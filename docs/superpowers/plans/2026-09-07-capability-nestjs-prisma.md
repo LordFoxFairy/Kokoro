@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 及其粒度整改均已验收（`f9dc3a3` + `9f237f9`）。`IAM-ATTESTATION-D` 文档设计门已由 IAM owner 提交 `bf160be` 并通过双审；下一个串行 P0 是 Agent proof/JWKS owner contract，之后才是 IAM verifier/OpenAPI/generated SDK 与 Platform consumer。P4b-4 在该 owner-first 链闭环前不放行，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 及其粒度整改均已验收（`f9dc3a3` + `9f237f9`）。`IAM-ATTESTATION-D` 文档设计门已由 IAM owner 提交 `bf160be`；Agent execution-proof A1/A2a/A2b/A2c owner 切片已分别提交 `cd2e698`、`43d5705`、`960a16b`、`02011bb`。下一个串行 P0 是 Platform typed identity、最终 RPC 名与 operation/request-binding owner contract；Platform 先发布不激活的 owner artifact，IAM 再按该 artifact 更新封闭 catalog并以 NestJS + Prisma 实现 verifier/OpenAPI/generated SDK，之后 Platform 才以单个可构建切片切换 Proto/runtime，Agent、BFF、System、Storage 与 Root 消费者完成代码发布后再协调激活。P4b-4 在该 owner-first 链和真实跨owner sandbox闭环前不放行，P4c–P4e 与其余 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -17,36 +17,37 @@
 
 ## 放置表（AGENTS §8）
 
-| 项 | 决定 |
-|---|---|
-| Owner | Capability/目标 Platform；Skills/MCP 唯一 writer 为本仓实现负责人，Root 只写计划和集成记录 |
-| 当前事实 | 以以上 commit、源码清单、契约和 schema 为行为基线；测试实跑证据另录 |
-| 目标职责 | Nest 组合/DI/生命周期，Prisma 数据访问，Skills/MCP Service 明确业务状态与失败恢复 |
+| 项       | 决定                                                                                                                                  |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | Capability/目标 Platform；Skills/MCP 唯一 writer 为本仓实现负责人，Root 只写计划和集成记录                                            |
+| 当前事实 | 以以上 commit、源码清单、契约和 schema 为行为基线；测试实跑证据另录                                                                   |
+| 目标职责 | Nest 组合/DI/生命周期，Prisma 数据访问，Skills/MCP Service 明确业务状态与失败恢复                                                     |
 | 目录方案 | 采用 `src/modules/skills`、`src/modules/mcp`；相比直接 `src/skills`，与 config/database/health/generated 类别分离更清晰，符合 ADR-029 |
-| 粒度 | 现有聚合式 application/ports/models 按真实变化原因拆分；简单 Service 直接用 Prisma，不机械造 Repository/DTO 五层或空目录 |
-| 依赖 | 传输→业务 Service→Prisma/owner client；禁止跨 owner 数据库、跨仓相对 import 和生成数据库类型穿透公开契约 |
+| 粒度     | 现有聚合式 application/ports/models 按真实变化原因拆分；简单 Service 直接用 Prisma，不机械造 Repository/DTO 五层或空目录              |
+| 依赖     | 传输→业务 Service→Prisma/owner client；禁止跨 owner 数据库、跨仓相对 import 和生成数据库类型穿透公开契约                              |
 | 数据/API | 唯一 Prisma schema；无外键、受信 tenant、幂等摘要/操作校验、稳定分页、原子本地 mutation/outbox/成功 receipt；外部操作有持久化恢复阶段 |
-| 删除 | 被替代 bootstrap、pg CRUD、SQL schema、旧分层与无效架构断言随实现退出；不删除仍有效安全检查；不留兼容服务/双写 |
-| 验证 | format/lint/typecheck/unit/contract/architecture/build/Prisma validate+generate/schema drift/integration/smoke；真实依赖独立资源 |
+| 删除     | 被替代 bootstrap、pg CRUD、SQL schema、旧分层与无效架构断言随实现退出；不删除仍有效安全检查；不留兼容服务/双写                        |
+| 验证     | format/lint/typecheck/unit/contract/architecture/build/Prisma validate+generate/schema drift/integration/smoke；真实依赖独立资源      |
 
 ## 任务卡与单一写入授权
 
 共享 checkout 的 Git index、分支和 commit 由 Root 串行管理；worker 不提交。新建源码/改 schema 前必须先通过 P0 文档门。同一负责人后续按卡续派，不默认获得全部阶段授权。
 
-| ID / 优先级 | 目标、完成条件 | Agent / 模型 / 权限 | 文件集 | 依赖 / 并行 | 状态 / 提交 |
-|---|---|---|---|---|---|
-| P0-A / P0 | 盘点协议、安全/状态机与消费者依赖，提出必须保留的行为与切换风险 | contract-review / gpt-5.6-sol / 只读 | 子仓 contract/src/test/docs，BFF/Agent 消费入口只读 | 可与 Root 设计并行 | 已交付只读报告 |
-| P0-D / P0 | TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、子仓 AGENTS/ADR/CURRENT 对齐，记录版本证据与未决项 | Root / 当前模型 / 写入（派实现前） | 子仓上述现有文档、ADR 新文件；Root 本任务板 | 参考 P0-A；不改源码/机器契约/schema | 已审查并提交 |
-| P0-R / P0 | 独立检查三份文档与计划的一致性、可执行性 | contract-review / gpt-5.6-sol / 只读 | P0-D 文档与当前 contract/schema | P0-D 完成后 | 已通过（三项整改复审） |
-| P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
-| P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
-| P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112`、P4b-3 `f9dc3a3` + `9f237f9` 已验收；IAM 文档门 `bf160be` 已验收；等待 Agent proof/JWKS → IAM verifier/SDK → Platform consumer，P4b-4 暂不放行 |
-| P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
+| ID / 优先级 | 目标、完成条件                                                                                    | Agent / 模型 / 权限                                 | 文件集                                                                                                                       | 依赖 / 并行                         | 状态 / 提交                                                                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0-A / P0   | 盘点协议、安全/状态机与消费者依赖，提出必须保留的行为与切换风险                                   | contract-review / gpt-5.6-sol / 只读                | 子仓 contract/src/test/docs，BFF/Agent 消费入口只读                                                                          | 可与 Root 设计并行                  | 已交付只读报告                                                                                                                                                                              |
+| P0-D / P0   | TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、子仓 AGENTS/ADR/CURRENT 对齐，记录版本证据与未决项    | Root / 当前模型 / 写入（派实现前）                  | 子仓上述现有文档、ADR 新文件；Root 本任务板                                                                                  | 参考 P0-A；不改源码/机器契约/schema | 已审查并提交                                                                                                                                                                                |
+| P0-R / P0   | 独立检查三份文档与计划的一致性、可执行性                                                          | contract-review / gpt-5.6-sol / 只读                | P0-D 文档与当前 contract/schema                                                                                              | P0-D 完成后                         | 已通过（三项整改复审）                                                                                                                                                                      |
+| P1 / P0     | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离       | 已验收：P1a `d32631f`，P1b `8606f87`                                                                                                                                                        |
+| P2 / P0     | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言                                        | capability-owner / gpt-5.6-sol / 后续授权           | Skills 源码/测试/必要契约文档；共享文件由任务卡另定                                                                          | P1；owner 契约先于消费者            | P2a/P2b/P2c 已验收                                                                                                                                                                          |
+| P3 / P0     | MCP connector/server/connection/authorization 模块闭环                                            | capability-owner / gpt-5.6-sol / 分片授权           | MCP 源码/测试/必要契约文档                                                                                                   | P2；不实现 Agent runtime            | P3-D、P3a、P3b 已验收                                                                                                                                                                       |
+| P4 / P0     | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性                                           | capability-owner / gpt-5.6-sol / 分片授权           | 本仓实际用例涉及文件，实施前细化                                                                                             | P2/P3                               | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112`、P4b-3 `f9dc3a3` + `9f237f9` 已验收；IAM 文档门 `bf160be` 已验收；等待 Agent proof/JWKS → IAM verifier/SDK → Platform consumer，P4b-4 暂不放行 |
+| P5 / P1     | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover         | Root 协调各仓负责人 / 后续授权                      | 独立切换任务卡，未授予其他仓写权                                                                                             | P1–P4；跨仓串行交接                 | 待派工                                                                                                                                                                                      |
 
 ## 实施检查清单
 
 ### P0：设计门
+
 - [x] 实跑当前 lint/typecheck/test/build/schema/contract 基线：均 exit 0，141 passed / 4 skipped；真实连接尚未配置。
 - [x] 核验 Nest/Prisma/Node/Connect manifest engines/peers；Node 24.13.0、Prisma 7.10.0、Nest 12.0.1、Connect Express 2.2.0，详细记录见 ADR-001；安装及运行实测留 P1。
 - [x] 更新现有三份设计、ADR、子仓指令与 CURRENT；不新建平行设计中心。
@@ -61,6 +62,7 @@ P1b 在 P1a 验收后另授权：Nest 原生 composition/lifecycle、health/proj
 P1a 的 red/green 必须覆盖 typed Prisma 读写、tenant 隔离、同库 mutation/outbox 回滚、connection policy 并发、receipt replay/digest/operation、复合分页、fresh-install/refuse/drift；缺失的恢复用例明确列 P4。
 
 ### P1：底座与持久化切片
+
 - [x] P1a：先新增并运行失败测试：Prisma 唯一 schema、无业务 pg SQL、tenant/并发/分页/事务基线。
 - [x] P1a 值域 gate：逐项验证 owner_kind、skill/connector/server/connection/authorization/installation/receipt/outbox status、connector type、transport、capability kind、effect 的生成 PostgreSQL enum，非法值在数据库写入时被拒绝；旧 CHECK 语义不丢失。
 - [x] P1b：先新增并运行 Nest 生命周期、HTTP/Connect raw-body/auth/route 失败测试。
@@ -97,12 +99,13 @@ P0 与 P1a 已完成本轮验收，实际命令、提交、审查与剩余 owner
 ### P0 通过报告
 
 子仓设计 commit：`c86d3cef2222f94a49dbb1a3e9f12c652b936f0d`。独立审查：contract-review / gpt-5.6-sol，P0-R 三项整改复审通过，Root diff --check 通过。
+
 - `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/TECHNICAL_DESIGN.md`
 - `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/API_CONTRACT.md`
 - `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/DATA_MODEL.md`
-当前契约/schema 检查 exit 0，Node24 下 architecture 22 passed；Prisma schema 尚待 P1a 创建验证，本报告只放行该实现设计，不表示 ORM/框架切换已验收。
-未决项：P2 安装 API、P4 实际事件消费者/publisher 与保留策略、P5 跨仓路由/身份更新，均由对应后续切片处理，不阻挡 P1a。
-资源：Root 新建专用 `kokoro_capability_p1a_20260907_worker` 与 `kokoro_capability_p1a_20260907_root` 数据库，复用 PostgreSQL5432/Redis6379；worker仅使用worker库，不清空Redis。
+  当前契约/schema 检查 exit 0，Node24 下 architecture 22 passed；Prisma schema 尚待 P1a 创建验证，本报告只放行该实现设计，不表示 ORM/框架切换已验收。
+  未决项：P2 安装 API、P4 实际事件消费者/publisher 与保留策略、P5 跨仓路由/身份更新，均由对应后续切片处理，不阻挡 P1a。
+  资源：Root 新建专用 `kokoro_capability_p1a_20260907_worker` 与 `kokoro_capability_p1a_20260907_root` 数据库，复用 PostgreSQL5432/Redis6379；worker仅使用worker库，不清空Redis。
 
 ### 当前派工（P1a）
 
@@ -111,18 +114,18 @@ contract-review / gpt-5.6-sol 同时只读准备 P1b 装配/HTTP/Connect 测试�
 
 ### Root 集成复验矩阵
 
-| 关注点 | 所需证据 | 阶段 |
-|---|---|---|
-| 单一 schema/数据库访问 | SQL canonical 删除，业务 src 无 pg Pool/raw CRUD；Prisma生成可重复 | P1a |
-| 旧值域承接 | PostgreSQL enum/类型/constraints catalog；非法值拒绝 | P1a |
-| tenant 写保护 | 同 ID 跨tenant写拒绝，不仅测试跨tenant读取 | P1a |
-| 业务事务 | mutation后outbox失败一起回滚，同一 Prisma transaction client | P1a |
-| connection 竞争 | 同identity同policy重放/不同policy冲突，真实并发写入 | P1a |
-| receipt 基线 | digest/operation漂移拒绝、重放codec、failed重试；不冒称crash原子 | P1a |
-| 安装边界 | 独立新空库成功、非空拒绝、并发安装仅一次、故意加列/索引/constraint/enum drift拒绝 | P1a |
-| 无丢失协议行为 | 既有 HTTP/Connect/attestation/pagination/status 回归 | P1a / P1b |
-| 生产装配 | 构建生成物路径正确、真实DB/Redis启动及依赖失败不监听 | P1a / P1b |
-| 原生Nest入口 | 同listener、Connect原始stream未被parser吞掉、两套auth分离、controller无SQL | P1b |
+| 关注点                 | 所需证据                                                                          | 阶段      |
+| ---------------------- | --------------------------------------------------------------------------------- | --------- |
+| 单一 schema/数据库访问 | SQL canonical 删除，业务 src 无 pg Pool/raw CRUD；Prisma生成可重复                | P1a       |
+| 旧值域承接             | PostgreSQL enum/类型/constraints catalog；非法值拒绝                              | P1a       |
+| tenant 写保护          | 同 ID 跨tenant写拒绝，不仅测试跨tenant读取                                        | P1a       |
+| 业务事务               | mutation后outbox失败一起回滚，同一 Prisma transaction client                      | P1a       |
+| connection 竞争        | 同identity同policy重放/不同policy冲突，真实并发写入                               | P1a       |
+| receipt 基线           | digest/operation漂移拒绝、重放codec、failed重试；不冒称crash原子                  | P1a       |
+| 安装边界               | 独立新空库成功、非空拒绝、并发安装仅一次、故意加列/索引/constraint/enum drift拒绝 | P1a       |
+| 无丢失协议行为         | 既有 HTTP/Connect/attestation/pagination/status 回归                              | P1a / P1b |
+| 生产装配               | 构建生成物路径正确、真实DB/Redis启动及依赖失败不监听                              | P1a / P1b |
+| 原生Nest入口           | 同listener、Connect原始stream未被parser吞掉、两套auth分离、controller无SQL        | P1b       |
 
 完整 Root full.sh 本轮尚不执行：该脚本编排所有正在由其他负责人修改的仓和发布资源，不是当前单仓稳定验收面；Root standard 已记录215项基线失败，最终再次只读核验。
 
@@ -158,18 +161,18 @@ Root供应链核验：`docker buildx imagetools inspect node:24.13.0-bookworm-sl
 
 Root 在最终提交相同工作树、Node 24.13.0 下执行（全部 exit 0）：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm prisma:generate` + 生成文件 SHA-256 对比 | 重复生成一致；build 复用同一生成入口 |
-| `pnpm format:check` | P1a 明确文件范围通过，不冒称全仓格式化完成 |
-| `pnpm lint` / `pnpm typecheck` | 通过 |
-| `pnpm prisma:validate` / `pnpm schema:check` | Prisma 有效、真实 PostgreSQL schema 无 drift |
-| `pnpm contract:check` | 通过，wire digest 仍为 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 42 files / 162 passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 9 files / 56 passed；包含组件测试，不把 56 项全部称为真实外部集成 |
-| `pnpm build` | 通过 |
-| `pnpm smoke:production` | 编译后入口 + 真实 PostgreSQL/Redis 通过；Storage/IAM/Secret/MCP provider 为本地协议 stub |
-| `git diff c86d3ce --check` | 包含实现与规范化的整体差异通过 |
+| 命令                                               | 实际结果                                                                                  |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `pnpm prisma:generate` + 生成文件 SHA-256 对比     | 重复生成一致；build 复用同一生成入口                                                      |
+| `pnpm format:check`                                | P1a 明确文件范围通过，不冒称全仓格式化完成                                                |
+| `pnpm lint` / `pnpm typecheck`                     | 通过                                                                                      |
+| `pnpm prisma:validate` / `pnpm schema:check`       | Prisma 有效、真实 PostgreSQL schema 无 drift                                              |
+| `pnpm contract:check`                              | 通过，wire digest 仍为 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`             | 42 files / 162 passed，0 failed、0 skipped                                                |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 9 files / 56 passed；包含组件测试，不把 56 项全部称为真实外部集成                         |
+| `pnpm build`                                       | 通过                                                                                      |
+| `pnpm smoke:production`                            | 编译后入口 + 真实 PostgreSQL/Redis 通过；Storage/IAM/Secret/MCP provider 为本地协议 stub  |
+| `git diff c86d3ce --check`                         | 包含实现与规范化的整体差异通过                                                            |
 
 真实数据库专项共 12 项（repository 9、installer 3）；另外已完成首次隔离空库 `pnpm db:apply-schema`、非空拒绝/并发安装/DDL 回滚、坏 DB 启动拒绝、额外 view/CHECK/materialized view drift 注入拒绝及清理后复验。只操作本任务专属数据库和随机测试数据库，未重启或清空共享 PostgreSQL/Redis。
 最新主控完整日志：`/tmp/kokoro-p1a-codegen-final-20260908.log`；前次完整/专项证据：`/tmp/kokoro-p1a-root-final-20260907.log`、`/tmp/kokoro-p1a-root-verification-20260907.log`。日志为本机临时验收证据，不作为仓库正式工件。
@@ -190,35 +193,33 @@ Root 在最终提交相同工作树、Node 24.13.0 下执行（全部 exit 0）�
 本轮新基线：Root `4c958c969fa41f52e514744f6362a9aae95f9856`（大量其他任务未提交变更）；Capability `d32631fa04b36a57f00c464bd78fcdde3ec10f1f`，分支 `codex/production-closure-docs`，子仓干净。Root 只写本任务板，不接管 System 正在更新的 Root 文档/治理工具。
 最新 AGENTS 第10节替代历史默认门禁：执行 standard、topology、`python3 -m pytest scripts/tests`；旧 full.sh/owner-health 已暂停（只诊断退出2），不再列为待恢复执行命令。全仓隔离编排由 Root 独立任务重建。
 
-| ID | 目标/完成条件 | Owner/角色/模型/权限 | 文件集/资源 | 依赖与交付 |
-|---|---|---|---|---|
-| P1b-D | 刷新当前态、细化 Nest 装配与关闭顺序，三设计一致 | Root / 设计 / 当前模型 / 写入 | 子仓 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR；Root仅本任务板 | 已批准大方向；设计刷新后才授权实现，Root提交 |
-| P1b-R0 | 固定 d32631f 核对 HTTP/Connect 既有行为及新方案必验矩阵 | contract_review / gpt-5.6-sol / 只读 | 子仓src/test/contract/docs；不改文件、不启动服务、不写数据库 | 与Root设计并行；报告准确路径与行为，不实现 |
-| P1b-I | Nest唯一入口/DI/生命周期，原生HTTP Controller、Guard/Filter及官方Connect同listener；旧入口删除 | capability_owner / gpt-5.6-sol / 唯一writer（P1b-D通过后授权） | 子仓src/main.ts/app.module.ts/config/database/health/http/rpc；旧bootstrap与interfaces必要删除/引用；package/lock/tsconfig/vitest/build/CI/Docker/scripts/test/必要docs；不改canonical schema/wire契约/其他仓/Root | 先失败测试、再实现；Git由Root独占；只用既有worker专属PG库与Redis5，不重建实例 |
-| P1b-R1 | 先规范审查后独立质量审查，阻断整改 | contract_review / database_review / 只读 | 实现停写快照或交付commit，禁止重置数据/服务 | Root先复核范围，再重跑本仓门禁与最新Root门禁；验收后精确路径提交 |
+| ID     | 目标/完成条件                                                                                  | Owner/角色/模型/权限                                           | 文件集/资源                                                                                                                                                                                                        | 依赖与交付                                                                    |
+| ------ | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| P1b-D  | 刷新当前态、细化 Nest 装配与关闭顺序，三设计一致                                               | Root / 设计 / 当前模型 / 写入                                  | 子仓 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR；Root仅本任务板                                                                                                                                                  | 已批准大方向；设计刷新后才授权实现，Root提交                                  |
+| P1b-R0 | 固定 d32631f 核对 HTTP/Connect 既有行为及新方案必验矩阵                                        | contract_review / gpt-5.6-sol / 只读                           | 子仓src/test/contract/docs；不改文件、不启动服务、不写数据库                                                                                                                                                       | 与Root设计并行；报告准确路径与行为，不实现                                    |
+| P1b-I  | Nest唯一入口/DI/生命周期，原生HTTP Controller、Guard/Filter及官方Connect同listener；旧入口删除 | capability_owner / gpt-5.6-sol / 唯一writer（P1b-D通过后授权） | 子仓src/main.ts/app.module.ts/config/database/health/http/rpc；旧bootstrap与interfaces必要删除/引用；package/lock/tsconfig/vitest/build/CI/Docker/scripts/test/必要docs；不改canonical schema/wire契约/其他仓/Root | 先失败测试、再实现；Git由Root独占；只用既有worker专属PG库与Redis5，不重建实例 |
+| P1b-R1 | 先规范审查后独立质量审查，阻断整改                                                             | contract_review / database_review / 只读                       | 实现停写快照或交付commit，禁止重置数据/服务                                                                                                                                                                        | Root先复核范围，再重跑本仓门禁与最新Root门禁；验收后精确路径提交              |
 
 允许保留一个注入完依赖后的 CapabilityServices 中间factory，P2/P3按业务拆除；不允许把旧createRuntime包进单provider冒充Nest原生。不得以Nest Guard默认保护middleware RPC。生成物只通过唯一脚本更新。子仓schema与wire不变，任何新增owner/契约决定先报告Root。
-
 
 ### P1b-D 通过与 P1b-I 放行
 
 2026-09-08，contract_review对三设计当前差异复核通过，无blocking。Root复核ADR今日版本/生命周期证据。
 通过文件：
+
 - `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/TECHNICAL_DESIGN.md`
 - `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/API_CONTRACT.md`
 - `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/DATA_MODEL.md`
-未决项仍为P2安装契约/P4publisher恢复/P5拓扑切换，均不阻挡P1b。
-Root在d32631f实现基线上重新执行：pnpm test=162 passed/0 failed/0 skipped；contract:check、prisma:validate、真实schema:check exit0，日志 `/tmp/kokoro-p1b-child-baseline.log`。
-Root最新工作树静态基线：standard exit1/197 violations；topology exit0；pytest scripts/tests=72 passed/2 failed（handbook测试仍期待18示例及固定标题“参考依据”，当前实际11示例/新标题）。日志 `/tmp/kokoro-p1b-root-{standard,topology,tests}-baseline.log`。这些Root文件由其他任务修改，不在本片抢写或降低断言。
-现在只授权P1b-I任务卡文件集；沿用现有干净codex分支/shared-checkout单writer模式，不另起重复实现worktree，Root独占index/commit。capability_owner负责失败测试、实现、文件清单与验证交付，后续规范/质量审查通过后Root重跑并提交。
+  未决项仍为P2安装契约/P4publisher恢复/P5拓扑切换，均不阻挡P1b。
+  Root在d32631f实现基线上重新执行：pnpm test=162 passed/0 failed/0 skipped；contract:check、prisma:validate、真实schema:check exit0，日志 `/tmp/kokoro-p1b-child-baseline.log`。
+  Root最新工作树静态基线：standard exit1/197 violations；topology exit0；pytest scripts/tests=72 passed/2 failed（handbook测试仍期待18示例及固定标题“参考依据”，当前实际11示例/新标题）。日志 `/tmp/kokoro-p1b-root-{standard,topology,tests}-baseline.log`。这些Root文件由其他任务修改，不在本片抢写或降低断言。
+  现在只授权P1b-I任务卡文件集；沿用现有干净codex分支/shared-checkout单writer模式，不另起重复实现worktree，Root独占index/commit。capability_owner负责失败测试、实现、文件清单与验证交付，后续规范/质量审查通过后Root重跑并提交。
 
 P1b-D 设计提交：`7c9367e20de0bb1de8fc8b7b25c94a8b1b7c7ccd`；P1b-I 已续派 capability_owner，当前状态进行中。
-
 
 ### P1b 实现负责人交接
 
 原 capability_owner 报告上下文耗尽，仅完成盘点，尚无文件写入；已结束并停写。Root确认子仓7c9367e工作树仍干净后，替换为新原生代理 capability_owner_p1b / gpt-5.6-sol / 独立精简上下文（fork none）。继承同一P1b-I任务卡与写入范围/验证/Root独占Git规则；旧负责人不再写入，不并行两个实现。此前接单不记实现进度或验收成果。
-
 
 P1b-I 首个RED（capability_owner_p1b 实跑，主控尚未验收）：`PATH=/Users/nako/.nvm/versions/node/v24.13.0/bin:$PATH pnpm vitest run test/integration/nest-ingress.test.ts` exit1，1 failed suite，目标AppModule未创建导致import失败。现进入最小GREEN实现，旧行为基线仍为7c9367e之前主控162/162。Nest/Connect依赖已安装；供应链release-age精确例外须由实现负责人说明并经Root审查，尚未算通过。
 
@@ -227,7 +228,6 @@ P1b-I 首个RED（capability_owner_p1b 实跑，主控尚未验收）：`PATH=/U
 - 规范审查 contract_review / gpt-5.6-sol：SPEC PASS；唯一Nest入口、同listener、HTTP/RPC协议/鉴权/surface/readiness/drain/telemetry及删除项均符合P1b范围。
 - 质量审查 database_review / gpt-6-astra：QUALITY FAIL，4项P1生命周期阻断：deadline等待取消完成而失去期限；资源flags在连接失败/关闭pending阶段漏掉force cleanup；readiness ping超时永久disconnect导致不可恢复；socket close提前释放执行计数但handler可能继续写库。
 - Root未接收首轮实现。capability_owner_p1b已按同一任务卡续接修复，要求取消挂起、坏Redis有界退出、quit挂起force、readiness恢复及client abort后等待业务handler settle的RED→GREEN测试。规范已通过，修复后仍由同一质量审查员复审，Root最后复验。
-
 
 ### P1b 最终交接与验收（2026-09-08）
 
@@ -241,16 +241,16 @@ P1b-I 首个RED（capability_owner_p1b 实跑，主控尚未验收）：`PATH=/U
 
 Root 在最终提交 `8606f876e8cce0c7affa346049f62910218793b0`、Node 24.13.0/pnpm 11.25.0、真实 PostgreSQL/Redis 环境重跑：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm install --frozen-lockfile` | 通过，lockfile 无漂移 |
-| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
-| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0，真实 schema 无 drift |
-| `pnpm contract:check` | exit 0；digest 保持 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 46 files / 192 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 10 files / 67 tests passed；包含组件测试，不把全部项目称为外部集成 |
-| `pnpm build` / `pnpm smoke:production` | exit 0；真实 PostgreSQL/Redis + 本地 owner 协议 stub；SIGINT/SIGTERM 与失败启动路径通过 |
-| `git diff --check` / clean worktree | 通过 |
+| 命令                                                                  | 实际结果                                                                                |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile`                                      | 通过，lockfile 无漂移                                                                   |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck`                  | 全部 exit 0                                                                             |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0，真实 schema 无 drift                                                       |
+| `pnpm contract:check`                                                 | exit 0；digest 保持 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca`  |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`                                | 46 files / 192 tests passed，0 failed、0 skipped                                        |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`                    | 10 files / 67 tests passed；包含组件测试，不把全部项目称为外部集成                      |
+| `pnpm build` / `pnpm smoke:production`                                | exit 0；真实 PostgreSQL/Redis + 本地 owner 协议 stub；SIGINT/SIGTERM 与失败启动路径通过 |
+| `git diff --check` / clean worktree                                   | 通过                                                                                    |
 
 提交前冻结工作树日志：`/tmp/kokoro-p1b-root-final-20260908.log`；提交后绑定最终 SHA 的完整日志：`/tmp/kokoro-p1b-postcommit-8606f87.log`。日志是本机证据，不纳入仓库。
 
@@ -264,17 +264,17 @@ Goal 继续保持 active。P2 先完成设计门，再依次实施 P2a 模块/�
 
 ### P2 放置表
 
-| 项 | 已批准结论 |
-|---|---|
-| Owner | `kokoro-capability` 当前为唯一 writer；业务模块 `skills`。目标 P5 才把服务拓扑名切为 `kokoro-platform`，本片不复制 owner。 |
-| 当前事实 | 基线 `8606f876e8cce0c7affa346049f62910218793b0`；Skills 仍分散在 `src/application/skill`、全局 models/ports、Prisma capability repository、聚合 RPC/HTTP，generic installation/authorization 尚未接入，catalog 仍有 `installed:true` 占位。 |
-| 目标职责 | `SkillsModule` 先承接既有 catalog/source，再由 additive `SkillInstallationService` 提供 tenant/attested owner scope 下的安装、升级、启停、移除和查询；HTTP 保持 read-only projection。 |
-| 目录方案 | 采用批准的 `src/modules/skills/{catalog,source,installation}` 按真实子能力聚合；淘汰继续扩展全局四层，因为会让 Skills/MCP 共享聚合类型和组合对象。暂不拆独立服务，避免提前做 P5 拓扑切换。 |
-| 粒度 | 三个可审查业务切片：P2a 只迁现有 surface 并修状态/series；P2b 同片落 owner proto/generated/schema/repository；P2c 才接 projection、原子事务并删除孤立 helper。 |
-| 依赖 | `SkillsModule` 可依赖 Prisma、Storage/IAM owner client 和共享 ingress/telemetry；禁止读取别仓数据库、把 Prisma/generated 类型穿透 wire、反向依赖 MCP、保留第二套安装实现或兼容 alias。AppModule 只 import feature；P3 才拆 MCP 聚合。 |
-| 数据/API | `skill_id` 仍是版本 ID，新增内部 `series_id`；安装唯一身份为 tenant + target owner scope + skill series。Install 输入只含 source_ref/target scope，asset/digest 服务端派生并复验。P2b 先更新唯一 proto，P5 才切 BFF/Agent consumers。 |
-| 删除项 | P2a 移除迁走后的旧 Skills service/repository/RPC/HTTP/global type/port；P2b 真实安装替换后删除 generic installation/authorization table/enum；P2c 删除孤立 installation/package/source-import helper 与只覆盖旧路径的 tests，不保留 fallback。 |
-| 验证 | 每片先 RED，再执行 format/lint/typecheck/Prisma generate+validate/schema、contract、unit/integration/build/smoke、architecture 与 diff；schema/state/concurrency 使用隔离真实 PostgreSQL，复用现有 Redis。Root 最后执行当前三项全局门禁并如实保留既有失败。 |
+| 项       | 已批准结论                                                                                                                                                                                                                                                  |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-capability` 当前为唯一 writer；业务模块 `skills`。目标 P5 才把服务拓扑名切为 `kokoro-platform`，本片不复制 owner。                                                                                                                                  |
+| 当前事实 | 基线 `8606f876e8cce0c7affa346049f62910218793b0`；Skills 仍分散在 `src/application/skill`、全局 models/ports、Prisma capability repository、聚合 RPC/HTTP，generic installation/authorization 尚未接入，catalog 仍有 `installed:true` 占位。                 |
+| 目标职责 | `SkillsModule` 先承接既有 catalog/source，再由 additive `SkillInstallationService` 提供 tenant/attested owner scope 下的安装、升级、启停、移除和查询；HTTP 保持 read-only projection。                                                                      |
+| 目录方案 | 采用批准的 `src/modules/skills/{catalog,source,installation}` 按真实子能力聚合；淘汰继续扩展全局四层，因为会让 Skills/MCP 共享聚合类型和组合对象。暂不拆独立服务，避免提前做 P5 拓扑切换。                                                                  |
+| 粒度     | 三个可审查业务切片：P2a 只迁现有 surface 并修状态/series；P2b 同片落 owner proto/generated/schema/repository；P2c 才接 projection、原子事务并删除孤立 helper。                                                                                              |
+| 依赖     | `SkillsModule` 可依赖 Prisma、Storage/IAM owner client 和共享 ingress/telemetry；禁止读取别仓数据库、把 Prisma/generated 类型穿透 wire、反向依赖 MCP、保留第二套安装实现或兼容 alias。AppModule 只 import feature；P3 才拆 MCP 聚合。                       |
+| 数据/API | `skill_id` 仍是版本 ID，新增内部 `series_id`；安装唯一身份为 tenant + target owner scope + skill series。Install 输入只含 source_ref/target scope，asset/digest 服务端派生并复验。P2b 先更新唯一 proto，P5 才切 BFF/Agent consumers。                       |
+| 删除项   | P2a 移除迁走后的旧 Skills service/repository/RPC/HTTP/global type/port；P2b 真实安装替换后删除 generic installation/authorization table/enum；P2c 删除孤立 installation/package/source-import helper 与只覆盖旧路径的 tests，不保留 fallback。              |
+| 验证     | 每片先 RED，再执行 format/lint/typecheck/Prisma generate+validate/schema、contract、unit/integration/build/smoke、architecture 与 diff；schema/state/concurrency 使用隔离真实 PostgreSQL，复用现有 Redis。Root 最后执行当前三项全局门禁并如实保留既有失败。 |
 
 ### P2-D 设计通过报告
 
@@ -287,12 +287,12 @@ Goal 继续保持 active。P2 先完成设计门，再依次实施 P2a 模块/�
 
 ### P2 实施任务卡
 
-| ID | 目标/完成条件 | Owner/角色/模型/权限 | 文件集与排除 | 依赖、验证与交付 |
-|---|---|---|---|---|
-| P2a-I | 建立原生 `SkillsModule`，迁移既有 catalog/source/RPC/HTTP projection/repository；增加 `series_id`、版本族和状态转换不变量；wire 行为不变 | capability_owner_p1b / gpt-5.6-sol / 子仓唯一 writer；Root 独占 Git | 可写 `src/modules/skills/**`、AppModule/必要共享 ingress 注册、迁出后的旧 Skills 路径、Prisma schema/generated/installer/drift、对应 test/docs/package script；不得改 proto/OpenAPI、installation schema/行为、MCP业务、其他仓 | 先写终态不可复活、非draft不可换包、同series owner/name、真实PG并发版本与状态竞争 RED；完成后停写交 Root/双审，Root 重跑完整本仓门禁并精确路径提交 |
-| P2a-R | 对冻结 P2a 快照执行规范与数据/质量审查 | contract_review + database_review / 只读 | 只读 P2a diff/source/test/docs；不改文件、Git、共享资源 | SPEC/DATA 均 PASS 后 Root 才接收；任何 blocking/important 回同一 writer 整改 |
-| P2b-I | 新增 `SkillInstallationService` 唯一 proto/generated/provenance/surface 与 `skill_installation` schema/repository；替换并删除 generic table/enum | P2a 验收后续派同仓唯一 writer | contract/proto+generated、Prisma schema/installer/drift、`src/modules/skills/installation/**`、对应 tests/docs；不改消费者仓/HTTP mutation/P4 publisher | 机器契约先 RED；覆盖 response presence/enum、operation互换拒绝、tenant/owner、unique/upgrade/reinstall/no-op/降级、fresh schema/drift与真实PG并发；独立双审+Root提交 |
-| P2c-I | 接通真实 install/pool/catalog，删除 `installed:true` 与孤立 helper；本地 business/outbox/success receipt 原子提交 | P2b 验收后续派同仓唯一 writer | Skills transaction/projection/Storage client、旧 installation/package helper 删除、tests/docs；不做 P4 crash recovery/public event 或 P5 consumer alias | 覆盖 clean/digest、rollback/replay/event、catalog/pool、cursor scope/filter；完整本仓门禁、双审、Root提交 |
+| ID    | 目标/完成条件                                                                                                                                    | Owner/角色/模型/权限                                                | 文件集与排除                                                                                                                                                                                                                   | 依赖、验证与交付                                                                                                                                                     |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P2a-I | 建立原生 `SkillsModule`，迁移既有 catalog/source/RPC/HTTP projection/repository；增加 `series_id`、版本族和状态转换不变量；wire 行为不变         | capability_owner_p1b / gpt-5.6-sol / 子仓唯一 writer；Root 独占 Git | 可写 `src/modules/skills/**`、AppModule/必要共享 ingress 注册、迁出后的旧 Skills 路径、Prisma schema/generated/installer/drift、对应 test/docs/package script；不得改 proto/OpenAPI、installation schema/行为、MCP业务、其他仓 | 先写终态不可复活、非draft不可换包、同series owner/name、真实PG并发版本与状态竞争 RED；完成后停写交 Root/双审，Root 重跑完整本仓门禁并精确路径提交                    |
+| P2a-R | 对冻结 P2a 快照执行规范与数据/质量审查                                                                                                           | contract_review + database_review / 只读                            | 只读 P2a diff/source/test/docs；不改文件、Git、共享资源                                                                                                                                                                        | SPEC/DATA 均 PASS 后 Root 才接收；任何 blocking/important 回同一 writer 整改                                                                                         |
+| P2b-I | 新增 `SkillInstallationService` 唯一 proto/generated/provenance/surface 与 `skill_installation` schema/repository；替换并删除 generic table/enum | P2a 验收后续派同仓唯一 writer                                       | contract/proto+generated、Prisma schema/installer/drift、`src/modules/skills/installation/**`、对应 tests/docs；不改消费者仓/HTTP mutation/P4 publisher                                                                        | 机器契约先 RED；覆盖 response presence/enum、operation互换拒绝、tenant/owner、unique/upgrade/reinstall/no-op/降级、fresh schema/drift与真实PG并发；独立双审+Root提交 |
+| P2c-I | 接通真实 install/pool/catalog，删除 `installed:true` 与孤立 helper；本地 business/outbox/success receipt 原子提交                                | P2b 验收后续派同仓唯一 writer                                       | Skills transaction/projection/Storage client、旧 installation/package helper 删除、tests/docs；不做 P4 crash recovery/public event 或 P5 consumer alias                                                                        | 覆盖 clean/digest、rollback/replay/event、catalog/pool、cursor scope/filter；完整本仓门禁、双审、Root提交                                                            |
 
 P2a 当前放行基线为 `83350ec2a4d89992ba89d17231af13e749ee4f0a`；沿用 `codex/production-closure-docs` shared checkout 和同一隔离资源纪律。Root/其他 Agent 在 writer 进行中不写该子仓；writer 不执行 Git add/commit/branch/reset，不扩大到 P2b/P2c。
 
@@ -306,16 +306,16 @@ P2a 当前放行基线为 `83350ec2a4d89992ba89d17231af13e749ee4f0a`；沿用 `c
 
 Root 使用 Node 24.13.0、pnpm 11.25.0、专属数据库 `kokoro_capability_p2a_20260908_root_r2` 和 Redis DB 6，在最终提交 `af9ac7bf611f2bbf1c49bf157a5acb7f55a02f34` 重跑：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema` | exit 0；未修改 lockfile；新库安装成功 |
-| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
-| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成前后差异稳定，真实数据库 No difference detected |
-| `pnpm contract:check` | exit 0；digest 保持 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 49 files / 208 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 11 files / 71 tests passed，0 failed、0 skipped |
-| `pnpm build` / `pnpm smoke` / `pnpm smoke:production` | exit 0；smoke 2 files / 12 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub |
-| `git diff --check` / clean worktree | 通过 |
+| 命令                                                                  | 实际结果                                                                               |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema`        | exit 0；未修改 lockfile；新库安装成功                                                  |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck`                  | 全部 exit 0                                                                            |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成前后差异稳定，真实数据库 No difference detected                       |
+| `pnpm contract:check`                                                 | exit 0；digest 保持 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`                                | 49 files / 208 tests passed，0 failed、0 skipped                                       |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`                    | 11 files / 71 tests passed，0 failed、0 skipped                                        |
+| `pnpm build` / `pnpm smoke` / `pnpm smoke:production`                 | exit 0；smoke 2 files / 12 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub         |
+| `git diff --check` / clean worktree                                   | 通过                                                                                   |
 
 提交前/后日志：`/tmp/kokoro-p2a-root-final-precommit-20260908.log`、`/tmp/kokoro-p2a-postcommit-af9ac7b.log`。日志为本机证据，不纳入仓库。
 
@@ -334,17 +334,17 @@ Docker daemon 既有 `/info` HTTP 500，镜像 build/smoke 未验；production s
 
 Root 使用 Node 24.13.0、pnpm 11.25.0、专属 fresh PostgreSQL 数据库 `kokoro_capability_p2b_f2_20260908_root_post119dbe3` 与 Redis DB 8，在最终提交 `119dbe36d2b44080d6be825ca84c98471e63467e` 重跑：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema` | exit 0；lockfile 无漂移；全新库安装成功 |
-| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
-| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成后工作树保持 clean；真实数据库无 drift |
-| `pnpm contract:check` | exit 0；新 digest `6e0bbfc7974692b20f13ef9aac8440c50a6b1be2466e90a020b0e2cb5197fd8b` |
-| `buf breaking` 相对 `af9ac7b` | exit 0；新增 proto 为 additive |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 55 files / 266 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 12 files / 77 tests passed，0 failed、0 skipped |
-| `pnpm build` / `pnpm smoke` / `pnpm smoke:production` | exit 0；smoke 2 files / 13 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub |
-| `git diff --check` / clean worktree | 通过 |
+| 命令                                                                  | 实际结果                                                                             |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema`        | exit 0；lockfile 无漂移；全新库安装成功                                              |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck`                  | 全部 exit 0                                                                          |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成后工作树保持 clean；真实数据库无 drift                              |
+| `pnpm contract:check`                                                 | exit 0；新 digest `6e0bbfc7974692b20f13ef9aac8440c50a6b1be2466e90a020b0e2cb5197fd8b` |
+| `buf breaking` 相对 `af9ac7b`                                         | exit 0；新增 proto 为 additive                                                       |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`                                | 55 files / 266 tests passed，0 failed、0 skipped                                     |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`                    | 12 files / 77 tests passed，0 failed、0 skipped                                      |
+| `pnpm build` / `pnpm smoke` / `pnpm smoke:production`                 | exit 0；smoke 2 files / 13 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub       |
+| `git diff --check` / clean worktree                                   | 通过                                                                                 |
 
 提交前日志：`/tmp/kokoro-p2b-f2-root-precommit-20260908.log`；提交后绑定最终 SHA 的日志：`/tmp/kokoro-p2b-postcommit-119dbe3-20260908.log`。日志为本机证据，不纳入仓库。
 
@@ -373,16 +373,16 @@ P2c 现在以 `119dbe36d2b44080d6be825ca84c98471e63467e` 为唯一实现基线�
 
 Root 在最终提交 `e63b56518b51dbf1ad1c172f709b19231b4bfaa3`、Node 24.13.0、pnpm 11.25.0、独立 fresh PostgreSQL 数据库 `kokoro_capability_p2c_post_e63b565_20260908` 与 Redis DB 10 重跑：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema` | exit 0；lockfile 无漂移；全新库安装成功 |
-| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
-| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成后工作树 clean；真实数据库无 drift、物理外键数 0 |
-| `pnpm contract:check` / `buf breaking` 相对 `119dbe3` | exit 0；digest 保持 `6e0bbfc7974692b20f13ef9aac8440c50a6b1be2466e90a020b0e2cb5197fd8b`，无 wire breaking |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 53 files / 275 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 13 files / 87 tests passed，0 failed、0 skipped |
-| `pnpm build` / `pnpm smoke` / `pnpm smoke:production` | exit 0；smoke 2 files / 13 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub |
-| `git diff --check` / clean worktree | 通过 |
+| 命令                                                                  | 实际结果                                                                                                 |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema`        | exit 0；lockfile 无漂移；全新库安装成功                                                                  |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck`                  | 全部 exit 0                                                                                              |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成后工作树 clean；真实数据库无 drift、物理外键数 0                                        |
+| `pnpm contract:check` / `buf breaking` 相对 `119dbe3`                 | exit 0；digest 保持 `6e0bbfc7974692b20f13ef9aac8440c50a6b1be2466e90a020b0e2cb5197fd8b`，无 wire breaking |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`                                | 53 files / 275 tests passed，0 failed、0 skipped                                                         |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`                    | 13 files / 87 tests passed，0 failed、0 skipped                                                          |
+| `pnpm build` / `pnpm smoke` / `pnpm smoke:production`                 | exit 0；smoke 2 files / 13 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub                           |
+| `git diff --check` / clean worktree                                   | 通过                                                                                                     |
 
 提交后完整日志：`/tmp/kokoro-p2c-root-postcommit-e63b565-20260908.log`。Root 最新全局门禁：standard exit 1（212 violations，其中 Capability 20）；topology exit 0；Root tests 为 82 passed / 2 failed，仍是工程手册示例数量与“参考依据”标题断言。日志 `/tmp/kokoro-p2c-root-global-20260908-{standard,topology,tests}.log`。未通过修改其他 owner、当前 SQL 手册脏文件或放宽门禁清零。
 
@@ -394,17 +394,17 @@ P3-D 使用三个并行只读角色审计同一 clean baseline：capability_owne
 
 ### P3 放置表
 
-| 项       | 已裁决结论                                                                                                                                                                                                                                           |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Owner    | `kokoro-capability` 当前唯一writer，业务模块`mcp`；secret/provider、IAM、Agent runtime事实继续由各owner持有，P5才切`kokoro-platform`物理拓扑。                                                                                                       |
-| 当前事实 | 基线`e63b56518b51dbf1ad1c172f709b19231b4bfaa3`；`CapabilityServices/Context`、`application/mcp`、legacy RPC factory、`PrismaMcpRepository`/state forwarding store承接唯一现行实现；四张MCP表，server global，其余tenant-owned。                      |
-| 目标职责 | `src/modules/mcp/{provider,connector,server,connection,authorization}`原生Nest feature，逐方法attestation/binding/digest/typed errors，current authorization状态、声明policy和短期tool decision。                                                    |
-| 目录方案 | 采用已批准`src/modules/mcp`而非继续扩展全局四层；不提前拆进程/切服务名，也不先提交只搬目录且保留安全缺口的中间态。                                                                                                                                   |
-| 粒度     | P3a关闭provider/connector/consent及其additive wire/schema、拆除HTTP projection wide bag依赖与统一client lifecycle；P3b迁server/connection/declaration/tool authorization并把已用窄reader的HTTP controller物理归位。RPC始终单handler，无alias/双写。 |
-| 依赖     | feature-owned Prisma repository/transaction与IAM/provider/secret/declaration窄token；保留共享receipt/outbox/pagination/bounded HTTP/drain。禁止`OWNER_ADAPTERS`宽bag、Skills反向依赖、别仓DB和provider SDK泄漏。                                     |
-| 数据/API | 七mutation additive attestation；17方法exact operation+full request binding；stable command digest服务端重算。Connector explicit pending/active auth pointer、authorization account/times、connector/connection revoke event/time；不新增通用表/FK。 |
+| 项       | 已裁决结论                                                                                                                                                                                                                                                            |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-capability` 当前唯一writer，业务模块`mcp`；secret/provider、IAM、Agent runtime事实继续由各owner持有，P5才切`kokoro-platform`物理拓扑。                                                                                                                        |
+| 当前事实 | 基线`e63b56518b51dbf1ad1c172f709b19231b4bfaa3`；`CapabilityServices/Context`、`application/mcp`、legacy RPC factory、`PrismaMcpRepository`/state forwarding store承接唯一现行实现；四张MCP表，server global，其余tenant-owned。                                       |
+| 目标职责 | `src/modules/mcp/{provider,connector,server,connection,authorization}`原生Nest feature，逐方法attestation/binding/digest/typed errors，current authorization状态、声明policy和短期tool decision。                                                                     |
+| 目录方案 | 采用已批准`src/modules/mcp`而非继续扩展全局四层；不提前拆进程/切服务名，也不先提交只搬目录且保留安全缺口的中间态。                                                                                                                                                    |
+| 粒度     | P3a关闭provider/connector/consent及其additive wire/schema、拆除HTTP projection wide bag依赖与统一client lifecycle；P3b迁server/connection/declaration/tool authorization并把已用窄reader的HTTP controller物理归位。RPC始终单handler，无alias/双写。                   |
+| 依赖     | feature-owned Prisma repository/transaction与IAM/provider/secret/declaration窄token；保留共享receipt/outbox/pagination/bounded HTTP/drain。禁止`OWNER_ADAPTERS`宽bag、Skills反向依赖、别仓DB和provider SDK泄漏。                                                      |
+| 数据/API | 七mutation additive attestation；17方法exact operation+full request binding；stable command digest服务端重算。Connector explicit pending/active auth pointer、authorization account/times、connector/connection revoke event/time；不新增通用表/FK。                  |
 | 删除     | P3a删除`CapabilityServices`、`CapabilityContext`、`OWNER_ADAPTERS/createRuntimeAdapters`、全局MCP models/ports与state转发并移除无用connector secret字段；P3b删除feature内remainder、旧server/connection/tool service、legacy RPC factory与`PrismaMcpRepository`旧名。 |
-| 验证     | 每片TDD、contract/provenance/Buf breaking、format/lint/typecheck/build、architecture、真实PG并发/事务/分页、真实HTTP JSON+protobuf/HTTP projection、smoke/production smoke；Root最后重跑全局三门。                                                   |
+| 验证     | 每片TDD、contract/provenance/Buf breaking、format/lint/typecheck/build、architecture、真实PG并发/事务/分页、真实HTTP JSON+protobuf/HTTP projection、smoke/production smoke；Root最后重跑全局三门。                                                                    |
 
 ### P3 安全/状态裁决
 
@@ -421,12 +421,12 @@ P3-D 使用三个并行只读角色审计同一 clean baseline：capability_owne
 
 ### P3 实施任务卡（设计复审通过后才改变状态）
 
-| ID    | 目标/完成条件                                                                                                                                  | Owner/角色/模型/权限                                             | 文件集与排除                                                                                                                                                                                                                                     | 依赖、RED与交付                                                                                                                          |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| P3-D  | 三审计+Root收敛TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR/CURRENT/SECURITY/RESOURCE_NAMING、Root Manus对齐页和本任务板，独立复审通过                                           | Root写文档；contract_review+database_review只读                  | 仅上述现有文档；不改proto/schema/src/generated                                                                                                                                                                                                   | 已验收；child commit `aa56cbf4623cead8810489bc2fdaabff04867ec3`，SPEC/DATA/EXECUTABLE均PASS，现放行P3a                                                        |
-| P3a-I | 原生McpModule的provider/connector/consent；connector mutation additive proof、binding/digest/typed errors；current auth schema/事务/撤销闭环   | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{provider,connector,authorization,legacy}`、全部MCP shared model/repository/token/transaction clock、对应legacy删除、`src/http/projection.controller.ts`窄reader接线、main/Runtime/App/RPC/readiness registry与Skills窄client provider/token必要接线、`owner-adapters.provider.ts`/wide token删除、connector proto/generated/provenance、Prisma MCP字段/generated/installer/drift、facades/tests/docs/config/format清单；不得改P3b业务语义、P4/P5/其他仓 | 已验收；child commit `4c363e24e1ba0e42a8db2a2a46016c65304282c8`；SPEC/QUALITY PASS；Root fresh schema/full real gates PASS |
-| P3b-I | 迁server/connection/declaration/tool authorization并物理归位HTTP；admin proof/network预算/trusted scope/current replay/audit；删除全部legacy aggregate | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{server,connection,authorization}`、已改窄reader的MCP HTTP controller物理迁移、剩余RPC/adapter/repository、server/connection proto/generated、connection revoke schema、facades/tests/docs/config/format清单与`legacy/mcp-remainder`删除；不得改Agent invoke/public event publisher/P5消费者 | 已验收；child commit `0f7dc1a95c84760612e4a96023f42149fe84cd0c`；SPEC/QUALITY PASS；Root fresh schema/full real/post-commit gates PASS |
-| P3-R  | 每片先规范审查、再数据/代码质量审查，所有blocking/important回原writerRED→GREEN                                                                 | contract_review + database_review / 只读                         | 冻结diff/commit与tests；不改文件/Git/服务/共享数据                                                                                                                                                                                               | 两审PASS且Root复验后才验收；P3b后确认legacy删除与单一DI实例                                                                              |
+| ID    | 目标/完成条件                                                                                                                                          | Owner/角色/模型/权限                                             | 文件集与排除                                                                                                                                                                                                                                                                                                                                                                                                                                                              | 依赖、RED与交付                                                                                                                        |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| P3-D  | 三审计+Root收敛TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR/CURRENT/SECURITY/RESOURCE_NAMING、Root Manus对齐页和本任务板，独立复审通过                 | Root写文档；contract_review+database_review只读                  | 仅上述现有文档；不改proto/schema/src/generated                                                                                                                                                                                                                                                                                                                                                                                                                            | 已验收；child commit `aa56cbf4623cead8810489bc2fdaabff04867ec3`，SPEC/DATA/EXECUTABLE均PASS，现放行P3a                                 |
+| P3a-I | 原生McpModule的provider/connector/consent；connector mutation additive proof、binding/digest/typed errors；current auth schema/事务/撤销闭环           | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{provider,connector,authorization,legacy}`、全部MCP shared model/repository/token/transaction clock、对应legacy删除、`src/http/projection.controller.ts`窄reader接线、main/Runtime/App/RPC/readiness registry与Skills窄client provider/token必要接线、`owner-adapters.provider.ts`/wide token删除、connector proto/generated/provenance、Prisma MCP字段/generated/installer/drift、facades/tests/docs/config/format清单；不得改P3b业务语义、P4/P5/其他仓 | 已验收；child commit `4c363e24e1ba0e42a8db2a2a46016c65304282c8`；SPEC/QUALITY PASS；Root fresh schema/full real gates PASS             |
+| P3b-I | 迁server/connection/declaration/tool authorization并物理归位HTTP；admin proof/network预算/trusted scope/current replay/audit；删除全部legacy aggregate | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{server,connection,authorization}`、已改窄reader的MCP HTTP controller物理迁移、剩余RPC/adapter/repository、server/connection proto/generated、connection revoke schema、facades/tests/docs/config/format清单与`legacy/mcp-remainder`删除；不得改Agent invoke/public event publisher/P5消费者                                                                                                                                                             | 已验收；child commit `0f7dc1a95c84760612e4a96023f42149fe84cd0c`；SPEC/QUALITY PASS；Root fresh schema/full real/post-commit gates PASS |
+| P3-R  | 每片先规范审查、再数据/代码质量审查，所有blocking/important回原writerRED→GREEN                                                                         | contract_review + database_review / 只读                         | 冻结diff/commit与tests；不改文件/Git/服务/共享数据                                                                                                                                                                                                                                                                                                                                                                                                                        | 两审PASS且Root复验后才验收；P3b后确认legacy删除与单一DI实例                                                                            |
 
 ### P3-D 验收证据（2026-09-09）
 
@@ -444,18 +444,18 @@ Root在Node 24.20.0、pnpm 11.25.0实跑`format:check`、lint、typecheck、cont
 
 Root 在最终提交 `4c363e24e1ba0e42a8db2a2a46016c65304282c8`、Node 24.13.0、pnpm 11.25.0、PostgreSQL 18.4 的独立 fresh database 和既有 Redis 的空 DB 14 上重跑：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm install --frozen-lockfile`、`pnpm db:apply-schema` | exit 0；仅创建/删除本任务 fresh database |
-| `pnpm format:check`、`pnpm lint`、`pnpm typecheck` | 全部 exit 0 |
-| `pnpm prisma:validate`、`pnpm prisma:generate`、`pnpm schema:check` | 全部 exit 0；public 物理外键 0 |
-| `pnpm contract:check` + 相对 `aa56cbf...` 的 `buf breaking` | exit 0；contract digest `642e1c29248fadc8407dd4098b19db1ce03c41d9b97577261fa793c7c1ce5f16` |
-| `pnpm build` | exit 0 |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 57 files / 352 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 14 files / 106 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm smoke` | 2 files / 14 tests passed，0 failed、0 skipped |
-| `pnpm smoke:production` | pass；真实 PostgreSQL/Redis + 本地 Storage/IAM/Secret/MCP provider 协议 stub |
-| `git diff --check` / clean child worktree | 通过 |
+| 命令                                                                | 实际结果                                                                                   |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `pnpm install --frozen-lockfile`、`pnpm db:apply-schema`            | exit 0；仅创建/删除本任务 fresh database                                                   |
+| `pnpm format:check`、`pnpm lint`、`pnpm typecheck`                  | 全部 exit 0                                                                                |
+| `pnpm prisma:validate`、`pnpm prisma:generate`、`pnpm schema:check` | 全部 exit 0；public 物理外键 0                                                             |
+| `pnpm contract:check` + 相对 `aa56cbf...` 的 `buf breaking`         | exit 0；contract digest `642e1c29248fadc8407dd4098b19db1ce03c41d9b97577261fa793c7c1ce5f16` |
+| `pnpm build`                                                        | exit 0                                                                                     |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`                              | 57 files / 352 tests passed，0 failed、0 skipped                                           |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`                  | 14 files / 106 tests passed，0 failed、0 skipped                                           |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm smoke`                             | 2 files / 14 tests passed，0 failed、0 skipped                                             |
+| `pnpm smoke:production`                                             | pass；真实 PostgreSQL/Redis + 本地 Storage/IAM/Secret/MCP provider 协议 stub               |
+| `git diff --check` / clean child worktree                           | 通过                                                                                       |
 
 提交后完整日志为 `/tmp/kokoro-p3a-root-postcommit-4c363e2-20260910.log`，真实 smoke 补充日志为 `/tmp/kokoro-p3a-root-real-smoke-20260910.log`；日志是本机证据，不纳入仓库。Docker 镜像与真实外部 owner sandbox 联调未验，不冒充生产级全链路通过。P4 的 processing lease/fencing/reaper、provider cleanup 重投、publisher/dead-letter/retention 和 P5 cutover 继续待后续分片。
 
@@ -474,18 +474,18 @@ P3a 已验收后放行的 P3b-I 现亦已完成；以下验收记录取代本段
 
 Root 在最终提交 `0f7dc1a95c84760612e4a96023f42149fe84cd0c`、Node 24.13.0、pnpm 11.25.0、PostgreSQL 18.4 独立 fresh database 和既有 Redis 空 DB 14 上提交前/提交后都完成全套复验；提交后结果为：
 
-| 命令 | 实际结果 |
-|---|---|
-| `pnpm install --frozen-lockfile`、`pnpm db:apply-schema` | exit 0；仅创建/删除本任务 fresh database；Redis DB 14 前后均为 0 |
-| `pnpm format:check`、`pnpm lint`、`pnpm typecheck` | 全部 exit 0 |
-| `pnpm prisma:validate`、`pnpm prisma:generate`、`pnpm schema:check` | 全部 exit 0；public 物理外键 0 |
-| `pnpm contract:check` + 相对 `4c363e24...` 的 `buf breaking` | exit 0；contract digest `6eb170d12bd046aa70b2a1b8aa775c6303e46ffc997cb4193f77fc230072d3b5` |
-| `pnpm build` | exit 0 |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 60 files / 442 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 15 files / 113 tests passed，0 failed、0 skipped |
-| `REQUIRE_REAL_INTEGRATION=1 pnpm smoke` | 2 files / 14 tests passed，0 failed、0 skipped |
-| `pnpm smoke:production` | pass；真实 PostgreSQL/Redis + 本地 Storage/IAM/Secret/MCP provider 协议 stub |
-| `git diff --check` / clean child worktree | 通过 |
+| 命令                                                                | 实际结果                                                                                   |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `pnpm install --frozen-lockfile`、`pnpm db:apply-schema`            | exit 0；仅创建/删除本任务 fresh database；Redis DB 14 前后均为 0                           |
+| `pnpm format:check`、`pnpm lint`、`pnpm typecheck`                  | 全部 exit 0                                                                                |
+| `pnpm prisma:validate`、`pnpm prisma:generate`、`pnpm schema:check` | 全部 exit 0；public 物理外键 0                                                             |
+| `pnpm contract:check` + 相对 `4c363e24...` 的 `buf breaking`        | exit 0；contract digest `6eb170d12bd046aa70b2a1b8aa775c6303e46ffc997cb4193f77fc230072d3b5` |
+| `pnpm build`                                                        | exit 0                                                                                     |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test`                              | 60 files / 442 tests passed，0 failed、0 skipped                                           |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`                  | 15 files / 113 tests passed，0 failed、0 skipped                                           |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm smoke`                             | 2 files / 14 tests passed，0 failed、0 skipped                                             |
+| `pnpm smoke:production`                                             | pass；真实 PostgreSQL/Redis + 本地 Storage/IAM/Secret/MCP provider 协议 stub               |
+| `git diff --check` / clean child worktree                           | 通过                                                                                       |
 
 提交后完整日志为 `/tmp/kokoro-p3b-root-postcommit-0f7dc1a-20260910.log`；日志是本机证据，不纳入仓库。Docker 镜像、真实外部 owner/provider sandbox 仍未验；P4 的 processing lease/fencing/reaper、provider cleanup 重投、publisher/dead-letter/retention 和 P5 cutover 仍是真实待办。
 
@@ -499,27 +499,27 @@ Root 在 P3b 验收记录提交 `fe63c14e` 后同步实跑全局三门：`verify
 
 三名 Agent 已在同一冻结 child 基线 `0f7dc1a95c84760612e4a96023f42149fe84cd0c` 完成只读审计；审前、审后 child 工作树均 clean，未修改文件、Git、数据库或服务：
 
-| 任务 | Agent / 角色 | 审计面 | 结论 |
-| --- | --- | --- | --- |
-| P4-D-IMPL-AUDIT | capability_owner_p1b / 当前实现与删除面 | receipt/outbox/provider cleanup/worker lifecycle | 六个 Skills catalog mutation 尚未把 business/outbox/codec/completed receipt 合入同一事务；先补原子性，才能允许 stale processing takeover |
-| P4-D-CONTRACT | contract_review / contract、identity、replay | wire/error/event/Manus typed ID/owner | 现有 Skills 与 17 个 MCP RPC wire 保持不变；恢复机制不得泄漏到业务请求；无真实 consumer/broker 前不发布伪 event-protocol |
-| P4-D-DATA | database_review / PostgreSQL、Prisma、并发 | schema/lease/fence/retirement/retention | 推荐 Prisma typed query + conditional update/CAS；cleanup completion 不能用 outbox published 代替，需 MCP feature-owned durable retirement 状态 |
+| 任务            | Agent / 角色                                 | 审计面                                           | 结论                                                                                                                                            |
+| --------------- | -------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| P4-D-IMPL-AUDIT | capability_owner_p1b / 当前实现与删除面      | receipt/outbox/provider cleanup/worker lifecycle | 六个 Skills catalog mutation 尚未把 business/outbox/codec/completed receipt 合入同一事务；先补原子性，才能允许 stale processing takeover        |
+| P4-D-CONTRACT   | contract_review / contract、identity、replay | wire/error/event/Manus typed ID/owner            | 现有 Skills 与 17 个 MCP RPC wire 保持不变；恢复机制不得泄漏到业务请求；无真实 consumer/broker 前不发布伪 event-protocol                        |
+| P4-D-DATA       | database_review / PostgreSQL、Prisma、并发   | schema/lease/fence/retirement/retention          | 推荐 Prisma typed query + conditional update/CAS；cleanup completion 不能用 outbox published 代替，需 MCP feature-owned durable retirement 状态 |
 
 Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、DB-native 的 NestJS worker + canonical Prisma schema + typed CAS**。不建设手写 SQL 队列，不把恢复状态交给 Scheduler，不增加独立进程或第二持久化事实源；若未来吞吐证明确需 `SKIP LOCKED`，必须另立 ADR、限定为 claim 短事务并补 raw 白名单/真实 PostgreSQL 并发证明，不能借现有 DB clock 例外扩大 raw SQL。
 
 #### P4-D 放置表
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | 当前仓为 `kokoro-capability`，目标业务 owner 为 `kokoro-platform`；Skills command receipt、MCP authorization recovery/credential retirement、owner outbox 均由本仓唯一写入。Agent 继续拥有 run/session/live invoke，IAM 拥有身份与授权判断，Storage/SecretStore 拥有各自资源生命周期，Scheduler 不拥有本仓恢复事实。 |
-| 当前事实 | `command_receipt` 只有 processing/completed/failed、digest/result/createdAt；installation 与 MCP 本地 success 已同事务，六个 Skills catalog mutation 仍为业务提交后另行 complete。`outbox_event` 只有 pending/published；unit dispatcher 未装配生产 publisher。Begin/Complete 有稳定 authorization identity 与部分 quarantine，但无跨崩溃 recovery stage。cleanup-requested outbox 只证明 durable intent，不证明 provider cleanup 完成。 |
-| 目标职责 | command receipt 提供 lease owner/epoch/fencing、同身份精确 replay、local reclaim 与 external reconciliation；MCP retirement 以 credential identity 阻止新绑定并记录 cleanup 实际完成；owner outbox 在真实 destination 确定后提供 fenced at-least-once delivery、backoff/DLQ；worker 受 Nest lifecycle、readiness、bounded drain 管理。 |
-| 目录方案 | 采用现有业务模块内聚：receipt/outbox 留在 application + infrastructure repository，Skills 原子事务留在 `modules/skills`，authorization recovery/retirement 留在 `modules/mcp/authorization`，生命周期由现有 Runtime registry 装配。淘汰独立通用 job 模块（会成为垃圾桶）和 Scheduler 托管方案（形成跨 owner 双事实）；cleanup 也不与公开 outbox delivery 混为同一状态机。 |
-| 粒度 | 先更新既有 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/RELIABILITY/RUNBOOK/SECURITY/CURRENT，不新建顶层目录。实现按 P4a receipt 原子性/fencing、P4b provider recovery、P4c cleanup retirement、P4d event delivery、P4e1 receipt retention/supervision、P4e2 retirement GC、P4e3 delivery/event GC 切片；每片才依据实际职责决定少量新文件。 |
-| 依赖 | 业务事务只 import Prisma transaction-facing repository/token，不 import transport/provider 实现；外部 I/O 永不进入数据库事务。worker 只经 typed repository/port 操作，Redis 仅可作通知/节流，不能决定 claim/fence/recovery 正确性。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | 当前仓为 `kokoro-capability`，目标业务 owner 为 `kokoro-platform`；Skills command receipt、MCP authorization recovery/credential retirement、owner outbox 均由本仓唯一写入。Agent 继续拥有 run/session/live invoke，IAM 拥有身份与授权判断，Storage/SecretStore 拥有各自资源生命周期，Scheduler 不拥有本仓恢复事实。                                                                                                                                                     |
+| 当前事实 | `command_receipt` 只有 processing/completed/failed、digest/result/createdAt；installation 与 MCP 本地 success 已同事务，六个 Skills catalog mutation 仍为业务提交后另行 complete。`outbox_event` 只有 pending/published；unit dispatcher 未装配生产 publisher。Begin/Complete 有稳定 authorization identity 与部分 quarantine，但无跨崩溃 recovery stage。cleanup-requested outbox 只证明 durable intent，不证明 provider cleanup 完成。                                 |
+| 目标职责 | command receipt 提供 lease owner/epoch/fencing、同身份精确 replay、local reclaim 与 external reconciliation；MCP retirement 以 credential identity 阻止新绑定并记录 cleanup 实际完成；owner outbox 在真实 destination 确定后提供 fenced at-least-once delivery、backoff/DLQ；worker 受 Nest lifecycle、readiness、bounded drain 管理。                                                                                                                                   |
+| 目录方案 | 采用现有业务模块内聚：receipt/outbox 留在 application + infrastructure repository，Skills 原子事务留在 `modules/skills`，authorization recovery/retirement 留在 `modules/mcp/authorization`，生命周期由现有 Runtime registry 装配。淘汰独立通用 job 模块（会成为垃圾桶）和 Scheduler 托管方案（形成跨 owner 双事实）；cleanup 也不与公开 outbox delivery 混为同一状态机。                                                                                                |
+| 粒度     | 先更新既有 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/RELIABILITY/RUNBOOK/SECURITY/CURRENT，不新建顶层目录。实现按 P4a receipt 原子性/fencing、P4b provider recovery、P4c cleanup retirement、P4d event delivery、P4e1 receipt retention/supervision、P4e2 retirement GC、P4e3 delivery/event GC 切片；每片才依据实际职责决定少量新文件。                                                                                                                                  |
+| 依赖     | 业务事务只 import Prisma transaction-facing repository/token，不 import transport/provider 实现；外部 I/O 永不进入数据库事务。worker 只经 typed repository/port 操作，Redis 仅可作通知/节流，不能决定 claim/fence/recovery 正确性。                                                                                                                                                                                                                                      |
 | 数据/API | 保持现有 Skills 与 17 个 MCP RPC wire；`command_id` 只作命令幂等 identity。Skill `series_id`/`skill_id`/`installation_id`，MCP `connector_id`/`server_id`/`connection_id`/`authorization_id`、wire `invocation_grant`，以及 event/recovery/retirement identity 均独立 typed，禁止互换或用 provider key、URL、selector、tool name 代替；不存在附加 `grant_id` 字段或 alias。receipt/outbox/retirement 都使用 tenant-scoped CAS、DB clock、stable identity 与 fenced ACK。 |
-| 删除项 | Skills 六 mutation 原子化后删除 generic action-then-complete production 路径；生产 worker接通后删除 unit-only dispatcher；未赋予语义的 `result_ref` 在 schema 片删除；修正文档中失真的 `PrismaCapabilityTransaction`、全局事务外 completion、Storage upload-abort 描述。不建立 alias、fallback 或双轨 worker。 |
-| 验证 | 真实 PostgreSQL RED/GREEN 覆盖双 owner claim、lease takeover、ABA/旧 fence 拒绝、business/outbox/codec/receipt 原子回滚、commit reply lost、provider 四崩溃点、cleanup/new-binding race、publish ACK lost、DLQ redrive、retention/replay/GC race；再跑 format/lint/typecheck/contract/Prisma validate+generate+schema/fresh install/full test/build/smoke、独立 SPEC/QUALITY 双审和 Root post-commit 复验。 |
+| 删除项   | Skills 六 mutation 原子化后删除 generic action-then-complete production 路径；生产 worker接通后删除 unit-only dispatcher；未赋予语义的 `result_ref` 在 schema 片删除；修正文档中失真的 `PrismaCapabilityTransaction`、全局事务外 completion、Storage upload-abort 描述。不建立 alias、fallback 或双轨 worker。                                                                                                                                                           |
+| 验证     | 真实 PostgreSQL RED/GREEN 覆盖双 owner claim、lease takeover、ABA/旧 fence 拒绝、business/outbox/codec/receipt 原子回滚、commit reply lost、provider 四崩溃点、cleanup/new-binding race、publish ACK lost、DLQ redrive、retention/replay/GC race；再跑 format/lint/typecheck/contract/Prisma validate+generate+schema/fresh install/full test/build/smoke、独立 SPEC/QUALITY 双审和 Root post-commit 复验。                                                              |
 
 #### 已固定的状态与协议
 
@@ -533,16 +533,16 @@ Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、D
 
 #### P4 实现切片与授权状态
 
-| 任务 | 依赖/owner | 允许范围 | 验收重点 | 当前状态 |
-| --- | --- | --- | --- | --- |
-| P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门 | 已验收；child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5` |
-| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；singleton admission、atomic installer、generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；cross-replica 0 zero-winner；无网络持slot | 已验收；最终 child `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` |
-| P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 实施设计已起草，双审前未授权 |
-| P4c-I | P4b 验收后续派 | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain | 未授权 |
-| P4d-I | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs | 双 worker、ACK lost、consumer dedupe、最终 contract 的 partition key，以及已裁决的 strict-predecessor 或 gap-tolerant fixture、redrive identity | 设计阻塞；不造 fake publisher |
-| P4e1-I | P4a 验收后 | receipt result compaction、expired tombstone、worker supervisor/metrics、tests/docs | 每条冻结窗口（配置>=30日）的 T-ε/T/T+ε、不可重执行、keyset/batch、readiness/fatal health、进程重启 | 未授权 |
-| P4e2-I | P4c 验收后 | retirement GC/compaction、tests/docs | pending/processing/dead不删、completed fence保留、parent/reference/redrive竞态 | 未授权 |
-| P4e3-I | P4d 验收后 | delivery/event GC、tests/docs | consumer dedupe窗口、dead-letter/redrive、receipt/audit引用顺序 | 依赖P4d，未授权 |
+| 任务     | 依赖/owner                                              | 允许范围                                                                                                                                                                                                   | 验收重点                                                                                                                                                      | 当前状态                                                      |
+| -------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test                                                                   | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门                                            | 已验收；child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5`      |
+| P4a-I    | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；singleton admission、atomic installer、generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；cross-replica 0 zero-winner；无网络持slot | 已验收；最终 child `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` |
+| P4b-I    | P4a 验收后续派                                          | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs                                                                                                                  | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race                                                         | 实施设计已起草，双审前未授权                                  |
+| P4c-I    | P4b 验收后续派                                          | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs                                                                                                                      | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain                                                                      | 未授权                                                        |
+| P4d-I    | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs                                                                                                                     | 双 worker、ACK lost、consumer dedupe、最终 contract 的 partition key，以及已裁决的 strict-predecessor 或 gap-tolerant fixture、redrive identity               | 设计阻塞；不造 fake publisher                                 |
+| P4e1-I   | P4a 验收后                                              | receipt result compaction、expired tombstone、worker supervisor/metrics、tests/docs                                                                                                                        | 每条冻结窗口（配置>=30日）的 T-ε/T/T+ε、不可重执行、keyset/batch、readiness/fatal health、进程重启                                                            | 未授权                                                        |
+| P4e2-I   | P4c 验收后                                              | retirement GC/compaction、tests/docs                                                                                                                                                                       | pending/processing/dead不删、completed fence保留、parent/reference/redrive竞态                                                                                | 未授权                                                        |
+| P4e3-I   | P4d 验收后                                              | delivery/event GC、tests/docs                                                                                                                                                                              | consumer dedupe窗口、dead-letter/redrive、receipt/audit引用顺序                                                                                               | 依赖P4d，未授权                                               |
 
 P4-D-DOC 已在 child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5` 闭环；后续只按下述 P4a 实施卡续派同一 capability_owner_p1b。contract_review 与 database_review 先对计划同一冻结 diff 分别作 SPEC/QUALITY 复审；双审前不开始 child schema/src/test 写入。
 
@@ -665,17 +665,17 @@ retry 修复后的最终冻结对象为 child HEAD `720acb999f6759a4fd2dca579c7a
 
 #### P4a-ADMISSION-D 跨副本 Prisma admission 设计验证卡（2026-09-10）
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | `kokoro-capability` 当前唯一 writer、目标 `kokoro-platform`；admission 只是本 owner 的数据库运行协调事实，不拥有 command、Skill、MCP、IAM 或 Scheduler 业务事实。 |
-| 当前事实 | receipt acquisition、Skills catalog、installation、MCP 各自直接打开 Serializable transaction；有限 retry 保证原子回滚但不保证有界负载下存在 winner。Prisma pool 每进程最多 10，Redis 不参与正确性；child `4c28d46a` 为失败基线。 |
-| 目标职责 | 在打开业务 Serializable snapshot 前，以 PostgreSQL DB clock 和 Prisma typed CAS 获得跨副本固定容量资格；资格 token 与业务 receipt fence 独立，确保到期/崩溃/同 owner ABA、排队取消、deadline 与 shutdown 均有稳定语义。 |
-| 目录方案 | 采用现有 `src/database` 的窄 admission service/model、`RuntimeModule` 唯一 provider，并由 feature transaction 注入；不放进 Skills/MCP 任一业务模块。淘汰 A 进程内 semaphore（跨副本无效）、C 全面 ReadCommitted+CAS（需重证全部读集）、D index/ANALYZE/增 retry（概率优化）与 E Serializable singleton gate（稳定制造 P2034 herd）。 |
-| 粒度 | 先做 `/tmp` 隔离 spike，再由原 writer 只更新现有 ADR-001、TECHNICAL_DESIGN、DATA_MODEL、RELIABILITY、RUNBOOK、CURRENT；同一冻结文档经 SPEC/QUALITY 双审后，Root 才新增 schema/src/test。不得直接从调查跳到实现。 |
-| 依赖 | 只依赖 Prisma client、现有固定 PostgreSQL clock、Nest lifecycle 与现有 typed error mapper。禁止 Redis lock、advisory/raw lock SQL、Scheduler、provider SDK、通用 job/queue、跨仓数据库或网络 I/O 持有资格。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-capability` 当前唯一 writer、目标 `kokoro-platform`；admission 只是本 owner 的数据库运行协调事实，不拥有 command、Skill、MCP、IAM 或 Scheduler 业务事实。                                                                                                                                                                                                                                                                                                                                                                                 |
+| 当前事实 | receipt acquisition、Skills catalog、installation、MCP 各自直接打开 Serializable transaction；有限 retry 保证原子回滚但不保证有界负载下存在 winner。Prisma pool 每进程最多 10，Redis 不参与正确性；child `4c28d46a` 为失败基线。                                                                                                                                                                                                                                                                                                                  |
+| 目标职责 | 在打开业务 Serializable snapshot 前，以 PostgreSQL DB clock 和 Prisma typed CAS 获得跨副本固定容量资格；资格 token 与业务 receipt fence 独立，确保到期/崩溃/同 owner ABA、排队取消、deadline 与 shutdown 均有稳定语义。                                                                                                                                                                                                                                                                                                                           |
+| 目录方案 | 采用现有 `src/database` 的窄 admission service/model、`RuntimeModule` 唯一 provider，并由 feature transaction 注入；不放进 Skills/MCP 任一业务模块。淘汰 A 进程内 semaphore（跨副本无效）、C 全面 ReadCommitted+CAS（需重证全部读集）、D index/ANALYZE/增 retry（概率优化）与 E Serializable singleton gate（稳定制造 P2034 herd）。                                                                                                                                                                                                              |
+| 粒度     | 先做 `/tmp` 隔离 spike，再由原 writer 只更新现有 ADR-001、TECHNICAL_DESIGN、DATA_MODEL、RELIABILITY、RUNBOOK、CURRENT；同一冻结文档经 SPEC/QUALITY 双审后，Root 才新增 schema/src/test。不得直接从调查跳到实现。                                                                                                                                                                                                                                                                                                                                  |
+| 依赖     | 只依赖 Prisma client、现有固定 PostgreSQL clock、Nest lifecycle 与现有 typed error mapper。禁止 Redis lock、advisory/raw lock SQL、Scheduler、provider SDK、通用 job/queue、跨仓数据库或网络 I/O 持有资格。                                                                                                                                                                                                                                                                                                                                       |
 | 数据/API | 候选是固定有界的内部 admission slot：`slot_id`、永久 `lease_epoch`、成对可空 `lease_owner/lease_expires_at`；acquire/release 为短 ReadCommitted Prisma CAS，旧 epoch 不能释放新 holder。每个业务 attempt 在同一 transaction client 内先 fenced guard/renew并持有该 slot 行锁，外部调用前已释放。`command_id`、event/recovery/retirement ID、Skill `series_id/skill_id/installation_id` 与 MCP `connector_id/server_id/connection_id/authorization_id/invocation_grant` 均不复用为 slot identity；不存在附加 `grant_id` 字段，Proto/OpenAPI 不变。 |
-| 删除项 | 不保留 per-feature retry/admission 双轨、进程内正确性 semaphore、singleton Serializable gate、raw SQL lock 或 provider 调用期间的 holder。统一 retry helper继续处理准入后剩余的安全 P2034。 |
-| 验证 | fresh PG18、至少两组独立 Prisma client/Nest composition，new/failed×24/48不同 tenant、same-command、Skills/installation/MCP、holder pause/rollback/connection death、expired takeover/旧 epoch release、acquire/commit/release ACK unknown、取消/deadline/shutdown/pool saturation；记录实际业务 overlap、P2034、waiter、durable receipt/business/outbox。最终才跑 P4a-13、双审与 Root post-commit。 |
+| 删除项   | 不保留 per-feature retry/admission 双轨、进程内正确性 semaphore、singleton Serializable gate、raw SQL lock 或 provider 调用期间的 holder。统一 retry helper继续处理准入后剩余的安全 P2034。                                                                                                                                                                                                                                                                                                                                                       |
+| 验证     | fresh PG18、至少两组独立 Prisma client/Nest composition，new/failed×24/48不同 tenant、same-command、Skills/installation/MCP、holder pause/rollback/connection death、expired takeover/旧 epoch release、acquire/commit/release ACK unknown、取消/deadline/shutdown/pool saturation；记录实际业务 overlap、P2034、waiter、durable receipt/business/outbox。最终才跑 P4a-13、双审与 Root post-commit。                                                                                                                                              |
 
 两名只读 reviewer 一致拒绝 A/C/D/E 并有条件推荐上述 B，但当前仍有两个设计阻断：其一，expired takeover 不能只看时间，业务 transaction 必须用同一 client fenced guard 并持 slot row lock到 COMMIT/ROLLBACK，否则暂停的旧 holder 会与新 holder并行；其二，多 slot 小表自身可能改变 SSI 冲突形态，cap 4 的旧原型不是证明。spike 必须先比较 cap 1 与 cap 4：cap 1 作为 correctness-first 默认候选，只有 cap 4 在 cold/warm 表、多 client连续压力都无 0 winner且 deadline/连接上界成立才可采用。固定 slot 集合不得由各副本自行扩容；本片可固定容量而不新增公开配置，未来扩容必须走受控设计/Schema变更。
 
@@ -738,17 +738,17 @@ writer 只跑文档格式、lint/typecheck与范围diff，冻结HEAD/tracked/unt
 
 ### P4a-ADMISSION-I 具体放置与实施门（2026-09-10）
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | 当前 `kokoro-capability`、目标 `kokoro-platform`；数据库transaction admission是owner内部运行协调能力，唯一writer为 capability_owner_p1b，Root独占Git。Skills、MCP、IAM、Storage与Scheduler事实owner不变。 |
-| 当前事实 | child `122a3a5b`；P4a业务/receipt fence提交`4c28d46a`仍为失败基线。四类入口可直接开Serializable；schema无slot，installer由pg持有事务，runtime client无10ms/2s session硬限，receipt lease仍接受1ms，`markRetryableFailure`仍为RC `updateMany`。Proto/OpenAPI与Manus alignment不变。 |
-| 目标职责 | 固定capacity=1的Prisma singleton admission；atomic fresh installer；同一Nest provider；所有本地Serializable attempt先guard/renew并持slot row lock；有界deadline/cancel/drain；receipt优先状态、Skills/MCP身份和外部网络边界保持。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | 当前 `kokoro-capability`、目标 `kokoro-platform`；数据库transaction admission是owner内部运行协调能力，唯一writer为 capability_owner_p1b，Root独占Git。Skills、MCP、IAM、Storage与Scheduler事实owner不变。                                                                                                                                                                                              |
+| 当前事实 | child `122a3a5b`；P4a业务/receipt fence提交`4c28d46a`仍为失败基线。四类入口可直接开Serializable；schema无slot，installer由pg持有事务，runtime client无10ms/2s session硬限，receipt lease仍接受1ms，`markRetryableFailure`仍为RC `updateMany`。Proto/OpenAPI与Manus alignment不变。                                                                                                                     |
+| 目标职责 | 固定capacity=1的Prisma singleton admission；atomic fresh installer；同一Nest provider；所有本地Serializable attempt先guard/renew并持slot row lock；有界deadline/cancel/drain；receipt优先状态、Skills/MCP身份和外部网络边界保持。                                                                                                                                                                      |
 | 目录方案 | coordinator port/typed error放`src/application`，Prisma实现与固定client policy放现有`src/database`；不用Skills/MCP目录承载共享slot。installer/catalog checker放`scripts`并由`apply-schema`与`check-schema`复用；不用runtime provider或第二SQL schema。测试进入既有unit/integration/architecture/smoke。淘汰把实现塞进receipt repository（会让MCP/Skills transaction反向依赖receipt）和新建单文件目录。 |
-| 粒度 | 允许新增`src/application/transaction-admission.ts`（纯port/type）、`src/application/transaction-admission.error.ts`（typed错误）、`src/database/prisma-transaction-admission.ts`（唯一有状态coordinator）、`scripts/canonical-schema-state.ts`、对应测试；其余扩展现有文件。不建`admission/`或`installer/`空层。 |
-| 依赖 | application只定义opaque token/operation/result与typed errors，不import Prisma/Nest/Connect；database实现依赖generated Prisma与现有clock/retry。feature只依赖application port；RuntimeModule唯一装配。禁止Redis/advisory/raw business lock、provider SDK、网络I/O、进程内semaphore承担正确性。installer固定raw例外受architecture allow-list。 |
-| 数据/API | 只加`transaction_admission_slot` canonical Prisma model和generated client；固定行由installer typed create。无tenant、FK/CHECK、proto/OpenAPI或新配置。`slot_id`/owner/epoch不复用业务ID；wire只有`invocation_grant`，不存在`grant_id`。receipt lease合法范围收紧为30,000–300,000ms。 |
-| 删除项 | 删除pg-owned installer transaction、所有绕过共享admission的production Serializable入口、重复feature admission/retry包装和任何临时splitter/self-heal。保留pg仅作为Prisma adapter底层与测试/catalog工具；不机械替换普通业务CRUD。 |
-| 验证 | 每卡先RED后GREEN；Prisma validate/generate/schema drift；真实PG18 installer faults、CAS/fence/timeout、同进程及多进程cold/warm压力；isolated Redis；unit/contract/architecture/build/smoke/production smoke；同冻结双审与Root post-commit。 |
+| 粒度     | 允许新增`src/application/transaction-admission.ts`（纯port/type）、`src/application/transaction-admission.error.ts`（typed错误）、`src/database/prisma-transaction-admission.ts`（唯一有状态coordinator）、`scripts/canonical-schema-state.ts`、对应测试；其余扩展现有文件。不建`admission/`或`installer/`空层。                                                                                       |
+| 依赖     | application只定义opaque token/operation/result与typed errors，不import Prisma/Nest/Connect；database实现依赖generated Prisma与现有clock/retry。feature只依赖application port；RuntimeModule唯一装配。禁止Redis/advisory/raw business lock、provider SDK、网络I/O、进程内semaphore承担正确性。installer固定raw例外受architecture allow-list。                                                           |
+| 数据/API | 只加`transaction_admission_slot` canonical Prisma model和generated client；固定行由installer typed create。无tenant、FK/CHECK、proto/OpenAPI或新配置。`slot_id`/owner/epoch不复用业务ID；wire只有`invocation_grant`，不存在`grant_id`。receipt lease合法范围收紧为30,000–300,000ms。                                                                                                                   |
+| 删除项   | 删除pg-owned installer transaction、所有绕过共享admission的production Serializable入口、重复feature admission/retry包装和任何临时splitter/self-heal。保留pg仅作为Prisma adapter底层与测试/catalog工具；不机械替换普通业务CRUD。                                                                                                                                                                        |
+| 验证     | 每卡先RED后GREEN；Prisma validate/generate/schema drift；真实PG18 installer faults、CAS/fence/timeout、同进程及多进程cold/warm压力；isolated Redis；unit/contract/architecture/build/smoke/production smoke；同冻结双审与Root post-commit。                                                                                                                                                            |
 
 #### P4a-ADMISSION-I RED → GREEN 实施卡
 
@@ -771,18 +771,18 @@ I-5验收后的编译依赖复核表明：若直接把root-only `claim()`改成t
 
 #### ADMISSION-I-11 放置门与执行卡（2026-09-11）
 
-| 项 | I-11 结论 |
-| --- | --- |
-| Owner | `kokoro-capability` 的 runtime transaction admission；目标仍为 `kokoro-platform`。唯一writer为 capability_owner_p1b，Root独占Git。Skills/MCP只作为已接入的业务压力面，不改变其事实owner。 |
-| 当前事实 | child `8c26e6cfa850e9b3bb2a3724ee48f81b0ce2e46a` clean；I-1至I-10已验收。现有 `transaction-admission-postgres.integration.test.ts` 证明单coordinator机制，Skills catalog、installation、MCP与production composition各有独立行为测试，但尚无跨surface、跨Nest composition的统一overlap/winner/timeout压力证据。 |
-| 目标职责 | 本卡只建立真实PostgreSQL并发、超时、故障恢复与production绕过门；吞吐数据仅是fixture证据，不是SLO。RED若证明生产缺口，先向Root报告最小变化面，Root补充本卡后才进入GREEN。 |
+| 项       | I-11 结论                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | `kokoro-capability` 的 runtime transaction admission；目标仍为 `kokoro-platform`。唯一writer为 capability_owner_p1b，Root独占Git。Skills/MCP只作为已接入的业务压力面，不改变其事实owner。                                                                                                                                                                                                                          |
+| 当前事实 | child `8c26e6cfa850e9b3bb2a3724ee48f81b0ce2e46a` clean；I-1至I-10已验收。现有 `transaction-admission-postgres.integration.test.ts` 证明单coordinator机制，Skills catalog、installation、MCP与production composition各有独立行为测试，但尚无跨surface、跨Nest composition的统一overlap/winner/timeout压力证据。                                                                                                     |
+| 目标职责 | 本卡只建立真实PostgreSQL并发、超时、故障恢复与production绕过门；吞吐数据仅是fixture证据，不是SLO。RED若证明生产缺口，先向Root报告最小变化面，Root补充本卡后才进入GREEN。                                                                                                                                                                                                                                           |
 | 目录方案 | 采用新建单一 `test/integration/transaction-admission-stress.integration.test.ts` 聚合跨surface/跨composition压力；相比继续扩充机制级 `transaction-admission-postgres.integration.test.ts`，可避免把单coordinator语义与端到端压力生命周期混成一文件。architecture绕过断言扩展既有 `test/architecture/architecture.test.ts`，不新建第二architecture入口。淘汰把同一overlap/winner fixture分别复制进Skills与MCP测试。 |
-| 粒度 | 新文件只有一个变化原因：证明所有已接入mutation共享capacity=1 admission及其故障恢复；近期I-12全门会继续复用。共用测试fixture仅在至少两个测试文件确有复用时扩展既有 `test/fixtures/**`，不新建单文件目录。 |
-| 依赖 | 测试只通过既有Nest/RuntimeModule/public provider与真实Prisma入口组装2+独立composition；不增加production test hook，不以进程内counter/semaphore替代数据库事实。architecture静态分析沿现有解析/allow-list机制，禁止按方法名字符串造成误报豁免。 |
-| 数据/API | 使用唯一fresh隔离PostgreSQL database和独立Redis namespace；不改Prisma schema、Proto、OpenAPI、typed identity或wire digest。Skill固定 `series_id`/`skill_id`/`source_ref=skill:<skill_id>`/`installation_id`；MCP固定 `connector_id`/`server_id`/`connection_id`/`authorization_id`/`invocation_grant`，值格式保持 `mcp-grant:<uuid-v4>`，不存在 `grant_id`。`command_id`仍只表示命令幂等身份。 |
-| 删除项 | 初始无production删除项；若RED暴露重复fixture，只在同一切片删除被新共享fixture完全替代的测试代码，不保留两套压力算法。 |
-| 允许文件 | 可新增 `test/integration/transaction-admission-stress.integration.test.ts`；可修改既有 `test/integration/transaction-admission-postgres.integration.test.ts`、Skills/MCP相关integration、`test/architecture/architecture.test.ts`及必要既有test fixture。未预授权production、schema/generated、package/lock、Proto/OpenAPI、文档或其他仓写入。 |
-| 验证 | 先取得命名RED；GREEN后聚焦unit/architecture/integration，stress在同一fresh DB上连续三轮；再执行Node 24全静态门、全真实integration、smoke与production smoke。每轮记录winner、zero-winner、最大business overlap、late rejection/unhandled、pool恢复和fixture吞吐；验证后确认PostgreSQL/Redis隔离资源残留为0。 |
+| 粒度     | 新文件只有一个变化原因：证明所有已接入mutation共享capacity=1 admission及其故障恢复；近期I-12全门会继续复用。共用测试fixture仅在至少两个测试文件确有复用时扩展既有 `test/fixtures/**`，不新建单文件目录。                                                                                                                                                                                                           |
+| 依赖     | 测试只通过既有Nest/RuntimeModule/public provider与真实Prisma入口组装2+独立composition；不增加production test hook，不以进程内counter/semaphore替代数据库事实。architecture静态分析沿现有解析/allow-list机制，禁止按方法名字符串造成误报豁免。                                                                                                                                                                      |
+| 数据/API | 使用唯一fresh隔离PostgreSQL database和独立Redis namespace；不改Prisma schema、Proto、OpenAPI、typed identity或wire digest。Skill固定 `series_id`/`skill_id`/`source_ref=skill:<skill_id>`/`installation_id`；MCP固定 `connector_id`/`server_id`/`connection_id`/`authorization_id`/`invocation_grant`，值格式保持 `mcp-grant:<uuid-v4>`，不存在 `grant_id`。`command_id`仍只表示命令幂等身份。                     |
+| 删除项   | 初始无production删除项；若RED暴露重复fixture，只在同一切片删除被新共享fixture完全替代的测试代码，不保留两套压力算法。                                                                                                                                                                                                                                                                                              |
+| 允许文件 | 可新增 `test/integration/transaction-admission-stress.integration.test.ts`；可修改既有 `test/integration/transaction-admission-postgres.integration.test.ts`、Skills/MCP相关integration、`test/architecture/architecture.test.ts`及必要既有test fixture。未预授权production、schema/generated、package/lock、Proto/OpenAPI、文档或其他仓写入。                                                                     |
+| 验证     | 先取得命名RED；GREEN后聚焦unit/architecture/integration，stress在同一fresh DB上连续三轮；再执行Node 24全静态门、全真实integration、smoke与production smoke。每轮记录winner、zero-winner、最大business overlap、late rejection/unhandled、pool恢复和fixture吞吐；验证后确认PostgreSQL/Redis隔离资源残留为0。                                                                                                        |
 
 I-11 首个architecture RED在child `8c26e6cfa850e9b3bb2a3724ee48f81b0ce2e46a`以TypeScript AST逐个检查production `$transaction(... Serializable)` callback，且不接受方法名或字符串豁免。命名门 `guards every production Serializable transaction through admission` 实际发现三个绕过：`src/modules/skills/skill-transaction.ts` 的optional fence分支、`src/modules/skills/installation/skill-installation.transaction.ts` 的public `run()`、`src/modules/mcp/mcp-transaction.ts` 的generic retry；exit 1，1 failed / 16 skipped。writer按范围门停写，dirty仅该architecture RED，tracked hash `376c4a31f2666b0481ad40c8853d508b045854ae7160156bb1a37c681d319732`。
 
@@ -798,17 +798,17 @@ I-12 首个收口候选把 admission 专项 AST helper/断言继续叠加到既�
 
 I-6至I-9 R2冻结审查发现 `mcp.ports.ts -> mcp-rpc.runtime.ts -> mcp.ports.ts` 的源码循环，且 Prisma transaction adapter 因复用 runtime helper 而反向依赖 Connect transport。R3 在不改 wire 的前提下按以下放置门执行：
 
-| 项 | R3 结论 |
-| --- | --- |
-| Owner | `kokoro-capability/modules/mcp`；它是 MCP 请求本地执行边界，不是 Connect 或 Prisma 的业务事实。 |
-| 当前事实 | boundary type/绝对单调 deadline/await helper 与 HandlerContext 构造、Connect error 混在 `mcp-rpc.runtime.ts`；ports 与 transaction 反向 import runtime。 |
-| 目标职责 | 纯内部 contract 只持有 `signal + callerDeadlineMonotonicMs`，以 application typed cancellation/deadline error 做同步最终裁决并吸收晚到 Promise；RPC runtime 只从 HandlerContext 构造 boundary。 |
+| 项       | R3 结论                                                                                                                                                                                                                                                          |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-capability/modules/mcp`；它是 MCP 请求本地执行边界，不是 Connect 或 Prisma 的业务事实。                                                                                                                                                                  |
+| 当前事实 | boundary type/绝对单调 deadline/await helper 与 HandlerContext 构造、Connect error 混在 `mcp-rpc.runtime.ts`；ports 与 transaction 反向 import runtime。                                                                                                         |
+| 目标职责 | 纯内部 contract 只持有 `signal + callerDeadlineMonotonicMs`，以 application typed cancellation/deadline error 做同步最终裁决并吸收晚到 Promise；RPC runtime 只从 HandlerContext 构造 boundary。                                                                  |
 | 目录方案 | 采用新建单文件 `src/modules/mcp/mcp-request-boundary.ts`，因为 type+typed assertion+await helper 有同一变化原因且同时被 RPC/runtime/transaction/ports 复用；淘汰塞入 `mcp.ports.ts`（混入有状态 helper）和留在 `mcp-rpc.runtime.ts`（保留反向 transport 依赖）。 |
-| 粒度 | 新文件承载一个可复用的纯 request-boundary contract；不新建目录、alias或第二套算法。 |
-| 依赖 | boundary 文件只允许依赖 application typed admission errors；`mcp.ports.ts`/transaction/RPC runtime 单向依赖它。禁止 boundary import `@connectrpc/connect`、Prisma、`mcp.ports.ts`或 `mcp-rpc.runtime.ts`。 |
-| 数据/API | 无 schema、Proto、OpenAPI、identity、receipt 或 provider 语义变化；RPC 由既有 `runRpc` 统一映射 typed error。 |
-| 删除项 | 从 `mcp-rpc.runtime.ts` 删除纯 type/assert/await 实现，删除 ports/transaction 对 runtime 的 import；不保留 re-export/compat alias。 |
-| 验证 | 先加 architecture RED 拒绝 ports/transaction import `mcp-rpc.runtime` 或 `@connectrpc/connect`，再重跑 MCP boundary/cancel/deadline unit、typecheck/lint/architecture/contract/build 及同一 fresh PostgreSQL 完整门。 |
+| 粒度     | 新文件承载一个可复用的纯 request-boundary contract；不新建目录、alias或第二套算法。                                                                                                                                                                              |
+| 依赖     | boundary 文件只允许依赖 application typed admission errors；`mcp.ports.ts`/transaction/RPC runtime 单向依赖它。禁止 boundary import `@connectrpc/connect`、Prisma、`mcp.ports.ts`或 `mcp-rpc.runtime.ts`。                                                       |
+| 数据/API | 无 schema、Proto、OpenAPI、identity、receipt 或 provider 语义变化；RPC 由既有 `runRpc` 统一映射 typed error。                                                                                                                                                    |
+| 删除项   | 从 `mcp-rpc.runtime.ts` 删除纯 type/assert/await 实现，删除 ports/transaction 对 runtime 的 import；不保留 re-export/compat alias。                                                                                                                              |
+| 验证     | 先加 architecture RED 拒绝 ports/transaction import `mcp-rpc.runtime` 或 `@connectrpc/connect`，再重跑 MCP boundary/cancel/deadline unit、typecheck/lint/architecture/contract/build 及同一 fresh PostgreSQL 完整门。                                            |
 
 R3 唯一新增 production 路径授权为 `src/modules/mcp/mcp-request-boundary.ts`；可修改本 wave 既有 MCP production/test/architecture 文件以删除循环并迁移 import，其余边界不变。
 
@@ -912,17 +912,17 @@ P4a 验收提交 `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` 是本片唯一 chil
 
 #### P4b 放置表
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | 当前 `kokoro-capability`、目标 `kokoro-platform/modules/mcp/authorization`；MCP authorization 与其 command recovery 由本仓唯一写入。Provider owner只返回 authoritative operation outcome；IAM/SecretStore不转移所有权，Scheduler/Agent不保存本仓 recovery fact。 |
-| 当前事实 | 17个MCP RPC和Begin/Complete wire已稳定；`command_receipt`已有status/lease/epoch/due/failure/recovery三元组，`mcp_connector_authorization`已有requested scopes、stored handle、account与状态。当前claim不写recovery，Begin authorization ID在后续事务生成，Complete handle另事务绑定，provider只有begin/complete/revoke且HTTP错误不能证明未执行。 |
-| 目标职责 | 同一精确RPC重试在重新完成attestation/IAM/tenant/resource/digest检查后，以caller-driven方式取得recovery lease；原子提交initial receipt claim与Begin pending或Complete verified-handle binding及recovery pointer；持久化provider call intended/response observed；用原authorization identity authoritative inspect并只重试本地finalization。进程重启由新Nest app/Prisma client对同一DB和provider事实重放同command证明，不新增后台scan loop。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | 当前 `kokoro-capability`、目标 `kokoro-platform/modules/mcp/authorization`；MCP authorization 与其 command recovery 由本仓唯一写入。Provider owner只返回 authoritative operation outcome；IAM/SecretStore不转移所有权，Scheduler/Agent不保存本仓 recovery fact。                                                                                                                                                                                                                                                                                   |
+| 当前事实 | 17个MCP RPC和Begin/Complete wire已稳定；`command_receipt`已有status/lease/epoch/due/failure/recovery三元组，`mcp_connector_authorization`已有requested scopes、stored handle、account与状态。当前claim不写recovery，Begin authorization ID在后续事务生成，Complete handle另事务绑定，provider只有begin/complete/revoke且HTTP错误不能证明未执行。                                                                                                                                                                                                   |
+| 目标职责 | 同一精确RPC重试在重新完成attestation/IAM/tenant/resource/digest检查后，以caller-driven方式取得recovery lease；原子提交initial receipt claim与Begin pending或Complete verified-handle binding及recovery pointer；持久化provider call intended/response observed；用原authorization identity authoritative inspect并只重试本地finalization。进程重启由新Nest app/Prisma client对同一DB和provider事实重放同command证明，不新增后台scan loop。                                                                                                         |
 | 目录方案 | 采用既有`src/modules/mcp/authorization/`新增两个单一职责文件：`mcp-authorization-recovery-state.ts`是多消费方共享的纯typed phase/pointer/codec事实源，`mcp-authorization-recovery.ts`只负责caller-driven orchestration。继续使用唯一`PrismaCommandReceiptRepository`执行receipt CAS，并从`mcp-rpc.runtime.ts`移出旧外部命令编排。相比`src/application/recovery`通用框架，此方案不把MCP provider语义污染公共层；相比新worker/job模块，不提前建设P4e1 supervisor。现有769行authorization service只保留本地业务规则，新增恢复逻辑不得继续堆入该文件。 |
-| 粒度 | `mcp-rpc.runtime.ts`只负责Connect请求边界/精确重放入口，`mcp-transaction.ts`只负责admitted Prisma transaction，纯state/codec文件只负责持久状态解析与不变式，orchestration文件只负责phase/provider outcome编排，HTTP adapter只负责bounded provider协议。新增测试使用独立P4b文件，不继续膨胀现有2245/1154/1641行测试。 |
-| 依赖 | transport → authorization recovery orchestration → typed provider port + MCP transaction port → Prisma receipt/MCP repositories。Repository/transaction只可依赖纯recovery state/codec，不得import orchestration service；provider outcome由`mcp.ports.ts`维护，不反向依赖编排。禁止provider/IAM/SecretStore HTTP进入Prisma transaction、P2034 callback或持有transaction-admission slot；禁止Prisma/Connect类型进入纯state codec。 |
-| 数据/API | 优先复用当前canonical Prisma schema与两条stale/due索引；`recovery_kind=mcp_connector_authorization`，`recovery_ref=<authorization_id>`，phase使用严格`v1.begin.*`/`v1.complete.*` codec。公开Proto/OpenAPI/17方法/field号/digest零变化。Provider operation identity固定为原`authorization_id`及既有snapshot；Complete只用数据库已绑定且本次重新经SecretStore验证的exact handle。 |
-| 删除项 | 验收时删除独立claim→bind崩溃窗、`providerMayHaveStarted`内存裁决、可能发送后mark retryable、generic external reclaim、optional `transact/bind/finalize/reject` production fallback与重复provider identity生成路径；不删除P4c所需cleanup intent，不把best-effort revoke写成durable完成。 |
-| 验证 | unit/contract/architecture + fresh真实PostgreSQL双pool/CAS/回滚/旧epoch + parent持久provider fixture和新app/process重启 + cancellation/blackhole/drain；再跑P4a完整静态、schema、integration、smoke、production smoke、三轮admission stress，SPEC/QUALITY双审和Root pre/post-commit。 |
+| 粒度     | `mcp-rpc.runtime.ts`只负责Connect请求边界/精确重放入口，`mcp-transaction.ts`只负责admitted Prisma transaction，纯state/codec文件只负责持久状态解析与不变式，orchestration文件只负责phase/provider outcome编排，HTTP adapter只负责bounded provider协议。新增测试使用独立P4b文件，不继续膨胀现有2245/1154/1641行测试。                                                                                                                                                                                                                               |
+| 依赖     | transport → authorization recovery orchestration → typed provider port + MCP transaction port → Prisma receipt/MCP repositories。Repository/transaction只可依赖纯recovery state/codec，不得import orchestration service；provider outcome由`mcp.ports.ts`维护，不反向依赖编排。禁止provider/IAM/SecretStore HTTP进入Prisma transaction、P2034 callback或持有transaction-admission slot；禁止Prisma/Connect类型进入纯state codec。                                                                                                                  |
+| 数据/API | 优先复用当前canonical Prisma schema与两条stale/due索引；`recovery_kind=mcp_connector_authorization`，`recovery_ref=<authorization_id>`，phase使用严格`v1.begin.*`/`v1.complete.*` codec。公开Proto/OpenAPI/17方法/field号/digest零变化。Provider operation identity固定为原`authorization_id`及既有snapshot；Complete只用数据库已绑定且本次重新经SecretStore验证的exact handle。                                                                                                                                                                   |
+| 删除项   | 验收时删除独立claim→bind崩溃窗、`providerMayHaveStarted`内存裁决、可能发送后mark retryable、generic external reclaim、optional `transact/bind/finalize/reject` production fallback与重复provider identity生成路径；不删除P4c所需cleanup intent，不把best-effort revoke写成durable完成。                                                                                                                                                                                                                                                            |
+| 验证     | unit/contract/architecture + fresh真实PostgreSQL双pool/CAS/回滚/旧epoch + parent持久provider fixture和新app/process重启 + cancellation/blackhole/drain；再跑P4a完整静态、schema、integration、smoke、production smoke、三轮admission stress，SPEC/QUALITY双审和Root pre/post-commit。                                                                                                                                                                                                                                                              |
 
 #### P4b 内部 provider 与 recovery 合同
 
@@ -1027,21 +1027,21 @@ P4b-2 R2 的 SPEC 与 QUALITY 双审均为 Blocking/Important/Minor `0/0/0`，�
 
 #### P4b-3 Recovery CAS/State 实施授权卡（待双审）
 
-| 项目 | 结论 |
-| --- | --- |
-| 任务 | P4b-3 / P0：在现有`command_receipt`上实现caller-driven recovery acquisition、held/waiting状态、epoch fence、phase CAS、等待退避与terminal清理；完成条件是下述unit/真实PG RED全部转GREEN且无provider I/O。 |
-| 归属 | owner为`kokoro-capability`/目标`kokoro-platform modules/mcp/authorization`；执行人为原capability writer，Root审查并提交；IAM、Agent、provider与Scheduler均非本卡writer。 |
-| 基线 | child绝对路径`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability`，分支`codex/production-closure-docs`，clean commit `4e26112848d11afd5d02d2b9d12553da35bf2016`；Root保留SQL手册、`kokoro-agent`和`.tmp/`未交接变更。 |
-| 文件集 | 允许修改`src/application/command-receipt.ts`、确有新typed error时的`src/application/command-receipt.error.ts`、唯一`prisma-command-receipt.repository.ts`、`mcp-authorization-recovery-state.ts`、`mcp-transaction.ts`、`mcp.ports.ts`、必要`test/doubles/command-receipt.ts`和既有architecture测试；新增独立`test/unit/mcp-recovery-cas.test.ts`与`test/integration/mcp-recovery-cas-postgres.integration.test.ts`。不得修改RPC/service/runtime、HTTP provider adapter、Nest装配、schema/generated/package/lock/docs或其他仓。 |
-| 依赖 | 只允许MCP transaction port → typed receipt coordinator/repository → Prisma/DB clock，以及repository → 纯recovery codec；repository不得import orchestration/provider/HTTP，纯codec不得import Prisma/Connect。P4b-4才调用inspect/invoke，P4b-6才接drain tracking。 |
-| API/结果 | 在`CommandReceiptCoordinator`/`McpMutationPort`增加或以严格等价typed接口实现四个方法族：recovery acquisition、fenced phase CAS、mark waiting、recovery terminal success/failure。每个写方法接收`identity + lease + expected exact pointer`；acquisition/readback结果显式区分`acquired / held / waiting / replayed / failed_terminal / ownership_lost`，expired抛既有replay-expired typed error。不得以boolean或message matching吞掉分类。 |
-| 数据/事务 | 复用唯一`command_receipt`及既有stale/due索引，无新表/列/raw claim SQL。eligible仅为：带合法exact recovery pointer的expired external `processing`、due `external_unknown/waiting`、lease-expired `external_unknown/held`。CAS同时比较tenant+command+digest+operation+status+完整pointer+旧owner/epoch/expiry/due；成功以同一transaction读取的DB clock统一落为`external_unknown/held`：owner/expiry非NULL、due为NULL、`failure_kind=unknown`、`result_json=SQL NULL`、terminal字段为空并保留exact pointer。stale processing首次转换固定净化`failure_code=provider_outcome_unknown`，waiting/held重取保留原合法failure code；epoch+1且仅此时增加一次attempt counter。P2034重用同一新owner ID重试完整transaction，每次重读DB clock/current row。 |
+| 项目         | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务         | P4b-3 / P0：在现有`command_receipt`上实现caller-driven recovery acquisition、held/waiting状态、epoch fence、phase CAS、等待退避与terminal清理；完成条件是下述unit/真实PG RED全部转GREEN且无provider I/O。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 归属         | owner为`kokoro-capability`/目标`kokoro-platform modules/mcp/authorization`；执行人为原capability writer，Root审查并提交；IAM、Agent、provider与Scheduler均非本卡writer。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 基线         | child绝对路径`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability`，分支`codex/production-closure-docs`，clean commit `4e26112848d11afd5d02d2b9d12553da35bf2016`；Root保留SQL手册、`kokoro-agent`和`.tmp/`未交接变更。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 文件集       | 允许修改`src/application/command-receipt.ts`、确有新typed error时的`src/application/command-receipt.error.ts`、唯一`prisma-command-receipt.repository.ts`、`mcp-authorization-recovery-state.ts`、`mcp-transaction.ts`、`mcp.ports.ts`、必要`test/doubles/command-receipt.ts`和既有architecture测试；新增独立`test/unit/mcp-recovery-cas.test.ts`与`test/integration/mcp-recovery-cas-postgres.integration.test.ts`。不得修改RPC/service/runtime、HTTP provider adapter、Nest装配、schema/generated/package/lock/docs或其他仓。                                                                                                                                                                                                                                                                                                                                                           |
+| 依赖         | 只允许MCP transaction port → typed receipt coordinator/repository → Prisma/DB clock，以及repository → 纯recovery codec；repository不得import orchestration/provider/HTTP，纯codec不得import Prisma/Connect。P4b-4才调用inspect/invoke，P4b-6才接drain tracking。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| API/结果     | 在`CommandReceiptCoordinator`/`McpMutationPort`增加或以严格等价typed接口实现四个方法族：recovery acquisition、fenced phase CAS、mark waiting、recovery terminal success/failure。每个写方法接收`identity + lease + expected exact pointer`；acquisition/readback结果显式区分`acquired / held / waiting / replayed / failed_terminal / ownership_lost`，expired抛既有replay-expired typed error。不得以boolean或message matching吞掉分类。                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| 数据/事务    | 复用唯一`command_receipt`及既有stale/due索引，无新表/列/raw claim SQL。eligible仅为：带合法exact recovery pointer的expired external `processing`、due `external_unknown/waiting`、lease-expired `external_unknown/held`。CAS同时比较tenant+command+digest+operation+status+完整pointer+旧owner/epoch/expiry/due；成功以同一transaction读取的DB clock统一落为`external_unknown/held`：owner/expiry非NULL、due为NULL、`failure_kind=unknown`、`result_json=SQL NULL`、terminal字段为空并保留exact pointer。stale processing首次转换固定净化`failure_code=provider_outcome_unknown`，waiting/held重取保留原合法failure code；epoch+1且仅此时增加一次attempt counter。P2034重用同一新owner ID重试完整transaction，每次重读DB clock/current row。                                                                                                                                              |
 | CAS readback | P2025仅表示CAS未命中，必须退出失败transaction后以fresh RepeatableRead、fresh DB transaction time和同一strict decoder重读。同owner幂等`acquired`必须完整匹配该attempt的postcondition：目标新epoch、`attempt_count=expected_old_attempt_count+1`、exact pointer、合法held NULL矩阵，并且`DB transaction_time < lease_expires_at`；等于或超过expiry返回`ownership_lost`，同owner/目标epoch但attempt不符则fail closed。completed为`replayed`；terminal failed为`failed_terminal`；expired抛replay-expired；其他owner/更新epoch且未过期为`held`；合法not-due无owner为`waiting`；exact pointer仍处于可取得stale/due状态为`ownership_lost`。missing、identity drift、pointer drift/partial/corrupt及其他未分类状态抛`CommandReceiptCorruptError`；不得用CAS前snapshot，不得把loser返回acquired。行锁commit后contender必须败并fresh-readback，rollback后contender按新的DB clock重新判断并可成功。 |
-| 状态/退避 | mapper/API显式区分`external_unknown/held`（owner+expiry，due NULL）与`external_unknown/waiting`（owner/expiry NULL，due非NULL），其余组合fail closed。初始external receipt的`attempt_count=1`不计作reconcile；成功acquisition后的`reconcile_attempt=attempt_count-1`，首次为1。delay为attempt>=7时60,000ms，否则`min(60,000,1000*2^(attempt-1))`；`lower=delay/2`，注入`randomIntInclusive(lower,delay)`且返回必须为闭区间内整数，`next_attempt_at=DB transaction_time+jitter_ms`，非法依赖值fail closed。端点为attempt1 `500..1000ms`，attempt7及长期cap `30000..60000ms`。当旧`attempt_count=2_147_483_647`时新acquisition会溢出，必须先拒绝；旧值为上限减一时仍可原子增加到上限。 |
-| Phase/Fence | 纯state冻结合法迁移：Begin `pending_committed`或Complete `handle_bound` →同operation `provider_call_intended`；intended→`provider_response_observed`；initial/intended/observed→`local_finalizing`；`local_finalizing`无phase后继。全程operation/kind/ref不变，逆向、跨operation、same phase和跳出图均fail closed。phase、waiting、completed、terminal failed均在同一transaction读取DB clock，以tenant+command+digest+operation+status+owner+epoch+exact pointer+`lease_expires_at > transaction_time` CAS；`DB now >= expiry`即使未takeover也失败且行不变。上述写不增加attempt counter，失败CAS、rollback和P2034 attempt也不得产生已提交增量。 |
-| Fence/终态 | 旧holder/旧epoch/same-owner ABA在phase、waiting与两种terminal写均为loser。waiting清owner/expiry、写DB-clock due并保留epoch/pointer；terminal success/failure在同一transaction清空owner/expiry/due与recovery kind/ref/phase。terminal replay只读持久result/error，不产生recovery acquisition。 |
-| 删除/禁止 | 删除或停止使用任何generic external failed reclaim、仅按owner/epoch不比pointer的recovery写路径、含糊的external_unknown lease映射；不实现provider inspection/invoke、Begin/Complete orchestration、后台scan/worker、指标、IAM contract、P4c cleanup或P5 cutover。 |
-| 验证 | 先保存旧实现RED，再最小GREEN。运行format/lint/typecheck、unit/contract/architecture、Prisma validate/generate/schema check、fresh真实PG双pool矩阵、完整integration/full/build/smoke/production smoke；冻结后SPEC/QUALITY双审，Root在pre/post-commit各用不同fresh DB/Redis复验并清理。 |
+| 状态/退避    | mapper/API显式区分`external_unknown/held`（owner+expiry，due NULL）与`external_unknown/waiting`（owner/expiry NULL，due非NULL），其余组合fail closed。初始external receipt的`attempt_count=1`不计作reconcile；成功acquisition后的`reconcile_attempt=attempt_count-1`，首次为1。delay为attempt>=7时60,000ms，否则`min(60,000,1000*2^(attempt-1))`；`lower=delay/2`，注入`randomIntInclusive(lower,delay)`且返回必须为闭区间内整数，`next_attempt_at=DB transaction_time+jitter_ms`，非法依赖值fail closed。端点为attempt1 `500..1000ms`，attempt7及长期cap `30000..60000ms`。当旧`attempt_count=2_147_483_647`时新acquisition会溢出，必须先拒绝；旧值为上限减一时仍可原子增加到上限。                                                                                                                                                                                                      |
+| Phase/Fence  | 纯state冻结合法迁移：Begin `pending_committed`或Complete `handle_bound` →同operation `provider_call_intended`；intended→`provider_response_observed`；initial/intended/observed→`local_finalizing`；`local_finalizing`无phase后继。全程operation/kind/ref不变，逆向、跨operation、same phase和跳出图均fail closed。phase、waiting、completed、terminal failed均在同一transaction读取DB clock，以tenant+command+digest+operation+status+owner+epoch+exact pointer+`lease_expires_at > transaction_time` CAS；`DB now >= expiry`即使未takeover也失败且行不变。上述写不增加attempt counter，失败CAS、rollback和P2034 attempt也不得产生已提交增量。                                                                                                                                                                                                                                           |
+| Fence/终态   | 旧holder/旧epoch/same-owner ABA在phase、waiting与两种terminal写均为loser。waiting清owner/expiry、写DB-clock due并保留epoch/pointer；terminal success/failure在同一transaction清空owner/expiry/due与recovery kind/ref/phase。terminal replay只读持久result/error，不产生recovery acquisition。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 删除/禁止    | 删除或停止使用任何generic external failed reclaim、仅按owner/epoch不比pointer的recovery写路径、含糊的external_unknown lease映射；不实现provider inspection/invoke、Begin/Complete orchestration、后台scan/worker、指标、IAM contract、P4c cleanup或P5 cutover。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 验证         | 先保存旧实现RED，再最小GREEN。运行format/lint/typecheck、unit/contract/architecture、Prisma validate/generate/schema check、fresh真实PG双pool矩阵、完整integration/full/build/smoke/production smoke；冻结后SPEC/QUALITY双审，Root在pre/post-commit各用不同fresh DB/Redis复验并清理。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 P4b-3 的强制RED矩阵：stale processing、due waiting与expired held三种acquisition并断言成功后完整数据库shape一致；A取得held后死亡，lease到期后B/C双pool仅一winner且旧A所有写失败；same-owner ABA；epoch与signed-Int attempt边界；A持receipt行锁跨expiry后commit/rollback两种结局；unknown→held→waiting→held两轮中每个旧epoch均拒绝；P2025 winner分别停在held、转waiting、completed、terminal failed时loser得到上述确定readback结果；幂等readback对同owner/目标epoch/exact pointer分别覆盖未过期且`attempt_count=expected+1`返回acquired、expiry等于DB now与早于DB now均返回ownership_lost、attempt不符抛corrupt，provider spy均为0且readback不改行；无contender但DB now等于/超过expiry时phase、waiting、completed、terminal四类写全部拒绝，另有未过期正向路径；wrong kind、cross-operation phase、partial/blank pointer、held/waiting非法空值组合fail closed；合法phase图各边通过，逆向/same/cross-operation/`local_finalizing`后继全部失败；phase CAS比较exact pointer。completed与terminal failed原子清全部recovery/lease/due且fresh replay不acquire。equal-jitter以确定随机源覆盖attempt1上下端点、attempt7上下端点、长期cap、非整数/越界随机值和计数上限。所有失败CAS、rollback/P2034及非acquired readback均不增加已提交attempt；本卡没有provider port调用，相关spy必须为0或不存在。
 
@@ -1098,17 +1098,17 @@ P4b-3 当前状态因此校正为“功能提交完成、架构粒度整改待�
 
 #### P4b-3-G 粒度整改放置表与任务卡
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | `kokoro-capability` 当前、`kokoro-platform/modules/mcp/authorization` 目标；command receipt 通用事实仍由 Capability owner 写入，MCP authorization recovery 是唯一当前 recovery consumer。原 `capability_owner_p1b` 继续作为子仓单一 writer，Root 独占 Git。IAM/Agent/provider/SecretStore owner 不变。 |
-| 当前事实 | Root `17063692`、child clean `f9dc3a3`；功能矩阵已通过，但 `prisma-command-receipt.repository.ts` 1626 行、`mcp-transaction.ts` 905 行触发 Root `file-granularity`。Recovery persistence 直接堆入通用 receipt repository，五个 recovery delegate 直接堆入通用 MCP transaction。 |
-| 目标职责 | 通用 receipt repository 只负责 admission/claim/inspect/local terminal；纯 row-state 文件只负责 Prisma row 到 typed receipt state 的不变式映射；recovery acquisition 文件只负责 DB-clock acquisition、P2025/P2034/严格 P2039-55P03 与 fresh readback；recovery repository 只负责完整 pointer/fence 下的 phase/waiting/completed/terminal CAS；MCP authorization recovery transaction 只负责 request boundary、typed pointer decode 与 recovery repository 委托。 |
-| 目录方案 | 采用既有 persistence 目录新增 `prisma-command-receipt-state.ts`、`prisma-command-recovery-acquisition.ts`、`prisma-command-recovery.repository.ts`，采用既有 MCP authorization 目录新增 `mcp-authorization-recovery.transaction.ts`。相比把全部文件放入 `src/modules/mcp`，通用 receipt row/state 不被错误归为 MCP 资源；相比继续扩展两个原文件，变化原因和 800 行门无法闭环；相比新建 `recovery/` 子目录，当前四个文件已有稳定职责且无需单文件目录。P5 再随物理 Platform cutover 处理 transitional `infrastructure` 路径，不在本片搬全仓。 |
-| 粒度 | 四个新文件均有独立变化原因和多个调用/测试点；不建立 BaseRepository、CQRS、DTO 或 optional compatibility facade。`PrismaCommandReceiptRepository` 停止实现 recovery port；新增 `PrismaCommandRecoveryRepository` 实现既有 `CommandReceiptRecoveryCoordinator`；`PrismaMcpTransaction` 仅实现既有 `McpMutationPort`，新增 `PrismaMcpAuthorizationRecoveryTransaction` 实现既有 `McpRecoveryMutationPort`。本切片触及和新增的手写 production TypeScript 文件均不超过 800 行；既存 `connector-authorization.service.ts` 850 行违规另片治理，不据此扩大本片。 |
-| 依赖 | receipt state 仅依赖 application typed contract、generated Prisma row/JSON sentinel与 typed errors；两份 recovery persistence 可依赖 state、Prisma clock/retry和纯 `mcp-authorization-recovery-state`，不得依赖 orchestration/RPC/provider/IAM/Nest；MCP recovery transaction 依赖既有 typed port、request boundary与 recovery repository。禁止循环 import、复制 mapper/CAS、raw SQL、第二 Prisma client或新 injection token。 |
-| 数据/API | Prisma schema/generated、transaction isolation、完整 CAS predicate、lease/epoch/attempt/backoff、terminal cleanup与 `f9dc3a3` 测试语义零变化；Proto/OpenAPI/17 RPC/digest零变化。Skills 保持 `series_id/skill_id/source_ref=skill:<skill_id>/installation_id`；MCP 保持 `connector_id/server_id/connection_id/authorization_id/invocation_grant=mcp-grant:<uuid-v4>`，不存在 `grant_id`。 |
-| 删除项 | 从原 receipt repository 删除 recovery imports/helpers/implementation，从原 MCP transaction 删除 recovery port实现与 pointer decode helper；同步删除测试对旧类承载 recovery 职责的依赖。不保留 re-export alias、delegating compatibility methods或双实现。 |
-| 验证 | 先加 architecture RED 固定职责、依赖方向、无重复实现和本切片触及/新增 production 文件 <=800；更新既有独立 unit/真实PG recovery测试到新 owner并完整通过。随后 format/lint/typecheck/contract/Prisma validate+generate/schema/unit/contract/architecture/real integration/full/build/smoke/production smoke/public FK/diff；Root 重跑 standard/topology/pytest，对比 Capability `file-granularity` 至少减少2且不得新增违规；同一冻结对象 SPEC/QUALITY 双审和 Root pre/post-commit。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-capability` 当前、`kokoro-platform/modules/mcp/authorization` 目标；command receipt 通用事实仍由 Capability owner 写入，MCP authorization recovery 是唯一当前 recovery consumer。原 `capability_owner_p1b` 继续作为子仓单一 writer，Root 独占 Git。IAM/Agent/provider/SecretStore owner 不变。                                                                                                                                                                                                                                                   |
+| 当前事实 | Root `17063692`、child clean `f9dc3a3`；功能矩阵已通过，但 `prisma-command-receipt.repository.ts` 1626 行、`mcp-transaction.ts` 905 行触发 Root `file-granularity`。Recovery persistence 直接堆入通用 receipt repository，五个 recovery delegate 直接堆入通用 MCP transaction。                                                                                                                                                                                                                                                                          |
+| 目标职责 | 通用 receipt repository 只负责 admission/claim/inspect/local terminal；纯 row-state 文件只负责 Prisma row 到 typed receipt state 的不变式映射；recovery acquisition 文件只负责 DB-clock acquisition、P2025/P2034/严格 P2039-55P03 与 fresh readback；recovery repository 只负责完整 pointer/fence 下的 phase/waiting/completed/terminal CAS；MCP authorization recovery transaction 只负责 request boundary、typed pointer decode 与 recovery repository 委托。                                                                                          |
+| 目录方案 | 采用既有 persistence 目录新增 `prisma-command-receipt-state.ts`、`prisma-command-recovery-acquisition.ts`、`prisma-command-recovery.repository.ts`，采用既有 MCP authorization 目录新增 `mcp-authorization-recovery.transaction.ts`。相比把全部文件放入 `src/modules/mcp`，通用 receipt row/state 不被错误归为 MCP 资源；相比继续扩展两个原文件，变化原因和 800 行门无法闭环；相比新建 `recovery/` 子目录，当前四个文件已有稳定职责且无需单文件目录。P5 再随物理 Platform cutover 处理 transitional `infrastructure` 路径，不在本片搬全仓。              |
+| 粒度     | 四个新文件均有独立变化原因和多个调用/测试点；不建立 BaseRepository、CQRS、DTO 或 optional compatibility facade。`PrismaCommandReceiptRepository` 停止实现 recovery port；新增 `PrismaCommandRecoveryRepository` 实现既有 `CommandReceiptRecoveryCoordinator`；`PrismaMcpTransaction` 仅实现既有 `McpMutationPort`，新增 `PrismaMcpAuthorizationRecoveryTransaction` 实现既有 `McpRecoveryMutationPort`。本切片触及和新增的手写 production TypeScript 文件均不超过 800 行；既存 `connector-authorization.service.ts` 850 行违规另片治理，不据此扩大本片。 |
+| 依赖     | receipt state 仅依赖 application typed contract、generated Prisma row/JSON sentinel与 typed errors；两份 recovery persistence 可依赖 state、Prisma clock/retry和纯 `mcp-authorization-recovery-state`，不得依赖 orchestration/RPC/provider/IAM/Nest；MCP recovery transaction 依赖既有 typed port、request boundary与 recovery repository。禁止循环 import、复制 mapper/CAS、raw SQL、第二 Prisma client或新 injection token。                                                                                                                           |
+| 数据/API | Prisma schema/generated、transaction isolation、完整 CAS predicate、lease/epoch/attempt/backoff、terminal cleanup与 `f9dc3a3` 测试语义零变化；Proto/OpenAPI/17 RPC/digest零变化。Skills 保持 `series_id/skill_id/source_ref=skill:<skill_id>/installation_id`；MCP 保持 `connector_id/server_id/connection_id/authorization_id/invocation_grant=mcp-grant:<uuid-v4>`，不存在 `grant_id`。                                                                                                                                                                |
+| 删除项   | 从原 receipt repository 删除 recovery imports/helpers/implementation，从原 MCP transaction 删除 recovery port实现与 pointer decode helper；同步删除测试对旧类承载 recovery 职责的依赖。不保留 re-export alias、delegating compatibility methods或双实现。                                                                                                                                                                                                                                                                                                |
+| 验证     | 先加 architecture RED 固定职责、依赖方向、无重复实现和本切片触及/新增 production 文件 <=800；更新既有独立 unit/真实PG recovery测试到新 owner并完整通过。随后 format/lint/typecheck/contract/Prisma validate+generate/schema/unit/contract/architecture/real integration/full/build/smoke/production smoke/public FK/diff；Root 重跑 standard/topology/pytest，对比 Capability `file-granularity` 至少减少2且不得新增违规；同一冻结对象 SPEC/QUALITY 双审和 Root pre/post-commit。                                                                        |
 
 任务 `P4b-3-G / P0`：基线为上述 Root/child commit；writer 只可修改原 `prisma-command-receipt.repository.ts`、原 `mcp-transaction.ts`、新增四个放置表文件、`test/architecture/mcp-p4b.test.ts`、`test/unit/mcp-recovery-cas.test.ts`、`test/integration/mcp-recovery-cas-postgres.integration.test.ts` 及确因 constructor/import 编译所需的既有 MCP transaction 测试。上述触及/新增 production 文件必须全部不超过800行。禁止修改 schema/generated/package/lock/contract/RPC/service/runtime/module/provider/IAM/SecretStore/其他仓与子仓文档；既存 `connector-authorization.service.ts` 粒度违规不在本片。若需要越界，先停写报告。交付状态依次为进行中、待审查、待集成验证、已验收；P4b-4 保持阻塞。
 
@@ -1126,19 +1126,19 @@ Root standard从223项降为221项，精确消除本片引入的两个粒度违�
 
 #### IAM-ATTESTATION-CONTRACT 跨仓设计门与文档授权卡（2026-09-11）
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | Agent独占Run/Checkpoint/execution evidence、签发语义与签名proof/JWKS契约；IAM独占caller workload authentication、当前identity/membership/permission、已支持的代表关系验证与decision audit；Platform独占Skills/MCP资源、operation/request-binding、provider policy、receipt/recovery/outbox。BFF仍拥有Project，不把Project事实复制到IAM。 |
-| 当前事实 | IAM `main@834fdc9` clean，已是NestJS 12 + Prisma 7.10、单一`prisma/schema.prisma`、code-first internal OpenAPI与generated `@kokoro/iam-client`；`authorization/check`只支持token-self `tenant/read|audit/read`，ADR-004明确V1禁用impersonation。Agent `e24b4aa` clean，`ExecutionIdentity`保留typed actor/subject与assertion ref，但无attestation signer/JWKS。Capability `9f237f9` clean，当前自有`RunExecutionAttestation` wire及手写camelCase、无Bearer、裸响应verifier，丢失actor/subject kind并无条件追加`user:<subject>`。 |
-| 目标职责 | Agent从canonical Run、当前execution identity与lease generation签发短期、exact audience/operation/request-binding的版本化proof；IAM在具名用例中验证proof和Platform caller，每次重验当前IAM事实并记录decision audit；Platform从实际请求重算binding，只使用IAM返回的typed identity/effective owner scopes/decision reference。 |
-| 目录方案 | 采用IAM既有`src/modules/authorization/execution-authorizations/`放Controller/schema/Service/Policy，由`AuthorizationModule`装配，机器契约继续由现有internal OpenAPI生成并进入现有SDK。淘汰把完整用例塞入`auth/internal-access`（该处只认证caller）、新建顶层attestation模块/第二套Proto生成链，以及把现有`authorization/check`改造为任意resource/action/subject permission bag。 |
-| 粒度 | 先只授权IAM三面文档、SECURITY/CURRENT与单一ADR；文档双审后再分Agent signer owner、IAM verifier owner、Platform generated-client consumer三个串行实现片。不在文档片预先授权schema/generated/source。 |
-| 依赖 | 唯一方向为Agent evidence artifact/JWKS → IAM verifier/OpenAPI/SDK → Platform adapter；Agent另消费Platform固定版本operation/binding contract以构造请求。生成类型只在adapter终止，禁止跨仓Prisma schema/DTO、相对import、请求body自报tenant/actor/subject或三仓各维护一份proof fields。 |
-| 数据/API | IAM候选新路径为`POST /internal/v1/execution-authorizations/verify`，visibility=`internal-owner`，使用caller Bearer与独立endpoint scope；strict snake_case request只携Agent owner的opaque signed proof、`expected_operation`和`expected_request_binding_sha256`。成功统一`{data}`返回`allowed`、typed actor/subject、tenant/run/execution-session、effective scopes、expiry与decision/audit reference。初片不新建nonce receipt或delegation表：nonce作proof identity，exact binding+短TTL+每次当前授权复验+已有command receipt定义同请求replay-safe；若后续要求single-use，另立schema/ACK-unknown ADR。 |
-| 身份范围 | 契约保留typed `user|project|service` actor/subject，但当前V1只放行IAM可用当前事实证明的direct `user -> user`；actor≠subject在版本化delegation assertion/owner完成前显式deny，project/service在对应owner resolver contract完成前显式deny，不得默认或强转为user。IAM只返回其可以当前证明的scope；Platform不根据subject猜测owner scope。 |
-| 错误/审计 | 400为schema/operation/digest非法，401为caller或proof authentication失败，403为caller无endpoint资格，已认证proof但当前授权拒绝返回200 `allowed=false`+稳定reason code，409沿用`TENANT_DISABLED`，429为限流，503为验签依赖/审计持久化失败且fail closed。日志/审计不保存proof、token、signature、完整binding或request body，三方用request/trace/run/decision引用关联。 |
-| 删除项 | Platform消费片删除手写IAM request/response schema、camelCase裸wire、无Bearer路径和`user:<subject>`猜测；将Capability自有的signed-proof字段事实收敛为Agent owner artifact/opaque proof引用。不保留fallback、alias或双协议。 |
-| 验证 | 文档门先由SPEC/QUALITY核对TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR一致。实现后要求真实Agent signer → IAM verifier → Platform RPC → PostgreSQL receipt sandbox，覆盖caller/proof两层认证、跨tenant、operation/binding篡改、direct user、actor≠subject/project/service deny、撤权后replay、同proof同请求重试、key rotation/unknown kid/alg/TTL/skew、审计失败回滚、已完成receipt撤权后仍拒绝与无敏感日志。 |
+| 项        | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner     | Agent独占Run/Checkpoint/execution evidence、签发语义与签名proof/JWKS契约；IAM独占caller workload authentication、当前identity/membership/permission、已支持的代表关系验证与decision audit；Platform独占Skills/MCP资源、operation/request-binding、provider policy、receipt/recovery/outbox。BFF仍拥有Project，不把Project事实复制到IAM。                                                                                                                                                                                                                                                              |
+| 当前事实  | IAM `main@834fdc9` clean，已是NestJS 12 + Prisma 7.10、单一`prisma/schema.prisma`、code-first internal OpenAPI与generated `@kokoro/iam-client`；`authorization/check`只支持token-self `tenant/read                                                                                                                                                                                                                                                                                                                                                                                                    | audit/read`，ADR-004明确V1禁用impersonation。Agent `e24b4aa` clean，`ExecutionIdentity`保留typed actor/subject与assertion ref，但无attestation signer/JWKS。Capability `9f237f9` clean，当前自有`RunExecutionAttestation` wire及手写camelCase、无Bearer、裸响应verifier，丢失actor/subject kind并无条件追加`user:<subject>`。 |
+| 目标职责  | Agent从canonical Run、当前execution identity与lease generation签发短期、exact audience/operation/request-binding的版本化proof；IAM在具名用例中验证proof和Platform caller，每次重验当前IAM事实并记录decision audit；Platform从实际请求重算binding，只使用IAM返回的typed identity/effective owner scopes/decision reference。                                                                                                                                                                                                                                                                           |
+| 目录方案  | 采用IAM既有`src/modules/authorization/execution-authorizations/`放Controller/schema/Service/Policy，由`AuthorizationModule`装配，机器契约继续由现有internal OpenAPI生成并进入现有SDK。淘汰把完整用例塞入`auth/internal-access`（该处只认证caller）、新建顶层attestation模块/第二套Proto生成链，以及把现有`authorization/check`改造为任意resource/action/subject permission bag。                                                                                                                                                                                                                      |
+| 粒度      | 先只授权IAM三面文档、SECURITY/CURRENT与单一ADR；文档双审后再分Agent signer owner、IAM verifier owner、Platform generated-client consumer三个串行实现片。不在文档片预先授权schema/generated/source。                                                                                                                                                                                                                                                                                                                                                                                                   |
+| 依赖      | 唯一方向为Agent evidence artifact/JWKS → IAM verifier/OpenAPI/SDK → Platform adapter；Agent另消费Platform固定版本operation/binding contract以构造请求。生成类型只在adapter终止，禁止跨仓Prisma schema/DTO、相对import、请求body自报tenant/actor/subject或三仓各维护一份proof fields。                                                                                                                                                                                                                                                                                                                 |
+| 数据/API  | IAM候选新路径为`POST /internal/v1/execution-authorizations/verify`，visibility=`internal-owner`，使用caller Bearer与独立endpoint scope；strict snake_case request只携Agent owner的opaque signed proof、`expected_operation`和`expected_request_binding_sha256`。成功统一`{data}`返回`allowed`、typed actor/subject、tenant/run/execution-session、effective scopes、expiry与decision/audit reference。初片不新建nonce receipt或delegation表：nonce作proof identity，exact binding+短TTL+每次当前授权复验+已有command receipt定义同请求replay-safe；若后续要求single-use，另立schema/ACK-unknown ADR。 |
+| 身份范围  | 契约保留typed `user                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | project                                                                                                                                                                                                                                                                                                                       | service`actor/subject，但当前V1只放行IAM可用当前事实证明的direct`user -> user`；actor≠subject在版本化delegation assertion/owner完成前显式deny，project/service在对应owner resolver contract完成前显式deny，不得默认或强转为user。IAM只返回其可以当前证明的scope；Platform不根据subject猜测owner scope。 |
+| 错误/审计 | 400为schema/operation/digest非法，401为caller或proof authentication失败，403为caller无endpoint资格，已认证proof但当前授权拒绝返回200 `allowed=false`+稳定reason code，409沿用`TENANT_DISABLED`，429为限流，503为验签依赖/审计持久化失败且fail closed。日志/审计不保存proof、token、signature、完整binding或request body，三方用request/trace/run/decision引用关联。                                                                                                                                                                                                                                   |
+| 删除项    | Platform消费片删除手写IAM request/response schema、camelCase裸wire、无Bearer路径和`user:<subject>`猜测；将Capability自有的signed-proof字段事实收敛为Agent owner artifact/opaque proof引用。不保留fallback、alias或双协议。                                                                                                                                                                                                                                                                                                                                                                            |
+| 验证      | 文档门先由SPEC/QUALITY核对TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR一致。实现后要求真实Agent signer → IAM verifier → Platform RPC → PostgreSQL receipt sandbox，覆盖caller/proof两层认证、跨tenant、operation/binding篡改、direct user、actor≠subject/project/service deny、撤权后replay、同proof同请求重试、key rotation/unknown kid/alg/TTL/skew、审计失败回滚、已完成receipt撤权后仍拒绝与无敏感日志。                                                                                                                                                                                          |
 
 `IAM-ATTESTATION-D / P0`文档writer只可修改IAM的`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、`docs/CURRENT.md`、`docs/ADR/README.md`并新建`docs/ADR/ADR-005-execution-authorization-contract.md`。禁止修改IAM source/schema/generated/OpenAPI/SDK/package/lock/test，禁止修改Agent/Capability/BFF或Root其他文件。交付必须列出三份核心文档绝对路径、未决项、契约/schema验证命令和当前commit；SPEC/QUALITY双审前不放行Agent signer、IAM source或Platform consumer。Skills/MCP继续使用`series_id/skill_id/installation_id`与`connector_id/server_id/connection_id/authorization_id/invocation_grant`；Manus v2官方`skill.list`/`connector.list`只确认list返回opaque ID后供`task.create`引用，不发生wire或IAM owner关系。
 
@@ -1152,18 +1152,18 @@ Root 精确提交 IAM 7 个文档为 `bf160be173ef473bebe8e4a93b74ec52c230f180`�
 
 #### AGENT-EXECUTION-PROOF-D 跨仓设计门与文档授权卡（2026-09-11）
 
-| 项 | 结论 |
-| --- | --- |
-| Owner | `kokoro-agent` 独占 proof schema、canonical claims、Ed25519 signer、active signing key 与 public key rotation/JWKS；IAM 只按 `bf160be` 验证固定 issuer/JWKS 与当前 IAM facts，Platform 只从其 owner contract计算 operation/binding并转发 opaque proof。 |
-| 当前事实 | Agent `codex/production-closure-agent-p0@e24b4aab05ee6df811c21089effbe1f91d7c2f2c` clean；typed `ExecutionIdentity` 位于 `protocol/control.py`，数据库 fencing 的 `LeaseFence.generation` 位于 `domain/run/models.py`。现有两个 `is_lease_current` 路径都在等待连接前取应用clock，再以旧时间比较expiry；连接排队跨expiry时可能误报current，不能直接作为proof fresh gate。现有唯一 HTTP machine fact 为 `contract/openapi/v1/openapi.json`，没有 proof JSON Schema、signer、JWKS route或对应 provenance。 |
-| 目标职责 | 每次调用 Platform 前，用 canonical Run request、execution session、typed actor/subject 与 fresh current lease generation，对 Platform owner contract给出的 exact operation/request-binding即时签发 `typ=kokoro-agent-execution+jwt`、EdDSA/Ed25519、最长60秒的compact proof；不缓存proof，不把旧generation继续用于新调用。发布只读public JWKS供IAM固定配置拉取。 |
-| 目录方案 | 采用既有 `src/kokoro_agent/execution/` 承载纯proof claims与signer，key material reader按实际多文件职责放在同一业务上下文或既有启动装配；JWKS handler复用 `interfaces/http/` 与唯一HTTP runtime。淘汰新建顶层`auth/attestation`、把签名塞进`protocol/`、在worker supervisor内拼JWT、由IAM反向读取Run或由Platform自行签名。 |
-| 粒度 | 先只收敛 Agent `TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/SECURITY/CURRENT`、ADR索引与一个proof ADR；双审后再拆 machine artifact/contract RED、signer/key/JWKS GREEN、调用点/lease race与全门。文档片不预先授权source/OpenAPI/schema/package/lock/test。 |
-| 依赖 | signer只依赖注入clock、nonce source、key provider与消费方定义的最小current-lease reader；该reader必须在数据库statement执行时用数据库clock核对run+owner+generation+unexpired+nonterminal，不使用连接排队前应用clock。operation/binding由Platform owner发布并在其generated client/adapter终止，Agent不复制Platform业务资源或operation policy。IAM/Platform不获得私钥，Agent不消费IAM数据库或permission graph。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-agent` 独占 proof schema、canonical claims、Ed25519 signer、active signing key 与 public key rotation/JWKS；IAM 只按 `bf160be` 验证固定 issuer/JWKS 与当前 IAM facts，Platform 只从其 owner contract计算 operation/binding并转发 opaque proof。                                                                                                                                                                                                                                                                                                                                       |
+| 当前事实 | Agent `codex/production-closure-agent-p0@e24b4aab05ee6df811c21089effbe1f91d7c2f2c` clean；typed `ExecutionIdentity` 位于 `protocol/control.py`，数据库 fencing 的 `LeaseFence.generation` 位于 `domain/run/models.py`。现有两个 `is_lease_current` 路径都在等待连接前取应用clock，再以旧时间比较expiry；连接排队跨expiry时可能误报current，不能直接作为proof fresh gate。现有唯一 HTTP machine fact 为 `contract/openapi/v1/openapi.json`，没有 proof JSON Schema、signer、JWKS route或对应 provenance。                                                                                      |
+| 目标职责 | 每次调用 Platform 前，用 canonical Run request、execution session、typed actor/subject 与 fresh current lease generation，对 Platform owner contract给出的 exact operation/request-binding即时签发 `typ=kokoro-agent-execution+jwt`、EdDSA/Ed25519、最长60秒的compact proof；不缓存proof，不把旧generation继续用于新调用。发布只读public JWKS供IAM固定配置拉取。                                                                                                                                                                                                                              |
+| 目录方案 | 采用既有 `src/kokoro_agent/execution/` 承载纯proof claims与signer，key material reader按实际多文件职责放在同一业务上下文或既有启动装配；JWKS handler复用 `interfaces/http/` 与唯一HTTP runtime。淘汰新建顶层`auth/attestation`、把签名塞进`protocol/`、在worker supervisor内拼JWT、由IAM反向读取Run或由Platform自行签名。                                                                                                                                                                                                                                                                     |
+| 粒度     | 先只收敛 Agent `TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/SECURITY/CURRENT`、ADR索引与一个proof ADR；双审后再拆 machine artifact/contract RED、signer/key/JWKS GREEN、调用点/lease race与全门。文档片不预先授权source/OpenAPI/schema/package/lock/test。                                                                                                                                                                                                                                                                                                                                       |
+| 依赖     | signer只依赖注入clock、nonce source、key provider与消费方定义的最小current-lease reader；该reader必须在数据库statement执行时用数据库clock核对run+owner+generation+unexpired+nonterminal，不使用连接排队前应用clock。operation/binding由Platform owner发布并在其generated client/adapter终止，Agent不复制Platform业务资源或operation policy。IAM/Platform不获得私钥，Agent不消费IAM数据库或permission graph。                                                                                                                                                                                  |
 | 数据/API | proof claims固定包含contract version、issuer/audience、tenant、typed actor/subject、run ID、execution session ID、跨语言安全范围内的正整数lease generation、exact operation、lowercase binding SHA-256、iat/exp/jti。初片不改`database/schema.sql`或Redis。worker只加载受控private key与public manifest，独立HTTP进程只加载public manifest；active private/public key必须一致。正常轮换按全部HTTP副本发布old+new → 全部worker切active signer → 从最后一次old签名起至少70秒后全部HTTP移除old，阶段未收敛不得前进。JWKS路径、认证可见性、cache/ETag和provenance由本设计门裁决后才进入机器契约。 |
-| 失败边界 | run-scoped proof supplier绑定canonical RunRequest与本次LeaseFence，并在每一次真实Platform outbound call紧邻发送前做数据库执行时刻current read后即时签发；不得只在Agent build时签发、缓存proof或把mutable current run放入共享client。无法证明current、clock/key损坏或配置漂移均fail closed，不签发。该检查不宣称零在途撤销：`exp-iat <= 60s` 是claim TTL，IAM另有5秒接收clock-skew容差，真实墙钟边界须连同时钟误差说明；更强实时撤销需新增Agent assertion/introspection contract，不由IAM或Platform猜测。日志禁止private key、compact proof、signature、完整binding与identity assertion。 |
-| 删除项 | 后续Platform consumer片删除Capability自有`RunExecutionAttestation`与手写IAM wire；Agent若出现临时claims/JWT组装，随正式signer片删除，不保留双schema、alias、fallback或多套key loader。 |
-| 验证 | 文档先做跨IAM `bf160be`、Agent当前Run/lease/HTTP contract一致性SPEC/QUALITY双审。实现后执行`uv lock --check`、`uv sync --frozen`、Ruff format/check、Pyright、unit/contract/architecture、真实PostgreSQL lease race、HTTP JWKS acceptance、contract/provenance、wheel/sdist；覆盖连接/查询排队跨expiry、canonical request漂移、并发run不串identity、每次调用新nonce、pause/terminal/takeover/same-owner ABA、sign前后lease race、canonical JWS bytes、跨语言整数、alg/typ/kid/aud/iss/TTL+5秒skew边界、rotation overlap与混合多副本、malformed key、敏感日志和真实Agent→IAM sandbox。 |
+| 失败边界 | run-scoped proof supplier绑定canonical RunRequest与本次LeaseFence，并在每一次真实Platform outbound call紧邻发送前做数据库执行时刻current read后即时签发；不得只在Agent build时签发、缓存proof或把mutable current run放入共享client。无法证明current、clock/key损坏或配置漂移均fail closed，不签发。该检查不宣称零在途撤销：`exp-iat <= 60s` 是claim TTL，IAM另有5秒接收clock-skew容差，真实墙钟边界须连同时钟误差说明；更强实时撤销需新增Agent assertion/introspection contract，不由IAM或Platform猜测。日志禁止private key、compact proof、signature、完整binding与identity assertion。      |
+| 删除项   | 后续Platform consumer片删除Capability自有`RunExecutionAttestation`与手写IAM wire；Agent若出现临时claims/JWT组装，随正式signer片删除，不保留双schema、alias、fallback或多套key loader。                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 验证     | 文档先做跨IAM `bf160be`、Agent当前Run/lease/HTTP contract一致性SPEC/QUALITY双审。实现后执行`uv lock --check`、`uv sync --frozen`、Ruff format/check、Pyright、unit/contract/architecture、真实PostgreSQL lease race、HTTP JWKS acceptance、contract/provenance、wheel/sdist；覆盖连接/查询排队跨expiry、canonical request漂移、并发run不串identity、每次调用新nonce、pause/terminal/takeover/same-owner ABA、sign前后lease race、canonical JWS bytes、跨语言整数、alg/typ/kid/aud/iss/TTL+5秒skew边界、rotation overlap与混合多副本、malformed key、敏感日志和真实Agent→IAM sandbox。         |
 
 `AGENT-EXECUTION-PROOF-D / P0`文档writer只可修改Agent的`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、`docs/CURRENT.md`、`docs/ADR/README.md`并新建一个execution-proof ADR。禁止修改Agent source、database schema、Redis protocol、OpenAPI/provenance、package/lock/test，禁止修改IAM/Capability/Platform/BFF或Root其他文件。writer必须先核对`bf160be`而不复制其全文，明确当前态/目标态、JWKS route认证与多副本rotation、proof canonicalization/current-lease race及后续机器artifact路径；交付冻结hash后由独立SPEC/QUALITY审查，双审前不放行实现。
 
@@ -1179,20 +1179,20 @@ Root 精确提交 Agent 7 个文档为 `9cc24b2384b0aa66ca239ddefaa9009c0a60fac3
 
 #### AGENT-EXECUTION-PROOF-A1 machine artifact / contract RED 任务卡（2026-09-12）
 
-| 项 | 结论 |
-| --- | --- |
-| 任务 | `AGENT-EXECUTION-PROOF-A1 / P0`；发布 Agent owner-authored decoded proof schema 与跨语言 conformance vectors，先证明 contract RED，再闭环 artifact/checker/provenance GREEN。本片不实现 signer/JWKS/lease reader/Platform client。 |
-| 归属 | owner=`kokoro-agent`；单一 writer=`agent_execution_artifact_writer`；Root 独占 Git/index/commit；完成候选由独立 SPEC 与 QUALITY 审查。 |
-| 基线 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@9cc24b2384b0aa66ca239ddefaa9009c0a60fac3`，writer 启动前 clean。Root 为 `5662423325a070a1b07d01f1fde381b88555fd81`，Root 既有 SQL 手册、agent gitlink与`.tmp/` dirty不属于本片。 |
-| Owner/当前事实 | 当前只有`contract/openapi/v1/openapi.json`与自报`source_files`的aggregate provenance；不存在`contract/execution-proof/v1/*`。现有Pydantic parser会丢duplicate member；JSON Schema `integer`单独不能拒绝`1.0`；stdlib `json.dumps`不是通用RFC 8785。 |
-| 目录方案 | 采用`contract/execution-proof/v1/schema.json + vectors.json`：同一版本下两个持续存在的owner artifacts，分别承载字段事实与conformance evidence。淘汰把schema写进测试/Pydantic、把vectors写成测试常量、复制到IAM，或把claims塞入OpenAPI。现有`contract/`正是机器事实目录，不能新建顶层auth/attestation。 |
-| 粒度/依赖 | `schema.json`唯一描述decoded `{protected_header,claims}`；`vectors.json`不重新定义字段约束，只给exact raw/canonical/base64url/signing-input/signature/JWK/thumbprint及负向stage。checker可直接依赖当前稳定`jsonschema>=4.26.0`与精确RFC8785实现`rfc8785>=0.1.4`并更新lock；记录截至2026-09-12的版本、许可证、维护风险、候选比较与退出路径。PyJWT/cryptography直接依赖、数学验签和production canonicalizer留给A2。 |
-| 数据/API | 不改`database/schema.sql`、Redis、Run/protocol、OpenAPI route。schema Draft 2020-12，version=`1.0.0`，root及nested object均strict；精确header/14 claims、typed actor/subject、safe-integer/token扩展、TTL/pair/canonical/base64url/16KiB metadata与stable `$id`。Skills/MCP opaque IDs不进入claims。 |
-| Provenance | checker硬编码完整有序owner inventory，拒绝缺失/重复/乱序/额外source；provenance升级为逐artifact schema/vector digest加aggregate digest，保留OpenAPI/protocol现有事实。IAM后续固定`repository+commit+version+schema path/hash+vectors path/hash`消费，不使用会随无关协议变化的aggregate作为proof digest。 |
-| RED/GREEN | 先新增contract test并在schema/vector不存在、inventory/digest未升级时取得预期失败，记录命令/失败点；再添加artifacts、strict raw parser/meta-schema/JCS/base64url/vector及provenance gate直至通过。expected signature由独立oracle固定，测试不得调用未来production signer生成expected；A1至少检查段重组、canonical bytes、长度与tamper fixture，A2再以直接cryptography验证数学签名。 |
-| 验证 | `uv lock --check`、`uv sync --frozen`、Ruff format/check、Pyright、`uv run pytest -q tests/contract/test_execution_proof_artifact.py`、完整contract tests、`uv run kokoro-agent-contract-check`、unit/full非integration、`uv build --wheel --sdist`、`git diff --check`。mutant必须覆盖删/改artifact后重算aggregate、inventory乱序/重复/越界、duplicate member、float/bool/unsafe integer、非canonical bytes、padding、version/digest漂移。 |
-| 文件范围 | 只可新增`contract/execution-proof/v1/schema.json`、`vectors.json`、`tests/contract/test_execution_proof_artifact.py`，修改`contract/provenance.json`、`contract/README.md`、`src/kokoro_agent/contract_check.py`、`pyproject.toml`、`uv.lock`、`docs/CURRENT.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`。禁止其他文件、Git mutation、source signer/key/JWKS/lease/Platform/IAM/Capability变更。越界先停写报告。 |
-| 交付 | writer交付文件清单、RED与GREEN真实输出、依赖核验、逐文件hash、完整dirty diff hash、未验项；Root冻结后双审、主仓复验并精确提交。A1通过不等于execution proof可签发或IAM已对齐。 |
+| 项             | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务           | `AGENT-EXECUTION-PROOF-A1 / P0`；发布 Agent owner-authored decoded proof schema 与跨语言 conformance vectors，先证明 contract RED，再闭环 artifact/checker/provenance GREEN。本片不实现 signer/JWKS/lease reader/Platform client。                                                                                                                                                                                                          |
+| 归属           | owner=`kokoro-agent`；单一 writer=`agent_execution_artifact_writer`；Root 独占 Git/index/commit；完成候选由独立 SPEC 与 QUALITY 审查。                                                                                                                                                                                                                                                                                                      |
+| 基线           | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@9cc24b2384b0aa66ca239ddefaa9009c0a60fac3`，writer 启动前 clean。Root 为 `5662423325a070a1b07d01f1fde381b88555fd81`，Root 既有 SQL 手册、agent gitlink与`.tmp/` dirty不属于本片。                                                                                                                                                  |
+| Owner/当前事实 | 当前只有`contract/openapi/v1/openapi.json`与自报`source_files`的aggregate provenance；不存在`contract/execution-proof/v1/*`。现有Pydantic parser会丢duplicate member；JSON Schema `integer`单独不能拒绝`1.0`；stdlib `json.dumps`不是通用RFC 8785。                                                                                                                                                                                         |
+| 目录方案       | 采用`contract/execution-proof/v1/schema.json + vectors.json`：同一版本下两个持续存在的owner artifacts，分别承载字段事实与conformance evidence。淘汰把schema写进测试/Pydantic、把vectors写成测试常量、复制到IAM，或把claims塞入OpenAPI。现有`contract/`正是机器事实目录，不能新建顶层auth/attestation。                                                                                                                                      |
+| 粒度/依赖      | `schema.json`唯一描述decoded `{protected_header,claims}`；`vectors.json`不重新定义字段约束，只给exact raw/canonical/base64url/signing-input/signature/JWK/thumbprint及负向stage。checker可直接依赖当前稳定`jsonschema>=4.26.0`与精确RFC8785实现`rfc8785>=0.1.4`并更新lock；记录截至2026-09-12的版本、许可证、维护风险、候选比较与退出路径。PyJWT/cryptography直接依赖、数学验签和production canonicalizer留给A2。                           |
+| 数据/API       | 不改`database/schema.sql`、Redis、Run/protocol、OpenAPI route。schema Draft 2020-12，version=`1.0.0`，root及nested object均strict；精确header/14 claims、typed actor/subject、safe-integer/token扩展、TTL/pair/canonical/base64url/16KiB metadata与stable `$id`。Skills/MCP opaque IDs不进入claims。                                                                                                                                        |
+| Provenance     | checker硬编码完整有序owner inventory，拒绝缺失/重复/乱序/额外source；provenance升级为逐artifact schema/vector digest加aggregate digest，保留OpenAPI/protocol现有事实。IAM后续固定`repository+commit+version+schema path/hash+vectors path/hash`消费，不使用会随无关协议变化的aggregate作为proof digest。                                                                                                                                    |
+| RED/GREEN      | 先新增contract test并在schema/vector不存在、inventory/digest未升级时取得预期失败，记录命令/失败点；再添加artifacts、strict raw parser/meta-schema/JCS/base64url/vector及provenance gate直至通过。expected signature由独立oracle固定，测试不得调用未来production signer生成expected；A1至少检查段重组、canonical bytes、长度与tamper fixture，A2再以直接cryptography验证数学签名。                                                           |
+| 验证           | `uv lock --check`、`uv sync --frozen`、Ruff format/check、Pyright、`uv run pytest -q tests/contract/test_execution_proof_artifact.py`、完整contract tests、`uv run kokoro-agent-contract-check`、unit/full非integration、`uv build --wheel --sdist`、`git diff --check`。mutant必须覆盖删/改artifact后重算aggregate、inventory乱序/重复/越界、duplicate member、float/bool/unsafe integer、非canonical bytes、padding、version/digest漂移。 |
+| 文件范围       | 只可新增`contract/execution-proof/v1/schema.json`、`vectors.json`、`tests/contract/test_execution_proof_artifact.py`，修改`contract/provenance.json`、`contract/README.md`、`src/kokoro_agent/contract_check.py`、`pyproject.toml`、`uv.lock`、`docs/CURRENT.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`。禁止其他文件、Git mutation、source signer/key/JWKS/lease/Platform/IAM/Capability变更。越界先停写报告。              |
+| 交付           | writer交付文件清单、RED与GREEN真实输出、依赖核验、逐文件hash、完整dirty diff hash、未验项；Root冻结后双审、主仓复验并精确提交。A1通过不等于execution proof可签发或IAM已对齐。                                                                                                                                                                                                                                                               |
 
 `AGENT-EXECUTION-PROOF-A1` 首轮冻结对象 `da1a0935128022f110ce50983bc7bad28642a99ee2e6d0c9240b800c5e1e8c80` 未放行：SPEC 为 `2 Blocking / 2 Important / 1 Minor`，QUALITY 为 `0 Blocking / 4 Important / 1 Minor`。Root 对照当前 `RunRequest/ExecutionIdentity`、ADR 与mutation实测后接受 findings：schema 删除未由canonical ingress事实支持的`kid/iss/tenant_ref/opaque_ref/run_id/execution_session_id` pattern/max，只保留已裁决非空与整体16KiB gate；JTI固定canonical 16-byte base64url末字符集合并执行decode/re-encode；vectors新增一bit signature tamper、nested/header duplicate、三数字字段float/bool/unsafe矩阵、key-source header与noncanonical JTI，且每个negative固定专属error kind、JSON pointer/keyword或单一差异，不能用同stage任意错误冒充；checker锁定全部normative metadata。
 
@@ -1214,19 +1214,19 @@ Root 精确提交 Agent 15 文件为 `cd2e698c3c8b55a0136746977dbbca0c38cf308d`�
 
 #### AGENT-EXECUTION-PROOF-A2 runtime signer / key / JWKS / supplier 设计与任务卡（2026-09-12）
 
-| 项 | 结论 |
-| --- | --- |
-| 任务 | `AGENT-EXECUTION-PROOF-A2 / P0`；在已提交 A1 owner artifact 上分三片实现 runtime profile+Ed25519 signer、进程隔离的private/public key与JWKS、数据库statement-time current lease+run-scoped supplier。真实Platform Skills/MCP call-site继续阻塞，不在A2伪造operation/binding。 |
-| 归属 | owner=`kokoro-agent`；同仓同一时刻只允许一个writer，Root独占Git/index/commit；每片RED/GREEN、冻结、SPEC/QUALITY、Root复验和独立commit后才授权下一片。 |
-| 基线 | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@cd2e698c3c8b55a0136746977dbbca0c38cf308d` clean。A1 schema SHA `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f`，vectors SHA `a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`。现有 `kokoro-agent-http`仍指向`worker.main:http_main`并加载完整`AppConfig`；现有`is_lease_current`在等待数据库连接前取应用clock，不能作为proof fresh gate。 |
-| 目标职责 | A2只让Agent能够按A1 exact profile安全签发短期proof、从独立HTTP进程发布public JWKS，并在每次调用前用数据库执行时刻证明同run/owner/generation仍current。Agent拥有签发与Run/lease事实，不拥有IAM permission或Platform resource/binding policy。 |
-| 目录方案 | 采用现有`execution/`放纯profile/signer/private-key/supplier，现有`infrastructure/`放专用PostgreSQL lease reader，现有`interfaces/http/`放public-ring/JWKS与HTTP composition root；更新各既有INDEX。否决顶层`auth/attestation/keys/ports`、把JWT塞入`protocol/`、让HTTP加载worker私钥配置、把全部逻辑塞进`server.py`或复用A1 checker作runtime。 |
-| 粒度 | A2a=`execution_proof_profile.py + execution_proof_signer.py + 新unit/contract tests + direct deps`；A2b=`execution_proof_keys.py + execution_proof_jwks.py + interfaces/http/main.py + 独立HTTP config/server + worker旧HTTP入口删除 + OpenAPI/provenance/checker/entrypoint/docs/tests`；A2c=`CurrentLeaseObservation + ExecutionProofLeaseReadPort + postgres_execution_proof_lease.py + execution_proof_supplier.py + unit/real-PG/fake-client tests`。三个切片分别提交；A2c不做生产worker/client composition，避免无消费者dead supplier或提前发明Platform wire。 |
-| 依赖 | runtime profile只依赖stdlib/Pydantic/RFC8785与已提交A1事实的contract tests；signer使用PyJWT顶层公开`jwt.encode(..., json_encoder=...)`和cryptography Ed25519，不导入`jwt.api_*`私有API。A2开写时重新核验最新稳定兼容版本、许可证和Python3.11，`pyproject.toml`声明PyJWT/cryptography直接依赖并由lock固定。Signer immutable config只拥有issuer、kid与private Ed25519 key，`contract_version/typ/alg/aud`为代码常量；其公开输入只含supplier从canonical Run/fence与注入clock/nonce产生的动态值，不接受caller覆盖issuer/audience/version/kid。PostgreSQL adapter只实现domain窄port；supplier只依赖RunRequest/LeaseFence、clock/nonce/signer/lease port。Production中只有`execution_proof_supplier.py`可调用signer签发方法，composition root/key loader只构造并注入，private-key固定challenge自检只能调用key primitive；未来Platform adapter只能看到supplier Protocol。HTTP不得导入private-key provider或完整AppConfig。 |
-| 数据/API | 不改`database/schema.sql`、不建proof/key/nonce表、不加Redis protocol。JWKS唯一新route为`GET|HEAD /v1/execution-proof/jwks`，机器OpenAPI/provenance/checker由A2b owner同步。200使用`application/jwk-set+json`和预计算JCS UTF-8 bytes；错误复用既有`{error,meta.request_id}`且使用`application/json; charset=utf-8`。缺失/非法ring时JWKS与ready为503、health仍200；route在bearer/identity/body/Redis/PostgreSQL前分派。 |
-| 失败边界 | signer与key/profile异常fail closed且错误/日志不含key path/bytes、proof/signature、JTI或完整binding。A2只交付private loader/config的独立组件，真实worker private config的pre-side-effect装配与supplier注入留给Platform generated-client接线片，禁止先构造未消费对象。独立`AgentHttpConfig`保留host/port、stream/database/schema/internal bearer等现有HTTP业务依赖并组合public `HttpExecutionProofConfig`，但不存在任何worker/model/sandbox/provider/private-key字段；非法ring形成immutable degraded state而不阻止health监听。supplier immutable绑定canonical RunRequest+LeaseFence，每次调用重新执行lease read、生成新JTI并即时签发，不缓存proof或mutable current run；签后在途race仍由TTL与Platform/IAM重验边界承担。 |
-| 删除项 | A2b删除`worker.main:http_main`与HTTP加载完整AppConfig路径，script改到独立HTTP root；配置日志由全字段+SecretStr前后缀改为显式安全allowlist。A2c不删除旧通用lease API，只新增proof专用statement-time port；最终Platform接线片再删除一次性build proof、名称选择、deployment fallback与Capability旧expanded attestation。 |
-| 验证 | 每片执行lock/sync、targeted format、全Ruff check、Pyright、unit/contract/architecture/full default、checker、build/diff；A2b做socket级JWKS GET/HEAD与HTTP对象图/旧业务route回归；A2c以有界总deadline和隔离真实PostgreSQL `ACCESS EXCLUSIVE`表锁构造真实statement等待跨expiry，证明释放后不签发。A2最终只称本仓 signer/key/JWKS/supplier独立组件验收；worker签发装配、Platform owner artifact与transmitted-proof测试前不得称Skills/MCP已接线。 |
+| 项       | 结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务     | `AGENT-EXECUTION-PROOF-A2 / P0`；在已提交 A1 owner artifact 上分三片实现 runtime profile+Ed25519 signer、进程隔离的private/public key与JWKS、数据库statement-time current lease+run-scoped supplier。真实Platform Skills/MCP call-site继续阻塞，不在A2伪造operation/binding。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 归属     | owner=`kokoro-agent`；同仓同一时刻只允许一个writer，Root独占Git/index/commit；每片RED/GREEN、冻结、SPEC/QUALITY、Root复验和独立commit后才授权下一片。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 基线     | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@cd2e698c3c8b55a0136746977dbbca0c38cf308d` clean。A1 schema SHA `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f`，vectors SHA `a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`。现有 `kokoro-agent-http`仍指向`worker.main:http_main`并加载完整`AppConfig`；现有`is_lease_current`在等待数据库连接前取应用clock，不能作为proof fresh gate。                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 目标职责 | A2只让Agent能够按A1 exact profile安全签发短期proof、从独立HTTP进程发布public JWKS，并在每次调用前用数据库执行时刻证明同run/owner/generation仍current。Agent拥有签发与Run/lease事实，不拥有IAM permission或Platform resource/binding policy。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 目录方案 | 采用现有`execution/`放纯profile/signer/private-key/supplier，现有`infrastructure/`放专用PostgreSQL lease reader，现有`interfaces/http/`放public-ring/JWKS与HTTP composition root；更新各既有INDEX。否决顶层`auth/attestation/keys/ports`、把JWT塞入`protocol/`、让HTTP加载worker私钥配置、把全部逻辑塞进`server.py`或复用A1 checker作runtime。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 粒度     | A2a=`execution_proof_profile.py + execution_proof_signer.py + 新unit/contract tests + direct deps`；A2b=`execution_proof_keys.py + execution_proof_jwks.py + interfaces/http/main.py + 独立HTTP config/server + worker旧HTTP入口删除 + OpenAPI/provenance/checker/entrypoint/docs/tests`；A2c=`CurrentLeaseObservation + ExecutionProofLeaseReadPort + postgres_execution_proof_lease.py + execution_proof_supplier.py + unit/real-PG/fake-client tests`。三个切片分别提交；A2c不做生产worker/client composition，避免无消费者dead supplier或提前发明Platform wire。                                                                                                                                                                                                                                                                                                                                                |
+| 依赖     | runtime profile只依赖stdlib/Pydantic/RFC8785与已提交A1事实的contract tests；signer使用PyJWT顶层公开`jwt.encode(..., json_encoder=...)`和cryptography Ed25519，不导入`jwt.api_*`私有API。A2开写时重新核验最新稳定兼容版本、许可证和Python3.11，`pyproject.toml`声明PyJWT/cryptography直接依赖并由lock固定。Signer immutable config只拥有issuer、kid与private Ed25519 key，`contract_version/typ/alg/aud`为代码常量；其公开输入只含supplier从canonical Run/fence与注入clock/nonce产生的动态值，不接受caller覆盖issuer/audience/version/kid。PostgreSQL adapter只实现domain窄port；supplier只依赖RunRequest/LeaseFence、clock/nonce/signer/lease port。Production中只有`execution_proof_supplier.py`可调用signer签发方法，composition root/key loader只构造并注入，private-key固定challenge自检只能调用key primitive；未来Platform adapter只能看到supplier Protocol。HTTP不得导入private-key provider或完整AppConfig。 |
+| 数据/API | 不改`database/schema.sql`、不建proof/key/nonce表、不加Redis protocol。JWKS唯一新route为`GET                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | HEAD /v1/execution-proof/jwks`，机器OpenAPI/provenance/checker由A2b owner同步。200使用`application/jwk-set+json`和预计算JCS UTF-8 bytes；错误复用既有`{error,meta.request_id}`且使用`application/json; charset=utf-8`。缺失/非法ring时JWKS与ready为503、health仍200；route在bearer/identity/body/Redis/PostgreSQL前分派。 |
+| 失败边界 | signer与key/profile异常fail closed且错误/日志不含key path/bytes、proof/signature、JTI或完整binding。A2只交付private loader/config的独立组件，真实worker private config的pre-side-effect装配与supplier注入留给Platform generated-client接线片，禁止先构造未消费对象。独立`AgentHttpConfig`保留host/port、stream/database/schema/internal bearer等现有HTTP业务依赖并组合public `HttpExecutionProofConfig`，但不存在任何worker/model/sandbox/provider/private-key字段；非法ring形成immutable degraded state而不阻止health监听。supplier immutable绑定canonical RunRequest+LeaseFence，每次调用重新执行lease read、生成新JTI并即时签发，不缓存proof或mutable current run；签后在途race仍由TTL与Platform/IAM重验边界承担。                                                                                                                                                                                               |
+| 删除项   | A2b删除`worker.main:http_main`与HTTP加载完整AppConfig路径，script改到独立HTTP root；配置日志由全字段+SecretStr前后缀改为显式安全allowlist。A2c不删除旧通用lease API，只新增proof专用statement-time port；最终Platform接线片再删除一次性build proof、名称选择、deployment fallback与Capability旧expanded attestation。                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 验证     | 每片执行lock/sync、targeted format、全Ruff check、Pyright、unit/contract/architecture/full default、checker、build/diff；A2b做socket级JWKS GET/HEAD与HTTP对象图/旧业务route回归；A2c以有界总deadline和隔离真实PostgreSQL `ACCESS EXCLUSIVE`表锁构造真实statement等待跨expiry，证明释放后不签发。A2最终只称本仓 signer/key/JWKS/supplier独立组件验收；worker签发装配、Platform owner artifact与transmitted-proof测试前不得称Skills/MCP已接线。                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ##### A2a：runtime exact profile 与 Ed25519 signer
 
@@ -1262,19 +1262,19 @@ A2计划首轮冻结commit `d1194b75f9e2e0f4e5c5d36846595f600f2a4182`、plan SHA
 
 A2 R2 计划冻结为 Root `9be805c6d34734b1cf25ebb47e854f79da9763bb`、任务板 SHA `14b3e53f01da2d765cf23c9cfe8505a9667442dc31dcb9129ab5d98a7a2a1cba`；SPEC 与 QUALITY 对同一对象均为 Blocking/Important/Minor `0/0/0`。两审确认三片串行边界、signer-only 调用约束、HTTP `1.1.0`、进程配置隔离、key/ring snapshot、JWKS wire、数据库总 deadline、真实表锁 race、supplier 实际剩余寿命以及 IAM 双 pin/Platform owner 前置门均可实施。本验收仅放行 A2a；A2b、A2c、worker 装配、IAM、Platform 和真实 outbound call-site 继续阻塞。
 
-| 项 | A2a 精确授权 |
-| --- | --- |
-| 任务 | `AGENT-EXECUTION-PROOF-A2a / P0`；按已验收 A2 计划以 TDD 实现 runtime exact profile 与 Ed25519 signer，并把 PyJWT/cryptography 固定为 Agent 直接依赖。 |
-| 归属 | owner=`kokoro-agent`；单一 writer=`agent_execution_artifact_writer`；Root 独占 Git/index/commit。候选冻结后由独立 SPEC 与 QUALITY 对同一对象审查，未清零不提交。 |
-| 基线 | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@cd2e698c3c8b55a0136746977dbbca0c38cf308d`，启动前 clean。A1 schema/vector direct SHA 分别为 `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f` 与 `a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`。 |
-| 允许文件 | 新建 `src/kokoro_agent/execution/execution_proof_profile.py`、`src/kokoro_agent/execution/execution_proof_signer.py`、`tests/unit/execution/test_execution_proof_signer.py`、`tests/contract/test_execution_proof_runtime.py`；修改 `src/kokoro_agent/execution/INDEX.md`、`pyproject.toml`、`uv.lock`、`docs/CURRENT.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`、`docs/SECURITY.md`。只有确有 import 必要且先向 Root 报告后才可修改 `src/kokoro_agent/execution/__init__.py`；不得扩张 798 行 A1 artifact test。 |
-| 依赖门 | 重新核验并锁定截至实施日最新稳定、Python 3.11 兼容的 PyJWT 与 cryptography 版本；记录精确版本、许可证、为何使用公开 `jwt.encode(..., json_encoder=...)`、维护/供应链风险与退出路径。不得只依赖 A1 lock 中的传递版本，不得导入 `jwt.api_*`。 |
-| RED/GREEN | 先写 focused unit/contract RED，并保存失败命令与断言，再最小 GREEN。生产 profile 不导入 A1 checker；代码常量独占 `contract_version/typ/alg/aud`，immutable signer config独占 issuer/kid/private Ed25519 key，公开签发输入只含 supplier 后续提供的动态可信值。除测试外，production signer 签发方法只能由未来 `execution_proof_supplier.py` 调用；本片不存在 production caller 或 constructed-but-unused composition。 |
-| 精确行为 | 锁定 A1 exact header/14 claims、strict type/safe integer、operation/binding/canonical 16-byte JTI、`exp>iat`、TTL≤60、JCS UTF-8、不做 Unicode normalization、canonical unpadded base64url与 compact proof≤16KiB。签发前预计算 exact JCS header/payload；签发后校验恰好3个非空segment、前两段解码与预计算bytes完全相等、全部segment canonical、signature 64 bytes、总长上限，并由派生public key自验。错误与日志不得含 private key/path、compact proof/signature、JTI或完整binding。 |
-| 强制测试 | A1 RFC8032 seed positive vector必须得到 exact compact proof；另有独立 RFC8032 KAT。覆盖 header/payload/signature one-bit tamper、wrong key、wrong curve/alg、63/65-byte signature、caller尝试覆盖 header/issuer/audience/version/kid、bool/float/unsafe integer、operation/binding/JTI、16KiB、Unicode不规范化、三段/canonical base64url与自验。AST门固定 `jwt.encode` 只出现在 signer，拒绝 `jwt.api_*`，并证明本片没有 production signer call-site。 |
-| 文档事实 | 只把 CURRENT/ADR/SECURITY 更新为“profile+signer 已实现候选/验收后已落地”，继续明确 private key loader、JWKS、statement-time lease supplier、IAM verifier、Platform owner contract和真实传输均未实现；不得提前声称 execution proof 已端到端可用。 |
-| 禁止范围 | 不改 HTTP/worker/config/OpenAPI/provenance/A1 artifact或checker、database/schema/Redis、Run/lease、Platform/IAM/Capability/BFF；不读环境/文件/数据库/网络；不实现 key loader、JWKS、supplier、deployment rollout或真实 client；不得 Git/index mutation。越界先停写报告。 |
-| 验证与交付 | writer运行 `uv lock --check`、`uv sync --frozen`、targeted Ruff format、全 Ruff check、Pyright、focused unit/contract、完整 contract、full default、contract checker、wheel/sdist、`git diff --check`；交付 RED/GREEN、依赖核验、文件清单、逐文件 SHA、tracked/untracked manifest 与完整 dirty hash、未验项。Root冻结双审后在主工作树 pre/post-commit 独立复验并精确暂存。 |
+| 项         | A2a 精确授权                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务       | `AGENT-EXECUTION-PROOF-A2a / P0`；按已验收 A2 计划以 TDD 实现 runtime exact profile 与 Ed25519 signer，并把 PyJWT/cryptography 固定为 Agent 直接依赖。                                                                                                                                                                                                                                                                                                                                                                           |
+| 归属       | owner=`kokoro-agent`；单一 writer=`agent_execution_artifact_writer`；Root 独占 Git/index/commit。候选冻结后由独立 SPEC 与 QUALITY 对同一对象审查，未清零不提交。                                                                                                                                                                                                                                                                                                                                                                 |
+| 基线       | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@cd2e698c3c8b55a0136746977dbbca0c38cf308d`，启动前 clean。A1 schema/vector direct SHA 分别为 `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f` 与 `a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`。                                                                                                                                                                           |
+| 允许文件   | 新建 `src/kokoro_agent/execution/execution_proof_profile.py`、`src/kokoro_agent/execution/execution_proof_signer.py`、`tests/unit/execution/test_execution_proof_signer.py`、`tests/contract/test_execution_proof_runtime.py`；修改 `src/kokoro_agent/execution/INDEX.md`、`pyproject.toml`、`uv.lock`、`docs/CURRENT.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`、`docs/SECURITY.md`。只有确有 import 必要且先向 Root 报告后才可修改 `src/kokoro_agent/execution/__init__.py`；不得扩张 798 行 A1 artifact test。 |
+| 依赖门     | 重新核验并锁定截至实施日最新稳定、Python 3.11 兼容的 PyJWT 与 cryptography 版本；记录精确版本、许可证、为何使用公开 `jwt.encode(..., json_encoder=...)`、维护/供应链风险与退出路径。不得只依赖 A1 lock 中的传递版本，不得导入 `jwt.api_*`。                                                                                                                                                                                                                                                                                      |
+| RED/GREEN  | 先写 focused unit/contract RED，并保存失败命令与断言，再最小 GREEN。生产 profile 不导入 A1 checker；代码常量独占 `contract_version/typ/alg/aud`，immutable signer config独占 issuer/kid/private Ed25519 key，公开签发输入只含 supplier 后续提供的动态可信值。除测试外，production signer 签发方法只能由未来 `execution_proof_supplier.py` 调用；本片不存在 production caller 或 constructed-but-unused composition。                                                                                                             |
+| 精确行为   | 锁定 A1 exact header/14 claims、strict type/safe integer、operation/binding/canonical 16-byte JTI、`exp>iat`、TTL≤60、JCS UTF-8、不做 Unicode normalization、canonical unpadded base64url与 compact proof≤16KiB。签发前预计算 exact JCS header/payload；签发后校验恰好3个非空segment、前两段解码与预计算bytes完全相等、全部segment canonical、signature 64 bytes、总长上限，并由派生public key自验。错误与日志不得含 private key/path、compact proof/signature、JTI或完整binding。                                               |
+| 强制测试   | A1 RFC8032 seed positive vector必须得到 exact compact proof；另有独立 RFC8032 KAT。覆盖 header/payload/signature one-bit tamper、wrong key、wrong curve/alg、63/65-byte signature、caller尝试覆盖 header/issuer/audience/version/kid、bool/float/unsafe integer、operation/binding/JTI、16KiB、Unicode不规范化、三段/canonical base64url与自验。AST门固定 `jwt.encode` 只出现在 signer，拒绝 `jwt.api_*`，并证明本片没有 production signer call-site。                                                                           |
+| 文档事实   | 只把 CURRENT/ADR/SECURITY 更新为“profile+signer 已实现候选/验收后已落地”，继续明确 private key loader、JWKS、statement-time lease supplier、IAM verifier、Platform owner contract和真实传输均未实现；不得提前声称 execution proof 已端到端可用。                                                                                                                                                                                                                                                                                 |
+| 禁止范围   | 不改 HTTP/worker/config/OpenAPI/provenance/A1 artifact或checker、database/schema/Redis、Run/lease、Platform/IAM/Capability/BFF；不读环境/文件/数据库/网络；不实现 key loader、JWKS、supplier、deployment rollout或真实 client；不得 Git/index mutation。越界先停写报告。                                                                                                                                                                                                                                                         |
+| 验证与交付 | writer运行 `uv lock --check`、`uv sync --frozen`、targeted Ruff format、全 Ruff check、Pyright、focused unit/contract、完整 contract、full default、contract checker、wheel/sdist、`git diff --check`；交付 RED/GREEN、依赖核验、文件清单、逐文件 SHA、tracked/untracked manifest 与完整 dirty hash、未验项。Root冻结双审后在主工作树 pre/post-commit 独立复验并精确暂存。                                                                                                                                                       |
 
 A2a 首轮候选冻结为 Agent HEAD `cd2e698c3c8b55a0136746977dbbca0c38cf308d`、10 files / 70177 bytes、dirty SHA `032e3dbf008f38247ed8f3913d241167c9eb2f9ef405372950d009b28ad5a107`；writer报告 focused 44、contract 179、full default 712 passed/6 skipped/77 deselected，Ruff/Pyright/checker/build/diff均通过，完整 Ruff format仍为授权外既有79文件。SPEC为`1/0/0`、QUALITY为`2/3/1`，候选未放行：`IdentityRef`只做`isinstance`并整体`model_dump`，可经subclass extra、`model_copy`非法kind/empty ref、duck-typed或frozen后变异input签出A1 schema拒绝的proof；signer/config入口也未重验exact runtime对象。PyJWT monkeypatch返回可重写`encode/split`的`str`子类时可让post-sign检查真实proof却返回底层假字符串。测试还未锁三段padding/trailing-bit alias、Ed448、AST import alias或16KiB精确边界。
 
@@ -1582,19 +1582,19 @@ Platform owner contract 与真实 outbound proof 仍未实现。
 
 #### AGENT-EXECUTION-PROOF-A2c statement-time lease 与 run-scoped supplier 设计门（2026-09-12）
 
-| 项 | A2c R3 精确候选 |
-| --- | --- |
-| 任务 | `AGENT-EXECUTION-PROOF-A2c / P0`；按已验收 A2 总设计，以 TDD 实现 proof 专用 statement-time current-lease reader 与 immutable run-scoped supplier。只形成 Agent owner 内部组件，不装入 worker、不发网络请求、不发明 Platform operation/binding。 |
-| Owner | owner=`kokoro-agent` 的 Run/Lease 与 execution-proof 签发边界；`execution/`拥有 supplier policy，`infrastructure/`拥有 PostgreSQL 实现。单一 writer=`agent_execution_artifact_writer`，Root 独占 Git/index/commit；候选冻结后分别由独立 SPEC 与 QUALITY 审查同一对象。IAM 只消费 A1/A2b owner contract，不拥有 Agent lease 或签发。 |
-| 基线 | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@960a16b20cb9f5d1d901b661cfda31c8c57bb3c5` clean。A1 schema/vector direct SHA 分别为 `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f`、`a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`；A2b HTTP `1.1.0` OpenAPI direct SHA 为 `20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f`。现有 `PostgresRunLeases.is_lease_current` 与 `PostgresRunRepositoryContext.is_lease_current` 都在等待连接前取得应用 clock，不能作为 proof fresh gate；现有 production `issue_execution_proof` caller 为 0。 |
-| 目标职责 | `CurrentLeaseObservation(database_now, lease_expires_at)`只表达一次数据库 statement 的 current 事实；`ExecutionProofLeaseReadPort.observe_current_lease(*, run_id: str, fence: LeaseFence) -> CurrentLeaseObservation | None`只为 proof 读取 current lease；`ExecutionProofSupplier`只接收一个 exact `LeasedRun` 并原子重建其 request/fence immutable snapshot，每次 `issue(operation, request_binding_sha256)`都重新读、重新计时、重新生成 nonce/JTI并签发。A2c证明 pair snapshot而非其数据库来源；后续 worker composition 才证明该 `LeasedRun` 来自 canonical claim/reclaim。supplier不得接受请求级 tenant/actor/subject/run/session/generation 覆盖。 |
-| 当前事实 | `RunRequest`位于 `protocol/control.py`，已含 typed `ExecutionIdentity`、run/session；`LeaseFence`与`LeasedRun`位于 `domain/run/models.py`，generation 当前只约束 `>=1`；V1 profile 已在 `execution_proof_profile.py`定义 `MAX_SAFE_INTEGER`及 operation/binding/JTI/time exact规则；A2a signer在 `execution_proof_signer.py`；canonical Run/lease事实只在 Agent PostgreSQL `kokoro_agent_run` 表。A2c不改变这些 owner 或公开 wire。 |
-| 目录方案 | 采用方案A：在新 `execution/execution_proof_supplier.py`放 proof 专用 immutable observation、窄 Protocol、supplier/factory与脱敏错误；在新 `infrastructure/postgres_execution_proof_lease.py`放唯一 PostgreSQL adapter，并更新两个既有 INDEX。port 只有 proof policy 一个消费者，放在使用侧可避免污染 broad `execution/protocols.py`，而 SQL/psycopg/schema 留在 infrastructure。否决方案B：扩宽 `domain/run/repositories.py` 或复用 `is_lease_current`，因为会把签发 freshness 混入通用 lifecycle port并保留 pre-statement app clock race；也否决新建 `ports/`、`auth/`、`database/` 子目录或把 SQL 塞进 supplier。 |
-| 粒度 | 两个 production 文件各有一个变化原因；测试分为 supplier unit、真实 PostgreSQL reader integration及既有 contract/architecture gate。`CurrentLeaseObservation`与窄 Protocol 暂与 supplier 同文件；不新建单文件目录，不修改 `execution/__init__.py`，除非 writer 先证明真实 import 需要并停写请求 Root 扩权。 |
-| 依赖 | supplier只可依赖 stdlib、typed `LeasedRun`/`RunRequest`/`LeaseFence`、V1 profile、A2a signer与窄 lease port；PostgreSQL adapter只可依赖 stdlib asyncio、psycopg public conninfo/async connection边界、既有 `qualified`/SQL helper/schema table constant及窄 port。它使用direct non-pooled connection而不复用会隐藏close ownership的`connect_pg` context manager。禁止 execution 反向导入 infrastructure，禁止 private key/JWKS/HTTP/Redis/Platform/IAM/BFF/Capability 依赖。生产 signer 调用唯一新增例外只能是 `execution_proof_supplier.py`；keys 仍只构造 signer，其他 production caller 保持 0。 |
-| 数据/API | 不改 `database/schema.sql`、migration、Redis protocol、A1 schema/vector、A2b OpenAPI/provenance、HTTP route、package/lock或任何跨仓 contract；不建 proof/key/nonce/cache/decision 表。reader只读 Agent canonical run表，不提交业务事务、不更新 lease。A2c不产生公开 API/generated client；IAM 后续仍单独 pin A1 profile和A2b HTTP direct contract。`docs/API_CONTRACT.md`与`docs/DATA_MODEL.md`只把A2b/A2c current fact对齐，不新增wire/schema。 |
-| 删除项 | 本片不删除旧通用 lease API，因为仍有其他 lifecycle caller；contract gate只禁止把它用于 proof。不得删除 A2b signer-construction例外。未来 Platform generated-client 接线片才删除一次性 proof build、legacy expanded attestation与任何 constructed-but-unused supplier；本片若出现 production composition或网络 send 即为越界。 |
-| 验证 | 严格 RED→GREEN；focused unit、真实PG integration、contract/architecture、全默认测试、Ruff、Pyright、contract checker、workspace外source-copy build与diff。真实PG只复用既有实例，在唯一临时 database或schema内安装 canonical schema；禁止启动第二套PG/Redis、reset共享数据库或清理他人资源。Root验收必须记录当前commit、RED/GREEN、逐文件hash、冻结hash、测试计数、临时资源名及精确cleanup证据。 |
+| 项       | A2c R3 精确候选                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 任务     | `AGENT-EXECUTION-PROOF-A2c / P0`；按已验收 A2 总设计，以 TDD 实现 proof 专用 statement-time current-lease reader 与 immutable run-scoped supplier。只形成 Agent owner 内部组件，不装入 worker、不发网络请求、不发明 Platform operation/binding。                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Owner    | owner=`kokoro-agent` 的 Run/Lease 与 execution-proof 签发边界；`execution/`拥有 supplier policy，`infrastructure/`拥有 PostgreSQL 实现。单一 writer=`agent_execution_artifact_writer`，Root 独占 Git/index/commit；候选冻结后分别由独立 SPEC 与 QUALITY 审查同一对象。IAM 只消费 A1/A2b owner contract，不拥有 Agent lease 或签发。                                                                                                                                                                                                                                                                                                                                |
+| 基线     | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@960a16b20cb9f5d1d901b661cfda31c8c57bb3c5` clean。A1 schema/vector direct SHA 分别为 `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f`、`a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`；A2b HTTP `1.1.0` OpenAPI direct SHA 为 `20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f`。现有 `PostgresRunLeases.is_lease_current` 与 `PostgresRunRepositoryContext.is_lease_current` 都在等待连接前取得应用 clock，不能作为 proof fresh gate；现有 production `issue_execution_proof` caller 为 0。 |
+| 目标职责 | `CurrentLeaseObservation(database_now, lease_expires_at)`只表达一次数据库 statement 的 current 事实；`ExecutionProofLeaseReadPort.observe_current_lease(\*, run_id: str, fence: LeaseFence) -> CurrentLeaseObservation                                                                                                                                                                                                                                                                                                                                                                                                                                             | None`只为 proof 读取 current lease；`ExecutionProofSupplier`只接收一个 exact `LeasedRun`并原子重建其 request/fence immutable snapshot，每次`issue(operation, request_binding_sha256)`都重新读、重新计时、重新生成 nonce/JTI并签发。A2c证明 pair snapshot而非其数据库来源；后续 worker composition 才证明该 `LeasedRun` 来自 canonical claim/reclaim。supplier不得接受请求级 tenant/actor/subject/run/session/generation 覆盖。 |
+| 当前事实 | `RunRequest`位于 `protocol/control.py`，已含 typed `ExecutionIdentity`、run/session；`LeaseFence`与`LeasedRun`位于 `domain/run/models.py`，generation 当前只约束 `>=1`；V1 profile 已在 `execution_proof_profile.py`定义 `MAX_SAFE_INTEGER`及 operation/binding/JTI/time exact规则；A2a signer在 `execution_proof_signer.py`；canonical Run/lease事实只在 Agent PostgreSQL `kokoro_agent_run` 表。A2c不改变这些 owner 或公开 wire。                                                                                                                                                                                                                                |
+| 目录方案 | 采用方案A：在新 `execution/execution_proof_supplier.py`放 proof 专用 immutable observation、窄 Protocol、supplier/factory与脱敏错误；在新 `infrastructure/postgres_execution_proof_lease.py`放唯一 PostgreSQL adapter，并更新两个既有 INDEX。port 只有 proof policy 一个消费者，放在使用侧可避免污染 broad `execution/protocols.py`，而 SQL/psycopg/schema 留在 infrastructure。否决方案B：扩宽 `domain/run/repositories.py` 或复用 `is_lease_current`，因为会把签发 freshness 混入通用 lifecycle port并保留 pre-statement app clock race；也否决新建 `ports/`、`auth/`、`database/` 子目录或把 SQL 塞进 supplier。                                                |
+| 粒度     | 两个 production 文件各有一个变化原因；测试分为 supplier unit、真实 PostgreSQL reader integration及既有 contract/architecture gate。`CurrentLeaseObservation`与窄 Protocol 暂与 supplier 同文件；不新建单文件目录，不修改 `execution/__init__.py`，除非 writer 先证明真实 import 需要并停写请求 Root 扩权。                                                                                                                                                                                                                                                                                                                                                         |
+| 依赖     | supplier只可依赖 stdlib、typed `LeasedRun`/`RunRequest`/`LeaseFence`、V1 profile、A2a signer与窄 lease port；PostgreSQL adapter只可依赖 stdlib asyncio、psycopg public conninfo/async connection边界、既有 `qualified`/SQL helper/schema table constant及窄 port。它使用direct non-pooled connection而不复用会隐藏close ownership的`connect_pg` context manager。禁止 execution 反向导入 infrastructure，禁止 private key/JWKS/HTTP/Redis/Platform/IAM/BFF/Capability 依赖。生产 signer 调用唯一新增例外只能是 `execution_proof_supplier.py`；keys 仍只构造 signer，其他 production caller 保持 0。                                                                |
+| 数据/API | 不改 `database/schema.sql`、migration、Redis protocol、A1 schema/vector、A2b OpenAPI/provenance、HTTP route、package/lock或任何跨仓 contract；不建 proof/key/nonce/cache/decision 表。reader只读 Agent canonical run表，不提交业务事务、不更新 lease。A2c不产生公开 API/generated client；IAM 后续仍单独 pin A1 profile和A2b HTTP direct contract。`docs/API_CONTRACT.md`与`docs/DATA_MODEL.md`只把A2b/A2c current fact对齐，不新增wire/schema。                                                                                                                                                                                                                   |
+| 删除项   | 本片不删除旧通用 lease API，因为仍有其他 lifecycle caller；contract gate只禁止把它用于 proof。不得删除 A2b signer-construction例外。未来 Platform generated-client 接线片才删除一次性 proof build、legacy expanded attestation与任何 constructed-but-unused supplier；本片若出现 production composition或网络 send 即为越界。                                                                                                                                                                                                                                                                                                                                      |
+| 验证     | 严格 RED→GREEN；focused unit、真实PG integration、contract/architecture、全默认测试、Ruff、Pyright、contract checker、workspace外source-copy build与diff。真实PG只复用既有实例，在唯一临时 database或schema内安装 canonical schema；禁止启动第二套PG/Redis、reset共享数据库或清理他人资源。Root验收必须记录当前commit、RED/GREEN、逐文件hash、冻结hash、测试计数、临时资源名及精确cleanup证据。                                                                                                                                                                                                                                                                    |
 
 ##### A2c statement-time reader exact contract
 
@@ -1674,7 +1674,396 @@ git diff --check
 
 A2c R0任务卡冻结为Root `5da46ec4376e503ece43e30e73087d8cd2c6179e`、plan 373867 bytes / SHA `f95fd81046566b54a2f66b6ebfa6547089d295bf7d95241aef16336dd375b8cc`、plan diff SHA `fc6d04a77a642b84d49b93f79616fd2a5c6265386e9197bac1fd8ec57331d4e8`、Agent clean `960a16b20cb9f5d1d901b661cfda31c8c57bb3c5`；SPEC为`0/6/0`，QUALITY为`1/7/0`，未放行。R1吸收全部finding：factory只收exact `LeasedRun`且不冒充其DB provenance；port/config/conninfo/schema API固定；2秒数据库工作budget与0.25秒cleanup allowance分开并锁direct close/cancel；删除无界nonce复用检测；所有time计算改为exact datetime/timedelta/整数epoch；补四份current docs；build改为workspace外source copy；异常链脱敏、reader PID绑定cleanup及relative-import/alias mutation门补齐。R1必须重新冻结，由同一SPEC与QUALITY对同一对象复审到`0/0/0`前仍不授权implementation。
 
-
 A2c R1任务卡冻结为同一Root/Agent基线、plan 375149 bytes / SHA `f7021ef7ef19f86d741f66fbd786a505d5303e0ffe48b7532cd504ea8627f1be`、plan diff SHA `c44afc1344b31de2e7adb5ca104021cbb305817114ba127d4b524a6e9da8050f`；SPEC为`0/1/0`，QUALITY为`0/2/0`，未放行。R2删除asyncio hard real-time误称，把工作deadline、cleanup budget、测试watchdog及PID eventual cleanup分层；source copy改为tracked inventory加精确4个授权untracked candidate，拒绝ignored secret/临时树与special file。R2须再次冻结并完成同一SPEC/QUALITY双审。
 
 A2c R2任务卡冻结为同一Root/Agent基线、plan 376792 bytes / SHA `e9b65ab2a1735f0983085eb786f12beef3cbe7fb75fc3ad58abde5c148fe154d`、plan diff SHA `056fbd2e0804f2c59e249baeebf6b2a33bbc0d2ba8d53a9569fc161eddd69f8e`；SPEC与QUALITY均为`0/0/1`，唯一Minor是表头仍把当前candidate误标为R1。R3只修正表头版本，不改任何implementation contract；须对新的同一冻结对象最终双审清零。
+
+#### AGENT-EXECUTION-PROOF-A2c 验收（2026-09-13）
+
+A2c implementation 在同一授权文件集完成六轮对抗整改；最终 R6 冻结对象为 Agent 基线
+`960a16b20cb9f5d1d901b661cfda31c8c57bb3c5`、13 个 tracked 修改 + 4 个 exact untracked、0 staged、
+17 files / 264287 bytes、content SHA
+`24e7a259c180401fca0a713eb604a25614a6dbd67948a538d4bd21babeee738c`。SPEC 与 QUALITY 对同一对象均为
+Blocking/Important/Minor `0/0/0`；Root 精确提交为
+`02011bba36af6984ef33c2a07b2a5d9fcf81975d`（`feat(agent): add statement-time execution proof supplier`）。
+
+最终实现只增加 proof 专用 statement-time PostgreSQL reader 与 run-scoped supplier：单 statement 使用数据库执行时刻核对
+run/owner/generation/unexpired/nonterminal；`LeasedRun` 被重建为 immutable pair snapshot；每次 issue 都 fresh read、exact integer
+time、fresh 128-bit nonce并签名。数据库工作 deadline 与 cleanup allowance 分离；只使用 public
+`AsyncConnection.close()` exact once，覆盖 connect/cursor/execute/fetch、single/double cancellation、late-success connection、
+cursor exit/active/close 多故障与 process-control/cancellation 原对象优先级，且不引入私有 psycopg/libpq fallback。真实 PostgreSQL
+使用 canonical schema、same-owner ABA、两个 exact PID 同表 `ACCESS EXCLUSIVE` 跨 expiry race、public close 与 deadline backend
+消失证明；SQL/architecture mutant 锁定 direct returned template、safe generation、旧 lease helper、HTTP/client import 与零 runtime
+composition。
+
+Root pre-commit 验收由三个日志组成：`/tmp/kokoro-agent-a2c-root-pre-20260912_235546.log` 的 lock/sync、Ruff、
+Pyright、focused 88 与 contract 235 通过；该次随后按未设置环境变量的历史 `55433` 默认 DSN 得到 connection-refused，Root 未把它
+冒充代码失败，而是复用已存在的 PostgreSQL 18.4 `127.0.0.1:5432` 并创建独立数据库
+`kokoro_agent_a2c_root_pre_20260912_235716`。`/tmp/kokoro-agent-a2c-root-pre-resume-20260912_235716.log`
+证明真实 PostgreSQL 86/86、默认 1089 passed / 6 skipped / 163 deselected 与 contract checker 通过；该 harness 尾部的 source-copy
+数量断言和 `psql :'db'` 存在性检查写法失败，因此不把其中打印的 `DB_CLEANUP_OK` 当作数据库归零证据。
+`/tmp/kokoro-agent-a2c-root-pre-build-20260912_235906.log` 独立证明 279-file workspace-external exact source-copy 的 wheel/sdist、
+post-build input hash 与临时 build root 清理通过；最终数据库/schema/backend归零只引用下述完整 post-commit验收。
+
+提交后 Root 在 fresh 数据库 `kokoro_agent_a2c_root_post_20260913_000014` 完整重复：lock/sync、targeted format、全 Ruff、
+Pyright、focused 88、contract 235、真实 PostgreSQL 86、默认 1089 passed / 6 skipped / 163 deselected、contract checker、
+workspace-external wheel/sdist 与 diff/status 全部通过；日志为
+`/tmp/kokoro-agent-a2c-root-post-20260913_000014.log`，数据库和全部临时资源已删除。A2c 只证明 standalone owner
+component；worker private-loader composition、Platform operation/binding、IAM verifier/generated SDK、真实 transport send 仍未实现。
+
+#### PLATFORM-IDENTITY-OPERATIONS-D 设计门与 IAM 对齐顺序（2026-09-13）
+
+IAM **必须对齐**，而且是本轮硬门；但 IAM 不能先于 Platform owner contract 猜 operation、RPC method、typed resource identity
+或 binding。现有 IAM `bf160be` 继续作为 proof verifier、当前权限/委托、disabled tenant审计与 JWKS安全边界的已验收设计；
+其中“5 个 Skill execution operation”的临时 catalog 不能直接实施，必须等 Platform 发布不激活的最终 owner artifact 后改为本卡锁定的
+8 个 tenant Skill operation。代码发布顺序与生产激活顺序必须分开：每个仓的 commit 都保持可构建，最终在维护窗口整体切换，不建立
+alias、双读、双写或同时服务两套 Proto。
+
+```text
+1. Platform docs design
+2. Platform inactive operation/binding/identity owner artifact（不改当前 runtime Proto）
+3. IAM separately pins Agent proof/JWKS + Platform owner artifacts；NestJS/Prisma verifier + OpenAPI/SDK
+4. Platform one buildable atomic code release：final Proto/generated/handlers/binding helper + IAM SDK；删除旧 package/attestation/selector
+5. Agent + BFF + System + Storage + Root consumers compile/pin the final Platform release（只发布代码，不先激活）
+6. coordinated stop/switch/start activation；按下述四个surface完成六owner real sandbox后才commit activation
+```
+
+Runtime graph按surface固定：
+
+```text
+execution: Browser -> Web -> BFF -> Agent -> Platform -> IAM ingress introspection（验证Agent tenant-machine bearer）
+           Platform（仅ingress allow后）-> IAM execution verifier（Platform tenant-machine bearer + opaque proof）-> Agent JWKS
+           Platform（仅verifier allow后）-> own Prisma；Skill package path另由Platform -> Storage
+projection: Browser -> Web -> BFF -> Platform -> IAM ingress introspection -> own Prisma
+catalog: approved BFF workload -> Platform -> IAM ingress introspection -> own Prisma/Storage
+global: System -> Platform -> IAM ingress introspection -> fixed unsupported（无execution verifier/Prisma/Storage）
+```
+
+| 项       | `PLATFORM-IDENTITY-OPERATIONS-D / P0` 设计结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | 当前物理仓 `kokoro-capability`，目标服务与 contract owner=`kokoro-platform`；业务模块只为 `modules/skills` 与 `modules/mcp`。Platform 唯一维护资源 identity、最终 RPC、operation inventory 与 canonical request-binding artifact；IAM 只验证 proof/current permission，Agent 只签 Agent-owned proof。                                                                                                                                                                                                                                            |
+| 当前事实 | Capability clean `9f237f95b90c5699f8bc54eb202fb0639c5d47fa`；NestJS + Prisma 已是唯一 runtime/data path。当前 Proto package=`kokoro.capability.v1`，含 expanded `RunExecutionAttestation`、裸 string ID、`source_selector`/`source_ref` 双名与三个 SkillSource RPC 的 generic `read`；Skills/MCP 各自手写 request binding。IAM clean `0f06f33` 的 ADR-005 明确拒绝 generic `read`，当前仅列 5 Skill + 16 MCP tenant operation。Agent clean `02011bb` 已有 proof schema/signer/JWKS/statement-time supplier，但没有 Platform client composition。 |
+| 目标职责 | 先在文档门裁决 final `kokoro.platform.v1` contract、typed opaque identity、单一 `source_ref`、opaque `execution_proof`、完整 8 Skill + 16 MCP tenant operation、6 workload-only + 1 global-reserved operation，以及 language-neutral binding schema/vector/provenance。随后发布不激活的 machine owner artifact；IAM完成后，Platform才在一个 buildable atomic code slice 中替换 Proto/runtime。                                                                                                                                                   |
+| 目录方案 | 采用现有 `contract/` 加 `contract/execution-operations/v1/` 作为 owner machine artifact；inactive artifact先发布 method/request/identity/binding事实但不并存第二套 runtime Proto。最终 code release 将唯一 Proto移动到 `contract/proto/kokoro/platform/v1/`，generated TypeScript仍只进现有 generated root。否决继续冻结 `kokoro.capability.v1` 后用 alias迁移，因为 FQ RPC method是binding输入；否决在 IAM/Agent各复制常量或canonicalizer；否决 `src/common/identity.ts` 裸 branded-string大包。                                                |
+| 粒度     | 本卡先只更新 `TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/RESOURCE_NAMING/SECURITY/contract README/ADR index` 并新增一个 identity+operation ADR。第二片只发布 inactive owner artifact/checker/vectors，不改 Proto或生产注册。IAM SDK发布后，Platform在同一切片同时替换 Proto/generated/handlers/parser/helper、接IAM SDK并删除旧实现；不得提交不可构建中间态。                                                                                                                                                                              |
+| 依赖     | NestJS Controller/Connect handler从trusted tenant context与已解码真实request重算binding；feature-owned immutable ID parser依赖generated wrapper，不依赖Prisma type。Prisma只保存scalar并只经generated delegate访问；不共享Prisma schema/type。IAM、Agent与其他消费者只pin owner artifact/release的repository+commit+path+direct SHA，不编辑副本。                                                                                                                                                                                                |
+| 数据/API | 本设计片不改 `prisma/schema.prisma`。final Proto用独立wrapper区分series/skill/installation/source/connector/server/connection/authorization/grant；display/provider/URL/tool selector/name不得替代ID。`source_ref`唯一接受 exact `skill:<SkillId.value>`；`invocation_grant`是短期 output decision，不是长期ID或新增proof claim。wrapper解包后才把scalar传给Prisma。                                                                                                                                                                             |
+| 删除项   | atomic Platform code release删除 `RunExecutionAttestation`、`source_selector`、generic `read`、`replace("skill:", "")`宽解析、两套手写binding、Capability package/service identity及旧alias/fallback。消费者激活时删除 `KOKORO_CAPABILITY_*`、旧allowlist/route/import与name-selector模型；不转存expanded claims。                                                                                                                                                                                                                               |
+| 验证     | 设计门先做SPEC/QUALITY双审。machine/atomic/consumer slices分别覆盖 strict artifact checker、Buf lint/generate/drift/breaking、descriptor双向覆盖、跨语言vectors、ID type-misuse compile/parser RED、每RPC field/presence/method/bytes tamper、current-state-before-receipt replay、unknown/generic operation、no-alias/no-legacy architecture gate与NestJS/Prisma完整门。最终六owner sandbox明确包含Agent、Platform、IAM、BFF、System、Storage：execution正向/撤权、projection、catalog/Storage及global auth+unsupported全部走真实owner。        |
+
+##### Identity 与 Manus 对齐裁决
+
+- 只采用 Manus v2 已实时核验的 list-first/reference-by-ID原则：`skill.list`/`connector.list`先返回 opaque ID，task 再引用；
+  不复制Manus wire、ID格式或把provider/display字段当身份。
+- Skill family=`series_id`，immutable revision=`skill_id`，安装管理=`installation_id`，task/runtime只引用discover/pool返回的
+  typed `source_ref`；唯一wire名是 `source_ref`，删除 `source_selector`。discover返回值可直接传给resolve/package/install。
+- MCP task引用typed `connector_id`；`server_id`是server catalog、`connection_id`是connector-server policy、
+  `authorization_id`是授权生命周期、`invocation_grant`是短期run/session decision。上述类型不可互换。
+- Proto固定 `syntax = "proto3"`、package=`kokoro.platform.v1`，并定义以下exact message；每个内部字段都是
+  `string value = 1`：`SkillSeriesId`、`SkillId`、`SkillInstallationId`、`SkillSourceRef`、`McpConnectorId`、
+  `McpServerId`、`McpConnectionId`、`McpAuthorizationId`、`McpInvocationGrant`。
+- 七个存储ID `SkillSeriesId/SkillId/SkillInstallationId/McpConnectorId/McpServerId/McpConnectionId/McpAuthorizationId`
+  的scalar域分别固定为1..191 bytes ASCII token，pattern `^[A-Za-z0-9][A-Za-z0-9._:-]{0,190}$`。
+  `SkillSourceRef.value`单独固定为7..197 bytes，必须只剥离一次exact `skill:`前缀，余下完整值通过`SkillId` parser；
+  `McpInvocationGrant.value`单独固定为exact 46 bytes且匹配
+  `^mcp-grant:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`。
+  ADR必须用当前生成路径/库值证明这些域不截断已批准事实；若盘点发现反例，本设计卡退回Root，不由writer自行放宽。
+- wrapper的protobuf wire均是同构length-delimited message；安全边界来自request field context、generated静态类型、构造期
+  `$typeName`/exact parser，而不是声称服务端能从相同wire bytes推断调用方原始wrapper。机器片必须含TS compile-fail misuse fixture、
+  descriptor覆盖和constructed-object runtime tests。
+- final ADR必须逐message列出所有旧裸string→wrapper的request/response field-number表。语义保持的ID字段在新package中保留原字段号；
+  删除的`source_selector`及每个`attestation` name/tag必须`reserved`；所有tenant operation request统一使用
+  `string execution_proof = 100`，并在解码边界限制为1..16384 bytes ASCII compact JWS/JWT。workload-only/global-reserved request
+  不包含proof；不得复用被reserved tag。
+- Platform资源维度不增加Agent proof claim；A1 exact 14 claims保持不变，其中只有`operation`与
+  `request_binding_sha256`承载Platform请求语义，typed ID留在实际request并被binding覆盖。
+
+##### Skill runtime read 与安装边界
+
+本卡明确选择保留三个具名SkillSource tenant operation，而不是退回5项安装清单；理由是Manus式list-first需要Agent在实际run中取得
+opaque `source_ref`，但它们必须从“可见catalog read”收紧为“当前安装池read”，不能沿用现有绕过installation的实现：
+
+1. Platform不解析opaque proof。`DiscoverVisibleSkills`只使用**本次**IAM allow decision中的`tenant_ref`、typed subject与
+   `effective_owner_scopes`，返回这些scope覆盖的active、已安装且enabled的immutable Skill revision；不得从proof或request body自报scope。
+2. `ResolveVisibleSkill`只接受exact `SkillSourceRef`，不得按名称/display/selector解析；每次重新核对该revision仍active、对应installation
+   仍installed+enabled、owner scope仍可访问。
+3. `GetApprovedSkillPackageReference`使用同一次fresh IAM decision执行相同current installation gate后才调用Storage验证clean asset/read reference；持有合法
+   `source_ref`本身不能绕过安装、禁用、移除、可见性撤销或package scan变化。
+4. Platform→BFF catalog/pool projection保持`internal-owner`；BFF投影后的Product API是`public`，Browser仍只经Web的
+   `browser-private` same-origin adapter。该projection不进入Agent execution operation catalog，其HTTP contract及权限单独保持。
+5. Agent消费者删除name-selector contract；配置/声明只能保存由Platform list返回的typed `source_ref`。没有声明外部Skill的基础run仍可
+   独立运行，但一旦声明Platform Skill，Platform不可用/未配置必须显式fail closed，不得静默降级为空列表；每次真正出站调用都由
+   run-scoped supplier fresh issue proof。
+
+##### Platform-owned 31项 operation/RPC 映射
+
+下表本身是Platform设计输入；IAM ADR不再是owner来源。所有`tenant-execution`项都要求opaque proof，IAM要求当前
+`platform:execute`，Platform随后执行resource/installation/current-state检查；所有read无command identity，mutation使用现有
+`CommandIdentity`，`mcp.authorize_tool`单独使用`idempotency_key`。六个`workload-only`项禁止execution proof并只接受已批准的内部
+workload credential；ADR必须把允许的exact service identity/credential boundary逐项锁死，不能继续用任意共享token。`global-reserved`也
+禁止proof，Platform在ingress IAM introspection成功后、调用execution-authorization verifier前固定返回
+`GLOBAL_OPERATION_UNSUPPORTED`；IAM若被直接请求execution verify该operation，也从已pin catalog返回同一
+deny code，形成defense in depth而不扩展global permission。
+
+| class            | exact FQ method                                                            | exact operation                        | idempotency                          |
+| ---------------- | -------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| tenant-execution | `kokoro.platform.v1.SkillSourceService/DiscoverVisibleSkills`              | `skill.discover_visible_skills`        | read/none                            |
+| tenant-execution | `kokoro.platform.v1.SkillSourceService/ResolveVisibleSkill`                | `skill.resolve_visible_skill`          | read/none                            |
+| tenant-execution | `kokoro.platform.v1.SkillSourceService/GetApprovedSkillPackageReference`   | `skill.get_approved_package_reference` | read/none                            |
+| tenant-execution | `kokoro.platform.v1.SkillInstallationService/InstallSkill`                 | `skill.install`                        | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.SkillInstallationService/SetSkillInstallationEnabled`  | `skill.set_installation_enabled`       | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.SkillInstallationService/RemoveSkillInstallation`      | `skill.remove_installation`            | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.SkillInstallationService/GetSkillInstallation`         | `skill.get_installation`               | read/none                            |
+| tenant-execution | `kokoro.platform.v1.SkillInstallationService/ListSkillInstallations`       | `skill.list_installations`             | read/none                            |
+| workload-only    | `kokoro.platform.v1.SkillCatalogService/CreateSkillDraft`                  | `skill.create_draft`                   | CommandIdentity                      |
+| workload-only    | `kokoro.platform.v1.SkillCatalogService/CreateSkillVersion`                | `skill.create_version`                 | CommandIdentity                      |
+| workload-only    | `kokoro.platform.v1.SkillCatalogService/ValidateSkillDraft`                | `skill.validate_draft`                 | CommandIdentity                      |
+| workload-only    | `kokoro.platform.v1.SkillCatalogService/PublishSkill`                      | `skill.publish`                        | CommandIdentity                      |
+| workload-only    | `kokoro.platform.v1.SkillCatalogService/WithdrawSkill`                     | `skill.withdraw`                       | CommandIdentity                      |
+| workload-only    | `kokoro.platform.v1.SkillCatalogService/SetSkillStatus`                    | `skill.set_status`                     | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.McpConnectorProviderService/ListMcpConnectorProviders` | `mcp.list_connector_providers`         | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectorService/CreateMcpConnector`                | `mcp.create_connector`                 | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.McpConnectorService/BeginMcpConnectorAuthorization`    | `mcp.begin_connector_authorization`    | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.McpConnectorService/CompleteMcpConnectorAuthorization` | `mcp.complete_connector_authorization` | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.McpConnectorService/ListMcpConnectors`                 | `mcp.list_connectors`                  | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectorService/GetMcpConnector`                   | `mcp.get_connector`                    | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectorService/RevokeMcpConnector`                | `mcp.revoke_connector`                 | CommandIdentity                      |
+| global-reserved  | `kokoro.platform.v1.McpServerService/RegisterMcpServer`                    | `mcp.admin.register_server`            | auth后、execution verifier前固定拒绝 |
+| tenant-execution | `kokoro.platform.v1.McpServerService/GetMcpServer`                         | `mcp.get_server`                       | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpServerService/ListMcpServers`                       | `mcp.list_servers`                     | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectionService/CreateMcpConnection`              | `mcp.create_connection`                | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.McpConnectionService/ListMcpServerDeclarations`        | `mcp.list_server_declarations`         | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectionService/GetMcpConnection`                 | `mcp.get_connection`                   | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectionService/ListMcpConnections`               | `mcp.list_connections`                 | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpConnectionService/RevokeMcpConnection`              | `mcp.revoke_connection`                | CommandIdentity                      |
+| tenant-execution | `kokoro.platform.v1.McpAuthorizationService/ListMcpConnectorCapabilities`  | `mcp.list_connector_capabilities`      | read/none                            |
+| tenant-execution | `kokoro.platform.v1.McpAuthorizationService/AuthorizeMcpTool`              | `mcp.authorize_tool`                   | exact `idempotency_key`              |
+
+Machine checker必须从final Proto descriptor和manifest做双向exact覆盖：31个method/operation/class唯一；24个tenant request
+`execution_proof` exact出现且tag=100；6个workload和1个global request不出现proof；删除、重复、改名、class/proof-presence漂移均失败。
+checker同时硬编码15个supported command-digest operation exact集合、各自`CommandIdentity` field/type/tag、业务字段投影与排除项；
+删除任一schema/vector、把`request_id`/proof纳入、遗漏业务字段、给read/global新增digest，即使重算全部provenance也必须失败。
+global register的最终request shape唯一固定为`string request_id = 1`，并`reserved 2, 3, 4, 5, 6, 7`及
+`"command", "provider_key", "server_identity", "transport", "declaration_digest", "attestation"`；不保留command/proof或业务payload。
+基础Connect解码/1 MiB上限和Platform ingress IAM introspection先执行：缺失/坏token、inactive或wrong audience返回`Unauthenticated`；
+token有效但caller/profile/resource/scope不符返回`PermissionDenied`；IAM introspection依赖失败返回`Unavailable`；只有exact System caller
+认证成功后固定返回Connect `Unimplemented`加stable detail code `GLOBAL_OPERATION_UNSUPPORTED`。此路径允许且要求ingress introspection，
+但execution-authorization verifier、Prisma、receipt、Storage/provider与outbox调用数全部为0。另一种request shape必须被descriptor checker拒绝。
+不存在generic `read`、prefix fallback或unknown-operation allow。
+
+##### Canonical request-binding owner artifact
+
+- inactive owner artifact先锁定未来FQ method/request shape，但不替换或注册当前`kokoro.capability.v1` Proto；IAM可据此实现。IAM SDK
+  发布后，Platform才在一个commit中替换唯一Proto/generated/runtime并删除旧contract。代码发布不等于生产激活，所有消费者ready前
+  旧部署继续运行；不在仓库中建立可路由alias或双服务。
+- package cutover是批准的intentional break，不能把对旧release的普通`buf breaking`非零冒充PASS。迁移门运行Buf lint/generate/drift，
+  并冻结旧/新FileDescriptorSet：仅允许删除`kokoro.capability.v1`全部symbols、加入`kokoro.platform.v1`批准表，且common/storage依赖
+  descriptor必须byte-identical；custom descriptor-cutover checker拒绝清单外message/field删除、保留tag变化或额外package。迁移提交后立即
+  把新的Platform release设为后续普通`buf breaking`基线；不放宽全局Buf策略，也不保留旧package清零。
+- binding profile固定：artifact format=`platform-execution-operations/1.0.0`、operation catalog version=`1.0.0`、binding schema
+  version=`1.0.0`、Proto package=`kokoro.platform.v1`。每个tenant request投影成exact snake_case根：
+
+```json
+{
+  "binding_version": "1.0.0",
+  "fq_method": "kokoro.platform.v1.Service/Method",
+  "tenant_ref": "TRUSTED_TENANT",
+  "request_id": "REQUEST_ID",
+  "request": {}
+}
+```
+
+`request`只含除`execution_proof`与重复`request_id`之外的全部RPC业务字段；manifest逐字段固定JSON member、type、enum编码、
+decoded-default或explicit-presence、普通数组/集合、bytes投影与CommandIdentity presence。proto3非optional scalar按decoded-default纳入；
+optional/message使用`{"present":false}`或`{"present":true,"value":...}`，不得混用absent/null/default。
+
+- 同一artifact同时定义15个受支持`CommandIdentity` mutation的stable command digest，不保留现有第三套手写实现。exact根为
+  `{"command_digest_version":"1.0.0","fq_method":"...","tenant_ref":"...","command":{...}}`；`command`逐RPC只含mutation
+  业务字段，排除`request_id`、`CommandIdentity`自身与`execution_proof`。六个Skill catalog、三个Skill installation与六个MCP tenant
+  mutation各有exact schema/vector；同一`command_id`改变任一业务字段必须产生不同digest并拒绝receipt replay。global-reserved register
+  不进入受支持command-digest集合，`mcp.authorize_tool`继续只使用其exact `idempotency_key`合同。
+- `request_id`虽是transport correlation而非nonce/command identity，本contract有意纳入binding以阻止跨关联请求移植proof。一次逻辑重试
+  必须保留同一request ID，但每个真实send仍fresh read/nonce/sign；若request ID改变，必须重新canonicalize并issue。JTI不是single-use；
+  IAM不建nonce表。Platform在任何completed receipt replay之前仍调用IAM，并且只使用该次allow response的tenant/subject/
+  `effective_owner_scopes`重验resource state；撤掉任一scope、撤权或disabled后
+  不返回旧成功结果；read重复执行是安全重放，mutation由CommandIdentity或authorize-tool idempotency key收敛。
+- `typed_arguments_json`按Proto原始bytes计算lowercase SHA-256，并只把`typed_arguments_sha256`放进request投影；不把它先
+  `JSON.parse`或JCS化。其他bytes字段由manifest逐项选择base64url或digest，未声明即拒绝。任一byte改变必须改变binding。
+- 投影后使用RFC 8785/JCS canonical UTF-8；object key严格按JCS规则，set字段先拒绝空值/重复再按UTF-8 bytes排序，普通数组保持
+  wire顺序；字符串拒绝lone surrogate且不做Unicode normalization。数字只接受JSON safe integer；Proto bigint先以bigint/整数检查
+  `[-9007199254740991,9007199254740991]`再序列化，禁止先转JS number；拒绝float、exponent、decimal、`-0`和bool-as-int。
+- runtime generated helper只接收typed Proto projection，不接受arbitrary JSON text。artifact/vectors checker则必须先对raw UTF-8 bytes使用
+  duplicate-key与number-token aware strict parser，再跑exact JSON Schema/custom invariants；普通`JSON.parse`与JSON Schema单独都不构成门。
+  negative vector用base64承载raw bytes，覆盖duplicate key、float/exponent/`-0`、bool-as-int、超安全整数、invalid UTF-8、lone surrogate、
+  未知/缺失/多余字段及set空值/重复。NFC与NFD都是合法、原样保留的paired positive vector，二者canonical bytes/digest必须不同；
+  另用normalization-substitution mismatch证明插入任何隐式normalization都会失败，不把NFD误标成非法文本。
+- owner artifact至少含versioned manifest、exact JSON Schemas、positive/negative raw vectors和provenance。provenance逐文件记录relative path、
+  byte length、direct SHA-256，并对按UTF-8 path排序的`path + NUL + length + NUL + sha256 + LF`记录流计算aggregate SHA-256；checker同时
+  硬编码最低语义不变量，删除schema的`type/required/additionalProperties`后即使重算全部hash也必须失败。checker还硬编码exact ordered
+  vector inventory（name、stage、expected error、JSON pointer/token/difference），拒绝删除、重复、改名、自报metadata或同stage替换；重算
+  全部direct/aggregate hash不能掩盖inventory漂移。
+- 每种语言消费相同owner manifest/schema与完整exact vector inventory；artifact只生成逐RPC typed projector，projector调用该语言唯一受审
+  JCS encoder，不生成第二套排序/转义/JSON serializer。TypeScript与Python分别实现语言适配，但都必须运行同一inventory；Agent现有
+  execution-proof JCS只能作为Python唯一encoder的复用候选，是否能承接Platform profile由machine slice的差异测试证明。“单一owner规则”
+  不冒充跨语言共享实现。IAM固定Platform artifact，Agent固定同一owner commit/vector；三仓不得再手写canonicalizer。
+
+##### Platform ingress 认证矩阵
+
+Agent proof的audience是IAM verifier，且BFF projection不带proof；proof不替代Agent/BFF→Platform transport authentication。IAM新增并拥有
+OAuth resource audience `https://kokoro.dev/resources/platform-internal`及其resource-server/introspection credential；Platform只用IAM
+generated client验证active token/profile/client/resource/scope，不手写JWT或直接读IAM数据库。目标矩阵固定为：
+
+| Platform surface                           | exact caller/profile                              | required scope                  | trusted tenant/subject                                                                                                                 |
+| ------------------------------------------ | ------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 24 tenant-execution Connect RPC            | per-tenant `kokoro-agent` `tenant_machine` client | `platform:execution.invoke`     | tenant只取verified bearer；随后必须与fresh IAM execution decision tenant exact match，subject/scopes只取该decision                     |
+| BFF Skills/MCP `internal-owner` projection | per-tenant `kokoro-bff` `tenant_machine` client   | `platform:projection.read`      | tenant只取verified bearer；`x-kokoro-subject`仅在caller exact为`kokoro-bff`后作为trusted projection assertion，跨tenant/header漂移拒绝 |
+| 6 workload-only Skill catalog RPC          | per-tenant `kokoro-bff` `tenant_machine` client   | `platform:skill-catalog.manage` | tenant只取verified bearer；owner scope仍按Platform resource rule核对，不能由body扩大                                                   |
+| global-reserved RegisterMcpServer          | `kokoro-system` `operator_machine` client         | `platform:mcp-server.register`  | 无tenant/resource decision；transport auth成功后仍固定Unimplemented，不能进入IAM execution verifier                                    |
+
+IAM provisioning为每个client固定resource、profile、grant、scope、service identity与tenant/operator marker；跨caller/profile/resource/scope/tenant
+一律在业务handler前拒绝。Platform resource-server credential按IAM既有create-new-client→滚动新credential→disable旧client规则轮换；旧JWT
+每次introspection都检查client current active。最终ADR/API必须把上述resource/scopes纳入IAM后续文档/实现片，不能仅靠环境变量命名冒充完成。
+
+配置clean cutover至少固定：`KOKORO_CAPABILITY_BASE_URL`→`KOKORO_PLATFORM_BASE_URL`；删除
+`KOKORO_CAPABILITY_SERVICE_TOKEN`与`KOKORO_CAPABILITY_BFF_SERVICE_TOKEN`，Platform改用
+`KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE`验证ingress，Agent/BFF/System分别使用deployment secret source中的
+tenant-indexed `KOKORO_AGENT_PLATFORM_CLIENT_CREDENTIALS_FILE`、tenant-indexed
+`KOKORO_BFF_PLATFORM_CLIENT_CREDENTIALS_FILE`、global `KOKORO_SYSTEM_PLATFORM_CLIENT_CREDENTIAL_FILE`；Platform→IAM另用
+tenant-indexed `KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE`。文件必须沿用IAM owner-only regular-file/mode与startup readback规则。
+Platform server只删除旧`KOKORO_CAPABILITY_SERVICE_TOKEN`与`KOKORO_CAPABILITY_BFF_SERVICE_TOKEN`。Agent只删除Capability/Platform
+outbound adapter对`KOKORO_INTERNAL_SECRET_AGENT`的消费，Agent自身HTTP ingress secret在其独立迁移前保留；BFF Platform client绕过
+通用`KOKORO_INTERNAL_SECRET_BFF/upstreamSecret`，BFF→Agent及其他owner调用继续保留。激活后本次替代的旧token/env/audience/client
+全部disable；零引用门只扫描production source、active Proto/generated、deploy/live config、package registration及current API/technical docs。
+本任务板与历史/归档ADR使用显式read-only allowlist，必须不可import、不可注册，不要求考古文本字面为0；
+不以新旧shared secret overlap建立兼容通道。RED覆盖每行正向、跨caller/profile/resource/scope/tenant、subject header spoof、proof当bearer、
+无proof BFF及旧credential撤销。
+
+Agent/BFF/System的outbound token supplier也以`(tenant或global marker, credential_ref_version, client_id, resource, sorted_scope_set)`
+为cache key、`expires_at-now > 5s`才复用、同key single-flight，reference切换立即evict且无stale fallback；新client真实Platform调用和
+Platform Guard在受控integration/audit中确认的exact client ID通过所有副本后才disable旧client，不新增向业务响应泄露client ID的header。
+`credential_ref_version`是不可复用的单调generation；single-flight完成发布前必须重读当前credential snapshot/key，A→B切换后late-success
+A token只能丢弃/清零，不能重新插入cache。该合同统一适用于Agent、BFF、System和Platform→IAM四类token provider：disable前恢复旧
+client/material也必须发布不可复用的更高generation C、清cache并重新exchange，绝不恢复generation A；A→B→C(old material)后late A/B
+completion都必须丢弃。单个waiter取消不取消共享exchange，其自身仍及时传播取消。测试分别放在各caller owner仓。
+
+##### Runtime IAM 调用图与 tenant-machine credential
+
+- execution runtime调用图固定为Agent→Platform RPC（携Agent tenant-machine bearer及opaque proof）；Platform必须先调用IAM ingress
+  introspection验证bearer的current client/profile/resource/scope/tenant，allow后才调用IAM execution verifier（携Platform自己的
+  tenant-machine bearer和proof），verifier再读Agent public JWKS；Platform不解析proof，Agent不导入/调用IAM verifier，IAM不调用
+  Platform或读取Agent数据库。ingress拒绝时不得调用execution verifier、Prisma或Storage。
+- IAM provisioning是每租户Platform `tenant_machine` OAuth client、client/resource binding、scope、create-new-client rotation与disable/revoke
+  的唯一owner。每个client只绑定一个tenant、internal resource、`client_credentials`和`iam:execution-authorization.verify`；不与BFF、
+  Agent、operator或resource-server credential复用。
+- Platform只从trusted ingress tenant选择`TenantIamTokenProvider`中的对应credential reference，向IAM token endpoint执行client-credentials
+  exchange。cache key exact为`(tenant_ref, credential_ref_version, client_id, resource, sorted_scope_set)`，同key single-flight；只在token
+  `expires_at - now > 5s`时复用，reference/version/client/resource/scope任一改变立即驱逐旧token并强制exchange，禁止stale-on-error。
+  `credential_ref_version`不可复用且单调；exchange成功发布前重读当前snapshot/key，不匹配则丢弃结果。一个waiter取消不取消共享exchange；
+  并发所有waiter取消时由provider-owned bounded cleanup决定取消/收割，不留后台task或把旧token发布回来。
+  不存在该tenant映射、token获取失败、client disabled或profile/scope漂移即fail closed。Platform
+  不把client secret写入Prisma/Redis/log，不接受body tenant选择credential，也不转发Agent/BFF bearer充当IAM caller。
+- credential secret由IAM provisioning一次性交付到deployment owner-only secret source，Platform只消费opaque per-tenant reference。
+  IAM verifier response必须回传Guard已认证的`caller_client_id`；轮换固定为IAM创建/link新client→secret source加入新versioned reference→
+  Platform每个副本清cache并用新client exchange→真实verify readback断言`caller_client_id`等于新client→所有副本barrier通过→IAM disable
+  旧client→删除旧reference；不得同client原地rotate。旧client disable前处于可回滚窗口，但即使恢复旧release/client material也必须发布
+  全新更高`credential_ref_version=C`、清cache并重新通过所有副本identity barrier，绝不重装旧generation A；A→B→C(old material)时
+  late A/B completion都必须丢弃。旧client disable并删除
+  后进入forward-only commit，只能继续新release或provision另一个新client，不能声称旧release仍可直接rollback。tenant停用或Platform client
+  撤销由IAM current-state即时拒绝新verify。
+- RED至少覆盖proof合法但Agent ingress bearer缺失/inactive/wrong audience/profile/scope/client/tenant均在execution verifier、Prisma与Storage
+  前失败；两个tenant选择不同有效caller token、body tenant不能改选择、caller-token tenant与proof tenant错配为403、缓存旧token后切
+  reference必须真实exchange、并发refresh single-flight、readback命中旧client失败、disable前rollback成功/disable后旧release明确失败。
+  Agent、BFF、System、Platform→IAM四类provider都必须真实阻塞A/B exchange、切到B后用旧material发布新generation C，并按A先完成、
+  B先完成及并发完成顺序断言A/B结果均不发布、cache只接受当前C的新exchange、所有副本barrier只读当前C snapshot；单waiter取消不改变
+  结果。另验Agent源码不能import IAM verifier client，以及激活后active production/config/contract范围内旧Capability client/env/
+  credential reference为0；历史allowlist中的同名文本不计失败。
+
+##### Consumer inventory 与无断档 cutover
+
+final Platform code release先提交但不部署；消费者全部编译/pin后才在维护窗口整体激活。旧IAM client disable前可按整组前一release代码/
+client material回滚，但credential reference仍必须提升到新generation并重做barrier；
+disable/delete旧credential是显式不可逆commit，之后只roll forward或provision全新client，不靠alias。
+文档candidate必须用全树`rg`生成完整清单并至少覆盖：
+
+| consumer               | 已知当前入口                                                                                                           | 必须完成的cutover与验证                                                                                                                                                                                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Platform自身           | old Proto/generated imports、Nest Connect注册、shared-token guards、binding helpers、contract checker/provenance/tests | 单一atomic buildable commit切package/service identity、opaque proof、wrapper、IAM generated ingress/introspection+verifier clients及per-tenant token provider；全门拒绝旧package/attestation/selector/helper/token                                                                                |
+| IAM                    | ADR-005临时5+16 catalog；未来verifier/JWKS client/OpenAPI/SDK/provisioning                                             | 分别pin Agent A1 schema/vectors/provenance、Agent A2b JWKS OpenAPI/direct SHA和Platform operation/binding artifact；发布Platform resource/scopes、ingress clients/resource-server及per-tenant verifier clients，response含trusted caller client ID；按barrier rotate/disable；NestJS+Prisma完整门 |
+| Agent                  | `clients/skills.py` name selector、Capability clients/config/env、worker composition                                   | typed `source_ref`/final generated Platform client+Python projector；用per-tenant Agent→Platform OAuth client，run-scoped supplier紧邻每次send；只移除Platform outbound对旧通用secret的消费，保留Agent ingress；删除silent fallback/name模型与active `KOKORO_CAPABILITY_*`                        |
+| BFF                    | `src/application/projections.ts`、`src/http/routes/owner.ts`、runtime capability URL/config/shared upstream token/docs | 更新Platform service URL/identity、独立per-tenant BFF→Platform OAuth client、Skills/MCP projection和错误文案；Platform client不再走通用upstreamSecret但BFF→Agent/其他owner保持；浏览器仍只经BFF；完整门                                                                                           |
+| System                 | global server registration caller、未来Platform generated client与`KOKORO_SYSTEM_PLATFORM_CLIENT_CREDENTIAL_FILE`      | pin同一Platform release；operator-machine token supplier遵守generation/cache/rotation合同；正反认证与fixed unsupported测试；旧Capability调用/credential active范围为0后参与coordinated activation                                                                                                 |
+| Storage                | workload/service allowlist与Platform package caller identity，例如`scripts/docker-smoke.sh`                            | allowlist从`kokoro-capability`一次切为`kokoro-platform`；service-auth与package read smoke                                                                                                                                                                                                         |
+| Root governance/deploy | topology/health/e2e/docs/仓名与gitlink                                                                                 | repo/service/env/health/smoke一次切换；standard/topology与Agent/Platform/IAM/BFF/System/Storage六owner真实sandbox                                                                                                                                                                                 |
+
+任何新发现consumer都追加同表并指定owner、前置artifact、code release、activation与删除验证；尤其不得把Agent变更缩写成只有generated client。
+
+##### 文档片精确授权
+
+下一writer只允许修改Capability/Platform：
+
+```text
+docs/TECHNICAL_DESIGN.md
+docs/API_CONTRACT.md
+docs/DATA_MODEL.md
+docs/CURRENT.md
+docs/RESOURCE_NAMING.md
+docs/SECURITY.md
+contract/README.md
+docs/ADR/README.md
+docs/ADR/ADR-002-platform-identity-and-execution-operations.md   # new
+```
+
+不得修改source、Proto/OpenAPI/provenance、Prisma schema/generated、package/lock、tests、IAM/Agent/BFF或Git/index。文档candidate必须把
+上述wrapper/field-number/reserved表、31项映射、24个binding request shape、Skill安装gate、artifact/activation分离和consumer inventory
+写成无未决项的current/target方案；发现现状反例即停写报告Root。候选冻结后由SPEC与QUALITY对同一hash双审；双审清零和Root精确
+提交前不授权machine artifact。IAM文档/实现继续串行等待owner设计与后续inactive machine artifact，不并行发明operation/binding。
+
+R0冻结对象为Root `26e36b336d30822919706c85b7c4b7488c4c14ea`、plan 388724 bytes / SHA
+`a1737d4465543695fdee0afc24377c2001c8f266cd12c1edd9376cbf94c44310`、diff SHA
+`e181d2f7ff8c0e02e2f988ad7d9308f052363595d25aabf400be86efc16b9013`；SPEC=`1/5/2`，QUALITY=`0/5/1`，未放行。
+R1吸收全部finding：区分owner artifact、code release与runtime activation；锁wrapper/message/tag/domain及同构wire边界；选择并收紧三个
+Skill runtime read；由Platform逐项拥有31项映射；固定binding root/version/presence/bytes/request-ID/replay；补strict raw parser、
+provenance/direct digest/跨语言实现边界；列出Platform/IAM/Agent/BFF/Storage/Root consumer cutover；纠正A2c pre-cleanup证据。
+R1冻结为同一Root HEAD、plan 403889 bytes / SHA
+`6a1899c90d69f4e13db8c5c1fc3ba35a4b4c990c4cafeb5f577107bc77cf465b`、diff SHA
+`101efc5ea84f81bfb8f0b509278300adb84526b8b8a442e0c13fa8233306e0ef`；SPEC=`0/3/0`，QUALITY=`0/5/0`，未放行。
+R2进一步逐名拆开ID/source/grant长度边界，修正Platform→BFF projection visibility，改为fresh IAM decision scopes，硬锁15项
+command-digest inventory，澄清NFC/NFD paired-positive与exact vector inventory，复用每语言唯一JCS encoder，并固定真实runtime graph、
+per-tenant IAM machine credential provisioning/select/rotation/revoke与旧client撤销。R2必须重新冻结并由同一SPEC/QUALITY审到`0/0/0`
+才允许提交。
+
+R2冻结为同一Root HEAD、plan 408298 bytes / SHA
+`7cdc5a0bb19db729786ebe3b5d73ba0f5f48a98d5b35cbb7b8fdf0dad9412afd`、diff SHA
+`5f8ad3e4682750c622240fde0d7340e9ac04eab5b540b5d7d802ada6cc505815`；SPEC=`0/2/0`，QUALITY=`0/3/0`，未放行。
+R3新增Platform ingress OAuth resource与四类caller/profile/scope/tenant矩阵，替换旧shared-token配置；锁所有outbound token cache key、
+5秒refresh floor、single-flight、ref-change eviction、no-stale、新client exact identity barrier和disable前/后的rollback状态；global register
+唯一request/reservation/auth/error顺序；迁移期Buf intentional-break allowlist与新baseline。R3必须重新冻结并由同一SPEC/QUALITY审到
+`0/0/0`才允许提交。
+
+R3冻结为同一Root HEAD、plan 414836 bytes / SHA
+`dbcd694e2270227df9e386cfb07766c5aecfe86e5d15d24fe7c3f984277e18fe`、diff SHA
+`96946b83365cabad4ec8eb45c93d7bc77fcf9e5138fa5a0026ae0876fc8e7945`；SPEC=`1/1/0`，QUALITY=`0/2/1`，未放行。
+R4区分global ingress introspection与execution verifier并锁完整错误/零副作用矩阵；把System加入code release/consumer/activation；精确限定
+Agent/BFF旧shared secret只从Platform outbound退出并保留其他owner边界；零引用门限定active树且allow历史考古；credential generation
+不可复用，single-flight发布前重读snapshot，A→B late-success丢弃，waiter取消不污染共享exchange。R4必须重新冻结并由同一
+SPEC/QUALITY审到`0/0/0`才允许提交。
+
+R4冻结为同一Root HEAD、plan 417835 bytes / SHA
+`b58a8f87888522073a5d6fe67dad44f262da8316ab7a698f79143bec71875c7d`、diff SHA
+`5c809f8034d355b17f79657167b8c3934eef946a8f7087e8dc6f636710bdcb40`；SPEC=`0/2/0`，QUALITY=`0/0/0`，未放行。
+R5把运行时身份链拆成execution、projection、catalog、global四张固定调用图；将System纳入Agent/Platform/IAM/BFF/System/Storage
+六owner真实sandbox；修正disable前rollback的generation ABA，恢复旧client/material时也必须发布更高新generation C并丢弃late A/B
+结果。R5必须重新冻结并由同一SPEC/QUALITY审到`0/0/0`才允许提交。
+
+R5冻结为同一Root HEAD、plan 419492 bytes / SHA
+`ee2c4b4c9088a872bb84ee33063eac182a66d357a7c37cbbac3d031f74be6c37`、diff SHA
+`a5b6c97fc382e3c9da0fa3a50e39a9e3889e20e39a0cfe790119a80b80c36a5f`；SPEC=`0/1/0`，QUALITY=`0/3/0`，未放行。
+R6在execution图和runtime说明中补齐Agent bearer的IAM ingress introspection前置门及拒绝时的零下游副作用；把A→B→C
+不可复用generation、late A/B丢弃、当前C exchange/barrier与取消合同提升为四类token provider共同合同并逐类加入可证伪RED；同时修复
+R4审计provenance的两个SHA。R6必须重新冻结并由同一SPEC/QUALITY审到`0/0/0`才允许提交。
+
+R6冻结为同一Root HEAD、plan 421314 bytes / SHA
+`3e4bcee2fbb9420658b905441773b4e4cc87eceeac6d7e72dead4d6143cb066e`、diff SHA
+`acb3e97fd7f94271414b14c6693fc2e1530f80ed2323976d85e6198150ea9d1b`；SPEC=`0/0/0 PASS`，
+QUALITY=`0/0/0 PASS`。R7只记录R6双审结论并对整个任务板执行Prettier，不改变设计语义；格式化后的同一冻结对象仍须由
+SPEC/QUALITY做最终无回归确认后才允许提交。
