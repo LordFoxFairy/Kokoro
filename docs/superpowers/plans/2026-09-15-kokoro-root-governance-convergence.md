@@ -205,10 +205,12 @@ git commit -m "docs(governance): scope active production plan to nine owners"
 assert paths
 assert len(paths) == len({path.resolve() for path in paths})
 for required in (
-    "typescript/src/app.ts",
-    "typescript/src/modules/sites/site.ts",
     "typescript/tsconfig.json",
     "typescript/package.json",
+    "python/src/kokoro_agent/settings.py",
+    "python/src/kokoro_agent/runs/models.py",
+    "python/src/kokoro_agent/runs/rows.py",
+    "python/src/kokoro_agent/runs/schemas.py",
     "python/src/kokoro_agent/runs/service.py",
     "python/pyproject.toml",
     "schema.sql",
@@ -222,7 +224,7 @@ for required in (
 assert re.search(r"^## 17\. (?:参考依据|真实来源与核验记录)$", text, re.MULTILINE)
 ```
 
-继续要求 `https://`、平衡 code fence 与 Root `AGENTS.md` 不复制 TS/Python/SQL 示例；不得编辑 dirty SQL 手册让旧测试通过。当前 `extract_examples` 实际写出 11 个文件，完整生成物语义比固定 18 个数更稳定。
+继续要求 `https://`、平衡 code fence 与 Root `AGENTS.md` 不复制 TS/Python/SQL 示例；不得编辑 dirty SQL 手册让旧测试通过。当前 `extract_examples` 实际写出 11 个文件，TypeScript 手册不再含 `// src/...` 的独立可抽取 `.ts` 示例，故旧 `typescript/src/app.ts` 和 `typescript/src/modules/sites/site.ts` 是过时必需项；真正的生成物为 TypeScript 工具配置、Python 业务对象/服务/配置以及 SQL 样本。完整生成物语义比固定 18 个数更稳定；未来若重新加入可抽取 TS 示例，应在对应切片增加断言。
 
 - [ ] **Step 2: 单测 RED/GREEN 对照**
 

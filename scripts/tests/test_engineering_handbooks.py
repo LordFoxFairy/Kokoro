@@ -18,10 +18,20 @@ from scripts.governance.handbook_examples import (
 
 def test_examples_extract_from_the_current_manuals(tmp_path: Path) -> None:
     paths = extract_examples(tmp_path)
-    assert len(paths) == 18
-    assert (tmp_path / "typescript/src/app.ts").is_file()
-    assert (tmp_path / "typescript/src/modules/sites/site.ts").is_file()
-    assert (tmp_path / "python/src/kokoro_agent/runs/service.py").is_file()
+    assert paths
+    assert len(paths) == len({path.resolve() for path in paths})
+    for required in (
+        "typescript/tsconfig.json",
+        "typescript/package.json",
+        "python/src/kokoro_agent/settings.py",
+        "python/src/kokoro_agent/runs/models.py",
+        "python/src/kokoro_agent/runs/rows.py",
+        "python/src/kokoro_agent/runs/schemas.py",
+        "python/src/kokoro_agent/runs/service.py",
+        "python/pyproject.toml",
+        "schema.sql",
+    ):
+        assert (tmp_path / required).is_file(), required
     for path in paths:
         if path.suffix == ".py":
             ast.parse(path.read_text())
@@ -58,7 +68,9 @@ def test_canonical_manuals_have_sources_and_balanced_code_fences() -> None:
     ):
         text = (STANDARDS / name).read_text()
         assert len(re.findall(r"^```", text, re.MULTILINE)) % 2 == 0
-        assert "参考依据" in text
+        assert re.search(
+            r"^## 17\. (?:参考依据|真实来源与核验记录)$", text, re.MULTILINE
+        )
         assert "https://" in text
     agents = (ROOT / "AGENTS.md").read_text()
     assert not code_blocks(agents, "ts")
