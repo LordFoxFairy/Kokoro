@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -113,3 +114,31 @@ def test_repository_status_lists_exact_nine_directories_and_web_remote() -> None
     ]
     assert "| kokoro | LordFoxFairy/kokoro-app |" in rows[0]
     assert "仅 Agent 是 Root gitlink" in status
+
+
+def test_active_production_plan_lists_exact_nine_runtime_repositories() -> None:
+    root = Path(__file__).resolve().parents[2]
+    plan = (
+        root / "docs/superpowers/plans/2026-09-03-kokoro-production-closure.md"
+    ).read_text()
+    scope = plan.split("## 1. 范围与完成定义", 1)[1].split(
+        "## 2. 固定架构裁决", 1
+    )[0]
+    repositories = re.findall(r"(?m)^\d+\. `([^`]+)`", scope)
+    assert repositories == [
+        "kokoro",
+        "kokoro-bff",
+        "kokoro-agent",
+        "kokoro-iam",
+        "kokoro-system",
+        "kokoro-billing",
+        "kokoro-capability",
+        "kokoro-storage",
+        "kokoro-scheduler",
+    ]
+    assert "model-catalog" in scope
+    assert "`kokoro-capability` 是当前物理仓" in scope
+    assert "目标 clean-slate 重命名为 `kokoro-platform`" in scope
+    assert "五个 TypeScript 业务 owner 仓" in plan
+    assert "拆入 Domain/Application/Infrastructure/Interfaces" not in plan
+    assert "domain/application -> infrastructure/interfaces" not in plan
