@@ -42,9 +42,11 @@ Agent 或业务仓。AG-UI 是 Web/BFF 唯一 Agent 网络事件协议；Vercel 
 | `kokoro-billing` | Payment/Subscription/Checkout/Refund/Credit/Ledger | PostgreSQL + Redis idempotency/lease/cache | TypeScript |
 | `kokoro-capability` | Skill + MCP Connector control plane | PostgreSQL + Redis admission/cache | TypeScript |
 | `kokoro-storage` | Upload/Asset/Artifact metadata + ObjectStore refs | PostgreSQL + Redis + S3-compatible ObjectStore | TypeScript |
-| `kokoro-scheduler` | Generic ScheduleJob/trigger/lease/retry/misfire | Optional Redis occurrence lease; no business DB | Go |
+| `kokoro-scheduler` | Generic ScheduleJob/trigger/lease/retry/misfire | PostgreSQL 保存 Schedule/Occurrence/Receipt/Outbox 权威事实；Redis 仅协调 lease/通知/缓存 | Go |
 
 Goal 2 的仓库清单和归属以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为准。每个业务仓库必须在本仓内完成自己的 API、Schema、实现、测试和 Docker/CI；Root 只维护拓扑、架构规则和验证入口，不发布跨仓契约。
+
+当前九个正式运行仓只有 `kokoro-agent` 通过 Root gitlink 声明；其余活动仓仍是同目录独立 checkout。目标 `apps/` 部署容器及其 Git 路径尚未实施，当前 Web 仍位于 `kokoro/`。
 
 本地基础设施固定复用一个 PostgreSQL 和一个 Redis。Redis logical DB：IAM=1、System=2、
 Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 与退出后的 DB 3 保留空置；Web 无 Redis/数据库。
@@ -63,5 +65,5 @@ platform 实现。Chat 属于 BFF 内部模块；Credit 属于 Billing。
 2. 变更单个子仓时只在该子仓内部闭环，不把另一个仓的源码复制进来；
 3. 跨仓变更先在事实 owner 仓库更新本仓 contract，再由消费者通过本仓 typed client 或 HTTP 文档对接；
 4. 普通 push/PR 只跑 CI；`v*.*.*` tag 才发布 GHCR 镜像；
-5. 当前跨仓 E2E 入口是 `scripts/e2e/run_stage2_bff_mock.py`，只通过 loopback HTTP 启动并验证 BFF，不复制子仓源码；
+5. `scripts/e2e/run_stage2_bff_mock.py` 是 Stage 2 BFF mock 入口，只通过 loopback HTTP 启动并验证 BFF，不代表完整系统 E2E；`scripts/verify-ten-repository-full.sh` 仍暂停；
 6. 完成前在 Root 重新跑 topology/architecture/E2E 验证，不能只引用子代理结果。

@@ -54,3 +54,33 @@ def test_unsafe_legacy_runners_are_paused_before_touching_infrastructure() -> No
         assert result.returncode == 2
         assert "VERIFICATION_ENTRY_PAUSED" in result.stderr
         assert "run_system_owner_smoke.py" in result.stderr
+
+
+def test_codebase_map_does_not_replace_scheduler_postgres_truth() -> None:
+    root = Path(__file__).resolve().parents[2]
+    map_text = (root / "docs/CODEBASE_MAP.md").read_text()
+    scheduler_row = next(
+        line
+        for line in map_text.splitlines()
+        if line.startswith("| `kokoro-scheduler` |")
+    )
+    assert "PostgreSQL" in scheduler_row
+    assert "no business DB" not in scheduler_row
+
+
+def test_current_web_path_is_not_claimed_as_an_apps_gitlink() -> None:
+    root = Path(__file__).resolve().parents[2]
+    status = (root / "docs/REPOSITORY_STATUS.md").read_text()
+    gitmodules = (root / ".gitmodules").read_text()
+    codebase_map = (root / "docs/CODEBASE_MAP.md").read_text()
+    assert "| kokoro | LordFoxFairy/kokoro-app |" in status
+    paths = [
+        line.split("=", 1)[1].strip()
+        for line in gitmodules.splitlines()
+        if line.strip().startswith("path =")
+    ]
+    # An approved Submodule cutover must update this assertion with .gitmodules and map changes.
+    assert paths == ["kokoro-agent"]
+    assert "当前九个正式运行仓只有 `kokoro-agent` 通过 Root gitlink 声明" in codebase_map
+    assert "目标 `apps/` 部署容器及其 Git 路径尚未实施" in codebase_map
+    assert "当前 Web 仍位于 `kokoro/`" in codebase_map
