@@ -18,6 +18,12 @@ checkout，远端 `LordFoxFairy/kokoro-app`。`apps/` 尚未实施；目标九�
 这些数量是本轮比较基线，不是当前切片验收；不替代子仓真实 lint/test/build/schema/smoke，亦不覆盖
 下文先前已验的 System owner commit 与隔离 HTTP smoke 证据。
 
+Root 规范收敛在已提交 `32a7d5cbbef4552c6f03769dfe5fbebcb37eeaf8` 上复验：
+`python3 -m pytest scripts/tests -q` **89 PASS / 0 FAIL**，拓扑静态门 PASS；
+九仓标准审计仍为 **244 条既有违规**，相对本轮 before 明细新增 **0 条**。
+本轮只校准 Root 导航、有效任务表及手册断言；九仓 gitlink、隔离全仓 runner、
+各子仓 dirty 工作树与 `main` 分支集成仍未闭环，不记作“整体已 clean”。
+
 ## 当前 System 完整交付主线
 
 用户明确要求完整 System，不以 Nest + Site CRUD 截止。唯一任务表在
