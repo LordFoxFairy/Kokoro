@@ -1,6 +1,6 @@
 # Kokoro repository status
 
-状态：2026-09-08 · System 完整源码、消费者 HTTP、NestJS 工程边界与v0.1.2镜像已验
+状态：2026-09-15 · 当前九仓路径校准；System 先前完整源码、消费者 HTTP、NestJS 工程边界与 v0.1.2 镜像验收事实保留
 
 > 按 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)，Model 业务归 System。
 > 本表是活动运行仓清单，不是所有磁盘目录清单。旧 Model checkout/remote 保留作历史源，不归 archived。
@@ -23,8 +23,10 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 | kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | a2d05a0 |
 | kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 2f7a3e8 |
 
-Root + 9 个 active child checkout 各为独立 Git root。仅 Agent 是 Root gitlink；其余活动仓为
-同目录独立 checkout。当前任务使用各自 `codex/` 分支，不能沿用历史“全是 main/clean”的声明。
+Root + 9 个 active child checkout 各为独立 Git root。仅 Agent 是 Root gitlink；其余八个活动仓为
+Root 同目录独立 checkout，其中 Web 当前路径是 `Kokoro/kokoro/`、远端是 `LordFoxFairy/kokoro-app`，
+不是 `apps/kokoro/` gitlink。目标九仓 Submodule 与 `apps/` 容器尚未实施；正式路径另由拓扑 ADR 冻结。
+当前任务使用各自 `codex/` 分支，不能沿用历史“全是 main/clean”的声明。
 `kokoro-model/` 是保留的非活动历史 checkout；本次不删除目录、不归档 GitHub、不改 remote。
 用 scripts/audit-repository-state.py 显式读取当前 SHA/分支/dirty，旧报告不等价于本次验收。
 

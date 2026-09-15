@@ -7,6 +7,16 @@
 > 仓库与文档归属看 [`docs/REPOSITORY_STATUS.md`](docs/REPOSITORY_STATUS.md) 和 [`docs/CODEBASE_MAP.md`](docs/CODEBASE_MAP.md)；过程方案看
 > [`docs/superpowers/specs/`](docs/superpowers/specs/)。
 
+## 五分钟定位当前工作区
+
+从 Root `Kokoro/` 进入 Web 的当前目录是 [`kokoro/`](kokoro/)（独立 checkout，远端
+`LordFoxFairy/kokoro-app`）；BFF、Agent、IAM、System、Billing、Capability、Storage、Scheduler
+也分别位于 Root 同目录的独立仓。当前仅 [`kokoro-agent/`](kokoro-agent/) 是 Root gitlink。
+先读 [仓库状态](docs/REPOSITORY_STATUS.md) 核对九仓路径与远端，再读 [当前证据](docs/CURRENT.md)
+辨别静态门禁与服务验收。目标九仓 Submodule/`apps/` 结构见
+[Root 规范收敛设计](docs/superpowers/specs/2026-09-15-kokoro-root-governance-convergence-design.md)；
+它不是当前本地路径，组合 CI 与 full runner 仍待验。
+
 ## 架构一图
 
 三仓，经 **BFF Chat v1 + Redis transport + PostgreSQL durable facts + SSE** 协议耦合，各自独立部署：

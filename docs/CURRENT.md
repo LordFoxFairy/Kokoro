@@ -1,8 +1,22 @@
 # 当前活跃文档白名单
 
-状态：2026-09-08
+状态：2026-09-15
 用途：降低 agent 阅读负担。做**目标 GA/Feature-first 架构**的 runtime、capability、deliver 主线时，只读
 “当前目标架构评审主线”；本地原型文档只用来核对现有代码行为，不能反向生成首发代码。
+
+## 2026-09-15 Root 当前路径与只读验证导航
+
+当前九个正式运行仓中，仅 `kokoro-agent` 是 Root gitlink；Web 是 `Kokoro/kokoro/` 的独立
+checkout，远端 `LordFoxFairy/kokoro-app`。`apps/` 尚未实施；目标九仓 Submodule 固定组合及
+组合 CI 尚待独立切片验收。`scripts/verify-ten-repository-full.sh` 仍暂停，入口只报
+`VERIFICATION_ENTRY_PAUSED`、退出 2，不触及基础设施；不能将静态治理 PASS 写成完整九仓验收。
+
+2026-09-15 read-only snapshot（Task 1 前 Root commit `17c4fcbce5ddf5f77573fc5110dffb4cfd0a8799`）：
+`python3 scripts/verify-repository-topology.py` 静态 PASS；
+`python3 -m pytest scripts/tests -q` 为 82 PASS / 2 个既有手册断言 FAIL；
+`python3 scripts/verify-ten-repository-standard.py --format json` 审计九仓、244 条既有违规。
+这些数量是本轮比较基线，不是当前切片验收；不替代子仓真实 lint/test/build/schema/smoke，亦不覆盖
+下文先前已验的 System owner commit 与隔离 HTTP smoke 证据。
 
 ## 当前 System 完整交付主线
 

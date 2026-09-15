@@ -84,3 +84,32 @@ def test_current_web_path_is_not_claimed_as_an_apps_gitlink() -> None:
     assert "当前九个正式运行仓只有 `kokoro-agent` 通过 Root gitlink 声明" in codebase_map
     assert "目标 `apps/` 部署容器及其 Git 路径尚未实施" in codebase_map
     assert "当前 Web 仍位于 `kokoro/`" in codebase_map
+
+
+def test_root_current_marks_apps_and_full_gate_as_unfinished() -> None:
+    root = Path(__file__).resolve().parents[2]
+    current = (root / "docs/CURRENT.md").read_text()
+    assert "`apps/` 尚未实施" in current
+    assert "`scripts/verify-ten-repository-full.sh` 仍暂停" in current
+
+
+def test_repository_status_lists_exact_nine_directories_and_web_remote() -> None:
+    root = Path(__file__).resolve().parents[2]
+    status = (root / "docs/REPOSITORY_STATUS.md").read_text()
+    table = status.split("## 正式仓库与 GitHub 映射", 1)[1].split("## 归属裁决", 1)[0]
+    rows = [line for line in table.splitlines() if line.startswith("| kokoro")]
+    assert len(rows) == 9
+    names = [row.split("|", 2)[1].strip() for row in rows]
+    assert names == [
+        "kokoro",
+        "kokoro-bff",
+        "kokoro-agent",
+        "kokoro-iam",
+        "kokoro-system",
+        "kokoro-billing",
+        "kokoro-capability",
+        "kokoro-storage",
+        "kokoro-scheduler",
+    ]
+    assert "| kokoro | LordFoxFairy/kokoro-app |" in rows[0]
+    assert "仅 Agent 是 Root gitlink" in status
