@@ -142,6 +142,8 @@ git commit -m "fix(governance): align profiles with owner facts"
 - Modify: `apps/kokoro-iam/scripts/generate-contracts.ts`
 - Modify: `apps/kokoro-iam/test/contract/auth-kernel.test.ts`
 - Modify: `apps/kokoro-scheduler/contract/README.md`
+- Modify: `scripts/governance/ten_repository_standard.py`
+- Test: `scripts/tests/test_ten_repository_standard.py`
 
 **Interfaces:**
 - Consumes: IAM Better Auth generated snapshot and Scheduler canonical OpenAPI.
@@ -159,7 +161,7 @@ expect(contractReadme).toMatch(/breaking/i);
 
 - [ ] **Step 2: Move the snapshot and update its one generator/test owner.**
 
-Use `git mv`. Change `generate-contracts.ts` to write exactly `contract/vendor/better-auth.v1.7.3.json`; preserve its deterministic output and test both that vendor snapshot and owned internal contract. In vendor README record the literal upstream package/source, `v1.7.3`, generation command, SHA-256, license and drift-only purpose. Do not add Kokoro operation extensions to an upstream snapshot.
+Use `git mv`. Change `generate-contracts.ts` to write exactly `contract/vendor/better-auth.v1.7.3.json`; preserve its deterministic output and test both that vendor snapshot and owned internal contract. In vendor README record the literal upstream package/source, `v1.7.3`, generation command, SHA-256, license and drift-only purpose. Change Root `RepositoryProfile["kokoro-iam"].upstream_openapi_snapshots` to that new exact vendor path and add a Root regression that a same-named file in `contract/openapi/` is not exempt. Do not add Kokoro operation extensions to an upstream snapshot.
 
 - [ ] **Step 3: State contract provenance without fabricating release status.**
 
@@ -179,7 +181,7 @@ Expected: both pass with no generated drift.
 ```bash
 (cd apps/kokoro-iam && git add contract/vendor/better-auth.v1.7.3.json contract/vendor/README.md contract/README.md scripts/generate-contracts.ts test/contract/auth-kernel.test.ts && git commit -m "docs(contract): classify Better Auth snapshot as vendor input")
 (cd apps/kokoro-scheduler && git add contract/README.md && git commit -m "docs(contract): record OpenAPI generation")
-git add apps/kokoro-iam apps/kokoro-scheduler
+git add scripts/governance/ten_repository_standard.py scripts/tests/test_ten_repository_standard.py apps/kokoro-iam apps/kokoro-scheduler
 git commit -m "chore(root): advance contract hygiene submodules"
 ```
 
