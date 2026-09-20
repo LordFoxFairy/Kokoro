@@ -76,7 +76,7 @@ python3 fresh-kokoro/scripts/verify-main-only.py
 `PASS`、Root `scripts/tests` 为 `322 passed`。Root、11 个 submodule 以及各自 `origin` 都只列出 `main`，且不存在
 `kokoro/` 或 `apps/kokoro/` 这类 Web alias。精确 gitlink SHA 由 [Root CURRENT](../../CURRENT.md#已锁定的组合) 记录。
 
-这不等同于每个 owner 的生产质量验收。同期的 `verify-ten-repository-standard.py --format json` 诚实报告 153 个 owner
+这不等同于每个 owner 的生产质量验收。同期的 `verify-ten-repository-standard.py --format json` 诚实报告 110 个 owner
 violation 和 1 个 System TypeScript `unverified`；owner 队列与修复顺序由 [Root CURRENT](../../CURRENT.md#明确的下一轮-owner-队列)
 维护。Root 的 OpenAPI 词法 preflight 也不是完整 YAML parser，不能单独证明 malformed-contract 被拒绝；owner 的 canonical
 parser/linter 仍是当前 parser 完整性证据，Root parser 替换须作为独立依赖治理切片完成。
