@@ -1,6 +1,6 @@
 # ADR-032：Root Submodule 组合与远端仓标识
 
-状态：已采纳，2026-09-19。
+状态：已采纳，2026-09-19；2026-09-20 已按本 ADR 的组合/分支约束复核。
 
 ## 背景
 
@@ -62,13 +62,24 @@ Root 使用 gitlink 锁定每个子仓的精确 SHA；`.gitmodules` 的 `branch 
 ```bash
 git clone --recurse-submodules ROOT_URL fresh-kokoro
 git -C fresh-kokoro submodule status --cached --recursive
-python3 fresh-kokoro/scripts/verify-submodule-topology.py
+python3 fresh-kokoro/scripts/verify-repository-topology.py
 python3 fresh-kokoro/scripts/verify-main-only.py
 ```
 
 验证器必须证明精确清单、路径与远端名一致、gitlink SHA 由远端可获取、工作树 clean、local/remote 仅有 `main`；子仓
 自己的 lint/typecheck/test/build 仍由各自仓 CI 执行。Root 组合级 contract/integration/e2e/smoke 放在 `verification/`，
 不得复制子仓 unit test 或机器契约。
+
+### 4.1 2026-09-20 复核证据与边界
+
+本 ADR 的结构性验收已在当前组合快照上实际执行：`verify-repository-topology.py` 为 `PASS`、`verify-main-only.py` 为
+`PASS`、Root `scripts/tests` 为 `322 passed`。Root、11 个 submodule 以及各自 `origin` 都只列出 `main`，且不存在
+`kokoro/` 或 `apps/kokoro/` 这类 Web alias。精确 gitlink SHA 由 [Root CURRENT](../../CURRENT.md#已锁定的组合) 记录。
+
+这不等同于每个 owner 的生产质量验收。同期的 `verify-ten-repository-standard.py --format json` 诚实报告 153 个 owner
+violation 和 1 个 System TypeScript `unverified`；owner 队列与修复顺序由 [Root CURRENT](../../CURRENT.md#明确的下一轮-owner-队列)
+维护。Root 的 OpenAPI 词法 preflight 也不是完整 YAML parser，不能单独证明 malformed-contract 被拒绝；owner 的 canonical
+parser/linter 仍是当前 parser 完整性证据，Root parser 替换须作为独立依赖治理切片完成。
 
 ## 放置与依赖裁决
 
