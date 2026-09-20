@@ -73,6 +73,7 @@ REQUIRED_TS_COMPILER_OPTIONS = (
     "isolatedModules",
     "noEmitOnError",
 )
+DEFAULT_READ_ONLY_GENERATED_SOURCE_PATHS = ("src/generated/",)
 
 
 @dataclass(frozen=True)
@@ -88,6 +89,9 @@ class RepositoryProfile:
     schema_drift_script: str | None = None
     schema_drift_checker: str | None = None
     upstream_openapi_snapshots: tuple[str, ...] = ()
+    read_only_generated_source_paths: tuple[str, ...] = (
+        DEFAULT_READ_ONLY_GENERATED_SOURCE_PATHS
+    )
 
 
 # Current owner facts, not the future cutover target. BFF still uses Node 22
@@ -119,6 +123,10 @@ REPOSITORY_PROFILES = {
         24,
         retired_source_paths=RETIRED_TS_TOP_LEVEL_DIRECTORIES,
         upstream_openapi_snapshots=("contract/vendor/better-auth.v1.7.3.json",),
+        read_only_generated_source_paths=(
+            *DEFAULT_READ_ONLY_GENERATED_SOURCE_PATHS,
+            "src/database/prisma-client/",
+        ),
         # TECHNICAL_DESIGN §12 requires read-only persisted-schema drift, but
         # the current fresh-DDL fixture is not that checker. Keep the gap visible.
     ),
@@ -225,6 +233,24 @@ def source_files(repository: Path) -> list[Path]:
     return tracked_or_worktree_files(repository, "src")
 
 
+def is_profile_read_only_generated_source(
+    repository_name: str, relative_path: str
+) -> bool:
+    """Whether an audited source path is a profile-declared read-only output.
+
+    The profile is the sole exemption registry. This intentionally does not
+    infer generated status from a directory name, comments, or Git tracking
+    state: a similarly named or untracked source file remains handwritten code
+    until its owner explicitly records a read-only generated output path.
+    """
+
+    profile = REPOSITORY_PROFILES[repository_name]
+    return any(
+        relative_path.startswith(prefix)
+        for prefix in profile.read_only_generated_source_paths
+    )
+
+
 def database_files(repository: Path) -> list[Path]:
     return tracked_or_worktree_files(repository, "database")
 
@@ -306,11 +332,7 @@ def openapi_contract_candidates(repository: Path) -> tuple[Path, ...]:
         # A generic vendor directory or self-declared provenance is not a waiver.
         if relative in snapshots and any(
             re.search(
-                r"(?<![\w./-])(?:"
-                + re.escape(relative)
-                + "|"
-                + re.escape(path.name)
-                + r")(?![\w./-])",
+                r"(?<![\w./-])" + re.escape(relative) + r"(?![\w./-])",
                 line,
             )
             and re.search(r"\bsnapshot\b", line, re.IGNORECASE)

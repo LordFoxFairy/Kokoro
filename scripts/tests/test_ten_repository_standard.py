@@ -10,6 +10,8 @@ import pytest
 
 from scripts.governance import (
     contract_checks,
+    repository_checks,
+    surface_checks,
     ten_repository_standard,
     typescript_checks,
 )
@@ -585,6 +587,79 @@ def test_orm_profile_uses_prisma_as_its_only_canonical_schema(name):
     assert profile.schema_kind == "prisma"
 
 
+def test_profile_declares_the_only_non_default_read_only_generated_source_path():
+    assert ten_repository_standard.is_profile_read_only_generated_source(
+        "kokoro-billing", "src/generated/client.ts"
+    )
+    assert not ten_repository_standard.is_profile_read_only_generated_source(
+        "kokoro-billing", "src/database/prisma-client/client.ts"
+    )
+    assert ten_repository_standard.is_profile_read_only_generated_source(
+        "kokoro-iam", "src/database/prisma-client/client.ts"
+    )
+    assert not ten_repository_standard.is_profile_read_only_generated_source(
+        "kokoro-iam", "src/database/prisma-client-copy/client.ts"
+    )
+
+
+@pytest.mark.parametrize(
+    ("relative", "expected_typescript_rules", "expected_common_rules"),
+    [
+        ("database/prisma-client/client.ts", set(), set()),
+        (
+            "database/prisma-client-copy/client.ts",
+            {"configuration-boundary", "file-granularity"},
+            {"production-doubles"},
+        ),
+        (
+            "modules/identity/identity.service.ts",
+            {
+                "configuration-boundary",
+                "dependency-direction",
+                "file-granularity",
+            },
+            {"production-doubles"},
+        ),
+    ],
+)
+def test_read_only_generated_source_exemption_is_profile_exact_and_shared(
+    relative, expected_typescript_rules, expected_common_rules, tmp_path, monkeypatch
+):
+    """Only a profile-declared generated path skips handwritten-source audits."""
+    repository = tmp_path / "apps/kokoro-iam"
+    source = repository / "src" / relative
+    source.parent.mkdir(parents=True)
+    source.write_text(
+        'import { Pool } from "pg";\n'
+        "const environment = process.env;\n"
+        "class InMemoryGeneratedClient {}\n"
+        + "// generated output\n" * 801,
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(repository_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+
+    common_failures = []
+    repository_checks.check_common("kokoro-iam", common_failures)
+    assert {
+        failure.rule
+        for failure in common_failures
+        if failure.rule == "production-doubles"
+    } == expected_common_rules
+
+    typescript_failures = []
+    typescript_checks.check_typescript("kokoro-iam", typescript_failures)
+    assert {
+        failure.rule
+        for failure in typescript_failures
+        if failure.rule
+        in {"configuration-boundary", "dependency-direction", "file-granularity"}
+    } == expected_typescript_rules
+
+
 def test_owned_openapi_excludes_vendor_snapshot_and_accepts_root_json(tmp_path):
     for relative, text in {
         "contract/vendor/upstream.json": '{"openapi":"3.1.0","paths":{}}',
@@ -825,6 +900,64 @@ def test_openapi_upstream_exemption_requires_pinned_owner_provenance(tmp_path):
     )
 
 
+def test_agent_http_contract_owner_requires_a_confirmed_openapi_input(
+    tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-agent"
+    for relative, contents in {
+        "contract/provenance.json": '{"http_contract":"openapi/v1/openapi.json"}',
+        "contract/execution-proof/v1/schema.json": '{"$schema":"https://json-schema.org/draft/2020-12/schema"}',
+    }.items():
+        path = repository / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(contents, encoding="utf-8")
+    monkeypatch.setattr(surface_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+
+    failures = []
+    surface_checks.check_agent(failures)
+
+    assert any(
+        failure.rule == "contract-owner"
+        and "HTTP boundary has no owned published or generated OpenAPI" in failure.detail
+        for failure in failures
+    )
+
+
+def test_agent_http_contract_owner_accepts_a_confirmed_openapi_input(
+    tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-agent"
+    specification = repository / "contract/openapi/v1/openapi.json"
+    specification.parent.mkdir(parents=True)
+    specification.write_text('{"openapi":"3.1.0","paths":{}}', encoding="utf-8")
+    monkeypatch.setattr(surface_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+
+    failures = []
+    surface_checks.check_agent(failures)
+
+    assert not any(
+        failure.rule == "contract-owner"
+        and "HTTP boundary has no owned published or generated OpenAPI" in failure.detail
+        for failure in failures
+    )
+
+
+def test_current_agent_openapi_is_a_confirmed_owner_contract():
+    repository = ROOT / "apps/kokoro-agent"
+    specification = repository / "contract/openapi/v1/openapi.json"
+    failures = []
+
+    assert specification in ten_repository_standard.openapi_contract_candidates(
+        repository
+    )
+    assert contract_checks.check_openapi_contract(
+        "kokoro-agent", specification, failures
+    )
+    assert failures == []
+
+
 def test_named_setup_node_step_and_docker_chown_are_not_false_majors(
     tmp_path, monkeypatch
 ):
@@ -929,6 +1062,10 @@ def test_review_yaml_non_block_paths_fail_closed(paths, tmp_path, monkeypatch):
         (
             "contract/vendor/better-auth.v1.7.3.json — upstream snapshot provenance: https://example.test/spec",
             True,
+        ),
+        (
+            "better-auth.v1.7.3.json upstream snapshot provenance: https://example.test/spec",
+            False,
         ),
     ],
 )
@@ -1280,10 +1417,13 @@ def test_review_non_typescript_owners_check_every_managed_candidate(
     spec.parent.mkdir(parents=True)
     spec.write_text("&doc {openapi: 3.1.0, paths: {/v2/items: {}}}")
     monkeypatch.setattr(repository_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(surface_checks, "ROOT", tmp_path)
     monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
     failures = []
     repository_checks.check_common(name, failures)
-    if name == "kokoro-scheduler":
+    if name == "kokoro-agent":
+        surface_checks.check_agent(failures)
+    else:
         repository_checks.check_scheduler(failures)
     assert any(
         item.rule == "openapi-parsing" and "contract/openapi/extra.yaml" in item.detail

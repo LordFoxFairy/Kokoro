@@ -18,6 +18,7 @@ from .ten_repository_standard import (
     extract_redis_databases,
     has_clean_slate_marker,
     has_exact_relative_file,
+    is_profile_read_only_generated_source,
     missing_contract_readme_fields,
     openapi_contract_candidates,
     read_text,
@@ -193,9 +194,6 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                 )
 
     machine_contracts = contract_source_files(repository)
-    if profile.kind == "python-service":
-        for specification in openapi_contract_candidates(repository):
-            check_openapi_contract(repository_name, specification, failures)
     if machine_contracts:
         contract_readme = repository / "contract" / "README.md"
         if not has_exact_relative_file(repository, "contract/README.md"):
@@ -216,7 +214,8 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                 )
 
     for path in source_files(repository):
-        if path.relative_to(repository).as_posix().startswith("src/generated/"):
+        relative_path = path.relative_to(repository).as_posix()
+        if is_profile_read_only_generated_source(repository_name, relative_path):
             continue
         text = read_text(path)
         if re.search(

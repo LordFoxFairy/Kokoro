@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from .contract_checks import check_openapi_contract
 from .ten_repository_standard import (
     REPOSITORY_PATHS,
     REQUIRED_AGENT_SOURCE_PATHS,
@@ -11,7 +12,8 @@ from .ten_repository_standard import (
     ROOT,
     Failure,
     add,
-    contract_source_files,
+    is_profile_read_only_generated_source,
+    openapi_contract_candidates,
     package_manifest,
     read_text,
     source_files,
@@ -43,7 +45,13 @@ def check_web(failures: list[Failure]) -> None:
                 f"package.json must pin {dependency!r} for the AG-UI -> UIMessage adapter",
             )
 
-    source_entries = source_files(repository)
+    source_entries = [
+        path
+        for path in source_files(repository)
+        if not is_profile_read_only_generated_source(
+            repository_name, path.relative_to(repository).as_posix()
+        )
+    ]
     source_text = "\n".join(
         read_text(path) for path in source_entries if path.suffix in {".ts", ".tsx"}
     )
@@ -108,6 +116,10 @@ def check_bff(failures: list[Failure]) -> None:
             "public Product API must be canonical at contract/openapi/v1/openapi.yaml",
         )
     for path in source_files(repository):
+        if is_profile_read_only_generated_source(
+            repository_name, path.relative_to(repository).as_posix()
+        ):
+            continue
         if path.suffix not in {".ts", ".tsx"}:
             continue
         text = read_text(path)
@@ -186,12 +198,16 @@ def check_agent(failures: list[Failure]) -> None:
             )
     if not (repository / "uv.lock").is_file():
         add(failures, repository_name, "python-tooling", "uv.lock is missing")
-    if not contract_source_files(repository):
+    confirmed_openapi = [
+        check_openapi_contract(repository_name, specification, failures)
+        for specification in openapi_contract_candidates(repository)
+    ]
+    if not any(confirmed_openapi):
         add(
             failures,
             repository_name,
             "contract-owner",
-            "Agent run/control/event boundary has no machine contract under contract/",
+            "Agent HTTP boundary has no owned published or generated OpenAPI specification",
         )
 
     forbidden_domain_import = re.compile(

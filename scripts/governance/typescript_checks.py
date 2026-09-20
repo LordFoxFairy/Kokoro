@@ -17,6 +17,7 @@ from .ten_repository_standard import (
     add,
     effective_ts_compiler_options,
     is_granularity_exempt,
+    is_profile_read_only_generated_source,
     openapi_contract_candidates,
     package_manifest,
     package_scripts,
@@ -414,7 +415,7 @@ def check_typescript(
     for path in source_files(repository):
         relative_path = path.relative_to(repository).as_posix()
         relative_parts = path.relative_to(repository / "src").parts
-        if relative_path.startswith("src/generated/"):
+        if is_profile_read_only_generated_source(repository_name, relative_path):
             continue
         line_count = len(read_text(path).splitlines())
         if path.suffix.lower() == ".css" and line_count > 500:
@@ -575,7 +576,7 @@ def check_typescript(
                 f"{relative_path} is grouped by a database/cache brand inside a business module; use repository/query/cache/event responsibilities",
             )
         if (
-            not relative_path.startswith("src/generated/")
+            not is_profile_read_only_generated_source(repository_name, relative_path)
             and not is_granularity_exempt(repository_name, relative_path)
             and path.suffix == ".ts"
             and line_count > 800
