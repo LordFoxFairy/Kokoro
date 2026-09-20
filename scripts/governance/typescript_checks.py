@@ -10,15 +10,14 @@ from .contract_checks import check_openapi_contract
 from .ten_repository_standard import (
     REPOSITORY_PROFILES,
     REPOSITORY_PATHS,
-    REQUIRED_NODE_ENGINE,
     REQUIRED_TS_COMPILER_OPTIONS,
-    RETIRED_TS_TOP_LEVEL_DIRECTORIES,
     ROOT,
     Failure,
     TypeScriptConfigError,
     add,
     effective_ts_compiler_options,
     is_granularity_exempt,
+    openapi_contract_candidates,
     package_manifest,
     package_scripts,
     read_text,
@@ -125,7 +124,103 @@ def forbidden_business_dependencies(text: str) -> tuple[str, ...]:
     )
 
 
-def check_typescript(repository_name: str, failures: list[Failure]) -> None:
+def node_major(value: object, *, engine: bool = False) -> int | None:
+    """Recognize a single declared major, not an unbounded or multi-major range."""
+    if not isinstance(value, str):
+        return None
+    value = value.strip().strip("\"'")
+    version = r"v?(\d+)(?:\.(?:\d+|x|\*)){0,2}"
+    match = re.fullmatch(version, value)
+    if match:
+        return int(match.group(1))
+    if engine:
+        match = re.fullmatch(r">=" + version + r"\s+<(\d+)(?:\.0(?:\.0)?)?", value)
+        if match and int(match.group(2)) == int(match.group(1)) + 1:
+            return int(match.group(1))
+        match = re.fullmatch(r"\^" + version, value)
+        if match:
+            return int(match.group(1))
+    return None
+
+
+def check_node_consistency(
+    repository_name: str, repository: Path, failures: list[Failure]
+) -> None:
+    expected = REPOSITORY_PROFILES[repository_name].node_major
+    engines = package_manifest(repository).get("engines", {})
+    declared = engines.get("node") if isinstance(engines, dict) else None
+    declarations = [("package.json engines.node", node_major(declared, engine=True))]
+    version_file = repository / ".node-version"
+    if version_file.exists():
+        declarations.append((".node-version", node_major(read_text(version_file))))
+    docker = "\n".join(
+        line
+        for line in read_text(repository / "Dockerfile").splitlines()
+        if not line.lstrip().startswith("#")
+    )
+    for match in re.finditer(
+        r"(?im)^(?:FROM\s+(?:--platform=\S+\s+)?|ARG\s+\w+=)node:([^\s]+)", docker
+    ):
+        declarations.append(
+            (
+                "Dockerfile node image",
+                node_major(match.group(1).split("-")[0].split("@")[0]),
+            )
+        )
+    workflows = repository / ".github/workflows"
+    for workflow in sorted(workflows.glob("*")):
+        if workflow.suffix not in {".yml", ".yaml"}:
+            continue
+        lines = read_text(workflow).splitlines()
+        for index, line in enumerate(lines):
+            if not re.search(
+                r"^\s*(?:-\s*)?uses:\s*(?:['\"])?actions/setup-node@", line
+            ):
+                continue
+            step_indent = (
+                len(line)
+                - len(line.lstrip())
+                - (0 if line.lstrip().startswith("-") else 2)
+            )
+            block: list[str] = []
+            for nested in lines[index + 1 :]:
+                if nested.strip() and not nested.lstrip().startswith("#"):
+                    if len(nested) - len(nested.lstrip()) <= step_indent:
+                        break
+                block.append(nested)
+            settings = "\n".join(block)
+            value = re.search(r"(?m)^\s*node-version:\s*(.+?)\s*(?:#.*)?$", settings)
+            filename = re.search(r"(?m)^\s*node-version-file:\s*([^#\n]+)", settings)
+            label = f"{workflow.relative_to(repository)} actions/setup-node"
+            if value:
+                declarations.append((label, node_major(value.group(1))))
+            elif filename:
+                relative = Path(filename.group(1).strip().strip("\"'"))
+                contents = (
+                    read_text(repository / relative)
+                    if not relative.is_absolute() and ".." not in relative.parts
+                    else ""
+                )
+                declarations.append(
+                    (label + " node-version-file", node_major(contents))
+                )
+            else:
+                declarations.append((label, None))
+    for source, actual in declarations:
+        if actual != expected:
+            add(
+                failures,
+                repository_name,
+                "toolchain",
+                f"{source} must declare profile Node major {expected}; resolved {actual!r}",
+            )
+
+
+def check_typescript(
+    repository_name: str,
+    failures: list[Failure],
+    unverified: list[Failure] | None = None,
+) -> None:
     repository = ROOT / REPOSITORY_PATHS[repository_name]
     profile = REPOSITORY_PROFILES[repository_name]
     for source_path in profile.required_source_paths:
@@ -139,7 +234,7 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
     if profile.kind == "typescript-service":
         retired = [
             name
-            for name in RETIRED_TS_TOP_LEVEL_DIRECTORIES
+            for name in profile.retired_source_paths
             if (repository / "src" / name).is_dir()
         ]
         if retired:
@@ -149,7 +244,7 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 "module-topology",
                 "retired top-level source directories exist: "
                 + ", ".join(f"src/{name}/" for name in retired)
-                + "; move owned code under src/modules/<capability>/",
+                + "; restore the approved feature-first owner design",
             )
 
     package = package_manifest(repository)
@@ -169,14 +264,7 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
             "toolchain",
             "packageManager must pin an exact stable pnpm version (pnpm@x.y.z)",
         )
-    engines = package.get("engines")
-    if not isinstance(engines, dict) or engines.get("node") != REQUIRED_NODE_ENGINE:
-        add(
-            failures,
-            repository_name,
-            "toolchain",
-            f"engines.node must be {REQUIRED_NODE_ENGINE!r}",
-        )
+    check_node_consistency(repository_name, repository, failures)
     if not (repository / "pnpm-lock.yaml").is_file():
         add(failures, repository_name, "toolchain", "pnpm-lock.yaml is missing")
     if (repository / "package-lock.json").exists():
@@ -223,6 +311,22 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 "quality-gates",
                 f"package.json script {script!r} is missing or a no-op",
             )
+    if profile.schema_kind == "prisma":
+        drift_script = profile.schema_drift_script
+        checker = profile.schema_drift_checker
+        if (
+            not drift_script
+            or not checker
+            or not (repository / checker).is_file()
+            or script_is_noop(str(scripts.get(drift_script, "")))
+            or checker not in str(scripts.get(drift_script, ""))
+        ):
+            add(
+                failures,
+                repository_name,
+                "schema-drift",
+                f"approved persisted-schema drift checker {drift_script or '(not implemented)'} is missing or a no-op; Prisma validate/fresh DDL alone is not drift proof",
+            )
     lint_command = str(scripts.get("lint", ""))
     if lint_command in {
         "npm run typecheck",
@@ -252,7 +356,8 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
     try:
         compiler_options = effective_ts_compiler_options(repository / "tsconfig.json")
     except TypeScriptConfigError as error:
-        add(failures, repository_name, "typescript-configuration", str(error))
+        if unverified is not None:
+            add(unverified, repository_name, "typescript-configuration", str(error))
         compiler_options = None
     if compiler_options is not None:
         for option in REQUIRED_TS_COMPILER_OPTIONS:
@@ -309,6 +414,8 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
     for path in source_files(repository):
         relative_path = path.relative_to(repository).as_posix()
         relative_parts = path.relative_to(repository / "src").parts
+        if relative_path.startswith("src/generated/"):
+            continue
         line_count = len(read_text(path).splitlines())
         if path.suffix.lower() == ".css" and line_count > 500:
             add(
@@ -348,41 +455,70 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 f"{relative_path} defines a generic BaseRepository/BaseService hierarchy",
             )
         is_domain_rule = "domain" in relative_parts
-        is_transport = path.name.endswith(
-            (".routes.ts", ".rpc.ts", ".connect.ts", ".controller.ts")
-        ) or any(
-            part in {"http", "rpc", "worker", "events"} for part in relative_parts[:-1]
+        is_transport = relative_path.startswith("src/transport/") or path.name.endswith(
+            (
+                ".routes.ts",
+                ".rpc.ts",
+                ".connect.ts",
+                ".controller.ts",
+                "-rpc.service.ts",
+            )
         )
         is_http_transport = (
             path.name.endswith((".routes.ts", ".controller.ts"))
             or "http" in relative_parts[:-1]
         )
-        # Approved process-level DB/cache providers are technical services, not
-        # business rules. This narrow root location does not exempt similarly
-        # named directories inside modules, domain rules, or HTTP controllers.
+        # Process integrations are not business rules. Domain always wins, and
+        # controllers retain the SQL boundary even at these process locations.
         is_process_service = (
+            relative_path.startswith(("src/database/", "src/integrations/"))
+            and not is_transport
+        )
+        is_cache_service = (
             len(relative_parts) == 2
-            and relative_parts[0] in {"database", "cache"}
+            and relative_parts[0] == "cache"
             and path.name.endswith(".service.ts")
+            and not is_transport
         )
-        is_business_service = path.name.endswith((".service.ts", ".policy.ts")) or any(
-            part in {"use-cases", "services", "commands"}
-            for part in relative_parts[:-1]
-        )
-        technical_driver = (
-            ("pg" if relative_parts[0] == "database" else "redis")
-            if is_process_service and not is_domain_rule
-            else None
-        )
-        forbidden_dependencies = tuple(
-            specifier
-            for specifier in forbidden_business_dependencies(text)
-            if technical_driver is None
-            or not (
-                specifier == technical_driver
-                or specifier.startswith(technical_driver + "/")
+        is_business_service = (
+            not is_transport
+            and not is_process_service
+            and not is_cache_service
+            and (
+                path.name.endswith((".service.ts", ".policy.ts"))
+                or any(
+                    part in {"use-cases", "services", "commands"}
+                    for part in relative_parts[:-1]
+                )
             )
         )
+        forbidden_dependencies = forbidden_business_dependencies(text)
+        # Keep the existing narrow database/cache driver guard: process scope is
+        # not permission to import arbitrary providers into the database owner.
+        technical_driver = (
+            "redis"
+            if is_cache_service
+            else "pg"
+            if relative_path.startswith("src/database/") and is_process_service
+            else None
+        )
+        if technical_driver and not is_domain_rule:
+            unexpected = tuple(
+                dep
+                for dep in forbidden_dependencies
+                if not (
+                    dep == technical_driver
+                    or dep.startswith(technical_driver + "/")
+                    or (technical_driver == "pg" and dep == "@prisma/client")
+                )
+            )
+            if unexpected:
+                add(
+                    failures,
+                    repository_name,
+                    "dependency-direction",
+                    f"{relative_path} imports an unrelated provider into a process database/cache service",
+                )
         if (is_domain_rule or is_business_service) and forbidden_dependencies:
             add(
                 failures,
@@ -392,8 +528,10 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
             )
         if (
             is_transport
+            or is_http_transport
             or is_domain_rule
-            or (is_business_service and technical_driver != "pg")
+            or is_business_service
+            or is_cache_service
         ) and sql_literal.search(text):
             add(
                 failures,
@@ -402,7 +540,8 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 f"{relative_path} contains persistence SQL outside a repository/query",
             )
         if (is_domain_rule or is_business_service) and re.search(
-            r"from\s+[\"'][^\"']*generated/", text
+            r"(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)[\"'][^\"']*generated/",
+            text,
         ):
             add(
                 failures,
@@ -456,7 +595,7 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                     route,
                 )
                 if (
-                    route.startswith(("/v1/", "/.well-known/"))
+                    route.startswith(("/v1/", "/internal/v1/", "/.well-known/"))
                     or route
                     in {
                         "/",
@@ -478,28 +617,17 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                         f"{relative_path} exposes non-versioned route literal {route!r}",
                     )
 
-    if any(path.suffix == ".ts" for path in http_sources):
-        openapi_root = repository / "contract" / "openapi"
-        openapi_files = (
-            [
-                path
-                for path in openapi_root.rglob("*")
-                if path.suffix.lower() in {".yaml", ".yml", ".json"}
-            ]
-            if openapi_root.is_dir()
-            else []
+    confirmed_openapi = [
+        check_openapi_contract(repository_name, specification, failures)
+        for specification in openapi_contract_candidates(repository)
+    ]
+    if http_sources and not any(confirmed_openapi):
+        add(
+            failures,
+            repository_name,
+            "contract-owner",
+            "HTTP surface exists but contract/ has no owned published or generated OpenAPI specification",
         )
-        if not openapi_files:
-            add(
-                failures,
-                repository_name,
-                "contract-owner",
-                "HTTP surface exists but contract/openapi has no published or generated specification",
-            )
-        else:
-            for specification in openapi_files:
-                check_openapi_contract(repository_name, specification, failures)
-
     for workflow_name in ("ci.yml", "release-image.yml"):
         workflow = repository / ".github" / "workflows" / workflow_name
         if not workflow.is_file():

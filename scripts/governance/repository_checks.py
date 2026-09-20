@@ -19,6 +19,7 @@ from .ten_repository_standard import (
     has_clean_slate_marker,
     has_exact_relative_file,
     missing_contract_readme_fields,
+    openapi_contract_candidates,
     read_text,
     source_files,
     sql_without_comments,
@@ -52,14 +53,14 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                 f".env.example must use shared Redis logical DB {redis_database}",
             )
 
-    migrations = repository / "database" / "migrations"
-    if migrations.is_dir():
-        add(
-            failures,
-            repository_name,
-            "canonical-schema",
-            "database/migrations must not exist",
-        )
+    for relative in ("database/migrations", "prisma/migrations"):
+        if (repository / relative).exists():
+            add(
+                failures,
+                repository_name,
+                "canonical-schema",
+                f"{relative} must not exist",
+            )
 
     for compose in (
         *repository.glob("docker-compose*.yml"),
@@ -88,22 +89,39 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
     sql_files = [
         path for path in database_files(repository) if path.suffix.lower() == ".sql"
     ]
-    canonical = repository / "database" / "schema.sql"
+    canonical = repository / (profile.canonical_schema or "database/schema.sql")
+    prisma_files = tuple((repository / "prisma").rglob("*.prisma"))
     if profile.requires_schema and not canonical.is_file():
         add(
             failures,
             repository_name,
             "canonical-schema",
-            "database/schema.sql is missing",
+            f"{profile.canonical_schema} is missing",
         )
-    if not profile.requires_schema and sql_files:
+    if profile.schema_kind == "prisma":
+        for extra in (*prisma_files, repository / "database/schema.sql"):
+            if extra.is_file() and extra != canonical:
+                add(
+                    failures,
+                    repository_name,
+                    "canonical-schema",
+                    f"{extra.relative_to(repository)} conflicts with the sole canonical {profile.canonical_schema}",
+                )
+    if profile.schema_kind == "sql" and (repository / "prisma/schema.prisma").is_file():
+        add(
+            failures,
+            repository_name,
+            "canonical-schema",
+            f"prisma/schema.prisma conflicts with the sole canonical {profile.canonical_schema}; generated ORM artifacts belong in an explicitly read-only generated location",
+        )
+    if not profile.requires_schema and (sql_files or prisma_files):
         add(
             failures,
             repository_name,
             "schema-ownership",
             "this repository profile must not own executable database SQL",
         )
-    if canonical.is_file():
+    if profile.schema_kind == "sql" and canonical.is_file():
         check_schema_naming(repository_name, canonical, failures)
 
     if sql_files:
@@ -175,6 +193,9 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                 )
 
     machine_contracts = contract_source_files(repository)
+    if profile.kind == "python-service":
+        for specification in openapi_contract_candidates(repository):
+            check_openapi_contract(repository_name, specification, failures)
     if machine_contracts:
         contract_readme = repository / "contract" / "README.md"
         if not has_exact_relative_file(repository, "contract/README.md"):
@@ -195,6 +216,8 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                 )
 
     for path in source_files(repository):
+        if path.relative_to(repository).as_posix().startswith("src/generated/"):
+            continue
         text = read_text(path)
         if re.search(
             r"\b(?:class|interface)\s+InMemory\w*|\bInMemory\w*Repository\b", text
@@ -264,8 +287,8 @@ def check_scheduler(failures: list[Failure]) -> None:
             "contract-owner",
             "canonical scheduler OpenAPI is missing",
         )
-    else:
-        check_openapi_contract(repository_name, openapi, failures)
+    for specification in openapi_contract_candidates(repository):
+        check_openapi_contract(repository_name, specification, failures)
 
 
 def check_docs(failures: list[Failure]) -> None:

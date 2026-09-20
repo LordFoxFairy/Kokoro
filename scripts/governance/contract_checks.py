@@ -6,7 +6,14 @@ import json
 import re
 from pathlib import Path
 
-from .ten_repository_standard import REPOSITORY_PATHS, ROOT, Failure, add, read_text
+from .ten_repository_standard import (
+    REPOSITORY_PATHS,
+    ROOT,
+    Failure,
+    add,
+    read_text,
+    yaml_document_body,
+)
 
 REQUIRED_OPENAPI_OPERATION_EXTENSIONS = (
     "x-kokoro-owner",
@@ -24,62 +31,24 @@ def missing_openapi_operation_extensions(
     text: str,
     suffix: str,
 ) -> tuple[tuple[str, str, tuple[str, ...]], ...]:
+    return _missing_operation_extensions(read_openapi_document(text, suffix))
+
+
+def _missing_operation_extensions(
+    document: dict[str, object] | None,
+) -> tuple[tuple[str, str, tuple[str, ...]], ...]:
     operations: list[tuple[str, str, set[str]]] = []
-    if suffix.lower() == ".json":
-        try:
-            document = json.loads(text)
-        except json.JSONDecodeError:
-            return ()
-        paths = document.get("paths", {}) if isinstance(document, dict) else {}
-        if isinstance(paths, dict):
-            for path, path_item in paths.items():
-                if not isinstance(path, str) or not isinstance(path_item, dict):
-                    continue
-                for method, operation in path_item.items():
-                    if method.lower() not in HTTP_OPERATION_METHODS or not isinstance(
-                        operation, dict
-                    ):
-                        continue
-                    operations.append((path, method.lower(), set(operation)))
-    else:
-        lines = text.splitlines()
-        current_path: str | None = None
-        current_path_indent = -1
-        for index, line in enumerate(lines):
-            stripped = line.lstrip()
-            if not stripped or stripped.startswith("#"):
-                continue
-            indent = len(line) - len(stripped)
-            path_match = re.match(r"[\"']?(/[^:\"']*)[\"']?\s*:\s*$", stripped)
-            if path_match:
-                current_path = path_match.group(1)
-                current_path_indent = indent
-                continue
-            method_match = re.match(r"([a-z]+)\s*:\s*$", stripped, re.IGNORECASE)
-            if (
-                current_path is None
-                or method_match is None
-                or indent <= current_path_indent
-                or method_match.group(1).lower() not in HTTP_OPERATION_METHODS
-            ):
-                continue
-            method = method_match.group(1).lower()
-            fields: set[str] = set()
-            for nested_line in lines[index + 1 :]:
-                nested_stripped = nested_line.lstrip()
-                if not nested_stripped or nested_stripped.startswith("#"):
-                    continue
-                nested_indent = len(nested_line) - len(nested_stripped)
-                if nested_indent <= indent:
-                    break
-                field_match = re.match(r"([a-zA-Z0-9_-]+)\s*:", nested_stripped)
-                if field_match:
-                    fields.add(field_match.group(1))
-            operations.append((current_path, method, fields))
+    paths = document.get("paths", {}) if document else {}
+    if document is not None and isinstance(paths, dict):
+        for path in _document_paths(document):
+            path_item = paths[path]
+            for method, operation in path_item.items():
+                if method in HTTP_OPERATION_METHODS:
+                    operations.append((path, method, set(operation)))
 
     missing: list[tuple[str, str, tuple[str, ...]]] = []
     for path, method, fields in operations:
-        if path in {"/healthz", "/readyz", "/metrics"}:
+        if path in {"/healthz", "/livez", "/readyz", "/metrics"}:
             continue
         absent = tuple(
             extension
@@ -159,10 +128,270 @@ def check_schema_naming(
             pending_constraint_name = None
 
 
+class OpenApiPathParseError(ValueError):
+    """A path map cannot be interpreted by the dependency-free preflight."""
+
+
+def _yaml_mapping_entries(text: str) -> dict[str, tuple[str, str]]:
+    """Read one explicit block mapping, keeping child bodies opaque.
+
+    This is a deliberately bounded preflight, not a general YAML parser. Node
+    properties, complex keys, merges, multiline inline values and multiple
+    documents are rejected wherever they could hide the mapping being read.
+    """
+    entries: dict[str, tuple[str, str]] = {}
+    root_indent: int | None = None
+    key: str | None = None
+    is_block_scalar = False
+    block_scalar_indent: int | None = None
+    block_scalar_closed = False
+    for line in text.splitlines():
+        stripped = line.lstrip(" ")
+        if not stripped:
+            continue
+        indent = len(line) - len(stripped)
+        if stripped.startswith("#"):
+            if key is None or root_indent is None:
+                continue
+            value, body = entries[key]
+            if is_block_scalar:
+                if indent <= root_indent or (
+                    block_scalar_indent is not None and indent < block_scalar_indent
+                ):
+                    block_scalar_closed = True
+                if block_scalar_closed:
+                    continue
+            else:
+                if not value or value.startswith("#"):
+                    # Retain even dedented comments so nested scalar readers
+                    # can observe the point at which their content ended.
+                    entries[key] = (value, body + line + "\n")
+                continue
+        if "\t" in line[: len(line) - len(line.lstrip())]:
+            raise OpenApiPathParseError("YAML tabs in indentation are unsupported")
+        if root_indent is None:
+            root_indent = indent
+        if indent < root_indent:
+            raise OpenApiPathParseError("inconsistent YAML mapping indentation")
+        if indent > root_indent and key is not None:
+            value, body = entries[key]
+            if value and not value.startswith("#"):
+                if not is_block_scalar:
+                    raise OpenApiPathParseError(
+                        "indented YAML content after an inline value is unsupported"
+                    )
+                if block_scalar_closed:
+                    raise OpenApiPathParseError(
+                        "indented YAML content after a closed block scalar"
+                    )
+                if block_scalar_indent is None:
+                    block_scalar_indent = indent
+                elif indent < block_scalar_indent:
+                    raise OpenApiPathParseError(
+                        "inconsistent YAML block scalar indentation"
+                    )
+            entries[key] = (value, body + line + "\n")
+            continue
+        match = re.fullmatch(
+            r"(?:\"([^\"\\]+)\"|'([^']+)'|([A-Za-z0-9_/$~.{}-]+))\s*:\s*(.*)",
+            stripped,
+        )
+        if not match:
+            raise OpenApiPathParseError(
+                "unsupported YAML mapping key, root node or document boundary"
+            )
+        key = next(value for value in match.groups()[:3] if value is not None)
+        if key in entries:
+            raise OpenApiPathParseError(f"duplicate YAML mapping key {key!r}")
+        value = match.group(4).rstrip()
+        block_scalar = re.fullmatch(r"[|>][+-]?(?:\s+#.*)?", value)
+        is_block_scalar = block_scalar is not None
+        block_scalar_indent = None
+        block_scalar_closed = False
+        if value.startswith(("|", ">")) and not is_block_scalar:
+            raise OpenApiPathParseError("unsupported YAML block scalar header")
+        if value.startswith(("&", "*", "!")):
+            raise OpenApiPathParseError(
+                "YAML anchors, aliases and tags are unsupported"
+            )
+        if value.startswith(('"', "'")):
+            if not re.fullmatch(
+                r'(?:"(?:[^"\\]|\\.)*"|\'(?:[^\']|\'\')*\')(?:\s+#.*)?', value
+            ):
+                raise OpenApiPathParseError(
+                    "multiline YAML quoted values are unsupported"
+                )
+        elif value.startswith(("{", "[")):
+            # Opaque inline leaves are allowed; multiline flow can cross the
+            # indentation boundary and must never masquerade as root entries.
+            closing = "}" if value[0] == "{" else "]"
+            if not re.search(re.escape(closing) + r"(?:\s+#.*)?$", value):
+                raise OpenApiPathParseError(
+                    "multiline YAML flow values are unsupported"
+                )
+        entries[key] = (value, "")
+    return entries
+
+
+def _yaml_block_mapping(entry: tuple[str, str]) -> dict[str, tuple[str, str]]:
+    value, body = entry
+    value = value.split("#", 1)[0].strip()
+    has_content = any(
+        line.strip() and not line.lstrip().startswith("#") for line in body.splitlines()
+    )
+    if value == "{}" and not has_content:
+        return {}
+    if value or not has_content:
+        raise OpenApiPathParseError(
+            "expected explicit YAML block mapping or {}; flow, scalar and indirect maps are unsupported"
+        )
+    return _yaml_mapping_entries(body)
+
+
+def _json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    document: dict[str, object] = {}
+    for key, value in pairs:
+        if key in document:
+            raise OpenApiPathParseError(f"duplicate JSON mapping key {key!r}")
+        document[key] = value
+    return document
+
+
+def read_openapi_document(text: str, suffix: str) -> dict[str, object] | None:
+    """Return a confirmed OpenAPI view, known non-OpenAPI, or raise a diagnostic.
+
+    JSON is parsed structurally regardless of extension. Explicit block YAML
+    is projected only at root/paths/path-item/operation mapping boundaries;
+    unsupported syntax fails closed before ownership or governance succeeds.
+    """
+    if suffix.lower() in {".yaml", ".yml"}:
+        try:
+            text = yaml_document_body(text)
+        except ValueError as error:
+            raise OpenApiPathParseError(str(error)) from error
+    if not text.strip():
+        raise OpenApiPathParseError("empty or unreadable OpenAPI candidate")
+    try:
+        document = json.loads(text, object_pairs_hook=_json_object)
+    except json.JSONDecodeError as error:
+        if suffix.lower() == ".json" or text.lstrip().startswith(("{", "[")):
+            raise OpenApiPathParseError(
+                "invalid JSON or unsupported YAML flow document"
+            ) from error
+    else:
+        if not isinstance(document, dict) or "openapi" not in document:
+            return None
+        if not isinstance(document["openapi"], str):
+            raise OpenApiPathParseError("OpenAPI version must be a string")
+        return document
+
+    root = _yaml_mapping_entries(text)
+    if "openapi" not in root:
+        return None
+    version, version_body = root["openapi"]
+    if version_body or not re.fullmatch(
+        r"(?:3\.\d+\.\d+|'3\.\d+\.\d+'|\"3\.\d+\.\d+\")(?:\s+#.*)?", version
+    ):
+        raise OpenApiPathParseError("unsupported YAML OpenAPI version declaration")
+    paths: dict[str, object] = {}
+    for route, item in _yaml_block_mapping(root.get("paths", ("{}", ""))).items():
+        if route.startswith("x-"):
+            continue
+        path_item = _yaml_block_mapping(item)
+        if "$ref" in path_item:
+            raise OpenApiPathParseError("indirect YAML path items are unsupported")
+        operations: dict[str, object] = {}
+        for method, operation in path_item.items():
+            if method in HTTP_OPERATION_METHODS:
+                fields = _yaml_block_mapping(operation)
+                operations[method] = {
+                    field: value for field, (value, _) in fields.items()
+                }
+            elif method not in {
+                "summary",
+                "description",
+                "servers",
+                "parameters",
+            } and not method.startswith("x-"):
+                raise OpenApiPathParseError(
+                    f"unsupported YAML path-item field {method!r}"
+                )
+        paths[route] = operations
+    return {"openapi": version, "paths": paths}
+
+
+def _document_paths(document: dict[str, object]) -> tuple[str, ...]:
+    paths = document.get("paths", {})
+    if not isinstance(paths, dict):
+        raise OpenApiPathParseError("OpenAPI paths must be a mapping")
+    routes: list[str] = []
+    for key, path_item in paths.items():
+        if isinstance(key, str) and key.startswith("x-"):
+            continue
+        if not isinstance(key, str) or not key.startswith("/"):
+            raise OpenApiPathParseError(
+                "OpenAPI paths entries must be routes or x-* extensions"
+            )
+        if not isinstance(path_item, dict):
+            raise OpenApiPathParseError("OpenAPI path items must be mappings")
+        for method, operation in path_item.items():
+            if method in HTTP_OPERATION_METHODS:
+                if not isinstance(operation, dict):
+                    raise OpenApiPathParseError("OpenAPI operations must be mappings")
+            elif method not in {
+                "summary",
+                "description",
+                "servers",
+                "parameters",
+            } and not method.startswith("x-"):
+                raise OpenApiPathParseError(
+                    f"unsupported OpenAPI path-item field {method!r}"
+                )
+        routes.append(key)
+    return tuple(routes)
+
+
+def openapi_paths(text: str, suffix: str) -> tuple[str, ...]:
+    document = read_openapi_document(text, suffix)
+    return _document_paths(document) if document is not None else ()
+
+
+def is_v1_http_path(route: str) -> bool:
+    return route.startswith(("/v1/", "/internal/v1/", "/.well-known/")) or route in {
+        "/v1",
+        "/internal/v1",
+        "/healthz",
+        "/livez",
+        "/readyz",
+        "/metrics",
+    }
+
+
 def check_openapi_contract(
     repository_name: str, specification: Path, failures: list[Failure]
-) -> None:
+) -> bool:
     specification_text = read_text(specification)
+    try:
+        document = read_openapi_document(specification_text, specification.suffix)
+        if document is None:
+            return False
+        paths = _document_paths(document)
+    except OpenApiPathParseError as error:
+        add(
+            failures,
+            repository_name,
+            "openapi-parsing",
+            f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])}: {error}",
+        )
+        return False
+    for route in paths:
+        if not is_v1_http_path(route):
+            add(
+                failures,
+                repository_name,
+                "http-versioning",
+                f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])} path {route!r} violates the first-release v1 baseline",
+            )
     lines = specification_text.splitlines()
     properties_indents: list[int] = []
     for line_number, line in enumerate(lines, start=1):
@@ -175,23 +404,6 @@ def check_openapi_contract(
         if re.match(r"properties\s*:\s*$", stripped):
             properties_indents.append(indent)
             continue
-        path_match = re.match(r"(/[^:]*):\s*$", stripped)
-        if path_match and indent <= 4:
-            route = path_match.group(1)
-            internal_versioned = re.match(
-                r"^/internal(?:/[a-z0-9._{}-]+)*/v[0-9]+(?:/|$)", route
-            )
-            if not (
-                route.startswith(("/v1/", "/.well-known/"))
-                or route in {"/v1", "/healthz", "/readyz", "/metrics"}
-                or internal_versioned
-            ):
-                add(
-                    failures,
-                    repository_name,
-                    "http-versioning",
-                    f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])}:{line_number} has non-versioned path {route!r}",
-                )
         if properties_indents and indent == properties_indents[-1] + 2:
             property_match = re.match(r"([A-Za-z_][A-Za-z0-9_]*):", stripped)
             if property_match and re.search(r"[A-Z]", property_match.group(1)):
@@ -202,10 +414,7 @@ def check_openapi_contract(
                     f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])}:{line_number} property {property_match.group(1)!r} is not snake_case",
                 )
 
-    for route, method, missing_extensions in missing_openapi_operation_extensions(
-        specification_text,
-        specification.suffix,
-    ):
+    for route, method, missing_extensions in _missing_operation_extensions(document):
         add(
             failures,
             repository_name,
@@ -213,3 +422,5 @@ def check_openapi_contract(
             f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])} {method.upper()} {route} lacks "
             + ", ".join(missing_extensions),
         )
+
+    return True

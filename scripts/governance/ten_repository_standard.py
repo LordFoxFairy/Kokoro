@@ -7,32 +7,16 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 ROOT = Path(__file__).resolve().parents[2]
 
-REQUIRED_NODE_ENGINE = ">=24 <25"
-REQUIRED_TS_SOURCE_PATHS = ("modules", "config")
 RETIRED_TS_TOP_LEVEL_DIRECTORIES = (
-    "adapters",
     "application",
-    "clients",
-    "common",
-    "contracts",
-    "controllers",
     "domain",
-    "dtos",
     "infrastructure",
     "interfaces",
-    "middlewares",
-    "models",
     "ports",
-    "postgres",
-    "prisma",
-    "redis",
-    "repositories",
-    "services",
-    "types",
-    "utils",
 )
 REQUIRED_AGENT_SOURCE_PATHS = ("execution",)
 RETIRED_AGENT_TOP_LEVEL_DIRECTORIES = (
@@ -96,39 +80,96 @@ class RepositoryProfile:
     kind: str
     requires_schema: bool
     redis_database: int | None
+    canonical_schema: str | None = None
+    schema_kind: Literal["none", "sql", "prisma"] = "none"
+    node_major: int | None = None
     required_source_paths: tuple[str, ...] = ()
+    retired_source_paths: tuple[str, ...] = ()
+    schema_drift_script: str | None = None
+    schema_drift_checker: str | None = None
+    upstream_openapi_snapshots: tuple[str, ...] = ()
 
 
+# Current owner facts, not the future cutover target. BFF still uses Node 22
+# and its existing layered tree; System/IAM/Storage have retired global layers.
 REPOSITORY_PROFILES = {
-    "kokoro-app": RepositoryProfile("web", False, None),
+    "kokoro-app": RepositoryProfile("web", False, None, node_major=22),
     "kokoro-bff": RepositoryProfile(
-        "typescript-service", True, 8, REQUIRED_TS_SOURCE_PATHS
+        "typescript-service",
+        True,
+        8,
+        "database/schema.sql",
+        "sql",
+        22,
     ),
     "kokoro-agent": RepositoryProfile(
-        "python-service", True, 9, REQUIRED_AGENT_SOURCE_PATHS
+        "python-service",
+        True,
+        9,
+        "database/schema.sql",
+        "sql",
+        required_source_paths=REQUIRED_AGENT_SOURCE_PATHS,
     ),
     "kokoro-iam": RepositoryProfile(
-        "typescript-service", True, 1, REQUIRED_TS_SOURCE_PATHS
+        "typescript-service",
+        True,
+        1,
+        "prisma/schema.prisma",
+        "prisma",
+        24,
+        retired_source_paths=RETIRED_TS_TOP_LEVEL_DIRECTORIES,
+        upstream_openapi_snapshots=("contract/openapi/better-auth.v1.7.3.json",),
+        # TECHNICAL_DESIGN §12 requires read-only persisted-schema drift, but
+        # the current fresh-DDL fixture is not that checker. Keep the gap visible.
     ),
     "kokoro-system": RepositoryProfile(
-        "typescript-service", True, 2, REQUIRED_TS_SOURCE_PATHS
+        "typescript-service",
+        True,
+        2,
+        "database/schema.sql",
+        "sql",
+        24,
+        retired_source_paths=RETIRED_TS_TOP_LEVEL_DIRECTORIES,
     ),
     "kokoro-billing": RepositoryProfile(
-        "typescript-service", True, 4, REQUIRED_TS_SOURCE_PATHS
+        "typescript-service",
+        True,
+        4,
+        "database/schema.sql",
+        "sql",
+        24,
     ),
     "kokoro-capability": RepositoryProfile(
-        "typescript-service", True, 5, REQUIRED_TS_SOURCE_PATHS
+        "typescript-service",
+        True,
+        5,
+        "prisma/schema.prisma",
+        "prisma",
+        24,
+        schema_drift_script="schema:check",
+        schema_drift_checker="scripts/check-schema.ts",
     ),
     "kokoro-storage": RepositoryProfile(
-        "typescript-service", True, 6, REQUIRED_TS_SOURCE_PATHS
+        "typescript-service",
+        True,
+        6,
+        "prisma/schema.prisma",
+        "prisma",
+        24,
+        retired_source_paths=RETIRED_TS_TOP_LEVEL_DIRECTORIES,
+        schema_drift_script="db:apply-schema",
+        schema_drift_checker="scripts/apply-schema.ts",
     ),
     "kokoro-scheduler": RepositoryProfile(
-        "go-service", True, 7, REQUIRED_SCHEDULER_LAYERS
+        "go-service",
+        True,
+        7,
+        "database/schema.sql",
+        "sql",
+        required_source_paths=REQUIRED_SCHEDULER_LAYERS,
     ),
 }
-REPOSITORY_PATHS = {
-    name: Path("apps") / name for name in REPOSITORY_PROFILES
-}
+REPOSITORY_PATHS = {name: Path("apps") / name for name in REPOSITORY_PROFILES}
 
 REPOSITORIES = tuple(REPOSITORY_PROFILES)
 TS_REPOSITORIES = tuple(
@@ -163,6 +204,10 @@ def required_quality_scripts(repository_name: str) -> tuple[str, ...]:
             "build",
             "db:apply-schema",
             "contract:check",
+        ) + (
+            ("prisma:validate", "prisma:generate")
+            if profile.schema_kind == "prisma"
+            else ()
         )
     return ()
 
@@ -192,6 +237,100 @@ def contract_source_files(repository: Path) -> list[Path]:
         and "tests" not in path.relative_to(repository / "contract").parts
         and path.suffix.lower() in {".json", ".proto", ".yaml", ".yml"}
     ]
+
+
+def yaml_document_body(text: str) -> str:
+    """Consume complete preamble lines, preserving the root node's indentation."""
+    lines = text.removeprefix("\ufeff").splitlines(keepends=True)
+    marker_seen = False
+    directive_seen = False
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            index += 1
+            continue
+        if line.startswith("%"):
+            if (
+                marker_seen
+                or directive_seen
+                or not re.fullmatch(r"%YAML 1\.2(?:\s+#.*)?", stripped)
+            ):
+                raise ValueError("unsupported or repeated YAML directive")
+            directive_seen = True
+            index += 1
+            continue
+        if not marker_seen and re.match(r"---(?:\s|$)", line):
+            marker_seen = True
+            remainder = line[3:].lstrip(" \t")
+            index += 1
+            if remainder.strip() and not remainder.startswith("#"):
+                body = remainder + "".join(lines[index:])
+                try:
+                    json.loads(body)
+                except json.JSONDecodeError as error:
+                    raise ValueError(
+                        "inline YAML document markers support JSON values only"
+                    ) from error
+                return body
+            continue
+        break
+    if directive_seen and not marker_seen:
+        raise ValueError("YAML directive requires a document-start marker")
+    return "".join(lines[index:])
+
+
+def openapi_contract_candidates(repository: Path) -> tuple[Path, ...]:
+    """Enumerate managed inputs without guessing YAML identity from source text.
+
+    Every YAML/JSON file under contract/openapi and the declared root JSON
+    reaches the parser, even if malformed or unsupported. Other contract files
+    are included only when the standard JSON parser proves a top-level OpenAPI
+    key (JSON remains valid with a YAML extension). Candidates are not proof of
+    ownership: only the contract checker can confirm that after parsing.
+    """
+    managed = set(tracked_or_worktree_files(repository, "contract/openapi"))
+    root_json = repository / "contract/openapi.json"
+    if root_json.is_file():
+        managed.add(root_json)
+    candidates: list[Path] = []
+    profile = REPOSITORY_PROFILES.get(repository.name)
+    snapshots = profile.upstream_openapi_snapshots if profile else ()
+    provenance = read_text(repository / "contract/README.md")
+    for path in sorted(managed | set(contract_source_files(repository))):
+        if path.suffix.lower() not in {".json", ".yaml", ".yml"}:
+            continue
+        relative = path.relative_to(repository).as_posix()
+        # Only a profile-pinned snapshot with an exact README record is exempt.
+        # A generic vendor directory or self-declared provenance is not a waiver.
+        if relative in snapshots and any(
+            re.search(
+                r"(?<![\w./-])(?:"
+                + re.escape(relative)
+                + "|"
+                + re.escape(path.name)
+                + r")(?![\w./-])",
+                line,
+            )
+            and re.search(r"\bsnapshot\b", line, re.IGNORECASE)
+            and re.search(r"\bupstream\b|上游", line, re.IGNORECASE)
+            for line in provenance.splitlines()
+        ):
+            continue
+        if path in managed:
+            candidates.append(path)
+            continue
+        text = read_text(path)
+        try:
+            if path.suffix.lower() in {".yaml", ".yml"}:
+                text = yaml_document_body(text)
+            document = json.loads(text)
+        except ValueError:
+            continue
+        if isinstance(document, dict) and isinstance(document.get("openapi"), str):
+            candidates.append(path)
+    return tuple(candidates)
 
 
 def read_text(path: Path) -> str:

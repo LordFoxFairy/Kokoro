@@ -57,23 +57,23 @@ def test_repository_profiles_encode_runtime_and_persistence_boundaries() -> None
 def test_language_profiles_use_native_module_first_topology() -> None:
     verifier = load_verifier()
 
-    assert verifier.REQUIRED_NODE_ENGINE == ">=24 <25"
-    assert verifier.REQUIRED_TS_SOURCE_PATHS == ("modules", "config")
+    assert verifier.REPOSITORY_PROFILES["kokoro-app"].node_major == 22
+    assert verifier.REPOSITORY_PROFILES["kokoro-system"].node_major == 24
     assert verifier.REQUIRED_AGENT_SOURCE_PATHS == ("execution",)
-    assert verifier.REPOSITORY_PROFILES["kokoro-bff"].required_source_paths == (
-        "modules",
-        "config",
+    assert (
+        "modules"
+        not in verifier.REPOSITORY_PROFILES["kokoro-bff"].required_source_paths
     )
     assert verifier.REPOSITORY_PROFILES["kokoro-agent"].required_source_paths == (
         "execution",
     )
-    assert "application" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
-    assert "infrastructure" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
-    assert "ports" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
-    assert "services" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
-    assert "repositories" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
-    assert "postgres" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
-    assert "redis" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES == (
+        "application",
+        "domain",
+        "infrastructure",
+        "interfaces",
+        "ports",
+    )
     assert "application" in verifier.RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
     assert "infrastructure" in verifier.RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
     assert "ports" in verifier.RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
@@ -323,7 +323,9 @@ def test_i18n_catalog_has_an_explicit_granularity_exemption() -> None:
     verifier = load_verifier()
 
     assert verifier.is_granularity_exempt("kokoro-app", "src/i18n/en.ts") is True
-    assert verifier.is_granularity_exempt("kokoro-app", "src/engine/machine.ts") is False
+    assert (
+        verifier.is_granularity_exempt("kokoro-app", "src/engine/machine.ts") is False
+    )
 
 
 def test_openapi_operation_extensions_are_machine_checked() -> None:
@@ -574,3 +576,887 @@ def test_release_gate_recognizes_digest_bound_attestations(tmp_path, monkeypatch
     delivery_checks.check_delivery("kokoro-system", failures)
     assert any("SBOM" in f.detail for f in failures)
     assert any("build provenance" in f.detail for f in failures)
+
+
+@pytest.mark.parametrize("name", ["kokoro-iam", "kokoro-capability", "kokoro-storage"])
+def test_orm_profile_uses_prisma_as_its_only_canonical_schema(name):
+    profile = ten_repository_standard.REPOSITORY_PROFILES[name]
+    assert profile.canonical_schema == "prisma/schema.prisma"
+    assert profile.schema_kind == "prisma"
+
+
+def test_owned_openapi_excludes_vendor_snapshot_and_accepts_root_json(tmp_path):
+    for relative, text in {
+        "contract/vendor/upstream.json": '{"openapi":"3.1.0","paths":{}}',
+        "contract/openapi.json": '{"openapi":"3.1.0","paths":{}}',
+        "contract/openapi/nested/api.yaml": "openapi: 3.1.0\npaths: {}\n",
+        "contract/provenance.json": '{"nested":{"openapi":"3.1.0"}}',
+        "contract/buf.yaml": "version: v2\n",
+    }.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    (tmp_path / "contract/README.md").write_text(
+        "contract/vendor/upstream.json — upstream snapshot provenance: https://example.test/spec\n"
+    )
+    assert ten_repository_standard.openapi_contract_candidates(tmp_path) == (
+        tmp_path / "contract/openapi/nested/api.yaml",
+        tmp_path / "contract/openapi.json",
+        tmp_path / "contract/vendor/upstream.json",
+    )
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [None, "database/schema.sql", "prisma/migrations/one.sql", "prisma/second.prisma"],
+)
+def test_orm_canonical_excludes_parallel_schemas_and_migrations(
+    extra, tmp_path, monkeypatch
+):
+    from scripts.governance import repository_checks
+
+    repository = tmp_path / "apps/kokoro-capability"
+    canonical = repository / "prisma/schema.prisma"
+    canonical.parent.mkdir(parents=True)
+    canonical.write_text(
+        'datasource db {\n provider = "postgresql"\n relationMode = "prisma"\n}\n'
+    )
+    if extra:
+        path = repository / extra
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("-- fixture")
+    monkeypatch.setattr(repository_checks, "ROOT", tmp_path)
+    failures = []
+    repository_checks.check_common("kokoro-capability", failures)
+    assert bool([f for f in failures if f.rule == "canonical-schema"]) is bool(extra)
+
+
+@pytest.mark.parametrize("suffix", [".json", ".yaml"])
+@pytest.mark.parametrize(
+    "route,allowed",
+    [
+        ("/v1/items", True),
+        ("/internal/v1/items", True),
+        ("/.well-known/jwks.json", True),
+        ("/livez", True),
+        ("/v2/items", False),
+        ("/internal/v2/items", False),
+        ("/internal/admin/v1/items", False),
+        ("/items", False),
+    ],
+)
+def test_openapi_version_policy_is_identical_for_yaml_and_json(
+    suffix, route, allowed, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / ("contract/openapi" + suffix)
+    spec.parent.mkdir(parents=True)
+    spec.write_text(
+        json.dumps({"openapi": "3.1.0", "paths": {route: {}}})
+        if suffix == ".json"
+        else f'openapi: 3.1.0\npaths:\n  "{route}": {{}}\n'
+    )
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    violations = [f for f in failures if f.rule == "http-versioning"]
+    assert (not violations) is allowed
+    if violations:
+        assert "first-release v1 baseline" in violations[0].detail
+
+
+@pytest.mark.parametrize(
+    "surface", ["manifest", "version-file", "docker", "ci", "release"]
+)
+@pytest.mark.parametrize("major,valid", [(24, True), (22, False)])
+def test_node_major_consistency_covers_each_declared_surface(
+    surface, major, valid, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-storage"
+    (repository / ".github/workflows").mkdir(parents=True)
+    (repository / "package.json").write_text(
+        json.dumps(
+            {
+                "engines": {
+                    "node": f">={major if surface == 'manifest' else 24}.20.0 <25"
+                }
+            }
+        )
+    )
+    (repository / ".node-version").write_text(
+        f"{major if surface == 'version-file' else 24}.20.0\n"
+    )
+    (repository / "Dockerfile").write_text(
+        f"ARG NODE_IMAGE=node:{major if surface == 'docker' else 24}.20.0-slim\nFROM ${{NODE_IMAGE}}\n"
+    )
+    for workflow, name in [("ci", "ci.yml"), ("release", "release-image.yml")]:
+        (repository / ".github/workflows" / name).write_text(
+            f"steps:\n  - uses: actions/setup-node@{'a' * 40}\n    with:\n      node-version: {major if surface == workflow else 24}\n"
+        )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-storage", failures)
+    assert (
+        not [f for f in failures if f.rule == "toolchain" and "Node" in f.detail]
+    ) is valid
+
+
+@pytest.mark.parametrize(
+    "relative,allowed",
+    [
+        ("generated/prisma/runtime.ts", True),
+        ("transport/execution.service.ts", True),
+        ("modules/skills/skill-rpc.service.ts", True),
+        ("integrations/iam/iam.service.ts", True),
+        ("modules/skills/skill.service.ts", False),
+        ("modules/skills/domain/model.ts", False),
+        ("modules/skills/integrations/iam.service.ts", False),
+        ("modules/skills/events/skill.service.ts", False),
+    ],
+)
+def test_generated_transport_and_process_roles_do_not_exempt_business_rules(
+    relative, allowed, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-capability"
+    path = repository / "src" / relative
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        'import { client } from "@connectrpc/connect";\nimport { Wire } from "../../generated/proto.js";\n'
+    )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-capability", failures)
+    assert (
+        not [f for f in failures if f.rule in {"wire-boundary", "dependency-direction"}]
+    ) is allowed
+
+
+def load_cli(monkeypatch):
+    import runpy
+
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    namespace = runpy.run_path(str(SCRIPT))
+    return namespace["main"].__globals__
+
+
+def test_missing_typescript_is_unverified_unless_requested(monkeypatch, capsys):
+    cli = load_cli(monkeypatch)
+
+    def missing(_):
+        raise ten_repository_standard.TypeScriptConfigError("missing")
+
+    monkeypatch.setattr(typescript_checks, "effective_ts_compiler_options", missing)
+    monkeypatch.setitem(cli, "check_typescript", typescript_checks.check_typescript)
+    failures, unverified = cli["collect_audit"]()
+    assert not [item for item in failures if item.rule == "typescript-configuration"]
+    assert (
+        len([item for item in unverified if item.rule == "typescript-configuration"])
+        == 7
+    )
+    monkeypatch.setitem(cli, "collect_audit", lambda: ([], unverified))
+    assert cli["main"](["--format", "json"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["status"] == "UNVERIFIED"
+    assert result["unverified_count"] == 7
+    assert cli["main"](["--format", "json", "--require-installed-tools"]) == 1
+    assert json.loads(capsys.readouterr().out)["violations"] == []
+
+
+@pytest.mark.parametrize(
+    "name,retired", [("kokoro-bff", False), ("kokoro-system", True)]
+)
+def test_retired_topology_is_an_explicit_owner_profile(
+    name, retired, tmp_path, monkeypatch
+):
+    (tmp_path / "apps" / name / "src/application").mkdir(parents=True)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript(name, failures)
+    assert bool([f for f in failures if "retired top-level" in f.detail]) is retired
+    assert not [f for f in failures if "src/modules/ is missing" in f.detail]
+
+
+def test_orm_quality_gates_require_validate_generate_and_drift(tmp_path, monkeypatch):
+    repository = tmp_path / "apps/kokoro-capability"
+    repository.mkdir(parents=True)
+    (repository / "package.json").write_text(
+        json.dumps(
+            {"scripts": {"prisma:validate": "echo pass", "prisma:generate": "true"}}
+        )
+    )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-capability", failures)
+    for name in ("prisma:validate", "prisma:generate", "schema:check"):
+        assert any(name in f.detail for f in failures)
+
+
+def test_openapi_upstream_exemption_requires_pinned_owner_provenance(tmp_path):
+    repository = tmp_path / "kokoro-iam"
+    spec = repository / "contract/openapi/better-auth.v1.7.3.json"
+    spec.parent.mkdir(parents=True)
+    spec.write_text('{"openapi":"3.1.0", "paths":{}}')
+    readme = repository / "contract/README.md"
+    readme.write_text("better-auth.v1.7.3.json # upstream schema snapshot\n")
+    assert ten_repository_standard.openapi_contract_candidates(repository) == ()
+    readme.write_text("owned specification\n")
+    assert ten_repository_standard.openapi_contract_candidates(repository) == (spec,)
+
+
+def test_named_setup_node_step_and_docker_chown_are_not_false_majors(
+    tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-iam"
+    (repository / ".github/workflows").mkdir(parents=True)
+    (repository / "package.json").write_text('{"engines":{"node":">=24 <25"}}')
+    (repository / ".node-version").write_text("24.20.0\n")
+    (repository / "Dockerfile").write_text(
+        "FROM node:24.20.0-slim\nCOPY --chown=node:node . /app\n"
+    )
+    workflow = repository / ".github/workflows/ci.yml"
+    workflow.write_text(
+        "steps:\n  - name: Setup\n    uses: actions/setup-node@fixture\n    with:\n      node-version-file: .node-version\n  - run: pnpm test\n"
+    )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    failures = []
+    typescript_checks.check_node_consistency("kokoro-iam", repository, failures)
+    assert failures == []
+
+
+def test_common_directory_is_not_itself_a_retired_global_layer(tmp_path, monkeypatch):
+    (tmp_path / "apps/kokoro-storage/src/common").mkdir(parents=True)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-storage", failures)
+    assert not [f for f in failures if "retired top-level" in f.detail]
+
+
+@pytest.mark.parametrize(
+    "relative", ["modules/skills/skill.service.ts", "modules/skills/domain/model.ts"]
+)
+@pytest.mark.parametrize(
+    "source",
+    [
+        'const wire = await import("../../generated/proto.js");',
+        'const wire = require("../../generated/proto.js");',
+    ],
+)
+def test_dynamic_generated_imports_stay_out_of_business_code(
+    relative, source, tmp_path, monkeypatch
+):
+    path = tmp_path / "apps/kokoro-capability/src" / relative
+    path.parent.mkdir(parents=True)
+    path.write_text(source)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-capability", failures)
+    assert any(f.rule == "wire-boundary" for f in failures)
+
+
+def test_schema_drift_script_must_call_the_approved_checker(tmp_path, monkeypatch):
+    repository = tmp_path / "apps/kokoro-capability"
+    (repository / "scripts").mkdir(parents=True)
+    (repository / "scripts/check-schema.ts").write_text("checkPersistedSchema();")
+    (repository / "package.json").write_text(
+        '{"scripts":{"schema:check":"node unrelated.js"}}'
+    )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-capability", failures)
+    assert any(f.rule == "schema-drift" for f in failures)
+
+
+@pytest.mark.parametrize(
+    "paths",
+    [
+        "paths: { /v2/items: {} }\n",
+        "paths: &routes\n  /v2/items: {}\n",
+        "x-paths: &routes\n  /v2/items: {}\npaths: *routes\n",
+        "x-paths: &routes\n  /v2/items: {}\npaths:\n  <<: *routes\n",
+        "x-document: &document\n  paths:\n    /v2/items: {}\n<<: *document\n",
+    ],
+)
+def test_review_yaml_non_block_paths_fail_closed(paths, tmp_path, monkeypatch):
+    spec = tmp_path / "apps/kokoro-billing/contract/openapi.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("openapi: 3.1.0\n" + paths)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert any(item.rule in {"http-versioning", "openapi-parsing"} for item in failures)
+
+
+@pytest.mark.parametrize(
+    "provenance,excluded",
+    [
+        ("", False),
+        (
+            "other-better-auth.v1.7.3.json — upstream snapshot provenance: https://example.test/spec",
+            False,
+        ),
+        ("better-auth.v1.7.3.json", False),
+        (
+            "contract/openapi/better-auth.v1.7.3.json — upstream snapshot provenance: https://example.test/spec",
+            True,
+        ),
+    ],
+)
+def test_review_vendor_exemption_requires_exact_provenance(
+    provenance, excluded, tmp_path
+):
+    repository = tmp_path / "kokoro-iam"
+    spec = repository / "contract/openapi/better-auth.v1.7.3.json"
+    spec.parent.mkdir(parents=True)
+    spec.write_text('{"openapi":"3.1.0", "paths":{"/v2/items":{}}}')
+    (repository / "contract/README.md").write_text(provenance)
+    assert (
+        spec not in ten_repository_standard.openapi_contract_candidates(repository)
+    ) is excluded
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "kokoro-bff",
+        "kokoro-agent",
+        "kokoro-system",
+        "kokoro-billing",
+        "kokoro-scheduler",
+    ],
+)
+def test_review_sql_canonical_rejects_editable_prisma_schema(
+    name, tmp_path, monkeypatch
+):
+    from scripts.governance import repository_checks
+
+    repository = tmp_path / "apps" / name
+    (repository / "database").mkdir(parents=True)
+    (repository / "database/schema.sql").write_text("CREATE TABLE fixture (id UUID);")
+    (repository / "prisma").mkdir()
+    (repository / "prisma/schema.prisma").write_text("model Fixture { id String @id }")
+    monkeypatch.setattr(repository_checks, "ROOT", tmp_path)
+    failures = []
+    repository_checks.check_common(name, failures)
+    assert any(
+        item.rule == "canonical-schema" and "prisma/schema.prisma" in item.detail
+        for item in failures
+    )
+
+
+@pytest.mark.parametrize("quote", ["", "'", '"'])
+@pytest.mark.parametrize("major,valid", [(22, False), (24, True)])
+def test_review_setup_node_quotes_do_not_skip_major_check(
+    quote, major, valid, tmp_path
+):
+    repository = tmp_path / "kokoro-system"
+    workflow = repository / ".github/workflows/ci.yml"
+    workflow.parent.mkdir(parents=True)
+    (repository / "package.json").write_text('{"engines":{"node":">=24 <25"}}')
+    workflow.write_text(
+        f"steps:\n  - uses: {quote}actions/setup-node@fixture{quote}\n    with:\n      node-version: {major}\n"
+    )
+    failures = []
+    typescript_checks.check_node_consistency("kokoro-system", repository, failures)
+    assert (not failures) is valid
+
+
+@pytest.mark.parametrize("route", ["/v1/items", "/v2/items"])
+def test_review_json_document_is_supported_as_yaml_subset(route):
+    text = json.dumps({"openapi": "3.1.0", "paths": {route: {}}})
+    assert contract_checks.openapi_paths(text, ".yaml") == (route,)
+
+
+@pytest.mark.parametrize(
+    "name,text",
+    [
+        ("flow.yaml", "{openapi: 3.1.0, paths: {/v2/items: {}}}"),
+        (
+            "flow.yml",
+            "{info: {title: fixture}, openapi: 3.1.0, paths: {/v2/items: {}}}",
+        ),
+        ("json-as-yaml.yaml", '{"openapi":"3.1.0","paths":{"/v2/items":{}}}'),
+        ("openapi.json", '{"openapi":"3.1.0","paths":{"/v2/items":{}}}'),
+    ],
+)
+def test_review_discovery_checks_root_flow_and_json_yaml_end_to_end(
+    name, text, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi" / name
+    spec.parent.mkdir(parents=True)
+    spec.write_text(text)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    discovered = ten_repository_standard.openapi_contract_candidates(repository)
+    assert discovered == (spec,)
+    failures = []
+    for path in discovered:
+        contract_checks.check_openapi_contract("kokoro-billing", path, failures)
+    assert any(item.rule in {"http-versioning", "openapi-parsing"} for item in failures)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "{nested: {openapi: 3.1.0}, paths: {}}",
+        '{info: {title: "openapi: 3.1.0"}, paths: {}}',
+        '{"nested":{"openapi":"3.1.0"}}',
+    ],
+)
+def test_review_discovery_does_not_promote_nested_flow_openapi(text, tmp_path):
+    spec = tmp_path / "contract/provenance.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(text)
+    assert ten_repository_standard.openapi_contract_candidates(tmp_path) == ()
+
+
+@pytest.mark.parametrize(
+    "prefix",
+    [
+        "# owned contract\n",
+        "---\n# owned contract\n",
+        "--- ",
+        "\ufeff\n# owned\n\n--- # document\n# contract\n",
+        "%YAML 1.2\n---\n# owned contract\n",
+    ],
+)
+@pytest.mark.parametrize(
+    "body",
+    [
+        "{openapi: 3.1.0, paths: {/v2/items: {}}}",
+        '{"openapi":"3.1.0","paths":{"/v2/items":{}}}',
+    ],
+)
+def test_review_yaml_document_prefixes_reach_contract_check(
+    prefix, body, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi/api.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(prefix + body)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    discovered = ten_repository_standard.openapi_contract_candidates(repository)
+    assert discovered == (spec,)
+    failures = []
+    for path in discovered:
+        contract_checks.check_openapi_contract("kokoro-billing", path, failures)
+    assert any(item.rule in {"http-versioning", "openapi-parsing"} for item in failures)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "{nested: {openapi: 3.1.0}, paths: {}}",
+        '{info: {title: "openapi: 3.1.0"}, paths: {}}',
+    ],
+)
+def test_review_yaml_prefixes_preserve_top_level_discovery_boundary(body, tmp_path):
+    spec = tmp_path / "contract/provenance.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("# provenance\n--- " + body)
+    assert ten_repository_standard.openapi_contract_candidates(tmp_path) == ()
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "&doc {openapi: 3.1.0, paths: {/v2/items: {}}}",
+        "openapi: &version 3.1.0\npaths:\n  /v2/items: {}\n",
+        "x-version: &version 3.1.0\nopenapi: *version\npaths:\n  /v2/items: {}\n",
+        "x-doc: &doc\n  openapi: 3.1.0\n  paths:\n    /v2/items: {}\n<<: *doc\n",
+        "  openapi: 3.1.0\n  paths:\n    /v2/items: {}\n",
+        "# comment\n--- # document\n# body\n  openapi: 3.1.0\n  paths:\n    /v2/items: {}\n",
+        "--- &doc {openapi: 3.1.0, paths: {/v2/items: {}}}",
+        '--- {"openapi":"3.1.0","paths":{"/v2/items":{}}}',
+        "--- {openapi: 3.1.0, paths: {/v2/items: {}}}",
+        '"openapi": 3.1.0\n"paths":\n  /v2/items: {}\n',
+        "? openapi\n: 3.1.0\npaths:\n  /v2/items: {}\n",
+        "!!map\nopenapi: 3.1.0\npaths:\n  /v2/items: {}\n",
+        "openapi: 3.1.0\npaths: {}\n---\nopenapi: 3.1.0\npaths:\n  /v2/items: {}\n",
+        "{ malformed",
+        "",
+    ],
+)
+@pytest.mark.parametrize(
+    "relative", ["contract/openapi/v1/api.yaml", "contract/openapi/tests/api.yml"]
+)
+def test_review_managed_candidates_never_silently_skip_yaml(
+    text, relative, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / relative
+    spec.parent.mkdir(parents=True)
+    spec.write_text(text)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-billing", failures)
+    diagnostics = [item for item in failures if relative in item.detail]
+    assert any(
+        item.rule in {"http-versioning", "openapi-parsing", "contract-owner"}
+        for item in diagnostics
+    ), diagnostics
+
+
+@pytest.mark.parametrize(
+    "text,expected_parsing",
+    [
+        ("{nested: {\nopenapi: 3.1.0\n}, paths: {}}", True),
+        ('"some text\nopenapi: 3.1.0\nmore text"', True),
+        ("nested:\n  openapi: 3.1.0\n  paths:\n    /v2/items: {}\n", False),
+        ('"openapi: 3.1.0"', False),
+        ('{"nested":{"openapi":"3.1.0","paths":{"/v2/items":{}}}}', False),
+    ],
+)
+def test_review_non_openapi_content_is_not_an_owned_spec(
+    text, expected_parsing, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    provenance = repository / "contract/provenance.yaml"
+    provenance.parent.mkdir(parents=True)
+    provenance.write_text(text)
+    assert ten_repository_standard.openapi_contract_candidates(repository) == ()
+    # A managed YAML file is a candidate, not proof of an owned OpenAPI document.
+    # Ambiguous/unsupported content must diagnose parsing instead of applying API rules.
+    spec = repository / "contract/openapi/candidate.yaml"
+    spec.parent.mkdir()
+    spec.write_text(text)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert not contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert bool(failures) is expected_parsing
+    assert all(item.rule == "openapi-parsing" for item in failures)
+
+
+@pytest.mark.parametrize("suffix", ["json", "yaml", "yml"])
+def test_review_managed_malformed_json_reaches_parser(suffix, tmp_path, monkeypatch):
+    repository = tmp_path / "apps/kokoro-billing"
+    relative = (
+        "contract/openapi.json"
+        if suffix == "json"
+        else f"contract/openapi/api.{suffix}"
+    )
+    spec = repository / relative
+    spec.parent.mkdir(parents=True)
+    spec.write_text('{"openapi":"3.1.0",')
+    assert ten_repository_standard.openapi_contract_candidates(repository) == (spec,)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    for path in ten_repository_standard.openapi_contract_candidates(repository):
+        contract_checks.check_openapi_contract("kokoro-billing", path, failures)
+    assert [item.rule for item in failures] == ["openapi-parsing"]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        '"not an OpenAPI document"',
+        '{"nested":{"openapi":"3.1.0"}}',
+        "nested:\n  openapi: 3.1.0\n",
+        "description: |\n  openapi: 3.1.0\n",
+        "&doc {openapi: 3.1.0, paths: {}}",
+    ],
+)
+def test_review_candidates_do_not_replace_confirmed_contract_owner(
+    text, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi/candidate.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(text)
+    transport = repository / "src/items.routes.ts"
+    transport.parent.mkdir()
+    transport.write_text('app.get("/v1/items", handler);')
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-billing", failures)
+    assert any(item.rule == "contract-owner" for item in failures)
+    assert not any(item.rule == "openapi-governance" for item in failures)
+
+
+def test_review_valid_sibling_does_not_hide_unreadable_candidate(tmp_path, monkeypatch):
+    repository = tmp_path / "apps/kokoro-billing"
+    valid = repository / "contract/openapi/valid.json"
+    valid.parent.mkdir(parents=True)
+    valid.write_text('{"openapi":"3.1.0","paths":{}}')
+    unreadable = valid.with_name("unreadable.yaml")
+    unreadable.write_bytes(b"\xff")
+    auxiliary = valid.with_name("breaking-policy.json")
+    auxiliary.write_text('{"breaking":"reject"}')
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-billing", failures)
+    parsing = [item for item in failures if item.rule == "openapi-parsing"]
+    assert len(parsing) == 1 and "unreadable.yaml" in parsing[0].detail
+    assert not any("breaking-policy.json" in item.detail for item in failures)
+
+
+@pytest.mark.parametrize("suffix", [".json", ".yaml", ".yml"])
+def test_review_json_operation_checks_are_extension_independent(
+    suffix, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / f"contract/openapi/api{suffix}"
+    spec.parent.mkdir(parents=True)
+    spec.write_text('{"openapi":"3.1.0","paths":{"/v1/items":{"get":{}}}}')
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert [item.rule for item in failures] == ["openapi-governance"]
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "  /v1/items: *item\n",
+        "  /v1/items: {get: {}}\n",
+        "  /v1/items:\n    get: {responses: {}}\n",
+        "  /v1/items:\n    get: *operation\n",
+        "  /v1/items:\n    <<: *item\n",
+    ],
+)
+def test_review_indirect_yaml_operations_do_not_silently_pass(
+    body, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi/api.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("openapi: 3.1.0\npaths:\n" + body)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert not contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert [item.rule for item in failures] == ["openapi-parsing"]
+
+
+@pytest.mark.parametrize("name", ["kokoro-agent", "kokoro-scheduler"])
+def test_review_non_typescript_owners_check_every_managed_candidate(
+    name, tmp_path, monkeypatch
+):
+    from scripts.governance import repository_checks
+
+    repository = tmp_path / "apps" / name
+    spec = repository / "contract/openapi/extra.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("&doc {openapi: 3.1.0, paths: {/v2/items: {}}}")
+    monkeypatch.setattr(repository_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    repository_checks.check_common(name, failures)
+    if name == "kokoro-scheduler":
+        repository_checks.check_scheduler(failures)
+    assert any(
+        item.rule == "openapi-parsing" and "contract/openapi/extra.yaml" in item.detail
+        for item in failures
+    )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "--- openapi: 3.1.0\npaths: {}\n",
+        "%YAML nonsense\n---\nopenapi: 3.1.0\npaths: {}\n",
+        "%YAML 1.2\n%YAML 1.2\n---\nopenapi: 3.1.0\npaths: {}\n",
+        "%YAML 1.2\nopenapi: 3.1.0\npaths: {}\n",
+        "%TAG nonsense\n---\nopenapi: 3.1.0\npaths: {}\n",
+        "openapi: 3.1.0\npaths:\n  /v1/items:\n    GET: {}\n",
+        "openapi: 3.1.0\npaths:\n  /v1/items:\n    unknown: {}\n",
+    ],
+)
+def test_review_unsupported_envelope_is_not_confirmed_owner(
+    text, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi/api.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(text)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert not contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert [item.rule for item in failures] == ["openapi-parsing"]
+
+
+@pytest.mark.parametrize("name", ["kokoro-iam", "kokoro-billing"])
+def test_review_generic_vendor_provenance_does_not_skip_managed_candidates(
+    name, tmp_path
+):
+    repository = tmp_path / name
+    spec = repository / "contract/openapi/vendor/upstream.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("&doc {openapi: 3.1.0, paths: {}}")
+    (repository / "contract/README.md").write_text(
+        "contract/openapi/vendor/upstream.yaml upstream snapshot provenance: https://example.test/spec"
+    )
+    assert ten_repository_standard.openapi_contract_candidates(repository) == (spec,)
+
+
+@pytest.mark.parametrize("suffix", [".json", ".yaml", ".yml"])
+@pytest.mark.parametrize(
+    "item",
+    [
+        "opaque",
+        {"get": "opaque"},
+        {
+            "GET": dict.fromkeys(
+                contract_checks.REQUIRED_OPENAPI_OPERATION_EXTENSIONS, "x"
+            )
+        },
+        {"$ref": "#/components/pathItems/Items"},
+        {"unknown": {}},
+    ],
+)
+def test_review_json_path_item_shape_fails_closed(suffix, item, tmp_path, monkeypatch):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / f"contract/openapi/api{suffix}"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(json.dumps({"openapi": "3.1.0", "paths": {"/v1/items": item}}))
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert not contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert [item.rule for item in failures] == ["openapi-parsing"]
+
+
+@pytest.mark.parametrize("suffix", [".json", ".yaml", ".yml"])
+def test_review_paths_extensions_are_not_http_operations(suffix, tmp_path, monkeypatch):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / f"contract/openapi/api{suffix}"
+    spec.parent.mkdir(parents=True)
+    spec.write_text('{"openapi":"3.1.0","paths":{"x-example":{"get":{}}}}')
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert failures == []
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "paths:\n  /v1/items:\n    summary: scalar\n      get: {}\n",
+        "paths:\n  /v1/items:\n    description: 'scalar'\n      post: {}\n",
+        'paths:\n  /v1/items:\n    x-note: "scalar" # comment\n      get: {}\n',
+        "paths:\n  /v1/items:\n    parameters: []\n      get: {}\n",
+        "paths:\n  /v1/items:\n    x-note: {}\n      get: {}\n",
+        "paths:\n  /v1/items:\n    get:\n      summary: scalar\n        responses: {}\n",
+        "x-note: scalar\n  nested: {}\npaths: {}\n",
+        "paths:\n  x-note: scalar\n    /v1/items: {}\n",
+        # Legal multiline plain scalars are outside this preflight's subset.
+        "paths:\n  /v1/items:\n    summary: first line\n      more text\n",
+        "paths:\n  /v1/items:\n    description: | invalid header\n      get: {}\n",
+        "paths:\n  /v1/items:\n    description: | invalid header\n",
+        "paths:\n  /v1/items:\n    description: |\n        first line\n      get: {}\n",
+        "paths:\n  /v1/items:\n    description: |\n        # scalar content\n      get: {}\n",
+        # Explicit indentation indicators are not in the supported scalar subset.
+        "paths:\n  /v1/items:\n    description: |2\n      get: {}\n",
+        # Preserving comments for literal scalar text must not turn null into {}.
+        "paths:\n  # no mapping entries\n",
+        "paths:\n  /v1/items:\n    # no mapping entries\n",
+        "paths:\n  /v1/items:\n    get:\n      # no mapping entries\n",
+        "paths:\n  /v1/items:\n    description: |\n      text\n    # closed scalar\n      get: {}\n",
+        "paths:\n  /v1/items:\n    description: |\n    # closed scalar\n      get: {}\n",
+        "paths:\n  /v1/items:\n    description: |\n      text\n  # closed scalar\n      get: {}\n",
+        "paths:\n  /v1/items:\n    description: |\n      text\n# closed scalar\n      get: {}\n",
+    ],
+)
+@pytest.mark.parametrize("suffix", [".yaml", ".yml"])
+def test_review_inline_yaml_values_never_swallow_indented_content(
+    body, suffix, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    relative = f"contract/openapi/api{suffix}"
+    spec = repository / relative
+    spec.parent.mkdir(parents=True)
+    spec.write_text("openapi: 3.1.0\n" + body)
+    transport = repository / "src/items.routes.ts"
+    transport.parent.mkdir()
+    transport.write_text('app.get("/v1/items", handler);')
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+
+    candidates = ten_repository_standard.openapi_contract_candidates(repository)
+    assert candidates == (spec,)
+    failures = []
+    assert not contract_checks.check_openapi_contract(
+        "kokoro-billing", candidates[0], failures
+    )
+    assert [item.rule for item in failures] == ["openapi-parsing"]
+    assert relative in failures[0].detail
+
+    failures = []
+    typescript_checks.check_typescript("kokoro-billing", failures)
+    assert len([item for item in failures if item.rule == "openapi-parsing"]) == 1
+    assert any(item.rule == "contract-owner" for item in failures)
+    assert not any(item.rule == "openapi-governance" for item in failures)
+
+
+@pytest.mark.parametrize("value", ["scalar", "'scalar'", '"scalar"', "{}", "[]"])
+def test_review_inline_yaml_values_keep_sibling_operations(
+    value, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi/api.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(
+        "openapi: 3.1.0\npaths:\n  /v1/items:\n"
+        f"    x-note: {value} # comment\n"
+        "      # An indented comment is not a child node.\n"
+        "    get: {}\n"
+    )
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert [item.rule for item in failures] == ["openapi-governance"]
+    assert "GET /v1/items" in failures[0].detail
+
+
+@pytest.mark.parametrize("header", ["|", ">", "|-", ">+ # comment"])
+def test_review_yaml_block_scalar_content_is_not_an_operation(
+    header, tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-billing"
+    spec = repository / "contract/openapi/api.yaml"
+    spec.parent.mkdir(parents=True)
+    spec.write_text(
+        "openapi: 3.1.0\npaths:\n  /v1/items:\n"
+        f"    description: {header}\n"
+        "      # scalar content\n        get: {}\n      scalar text\n"
+        "    # The scalar is closed; a same-level sibling remains valid.\n"
+        "    post: {}\n"
+    )
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+    failures = []
+    assert contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
+    assert [item.rule for item in failures] == ["openapi-governance"]
+    assert "POST /v1/items" in failures[0].detail

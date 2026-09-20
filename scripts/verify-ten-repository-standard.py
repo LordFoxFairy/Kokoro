@@ -9,6 +9,7 @@ a false green baseline.
 
 from __future__ import annotations
 
+from dataclasses import asdict
 import argparse
 import json
 import sys
@@ -28,21 +29,29 @@ from governance.ten_repository_standard import (
 )
 
 
-def collect_failures() -> list[Failure]:
+def collect_audit() -> tuple[list[Failure], list[Failure]]:
     failures: list[Failure] = []
+    unverified: list[Failure] = []
     check_docs(failures)
     for repository in REPOSITORIES:
         check_common(repository, failures)
         check_delivery(repository, failures)
     for repository in TS_REPOSITORIES:
-        check_typescript(repository, failures)
+        check_typescript(repository, failures, unverified)
     check_web(failures)
     check_bff(failures)
     check_agent(failures)
     check_scheduler(failures)
-    return sorted(
-        failures, key=lambda failure: (failure.repository, failure.rule, failure.detail)
-    )
+
+    def key(item: Failure) -> tuple[str, str, str]:
+        return item.repository, item.rule, item.detail
+
+    return sorted(failures, key=key), sorted(unverified, key=key)
+
+
+def collect_failures() -> list[Failure]:
+    """Policy violations only; toolchain availability is a separate channel."""
+    return collect_audit()[0]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -53,52 +62,38 @@ def main(argv: list[str] | None = None) -> int:
         default="text",
         help="stable diagnostic output format",
     )
+    parser.add_argument(
+        "--require-installed-tools",
+        action="store_true",
+        help="exit non-zero when installed TypeScript configuration cannot be verified",
+    )
     args = parser.parse_args(argv)
-    failures = collect_failures()
-
-    if failures:
-        if args.format == "json":
-            print(
-                json.dumps(
-                    {
-                        "status": "FAIL",
-                        "repository_count": len(REPOSITORIES),
-                        "violation_count": len(failures),
-                        "violations": [
-                            {
-                                "repository": failure.repository,
-                                "rule": failure.rule,
-                                "detail": failure.detail,
-                            }
-                            for failure in failures
-                        ],
-                    },
-                    ensure_ascii=False,
-                    indent=2,
-                )
-            )
-        else:
-            print(f"FAIL ten-repository-standard ({len(failures)} rule violations)")
-            for failure in failures:
-                print(f"- [{failure.repository}] {failure.rule}: {failure.detail}")
-        return 1
-
+    failures, unverified = collect_audit()
+    failed = bool(failures or (args.require_installed_tools and unverified))
+    status = "FAIL" if failed else "UNVERIFIED" if unverified else "PASS"
     if args.format == "json":
         print(
             json.dumps(
                 {
-                    "status": "PASS",
+                    "status": status,
                     "repository_count": len(REPOSITORIES),
-                    "violation_count": 0,
-                    "violations": [],
+                    "violation_count": len(failures),
+                    "violations": [asdict(item) for item in failures],
+                    "unverified_count": len(unverified),
+                    "unverified": [asdict(item) for item in unverified],
                 },
                 ensure_ascii=False,
                 indent=2,
             )
         )
     else:
-        print(f"PASS ten-repository-standard ({len(REPOSITORIES)} repositories)")
-    return 0
+        print(
+            f"{status} ten-repository-standard ({len(failures)} rule violations, {len(unverified)} unverified)"
+        )
+        for label, items in (("violation", failures), ("unverified", unverified)):
+            for item in items:
+                print(f"- [{item.repository}] {label} {item.rule}: {item.detail}")
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
