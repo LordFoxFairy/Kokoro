@@ -19,6 +19,8 @@ python3 -m pytest scripts/tests
 
 逐仓 lint/typecheck/test/build/schema/smoke 继续由各自 submodule 运行并以其 commit 为证据。Root 静态治理 PASS 不冒充 live owner、外部 provider、发布镜像或 SLO 验收。
 
+`python3 scripts/verify-ten-repository-standard.py --format json` 当前仍报告 189 条逐仓工程规范缺口；它们是下一轮按 owner 收敛的工作队列，不影响本次 Root gitlink、路径、main-only 与 clean-worktree 验收，也不能被写成“全仓质量门已绿”。
+
 ## 未闭合项
 
 1. `kokoro-capability` 到 `kokoro-platform` 的仓名、remote、数据库/Redis namespace 与消费者一次性 cutover 需要独立 ADR 和发布，不通过路径 alias 提前实现。
