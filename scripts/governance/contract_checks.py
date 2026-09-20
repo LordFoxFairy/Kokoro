@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-from .ten_repository_standard import ROOT, Failure, add, read_text
+from .ten_repository_standard import REPOSITORY_PATHS, ROOT, Failure, add, read_text
 
 REQUIRED_OPENAPI_OPERATION_EXTENSIONS = (
     "x-kokoro-owner",
@@ -190,7 +190,7 @@ def check_openapi_contract(
                     failures,
                     repository_name,
                     "http-versioning",
-                    f"{specification.relative_to(ROOT / repository_name)}:{line_number} has non-versioned path {route!r}",
+                    f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])}:{line_number} has non-versioned path {route!r}",
                 )
         if properties_indents and indent == properties_indents[-1] + 2:
             property_match = re.match(r"([A-Za-z_][A-Za-z0-9_]*):", stripped)
@@ -199,7 +199,7 @@ def check_openapi_contract(
                     failures,
                     repository_name,
                     "wire-naming",
-                    f"{specification.relative_to(ROOT / repository_name)}:{line_number} property {property_match.group(1)!r} is not snake_case",
+                    f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])}:{line_number} property {property_match.group(1)!r} is not snake_case",
                 )
 
     for route, method, missing_extensions in missing_openapi_operation_extensions(
@@ -210,6 +210,6 @@ def check_openapi_contract(
             failures,
             repository_name,
             "openapi-governance",
-            f"{specification.relative_to(ROOT / repository_name)} {method.upper()} {route} lacks "
+            f"{specification.relative_to(ROOT / REPOSITORY_PATHS[repository_name])} {method.upper()} {route} lacks "
             + ", ".join(missing_extensions),
         )

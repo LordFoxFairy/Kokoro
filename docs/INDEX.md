@@ -15,6 +15,7 @@
 | 任务 | 入口 |
 | --- | --- |
 | 了解活动仓边界 | [`CODEBASE_MAP.md`](CODEBASE_MAP.md)、[`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) |
+| 初始化/验证 Submodule 组合 | [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md)、[ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)、[`../scripts/verify-repository-topology.py`](../scripts/verify-repository-topology.py) |
 | 修改架构或跨仓规则 | [`ARCHITECTURE_STANDARD.md`](ARCHITECTURE_STANDARD.md)、[`kokoro-handbook/technical/`](kokoro-handbook/technical/) |
 | 设计/修改 API | 先定位事实 owner，再阅读该仓 `contract/README.md` 与 `docs/API_CONTRACT.md`；Root 不复制契约 |
 | 设计/修改 SQL | 先定位事实 owner，再阅读该仓 `database/schema.sql` 与 `docs/DATA_MODEL.md`；Root 不复制 Schema |

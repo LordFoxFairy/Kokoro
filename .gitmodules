@@ -1,4 +1,44 @@
+[submodule "kokoro-app"]
+	path = apps/kokoro-app
+	url = https://github.com/LordFoxFairy/kokoro-app.git
+	branch = main
+[submodule "kokoro-mori"]
+	path = apps/kokoro-mori
+	url = https://github.com/LordFoxFairy/kokoro-mori.git
+	branch = main
+[submodule "kokoro-bff"]
+	path = apps/kokoro-bff
+	url = https://github.com/LordFoxFairy/kokoro-bff.git
+	branch = main
 [submodule "kokoro-agent"]
-	path = kokoro-agent
+	path = apps/kokoro-agent
 	url = https://github.com/LordFoxFairy/kokoro-agent.git
+	branch = main
+[submodule "kokoro-iam"]
+	path = apps/kokoro-iam
+	url = https://github.com/LordFoxFairy/kokoro-iam.git
+	branch = main
+[submodule "kokoro-system"]
+	path = apps/kokoro-system
+	url = https://github.com/LordFoxFairy/kokoro-system.git
+	branch = main
+[submodule "kokoro-billing"]
+	path = apps/kokoro-billing
+	url = https://github.com/LordFoxFairy/kokoro-billing.git
+	branch = main
+[submodule "kokoro-capability"]
+	path = apps/kokoro-capability
+	url = https://github.com/LordFoxFairy/kokoro-capability.git
+	branch = main
+[submodule "kokoro-storage"]
+	path = apps/kokoro-storage
+	url = https://github.com/LordFoxFairy/kokoro-storage.git
+	branch = main
+[submodule "kokoro-scheduler"]
+	path = apps/kokoro-scheduler
+	url = https://github.com/LordFoxFairy/kokoro-scheduler.git
+	branch = main
+[submodule "kokoro-web-shared"]
+	path = libs/kokoro-web-shared
+	url = https://github.com/LordFoxFairy/kokoro-web-shared.git
 	branch = main

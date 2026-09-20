@@ -7,6 +7,7 @@ import re
 from .contract_checks import check_openapi_contract, check_schema_naming
 from .ten_repository_standard import (
     REPOSITORY_PROFILES,
+    REPOSITORY_PATHS,
     REQUIRED_SCHEDULER_LAYERS,
     ROOT,
     Failure,
@@ -25,7 +26,7 @@ from .ten_repository_standard import (
 
 
 def check_common(repository_name: str, failures: list[Failure]) -> None:
-    repository = ROOT / repository_name
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     profile = REPOSITORY_PROFILES[repository_name]
     if not repository.is_dir():
         add(
@@ -233,7 +234,7 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
 
 def check_scheduler(failures: list[Failure]) -> None:
     repository_name = "kokoro-scheduler"
-    repository = ROOT / repository_name
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     for layer in REQUIRED_SCHEDULER_LAYERS:
         if not (repository / "internal" / layer).is_dir():
             add(

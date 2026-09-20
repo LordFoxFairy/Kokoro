@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from .ten_repository_standard import (
+    REPOSITORY_PATHS,
     REQUIRED_AGENT_SOURCE_PATHS,
     RETIRED_AGENT_TOP_LEVEL_DIRECTORIES,
     ROOT,
@@ -18,8 +19,8 @@ from .ten_repository_standard import (
 
 
 def check_web(failures: list[Failure]) -> None:
-    repository_name = "kokoro"
-    repository = ROOT / repository_name
+    repository_name = "kokoro-app"
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     manifest = package_manifest(repository)
     dependencies = {
         **(
@@ -97,7 +98,7 @@ def check_web(failures: list[Failure]) -> None:
 
 def check_bff(failures: list[Failure]) -> None:
     repository_name = "kokoro-bff"
-    repository = ROOT / repository_name
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     expected_openapi = repository / "contract" / "openapi" / "v1" / "openapi.yaml"
     if not expected_openapi.is_file():
         add(
@@ -140,7 +141,7 @@ def check_bff(failures: list[Failure]) -> None:
 
 def check_agent(failures: list[Failure]) -> None:
     repository_name = "kokoro-agent"
-    repository = ROOT / repository_name
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     package_root = repository / "src" / "kokoro_agent"
     for source_path in REQUIRED_AGENT_SOURCE_PATHS:
         if not (package_root / source_path).is_dir():

@@ -1,112 +1,45 @@
-# Kokoro repository status
+# Kokoro repository composition
 
-状态：2026-09-15 · 当前九仓路径校准；System 先前完整源码、消费者 HTTP、NestJS 工程边界与 v0.1.2 镜像验收事实保留
+状态：2026-09-19。Root 是 Git superproject：它只锁定子仓的精确 gitlink、维护跨仓治理与组合验证；每个子仓独立拥有代码、依赖锁、契约、数据、测试、CI 和发布。
 
-> 按 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)，Model 业务归 System。
-> 本表是活动运行仓清单，不是所有磁盘目录清单。旧 Model checkout/remote 保留作历史源，不归 archived。
-> 各仓行内旧 SHA 只作先前基线，最新可运行/已验事实见各仓 CURRENT；System/BFF/Agent 本轮具体 SHA 与边界见 Root CURRENT。
+## 组合清单
 
-本文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存仓库拓扑、架构文档、部署编排与验证工具；API contract、Schema、生成代码和业务实现必须留在对应独立仓库。子仓之间只通过各 owner 仓库发布的
-HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导入源代码、数据库或 ORM。
-
-## 正式仓库与 GitHub 映射
-
-| 本地目录 | GitHub 仓库 | 事实/业务边界 | 历史基线（当前见本仓 CURRENT） |
+| Root 路径 | GitHub 仓库 | 分类 | 唯一职责 |
 |---|---|---|---|
-| kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | e1d9eeb |
-| kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 26eec011 |
-| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | e24b4aa |
-| kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 531816e |
-| kokoro-system | LordFoxFairy/kokoro-system | Sites/Hosts/Policy、Workspaces、Products、Runtime Manifest、Model Catalog | f3b5a18（v0.1.2→7252d50） |
-| kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | fd80ec4 |
-| kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | 1de0bf5 |
-| kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | a2d05a0 |
-| kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 2f7a3e8 |
+| `apps/kokoro-app` | `LordFoxFairy/kokoro-app` | deployable Web | Web UI、浏览器状态、HttpOnly session、同源 adapter |
+| `apps/kokoro-mori` | `LordFoxFairy/kokoro-mori` | deployable Web | Mori 音乐产品 UI |
+| `apps/kokoro-bff` | `LordFoxFairy/kokoro-bff` | service | Conversation、Message、Share、Project、ScheduledTask、公开 Product API、durable AG-UI projection |
+| `apps/kokoro-agent` | `LordFoxFairy/kokoro-agent` | service | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence |
+| `apps/kokoro-iam` | `LordFoxFairy/kokoro-iam` | service | Tenant、Identity、Authentication、Authorization、Role、Permission、Audit |
+| `apps/kokoro-system` | `LordFoxFairy/kokoro-system` | service | Site、Host、Workspace、Runtime、Policy、Model Catalog |
+| `apps/kokoro-billing` | `LordFoxFairy/kokoro-billing` | service | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering |
+| `apps/kokoro-capability` | `LordFoxFairy/kokoro-capability` | service | Skills 与 MCP control plane |
+| `apps/kokoro-storage` | `LordFoxFairy/kokoro-storage` | service | Blob、Upload、Asset、Artifact、Scan、object lifecycle metadata |
+| `apps/kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | service | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch |
+| `libs/kokoro-web-shared` | `LordFoxFairy/kokoro-web-shared` | versioned library | 独立发布的共享前端包 |
 
-Root + 9 个 active child checkout 各为独立 Git root。仅 Agent 是 Root gitlink；其余八个活动仓为
-Root 同目录独立 checkout，其中 Web 当前路径是 `Kokoro/kokoro/`、远端是 `LordFoxFairy/kokoro-app`，
-不是 `apps/kokoro/` gitlink。目标九仓 Submodule 与 `apps/` 容器尚未实施；正式路径另由拓扑 ADR 冻结。
-当前任务使用各自 `codex/` 分支，不能沿用历史“全是 main/clean”的声明。
-`kokoro-model/` 是保留的非活动历史 checkout；本次不删除目录、不归档 GitHub、不改 remote。
-用 scripts/audit-repository-state.py 显式读取当前 SHA/分支/dirty，旧报告不等价于本次验收。
+`kokoro-app` 是 Web 仓的唯一 Git 标识；Root 不使用 `kokoro/` 或 `apps/kokoro/` 作为 alias。`kokoro-mori-p1-arrangement-recording` 是已移除的 Mori worktree，不是仓库或 submodule。`kokoro-model` 已合入 System model-catalog，不在组合清单中；Capability→Platform 的独立 clean-slate cutover 尚未发生。
 
-## 归属裁决
+## Git 与版本政策
 
-- Chat 是 kokoro-bff 的内部业务模块；Session 是 BFF v1 API 概念，不存在独立
-  kokoro-chat 或 kokoro-session 运行仓。
-- Project 的 instruction、resource、task 语义归 BFF；不要将它们伪装成 System Workspace。
-- ScheduledTask 定义与业务状态归 BFF；Scheduler 只拥有通用 ScheduleJob、occurrence lease、
-  retry/misfire/pause/resume 和 dispatch，不读 Billing、BFF 或其他业务数据库。
-- Credit 属于 kokoro-billing，与 Payment、Subscription、Checkout、Refund、Ledger 同仓，
-  但保留独立 bounded context、repository、表 owner 与事务边界。
-- IAM 与 System 保持独立；System 拥有模型目录与路由，但不持有 IAM 授权事实、provider 明文 secret 或 Billing ledger。
-- 正式业务仓统一 PostgreSQL + Redis。PostgreSQL 保存业务事实；Redis 仅作 cache、stream、
-  queue、lease、限流和协调；对象字节归 Storage 的 S3-compatible ObjectStore。
-- Web 不直连任何 owner、Agent、PostgreSQL 或 Redis；浏览器 X-Domain、X-Forwarded-* 和
-  Host 不作为租户身份来源。BFF 从 KOKORO_DOMAIN 生成标准 Forwarded，向 IAM 完成身份/权限 admission，
-  再向 System 发送受信 tenant_id + Host；Site/Host binding 由 System 自己校验，再向 owner 发送受信服务上下文。
+1. Root 与所有子仓本地、`origin` 只保留 `main`；每个 gitlink 锁定精确、已推送的 commit。
+2. `.gitmodules` 的 `branch = main` 仅作更新提示，不能替代 gitlink 发布锁。
+3. 子仓先独立 commit、验证、推送；随后才更新 Root gitlink 并执行组合验证。禁止用 `git submodule update --remote` 形成浮动发布快照。
+4. Root 不建立跨仓 `pnpm-workspace.yaml`、共享语言 lockfile、共享 ORM schema、可编辑 contract 副本或 sibling source import。
 
-## 运行链路
+## 测试与文档归属
 
-    kokoro-app Web
-      -> same-origin /api/*
-      -> kokoro-bff /v1/*
-      -> IAM/System/Billing/Capability/Storage owner contracts
-      -> kokoro-agent HTTP ingress
-      -> kokoro-scheduler internal command and occurrence replay
+- unit、子仓 integration、contract、lint、typecheck、build、schema 与仓内 smoke 由对应 submodule 保有。
+- Root `scripts/tests/` 只测试 Root 自己的拓扑与治理脚本；未来跨仓组合 contract/integration/e2e/smoke 归 `verification/`，不复制子仓测试。
+- 系统拓扑、跨仓 ADR、组合版本、部署、回滚与组合验证归 Root；业务 API、SQL schema、运行手册归事实 owner 子仓。
 
-BFF live 已接入 System runtime manifest 与 model-catalog、Billing catalog/checkout、
-Capability skill/MCP read projection、Storage library projection、Agent Chat
-launch/control/replay/detail/session-list。BFF 自有 PostgreSQL/Redis business store 保存 Project/
-ScheduledTask，并同步 Scheduler 注册、dispatch 和 durable receipt。未提供 owner ingress
-的写操作显式返回稳定的未接线错误，不回退成 mock 成功。
+## 验证入口
 
-## 契约归属
+```bash
+git submodule update --init --recursive
+python3 scripts/verify-repository-topology.py
+python3 scripts/verify-main-only.py
+python3 -m pytest scripts/tests
+```
 
-Root 不保存跨仓 machine-readable contract、Proto、OpenAPI、JSON Schema 或生成器。每个 active repository
-在自己的 `docs/api/`、`docs/agent/`、`contract/` 或等价目录维护本仓边界，具体目录由该仓 README 声明。
-
-- Web 的 AG-UI 解析和同源 API 契约由 `kokoro` 自己维护；
-- BFF 的公开 HTTP、SSE、Chat 和 AG-UI projection 契约由 `kokoro-bff` 自己维护；
-- Agent 的 ingress、Redis command/event protocol 和执行事实契约由 `kokoro-agent` 自己维护；
-- 六个业务 owner 各自维护 API、canonical SQL schema、client facade、contract tests、Docker 和 CI。
-
-Root 只做 topology、architecture 和 loopback E2E 编排，不生成、复制或发布 sibling contract。历史报告中的 Root
-contract、manifest 和 generator 路径均为迁移记录，不是当前实现入口。
-
-HTTP envelope 以各 owner 的已发布契约为准，不由 Root 复制一套字段。System 成功为 `{data}`，
-错误为 `{error:{code,message,retryable}}`，request ID 在 `x-request-id`；BFF 对外投影仍遵循其自身契约。
-
-## 子仓自洽门禁
-
-每个 active repository 必须在自身 checkout 内完成：
-
-1. README、API contract、integration/runbook/acceptance/risk 文档；
-2. 本仓 unit、integration、contract、architecture/smoke 测试；
-3. push/PR 只执行质量门禁；
-4. 只有 v*.*.* tag 触发 GHCR 生产镜像发布，普通 push 不发布镜像；
-5. Dockerfile 使用生产启动入口；本地开发直接使用本仓 dev/test 命令；
-6. 不读取 sibling source，不共享 sibling database/table/schema，不信任浏览器自定义域名 header。
-
-## 已废弃并归档
-
-| 名称 | GitHub 状态 | 当前处理 |
-|---|---|---|
-| kokoro-session | LordFoxFairy/kokoro-session archived | 不在 Root、Compose、CI、manifest |
-| kokoro-gateway | LordFoxFairy/kokoro-gateway archived | 不在 Root、Compose、CI、manifest |
-| kokoro-platform | LordFoxFairy/kokoro-platform archived | 不在 Root、Compose、CI、manifest |
-| kokoro-web | LordFoxFairy/kokoro-web archived | 旧 monorepo，不再作为 Web 入口 |
-| kokoro-credit | 无正式远程仓 | Credit 已并入 Billing |
-| kokoro-site-kokoro | 无正式远程仓 | 旧 Site 占位目录已移除 |
-
-归档远程仓保留历史提交；本机不保留旧仓源码、旧部署、旧全栈 Compose、旧 MySQL/Mongo
-运行时或旧 infrastructure 容器。历史 handbook/report 只作迁移考古，并明确标记为历史材料。
-
-## 证据
-
-- 阶段 2 最终测试报告：docs/reports/2026-09-02-stage2-final-test-report.md
-- live owner health：docs/reports/2026-09-01-stage2-owner-health.json
-- 仓库审计：docs/reports/2026-09-01-stage2-repository-audit.md
-- Root topology/E2E：`scripts/verify-repository-topology.py` 与 `scripts/e2e/`
-- 本地/GitHub 审计：scripts/audit-repository-state.py
-- 子仓库架构与规范审计：docs/repository-architecture-review-v1.md
+完整 clone 的复现命令见 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)。

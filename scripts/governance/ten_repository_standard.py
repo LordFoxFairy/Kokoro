@@ -67,7 +67,7 @@ REQUIRED_REPOSITORY_DOCUMENTS = (
 )
 REQUIRED_REPOSITORY_DIRECTORIES = ("docs/ADR",)
 FILE_GRANULARITY_EXEMPT_PREFIXES = {
-    "kokoro": ("src/i18n/",),
+    "kokoro-app": ("src/i18n/",),
 }
 CONTRACT_README_FIELDS = (
     "owner",
@@ -100,7 +100,7 @@ class RepositoryProfile:
 
 
 REPOSITORY_PROFILES = {
-    "kokoro": RepositoryProfile("web", False, None),
+    "kokoro-app": RepositoryProfile("web", False, None),
     "kokoro-bff": RepositoryProfile(
         "typescript-service", True, 8, REQUIRED_TS_SOURCE_PATHS
     ),
@@ -126,6 +126,10 @@ REPOSITORY_PROFILES = {
         "go-service", True, 7, REQUIRED_SCHEDULER_LAYERS
     ),
 }
+REPOSITORY_PATHS = {
+    name: Path("apps") / name for name in REPOSITORY_PROFILES
+}
+
 REPOSITORIES = tuple(REPOSITORY_PROFILES)
 TS_REPOSITORIES = tuple(
     name

@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from .ten_repository_standard import (
+    REPOSITORY_PATHS,
     REQUIRED_REPOSITORY_DIRECTORIES,
     REQUIRED_REPOSITORY_DOCUMENTS,
     ROOT,
@@ -17,7 +18,7 @@ from .ten_repository_standard import (
 
 
 def check_delivery(repository_name: str, failures: list[Failure]) -> None:
-    repository = ROOT / repository_name
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     for relative in REQUIRED_REPOSITORY_DOCUMENTS:
         if not has_exact_relative_file(repository, relative):
             add(failures, repository_name, "documentation", f"{relative} is missing")

@@ -40,8 +40,7 @@ apps/kokoro-scheduler/  LordFoxFairy/kokoro-scheduler  服务
 libs/kokoro-web-shared/ LordFoxFairy/kokoro-web-shared 独立版本化共享包
 ```
 
-`kokoro-mori` 和 `kokoro-web-shared` 尚未建立正式远端。其远端创建、默认分支设为 `main`、首次 push 与单仓验证是
-进入 Root Submodule 清单的前置条件。没有 `origin` 的本地仓不被伪装成已可复现的子模块。
+`kokoro-mori` 与 `kokoro-web-shared` 已建立正式远端、默认分支为 `main`，并在进入本清单前完成首次 push 与单仓验证。没有 `origin` 的本地目录不得伪装成已可复现的子模块。
 
 当前正式服务 owner 仍是既定九个；Mori 增加的是独立部署的前端产品，`web-shared` 是包边界，不取得服务 owner 数据库、
 契约或写入权。`kokoro-model` 是已裁决合入 System 的历史 checkout，不进入组合。`kokoro-capability` 到
@@ -57,7 +56,7 @@ Root 使用 gitlink 锁定每个子仓的精确 SHA；`.gitmodules` 的 `branch 
 
 ### 4. 迁移与验证
 
-先完成每仓 `main` 收敛，再在隔离 Root worktree 创建 `apps/`、`libs/` gitlink 并移除旧同级 gitlink/checkouts。
+先完成每仓 `main` 收敛，再在隔离 Root worktree 创建 `apps/`、`libs/` gitlink 并移除旧同级 gitlink/checkouts。当前组合已按此路径落地。
 迁移完成后必须在新目录外验证：
 
 ```bash

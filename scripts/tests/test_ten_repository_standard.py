@@ -29,7 +29,7 @@ def test_verifier_targets_nine_active_repositories_after_system_model_cutover() 
     verifier = load_verifier()
 
     assert verifier.REPOSITORIES == (
-        "kokoro",
+        "kokoro-app",
         "kokoro-bff",
         "kokoro-agent",
         "kokoro-iam",
@@ -44,8 +44,8 @@ def test_verifier_targets_nine_active_repositories_after_system_model_cutover() 
 def test_repository_profiles_encode_runtime_and_persistence_boundaries() -> None:
     verifier = load_verifier()
 
-    assert verifier.REPOSITORY_PROFILES["kokoro"].kind == "web"
-    assert verifier.REPOSITORY_PROFILES["kokoro"].requires_schema is False
+    assert verifier.REPOSITORY_PROFILES["kokoro-app"].kind == "web"
+    assert verifier.REPOSITORY_PROFILES["kokoro-app"].requires_schema is False
     assert verifier.REPOSITORY_PROFILES["kokoro-bff"].kind == "typescript-service"
     assert verifier.REPOSITORY_PROFILES["kokoro-bff"].requires_schema is True
     assert verifier.REPOSITORY_PROFILES["kokoro-agent"].kind == "python-service"
@@ -96,7 +96,7 @@ def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_service
     }
     assert 0 not in verifier.LOCAL_REDIS_DATABASES.values()
     assert 3 not in verifier.LOCAL_REDIS_DATABASES.values()
-    assert "kokoro" not in verifier.LOCAL_REDIS_DATABASES
+    assert "kokoro-app" not in verifier.LOCAL_REDIS_DATABASES
     assert verifier.extract_redis_databases("REDIS_URL=redis://cache.local:6379/8") == {
         8
     }
@@ -106,7 +106,7 @@ def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_service
 def test_nest_process_directories_are_not_retired(
     directory, tmp_path, monkeypatch
 ) -> None:
-    repository = tmp_path / "kokoro-system"
+    repository = tmp_path / "apps" / "kokoro-system"
     (repository / "src" / directory).mkdir(parents=True)
     monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
     monkeypatch.setattr(
@@ -137,8 +137,8 @@ def test_nest_process_directories_are_not_retired(
 def test_package_manager_requires_an_exact_stable_pnpm_pin(
     package_manager, valid, tmp_path, monkeypatch
 ) -> None:
-    repository = tmp_path / "kokoro-system"
-    repository.mkdir()
+    repository = tmp_path / "apps" / "kokoro-system"
+    repository.mkdir(parents=True)
     (repository / "package.json").write_text(
         json.dumps({"packageManager": package_manager}), encoding="utf-8"
     )
@@ -212,7 +212,7 @@ def test_typescript_strictness_includes_unknown_catch_variables() -> None:
 def test_required_quality_scripts_are_profile_specific() -> None:
     verifier = load_verifier()
 
-    assert verifier.required_quality_scripts("kokoro") == (
+    assert verifier.required_quality_scripts("kokoro-app") == (
         "lint",
         "typecheck",
         "test",
@@ -322,8 +322,8 @@ def test_contract_readme_requires_provenance_fields() -> None:
 def test_i18n_catalog_has_an_explicit_granularity_exemption() -> None:
     verifier = load_verifier()
 
-    assert verifier.is_granularity_exempt("kokoro", "src/i18n/en.ts") is True
-    assert verifier.is_granularity_exempt("kokoro", "src/engine/machine.ts") is False
+    assert verifier.is_granularity_exempt("kokoro-app", "src/i18n/en.ts") is True
+    assert verifier.is_granularity_exempt("kokoro-app", "src/engine/machine.ts") is False
 
 
 def test_openapi_operation_extensions_are_machine_checked() -> None:
@@ -448,7 +448,7 @@ def test_tsconfig_missing_compiler_is_reported_not_silently_parsed(tmp_path) -> 
 def test_process_services_are_not_misclassified_as_business_rules(
     relative, allowed, tmp_path, monkeypatch
 ) -> None:
-    repository = tmp_path / "kokoro-system"
+    repository = tmp_path / "apps" / "kokoro-system"
     path = repository / "src" / relative
     path.parent.mkdir(parents=True)
     path.write_text(
@@ -481,7 +481,7 @@ def test_process_services_are_not_misclassified_as_business_rules(
 def test_technical_service_exception_is_limited_to_its_driver(
     relative, source, tmp_path, monkeypatch
 ) -> None:
-    repository = tmp_path / "kokoro-system"
+    repository = tmp_path / "apps" / "kokoro-system"
     path = repository / "src" / relative
     path.parent.mkdir(parents=True)
     path.write_text(source)
@@ -510,7 +510,7 @@ def test_technical_service_exception_is_limited_to_its_driver(
 def test_environment_reads_stay_at_process_configuration_boundary(
     relative, allowed, tmp_path, monkeypatch
 ):
-    path = tmp_path / "kokoro-system" / "src" / relative
+    path = tmp_path / "apps" / "kokoro-system" / "src" / relative
     path.parent.mkdir(parents=True)
     path.write_text("const environment = process.env;")
     monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
@@ -553,7 +553,7 @@ def test_workflow_gate_expansion_ignores_comments_echo_and_cycles():
 def test_release_gate_recognizes_digest_bound_attestations(tmp_path, monkeypatch):
     from scripts.governance import delivery_checks
 
-    workflow = tmp_path / "kokoro-system/.github/workflows/release-image.yml"
+    workflow = tmp_path / "apps/kokoro-system/.github/workflows/release-image.yml"
     workflow.parent.mkdir(parents=True)
     workflow.write_text("""steps:
   - uses: aquasecurity/trivy-action@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

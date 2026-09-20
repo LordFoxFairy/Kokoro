@@ -9,6 +9,7 @@ from pathlib import Path
 from .contract_checks import check_openapi_contract
 from .ten_repository_standard import (
     REPOSITORY_PROFILES,
+    REPOSITORY_PATHS,
     REQUIRED_NODE_ENGINE,
     REQUIRED_TS_COMPILER_OPTIONS,
     RETIRED_TS_TOP_LEVEL_DIRECTORIES,
@@ -125,7 +126,7 @@ def forbidden_business_dependencies(text: str) -> tuple[str, ...]:
 
 
 def check_typescript(repository_name: str, failures: list[Failure]) -> None:
-    repository = ROOT / repository_name
+    repository = ROOT / REPOSITORY_PATHS[repository_name]
     profile = REPOSITORY_PROFILES[repository_name]
     for source_path in profile.required_source_paths:
         if not (repository / "src" / source_path).is_dir():

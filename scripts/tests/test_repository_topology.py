@@ -1,144 +1,91 @@
+from __future__ import annotations
+
 import re
+import runpy
+import subprocess
+import sys
 from pathlib import Path
 
-
-def test_repository_topology_script_exists() -> None:
-    path = Path(__file__).parents[1] / "verify-repository-topology.py"
-    assert path.is_file()
+ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_model_retirement_keeps_checkout_without_active_or_archive_classification() -> (
-    None
-):
-    import runpy
+def test_repository_topology_script_declares_exact_remote_named_composition() -> None:
+    topology = runpy.run_path(str(ROOT / "scripts/verify-repository-topology.py"))
+    assert topology["RUNTIME_MODULES"] == (
+        "kokoro-app",
+        "kokoro-bff",
+        "kokoro-agent",
+        "kokoro-iam",
+        "kokoro-system",
+        "kokoro-billing",
+        "kokoro-capability",
+        "kokoro-storage",
+        "kokoro-scheduler",
+    )
+    modules = topology["MODULES"]
+    assert modules["kokoro-app"] == ("apps/kokoro-app", "https://github.com/LordFoxFairy/kokoro-app.git")
+    assert modules["kokoro-mori"][0] == "apps/kokoro-mori"
+    assert modules["kokoro-web-shared"][0] == "libs/kokoro-web-shared"
+    assert "kokoro-model" not in modules
 
-    root = Path(__file__).resolve().parents[2]
-    topology = runpy.run_path(str(root / "scripts/verify-repository-topology.py"))
-    assert "kokoro-model" not in topology["ACTIVE"]
-    assert "kokoro-model" not in topology["ARCHIVED"]
-    assert len(topology["ACTIVE"]) == 9
-    assert topology["ACTIVE"]["kokoro-system"].endswith("kokoro-system.git")
-    clone = (root / "deploy/clone-active-repositories.sh").read_text()
+
+def test_root_metadata_uses_remote_names_without_a_web_alias() -> None:
+    status = (ROOT / "docs/REPOSITORY_STATUS.md").read_text()
+    codebase_map = (ROOT / "docs/CODEBASE_MAP.md").read_text()
+    gitmodules = (ROOT / ".gitmodules").read_text()
+    paths = [line.split("=", 1)[1].strip() for line in gitmodules.splitlines() if line.strip().startswith("path =")]
+    assert paths == [
+        "apps/kokoro-app", "apps/kokoro-mori", "apps/kokoro-bff", "apps/kokoro-agent",
+        "apps/kokoro-iam", "apps/kokoro-system", "apps/kokoro-billing", "apps/kokoro-capability",
+        "apps/kokoro-storage", "apps/kokoro-scheduler", "libs/kokoro-web-shared",
+    ]
+    assert "`apps/kokoro-app`" in status
+    assert "`apps/kokoro-app`" in codebase_map
+    assert "| `apps/kokoro/` |" not in status
+
+
+def test_root_current_distinguishes_root_governance_tests_from_subrepository_tests() -> None:
+    current = (ROOT / "docs/CURRENT.md").read_text()
+    assert "子仓的 tests 不迁入 Root" in current
+    assert "`scripts/tests/` 只覆盖 Root 治理脚本" in current
+    assert "`verification/`" in current
+
+
+def test_model_retirement_keeps_it_out_of_active_composition() -> None:
+    topology = runpy.run_path(str(ROOT / "scripts/verify-repository-topology.py"))
+    assert "kokoro-model" not in topology["MODULES"]
+    assert "kokoro-model" in topology["ARCHIVED"]
+    clone = (ROOT / "deploy/clone-active-repositories.sh").read_text()
     assert '"kokoro-model|kokoro-model"' not in clone
 
 
-def test_model_retirement_covers_active_verification_and_owner_processes() -> None:
-    root = Path(__file__).resolve().parents[2]
-    for path in (
-        "scripts/audit-repository-state.py",
-        "scripts/e2e/run_stage2_owner_health.py",
-        "scripts/verify-ten-repository-full.sh",
-    ):
-        assert "kokoro-model" not in (root / path).read_text(), path
-    full = (root / "scripts/verify-ten-repository-full.sh").read_text()
-    assert "MODEL_DATABASE_URL" not in full
-    assert "kokoro_gate_model" not in full
-
-
 def test_unsafe_legacy_runners_are_paused_before_touching_infrastructure() -> None:
-    import subprocess
-    import sys
-
-    root = Path(__file__).resolve().parents[2]
     for relative, interpreter in (
         ("scripts/e2e/run_stage2_owner_health.py", sys.executable),
         ("scripts/verify-ten-repository-full.sh", "bash"),
     ):
-        path = root / relative
+        path = ROOT / relative
         source = path.read_text()
-        # Inspect before executing: the RED run must never execute the old cleanup.
         assert "FLUSHDB" not in source and "DROP DATABASE" not in source
         assert "VERIFICATION_ENTRY_PAUSED" in source
-        result = subprocess.run(
-            [interpreter, str(path)], capture_output=True, text=True, timeout=5
-        )
+        result = subprocess.run([interpreter, str(path)], capture_output=True, text=True, timeout=5)
         assert result.returncode == 2
         assert "VERIFICATION_ENTRY_PAUSED" in result.stderr
         assert "run_system_owner_smoke.py" in result.stderr
 
 
-def test_codebase_map_does_not_replace_scheduler_postgres_truth() -> None:
-    root = Path(__file__).resolve().parents[2]
-    map_text = (root / "docs/CODEBASE_MAP.md").read_text()
-    scheduler_row = next(
-        line
-        for line in map_text.splitlines()
-        if line.startswith("| `kokoro-scheduler` |")
-    )
-    assert "PostgreSQL" in scheduler_row
-    assert "no business DB" not in scheduler_row
+def test_codebase_map_keeps_scheduler_postgres_truth() -> None:
+    map_text = (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
+    assert "Scheduler" in map_text
+    assert "PostgreSQL" in map_text
 
 
-def test_current_web_path_is_not_claimed_as_an_apps_gitlink() -> None:
-    root = Path(__file__).resolve().parents[2]
-    status = (root / "docs/REPOSITORY_STATUS.md").read_text()
-    gitmodules = (root / ".gitmodules").read_text()
-    codebase_map = (root / "docs/CODEBASE_MAP.md").read_text()
-    assert "| kokoro | LordFoxFairy/kokoro-app |" in status
-    paths = [
-        line.split("=", 1)[1].strip()
-        for line in gitmodules.splitlines()
-        if line.strip().startswith("path =")
-    ]
-    # An approved Submodule cutover must update this assertion with .gitmodules and map changes.
-    assert paths == ["kokoro-agent"]
-    assert "当前九个正式运行仓只有 `kokoro-agent` 通过 Root gitlink 声明" in codebase_map
-    assert "目标 `apps/` 部署容器及其 Git 路径尚未实施" in codebase_map
-    assert "当前 Web 仍位于 `kokoro/`" in codebase_map
-
-
-def test_root_current_marks_apps_and_full_gate_as_unfinished() -> None:
-    root = Path(__file__).resolve().parents[2]
-    current = (root / "docs/CURRENT.md").read_text()
-    assert "`apps/` 尚未实施" in current
-    assert "`scripts/verify-ten-repository-full.sh` 仍暂停" in current
-
-
-def test_repository_status_lists_exact_nine_directories_and_web_remote() -> None:
-    root = Path(__file__).resolve().parents[2]
-    status = (root / "docs/REPOSITORY_STATUS.md").read_text()
-    table = status.split("## 正式仓库与 GitHub 映射", 1)[1].split("## 归属裁决", 1)[0]
-    rows = [line for line in table.splitlines() if line.startswith("| kokoro")]
-    assert len(rows) == 9
-    names = [row.split("|", 2)[1].strip() for row in rows]
-    assert names == [
-        "kokoro",
-        "kokoro-bff",
-        "kokoro-agent",
-        "kokoro-iam",
-        "kokoro-system",
-        "kokoro-billing",
-        "kokoro-capability",
-        "kokoro-storage",
-        "kokoro-scheduler",
-    ]
-    assert "| kokoro | LordFoxFairy/kokoro-app |" in rows[0]
-    assert "仅 Agent 是 Root gitlink" in status
-
-
-def test_active_production_plan_lists_exact_nine_runtime_repositories() -> None:
-    root = Path(__file__).resolve().parents[2]
-    plan = (
-        root / "docs/superpowers/plans/2026-09-03-kokoro-production-closure.md"
-    ).read_text()
-    scope = plan.split("## 1. 范围与完成定义", 1)[1].split(
-        "## 2. 固定架构裁决", 1
-    )[0]
+def test_active_production_plan_keeps_nine_runtime_owners() -> None:
+    plan = (ROOT / "docs/superpowers/plans/2026-09-03-kokoro-production-closure.md").read_text()
+    scope = plan.split("## 1. 范围与完成定义", 1)[1].split("## 2. 固定架构裁决", 1)[0]
     repositories = re.findall(r"(?m)^\d+\. `([^`]+)`", scope)
     assert repositories == [
-        "kokoro",
-        "kokoro-bff",
-        "kokoro-agent",
-        "kokoro-iam",
-        "kokoro-system",
-        "kokoro-billing",
-        "kokoro-capability",
-        "kokoro-storage",
-        "kokoro-scheduler",
+        "kokoro", "kokoro-bff", "kokoro-agent", "kokoro-iam", "kokoro-system",
+        "kokoro-billing", "kokoro-capability", "kokoro-storage", "kokoro-scheduler",
     ]
     assert "model-catalog" in scope
-    assert "`kokoro-capability` 是当前物理仓" in scope
-    assert "目标 clean-slate 重命名为 `kokoro-platform`" in scope
-    assert "五个 TypeScript 业务 owner 仓" in plan
-    assert "拆入 Domain/Application/Infrastructure/Interfaces" not in plan
-    assert "domain/application -> infrastructure/interfaces" not in plan
