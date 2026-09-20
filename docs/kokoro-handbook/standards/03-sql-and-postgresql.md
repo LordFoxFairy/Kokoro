@@ -13,8 +13,8 @@ Kokoro V1 统一采用：
 
 ```text
 PostgreSQL
-+ database/schema.sql 作为唯一可编辑 schema 事实源
-+ TypeScript 使用 pg（node-postgres）执行参数化 SQL
++ 每个数据 owner 选择一份唯一 canonical schema
++ TypeScript 使用本仓 ADR 选定的一种 ORM/数据访问栈
 + Python 使用 psycopg 3
 + 空数据库安装与 drift 校验
 + 应用层维护跨表关系
@@ -22,7 +22,8 @@ PostgreSQL
 
 项目硬约束：
 
-1. 每个数据 owner 仓库只维护 `database/schema.sql`；不并存 Prisma schema、第二份 DDL 或可编辑生成副本。
+1. 每个数据 owner 仓库只维护一份 canonical schema：SQL-first 使用 `database/schema.sql`，ORM-first 可使用该 ORM 的
+   canonical schema（例如 `prisma/schema.prisma`）。两种模式不得并存为可编辑事实源；生成 DDL/Client 必须只读并有 drift gate。
 2. V1 clean-slate 不保留 `database/migrations/`、migration runner、migration ledger 或历史升级路径。
 3. 正式 SQL 禁止 `FOREIGN KEY` 和 `REFERENCES`。无外键并非 Kokoro 独有：Alibaba 开发手册将禁用外键/级联列为强制项，
    Vitess 也明确不鼓励分片 keyspace 使用外键约束；Kokoro 采用这一常见的大规模分布式治理路线作为硬规则。
@@ -54,16 +55,20 @@ owner 是哪个服务和业务模块？
 
 ## 3. Schema 文件组织
 
-每仓固定：
+每仓在技术方案/ADR 中二选一：
 
 ```text
-database/
-  schema.sql
-scripts/
-  apply-schema.ts|py    # 安装空库，不处理历史升级
+SQL-first
+  database/schema.sql
+  scripts/apply-schema.ts|py
+
+ORM-first（以 Prisma 为例）
+  prisma/schema.prisma
+  prisma.config.ts
+  src/generated/prisma/       # 只读生成物
 ```
 
-`schema.sql` 按以下顺序组织：
+SQL-first 的 `schema.sql` 按以下顺序组织：
 
 ```text
 1. 必要 extension
@@ -79,7 +84,8 @@ scripts/
 - `db:apply-schema` 在执行前确认目标为空，使用 advisory lock 防止并发安装，并在事务可覆盖的范围内失败回滚。
 - 安装后对 catalog 做 drift check：表、列、类型、默认值、约束和索引必须与预期一致。
 - 开发样本与 schema 分开，放语言手册规定的 test(s)/fixtures；生产启动不自动 seed。产品必需的基础字典数据单独说明 owner 和安装规则，不与测试样本混放。
-- DDL 不依赖 ORM 自动同步、`db push` 或应用启动时“顺便修表”。
+- SQL-first 不依赖 ORM 自动同步。ORM-first 的 schema apply 命令必须是仓库批准的显式命令，只允许空库/临时库，生产启动不得
+  “顺便修表”。无历史 migration 的 clean-slate 仓可以使用 `db push`；一旦进入有数据的持续演进阶段必须另立 ADR 选择 migration/expand-contract。
 
 ## 4. 命名规则
 
@@ -282,9 +288,9 @@ JOIN 本身不是坏实践。允许范围：
 
 ## 9. SQL 编写规范
 
-### 9.1 参数绑定
+### 9.1 参数绑定与 ORM
 
-TypeScript `pg` 使用 `$1`、`$2`：
+TypeScript 仓若选择 `pg`，使用 `$1`、`$2`：
 
 ```ts
 await pool.query(
@@ -315,6 +321,10 @@ cursor.execute(
 ```
 
 动态结构使用白名单映射。禁止把客户端值直接拼入表名、列名、方向、JSON path 或 SQL fragment。
+
+TypeScript 仓若选择 Prisma，普通 CRUD/query 使用生成的 typed Client；事务使用 `$transaction`，唯一冲突、事务冲突和条件更新
+按 Prisma 稳定错误码/affected count 归一。业务 Service/Repository 不同时保留 `pg` 查询实现，也不因少数复杂查询临时形成双轨；
+确需 raw SQL 时必须由本仓 ADR 明确用途、边界、参数化、测试和退出条件。
 
 ### 9.2 明确列和写入范围
 
@@ -419,7 +429,7 @@ RETURNING id, version, updated_at;
 
 ## 14. 数据访问代码位置
 
-SQL 放在所属业务模块的 Repository/Query 文件中。小模块默认平铺：
+数据访问放在所属业务模块的 Repository/Query 或简单 Service 中。小模块默认平铺：
 
 ```text
 src/modules/sites/
@@ -435,6 +445,10 @@ Repository 在这里指“该模块的数据访问组件”，不是 Git 仓库�
 `ISiteRepository`、`SiteRepositoryPort`、`PgSiteRepository` 三件套。复杂读模型可以使用 `*.query.ts`，不必强行
 伪装成 Aggregate Repository。
 
+使用 Prisma 时，连接生命周期由唯一 `PrismaService`/DatabaseModule 管理；业务文件使用 `SiteRepository`，不使用
+`PostgresSiteRepository`、`PrismaSiteRepository` 等把已确定技术栈重复写入每个类名。简单 CRUD 可以由 Service 直接使用 Prisma；
+复杂查询、幂等状态机、共享写入策略或独立测试边界出现后再增加 Repository class。
+
 ## 15. 验证门禁
 
 每个持久化 owner 至少验证：
@@ -447,7 +461,7 @@ pnpm test                  # 包含 schema/architecture checks
 
 CI 阻断：
 
-1. `database/migrations/`、migration ledger 或第二份可编辑 schema；
+1. `database/migrations/`、migration ledger 或第二份可编辑 schema；唯一 canonical schema 的位置由本仓技术方案/ADR 确定；
 2. `FOREIGN KEY`、`REFERENCES`；
 3. 无时区 `TIMESTAMP`、浮点金额、未命名业务 UNIQUE/CHECK；
 4. `SELECT *`、疑似字符串拼接 SQL、错误的参数占位符；
@@ -492,6 +506,9 @@ CI 阻断：
 - [Google Cloud Spanner: Foreign keys](https://cloud.google.com/spanner/docs/foreign-keys/overview)
 - [node-postgres: Queries](https://node-postgres.com/features/queries)
 - [node-postgres: Transactions](https://node-postgres.com/features/transactions)
+- [Prisma ORM: Database drivers](https://www.prisma.io/docs/orm/v7/core-concepts/supported-databases/database-drivers)
+- [Prisma ORM: Relation mode](https://docs.prisma.io/docs/orm/prisma-schema/data-model/relations/relation-mode)
+- [Prisma CLI: db push](https://www.prisma.io/docs/cli/db/push)
 - [psycopg 3: Transactions management](https://www.psycopg.org/psycopg3/docs/basic/transactions.html)
 
 参考方法是“吸收经过规模验证的评审和故障经验”，不是整本照搬：PostgreSQL 官方文档决定数据库语义；GitLab 公开规范用于索引成本、
@@ -499,5 +516,5 @@ query plan 和 database review 经验；Alibaba P3C 与 Vitess 证明无外键�
 P3C 是 MySQL 规范，其 unsigned type、行数阈值和执行计划术语不照搬到 PostgreSQL；Spanner/GitLab 对外键的不同选择也说明
 是否 enforced 必须服从系统形态，不能以“大厂”二字代替架构分析。
 
-“V1 无外键、无历史 migration、单一 schema.sql”是 Kokoro 的硬规则。其中无外键与公开的大规模分布式实践一致；
+“V1 无外键、无历史 migration、单一 canonical schema”是 Kokoro 的硬规则。其中无外键与公开的大规模分布式实践一致；
 其余条款必须能追溯到 PostgreSQL 语义、真实查询/故障或当前项目决策。
