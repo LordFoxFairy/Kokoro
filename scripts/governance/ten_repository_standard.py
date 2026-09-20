@@ -118,7 +118,7 @@ REPOSITORY_PROFILES = {
         "prisma",
         24,
         retired_source_paths=RETIRED_TS_TOP_LEVEL_DIRECTORIES,
-        upstream_openapi_snapshots=("contract/openapi/better-auth.v1.7.3.json",),
+        upstream_openapi_snapshots=("contract/vendor/better-auth.v1.7.3.json",),
         # TECHNICAL_DESIGN §12 requires read-only persisted-schema drift, but
         # the current fresh-DDL fixture is not that checker. Keep the gap visible.
     ),

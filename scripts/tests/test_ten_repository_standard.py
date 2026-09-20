@@ -805,14 +805,24 @@ def test_orm_quality_gates_require_validate_generate_and_drift(tmp_path, monkeyp
 
 def test_openapi_upstream_exemption_requires_pinned_owner_provenance(tmp_path):
     repository = tmp_path / "kokoro-iam"
-    spec = repository / "contract/openapi/better-auth.v1.7.3.json"
-    spec.parent.mkdir(parents=True)
-    spec.write_text('{"openapi":"3.1.0", "paths":{}}')
+    vendor = repository / "contract/vendor/better-auth.v1.7.3.json"
+    legacy = repository / "contract/openapi/better-auth.v1.7.3.json"
+    vendor.parent.mkdir(parents=True)
+    legacy.parent.mkdir(parents=True)
+    vendor.write_text('{"openapi":"3.1.0", "paths":{}}')
+    legacy.write_text('{"openapi":"3.1.0", "paths":{}}')
     readme = repository / "contract/README.md"
-    readme.write_text("better-auth.v1.7.3.json # upstream schema snapshot\n")
-    assert ten_repository_standard.openapi_contract_candidates(repository) == ()
+    readme.write_text(
+        "contract/vendor/better-auth.v1.7.3.json # upstream schema snapshot\n"
+    )
+    assert ten_repository_standard.openapi_contract_candidates(repository) == (
+        legacy,
+    )
     readme.write_text("owned specification\n")
-    assert ten_repository_standard.openapi_contract_candidates(repository) == (spec,)
+    assert ten_repository_standard.openapi_contract_candidates(repository) == (
+        legacy,
+        vendor,
+    )
 
 
 def test_named_setup_node_step_and_docker_chown_are_not_false_majors(
@@ -917,7 +927,7 @@ def test_review_yaml_non_block_paths_fail_closed(paths, tmp_path, monkeypatch):
         ),
         ("better-auth.v1.7.3.json", False),
         (
-            "contract/openapi/better-auth.v1.7.3.json — upstream snapshot provenance: https://example.test/spec",
+            "contract/vendor/better-auth.v1.7.3.json — upstream snapshot provenance: https://example.test/spec",
             True,
         ),
     ],
@@ -926,7 +936,7 @@ def test_review_vendor_exemption_requires_exact_provenance(
     provenance, excluded, tmp_path
 ):
     repository = tmp_path / "kokoro-iam"
-    spec = repository / "contract/openapi/better-auth.v1.7.3.json"
+    spec = repository / "contract/vendor/better-auth.v1.7.3.json"
     spec.parent.mkdir(parents=True)
     spec.write_text('{"openapi":"3.1.0", "paths":{"/v2/items":{}}}')
     (repository / "contract/README.md").write_text(provenance)
