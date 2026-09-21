@@ -197,3 +197,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - OpenAPI `2.0.0` direct digest 为 `e0b7c4b57ac030efb73878b51da2a3595ec0172bce0608a88ea925b57a69761a`，combined provenance 为 `536dca2989a5a9b7e06f1bcd15ef8eb25876ef4184345b077407555457e45c4b`。契约固定四个 GET、canonical `query`、Unicode code point 参数上限、header-only request ID、`retryable` 错误语义与 typed dependency failure；Prisma/schema、Proto、generated、package/lock 和 Platform artifact 未改变。
 - Root fresh pre-commit verification 使用 Node `24.20.0`：format/lint/typecheck/contract/platform-artifact/schema/build 全部 exit 0；focused `35 passed`；full `663 passed / 177 skipped / 0 failed`；范围与禁止变更检查通过。独立 post-commit release 复验与 Root 集成验证仍在执行，因此任务状态保持“待集成验证”。
 - W0B-2B inventory writer 仅更新 `verification/contracts/consumer-inventory.json`：9 个 Capability tuple pin 到新 SHA，并从新 commit blob 重算两个实际变化的 controller digest；未改变任何 edge state/protocol/reason/version/runtime assertion。Root 主控负责 gitlink、权威计划、当前状态与最终 checkpoint。
+
+## 2026-09-21 — W0B-2 验收完成
+
+- 独立只读 Agent `w0b2_release_reverify` 在已推送 commit 上复跑全部 Capability 门：format/lint/typecheck/contract/platform-artifact/schema/build 全部 exit 0；focused `26 passed`、direct-digest `9 passed`、full `663 passed / 177 skipped / 0 failed`；确认 21 文件范围、四路由、OpenAPI `2.0.0`、digest、无 schema/Proto/generated/package/lock 漂移，结论 PASS。
+- Root 集成提交 `3d2fa8a11acc7ffe18c87875c4131ecc011a46bd`（`fix(integration): pin Capability HTTP owner release`）已推送；它只提升 Capability gitlink、刷新全部 Capability fan-out tuple/digest，并同步 CURRENT、W0B 权威计划与控制账。
+- Root 在该 commit 上复跑 topology、main-only、`w0b-start` exact checkpoint、全量 governance tests 与 diff check：全部 exit 0，`406 passed`；Root、全部子仓与 live remote 均 clean、只保留 `main`。当前 compatibility 基线仍诚实保持 1 active / 15 broken / 1 illegal。
+- `verify-ten-repository-standard.py --format json` 继续报告既有 `110 violations / 1 unverified`，与 W0B-2 owner contract repair 无关，未被弱化或冒充通过。W0B-2 已验收，下一任务是 W0B-3：冻结 BFF Capability 设计与 owner artifact。
