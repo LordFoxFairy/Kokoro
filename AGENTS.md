@@ -137,8 +137,8 @@ Browser -> Web same-origin adapter -> BFF -> System/IAM/Platform/Billing/Storage
 
 ## 4. 本地基础设施与运行
 
-- 本地所有仓共享一个 PostgreSQL 实例和一个 Redis 实例；先探测复用，缺失时才各启动一个。
-- 每个数据 owner 使用独立 PostgreSQL database/schema 和凭据；Web 不拥有数据库。
+- 本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。
+- 本地所有仓共享一个 Redis 实例；先探测复用，缺失时才启动。Web 不拥有数据库。
 - Redis 使用独立 namespace/logical DB；目标拓扑 cutover 时由单独 ADR 重新分配，禁止旧新服务同时占用并双写。
 - 应用开发从源码运行：TypeScript `pnpm dev`、Python `uv run`、Go `go run`。
 - Docker 应用容器只用于 release candidate smoke，不替代本地 lint/test/dev。

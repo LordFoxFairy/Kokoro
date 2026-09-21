@@ -1,6 +1,6 @@
 # Kokoro 总体架构规范 v1
 
-状态：正式目标，2026-09-04。
+状态：正式目标，2026-09-21。
 
 本文只定义系统级边界。语言目录、代码风格与 SQL 细节由以下唯一专项手册负责：
 
@@ -52,6 +52,10 @@ kokoro-platform    -> skills 与 mcp 两个一级业务域
 契约、生命周期、权限、观测和 ADR，并证明不属于 System/IAM/Billing/Storage/Scheduler/Agent 的既有边界。
 历史归档的 platform 代码不直接恢复；目标仓由当前 Capability 以 clean-slate 方式收敛。
 
+当前物理身份仍是 `kokoro-capability`。只有 remote、path、package、service、env、Proto、数据库、Redis 和 consumer
+在 Wave 3 同一窗口完成切换并通过 owner 完整门禁与跨仓 integration/smoke 后，才改称 `kokoro-platform`；切换前的
+Root 路径、运行身份和当前状态不得提前使用目标名称，也不保留兼容 alias。
+
 ### 2.2 目标模块地图
 
 ```text
@@ -90,7 +94,8 @@ kokoro-platform/src/modules/
 
 ## 3. 数据边界
 
-- 每个数据 owner 维护唯一 `database/schema.sql`。
+- 本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。
+- 每个数据 owner 维护一份唯一 canonical schema；SQL-first 使用 `database/schema.sql`，ORM-first 使用技术方案批准的唯一 ORM schema。
 - Kokoro V1 clean-slate 不保留 migration 链、外键或兼容 schema；完整规则只见 SQL 手册。
 - 同一 owner/数据库/业务边界允许 JOIN；跨 owner 禁止 JOIN。
 - PostgreSQL 是 durable truth；Redis 只用于缓存、lease、通知和 stream。
@@ -104,6 +109,19 @@ Platform 从 Capability cutover 时继承该数据 owner，并重新固定服务
 contract owner 和消费者配置；旧 Capability 名称不保留兼容 alias。
 
 ## 4. API 与协议
+
+| Caller → Owner | 唯一协议 |
+| --- | --- |
+| Browser → Web | same-origin HTTP |
+| Web → BFF | HTTP/OpenAPI + AG-UI/SSE |
+| BFF → IAM | HTTP/OpenAPI generated client |
+| BFF/Agent → System | HTTP/OpenAPI generated client |
+| BFF/Agent → Platform | ConnectRPC/Proto |
+| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2 |
+| BFF → Agent | HTTP/OpenAPI generated client |
+| BFF → Scheduler | HTTP/OpenAPI generated client |
+| Scheduler → BFF/Agent | versioned HTTP event protocol |
+| BFF → Billing | HTTP/OpenAPI generated client |
 
 - BFF 是唯一 public Product API owner；Web 使用 browser-private 同源 adapter。
 - 内部服务 contract 由各 owner 仓维护；Root 只做 catalog 和治理。

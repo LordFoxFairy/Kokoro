@@ -1,6 +1,6 @@
 # PostgreSQL 与 SQL 工程规范
 
-状态：正式规范，2026-09-07 修订。
+状态：正式规范，2026-09-21 修订。
 
 适用范围：Kokoro 所有 PostgreSQL schema、SQL、数据库访问代码、事务、索引与数据库测试。本文同时说明
 PostgreSQL 的通用语义、规模化系统的成熟实践和 Kokoro V1 的强制 profile；不把具体 profile 扩大为所有数据库场景的唯一答案。
@@ -30,7 +30,7 @@ PostgreSQL
    PostgreSQL/Spanner 等数据库仍支持并在部分场景推荐 enforced foreign key，因此本文不把它描述成所有公司的统一规则。
 4. `CREATE TABLE IF NOT EXISTS` 可以使用；它容忍已存在的同名表，不修复 schema drift；`db:apply-schema` 仍检查空库，发现非空目标就停止，绝不自动删库。
 5. 所有值使用参数绑定；表名、列名、排序方向等不能参数化的结构只能来自代码白名单。
-6. 同一 PostgreSQL 实例可以承载多个服务，但每个服务使用独立 database/schema 和独立凭据；服务只访问自己的数据。
+6. 本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。
 
 ## 2. 数据所有权先于表设计
 

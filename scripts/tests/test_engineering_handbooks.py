@@ -76,3 +76,69 @@ def test_canonical_manuals_have_sources_and_balanced_code_fences() -> None:
     assert not code_blocks(agents, "ts")
     assert not code_blocks(agents, "python")
     assert not code_blocks(agents, "sql")
+
+
+def test_local_ci_database_identity_and_owner_isolation_are_not_conflated() -> None:
+    agents = (ROOT / "AGENTS.md").read_text()
+    architecture = (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
+    sql = (ROOT / "docs/kokoro-handbook/standards/03-sql-and-postgresql.md").read_text()
+    decision = (
+        "本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用"
+        "独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner "
+        "SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、"
+        "GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。"
+    )
+    for content in (agents, architecture, sql):
+        assert decision in content
+        assert "SQL-first" in content
+        assert "ORM-first" in content
+        assert "canonical schema" in content
+        assert "每个数据 owner 使用独立 PostgreSQL database/schema 和凭据" not in content
+        assert "每个服务使用独立 database/schema 和独立凭据" not in content
+
+
+def test_architecture_has_the_complete_approved_protocol_matrix() -> None:
+    architecture = (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
+    agents = (ROOT / "AGENTS.md").read_text()
+    rows = (
+        "| Browser → Web | same-origin HTTP |",
+        "| Web → BFF | HTTP/OpenAPI + AG-UI/SSE |",
+        "| BFF → IAM | HTTP/OpenAPI generated client |",
+        "| BFF/Agent → System | HTTP/OpenAPI generated client |",
+        "| BFF/Agent → Platform | ConnectRPC/Proto |",
+        "| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2 |",
+        "| BFF → Agent | HTTP/OpenAPI generated client |",
+        "| BFF → Scheduler | HTTP/OpenAPI generated client |",
+        "| Scheduler → BFF/Agent | versioned HTTP event protocol |",
+        "| BFF → Billing | HTTP/OpenAPI generated client |",
+    )
+    for row in rows:
+        assert architecture.count(row) == 1
+    assert "BFF → IAM/System/Agent/Scheduler/Billing" not in architecture
+    assert "Root 只做 catalog 和治理" in architecture
+    assert "Root 不建立跨仓可编辑 contract 中心" in agents
+    assert "不共享 ORM schema、SQL、业务 DTO" in agents
+    assert "固定版本、commit 和 digest 的 generated client/artifact" in agents
+
+
+def test_architecture_locks_capability_current_identity_and_atomic_cutover() -> None:
+    architecture = re.sub(
+        r"\s+", " ", (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
+    )
+    decision = (
+        "当前物理身份仍是 `kokoro-capability`。只有 remote、path、package、service、env、Proto、"
+        "数据库、Redis 和 consumer 在 Wave 3 同一窗口完成切换并通过 owner 完整门禁与跨仓 "
+        "integration/smoke 后，才改称 `kokoro-platform`；切换前的 Root 路径、运行身份和当前状态"
+        "不得提前使用目标名称，也不保留兼容 alias。"
+    )
+    assert decision in architecture
+
+
+def test_architecture_allows_exactly_one_sql_first_or_orm_first_schema() -> None:
+    architecture = (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
+    assert (
+        "每个数据 owner 维护一份唯一 canonical schema；SQL-first 使用 "
+        "`database/schema.sql`，ORM-first 使用技术方案批准的唯一 ORM schema。"
+        in architecture
+    )
+    assert "每个数据 owner 维护唯一 `database/schema.sql`" not in architecture
