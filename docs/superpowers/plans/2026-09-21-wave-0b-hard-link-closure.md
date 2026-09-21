@@ -281,7 +281,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
    ```
 2. RED tests cover missing flags, invalid URL schemes, command timeout, readiness timeout, child early exit, database/Redis ownership, signal escalation, log sanitization and cleanup-after-failure. Run `python3 -m pytest scripts/tests/test_capability_bff_smoke.py -q`; capture non-zero.
 3. Implement a 24-hex run ID; create only `w0b_cap_<run>_{capability,bff}` databases; use Redis prefix `kokoro:w0b:capability:<run>:`; choose loopback ports; apply each owner schema; start built `dist/main.js` with exact Node binaries in new process groups; wait `/readyz` for at most 30 seconds; always drain/TERM/KILL owned groups and drop only owned resources.
-4. Exactly eight cases through the real BFF process: `/v1/skills?query=` 200 (also proves canonical forwarding), pool 200, catalog 200, MCP servers 200, `q` 400, missing BFF auth 401, bad owner service token mapped to the documented upstream error, and invalid cursor 400. Empty owner data is valid; no fixture may bypass HTTP.
+4. Exactly eight cases through the real BFF process: `/v1/skills?query=` with a non-empty value returns 200 (also proves canonical forwarding), pool 200, catalog 200, MCP servers 200, `q` 400, missing BFF service auth returns the canonical `403 service_auth_failed`, bad owner service token maps to the documented upstream error, and invalid cursor returns 400. Empty owner data is valid; no fixture may bypass HTTP. The 403 expectation follows the live-only runtime, which requires `KOKORO_BFF_SHARED_SECRET`; 401 is not a reachable configured live state.
 5. GREEN:
    ```bash
    python3 -m pytest scripts/tests/test_capability_bff_smoke.py -q

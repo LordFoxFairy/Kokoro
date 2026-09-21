@@ -227,3 +227,4 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 独立核对 owner commit blob、vendor digest `e0b7c4b57ac030efb73878b51da2a3595ec0172bce0608a88ea925b57a69761a`、manifest config/lock/generated digests、无 TypeScript/ESLint suppression、无 legacy `/bff/*`/搜索 alias、无 schema/config/operation baseline 漂移，全部通过。
 - Root gitlink仍按计划不提升：W0B-5 必须先用真实 Capability/BFF 进程、独占数据库、Redis namespace 与端口完成八个 case，W0B-6 才一次刷新 BFF fan-out 并激活 `EDGE-BFF-CAPABILITY`。当前 compatibility 仍保持 1 active / 15 broken / 1 illegal。
 - 本机预检已确认 Node `22.22.2`、Node `24.20.0`、`psql`、`redis-cli` 可用；`postgresql://localhost/postgres` 以当前用户连通，`redis://127.0.0.1:6379` 返回 `PONG`。W0B-5 任务卡固定只写 Root smoke runner、其测试与 `scripts/INDEX.md`，不改子仓、gitlink、inventory 或控制文档。
+- W0B-5 派工后的 Root runtime/contract 交叉核对发现计划把“缺 BFF auth”误写为 401；live BFF 强制配置 shared secret，当前实现与 public OpenAPI 都固定为 `403 service_auth_failed`，401 在配置完成的 live 运行态不可达。Root 已把该 smoke case 更正为 403，禁止 worker 为迎合旧文字伪造运行态。
