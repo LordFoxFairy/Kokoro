@@ -204,3 +204,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 集成提交 `3d2fa8a11acc7ffe18c87875c4131ecc011a46bd`（`fix(integration): pin Capability HTTP owner release`）已推送；它只提升 Capability gitlink、刷新全部 Capability fan-out tuple/digest，并同步 CURRENT、W0B 权威计划与控制账。
 - Root 在该 commit 上复跑 topology、main-only、`w0b-start` exact checkpoint、全量 governance tests 与 diff check：全部 exit 0，`406 passed`；Root、全部子仓与 live remote 均 clean、只保留 `main`。当前 compatibility 基线仍诚实保持 1 active / 15 broken / 1 illegal。
 - `verify-ten-repository-standard.py --format json` 继续报告既有 `110 violations / 1 unverified`，与 W0B-2 owner contract repair 无关，未被弱化或冒充通过。W0B-2 已验收，下一任务是 W0B-3：冻结 BFF Capability 设计与 owner artifact。
+
+## 2026-09-21 — W0B-3 已派工
+
+- Root 已完成新建文件/目录前放置裁决，精确任务卡位于 ignored SDD workspace 的 `task-3-bff-capability-design.md`。本切片只允许 BFF 的 9 个 contract/config/docs/test 文件，不改 runtime、package/lock、public OpenAPI 或数据库 schema。
+- 写入 Agent `w0b3_bff_capability_designer`（`gpt-5.6-sol`，high）负责 RED→GREEN：从 Capability commit blob 冻结 OpenAPI `2.0.0`、dependency provenance 与生成配置，并让 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 对齐 HTTP-only consumer 目标。
+- Root 主控保留规格审查、质量审查、BFF Git index、commit/push、Root gitlink 与最终验证；W0B-4 在 W0B-3 双审和 owner artifact 验收前不启动。
