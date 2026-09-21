@@ -236,3 +236,22 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 独立复验：focused `26 passed`；Ruff format/check、`py_compile` 全部 exit 0；Root full tests `432 passed in 30.18s`；真实 CLI 两次均输出 `status=PASS,cases=8`。故障注入测试经真实 `run_smoke(..., fault_injection=...)` 证明 mid-flight 失败仍按逆序清理。
 - 真实 CLI 后残留探针：PostgreSQL `w0b_cap_%` database=`0`，Redis `kokoro:w0b:capability:*` key=`0`，BFF/Capability `dist/main.js` process=`0`，临时目录=`0`。owner 日志证据固定唯一 `trace_id` 与精确 `/v1/skills` operation；W0B-4 unit 继续负责 literal query forwarding 断言。
 - W0B-6 由 `w0b6_capability_integration_writer` 独占 Root 四个集成文件：提升 `apps/kokoro-bff` gitlink 到已推送 `2ed792586e89c035155938078d9b07f33af95abd`，刷新全部 BFF fan-out commit-blob evidence，并只激活 `EDGE-BFF-CAPABILITY`。Root 主控保留 Git index、commit/push、交叉审查与冻结 SHA 独立复验。
+
+## 2026-09-21 — W0B-6 写入完成，待独立审查
+
+- 唯一写入 Agent `w0b6_capability_integration_writer` 基于 Root `274dee1b1640e5e4fa189fb735e230383dba780c` 完成四文件集成切片；未操作 Git index、未提交、未推送。`apps/kokoro-bff` checkout 与已推送 `origin/main` 均为 `2ed792586e89c035155938078d9b07f33af95abd`；`apps/kokoro-capability` 保持 `7f89a267d745cbb9870f52d6edb23dec1a3c469b`。
+- `consumer-inventory.json` 已从 frozen BFF commit blob 重算全部 BFF fan-out tuple/digest；`EDGE-BFF-CAPABILITY` 唯一从 broken 切为 active，owner 固定 Capability HTTP OpenAPI `2.0.0` / `e0b7c4b…61a`，consumer evidence 固定 dependency manifest、vendor、generator config/script、16 个 generated 文件、facade、行为测试、`package.json`、`pnpm-lock.yaml` 与 `.node-version`。生成器 assertion 为 `@hey-api/openapi-ts@0.99.0`，运行时 assertion 为 Node `22.22.2`。
+- 因 Root 主控保留真实 Git index，本 Agent 使用 Root index 的临时副本，仅把 BFF gitlink设为 prospective release进行机器验证；真实 index 始终未改。`w0b-capability` checkpoint exit 0；raw compatibility按预期 exit 1，精确为 14 条 `declared broken` + 1 条 `illegal edge`，其他漂移为 0；prospective topology exit 0，`runtime_module_count=9`。
+- Root full governance tests 在仅对 Root cwd 使用 prospective index 的 Git wrapper 下为 `432 passed in 35.26s`。首次把 `GIT_INDEX_FILE` 全局传给 pytest 会污染测试创建的临时 Git 仓并产生 fixture setup errors；该次结果已废弃，修正为 cwd-scoped wrapper后全量通过，临时 index/wrapper均已删除。
+- `verify-ten-repository-standard.py --format json` 按真实债务 exit 1：`9 repositories / 109 violations / 1 unverified`；这是既有 owner 改造队列，不是 W0B-6 通过门，也未放宽规则。
+- 真实 Capability↔BFF smoke exit 0：`status=PASS`、`cases=8`，release 精确为 BFF `2ed7925…` / Capability `7f89a267…`；PostgreSQL、Redis、process group 与临时日志清理均由 runner 报告完成。
+- 当前状态为“待审查”：Root 主控仍需 fresh cross-repository review、真实暂存四个精确路径后以普通 index 重跑门禁、提交并推送；本条不构成验收或冻结 SHA。
+
+## 2026-09-21 — W0B-6 独立审查与 Root 集成验收
+
+- Fresh cross-repository reviewer 对 Root `274dee1b…` 加四文件 prospective diff 完成独立复审：SPEC `✅`、QUALITY `✅`，Critical/Important/Minor 均为 `0/0/0`。审查独立核验全部 95 个 inventory commit-blob digest、45 个 BFF tuple、35 个唯一 BFF path、25 个 active request-edge BFF evidence，非目标 edge 语义漂移为 0。
+- Root 精确暂存 `apps/kokoro-bff`、`verification/contracts/consumer-inventory.json`、`docs/task.md`、`docs/progress.md`，普通 index 下复跑 topology exit 0（9 runtime）、`w0b-capability` checkpoint exit 0、全量 governance tests `432 passed in 29.12s`、`git diff --cached --check` exit 0。
+- Raw compatibility 保持诚实红门：预期 exit 1，精确 14 条 `declared broken` + 1 条 `illegal edge`，无 schema/gitlink/digest/evidence/version drift；状态精确为 2 active / 14 broken / 1 illegal。
+- Root 再次执行真实 smoke：exit 0，`status=PASS,cases=8`，release 精确为 BFF `2ed7925…` / Capability `7f89a267…`。独立残留探针确认 PostgreSQL database=`0`、Redis key=`0`、owner process=`0`、临时目录=`0`。
+- `verify-ten-repository-standard.py --format json` 仍按真实债务 exit 1：`9 repositories / 109 violations / 1 unverified`；相较上一基线少 1 条仅因 BFF Root gitlink已提升，不影响后续 owner debt队列。
+- BFF 与 Capability 的 local/origin/live remote均只保留 `main`，child工作树 clean；本切片满足 W0B-6 激活条件。下一步在本集成 commit推送并确认 Root clean后，进入 W0B-7 Scheduler owner只读 release验证。

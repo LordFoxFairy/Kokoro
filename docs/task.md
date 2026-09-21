@@ -37,7 +37,7 @@
 | W0B-3 | P0 | 冻结 BFF Capability 设计与 owner artifact | BFF / `w0b3_bff_capability_designer` | W0B-2 | commit-blob vendor/provenance 固定；三文档门通过；只接受 `query` | 已验收 |
 | W0B-4 | P0 | 实现 BFF Capability generated consumer | BFF / `w0b3_bff_capability_designer`（续任） | W0B-3 | 四路由、身份、查询、错误、timeout/body cap 与生成漂移门通过；旧 `/bff/*` 删除 | 已验收 |
 | W0B-5 | P0 | 实现 Capability↔BFF 隔离真实进程 smoke | Root / `w0b5_capability_bff_smoke_writer` | W0B-4 | 独占 DB/Redis/port/process；8 个 case 通过；失败也只清理自有资源 | 已验收 |
-| W0B-6 | P0 | 集成并激活 `EDGE-BFF-CAPABILITY` | Root / `w0b6_capability_integration_writer` | W0B-5 | 子仓推送、gitlink/fan-out/version/evidence 更新；`w0b-capability` 精确通过 | 进行中 |
+| W0B-6 | P0 | 集成并激活 `EDGE-BFF-CAPABILITY` | Root / `w0b6_capability_integration_writer` | W0B-5 | 子仓推送、gitlink/fan-out/version/evidence 更新；`w0b-capability` 精确通过 | 已验收 |
 | W0B-7 | P0 | 验证 Scheduler owner release | Scheduler / 只读 owner 审查 | W0B-6 | `/schedules`、event header/RFC3339、幂等/重试与 docs/schema 一致；Go 全门通过 | 待派工 |
 | W0B-8 | P0 | 冻结 BFF Scheduler 控制/回调设计与 artifact | BFF / Scheduler 子 Agent | W0B-7 | control/receiver 边界、trusted tenant、opaque key + semantic digest、恢复语义确定 | 待派工 |
 | W0B-9 | P0 | 实现 Scheduler generated control 与 receiver | BFF / 同一 Scheduler 子 Agent | W0B-8 | `/jobs`/`job_*`/旧 header 删除；webhook generated validation、幂等与恢复测试通过 | 待派工 |
