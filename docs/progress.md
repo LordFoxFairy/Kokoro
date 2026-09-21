@@ -255,3 +255,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 再次执行真实 smoke：exit 0，`status=PASS,cases=8`，release 精确为 BFF `2ed7925…` / Capability `7f89a267…`。独立残留探针确认 PostgreSQL database=`0`、Redis key=`0`、owner process=`0`、临时目录=`0`。
 - `verify-ten-repository-standard.py --format json` 仍按真实债务 exit 1：`9 repositories / 109 violations / 1 unverified`；相较上一基线少 1 条仅因 BFF Root gitlink已提升，不影响后续 owner debt队列。
 - BFF 与 Capability 的 local/origin/live remote均只保留 `main`，child工作树 clean；本切片满足 W0B-6 激活条件。下一步在本集成 commit推送并确认 Root clean后，进入 W0B-7 Scheduler owner只读 release验证。
+
+## 2026-09-21 — W0B-6 冻结完成，W0B-7 已派工
+
+- Root 集成提交 `2ef5aa689ecaaf137168dcd68a9dd4ae8185c6c4`（`fix(integration): activate BFF Capability projection edge`）已推送；`main == origin/main`、Root工作树 clean。提交精确包含 BFF gitlink、consumer inventory与两份控制账。
+- 提交后 Root 再次复验：topology exit 0、`w0b-capability` checkpoint exit 0、全量 governance tests `432 passed in 28.94s`、真实 smoke `PASS / 8 cases`；独立残留探针仍为 PostgreSQL `0`、Redis `0`、process `0`、temp dir `0`。
+- W0B-7 只读 Agent `w0b7_scheduler_owner_auditor` 绑定 Scheduler `17c2de3e68ed75dbf3fa495643f6ad280e3c7112`，核对 contract/docs/schema/runtime语义与完整 Go门禁。审计不改文件、不操作 Git index、不写共享 PostgreSQL/Redis；若发现任何 drift，先报告并拆出 owner repair任务，不直接进入 BFF Scheduler设计。
