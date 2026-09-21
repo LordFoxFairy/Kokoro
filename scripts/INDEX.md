@@ -26,6 +26,10 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 - `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
   Redis prefix, and removes only resources registered by this invocation. It does not perform provider inference.
+- `python3 scripts/e2e/run_capability_bff_smoke.py --help` is the isolated Capability/BFF real-build acceptance entry.
+  It requires explicit PostgreSQL, Redis and Node 22/24 arguments, starts the frozen child `dist/main.js` files on
+  loopback ports, exercises eight BFF-facing Capability cases, and removes only its two exact databases, Redis prefix,
+  process groups and temporary logs.
 - `scripts/governance/` owns the profile matrix and focused contract, delivery, repository, TypeScript, Web/BFF/Agent checks.
   These modules inspect structure and declarations only; the full verifier must still execute every repository's real commands.
 
