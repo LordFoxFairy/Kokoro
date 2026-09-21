@@ -250,6 +250,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 - modify `contract/openapi/v1/openapi.yaml`, `contract/tests/v1-operations.json`
 - create `test/capability-client.test.ts`
 - modify `test/bff.test.ts`, `test/contract-governance.test.mjs`, `test/architecture.test.ts`
+- modify `docs/TECHNICAL_DESIGN.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/CURRENT.md` to replace the design-frozen/future-tense state with the implemented current state
 - no config, composition, database or unrelated docs file
 
 1. Pin exact dev dependencies `@hey-api/openapi-ts@0.99.0`, `prettier@3.9.6`, `typescript@5.9.3`; exact runtime `zod@4.5.4`; add `format:check`, `contract:generate:capability`, `contract:check:capability`, and include drift check in `contract:check`.

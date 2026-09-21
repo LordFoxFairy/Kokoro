@@ -210,3 +210,11 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 已完成新建文件/目录前放置裁决，精确任务卡位于 ignored SDD workspace 的 `task-3-bff-capability-design.md`。本切片只允许 BFF 的 9 个 contract/config/docs/test 文件，不改 runtime、package/lock、public OpenAPI 或数据库 schema。
 - 写入 Agent `w0b3_bff_capability_designer`（`gpt-5.6-sol`，high）负责 RED→GREEN：从 Capability commit blob 冻结 OpenAPI `2.0.0`、dependency provenance 与生成配置，并让 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 对齐 HTTP-only consumer 目标。
 - Root 主控保留规格审查、质量审查、BFF Git index、commit/push、Root gitlink 与最终验证；W0B-4 在 W0B-3 双审和 owner artifact 验收前不启动。
+
+## 2026-09-21 — W0B-3 验收完成，W0B-4 已派工
+
+- W0B-3 初审发现并修复两处真实 owner 语义偏差：Capability response correlation header 必须是 `x-kokoro-request-id`；Skills cursor 含 subject scope，而 MCP cursor 只绑定 tenant/operation/provider filter，BFF 不自造 MCP subject binding。修正后 SPEC/QUALITY 均为 `0/0/0`。
+- BFF 提交 `8a66158f4ec19f09d995bc92917b117fc1d2ab89`（`docs(bff): freeze Capability projection consumer design`）已推送，local、`origin/main` 与 live remote 一致且 remote main-only。它精确包含 9 个允许文件；vendored blob 与 Capability owner commit byte-for-byte 一致。
+- Root 在该 commit 上使用 Node `22.22.2` 复跑 lint/typecheck/build、focused `28 passed`、contract `16 passed`、full `160 passed`、owner blob compare 与 diff check，全部通过；generator config 另由质量 reviewer 在隔离环境实际生成两次，16 文件 byte-identical。
+- Root gitlink 按 W0B 计划暂不提升：BFF W0B-4/W0B-5 完成后由 W0B-6 一次刷新全部 fan-out 并激活 edge。当前 checkout 前移不等于 Root 已集成。
+- W0B-4 任务卡位于 ignored SDD workspace 的 `task-4-bff-capability-consumer.md`，续派同一 Agent 实现 generated client/facade/四路由切换。为避免实现后 CURRENT 与三文档门失真，计划范围补入四份现有设计文档；无新目录 owner、无数据库/schema 变化。
