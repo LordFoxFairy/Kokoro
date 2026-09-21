@@ -127,3 +127,46 @@ Codex Goal 已建立并保持 `active`：按已批准的 Kokoro 后端整体闭�
 - `python3 scripts/verify-contract-compatibility.py --inventory verification/contracts/consumer-inventory.json`：预期 exit 1，`16 edges / 1 violation`；错误仅为 15 条 `declared broken` 与 1 条 `illegal edge`，其他漂移为 0。
 - `git diff --check`：exit 0。Wave 0A 治理基线、机器门和冻结 inventory 已闭环；下一阶段进入 W0B owner-first 硬断链修复。
 - W0B compatibility 红队列：`EDGE-WEB-BFF`、`EDGE-BFF-IAM`、`EDGE-BFF-SYSTEM`、`EDGE-BFF-CAPABILITY`、`EDGE-BFF-STORAGE`、`EDGE-BFF-AGENT`、`EDGE-BFF-SCHEDULER`、`EDGE-BFF-BILLING`、`EDGE-AGENT-SYSTEM`、`EDGE-AGENT-CAPABILITY`、`EDGE-AGENT-STORAGE`、`EDGE-CAPABILITY-STORAGE`、`EDGE-CAPABILITY-IAM`、`EDGE-SCHEDULER-BFF`、`EDGE-SCHEDULER-AGENT` 与 `EDGE-WEB-IAM-DIRECT`。
+
+## 2026-09-21 — W0B-0 计划冻结与控制面切换
+
+### 基线与范围
+
+- Root 起始 SHA：`bfa054f3cafe0e340a8e04d567bf923dbe03ee4e`；开始时 `main == origin/main`、工作树 clean。
+- 当前实施计划：`docs/superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md`，480 行，最终审查 SHA-256 `3481acfb6ac1d0431fd349c4f0a23a27948f94dee609a9b215e4644d9fd097be`。
+- 本切片只修改 Root 计划、任务表、进度账和文档索引；没有修改子仓、gitlink、contract、Schema 或运行代码。
+
+### 子 Agent 审计与裁决
+
+- Capability/BFF 只读审计确认 W0B 使用当前 Capability HTTP 四个 `/v1/*` projection，而不是恢复旧 Capability RPC；BFF 旧 `/bff/*` 与 `q/query` 已漂移。计划裁决 public API 只接受 canonical `query`，`q` 返回 400；Wave 3 再原子切到 Platform ConnectRPC。
+- Scheduler 只读审计确认 owner `/schedules/{name}`、`X-Kokoro-Scheduler-Schedule`、RFC3339/RFC3339Nano、opaque idempotency key 与 retry status 已一致；BFF 的 `/jobs`、旧 header/time/error 已漂移。计划把 BFF receiver 的 generated/Node 作为 consumer evidence，把 Scheduler `go.mod` 作为独立 producer evidence。
+- Storage consumers 只读审计确认 BFF 废止 HTTP、Agent 缺 adapter、Capability 仍固定 Storage v1，且 caller×operation×scope 授权依赖 Wave 1。W0B 只删除死 HTTP；三条 Storage edge 留给 W2，不伪造激活。
+- W0B 退出状态冻结为：active `EDGE-BROWSER-WEB`、`EDGE-BFF-CAPABILITY`、`EDGE-BFF-SCHEDULER`、`EDGE-SCHEDULER-BFF`；12 条明确 broken；非法旁路仍仅 `EDGE-WEB-IAM-DIRECT`。
+
+### 计划审查
+
+- 架构审查经历 owner/consumer 语义、Storage 范围和 Browser generator 豁免修正；最终 `SPEC ✅`，Blocking/Important/Minor=`0/0/0`，绑定计划 digest `3481acfb…fd097be`。
+- 执行审查经历 repository writer 拆卡、真实 smoke、精确工具链、vendor provenance/generator、逐 edge checkpoint、精确文件集与 tenant 语义修正；最终 `EXECUTION ✅`，Blocking/Important/Minor=`0/0/0`，绑定同一 digest。
+- 计划最终拆为 W0B-0..16：Root 主控保留架构、任务账、Git index、集成和最终验收；子 Agent 逐 owner 串行实施；两个真实 smoke 各自独立成 Root 任务。
+
+### 实测工具链
+
+```text
+BFF Node: v22.22.2
+Capability Node: v24.20.0
+BFF/Capability pnpm via Corepack: 11.25.0
+BFF/Capability TypeScript: 5.9.3
+Scheduler: go1.26.8 / GOTOOLCHAIN=auto
+Root Ruff: 0.15.2
+```
+
+### 下一步
+
+W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和三个逐 edge checkpoint；Root 主控随后独立审查、复跑门禁、精确提交并推送。W0B 尚未改变任何业务 edge 状态，真实 compatibility 基线仍是 1 active / 15 broken / 1 illegal。
+
+### W0B-0 Root 验收命令
+
+- `python3 scripts/verify-repository-topology.py`：exit 0，`status=PASS`，9 个正式 runtime、2 个非 runtime submodule 均匹配。
+- `python3 -m pytest scripts/tests -q`：exit 0，`367 passed in 16.60s`。
+- `git diff --check`：exit 0，无空白错误。
+- W0B-0 达到计划冻结门；业务实现、gitlink 提升和 edge 激活仍全部未开始。

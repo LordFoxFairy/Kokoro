@@ -6,7 +6,8 @@
 
 - Goal：按已批准设计依次完成 Wave 0–7；Root 主控负责架构裁决、派工、双重审查、集成与最终验收，子 Agent 按 owner 逐仓实施；Billing 最后处理。
 - 设计事实源：[`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)
-- 当前执行计划：[`superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md`](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md)
+- 当前执行计划：[`superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md`](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)
+- 已验收计划：[`superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md`](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md)
 - 证据账：[`progress.md`](progress.md)
 - 本轮启动 Root 基线：`1bc74ae536d8a2da48f76045da95c2d5c2877750`
 - 范围：`apps/kokoro-app` 与八个后端 owner；`apps/kokoro-mori` 和其他前端不参与业务改造。
@@ -30,9 +31,23 @@
 | W0A-2 | P0 | 实现从 gitlink commit blob 校验 contract/evidence 的机器门 | Root / `w0a2_contract_verifier_writer` | W0A-1 | schema、gitlink、commit blob digest、状态与非法旁路负向测试通过；脏工作树不能影响结果 | 已验收 |
 | W0A-3 | P0 | 冻结完整调用矩阵与 consumer inventory | Root / `w0a3_inventory_writer` | W0A-2 | 16 条批准 edge 与 Web→IAM 非法旁路完整登记；绑定 contract version、generator/runtime version 和 evidence digest | 已验收 |
 | W0A-4 | P0 | 完成 Wave 0A 独立审查和 Root 集成验证 | Root / 主控 + `w0a_final_spec_reviewer` + `w0a_final_quality_reviewer` | W0A-1、W0A-2、W0A-3 | 规格审查与质量审查通过；Root 三项门禁和 compatibility 红门有当前输出 | 已验收 |
-| W0B-1 | P0 | 修复 BFF → Capability 当前 `/bff/*` 断链 | Capability owner 先确认 / BFF 写入 Agent | W0A-4 | owner 当前 `/v1/*` contract 与 BFF consumer/runtime parity 通过；删除旧路径 | 待派工 |
-| W0B-2 | P0 | 修复 Scheduler `jobs/schedules`、callback header 与 RFC3339 漂移 | Scheduler owner + BFF 写入 Agent，串行 | W0A-4 | owner contract 先冻结；双向 contract/integration tests 通过 | 待派工 |
-| W0B-3 | P0 | 切除 Storage `/internal/bff/library` 并固定 Proto v2 consumer 边界 | Storage owner + BFF/Agent/Capability，串行 | W0A-4 | v2 artifact/pin 发布；所有 consumer 通过；旧 v1 和废止 URL 删除 | 待派工 |
+| W0B-0 | P0 | 冻结 W0B 执行计划与控制面 | Root / 主控 | W0A-4 | 计划 SPEC/EXECUTION 双审 `0/0/0`；task/progress/INDEX 切换完成；Root 门通过 | 已验收 |
+| W0B-1 | P0 | 增加 consumer/producer 版本与精确 edge checkpoint 机器门 | Root / governance 子 Agent | W0B-0 | `.node-version`/`go.mod`/producer assertion 负例通过；三个 checkpoint 逐 edge 验证 | 待派工 |
+| W0B-2 | P0 | 验证 Capability 当前 HTTP owner release | Capability / 只读 owner 审查 | W0B-1 | 四个 `/v1/*` GET、contract/runtime/docs/schema 一致；全门通过；remote 可达 | 待派工 |
+| W0B-3 | P0 | 冻结 BFF Capability 设计与 owner artifact | BFF / Capability 子 Agent | W0B-2 | commit-blob vendor/provenance 固定；三文档门通过；只接受 `query` | 待派工 |
+| W0B-4 | P0 | 实现 BFF Capability generated consumer | BFF / 同一 Capability 子 Agent | W0B-3 | 四路由、身份、查询、错误、timeout/body cap 与生成漂移门通过；旧 `/bff/*` 删除 | 待派工 |
+| W0B-5 | P0 | 实现 Capability↔BFF 隔离真实进程 smoke | Root / smoke 子 Agent | W0B-4 | 独占 DB/Redis/port/process；8 个 case 通过；失败也只清理自有资源 | 待派工 |
+| W0B-6 | P0 | 集成并激活 `EDGE-BFF-CAPABILITY` | Root / integration 子 Agent | W0B-5 | 子仓推送、gitlink/fan-out/version/evidence 更新；`w0b-capability` 精确通过 | 待派工 |
+| W0B-7 | P0 | 验证 Scheduler owner release | Scheduler / 只读 owner 审查 | W0B-6 | `/schedules`、event header/RFC3339、幂等/重试与 docs/schema 一致；Go 全门通过 | 待派工 |
+| W0B-8 | P0 | 冻结 BFF Scheduler 控制/回调设计与 artifact | BFF / Scheduler 子 Agent | W0B-7 | control/receiver 边界、trusted tenant、opaque key + semantic digest、恢复语义确定 | 待派工 |
+| W0B-9 | P0 | 实现 Scheduler generated control 与 receiver | BFF / 同一 Scheduler 子 Agent | W0B-8 | `/jobs`/`job_*`/旧 header 删除；webhook generated validation、幂等与恢复测试通过 | 待派工 |
+| W0B-10 | P0 | 实现 Scheduler↔BFF 隔离真实进程 smoke | Root / smoke 子 Agent | W0B-9 | 真实 Scheduler/BFF/DB/Redis；11 个 case；response-unknown + restart 不重复创建 | 待派工 |
+| W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / integration 子 Agent | W0B-10 | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 待派工 |
+| W0B-12 | P0 | 冻结 BFF Storage fail-closed 与 W1/W2 前置 | BFF / Storage 子 Agent | W0B-11 | `GET /v1/library` 固定 503；授权矩阵、IAM admission、scope/pagination owner 明确 | 待派工 |
+| W0B-13 | P0 | 将 Storage 前置绑定到 Root W1/W2 | Root / 主控 | W0B-12 | task/progress 记录 BFF docs SHA 与五项验收前置 | 待派工 |
+| W0B-14 | P0 | 删除 BFF `/internal/bff/library` 运行链 | BFF / 同一 Storage 子 Agent | W0B-13 | 不打开 upstream socket；旧 URL/config/projector 全删；BFF 全门通过 | 待派工 |
+| W0B-15 | P0 | 集成 Storage 死链删除但不激活 Storage | Root / integration 子 Agent | W0B-14 | 所有 BFF fan-out 更新；Storage edges 继续 broken；`w0b-exit` 与双 smoke 通过 | 待派工 |
+| W0B-16 | P0 | W0B 双审与证据冻结 | Root / 主控 + 独立审查 | W0B-15 | SPEC/QUALITY `0/0/0`；4 active / 12 broken / 1 illegal 精确门；Root/子仓 clean main-only | 待派工 |
 | W1 | P0 | IAM → BFF → Web 身份、授权与 same-origin 闭环 | IAM → BFF → Web，串行 | Wave 0 | admission、CSRF、tenant/actor/subject、越权负例与生成客户端通过 | 待派工 |
 | W2 | P0 | Storage v2 完整命令、查询、幂等与数据闭环 | Storage → consumers | Wave 1 | Proto/runtime/generated drift、真实 PostgreSQL/ObjectStore、恢复测试通过 | 待派工 |
 | W3 | P0 | `kokoro-capability` → `kokoro-platform` 原子切换 | Platform → Agent/BFF → Root | Wave 2、IAM workload auth | remote/path/package/service/env/Proto/数据库/Redis/consumer 同一窗口切换；旧身份删除 | 待派工 |
