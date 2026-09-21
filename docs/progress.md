@@ -228,3 +228,11 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root gitlink仍按计划不提升：W0B-5 必须先用真实 Capability/BFF 进程、独占数据库、Redis namespace 与端口完成八个 case，W0B-6 才一次刷新 BFF fan-out 并激活 `EDGE-BFF-CAPABILITY`。当前 compatibility 仍保持 1 active / 15 broken / 1 illegal。
 - 本机预检已确认 Node `22.22.2`、Node `24.20.0`、`psql`、`redis-cli` 可用；`postgresql://localhost/postgres` 以当前用户连通，`redis://127.0.0.1:6379` 返回 `PONG`。W0B-5 任务卡固定只写 Root smoke runner、其测试与 `scripts/INDEX.md`，不改子仓、gitlink、inventory 或控制文档。
 - W0B-5 派工后的 Root runtime/contract 交叉核对发现计划把“缺 BFF auth”误写为 401；live BFF 强制配置 shared secret，当前实现与 public OpenAPI 都固定为 `403 service_auth_failed`，401 在配置完成的 live 运行态不可达。Root 已把该 smoke case 更正为 403，禁止 worker 为迎合旧文字伪造运行态。
+
+## 2026-09-21 — W0B-5 验收完成，W0B-6 已派工
+
+- 写入 Agent `w0b5_capability_bff_smoke_writer` 完成 Root 隔离 smoke；独立可靠性审查 `w0b5_smoke_reliability_reviewer` 最终 QUALITY `✅`，Critical/Important/Minor=`0/0/0`。Root 精确提交并推送 `97c98bf95dc270d605ffa46817ef9b1850405c67`（`test(e2e): add isolated Capability BFF smoke`），仅包含 runner、测试与 `scripts/INDEX.md`。
+- Runner 强制 BFF Node `22.22.2` 与 Capability Node `24.20.0`，创建本次唯一拥有的两个 PostgreSQL database、Redis prefix、loopback ports 与 process groups；真实 BFF HTTP surface 的 8 个 case 全部通过，其中缺 BFF auth 为 canonical `403 service_auth_failed`。
+- Root 独立复验：focused `26 passed`；Ruff format/check、`py_compile` 全部 exit 0；Root full tests `432 passed in 30.18s`；真实 CLI 两次均输出 `status=PASS,cases=8`。故障注入测试经真实 `run_smoke(..., fault_injection=...)` 证明 mid-flight 失败仍按逆序清理。
+- 真实 CLI 后残留探针：PostgreSQL `w0b_cap_%` database=`0`，Redis `kokoro:w0b:capability:*` key=`0`，BFF/Capability `dist/main.js` process=`0`，临时目录=`0`。owner 日志证据固定唯一 `trace_id` 与精确 `/v1/skills` operation；W0B-4 unit 继续负责 literal query forwarding 断言。
+- W0B-6 由 `w0b6_capability_integration_writer` 独占 Root 四个集成文件：提升 `apps/kokoro-bff` gitlink 到已推送 `2ed792586e89c035155938078d9b07f33af95abd`，刷新全部 BFF fan-out commit-blob evidence，并只激活 `EDGE-BFF-CAPABILITY`。Root 主控保留 Git index、commit/push、交叉审查与冻结 SHA 独立复验。
