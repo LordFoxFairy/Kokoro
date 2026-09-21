@@ -8,7 +8,7 @@
 - 设计事实源：[`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)
 - 当前执行计划：[`superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md`](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md)
 - 证据账：[`progress.md`](progress.md)
-- 当前 Root 基线：`1bc74ae536d8a2da48f76045da95c2d5c2877750`
+- 本轮启动 Root 基线：`1bc74ae536d8a2da48f76045da95c2d5c2877750`
 - 范围：`apps/kokoro-app` 与八个后端 owner；`apps/kokoro-mori` 和其他前端不参与业务改造。
 
 ## 2. 工作规则
@@ -27,7 +27,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | W0A-0 | P0 | 建立 Goal、任务表、进度账和 Wave 0A 计划 | Root / 主控 | 已批准设计 | 四个入口互链；Root 文档门通过；当前 diff 与验证写入证据账 | 已验收 |
 | W0A-1 | P0 | 统一数据库角色、协议矩阵与当前 Capability 身份的治理表述 | Root / `w0a1_governance_writer` | W0A-0 | `AGENTS.md`、架构标准、SQL 标准、CURRENT 无矛盾；治理测试锁定决定 | 已验收 |
-| W0A-2 | P0 | 实现从 gitlink commit blob 校验 contract/evidence 的机器门 | Root / 待派子 Agent | W0A-1 | schema、gitlink、commit blob digest、状态与非法旁路负向测试通过；脏工作树不能影响结果 | 待派工 |
+| W0A-2 | P0 | 实现从 gitlink commit blob 校验 contract/evidence 的机器门 | Root / `w0a2_contract_verifier_writer` | W0A-1 | schema、gitlink、commit blob digest、状态与非法旁路负向测试通过；脏工作树不能影响结果 | 已验收 |
 | W0A-3 | P0 | 冻结完整调用矩阵与 consumer inventory | Root / 待派子 Agent | W0A-2 | 16 条批准 edge 与 Web→IAM 非法旁路完整登记；绑定 contract version、generator/runtime version 和 evidence digest | 待派工 |
 | W0A-4 | P0 | 完成 Wave 0A 独立审查和 Root 集成验证 | Root / 主控 + 只读审查 Agent | W0A-1、W0A-2、W0A-3 | 规格审查与质量审查通过；Root 三项门禁和 compatibility 红门有当前输出 | 待派工 |
 | W0B-1 | P0 | 修复 BFF → Capability 当前 `/bff/*` 断链 | Capability owner 先确认 / BFF 写入 Agent | W0A-4 | owner 当前 `/v1/*` contract 与 BFF consumer/runtime parity 通过；删除旧路径 | 待派工 |

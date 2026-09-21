@@ -68,3 +68,24 @@ Codex Goal 已建立并保持 `active`：按已批准的 Kokoro 后端整体闭�
 - 提交后 `python3 -m pytest scripts/tests -q`：exit 0，`326 passed in 3.22s`。
 - `git show --check --stat --oneline HEAD` 与 `git diff --check`：exit 0。
 - 已锁定：共享 local/CI PostgreSQL role、独立 owner database/schema、SQL-first/ORM-first 唯一 schema、完整协议矩阵、Capability 当前身份和 Wave 3 Platform 原子切换条件。
+
+## 2026-09-21 — W0A-2 派工
+
+- 写入 Agent：`w0a2_contract_verifier_writer`（`gpt-5.6-sol`，high）。
+- 基线：Root `73b373db73b4df572d8ce7557032bdd10efb21f5`，`main` 与 `origin/main` 对齐且工作树 clean。
+- 获准文件：`scripts/governance/contract_inventory.py`、`scripts/verify-contract-compatibility.py`、`scripts/tests/test_contract_compatibility.py`。
+- Root 保留真实 inventory、任务/进度账、Git index、commit、push、审查与集成验证；本任务只实现 verifier 与隔离 fixture。
+
+## 2026-09-21 — W0A-2 验收
+
+- 实现 Agent：`w0a2_contract_verifier_writer`；独立审查 Agent：`w0a2_contract_verifier_reviewer`；基线 `73b373db73b4df572d8ce7557032bdd10efb21f5`。
+- 初审为 SPEC `✅`、QUALITY `❌`，发现 3 个 Important：Git option injection、缺失 child checkout 的不稳定异常、version assertion 可由无关 JSON pointer 伪造。
+- Fix Round 1 关闭 option injection；复审继续发现 2 个 Important：version evidence 的无效 UTF-8 仍抛异常、任意 JSON 父路径仍可伪造依赖 pin。
+- Fix Round 2 将 version evidence 收敛到 fail-closed `npm-package-json`：canonical `package.json`、runtime=`dependencies`、generator=`devDependencies`、RFC 6901 package identity 与冻结 blob version 同时绑定；无效 UTF-8 返回稳定错误。
+- 最终独立复审：SPEC `✅`、QUALITY `✅`，Critical/Important/Minor=`0/0/0`。
+- Root 精确提交：`ba51947e`（`test(contracts): verify frozen owner and consumer pins`），只包含三个获准文件：`scripts/governance/contract_inventory.py`、`scripts/verify-contract-compatibility.py`、`scripts/tests/test_contract_compatibility.py`。
+- 提交后 `python3 scripts/verify-repository-topology.py`：exit 0，`status=PASS`，`runtime_module_count=9`。
+- 提交后 `python3 -m pytest scripts/tests/test_contract_compatibility.py -q`：exit 0，`38 passed in 11.79s`。
+- 提交后 `python3 -m pytest scripts/tests -q`：exit 0，`364 passed in 15.11s`。
+- `git show --check --stat --oneline HEAD` 与 `git diff --check`：exit 0。
+- 真实 `consumer-inventory.json` 尚未建立；默认 compatibility CLI 在 W0A-3 前保持“inventory 缺失”的稳定红门。
