@@ -33,6 +33,14 @@ EXPECTED_EDGE_IDS = frozenset(
 )
 EXPECTED_VIOLATION_IDS = frozenset({"EDGE-WEB-IAM-DIRECT"})
 OBJECT_ID_PATTERN = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
+EXACT_SEMVER_PATTERN = re.compile(
+    r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"
+)
+VERSION_MANIFEST_KINDS = {
+    "code_generator_version": frozenset({"npm-package-json"}),
+    "runtime_package_version": frozenset({"npm-package-json", "plain-version-file"}),
+    "producer_runtime_version": frozenset({"go-mod"}),
+}
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -191,6 +199,193 @@ def _npm_package_pointer(field: str, package_name: str) -> str:
     return f"/{section}/{escaped_package_name}"
 
 
+def _verify_declared_package_version(
+    label: str,
+    declared_value: str,
+    package_name: str,
+    version: str,
+    errors: list[str],
+) -> None:
+    try:
+        declared_package_name, declared_version = _split_package_version(declared_value)
+    except ValueError as error:
+        errors.append(f"{label}: {error}")
+    else:
+        if package_name != declared_package_name:
+            errors.append(
+                f"{label}: package_name {package_name!r} != {declared_package_name!r}"
+            )
+        if version != declared_version:
+            errors.append(f"{label}: version {version!r} != {declared_version!r}")
+    if f"{package_name}@{version}" != declared_value:
+        errors.append(
+            f"{label}: package_name/version do not compose declared_value "
+            f"{declared_value!r}"
+        )
+
+
+def _verify_npm_assertion(
+    label: str,
+    field: str,
+    assertion: dict[str, Any],
+    package_name: str,
+    version: str,
+    blob: bytes | None,
+    errors: list[str],
+) -> None:
+    evidence_path = _text(assertion, "path", label, errors)
+    if evidence_path and PurePosixPath(evidence_path).name != "package.json":
+        errors.append(f"{label}: evidence basename must be package.json")
+    checks = assertion.get("json_checks")
+    if blob is None or not isinstance(checks, list) or not checks:
+        errors.append(f"{label}: json_checks must be a non-empty list")
+        return
+    try:
+        document = json.loads(blob)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        errors.append(f"{label}: version evidence must be UTF-8 JSON")
+        return
+    canonical_pointer = _npm_package_pointer(field, package_name)
+    has_package_version_evidence = False
+    for check_index, check in enumerate(checks):
+        check_label = f"{label}.json_checks[{check_index}]"
+        if not isinstance(check, dict):
+            errors.append(f"{check_label}: must be an object")
+            continue
+        pointer = _text(check, "pointer", check_label, errors)
+        expected = check.get("expected")
+        if pointer != canonical_pointer:
+            errors.append(
+                f"{check_label}: pointer {pointer!r} != canonical npm pointer "
+                f"{canonical_pointer!r}"
+            )
+            continue
+        try:
+            actual = _json_pointer(document, pointer)
+        except ValueError as error:
+            errors.append(f"{check_label}: {error}")
+            continue
+        if actual != expected:
+            errors.append(f"{check_label}: {actual!r} != {expected!r}")
+        elif expected == version:
+            has_package_version_evidence = True
+    if not has_package_version_evidence:
+        errors.append(
+            f"{label}: json_checks must include package/version evidence for "
+            f"{package_name}@{version}"
+        )
+
+
+def _verify_plain_version_assertion(
+    label: str,
+    assertion: dict[str, Any],
+    package_name: str,
+    version: str,
+    blob: bytes | None,
+    errors: list[str],
+) -> None:
+    evidence_path = _text(assertion, "path", label, errors)
+    if evidence_path and evidence_path != ".node-version":
+        errors.append(f"{label}: path must be .node-version")
+    if package_name != "node":
+        errors.append(f"{label}: plain-version-file package_name must be 'node'")
+    if EXACT_SEMVER_PATTERN.fullmatch(version) is None:
+        errors.append(f"{label}: version must be an exact semantic version")
+    if blob is None:
+        return
+    try:
+        text = blob.decode("utf-8")
+    except UnicodeDecodeError:
+        errors.append(f"{label}: plain version evidence must be UTF-8")
+        return
+    content = text.removesuffix("\n")
+    if (
+        text not in {content, f"{content}\n"}
+        or "\n" in content
+        or EXACT_SEMVER_PATTERN.fullmatch(content) is None
+    ):
+        errors.append(
+            f"{label}: plain version evidence must be one exact semantic version"
+        )
+    elif content != version:
+        errors.append(f"{label}: plain version evidence {content!r} != {version!r}")
+
+
+def _verify_go_mod_assertion(
+    label: str,
+    assertion: dict[str, Any],
+    package_name: str,
+    version: str,
+    blob: bytes | None,
+    errors: list[str],
+) -> None:
+    evidence_path = _text(assertion, "path", label, errors)
+    if evidence_path and evidence_path != "go.mod":
+        errors.append(f"{label}: path must be go.mod")
+    if package_name != "go":
+        errors.append(f"{label}: go-mod package_name must be 'go'")
+    if EXACT_SEMVER_PATTERN.fullmatch(version) is None:
+        errors.append(f"{label}: version must be an exact semantic version")
+    if blob is None:
+        return
+    try:
+        text = blob.decode("utf-8")
+    except UnicodeDecodeError:
+        errors.append(f"{label}: go.mod evidence must be UTF-8")
+        return
+    directives = [
+        line for line in text.splitlines() if re.match(r"^[^\S\r\n]*go[^\S\r\n]+", line)
+    ]
+    if len(directives) != 1:
+        errors.append(
+            f"{label}: go.mod must contain exactly one canonical go directive"
+        )
+        return
+    match = re.fullmatch(rf"go ({EXACT_SEMVER_PATTERN.pattern})", directives[0])
+    if match is None:
+        errors.append(
+            f"{label}: go.mod must contain exactly one canonical go directive"
+        )
+    elif match.group(1) != version:
+        errors.append(f"{label}: go.mod version {match.group(1)!r} != {version!r}")
+
+
+def _verify_version_assertion(
+    root: Path,
+    label: str,
+    assertion: dict[str, Any],
+    field: str,
+    errors: list[str],
+) -> None:
+    declared_value = _text(assertion, "declared_value", label, errors)
+    package_name = _text(assertion, "package_name", label, errors)
+    version = _text(assertion, "version", label, errors)
+    manifest_kind = _text(assertion, "manifest_kind", label, errors)
+    _verify_declared_package_version(
+        label, declared_value, package_name, version, errors
+    )
+    blob = _verify_blob_reference(root, label, assertion, errors)
+    known_manifest_kinds = set().union(*VERSION_MANIFEST_KINDS.values())
+    if manifest_kind not in known_manifest_kinds:
+        errors.append(f"{label}: unknown manifest_kind {manifest_kind!r}")
+        return
+    if manifest_kind not in VERSION_MANIFEST_KINDS.get(field, frozenset()):
+        errors.append(
+            f"{label}: manifest_kind {manifest_kind!r} is not allowed for {field}"
+        )
+        return
+    if manifest_kind == "npm-package-json":
+        _verify_npm_assertion(
+            label, field, assertion, package_name, version, blob, errors
+        )
+    elif manifest_kind == "plain-version-file":
+        _verify_plain_version_assertion(
+            label, assertion, package_name, version, blob, errors
+        )
+    elif manifest_kind == "go-mod":
+        _verify_go_mod_assertion(label, assertion, package_name, version, blob, errors)
+
+
 def _verify_version_assertions(
     root: Path,
     edge_id: str,
@@ -203,7 +398,15 @@ def _verify_version_assertions(
         return
     required = {"runtime_package_version"}
     generator = edge.get("code_generator_version")
-    if isinstance(generator, str) and not generator.startswith("not-applicable:"):
+    generator_exempt = (
+        edge_id == "EDGE-BROWSER-WEB"
+        and edge.get("protocol") == "same-origin-http"
+        and generator == "not-applicable:same-origin-route"
+    )
+    if isinstance(generator, str) and generator.startswith("not-applicable:"):
+        if not generator_exempt:
+            errors.append(f"{edge_id}: generator exemption is not allowed")
+    else:
         required.add("code_generator_version")
     asserted: set[str] = set()
     for index, raw_assertion in enumerate(assertions):
@@ -219,79 +422,46 @@ def _verify_version_assertions(
             errors.append(f"{label}: duplicate version assertion for {field}")
             continue
         asserted.add(field)
-        declared_value = _text(raw_assertion, "declared_value", label, errors)
-        package_name = _text(raw_assertion, "package_name", label, errors)
-        version = _text(raw_assertion, "version", label, errors)
-        manifest_kind = _text(raw_assertion, "manifest_kind", label, errors)
-        evidence_path = _text(raw_assertion, "path", label, errors)
-        if manifest_kind != "npm-package-json":
-            errors.append(f"{label}: unknown manifest_kind {manifest_kind!r}")
-        if evidence_path and PurePosixPath(evidence_path).name != "package.json":
-            errors.append(f"{label}: evidence basename must be package.json")
+        declared_value = raw_assertion.get("declared_value")
         if declared_value != edge.get(field):
             errors.append(
                 f"{label}: declared version {declared_value!r} != {edge.get(field)!r}"
             )
-        try:
-            declared_package_name, declared_version = _split_package_version(
-                declared_value
-            )
-        except ValueError as error:
-            errors.append(f"{label}: {error}")
-        else:
-            if package_name != declared_package_name:
-                errors.append(
-                    f"{label}: package_name {package_name!r} != "
-                    f"{declared_package_name!r}"
-                )
-            if version != declared_version:
-                errors.append(f"{label}: version {version!r} != {declared_version!r}")
-        if f"{package_name}@{version}" != declared_value:
-            errors.append(
-                f"{label}: package_name/version do not compose declared_value "
-                f"{declared_value!r}"
-            )
-        blob = _verify_blob_reference(root, label, raw_assertion, errors)
-        checks = raw_assertion.get("json_checks")
-        if blob is None or not isinstance(checks, list) or not checks:
-            errors.append(f"{label}: json_checks must be a non-empty list")
-            continue
-        try:
-            document = json.loads(blob)
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            errors.append(f"{label}: version evidence must be UTF-8 JSON")
-            continue
-        canonical_pointer = _npm_package_pointer(field, package_name)
-        has_package_version_evidence = False
-        for check_index, check in enumerate(checks):
-            check_label = f"{label}.json_checks[{check_index}]"
-            if not isinstance(check, dict):
-                errors.append(f"{check_label}: must be an object")
-                continue
-            pointer = _text(check, "pointer", check_label, errors)
-            expected = check.get("expected")
-            if pointer != canonical_pointer:
-                errors.append(
-                    f"{check_label}: pointer {pointer!r} != canonical npm pointer "
-                    f"{canonical_pointer!r}"
-                )
-                continue
-            try:
-                actual = _json_pointer(document, pointer)
-            except ValueError as error:
-                errors.append(f"{check_label}: {error}")
-                continue
-            if actual != expected:
-                errors.append(f"{check_label}: {actual!r} != {expected!r}")
-            elif expected == version:
-                has_package_version_evidence = True
-        if not has_package_version_evidence:
-            errors.append(
-                f"{label}: json_checks must include package/version evidence for "
-                f"{package_name}@{version}"
-            )
+        _verify_version_assertion(root, label, raw_assertion, field, errors)
     for field in sorted(required - asserted):
         errors.append(f"{edge_id}: missing version assertion for {field}")
+
+
+def _verify_producer_runtime_assertion(
+    root: Path,
+    edge_id: str,
+    edge: dict[str, Any],
+    errors: list[str],
+) -> None:
+    assertion = edge.get("producer_runtime_assertion")
+    if edge.get("protocol") != "http-event":
+        if assertion is not None:
+            errors.append(
+                f"{edge_id}: producer_runtime_assertion is only valid for http-event"
+            )
+        return
+    if not isinstance(assertion, dict):
+        errors.append(f"{edge_id}: missing producer_runtime_assertion")
+        return
+    label = f"{edge_id}: producer_runtime_assertion"
+    owner = edge.get("owner")
+    if isinstance(owner, dict) and (
+        assertion.get("repository_path") != owner.get("repository_path")
+        or assertion.get("repository_commit") != owner.get("repository_commit")
+    ):
+        errors.append(f"{label}: repository must match contract owner")
+    _verify_version_assertion(
+        root,
+        label,
+        assertion,
+        "producer_runtime_version",
+        errors,
+    )
 
 
 def verify_inventory(root: Path, inventory_path: Path) -> list[str]:
@@ -386,6 +556,7 @@ def verify_inventory(root: Path, inventory_path: Path) -> list[str]:
                 _verify_blob_reference(root, reference_label, raw_reference, errors)
         if state == "active":
             _verify_version_assertions(root, edge_id, raw_edge, errors)
+            _verify_producer_runtime_assertion(root, edge_id, raw_edge, errors)
         if state == "broken":
             errors.append(f"{edge_id}: declared broken: {raw_edge.get('reason')}")
     for index, raw_violation in enumerate(inventory["violations"]):

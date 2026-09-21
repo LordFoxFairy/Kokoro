@@ -12,12 +12,17 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 - `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the six owner repositories. It emits stable
   text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
   every repository converges.
-- `python3 -m pytest scripts/tests/test_contract_compatibility.py -q` exercises the frozen inventory parser and fail-closed
-  gitlink, commit-blob digest, topology and package-version checks. Exit `0` means the focused verifier tests pass.
+- `python3 -m pytest scripts/tests/test_contract_compatibility.py scripts/tests/test_contract_checkpoint.py -q` exercises the
+  frozen inventory parser and fail-closed gitlink, commit-blob digest, topology, package-version and checkpoint checks. Exit `0`
+  means the focused verifier tests pass.
 - `python3 scripts/verify-contract-compatibility.py --inventory verification/contracts/consumer-inventory.json` checks every
   approved call edge and recorded violation against the Root index and child commit blobs. Exit `0` means all edges are active
   with no violations; exit `1` is the intentional Wave 0A red baseline only when the output contains exactly fifteen declared
   broken edges and `EDGE-WEB-IAM-DIRECT`, with no schema, gitlink, digest, evidence or version drift.
+- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-start.json` compares the
+  complete active/broken/illegal edge ID sets with a frozen checkpoint and runs the compatibility verifier. Exit `0` accepts
+  only the checkpoint's declared broken and illegal outcomes; count-preserving ID swaps and any schema, gitlink, digest,
+  evidence or version drift fail.
 - `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
   Redis prefix, and removes only resources registered by this invocation. It does not perform provider inference.

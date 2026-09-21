@@ -124,19 +124,26 @@ def fixture(tmp_path: Path) -> InventoryFixture:
     run(root, "git", "config", "user.email", "tests@kokoro.local")
     run(root, "git", "config", "user.name", "Kokoro Tests")
     owner_contract = b'{"openapi":"3.1.0"}\n'
+    owner_go_mod = b"module example.com/owner\n\ngo 1.26.8\n"
     consumer_source = b'export const ownerVersion = "v1";\n'
+    consumer_node_version = b"22.22.2\n"
     consumer_package = (
         b'{"version":"7.16.0","metadata":{"undici":"7.16.0"},'
         b'"dependencies":{"undici":"7.16.0","openapi-typescript":"7.10.1"},'
         b'"devDependencies":{"openapi-typescript":"7.10.1",'
         b'"undici":"7.16.0"}}\n'
     )
-    owner_sha = commit_child(root, "owner", {"contract/openapi.json": owner_contract})
+    owner_sha = commit_child(
+        root,
+        "owner",
+        {"contract/openapi.json": owner_contract, "go.mod": owner_go_mod},
+    )
     consumer_sha = commit_child(
         root,
         "consumer",
         {
             "src/client.ts": consumer_source,
+            ".node-version": consumer_node_version,
             "package.json": consumer_package,
             "config/versions.json": consumer_package,
         },
@@ -239,6 +246,43 @@ def fixture(tmp_path: Path) -> InventoryFixture:
     inventory_fixture = InventoryFixture(module, root, manifest_path, data)
     inventory_fixture.write()
     return inventory_fixture
+
+
+def use_plain_node_runtime(fixture: InventoryFixture) -> dict[str, object]:
+    edge = fixture.data["edges"][0]
+    consumer_commit = edge["evidence"][0]["repository_commit"]
+    assertion = {
+        "field": "runtime_package_version",
+        "declared_value": "node@22.22.2",
+        "package_name": "node",
+        "version": "22.22.2",
+        "manifest_kind": "plain-version-file",
+        "repository_path": "apps/consumer",
+        "repository_commit": consumer_commit,
+        "path": ".node-version",
+        "sha256": sha256(b"22.22.2\n").hexdigest(),
+    }
+    edge["runtime_package_version"] = "node@22.22.2"
+    edge["version_assertions"][1] = assertion
+    return assertion
+
+
+def use_event_producer_runtime(fixture: InventoryFixture) -> dict[str, object]:
+    edge = fixture.data["edges"][0]
+    edge["protocol"] = "http-event"
+    owner = edge["owner"]
+    assertion = {
+        "declared_value": "go@1.26.8",
+        "package_name": "go",
+        "version": "1.26.8",
+        "manifest_kind": "go-mod",
+        "repository_path": owner["repository_path"],
+        "repository_commit": owner["repository_commit"],
+        "path": "go.mod",
+        "sha256": sha256(b"module example.com/owner\n\ngo 1.26.8\n").hexdigest(),
+    }
+    edge["producer_runtime_assertion"] = assertion
+    return assertion
 
 
 @pytest.fixture()
@@ -380,6 +424,332 @@ def test_invalid_utf8_version_evidence_is_reported_without_traceback(
     assert any("version evidence must be UTF-8 JSON" in error for error in errors)
 
 
+def test_plain_version_file_accepts_exact_node_semver(fixture) -> None:
+    use_plain_node_runtime(fixture)
+
+    assert fixture.verify() == []
+
+
+def test_plain_version_file_reads_commit_blob_not_dirty_worktree(fixture) -> None:
+    use_plain_node_runtime(fixture)
+    (fixture.root / "apps/consumer/.node-version").write_text("999.0.0\n")
+
+    assert fixture.verify() == []
+
+
+def test_plain_version_file_ignores_local_replace_refs(fixture) -> None:
+    use_plain_node_runtime(fixture)
+    edge = fixture.data["edges"][0]
+    original_commit = edge["evidence"][0]["repository_commit"]
+    repository = fixture.root / "apps/consumer"
+    (repository / ".node-version").write_text("999.0.0\n")
+    run(repository, "git", "add", ".node-version")
+    run(repository, "git", "commit", "-m", "test: replacement node version")
+    replacement_commit = run(repository, "git", "rev-parse", "HEAD")
+    run(repository, "git", "replace", original_commit, replacement_commit)
+
+    assert fixture.verify() == []
+
+
+def test_plain_version_file_requires_canonical_filename(fixture) -> None:
+    assertion = use_plain_node_runtime(fixture)
+    assertion["path"] = "config/.node-version"
+
+    assert any("path must be .node-version" in error for error in fixture.verify())
+
+
+@pytest.mark.parametrize("content", [b">=22.22.2\n", b"22.x\n", b"v22.22.2\n"])
+def test_plain_version_file_rejects_ranges_and_noncanonical_versions(
+    fixture, content: bytes
+) -> None:
+    assertion = use_plain_node_runtime(fixture)
+    repository_commit = commit_child(
+        fixture.root, "node-runtime", {".node-version": content}
+    )
+    run(
+        fixture.root,
+        "git",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "160000",
+        repository_commit,
+        "apps/node-runtime",
+    )
+    assertion.update(
+        repository_path="apps/node-runtime",
+        repository_commit=repository_commit,
+        sha256=sha256(content).hexdigest(),
+    )
+
+    assert any("exact semantic version" in error for error in fixture.verify())
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("declared_value", "node@22.22.3"),
+        ("package_name", "deno"),
+        ("version", "22.22.3"),
+    ],
+)
+def test_plain_version_file_rejects_wrong_declaration_package_or_version(
+    fixture, key: str, value: str
+) -> None:
+    assertion = use_plain_node_runtime(fixture)
+    assertion[key] = value
+
+    assert fixture.verify()
+
+
+def test_plain_version_file_rejects_invalid_utf8(fixture) -> None:
+    assertion = use_plain_node_runtime(fixture)
+    invalid_blob = b"\xff"
+    repository_commit = commit_child(
+        fixture.root, "invalid-node-runtime", {".node-version": invalid_blob}
+    )
+    run(
+        fixture.root,
+        "git",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "160000",
+        repository_commit,
+        "apps/invalid-node-runtime",
+    )
+    assertion.update(
+        repository_path="apps/invalid-node-runtime",
+        repository_commit=repository_commit,
+        sha256=sha256(invalid_blob).hexdigest(),
+    )
+
+    assert any(
+        "plain version evidence must be UTF-8" in error for error in fixture.verify()
+    )
+
+
+def test_plain_version_file_rejects_mismatched_gitlink(fixture) -> None:
+    assertion = use_plain_node_runtime(fixture)
+    assertion["repository_commit"] = fixture.data["edges"][0]["owner"][
+        "repository_commit"
+    ]
+
+    assert any("evidence gitlink" in error for error in fixture.verify())
+
+
+def test_go_mod_accepts_exact_go_directive_for_event_producer(fixture) -> None:
+    use_event_producer_runtime(fixture)
+
+    assert fixture.verify() == []
+
+
+def test_go_mod_reads_commit_blob_not_dirty_worktree(fixture) -> None:
+    use_event_producer_runtime(fixture)
+    (fixture.root / "apps/owner/go.mod").write_text(
+        "module example.com/owner\n\ngo 9.9.9\n"
+    )
+
+    assert fixture.verify() == []
+
+
+def test_go_mod_requires_canonical_path(fixture) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    assertion["path"] = "config/go.mod"
+
+    assert any("path must be go.mod" in error for error in fixture.verify())
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        b"module example.com/owner\n\ngo >=1.26.8\n",
+        b"module example.com/owner\n\ntoolchain go1.26.8\n",
+        b"module example.com/owner\n\ngo 1.26.8\ngo 1.26.8\n",
+    ],
+)
+def test_go_mod_rejects_range_toolchain_substitute_and_duplicate_directive(
+    fixture, content: bytes
+) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    repository_commit = commit_child(fixture.root, "go-runtime", {"go.mod": content})
+    run(
+        fixture.root,
+        "git",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "160000",
+        repository_commit,
+        "apps/go-runtime",
+    )
+    edge = fixture.data["edges"][0]
+    edge["owner"]["repository_path"] = "apps/go-runtime"
+    edge["owner"]["repository_commit"] = repository_commit
+    edge["owner"]["contract_path"] = "go.mod"
+    edge["owner"]["contract_sha256"] = sha256(content).hexdigest()
+    assertion.update(
+        repository_path="apps/go-runtime",
+        repository_commit=repository_commit,
+        sha256=sha256(content).hexdigest(),
+    )
+
+    assert any(
+        "exactly one canonical go directive" in error for error in fixture.verify()
+    )
+
+
+@pytest.mark.parametrize(
+    "hidden_directive",
+    [
+        b"go\t1.25.0\n",
+        b"\tgo 1.25.0\n",
+        b"  go\t1.25.0\n",
+    ],
+)
+def test_go_mod_rejects_duplicate_directive_with_noncanonical_whitespace(
+    fixture, hidden_directive: bytes
+) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    content = b"module example.com/owner\n\ngo 1.26.8\n" + hidden_directive
+    repository_commit = commit_child(
+        fixture.root, "duplicate-go-runtime", {"go.mod": content}
+    )
+    run(
+        fixture.root,
+        "git",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "160000",
+        repository_commit,
+        "apps/duplicate-go-runtime",
+    )
+    edge = fixture.data["edges"][0]
+    edge["owner"].update(
+        repository_path="apps/duplicate-go-runtime",
+        repository_commit=repository_commit,
+        contract_path="go.mod",
+        contract_sha256=sha256(content).hexdigest(),
+    )
+    assertion.update(
+        repository_path="apps/duplicate-go-runtime",
+        repository_commit=repository_commit,
+        sha256=sha256(content).hexdigest(),
+    )
+
+    assert any(
+        "exactly one canonical go directive" in error for error in fixture.verify()
+    )
+
+
+def test_producer_runtime_rejects_incompatible_npm_manifest_without_exception(
+    fixture,
+) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    edge = fixture.data["edges"][0]
+    assertion.update(
+        manifest_kind="npm-package-json",
+        path="contract/openapi.json",
+        sha256=edge["owner"]["contract_sha256"],
+        json_checks=[{"pointer": "/dependencies/go", "expected": "1.26.8"}],
+    )
+
+    errors = fixture.verify()
+
+    assert any(
+        "manifest_kind 'npm-package-json' is not allowed for producer_runtime_version"
+        in error
+        for error in errors
+    )
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("declared_value", "go@1.26.7"),
+        ("package_name", "golang"),
+        ("version", "1.26.7"),
+    ],
+)
+def test_go_mod_rejects_wrong_declaration_package_or_version(
+    fixture, key: str, value: str
+) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    assertion[key] = value
+
+    assert fixture.verify()
+
+
+def test_go_mod_rejects_invalid_utf8(fixture) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    invalid_blob = b"\xff"
+    repository_commit = commit_child(
+        fixture.root, "invalid-go-runtime", {"go.mod": invalid_blob}
+    )
+    run(
+        fixture.root,
+        "git",
+        "update-index",
+        "--add",
+        "--cacheinfo",
+        "160000",
+        repository_commit,
+        "apps/invalid-go-runtime",
+    )
+    edge = fixture.data["edges"][0]
+    edge["owner"]["repository_path"] = "apps/invalid-go-runtime"
+    edge["owner"]["repository_commit"] = repository_commit
+    edge["owner"]["contract_path"] = "go.mod"
+    edge["owner"]["contract_sha256"] = sha256(invalid_blob).hexdigest()
+    assertion.update(
+        repository_path="apps/invalid-go-runtime",
+        repository_commit=repository_commit,
+        sha256=sha256(invalid_blob).hexdigest(),
+    )
+
+    assert any("go.mod evidence must be UTF-8" in error for error in fixture.verify())
+
+
+def test_http_event_requires_producer_runtime_assertion(fixture) -> None:
+    fixture.data["edges"][0]["protocol"] = "http-event"
+
+    assert any(
+        "missing producer_runtime_assertion" in error for error in fixture.verify()
+    )
+
+
+def test_non_event_rejects_producer_runtime_assertion(fixture) -> None:
+    use_event_producer_runtime(fixture)
+    fixture.data["edges"][0]["protocol"] = "http-openapi"
+
+    assert any(
+        "producer_runtime_assertion is only valid" in error
+        for error in fixture.verify()
+    )
+
+
+def test_event_producer_assertion_must_match_contract_owner(fixture) -> None:
+    assertion = use_event_producer_runtime(fixture)
+    assertion["repository_path"] = "apps/consumer"
+    assertion["repository_commit"] = fixture.data["edges"][0]["evidence"][0][
+        "repository_commit"
+    ]
+
+    assert any("must match contract owner" in error for error in fixture.verify())
+
+
+def test_producer_assertion_cannot_replace_consumer_runtime_assertion(fixture) -> None:
+    use_event_producer_runtime(fixture)
+    edge = fixture.data["edges"][0]
+    edge["version_assertions"] = [edge["version_assertions"][0]]
+
+    assert any(
+        "missing version assertion for runtime_package_version" in error
+        for error in fixture.verify()
+    )
+
+
 def test_contract_digest_uses_commit_blob_not_dirty_worktree(fixture) -> None:
     (fixture.root / "apps/owner/contract/openapi.json").write_text("dirty")
     assert fixture.verify() == []
@@ -516,12 +886,34 @@ def test_multi_package_version_requires_a_packages_array(fixture) -> None:
         fixture.module._split_package_version("next@16.2.6+ai@7.0.92")
 
 
-def test_not_applicable_generator_does_not_require_assertion(fixture) -> None:
+def test_browser_same_origin_generator_exemption_does_not_require_assertion(
+    fixture,
+) -> None:
+    edge = fixture.data["edges"][0]
+    edge["id"] = "EDGE-BROWSER-WEB"
+    edge["protocol"] = "same-origin-http"
+    edge["code_generator_version"] = "not-applicable:same-origin-route"
+    edge["version_assertions"] = [edge["version_assertions"][1]]
+    fixture.module.EXPECTED_EDGE_IDS = frozenset({"EDGE-BROWSER-WEB"})
+
+    assert fixture.verify() == []
+
+
+def test_generator_exemption_is_rejected_for_other_edges(fixture) -> None:
     edge = fixture.data["edges"][0]
     edge["code_generator_version"] = "not-applicable:same-origin-route"
     edge["version_assertions"] = [edge["version_assertions"][1]]
 
-    assert fixture.verify() == []
+    assert any("generator exemption" in error for error in fixture.verify())
+
+
+def test_http_event_cannot_use_generator_exemption(fixture) -> None:
+    edge = fixture.data["edges"][0]
+    edge["code_generator_version"] = "not-applicable:same-origin-route"
+    edge["version_assertions"] = [edge["version_assertions"][1]]
+    use_event_producer_runtime(fixture)
+
+    assert any("generator exemption" in error for error in fixture.verify())
 
 
 def test_top_level_version_pin_must_match_assertion_declared_value(fixture) -> None:
