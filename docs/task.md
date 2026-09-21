@@ -26,7 +26,7 @@
 | ID | 优先级 | 业务目标 | Owner / 写入 Agent | 依赖 | 完成条件 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
 | W0A-0 | P0 | 建立 Goal、任务表、进度账和 Wave 0A 计划 | Root / 主控 | 已批准设计 | 四个入口互链；Root 文档门通过；当前 diff 与验证写入证据账 | 已验收 |
-| W0A-1 | P0 | 统一数据库角色、协议矩阵与当前 Capability 身份的治理表述 | Root / 待派子 Agent | W0A-0 | `AGENTS.md`、架构标准、SQL 标准、CURRENT 无矛盾；治理测试锁定决定 | 待派工 |
+| W0A-1 | P0 | 统一数据库角色、协议矩阵与当前 Capability 身份的治理表述 | Root / `w0a1_governance_writer` | W0A-0 | `AGENTS.md`、架构标准、SQL 标准、CURRENT 无矛盾；治理测试锁定决定 | 已验收 |
 | W0A-2 | P0 | 实现从 gitlink commit blob 校验 contract/evidence 的机器门 | Root / 待派子 Agent | W0A-1 | schema、gitlink、commit blob digest、状态与非法旁路负向测试通过；脏工作树不能影响结果 | 待派工 |
 | W0A-3 | P0 | 冻结完整调用矩阵与 consumer inventory | Root / 待派子 Agent | W0A-2 | 16 条批准 edge 与 Web→IAM 非法旁路完整登记；绑定 contract version、generator/runtime version 和 evidence digest | 待派工 |
 | W0A-4 | P0 | 完成 Wave 0A 独立审查和 Root 集成验证 | Root / 主控 + 只读审查 Agent | W0A-1、W0A-2、W0A-3 | 规格审查与质量审查通过；Root 三项门禁和 compatibility 红门有当前输出 | 待派工 |
