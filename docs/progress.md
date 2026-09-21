@@ -181,3 +181,19 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 复跑：focused `80 passed in 29.20s`；全量 `406 passed in 32.08s`；Ruff format/check、`py_compile`、`w0b-start` checkpoint、topology 与 `git diff --check` 全部 exit 0。
 - Root 精确提交并推送：`dc05459a`（`test(contracts): verify consumer and producer runtimes`），仅包含任务卡 10 个文件；`verification/contracts/consumer-inventory.json`、gitlink、子仓和业务 edge 状态未改变。
 - 当前 compatibility 基线仍是 `w0b-start`：1 active / 15 broken / 1 illegal。下一任务为 W0B-2，只读验证 Capability owner release。
+
+## 2026-09-21 — W0B-2 只读审计与 W0B-2A owner 修复派工
+
+- 只读验证 Agent：`w0b2_capability_owner_verifier`；Root 基线 `60cd4a79e2a2ecff11d8d7961d486ff92fec947c`；Capability frozen release `e576d38dd103c2fda4d6389385b3f04f82ddfc20`。
+- 冻结 release 的 Node `24.20.0`、pnpm `11.25.0`、TypeScript `5.9.3` 可复现；format/lint/typecheck/contract/build 均 exit 0；focused `11 passed`；full `650 passed / 177 skipped / 0 failed`；Root、child 与 live remote 均 clean、main-only、SHA 对齐。
+- Owner artifact `1.0.0` 的 direct SHA-256 为 `c24f5b42bd9f92f5f149e93fc455b55ae3a451e2d30ca08ef899088d717af8f4`，combined provenance 为 `6eb170d12bd046aa70b2a1b8aa775c6303e46ffc997cb4193f77fc230072d3b5`；但验证发现四类实质漂移，故未把 W0B-2 冒充验收：runtime/docs/test 仍接受未发布的 `q` alias；runtime 未执行 `query/tags/provider_key` 的声明上限；三份当前设计文档误称 inactive Platform artifact 未实现；错误 envelope 缺少 Root 标准要求的 `retryable`。
+- Root 裁决为独立 owner-local W0B-2A：OpenAPI 提升到 `2.0.0`，只保留 canonical `query`，按 Unicode code point 执行参数边界，request ID 只保留响应 header，错误 retry 语义由 Capability 固定；无 Prisma/schema/data-owner 变化。
+- 写入 Agent：`w0b2a_capability_owner_writer`（`gpt-5.6-sol`，high）；精确任务卡位于 ignored SDD workspace 的 `task-2a-capability-owner-repair.md`。Root 保留 Git index、commit、push、Root gitlink、consumer inventory、双审和最终复跑；W0B-3 在新 owner release 验收前不启动。
+
+## 2026-09-21 — W0B-2A owner release 与 W0B-2B Root repin
+
+- Capability owner repair 经两轮 TDD 修正后由独立 SPEC/QUALITY reviewer 对最终 21 文件 diff 复审，结论均为 `0 blocking/critical, 0 important, 0 minor`。
+- 新 owner release 已精确提交并推送到 Capability `main`：`7f89a267d745cbb9870f52d6edb23dec1a3c469b`（`fix(http): publish canonical Capability projection contract`）；local、`origin/main` 与 live remote 一致，remote 只保留 `main`。
+- OpenAPI `2.0.0` direct digest 为 `e0b7c4b57ac030efb73878b51da2a3595ec0172bce0608a88ea925b57a69761a`，combined provenance 为 `536dca2989a5a9b7e06f1bcd15ef8eb25876ef4184345b077407555457e45c4b`。契约固定四个 GET、canonical `query`、Unicode code point 参数上限、header-only request ID、`retryable` 错误语义与 typed dependency failure；Prisma/schema、Proto、generated、package/lock 和 Platform artifact 未改变。
+- Root fresh pre-commit verification 使用 Node `24.20.0`：format/lint/typecheck/contract/platform-artifact/schema/build 全部 exit 0；focused `35 passed`；full `663 passed / 177 skipped / 0 failed`；范围与禁止变更检查通过。独立 post-commit release 复验与 Root 集成验证仍在执行，因此任务状态保持“待集成验证”。
+- W0B-2B inventory writer 仅更新 `verification/contracts/consumer-inventory.json`：9 个 Capability tuple pin 到新 SHA，并从新 commit blob 重算两个实际变化的 controller digest；未改变任何 edge state/protocol/reason/version/runtime assertion。Root 主控负责 gitlink、权威计划、当前状态与最终 checkpoint。

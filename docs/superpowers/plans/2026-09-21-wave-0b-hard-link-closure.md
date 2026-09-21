@@ -195,7 +195,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 
 **Repository:** `apps/kokoro-capability`. **Writer:** none unless drift is found. **Reviewer:** Capability owner reviewer.
 
-**Frozen owner:** commit `e576d38dd103c2fda4d6389385b3f04f82ddfc20`; `contract/openapi/capability-http.openapi.json`; version `1.0.0`; SHA-256 `c24f5b42bd9f92f5f149e93fc455b55ae3a451e2d30ca08ef899088d717af8f4`.
+**Accepted owner:** the initial frozen release `e576d38dd103c2fda4d6389385b3f04f82ddfc20` failed runtime/contract/docs parity and opened the separate W0B-2A owner repair. The accepted release is commit `7f89a267d745cbb9870f52d6edb23dec1a3c469b`; `contract/openapi/capability-http.openapi.json`; version `2.0.0`; direct SHA-256 `e0b7c4b57ac030efb73878b51da2a3595ec0172bce0608a88ea925b57a69761a`; combined provenance `536dca2989a5a9b7e06f1bcd15ef8eb25876ef4184345b077407555457e45c4b`.
 
 1. Run the exact Capability toolchain preflight and verify clean `main`, Root gitlink, HEAD and `origin/main` all equal the frozen commit.
 2. Read absolute `docs/TECHNICAL_DESIGN.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, contract and canonical Prisma schema. Report no blocking contradiction and “no schema change”.
@@ -217,7 +217,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 **Repository/writer:** `apps/kokoro-bff` / BFF Capability subagent. **Reviewer:** BFF design reviewer.
 
 **Exact files:**
-- create `contract/vendor/kokoro-capability/e576d38dd103c2fda4d6389385b3f04f82ddfc20/capability-http.openapi.json`
+- create `contract/vendor/kokoro-capability/7f89a267d745cbb9870f52d6edb23dec1a3c469b/capability-http.openapi.json`
 - create `contract/dependencies/capability-http.json` with `status=design-frozen`
 - create `openapi-ts.capability.config.ts`
 - modify `docs/TECHNICAL_DESIGN.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/CURRENT.md`

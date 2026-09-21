@@ -20,6 +20,10 @@
 | `apps/kokoro-scheduler` | `17c2de3e68ed75dbf3fa495643f6ad280e3c7112` |
 | `libs/kokoro-web-shared` | `0c4e87ace01340aaa07bc57935f1d98b8e77af14` |
 
+W0B-2 在上述历史快照之后完成了经过双审的 Capability owner-local contract repair；当前 Root 组合将
+`apps/kokoro-capability` 提升到已推送的 `7f89a267d745cbb9870f52d6edb23dec1a3c469b`。其余 gitlink 仍与表中快照一致；
+Root 的实际 gitlink 始终是组合事实源。
+
 - Root 子仓路径严格使用远端仓名：Web 为 `apps/kokoro-app`，不存在 `kokoro/`、`apps/kokoro/` 或其他 alias；Mori 为 `apps/kokoro-mori`；共享前端包为 `libs/kokoro-web-shared`。
 - 九个正式 runtime owner 仍是 `kokoro-app`、BFF、Agent、IAM、System、Billing、Capability、Storage、Scheduler；Mori 是独立前端产品，web-shared 是独立版本化库。
 - Root 与每个 submodule 的本地和 `origin` 都只保留 `main`。每个 gitlink 锁定已推送的 commit；`.gitmodules branch=main` 仅是更新提示，不构成发布锁。
