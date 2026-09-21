@@ -25,17 +25,17 @@ Browser -> Web -> BFF -> internal owner services / Agent / Scheduler
 
 ## 2. 目标运行仓与 owner
 
-| 仓库 | Owner |
-|---|---|
-| `kokoro` | Web UI、浏览器状态、同源 adapter |
-| `kokoro-bff` | Conversation、Message、Project、Share、ScheduledTask、Public API、AG-UI projection |
-| `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行、Approval/HITL、Evidence |
-| `kokoro-iam` | Tenant、Identity、AuthN/AuthZ、Role、Permission、Audit |
-| `kokoro-system` | 系统控制面：Site、Host、Workspace、Runtime、Policy、模型目录与路由配置 |
-| `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering、Reconciliation |
-| `kokoro-platform` | Agent Capability Control Plane：Skills 与 MCP；后续平台模块须单独 ADR |
-| `kokoro-storage` | Blob、Upload、Asset、Artifact、Scan、ObjectStore metadata |
-| `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch |
+| 仓库               | Owner                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `kokoro`           | Web UI、浏览器状态、同源 adapter                                                   |
+| `kokoro-bff`       | Conversation、Message、Project、Share、ScheduledTask、Public API、AG-UI projection |
+| `kokoro-agent`     | Run、Checkpoint、Lease、Tool Journal、执行、Approval/HITL、Evidence                |
+| `kokoro-iam`       | Tenant、Identity、AuthN/AuthZ、Role、Permission、Audit                             |
+| `kokoro-system`    | 系统控制面：Site、Host、Workspace、Runtime、Policy、模型目录与路由配置             |
+| `kokoro-billing`   | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering、Reconciliation  |
+| `kokoro-platform`  | Agent Capability Control Plane：Skills 与 MCP；后续平台模块须单独 ADR              |
+| `kokoro-storage`   | Blob、Upload、Asset、Artifact、Scan、ObjectStore metadata                          |
+| `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch                               |
 
 ### 2.1 已裁决的收敛
 
@@ -110,18 +110,18 @@ contract owner 和消费者配置；旧 Capability 名称不保留兼容 alias�
 
 ## 4. API 与协议
 
-| Caller → Owner | 唯一协议 |
-| --- | --- |
-| Browser → Web | same-origin HTTP |
-| Web → BFF | HTTP/OpenAPI + AG-UI/SSE |
-| BFF → IAM | HTTP/OpenAPI generated client |
-| BFF/Agent → System | HTTP/OpenAPI generated client |
-| BFF/Agent → Platform | ConnectRPC/Proto |
-| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2 |
-| BFF → Agent | HTTP/OpenAPI generated client |
-| BFF → Scheduler | HTTP/OpenAPI generated client |
-| Scheduler → BFF/Agent | versioned HTTP event protocol |
-| BFF → Billing | HTTP/OpenAPI generated client |
+| Caller → Owner               | 唯一目标协议                  | 契约 owner | 说明                                             |
+| ---------------------------- | ----------------------------- | ---------- | ------------------------------------------------ |
+| Browser → Web                | same-origin HTTP              | Web        | Cookie、CSRF、浏览器状态。                       |
+| Web → BFF                    | HTTP/OpenAPI；AG-UI/SSE       | BFF        | Public Product API 与 durable event projection。 |
+| BFF → IAM                    | HTTP/OpenAPI generated client | IAM        | OAuth/OIDC/Better Auth 保持原生 HTTP 语义。      |
+| BFF/Agent → System           | HTTP/OpenAPI generated client | System     | 不因统一偏好重写当前稳定 HTTP。                  |
+| BFF/Agent → Platform         | ConnectRPC/Proto              | Platform   | Skills/MCP typed command/query。                 |
+| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2           | Storage    | Asset、Artifact、Upload、Package reference。     |
+| BFF → Agent                  | HTTP/OpenAPI generated client | Agent      | Run dispatch/control 与可恢复 event paging。     |
+| BFF → Scheduler              | HTTP/OpenAPI generated client | Scheduler  | Schedule command/query。                         |
+| Scheduler → BFF/Agent        | HTTP event protocol           | Scheduler  | Durable retry、receipt、duplicate delivery。     |
+| BFF → Billing                | HTTP/OpenAPI generated client | Billing    | Checkout、payment resource 与 provider webhook。 |
 
 - BFF 是唯一 public Product API owner；Web 使用 browser-private 同源 adapter。
 - 内部服务 contract 由各 owner 仓维护；Root 只做 catalog 和治理。

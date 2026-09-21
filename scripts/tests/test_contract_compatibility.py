@@ -81,6 +81,34 @@ def test_default_topology_baseline_declares_16_edges_and_violation() -> None:
     assert module.EXPECTED_VIOLATION_IDS == frozenset({"EDGE-WEB-IAM-DIRECT"})
 
 
+def test_scheduler_event_edges_pin_scheduler_owned_contract() -> None:
+    inventory = json.loads(
+        (ROOT / "verification/contracts/consumer-inventory.json").read_text()
+    )
+    edges = {edge["id"]: edge for edge in inventory["edges"]}
+    scheduler_owner = {
+        "name": "kokoro-scheduler",
+        "repository_path": "apps/kokoro-scheduler",
+        "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+        "contract_version": "1.0.0",
+        "contract_path": "contract/openapi/v1/openapi.yaml",
+        "contract_sha256": (
+            "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
+        ),
+    }
+
+    assert edges["EDGE-SCHEDULER-BFF"]["owner"] == scheduler_owner
+    assert edges["EDGE-SCHEDULER-AGENT"]["owner"] == scheduler_owner
+    assert "apps/kokoro-bff" in {
+        reference["repository_path"]
+        for reference in edges["EDGE-SCHEDULER-BFF"]["evidence"]
+    }
+    assert "apps/kokoro-agent" in {
+        reference["repository_path"]
+        for reference in edges["EDGE-SCHEDULER-AGENT"]["evidence"]
+    }
+
+
 @pytest.fixture()
 def fixture(tmp_path: Path) -> InventoryFixture:
     root = tmp_path / "root"

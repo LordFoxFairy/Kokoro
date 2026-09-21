@@ -22,24 +22,25 @@
 
 ## File map
 
-| 文件 | 单一职责 |
-| --- | --- |
-| `AGENTS.md` | 跨仓 owner、执行流程和本地/CI 数据库裁决。 |
-| `docs/ARCHITECTURE_STANDARD.md` | 当前协议矩阵、数据隔离与 Platform 目标态。 |
-| `docs/kokoro-handbook/standards/03-sql-and-postgresql.md` | PostgreSQL/SQL 唯一规范；区分逻辑 owner 隔离与部署凭据隔离。 |
-| `docs/CURRENT.md` | 当前组合事实、正在执行的 Wave 与诚实门禁结果。 |
-| `verification/contracts/consumer-inventory.json` | 全批准调用矩阵和非法旁路的机器清单；不含 contract 内容副本。 |
-| `verification/contracts/README.md` | 清单字段、状态语义、更新流程和运行命令。 |
-| `scripts/governance/contract_inventory.py` | 可导入的 manifest/git-blob 校验逻辑。 |
-| `scripts/verify-contract-compatibility.py` | 稳定 CLI 入口。 |
-| `scripts/tests/test_contract_compatibility.py` | git blob、schema、pin、digest、evidence、状态和旁路负向测试。 |
-| `scripts/INDEX.md` | 暴露新的 Root compatibility 门。 |
-| `docs/task.md` | 当前任务状态、依赖和 owner。 |
-| `docs/progress.md` | 冻结 SHA、命令输出、审查和风险的追加证据。 |
+| 文件                                                      | 单一职责                                                      |
+| --------------------------------------------------------- | ------------------------------------------------------------- |
+| `AGENTS.md`                                               | 跨仓 owner、执行流程和本地/CI 数据库裁决。                    |
+| `docs/ARCHITECTURE_STANDARD.md`                           | 当前协议矩阵、数据隔离与 Platform 目标态。                    |
+| `docs/kokoro-handbook/standards/03-sql-and-postgresql.md` | PostgreSQL/SQL 唯一规范；区分逻辑 owner 隔离与部署凭据隔离。  |
+| `docs/CURRENT.md`                                         | 当前组合事实、正在执行的 Wave 与诚实门禁结果。                |
+| `verification/contracts/consumer-inventory.json`          | 全批准调用矩阵和非法旁路的机器清单；不含 contract 内容副本。  |
+| `verification/contracts/README.md`                        | 清单字段、状态语义、更新流程和运行命令。                      |
+| `scripts/governance/contract_inventory.py`                | 可导入的 manifest/git-blob 校验逻辑。                         |
+| `scripts/verify-contract-compatibility.py`                | 稳定 CLI 入口。                                               |
+| `scripts/tests/test_contract_compatibility.py`            | git blob、schema、pin、digest、evidence、状态和旁路负向测试。 |
+| `scripts/INDEX.md`                                        | 暴露新的 Root compatibility 门。                              |
+| `docs/task.md`                                            | 当前任务状态、依赖和 owner。                                  |
+| `docs/progress.md`                                        | 冻结 SHA、命令输出、审查和风险的追加证据。                    |
 
 ## Task 1: Align governance decisions
 
 **Files:**
+
 - Modify: `AGENTS.md`
 - Modify: `docs/ARCHITECTURE_STANDARD.md`
 - Modify: `docs/kokoro-handbook/standards/03-sql-and-postgresql.md`
@@ -47,6 +48,7 @@
 - Test: `scripts/tests/test_engineering_handbooks.py`
 
 **Interfaces:**
+
 - Consumes: `docs/superpowers/specs/2026-09-20-kokoro-backend-closure-design.md` 第 1、3、4、6、8 节。
 - Produces: 后续任务读取的唯一数据库部署裁决和协议矩阵；不产生运行时 API。
 
@@ -121,11 +123,13 @@ git commit -m "docs(architecture): align database and protocol authority"
 ## Task 2: Implement the git-blob compatibility verifier
 
 **Files:**
+
 - Create: `scripts/governance/contract_inventory.py`
 - Create: `scripts/verify-contract-compatibility.py`
 - Create: `scripts/tests/test_contract_compatibility.py`
 
 **Interfaces:**
+
 - Consumes: Root git index、submodule commit blobs 和 schema version 1 JSON。
 - Produces: `verify_inventory(root: Path, inventory_path: Path) -> list[str]`；返回排序错误列表。CLI 成功输出 JSON `{"status":"PASS","edge_count":16,"violation_count":0}`，失败输出 `status=FAIL` 与 `errors` 并 exit 1。
 
@@ -791,11 +795,13 @@ git commit -m "test(contracts): verify frozen owner and consumer pins"
 ## Task 3: Freeze the complete current call inventory
 
 **Files:**
+
 - Create: `verification/contracts/consumer-inventory.json`
 - Create: `verification/contracts/README.md`
 - Modify: `scripts/INDEX.md`
 
 **Interfaces:**
+
 - Consumes: Task 2 schema/verifier；Root 当前 gitlinks；下表给出的全部 owner artifact 与 evidence 路径。
 - Produces: 16 条批准 topology edge、1 条非法 Web→IAM 旁路及其精确冻结证据。
 
@@ -803,17 +809,17 @@ git commit -m "test(contracts): verify frozen owner and consumer pins"
 
 清单中重复使用以下精确 owner tuple；digest 必须来自表内对应 repository 中 `git show` 读取的指定 commit/path blob bytes，不从工作树读取：
 
-| Owner | repository path | commit | contract version | contract path | SHA-256 |
-| --- | --- | --- | --- | --- | --- |
-| Web | `apps/kokoro-app` | `ce4e466c960c4b40a87a7be38b5a56f265f7a12f` | `browser-private-0.1.0` | `contract/README.md` | `651f270aab0e3451ac4cd6a68f490024c3e907751571940bda6f817224b6821f` |
-| BFF | `apps/kokoro-bff` | `f117a00a9c12649a762c975622da81ad8e3c59ec` | `1.0.0` | `contract/openapi/v1/openapi.yaml` | `af2b1cfd350b139527a8ce2579764d32412c9d3f43927d1eb86e9ebd6030127f` |
-| IAM | `apps/kokoro-iam` | `35d868a410c06731362bd1e8bcc3e602d01875f8` | `0.1.0` | `contract/openapi/iam.internal.v1.json` | `b76903a274c708910a791b47beefbeb9094a3a38269e07112c084aecce7d2579` |
-| System | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` | `2.0.0` | `contract/openapi/system.openapi.json` | `f9ea76f107e1ea0fc19df20ee7c59032c0fbac66e640e9a16a1b770ab27c1f37` |
-| Agent | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` | `1.1.0` | `contract/openapi/v1/openapi.json` | `20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f` |
-| Capability RPC | `apps/kokoro-capability` | `e576d38dd103c2fda4d6389385b3f04f82ddfc20` | `kokoro.capability.v1` | `contract/proto/kokoro/capability/v1/capability_runtime.proto` | `830b5b6cbc1409ce8a8cb87dace688fd76e4f07d17c18c8cadedb4ec725a66a5` |
-| Storage | `apps/kokoro-storage` | `f80917e98a1cd1fe196ce10b0aba6f8f67fdf205` | `kokoro.storage.v2` | `contract/proto/kokoro/storage/v2/storage.proto` | `e6a599c447d19f9d97b097751156ef8e84f2ce34ffe38c67f4f83dcdc22a4def` |
-| Scheduler | `apps/kokoro-scheduler` | `17c2de3e68ed75dbf3fa495643f6ad280e3c7112` | `1.0.0` | `contract/openapi/v1/openapi.yaml` | `49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3` |
-| Billing v1 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` | `1.0.0` | `contract/openapi/v1/openapi.yaml` | `58fbe4fea083ba12e0db23f49e995b96500d01af0013febf40eba3093510ef63` |
+| Owner          | repository path          | commit                                     | contract version        | contract path                                                  | SHA-256                                                            |
+| -------------- | ------------------------ | ------------------------------------------ | ----------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Web            | `apps/kokoro-app`        | `ce4e466c960c4b40a87a7be38b5a56f265f7a12f` | `browser-private-0.1.0` | `contract/README.md`                                           | `651f270aab0e3451ac4cd6a68f490024c3e907751571940bda6f817224b6821f` |
+| BFF            | `apps/kokoro-bff`        | `f117a00a9c12649a762c975622da81ad8e3c59ec` | `1.0.0`                 | `contract/openapi/v1/openapi.yaml`                             | `af2b1cfd350b139527a8ce2579764d32412c9d3f43927d1eb86e9ebd6030127f` |
+| IAM            | `apps/kokoro-iam`        | `35d868a410c06731362bd1e8bcc3e602d01875f8` | `0.1.0`                 | `contract/openapi/iam.internal.v1.json`                        | `b76903a274c708910a791b47beefbeb9094a3a38269e07112c084aecce7d2579` |
+| System         | `apps/kokoro-system`     | `c0a76a3a7614bf46ea6e665e523f24261862436f` | `2.0.0`                 | `contract/openapi/system.openapi.json`                         | `f9ea76f107e1ea0fc19df20ee7c59032c0fbac66e640e9a16a1b770ab27c1f37` |
+| Agent          | `apps/kokoro-agent`      | `741c928dfc11313a25064a905d77d4ad371f5534` | `1.1.0`                 | `contract/openapi/v1/openapi.json`                             | `20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f` |
+| Capability RPC | `apps/kokoro-capability` | `e576d38dd103c2fda4d6389385b3f04f82ddfc20` | `kokoro.capability.v1`  | `contract/proto/kokoro/capability/v1/capability_runtime.proto` | `830b5b6cbc1409ce8a8cb87dace688fd76e4f07d17c18c8cadedb4ec725a66a5` |
+| Storage        | `apps/kokoro-storage`    | `f80917e98a1cd1fe196ce10b0aba6f8f67fdf205` | `kokoro.storage.v2`     | `contract/proto/kokoro/storage/v2/storage.proto`               | `e6a599c447d19f9d97b097751156ef8e84f2ce34ffe38c67f4f83dcdc22a4def` |
+| Scheduler      | `apps/kokoro-scheduler`  | `17c2de3e68ed75dbf3fa495643f6ad280e3c7112` | `1.0.0`                 | `contract/openapi/v1/openapi.yaml`                             | `49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3` |
+| Billing v1     | `apps/kokoro-billing`    | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` | `1.0.0`                 | `contract/openapi/v1/openapi.yaml`                             | `58fbe4fea083ba12e0db23f49e995b96500d01af0013febf40eba3093510ef63` |
 
 - [ ] **Step 2: 写入完整 16-edge matrix**
 
@@ -873,24 +879,26 @@ for repository, commit, path in evidence:
     print(repository, commit, path, hashlib.sha256(blob).hexdigest())
 ```
 
-| id | caller → owner / protocol | state | generator / runtime | evidence path（均为相对各自 repository） | 精确 reason |
-| --- | --- | --- | --- | --- | --- |
-| `EDGE-BROWSER-WEB` | Browser→Web / `same-origin-http` | active | `not-applicable:same-origin-route` / `next@16.2.6` | Web `contract/README.md`; `src/app/api/session/[...path]/route.ts`; `package.json` | Browser 只进入 Web same-origin routes。 |
-| `EDGE-WEB-BFF` | Web→BFF / `http-openapi` | broken | `unmanaged` / `next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92` | Web `src/app/api/session/[...path]/route.ts`; `src/engine/agui-chat-transport.ts`; `package.json` | Runtime path exists but Web has no BFF artifact commit/digest pin or generated client. |
-| `EDGE-BFF-IAM` | BFF→IAM / `http-openapi` | broken | `unmanaged` / `unmanaged` | BFF `src/config/runtime.ts`; `src/http/request.ts` | BFF has no IAM upstream or admission client and trusts Web headers/shared secret only. |
-| `EDGE-BFF-SYSTEM` | BFF→System / `http-openapi` | broken | `unmanaged` / `node:http@22` | BFF `src/http/routes/owner.ts`; `src/upstream.ts`; `contract/README.md`; `package.json` | Calls are handwritten and the recorded System commit pin is stale. |
-| `EDGE-BFF-CAPABILITY` | BFF→Capability / `connect-proto` | broken | `unmanaged` / `unmanaged` | BFF `src/http/routes/owner.ts`; Capability `src/modules/skills/source/skill-projection.controller.ts`; `src/modules/mcp/server/mcp-server-projection.controller.ts` | BFF calls removed `/bff/*` HTTP paths and has no Connect client. |
-| `EDGE-BFF-STORAGE` | BFF→Storage / `connect-proto` | broken | `unmanaged` / `unmanaged` | BFF `src/http/routes/owner.ts`; Storage `contract/openapi.json`; `contract/proto/kokoro/storage/v2/storage.proto` | BFF calls deleted `/internal/bff/library` and has no Storage v2 Connect client. |
-| `EDGE-BFF-AGENT` | BFF→Agent / `http-openapi` | broken | `unmanaged` / `node:http@22` | BFF `src/infrastructure/clients/agent/launch.ts`; `src/infrastructure/clients/agent/projector-source.ts`; `contract/README.md`; `package.json` | Runtime calls are handwritten and the recorded Agent commit pin is stale. |
-| `EDGE-BFF-SCHEDULER` | BFF→Scheduler / `http-openapi` | broken | `unmanaged` / `node:http@22` | BFF `src/infrastructure/clients/scheduler/outbox-delivery.ts`; `package.json`; Scheduler `contract/openapi/v1/openapi.yaml` | BFF sends `/jobs/{name}` while owner contract exposes `/schedules/{name}`. |
-| `EDGE-BFF-BILLING` | BFF→Billing / `http-openapi` | broken | `unmanaged` / `node:http@22` | BFF `src/http/routes/owner.ts`; `package.json`; Billing `docs/CURRENT.md` | BFF consumes v1 while Billing v2 is target-only and no unique release artifact/generated client exists. |
-| `EDGE-AGENT-SYSTEM` | Agent→System / `http-openapi` | broken | `unmanaged` / `httpx@0.28.1` | Agent `src/kokoro_agent/clients/system.py`; `src/kokoro_agent/worker/main.py`; `contract/provenance.json`; `uv.lock` | Runtime works through handwritten HTTP and the recorded System commit pin is stale. |
-| `EDGE-AGENT-CAPABILITY` | Agent→Capability / `connect-proto` | broken | `unmanaged` / `unmanaged` | Agent `src/kokoro_agent/clients/skills.py`; `src/kokoro_agent/clients/mcp.py`; `src/kokoro_agent/worker/dependencies.py`; `src/kokoro_agent/worker/main.py` | Only optional interfaces exist; no production Connect adapter is assembled. |
-| `EDGE-AGENT-STORAGE` | Agent→Storage / `connect-proto` | broken | `unmanaged` / `unmanaged` | Agent `src/kokoro_agent/clients/storage.py`; `src/kokoro_agent/worker/dependencies.py`; `src/kokoro_agent/worker/main.py` | Only a Protocol exists; no Storage v2 adapter/generated client is assembled. |
-| `EDGE-CAPABILITY-STORAGE` | Capability→Storage / `connect-proto` | broken | `@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0` / `@bufbuild/protobuf@2.14.0+@connectrpc/connect@2.2.0+@connectrpc/connect-node@2.2.0` | Capability `src/modules/skills/storage-package.client.ts`; `src/generated/proto/kokoro/storage/v1/storage_pb.ts`; `package.json` | Consumer is generated from `kokoro.storage.v1` while owner canonical contract is v2. |
-| `EDGE-CAPABILITY-IAM` | Capability→IAM / `http-openapi` | broken | `unmanaged` / `node:fetch@24` | Capability `src/infrastructure/clients/iam/http-attestation.ts`; `src/modules/skills/skills.module.ts`; IAM `docs/CURRENT.md` | Capability expects a handwritten attestation endpoint that IAM runtime/OpenAPI does not expose. |
-| `EDGE-SCHEDULER-BFF` | Scheduler→BFF / `http-event` | broken | `unmanaged` / `go:net/http@1.26.8+node:http@22` | Scheduler `internal/adapters/httpclient/client.go`; `go.mod`; BFF `src/http/routes/scheduler.ts`; `package.json` | Scheduler emits schedule header/RFC3339Nano while BFF expects job header/compact timestamp. |
-| `EDGE-SCHEDULER-AGENT` | Scheduler→Agent / `http-event` | broken | `unmanaged` / `go:net/http@1.26.8` | Scheduler `internal/adapters/httpclient/client.go`; `go.mod`; Agent `contract/openapi/v1/openapi.json` | Scheduler can emit webhooks but Agent has no scheduler callback operation or header handling. |
+`caller → target` 记录运行时调用方向，`contract owner` 记录 canonical schema 的唯一 owner；二者不得视为同义。普通 request/response edge 通常由 target 拥有 contract，但 outbound event protocol 由 producer 拥有。`EDGE-SCHEDULER-BFF` 与 `EDGE-SCHEDULER-AGENT` 因而都使用 Step 1 的 Scheduler canonical OpenAPI tuple：`apps/kokoro-scheduler`、`17c2de3e68ed75dbf3fa495643f6ad280e3c7112`、`1.0.0`、`contract/openapi/v1/openapi.yaml`、`49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3`；BFF/Agent 仍是 target 与 consumer evidence。
+
+| id                        | caller → target / protocol           | contract owner | state  | generator / runtime                                                                                                                          | evidence path（均为相对各自 repository）                                                                                                                            | 精确 reason                                                                                             |
+| ------------------------- | ------------------------------------ | -------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `EDGE-BROWSER-WEB`        | Browser→Web / `same-origin-http`     | Web            | active | `not-applicable:same-origin-route` / `next@16.2.6`                                                                                           | Web `contract/README.md`; `src/app/api/session/[...path]/route.ts`; `package.json`                                                                                  | Browser 只进入 Web same-origin routes。                                                                 |
+| `EDGE-WEB-BFF`            | Web→BFF / `http-openapi`             | BFF            | broken | `unmanaged` / `next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92`                                                                                     | Web `src/app/api/session/[...path]/route.ts`; `src/engine/agui-chat-transport.ts`; `package.json`                                                                   | Runtime path exists but Web has no BFF artifact commit/digest pin or generated client.                  |
+| `EDGE-BFF-IAM`            | BFF→IAM / `http-openapi`             | IAM            | broken | `unmanaged` / `unmanaged`                                                                                                                    | BFF `src/config/runtime.ts`; `src/http/request.ts`                                                                                                                  | BFF has no IAM upstream or admission client and trusts Web headers/shared secret only.                  |
+| `EDGE-BFF-SYSTEM`         | BFF→System / `http-openapi`          | System         | broken | `unmanaged` / `node:http@22`                                                                                                                 | BFF `src/http/routes/owner.ts`; `src/upstream.ts`; `contract/README.md`; `package.json`                                                                             | Calls are handwritten and the recorded System commit pin is stale.                                      |
+| `EDGE-BFF-CAPABILITY`     | BFF→Capability / `connect-proto`     | Capability     | broken | `unmanaged` / `unmanaged`                                                                                                                    | BFF `src/http/routes/owner.ts`; Capability `src/modules/skills/source/skill-projection.controller.ts`; `src/modules/mcp/server/mcp-server-projection.controller.ts` | BFF calls removed `/bff/*` HTTP paths and has no Connect client.                                        |
+| `EDGE-BFF-STORAGE`        | BFF→Storage / `connect-proto`        | Storage        | broken | `unmanaged` / `unmanaged`                                                                                                                    | BFF `src/http/routes/owner.ts`; Storage `contract/openapi.json`; `contract/proto/kokoro/storage/v2/storage.proto`                                                   | BFF calls deleted `/internal/bff/library` and has no Storage v2 Connect client.                         |
+| `EDGE-BFF-AGENT`          | BFF→Agent / `http-openapi`           | Agent          | broken | `unmanaged` / `node:http@22`                                                                                                                 | BFF `src/infrastructure/clients/agent/launch.ts`; `src/infrastructure/clients/agent/projector-source.ts`; `contract/README.md`; `package.json`                      | Runtime calls are handwritten and the recorded Agent commit pin is stale.                               |
+| `EDGE-BFF-SCHEDULER`      | BFF→Scheduler / `http-openapi`       | Scheduler      | broken | `unmanaged` / `node:http@22`                                                                                                                 | BFF `src/infrastructure/clients/scheduler/outbox-delivery.ts`; `package.json`; Scheduler `contract/openapi/v1/openapi.yaml`                                         | BFF sends `/jobs/{name}` while owner contract exposes `/schedules/{name}`.                              |
+| `EDGE-BFF-BILLING`        | BFF→Billing / `http-openapi`         | Billing        | broken | `unmanaged` / `node:http@22`                                                                                                                 | BFF `src/http/routes/owner.ts`; `package.json`; Billing `docs/CURRENT.md`                                                                                           | BFF consumes v1 while Billing v2 is target-only and no unique release artifact/generated client exists. |
+| `EDGE-AGENT-SYSTEM`       | Agent→System / `http-openapi`        | System         | broken | `unmanaged` / `httpx@0.28.1`                                                                                                                 | Agent `src/kokoro_agent/clients/system.py`; `src/kokoro_agent/worker/main.py`; `contract/provenance.json`; `uv.lock`                                                | Runtime works through handwritten HTTP and the recorded System commit pin is stale.                     |
+| `EDGE-AGENT-CAPABILITY`   | Agent→Capability / `connect-proto`   | Capability     | broken | `unmanaged` / `unmanaged`                                                                                                                    | Agent `src/kokoro_agent/clients/skills.py`; `src/kokoro_agent/clients/mcp.py`; `src/kokoro_agent/worker/dependencies.py`; `src/kokoro_agent/worker/main.py`         | Only optional interfaces exist; no production Connect adapter is assembled.                             |
+| `EDGE-AGENT-STORAGE`      | Agent→Storage / `connect-proto`      | Storage        | broken | `unmanaged` / `unmanaged`                                                                                                                    | Agent `src/kokoro_agent/clients/storage.py`; `src/kokoro_agent/worker/dependencies.py`; `src/kokoro_agent/worker/main.py`                                           | Only a Protocol exists; no Storage v2 adapter/generated client is assembled.                            |
+| `EDGE-CAPABILITY-STORAGE` | Capability→Storage / `connect-proto` | Storage        | broken | `@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0` / `@bufbuild/protobuf@2.14.0+@connectrpc/connect@2.2.0+@connectrpc/connect-node@2.2.0` | Capability `src/modules/skills/storage-package.client.ts`; `src/generated/proto/kokoro/storage/v1/storage_pb.ts`; `package.json`                                    | Consumer is generated from `kokoro.storage.v1` while owner canonical contract is v2.                    |
+| `EDGE-CAPABILITY-IAM`     | Capability→IAM / `http-openapi`      | IAM            | broken | `unmanaged` / `node:fetch@24`                                                                                                                | Capability `src/infrastructure/clients/iam/http-attestation.ts`; `src/modules/skills/skills.module.ts`; IAM `docs/CURRENT.md`                                       | Capability expects a handwritten attestation endpoint that IAM runtime/OpenAPI does not expose.         |
+| `EDGE-SCHEDULER-BFF`      | Scheduler→BFF / `http-event`         | Scheduler      | broken | `unmanaged` / `go:net/http@1.26.8+node:http@22`                                                                                              | Scheduler `internal/adapters/httpclient/client.go`; `go.mod`; BFF `src/http/routes/scheduler.ts`; `package.json`                                                    | Scheduler emits schedule header/RFC3339Nano while BFF expects job header/compact timestamp.             |
+| `EDGE-SCHEDULER-AGENT`    | Scheduler→Agent / `http-event`       | Scheduler      | broken | `unmanaged` / `go:net/http@1.26.8`                                                                                                           | Scheduler `internal/adapters/httpclient/client.go`; `go.mod`; Agent `contract/openapi/v1/openapi.json`                                                              | Scheduler can emit webhooks but Agent has no scheduler callback operation or header handling.           |
 
 第一条 active edge 必须按以下完整 JSON 写入；其余 15 条复用同一字段结构并使用上表字面值，不得省略 `evidence`：
 
@@ -939,9 +947,7 @@ for repository, commit, path in evidence:
       "repository_commit": "ce4e466c960c4b40a87a7be38b5a56f265f7a12f",
       "path": "package.json",
       "sha256": "09a2bf989ec1e2e834682428a45aa68b909a6e80abf06df9010059d8f950e348",
-      "json_checks": [
-        {"pointer": "/dependencies/next", "expected": "16.2.6"}
-      ]
+      "json_checks": [{ "pointer": "/dependencies/next", "expected": "16.2.6" }]
     }
   ]
 }
@@ -975,11 +981,13 @@ git commit -m "test(contracts): freeze complete consumer inventory"
 ## Task 4: Review, integrate, and freeze Wave 0A evidence
 
 **Files:**
+
 - Modify: `docs/task.md`
 - Modify: `docs/progress.md`
 - Modify: `docs/INDEX.md`
 
 **Interfaces:**
+
 - Consumes: Task 1–3 commits、审查报告和当前门禁输出。
 - Produces: W0A 冻结证据；W0B 直接消费的 15 个 broken edge 与非法旁路队列。
 

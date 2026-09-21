@@ -93,27 +93,35 @@ def test_local_ci_database_identity_and_owner_isolation_are_not_conflated() -> N
         assert "SQL-first" in content
         assert "ORM-first" in content
         assert "canonical schema" in content
-        assert "每个数据 owner 使用独立 PostgreSQL database/schema 和凭据" not in content
+        assert (
+            "每个数据 owner 使用独立 PostgreSQL database/schema 和凭据" not in content
+        )
         assert "每个服务使用独立 database/schema 和独立凭据" not in content
 
 
 def test_architecture_has_the_complete_approved_protocol_matrix() -> None:
     architecture = (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
     agents = (ROOT / "AGENTS.md").read_text()
+    table_rows = [
+        "| " + " | ".join(cell.strip() for cell in line.strip("|").split("|")) + " |"
+        for line in architecture.splitlines()
+        if line.startswith("|")
+    ]
     rows = (
-        "| Browser → Web | same-origin HTTP |",
-        "| Web → BFF | HTTP/OpenAPI + AG-UI/SSE |",
-        "| BFF → IAM | HTTP/OpenAPI generated client |",
-        "| BFF/Agent → System | HTTP/OpenAPI generated client |",
-        "| BFF/Agent → Platform | ConnectRPC/Proto |",
-        "| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2 |",
-        "| BFF → Agent | HTTP/OpenAPI generated client |",
-        "| BFF → Scheduler | HTTP/OpenAPI generated client |",
-        "| Scheduler → BFF/Agent | versioned HTTP event protocol |",
-        "| BFF → Billing | HTTP/OpenAPI generated client |",
+        "| Browser → Web | same-origin HTTP | Web | Cookie、CSRF、浏览器状态。 |",
+        "| Web → BFF | HTTP/OpenAPI；AG-UI/SSE | BFF | Public Product API 与 durable event projection。 |",
+        "| BFF → IAM | HTTP/OpenAPI generated client | IAM | OAuth/OIDC/Better Auth 保持原生 HTTP 语义。 |",
+        "| BFF/Agent → System | HTTP/OpenAPI generated client | System | 不因统一偏好重写当前稳定 HTTP。 |",
+        "| BFF/Agent → Platform | ConnectRPC/Proto | Platform | Skills/MCP typed command/query。 |",
+        "| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2 | Storage | Asset、Artifact、Upload、Package reference。 |",
+        "| BFF → Agent | HTTP/OpenAPI generated client | Agent | Run dispatch/control 与可恢复 event paging。 |",
+        "| BFF → Scheduler | HTTP/OpenAPI generated client | Scheduler | Schedule command/query。 |",
+        "| Scheduler → BFF/Agent | HTTP event protocol | Scheduler | Durable retry、receipt、duplicate delivery。 |",
+        "| BFF → Billing | HTTP/OpenAPI generated client | Billing | Checkout、payment resource 与 provider webhook。 |",
     )
+    assert "| Caller → Owner | 唯一目标协议 | 契约 owner | 说明 |" in table_rows
     for row in rows:
-        assert architecture.count(row) == 1
+        assert table_rows.count(row) == 1
     assert "BFF → IAM/System/Agent/Scheduler/Billing" not in architecture
     assert "Root 只做 catalog 和治理" in architecture
     assert "Root 不建立跨仓可编辑 contract 中心" in agents

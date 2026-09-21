@@ -560,12 +560,12 @@
       "id": "EDGE-SCHEDULER-BFF",
       "caller": "Scheduler",
       "owner": {
-        "name": "kokoro-bff",
-        "repository_path": "apps/kokoro-bff",
-        "repository_commit": "f117a00a9c12649a762c975622da81ad8e3c59ec",
+        "name": "kokoro-scheduler",
+        "repository_path": "apps/kokoro-scheduler",
+        "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
-        "contract_sha256": "af2b1cfd350b139527a8ce2579764d32412c9d3f43927d1eb86e9ebd6030127f"
+        "contract_sha256": "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
       },
       "protocol": "http-event",
       "code_generator_version": "unmanaged",
@@ -603,12 +603,12 @@
       "id": "EDGE-SCHEDULER-AGENT",
       "caller": "Scheduler",
       "owner": {
-        "name": "kokoro-agent",
-        "repository_path": "apps/kokoro-agent",
-        "repository_commit": "741c928dfc11313a25064a905d77d4ad371f5534",
-        "contract_version": "1.1.0",
-        "contract_path": "contract/openapi/v1/openapi.json",
-        "contract_sha256": "20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f"
+        "name": "kokoro-scheduler",
+        "repository_path": "apps/kokoro-scheduler",
+        "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+        "contract_version": "1.0.0",
+        "contract_path": "contract/openapi/v1/openapi.yaml",
+        "contract_sha256": "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
       },
       "protocol": "http-event",
       "code_generator_version": "unmanaged",

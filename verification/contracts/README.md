@@ -13,6 +13,11 @@ evidence and the one currently known topology violation.
 - Every `evidence` and `version_assertions` digest is likewise calculated from
   the referenced child commit blob. Dirty or newer child working-tree content
   is not evidence for a frozen edge.
+- The edge target is the runtime receiver; `owner` identifies the repository
+  that owns the canonical contract and can therefore differ from the target.
+  Event protocols are producer-owned: Scheduler owns its outbound dispatch
+  schema while BFF or Agent remains the receiving consumer and runtime
+  evidence.
 - `code_generator_version` and `runtime_package_version` describe the frozen
   consumer implementation. The literal `unmanaged` is permitted only on a
   `broken` edge. Active npm edges must prove each managed version through a
