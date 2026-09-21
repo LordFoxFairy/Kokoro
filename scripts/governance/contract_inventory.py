@@ -80,7 +80,13 @@ def git_blob(
     relative = safe_relative_path(relative_path).as_posix()
     try:
         result = subprocess.run(
-            ["git", "show", "--end-of-options", f"{commit}:{relative}"],
+            [
+                "git",
+                "--no-replace-objects",
+                "show",
+                "--end-of-options",
+                f"{commit}:{relative}",
+            ],
             cwd=repository,
             capture_output=True,
             check=False,

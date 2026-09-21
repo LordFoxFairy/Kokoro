@@ -30,6 +30,13 @@ class InventoryFixture:
         return self.module.verify_inventory(self.root, self.manifest_path)
 
 
+@dataclass
+class ReplaceRefFixture:
+    inventory: InventoryFixture
+    original_commit: str
+    original_blob: bytes
+
+
 def run(cwd: Path, *args: str) -> str:
     return subprocess.run(
         args, cwd=cwd, text=True, capture_output=True, check=True
@@ -234,8 +241,52 @@ def fixture(tmp_path: Path) -> InventoryFixture:
     return inventory_fixture
 
 
+@pytest.fixture()
+def replace_ref_fixture(fixture: InventoryFixture) -> ReplaceRefFixture:
+    owner = fixture.data["edges"][0]["owner"]
+    original_commit = owner["repository_commit"]
+    original_blob = b'{"openapi":"3.1.0"}\n'
+    replacement_blob = b'{"openapi":"replaced"}\n'
+    repository = fixture.root / "apps/owner"
+    (repository / "contract/openapi.json").write_bytes(replacement_blob)
+    run(repository, "git", "add", "contract/openapi.json")
+    run(repository, "git", "commit", "-m", "test: add replacement contract")
+    replacement_commit = run(repository, "git", "rev-parse", "HEAD")
+    run(repository, "git", "replace", original_commit, replacement_commit)
+
+    replaced = subprocess.run(
+        ["git", "show", "--end-of-options", f"{original_commit}:contract/openapi.json"],
+        cwd=repository,
+        capture_output=True,
+        check=True,
+    ).stdout
+    assert replaced == replacement_blob
+    return ReplaceRefFixture(fixture, original_commit, original_blob)
+
+
 def test_matching_gitlink_blobs_and_active_edge_return_no_errors(fixture) -> None:
     assert fixture.module.verify_inventory(fixture.root, fixture.manifest_path) == []
+
+
+def test_git_blob_ignores_local_replace_refs(
+    replace_ref_fixture: ReplaceRefFixture,
+) -> None:
+    fixture = replace_ref_fixture.inventory
+    assert (
+        fixture.module.git_blob(
+            fixture.root,
+            "apps/owner",
+            replace_ref_fixture.original_commit,
+            "contract/openapi.json",
+        )
+        == replace_ref_fixture.original_blob
+    )
+
+
+def test_verify_inventory_ignores_local_replace_refs(
+    replace_ref_fixture: ReplaceRefFixture,
+) -> None:
+    assert replace_ref_fixture.inventory.verify() == []
 
 
 def test_owner_commit_drift_is_reported(fixture) -> None:
