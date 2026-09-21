@@ -218,3 +218,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 在该 commit 上使用 Node `22.22.2` 复跑 lint/typecheck/build、focused `28 passed`、contract `16 passed`、full `160 passed`、owner blob compare 与 diff check，全部通过；generator config 另由质量 reviewer 在隔离环境实际生成两次，16 文件 byte-identical。
 - Root gitlink 按 W0B 计划暂不提升：BFF W0B-4/W0B-5 完成后由 W0B-6 一次刷新全部 fan-out 并激活 edge。当前 checkout 前移不等于 Root 已集成。
 - W0B-4 任务卡位于 ignored SDD workspace 的 `task-4-bff-capability-consumer.md`，续派同一 Agent 实现 generated client/facade/四路由切换。为避免实现后 CURRENT 与三文档门失真，计划范围补入四份现有设计文档；无新目录 owner、无数据库/schema 变化。
+
+## 2026-09-21 — W0B-4 验收完成，W0B-5 已派工
+
+- BFF Capability consumer 经两轮 TDD 修正和完整双审收敛。最终 SPEC 与 QUALITY 均为 `0/0/0`；旧问题（稳定错误码、strict response、cursor、非四 GET fail-closed、generated allow-list、public cursor schema、generated suppression 与文档当前态）全部关闭。
+- BFF 提交 `2ed792586e89c035155938078d9b07f33af95abd`（`fix(bff): align Capability projection client with owner v1 routes`）已推送；local、`origin/main` 与 live remote 一致，remote 只保留 `main`，工作树 clean。提交精确包含任务卡 36 文件。
+- Node `22.22.2` / pnpm `11.25.0` 下，Root pre-commit 与 post-commit 均复跑 generation/contract/focused/full/build：16 个 generated 文件连续两次 byte-identical，contract `19 passed`，focused `69 passed`，full `173 passed`，build 通过；integration `30 skipped / 0 failed`，原因是该门需要显式测试数据库与 Redis 环境。
+- Root 独立核对 owner commit blob、vendor digest `e0b7c4b57ac030efb73878b51da2a3595ec0172bce0608a88ea925b57a69761a`、manifest config/lock/generated digests、无 TypeScript/ESLint suppression、无 legacy `/bff/*`/搜索 alias、无 schema/config/operation baseline 漂移，全部通过。
+- Root gitlink仍按计划不提升：W0B-5 必须先用真实 Capability/BFF 进程、独占数据库、Redis namespace 与端口完成八个 case，W0B-6 才一次刷新 BFF fan-out 并激活 `EDGE-BFF-CAPABILITY`。当前 compatibility 仍保持 1 active / 15 broken / 1 illegal。
+- 本机预检已确认 Node `22.22.2`、Node `24.20.0`、`psql`、`redis-cli` 可用；`postgresql://localhost/postgres` 以当前用户连通，`redis://127.0.0.1:6379` 返回 `PONG`。W0B-5 任务卡固定只写 Root smoke runner、其测试与 `scripts/INDEX.md`，不改子仓、gitlink、inventory 或控制文档。
