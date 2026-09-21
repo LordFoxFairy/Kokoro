@@ -261,3 +261,11 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 集成提交 `2ef5aa689ecaaf137168dcd68a9dd4ae8185c6c4`（`fix(integration): activate BFF Capability projection edge`）已推送；`main == origin/main`、Root工作树 clean。提交精确包含 BFF gitlink、consumer inventory与两份控制账。
 - 提交后 Root 再次复验：topology exit 0、`w0b-capability` checkpoint exit 0、全量 governance tests `432 passed in 28.94s`、真实 smoke `PASS / 8 cases`；独立残留探针仍为 PostgreSQL `0`、Redis `0`、process `0`、temp dir `0`。
 - W0B-7 只读 Agent `w0b7_scheduler_owner_auditor` 绑定 Scheduler `17c2de3e68ed75dbf3fa495643f6ad280e3c7112`，核对 contract/docs/schema/runtime语义与完整 Go门禁。审计不改文件、不操作 Git index、不写共享 PostgreSQL/Redis；若发现任何 drift，先报告并拆出 owner repair任务，不直接进入 BFF Scheduler设计。
+
+## 2026-09-21 — W0B-7 发现 owner contract drift，W0B-7R 已派工
+
+- 只读审计确认 Scheduler Git/provenance正确：HEAD、Root gitlink、`origin/main`与live remote均为 `17c2de3e68ed75dbf3fa495643f6ad280e3c7112`，local/remote只保留`main`；OpenAPI commit-blob SHA-256为`49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3`，version `1.0.0`。
+- Go `1.26.8`下，contract-check、gofmt、vet、test、race、build与diff-check全部exit 0；独立统计`120 pass / 9 skip / 0 fail`。9个skip来自未配置的7个PostgreSQL integration、1个source-process smoke与1个Redis integration，本次只读审计未访问共享基础设施。
+- W0B-7保持未验收：runtime/docs已有`409 schedule_already_exists`与`404 schedule_not_found`，但canonical OpenAPI只把`error.code`声明为无约束string，breaking policy与contract/handler tests也未保护两项稳定机器码；删除或改名时现有contract-check仍会误绿。另缺RFC3339Nano小数秒与复杂opaque idempotency key逐字传递证据。
+- 其余owner语义已核对一致：`/schedules/{name}`、tenant/schedule headers、408/425/429/5xx retry、四类PostgreSQL事实、无外键、transaction/outbox/claim expiry/recovery与Redis仅协调均无drift。
+- W0B-7R由单一Scheduler writer以TDD修复，限定7个contract/test文件，不改runtime、SQL schema、路径、header、owner或contract major；owner commit推送和fresh contract复审完成前不得启动W0B-8。
