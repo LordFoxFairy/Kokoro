@@ -170,3 +170,14 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - `python3 -m pytest scripts/tests -q`：exit 0，`367 passed in 16.60s`。
 - `git diff --check`：exit 0，无空白错误。
 - W0B-0 达到计划冻结门；业务实现、gitlink 提升和 edge 激活仍全部未开始。
+
+## 2026-09-21 — W0B-1 consumer/producer 与 checkpoint 机器门验收
+
+- 写入 Agent：`w0b1_governance_writer`；基线 Root `bf16916dbed17e585f08cd3bf2a0c4ebd29b0036`；共享 checkout 未由 worker 暂存、提交或推送。
+- TDD 初始 RED：focused pytest 在新模块缺失时 collection exit 2；首版 GREEN 后 fresh review 又用独立 fixture 复现 2 个真实缺口：非 canonical whitespace 的重复 Go directive 可绕过、错误 producer manifest kind 会触发未捕获 `ValueError`/CLI traceback。
+- Fix Round 1 RED：`5 failed, 75 passed`；覆盖三类隐藏 whitespace 重复 directive、verifier 异常和两个 CLI traceback。修复后 field×manifest 使用 fail-closed 允许矩阵，W0B producer 只允许 `go-mod`；Go directive 同时识别空格/tab/前导空白并要求唯一 canonical `go X.Y.Z`。
+- 三份 checkpoint fixture 现逐项固定完整 active/broken/illegal ID 集，不以数量替代身份验证；checkpoint CLI 只接受声明的 broken/illegal outcome，任何其他 compatibility drift 都失败。
+- 最终独立复审：SPEC `✅`、Blocking/Important/Minor=`0/0/0`；QUALITY `✅`、Critical/Important/Minor=`0/0/0`。
+- Root 复跑：focused `80 passed in 29.20s`；全量 `406 passed in 32.08s`；Ruff format/check、`py_compile`、`w0b-start` checkpoint、topology 与 `git diff --check` 全部 exit 0。
+- Root 精确提交并推送：`dc05459a`（`test(contracts): verify consumer and producer runtimes`），仅包含任务卡 10 个文件；`verification/contracts/consumer-inventory.json`、gitlink、子仓和业务 edge 状态未改变。
+- 当前 compatibility 基线仍是 `w0b-start`：1 active / 15 broken / 1 illegal。下一任务为 W0B-2，只读验证 Capability owner release。

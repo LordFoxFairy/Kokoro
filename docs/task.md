@@ -32,7 +32,7 @@
 | W0A-3 | P0 | 冻结完整调用矩阵与 consumer inventory | Root / `w0a3_inventory_writer` | W0A-2 | 16 条批准 edge 与 Web→IAM 非法旁路完整登记；绑定 contract version、generator/runtime version 和 evidence digest | 已验收 |
 | W0A-4 | P0 | 完成 Wave 0A 独立审查和 Root 集成验证 | Root / 主控 + `w0a_final_spec_reviewer` + `w0a_final_quality_reviewer` | W0A-1、W0A-2、W0A-3 | 规格审查与质量审查通过；Root 三项门禁和 compatibility 红门有当前输出 | 已验收 |
 | W0B-0 | P0 | 冻结 W0B 执行计划与控制面 | Root / 主控 | W0A-4 | 计划 SPEC/EXECUTION 双审 `0/0/0`；task/progress/INDEX 切换完成；Root 门通过 | 已验收 |
-| W0B-1 | P0 | 增加 consumer/producer 版本与精确 edge checkpoint 机器门 | Root / governance 子 Agent | W0B-0 | `.node-version`/`go.mod`/producer assertion 负例通过；三个 checkpoint 逐 edge 验证 | 待派工 |
+| W0B-1 | P0 | 增加 consumer/producer 版本与精确 edge checkpoint 机器门 | Root / `w0b1_governance_writer` | W0B-0 | `.node-version`/`go.mod`/producer assertion 负例通过；三个 checkpoint 逐 edge 验证 | 已验收 |
 | W0B-2 | P0 | 验证 Capability 当前 HTTP owner release | Capability / 只读 owner 审查 | W0B-1 | 四个 `/v1/*` GET、contract/runtime/docs/schema 一致；全门通过；remote 可达 | 待派工 |
 | W0B-3 | P0 | 冻结 BFF Capability 设计与 owner artifact | BFF / Capability 子 Agent | W0B-2 | commit-blob vendor/provenance 固定；三文档门通过；只接受 `query` | 待派工 |
 | W0B-4 | P0 | 实现 BFF Capability generated consumer | BFF / 同一 Capability 子 Agent | W0B-3 | 四路由、身份、查询、错误、timeout/body cap 与生成漂移门通过；旧 `/bff/*` 删除 | 待派工 |
