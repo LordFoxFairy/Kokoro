@@ -90,14 +90,12 @@ Codex Goal 已建立并保持 `active`：按已批准的 Kokoro 后端整体闭�
 - `git show --check --stat --oneline HEAD` 与 `git diff --check`：exit 0。
 - 真实 `consumer-inventory.json` 尚未建立；默认 compatibility CLI 在 W0A-3 前保持“inventory 缺失”的稳定红门。
 
-
 ## 2026-09-21 — W0A-3 派工
 
 - 写入 Agent：`w0a3_inventory_writer`（`gpt-5.6-sol`，high）。
 - 基线：Root `311a1391a6752961e61a6c5236527bc58f9196ec`，`main` 与 `origin/main` 对齐且工作树 clean。
 - 获准文件：`verification/contracts/consumer-inventory.json`、`verification/contracts/README.md`、`scripts/INDEX.md`。
 - Root 保留任务/进度账、Git index、commit、push、审查与集成验证；子 Agent 必须从 Root gitlink 与 child commit blob 计算证据，不读取脏工作树作为冻结事实。
-
 
 ## 2026-09-21 — W0A-3 验收
 
@@ -110,3 +108,22 @@ Codex Goal 已建立并保持 `active`：按已批准的 Kokoro 后端整体闭�
 - 提交后 `python3 -m pytest scripts/tests/test_contract_compatibility.py -q`：exit 0，`38 passed in 11.80s`。
 - 提交后真实 compatibility CLI：预期 exit 1；错误精确为 15 条 `declared broken` + 1 条 `illegal edge`，schema/gitlink/digest/evidence/version 漂移为 0。
 - 提交后 `python3 -m pytest scripts/tests -q`：exit 0，`364 passed in 15.04s`；`git show --check` 与 `git diff --check`：exit 0。
+
+## 2026-09-21 — W0A-4 双审启动
+
+- 冻结审查 SHA：Root `ff5f91191ad33f39f80272df546af34d1b691e0e`；该 SHA 已推送，`main` 与 `origin/main` 对齐。
+- 规格审查 Agent：`w0a_final_spec_reviewer`；质量审查 Agent：`w0a_final_quality_reviewer`；两者只读、独立、绑定同一 SHA。
+- Root 保留最终门禁、任务/进度账、提交、推送和 W0B 放行决定。
+
+## 2026-09-21 — W0A-4 最终验收
+
+- 初始双审绑定 `ff5f91191ad33f39f80272df546af34d1b691e0e`，各发现 1 个 Important：Scheduler outbound event 的 canonical contract owner 错绑 receiver；Git `replace` refs 可改变声明 OID 的读取结果。
+- 规格修复提交 `68a53463`（`fix(governance): bind scheduler event contract owner`）：架构矩阵恢复 contract owner 列；两条 Scheduler event edge 绑定 Scheduler canonical OpenAPI；BFF/Agent 保留 receiver evidence；计划、README 与回归同步。
+- 质量修复提交 `d0f012a1`（`fix(contracts): ignore local Git replace objects`）：使用 `git --no-replace-objects show --end-of-options`，helper 与完整 verifier 都有 replace-ref 回归。
+- 最终冻结 SHA：`d0f012a1ef7a5b4914b4b631122482d5f121ca01`。独立规格审查 SPEC `✅`；独立质量审查 QUALITY `✅`；两者 Critical/Important/Minor 均为 `0/0/0`，绑定同一 SHA。
+- `python3 scripts/verify-repository-topology.py`：exit 0，`status=PASS`，`runtime_module_count=9`。
+- `python3 -m pytest scripts/tests -q`：exit 0，`367 passed in 15.66s`。
+- `python3 scripts/verify-ten-repository-standard.py --format json`：exit 1，`9 repositories / 110 violations / 1 unverified`；这是后续 owner 改造队列，不冒充通过。
+- `python3 scripts/verify-contract-compatibility.py --inventory verification/contracts/consumer-inventory.json`：预期 exit 1，`16 edges / 1 violation`；错误仅为 15 条 `declared broken` 与 1 条 `illegal edge`，其他漂移为 0。
+- `git diff --check`：exit 0。Wave 0A 治理基线、机器门和冻结 inventory 已闭环；下一阶段进入 W0B owner-first 硬断链修复。
+- W0B compatibility 红队列：`EDGE-WEB-BFF`、`EDGE-BFF-IAM`、`EDGE-BFF-SYSTEM`、`EDGE-BFF-CAPABILITY`、`EDGE-BFF-STORAGE`、`EDGE-BFF-AGENT`、`EDGE-BFF-SCHEDULER`、`EDGE-BFF-BILLING`、`EDGE-AGENT-SYSTEM`、`EDGE-AGENT-CAPABILITY`、`EDGE-AGENT-STORAGE`、`EDGE-CAPABILITY-STORAGE`、`EDGE-CAPABILITY-IAM`、`EDGE-SCHEDULER-BFF`、`EDGE-SCHEDULER-AGENT` 与 `EDGE-WEB-IAM-DIRECT`。

@@ -29,7 +29,7 @@
 | W0A-1 | P0 | 统一数据库角色、协议矩阵与当前 Capability 身份的治理表述 | Root / `w0a1_governance_writer` | W0A-0 | `AGENTS.md`、架构标准、SQL 标准、CURRENT 无矛盾；治理测试锁定决定 | 已验收 |
 | W0A-2 | P0 | 实现从 gitlink commit blob 校验 contract/evidence 的机器门 | Root / `w0a2_contract_verifier_writer` | W0A-1 | schema、gitlink、commit blob digest、状态与非法旁路负向测试通过；脏工作树不能影响结果 | 已验收 |
 | W0A-3 | P0 | 冻结完整调用矩阵与 consumer inventory | Root / `w0a3_inventory_writer` | W0A-2 | 16 条批准 edge 与 Web→IAM 非法旁路完整登记；绑定 contract version、generator/runtime version 和 evidence digest | 已验收 |
-| W0A-4 | P0 | 完成 Wave 0A 独立审查和 Root 集成验证 | Root / 主控 + 只读审查 Agent | W0A-1、W0A-2、W0A-3 | 规格审查与质量审查通过；Root 三项门禁和 compatibility 红门有当前输出 | 待派工 |
+| W0A-4 | P0 | 完成 Wave 0A 独立审查和 Root 集成验证 | Root / 主控 + `w0a_final_spec_reviewer` + `w0a_final_quality_reviewer` | W0A-1、W0A-2、W0A-3 | 规格审查与质量审查通过；Root 三项门禁和 compatibility 红门有当前输出 | 已验收 |
 | W0B-1 | P0 | 修复 BFF → Capability 当前 `/bff/*` 断链 | Capability owner 先确认 / BFF 写入 Agent | W0A-4 | owner 当前 `/v1/*` contract 与 BFF consumer/runtime parity 通过；删除旧路径 | 待派工 |
 | W0B-2 | P0 | 修复 Scheduler `jobs/schedules`、callback header 与 RFC3339 漂移 | Scheduler owner + BFF 写入 Agent，串行 | W0A-4 | owner contract 先冻结；双向 contract/integration tests 通过 | 待派工 |
 | W0B-3 | P0 | 切除 Storage `/internal/bff/library` 并固定 Proto v2 consumer 边界 | Storage owner + BFF/Agent/Capability，串行 | W0A-4 | v2 artifact/pin 发布；所有 consumer 通过；旧 v1 和废止 URL 删除 | 待派工 |
