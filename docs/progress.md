@@ -89,3 +89,24 @@ Codex Goal 已建立并保持 `active`：按已批准的 Kokoro 后端整体闭�
 - 提交后 `python3 -m pytest scripts/tests -q`：exit 0，`364 passed in 15.11s`。
 - `git show --check --stat --oneline HEAD` 与 `git diff --check`：exit 0。
 - 真实 `consumer-inventory.json` 尚未建立；默认 compatibility CLI 在 W0A-3 前保持“inventory 缺失”的稳定红门。
+
+
+## 2026-09-21 — W0A-3 派工
+
+- 写入 Agent：`w0a3_inventory_writer`（`gpt-5.6-sol`，high）。
+- 基线：Root `311a1391a6752961e61a6c5236527bc58f9196ec`，`main` 与 `origin/main` 对齐且工作树 clean。
+- 获准文件：`verification/contracts/consumer-inventory.json`、`verification/contracts/README.md`、`scripts/INDEX.md`。
+- Root 保留任务/进度账、Git index、commit、push、审查与集成验证；子 Agent 必须从 Root gitlink 与 child commit blob 计算证据，不读取脏工作树作为冻结事实。
+
+
+## 2026-09-21 — W0A-3 验收
+
+- 实现 Agent：`w0a3_inventory_writer`；独立审查 Agent：`w0a3_inventory_reviewer`；基线 `311a1391a6752961e61a6c5236527bc58f9196ec`。
+- 冻结 `verification/contracts/consumer-inventory.json`：16 条批准 edge（1 active、15 broken）与 1 条 `EDGE-WEB-IAM-DIRECT` 非法旁路；owner、evidence 与唯一 active version assertion 均绑定 Root gitlink 和 child commit blob digest。
+- hardened npm assertion 固定 `manifest_kind=npm-package-json`、`package_name=next`、`version=16.2.6` 与 `/dependencies/next`；15 条 broken edge 不伪造 version assertion。
+- 独立审查：SPEC `✅`、QUALITY `✅`，Critical/Important/Minor=`0/0/0`，逐项核对 edge、owner tuple、protocol、state、版本、reason 与 evidence。
+- Root 精确提交：`95afb3c3`（`test(contracts): freeze complete consumer inventory`），只包含 `verification/contracts/consumer-inventory.json`、`verification/contracts/README.md`、`scripts/INDEX.md`。
+- 提交后 `python3 scripts/verify-repository-topology.py`：exit 0，`status=PASS`，`runtime_module_count=9`。
+- 提交后 `python3 -m pytest scripts/tests/test_contract_compatibility.py -q`：exit 0，`38 passed in 11.80s`。
+- 提交后真实 compatibility CLI：预期 exit 1；错误精确为 15 条 `declared broken` + 1 条 `illegal edge`，schema/gitlink/digest/evidence/version 漂移为 0。
+- 提交后 `python3 -m pytest scripts/tests -q`：exit 0，`364 passed in 15.04s`；`git show --check` 与 `git diff --check`：exit 0。
