@@ -145,6 +145,6 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 
 | ID / 优先级 | Owner / Agent / 模型 | 基线 / 范围 | 验收 / 状态 |
 | --- | --- | --- | --- |
-| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c，绝对目录同上；当前只授权 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 三文档，runtime 等 Root 放行 | 当前计划 Task1；先通过三文档门，再实现 generated admission；Root唯一Git操作；状态：进行中 |
+| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c，绝对目录同上；三文档已由Root验收，授权当前计划Task1精确runtime/contract/test文件集；Task2仍未授权 | 当前计划 Task1；先通过三文档门，再实现 generated admission；Root唯一Git操作；状态：进行中 |
 | W1B-2 / P0 | BFF / 同一负责人后续续派 | 依赖W1B-1冻结提交；计划Task2精确范围，默认个人私有 | Project/ScheduledTask/Run control/Project关联负例通过；状态：待派工 |
 | W1B-3 / P0 | Root主控 + 独立审查 | 依赖BFF两片停写、完整门；Root单独组合任务卡 | 真实证据、smoke回归、gitlink/inventory、main-only；不以fixture激活IAM；状态：待派工 |

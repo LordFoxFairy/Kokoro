@@ -580,3 +580,6 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root沿用active Goal，接续BFF而非重做W1A。BFF基线c5e9b3c上执行Node22.22.2 `corepack pnpm test`：199 passed、0 failed、0 skipped，5.43s；未执行改后验收。
 - `w1b_privacy_reviewer`（sol/high）只读交付；Root核对Run control漏Conversation owner gate、ScheduledTask稳定ID漏subject、Project无owner与tenant缓存/slug，以及project_ref关系缺口。已纳入同一W1B计划Task2；没有把IAM会话有效等同资源权限。
 - Root冻结新auth目录、Node22 generated IAM0.2.0、三个显式服务例外及连续私有资源切片。当前仅授权BFF三文档门；尚未修改runtime/schema，未提升gitlink或激活edge。
+
+- W1B控制计划已提交并推送Root `818f714841e83e5ea6ace630f7254f239c72255a`；Root handbook/topology回归14 passed，topology和本地Markdown链接通过。BFF负责人三文档停写交付后，Root完整审阅diff（仅三文档）、复跑 `corepack pnpm contract:check`（21 passed，63 operations、两旧generated drift通过，Library既有1 warning）及`schema:check`（4 passed）；文档门通过。
+- 已续派同一BFF负责人进入Task1 TDD实现，仍只写计划精确文件集；Root独占Git。预存IAM两数据库仍保留，Redis8 PONG；本门未创建/清理基础设施。Task2私有SQL/Run control尚未实施，边界不得提前宣称闭环。
