@@ -286,3 +286,19 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 在冻结 diff 与提交后的上述 SHA 各执行独占 PostgreSQL + Redis DB 7 的 `go test -race -count=1 -json ./...`：均 `135 pass / 0 fail / 0 skip`；包含8项 PostgreSQL integration、1项 Redis integration、1项真实 source-process restart smoke。提交后 contract-check、vet、build 均 exit 0；修改前的 fresh install/4表/非空拒绝门通过，schema 未变。
 - Root 建立的修复测试库与提交后测试库已逐个精确删除；未改变共享role、重启数据库或清空Redis。Worker 自报的1项Redis skip已由Root真实门禁补齐，不再作为此 owner release 的缺失证据。
 - W0B-7I 只集成已推送 owner：Root 单一 writer 更新 Scheduler gitlink、全部8个 inventory tuple与commit-blob digest、固定owner测试pin、CURRENT、当前计划与控制账；不激活任何新edge。BFF Scheduler设计仍等待Root集成门通过。
+
+## 2026-09-21 — W0B-7I 写入完成，待独立审查
+
+- 唯一写入 Agent `w0b7i_scheduler_integration_writer` 基于 Root `73036f75f035570cf83f0ab5ea4a9d16a0c6c9a9` 完成七文件 prospective 集成切片；Scheduler checkout 为已推送 `92bf9e7e6724c591bab4b7fa27f08d694b59a67e`。Worker 没有操作 Git index、提交或推送。
+- TDD 聚焦红绿证据：先只更新 inventory 的 Scheduler pin，`test_scheduler_event_edges_pin_scheduler_owned_contract` 如预期 `1 failed`（旧 SHA/digest 冻结断言命中）；再仅更新该测试的 owner SHA/digest 后为 `1 passed`。随后整个 `scripts/tests/test_contract_compatibility.py` 为 `73 passed in 17.54s`。
+- 使用 `git -C apps/kokoro-scheduler --no-replace-objects show --end-of-options <SHA>:<path>` 对全部 8 个 Scheduler owner/evidence tuple 重算 SHA-256：4 个 OpenAPI tuple 均为 `6ec2f6d5…24183`，2 个 `client.go` tuple 仍为 `e5fb3901‣69e`，2 个 `go.mod` tuple 仍为 `289cf9e8‣4a1`；8 个全部与 commit blob 一致。JSON 语义对比确认除这些 Scheduler pin/digest 外其余字段不变，状态仍为 `2 active / 14 broken / 1 illegal`。
+- `git diff --check` 对精确七文件范围 exit 0；当前计划、固定 owner 测试与 inventory 已无旧 Scheduler SHA/digest。CURRENT 已切换到 W0B 当前态，并保留 Root 词法 parser 限制、非法 Web→IAM、真实全仓 runner/镜像/SLO 未验收等未完成事实。
+- 真实 Root index 仍由主控保留且 Scheduler gitlink 尚未暂存，因此本 Agent 未构造 prospective index，也未运行最终 checkpoint/topology/全量 Root tests。这些门禁须由 Root 主控精确暂存七个文件后以普通 index 执行；本条不构成 Root 集成验收或冻结 SHA。
+
+## 2026-09-21 — W0B-7 / W0B-7I Root 集成验收
+
+- Root 主控接收七文件交付，独立审查 Agent `w0b7i_integration_reviewer`（`gpt-5.6-sol` / high）对冻结 diff 给出 SPEC/QUALITY PASS，Critical/Important/Minor = `0/0/0`；当前 index 与交付差异完全一致。
+- 主控独立核对全部8个 Scheduler commit-blob tuple，digest 8/8匹配；除目标 pin 外 JSON 语义漂移为0。Scheduler release 为 `92bf9e7e6724c591bab4b7fa27f08d694b59a67e`；Root 基线 `73036f75f035570cf83f0ab5ea4a9d16a0c6c9a9`，集成 SHA 以本条所在 commit 为准。
+- 精确暂存后真实 index 门禁：`python3 scripts/verify-repository-topology.py` PASS；`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-capability.json` PASS；`python3 -m pytest scripts/tests -q` 为 `432 passed in 41.00s`；`git diff --cached --check` exit0。
+- Raw compatibility exit1，恰好14条 declared-broken + 1条 illegal，无新增 drift；ten-repository-standard exit1，`109 violations / 1 unverified`。Scheduler双向 edge尚未激活，W0B-8..11继续负责BFF设计、实现和真实进程验收。
+- 本切片不改Schema、不访问或清理共享数据，不重复运行未改变的Capability smoke。全仓E2E、镜像与SLO仍未验收；Goal保持active。

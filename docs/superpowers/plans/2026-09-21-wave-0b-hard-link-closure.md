@@ -311,7 +311,11 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 
 **Repository:** `apps/kokoro-scheduler`. **Writer:** none unless drift is found. **Reviewer:** Scheduler owner reviewer.
 
-**Frozen owner:** commit `17c2de3e68ed75dbf3fa495643f6ad280e3c7112`; `contract/openapi/v1/openapi.yaml`; version `1.0.0`; SHA-256 `49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3`.
+**Frozen owner:** commit `92bf9e7e6724c591bab4b7fa27f08d694b59a67e`; `contract/openapi/v1/openapi.yaml`; version `1.0.0`; SHA-256 `6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183`.
+
+W0B-7R owner repair 已完成：修复精确限于 `contract/README.md`、`contract/manifest.json`、`contract/openapi/v1/breaking-policy.json`、`contract/openapi/v1/openapi.yaml`、`internal/adapters/httpclient/client_test.go`、`internal/application/commands.go`、`internal/transport/http/handler.go`、`internal/transport/http/handler_test.go`、`test/contract/openapi_test.go` 与 `test/integration/postgres_test.go` 这 10 个文件。它只把现有 `schedule_not_found` / `schedule_already_exists` 机器码与 opaque idempotency key 逐字语义变成可执行契约，并增加 RFC3339Nano 边界证据；没有新 API shape、Schema、路径或 header。独立 SPEC/QUALITY 最终为 `0/0/0`；Root 在冻结 diff 和推送 commit 后各执行独占 PostgreSQL + Redis DB 7 的全量 race，均为 `135 pass / 0 fail / 0 skip`，提交后 contract-check、vet 和 build 也均通过。
+
+W0B-7I Root 集成精确限于 Scheduler gitlink、`verification/contracts/consumer-inventory.json`、`scripts/tests/test_contract_compatibility.py`、`docs/CURRENT.md`、本计划、`docs/task.md` 与 `docs/progress.md` 七个 Root 文件。它前移全部 8 个 Scheduler owner/evidence tuple 及 commit-blob digest，不激活新 edge；聚焦 pin 测试按 inventory-only RED 再 test-pin GREEN 执行，最终 checkpoint/topology/Root tests 由 Root 主控在真实暂存 gitlink 后复验。
 
 1. Run exact Go preflight; verify clean `main`, Root gitlink and remote equality.
 2. Read absolute technical/API/data documents, contract and canonical schema. Confirm `/schedules/{name}`, `X-Kokoro-Tenant-Id`, `X-Kokoro-Scheduler-Schedule`, RFC3339/RFC3339Nano occurrence, opaque idempotency key, `schedule_not_found`, `schedule_already_exists`, and retry statuses `408/425/429/5xx`.
@@ -331,7 +335,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 **Repository/writer:** BFF / BFF Scheduler subagent. **Reviewer:** BFF design reviewer. **Start:** Task 4 remote SHA.
 
 **Exact files:**
-- create `contract/vendor/kokoro-scheduler/17c2de3e68ed75dbf3fa495643f6ad280e3c7112/openapi.yaml`
+- create `contract/vendor/kokoro-scheduler/92bf9e7e6724c591bab4b7fa27f08d694b59a67e/openapi.yaml`
 - create `contract/dependencies/scheduler.json` with `status=design-frozen`
 - create `openapi-ts.scheduler.config.ts`
 - modify `docs/TECHNICAL_DESIGN.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/CURRENT.md`

@@ -465,10 +465,10 @@
       "owner": {
         "name": "kokoro-scheduler",
         "repository_path": "apps/kokoro-scheduler",
-        "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+        "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
-        "contract_sha256": "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
+        "contract_sha256": "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
       },
       "protocol": "http-openapi",
       "code_generator_version": "unmanaged",
@@ -490,9 +490,9 @@
         },
         {
           "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+          "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
           "path": "contract/openapi/v1/openapi.yaml",
-          "sha256": "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
+          "sha256": "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
         }
       ]
     },
@@ -736,10 +736,10 @@
       "owner": {
         "name": "kokoro-scheduler",
         "repository_path": "apps/kokoro-scheduler",
-        "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+        "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
-        "contract_sha256": "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
+        "contract_sha256": "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
       },
       "protocol": "http-event",
       "code_generator_version": "unmanaged",
@@ -749,13 +749,13 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+          "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
           "path": "internal/adapters/httpclient/client.go",
           "sha256": "e5fb3901f41fddd447796e029f0dc9046206bc142a52364c69b5e88cba25369e"
         },
         {
           "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+          "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
           "path": "go.mod",
           "sha256": "289cf9e81aeaeb43be815be780ffa5a3442e3bde1b402bed1d08439e341b34a1"
         },
@@ -779,10 +779,10 @@
       "owner": {
         "name": "kokoro-scheduler",
         "repository_path": "apps/kokoro-scheduler",
-        "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+        "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
-        "contract_sha256": "49be4429f9b1f4e86582c95aff770f6835629d3ea4ad80408bf65d0c64e598c3"
+        "contract_sha256": "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
       },
       "protocol": "http-event",
       "code_generator_version": "unmanaged",
@@ -792,13 +792,13 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+          "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
           "path": "internal/adapters/httpclient/client.go",
           "sha256": "e5fb3901f41fddd447796e029f0dc9046206bc142a52364c69b5e88cba25369e"
         },
         {
           "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "17c2de3e68ed75dbf3fa495643f6ad280e3c7112",
+          "repository_commit": "92bf9e7e6724c591bab4b7fa27f08d694b59a67e",
           "path": "go.mod",
           "sha256": "289cf9e81aeaeb43be815be780ffa5a3442e3bde1b402bed1d08439e341b34a1"
         },
