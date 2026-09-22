@@ -434,3 +434,5 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root在冻结Fix2源码上实测focused47/47、全pytest479/479（42.85s）、Ruff format/check、compile与diff通过。真实CLI exit1，前置DNS检查发现主机名仅解析192.168.1.4；未创建run资源，自有Scheduler/BFF smoke数据库为零。保留原loopback边界，用户网络选项尚待答复。
 - 独立reviewer确认F2关闭、慢速body约3.1s自行Timeout，但未完成headers每100ms滴入1byte时4.3s仍未结束，保留F1一个Important（0/1/0）。手动取消后所有探针资源已回收。Root接受该问题，原writer进入Fix3，不以479项全绿替代失败路径证据。
 - 当前runtime774/test798行。Root先完成放置门，批准同目录HTTP fixture模块及对应HTTP测试文件，精确范围由5变7：按HTTP职责搬迁，原定义和旧import删除；不创建共享框架或兼容alias。实现覆盖request/status/headers/body的主动总期限取消，处理HTTP/1.0 socket转移并回收timer；其他owner/contract/network边界不变。Task10尚未提交或验收，Goal active。
+
+- Root只读完成5R实施前盘点：现有Capability runner884行/test408行，原focused26/26通过；Capability7f89a267 clean。已批准一个同目录runtime与INDEX更新（精确4文件），承接进程/资源/readiness生命周期，保留原8case及已验收行为。5R在Task10代码审查通过且writer停写后可串行推进，不依赖Scheduler回调DNS；Task11仍要求两项真实CLI全绿。这是独立修复的调度调整，不放宽Task10或edge验收门。尚未派工或修改5R源码。
