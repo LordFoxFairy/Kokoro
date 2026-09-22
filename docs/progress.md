@@ -374,3 +374,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 下一项W0B-10：真实Scheduler+BFF进程smoke，Agent只用明确标记的receipt stub；W0B-11再提升Root gitlink、刷新全fan-out与Capability smoke pin并激活双向edge。当前Root仍固定旧BFF组合，`2 active / 14 broken / 1 illegal`保持不变；真实Agent admission归W4，全局Goal保持active，不宣称整体闭环。
 
 - 本轮Root收尾实测：checkpoint `w0b-capability` PASS；Root tests `432 passed in 24.18s`；topology exit1仅BFF checkout与冻结gitlink不一致。静态规范审计现为 **112 violations / 1 unverified**，不是之前109：新增3条全部来自Task8引入的Scheduler原始vendor中 `/internal/scheduler/v1/schedules/{name}` 及pause/resume路径，被当前通用v1规则再次计入BFF。与前次109逐项对比无其他新增/消失；不删除vendor、不放宽规则或隐去红门，后续Root治理收敛owner/vendor归属与路径规则。
+
+## 2026-09-22 — W0B-10 真实进程 smoke 派发
+
+- 上一Goal回合属于progress：W0B-9完成子仓实现、审查、真实验证与提交；本回合重新核对Root `07f2420c…`、BFF `5ea4440…`、Scheduler `92bf9e7e…`，两子仓clean且live远端一致。Root唯一已有差异是按计划尚未提升的BFF gitlink。
+- 负责人 `w0b10_scheduler_bff_smoke_writer`（gpt-5.6-sol/high）只写runner、runner自身pytest、scripts/INDEX三个文件。Root保留控制账、Git操作和独立验收；不得改owner、contract、Schema、inventory或gitlink。
+- 创建前放置表已加入当前计划Task10。Root发现Scheduler原生Redis lease使用tenant/occurrence摘要固定前缀而非可配置namespace；方案使用nonce tenant与独占DB证明归属、登记精确key并在进程停止后清理，禁止全前缀清除，也不通过禁用Redis缩小验收。
+- 本阶段验证真实Scheduler控制/派发→BFF receipt恢复；Agent只用明确stub。尚未运行新runner，不提前激活edge，Goal保持active。

@@ -409,6 +409,21 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 
 **Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/tests/test_scheduler_bff_smoke.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
 
+**Task 10 placement/design gate (Root, 2026-09-22):**
+
+| Item | Decision |
+| --- | --- |
+| Owner/current facts | Root owns composition verification only. Existing Capability/System runners and Root pytest lifecycle tests are the pattern. BFF `5ea4440941ed65c424fffb0ae834e67b2ae93e74` and Scheduler `92bf9e7e6724c591bab4b7fa27f08d694b59a67e` are clean, pushed prerequisites; Root gitlink lift remains Task11. |
+| Responsibility/API | One explicit CLI proves the eleven existing control/receiver cases and returns bounded sanitized JSON evidence; no application API, Schema or owner change. |
+| Placement/granularity | Use `scripts/e2e/` plus `scripts/tests/`, matching current Root orchestration; reject a new `verification/e2e/` tree or putting a cross-owner runner in BFF because both duplicate/misplace the current Root responsibility. No new package/framework. |
+| Dependencies/lifecycle | Source-build the exact pinned owners, use their HTTP boundaries; own loopback processes/threads, temporary Go binary/logs, per-owner databases, deadlines and cleanup. No production sibling source import, service restart or blanket Redis cleanup. |
+| SQL/data | Apply each canonical schema to a new random database with explicit public search_path. Test harness may inspect/seed only those owned databases; BFF still never queries Scheduler SQL. Capture owner facts rather than simulate Scheduler dispatch. |
+| Redis ownership | Use real Redis DB7 for Scheduler and DB8 for BFF. Harness prefix is `kokoro:w0b:scheduler:<run>:`. Scheduler natively hashes `tenant_id + NUL + occurrence_id` to `kokoro:scheduler:dispatch:<sha256>` and has no prefix setting: before deleting databases, derive/register only exact keys from the run's private Scheduler occurrence rows with its nonce tenant, stop all owned processes, then verify/release only this allow-list. Never scan/delete the entire native prefix. This preserves native lease behavior rather than disabling Redis or changing an owner. |
+| Proof limits | Positive callback/retry evidence must come from the real Scheduler dispatcher; manual negative requests supplement rather than replace this. An Agent receipt stub records calls and identity only; real Agent durability remains W4. Control conflict/reconciliation must prove the real BFF outbox path. |
+| Deletions | No replaced production path in this slice; delete every owned temporary resource on success and failure. Existing Capability runner remains unchanged until Task11. |
+| Validation | Focused pytest RED/GREEN, Ruff format/lint, py_compile, actual eleven-case CLI with cleanup assertions, independent Root replay; wrong SHA/version, partial setup, timeout and cleanup failure are nonzero. |
+
+
 1. Runner CLI is exactly:
    ```bash
    python3 scripts/e2e/run_scheduler_bff_smoke.py \
