@@ -271,6 +271,50 @@ def test_redis_ack_loss_with_unknown_inventory_fails_cleanup_closed() -> None:
         owned.cleanup()
 
 
+def test_redis_markerless_preexisting_prefix_is_never_claimed_or_unlinked() -> None:
+    recorder = Recorder()
+    owned = resources(recorder)
+    key = owned.redis_prefix + "preexisting"
+    recorder.redis_values[key] = "someone-else"
+    with pytest.raises(runtime.SmokeError, match="already exists"):
+        owned.claim_harness_prefix()
+    owned.cleanup()
+    owned.verify_clean()
+    assert owned.harness_preexisting
+    assert recorder.redis_values == {key: "someone-else"}
+    assert not any("SET" in command for command in recorder.commands)
+    assert not any("UNLINK" in command for command in recorder.commands)
+    scans = [command for command in recorder.commands if "--scan" in command]
+    assert len(scans) == 1
+    assert scans[0][-1] == owned.redis_prefix + "*"
+
+
+def test_redis_prefix_scan_failure_preserves_keys_and_cleans_owned_database() -> None:
+    class ScanFailureRecorder(Recorder):
+        def __call__(self, command: list[str], **kwargs: object) -> str:
+            if "--scan" in command:
+                self.commands.append(command)
+                raise runtime.SmokeError("Redis prefix inventory unavailable")
+            return super().__call__(command, **kwargs)
+
+    recorder = ScanFailureRecorder()
+    owned = resources(recorder)
+    owned.create_database("scheduler")
+    key = owned.redis_prefix + "preexisting"
+    recorder.redis_values[key] = "someone-else"
+    with pytest.raises(runtime.SmokeError, match="prefix inventory unavailable"):
+        owned.claim_harness_prefix()
+    owned.cleanup()
+    owned.verify_clean()
+    assert recorder.databases == set()
+    assert recorder.redis_values == {key: "someone-else"}
+    assert not any("SET" in command for command in recorder.commands)
+    assert not any("UNLINK" in command for command in recorder.commands)
+    scans = [command for command in recorder.commands if "--scan" in command]
+    assert len(scans) == 1
+    assert scans[0][-1] == owned.redis_prefix + "*"
+
+
 def test_owned_command_timeout_kills_the_process_group(tmp_path: Path) -> None:
     pid_file = tmp_path / "pid"
     source = f"import os,time;open({str(pid_file)!r},'w').write(str(os.getpid()));time.sleep(120)"

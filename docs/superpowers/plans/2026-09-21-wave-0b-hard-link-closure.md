@@ -294,7 +294,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 
 ### Task 6: Integrate and activate `EDGE-BFF-CAPABILITY`
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/2BV/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
 **Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`. Capability gitlink is unchanged unless Task 2 created a separately reviewed/pushed owner commit.
 
@@ -508,13 +508,32 @@ Task5R temporary existing-test exception: its unchanged midflight cleanup test i
 
 Root found `apps/kokoro-capability/src/main.ts:190` hard-coded `0.0.0.0`, so the successful Task5/5R functional CLI was not proof of loopback-only owner binding. All owned processes are stopped. Do not repeat that CLI until this prerequisite closes. First a read-only owner audit checks the current three documents, config/main entry, bootstrap test helpers and every real listener involved in the relevant verification. Root then fixes the minimum configuration decision and exact write set before dispatching a child writer. No API/schema/dependency/Platform identity change is proposed. Compare preserving the existing deploy bind default with an explicit numeric-loopback override versus changing the default and deployments; identify tests that can go RED without opening a wildcard listener. Root retains the overall decision/Git; auditor may write only its scratch report. Root decision after audit: adopt source default127.0.0.1 and explicit Docker0.0.0.0; one `KOKORO_CAPABILITY_HOST` / `listenHost` config accepting only these two literals, invalid/blank inputs reject. Do not add a one-line production export only as a test seam: mock existing NestFactory/createRuntime as needed, plus real compiled server.address evidence. Clarify the stale DATA_MODEL baseline as a historical milestone and record no wire/schema impact in the three-document gate. Owner code plus docs/test release must be independently reviewed and actually verify the bound address before Root updates Task5R runtime pin/explicit loopback env. Refresh all affected Capability runtime evidence/gitlink in Task11; owner contract artifact provenance remains truthful if bytes do not change.
 
+**Task2B Root design/document gate and exact implementation scope (2026-09-22):**
+
+The three owner design documents were converged by Root and pushed as `e956c62a4212d7b691f3678310a46fdd172f3b5b`. Their current/target distinction is explicit; contract check and static Prisma schema check passed,23 contract/schema blobs unchanged. No unresolved owner/API/SQL decision; real DB/install and OS listener proof remain implementation gates, not document evidence.
+
+| Item | Root decision |
+| --- | --- |
+| Owner/current facts | Existing Capability config/bootstrap, sole listener/writer; clean owner document baseline above. No new domain or process. |
+| Location/granularity | Extend `src/config/runtime.ts` and `src/main.ts`; reject a listener service/module or one-line production wrapper exported solely for tests. Existing config inference and composition boundary remain authoritative. |
+| Configuration/behavior | One `KOKORO_CAPABILITY_HOST`/`listenHost`; raw exact literals127.0.0.1/0.0.0.0 only, default127.0.0.1, explicit empty/whitespace/hostname/other address reject. Docker explicitly0.0.0.0; local/test/candidate smoke explicitly127.0.0.1. Preserve ready-before-listen and shutdown/drain semantics. |
+| Dependencies/data | No dependency, namespace, credential-role, API/RPC/schema/generated changes. Native Nest/typed config only. Preserve owner contracts and data lifecycle. |
+| Deletions | Remove hard-coded bootstrap bind; no aliases, DNS fallbacks, second server or compatibility path. |
+| Proof | RED config+real bootstrap mocked before any socket; then real compiled createRuntime server.address must be IPv4/127.0.0.1. Wildcard deployment is statically asserted, not locally started. Full owner gates/0skip, independent fresh DB schema+production smoke; Root reviews/repeats before final release pin. |
+
+Exact15 existing owner files: `src/config/runtime.ts`, `src/main.ts`, `test/smoke/smoke.test.ts`, `test/unit/runtime-lifecycle.test.ts`, `scripts/smoke-production.mjs`, `test/smoke/production-entry.test.ts`, `test/integration/production-composition.integration.test.ts`, `Dockerfile`, `test/architecture/deployment.test.ts`, `.github/workflows/release-image.yml` (listener env only), `.env.example`, `README.md`, `docs/RUNBOOK.md`, `docs/TECHNICAL_DESIGN.md`, `docs/CURRENT.md`. API/DATA are already converged and read-only now; no new file. Root owns Git/index/commit and excludes all Root files/other children from writer scope. If implementation needs another file, report before editing.
+
+### Task 2BV: Release workflow schema ordering repair
+
+A separate same-owner two-file slice after2B: `.github/workflows/release-image.yml` and `test/architecture/deployment.test.ts`. Under REQUIRE_REAL_INTEGRATION=1 a fresh DB must run db:apply-schema before schema:check. RED static ordering assertion, then minimum order correction; independent owned fresh DB demonstrates the successful sequence, without treating an unexecuted Docker/GitHub job as passed. No action/dependency/image upgrades. Root commits separately (`fix(ci): install schema before persisted verification`), then uses the final owner SHA in Task5R/Task11. This new known prerequisite is not silently included in the listener feature commit.
+
 ### Task 10R: Scheduler harness pre-existing-prefix protection
 
 Task5R review exposed a sibling defect in the committed Task10 harness: GET of the ownership marker alone does not prove the whole prefix was absent. A pre-existing non-marker key must never be adopted and removed by cleanup. After Task5R fixes this exact behavior and stops writing, dispatch a separate two-file Root slice (`scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/tests/test_scheduler_bff_smoke.py`), preserve deadline/HTTP files and owner releases. Use RED/GREEN for markerless pre-existing key preservation and unknown prefix inventory; assert no SET/UNLINK for rejected pre-existing data. No shared framework, no native Scheduler-key prefix scan or cleanup, no owner/network change. This is a follow-up to original Task10 ownership review, not a restart of the deadline fix loop. Apply fresh higher-tier reviewer/implementer judgment as required by the existing fix-loop history; record separately and review before Task11.
 
 ### Task 11: Integrate Scheduler and activate two edges
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/2BV/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
 **Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage; update `scripts/tests/test_contract_compatibility.py` for the Task7R2 Scheduler runtime release pin.
 
@@ -565,7 +584,7 @@ Task5R review exposed a sibling defect in the committed Task10 harness: GET of t
 
 ### Task 15: Integrate the Storage deletion without activating Storage
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/2BV/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
 **Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`, `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, both `scripts/e2e/run_capability_bff_smoke.py` and `scripts/e2e/run_scheduler_bff_smoke.py`, and `scripts/tests/test_capability_bff_smoke.py` and `scripts/tests/test_scheduler_bff_smoke.py`.
 

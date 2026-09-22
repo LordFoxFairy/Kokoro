@@ -466,3 +466,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root对冻结4文件独立复跑focused37/37（1.59s）、全Root491/491（43.70s）、3文件Ruff format/check及diff通过，前轮compile后未改变Python语法结构；提交前再编译冻结源码。未再运行真实CLI或启动旧wildcard owner，PG/Redis未触碰。代码先保存，5R仍“待集成验证”，2B后更新owner pin/显式loopback并重跑真实8case才验收。
 - 尺寸核对纠正：runner/runtime满足≤800/≤100；测试中既有midflight cleanup用例仍为105行，早先“全部函数≤100”不准确。Root登记临时例外：owner Root，保留该既有行为基线避免与故障修复混拆，截止2026-09-23或5R实际运行验收前（取先）；5R更新owner pin的同一次测试改动须提取fixture setup并关闭例外，不影响其现有断言。
 - 2B只读owner审计已完成。Root选择源码默认127.0.0.1、Docker部署显式0.0.0.0，配置KOKORO_CAPABILITY_HOST/listenHost仅两个精确literal，空白/hostname等拒绝；实际OS绑定地址须验证，API/Schema不变。整体设计由Root固定，尚未授权child实现；先串行完成10R的Root小修复。
+
+- 5R代码提交`1f628dd2b2b1393d42730fa989a72154bce5bdd3`已推送main，未标记runtime验收；Root现串行派fresh `w0b10r_scheduler_prefix_writer`（gpt-6-astra/high）做Task10原ownership后续定向修复，精确runtime/主pytest两文件，HTTP/deadline/owner均不动。按既有fix-loop升级判断，不重开已关闭deadline工作。Root保留控制/Git；2B仍只读资源审计/设计，尚无child writer。
+
+## 2026-09-22 — W0B-10R通过 / W0B-2B文档门
+
+- 10R fresh astra writer只改runtime三行及两个内存回归；原reviewerSPEC/QUALITY PASS 0/0/0，6个独立内存测试通过。Root对同一冻结两文件复跑50/50 focused（8.19s）、全Root493/493（45.02s）、Ruff/diff通过；提交前compile与hash复核。无共享资源操作，Task10原11case仍留DNS前置，不冒称运行闭环。
+- Root完成并提交Capability三文档设计门：owner commit `e956c62a4212d7b691f3678310a46fdd172f3b5b`已推送main；设计明确当前硬编码wildcard尚未改、目标源码默认loopback/部署显式wildcard。文件为 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/DATA_MODEL.md`；DATA旧“当前基线”澄清为历史里程碑。
+- Node24静态文档门实测：三文件Prettier write均unchanged/check通过；`pnpm exec tsx scripts/check-contract.ts`通过，combined digest仍536dca2989…；`REQUIRE_REAL_INTEGRATION=0 pnpm schema:check`通过（Prisma既有无FK索引提示保留，不是实时数据库证明）。contract/canonical schema共23个tracked blob SHA-256全部与7f89a267一致。三面无未决owner/API/SQL决定；真实fresh install、监听与完整owner门留实现阶段。
+- 资源审计确认owner完整suite在显式独占PG URL、Redis URL及REQUIRE_REAL_INTEGRATION=1下目标0skip；Redis仅PING无flush。另发现release-image既有check→apply顺序在fresh DB错误，单列2BV沿同owner两文件独立commit，不能把旧workflow当fresh-install证据。

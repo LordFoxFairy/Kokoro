@@ -237,6 +237,9 @@ class OwnedResources:
 
     def claim_harness_prefix(self) -> None:
         key = self.redis_prefix + "ownership"
+        if self._harness_keys():
+            self.harness_preexisting = True
+            raise SmokeError("Owned Redis prefix already exists")
         if self._harness_owner():
             self.harness_preexisting = True
             raise SmokeError("Owned Redis prefix already exists")
