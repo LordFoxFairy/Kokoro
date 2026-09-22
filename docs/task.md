@@ -46,7 +46,8 @@
 | W0B-9 | P0 | 实现 Scheduler generated control 与 receiver | BFF / `w0b9_bff_scheduler_writer` | W0B-8 | 旧协议删除；generated validation、专用 receipt/CAS、幂等与恢复测试通过 | 已验收 |
 | W0B-9V | P0 | 修复基线已失败的两处 AG-UI fixture | BFF / `w0b9v_agui_fixture_writer` | W0B-9 全量门暴露 | 第二Run遵循admission；delete传requestId；原断言保持；独立PG复验通过 | 已验收 |
 | W0B-10 | P0 | 实现 Scheduler↔BFF 隔离真实进程 smoke | Root / `w0b10_scheduler_bff_smoke_writer` | W0B-9、W0B-7R2 | 真实 Scheduler/BFF/DB/Redis；11 个 case；response-unknown + restart 不重复创建 | 进行中 |
-| W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / integration 子 Agent | W0B-10 | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 待派工 |
+| W0B-5R | P0 | 修复Capability smoke同源资源确认丢失清理缺陷 | Root / 待派smoke负责人 | W0B-10 | 已创建DB/Redis确认丢失、预存保护回归；新BFF pin；真实8case与清理通过，独立提交 | 待派工 |
+| W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / integration 子 Agent | W0B-10、W0B-5R | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 待派工 |
 | W0B-12 | P0 | 冻结 BFF Storage fail-closed 与 W1/W2 前置 | BFF / Storage 子 Agent | W0B-11 | `GET /v1/library` 固定 503；授权矩阵、IAM admission、scope/pagination owner 明确 | 待派工 |
 | W0B-13 | P0 | 将 Storage 前置绑定到 Root W1/W2 | Root / 主控 | W0B-12 | task/progress 记录 BFF docs SHA 与五项验收前置 | 待派工 |
 | W0B-14 | P0 | 删除 BFF `/internal/bff/library` 运行链 | BFF / 同一 Storage 子 Agent | W0B-13 | 不打开 upstream socket；旧 URL/config/projector 全删；BFF 全门通过 | 待派工 |

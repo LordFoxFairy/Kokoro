@@ -401,3 +401,19 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root真实HTTP新库/新进程复验提交前后均得到200→409→重启后409，第二receipt保留原request ID及完整body；数据库精确1个Schedule/2个receipt，Redis DB7启用。每次探针自动清理自有库/进程/临时文件；writer与Root两个额外测试库现也已精确删除、fixture env移除。
 - BFF原vendor、Scheduler92bf9e7发布artifact与新runtime的canonical OpenAPI字节完全一致，digest仍为6ec2f6d5…183。保留真实历史artifact provenance，不伪造重新生成记录；Root Task11将pin新runtime并重算所有Scheduler证据，更新pin回归。
 - W0B-10原writer恢复，仅在原四文件内更新Scheduler runtime SHA、移除私有409 receipt注入及known-risk分支，以真实同名新key创建自然产生409，完成11case与完整生命周期门。当前尚未验收Task10或激活Scheduler双向edge；Root gitlink与inventory留Task11一次集成，Goal保持active。
+
+- Root接受owner后的组合门：checkpoint仍为w0b-capability PASS；已接收Root tests（显式排除未交付Task10测试）432 passed in 33.11s。topology exit1精确为BFF与Scheduler两个checkout领先旧gitlink，留Task11集成。只读预检新组合：BFF45、Scheduler8个现有tuple路径在各新release均存在，10处BFF摘要需要更新、无缺失路径。
+
+- Task10恢复后的writer报告真实自然409与私库/receipt断言11case已通过，尚待Root独立审查。Ruff后runner878/runtime789行，Root按Python尺寸/职责门批准同目录唯一新增 `scheduler_bff_smoke_cases.py`（现精确5文件）：cases承载行为/SQL观察，runner保留CLI/总生命周期，runtime保留资源/进程/HTTP。不塞满runtime、不压缩代码或登记永久行数豁免；修改后重新冻结审查和真实CLI。
+
+## 2026-09-22 — W0B-10 冻结待审查
+
+- writer最终停写，精确五文件：runner302、cases641、runtime789行及pytest/INDEX；自然owner409→BFF PUT、三项control的Scheduler schedule/receipt断言、负例Agent计数均已补齐；没有诊断伪造receipt/预期500/known-risk成功分支。
+- Root冻结五文件SHA-256后独立执行focused24/24、Ruff format/check、三源码py_compile、全量Root456/456、真实Scheduler/BFF/PG/Redis十一case CLI，均通过。runtime SHA固定Scheduler975dee596…与BFF5ea444094…；输出明确Agent只为receipt stub，未验证真实Agent。自有fixture清理通过。
+- fresh reviewer `w0b10_scheduler_bff_smoke_reviewer`（gpt-6-astra/high）正在独立检查失败路径、资源所有权、线程生命周期和replay证明强度；Root不以绿色正常路径替代审查，任务保持待审查、未提交，双向edge未激活。
+
+## 2026-09-22 — W0B-10 首轮审查退回
+
+- 独立astra reviewer以纯内存与自有loopback探针复现4 Important：CREATE/SET已生效但确认丢失后丢弃ownership、partial-body HTTP handler在context退出后仍alive、同task新run_id二次Agent调用被case误判PASS、go1.26.80/devel被子串版本检查放行。另有2个超100行函数（191/211）为Minor。reviewer所有探针连接/线程/临时目录已清理。
+- Root接受上述缺口并退回原writer Fix Round1，精确五文件不扩张；每项先补RED后修复，保持实际11case/严格cleanup/owner边界。456全绿和真实11case正常路径不替代故障验收。
+- 同源CREATE资源登记缺陷也存在已验收Capability runner（只读定位），新增W0B-5R两文件修复切片，排在Task10完成后、Task11激活前。它同时前移原本Task11负责的Capability smoke BFF pin以便真实8case验证；不改业务owner/contract或提前激活edge。Goal继续active，本回合已有Scheduler owner修复进展，不标记全局blocked。

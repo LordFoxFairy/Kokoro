@@ -421,7 +421,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 
 **Repository/writer:** Root / Root smoke subagent. **Reviewer:** fresh reliability reviewer.
 
-**Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/tests/test_scheduler_bff_smoke.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
+**Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/e2e/scheduler_bff_smoke_cases.py`, `scripts/tests/test_scheduler_bff_smoke.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
 
 **Task 10 placement/design gate (Root, 2026-09-22):**
 
@@ -430,7 +430,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 | Owner/current facts | Root owns composition verification only. Existing Capability/System runners and Root pytest lifecycle tests are the pattern. BFF `5ea4440941ed65c424fffb0ae834e67b2ae93e74` and Scheduler `975dee59616a1e0eda609aa69283401344900d83` (Task7R2) are clean, pushed prerequisites; Root gitlink lift remains Task11. |
 | Responsibility/API | One explicit CLI proves the eleven existing control/receiver cases and returns bounded sanitized JSON evidence; no application API, Schema or owner change. |
 | Placement/granularity | Use `scripts/e2e/` plus `scripts/tests/`, matching current Root orchestration; reject a new `verification/e2e/` tree or putting a cross-owner runner in BFF because both duplicate/misplace the current Root responsibility. No new package/framework. |
-| Runtime split | A 1128-line draft triggers the Python size review. Split the same existing directory into the CLI/eleven-case runner and `scheduler_bff_smoke_runtime.py` for owned process/resource lifecycle, HTTP test fixtures and startup helpers; target each below 800 lines. Reject compressing code to meet a line count or introducing a cross-runner common framework. Tests import the module that owns the behavior; no production consumers or new package. |
+| Runtime split | Final strengthened draft is runner878/runtime789. Python §12 requires split or an owner/expiry exception above800 lines. Adopt exactly one additional `scheduler_bff_smoke_cases.py` in the same directory for eleven-case behavior and private SQL observation; runner owns CLI/composition lifecycle, runtime owns processes/resources/HTTP fixtures. Reject pushing more code into the nearly800-line runtime or a line-count exception that leaves mixed concerns. Split the long case sequence along control/callback/recovery behavior, not per-line wrappers. No framework/new package; tests import the module owning the behavior. |
 | Dependencies/lifecycle | Source-build the exact pinned owners, use their HTTP boundaries; own loopback processes/threads, temporary Go binary/logs, per-owner databases, deadlines and cleanup. No production sibling source import, service restart or blanket Redis cleanup. |
 | SQL/data | Apply each canonical schema to a new random database with explicit public search_path. Test harness may inspect/seed only those owned databases; BFF still never queries Scheduler SQL. Capture owner facts rather than simulate Scheduler dispatch. |
 | Redis ownership | Use real Redis DB7 for Scheduler and DB8 for BFF. Harness prefix is `kokoro:w0b:scheduler:<run>:`. Scheduler natively hashes `tenant_id + NUL + occurrence_id` to `kokoro:scheduler:dispatch:<sha256>` and has no prefix setting: before deleting databases, derive/register only exact keys from the run's private Scheduler occurrence rows with its nonce tenant, stop all owned processes, then verify/release only this allow-list. Never scan/delete the entire native prefix. This preserves native lease behavior rather than disabling Redis or changing an owner. |
@@ -453,12 +453,22 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 5. GREEN:
    ```bash
    python3 -m pytest scripts/tests/test_scheduler_bff_smoke.py -q
-   python3 -m ruff format --check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/tests/test_scheduler_bff_smoke.py
-   python3 -m ruff check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/tests/test_scheduler_bff_smoke.py
-   python3 -m py_compile scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py
+   python3 -m ruff format --check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/tests/test_scheduler_bff_smoke.py
+   python3 -m ruff check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/tests/test_scheduler_bff_smoke.py
+   python3 -m py_compile scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py
    # then the exact real CLI above; expected exit 0 and JSON {"status":"PASS","cases":11,...}
    ```
 6. Review; commit `test(e2e): add isolated Scheduler BFF smoke`; push.
+
+### Task 10 — Fix Round 1 acceptance
+
+Initial frozen five-file review found four Important and one Minor despite Root focused24/full456/real11case passing. Fix within the same five paths; Root owns control docs/Git. Before changing code, add RED probes for: database/Redis creation applied then acknowledgement lost (retain exact attempted identities, reconcile proved ownership, preserve pre-existing resources, fail closed on unknown query/cleanup); partial HTTP bodies and stalled upstream (bounded accepted sockets, tracked connections/handler threads, bounded shutdown/join); duplicate and restart admitting a second Agent call with the same or a different run ID (bind task/occurrence and entire call snapshots, not only original run count); exact stable Go token (reject 1.26.80/devel/rc/beta and wrong Node/pnpm). Close 191/211-line functions by real lifecycle/control/reconciliation responsibilities; no permanent size exception or new shared framework. Build/start/config composition may move from runtime to runner within these same files to preserve single-purpose modules below800 lines. Repeat final focused, Ruff, compile and real eleven-case CLI before stopping for scoped re-review and Root fresh gates.
+
+### Task 5R: Repair Capability smoke resource acknowledgement-loss parity
+
+Task10 reviewer read-only confirmed the same CREATE failure path in the already accepted Capability runner. This known defect must close before Task11 activation, not be hidden by a normal-path smoke.
+
+**Owner/writer:** Root smoke subagent, dispatched only after Task10 acceptance. **Exact files:** `scripts/e2e/run_capability_bff_smoke.py`, `scripts/tests/test_capability_bff_smoke.py`. Preserve tests/fixtures already accepted; no child, contract, inventory or gitlink change. Port only the reviewed resource ownership/acknowledgement-loss behavior needed by this runner, with RED/GREEN for uncertain CREATE/SET, before-create failure, pre-existing resource preservation and cleanup-query errors. No new cross-runner common framework. Advance BFF runtime input to accepted `5ea4440941ed65c424fffb0ae834e67b2ae93e74`, preserving precise wrong-SHA rejection, so real validation uses the available pushed child. Root reruns tests and the exact eight-case CLI before independent two-file commit. Task11 then integrates the new composition and does not duplicate this completed pin repair.
 
 ### Task 11: Integrate Scheduler and activate two edges
 
