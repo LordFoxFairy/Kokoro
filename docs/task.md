@@ -112,8 +112,8 @@ commit：<子仓 SHA；Root 集成后再补 Root SHA>
 
 | ID | 目标 / 状态 | Owner / Agent / 模型 | 基线 / 范围 / 验证 / 交付 |
 | --- | --- | --- | --- |
-| W1A-1 | 发布用户session admission；进行中（文档门） | IAM / w1_iam_owner_auditor / gpt-5.6-sol high；Root审查 | main35d868a4，绝对目录及精确文件集见当前计划；P1/P2盘点完成，682测试基线；不写Root/BFF/Web/schema；真实撤销矩阵+全门；Root唯一Git提交人 |
-| W1A-2 | Root review/组合；待派工 | Root主控 + 独立审查 | 依赖W1A-1停写交付；计划Task2精确Root集成范围，edge状态不变，main-only/remote/clean真实审计 |
+| W1A-1 | 发布用户session admission；已验收（owner代码/consumer；Root组合待完成） | IAM / w1_iam_owner_auditor / gpt-5.6-sol high；Root审查 | main35d868a4，绝对目录及精确文件集见当前计划；P1/P2盘点完成，682测试基线；不写Root/BFF/Web/schema；真实撤销矩阵+全门；Root唯一Git提交人 |
+| W1A-2 | Root review/组合；待集成验证（提交/发布审计） | Root主控 + 独立审查 | 依赖W1A-1停写交付；计划Task2精确Root集成范围，edge状态不变，main-only/remote/clean真实审计 |
 
 ## 7. 核心聊天体验验收矩阵（P2 盘点，不是完成证据）
 
@@ -125,5 +125,9 @@ commit：<子仓 SHA；Root 集成后再补 Root SHA>
 | 工具与HITL | mapper/多项staging有代码，主要fake测试 | 工具输入/进行中/结果、全部pending一次resume、刷新与重复审批、权限负例 | W3/W4 |
 | 附件/产物 | 输入消息无attachment字段；文件展示主要fixture | 私有上传/扫描/下载、产物关联与恢复、同tenant他人拒绝、显式分享撤销 | W2/W4 |
 | 编辑/重新生成 | 当前未实现，不能当现有能力 | 单独冻结branch/重生成语义与幂等、历史，后续契约切片实施 | W4 |
-| 隐私 | BFF chat repository已有owner predicate；未证明所有边界 | 同tenant A/B 与跨tenant列表/详情/事件/控制/文件/项目负例全通过 | W1/W2/W4 |
+| 隐私 | BFF chat已有owner predicate；Project查询/缓存、ScheduledTask列表仅tenant，尚未个人隔离 | 同tenant A/B 与跨tenant列表/详情/事件/控制/文件/项目负例全通过 | W1/W2/W4 |
 | 浏览器体验 | Playwright主要preview/login/axe/viewport | live聊天桌面/移动端、键盘IME、loading/error/partial/disabled、无障碍与恢复 | W4/W7 |
+
+W1A-R：只读规格/质量审查，由 `w1a_task_reviewer`（gpt-5.6-sol/high）执行；范围为 IAM 基线35d868a4至冻结43文件，manifest/diff位于本计划scratch；不写代码/Git，不启动共享服务。Root并行复跑owner门，审查报告后统一裁决。
+
+W1A-F：最终组合只读审查，由 `w1a_final_reviewer`（gpt-6-astra/high）执行；范围为Root当前计划集成diff与IAM35d868a4→30f7dbf两提交，重点consumer发布证据、gitlink/inventory和未完成边界；不重跑owner全门、不写仓库、不改index。

@@ -4,7 +4,7 @@
 
 ## 当前已接收组合
 
-W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；提交后 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计全部通过。下表是该集成 commit 的 gitlink 组合；后续状态以 task/progress 与新审计为准，工作区 checkout 本身不是组合证据。
+W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；提交后 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计全部通过。本次 W1A 仅前移 IAM owner release，其他 owner 保持 W0B 组合；下表为本切片组合，Root 集成与发布状态以 task/progress 的新审计为准，工作区 checkout 本身不是组合证据。
 
 | Root 路径 | 子仓 SHA |
 | --- | --- |
@@ -12,7 +12,7 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `apps/kokoro-bff` | `c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
-| `apps/kokoro-iam` | `35d868a410c06731362bd1e8bcc3e602d01875f8` |
+| `apps/kokoro-iam` | `259a66e6a569889c030734f380e99685d8b9e21c` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `9c88d0d934387b590bc74dae0179a587292e0253` |
@@ -27,6 +27,7 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 
 ## 当前已验证的代码与组合能力
 
+- IAM `259a66e…`（代码 `54d0d5f…`，后续仅文档）：session admission OpenAPI/SDK0.2.0已验收；Root重跑701标准、174真实integration与release仓外consumer2项通过，所有撤销/孤儿/no-store负例通过。只有用户会话/成员准入，不授予BFF资源权限；BFF/Web尚未消费，IAM edges保持broken。
 - Capability runtime `9c88d0d…`：显式typed监听地址，源码默认loopback、Docker显式wildcard；release空库先安装再persisted check；两个Serializable探针suite物理隔离，标准并行853测试通过、0跳过。
 - BFF `c5e9b3c…`：已使用Capability与Scheduler固定artifact/generated client；Scheduler control、专用持久receipt/CAS和恢复链已接通。Storage旧HTTP/配置/parser/mock成功数据及孤儿200类型已删除；认证后的Library当前只返回明确503且零Storage socket，不等于Storage功能完成。
 - Scheduler `975dee59…`：新键同名create冲突以409写入持久receipt并可重启重放；普通/race各139项的owner验收见progress。

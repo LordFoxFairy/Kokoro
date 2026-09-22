@@ -78,6 +78,8 @@ test/integration/session-authorization-http.test.ts
 IAM目录内修改：
 
 ```text
+src/http/application.setup.ts
+src/http/internal-api.openapi.ts
 src/modules/auth/oauth/oauth.constants.ts
 src/modules/auth/better-auth/better-auth.config.ts
 src/modules/auth/oauth/clients/oauth-client.schema.ts
@@ -120,10 +122,10 @@ SDK package仅版本0.2.0，engines保留>=24<25；internal OpenAPI升0.2.0，�
 
 **接口：** 消费已有InternalAuthGuard/PrismaService及IAM事实；产出上述唯一operation + `IamClient.verifySessionAuthorization(options?: IamCallOptions)`，无request参数，返回`IamResponse<SessionAuthorizationResponse>`。固定生成函数/response schema由operationId推导；业务层不手写一份wire DTO。
 
-- [ ] 先把TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL写为一致目标，明确当前不存在endpoint；运行既有contract/schema静态门，向Root发送绝对路径、基线、未决项和命令结果后等待文档门放行。文档门期间不写runtime。
-- [ ] TDD：先写新operation/guard/service/SDK/真实HTTP负例，确认旧基线404/缺少新方法使所需断言失败；非import缺失之外至少一次真正HTTP行为RED。
-- [ ] 最小实现：user-only Guard passage、无body/query拒绝；本模块service/current-facts repository；不新增API身份输入、不复用permission checker充当admission。
-- [ ] 单元与真实HTTP固定以下断言形式，fixture沿用本仓真实issuer发行token，不mock签名/DB成功：
+- [x] 先把TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL写为一致目标，明确当前不存在endpoint；运行既有contract/schema静态门，向Root发送绝对路径、基线、未决项和命令结果后等待文档门放行。文档门期间不写runtime。
+- [x] TDD：先写新operation/guard/service/SDK/真实HTTP负例，确认旧基线404/缺少新方法使所需断言失败；非import缺失之外至少一次真正HTTP行为RED。
+- [x] 最小实现：user-only Guard passage、无body/query拒绝；本模块service/current-facts repository；不新增API身份输入、不复用permission checker充当admission。
+- [x] 单元与真实HTTP固定以下断言形式，fixture沿用本仓真实issuer发行token，不mock签名/DB成功：
 
 ```ts
 const response = await fetch(`${fixture.baseUrl}/internal/v1/session-authorizations/verify`, {
@@ -140,18 +142,18 @@ expect((await verify(userToken)).status).toBe(403);
 ```
 
   还需覆盖：机器/operator、缺scope、body/query注入、伪造header不改变identity、invalidJWT/issuer/aud/expired、session删除/过期/错误user绑定、client删除/禁用/profile/scope/resource变化、user直接SQL删除遗留session/member、tenant不存在/disabled、membership移除、依赖503且不回退允许、refresh与会话撤销、no-store/request-id；数据库操作仅fixture拥有的库。
-- [ ] 正常generator更新OpenAPI/SDK，新增SDK方法设置retry=false；source/schema/contract/type与测试一致。
-- [ ] GREEN：从IAM目录，Node24.20.0 PATH，运行下一节完整命令并记录实际数量。标准测试基线682，不允许静默减少覆盖或skip绿色。
-- [ ] 停写交付文件清单、diff、RED/GREEN证据、资源回收与未完成项；由Root串行review/Git，不自行提交。
+- [x] 正常generator更新OpenAPI/SDK，新增SDK方法设置retry=false；source/schema/contract/type与测试一致。
+- [x] GREEN：从IAM目录，Node24.20.0 PATH，运行下一节完整命令并记录实际数量。标准测试基线682，不允许静默减少覆盖或skip绿色。
+- [x] 停写交付文件清单、diff、RED/GREEN证据、资源回收与未完成项；由Root串行review/Git，不自行提交。
 
 ## Task 2 — Root 独立审查、验证与集成（W1A-2）
 
 **Root精确文件：** gitlink apps/kokoro-iam、verification/contracts/consumer-inventory.json、相关固定pin回归 scripts/tests/test_contract_compatibility.py、本计划、docs/task.md、docs/progress.md、docs/CURRENT.md、docs/INDEX.md。其它Root脚本或edge checkpoint不改。
 
-- [ ] 审查绑定冻结IAM工作树hash与base；独立SPEC/QUALITY覆盖scope签发、身份绑定、撤销、无FK孤儿、异常与SDK生成/Node边界。需要修复时只回派IAM负责人。
-- [ ] Root在冻结代码重跑IAM同一完整门，确认资源清理；精确提交IAM业务+测试+文档自洽slice，push并验证live main。
-- [ ] Root提升IAM gitlink，将所有受影响IAM owner/evidence tuple刷新到新commit-blob/digest/version；不伪造任何未变artifact来源，不激活edge。BFF/Web仍未接线。
-- [ ] Root运行topology、w0b-exit精确4 active/12 broken/1 illegal、完整scripts/tests；static standard实际失败继续列明，不放宽规则。
+- [x] 审查绑定冻结IAM工作树hash与base；独立SPEC/QUALITY覆盖scope签发、身份绑定、撤销、无FK孤儿、异常与SDK生成/Node边界。需要修复时只回派IAM负责人。
+- [x] Root在冻结代码重跑IAM同一完整门，确认资源清理；精确提交IAM业务+测试+文档自洽slice，push并验证live main。
+- [x] Root提升IAM gitlink，将所有受影响IAM owner/evidence tuple刷新到新commit-blob/digest/version；不伪造任何未变artifact来源，不激活edge。BFF/Web仍未接线。
+- [x] Root运行topology、w0b-exit精确4 active/12 broken/1 illegal、完整scripts/tests；static standard实际失败继续列明，不放宽规则。
 - [ ] 精确提交Root并push；main-only/clean/live-main审计；W1A完成但W1与整体Goal不完成。后续 W1B BFF admission/generated consumer、W1C Web issuer/same-origin/CSRF、W1D已批准execution authorization；每片独立设计门。
 
 ## 验证命令与资源
@@ -180,3 +182,9 @@ IAM_TEST_ADMIN_URL=postgresql://nako@127.0.0.1:5432/postgres IAM_TEST_REDIS_URL=
 - 不阻断已完成W0B，也不重复其双smoke；Root只刷新本次IAM组合输入。
 - 现有Web无Auth.js事实与IAM文档目标态明确区分；后续只能按当前issuer contract收敛，不恢复旧API。
 - 无外键关系由查询与负例补偿，数据角色共用不改变owner隔离；不创建新schema或自研身份协议。
+
+## 审查修复 Round 1
+
+Root 接收独立审查的 no-store 缺口：Controller header 晚于 Guard/64KiB parser，错误响应缺少 no-store。允许仅扩展既有 HTTP 装配和错误 OpenAPI decorator 两文件，配置在 parser/guard 前生效的 session endpoint cache policy；保持其他 operation 行为不变。新增代表性 400/401/403/413/429/503 header 回归与所有错误响应机器契约断言；禁止手改生成文件。consumer 必须先有 Root 精确候选提交，再实跑 clean provenance 门，发布仍在所有门通过之后。
+
+Round2：Root真实probe要求缓存策略与Express实际接受的case/trailing-slash路由语义相同；复用框架matcher，不维护第二份字符串路径判定。错误header覆盖canonical与相同operation的路径变体，不调整其他路由策略。

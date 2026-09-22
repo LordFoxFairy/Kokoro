@@ -100,10 +100,10 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "35d868a410c06731362bd1e8bcc3e602d01875f8",
-        "contract_version": "0.1.0",
+        "repository_commit": "259a66e6a569889c030734f380e99685d8b9e21c",
+        "contract_version": "0.2.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
-        "contract_sha256": "b76903a274c708910a791b47beefbeb9094a3a38269e07112c084aecce7d2579"
+        "contract_sha256": "f7a3ea2e5ae7ade82ae1a6756a2f560d3129ca1b2977c6b0905633a284bd3aab"
       },
       "protocol": "http-openapi",
       "code_generator_version": "unmanaged",
@@ -921,10 +921,10 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "35d868a410c06731362bd1e8bcc3e602d01875f8",
-        "contract_version": "0.1.0",
+        "repository_commit": "259a66e6a569889c030734f380e99685d8b9e21c",
+        "contract_version": "0.2.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
-        "contract_sha256": "b76903a274c708910a791b47beefbeb9094a3a38269e07112c084aecce7d2579"
+        "contract_sha256": "f7a3ea2e5ae7ade82ae1a6756a2f560d3129ca1b2977c6b0905633a284bd3aab"
       },
       "protocol": "http-openapi",
       "code_generator_version": "unmanaged",
@@ -946,9 +946,9 @@
         },
         {
           "repository_path": "apps/kokoro-iam",
-          "repository_commit": "35d868a410c06731362bd1e8bcc3e602d01875f8",
+          "repository_commit": "259a66e6a569889c030734f380e99685d8b9e21c",
           "path": "docs/CURRENT.md",
-          "sha256": "49bd473c53c7089b664f089d4f65b7605cc7159e6e44c3bb31507f26590c3654"
+          "sha256": "646e109c2f538c19bd6fbbbe5f898be6eda165803847b5aada07d22f52dc0471"
         }
       ]
     },

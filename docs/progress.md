@@ -545,3 +545,23 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 当前执行计划切至Wave1A，发布user-only/no-body session admission与生成SDK；IAM SDK engines保持Node24，未来BFF从固定OpenAPI生成Node22client。暂不处理63operation授权/ADR005execution，不声称W1完成。
 
 - Wave1A 控制文档复验：Root handbook/topology 回归14 passed，topology PASS，Markdown本地链接与git diff --check通过。IAM三文档门已交原负责人续任，Root保留所有Git操作；本记录不代表运行实现完成。
+
+- 控制计划已提交并推送 `96a283db`；其上 Root 全量 `python3 -m pytest scripts/tests -q` →495 passed/0 failed/0 skipped，47.07s。
+- W1后续边界复核：BFF Chat已有owner predicate，但Project的list/find/update与Redis缓存key仅tenant维度，ScheduledTask列表也仅tenant；这些不是本次IAM identity endpoint能解决的权限，必须进入BFF资源授权切片，同tenant他人负例通过前不宣布默认私有闭环。Web session adapter已有Bearer转发，BFF当前仍只使用service secret+自报tenant/user headers；W1B需移除这条身份来源，并保留独立的Scheduler服务回调与显式只读share边界。
+
+- W1A三文档门通过：IAM TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL明确无body/query、user-only scope、只读RepeatableRead当前事实、无FK孤儿拒绝和Node24 SDK边界；Root核对BFF relay方向、普通header不扩展黑名单。Agent在基线35d868a4验证contract:check/prisma:validate通过，contract:breaking为0 error/400既有warning；仅三文档变化。Root已续派同负责人进入TDD实现，运行能力尚未验收。
+
+- W1A首次冻结41文件，Root独立复验format/lint/typecheck/contract+breaking/sdk/schema/build全部通过；标准82 files/701 passed（4.87s）、真实integration28 files/170 passed（25.70s），自有资源清理通过。独立审查0 Critical/1 Important/0 Minor：Guard/parser错误发生在Controller header前，缺no-store。已回派同负责人修复并增加错误header回归；未提交或发布IAM。consumer仍需clean候选提交后实跑，不绕过provenance门。
+
+- no-store修复首轮后Root真实HTTP探针发现相同缺口在框架接受的大小写/尾斜杠路径仍存在（401，cache header为null）；canonical路径已为401/no-store。已回派通过Express本身路由匹配统一前置策略，补变体400/401/413测试，不更改全局路由语义；探针私有DB/prefix已回收。
+
+- W1A实现已精确提交IAM `54d0d5f923c82e6145c71c6e9ea6eb571cc6713c`（43文件，未推送）。提交前最终冻结hash与提交内容一致，独立SPEC/QUALITY0/0/0；Root完整format/lint/typecheck/contract+breaking/sdk/prisma/build均通过，82 files/701标准测试（5.03s）、28 files/174真实integration（29.16s），no-store含路由变体全部覆盖。现在在clean候选提交运行仓外consumer，尚未宣布发布。
+
+- clean候选 `54d0d5f…` 的 `pnpm test:consumer` 已实跑2文件/2项通过（10.75s），包括仓外安装、编译和新method真实调用。Root接收owner交付后仅更正4份owner文档，形成文档release `30f7dbffa8bac3dc9b3a5a163babc3722384051a`；runtime/contract/test/SDK/lockfile字节不变，正在该release再核验consumer provenance。
+
+- IAM release `30f7dbffa8bac3dc9b3a5a163babc3722384051a` 的clean工作树consumer复验2文件/2项通过（11.19s）；仅文档相对54d0d5f发生变化，SDK/runtime/contract/test字节未变。Root现在提升IAM gitlink与3个commit-blob tuple，不修改任何edge状态或其它owner artifact。
+
+- Root组合门：topology PASS、w0b-exit精确4active/12broken/1illegal PASS，495 tests通过（42.55s）；static112violations/1unverified保持原事实。Markdown检查发现IAM技术文档两条既有Root手册相对路径失效，已在仅2行docs提交`259a66e6a569889c030734f380e99685d8b9e21c`修复，运行代码/contract/SDK与54d0d5f保持一致；最终组合改锁此文档release，不扩大业务范围。
+
+- 最终组合只读审查（gpt-6-astra/high）SPEC PASS、QUALITY Approved，Critical/Important/Minor=0/0/0；最终IAM259a66e gitlink、3个tuple、provenance及默认私有/BFF-Web未完成边界一致。新pin上Root全量495 passed（42.27s），checkpoint PASS；最终release仓外consumer2/2（11.25s），IAM HEAD=origin/main=live main且clean。资源基线仍为保留原2数据库、testkeys0。本轮没有运行真实BFF/IAM/Web浏览器组合或发布镜像，不以本片替代后续验收。
+- W1A-2代码与验证已就绪；Root最终提交和发布后main-only/clean审计随后执行，完成前保持待集成验证。整体Goal继续active，下一owner为BFF（IAM admission、权限/私有资源边界），其后Web；Billing最后。
