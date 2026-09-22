@@ -443,3 +443,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root在控制基线9e0fd859及相同七文件上独立复跑：双focused48/48（8.27s）、全pytest480/480（38.45s）、6文件Ruff format/check、4源码compile、diff-check全部通过；AST文件/函数门通过，冻结hash7/7匹配；w0b-capability checkpoint PASS。
 - Root真实精确CLI仍exit1：本机hostname仅192.168.1.4，loopback前置检查先于所有资源创建。PG自有smoke库/Redis harness为空；未扩大listener，不修改DNS/hosts，不激活双向edge。此切片保存已审查实现，但W0B-10状态只到“待集成验证”，不是已验收；Agent仍明确stub，Goal保持active。
 - 下一切片按已批准调度为独立W0B-5R，由新的Root smoke负责人单独写入四文件；Task10代码保持冻结，Task11仍等待两个真实CLI通过。Root继续拥有所有Git与最终质量放行。
+
+- W0B-10代码提交`cfaacbb50ec00180dbc34a44ed96096d1c53332c`已推送main；七个源码/测试/INDEX文件与独立审查冻结字节一致，Root仅剩两处计划中的子仓gitlink差异。未将代码提交冒作真实运行验收。
+- 派发W0B-5R：`w0b5r_capability_smoke_writer`（gpt-5.6-sol/high）独占Capability runner/runtime/pytest及scripts/INDEX四文件；Root保留控制账与Git。基线为上述Root提交，Task10所有源码冻结；新的同源故障修复先RED，真实8case、资源回收、独立审查和主控复跑之后提交。
+
+- 提交后Root治理诊断：topology exit1精确为BFF/Scheduler两个checkout领先冻结gitlink；ten-repository-standard exit1仍为112 violations/1 unverified，无门禁放宽。Task10提交未改变owner/inventory，w0b-capability仍为2 active/14 broken/1 illegal；后续Task11才提升组合。
