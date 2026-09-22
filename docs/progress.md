@@ -488,3 +488,30 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - BFF只读预检完成，基线`5ea4440941ed65c424fffb0ae834e67b2ae93e74` clean：真实死链、test-double假200与机器契约缺503均已定位。Root批准原13+7清理文件并扩`src/contracts/account.ts`共21文件；按未上线clean-slate删除不可达Library200及孤儿类型，不把未来设计伪装当前契约。三文档/机器门先于runtime，合成单次owner交付；W1/W2五项授权/scope/分页条件已写入任务验收栏，后续以最终BFF release绑定。预检报告Redis端口56380更正为实际共享6379/8；尚未派BFF写入。
 - 本次Root控制文档验证：本地Markdown链接PASS，handbook/checkpoint测试14 passed；当前topology exit1，精确三项为BFF/Capability/Scheduler checkout领先旧gitlink，待最终组合接收。
+
+## 2026-09-22 — Capability 监听与并行验收隔离闭环，接力 BFF
+
+- Capability交付`9c88d0d934387b590bc74dae0179a587292e0253`：19文件；唯一typed listener配置、默认127.0.0.1/显式Docker 0.0.0.0、release先apply后check；两个Serializable探针suite转为各自成功创建的随机canonical DB，内部真实竞争和原精确断言保留。新增fixture纳入标准format gate；无API/schema/dependency/lockfile变更，23机器blob一致。
+- 原listener审查及fixture增量最终均SPEC/QUALITY 0/0/0。Root独立fresh apply→persisted schema、format/lint/typecheck、标准并行`pnpm test` 75 files/853 passed/0 failed/0 skipped、contract/artifact/Prisma/build/production smoke全部PASS；compiled address断言IPv4/127.0.0.1。最后一行format清单补充仅复跑实际format门，原18文件hash保持；未重复不变全门。
+- Root新库`w0b_cap2b_root_bcb19dd76cb4`关闭后0连接、精确DROP并确认不存在；receipt/recovery两suite fixture数据库余量0。前一次852/1失败记录保留，不改写历史。未运行Docker候选或Root最终双smoke，不把owner验收冒充组合验收。
+- BFF下一窗口交给同仓预检负责人，Root批准22文件（在原21外补`contract/README.md`的未上线corrective-baseline说明，保持上线后breaking政策），先三文档/机器契约门，再删除运行链、mock200与孤儿类型；五个W1/W2前置已绑定任务栏，提交后再补最终BFF SHA。Root仍独占Git/组合文件，子仓单writer。
+
+- Root已完成5R最后小切片：Capability runner锁定已发布9c88d0d并覆盖继承wildcard HOST；2个RED后GREEN，旧105行fixture提取后所有函数≤100、两个文件≤800。定向39/全Root495通过，Ruff通过，独立luna SPEC/QUALITY 0/0/0。BFF仍在写入，暂不跑最终8case或冻结其新pin。
+- Root组合接收与edge激活分开记账：后续可把已验收子仓SHA/digest与真实broken原因一次更新，使组合可复现；Scheduler DNS条件尚不满足时保留2 active/14 broken/1 illegal，不冒称4/12/1，也不让这一环境条件阻断独立代码清理。
+
+## 2026-09-22 — BFF Storage删除已发布，最终双smoke真实通过
+
+- BFF `c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7` 已审查/推送main，22文件精确范围。Root独立复验format/lint/typecheck/build、contract21、architecture25、unit199、schema4、fresh PG+Redis integration35，0失败/0跳过；独立SPEC/QUALITY 0/0/0。OpenAPI digest为`173354c68ea8e7c606df8213c0a7605d510c46bb2dcc298245daff3c944df946`；schema/依赖/vendor/generated不变。Redocly无2xx warning如实保留，未保留假success契约。Root新库`w0b_bff14_root_9d67d5bf327d`0连接后精确回收。
+- W0B-13的五项前置正式绑定上述BFF同一commit：Storage default-deny caller×operation×scope、Capability scope mapping、Agent trusted Run/ExecutionIdentity mapping、BFF W1 IAM admission、Library per-kind/composite pagination。这里只完成交接，不冒称这些能力已实现。
+- 最终Capability9c88d0d/BFFc5e9b3c真实smoke **8/8 PASS**，DB、Redis前缀、进程组、临时文件全部回收；最终Scheduler975dee59/BFFc5e9b3c严格原CLI **11/11 PASS**，同样全部本次资源回收。当前hostname解析包含127.0.0.1，未改hosts/resolver、未扩大listener或CIDR。早前DNS失败记录保留；本次通过结束该环境阻碍。
+- 因最终双smoke已通过，执行原Task11两edge激活，不再停在前述partial-only方案；其余12 broken与唯一非法旁路保持不变。更新三gitlink、62个既有commit tuple、Scheduler generator/Node/Go及完整生成链证据、Storage明确503原因；BFF vendor来源仍7f89a267/92bf9e7，不伪造新生成。Root候选topology PASS，激活前495测试通过，激活后待冻结复验；静态审计仍112 violations/1 unverified。W0B-11/15/16待最终独立组合审查，不提前宣称全项目闭环。
+
+- 最终激活候选复验：`verify-contract-checkpoint.py --expected .../w0b-exit.json` PASS（精确4 active /12 broken /1 illegal）；Root完整测试495 passed、Ruff与diff检查通过；topology PASS。两条新Scheduler edge的generator/Node/Go版本断言亦独立执行PASS。下一步是绑定这一冻结候选的独立SPEC/QUALITY组合审查与提交后main-only审计。
+
+
+## 2026-09-22 — W0B 最终组合双审通过，进入提交后审计
+
+- 独立 SPEC `w0b_final_spec_reviewer` 与 QUALITY `w0b_final_quality_reviewer`（均 gpt-5.6-sol/high）绑定 Root 基线 `818bb300483f4f7b483fb02bd7f66624320e7b7d` 的冻结 9 文件 + 3 gitlink，均 PASS、Critical/Important/Minor `0/0/0`。
+- QUALITY 独立核验 144 引用实例 / 96 唯一 commit-blob tuple、16 条 owner contract digest 均一致，三子仓 live main 与 HEAD 相等；定向 154 tests、Ruff、topology 与 w0b-exit 通过。真实资源门由 Root 既有最终双 smoke 提供，不重复宣称 reviewer 运行了真实 smoke。
+- Root 收尾更正 Task6 的历史前置：它依赖当时 Task5 Capability smoke，不倒置依赖后来 Task10R/Scheduler；Task11 的最终双 smoke 门保持不变。这是计划文字纠错，不改变实现、edge 状态或验收门。
+- W0B-11/15/16 进入待集成验证；尚不预先证明 Root 已推送、全仓工作树 clean 或 main-only live audit。下一步按精确 12 路径提交集成、推送，再执行审计。

@@ -25,8 +25,8 @@ else:
 ROOT = Path(__file__).resolve().parents[2]
 BFF = ROOT / "apps" / "kokoro-bff"
 CAPABILITY = ROOT / "apps" / "kokoro-capability"
-BFF_RELEASE = "5ea4440941ed65c424fffb0ae834e67b2ae93e74"
-CAPABILITY_RELEASE = "7f89a267d745cbb9870f52d6edb23dec1a3c469b"
+BFF_RELEASE = "c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7"
+CAPABILITY_RELEASE = "9c88d0d934387b590bc74dae0179a587292e0253"
 
 
 def owner_request_count(
@@ -274,6 +274,7 @@ def _capability_environment(
         **base,
         "KOKORO_POSTGRES_URL": database_url,
         "KOKORO_REDIS_URL": redis_url,
+        "KOKORO_CAPABILITY_HOST": "127.0.0.1",
         "KOKORO_CAPABILITY_PORT": str(port),
         "KOKORO_CAPABILITY_SERVICE_TOKEN": rpc_token,
         "KOKORO_CAPABILITY_BFF_SERVICE_TOKEN": owner_token,

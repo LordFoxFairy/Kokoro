@@ -44,7 +44,7 @@ command_output, run_owned_command = (
 )
 stop_owned_process = _runtime.stop_owned_process
 
-BFF_RELEASE = "5ea4440941ed65c424fffb0ae834e67b2ae93e74"
+BFF_RELEASE = "c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7"
 SCHEDULER_RELEASE = "975dee59616a1e0eda609aa69283401344900d83"
 EXPECTED_CASES = (
     "control_create",

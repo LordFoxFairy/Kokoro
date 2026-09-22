@@ -385,8 +385,35 @@ def test_readiness_fixture_keeps_unexpected_handler_errors_observable(
     assert _request_threads_after(baseline) == []
 
 
+def test_capability_release_pin_rejects_every_other_sha(
+    tmp_path: Path, monkeypatch
+) -> None:
+    accepted = "9c88d0d934387b590bc74dae0179a587292e0253"
+    assert smoke.CAPABILITY_RELEASE == accepted
+    (tmp_path / "dist").mkdir()
+    (tmp_path / "dist" / "main.js").touch()
+    monkeypatch.setattr(runtime, "command_output", lambda *_args, **_kwargs: "0" * 40)
+    with pytest.raises(runtime.SmokeError, match="frozen smoke input"):
+        runtime.verify_release(tmp_path, accepted)
+
+
+def test_capability_environment_overrides_inherited_wildcard_host() -> None:
+    inherited = {"KOKORO_CAPABILITY_HOST": "0.0.0.0"}
+    actual = smoke._capability_environment(
+        inherited,
+        "postgresql://localhost/owned",
+        "redis://localhost/6",
+        41001,
+        "http://127.0.0.1:41002",
+        "rpc-fixture",
+        "owner-fixture",
+    )
+    assert actual["KOKORO_CAPABILITY_HOST"] == "127.0.0.1"
+    assert inherited == {"KOKORO_CAPABILITY_HOST": "0.0.0.0"}
+
+
 def test_bff_release_pin_rejects_every_other_sha(tmp_path: Path, monkeypatch) -> None:
-    accepted = "5ea4440941ed65c424fffb0ae834e67b2ae93e74"
+    accepted = "c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7"
     assert smoke.BFF_RELEASE == accepted
     (tmp_path / "dist").mkdir()
     (tmp_path / "dist" / "main.js").touch()
@@ -491,11 +518,7 @@ def test_process_cleanup_stops_child_after_leader_exits() -> None:
             pass
 
 
-def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
-    monkeypatch,
-) -> None:
-    events: list[str] = []
-
+def _midflight_resource_type(events: list[str]) -> type[runtime.OwnedResources]:
     class FakeResources(runtime.OwnedResources):
         def __init__(self, *_args: object) -> None:
             self.redis_key_present = False
@@ -544,6 +567,14 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
             super().verify_clean()
             events.append("verify-clean")
 
+    return FakeResources
+
+
+def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
+    monkeypatch,
+) -> None:
+    events: list[str] = []
+
     processes = [
         SimpleNamespace(pid=101, name="capability", poll=lambda: None),
         SimpleNamespace(pid=102, name="bff", poll=lambda: None),
@@ -555,7 +586,7 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
         "node_environment",
         lambda *_args: (Path("/fake/node"), {}),
     )
-    monkeypatch.setattr(runtime, "OwnedResources", FakeResources)
+    monkeypatch.setattr(runtime, "OwnedResources", _midflight_resource_type(events))
     monkeypatch.setattr(runtime, "distinct_ports", lambda _count: [41001, 41002, 41003])
     monkeypatch.setattr(runtime, "install_schema", lambda *_args: None)
     monkeypatch.setattr(
