@@ -448,3 +448,14 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 派发W0B-5R：`w0b5r_capability_smoke_writer`（gpt-5.6-sol/high）独占Capability runner/runtime/pytest及scripts/INDEX四文件；Root保留控制账与Git。基线为上述Root提交，Task10所有源码冻结；新的同源故障修复先RED，真实8case、资源回收、独立审查和主控复跑之后提交。
 
 - 提交后Root治理诊断：topology exit1精确为BFF/Scheduler两个checkout领先冻结gitlink；ten-repository-standard exit1仍为112 violations/1 unverified，无门禁放宽。Task10提交未改变owner/inventory，w0b-capability仍为2 active/14 broken/1 illegal；后续Task11才提升组合。
+
+- Root另行执行live只读分支审计（Task5R写入期间快照）：主仓+11个submodule共12仓，本地分支与远端heads均只有main，12/12 HEAD与live origin/main一致；11子仓全部clean。Root当前差异仅本轮工具/控制变更及两处尚待Task11提升的gitlink，故不宣称整个工作树已clean。审计不fetch、不删除分支、不操作worker索引。
+
+## 2026-09-22 — W0B-5R主控复验与新隔离前置
+
+- Root冻结四文件后独立focused34/34、全Root488/488（41.30s）、Ruff/compile3/3/diff通过；真实Capability/BFF CLI exit0、8case，随后自有PG/Redis/进程/临时资源均已回收。BFF与Capability子仓仍clean。
+- Root另查到Capability `src/main.ts:190`硬编码listen 0.0.0.0：runner访问127不等于owner只监听127。此前“owner进程loopback”描述不准确；本次功能8case通过也不满足该隔离验收。自有进程已结束，暂停继续执行该真实CLI；新增W0B-2B owner监听配置切片，先做三文档/代码/测试只读审计，再由Root决定最小配置变更。
+- 5R独立sol reviewer另复现一个Important：prefix存在非ownership key但无marker时仍可SET claim，cleanup会删除预存key。Root接受并准备原writer Fix1；这是四文件范围内问题，不靠随机ID碰撞概率豁免。Root定位Task10 harness同源路径，登记独立W0B-10R，只修该残留，不重复已验收deadline工作。
+- Task5R未验收/未提交；Task10只完成代码审查保存，仍待DNS条件及10R补验；Task11新增两项前置，继续不激活edge。Goal active，本轮已有owner7R2、Task10代码提交及故障验证进展，不宣称整体完成。
+
+- 5R最终fresh review为SPEC/QUALITY fail0/1/1：除markerless预存prefix被删除外，partial-header清理虽无线程残留，仍打印预期BrokenPipe teardown traceback。Root退回原writer Fix1：前置exact-prefix inventory fail-closed、仅收敛owned shutdown的预期socket错误且保留异常错误可见；原四文件，不动Task10/child。真实CLI因Task2B前置暂停，先完成故障代码审查；Root派sol只读owner监听审计并行提供三文档/最小配置建议，尚未授权child写入。

@@ -294,9 +294,9 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 
 ### Task 6: Integrate and activate `EDGE-BFF-CAPABILITY`
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
-**Exact files:** modify gitlink `apps/kokoro-bff`; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`. Capability gitlink is unchanged unless Task 2 created a separately reviewed/pushed owner commit.
+**Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`. Capability gitlink is unchanged unless Task 2 created a separately reviewed/pushed owner commit.
 
 1. Lift only pushed child SHA and refresh every BFF fan-out reference/digest.
 2. Pin all request-edge evidence listed in §4; set only `EDGE-BFF-CAPABILITY` active with npm generator assertion and BFF `.node-version` runtime assertion.
@@ -498,11 +498,23 @@ Task10 reviewer read-only confirmed the same CREATE failure path in the already 
 | Cleanup and deleted paths | Retain attempted resource identities across lost acknowledgements; reconcile proven ownership, fail closed when inventory is unknown, continue independent cleanup after another resource fails. Track and stop readiness sockets/handlers on all context exits; remove old definitions/imports, retain accepted behaviors. |
 | Gates/commit | RED for applied-then-lost CREATE/SET, before-create failure, pre-existing resources, unknown cleanup query, partial-header handler on exit; preserve original26 and8 real cases. Full Root pytest, Ruff/compile, exact eight-case CLI and independent review; new code files≤800/functions≤100 with cohesive decomposition. Root sole index/commit/push; no unrelated formatting/owner changes. |
 
+### Task 5R — Fix Round1
+
+Frozen review is SPEC/QUALITY fail0/1/1. Same original writer and four-file scope only. I1: before claiming, validate the exact Redis prefix inventory and reject any pre-existing key (including non-marker keys) without SET/UNLINK; unknown inventory fails closed. Retain acknowledgement-loss reconciliation, before-create failure, marker preservation and independent cleanup. M1: contain only expected socket exceptions from owned readiness teardown, keep unexpected handler errors observable, and test quiet stderr plus no remaining handlers. Add RED then focused/full/static GREEN; no code beyond the four approved paths. The independent Task2B wildcard owner baseline blocks further real eight-case CLI until owner release/pin/explicit loopback environment is updated by a later authorized step. Do not quietly rerun the old wildcard owner or count old eight-case output as final isolation acceptance. Stop and freeze for original scoped reviewer; Root owns Git/controls. Task10 mirror is separate Task10R, not this writer's scope.
+
+### Task 2B: Capability owner listener isolation prerequisite
+
+Root found `apps/kokoro-capability/src/main.ts:190` hard-coded `0.0.0.0`, so the successful Task5/5R functional CLI was not proof of loopback-only owner binding. All owned processes are stopped. Do not repeat that CLI until this prerequisite closes. First a read-only owner audit checks the current three documents, config/main entry, bootstrap test helpers and every real listener involved in the relevant verification. Root then fixes the minimum configuration decision and exact write set before dispatching a child writer. No API/schema/dependency/Platform identity change is proposed. Compare preserving the existing deploy bind default with an explicit numeric-loopback override versus changing the default and deployments; identify tests that can go RED without opening a wildcard listener. Root retains the overall decision/Git; auditor may write only its scratch report. Owner code plus docs/test release must be independently reviewed and actually verify the bound address before Root updates Task5R runtime pin/explicit loopback env. Refresh all affected Capability runtime evidence/gitlink in Task11; owner contract artifact provenance remains truthful if bytes do not change.
+
+### Task 10R: Scheduler harness pre-existing-prefix protection
+
+Task5R review exposed a sibling defect in the committed Task10 harness: GET of the ownership marker alone does not prove the whole prefix was absent. A pre-existing non-marker key must never be adopted and removed by cleanup. After Task5R fixes this exact behavior and stops writing, dispatch a separate two-file Root slice (`scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/tests/test_scheduler_bff_smoke.py`), preserve deadline/HTTP files and owner releases. Use RED/GREEN for markerless pre-existing key preservation and unknown prefix inventory; assert no SET/UNLINK for rejected pre-existing data. No shared framework, no native Scheduler-key prefix scan or cleanup, no owner/network change. This is a follow-up to original Task10 ownership review, not a restart of the deadline fix loop. Apply fresh higher-tier reviewer/implementer judgment as required by the existing fix-loop history; record separately and review before Task11.
+
 ### Task 11: Integrate Scheduler and activate two edges
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
-**Exact files:** modify gitlink `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage; update `scripts/tests/test_contract_compatibility.py` for the Task7R2 Scheduler runtime release pin.
+**Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage; update `scripts/tests/test_contract_compatibility.py` for the Task7R2 Scheduler runtime release pin.
 
 1. Lift pushed child SHA(s) and refresh every fan-out reference/digest. Advance the existing Capability smoke BFF release input to the accepted consumer SHA; preserve exact-SHA rejection and run its unit gate plus real smoke against the new combination.
 2. `EDGE-BFF-SCHEDULER`: pin BFF generated control/npm generator/BFF `.node-version`. `EDGE-SCHEDULER-BFF`: pin BFF generated webhook validator/route/test/npm generator/BFF `.node-version`; add Scheduler `go.mod` producer assertion. Both pin Scheduler owner blob. Keep `EDGE-SCHEDULER-AGENT` broken.
@@ -551,9 +563,9 @@ Task10 reviewer read-only confirmed the same CREATE failure path in the already 
 
 ### Task 15: Integrate the Storage deletion without activating Storage
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
-**Exact files:** modify gitlink `apps/kokoro-bff`, `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, both `scripts/e2e/run_capability_bff_smoke.py` and `scripts/e2e/run_scheduler_bff_smoke.py`, and `scripts/tests/test_capability_bff_smoke.py` and `scripts/tests/test_scheduler_bff_smoke.py`.
+**Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`, `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, both `scripts/e2e/run_capability_bff_smoke.py` and `scripts/e2e/run_scheduler_bff_smoke.py`, and `scripts/tests/test_capability_bff_smoke.py` and `scripts/tests/test_scheduler_bff_smoke.py`.
 
 1. Lift Task 14 BFF SHA and refresh all BFF fan-out commits/digests, including both smoke runners' BFF release inputs. Keep wrong-SHA rejection and verify the two runner unit suites before their real smoke gates.
 2. Keep `EDGE-BFF-STORAGE` broken; update its reason/evidence to the explicit W1/W2 dependency. No Storage state or owner pin changes.
