@@ -4,7 +4,7 @@
 
 ## 当前已接收组合
 
-下表是 W0B-11/15 已通过最终 SPEC/QUALITY 审查的组合（两者均 0/0/0）；子仓已完成 Root owner 复验和推送。Root 集成提交、推送及全仓 main-only/clean 审计结果见 task/progress；本文件所在集成 commit 的 gitlink 是冻结事实源，工作区 checkout 本身不是组合证据。
+W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；提交后 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计全部通过。下表是该集成 commit 的 gitlink 组合；后续状态以 task/progress 与新审计为准，工作区 checkout 本身不是组合证据。
 
 | Root 路径 | 子仓 SHA |
 | --- | --- |

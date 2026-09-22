@@ -515,3 +515,17 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - QUALITY 独立核验 144 引用实例 / 96 唯一 commit-blob tuple、16 条 owner contract digest 均一致，三子仓 live main 与 HEAD 相等；定向 154 tests、Ruff、topology 与 w0b-exit 通过。真实资源门由 Root 既有最终双 smoke 提供，不重复宣称 reviewer 运行了真实 smoke。
 - Root 收尾更正 Task6 的历史前置：它依赖当时 Task5 Capability smoke，不倒置依赖后来 Task10R/Scheduler；Task11 的最终双 smoke 门保持不变。这是计划文字纠错，不改变实现、edge 状态或验收门。
 - W0B-11/15/16 进入待集成验证；尚不预先证明 Root 已推送、全仓工作树 clean 或 main-only live audit。下一步按精确 12 路径提交集成、推送，再执行审计。
+
+
+## 2026-09-22 — W0B 已验收：主仓集成与 12 仓 live 审计闭环
+
+- Root 集成提交 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b`（`fix(integration): close Scheduler BFF edges and remove Storage dead path`）已推送。精确 9 普通文件 + 3 gitlink，无任务外变更；Task6 文字纠错及 4 控制文档收尾已由原 SPEC reviewer 增量复审，仍 `0/0/0`，其余 5 文件 + 3 gitlink 字节未变。
+- Root 提交前最后复验：`python3 -m pytest scripts/tests -q` → **495 passed / 0 failed / 0 skipped, 47.39s**；本次 4 Python 文件 `python3 -m ruff check`、`python3 -m ruff format --check`、`git diff --check` 与本地 Markdown 链接检查均 exit0。
+- 在上述已推送 SHA 上实跑：`python3 scripts/verify-main-only.py` → **PASS，Root + 11 submodules**；全部本地分支与 origin live heads 只有 `main`，工作树均 clean。另对 12 仓逐一执行 `git rev-parse HEAD`、`git rev-parse origin/main`、`git ls-remote origin refs/heads/main`，三个 SHA 全部相等。
+- 同一提交上 `python3 scripts/verify-repository-topology.py` → PASS；`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-exit.json` → PASS，精确 **4 active / 12 broken / 1 illegal**。只激活两条 Scheduler 边；Storage 与真实 Agent 边均未冒进激活。
+- 最终真实 smoke 命令使用 owned 临时 pnpm→corepack wrapper、现有 PG/Redis 实例与独占数据库/精确 prefix：
+  - `python3 scripts/e2e/run_capability_bff_smoke.py --postgres-admin-url 'postgresql://nako@127.0.0.1:5432/postgres?options=-csearch_path%3Dpublic' --redis-url redis://127.0.0.1:6379 --bff-node-bin /Users/nako/.nvm/versions/node/v22.22.2/bin --capability-node-bin /Users/nako/.nvm/versions/node/v24.20.0/bin` → exit0，8/8。
+  - `python3 scripts/e2e/run_scheduler_bff_smoke.py --postgres-admin-url 'postgresql://nako@127.0.0.1:5432/postgres?options=-csearch_path%3Dpublic' --redis-url redis://127.0.0.1:6379/7 --bff-node-bin /Users/nako/.nvm/versions/node/v22.22.2/bin --go-bin /opt/homebrew/bin/go` → exit0，11/11；Agent 为明确的 receipt stub。
+  - 两门绑定最终 BFF `c5e9b3c…`、Capability `9c88d0d…`、Scheduler `975dee59…`；全部自有资源已回收，没有修改 hosts/resolver 或放宽 loopback 边界。集成仅绑定已验证字节，不重复运行不变 owner 全门。
+- W0B-11/15/16 标记已验收。后续 owner：W1 IAM → BFF → kokoro-app；其后按批准设计推进 Storage、Platform、Agent、System，Billing 最后。112 条静态违规、1 项 System TypeScript 未验证、12 broken 与 1 illegal 仍是实际差距；镜像/全仓 E2E/SLO 未执行，不声称全项目完成。
+- 全局 Goal 的 Wave 0–7 目标未完成。本次工具查询仍返回旧 `blocked` 状态；原 DNS 阻碍已通过真实 CLI 消除，当前接口仅支持 complete/blocked/paused，无 resume 操作，因此未创建替代 Goal、未缩小目标或误标 complete。任务执行进度以本账与 task.md 为准。

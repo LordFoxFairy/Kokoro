@@ -49,12 +49,12 @@
 | W0B-5R | P0 | 修复Capability smoke同源资源/HTTP生命周期缺陷 | Root / `w0b5r_capability_smoke_writer` | W0B-10代码审查通过、writer停写 | 已创建DB/Redis确认丢失、预存保护、HTTP线程回收回归；新BFF pin；真实8case与清理通过，独立提交；最终9c88d0d/c5e9b3c监听前置及8case通过；105行fixture例外已关闭 | 已验收 |
 | W0B-2B | P0 | 补齐Capability owner显式监听地址与loopback验收 | Capability / `w0b2b_capability_listener_writer` | Root发现main.ts硬编码0.0.0.0 | runtime配置/入口/测试/docs一致；实际监听loopback；release先apply后check；修复Root复现的并行receipt fixture隔离；owner门通过；新release后consumer pin刷新（Root集成另计） | 已验收 |
 | W0B-10R | P0 | 修复Scheduler smoke无ownership marker的预存Redis prefix保护 | Root / `w0b10r_scheduler_prefix_writer` | W0B-5R同源审查 | 预存prefix无SET/UNLINK；未知inventory fail-closed；现有生命周期不退化 | 已验收 |
-| W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / integration 子 Agent | W0B-10、W0B-5R、W0B-2B、W0B-10R | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 待集成验证 |
+| W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / 主控 + 独立双审 | W0B-10、W0B-5R、W0B-2B、W0B-10R | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 已验收 |
 | W0B-12 | P0 | 冻结 BFF Storage fail-closed 与 W1/W2 前置 | BFF / `w0b12_14_bff_storage_preflight` 转任同仓实现 | W0B-2B 已验收；Root批准22文件与文档门 | `GET /v1/library` 固定 503；授权矩阵、IAM admission、scope/pagination owner 明确 | 已验收 |
 | W0B-13 | P0 | 将 Storage 前置绑定到 Root W1/W2 | Root / 主控 | W0B-12 | task/progress 记录 BFF docs SHA 与五项验收前置 | 已验收 |
 | W0B-14 | P0 | 删除 BFF `/internal/bff/library` 运行链 | BFF / 同一 Storage 子 Agent | W0B-13 | 不打开 upstream socket；旧 URL/config/projector 全删；BFF 全门通过 | 已验收 |
-| W0B-15 | P0 | 集成 Storage 死链删除但不激活 Storage | Root / integration 子 Agent | W0B-14 | 所有 BFF fan-out 更新；Storage edges 继续 broken；`w0b-exit` 与双 smoke 通过 | 待集成验证 |
-| W0B-16 | P0 | W0B 双审与证据冻结 | Root / 主控 + 独立审查 | W0B-15 | SPEC/QUALITY `0/0/0`；4 active / 12 broken / 1 illegal 精确门；Root/子仓 clean main-only | 待集成验证 |
+| W0B-15 | P0 | 集成 Storage 死链删除但不激活 Storage | Root / 主控 + 独立双审 | W0B-14 | 所有 BFF fan-out 更新；Storage edges 继续 broken；`w0b-exit` 与双 smoke 通过 | 已验收 |
+| W0B-16 | P0 | W0B 双审与证据冻结 | Root / 主控 + 独立审查 | W0B-15 | SPEC/QUALITY `0/0/0`；4 active / 12 broken / 1 illegal 精确门；Root/子仓 clean main-only | 已验收 |
 | W1 | P0 | IAM → BFF → Web 身份、授权与 same-origin 闭环 | IAM → BFF → Web，串行 | Wave 0 | admission、CSRF、tenant/actor/subject、越权负例与生成客户端通过；Storage消费必须先有BFF IAM admission | 待派工 |
 | W2 | P0 | Storage v2 完整命令、查询、幂等与数据闭环 | Storage → consumers | Wave 1 | Proto/runtime/generated drift、真实 PostgreSQL/ObjectStore、恢复测试通过；先固定default-deny caller×operation×scope、Capability scope与Agent可信ExecutionIdentity映射、Library分页，且依赖W1 admission | 待派工 |
 | W3 | P0 | `kokoro-capability` → `kokoro-platform` 原子切换 | Platform → Agent/BFF → Root | Wave 2、IAM workload auth | remote/path/package/service/env/Proto/数据库/Redis/consumer 同一窗口切换；旧身份删除 | 待派工 |
