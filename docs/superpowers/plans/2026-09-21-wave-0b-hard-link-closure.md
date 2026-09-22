@@ -330,6 +330,18 @@ W0B-7I Root 集成精确限于 Scheduler gitlink、`verification/contracts/consu
    ```
 4. Produce the read-only structured handoff. Any drift becomes a new owner task.
 
+### Task 7R2: Preserve durable duplicate-create outcomes in PostgreSQL
+
+**Owner/writer:** Scheduler / `w0b7r2_scheduler_conflict_writer` (gpt-5.6-sol/high); independent reviewer; Root owns Git and release acceptance. **Baseline:** `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-scheduler`, main `92bf9e7e6724c591bab4b7fa27f08d694b59a67e`, clean. Root control baseline `33ab25b44778a750b33a1c2bdcf154dac1dac1fc`; Task10 four-file draft is frozen and excluded from this slice.
+
+**Placement/document gate:** this is an existing PostgreSQL command adapter bug, not a new responsibility. `docs/TECHNICAL_DESIGN.md` §3 already requires durable already-exists outcomes, `docs/API_CONTRACT.md` §3/6 and `contract/openapi/v1/openapi.yaml` require replayable 409, and `docs/DATA_MODEL.md` §1/3/5 plus `database/schema.sql` name `uq_scheduler_schedule_tenant_name`. The three documents are consistent; their runtime implementation failed Root's real HTTP probe (200 then 500). No new schema, API, module or dependency is needed.
+
+**Exact files:** `internal/adapters/postgres/commands.go` and `test/integration/postgres_test.go` only. Record a real PostgreSQL RED for same tenant/name with a different key; fix the INSERT with targeted `ON CONFLICT ON CONSTRAINT uq_scheduler_schedule_tenant_name DO NOTHING RETURNING`, mapping `pgx.ErrNoRows` to the existing domain already-exists result. Delete the obsolete exclusive 23505 helper/import. Do not pre-SELECT, catch arbitrary errors or suppress unrelated constraints. Verify one Schedule, two durable receipts, service reconstruction and exact original result/request ID replay; add bounded concurrent new-key coverage in the same test file.
+
+**Resources/verification:** Root allocates an exclusive `kokoro_scheduler_test_w0b7r2_*` database with explicit public search_path; reuse Redis DB7, no shared resets. Run focused RED/GREEN, contract-check, gofmt check, vet, full test and race with zero skips, build and fresh schema/nonempty rejection. Root independently reviews and reruns on a separate fixture, then commits/pushes the two paths. Frozen OpenAPI/manifest/schema bytes must remain unchanged.
+
+**Dependencies:** Task10 writer has stopped and cleaned its resources. After this release is accepted, resume that same writer with the new runtime SHA, remove the diagnostic private 409 receipt injection, and prove natural duplicate-create 409 through BFF outbox. Task11 lifts Scheduler as well as BFF gitlinks and all runtime/evidence tuples, including the Scheduler pin regression. BFF's immutable owner artifact remains the original published release only if its bytes/version/digest still match; runtime release and artifact provenance are recorded separately, never rewritten as if generated from another commit.
+
 ### Task 8: Freeze BFF Scheduler design and owner artifact
 
 **Repository/writer:** BFF / `w0b8_bff_scheduler_designer` (`gpt-6-astra`, high). **Reviewer:** independent BFF design reviewer; Root integrates. **Start:** main `2ed792586e89c035155938078d9b07f33af95abd`, clean/live-remote aligned; Scheduler prerequisite accepted in Root `7c9e7abfbf8a4af36d7f039ec93f863dfc66b63f`. Root owns index/commit/push and control documents. No shared fixture access is required in this design-only slice.
@@ -407,7 +419,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 
 **Repository/writer:** Root / Root smoke subagent. **Reviewer:** fresh reliability reviewer.
 
-**Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/tests/test_scheduler_bff_smoke.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
+**Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/tests/test_scheduler_bff_smoke.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
 
 **Task 10 placement/design gate (Root, 2026-09-22):**
 
@@ -416,6 +428,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 | Owner/current facts | Root owns composition verification only. Existing Capability/System runners and Root pytest lifecycle tests are the pattern. BFF `5ea4440941ed65c424fffb0ae834e67b2ae93e74` and Scheduler `92bf9e7e6724c591bab4b7fa27f08d694b59a67e` are clean, pushed prerequisites; Root gitlink lift remains Task11. |
 | Responsibility/API | One explicit CLI proves the eleven existing control/receiver cases and returns bounded sanitized JSON evidence; no application API, Schema or owner change. |
 | Placement/granularity | Use `scripts/e2e/` plus `scripts/tests/`, matching current Root orchestration; reject a new `verification/e2e/` tree or putting a cross-owner runner in BFF because both duplicate/misplace the current Root responsibility. No new package/framework. |
+| Runtime split | A 1128-line draft triggers the Python size review. Split the same existing directory into the CLI/eleven-case runner and `scheduler_bff_smoke_runtime.py` for owned process/resource lifecycle, HTTP test fixtures and startup helpers; target each below 800 lines. Reject compressing code to meet a line count or introducing a cross-runner common framework. Tests import the module that owns the behavior; no production consumers or new package. |
 | Dependencies/lifecycle | Source-build the exact pinned owners, use their HTTP boundaries; own loopback processes/threads, temporary Go binary/logs, per-owner databases, deadlines and cleanup. No production sibling source import, service restart or blanket Redis cleanup. |
 | SQL/data | Apply each canonical schema to a new random database with explicit public search_path. Test harness may inspect/seed only those owned databases; BFF still never queries Scheduler SQL. Capture owner facts rather than simulate Scheduler dispatch. |
 | Redis ownership | Use real Redis DB7 for Scheduler and DB8 for BFF. Harness prefix is `kokoro:w0b:scheduler:<run>:`. Scheduler natively hashes `tenant_id + NUL + occurrence_id` to `kokoro:scheduler:dispatch:<sha256>` and has no prefix setting: before deleting databases, derive/register only exact keys from the run's private Scheduler occurrence rows with its nonce tenant, stop all owned processes, then verify/release only this allow-list. Never scan/delete the entire native prefix. This preserves native lease behavior rather than disabling Redis or changing an owner. |
@@ -438,9 +451,9 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 5. GREEN:
    ```bash
    python3 -m pytest scripts/tests/test_scheduler_bff_smoke.py -q
-   python3 -m ruff format --check scripts/e2e/run_scheduler_bff_smoke.py scripts/tests/test_scheduler_bff_smoke.py
-   python3 -m ruff check scripts/e2e/run_scheduler_bff_smoke.py scripts/tests/test_scheduler_bff_smoke.py
-   python3 -m py_compile scripts/e2e/run_scheduler_bff_smoke.py
+   python3 -m ruff format --check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/tests/test_scheduler_bff_smoke.py
+   python3 -m ruff check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/tests/test_scheduler_bff_smoke.py
+   python3 -m py_compile scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py
    # then the exact real CLI above; expected exit 0 and JSON {"status":"PASS","cases":11,...}
    ```
 6. Review; commit `test(e2e): add isolated Scheduler BFF smoke`; push.
@@ -449,7 +462,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 
 **Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer.
 
-**Exact files:** modify gitlink `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage.
+**Exact files:** modify gitlink `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage; update `scripts/tests/test_contract_compatibility.py` for the Task7R2 Scheduler runtime release pin.
 
 1. Lift pushed child SHA(s) and refresh every fan-out reference/digest. Advance the existing Capability smoke BFF release input to the accepted consumer SHA; preserve exact-SHA rejection and run its unit gate plus real smoke against the new combination.
 2. `EDGE-BFF-SCHEDULER`: pin BFF generated control/npm generator/BFF `.node-version`. `EDGE-SCHEDULER-BFF`: pin BFF generated webhook validator/route/test/npm generator/BFF `.node-version`; add Scheduler `go.mod` producer assertion. Both pin Scheduler owner blob. Keep `EDGE-SCHEDULER-AGENT` broken.

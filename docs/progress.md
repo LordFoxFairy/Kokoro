@@ -381,3 +381,13 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 负责人 `w0b10_scheduler_bff_smoke_writer`（gpt-5.6-sol/high）只写runner、runner自身pytest、scripts/INDEX三个文件。Root保留控制账、Git操作和独立验收；不得改owner、contract、Schema、inventory或gitlink。
 - 创建前放置表已加入当前计划Task10。Root发现Scheduler原生Redis lease使用tenant/occurrence摘要固定前缀而非可配置namespace；方案使用nonce tenant与独占DB证明归属、登记精确key并在进程停止后清理，禁止全前缀清除，也不通过禁用Redis缩小验收。
 - 本阶段验证真实Scheduler控制/派发→BFF receipt恢复；Agent只用明确stub。尚未运行新runner，不提前激活edge，Goal保持active。
+
+- W0B-10 worker已完成pytest RED（runner缺失导致预期collection ImportError、exit2）并写初稿；1128行触发Python职责复核。Root批准同目录增加唯一 `scripts/e2e/scheduler_bff_smoke_runtime.py`，拆出自有资源/进程生命周期与HTTP测试设施，runner保留11case/CLI/证据编排；测试文件不扩散。不靠压缩代码过行数门，也不新建common框架。Task10精确范围由3文件调整为4文件，Ruff/py_compile同步覆盖runtime。
+
+## 2026-09-22 — W0B-10 partial handoff / W0B-7R2 派发
+
+- Task10 writer已明确停写，四文件成果保留未提交；报告确认其进程、私有数据库及owned Redis keys已清理。首轮focused20/20及随后定向RED/GREEN只属于阶段证据，最终完整门禁仍待执行。曾输出11case PASS的诊断含私有409 receipt注入，因此不作为owner/Task10验收。
+- Root在独立新库、真实Scheduler HTTP上观察首次create 200、同tenant/name新key create 500 `scheduler_command_failed`。该探针误把首次成功期待为201，故命令exit1；保存的JSON由Root另行断言状态序列200/500，不把失败命令冒称通过。探针自有进程/数据库/临时文件已清理。只读owner auditor确认23505导致事务aborted，后续receipt写入25P02；此前135项全绿缺少此场景。
+- W0B-7R2归Scheduler现有PostgreSQL command adapter，三文档与canonical schema已明确可replay冲突语义；仅允许adapter及PG integration测试两个现有文件。实现Agent `w0b7r2_scheduler_conflict_writer`（gpt-5.6-sol/high），Root负责Git、独立审查和真实HTTP复验。没有schema/contract变更；Task10先等待本切片，整体Goal仍active。
+
+- W0B-7R2派工控制账Root复验：已接收Root测试（显式排除尚未交付Task10测试）432 passed in 25.45s；`w0b-capability` checkpoint PASS；diff检查通过。Root独立查询确认Task10数据库及其应用进程均无遗留。未运行Task10最终门禁，不计入本次432项。
