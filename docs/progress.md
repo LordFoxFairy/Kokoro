@@ -354,3 +354,23 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - 本轮控制账Root复验：checkpoint `w0b-capability` PASS；Root tests `432 passed in 34.83s`；topology exit1且仅BFF checkout/gitlink待W0B-11集成不一致；diff检查通过。既有109 violations/1 unverified是前次静态审计证据，本次未重测，不写成已清零。
 - 9V独占基线数据库和临时源码已精确删除，RED/GREEN日志保留；Task9 writer库和Root独立复验库仍保留用于本轮修复。未清理共享数据库/Redis。
+
+## 2026-09-22 — W0B-9 Fix Round 1 交付与复验
+
+- 原writer已停写，基线BFF `fd75dc92dbf0401a6d21cbdab13fe723dd6ccfe0`；修复原44路径内14文件，生成物/Schema/config/9V fixture均无额外变动。Root再次精确暂存44文件并冻结diff，未提交。
+- Root在自有独占PG库独立复跑：format/lint/typecheck/build均exit0；contract20/20、unit193/193、integration34/34、schema4/4，均0fail/0skip。新增PG+BFF HTTP+Agent stub覆盖finalize失败、receiver重建、原snapshot恢复与stale prepare零I/O，不冒称真实Agent事实。
+- 只读astra审查员已续派复审七项及修复回归，当前状态“待审查”。Root另检查DB返回/COMMIT延迟是否被lease预算扣除；在结论确认前不放行，Scheduler edge维持原状态。
+
+- Fix1复审仅余1项P2：预算采样后至repository返回的传输/COMMIT延迟被遗漏。Root真实PG注入6500ms确认延迟，返回预算59996ms、真实剩余53489.512ms，扣5000ms reserve仍超出。astra独立内存探针亦证实过期后仍发Agent请求。原writer续派Fix2，只改本地预算观测与两条接纳路径测试；其余原发现已关闭。
+
+## 2026-09-22 — W0B-9 最终验收与冻结
+
+- BFF实现release `5ea4440941ed65c424fffb0ae834e67b2ae93e74`（`fix(bff): align Scheduler control and event contracts`）已推送main，live远端一致、子仓clean。Root精确提交已审查44文件；9V独立commit `fd75dc9…` 未混入本切片。
+- writer `w0b9_bff_scheduler_writer`（gpt-5.6-sol/high），审查 `w0b9_scheduler_implementation_reviewer`（gpt-6-astra/high）。两轮修复后最终SPEC/QUALITY PASS、剩余发现0；预算query前单调观测随claim/prepare传递，覆盖DB/COMMIT/route返回耗时。审查员独立执行两条延迟负例2/2通过。
+- Root提交前与提交后各独立执行完整门禁：format/lint/typecheck/build均exit0；contract20/20、unit195/195、integration35/35、schema4/4，全部0fail/0skip。提交后重新创建Root独占空库，fresh install通过，非空重复apply按设计exit1。Schema、runtime config、package lock无本切片变化。
+- Root对同一6500ms COMMIT确认延迟故障重验：最终Agent预算48489ms、DB剩余53488.601ms，约5000ms settlement reserve完整保留；只操作Root独占库，自有探针行已清理。
+- 三文档实现状态已随release冻结：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/DATA_MODEL.md`。owner artifact仍固定Scheduler `92bf9e7e…`，BFF generated control/webhook边界与immutable receipt/snapshot真实PG恢复已验收。
+- Task9两个PG库现均已精确删除，连同之前清理的9V baseline库，共三个自有库无遗留；fixture env已移除，worker/reviewer均停写。未启停或清空共享PG/Redis。
+- 下一项W0B-10：真实Scheduler+BFF进程smoke，Agent只用明确标记的receipt stub；W0B-11再提升Root gitlink、刷新全fan-out与Capability smoke pin并激活双向edge。当前Root仍固定旧BFF组合，`2 active / 14 broken / 1 illegal`保持不变；真实Agent admission归W4，全局Goal保持active，不宣称整体闭环。
+
+- 本轮Root收尾实测：checkpoint `w0b-capability` PASS；Root tests `432 passed in 24.18s`；topology exit1仅BFF checkout与冻结gitlink不一致。静态规范审计现为 **112 violations / 1 unverified**，不是之前109：新增3条全部来自Task8引入的Scheduler原始vendor中 `/internal/scheduler/v1/schedules/{name}` 及pause/resume路径，被当前通用v1规则再次计入BFF。与前次109逐项对比无其他新增/消失；不删除vendor、不放宽规则或隐去红门，后续Root治理收敛owner/vendor归属与路径规则。
