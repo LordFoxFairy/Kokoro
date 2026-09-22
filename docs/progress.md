@@ -529,3 +529,19 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
   - 两门绑定最终 BFF `c5e9b3c…`、Capability `9c88d0d…`、Scheduler `975dee59…`；全部自有资源已回收，没有修改 hosts/resolver 或放宽 loopback 边界。集成仅绑定已验证字节，不重复运行不变 owner 全门。
 - W0B-11/15/16 标记已验收。后续 owner：W1 IAM → BFF → kokoro-app；其后按批准设计推进 Storage、Platform、Agent、System，Billing 最后。112 条静态违规、1 项 System TypeScript 未验证、12 broken 与 1 illegal 仍是实际差距；镜像/全仓 E2E/SLO 未执行，不声称全项目完成。
 - 全局 Goal 的 Wave 0–7 目标未完成。本次工具查询仍返回旧 `blocked` 状态；原 DNS 阻碍已通过真实 CLI 消除，当前接口仅支持 complete/blocked/paused，无 resume 操作，因此未创建替代 Goal、未缩小目标或误标 complete。任务执行进度以本账与 task.md 为准。
+
+
+## 2026-09-22 — 继续整体闭环，启动 Wave 1
+
+- 用户要求继续，核心聊天和 AG-UI/工具交互按真实可运行体验验收，不以 owner 单测替代浏览器端到端结果。
+- Goal 工具重新查询为 `active`，原整体 Wave0–7 目标继续沿用；不重建 Goal、不缩小完成定义。Root `136e12d7…` 工作树 clean。
+- 先进行三条明确责任的只读预检：IAM owner、Web 聊天/同源边界、主控 BFF admission；任务卡见 task.md §6。通过后由 Root 冻结精确计划，IAM owner 先发布，BFF/Web 顺序消费；Billing 仍最后。
+
+- 用户异步确认默认个人私有、显式分享。已写入批准设计 §1.1，要求列表/详情/搜索/AG-UI/审批/附件与产物逐边界授权；当前仅确认需求，尚未声称现有代码满足。
+
+- W1-P1/P2只读盘点结束；Root自跑IAM标准 `PATH=/Users/nako/.nvm/versions/node/v24.20.0/bin:$PATH corepack pnpm test` →80 files/682 passed、13.77s，0fail/0skip。未运行真实IAM资源门。
+- Web真实现状不是文档中的Auth.js/OIDC，而是旧magic-link/session HTTP +AES-GCM cookie；仍直连IAM。AG-UI入口已有，浏览器测试主要fixture，输入附件和编辑/重新生成缺失，reconnect状态未完整上抛。已将核心可运行验收矩阵写入task §7，避免用静态UI假装聊天闭环。
+- Root独立确认BA1.7.3 introspection查询当前client/session，却未校验session.userId与user存在；无FK下现hasMembership只查member行。W1A必须增加最小current-facts查询及孤儿/错绑定负例；不扩大成新身份系统或新增表。
+- 当前执行计划切至Wave1A，发布user-only/no-body session admission与生成SDK；IAM SDK engines保持Node24，未来BFF从固定OpenAPI生成Node22client。暂不处理63operation授权/ADR005execution，不声称W1完成。
+
+- Wave1A 控制文档复验：Root handbook/topology 回归14 passed，topology PASS，Markdown本地链接与git diff --check通过。IAM三文档门已交原负责人续任，Root保留所有Git操作；本记录不代表运行实现完成。

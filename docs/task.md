@@ -6,7 +6,8 @@
 
 - Goal：按已批准设计依次完成 Wave 0–7；Root 主控负责架构裁决、派工、双重审查、集成与最终验收，子 Agent 按 owner 逐仓实施；Billing 最后处理。
 - 设计事实源：[`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)
-- 当前执行计划：[`superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md`](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)
+- 当前执行计划：[`superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md`](superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md)
+- 已验收 Wave0B：[`superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md`](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)
 - 已验收计划：[`superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md`](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md)
 - 证据账：[`progress.md`](progress.md)
 - 本轮启动 Root 基线：`1bc74ae536d8a2da48f76045da95c2d5c2877750`
@@ -55,7 +56,7 @@
 | W0B-14 | P0 | 删除 BFF `/internal/bff/library` 运行链 | BFF / 同一 Storage 子 Agent | W0B-13 | 不打开 upstream socket；旧 URL/config/projector 全删；BFF 全门通过 | 已验收 |
 | W0B-15 | P0 | 集成 Storage 死链删除但不激活 Storage | Root / 主控 + 独立双审 | W0B-14 | 所有 BFF fan-out 更新；Storage edges 继续 broken；`w0b-exit` 与双 smoke 通过 | 已验收 |
 | W0B-16 | P0 | W0B 双审与证据冻结 | Root / 主控 + 独立审查 | W0B-15 | SPEC/QUALITY `0/0/0`；4 active / 12 broken / 1 illegal 精确门；Root/子仓 clean main-only | 已验收 |
-| W1 | P0 | IAM → BFF → Web 身份、授权与 same-origin 闭环 | IAM → BFF → Web，串行 | Wave 0 | admission、CSRF、tenant/actor/subject、越权负例与生成客户端通过；Storage消费必须先有BFF IAM admission | 待派工 |
+| W1 | P0 | IAM → BFF → Web 身份、授权与 same-origin 闭环 | IAM → BFF → Web，串行 | Wave 0 | admission、CSRF、tenant/actor/subject、越权负例与生成客户端通过；Storage消费必须先有BFF IAM admission | 进行中 |
 | W2 | P0 | Storage v2 完整命令、查询、幂等与数据闭环 | Storage → consumers | Wave 1 | Proto/runtime/generated drift、真实 PostgreSQL/ObjectStore、恢复测试通过；先固定default-deny caller×operation×scope、Capability scope与Agent可信ExecutionIdentity映射、Library分页，且依赖W1 admission | 待派工 |
 | W3 | P0 | `kokoro-capability` → `kokoro-platform` 原子切换 | Platform → Agent/BFF → Root | Wave 2、IAM workload auth | remote/path/package/service/env/Proto/数据库/Redis/consumer 同一窗口切换；旧身份删除 | 待派工 |
 | W4 | P0 | BFF / Agent / Scheduler 事实 owner、投影、outbox 与恢复闭环 | BFF → Agent → Scheduler | Wave 3 | Conversation/Message 唯一归 BFF；Run/Evidence 唯一归 Agent；调度重复投递可恢复 | 待派工 |
@@ -90,3 +91,39 @@ commit：<子仓 SHA；Root 集成后再补 Root SHA>
 未完成与风险：<明确列出>
 后续 owner：<仓库 / Agent / 主控>
 ```
+
+
+## 6. Wave 1 启动任务卡（2026-09-22）
+
+批准依据为整体设计 Wave1；Root 基线 `136e12d7f751b7b77c5a16f8a36fa1df32f97b50`。以下为已完成盘点的冻结任务卡；当前执行授权以 Wave1A 执行卡和精确计划为准，不扩展总架构或恢复 W0B 旧工作。
+
+| ID / 目标 / 优先级 | Owner / Agent / 模型 / 模式 | 基线与绝对工作目录 | 范围 / 依赖 / 验证 / 交付 |
+| --- | --- | --- | --- |
+| W1-P1：确认 IAM admission/workload 契约与 SQL 差距；P0 | IAM / `w1_iam_owner_auditor` / gpt-5.6-sol high / 只读，Root 审查 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam`；main `35d868a410c06731362bd1e8bcc3e602d01875f8`，clean | 读取三文档/contract/schema/身份代码与测试；不改文件/Git/基础设施；依赖批准设计和三大手册；输出精确 operation、缺陷证据、最小实现文件集及无破坏验证命令；Root 后续唯一提交人 |
+| W1-P2：核实 Web same-origin 与核心聊天验收面；P0 | Web / `w1_web_chat_auditor` / gpt-5.6-sol high / 只读，Root 审查 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app`；main `ce4e466c960c4b40a87a7be38b5a56f265f7a12f`，clean | 只读 session/CSRF/AG-UI/聊天/工具/审批/历史/附件/测试；排除 Mori；不改文件/Git/基础设施；与 P1 独立并行；区分真实、替身、缺失，输出浏览器验收矩阵与文件证据；Root 后续唯一提交人 |
+| W1-P3：确定 BFF admission 及交接边界；P0 | BFF + Root / 主控 / 当前模型 / 只读分析，Root 控制文档唯一 writer | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`；main `c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7`，clean | 核对 auth/routes/projection/contract 与真实 owner 依赖；P1/P2 完成后冻结 Wave1 精确实施计划；现阶段不改子仓，不启动共享服务 |
+
+验收方向：用户核心是可运行的完整对话体验。后续统一验收矩阵覆盖发送/流式/取消/重连/历史、结构化工具进度与结果、HITL 审批/恢复、附件/产物、错误与跨 tenant 隔离；W1 先交付可信身份入口，AG-UI/执行/Storage 完整闭环仍按 W2–W4 依赖实施。对照体验不等于宣称复制任何外部产品全部能力。
+
+用户已确认（2026-09-22）：聊天和文件默认个人私有，显式分享才开放。当前验收同时覆盖同 tenant 不同用户与跨 tenant 负例；Project/Share 不自动授予 Run control/HITL/未分享文件访问。详见批准设计 §1.1。
+
+
+### Wave1A 执行卡
+
+| ID | 目标 / 状态 | Owner / Agent / 模型 | 基线 / 范围 / 验证 / 交付 |
+| --- | --- | --- | --- |
+| W1A-1 | 发布用户session admission；进行中（文档门） | IAM / w1_iam_owner_auditor / gpt-5.6-sol high；Root审查 | main35d868a4，绝对目录及精确文件集见当前计划；P1/P2盘点完成，682测试基线；不写Root/BFF/Web/schema；真实撤销矩阵+全门；Root唯一Git提交人 |
+| W1A-2 | Root review/组合；待派工 | Root主控 + 独立审查 | 依赖W1A-1停写交付；计划Task2精确Root集成范围，edge状态不变，main-only/remote/clean真实审计 |
+
+## 7. 核心聊天体验验收矩阵（P2 盘点，不是完成证据）
+
+| 面 | 当前可验证代码事实 | 必须交付的真实闭环 | 后续owner |
+| --- | --- | --- | --- |
+| 身份入口 | Web旧magic-link直连IAM，无Auth.js/OIDC；CSRF缺Origin放行 | 当前issuer→BFF→Web同源，cookie/refresh/logout、无origin拒绝、身份撤销 | W1 IAM/BFF/Web |
+| 发送与流式 | 已有AgUiChatTransport和durable BFF Chat；现验收主要fixture | 真实用户发送→Agent执行→持久消息→逐帧UI；刷新后结果一致 | W4 BFF/Agent/Web |
+| 取消与恢复 | 本地stop、retry存在；UI缺完整queued/resuming/cancelling/reconnecting态 | 后台真正取消、竞态/重复、断网恢复、cursor过期回补，不生成重复消息 | W4 |
+| 工具与HITL | mapper/多项staging有代码，主要fake测试 | 工具输入/进行中/结果、全部pending一次resume、刷新与重复审批、权限负例 | W3/W4 |
+| 附件/产物 | 输入消息无attachment字段；文件展示主要fixture | 私有上传/扫描/下载、产物关联与恢复、同tenant他人拒绝、显式分享撤销 | W2/W4 |
+| 编辑/重新生成 | 当前未实现，不能当现有能力 | 单独冻结branch/重生成语义与幂等、历史，后续契约切片实施 | W4 |
+| 隐私 | BFF chat repository已有owner predicate；未证明所有边界 | 同tenant A/B 与跨tenant列表/详情/事件/控制/文件/项目负例全通过 | W1/W2/W4 |
+| 浏览器体验 | Playwright主要preview/login/axe/viewport | live聊天桌面/移动端、键盘IME、loading/error/partial/disabled、无障碍与恢复 | W4/W7 |

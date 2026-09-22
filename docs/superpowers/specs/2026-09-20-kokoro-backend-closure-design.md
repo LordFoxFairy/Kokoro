@@ -17,6 +17,17 @@
 7. 本地和 CI 共用一个 PostgreSQL 实例、一个应用角色与一套凭据；每个 owner 仍使用独立 database 或 schema。独立 production role、GRANT/REVOKE、mTLS 和 NetworkPolicy 属于部署阶段，不是本轮闭环门禁。
 8. 每个事实只有一个 owner 和 writer；服务只通过版本化 contract 访问其他 owner，不共享 ORM schema、SQL、业务 DTO 或源码。
 
+### 1.1 聊天与文件默认可见性（2026-09-22 用户确认）
+
+聊天与文件默认个人私有，只有显式分享/授权才开放。同一 tenant 是必要隔离范围，不是成员互相访问所有数据的授权。
+
+- Conversation/Message、历史列表/详情/搜索、AG-UI replay/live、附件与产物均执行 tenant + 资源 owner/显式授权检查；隐藏 UI 不替代服务端检查。
+- 放进 Project 不自动变成整个 tenant 可见；只有该 Project 的显式有效访问授权才可授予相应资源访问，具体继承范围在 owner 契约中固定。
+- 分享只授予声明的资源与动作；只读分享不授予继续聊天、取消 Run、审批工具或读取未分享文件的权利。
+- 取消、HITL 审批与恢复必须绑定可信 actor、Run/thread 及对应操作权限；不得只凭 session ID、cursor、share token 或 tenant 相同放行。
+- 验收必须有“同 tenant 不同用户”和“跨 tenant”两组负例，覆盖列表到事件/附件下载，且不泄漏不可见资源的存在性。
+- 当前实现可能仅有 tenant predicate；本决定是待落实的完成标准，不把它写成当前已完成能力。
+
 ## 2. `kokoro-capability` 当前状态
 
 当前尚未正式成为 Platform：
