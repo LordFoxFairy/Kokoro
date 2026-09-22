@@ -269,3 +269,11 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - W0B-7保持未验收：runtime/docs已有`409 schedule_already_exists`与`404 schedule_not_found`，但canonical OpenAPI只把`error.code`声明为无约束string，breaking policy与contract/handler tests也未保护两项稳定机器码；删除或改名时现有contract-check仍会误绿。另缺RFC3339Nano小数秒与复杂opaque idempotency key逐字传递证据。
 - 其余owner语义已核对一致：`/schedules/{name}`、tenant/schedule headers、408/425/429/5xx retry、四类PostgreSQL事实、无外键、transaction/outbox/claim expiry/recovery与Redis仅协调均无drift。
 - W0B-7R由单一Scheduler writer以TDD修复，限定7个contract/test文件，不改runtime、SQL schema、路径、header、owner或contract major；owner commit推送和fresh contract复审完成前不得启动W0B-8。
+
+
+## 2026-09-21 — W0B-7R 修复审查第 1 轮
+
+- 原7文件交付的机器错误码、manifest、Nano样本和handler映射通过审查；独立 reviewer 以真实 HTTP 证明合法 U+00A0 边界 key 被 handler/application 的两次 `TrimSpace` 改写，可能使不同 key 共用 durable receipt。SPEC/QUALITY 各有1项 Important，W0B-7R继续进行中。
+- Root 对旧7文件交付已做额外真实验证：独占临时数据库 + Redis DB 7 下 `go test -race -count=1 -json ./...` 为 `134 pass / 0 skip / 0 fail`（包含7 PostgreSQL、1 Redis与1真实进程重启smoke）；schema fresh install得到4表，二次安装正确拒绝，contract/vet/build/module verify/gofmt通过。该结果仅证明旧覆盖集，不消除审查发现的新回归缺口。
+- 首次空库验证受本机role的 `search_path=kokoro, pg_catalog` 影响而正确拒绝系统目录；第二次在本次独占连接URL显式指定 `search_path=public` 后通过。未更改全局role设置；两个本次临时数据库均已删除，Redis测试key无残留。
+- 范围已限定扩展为10文件：原7文件加 `internal/transport/http/handler.go`、`internal/application/commands.go`、`test/integration/postgres_test.go`。目标为原始HTTP field value与持久化幂等身份一致，不改其他身份处理、schema或依赖。Writer续任，先RED证明两层缺陷，再修复与独立复审；禁止以已有绿色测试放行。
