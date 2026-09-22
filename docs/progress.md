@@ -319,3 +319,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 当前计划Task9已加入专用receipt port/repository、现有pool装配、稳定Agent occurrence identity、独立identity算法/单测/PG测试和四文档状态同步。保留原Schema/通用public mutation实现，不新增owner/进程；generation、control与webhook边界仍沿既定方案。
 - Root暂不提升BFF gitlink：按计划待W0B-9实现、W0B-10 smoke后由W0B-11统一提升并刷新全部fan-out。当前Root checkpoint仍对已冻结组合PASS（2 active/14 broken/1 illegal）；topology实际exit1，仅`kokoro-bff: checkout HEAD differs from recorded gitlink`。不把这个有记录的待集成状态写成全仓clean或拓扑通过。
 - 本设计切片按Task8未运行完整runtime test、真实integration或db:apply-schema，也未重复Root全量tests；实际Root432项通过的最近冻结证据仍绑定`7c9e7abf…`。Goal保持active，下一步W0B-9。
+
+## 2026-09-21 — W0B-9 实现派发
+
+- 设计writer已停写；实现交接给 `w0b9_bff_scheduler_writer`（gpt-5.6-sol/high），BFF基线 `94a143cc545d74c2d3f518e3cafcc7f0eca0b450`，精确范围以当前计划Task9为准。Root继续独占Git index/commit/push与最终验证。
+- Root复用现有PG/Redis，只新建本任务独占空库 `kokoro_bff_test_w0b9_742c50e086d4a950`；显式public search_path，未改共享role，Redis复用DB8且禁止flush。该库由Root在worker停写及独立验证后精确清理。
+- Worker先RED后实现identity/generation/control/receipt/receiver，执行完整BFF门；Root随后独立审查及用另一独占库复验。当前仍在实施，不构成runtime或Scheduler双向edge验收。
