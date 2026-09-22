@@ -417,3 +417,14 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 独立astra reviewer以纯内存与自有loopback探针复现4 Important：CREATE/SET已生效但确认丢失后丢弃ownership、partial-body HTTP handler在context退出后仍alive、同task新run_id二次Agent调用被case误判PASS、go1.26.80/devel被子串版本检查放行。另有2个超100行函数（191/211）为Minor。reviewer所有探针连接/线程/临时目录已清理。
 - Root接受上述缺口并退回原writer Fix Round1，精确五文件不扩张；每项先补RED后修复，保持实际11case/严格cleanup/owner边界。456全绿和真实11case正常路径不替代故障验收。
 - 同源CREATE资源登记缺陷也存在已验收Capability runner（只读定位），新增W0B-5R两文件修复切片，排在Task10完成后、Task11激活前。它同时前移原本Task11负责的Capability smoke BFF pin以便真实8case验证；不改业务owner/contract或提前激活edge。Goal继续active，本回合已有Scheduler owner修复进展，不标记全局blocked。
+
+- W0B-5R只读预检补充：Root对Capability现有readiness fixture发出自有loopback partial-header，context返回后实测1个owned handler仍alive；关闭自有socket并join后0残留。该同源HTTP生命周期缺陷一并列入5R原两文件范围；没有修改Capability runner或共享基础设施。
+
+## 2026-09-22 — W0B-10 Fix1交付与网络边界复核
+
+- writer已停写：RED17 failed/26 passed，报告最终focused45/45、Ruff/compile、十一case真实CLI通过；源码函数均≤100行，文件均<800。Root冻结Fix1 delta后续派原reviewer定向复审，尚未验收。
+- Root发现writer另加未先申请的RFC1918 callback listener，以适应本机DNS变化；当前Root独立查询主机名仅解析192.168.1.4及link-local IPv6，原loopback条件已不成立。Scheduler出站/32 allowlist不等于listener入站peer限制；现实现缺少peer限制，Root未运行该新非loopbackCLI。已向用户询问是否允许仅本机peer的临时内网绑定，或保持loopback；在明确新边界前保留原隔离约束，不把worker扩大网络面的PASS作为接受证据。
+- Root仍继续不触及非loopback面的focused/全pytest/静态门，以及reviewer对I1–I4/M1的内存/loopback故障复验；Goal保持active，非停止全部推进。
+
+- Fix1 Root非扩面验证：focused45/45、全pytest477/477、Ruff/compile通过。独立复审关闭I1/I3/I4/M1，仅剩2 Important：慢速上游body绕过idle timeout使server_close无界join；RFC1918自动绑定且无入站peer限制。reviewer的6秒慢速body/peer模拟探针已全部清理。
+- Root派原writer Fix2：为全部proxy upstream I/O设置总期限/取消并有界join；撤回未经批准的RFC1918自动扩面，保留loopback/fail-closed并提前检查DNS。用户尚未答复网络边界问题，Root按既有批准约束推进，不等待回复才修其余质量缺口，不修改共享hosts/DNS。真实CLI若仍因本机DNS失败，应如实交付环境限制，Task10不冒称已验收。
