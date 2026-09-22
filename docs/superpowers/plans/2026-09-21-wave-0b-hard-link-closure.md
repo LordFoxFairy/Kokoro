@@ -8,6 +8,12 @@
 
 **Pinned toolchain:** BFF Node `22.22.2`, Capability Node `24.20.0`, pnpm `11.25.0`, TypeScript `5.9.3`, `@hey-api/openapi-ts` `0.99.0`, Zod `4.5.4`, Prettier `3.9.6`, Scheduler Go `1.26.8`, Root Python 3 + pytest + Ruff `0.15.2`.
 
+## Acceleration operating rule — 2026-09-22
+
+User requests faster code delivery and clean-slate removal of old code/compatibility. Prioritize coherent owner-level executable slices, not process-only microcommits: one writer, one frozen spec/quality review, one Root integration validation. Batch related corrections in the same approved file set; do not serially redispatch cosmetic or two-line changes as separate goals. Unchanged evidence is reused by commit/digest; only changed behavior receives focused re-review, while final owner/integration gates remain real and complete. No tests are weakened, no old route/alias/fallback/dual-write is retained, and incomplete functionality remains explicit rather than declared closed.
+
+Task12/14 BFF Storage cleanup will be prepared while Capability implementation runs (read-only investigation only). Its approved fail-closed/no-upstream behavior has no data dependency on Scheduler smoke DNS. Root may combine its existing document/code handoff into one BFF owner window after Capability, then batch Task11/15 gitlink, full fan-out and smoke pins once against the final owner releases. Task13's five W1/W2 prerequisites must still be recorded before BFF implementation; all real smoke/contract/owner gates remain required before activating edges. This changes scheduling/commit granularity, not owner or API/SQL decisions.
+
 ## 1. Global constraints
 
 1. Root begins at `bfa054f3cafe0e340a8e04d567bf923dbe03ee4e`. Every task records its actual start SHA, `main`, clean status, files, executor, reviewer, delivery SHA and remote SHA.
@@ -294,7 +300,7 @@ An active request edge pins: dependency manifest, vendor artifact, generator con
 
 ### Task 6: Integrate and activate `EDGE-BFF-CAPABILITY`
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/2BV/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
 **Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`. Capability gitlink is unchanged unless Task 2 created a separately reviewed/pushed owner commit.
 
@@ -521,11 +527,11 @@ The three owner design documents were converged by Root and pushed as `e956c62a4
 | Deletions | Remove hard-coded bootstrap bind; no aliases, DNS fallbacks, second server or compatibility path. |
 | Proof | RED config+real bootstrap mocked before any socket; then real compiled createRuntime server.address must be IPv4/127.0.0.1. Wildcard deployment is statically asserted, not locally started. Full owner gates/0skip, independent fresh DB schema+production smoke; Root reviews/repeats before final release pin. |
 
-Exact15 existing owner files: `src/config/runtime.ts`, `src/main.ts`, `test/smoke/smoke.test.ts`, `test/unit/runtime-lifecycle.test.ts`, `scripts/smoke-production.mjs`, `test/smoke/production-entry.test.ts`, `test/integration/production-composition.integration.test.ts`, `Dockerfile`, `test/architecture/deployment.test.ts`, `.github/workflows/release-image.yml` (listener env only), `.env.example`, `README.md`, `docs/RUNBOOK.md`, `docs/TECHNICAL_DESIGN.md`, `docs/CURRENT.md`. API/DATA are already converged and read-only now; no new file. Root owns Git/index/commit and excludes all Root files/other children from writer scope. If implementation needs another file, report before editing.
+Exact15 existing owner files: `src/config/runtime.ts`, `src/main.ts`, `test/smoke/smoke.test.ts`, `test/unit/runtime-lifecycle.test.ts`, `scripts/smoke-production.mjs`, `test/smoke/production-entry.test.ts`, `test/integration/production-composition.integration.test.ts`, `Dockerfile`, `test/architecture/deployment.test.ts`, `.github/workflows/release-image.yml` (listener env and fresh-schema ordering), `.env.example`, `README.md`, `docs/RUNBOOK.md`, `docs/TECHNICAL_DESIGN.md`, `docs/CURRENT.md`. API/DATA are already converged and read-only now; no new file. Root owns Git/index/commit and excludes all Root files/other children from writer scope. If implementation needs another file, report before editing.
 
-### Task 2BV: Release workflow schema ordering repair
+**Acceleration decision (2026-09-22, latest user request):** former Task2BV is absorbed into Task2B's same15-file owner delivery. In `release-image.yml` and `deployment.test.ts`, fix and test apply-before-persisted-check now, with the same owned fresh DB proof; do not stop for a separate two-line-task commit. This supersedes earlier instructions to defer that order correction. No additional file or dependency is authorized; wildcard candidate execution remains prohibited.
 
-A separate same-owner two-file slice after2B: `.github/workflows/release-image.yml` and `test/architecture/deployment.test.ts`. Under REQUIRE_REAL_INTEGRATION=1 a fresh DB must run db:apply-schema before schema:check. RED static ordering assertion, then minimum order correction; independent owned fresh DB demonstrates the successful sequence, without treating an unexecuted Docker/GitHub job as passed. No action/dependency/image upgrades. Root commits separately (`fix(ci): install schema before persisted verification`), then uses the final owner SHA in Task5R/Task11. This new known prerequisite is not silently included in the listener feature commit.
+**Root full-gate follow-up, same owner window:** standard parallel `pnpm test` independently reproduced one receipt-probe failure (852 pass / 1 fail / 0 skip). The original listener 15-file review is accepted but does not release the owner. Continue with the same writer: investigate cross-file PostgreSQL SSI interference in `test/integration/mcp-recovery-cas-postgres.integration.test.ts` and `test/integration/command-receipt-postgres.integration.test.ts`; use physically isolated owned fixture databases if confirmed, not serializing the gate or weakening exact rollback/retry assertions. Approved additional location is `test/fixtures/owned-postgres-database.ts` only if needed by both suites; test lifecycle must not enter production database components. `docs/CURRENT.md` records actual results. No production/API/schema/generated/dependency change is added. Root reviews the incremental fixture fix and independently repeats the complete gate before publishing.
 
 ### Task 10R: Scheduler harness pre-existing-prefix protection
 
@@ -533,7 +539,7 @@ Task5R review exposed a sibling defect in the committed Task10 harness: GET of t
 
 ### Task 11: Integrate Scheduler and activate two edges
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/2BV/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
 **Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage; update `scripts/tests/test_contract_compatibility.py` for the Task7R2 Scheduler runtime release pin.
 
@@ -545,6 +551,10 @@ Task5R review exposed a sibling defect in the committed Task10 harness: GET of t
 ---
 
 ## Chunk 4 — Delete dead Storage HTTP and freeze W1/W2 handoff
+
+**Root approved grouped handoff after read-only preflight (2026-09-22):** Tasks12/13/14 now form one BFF implementation window. Before runtime edits, converge the three owner documents and canonical contract, run contract/document gates, and send the gate evidence to Root. The five W1/W2 acceptance prerequisites are already recorded in Root task/progress; bind their final BFF SHA after the single reviewed code+documentation release, instead of issuing document-only child and Root commits. This replaces the earlier per-task commit sequence below, not the ordering of the design gate or real verification.
+
+The exact combined scope is the existing13-file union below plus canonical `contract/openapi/v1/openapi.yaml`, `.env.local.example`, `.env.prod.example`, `INDEX.md`, `docs/ACCEPTANCE.md`, `test/doubles/mock-route.ts`, `test/doubles/bff-store.ts`, and `src/contracts/account.ts` (21 existing files, no new directory). The actual canonical operation currently lacks503; add ErrorEnvelope with the exact `storage_integration_unavailable` code constraint. User-approved prelaunch clean-slate also removes the unreachable Library200 response and orphan LibraryResponse/LibraryItem schemas/type, rather than keeping a speculative future-success contract. Preserve the operation identity,403 admission and existing trace envelope; no global error-system or IAM rewrite. Live and explicit test composition both fail closed. Keep route recognition needed to reach the503 handler, but delete old outbound transport,parser,env and fake data. Negative regression literals in tests are intentional; do not weaken assertions to make a blanket grep pass. Storage edges remain broken until W1/W2 succeeds.
 
 ### Task 12: Freeze BFF Storage degraded behavior
 
@@ -584,7 +594,7 @@ Task5R review exposed a sibling defect in the committed Task10 harness: GET of t
 
 ### Task 15: Integrate the Storage deletion without activating Storage
 
-**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/2BV/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
+**Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer. Requires Task2B/10R and both real smokes accepted. Capability listener release gitlink and all affected fan-out must also be refreshed; do not falsify unchanged historical artifact provenance.
 
 **Exact files:** modify gitlink `apps/kokoro-capability` and `apps/kokoro-bff`, `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, both `scripts/e2e/run_capability_bff_smoke.py` and `scripts/e2e/run_scheduler_bff_smoke.py`, and `scripts/tests/test_capability_bff_smoke.py` and `scripts/tests/test_scheduler_bff_smoke.py`.
 

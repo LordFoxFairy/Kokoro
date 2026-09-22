@@ -477,3 +477,14 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 资源审计确认owner完整suite在显式独占PG URL、Redis URL及REQUIRE_REAL_INTEGRATION=1下目标0skip；Redis仅PING无flush。另发现release-image既有check→apply顺序在fresh DB错误，单列2BV沿同owner两文件独立commit，不能把旧workflow当fresh-install证据。
 
 - Root串行派发2B实现负责人 `w0b2b_capability_listener_writer`（gpt-5.6-sol/high），基线为已推送三文档提交`e956c62a4212d7b691f3678310a46fdd172f3b5b`，child clean。精确15既有文件；Root保留Git和跨仓控制。先无socket RED，再仅loopback实测；明确独占随机PG库、Redis只PING、full suite目标0skip。2BV顺序修复和Root pin/105行fixture收尾分别后置，未一并授予修改权。
+
+## 2026-09-22 — 按用户要求加速代码推进
+
+- 收敛为同owner完整实现窗口，减少只为过程记账的提交与重复全盘评审；保留冻结版本上的真实功能/隔离验收。用户明确未上线按clean-slate，删除被替代旧路径/协议/alias/fallback，不维护兼容双轨。
+- 原2BV两文件顺序修复并入正在执行的2B（仍原15文件），已通知writer，不另停一轮派工/提交；Root验收包含apply→persisted check实际证明。此前“另行提交2BV”安排由本决定替代。
+- 并行准备下一BFF Storage代码清理的只读检查，不让Scheduler本机DNS限制阻止独立代码工作。Root先核对Task12/14既定契约/文件范围，之后同BFF窗口处理三文档和删除死链；最终同一次组合更新pins/fan-out，避免多次无收益升级。尚未放宽任何edge激活门或修改网络边界。
+
+- 2B原15文件独立SPEC/QUALITY通过（0/0/0，15hash与23机器blob一致，定向36测试）；Root fresh apply/schema/format/lint/typecheck通过，但标准并行全门实测852 passed/1 failed/0 skipped：MCP real-P2034探针在预期rollback观察点前触发冲突。Root新库已精确回收；整体owner未放行。继续同owner窗口排查并修复两个receipt integration suite的资源隔离，保留真实并行与精确断言，不用重跑或串行化掩盖。
+
+- BFF只读预检完成，基线`5ea4440941ed65c424fffb0ae834e67b2ae93e74` clean：真实死链、test-double假200与机器契约缺503均已定位。Root批准原13+7清理文件并扩`src/contracts/account.ts`共21文件；按未上线clean-slate删除不可达Library200及孤儿类型，不把未来设计伪装当前契约。三文档/机器门先于runtime，合成单次owner交付；W1/W2五项授权/scope/分页条件已写入任务验收栏，后续以最终BFF release绑定。预检报告Redis端口56380更正为实际共享6379/8；尚未派BFF写入。
+- 本次Root控制文档验证：本地Markdown链接PASS，handbook/checkpoint测试14 passed；当前topology exit1，精确三项为BFF/Capability/Scheduler checkout领先旧gitlink，待最终组合接收。
