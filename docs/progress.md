@@ -565,3 +565,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - 最终组合只读审查（gpt-6-astra/high）SPEC PASS、QUALITY Approved，Critical/Important/Minor=0/0/0；最终IAM259a66e gitlink、3个tuple、provenance及默认私有/BFF-Web未完成边界一致。新pin上Root全量495 passed（42.27s），checkpoint PASS；最终release仓外consumer2/2（11.25s），IAM HEAD=origin/main=live main且clean。资源基线仍为保留原2数据库、testkeys0。本轮没有运行真实BFF/IAM/Web浏览器组合或发布镜像，不以本片替代后续验收。
 - W1A-2代码与验证已就绪；Root最终提交和发布后main-only/clean审计随后执行，完成前保持待集成验证。整体Goal继续active，下一owner为BFF（IAM admission、权限/私有资源边界），其后Web；Billing最后。
+
+## 2026-09-22 — W1A 最终验收
+
+- IAM代码 `54d0d5f923c82e6145c71c6e9ea6eb571cc6713c`；最终发布 `259a66e6a569889c030734f380e99685d8b9e21c`（后两提交只改文档）。Root集成 `a7585a97a2bf34eff33f2d20af3a46779aca1884` 已推送；仅1个gitlink、3个IAM证据tuple前移，所有edge状态保持原值。
+- 已发布Root提交上：`python3 scripts/verify-main-only.py` → PASS，Root+11子仓均clean且本地/远程只有main；额外逐仓核对HEAD=origin/main=live main，12/12相等。`verify-repository-topology.py` 与 `verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-exit.json` 均PASS，4active/12broken/1illegal。
+- 最终新pin Root回归：`python3 -m pytest scripts/tests -q` →495 passed/0 failed/0 skipped（42.27s）。IAM full静态/生成/构建门、701标准、174真实integration、最终release仓外consumer2均通过；完整实际命令与各次结果见本节之前记录及IAM CURRENT。独立任务审查与最终组合审查均0/0/0。
+- 静态全仓治理依旧112 violations/1 unverified（System TypeScript）；旧400条breaking warning保留，没有放宽门禁。真实BFF/IAM/Web浏览器E2E、模型provider、全仓镜像/SLO未验收；W1A不代表W1或完整聊天闭环。
+- W1A-1/2已验收；Goal工具确认active，整体Wave0–7未完成。后续owner为BFF，再Web；个人私有/显式分享、同tenant不同用户负例仍是后续资源授权硬要求，Billing最后。
+- 本计划scratch只保存过渡日志/报告；验收事实已固化到本账、task与owner CURRENT，收尾后删除本计划专属scratch，不触碰其他计划或预存数据库。

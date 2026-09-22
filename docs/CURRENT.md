@@ -4,7 +4,7 @@
 
 ## 当前已接收组合
 
-W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；提交后 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计全部通过。本次 W1A 仅前移 IAM owner release，其他 owner 保持 W0B 组合；下表为本切片组合，Root 集成与发布状态以 task/progress 的新审计为准，工作区 checkout 本身不是组合证据。
+W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；提交后 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计全部通过。W1A 已由 Root `a7585a97a2bf34eff33f2d20af3a46779aca1884` 集成并推送，仅前移 IAM owner release；12仓main-only/clean及HEAD=origin/main=live main已实测。下表为已验收组合，详细命令见task/progress；后续只更新控制文档不改变该运行组合。
 
 | Root 路径 | 子仓 SHA |
 | --- | --- |

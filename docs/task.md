@@ -112,8 +112,8 @@ commit：<子仓 SHA；Root 集成后再补 Root SHA>
 
 | ID | 目标 / 状态 | Owner / Agent / 模型 | 基线 / 范围 / 验证 / 交付 |
 | --- | --- | --- | --- |
-| W1A-1 | 发布用户session admission；已验收（owner代码/consumer；Root组合待完成） | IAM / w1_iam_owner_auditor / gpt-5.6-sol high；Root审查 | main35d868a4，绝对目录及精确文件集见当前计划；P1/P2盘点完成，682测试基线；不写Root/BFF/Web/schema；真实撤销矩阵+全门；Root唯一Git提交人 |
-| W1A-2 | Root review/组合；待集成验证（提交/发布审计） | Root主控 + 独立审查 | 依赖W1A-1停写交付；计划Task2精确Root集成范围，edge状态不变，main-only/remote/clean真实审计 |
+| W1A-1 | 发布用户session admission；已验收 | IAM / w1_iam_owner_auditor / gpt-5.6-sol high；Root审查 | main35d868a4，绝对目录及精确文件集见当前计划；P1/P2盘点完成，682测试基线；不写Root/BFF/Web/schema；真实撤销矩阵+全门；Root唯一Git提交人 |
+| W1A-2 | Root review/组合；已验收 | Root主控 + 独立审查 | 依赖W1A-1停写交付；计划Task2精确Root集成范围，edge状态不变，main-only/remote/clean真实审计 |
 
 ## 7. 核心聊天体验验收矩阵（P2 盘点，不是完成证据）
 
@@ -131,3 +131,7 @@ commit：<子仓 SHA；Root 集成后再补 Root SHA>
 W1A-R：只读规格/质量审查，由 `w1a_task_reviewer`（gpt-5.6-sol/high）执行；范围为 IAM 基线35d868a4至冻结43文件，manifest/diff位于本计划scratch；不写代码/Git，不启动共享服务。Root并行复跑owner门，审查报告后统一裁决。
 
 W1A-F：最终组合只读审查，由 `w1a_final_reviewer`（gpt-6-astra/high）执行；范围为Root当前计划集成diff与IAM35d868a4→30f7dbf两提交，重点consumer发布证据、gitlink/inventory和未完成边界；不重跑owner全门、不写仓库、不改index。
+
+### 下一片 W1B（尚未授权实现）
+
+Owner为BFF；前置IAM release `259a66e6a569889c030734f380e99685d8b9e21c`、OpenAPI0.2.0已可固定消费。主控先冻结BFF三文档与精确文件集，再派同仓唯一负责人。目标是Node22 generated admission、删除自报header身份来源、明确public share/Scheduler服务边界，并承接已确认的同tenant私有资源权限缺口；Web OIDC/CSRF接线随后推进。不重复已验收W0B/W1A，也不提前激活edge。

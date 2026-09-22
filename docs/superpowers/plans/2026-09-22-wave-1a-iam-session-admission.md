@@ -154,7 +154,7 @@ expect((await verify(userToken)).status).toBe(403);
 - [x] Root在冻结代码重跑IAM同一完整门，确认资源清理；精确提交IAM业务+测试+文档自洽slice，push并验证live main。
 - [x] Root提升IAM gitlink，将所有受影响IAM owner/evidence tuple刷新到新commit-blob/digest/version；不伪造任何未变artifact来源，不激活edge。BFF/Web仍未接线。
 - [x] Root运行topology、w0b-exit精确4 active/12 broken/1 illegal、完整scripts/tests；static standard实际失败继续列明，不放宽规则。
-- [ ] 精确提交Root并push；main-only/clean/live-main审计；W1A完成但W1与整体Goal不完成。后续 W1B BFF admission/generated consumer、W1C Web issuer/same-origin/CSRF、W1D已批准execution authorization；每片独立设计门。
+- [x] 精确提交Root并push；main-only/clean/live-main审计；W1A完成但W1与整体Goal不完成。后续 W1B BFF admission/generated consumer、W1C Web issuer/same-origin/CSRF、W1D已批准execution authorization；每片独立设计门。
 
 ## 验证命令与资源
 
@@ -188,3 +188,7 @@ IAM_TEST_ADMIN_URL=postgresql://nako@127.0.0.1:5432/postgres IAM_TEST_REDIS_URL=
 Root 接收独立审查的 no-store 缺口：Controller header 晚于 Guard/64KiB parser，错误响应缺少 no-store。允许仅扩展既有 HTTP 装配和错误 OpenAPI decorator 两文件，配置在 parser/guard 前生效的 session endpoint cache policy；保持其他 operation 行为不变。新增代表性 400/401/403/413/429/503 header 回归与所有错误响应机器契约断言；禁止手改生成文件。consumer 必须先有 Root 精确候选提交，再实跑 clean provenance 门，发布仍在所有门通过之后。
 
 Round2：Root真实probe要求缓存策略与Express实际接受的case/trailing-slash路由语义相同；复用框架matcher，不维护第二份字符串路径判定。错误header覆盖canonical与相同operation的路径变体，不调整其他路由策略。
+
+## 执行结果
+
+Task1/2完成。IAM代码54d0d5f、最终docs release259a66e，Root集成a7585a97均已推送。Root复验701标准/174真实integration/2仓外consumer/495治理测试；12仓main-only/clean/live-SHA审计通过，SPEC/QUALITY均0/0/0。112静态违规与1未验证项、12broken与1illegal保留；后续BFF→Web及整体Goal仍未完成。详见docs/task.md、docs/progress.md与IAM CURRENT，不从本计划scratch重派完成任务。
