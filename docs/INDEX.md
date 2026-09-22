@@ -24,7 +24,7 @@
 | 执行质量门禁 | [`../scripts/INDEX.md`](../scripts/INDEX.md) 与各 owner README/ACCEPTANCE；旧全仓 runner 已暂停，System 隔离 smoke 不是全仓门 |
 | 查看已验证事实 | [`reports/`](reports/)；报告必须包含 commit、命令、结果和时间 |
 | 给 Agent 派工 | [`CODEBASE_MAP.md`](CODEBASE_MAP.md) + [`ARCHITECTURE_STANDARD.md`](ARCHITECTURE_STANDARD.md) 第 11 节 |
-| 跟踪后端闭环 | [`task.md`](task.md)、[`progress.md`](progress.md)、[批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)、[当前 Wave 1A 计划](superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md)、[已验收 Wave 0B 计划](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)、[已验收 Wave 0A 计划](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md) |
+| 跟踪后端闭环 | [`task.md`](task.md)、[`progress.md`](progress.md)、[批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)、[当前 Wave 1B 计划](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md)、[已验收 Wave 0B 计划](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)、[已验收 Wave 0A 计划](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md) |
 
 ## 文档层级
 

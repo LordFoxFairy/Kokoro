@@ -6,7 +6,8 @@
 
 - Goal：按已批准设计依次完成 Wave 0–7；Root 主控负责架构裁决、派工、双重审查、集成与最终验收，子 Agent 按 owner 逐仓实施；Billing 最后处理。
 - 设计事实源：[`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)
-- 当前执行计划：[`superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md`](superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md)
+- 当前执行计划：[`superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md`](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md)
+- 已验收 Wave1A：[`superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md`](superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md)
 - 已验收 Wave0B：[`superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md`](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)
 - 已验收计划：[`superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md`](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md)
 - 证据账：[`progress.md`](progress.md)
@@ -132,6 +133,18 @@ W1A-R：只读规格/质量审查，由 `w1a_task_reviewer`（gpt-5.6-sol/high�
 
 W1A-F：最终组合只读审查，由 `w1a_final_reviewer`（gpt-6-astra/high）执行；范围为Root当前计划集成diff与IAM35d868a4→30f7dbf两提交，重点consumer发布证据、gitlink/inventory和未完成边界；不重跑owner全门、不写仓库、不改index。
 
-### 下一片 W1B（尚未授权实现）
+### Wave1B 执行卡（先文档门，再逐片实现）
 
 Owner为BFF；前置IAM release `259a66e6a569889c030734f380e99685d8b9e21c`、OpenAPI0.2.0已可固定消费。主控先冻结BFF三文档与精确文件集，再派同仓唯一负责人。目标是Node22 generated admission、删除自报header身份来源、明确public share/Scheduler服务边界，并承接已确认的同tenant私有资源权限缺口；Web OIDC/CSRF接线随后推进。不重复已验收W0B/W1A，也不提前激活edge。
+
+| ID / 目标 | Owner / Agent / 模型 / 模式 | 基线与范围 | 完成条件 / 交付 |
+| --- | --- | --- | --- |
+| W1B-P：私有资源访问矩阵复核 | BFF / `w1b_privacy_reviewer` / gpt-5.6-sol high / 只读 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`，main `c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7`，clean；Project/Task/ScheduledTask/Chat/Share/AG-UI 的路由、repository、schema、cache、receipt、测试；排除其他仓写入与所有 Git/基础设施操作 | 每个缺口绑定具体文件和调用路径，给出最小修改集、同 tenant / 跨 tenant 负例以及服务回调例外；Root 定义最终架构与审查；状态：已验收（只读审查交付，不代表缺陷已修复） |
+
+Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated client 的实施设计；这里只扩展已有任务台账，不改变业务职责或授权运行代码重写。
+
+| ID / 优先级 | Owner / Agent / 模型 | 基线 / 范围 | 验收 / 状态 |
+| --- | --- | --- | --- |
+| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c，绝对目录同上；当前只授权 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 三文档，runtime 等 Root 放行 | 当前计划 Task1；先通过三文档门，再实现 generated admission；Root唯一Git操作；状态：进行中 |
+| W1B-2 / P0 | BFF / 同一负责人后续续派 | 依赖W1B-1冻结提交；计划Task2精确范围，默认个人私有 | Project/ScheduledTask/Run control/Project关联负例通过；状态：待派工 |
+| W1B-3 / P0 | Root主控 + 独立审查 | 依赖BFF两片停写、完整门；Root单独组合任务卡 | 真实证据、smoke回归、gitlink/inventory、main-only；不以fixture激活IAM；状态：待派工 |

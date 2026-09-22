@@ -574,3 +574,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 静态全仓治理依旧112 violations/1 unverified（System TypeScript）；旧400条breaking warning保留，没有放宽门禁。真实BFF/IAM/Web浏览器E2E、模型provider、全仓镜像/SLO未验收；W1A不代表W1或完整聊天闭环。
 - W1A-1/2已验收；Goal工具确认active，整体Wave0–7未完成。后续owner为BFF，再Web；个人私有/显式分享、同tenant不同用户负例仍是后续资源授权硬要求，Billing最后。
 - 本计划scratch只保存过渡日志/报告；验收事实已固化到本账、task与owner CURRENT，收尾后删除本计划专属scratch，不触碰其他计划或预存数据库。
+
+## 2026-09-22 — W1B 启动
+
+- Root沿用active Goal，接续BFF而非重做W1A。BFF基线c5e9b3c上执行Node22.22.2 `corepack pnpm test`：199 passed、0 failed、0 skipped，5.43s；未执行改后验收。
+- `w1b_privacy_reviewer`（sol/high）只读交付；Root核对Run control漏Conversation owner gate、ScheduledTask稳定ID漏subject、Project无owner与tenant缓存/slug，以及project_ref关系缺口。已纳入同一W1B计划Task2；没有把IAM会话有效等同资源权限。
+- Root冻结新auth目录、Node22 generated IAM0.2.0、三个显式服务例外及连续私有资源切片。当前仅授权BFF三文档门；尚未修改runtime/schema，未提升gitlink或激活edge。

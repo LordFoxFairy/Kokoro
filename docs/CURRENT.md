@@ -1,6 +1,6 @@
 # Root 当前状态
 
-状态：2026-09-22。Root 已采用 remote-name Git submodule 组合；可复现组合由 `.gitmodules` 与精确 gitlink SHA 定义，而不是同级 checkout 或工作目录约定。本轮后端闭环以 [批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为架构事实源，以 [Wave 1A 计划](superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md) 为当前执行计划，以 [`task.md`](task.md) 为唯一任务状态表，以 [`progress.md`](progress.md) 为唯一执行证据账。
+状态：2026-09-22。Root 已采用 remote-name Git submodule 组合；可复现组合由 `.gitmodules` 与精确 gitlink SHA 定义，而不是同级 checkout 或工作目录约定。本轮后端闭环以 [批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为架构事实源，以 [Wave 1B 计划](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md) 为当前执行计划，以 [`task.md`](task.md) 为唯一任务状态表，以 [`progress.md`](progress.md) 为唯一执行证据账。
 
 ## 当前已接收组合
 
