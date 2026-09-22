@@ -376,6 +376,10 @@ Reuse the existing BFF vendor/dependency/config locations rather than a Root con
 - Freeze the full first-authorized launch snapshot before Agent I/O; retries use the same snapshot. Derive Run identity from an unambiguous tenant/schedule/canonicalNano tuple, not actor or opaque key; ordinary Chat launch identity remains unchanged.
 - Use a recursive canonical serializer, not sorted-object reconstruction followed by JSON.stringify. Cover integer-index-looking keys (`"2"`, `"10"`, `"01"`), nested objects, Unicode, arrays, finite numbers, fractional Nano, actor/key/request-id independence and delimiter ambiguity.
 - Add real isolated PostgreSQL tests for concurrent claims, different digest after expiry/5xx, stale tokens, snapshot recovery, tenant isolation and response-unknown; wire the new integration file into `test:integration` and the identity test into `test`. No shared fixture cleanup.
+- First review repair gate: preserve all original JSON own fields after generated validation (including `__proto__`); reject non-finite JSON numbers with HTTP 400; validate years 0000–0099 without Date.UTC remapping. Add red/green boundary cases.
+- Lease correctness uses actual database time after blocking row locks, including claim and fenced mutations. Bound Scheduler Agent I/O by remaining lease minus settlement reserve, independent of a larger global timeout; expired/stale admission must perform no Agent I/O. Real PG lock-wait tests must prove fresh deadlines and fencing.
+- Control response hard cap must stop streaming consumption and abort/cancel at the limit, not buffer the entire response before checking.
+- Recovery proof requires real PostgreSQL plus HTTP Agent stub: accepted Agent call followed by finalize failure, BFF receiver restart, database task and transport request-ID changes followed by exact first-snapshot resend, and stale prepare preventing Agent I/O. Repository-only tests are not this evidence; align the four docs with actual tests.
 - W0B-9 proves BFF/PG behavior; W0B-10 uses real Scheduler/BFF with an Agent receipt stub. True Agent durable admission, parameter conflicts and Agent restart uniqueness remain the W4 Agent-owner closure and do not activate `EDGE-BFF-AGENT` here.
 
 1. Reuse exact generator/Zod pins already installed; add `contract:generate:scheduler` and `contract:check:scheduler` to the aggregate contract gate.
@@ -392,6 +396,12 @@ Reuse the existing BFF vendor/dependency/config locations rather than a Root con
    git diff --check
    ```
 6. Review; commit `fix(bff): align Scheduler control and event contracts`; push; prove remote equality.
+
+### Task 9V: Repair pre-existing AG-UI acceptance fixtures
+
+Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f0eca0b450` with a separate source snapshot and database (20 pass / 2 fail). This is an independently reviewable test-only slice, not a Scheduler runtime change.
+
+**Exact two files:** `test/agui-http.integration.mjs`, `test/agui-projection.integration.mjs`. The HTTP fixture must register the expected next Run through the existing consumer admission before publishing its source events and must close that owned repository. The projection fixture must supply the existing required requestId to deleteConversation. Keep every frame/cursor/replay/tenant/deletion assertion; no skips, sleeps replacing state synchronization, production changes or shared cleanup. Root owns a separate commit and reruns both suites on isolated PostgreSQL before the final Task9 full gate.
 
 ### Task 10: Implement the isolated Scheduler↔BFF smoke runner
 
@@ -424,9 +434,9 @@ Reuse the existing BFF vendor/dependency/config locations rather than a Root con
 
 **Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer.
 
-**Exact files:** modify gitlink `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`.
+**Exact files:** modify gitlink `apps/kokoro-bff`; Scheduler gitlink only if Task 7 produced a separate pushed owner commit; modify `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, `scripts/e2e/run_capability_bff_smoke.py` and its `scripts/tests/test_capability_bff_smoke.py` regression coverage.
 
-1. Lift pushed child SHA(s) and refresh every fan-out reference/digest.
+1. Lift pushed child SHA(s) and refresh every fan-out reference/digest. Advance the existing Capability smoke BFF release input to the accepted consumer SHA; preserve exact-SHA rejection and run its unit gate plus real smoke against the new combination.
 2. `EDGE-BFF-SCHEDULER`: pin BFF generated control/npm generator/BFF `.node-version`. `EDGE-SCHEDULER-BFF`: pin BFF generated webhook validator/route/test/npm generator/BFF `.node-version`; add Scheduler `go.mod` producer assertion. Both pin Scheduler owner blob. Keep `EDGE-SCHEDULER-AGENT` broken.
 3. Run Task 10 real CLI, Root topology/tests/ten-repository audit, and `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-exit.json`; non-debt gates exit `0`.
 4. Review; commit `fix(integration): activate Scheduler BFF contract edges`; push; require clean Root.
@@ -475,9 +485,9 @@ Reuse the existing BFF vendor/dependency/config locations rather than a Root con
 
 **Repository/writer:** Root / Root integration subagent. **Reviewer:** cross-repository reviewer.
 
-**Exact files:** modify gitlink `apps/kokoro-bff`, `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`.
+**Exact files:** modify gitlink `apps/kokoro-bff`, `verification/contracts/consumer-inventory.json`, `docs/task.md`, `docs/progress.md`, both `scripts/e2e/run_capability_bff_smoke.py` and `scripts/e2e/run_scheduler_bff_smoke.py`, and `scripts/tests/test_capability_bff_smoke.py` and `scripts/tests/test_scheduler_bff_smoke.py`.
 
-1. Lift Task 14 BFF SHA and refresh all BFF fan-out commits/digests.
+1. Lift Task 14 BFF SHA and refresh all BFF fan-out commits/digests, including both smoke runners' BFF release inputs. Keep wrong-SHA rejection and verify the two runner unit suites before their real smoke gates.
 2. Keep `EDGE-BFF-STORAGE` broken; update its reason/evidence to the explicit W1/W2 dependency. No Storage state or owner pin changes.
 3. Run Root full gate with `w0b-exit`; compatibility IDs must remain exactly unchanged. Re-run both real smoke CLIs.
 4. Review; commit `fix(integration): remove dead BFF Storage HTTP path`; push; require clean Root.

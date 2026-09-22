@@ -325,3 +325,32 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 设计writer已停写；实现交接给 `w0b9_bff_scheduler_writer`（gpt-5.6-sol/high），BFF基线 `94a143cc545d74c2d3f518e3cafcc7f0eca0b450`，精确范围以当前计划Task9为准。Root继续独占Git index/commit/push与最终验证。
 - Root复用现有PG/Redis，只新建本任务独占空库 `kokoro_bff_test_w0b9_742c50e086d4a950`；显式public search_path，未改共享role，Redis复用DB8且禁止flush。该库由Root在worker停写及独立验证后精确清理。
 - Worker先RED后实现identity/generation/control/receipt/receiver，执行完整BFF门；Root随后独立审查及用另一独占库复验。当前仍在实施，不构成runtime或Scheduler双向edge验收。
+
+### W0B-9 并行 Root 预审：后续 smoke release pin
+
+- Root只读核对发现既有 `run_capability_bff_smoke.py` 对BFF精确锁定 `2ed7925…` 并在HEAD不同立即停止；这是有效保护，不应在consumer升级后绕过。W0B-11提升BFF时需同步推进该runner的固定输入并保留不匹配拒绝；W0B-15再次提升BFF时同步两条runner的输入。新增Scheduler runner仍由W0B-10负责，当前未派工/未写入。
+- 该维护项属于Root组合pin，不改变consumer契约、Schema或edge状态；Root将把精确文件集与回归验证写入相应任务卡，避免到最后执行双smoke才发现旧pin阻挡。
+
+## 2026-09-21 — W0B-9 待审查 / W0B-9V 基线 fixture 修复
+
+- W0B-9 writer已停写：44文件交付，聚焦unit50/50、聚焦PG4/4、全量unit185/185；全量integration30/32，保留两条真实失败，不宣称全门通过。
+- Root将未修改的BFF基线94a143c导出到独立临时源码、独立新库 `kokoro_bff_test_w0b9_base_a2c2d1c006e7`，相同两份AG-UI suite实际20 pass/2 fail/0 skip，确认不是靠Task9变更才产生的失败。
+- 根因：AG-UI HTTP fixture在旧Run终态后直接追加Run2 source，没有先调用现有consumer admission注册expectedRun；projection fixture调用deleteConversation缺少第4个requestId。Root只在临时基线候选中修复，22/22连续三轮通过；进一步把admission放到发布Run2 events之前，避免新竞态。没有放宽原frame/replay/tenant/delete断言，也未改runtime。
+- W0B-9V仅允许 `test/agui-http.integration.mjs`、`test/agui-projection.integration.mjs`，writer `w0b9v_agui_fixture_writer`（gpt-5.6-luna/medium）负责将已定位修正应用到实际子仓；Root保留index/commit/push并把此小切片独立提交。Task9原writer仍停写，避免同仓双writer。
+
+## 2026-09-21 — W0B-9 独立验证与首轮审查退回
+
+- Root使用另一独占PG库 `kokoro_bff_test_w0b9_root_332e93eff4b496` 复验实际44文件与两项fixture修复：format/lint/typecheck/contract/build/schema均exit0；unit185/185、integration32/32、contract20/20、schema4/4，均0skip。fresh install通过，非空重复apply按设计exit1。集合有重叠，不汇总为独立测试数量。
+- 独立审查 `w0b9_scheduler_implementation_reviewer`（gpt-6-astra/high）发现6项P2、1项P3：特殊JSON键被generated parser删除、锁等待消耗lease、Agent预算超过lease、响应hard cap读完才检查、非有限数字变500、恢复验收缺失、0000–0099年误判。Root源码核对并接纳；绿色测试不替代缺失场景与正确性。
+- Root真实PG锁等待探针：等待62007ms后claim返回成功但lease剩余-2003.661ms，确认生产逻辑缺陷；只使用Root独占库，自有探针行已删除。修复必须使用锁后实际数据库时间，并覆盖预算、CAS和恢复，不靠放宽测试。
+- W0B-9退回“进行中”，原writer续任集中修复，Root保持审查/控制账/最终验证；9V已独立审查无发现。Scheduler edge仍未激活，Goal继续active。
+
+## 2026-09-21 — W0B-9V 独立验收与提交
+
+- 仅两个AG-UI fixture修复已独立提交并推送BFF main：`fd75dc92dbf0401a6d21cbdab13fe723dd6ccfe0`，live远端SHA一致。6行新增/1行删除，不修改生产逻辑、原断言或跳过测试。
+- writer `w0b9v_agui_fixture_writer`（gpt-5.6-luna/medium）交付后停写；独立审查 `w0b9_scheduler_implementation_reviewer` 无发现。Root在独立94a143c基线源码+修复上提交前22/22、提交后逐文件校对commit blob后22/22，均0fail/0skip。
+- 使用显式两路径提交；Root比较提交前后Task9暂存diff字节完全一致，44文件未混入9V。Task9新基线是fd75dc9，原44文件待修复/审查，子仓工作树仍不clean。
+- Fix Round1派发原实现负责人；七项缺陷及验收要求在当前计划固化。Root gitlink仍留待W0B-11提升，不借fixture提交提前宣称Scheduler集成完成。
+
+- 本轮控制账Root复验：checkpoint `w0b-capability` PASS；Root tests `432 passed in 34.83s`；topology exit1且仅BFF checkout/gitlink待W0B-11集成不一致；diff检查通过。既有109 violations/1 unverified是前次静态审计证据，本次未重测，不写成已清零。
+- 9V独占基线数据库和临时源码已精确删除，RED/GREEN日志保留；Task9 writer库和Root独立复验库仍保留用于本轮修复。未清理共享数据库/Redis。
