@@ -41,7 +41,7 @@
 | W0B-7 | P0 | 验证 Scheduler owner release | Scheduler / `w0b7_scheduler_owner_auditor`（只读） | W0B-6 | `/schedules`、event header/RFC3339、幂等/重试与 docs/schema 一致；Go 全门通过 | 已验收 |
 | W0B-7R | P0 | 修复 Scheduler 稳定错误机器契约与边界证据 | Scheduler / `w0b7r_scheduler_contract_writer` | W0B-7 审计 drift | OpenAPI/breaking policy/runtime parity锁定两个稳定错误；Nano与opaque key证据；完整 Go门通过 | 已验收 |
 | W0B-7I | P0 | 集成 Scheduler 修复后的 owner release | Root / `w0b7i_scheduler_integration_writer` | W0B-7R | gitlink/全部 Scheduler fan-out/测试 pin/计划一致；edge 状态不变；Root checkpoint 通过 | 已验收 |
-| W0B-7R2 | P0 | 修复真实 PostgreSQL 同名新键 create 的可持久化冲突结果 | Scheduler / `w0b7r2_scheduler_conflict_writer` | W0B-10 真实联调缺陷 | 新键重复 create 返回409并写receipt；重启replay；Go/PG/Redis全门；Root真实HTTP复验 | 进行中 |
+| W0B-7R2 | P0 | 修复真实 PostgreSQL 同名新键 create 的可持久化冲突结果 | Scheduler / `w0b7r2_scheduler_conflict_writer` | W0B-10 真实联调缺陷 | 新键重复 create 返回409并写receipt；重启replay；Go/PG/Redis全门；Root真实HTTP复验 | 已验收 |
 | W0B-8 | P0 | 冻结 BFF Scheduler 控制/回调设计与 artifact | BFF / `w0b8_bff_scheduler_designer` | W0B-7 | control/receiver 边界、trusted tenant、opaque key + semantic digest、恢复语义确定 | 已验收 |
 | W0B-9 | P0 | 实现 Scheduler generated control 与 receiver | BFF / `w0b9_bff_scheduler_writer` | W0B-8 | 旧协议删除；generated validation、专用 receipt/CAS、幂等与恢复测试通过 | 已验收 |
 | W0B-9V | P0 | 修复基线已失败的两处 AG-UI fixture | BFF / `w0b9v_agui_fixture_writer` | W0B-9 全量门暴露 | 第二Run遵循admission；delete传requestId；原断言保持；独立PG复验通过 | 已验收 |

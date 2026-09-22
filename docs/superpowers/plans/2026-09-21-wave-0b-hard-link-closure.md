@@ -342,6 +342,8 @@ W0B-7I Root 集成精确限于 Scheduler gitlink、`verification/contracts/consu
 
 **Dependencies:** Task10 writer has stopped and cleaned its resources. After this release is accepted, resume that same writer with the new runtime SHA, remove the diagnostic private 409 receipt injection, and prove natural duplicate-create 409 through BFF outbox. Task11 lifts Scheduler as well as BFF gitlinks and all runtime/evidence tuples, including the Scheduler pin regression. BFF's immutable owner artifact remains the original published release only if its bytes/version/digest still match; runtime release and artifact provenance are recorded separately, never rewritten as if generated from another commit.
 
+**Accepted release (2026-09-22):** `975dee59616a1e0eda609aa69283401344900d83`; independent SPEC/QUALITY 0/0/0; Root full/race 139/0/0, real HTTP 200/409/restart409, exact receipt replay, cleanup verified. Artifact/schema/dependency bytes unchanged.
+
 ### Task 8: Freeze BFF Scheduler design and owner artifact
 
 **Repository/writer:** BFF / `w0b8_bff_scheduler_designer` (`gpt-6-astra`, high). **Reviewer:** independent BFF design reviewer; Root integrates. **Start:** main `2ed792586e89c035155938078d9b07f33af95abd`, clean/live-remote aligned; Scheduler prerequisite accepted in Root `7c9e7abfbf8a4af36d7f039ec93f863dfc66b63f`. Root owns index/commit/push and control documents. No shared fixture access is required in this design-only slice.
@@ -425,7 +427,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 
 | Item | Decision |
 | --- | --- |
-| Owner/current facts | Root owns composition verification only. Existing Capability/System runners and Root pytest lifecycle tests are the pattern. BFF `5ea4440941ed65c424fffb0ae834e67b2ae93e74` and Scheduler `92bf9e7e6724c591bab4b7fa27f08d694b59a67e` are clean, pushed prerequisites; Root gitlink lift remains Task11. |
+| Owner/current facts | Root owns composition verification only. Existing Capability/System runners and Root pytest lifecycle tests are the pattern. BFF `5ea4440941ed65c424fffb0ae834e67b2ae93e74` and Scheduler `975dee59616a1e0eda609aa69283401344900d83` (Task7R2) are clean, pushed prerequisites; Root gitlink lift remains Task11. |
 | Responsibility/API | One explicit CLI proves the eleven existing control/receiver cases and returns bounded sanitized JSON evidence; no application API, Schema or owner change. |
 | Placement/granularity | Use `scripts/e2e/` plus `scripts/tests/`, matching current Root orchestration; reject a new `verification/e2e/` tree or putting a cross-owner runner in BFF because both duplicate/misplace the current Root responsibility. No new package/framework. |
 | Runtime split | A 1128-line draft triggers the Python size review. Split the same existing directory into the CLI/eleven-case runner and `scheduler_bff_smoke_runtime.py` for owned process/resource lifecycle, HTTP test fixtures and startup helpers; target each below 800 lines. Reject compressing code to meet a line count or introducing a cross-runner common framework. Tests import the module that owns the behavior; no production consumers or new package. |

@@ -391,3 +391,13 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - W0B-7R2归Scheduler现有PostgreSQL command adapter，三文档与canonical schema已明确可replay冲突语义；仅允许adapter及PG integration测试两个现有文件。实现Agent `w0b7r2_scheduler_conflict_writer`（gpt-5.6-sol/high），Root负责Git、独立审查和真实HTTP复验。没有schema/contract变更；Task10先等待本切片，整体Goal仍active。
 
 - W0B-7R2派工控制账Root复验：已接收Root测试（显式排除尚未交付Task10测试）432 passed in 25.45s；`w0b-capability` checkpoint PASS；diff检查通过。Root独立查询确认Task10数据库及其应用进程均无遗留。未运行Task10最终门禁，不计入本次432项。
+
+- W0B-7R2 writer已停写交付：仅adapter与PG测试两文件，真实RED复现25P02，full/race各139 pass/0 fail/0 skip（含子测试）；重放使用新RequestID仍保留原receipt，并发两键收敛。Root已冻结文件digest、确认Schema/contract/module未变及BFF原vendor逐字一致，独立审查与另库全门/真实HTTP复验正在进行，尚未提交owner。
+
+## 2026-09-22 — W0B-7R2 owner 验收 / W0B-10 恢复
+
+- Scheduler新release `975dee59616a1e0eda609aa69283401344900d83` 已精确提交并推送main，live远端一致、子仓clean、远端仅main。两文件137新增/8删除；无Schema、OpenAPI、manifest或依赖变化。
+- 独立reviewer `w0b7r2_scheduler_conflict_reviewer`（gpt-5.6-sol/high）对冻结diff给出SPEC/QUALITY PASS，Critical/Important/Minor=0/0/0。Root提交前独立库普通/race各139 pass/0 fail/0 skip；提交后race再次139/0/0，contract-check、gofmt、vet、build与提交前mod verify通过。
+- Root真实HTTP新库/新进程复验提交前后均得到200→409→重启后409，第二receipt保留原request ID及完整body；数据库精确1个Schedule/2个receipt，Redis DB7启用。每次探针自动清理自有库/进程/临时文件；writer与Root两个额外测试库现也已精确删除、fixture env移除。
+- BFF原vendor、Scheduler92bf9e7发布artifact与新runtime的canonical OpenAPI字节完全一致，digest仍为6ec2f6d5…183。保留真实历史artifact provenance，不伪造重新生成记录；Root Task11将pin新runtime并重算所有Scheduler证据，更新pin回归。
+- W0B-10原writer恢复，仅在原四文件内更新Scheduler runtime SHA、移除私有409 receipt注入及known-risk分支，以真实同名新key创建自然产生409，完成11case与完整生命周期门。当前尚未验收Task10或激活Scheduler双向edge；Root gitlink与inventory留Task11一次集成，Goal保持active。
