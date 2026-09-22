@@ -4,6 +4,10 @@ import json
 import os
 from pathlib import Path
 import signal
+import socket
+import threading
+from threading import Thread
+import time
 from types import SimpleNamespace
 import subprocess
 import sys
@@ -11,31 +15,90 @@ import sys
 import pytest
 
 from scripts.e2e import run_capability_bff_smoke as smoke
+from scripts.e2e import capability_bff_smoke_runtime as runtime
 
 
 class Recorder:
     def __init__(self) -> None:
         self.commands: list[list[str]] = []
         self.fail_create_for: str | None = None
-        self.scan_output = ""
+        self.fail_queries = False
+        self.fail_scan = False
         self.fail_unlink = False
+        self.scan_output: str | None = None
+        self.set_result = "OK"
+        self.databases: set[str] = set()
+        self.redis_values: dict[str, str] = {}
 
     def __call__(self, command: list[str], **_kwargs: object) -> str:
         self.commands.append(command)
+        joined = " ".join(command)
         if self.fail_create_for and any(
             f'CREATE DATABASE "{self.fail_create_for}"' in value for value in command
         ):
-            raise smoke.SmokeError("database creation failed")
+            raise runtime.SmokeError("database creation failed")
+        if "CREATE DATABASE" in joined:
+            self.databases.add(joined.split('"')[1])
+        elif "DROP DATABASE" in joined:
+            self.databases.discard(joined.split('"')[1])
+        elif "SELECT datname" in joined:
+            if self.fail_queries:
+                raise runtime.SmokeError("database inventory unavailable")
+            return next((name for name in self.databases if name in joined), "")
+        elif " SET " in f" {joined} ":
+            if self.set_result == "OK":
+                self.redis_values[command[-5]] = command[-4]
+            return self.set_result
+        elif " GET " in f" {joined} ":
+            if self.fail_queries:
+                raise runtime.SmokeError("redis inventory unavailable")
+            return self.redis_values.get(command[-1], "")
         if "--scan" in command:
-            return self.scan_output
+            if self.fail_scan:
+                raise runtime.SmokeError("redis prefix inventory unavailable")
+            if self.scan_output is not None:
+                return self.scan_output
+            prefix = command[-1][:-1]
+            return "\n".join(key for key in self.redis_values if key.startswith(prefix))
         if "UNLINK" in command and self.fail_unlink:
-            raise smoke.SmokeError("redis command failed")
+            raise runtime.SmokeError("redis command failed")
+        if "UNLINK" in command:
+            for key in command[command.index("UNLINK") + 1 :]:
+                self.redis_values.pop(key, None)
         return ""
 
 
-def resources(recorder: Recorder) -> smoke.OwnedResources:
-    return smoke.OwnedResources(
-        "postgresql://localhost/postgres",
+class AcknowledgementLossRecorder(Recorder):
+    def __init__(self, resource: str, *, fail_queries: bool = False) -> None:
+        super().__init__()
+        self.resource = resource
+        self.fail_queries_after_loss = fail_queries
+        self.ack_lost = False
+
+    def __call__(self, command: list[str], **kwargs: object) -> str:
+        joined = " ".join(command)
+        if self.resource == "database" and "CREATE DATABASE" in joined:
+            self.commands.append(command)
+            self.databases.add(joined.split('"')[1])
+            self.ack_lost = True
+            raise runtime.SmokeError("database acknowledgement lost")
+        if self.resource == "database" and "SELECT datname" in joined:
+            if self.fail_queries_after_loss and self.ack_lost:
+                raise runtime.SmokeError("database inventory unavailable")
+        if self.resource == "redis" and " SET " in f" {joined} ":
+            self.commands.append(command)
+            self.redis_values[command[-5]] = command[-4]
+            self.ack_lost = True
+            raise runtime.SmokeError("redis acknowledgement lost")
+        if self.resource == "redis" and " GET " in f" {joined} ":
+            if self.fail_queries_after_loss and self.ack_lost:
+                raise runtime.SmokeError("redis inventory unavailable")
+        return super().__call__(command, **kwargs)
+
+
+def resources(recorder: Recorder) -> runtime.OwnedResources:
+    return runtime.OwnedResources(
+        "postgresql://localhost/postgres?options=-csearch_path%3Dpublic",
         "redis://127.0.0.1:6379",
         "a" * 24,
         command=recorder,
@@ -66,15 +129,15 @@ def test_parser_requires_all_four_explicit_flags() -> None:
     ],
 )
 def test_rejects_non_database_url_schemes(postgres: str, redis: str) -> None:
-    with pytest.raises(smoke.SmokeError, match="endpoint"):
-        smoke.OwnedResources(postgres, redis, "a" * 24, command=Recorder())
+    with pytest.raises(runtime.SmokeError, match="endpoint"):
+        runtime.OwnedResources(postgres, redis, "a" * 24, command=Recorder())
 
 
 @pytest.mark.parametrize("run_id", ["", "*", "../", "a" * 23, "A" * 24])
 def test_rejects_unsafe_run_identity(run_id: str) -> None:
     recorder = Recorder()
-    with pytest.raises(smoke.SmokeError, match="identity"):
-        smoke.OwnedResources(
+    with pytest.raises(runtime.SmokeError, match="identity"):
+        runtime.OwnedResources(
             "postgresql://localhost/postgres",
             "redis://localhost",
             run_id,
@@ -88,8 +151,9 @@ def test_database_names_and_redis_prefix_are_exact() -> None:
     owned = resources(recorder)
     capability = owned.create_database("capability")
     bff = owned.create_database("bff")
-    assert capability.endswith("/w0b_cap_" + "a" * 24 + "_capability")
-    assert bff.endswith("/w0b_cap_" + "a" * 24 + "_bff")
+    assert "/w0b_cap_" + "a" * 24 + "_capability" in capability
+    assert "/w0b_cap_" + "a" * 24 + "_bff" in bff
+    assert "options=" not in capability
     assert owned.redis_prefix == "kokoro:w0b:capability:" + "a" * 24 + ":"
     assert "FLUSH" not in str(recorder.commands)
 
@@ -101,6 +165,10 @@ def test_redis_prefix_claim_is_exact_and_expiring() -> None:
 
     def command(args: list[str], **_kwargs: object) -> str:
         recorder.commands.append(args)
+        if "--scan" in args:
+            return ""
+        if "GET" in args:
+            return ""
         return recorder_output
 
     owned.command = command
@@ -122,7 +190,7 @@ def test_failed_create_is_not_registered_and_cleanup_drops_only_owned_database()
     owned = resources(recorder)
     capability_name = "w0b_cap_" + "a" * 24 + "_capability"
     recorder.fail_create_for = capability_name
-    with pytest.raises(smoke.SmokeError):
+    with pytest.raises(runtime.SmokeError):
         owned.create_database("capability")
     recorder.fail_create_for = None
     owned.create_database("bff")
@@ -136,22 +204,24 @@ def test_cleanup_rejects_out_of_prefix_redis_key_before_unlink() -> None:
     recorder = Recorder()
     recorder.scan_output = "shared:important\n"
     owned = resources(recorder)
+    recorder.redis_values[owned.redis_prefix + "ownership"] = owned.run_id
     owned.redis_claimed = True
     owned.redis_was_claimed = True
-    with pytest.raises(smoke.SmokeError, match="Redis cleanup"):
+    with pytest.raises(runtime.SmokeError, match="Redis cleanup"):
         owned.cleanup()
     assert not any("UNLINK" in command for command in recorder.commands)
 
 
 def test_command_level_redis_failure_still_drops_owned_database() -> None:
     recorder = Recorder()
-    recorder.scan_output = "kokoro:w0b:capability:" + "a" * 24 + ":one\n"
+    recorder.redis_values["kokoro:w0b:capability:" + "a" * 24 + ":one"] = "value"
     recorder.fail_unlink = True
     owned = resources(recorder)
+    recorder.redis_values[owned.redis_prefix + "ownership"] = owned.run_id
     owned.redis_claimed = True
     owned.redis_was_claimed = True
     owned.create_database("capability")
-    with pytest.raises(smoke.SmokeError, match="Redis cleanup"):
+    with pytest.raises(runtime.SmokeError, match="Redis cleanup"):
         owned.cleanup()
     assert any("DROP DATABASE" in command[-1] for command in recorder.commands)
     assert owned.created_databases == []
@@ -159,12 +229,170 @@ def test_command_level_redis_failure_still_drops_owned_database() -> None:
 
 def test_failed_redis_claim_never_cleans_an_unowned_prefix() -> None:
     recorder = Recorder()
+    recorder.set_result = ""
     owned = resources(recorder)
-    with pytest.raises(smoke.SmokeError, match="claimed"):
+    with pytest.raises(runtime.SmokeError, match="claimed"):
         owned.claim_redis_prefix()
     owned.cleanup()
-    assert not any("--scan" in command for command in recorder.commands)
+    assert sum("--scan" in command for command in recorder.commands) == 1
     assert not any("UNLINK" in command for command in recorder.commands)
+
+
+def test_database_ack_loss_reconciles_exact_identity_and_cleans_it() -> None:
+    recorder = AcknowledgementLossRecorder("database")
+    owned = resources(recorder)
+    with pytest.raises(runtime.SmokeError, match="acknowledgement lost"):
+        owned.create_database("capability")
+    owned.cleanup()
+    owned.verify_clean()
+    assert recorder.databases == set()
+
+
+def test_database_preexisting_identity_is_never_created_or_dropped() -> None:
+    recorder = Recorder()
+    name = "w0b_cap_" + "a" * 24 + "_capability"
+    recorder.databases.add(name)
+    owned = resources(recorder)
+    with pytest.raises(runtime.SmokeError, match="already exists"):
+        owned.create_database("capability")
+    owned.cleanup()
+    assert recorder.databases == {name}
+    assert not any(
+        "CREATE DATABASE" in " ".join(command) for command in recorder.commands
+    )
+    assert not any(
+        "DROP DATABASE" in " ".join(command) for command in recorder.commands
+    )
+
+
+def test_database_unknown_reconciliation_still_cleans_owned_redis() -> None:
+    recorder = AcknowledgementLossRecorder("database", fail_queries=True)
+    owned = resources(recorder)
+    owned.claim_redis_prefix()
+    with pytest.raises(runtime.SmokeError, match="acknowledgement lost"):
+        owned.create_database("capability")
+    with pytest.raises(runtime.SmokeError, match="PostgreSQL.*reconciliation"):
+        owned.cleanup()
+    assert recorder.redis_values == {}
+
+
+def test_redis_ack_loss_reconciles_exact_ownership_and_cleans_it() -> None:
+    recorder = AcknowledgementLossRecorder("redis")
+    owned = resources(recorder)
+    with pytest.raises(runtime.SmokeError, match="acknowledgement lost"):
+        owned.claim_redis_prefix()
+    owned.cleanup()
+    owned.verify_clean()
+    assert recorder.redis_values == {}
+
+
+def test_redis_preexisting_ownership_is_never_replaced_or_unlinked() -> None:
+    recorder = Recorder()
+    owned = resources(recorder)
+    ownership = owned.redis_prefix + "ownership"
+    recorder.redis_values[ownership] = "someone-else"
+    with pytest.raises(runtime.SmokeError, match="already exists"):
+        owned.claim_redis_prefix()
+    owned.cleanup()
+    assert recorder.redis_values == {ownership: "someone-else"}
+    assert not any("SET" in command for command in recorder.commands)
+    assert not any("UNLINK" in command for command in recorder.commands)
+
+
+def test_redis_markerless_preexisting_prefix_is_never_claimed_or_unlinked() -> None:
+    recorder = Recorder()
+    owned = resources(recorder)
+    foreign_key = owned.redis_prefix + "preexisting"
+    recorder.redis_values[foreign_key] = "foreign-value"
+    with pytest.raises(runtime.SmokeError, match="already exists"):
+        owned.claim_redis_prefix()
+    owned.cleanup()
+    assert recorder.redis_values == {foreign_key: "foreign-value"}
+    assert not any("SET" in command for command in recorder.commands)
+    assert not any("UNLINK" in command for command in recorder.commands)
+
+
+def test_redis_unknown_prefix_inventory_fails_closed_before_set() -> None:
+    recorder = Recorder()
+    recorder.fail_scan = True
+    owned = resources(recorder)
+    with pytest.raises(runtime.SmokeError, match="inventory"):
+        owned.claim_redis_prefix()
+    owned.cleanup()
+    assert not any("SET" in command for command in recorder.commands)
+    assert not any("UNLINK" in command for command in recorder.commands)
+
+
+def test_redis_unknown_reconciliation_still_drops_owned_database() -> None:
+    recorder = AcknowledgementLossRecorder("redis", fail_queries=True)
+    owned = resources(recorder)
+    owned.create_database("bff")
+    with pytest.raises(runtime.SmokeError, match="acknowledgement lost"):
+        owned.claim_redis_prefix()
+    with pytest.raises(runtime.SmokeError, match="Redis.*reconciliation"):
+        owned.cleanup()
+    assert recorder.databases == set()
+
+
+def _request_threads_after(baseline: set[int]) -> list[Thread]:
+    return [
+        thread
+        for thread in threading.enumerate()
+        if thread.ident not in baseline and "process_request_thread" in thread.name
+    ]
+
+
+def test_readiness_fixture_drains_partial_header_without_stderr(
+    capfd: pytest.CaptureFixture[str],
+) -> None:
+    baseline = {thread.ident for thread in threading.enumerate()}
+    client: socket.socket | None = None
+    try:
+        with runtime.dependency_readiness_fixture() as base_url:
+            port = int(base_url.rsplit(":", 1)[1])
+            client = socket.create_connection(("127.0.0.1", port), timeout=2)
+            client.sendall(b"GET /readyz HTTP/1.1\r\nHost: 127.0.0.1")
+            deadline = time.monotonic() + 2
+            while time.monotonic() < deadline and not _request_threads_after(baseline):
+                time.sleep(0.01)
+            assert _request_threads_after(baseline)
+        assert _request_threads_after(baseline) == []
+        assert capfd.readouterr().err == ""
+    finally:
+        if client is not None:
+            client.close()
+        for thread in _request_threads_after(baseline):
+            thread.join(timeout=2)
+
+
+def test_readiness_fixture_keeps_unexpected_handler_errors_observable(
+    monkeypatch: pytest.MonkeyPatch,
+    capfd: pytest.CaptureFixture[str],
+) -> None:
+    baseline = {thread.ident for thread in threading.enumerate()}
+
+    def raise_unexpected(_handler: object) -> None:
+        raise RuntimeError("unexpected readiness handler failure")
+
+    monkeypatch.setattr(runtime._DependencyHandler, "do_GET", raise_unexpected)
+    with runtime.dependency_readiness_fixture() as base_url:
+        port = int(base_url.rsplit(":", 1)[1])
+        with socket.create_connection(("127.0.0.1", port), timeout=2) as client:
+            client.sendall(b"GET /readyz HTTP/1.0\r\n\r\n")
+            assert client.recv(1) == b""
+    captured = capfd.readouterr()
+    assert "unexpected readiness handler failure" in captured.err
+    assert _request_threads_after(baseline) == []
+
+
+def test_bff_release_pin_rejects_every_other_sha(tmp_path: Path, monkeypatch) -> None:
+    accepted = "5ea4440941ed65c424fffb0ae834e67b2ae93e74"
+    assert smoke.BFF_RELEASE == accepted
+    (tmp_path / "dist").mkdir()
+    (tmp_path / "dist" / "main.js").touch()
+    monkeypatch.setattr(runtime, "command_output", lambda *_args, **_kwargs: "0" * 40)
+    with pytest.raises(runtime.SmokeError, match="frozen smoke input"):
+        runtime.verify_release(tmp_path, accepted)
 
 
 def test_owned_command_timeout_kills_the_process_group(tmp_path: Path) -> None:
@@ -175,8 +403,8 @@ def test_owned_command_timeout_kills_the_process_group(tmp_path: Path) -> None:
         "time.sleep(120)"
     )
     with (tmp_path / "command.log").open("wb") as log:
-        with pytest.raises(smoke.SmokeError, match="deadline"):
-            smoke.run_owned_command(
+        with pytest.raises(runtime.SmokeError, match="deadline"):
+            runtime.run_owned_command(
                 [sys.executable, "-c", source],
                 cwd=tmp_path,
                 env=dict(os.environ),
@@ -192,32 +420,34 @@ def test_node_toolchain_requires_the_exact_frozen_version(
 ) -> None:
     (tmp_path / "node").touch()
     (tmp_path / "corepack").touch()
-    monkeypatch.setattr(smoke, "command_output", lambda *_args, **_kwargs: "v22.99.0\n")
-    with pytest.raises(smoke.SmokeError, match="v22.22.2"):
-        smoke.node_environment(str(tmp_path), "v22.22.2")
+    monkeypatch.setattr(
+        runtime, "command_output", lambda *_args, **_kwargs: "v22.99.0\n"
+    )
+    with pytest.raises(runtime.SmokeError, match="v22.22.2"):
+        runtime.node_environment(str(tmp_path), "v22.22.2")
 
 
 def test_readiness_timeout_and_malformed_body_are_sanitized(monkeypatch) -> None:
     monkeypatch.setattr(
-        smoke,
+        runtime,
         "http_json",
-        lambda *_args, **_kwargs: (_ for _ in ()).throw(smoke.SmokeError("bad")),
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(runtime.SmokeError("bad")),
     )
     process = SimpleNamespace(poll=lambda: None)
-    with pytest.raises(smoke.SmokeError, match="ready"):
-        smoke.wait_ready("http://127.0.0.1:1", process, timeout=0.03, poll=0.005)
+    with pytest.raises(runtime.SmokeError, match="ready"):
+        runtime.wait_ready("http://127.0.0.1:1", process, timeout=0.03, poll=0.005)
 
     monkeypatch.setattr(
-        smoke, "http_json", lambda *_args, **_kwargs: ({"bad": True}, {})
+        runtime, "http_json", lambda *_args, **_kwargs: ({"bad": True}, {})
     )
-    with pytest.raises(smoke.SmokeError, match="malformed"):
-        smoke.wait_ready("http://127.0.0.1:1", process, timeout=0.03, poll=0.005)
+    with pytest.raises(runtime.SmokeError, match="malformed"):
+        runtime.wait_ready("http://127.0.0.1:1", process, timeout=0.03, poll=0.005)
 
 
 def test_readiness_reports_child_early_exit(monkeypatch) -> None:
-    monkeypatch.setattr(smoke, "http_json", lambda *_args, **_kwargs: ({}, {}))
-    with pytest.raises(smoke.SmokeError, match="exited"):
-        smoke.wait_ready(
+    monkeypatch.setattr(runtime, "http_json", lambda *_args, **_kwargs: ({}, {}))
+    with pytest.raises(runtime.SmokeError, match="exited"):
+        runtime.wait_ready(
             "http://127.0.0.1:1",
             SimpleNamespace(poll=lambda: 1),
             timeout=0.03,
@@ -228,11 +458,13 @@ def test_readiness_reports_child_early_exit(monkeypatch) -> None:
 def test_process_cleanup_handles_dead_leader_and_escalates(monkeypatch) -> None:
     states = iter([True, True, False])
     sent: list[int] = []
-    monkeypatch.setattr(smoke, "process_group_exists", lambda _pid: next(states))
-    monkeypatch.setattr(smoke.os, "killpg", lambda _pid, sig: sent.append(sig))
-    monkeypatch.setattr(smoke.time, "sleep", lambda _seconds: None)
-    monkeypatch.setattr(smoke.time, "monotonic", iter([0.0, 20.0, 20.0, 20.0]).__next__)
-    smoke.stop_owned_process(SimpleNamespace(pid=123, poll=lambda: 0))
+    monkeypatch.setattr(runtime, "process_group_exists", lambda _pid: next(states))
+    monkeypatch.setattr(runtime.os, "killpg", lambda _pid, sig: sent.append(sig))
+    monkeypatch.setattr(runtime.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        runtime.time, "monotonic", iter([0.0, 20.0, 20.0, 20.0]).__next__
+    )
+    runtime.stop_owned_process(SimpleNamespace(pid=123, poll=lambda: 0))
     assert sent == [signal.SIGTERM, signal.SIGKILL]
 
 
@@ -249,7 +481,7 @@ def test_process_cleanup_stops_child_after_leader_exits() -> None:
     )
     leader.wait(timeout=5)
     try:
-        smoke.stop_owned_process(leader)
+        runtime.stop_owned_process(leader)
         with pytest.raises(ProcessLookupError):
             os.killpg(leader.pid, 0)
     finally:
@@ -264,7 +496,7 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
 ) -> None:
     events: list[str] = []
 
-    class FakeResources(smoke.OwnedResources):
+    class FakeResources(runtime.OwnedResources):
         def __init__(self, *_args: object) -> None:
             self.redis_key_present = False
             self.databases: set[str] = set()
@@ -283,6 +515,8 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
                 self.redis_key_present = True
                 events.append("claim-redis")
                 return "OK"
+            if "GET" in args:
+                return self.run_id if self.redis_key_present else ""
             if "--scan" in args:
                 return (
                     self.redis_prefix + "ownership\n" if self.redis_key_present else ""
@@ -315,23 +549,23 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
         SimpleNamespace(pid=102, name="bff", poll=lambda: None),
     ]
 
-    monkeypatch.setattr(smoke, "verify_release", lambda *_args: None)
+    monkeypatch.setattr(runtime, "verify_release", lambda *_args: None)
     monkeypatch.setattr(
-        smoke,
+        runtime,
         "node_environment",
         lambda *_args: (Path("/fake/node"), {}),
     )
-    monkeypatch.setattr(smoke, "OwnedResources", FakeResources)
-    monkeypatch.setattr(smoke, "distinct_ports", lambda _count: [41001, 41002, 41003])
-    monkeypatch.setattr(smoke, "install_schema", lambda *_args: None)
+    monkeypatch.setattr(runtime, "OwnedResources", FakeResources)
+    monkeypatch.setattr(runtime, "distinct_ports", lambda _count: [41001, 41002, 41003])
+    monkeypatch.setattr(runtime, "install_schema", lambda *_args: None)
     monkeypatch.setattr(
-        smoke,
+        runtime,
         "start_process",
         lambda *_args: processes.pop(0),
     )
-    monkeypatch.setattr(smoke, "wait_ready", lambda *_args: None)
+    monkeypatch.setattr(runtime, "wait_ready", lambda *_args: None)
     monkeypatch.setattr(
-        smoke,
+        runtime,
         "stop_owned_process",
         lambda process: events.append(f"stop-{process.name}"),
     )
@@ -339,7 +573,7 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
     def fail(stage: str) -> None:
         assert stage == "after-processes-started"
         events.append("fault")
-        raise smoke.SmokeError("injected failure")
+        raise runtime.SmokeError("injected failure")
 
     args = SimpleNamespace(
         postgres_admin_url="postgresql://localhost/postgres",
@@ -347,7 +581,7 @@ def test_run_smoke_cleans_all_registered_resources_after_midflight_failure(
         bff_node_bin="/node22",
         capability_node_bin="/node24",
     )
-    with pytest.raises(smoke.SmokeError, match="injected"):
+    with pytest.raises(runtime.SmokeError, match="injected"):
         smoke.run_smoke(args, fault_injection=fail)
 
     assert events == [
@@ -379,7 +613,7 @@ def test_failure_output_never_contains_credentials_tokens_or_payload() -> None:
 def test_eight_case_summary_is_an_invariant() -> None:
     cases = [f"case-{index}" for index in range(8)]
     assert smoke.success_summary(cases)["cases"] == 8
-    with pytest.raises(smoke.SmokeError, match="eight"):
+    with pytest.raises(runtime.SmokeError, match="eight"):
         smoke.success_summary(cases[:-1])
 
 

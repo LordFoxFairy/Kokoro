@@ -459,3 +459,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Task5R未验收/未提交；Task10只完成代码审查保存，仍待DNS条件及10R补验；Task11新增两项前置，继续不激活edge。Goal active，本轮已有owner7R2、Task10代码提交及故障验证进展，不宣称整体完成。
 
 - 5R最终fresh review为SPEC/QUALITY fail0/1/1：除markerless预存prefix被删除外，partial-header清理虽无线程残留，仍打印预期BrokenPipe teardown traceback。Root退回原writer Fix1：前置exact-prefix inventory fail-closed、仅收敛owned shutdown的预期socket错误且保留异常错误可见；原四文件，不动Task10/child。真实CLI因Task2B前置暂停，先完成故障代码审查；Root派sol只读owner监听审计并行提供三文档/最小配置建议，尚未授权child写入。
+
+## 2026-09-22 — W0B-5R Fix1代码放行
+
+- 原writer完成markerless prefix/未知SCAN前置拒绝与只抑制owned teardown预期socket错误；原独立reviewer定向SPEC/QUALITY PASS，0/0/0，内存探针证明预存key无SET/UNLINK，12-client loopback stderr=0/handler=0，非预期RuntimeError仍可见。
+- Root对冻结4文件独立复跑focused37/37（1.59s）、全Root491/491（43.70s）、3文件Ruff format/check及diff通过，前轮compile后未改变Python语法结构；提交前再编译冻结源码。未再运行真实CLI或启动旧wildcard owner，PG/Redis未触碰。代码先保存，5R仍“待集成验证”，2B后更新owner pin/显式loopback并重跑真实8case才验收。
+- 尺寸核对纠正：runner/runtime满足≤800/≤100；测试中既有midflight cleanup用例仍为105行，早先“全部函数≤100”不准确。Root登记临时例外：owner Root，保留该既有行为基线避免与故障修复混拆，截止2026-09-23或5R实际运行验收前（取先）；5R更新owner pin的同一次测试改动须提取fixture setup并关闭例外，不影响其现有断言。
+- 2B只读owner审计已完成。Root选择源码默认127.0.0.1、Docker部署显式0.0.0.0，配置KOKORO_CAPABILITY_HOST/listenHost仅两个精确literal，空白/hostname等拒绝；实际OS绑定地址须验证，API/Schema不变。整体设计由Root固定，尚未授权child实现；先串行完成10R的Root小修复。

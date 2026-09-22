@@ -46,7 +46,7 @@
 | W0B-9 | P0 | 实现 Scheduler generated control 与 receiver | BFF / `w0b9_bff_scheduler_writer` | W0B-8 | 旧协议删除；generated validation、专用 receipt/CAS、幂等与恢复测试通过 | 已验收 |
 | W0B-9V | P0 | 修复基线已失败的两处 AG-UI fixture | BFF / `w0b9v_agui_fixture_writer` | W0B-9 全量门暴露 | 第二Run遵循admission；delete传requestId；原断言保持；独立PG复验通过 | 已验收 |
 | W0B-10 | P0 | 实现 Scheduler↔BFF 隔离真实进程 smoke | Root / `w0b10_scheduler_bff_smoke_writer` | W0B-9、W0B-7R2 | 真实 Scheduler/BFF/DB/Redis；11 个 case；response-unknown + restart 不重复创建；代码已审查，真实CLI待DNS条件 | 待集成验证 |
-| W0B-5R | P0 | 修复Capability smoke同源资源/HTTP生命周期缺陷 | Root / `w0b5r_capability_smoke_writer` | W0B-10代码审查通过、writer停写 | 已创建DB/Redis确认丢失、预存保护、HTTP线程回收回归；新BFF pin；真实8case与清理通过，独立提交 | 进行中 |
+| W0B-5R | P0 | 修复Capability smoke同源资源/HTTP生命周期缺陷 | Root / `w0b5r_capability_smoke_writer` | W0B-10代码审查通过、writer停写 | 已创建DB/Redis确认丢失、预存保护、HTTP线程回收回归；新BFF pin；真实8case与清理通过，独立提交；代码已审查，等待2B监听前置 | 待集成验证 |
 | W0B-2B | P0 | 补齐Capability owner显式监听地址与loopback验收 | Capability / 只读审计后派owner负责人 | Root发现main.ts硬编码0.0.0.0 | runtime配置/入口/测试/docs一致；实际监听loopback；owner门通过；新release后consumer pin刷新 | 进行中 |
 | W0B-10R | P0 | 修复Scheduler smoke无ownership marker的预存Redis prefix保护 | Root / 待派定向修复 | W0B-5R同源审查 | 预存prefix无SET/UNLINK；未知inventory fail-closed；现有生命周期不退化 | 待派工 |
 | W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / integration 子 Agent | W0B-10、W0B-5R、W0B-2B、W0B-10R | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 待派工 |

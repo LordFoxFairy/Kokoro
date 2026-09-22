@@ -29,7 +29,10 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 - `python3 scripts/e2e/run_capability_bff_smoke.py --help` is the isolated Capability/BFF real-build acceptance entry.
   It requires explicit PostgreSQL, Redis and Node 22/24 arguments, starts the frozen child `dist/main.js` files on
   loopback ports, exercises eight BFF-facing Capability cases, and removes only its two exact databases, Redis prefix,
-  process groups and temporary logs.
+  process groups and temporary logs. The runner owns case assertions and CLI composition;
+  `capability_bff_smoke_runtime.py` owns process groups, acknowledgement-loss-safe PostgreSQL/Redis cleanup and the
+  bounded loopback readiness fixture. Pre-existing resource identities are preserved and unknown cleanup inventory
+  fails closed.
 - `python3 scripts/e2e/run_scheduler_bff_smoke.py --help` is the isolated Scheduler/BFF real-process acceptance entry.
   It requires explicit PostgreSQL, Redis DB 7, Node 22 and Go arguments; source-builds the frozen owners; exercises the
   eleven control, reconciliation, callback, replay, tenant-integrity and response-unknown/restart cases; and removes only
