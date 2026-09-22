@@ -109,6 +109,8 @@ ScheduledTask用户list/detail/update/delete/retry均tenant+owner；create所引
 
 补充P0（只读审查、Root核对源码）：`scheduledTaskId`稳定材料必须包含tenant+可信subject+path+key；create replay和outbox lookup不能跨owner命中。Run control目前直接落到Agent adapter而未检查Conversation；必须在业务receipt replay与Agent IO之前检查tenant+subject+Conversation，并覆盖cancel/resume/steer，不能只依赖Agent替BFF授权。Chat query `scope`只允许省略/空/direct（与现有mock定义一致），其它值400，不作为tenant来源；body/query同时提供不同project_ref返回400。非空Conversation.project_ref必须匹配同tenant/owner的Project；隐私读取、message事务与control均fail-closed，不把外部字符串当共享授权。
 
+所有按既有资源寻址的用户mutation都先做资源gate再进入通用receipt：`chat-authorization.ts`负责Conversation；既有`live-bff.ts`提供Project/ScheduledTask的窄HTTP授权入口，server在receipt之前调用。mutation repository仍在事务/写入predicate中重验，避免预检后TOCTOU；不能只靠HTTP预检，也不能通过旧receipt跳过已删除/不可见资源。新建Project无既有资源预检；新建ScheduledTask的非空Project引用先检查且在写事务锁内再次验证。该接线使用Task2既有文件范围，不新增授权框架。
+
 - [ ] **Step 1: 真实PG red矩阵。** 同tenant A/B及跨tenant C：A创建私有Project/ScheduledTask/Conversation；B/C的list不出现、detail/mutation/control/events均与缺失相同；B可创建同名slug的自己的Project。记录调用前后事实/outbox/receipt数量，拒绝不产生业务副作用。
 ```js
 assert.equal(otherUserDetail.status, 404)
