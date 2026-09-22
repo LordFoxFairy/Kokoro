@@ -277,3 +277,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 对旧7文件交付已做额外真实验证：独占临时数据库 + Redis DB 7 下 `go test -race -count=1 -json ./...` 为 `134 pass / 0 skip / 0 fail`（包含7 PostgreSQL、1 Redis与1真实进程重启smoke）；schema fresh install得到4表，二次安装正确拒绝，contract/vet/build/module verify/gofmt通过。该结果仅证明旧覆盖集，不消除审查发现的新回归缺口。
 - 首次空库验证受本机role的 `search_path=kokoro, pg_catalog` 影响而正确拒绝系统目录；第二次在本次独占连接URL显式指定 `search_path=public` 后通过。未更改全局role设置；两个本次临时数据库均已删除，Redis测试key无残留。
 - 范围已限定扩展为10文件：原7文件加 `internal/transport/http/handler.go`、`internal/application/commands.go`、`test/integration/postgres_test.go`。目标为原始HTTP field value与持久化幂等身份一致，不改其他身份处理、schema或依赖。Writer续任，先RED证明两层缺陷，再修复与独立复审；禁止以已有绿色测试放行。
+
+
+## 2026-09-21 — W0B-7R 验收，W0B-7I owner release 集成
+
+- Fix Round 1 以真实 HTTP 与独占 PostgreSQL 测试分别复现两个 trim 缺陷，再仅删除 handler/application 两处 `IdempotencyKey` 改写。两种 key 分别保存 receipt，同 key replay 与异 digest conflict 均保持。原 reviewer 复审结论 ADDRESSED，最终 SPEC/QUALITY 均 `0/0/0`。
+- Scheduler 已精确提交并推送 `92bf9e7e6724c591bab4b7fa27f08d694b59a67e`（`fix(scheduler): protect stable control error and idempotency contracts`），10 个批准文件，工作树 clean，live remote 仅 main。OpenAPI `1.0.0` digest=`6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183`，policy digest=`57b9c2739bcee031f4750fc01dce7607f8fceff5ceea9fc86c938370a0d75d34`；manifest 两项匹配。
+- Root 在冻结 diff 与提交后的上述 SHA 各执行独占 PostgreSQL + Redis DB 7 的 `go test -race -count=1 -json ./...`：均 `135 pass / 0 fail / 0 skip`；包含8项 PostgreSQL integration、1项 Redis integration、1项真实 source-process restart smoke。提交后 contract-check、vet、build 均 exit 0；修改前的 fresh install/4表/非空拒绝门通过，schema 未变。
+- Root 建立的修复测试库与提交后测试库已逐个精确删除；未改变共享role、重启数据库或清空Redis。Worker 自报的1项Redis skip已由Root真实门禁补齐，不再作为此 owner release 的缺失证据。
+- W0B-7I 只集成已推送 owner：Root 单一 writer 更新 Scheduler gitlink、全部8个 inventory tuple与commit-blob digest、固定owner测试pin、CURRENT、当前计划与控制账；不激活任何新edge。BFF Scheduler设计仍等待Root集成门通过。
