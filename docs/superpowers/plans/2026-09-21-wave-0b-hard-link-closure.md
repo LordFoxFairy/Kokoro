@@ -332,7 +332,9 @@ W0B-7I Root 集成精确限于 Scheduler gitlink、`verification/contracts/consu
 
 ### Task 8: Freeze BFF Scheduler design and owner artifact
 
-**Repository/writer:** BFF / BFF Scheduler subagent. **Reviewer:** BFF design reviewer. **Start:** Task 4 remote SHA.
+**Repository/writer:** BFF / `w0b8_bff_scheduler_designer` (`gpt-6-astra`, high). **Reviewer:** independent BFF design reviewer; Root integrates. **Start:** main `2ed792586e89c035155938078d9b07f33af95abd`, clean/live-remote aligned; Scheduler prerequisite accepted in Root `7c9e7abfbf8a4af36d7f039ec93f863dfc66b63f`. Root owns index/commit/push and control documents. No shared fixture access is required in this design-only slice.
+
+Reuse the existing BFF vendor/dependency/config locations rather than a Root contract center or an editable duplicate in BFF public OpenAPI. The immutable owner blob and BFF consumer mapping have different owners; no Schema change is allowed. Before declaring the three-document gate passed, inspect the existing receipt pending-reclaim behavior: if preserving same-key/different-digest rejection requires extending Task 9's runtime file list, report the smallest required change to Root first. Design acceptance must not silently assume absent fencing or cross-service atomicity.
 
 **Exact files:**
 - create `contract/vendor/kokoro-scheduler/92bf9e7e6724c591bab4b7fa27f08d694b59a67e/openapi.yaml`

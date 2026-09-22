@@ -302,3 +302,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 精确暂存后真实 index 门禁：`python3 scripts/verify-repository-topology.py` PASS；`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-capability.json` PASS；`python3 -m pytest scripts/tests -q` 为 `432 passed in 41.00s`；`git diff --cached --check` exit0。
 - Raw compatibility exit1，恰好14条 declared-broken + 1条 illegal，无新增 drift；ten-repository-standard exit1，`109 violations / 1 unverified`。Scheduler双向 edge尚未激活，W0B-8..11继续负责BFF设计、实现和真实进程验收。
 - 本切片不改Schema、不访问或清理共享数据，不重复运行未改变的Capability smoke。全仓E2E、镜像与SLO仍未验收；Goal保持active。
+
+## 2026-09-21 — W0B-7I 冻结证据与 W0B-8 派发
+
+- Root集成commit `7c9e7abfbf8a4af36d7f039ec93f863dfc66b63f` 已推送origin/main；提交后 topology/checkpoint再次PASS，Root tests `432 passed in 34.56s`。`python3 scripts/verify-main-only.py` exit0：Root + 11个submodule全部clean，local/remote仅main。此证据绑定该commit，不代表后续写入中的工作树仍clean。
+- W0B-8负责人 `w0b8_bff_scheduler_designer`（`gpt-6-astra` / high）只写当前计划Task8精确9个BFF文件：vendor、dependency manifest、generator config、技术/API/数据/CURRENT四文档、contract-governance/architecture两测试。BFF基线main `2ed792586e89c035155938078d9b07f33af95abd`，工作树干净且live远端一致。Root保留Git index/commit/push、控制账和最终放行。
+- 本步仅设计与不可变artifact，不改runtime、public contract、package/lock或schema，不激活edge。Root已核验Node22.22.2、pnpm11.25.0、TS5.9.3；后续worker执行治理RED/GREEN、build与contract门，Root重新验收。
+- 设计风险核对项：现有receipt的过期pending claim会替换fingerprint，不能直接当作同key不同digest恒409的证据；要求设计明确opaque identity、Nano精度、semantic digest、重启/response-unknown窗口及后续最小实现范围。任何所需范围扩展先回报主控，不悄悄改Schema或放宽门禁。
