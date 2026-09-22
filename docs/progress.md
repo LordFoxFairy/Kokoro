@@ -309,3 +309,13 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - W0B-8负责人 `w0b8_bff_scheduler_designer`（`gpt-6-astra` / high）只写当前计划Task8精确9个BFF文件：vendor、dependency manifest、generator config、技术/API/数据/CURRENT四文档、contract-governance/architecture两测试。BFF基线main `2ed792586e89c035155938078d9b07f33af95abd`，工作树干净且live远端一致。Root保留Git index/commit/push、控制账和最终放行。
 - 本步仅设计与不可变artifact，不改runtime、public contract、package/lock或schema，不激活edge。Root已核验Node22.22.2、pnpm11.25.0、TS5.9.3；后续worker执行治理RED/GREEN、build与contract门，Root重新验收。
 - 设计风险核对项：现有receipt的过期pending claim会替换fingerprint，不能直接当作同key不同digest恒409的证据；要求设计明确opaque identity、Nano精度、semantic digest、重启/response-unknown窗口及后续最小实现范围。任何所需范围扩展先回报主控，不悄悄改Schema或放宽门禁。
+
+## 2026-09-21 — W0B-8 设计/artifact 验收，W0B-9 范围收敛
+
+- BFF设计release `94a143cc545d74c2d3f518e3cafcc7f0eca0b450`（`docs(bff): freeze Scheduler owner contracts`）已推送main，live远端一致、子仓clean；精确9文件，无runtime/schema/package/lock/public OpenAPI变更。原始owner vendor与Scheduler `92bf9e7e…` blob字节一致；manifest/config/lock摘要已由Root独立核对。
+- Writer `w0b8_bff_scheduler_designer`（gpt-6-astra/high）；独立审查 `w0b8_bff_scheduler_design_reviewer`（gpt-5.6-sol/high）。首轮发现验收层级误把Agent stub作为真实Agent证据，以及canonical JSON数字键序列化验收遗漏；fix1全部解决，最终SPEC/QUALITY `0/0/0`，后续Task9精确范围补充亦通过审查。
+- Root在最终diff与提交后SHA分别复验：build exit0；contract-governance+architecture `34 pass / 0 fail / 0 skip`；contract:check `20 pass / 0 fail / 0 skip`及生成漂移/lint/semantic通过；schema:check `4 pass / 0 fail / 0 skip`；config prettier、diff-check通过。各测试集合有重叠，不相加为独立用例总数。
+- 三文档门通过：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/DATA_MODEL.md`。设计无剩余阻断；实现、fresh install/真实PG与smoke仍待9/10，真实Agent admission/冲突/重启唯一事实属于W4。
+- 当前计划Task9已加入专用receipt port/repository、现有pool装配、稳定Agent occurrence identity、独立identity算法/单测/PG测试和四文档状态同步。保留原Schema/通用public mutation实现，不新增owner/进程；generation、control与webhook边界仍沿既定方案。
+- Root暂不提升BFF gitlink：按计划待W0B-9实现、W0B-10 smoke后由W0B-11统一提升并刷新全部fan-out。当前Root checkpoint仍对已冻结组合PASS（2 active/14 broken/1 illegal）；topology实际exit1，仅`kokoro-bff: checkout HEAD differs from recorded gitlink`。不把这个有记录的待集成状态写成全仓clean或拓扑通过。
+- 本设计切片按Task8未运行完整runtime test、真实integration或db:apply-schema，也未重复Root全量tests；实际Root432项通过的最近冻结证据仍绑定`7c9e7abf…`。Goal保持active，下一步W0B-9。

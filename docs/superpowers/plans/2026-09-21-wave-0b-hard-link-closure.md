@@ -364,7 +364,19 @@ Reuse the existing BFF vendor/dependency/config locations rather than a Root con
 - modify `contract/dependencies/scheduler.json` to `status=generated`
 - create `test/scheduler-client.test.ts`
 - modify `test/scheduler.test.ts`, `test/scheduled-outbox.test.ts`, `test/scheduled-outbox.integration.mjs`, `test/business-store.integration.mjs`, `test/contract-governance.test.mjs`, `test/architecture.test.ts`
-- exclude database schema, config and unrelated routes/docs
+- create `src/application/ports/scheduler-dispatch-receipt-repository.ts`, `src/infrastructure/postgres/scheduler-dispatch-receipt-repository.ts`
+- modify `src/application/ports/bff-business-store.ts`, `src/infrastructure/postgres/repositories.ts`, `src/infrastructure/clients/agent/launch.ts`
+- create `src/infrastructure/clients/scheduler/dispatch-identity.ts`, `test/scheduler-dispatch-identity.test.ts`, `test/scheduler-dispatch-receipt.integration.mjs`
+- update the Scheduler sections of `docs/TECHNICAL_DESIGN.md`, `docs/API_CONTRACT.md`, `docs/DATA_MODEL.md`, `docs/CURRENT.md` to distinguish implemented BFF behavior from unverified cross-owner behavior
+- exclude database schema, runtime config, generic public mutation receipt implementation and unrelated routes/docs
+
+**Task 8 design-driven scope clarification (Root):** The current generic receipt reclaims expired pending rows with a new fingerprint and deletes pending bindings on 5xx. Its actor-dependent scope/launch identity cannot satisfy the accepted Scheduler invariants. Use a dedicated Scheduler receipt port/repository over the existing table and existing pool, with an independent protocol scope, immutable digest and launch snapshot, database-time lease and claim-token CAS. No schema, new process, data owner or all-repository layer migration is introduced. The pure identity/canonical JSON algorithm lives in `dispatch-identity.ts`; generated wire/Nano validation stays in `webhook-contract.ts`; SQL remains in the dedicated repository. Do not import generated types into application/domain. The port exposes only local receipt/snapshot values.
+
+- Preserve opaque key bytes and immutable same-key digest across timeout, 5xx and restart; active same-digest pending responds 425; different digest always 409. Stale prepare/finalize/retryable-release must not change newer claims or falsely acknowledge success.
+- Freeze the full first-authorized launch snapshot before Agent I/O; retries use the same snapshot. Derive Run identity from an unambiguous tenant/schedule/canonicalNano tuple, not actor or opaque key; ordinary Chat launch identity remains unchanged.
+- Use a recursive canonical serializer, not sorted-object reconstruction followed by JSON.stringify. Cover integer-index-looking keys (`"2"`, `"10"`, `"01"`), nested objects, Unicode, arrays, finite numbers, fractional Nano, actor/key/request-id independence and delimiter ambiguity.
+- Add real isolated PostgreSQL tests for concurrent claims, different digest after expiry/5xx, stale tokens, snapshot recovery, tenant isolation and response-unknown; wire the new integration file into `test:integration` and the identity test into `test`. No shared fixture cleanup.
+- W0B-9 proves BFF/PG behavior; W0B-10 uses real Scheduler/BFF with an Agent receipt stub. True Agent durable admission, parameter conflicts and Agent restart uniqueness remain the W4 Agent-owner closure and do not activate `EDGE-BFF-AGENT` here.
 
 1. Reuse exact generator/Zod pins already installed; add `contract:generate:scheduler` and `contract:check:scheduler` to the aggregate contract gate.
 2. RED: old `/jobs`, `job_*`, old header and compact-only time fail; add create/replace/delete 404/409 reconciliation, exact headers, fractional RFC3339, opaque-key replay/conflict, trusted-tenant mismatch, transaction rollback, restart and response-unknown cases.
