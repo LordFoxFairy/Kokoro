@@ -30,6 +30,15 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   It requires explicit PostgreSQL, Redis and Node 22/24 arguments, starts the frozen child `dist/main.js` files on
   loopback ports, exercises eight BFF-facing Capability cases, and removes only its two exact databases, Redis prefix,
   process groups and temporary logs.
+- `python3 scripts/e2e/run_scheduler_bff_smoke.py --help` is the isolated Scheduler/BFF real-process acceptance entry.
+  It requires explicit PostgreSQL, Redis DB 7, Node 22 and Go arguments; source-builds the frozen owners; exercises the
+  eleven control, reconciliation, callback, replay, tenant-integrity and response-unknown/restart cases; and removes only
+  its two exact databases, harness prefix, registered native Scheduler lease keys, process groups and temporary files.
+  The runner owns toolchain/build/start/config composition and total cleanup orchestration;
+  `scheduler_bff_smoke_cases.py` owns the behaviors/private-owner observations;
+  `scheduler_bff_smoke_runtime.py` owns process-group, PostgreSQL and Redis lifecycle; and
+  `scheduler_bff_smoke_http.py` owns loopback-only bounded HTTP fixtures and operation cancellation. The Agent endpoint
+  is an owned deterministic receipt stub, not evidence for a real Agent edge.
 - `scripts/governance/` owns the profile matrix and focused contract, delivery, repository, TypeScript, Web/BFF/Agent checks.
   These modules inspect structure and declarations only; the full verifier must still execute every repository's real commands.
 

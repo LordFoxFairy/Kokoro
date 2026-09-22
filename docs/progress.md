@@ -436,3 +436,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 当前runtime774/test798行。Root先完成放置门，批准同目录HTTP fixture模块及对应HTTP测试文件，精确范围由5变7：按HTTP职责搬迁，原定义和旧import删除；不创建共享框架或兼容alias。实现覆盖request/status/headers/body的主动总期限取消，处理HTTP/1.0 socket转移并回收timer；其他owner/contract/network边界不变。Task10尚未提交或验收，Goal active。
 
 - Root只读完成5R实施前盘点：现有Capability runner884行/test408行，原focused26/26通过；Capability7f89a267 clean。已批准一个同目录runtime与INDEX更新（精确4文件），承接进程/资源/readiness生命周期，保留原8case及已验收行为。5R在Task10代码审查通过且writer停写后可串行推进，不依赖Scheduler回调DNS；Task11仍要求两项真实CLI全绿。这是独立修复的调度调整，不放宽Task10或edge验收门。尚未派工或修改5R源码。
+
+## 2026-09-22 — W0B-10代码审查放行，运行验收保留
+
+- 原writer Fix3已停写，Root冻结七文件SHA-256；原独立astra reviewer SPEC/QUALITY PASS，0/0/0。真实loopback slow status/header/HTTP1.0 body分别3.00/3.01/3.00s自行Timeout，HTTP1.0取消立即退出；late registration、正常/异常出口均无timer/socket/线程残留。HTTP职责移动无旧定义或兼容re-export。
+- Root在控制基线9e0fd859及相同七文件上独立复跑：双focused48/48（8.27s）、全pytest480/480（38.45s）、6文件Ruff format/check、4源码compile、diff-check全部通过；AST文件/函数门通过，冻结hash7/7匹配；w0b-capability checkpoint PASS。
+- Root真实精确CLI仍exit1：本机hostname仅192.168.1.4，loopback前置检查先于所有资源创建。PG自有smoke库/Redis harness为空；未扩大listener，不修改DNS/hosts，不激活双向edge。此切片保存已审查实现，但W0B-10状态只到“待集成验证”，不是已验收；Agent仍明确stub，Goal保持active。
+- 下一切片按已批准调度为独立W0B-5R，由新的Root smoke负责人单独写入四文件；Task10代码保持冻结，Task11仍等待两个真实CLI通过。Root继续拥有所有Git与最终质量放行。

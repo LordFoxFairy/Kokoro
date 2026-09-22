@@ -421,7 +421,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 
 **Repository/writer:** Root / Root smoke subagent. **Reviewer:** fresh reliability reviewer.
 
-**Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/e2e/scheduler_bff_smoke_cases.py`, `scripts/tests/test_scheduler_bff_smoke.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
+**Exact files:** create `scripts/e2e/run_scheduler_bff_smoke.py`, `scripts/e2e/scheduler_bff_smoke_runtime.py`, `scripts/e2e/scheduler_bff_smoke_cases.py`, `scripts/e2e/scheduler_bff_smoke_http.py`, `scripts/tests/test_scheduler_bff_smoke.py`, `scripts/tests/test_scheduler_bff_smoke_http.py`; modify `scripts/INDEX.md`. No gitlink, inventory or control docs.
 
 **Task 10 placement/design gate (Root, 2026-09-22):**
 
@@ -435,7 +435,7 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
 | SQL/data | Apply each canonical schema to a new random database with explicit public search_path. Test harness may inspect/seed only those owned databases; BFF still never queries Scheduler SQL. Capture owner facts rather than simulate Scheduler dispatch. |
 | Redis ownership | Use real Redis DB7 for Scheduler and DB8 for BFF. Harness prefix is `kokoro:w0b:scheduler:<run>:`. Scheduler natively hashes `tenant_id + NUL + occurrence_id` to `kokoro:scheduler:dispatch:<sha256>` and has no prefix setting: before deleting databases, derive/register only exact keys from the run's private Scheduler occurrence rows with its nonce tenant, stop all owned processes, then verify/release only this allow-list. Never scan/delete the entire native prefix. This preserves native lease behavior rather than disabling Redis or changing an owner. |
 | Proof limits | Positive callback/retry evidence must come from the real Scheduler dispatcher; manual negative requests supplement rather than replace this. An Agent receipt stub records calls and identity only; real Agent durability remains W4. Control conflict/reconciliation must prove the real BFF outbox path. |
-| Deletions | No replaced production path in this slice; delete every owned temporary resource on success and failure. Existing Capability runner remains unchanged until Task11. |
+| Deletions | No replaced production path in this slice; delete every owned temporary resource on success and failure. Existing Capability runner changes only in the separate Task5R slice. |
 | Validation | Focused pytest RED/GREEN, Ruff format/lint, py_compile, actual eleven-case CLI with cleanup assertions, independent Root replay; wrong SHA/version, partial setup, timeout and cleanup failure are nonzero. |
 
 
@@ -447,15 +447,15 @@ Root reproduced both failures on unmodified BFF `94a143cc545d74c2d3f518e3cafcc7f
      --bff-node-bin "$HOME/.nvm/versions/node/v22.22.2/bin" \
      --go-bin "$(command -v go)"
    ```
-2. RED unit tests mirror Task 5 lifecycle tests and additionally cover temporary Go binary cleanup, deterministic Agent stub receipt, response-drop proxy and BFF restart. Capture non-zero from `python3 -m pytest scripts/tests/test_scheduler_bff_smoke.py -q`.
+2. RED unit tests mirror Task 5 lifecycle tests and additionally cover temporary Go binary cleanup, deterministic Agent stub receipt, response-drop proxy and BFF restart. Capture non-zero from `python3 -m pytest scripts/tests/test_scheduler_bff_smoke.py scripts/tests/test_scheduler_bff_smoke_http.py -q`.
 3. Create only `w0b_sched_<run>_{scheduler,bff}` databases and prefix `kokoro:w0b:scheduler:<run>:`. Build `./cmd/scheduler` into the runner temp directory with Go 1.26.8; apply both schemas; start real Scheduler and BFF on loopback; start only an owned deterministic Agent receipt stub because `EDGE-BFF-AGENT` is not under activation; wait at most 30 seconds; clean only owned resources.
 4. Exactly eleven cases: control create, replace and delete; delete 404 reconciliation; create 409→replace; replace 404→create; fractional RFC3339 callback; duplicate replay; same-key/different-digest 409; trusted header/body tenant mismatch; and one response-unknown scenario that drops the response after durable acceptance, restarts BFF, then retries. Agent stub invocation count remains one per occurrence.
 5. GREEN:
    ```bash
-   python3 -m pytest scripts/tests/test_scheduler_bff_smoke.py -q
-   python3 -m ruff format --check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/tests/test_scheduler_bff_smoke.py
-   python3 -m ruff check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/tests/test_scheduler_bff_smoke.py
-   python3 -m py_compile scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py
+   python3 -m pytest scripts/tests/test_scheduler_bff_smoke.py scripts/tests/test_scheduler_bff_smoke_http.py -q
+   python3 -m ruff format --check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/e2e/scheduler_bff_smoke_http.py scripts/tests/test_scheduler_bff_smoke.py scripts/tests/test_scheduler_bff_smoke_http.py
+   python3 -m ruff check scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/e2e/scheduler_bff_smoke_http.py scripts/tests/test_scheduler_bff_smoke.py scripts/tests/test_scheduler_bff_smoke_http.py
+   python3 -m py_compile scripts/e2e/run_scheduler_bff_smoke.py scripts/e2e/scheduler_bff_smoke_runtime.py scripts/e2e/scheduler_bff_smoke_cases.py scripts/e2e/scheduler_bff_smoke_http.py
    # then the exact real CLI above; expected exit 0 and JSON {"status":"PASS","cases":11,...}
    ```
 6. Review; commit `test(e2e): add isolated Scheduler BFF smoke`; push.
