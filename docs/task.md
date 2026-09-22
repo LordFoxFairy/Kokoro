@@ -45,7 +45,7 @@
 | W0B-8 | P0 | 冻结 BFF Scheduler 控制/回调设计与 artifact | BFF / `w0b8_bff_scheduler_designer` | W0B-7 | control/receiver 边界、trusted tenant、opaque key + semantic digest、恢复语义确定 | 已验收 |
 | W0B-9 | P0 | 实现 Scheduler generated control 与 receiver | BFF / `w0b9_bff_scheduler_writer` | W0B-8 | 旧协议删除；generated validation、专用 receipt/CAS、幂等与恢复测试通过 | 已验收 |
 | W0B-9V | P0 | 修复基线已失败的两处 AG-UI fixture | BFF / `w0b9v_agui_fixture_writer` | W0B-9 全量门暴露 | 第二Run遵循admission；delete传requestId；原断言保持；独立PG复验通过 | 已验收 |
-| W0B-10 | P0 | 实现 Scheduler↔BFF 隔离真实进程 smoke | Root / `w0b10_scheduler_bff_smoke_writer` | W0B-9、W0B-7R2 | 真实 Scheduler/BFF/DB/Redis；11 个 case；response-unknown + restart 不重复创建 | 进行中 |
+| W0B-10 | P0 | 实现 Scheduler↔BFF 隔离真实进程 smoke | Root / `w0b10_scheduler_bff_smoke_writer` | W0B-9、W0B-7R2 | 真实 Scheduler/BFF/DB/Redis；11 个 case；response-unknown + restart 不重复创建；Fix3补全HTTP总期限，真实CLI待DNS条件 | 进行中 |
 | W0B-5R | P0 | 修复Capability smoke同源资源/HTTP生命周期缺陷 | Root / 待派smoke负责人 | W0B-10 | 已创建DB/Redis确认丢失、预存保护、HTTP线程回收回归；新BFF pin；真实8case与清理通过，独立提交 | 待派工 |
 | W0B-11 | P0 | 集成并激活 Scheduler 双向 edge | Root / integration 子 Agent | W0B-10、W0B-5R | BFF consumer generator/Node + Scheduler producer Go 证据固定；`w0b-exit` 通过 | 待派工 |
 | W0B-12 | P0 | 冻结 BFF Storage fail-closed 与 W1/W2 前置 | BFF / Storage 子 Agent | W0B-11 | `GET /v1/library` 固定 503；授权矩阵、IAM admission、scope/pagination owner 明确 | 待派工 |

@@ -428,3 +428,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - Fix1 Root非扩面验证：focused45/45、全pytest477/477、Ruff/compile通过。独立复审关闭I1/I3/I4/M1，仅剩2 Important：慢速上游body绕过idle timeout使server_close无界join；RFC1918自动绑定且无入站peer限制。reviewer的6秒慢速body/peer模拟探针已全部清理。
 - Root派原writer Fix2：为全部proxy upstream I/O设置总期限/取消并有界join；撤回未经批准的RFC1918自动扩面，保留loopback/fail-closed并提前检查DNS。用户尚未答复网络边界问题，Root按既有批准约束推进，不等待回复才修其余质量缺口，不修改共享hosts/DNS。真实CLI若仍因本机DNS失败，应如实交付环境限制，Task10不冒称已验收。
+
+## 2026-09-22 — W0B-10 Fix2复验 / Fix3定向派发
+
+- Root在冻结Fix2源码上实测focused47/47、全pytest479/479（42.85s）、Ruff format/check、compile与diff通过。真实CLI exit1，前置DNS检查发现主机名仅解析192.168.1.4；未创建run资源，自有Scheduler/BFF smoke数据库为零。保留原loopback边界，用户网络选项尚待答复。
+- 独立reviewer确认F2关闭、慢速body约3.1s自行Timeout，但未完成headers每100ms滴入1byte时4.3s仍未结束，保留F1一个Important（0/1/0）。手动取消后所有探针资源已回收。Root接受该问题，原writer进入Fix3，不以479项全绿替代失败路径证据。
+- 当前runtime774/test798行。Root先完成放置门，批准同目录HTTP fixture模块及对应HTTP测试文件，精确范围由5变7：按HTTP职责搬迁，原定义和旧import删除；不创建共享框架或兼容alias。实现覆盖request/status/headers/body的主动总期限取消，处理HTTP/1.0 socket转移并回收timer；其他owner/contract/network边界不变。Task10尚未提交或验收，Goal active。
