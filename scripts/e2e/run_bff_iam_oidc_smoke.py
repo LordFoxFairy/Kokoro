@@ -23,6 +23,7 @@ from urllib.parse import parse_qs, quote, quote_plus, unquote, urlencode, urlspl
 from urllib.request import ProxyHandler, Request, build_opener
 
 import capability_bff_smoke_runtime as runtime
+from bff_owner_schema import bff_owner_database_url
 import run_bff_iam_session_smoke as session
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -718,9 +719,8 @@ def main(argv=None) -> int:
                     raise SmokeError("Shared Redis unavailable")
                 before = inventory(resources)
                 stage = "BFF database create"
-                db_url = resources.create_database("bff")
-                bff_env.update({"KOKORO_BFF_POSTGRES_URL": db_url, "KOKORO_BFF_REDIS_URL": args.redis_url,
-                                "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC"})
+                db_url = bff_owner_database_url(resources.create_database("bff"))
+                bff_env.update({"KOKORO_BFF_POSTGRES_URL": db_url, "KOKORO_BFF_REDIS_URL": args.redis_url})
                 stage = "BFF schema install"
                 runtime.install_schema("bff", BFF, str(args.bff_node_bin.parent), bff_env, log)
                 iam_env.update({"IAM_TEST_ADMIN_URL": args.postgres_admin_url, "IAM_TEST_REDIS_URL": args.redis_url,

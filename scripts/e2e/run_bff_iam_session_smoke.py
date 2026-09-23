@@ -21,8 +21,10 @@ from urllib.request import ProxyHandler, Request, build_opener
 
 if __package__:
     from . import capability_bff_smoke_runtime as runtime
+    from .bff_owner_schema import bff_owner_database_url
 else:
     import capability_bff_smoke_runtime as runtime
+    from bff_owner_schema import bff_owner_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
 IAM = ROOT / "apps" / "kokoro-iam"
@@ -239,7 +241,7 @@ def require_error(status: int, body: dict, expected_status: int, expected_code: 
 def database_count(resources: runtime.OwnedResources, db_url: str, table: str) -> int:
     if table not in {"bff_project", "bff_idempotency_receipt"}:
         raise SmokeError("Database assertion table not allowed")
-    value = resources.command(["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", f"SELECT count(*) FROM public.{table}"]).strip()
+    value = resources.command(["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", f"SELECT count(*) FROM kokoro_bff.{table}"]).strip()
     if not re.fullmatch(r"[0-9]+", value):
         raise SmokeError("BFF fact count malformed")
     return int(value)
@@ -296,7 +298,7 @@ def main(argv=None) -> int:
                 iam_before = iam_resource_snapshot(resources)
                 stage = "BFF database create"
                 db_url = resources.create_database("bff")
-                bff_env.update({"KOKORO_BFF_POSTGRES_URL": db_url, "KOKORO_BFF_REDIS_URL": args.redis_url, "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC"})
+                bff_env.update({"KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(db_url), "KOKORO_BFF_REDIS_URL": args.redis_url})
                 stage = "BFF schema install"
                 runtime.install_schema("bff", BFF, str(args.bff_node_bin.parent), bff_env, log)
                 iam_env.update({"IAM_TEST_ADMIN_URL": args.postgres_admin_url, "IAM_TEST_REDIS_URL": args.redis_url, "NODE_ENV": "test"})
@@ -332,7 +334,7 @@ def main(argv=None) -> int:
                 if database_count(resources, db_url, "bff_project") != 1:
                     raise SmokeError("Expected exactly one BFF project fact")
                 stage = "owner SQL assertion"
-                owner = resources.command(["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", "SELECT tenant_id || '|' || owner_id FROM public.bff_project LIMIT 1"]).strip()
+                owner = resources.command(["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", "SELECT tenant_id || '|' || owner_id FROM kokoro_bff.bff_project LIMIT 1"]).strip()
                 if owner != f"{ready.tenant_id}|{ready.user_id}":
                     raise SmokeError("Legacy identity headers changed BFF fact owner")
                 cases += 1

@@ -445,6 +445,7 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
     from scripts.e2e import run_system_owner_smoke as smoke
 
     expected = smoke.EXPECTED_RELEASES
+    assert expected["kokoro-bff"] == "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
     apps = tmp_path / "apps"
     apps.mkdir()
     for owner in expected:

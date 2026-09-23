@@ -22,6 +22,7 @@ from typing import BinaryIO
 if __package__:
     from . import scheduler_bff_smoke_runtime as _runtime
     from .bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+    from .bff_owner_schema import bff_owner_database_url
     from .scheduler_bff_smoke_cases import exercise_cases, http_json
     from .scheduler_bff_smoke_http import (
         AgentReceiptState,
@@ -31,6 +32,7 @@ if __package__:
 else:
     import scheduler_bff_smoke_runtime as _runtime
     from bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+    from bff_owner_schema import bff_owner_database_url
     from scheduler_bff_smoke_cases import exercise_cases, http_json
     from scheduler_bff_smoke_http import (
         AgentReceiptState,
@@ -47,7 +49,7 @@ command_output, run_owned_command = (
 )
 stop_owned_process = _runtime.stop_owned_process
 
-BFF_RELEASE = "cd1c2600ea2a6e0716b07628822a49653964675a"
+BFF_RELEASE = "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
 SCHEDULER_RELEASE = "975dee59616a1e0eda609aa69283401344900d83"
 EXPECTED_CASES = (
     "control_create",
@@ -165,8 +167,7 @@ def apply_schemas(
         raise SmokeError("Scheduler schema installation failed")
     bff_env = {
         **node_env,
-        "KOKORO_BFF_POSTGRES_URL": bff_url,
-        "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
+        "KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(bff_url),
     }
     corepack = str(Path(node_env["PATH"].split(os.pathsep)[0]) / "corepack")
     if (
@@ -403,7 +404,7 @@ def service_configuration(
     }
     bff_env = {
         **node_env,
-        "KOKORO_BFF_POSTGRES_URL": bff_url,
+        "KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(bff_url),
         "KOKORO_BFF_REDIS_URL": state.resources.bff_redis_url,
         "KOKORO_BFF_HOST": "127.0.0.1",
         "KOKORO_BFF_PORT": str(bff_port),
@@ -418,7 +419,6 @@ def service_configuration(
         "KOKORO_AGENT_BASE_URL": agent_base,
         "KOKORO_TENANT_ID": state.tenant,
         "KOKORO_DOMAIN": state.resources.run_id + ".smoke.local",
-        "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
     }
     node = Path(args.bff_node_bin).expanduser().resolve() / "node"
     return ServiceConfiguration(

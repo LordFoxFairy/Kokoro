@@ -20,7 +20,7 @@ LOOPBACK_BINDING = ("fixture-host.local", "127.0.0.1", "127.0.0.1/32")
 
 
 def test_bff_release_and_user_headers_use_iam_admission() -> None:
-    assert smoke.BFF_RELEASE == "cd1c2600ea2a6e0716b07628822a49653964675a"
+    assert smoke.BFF_RELEASE == "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
     assert case_owner.bff_headers(
         "service-secret", "tenant-a", "user-a", "request-1", "key-1", "session-token"
     ) == {

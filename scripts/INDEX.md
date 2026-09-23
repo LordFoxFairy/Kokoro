@@ -34,6 +34,9 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 - `python3 scripts/e2e/run_bff_iam_session_smoke.py --help` is the real IAM Nest/PKCE fixture HTTP to BFF source-process
   admission entry. It pins clean IAM/BFF commits and Root gitlinks, creates only its own BFF database, asks the IAM test-owned
   host to manage IAM facts, exercises seven allow/deny/revocation/outage cases, and verifies owned-resource cleanup.
+- `python3 scripts/e2e/run_bff_iam_oidc_smoke.py --help` exercises the IAM→BFF native Code+S256 interaction chain;
+  it does not prove Web RP login. `bff_owner_schema.py` gives all five Root BFF smokes an application URL fixed to
+  `kokoro_bff`; `psql` observations retain the original libpq URL and explicitly qualify owner SQL.
 - `bff_iam_admission_stub.py` is only a strict fixed-token wire fixture for unrelated owner smoke regressions; it is not
   evidence of a real IAM dependency. Real IAM evidence comes from the preceding runner.
 - `python3 scripts/e2e/run_capability_bff_smoke.py --help` is the isolated Capability/BFF real-build acceptance entry.

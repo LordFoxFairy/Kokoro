@@ -20,14 +20,16 @@ from urllib.parse import urlencode
 if __package__:
     from . import capability_bff_smoke_runtime as runtime
     from .bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+    from .bff_owner_schema import bff_owner_database_url
 else:
     import capability_bff_smoke_runtime as runtime
     from bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+    from bff_owner_schema import bff_owner_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
 BFF = ROOT / "apps" / "kokoro-bff"
 CAPABILITY = ROOT / "apps" / "kokoro-capability"
-BFF_RELEASE = "cd1c2600ea2a6e0716b07628822a49653964675a"
+BFF_RELEASE = "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
 CAPABILITY_RELEASE = "9c88d0d934387b590bc74dae0179a587292e0253"
 
 
@@ -313,7 +315,7 @@ def _bff_environments(
 ) -> tuple[dict[str, str], dict[str, str]]:
     common = {
         **base,
-        "KOKORO_BFF_POSTGRES_URL": database_url,
+        "KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(database_url),
         "KOKORO_BFF_REDIS_URL": redis_url,
         "KOKORO_BFF_HOST": "127.0.0.1",
         "KOKORO_BFF_MODE": "live",
@@ -323,7 +325,6 @@ def _bff_environments(
         "KOKORO_AGENT_ENABLED": "false",
         "KOKORO_TENANT_ID": tenant,
         "KOKORO_DOMAIN": f"{run_id}.smoke.localhost",
-        "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
     }
     good = {
         **common,

@@ -25,13 +25,15 @@ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_ope
 
 if __package__:
     from .bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+    from .bff_owner_schema import bff_owner_database_url
 else:
     from bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+    from bff_owner_schema import bff_owner_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_RELEASES = {
     "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
-    "kokoro-bff": "cd1c2600ea2a6e0716b07628822a49653964675a",
+    "kokoro-bff": "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87",
     "kokoro-agent": "741c928dfc11313a25064a905d77d4ad371f5534",
 }
 
@@ -862,7 +864,9 @@ def run_smoke(args: argparse.Namespace) -> int:
             )
             bff_env.update(
                 {
-                    "KOKORO_BFF_POSTGRES_URL": resources.create_database("bff"),
+                    "KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(
+                        resources.create_database("bff")
+                    ),
                     "KOKORO_BFF_REDIS_URL": args.redis,
                     "KOKORO_BFF_HOST": "127.0.0.1",
                     "KOKORO_BFF_PORT": str(bff_port),
@@ -874,7 +878,6 @@ def run_smoke(args: argparse.Namespace) -> int:
                     "KOKORO_AGENT_ENABLED": "false",
                     "KOKORO_TENANT_ID": tenant,
                     "KOKORO_DOMAIN": f"{resources.run_id}.smoke.localhost",
-                    "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
                 }
             )
             for owner, env, base in [
