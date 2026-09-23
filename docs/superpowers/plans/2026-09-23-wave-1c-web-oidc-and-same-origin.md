@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Root `AGENTS.md` 与 SQL/TypeScript/API 专项手册为权威；先通过每个 owner 的 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL` 三文档门，再改业务源码。
-- 只在 `apps/kokoro-bff` 与 `apps/kokoro-app` 写本切片，IAM 已发布 owner 协议不回退旧 alias；跨仓每次只一位 writer，Root 保留 Git index/commit/push/gitlink。
+- 原 W1C relay/RP 代码只写 `apps/kokoro-bff` 与 `apps/kokoro-app`；W1C-2F 为消除已发布文档冲突，额外修订 IAM ADR/技术/API/可靠性文档，**不改变 IAM 运行协议或回退旧 alias**。每仓同一时刻仅一位 writer；Root 保留 Git index/commit/push/gitlink。
 - 当前 IAM admission `0.2.0` 只校验已有 Bearer；BFF `/iam` relay 是无用户凭据的登录 bootstrap 服务例外，普通 `/v1` 仍必须在线 IAM admission。
 - IAM 原生 OAuth/OIDC redirect、JSON、表单、cookie 不包装为 BFF Product envelope；BFF 不编辑、复制 IAM 的协议 schema，自己维护的是 relay 准入策略，并从单一TS policy确定性导出只读 `contract/iam-relay-policy.json` 供Web固定版本消费。浏览器到 Web 的 Product Session cookie `Path=/` 可能同时出现在 `/iam` 请求；Web/BFF 双层只转发 IAM 发布 cookie snapshot 中的精确 `kokoro-issuer.*` 与 production `__Secure-kokoro-issuer.*`，绝不转发 Auth.js/Product Session cookie、BFF service secret 或浏览器自带任意 `Authorization`。通常 issuer cookie `Path=/iam`；锁定 OAuth Provider 的 logout-confirmation cookie 使用更窄的 `Path=/iam/oauth2/end-session/confirm`，必须按精确名称/路径例外验证，不机械改写为 `/iam`。`/iam/oauth2/token` 的 Basic client authentication 只可由受信 Web server 生成，Web ingress 必须丢弃浏览器任意 Basic/Bearer；BFF 只信任已校验的 Web service 身份，不假装能凭同一 secret 区分 Basic 的原始来源。
 - 默认个人私有、显式分享；Web 不把 Product Session cookie 或 Bearer 暴露给浏览器脚本、IAM issuer 或其他 owner。
@@ -61,7 +61,7 @@
 
 - Web cookie 为 HttpOnly 加密 Product Session，只携带随机 session ID、generation、当前 access 与必要 RP 退出提示；不以旧 cookie 的 refresh 作为撤销依据。Web Redis record 是本服务持有凭据的生命周期状态，保存 `active(g)`/`refreshing(g,reservation,deadline)`/`revoked`、固定到期和 **Web 密钥加密的当前 refresh**；key、日志、公开 session、浏览器存储均无 token。IAM 是实际 issuer grant/session 的唯一事实 owner。
 - `active(g)` 原子预留为 `refreshing(g,reservation)`；仅赢家发起一次固定 Basic/resource 的 refresh，随后在 reservation、deadline、未撤销条件下原子写新加密 refresh 并提交 `active(g+1)`，才发新 cookie。败者只拒绝本请求，不撤销赢家、不触发第二次 refresh、不清其 cookie。pending、旧 generation、结果未知、Redis 故障均 fail closed；未决 reservation 到期只撤销，不回退 active。cookie 交付未知时重新登录。
-- logout 凭可信解封的 session ID 原子 tombstone 当前记录并 **take 当前**加密 refresh，不要求请求 cookie generation 最新；重复 logout 不重复远端 revoke。缺失记录也建覆盖最大会话/在途窗口的 tombstone，迟到 finalize 不可复活。tombstone 成功后单次有界 revoke/end-session 并清 cookie；远端失败准确报告未确认。若 tombstone 写入结果未知，清 cookie 只能代表本浏览器清除，不能报告服务端已撤销。refresh 与 logout 并发下远端撤销结果可能不确定；锁定 Better Auth 对旧 refresh 的 revoke 会扩大到同 client/user family 且返回 400，不能称它幂等或单设备隔离。
+- logout 凭可信解封的 session ID 原子 tombstone 当前记录；仅 `active` 时 **take 已确认当前**的加密 refresh 并单次有界 revoke，`refreshing` 时不向 IAM 发送可能已 rotated 的旧 refresh，报告远端撤销未确认。请求 cookie generation 不必最新；重复 logout 不重复远端 revoke。缺失记录也建覆盖最大会话/在途窗口的 tombstone，迟到 finalize 不可复活；受控 end-session 后清 cookie。若 tombstone 写入结果未知，清 cookie 只能代表本浏览器清除，不能报告服务端已撤销。锁定 Better Auth 对旧 refresh 的 revoke 会扩大到同 client/user family 且返回 400，不能称它幂等或单设备隔离。
 - IAM ADR/API/TECHNICAL_DESIGN/RELIABILITY 需删去“Web 必须 previous-generation/fingerprint/jitter 恢复、单 CAS”指令，保留 issuer 30 秒 replay、真实 revoke 行为；Web 三文档同步上述唯一目标。各仓文档门完成前不写 Product Session 业务代码。
 - Team 管理另走 IAM owner-first：先发布当前 tenant 的狭窄 member/invitation read、授权 scope/permission 和 machine contract，再由 BFF 固定 artifact 生成消费、发布窄 Product projection，Web 最后切换 UI/代理并删除 `/bff/*`/team-session 旧路径。待加入租户的邀请查询/接受/拒绝属于 issuer-session 路径，不借尚不存在的目标 tenant Product admission。成员资格不自动开放私人 Conversation/Project/文件。
 
