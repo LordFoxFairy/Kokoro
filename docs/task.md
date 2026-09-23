@@ -135,6 +135,8 @@ W1A-F：最终组合只读审查，由 `w1a_final_reviewer`（gpt-6-astra/high�
 
 ### Wave1B 执行卡（先文档门，再逐片实现）
 
+当前节奏（用户2026-09-22裁决）：以功能代码、针对性测试和最小真实联调推进；运维加固、部署、镜像、SLO及重复全仓审计后置。身份/私有资源负例与数据正确性继续作为开发验收，不扩张成运维项目。
+
 Owner为BFF；前置IAM release `259a66e6a569889c030734f380e99685d8b9e21c`、OpenAPI0.2.0已可固定消费。主控先冻结BFF三文档与精确文件集，再派同仓唯一负责人。目标是Node22 generated admission、删除自报header身份来源、明确public share/Scheduler服务边界，并承接已确认的同tenant私有资源权限缺口；Web OIDC/CSRF接线随后推进。不重复已验收W0B/W1A，也不提前激活edge。
 
 | ID / 目标 | Owner / Agent / 模型 / 模式 | 基线与范围 | 完成条件 / 交付 |
@@ -145,6 +147,7 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 
 | ID / 优先级 | Owner / Agent / 模型 | 基线 / 范围 | 验收 / 状态 |
 | --- | --- | --- | --- |
-| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c，绝对目录同上；三文档已由Root验收，授权当前计划Task1精确runtime/contract/test文件集；Task2仍未授权 | 当前计划 Task1；先通过三文档门，再实现 generated admission；Root唯一Git操作；状态：进行中 |
+| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c，绝对目录同上；三文档已由Root验收，授权当前计划Task1精确runtime/contract/test文件集；Task2仍未授权 | 当前计划 Task1；64文件停写交付，owner报告222标准/35集成；独立SPEC/QUALITY审查与Root重跑中，Root唯一Git操作；状态：待审查 |
+| W1B-1R / P0 | BFF / `w1b1_task_reviewer` / gpt-5.6-sol high / 只读；Root集成验证 | main c5e9b3c + Task1冻结64文件；仅审查本片diff与具名调用风险，不操作Git/数据库/服务；Root独占验证与提交 | SPEC/QUALITY发现0 Critical/2 Important/0 Minor；同负责人只修client/transport/聚焦测试中的429映射与总响应预算；状态：首轮修复中 |
 | W1B-2 / P0 | BFF / 同一负责人后续续派 | 依赖W1B-1冻结提交；计划Task2精确范围，默认个人私有 | Project/ScheduledTask/Run control/Project关联负例通过；状态：待派工 |
 | W1B-3 / P0 | Root主控 + 独立审查 | 依赖BFF两片停写、完整门；Root单独组合任务卡 | 真实证据、smoke回归、gitlink/inventory、main-only；不以fixture激活IAM；状态：待派工 |

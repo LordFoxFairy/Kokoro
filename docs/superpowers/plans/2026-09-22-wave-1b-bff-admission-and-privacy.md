@@ -17,6 +17,7 @@
 - 本地共用 PostgreSQL/Redis 实例和 role；测试使用新随机数据库及专属 key/prefix，禁止清理预存数据库或共享 Redis。
 - IAM owner 固定 `259a66e6a569889c030734f380e99685d8b9e21c`，OpenAPI0.2.0，`contract/openapi/iam.internal.v1.json`，SHA256 `f7a3ea2e5ae7ade82ae1a6756a2f560d3129ca1b2977c6b0905633a284bd3aab`。
 - W0B 当前4 active /12 broken /1 illegal 不因生成client自动变绿；W1B必须明确真实owner与fixture证据。Billing最后、Platform原子改名不提前。
+- 用户最新裁决（2026-09-22）：当前以开发为目的，优先功能代码、针对性测试和最小真实联调；运维加固、部署、镜像、SLO与重复全仓审计后置，不作为本片功能开发的额外前置。保留身份/资源权限、数据一致性及自有测试资源隔离，不扩大为基础设施治理项目。
 
 ## 基线、放置与文档门
 
@@ -132,8 +133,8 @@ assert.equal(outboxCountAfterDeniedWrite, outboxCountBeforeDeniedWrite)
 - [ ] 回收两个切片SPEC/QUALITY结论，Root在冻结BFF SHA重跑完整owner门。核对IAMvendor源commit/digest、SQL owner/无FK、用户/服务例外、旧身份入口全部删除。
 - [ ] 更新现有Capability↔BFF与Scheduler↔BFF隔离smoke的认证fixture，使其使用明确token→admission fixture映射；System smoke同步。fixture必须标注非真实IAM，不能因此激活BFF→IAM edge。保持原8/11case及资源生命周期负例，不用删case通过。
 - [ ] 按已经发布的IAM/BFF原生接口建立独立真实IAM↔BFF验收任务：当前有效会话、撤销/成员删除、同tenant身份冒用、IAM失联fail-closed、无敏感token日志；Root发布前要有真实证据，否则BFF→IAM继续broken并明确剩余项。该harness须先独立放置/隔离设计，不从Root直接读写业务数据库。
-- [ ] IAM真实进程预检：当前`src/main.ts`固定监听`0.0.0.0`，不得把它当作已通过Root loopback隔离门。真实源码进程smoke前，按单owner规则独立交给IAM负责人补监听配置/负例并发布；契约字节未变也要按真实release记录pin。已有IAM Nest HTTP fixture是真实PG/Redis业务但覆盖配置/provider装配，若先使用它，只能标注真实HTTP integration，不能冒称`src/main.ts`双进程验收。
-- [ ] 子仓push后再提升Root gitlink与全部BFF fan-out evidence；按实测证据决定edge状态，生成器/Node/provenance与consumer digest一致。执行Root topology、exact checkpoint、`python3 -m pytest scripts/tests -q`、standard实际报告、main-only/live-main/clean审计。
+- [ ] 开发联调优先复用IAM已有loopback Nest HTTP fixture及真实PG/Redis业务，明确标注真实HTTP integration，不冒称`src/main.ts`双进程或部署验收。IAM源码入口监听配置、发布进程硬化留到部署阶段，不因该运维项打断BFF→Web功能推进；也不为此扩大监听范围或放宽测试资源隔离。
+- [ ] 子仓push后再提升Root gitlink与全部BFF fan-out evidence；按实测证据决定edge状态，生成器/Node/provenance与consumer digest一致。在组合发布时集中执行一次Root topology、exact checkpoint及相关Root回归，不在每个功能小片重复全仓审计；全仓standard/远端分支/部署门后置统一收尾，既有失败如实保留。
 - [ ] 更新同一task/progress/CURRENT，不复制任务中心；W1后续Web OIDC/CSRF与execution authorization仍由既定owner接续，完整Goal继续active。计划scratch仅在本计划全部验收且证据固化后删除。
 
 ## 本片不宣称的能力

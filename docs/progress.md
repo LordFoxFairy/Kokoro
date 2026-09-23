@@ -584,3 +584,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - W1B控制计划已提交并推送Root `818f714841e83e5ea6ace630f7254f239c72255a`；Root handbook/topology回归14 passed，topology和本地Markdown链接通过。BFF负责人三文档停写交付后，Root完整审阅diff（仅三文档）、复跑 `corepack pnpm contract:check`（21 passed，63 operations、两旧generated drift通过，Library既有1 warning）及`schema:check`（4 passed）；文档门通过。
 - 已续派同一BFF负责人进入Task1 TDD实现，仍只写计划精确文件集；Root独占Git。预存IAM两数据库仍保留，Redis8 PONG；本门未创建/清理基础设施。Task2私有SQL/Run control尚未实施，边界不得提前宣称闭环。
 - Root另在未改动的`src/http/routes/scheduler.ts`及对应dist上执行纯函数探针：同tenant、不同user、同path/key生成的ScheduledTask ID完全相同，确认Task2碰撞缺陷（无DB/网络操作）。资源授权必须先于receipt且事务内重验的补充已提交并推送`91908b3b`，不是修复完成证据。
+
+- W1B Task1负责人已停写交付：64文件，BFF HEAD仍c5e9b3c，未操作Git；owner报告222标准/35真实integration及contract24/architecture26/schema4通过。Root已核对精确文件范围、vendor owner blob一致、schema/lock未改，冻结hash；进入独立SPEC/QUALITY审查与Root重跑，尚未提交或提升gitlink。
+- Root在该64文件冻结工作树独立执行Node22.22.2 `corepack pnpm format:check/lint/typecheck/contract:check/test:architecture/schema:check/test/build`，全部exit0；contract24、architecture26、schema4、标准222（5.44s），0失败/跳过。真实新库`bff_w1b_root_c15823ee2894`先apply-schema再`test:integration`，35 passed（14.25s）；自有库已删除、所有预存库保留、Redis8前后key完全一致。独立审查尚未放行，以上不代表Task1已验收或整体私有资源已闭环。
+- Root额外loopback探针发现当前测试未覆盖的契约偏差：严格合法IAM 429响应省略可选`Retry-After`时，BFF映射为503而不是既定429；`assert.equal(actual.status,429)`真实失败。临时HTTP server已关闭，无数据库操作；已交独立审查汇总，Task1保持未放行。
+- 用户进一步明确“目的是开发、写代码”，避免深陷运维。主控已收敛当前计划：只修本片明确行为/契约缺陷，后续直接推进资源权限与聊天代码；IAM监听硬化、部署/镜像/SLO后置，开发联调复用现有真实HTTP fixture并准确标注证据等级；不在每个小片重复全仓审计。该调整不取消权限负例、事务正确性和测试资源隔离。
