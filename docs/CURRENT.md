@@ -8,7 +8,7 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 
 | Root 路径 | 子仓 SHA |
 | --- | --- |
-| `apps/kokoro-app` | `38683a5c2a46af3e9d604b5d7219a864684d5ad1` |
+| `apps/kokoro-app` | `85b4bad25769efcca8f417e0232fdaa6c485bf01` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `apps/kokoro-bff` | `cd1c2600ea2a6e0716b07628822a49653964675a` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
@@ -25,7 +25,7 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 - Root 与每个 submodule 的本地和 `origin` 都只保留 `main`。每个 gitlink 锁定已推送的 commit；`.gitmodules branch=main` 仅是更新提示，不构成发布锁。
 - 子仓的 tests 不迁入 Root。Root `scripts/tests/` 只覆盖 Root 治理脚本；跨仓行为测试将归 `verification/`，不重复子仓单测。
 - 用户已选开发应用单 PostgreSQL 数据库/单账号，owner 在同库使用独立 schema/连接 URL；现有部分 owner 仍限制 `public` 或整库空白安装，W1C-DB 代码切片未完成，不能把目标说成当前可运行事实。测试fixture的临时库只是测试隔离，应用并发访问同库不受此限制。
-- Web `38683a5…` 仅完成 W1C-2 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 三文档门和最终来源pin修正；Auth.js、同源 `/iam` adapter、Product Session、全代理Bearer及浏览器E2E均未实现，`EDGE-WEB-BFF`/Web→IAM非法旁路状态未变。
+- Web `85b4bad…` 已发布 W1C-2A 固定BFF policy的同源 `/iam` **GET只读子集**，Node22 `pnpm check`、Playwright6/6及真实Next HTTP聚焦测试通过。Auth.js、三个交互页、POST/CSRF、userinfo、end-session、Product Session、全代理Bearer及真实Web→BFF→IAM浏览器登录尚未实现，`EDGE-WEB-BFF` broken / Web→IAM非法旁路状态未变。
 
 ## 当前已验证的代码与组合能力
 
@@ -34,7 +34,7 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 - BFF `cd1c260…`：已使用Capability、Scheduler与IAM固定artifact/generated client；Scheduler control、专用持久receipt/CAS和恢复链已接通。W1B代码增加IAM session bearer准入、Project/ScheduledTask/Chat按个人私有授权、Share撤销竞态拒绝；W1C新增精确 `/iam` 原生 relay policy/transport，并固定IAM最新test-owned来源，Node22标准248/248、contract25/25通过。当前pin真实IAM admission→BFF 7case及修后首次OAuth 15case已由Root独立复验；Web同源登录仍待后续切片。Storage旧HTTP/配置/parser/mock成功数据及孤儿200类型已删除；认证后的Library当前只返回明确503且零Storage socket，不等于Storage功能完成。
 - Scheduler `975dee59…`：新键同名create冲突以409写入持久receipt并可重启重放；普通/race各139项的owner验收见progress。
 - Artifact来源保持真实：BFF消费的Capability artifact仍来自`7f89a267…`，Scheduler artifact仍来自`92bf9e7e…`，与各自新runtime release的canonical contract字节相同；没有伪造重新生成。
-- BFF `cd1c260…` pin上Root已重跑真实IAM准入→BFF 7/7、Capability→BFF 8/8、Scheduler→BFF 11/11、System/BFF/Agent HTTP组合PASS、首次无session OAuth 15/15，自有资源均清理；OAuth runner独立复审0 P1/P2、Root scripts 563/563及56 subtests，脚本提交待发布。三条旧owner smoke的用户准入是明确标记的固定wire stub，不是IAM事实源；Agent在Scheduler链仍是deterministic receipt stub。真实Agent执行、Storage与provider推理按后续Wave闭环。
+- BFF `cd1c260…` pin上Root已重跑真实IAM准入→BFF 7/7、Capability→BFF 8/8、Scheduler→BFF 11/11、System/BFF/Agent HTTP组合PASS、首次无session OAuth 15/15，自有资源均清理；OAuth runner独立复审0 P1/P2、Root scripts 563/563及56 subtests，已随Root `bb60a6a…`发布。三条旧owner smoke的用户准入是明确标记的固定wire stub，不是IAM事实源；Agent在Scheduler链仍是deterministic receipt stub。真实Agent执行、Storage与provider推理按后续Wave闭环。
 
 ## 当前验证证据
 
