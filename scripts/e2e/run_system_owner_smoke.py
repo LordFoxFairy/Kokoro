@@ -23,7 +23,17 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
+if __package__:
+    from .bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+else:
+    from bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
+
 ROOT = Path(__file__).resolve().parents[2]
+EXPECTED_RELEASES = {
+    "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
+    "kokoro-bff": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+    "kokoro-agent": "741c928dfc11313a25064a905d77d4ad371f5534",
+}
 
 
 class SmokeError(RuntimeError):
@@ -573,6 +583,8 @@ def verify_read_consumers(
     values: dict[str, str],
     bff_token: str,
     web_token: str,
+    session_token_a: str,
+    session_token_b: str,
 ) -> None:
     owner_headers = {
         "authorization": f"Bearer {bff_token}",
@@ -598,8 +610,7 @@ def verify_read_consumers(
     web_headers = {
         "x-kokoro-service": "web-bff",
         "x-kokoro-internal-secret": web_token,
-        "x-kokoro-namespace": tenant,
-        "x-kokoro-principal-id": "smoke-user",
+        "authorization": f"Bearer {session_token_a}",
     }
     models = data_of(http_json(bff, "/v1/models?" + catalog_query, headers=web_headers))
     public_models = models.get("models")
@@ -640,8 +651,12 @@ def verify_read_consumers(
         ],
         "Published release configuration did not override ordinary configuration",
     )
+    server_headers = {
+        "x-kokoro-service": "web-bff",
+        "x-kokoro-internal-secret": web_token,
+    }
     public_manifest = data_of(
-        http_json(bff, "/v1/system/runtime-manifest?" + query, headers=web_headers)
+        http_json(bff, "/v1/system/runtime-manifest?" + query, headers=server_headers)
     )
     for key in (
         "tenant_id",
@@ -665,17 +680,29 @@ def verify_read_consumers(
         "Manifest omitted seeded capabilities",
     )
     other = {**owner_headers, "x-kokoro-tenant-id": tenant + "-other"}
-    for base, headers in (
-        (system, other),
-        (bff, {**web_headers, "x-kokoro-namespace": tenant + "-other"}),
-    ):
-        denied_manifest = http_json(
-            base, "/v1/system/runtime-manifest?" + query, headers=headers, expected=404
+    denied_manifest = http_json(
+        system, "/v1/system/runtime-manifest?" + query, headers=other, expected=404
+    )
+    require(
+        data_of({"data": denied_manifest.get("error")}).get("code") == "NOT_FOUND",
+        "Manifest crossed tenant boundary or returned an unexpected error",
+    )
+    malicious_manifest = data_of(
+        http_json(
+            bff,
+            "/v1/system/runtime-manifest?" + query,
+            headers={
+                **server_headers,
+                "authorization": f"Bearer {session_token_b}",
+                "x-kokoro-namespace": tenant + "-other",
+                "x-kokoro-principal-id": "forged-user",
+            },
         )
-        require(
-            data_of({"data": denied_manifest.get("error")}).get("code") == "NOT_FOUND",
-            "Manifest crossed tenant boundary or returned an unexpected error",
-        )
+    )
+    require(
+        malicious_manifest == public_manifest,
+        "BFF server-only manifest followed untrusted user identity headers",
+    )
     empty = data_of(
         http_json(
             system, "/v1/system/model-catalog/catalog?" + catalog_query, headers=other
@@ -698,7 +725,7 @@ def verify_read_consumers(
         http_json(
             bff,
             "/v1/models?" + catalog_query,
-            headers={**web_headers, "x-kokoro-namespace": tenant + "-other"},
+            headers={**web_headers, "authorization": f"Bearer {session_token_b}"},
         )
     )
     require(other_models.get("models") == [], "BFF models crossed tenant boundary")
@@ -732,7 +759,7 @@ asyncio.run(main())
 def repository_evidence() -> dict[str, dict[str, str | bool]]:
     states: dict[str, dict[str, str | bool]] = {}
     for owner in ("kokoro-system", "kokoro-bff", "kokoro-agent"):
-        command = ["git", "-C", str(ROOT / owner)]
+        command = ["git", "-C", str(ROOT / "apps" / owner)]
         states[owner] = {
             "commit": command_output([*command, "rev-parse", "HEAD"]).strip(),
             "working_tree_dirty": bool(
@@ -744,7 +771,37 @@ def repository_evidence() -> dict[str, dict[str, str | bool]]:
     return states
 
 
+def verify_release_inputs() -> dict[str, dict[str, str | bool]]:
+    states = repository_evidence()
+    apps = ROOT / "apps"
+    if not apps.is_dir() or apps.is_symlink():
+        raise SmokeError("Root apps release directory mismatch")
+    for owner, expected in EXPECTED_RELEASES.items():
+        state = states[owner]
+        checkout = apps / owner
+        tree = command_output(
+            ["git", "-C", str(ROOT), "ls-tree", "HEAD", f"apps/{owner}"]
+        ).split()
+        index = command_output(
+            ["git", "-C", str(ROOT), "ls-files", "--stage", "--", f"apps/{owner}"]
+        ).strip()
+        if (
+            not checkout.is_dir()
+            or checkout.is_symlink()
+            or state["commit"] != expected
+            or state["working_tree_dirty"]
+            or len(tree) != 4
+            or tree[:2] != ["160000", "commit"]
+            or tree[2] != expected
+            or tree[3] != f"apps/{owner}"
+            or index != f"160000 {expected} 0\tapps/{owner}"
+        ):
+            raise SmokeError(f"{owner} release source or Root gitlink mismatch")
+    return states
+
+
 def run_smoke(args: argparse.Namespace) -> int:
+    verify_release_inputs()
     system_env = node_environment(args.node24_bin, 24)
     bff_env = node_environment(args.node22_bin, 22)
     resources = OwnedResources(args.postgres, args.redis, secrets.token_hex(12))
@@ -758,11 +815,30 @@ def run_smoke(args: argparse.Namespace) -> int:
     bff_token, agent_token, admin_token, web_token = (
         secrets.token_hex(24) for _ in range(4)
     )
+    session_token_a, session_token_b = (secrets.token_urlsafe(32) for _ in range(2))
     with (
         tempfile.TemporaryDirectory(prefix="kokoro-system-smoke-") as temporary,
         ExitStack() as files,
     ):
         try:
+            iam_base = files.enter_context(
+                iam_admission_stub(
+                    {
+                        session_token_a: AdmissionIdentity(
+                            tenant_id=tenant,
+                            user_id=f"smoke-user-{resources.run_id}",
+                            session_id=f"session-a-{resources.run_id}",
+                            client_id="system-owner-smoke",
+                        ),
+                        session_token_b: AdmissionIdentity(
+                            tenant_id=tenant + "-other",
+                            user_id=f"other-user-{resources.run_id}",
+                            session_id=f"session-b-{resources.run_id}",
+                            client_id="system-owner-smoke",
+                        ),
+                    }
+                )
+            )
             resources.command(["psql", resources.postgres, "-X", "-Atc", "SELECT 1"])
             require(
                 resources.command(
@@ -792,6 +868,7 @@ def run_smoke(args: argparse.Namespace) -> int:
                     "KOKORO_BFF_PORT": str(bff_port),
                     "KOKORO_BFF_MODE": "live",
                     "KOKORO_BFF_SHARED_SECRET": web_token,
+                    "KOKORO_IAM_BASE_URL": iam_base,
                     "KOKORO_INTERNAL_SECRET_BFF": bff_token,
                     "KOKORO_SYSTEM_BASE_URL": system,
                     "KOKORO_AGENT_ENABLED": "false",
@@ -807,7 +884,7 @@ def run_smoke(args: argparse.Namespace) -> int:
                 log = files.enter_context(open(Path(temporary) / f"{owner}.log", "wb"))
                 installed = run_owned_command(
                     ["pnpm", "db:apply-schema"],
-                    cwd=ROOT / owner,
+                    cwd=ROOT / "apps" / owner,
                     env=env,
                     log=log,
                     timeout=30,
@@ -818,7 +895,7 @@ def run_smoke(args: argparse.Namespace) -> int:
                 )
                 process = subprocess.Popen(
                     ["pnpm", "dev"],
-                    cwd=ROOT / owner,
+                    cwd=ROOT / "apps" / owner,
                     env=env,
                     stdout=log,
                     stderr=subprocess.STDOUT,
@@ -827,7 +904,16 @@ def run_smoke(args: argparse.Namespace) -> int:
                 processes.append(process)
                 wait_ready(base, process)
             values = seed_control_plane(system, tenant, admin_token, resources.run_id)
-            verify_read_consumers(system, bff, tenant, values, bff_token, web_token)
+            verify_read_consumers(
+                system,
+                bff,
+                tenant,
+                values,
+                bff_token,
+                web_token,
+                session_token_a,
+                session_token_b,
+            )
             agent_env = {
                 **os.environ,
                 "SMOKE_SYSTEM_URL": system,
@@ -847,7 +933,7 @@ def run_smoke(args: argparse.Namespace) -> int:
                     "-c",
                     AGENT_RESOLVE_CHECK,
                 ],
-                cwd=ROOT / "kokoro-agent",
+                cwd=ROOT / "apps" / "kokoro-agent",
                 env=agent_env,
                 log=files.enter_context(open(Path(temporary) / "agent.log", "wb")),
                 timeout=30,

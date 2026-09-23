@@ -190,6 +190,7 @@ def test_process_inventory_failure_does_not_skip_registered_database_cleanup(
         command=command,
     )
     monkeypatch.setattr(smoke, "OwnedResources", lambda *_args: resources)
+    monkeypatch.setattr(smoke, "verify_release_inputs", lambda: {})
     monkeypatch.setattr(smoke, "node_environment", lambda *_args: {})
     monkeypatch.setattr(smoke, "run_owned_command", lambda *_args, **_kwargs: 0)
     monkeypatch.setattr(
@@ -355,14 +356,16 @@ def test_consumer_smoke_checks_manifest_and_catalog_tenant_isolation(
         "feature_flags": [{"key": "chat.smoke", "enabled": True}],
     }
     denied_manifests = set()
+    seen_models: list[dict[str, str]] = []
+    seen_manifest_headers: list[dict[str, str]] = []
 
     def http(base: str, path: str, **kwargs) -> dict:
         headers = kwargs["headers"]
-        other = (
-            headers.get("x-kokoro-tenant-id", headers.get("x-kokoro-namespace"))
-            == "tenant-other"
-        )
+        other = headers.get("x-kokoro-tenant-id") == "tenant-other"
         if "runtime-manifest" in path:
+            if base == "http://bff.test":
+                seen_manifest_headers.append(headers)
+                return {"data": manifest}
             if other:
                 assert kwargs["expected"] == 404
                 denied_manifests.add(base)
@@ -372,9 +375,12 @@ def test_consumer_smoke_checks_manifest_and_catalog_tenant_isolation(
             assert other and kwargs["expected"] == 403
             return {"error": {"code": "FORBIDDEN"}}
         if path.startswith("/v1/models?"):
+            seen_models.append(headers)
             return {
                 "data": {
-                    "models": [] if other else [{"name": "opaque", "is_default": True}]
+                    "models": []
+                    if headers.get("authorization") == "Bearer token-b"
+                    else [{"name": "opaque", "is_default": True}]
                 }
             }
         return {"data": {"items": [] if other else [{"is_default": True}]}}
@@ -387,8 +393,21 @@ def test_consumer_smoke_checks_manifest_and_catalog_tenant_isolation(
         values,
         "bff-token",
         "web-token",
+        "token-a",
+        "token-b",
     )
-    assert denied_manifests == {"http://system.test", "http://bff.test"}
+    assert denied_manifests == {"http://system.test"}
+    assert [headers["authorization"] for headers in seen_models] == [
+        "Bearer token-a",
+        "Bearer token-b",
+    ]
+    assert all(
+        "x-kokoro-namespace" not in headers and "x-kokoro-principal-id" not in headers
+        for headers in seen_models
+    )
+    assert len(seen_manifest_headers) == 2
+    assert seen_manifest_headers[1]["x-kokoro-namespace"] == "tenant-other"
+    assert seen_manifest_headers[1]["authorization"] == "Bearer token-b"
 
 
 def test_runtime_evidence_distinguishes_commits_from_dirty_checkouts(
@@ -397,6 +416,7 @@ def test_runtime_evidence_distinguishes_commits_from_dirty_checkouts(
     from scripts.e2e import run_system_owner_smoke as smoke
 
     def git(command: list[str]) -> str:
+        assert "/apps/" in command[2]
         owner = command[2].rsplit("/", 1)[1]
         if command[3:] == ["rev-parse", "HEAD"]:
             return owner + "-sha\n"
@@ -417,3 +437,77 @@ def test_runtime_evidence_distinguishes_commits_from_dirty_checkouts(
         "commit": "kokoro-agent-sha",
         "working_tree_dirty": False,
     }
+
+
+def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
+    monkeypatch, tmp_path
+) -> None:
+    from scripts.e2e import run_system_owner_smoke as smoke
+
+    expected = smoke.EXPECTED_RELEASES
+    apps = tmp_path / "apps"
+    apps.mkdir()
+    for owner in expected:
+        (apps / owner).mkdir()
+    monkeypatch.setattr(smoke, "ROOT", tmp_path)
+    calls: list[list[str]] = []
+    changed_owner = "kokoro-bff"
+    state = {
+        "source_sha": expected[changed_owner],
+        "source_dirty": False,
+        "head_sha": expected[changed_owner],
+        "head_mode": "160000",
+        "index_sha": expected[changed_owner],
+        "index_mode": "160000",
+    }
+
+    def git(command: list[str]) -> str:
+        calls.append(command)
+        if command[3:5] == ["ls-tree", "HEAD"]:
+            owner = command[-1].rsplit("/", 1)[1]
+            return f"{state['head_mode'] if owner == changed_owner else '160000'} commit {state['head_sha'] if owner == changed_owner else expected[owner]}\tapps/{owner}\n"
+        if command[3:6] == ["ls-files", "--stage", "--"]:
+            owner = command[-1].rsplit("/", 1)[1]
+            return f"{state['index_mode'] if owner == changed_owner else '160000'} {state['index_sha'] if owner == changed_owner else expected[owner]} 0\tapps/{owner}\n"
+        owner = command[2].rsplit("/", 1)[1]
+        if command[3:] == ["rev-parse", "HEAD"]:
+            return (
+                state["source_sha"] if owner == changed_owner else expected[owner]
+            ) + "\n"
+        if command[3:] == ["status", "--porcelain", "--untracked-files=normal"]:
+            return (
+                " M src/main.ts\n"
+                if owner == changed_owner and state["source_dirty"]
+                else ""
+            )
+        raise AssertionError(command)
+
+    monkeypatch.setattr(smoke, "command_output", git)
+    assert smoke.verify_release_inputs() == {
+        owner: {"commit": sha, "working_tree_dirty": False}
+        for owner, sha in expected.items()
+    }
+    assert any("ls-tree" in command for command in calls)
+    assert any("ls-files" in command for command in calls)
+
+    for field, value in (
+        ("source_sha", "0" * 40),
+        ("source_dirty", True),
+        ("head_sha", "0" * 40),
+        ("head_mode", "100644"),
+        ("index_sha", "0" * 40),
+        ("index_mode", "120000"),
+    ):
+        original = state[field]
+        state[field] = value
+        with pytest.raises(SmokeError, match="release"):
+            smoke.verify_release_inputs()
+        state[field] = original
+
+    (apps / changed_owner).rmdir()
+    (apps / changed_owner).symlink_to(apps / "kokoro-system", target_is_directory=True)
+    with pytest.raises(SmokeError, match="release"):
+        smoke.verify_release_inputs()
+    (apps / changed_owner).unlink()
+    with pytest.raises(SmokeError, match="release"):
+        smoke.verify_release_inputs()
