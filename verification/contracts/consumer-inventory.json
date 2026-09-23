@@ -7,7 +7,7 @@
       "owner": {
         "name": "kokoro-app",
         "repository_path": "apps/kokoro-app",
-        "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+        "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
         "contract_version": "browser-private-0.1.0",
         "contract_path": "contract/README.md",
         "contract_sha256": "651f270aab0e3451ac4cd6a68f490024c3e907751571940bda6f817224b6821f"
@@ -20,19 +20,19 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "contract/README.md",
           "sha256": "651f270aab0e3451ac4cd6a68f490024c3e907751571940bda6f817224b6821f"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "src/app/api/session/[...path]/route.ts",
           "sha256": "87cb54ab3fc1d309c67d8786e0b27fc7dab3f291277a63a623b774f1a247b8da"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "package.json",
           "sha256": "1064c930a5544c3acb9eaadae8d3a77eaf8c3c8e161d19f4926be9e8cefa54fe"
         }
@@ -45,7 +45,7 @@
           "package_name": "next",
           "version": "16.2.6",
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "package.json",
           "sha256": "1064c930a5544c3acb9eaadae8d3a77eaf8c3c8e161d19f4926be9e8cefa54fe",
           "json_checks": [
@@ -76,19 +76,19 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "src/app/api/session/[...path]/route.ts",
           "sha256": "87cb54ab3fc1d309c67d8786e0b27fc7dab3f291277a63a623b774f1a247b8da"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "src/engine/agui-chat-transport.ts",
           "sha256": "0bd05ef0b2ab0d816b43cfccb34d3aa1ae961db024534d070320d234d61a2fa6"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "package.json",
           "sha256": "1064c930a5544c3acb9eaadae8d3a77eaf8c3c8e161d19f4926be9e8cefa54fe"
         }
@@ -1448,7 +1448,7 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "12e07eb5874b085be989364606d485dce0722249",
+          "repository_commit": "5299f290ff7653933078007678a2b7a3da01dc67",
           "path": "src/lib/server/auth.ts",
           "sha256": "3dea377725f7b5e70eeb6dbf5cd43fc57aecacb3c76fbbf42d5b4e475c83b97e"
         }
