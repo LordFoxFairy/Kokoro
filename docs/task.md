@@ -16,7 +16,7 @@
 
 ### 1.1 主控优先看这里
 
-- 当前关键路径：**W1B-3 IAM↔BFF 最小真实联调 → Web 登录/同源接线**；W1B-1/R、W1B-2 已按各自 owner 切片验收，不代表跨仓运行闭环。具体状态与唯一写入负责人见本文 Wave1B 执行卡。
+- 当前关键路径：**W1C Web 登录/同源接线 → Storage owner与消费边界**；W1B IAM↔BFF真实HTTP及BFF个人私有资源切片已按各自边界验收，不代表Web或完整聊天执行链已闭环。具体状态与唯一写入负责人见本文Wave1B执行卡。
 - 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
 - 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
 - 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
@@ -171,13 +171,13 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 | W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c → a898c90fe2b5447178a76fb04b0fedf9fa98e0d5，绝对目录同上；64个精确文件，Root提交 | SPEC/QUALITY通过；Root最终227标准/35真实integration、静态门通过；代码切片已验收，跨仓组合归W1B-3 |
 | W1B-1R / P0 | BFF / `w1b1_task_reviewer` / gpt-5.6-sol high / 只读；Root集成验证 | c5e9b3c + 最终冻结64文件，与a898c90提交字节一致；未操作Git/基础设施 | 首轮2 Important均已修复；增量复核SPEC Compliant/QUALITY Approved，0未决；状态：已验收 |
 | W1B-2 / P0 | BFF / 原`w1b_bff_owner`额度中断后Root唯一写入、`w1b2_privacy_review`只读复核 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`，main a898c90 → `6238599667110fbfbc2d5ef3a9d53731f2623cfe`，35文件，已推送、clean；原Task2范围加批准的旧fixture修复 | Root Node22 format/lint/typecheck/contract25/标准231/schema4/build/fresh PG+Redis integration37全绿；独立审查2条P2已修复复核无新阻断；自有DB回收、Redis8不变；BFF owner切片已验收，跨仓组合归W1B-3 |
-| W1B-3 / P0 | Root主控 + 独立审查 | BFF/IAM owner已推送；Root真实IAM组合已提交，旧smoke仍待接线 | 真实IAM↔BFF证据、旧smoke回归、gitlink/inventory、main-only；状态：进行中，未验收 |
+| W1B-3 / P0 | Root主控 + 独立审查 | IAM/BFF owner及Root `7b6e486b…`组合已推送main，旧smoke均接线且通过 | 真实IAM↔BFF 7/7、Capability8/8、Scheduler11/11、System组合PASS；新checkpoint5/11/1与main-only/clean PASS；状态：已验收（仅本组合切片，W1/Web未完成） |
 | W1B-3P / P0 | IAM测试入口 / `w1b3_iam_fixture_reader` / gpt-5.6-sol high / 只读；Root审查 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam`，main 259a66e6；仅既有HTTP fixture/consumer测试/API入口，不写文件/Git、不启动服务、不操作数据库；与BFF Task2独立 | 已定位真实PKCE/session/在线membership与自有资源fixture；Root可复用本地测试CLI，不需IAM部署改造；状态：已验收（只读预检，不是联调通过） |
 | W1B-3A / P0 | IAM测试入口 / `w1b3_iam_host_owner` / gpt-6-sol / 唯一写入；Root复验提交 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam`，main 259a66e6→`b2ad9dd6906b73f275b96d570dad66eae86e97e9`，两文件，已推送clean；不碰生产入口/schema/contract/lockfile | NDJSON真实IAM host与3项聚焦integration、Node24 typecheck/format/lint均通过；Root独立资源快照确认零新DB/Redis键；独立复审P1/P2均关闭。IAM测试入口已验收，Root消费仍归W1B-3B |
 | W1B-3B / P0 | Root真实IAM↔BFF组合 / `w1b3_root_iam_smoke_writer` / gpt-6-sol / 仅两脚本写入；Root审查与Git唯一负责人 | Root `77c9c5db`→`1d1c4df85fd7b7d39a8465d9746ac2be59b5ba4d`，IAM gitlink→`b2ad9dd…`，BFF `6238599…`不变；两脚本、台账与106 BFF/3 IAM机械fan-out已推送 | Root提交后无过渡参数真实HTTP **7/7**，SHA/clean/gitlink均匹配，w0b-exit checkpoint通过；独立P1/P2已关闭，自有资源清理通过。IAM edge仍broken待W1B-3C/D；状态：已验收 |
 | W1B-3C / P0 | Root旧Capability/Scheduler smoke准入改造 / `w1b3_legacy_smoke_writer` / gpt-6-sol / 唯一脚本writer；Root审查、Git与台账负责人 | Root `1d1c4df…`→`0295fbdda439a4008cb114c8d726cf893694fc4b`已推送main；9个获授权脚本/测试，新增共享IAM wire stub，未改子仓/System | Root聚焦**110/110**、全scripts **524/524**，真实Capability **8/8**、Scheduler **11/11**及自有资源清理均通过；独立审查2项P2已修复复核无新阻断，w0b-exit与topology PASS。stub只供旧owner回归；状态：已验收 |
 | W1B-3D / P0 | Root System跨仓smoke新准入与路径修复 / `w1b3_legacy_smoke_writer`（续任）/ gpt-6-sol / 唯一脚本writer；Root审查与Git负责人 | Root `0295fbdd…`→`9fa6d2cd68d06dbd9dc235da520ba4c15089b1e1`已推送main；仅System runner与对应测试，子仓不改 | Root聚焦**23/23**、全scripts **525/525**、真实System/BFF/Agent组合PASS、独占PG/Redis/临时文件零残留；独立审查1项P2 gitlink门已修复复核无新阻断；状态：已验收 |
-| W1B-3E / P0 | Root激活BFF→IAM精确契约edge / Root唯一writer + `w1b3_edge_release_review`独立只读审查 | Root main `9fa6d2cd…`，IAM `b2ad9dd…`/BFF `6238599…`均clean；仅consumer inventory、新`w1b-iam.json` checkpoint、聚焦checkpoint测试、Root CURRENT/scripts INDEX/task/progress；不改子仓与smoke实现 | 候选仅IAM edge broken→active，31个consumer blob与IAM0.2.0 contract/旧vendor字节一致，2项版本断言；checkpoint **5 active/11 broken/1 illegal** PASS、聚焦81/81、全Root526/526、topology PASS；独立SPEC/QUALITY0/0。待精确提交后main-only/clean复验；状态：待集成验证 |
+| W1B-3E / P0 | Root激活BFF→IAM精确契约edge / Root唯一writer + `w1b3_edge_release_review`独立只读审查 | Root `9fa6d2cd…`→`7b6e486b630a40ff825736299ef02720cbfbef6a`已推送main，IAM `b2ad9dd…`/BFF `6238599…`clean；只改Root inventory/checkpoint/test/文档 | 唯一IAM edge broken→active，31个consumer blob与IAM0.2.0 contract/旧vendor字节一致，2项版本断言；checkpoint **5 active/11 broken/1 illegal**、聚焦81/81、全Root526/526、topology及main-only（Root+11仅main/clean）PASS；独立SPEC/QUALITY0/0。状态：已验收 |
 
 W1B-3A放置门：owner为IAM test fixture、唯一writer为本片负责人；当前已有`test/fixtures/internal-http-application.ts`真实PKCE/Nest/独占资源，Root无IAM SQL写入权。候选A在IAM `test/fixtures/`扩展本地管道入口及`test/integration/`验证（采用：只变化测试联调生命周期），候选B在Root `scripts/e2e/`复制身份引导/数据库操作（淘汰：跨owner事实与双实现）。新增host与聚焦测试两个文件而非模块；只依赖既有fixture，不引入生产服务/跨仓源码import。测试删除Member仅作用于fixture自建IAM库并显式标注失效注入；无Schema/HTTP contract/generated变化、无旧路径需保留。验证为Node24脚本启动/命令/清理、IAM typecheck与聚焦integration、Root经真实HTTP观察BFF状态和拒绝后无业务副作用。
 
