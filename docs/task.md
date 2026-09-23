@@ -7,6 +7,7 @@
 - Goal：按已批准设计依次完成 Wave 0–7；Root 主控负责架构裁决、派工、双重审查、集成与最终验收，子 Agent 按 owner 逐仓实施；Billing 最后处理。
 - 设计事实源：[`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md)
 - 当前执行计划：[`superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md`](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md)
+- Wave 1C 当前计划：[`superpowers/plans/2026-09-23-wave-1c-web-oidc-and-same-origin.md`](superpowers/plans/2026-09-23-wave-1c-web-oidc-and-same-origin.md)
 - 已验收 Wave1A：[`superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md`](superpowers/plans/2026-09-22-wave-1a-iam-session-admission.md)
 - 已验收 Wave0B：[`superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md`](superpowers/plans/2026-09-21-wave-0b-hard-link-closure.md)
 - 已验收计划：[`superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md`](superpowers/plans/2026-09-21-wave-0a-governance-and-contract-gates.md)
@@ -16,7 +17,7 @@
 
 ### 1.1 主控优先看这里
 
-- 当前关键路径：**W1C Web 登录/同源接线 → Storage owner与消费边界**；W1B IAM↔BFF真实HTTP及BFF个人私有资源切片已按各自边界验收，不代表Web或完整聊天执行链已闭环。具体状态与唯一写入负责人见本文Wave1B执行卡。
+- 当前关键路径：**W1C BFF受控登录relay→Web OIDC/同源接线 → W1D Web Product generated consumer/AG-UI → Storage owner与消费边界**；W1B IAM↔BFF真实HTTP及BFF个人私有资源切片已按各自边界验收，不代表Web或完整聊天执行链已闭环。具体状态与唯一写入负责人见本文Wave1B执行卡。
 - 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
 - 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
 - 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
@@ -178,6 +179,13 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 | W1B-3C / P0 | Root旧Capability/Scheduler smoke准入改造 / `w1b3_legacy_smoke_writer` / gpt-6-sol / 唯一脚本writer；Root审查、Git与台账负责人 | Root `1d1c4df…`→`0295fbdda439a4008cb114c8d726cf893694fc4b`已推送main；9个获授权脚本/测试，新增共享IAM wire stub，未改子仓/System | Root聚焦**110/110**、全scripts **524/524**，真实Capability **8/8**、Scheduler **11/11**及自有资源清理均通过；独立审查2项P2已修复复核无新阻断，w0b-exit与topology PASS。stub只供旧owner回归；状态：已验收 |
 | W1B-3D / P0 | Root System跨仓smoke新准入与路径修复 / `w1b3_legacy_smoke_writer`（续任）/ gpt-6-sol / 唯一脚本writer；Root审查与Git负责人 | Root `0295fbdd…`→`9fa6d2cd68d06dbd9dc235da520ba4c15089b1e1`已推送main；仅System runner与对应测试，子仓不改 | Root聚焦**23/23**、全scripts **525/525**、真实System/BFF/Agent组合PASS、独占PG/Redis/临时文件零残留；独立审查1项P2 gitlink门已修复复核无新阻断；状态：已验收 |
 | W1B-3E / P0 | Root激活BFF→IAM精确契约edge / Root唯一writer + `w1b3_edge_release_review`独立只读审查 | Root `9fa6d2cd…`→`7b6e486b630a40ff825736299ef02720cbfbef6a`已推送main，IAM `b2ad9dd…`/BFF `6238599…`clean；只改Root inventory/checkpoint/test/文档 | 唯一IAM edge broken→active，31个consumer blob与IAM0.2.0 contract/旧vendor字节一致，2项版本断言；checkpoint **5 active/11 broken/1 illegal**、聚焦81/81、全Root526/526、topology及main-only（Root+11仅main/clean）PASS；独立SPEC/QUALITY0/0。状态：已验收 |
+| W1C-P / P0 | Web同源登录依赖预检 / `w1c_web_auth_reader` + `w1c_iam_oidc_readiness` / 只读；Root裁决 | Web `apps/kokoro-app` main `ce4e466c…`，BFF `apps/kokoro-bff` main `6238599…`，IAM `b2ad9dd…`；仅读Web auth/session/cookie/CSRF route及BFF/IAM协议，不改文件/Git/资源 | 已确认IAM Code+PKCE与精确allowlist已运行；BFF尚无`/iam` relay，Web旧IAM直连且多数BFF代理缺Bearer；两份只读报告已交付，未运行测试；状态：已验收（只读预检） |
+| W1C-1 / P0 | BFF受控`/iam`原生协议relay / `w1c_bff_relay_owner`唯一BFF writer；Root审查与集成 | W1C-P；BFF main `6238599…`、IAM main `b2ad9dd…`；BFF三文档设计门已通过，现进入批准文件集实施，见下 | 精确path/method服务例外、原生HTTP/cookie/redirect保持、无用户Bearer/SQL/Redis事实；BFF全门+真实IAM HTTP+负例；状态：进行中（代码） |
+| W1C-2 / P0 | Web Auth.js RP、同源adapter与Product Session / 待派唯一Web writer | W1C-1 BFF contract与SHA冻结，Web main `ce4e466c…`；文件集与三文档门见Wave1C计划Task2 | Code+S256、refresh/logout/CSRF、全部业务代理唯一Bearer、旧IAM直连与自报身份删除；Web全门+真实组合；状态：待派工 |
+| W1C-3 / P0 | Root Web→BFF→IAM真实登录组合 / Root主控+独立审查 | W1C-1与W1C-2 release | 登录/刷新/退出/失效/越权真HTTP、隔离资源清理与固定SHA/digest；本片不激活尚缺Product generated consumer的EDGE-WEB-BFF；状态：待派工 |
+| W1D / P0 | Web全量BFF Product OpenAPI generated consumer与单一AG-UI接线 / Web唯一writer；Root集成 | W1C-3；BFF public contract先冻结 | Web消除手写Product wire和旧网络协议，固定BFF contract/generator/runtime/digest；Web owner全门+组合验证后才激活EDGE-WEB-BFF；状态：待派工 |
+
+W1C-1设计门通过报告（实施前，不等于代码验收）：当前BFF commit `6238599667110fbfbc2d5ef3a9d53731f2623cfe`，唯一writer修改 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/DATA_MODEL.md`；独立设计审查初轮1 P1/2 P2均修正复核0 P1/P2。未决项为IAM既有`/iam/error`未开放（仅错误分支，不以BFF通配修补）、Web OAuth client注册URI与Auth.js版本/`resource`行为待W1C-2实测。本阶段`git diff --check`通过；机器`pnpm contract:check`、`pnpm schema:check`与真实IAM HTTP尚未运行，留W1C-1实现门。批准写入仅限BFF现有三文档，新增`src/http/routes/iam-protocol-relay.{policy,transport}.ts`与`src/http/routes/iam-protocol-relay.ts`、`contract/iam-relay-policy.json`、`scripts/generate-iam-relay-policy.mjs`、对应`test/iam-protocol-relay-{policy,transport}.test.ts`及独立真实HTTP integration fixture/test、`src/bootstrap/server.ts`、`src/config/runtime.ts`、`package.json`脚本、必要`docs/CURRENT.md`/`contract/README.md`。`database/schema.sql`、IAM/Web、lockfile、BFF public OpenAPI禁止改；如确需越界先报Root。Root保留Git index/提交/推送/gitlink；BFF writer先RED→GREEN并交文件清单、命令与真实结果。
 
 W1B-3A放置门：owner为IAM test fixture、唯一writer为本片负责人；当前已有`test/fixtures/internal-http-application.ts`真实PKCE/Nest/独占资源，Root无IAM SQL写入权。候选A在IAM `test/fixtures/`扩展本地管道入口及`test/integration/`验证（采用：只变化测试联调生命周期），候选B在Root `scripts/e2e/`复制身份引导/数据库操作（淘汰：跨owner事实与双实现）。新增host与聚焦测试两个文件而非模块；只依赖既有fixture，不引入生产服务/跨仓源码import。测试删除Member仅作用于fixture自建IAM库并显式标注失效注入；无Schema/HTTP contract/generated变化、无旧路径需保留。验证为Node24脚本启动/命令/清理、IAM typecheck与聚焦integration、Root经真实HTTP观察BFF状态和拒绝后无业务副作用。
 
