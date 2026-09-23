@@ -31,7 +31,7 @@ Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能�
 
 `verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；本次同步 Web 9、BFF 137、IAM 3 处来源，不改变 16 条 edge 语义。现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。Root 跨仓 runner 将 BFF 应用 URL 定向 `kokoro_bff`，直接观测 SQL 显式限定 owner schema、`psql` 使用无应用 schema 参数的原 URL；System/Capability/Scheduler/IAM 自身 URL 不改。
 
-当前组合的 Root checkpoint、policy、topology 均 PASS；新 runner 两脚本纳入候选时 `scripts/tests` **588 passed / 78 subtests**。Web→BFF→IAM 真实 HTTPS RP-only 链 **14/14**，验证真实 Code+S256/token/userinfo/JWKS、回调重放和受控 `503 product_session_unavailable`；测试只直接观测 Web→BFF 入口，IAM 后段由真实进程与回调间接证明，资源报告零残留。新 pin 首次 OIDC→BFF **15/15**；其余 IAM准入7/7、Capability8/8、Scheduler11/11、System组合沿用上一固定 pin 的已执行证据，待下一轮按需复验。Root 新脚本尚未提交时 main-only 因两未跟踪文件失败；发布后复验。全仓静态治理上一轮仍为9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
+当前组合的 Root checkpoint、policy、topology 与 main-only 均 PASS，Root+11 子仓只留 main 且本地/远端一致、工作树干净；`scripts/tests` **588 passed / 78 subtests**。Root `519d5a924b9b0d54a97edc760f82a965e366d1ea` 发布后，Web→BFF→IAM 真实 HTTPS RP-only 链 **14/14**，验证真实 Code+S256/token/userinfo/JWKS、回调重放和受控 `503 product_session_unavailable`；测试只直接观测 Web→BFF 入口，IAM 后段由真实进程与回调间接证明，资源报告零残留。新 pin 首次 OIDC→BFF **15/15**；其余 IAM准入7/7、Capability8/8、Scheduler11/11、System组合沿用上一固定 pin 的已执行证据，待下一轮按需复验。全仓静态治理仍为9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
 
 ## 下一条代码关键路径
 
