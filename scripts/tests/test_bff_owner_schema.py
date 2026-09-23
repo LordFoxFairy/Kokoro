@@ -86,3 +86,9 @@ def test_session_smoke_keeps_psql_url_free_of_app_schema_parameter() -> None:
     assert 'db_url = resources.create_database("bff")' in source
     assert '"KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(db_url)' in source
     assert 'resources.command(["psql", db_url,' in source
+
+
+def test_scheduler_smoke_observes_bff_outbox_in_owner_schema() -> None:
+    source = (ROOT / "scripts/e2e/scheduler_bff_smoke_cases.py").read_text()
+    assert source.count("FROM kokoro_bff.bff_scheduled_task_outbox") == 2
+    assert "FROM bff_scheduled_task_outbox" not in source

@@ -236,7 +236,7 @@ def deterministic_task_id(tenant: str, subject: str, key: str) -> str:
 
 def wait_outbox(bff_url: str, tenant: str, task_id: str, command_type: str) -> None:
     query = (
-        "SELECT status FROM bff_scheduled_task_outbox WHERE tenant_id = "
+        "SELECT status FROM kokoro_bff.bff_scheduled_task_outbox WHERE tenant_id = "
         + _sql_literal(tenant)
         + " AND task_id = "
         + _sql_literal(task_id)
@@ -249,7 +249,7 @@ def wait_outbox(bff_url: str, tenant: str, task_id: str, command_type: str) -> N
     except SmokeError:
         diagnostic = sql(
             bff_url,
-            "SELECT status || ':' || COALESCE(last_error_code,'none') FROM bff_scheduled_task_outbox WHERE tenant_id = "
+            "SELECT status || ':' || COALESCE(last_error_code,'none') FROM kokoro_bff.bff_scheduled_task_outbox WHERE tenant_id = "
             + _sql_literal(tenant)
             + " AND task_id = "
             + _sql_literal(task_id)
