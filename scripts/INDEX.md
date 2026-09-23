@@ -17,15 +17,21 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   means the focused verifier tests pass.
 - `python3 scripts/verify-contract-compatibility.py --inventory verification/contracts/consumer-inventory.json` checks every
   approved call edge and recorded violation against the Root index and child commit blobs. Exit `0` means all edges are active
-  with no violations; exit `1` is the intentional Wave 0A red baseline only when the output contains exactly fifteen declared
-  broken edges and `EDGE-WEB-IAM-DIRECT`, with no schema, gitlink, digest, evidence or version drift.
-- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w0b-start.json` compares the
+  with no violations; current `w1b-iam` baseline remains intentionally red with exactly eleven declared broken edges and
+  `EDGE-WEB-IAM-DIRECT`, with no schema, gitlink, digest, evidence or version drift.
+- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1b-iam.json` compares the
   complete active/broken/illegal edge ID sets with a frozen checkpoint and runs the compatibility verifier. Exit `0` accepts
   only the checkpoint's declared broken and illegal outcomes; count-preserving ID swaps and any schema, gitlink, digest,
   evidence or version drift fail.
 - `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
-  Redis prefix, and removes only resources registered by this invocation. It does not perform provider inference.
+  Redis prefix, and removes only resources registered by this invocation. BFF user models use an explicit fixed-token IAM
+  wire stub; server-only runtime manifest remains bound to configured tenant. It does not perform provider inference.
+- `python3 scripts/e2e/run_bff_iam_session_smoke.py --help` is the real IAM Nest/PKCE fixture HTTP to BFF source-process
+  admission entry. It pins clean IAM/BFF commits and Root gitlinks, creates only its own BFF database, asks the IAM test-owned
+  host to manage IAM facts, exercises seven allow/deny/revocation/outage cases, and verifies owned-resource cleanup.
+- `bff_iam_admission_stub.py` is only a strict fixed-token wire fixture for unrelated owner smoke regressions; it is not
+  evidence of a real IAM dependency. Real IAM evidence comes from the preceding runner.
 - `python3 scripts/e2e/run_capability_bff_smoke.py --help` is the isolated Capability/BFF real-build acceptance entry.
   It requires explicit PostgreSQL, Redis and Node 22/24 arguments, starts the frozen child `dist/main.js` files on
   loopback ports, exercises eight BFF-facing Capability cases, and removes only its two exact databases, Redis prefix,
@@ -40,7 +46,8 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   The runner owns toolchain/build/start/config composition and total cleanup orchestration;
   `scheduler_bff_smoke_cases.py` owns the behaviors/private-owner observations;
   `scheduler_bff_smoke_runtime.py` owns process-group, PostgreSQL and Redis lifecycle; and
-  `scheduler_bff_smoke_http.py` owns loopback-only bounded HTTP fixtures and operation cancellation. The Agent endpoint
+  `scheduler_bff_smoke_http.py` owns bounded HTTP fixtures and operation cancellation; the callback response-drop proxy binds
+  only a single locally owned loopback or RFC1918 address with an exact /32 allowlist while its BFF upstream remains loopback. The Agent endpoint
   is an owned deterministic receipt stub, not evidence for a real Agent edge.
 - `scripts/governance/` owns the profile matrix and focused contract, delivery, repository, TypeScript, Web/BFF/Agent checks.
   These modules inspect structure and declarations only; the full verifier must still execute every repository's real commands.

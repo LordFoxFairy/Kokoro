@@ -63,7 +63,7 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/w0b-start.json
+  --expected verification/contracts/checkpoints/w1b-iam.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
