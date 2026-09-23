@@ -19,13 +19,15 @@ from urllib.parse import urlencode
 
 if __package__:
     from . import capability_bff_smoke_runtime as runtime
+    from .bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
 else:
     import capability_bff_smoke_runtime as runtime
+    from bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
 
 ROOT = Path(__file__).resolve().parents[2]
 BFF = ROOT / "apps" / "kokoro-bff"
 CAPABILITY = ROOT / "apps" / "kokoro-capability"
-BFF_RELEASE = "c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7"
+BFF_RELEASE = "6238599667110fbfbc2d5ef3a9d53731f2623cfe"
 CAPABILITY_RELEASE = "9c88d0d934387b590bc74dae0179a587292e0253"
 
 
@@ -85,14 +87,13 @@ def assert_success_envelope(body: dict[str, object]) -> None:
 
 
 def bff_headers(
-    web_token: str, tenant: str, subject: str, request_id: str
+    web_token: str, tenant: str, subject: str, request_id: str, session_token: str
 ) -> dict[str, str]:
     return {
         "x-kokoro-service": "web-bff",
         "x-kokoro-internal-secret": web_token,
-        "x-kokoro-namespace": tenant,
-        "x-kokoro-principal-id": subject,
         "x-kokoro-request-id": request_id,
+        "authorization": "Bearer " + session_token,
     }
 
 
@@ -101,13 +102,14 @@ def verify_good_bff_cases(
     web_token: str,
     tenant: str,
     subject: str,
+    session_token: str,
     run_id: str,
     capability_log: Path,
 ) -> list[str]:
     cases: list[str] = []
     query_marker = f"canonical-{run_id}"
     query_request_id = f"w0b-query-{run_id}"
-    headers = bff_headers(web_token, tenant, subject, query_request_id)
+    headers = bff_headers(web_token, tenant, subject, query_request_id, session_token)
     body, _ = runtime.http_json(
         bff_base,
         "/v1/skills?" + urlencode({"query": query_marker}),
@@ -126,7 +128,7 @@ def verify_good_bff_cases(
         result, _ = runtime.http_json(
             bff_base,
             path,
-            headers=bff_headers(web_token, tenant, subject, request_id),
+            headers=bff_headers(web_token, tenant, subject, request_id, session_token),
         )
         assert_success_envelope(result)
         wait_for_owner_request(capability_log, request_id, f"GET {path}")
@@ -136,7 +138,9 @@ def verify_good_bff_cases(
     legacy, _ = runtime.http_json(
         bff_base,
         "/v1/skills?" + urlencode({"q": query_marker}),
-        headers=bff_headers(web_token, tenant, subject, f"w0b-q-{run_id}"),
+        headers=bff_headers(
+            web_token, tenant, subject, f"w0b-q-{run_id}", session_token
+        ),
         expected=400,
     )
     require(error_code(legacy) == "invalid_query_parameter", "legacy q error drift")
@@ -149,8 +153,7 @@ def verify_good_bff_cases(
         "/v1/skills",
         headers={
             "x-kokoro-service": "web-bff",
-            "x-kokoro-namespace": tenant,
-            "x-kokoro-principal-id": subject,
+            "authorization": "Bearer " + session_token,
         },
         expected=403,
     )
@@ -161,7 +164,9 @@ def verify_good_bff_cases(
     invalid_cursor, _ = runtime.http_json(
         bff_base,
         "/v1/skills?" + urlencode({"cursor": "invalid"}),
-        headers=bff_headers(web_token, tenant, subject, invalid_cursor_id),
+        headers=bff_headers(
+            web_token, tenant, subject, invalid_cursor_id, session_token
+        ),
         expected=400,
     )
     require(
@@ -178,6 +183,7 @@ def verify_bad_owner_token_case(
     web_token: str,
     tenant: str,
     subject: str,
+    session_token: str,
     run_id: str,
     capability_log: Path,
 ) -> str:
@@ -185,7 +191,7 @@ def verify_bad_owner_token_case(
     body, _ = runtime.http_json(
         bff_base,
         "/v1/skills",
-        headers=bff_headers(web_token, tenant, subject, request_id),
+        headers=bff_headers(web_token, tenant, subject, request_id, session_token),
         expected=503,
     )
     require(error_code(body) == "capability_unavailable", "owner auth mapping drift")
@@ -229,6 +235,7 @@ class SmokeConfiguration:
     tenant: str
     subject: str
     web_token: str
+    session_token: str
     capability_base: str
     bff_base: str
     bad_bff_base: str
@@ -298,6 +305,7 @@ def _bff_environments(
     run_id: str,
     tenant: str,
     web_token: str,
+    iam_base: str,
     owner_token: str,
     wrong_owner_token: str,
     bff_port: int,
@@ -310,6 +318,7 @@ def _bff_environments(
         "KOKORO_BFF_HOST": "127.0.0.1",
         "KOKORO_BFF_MODE": "live",
         "KOKORO_BFF_SHARED_SECRET": web_token,
+        "KOKORO_IAM_BASE_URL": iam_base,
         "KOKORO_CAPABILITY_BASE_URL": capability_base,
         "KOKORO_AGENT_ENABLED": "false",
         "KOKORO_TENANT_ID": tenant,
@@ -333,6 +342,8 @@ def _provision_configuration(
     args: argparse.Namespace,
     resources: runtime.OwnedResources,
     dependency_base: str,
+    iam_base: str,
+    session_token: str,
     temporary: str,
     files: ExitStack,
     bff_toolchain: tuple[Path, dict[str, str]],
@@ -367,6 +378,7 @@ def _provision_configuration(
         run_id,
         tenant,
         web_token,
+        iam_base,
         owner_token,
         secrets.token_hex(32),
         bff_port,
@@ -379,6 +391,7 @@ def _provision_configuration(
         tenant=tenant,
         subject=f"subject-{run_id}",
         web_token=web_token,
+        session_token=session_token,
         capability_base=capability_base,
         bff_base=f"http://127.0.0.1:{bff_port}",
         bad_bff_base=f"http://127.0.0.1:{bad_bff_port}",
@@ -435,6 +448,7 @@ def _exercise_cases(
         config.web_token,
         config.tenant,
         config.subject,
+        config.session_token,
         config.run_id,
         config.capability_log_path,
     )
@@ -451,6 +465,7 @@ def _exercise_cases(
             config.web_token,
             config.tenant,
             config.subject,
+            config.session_token,
             config.run_id,
             config.capability_log_path,
         )
@@ -489,16 +504,29 @@ def _run_with_fixtures(
     fault_injection: Callable[[str], None] | None,
 ) -> list[str]:
     processes: list[subprocess.Popen[bytes]] = []
+    session_token = secrets.token_urlsafe(32)
     with (
         tempfile.TemporaryDirectory(prefix="kokoro-w0b-capability-") as temporary,
         ExitStack() as files,
         runtime.dependency_readiness_fixture() as dependency_base,
+        iam_admission_stub(
+            {
+                session_token: AdmissionIdentity(
+                    tenant_id=f"tenant-{resources.run_id}",
+                    user_id=f"subject-{resources.run_id}",
+                    session_id=f"session-{resources.run_id}",
+                    client_id="w0b-capability-smoke",
+                )
+            }
+        ) as iam_base,
     ):
         try:
             config = _provision_configuration(
                 args,
                 resources,
                 dependency_base,
+                iam_base,
+                session_token,
                 temporary,
                 files,
                 bff_toolchain,

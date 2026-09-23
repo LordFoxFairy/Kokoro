@@ -119,15 +119,14 @@ def wait_sql(url: str, query: str, expected: str, timeout: float = 30) -> str:
 
 
 def bff_headers(
-    token: str, tenant: str, subject: str, request_id: str, key: str
+    token: str, tenant: str, subject: str, request_id: str, key: str, session_token: str
 ) -> dict[str, str]:
     return {
         "x-kokoro-service": "web-bff",
         "x-kokoro-internal-secret": token,
-        "x-kokoro-namespace": tenant,
-        "x-kokoro-principal-id": subject,
         "x-kokoro-request-id": request_id,
         "idempotency-key": key,
+        "authorization": "Bearer " + session_token,
     }
 
 
@@ -144,13 +143,19 @@ def task_body(marker: str) -> dict[str, object]:
 
 
 def create_task(
-    base: str, token: str, tenant: str, subject: str, key: str, marker: str
+    base: str,
+    token: str,
+    tenant: str,
+    subject: str,
+    key: str,
+    marker: str,
+    session_token: str,
 ) -> str:
     result = http_json(
         base,
         "/v1/scheduled-tasks",
         method="POST",
-        headers=bff_headers(token, tenant, subject, "req-" + key, key),
+        headers=bff_headers(token, tenant, subject, "req-" + key, key, session_token),
         body=task_body(marker),
     )
     data = result.body.get("data")
@@ -221,10 +226,11 @@ def assert_agent_snapshot_unchanged(
         raise SmokeError("Callback replay caused an additional Agent admission")
 
 
-def deterministic_task_id(tenant: str, key: str) -> str:
-    digest = hashlib.sha256(
-        (tenant + "\x1f/scheduled-tasks\x1f" + key).encode()
-    ).hexdigest()[:32]
+def deterministic_task_id(tenant: str, subject: str, key: str) -> str:
+    material = json.dumps(
+        [tenant, subject, "/scheduled-tasks", key], separators=(",", ":")
+    )
+    digest = hashlib.sha256(material.encode()).hexdigest()[:32]
     return "scheduled_" + digest
 
 
@@ -372,6 +378,7 @@ class CaseFixture:
     bff_url: str
     scheduler_url: str
     web_token: str
+    session_token: str
     scheduler_token: str
     tenant: str
     subject: str
@@ -387,7 +394,13 @@ def exercise_control_lifecycle(
     scheduler_url, web_token = fixture.scheduler_url, fixture.web_token
     tenant, subject = fixture.tenant, fixture.subject
     task = create_task(
-        bff_base, web_token, tenant, subject, "control-create", "control-create"
+        bff_base,
+        web_token,
+        tenant,
+        subject,
+        "control-create",
+        "control-create",
+        fixture.session_token,
     )
     wait_outbox(bff_url, tenant, task, "scheduler.register")
     control_name = schedule_name(task)
@@ -411,7 +424,12 @@ def exercise_control_lifecycle(
         "/v1/scheduled-tasks/" + quote(task, safe=""),
         method="PATCH",
         headers=bff_headers(
-            web_token, tenant, subject, "req-control-replace", "control-replace"
+            web_token,
+            tenant,
+            subject,
+            "req-control-replace",
+            "control-replace",
+            fixture.session_token,
         ),
         body={"prompt": "control replaced"},
     )
@@ -433,7 +451,12 @@ def exercise_control_lifecycle(
         "/v1/scheduled-tasks/" + quote(task, safe=""),
         method="DELETE",
         headers=bff_headers(
-            web_token, tenant, subject, "req-control-delete", "control-delete"
+            web_token,
+            tenant,
+            subject,
+            "req-control-delete",
+            "control-delete",
+            fixture.session_token,
         ),
         body={},
     )
@@ -462,7 +485,13 @@ def exercise_delete_404(
     web_token, scheduler_token = fixture.web_token, fixture.scheduler_token
     tenant, subject = fixture.tenant, fixture.subject
     delete_task = create_task(
-        bff_base, web_token, tenant, subject, "delete-404-create", "delete-404"
+        bff_base,
+        web_token,
+        tenant,
+        subject,
+        "delete-404-create",
+        "delete-404",
+        fixture.session_token,
     )
     wait_outbox(bff_url, tenant, delete_task, "scheduler.register")
     delete_name = schedule_name(delete_task)
@@ -479,7 +508,14 @@ def exercise_delete_404(
         bff_base,
         "/v1/scheduled-tasks/" + quote(delete_task, safe=""),
         method="DELETE",
-        headers=bff_headers(web_token, tenant, subject, "req-delete-404", "delete-404"),
+        headers=bff_headers(
+            web_token,
+            tenant,
+            subject,
+            "req-delete-404",
+            "delete-404",
+            fixture.session_token,
+        ),
         body={},
     )
     wait_outbox(bff_url, tenant, delete_task, "scheduler.delete")
@@ -502,7 +538,7 @@ def exercise_create_409(
     web_token, scheduler_token = fixture.web_token, fixture.scheduler_token
     tenant, subject = fixture.tenant, fixture.subject
     create_key = "create-409"
-    predicted = deterministic_task_id(tenant, create_key)
+    predicted = deterministic_task_id(tenant, subject, create_key)
     predicted_name = schedule_name(predicted)
     predicted_body = {
         "name": predicted_name,
@@ -547,7 +583,13 @@ def exercise_create_409(
     ):
         raise SmokeError("Create 409 owner precondition was not durably established")
     created = create_task(
-        bff_base, web_token, tenant, subject, create_key, "create-409"
+        bff_base,
+        web_token,
+        tenant,
+        subject,
+        create_key,
+        "create-409",
+        fixture.session_token,
     )
     if created != predicted:
         raise SmokeError("BFF deterministic ScheduledTask identity drift")
@@ -574,7 +616,13 @@ def exercise_replace_404(
     web_token, scheduler_token = fixture.web_token, fixture.scheduler_token
     tenant, subject = fixture.tenant, fixture.subject
     replace_task = create_task(
-        bff_base, web_token, tenant, subject, "replace-404-create", "replace-404"
+        bff_base,
+        web_token,
+        tenant,
+        subject,
+        "replace-404-create",
+        "replace-404",
+        fixture.session_token,
     )
     wait_outbox(bff_url, tenant, replace_task, "scheduler.register")
     replace_name = schedule_name(replace_task)
@@ -592,7 +640,12 @@ def exercise_replace_404(
         "/v1/scheduled-tasks/" + quote(replace_task, safe=""),
         method="PATCH",
         headers=bff_headers(
-            web_token, tenant, subject, "req-replace-404", "replace-404"
+            web_token,
+            tenant,
+            subject,
+            "req-replace-404",
+            "replace-404",
+            fixture.session_token,
         ),
         body={"prompt": "replace 404 reconciled"},
     )
@@ -627,7 +680,13 @@ def exercise_callback_replay_cases(
     tenant, subject = fixture.tenant, fixture.subject
     proxy, agent = fixture.proxy, fixture.agent
     callback_task = create_task(
-        bff_base, web_token, tenant, subject, "callback-create", "callback"
+        bff_base,
+        web_token,
+        tenant,
+        subject,
+        "callback-create",
+        "callback",
+        fixture.session_token,
     )
     wait_outbox(bff_url, tenant, callback_task, "scheduler.register")
     callback_name = schedule_name(callback_task)
@@ -691,7 +750,13 @@ def exercise_restart_case(fixture: CaseFixture, cases: list[dict[str, str]]) -> 
     tenant, subject = fixture.tenant, fixture.subject
     proxy, agent, restart = fixture.proxy, fixture.agent, fixture.restart
     unknown_task = create_task(
-        bff_base, web_token, tenant, subject, "unknown-create", "unknown"
+        bff_base,
+        web_token,
+        tenant,
+        subject,
+        "unknown-create",
+        "unknown",
+        fixture.session_token,
     )
     wait_outbox(bff_url, tenant, unknown_task, "scheduler.register")
     unknown_name = schedule_name(unknown_task)
@@ -757,6 +822,7 @@ def exercise_cases(
     bff_url: str,
     scheduler_url: str,
     web_token: str,
+    session_token: str,
     scheduler_token: str,
     tenant: str,
     subject: str,
@@ -770,6 +836,7 @@ def exercise_cases(
         bff_url,
         scheduler_url,
         web_token,
+        session_token,
         scheduler_token,
         tenant,
         subject,

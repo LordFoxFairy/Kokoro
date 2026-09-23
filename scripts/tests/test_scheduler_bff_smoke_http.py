@@ -62,6 +62,28 @@ def test_proxy_exposes_configured_dns_target_separately_from_listen_address() ->
         assert proxy.target_base == f"http://fixture-host.local:{port}"
 
 
+def test_proxy_binds_only_the_exact_requested_private_interface(monkeypatch) -> None:
+    actual = "192.168.1.9"
+    captured: list[tuple[str, int]] = []
+    original = http.OwnedHTTPServer
+
+    class RecordingServer(original):
+        def __init__(self, address, handler):
+            captured.append(address)
+            super().__init__(("127.0.0.1", address[1]), handler)
+
+    monkeypatch.setattr(http, "OwnedHTTPServer", RecordingServer)
+    with http.response_drop_proxy("http://127.0.0.1:1", bind_address=actual):
+        assert captured == [(actual, 0)]
+
+
+@pytest.mark.parametrize("address", ["0.0.0.0", "8.8.8.8", "198.18.1.2", "::1"])
+def test_proxy_rejects_non_private_bind_address(address: str) -> None:
+    with pytest.raises(http.SmokeError, match="bind"):
+        with http.response_drop_proxy("http://127.0.0.1:1", bind_address=address):
+            pass
+
+
 def _request_threads_after(baseline: set[int]) -> list[Thread]:
     return [
         thread

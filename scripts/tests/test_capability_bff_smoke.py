@@ -413,13 +413,25 @@ def test_capability_environment_overrides_inherited_wildcard_host() -> None:
 
 
 def test_bff_release_pin_rejects_every_other_sha(tmp_path: Path, monkeypatch) -> None:
-    accepted = "c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7"
+    accepted = "6238599667110fbfbc2d5ef3a9d53731f2623cfe"
     assert smoke.BFF_RELEASE == accepted
     (tmp_path / "dist").mkdir()
     (tmp_path / "dist" / "main.js").touch()
     monkeypatch.setattr(runtime, "command_output", lambda *_args, **_kwargs: "0" * 40)
     with pytest.raises(runtime.SmokeError, match="frozen smoke input"):
         runtime.verify_release(tmp_path, accepted)
+
+
+def test_user_headers_use_bearer_without_self_asserted_identity() -> None:
+    headers = smoke.bff_headers(
+        "service-secret", "tenant-a", "user-a", "request-1", "session-token"
+    )
+    assert headers == {
+        "x-kokoro-service": "web-bff",
+        "x-kokoro-internal-secret": "service-secret",
+        "x-kokoro-request-id": "request-1",
+        "authorization": "Bearer session-token",
+    }
 
 
 def test_owned_command_timeout_kills_the_process_group(tmp_path: Path) -> None:

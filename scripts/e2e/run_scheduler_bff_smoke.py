@@ -8,6 +8,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 import json
 import os
+from ipaddress import IPv4Address, IPv4Network
 from pathlib import Path
 import re
 import secrets
@@ -20,6 +21,7 @@ from typing import BinaryIO
 
 if __package__:
     from . import scheduler_bff_smoke_runtime as _runtime
+    from .bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
     from .scheduler_bff_smoke_cases import exercise_cases, http_json
     from .scheduler_bff_smoke_http import (
         AgentReceiptState,
@@ -28,6 +30,7 @@ if __package__:
     )
 else:
     import scheduler_bff_smoke_runtime as _runtime
+    from bff_iam_admission_stub import AdmissionIdentity, iam_admission_stub
     from scheduler_bff_smoke_cases import exercise_cases, http_json
     from scheduler_bff_smoke_http import (
         AgentReceiptState,
@@ -44,7 +47,7 @@ command_output, run_owned_command = (
 )
 stop_owned_process = _runtime.stop_owned_process
 
-BFF_RELEASE = "c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7"
+BFF_RELEASE = "6238599667110fbfbc2d5ef3a9d53731f2623cfe"
 SCHEDULER_RELEASE = "975dee59616a1e0eda609aa69283401344900d83"
 EXPECTED_CASES = (
     "control_create",
@@ -226,6 +229,22 @@ def free_port() -> int:
         return int(listener.getsockname()[1])
 
 
+_PRIVATE_CALLBACK_NETWORKS = (
+    IPv4Network("10.0.0.0/8"),
+    IPv4Network("172.16.0.0/12"),
+    IPv4Network("192.168.0.0/16"),
+)
+
+
+def _is_owned_address(address: str) -> bool:
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+            probe.bind((address, 0))
+        return True
+    except OSError:
+        return False
+
+
 def callback_binding() -> tuple[str, str, str]:
     host = socket.gethostname().rstrip(".").lower()
     if not re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?", host):
@@ -237,11 +256,20 @@ def callback_binding() -> tuple[str, str, str]:
             if item[4]
         }
     )
-    if "127.0.0.1" not in addresses:
-        raise SmokeError(
-            "Host does not resolve to the required loopback callback address"
-        )
-    return host, "127.0.0.1", "127.0.0.1/32"
+    if len(addresses) != 1:
+        raise SmokeError("Host callback address is ambiguous")
+    address = addresses[0]
+    try:
+        parsed = IPv4Address(address)
+    except ValueError:
+        raise SmokeError("Host callback address is invalid") from None
+    if address != "127.0.0.1" and not any(
+        parsed in network for network in _PRIVATE_CALLBACK_NETWORKS
+    ):
+        raise SmokeError("Host callback address is not RFC1918 private")
+    if not _is_owned_address(address):
+        raise SmokeError("Host callback address is not locally owned")
+    return host, address, address + "/32"
 
 
 def success_summary(
@@ -285,6 +313,7 @@ class ServiceConfiguration:
     node: Path
     scheduler_token: str
     web_token: str
+    session_token: str
 
 
 def prepare_owned_dependencies(
@@ -339,6 +368,8 @@ def service_configuration(
     scheduler_url: str,
     bff_url: str,
     agent_base: str,
+    iam_base: str,
+    session_token: str,
     proxy_base: str,
     callback_host: str,
     callback_cidr: str,
@@ -378,6 +409,7 @@ def service_configuration(
         "KOKORO_BFF_PORT": str(bff_port),
         "KOKORO_BFF_MODE": "live",
         "KOKORO_BFF_SHARED_SECRET": web_token,
+        "KOKORO_IAM_BASE_URL": iam_base,
         "KOKORO_INTERNAL_SECRET_BFF": agent_token,
         "KOKORO_SCHEDULER_SERVICE_TOKEN": scheduler_token,
         "KOKORO_SCHEDULER_BASE_URL": scheduler_base,
@@ -397,6 +429,7 @@ def service_configuration(
         node,
         scheduler_token,
         web_token,
+        session_token,
     )
 
 
@@ -408,13 +441,15 @@ def exercise_real_processes(
     scheduler_url: str,
     bff_url: str,
     agent: AgentReceiptState,
+    iam_base: str,
+    session_token: str,
     log: BinaryIO,
     callback: tuple[str, str, str],
 ) -> list[dict[str, str]]:
     scheduler_port, bff_port = free_port(), free_port()
     bff_base = f"http://127.0.0.1:{bff_port}"
-    callback_host, _callback_address, callback_cidr = callback
-    with response_drop_proxy(bff_base) as proxy:
+    callback_host, callback_address, callback_cidr = callback
+    with response_drop_proxy(bff_base, bind_address=callback_address) as proxy:
         proxy.set_target_host(callback_host)
         config = service_configuration(
             state,
@@ -424,6 +459,8 @@ def exercise_real_processes(
             scheduler_url,
             bff_url,
             agent.base_url,
+            iam_base,
+            session_token,
             proxy.base_url,
             callback_host,
             callback_cidr,
@@ -454,6 +491,7 @@ def exercise_real_processes(
             bff_url,
             scheduler_url,
             config.web_token,
+            config.session_token,
             config.scheduler_token,
             state.tenant,
             "subject-" + state.resources.run_id,
@@ -519,8 +557,22 @@ def run_smoke(
         directory_context,
     )
     cases: list[dict[str, str]] = []
+    session_token = secrets.token_urlsafe(32)
     try:
-        with (directory / "smoke.log").open("wb") as log, agent_receipt_stub() as agent:
+        with (
+            (directory / "smoke.log").open("wb") as log,
+            agent_receipt_stub() as agent,
+            iam_admission_stub(
+                {
+                    session_token: AdmissionIdentity(
+                        tenant_id=state.tenant,
+                        user_id="subject-" + run_id,
+                        session_id="session-" + run_id,
+                        client_id="w0b-scheduler-smoke",
+                    )
+                }
+            ) as iam_base,
+        ):
             scheduler_url, bff_url = prepare_owned_dependencies(
                 state, args, node_env, go_env, log, fault_injection
             )
@@ -532,6 +584,8 @@ def run_smoke(
                 scheduler_url,
                 bff_url,
                 agent,
+                iam_base,
+                session_token,
                 log,
                 callback,
             )

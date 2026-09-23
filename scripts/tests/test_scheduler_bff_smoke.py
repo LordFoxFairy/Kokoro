@@ -19,6 +19,25 @@ from scripts.e2e import scheduler_bff_smoke_runtime as runtime
 LOOPBACK_BINDING = ("fixture-host.local", "127.0.0.1", "127.0.0.1/32")
 
 
+def test_bff_release_and_user_headers_use_iam_admission() -> None:
+    assert smoke.BFF_RELEASE == "6238599667110fbfbc2d5ef3a9d53731f2623cfe"
+    assert case_owner.bff_headers(
+        "service-secret", "tenant-a", "user-a", "request-1", "key-1", "session-token"
+    ) == {
+        "x-kokoro-service": "web-bff",
+        "x-kokoro-internal-secret": "service-secret",
+        "x-kokoro-request-id": "request-1",
+        "idempotency-key": "key-1",
+        "authorization": "Bearer session-token",
+    }
+
+
+def test_deterministic_task_id_is_scoped_to_trusted_user() -> None:
+    assert case_owner.deterministic_task_id(
+        "tenant-a", "user-a", "key-a"
+    ) != case_owner.deterministic_task_id("tenant-a", "user-b", "key-a")
+
+
 class Recorder:
     def __init__(self) -> None:
         self.commands: list[list[str]] = []
@@ -571,10 +590,11 @@ def test_readiness_accepts_scheduler_owner_envelope(monkeypatch) -> None:
     ("addresses", "expected"),
     [
         (["192.168.1.9"], None),
-        (["10.0.0.9", "127.0.0.1"], LOOPBACK_BINDING),
+        (["10.0.0.9", "127.0.0.1"], None),
+        (["127.0.0.1"], LOOPBACK_BINDING),
     ],
 )
-def test_callback_binding_requires_and_prefers_loopback(
+def test_callback_binding_rejects_ambiguous_host_and_accepts_unique_loopback(
     monkeypatch, addresses: list[str], expected: tuple[str, str, str] | None
 ) -> None:
     monkeypatch.setattr(smoke.socket, "gethostname", lambda: "fixture-host.local")
@@ -584,10 +604,56 @@ def test_callback_binding_requires_and_prefers_loopback(
     ]
     monkeypatch.setattr(smoke.socket, "getaddrinfo", lambda *_args, **_kwargs: answers)
     if expected is None:
-        with pytest.raises(runtime.SmokeError, match="loopback"):
+        with pytest.raises(runtime.SmokeError, match="callback"):
             smoke.callback_binding()
     else:
         assert smoke.callback_binding() == expected
+
+
+@pytest.mark.parametrize(
+    ("addresses", "owned", "expected"),
+    [
+        (
+            ["192.168.1.9"],
+            True,
+            ("fixture-host.local", "192.168.1.9", "192.168.1.9/32"),
+        ),
+        (["192.168.1.9"], False, None),
+        (["192.168.1.9", "10.0.0.9"], True, None),
+        (["8.8.8.8"], True, None),
+        (["198.18.1.2"], True, None),
+        (["0.0.0.0"], True, None),
+    ],
+)
+def test_callback_binding_requires_one_locally_owned_rfc1918_address(
+    monkeypatch,
+    addresses: list[str],
+    owned: bool,
+    expected: tuple[str, str, str] | None,
+) -> None:
+    monkeypatch.setattr(smoke.socket, "gethostname", lambda: "fixture-host.local")
+    answers = [
+        (smoke.socket.AF_INET, smoke.socket.SOCK_STREAM, 6, "", (address, 0))
+        for address in addresses
+    ]
+    monkeypatch.setattr(smoke.socket, "getaddrinfo", lambda *_args, **_kwargs: answers)
+    monkeypatch.setattr(smoke, "_is_owned_address", lambda _address: owned)
+    if expected is None:
+        with pytest.raises(runtime.SmokeError, match="callback"):
+            smoke.callback_binding()
+    else:
+        assert smoke.callback_binding() == expected
+
+
+def test_callback_binding_requires_locally_owned_loopback(monkeypatch) -> None:
+    monkeypatch.setattr(smoke.socket, "gethostname", lambda: "fixture-host.local")
+    answers = [
+        (smoke.socket.AF_INET, smoke.socket.SOCK_STREAM, 6, "", ("127.0.0.1", 0))
+    ]
+    monkeypatch.setattr(smoke.socket, "getaddrinfo", lambda *_args, **_kwargs: answers)
+    monkeypatch.setattr(smoke, "_is_owned_address", lambda _address: False)
+    with pytest.raises(runtime.SmokeError, match="locally owned"):
+        smoke.callback_binding()
 
 
 def test_private_sql_suppresses_command_tags_for_returning_rows(monkeypatch) -> None:

@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from http.client import HTTPConnection, HTTPException
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from ipaddress import ip_address
+from ipaddress import IPv4Address, IPv4Network, ip_address
 import json
 import socket
 from threading import Event, Lock, Thread, Timer
@@ -424,11 +424,29 @@ def _proxy_handler(state: ResponseDropState) -> type[BaseHTTPRequestHandler]:
 
 
 @contextmanager
-def response_drop_proxy(upstream: str) -> Iterator[ResponseDropState]:
+def response_drop_proxy(
+    upstream: str, *, bind_address: str = "127.0.0.1"
+) -> Iterator[ResponseDropState]:
     _loopback_upstream(upstream)
+    try:
+        parsed_bind = IPv4Address(bind_address)
+    except ValueError:
+        raise SmokeError(
+            "Response-drop proxy bind address must be exact IPv4"
+        ) from None
+    private = any(
+        parsed_bind in network
+        for network in (
+            IPv4Network("10.0.0.0/8"),
+            IPv4Network("172.16.0.0/12"),
+            IPv4Network("192.168.0.0/16"),
+        )
+    )
+    if bind_address != "127.0.0.1" and not private:
+        raise SmokeError("Response-drop proxy bind address must be loopback or RFC1918")
     state = ResponseDropState(upstream)
-    server = OwnedHTTPServer(("127.0.0.1", 0), _proxy_handler(state))
-    state.base_url = f"http://127.0.0.1:{server.server_port}"
+    server = OwnedHTTPServer((bind_address, 0), _proxy_handler(state))
+    state.base_url = f"http://{bind_address}:{server.server_port}"
     state.target_base = state.base_url
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
