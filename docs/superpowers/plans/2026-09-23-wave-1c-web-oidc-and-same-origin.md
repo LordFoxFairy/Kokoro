@@ -78,6 +78,12 @@
 - [ ] 记录 Web→BFF `/iam` browser-private relay 的固定 BFF+Web commit/digest 与真实组合证据，并证明非法 Web→IAM 旁路已删除。`EDGE-WEB-BFF` 当前还覆盖 Product OpenAPI generated client 与 AG-UI consumer，**不得因登录 relay 可用而激活**；本片保留其 broken，另立 W1D 完成 Product API 全量生成消费与单一 AG-UI 协议后才运行精确 edge checkpoint。
 - [ ] 子仓各自 commit/push 后 Root 提升 gitlink、更新 `docs/task.md`/`docs/progress.md`，复跑 topology、compatibility、Root tests、main-only 与 Git clean。
 
+### 2026-09-23 当前执行修订：S1 与 Team 依赖门
+
+- IAM Team 三设计文档已由 owner 发布 f240bd7d5f542bb152c7eb929074c96b6c290ea8，只通过设计门；运行 Controller/Guard、canonical Prisma schema、OpenAPI/SDK 均未实现。BFF 机械来源 pin 1d1f42775e0fa4464de6b08ee9d2b9cd82911a71 已发布，Web S1 唯一 writer 在当前工作树消费；Root gitlink/库存待 Web 冻结后集成。Team runtime 必须待 Web S1 单仓验收，再由 IAM 唯一 writer 按 scope/permission→事务内三 GET→owner artifact 的顺序推进，BFF/Web 消费串行。
+- S1 源码所有权仍只在 Web。已安装 Better Auth 1.7.3 的无 id_token_hint 退出协议必须浏览器 GET /iam/oauth2/end-session、签名 confirmation cookie、精确 POST /iam/oauth2/end-session/confirm 后才删除 issuer session。原 Web 只 revoke refresh 而未执行 issuer end-session，故当前 S1 授权同一 writer 将既有 Web /iam GET 准入、专用 confirmation POST、仅 confirm 透传的窄 Path cookie、固定 post-logout redirect 与对应测试纳入切片。登出响应可给同源 pending navigation，不能在用户确认前报告 issuer 已退出；不得把 ID/access/refresh token 放 URL。普通 Product /v1 Bearer、UI 消费与旧路径删除仍属于 S2。
+- Root 另设独立 scripts/e2e/run_web_bff_iam_product_session_smoke.py 及 scripts/tests/test_web_bff_iam_product_session_smoke.py，与旧 RP-only 503 runner 并存以保留历史基线。新 runner 只复用旧安全 harness、CookieJar、IAM fixture 和自有资源清理，不调用旧 run_browser/503断言；固定三仓 SHA 后真实验证 callback→Product cookie/session→单次 refresh→旧 generation 拒绝→revoke/logout→issuer 确认与 issuer session 删除，精确清理本次 Web Redis key并扫描秘密。它不验证 S2 的普通 BFF /v1 Bearer。脚本唯一 writer 与 Web 唯一 writer 位于不同仓，Root 对冻结代码审查并在主工作树重跑。
+
 ## 不提前宣称的能力
 
 本计划只关闭 Wave 1C 浏览器身份接线，不代表整个 Web→BFF edge、Storage、Platform、Agent 聊天执行链、System generated consumer、Billing 或 Wave 7 组合已完成。W1D 单独关闭 Product generated consumer/AG-UI 后才可能宣布 Wave 1 完成。各 owner 的技术设计/契约/Schema 和独立验证继续按 `docs/task.md` 依赖顺序闭环。

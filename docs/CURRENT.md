@@ -6,11 +6,11 @@
 
 | 路径 | 锁定的子仓 main commit |
 | --- | --- |
-| `apps/kokoro-app` | `5da730426faaca54a9f0003fa1e7fd99f4db6f00` |
+| `apps/kokoro-app` | `1ba0498511447b9aafde892adafaae4de7f61ed6` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
-| `apps/kokoro-bff` | `eb7ded2386efd9a10905843a7a5aedff9ac72df6` |
+| `apps/kokoro-bff` | `1d1f42775e0fa4464de6b08ee9d2b9cd82911a71` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
-| `apps/kokoro-iam` | `65b0fd969989d4044fae640a8414d9c2dcf41c3b` |
+| `apps/kokoro-iam` | `f240bd7d5f542bb152c7eb929074c96b6c290ea8` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `9c88d0d934387b590bc74dae0179a587292e0253` |
@@ -22,21 +22,21 @@ Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能�
 
 ## 已落地的 owner 能力
 
-- IAM 已提供真实 Code+S256、session admission 与测试专用 OIDC host；本次 `6bc9b19…` 将 17 个 Prisma model 固定到 `kokoro_iam` schema，fresh installer 与 readiness 不再依赖 `public` 或整库空白。Root 独立 Node24 `pnpm verify` 704/704、串行真实 integration 183/183；旧并行 fixture 的全局临时库计数竞态仍待单独修，不是应用数据库并发限制。
-- BFF 已提供个人私有 Conversation/Project/ScheduledTask 权限、IAM admission、固定 `/iam` 原生 relay、Capability/Scheduler generated consumer。本次 `a4dbc33…` 使用 `kokoro_bff` schema 与 IAM `6bc9b19…` policy 来源；Root Node22 标准 253/253、contract 25/25、真实 schema 6/6、integration 37/37 已独立通过。
-- Web 已实现同源 issuer GET、sign-in 与 tenant/consent 三页交互，并安装 Auth.js RP-only Code+S256/state/nonce callback。固定 issuer/client/callback/resource，token Basic、userinfo Bearer 与 JWKS 仅经 BFF；验证型 `client.callback` 检查 EdDSA ID token，Redis 一次消费 state。真实 HTTPS Web→BFF→IAM RP-only **14/14** 已在前一固定 pin 验证，成功仍受控 `503 product_session_unavailable`、无可用 Product Session。本次 Web/IAM 三文档及 ADR 已统一双阶段 CAS、单次 refresh、加密当前凭据与 pending logout 语义；BFF/Web policy provenance 已机械 re-pin，运行会话仍待代码实现。
+- IAM 已提供真实 Code+S256、session admission 与测试专用 OIDC host；既有 `6bc9b19…` 将 17 个 Prisma model 固定到 `kokoro_iam` schema，fresh installer 与 readiness 不再依赖 `public` 或整库空白。Root 独立 Node24 `pnpm verify` 704/704、串行真实 integration 183/183；旧并行 fixture 的全局临时库计数竞态仍待单独修，不是应用数据库并发限制。本次 `f240bd7…` 仅收敛 Team 三个当前tenant窄读端点的设计文档，运行代码/OpenAPI/SDK未实现。
+- BFF 已提供个人私有 Conversation/Project/ScheduledTask 权限、IAM admission、固定 `/iam` 原生 relay、Capability/Scheduler generated consumer。既有 `a4dbc33…` 使用 `kokoro_bff` schema；本次 `1d1f427…` 仅将 relay policy 来源机械 re-pin 至 IAM `f240bd7…`，Node22 policy 4/4 与 contract check 已过，没有 Team Product API。此前 Root Node22 标准 253/253、真实 schema 6/6、integration 37/37 只证明对应旧提交。
+- Web 已实现同源 issuer、三页交互及 Auth.js Code+S256/state/nonce 回调。本次 `1ba0498…` 新增 HttpOnly Product Session、Redis 加密当前 refresh/双阶段 CAS、受控单次 refresh 与 active-current revoke；无 ID token hint 的 IAM logout 由浏览器 GET 确认页、签名窄 Path cookie 和 POST confirm 完成，未确认前只报告 pending。Root 独立 Node22 contract **52/52**、architecture **32/32**、Vitest **1366/1366**、lint/typecheck/build 与 Playwright **6/6** 通过；先前一次全测受宿主 Clamshell Sleep 冻结计时器影响，按系统电源日志核实后在保持唤醒的当前冻结代码上重跑全绿。当前新三仓 pin 的真实 HTTPS Product Session runner 尚未执行；前一 pin 的 RP-only **14/14** 只证明回调抵达旧受控503，不代表新会话真链完成。普通 BFF adapter Bearer、旧IAM直连删除及UI登出消费仍待后续切片。
 - Root 已在同一个自有临时 PostgreSQL 数据库、同一账号运行 BFF 与 IAM 两个 installer，观察到 `kokoro_bff` 16 表、`kokoro_iam` 17 表、`public` 0 业务表、跨 owner FK 0，随后删除测试库。应用开发采用一个物理数据库和一套账号；其他数据 owner 的 schema 适配尚未据此宣称完成，不新增部署角色或长期子库。
 
 ## 本次 Root 集成边界
 
-`verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；本次同步 Web/BFF/IAM **149 处来源 tuple**，仅 BFF `docs/API_CONTRACT.md` 的 evidence digest 随文档变化，不改变 16 条 edge 语义。现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。
+`verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；本次拟同步 Web/BFF/IAM **149 处来源 tuple**，仅 BFF `docs/API_CONTRACT.md` 的 evidence digest 随文档变化，不改变 16 条 edge 语义。现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。Root 当前工作树和gitlink待提交，因此本段只是待发布组合，不是发布后验收。
 
 前一固定 pin 的 Root checkpoint、policy、topology 与 main-only 均 PASS，Root+11 子仓只留 main 且本地/远端一致、工作树干净；Root `scripts/tests` **588 passed / 78 subtests**。Root `519d5a924b9b0d54a97edc760f82a965e366d1ea` 发布后，Web→BFF→IAM 真实 HTTPS RP-only 链 **14/14**，验证真实 Code+S256/token/userinfo/JWKS、回调重放和受控 `503 product_session_unavailable`，资源零残留；首次 OIDC→BFF **15/15**。本次三仓新 pin 的 Root 门与真实 HTTPS 尚待当前提交后复验，不能继承旧组合的测试结论。全仓静态治理此前为9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
 
 ## 下一条代码关键路径
 
-1. Web Product Session 与所有 BFF adapter 的单一 Bearer：Web/IAM refresh 语义已统一但代码未实现；Team IAM→BFF→Web 窄契约仍待 owner-first 发布。默认个人私有、显式分享；按调用点删除旧 IAM magic-link/team-session 直连、sealed envelope 和旧 identity header，不建兼容双轨。
-2. 双 CAS refresh 与退出链：先 tombstone；仅 active take 当前 refresh 后单次 revoke，pending 不发送可能已轮换旧 token。真实三仓 RP-only 回归是前置，不把当前受控 503 当完整登录。
+1. 先在本次固定三仓 SHA 上运行新真实 HTTPS Product Session runner：验证 callback→HttpOnly session→单次 refresh→旧 generation 拒绝→revoke→IAM end-session confirm 与资源零残留；不以Web本仓fixture代替真IAM。其后 Web 所有普通 BFF adapter 使用单一 Bearer，删除旧 IAM magic-link/team-session 直连、sealed envelope 和旧 identity header。
+2. IAM Team 已过三设计文档门，下一片由IAM owner实现窄读runtime/Schema/OpenAPI/SDK，再让BFF发布Product projection，Web最后切换；默认个人私有、显式分享，不以成员资格开放私人聊天/文件。
 3. 之后推进单一 AG-UI 聊天、Agent/Storage/System/Platform/Scheduler 各自 owner 闭环；Billing 最后。
 
 旧全仓 `verify-ten-repository-full.sh` 和 `run_stage2_owner_health.py` 仍是只诊断退出的暂停入口；不以其替代逐仓代码门或已隔离的跨仓 smoke。
