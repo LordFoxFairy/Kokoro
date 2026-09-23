@@ -67,6 +67,11 @@
 
 本决议的并行面仅为不同仓的**文档收敛与只读审查**。IAM 与 Web owner 文档可以并行改写，Root 对齐后再放行 Web Product Session 源码；Team 的 IAM→BFF→Web 运行时契约仍串行发布。主控保留共享 checkout 的 Git index、commit、push 与最终验证。
 
+### W1C-2F-S 与 Team owner-first 放置门
+
+- **Web Product Session 代码首片 S1：** 当前 `src/app/api/auth/[...nextauth]/route.ts` 在真实 RP 成功后固定受控503，`oidc-provider.ts` 已验证 Code+S256/EdDSA/resource，不得重写该已验链。选择既有 `src/lib/server/` 下的 `product-session.ts`（请求/cookie及公开最小projection）、`product-session-store.ts`（Redis加密记录/CAS/tombstone）、`oidc-token.ts`（固定BFF relay refresh/revoke）并定点接入现有 RP route/provider；不放 UI、`contract/` 或通用认证 helper。先建失败行为测试，再使成功 callback 创建在线会话；仅 S1 通过不等于普通代理Bearer或旧路径删除，二者后续单独切片。Web无SQL/API owner变更，Redis仅本仓隔离key，普通BFF Bearer仍由在线IAM admission判定。验证 Node22 contract/architecture/lint/typecheck/test/build/Playwright、双连接Redis竞争与真实三仓HTTP；新文件须按一个变化原因拆分，不建新顶层目录。Root保留Git/审查，Web一位writer。
+- **Team IAM owner 设计裁决：** 第一片只新增当前tenant的 `member.list`、`invitation.list`、`role.list` 三个 user-delegated internal GET；路径沿用 `/internal/v1/tenants/{tenant_id}/{members|invitations|roles}`，不建 IAM `/me/team` alias。各自 user-only read scope (`iam:member.read`/`iam:invitation.read`/`iam:role.read`) 不进入 tenant/operator machine provisioning；scope不是权限，持久membership/tenant状态及 `member:read`（owner/admin/member）、`invitation:read`（owner/admin）、`ac:read`（已有）每请求重验。普通 roster默认不返回其他成员email，邀请邮箱仅 invitation-read 权限；wire使用最小字段和绑定tenant/operation/filter的有界cursor，不跨owner SQL。先更新IAM三文档和唯一ORM schema的索引决定，Root审查后再写owner源码/生成OpenAPI/SDK；BFF consumer只在IAM发布后接。未加入tenant的本人pending邀请查询及既有accept/reject属独立issuer-session切片，不借目标tenant Product admission，也不把membership变成聊天/文件可见权。
+
 ## Task 3：Root 组合验收与 W1C 证据冻结
 
 - [ ] 在独立 fixture 中运行真实 Browser/HTTP Web→BFF→IAM：首次登录、有效 Bearer、refresh rotation、logout/revoke、失效后拒绝、同租户不同人/跨租户访问拒绝；确认无 owner 数据或进程泄漏。
