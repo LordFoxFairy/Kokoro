@@ -6,7 +6,7 @@
 
 | 路径 | 锁定的子仓 main commit |
 | --- | --- |
-| `apps/kokoro-app` | `c71aa3f5130ae52c7f76356ac38bdabaf551d4e9` |
+| `apps/kokoro-app` | `12e07eb5874b085be989364606d485dce0722249` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `apps/kokoro-bff` | `a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
@@ -24,7 +24,7 @@ Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能�
 
 - IAM 已提供真实 Code+S256、session admission 与测试专用 OIDC host；本次 `6bc9b19…` 将 17 个 Prisma model 固定到 `kokoro_iam` schema，fresh installer 与 readiness 不再依赖 `public` 或整库空白。Root 独立 Node24 `pnpm verify` 704/704、串行真实 integration 183/183；旧并行 fixture 的全局临时库计数竞态仍待单独修，不是应用数据库并发限制。
 - BFF 已提供个人私有 Conversation/Project/ScheduledTask 权限、IAM admission、固定 `/iam` 原生 relay、Capability/Scheduler generated consumer。本次 `a4dbc33…` 使用 `kokoro_bff` schema 与 IAM `6bc9b19…` policy 来源；Root Node22 标准 253/253、contract 25/25、真实 schema 6/6、integration 37/37 已独立通过。
-- Web `c71aa3f…` 已实现同源 issuer GET、sign-in 与 tenant/consent 三页交互，并安装 Auth.js RP-only Code+S256/state/nonce callback。固定 issuer/client/callback/resource，token Basic、userinfo Bearer 与 JWKS 仅经 BFF；验证型 `client.callback` 检查 EdDSA ID token，Redis 一次消费 state。Node22 contract 52/52、architecture 32/32、标准 1339/1339、build 与 Playwright 6/6；真实 Next + 严格 BFF fixture 覆盖签名、重放、取消、超时和限额。验证成功仍受控 `503 product_session_unavailable`、无可用新 session；fixture 不等于真实 IAM 三服务或完整登录。
+- Web `12e07eb…` 已实现同源 issuer GET、sign-in 与 tenant/consent 三页交互，并安装 Auth.js RP-only Code+S256/state/nonce callback。固定 issuer/client/callback/resource，token Basic、userinfo Bearer 与 JWKS 仅经 BFF；验证型 `client.callback` 检查 EdDSA ID token，Redis 一次消费 state。本次修正 Next 反代时内部 `request.url` authority 与公开 origin 不同导致的误拒：公开来源只按固定配置、精确 Host/Origin 及既有路径/CSRF门判断，不信转发头。Node22 contract 52/52、architecture 32/32、标准 1344/1344、build 与 Playwright 6/6；真实 Next + 严格 BFF fixture 覆盖签名、重放、取消、超时和限额，新增 HTTP 代理式 Next 测试覆盖公开 Host 与内部 URL 不同。验证成功仍受控 `503 product_session_unavailable`、无可用新 session；fixture 不等于真实 IAM 三服务或完整登录。
 - Root 已在同一个自有临时 PostgreSQL 数据库、同一账号运行 BFF 与 IAM 两个 installer，观察到 `kokoro_bff` 16 表、`kokoro_iam` 17 表、`public` 0 业务表、跨 owner FK 0，随后删除测试库。应用开发采用一个物理数据库和一套账号；其他数据 owner 的 schema 适配尚未据此宣称完成，不新增部署角色或长期子库。
 
 ## 本次 Root 集成边界
