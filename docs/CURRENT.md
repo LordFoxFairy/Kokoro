@@ -6,11 +6,11 @@
 
 | 路径 | 锁定的子仓 main commit |
 | --- | --- |
-| `apps/kokoro-app` | `5299f290ff7653933078007678a2b7a3da01dc67` |
+| `apps/kokoro-app` | `bbd8f0806e3c040200af9d478828232baae57ff2` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
-| `apps/kokoro-bff` | `a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87` |
+| `apps/kokoro-bff` | `2d951e1a56b5720431963d728b74f662e2379999` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
-| `apps/kokoro-iam` | `6bc9b190c359b8109238626ff689ce9839e858b5` |
+| `apps/kokoro-iam` | `606d9090c2282e13370e17a20379a32629df9722` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `9c88d0d934387b590bc74dae0179a587292e0253` |
