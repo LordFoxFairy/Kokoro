@@ -1,16 +1,16 @@
 # Root 当前状态
 
-状态：2026-09-22。Root 已采用 remote-name Git submodule 组合；可复现组合由 `.gitmodules` 与精确 gitlink SHA 定义，而不是同级 checkout 或工作目录约定。本轮后端闭环以 [批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为架构事实源，以 [Wave 1B 计划](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md) 为当前执行计划，以 [`task.md`](task.md) 为唯一任务状态表，以 [`progress.md`](progress.md) 为唯一执行证据账。
+状态：2026-09-23。Root 已采用 remote-name Git submodule 组合；可复现组合由 `.gitmodules` 与精确 gitlink SHA 定义，而不是同级 checkout 或工作目录约定。本轮后端闭环以 [批准设计](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为架构事实源，以 [Wave 1B 计划](superpowers/plans/2026-09-22-wave-1b-bff-admission-and-privacy.md) 为当前执行计划，以 [`task.md`](task.md) 为唯一任务状态表，以 [`progress.md`](progress.md) 为唯一执行证据账。
 
 ## 当前已接收组合
 
-W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；提交后 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计全部通过。W1A 已由 Root `a7585a97a2bf34eff33f2d20af3a46779aca1884` 集成并推送，仅前移 IAM owner release；12仓main-only/clean及HEAD=origin/main=live main已实测。下表为已验收组合，详细命令见task/progress；后续只更新控制文档不改变该运行组合。
+W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送，最终 SPEC/QUALITY 均 0/0/0；当时 Root + 11 个 submodule 的 main-only/clean、HEAD = origin/main = live main 审计通过。W1A 已由 Root `a7585a97a2bf34eff33f2d20af3a46779aca1884` 集成并推送，仅前移 IAM owner release。W1B BFF 两个 owner 代码切片已验收并推送；下表为本次 Root gitlink 组合，跨仓 IAM↔BFF/Web 联调尚未验收。
 
 | Root 路径 | 子仓 SHA |
 | --- | --- |
 | `apps/kokoro-app` | `ce4e466c960c4b40a87a7be38b5a56f265f7a12f` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
-| `apps/kokoro-bff` | `c5e9b3cc8eb134ff72e37f56ac1f95ebec4f42e7` |
+| `apps/kokoro-bff` | `6238599667110fbfbc2d5ef3a9d53731f2623cfe` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
 | `apps/kokoro-iam` | `259a66e6a569889c030734f380e99685d8b9e21c` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
@@ -29,14 +29,14 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 
 - IAM `259a66e…`（代码 `54d0d5f…`，后续仅文档）：session admission OpenAPI/SDK0.2.0已验收；Root重跑701标准、174真实integration与release仓外consumer2项通过，所有撤销/孤儿/no-store负例通过。只有用户会话/成员准入，不授予BFF资源权限；BFF/Web尚未消费，IAM edges保持broken。
 - Capability runtime `9c88d0d…`：显式typed监听地址，源码默认loopback、Docker显式wildcard；release空库先安装再persisted check；两个Serializable探针suite物理隔离，标准并行853测试通过、0跳过。
-- BFF `c5e9b3c…`：已使用Capability与Scheduler固定artifact/generated client；Scheduler control、专用持久receipt/CAS和恢复链已接通。Storage旧HTTP/配置/parser/mock成功数据及孤儿200类型已删除；认证后的Library当前只返回明确503且零Storage socket，不等于Storage功能完成。
+- BFF `6238599…`：已使用Capability与Scheduler固定artifact/generated client；Scheduler control、专用持久receipt/CAS和恢复链已接通。W1B代码增加IAM session bearer准入、Project/ScheduledTask/Chat按个人私有授权、Share撤销竞态拒绝；owner切片Node22标准231、contract25、schema4、真实PG/Redis integration37通过。真实IAM↔BFF组合和Web接线仍待W1B-3/后续切片。Storage旧HTTP/配置/parser/mock成功数据及孤儿200类型已删除；认证后的Library当前只返回明确503且零Storage socket，不等于Storage功能完成。
 - Scheduler `975dee59…`：新键同名create冲突以409写入持久receipt并可重启重放；普通/race各139项的owner验收见progress。
 - Artifact来源保持真实：BFF消费的Capability artifact仍来自`7f89a267…`，Scheduler artifact仍来自`92bf9e7e…`，与各自新runtime release的canonical contract字节相同；没有伪造重新生成。
 - Root最终Capability/BFF真实进程smoke8/8；Scheduler/BFF真实进程smoke11/11，覆盖真实owner409、RFC3339小数、重复重放、身份冲突、response-unknown与BFF重启后重试。Agent仍是deterministic receipt stub，真实Agent闭环留W4；Storage/IAM/provider readiness替身也不算真实owner验收。
 
 ## 当前验证证据
 
-本次已审查组合的实际结果（Root 提交后审计见 task/progress）：
+以下为W0B退出时的历史组合证据；本次BFF切片新证据见上文及task/progress，不把旧smoke结果冒充新gitlink组合验收：
 
 ```text
 python3 scripts/verify-repository-topology.py -> PASS

@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-状态日期：2026-09-22。本文是本轮后端闭环的**唯一任务状态表**；历史任务由 Git 历史保存，不再与当前任务混排。主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
+状态日期：2026-09-23。本文是本轮后端闭环的**唯一任务状态表**；历史任务由 Git 历史保存，不再与当前任务混排。主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
 ## 1. 总目标与权威入口
 
@@ -16,7 +16,7 @@
 
 ### 1.1 主控优先看这里
 
-- 当前关键路径：**W1B-1/R 准入收尾 → W1B-2 私有资源权限 → W1B-3 最小真实联调 → Web 登录/同源接线**。具体状态与唯一写入负责人见本文 Wave1B 执行卡。
+- 当前关键路径：**W1B-3 IAM↔BFF 最小真实联调 → Web 登录/同源接线**；W1B-1/R、W1B-2 已按各自 owner 切片验收，不代表跨仓运行闭环。具体状态与唯一写入负责人见本文 Wave1B 执行卡。
 - 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
 - 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
 - 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
@@ -170,6 +170,6 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 | --- | --- | --- | --- |
 | W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c → a898c90fe2b5447178a76fb04b0fedf9fa98e0d5，绝对目录同上；64个精确文件，Root提交 | SPEC/QUALITY通过；Root最终227标准/35真实integration、静态门通过；代码切片已验收，跨仓组合归W1B-3 |
 | W1B-1R / P0 | BFF / `w1b1_task_reviewer` / gpt-5.6-sol high / 只读；Root集成验证 | c5e9b3c + 最终冻结64文件，与a898c90提交字节一致；未操作Git/基础设施 | 首轮2 Important均已修复；增量复核SPEC Compliant/QUALITY Approved，0未决；状态：已验收 |
-| W1B-2 / P0 | BFF / 原`w1b_bff_owner`已停；Root主控待接续唯一写入与复核 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`，main a898c90fe2b5447178a76fb04b0fedf9fa98e0d5；当前33个已跟踪修改+1新文件，均未提交；原Task2范围，另批准仅更新`test/scheduler-dispatch-receipt.integration.mjs`旧调用以匹配具名scope | 当前TypeScript/标准231/schema4通过，真实integration35/36（旧fixture仍用位置参数而失败）；补测试调用后继续隐私负例与全门、独立审查；状态：进行中，交接待验收 |
-| W1B-3 / P0 | Root主控 + 独立审查 | 依赖BFF两片停写、完整门；Root单独组合任务卡 | 真实证据、smoke回归、gitlink/inventory、main-only；不以fixture激活IAM；状态：待派工 |
+| W1B-2 / P0 | BFF / 原`w1b_bff_owner`额度中断后Root唯一写入、`w1b2_privacy_review`只读复核 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`，main a898c90 → `6238599667110fbfbc2d5ef3a9d53731f2623cfe`，35文件，已推送、clean；原Task2范围加批准的旧fixture修复 | Root Node22 format/lint/typecheck/contract25/标准231/schema4/build/fresh PG+Redis integration37全绿；独立审查2条P2已修复复核无新阻断；自有DB回收、Redis8不变；BFF owner切片已验收，跨仓组合归W1B-3 |
+| W1B-3 / P0 | Root主控 + 独立审查 | BFF两片已停写/通过，子仓main已推送；Root组合任务卡与IAM真实fixture接线待实施 | 真实IAM↔BFF证据、旧smoke回归、gitlink/inventory、main-only；不以fixture激活IAM；状态：进行中，未验收 |
 | W1B-3P / P0 | IAM测试入口 / `w1b3_iam_fixture_reader` / gpt-5.6-sol high / 只读；Root审查 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam`，main 259a66e6；仅既有HTTP fixture/consumer测试/API入口，不写文件/Git、不启动服务、不操作数据库；与BFF Task2独立 | 已定位真实PKCE/session/在线membership与自有资源fixture；Root可复用本地测试CLI，不需IAM部署改造；状态：已验收（只读预检，不是联调通过） |
