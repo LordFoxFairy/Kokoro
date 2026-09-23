@@ -31,7 +31,7 @@ else:
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_RELEASES = {
     "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
-    "kokoro-bff": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+    "kokoro-bff": "804a5832c066ce60dde9f4592856ac40ce20f402",
     "kokoro-agent": "741c928dfc11313a25064a905d77d4ad371f5534",
 }
 

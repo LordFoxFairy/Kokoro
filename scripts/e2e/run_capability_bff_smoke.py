@@ -27,7 +27,7 @@ else:
 ROOT = Path(__file__).resolve().parents[2]
 BFF = ROOT / "apps" / "kokoro-bff"
 CAPABILITY = ROOT / "apps" / "kokoro-capability"
-BFF_RELEASE = "6238599667110fbfbc2d5ef3a9d53731f2623cfe"
+BFF_RELEASE = "804a5832c066ce60dde9f4592856ac40ce20f402"
 CAPABILITY_RELEASE = "9c88d0d934387b590bc74dae0179a587292e0253"
 
 

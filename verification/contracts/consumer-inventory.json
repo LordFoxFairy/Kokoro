@@ -63,7 +63,7 @@
       "owner": {
         "name": "kokoro-bff",
         "repository_path": "apps/kokoro-bff",
-        "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+        "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
         "contract_sha256": "b9336969c51703b36c7cd49bb5e06971b654d22985691a1db431ff9466ed664a"
@@ -100,7 +100,7 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "b2ad9dd6906b73f275b96d570dad66eae86e97e9",
+        "repository_commit": "f0bb18e6fee8f4b1ee9a1c2d9e7aa2eb4621e614",
         "contract_version": "0.2.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "f7a3ea2e5ae7ade82ae1a6756a2f560d3129ca1b2977c6b0905633a284bd3aab"
@@ -113,187 +113,187 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/dependencies/iam-http.json",
           "sha256": "c3c087bdc7db6a5c85c0e3d70ce66ee2e7fc4c6a0588968b6d1beb5c1c8c6a4c"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/vendor/kokoro-iam/259a66e6a569889c030734f380e99685d8b9e21c/iam.internal.v1.json",
           "sha256": "f7a3ea2e5ae7ade82ae1a6756a2f560d3129ca1b2977c6b0905633a284bd3aab"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "openapi-ts.iam.config.ts",
           "sha256": "a09fbb072e27a6af119be211d33de03e413503c07cf8a2446c08dc1618915430"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "scripts/generate-iam-http-client.mjs",
           "sha256": "7a3e336e439353a42be04a5e440a16296e771948957c6cbbae8b84e9465f2b08"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/client.gen.ts",
           "sha256": "a6622c66edd3af01581d3e2f8300c3a9596bc396e81ccb66d4612a1c6c44034e"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/client/client.gen.ts",
           "sha256": "a21c011210a9101e788ef6467e7d58d9a6def98a7f9ad2358cf4712df7e61eff"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/client/index.ts",
           "sha256": "99ab0d415e27c7e260e58ffe989fce7af454535ab5809407775974f32e3eb7b6"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/client/types.gen.ts",
           "sha256": "581edb4ba1bfdef4f476c8c0d27861641376566fc5e1238ed0280aa4fa1fda94"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/client/utils.gen.ts",
           "sha256": "c396147ad4886af96c437c8c2fb9e8706a750d20f688a0c3d068eaa00da5a5ef"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/auth.gen.ts",
           "sha256": "92fa002fb2c96a58e858828c5f79bd498e7998e0cc8822ff48e7313c0b87dbd4"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/bodySerializer.gen.ts",
           "sha256": "b9bd66196352f01f2debd0620130372bcf3eec4cf3d87bee11b1ca98e1ae0d1a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/params.gen.ts",
           "sha256": "9886fa05622d38afbc1901a340e4b5b8edaf268568eaa35242b8f196901d297a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/pathSerializer.gen.ts",
           "sha256": "5ebd41592d8612f3a39e6404b3212d8f76ea59475493aac38b342454ce18dfbe"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/queryKeySerializer.gen.ts",
           "sha256": "6597d62d031c9da5218c443f83f0f03b19f5d7c29cf36d6546f5d8363b6fd0f7"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/serverSentEvents.gen.ts",
           "sha256": "8516908fa2eb352653b036d47096826c378e075f6be81fe95452401f8f42ebe1"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/types.gen.ts",
           "sha256": "f26a0b3850b9d57e13d9b49b80c63987614b64a4df88e2b91f525aa277951415"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/core/utils.gen.ts",
           "sha256": "c506702ae2cd031ca21665e78d90bcc18d65daf3e8d3f8280983c5f873242774"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/sdk.gen.ts",
           "sha256": "3f7b3a9e363c7f1c70ee989245c70d454e2c30ade0a17755790e432abc99dcfb"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/types.gen.ts",
           "sha256": "6d3f9b5f94131b654927d14d75ef0c4afa4230a5af153fb035bdb63ac80f6ae9"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/iam-http/zod.gen.ts",
           "sha256": "e9083824f0fa05ae48fc459a3e76ba19291febfd88adf1771d6a8b977c947d14"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/auth/session-admission.client.ts",
           "sha256": "46ddc060fedbdacd437c67a1b2a10ebab9b6058c619eb82b59b8eb2c4686d835"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/auth/session-admission.transport.ts",
           "sha256": "e97cb5a3bc034f2fcebebafac7fa78a30c8e94bb2a80b78523645865a79afc13"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/auth/session-admission.types.ts",
           "sha256": "c6ed751b02a0ea0e1e66492970389492f58eb3bedbf384f4bcf5a7fd55f7c3ee"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/auth/user-admission.ts",
           "sha256": "6b83dd764c434284f6b8edf5921f9ab3d1c49bac72d9c1f1959377d3b35c06c2"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/http/request.ts",
           "sha256": "328eb350a02f938588068f5c90776cb36fe8761bde6982f5428b54bac8b4060a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/iam-admission-client.test.ts",
           "sha256": "7163509aca1c53a0e86d73f0722d364345d22f5fb12719ec405603c9a1c08c31"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/user-admission.test.ts",
           "sha256": "851e9d7f1d246ad10680657982c3d981872a9a8966b930dc3e34ae6a577f9f03"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/bff.test.ts",
           "sha256": "7d9f87a8197081931b3888a1a48db00611191cbcc28b71a04b2153bc5d9b266b"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "pnpm-lock.yaml",
           "sha256": "bc3921fe5e105cae6a508aa7af2d8bddd82182ebd163e11983fd2c82c4fcb704"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         }
@@ -306,9 +306,9 @@
           "version": "0.99.0",
           "manifest_kind": "npm-package-json",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9",
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36",
           "json_checks": [
             {
               "pointer": "/devDependencies/@hey-api~1openapi-ts",
@@ -323,7 +323,7 @@
           "version": "22.22.2",
           "manifest_kind": "plain-version-file",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         }
@@ -348,27 +348,27 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/http/routes/owner.ts",
           "sha256": "3522b4063fdfba64c20b539b1aec6a0ac35242502c7aa283bc2aa0baeb37327a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/upstream.ts",
           "sha256": "e2281c3eab226f5c6c301a094df06c0cd5ae91a050664f7b78dc2cca24b2dae2"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/README.md",
-          "sha256": "4e4002128aab9141f73e8ffd6ca43b86734674d0f3866418a11a37273edcb380"
+          "sha256": "60e36f0fbe6addd95a16b6202ced2668eb4dbbfb42fab2b9dcb73e040db4687e"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         }
       ]
     },
@@ -391,151 +391,151 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/dependencies/capability-http.json",
           "sha256": "2c612c8af0f970628bf894fcc7c88623d538f8c1e061b1dc9181fd82614ed6ae"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/vendor/kokoro-capability/7f89a267d745cbb9870f52d6edb23dec1a3c469b/capability-http.openapi.json",
           "sha256": "e0b7c4b57ac030efb73878b51da2a3595ec0172bce0608a88ea925b57a69761a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "openapi-ts.capability.config.ts",
           "sha256": "1213cb56e3c54de3ac00092e2250ce21b11a6cf2534fe7d41380aecb9a666d10"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "scripts/generate-capability-http-client.mjs",
           "sha256": "15b22045c9bc754bb73cb224cf7ca5559773341aaab1800c769450674cf2ca74"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/client.gen.ts",
           "sha256": "a6622c66edd3af01581d3e2f8300c3a9596bc396e81ccb66d4612a1c6c44034e"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/client/client.gen.ts",
           "sha256": "a21c011210a9101e788ef6467e7d58d9a6def98a7f9ad2358cf4712df7e61eff"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/client/index.ts",
           "sha256": "99ab0d415e27c7e260e58ffe989fce7af454535ab5809407775974f32e3eb7b6"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/client/types.gen.ts",
           "sha256": "581edb4ba1bfdef4f476c8c0d27861641376566fc5e1238ed0280aa4fa1fda94"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/client/utils.gen.ts",
           "sha256": "c396147ad4886af96c437c8c2fb9e8706a750d20f688a0c3d068eaa00da5a5ef"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/auth.gen.ts",
           "sha256": "92fa002fb2c96a58e858828c5f79bd498e7998e0cc8822ff48e7313c0b87dbd4"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/bodySerializer.gen.ts",
           "sha256": "b9bd66196352f01f2debd0620130372bcf3eec4cf3d87bee11b1ca98e1ae0d1a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/params.gen.ts",
           "sha256": "9886fa05622d38afbc1901a340e4b5b8edaf268568eaa35242b8f196901d297a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/pathSerializer.gen.ts",
           "sha256": "5ebd41592d8612f3a39e6404b3212d8f76ea59475493aac38b342454ce18dfbe"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/queryKeySerializer.gen.ts",
           "sha256": "6597d62d031c9da5218c443f83f0f03b19f5d7c29cf36d6546f5d8363b6fd0f7"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/serverSentEvents.gen.ts",
           "sha256": "8516908fa2eb352653b036d47096826c378e075f6be81fe95452401f8f42ebe1"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/types.gen.ts",
           "sha256": "f26a0b3850b9d57e13d9b49b80c63987614b64a4df88e2b91f525aa277951415"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/core/utils.gen.ts",
           "sha256": "c506702ae2cd031ca21665e78d90bcc18d65daf3e8d3f8280983c5f873242774"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/sdk.gen.ts",
           "sha256": "0f81ad49087b61c231cb65191c1bcdd00519b2842e99e98db984e321a67031f6"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/types.gen.ts",
           "sha256": "b69f8dd5738dbeb58fad7a0747195f2d897d075e775df18a0b4250d13c037ffa"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/capability-http/zod.gen.ts",
           "sha256": "a65dad87f02e44cb71fa03a28162ef6339e3d43a65204cd45072f27d37d82d11"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/capability/client.ts",
           "sha256": "ec6c4e791e270ff114c37bc1eda5a38af5d866207d37f790167cbedfe68a6446"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/capability-client.test.ts",
           "sha256": "df02d77e4d245ccda9f8eb7222b11e4739391af271d8a120019908a5cc96e509"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "pnpm-lock.yaml",
           "sha256": "bc3921fe5e105cae6a508aa7af2d8bddd82182ebd163e11983fd2c82c4fcb704"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         },
@@ -560,9 +560,9 @@
           "version": "0.99.0",
           "manifest_kind": "npm-package-json",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9",
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36",
           "json_checks": [
             {
               "pointer": "/devDependencies/@hey-api~1openapi-ts",
@@ -577,7 +577,7 @@
           "version": "22.22.2",
           "manifest_kind": "plain-version-file",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         }
@@ -602,7 +602,7 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/http/routes/owner.ts",
           "sha256": "3522b4063fdfba64c20b539b1aec6a0ac35242502c7aa283bc2aa0baeb37327a"
         },
@@ -620,33 +620,33 @@
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/openapi/v1/openapi.yaml",
           "sha256": "b9336969c51703b36c7cd49bb5e06971b654d22985691a1db431ff9466ed664a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/config/runtime.ts",
-          "sha256": "0c9c83b8b3061e69760deb74a7d2cd6fc83553fdfe318266ef3d20f949ce3ded"
+          "sha256": "b530c758d221094a49384da3d197b42e3798352869b0edc2992c2ed0b4344070"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/bff.test.ts",
           "sha256": "7d9f87a8197081931b3888a1a48db00611191cbcc28b71a04b2153bc5d9b266b"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "docs/API_CONTRACT.md",
-          "sha256": "30e6de1b904f32f98b5b3635d3fec8c106eb2b0deb070d9c4f2e4a0d408cdedd"
+          "sha256": "8ba6b8cda789d5361ac144f9047399afb23e19f83fbc217851f13d1e836db741"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "docs/DATA_MODEL.md",
-          "sha256": "6bee912ff8cfb5f2cfc564f90142407a24f8d1fca5772607bd3f89c414d879f1"
+          "sha256": "66ece970e8ce22202b40d9a51eb94d87425649e37ccfc1ef77737d1bdb28227c"
         }
       ]
     },
@@ -669,27 +669,27 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/agent/launch.ts",
           "sha256": "b540a5a81abd77c22845166fbb41c26c8b5707209634ee49a8d33669995ba9b8"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/agent/projector-source.ts",
           "sha256": "a690e863d4671eeabf278590a340fd1f021eb7f4141c12950beeb5efeeed9f51"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/README.md",
-          "sha256": "4e4002128aab9141f73e8ffd6ca43b86734674d0f3866418a11a37273edcb380"
+          "sha256": "60e36f0fbe6addd95a16b6202ced2668eb4dbbfb42fab2b9dcb73e040db4687e"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         }
       ]
     },
@@ -712,15 +712,15 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/scheduler/outbox-delivery.ts",
           "sha256": "af968c2696aea8d27356dd451946cf23d2d8aa0955f6aa2a4247d2d9f93d4183"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         },
         {
           "repository_path": "apps/kokoro-scheduler",
@@ -730,151 +730,151 @@
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/dependencies/scheduler.json",
           "sha256": "033924230cd71c10465670f6ca98518399eebe4c03df151b638a73625cddce01"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/vendor/kokoro-scheduler/92bf9e7e6724c591bab4b7fa27f08d694b59a67e/openapi.yaml",
           "sha256": "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "openapi-ts.scheduler.config.ts",
           "sha256": "c49de22f14cd1c682eb23dbb502258325067e157c91fe01a5bcf7676efa76dcc"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "scripts/generate-scheduler-contracts.mjs",
           "sha256": "c2174de7486ceb17cec0db38902563aef1b45b614bd62533b1bc2aaeef378fa8"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "pnpm-lock.yaml",
           "sha256": "bc3921fe5e105cae6a508aa7af2d8bddd82182ebd163e11983fd2c82c4fcb704"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client.gen.ts",
           "sha256": "a6622c66edd3af01581d3e2f8300c3a9596bc396e81ccb66d4612a1c6c44034e"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/client.gen.ts",
           "sha256": "a21c011210a9101e788ef6467e7d58d9a6def98a7f9ad2358cf4712df7e61eff"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/index.ts",
           "sha256": "99ab0d415e27c7e260e58ffe989fce7af454535ab5809407775974f32e3eb7b6"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/types.gen.ts",
           "sha256": "581edb4ba1bfdef4f476c8c0d27861641376566fc5e1238ed0280aa4fa1fda94"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/utils.gen.ts",
           "sha256": "c396147ad4886af96c437c8c2fb9e8706a750d20f688a0c3d068eaa00da5a5ef"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/auth.gen.ts",
           "sha256": "92fa002fb2c96a58e858828c5f79bd498e7998e0cc8822ff48e7313c0b87dbd4"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/bodySerializer.gen.ts",
           "sha256": "b9bd66196352f01f2debd0620130372bcf3eec4cf3d87bee11b1ca98e1ae0d1a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/params.gen.ts",
           "sha256": "9886fa05622d38afbc1901a340e4b5b8edaf268568eaa35242b8f196901d297a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/pathSerializer.gen.ts",
           "sha256": "5ebd41592d8612f3a39e6404b3212d8f76ea59475493aac38b342454ce18dfbe"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/queryKeySerializer.gen.ts",
           "sha256": "6597d62d031c9da5218c443f83f0f03b19f5d7c29cf36d6546f5d8363b6fd0f7"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/serverSentEvents.gen.ts",
           "sha256": "8516908fa2eb352653b036d47096826c378e075f6be81fe95452401f8f42ebe1"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/types.gen.ts",
           "sha256": "f26a0b3850b9d57e13d9b49b80c63987614b64a4df88e2b91f525aa277951415"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/utils.gen.ts",
           "sha256": "c506702ae2cd031ca21665e78d90bcc18d65daf3e8d3f8280983c5f873242774"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/sdk.gen.ts",
           "sha256": "b67838f4a9c5539243486881b8f659d6b25bdc29439742d2c46c1a8acfd0cc88"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/types.gen.ts",
           "sha256": "52c283528ca6091dd2dfb1852ee30f880071d8934e4ec5d81c06a43951e0cfec"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/zod.gen.ts",
           "sha256": "3f8fa68142d746c3a1231d5b394bcc9b7310634b26e9f71c196b86a479446f5c"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/scheduler/control-client.ts",
           "sha256": "737aeedf8d25a417123ba0793343daa01e10e20908bf855bf538f6715585a8a9"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/scheduler/schedule.ts",
           "sha256": "ba1fa25c597fc03c825ec08768ebccfe56120c352c1252178dbe5bd1f429a076"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/scheduler-client.test.ts",
           "sha256": "4a3d7278dbe6e0ecad9f1c1946ccb7d0621bc30d557f1e2435d09378d190d20c"
         },
@@ -899,9 +899,9 @@
           "version": "0.99.0",
           "manifest_kind": "npm-package-json",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9",
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36",
           "json_checks": [
             {
               "pointer": "/devDependencies/@hey-api~1openapi-ts",
@@ -916,7 +916,7 @@
           "version": "22.22.2",
           "manifest_kind": "plain-version-file",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         }
@@ -941,15 +941,15 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/http/routes/owner.ts",
           "sha256": "3522b4063fdfba64c20b539b1aec6a0ac35242502c7aa283bc2aa0baeb37327a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         },
         {
           "repository_path": "apps/kokoro-billing",
@@ -1125,7 +1125,7 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "b2ad9dd6906b73f275b96d570dad66eae86e97e9",
+        "repository_commit": "f0bb18e6fee8f4b1ee9a1c2d9e7aa2eb4621e614",
         "contract_version": "0.2.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "f7a3ea2e5ae7ade82ae1a6756a2f560d3129ca1b2977c6b0905633a284bd3aab"
@@ -1150,7 +1150,7 @@
         },
         {
           "repository_path": "apps/kokoro-iam",
-          "repository_commit": "b2ad9dd6906b73f275b96d570dad66eae86e97e9",
+          "repository_commit": "f0bb18e6fee8f4b1ee9a1c2d9e7aa2eb4621e614",
           "path": "docs/CURRENT.md",
           "sha256": "646e109c2f538c19bd6fbbbe5f898be6eda165803847b5aada07d22f52dc0471"
         }
@@ -1187,175 +1187,175 @@
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/http/routes/scheduler.ts",
           "sha256": "7acaa7e870fc2a23af14c3c0859682218f641d5792be52cd16c3d696896ef41d"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9"
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/dependencies/scheduler.json",
           "sha256": "033924230cd71c10465670f6ca98518399eebe4c03df151b638a73625cddce01"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "contract/vendor/kokoro-scheduler/92bf9e7e6724c591bab4b7fa27f08d694b59a67e/openapi.yaml",
           "sha256": "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "openapi-ts.scheduler.config.ts",
           "sha256": "c49de22f14cd1c682eb23dbb502258325067e157c91fe01a5bcf7676efa76dcc"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "scripts/generate-scheduler-contracts.mjs",
           "sha256": "c2174de7486ceb17cec0db38902563aef1b45b614bd62533b1bc2aaeef378fa8"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "pnpm-lock.yaml",
           "sha256": "bc3921fe5e105cae6a508aa7af2d8bddd82182ebd163e11983fd2c82c4fcb704"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client.gen.ts",
           "sha256": "a6622c66edd3af01581d3e2f8300c3a9596bc396e81ccb66d4612a1c6c44034e"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/client.gen.ts",
           "sha256": "a21c011210a9101e788ef6467e7d58d9a6def98a7f9ad2358cf4712df7e61eff"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/index.ts",
           "sha256": "99ab0d415e27c7e260e58ffe989fce7af454535ab5809407775974f32e3eb7b6"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/types.gen.ts",
           "sha256": "581edb4ba1bfdef4f476c8c0d27861641376566fc5e1238ed0280aa4fa1fda94"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/client/utils.gen.ts",
           "sha256": "c396147ad4886af96c437c8c2fb9e8706a750d20f688a0c3d068eaa00da5a5ef"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/auth.gen.ts",
           "sha256": "92fa002fb2c96a58e858828c5f79bd498e7998e0cc8822ff48e7313c0b87dbd4"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/bodySerializer.gen.ts",
           "sha256": "b9bd66196352f01f2debd0620130372bcf3eec4cf3d87bee11b1ca98e1ae0d1a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/params.gen.ts",
           "sha256": "9886fa05622d38afbc1901a340e4b5b8edaf268568eaa35242b8f196901d297a"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/pathSerializer.gen.ts",
           "sha256": "5ebd41592d8612f3a39e6404b3212d8f76ea59475493aac38b342454ce18dfbe"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/queryKeySerializer.gen.ts",
           "sha256": "6597d62d031c9da5218c443f83f0f03b19f5d7c29cf36d6546f5d8363b6fd0f7"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/serverSentEvents.gen.ts",
           "sha256": "8516908fa2eb352653b036d47096826c378e075f6be81fe95452401f8f42ebe1"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/types.gen.ts",
           "sha256": "f26a0b3850b9d57e13d9b49b80c63987614b64a4df88e2b91f525aa277951415"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/core/utils.gen.ts",
           "sha256": "c506702ae2cd031ca21665e78d90bcc18d65daf3e8d3f8280983c5f873242774"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/sdk.gen.ts",
           "sha256": "b67838f4a9c5539243486881b8f659d6b25bdc29439742d2c46c1a8acfd0cc88"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/types.gen.ts",
           "sha256": "52c283528ca6091dd2dfb1852ee30f880071d8934e4ec5d81c06a43951e0cfec"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/generated/scheduler/zod.gen.ts",
           "sha256": "3f8fa68142d746c3a1231d5b394bcc9b7310634b26e9f71c196b86a479446f5c"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/scheduler/webhook-contract.ts",
           "sha256": "5755ddb22326b582b030c73623815b1e6e5079d45ad49903b99fcf09e19db7ff"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "src/infrastructure/clients/scheduler/dispatch-identity.ts",
           "sha256": "cdc35537b4a6bd089c41b84f900542cf65f7d059dd856f8b14eb6ed97fcb0b95"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/scheduler.test.ts",
           "sha256": "9fd2b5dd3b6540ba8c5b1966e5cb682727a78e22af140bddbf1b0375887e1569"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/scheduler-dispatch-identity.test.ts",
           "sha256": "331acd2189889808d6e19cbb5c39a1902130e62f2813025a3c3a1e51f6cdc54b"
         },
         {
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "test/scheduler-dispatch-receipt.integration.mjs",
           "sha256": "2d07af1a5a49a8d221eb2651e21e4a7b3608412c95dcfc1956923aa63f485e43"
         }
@@ -1368,9 +1368,9 @@
           "version": "0.99.0",
           "manifest_kind": "npm-package-json",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": "package.json",
-          "sha256": "c13fcd99bb13845048c490a4e955672807e21069d1f892480a968bb0e0b5bcf9",
+          "sha256": "860a2607989424d77672f78879e1313f75cb711258b2066c6aa7f02b98656f36",
           "json_checks": [
             {
               "pointer": "/devDependencies/@hey-api~1openapi-ts",
@@ -1385,7 +1385,7 @@
           "version": "22.22.2",
           "manifest_kind": "plain-version-file",
           "repository_path": "apps/kokoro-bff",
-          "repository_commit": "6238599667110fbfbc2d5ef3a9d53731f2623cfe",
+          "repository_commit": "804a5832c066ce60dde9f4592856ac40ce20f402",
           "path": ".node-version",
           "sha256": "4c42fb8d6334c5cdcac68b93f96c581fb83b1f58cda898cff115e5e941ef717d"
         }

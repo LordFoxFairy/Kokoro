@@ -23,6 +23,10 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   complete active/broken/illegal edge ID sets with a frozen checkpoint and runs the compatibility verifier. Exit `0` accepts
   only the checkpoint's declared broken and illegal outcomes; count-preserving ID swaps and any schema, gitlink, digest,
   evidence or version drift fail.
+- `python3 scripts/verify-iam-relay-policy.py` verifies the BFF browser-private IAM relay policy against the frozen IAM/BFF
+  gitlink commit blobs. It checks owner commit and allowlist/snapshot digests, TS-to-JSON policy drift, and the narrower
+  route/method subset without copying IAM-owned protocol source into BFF. Exit `0` proves provenance, not a successful
+  OAuth browser flow; the latter requires a separate real HTTP composition smoke.
 - `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
   Redis prefix, and removes only resources registered by this invocation. BFF user models use an explicit fixed-token IAM
