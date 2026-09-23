@@ -31,7 +31,7 @@ Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能�
 
 `verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；本次只同步 Web/BFF/IAM 新 gitlink 与对应证据，不改变 16 条 edge 语义。现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。五个 Root 跨仓 runner 只将 BFF 应用 URL 定向 `kokoro_bff`，直接观测 SQL 显式限定 owner schema、`psql` 使用无应用 schema 参数的原 URL；System/Capability/Scheduler/IAM 自身 URL 不改。
 
-发布后必须重新执行 Root checkpoint、policy、topology、全量 `scripts/tests`、main-only 及五条真实组合 smoke，并核对仅清理本次自有 PostgreSQL/Redis/进程。发布前的 owner 单仓结果不算这些组合门通过。全仓静态治理仍有真实未闭合项，不因局部绿色测试而降级门禁。
+当前组合已执行 Root checkpoint、policy、topology 与 main-only，均 PASS；Root `scripts/tests` **570 passed / 56 subtests**。固定新 pin 真实IAM准入→BFF **7/7**、首次OIDC→BFF **15/15**、Capability→BFF **8/8**、Scheduler→BFF **11/11**、System/BFF/Agent HTTP组合 **PASS**，各 runner 报告仅清理本次自有 PostgreSQL/Redis/进程。Scheduler 的两个直接观测SQL在本次补丁中已限定 `kokoro_bff` 并在发布后重跑11/11；一次诊断前的无细节瞬时FAIL记录在progress，不抹去。全仓静态治理当前仍为9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
 
 ## 下一条代码关键路径
 
