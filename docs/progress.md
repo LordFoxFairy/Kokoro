@@ -583,3 +583,4 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - W1B控制计划已提交并推送Root `818f714841e83e5ea6ace630f7254f239c72255a`；Root handbook/topology回归14 passed，topology和本地Markdown链接通过。BFF负责人三文档停写交付后，Root完整审阅diff（仅三文档）、复跑 `corepack pnpm contract:check`（21 passed，63 operations、两旧generated drift通过，Library既有1 warning）及`schema:check`（4 passed）；文档门通过。
 - 已续派同一BFF负责人进入Task1 TDD实现，仍只写计划精确文件集；Root独占Git。预存IAM两数据库仍保留，Redis8 PONG；本门未创建/清理基础设施。Task2私有SQL/Run control尚未实施，边界不得提前宣称闭环。
+- Root另在未改动的`src/http/routes/scheduler.ts`及对应dist上执行纯函数探针：同tenant、不同user、同path/key生成的ScheduledTask ID完全相同，确认Task2碰撞缺陷（无DB/网络操作）。资源授权必须先于receipt且事务内重验的补充已提交并推送`91908b3b`，不是修复完成证据。

@@ -111,6 +111,8 @@ ScheduledTask用户list/detail/update/delete/retry均tenant+owner；create所引
 
 所有按既有资源寻址的用户mutation都先做资源gate再进入通用receipt：`chat-authorization.ts`负责Conversation；既有`live-bff.ts`提供Project/ScheduledTask的窄HTTP授权入口，server在receipt之前调用。mutation repository仍在事务/写入predicate中重验，避免预检后TOCTOU；不能只靠HTTP预检，也不能通过旧receipt跳过已删除/不可见资源。新建Project无既有资源预检；新建ScheduledTask的非空Project引用先检查且在写事务锁内再次验证。该接线使用Task2既有文件范围，不新增授权框架。
 
+契约细节：现有`ScopeQuery`同时被私有Chat与Public Share引用；拆出私有Chat的direct/空过滤参数，保留Share的tenant窄化过滤语义，不能全局收窄同一component误伤分享。ScheduledTask稳定ID使用无歧义的序列化材料（例如JSON数组），避免将opaque tenant/subject/key用可出现在值中的分隔符拼接。
+
 - [ ] **Step 1: 真实PG red矩阵。** 同tenant A/B及跨tenant C：A创建私有Project/ScheduledTask/Conversation；B/C的list不出现、detail/mutation/control/events均与缺失相同；B可创建同名slug的自己的Project。记录调用前后事实/outbox/receipt数量，拒绝不产生业务副作用。
 ```js
 assert.equal(otherUserDetail.status, 404)
@@ -130,6 +132,7 @@ assert.equal(outboxCountAfterDeniedWrite, outboxCountBeforeDeniedWrite)
 - [ ] 回收两个切片SPEC/QUALITY结论，Root在冻结BFF SHA重跑完整owner门。核对IAMvendor源commit/digest、SQL owner/无FK、用户/服务例外、旧身份入口全部删除。
 - [ ] 更新现有Capability↔BFF与Scheduler↔BFF隔离smoke的认证fixture，使其使用明确token→admission fixture映射；System smoke同步。fixture必须标注非真实IAM，不能因此激活BFF→IAM edge。保持原8/11case及资源生命周期负例，不用删case通过。
 - [ ] 按已经发布的IAM/BFF原生接口建立独立真实IAM↔BFF验收任务：当前有效会话、撤销/成员删除、同tenant身份冒用、IAM失联fail-closed、无敏感token日志；Root发布前要有真实证据，否则BFF→IAM继续broken并明确剩余项。该harness须先独立放置/隔离设计，不从Root直接读写业务数据库。
+- [ ] IAM真实进程预检：当前`src/main.ts`固定监听`0.0.0.0`，不得把它当作已通过Root loopback隔离门。真实源码进程smoke前，按单owner规则独立交给IAM负责人补监听配置/负例并发布；契约字节未变也要按真实release记录pin。已有IAM Nest HTTP fixture是真实PG/Redis业务但覆盖配置/provider装配，若先使用它，只能标注真实HTTP integration，不能冒称`src/main.ts`双进程验收。
 - [ ] 子仓push后再提升Root gitlink与全部BFF fan-out evidence；按实测证据决定edge状态，生成器/Node/provenance与consumer digest一致。执行Root topology、exact checkpoint、`python3 -m pytest scripts/tests -q`、standard实际报告、main-only/live-main/clean审计。
 - [ ] 更新同一task/progress/CURRENT，不复制任务中心；W1后续Web OIDC/CSRF与execution authorization仍由既定owner接续，完整Goal继续active。计划scratch仅在本计划全部验收且证据固化后删除。
 
