@@ -413,7 +413,7 @@ def test_capability_environment_overrides_inherited_wildcard_host() -> None:
 
 
 def test_bff_release_pin_rejects_every_other_sha(tmp_path: Path, monkeypatch) -> None:
-    accepted = "804a5832c066ce60dde9f4592856ac40ce20f402"
+    accepted = "1fae01e309aed26439ae5f172a70551621107222"
     assert smoke.BFF_RELEASE == accepted
     (tmp_path / "dist").mkdir()
     (tmp_path / "dist" / "main.js").touch()

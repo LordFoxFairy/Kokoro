@@ -8,11 +8,11 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 
 | Root 路径 | 子仓 SHA |
 | --- | --- |
-| `apps/kokoro-app` | `62da3f856efdb207ea662010382ad14a965009a0` |
+| `apps/kokoro-app` | `38683a5c2a46af3e9d604b5d7219a864684d5ad1` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
-| `apps/kokoro-bff` | `804a5832c066ce60dde9f4592856ac40ce20f402` |
+| `apps/kokoro-bff` | `1fae01e309aed26439ae5f172a70551621107222` |
 | `apps/kokoro-agent` | `741c928dfc11313a25064a905d77d4ad371f5534` |
-| `apps/kokoro-iam` | `f0bb18e6fee8f4b1ee9a1c2d9e7aa2eb4621e614` |
+| `apps/kokoro-iam` | `c9a277213ade41b9225ab0f158b89092d1869a83` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `9c88d0d934387b590bc74dae0179a587292e0253` |
@@ -25,16 +25,16 @@ W0B 已验收：Root 集成 `96d238bae1e23cbbfda66ea631e7e40c1176ef3b` 已推送
 - Root 与每个 submodule 的本地和 `origin` 都只保留 `main`。每个 gitlink 锁定已推送的 commit；`.gitmodules branch=main` 仅是更新提示，不构成发布锁。
 - 子仓的 tests 不迁入 Root。Root `scripts/tests/` 只覆盖 Root 治理脚本；跨仓行为测试将归 `verification/`，不重复子仓单测。
 - 用户已选开发应用单 PostgreSQL 数据库/单账号，owner 在同库使用独立 schema/连接 URL；现有部分 owner 仍限制 `public` 或整库空白安装，W1C-DB 代码切片未完成，不能把目标说成当前可运行事实。测试fixture的临时库只是测试隔离，应用并发访问同库不受此限制。
-- Web `62da3f85…` 仅完成 W1C-2 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 三文档门；Auth.js、同源 `/iam` adapter、Product Session、全代理Bearer及浏览器E2E均未实现，`EDGE-WEB-BFF`/Web→IAM非法旁路状态未变。
+- Web `38683a5…` 仅完成 W1C-2 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 三文档门和最终来源pin修正；Auth.js、同源 `/iam` adapter、Product Session、全代理Bearer及浏览器E2E均未实现，`EDGE-WEB-BFF`/Web→IAM非法旁路状态未变。
 
 ## 当前已验证的代码与组合能力
 
-- IAM `f0bb18e…`（生产准入代码 `54d0d5f…`，其后为文档与test-owned HTTP联调fixture）：session admission OpenAPI/SDK0.2.0已验收；Root此前重跑701标准、174真实integration与release仓外consumer2项通过；W1C test-only Web OIDC 首次登录host聚焦5/5、旧admission host隔离3/3通过。BFF现在通过固定IAM artifact/generated client在线消费；准入只确认当前用户会话/成员，不替代BFF资源权限或Web登录。W1C完整OAuth成功流仍待Root组合。
+- IAM `c9a2772…`（生产准入代码 `54d0d5f…`，其后为文档与test-owned HTTP联调fixture）：session admission OpenAPI/SDK0.2.0已验收；Root此前重跑701标准、174真实integration与release仓外consumer2项通过；W1C test-only Web OIDC 首次登录host聚焦5/5、退出URI更正后再聚焦5/5，旧admission host隔离3/3通过。BFF现在通过固定IAM artifact/generated client在线消费；准入只确认当前用户会话/成员，不替代BFF资源权限或Web登录。W1C完整OAuth成功流仍待Root组合。
 - Capability runtime `9c88d0d…`：显式typed监听地址，源码默认loopback、Docker显式wildcard；release空库先安装再persisted check；两个Serializable探针suite物理隔离，标准并行853测试通过、0跳过。
-- BFF `804a583…`：已使用Capability、Scheduler与IAM固定artifact/generated client；Scheduler control、专用持久receipt/CAS和恢复链已接通。W1B代码增加IAM session bearer准入、Project/ScheduledTask/Chat按个人私有授权、Share撤销竞态拒绝；W1C新增精确 `/iam` 原生 relay policy/transport，并固定IAM新测试release来源，Node22标准248/248、contract25/25通过。W1B真实IAM Nest/PKCE HTTP→BFF源码进程7case历史通过；新relay尚未通过完整首次OAuth正向链，Web同源登录仍待后续切片。Storage旧HTTP/配置/parser/mock成功数据及孤儿200类型已删除；认证后的Library当前只返回明确503且零Storage socket，不等于Storage功能完成。
+- BFF `1fae01e…`：已使用Capability、Scheduler与IAM固定artifact/generated client；Scheduler control、专用持久receipt/CAS和恢复链已接通。W1B代码增加IAM session bearer准入、Project/ScheduledTask/Chat按个人私有授权、Share撤销竞态拒绝；W1C新增精确 `/iam` 原生 relay policy/transport，并固定IAM退出测试release来源，Node22标准248/248、contract25/25通过。原真实IAM Nest/PKCE HTTP→BFF源码进程7case属历史验收；新relay尚未通过完整首次OAuth正向链，Web同源登录仍待后续切片。Storage旧HTTP/配置/parser/mock成功数据及孤儿200类型已删除；认证后的Library当前只返回明确503且零Storage socket，不等于Storage功能完成。
 - Scheduler `975dee59…`：新键同名create冲突以409写入持久receipt并可重启重放；普通/race各139项的owner验收见progress。
 - Artifact来源保持真实：BFF消费的Capability artifact仍来自`7f89a267…`，Scheduler artifact仍来自`92bf9e7e…`，与各自新runtime release的canonical contract字节相同；没有伪造重新生成。
-- 当前BFF `804a583…` pin上，Root已重跑真实IAM准入→BFF 7/7、Capability→BFF 8/8、Scheduler→BFF 11/11、System/BFF/Agent HTTP组合PASS，独占测试资源均清理；这保留旧owner行为，不是首次OAuth Code+PKCE或Web登录证明。三条旧owner smoke的用户准入是明确标记的固定wire stub，不是IAM事实源；Agent在Scheduler链仍是deterministic receipt stub。真实Agent执行、Storage与provider推理按后续Wave闭环。
+- BFF `804a583…` pin上的Root真实IAM准入→BFF 7/7、Capability→BFF 8/8、Scheduler→BFF 11/11、System/BFF/Agent HTTP组合PASS是上一release历史证据；`1fae01e…`仅重pin IAM test-only commit，真实组合待重跑。三条旧owner smoke的用户准入是明确标记的固定wire stub，不是IAM事实源；Agent在Scheduler链仍是deterministic receipt stub。真实Agent执行、Storage与provider推理按后续Wave闭环。
 
 ## 当前验证证据
 
@@ -51,7 +51,7 @@ Scheduler/BFF real smoke -> 11 passed，全部本次资源回收
 python3 scripts/verify-ten-repository-standard.py --format json -> FAIL: 112 violations / 1 unverified
 ```
 
-BFF Library有意只声明403/503，Redocly报告1个无2xx的warning（exit0）；未为消除警告保留假200或放宽规则。Root仍以`w1b-iam.json`为精确**状态集合**门：5 active / 11 broken / 1 illegal；新`804a583…`的真实IAM/BFF 7/7、Capability/BFF 8/8、Scheduler/BFF 11/11、System组合PASS已复验，命令与资源证据见本轮progress。Scheduler smoke使用本机唯一owned RFC1918 IPv4/32绑定response-drop proxy，BFF upstream仍loopback，未修改hosts/resolver或共享服务。
+BFF Library有意只声明403/503，Redocly报告1个无2xx的warning（exit0）；未为消除警告保留假200或放宽规则。Root仍以`w1b-iam.json`为精确**状态集合**门：5 active / 11 broken / 1 illegal；`804a583…`的真实IAM/BFF 7/7、Capability/BFF 8/8、Scheduler/BFF 11/11、System组合PASS是历史证据，`1fae01e…`运行回归待验。Scheduler smoke此前使用本机唯一owned RFC1918 IPv4/32绑定response-drop proxy，BFF upstream仍loopback，未修改hosts/resolver或共享服务。
 
 全仓静态差距仍是实际待办；历史W0B为112项/1 unverified，W1B本提交候选实测为130项/0 unverified（exit 1）；不得写成全仓质量门全绿。
 Root OpenAPI词法preflight也不等于完整YAML parser，带异常空行缩进的某类malformed block scalar边界仍由owner canonical parser/linter兜底，后续替换需正式依赖治理。
