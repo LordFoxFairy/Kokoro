@@ -17,11 +17,11 @@
 
 ### 1.1 主控优先看这里
 
-- 当前关键路径：**W1C BFF受控登录relay→Web OIDC/同源接线 → W1D Web Product generated consumer/AG-UI → Storage owner与消费边界**；W1B IAM↔BFF真实HTTP及BFF个人私有资源切片已按各自边界验收，不代表Web或完整聊天执行链已闭环。具体状态与唯一写入负责人见本文Wave1B执行卡。
+- 当前关键路径：**W1C BFF/IAM首次OAuth正向组合 → Web OIDC/同源接线 → W1D Web Product generated consumer/AG-UI → Storage owner与消费边界**；BFF relay 来源与原IAM准入、Capability/Scheduler/System 旧真实回归在当前pin已验证，不代表Web或完整聊天执行链已闭环。具体状态与唯一写入负责人见本文Wave1C执行卡。
 - 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
 - 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
 - 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
-- 用户本轮资源裁决：开发组合只复用**一个 PostgreSQL 实例、一个数据库、一套应用账号**和现有 Redis；owner 仍通过各自 schema/表与代码写入边界隔离，不建多 role 或长期独立库。现有临时测试 fixture 的独占库/前缀只作为可清理隔离资源，不把其实现迁移变成当前功能切片的运维任务；结束必须零残留。
+- 用户本轮资源裁决：开发应用目标只复用**一个 PostgreSQL 实例、一个数据库、一套应用账号**和现有 Redis；每个数据 owner 使用独立 schema/连接 URL 与代码写入边界，表名前缀不替代 schema。不建多 role 或长期独立库。当前部分 owner 的 `public`/整库空白 installer 尚未适配，单库应用组合**未通过**；按 owner 代码切片收敛，不做运维专项。现有测试 fixture 临时库/前缀仅用于测试隔离且只清理自身，不是应用并发或数据库角色限制。
 
 ### 1.2 能力边界（不互相代写事实）
 
@@ -181,10 +181,11 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 | W1B-3D / P0 | Root System跨仓smoke新准入与路径修复 / `w1b3_legacy_smoke_writer`（续任）/ gpt-6-sol / 唯一脚本writer；Root审查与Git负责人 | Root `0295fbdd…`→`9fa6d2cd68d06dbd9dc235da520ba4c15089b1e1`已推送main；仅System runner与对应测试，子仓不改 | Root聚焦**23/23**、全scripts **525/525**、真实System/BFF/Agent组合PASS、独占PG/Redis/临时文件零残留；独立审查1项P2 gitlink门已修复复核无新阻断；状态：已验收 |
 | W1B-3E / P0 | Root激活BFF→IAM精确契约edge / Root唯一writer + `w1b3_edge_release_review`独立只读审查 | Root `9fa6d2cd…`→`7b6e486b630a40ff825736299ef02720cbfbef6a`已推送main，IAM `b2ad9dd…`/BFF `6238599…`clean；只改Root inventory/checkpoint/test/文档 | 唯一IAM edge broken→active，31个consumer blob与IAM0.2.0 contract/旧vendor字节一致，2项版本断言；checkpoint **5 active/11 broken/1 illegal**、聚焦81/81、全Root526/526、topology及main-only（Root+11仅main/clean）PASS；独立SPEC/QUALITY0/0。状态：已验收 |
 | W1C-P / P0 | Web同源登录依赖预检 / `w1c_web_auth_reader` + `w1c_iam_oidc_readiness` / 只读；Root裁决 | Web `apps/kokoro-app` main `ce4e466c…`，BFF `apps/kokoro-bff` main `6238599…`，IAM `b2ad9dd…`；仅读Web auth/session/cookie/CSRF route及BFF/IAM协议，不改文件/Git/资源 | 已确认IAM Code+PKCE与精确allowlist已运行；BFF尚无`/iam` relay，Web旧IAM直连且多数BFF代理缺Bearer；两份只读报告已交付，未运行测试；状态：已验收（只读预检） |
-| W1C-1 / P0 | BFF受控`/iam`原生协议relay / `w1c_bff_relay_owner`实现、`w1c_bff_repin_owner`来源重pin；Root审查与集成 | BFF `55b9150…`代码、`804a5832…`最终IAM来源pin均已推送main，Root gitlink/库存待发布 | 精确path/method服务例外、原生HTTP/cookie/redirect保持、无用户Bearer/SQL/Redis事实；BFF Node22标准248/248、contract25/25及静态/构建门通过，真实IAM基础HTTP1/1；首次Code+PKCE成功流和Root组合仍待验，状态：待集成验证 |
+| W1C-1 / P0 | BFF受控`/iam`原生协议relay / `w1c_bff_relay_owner`实现、`w1c_bff_repin_owner`来源重pin；Root审查与集成 | BFF `804a5832…`、IAM `f0bb18e6…`已由Root `4d2c149b…`锁gitlink/库存并推送main | 精确path/method服务例外、原生HTTP/cookie/redirect保持；BFF Node22标准248/248、contract25/25，Root relay来源CLI PASS、旧IAM准入7/7、Capability8/8、Scheduler11/11、System组合PASS；首次完整Code+PKCE/交互/令牌/logout仍待真HTTP，状态：待集成验证 |
 | W1C-1F / P0 | IAM test-owned Web OIDC首次流fixture / `w1c_iam_flow_owner`唯一IAM writer；Root审查 | IAM `f0bb18e6…`已提交推送main；仅四个IAM测试fixture/integration文件，生产API/schema/contract未改 | HTTPS公开origin、未预consent RP client、真实sign-in→authorize首次重定向；Root聚焦5/5、旧host独立3/3、format/lint/typecheck通过，自有DB/Redis零残留，独立复审0 P1/P2；完整Code+S256/tenant/consent/token/userinfo/logout仍归Root组合，状态：已验收（测试入口） |
-| W1C-1G / P0 | Root从gitlink commit blob核验BFF relay↔IAM发布证据 / `w1c_root_relay_verifier`实现、独立审查，Root集成 | Root `070b0589…`已提交推送三脚本；IAM `f0bb18e6…`、BFF `804a5832…`待Root pin | 固定IAM allowlist/snapshot与BFF policy的commit/digest、route/method子集/disabled负例；14/14聚焦、Root 540/540、Ruff、独立审查0 P1/P2；真实CLI待最终gitlink发布后重跑，状态：待集成验证 |
-| W1C-2 / P0 | Web Auth.js RP、同源adapter与Product Session / `w1c_web_design_owner`三文档writer；源码唯一writer待派 | W1C-1 BFF contract与SHA冻结，Web main `ce4e466c…`；三文档设计门首轮独立审查4 P2/1 P3已回派修正 | Code+S256、refresh/logout/CSRF、全部业务代理唯一Bearer、旧IAM直连与自报身份删除；Web全门+真实组合；状态：设计门修正中（未改源码） |
+| W1C-1G / P0 | Root从gitlink commit blob核验BFF relay↔IAM发布证据 / `w1c_root_relay_verifier`实现、独立审查，Root集成 | Root脚本 `070b0589…`、两gitlink/库存发布 `4d2c149b…`，IAM/BFF main clean | 固定IAM allowlist/snapshot与BFF policy的commit/digest、route/method子集/disabled负例；14/14聚焦、Root全量540/540、真实CLI PASS、checkpoint/topology PASS，独立release审查0 P1/P2；状态：已验收（来源门，不替代OAuth正向行为） |
+| W1C-2 / P0 | Web Auth.js RP、同源adapter与Product Session / `w1c_web_design_owner`三文档writer；源码唯一writer待派 | Web三文档 `62da3f85…`已推送main；BFF `804a5832…` policy digest固定，Root gitlink/库存待发布 | 三文档首轮4 P2/1 P3及单库schema P2已修，独立复审0 P1/P2，源码/依赖未改；下一步Code+S256、refresh/logout/CSRF、全部业务代理唯一Bearer、旧IAM直连与自报身份删除；状态：设计门已验收，源码待派 |
+| W1C-DB / P1 | 单开发数据库的 owner-schema 代码适配 / 各数据owner逐仓唯一writer，Root按依赖集成 | 用户明确一个应用库/一套账号；现有部分URL/installer固定`public`或要求整库为空，不允许以文档宣称已可运行 | 每仓连接只指向自己的schema、fresh install只检查本schema，统一同一物理应用库真HTTP组合；不建多角色/长期子库，测试临时资源仍归fixture；状态：待派工，不阻断W1C身份源码切片 |
 | W1C-3 / P0 | Root Web→BFF→IAM真实登录组合 / Root主控+独立审查 | W1C-1与W1C-2 release | 登录/刷新/退出/失效/越权真HTTP、隔离资源清理与固定SHA/digest；本片不激活尚缺Product generated consumer的EDGE-WEB-BFF；状态：待派工 |
 | W1D / P0 | Web全量BFF Product OpenAPI generated consumer与单一AG-UI接线 / Web唯一writer；Root集成 | W1C-3；BFF public contract先冻结 | Web消除手写Product wire和旧网络协议，固定BFF contract/generator/runtime/digest；Web owner全门+组合验证后才激活EDGE-WEB-BFF；状态：待派工 |
 

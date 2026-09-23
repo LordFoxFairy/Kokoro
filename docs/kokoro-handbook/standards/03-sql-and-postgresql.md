@@ -28,9 +28,9 @@ PostgreSQL
 3. 正式 SQL 禁止 `FOREIGN KEY` 和 `REFERENCES`。无外键并非 Kokoro 独有：Alibaba 开发手册将禁用外键/级联列为强制项，
    Vitess 也明确不鼓励分片 keyspace 使用外键约束；Kokoro 采用这一常见的大规模分布式治理路线作为硬规则。
    PostgreSQL/Spanner 等数据库仍支持并在部分场景推荐 enforced foreign key，因此本文不把它描述成所有公司的统一规则。
-4. `CREATE TABLE IF NOT EXISTS` 可以使用；它容忍已存在的同名表，不修复 schema drift；`db:apply-schema` 仍检查空库，发现非空目标就停止，绝不自动删库。
+4. `CREATE TABLE IF NOT EXISTS` 可以使用；它容忍已存在的同名表，不修复 schema drift；`db:apply-schema` 只检查目标 owner schema 是否为空，发现该 schema 非空就停止，不要求同库其他 owner schema 为空，绝不自动删库。
 5. 所有值使用参数绑定；表名、列名、排序方向等不能参数化的结构只能来自代码白名单。
-6. 本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。
+6. 本地与 CI 的应用目标是一个 PostgreSQL 实例、一个数据库和一套应用 role/credential；每个数据 owner 在同库使用独立 schema 与指向该 schema 的连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享；表名前缀不代替 owner schema。现有部分 installer/URL 仍锁定 `public` 或整库空白，须由 owner 代码切片改为 schema 边界后才能宣称单库应用组合通过。测试 fixture 临时库只是运行隔离，不是新增应用数据库或角色。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前开发门禁。
 
 ## 2. 数据所有权先于表设计
 
@@ -80,11 +80,11 @@ SQL-first 的 `schema.sql` 按以下顺序组织：
 
 要求：
 
-- schema 应能在全新数据库一次成功安装。
-- `db:apply-schema` 在执行前确认目标为空，使用 advisory lock 防止并发安装，并在事务可覆盖的范围内失败回滚。
+- schema 应能在目标 owner 的全新空 schema 一次成功安装；不得要求其他 owner 的 schema 也为空。
+- `db:apply-schema` 在执行前只确认目标 owner schema 为空，使用 owner 范围的 advisory lock 防止并发安装，并在事务可覆盖的范围内失败回滚。
 - 安装后对 catalog 做 drift check：表、列、类型、默认值、约束和索引必须与预期一致。
 - 开发样本与 schema 分开，放语言手册规定的 test(s)/fixtures；生产启动不自动 seed。产品必需的基础字典数据单独说明 owner 和安装规则，不与测试样本混放。
-- SQL-first 不依赖 ORM 自动同步。ORM-first 的 schema apply 命令必须是仓库批准的显式命令，只允许空库/临时库，生产启动不得
+- SQL-first 不依赖 ORM 自动同步。ORM-first 的 schema apply 命令必须是仓库批准的显式命令，只允许目标 owner 空 schema（测试可使用隔离的临时库），生产启动不得
   “顺便修表”。无历史 migration 的 clean-slate 仓可以使用 `db push`；一旦进入有数据的持续演进阶段必须另立 ADR 选择 migration/expand-contract。
 
 ## 4. 命名规则
@@ -378,7 +378,7 @@ tenant / 等值过滤 -> 选择性过滤 -> 范围 -> 排序 -> 唯一 tie-break
 - `INCLUDE` 仅在 index-only scan 有证据收益时使用。
 - 低基数字段通常不能单独成为有效索引。
 - 索引增加写放大、锁和存储；无使用证据的索引应删除。
-- 大表索引构建、锁影响和失败恢复必须在生产演进方案中说明；V1 空库安装不等于未来永远不需要 migration。
+- 大表索引构建、锁影响和失败恢复必须在生产演进方案中说明；V1 owner 空 schema 安装不等于未来永远不需要 migration。
 
 ## 11. 事务、锁和并发
 
@@ -454,7 +454,7 @@ Repository 在这里指“该模块的数据访问组件”，不是 Git 仓库�
 每个持久化 owner 至少验证：
 
 ```bash
-pnpm db:apply-schema       # 或对应 Python/Go 命令；目标必须是 fresh database
+pnpm db:apply-schema       # 或对应 Python/Go 命令；目标 owner schema 必须为空
 pnpm test:integration
 pnpm test                  # 包含 schema/architecture checks
 ```

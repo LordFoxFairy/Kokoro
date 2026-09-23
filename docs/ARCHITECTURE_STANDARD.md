@@ -18,7 +18,7 @@ Browser -> Web -> BFF -> internal owner services / Agent / Scheduler
 ```
 
 - 一个业务事实只有一个 owner 和一个 writer。
-- 跨仓只通过版本化 API/RPC/Event；不共享数据库、ORM schema、SQL、业务 DTO 或源码 import。
+- 跨仓只通过版本化 API/RPC/Event；即使位于同一物理 PostgreSQL 数据库，也不共享 owner schema、数据库业务事实、ORM schema、SQL、业务 DTO 或源码 import，不跨 owner 查询。
 - 服务内按业务模块聚合；具体物理目录遵循语言手册。
 - HTTP/RPC/worker 只处理协议，业务 Service/use case 负责授权、事务和编排，Repository/client 负责 I/O。
 - 简单模块不制造 DDD 空层，复杂状态机才建立显式 Domain Model。
@@ -94,7 +94,7 @@ kokoro-platform/src/modules/
 
 ## 3. 数据边界
 
-- 本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。
+- 本地与 CI 的应用目标是一个 PostgreSQL 实例、一个数据库和一套应用 role/credential；每个数据 owner 在同库使用独立 schema 与指向该 schema 的连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享；表名前缀不代替 owner schema。现有部分 installer/URL 仍锁定 `public` 或整库空白，须由 owner 代码切片改为 schema 边界后才能宣称单库应用组合通过。测试 fixture 临时库只是运行隔离，不是新增应用数据库或角色。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前开发门禁。
 - 每个数据 owner 维护一份唯一 canonical schema；SQL-first 使用 `database/schema.sql`，ORM-first 使用技术方案批准的唯一 ORM schema。
 - Kokoro V1 clean-slate 不保留 migration 链、外键或兼容 schema；完整规则只见 SQL 手册。
 - 同一 owner/数据库/业务边界允许 JOIN；跨 owner 禁止 JOIN。

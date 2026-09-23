@@ -83,10 +83,14 @@ def test_local_ci_database_identity_and_owner_isolation_are_not_conflated() -> N
     architecture = (ROOT / "docs/ARCHITECTURE_STANDARD.md").read_text()
     sql = (ROOT / "docs/kokoro-handbook/standards/03-sql-and-postgresql.md").read_text()
     decision = (
-        "本地与 CI 复用一个 PostgreSQL 实例和一套应用 role/credential；每个数据 owner 仍使用"
-        "独立 database/schema 与独立连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner "
-        "SQL/JOIN、表引用、ORM model 与 canonical schema 共享。每 owner 独立 production role、"
-        "GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前闭环门禁。"
+        "本地与 CI 的应用目标是一个 PostgreSQL 实例、一个数据库和一套应用 role/credential；"
+        "每个数据 owner 在同库使用独立 schema 与指向该 schema 的连接 URL。"
+        "代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享；"
+        "表名前缀不代替 owner schema。现有部分 installer/URL 仍锁定 `public` 或整库空白，"
+        "须由 owner 代码切片改为 schema 边界后才能宣称单库应用组合通过。"
+        "测试 fixture 临时库只是运行隔离，不是新增应用数据库或角色。"
+        "每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，"
+        "不是当前开发门禁。"
     )
     for content in (agents, architecture, sql):
         assert decision in content
