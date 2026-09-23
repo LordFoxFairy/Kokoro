@@ -29,14 +29,14 @@ Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能�
 
 ## 本次 Root 集成边界
 
-`verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；本次仅同步 Web 新 gitlink 的 9 处来源，不改变 16 条 edge 语义。现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。五个 Root 跨仓 runner 继续将 BFF 应用 URL 定向 `kokoro_bff`，直接观测 SQL 显式限定 owner schema、`psql` 使用无应用 schema 参数的原 URL；System/Capability/Scheduler/IAM 自身 URL 不改。
+`verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；本次同步 Web 9、BFF 137、IAM 3 处来源，不改变 16 条 edge 语义。现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。Root 跨仓 runner 将 BFF 应用 URL 定向 `kokoro_bff`，直接观测 SQL 显式限定 owner schema、`psql` 使用无应用 schema 参数的原 URL；System/Capability/Scheduler/IAM 自身 URL 不改。
 
-当前组合已执行 Root checkpoint、policy、topology 与 main-only，均 PASS；Root `scripts/tests` **570 passed / 56 subtests**。固定新 pin 真实IAM准入→BFF **7/7**、首次OIDC→BFF **15/15**、Capability→BFF **8/8**、Scheduler→BFF **11/11**、System/BFF/Agent HTTP组合 **PASS**，各 runner 报告仅清理本次自有 PostgreSQL/Redis/进程。Scheduler 的两个直接观测SQL在本次补丁中已限定 `kokoro_bff` 并在发布后重跑11/11；一次诊断前的无细节瞬时FAIL记录在progress，不抹去。全仓静态治理当前仍为9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
+当前组合的 Root checkpoint、policy、topology 均 PASS；新 runner 两脚本纳入候选时 `scripts/tests` **588 passed / 78 subtests**。Web→BFF→IAM 真实 HTTPS RP-only 链 **14/14**，验证真实 Code+S256/token/userinfo/JWKS、回调重放和受控 `503 product_session_unavailable`；测试只直接观测 Web→BFF 入口，IAM 后段由真实进程与回调间接证明，资源报告零残留。新 pin 首次 OIDC→BFF **15/15**；其余 IAM准入7/7、Capability8/8、Scheduler11/11、System组合沿用上一固定 pin 的已执行证据，待下一轮按需复验。Root 新脚本尚未提交时 main-only 因两未跟踪文件失败；发布后复验。全仓静态治理上一轮仍为9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
 
 ## 下一条代码关键路径
 
-1. Root 真实 HTTPS Web→BFF→IAM RP 组合：复用隔离 IAM/BFF host 与自有 PostgreSQL/Redis，跑浏览器同源登录至真实 IAM 签名回调，终态应为 `503 product_session_unavailable` 而非完成登录；验证重放/负例与无新 session。
-2. Product Session 与所有 BFF adapter 的单一 Bearer：默认个人私有、显式分享；按调用点删除旧 IAM magic-link/team-session 直连、sealed envelope 和旧 identity header，不建兼容双轨。
-3. Refresh CAS 与先 tombstone 后 revoke/end-session 的退出链。之后推进单一 AG-UI 聊天、Agent/Storage/System/Platform/Scheduler 各自 owner 闭环；Billing 最后。
+1. Product Session 与所有 BFF adapter 的单一 Bearer：先裁决 Web/IAM refresh 设计冲突，并由 IAM/BFF 发布 Team 窄契约；默认个人私有、显式分享。按调用点删除旧 IAM magic-link/team-session 直连、sealed envelope 和旧 identity header，不建兼容双轨。
+2. Refresh CAS 与先 tombstone 后 revoke/end-session 的退出链；用真实三仓 RP-only 回归作为前置，不把当前受控 503 当完整登录。
+3. 之后推进单一 AG-UI 聊天、Agent/Storage/System/Platform/Scheduler 各自 owner 闭环；Billing 最后。
 
 旧全仓 `verify-ten-repository-full.sh` 和 `run_stage2_owner_health.py` 仍是只诊断退出的暂停入口；不以其替代逐仓代码门或已隔离的跨仓 smoke。
