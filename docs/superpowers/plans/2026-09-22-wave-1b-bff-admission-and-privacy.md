@@ -77,8 +77,8 @@ export type SessionAdmission = { verify(input: SessionAdmissionInput): Promise<S
 ```
 `SessionAdmissionClient`实现该窄接口；composition显式test seam `sessionAdmission?: SessionAdmission`，生产默认真实client。`config.iamBaseUrl: string | null`从`KOKORO_IAM_BASE_URL`解析，只接收无userinfo/query/hash的HTTP(S) origin；未配置不允许业务。HTTP建立context由`authorizeUserRequest`统一负责，service检查在调用client之前。测试double只从固定token→身份映射取值，不读取legacy identity header，不提供环境变量测试 bypass。
 
-- [ ] **Step 1: 文档门与机器契约先行。** 三文档通过后复制固定commit blob为vendor并校验digest；配置生成入口只暴露`verifySessionAuthorization`操作及其引用schema，不复制另一套手写wire DTO。scope过滤必须可重复由完整vendor派生；Node22生成兼容修正只允许写在生成脚本中，严格匹配次数并纳入负例。保留已接受Capability/Scheduler artifact字节与版本。
-- [ ] **Step 2: 写失败用例并实跑red。** client用loopback HTTP owner fixture验证：POST/no-body/唯一Bearer、strict success、false/空字段/extra字段、错误status/envelope/no-store/request-id、redirect、超过cap、慢header/慢body、取消、零重试。server用显式admission spy验证service/Bearer拒绝不触发业务、IAM identity覆盖恶意header、撤销后同key不replay、断开取消，以及三类服务例外互不授权。
+- [x] **Step 1: 文档门与机器契约先行。** 三文档通过后复制固定commit blob为vendor并校验digest；配置生成入口只暴露`verifySessionAuthorization`操作及其引用schema，不复制另一套手写wire DTO。scope过滤必须可重复由完整vendor派生；Node22生成兼容修正只允许写在生成脚本中，严格匹配次数并纳入负例。保留已接受Capability/Scheduler artifact字节与版本。
+- [x] **Step 2: 写失败用例并实跑red。** client用loopback HTTP owner fixture验证：POST/no-body/唯一Bearer、strict success、false/空字段/extra字段、错误status/envelope/no-store/request-id、redirect、超过cap、慢header/慢body、取消、零重试。server用显式admission spy验证service/Bearer拒绝不触发业务、IAM identity覆盖恶意header、撤销后同key不replay、断开取消，以及三类服务例外互不授权。
 ```ts
 assert.equal(captured.method, "POST")
 assert.equal(captured.url, "/internal/v1/session-authorizations/verify")
@@ -91,9 +91,9 @@ assert.equal(ownerCallsAfterDeniedAdmission, 0)
 assert.equal(receiptCallsAfterDeniedAdmission, 0)
 ```
 Run: `corepack pnpm build && node --test test/iam-admission-client.test.ts test/user-admission.test.ts`；新实现前必须至少有一项行为失败，不以语法/import错误作唯一red证据。
-- [ ] **Step 3: 实现单一准入链。** 删除`authorize`旧身份构造；先service→Bearer→在线verify→context，后才mutation/body/routes。request.aborted和response提前close取消本次IAM IO，正常request body end不得误取消；清理listener/timer/reader，失败不泄漏Bearer。manifest走显式服务handler，删除owner.ts重复分支与fake principal，不泛化代理。
-- [ ] **Step 4: 同步public contract和测试接线。** 顶层security为serviceHeader+internalSecret+userBearer，删除namespace/principalId security schemes；share/manifest显式service-only override；所有受保护operation发布401/403/429/503，path/method/operationId不变。记录未上线clean-slate auth修正，不声称backward compatible。旧fixtures改为token映射，测试仍验证原业务断言；默认composition必须真实client，不允许旧tests通过隐式allow。
-- [ ] **Step 5: Owner全门和停写交付。** `format:check`纳入新手写/生成文件；`contract:check`纳入IAM drift，provenance固定Node/pnpm/generator/lockfile。执行format/lint/typecheck/contract/architecture/schema/test/build与真实integration。先自有空库apply，再集成；回报计数、资源清理及剩余私有资源问题。Root独立SPEC/QUALITY审查与重跑后精确提交`feat(bff): admit users through pinned IAM session contract`，不提前提升Root gitlink或声明私有资源完成。
+- [x] **Step 3: 实现单一准入链。** 删除`authorize`旧身份构造；先service→Bearer→在线verify→context，后才mutation/body/routes。request.aborted和response提前close取消本次IAM IO，正常request body end不得误取消；清理listener/timer/reader，失败不泄漏Bearer。manifest走显式服务handler，删除owner.ts重复分支与fake principal，不泛化代理。
+- [x] **Step 4: 同步public contract和测试接线。** 顶层security为serviceHeader+internalSecret+userBearer，删除namespace/principalId security schemes；share/manifest显式service-only override；所有受保护operation发布401/403/429/503，path/method/operationId不变。记录未上线clean-slate auth修正，不声称backward compatible。旧fixtures改为token映射，测试仍验证原业务断言；默认composition必须真实client，不允许旧tests通过隐式allow。
+- [x] **Step 5: Owner全门和停写交付。** `format:check`纳入新手写/生成文件；`contract:check`纳入IAM drift，provenance固定Node/pnpm/generator/lockfile。执行format/lint/typecheck/contract/architecture/schema/test/build与真实integration。先自有空库apply，再集成；回报计数、资源清理及剩余私有资源问题。Root独立SPEC/QUALITY审查与重跑后精确提交`feat(bff): admit users through pinned IAM session contract`，不提前提升Root gitlink或声明私有资源完成。
 
 ### Task 2: 关闭同 tenant 私有 Project / ScheduledTask 与关联访问缺口
 

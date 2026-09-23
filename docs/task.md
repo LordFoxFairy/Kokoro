@@ -14,6 +14,27 @@
 - 本轮启动 Root 基线：`1bc74ae536d8a2da48f76045da95c2d5c2877750`
 - 范围：`apps/kokoro-app` 与八个后端 owner；`apps/kokoro-mori` 和其他前端不参与业务改造。
 
+### 1.1 主控优先看这里
+
+- 当前关键路径：**W1B-1/R 准入收尾 → W1B-2 私有资源权限 → W1B-3 最小真实联调 → Web 登录/同源接线**。具体状态与唯一写入负责人见本文 Wave1B 执行卡。
+- 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
+- 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
+- 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
+
+### 1.2 能力边界（不互相代写事实）
+
+| Owner | 负责 | 明确不负责 |
+| --- | --- | --- |
+| `kokoro-app` | 页面、交互状态、浏览器会话、同源adapter、AG-UI视图映射 | 不直连内部owner、不保存业务数据库事实 |
+| `kokoro-bff` | Conversation/Message/Share/Project/ScheduledTask、资源权限、durable AG-UI投影 | 不执行模型/工具、不读取其他owner数据库 |
+| `kokoro-iam` | 登录、会话、租户/成员与身份授权事实 | 有效会话不等于能读同团队其他人的聊天 |
+| `kokoro-agent` | Run、工具执行、HITL/Approval、Checkpoint、执行事件/Evidence | 不另建Conversation/Message或公开事件账本 |
+| `kokoro-storage` | 上传、Blob/Asset/Artifact、对象生命周期与访问边界 | BFF/Agent不复制存储模型或绕过文件授权 |
+| Capability → Platform | Skills/MCP控制面与授权能力供给；按既定切片原子更名 | 不作为任意共享代码/业务的收容仓；当前名称仍为Capability |
+| `kokoro-scheduler` | Schedule/Occurrence、触发、投递、重试与receipt | 不拥有BFF产品任务或Agent Run |
+| `kokoro-system` | 站点/运行控制、模型目录与路由配置 | 不作为任意key/value配置中心 |
+| `kokoro-billing` | 支付、订阅、额度、账本、计量与对账 | 本轮其他核心能力开发不被支付实施阻塞 |
+
 ## 2. 工作规则
 
 状态只使用：`待派工 → 进行中 → 待审查 → 待集成验证 → 已验收`；真正无法继续时使用 `阻塞`，并写明阻塞条件和 owner。
@@ -147,7 +168,7 @@ Root 并行负责 IAM admission、bootstrap/service 例外与 Node22 generated c
 
 | ID / 优先级 | Owner / Agent / 模型 | 基线 / 范围 | 验收 / 状态 |
 | --- | --- | --- | --- |
-| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c，绝对目录同上；三文档已由Root验收，授权当前计划Task1精确runtime/contract/test文件集；Task2仍未授权 | 当前计划 Task1；64文件停写交付，owner报告222标准/35集成；独立SPEC/QUALITY审查与Root重跑中，Root唯一Git操作；状态：待审查 |
-| W1B-1R / P0 | BFF / `w1b1_task_reviewer` / gpt-5.6-sol high / 只读；Root集成验证 | main c5e9b3c + Task1冻结64文件；仅审查本片diff与具名调用风险，不操作Git/数据库/服务；Root独占验证与提交 | SPEC/QUALITY发现0 Critical/2 Important/0 Minor；同负责人只修client/transport/聚焦测试中的429映射与总响应预算；状态：首轮修复中 |
-| W1B-2 / P0 | BFF / 同一负责人后续续派 | 依赖W1B-1冻结提交；计划Task2精确范围，默认个人私有 | Project/ScheduledTask/Run control/Project关联负例通过；状态：待派工 |
+| W1B-1 / P0 | BFF / `w1b_bff_owner` / gpt-5.6-sol high / 唯一写入 | main c5e9b3c → a898c90fe2b5447178a76fb04b0fedf9fa98e0d5，绝对目录同上；64个精确文件，Root提交 | SPEC/QUALITY通过；Root最终227标准/35真实integration、静态门通过；代码切片已验收，跨仓组合归W1B-3 |
+| W1B-1R / P0 | BFF / `w1b1_task_reviewer` / gpt-5.6-sol high / 只读；Root集成验证 | c5e9b3c + 最终冻结64文件，与a898c90提交字节一致；未操作Git/基础设施 | 首轮2 Important均已修复；增量复核SPEC Compliant/QUALITY Approved，0未决；状态：已验收 |
+| W1B-2 / P0 | BFF / `w1b_bff_owner`续任 / gpt-5.6-sol high / 唯一写入；Root审查与提交 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`，main a898c90fe2b5447178a76fb04b0fedf9fa98e0d5，开始时clean；计划Task2精确范围，排除其它仓/生成物/lock；额外fixture写前列明 | Project/ScheduledTask/Run control/Project关联与分享负例通过；新随机PG库/现有Redis，Root唯一Git；状态：进行中 |
 | W1B-3 / P0 | Root主控 + 独立审查 | 依赖BFF两片停写、完整门；Root单独组合任务卡 | 真实证据、smoke回归、gitlink/inventory、main-only；不以fixture激活IAM；状态：待派工 |

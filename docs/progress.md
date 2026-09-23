@@ -2,6 +2,8 @@
 
 本文件只追加已执行事实，任务状态以 [`task.md`](task.md) 为准，目标设计以 [`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为准。没有命令输出、commit 或冻结 SHA 的事项不得写成完成。
 
+阅读入口：当前执行记录见本文末尾的 **W1B 启动**；能力边界与下一步见 [`task.md`](task.md) 第1节及 Wave1B 执行卡。此前日期的通过数只证明对应提交，不代表最新工作树或整体系统已完成。
+
 ## 2026-09-21 — W0A-0 启动
 
 ### Goal
@@ -589,3 +591,7 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root在该64文件冻结工作树独立执行Node22.22.2 `corepack pnpm format:check/lint/typecheck/contract:check/test:architecture/schema:check/test/build`，全部exit0；contract24、architecture26、schema4、标准222（5.44s），0失败/跳过。真实新库`bff_w1b_root_c15823ee2894`先apply-schema再`test:integration`，35 passed（14.25s）；自有库已删除、所有预存库保留、Redis8前后key完全一致。独立审查尚未放行，以上不代表Task1已验收或整体私有资源已闭环。
 - Root额外loopback探针发现当前测试未覆盖的契约偏差：严格合法IAM 429响应省略可选`Retry-After`时，BFF映射为503而不是既定429；`assert.equal(actual.status,429)`真实失败。临时HTTP server已关闭，无数据库操作；已交独立审查汇总，Task1保持未放行。
 - 用户进一步明确“目的是开发、写代码”，避免深陷运维。主控已收敛当前计划：只修本片明确行为/契约缺陷，后续直接推进资源权限与聊天代码；IAM监听硬化、部署/镜像/SLO后置，开发联调复用现有真实HTTP fixture并准确标注证据等级；不在每个小片重复全仓审计。该调整不取消权限负例、事务正确性和测试资源隔离。
+- 用户要求明确能力边界并用task/progress整体把控；主控复用现有两份文档，在task首页补当前开发关键路径和九个owner的负责/不负责边界，没有另建任务中心。开发优先裁决及首轮审查状态已随Root `a541254f` 推送。独立审查最终为0 Critical/2 Important/0 Minor，准入429映射与header/body总预算已批量续派同一负责人，仅3个代码/测试文件加报告；Task2仍待本片冻结提交。
+- W1B-1代码已由Root精确提交BFF `a898c90fe2b5447178a76fb04b0fedf9fa98e0d5`（64文件、提交字节等于冻结hash，提交后clean）。429保持稳定状态、合法Retry-After才转发及header/body总预算两项已修复；独立增量复核均ADDRESSED、无新缺陷，SPEC Compliant/QUALITY Approved。
+- 最终代码上Root执行`corepack pnpm format:check`、`lint`、`typecheck`、`test`、`build`均exit0；标准 **227 passed/0 failed/0 skipped（5.43s）**。独占空库`bff_w1b_root_51dcbc524d9f`先`db:apply-schema`再`test:integration`：**35 passed/0 failed/0 skipped（12.02s）**；自有库已删除、预存数据库保留、Redis8无增删。contract24/architecture26/schema4此前独立通过；fix仅3文件，contract/generated/schema/lock字节未变，标准测试亦覆盖相应断言，未重复生成。
+- Task1代码切片验收，Root gitlink仍锁c5e9b3c、IAM edge尚未激活；真实跨仓联调留Task3，不声称整套登录或个人私有已闭环。现续派同一BFF owner按Task2实现Project/ScheduledTask与Chat关联/Run control私有权限；主控维护边界与复核，不抢写子仓。
