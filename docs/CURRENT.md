@@ -18,7 +18,7 @@
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
 | `libs/kokoro-web-shared` | `0c4e87ace01340aaa07bc57935f1d98b8e77af14` |
 
-Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能力仓仍叫 `kokoro-capability`，尚未原子切换成 `kokoro-platform`；Mori 和 web-shared 不是本轮后端 runtime owner。各子仓测试留在各自仓库，Root `scripts/tests/` 只验证治理与组合 runner。
+Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能力仓仍叫 `kokoro-capability`，尚未原子切换成 `kokoro-platform`；Mori 和 web-shared 不是本轮后端 runtime owner。子仓的 tests 不迁入 Root；各子仓测试留在各自仓库。`scripts/tests/` 只覆盖 Root 治理脚本和组合 runner 自身的测试；跨仓验收入口在 `scripts/e2e/`，证据清单在 `verification/`。
 
 ## 已落地的 owner 能力
 
