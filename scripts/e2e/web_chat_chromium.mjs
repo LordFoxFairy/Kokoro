@@ -14,16 +14,20 @@ const fail = (message) => {
 const parseInput = () => {
   if (process.argv.length !== 2) throw new Error("expected stdin JSON input")
   const value = JSON.parse(readFileSync(0, "utf8"))
-  const fields = ["web_origin", "web_host", "web_root", "screenshot", "headed", "hold_seconds", "email", "password", "tenant_id"]
+  const fields = ["web_origin", "web_host", "web_root", "screenshot", "headed", "hold_seconds", "email", "password", "tenant_id", "chat_content", "expected_reply", "chat_timeout_ms", "fail_after_chat_receipt"]
   if (
     value === null ||
     typeof value !== "object" ||
     Array.isArray(value) ||
     Object.keys(value).sort().join(",") !== [...fields].sort().join(",") ||
-    ![...fields.slice(0, 4), ...fields.slice(6)].every((field) => typeof value[field] === "string" && value[field] !== "") ||
+    ![...fields.slice(0, 4), ...fields.slice(6, 11)].every((field) => typeof value[field] === "string" && value[field] !== "") ||
     typeof value.headed !== "boolean" ||
+    typeof value.fail_after_chat_receipt !== "boolean" ||
     typeof value.hold_seconds !== "number" ||
-    value.hold_seconds < 0
+    value.hold_seconds < 0 ||
+    !Number.isInteger(value.chat_timeout_ms) ||
+    value.chat_timeout_ms < 20_000 ||
+    value.chat_timeout_ms > 600_000
   ) {
     throw new Error("invalid Chromium milestone input")
   }
@@ -51,16 +55,32 @@ try {
   const failedRequests = []
   const observedPaths = []
   const observedResponses = []
+  const observedAguiResponses = []
   const browserErrors = []
+  const sseAttempts = []
+  const pendingSse = new Map()
   page.on("request", (request) => {
     const pathname = new URL(request.url()).pathname
     observedPaths.push(pathname)
+    if (pathname.endsWith("/events")) {
+      const attempt = { startedAt: Date.now(), status: null, headersMs: null, endedMs: null, outcome: "open" }
+      sseAttempts.push(attempt)
+      pendingSse.set(request, attempt)
+    }
     if (pathname === "/api/auth/csrf") csrfRequests += 1
     if (pathname === "/api/auth/signin/kokoro-iam") signInRequests += 1
   })
   page.on("response", (response) => {
     const url = new URL(response.url())
     if (url.origin === input.web_origin) observedResponses.push(`${response.status()} ${url.pathname}`)
+    if (url.origin === input.web_origin && url.pathname.endsWith("/events")) {
+      observedAguiResponses.push({ status: response.status(), pathname: url.pathname })
+      const attempt = pendingSse.get(response.request())
+      if (attempt) {
+        attempt.status = response.status()
+        attempt.headersMs = Date.now() - attempt.startedAt
+      }
+    }
     if (url.origin === input.web_origin && response.status() >= 400) {
       failedRequests.push(`${response.status()} ${url.pathname}`)
     }
@@ -68,6 +88,20 @@ try {
   page.on("requestfailed", (request) => {
     const url = new URL(request.url())
     if (url.origin === input.web_origin) failedRequests.push(`failed ${url.pathname}`)
+    const attempt = pendingSse.get(request)
+    if (attempt) {
+      attempt.endedMs = Date.now() - attempt.startedAt
+      attempt.outcome = "failed"
+      pendingSse.delete(request)
+    }
+  })
+  page.on("requestfinished", (request) => {
+    const attempt = pendingSse.get(request)
+    if (attempt) {
+      attempt.endedMs = Date.now() - attempt.startedAt
+      attempt.outcome = "finished"
+      pendingSse.delete(request)
+    }
   })
   page.on("console", (message) => {
     if (message.type() === "error" && !message.text().includes("webpack-hmr")) {
@@ -115,6 +149,7 @@ try {
   if ((await email.inputValue()) !== "" || (await password.inputValue()) !== "") {
     throw new Error("IAM credential fields were not empty")
   }
+  process.stderr.write("MILESTONE:iam\n")
   await page.screenshot({ path: input.screenshot, fullPage: true })
   await email.fill(input.email)
   await password.fill(input.password)
@@ -160,7 +195,157 @@ try {
   ) {
     throw new Error("Browser Product Session cookie invalid")
   }
+  process.stderr.write("MILESTONE:app\n")
   const appScreenshot = path.join(path.dirname(input.screenshot), `app-${input.web_host}.png`)
+  const composer = page.locator('[data-slot="composer-input"]')
+  const send = page.locator('[data-composer-action="send"]')
+  await composer.waitFor({ state: "visible", timeout: input.chat_timeout_ms })
+  const receiptPromise = page.waitForResponse((response) => {
+    const url = new URL(response.url())
+    return url.origin === input.web_origin &&
+      /^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) &&
+      response.request().method() === "POST" && response.status() === 202
+  }, { timeout: input.chat_timeout_ms })
+  await composer.fill(input.chat_content)
+  await send.click()
+  const receiptResponse = await receiptPromise
+  const conversationId = decodeURIComponent(new URL(receiptResponse.url()).pathname.split("/")[4])
+  const receipt = await receiptResponse.json()
+  if (
+    !conversationId.startsWith("conv_") ||
+    typeof receipt?.run_id !== "string" || !receipt.run_id ||
+    typeof receipt?.user_message_id !== "string" ||
+    typeof receipt?.assistant_message_id !== "string"
+  ) {
+    throw new Error("Browser DOM submit returned an invalid 202 receipt")
+  }
+  process.stderr.write("MILESTONE:receipt\n")
+  if (input.fail_after_chat_receipt) {
+    throw new Error("Injected browser failure after committed 202 receipt")
+  }
+  const snapshotPath = `/api/session/sessions/${encodeURIComponent(conversationId)}`
+  try {
+    await page.waitForFunction(
+      ({ content, reply }) => {
+        const users = [...document.querySelectorAll('[data-slot="user-message-body"]')]
+        const assistants = [...document.querySelectorAll('[data-slot="markdown-message"]')]
+        return users.filter((element) => element.textContent === content).length === 1 &&
+          assistants.some((element) => element.textContent?.includes(reply))
+      },
+      { content: input.chat_content, reply: input.expected_reply },
+      { timeout: input.chat_timeout_ms },
+    )
+  } catch {
+    const owner = await page.evaluate(async (target) => {
+      const response = await fetch(target, { credentials: "same-origin", cache: "no-store" })
+      const body = await response.json().catch(() => ({}))
+      return {
+        snapshot_status: response.status,
+        messages: Array.isArray(body.messages) ? body.messages.map((message) => ({ role: message.role, status: message.status, length: message.content?.length ?? null })) : [],
+        has_watermark: typeof body.event_watermark === "string" && body.event_watermark.length > 0,
+      }
+    }, snapshotPath).catch(() => ({ snapshot_status: null, messages: [], has_watermark: false }))
+    const dom = await page.evaluate(() => ({
+      dom_users: document.querySelectorAll('[data-slot="user-message-body"]').length,
+      dom_assistants: document.querySelectorAll('[data-slot="markdown-message"]').length,
+      web_view: document.querySelector('[data-web-view]')?.getAttribute("data-web-view") ?? null,
+      visible_alerts: [...document.querySelectorAll('[role="alert"]')]
+        .filter((element) => element.getClientRects().length > 0)
+        .map((element) => element.textContent?.trim().slice(0, 150) ?? "")
+        .slice(0, 3),
+    })).catch(() => ({ dom_users: -1, dom_assistants: -1, web_view: null, visible_alerts: [] }))
+    const failureScreenshot = path.join(path.dirname(input.screenshot), `chat-timeout-${input.web_host}.png`)
+    await page.screenshot({ path: failureScreenshot, fullPage: true }).catch(() => undefined)
+    const sse_attempts = sseAttempts.map((attempt) => ({
+      status: attempt.status,
+      headers_ms: attempt.headersMs,
+      elapsed_ms: attempt.endedMs ?? Date.now() - attempt.startedAt,
+      outcome: attempt.outcome,
+    }))
+    throw new Error(`Browser assistant DOM did not converge; path=${new URL(page.url()).pathname}; ${JSON.stringify({ ...owner, ...dom, sse_attempts, browser_error_count: browserErrors.length, failed_paths: failedRequests.slice(-5), screenshot: failureScreenshot })}`)
+  }
+  process.stderr.write("MILESTONE:assistant\n")
+  if (!observedAguiResponses.some((response) => response.status === 200 && response.pathname === `/api/session/sessions/${encodeURIComponent(conversationId)}/events`)) {
+    throw new Error(`Browser app did not open AG-UI SSE; observed=${JSON.stringify(observedAguiResponses)}`)
+  }
+  const snapshot = await page.evaluate(async (target) => {
+    const response = await fetch(target, { credentials: "same-origin", cache: "no-store" })
+    return { status: response.status, body: await response.json() }
+  }, snapshotPath)
+  const messages = snapshot.body?.messages
+  const users = Array.isArray(messages) ? messages.filter((message) => message.role === "user") : []
+  const assistants = Array.isArray(messages) ? messages.filter((message) => message.role === "assistant") : []
+  if (
+    snapshot.status !== 200 || users.length !== 1 || assistants.length !== 1 ||
+    users[0].content !== input.chat_content ||
+    assistants[0].content !== input.expected_reply || assistants[0].status !== "completed" ||
+    typeof snapshot.body.event_watermark !== "string" || !snapshot.body.event_watermark
+  ) {
+    throw new Error("Browser owner snapshot was not one durable completed turn")
+  }
+  const replay = await page.evaluate(async ({ target, timeoutMs }) => {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+    const frames = []
+    try {
+      const response = await fetch(`${target}/events`, {
+        credentials: "same-origin", cache: "no-store",
+        headers: { accept: "text/event-stream" }, signal: controller.signal,
+      })
+      if (response.status !== 200 || !response.headers.get("content-type")?.startsWith("text/event-stream") || !response.body) {
+        return { status: response.status, frames: [] }
+      }
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      while (!controller.signal.aborted && frames.length < 32) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        let split = buffer.search(/\r?\n\r?\n/u)
+        while (split >= 0) {
+          const block = buffer.slice(0, split)
+          buffer = buffer.slice(split).replace(/^\r?\n\r?\n/u, "")
+          const id = /^id: ?(.+)$/mu.exec(block)?.[1]
+          const data = /^data: ?(.+)$/mu.exec(block)?.[1]
+          if (id && data) {
+            const event = JSON.parse(data)
+            frames.push({ id, type: event.type })
+          }
+          split = buffer.search(/\r?\n\r?\n/u)
+        }
+        if (frames.some((frame) => frame.type === "RUN_FINISHED")) break
+      }
+      await reader.cancel().catch(() => undefined)
+      return { status: response.status, frames }
+    } finally {
+      clearTimeout(timeout)
+      controller.abort()
+    }
+  }, { target: snapshotPath, timeoutMs: input.chat_timeout_ms })
+  const frameTypes = replay.frames.map((frame) => frame.type)
+  if (
+    replay.status !== 200 || !frameTypes.includes("RUN_STARTED") || !frameTypes.includes("RUN_FINISHED") ||
+    replay.frames.at(-1)?.id !== snapshot.body.event_watermark ||
+    new Set(replay.frames.map((frame) => frame.id)).size !== replay.frames.length
+  ) {
+    throw new Error(`Browser AG-UI replay drift: ${JSON.stringify(replay)}`)
+  }
+  process.stderr.write("MILESTONE:replay\n")
+  await page.reload({ waitUntil: "domcontentloaded" })
+  await page.waitForFunction(
+    ({ content, reply }) => {
+      const users = [...document.querySelectorAll('[data-slot="user-message-body"]')]
+      const assistants = [...document.querySelectorAll('[data-slot="markdown-message"]')]
+      return users.filter((element) => element.textContent === content).length === 1 &&
+        assistants.filter((element) => element.textContent?.includes(reply)).length === 1
+    },
+    { content: input.chat_content, reply: input.expected_reply },
+    { timeout: input.chat_timeout_ms },
+  )
+  const reloadUserCount = await page.locator('[data-slot="user-message-body"]').count()
+  const reloadAssistantCount = await page.locator('[data-slot="markdown-message"]').count()
+  process.stderr.write("MILESTONE:reload\n")
   await page.screenshot({ path: appScreenshot, fullPage: true })
   if (input.hold_seconds > 0) await page.waitForTimeout(input.hold_seconds * 1000)
   process.stdout.write(
@@ -178,6 +363,15 @@ try {
       app_page: true,
       product_session: true,
       app_screenshot: appScreenshot,
+      conversation_id: conversationId,
+      run_id: receipt.run_id,
+      message_post_status: receiptResponse.status(),
+      agui_first_status: 200,
+      agui_frame_types: frameTypes,
+      event_watermark: snapshot.body.event_watermark,
+      reload_user_count: reloadUserCount,
+      reload_assistant_count: reloadAssistantCount,
+      reload_reply_visible: true,
     }),
   )
   await context.close()

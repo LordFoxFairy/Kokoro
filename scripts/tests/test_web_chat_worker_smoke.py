@@ -20,6 +20,82 @@ def test_runner_exists_as_a_narrow_composer() -> None:
     assert RUNNER.is_file()
 
 
+def test_browser_turn_context_exposes_only_owned_worker_start_and_fixture_reply() -> (
+    None
+):
+    starts: list[str] = []
+    context = smoke.BrowserTurnContext(
+        start_worker=lambda: starts.append("started"),
+        expected_reply="fixture reply",
+        timeout=45.0,
+    )
+
+    context.start_worker()
+
+    assert starts == ["started"]
+    assert context.expected_reply == "fixture reply"
+    assert context.timeout == 45.0
+
+
+def test_failed_browser_after_post_registers_only_owner_sql_runs_before_cleanup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    actions: list[object] = []
+
+    class Owned:
+        def register_agent_keys(self, conversation_id: str, run_id: str) -> None:
+            actions.append((conversation_id, run_id))
+
+        def cleanup(self) -> None:
+            actions.append("cleanup")
+
+        def verify_clean(self) -> None:
+            actions.append("verify_clean")
+
+    def query(_resources: object, _url: str, _sql: str) -> str:
+        actions.append("owner_sql")
+        return json.dumps(
+            [{"conversation_id": "conv_committed", "run_id": "run_committed"}]
+        )
+
+    monkeypatch.setattr(smoke.worker, "_psql", query)
+    smoke._cleanup_browser_resources(Owned(), "postgresql://owned")
+
+    assert actions == [
+        "owner_sql",
+        ("conv_committed", "run_committed"),
+        "cleanup",
+        "verify_clean",
+    ]
+
+
+@pytest.mark.parametrize(
+    "inventory",
+    [
+        "not-json",
+        "{}",
+        '[{"conversation_id":"conv_ok"}]',
+        '[{"conversation_id":1,"run_id":"run_ok"}]',
+    ],
+)
+def test_browser_cleanup_rejects_untrusted_owner_inventory_without_deleting(
+    monkeypatch: pytest.MonkeyPatch, inventory: str
+) -> None:
+    actions: list[str] = []
+
+    class Owned:
+        def register_agent_keys(self, _conversation_id: str, _run_id: str) -> None:
+            actions.append("register")
+
+        def cleanup(self) -> None:
+            actions.append("cleanup")
+
+    monkeypatch.setattr(smoke.worker, "_psql", lambda *_args: inventory)
+    with pytest.raises(smoke.SmokeError, match="cleanup inventory malformed"):
+        smoke._cleanup_browser_resources(Owned(), "postgresql://owned")
+    assert actions == []
+
+
 def test_bounded_chunked_proxy_body_is_normalized() -> None:
     stream = BytesIO(b"4\r\nWiki\r\n5\r\npedia\r\n0\r\n\r\n")
     assert smoke._read_bounded_chunked(stream, max_bytes=9) == b"Wikipedia"

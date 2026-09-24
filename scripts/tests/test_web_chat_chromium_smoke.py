@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from types import SimpleNamespace
+import subprocess
 import socket
 import ssl
 import tempfile
@@ -52,7 +54,7 @@ def test_browser_origin_mode_uses_exact_reserved_port() -> None:
     mode = worker_smoke.BrowserOriginMode(
         tls_port=43123,
         proxy_factory=lambda *_args: None,
-        before_cookiejar=lambda *_args: None,
+        execute_turn=lambda *_args: {},
     )
 
     origin, host = worker_smoke._web_origin("a" * 24, mode)
@@ -68,7 +70,7 @@ def test_browser_proxy_rejects_port_drift() -> None:
     mode = worker_smoke.BrowserOriginMode(
         tls_port=43123,
         proxy_factory=lambda *_args: WrongProxy(),
-        before_cookiejar=lambda *_args: None,
+        execute_turn=lambda *_args: {},
     )
 
     with pytest.raises(worker_smoke.SmokeError, match="TLS port"):
@@ -90,7 +92,7 @@ def test_browser_mode_changes_only_test_owned_next_external_port(tmp_path) -> No
     mode = worker_smoke.BrowserOriginMode(
         tls_port=43123,
         proxy_factory=lambda *_args: None,
-        before_cookiejar=lambda *_args: None,
+        execute_turn=lambda *_args: {},
     )
 
     worker_smoke._configure_next_browser_port(tmp_path, mode)
@@ -274,3 +276,71 @@ def test_chromium_driver_submits_real_iam_forms_without_argv_credentials() -> No
     assert 'url.pathname === "/app"' in source
     assert 'fetch("/api/auth/session"' in source
     assert "context.cookies(input.web_origin)" in source
+
+
+def test_chromium_driver_submits_dom_composer_and_checks_durable_reload() -> None:
+    source = (ROOT / "scripts/e2e/web_chat_chromium.mjs").read_text()
+    assert 'data-slot="composer-input"' in source
+    assert 'data-composer-action="send"' in source
+    assert "response.status() === 202" in source
+    assert 'data-slot="user-message-body"' in source
+    assert 'data-slot="markdown-message"' in source
+    assert "await page.reload(" in source
+    assert "event_watermark" in source
+
+
+def test_chromium_assistant_wait_reports_owner_snapshot_and_dom_state() -> None:
+    source = (ROOT / "scripts/e2e/web_chat_chromium.mjs").read_text()
+    assert "Browser assistant DOM did not converge" in source
+    assert "snapshot_status" in source
+    assert "dom_users" in source
+    assert "dom_assistants" in source
+    assert "web_view" in source
+    assert "visible_alerts" in source
+    assert "sse_attempts" in source
+
+
+def test_failure_injection_option_is_scoped_to_browser_runner(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        chromium_smoke.worker_smoke,
+        "parse_args",
+        lambda argv: SimpleNamespace(timeout=120, node22_bin=Path("/fixture/node")),
+    )
+
+    args = chromium_smoke.parse_args(["--fail-after-chat-receipt"])
+
+    assert args.fail_after_chat_receipt is True
+
+
+def test_chromium_timeout_reports_only_last_controlled_stage(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def timed_out(*_args: object, **_kwargs: object) -> None:
+        raise subprocess.TimeoutExpired(
+            ["node", "driver"], 180, stderr=b"MILESTONE:receipt\nsecret=do-not-echo\n"
+        )
+
+    monkeypatch.setattr(chromium_smoke.subprocess, "run", timed_out)
+    milestone = chromium_smoke.ChromiumLoginMilestone(
+        node_bin=Path("/fixture/node"),
+        headed=False,
+        hold_seconds=0,
+        timeout=120,
+        fail_after_chat_receipt=False,
+    )
+    ready = SimpleNamespace(
+        redirect_uri="https://web.example.test:443/api/auth/callback/kokoro-iam",
+        email="user@example.test",
+        password="do-not-echo",
+        tenant_id="tenant_1",
+    )
+    turn = worker_smoke.BrowserTurnContext(
+        start_worker=lambda: None, expected_reply="reply", timeout=120
+    )
+
+    with pytest.raises(chromium_smoke.SmokeError, match="stage=receipt") as error:
+        milestone(443, "https://web.example.test:443", ready, tmp_path, turn)
+
+    assert "do-not-echo" not in str(error.value)

@@ -42,7 +42,7 @@ BFF = worker.BFF
 IAM = product.IAM
 AGENT = worker.AGENT
 EXPECTED_RELEASES = {
-    "kokoro-app": "9794a286df9a098a095e06eb60a5123bb7631b85",
+    "kokoro-app": "067d7eabb404d80a88ff47c7fc0220b4a43bfcd1",
     "kokoro-bff": "84a560abeac5b7a63f32d7064abdde849ab33cf9",
     "kokoro-iam": "b35a9a5301219654ea344c03407fd355f58c481e",
     "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
@@ -59,14 +59,28 @@ BrowserProxyFactory = Callable[
     [int, str, str, tuple[Path, Path]],
     WebProxy,
 ]
-BeforeCookieJar = Callable[[int, str, product.previous.Ready, Path], None]
+
+
+@dataclass(frozen=True, slots=True)
+class BrowserTurnContext:
+    """Run-owned capabilities exposed only to the Chromium E2E callback."""
+
+    start_worker: Callable[[], None]
+    expected_reply: str
+    timeout: float
+
+
+BrowserTurn = Callable[
+    [int, str, product.previous.Ready, Path, BrowserTurnContext],
+    dict[str, object],
+]
 
 
 @dataclass(frozen=True, slots=True)
 class BrowserOriginMode:
     tls_port: int
     proxy_factory: BrowserProxyFactory
-    before_cookiejar: BeforeCookieJar
+    execute_turn: BrowserTurn
 
 
 def _web_origin(run_id: str, browser_mode: BrowserOriginMode | None) -> tuple[str, str]:
@@ -505,6 +519,35 @@ def _cleanup_bff_agent_resources(resources: worker.OwnedResources) -> None:
     resources.verify_clean()
 
 
+def _cleanup_browser_resources(
+    resources: worker.OwnedResources, database_url: str
+) -> None:
+    """Recover run ownership from this run's BFF SQL after all writers stop."""
+
+    raw = worker._psql(
+        resources,
+        database_url,
+        "SELECT coalesce(json_agg(json_build_object("
+        "'conversation_id',conversation_id,'run_id',run_id)), '[]'::json)::text "
+        "FROM kokoro_bff.bff_agent_dispatch_outbox",
+    )
+    try:
+        runs = json.loads(raw)
+    except json.JSONDecodeError:
+        raise SmokeError("owned BFF run cleanup inventory malformed") from None
+    if not isinstance(runs, list) or any(
+        not isinstance(item, dict)
+        or set(item) != {"conversation_id", "run_id"}
+        or not isinstance(item["conversation_id"], str)
+        or not isinstance(item["run_id"], str)
+        for item in runs
+    ):
+        raise SmokeError("owned BFF run cleanup inventory malformed")
+    for item in runs:
+        resources.register_agent_keys(item["conversation_id"], item["run_id"])
+    _cleanup_bff_agent_resources(resources)
+
+
 def run_smoke(
     args: argparse.Namespace,
     *,
@@ -565,6 +608,8 @@ def run_smoke(
     stage = "preflight"
     observation: worker.FixtureObservation | None = None
     chat_result: dict[str, object] = {}
+    database_url: str | None = None
+    bff_schema_installed = False
     cleanup_failures: list[str] = []
     primary_error: BaseException | None = None
 
@@ -632,6 +677,7 @@ def run_smoke(
                     != 0
                 ):
                     raise SmokeError("BFF schema installation failed")
+                bff_schema_installed = True
                 common_agent_env = {
                     **agent_env,
                     "KOKORO_REDIS_URL": args.agent_redis_url,
@@ -852,7 +898,12 @@ def run_smoke(
                             + json.dumps(origin_readback, sort_keys=True)
                         )
 
+                    agent_worker_started = False
+
                     def start_agent_worker() -> None:
+                        nonlocal agent_worker_started
+                        if agent_worker_started:
+                            return
                         agent_http = worker._start_process(
                             [str(args.uv_bin), "run", "kokoro-agent-http"],
                             cwd=AGENT,
@@ -868,6 +919,7 @@ def run_smoke(
                             log=log,
                         )
                         processes.append(agent_worker)
+                        agent_worker_started = True
 
                     action = AuthenticatedChatAction(
                         resources=resources,
@@ -882,24 +934,50 @@ def run_smoke(
                         timeout=args.timeout,
                     )
                     if browser_mode is not None:
-                        stage = "real Chromium login milestone"
-                        browser_mode.before_cookiejar(
+                        stage = "real Chromium Product Chat turn"
+                        browser_result = browser_mode.execute_turn(
                             web_proxy.server_port,
                             web_origin,
                             ready,
                             temporary_path,
+                            BrowserTurnContext(
+                                start_worker=start_agent_worker,
+                                expected_reply=reply,
+                                timeout=args.timeout,
+                            ),
                         )
-                    stage = "real IAM Product Session and Web worker turn"
-                    product.run_browser(
-                        web_proxy.server_port,
-                        web_origin,
-                        ready,
-                        bff_proxy.observed,
-                        credentials,
-                        authenticated_action=action,
-                        preconsented=browser_mode is not None,
-                    )
-                    chat_result = action.result
+                        conversation_id = browser_result.get("conversation_id")
+                        run_id = browser_result.get("run_id")
+                        if not isinstance(conversation_id, str) or not isinstance(
+                            run_id, str
+                        ):
+                            raise SmokeError("Chromium chat identity evidence missing")
+                        sql_evidence = worker._final_sql_evidence(
+                            resources, database_url, conversation_id, run_id
+                        )
+                        if (
+                            sql_evidence.get("bff_outbox_status") != "succeeded"
+                            or sql_evidence.get("bff_assistant_status") != "completed"
+                            or sql_evidence.get("agent_terminal") is not True
+                            or sql_evidence.get("agent_dispatch_status") != "claimed"
+                            or sql_evidence.get("agent_completed_assistants") != 1
+                        ):
+                            raise SmokeError(
+                                "Chromium worker durable SQL evidence drift"
+                            )
+                        chat_result = {**browser_result, "sql_evidence": sql_evidence}
+                    else:
+                        stage = "real IAM Product Session and Web worker turn"
+                        product.run_browser(
+                            web_proxy.server_port,
+                            web_origin,
+                            ready,
+                            bff_proxy.observed,
+                            credentials,
+                            authenticated_action=action,
+                            preconsented=False,
+                        )
+                        chat_result = action.result
                     if not chat_result:
                         raise SmokeError("authenticated Web chat action did not run")
                     if (
@@ -964,12 +1042,20 @@ def run_smoke(
                             ),
                         )
                     )
-                data_cleanups.append(
-                    (
-                        "BFF/Agent resource cleanup",
-                        lambda: _cleanup_bff_agent_resources(resources),
+                if browser_mode is not None and bff_schema_installed and database_url:
+                    data_cleanups.append(
+                        (
+                            "BFF/Agent browser resource cleanup",
+                            lambda: _cleanup_browser_resources(resources, database_url),
+                        )
                     )
-                )
+                else:
+                    data_cleanups.append(
+                        (
+                            "BFF/Agent resource cleanup",
+                            lambda: _cleanup_bff_agent_resources(resources),
+                        )
+                    )
                 cleanup_failures.extend(
                     _stop_processes_then_cleanup_data(processes, data_cleanups)
                 )

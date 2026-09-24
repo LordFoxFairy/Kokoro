@@ -30,6 +30,23 @@ ROOT = worker_smoke.ROOT
 WEB = worker_smoke.WEB
 DRIVER = E2E / "web_chat_chromium.mjs"
 ARTIFACT_ROOT = ROOT / "output" / "playwright" / "r2c-login"
+_BROWSER_STAGES = frozenset({"iam", "app", "receipt", "assistant", "replay", "reload"})
+
+
+def _last_browser_stage(stderr: bytes | str | None) -> str:
+    if not isinstance(stderr, (bytes, str)):
+        return "unknown"
+    output = (
+        stderr.decode("utf-8", errors="replace")
+        if isinstance(stderr, bytes)
+        else stderr
+    )
+    stages = [
+        line.removeprefix("MILESTONE:")
+        for line in output.splitlines()
+        if line.startswith("MILESTONE:")
+    ]
+    return stages[-1] if stages and stages[-1] in _BROWSER_STAGES else "unknown"
 
 
 @dataclass(slots=True)
@@ -124,6 +141,7 @@ class ChromiumLoginMilestone:
     headed: bool
     hold_seconds: float
     timeout: float
+    fail_after_chat_receipt: bool = False
     result: dict[str, object] | None = None
 
     def __call__(
@@ -132,7 +150,8 @@ class ChromiumLoginMilestone:
         web_origin: str,
         ready: worker_smoke.product.previous.Ready,
         _temporary_path: Path,
-    ) -> None:
+        turn: worker_smoke.BrowserTurnContext,
+    ) -> dict[str, object]:
         parsed = urlsplit(web_origin)
         if (
             parsed.scheme != "https"
@@ -148,6 +167,7 @@ class ChromiumLoginMilestone:
             str(self.node_bin),
             str(DRIVER),
         ]
+        turn.start_worker()
         try:
             completed = subprocess.run(
                 command,
@@ -164,13 +184,22 @@ class ChromiumLoginMilestone:
                         "email": ready.email,
                         "password": ready.password,
                         "tenant_id": ready.tenant_id,
+                        "chat_content": "Run the deterministic Web worker smoke.",
+                        "expected_reply": turn.expected_reply,
+                        "chat_timeout_ms": int(turn.timeout * 1000),
+                        "fail_after_chat_receipt": self.fail_after_chat_receipt,
                     },
                     separators=(",", ":"),
                 ),
                 capture_output=True,
-                timeout=self.timeout,
+                # The driver's chat timeout starts only after IAM navigation.
+                timeout=self.timeout + 60,
                 check=False,
             )
+        except subprocess.TimeoutExpired as error:
+            raise SmokeError(
+                f"Chromium milestone timed out; stage={_last_browser_stage(error.stderr)}"
+            ) from None
         except (OSError, subprocess.SubprocessError):
             raise SmokeError("Chromium milestone process failed") from None
         if completed.returncode != 0:
@@ -197,6 +226,15 @@ class ChromiumLoginMilestone:
             "app_page",
             "product_session",
             "app_screenshot",
+            "conversation_id",
+            "run_id",
+            "message_post_status",
+            "agui_first_status",
+            "agui_frame_types",
+            "event_watermark",
+            "reload_user_count",
+            "reload_assistant_count",
+            "reload_reply_visible",
         }
         if (
             not isinstance(result, dict)
@@ -218,21 +256,45 @@ class ChromiumLoginMilestone:
             or result.get("app_screenshot") != str(app_screenshot)
             or not app_screenshot.is_file()
             or app_screenshot.stat().st_size == 0
+            or not isinstance(result.get("conversation_id"), str)
+            or not result["conversation_id"].startswith("conv_")
+            or not isinstance(result.get("run_id"), str)
+            or not result["run_id"]
+            or result.get("message_post_status") != 202
+            or result.get("agui_first_status") != 200
+            or not isinstance(result.get("agui_frame_types"), list)
+            or "RUN_STARTED" not in result["agui_frame_types"]
+            or "RUN_FINISHED" not in result["agui_frame_types"]
+            or not isinstance(result.get("event_watermark"), str)
+            or not result["event_watermark"]
+            or result.get("reload_user_count") != 1
+            or result.get("reload_assistant_count") != 1
+            or result.get("reload_reply_visible") is not True
         ):
             raise SmokeError("Chromium milestone evidence drift")
         self.result = result
+        return {
+            "conversation_id": result["conversation_id"],
+            "run_id": result["run_id"],
+            "event_watermark": result["event_watermark"],
+            "agui_frame_types": result["agui_frame_types"],
+            "reload_user_count": result["reload_user_count"],
+            "reload_assistant_count": result["reload_assistant_count"],
+        }
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     browser_parser = argparse.ArgumentParser(add_help=False)
     browser_parser.add_argument("--headed", action="store_true")
     browser_parser.add_argument("--hold-seconds", type=float, default=0)
+    browser_parser.add_argument("--fail-after-chat-receipt", action="store_true")
     browser_args, worker_argv = browser_parser.parse_known_args(argv)
     args = worker_smoke.parse_args(worker_argv)
     if not 0 <= browser_args.hold_seconds <= args.timeout:
         browser_parser.error("hold-seconds must be bounded by timeout")
     args.headed = browser_args.headed
     args.hold_seconds = browser_args.hold_seconds
+    args.fail_after_chat_receipt = browser_args.fail_after_chat_receipt
     return args
 
 
@@ -242,6 +304,7 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
         headed=args.headed,
         hold_seconds=args.hold_seconds,
         timeout=args.timeout,
+        fail_after_chat_receipt=args.fail_after_chat_receipt,
     )
     with OwnedTlsReservation.reserve() as reservation:
         mode = worker_smoke.BrowserOriginMode(
@@ -251,14 +314,14 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
                     reservation, upstream, host, authority, certificate
                 )
             ),
-            before_cookiejar=milestone,
+            execute_turn=milestone,
         )
         base = worker_smoke.run_smoke(args, browser_mode=mode)
     if milestone.result is None:
         raise SmokeError("Chromium login milestone did not run")
     return {
         **base,
-        "browser_boundary": "real Chromium login milestone; CookieJar post-check",
+        "browser_boundary": "same Chromium Context login, DOM message, AG-UI and reload",
         "chromium": milestone.result,
     }
 
