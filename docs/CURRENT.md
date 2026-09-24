@@ -47,7 +47,7 @@
   邮箱/密码表单；同一 Chromium 原生提交凭据、选择 tenant、确认 consent，取得 Product Session
   HttpOnly/Secure/Lax cookie 与同源 session projection 并进入 `/app`。随后独立 Python CookieJar
   完成 Web/BFF/Agent worker 首消息与持久回归；自有 PostgreSQL/Redis/进程剩余0。后续 Web 文档提交
-  `9794a286` 不改运行代码，Root 来源已重钉，须在当前 SHA 复跑同一组合。
+  `9794a286` 不改运行代码，Root 来源已重钉，并在该精确 SHA 复跑同一组合 `status=PASS`、资源剩余0。
   Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行。3310 仍仅运行 Web，
   没有常驻 RP/IAM/BFF，不能将隔离测试当作用户当前 HTTP 页面已登录。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
