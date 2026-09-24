@@ -84,6 +84,19 @@
 
 本操作是受信当前身份投影而非公开团队目录；权限与缓存语义需沿 BFF 既有 Product API 一致实现。
 
+### W1C-FIXED-TENANT-WEB-D：无选择页固定租户登录与 RP 准入（待派工）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | Web `74319fac` main/clean；`/login` 已无可见中转，但 3310 Web-only 因缺正式 RP/BFF/IAM 配置仍 503/body0。`/auth/select-tenant` 外层 302→`/iam/interactions/select-tenant` 内层（issuer cookie Path=/iam），内层仍 list/dropdown/POST 浏览器选择。RP callback/refresh 目前未核 BFF fixed tenant。Team 另有可见 switcher 与 `/api/team/switch`。 |
+| 目标职责 | Web 使用 server-only 固定 `KOKORO_TENANT_ID`；`/login` 缺配置 fail closed，真实 IAM sign-in 保留；signed tenant 交互内层只用受信配置在服务端续接，不渲染选择/重试页或接受浏览器 tenant；code callback 创建 Product Session 前与 refresh finalize 前调用 BFF owner 新 `GET /v1/me`，核已验证 tenant 与 OIDC subject，错配不签发有效 session。删除 Team 可见切换器和 legacy switch mutation。 |
+| 目录方案 / 粒度 | 复用现有 `src/app/auth/select-tenant` 外层 302 和 `src/app/iam/interactions/select-tenant` 内层、RP/product-session/server adapter/Team UI 原位置（采用）；不建第二登录 SPA/通用 proxy/额外身份 store（淘汰）。BFF `/v1/me` 由 owner OpenAPI 固定版本与 digest 驱动生成消费，Web adapter 终止 wire 类型；不直接读取 IAM/BFF DB。 |
+| 依赖 | BFF-B `74ec30b` policy 2.0.0 删除 list、窄 set-active 已发布；先等 IAM-C 第一方 client 续接和 BFF-C `/v1/me` contract commit，再冻结 Web consumer。独立的 Team switcher/route 删除可先做；同仓仍唯一 writer。Web 与 BFF/IAM 配置不一致、已有第二 Tenant active、无 membership/disabled、恶意签名/重放、refresh tenant 变化须 fail closed 且无 Product Session。 |
+| 数据/API / 删除 | Web 无数据库 owner；Product Session Redis record 不新增 tenant 事实副本，Web 只保存已验证 token/session，BFF 每次普通 Product admission 重验。删除 `/iam/organization/list` Web browser GET policy/生成快照消费、旧 tenant selector/POST/CSRF、`/api/team/switch` 与可见 switcher；旧 Team context/写读整体替换属后续 Team consumer 卡，不能让遗留切换途径可达。无兼容/备用按钮/整页重试。 |
+| 验证 | Web Node22 contract/architecture/lint/full unit；真 Next HTTP + Chromium 对直接 list/set-active/旧 switch、无页面续接/登录表单/配置缺失、code/refresh 错配/私有性负例；typegen/build 在**独立安装 node_modules 的隔离副本**执行，不修改用户 3310 `.next`/进程。Root 固定 IAM/BFF/Web SHA 真 SMTP→OAuth→Product/Team 与资源0，普通 IAB 3310 是否实际可登录单独验收。 |
+
+前置 owner contract 未发布前，Web writer 只可完成三设计文档与独立 Team switcher/route 删除，不提前编造 `/v1/me` wire 或重写 tenant 续接。
+
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
 ## 1. 总目标与权威入口
