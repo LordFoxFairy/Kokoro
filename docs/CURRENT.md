@@ -31,7 +31,7 @@ Web 正式路径是 `apps/kokoro-app`，不是 `apps/kokoro/`。当前正式能�
 
 `verification/contracts/consumer-inventory.json` 固定 owner/consumer commit blob；Root `594358ba…` 首次同步 Web/BFF/IAM **149 处来源 tuple**，`0c829a0…` 跟进 Web HTTPS cookie pin，`a59bc736…` 已同步 Web **9**、BFF **137** 处来源 tuple 与 BFF `docs/API_CONTRACT.md` 新digest。不改变 16 条 edge 语义，现有状态仍为 **5 active / 11 broken / 1 illegal**；Web→IAM 旧直连仍是非法边，Web→BFF Product generated edge 尚未激活。checkpoint、policy、topology均PASS；compatibility按上述未闭环状态仍exit1。真HTTPS S1会话链已PASS，不外推为S2/Team/聊天整体闭环。
 
-当前三仓固定pin的Root relay policy、w1b-iam checkpoint、topology均PASS；`scripts/tests` **597 passed / 108 subtests**，真HTTPS Product Session流程PASS且自有资源0。此证据不同于历史`519d5a9…`的RP-only **14/14**（成功回调仍受控503）和OIDC→BFF **15/15**，也不覆盖普通Product Bearer。最终runner/台账工作树修订待提交推送；提交后仍须复核main-only。本轮全仓compatibility继续 **5 active/11 broken/1 illegal**（exit1）；静态治理此前9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
+当前三仓固定pin的Root relay policy、w1b-iam checkpoint、topology均PASS；`scripts/tests` **597 passed / 108 subtests**，真HTTPS Product Session流程PASS且自有资源0。此证据不同于历史`519d5a9…`的RP-only **14/14**（成功回调仍受控503）和OIDC→BFF **15/15**，也不覆盖普通Product Bearer。最终runner/台账已随Root `86f2f0dd…` 提交推送main，发布后main-only确认Root+11子仓仅main、远端一致、全clean。本轮全仓compatibility继续 **5 active/11 broken/1 illegal**（exit1）；静态治理此前9仓 **130 violations / 0 unverified**（exit1），不因局部绿色测试而降级门禁。
 
 ## 下一条代码关键路径
 
