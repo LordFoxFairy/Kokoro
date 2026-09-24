@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `9794a286df9a098a095e06eb60a5123bb7631b85` |
+| `apps/kokoro-app` | `f8650fc00c192a8e0bbd2ce8392e082defc8eeda` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
@@ -27,10 +27,10 @@
 
 ## 已验证到的边界
 
-- Web `/` 是固定单租户公开首页；`/login` 已删除可见连接中/整页重试组件，服务端启动固定 Product OIDC，
+- Web `/` 是固定单租户公开首页；`/login` 已删除可见连接中/整页重试组件以及失败时共用的假登录页面，服务端启动固定 Product OIDC，
   成功后浏览器直接进入真正的 IAM `/auth/sign-in` 邮箱/密码表单；不依赖 System manifest。
   `/app` 只以 Product Session 作认证闸。仅 Web dev 在 3310 运行时，缺少常驻 BFF/IAM/RP 配置，
-  `/login` 返回 HTTP 503，不是在线登录入口；没有后端不伪造可提交的凭据表单。
+  `/login` 返回空 body 的 HTTP 503，不是在线登录入口；没有后端不伪造可提交的凭据表单。
 - 固定上述 IAM/BFF/Web 提交运行的独占真实 HTTPS Product Session smoke 已通过：Web 同源入口、
   BFF/IAM 协议链、在线会话、Chat 列表 Bearer 代理与退出，测试自有资源剩余 0。这不是 3310 常驻
   服务的证明，也不覆盖首条消息、Agent worker、Web 重载或真实模型 provider。
