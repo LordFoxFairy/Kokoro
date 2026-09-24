@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `5192ff085d95a8bd4904915ee21a23b75f37325b` |
-| `apps/kokoro-bff` | `a50f987d73aef6efeccde29e1c5ee6d5f4a13419` |
+| `apps/kokoro-app` | `0f5aec47c2bb8a06d974cc1e1ff27d8908cd473e` |
+| `apps/kokoro-bff` | `7a7f3adfaec7d1bcee3b2079304a6129c0591d06` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `c16a9bcddd19211eb1e9705c392f4e5cf96f494e` |
+| `apps/kokoro-iam` | `093b76513a9aa71611c65d4f210e279d3227e002` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
