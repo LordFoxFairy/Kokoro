@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `f8650fc00c192a8e0bbd2ce8392e082defc8eeda` |
+| `apps/kokoro-app` | `067d7eabb404d80a88ff47c7fc0220b4a43bfcd1` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
@@ -50,6 +50,7 @@
   `9794a286` 不改运行代码，Root 来源已重钉，并在该精确 SHA 复跑同一组合 `status=PASS`、资源剩余0。
   Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行。3310 仍仅运行 Web，
   没有常驻 RP/IAM/BFF，不能将隔离测试当作用户当前 HTTP 页面已登录。
+- Web `067d7ea` 已修正真实 BFF AG-UI 终帧/工具错误字段的严格解析，并只对 Chat events SSE 采用首部连接 deadline + 可续空闲 deadline；Web 当前 Node22 单仓 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS，独立只读审查0 P0/P1/P2。Root 真 Chromium Assistant DOM/断线恢复尚待此精确 SHA 复验，不能把单仓门禁记作浏览器闭环。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。
