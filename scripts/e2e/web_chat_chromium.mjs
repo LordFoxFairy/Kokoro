@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { createRequire } from "node:module"
+import { readFileSync } from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import { pathToFileURL } from "node:url"
@@ -11,15 +12,15 @@ const fail = (message) => {
 }
 
 const parseInput = () => {
-  if (process.argv.length !== 3) throw new Error("expected one JSON input")
-  const value = JSON.parse(process.argv[2])
-  const fields = ["web_origin", "web_host", "web_root", "screenshot", "headed", "hold_seconds"]
+  if (process.argv.length !== 2) throw new Error("expected stdin JSON input")
+  const value = JSON.parse(readFileSync(0, "utf8"))
+  const fields = ["web_origin", "web_host", "web_root", "screenshot", "headed", "hold_seconds", "email", "password", "tenant_id"]
   if (
     value === null ||
     typeof value !== "object" ||
     Array.isArray(value) ||
     Object.keys(value).sort().join(",") !== [...fields].sort().join(",") ||
-    !fields.slice(0, 4).every((field) => typeof value[field] === "string" && value[field] !== "") ||
+    ![...fields.slice(0, 4), ...fields.slice(6)].every((field) => typeof value[field] === "string" && value[field] !== "") ||
     typeof value.headed !== "boolean" ||
     typeof value.hold_seconds !== "number" ||
     value.hold_seconds < 0
@@ -111,6 +112,52 @@ try {
     throw new Error("IAM credential fields were not empty")
   }
   await page.screenshot({ path: input.screenshot, fullPage: true })
+  await email.fill(input.email)
+  await password.fill(input.password)
+  await page.getByRole("button", { name: "Sign in", exact: true }).click()
+  await page.getByRole("heading", { name: "Select tenant", exact: true }).waitFor({ state: "visible" })
+  if (new URL(page.url()).pathname !== "/iam/interactions/select-tenant") {
+    throw new Error("IAM tenant form path drift")
+  }
+  await page.locator('select[name="organization_id"]').selectOption(input.tenant_id)
+  await page.getByRole("button", { name: "Continue", exact: true }).click()
+  await page.getByRole("heading", { name: "Review requested access", exact: true }).waitFor({ state: "visible" })
+  if (new URL(page.url()).pathname !== "/iam/interactions/consent") {
+    throw new Error("IAM consent form path drift")
+  }
+  await page.getByRole("button", { name: "Agree and continue", exact: true }).click()
+  await page.waitForURL(
+    (url) => url.origin === input.web_origin && url.pathname === "/app",
+    { waitUntil: "domcontentloaded", timeout: 12000 },
+  )
+  const projection = await page.evaluate(async () => {
+    const response = await fetch("/api/auth/session", { credentials: "same-origin", cache: "no-store" })
+    return { status: response.status, cacheControl: response.headers.get("cache-control"), body: await response.json() }
+  })
+  if (
+    projection.status !== 200 ||
+    !projection.cacheControl?.includes("no-store") ||
+    projection.body?.authenticated !== true ||
+    Object.keys(projection.body).sort().join(",") !== "authenticated,expires_at,subject" ||
+    typeof projection.body.subject !== "string" ||
+    projection.body.subject.length === 0 ||
+    !Number.isInteger(projection.body.expires_at) ||
+    projection.body.expires_at <= Date.now()
+  ) {
+    throw new Error("Browser Product Session projection invalid")
+  }
+  const productCookies = (await context.cookies(input.web_origin)).filter((cookie) => cookie.name === "kokoro_product_session")
+  if (
+    productCookies.length !== 1 ||
+    productCookies[0].path !== "/" ||
+    productCookies[0].httpOnly !== true ||
+    productCookies[0].secure !== true ||
+    productCookies[0].sameSite !== "Lax"
+  ) {
+    throw new Error("Browser Product Session cookie invalid")
+  }
+  const appScreenshot = path.join(path.dirname(input.screenshot), `app-${input.web_host}.png`)
+  await page.screenshot({ path: appScreenshot, fullPage: true })
   if (input.hold_seconds > 0) await page.waitForTimeout(input.hold_seconds * 1000)
   process.stdout.write(
     JSON.stringify({
@@ -122,6 +169,11 @@ try {
       screenshot: input.screenshot,
       csrf_requests: csrfRequests,
       signin_requests: signInRequests,
+      tenant_form: true,
+      consent_form: true,
+      app_page: true,
+      product_session: true,
+      app_screenshot: appScreenshot,
     }),
   )
   await context.close()

@@ -523,6 +523,8 @@ def run_browser(
     observed: list[tuple[str, str]],
     credentials: previous.CredentialRegistry,
     authenticated_action: AuthenticatedAction | None = None,
+    *,
+    preconsented: bool = False,
 ) -> None:
     jar = BrowserCookies(credentials.add)
 
@@ -688,26 +690,29 @@ def run_browser(
             f"IAM tenant continuation: HTTP {tenant.status}, expected redirect"
         )
     path = navigate(tenant.location(), "consent navigation")
-    if not path.startswith("/auth/consent?"):
-        raise SmokeError("IAM consent interaction missing")
-    outer_consent = request(path)
-    require_status(outer_consent, 302, "consent outer redirect")
-    path = navigate(outer_consent.location(), "consent page")
-    consent_page = request(path)
-    consent_action = "/iam/interactions/consent?" + urlsplit(path).query
-    consent_form = form_inputs(consent_page, consent_action)
-    credentials.add(consent_form.hidden["csrf_token"])
-    consent = request(
-        consent_form.action,
-        method="POST",
-        form={"csrf_token": consent_form.hidden["csrf_token"], "decision": "agree"},
-        origin=web_origin,
-    )
-    if consent.status not in (302, 303):
-        raise SmokeError(
-            f"IAM consent continuation: HTTP {consent.status}, code {safe_error_code(consent)}, expected redirect"
+    if preconsented:
+        callback_path = path
+    else:
+        if not path.startswith("/auth/consent?"):
+            raise SmokeError("IAM consent interaction missing: " + urlsplit(path).path)
+        outer_consent = request(path)
+        require_status(outer_consent, 302, "consent outer redirect")
+        path = navigate(outer_consent.location(), "consent page")
+        consent_page = request(path)
+        consent_action = "/iam/interactions/consent?" + urlsplit(path).query
+        consent_form = form_inputs(consent_page, consent_action)
+        credentials.add(consent_form.hidden["csrf_token"])
+        consent = request(
+            consent_form.action,
+            method="POST",
+            form={"csrf_token": consent_form.hidden["csrf_token"], "decision": "agree"},
+            origin=web_origin,
         )
-    callback_path = navigate(consent.location(), "RP callback")
+        if consent.status not in (302, 303):
+            raise SmokeError(
+                f"IAM consent continuation: HTTP {consent.status}, code {safe_error_code(consent)}, expected redirect"
+            )
+        callback_path = navigate(consent.location(), "RP callback")
     if not callback_path.startswith("/api/auth/callback/kokoro-iam?"):
         raise SmokeError("RP callback path invalid")
     callback_query = single_query_values(callback_path, {"code", "state", "iss"})

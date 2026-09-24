@@ -896,6 +896,7 @@ def run_smoke(
                         bff_proxy.observed,
                         credentials,
                         authenticated_action=action,
+                        preconsented=browser_mode is not None,
                     )
                     chat_result = action.result
                     if not chat_result:

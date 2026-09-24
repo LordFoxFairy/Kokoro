@@ -182,8 +182,22 @@ def test_chromium_driver_does_not_mock_authentication_or_network() -> None:
         "route.fulfill",
         "storageState",
         "document.cookie",
-        "page.evaluate",
     ):
         assert forbidden not in source
     assert "--host-resolver-rules=" in source
     assert "ignoreHTTPSErrors: true" in source
+
+
+def test_chromium_driver_submits_real_iam_forms_without_argv_credentials() -> None:
+    source = (ROOT / "scripts/e2e/web_chat_chromium.mjs").read_text()
+    runner = (ROOT / "scripts/e2e/run_web_chat_chromium_smoke.py").read_text()
+
+    assert 'readFileSync(0, "utf8")' in source
+    assert "input=json.dumps(" in runner
+    assert "email.fill(input.email)" in source
+    assert "password.fill(input.password)" in source
+    assert "selectOption(input.tenant_id)" in source
+    assert 'name: "Agree and continue"' in source
+    assert 'url.pathname === "/app"' in source
+    assert 'fetch("/api/auth/session"' in source
+    assert "context.cookies(input.web_origin)" in source

@@ -142,26 +142,30 @@ class ChromiumLoginMilestone:
             raise SmokeError("Chromium Web/IAM origin drift")
         ARTIFACT_ROOT.mkdir(parents=True, exist_ok=True)
         screenshot = ARTIFACT_ROOT / f"iam-login-{parsed.hostname}.png"
+        app_screenshot = ARTIFACT_ROOT / f"app-{parsed.hostname}.png"
         command = [
             str(self.node_bin),
             str(DRIVER),
-            json.dumps(
-                {
-                    "web_origin": web_origin,
-                    "web_host": parsed.hostname,
-                    "web_root": str(WEB),
-                    "screenshot": str(screenshot),
-                    "headed": self.headed,
-                    "hold_seconds": self.hold_seconds,
-                },
-                separators=(",", ":"),
-            ),
         ]
         try:
             completed = subprocess.run(
                 command,
                 cwd=ROOT,
                 text=True,
+                input=json.dumps(
+                    {
+                        "web_origin": web_origin,
+                        "web_host": parsed.hostname,
+                        "web_root": str(WEB),
+                        "screenshot": str(screenshot),
+                        "headed": self.headed,
+                        "hold_seconds": self.hold_seconds,
+                        "email": ready.email,
+                        "password": ready.password,
+                        "tenant_id": ready.tenant_id,
+                    },
+                    separators=(",", ":"),
+                ),
                 capture_output=True,
                 timeout=self.timeout,
                 check=False,
@@ -187,6 +191,11 @@ class ChromiumLoginMilestone:
             "screenshot",
             "csrf_requests",
             "signin_requests",
+            "tenant_form",
+            "consent_form",
+            "app_page",
+            "product_session",
+            "app_screenshot",
         }
         if (
             not isinstance(result, dict)
@@ -198,9 +207,16 @@ class ChromiumLoginMilestone:
             or result.get("password_field") is not True
             or result.get("csrf_requests") != 1
             or result.get("signin_requests") != 1
+            or result.get("tenant_form") is not True
+            or result.get("consent_form") is not True
+            or result.get("app_page") is not True
+            or result.get("product_session") is not True
             or result.get("screenshot") != str(screenshot)
             or not screenshot.is_file()
             or screenshot.stat().st_size == 0
+            or result.get("app_screenshot") != str(app_screenshot)
+            or not app_screenshot.is_file()
+            or app_screenshot.stat().st_size == 0
         ):
             raise SmokeError("Chromium milestone evidence drift")
         self.result = result
