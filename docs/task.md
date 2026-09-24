@@ -289,3 +289,5 @@ W1B-3E放置门：Root是跨仓依赖清单、checkpoint与当前组合文档own
 W1D-B3 状态：BFF `9b8c7af6383541cf8ffcaa66c8cffdddaeae9864` 已发布 main；Root 修复独立审查指出的 `source_index`/负例后复验 Node22 静态门、标准测试267通过/1跳过、真实隔离PG+Redis integration 42/42。BFF owner切片已验收；固定SHA真Agent worker组合仍待执行。Root将此 SHA 与Web登录入口一起pin。
 
 W1D-Web-Login-Entry 状态：Web `5e3b27af4ddfd1a1cd37287e702ea51d271298f4` 已发布 main；Root先补5项RED，再修取消/浏览器POST失败/失败态，聚焦20/20，完整 `pnpm check` contract54、architecture32、unit1396、lint/typecheck/build通过，Playwright桌面+移动13通过/1既有skip。固定SHA真HTTPS登录组合、3310实测与Root pin放行仍待后续验收。
+
+W1D-Web-Login-Entry / B3 Root集成：Root `ded9efd5ce87f795529e4191204197575d05a02d` 已pin Web/BFF，真实独占HTTPS Product Session smoke与 Root 603/130、checkpoint/topology/policy均通过。旧runner对浏览器错误状态的断言已按固定303重试页修正；3310仅Web进程，在线联调仍为后续开发切片，不将隔离smoke冒充常驻服务。下一优先级仍是真Web首消息→BFF→Agent worker→durable assistant reload的固定SHA组合，支付后置。

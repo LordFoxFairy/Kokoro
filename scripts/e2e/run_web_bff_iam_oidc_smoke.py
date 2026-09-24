@@ -803,16 +803,15 @@ def run_browser(
         403,
         "foreign Origin",
     )
-    require_status(
-        request(
-            "/api/auth/signin/kokoro-iam",
-            method="POST",
-            form={"csrfToken": "wrong"},
-            origin=web_origin,
-        ),
-        403,
-        "wrong RP CSRF",
+    wrong_csrf = request(
+        "/api/auth/signin/kokoro-iam",
+        method="POST",
+        form={"csrfToken": "wrong"},
+        origin=web_origin,
     )
+    require_status(wrong_csrf, 303, "wrong RP CSRF")
+    if wrong_csrf.location() != "/login?auth=sign_in_failed":
+        raise SmokeError("wrong RP CSRF: retry target invalid")
     signin = request(
         "/api/auth/signin/kokoro-iam",
         method="POST",
