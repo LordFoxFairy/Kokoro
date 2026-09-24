@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from http.server import ThreadingHTTPServer
 from io import BytesIO
 import json
@@ -44,7 +44,7 @@ AGENT = worker.AGENT
 EXPECTED_RELEASES = {
     "kokoro-app": "9e2eb7385ccd18f7fc0a139702d388c4f2fb6825",
     "kokoro-bff": "84a560abeac5b7a63f32d7064abdde849ab33cf9",
-    "kokoro-iam": "b35a9a5301219654ea344c03407fd355f58c481e",
+    "kokoro-iam": "e36da9ecf8d62a364182949817431a8e2329d50a",
     "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
 }
 
@@ -81,6 +81,14 @@ class BrowserOriginMode:
     tls_port: int
     proxy_factory: BrowserProxyFactory
     execute_turn: BrowserTurn
+
+
+def _privacy_browser_boundary(browser_mode: BrowserOriginMode | None) -> str:
+    if browser_mode is None:
+        return "A/B/C: independent Python CookieJar HTTPS Product Sessions"
+    return (
+        "A: Chromium DOM/SSE; B/C: independent Python CookieJar HTTPS Product Sessions"
+    )
 
 
 def _web_origin(run_id: str, browser_mode: BrowserOriginMode | None) -> tuple[str, str]:
@@ -418,6 +426,135 @@ class AuthenticatedChatAction:
         return self.conversation_id
 
 
+@dataclass(slots=True)
+class PrivateActorProbe:
+    actor_name: str
+    user_id: str
+    conversation_id: str
+    run_id: str
+    web_origin: str
+    calls: int = field(default=0, init=False)
+
+    def __call__(self, request: product.AuthenticatedRequest, projection: dict) -> None:
+        if projection.get("subject") != self.user_id:
+            raise SmokeError("private actor Product Session subject drift")
+        self.calls += 1
+        base = f"/api/session/sessions/{self.conversation_id}"
+        listing = product.require_product_chat_list(
+            request("/api/session/sessions?limit=1")
+        )
+        if listing["sessions"] or listing["next_cursor"] is not None:
+            raise SmokeError("private actor discovered another conversation")
+        for path, options, label in (
+            (base, {}, "snapshot"),
+            (f"{base}/messages?limit=1", {}, "messages"),
+            (f"{base}/events", {"accept": "text/event-stream"}, "events"),
+            (
+                f"{base}/messages",
+                {
+                    "method": "POST",
+                    "json_body": {
+                        "content": "Foreign actor must not mutate this conversation."
+                    },
+                    "origin": self.web_origin,
+                    "idempotency_key": f"privacy:{self.actor_name}:{self.conversation_id}",
+                },
+                "message mutation",
+            ),
+            (
+                base,
+                {
+                    "method": "DELETE",
+                    "origin": self.web_origin,
+                    "idempotency_key": f"privacy:delete:{self.actor_name}:{self.conversation_id}",
+                },
+                "delete mutation",
+            ),
+            (
+                f"{base}/runs/{self.run_id}/control",
+                {
+                    "method": "POST",
+                    "json_body": {"kind": "run.cancel"},
+                    "origin": self.web_origin,
+                    "idempotency_key": f"privacy:control:{self.actor_name}:{self.conversation_id}",
+                },
+                "run mutation",
+            ),
+        ):
+            _web_error(
+                request(path, **options),
+                404,
+                "session_not_found",
+                f"{self.actor_name} private {label}",
+            )
+
+
+def _privacy_sql_evidence(
+    resources: worker.OwnedResources,
+    database_url: str,
+    conversation_id: str,
+    run_id: str,
+) -> dict[str, object]:
+    # These are independent owner-local reads against the test-owned database.
+    queries = {
+        "bff": "SELECT json_build_object("
+        "'conversations',(SELECT count(*) FROM kokoro_bff.bff_conversation),"
+        "'messages',(SELECT count(*) FROM kokoro_bff.bff_message),"
+        "'outbox',(SELECT count(*) FROM kokoro_bff.bff_agent_dispatch_outbox),"
+        "'agui_events',(SELECT count(*) FROM kokoro_bff.bff_agui_event),"
+        "'idempotency_receipts',(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt),"
+        "'cancellation_outbox',(SELECT count(*) FROM kokoro_bff.bff_agent_cancellation_outbox),"
+        "'shares',(SELECT count(*) FROM kokoro_bff.bff_share),"
+        "'agui_source_events',(SELECT count(*) FROM kokoro_bff.bff_agui_source_event),"
+        "'agui_streams',(SELECT count(*) FROM kokoro_bff.bff_agui_stream)"
+        ")::text",
+        "agent": "SELECT json_build_object("
+        "'runs',(SELECT count(*) FROM kokoro_agent.kokoro_agent_run),"
+        "'dispatches',(SELECT count(*) FROM kokoro_agent.kokoro_agent_run_dispatch),"
+        "'chat_events',(SELECT count(*) FROM kokoro_agent.kokoro_agent_chat_event),"
+        "'chat_messages',(SELECT count(*) FROM kokoro_agent.kokoro_agent_chat_message)"
+        ")::text",
+    }
+    counts: dict[str, dict[str, int]] = {}
+    for owner, query in queries.items():
+        try:
+            value = json.loads(worker._psql(resources, database_url, query))
+        except (ValueError, UnicodeError):
+            raise SmokeError(f"{owner} privacy SQL evidence invalid") from None
+        if (
+            not isinstance(value, dict)
+            or set(value)
+            != (
+                {
+                    "conversations",
+                    "messages",
+                    "outbox",
+                    "agui_events",
+                    "idempotency_receipts",
+                    "cancellation_outbox",
+                    "shares",
+                    "agui_source_events",
+                    "agui_streams",
+                }
+                if owner == "bff"
+                else {"runs", "dispatches", "chat_events", "chat_messages"}
+            )
+            or any(type(item) is not int or item < 0 for item in value.values())
+        ):
+            raise SmokeError(f"{owner} privacy SQL counts invalid")
+        counts[owner] = value
+    return {
+        "bff": counts["bff"],
+        "agent": counts["agent"],
+        "first_turn": worker._first_turn_facts(
+            resources, database_url, conversation_id
+        ),
+        "terminal": worker._final_sql_evidence(
+            resources, database_url, conversation_id, run_id
+        ),
+    }
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--postgres-admin-url", required=True)
@@ -608,6 +745,7 @@ def run_smoke(
     stage = "preflight"
     observation: worker.FixtureObservation | None = None
     chat_result: dict[str, object] = {}
+    privacy_result: dict[str, object] = {}
     database_url: str | None = None
     bff_schema_installed = False
     cleanup_failures: list[str] = []
@@ -980,6 +1118,74 @@ def run_smoke(
                         chat_result = action.result
                     if not chat_result:
                         raise SmokeError("authenticated Web chat action did not run")
+                    stage = "real A/B/C private Product Sessions"
+                    conversation_id = chat_result.get("conversation_id")
+                    run_id = chat_result.get("run_id")
+                    if not isinstance(conversation_id, str) or not isinstance(
+                        run_id, str
+                    ):
+                        raise SmokeError("A private conversation identity missing")
+                    if reader is None or database_url is None:
+                        raise SmokeError("private matrix ownership context missing")
+                    actors = product.request_actor_matrix(
+                        iam, reader, ready, credentials
+                    )
+                    privacy_before = _privacy_sql_evidence(
+                        resources, database_url, conversation_id, run_id
+                    )
+                    requests_before = (
+                        observation.system_requests,
+                        observation.model_requests,
+                    )
+                    for name, actor in (
+                        ("same_tenant_member", actors.same_tenant_member),
+                        ("other_tenant_owner", actors.other_tenant_owner),
+                    ):
+                        probe = PrivateActorProbe(
+                            actor_name=name,
+                            user_id=actor.user_id,
+                            conversation_id=conversation_id,
+                            run_id=run_id,
+                            web_origin=web_origin,
+                        )
+                        product.run_browser(
+                            web_proxy.server_port,
+                            web_origin,
+                            replace(
+                                ready,
+                                email=actor.email,
+                                password=actor.password,
+                                tenant_id=actor.tenant_id,
+                            ),
+                            bff_proxy.observed,
+                            credentials,
+                            authenticated_probe=probe,
+                        )
+                        if probe.calls != 1:
+                            raise SmokeError(
+                                f"{name} private probe did not execute once"
+                            )
+                    privacy_after = _privacy_sql_evidence(
+                        resources, database_url, conversation_id, run_id
+                    )
+                    if (
+                        privacy_after != privacy_before
+                        or (
+                            observation.system_requests,
+                            observation.model_requests,
+                        )
+                        != requests_before
+                    ):
+                        raise SmokeError(
+                            "private actor probe changed owner facts or provider calls"
+                        )
+                    privacy_result = {
+                        "same_tenant_member": "private",
+                        "other_tenant_owner": "private",
+                        "foreign_resource_status": 404,
+                        "owner_facts_unchanged": True,
+                        "browser_boundary": _privacy_browser_boundary(browser_mode),
+                    }
                     if (
                         observation.system_requests < 1
                         or observation.model_requests < 1
@@ -1090,6 +1296,7 @@ def run_smoke(
         "system_requests": observation.system_requests,
         "model_requests": observation.model_requests,
         "chat": chat_result,
+        "privacy": privacy_result,
         "owned_postgres_databases_remaining": 0,
         "owned_redis_keys_remaining": 0,
         "owned_processes_remaining": 0,

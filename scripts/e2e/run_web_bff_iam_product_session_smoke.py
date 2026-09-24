@@ -92,6 +92,83 @@ class AuthenticatedRequest(Protocol):
 
 
 AuthenticatedAction = Callable[[AuthenticatedRequest], str]
+AuthenticatedProbe = Callable[[AuthenticatedRequest, dict], None]
+
+
+@dataclass(frozen=True, slots=True)
+class ActorIdentity:
+    email: str
+    password: str
+    user_id: str
+    tenant_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class ActorMatrix:
+    same_tenant_member: ActorIdentity
+    other_tenant_owner: ActorIdentity
+
+
+def require_actor_matrix(record: object, ready: previous.Ready) -> ActorMatrix:
+    if (
+        not isinstance(record, dict)
+        or set(record) != {"kind", "same_tenant_member", "other_tenant_owner"}
+        or record["kind"] != "actors"
+    ):
+        raise SmokeError("IAM actor protocol invalid")
+
+    def actor(value: object) -> ActorIdentity:
+        fields = set(ActorIdentity.__dataclass_fields__)
+        if (
+            not isinstance(value, dict)
+            or set(value) != fields
+            or any(not isinstance(value[key], str) or not value[key] for key in fields)
+            or re.fullmatch(r"[^@\s]+@[^@\s]+", value["email"]) is None
+        ):
+            raise SmokeError("IAM actor identity invalid")
+        return ActorIdentity(**value)
+
+    member = actor(record["same_tenant_member"])
+    outsider = actor(record["other_tenant_owner"])
+    if (
+        member.tenant_id != ready.tenant_id
+        or outsider.tenant_id == ready.tenant_id
+        or len({ready.email, member.email, outsider.email}) != 3
+        or member.user_id == outsider.user_id
+    ):
+        raise SmokeError("IAM actor membership boundary invalid")
+    return ActorMatrix(member, outsider)
+
+
+def request_actor_matrix(
+    process: subprocess.Popen[bytes],
+    reader: session.ProtocolReader,
+    ready: previous.Ready,
+    credentials: previous.CredentialRegistry,
+) -> ActorMatrix:
+    if process.poll() is not None or process.stdin is None:
+        raise SmokeError("IAM actor host unavailable")
+    try:
+        process.stdin.write(b'{"command":"actors"}\n')
+        process.stdin.flush()
+    except (BrokenPipeError, OSError):
+        raise SmokeError("IAM actor command failed") from None
+    actors = require_actor_matrix(reader.record(timeout=60), ready)
+    credentials.add(
+        actors.same_tenant_member.password, actors.other_tenant_owner.password
+    )
+    return actors
+
+
+def _run_authenticated_probe(
+    probe: AuthenticatedProbe | None,
+    request: AuthenticatedRequest,
+    projection: dict,
+    *,
+    authenticated: bool,
+) -> None:
+    if probe is not None and authenticated:
+        probe(request, projection)
 
 
 def _run_authenticated_action(
@@ -524,6 +601,7 @@ def run_browser(
     credentials: previous.CredentialRegistry,
     authenticated_action: AuthenticatedAction | None = None,
     *,
+    authenticated_probe: AuthenticatedProbe | None = None,
     preconsented: bool = False,
 ) -> None:
     jar = BrowserCookies(credentials.add)
@@ -762,6 +840,9 @@ def run_browser(
     chat_calls += 1
     authenticated_session_id = _run_authenticated_action(
         authenticated_action, request, authenticated=True
+    )
+    _run_authenticated_probe(
+        authenticated_probe, request, initial_product, authenticated=True
     )
     old_product_cookie = jar.header("/api/auth/session")
     issuer_cookie = "; ".join(

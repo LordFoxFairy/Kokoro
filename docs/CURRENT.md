@@ -10,7 +10,7 @@
 | `apps/kokoro-app` | `9e2eb7385ccd18f7fc0a139702d388c4f2fb6825` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
+| `apps/kokoro-iam` | `e36da9ecf8d62a364182949817431a8e2329d50a` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |

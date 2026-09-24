@@ -20,6 +20,173 @@ def test_runner_exists_as_a_narrow_composer() -> None:
     assert RUNNER.is_file()
 
 
+def test_private_actor_probe_uses_own_product_session_for_all_foreign_paths() -> None:
+    calls: list[tuple[str, dict[str, object]]] = []
+    conversation_id = "conv_12345678-1234-1234-1234-123456789abc"
+    run_id = "run_12345678-1234-1234-1234-123456789abc"
+    headers = {
+        "content-type": "application/json",
+        "cache-control": "private, no-store",
+        "x-request-id": "req-private-1",
+    }
+
+    def request(path: str, **kwargs: object) -> smoke.product.BrowserResponse:
+        calls.append((path, kwargs))
+        if path == "/api/session/sessions?limit=1":
+            return smoke.product.BrowserResponse(
+                200, headers, [], b'{"sessions":[],"next_cursor":null}'
+            )
+        return smoke.product.BrowserResponse(
+            404,
+            headers,
+            [],
+            b'{"error":{"code":"session_not_found","message":"Session was not found"},"meta":{"request_id":"req-private-1"}}',
+        )
+
+    probe = smoke.PrivateActorProbe(
+        actor_name="same_tenant_member",
+        user_id="user-b",
+        conversation_id=conversation_id,
+        run_id=run_id,
+        web_origin="https://web.example.test",
+    )
+    probe(request, {"authenticated": True, "subject": "user-b", "expires_at": 1})
+
+    assert probe.calls == 1
+    assert calls == [
+        ("/api/session/sessions?limit=1", {}),
+        (f"/api/session/sessions/{conversation_id}", {}),
+        (f"/api/session/sessions/{conversation_id}/messages?limit=1", {}),
+        (
+            f"/api/session/sessions/{conversation_id}/events",
+            {"accept": "text/event-stream"},
+        ),
+        (
+            f"/api/session/sessions/{conversation_id}/messages",
+            {
+                "method": "POST",
+                "json_body": {
+                    "content": "Foreign actor must not mutate this conversation."
+                },
+                "origin": "https://web.example.test",
+                "idempotency_key": "privacy:same_tenant_member:conv_12345678-1234-1234-1234-123456789abc",
+            },
+        ),
+        (
+            f"/api/session/sessions/{conversation_id}",
+            {
+                "method": "DELETE",
+                "origin": "https://web.example.test",
+                "idempotency_key": "privacy:delete:same_tenant_member:conv_12345678-1234-1234-1234-123456789abc",
+            },
+        ),
+        (
+            f"/api/session/sessions/{conversation_id}/runs/{run_id}/control",
+            {
+                "method": "POST",
+                "json_body": {"kind": "run.cancel"},
+                "origin": "https://web.example.test",
+                "idempotency_key": "privacy:control:same_tenant_member:conv_12345678-1234-1234-1234-123456789abc",
+            },
+        ),
+    ]
+
+
+def test_private_actor_probe_rejects_wrong_subject_and_leaked_resource() -> None:
+    probe = smoke.PrivateActorProbe(
+        actor_name="other_tenant_owner",
+        user_id="user-c",
+        conversation_id="conv-a",
+        run_id="run-a",
+        web_origin="https://web.example.test",
+    )
+    with pytest.raises(smoke.SmokeError, match="subject"):
+        probe(lambda *_a, **_k: None, {"subject": "user-a"})
+    assert probe.calls == 0
+
+    calls: list[str] = []
+    headers = {
+        "content-type": "application/json",
+        "cache-control": "private, no-store",
+        "x-request-id": "req-private-1",
+    }
+
+    def leaked_list(path: str, **_kwargs: object) -> smoke.product.BrowserResponse:
+        calls.append(path)
+        return smoke.product.BrowserResponse(
+            200,
+            headers,
+            [],
+            b'{"sessions":[{"session_id":"conv-a"}],"next_cursor":null}',
+        )
+
+    with pytest.raises(smoke.SmokeError, match="discovered"):
+        probe(leaked_list, {"subject": "user-c"})
+    assert calls == ["/api/session/sessions?limit=1"]
+
+
+def test_privacy_sql_evidence_uses_separate_owner_local_queries(monkeypatch) -> None:
+    queries: list[str] = []
+
+    def psql(_resources: object, _url: str, query: str) -> str:
+        queries.append(query)
+        if "kokoro_bff." in query:
+            return json.dumps(
+                {
+                    "conversations": 1,
+                    "messages": 2,
+                    "outbox": 1,
+                    "agui_events": 5,
+                    "idempotency_receipts": 1,
+                    "cancellation_outbox": 0,
+                    "shares": 0,
+                    "agui_source_events": 4,
+                    "agui_streams": 1,
+                }
+            )
+        return json.dumps(
+            {"runs": 1, "dispatches": 1, "chat_events": 4, "chat_messages": 2}
+        )
+
+    monkeypatch.setattr(smoke.worker, "_psql", psql)
+    monkeypatch.setattr(smoke.worker, "_first_turn_facts", lambda *_args: {"count": 1})
+    monkeypatch.setattr(
+        smoke.worker, "_final_sql_evidence", lambda *_args: {"terminal": True}
+    )
+
+    evidence = smoke._privacy_sql_evidence(
+        object(), "postgresql://owned", "conv-a", "run-a"
+    )
+    assert evidence["bff"]["conversations"] == 1
+    assert evidence["bff"]["idempotency_receipts"] == 1
+    assert evidence["bff"]["cancellation_outbox"] == 0
+    assert evidence["bff"]["shares"] == 0
+    assert evidence["bff"]["agui_source_events"] == 4
+    assert evidence["bff"]["agui_streams"] == 1
+    assert evidence["agent"]["runs"] == 1
+    assert len(queries) == 2
+    assert "kokoro_bff." in queries[0] and "kokoro_agent." not in queries[0]
+    assert "kokoro_agent." in queries[1] and "kokoro_bff." not in queries[1]
+    for table in (
+        "bff_idempotency_receipt",
+        "bff_agent_cancellation_outbox",
+        "bff_share",
+        "bff_agui_source_event",
+        "bff_agui_stream",
+    ):
+        assert f"kokoro_bff.{table}" in queries[0]
+
+
+def test_privacy_browser_boundary_keeps_bc_distinct_from_a_chromium() -> None:
+    assert smoke._privacy_browser_boundary(None) == (
+        "A/B/C: independent Python CookieJar HTTPS Product Sessions"
+    )
+    mode = smoke.BrowserOriginMode(443, lambda *_args: None, lambda *_args: {})
+    assert smoke._privacy_browser_boundary(mode) == (
+        "A: Chromium DOM/SSE; B/C: independent Python CookieJar HTTPS Product Sessions"
+    )
+
+
 def test_browser_turn_context_exposes_only_owned_worker_start_and_fixture_reply() -> (
     None
 ):

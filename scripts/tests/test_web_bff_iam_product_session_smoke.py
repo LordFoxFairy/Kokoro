@@ -2,6 +2,7 @@
 
 import importlib.util
 import inspect
+from io import BytesIO
 import json
 from pathlib import Path
 import sys
@@ -22,6 +23,115 @@ spec.loader.exec_module(smoke)
 
 
 class ProductSessionGuards(unittest.TestCase):
+    def test_actor_matrix_requires_distinct_real_identity_and_tenant_membership(self):
+        ready = type(
+            "Ready", (), {"tenant_id": "tenant-a", "email": "a@example.test"}
+        )()
+        record = {
+            "kind": "actors",
+            "same_tenant_member": {
+                "email": "b@example.test",
+                "password": "password-b",
+                "user_id": "user-b",
+                "tenant_id": "tenant-a",
+            },
+            "other_tenant_owner": {
+                "email": "c@example.test",
+                "password": "password-c",
+                "user_id": "user-c",
+                "tenant_id": "tenant-c",
+            },
+        }
+        actors = smoke.require_actor_matrix(record, ready)
+        self.assertEqual(actors.same_tenant_member.user_id, "user-b")
+        self.assertEqual(actors.other_tenant_owner.tenant_id, "tenant-c")
+        for invalid in (
+            {**record, "unexpected": "leak"},
+            {**record, "kind": "ready"},
+            {
+                **record,
+                "same_tenant_member": {
+                    **record["same_tenant_member"],
+                    "tenant_id": "tenant-x",
+                },
+            },
+            {
+                **record,
+                "other_tenant_owner": {
+                    **record["other_tenant_owner"],
+                    "tenant_id": "tenant-a",
+                },
+            },
+            {
+                **record,
+                "other_tenant_owner": {
+                    **record["other_tenant_owner"],
+                    "user_id": "user-b",
+                },
+            },
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(smoke.SmokeError):
+                smoke.require_actor_matrix(invalid, ready)
+
+    def test_authenticated_probe_is_opt_in_and_gated(self):
+        calls = []
+
+        def probe(request, projection):
+            calls.append((request, projection))
+
+        request = object()
+        projection = {"subject": "user-b"}
+        smoke._run_authenticated_probe(probe, request, projection, authenticated=False)
+        self.assertEqual(calls, [])
+        smoke._run_authenticated_probe(probe, request, projection, authenticated=True)
+        self.assertEqual(calls, [(request, projection)])
+
+    def test_actor_command_is_one_bounded_host_protocol_exchange(self):
+        ready = type(
+            "Ready", (), {"tenant_id": "tenant-a", "email": "a@example.test"}
+        )()
+        record = {
+            "kind": "actors",
+            "same_tenant_member": {
+                "email": "b@example.test",
+                "password": "secret-b",
+                "user_id": "user-b",
+                "tenant_id": "tenant-a",
+            },
+            "other_tenant_owner": {
+                "email": "c@example.test",
+                "password": "secret-c",
+                "user_id": "user-c",
+                "tenant_id": "tenant-c",
+            },
+        }
+
+        class Process:
+            stdin = BytesIO()
+
+            def poll(self):
+                return None
+
+        class Reader:
+            def record(self, timeout):
+                self.timeout = timeout
+                return record
+
+        class Credentials:
+            def __init__(self):
+                self.values = []
+
+            def add(self, *values):
+                self.values.extend(values)
+
+        process = Process()
+        reader = Reader()
+        credentials = Credentials()
+        smoke.request_actor_matrix(process, reader, ready, credentials)
+        self.assertEqual(process.stdin.getvalue(), b'{"command":"actors"}\n')
+        self.assertEqual(reader.timeout, 60)
+        self.assertEqual(credentials.values, ["secret-b", "secret-c"])
+
     def test_authenticated_request_exposes_only_needed_chat_wire_options(self):
         parameters = set(
             inspect.signature(smoke.AuthenticatedRequest.__call__).parameters
