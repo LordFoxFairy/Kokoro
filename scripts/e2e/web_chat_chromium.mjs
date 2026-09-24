@@ -77,7 +77,12 @@ try {
   page.on("pageerror", (error) => browserErrors.push(error.message.slice(0, 300)))
   const entryUrl = `${input.web_origin}/login`
   const entry = await page.goto(entryUrl, { waitUntil: "domcontentloaded" })
-  if (entry === null || entry.status() !== 200) throw new Error("IAM sign-in document was not HTTP 200")
+  if (entry === null || entry.status() !== 200) {
+    throw new Error(
+      `IAM sign-in document was not HTTP 200; status=${entry?.status() ?? "none"}; ` +
+      `path=${new URL(page.url()).pathname}; responses=${observedResponses.slice(-6).join("|") || "none"}`,
+    )
+  }
   try {
     // /login starts OIDC on the server; only the IAM interaction reaches the browser.
     await page.waitForURL(
