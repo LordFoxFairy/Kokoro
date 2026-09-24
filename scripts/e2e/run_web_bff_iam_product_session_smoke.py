@@ -682,9 +682,7 @@ def run_browser(
         form={"csrfToken": "wrong"},
         origin=web_origin,
     )
-    require_status(wrong_csrf, 303, "wrong RP CSRF")
-    if wrong_csrf.location() != "/login?auth=sign_in_failed":
-        raise SmokeError("wrong RP CSRF: retry target invalid")
+    old.require_rejected_rp_signin(wrong_csrf)
     signin = request(
         "/api/auth/signin/kokoro-iam",
         method="POST",

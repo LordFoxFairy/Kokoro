@@ -21,6 +21,25 @@ spec.loader.exec_module(smoke)
 
 
 class BrowserGuards(unittest.TestCase):
+    def test_rp_csrf_rejection_has_no_retry_page_navigation(self):
+        accepted = smoke.BrowserResponse(
+            403,
+            {"content-type": "application/json", "cache-control": "no-store"},
+            [],
+            b'{"error":{"code":"rp_signin_rejected"}}',
+        )
+        smoke.require_rejected_rp_signin(accepted)
+        for rejected in (
+            smoke.BrowserResponse(303, {"location": "/login"}, [], b""),
+            smoke.BrowserResponse(403, {"location": "/login"}, [], accepted.body),
+            smoke.BrowserResponse(403, accepted.headers, ["retry=1"], accepted.body),
+            smoke.BrowserResponse(
+                403, accepted.headers, [], b'{"error":{"code":"other"}}'
+            ),
+        ):
+            with self.subTest(rejected=rejected), self.assertRaises(smoke.SmokeError):
+                smoke.require_rejected_rp_signin(rejected)
+
     def test_https_browser_supports_authenticated_json_request_headers(self):
         captured = []
 

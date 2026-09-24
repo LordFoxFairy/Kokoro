@@ -721,6 +721,21 @@ def safe_error_code(response: BrowserResponse) -> str:
     )
 
 
+def require_rejected_rp_signin(response: BrowserResponse) -> None:
+    if (
+        response.status != 403
+        or response.headers.get("location") is not None
+        or response.headers.get("cache-control") != "no-store"
+        or response.headers.get("content-type", "").split(";", 1)[0]
+        != "application/json"
+        or response.set_cookies
+        or safe_error_code(response) != "rp_signin_rejected"
+    ):
+        raise SmokeError(
+            "wrong RP CSRF: structured rejection without navigation required"
+        )
+
+
 def navigation_location(response: BrowserResponse, stage: str) -> str:
     if response.status in (302, 303):
         return response.location()
@@ -930,9 +945,7 @@ def run_browser(
         form={"csrfToken": "wrong"},
         origin=web_origin,
     )
-    require_status(wrong_csrf, 303, "wrong RP CSRF")
-    if wrong_csrf.location() != "/login?auth=sign_in_failed":
-        raise SmokeError("wrong RP CSRF: retry target invalid")
+    require_rejected_rp_signin(wrong_csrf)
     signin = request(
         "/api/auth/signin/kokoro-iam",
         method="POST",
