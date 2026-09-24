@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `24445a17614c6d3ed96c3faef40bff1f36538292` |
+| `apps/kokoro-app` | `a70dd24f75ce05f5e25f424c09c111dadffcdd96` |
 | `apps/kokoro-bff` | `928ada2880f222b4406b13144f7dfc7be43c8099` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `e36da9ecf8d62a364182949817431a8e2329d50a` |
@@ -30,6 +30,7 @@
 - BFF `928ada2` 增加固定 IAM 邮箱验证 GET relay，Web `24445a1` 固定消费其 policy `1.1.0`：真 Next HTTP/Chromium fixture 验证 token query、同源 200/302、最终 `no-store`/`no-referrer`、跳转后请求不带 token Referer、Next 开发 incoming log 不输出验证 token，外域/错误方法/路径别名/重复 query 拒绝。Web Node22 本片 Root 独立聚焦测试 13/13、contract 56/56、architecture 32/32、lint、`tsc --noEmit`、全量 Vitest 1414/1414 通过；未触用户 3310 `.next`，正式 build/Next typegen、真 IAM 邮件点击与普通 IAB 可见登录仍待验证，不把 fixture 当成用户当前可用入口。
 - Web `/` 是固定单租户公开首页；`/login` 已删除可见连接中/整页重试组件以及失败时共用的假登录页面，服务端启动固定 Product OIDC，
   成功后浏览器直接进入真正的 IAM `/auth/sign-in` 邮箱/密码表单；不依赖 System manifest。
+  Web `a70dd24` 进一步删除 RP `signin` 失败时 303 跳回重试页的残留分支；失败返回原状态的结构化错误，不再生成失败页 Location。
   `/app` 只以 Product Session 作认证闸。仅 Web dev 在 3310 运行时，缺少常驻 BFF/IAM/RP 配置，
   `/login` 返回空 body 的 HTTP 503，不是在线登录入口；没有后端不伪造可提交的凭据表单。
 - 固定上述 IAM/BFF/Web 提交运行的独占真实 HTTPS Product Session smoke 已通过：Web 同源入口、
