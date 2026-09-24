@@ -197,7 +197,21 @@ def require_logout_confirmation(
         response.status != 200
         or response.headers.get("content-type", "").split(";", 1)[0] != "text/html"
     ):
-        raise SmokeError("IAM issuer confirmation page absent")
+        try:
+            failure = json.loads(response.body)
+            wire_error = failure.get("error") if isinstance(failure, dict) else None
+            if not isinstance(wire_error, str) or not re.fullmatch(
+                r"[a-z][a-z0-9_]{0,79}", wire_error
+            ):
+                wire_error = safe_error_code(response)
+        except (ValueError, UnicodeError):
+            wire_error = "unknown"
+        raise SmokeError(
+            "IAM issuer confirmation page absent: "
+            f"HTTP {response.status}, "
+            f"content-type {response.headers.get('content-type', '').split(';', 1)[0]}, "
+            f"code {wire_error}"
+        )
     parser = _ConfirmParser()
     try:
         parser.feed(response.body.decode("utf-8"))
@@ -314,6 +328,21 @@ def require_signout_handoff(
     }:
         raise SmokeError("issuer logout target not bound to registered client")
     return target
+
+
+def require_stale_signout(response: old.BrowserResponse) -> None:
+    if response.status != 200 or "no-store" not in response.headers.get(
+        "cache-control", ""
+    ):
+        raise SmokeError("stale Product logout response invalid")
+    try:
+        body = json.loads(response.body)
+    except (ValueError, UnicodeError):
+        raise SmokeError("stale Product logout response malformed") from None
+    if body != {"status": "stale_session", "remote_revocation": "not_required"}:
+        raise SmokeError("stale Product logout changed current session or issuer")
+    if any(cookie.startswith(PRODUCT_COOKIE + "=") for cookie in response.set_cookies):
+        raise SmokeError("stale Product logout could overwrite current cookie")
 
 
 def require_foreign_confirmation_rejected(
@@ -620,6 +649,20 @@ def run_browser(
     current_product_cookie = jar.header("/api/auth/session")
     if current_product_cookie == old_product_cookie:
         raise SmokeError("Product Session generation cookie did not rotate")
+    before_stale_revoke = observed.count(("POST", "/iam/oauth2/revoke"))
+    require_stale_signout(
+        https_browser(
+            port,
+            "/api/auth/signout",
+            web_origin,
+            method="POST",
+            form={"csrfToken": csrf_token},
+            cookie=old_product_cookie,
+            origin=web_origin,
+        )
+    )
+    if observed.count(("POST", "/iam/oauth2/revoke")) != before_stale_revoke:
+        raise SmokeError("stale Product logout revoked current refresh")
     if (
         require_session_projection(request("/api/auth/session"), authenticated=True)
         != refreshed_product

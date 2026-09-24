@@ -162,6 +162,38 @@ class ProductSessionGuards(unittest.TestCase):
                     ready,
                 )
 
+    def test_stale_signout_does_not_overwrite_current_cookie_or_handoff_issuer(self):
+        good = smoke.old.BrowserResponse(
+            200,
+            {"cache-control": "private, no-store"},
+            [],
+            b'{"status":"stale_session","remote_revocation":"not_required"}',
+        )
+        smoke.require_stale_signout(good)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_stale_signout(
+                smoke.old.BrowserResponse(
+                    200,
+                    good.headers,
+                    ["kokoro_product_session=; Path=/; Max-Age=0"],
+                    good.body,
+                )
+            )
+        for bad in (
+            {"status": "signed_out", "remote_revocation": "confirmed"},
+            {
+                "status": "stale_session",
+                "remote_revocation": "not_required",
+                "issuer_end_session_url": "/iam/oauth2/end-session",
+            },
+        ):
+            with self.subTest(bad=bad), self.assertRaises(smoke.SmokeError):
+                smoke.require_stale_signout(
+                    smoke.old.BrowserResponse(
+                        200, good.headers, good.set_cookies, json.dumps(bad).encode()
+                    )
+                )
+
     def test_callback_cookie_must_be_secure_httponly_and_distinct(self):
         good = smoke.old.BrowserResponse(
             303,
