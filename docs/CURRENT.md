@@ -37,6 +37,7 @@
 - 固定上述 IAM/BFF/Web 提交运行的独占真实 HTTPS Product Session smoke 已通过：Web 同源入口、
   BFF/IAM 协议链、在线会话、Chat 列表 Bearer 代理与退出，测试自有资源剩余 0。这不是 3310 常驻
   服务的证明，也不覆盖首条消息、Agent worker、Web 重载或真实模型 provider。
+- 本轮 IAM `c16a9bc`/BFF `a50f987`/Web `5192ff0` 重新执行上述真 HTTPS Product Session runner，修正 Root 对 `Cache-Control` 的过窄字面断言后 `status=passed`、自有资源剩余0；其 IAM 测试 host 预置 verified user/tenant/client，尚未证明真实邮件从 Web relay 点击到正式固定租户首次登录。
 - Agent 已发布 typed `createRun`/`replaySessionEvents` 契约及空最终文本完成事件；BFF 已完成
   新会话首消息事务、assistant Message 与 AG-UI 同事务投影，并固定生成的 Agent HTTP 消费者。
   Web 已按 BFF 严格 MessageCreate 契约发送首消息。固定 BFF/Agent SHA 的 Root 真 HTTP + 独立

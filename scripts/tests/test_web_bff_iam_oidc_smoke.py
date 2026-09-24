@@ -29,12 +29,26 @@ class BrowserGuards(unittest.TestCase):
             b'{"error":{"code":"rp_signin_rejected"}}',
         )
         smoke.require_rejected_rp_signin(accepted)
+        smoke.require_rejected_rp_signin(
+            smoke.BrowserResponse(
+                403,
+                {**accepted.headers, "cache-control": "private, no-store, max-age=0"},
+                [],
+                accepted.body,
+            )
+        )
         for rejected in (
             smoke.BrowserResponse(303, {"location": "/login"}, [], b""),
             smoke.BrowserResponse(403, {"location": "/login"}, [], accepted.body),
             smoke.BrowserResponse(403, accepted.headers, ["retry=1"], accepted.body),
             smoke.BrowserResponse(
                 403, accepted.headers, [], b'{"error":{"code":"other"}}'
+            ),
+            smoke.BrowserResponse(
+                403,
+                {**accepted.headers, "cache-control": "private, max-age=60"},
+                [],
+                accepted.body,
             ),
         ):
             with self.subTest(rejected=rejected), self.assertRaises(smoke.SmokeError):

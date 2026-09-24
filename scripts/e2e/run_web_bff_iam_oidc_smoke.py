@@ -722,17 +722,26 @@ def safe_error_code(response: BrowserResponse) -> str:
 
 
 def require_rejected_rp_signin(response: BrowserResponse) -> None:
+    mime = response.headers.get("content-type", "").split(";", 1)[0]
+    code = safe_error_code(response)
+    cache_directives = {
+        directive.strip().lower()
+        for directive in response.headers.get("cache-control", "").split(",")
+    }
     if (
         response.status != 403
         or response.headers.get("location") is not None
-        or response.headers.get("cache-control") != "no-store"
-        or response.headers.get("content-type", "").split(";", 1)[0]
-        != "application/json"
+        or "no-store" not in cache_directives
+        or mime != "application/json"
         or response.set_cookies
-        or safe_error_code(response) != "rp_signin_rejected"
+        or code != "rp_signin_rejected"
     ):
         raise SmokeError(
-            "wrong RP CSRF: structured rejection without navigation required"
+            "wrong RP CSRF: structured rejection without navigation required "
+            f"(status={response.status}, code={code}, mime={mime}, "
+            f"location={response.headers.get('location') is not None}, "
+            f"cookies={len(response.set_cookies)}, "
+            f"cache={response.headers.get('cache-control')})"
         )
 
 
