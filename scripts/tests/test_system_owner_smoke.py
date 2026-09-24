@@ -446,7 +446,7 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
     from scripts.e2e import run_system_owner_smoke as smoke
 
     expected = smoke.EXPECTED_RELEASES
-    assert expected["kokoro-bff"] == "9b8c7af6383541cf8ffcaa66c8cffdddaeae9864"
+    assert expected["kokoro-bff"] == "84a560abeac5b7a63f32d7064abdde849ab33cf9"
     assert expected["kokoro-agent"] == "520ec181a101298b4f336aad273ce003b2735955"
     apps = tmp_path / "apps"
     apps.mkdir()

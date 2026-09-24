@@ -307,3 +307,5 @@ W1D-Web-Login-Entry / B3 Root集成：Root `ded9efd5ce87f795529e4191204197575d05
 | 验证 | R1 先写来源、exclusive Redis、cleanup、错误路径单测 RED；完整 Root `pytest scripts/tests`、topology/checkpoint/policy/main-only；真正启动本地自有 PG/Redis 数据与 BFF/Agent HTTP/worker进程，逐条记录 status/证据/自有资源0；由 Root复跑、审查并提交。 |
 
 任务卡：`W1D-Chat-R1` / P0，执行者为 Root 原生子 Agent（唯一 Root 脚本 writer），Root 保留 `docs/task.md`、`docs/progress.md`、Root Git index/commit/推送与最终验证；基线 Root `bab11bc283adb47b5fecf2fd35d97a64d96da082`，BFF `9b8c7af…`、Agent `520ec181…`。允许写 `scripts/e2e/run_bff_agent_worker_smoke.py`、`scripts/tests/test_bff_agent_worker_smoke.py` 及确需复用的 Root runner helper；不得改子仓、inventory、lockfile、共享脚本入口或启动非自有服务。前置 R0 精确固定与 fixture 边界已裁决；发现越界/真实 provider 需求先报告。交付包括文件清单、测试命令与实际结果、资源/进程证明、未覆盖场景；Root 提交并集成验收。
+
+R1 来源更新（2026-09-24）：上述基线 SHA 保留为任务派发历史，不再作为执行输入。IAM 文档状态修正触发严格 provenance 级联：IAM `b35a9a5301219654ea344c03407fd355f58c481e`、BFF `84a560abeac5b7a63f32d7064abdde849ab33cf9`、Web `210ddfdd77f24143a0ed0617e2ecf1089bcf513c` 已分别由 owner 发布；Agent 仍为 `520ec181a101298b4f336aad273ce003b2735955`。R1 runner 必须按 Root 新发布 gitlink 核验这些精确来源；此更新只改变 policy/source digest，不扩大 R1 边界，也不把 IAM 文档提交当作 IAM 行为变更。
