@@ -167,6 +167,69 @@ def require_refreshed_projection(initial: dict, refreshed: dict) -> None:
         raise SmokeError("Product refresh changed subject or fixed session expiry")
 
 
+def _product_chat_response_body(response: BrowserResponse, status: int) -> dict:
+    if response.status != status:
+        raise SmokeError(
+            f"Product Chat proxy HTTP {response.status}, expected {status}"
+        )
+    if (
+        response.headers.get("content-type", "").split(";", 1)[0].strip()
+        != "application/json"
+    ):
+        raise SmokeError("Product Chat proxy content type invalid")
+    cache_directives = {
+        directive.strip().lower()
+        for directive in response.headers.get("cache-control", "").split(",")
+    }
+    if (
+        not {"private", "no-store"}.issubset(cache_directives)
+        or "public" in cache_directives
+    ):
+        raise SmokeError("Product Chat proxy cache policy invalid")
+    request_id = response.headers.get("x-request-id", "")
+    if re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) is None:
+        raise SmokeError("Product Chat proxy request ID invalid")
+    try:
+        body = json.loads(response.body)
+    except (ValueError, UnicodeError):
+        raise SmokeError("Product Chat proxy JSON invalid") from None
+    if not isinstance(body, dict):
+        raise SmokeError("Product Chat proxy body invalid")
+    return body
+
+
+def require_product_chat_list(response: BrowserResponse) -> dict:
+    body = _product_chat_response_body(response, 200)
+    if (
+        set(body) != {"sessions", "next_cursor"}
+        or not isinstance(body["sessions"], list)
+        or any(not isinstance(item, dict) for item in body["sessions"])
+        or (
+            body["next_cursor"] is not None and not isinstance(body["next_cursor"], str)
+        )
+    ):
+        raise SmokeError("Product Chat list projection invalid")
+    return body
+
+
+def require_product_chat_rejection(response: BrowserResponse) -> None:
+    body = _product_chat_response_body(response, 401)
+    error = body.get("error")
+    meta = body.get("meta")
+    if (
+        set(body) != {"error", "meta"}
+        or not isinstance(error, dict)
+        or set(error) != {"code", "message"}
+        or error["code"] != "unauthenticated"
+        or not isinstance(error["message"], str)
+        or not error["message"]
+        or not isinstance(meta, dict)
+        or set(meta) != {"request_id"}
+        or meta["request_id"] != response.headers["x-request-id"]
+    ):
+        raise SmokeError("Product Chat rejection envelope invalid")
+
+
 @dataclass(frozen=True)
 class ConfirmationForm:
     action: str
@@ -449,6 +512,11 @@ def run_browser(
             404,
             "browser backchannel",
         )
+    chat_operation = ("GET", "/v1/sessions")
+    chat_calls = observed.count(chat_operation)
+    require_product_chat_rejection(request("/api/session/sessions?limit=1"))
+    if observed.count(chat_operation) != chat_calls:
+        raise SmokeError("anonymous Product Chat request reached BFF")
     csrf = request("/api/auth/csrf")
     require_status(csrf, 200, "RP CSRF")
     try:
@@ -620,6 +688,15 @@ def run_browser(
 
     first_projection = request("/api/auth/session")
     initial_product = require_session_projection(first_projection, authenticated=True)
+    live_chat = request(
+        "/api/session/sessions?limit=1",
+        authorization="Bearer browser-supplied-invalid",
+    )
+    if require_product_chat_list(live_chat)["sessions"]:
+        raise SmokeError("new Product tenant unexpectedly has Chat sessions")
+    if observed.count(chat_operation) != chat_calls + 1:
+        raise SmokeError("Product Chat request did not cross Web to BFF exactly once")
+    chat_calls += 1
     old_product_cookie = jar.header("/api/auth/session")
     issuer_cookie = "; ".join(
         pair
@@ -658,9 +735,23 @@ def run_browser(
         port, "/api/auth/session", web_origin, cookie=old_product_cookie
     )
     require_session_projection(stale, authenticated=False)
+    require_product_chat_rejection(
+        https_browser(
+            port, "/api/session/sessions?limit=1", web_origin, cookie=old_product_cookie
+        )
+    )
+    if observed.count(chat_operation) != chat_calls:
+        raise SmokeError("stale Product Chat request reached BFF")
     current_product_cookie = jar.header("/api/auth/session")
     if current_product_cookie == old_product_cookie:
         raise SmokeError("Product Session generation cookie did not rotate")
+    if require_product_chat_list(request("/api/session/sessions?limit=1"))["sessions"]:
+        raise SmokeError("refreshed Product tenant unexpectedly has Chat sessions")
+    if observed.count(chat_operation) != chat_calls + 1:
+        raise SmokeError(
+            "refreshed Product Chat request did not cross BFF exactly once"
+        )
+    chat_calls += 1
     before_stale_revoke = observed.count(("POST", "/iam/oauth2/revoke"))
     require_stale_signout(
         https_browser(
@@ -691,6 +782,17 @@ def run_browser(
     if observed.count(("POST", "/iam/oauth2/revoke")) != before_revoke + 1:
         raise SmokeError("Product logout did not revoke current refresh once")
     require_session_projection(request("/api/auth/session"), authenticated=False)
+    require_product_chat_rejection(request("/api/session/sessions?limit=1"))
+    require_product_chat_rejection(
+        https_browser(
+            port,
+            "/api/session/sessions?limit=1",
+            web_origin,
+            cookie=current_product_cookie,
+        )
+    )
+    if observed.count(chat_operation) != chat_calls:
+        raise SmokeError("signed-out Product Chat request reached BFF")
     require_session_projection(
         https_browser(
             port, "/api/auth/session", web_origin, cookie=current_product_cookie
@@ -736,7 +838,7 @@ def run_browser(
     # misclassify the public URL-encoded Web origin as a credential.
     if any(
         secret.encode() in response.body
-        for response in (callback, first_projection, refresh, confirmed)
+        for response in (callback, first_projection, live_chat, refresh, confirmed)
         for secret in credentials.values()
         if len(secret) >= 12
     ):
@@ -1078,6 +1180,7 @@ def main(argv=None) -> int:
                 "status": "passed",
                 "flow": "web_bff_iam_product_session",
                 "web_bff_backchannel_entrance_observed": True,
+                "product_chat_proxy": "verified",
                 "product_session": "active_then_ended",
                 "owned_resources_remaining": 0,
             }

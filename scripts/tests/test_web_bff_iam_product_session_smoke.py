@@ -21,6 +21,80 @@ spec.loader.exec_module(smoke)
 
 
 class ProductSessionGuards(unittest.TestCase):
+    def test_product_chat_list_requires_live_private_web_projection(self):
+        headers = {
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "private, no-store",
+            "x-request-id": "chat-request-1",
+        }
+        good = smoke.old.BrowserResponse(
+            200, headers, [], b'{"sessions":[],"next_cursor":null}'
+        )
+        smoke.require_product_chat_list(good)
+        for changed in (
+            smoke.old.BrowserResponse(401, headers, [], good.body),
+            smoke.old.BrowserResponse(
+                200, {**headers, "cache-control": "public"}, [], good.body
+            ),
+            smoke.old.BrowserResponse(
+                200, {**headers, "cache-control": "no-store"}, [], good.body
+            ),
+            smoke.old.BrowserResponse(
+                200, {**headers, "cache-control": "private, x-no-store"}, [], good.body
+            ),
+            smoke.old.BrowserResponse(
+                200, {**headers, "x-request-id": "bad request id"}, [], good.body
+            ),
+            smoke.old.BrowserResponse(
+                200, headers, [], b'{"data":{"sessions":[]},"meta":{}}'
+            ),
+            smoke.old.BrowserResponse(
+                200, headers, [], b'{"sessions":[],"next_cursor":0}'
+            ),
+        ):
+            with (
+                self.subTest(status=changed.status, body=changed.body),
+                self.assertRaises(smoke.SmokeError),
+            ):
+                smoke.require_product_chat_list(changed)
+
+    def test_product_chat_list_rejection_has_stable_error_and_request_id(self):
+        headers = {
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "private, no-store",
+            "x-request-id": "chat-request-1",
+        }
+        good = smoke.old.BrowserResponse(
+            401,
+            headers,
+            [],
+            b'{"error":{"code":"unauthenticated","message":"unauthenticated"},"meta":{"request_id":"chat-request-1"}}',
+        )
+        smoke.require_product_chat_rejection(good)
+        for changed in (
+            smoke.old.BrowserResponse(200, headers, [], good.body),
+            smoke.old.BrowserResponse(
+                401,
+                headers,
+                [],
+                b'{"error":{"code":"wrong","message":"wrong"},"meta":{"request_id":"chat-request-1"}}',
+            ),
+            smoke.old.BrowserResponse(
+                401,
+                headers,
+                [],
+                b'{"error":{"code":"unauthenticated","message":"unauthenticated"},"meta":{"request_id":"other"}}',
+            ),
+            smoke.old.BrowserResponse(
+                401, {**headers, "content-type": "text/plain"}, [], good.body
+            ),
+        ):
+            with (
+                self.subTest(status=changed.status, body=changed.body),
+                self.assertRaises(smoke.SmokeError),
+            ):
+                smoke.require_product_chat_rejection(changed)
+
     def test_foreign_confirmation_after_signed_get_preserves_issuer(self):
         events = []
         observed = []
