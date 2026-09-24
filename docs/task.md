@@ -368,6 +368,8 @@ R2e-IAM-VERIFY-WEB 开发日志发现扩卡（2026-09-24）：独立 reviewer �
 
 R2e-IAM-VERIFY BFF→Web 切片验收记录（2026-09-24）：BFF producer 已在 main `928ada2880f222b4406b13144f7dfc7be43c8099` 提交，Root 独立 Node22 format/check PASS（270 pass/1 skip）；Web consumer 已在 main `24445a17614c6d3ed96c3faef40bff1f36538292` 提交，Root 聚焦真 Next/登录/contract 13/13、contract 56/56、architecture 32/32、lint、`tsc --noEmit`、全量 Vitest 1414/1414 PASS，独立 reviewer 对两切片均 0 P0/P1/P2。Root inventory/gitlink/CURRENT pin 已准备；提交后仍需重新验证 Root source policy/checkpoint/main-only 与全 Root tests。下一 owner 是 Root 的正式 IAM 单租户账号/SMTP邮件点击/普通 IAB入口组合验收（不复活中转 UI），以及 Web 可隔离的 Next typegen/build；TLS access log 只作为敏感 URL 核查点，非运维拓扑调试。Billing 保持最后。
 
+R2e-IAM-VERIFY Root 集成门（2026-09-24）：Root 已将 BFF/Web gitlink、来源 inventory 150 条引用和 CURRENT 作为 `94789df52baed3555f4e7e27af8b715c8a19aae8` 提交；提交后 relay source policy、contract checkpoint、topology、main-only 均 PASS，全 Root `scripts/tests` 679 pass/139 subtests，工作树 clean/main。R2e 当前状态是 **代码/静态来源与 fixture 浏览器门已闭，正式入口/邮件运营组合未闭**；下一片只处理真实 IAM 单库账号/邮箱验证/正式浏览器与可隔离 Web build，不借旧可见中转/重试页掩盖 3310 空503。已有 ten-repository-standard 的 130 条全局不合规另按 owner 切片处理，不作为本片绿灯。
+
 依赖顺序：R2a→R2b→R2c；R2d 可在 R2b 后由 IAM 唯一writer独立推进，再由 Root 串行集成；R2e 使用同一真实入口，不为可见性分叉协议。每个写入任务先记录精确基线/允许文件集、先RED再GREEN、Root提交并复验。R3真实System发布route和真实provider仍独立，不让 fixture 代替。
 
 R2a 验收状态：唯一writer已把最终证据查询拆成 BFF/Agent 各一条 owner-local SQL，Python 严格字段合并；独立复审 0 P0/P1/P2，Root 聚焦 18/18、全Root **622 passed/130 subtests**、Ruff、真 worker smoke PASS，临时资源为0。本条与代码由 Root 同切片提交，R2b随后推进。
