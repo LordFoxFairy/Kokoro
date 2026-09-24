@@ -22,6 +22,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from typing import Protocol
 from urllib.parse import unquote, urlsplit
 from uuid import uuid4
 
@@ -73,6 +74,54 @@ PUBLIC_LOGOUT_ERROR_CODES = frozenset(
         "server_error",
     }
 )
+
+
+class AuthenticatedRequest(Protocol):
+    def __call__(
+        self,
+        path: str,
+        *,
+        method: str = "GET",
+        form: dict | None = None,
+        json_body: dict | None = None,
+        origin: str | None = None,
+        authorization: str | None = None,
+        idempotency_key: str | None = None,
+        accept: str | None = None,
+    ) -> BrowserResponse: ...
+
+
+AuthenticatedAction = Callable[[AuthenticatedRequest], str]
+
+
+def _run_authenticated_action(
+    action: AuthenticatedAction | None,
+    request: AuthenticatedRequest,
+    *,
+    authenticated: bool,
+) -> str | None:
+    if action is not None and authenticated:
+        session_id = action(request)
+        if not isinstance(session_id, str) or not session_id:
+            raise SmokeError("authenticated action session identity missing")
+        return session_id
+    return None
+
+
+def require_expected_chat_sessions(body: dict, expected_session_id: str | None) -> None:
+    sessions = body.get("sessions")
+    if not isinstance(sessions, list):
+        raise SmokeError("Product Chat list sessions invalid")
+    if expected_session_id is None:
+        if sessions:
+            raise SmokeError("new Product tenant unexpectedly has Chat sessions")
+        return
+    if (
+        len(sessions) != 1
+        or not isinstance(sessions[0], dict)
+        or sessions[0].get("session_id") != expected_session_id
+    ):
+        raise SmokeError("authenticated action Chat session list drift")
 
 
 def _cookie_parts(cookie: str) -> tuple[str, dict[str, str]]:
@@ -473,6 +522,7 @@ def run_browser(
     ready: previous.Ready,
     observed: list[tuple[str, str]],
     credentials: previous.CredentialRegistry,
+    authenticated_action: AuthenticatedAction | None = None,
 ) -> None:
     jar = BrowserCookies(credentials.add)
 
@@ -481,8 +531,11 @@ def run_browser(
         *,
         method: str = "GET",
         form: dict | None = None,
+        json_body: dict | None = None,
         origin: str | None = None,
         authorization: str | None = None,
+        idempotency_key: str | None = None,
+        accept: str | None = None,
     ) -> BrowserResponse:
         target = browser_target(path, web_origin)
         response = https_browser(
@@ -491,9 +544,12 @@ def run_browser(
             web_origin,
             method=method,
             form=form,
+            json_body=json_body,
             cookie=jar.header(urlsplit(target).path),
             origin=origin,
             authorization=authorization,
+            idempotency_key=idempotency_key,
+            accept=accept,
         )
         jar.update(urlsplit(target).path, response.set_cookies)
         return response
@@ -517,6 +573,7 @@ def run_browser(
     require_product_chat_rejection(request("/api/session/sessions?limit=1"))
     if observed.count(chat_operation) != chat_calls:
         raise SmokeError("anonymous Product Chat request reached BFF")
+    _run_authenticated_action(authenticated_action, request, authenticated=False)
     csrf = request("/api/auth/csrf")
     require_status(csrf, 200, "RP CSRF")
     try:
@@ -696,6 +753,9 @@ def run_browser(
     if observed.count(chat_operation) != chat_calls + 1:
         raise SmokeError("Product Chat request did not cross Web to BFF exactly once")
     chat_calls += 1
+    authenticated_session_id = _run_authenticated_action(
+        authenticated_action, request, authenticated=True
+    )
     old_product_cookie = jar.header("/api/auth/session")
     issuer_cookie = "; ".join(
         pair
@@ -744,8 +804,8 @@ def run_browser(
     current_product_cookie = jar.header("/api/auth/session")
     if current_product_cookie == old_product_cookie:
         raise SmokeError("Product Session generation cookie did not rotate")
-    if require_product_chat_list(request("/api/session/sessions?limit=1"))["sessions"]:
-        raise SmokeError("refreshed Product tenant unexpectedly has Chat sessions")
+    refreshed_chat = require_product_chat_list(request("/api/session/sessions?limit=1"))
+    require_expected_chat_sessions(refreshed_chat, authenticated_session_id)
     if observed.count(chat_operation) != chat_calls + 1:
         raise SmokeError(
             "refreshed Product Chat request did not cross BFF exactly once"

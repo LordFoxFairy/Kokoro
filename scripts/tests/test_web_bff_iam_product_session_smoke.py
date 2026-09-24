@@ -1,6 +1,7 @@
 """Focused guards for the HTTPS Product Session composition runner."""
 
 import importlib.util
+import inspect
 import json
 from pathlib import Path
 import sys
@@ -21,6 +22,88 @@ spec.loader.exec_module(smoke)
 
 
 class ProductSessionGuards(unittest.TestCase):
+    def test_authenticated_request_exposes_only_needed_chat_wire_options(self):
+        parameters = set(
+            inspect.signature(smoke.AuthenticatedRequest.__call__).parameters
+        )
+        self.assertEqual(
+            parameters,
+            {
+                "self",
+                "path",
+                "method",
+                "form",
+                "json_body",
+                "origin",
+                "authorization",
+                "idempotency_key",
+                "accept",
+            },
+        )
+
+    def test_authenticated_action_is_gated_and_called_once(self):
+        request = object()
+        calls = []
+
+        def action(received):
+            calls.append(received)
+            return "session-one"
+
+        self.assertIsNone(
+            smoke._run_authenticated_action(action, request, authenticated=False)
+        )
+        self.assertEqual(calls, [])
+        self.assertEqual(
+            smoke._run_authenticated_action(action, request, authenticated=True),
+            "session-one",
+        )
+        self.assertEqual(calls, [request])
+
+    def test_authenticated_action_failure_propagates_through_cleanup(self):
+        events = []
+
+        def action(_request):
+            events.append("action")
+            raise RuntimeError("probe failed")
+
+        with self.assertRaisesRegex(RuntimeError, "probe failed"):
+            try:
+                smoke._run_authenticated_action(action, object(), authenticated=True)
+            finally:
+                events.append("cleanup")
+        self.assertEqual(events, ["action", "cleanup"])
+
+    def test_refreshed_chat_list_is_exact_for_default_and_action_paths(self):
+        smoke.require_expected_chat_sessions(
+            {"sessions": [], "next_cursor": None}, None
+        )
+        smoke.require_expected_chat_sessions(
+            {
+                "sessions": [{"session_id": "session-one", "title": "New chat"}],
+                "next_cursor": None,
+            },
+            "session-one",
+        )
+        for body, expected in (
+            ({"sessions": [{"session_id": "unexpected"}]}, None),
+            ({"sessions": []}, "session-one"),
+            (
+                {
+                    "sessions": [
+                        {"session_id": "session-one"},
+                        {"session_id": "extra"},
+                    ]
+                },
+                "session-one",
+            ),
+            ({"sessions": [{"session_id": "other"}]}, "session-one"),
+        ):
+            with (
+                self.subTest(body=body, expected=expected),
+                self.assertRaises(smoke.SmokeError),
+            ):
+                smoke.require_expected_chat_sessions(body, expected)
+
     def test_product_chat_list_requires_live_private_web_projection(self):
         headers = {
             "content-type": "application/json; charset=utf-8",

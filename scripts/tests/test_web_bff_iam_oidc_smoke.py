@@ -10,6 +10,7 @@ import sys
 import tempfile
 from threading import Thread
 import unittest
+from unittest.mock import patch
 
 PATH = Path(__file__).resolve().parents[1] / "e2e" / "run_web_bff_iam_oidc_smoke.py"
 sys.path.insert(0, str(PATH.parent))
@@ -20,6 +21,70 @@ spec.loader.exec_module(smoke)
 
 
 class BrowserGuards(unittest.TestCase):
+    def test_https_browser_supports_authenticated_json_request_headers(self):
+        captured = []
+
+        class Response:
+            status = 202
+
+            def read(self, _limit):
+                return b"{}"
+
+            def getheaders(self):
+                return [("content-type", "application/json")]
+
+        class Connection:
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def request(self, method, target, body=None, headers=None):
+                captured.append((method, target, body, headers))
+
+            def getresponse(self):
+                return Response()
+
+            def close(self):
+                pass
+
+        with patch.object(smoke.http.client, "HTTPSConnection", Connection):
+            response = smoke.https_browser(
+                443,
+                "/api/session/sessions/conv/messages",
+                "https://web.example.test",
+                method="POST",
+                json_body={"content": "hello"},
+                idempotency_key="message-1",
+                accept="application/json",
+            )
+        self.assertEqual(response.status, 202)
+        self.assertEqual(
+            captured,
+            [
+                (
+                    "POST",
+                    "/api/session/sessions/conv/messages",
+                    b'{"content":"hello"}',
+                    {
+                        "Host": "web.example.test",
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "Idempotency-Key": "message-1",
+                    },
+                )
+            ],
+        )
+
+    def test_https_browser_rejects_form_and_json_together(self):
+        with self.assertRaisesRegex(smoke.SmokeError, "form and JSON"):
+            smoke.https_browser(
+                443,
+                "/api/session/sessions/conv/messages",
+                "https://web.example.test",
+                method="POST",
+                form={"content": "form"},
+                json_body={"content": "json"},
+            )
+
     def test_cookie_path_and_deletion(self):
         jar = smoke.BrowserCookies()
         jar.update(

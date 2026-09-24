@@ -535,24 +535,41 @@ def https_browser(
     *,
     method: str = "GET",
     form: dict | None = None,
+    json_body: dict | None = None,
     cookie: str = "",
     origin: str | None = None,
     authorization: str | None = None,
+    idempotency_key: str | None = None,
+    accept: str | None = None,
 ) -> BrowserResponse:
     target = browser_target(path, web_origin)
-    body = urlencode(form).encode() if form is not None else None
+    if form is not None and json_body is not None:
+        raise SmokeError("browser form and JSON bodies are mutually exclusive")
+    body = (
+        urlencode(form).encode()
+        if form is not None
+        else (
+            json.dumps(json_body, separators=(",", ":")).encode()
+            if json_body is not None
+            else None
+        )
+    )
     headers = {
         "Host": urlsplit(web_origin).netloc,
-        "Accept": "text/html,application/json",
+        "Accept": accept or "text/html,application/json",
     }
-    if body is not None:
+    if form is not None:
         headers["Content-Type"] = "application/x-www-form-urlencoded"
+    elif json_body is not None:
+        headers["Content-Type"] = "application/json"
     if cookie:
         headers["Cookie"] = cookie
     if origin is not None:
         headers["Origin"] = origin
     if authorization is not None:
         headers["Authorization"] = authorization
+    if idempotency_key is not None:
+        headers["Idempotency-Key"] = idempotency_key
     connection = http.client.HTTPSConnection(
         "127.0.0.1", port, context=ssl._create_unverified_context(), timeout=12
     )

@@ -36,15 +36,18 @@
 - Agent 已发布 typed `createRun`/`replaySessionEvents` 契约及空最终文本完成事件；BFF 已完成
   新会话首消息事务、assistant Message 与 AG-UI 同事务投影，并固定生成的 Agent HTTP 消费者。
   Web 已按 BFF 严格 MessageCreate 契约发送首消息。固定 BFF/Agent SHA 的 Root 真 HTTP + 独立
-  CLI worker 首消息组合已通过，覆盖幂等、Agent 执行、AG-UI 与持久重载；System/模型 HTTP 是
-  严格测试 fixture。**尚无真 Web/IAM 浏览器首发、跨 tenant 私有负例或真实 provider 验收**。
+  CLI worker 首消息组合已通过，覆盖幂等、Agent 执行、AG-UI 与持久重载。Root R2b 进一步把真实 IAM
+  Product Session、Web 同源 JSON 首发、BFF 与独立 Agent CLI worker 放在同一次隔离 HTTPS 运行：202、
+  同 key 重放、改 body 409、Web 重载 snapshot 与 AG-UI 5 帧通过；测试自有 PG/Redis/进程归零。
+  此处使用 Python CookieJar HTTPS 客户端，不执行真实浏览器 JavaScript；System/模型 HTTP 是严格
+  确定性测试 fixture。**尚无 Chromium/DOM 首发、跨 tenant 私有负例或真实 provider 验收**。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。
 
 ## 仍未完成
 
-1. 真 Web/IAM 浏览器首消息→BFF→Agent worker→AG-UI/刷新组合、Web 对 BFF public contract 的全量
+1. 真 Chromium/DOM 登录及首消息→BFF→Agent worker→实时AG-UI/断线恢复组合、Web 对 BFF public contract 的全量
    generated 消费与单一 AG-UI 网络协议，以及默认个人私有、显式分享和跨 tenant 负例；Root 的 R1
    fixture worker 验收不代替浏览器链或真实 provider。
 2. IAM Team 窄读到 BFF Product projection 再到 Web 的串行消费；删除 Web 旧 IAM/Team 直连。
