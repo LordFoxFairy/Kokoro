@@ -71,6 +71,19 @@
 
 本任务与 BFF relay 收窄为不同 owner，可并行实现；Web consumer 须等待两者发布后再原子切换。
 
+### W1C-FIXED-TENANT-BFF-C：发布当前用户身份投影供 Web RP 验证（待派工）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | BFF `74ec30b` main/clean；已有 `authorizeUserRequest` 在全部普通 Product `/v1` 前在线验证 IAM token 并强制固定 `KOKORO_TENANT_ID`。Web RP 当前只看 token 形状、subject/TTL，签发/refresh 前未验证 tenant 或 BFF 配置同值。 |
+| 目标职责 | BFF 公布窄 `GET /v1/me` Product API，返回仅受信 admission 的 `{user_id, tenant_id}`；同一现有 service+Bearer 闸、固定租户/撤权/失效语义，不读库、不接受 client 自报 tenant。Web 在 code callback 建 Session 前及 refresh finalize 前调用，核对自身固定配置 ID 与 OIDC subject；错配不建/续有效 Product Session。 |
+| 目录方案 / 粒度 | 扩展既有 public OpenAPI、HTTP route/已存在 admission 及相邻测试/生成门（采用）。不借 Team GET 或 runtime manifest 充当身份契约，不新增私有隐藏 RPC、IAM SQL、BFF 身份表（淘汰）。新 route 采用 BFF 已有最小路由目录/response envelope；若审计发现现有路由已可提供同等受信投影，先报告不重复创建。 |
+| 数据/API | public `/v1` additive beta operation，由 BFF 唯一维护 OpenAPI operationId/schema/稳定错误/响应和 baseline；外部 JSON `snake_case`，`x-request-id`/no-store，权限 `self:read` 或本仓既有等价 marker。无 SQL/事务/receipt/cache 写；version/source/digest 须由 Web 固定消费。 |
+| 删除/依赖 | 不保留 fallback 到 JWT decode/Team 列表；Web 消费必须等待 BFF owner commit。此卡不更改 Web 源码；BFF relay B 已独立发布，IAM Web client 续接 C 并行实施。 |
+| 验证 | BFF Node22 `pnpm format:check && pnpm check`、公开 contract/breaking/错误/身份测试及真实 IAM same/foreign/revoked OAuth；Root 冻结 SHA 复验，再由 Web RP code+refresh 真组合证明错误 tenant/配置错配零 Product Session。 |
+
+本操作是受信当前身份投影而非公开团队目录；权限与缓存语义需沿 BFF 既有 Product API 一致实现。
+
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
 ## 1. 总目标与权威入口
