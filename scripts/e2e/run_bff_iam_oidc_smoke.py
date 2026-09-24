@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the first unconsented IAM OIDC Code+S256 grant through the real BFF relay.
+"""Run real IAM OIDC grants and fixed-tenant Product admission through the BFF relay.
 
 All HTTP uses BFF /iam; IAM is touched only through its test-owned NDJSON host.
 """
@@ -16,7 +16,7 @@ import secrets
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, quote, quote_plus, unquote, urlencode, urlsplit
@@ -48,6 +48,7 @@ PRIMARY_STAGE_LABELS = frozenset({
     "IAM test host startup",
     "BFF startup",
     "OAuth first grant",
+    "OAuth foreign tenant guard",
 })
 FINALIZATION_LABELS = frozenset({
     "owned process cleanup",
@@ -124,6 +125,42 @@ def validate_ready(record: object) -> Ready:
             or "@" not in record["email"]):
         raise SmokeError("IAM host Web OIDC contract invalid")
     return Ready(**{key: record[key] for key in names})
+
+
+def require_foreign_actor(record: object, ready: Ready) -> Ready:
+    if (
+        not isinstance(record, dict)
+        or set(record) != {"kind", "same_tenant_member", "other_tenant_owner"}
+        or record["kind"] != "actors"
+    ):
+        raise SmokeError("IAM actor protocol invalid")
+
+    def identity(value: object) -> dict[str, str]:
+        fields = {"email", "password", "user_id", "tenant_id"}
+        if (
+            not isinstance(value, dict)
+            or set(value) != fields
+            or any(not isinstance(value[key], str) or not value[key] for key in fields)
+            or re.fullmatch(r"[^@\s]+@[^@\s]+", value["email"]) is None
+        ):
+            raise SmokeError("IAM actor identity invalid")
+        return value
+
+    member = identity(record["same_tenant_member"])
+    outsider = identity(record["other_tenant_owner"])
+    if (
+        member["tenant_id"] != ready.tenant_id
+        or outsider["tenant_id"] == ready.tenant_id
+        or len({ready.email, member["email"], outsider["email"]}) != 3
+        or member["user_id"] == outsider["user_id"]
+    ):
+        raise SmokeError("IAM actor membership boundary invalid")
+    return replace(
+        ready,
+        email=outsider["email"],
+        password=outsider["password"],
+        tenant_id=outsider["tenant_id"],
+    )
 
 
 def parse_args(argv=None):
@@ -395,6 +432,36 @@ def validate_team_missing_bearer(response: HttpResponse) -> None:
             or not isinstance(meta, dict) or set(meta) != {"request_id"}
             or meta["request_id"] != request_id):
         raise SmokeError("Team Product rejection envelope invalid")
+
+
+def validate_team_foreign_tenant(response: HttpResponse) -> None:
+    if response.status != 403:
+        raise SmokeError("Foreign tenant entered Product route")
+    require_json_content_type(response)
+    if response.headers.get("cache-control") != "no-store":
+        raise SmokeError("Foreign tenant rejection cache policy invalid")
+    request_id = response.headers.get("x-request-id")
+    if (
+        not isinstance(request_id, str)
+        or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) is None
+    ):
+        raise SmokeError("Foreign tenant rejection request ID invalid")
+    body = response.json()
+    if set(body) != {"error", "meta"}:
+        raise SmokeError("Foreign tenant rejection envelope invalid")
+    error = body["error"]
+    meta = body["meta"]
+    if (
+        not isinstance(error, dict)
+        or set(error) != {"code", "message"}
+        or error["code"] != "product_tenant_forbidden"
+        or not isinstance(error["message"], str)
+        or not error["message"]
+        or not isinstance(meta, dict)
+        or set(meta) != {"request_id"}
+        or meta["request_id"] != request_id
+    ):
+        raise SmokeError("Foreign tenant rejection envelope invalid")
 
 
 def require(response: HttpResponse, status: int, stage: str) -> dict:
@@ -751,6 +818,117 @@ def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegist
     return cases
 
 
+def run_foreign_tenant_guard(
+    base: str, secret: str, ready: Ready, credentials: CredentialRegistry
+) -> int:
+    jar = IssuerCookies(credentials.add)
+    state = secrets.token_urlsafe(24)
+    nonce = secrets.token_urlsafe(24)
+    verifier = secrets.token_urlsafe(48)
+    credentials.add(state, nonce, verifier)
+    challenge = (
+        base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest())
+        .decode()
+        .rstrip("=")
+    )
+    query = urlencode(
+        {
+            "client_id": ready.client_id,
+            "redirect_uri": ready.redirect_uri,
+            "response_type": "code",
+            "scope": SCOPES,
+            "resource": RESOURCE,
+            "state": state,
+            "nonce": nonce,
+            "code_challenge": challenge,
+            "code_challenge_method": "S256",
+        }
+    )
+    target, seen, cases = start_first_grant(
+        base, secret, ready, jar, query, lambda *_: None, credentials.add
+    )
+    for _ in range(4):
+        if target.startswith(ready.redirect_uri + "?"):
+            break
+        kind, raw_query = interaction(target)
+        remember_interaction_query(raw_query, credentials.add)
+        seen.append(kind)
+        if kind == "select-tenant":
+            response = http(
+                base,
+                "/iam/organization/set-active",
+                secret,
+                method="POST",
+                origin=True,
+                cookie=jar.header(),
+                payload={"organizationId": ready.tenant_id, "oauth_query": raw_query},
+            )
+        elif kind == "consent":
+            response = http(
+                base,
+                "/iam/oauth2/consent",
+                secret,
+                method="POST",
+                origin=True,
+                cookie=jar.header(),
+                payload={"accept": True, "scope": SCOPES, "oauth_query": raw_query},
+            )
+        else:
+            raise SmokeError("foreign OAuth interaction order invalid")
+        jar.update(response.headers.get_all("set-cookie") or [])
+        target = redirect_result(response, "foreign " + kind + " continuation")
+        cases += 1
+    validate_interaction_sequence(seen)
+    code = authorization_code(target, ready.redirect_uri, state)
+    credentials.add(code)
+    cases += 1
+    basic = (
+        "Basic "
+        + base64.b64encode(f"{ready.client_id}:{ready.client_secret}".encode()).decode()
+    )
+    credentials.add(basic)
+    issued = require(
+        http(
+            base,
+            "/iam/oauth2/token",
+            secret,
+            method="POST",
+            auth=basic,
+            form={
+                "grant_type": "authorization_code",
+                "code": code,
+                "redirect_uri": ready.redirect_uri,
+                "code_verifier": verifier,
+                "resource": RESOURCE,
+            },
+        ),
+        200,
+        "foreign Code+S256 token",
+    )
+    credentials.add(
+        *[
+            issued.get(name)
+            for name in ("access_token", "refresh_token", "id_token")
+            if isinstance(issued.get(name), str)
+        ]
+    )
+    tokens = validate_token_bundle(issued, ready, nonce)
+    cases += 1
+    for kind in ("members", "invitations", "roles"):
+        response = product_team_http(
+            base, secret, kind, tokens.access_token, spoof_identity=True
+        )
+        validate_team_foreign_tenant(response)
+        print(
+            json.dumps(
+                {"http_step": f"foreign tenant Team {kind}", "status": response.status}
+            ),
+            flush=True,
+        )
+        cases += 1
+    return cases
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
     bff_source = session.verify_source(BFF, args.expected_bff_sha, "apps/kokoro-bff")
@@ -833,6 +1011,14 @@ def main(argv=None) -> int:
                 runtime.wait_ready(base, bff)
                 stage = "OAuth first grant"
                 cases = run_flow(base, service_secret, ready, credentials)
+                stage = "OAuth foreign tenant guard"
+                if host.poll() is not None or host.stdin is None:
+                    raise SmokeError("IAM actor host unavailable")
+                host.stdin.write(b'{"command":"actors"}\n')
+                host.stdin.flush()
+                foreign_ready = require_foreign_actor(reader.record(timeout=60), ready)
+                credentials.add(foreign_ready.password)
+                cases += run_foreign_tenant_guard(base, service_secret, foreign_ready, credentials)
                 cases += 1
             except Exception:
                 primary_failure_stage = stage

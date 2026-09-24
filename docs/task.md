@@ -30,7 +30,7 @@
 | 删除项 | 后续 Web 原子替换旧 `/api/team/{context,switch,[...path]}`、`src/team/client.ts` 旧 wire、旧 `auth.ts` team-session/helper、namespace 切换器与相关文案/测试；不得先删有效邀请/成员写而造成业务回退。 |
 | 验证 | 文档门：三设计相互一致、当前/目标分明、Root 审查与 `git diff --check`；实现门：IAM `pnpm verify`/真实 PG+Redis/contract+consumer，BFF `pnpm check`/真实 IAM HTTP，Web contract/architecture/lint/typecheck/test/build/Playwright，Root 固定 SHA 真 OAuth→Team 读写/邀请与默认私有负例、来源门/main-only。 |
 
-本片分工：`iam_team_read_audit` 与 `web_team_read_audit` 已完成独立只读盘点；`iam_team_fixed_docs_writer` 仅改上述三文件，经独立复审指出的 P1/P2 修正与 Root 事实纠偏后，IAM `c588d86f` 三文档及 `b363554d` CURRENT 均已提交推送 main、工作树 clean。Root `pnpm contract:check`、`pnpm prisma:validate`、`git diff --check` 通过。此为 IAM 文档设计门，不是固定租户 runtime、BFF/Web 消费或 Team 写闭环；BFF admission writer 正按下一卡实施。
+本片分工：`iam_team_read_audit` 与 `web_team_read_audit` 已完成独立只读盘点；`iam_team_fixed_docs_writer` 仅改上述三文件，经独立复审指出的 P1/P2 修正与 Root 事实纠偏后，IAM `c588d86f` 三文档及 `b363554d` CURRENT 均已提交推送 main、工作树 clean。Root `pnpm contract:check`、`pnpm prisma:validate`、`git diff --check` 通过。此为 IAM 文档设计门，不是固定租户登录、Web 消费或 Team 写闭环；BFF admission 已按下一卡完成并由 Root 真 OAuth 异租户负例验证。
 
 ### W1C-FIXED-TENANT-BFF-A：普通 Product admission 固定租户闸
 
@@ -41,6 +41,8 @@
 | 放置/粒度 | 扩展既有 `src/auth/user-admission.ts` 和相邻 `test/user-admission.test.ts`、必要配置/HTTP 测试及三设计文档（采用）；另建 Team 专属检查、独立 middleware/数据库表或 BFF 租户目录均淘汰，因为所有 Product 资源必须同样绑定。 |
 | 依赖与删除 | 不修改 IAM scope/contract、不放宽旧 IAM admission；不接受浏览器 tenant/header。此切片不删登录所需 `/organization/list|set-active`，删除须等 Web 固定选择流程同步。无 schema/事务变化；现有测试 fixture 必须显式固定 tenant，不能靠 `null` 绕过。 |
 | 验证 | TDD：同租户成功；异租户/未配置在任何 route/receipt/owner I/O 前失败；伪造 legacy tenant header无效；service-only/issuer 仍可用。BFF `pnpm format:check && pnpm check`、Root 固定 SHA 真 OAuth A/C 跨租户负例后方可验收。 |
+
+执行结果：BFF main `018c6176` 实施准入，`dadf9264` 顺序固定 IAM `b363554d` 来源，Web `74319fac` 消费固定 relay artifact，Root `d35c8d71` pin 三仓 gitlink 与 153 条相关来源记录。BFF 全门 272 pass/1 skip；Root 真 IAM OIDC Code+S256 A/C：A 当前 tenant 三个 Team GET 200，C 独立真实 issuer session + 其他 tenant JWT 对三 GET 全部 403 `product_tenant_forbidden`，伪造 legacy tenant/principal header 无效，自有资源0。此任务 **已验收**，但 Web 固定 tenant 登录交互及 Team Product 写仍待后续任务。
 
 
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。

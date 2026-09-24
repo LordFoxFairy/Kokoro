@@ -95,6 +95,108 @@ class OidcGuards(unittest.TestCase):
             with self.subTest(status=changed.status, body=changed.body), self.assertRaises(smoke.SmokeError):
                 smoke.validate_team_missing_bearer(changed)
 
+    def test_foreign_tenant_guard_requires_stable_denial(self):
+        headers = self.Headers(
+            {
+                "content-type": "application/json; charset=utf-8",
+                "cache-control": "no-store",
+                "x-request-id": "foreign-request-1",
+            }
+        )
+        good = smoke.HttpResponse(
+            403,
+            headers,
+            json.dumps(
+                {
+                    "error": {
+                        "code": "product_tenant_forbidden",
+                        "message": "BFF user admission failed",
+                    },
+                    "meta": {"request_id": "foreign-request-1"},
+                }
+            ).encode(),
+        )
+        smoke.validate_team_foreign_tenant(good)
+        for changed in (
+            smoke.HttpResponse(200, headers, good.body),
+            smoke.HttpResponse(
+                403,
+                headers,
+                good.body.replace(b"product_tenant_forbidden", b"service_auth_failed"),
+            ),
+            smoke.HttpResponse(
+                403,
+                self.Headers(
+                    {
+                        "content-type": "application/json",
+                        "cache-control": "public",
+                        "x-request-id": "foreign-request-1",
+                    }
+                ),
+                good.body,
+            ),
+            smoke.HttpResponse(
+                403,
+                headers,
+                good.body.replace(b'"foreign-request-1"}', b'"wrong-request"}'),
+            ),
+        ):
+            with (
+                self.subTest(status=changed.status, body=changed.body),
+                self.assertRaises(smoke.SmokeError),
+            ):
+                smoke.validate_team_foreign_tenant(changed)
+
+    def test_foreign_actor_protocol_requires_distinct_tenant(self):
+        ready = self.ready()
+        good = {
+            "kind": "actors",
+            "same_tenant_member": {
+                "email": "member@example.test",
+                "password": "member-secret",
+                "user_id": "member-1",
+                "tenant_id": ready.tenant_id,
+            },
+            "other_tenant_owner": {
+                "email": "outsider@example.test",
+                "password": "outsider-secret",
+                "user_id": "outsider-1",
+                "tenant_id": "other-tenant",
+            },
+        }
+        outsider = smoke.require_foreign_actor(good, ready)
+        self.assertEqual(
+            (outsider.email, outsider.password, outsider.tenant_id),
+            ("outsider@example.test", "outsider-secret", "other-tenant"),
+        )
+        for changed in (
+            {
+                **good,
+                "other_tenant_owner": {
+                    **good["other_tenant_owner"],
+                    "tenant_id": ready.tenant_id,
+                },
+            },
+            {
+                **good,
+                "other_tenant_owner": {
+                    **good["other_tenant_owner"],
+                    "email": ready.email,
+                },
+            },
+            {
+                **good,
+                "same_tenant_member": {
+                    **good["same_tenant_member"],
+                    "tenant_id": "other-tenant",
+                },
+            },
+            {**good, "extra": "drift"},
+        ):
+            with self.subTest(changed=changed), self.assertRaises(smoke.SmokeError):
+                smoke.require_foreign_actor(changed, ready)
+
+
     class Headers:
         def __init__(self, values=None, cookies=None):
             self.values = {key.lower(): value for key, value in (values or {}).items()}

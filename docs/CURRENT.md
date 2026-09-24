@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-IAM `b363554d` 已把三个当前态设计文档与已发布 Team 读/写事实对齐；BFF `018c6176` 在普通 Product admission 加入固定 `KOKORO_TENANT_ID` 与 IAM 已验证 tenant 的等值闸，异租户 403、缺配置 503；随后 BFF `dadf9264`、Web `74319fac` 顺序重钉同一 IAM relay policy 1.1.0 来源与生成快照。BFF Node22 完整门 `272 passed/1 skip`，Web contract 57/57、architecture 33/33、full Vitest 1417/1417、隔离目录 typegen/build 通过。当前 Web 固定 tenant 登录交互、Team Product 写/旧路径删除、真 OAuth 异租户负例均**未完成**，不得把 BFF 准入闸宣称为整个固定租户闭环。
+IAM `b363554d` 已把三个当前态设计文档与已发布 Team 读/写事实对齐；BFF `018c6176` 在普通 Product admission 加入固定 `KOKORO_TENANT_ID` 与 IAM 已验证 tenant 的等值闸，异租户 403、缺配置 503；随后 BFF `dadf9264`、Web `74319fac` 顺序重钉同一 IAM relay policy 1.1.0 来源与生成快照。BFF Node22 完整门 `272 passed/1 skip`，Web contract 57/57、architecture 33/33、full Vitest 1417/1417、隔离目录 typegen/build 通过。Root 已在固定来源的真实 IAM→BFF Code+S256 组合验证同租户 Team 三读 200、异租户真实 JWT 加伪造身份头三读 403，自有资源0；Web 固定 tenant 登录交互、Team Product 写/旧路径删除仍**未完成**，不得把 BFF 准入闸宣称为整个固定租户闭环。
 
 用户 3310 的 Web-only 常驻 `/login` 当前 HTTP 503 且 body 为 0，没有可见“连接中／整页重试”UI，也尚未连接正式 IAM 登录。2026-09-24 修复了其 `node_modules/@kokoro/{i18n,tsconfig,web-core}` 指向已清理隔离目录的断裂 symlink，恢复页面编译；随后实测 503/0 字节，Web 登录/架构聚焦 25/25 通过。此前隔离 build 的复用 node_modules 方式会改写 checkout workspace 链接，后续隔离验证必须避免再次触碰用户常驻依赖。
 
