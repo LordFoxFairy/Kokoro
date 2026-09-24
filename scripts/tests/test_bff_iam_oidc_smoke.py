@@ -1,13 +1,13 @@
 """Protocol and cleanup guards for real IAM → BFF first-login smoke."""
 
-import importlib.util
 import base64
+import importlib.util
 import json
-from pathlib import Path
 import sys
 import tempfile
 import unittest
-from unittest.mock import Mock, patch
+from pathlib import Path
+from unittest.mock import MagicMock, Mock, patch
 
 PATH = Path(__file__).resolve().parents[1] / "e2e" / "run_bff_iam_oidc_smoke.py"
 sys.path.insert(0, str(PATH.parent))
@@ -25,6 +25,75 @@ class OidcGuards(unittest.TestCase):
             "iam:session-authorization.verify",
             "iam:member.read", "iam:invitation.read", "iam:role.read",
         ])
+
+    def test_product_team_page_requires_owner_projection_and_current_subject(self):
+        headers = self.Headers({
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "no-store",
+            "x-request-id": "team-request-1",
+        })
+        good = smoke.HttpResponse(200, headers, json.dumps({
+            "data": [{"user_id": "user-1"}],
+            "meta": {"request_id": "team-request-1", "next_cursor": None},
+        }).encode())
+        self.assertEqual(smoke.validate_team_page(good, "members", "user-1"), 1)
+        self.assertEqual(smoke.validate_team_page(
+            smoke.HttpResponse(200, headers, b'{"data":[],"meta":{"request_id":"team-request-1","next_cursor":null}}'),
+            "invitations", "user-1",
+        ), 0)
+        for changed, kind in (
+            (smoke.HttpResponse(200, headers, b'{"data":[],"meta":{"request_id":"team-request-1","next_cursor":null}}'), "members"),
+            (smoke.HttpResponse(200, headers, b'{"data":[{"user_id":"other"}],"meta":{"request_id":"team-request-1","next_cursor":null}}'), "members"),
+            (smoke.HttpResponse(200, self.Headers({"content-type": "application/json; charset=utf-8", "cache-control": "public", "x-request-id": "team-request-1"}), good.body), "members"),
+            (smoke.HttpResponse(200, headers, b'{"data":[{"user_id":"user-1"}],"meta":{"request_id":"wrong","next_cursor":null}}'), "members"),
+            (smoke.HttpResponse(503, headers, good.body), "members"),
+        ):
+            with self.subTest(kind=kind, status=changed.status, body=changed.body), self.assertRaises(smoke.SmokeError):
+                smoke.validate_team_page(changed, kind, "user-1")
+
+    def test_product_team_http_uses_narrow_route_and_user_bearer(self):
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.status = 200
+        response.headers = self.Headers({"content-type": "application/json; charset=utf-8"})
+        response.read.return_value = b"{}"
+        opener = Mock()
+        opener.open.return_value = response
+        with patch.object(smoke, "build_opener", return_value=opener):
+            smoke.product_team_http("http://127.0.0.1:1234", "service-secret", "members", "user-token", spoof_identity=True)
+        request = opener.open.call_args.args[0]
+        self.assertEqual(request.full_url, "http://127.0.0.1:1234/v1/team/members?limit=5")
+        sent = dict(request.header_items())
+        self.assertEqual(sent["Authorization"], "Bearer user-token")
+        self.assertEqual(sent["X-kokoro-service"], "web-bff")
+        self.assertEqual(sent["X-kokoro-internal-secret"], "service-secret")
+        self.assertEqual(sent["X-kokoro-tenant-id"], "spoofed-tenant")
+        self.assertEqual(sent["X-kokoro-principal-id"], "spoofed-actor")
+        self.assertNotIn("Cookie", sent)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.product_team_http("http://127.0.0.1:1234", "service-secret", "../../admin", "user-token")
+
+    def test_team_missing_bearer_requires_stable_error_envelope(self):
+        headers = self.Headers({
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "no-store",
+            "x-request-id": "team-request-1",
+        })
+        good = smoke.HttpResponse(401, headers, json.dumps({
+            "error": {"code": "session_authentication_required", "message": "BFF user admission failed"},
+            "meta": {"request_id": "team-request-1"},
+        }).encode())
+        smoke.validate_team_missing_bearer(good)
+        for changed in (
+            smoke.HttpResponse(401, self.Headers({"content-type": "text/plain", "cache-control": "no-store", "x-request-id": "team-request-1"}), good.body),
+            smoke.HttpResponse(401, self.Headers({"content-type": "application/json", "cache-control": "public", "x-request-id": "team-request-1"}), good.body),
+            smoke.HttpResponse(401, self.Headers({"content-type": "application/json", "cache-control": "no-store", "x-request-id": "invalid request id"}), good.body),
+            smoke.HttpResponse(401, headers, b'{"error":{"code":"wrong"},"meta":{"request_id":"team-request-1"}}'),
+            smoke.HttpResponse(401, headers, b'{"error":{"code":"session_authentication_required"},"meta":{"request_id":"other"}}'),
+            smoke.HttpResponse(200, headers, good.body),
+        ):
+            with self.subTest(status=changed.status, body=changed.body), self.assertRaises(smoke.SmokeError):
+                smoke.validate_team_missing_bearer(changed)
 
     class Headers:
         def __init__(self, values=None, cookies=None):
@@ -411,9 +480,8 @@ class OidcGuards(unittest.TestCase):
                 smoke.assert_log_clean(path, ("authorization/code",))
 
     def test_native_session_and_error_are_classified_without_payload_logging(self):
-        response = lambda status, body, content_type="application/json": smoke.HttpResponse(
-            status, self.Headers({"content-type": content_type}), body
-        )
+        def response(status, body, content_type="application/json"):
+            return smoke.HttpResponse(status, self.Headers({"content-type": content_type}), body)
         self.assertTrue(smoke.session_present(response(200, b'{"user":{"id":"u"}}')))
         self.assertFalse(smoke.session_present(response(200, b"null")))
         self.assertEqual(smoke.native_error_code(response(401, b'{"error":"invalid_token"}')), "invalid_token")

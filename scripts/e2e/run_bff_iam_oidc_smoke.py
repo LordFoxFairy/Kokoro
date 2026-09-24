@@ -8,23 +8,23 @@ from __future__ import annotations
 
 import argparse
 import base64
-from dataclasses import dataclass
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import secrets
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qs, quote, quote_plus, unquote, urlencode, urlsplit
 from urllib.request import ProxyHandler, Request, build_opener
 
 import capability_bff_smoke_runtime as runtime
-from bff_owner_schema import bff_owner_database_url
 import run_bff_iam_session_smoke as session
+from bff_owner_schema import bff_owner_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
 IAM = ROOT / "apps/kokoro-iam"
@@ -38,6 +38,7 @@ TOKEN_KIND_CLAIM = "https://kokoro.dev/token_kind"
 LOGOUT_CSP = "default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
 MAX_BODY = 1_048_576
 JSON_CONTENT_TYPES = frozenset({"application/json", "application/json; charset=utf-8"})
+TEAM_READ_KINDS = frozenset({"members", "invitations", "roles"})
 PRIMARY_STAGE_LABELS = frozenset({
     "preflight",
     "BFF current-source build",
@@ -322,6 +323,78 @@ def http(base: str, path: str, secret: str, *, method: str = "GET", payload: dic
         if len(body) > MAX_BODY:
             raise SmokeError("Native IAM response oversized")
         return HttpResponse(response.status, response.headers, body)
+
+
+def product_team_http(base: str, secret: str, kind: str, token: str | None,
+                      *, spoof_identity: bool = False) -> HttpResponse:
+    if kind not in TEAM_READ_KINDS:
+        raise SmokeError("Team Product route invalid")
+    headers = {"x-kokoro-service": "web-bff", "x-kokoro-internal-secret": secret,
+               "accept": "application/json"}
+    if token is not None:
+        headers["authorization"] = "Bearer " + token
+    if spoof_identity:
+        headers["x-kokoro-tenant-id"] = "spoofed-tenant"
+        headers["x-kokoro-principal-id"] = "spoofed-actor"
+    request = Request(base + f"/v1/team/{kind}?limit=5", method="GET", headers=headers)
+    try:
+        response = build_opener(ProxyHandler({}), runtime.NoRedirect()).open(request, timeout=8)
+    except HTTPError as error:
+        response = error
+    except (URLError, TimeoutError, OSError):
+        raise SmokeError("BFF Team HTTP transport failed") from None
+    with response:
+        body = response.read(MAX_BODY + 1)
+        if len(body) > MAX_BODY:
+            raise SmokeError("BFF Team response oversized")
+        return HttpResponse(response.status, response.headers, body)
+
+
+def validate_team_page(response: HttpResponse, kind: str, subject: str) -> int:
+    if kind not in TEAM_READ_KINDS or response.status != 200:
+        raise SmokeError(f"Team {kind}: HTTP {response.status}, expected 200")
+    require_json_content_type(response)
+    if response.headers.get("cache-control") != "no-store":
+        raise SmokeError("Team Product response cache policy invalid")
+    request_id = response.headers.get("x-request-id")
+    if not isinstance(request_id, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) is None:
+        raise SmokeError("Team Product request ID invalid")
+    page = response.json()
+    if set(page) != {"data", "meta"} or not isinstance(page["data"], list) or len(page["data"]) > 5:
+        raise SmokeError("Team Product page shape invalid")
+    meta = page["meta"]
+    if not isinstance(meta, dict) or set(meta) != {"request_id", "next_cursor"} or meta["request_id"] != request_id:
+        raise SmokeError("Team Product page metadata invalid")
+    cursor = meta["next_cursor"]
+    if cursor is not None and (not isinstance(cursor, str) or not 1 <= len(cursor) <= 2048):
+        raise SmokeError("Team Product cursor invalid")
+    if any(not isinstance(item, dict) for item in page["data"]):
+        raise SmokeError("Team Product items invalid")
+    if kind == "members" and not any(item.get("user_id") == subject for item in page["data"]):
+        raise SmokeError("Team Product current membership absent")
+    return len(page["data"])
+
+
+def validate_team_missing_bearer(response: HttpResponse) -> None:
+    if response.status != 401:
+        raise SmokeError("Team Product request without Bearer was not denied")
+    require_json_content_type(response)
+    if response.headers.get("cache-control") != "no-store":
+        raise SmokeError("Team Product rejection cache policy invalid")
+    request_id = response.headers.get("x-request-id")
+    if not isinstance(request_id, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) is None:
+        raise SmokeError("Team Product rejection request ID invalid")
+    body = response.json()
+    if set(body) != {"error", "meta"}:
+        raise SmokeError("Team Product rejection envelope invalid")
+    error = body["error"]
+    meta = body["meta"]
+    if (not isinstance(error, dict) or set(error) != {"code", "message"}
+            or error["code"] != "session_authentication_required"
+            or not isinstance(error["message"], str) or not error["message"]
+            or not isinstance(meta, dict) or set(meta) != {"request_id"}
+            or meta["request_id"] != request_id):
+        raise SmokeError("Team Product rejection envelope invalid")
 
 
 def require(response: HttpResponse, status: int, stage: str) -> dict:
@@ -611,6 +684,15 @@ def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegist
     validate_userinfo(info, tokens)
     evidence("userinfo", 200)
     cases += 1
+    missing_bearer = product_team_http(base, secret, "members", None)
+    validate_team_missing_bearer(missing_bearer)
+    evidence("Team missing bearer", missing_bearer.status)
+    cases += 1
+    for kind in ("members", "invitations", "roles"):
+        page = product_team_http(base, secret, kind, tokens.access_token, spoof_identity=True)
+        count = validate_team_page(page, kind, tokens.subject)
+        print(json.dumps({"http_step": f"Team {kind}", "status": 200, "item_count": count}), flush=True)
+        cases += 1
     current = session_present(http(base, "/iam/get-session", secret, cookie=jar.header()))
     print(json.dumps({"http_step": "get-session before logout", "status": 200,
                       "session_present": current}), flush=True)
