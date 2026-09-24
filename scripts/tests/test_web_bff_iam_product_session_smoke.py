@@ -310,6 +310,29 @@ class ProductSessionGuards(unittest.TestCase):
             b'<main><form method="post" data-oidc-logout-confirmation action="https://web.example.test/iam/oauth2/end-session/confirm"><button type="submit" name="action" value="confirm">Confirm logout</button></form></main>',
         )
         smoke.require_logout_confirmation(response, "https://web.example.test")
+        smoke.require_logout_confirmation(
+            smoke.old.BrowserResponse(
+                200,
+                response.headers,
+                [response.set_cookies[0].replace("; Secure", "")],
+                response.body,
+            ),
+            "https://web.example.test",
+        )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_logout_confirmation(
+                smoke.old.BrowserResponse(
+                    200,
+                    response.headers,
+                    [
+                        response.set_cookies[0]
+                        .replace("kokoro-issuer.", "__Secure-kokoro-issuer.")
+                        .replace("; Secure", "")
+                    ],
+                    response.body,
+                ),
+                "https://web.example.test",
+            )
         for name in (
             "evil.session_token.oauth_logout_confirmation",
             "kokoro-issuer.other.oauth_logout_confirmation",

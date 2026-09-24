@@ -222,12 +222,12 @@ def require_logout_confirmation(
     ]
     if len(cookies) != 1:
         raise SmokeError("IAM confirmation cookie missing")
-    _, attributes = _cookie_parts(cookies[0])
+    name, attributes = _cookie_parts(cookies[0])
     if (
         attributes.get("path") != CONFIRM_PATH
         or attributes.get("samesite", "").lower() != "lax"
         or "httponly" not in attributes
-        or "secure" not in attributes
+        or (name.startswith("__Secure-") and "secure" not in attributes)
     ):
         raise SmokeError("IAM confirmation cookie attributes invalid")
     return ConfirmationForm(CONFIRM_PATH, {**parser.hidden, "action": "confirm"})
