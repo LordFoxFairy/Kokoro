@@ -257,6 +257,61 @@ def test_agent_environment_disables_dotenv_without_starting_resources(
     assert smoke._agent_environment([tmp_path])["PYTHON_DOTENV_DISABLED"] == "1"
 
 
+def test_final_sql_evidence_queries_each_owner_separately() -> None:
+    bff_evidence = {
+        "bff_outbox_status": "succeeded",
+        "bff_assistant_status": "completed",
+        "bff_agui_frames": 5,
+        "bff_source_events": 4,
+    }
+    agent_evidence = {
+        "agent_terminal": True,
+        "agent_dispatch_status": "succeeded",
+        "agent_chat_events": 4,
+        "agent_event_summary": [{"type": "RUN_FINISHED", "payload": {}}],
+        "agent_completed_assistants": 1,
+    }
+
+    class OwnerSqlRecorder:
+        def __init__(self) -> None:
+            self.queries: list[str] = []
+
+        def _run(self, command: list[str]) -> str:
+            query = command[-1]
+            self.queries.append(query)
+            owners = {
+                owner
+                for owner, marker in (
+                    ("bff", "kokoro_bff."),
+                    ("agent", "kokoro_agent."),
+                )
+                if marker in query
+            }
+            if owners == {"bff"}:
+                return json.dumps(bff_evidence)
+            if owners == {"agent"}:
+                return json.dumps(agent_evidence)
+            return json.dumps({**bff_evidence, **agent_evidence})
+
+    resources = OwnerSqlRecorder()
+    evidence = smoke._final_sql_evidence(
+        resources,  # type: ignore[arg-type]
+        "postgresql://local/app",
+        "conversation-a",
+        "run-a",
+    )
+
+    assert evidence == {**bff_evidence, **agent_evidence}
+    assert len(resources.queries) == 2
+    assert all(
+        not ("kokoro_bff." in query and "kokoro_agent." in query)
+        for query in resources.queries
+    )
+    assert {
+        "bff" if "kokoro_bff." in query else "agent" for query in resources.queries
+    } == {"bff", "agent"}
+
+
 def test_failed_database_create_is_not_registered_for_drop() -> None:
     recorder = Recorder()
 

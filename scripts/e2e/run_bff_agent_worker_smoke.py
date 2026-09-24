@@ -916,7 +916,7 @@ def _first_turn_facts(
 def _final_sql_evidence(
     resources: OwnedResources, database_url: str, conversation_id: str, run_id: str
 ) -> dict[str, object]:
-    raw = _psql(
+    bff_raw = _psql(
         resources,
         database_url,
         "SELECT json_build_object("
@@ -931,7 +931,13 @@ def _final_sql_evidence(
         + "),"
         "'bff_source_events',(SELECT count(*) FROM kokoro_bff.bff_agui_source_event WHERE session_id="
         + _sql_literal(conversation_id)
-        + "),"
+        + ")"
+        ")::text",
+    )
+    agent_raw = _psql(
+        resources,
+        database_url,
+        "SELECT json_build_object("
         "'agent_terminal',(SELECT terminal FROM kokoro_agent.kokoro_agent_run WHERE run_id="
         + _sql_literal(run_id)
         + "),"
@@ -949,11 +955,32 @@ def _final_sql_evidence(
         + " AND role='assistant' AND status='completed')"
         ")::text",
     )
-    try:
-        value = json.loads(raw)
-    except json.JSONDecodeError:
-        raise SmokeError("Final worker SQL evidence was invalid") from None
-    return value if isinstance(value, dict) else {}
+    expected_bff_fields = {
+        "bff_outbox_status",
+        "bff_assistant_status",
+        "bff_agui_frames",
+        "bff_source_events",
+    }
+    expected_agent_fields = {
+        "agent_terminal",
+        "agent_dispatch_status",
+        "agent_chat_events",
+        "agent_event_summary",
+        "agent_completed_assistants",
+    }
+
+    def decode(raw: str, owner: str, expected_fields: set[str]) -> dict[str, object]:
+        try:
+            value = json.loads(raw)
+        except json.JSONDecodeError:
+            raise SmokeError(f"{owner} final SQL evidence was invalid") from None
+        if not isinstance(value, dict) or set(value) != expected_fields:
+            raise SmokeError(f"{owner} final SQL evidence fields drifted")
+        return value
+
+    bff_evidence = decode(bff_raw, "BFF", expected_bff_fields)
+    agent_evidence = decode(agent_raw, "Agent", expected_agent_fields)
+    return {**bff_evidence, **agent_evidence}
 
 
 def _wait_snapshot(

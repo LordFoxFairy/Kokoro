@@ -311,3 +311,19 @@ W1D-Web-Login-Entry / B3 Root集成：Root `ded9efd5ce87f795529e4191204197575d05
 R1 来源更新（2026-09-24）：上述基线 SHA 保留为任务派发历史，不再作为执行输入。IAM 文档状态修正触发严格 provenance 级联：IAM `b35a9a5301219654ea344c03407fd355f58c481e`、BFF `84a560abeac5b7a63f32d7064abdde849ab33cf9`、Web `210ddfdd77f24143a0ed0617e2ecf1089bcf513c` 已分别由 owner 发布；Agent 仍为 `520ec181a101298b4f336aad273ce003b2735955`。R1 runner 必须按 Root 新发布 gitlink 核验这些精确来源；此更新只改变 policy/source digest，不扩大 R1 边界，也不把 IAM 文档提交当作 IAM 行为变更。
 
 R1 集成状态（2026-09-24）：Root `b55379884aa3152be0d5e7bfd04b67f745763297` 已固定上述来源。真 BFF HTTP→Agent HTTP→独立 CLI worker→System/模型严格 fixture 已由 Root 独立复跑 PASS，Agent 4 个执行/聊天事件、BFF 4 source/5 AG-UI frame、assistant completed、重载与幂等/同 tenant 他人隔离均已验证；测试自有 PG 库、Redis14/15 与进程最终为 0。独立审查 P1 Redis ownership 竞态、P2 ignored `.env` 注入已在原两文件 TDD 修复并复审为 0 P0/P1/P2；Root `scripts/tests` 621 passed/130 subtests。R1 不证明真实 provider、Web/IAM 浏览器首发、跨 tenant 或 HITL；R2/R3 仍是独立待办。
+
+## W1D-Chat-R2：真实浏览器、IAM 与 worker 同链（2026-09-24 设计门）
+
+当前 Root `34c71d902a1fe99c07130bc29d030d4d5642cca5`、Web `210ddfdd`、BFF `84a560a`、IAM `b35a9a5`、Agent `520ec181` 均 clean；登录 HTTP smoke 的 `run_browser()` 实际是 Python CookieJar，不执行 Web JavaScript；R1 的 IAM 是 admission stub。两个绿门相加不等于真实页面首发。生产 Web `/api/session`→BFF→Agent 路径已有，无需先造新业务 API。R2 是把原有 owner 一次置于同一受控链，再由真浏览器验证。
+
+| 切片 | Owner、位置与取舍 | 完成条件 |
+| --- | --- | --- |
+| R2a / Root 原有门修正 | Root `run_bff_agent_worker_smoke.py` 唯一writer；拆 `_final_sql_evidence` 为 BFF/Agent 各自独立 SQL，再在 Python 合并。淘汰同一查询跨两个 owner schema；只改原 runner/测试，不改业务库。 | 架构负例防跨 owner SQL、聚焦测试与真worker回归、独占资源0、Root复审。 |
+| R2b / 一用户真实组合 | Root 在 `scripts/e2e/` 新建窄 Web+IAM+BFF+Agent worker runner/测试；复用现有 IAM test-owned host、隔离 Next/TLS、R1 原子 Redis ownership、真实 Agent HTTP/CLI 与严格 System/模型 HTTP fixture。淘汰在登录 runner 内增加 worker 状态机、也淘汰复制 R1 整个 runner；仅提取有第二调用者且可独立验收的 helper。 | 一个真实 IAM 用户在 Web Product Session 下首发，BFF/Agent owner-local PG、AG-UI、重载、幂等及资源0；不把 Python CookieJar 称为浏览器。 |
+| R2c / Chromium 页面 | Root 窄 `.mjs` 浏览器驱动消费 Web 自有 Playwright 依赖，浏览器专属 hostname→127.0.0.1 映射和自签测试TLS信任；测试 origin/实际 TLS port/Host 完全一致。需要 TLS proxy 有界 SSE 透传，不能用现有全量缓冲代理证明流或断线。淘汰 mock cookie、`route.fulfill`、伪造 Agent 帧。 | `/login`→IAM sign-in/tenant/consent→`/app` 真DOM composer→202/AG-UI→刷新后恰好一对持久消息；受控断流后 `Last-Event-ID` 恢复且无重复。 |
+| R2d / 私有矩阵 | IAM test fixture owner 才能添加 A/B/C真实账号及同/跨 tenant membership，优先扩展既有 host+integration test，不让 Root 写 IAM SQL；Root 消费 owner 发布的 test-only fixture，BFF/Agent不改身份模型。 | B 同tenant、C跨tenant 都以自己的真实Product Session拿不到 A 的列表/snapshot/events/mutation，且BFF/Agent无副作用；固定IAM SHA及来源级联复验。 |
+| R2e / 当前可见预览 | `3310` 当前只起 Web，`oidcRpConfig()` 因缺 RP server-only env 为 null，`/api/auth/csrf` 503，所以自动登录落失败页；这不是单租户未配置。测试 IAM host强制HTTPS且拒绝IP/localhost，不能把 `http://127.0.0.1:3310` 假称为可用RP。优先复用R2真实HTTPS编排做有界、可停止的本地可见入口，不改生产Host/Origin/cookie校验、不造假登录。 | 交付实际可打开的HTTPS地址和明确启动/停止/清理流程；用户浏览器能进入真实IAM登录页。若仅运行Web，页面仍应诚实反映依赖未就绪。 |
+
+依赖顺序：R2a→R2b→R2c；R2d 可在 R2b 后由 IAM 唯一writer独立推进，再由 Root 串行集成；R2e 使用同一真实入口，不为可见性分叉协议。每个写入任务先记录精确基线/允许文件集、先RED再GREEN、Root提交并复验。R3真实System发布route和真实provider仍独立，不让 fixture 代替。
+
+R2a 验收状态：唯一writer已把最终证据查询拆成 BFF/Agent 各一条 owner-local SQL，Python 严格字段合并；独立复审 0 P0/P1/P2，Root 聚焦 18/18、全Root **622 passed/130 subtests**、Ruff、真 worker smoke PASS，临时资源为0。本条与代码由 Root 同切片提交，R2b随后推进。
