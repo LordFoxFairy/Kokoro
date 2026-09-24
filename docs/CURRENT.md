@@ -21,7 +21,9 @@
 
 `kokoro-app` 是本轮唯一正式前端；Mori 不在本轮业务改造内。正式能力仓当前仍是
 `kokoro-capability`，尚未完成向 `kokoro-platform` 的原子切换。各子仓自行持有测试；Root 的
-`scripts/tests/` 只验证组合工具，不是业务单元测试总目录。
+`scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
+子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
+`verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
 
 ## 已验证到的边界
 
@@ -33,16 +35,18 @@
   服务的证明，也不覆盖首条消息、Agent worker、Web 重载或真实模型 provider。
 - Agent 已发布 typed `createRun`/`replaySessionEvents` 契约及空最终文本完成事件；BFF 已完成
   新会话首消息事务、assistant Message 与 AG-UI 同事务投影，并固定生成的 Agent HTTP 消费者。
-  Web 已按 BFF 严格 MessageCreate 契约发送首消息。三仓各自门禁通过，**尚无固定 SHA 的真
-  Web→BFF→Agent worker→持久重载组合验收**。
+  Web 已按 BFF 严格 MessageCreate 契约发送首消息。固定 BFF/Agent SHA 的 Root 真 HTTP + 独立
+  CLI worker 首消息组合已通过，覆盖幂等、Agent 执行、AG-UI 与持久重载；System/模型 HTTP 是
+  严格测试 fixture。**尚无真 Web/IAM 浏览器首发、跨 tenant 私有负例或真实 provider 验收**。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。
 
 ## 仍未完成
 
-1. 固定 SHA 真首消息/worker/AG-UI/重载组合验收；Web 对 BFF public contract 的全量 generated
-   消费与单一 AG-UI 网络协议，以及默认个人私有、显式分享、同 tenant 他人与跨 tenant 负例。
+1. 真 Web/IAM 浏览器首消息→BFF→Agent worker→AG-UI/刷新组合、Web 对 BFF public contract 的全量
+   generated 消费与单一 AG-UI 网络协议，以及默认个人私有、显式分享和跨 tenant 负例；Root 的 R1
+   fixture worker 验收不代替浏览器链或真实 provider。
 2. IAM Team 窄读到 BFF Product projection 再到 Web 的串行消费；删除 Web 旧 IAM/Team 直连。
 3. Storage/Platform/System/Scheduler 各自 owner 的能力调用、契约与数据闭环；Billing 最后。
 4. 当前 inventory 的 11 条 broken edge 与 1 条非法 Web→IAM 旁路，不能因为局部 smoke 通过而标绿。
