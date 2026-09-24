@@ -345,6 +345,46 @@ class BrowserGuards(unittest.TestCase):
             upstream.server_close()
             worker.join(timeout=5)
 
+    def test_proxy_forwards_delete_without_turning_it_into_501(self):
+        observed = []
+
+        class Upstream(BaseHTTPRequestHandler):
+            def log_message(self, *_args):
+                pass
+
+            def do_DELETE(self):
+                observed.append((self.command, self.path))
+                payload = b'{"error":{"code":"session_not_found"}}'
+                self.send_response(404)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(payload)))
+                self.end_headers()
+                self.wfile.write(payload)
+
+        upstream = ThreadingHTTPServer(("127.0.0.1", 0), Upstream)
+        worker = Thread(target=upstream.serve_forever, daemon=True)
+        worker.start()
+        proxy = smoke.Proxy(
+            upstream.server_port,
+            credentials=smoke.previous.CredentialRegistry(),
+        )
+        try:
+            connection = http.client.HTTPConnection("127.0.0.1", proxy.server_port)
+            connection.request("DELETE", "/v1/sessions/conv-a")
+            response = connection.getresponse()
+            self.assertEqual(response.status, 404)
+            self.assertEqual(
+                json.loads(response.read()),
+                {"error": {"code": "session_not_found"}},
+            )
+            self.assertEqual(observed, [("DELETE", "/v1/sessions/conv-a")])
+            connection.close()
+        finally:
+            proxy.close()
+            upstream.shutdown()
+            upstream.server_close()
+            worker.join(timeout=5)
+
     def test_oidc_query_requires_exact_single_values(self):
         expected = {"code", "state", "iss"}
         self.assertEqual(

@@ -50,7 +50,10 @@ def test_private_actor_probe_uses_own_product_session_for_all_foreign_paths() ->
         run_id=run_id,
         web_origin="https://web.example.test",
     )
-    probe(request, {"authenticated": True, "subject": "user-b", "expires_at": 1})
+    assert (
+        probe(request, {"authenticated": True, "subject": "user-b", "expires_at": 1})
+        == 1
+    )
 
     assert probe.calls == 1
     assert calls == [

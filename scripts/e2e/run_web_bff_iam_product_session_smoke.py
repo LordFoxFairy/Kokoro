@@ -92,7 +92,7 @@ class AuthenticatedRequest(Protocol):
 
 
 AuthenticatedAction = Callable[[AuthenticatedRequest], str]
-AuthenticatedProbe = Callable[[AuthenticatedRequest, dict], None]
+AuthenticatedProbe = Callable[[AuthenticatedRequest, dict], int]
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,9 +166,13 @@ def _run_authenticated_probe(
     projection: dict,
     *,
     authenticated: bool,
-) -> None:
+) -> int:
     if probe is not None and authenticated:
-        probe(request, projection)
+        expected_list_calls = probe(request, projection)
+        if type(expected_list_calls) is not int or expected_list_calls < 0:
+            raise SmokeError("authenticated probe list count invalid")
+        return expected_list_calls
+    return 0
 
 
 def _run_authenticated_action(
@@ -650,6 +654,7 @@ def run_browser(
         )
     chat_operation = ("GET", "/v1/sessions")
     chat_calls = observed.count(chat_operation)
+    confirmation_calls = observed.count(("POST", "/iam/oauth2/end-session/confirm"))
     require_product_chat_rejection(request("/api/session/sessions?limit=1"))
     if observed.count(chat_operation) != chat_calls:
         raise SmokeError("anonymous Product Chat request reached BFF")
@@ -841,9 +846,12 @@ def run_browser(
     authenticated_session_id = _run_authenticated_action(
         authenticated_action, request, authenticated=True
     )
-    _run_authenticated_probe(
+    probe_chat_calls = _run_authenticated_probe(
         authenticated_probe, request, initial_product, authenticated=True
     )
+    if observed.count(chat_operation) != chat_calls + probe_chat_calls:
+        raise SmokeError("authenticated probe Chat list count drift")
+    chat_calls += probe_chat_calls
     old_product_cookie = jar.header("/api/auth/session")
     issuer_cookie = "; ".join(
         pair
@@ -978,7 +986,10 @@ def run_browser(
         https_browser(port, "/iam/get-session", web_origin, cookie=issuer_cookie),
         active=False,
     )
-    if observed.count(("POST", "/iam/oauth2/end-session/confirm")) != 1:
+    if (
+        observed.count(("POST", "/iam/oauth2/end-session/confirm"))
+        != confirmation_calls + 1
+    ):
         raise SmokeError("issuer confirmation did not cross BFF once")
     # Signout is checked by require_signout_handoff against an exact public
     # client_id and registered redirect. A generic substring scan there would

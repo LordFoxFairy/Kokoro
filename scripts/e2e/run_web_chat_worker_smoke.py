@@ -435,7 +435,7 @@ class PrivateActorProbe:
     web_origin: str
     calls: int = field(default=0, init=False)
 
-    def __call__(self, request: product.AuthenticatedRequest, projection: dict) -> None:
+    def __call__(self, request: product.AuthenticatedRequest, projection: dict) -> int:
         if projection.get("subject") != self.user_id:
             raise SmokeError("private actor Product Session subject drift")
         self.calls += 1
@@ -487,6 +487,7 @@ class PrivateActorProbe:
                 "session_not_found",
                 f"{self.actor_name} private {label}",
             )
+        return 1
 
 
 def _privacy_sql_evidence(

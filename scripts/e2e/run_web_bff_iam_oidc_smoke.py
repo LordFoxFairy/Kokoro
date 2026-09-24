@@ -423,6 +423,9 @@ class ProxyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.forward()
 
+    def do_DELETE(self):
+        self.forward()
+
     def _stream_sse(
         self, response: http.client.HTTPResponse, upstream: http.client.HTTPConnection
     ) -> None:

@@ -78,12 +78,23 @@ class ProductSessionGuards(unittest.TestCase):
 
         def probe(request, projection):
             calls.append((request, projection))
+            return 1
 
         request = object()
         projection = {"subject": "user-b"}
-        smoke._run_authenticated_probe(probe, request, projection, authenticated=False)
+        self.assertEqual(
+            smoke._run_authenticated_probe(
+                probe, request, projection, authenticated=False
+            ),
+            0,
+        )
         self.assertEqual(calls, [])
-        smoke._run_authenticated_probe(probe, request, projection, authenticated=True)
+        self.assertEqual(
+            smoke._run_authenticated_probe(
+                probe, request, projection, authenticated=True
+            ),
+            1,
+        )
         self.assertEqual(calls, [(request, projection)])
 
     def test_actor_command_is_one_bounded_host_protocol_exchange(self):
