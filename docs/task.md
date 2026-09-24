@@ -18,6 +18,30 @@
 
 用户要求的最后旧失败入口已按既定 Web clean-slate 设计门单独删除：Web `08ef650a` 删除未被当前 UI/正式 OIDC 调用的 `/api/auth/magic-link/request` 和旧 `/api/auth/callback`，不再产出 `/login?auth=link_unavailable`；`/api/auth/callback/kokoro-iam` 保留。Root `54e18142` pin 后，以该 Web SHA 重新跑隔离真 HTTPS first-login smoke 通过。Web 聚焦 contract 57/57、architecture 33/33、全量 1417/1417，隔离新目录 `next typegen`/TypeScript/production build 通过；用户 3310 的旧 `.next` 不被测试重写。旧 `auth.ts` helper/Team 仍属其他 clean-slate 切片，不把删除两条 route 冒充全部遗留路径清零。
 
+## W1C-Team-R2D-FIX 固定租户设计门（2026-09-24，进行中）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | IAM `apps/kokoro-iam` 的 organization 是 Tenant/Member/Invitation/Role 唯一事实与 writer；Root 管理跨仓 Product 约束。审查基线 Root `e66e93e6`、IAM `093b7651`、BFF `7a7f3adf`、Web `08ef650a`，均 main/clean。 |
+| 当前事实 | IAM 三个 current-tenant internal GET、相关 mutation 与 issuer-session 已验证收/拒邀请存在；BFF 已发布 `/v1/team/{members,invitations,roles}` 三 GET。Web Team 零消费这些 GET，仍经旧 `/api/team/*` 直连 IAM `/bff/*`、密封 team-session 与切换 UI。IAM 三设计文档首页把已发布三 GET 写成待实现，须纠正。 |
+| 目标职责 | 固定一个**产品部署租户**：受信配置绑定登录/Token 与 Product admission，Team 页面只有当前租户成员、邀请、角色；不显示全局租户目录、个人/团队 namespace 或切换器。IAM 可以继续持有通用多租户事实，不把 `Member.userId` 改成全局唯一。聊天/文件仍默认个人私有，成员资格不授予访问。 |
+| 目录方案 / 粒度 | IAM 扩展现有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md`（采用），不新建 `team-config`/ADR 垃圾桶或复制 contract（淘汰）；下一实现片复用 IAM 现有 organization controller/repository 与 BFF 现有 Team route/client，再由 Web 删除旧 Team adapter/UI。 |
+| 依赖 / 数据 API | IAM 三文档先区分已发布 owner 三读/已有写与尚未发布的 Product 写投影；收/拒邀请复用已存在的 verified issuer-session 边界。本人未入组 pending inbox 只有确认产品必要且冻结窄 issuer 契约后才建；不为旧切换 UI 发明跨租户目录/HMAC cursor。BFF 受信固定 `KOKORO_TENANT_ID` 与 Web RP 的绑定方式须在代码切片前定成可验证 contract，不能只隐藏 UI。无新 IAM Team 表/全局用户唯一约束、无跨 owner SQL。 |
+| 删除项 | 后续 Web 原子替换旧 `/api/team/{context,switch,[...path]}`、`src/team/client.ts` 旧 wire、旧 `auth.ts` team-session/helper、namespace 切换器与相关文案/测试；不得先删有效邀请/成员写而造成业务回退。 |
+| 验证 | 文档门：三设计相互一致、当前/目标分明、Root 审查与 `git diff --check`；实现门：IAM `pnpm verify`/真实 PG+Redis/contract+consumer，BFF `pnpm check`/真实 IAM HTTP，Web contract/architecture/lint/typecheck/test/build/Playwright，Root 固定 SHA 真 OAuth→Team 读写/邀请与默认私有负例、来源门/main-only。 |
+
+本片分工：`iam_team_read_audit` 与 `web_team_read_audit` 已完成独立只读盘点；`iam_team_fixed_docs_writer` 仅改上述三文件，经独立复审指出的 P1/P2 修正与 Root 事实纠偏后，IAM `c588d86f` 三文档及 `b363554d` CURRENT 均已提交推送 main、工作树 clean。Root `pnpm contract:check`、`pnpm prisma:validate`、`git diff --check` 通过。此为 IAM 文档设计门，不是固定租户 runtime、BFF/Web 消费或 Team 写闭环；BFF admission writer 正按下一卡实施。
+
+### W1C-FIXED-TENANT-BFF-A：普通 Product admission 固定租户闸
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 当前事实 | BFF `src/auth/user-admission.ts` 是普通 `/v1` 的唯一身份准入点；`config.tenantId` 已由 `KOKORO_TENANT_ID` 读取但当前仅 `runtime-manifest` 使用。IAM 验证的其他租户 User Bearer 目前仍能进入 BFF 普通路由。基线 BFF `7a7f3adf` main/clean。 |
+| 目标职责 | 在任何普通 Product route、请求体、receipt、数据库或 owner socket 之前，要求已配置的固定 tenant 与 IAM admission 的 tenant 精确相等；配置缺失返回稳定 503，异租户返回稳定 403。service-only runtime manifest 与 browser-private `/iam` 原生协议不经过此闸，不能误伤。 |
+| 放置/粒度 | 扩展既有 `src/auth/user-admission.ts` 和相邻 `test/user-admission.test.ts`、必要配置/HTTP 测试及三设计文档（采用）；另建 Team 专属检查、独立 middleware/数据库表或 BFF 租户目录均淘汰，因为所有 Product 资源必须同样绑定。 |
+| 依赖与删除 | 不修改 IAM scope/contract、不放宽旧 IAM admission；不接受浏览器 tenant/header。此切片不删登录所需 `/organization/list|set-active`，删除须等 Web 固定选择流程同步。无 schema/事务变化；现有测试 fixture 必须显式固定 tenant，不能靠 `null` 绕过。 |
+| 验证 | TDD：同租户成功；异租户/未配置在任何 route/receipt/owner I/O 前失败；伪造 legacy tenant header无效；service-only/issuer 仍可用。BFF `pnpm format:check && pnpm check`、Root 固定 SHA 真 OAuth A/C 跨租户负例后方可验收。 |
+
 
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 

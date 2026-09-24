@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `08ef650ad800719294111912d19776cacf96dbc5` |
-| `apps/kokoro-bff` | `7a7f3adfaec7d1bcee3b2079304a6129c0591d06` |
+| `apps/kokoro-app` | `74319facdd9545a2a3128a415e1cc7c12aeb2b78` |
+| `apps/kokoro-bff` | `dadf9264116ea9df2c0886c4af84bacb67aa6e41` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `093b76513a9aa71611c65d4f210e279d3227e002` |
+| `apps/kokoro-iam` | `b363554d07e5b6e182160b42ae1402330e55d9db` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -24,6 +24,12 @@
 `scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
+
+## 当前进行中的固定租户切片
+
+IAM `b363554d` 已把三个当前态设计文档与已发布 Team 读/写事实对齐；BFF `018c6176` 在普通 Product admission 加入固定 `KOKORO_TENANT_ID` 与 IAM 已验证 tenant 的等值闸，异租户 403、缺配置 503；随后 BFF `dadf9264`、Web `74319fac` 顺序重钉同一 IAM relay policy 1.1.0 来源与生成快照。BFF Node22 完整门 `272 passed/1 skip`，Web contract 57/57、architecture 33/33、full Vitest 1417/1417、隔离目录 typegen/build 通过。当前 Web 固定 tenant 登录交互、Team Product 写/旧路径删除、真 OAuth 异租户负例均**未完成**，不得把 BFF 准入闸宣称为整个固定租户闭环。
+
+用户 3310 的 Web-only 常驻 `/login` 当前 HTTP 503 且 body 为 0，没有可见“连接中／整页重试”UI，也尚未连接正式 IAM 登录。2026-09-24 修复了其 `node_modules/@kokoro/{i18n,tsconfig,web-core}` 指向已清理隔离目录的断裂 symlink，恢复页面编译；随后实测 503/0 字节，Web 登录/架构聚焦 25/25 通过。此前隔离 build 的复用 node_modules 方式会改写 checkout workspace 链接，后续隔离验证必须避免再次触碰用户常驻依赖。
 
 ## 已验证到的边界
 
