@@ -664,7 +664,7 @@
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
           "path": "docs/API_CONTRACT.md",
-          "sha256": "e076340785ca75c334393e1303c7490e7618aee6b694921b8f45bf9bc1541563"
+          "sha256": "0cee574dcdbba1867ae082041d13e79c74372de4e1b71420d88f009e7b410efa"
         },
         {
           "repository_path": "apps/kokoro-bff",
