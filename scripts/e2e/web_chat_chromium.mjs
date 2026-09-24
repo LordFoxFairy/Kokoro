@@ -265,8 +265,8 @@ try {
     throw new Error(`Browser assistant DOM did not converge; path=${new URL(page.url()).pathname}; ${JSON.stringify({ ...owner, ...dom, sse_attempts, browser_error_count: browserErrors.length, failed_paths: failedRequests.slice(-5), screenshot: failureScreenshot })}`)
   }
   process.stderr.write("MILESTONE:assistant\n")
-  if (!observedAguiResponses.some((response) => response.status === 200 && response.pathname === `/api/session/sessions/${encodeURIComponent(conversationId)}/events`)) {
-    throw new Error(`Browser app did not open AG-UI SSE; observed=${JSON.stringify(observedAguiResponses)}`)
+  if (observedAguiResponses.filter((response) => response.status === 200 && response.pathname === `/api/session/sessions/${encodeURIComponent(conversationId)}/events`).length < 2) {
+    throw new Error(`Browser app did not reconnect AG-UI SSE before assistant DOM; observed=${JSON.stringify(observedAguiResponses)}`)
   }
   const snapshot = await page.evaluate(async (target) => {
     const response = await fetch(target, { credentials: "same-origin", cache: "no-store" })
@@ -324,8 +324,9 @@ try {
     }
   }, { target: snapshotPath, timeoutMs: input.chat_timeout_ms })
   const frameTypes = replay.frames.map((frame) => frame.type)
+  const expectedTypes = ["RUN_STARTED", "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END", "RUN_FINISHED"]
   if (
-    replay.status !== 200 || !frameTypes.includes("RUN_STARTED") || !frameTypes.includes("RUN_FINISHED") ||
+    replay.status !== 200 || JSON.stringify(frameTypes) !== JSON.stringify(expectedTypes) ||
     replay.frames.at(-1)?.id !== snapshot.body.event_watermark ||
     new Set(replay.frames.map((frame) => frame.id)).size !== replay.frames.length
   ) {
@@ -368,6 +369,7 @@ try {
       message_post_status: receiptResponse.status(),
       agui_first_status: 200,
       agui_frame_types: frameTypes,
+      agui_frame_ids: replay.frames.map((frame) => frame.id),
       event_watermark: snapshot.body.event_watermark,
       reload_user_count: reloadUserCount,
       reload_assistant_count: reloadAssistantCount,

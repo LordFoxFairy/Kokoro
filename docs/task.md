@@ -17,7 +17,7 @@
 
 ### 1.1 主控优先看这里
 
-- 当前关键路径：**W1C Team owner-first 消费与旧直连删除 + W1D 真 Chromium 首消息/实时 AG-UI 恢复 → Storage 能力链**。固定 Web `9794a286`、BFF `84a560a`、IAM `b35a9a5`、Agent `520ec181` 的隔离 HTTPS Chromium 已从 `/login` 提交真实 IAM 凭据并取得 Product Session；独立 Python CookieJar 已把 Web 首消息送至真实 Agent worker 并验证 BFF 持久投影。两个证据尚未合成“同一浏览器发消息/观察 SSE”，当前 `3310` 也只有 Web，仍返回503。首消息 owner 代码、Product Session 与登录直达已发布；Team/私有矩阵、浏览器 Chat/SSE 与可见完整入口未验收。详见 Wave1C/W1D 执行卡。
+- 当前关键路径：**R2d 默认个人私有/显式分享的真实多身份矩阵 + R2e 用户可见的完整 HTTPS IAM 入口 + W1C Team 单租户契约收敛 → Storage 能力链**。固定 Web `9e2eb73`（登录文案清理）、BFF `84a560a`、IAM `b35a9a5`、Agent `520ec181` 中，R2c 已在前一 Web `067d7ea` 精确 SHA 的隔离 HTTPS Chromium 证明同一浏览器 IAM 登录→DOM 首消息→真实 Agent worker→AG-UI 助手可见/重载及一次受控断线 `Last-Event-ID` 恢复；本次新 Web 仅删除无引用旧文案，组合证据仍需按新 pin 复验。用户的 `3310` 只有 Web，`/login` 返回空 body 503，旧中转 UI 已删除但入口未接通。Team 设计候选经独立审查未放行，先按固定单租户重写窄契约，不扩建全租户切换。详见 Wave1C/W1D 执行卡。
 - 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
 - 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
 - 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
@@ -358,6 +358,10 @@ R2c-Chat-Web-SSE owner 交付：Web main `067d7eabb404d80a88ff47c7fc0220b4a43bfc
 
 R2c-Chat-DOM 子切片已过（2026-09-24）：Root 在固定 Web `067d7ea`/BFF `84a560a`/IAM `b35a9a5`/Agent `520ec181` 上复跑独占真HTTPS Chromium，单一 BrowserContext完成 IAM Email/Password→tenant→consent→Product Session→`/app` DOM composer POST202→真实 Agent worker→Web AG-UI 五帧→助手DOM可见→刷新后恰好一用户/一助手；BFF outbox/assistant 和 Agent执行终态一致，System/模型仍是严格fixture；测试自有PG/Redis/进程剩余均0。该子切片只证明正常实时流/重载，不证明受控断线 `Last-Event-ID` 恢复或用户当前3310可登录。R2c下一片保持恢复门 RED，随后再关浏览器闭环。
 
+R2c-Chat-SSE恢复子切片已过（2026-09-24）：Root 唯一脚本writer增加测试自有 TLS proxy 首帧完整截断：首次 Chat `/events` 只转发一帧 id/data，同一 upstream chunk 内其余帧不外泄，故意省略终止 chunk 触发真实浏览器断流；第二次同 conversation `/events` 必须携第一帧 cursor 的 `Last-Event-ID`。Root 固定 Web `067d7ea`/BFF `84a560a`/IAM `b35a9a5`/Agent `520ec181` 的真 Chromium exit0，proxy cuts=1、首cursor=重连header、浏览器观察至少两次200 SSE，五帧唯一、assistant DOM及reload一对、owner SQL一致、测试自有PG/Redis/进程0。此完成 R2c 正常流+受控一次断线的固定fixture门；R2d A/B/C个人私有矩阵、R2e用户可见完整入口、真实provider及后续Wave仍独立待验。
+
 W1C-Team 当前裁决（2026-09-24）：只读审查确认 IAM main `b35a9a5` 中三窄读 owner contract 已由 `68aa0da` 发布，OpenAPI 0.3.0 digest `e1a023d3ae9839c345d65ec91c3674bd105a9c27f65bb6ecb10f74c965340c54`；BFF main `84a560a` 已固定其生成 client、发布 `/v1/team/{members,invitations,roles}`，Root 真 OAuth→BFF→IAM R4 已验 19 case。故原“再实现 BFF 三读”的待办取消，不能重复写。Web `src/team/client.ts`、旧 `/api/team/*` 和 sealed team-session 仍要求本人团队、未入组邀请、邀请/成员写、切换以及旧字段，当前三读仅当前 tenant 且缺 email 等字段；直接换 URL 会破坏业务。下一片 IAM owner 先对这些缺失操作完成三文档门和契约/SQL设计，再按 IAM→BFF→Web 顺序实现并删除旧直连，不放宽默认个人私有。
 
 W1C-Team-R2D 文档任务卡：IAM 唯一写入 Agent `iam_team_r2_design_writer` 进行中；基线 IAM `b35a9a5301219654ea344c03407fd355f58c481e`、`main` clean。写入仅限 IAM `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`，Root 保留 Git index/commit、Root pin/台账和最终设计审查；不改 runtime、机器 OpenAPI、Schema、SDK、Web、BFF。基于 IAM 现有 Better Auth/组织/邀请事实和 Web 当前真实 UI，区分当前已发布的三读与目标缺失操作，裁决可信 issuer-session 与 user-delegated Product token 边界、owner、状态机/并发/幂等、权限、分页、API wire/错误、索引与 SQL 事务，并列出无法从现存事实确定的产品决策。完成条件：三文档对齐、无伪造当前态、无跨 owner SQL、Root 审查通过后才允许机器契约和实现切片。
+
+W1C-Team-R2D 评审裁决（2026-09-24）：上述候选已由 IAM writer 交付为未应用 patch `output/iam-team-r2d/iam-team-r2d-candidate.patch`，独立只读评审结论“需修改，不通过文档门”。用户本轮固定单租户部署是当前产品边界；候选为旧 Web `me/teams`、`switch`、`personal|team` 造跨 tenant 自助目录、重授权切换、全局cursor/索引，属于目标偏移。IAM main 保持 clean、机器 contract/schema/runtime 不变。下一切片先收敛 Web Team 目标为**当前固定 tenant** 的成员/邀请/角色，复用 IAM/BFF 已发布三读；删除旧 sealed team-session、namespace换签与切换 UI，而非做兼容层。成员 email不默认公开，多角色按 owner wire 展示；写投影按 IAM user-delegated scope/权限经 BFF 串行发布。未入组者接受邀请优先复用已发布 issuer verified accept/reject 及直接邀请入口；仅产品确需 inbox 时再设计固定 tenant 的窄 pending 读，不预建全局列表、HMAC cursor或索引。IAM 三文档须按此裁决重写并由 Root 复核，之前的候选不允许作为实现依据。

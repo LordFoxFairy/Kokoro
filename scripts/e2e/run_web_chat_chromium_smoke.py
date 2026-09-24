@@ -5,15 +5,19 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import http.client
 from http.server import ThreadingHTTPServer
 import json
 from pathlib import Path
+import re
+import select
 import socket
 import ssl
 import subprocess
 import sys
-from threading import Thread
-from urllib.parse import urlsplit
+from threading import Event, Lock, Thread
+import time
+from urllib.parse import quote, urlsplit
 
 E2E = Path(__file__).resolve().parent
 if str(E2E) not in sys.path:
@@ -99,12 +103,13 @@ class OwnedBrowserTlsProxy(ThreadingHTTPServer):
         host_name: str,
         authority: str,
         certificate: tuple[Path, Path],
+        drop_first_agui_frame: bool = False,
     ) -> OwnedBrowserTlsProxy:
         listener = reservation.transfer_socket()
         try:
             server = cls(
                 ("127.0.0.1", reservation.port),
-                worker_smoke.product.old.ProxyHandler,
+                BrowserRecoveryProxyHandler,
                 bind_and_activate=False,
             )
             server.socket.close()
@@ -119,6 +124,14 @@ class OwnedBrowserTlsProxy(ThreadingHTTPServer):
             server.observed: list[tuple[str, str]] = []
             server.credentials = None
             server.stream_sse = True
+            server.drop_first_agui_frame = drop_first_agui_frame
+            server.recovery_lock = Lock()
+            server.recovery_claimed = False
+            server.controlled_disconnects = 0
+            server.first_agui_cursor = None
+            server.first_agui_path = None
+            server.agui_request_headers = []
+            server.agui_resume_headers = []
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(str(certificate[0]), str(certificate[1]))
             server.socket = context.wrap_socket(server.socket, server_side=True)
@@ -133,6 +146,144 @@ class OwnedBrowserTlsProxy(ThreadingHTTPServer):
         self.shutdown()
         self.server_close()
         self.thread.join(timeout=5)
+
+    def assert_recovery(self, expected_event_path: str) -> dict[str, object]:
+        with self.recovery_lock:
+            first_cursor = self.first_agui_cursor
+            first_path = self.first_agui_path
+            requests = list(self.agui_request_headers)
+            resumes = list(self.agui_resume_headers)
+            cuts = self.controlled_disconnects
+        if (
+            cuts != 1
+            or not isinstance(first_cursor, str)
+            or not first_cursor
+            or not isinstance(first_path, str)
+            or first_path != expected_event_path
+            or len(requests) < 2
+            or requests[0] != (first_path, None)
+            or requests[1] != (first_path, first_cursor)
+            or not resumes
+            or resumes[0] != first_cursor
+        ):
+            raise SmokeError("Chromium AG-UI controlled cursor recovery drift")
+        return {
+            "controlled_disconnects": cuts,
+            "first_cursor": first_cursor,
+            "resumed_last_event_id": resumes[0],
+            "same_event_path": True,
+        }
+
+
+class BrowserRecoveryProxyHandler(worker_smoke.product.old.ProxyHandler):
+    """One test-owned SSE cut after exactly one complete upstream AG-UI event."""
+
+    def forward(self) -> None:
+        if self.command == "GET" and worker_smoke.product.old._SSE_PATH.fullmatch(
+            self.path.split("?", 1)[0]
+        ):
+            cursor = self.headers.get("Last-Event-ID")
+            with self.server.recovery_lock:
+                self.server.agui_request_headers.append((self.path, cursor))
+                if cursor is not None:
+                    self.server.agui_resume_headers.append(cursor)
+        super().forward()
+
+    def _stream_sse(
+        self, response: http.client.HTTPResponse, upstream: http.client.HTTPConnection
+    ) -> None:
+        with self.server.recovery_lock:
+            truncate = (
+                self.server.drop_first_agui_frame and not self.server.recovery_claimed
+            )
+            if truncate:
+                self.server.recovery_claimed = True
+        if not truncate:
+            super()._stream_sse(response, upstream)
+            return
+
+        self.send_response_only(200)
+        for name, value in response.getheaders():
+            if name.lower() not in {
+                "connection",
+                "content-length",
+                "transfer-encoding",
+                "trailer",
+                "keep-alive",
+                "proxy-connection",
+                "upgrade",
+                "te",
+            }:
+                self.send_header(name, value)
+        self.send_header("Transfer-Encoding", "chunked")
+        self.send_header("Connection", "close")
+        self.end_headers()
+        self.wfile.flush()
+        self.close_connection = True
+        response_socket = upstream.sock or getattr(
+            getattr(response.fp, "raw", None), "_sock", None
+        )
+        if response_socket is None:
+            return
+        watcher_stop = Event()
+
+        def close_upstream_on_disconnect() -> None:
+            while not watcher_stop.is_set():
+                try:
+                    if select.select([self.connection], [], [], 0.1)[0]:
+                        response_socket.shutdown(socket.SHUT_RDWR)
+                        return
+                except (OSError, ValueError):
+                    return
+
+        watcher = Thread(target=close_upstream_on_disconnect, daemon=True)
+        watcher.start()
+        pending = bytearray()
+        total = 0
+        deadline = time.monotonic() + worker_smoke.product.old.SSE_TOTAL_SECONDS
+        try:
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return
+                response_socket.settimeout(
+                    min(worker_smoke.product.old.SSE_IDLE_SECONDS, remaining)
+                )
+                chunk = response.read1(4096)
+                if not chunk:
+                    return
+                total += len(chunk)
+                if total > worker_smoke.product.old.MAX_SSE_BODY:
+                    return
+                pending.extend(chunk)
+                while match := re.search(rb"\r?\n\r?\n", pending):
+                    frame = bytes(pending[: match.end()])
+                    del pending[: match.end()]
+                    id_match = re.search(rb"^id: ?([^\r\n]+)$", frame, re.MULTILINE)
+                    if id_match is None or not re.search(
+                        rb"^data:", frame, re.MULTILINE
+                    ):
+                        continue
+                    try:
+                        cursor = id_match.group(1).decode("utf-8")
+                    except UnicodeDecodeError:
+                        return
+                    self.wfile.write(f"{len(frame):x}\r\n".encode("ascii"))
+                    self.wfile.write(frame)
+                    self.wfile.write(b"\r\n")
+                    self.wfile.flush()
+                    with self.server.recovery_lock:
+                        self.server.first_agui_cursor = cursor
+                        self.server.first_agui_path = self.path
+                        self.server.controlled_disconnects += 1
+                    # Deliberately omit the terminating HTTP chunk. Any remaining
+                    # events in the same upstream read are not sent to Chromium.
+                    return
+        except (OSError, ValueError, http.client.HTTPException):
+            return
+        finally:
+            watcher_stop.set()
+            watcher.join(timeout=0.5)
 
 
 @dataclass(slots=True)
@@ -231,6 +382,7 @@ class ChromiumLoginMilestone:
             "message_post_status",
             "agui_first_status",
             "agui_frame_types",
+            "agui_frame_ids",
             "event_watermark",
             "reload_user_count",
             "reload_assistant_count",
@@ -263,8 +415,21 @@ class ChromiumLoginMilestone:
             or result.get("message_post_status") != 202
             or result.get("agui_first_status") != 200
             or not isinstance(result.get("agui_frame_types"), list)
-            or "RUN_STARTED" not in result["agui_frame_types"]
-            or "RUN_FINISHED" not in result["agui_frame_types"]
+            or result["agui_frame_types"]
+            != [
+                "RUN_STARTED",
+                "TEXT_MESSAGE_START",
+                "TEXT_MESSAGE_CONTENT",
+                "TEXT_MESSAGE_END",
+                "RUN_FINISHED",
+            ]
+            or not isinstance(result.get("agui_frame_ids"), list)
+            or len(result["agui_frame_ids"]) != 5
+            or any(
+                not isinstance(cursor, str) or not cursor
+                for cursor in result["agui_frame_ids"]
+            )
+            or len(set(result["agui_frame_ids"])) != 5
             or not isinstance(result.get("event_watermark"), str)
             or not result["event_watermark"]
             or result.get("reload_user_count") != 1
@@ -278,6 +443,7 @@ class ChromiumLoginMilestone:
             "run_id": result["run_id"],
             "event_watermark": result["event_watermark"],
             "agui_frame_types": result["agui_frame_types"],
+            "agui_frame_ids": result["agui_frame_ids"],
             "reload_user_count": result["reload_user_count"],
             "reload_assistant_count": result["reload_assistant_count"],
         }
@@ -306,23 +472,47 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
         timeout=args.timeout,
         fail_after_chat_receipt=args.fail_after_chat_receipt,
     )
+    owned_proxy: OwnedBrowserTlsProxy | None = None
     with OwnedTlsReservation.reserve() as reservation:
+
+        def create_proxy(
+            upstream: int, host: str, authority: str, certificate: tuple[Path, Path]
+        ) -> OwnedBrowserTlsProxy:
+            nonlocal owned_proxy
+            owned_proxy = OwnedBrowserTlsProxy.from_reservation(
+                reservation,
+                upstream,
+                host,
+                authority,
+                certificate,
+                drop_first_agui_frame=True,
+            )
+            return owned_proxy
+
         mode = worker_smoke.BrowserOriginMode(
             tls_port=reservation.port,
-            proxy_factory=lambda upstream, host, authority, certificate: (
-                OwnedBrowserTlsProxy.from_reservation(
-                    reservation, upstream, host, authority, certificate
-                )
-            ),
+            proxy_factory=create_proxy,
             execute_turn=milestone,
         )
         base = worker_smoke.run_smoke(args, browser_mode=mode)
-    if milestone.result is None:
+    if milestone.result is None or owned_proxy is None:
         raise SmokeError("Chromium login milestone did not run")
+    result = milestone.result
+    expected_event_path = (
+        "/api/session/sessions/" + quote(result["conversation_id"], safe="") + "/events"
+    )
+    recovery = owned_proxy.assert_recovery(expected_event_path)
+    sql_evidence = base.get("chat", {}).get("sql_evidence", {})
+    if (
+        result["agui_frame_ids"][0] != recovery["first_cursor"]
+        or sql_evidence.get("bff_agui_frames") != 5
+    ):
+        raise SmokeError("Chromium AG-UI five-frame recovery evidence drift")
     return {
         **base,
         "browser_boundary": "same Chromium Context login, DOM message, AG-UI and reload",
-        "chromium": milestone.result,
+        "chromium": result,
+        "agui_recovery": recovery,
     }
 
 

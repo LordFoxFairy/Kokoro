@@ -250,6 +250,107 @@ def test_owned_browser_tls_proxy_flushes_live_sse_before_completion() -> None:
             upstream_thread.join(timeout=5)
 
 
+def test_owned_browser_tls_proxy_cuts_only_first_complete_agui_frame_and_forwards_resume() -> (
+    None
+):
+    observed: list[str | None] = []
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            observed.append(self.headers.get("Last-Event-ID"))
+            non_agui = b": heartbeat\n\n"
+            first = b'id: cursor-1\ndata: {"type":"RUN_STARTED"}\n\n'
+            second = b'id: cursor-2\ndata: {"type":"RUN_FINISHED"}\n\n'
+            payload = non_agui + first + second if len(observed) == 1 else second
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            # Both frames intentionally occupy one upstream write/read chunk.
+            self.wfile.write(payload)
+            self.wfile.flush()
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    reservation = chromium_smoke.OwnedTlsReservation.reserve()
+    authority = f"web-browser.example.test:{reservation.port}"
+    with tempfile.TemporaryDirectory() as directory:
+        certificate = worker_smoke.product.certificate(
+            Path(directory), "web-browser.example.test"
+        )
+        proxy = chromium_smoke.OwnedBrowserTlsProxy.from_reservation(
+            reservation,
+            upstream.server_port,
+            "web-browser.example.test",
+            authority,
+            certificate,
+            drop_first_agui_frame=True,
+        )
+        try:
+            context = ssl._create_unverified_context()
+
+            def request(cursor: str | None) -> bytes:
+                with socket.create_connection(
+                    ("127.0.0.1", proxy.server_port), timeout=2
+                ) as raw:
+                    with context.wrap_socket(
+                        raw, server_hostname="web-browser.example.test"
+                    ) as client:
+                        client.settimeout(2)
+                        headers = (
+                            "GET /api/session/sessions/session_one/events HTTP/1.1\r\n"
+                            f"Host: {authority}\r\n"
+                            "Accept: text/event-stream\r\n"
+                            + (f"Last-Event-ID: {cursor}\r\n" if cursor else "")
+                            + "Connection: close\r\n\r\n"
+                        )
+                        client.sendall(headers.encode())
+                        output = bytearray()
+                        while chunk := client.recv(4096):
+                            output.extend(chunk)
+                        return bytes(output)
+
+            first = request(None)
+            assert b'id: cursor-1\ndata: {"type":"RUN_STARTED"}\n\n' in first
+            assert b"heartbeat" not in first
+            assert b"cursor-2" not in first
+            assert not first.endswith(b"0\r\n\r\n")
+            second = request("cursor-1")
+            assert b'id: cursor-2\ndata: {"type":"RUN_FINISHED"}\n\n' in second
+            assert observed == [None, "cursor-1"]
+            assert proxy.first_agui_cursor == "cursor-1"
+            assert proxy.controlled_disconnects == 1
+            assert proxy.agui_resume_headers == ["cursor-1"]
+            assert proxy.assert_recovery(
+                "/api/session/sessions/session_one/events"
+            ) == {
+                "controlled_disconnects": 1,
+                "first_cursor": "cursor-1",
+                "resumed_last_event_id": "cursor-1",
+                "same_event_path": True,
+            }
+            with pytest.raises(chromium_smoke.SmokeError, match="cursor recovery"):
+                proxy.assert_recovery("/api/session/sessions/another_session/events")
+            proxy.agui_request_headers[1] = (
+                "/api/session/sessions/session_one/events",
+                "wrong-cursor",
+            )
+            with pytest.raises(chromium_smoke.SmokeError, match="cursor recovery"):
+                proxy.assert_recovery("/api/session/sessions/session_one/events")
+        finally:
+            proxy.close()
+            reservation.close()
+            upstream.shutdown()
+            upstream.server_close()
+            upstream_thread.join(timeout=5)
+
+
 def test_chromium_driver_does_not_mock_authentication_or_network() -> None:
     source = (ROOT / "scripts/e2e/web_chat_chromium.mjs").read_text()
     for forbidden in (
@@ -287,6 +388,27 @@ def test_chromium_driver_submits_dom_composer_and_checks_durable_reload() -> Non
     assert 'data-slot="markdown-message"' in source
     assert "await page.reload(" in source
     assert "event_watermark" in source
+
+
+def test_chromium_driver_requires_exact_five_unique_agui_frames() -> None:
+    source = (ROOT / "scripts/e2e/web_chat_chromium.mjs").read_text()
+    runner = (ROOT / "scripts/e2e/run_web_chat_chromium_smoke.py").read_text()
+    assert (
+        'const expectedTypes = ["RUN_STARTED", "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END", "RUN_FINISHED"]'
+        in source
+    )
+    assert "JSON.stringify(frameTypes) !== JSON.stringify(expectedTypes)" in source
+    assert (
+        "new Set(replay.frames.map((frame) => frame.id)).size !== replay.frames.length"
+        in source
+    )
+    assert "agui_frame_ids: replay.frames.map((frame) => frame.id)" in source
+    assert 'result["agui_frame_ids"][0] != recovery["first_cursor"]' in runner
+    assert 'sql_evidence.get("bff_agui_frames") != 5' in runner
+    assert "owned_proxy.assert_recovery(expected_event_path)" in runner
+    assert (
+        "observedAguiResponses.filter((response) => response.status === 200" in source
+    )
 
 
 def test_chromium_assistant_wait_reports_owner_snapshot_and_dom_state() -> None:
