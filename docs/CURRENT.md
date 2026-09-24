@@ -51,7 +51,7 @@
   Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行。3310 仍仅运行 Web，
   没有常驻 RP/IAM/BFF，不能将隔离测试当作用户当前 HTTP 页面已登录。
 - Web `067d7ea` 已修正真实 BFF AG-UI 终帧/工具错误字段的严格解析，并只对 Chat events SSE 采用首部连接 deadline + 可续空闲 deadline；Web 当前 Node22 单仓 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS，独立只读审查0 P0/P1/P2。Root 已以此精确 SHA 真 Chromium 跑通 IAM登录→DOM首发→真实Agent worker→AG-UI助手DOM→刷新一用户一助手；随后测试自有 TLS proxy 将首次 SSE 截在一个完整帧后，浏览器携该帧 `Last-Event-ID` 重连、恢复助手DOM并保持刷新后一对消息，BFF五帧 cursor 唯一，测试自有资源清零。此证明固定 fixture 的浏览器 Chat/断线恢复，不代表3310常驻IAM/BFF、真实模型 provider、跨用户私有矩阵或全产品完成。
-- Web `9e2eb73` 在同一 `/login` 路由不变的前提下，进一步删除九语种 54 条不再使用的连接中、整页重试和旧 handoff 文案；Node22 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS。当前 3310 的 `/login` 仍是空 body 503，说明旧错误页没有复活，但该 Web-only 进程仍不是完整 IAM 可用入口。
+- Web `9e2eb73` 在同一 `/login` 路由不变的前提下，进一步删除九语种 54 条不再使用的连接中、整页重试和旧 handoff 文案；Node22 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS。Root 固定该 Web gitlink 再跑真 HTTPS Chromium 登录/Chat/一次断线恢复 `status=PASS`，测试自有 PG/Redis/进程剩余 0。当前 3310 的 `/login` 仍是空 body 503，说明旧错误页没有复活，但该 Web-only 进程仍不是完整 IAM 可用入口。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。
