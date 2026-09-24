@@ -45,6 +45,19 @@
 执行结果：BFF main `018c6176` 实施准入，`dadf9264` 顺序固定 IAM `b363554d` 来源，Web `74319fac` 消费固定 relay artifact，Root `d35c8d71` pin 三仓 gitlink 与 153 条相关来源记录。BFF 全门 272 pass/1 skip；Root 真 IAM OIDC Code+S256 A/C：A 当前 tenant 三个 Team GET 200，C 独立真实 issuer session + 其他 tenant JWT 对三 GET 全部 403 `product_tenant_forbidden`，伪造 legacy tenant/principal header 无效，自有资源0。此任务 **已验收**，但 Web 固定 tenant 登录交互及 Team Product 写仍待后续任务。
 
 
+### W1C-FIXED-TENANT-BFF-B：收窄第一方 IAM tenant relay（待派工）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | BFF 是 browser-private IAM relay policy/transport 唯一 writer，IAM 仍拥有通用 Organization API。BFF `dadf9264`、IAM `b363554d`、Root `9f8d8d60` main/clean。 |
+| 当前事实 | BFF policy `1.1.0` 仍放行 `/organization/list` GET 和任意 body 的 `/organization/set-active` POST；Web 旧 tenant 选择页消费二者。BFF 普通 `/v1` 的固定 tenant admission 已发布。 |
+| 目标职责 | relay 删除可枚举全租户的 list；set-active 仅在 Web 受信 service + 精确 Origin + issuer cookie + OAuth signed continuation query + 固定配置 tenant 同值的窄输入上代理，不让浏览器自报 Organization ID 变成 Product tenant。缺/错配置在转发前失败。 |
+| 目录方案 / 粒度 | 扩展既有 `src/http/routes/iam-protocol-relay.{policy,ts}`、相邻测试与 `contract/iam-relay-policy.json` 生成物（采用）；不创建 Team 专属代理/共享 IAM contract 副本/兼容 route（淘汰）。三设计文档同步当前/目标，先通过文档门再改代码。 |
+| 依赖 / 删除 | IAM 当前允许 set-active 原生路由不变；BFF 发布 policy 后 Web 再原子消费，删除旧 list/可选表单/POST。contract version 按 browser-private breaking policy 提升；Root provenance pin 必须在 Web consumer 发布后完成。无 schema/SQL 变化。 |
+| 验证 | BFF owner `pnpm format:check && pnpm check`；单元/真 HTTP 负例：list 404、伪造 tenant/额外字段/错 query/缺 issuer cookie/错 Origin/缺配置均零 IAM socket，固定 tenant 合法 continuation 通过；Root 来源门和 Web 真 OAuth 回归随后执行。 |
+
+本任务由 BFF 唯一 writer 执行；Root 负责设计/契约放行、diff 审查和主仓重验，不把 BFF relay 收窄单独冒称固定租户登录已闭环。
+
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
 ## 1. 总目标与权威入口
