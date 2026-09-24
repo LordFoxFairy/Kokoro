@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `175a6d805b69b88c1478b86164fdcbfe925f498a` |
+| `apps/kokoro-app` | `9794a286df9a098a095e06eb60a5123bb7631b85` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
@@ -42,11 +42,12 @@
   同 key 重放、改 body 409、Web 重载 snapshot 与 AG-UI 5 帧通过；测试自有 PG/Redis/进程归零。
   此处使用 Python CookieJar HTTPS 客户端，不执行真实浏览器 JavaScript；System/模型 HTTP 是严格
   确定性测试 fixture。该 R2b 证据本身不包含 Chromium/DOM 首发、跨 tenant 私有负例或真实 provider 验收。
-- 先前 R2c 已用真实 Chromium、真实 JS 和测试自有 HTTPS origin 验证旧 Web `/login` 浏览器 CSRF/OIDC 各1次、
-  Web IAM relay 将 issuer 的合法 JSON continuation 转成浏览器 HTTP 302；同一 Chromium 原生提交受控 IAM
-  邮箱/密码、选择 tenant、确认 consent，收到 Product Session HttpOnly/Secure/Lax cookie、同源 session projection
-  并进入 `/app`。随后独立 Python CookieJar 在已授权身份下完成 Web/BFF/Agent worker 首消息与持久化回归；
-  自有 PostgreSQL/Redis/进程剩余0。该证据绑定旧 Web commit，**新服务端登录入口尚待同等真浏览器复验**；
+- 固定 Web `175a6d805b69b88c1478b86164fdcbfe925f498a` 的 R2f 真 HTTPS Chromium 组合已 PASS：
+  `/login` 在服务端启动 OIDC，浏览器不再请求可见 CSRF/signin 中转页，直接进入带签名 query 的 IAM
+  邮箱/密码表单；同一 Chromium 原生提交凭据、选择 tenant、确认 consent，取得 Product Session
+  HttpOnly/Secure/Lax cookie 与同源 session projection 并进入 `/app`。随后独立 Python CookieJar
+  完成 Web/BFF/Agent worker 首消息与持久回归；自有 PostgreSQL/Redis/进程剩余0。后续 Web 文档提交
+  `9794a286` 不改运行代码，Root 来源已重钉，须在当前 SHA 复跑同一组合。
   Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行。3310 仍仅运行 Web，
   没有常驻 RP/IAM/BFF，不能将隔离测试当作用户当前 HTTP 页面已登录。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
