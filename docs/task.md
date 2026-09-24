@@ -45,7 +45,7 @@
 执行结果：BFF main `018c6176` 实施准入，`dadf9264` 顺序固定 IAM `b363554d` 来源，Web `74319fac` 消费固定 relay artifact，Root `d35c8d71` pin 三仓 gitlink 与 153 条相关来源记录。BFF 全门 272 pass/1 skip；Root 真 IAM OIDC Code+S256 A/C：A 当前 tenant 三个 Team GET 200，C 独立真实 issuer session + 其他 tenant JWT 对三 GET 全部 403 `product_tenant_forbidden`，伪造 legacy tenant/principal header 无效，自有资源0。此任务 **已验收**，但 Web 固定 tenant 登录交互及 Team Product 写仍待后续任务。
 
 
-### W1C-FIXED-TENANT-BFF-B：收窄第一方 IAM tenant relay（待派工）
+### W1C-FIXED-TENANT-BFF-B：收窄第一方 IAM tenant relay（已验 owner 门；真三仓待验）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -58,7 +58,9 @@
 
 本任务由 BFF 唯一 writer 执行；Root 负责设计/契约放行、diff 审查和主仓重验，不把 BFF relay 收窄单独冒称固定租户登录已闭环。
 
-### W1C-FIXED-TENANT-IAM-C：Web OAuth client 必经固定租户续接（待派工）
+交付：BFF `74ec30b` 发布 policy `2.0.0`，删除 list、收窄 set-active；Root 独立 Node22 `pnpm format:check && pnpm check` 通过。IAM-C 发布后 BFF `87f9d8d` 顺序重钉 IAM provenance，Web `23bd00e` 已按该 artifact SHA-256 `b3c23492…` 消费；Root 来源/真组合待完成。
+
+### W1C-FIXED-TENANT-IAM-C：Web OAuth client 必经固定租户续接（已验 owner 门；真三仓待验）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -71,7 +73,9 @@
 
 本任务与 BFF relay 收窄为不同 owner，可并行实现；Web consumer 须等待两者发布后再原子切换。
 
-### W1C-FIXED-TENANT-BFF-C：发布当前用户身份投影供 Web RP 验证（待派工）
+交付：IAM `3231d2e` 仅对配置的第一方 Web client 绑定固定 Product tenant，沿已签名续接与 consent 边界重验；Root 独立 Node24 `pnpm prisma:validate && pnpm verify`（741 tests）与真实 PostgreSQL 聚焦 6/6 通过。Web/BFF 真组合待验。
+
+### W1C-FIXED-TENANT-BFF-C：发布当前用户身份投影供 Web RP 验证（已验 owner 门；Web 消费待做）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -84,7 +88,9 @@
 
 本操作是受信当前身份投影而非公开团队目录；权限与缓存语义需沿 BFF 既有 Product API 一致实现。
 
-### W1C-FIXED-TENANT-WEB-D：无选择页固定租户登录与 RP 准入（待派工）
+交付：BFF `8ca0264` 发布 `GET /v1/me`，OpenAPI SHA-256 `75ab4821…`；BFF `87f9d8d` 顺序重钉 IAM 来源。Root 独立 Node22 `pnpm format:check && pnpm check` 通过（276 pass/1 skip）；Web callback/refresh 尚未消费，不能标记全链完成。
+
+### W1C-FIXED-TENANT-WEB-D：无选择页固定租户登录与 RP 准入（阶段 1–2 已验；RP 准入待做）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -96,6 +102,8 @@
 | 验证 | Web Node22 contract/architecture/lint/full unit；真 Next HTTP + Chromium 对直接 list/set-active/旧 switch、无页面续接/登录表单/配置缺失、code/refresh 错配/私有性负例；typegen/build 在**独立安装 node_modules 的隔离副本**执行，不修改用户 3310 `.next`/进程。Root 固定 IAM/BFF/Web SHA 真 SMTP→OAuth→Product/Team 与资源0，普通 IAB 3310 是否实际可登录单独验收。 |
 
 前置 owner contract 未发布前，Web writer 只可完成三设计文档与独立 Team switcher/route 删除，不提前编造 `/v1/me` wire 或重写 tenant 续接。
+
+阶段 1：Web `874bb1f` 删除可见 Team switcher、`/api/team/switch`、客户端 mutation，独立隔离副本 typecheck/build 和 owner 全量测试通过。阶段 2：Web `23bd00e` 固定消费 BFF policy `2.0.0`，内层 tenant 只 GET 服务端固定续接，彻底删除候选列表/表单/POST/tenant CSRF；Root 真实 Next HTTP 51/51、HTTPS 反代 5/5、Web full Vitest 1417/1417、contract 57/57、architecture 34/34、lint 与隔离副本 typecheck/build 均通过。`/login` 可见连接/整页重试组件此前已删除，当前 3310 仅返回空 503，仍非可登录正式入口。**剩余阻塞：** Web RP callback/refresh 对 `/v1/me` 的准入与固定租户错配负例、Root 真三仓 OAuth/SMTP/Team 组合、3310 实际 HTTPS 接入；这些未完成前此卡不得验收。
 
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
