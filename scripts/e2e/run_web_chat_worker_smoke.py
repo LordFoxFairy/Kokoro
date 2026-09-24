@@ -42,7 +42,7 @@ BFF = worker.BFF
 IAM = product.IAM
 AGENT = worker.AGENT
 EXPECTED_RELEASES = {
-    "kokoro-app": "c9fcfcc1123ddecf726002b69c78bcd9f7050662",
+    "kokoro-app": "83a39ddefe70449346c86225ee1382b7a5024b5e",
     "kokoro-bff": "84a560abeac5b7a63f32d7064abdde849ab33cf9",
     "kokoro-iam": "b35a9a5301219654ea344c03407fd355f58c481e",
     "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
@@ -203,6 +203,7 @@ class BoundedObservingProxy(ThreadingHTTPServer):
         self.tls_web = False
         self.observed: list[tuple[str, str]] = []
         self.credentials = credentials
+        self.stream_sse = True
         self.thread = Thread(target=self.serve_forever, daemon=True)
         self.thread.start()
 

@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `c9fcfcc1123ddecf726002b69c78bcd9f7050662` |
+| `apps/kokoro-app` | `83a39ddefe70449346c86225ee1382b7a5024b5e` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
@@ -27,10 +27,10 @@
 
 ## 已验证到的边界
 
-- Web `/` 是固定单租户公开首页，`/login` 首次装载自动发起固定 Product OIDC，失败回跳停止自动重试，
-  不依赖 System manifest；
-  `/app` 只以 Product Session 作认证闸，System 暂不可达不会变成整页“配置不可用”。仅 Web dev
-  在 3310 运行时，缺少常驻 BFF/IAM/RP 配置，登录显示诚实的失败重试，不等于在线登录。
+- Web `/` 是固定单租户公开首页；`/login` 已删除可见连接中/整页重试组件，服务端启动固定 Product OIDC，
+  成功后浏览器直接进入真正的 IAM `/auth/sign-in` 邮箱/密码表单；不依赖 System manifest。
+  `/app` 只以 Product Session 作认证闸。仅 Web dev 在 3310 运行时，缺少常驻 BFF/IAM/RP 配置，
+  `/login` 返回 HTTP 503，不是在线登录入口；没有后端不伪造可提交的凭据表单。
 - 固定上述 IAM/BFF/Web 提交运行的独占真实 HTTPS Product Session smoke 已通过：Web 同源入口、
   BFF/IAM 协议链、在线会话、Chat 列表 Bearer 代理与退出，测试自有资源剩余 0。这不是 3310 常驻
   服务的证明，也不覆盖首条消息、Agent worker、Web 重载或真实模型 provider。
@@ -42,12 +42,13 @@
   同 key 重放、改 body 409、Web 重载 snapshot 与 AG-UI 5 帧通过；测试自有 PG/Redis/进程归零。
   此处使用 Python CookieJar HTTPS 客户端，不执行真实浏览器 JavaScript；System/模型 HTTP 是严格
   确定性测试 fixture。该 R2b 证据本身不包含 Chromium/DOM 首发、跨 tenant 私有负例或真实 provider 验收。
-- R2c 已用真实 Chromium、真实 JS 和测试自有 HTTPS origin 验证 `/login` 自动 CSRF/OIDC 各1次、
+- 先前 R2c 已用真实 Chromium、真实 JS 和测试自有 HTTPS origin 验证旧 Web `/login` 浏览器 CSRF/OIDC 各1次、
   Web IAM relay 将 issuer 的合法 JSON continuation 转成浏览器 HTTP 302；同一 Chromium 原生提交受控 IAM
   邮箱/密码、选择 tenant、确认 consent，收到 Product Session HttpOnly/Secure/Lax cookie、同源 session projection
   并进入 `/app`。随后独立 Python CookieJar 在已授权身份下完成 Web/BFF/Agent worker 首消息与持久化回归；
-  自有 PostgreSQL/Redis/进程剩余0。**Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复**；真实模型
-  provider 仍未执行。3310 仍仅运行 Web，没有常驻 RP/IAM/BFF，不能将这条隔离测试当作用户当前 HTTP 页面已登录。
+  自有 PostgreSQL/Redis/进程剩余0。该证据绑定旧 Web commit，**新服务端登录入口尚待同等真浏览器复验**；
+  Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行。3310 仍仅运行 Web，
+  没有常驻 RP/IAM/BFF，不能将隔离测试当作用户当前 HTTP 页面已登录。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。

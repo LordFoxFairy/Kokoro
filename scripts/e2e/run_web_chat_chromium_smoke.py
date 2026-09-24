@@ -101,6 +101,7 @@ class OwnedBrowserTlsProxy(ThreadingHTTPServer):
             server.tls_web = True
             server.observed: list[tuple[str, str]] = []
             server.credentials = None
+            server.stream_sse = True
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(str(certificate[0]), str(certificate[1]))
             server.socket = context.wrap_socket(server.socket, server_side=True)
@@ -205,8 +206,8 @@ class ChromiumLoginMilestone:
             or result.get("iam_page") != web_origin + "/auth/sign-in"
             or result.get("email_field") is not True
             or result.get("password_field") is not True
-            or result.get("csrf_requests") != 1
-            or result.get("signin_requests") != 1
+            or result.get("csrf_requests") != 0
+            or result.get("signin_requests") != 0
             or result.get("tenant_form") is not True
             or result.get("consent_form") is not True
             or result.get("app_page") is not True

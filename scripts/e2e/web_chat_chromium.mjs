@@ -77,16 +77,15 @@ try {
   page.on("pageerror", (error) => browserErrors.push(error.message.slice(0, 300)))
   const entryUrl = `${input.web_origin}/login`
   const entry = await page.goto(entryUrl, { waitUntil: "domcontentloaded" })
-  if (entry === null || entry.status() !== 200) throw new Error("Web login entry was not HTTP 200")
+  if (entry === null || entry.status() !== 200) throw new Error("IAM sign-in document was not HTTP 200")
   try {
-    // /login owns the single automatic handoff. Request observers are attached
-    // before navigation so a fast hydration cannot race a later waitForRequest.
+    // /login starts OIDC on the server; only the IAM interaction reaches the browser.
     await page.waitForURL(
       (url) => url.origin === input.web_origin && url.pathname === "/auth/sign-in" && url.search.length > 1,
       { waitUntil: "commit", timeout: 12000 },
     )
-    if (csrfRequests !== 1 || signInRequests !== 1) {
-      throw new Error(`Expected one automatic OIDC handoff, observed csrf=${csrfRequests}, signin=${signInRequests}`)
+    if (csrfRequests !== 0 || signInRequests !== 0 || observedPaths.filter((path) => path === "/login").length !== 1) {
+      throw new Error(`Expected direct server-owned OIDC start, observed csrf=${csrfRequests}, signin=${signInRequests}`)
     }
   } catch {
     const current = new URL(page.url())

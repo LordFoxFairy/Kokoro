@@ -7,7 +7,7 @@ from pathlib import Path
 import socket
 import ssl
 import tempfile
-from threading import Thread
+from threading import Event, Thread
 
 import pytest
 
@@ -168,6 +168,79 @@ def test_owned_browser_proxy_forwards_actual_authority_and_port() -> None:
             assert bytes(response).startswith(b"HTTP/1.1 200 ")
             assert observed == [(authority, authority, str(port))]
         finally:
+            proxy.close()
+            reservation.close()
+            upstream.shutdown()
+            upstream.server_close()
+            upstream_thread.join(timeout=5)
+
+
+def test_owned_browser_tls_proxy_flushes_live_sse_before_completion() -> None:
+    release = Event()
+    first_sent = Event()
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+            self.send_header("Content-Length", "21")
+            self.end_headers()
+            self.wfile.write(b"id: 1\ndata: a\n\n")
+            self.wfile.flush()
+            first_sent.set()
+            release.wait(3)
+            self.wfile.write(b"id: 2\n\n")
+            self.wfile.flush()
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    reservation = chromium_smoke.OwnedTlsReservation.reserve()
+    with tempfile.TemporaryDirectory() as directory:
+        certificate = worker_smoke.product.certificate(
+            Path(directory), "web-browser.example.test"
+        )
+        proxy = chromium_smoke.OwnedBrowserTlsProxy.from_reservation(
+            reservation,
+            upstream.server_port,
+            "web-browser.example.test",
+            f"web-browser.example.test:{reservation.port}",
+            certificate,
+        )
+        try:
+            context = ssl._create_unverified_context()
+            with socket.create_connection(
+                ("127.0.0.1", proxy.server_port), timeout=2
+            ) as raw:
+                with context.wrap_socket(
+                    raw, server_hostname="web-browser.example.test"
+                ) as client:
+                    client.settimeout(1)
+                    client.sendall(
+                        b"GET /api/session/sessions/session_one/events HTTP/1.1\r\n"
+                        b"Host: web-browser.example.test\r\n"
+                        b"Accept: text/event-stream\r\n\r\n"
+                    )
+                    assert first_sent.wait(1)
+                    first = bytearray()
+                    while b"id: 1" not in first:
+                        first.extend(client.recv(4096))
+                    assert b"HTTP/1.1 200" in first
+                    assert b"Transfer-Encoding: chunked" in first
+                    assert b"Content-Length:" not in first
+                    release.set()
+                    remaining = bytearray()
+                    while part := client.recv(4096):
+                        remaining.extend(part)
+                    assert b"id: 2" in remaining
+                    assert remaining.endswith(b"0\r\n\r\n")
+        finally:
+            release.set()
             proxy.close()
             reservation.close()
             upstream.shutdown()

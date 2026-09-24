@@ -5,7 +5,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
 from pathlib import Path
 import socket
-from threading import Thread
+from threading import Event, Thread
 
 import pytest
 
@@ -109,6 +109,277 @@ def test_bounded_proxy_normalizes_valid_chunked_body_at_handler_boundary() -> No
 
     assert response.startswith(b"HTTP/1.1 204 ")
     assert received == [b"test"]
+
+
+def test_bff_proxy_streams_decoded_sse_before_upstream_finishes() -> None:
+    release = Event()
+    first_sent = Event()
+    observed_cursors: list[str | None] = []
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            observed_cursors.append(self.headers.get("last-event-id"))
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            self.wfile.write(b"b\r\nid: 1\n\ndata\r\n")
+            self.wfile.flush()
+            first_sent.set()
+            release.wait(3)
+            self.wfile.write(b"6\r\n: end\n\r\n0\r\n\r\n")
+            self.wfile.flush()
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    proxy = smoke.BoundedObservingProxy(
+        upstream.server_port,
+        credentials=smoke.product.previous.CredentialRegistry(),
+    )
+    try:
+        with socket.create_connection(
+            ("127.0.0.1", proxy.server_port), timeout=2
+        ) as client:
+            client.settimeout(1)
+            client.sendall(
+                b"GET /v1/sessions/session_one/events HTTP/1.1\r\n"
+                b"Host: fixture\r\nAccept: text/event-stream\r\n"
+                b"Last-Event-ID: agui_cursor\r\n\r\n"
+            )
+            assert first_sent.wait(1)
+            first = bytearray()
+            while b"id: 1" not in first:
+                first.extend(client.recv(4096))
+            assert b"HTTP/1.1 200" in first
+            assert b"Transfer-Encoding: chunked" in first
+            assert b"id: 1" in first
+            assert b"Content-Length:" not in first
+            release.set()
+            remaining = bytearray()
+            while part := client.recv(4096):
+                remaining.extend(part)
+            assert b": end\n" in remaining
+            assert remaining.endswith(b"0\r\n\r\n")
+            assert observed_cursors == ["agui_cursor"]
+    finally:
+        release.set()
+        proxy.close()
+        upstream.shutdown()
+        upstream.server_close()
+        upstream_thread.join(timeout=5)
+
+
+@pytest.mark.parametrize("limit_name", ["SSE_IDLE_SECONDS", "SSE_TOTAL_SECONDS"])
+def test_bff_proxy_bounds_stalled_sse_and_closes_upstream(
+    monkeypatch, limit_name
+) -> None:
+    upstream_closed = Event()
+    monkeypatch.setattr(smoke.product.old, limit_name, 0.2)
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            self.wfile.write(b"7\r\nid: 1\n\n\r\n")
+            self.wfile.flush()
+            if not self.connection.recv(1):
+                upstream_closed.set()
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    proxy = smoke.BoundedObservingProxy(
+        upstream.server_port,
+        credentials=smoke.product.previous.CredentialRegistry(),
+    )
+    try:
+        with socket.create_connection(
+            ("127.0.0.1", proxy.server_port), timeout=2
+        ) as client:
+            client.settimeout(2)
+            client.sendall(
+                b"GET /v1/sessions/session_one/events HTTP/1.1\r\nHost: fixture\r\n\r\n"
+            )
+            response = bytearray()
+            while part := client.recv(4096):
+                response.extend(part)
+            assert b"HTTP/1.1 200" in response
+            assert b"id: 1" in response
+            assert b"502" not in response
+            assert not response.endswith(b"0\r\n\r\n")
+        assert upstream_closed.wait(1)
+    finally:
+        proxy.close()
+        upstream.shutdown()
+        upstream.server_close()
+        upstream_thread.join(timeout=5)
+
+
+def test_bff_proxy_caps_sse_bytes_without_second_status(monkeypatch) -> None:
+    monkeypatch.setattr(smoke.product.old, "MAX_SSE_BODY", 5)
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Content-Length", "7")
+            self.end_headers()
+            self.wfile.write(b"id: 1\n\n")
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    proxy = smoke.BoundedObservingProxy(
+        upstream.server_port,
+        credentials=smoke.product.previous.CredentialRegistry(),
+    )
+    try:
+        with socket.create_connection(
+            ("127.0.0.1", proxy.server_port), timeout=2
+        ) as client:
+            client.settimeout(2)
+            client.sendall(
+                b"GET /v1/sessions/session_one/events HTTP/1.1\r\nHost: fixture\r\n\r\n"
+            )
+            response = bytearray()
+            while part := client.recv(4096):
+                response.extend(part)
+            assert b"HTTP/1.1 200" in response
+            assert b"id: 1" not in response
+            assert b"502" not in response
+            assert not response.endswith(b"0\r\n\r\n")
+    finally:
+        proxy.close()
+        upstream.shutdown()
+        upstream.server_close()
+        upstream_thread.join(timeout=5)
+
+
+def test_bff_proxy_closes_upstream_on_downstream_disconnect(monkeypatch) -> None:
+    upstream_closed = Event()
+    monkeypatch.setattr(smoke.product.old, "SSE_IDLE_SECONDS", 3)
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Transfer-Encoding", "chunked")
+            self.end_headers()
+            self.wfile.write(b"7\r\nid: 1\n\n\r\n")
+            self.wfile.flush()
+            if not self.connection.recv(1):
+                upstream_closed.set()
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    proxy = smoke.BoundedObservingProxy(
+        upstream.server_port,
+        credentials=smoke.product.previous.CredentialRegistry(),
+    )
+    try:
+        with socket.create_connection(
+            ("127.0.0.1", proxy.server_port), timeout=2
+        ) as client:
+            client.settimeout(1)
+            client.sendall(
+                b"GET /v1/sessions/session_one/events HTTP/1.1\r\nHost: fixture\r\n\r\n"
+            )
+            first = bytearray()
+            while b"id: 1" not in first:
+                first.extend(client.recv(4096))
+        assert upstream_closed.wait(1)
+    finally:
+        proxy.close()
+        upstream.shutdown()
+        upstream.server_close()
+        upstream_thread.join(timeout=5)
+
+
+@pytest.mark.parametrize(
+    ("path", "status", "content_type"),
+    [
+        ("/v1/sessions/session_one/events", 200, "application/json"),
+        ("/v1/sessions/session_one/events", 403, "text/event-stream"),
+        ("/iam/oauth2/token", 200, "text/event-stream"),
+    ],
+)
+def test_bff_proxy_keeps_nonmatching_responses_buffered(
+    path: str, status: int, content_type: str
+) -> None:
+    release = Event()
+    first_sent = Event()
+
+    class UpstreamHandler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, _format, *_args) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.send_response(status)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", "7")
+            self.end_headers()
+            self.wfile.write(b"first")
+            self.wfile.flush()
+            first_sent.set()
+            release.wait(3)
+            self.wfile.write(b"!!")
+            self.wfile.flush()
+
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), UpstreamHandler)
+    upstream_thread = Thread(target=upstream.serve_forever, daemon=True)
+    upstream_thread.start()
+    proxy = smoke.BoundedObservingProxy(
+        upstream.server_port,
+        credentials=smoke.product.previous.CredentialRegistry(),
+    )
+    try:
+        with socket.create_connection(
+            ("127.0.0.1", proxy.server_port), timeout=2
+        ) as client:
+            client.settimeout(0.3)
+            client.sendall(f"GET {path} HTTP/1.1\r\nHost: fixture\r\n\r\n".encode())
+            assert first_sent.wait(1)
+            with pytest.raises(TimeoutError):
+                client.recv(4096)
+            release.set()
+            client.settimeout(2)
+            response = bytearray()
+            while part := client.recv(4096):
+                response.extend(part)
+            assert bytes(response).startswith(f"HTTP/1.1 {status} ".encode())
+            assert b"Content-Length: 7" in response
+            assert b"Transfer-Encoding: chunked" not in response
+            assert response.endswith(b"first!!")
+    finally:
+        release.set()
+        proxy.close()
+        upstream.shutdown()
+        upstream.server_close()
+        upstream_thread.join(timeout=5)
 
 
 def test_process_stop_failure_defers_every_owned_data_cleanup(monkeypatch) -> None:

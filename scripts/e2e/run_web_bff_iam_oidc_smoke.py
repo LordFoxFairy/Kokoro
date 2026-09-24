@@ -23,12 +23,14 @@ import os
 from pathlib import Path
 import re
 import secrets
+import select
 import shutil
+import socket
 import ssl
 import subprocess
 import sys
 import tempfile
-from threading import Thread
+from threading import Event, Thread
 import time
 from urllib.parse import parse_qsl, urlencode, urlsplit, unquote
 from uuid import UUID, uuid4
@@ -45,6 +47,10 @@ IAM = ROOT / "apps/kokoro-iam"
 HOST = IAM / "test/fixtures/web-oidc-flow-host.ts"
 DEFAULT_WEB_ORIGIN = "https://web.example.test"
 MAX_BODY = 1_048_576
+MAX_SSE_BODY = 4_194_304
+SSE_IDLE_SECONDS = 15
+SSE_TOTAL_SECONDS = 120
+_SSE_PATH = re.compile(r"(?:/api/session/sessions|/v1/sessions)/[^/?]+/events")
 
 
 class SmokeError(RuntimeError):
@@ -417,7 +423,80 @@ class ProxyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.forward()
 
+    def _stream_sse(
+        self, response: http.client.HTTPResponse, upstream: http.client.HTTPConnection
+    ) -> None:
+        """Reframe a decoded upstream SSE body as bounded HTTP/1.1 chunks."""
+        self.send_response_only(200)
+        for name, value in response.getheaders():
+            if name.lower() not in {
+                "connection",
+                "content-length",
+                "transfer-encoding",
+                "trailer",
+                "keep-alive",
+                "proxy-connection",
+                "upgrade",
+                "te",
+            }:
+                self.send_header(name, value)
+        self.send_header("Transfer-Encoding", "chunked")
+        self.send_header("Connection", "close")
+        self.end_headers()
+        self.wfile.flush()
+        self.close_connection = True
+        deadline = time.monotonic() + SSE_TOTAL_SECONDS
+        total = 0
+        # HTTPConnection releases its socket to HTTPResponse for close-delimited replies.
+        response_socket = upstream.sock or getattr(
+            getattr(response.fp, "raw", None), "_sock", None
+        )
+        if response_socket is None:
+            self.wfile.write(b"0\r\n\r\n")
+            self.wfile.flush()
+            return
+        watcher_stop = Event()
+
+        def close_upstream_on_disconnect() -> None:
+            while not watcher_stop.is_set():
+                try:
+                    if select.select([self.connection], [], [], 0.1)[0]:
+                        response_socket.shutdown(socket.SHUT_RDWR)
+                        return
+                except (OSError, ValueError):
+                    return
+
+        watcher = Thread(target=close_upstream_on_disconnect, daemon=True)
+        watcher.start()
+        try:
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return
+                response_socket.settimeout(min(SSE_IDLE_SECONDS, remaining))
+                chunk = response.read1(4096)
+                if not chunk:
+                    if response.length not in (None, 0):
+                        return
+                    self.wfile.write(b"0\r\n\r\n")
+                    self.wfile.flush()
+                    return
+                total += len(chunk)
+                if total > MAX_SSE_BODY:
+                    return
+                self.wfile.write(f"{len(chunk):x}\r\n".encode("ascii"))
+                self.wfile.write(chunk)
+                self.wfile.write(b"\r\n")
+                self.wfile.flush()
+        except (OSError, ValueError, http.client.HTTPException):
+            # Headers are already committed; terminate the stream, never send_error.
+            return
+        finally:
+            watcher_stop.set()
+            watcher.join(timeout=0.5)
+
     def forward(self):
+        response_started = False
         if len(self.path) > 8192 or not self.path.startswith("/"):
             self.send_error(400)
             return
@@ -455,9 +534,24 @@ class ProxyHandler(BaseHTTPRequestHandler):
             upstream = http.client.HTTPConnection(
                 "127.0.0.1", self.server.upstream_port, timeout=10
             )
+            response = None
             try:
                 upstream.request(self.command, self.path, body=body, headers=headers)
                 response = upstream.getresponse()
+                if (
+                    getattr(self.server, "stream_sse", False)
+                    and self.command == "GET"
+                    and _SSE_PATH.fullmatch(self.path.split("?", 1)[0]) is not None
+                    and response.status == 200
+                    and response.getheader("content-type", "")
+                    .split(";", 1)[0]
+                    .strip()
+                    .lower()
+                    == "text/event-stream"
+                ):
+                    response_started = True
+                    self._stream_sse(response, upstream)
+                    return
                 payload = response.read(MAX_BODY + 1)
                 if len(payload) > MAX_BODY:
                     raise SmokeError("proxied response oversized")
@@ -480,6 +574,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
                         response.getheader("content-type", ""),
                         payload,
                     )
+                response_started = True
                 self.send_response_only(response.status)
                 for name, value in response.getheaders():
                     if name.lower() not in {
@@ -494,9 +589,14 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 self.wfile.write(payload)
                 self.close_connection = True
             finally:
+                if response is not None:
+                    response.close()
                 upstream.close()
         except (OSError, ValueError, SmokeError):
-            self.send_error(502)
+            if response_started:
+                self.close_connection = True
+            else:
+                self.send_error(502)
 
 
 class Proxy(ThreadingHTTPServer):
