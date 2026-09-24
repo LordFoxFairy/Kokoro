@@ -446,7 +446,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
                         "Host": self.server.web_host,
                         "X-Forwarded-Proto": "https",
                         "X-Forwarded-Host": self.server.web_host,
-                        "X-Forwarded-Port": "443",
+                        "X-Forwarded-Port": str(self.server.web_port),
                     }
                 )
             else:
@@ -512,6 +512,7 @@ class Proxy(ThreadingHTTPServer):
         super().__init__(("127.0.0.1", 0), ProxyHandler)
         self.upstream_port = upstream_port
         self.web_host = web_host
+        self.web_port = 443
         self.tls_web = web_host is not None
         self.observed: list[tuple[str, str]] = []
         self.credentials = credentials

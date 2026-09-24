@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `2211020b10e5a57b9b0e55367179844e52238dfb` |
+| `apps/kokoro-app` | `c9fcfcc1123ddecf726002b69c78bcd9f7050662` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
@@ -27,7 +27,7 @@
 
 ## 已验证到的边界
 
-- Web `/` 是固定单租户公开首页，`/login` 首屏显示唯一账号继续动作，点击后发起固定 Product OIDC，
+- Web `/` 是固定单租户公开首页，`/login` 首次装载自动发起固定 Product OIDC，失败回跳停止自动重试，
   不依赖 System manifest；
   `/app` 只以 Product Session 作认证闸，System 暂不可达不会变成整页“配置不可用”。仅 Web dev
   在 3310 运行时，缺少常驻 BFF/IAM/RP 配置，登录显示诚实的失败重试，不等于在线登录。
@@ -41,14 +41,19 @@
   Product Session、Web 同源 JSON 首发、BFF 与独立 Agent CLI worker 放在同一次隔离 HTTPS 运行：202、
   同 key 重放、改 body 409、Web 重载 snapshot 与 AG-UI 5 帧通过；测试自有 PG/Redis/进程归零。
   此处使用 Python CookieJar HTTPS 客户端，不执行真实浏览器 JavaScript；System/模型 HTTP 是严格
-  确定性测试 fixture。**尚无 Chromium/DOM 首发、跨 tenant 私有负例或真实 provider 验收**。
+  确定性测试 fixture。该 R2b 证据本身不包含 Chromium/DOM 首发、跨 tenant 私有负例或真实 provider 验收。
+- R2c 窄里程碑已用真实 Chromium、真实 JS 和测试自有 HTTPS origin 验证 `/login` 自动 CSRF/OIDC 各1次、
+  Web IAM relay 将 issuer 的合法 JSON continuation 转成浏览器 HTTP 302、进入有响应式布局的 IAM 邮箱/密码表单；
+  同次随后由独立 Python CookieJar 完成 Product Session→Web/BFF/Agent worker 首消息与持久化回归，两次连续 PASS，
+  自有 PostgreSQL/Redis/进程剩余0。**Chromium 尚未提交凭据、发送 Chat、验证 AG-UI/断线恢复**；真实模型
+  provider 仍未执行。3310 仍仅运行 Web，没有常驻 RP/IAM/BFF，不能将这条隔离测试当作用户当前 HTTP 页面已登录。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。
 
 ## 仍未完成
 
-1. 真 Chromium/DOM 登录及首消息→BFF→Agent worker→实时AG-UI/断线恢复组合、Web 对 BFF public contract 的全量
+1. 真 Chromium/DOM 的凭据登录及首消息→BFF→Agent worker→实时AG-UI/断线恢复组合、Web 对 BFF public contract 的全量
    generated 消费与单一 AG-UI 网络协议，以及默认个人私有、显式分享和跨 tenant 负例；Root 的 R1
    fixture worker 验收不代替浏览器链或真实 provider。
 2. IAM Team 窄读到 BFF Product projection 再到 Web 的串行消费；删除 Web 旧 IAM/Team 直连。

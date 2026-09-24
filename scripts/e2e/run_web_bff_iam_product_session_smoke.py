@@ -658,7 +658,9 @@ def run_browser(
         origin=web_origin,
     )
     if login.status not in (302, 303):
-        raise SmokeError(f"IAM sign-in: HTTP {login.status}, expected redirect")
+        raise SmokeError(
+            f"IAM sign-in: HTTP {login.status}, code {old.safe_error_code(login)}, expected redirect"
+        )
     path = navigate(login.location(), "tenant navigation")
     if not path.startswith("/auth/select-tenant?"):
         raise SmokeError("IAM tenant interaction missing")

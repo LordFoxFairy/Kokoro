@@ -19,7 +19,7 @@ import sys
 import tempfile
 from threading import Thread
 import time
-from typing import BinaryIO
+from typing import BinaryIO, Protocol
 from urllib.parse import unquote, urlsplit
 from uuid import uuid4
 
@@ -42,11 +42,88 @@ BFF = worker.BFF
 IAM = product.IAM
 AGENT = worker.AGENT
 EXPECTED_RELEASES = {
-    "kokoro-app": "2211020b10e5a57b9b0e55367179844e52238dfb",
+    "kokoro-app": "c9fcfcc1123ddecf726002b69c78bcd9f7050662",
     "kokoro-bff": "84a560abeac5b7a63f32d7064abdde849ab33cf9",
     "kokoro-iam": "b35a9a5301219654ea344c03407fd355f58c481e",
     "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
 }
+
+
+class WebProxy(Protocol):
+    server_port: int
+
+    def close(self) -> None: ...
+
+
+BrowserProxyFactory = Callable[
+    [int, str, str, tuple[Path, Path]],
+    WebProxy,
+]
+BeforeCookieJar = Callable[[int, str, product.previous.Ready, Path], None]
+
+
+@dataclass(frozen=True, slots=True)
+class BrowserOriginMode:
+    tls_port: int
+    proxy_factory: BrowserProxyFactory
+    before_cookiejar: BeforeCookieJar
+
+
+def _web_origin(run_id: str, browser_mode: BrowserOriginMode | None) -> tuple[str, str]:
+    host_name = f"web-{run_id}.example.test"
+    if browser_mode is None:
+        return f"https://{host_name}", host_name
+    if (
+        isinstance(browser_mode.tls_port, bool)
+        or not 1 <= browser_mode.tls_port <= 65_535
+    ):
+        raise SmokeError("Browser TLS port invalid")
+    return f"https://{host_name}:{browser_mode.tls_port}", host_name
+
+
+def _create_web_proxy(
+    browser_mode: BrowserOriginMode | None,
+    *,
+    upstream_port: int,
+    host_name: str,
+    authority: str,
+    certificate: tuple[Path, Path],
+) -> WebProxy:
+    if browser_mode is None:
+        return product.Proxy(upstream_port, host_name, certificate)
+    proxy = browser_mode.proxy_factory(upstream_port, host_name, authority, certificate)
+    if proxy.server_port != browser_mode.tls_port:
+        try:
+            proxy.close()
+        finally:
+            raise SmokeError("Browser proxy TLS port drift") from None
+    return proxy
+
+
+def _configure_next_browser_port(
+    next_root: Path, browser_mode: BrowserOriginMode | None
+) -> None:
+    if browser_mode is None:
+        return
+    server = next_root / "server.cjs"
+    source = server.read_text()
+    marker = "hostname: host, port: 443"
+    if source.count(marker) != 1 or source.count("dev: true") != 1:
+        raise SmokeError("Isolated Next external port fixture drift")
+    server.write_text(
+        source.replace("dev: true", "dev: false").replace(
+            marker, f"hostname: host, port: {browser_mode.tls_port}"
+        )
+    )
+    # The browser fixture starts the same isolated custom server in production
+    # mode. A standalone artifact has a different generated entrypoint and
+    # would bypass the fixture's public origin/port setup.
+    config = next_root / "next.config.ts"
+    config_source = config.read_text()
+    output_marker = '  output: "standalone",\n'
+    if config_source.count(output_marker) != 1:
+        raise SmokeError("Isolated Next output fixture drift")
+    config.write_text(config_source.replace(output_marker, ""))
 
 
 def _read_bounded_chunked(
@@ -231,7 +308,10 @@ class AuthenticatedChatAction:
             or initial.get("outbox_status") not in {"pending", "retryable"}
             or initial.get("expected_run") != run_id
         ):
-            raise SmokeError("Web first-turn durable transaction evidence drift")
+            raise SmokeError(
+                "Web first-turn durable transaction evidence drift: "
+                + json.dumps(initial, sort_keys=True)
+            )
         replay = _web_json(create(self.content), 202, "Web idempotent replay")
         if replay != receipt:
             raise SmokeError("Web same-key replay changed the receipt")
@@ -424,13 +504,15 @@ def _cleanup_bff_agent_resources(resources: worker.OwnedResources) -> None:
     resources.verify_clean()
 
 
-def run_smoke(args: argparse.Namespace) -> dict[str, object]:
+def run_smoke(
+    args: argparse.Namespace,
+    *,
+    browser_mode: BrowserOriginMode | None = None,
+) -> dict[str, object]:
     sources = verify_release_inputs()
     run_id = secrets.token_hex(12)
-    web_origin = f"https://web-{run_id}.example.test"
-    host_name = urlsplit(web_origin).hostname
-    if host_name is None:
-        raise SmokeError("Web origin host missing")
+    web_origin, host_name = _web_origin(run_id, browser_mode)
+    web_authority = urlsplit(web_origin).netloc
     resources = worker.OwnedResources(
         args.postgres_admin_url,
         args.bff_redis_url,
@@ -474,7 +556,8 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
     )
     agent_env = worker._agent_environment([args.uv_bin.parent])
     processes: list[subprocess.Popen[bytes]] = []
-    proxies: list[product.Proxy | BoundedObservingProxy] = []
+    proxies: list[WebProxy | BoundedObservingProxy] = []
+    bff_proxy: BoundedObservingProxy | None = None
     reader: product.session.ProtocolReader | None = None
     before_web: set[str] | None = None
     iam_attempted = False
@@ -672,6 +755,7 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
 
                     stage = "Web HTTPS startup"
                     next_root = product.isolated_next(temporary_path)
+                    _configure_next_browser_port(next_root, browser_mode)
                     next_port = product.runtime.free_port()
                     web_env.update(
                         {
@@ -687,14 +771,38 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
                         }
                     )
                     credentials.add(web_env["KOKORO_WEB_AUTH_SECRET"])
+                    next_command = [
+                        str(args.node22_bin),
+                        str(next_root / "server.cjs"),
+                        str(next_port),
+                        host_name,
+                    ]
+                    next_cwd = next_root
+                    if browser_mode is not None:
+                        stage = "Web browser production build"
+                        if (
+                            worker.run_owned_command(
+                                [
+                                    str(args.node22_bin),
+                                    str(next_root / "node_modules/next/dist/bin/next"),
+                                    "build",
+                                ],
+                                cwd=next_root,
+                                env=web_env,
+                                log=log,
+                                timeout=180,
+                            )
+                            != 0
+                        ):
+                            raise SmokeError("test-owned Web production build failed")
+                        # The IAM fixture uses NODE_ENV=test and intentionally
+                        # emits test-mode issuer cookie names. Keep this
+                        # isolated runtime aligned without changing Web source.
+                        web_env["NODE_ENV"] = "test"
+                        stage = "Web HTTPS startup"
                     next_process = subprocess.Popen(
-                        [
-                            str(args.node22_bin),
-                            str(next_root / "server.cjs"),
-                            str(next_port),
-                            host_name,
-                        ],
-                        cwd=next_root,
+                        next_command,
+                        cwd=next_cwd,
                         env=web_env,
                         stdin=subprocess.DEVNULL,
                         stdout=subprocess.DEVNULL,
@@ -702,10 +810,12 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
                         start_new_session=True,
                     )
                     processes.append(next_process)
-                    web_proxy = product.Proxy(
-                        next_port,
-                        host_name,
-                        product.certificate(temporary_path, host_name),
+                    web_proxy = _create_web_proxy(
+                        browser_mode,
+                        upstream_port=next_port,
+                        host_name=host_name,
+                        authority=web_authority,
+                        certificate=product.certificate(temporary_path, host_name),
                     )
                     proxies.append(web_proxy)
                     stage = "Web HTTPS origin preflight"
@@ -733,10 +843,13 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
                         raise SmokeError("Next origin fixture malformed") from None
                     if origin_readback != {
                         "origin": web_origin,
-                        "host": host_name,
+                        "host": web_authority,
                         "proto": "https",
                     }:
-                        raise SmokeError("Next origin fixture rejected")
+                        raise SmokeError(
+                            "Next origin fixture rejected: "
+                            + json.dumps(origin_readback, sort_keys=True)
+                        )
 
                     def start_agent_worker() -> None:
                         agent_http = worker._start_process(
@@ -767,6 +880,14 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
                         expected_reply=reply,
                         timeout=args.timeout,
                     )
+                    if browser_mode is not None:
+                        stage = "real Chromium login milestone"
+                        browser_mode.before_cookiejar(
+                            web_proxy.server_port,
+                            web_origin,
+                            ready,
+                            temporary_path,
+                        )
                     stage = "real IAM Product Session and Web worker turn"
                     product.run_browser(
                         web_proxy.server_port,
@@ -790,6 +911,14 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
             except BaseException as error:
                 log.flush()
                 excerpt = worker.safe_log_excerpt(log_path, set(credentials.values()))
+                observed = (
+                    "|".join(
+                        f"{method} {urlsplit(path).path}"
+                        for method, path in bff_proxy.observed[-12:]
+                    )
+                    if bff_proxy is not None
+                    else "none"
+                )
                 if isinstance(
                     error,
                     (
@@ -801,7 +930,7 @@ def run_smoke(args: argparse.Namespace) -> dict[str, object]:
                     ),
                 ):
                     primary_error = SmokeError(
-                        f"{stage}: {error}\nowned log tail:\n{excerpt}"
+                        f"{stage}: {error}\nBFF relay paths: {observed}\nowned log tail:\n{excerpt}"
                     )
                 else:
                     primary_error = error
