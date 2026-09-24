@@ -18,6 +18,14 @@ spec.loader.exec_module(smoke)
 
 
 class OidcGuards(unittest.TestCase):
+    def test_product_oidc_scope_contains_only_published_team_reads(self):
+        scopes = smoke.SCOPES.split(" ")
+        self.assertEqual(scopes, [
+            "openid", "profile", "email", "offline_access",
+            "iam:session-authorization.verify",
+            "iam:member.read", "iam:invitation.read", "iam:role.read",
+        ])
+
     class Headers:
         def __init__(self, values=None, cookies=None):
             self.values = {key.lower(): value for key, value in (values or {}).items()}
