@@ -64,6 +64,15 @@ CONFIRM_COOKIE_NAMES = frozenset(
         "__Secure-kokoro-issuer.session_token.oauth_logout_confirmation",
     }
 )
+PUBLIC_LOGOUT_ERROR_CODES = frozenset(
+    {
+        "invalid_request",
+        "invalid_client",
+        "invalid_token",
+        "access_denied",
+        "server_error",
+    }
+)
 
 
 def _cookie_parts(cookie: str) -> tuple[str, dict[str, str]]:
@@ -200,16 +209,19 @@ def require_logout_confirmation(
         try:
             failure = json.loads(response.body)
             wire_error = failure.get("error") if isinstance(failure, dict) else None
-            if not isinstance(wire_error, str) or not re.fullmatch(
-                r"[a-z][a-z0-9_]{0,79}", wire_error
-            ):
+            if not isinstance(wire_error, str):
                 wire_error = safe_error_code(response)
+            if wire_error not in PUBLIC_LOGOUT_ERROR_CODES:
+                wire_error = "unknown"
         except (ValueError, UnicodeError):
             wire_error = "unknown"
+        media_type = response.headers.get("content-type", "").split(";", 1)[0]
+        if media_type not in {"text/html", "application/json"}:
+            media_type = "other"
         raise SmokeError(
             "IAM issuer confirmation page absent: "
             f"HTTP {response.status}, "
-            f"content-type {response.headers.get('content-type', '').split(';', 1)[0]}, "
+            f"content-type {media_type}, "
             f"code {wire_error}"
         )
     parser = _ConfirmParser()
@@ -398,7 +410,7 @@ def run_browser(
     ready: previous.Ready,
     observed: list[tuple[str, str]],
     credentials: previous.CredentialRegistry,
-) -> int:
+) -> None:
     jar = BrowserCookies(credentials.add)
 
     def request(
@@ -719,14 +731,16 @@ def run_browser(
     )
     if observed.count(("POST", "/iam/oauth2/end-session/confirm")) != 1:
         raise SmokeError("issuer confirmation did not cross BFF once")
+    # Signout is checked by require_signout_handoff against an exact public
+    # client_id and registered redirect. A generic substring scan there would
+    # misclassify the public URL-encoded Web origin as a credential.
     if any(
         secret.encode() in response.body
-        for response in (callback, first_projection, refresh, signout, confirmed)
+        for response in (callback, first_projection, refresh, confirmed)
         for secret in credentials.values()
         if len(secret) >= 12
     ):
         raise SmokeError("Product Session response leaked credential")
-    return 23
 
 
 def parse_args(argv=None):
@@ -984,7 +998,7 @@ def main(argv=None) -> int:
                 if csrf.status != 200:
                     raise SmokeError(f"Next RP CSRF HTTPS preflight HTTP {csrf.status}")
                 stage = "real browser OIDC"
-                cases = run_browser(
+                run_browser(
                     web_proxy.server_port,
                     web_origin,
                     ready,
@@ -1062,7 +1076,7 @@ def main(argv=None) -> int:
         json.dumps(
             {
                 "status": "passed",
-                "cases": cases,
+                "flow": "web_bff_iam_product_session",
                 "web_bff_backchannel_entrance_observed": True,
                 "product_session": "active_then_ended",
                 "owned_resources_remaining": 0,

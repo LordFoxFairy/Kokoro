@@ -342,6 +342,30 @@ class ProductSessionGuards(unittest.TestCase):
             b'<main><form method="post" data-oidc-logout-confirmation action="https://web.example.test/iam/oauth2/end-session/confirm"><button type="submit" name="action" value="confirm">Confirm logout</button></form></main>',
         )
         smoke.require_logout_confirmation(response, "https://web.example.test")
+        with self.assertRaises(smoke.SmokeError) as rejected:
+            smoke.require_logout_confirmation(
+                smoke.old.BrowserResponse(
+                    400,
+                    {"content-type": "application/private-token; charset=utf-8"},
+                    [],
+                    b'{"error":"invalid_request"}',
+                ),
+                "https://web.example.test",
+            )
+        self.assertIn("content-type other", str(rejected.exception))
+        self.assertNotIn("private-token", str(rejected.exception))
+        with self.assertRaises(smoke.SmokeError) as secret_code:
+            smoke.require_logout_confirmation(
+                smoke.old.BrowserResponse(
+                    400,
+                    {"content-type": "application/json"},
+                    [],
+                    b'{"error":"abcdef1234567890"}',
+                ),
+                "https://web.example.test",
+            )
+        self.assertIn("code unknown", str(secret_code.exception))
+        self.assertNotIn("abcdef1234567890", str(secret_code.exception))
         smoke.require_logout_confirmation(
             smoke.old.BrowserResponse(
                 200,
