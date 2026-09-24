@@ -27,6 +27,7 @@ from urllib.parse import unquote, urlsplit
 from uuid import uuid4
 
 import run_web_bff_iam_oidc_smoke as old
+import run_web_bff_iam_first_login_smoke as first_login
 
 
 ROOT = old.ROOT
@@ -1063,6 +1064,7 @@ def main(argv=None) -> int:
     processes = []
     proxies: list[Proxy] = []
     reader = None
+    mailbox = None
     ready = None
     during_iam = None
     iam_attempted = False
@@ -1120,6 +1122,7 @@ def main(argv=None) -> int:
                     "bff", BFF, str(args.bff_node_bin.parent), bff_env, log
                 )
                 stage = "IAM host"
+                mailbox = first_login.SmtpMailbox()
                 if iam_owned_inventory(resources, iam_identity) != (set(), set()):
                     raise SmokeError("IAM named resources already exist")
                 iam_env.update(
@@ -1129,6 +1132,7 @@ def main(argv=None) -> int:
                         "IAM_TEST_WEB_ORIGIN": web_origin,
                         "IAM_TEST_RESOURCE_ID": iam_resource_id,
                         "IAM_TEST_RESOURCE_OWNER_TOKEN": iam_owner_token,
+                        "IAM_TEST_SMTP_URL": mailbox.url,
                         "NODE_ENV": "test",
                     }
                 )
@@ -1255,15 +1259,28 @@ def main(argv=None) -> int:
                 )
                 if csrf.status != 200:
                     raise SmokeError(f"Next RP CSRF HTTPS preflight HTTP {csrf.status}")
+                stage = "formal /login IAM form"
+                first_login.probe_formal_login_entry(
+                    web_proxy.server_port, web_origin, credentials
+                )
+                stage = "first-login SMTP verification"
+                first_ready = first_login.prepare_first_login(
+                    ready,
+                    mailbox,
+                    web_origin,
+                    web_proxy.server_port,
+                    bff_proxy.observed,
+                    credentials,
+                )
                 stage = "real browser OIDC"
                 run_browser(
                     web_proxy.server_port,
                     web_origin,
-                    ready,
+                    first_ready,
                     bff_proxy.observed,
                     credentials,
                 )
-            except SmokeError as error:
+            except (SmokeError, first_login.FirstLoginError) as error:
                 failures.append(f"{stage}: {error}")
             except Exception:
                 failures.append(stage)
@@ -1285,6 +1302,11 @@ def main(argv=None) -> int:
                         reader.close()
                     except Exception:
                         failures.append("IAM protocol cleanup")
+                if mailbox is not None:
+                    try:
+                        mailbox.close()
+                    except Exception:
+                        failures.append("owned SMTP cleanup")
                 if before_web is not None:
                     try:
                         extras = (
@@ -1338,6 +1360,7 @@ def main(argv=None) -> int:
                 "web_bff_backchannel_entrance_observed": True,
                 "product_chat_proxy": "verified",
                 "product_session": "active_then_ended",
+                "first_login": "smtp_verified_then_oidc",
                 "owned_resources_remaining": 0,
             }
         ),

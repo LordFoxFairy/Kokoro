@@ -27,6 +27,8 @@
 
 ## 已验证到的边界
 
+- 当前固定 IAM `093b7651`、BFF `7a7f3adf`、Web `0f5aec47` 已由隔离 HTTPS Product Session runner 实测：`/login` 302 直达真实 IAM 邮箱/密码表单，无可见连接中或整页重试；新账号在未验邮件时 403，经真实 TCP SMTP 邮件中的链接由 Web→BFF→IAM GET 验证，随后以新账号/新测试 tenant 完成 OIDC、Product Session、Chat 代理与退出，自有资源剩余 0。注册与建租户由测试 setup 直连 IAM loopback；IAM host 仍预置测试 owner/tenant/client，因此这不是空库首租户开通，也不是当前仅运行 Web 的 `3310` 正式入口。Web Next typegen/build 与普通 IAB 可见 HTTPS 入口仍待单独验证。
+
 - BFF `928ada2` 增加固定 IAM 邮箱验证 GET relay，Web `24445a1` 固定消费其 policy `1.1.0`：真 Next HTTP/Chromium fixture 验证 token query、同源 200/302、最终 `no-store`/`no-referrer`、跳转后请求不带 token Referer、Next 开发 incoming log 不输出验证 token，外域/错误方法/路径别名/重复 query 拒绝。Web Node22 本片 Root 独立聚焦测试 13/13、contract 56/56、architecture 32/32、lint、`tsc --noEmit`、全量 Vitest 1414/1414 通过；未触用户 3310 `.next`，正式 build/Next typegen、真 IAM 邮件点击与普通 IAB 可见登录仍待验证，不把 fixture 当成用户当前可用入口。
 - IAM `c16a9bc` 已用真实 TCP SMTP 邮件证明新用户未验证登录拒绝、验证链接生效、持久 `emailVerified` 与后续 issuer Session；BFF `a50f987`、Web `5192ff0` 仅顺序重钉该 IAM 来源与原始 relay policy blob，路由/安全边界未变。IAM owner 全门 740/740、SMTP integration 4/4；BFF 270/1 skip、Web 1414/1414 通过。真实跨仓首次邮件点击与普通 IAB 可用入口尚待独立组合验证。
 - Web `/` 是固定单租户公开首页；`/login` 已删除可见连接中/整页重试组件以及失败时共用的假登录页面，服务端启动固定 Product OIDC，

@@ -1,5 +1,22 @@
 # Kokoro 后端闭环任务总表
 
+## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner | IAM 唯一拥有注册、验证邮件及 issuer 会话；Root 只拥有跨仓隔离 smoke。IAM fixture 由 `r2e_bff_verify_review` 唯一写入，Root 不写 IAM；Root 脚本仅 Root 写入。 |
+| 当前事实 | IAM `test/fixtures/web-oidc-flow-host.ts` 已能启动临时 PG/Redis 和预置 tenant/client，但未把下层已支持的 `smtpUrl` 接入；Root Product Session smoke 仅使用预验证账号。三仓当前均为 clean main，Root `510f1cc6`、IAM `c16a9bc`、BFF `a50f987`、Web `5192ff0`。 |
+| 目标职责 | 证明新注册账号经过真 SMTP 邮件与 Web→BFF→IAM 验证 GET，随后可用正式 OIDC/Product Session 登录；与“空库首账号/首租户”分别报告，不混称。 |
+| 目录方案 | IAM 扩展现有 fixture（采用），不在生产代码加测试开关；Root 新建 `scripts/e2e/run_web_bff_iam_first_login_smoke.py` 和对应 `scripts/tests/` 测试（采用），不把邮件/注册状态机塞入已有 1300 行 Product Session runner，也不复制 IAM owner 业务代码。 |
+| 粒度 | IAM 仅添加受限 SMTP URL 环境入口及 fixture 测试；Root 新文件仅封装真 SMTP、验证和首次登录编排，复用现有 owned-resource/HTTPS 组件。 |
+| 依赖 | IAM owner fixture 先提交，Root 再按 IAM→BFF→Web 固定来源重 pin；Root 不直读 IAM 数据表，不改变产品 API 或生成客户端。 |
+| 数据/API | 不改生产 schema/API；测试仍复用单 PostgreSQL/Redis 实例，以临时 DB/前缀和自有 SMTP socket 隔离；邮件 token 不打印。现有 BFF policy 仅允许 `/verify-email` GET，注册仅由 Root 测试准备调用 IAM loopback，不冒称浏览器注册 UI。 |
+| 删除项 | 不增加可见中转、重试页或兼容 alias；`/login` 仍只负责正式 OIDC 启动。 |
+| 验证 | IAM Node24 聚焦 test + `pnpm verify`；Root Python unit、真实隔离 HTTPS 三仓 smoke、资源清理、固定 SHA/gov 门。 |
+
+执行结果：IAM `093b7651`、BFF `7a7f3adf`、Web `0f5aec47` 已在各自 `main` 提交，Root `e4cdf055` pin 三 gitlink。IAM 真 SMTP host integration 18/18、`pnpm verify` 740/740，BFF 270/1 skip，Web full Vitest 1415/1415；Root 改造隔离 HTTPS Product Session runner 后已得到 `first_login=smtp_verified_then_oidc`、资源剩余 0，并额外证明 `/login` 直达正式 IAM 凭据表单。Root checkpoint 曾因新 BFF commit 下两份文档 blob digest 未随库存更新而 RED，已按提交 blob 精确修正；独立只读复审 P0/P1/P2=0，Root Python 全量 **686 passed/156 subtests**。最终 Root 提交后的 main-only 证据以 `docs/progress.md` 为准。本片注册/建租户是测试准备对 IAM loopback 的调用，浏览器验证链接及后续 OIDC/Product 登录是真 Web→BFF→IAM；host 启动时仍预置测试 owner、tenant、OAuth client，不宣称空库首租户，也不宣称用户正在访问的 `3310` Web-only 进程已经配好正式 IAM/BFF。
+
+
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
 ## 1. 总目标与权威入口
