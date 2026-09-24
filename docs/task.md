@@ -58,6 +58,19 @@
 
 本任务由 BFF 唯一 writer 执行；Root 负责设计/契约放行、diff 审查和主仓重验，不把 BFF relay 收窄单独冒称固定租户登录已闭环。
 
+### W1C-FIXED-TENANT-IAM-C：Web OAuth client 必经固定租户续接（待派工）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | IAM 唯一拥有 OAuth issuer 状态机及签发；IAM `b363554d` main/clean。Web/BFF 持有 Product 配置与准入，不读取 IAM 表。 |
+| 当前事实 | Better Auth 1.7.3 `postLogin.shouldRedirect` 只检查 active Tenant 是否存在；已在第二 Tenant active 的第一方 Web client 可绕开 `/auth/select-tenant`，最终签发错 tenant 并被 BFF 403，造成登录死路。hook 只收到 headers/user/session/scopes；包公开的 request-local `getOAuthProviderState().query` 可取得已验证的 client ID。 |
+| 目标职责 | 只对精确配置的第一方 Web OAuth client，若 active Tenant 不等于配置的固定 Product Tenant，强制进入现有 signed postLogin 续接；在 `consentReferenceId` 再次验证固定 Tenant 后方可签发。其他 IAM OAuth client 保持通用多租户行为。缺/错绑定 fail closed，不用 Origin/Referer/scope 猜 client。 |
+| 目录方案 / 粒度 | 扩展现有 Better Auth config、环境 schema/fixture、相邻 OAuth 测试及三设计文档（采用）；不另造 OAuth provider、数据库表或全局单租户模式（淘汰）。IAM 配置是此 Web client 的 issuer 续接约束，不代替 Web/BFF Product 配置。 |
+| 数据/API / 删除 | 无新 HTTP operation/token claim/schema；不删 IAM 原生 Organization endpoint。避免只隐藏选择页或无条件 redirect 导致循环；测试实例先注册 client 再绑定精确 ID/tenant，部署示例必须说明三方配置同值。 |
+| 验证 | IAM Node24 contract/format/lint/typecheck/unit/integration/build；真实 OAuth：Web client 已 active 第二 Tenant / 固定 Tenant / 无 active、其他 client 保持原行为、未加入/disabled target、跳过/重放 continuation、prompt=none、配置缺失/不一致均符合失败边界。Root 后续固定 SHA Web→BFF→IAM 真组合。 |
+
+本任务与 BFF relay 收窄为不同 owner，可并行实现；Web consumer 须等待两者发布后再原子切换。
+
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
 ## 1. 总目标与权威入口
