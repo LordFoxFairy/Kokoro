@@ -283,3 +283,9 @@ W1B-3E放置门：Root是跨仓依赖清单、checkpoint与当前组合文档own
 | 目标交互 | 首次挂载启动一次固定 Product OIDC；启动时 `role=status` 说明正在连接，不显示重复 CTA；CSRF/发起失败后停在同页 `role=alert` 且按钮显式重试，**不自动循环**。重复 effect/双击均只发起一次；成功提交后保持跳转状态。品牌入口只回 `/`，不带营销能力/FAQ/另一个登录链接。 |
 | 依赖/数据/删除 | 只调用既有 `beginProductSignIn`，不请求 System，不将 tenant/client/secret 放浏览器，不放宽 Host/Origin/CSRF。删除登录页营销顶栏依赖、旧大按钮中转状态/样式；复用既有 token 与无障碍语义，移动端/暗色正常。服务未启动仍按真实错误显示；这个 UI 切片不能算当前3310在线登录闭环。 |
 | 验证 | 先改失败测试：首次自动发起一次、严格模式重复 effect 无重复、失败停止并重试一次、无营销导航/无 System 请求；更新浏览器 E2E 对固定 CSRF/provider POST 的断言；Node22 Web format/lint/typecheck/contract/unit/build 与 desktop/mobile Playwright；Root 浏览器验 `/login` 首屏及实际3310诚实故障态。固定SHA真 HTTPS 登录 smoke 另验，不能把 mock CSRF E2E 当真 IAM。 |
+
+独立审查补充放置门：原范围漏掉两处真实用户路径。候选A在 Web 既有 `product-auth-client.ts` 给自动 CSRF 尝试加取消信号，并在现有 RP `signin` 分支将浏览器HTML表单失败303回固定 `/login?auth=sign_in_failed`（采用）；正常配置时保留 canonical Host/Origin/credential 检查，配置完全缺席时也只回固定站内失败页。候选B把安全敏感的OIDC表单改为fetch/manual redirect（淘汰，浏览器 opaque redirect/Set-Cookie 语义不可靠）；候选C忽略POST失败继续展示JSON（淘汰，不满足失败重试）。`/login` 现有 page 只把精确失败 query 转成初始错误态，不自动循环；API客户端/JSON请求的原错误 status/envelope 不变，成功302与OIDC状态/cookie不变。另在既有CSS停 reduced-motion 旋转、失败标题、现有Web tests 增加离页迟到CSRF与浏览器POST失败导航。仅扩展既有 Web auth 文件职责，不建新模块/数据/API/兼容入口；Web单writer已交付候选并停写，Root接管审查定点修复。
+
+W1D-B3 状态：BFF `9b8c7af6383541cf8ffcaa66c8cffdddaeae9864` 已发布 main；Root 修复独立审查指出的 `source_index`/负例后复验 Node22 静态门、标准测试267通过/1跳过、真实隔离PG+Redis integration 42/42。BFF owner切片已验收；固定SHA真Agent worker组合仍待执行。Root将此 SHA 与Web登录入口一起pin。
+
+W1D-Web-Login-Entry 状态：Web `5e3b27af4ddfd1a1cd37287e702ea51d271298f4` 已发布 main；Root先补5项RED，再修取消/浏览器POST失败/失败态，聚焦20/20，完整 `pnpm check` contract54、architecture32、unit1396、lint/typecheck/build通过，Playwright桌面+移动13通过/1既有skip。固定SHA真HTTPS登录组合、3310实测与Root pin放行仍待后续验收。
