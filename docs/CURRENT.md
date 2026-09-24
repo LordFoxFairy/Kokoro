@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `0f5aec47c2bb8a06d974cc1e1ff27d8908cd473e` |
+| `apps/kokoro-app` | `08ef650ad800719294111912d19776cacf96dbc5` |
 | `apps/kokoro-bff` | `7a7f3adfaec7d1bcee3b2079304a6129c0591d06` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `093b76513a9aa71611c65d4f210e279d3227e002` |
