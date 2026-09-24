@@ -27,6 +27,8 @@
 
 ## 已验证到的边界
 
+- Web `08ef650a` 已把两个不被当前 UI/正式 OIDC 使用的旧 magic-link browser route 实际删除；失败回调不再产出 `/login?auth=link_unavailable`。正式 Auth.js `/api/auth/callback/kokoro-iam` 保留。Root `54e18142` pin 后的隔离 HTTPS first-login smoke 再次 PASS，自有资源0；Web 隔离新目录的 Next typegen、TypeScript 和 production build PASS，未改用户 3310 共享 `.next`。旧 auth helper、Team/其他认证路径尚在，普通 IAB 3310 入口依旧未配 IAM/BFF。
+
 - 当前固定 IAM `093b7651`、BFF `7a7f3adf`、Web `0f5aec47` 已由隔离 HTTPS Product Session runner 实测：`/login` 302 直达真实 IAM 邮箱/密码表单，无可见连接中或整页重试；新账号在未验邮件时 403，经真实 TCP SMTP 邮件中的链接由 Web→BFF→IAM GET 验证，随后以新账号/新测试 tenant 完成 OIDC、Product Session、Chat 代理与退出，自有资源剩余 0。注册与建租户由测试 setup 直连 IAM loopback；IAM host 仍预置测试 owner/tenant/client，因此这不是空库首租户开通，也不是当前仅运行 Web 的 `3310` 正式入口。Web Next typegen/build 与普通 IAB 可见 HTTPS 入口仍待单独验证。
 
 - BFF `928ada2` 增加固定 IAM 邮箱验证 GET relay，Web `24445a1` 固定消费其 policy `1.1.0`：真 Next HTTP/Chromium fixture 验证 token query、同源 200/302、最终 `no-store`/`no-referrer`、跳转后请求不带 token Referer、Next 开发 incoming log 不输出验证 token，外域/错误方法/路径别名/重复 query 拒绝。Web Node22 本片 Root 独立聚焦测试 13/13、contract 56/56、architecture 32/32、lint、`tsc --noEmit`、全量 Vitest 1414/1414 通过；未触用户 3310 `.next`，正式 build/Next typegen、真 IAM 邮件点击与普通 IAB 可见登录仍待验证，不把 fixture 当成用户当前可用入口。

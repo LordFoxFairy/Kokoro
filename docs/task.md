@@ -16,6 +16,8 @@
 
 执行结果：IAM `093b7651`、BFF `7a7f3adf`、Web `0f5aec47` 已在各自 `main` 提交，Root `e4cdf055` pin 三 gitlink。IAM 真 SMTP host integration 18/18、`pnpm verify` 740/740，BFF 270/1 skip，Web full Vitest 1415/1415；Root 改造隔离 HTTPS Product Session runner 后已得到 `first_login=smtp_verified_then_oidc`、资源剩余 0，并额外证明 `/login` 直达正式 IAM 凭据表单。Root checkpoint 曾因新 BFF commit 下两份文档 blob digest 未随库存更新而 RED，已按提交 blob 精确修正；独立只读复审 P0/P1/P2=0，Root Python 全量 **686 passed/156 subtests**。最终 Root 提交后的 main-only 证据以 `docs/progress.md` 为准。本片注册/建租户是测试准备对 IAM loopback 的调用，浏览器验证链接及后续 OIDC/Product 登录是真 Web→BFF→IAM；host 启动时仍预置测试 owner、tenant、OAuth client，不宣称空库首租户，也不宣称用户正在访问的 `3310` Web-only 进程已经配好正式 IAM/BFF。
 
+用户要求的最后旧失败入口已按既定 Web clean-slate 设计门单独删除：Web `08ef650a` 删除未被当前 UI/正式 OIDC 调用的 `/api/auth/magic-link/request` 和旧 `/api/auth/callback`，不再产出 `/login?auth=link_unavailable`；`/api/auth/callback/kokoro-iam` 保留。Root `54e18142` pin 后，以该 Web SHA 重新跑隔离真 HTTPS first-login smoke 通过。Web 聚焦 contract 57/57、architecture 33/33、全量 1417/1417，隔离新目录 `next typegen`/TypeScript/production build 通过；用户 3310 的旧 `.next` 不被测试重写。旧 `auth.ts` helper/Team 仍属其他 clean-slate 切片，不把删除两条 route 冒充全部遗留路径清零。
+
 
 状态日期：2026-09-24。本文是本轮后端闭环的**唯一任务状态表**；主控 Agent 维护状态、依赖、负责人和验收证据，子 Agent 只更新自己获准任务卡中的交付信息。
 
