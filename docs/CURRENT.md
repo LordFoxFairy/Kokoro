@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `210ddfdd77f24143a0ed0617e2ecf1089bcf513c` |
+| `apps/kokoro-app` | `2211020b10e5a57b9b0e55367179844e52238dfb` |
 | `apps/kokoro-bff` | `84a560abeac5b7a63f32d7064abdde849ab33cf9` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b35a9a5301219654ea344c03407fd355f58c481e` |
@@ -27,7 +27,8 @@
 
 ## 已验证到的边界
 
-- Web `/` 是固定单租户公开首页，`/login` 自动发起固定 Product OIDC，不依赖 System manifest；
+- Web `/` 是固定单租户公开首页，`/login` 首屏显示唯一账号继续动作，点击后发起固定 Product OIDC，
+  不依赖 System manifest；
   `/app` 只以 Product Session 作认证闸，System 暂不可达不会变成整页“配置不可用”。仅 Web dev
   在 3310 运行时，缺少常驻 BFF/IAM/RP 配置，登录显示诚实的失败重试，不等于在线登录。
 - 固定上述 IAM/BFF/Web 提交运行的独占真实 HTTPS Product Session smoke 已通过：Web 同源入口、
