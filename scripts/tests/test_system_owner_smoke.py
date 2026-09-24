@@ -296,7 +296,8 @@ def test_http_smoke_does_not_follow_owner_redirects() -> None:
             thread.join()
 
 
-def test_seed_uses_formal_http_and_scoped_preconditions(monkeypatch) -> None:
+@pytest.mark.parametrize("feature_key", [None, "chat"])
+def test_seed_uses_formal_http_and_scoped_preconditions(monkeypatch, feature_key) -> None:
     calls: list[tuple[str, dict]] = []
 
     def http(_base: str, path: str, **kwargs) -> dict:
@@ -304,8 +305,8 @@ def test_seed_uses_formal_http_and_scoped_preconditions(monkeypatch) -> None:
         return {"data": {"id": str(len(calls)), "version": "1"}}
 
     monkeypatch.setattr("scripts.e2e.run_system_owner_smoke.http_json", http)
-    values = seed_control_plane("http://system.test", "tenant", "token", "a" * 24)
-    assert values["feature_key"] == "chat." + "a" * 24
+    values = seed_control_plane("http://system.test", "tenant", "token", "a" * 24, feature_key=feature_key)
+    assert values["feature_key"] == (feature_key or "chat." + "a" * 24)
     assert values["release_id"]
     assert len(calls) == 22
     released = [
@@ -445,7 +446,8 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
     from scripts.e2e import run_system_owner_smoke as smoke
 
     expected = smoke.EXPECTED_RELEASES
-    assert expected["kokoro-bff"] == "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
+    assert expected["kokoro-bff"] == "9b8c7af6383541cf8ffcaa66c8cffdddaeae9864"
+    assert expected["kokoro-agent"] == "520ec181a101298b4f336aad273ce003b2735955"
     apps = tmp_path / "apps"
     apps.mkdir()
     for owner in expected:

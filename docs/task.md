@@ -291,3 +291,19 @@ W1D-B3 状态：BFF `9b8c7af6383541cf8ffcaa66c8cffdddaeae9864` 已发布 main；
 W1D-Web-Login-Entry 状态：Web `5e3b27af4ddfd1a1cd37287e702ea51d271298f4` 已发布 main；Root先补5项RED，再修取消/浏览器POST失败/失败态，聚焦20/20，完整 `pnpm check` contract54、architecture32、unit1396、lint/typecheck/build通过，Playwright桌面+移动13通过/1既有skip。固定SHA真HTTPS登录组合、3310实测与Root pin放行仍待后续验收。
 
 W1D-Web-Login-Entry / B3 Root集成：Root `ded9efd5ce87f795529e4191204197575d05a02d` 已pin Web/BFF，真实独占HTTPS Product Session smoke与 Root 603/130、checkpoint/topology/policy均通过。旧runner对浏览器错误状态的断言已按固定303重试页修正；3310仅Web进程，在线联调仍为后续开发切片，不将隔离smoke冒充常驻服务。下一优先级仍是真Web首消息→BFF→Agent worker→durable assistant reload的固定SHA组合，支付后置。
+
+## W1D-Chat-R：固定 SHA 真实 worker 组合门（2026-09-24）
+
+只读 Agent 与 Web/BFF 双审已核对当前 Agent `520ec181`、BFF `9b8c7af`、Web `5e3b27a` 的实际代码链：首发、outbox、Agent HTTP/worker、PG chat replay、BFF AG-UI/Message snapshot 各有 owner 实现，但此前所有组合证据停在登录+Chat 列表，尚无真实 CLI worker 跑完首条消息。System 旧 runner 只验证 route，不执行 inference；不能代替本门。先交付 R0 来源复验与 R1 真 worker 首消息，再接 R2 Web/IAM 浏览器重载和 R3 真实网关/provider；这只是依赖顺序，不缩小最终完成条件。
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 当前事实 | Root 只拥有跨仓 runner、其测试和组合证据；BFF/Agent/System/Web 各自继续独占 API、业务与 SQL。Root 现有 `scripts/e2e/run_system_owner_smoke.py` 固定旧 BFF/Agent SHA，`seed_control_plane` 用唯一 `chat.<run_id>`，实际 Agent catalog 只接受 `chat`；该脚本明确 `inference:not-executed`。Agent requests stream/group 名固定，需独占 Redis logical DB，随机 run ID/Schema 不足以隔离。 |
+| R0 / 已执行 | 将既有 System smoke 精确 re-pin 当前 BFF/Agent，给 seed 新增仅允许 `chat` 的可选参数，默认旧唯一 key 不变；保持原脚本仍只证明模型 route。测试先 RED、修后绿；当前固定 System/BFF/Agent 的真实 HTTP smoke `status=PASS`、`inference:not-executed`、自有资源已清理。 |
+| 目录比较 | R1 采用新 `scripts/e2e/run_bff_agent_worker_smoke.py` 和同名 `scripts/tests/test_*.py`：保持 System catalog read smoke、登录 session smoke 和 worker execution smoke 各自单一职责，复用现有 Root 进程/PG/Redis/身份 fixture。淘汰把执行断言硬塞进 System smoke（会把 read-only route 伪装 inference），也淘汰复用旧 `run_stage2_owner_health.py`（共享状态不隔离）。不建立跨仓源码/Schema/contract 目录。 |
+| R1 目标与边界 | 固定 Root gitlink/child SHA/clean；复用本地一个 PostgreSQL 实例、一套账号，为测试创建自有临时数据库并用 `kokoro_bff`/`kokoro_agent` owner schema；Agent HTTP+独立 CLI worker 共用它。BFF 使用 IAM test-owned admission stub。System route 与 OpenAI-compatible模型网关为**测试专属确定性 HTTP fixture**，worker仍走生产 `SystemModelClient`、`AgentFactory`、DeepAgents、PG lease/outbox/Redis、Agent HTTP，禁止生产 fake 开关或伪造 Agent 202/replay。Agent Redis URL 必须指向运行前为空的独占 logical DB；BFF Redis另用隔离 namespace/DB。预设有限 token/run/time budget、无外部 provider 费用。 |
+| R1 断言 / 清理 | BFF 首条 `conv_*` 202→同 key/同 body receipt重放、同 key/改 body 409；确认 BFF PG conversation/user/pending assistant/outbox，Agent PG dispatch/terminal/chat_event，BFF 从真 Agent GET replay 后 AG-UI frame、watermark 与 completed assistant Message 同快照；重开 snapshot 唯一且 BFF/Agent 身份边界负例。所有子进程只杀本 runner 进程组，临时库只删自建，Redis只删/核对本 run 所有键，不重启/清空共享实例。CLI/API/SQL/日志当前事实必须记录；失败保留安全日志摘要但不泄凭据。 |
+| R2/R3 后续 | R2 把同一执行链接上真实 IAM Product Session、Web HTTPS 页面首发、断流重连与刷新，并覆盖同 tenant B/跨 tenant C 私有负例；另切 HITL 多项审批。R3 经真实 System 发布 route 与已配置 LiteLLM/真实 provider 证明 inference，不能将 R1 fixture 称为真实 provider。上线 Billing 最后。 |
+| 验证 | R1 先写来源、exclusive Redis、cleanup、错误路径单测 RED；完整 Root `pytest scripts/tests`、topology/checkpoint/policy/main-only；真正启动本地自有 PG/Redis 数据与 BFF/Agent HTTP/worker进程，逐条记录 status/证据/自有资源0；由 Root复跑、审查并提交。 |
+
+任务卡：`W1D-Chat-R1` / P0，执行者为 Root 原生子 Agent（唯一 Root 脚本 writer），Root 保留 `docs/task.md`、`docs/progress.md`、Root Git index/commit/推送与最终验证；基线 Root `bab11bc283adb47b5fecf2fd35d97a64d96da082`，BFF `9b8c7af…`、Agent `520ec181…`。允许写 `scripts/e2e/run_bff_agent_worker_smoke.py`、`scripts/tests/test_bff_agent_worker_smoke.py` 及确需复用的 Root runner helper；不得改子仓、inventory、lockfile、共享脚本入口或启动非自有服务。前置 R0 精确固定与 fixture 边界已裁决；发现越界/真实 provider 需求先报告。交付包括文件清单、测试命令与实际结果、资源/进程证明、未覆盖场景；Root 提交并集成验收。

@@ -33,8 +33,8 @@ else:
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED_RELEASES = {
     "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
-    "kokoro-bff": "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87",
-    "kokoro-agent": "741c928dfc11313a25064a905d77d4ad371f5534",
+    "kokoro-bff": "9b8c7af6383541cf8ffcaa66c8cffdddaeae9864",
+    "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
 }
 
 
@@ -299,9 +299,11 @@ def data_of(envelope: dict[str, object]) -> dict[str, object]:
 
 
 def seed_control_plane(
-    base: str, tenant: str, token: str, run_id: str
+    base: str, tenant: str, token: str, run_id: str, *, feature_key: str | None = None
 ) -> dict[str, str]:
     """Seed through the authoritative HTTP API, never through business table SQL."""
+    if feature_key not in (None, "chat"):
+        raise SmokeError("Unsupported smoke feature key")
 
     def mutate(
         path: str,
@@ -343,7 +345,7 @@ def seed_control_plane(
         return data_of(result)
 
     product_key = f"smoke-{run_id}"
-    feature_key = f"chat.{run_id}"
+    feature_key = feature_key or f"chat.{run_id}"
     hostname = f"{run_id}.smoke.localhost"
     product = mutate(
         "products",
