@@ -121,7 +121,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "active",
-      "reason": "IAM admission remains active from prior real Code+PKCE/BFF HTTP smoke; current IAM 0.3.0 owner contract is blob-identical between its published 68aa0da contract release and current c0f6068 test-fixture release. BFF generated 0.3.0 admission plus three Team read schemas and public projections pass local gates; current-source real IAM Team HTTP is pending and is not claimed by this active admission edge.",
+      "reason": "IAM 0.3.0 owner OpenAPI and BFF vendored artifact are byte-identical at the current pinned commits; generated client plus three Team reads and six Product mutation routes pass local gates. Root real Code+PKCE/BFF HTTP smoke verifies Team reads, create/resend/cancel invitation, roles replace, member remove, LAST_OWNER conflict, missing Bearer and fixed-tenant foreign admission. Web Team consumer and invitation-link browser flow remain pending.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",

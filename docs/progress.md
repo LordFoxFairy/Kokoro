@@ -849,3 +849,20 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 2026-09-24 R2c 固定租户 Chromium Chat 回归：Root 基线 `6c9a4f46`，先以新断言得到已删 tenant form 的 RED，再把浏览器改为 IAM signed GET 固定租户续接→consent；重钉当前 Web `0d180225`/BFF `e0663a8`/IAM `7f39193`/Agent `520ec181`。首次真运行 `/login` 503 定位为组合漏传 Web `KOKORO_TENANT_ID`；修后 Chromium A 实际完成登录、DOM POST202、AG-UI 五帧、一次受控断线后精确 `Last-Event-ID`、reload 一 user/一 assistant，但旧 C 流程错误要求外租户获取 Product Session；最终改为 B 同租户 Product 私有 404、C 固定租户准入 403 且无 Product Session，未弱化业务准入。最终独立 HTTPS/真实 PG+Redis/Agent worker 组合 `status=PASS`、`fixed_tenant_continuation=true`、五帧唯一、`controlled_disconnects=1`、`same_event_path=true`、自有 PG/Redis/进程均0；System/模型仍是严格 fixture，不是正式 provider。首轮失败时 Agent 预建 `kokoro:runs:requests` 未被失败清理登记，Root 在核实 marker/无外来 key/无进程后只清理本次自有 DB15，新增回归防止再漏。Root `python3 -m pytest -q scripts/tests` **695 passed/169 subtests**，受影响 Ruff format/check 与 JS syntax PASS。只读 3310 `/login` 仍 HTTP503/body0；未触用户预览。实现与台账提交 Root `2cde4883c00260ec618e7f2c14c2f9761071240e` 已推送 main；提交后 `verify-main-only.py` PASS，Root/所有子仓仅 main 且 clean。
 
 - 本片静态治理复核：`verify-iam-relay-policy.py`、`verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1b-iam.json`、`verify-repository-topology.py` 均 PASS；`verify-ten-repository-standard.py` 仍 FAIL（既有 130 项），`verify-contract-compatibility.py` 仍 FAIL（12 条已登记 broken edge、1 条非法调用边）；浏览器 smoke 的绿灯不替代这两道全仓红门。独立 BFF/Agent worker runner 的 BFF 来源也已重钉当前 `e0663a8`，完整 Root pytest 复跑 **695 passed/169 subtests**；当前切片不改业务 owner 的这些技术债。
+## 2026-09-24 — `/login` 可见中转删除复核
+
+- Web 当前 `main`：`0d1802250f94c2ac0f3dd28b5b486ca92a976a1c`。可见登录中转页及 `login-panel` 已在 `83a39dd` 删除；后续 `f8650fc` 删除了登录启动失败的可见 fallback。现行 `src/app/login/route.ts` 只在服务端启动 OIDC 并 302 到 IAM，失败返回无正文的 503；没有“连接中”或整页重试 UI。
+- 保持用户运行中的 3310 Next 进程不变，`KOKORO_E2E_BASE_URL=http://127.0.0.1:3310 pnpm exec playwright test tests/e2e/web-governance.spec.ts --project=desktop-chromium --grep 'public root remains available|an unexpected login query|never substitutes a Product sign-in page'`：3 passed。只读 `curl /login`：HTTP 503，body 0 bytes。
+- 结论仅为**可见中转已删除**，不把 3310 当前 Web-only 空 503 冒称可用的 IAM 登录。要在该地址显示正式 IAM 表单，仍需真实 BFF/IAM/RP 运行配置和独立浏览器验收；不恢复任何可见中转或重试页。
+
+## 2026-09-24 — R5 IAM Web Team scope 验收
+
+- IAM 基线 `7f39193fff97dbb1398cb536ded7dca0db354213`；唯一 writer `team_iam_write_scope` 只改两份允许的 test fixture/integration 文件，Root 复核差异后提交并推送 main `ad5224a9e0a3a31d1c593d214d37940d6923b2e7`。
+- Root 独立 Node24 `pnpm verify` exit0，确定性 86 文件/741 测试；既有 OpenAPI breaking 报告 400 warning、0 error。首次无测试数据库配置的 integration 启动按预期 fail fast；随后显式复用现有 PostgreSQL/Redis `IAM_TEST_ADMIN_URL=postgresql://nako@127.0.0.1:5432/postgres IAM_TEST_REDIS_URL=redis://127.0.0.1:6379/1 VITEST_MAX_WORKERS=1 pnpm exec vitest run test/integration/web-oidc-flow-host.test.ts`：24/24 通过，测试自有数据库/Redis 前缀清理断言通过。
+- 改动只让测试自有第一方 Web OIDC client 申请两项已有 user-delegated Team 写 scope；machine client 没有取得这两项，Web client 的 client_credentials 仍被拒绝。IAM runtime/schema/机器 contract 未改。BFF Product mutation、Web OIDC scope/Team UI、Root 真组合尚未完成，不能据此宣称 Team 闭环。
+
+## 2026-09-24 — R5 Team owner 真 HTTP 闭环与边界
+
+- IAM main `ad5224a9`、BFF main `dd605c9`、Web main `f86aefe` 依 owner 顺序发布；Root 先 pin `6fe058c3` 并重钉 16 条 contract inventory 的当前证据。Web policy 2.0.0 只更新来源，Web 7 文件 diff；Node22 contract 57/57、architecture 34/34、lint、Vitest 1424/1424、隔离 typecheck/build PASS，用户 3310 进程未触。
+- Root 真 IAM/BFF Team mutation 首轮在 create invitation 得到 BFF 502；隔离 IAM owner 诊断确认真实 200 `{data}`、合法 JSON/request-id，**但 mutation 没有 Cache-Control**。不是缺 IAM 服务或配置。BFF `da03b76` 定点修复 write 响应 header 判定，GET 的 owner no-store 校验保持，Product 仍 `no-store`，Node22 283 pass/1 skip、format/check PASS。Root `39383550` pin 后复跑隔离真实 PostgreSQL/Redis/HTTP：30 case PASS、资源剩余0；覆盖三读、五个成功 mutation（邀请 create/resend/cancel、成员 role replace/remove）、缺 Bearer 401、LAST_OWNER 409、外租户登录固定租户准入 403、撤销/退出。外租户没有进入 Product Team route，不能将此门写成跨 tenant Product Token 测试。
+- Root runner unit TDD 后 `scripts/tests/test_bff_iam_oidc_smoke.py` 30 passed/71 subtests，Root 全套 `python3 -m pytest -q scripts/tests` 696 passed/169 subtests，Ruff check/py_compile PASS。脚本与本段台账在本切片由 Root 精确提交；Web Team Product UI、邀请邮件入口和 3310 常驻完整服务仍未完成。

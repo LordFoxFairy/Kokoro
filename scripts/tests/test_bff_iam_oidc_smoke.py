@@ -18,13 +18,59 @@ spec.loader.exec_module(smoke)
 
 
 class OidcGuards(unittest.TestCase):
-    def test_product_oidc_scope_contains_only_published_team_reads(self):
+    def test_product_oidc_scope_contains_published_team_reads_and_user_writes(self):
         scopes = smoke.SCOPES.split(" ")
         self.assertEqual(scopes, [
             "openid", "profile", "email", "offline_access",
             "iam:session-authorization.verify",
             "iam:member.read", "iam:invitation.read", "iam:role.read",
+            "iam:member.write", "iam:invitation.write",
         ])
+
+    def test_product_team_write_uses_one_admitted_bearer_and_strict_owner_envelope(self):
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.status = 200
+        response.headers = self.Headers({"content-type": "application/json; charset=utf-8"})
+        response.read.return_value = b"{}"
+        opener = Mock()
+        opener.open.return_value = response
+        with patch.object(smoke, "build_opener", return_value=opener):
+            smoke.product_team_write_http(
+                "http://127.0.0.1:1234", "service-secret", "/v1/team/invitations", "POST",
+                "user-token", {"email": "new@example.test", "roles": ["member"]},
+            )
+        request = opener.open.call_args.args[0]
+        self.assertEqual(request.full_url, "http://127.0.0.1:1234/v1/team/invitations")
+        self.assertEqual(request.get_method(), "POST")
+        self.assertEqual(json.loads(request.data), {"email": "new@example.test", "roles": ["member"]})
+        self.assertEqual(dict(request.header_items())["Authorization"], "Bearer user-token")
+        self.assertEqual(opener.open.call_count, 1)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.product_team_write_http("http://127.0.0.1:1234", "service-secret", "/v1/team/../../admin", "POST", "user-token")
+
+        headers = self.Headers({
+            "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-request-id": "team-write-1",
+        })
+        good = smoke.HttpResponse(200, headers, b'{"data":{"invitation_id":"i-1","status":"pending"},"meta":{"request_id":"team-write-1"}}')
+        self.assertEqual(smoke.require_team_write(good, 200, {"invitation_id": "i-1", "status": "pending"}), {"invitation_id": "i-1", "status": "pending"})
+        for changed in (
+            smoke.HttpResponse(200, headers, b'{"data":{"invitation_id":"i-1","status":"pending","secret":"leak"},"meta":{"request_id":"team-write-1"}}'),
+            smoke.HttpResponse(200, self.Headers({"content-type": "application/json", "cache-control": "public", "x-request-id": "team-write-1"}), good.body),
+            smoke.HttpResponse(409, headers, good.body),
+        ):
+            with self.assertRaises(smoke.SmokeError):
+                smoke.require_team_write(changed, 200, {"invitation_id": "i-1", "status": "pending"})
+
+        denied = smoke.HttpResponse(409, headers, b'{"error":{"code":"LAST_OWNER","message":"Team mutation failed"},"meta":{"request_id":"team-write-1"}}')
+        smoke.require_team_write_error(denied, 409, "LAST_OWNER")
+        for changed in (
+            smoke.HttpResponse(403, headers, denied.body),
+            smoke.HttpResponse(409, headers, denied.body.replace(b"LAST_OWNER", b"CONFLICT")),
+            smoke.HttpResponse(409, headers, denied.body.replace(b"team-write-1", b"other-id")),
+        ):
+            with self.assertRaises(smoke.SmokeError):
+                smoke.require_team_write_error(changed, 409, "LAST_OWNER")
 
     def test_product_team_page_requires_owner_projection_and_current_subject(self):
         headers = self.Headers({

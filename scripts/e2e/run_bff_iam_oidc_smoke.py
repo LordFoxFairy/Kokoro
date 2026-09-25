@@ -32,13 +32,20 @@ BFF = ROOT / "apps/kokoro-bff"
 HOST = IAM / "test/fixtures/web-oidc-flow-host.ts"
 WEB_ORIGIN = "https://web.example.test"
 RESOURCE = "https://kokoro.dev/resources/iam-internal"
-SCOPES = "openid profile email offline_access iam:session-authorization.verify iam:member.read iam:invitation.read iam:role.read"
+SCOPES = "openid profile email offline_access iam:session-authorization.verify iam:member.read iam:invitation.read iam:role.read iam:member.write iam:invitation.write"
 TENANT_CLAIM = "https://kokoro.dev/tenant_id"
 TOKEN_KIND_CLAIM = "https://kokoro.dev/token_kind"
 LOGOUT_CSP = "default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
 MAX_BODY = 1_048_576
 JSON_CONTENT_TYPES = frozenset({"application/json", "application/json; charset=utf-8"})
 TEAM_READ_KINDS = frozenset({"members", "invitations", "roles"})
+TEAM_WRITE_PATHS = (
+    ("POST", re.compile(r"/v1/team/invitations")),
+    ("POST", re.compile(r"/v1/team/invitations/[A-Za-z0-9_-]{1,256}/resend")),
+    ("DELETE", re.compile(r"/v1/team/invitations/[A-Za-z0-9_-]{1,256}")),
+    ("PUT", re.compile(r"/v1/team/members/[A-Za-z0-9_-]{1,256}/roles")),
+    ("DELETE", re.compile(r"/v1/team/members/[A-Za-z0-9_-]{1,256}")),
+)
 PRIMARY_STAGE_LABELS = frozenset({
     "preflight",
     "BFF current-source build",
@@ -47,6 +54,7 @@ PRIMARY_STAGE_LABELS = frozenset({
     "BFF schema install",
     "IAM test host startup",
     "BFF startup",
+    "IAM actors issuance",
     "OAuth first grant",
     "OAuth foreign tenant guard",
 })
@@ -387,6 +395,71 @@ def product_team_http(base: str, secret: str, kind: str, token: str | None,
         return HttpResponse(response.status, response.headers, body)
 
 
+def product_team_write_http(base: str, secret: str, path: str, method: str,
+                            token: str | None, payload: dict | None = None) -> HttpResponse:
+    if not any(method == allowed and pattern.fullmatch(path) for allowed, pattern in TEAM_WRITE_PATHS):
+        raise SmokeError("Team Product mutation route invalid")
+    headers = {"x-kokoro-service": "web-bff", "x-kokoro-internal-secret": secret,
+               "accept": "application/json"}
+    if token is not None:
+        headers["authorization"] = "Bearer " + token
+    body = None if payload is None else json.dumps(payload).encode()
+    if body is not None:
+        headers["content-type"] = "application/json"
+    request = Request(base + path, method=method, headers=headers, data=body)
+    try:
+        response = build_opener(ProxyHandler({}), runtime.NoRedirect()).open(request, timeout=8)
+    except HTTPError as error:
+        response = error
+    except (URLError, TimeoutError, OSError):
+        raise SmokeError("BFF Team mutation HTTP transport failed") from None
+    with response:
+        raw = response.read(MAX_BODY + 1)
+        if len(raw) > MAX_BODY:
+            raise SmokeError("BFF Team mutation response oversized")
+        return HttpResponse(response.status, response.headers, raw)
+
+
+def require_team_write(response: HttpResponse, status: int, expected_data: dict) -> dict:
+    if response.status != status:
+        raise SmokeError("Team Product mutation status invalid")
+    require_json_content_type(response)
+    if response.headers.get("cache-control") != "no-store":
+        raise SmokeError("Team Product mutation cache policy invalid")
+    request_id = response.headers.get("x-request-id")
+    if not isinstance(request_id, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) is None:
+        raise SmokeError("Team Product mutation request ID invalid")
+    value = response.json()
+    data = value.get("data") if isinstance(value, dict) else None
+    meta = value.get("meta") if isinstance(value, dict) else None
+    if (not isinstance(value, dict) or set(value) != {"data", "meta"}
+            or not isinstance(data, dict) or data != expected_data
+            or not isinstance(meta, dict) or set(meta) != {"request_id"}
+            or meta["request_id"] != request_id):
+        raise SmokeError("Team Product mutation envelope invalid")
+    return data
+
+
+def require_team_write_error(response: HttpResponse, status: int, code: str) -> None:
+    if response.status != status:
+        raise SmokeError("Team Product mutation rejection status invalid")
+    require_json_content_type(response)
+    if response.headers.get("cache-control") != "no-store":
+        raise SmokeError("Team Product mutation rejection cache policy invalid")
+    request_id = response.headers.get("x-request-id")
+    if not isinstance(request_id, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", request_id) is None:
+        raise SmokeError("Team Product mutation rejection request ID invalid")
+    value = response.json()
+    error = value.get("error") if isinstance(value, dict) else None
+    meta = value.get("meta") if isinstance(value, dict) else None
+    if (not isinstance(value, dict) or set(value) != {"error", "meta"}
+            or not isinstance(error, dict) or set(error) != {"code", "message"}
+            or error["code"] != code or not isinstance(error["message"], str) or not error["message"]
+            or not isinstance(meta, dict) or set(meta) != {"request_id"}
+            or meta["request_id"] != request_id):
+        raise SmokeError("Team Product mutation rejection envelope invalid")
+
+
 def validate_team_page(response: HttpResponse, kind: str, subject: str) -> int:
     if kind not in TEAM_READ_KINDS or response.status != 200:
         raise SmokeError(f"Team {kind}: HTTP {response.status}, expected 200")
@@ -410,6 +483,49 @@ def validate_team_page(response: HttpResponse, kind: str, subject: str) -> int:
     if kind == "members" and not any(item.get("user_id") == subject for item in page["data"]):
         raise SmokeError("Team Product current membership absent")
     return len(page["data"])
+
+
+def run_team_writes(base: str, secret: str, token: str, owner_user_id: str, member_user_id: str) -> int:
+    def observed(label: str, response: HttpResponse) -> HttpResponse:
+        error = response.json().get("error") if response.status >= 400 else None
+        code = error.get("code") if isinstance(error, dict) else None
+        safe_code = code if isinstance(code, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_.-]{0,63}", code) else None
+        print(json.dumps({"http_step": label, "status": response.status, **({"error_code": safe_code} if safe_code else {})}), flush=True)
+        return response
+
+    roster = product_team_http(base, secret, "members", token)
+    validate_team_page(roster, "members", owner_user_id)
+    members = [item for item in roster.json()["data"] if item.get("user_id") == member_user_id]
+    if len(members) != 1 or not isinstance(members[0].get("member_id"), str):
+        raise SmokeError("IAM test member absent from Team projection")
+    member_id = members[0]["member_id"]
+    if re.fullmatch(r"[A-Za-z0-9_-]{1,256}", member_id) is None:
+        raise SmokeError("IAM test member ID invalid")
+
+    email = f"team-r5-{secrets.token_hex(8)}@example.test"
+    missing = observed("Team create invitation missing bearer", product_team_write_http(
+        base, secret, "/v1/team/invitations", "POST", None, {"email": email, "roles": ["member"]}))
+    require_team_write_error(missing, 401, "session_authentication_required")
+    created = observed("Team create invitation", product_team_write_http(
+        base, secret, "/v1/team/invitations", "POST", token, {"email": email, "roles": ["member"]}))
+    created_data = created.json().get("data") if created.status == 200 else None
+    invitation_id = created_data.get("invitation_id") if isinstance(created_data, dict) else None
+    if not isinstance(invitation_id, str) or re.fullmatch(r"[A-Za-z0-9_-]{1,256}", invitation_id) is None:
+        raise SmokeError("IAM invitation ID invalid")
+    require_team_write(created, 200, {"invitation_id": invitation_id, "status": "pending"})
+    for method, path, expected in (
+        ("POST", f"/v1/team/invitations/{invitation_id}/resend", {"invitation_id": invitation_id, "status": "pending"}),
+        ("DELETE", f"/v1/team/invitations/{invitation_id}", {"invitation_id": invitation_id, "status": "canceled"}),
+    ):
+        require_team_write(observed(f"Team {method} invitation", product_team_write_http(base, secret, path, method, token)), 200, expected)
+    require_team_write(observed("Team replace member roles", product_team_write_http(base, secret, f"/v1/team/members/{member_id}/roles", "PUT", token,
+                                               {"roles": ["admin"]})), 200,
+                       {"member_id": member_id, "roles": ["admin"]})
+    require_team_write(observed("Team remove member", product_team_write_http(base, secret, f"/v1/team/members/{member_id}", "DELETE", token)), 200,
+                       {"member_id": member_id, "status": "removed"})
+    require_team_write_error(observed("Team last owner leave", product_team_write_http(base, secret, "/v1/team/members/me", "DELETE", token)), 409,
+                             "LAST_OWNER")
+    return 7
 
 
 def validate_team_missing_bearer(response: HttpResponse) -> None:
@@ -688,7 +804,7 @@ def validate_interaction_sequence(seen: list[str]) -> None:
         raise SmokeError("first OAuth interaction order invalid")
 
 
-def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegistry) -> int:
+def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegistry, member_user_id: str) -> int:
     def evidence(step: str, status: int) -> None:
         print(json.dumps({"http_step": step, "status": status}), flush=True)
 
@@ -760,6 +876,8 @@ def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegist
         count = validate_team_page(page, kind, tokens.subject)
         print(json.dumps({"http_step": f"Team {kind}", "status": 200, "item_count": count}), flush=True)
         cases += 1
+    cases += run_team_writes(base, secret, tokens.access_token, tokens.subject, member_user_id)
+    print(json.dumps({"http_step": "Team owner mutations", "status": 200, "cases": 7}), flush=True)
     current = session_present(http(base, "/iam/get-session", secret, cookie=jar.header()))
     print(json.dumps({"http_step": "get-session before logout", "status": 200,
                       "session_present": current}), flush=True)
@@ -847,86 +965,26 @@ def run_foreign_tenant_guard(
     target, seen, cases = start_first_grant(
         base, secret, ready, jar, query, lambda *_: None, credentials.add
     )
-    for _ in range(4):
-        if target.startswith(ready.redirect_uri + "?"):
-            break
-        kind, raw_query = interaction(target)
-        remember_interaction_query(raw_query, credentials.add)
-        seen.append(kind)
-        if kind == "select-tenant":
-            response = http(
-                base,
-                "/iam/organization/set-active",
-                secret,
-                method="POST",
-                origin=True,
-                cookie=jar.header(),
-                payload={"organizationId": ready.tenant_id, "oauth_query": raw_query},
-            )
-        elif kind == "consent":
-            response = http(
-                base,
-                "/iam/oauth2/consent",
-                secret,
-                method="POST",
-                origin=True,
-                cookie=jar.header(),
-                payload={"accept": True, "scope": SCOPES, "oauth_query": raw_query},
-            )
-        else:
-            raise SmokeError("foreign OAuth interaction order invalid")
-        jar.update(response.headers.get_all("set-cookie") or [])
-        target = redirect_result(response, "foreign " + kind + " continuation")
-        cases += 1
-    validate_interaction_sequence(seen)
-    code = authorization_code(target, ready.redirect_uri, state)
-    credentials.add(code)
-    cases += 1
-    basic = (
-        "Basic "
-        + base64.b64encode(f"{ready.client_id}:{ready.client_secret}".encode()).decode()
+    if seen != ["sign-in"]:
+        raise SmokeError("Foreign OAuth sign-in sequence invalid")
+    kind, raw_query = interaction(target)
+    if kind != "select-tenant":
+        raise SmokeError("Foreign tenant was not challenged before Product admission")
+    remember_interaction_query(raw_query, credentials.add)
+    response = http(
+        base,
+        "/iam/organization/set-active",
+        secret,
+        method="POST",
+        origin=True,
+        cookie=jar.header(),
+        payload={"organizationId": ready.tenant_id, "oauth_query": raw_query},
     )
-    credentials.add(basic)
-    issued = require(
-        http(
-            base,
-            "/iam/oauth2/token",
-            secret,
-            method="POST",
-            auth=basic,
-            form={
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": ready.redirect_uri,
-                "code_verifier": verifier,
-                "resource": RESOURCE,
-            },
-        ),
-        200,
-        "foreign Code+S256 token",
-    )
-    credentials.add(
-        *[
-            issued.get(name)
-            for name in ("access_token", "refresh_token", "id_token")
-            if isinstance(issued.get(name), str)
-        ]
-    )
-    tokens = validate_token_bundle(issued, ready, nonce)
-    cases += 1
-    for kind in ("members", "invitations", "roles"):
-        response = product_team_http(
-            base, secret, kind, tokens.access_token, spoof_identity=True
-        )
-        validate_team_foreign_tenant(response)
-        print(
-            json.dumps(
-                {"http_step": f"foreign tenant Team {kind}", "status": response.status}
-            ),
-            flush=True,
-        )
-        cases += 1
-    return cases
+    require_team_write_error(response, 403, "product_tenant_forbidden")
+    if response.headers.get("location") is not None:
+        raise SmokeError("Foreign tenant relay denial redirected")
+    print(json.dumps({"http_step": "foreign tenant fixed admission", "status": 403}), flush=True)
+    return cases + 1
 
 
 def main(argv=None) -> int:
@@ -1009,15 +1067,18 @@ def main(argv=None) -> int:
                 bff = runtime.start_process(args.bff_node_bin, BFF, bff_env, log)
                 processes.append(bff)
                 runtime.wait_ready(base, bff)
-                stage = "OAuth first grant"
-                cases = run_flow(base, service_secret, ready, credentials)
-                stage = "OAuth foreign tenant guard"
+                stage = "IAM actors issuance"
                 if host.poll() is not None or host.stdin is None:
                     raise SmokeError("IAM actor host unavailable")
                 host.stdin.write(b'{"command":"actors"}\n')
                 host.stdin.flush()
-                foreign_ready = require_foreign_actor(reader.record(timeout=60), ready)
+                actor_record = reader.record(timeout=60)
+                foreign_ready = require_foreign_actor(actor_record, ready)
+                member_user_id = actor_record["same_tenant_member"]["user_id"]
                 credentials.add(foreign_ready.password)
+                stage = "OAuth first grant"
+                cases = run_flow(base, service_secret, ready, credentials, member_user_id)
+                stage = "OAuth foreign tenant guard"
                 cases += run_foreign_tenant_guard(base, service_secret, foreign_ready, credentials)
                 cases += 1
             except Exception:
