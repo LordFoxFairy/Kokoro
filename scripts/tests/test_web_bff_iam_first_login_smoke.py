@@ -6,6 +6,8 @@ from pathlib import Path
 import smtplib
 import sys
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 
 PATH = (
@@ -19,6 +21,63 @@ spec.loader.exec_module(smoke)
 
 
 class FirstLoginGuards(unittest.TestCase):
+    def test_verified_user_joins_existing_fixed_product_tenant(self):
+        ready = SimpleNamespace(
+            base_url="http://127.0.0.1:4211",
+            email="owner@example.test",
+            password="owner-password",
+            tenant_id="fixed-tenant",
+        )
+        calls = []
+
+        def iam(base_url, path, body, *, cookie="", origin):
+            calls.append((base_url, path, body, cookie, origin))
+            if path == "/iam/sign-in/email":
+                return (
+                    200,
+                    {},
+                    ["kokoro-issuer.session_token=owner; Path=/iam; HttpOnly"],
+                )
+            if path == "/iam/organization/invite-member":
+                return 200, {"id": "invite-one", "organizationId": "fixed-tenant"}, []
+            if path == "/iam/organization/accept-invitation":
+                return 200, {"member": {"organizationId": "fixed-tenant"}}, []
+            self.fail(f"unexpected IAM request: {path}")
+
+        class Credentials:
+            values = []
+
+            def add(self, value):
+                self.values.append(value)
+
+        with patch.object(smoke, "_iam_json", side_effect=iam):
+            smoke.enroll_in_fixed_tenant(
+                ready,
+                "new@example.test",
+                "kokoro-issuer.session_token=new",
+                "https://web.example.test",
+                Credentials(),
+            )
+        self.assertEqual(
+            [call[1] for call in calls],
+            [
+                "/iam/sign-in/email",
+                "/iam/organization/invite-member",
+                "/iam/organization/accept-invitation",
+            ],
+        )
+        self.assertEqual(
+            calls[1][2],
+            {
+                "email": "new@example.test",
+                "role": "member",
+                "organizationId": "fixed-tenant",
+            },
+        )
+        self.assertEqual(calls[1][3], "kokoro-issuer.session_token=owner")
+        self.assertEqual(calls[2][2], {"invitationId": "invite-one"})
+        self.assertEqual(calls[2][3], "kokoro-issuer.session_token=new")
+
     def test_visible_form_requires_both_credential_inputs(self):
         good = b'<form><input name="email" type="email"><input name="password" type="password"></form>'
         smoke.require_credential_inputs(good)

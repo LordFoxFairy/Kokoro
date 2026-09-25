@@ -23,6 +23,53 @@ spec.loader.exec_module(smoke)
 
 
 class ProductSessionGuards(unittest.TestCase):
+    def test_fixed_tenant_continuation_is_get_only_and_has_no_visible_selection(self):
+        observed = []
+        calls = []
+        signed = "?sig=opaque"
+
+        def request(path, *, method="GET"):
+            calls.append((method, path))
+            if path == "/auth/select-tenant" + signed:
+                return smoke.BrowserResponse(
+                    302,
+                    {"location": "/iam/interactions/select-tenant" + signed},
+                    [],
+                    b"",
+                )
+            if path == "/iam/interactions/select-tenant" + signed:
+                observed.append(("POST", "/iam/organization/set-active"))
+                return smoke.BrowserResponse(
+                    303,
+                    {"location": "/auth/consent" + signed + "&scope=openid"},
+                    [],
+                    b"",
+                )
+            self.fail(f"unexpected browser request: {path}")
+
+        def navigate(value, _stage):
+            return smoke.browser_target(value, "https://web.example.test")
+
+        result = smoke.continue_fixed_tenant(
+            request,
+            navigate,
+            "/auth/select-tenant" + signed,
+            observed,
+        )
+        self.assertEqual(result, "/auth/consent" + signed + "&scope=openid")
+        self.assertEqual(
+            calls,
+            [
+                ("GET", "/auth/select-tenant" + signed),
+                ("GET", "/iam/interactions/select-tenant" + signed),
+            ],
+        )
+        self.assertNotIn(("GET", "/iam/organization/list"), observed)
+        self.assertEqual(
+            smoke.continue_fixed_tenant(request, navigate, result, observed),
+            result,
+        )
+
     def test_actor_matrix_requires_distinct_real_identity_and_tenant_membership(self):
         ready = type(
             "Ready", (), {"tenant_id": "tenant-a", "email": "a@example.test"}

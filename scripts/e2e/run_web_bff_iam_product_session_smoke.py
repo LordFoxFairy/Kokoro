@@ -598,6 +598,38 @@ def web_redis_keys(
     return keys
 
 
+def continue_fixed_tenant(
+    request: AuthenticatedRequest,
+    navigate: Callable[[str, str], str],
+    path: str,
+    observed: list[tuple[str, str]],
+) -> str:
+    """Follow the signed GET-only continuation without inventing a tenant form."""
+    if not path.startswith("/auth/select-tenant?"):
+        return path
+    query = urlsplit(path).query
+    before_list = observed.count(("GET", "/iam/organization/list"))
+    before_change = observed.count(("POST", "/iam/organization/set-active"))
+    outer = request(path)
+    if outer.status != 302 or outer.body or outer.set_cookies:
+        raise SmokeError("fixed tenant outer interaction invalid")
+    inner_path = navigate(outer.location(), "fixed tenant inner navigation")
+    if inner_path != "/iam/interactions/select-tenant?" + query:
+        raise SmokeError("fixed tenant signed query drift")
+    inner = request(inner_path)
+    if inner.status not in (302, 303) or inner.body:
+        raise SmokeError("fixed tenant continuation displayed a page")
+    next_path = navigate(inner.location(), "fixed tenant continuation")
+    if next_path.startswith("/auth/select-tenant?"):
+        raise SmokeError("fixed tenant continuation loop")
+    if (
+        observed.count(("GET", "/iam/organization/list")) != before_list
+        or observed.count(("POST", "/iam/organization/set-active")) != before_change + 1
+    ):
+        raise SmokeError("fixed tenant relay did not use its narrow owner operation")
+    return next_path
+
+
 def run_browser(
     port: int,
     web_origin: str,
@@ -745,33 +777,9 @@ def run_browser(
         raise SmokeError(
             f"IAM sign-in: HTTP {login.status}, code {old.safe_error_code(login)}, expected redirect"
         )
-    path = navigate(login.location(), "tenant navigation")
-    if not path.startswith("/auth/select-tenant?"):
-        raise SmokeError("IAM tenant interaction missing")
-    outer_tenant = request(path)
-    require_status(outer_tenant, 302, "tenant outer redirect")
-    path = navigate(outer_tenant.location(), "tenant page")
-    tenant_page = request(path)
-    tenant_action = "/iam/interactions/select-tenant?" + urlsplit(path).query
-    tenant_form = form_inputs(tenant_page, tenant_action)
-    credentials.add(tenant_form.hidden["csrf_token"])
-    if ready.tenant_id not in tenant_form.options:
-        raise SmokeError("IAM fixture tenant absent")
-    tenant = request(
-        tenant_form.action,
-        method="POST",
-        form={
-            "csrf_token": tenant_form.hidden["csrf_token"],
-            "tenant_ids": tenant_form.hidden.get("tenant_ids", ""),
-            "organization_id": ready.tenant_id,
-        },
-        origin=web_origin,
+    path = continue_fixed_tenant(
+        request, navigate, navigate(login.location(), "tenant navigation"), observed
     )
-    if tenant.status not in (302, 303):
-        raise SmokeError(
-            f"IAM tenant continuation: HTTP {tenant.status}, expected redirect"
-        )
-    path = navigate(tenant.location(), "consent navigation")
     if preconsented:
         callback_path = path
     else:
@@ -802,8 +810,13 @@ def run_browser(
         raise SmokeError("RP callback contract drift")
     code = callback_query["code"]
     credentials.add(code)
+    me_calls = observed.count(("GET", "/v1/me"))
     callback = request(callback_path)
     require_product_callback(callback)
+    if observed.count(("GET", "/v1/me")) != me_calls + 1:
+        raise SmokeError("RP callback did not verify current fixed Product identity")
+    if ("GET", "/iam/organization/list") in observed:
+        raise SmokeError("retired tenant directory reached the BFF")
     if not any(
         part.startswith(PRODUCT_COOKIE + "=")
         for part in jar.header("/api/auth/session").split("; ")
@@ -883,6 +896,8 @@ def run_browser(
     )
     refreshed_product = require_session_projection(refresh, authenticated=True)
     require_refreshed_projection(initial_product, refreshed_product)
+    if observed.count(("GET", "/v1/me")) != me_calls + 2:
+        raise SmokeError("RP refresh did not reverify current fixed Product identity")
     if observed.count(("POST", "/iam/oauth2/token")) != initial_token_calls + 1:
         raise SmokeError("Product refresh did not rotate exactly once")
     stale = https_browser(
@@ -1196,6 +1211,7 @@ def main(argv=None) -> int:
                         "KOKORO_BFF_BASE_URL": f"http://127.0.0.1:{bff_proxy.server_port}",
                         "KOKORO_INTERNAL_SECRET_WEB_BFF": secret,
                         "KOKORO_WEB_REDIS_URL": args.redis_url,
+                        "KOKORO_TENANT_ID": ready.tenant_id,
                         "KOKORO_OIDC_CLIENT_ID": ready.client_id,
                         "KOKORO_OIDC_CLIENT_SECRET": ready.client_secret,
                         "KOKORO_WEB_AUTH_SECRET": secrets.token_hex(32),
