@@ -16,6 +16,7 @@ import secrets
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 from dataclasses import dataclass, replace
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -55,6 +56,7 @@ PRIMARY_STAGE_LABELS = frozenset({
     "IAM test host startup",
     "BFF startup",
     "IAM actors issuance",
+    "IAM invitation issuance",
     "OAuth first grant",
     "OAuth foreign tenant guard",
 })
@@ -67,6 +69,7 @@ FINALIZATION_LABELS = frozenset({
     "IAM host resource cleanup",
     "IAM host resource inventory",
 })
+INVITATION_ID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
 
 
 class SmokeError(RuntimeError):
@@ -169,6 +172,81 @@ def require_foreign_actor(record: object, ready: Ready) -> Ready:
         password=outsider["password"],
         tenant_id=outsider["tenant_id"],
     )
+
+
+def require_invitation_record(record: object) -> str:
+    if (not isinstance(record, dict) or set(record) != {"kind", "invitation_id"}
+            or record["kind"] != "invitation" or not isinstance(record["invitation_id"], str)
+            or INVITATION_ID.fullmatch(record["invitation_id"]) is None):
+        raise SmokeError("IAM invitation fixture protocol invalid")
+    return record["invitation_id"]
+
+
+def invitation_path(tenant_id: str, invitation_id: str, action: str) -> str:
+    if (not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", tenant_id)
+            or INVITATION_ID.fullmatch(invitation_id) is None
+            or action not in {"context", "accept", "reject"}):
+        raise SmokeError("Invitation relay target invalid")
+    return f"/iam/v1/tenants/{tenant_id}/invitations/{invitation_id}/{action}"
+
+
+def invitation_headers(response: HttpResponse) -> None:
+    require_json_content_type(response)
+    if (response.headers.get("cache-control") != "no-store"
+            or response.headers.get("referrer-policy") != "no-referrer"
+            or response.headers.get("location") is not None
+            or response.headers.get_all("set-cookie")
+            or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", response.headers.get("x-request-id") or "") is None):
+        raise SmokeError("Invitation relay privacy headers invalid")
+
+
+def require_invitation_success(response: HttpResponse, action: str, invitation_id: str, tenant_id: str) -> dict:
+    if response.status != 200:
+        raise SmokeError(f"Invitation {action} HTTP status invalid: {response.status}")
+    invitation_headers(response)
+    value = response.json()
+    if set(value) != {"data"} or not isinstance(value["data"], dict):
+        raise SmokeError("Invitation success envelope invalid")
+    data = value["data"]
+    if action == "context":
+        if (set(data) != {"invitation_id", "tenant_id", "tenant_name", "roles", "status", "expires_at"}
+                or data.get("tenant_id") != tenant_id or not isinstance(data.get("tenant_name"), str)
+                or not data["tenant_name"] or not isinstance(data.get("roles"), list) or not data["roles"]
+                or any(not isinstance(role, str) or re.fullmatch(r"[a-z][a-z0-9_-]{0,63}", role) is None for role in data["roles"])
+                or data.get("status") != "pending" or not isinstance(data.get("expires_at"), str)):
+            raise SmokeError("Invitation context projection invalid")
+        try:
+            datetime.fromisoformat(data["expires_at"].replace("Z", "+00:00"))
+        except ValueError:
+            raise SmokeError("Invitation expiry invalid") from None
+    elif action == "accept":
+        if (set(data) != {"invitation_id", "member_id", "status"}
+                or not isinstance(data.get("member_id"), str) or not data["member_id"]
+                or data.get("status") != "accepted"):
+            raise SmokeError("Invitation accept projection invalid")
+    elif action == "reject":
+        if set(data) != {"invitation_id", "status"} or data.get("status") != "rejected":
+            raise SmokeError("Invitation reject projection invalid")
+    else:
+        raise SmokeError("Invitation action invalid")
+    if data.get("invitation_id") != invitation_id:
+        raise SmokeError("Invitation response ID mismatch")
+    return data
+
+
+def require_invitation_error(response: HttpResponse, status: int, code: str) -> None:
+    if response.status != status:
+        raise SmokeError(f"Invitation rejection HTTP status invalid: {response.status}")
+    invitation_headers(response)
+    value = response.json()
+    if set(value) != {"error"} or not isinstance(value["error"], dict):
+        raise SmokeError("Invitation rejection envelope invalid")
+    error = value["error"]
+    if (set(error) != {"code", "message", "retryable", "details"}
+            or error.get("code") != code or not isinstance(error.get("message"), str)
+            or not error["message"] or not isinstance(error.get("retryable"), bool)
+            or error.get("details") != []):
+        raise SmokeError("Invitation rejection details invalid")
 
 
 def parse_args(argv=None):
@@ -338,7 +416,7 @@ def require_json_content_type(response: HttpResponse) -> None:
 
 
 def http(base: str, path: str, secret: str, *, method: str = "GET", payload: dict | None = None,
-         form: dict | None = None, cookie: str = "", auth: str = "", origin: bool = False,
+         form: dict | None = None, cookie: str = "", auth: str = "", origin: bool | str = False,
          accept: str = "application/json") -> HttpResponse:
     if not path.startswith("/iam/") or "#" in path:
         raise SmokeError("Runner HTTP target invalid")
@@ -348,7 +426,7 @@ def http(base: str, path: str, secret: str, *, method: str = "GET", payload: dic
     if auth:
         headers["authorization"] = auth
     if origin:
-        headers["origin"] = WEB_ORIGIN
+        headers["origin"] = WEB_ORIGIN if origin is True else origin
     data = None
     if payload is not None:
         data = json.dumps(payload).encode()
@@ -526,6 +604,58 @@ def run_team_writes(base: str, secret: str, token: str, owner_user_id: str, memb
     require_team_write_error(observed("Team last owner leave", product_team_write_http(base, secret, "/v1/team/members/me", "DELETE", token)), 409,
                              "LAST_OWNER")
     return 7
+
+
+def run_invitation_relay(base: str, secret: str, ready: Ready, credentials: CredentialRegistry,
+                         owner_token: str, owner_cookie: str, recipient: Ready, first_id: str) -> int:
+    recipient_jar = IssuerCookies(credentials.add)
+    signed_in = http(base, "/iam/sign-in/email", secret, method="POST", origin=True,
+                     payload={"email": recipient.email, "password": recipient.password})
+    require(signed_in, 200, "invitation recipient sign-in")
+    recipient_jar.update(signed_in.headers.get_all("set-cookie") or [])
+    if "kokoro-issuer.session_token" not in recipient_jar.values:
+        raise SmokeError("Invitation recipient issuer Session absent")
+    print(json.dumps({"http_step": "invitation recipient issuer sign-in", "status": 200}), flush=True)
+    cases = 1
+
+    def request(invitation_id: str, action: str, *, tenant_id: str | None = None,
+                cookie: str | None = None, origin: bool | str = True) -> HttpResponse:
+        return http(base, invitation_path(tenant_id or ready.tenant_id, invitation_id, action), secret,
+                    method="GET" if action == "context" else "POST",
+                    cookie=recipient_jar.header() if cookie is None else cookie, origin=origin)
+
+    require_team_write_error(request(first_id, "context", cookie=""), 403, "iam_relay_credential_rejected")
+    cases += 1
+    require_team_write_error(request(first_id, "context", tenant_id=recipient.tenant_id), 403, "product_tenant_forbidden")
+    cases += 1
+    require_team_write_error(request(first_id, "context", origin="https://wrong.example.test"), 403, "iam_relay_origin_rejected")
+    cases += 1
+    require_invitation_error(http(base, invitation_path(ready.tenant_id, first_id, "context"), secret,
+                                  cookie=owner_cookie, origin=True), 404, "INVITATION_NOT_FOUND")
+    cases += 1
+    require_invitation_success(request(first_id, "context"), "context", first_id, ready.tenant_id)
+    cases += 1
+    require_invitation_success(request(first_id, "reject"), "reject", first_id, ready.tenant_id)
+    cases += 1
+    require_invitation_error(request(first_id, "context"), 404, "INVITATION_NOT_FOUND")
+    cases += 1
+
+    created = product_team_write_http(base, secret, "/v1/team/invitations", "POST", owner_token,
+                                      {"email": recipient.email, "roles": ["member"]})
+    created_data = created.json().get("data") if created.status == 200 else None
+    second_id = created_data.get("invitation_id") if isinstance(created_data, dict) else None
+    if (not isinstance(second_id, str) or INVITATION_ID.fullmatch(second_id) is None or second_id == first_id):
+        raise SmokeError("Second invitation ID invalid")
+    require_team_write(created, 200, {"invitation_id": second_id, "status": "pending"})
+    cases += 1
+    require_invitation_success(request(second_id, "context"), "context", second_id, ready.tenant_id)
+    cases += 1
+    require_invitation_success(request(second_id, "accept"), "accept", second_id, ready.tenant_id)
+    cases += 1
+    require_invitation_error(request(second_id, "context"), 404, "INVITATION_NOT_FOUND")
+    cases += 1
+    print(json.dumps({"http_step": "invitation relay context/reject/accept", "status": 200, "cases": cases}), flush=True)
+    return cases
 
 
 def validate_team_missing_bearer(response: HttpResponse) -> None:
@@ -804,7 +934,8 @@ def validate_interaction_sequence(seen: list[str]) -> None:
         raise SmokeError("first OAuth interaction order invalid")
 
 
-def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegistry, member_user_id: str) -> int:
+def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegistry, member_user_id: str,
+             recipient: Ready, invitation_id: str) -> int:
     def evidence(step: str, status: int) -> None:
         print(json.dumps({"http_step": step, "status": status}), flush=True)
 
@@ -878,6 +1009,8 @@ def run_flow(base: str, secret: str, ready: Ready, credentials: CredentialRegist
         cases += 1
     cases += run_team_writes(base, secret, tokens.access_token, tokens.subject, member_user_id)
     print(json.dumps({"http_step": "Team owner mutations", "status": 200, "cases": 7}), flush=True)
+    cases += run_invitation_relay(base, secret, ready, credentials, tokens.access_token,
+                                  jar.header(), recipient, invitation_id)
     current = session_present(http(base, "/iam/get-session", secret, cookie=jar.header()))
     print(json.dumps({"http_step": "get-session before logout", "status": 200,
                       "session_present": current}), flush=True)
@@ -1076,10 +1209,15 @@ def main(argv=None) -> int:
                 foreign_ready = require_foreign_actor(actor_record, ready)
                 member_user_id = actor_record["same_tenant_member"]["user_id"]
                 credentials.add(foreign_ready.password)
-                stage = "OAuth first grant"
-                cases = run_flow(base, service_secret, ready, credentials, member_user_id)
                 stage = "OAuth foreign tenant guard"
                 cases += run_foreign_tenant_guard(base, service_secret, foreign_ready, credentials)
+                stage = "IAM invitation issuance"
+                host.stdin.write((json.dumps({"command": "invite-verified", "email": foreign_ready.email}) + "\n").encode())
+                host.stdin.flush()
+                invitation_id = require_invitation_record(reader.record(timeout=60))
+                stage = "OAuth first grant"
+                cases += run_flow(base, service_secret, ready, credentials, member_user_id,
+                                  foreign_ready, invitation_id)
                 cases += 1
             except Exception:
                 primary_failure_stage = stage

@@ -18,6 +18,55 @@ spec.loader.exec_module(smoke)
 
 
 class OidcGuards(unittest.TestCase):
+    def test_invitation_fixture_record_and_relay_path_are_narrow(self):
+        invitation_id = "123e4567-e89b-42d3-a456-426614174000"
+        self.assertEqual(smoke.require_invitation_record({"kind": "invitation", "invitation_id": invitation_id}), invitation_id)
+        for value in ({"kind": "invitation", "invitation_id": "../bad"},
+                      {"kind": "invitation", "invitation_id": invitation_id, "secret": "leak"}):
+            with self.assertRaises(smoke.SmokeError):
+                smoke.require_invitation_record(value)
+        self.assertEqual(smoke.invitation_path("tenant-1", invitation_id, "context"),
+                         "/iam/v1/tenants/tenant-1/invitations/" + invitation_id + "/context")
+        with self.assertRaises(smoke.SmokeError):
+            smoke.invitation_path("../tenant", invitation_id, "context")
+
+    def test_invitation_response_requires_private_exact_shape(self):
+        headers = self.Headers({"content-type": "application/json; charset=utf-8", "cache-control": "no-store",
+                                "referrer-policy": "no-referrer", "x-request-id": "invite-1"})
+        invitation_id = "123e4567-e89b-42d3-a456-426614174000"
+        context = {"data": {"invitation_id": invitation_id, "tenant_id": "tenant-1", "tenant_name": "Team",
+                            "roles": ["member"], "status": "pending", "expires_at": "2026-10-01T00:00:00.000Z"}}
+        self.assertEqual(smoke.require_invitation_success(smoke.HttpResponse(200, headers, json.dumps(context).encode()),
+                                                          "context", invitation_id, "tenant-1")["status"], "pending")
+        for changed in ({**context, "extra": "leak"}, {"data": {**context["data"], "email": "private@example.test"}}):
+            with self.assertRaises(smoke.SmokeError):
+                smoke.require_invitation_success(smoke.HttpResponse(200, headers, json.dumps(changed).encode()),
+                                                 "context", invitation_id, "tenant-1")
+        denied = smoke.HttpResponse(404, headers, b'{"error":{"code":"INVITATION_NOT_FOUND","message":"Not found","retryable":false,"details":[]}}')
+        smoke.require_invitation_error(denied, 404, "INVITATION_NOT_FOUND")
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_invitation_error(smoke.HttpResponse(404, headers, denied.body.replace(b"[]", b'["leak"]')),
+                                           404, "INVITATION_NOT_FOUND")
+
+    def test_invitation_relay_sends_issuer_cookie_and_trusted_origin(self):
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.status = 200
+        response.headers = self.Headers({"content-type": "application/json"})
+        response.read.return_value = b"{}"
+        opener = Mock()
+        opener.open.return_value = response
+        with patch.object(smoke, "build_opener", return_value=opener):
+            smoke.http("http://127.0.0.1:1234", "/iam/v1/tenants/t/invitations/i/context",
+                       "service-secret", cookie="kokoro-issuer.session_token=issuer-secret", origin=True)
+            smoke.http("http://127.0.0.1:1234", "/iam/v1/tenants/t/invitations/i/context",
+                       "service-secret", cookie="kokoro-issuer.session_token=issuer-secret", origin="https://wrong.example.test")
+        first = dict(opener.open.call_args_list[0].args[0].header_items())
+        second = dict(opener.open.call_args_list[1].args[0].header_items())
+        self.assertEqual(first["Origin"], smoke.WEB_ORIGIN)
+        self.assertEqual(second["Origin"], "https://wrong.example.test")
+        self.assertEqual(first["Cookie"], "kokoro-issuer.session_token=issuer-secret")
+
     def test_product_oidc_scope_contains_published_team_reads_and_user_writes(self):
         scopes = smoke.SCOPES.split(" ")
         self.assertEqual(scopes, [
