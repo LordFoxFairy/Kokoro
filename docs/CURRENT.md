@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `6290c11a567be6d1fd98006e2a16feedcc0b8a07` |
+| `apps/kokoro-app` | `07a30fa2e424307e75390031b458e015dc153d3c` |
 | `apps/kokoro-bff` | `2f1fc3382df31ba107d7eb2b2b6a611fa893bc13` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `7215223b2ed27a0d5217f3bbaaabce547006d3bb` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `6290c11`。Web 的邀请页已修复真实 Chromium 暴露的 `Referrer-Policy: no-referrer` 导致同源表单 `Origin: null`、POST 403；精确邀请路径改为 `same-origin`，跨站不发送邀请 URL，`/iam/verify-email` 继续 `no-referrer`。Root 隔离 HTTPS/真实 SMTP 测试在同一 Chromium Context 中验证已有账号邮件链接→Web 登录→收件人限定预览→accept→正式 IAM consent→Product Session，及 reject→完成页/匿名；两次均 exit0、自有资源余量0。HTTP CookieJar 在新 Web pin 下还验证新账号注册/邮箱验证后的 accept/reject 与拒绝后直接查询 IAM owner 成员列表，固定租户均未被授予成员资格；这些不是用户 3310 常驻入口的可用性证据。旧 IAM/BFF/Web 组合及 Web 子仓的 1483 测试记录是历史版本证据，最新门禁见 `progress.md`。错误收件人/过期的 Chromium 矩阵、新账号 Chromium 注册与用户 3310 仍待验。
+Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `07a30fa`。Web 的邀请页已修复真实 Chromium 暴露的 `Referrer-Policy: no-referrer` 导致同源表单 `Origin: null`、POST 403；精确邀请路径改为 `same-origin`，跨站不发送邀请 URL，`/iam/verify-email` 继续 `no-referrer`。此前固定 Web `6290c11` 的隔离 HTTPS/真实 SMTP/Chromium 验收已证明已有账号邀请 accept/reject 和 Product OIDC；当前 Web 只更改签名登录表单的呈现，Root 已在新提交上独立通过真实 Next/Chromium 页面与 Web 全门，**尚未重跑新 gitlink 的三仓 SMTP 组合**。旧组合不能当作新提交的最终跨仓证据；用户 3310 无监听、缺本地登录配置，也不因本次样式修复变成可登录。错误收件人/过期的 Chromium 矩阵、新账号 Chromium 注册与常驻 3310 仍待验。
 
 ## 已验证到的边界
 
