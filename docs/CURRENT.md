@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `0d1802250f94c2ac0f3dd28b5b486ca92a976a1c` |
-| `apps/kokoro-bff` | `e0663a8c85f055c2bac5af894070fea8e24ff3ce` |
+| `apps/kokoro-app` | `f86aefe7ea3e48bc7ac1e4f1aea99bbe6f15feb6` |
+| `apps/kokoro-bff` | `dd605c99e9bb5c6669ec31e04e285e5f92b79ed0` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `7f39193fff97dbb1398cb536ded7dca0db354213` |
+| `apps/kokoro-iam` | `ad5224a9e0a3a31d1c593d214d37940d6923b2e7` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,11 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-IAM `7f39193`、BFF `e0663a8`、Web `d117688` 固定来源的隔离 HTTPS 组合已通过：真实 TCP SMTP 新账号验证、正式 IAM internal 邀请加入既有固定 tenant、issuer 接受、Web `/login` 直达 IAM 表单、OIDC、BFF `/v1/me`、Product Session/refresh/退出；测试自有资源剩余 0。Web `0d18022` 仅补记该验收，生产路由不变。BFF policy `2.0.0` 的 route/header/cookie 语义未随 IAM test host 来源重钉而变化。Team Product 写、其余 Wave 任务与当前 3310 常驻登录仍**未完成**，不得把这条隔离真组合冒充全项目闭环。
-
-用户 3310 的 Web-only 常驻 `/login` 当前 HTTP 503 且 body 为 0，没有可见“连接中／整页重试”UI，也尚未连接正式 IAM 登录。2026-09-24 修复了其 `node_modules/@kokoro/{i18n,tsconfig,web-core}` 指向已清理隔离目录的断裂 symlink，恢复页面编译；随后实测 503/0 字节，Web 登录/架构聚焦 25/25 通过。此前隔离 build 的复用 node_modules 方式会改写 checkout workspace 链接，后续隔离验证必须避免再次触碰用户常驻依赖。
-
-当前固定 SHA 的 Root 真 Chromium Chat 组合已在独立 HTTPS/真实 PG+Redis 上重验：`/login` 服务端直达 IAM 表单，固定 tenant 只走 signed GET 续接、不显示选择表单；同一 Chromium 获取 Product Session、从 DOM 发首消息并接收 AG-UI 五帧，受控断线携原 cursor 恢复，reload 后恰好一 user/一 assistant。B 同 tenant 的独立 Product Session 对 A 资源返回私有 404；C 外租户在固定 tenant 准入被 403 拒绝，未发 Product Session。测试自有 PG/Redis/进程归零。模型/System 是严格 fixture；该证据不代表用户现有 3310 已可登录，也不代表真 provider 或所有 Wave 完成。
+Root 当前精确 pin IAM `ad5224a`、BFF `dd605c9`、Web `f86aefe`。IAM test-only Web OIDC client 已加 user-delegated Team 写 scope；BFF 通过 IAM owner `0.3.0` contract 发布六个 public Team mutation，Web 当前仅完成 browser-private relay policy 的来源重钉。BFF policy 仍为 `2.0.0`，只更改 IAM owner commit；Web Team UI/Product Session 尚未消费新写契约。Root 的真 IAM/BFF Team 写 HTTP smoke 正在验证，不把静态门冒充真实组合。固定租户 SMTP 首登与 Chromium Chat 的历史隔离证据见下文；当前用户 3310 仅 Web 进程，`/login` 只读实测为空 body 503，不是在线 IAM 表单，也没有可见“连接中／整页重试”中转。
 
 ## 已验证到的边界
 
