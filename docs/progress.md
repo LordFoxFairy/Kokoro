@@ -872,3 +872,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - R5 邀请链接只读 owner 审查确认真实代码缺口：IAM 邮件仍指向不存在的 Web `/auth/invitation?id=`，issuer Cookie Path=/iam；IAM 已有 verified Session 守卫、accept/reject 条件事务及 SMTP 注册/邮箱验证 owner 能力，但尚无窄 context GET，也无 BFF/Web 独立邀请入口。当前 BFF relay policy 的静态 Better Auth allowlist 与动态邀请控制器路径不匹配，不能仅加一条宽泛 allowlist。已在任务卡登记 IAM→BFF→Web 的 owner-first 序列和协议门；这是只读设计证据，不是实现完成或浏览器通过。
 
 - R5 Web Team Product 全量 cutover 子代理因长时间跨 codegen/route/client/UI 实施而被 Root 中断（2026-09-24）；Web main 仍 `732de58`，存在未提交的 scoped 工作树：BFF Team OpenAPI artifact/生成脚本与 client、同源 Team route、相邻测试正在编辑，UI 迁移和最终验证未完成。Root 未将这些工作树改动标为已验收、未 pin 新 Web commit；当前未发现额外 pnpm/vitest/Next build 后台进程，原用户 3310 `pnpm dev` 保持不变。下次先审查该工作树、清理生成错误日志，再以明确时间盒推进单一可验证 cutover，并在到点给用户实际状态，不再静默等待。
+
+## 2026-09-25 — R5 Web Team Product 接管与本仓门禁
+
+- Root 接管中断的 Web 独占写入，重做固定租户 Team UI 与 Settings/rail/preview 模型；旧 namespace/inbox/context 和 IAM `/bff/*` 直连从 Team 路径删除。BFF public OpenAPI 来源、9 个 generated operation 和同源 Product Session adapter 对齐；Team UI 的 5 个新场景从 RED 到 GREEN，相关 93/93 通过。
+- 最终 Node22 `pnpm check` 在 Web 当前工作树 exit0：contract 69/69、architecture 34/34、lint、typecheck、全量 Vitest 1459/1459、Next production build。第一次生产 build 暴露 generated `.js` 扩展名与 Turbopack 解析不兼容，改生成配置后重新生成并完整复跑；无临时错误日志保留。独立只读审查指出写成功后刷新误报、跨页 actor/角色和邀请分页 3 个真实缺陷，Root 修复并补 4 个 UI 回归后重跑完整门。Web 提交、Root gitlink/库存和隔离真浏览器未完成前不宣称 R5 Web/邀请邮件完整闭环。
+- 当前只读检查 `127.0.0.1:3310` 没有监听进程；以前的“用户 3310 进程保持不变”仅是 2026-09-24 的历史记录，不推断它今天仍在。未在本切片启动额外常驻服务。
