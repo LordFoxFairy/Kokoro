@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `74319facdd9545a2a3128a415e1cc7c12aeb2b78` |
-| `apps/kokoro-bff` | `dadf9264116ea9df2c0886c4af84bacb67aa6e41` |
+| `apps/kokoro-app` | `0d1802250f94c2ac0f3dd28b5b486ca92a976a1c` |
+| `apps/kokoro-bff` | `e0663a8c85f055c2bac5af894070fea8e24ff3ce` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `b363554d07e5b6e182160b42ae1402330e55d9db` |
+| `apps/kokoro-iam` | `7f39193fff97dbb1398cb536ded7dca0db354213` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-IAM `b363554d` 已把三个当前态设计文档与已发布 Team 读/写事实对齐；BFF `018c6176` 在普通 Product admission 加入固定 `KOKORO_TENANT_ID` 与 IAM 已验证 tenant 的等值闸，异租户 403、缺配置 503；随后 BFF `dadf9264`、Web `74319fac` 顺序重钉同一 IAM relay policy 1.1.0 来源与生成快照。BFF Node22 完整门 `272 passed/1 skip`，Web contract 57/57、architecture 33/33、full Vitest 1417/1417、隔离目录 typegen/build 通过。Root 已在固定来源的真实 IAM→BFF Code+S256 组合验证同租户 Team 三读 200、异租户真实 JWT 加伪造身份头三读 403，自有资源0；Web 固定 tenant 登录交互、Team Product 写/旧路径删除仍**未完成**，不得把 BFF 准入闸宣称为整个固定租户闭环。
+IAM `7f39193`、BFF `e0663a8`、Web `d117688` 固定来源的隔离 HTTPS 组合已通过：真实 TCP SMTP 新账号验证、正式 IAM internal 邀请加入既有固定 tenant、issuer 接受、Web `/login` 直达 IAM 表单、OIDC、BFF `/v1/me`、Product Session/refresh/退出；测试自有资源剩余 0。Web `0d18022` 仅补记该验收，生产路由不变。BFF policy `2.0.0` 的 route/header/cookie 语义未随 IAM test host 来源重钉而变化。Team Product 写、其余 Wave 任务与当前 3310 常驻登录仍**未完成**，不得把这条隔离真组合冒充全项目闭环。
 
 用户 3310 的 Web-only 常驻 `/login` 当前 HTTP 503 且 body 为 0，没有可见“连接中／整页重试”UI，也尚未连接正式 IAM 登录。2026-09-24 修复了其 `node_modules/@kokoro/{i18n,tsconfig,web-core}` 指向已清理隔离目录的断裂 symlink，恢复页面编译；随后实测 503/0 字节，Web 登录/架构聚焦 25/25 通过。此前隔离 build 的复用 node_modules 方式会改写 checkout workspace 链接，后续隔离验证必须避免再次触碰用户常驻依赖。
 

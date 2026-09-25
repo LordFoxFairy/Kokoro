@@ -842,3 +842,6 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 
 - 2026-09-24 固定租户首登 404 修复进入真组合门：IAM test host `7f39193` 增加一次性 test-only 邀请命令，经正式 internal invitation 产生固定 tenant 邀请；Root 首登脚本已删除对禁用 Better Auth `/organization/invite-member` 的调用，改用正式 issuer accept。IAM 真 PostgreSQL/Redis host integration **23/23**；BFF `e0663a8` 仅重钉 IAM 来源，`pnpm check` **276 pass/1 skip**；Web `d117688` 精确消费新 BFF policy artifact，Root 独立 Web contract **57/57**、architecture **34/34**、lint、全量单 worker **1424/1424**、隔离 typecheck/build PASS。Root runner 聚焦 **28 passed/67 subtests**；固定 SHA 三仓真实首登尚待 Root gitlink 发布后的复验，当前不宣称产品登录可用。用户 3310 进程未触。
+
+
+- 2026-09-24 固定租户新用户首登真三仓完成：Root 固定 IAM `7f39193`、BFF `e0663a8`、Web `d117688` 的测试自有 HTTPS/PG/Redis 组合返回 `status=passed`、`first_login=smtp_verified_then_oidc`、`product_session=active_then_ended`、`product_chat_proxy=verified`、`owned_resources_remaining=0`；创建邀请使用 IAM 正式 internal owner API，接受走正式 issuer endpoint，Product callback/refresh 均见 BFF `/v1/me`。Web docs-only `0d180225` 已记录结果，Root 本提交重钉其 gitlink。Root relay-policy/checkpoint/topology 与聚焦 **36 passed/67 subtests** PASS；用户 3310 `/login` 仍为 503/0 bytes，未触用户进程。本片是隔离真实组合完成，不代表当前 3310 可登录或全项目 Wave 0–7 完成。
