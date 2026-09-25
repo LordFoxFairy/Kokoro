@@ -297,7 +297,7 @@ def enroll_in_fixed_tenant(
         or not isinstance(invitation_id, str)
         or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", invitation_id) is None
     ):
-        raise FirstLoginError("fixed tenant invitation failed")
+        raise FirstLoginError(f"fixed tenant invitation failed HTTP {status}")
     for issued in cookies:
         credentials.add(issued.split(";", 1)[0].partition("=")[2])
     credentials.add(invitation_id)
