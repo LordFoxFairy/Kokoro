@@ -868,3 +868,5 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root runner unit TDD 后 `scripts/tests/test_bff_iam_oidc_smoke.py` 30 passed/71 subtests，Root 全套 `python3 -m pytest -q scripts/tests` 696 passed/169 subtests，Ruff check/py_compile PASS。脚本与本段台账在本切片由 Root 精确提交；Web Team Product UI、邀请邮件入口和 3310 常驻完整服务仍未完成。
 
 - R5 Web Product OIDC 前置 scope：唯一 writer 交付 `732de58`，Root 独立聚焦测试 13/13，Web 全量 Vitest 1426/1426、contract57、architecture34、lint、隔离 typecheck/build PASS。Web 只增加固定两项 user-delegated Team 写 scope 的申请与严格 Location 校验；现有 sealed Team API/UI 仍旧，不能以 scope 申请冒充 Team 浏览器闭环。Web main 已推送，Root 本切片重钉 gitlink/库存。用户3310登录仍是 Web-only HTTP503/0 bytes，不显示旧可见中转，也没有正式在线 IAM 表单。
+
+- R5 邀请链接只读 owner 审查确认真实代码缺口：IAM 邮件仍指向不存在的 Web `/auth/invitation?id=`，issuer Cookie Path=/iam；IAM 已有 verified Session 守卫、accept/reject 条件事务及 SMTP 注册/邮箱验证 owner 能力，但尚无窄 context GET，也无 BFF/Web 独立邀请入口。当前 BFF relay policy 的静态 Better Auth allowlist 与动态邀请控制器路径不匹配，不能仅加一条宽泛 allowlist。已在任务卡登记 IAM→BFF→Web 的 owner-first 序列和协议门；这是只读设计证据，不是实现完成或浏览器通过。
