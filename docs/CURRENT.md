@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `07a30fa`。Web 的邀请页已修复真实 Chromium 暴露的 `Referrer-Policy: no-referrer` 导致同源表单 `Origin: null`、POST 403；精确邀请路径改为 `same-origin`，跨站不发送邀请 URL，`/iam/verify-email` 继续 `no-referrer`。此前固定 Web `6290c11` 的隔离 HTTPS/真实 SMTP/Chromium 验收已证明已有账号邀请 accept/reject 和 Product OIDC；当前 Web 只更改签名登录表单的呈现，Root 已在新提交上独立通过真实 Next/Chromium 页面与 Web 全门，**尚未重跑新 gitlink 的三仓 SMTP 组合**。旧组合不能当作新提交的最终跨仓证据；用户 3310 无监听、缺本地登录配置，也不因本次样式修复变成可登录。错误收件人/过期的 Chromium 矩阵、新账号 Chromium 注册与常驻 3310 仍待验。
+Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `07a30fa`。Web 的邀请页已修复真实 Chromium 暴露的 `Referrer-Policy: no-referrer` 导致同源表单 `Origin: null`、POST 403；精确邀请路径改为 `same-origin`，跨站不发送邀请 URL，`/iam/verify-email` 继续 `no-referrer`。Root 已以当前固定三仓 SHA 重跑真实 SMTP/Product Session 组合，首登、在线会话与 Chat proxy PASS、资源0；已有账号 Chromium accept/reject 和新账号 Chromium 注册→验信→accept/reject 均在隔离 HTTPS 组合通过。当前 3310 是 Root 启动的前台临时租户 HTTPS 联调入口，真实邮箱/密码表单可见，但不是正式单租户部署；旧 IAB 的 `http://127.0.0.1:3310` 标签不指向此入口。错误收件人/过期邀请的 Chromium 负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
 
 ## 已验证到的边界
 
@@ -60,10 +60,10 @@ Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `07a30fa`。Web 的邀
   HttpOnly/Secure/Lax cookie 与同源 session projection 并进入 `/app`。随后独立 Python CookieJar
   完成 Web/BFF/Agent worker 首消息与持久回归；自有 PostgreSQL/Redis/进程剩余0。后续 Web 文档提交
   `9794a286` 不改运行代码，Root 来源已重钉，并在该精确 SHA 复跑同一组合 `status=PASS`、资源剩余0。
-  Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行。3310 仍仅运行 Web，
-  没有常驻 RP/IAM/BFF，不能将隔离测试当作用户当前 HTTP 页面已登录。
+  在该次验收时 Chromium 尚未发送 Chat、验证实时 AG-UI/断线恢复，真实模型 provider 仍未执行；当时 3310 仅运行 Web，
+  没有常驻 RP/IAM/BFF。后续 Chat 浏览器组合与临时 HTTPS 联调入口见本文件当前状态，不以旧 HTTP 标签作登录证明。
 - Web `067d7ea` 已修正真实 BFF AG-UI 终帧/工具错误字段的严格解析，并只对 Chat events SSE 采用首部连接 deadline + 可续空闲 deadline；Web 当前 Node22 单仓 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS，独立只读审查0 P0/P1/P2。Root 已以此精确 SHA 真 Chromium 跑通 IAM登录→DOM首发→真实Agent worker→AG-UI助手DOM→刷新一用户一助手；随后测试自有 TLS proxy 将首次 SSE 截在一个完整帧后，浏览器携该帧 `Last-Event-ID` 重连、恢复助手DOM并保持刷新后一对消息，BFF五帧 cursor 唯一，测试自有资源清零。此证明固定 fixture 的浏览器 Chat/断线恢复，不代表3310常驻IAM/BFF、真实模型 provider、跨用户私有矩阵或全产品完成。
-- Web `9e2eb73` 在同一 `/login` 路由不变的前提下，进一步删除九语种 54 条不再使用的连接中、整页重试和旧 handoff 文案；Node22 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS。Root 固定该 Web gitlink 再跑真 HTTPS Chromium 登录/Chat/一次断线恢复 `status=PASS`，测试自有 PG/Redis/进程剩余 0。当前 3310 的 `/login` 仍是空 body 503，说明旧错误页没有复活，但该 Web-only 进程仍不是完整 IAM 可用入口。
+- Web `9e2eb73` 在同一 `/login` 路由不变的前提下，进一步删除九语种 54 条不再使用的连接中、整页重试和旧 handoff 文案；Node22 `pnpm check` contract56、architecture32、unit1408、lint/typecheck/build PASS。Root 固定该 Web gitlink 再跑真 HTTPS Chromium 登录/Chat/一次断线恢复 `status=PASS`，测试自有 PG/Redis/进程剩余 0。当时 Web-only 3310 的 `/login` 返回空 body 503；后续前台临时 HTTPS 联调入口见上文，仍不等于正式租户部署。
 - 本地 PostgreSQL/Redis 复用一套实例与应用凭据，数据 owner 各自使用 schema/连接边界；
   Root 不要求此阶段拆分多个数据库角色，不允许跨 owner SQL。Storage owner schema 已有独立验证，
   但 Storage 用户文件链尚未与 Web/BFF/Agent 闭环。
@@ -72,7 +72,7 @@ Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `07a30fa`。Web 的邀
 
 1. R2c 已在固定隔离组合中证明 Chromium/DOM 首消息→BFF→Agent worker→实时 AG-UI 与一次受控断线恢复；仍需
    Web 对 BFF public contract 的全量 generated 消费、单一 AG-UI 网络协议门、默认个人私有/显式分享/跨 tenant
-   负例以及真实 provider 验收。固定 fixture 不等于用户当前 3310 已具备完整可见登录入口。
+   负例以及真实 provider 验收。固定 fixture 不等于正式单租户常驻入口已具备完整能力。
 2. Team Product 的 Web→BFF→IAM 同源 HTTP 读链已通过隔离组合；仍需 Chromium DOM、邀请邮件入口与写操作的浏览器端到端验收。
 3. Storage/Platform/System/Scheduler 各自 owner 的能力调用、契约与数据闭环；Billing 最后。
 4. 当前 inventory 的 11 条 broken edge 与 1 条非法 Web→IAM 旁路，不能因为局部 smoke 通过而标绿。

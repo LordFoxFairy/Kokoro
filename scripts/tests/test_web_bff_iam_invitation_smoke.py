@@ -1,13 +1,15 @@
 """Focused guards for the run-owned invitation browser journey."""
 
 import importlib.util
+import io
 import sys
 import tempfile
 import unittest
 from email.message import EmailMessage
 from pathlib import Path
 from subprocess import CompletedProcess
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 PATH = (
     Path(__file__).resolve().parents[1] / "e2e" / "run_web_bff_iam_invitation_smoke.py"
@@ -33,10 +35,50 @@ def message(subject: str, body: str) -> bytes:
 
 
 class InvitationSmokeGuards(unittest.TestCase):
-    def test_chromium_a_rejects_new_recipient_before_startup(self):
-        with self.assertRaises(SystemExit) as error:
-            smoke.main(["--browser", "chromium", "--account", "new"])
-        self.assertEqual(error.exception.code, 2)
+    def test_new_chromium_reaps_process_group_when_node_exits_before_checkpoint(self):
+        child = SimpleNamespace(
+            stdin=io.StringIO(),
+            stdout=io.StringIO(),
+            stderr=Mock(),
+            poll=lambda: 1,
+        )
+        with (
+            patch.object(smoke.subprocess, "Popen", return_value=child),
+            patch.object(smoke.select, "select", return_value=([child.stdout], [], [])),
+            patch.object(smoke.product.runtime, "stop_owned_process") as stop,
+        ):
+            with self.assertRaisesRegex(smoke.SmokeError, "checkpoint invalid"):
+                smoke.run_new_account_chromium(
+                    node_bin=Path("/node"),
+                    payload="{}\n",
+                    mailbox=object(),
+                    email="new@example.test",
+                    web_origin=ORIGIN,
+                    path=smoke.invitation_path(INVITATION_ID),
+                    credentials=object(),
+                )
+        stop.assert_called_once_with(child)
+        child.stderr.read.assert_not_called()
+
+    def test_chromium_new_recipient_reaches_owned_preflight(self):
+        with (
+            patch.object(
+                smoke.product,
+                "parse_args",
+                return_value=SimpleNamespace(
+                    expected_iam_sha="a",
+                    expected_bff_sha="b",
+                    expected_web_sha="c",
+                ),
+            ),
+            patch.object(
+                smoke.product.session,
+                "verify_source",
+                side_effect=RuntimeError("preflight"),
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "preflight"):
+                smoke.main(["--browser", "chromium", "--account", "new"])
 
     def test_chromium_evidence_requires_one_real_owner_decision(self):
         import json
@@ -58,6 +100,10 @@ class InvitationSmokeGuards(unittest.TestCase):
                 "rejected_anonymous": False,
                 "membership_absent": False,
                 "screenshot": str(screenshot),
+                "account": "existing",
+                "registration_verified": False,
+                "unverified_login_denied": False,
+                "verification_returned": False,
             }
 
             def browser_run(*_args, **_kwargs):
@@ -163,6 +209,86 @@ class InvitationSmokeGuards(unittest.TestCase):
             ),
             "iam-membership",
         )
+
+    def test_new_chromium_requires_registration_verification_and_owner_relays(self):
+        import json
+
+        owner = f"/iam/v1/tenants/tenant/invitations/{INVITATION_ID}/reject"
+        observed = []
+        with tempfile.TemporaryDirectory() as temporary:
+            screenshot = Path(temporary) / "entry.png"
+            screenshot.write_bytes(b"png")
+            evidence = {
+                "browser": "chromium",
+                "decision": "reject",
+                "account": "new",
+                "entry_form": True,
+                "recipient_preview": True,
+                "legacy_intermediary_absent": True,
+                "decision_post_count": 1,
+                "consumed_pending": True,
+                "product_login_started": False,
+                "product_authenticated": False,
+                "rejected_anonymous": True,
+                "membership_absent": True,
+                "screenshot": str(screenshot),
+                "registration_verified": True,
+                "unverified_login_denied": True,
+                "verification_returned": True,
+            }
+
+            def run_browser(**_kwargs):
+                observed.extend(
+                    [
+                        ("POST", "/iam/sign-up/email"),
+                        ("POST", "/iam/sign-in/email"),
+                        ("GET", "/iam/verify-email"),
+                        ("POST", "/iam/sign-in/email"),
+                        ("POST", owner),
+                    ]
+                )
+                return CompletedProcess([], 0, json.dumps(evidence), "")
+
+            kwargs = dict(
+                node_bin=Path("/node"),
+                web_origin=ORIGIN + ":12345",
+                path=smoke.invitation_path(INVITATION_ID),
+                email="new@example.test",
+                password="example-password",
+                decision="reject",
+                screenshot=screenshot,
+                tenant_id="tenant",
+                iam_base_url="http://127.0.0.1:1234",
+                existing_tenant_id="none",
+                observed=observed,
+                account="new",
+                mailbox=object(),
+                credentials=object(),
+            )
+            with patch.object(
+                smoke, "run_new_account_chromium", side_effect=run_browser
+            ):
+                self.assertTrue(
+                    smoke.chromium_invitation(**kwargs).verification_returned
+                )
+            for missing in (
+                "registration_verified",
+                "unverified_login_denied",
+                "verification_returned",
+            ):
+                observed.clear()
+                evidence[missing] = False
+                with patch.object(
+                    smoke, "run_new_account_chromium", side_effect=run_browser
+                ):
+                    with (
+                        self.subTest(missing=missing),
+                        self.assertRaisesRegex(
+                            smoke.SmokeError, "evidence or owner relay drift"
+                        ),
+                    ):
+                        smoke.chromium_invitation(**kwargs)
+                evidence[missing] = True
 
     def test_new_recipient_verification_is_bound_to_exact_invitation(self):
         from urllib.parse import quote

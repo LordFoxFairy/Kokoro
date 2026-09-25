@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import http.client
 import re
+import select
 import secrets
 import subprocess
 import sys
@@ -37,6 +38,11 @@ CHROMIUM_STAGES = frozenset(
     {
         "input",
         "browser",
+        "registration",
+        "registration-submit",
+        "registration-result",
+        "unverified-login",
+        "email-verification",
         "invitation-entry",
         "issuer-sign-in",
         "invitation-decision",
@@ -75,6 +81,9 @@ class ChromiumInvitationEvidence:
     product_authenticated: bool
     rejected_anonymous: bool
     membership_absent: bool
+    registration_verified: bool
+    unverified_login_denied: bool
+    verification_returned: bool
 
 
 def chromium_invitation(
@@ -90,6 +99,9 @@ def chromium_invitation(
     iam_base_url: str,
     existing_tenant_id: str,
     observed: list[tuple[str, str]],
+    account: str = "existing",
+    mailbox: product.first_login.SmtpMailbox | None = None,
+    credentials: product.previous.CredentialRegistry | None = None,
 ) -> ChromiumInvitationEvidence:
     """Drive the actual Web forms; the owner relay remains independently observed."""
     parsed = urlsplit(web_origin)
@@ -100,31 +112,54 @@ def chromium_invitation(
         raise SmokeError("Chromium invitation target invalid")
     owner_path = f"/iam/v1/tenants/{tenant_id}/invitations/{invitation_id}/{decision}"
     before = observed.count(("POST", owner_path))
-    try:
-        completed = subprocess.run(
-            [str(node_bin), str(CHROMIUM_DRIVER)],
-            cwd=product.ROOT,
-            text=True,
-            input=json.dumps(
-                {
-                    "web_origin": web_origin,
-                    "web_host": parsed.hostname,
-                    "web_root": str(product.WEB),
-                    "invitation_path": path,
-                    "email": email,
-                    "password": password,
-                    "decision": decision,
-                    "screenshot": str(screenshot),
-                    "iam_base_url": iam_base_url,
-                    "tenant_id": tenant_id,
-                    "existing_tenant_id": existing_tenant_id,
-                },
-                separators=(",", ":"),
-            ),
-            capture_output=True,
-            timeout=90,
-            check=False,
+    signup_before = observed.count(("POST", "/iam/sign-up/email"))
+    signin_before = observed.count(("POST", "/iam/sign-in/email"))
+    verify_before = observed.count(("GET", "/iam/verify-email"))
+    if account not in {"existing", "new"} or (
+        account == "new" and (mailbox is None or credentials is None)
+    ):
+        raise SmokeError("Chromium invitation account fixture invalid")
+    payload = (
+        json.dumps(
+            {
+                "web_origin": web_origin,
+                "web_host": parsed.hostname,
+                "web_root": str(product.WEB),
+                "invitation_path": path,
+                "email": email,
+                "password": password,
+                "decision": decision,
+                "account": account,
+                "screenshot": str(screenshot),
+                "iam_base_url": iam_base_url,
+                "tenant_id": tenant_id,
+                "existing_tenant_id": existing_tenant_id,
+            },
+            separators=(",", ":"),
         )
+        + "\n"
+    )
+    try:
+        if account == "new":
+            completed = run_new_account_chromium(
+                node_bin=node_bin,
+                payload=payload,
+                mailbox=mailbox,
+                email=email,
+                web_origin=web_origin,
+                path=path,
+                credentials=credentials,
+            )
+        else:
+            completed = subprocess.run(
+                [str(node_bin), str(CHROMIUM_DRIVER)],
+                cwd=product.ROOT,
+                text=True,
+                input=payload,
+                capture_output=True,
+                timeout=90,
+                check=False,
+            )
     except subprocess.TimeoutExpired as error:
         raise SmokeError(
             f"Chromium invitation timed out; stage={chromium_failure_stage(error.stderr)}"
@@ -155,9 +190,17 @@ def chromium_invitation(
             "rejected_anonymous",
             "membership_absent",
             "screenshot",
+            "account",
+            "registration_verified",
+            "unverified_login_denied",
+            "verification_returned",
         }
         or evidence["browser"] != "chromium"
         or evidence["decision"] != decision
+        or evidence["account"] != account
+        or evidence["registration_verified"] is not (account == "new")
+        or evidence["unverified_login_denied"] is not (account == "new")
+        or evidence["verification_returned"] is not (account == "new")
         or evidence["entry_form"] is not True
         or evidence["recipient_preview"] is not True
         or evidence["legacy_intermediary_absent"] is not True
@@ -171,6 +214,14 @@ def chromium_invitation(
         or not screenshot.is_file()
         or screenshot.stat().st_size == 0
         or observed.count(("POST", owner_path)) != before + 1
+        or (
+            account == "new"
+            and (
+                observed.count(("POST", "/iam/sign-up/email")) != signup_before + 1
+                or observed.count(("POST", "/iam/sign-in/email")) != signin_before + 2
+                or observed.count(("GET", "/iam/verify-email")) != verify_before + 1
+            )
+        )
     ):
         raise SmokeError("Chromium invitation evidence or owner relay drift")
     return ChromiumInvitationEvidence(
@@ -181,7 +232,50 @@ def chromium_invitation(
         product_authenticated=decision == "accept",
         rejected_anonymous=decision == "reject",
         membership_absent=decision == "reject",
+        registration_verified=account == "new",
+        unverified_login_denied=account == "new",
+        verification_returned=account == "new",
     )
+
+
+def run_new_account_chromium(
+    *,
+    node_bin: Path,
+    payload: str,
+    mailbox: product.first_login.SmtpMailbox,
+    email: str,
+    web_origin: str,
+    path: str,
+    credentials: product.previous.CredentialRegistry,
+) -> subprocess.CompletedProcess[str]:
+    """One bounded browser process pauses only for its own real SMTP message."""
+    child = subprocess.Popen(
+        [str(node_bin), str(CHROMIUM_DRIVER)],
+        cwd=product.ROOT,
+        text=True,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        start_new_session=True,
+        bufsize=1,
+    )
+    try:
+        if child.stdin is None or child.stdout is None:
+            raise SmokeError("Chromium invitation protocol absent")
+        child.stdin.write(payload)
+        child.stdin.flush()
+        ready, _, _ = select.select([child.stdout], [], [], 45)
+        checkpoint = child.stdout.readline() if ready else ""
+        if checkpoint != "REGISTERED\n":
+            raise SmokeError("Chromium invitation registration checkpoint invalid")
+        verification = invitation_verification_path(
+            mailbox.for_recipient(email), web_origin, web_origin + path
+        )
+        product.remember_sensitive_query(verification, credentials)
+        stdout, stderr = child.communicate(input=verification + "\n", timeout=90)
+        return subprocess.CompletedProcess(child.args, child.returncode, stdout, stderr)
+    finally:
+        product.runtime.stop_owned_process(child)
 
 
 def configure_isolated_chromium_web(next_root: Path, tls_port: int) -> None:
@@ -831,8 +925,6 @@ def main(argv: list[str] | None = None) -> int:
     selector.add_argument("--account", choices=("existing", "new"), default="existing")
     selector.add_argument("--browser", choices=("http", "chromium"), default="http")
     selected, remaining = selector.parse_known_args(argv)
-    if selected.browser == "chromium" and selected.account != "existing":
-        selector.error("Chromium A covers only existing invitation recipients")
     args = product.parse_args(remaining)
     for repo, sha, label in (
         (product.IAM, args.expected_iam_sha, "apps/kokoro-iam"),
@@ -1104,7 +1196,7 @@ def main(argv: list[str] | None = None) -> int:
                 }:
                     raise SmokeError("Web HTTPS origin mismatch")
                 browser_jar = None
-                if selected.account == "new":
+                if selected.account == "new" and selected.browser == "http":
                     stage = "new recipient Web registration and verification"
                     browser_jar = new_account_registration(
                         web_proxy.server_port,
@@ -1128,8 +1220,13 @@ def main(argv: list[str] | None = None) -> int:
                         screenshot=directory / "invitation-entry.png",
                         tenant_id=ready.tenant_id,
                         iam_base_url=ready.base_url,
-                        existing_tenant_id=actors.other_tenant_owner.tenant_id,
+                        existing_tenant_id=actors.other_tenant_owner.tenant_id
+                        if selected.account == "existing"
+                        else "none",
                         observed=bff_proxy.observed,
+                        account=selected.account,
+                        mailbox=mailbox,
+                        credentials=credentials,
                     )
                 else:
                     completed_jar = existing_account_entry(

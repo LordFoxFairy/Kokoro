@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { createRequire } from "node:module"
-import { readFileSync } from "node:fs"
 import path from "node:path"
 import process from "node:process"
+import { createInterface } from "node:readline"
 import { pathToFileURL } from "node:url"
 
 async function rejectedMembershipAbsent(input, context, invitationUrl) {
@@ -38,21 +38,21 @@ async function rejectedMembershipAbsent(input, context, invitationUrl) {
     throw new Error("IAM membership list malformed")
   }
   const ids = new Set(organizations.map((item) => item.id))
-  if (ids.has(input.tenant_id) || !ids.has(input.existing_tenant_id)) {
+  if (ids.has(input.tenant_id) || (input.account === "existing" && !ids.has(input.existing_tenant_id))) {
     throw new Error("rejected invitation changed IAM membership")
   }
   return true
 }
 
-function inputFromStdin() {
+function inputFromStdin(raw) {
   if (process.argv.length !== 2) throw new Error("expected stdin JSON input")
-  const value = JSON.parse(readFileSync(0, "utf8"))
+  const value = JSON.parse(raw)
   const fields = ["web_origin", "web_host", "web_root", "invitation_path", "email", "password", "decision", "screenshot",
-    "iam_base_url", "tenant_id", "existing_tenant_id"]
+    "iam_base_url", "tenant_id", "existing_tenant_id", "account"]
   if (value === null || typeof value !== "object" || Array.isArray(value) ||
       Object.keys(value).sort().join(",") !== fields.sort().join(",") ||
       !fields.every((field) => typeof value[field] === "string" && value[field] !== "") ||
-      !["accept", "reject"].includes(value.decision)) {
+      !["accept", "reject"].includes(value.decision) || !["existing", "new"].includes(value.account)) {
     throw new Error("invalid Chromium invitation input")
   }
   const origin = new URL(value.web_origin)
@@ -72,7 +72,10 @@ function inputFromStdin() {
 let browser
 let stage = "input"
 try {
-  const input = inputFromStdin()
+  const lines = createInterface({ input: process.stdin })[Symbol.asyncIterator]()
+  const first = await lines.next()
+  if (first.done) throw new Error("missing Chromium invitation input")
+  const input = inputFromStdin(first.value)
   stage = "browser"
   const require = createRequire(pathToFileURL(path.join(input.web_root, "package.json")))
   const { chromium } = require("@playwright/test")
@@ -107,12 +110,75 @@ try {
   }
   await page.screenshot({ path: input.screenshot, fullPage: true })
   process.stderr.write("MILESTONE:entry\n")
+  let registrationVerified = false
+  let unverifiedLoginDenied = false
+  let verificationReturned = false
+  if (input.account === "new") {
+    stage = "registration"
+    await page.locator("details.invitation-register summary").click()
+    const signUpForm = page.locator('form:has(input[name="decision"][value="sign-up"])')
+    if (await signUpForm.count() !== 1 || await signUpForm.locator('input[name="csrf_token"]').count() !== 1) {
+      throw new Error("invitation registration form missing")
+    }
+    await signUpForm.locator('input[name="name"]').fill("New invited recipient")
+    await signUpForm.locator('input[name="email"]').fill(input.email)
+    await signUpForm.locator('input[name="password"]').fill(input.password)
+    const registeredResponse = page.waitForResponse((response) =>
+      response.url() === target && response.request().method() === "POST", { timeout: 15000 })
+    stage = "registration-submit"
+    await signUpForm.getByRole("button", { name: "创建账号", exact: true }).click()
+    const registered = await registeredResponse
+    stage = "registration-result"
+    await page.getByRole("heading", { name: "请查收邮件", exact: true }).waitFor({ state: "visible", timeout: 15000 })
+    if (registered.status() !== 200 || page.url() !== target) throw new Error("registration did not await email")
+    const signupCookies = await context.cookies(target)
+    if (signupCookies.some((cookie) => cookie.name.includes("issuer.session_token") || cookie.name === "kokoro_product_session")) {
+      throw new Error("registration created a session")
+    }
+    stage = "unverified-login"
+    await page.goto(target, { waitUntil: "domcontentloaded" })
+    const deniedForm = page.locator('form:has(input[name="decision"][value="sign-in"])')
+    await deniedForm.locator('input[name="email"]').fill(input.email)
+    await deniedForm.locator('input[name="password"]').fill(input.password)
+    const deniedResponse = page.waitForResponse((response) =>
+      response.url() === target && response.request().method() === "POST", { timeout: 15000 })
+    await deniedForm.getByRole("button", { name: "登录并查看邀请", exact: true }).click()
+    const denied = await deniedResponse
+    await page.getByRole("heading", { name: "加入 Kokoro", exact: true }).waitFor({ state: "visible", timeout: 15000 })
+    const deniedCookies = await context.cookies(target)
+    unverifiedLoginDenied = denied.status() === 200 && page.url() === target &&
+      deniedCookies.every((cookie) => !cookie.name.includes("issuer.session_token") && cookie.name !== "kokoro_product_session") &&
+      await page.locator('[role="alert"]').count() > 0
+    if (!unverifiedLoginDenied) throw new Error("unverified recipient admitted")
+    process.stdout.write("REGISTERED\n")
+    stage = "email-verification"
+    const second = await lines.next()
+    if (second.done) throw new Error("verification mail absent")
+    const verification = new URL(second.value, input.web_origin)
+    if (verification.origin !== input.web_origin || verification.pathname !== "/iam/verify-email" ||
+        !verification.searchParams.has("token") || verification.searchParams.get("callbackURL") !== target) {
+      throw new Error("verification mail target invalid")
+    }
+    const verifyResponse = page.waitForResponse((response) =>
+      response.url() === verification.href && response.request().method() === "GET", { timeout: 15000 })
+    const verified = await page.goto(verification.href, { waitUntil: "domcontentloaded" })
+    const relay = await verifyResponse
+    verificationReturned = relay.status() === 302 && relay.headers().location === target &&
+      relay.headers()["referrer-policy"] === "no-referrer" &&
+      relay.headers()["cache-control"]?.includes("no-store") &&
+      verified?.status() === 200 && page.url() === target &&
+      await page.getByRole("heading", { name: "加入 Kokoro", exact: true }).isVisible()
+    if (!verificationReturned) throw new Error("verification did not return to invitation")
+    registrationVerified = true
+    process.stderr.write("MILESTONE:verified\n")
+  }
   stage = "issuer-sign-in"
-  await signInForm.locator('input[name="email"]').fill(input.email)
-  await signInForm.locator('input[name="password"]').fill(input.password)
+  const activeSignInForm = page.locator('form:has(input[name="decision"][value="sign-in"])')
+  await activeSignInForm.locator('input[name="email"]').fill(input.email)
+  await activeSignInForm.locator('input[name="password"]').fill(input.password)
   const signInResponse = page.waitForResponse((response) =>
     response.url() === target && response.request().method() === "POST", { timeout: 15000 })
-  await signInForm.getByRole("button", { name: "登录并查看邀请", exact: true }).click()
+  await activeSignInForm.getByRole("button", { name: "登录并查看邀请", exact: true }).click()
   const signedIn = await signInResponse
   try {
     await page.getByRole("heading", { name: "你收到一份邀请", exact: true }).waitFor({ state: "visible", timeout: 15000 })
@@ -147,7 +213,7 @@ try {
     response.url() === target && response.request().method() === "POST", { timeout: 15000 })
   await form.getByRole("button", { name: input.decision === "accept" ? "接受邀请" : "拒绝邀请", exact: true }).click()
   const decided = await decidedResponse
-  if (postCount !== 2 || decided.status() !== (input.decision === "accept" ? 303 : 200)) {
+  if (postCount !== (input.account === "new" ? 4 : 2) || decided.status() !== (input.decision === "accept" ? 303 : 200)) {
     throw new Error("invitation decision POST drift")
   }
   let productLoginStarted = false
@@ -162,8 +228,8 @@ try {
     } catch {
       throw new Error(`accepted invitation Product login navigation drift; path=${new URL(page.url()).pathname}; navigation=${navigationStatuses.join(",")}`)
     }
-    productLoginStarted = await page.getByRole("heading", { name: "Review requested access", exact: true }).isVisible()
-    if (!productLoginStarted) throw new Error("accepted invitation did not enter formal IAM login")
+    await page.getByRole("heading", { name: "Review requested access", exact: true }).waitFor({ state: "visible", timeout: 15000 })
+    productLoginStarted = true
     await page.getByRole("button", { name: "Agree and continue", exact: true }).click()
     try {
       await page.waitForURL((url) => url.origin === input.web_origin && url.pathname === "/app", { timeout: 15000 })
@@ -196,7 +262,9 @@ try {
   if (!consumedPending) throw new Error("consumed invitation remained pending")
   process.stderr.write("MILESTONE:consumed\n")
   process.stdout.write(JSON.stringify({
-    browser: "chromium", decision: input.decision, entry_form: true,
+    browser: "chromium", decision: input.decision, account: input.account, entry_form: true,
+    registration_verified: registrationVerified, unverified_login_denied: unverifiedLoginDenied,
+    verification_returned: verificationReturned,
     recipient_preview: true, legacy_intermediary_absent: true,
     decision_post_count: 1, consumed_pending: true,
     product_login_started: productLoginStarted, product_authenticated: productAuthenticated,
