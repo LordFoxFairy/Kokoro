@@ -18,7 +18,8 @@ import secrets
 import socketserver
 from threading import Thread
 import time
-from urllib.parse import parse_qs, urlsplit
+from typing import Callable
+from urllib.parse import parse_qs, quote, urlsplit
 
 import run_web_bff_iam_oidc_smoke as web_smoke
 
@@ -268,53 +269,37 @@ def probe_formal_login_entry(web_port: int, web_origin: str, credentials) -> Non
 
 
 def enroll_in_fixed_tenant(
-    ready, address: str, member_cookie: str, web_origin: str, credentials
+    ready,
+    address: str,
+    member_cookie: str,
+    web_origin: str,
+    credentials,
+    *,
+    invite: Callable[[str], str],
 ) -> None:
     """Use IAM's existing invitation lifecycle; the Product tenant never changes."""
-    status, _, owner_cookies = _iam_json(
-        ready.base_url,
-        "/iam/sign-in/email",
-        {"email": ready.email, "password": ready.password},
-        origin=web_origin,
-    )
-    if status != 200 or len(owner_cookies) != 1:
-        raise FirstLoginError("fixed tenant owner session unavailable")
-    owner_cookie = owner_cookies[0].split(";", 1)[0]
-    if not owner_cookie.startswith("kokoro-issuer.session_token="):
-        raise FirstLoginError("fixed tenant owner cookie invalid")
-    credentials.add(owner_cookie.split("=", 1)[1])
-    status, invitation, cookies = _iam_json(
-        ready.base_url,
-        "/iam/organization/invite-member",
-        {"email": address, "role": "member", "organizationId": ready.tenant_id},
-        cookie=owner_cookie,
-        origin=web_origin,
-    )
-    invitation_id = invitation.get("id")
-    if (
-        status != 200
-        or invitation.get("organizationId") != ready.tenant_id
-        or not isinstance(invitation_id, str)
-        or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", invitation_id) is None
-    ):
-        raise FirstLoginError(f"fixed tenant invitation failed HTTP {status}")
-    for issued in cookies:
-        credentials.add(issued.split(";", 1)[0].partition("=")[2])
+    invitation_id = invite(address)
+    if re.fullmatch(r"[A-Za-z0-9_-]{1,128}", invitation_id) is None:
+        raise FirstLoginError("fixed tenant invitation identity invalid")
     credentials.add(invitation_id)
     status, accepted, cookies = _iam_json(
         ready.base_url,
-        "/iam/organization/accept-invitation",
-        {"invitationId": invitation_id},
+        f"/iam/v1/tenants/{quote(ready.tenant_id, safe='')}/invitations/{quote(invitation_id, safe='')}/accept",
+        {},
         cookie=member_cookie,
         origin=web_origin,
     )
-    member = accepted.get("member")
+    data = accepted.get("data")
     if (
         status != 200
-        or not isinstance(member, dict)
-        or member.get("organizationId") != ready.tenant_id
+        or not isinstance(data, dict)
+        or set(data) != {"invitation_id", "member_id", "status"}
+        or data.get("invitation_id") != invitation_id
+        or data.get("status") != "accepted"
+        or not isinstance(data.get("member_id"), str)
+        or not data["member_id"]
     ):
-        raise FirstLoginError("fixed tenant invitation accept failed")
+        raise FirstLoginError(f"fixed tenant invitation accept failed HTTP {status}")
     for issued in cookies:
         credentials.add(issued.split(";", 1)[0].partition("=")[2])
 
@@ -326,6 +311,8 @@ def prepare_first_login(
     web_port: int,
     observed: list[tuple[str, str]],
     credentials,
+    *,
+    invite: Callable[[str], str],
 ):
     """Return a newly verified user/tenant identity for the existing OIDC browser flow."""
     address = f"first-{secrets.token_hex(8)}@example.test"
@@ -378,5 +365,5 @@ def prepare_first_login(
     if not pair.startswith("kokoro-issuer.session_token="):
         raise FirstLoginError("issuer session cookie missing")
     credentials.add(pair.split("=", 1)[1])
-    enroll_in_fixed_tenant(ready, address, pair, web_origin, credentials)
+    enroll_in_fixed_tenant(ready, address, pair, web_origin, credentials, invite=invite)
     return replace(ready, email=address, password=password)

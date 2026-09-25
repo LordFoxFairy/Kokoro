@@ -110,6 +110,35 @@ class ActorMatrix:
     other_tenant_owner: ActorIdentity
 
 
+def require_fixed_invitation(record: object) -> str:
+    if (
+        not isinstance(record, dict)
+        or set(record) != {"kind", "invitation_id"}
+        or record["kind"] != "invitation"
+        or not isinstance(record["invitation_id"], str)
+        or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", record["invitation_id"]) is None
+    ):
+        raise SmokeError("IAM fixed invitation protocol invalid")
+    return record["invitation_id"]
+
+
+def request_fixed_invitation(
+    process: subprocess.Popen[bytes], reader: session.ProtocolReader, email: str
+) -> str:
+    if re.fullmatch(r"first-[a-f0-9]{16}@example\.test", email) is None:
+        raise SmokeError("IAM fixed invitation email invalid")
+    if process.poll() is not None or process.stdin is None:
+        raise SmokeError("IAM fixed invitation host unavailable")
+    try:
+        process.stdin.write(
+            (json.dumps({"command": "invite-verified", "email": email}) + "\n").encode()
+        )
+        process.stdin.flush()
+    except (BrokenPipeError, OSError):
+        raise SmokeError("IAM fixed invitation command failed") from None
+    return require_fixed_invitation(reader.record(timeout=30))
+
+
 def require_actor_matrix(record: object, ready: previous.Ready) -> ActorMatrix:
     if (
         not isinstance(record, dict)
@@ -1287,6 +1316,9 @@ def main(argv=None) -> int:
                     web_proxy.server_port,
                     bff_proxy.observed,
                     credentials,
+                    invite=lambda address: request_fixed_invitation(
+                        iam, reader, address
+                    ),
                 )
                 stage = "real browser OIDC"
                 run_browser(

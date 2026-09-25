@@ -29,19 +29,22 @@ class FirstLoginGuards(unittest.TestCase):
             tenant_id="fixed-tenant",
         )
         calls = []
+        invited = []
 
         def iam(base_url, path, body, *, cookie="", origin):
             calls.append((base_url, path, body, cookie, origin))
-            if path == "/iam/sign-in/email":
+            if path == "/iam/v1/tenants/fixed-tenant/invitations/invite-one/accept":
                 return (
                     200,
-                    {},
-                    ["kokoro-issuer.session_token=owner; Path=/iam; HttpOnly"],
+                    {
+                        "data": {
+                            "invitation_id": "invite-one",
+                            "member_id": "member-one",
+                            "status": "accepted",
+                        }
+                    },
+                    [],
                 )
-            if path == "/iam/organization/invite-member":
-                return 200, {"id": "invite-one", "organizationId": "fixed-tenant"}, []
-            if path == "/iam/organization/accept-invitation":
-                return 200, {"member": {"organizationId": "fixed-tenant"}}, []
             self.fail(f"unexpected IAM request: {path}")
 
         class Credentials:
@@ -57,26 +60,15 @@ class FirstLoginGuards(unittest.TestCase):
                 "kokoro-issuer.session_token=new",
                 "https://web.example.test",
                 Credentials(),
+                invite=lambda email: invited.append(email) or "invite-one",
             )
         self.assertEqual(
             [call[1] for call in calls],
-            [
-                "/iam/sign-in/email",
-                "/iam/organization/invite-member",
-                "/iam/organization/accept-invitation",
-            ],
+            ["/iam/v1/tenants/fixed-tenant/invitations/invite-one/accept"],
         )
-        self.assertEqual(
-            calls[1][2],
-            {
-                "email": "new@example.test",
-                "role": "member",
-                "organizationId": "fixed-tenant",
-            },
-        )
-        self.assertEqual(calls[1][3], "kokoro-issuer.session_token=owner")
-        self.assertEqual(calls[2][2], {"invitationId": "invite-one"})
-        self.assertEqual(calls[2][3], "kokoro-issuer.session_token=new")
+        self.assertEqual(invited, ["new@example.test"])
+        self.assertEqual(calls[0][3], "kokoro-issuer.session_token=new")
+        self.assertEqual(calls[0][2], {})
 
     def test_visible_form_requires_both_credential_inputs(self):
         good = b'<form><input name="email" type="email"><input name="password" type="password"></form>'

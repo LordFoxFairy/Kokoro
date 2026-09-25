@@ -23,6 +23,56 @@ spec.loader.exec_module(smoke)
 
 
 class ProductSessionGuards(unittest.TestCase):
+    def test_fixed_tenant_invitation_protocol_is_exact_and_opaque(self):
+        valid = {"kind": "invitation", "invitation_id": "invite-one"}
+        self.assertEqual(smoke.require_fixed_invitation(valid), "invite-one")
+        for invalid in (
+            {**valid, "user_token": "secret"},
+            {**valid, "kind": "actors"},
+            {**valid, "invitation_id": "../other"},
+            {**valid, "invitation_id": ""},
+            {"kind": "invitation"},
+        ):
+            with self.subTest(record=invalid), self.assertRaises(smoke.SmokeError):
+                smoke.require_fixed_invitation(invalid)
+
+    def test_fixed_tenant_invitation_command_is_test_owned_and_bounded(self):
+        class Input(BytesIO):
+            def flush(self):
+                pass
+
+        class Process:
+            stdin = Input()
+
+            def poll(self):
+                return None
+
+        class Reader:
+            timeout = None
+
+            def record(self, timeout):
+                self.timeout = timeout
+                return {"kind": "invitation", "invitation_id": "inv-1"}
+
+        process = Process()
+        reader = Reader()
+        self.assertEqual(
+            smoke.request_fixed_invitation(
+                process, reader, "first-0123456789abcdef@example.test"
+            ),
+            "inv-1",
+        )
+        self.assertEqual(
+            json.loads(process.stdin.getvalue()),
+            {
+                "command": "invite-verified",
+                "email": "first-0123456789abcdef@example.test",
+            },
+        )
+        self.assertEqual(reader.timeout, 30)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.request_fixed_invitation(process, reader, "other@example.test")
+
     def test_fixed_tenant_continuation_is_get_only_and_has_no_visible_selection(self):
         observed = []
         calls = []
