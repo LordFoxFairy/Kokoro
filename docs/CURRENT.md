@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `f86aefe7ea3e48bc7ac1e4f1aea99bbe6f15feb6` |
+| `apps/kokoro-app` | `732de584bee16d62bc93ee23ceeed61fa74c9d36` |
 | `apps/kokoro-bff` | `da03b76e450018ffa00f812da461569a00a377b3` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `ad5224a9e0a3a31d1c593d214d37940d6923b2e7` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `ad5224a`、BFF `da03b76`、Web `f86aefe`。IAM test-only Web OIDC client 已加 user-delegated Team 写 scope；BFF 通过 IAM owner `0.3.0` contract 发布六个 public Team mutation，Web 当前仅完成 browser-private relay policy 的来源重钉。BFF policy 仍为 `2.0.0`，只更改 IAM owner commit；Web Team UI/Product Session 尚未消费新写契约。Root 固定 IAM/BFF 真实 PostgreSQL/Redis/HTTP Team mutation smoke 已通过：OAuth Code+PKCE、三窄读、六写中的 create/resend/cancel/roles/remove，以及最后 owner leave 的 409 `LAST_OWNER`；缺 Bearer 401，外租户在固定租户 set-active 被 403 拒绝，资源剩余0。此门只覆盖 test-owned IAM/BFF，不是 Web Team UI 或邮件点击闭环。固定租户 SMTP 首登与 Chromium Chat 的历史隔离证据见下文；当前用户 3310 仅 Web 进程，`/login` 只读实测为空 body 503，不是在线 IAM 表单，也没有可见“连接中／整页重试”中转。
+Root 当前精确 pin IAM `ad5224a`、BFF `da03b76`、Web `732de58`。IAM test-only Web OIDC client 已加 user-delegated Team 写 scope；BFF 通过 IAM owner `0.3.0` contract 发布六个 public Team mutation，Web 当前仅完成 browser-private relay policy 的来源重钉。BFF policy 仍为 `2.0.0`，只更改 IAM owner commit；Web 已申请 Team 写 scope，但旧 Team UI/API 尚未消费新写契约。Root 固定 IAM/BFF 真实 PostgreSQL/Redis/HTTP Team mutation smoke 已通过：OAuth Code+PKCE、三窄读、六写中的 create/resend/cancel/roles/remove，以及最后 owner leave 的 409 `LAST_OWNER`；缺 Bearer 401，外租户在固定租户 set-active 被 403 拒绝，资源剩余0。此门只覆盖 test-owned IAM/BFF，不是 Web Team UI 或邮件点击闭环。固定租户 SMTP 首登与 Chromium Chat 的历史隔离证据见下文；当前用户 3310 仅 Web 进程，`/login` 只读实测为空 body 503，不是在线 IAM 表单，也没有可见“连接中／整页重试”中转。
 
 ## 已验证到的边界
 
