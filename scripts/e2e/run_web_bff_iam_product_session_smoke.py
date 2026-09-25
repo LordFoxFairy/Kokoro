@@ -632,9 +632,13 @@ def continue_fixed_tenant(
     navigate: Callable[[str, str], str],
     path: str,
     observed: list[tuple[str, str]],
-) -> str:
+    *,
+    expect_forbidden: bool = False,
+) -> str | None:
     """Follow the signed GET-only continuation without inventing a tenant form."""
     if not path.startswith("/auth/select-tenant?"):
+        if expect_forbidden:
+            raise SmokeError("foreign actor skipped fixed tenant admission")
         return path
     query = urlsplit(path).query
     before_list = observed.count(("GET", "/iam/organization/list"))
@@ -646,6 +650,24 @@ def continue_fixed_tenant(
     if inner_path != "/iam/interactions/select-tenant?" + query:
         raise SmokeError("fixed tenant signed query drift")
     inner = request(inner_path)
+    if expect_forbidden:
+        try:
+            body = json.loads(inner.body)
+        except (ValueError, UnicodeError):
+            body = None
+        if (
+            inner.status != 403
+            or inner.headers.get("cache-control") != "no-store"
+            or inner.set_cookies
+            or not isinstance(body, dict)
+            or not isinstance(body.get("error"), dict)
+            or body["error"].get("code") != "iam_interaction_tenant_forbidden"
+            or observed.count(("GET", "/iam/organization/list")) != before_list
+            or observed.count(("POST", "/iam/organization/set-active"))
+            != before_change + 1
+        ):
+            raise SmokeError("foreign actor fixed tenant admission did not reject")
+        return None
     if inner.status not in (302, 303) or inner.body:
         raise SmokeError("fixed tenant continuation displayed a page")
     next_path = navigate(inner.location(), "fixed tenant continuation")
@@ -669,6 +691,7 @@ def run_browser(
     *,
     authenticated_probe: AuthenticatedProbe | None = None,
     preconsented: bool = False,
+    expect_fixed_tenant_forbidden: bool = False,
 ) -> None:
     jar = BrowserCookies(credentials.add)
 
@@ -807,8 +830,22 @@ def run_browser(
             f"IAM sign-in: HTTP {login.status}, code {old.safe_error_code(login)}, expected redirect"
         )
     path = continue_fixed_tenant(
-        request, navigate, navigate(login.location(), "tenant navigation"), observed
+        request,
+        navigate,
+        navigate(login.location(), "tenant navigation"),
+        observed,
+        expect_forbidden=expect_fixed_tenant_forbidden,
     )
+    if expect_fixed_tenant_forbidden:
+        if path is not None:
+            raise SmokeError("foreign actor unexpectedly continued Product login")
+        require_session_projection(request("/api/auth/session"), authenticated=False)
+        require_product_chat_rejection(request("/api/session/sessions?limit=1"))
+        if observed.count(chat_operation) != chat_calls:
+            raise SmokeError("foreign actor reached Product Chat")
+        return
+    if path is None:
+        raise SmokeError("fixed tenant continuation missing")
     if preconsented:
         callback_path = path
     else:

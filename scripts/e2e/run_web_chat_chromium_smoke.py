@@ -334,7 +334,6 @@ class ChromiumLoginMilestone:
                         "hold_seconds": self.hold_seconds,
                         "email": ready.email,
                         "password": ready.password,
-                        "tenant_id": ready.tenant_id,
                         "chat_content": "Run the deterministic Web worker smoke.",
                         "expected_reply": turn.expected_reply,
                         "chat_timeout_ms": int(turn.timeout * 1000),
@@ -372,7 +371,7 @@ class ChromiumLoginMilestone:
             "screenshot",
             "csrf_requests",
             "signin_requests",
-            "tenant_form",
+            "fixed_tenant_continuation",
             "consent_form",
             "app_page",
             "product_session",
@@ -398,7 +397,7 @@ class ChromiumLoginMilestone:
             or result.get("password_field") is not True
             or result.get("csrf_requests") != 0
             or result.get("signin_requests") != 0
-            or result.get("tenant_form") is not True
+            or result.get("fixed_tenant_continuation") is not True
             or result.get("consent_form") is not True
             or result.get("app_page") is not True
             or result.get("product_session") is not True

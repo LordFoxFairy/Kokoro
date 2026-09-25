@@ -20,6 +20,14 @@ def test_runner_exists_as_a_narrow_composer() -> None:
     assert RUNNER.is_file()
 
 
+def test_web_fixture_receives_the_owner_fixed_tenant() -> None:
+    source = RUNNER.read_text()
+    web_configuration = source.split("web_env.update(", 1)[1].split(
+        "credentials.add(web_env", 1
+    )[0]
+    assert '"KOKORO_TENANT_ID": ready.tenant_id' in web_configuration
+
+
 def test_private_actor_probe_uses_own_product_session_for_all_foreign_paths() -> None:
     calls: list[tuple[str, dict[str, object]]] = []
     conversation_id = "conv_12345678-1234-1234-1234-123456789abc"
@@ -182,11 +190,13 @@ def test_privacy_sql_evidence_uses_separate_owner_local_queries(monkeypatch) -> 
 
 def test_privacy_browser_boundary_keeps_bc_distinct_from_a_chromium() -> None:
     assert smoke._privacy_browser_boundary(None) == (
-        "A/B/C: independent Python CookieJar HTTPS Product Sessions"
+        "A/B: independent Python CookieJar HTTPS Product Sessions; "
+        "C: fixed-tenant admission denied before Product Session"
     )
     mode = smoke.BrowserOriginMode(443, lambda *_args: None, lambda *_args: {})
     assert smoke._privacy_browser_boundary(mode) == (
-        "A: Chromium DOM/SSE; B/C: independent Python CookieJar HTTPS Product Sessions"
+        "A: Chromium DOM/SSE; B: Python CookieJar HTTPS Product Session; "
+        "C: fixed-tenant admission denied before Product Session"
     )
 
 

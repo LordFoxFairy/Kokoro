@@ -42,9 +42,9 @@ BFF = worker.BFF
 IAM = product.IAM
 AGENT = worker.AGENT
 EXPECTED_RELEASES = {
-    "kokoro-app": "0a093f65bdc4990b956b10ae534198e3b4b5c3b5",
-    "kokoro-bff": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
-    "kokoro-iam": "e36da9ecf8d62a364182949817431a8e2329d50a",
+    "kokoro-app": "0d1802250f94c2ac0f3dd28b5b486ca92a976a1c",
+    "kokoro-bff": "e0663a8c85f055c2bac5af894070fea8e24ff3ce",
+    "kokoro-iam": "7f39193fff97dbb1398cb536ded7dca0db354213",
     "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
 }
 
@@ -85,9 +85,13 @@ class BrowserOriginMode:
 
 def _privacy_browser_boundary(browser_mode: BrowserOriginMode | None) -> str:
     if browser_mode is None:
-        return "A/B/C: independent Python CookieJar HTTPS Product Sessions"
+        return (
+            "A/B: independent Python CookieJar HTTPS Product Sessions; "
+            "C: fixed-tenant admission denied before Product Session"
+        )
     return (
-        "A: Chromium DOM/SSE; B/C: independent Python CookieJar HTTPS Product Sessions"
+        "A: Chromium DOM/SSE; B: Python CookieJar HTTPS Product Session; "
+        "C: fixed-tenant admission denied before Product Session"
     )
 
 
@@ -950,6 +954,7 @@ def run_smoke(
                             "KOKORO_BFF_BASE_URL": f"http://127.0.0.1:{bff_proxy.server_port}",
                             "KOKORO_INTERNAL_SECRET_WEB_BFF": bff_secret,
                             "KOKORO_WEB_REDIS_URL": args.web_iam_redis_url,
+                            "KOKORO_TENANT_ID": ready.tenant_id,
                             "KOKORO_OIDC_CLIENT_ID": ready.client_id,
                             "KOKORO_OIDC_CLIENT_SECRET": ready.client_secret,
                             "KOKORO_WEB_AUTH_SECRET": secrets.token_hex(32),
@@ -1138,34 +1143,40 @@ def run_smoke(
                         observation.system_requests,
                         observation.model_requests,
                     )
-                    for name, actor in (
-                        ("same_tenant_member", actors.same_tenant_member),
-                        ("other_tenant_owner", actors.other_tenant_owner),
-                    ):
-                        probe = PrivateActorProbe(
-                            actor_name=name,
-                            user_id=actor.user_id,
-                            conversation_id=conversation_id,
-                            run_id=run_id,
-                            web_origin=web_origin,
+                    member = actors.same_tenant_member
+                    probe = PrivateActorProbe(
+                        actor_name="same_tenant_member",
+                        user_id=member.user_id,
+                        conversation_id=conversation_id,
+                        run_id=run_id,
+                        web_origin=web_origin,
+                    )
+                    product.run_browser(
+                        web_proxy.server_port,
+                        web_origin,
+                        replace(ready, email=member.email, password=member.password),
+                        bff_proxy.observed,
+                        credentials,
+                        authenticated_probe=probe,
+                    )
+                    if probe.calls != 1:
+                        raise SmokeError(
+                            "same tenant private probe did not execute once"
                         )
-                        product.run_browser(
-                            web_proxy.server_port,
-                            web_origin,
-                            replace(
-                                ready,
-                                email=actor.email,
-                                password=actor.password,
-                                tenant_id=actor.tenant_id,
-                            ),
-                            bff_proxy.observed,
-                            credentials,
-                            authenticated_probe=probe,
-                        )
-                        if probe.calls != 1:
-                            raise SmokeError(
-                                f"{name} private probe did not execute once"
-                            )
+                    outsider = actors.other_tenant_owner
+                    product.run_browser(
+                        web_proxy.server_port,
+                        web_origin,
+                        replace(
+                            ready,
+                            email=outsider.email,
+                            password=outsider.password,
+                            tenant_id=outsider.tenant_id,
+                        ),
+                        bff_proxy.observed,
+                        credentials,
+                        expect_fixed_tenant_forbidden=True,
+                    )
                     privacy_after = _privacy_sql_evidence(
                         resources, database_url, conversation_id, run_id
                     )
@@ -1182,8 +1193,9 @@ def run_smoke(
                         )
                     privacy_result = {
                         "same_tenant_member": "private",
-                        "other_tenant_owner": "private",
+                        "other_tenant_owner": "fixed_tenant_admission_denied",
                         "foreign_resource_status": 404,
+                        "cross_tenant_admission_status": 403,
                         "owner_facts_unchanged": True,
                         "browser_boundary": _privacy_browser_boundary(browser_mode),
                     }

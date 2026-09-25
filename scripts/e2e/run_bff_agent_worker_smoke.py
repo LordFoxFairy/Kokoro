@@ -48,7 +48,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BFF = ROOT / "apps" / "kokoro-bff"
 AGENT = ROOT / "apps" / "kokoro-agent"
 EXPECTED_RELEASES = {
-    "kokoro-bff": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
+    "kokoro-bff": "e0663a8c85f055c2bac5af894070fea8e24ff3ce",
     "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
 }
 MAX_HTTP_BYTES = 2 * 1024 * 1024
@@ -222,6 +222,9 @@ class OwnedResources:
         self._owned_keys = {
             database: {self._markers[database]} for database in self._redis_urls
         }
+        # The Agent worker initializes its request stream before the first run.
+        # It belongs to this exclusively claimed logical DB even on login failure.
+        self._owned_keys[self._agent_db].add("kokoro:runs:requests")
 
     def _run(self, command: list[str]) -> str:
         try:

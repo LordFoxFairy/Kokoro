@@ -84,7 +84,7 @@ def resources(recorder: Recorder) -> smoke.OwnedResources:
 
 def test_release_inputs_pin_current_bff_and_agent() -> None:
     assert smoke.EXPECTED_RELEASES == {
-        "kokoro-bff": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
+        "kokoro-bff": "e0663a8c85f055c2bac5af894070fea8e24ff3ce",
         "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
     }
 
@@ -206,6 +206,17 @@ def test_cleanup_unlinks_only_registered_owned_agent_keys_and_marker() -> None:
         "FLUSHDB" not in command and "FLUSHALL" not in command
         for command in recorder.commands
     )
+
+
+def test_cleanup_unlinks_worker_request_stream_before_any_run_exists() -> None:
+    recorder = Recorder()
+    owned = resources(recorder)
+    owned.claim_redis()
+    recorder.redis_keys[15].append("kokoro:runs:requests")
+
+    owned.cleanup()
+
+    assert recorder.redis_keys == {14: [], 15: []}
 
 
 def test_cleanup_refuses_unknown_redis_keys_instead_of_deleting_them() -> None:

@@ -120,6 +120,45 @@ class ProductSessionGuards(unittest.TestCase):
             result,
         )
 
+    def test_foreign_actor_is_denied_before_product_session(self):
+        observed = []
+        calls = []
+        signed = "?sig=opaque"
+
+        def request(path, *, method="GET"):
+            calls.append((method, path))
+            if path == "/auth/select-tenant" + signed:
+                return smoke.BrowserResponse(
+                    302,
+                    {"location": "/iam/interactions/select-tenant" + signed},
+                    [],
+                    b"",
+                )
+            if path == "/iam/interactions/select-tenant" + signed:
+                observed.append(("POST", "/iam/organization/set-active"))
+                return smoke.BrowserResponse(
+                    403,
+                    {"cache-control": "no-store"},
+                    [],
+                    b'{"error":{"code":"iam_interaction_tenant_forbidden","message":"IAM interaction was rejected"}}',
+                )
+            self.fail(f"unexpected browser request: {path}")
+
+        def navigate(value, _stage):
+            return smoke.browser_target(value, "https://web.example.test")
+
+        self.assertIsNone(
+            smoke.continue_fixed_tenant(
+                request,
+                navigate,
+                "/auth/select-tenant" + signed,
+                observed,
+                expect_forbidden=True,
+            )
+        )
+        self.assertEqual(observed, [("POST", "/iam/organization/set-active")])
+        self.assertEqual(len(calls), 2)
+
     def test_actor_matrix_requires_distinct_real_identity_and_tenant_membership(self):
         ready = type(
             "Ready", (), {"tenant_id": "tenant-a", "email": "a@example.test"}

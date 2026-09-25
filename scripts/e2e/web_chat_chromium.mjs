@@ -14,13 +14,14 @@ const fail = (message) => {
 const parseInput = () => {
   if (process.argv.length !== 2) throw new Error("expected stdin JSON input")
   const value = JSON.parse(readFileSync(0, "utf8"))
-  const fields = ["web_origin", "web_host", "web_root", "screenshot", "headed", "hold_seconds", "email", "password", "tenant_id", "chat_content", "expected_reply", "chat_timeout_ms", "fail_after_chat_receipt"]
+  const fields = ["web_origin", "web_host", "web_root", "screenshot", "headed", "hold_seconds", "email", "password", "chat_content", "expected_reply", "chat_timeout_ms", "fail_after_chat_receipt"]
+  const stringFields = ["web_origin", "web_host", "web_root", "screenshot", "email", "password", "chat_content", "expected_reply"]
   if (
     value === null ||
     typeof value !== "object" ||
     Array.isArray(value) ||
     Object.keys(value).sort().join(",") !== [...fields].sort().join(",") ||
-    ![...fields.slice(0, 4), ...fields.slice(6, 11)].every((field) => typeof value[field] === "string" && value[field] !== "") ||
+    !stringFields.every((field) => typeof value[field] === "string" && value[field] !== "") ||
     typeof value.headed !== "boolean" ||
     typeof value.fail_after_chat_receipt !== "boolean" ||
     typeof value.hold_seconds !== "number" ||
@@ -52,6 +53,7 @@ try {
   await page.addInitScript(() => window.localStorage.setItem("kokoro.locale", "en"))
   let csrfRequests = 0
   let signInRequests = 0
+  let tenantSelectionPosts = 0
   const failedRequests = []
   const observedPaths = []
   const observedResponses = []
@@ -69,6 +71,7 @@ try {
     }
     if (pathname === "/api/auth/csrf") csrfRequests += 1
     if (pathname === "/api/auth/signin/kokoro-iam") signInRequests += 1
+    if (pathname === "/iam/interactions/select-tenant" && request.method() === "POST") tenantSelectionPosts += 1
   })
   page.on("response", (response) => {
     const url = new URL(response.url())
@@ -154,15 +157,11 @@ try {
   await email.fill(input.email)
   await password.fill(input.password)
   await page.getByRole("button", { name: "Sign in", exact: true }).click()
-  await page.getByRole("heading", { name: "Select tenant", exact: true }).waitFor({ state: "visible" })
-  if (new URL(page.url()).pathname !== "/iam/interactions/select-tenant") {
-    throw new Error("IAM tenant form path drift")
-  }
-  await page.locator('select[name="organization_id"]').selectOption(input.tenant_id)
-  await page.getByRole("button", { name: "Continue", exact: true }).click()
   await page.getByRole("heading", { name: "Review requested access", exact: true }).waitFor({ state: "visible" })
-  if (new URL(page.url()).pathname !== "/iam/interactions/consent") {
-    throw new Error("IAM consent form path drift")
+  if (new URL(page.url()).pathname !== "/iam/interactions/consent" ||
+      tenantSelectionPosts !== 0 ||
+      await page.locator('select[name="organization_id"]').count() !== 0) {
+    throw new Error("Fixed-tenant IAM continuation drift")
   }
   await page.getByRole("button", { name: "Agree and continue", exact: true }).click()
   await page.waitForURL(
@@ -359,7 +358,7 @@ try {
       screenshot: input.screenshot,
       csrf_requests: csrfRequests,
       signin_requests: signInRequests,
-      tenant_form: true,
+      fixed_tenant_continuation: true,
       consent_form: true,
       app_page: true,
       product_session: true,

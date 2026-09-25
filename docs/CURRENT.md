@@ -31,6 +31,8 @@ IAM `7f39193`、BFF `e0663a8`、Web `d117688` 固定来源的隔离 HTTPS 组合
 
 用户 3310 的 Web-only 常驻 `/login` 当前 HTTP 503 且 body 为 0，没有可见“连接中／整页重试”UI，也尚未连接正式 IAM 登录。2026-09-24 修复了其 `node_modules/@kokoro/{i18n,tsconfig,web-core}` 指向已清理隔离目录的断裂 symlink，恢复页面编译；随后实测 503/0 字节，Web 登录/架构聚焦 25/25 通过。此前隔离 build 的复用 node_modules 方式会改写 checkout workspace 链接，后续隔离验证必须避免再次触碰用户常驻依赖。
 
+当前固定 SHA 的 Root 真 Chromium Chat 组合已在独立 HTTPS/真实 PG+Redis 上重验：`/login` 服务端直达 IAM 表单，固定 tenant 只走 signed GET 续接、不显示选择表单；同一 Chromium 获取 Product Session、从 DOM 发首消息并接收 AG-UI 五帧，受控断线携原 cursor 恢复，reload 后恰好一 user/一 assistant。B 同 tenant 的独立 Product Session 对 A 资源返回私有 404；C 外租户在固定 tenant 准入被 403 拒绝，未发 Product Session。测试自有 PG/Redis/进程归零。模型/System 是严格 fixture；该证据不代表用户现有 3310 已可登录，也不代表真 provider 或所有 Wave 完成。
+
 ## 已验证到的边界
 
 - Web `08ef650a` 已把两个不被当前 UI/正式 OIDC 使用的旧 magic-link browser route 实际删除；失败回调不再产出 `/login?auth=link_unavailable`。正式 Auth.js `/api/auth/callback/kokoro-iam` 保留。Root `54e18142` pin 后的隔离 HTTPS first-login smoke 再次 PASS，自有资源0；Web 隔离新目录的 Next typegen、TypeScript 和 production build PASS，未改用户 3310 共享 `.next`。旧 auth helper、Team/其他认证路径尚在，普通 IAB 3310 入口依旧未配 IAM/BFF。
