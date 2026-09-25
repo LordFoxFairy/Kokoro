@@ -13,11 +13,96 @@ IAM_REPOSITORY = "apps/kokoro-iam"
 BFF_REPOSITORY = "apps/kokoro-bff"
 IAM_ALLOWLIST = "src/modules/auth/ingress/auth-routes.constants.ts"
 IAM_SNAPSHOT = "contract/vendor/better-auth.v1.7.3.json"
+IAM_OPENAPI = "contract/openapi/iam.internal.v1.json"
+IAM_REDIRECT_ERRORS = "src/modules/audit/auth-audit.constants.ts"
 BFF_POLICY = "contract/iam-relay-policy.json"
 BFF_SOURCE = "src/http/routes/iam-protocol-relay.policy.ts"
 OID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 ROUTE = re.compile(r"/[a-z0-9./-]+")
 METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"})
+POLICY_2_1_FIELDS = (
+    "version",
+    "iamOwnerCommit",
+    "iamAllowlistSha256",
+    "iamSnapshotSha256",
+    "iamOpenapiPath",
+    "iamOpenapiVersion",
+    "iamOpenapiSha256",
+    "routes",
+    "invitationRoutes",
+    "invitationSignUp",
+    "invitationLocation",
+    "requestHeaders",
+    "responseHeaders",
+    "cookieNames",
+    "cookieNamePrefixes",
+    "cookiePaths",
+    "webInteractionPaths",
+    "maxQueryBytes",
+    "maxRequestBodyBytes",
+    "maxHeaderBytes",
+    "maxResponseBytes",
+    "maxDurationMs",
+)
+INVITATION_ROUTE_FIELDS = (
+    "template",
+    "methods",
+    "operationId",
+    "owner",
+    "visibility",
+    "stability",
+    "idempotency",
+)
+INVITATION_ROUTE_SPECS = (
+    (
+        "/v1/tenants/{tenant_id}/invitations/{invitation_id}/context",
+        "GET",
+        "getTenantInvitationContext",
+    ),
+    (
+        "/v1/tenants/{tenant_id}/invitations/{invitation_id}/accept",
+        "POST",
+        "acceptTenantInvitation",
+    ),
+    (
+        "/v1/tenants/{tenant_id}/invitations/{invitation_id}/reject",
+        "POST",
+        "rejectTenantInvitation",
+    ),
+)
+INVITATION_SIGN_UP = {
+    "route": "/sign-up/email",
+    "method": "POST",
+    "bodyFields": ["callbackURL", "email", "name", "password"],
+    "callbackPath": "/iam/interactions/invitation",
+    "callbackQueryParameter": "id",
+}
+INVITATION_LOCATION_BASE = {
+    "sourceRoute": "/verify-email",
+    "path": "/iam/interactions/invitation",
+    "queryParameter": "id",
+    "valueFormat": "canonical-lowercase-uuid",
+    "errorQueryParameter": "error",
+}
+STATIC_2_1_ROUTES = {
+    "/.well-known/openid-configuration": ["GET"],
+    "/.well-known/oauth-authorization-server": ["GET"],
+    "/jwks": ["GET"],
+    "/oauth2/authorize": ["GET", "POST"],
+    "/oauth2/token": ["POST"],
+    "/oauth2/userinfo": ["GET"],
+    "/oauth2/revoke": ["POST"],
+    "/oauth2/end-session": ["GET", "POST"],
+    "/oauth2/end-session/confirm": ["POST"],
+    "/sign-up/email": ["POST"],
+    "/sign-in/email": ["POST"],
+    "/verify-email": ["GET"],
+    "/sign-out": ["POST"],
+    "/get-session": ["GET"],
+    "/organization/set-active": ["POST"],
+    "/oauth2/consent": ["POST"],
+    "/oauth2/continue": ["POST"],
+}
 
 
 def _git(cwd: Path, *args: str) -> bytes:
@@ -150,6 +235,142 @@ def _iam_routes(blob: bytes) -> tuple[dict[str, set[str]], set[str]]:
     return routes, set(disabled)
 
 
+def _iam_verify_email_error_codes(blob: bytes) -> list[str]:
+    try:
+        source = blob.decode("utf-8")
+    except UnicodeDecodeError:
+        raise ValueError("IAM verify-email redirect constants must be UTF-8") from None
+    matches = re.findall(
+        r"export const VERIFY_EMAIL_REDIRECT_ERROR_CODES = \[\n"
+        r'(?P<codes>(?:  "[A-Z_]+",\n)+)'
+        r"\] as const;",
+        source,
+    )
+    if len(matches) != 1:
+        raise ValueError(
+            "IAM VERIFY_EMAIL_REDIRECT_ERROR_CODES does not match the pinned parser"
+        )
+    codes = [
+        json.loads(line.strip().removesuffix(",")) for line in matches[0].splitlines()
+    ]
+    if len(codes) != len(set(codes)):
+        raise ValueError("IAM VERIFY_EMAIL_REDIRECT_ERROR_CODES contains duplicates")
+    return codes
+
+
+def _strict_object(
+    value: object, expected: dict[str, object], label: str
+) -> dict[str, Any]:
+    if (
+        not isinstance(value, dict)
+        or tuple(value) != tuple(expected)
+        or value != expected
+    ):
+        raise ValueError(f"BFF policy {label} does not match the exact 2.1.0 shape")
+    return value
+
+
+def _verify_invitation_routes(policy: dict[str, Any], openapi: dict[str, Any]) -> None:
+    paths = openapi.get("paths")
+    if not isinstance(paths, dict):
+        raise ValueError("IAM OpenAPI paths must be an object")
+    expected_policy_routes: list[dict[str, object]] = []
+    for template, method, operation_id in INVITATION_ROUTE_SPECS:
+        path_item = paths.get(f"/iam{template}")
+        operation = (
+            path_item.get(method.lower()) if isinstance(path_item, dict) else None
+        )
+        if not isinstance(operation, dict):
+            raise ValueError(
+                f"IAM OpenAPI missing invitation operation {method} /iam{template}"
+            )
+        expected_operation = {
+            "operationId": operation_id,
+            "x-kokoro-owner": "kokoro-iam",
+            "x-kokoro-visibility": "browser-private",
+            "x-kokoro-stability": "stable",
+            "x-kokoro-idempotency": "none",
+        }
+        if any(
+            operation.get(key) != value for key, value in expected_operation.items()
+        ):
+            raise ValueError(
+                "BFF policy invitationRoutes owner metadata does not match IAM 2.1.0"
+            )
+        expected_policy_routes.append(
+            {
+                "template": template,
+                "methods": [method],
+                "operationId": operation["operationId"],
+                "owner": operation["x-kokoro-owner"],
+                "visibility": operation["x-kokoro-visibility"],
+                "stability": operation["x-kokoro-stability"],
+                "idempotency": operation["x-kokoro-idempotency"],
+            }
+        )
+    invitation_routes = policy.get("invitationRoutes")
+    if not isinstance(invitation_routes, list) or len(invitation_routes) != len(
+        expected_policy_routes
+    ):
+        raise ValueError(
+            "BFF policy invitationRoutes must contain exactly three routes"
+        )
+    for actual, expected in zip(invitation_routes, expected_policy_routes, strict=True):
+        if (
+            not isinstance(actual, dict)
+            or tuple(actual) != INVITATION_ROUTE_FIELDS
+            or actual != expected
+        ):
+            raise ValueError(
+                "BFF policy invitationRoutes do not match IAM committed OpenAPI"
+            )
+
+
+def _verify_2_1_policy(
+    root: Path,
+    iam_commit: str,
+    policy: dict[str, Any],
+    routes: dict[str, Any],
+) -> None:
+    if tuple(policy) != POLICY_2_1_FIELDS:
+        raise ValueError("BFF policy 2.1.0 fields do not match the exact shape")
+    if policy.get("iamOpenapiPath") != IAM_OPENAPI:
+        raise ValueError(f"BFF policy iamOpenapiPath must equal {IAM_OPENAPI}")
+    openapi_blob = _blob(root, IAM_REPOSITORY, iam_commit, IAM_OPENAPI)
+    if policy.get("iamOpenapiSha256") != _sha(openapi_blob):
+        raise ValueError("BFF policy iamOpenapiSha256 != IAM committed blob sha256")
+    openapi = _json_object(openapi_blob, "IAM internal OpenAPI")
+    info = openapi.get("info")
+    openapi_version = info.get("version") if isinstance(info, dict) else None
+    if openapi_version != "0.4.0" or policy.get("iamOpenapiVersion") != openapi_version:
+        raise ValueError("BFF policy iamOpenapiVersion != IAM OpenAPI 0.4.0")
+    if tuple(routes) != tuple(STATIC_2_1_ROUTES) or routes != STATIC_2_1_ROUTES:
+        raise ValueError(
+            "BFF policy 2.1.0 static routes including sign-up do not match the exact matrix"
+        )
+    _verify_invitation_routes(policy, openapi)
+    _strict_object(
+        policy.get("invitationSignUp"), INVITATION_SIGN_UP, "invitationSignUp"
+    )
+    redirect_blob = _blob(root, IAM_REPOSITORY, iam_commit, IAM_REDIRECT_ERRORS)
+    invitation_location = dict(INVITATION_LOCATION_BASE)
+    owner_error_codes = _iam_verify_email_error_codes(redirect_blob)
+    raw_invitation_location = policy.get("invitationLocation")
+    if (
+        not isinstance(raw_invitation_location, dict)
+        or raw_invitation_location.get("allowedErrorCodes") != owner_error_codes
+    ):
+        raise ValueError(
+            "BFF policy invitationLocation.allowedErrorCodes != IAM owner constants"
+        )
+    invitation_location["allowedErrorCodes"] = owner_error_codes
+    _strict_object(
+        policy.get("invitationLocation"),
+        invitation_location,
+        "invitationLocation",
+    )
+
+
 def _typescript_policy(blob: bytes) -> dict[str, Any]:
     try:
         source = blob.decode("utf-8")
@@ -212,6 +433,10 @@ def _verify(root: Path) -> None:
             raise ValueError(f"BFF policy invalid methods for {path}")
         if not set(declared_methods).issubset(iam_routes[path]):
             raise ValueError(f"BFF policy method expansion for {path}")
+    version = policy.get("version")
+    if version != "2.1.0":
+        raise ValueError("BFF policy version must be 2.1.0")
+    _verify_2_1_policy(root, iam_commit, policy, routes)
 
 
 def verify_iam_relay_policy(root: Path) -> list[str]:

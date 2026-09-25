@@ -8,9 +8,9 @@
 | 子仓 | 当前固定提交 |
 | --- | --- |
 | `apps/kokoro-app` | `63aca94f93095722425340a0a95985e8796a5b33` |
-| `apps/kokoro-bff` | `da03b76e450018ffa00f812da461569a00a377b3` |
+| `apps/kokoro-bff` | `d6dc8a0ea5a3fee7a4f54f01fefdeff0e28892e7` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `ad5224a9e0a3a31d1c593d214d37940d6923b2e7` |
+| `apps/kokoro-iam` | `ac94f152daffa2293801ea4f56f98b3ae59452d7` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `ad5224a`、BFF `da03b76`、Web `63aca94`。IAM test-only Web OIDC client 已加 user-delegated Team 写 scope；BFF 通过 IAM owner `0.3.0` contract 发布六个 public Team mutation。Web 现以固定 BFF public OpenAPI 生成 Team client，经同源 Product Session adapter 使用三 GET/六写；旧 sealed Team context、namespace/inbox UI 和 Team→IAM `/bff/*` 直连已删除。BFF relay policy 仍为 `2.0.0`。Root 固定 IAM/BFF 真实 PostgreSQL/Redis/HTTP Team mutation smoke 已通过：OAuth Code+PKCE、三窄读、六写中的 create/resend/cancel/roles/remove，以及最后 owner leave 的 409 `LAST_OWNER`；缺 Bearer 401，外租户在固定租户 set-active 被 403 拒绝，资源剩余0。Web Node22 本仓 `pnpm check` exit0，但尚未在当前 Web SHA 运行完整 Team 浏览器组合或正式邀请邮件点击，故不声称端到端闭环。2026-09-25 只读检查 3310 无监听进程；历史 3310 Web-only 空 503 不代表今天正在运行，也没有可见“连接中／整页重试”中转。
+Root 当前精确 pin IAM `ac94f15`、BFF `d6dc8a0`、Web `63aca94`。IAM 已发布固定租户、收件人限定 invitation context 与正式邮件 URL，BFF 已发布 policy `2.1.0` 的 sign-up 和三条独立动态 invitation relay；BFF 本仓 `pnpm format:check && pnpm check` 为 291 passed、1 skipped、0 failed，build 通过。Root 真 IAM→BFF HTTP 和 Web 独立 invitation interaction 尚未完成，故不声称邮件点击或用户页面闭环。原有 Team Product API 三读/六写仍在当前 BFF；此前固定旧 SHA 的真实 PostgreSQL/Redis/HTTP Team mutation smoke 是历史证据，不冒充新组合验收。2026-09-25 只读检查 3310 无监听进程；本轮不启动用户常驻预览，也没有可见“连接中／整页重试”中转。
 
 ## 已验证到的边界
 
