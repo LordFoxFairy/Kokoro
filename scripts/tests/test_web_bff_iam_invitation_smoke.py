@@ -2,9 +2,12 @@
 
 import importlib.util
 import sys
+import tempfile
 import unittest
 from email.message import EmailMessage
 from pathlib import Path
+from subprocess import CompletedProcess
+from unittest.mock import patch
 
 PATH = (
     Path(__file__).resolve().parents[1] / "e2e" / "run_web_bff_iam_invitation_smoke.py"
@@ -30,6 +33,137 @@ def message(subject: str, body: str) -> bytes:
 
 
 class InvitationSmokeGuards(unittest.TestCase):
+    def test_chromium_a_rejects_new_recipient_before_startup(self):
+        with self.assertRaises(SystemExit) as error:
+            smoke.main(["--browser", "chromium", "--account", "new"])
+        self.assertEqual(error.exception.code, 2)
+
+    def test_chromium_evidence_requires_one_real_owner_decision(self):
+        import json
+
+        observed = []
+        owner = f"/iam/v1/tenants/tenant/invitations/{INVITATION_ID}/accept"
+        with tempfile.TemporaryDirectory() as temporary:
+            screenshot = Path(temporary) / "entry.png"
+            evidence = {
+                "browser": "chromium",
+                "decision": "accept",
+                "entry_form": True,
+                "recipient_preview": True,
+                "legacy_intermediary_absent": True,
+                "decision_post_count": 1,
+                "consumed_pending": True,
+                "product_login_started": True,
+                "product_authenticated": True,
+                "rejected_anonymous": False,
+                "membership_absent": False,
+                "screenshot": str(screenshot),
+            }
+
+            def browser_run(*_args, **_kwargs):
+                screenshot.write_bytes(b"png")
+                observed.append(("POST", owner))
+                return CompletedProcess([], 0, json.dumps(evidence), "")
+
+            with patch.object(smoke.subprocess, "run", side_effect=browser_run):
+                result = smoke.chromium_invitation(
+                    node_bin=Path("/node"),
+                    web_origin=ORIGIN + ":12345",
+                    path=smoke.invitation_path(INVITATION_ID),
+                    email="recipient@example.test",
+                    password="example-password",
+                    decision="accept",
+                    screenshot=screenshot,
+                    tenant_id="tenant",
+                    iam_base_url="http://127.0.0.1:1234",
+                    existing_tenant_id="other-tenant",
+                    observed=observed,
+                )
+            self.assertEqual(result.owner_post_count, 1)
+            observed.clear()
+            rejected = {
+                **evidence,
+                "decision": "reject",
+                "product_login_started": False,
+                "product_authenticated": False,
+                "rejected_anonymous": True,
+                "membership_absent": True,
+            }
+            reject_owner = f"/iam/v1/tenants/tenant/invitations/{INVITATION_ID}/reject"
+
+            def reject_run(*_args, **_kwargs):
+                observed.append(("POST", reject_owner))
+                return CompletedProcess([], 0, json.dumps(rejected), "")
+
+            with patch.object(smoke.subprocess, "run", side_effect=reject_run):
+                rejected_result = smoke.chromium_invitation(
+                    node_bin=Path("/node"),
+                    web_origin=ORIGIN + ":12345",
+                    path=smoke.invitation_path(INVITATION_ID),
+                    email="recipient@example.test",
+                    password="example-password",
+                    decision="reject",
+                    screenshot=screenshot,
+                    tenant_id="tenant",
+                    iam_base_url="http://127.0.0.1:1234",
+                    existing_tenant_id="other-tenant",
+                    observed=observed,
+                )
+            self.assertTrue(rejected_result.membership_absent)
+            observed.clear()
+            rejected["membership_absent"] = False
+            with patch.object(smoke.subprocess, "run", side_effect=reject_run):
+                with self.assertRaisesRegex(
+                    smoke.SmokeError, "evidence or owner relay drift"
+                ):
+                    smoke.chromium_invitation(
+                        node_bin=Path("/node"),
+                        web_origin=ORIGIN + ":12345",
+                        path=smoke.invitation_path(INVITATION_ID),
+                        email="recipient@example.test",
+                        password="example-password",
+                        decision="reject",
+                        screenshot=screenshot,
+                        tenant_id="tenant",
+                        iam_base_url="http://127.0.0.1:1234",
+                        existing_tenant_id="other-tenant",
+                        observed=observed,
+                    )
+            observed.clear()
+            with patch.object(
+                smoke.subprocess,
+                "run",
+                return_value=CompletedProcess([], 0, json.dumps(evidence), ""),
+            ):
+                with self.assertRaisesRegex(
+                    smoke.SmokeError, "evidence or owner relay drift"
+                ):
+                    smoke.chromium_invitation(
+                        node_bin=Path("/node"),
+                        web_origin=ORIGIN + ":12345",
+                        path=smoke.invitation_path(INVITATION_ID),
+                        email="recipient@example.test",
+                        password="example-password",
+                        decision="accept",
+                        screenshot=screenshot,
+                        tenant_id="tenant",
+                        iam_base_url="http://127.0.0.1:1234",
+                        existing_tenant_id="other-tenant",
+                        observed=observed,
+                    )
+
+    def test_chromium_failure_exposes_only_controlled_stage(self):
+        secret = "https://web.example.test/iam/interactions/invitation?id=secret"
+        self.assertEqual(
+            smoke.chromium_failure_stage(f"Playwright failed at {secret}"), "unknown"
+        )
+        self.assertEqual(
+            smoke.chromium_failure_stage(
+                f"Playwright failed at {secret}\nChromium invitation failed at iam-membership"
+            ),
+            "iam-membership",
+        )
+
     def test_new_recipient_verification_is_bound_to_exact_invitation(self):
         from urllib.parse import quote
 
@@ -67,7 +201,7 @@ class InvitationSmokeGuards(unittest.TestCase):
             headers={
                 "content-type": "text/html; charset=utf-8",
                 "cache-control": "no-store",
-                "referrer-policy": "no-referrer",
+                "referrer-policy": "same-origin",
             },
             body=(
                 '<form method="post" action="/iam/interactions/invitation?id='

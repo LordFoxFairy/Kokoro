@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Exercise existing and new recipient invitations through HTTPS Web → BFF → IAM.
+"""Exercise invitations through test-owned HTTPS Web → BFF → IAM.
 
-The test-owned SMTP mailbox, PostgreSQL databases, Redis keys and HTTPS processes
-are cleaned up. This is an HTTP browser-cookie client, not Chromium DOM evidence.
+The default is an HTTP browser-cookie client; --browser chromium drives real forms.
+Owned SMTP, PostgreSQL, Redis and HTTPS resources are cleaned up.
 """
 
 from __future__ import annotations
 
 import json
+import http.client
 import re
 import secrets
 import subprocess
 import sys
 import tempfile
 import time
+from dataclasses import dataclass
 from email import policy
 from email.parser import BytesParser
 from html.parser import HTMLParser
@@ -22,6 +24,7 @@ from urllib.parse import parse_qsl, unquote, urlsplit
 from uuid import uuid4
 
 import run_web_bff_iam_product_session_smoke as product
+import run_web_chat_chromium_smoke as chromium_smoke
 
 SmokeError = product.SmokeError
 PAGE_PATH = "/iam/interactions/invitation"
@@ -29,6 +32,178 @@ UUID = re.compile(
     r"[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\Z"
 )
 EMAIL = re.compile(r"[^@\s]+@[^@\s]+\Z")
+CHROMIUM_DRIVER = Path(__file__).resolve().parent / "web_invitation_chromium.mjs"
+CHROMIUM_STAGES = frozenset(
+    {
+        "input",
+        "browser",
+        "invitation-entry",
+        "issuer-sign-in",
+        "invitation-decision",
+        "product-login",
+        "rejected-session",
+        "iam-membership",
+        "consumed-invitation",
+    }
+)
+
+
+def chromium_failure_stage(stderr: bytes | str | None) -> str:
+    """Report only controlled stage labels, never browser errors containing links."""
+    if not isinstance(stderr, (bytes, str)):
+        return "unknown"
+    output = (
+        stderr.decode("utf-8", errors="replace")
+        if isinstance(stderr, bytes)
+        else stderr
+    )
+    for line in reversed(output.splitlines()):
+        label = line.removeprefix("Chromium invitation failed at ")
+        if label in CHROMIUM_STAGES and line.startswith(
+            "Chromium invitation failed at "
+        ):
+            return label
+    return "unknown"
+
+
+@dataclass(frozen=True, slots=True)
+class ChromiumInvitationEvidence:
+    decision: str
+    owner_post_count: int
+    consumed_pending: bool
+    product_login_started: bool
+    product_authenticated: bool
+    rejected_anonymous: bool
+    membership_absent: bool
+
+
+def chromium_invitation(
+    *,
+    node_bin: Path,
+    web_origin: str,
+    path: str,
+    email: str,
+    password: str,
+    decision: str,
+    screenshot: Path,
+    tenant_id: str,
+    iam_base_url: str,
+    existing_tenant_id: str,
+    observed: list[tuple[str, str]],
+) -> ChromiumInvitationEvidence:
+    """Drive the actual Web forms; the owner relay remains independently observed."""
+    parsed = urlsplit(web_origin)
+    if parsed.scheme != "https" or parsed.port is None or parsed.hostname is None:
+        raise SmokeError("Chromium invitation origin invalid")
+    invitation_id = path.rsplit("?id=", 1)[-1]
+    if invitation_path(invitation_id) != path or decision not in {"accept", "reject"}:
+        raise SmokeError("Chromium invitation target invalid")
+    owner_path = f"/iam/v1/tenants/{tenant_id}/invitations/{invitation_id}/{decision}"
+    before = observed.count(("POST", owner_path))
+    try:
+        completed = subprocess.run(
+            [str(node_bin), str(CHROMIUM_DRIVER)],
+            cwd=product.ROOT,
+            text=True,
+            input=json.dumps(
+                {
+                    "web_origin": web_origin,
+                    "web_host": parsed.hostname,
+                    "web_root": str(product.WEB),
+                    "invitation_path": path,
+                    "email": email,
+                    "password": password,
+                    "decision": decision,
+                    "screenshot": str(screenshot),
+                    "iam_base_url": iam_base_url,
+                    "tenant_id": tenant_id,
+                    "existing_tenant_id": existing_tenant_id,
+                },
+                separators=(",", ":"),
+            ),
+            capture_output=True,
+            timeout=90,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise SmokeError(
+            f"Chromium invitation timed out; stage={chromium_failure_stage(error.stderr)}"
+        ) from None
+    except (OSError, subprocess.SubprocessError):
+        raise SmokeError("Chromium invitation process failed") from None
+    if completed.returncode != 0:
+        raise SmokeError(
+            f"Chromium invitation failed at {chromium_failure_stage(completed.stderr)}"
+        )
+    try:
+        evidence = json.loads(completed.stdout)
+    except (TypeError, ValueError):
+        raise SmokeError("Chromium invitation evidence malformed") from None
+    if (
+        not isinstance(evidence, dict)
+        or set(evidence)
+        != {
+            "browser",
+            "decision",
+            "entry_form",
+            "recipient_preview",
+            "legacy_intermediary_absent",
+            "decision_post_count",
+            "consumed_pending",
+            "product_login_started",
+            "product_authenticated",
+            "rejected_anonymous",
+            "membership_absent",
+            "screenshot",
+        }
+        or evidence["browser"] != "chromium"
+        or evidence["decision"] != decision
+        or evidence["entry_form"] is not True
+        or evidence["recipient_preview"] is not True
+        or evidence["legacy_intermediary_absent"] is not True
+        or evidence["decision_post_count"] != 1
+        or evidence["consumed_pending"] is not True
+        or evidence["product_login_started"] is not (decision == "accept")
+        or evidence["product_authenticated"] is not (decision == "accept")
+        or evidence["rejected_anonymous"] is not (decision == "reject")
+        or evidence["membership_absent"] is not (decision == "reject")
+        or evidence["screenshot"] != str(screenshot)
+        or not screenshot.is_file()
+        or screenshot.stat().st_size == 0
+        or observed.count(("POST", owner_path)) != before + 1
+    ):
+        raise SmokeError("Chromium invitation evidence or owner relay drift")
+    return ChromiumInvitationEvidence(
+        decision=decision,
+        owner_post_count=1,
+        consumed_pending=True,
+        product_login_started=decision == "accept",
+        product_authenticated=decision == "accept",
+        rejected_anonymous=decision == "reject",
+        membership_absent=decision == "reject",
+    )
+
+
+def configure_isolated_chromium_web(next_root: Path, tls_port: int) -> None:
+    """Make only the test-owned Next copy reflect its reserved public TLS port."""
+    if not 1 <= tls_port <= 65_535:
+        raise SmokeError("Chromium Web TLS port invalid")
+    server = next_root / "server.cjs"
+    source = server.read_text()
+    marker = "hostname: host, port: 443"
+    if source.count(marker) != 1 or source.count("dev: true") != 1:
+        raise SmokeError("isolated Chromium Next origin fixture drift")
+    server.write_text(
+        source.replace("dev: true", "dev: false").replace(
+            marker, f"hostname: host, port: {tls_port}"
+        )
+    )
+    config = next_root / "next.config.ts"
+    config_source = config.read_text()
+    output_marker = '  output: "standalone",\n'
+    if config_source.count(output_marker) != 1:
+        raise SmokeError("isolated Chromium Next output fixture drift")
+    config.write_text(config_source.replace(output_marker, ""))
 
 
 def invitation_path(invitation_id: str) -> str:
@@ -214,7 +389,7 @@ def sign_up_form(page: product.BrowserResponse, path: str) -> str:
         page.status != 200
         or page.headers.get("content-type", "").split(";", 1)[0] != "text/html"
         or "no-store" not in page.headers.get("cache-control", "")
-        or page.headers.get("referrer-policy") != "no-referrer"
+        or page.headers.get("referrer-policy") != "same-origin"
     ):
         raise SmokeError("independent invitation registration form unavailable")
     try:
@@ -291,7 +466,7 @@ def sign_in_form(page: product.BrowserResponse, path: str) -> tuple[str, str]:
         raise SmokeError("independent invitation form unavailable")
     if (
         "no-store" not in page.headers.get("cache-control", "")
-        or page.headers.get("referrer-policy") != "no-referrer"
+        or page.headers.get("referrer-policy") != "same-origin"
     ):
         raise SmokeError("invitation form privacy headers missing")
     try:
@@ -322,7 +497,7 @@ def existing_account_entry(
     observed: list[tuple[str, str]],
     decision: str,
     jar: product.BrowserCookies | None = None,
-) -> None:
+) -> product.BrowserCookies:
     jar = jar or product.BrowserCookies(credentials.add)
 
     def get() -> product.BrowserResponse:
@@ -380,7 +555,7 @@ def existing_account_entry(
         raise SmokeError("invitation preview leaked credential or Product Session")
     if (
         "no-store" not in preview.headers.get("cache-control", "")
-        or preview.headers.get("referrer-policy") != "no-referrer"
+        or preview.headers.get("referrer-policy") != "same-origin"
     ):
         raise SmokeError("invitation preview privacy headers missing")
     if b"member" not in preview.body:
@@ -454,6 +629,75 @@ def existing_account_entry(
             ),
             authenticated=False,
         )
+    return jar
+
+
+def require_rejected_membership_absent(
+    iam_base_url: str,
+    web_origin: str,
+    jar: product.BrowserCookies,
+    tenant_id: str,
+    existing_tenant_id: str | None,
+) -> None:
+    """Read the issuer's own organization list; never infer membership from UI state."""
+    parsed = urlsplit(iam_base_url)
+    if (
+        parsed.scheme != "http"
+        or parsed.hostname not in {"127.0.0.1", "localhost"}
+        or parsed.port is None
+    ):
+        raise SmokeError("IAM membership probe origin invalid")
+    cookie = jar.header("/iam/organization/list")
+    if not any(
+        part.startswith(
+            ("kokoro-issuer.session_token=", "__Secure-kokoro-issuer.session_token=")
+        )
+        for part in cookie.split("; ")
+    ):
+        raise SmokeError("IAM membership probe issuer session absent")
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=10)
+    try:
+        connection.request(
+            "GET",
+            "/iam/organization/list",
+            headers={
+                "Host": parsed.netloc,
+                "Origin": web_origin,
+                "Accept": "application/json",
+                "Cookie": cookie,
+            },
+        )
+        response = connection.getresponse()
+        body = response.read(65_537)
+        if (
+            response.status != 200
+            or len(body) > 65_536
+            or response.getheader("content-type", "").split(";", 1)[0]
+            != "application/json"
+        ):
+            raise SmokeError(
+                f"IAM membership probe HTTP {response.status} or invalid envelope"
+            )
+    except (OSError, http.client.HTTPException):
+        raise SmokeError("IAM membership probe request failed") from None
+    finally:
+        connection.close()
+    try:
+        organizations = json.loads(body)
+    except (ValueError, UnicodeError):
+        raise SmokeError("IAM membership probe body malformed") from None
+    if not isinstance(organizations, list) or any(
+        not isinstance(item, dict)
+        or not isinstance(item.get("id"), str)
+        or not item["id"]
+        for item in organizations
+    ):
+        raise SmokeError("IAM membership probe organization list invalid")
+    ids = {item["id"] for item in organizations}
+    if tenant_id in ids or (
+        existing_tenant_id is not None and existing_tenant_id not in ids
+    ):
+        raise SmokeError("rejected invitation changed IAM membership")
 
 
 def new_account_registration(
@@ -585,7 +829,10 @@ def main(argv: list[str] | None = None) -> int:
     selector = argparse.ArgumentParser(add_help=False)
     selector.add_argument("--decision", choices=("accept", "reject"), default="accept")
     selector.add_argument("--account", choices=("existing", "new"), default="existing")
+    selector.add_argument("--browser", choices=("http", "chromium"), default="http")
     selected, remaining = selector.parse_known_args(argv)
+    if selected.browser == "chromium" and selected.account != "existing":
+        selector.error("Chromium A covers only existing invitation recipients")
     args = product.parse_args(remaining)
     for repo, sha, label in (
         (product.IAM, args.expected_iam_sha, "apps/kokoro-iam"),
@@ -597,7 +844,14 @@ def main(argv: list[str] | None = None) -> int:
     iam_resource_id = str(uuid4())
     iam_identity = product.named_iam_identity(iam_resource_id)
     iam_owner_token = secrets.token_hex(16)
+    tls_reservation = (
+        chromium_smoke.OwnedTlsReservation.reserve()
+        if selected.browser == "chromium"
+        else None
+    )
     web_origin = f"https://web-{run_id}.example.test"
+    if tls_reservation is not None:
+        web_origin += f":{tls_reservation.port}"
     host_name = urlsplit(web_origin).hostname
     resources = product.runtime.OwnedResources(
         args.postgres_admin_url, args.redis_url, run_id
@@ -620,7 +874,7 @@ def main(argv: list[str] | None = None) -> int:
         if len(password) >= 12:
             credentials.add(password)
     processes: list[subprocess.Popen[bytes]] = []
-    proxies: list[product.Proxy] = []
+    proxies: list[product.Proxy | chromium_smoke.OwnedBrowserTlsProxy] = []
     reader = None
     mailbox = None
     iam_attempted = False
@@ -765,6 +1019,8 @@ def main(argv: list[str] | None = None) -> int:
                 proxies.append(bff_proxy)
                 stage = "Web HTTPS startup"
                 next_root = product.isolated_next(directory)
+                if tls_reservation is not None:
+                    configure_isolated_chromium_web(next_root, tls_reservation.port)
                 next_port = product.runtime.free_port()
                 web_env.update(
                     {
@@ -781,6 +1037,25 @@ def main(argv: list[str] | None = None) -> int:
                     }
                 )
                 credentials.add(web_env["KOKORO_WEB_AUTH_SECRET"])
+                if tls_reservation is not None:
+                    stage = "test-owned Chromium Web production build"
+                    if (
+                        product.runtime.run_owned_command(
+                            [
+                                str(args.web_node_bin),
+                                str(next_root / "node_modules/next/dist/bin/next"),
+                                "build",
+                            ],
+                            cwd=next_root,
+                            env=web_env,
+                            log=log,
+                            timeout=180,
+                        )
+                        != 0
+                    ):
+                        raise SmokeError("test-owned Chromium Web build failed")
+                    web_env["NODE_ENV"] = "test"
+                    stage = "Web HTTPS startup"
                 web = subprocess.Popen(
                     [
                         str(args.web_node_bin),
@@ -796,9 +1071,17 @@ def main(argv: list[str] | None = None) -> int:
                     start_new_session=True,
                 )
                 processes.append(web)
-                web_proxy = product.Proxy(
-                    next_port, host_name, product.certificate(directory, host_name)
-                )
+                certificate = product.certificate(directory, host_name)
+                if tls_reservation is None:
+                    web_proxy = product.Proxy(next_port, host_name, certificate)
+                else:
+                    web_proxy = chromium_smoke.OwnedBrowserTlsProxy.from_reservation(
+                        tls_reservation,
+                        next_port,
+                        host_name,
+                        urlsplit(web_origin).netloc,
+                        certificate,
+                    )
                 proxies.append(web_proxy)
                 stage = "Web HTTPS origin"
                 deadline = time.monotonic() + 30
@@ -816,7 +1099,7 @@ def main(argv: list[str] | None = None) -> int:
                     time.sleep(0.1)
                 if json.loads(fixture.body) != {
                     "origin": web_origin,
-                    "host": host_name,
+                    "host": urlsplit(web_origin).netloc,
                     "proto": "https",
                 }:
                     raise SmokeError("Web HTTPS origin mismatch")
@@ -834,19 +1117,45 @@ def main(argv: list[str] | None = None) -> int:
                         bff_proxy.observed,
                     )
                 stage = f"{selected.account} recipient browser decision"
-                existing_account_entry(
-                    web_proxy.server_port,
-                    web_origin,
-                    path,
-                    email,
-                    password,
-                    ready.tenant_id,
-                    credentials,
-                    bff_proxy.observed,
-                    selected.decision,
-                    browser_jar,
-                )
-                if selected.decision == "accept":
+                if selected.browser == "chromium":
+                    chromium_invitation(
+                        node_bin=args.web_node_bin,
+                        web_origin=web_origin,
+                        path=path,
+                        email=email,
+                        password=password,
+                        decision=selected.decision,
+                        screenshot=directory / "invitation-entry.png",
+                        tenant_id=ready.tenant_id,
+                        iam_base_url=ready.base_url,
+                        existing_tenant_id=actors.other_tenant_owner.tenant_id,
+                        observed=bff_proxy.observed,
+                    )
+                else:
+                    completed_jar = existing_account_entry(
+                        web_proxy.server_port,
+                        web_origin,
+                        path,
+                        email,
+                        password,
+                        ready.tenant_id,
+                        credentials,
+                        bff_proxy.observed,
+                        selected.decision,
+                        browser_jar,
+                    )
+                    if selected.decision == "reject":
+                        stage = "rejected recipient IAM membership"
+                        require_rejected_membership_absent(
+                            ready.base_url,
+                            web_origin,
+                            completed_jar,
+                            ready.tenant_id,
+                            actors.other_tenant_owner.tenant_id
+                            if selected.account == "existing"
+                            else None,
+                        )
+                if selected.decision == "accept" and selected.browser == "http":
                     stage = "accepted recipient Product login"
                     from dataclasses import replace
 
@@ -867,6 +1176,8 @@ def main(argv: list[str] | None = None) -> int:
                         proxy.close()
                     except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         failures.append("owned proxy cleanup")
+                if tls_reservation is not None:
+                    tls_reservation.close()
                 processes_stopped = True
                 for process in reversed(processes):
                     try:
@@ -950,7 +1261,7 @@ def main(argv: list[str] | None = None) -> int:
                 "product_login": "verified"
                 if selected.decision == "accept"
                 else "not_attempted",
-                "chromium": "not_run",
+                "chromium": "verified" if selected.browser == "chromium" else "not_run",
                 "owned_resources_remaining": 0,
             }
         ),

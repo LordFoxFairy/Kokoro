@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `205c77bd477048b95243642c6cab53f8042608e2` |
+| `apps/kokoro-app` | `6290c11a567be6d1fd98006e2a16feedcc0b8a07` |
 | `apps/kokoro-bff` | `2f1fc3382df31ba107d7eb2b2b6a611fa893bc13` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `7215223b2ed27a0d5217f3bbaaabce547006d3bb` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `205c77b`。IAM 已发布固定租户、收件人限定 invitation context、正式邮件 URL，并修复测试宿主真实 SMTP 邀请投递；BFF 已发布 policy `2.1.0` 的 sign-up 和三条独立动态 invitation relay；Web 已发布独立邀请登录、预览及接受／拒绝表单。IAM 全量 `pnpm verify` 742/742、相关真实集成 40/40，BFF Node22 `pnpm format:check && pnpm check` 291 passed、1 skipped，Web Node22 contract 69/69、lint、类型检查通过；Web C 提交的 1483/1483 与隔离 production build 是其对应版本证据。Root 在本精确三仓组合的独立 HTTPS 测试中已分别跑通真实 SMTP 邀请→Web issuer 登录→BFF/IAM context→accept 与 reject；接受后进入 Product OIDC，消费后 context 不再 pending，两次资源余量均为 0。此前 IAM→BFF Code+PKCE/Team HTTP 42-case 是另一组合证据。Root 随后扩同一自清理 runner，真实新邮箱邀请→Web 注册→未验证登录拒绝→SMTP 验证精确回同一邀请→issuer 登录/context→接受或拒绝→接受后 Product OIDC；已有/新账号的接受/拒绝四种组合在固定三仓版本均通过，自有资源余量均为 0。HTTP CookieJar 在注册与邀请决定之间复用，Product OIDC 仍由独立 CookieJar 验收；此门不包含 Chromium DOM、错误收件人/过期矩阵或用户 3310 常驻可用。原有 Team Product API 三读/六写仍在当前 BFF。用户 3310 本轮不启动常驻进程；可见“连接中／整页重试”中转已删除。
+Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `6290c11`。Web 的邀请页已修复真实 Chromium 暴露的 `Referrer-Policy: no-referrer` 导致同源表单 `Origin: null`、POST 403；精确邀请路径改为 `same-origin`，跨站不发送邀请 URL，`/iam/verify-email` 继续 `no-referrer`。Root 隔离 HTTPS/真实 SMTP 测试在同一 Chromium Context 中验证已有账号邮件链接→Web 登录→收件人限定预览→accept→正式 IAM consent→Product Session，及 reject→完成页/匿名；两次均 exit0、自有资源余量0。HTTP CookieJar 在新 Web pin 下还验证新账号注册/邮箱验证后的 accept/reject 与拒绝后直接查询 IAM owner 成员列表，固定租户均未被授予成员资格；这些不是用户 3310 常驻入口的可用性证据。旧 IAM/BFF/Web 组合及 Web 子仓的 1483 测试记录是历史版本证据，最新门禁见 `progress.md`。错误收件人/过期的 Chromium 矩阵、新账号 Chromium 注册与用户 3310 仍待验。
 
 ## 已验证到的边界
 
