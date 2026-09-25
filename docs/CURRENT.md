@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `63aca94f93095722425340a0a95985e8796a5b33` |
-| `apps/kokoro-bff` | `d6dc8a0ea5a3fee7a4f54f01fefdeff0e28892e7` |
+| `apps/kokoro-app` | `205c77bd477048b95243642c6cab53f8042608e2` |
+| `apps/kokoro-bff` | `2f1fc3382df31ba107d7eb2b2b6a611fa893bc13` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `ac94f152daffa2293801ea4f56f98b3ae59452d7` |
+| `apps/kokoro-iam` | `7215223b2ed27a0d5217f3bbaaabce547006d3bb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `ac94f15`、BFF `d6dc8a0`、Web `63aca94`。IAM 已发布固定租户、收件人限定 invitation context 与正式邮件 URL，BFF 已发布 policy `2.1.0` 的 sign-up 和三条独立动态 invitation relay；BFF 本仓 `pnpm format:check && pnpm check` 为 291 passed、1 skipped、0 failed，build 通过。Root 真 IAM→BFF HTTP 和 Web 独立 invitation interaction 尚未完成，故不声称邮件点击或用户页面闭环。原有 Team Product API 三读/六写仍在当前 BFF；此前固定旧 SHA 的真实 PostgreSQL/Redis/HTTP Team mutation smoke 是历史证据，不冒充新组合验收。2026-09-25 只读检查 3310 无监听进程；本轮不启动用户常驻预览，也没有可见“连接中／整页重试”中转。
+Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `205c77b`。IAM 已发布固定租户、收件人限定 invitation context、正式邮件 URL，并修复测试宿主真实 SMTP 邀请投递；BFF 已发布 policy `2.1.0` 的 sign-up 和三条独立动态 invitation relay；Web 已发布独立邀请登录、预览及接受／拒绝表单。IAM 全量 `pnpm verify` 742/742、相关真实集成 40/40，BFF Node22 `pnpm format:check && pnpm check` 291 passed、1 skipped，Web Node22 contract 69/69、lint、类型检查通过；Web C 提交的 1483/1483 与隔离 production build 是其对应版本证据。Root 真实 IAM→BFF HTTP 42-case 已在前一组合通过；本精确三仓组合的 SMTP→Web→BFF→IAM 邀请旅程仍在独立验收，不冒称 3310 可用。原有 Team Product API 三读/六写仍在当前 BFF。用户 3310 本轮不启动常驻进程；可见“连接中／整页重试”中转已删除。
 
 ## 已验证到的边界
 
