@@ -8,7 +8,7 @@
 | 子仓 | 当前固定提交 |
 | --- | --- |
 | `apps/kokoro-app` | `f86aefe7ea3e48bc7ac1e4f1aea99bbe6f15feb6` |
-| `apps/kokoro-bff` | `dd605c99e9bb5c6669ec31e04e285e5f92b79ed0` |
+| `apps/kokoro-bff` | `da03b76e450018ffa00f812da461569a00a377b3` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `ad5224a9e0a3a31d1c593d214d37940d6923b2e7` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `ad5224a`、BFF `dd605c9`、Web `f86aefe`。IAM test-only Web OIDC client 已加 user-delegated Team 写 scope；BFF 通过 IAM owner `0.3.0` contract 发布六个 public Team mutation，Web 当前仅完成 browser-private relay policy 的来源重钉。BFF policy 仍为 `2.0.0`，只更改 IAM owner commit；Web Team UI/Product Session 尚未消费新写契约。Root 的真 IAM/BFF Team 写 HTTP smoke 正在验证，不把静态门冒充真实组合。固定租户 SMTP 首登与 Chromium Chat 的历史隔离证据见下文；当前用户 3310 仅 Web 进程，`/login` 只读实测为空 body 503，不是在线 IAM 表单，也没有可见“连接中／整页重试”中转。
+Root 当前精确 pin IAM `ad5224a`、BFF `da03b76`、Web `f86aefe`。IAM test-only Web OIDC client 已加 user-delegated Team 写 scope；BFF 通过 IAM owner `0.3.0` contract 发布六个 public Team mutation，Web 当前仅完成 browser-private relay policy 的来源重钉。BFF policy 仍为 `2.0.0`，只更改 IAM owner commit；Web Team UI/Product Session 尚未消费新写契约。Root 的真 IAM/BFF Team 写 HTTP smoke 正在验证，不把静态门冒充真实组合。固定租户 SMTP 首登与 Chromium Chat 的历史隔离证据见下文；当前用户 3310 仅 Web 进程，`/login` 只读实测为空 body 503，不是在线 IAM 表单，也没有可见“连接中／整页重试”中转。
 
 ## 已验证到的边界
 
