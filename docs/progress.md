@@ -870,3 +870,5 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - R5 Web Product OIDC 前置 scope：唯一 writer 交付 `732de58`，Root 独立聚焦测试 13/13，Web 全量 Vitest 1426/1426、contract57、architecture34、lint、隔离 typecheck/build PASS。Web 只增加固定两项 user-delegated Team 写 scope 的申请与严格 Location 校验；现有 sealed Team API/UI 仍旧，不能以 scope 申请冒充 Team 浏览器闭环。Web main 已推送，Root 本切片重钉 gitlink/库存。用户3310登录仍是 Web-only HTTP503/0 bytes，不显示旧可见中转，也没有正式在线 IAM 表单。
 
 - R5 邀请链接只读 owner 审查确认真实代码缺口：IAM 邮件仍指向不存在的 Web `/auth/invitation?id=`，issuer Cookie Path=/iam；IAM 已有 verified Session 守卫、accept/reject 条件事务及 SMTP 注册/邮箱验证 owner 能力，但尚无窄 context GET，也无 BFF/Web 独立邀请入口。当前 BFF relay policy 的静态 Better Auth allowlist 与动态邀请控制器路径不匹配，不能仅加一条宽泛 allowlist。已在任务卡登记 IAM→BFF→Web 的 owner-first 序列和协议门；这是只读设计证据，不是实现完成或浏览器通过。
+
+- R5 Web Team Product 全量 cutover 子代理因长时间跨 codegen/route/client/UI 实施而被 Root 中断（2026-09-24）；Web main 仍 `732de58`，存在未提交的 scoped 工作树：BFF Team OpenAPI artifact/生成脚本与 client、同源 Team route、相邻测试正在编辑，UI 迁移和最终验证未完成。Root 未将这些工作树改动标为已验收、未 pin 新 Web commit；当前未发现额外 pnpm/vitest/Next build 后台进程，原用户 3310 `pnpm dev` 保持不变。下次先审查该工作树、清理生成错误日志，再以明确时间盒推进单一可验证 cutover，并在到点给用户实际状态，不再静默等待。
