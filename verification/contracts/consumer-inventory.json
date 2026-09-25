@@ -133,7 +133,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "active",
-      "reason": "IAM 0.4.0 owner OpenAPI and BFF vendored artifact remain byte-identical after the IAM test-only SMTP fixture repin. Generated client and BFF browser-private relay policy 2.1.0 preserve exact sign-up, context, accept, reject and verify-email operations. Root real IAM-to-BFF Code+PKCE/Team/invitation HTTP smoke passed 42 cases at the prior behavior-equivalent source; the current three-repository SMTP-to-Web journey remains a separate gate.",
+      "reason": "IAM 0.4.0 owner OpenAPI and BFF vendored artifact remain byte-identical after the IAM test-only SMTP fixture repin. Generated client and BFF browser-private relay policy 2.1.0 preserve exact sign-up, context, accept, reject and verify-email operations. Root real IAM-to-BFF Code+PKCE/Team/invitation HTTP smoke passed 42 cases at the prior behavior-equivalent source; at the current exact IAM/BFF/Web pins, test-owned HTTPS SMTP invitation→Web issuer sign-in→context→accept and reject passed with zero owned resources. New-account and Chromium journeys remain separate gates.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",

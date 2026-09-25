@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `205c77b`。IAM 已发布固定租户、收件人限定 invitation context、正式邮件 URL，并修复测试宿主真实 SMTP 邀请投递；BFF 已发布 policy `2.1.0` 的 sign-up 和三条独立动态 invitation relay；Web 已发布独立邀请登录、预览及接受／拒绝表单。IAM 全量 `pnpm verify` 742/742、相关真实集成 40/40，BFF Node22 `pnpm format:check && pnpm check` 291 passed、1 skipped，Web Node22 contract 69/69、lint、类型检查通过；Web C 提交的 1483/1483 与隔离 production build 是其对应版本证据。Root 真实 IAM→BFF HTTP 42-case 已在前一组合通过；本精确三仓组合的 SMTP→Web→BFF→IAM 邀请旅程仍在独立验收，不冒称 3310 可用。原有 Team Product API 三读/六写仍在当前 BFF。用户 3310 本轮不启动常驻进程；可见“连接中／整页重试”中转已删除。
+Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `205c77b`。IAM 已发布固定租户、收件人限定 invitation context、正式邮件 URL，并修复测试宿主真实 SMTP 邀请投递；BFF 已发布 policy `2.1.0` 的 sign-up 和三条独立动态 invitation relay；Web 已发布独立邀请登录、预览及接受／拒绝表单。IAM 全量 `pnpm verify` 742/742、相关真实集成 40/40，BFF Node22 `pnpm format:check && pnpm check` 291 passed、1 skipped，Web Node22 contract 69/69、lint、类型检查通过；Web C 提交的 1483/1483 与隔离 production build 是其对应版本证据。Root 在本精确三仓组合的独立 HTTPS 测试中已分别跑通真实 SMTP 邀请→Web issuer 登录→BFF/IAM context→accept 与 reject；接受后进入 Product OIDC，消费后 context 不再 pending，两次资源余量均为 0。此前 IAM→BFF Code+PKCE/Team HTTP 42-case 是另一组合证据。此门仅覆盖已有账号的 HTTP 浏览器客户端，不包含新邮箱注册/验证、Chromium DOM、错误收件人/过期矩阵或用户 3310 常驻可用。原有 Team Product API 三读/六写仍在当前 BFF。用户 3310 本轮不启动常驻进程；可见“连接中／整页重试”中转已删除。
 
 ## 已验证到的边界
 
