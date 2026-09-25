@@ -1,11 +1,10 @@
 """Focused guards for the run-owned invitation browser journey."""
 
-from email.message import EmailMessage
 import importlib.util
-from pathlib import Path
 import sys
 import unittest
-
+from email.message import EmailMessage
+from pathlib import Path
 
 PATH = (
     Path(__file__).resolve().parents[1] / "e2e" / "run_web_bff_iam_invitation_smoke.py"
@@ -31,6 +30,61 @@ def message(subject: str, body: str) -> bytes:
 
 
 class InvitationSmokeGuards(unittest.TestCase):
+    def test_new_recipient_verification_is_bound_to_exact_invitation(self):
+        from urllib.parse import quote
+
+        verification = (
+            ORIGIN
+            + "/iam/verify-email?token=0123456789abcdef0123456789abcdef"
+            + "&callbackURL="
+            + quote(LINK, safe="")
+        )
+        self.assertEqual(
+            smoke.invitation_verification_path(
+                message("Verify your email", verification), ORIGIN, LINK
+            ),
+            verification.removeprefix(ORIGIN),
+        )
+        for bad in (
+            verification.replace(
+                quote(LINK, safe=""), quote(ORIGIN + "/auth/sign-in", safe="")
+            ),
+            verification + "&callbackURL=" + quote(LINK, safe=""),
+            verification.replace("token=", "token=bad&token="),
+            verification.replace(ORIGIN, "https://evil.example.test", 1),
+            verification + "#fragment",
+        ):
+            with self.subTest(bad=bad), self.assertRaises(smoke.SmokeError):
+                smoke.invitation_verification_path(
+                    message("Verify your email", bad), ORIGIN, LINK
+                )
+
+    def test_new_recipient_signup_form_has_one_scoped_csrf(self):
+        from types import SimpleNamespace
+
+        page = SimpleNamespace(
+            status=200,
+            headers={
+                "content-type": "text/html; charset=utf-8",
+                "cache-control": "no-store",
+                "referrer-policy": "no-referrer",
+            },
+            body=(
+                '<form method="post" action="/iam/interactions/invitation?id='
+                + INVITATION_ID
+                + '"><input name="decision" value="sign-up">'
+                + '<input name="csrf_token" value="'
+                + "A" * 43
+                + '"><input name="name" type="text">'
+                + '<input name="email" type="email">'
+                + '<input name="password" type="password"></form>'
+            ).encode(),
+        )
+        self.assertEqual(smoke.sign_up_form(page, LINK.removeprefix(ORIGIN)), "A" * 43)
+        page.body += page.body
+        with self.assertRaises(smoke.SmokeError):
+            smoke.sign_up_form(page, LINK.removeprefix(ORIGIN))
+
     def test_accepts_only_the_owner_delivered_exact_invitation_link(self):
         self.assertEqual(
             smoke.invitation_mail_path(
@@ -57,8 +111,8 @@ class InvitationSmokeGuards(unittest.TestCase):
     def test_actor_invitation_command_is_bounded_and_does_not_reuse_first_login_helper(
         self,
     ):
-        from io import BytesIO
         import json
+        from io import BytesIO
 
         class Input(BytesIO):
             def flush(self):

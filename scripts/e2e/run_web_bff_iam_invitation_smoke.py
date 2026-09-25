@@ -1,30 +1,27 @@
 #!/usr/bin/env python3
-"""Exercise a delivered invitation through real HTTPS Web → BFF → IAM.
+"""Exercise existing and new recipient invitations through HTTPS Web → BFF → IAM.
 
-The first slice proves an existing foreign-tenant account can open the actual
-SMTP invitation, sign in at the independent Web interaction, and view only its
-recipient-scoped pending context. Decision, new-account and Chromium legs are
-not counted as passed by this runner until they have their own assertions.
+The test-owned SMTP mailbox, PostgreSQL databases, Redis keys and HTTPS processes
+are cleaned up. This is an HTTP browser-cookie client, not Chromium DOM evidence.
 """
 
 from __future__ import annotations
 
-from email import policy
-from email.parser import BytesParser
-from html.parser import HTMLParser
 import json
-from pathlib import Path
 import re
 import secrets
 import subprocess
 import sys
 import tempfile
 import time
-from urllib.parse import unquote, urlsplit
+from email import policy
+from email.parser import BytesParser
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import parse_qsl, unquote, urlsplit
 from uuid import uuid4
 
 import run_web_bff_iam_product_session_smoke as product
-
 
 SmokeError = product.SmokeError
 PAGE_PATH = "/iam/interactions/invitation"
@@ -85,6 +82,43 @@ def delivered_invitation(
     raise SmokeError("IAM invitation mail absent")
 
 
+def invitation_verification_path(
+    message: bytes, web_origin: str, invitation_link: str
+) -> str:
+    """Require an actual verification mail returning to this exact invitation."""
+    try:
+        parsed = BytesParser(policy=policy.default).parsebytes(message)
+        body = parsed.get_body(preferencelist=("plain",))
+        content = body.get_content().strip() if body is not None else None
+        if (
+            parsed.get("Subject") != "Verify your email"
+            or not isinstance(content, str)
+            or len(content) > 8192
+        ):
+            raise SmokeError("invitation verification mail invalid")
+        target = urlsplit(content)
+        if (
+            target.scheme != "https"
+            or f"{target.scheme}://{target.netloc}" != web_origin
+            or target.path != "/iam/verify-email"
+            or target.fragment
+            or not target.query
+            or target.geturl() != content
+        ):
+            raise SmokeError("invitation verification link invalid")
+        pairs = parse_qsl(target.query, keep_blank_values=True, strict_parsing=True)
+        if (
+            len(pairs) != 2
+            or {key for key, _ in pairs} != {"token", "callbackURL"}
+            or dict(pairs)["callbackURL"] != invitation_link
+            or re.fullmatch(r"[A-Za-z0-9._-]{24,4096}", dict(pairs)["token"]) is None
+        ):
+            raise SmokeError("invitation verification callback invalid")
+    except (UnicodeError, ValueError, TypeError):
+        raise SmokeError("invitation verification mail malformed") from None
+    return target.path + "?" + target.query
+
+
 def request_invitation(
     process: subprocess.Popen[bytes], reader: object, email: str
 ) -> str:
@@ -138,6 +172,71 @@ class _SignInForm(HTMLParser):
                 self.sign_in_action = self.action
                 self.sign_in_token = self.token
             self.in_form = False
+
+
+class _SignUpForm(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.in_form = False
+        self.forms: list[tuple[str | None, str | None, dict[str, str | None]]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if tag == "form":
+            if self.in_form:
+                raise SmokeError("nested invitation registration form")
+            self.in_form = True
+            self.action = (
+                values.get("action") if values.get("method") == "post" else None
+            )
+            self.inputs: dict[str, str | None] = {}
+        elif tag == "input" and self.in_form:
+            name = values.get("name")
+            if name in {"decision", "csrf_token", "name", "email", "password"}:
+                if name in self.inputs or "disabled" in values or "hidden" in values:
+                    raise SmokeError(
+                        "duplicate or hidden invitation registration input"
+                    )
+                self.inputs[name] = (
+                    values.get("value")
+                    if name in {"decision", "csrf_token"}
+                    else values.get("type")
+                )
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "form" and self.in_form:
+            self.forms.append((self.action, self.inputs.get("decision"), self.inputs))
+            self.in_form = False
+
+
+def sign_up_form(page: product.BrowserResponse, path: str) -> str:
+    if (
+        page.status != 200
+        or page.headers.get("content-type", "").split(";", 1)[0] != "text/html"
+        or "no-store" not in page.headers.get("cache-control", "")
+        or page.headers.get("referrer-policy") != "no-referrer"
+    ):
+        raise SmokeError("independent invitation registration form unavailable")
+    try:
+        parser = _SignUpForm()
+        parser.feed(page.body.decode("utf-8", "strict"))
+    except UnicodeError:
+        raise SmokeError("invitation registration form encoding invalid") from None
+    matches = [entry for entry in parser.forms if entry[1] == "sign-up"]
+    if len(matches) != 1 or parser.in_form:
+        raise SmokeError("invitation registration form missing or duplicated")
+    action, _, inputs = matches[0]
+    token = inputs.get("csrf_token")
+    if (
+        action != path
+        or not isinstance(token, str)
+        or re.fullmatch(r"[A-Za-z0-9_-]{43}", token) is None
+        or inputs.get("name") != "text"
+        or inputs.get("email") != "email"
+        or inputs.get("password") != "password"
+    ):
+        raise SmokeError("invitation registration form invalid")
+    return token
 
 
 class _DecisionForm(HTMLParser):
@@ -216,13 +315,15 @@ def existing_account_entry(
     port: int,
     web_origin: str,
     path: str,
-    actor: product.ActorIdentity,
+    email: str,
+    password: str,
     tenant_id: str,
     credentials: product.previous.CredentialRegistry,
     observed: list[tuple[str, str]],
     decision: str,
+    jar: product.BrowserCookies | None = None,
 ) -> None:
-    jar = product.BrowserCookies(credentials.add)
+    jar = jar or product.BrowserCookies(credentials.add)
 
     def get() -> product.BrowserResponse:
         response = product.https_browser(
@@ -245,8 +346,8 @@ def existing_account_entry(
         form={
             "decision": "sign-in",
             "csrf_token": csrf,
-            "email": actor.email,
-            "password": actor.password,
+            "email": email,
+            "password": password,
         },
         cookie=jar.header(PAGE_PATH),
         origin=web_origin,
@@ -355,11 +456,135 @@ def existing_account_entry(
         )
 
 
+def new_account_registration(
+    port: int,
+    web_origin: str,
+    path: str,
+    email: str,
+    password: str,
+    mailbox: product.first_login.SmtpMailbox,
+    credentials: product.previous.CredentialRegistry,
+    observed: list[tuple[str, str]],
+) -> product.BrowserCookies:
+    """Sign up on Web, reject unverified login, then follow real SMTP verification."""
+    jar = product.BrowserCookies(credentials.add)
+
+    def get() -> product.BrowserResponse:
+        response = product.https_browser(
+            port, path, web_origin, cookie=jar.header(PAGE_PATH)
+        )
+        jar.update(PAGE_PATH, response.set_cookies)
+        return response
+
+    registration = get()
+    proof = sign_up_form(registration, path)
+    credentials.add(proof)
+    if jar.has_usable_session() or b"kokoro_product_session" in registration.body:
+        raise SmokeError("invitation registration entry created Product Session")
+    before_signup = observed.count(("POST", "/iam/sign-up/email"))
+    created = product.https_browser(
+        port,
+        path,
+        web_origin,
+        method="POST",
+        form={
+            "decision": "sign-up",
+            "csrf_token": proof,
+            "name": "New invited recipient",
+            "email": email,
+            "password": password,
+        },
+        cookie=jar.header(PAGE_PATH),
+        origin=web_origin,
+    )
+    jar.update(PAGE_PATH, created.set_cookies)
+    if (
+        observed.count(("POST", "/iam/sign-up/email")) != before_signup + 1
+        or created.status != 200
+        or "请查收邮件" not in created.body.decode("utf-8", "strict")
+        or created.headers.get("location") is not None
+        or jar.has_usable_session()
+        or any(
+            "issuer.session_token=" in cookie
+            or cookie.startswith("kokoro_product_session=")
+            for cookie in created.set_cookies
+        )
+    ):
+        raise SmokeError(
+            "invitation Web registration or pending-verification state invalid"
+        )
+    replay = product.https_browser(
+        port,
+        path,
+        web_origin,
+        method="POST",
+        form={
+            "decision": "sign-up",
+            "csrf_token": proof,
+            "name": "New invited recipient",
+            "email": email,
+            "password": password,
+        },
+        cookie=jar.header(PAGE_PATH),
+        origin=web_origin,
+    )
+    if (
+        replay.status != 403
+        or observed.count(("POST", "/iam/sign-up/email")) != before_signup + 1
+    ):
+        raise SmokeError("invitation registration CSRF replay reached owner")
+
+    sign_in = get()
+    sign_in_path, sign_in_proof = sign_in_form(sign_in, path)
+    credentials.add(sign_in_proof)
+    before_signin = observed.count(("POST", "/iam/sign-in/email"))
+    denied = product.https_browser(
+        port,
+        sign_in_path,
+        web_origin,
+        method="POST",
+        form={
+            "decision": "sign-in",
+            "csrf_token": sign_in_proof,
+            "email": email,
+            "password": password,
+        },
+        cookie=jar.header(PAGE_PATH),
+        origin=web_origin,
+    )
+    jar.update(PAGE_PATH, denied.set_cookies)
+    if (
+        observed.count(("POST", "/iam/sign-in/email")) != before_signin + 1
+        or denied.status != 200
+        or b'role="alert"' not in denied.body
+        or denied.headers.get("location") is not None
+        or jar.has_usable_session()
+        or any(
+            "issuer.session_token=" in cookie
+            or cookie.startswith("kokoro_product_session=")
+            for cookie in denied.set_cookies
+        )
+    ):
+        raise SmokeError("unverified invitation recipient admitted")
+
+    verification = invitation_verification_path(
+        mailbox.for_recipient(email), web_origin, web_origin + path
+    )
+    product.remember_sensitive_query(verification, credentials)
+    before_verify = observed.count(("GET", "/iam/verify-email"))
+    verified = product.https_browser(port, verification, web_origin)
+    product.first_login.require_verified_relay(verified, web_origin + path)
+    if observed.count(("GET", "/iam/verify-email")) != before_verify + 1:
+        raise SmokeError("invitation verification bypassed BFF owner relay")
+    return jar
+
+
 def main(argv: list[str] | None = None) -> int:
     import argparse
 
     selector = argparse.ArgumentParser(add_help=False)
     selector.add_argument("--decision", choices=("accept", "reject"), default="accept")
+    selector.add_argument("--account", choices=("existing", "new"), default="existing")
     selected, remaining = selector.parse_known_args(argv)
     args = product.parse_args(remaining)
     for repo, sha, label in (
@@ -497,12 +722,20 @@ def main(argv: list[str] | None = None) -> int:
                 ):
                     raise SmokeError("IAM named identity drift")
                 credentials.add(ready.client_secret, ready.password)
-                stage = "existing actor and invitation"
-                actors = product.request_actor_matrix(iam, reader, ready, credentials)
-                actor = actors.other_tenant_owner
-                invite_id = request_invitation(iam, reader, actor.email)
+                stage = f"{selected.account} recipient invitation"
+                if selected.account == "existing":
+                    actors = product.request_actor_matrix(
+                        iam, reader, ready, credentials
+                    )
+                    email = actors.other_tenant_owner.email
+                    password = actors.other_tenant_owner.password
+                else:
+                    email = f"new-{secrets.token_hex(8)}@example.test"
+                    password = secrets.token_urlsafe(32)
+                    credentials.add(password)
+                invite_id = request_invitation(iam, reader, email)
                 credentials.add(invite_id)
-                path = delivered_invitation(mailbox, actor.email, web_origin, invite_id)
+                path = delivered_invitation(mailbox, email, web_origin, invite_id)
                 stage = "BFF startup"
                 secret = secrets.token_urlsafe(32)
                 credentials.add(secret)
@@ -587,16 +820,31 @@ def main(argv: list[str] | None = None) -> int:
                     "proto": "https",
                 }:
                     raise SmokeError("Web HTTPS origin mismatch")
-                stage = "existing recipient browser entry"
+                browser_jar = None
+                if selected.account == "new":
+                    stage = "new recipient Web registration and verification"
+                    browser_jar = new_account_registration(
+                        web_proxy.server_port,
+                        web_origin,
+                        path,
+                        email,
+                        password,
+                        mailbox,
+                        credentials,
+                        bff_proxy.observed,
+                    )
+                stage = f"{selected.account} recipient browser decision"
                 existing_account_entry(
                     web_proxy.server_port,
                     web_origin,
                     path,
-                    actor,
+                    email,
+                    password,
                     ready.tenant_id,
                     credentials,
                     bff_proxy.observed,
                     selected.decision,
+                    browser_jar,
                 )
                 if selected.decision == "accept":
                     stage = "accepted recipient Product login"
@@ -605,36 +853,36 @@ def main(argv: list[str] | None = None) -> int:
                     product.run_browser(
                         web_proxy.server_port,
                         web_origin,
-                        replace(ready, email=actor.email, password=actor.password),
+                        replace(ready, email=email, password=password),
                         bff_proxy.observed,
                         credentials,
                     )
             except (SmokeError, product.first_login.FirstLoginError) as error:
                 failures.append(f"{stage}: {error}")
-            except Exception:
+            except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                 failures.append(stage)
             finally:
                 for proxy in reversed(proxies):
                     try:
                         proxy.close()
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         failures.append("owned proxy cleanup")
                 processes_stopped = True
                 for process in reversed(processes):
                     try:
                         product.runtime.stop_owned_process(process)
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         processes_stopped = False
                         failures.append("owned process cleanup")
                 if reader is not None:
                     try:
                         reader.close()
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         failures.append("IAM protocol cleanup")
                 if mailbox is not None:
                     try:
                         mailbox.close()
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         failures.append("owned SMTP cleanup")
                 if before_web is not None:
                     try:
@@ -662,19 +910,19 @@ def main(argv: list[str] | None = None) -> int:
                             != before_web
                         ):
                             failures.append("Web Redis cleanup")
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         failures.append("Web Redis cleanup")
                 try:
                     resources.cleanup()
                     resources.verify_clean()
-                except Exception:
+                except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                     failures.append("BFF resource cleanup")
                 if iam_attempted and processes_stopped:
                     try:
                         product.reconcile_iam_identity(
                             resources, iam_identity, iam_owner_token
                         )
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                         failures.append("IAM resource cleanup")
                 elif iam_attempted:
                     failures.append(
@@ -683,7 +931,7 @@ def main(argv: list[str] | None = None) -> int:
                 try:
                     log.flush()
                     product.previous.assert_log_clean(log_path, credentials.values())
-                except Exception:
+                except Exception:  # noqa: BLE001 - sanitize failures and continue owned-resource cleanup
                     failures.append("credential log scan")
     if failures:
         raise SmokeError("; ".join(sorted(set(failures))) + " failed")
@@ -691,8 +939,11 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(
             {
                 "status": "passed",
-                "flow": "existing_email_invitation_decision",
+                "flow": f"{selected.account}_email_invitation_decision",
                 "smtp_invitation": "verified",
+                "registration_verification": "verified"
+                if selected.account == "new"
+                else "not_run",
                 "web_bff_iam_context": "invited_recipient_positive",
                 "recipient_isolation": "not_run",
                 "decision": selected.decision,
