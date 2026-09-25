@@ -73,7 +73,7 @@ Root 当前精确 pin IAM `ad5224a`、BFF `da03b76`、Web `63aca94`。IAM test-o
 1. R2c 已在固定隔离组合中证明 Chromium/DOM 首消息→BFF→Agent worker→实时 AG-UI 与一次受控断线恢复；仍需
    Web 对 BFF public contract 的全量 generated 消费、单一 AG-UI 网络协议门、默认个人私有/显式分享/跨 tenant
    负例以及真实 provider 验收。固定 fixture 不等于用户当前 3310 已具备完整可见登录入口。
-2. IAM Team 窄读到 BFF Product projection 再到 Web 的串行消费；删除 Web 旧 IAM/Team 直连。
+2. Team Product 的 Web→BFF→IAM 同源 HTTP 读链已通过隔离组合；仍需 Chromium DOM、邀请邮件入口与写操作的浏览器端到端验收。
 3. Storage/Platform/System/Scheduler 各自 owner 的能力调用、契约与数据闭环；Billing 最后。
 4. 当前 inventory 的 11 条 broken edge 与 1 条非法 Web→IAM 旁路，不能因为局部 smoke 通过而标绿。
 

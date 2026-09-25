@@ -28,6 +28,7 @@ from uuid import uuid4
 
 import run_web_bff_iam_oidc_smoke as old
 import run_web_bff_iam_first_login_smoke as first_login
+import web_team_product_probe as team_probe
 
 
 ROOT = old.ROOT
@@ -690,6 +691,7 @@ def run_browser(
     authenticated_action: AuthenticatedAction | None = None,
     *,
     authenticated_probe: AuthenticatedProbe | None = None,
+    probe_team: bool = False,
     preconsented: bool = False,
     expect_fixed_tenant_forbidden: bool = False,
 ) -> None:
@@ -741,6 +743,8 @@ def run_browser(
     chat_calls = observed.count(chat_operation)
     confirmation_calls = observed.count(("POST", "/iam/oauth2/end-session/confirm"))
     require_product_chat_rejection(request("/api/session/sessions?limit=1"))
+    if probe_team:
+        team_probe.anonymous(request, observed)
     if observed.count(chat_operation) != chat_calls:
         raise SmokeError("anonymous Product Chat request reached BFF")
     _run_authenticated_action(authenticated_action, request, authenticated=False)
@@ -912,6 +916,8 @@ def run_browser(
 
     first_projection = request("/api/auth/session")
     initial_product = require_session_projection(first_projection, authenticated=True)
+    if probe_team:
+        team_probe.authenticated(request, initial_product, observed, web_origin)
     live_chat = request(
         "/api/session/sessions?limit=1",
         authorization="Bearer browser-supplied-invalid",
@@ -1364,8 +1370,13 @@ def main(argv=None) -> int:
                     first_ready,
                     bff_proxy.observed,
                     credentials,
+                    probe_team=True,
                 )
-            except (SmokeError, first_login.FirstLoginError) as error:
+            except (
+                SmokeError,
+                first_login.FirstLoginError,
+                team_probe.TeamProbeError,
+            ) as error:
                 failures.append(f"{stage}: {error}")
             except Exception:
                 failures.append(stage)
@@ -1444,6 +1455,7 @@ def main(argv=None) -> int:
                 "flow": "web_bff_iam_product_session",
                 "web_bff_backchannel_entrance_observed": True,
                 "product_chat_proxy": "verified",
+                "team_product_same_origin_http": "verified",
                 "product_session": "active_then_ended",
                 "first_login": "smtp_verified_then_oidc",
                 "owned_resources_remaining": 0,
