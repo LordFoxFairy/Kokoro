@@ -124,6 +124,43 @@ def load_inventory(path: Path) -> dict[str, Any]:
     return value
 
 
+def _openapi_info_version(blob: bytes) -> str:
+    try:
+        source = blob.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        raise ValueError("OpenAPI contract must be UTF-8") from None
+    if source.lstrip().startswith("{"):
+        try:
+            document = json.loads(source)
+        except json.JSONDecodeError:
+            raise ValueError("OpenAPI contract is invalid JSON") from None
+        if not isinstance(document, dict) or not isinstance(document.get("info"), dict):
+            raise ValueError("OpenAPI contract has no info object")
+        version = document["info"].get("version")
+    else:
+        # Root governance uses only stdlib. Fail closed for YAML metadata shapes
+        # outside the canonical top-level info / indented version form.
+        in_info = False
+        version = None
+        for line in source.splitlines():
+            if line == "info:":
+                in_info = True
+                continue
+            if not in_info:
+                continue
+            if line and not line[0].isspace() and not line.startswith("#"):
+                break
+            match = re.fullmatch(
+                r"  version:\s*['\"]?([^'\"#\s]+)['\"]?\s*(?:#.*)?", line
+            )
+            if match is not None:
+                version = match.group(1)
+                break
+    if not isinstance(version, str) or not version:
+        raise ValueError("OpenAPI contract has no canonical info.version")
+    return version
+
+
 def _text(record: dict[str, Any], field: str, label: str, errors: list[str]) -> str:
     value = record.get(field)
     if not isinstance(value, str) or not value.strip():
@@ -542,6 +579,18 @@ def verify_inventory(root: Path, inventory_path: Path) -> list[str]:
                                 f"{edge_id}: contract_sha256 {actual_digest} != "
                                 f"{contract_digest}"
                             )
+                        if raw_edge.get("protocol") in {"http-openapi", "http-event"}:
+                            try:
+                                openapi_version = _openapi_info_version(blob)
+                            except ValueError as error:
+                                errors.append(f"{edge_id}: owner {error}")
+                            else:
+                                if owner_values["contract_version"] != openapi_version:
+                                    errors.append(
+                                        f"{edge_id}: owner contract_version "
+                                        f"{owner_values['contract_version']!r} != "
+                                        f"OpenAPI info.version {openapi_version!r}"
+                                    )
                 except ValueError as error:
                     errors.append(f"{edge_id}: owner {error}")
         evidence = raw_edge.get("evidence")

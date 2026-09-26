@@ -125,7 +125,7 @@
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
         "repository_commit": "a4c2b61467f1fc1772d6b6d8e98f081c090289fb",
-        "contract_version": "0.5.0",
+        "contract_version": "0.6.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "392ca0e49544c0ec6e0d2fa782c46c33c1847e2c350102e7ad3b8af43f858ced"
       },
@@ -133,7 +133,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "active",
-      "reason": "IAM 0.5.0 owner OpenAPI is pinned byte-for-byte in BFF at the current IAM commit. BFF generated runtime operations and browser-private relay routes/cookies/status remain unchanged; the new execution-authorization verifier is an IAM owner endpoint for Platform, not a BFF operation. Web consumes the matching BFF policy 2.1.0 source pin. Platform consumer activation remains a separate unfinished slice.",
+      "reason": "IAM 0.6.0 owner OpenAPI is pinned byte-for-byte in BFF at the current IAM commit. BFF generated runtime operations and browser-private relay routes/cookies/status remain unchanged; the new execution-authorization verifier is an IAM owner endpoint for Platform, not a BFF operation. Web consumes the matching BFF policy 2.1.0 source pin. Platform consumer activation remains a separate unfinished slice.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1204,7 +1204,7 @@
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
         "repository_commit": "a4c2b61467f1fc1772d6b6d8e98f081c090289fb",
-        "contract_version": "0.5.0",
+        "contract_version": "0.6.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "392ca0e49544c0ec6e0d2fa782c46c33c1847e2c350102e7ad3b8af43f858ced"
       },

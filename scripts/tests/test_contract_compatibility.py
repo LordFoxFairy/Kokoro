@@ -123,7 +123,7 @@ def fixture(tmp_path: Path) -> InventoryFixture:
     run(root, "git", "init")
     run(root, "git", "config", "user.email", "tests@kokoro.local")
     run(root, "git", "config", "user.name", "Kokoro Tests")
-    owner_contract = b'{"openapi":"3.1.0"}\n'
+    owner_contract = b'{"openapi":"3.1.0","info":{"version":"1.0.0"}}\n'
     owner_go_mod = b"module example.com/owner\n\ngo 1.26.8\n"
     consumer_source = b'export const ownerVersion = "v1";\n'
     consumer_node_version = b"22.22.2\n"
@@ -186,7 +186,7 @@ def fixture(tmp_path: Path) -> InventoryFixture:
                     "name": "owner",
                     "repository_path": "apps/owner",
                     "repository_commit": owner_sha,
-                    "contract_version": "v1",
+                    "contract_version": "1.0.0",
                     "contract_path": "contract/openapi.json",
                     "contract_sha256": sha256(owner_contract).hexdigest(),
                 },
@@ -289,7 +289,7 @@ def use_event_producer_runtime(fixture: InventoryFixture) -> dict[str, object]:
 def replace_ref_fixture(fixture: InventoryFixture) -> ReplaceRefFixture:
     owner = fixture.data["edges"][0]["owner"]
     original_commit = owner["repository_commit"]
-    original_blob = b'{"openapi":"3.1.0"}\n'
+    original_blob = b'{"openapi":"3.1.0","info":{"version":"1.0.0"}}\n'
     replacement_blob = b'{"openapi":"replaced"}\n'
     repository = fixture.root / "apps/owner"
     (repository / "contract/openapi.json").write_bytes(replacement_blob)
@@ -753,6 +753,34 @@ def test_producer_assertion_cannot_replace_consumer_runtime_assertion(fixture) -
 def test_contract_digest_uses_commit_blob_not_dirty_worktree(fixture) -> None:
     (fixture.root / "apps/owner/contract/openapi.json").write_text("dirty")
     assert fixture.verify() == []
+
+
+@pytest.mark.parametrize("state", ["active", "broken"])
+def test_openapi_owner_version_must_match_frozen_contract_info(fixture, state) -> None:
+    edge = fixture.data["edges"][0]
+    edge["state"] = state
+    edge["owner"]["contract_version"] = "0.9.0"
+
+    assert any(
+        "contract_version '0.9.0' != OpenAPI info.version '1.0.0'" in error
+        for error in fixture.verify()
+    )
+
+
+@pytest.mark.parametrize(
+    ("source", "expected"),
+    [
+        (b'{"openapi":"3.1.0","info":{"version":"1.0.0"}}', "1.0.0"),
+        (
+            b"openapi: 3.1.0\ninfo:\n  title: Example\n  version: '2.0.0'\npaths: {}\n",
+            "2.0.0",
+        ),
+    ],
+)
+def test_openapi_info_version_reads_json_and_canonical_yaml(
+    fixture, source, expected
+) -> None:
+    assert fixture.module._openapi_info_version(source) == expected
 
 
 def test_contract_digest_drift_is_reported(fixture) -> None:

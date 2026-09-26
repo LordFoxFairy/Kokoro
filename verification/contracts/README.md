@@ -10,6 +10,9 @@ evidence. The former Web-to-IAM direct-call violation is preserved only in histo
   index. `owner.contract_sha256` is the SHA-256 of `contract_path` read from
   that exact child commit blob with `git show`; it is never calculated from a
   child working tree.
+- For OpenAPI and HTTP-event edges, `owner.contract_version` must equal the
+  frozen contract's `info.version`. The verifier reads JSON or the canonical
+  top-level `info.version` YAML header and fails closed on missing metadata.
 - Every `evidence`, `version_assertions` and `producer_runtime_assertion`
   digest is likewise calculated from the referenced child commit blob. Dirty
   or newer child working-tree content and local Git replace refs are not
