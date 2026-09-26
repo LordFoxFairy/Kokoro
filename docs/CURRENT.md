@@ -14,7 +14,7 @@
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
-| `apps/kokoro-capability` | `9c88d0d934387b590bc74dae0179a587292e0253` |
+| `apps/kokoro-capability` | `122c565d87f43f3ab83dfec740719db9ee5a220d` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `libs/kokoro-web-shared` | `0c4e87ace01340aaa07bc57935f1d98b8e77af14` |
@@ -24,6 +24,7 @@
 `scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
+Platform 本轮仅把三设计文档与 CURRENT 更新为 IAM 0.6 已发布、本仓尚未消费的当前事实；Proto、认证运行时、Schema 与 SQL installer 仍旧，不能把文档 gitlink 当作能力激活。Root 库存现校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
 
 ## 当前固定租户登录与 relay 来源
 
