@@ -263,6 +263,17 @@ def test_accepts_exact_committed_gitlink_blobs(repositories) -> None:
     assert verify_iam_relay_policy(root) == []
 
 
+def test_accepts_newer_committed_iam_openapi_version(repositories) -> None:
+    root, iam, bff, policy = repositories
+    openapi = invitation_openapi().replace('"version": "0.4.0"', '"version": "0.5.0"')
+    write(iam, "contract/openapi/iam.internal.v1.json", openapi)
+    policy["iamOwnerCommit"] = commit(iam, "publish IAM OpenAPI 0.5.0")
+    policy["iamOpenapiVersion"] = "0.5.0"
+    policy["iamOpenapiSha256"] = digest(openapi)
+    publish(root, bff, policy)
+    assert verify_iam_relay_policy(root) == []
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [

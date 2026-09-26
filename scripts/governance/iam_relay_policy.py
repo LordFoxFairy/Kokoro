@@ -18,6 +18,7 @@ IAM_REDIRECT_ERRORS = "src/modules/audit/auth-audit.constants.ts"
 BFF_POLICY = "contract/iam-relay-policy.json"
 BFF_SOURCE = "src/http/routes/iam-protocol-relay.policy.ts"
 OID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
+OPENAPI_VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
 ROUTE = re.compile(r"/[a-z0-9./-]+")
 METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"})
 POLICY_2_1_FIELDS = (
@@ -342,8 +343,12 @@ def _verify_2_1_policy(
     openapi = _json_object(openapi_blob, "IAM internal OpenAPI")
     info = openapi.get("info")
     openapi_version = info.get("version") if isinstance(info, dict) else None
-    if openapi_version != "0.4.0" or policy.get("iamOpenapiVersion") != openapi_version:
-        raise ValueError("BFF policy iamOpenapiVersion != IAM OpenAPI 0.4.0")
+    if (
+        not isinstance(openapi_version, str)
+        or OPENAPI_VERSION.fullmatch(openapi_version) is None
+        or policy.get("iamOpenapiVersion") != openapi_version
+    ):
+        raise ValueError("BFF policy iamOpenapiVersion != IAM committed OpenAPI version")
     if tuple(routes) != tuple(STATIC_2_1_ROUTES) or routes != STATIC_2_1_ROUTES:
         raise ValueError(
             "BFF policy 2.1.0 static routes including sign-up do not match the exact matrix"
