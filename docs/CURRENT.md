@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `1fa25d2b4760dc428d3fcdf77628ba343a5bc3ff` |
-| `apps/kokoro-bff` | `c586d0bdb42248f206b8adc92784e4c2140d2512` |
+| `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
+| `apps/kokoro-bff` | `1105553cfc24d4f44a90f626132bc30323a77946` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `b720b6dc095b883237682102ca0a87ed6451a968` |
+| `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,13 +27,17 @@
 
 ## 当前固定租户登录与 relay 来源
 
+W1E IAM 0.6 来源组合：IAM main `a4c2b61` 已发布 Platform ingress 运行端点/OpenAPI/SDK；BFF main `1105553` 只把完整 IAM owner OpenAPI `0.6.0` 精确 vendor/生成来源/浏览器 policy provenance 重钉，既有 16 个 generated 文件与 browser relay 路由不变；Web main `40a2095` 原样固定 BFF policy `2.1.0` SHA-256 `8f7d4f4cb6fa0ec34d2cce8702d8882d3270a316a6cbdb2d8bdaccefb9c6b4a1`，仅三个 IAM 来源字段变化。IAM Node24 97 文件/883 unit 与 36 文件/265 真实隔离 integration、BFF Node22 292 pass/1 skip、Web Node22 1478/1478 最终全门已由 Root 独立复验；Web 首轮全量一个 OIDC refresh 真 HTTP 用例间歇失败，聚焦 38/38 与第二轮全量均通过，仍需单独稳定化。Root gitlink/库存本节记录新组合；Platform owner 尚未消费/激活 IAM ingress，六 owner 真组合与其他 declared broken edge 仍待执行。
+
+以下为先前固定组合的历史验收，不是当前 IAM/BFF/Web 来源：
+
 Web main `1fa25d2b4760dc428d3fcdf77628ba343a5bc3ff` 已发布真实 shadcn 登录表单；Root Node22 `pnpm check` exit0（contract 69、architecture 36、Vitest 1478、lint/typecheck/build），3310 临时组合已按明确文件热同步且未重启进程。全新 Chromium 实测 `/login` 302→302→200 到同一邮箱/密码表单、旧重试/连接状态 0；一次无效凭据提交后仍在表单就近报错且密码清空。下面旧三仓组合与无脚本 Route Handler 描述是此前 Root pin 的历史状态；本次仅提升 Web gitlink，不冒充 IAM 0.6/BFF 来源或 Platform 完整闭环。
 
-Root 当前固定 IAM `b720b6d`、BFF `c586d0b`、Web `9fc2fef`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 原样消费其发布字节。IAM 已发布 `platform:execute` 目录及具名 execution verifier/OpenAPI `0.5.0`/SDK，Root 独立验收 IAM 92 文件/846 单测及真实 PostgreSQL/Redis/JWKS HTTP 8/8；BFF Node22 `pnpm format:check && pnpm check` 292 项中 291 pass/1 既有 skip；Web Node22 `pnpm check` contract 69、architecture 36、Vitest 1475、lint/typecheck/build 均通过。当前三仓精确 SHA 的隔离 HTTPS Product Session S1 已实跑首登邮件→OIDC→会话→issuer logout、Team 同源 HTTP 与 Chat proxy，通过且测试自有资源清零；该 runner 使用 CookieJar/HTTP，Chromium DOM 在这一新组合仍待验。Platform ingress 身份契约、consumer 原子切换、真实 Agent signer 和六 owner 组合也仍未完成，不能将 IAM 单仓 E2 当成授权链闭环。
+W1D 历史固定 IAM `b720b6d`、BFF `c586d0b`、Web `9fc2fef`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 原样消费其发布字节。IAM 已发布 `platform:execute` 目录及具名 execution verifier/OpenAPI `0.5.0`/SDK，Root 独立验收 IAM 92 文件/846 单测及真实 PostgreSQL/Redis/JWKS HTTP 8/8；BFF Node22 `pnpm format:check && pnpm check` 292 项中 291 pass/1 既有 skip；Web Node22 `pnpm check` contract 69、architecture 36、Vitest 1475、lint/typecheck/build 均通过。当前三仓精确 SHA 的隔离 HTTPS Product Session S1 已实跑首登邮件→OIDC→会话→issuer logout、Team 同源 HTTP 与 Chat proxy，通过且测试自有资源清零；该 runner 使用 CookieJar/HTTP，Chromium DOM 在这一新组合仍待验。Platform ingress 身份契约、consumer 原子切换、真实 Agent signer 和六 owner 组合也仍未完成，不能将 IAM 单仓 E2 当成授权链闭环。
 
 Root 已按进程所有权正常停止旧隔离预览并清理其自有资源，以 W1D 固定 IAM `6a55ffb`/BFF `bc45632`/Web `942d22e` 重建 3310 本地临时组合。真实 `GET /login` 经 IAM authorize 到中文签名表单为 200；Codex IAB 目视无连接/整页重试，临时账号提交到 consent 后继续进入 `/app`，页面显示工作区/输入区。当前 W1E 三仓仅更新角色权限与来源 pin，尚未重建 3310；该实例是可交互的**临时测试租户**，不是正式部署。Issuer 最终退出仍未在当前 HTTP 组合验收。后续 Chat/Storage/其他 11 条 declared broken edge 未因此闭环，Billing 仍最后。
 
-Root 当前组合提交 `b5738127ab98e9a2ef1cc2f4ee1d681a88e07255` 已将 IAM/BFF/Web 三 gitlink、16 edge 来源库存与 IAM `0.5.0` 验证器固定；`verify-iam-relay-policy.py`、topology、W1D checkpoint 及单独的治理验证器 36/36 均 PASS。Root 全量 `scripts/tests` 在验证器修复前为 741 passed/187 subtests；修复后全量尚待重跑，不用此前结果冒充当前提交。完整 compatibility 仍 `FAIL`：16 edges、0 illegal、11 declared broken；十仓标准门仍未通过，具体违反项以当前命令为准。
+W1D 历史组合提交 `b5738127ab98e9a2ef1cc2f4ee1d681a88e07255` 已将 IAM/BFF/Web 三 gitlink、16 edge 来源库存与 IAM `0.5.0` 验证器固定；`verify-iam-relay-policy.py`、topology、W1D checkpoint 及单独的治理验证器 36/36 均 PASS。Root 全量 `scripts/tests` 在验证器修复前为 741 passed/187 subtests；修复后全量尚待重跑，不用此前结果冒充当前提交。完整 compatibility 仍 `FAIL`：16 edges、0 illegal、11 declared broken；十仓标准门仍未通过，具体违反项以当前命令为准。
 
 ## 已验证到的边界
 
