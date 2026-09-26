@@ -2,7 +2,7 @@
 
 本文件只追加已执行事实，任务状态以 [`task.md`](task.md) 为准，目标设计以 [`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为准。没有命令输出、commit 或冻结 SHA 的事项不得写成完成。
 
-阅读入口：当前执行记录见本文末尾的 **W1B 启动**；能力边界与下一步见 [`task.md`](task.md) 第1节及 Wave1B 执行卡。此前日期的通过数只证明对应提交，不代表最新工作树或整体系统已完成。
+阅读入口：当前执行记录见本文末尾的最新 W1E 小节；能力边界与下一步见 [`task.md`](task.md) 第1节及 Wave1B 执行卡。此前日期的通过数只证明对应提交，不代表最新工作树或整体系统已完成。
 
 ## 2026-09-21 — W0A-0 启动
 
@@ -925,3 +925,11 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 2026-09-26 登录 UI 当前代码验收：Web main `942d22e4d42ba3abfeb0407f738e8108b7a74eed` 已推送/clean。Root 独立 Node22 `pnpm check` PASS（contract 69、architecture 36、1475 Vitest、lint/typecheck/build）；独立隔离 Next/Chromium 登录/401 错误 52/52 PASS，桌面/窄屏/移动和移动 axe 零违规，截图已目视。正式中文表单保留签名 query/CSRF/Cookie/OIDC/POST，无连接/整页重试；它遵循既有 shadcn 语义 token，未直接 import React 组件。BFF/Web 来源库存已按固定发布 blob 重钉；Root gitlink/治理门提交后复验。3310 当前进程仍是旧源码副本，尚未展示本次中文 UI。
 
 - 2026-09-26 Root IAM relay/登录 UI 集成：main `c189f2fc289d3e9fe4998917fe6667f9d82720d4` 固定 BFF `bc45632`、Web `942d22e` 与精确来源库存；提交后 `verify-iam-relay-policy.py`、topology、main-only、W1D checkpoint PASS，Root `scripts/tests` **741 passed/187 subtests**。完整 compatibility `FAIL` 16 edges/0 illegal/11 declared broken，十仓标准 `FAIL` 134 violations。Root 仅停止原 PID 36604 及其子进程，清理旧 fixture 后以当前 SHA 新建 3310（新 launcher PID 88811、Next PID 88923）；真实 HTTP `/login` 302→302→中文表单 200，Codex IAB 提交临时账号→consent→`/app` 可见工作区，未见中转/整页重试。Issuer 最终退出和其余 owner broken edge 未验；3310 是临时测试租户，非正式部署。
+
+## 2026-09-26 — W1E 权限目录与来源消费（Root 集成前证据）
+
+- 固定基线 Root `da0b1cf76b1cf0ed4e5dbd3da3cd17b7b352f1e3`，IAM `6a55ffb4c22f0b155ddb83157735c0ace766701d`，BFF `bc45632b8654db7e06eb9878bb4d7a609d12dc7b`，Web `942d22e4d42ba3abfeb0407f738e8108b7a74eed`；四仓初始 clean/main，Root 仅先写任务卡。Web→BFF 只读审查确认 Team 9 个 generated Product operation 与其他仍手写/未发布路径分离；AG-UI 保持独立协议，不提前激活 broken edge。
+- IAM 唯一 writer Root：unit TDD 初始 6 失败后实现固定 owner/admin/member 与 dynamic role 的 `platform:execute`，复用原 catalog/policy，无 Prisma schema 变化。生成 IAM OpenAPI 和 SDK；`pnpm verify` exit0（86 文件/761 项，含 format/lint/typecheck/contract/breaking/SDK/test/build），`IAM_TEST_ADMIN_URL=postgresql://nako@localhost/postgres IAM_TEST_REDIS_URL=redis://localhost:6379/1` 下隔离真实 PG role-lifecycle **2/2**，`git diff --check` PASS。owner main `5c9cecf714c87234bbc9558665b23e09afa6e9f6` 已提交、clean。
+- BFF 顺序消费：IAM OpenAPI 新 SHA-256 `05ff7ff712ce06571ca5e092fdaf234b9ee4d1b4978c54e0d54d2b50fe51dde2`；vendor 原始字节与 IAM 相同、16 文件确定性生成，只有角色列表类型/Zod 新增可选 `platform` 字段。relay `2.1.0` 路径/头/Cookie/状态不变，policy JSON SHA-256 `7bb829c988908804d0c3cac0cb023a6c247af6b0b4a55e8baf90b39d795f7118`。Node22 `pnpm format:check && pnpm check` exit0，292 tests/291 pass/1 既有 skip、contract/lint/typecheck/build PASS；BFF main `017464480e603e3e5780c55597f8d40970589ef7` 已提交、clean。外部 IAM process integration 未执行，不冒充真 BFF→IAM HTTP 通过。
+- Web 再消费 BFF 已提交 policy 原始字节；`cmp` 和 SHA-256 相同，固定 provenance 与测试已更新。Node22 `pnpm check` exit0：contract 69/69、architecture 36/36、Vitest 1475/1475、lint/typecheck/build PASS；Web main `04fd9418df55bc5db3df9829b9e9cbba40d3a334` 已提交、clean。无 UI/路由/OIDC/CSRF 行为改动；3310 仍为 W1D 固定隔离实例，未重启、未声称新三仓浏览器验收。
+- Root 正在更新三个 gitlink 与 161 处 inventory tuple/blob，待 Root commit 后重跑 topology、relay policy、checkpoint、main-only、compatibility 与 scripts/tests。IAM E2 在线授权端点与 Platform consumer 未实现；`EDGE-WEB-BFF` 仍 broken，Billing 仍最后。

@@ -7,10 +7,10 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `942d22e4d42ba3abfeb0407f738e8108b7a74eed` |
-| `apps/kokoro-bff` | `bc45632b8654db7e06eb9878bb4d7a609d12dc7b` |
+| `apps/kokoro-app` | `04fd9418df55bc5db3df9829b9e9cbba40d3a334` |
+| `apps/kokoro-bff` | `017464480e603e3e5780c55597f8d40970589ef7` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `6a55ffb4c22f0b155ddb83157735c0ace766701d` |
+| `apps/kokoro-iam` | `5c9cecf714c87234bbc9558665b23e09afa6e9f6` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,9 +27,9 @@
 
 ## 当前固定租户登录与 relay 来源
 
-Root 当前固定 IAM `6a55ffb`、BFF `bc45632`、Web `942d22e`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 消费 BFF 已发布 policy 原始字节。Root 独立 Node22 BFF `pnpm format:check && pnpm check` PASS（291 pass/1 skip）；Web `pnpm check` PASS（contract 69、architecture 36、Vitest 1475、lint/typecheck/build），隔离真实 Next/Chromium 登录页面 52 项及移动 axe PASS。
+Root 当前固定 IAM `5c9cecf`、BFF `0174644`、Web `04fd941`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 消费 BFF 已发布 policy 原始字节。当前 IAM `platform:execute` 权限目录、BFF 生成的角色只读类型及 Web policy 来源已按 owner 顺序更新；IAM execution verifier endpoint 仍待实现，不把权限目录当成执行授权闭环。IAM `pnpm verify` 761/761、真实 PG role lifecycle 2/2；BFF Node22 `pnpm format:check && pnpm check` 291 pass/1 skip；Web Node22 `pnpm check` contract 69、architecture 36、Vitest 1475、lint/typecheck/build 均通过。旧 SHA 登录页面隔离真实 Next/Chromium 52 项与移动 axe PASS；来源重钉不更改 UI/路由/OIDC/CSRF，当前三仓 SHA 的浏览器组合仍待 Root 复验。
 
-Root 已按进程所有权正常停止旧隔离预览并清理其自有资源，以当前固定 IAM/BFF/Web SHA 重建 3310 本地临时组合。真实 `GET /login` 经 IAM authorize 到中文签名表单为 200；Codex IAB 目视无连接/整页重试，临时账号提交到 consent 后继续进入 `/app`，页面显示工作区/输入区。该实例是可交互的**临时测试租户**，不是正式部署；Issuer 最终退出仍未在当前 HTTP 组合验收。后续 Chat/Storage/其他 11 条 declared broken edge 未因此闭环，Billing 仍最后。
+Root 已按进程所有权正常停止旧隔离预览并清理其自有资源，以 W1D 固定 IAM `6a55ffb`/BFF `bc45632`/Web `942d22e` 重建 3310 本地临时组合。真实 `GET /login` 经 IAM authorize 到中文签名表单为 200；Codex IAB 目视无连接/整页重试，临时账号提交到 consent 后继续进入 `/app`，页面显示工作区/输入区。当前 W1E 三仓仅更新角色权限与来源 pin，尚未重建 3310；该实例是可交互的**临时测试租户**，不是正式部署。Issuer 最终退出仍未在当前 HTTP 组合验收。后续 Chat/Storage/其他 11 条 declared broken edge 未因此闭环，Billing 仍最后。
 
 Root 治理本切片对 BFF 146 处、Web 12 处固定来源 commit/blob 重新计算；提交后 `verify-iam-relay-policy.py`、topology、main-only、新 W1D checkpoint 全部 PASS，Root `scripts/tests` 741 passed/187 subtests。完整 compatibility 仍 `FAIL`：16 edges、0 illegal、11 declared broken；十仓标准门仍 `FAIL`：134 项未闭环。
 
