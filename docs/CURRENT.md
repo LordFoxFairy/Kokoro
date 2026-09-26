@@ -29,9 +29,9 @@
 
 Root 当前固定 IAM `6a55ffb`、BFF `bc45632`、Web `942d22e`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 消费 BFF 已发布 policy 原始字节。Root 独立 Node22 BFF `pnpm format:check && pnpm check` PASS（291 pass/1 skip）；Web `pnpm check` PASS（contract 69、architecture 36、Vitest 1475、lint/typecheck/build），隔离真实 Next/Chromium 登录页面 52 项及移动 axe PASS。
 
-用户正在使用的 3310 是 Root 之前启动的**隔离旧源码副本**；当前源码改动尚未自动进入该进程，Root 将在完成提交/所有权清理后重新生成本地预览并用浏览器复验，不以截图或静态门冒称 3310 已更新。此前该入口真实 `/login` 302→IAM authorize 302→表单 200，临时账号可达 `/app`，应用退出清除 Product Session；Issuer 最终确认 POST 曾被 Codex 浏览器拦截，仍属独立待验。后续 Chat/Storage/其他 11 条 declared broken edge 未因此闭环，Billing 仍最后。
+Root 已按进程所有权正常停止旧隔离预览并清理其自有资源，以当前固定 IAM/BFF/Web SHA 重建 3310 本地临时组合。真实 `GET /login` 经 IAM authorize 到中文签名表单为 200；Codex IAB 目视无连接/整页重试，临时账号提交到 consent 后继续进入 `/app`，页面显示工作区/输入区。该实例是可交互的**临时测试租户**，不是正式部署；Issuer 最终退出仍未在当前 HTTP 组合验收。后续 Chat/Storage/其他 11 条 declared broken edge 未因此闭环，Billing 仍最后。
 
-Root 治理本切片对 BFF 146 处、Web 12 处固定来源 commit/blob 重新计算；原 W1D checkpoint 保留 11 broken、0 illegal 的诚实队列。`verify-iam-relay-policy.py`、topology、main-only 和 compatibility 的最终状态以**本次 Root 提交后**重跑结果为准，不以提交前旧 gitlink 导致的暂时失败作结论。十仓标准门先前仍有 134 项未闭环。
+Root 治理本切片对 BFF 146 处、Web 12 处固定来源 commit/blob 重新计算；提交后 `verify-iam-relay-policy.py`、topology、main-only、新 W1D checkpoint 全部 PASS，Root `scripts/tests` 741 passed/187 subtests。完整 compatibility 仍 `FAIL`：16 edges、0 illegal、11 declared broken；十仓标准门仍 `FAIL`：134 项未闭环。
 
 ## 已验证到的边界
 
