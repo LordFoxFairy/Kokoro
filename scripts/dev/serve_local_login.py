@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve real local Web → BFF → IAM login on a temporary HTTPS origin at port 3310.
+"""Serve real local Web → BFF → IAM login at http://127.0.0.1:3310.
 
 This is an interactive, foreground development fixture. Ctrl-C stops only the
 processes and isolated PostgreSQL/Redis resources created by this invocation.
@@ -8,12 +8,10 @@ processes and isolated PostgreSQL/Redis resources created by this invocation.
 from __future__ import annotations
 
 import argparse
-import base64
-import hashlib
+import http.client
 import json
 import os
 from pathlib import Path
-import re
 import secrets
 import signal
 import socket
@@ -37,8 +35,8 @@ import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
 WEB_PORT = 3310
 
 
-def web_origin(run_id: str) -> str:
-    return f"https://web-{run_id}.example.test:{WEB_PORT}"
+def web_origin(_run_id: str) -> str:
+    return f"http://127.0.0.1:{WEB_PORT}"
 
 
 class LaunchError(RuntimeError):
@@ -61,39 +59,66 @@ def local_next_server(source: str) -> str:
     return source.replace(marker, f"port: {WEB_PORT}")
 
 
-class LocalWebProxy(web_smoke.Proxy):
-    """Reuse the tested TLS proxy handler on the interactive local port."""
-
-    def server_bind(self) -> None:
-        self.server_address = ("127.0.0.1", WEB_PORT)
-        super().server_bind()
-
-    def __init__(self, upstream_port: int, host: str, certificate: tuple[Path, Path]):
-        super().__init__(
-            upstream_port, web_host=f"{host}:{WEB_PORT}", certificate=certificate
+def http_browser(
+    port: int, path: str, origin: str, *, cookie: str = ""
+) -> web_smoke.BrowserResponse:
+    """Read only the local, same-origin HTTP surface with bounded response size."""
+    if origin != f"http://127.0.0.1:{port}":
+        raise LaunchError("local browser origin mismatch")
+    target = web_smoke.browser_target(path, origin)
+    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=12)
+    try:
+        headers = {
+            "Host": urlsplit(origin).netloc,
+            "Accept": "text/html,application/json",
+        }
+        if cookie:
+            headers["Cookie"] = cookie
+        connection.request("GET", target, headers=headers)
+        response = connection.getresponse()
+        body = response.read(web_smoke.MAX_BODY + 1)
+        if len(body) > web_smoke.MAX_BODY:
+            raise LaunchError("local browser response oversized")
+        return web_smoke.BrowserResponse(
+            response.status,
+            {
+                name.lower(): value
+                for name, value in response.getheaders()
+                if name.lower() != "set-cookie"
+            },
+            [
+                value
+                for name, value in response.getheaders()
+                if name.lower() == "set-cookie"
+            ],
+            body,
         )
-        self.web_port = WEB_PORT
+    except (OSError, http.client.HTTPException):
+        raise web_smoke.SmokeError("local HTTP browser request failed") from None
+    finally:
+        connection.close()
 
 
-def wait_for_web(
-    proxy: LocalWebProxy, process: subprocess.Popen[bytes], origin: str
-) -> None:
+def fixture_origin_matches(observed: object, origin: str) -> bool:
+    """Next normalizes request.nextUrl to localhost; Host remains browser authority."""
+    return observed == {
+        "origin": f"http://localhost:{WEB_PORT}",
+        "host": urlsplit(origin).netloc,
+        "proto": "http",
+    }
+
+
+def wait_for_web(process: subprocess.Popen[bytes], origin: str) -> None:
     deadline = time.monotonic() + 45
     while time.monotonic() < deadline and process.poll() is None:
         try:
-            response = web_smoke.https_browser(
-                proxy.server_port, "/api/fixture-origin", origin
-            )
+            response = http_browser(WEB_PORT, "/api/fixture-origin", origin)
             if response.status == 200:
                 try:
                     observed = json.loads(response.body)
                 except (ValueError, UnicodeError):
                     raise LaunchError("Next origin fixture malformed") from None
-                if observed != {
-                    "origin": origin,
-                    "host": urlsplit(origin).netloc,
-                    "proto": "https",
-                }:
+                if not fixture_origin_matches(observed, origin):
                     raise LaunchError("Next origin fixture mismatch")
                 return
         except web_smoke.SmokeError:
@@ -102,55 +127,11 @@ def wait_for_web(
     raise LaunchError("local Web login page did not become ready")
 
 
-def chromium_command(
-    chromium: Path, profile: Path, host: str, origin: str, certificate_spki: str
-) -> list[str]:
-    if not re.fullmatch(r"web-[a-f0-9]{24}\.example\.test", host):
-        raise LaunchError("unexpected local Web host")
-    if not re.fullmatch(r"[A-Za-z0-9+/]{43}=", certificate_spki):
-        raise LaunchError("invalid local certificate fingerprint")
-    return [
-        str(chromium),
-        f"--user-data-dir={profile}",
-        "--no-first-run",
-        "--no-proxy-server",
-        "--new-window",
-        f"--host-resolver-rules=MAP {host} 127.0.0.1",
-        f"--ignore-certificate-errors-spki-list={certificate_spki}",
-        origin + "/login",
-    ]
-
-
-def certificate_spki_sha256(certificate: Path) -> str:
-    try:
-        public_key = subprocess.run(
-            ["openssl", "x509", "-in", str(certificate), "-pubkey", "-noout"],
-            capture_output=True,
-            check=True,
-            timeout=5,
-        ).stdout
-        der = subprocess.run(
-            ["openssl", "pkey", "-pubin", "-outform", "DER"],
-            input=public_key,
-            capture_output=True,
-            check=True,
-            timeout=5,
-        ).stdout
-    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
-        raise LaunchError("local certificate fingerprint unavailable") from None
-    return base64.b64encode(hashlib.sha256(der).digest()).decode("ascii")
-
-
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--iam-node-bin", type=Path, required=True)
     parser.add_argument("--bff-node-bin", type=Path, required=True)
     parser.add_argument("--web-node-bin", type=Path, required=True)
-    parser.add_argument(
-        "--chromium-bin",
-        type=Path,
-        default=Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
-    )
     args = parser.parse_args(argv)
     args.postgres_admin_url = os.environ.get("KOKORO_LOCAL_POSTGRES_URL", "")
     args.redis_url = os.environ.get("KOKORO_LOCAL_REDIS_URL", "")
@@ -160,7 +141,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("set KOKORO_LOCAL_POSTGRES_URL and KOKORO_LOCAL_REDIS_URL")
     if urlsplit(args.postgres_admin_url).password or urlsplit(args.redis_url).password:
         parser.error("use local passwordless endpoints for this foreground fixture")
-    for name in ("iam_node_bin", "bff_node_bin", "web_node_bin", "chromium_bin"):
+    for name in ("iam_node_bin", "bff_node_bin", "web_node_bin"):
         node = getattr(args, name).expanduser().resolve()
         if not node.is_file() or not os.access(node, os.X_OK):
             parser.error(f"{name} must be executable")
@@ -173,9 +154,7 @@ def main(argv: list[str] | None = None) -> int:
     require_free_web_port()
     run_id = secrets.token_hex(12)
     origin = web_origin(run_id)
-    host_name = urlsplit(origin).hostname
-    if host_name is None:
-        raise LaunchError("Web host absent")
+    host_name = "127.0.0.1"
     iam_resource_id = str(uuid4())
     iam_identity = web_smoke.named_iam_identity(iam_resource_id)
     iam_owner_token = secrets.token_hex(16)
@@ -264,6 +243,7 @@ def main(argv: list[str] | None = None) -> int:
                         "IAM_TEST_ADMIN_URL": args.postgres_admin_url,
                         "IAM_TEST_REDIS_URL": args.redis_url,
                         "IAM_TEST_WEB_ORIGIN": origin,
+                        "IAM_TEST_ALLOW_HTTP_LOOPBACK": "1",
                         "IAM_TEST_RESOURCE_ID": iam_resource_id,
                         "IAM_TEST_RESOURCE_OWNER_TOKEN": iam_owner_token,
                         "NODE_ENV": "test",
@@ -329,7 +309,6 @@ def main(argv: list[str] | None = None) -> int:
                 next_root = web_smoke.isolated_next(directory)
                 server_path = next_root / "server.cjs"
                 server_path.write_text(local_next_server(server_path.read_text()))
-                next_port = runtime.free_port()
                 web_env.update(
                     {
                         "KOKORO_WEB_ORIGIN": origin,
@@ -349,7 +328,7 @@ def main(argv: list[str] | None = None) -> int:
                     [
                         str(args.web_node_bin),
                         str(server_path),
-                        str(next_port),
+                        str(WEB_PORT),
                         host_name,
                     ],
                     cwd=next_root,
@@ -360,33 +339,11 @@ def main(argv: list[str] | None = None) -> int:
                     start_new_session=True,
                 )
                 processes.append(next_process)
-                certificate = web_smoke.certificate(directory, host_name)
-                web_proxy = LocalWebProxy(next_port, host_name, certificate)
-                proxies.append(web_proxy)
-                wait_for_web(web_proxy, next_process, origin)
+                wait_for_web(next_process, origin)
                 stage = "formal login navigation"
                 first_login.probe_formal_login_entry(
-                    web_proxy.server_port, origin, credentials
+                    WEB_PORT, origin, credentials, browser_request=http_browser
                 )
-                stage = "Chromium startup"
-                chrome = subprocess.Popen(
-                    chromium_command(
-                        args.chromium_bin,
-                        directory / "chromium-profile",
-                        host_name,
-                        origin,
-                        certificate_spki_sha256(certificate[0]),
-                    ),
-                    cwd=directory,
-                    stdin=subprocess.DEVNULL,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    start_new_session=True,
-                )
-                processes.append(chrome)
-                time.sleep(0.5)
-                if chrome.poll() is not None:
-                    raise LaunchError("Chromium exited before local login became ready")
                 print(f"Local login: {origin}/login", flush=True)
                 print(f"Temporary email: {ready.email}", flush=True)
                 print(f"Temporary password: {ready.password}", flush=True)

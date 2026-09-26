@@ -2,9 +2,10 @@
 
 import importlib.util
 from pathlib import Path
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import socket
 import sys
-import tempfile
+from threading import Thread
 import unittest
 from unittest.mock import patch
 
@@ -18,10 +19,33 @@ spec.loader.exec_module(launcher)
 
 
 class LocalLoginGuards(unittest.TestCase):
-    def test_origin_is_https_non_loopback_on_local_port(self):
+    def test_next_normalized_origin_is_not_used_as_browser_authority(self):
+        origin = "http://127.0.0.1:3310"
+        self.assertTrue(
+            launcher.fixture_origin_matches(
+                {
+                    "origin": "http://localhost:3310",
+                    "host": "127.0.0.1:3310",
+                    "proto": "http",
+                },
+                origin,
+            )
+        )
+        self.assertFalse(
+            launcher.fixture_origin_matches(
+                {
+                    "origin": "http://localhost:3310",
+                    "host": "localhost:3310",
+                    "proto": "http",
+                },
+                origin,
+            )
+        )
+
+    def test_origin_is_the_visible_http_loopback_on_local_port(self):
         self.assertEqual(
             launcher.web_origin("a" * 24),
-            "https://web-aaaaaaaaaaaaaaaaaaaaaaaa.example.test:3310",
+            "http://127.0.0.1:3310",
         )
         self.assertEqual(launcher.WEB_PORT, 3310)
 
@@ -44,49 +68,36 @@ class LocalLoginGuards(unittest.TestCase):
         with self.assertRaises(launcher.LaunchError):
             launcher.local_next_server("unexpected Next server template")
 
-    def test_https_proxy_binds_exact_port_and_chrome_is_isolated(self):
-        host = "web-" + "a" * 24 + ".example.test"
-        with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            with socket.socket() as reservation:
-                reservation.bind(("127.0.0.1", 0))
-                port = reservation.getsockname()[1]
-            with patch.object(launcher, "WEB_PORT", port):
-                proxy = launcher.LocalWebProxy(
-                    65534, host, launcher.web_smoke.certificate(root, host)
-                )
-                try:
-                    self.assertEqual(proxy.server_port, port)
-                    self.assertEqual(proxy.web_host, host + f":{port}")
-                    self.assertEqual(proxy.web_port, port)
-                    self.assertTrue(proxy.tls_web)
-                finally:
-                    proxy.close()
-            command = launcher.chromium_command(
-                Path("/chrome"),
-                root / "profile",
-                host,
-                launcher.web_origin("a" * 24),
-                launcher.certificate_spki_sha256(root / "web.crt"),
-            )
-            self.assertIn("--user-data-dir=" + str(root / "profile"), command)
-            self.assertIn("--host-resolver-rules=MAP " + host + " 127.0.0.1", command)
-            self.assertIn("--no-proxy-server", command)
-            self.assertNotIn("--ignore-certificate-errors", command)
-            self.assertTrue(
-                any(
-                    arg.startswith("--ignore-certificate-errors-spki-list=")
-                    for arg in command
-                )
-            )
-            self.assertEqual(command[-1], launcher.web_origin("a" * 24) + "/login")
+    def test_plain_http_transport_preserves_form_navigation_and_cookies(self):
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(302)
+                self.send_header("Location", "/iam/oauth2/authorize?state=abc")
+                self.send_header("Set-Cookie", "next-auth.state=abc; Path=/")
+                self.end_headers()
+
+            def log_message(self, *_args):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = Thread(target=server.serve_forever)
+        thread.start()
+        try:
+            port = server.server_address[1]
+            response = launcher.http_browser(port, "/login", f"http://127.0.0.1:{port}")
+            self.assertEqual(response.status, 302)
+            self.assertEqual(response.location(), "/iam/oauth2/authorize?state=abc")
+            self.assertEqual(response.set_cookies, ["next-auth.state=abc; Path=/"])
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
 
     def test_database_endpoints_are_read_from_environment_without_password(self):
         paths = {
             "--iam-node-bin": "/bin/echo",
             "--bff-node-bin": "/bin/echo",
             "--web-node-bin": "/bin/echo",
-            "--chromium-bin": "/bin/echo",
         }
         argv = [item for pair in paths.items() for item in pair]
         with patch.dict(

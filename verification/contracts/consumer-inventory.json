@@ -124,7 +124,7 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "7215223b2ed27a0d5217f3bbaaabce547006d3bb",
+        "repository_commit": "6a55ffb4c22f0b155ddb83157735c0ace766701d",
         "contract_version": "0.4.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "a18d57172df841cb2f55aa845a3eeb519ddb5abc8bea1c2be74fbb7e0fb62416"
@@ -133,7 +133,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "active",
-      "reason": "IAM 0.4.0 owner OpenAPI and BFF vendored artifact remain byte-identical after the IAM test-only SMTP fixture repin. Generated client and BFF browser-private relay policy 2.1.0 preserve exact sign-up, context, accept, reject and verify-email operations. Root real IAM-to-BFF Code+PKCE/Team/invitation HTTP smoke passed 42 cases at the prior behavior-equivalent source; at the current exact IAM/BFF/Web pins, test-owned HTTPS SMTP invitation→Web issuer sign-in→context→accept and reject passed with zero owned resources. New-account and Chromium journeys remain separate gates.",
+      "reason": "IAM 0.4.0 owner OpenAPI and BFF vendored artifact remain byte-identical after IAM adds a development-only native loopback client; the BFF still consumes its previously pinned equivalent machine contract. Generated client and browser-private relay policy 2.1.0 preserve sign-up, context, accept, reject and verify-email operations. Prior HTTPS SMTP/Chromium journeys remain evidence for their exact former pins; the new HTTP loopback login is a separate Root gate.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1203,7 +1203,7 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "7215223b2ed27a0d5217f3bbaaabce547006d3bb",
+        "repository_commit": "6a55ffb4c22f0b155ddb83157735c0ace766701d",
         "contract_version": "0.4.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "a18d57172df841cb2f55aa845a3eeb519ddb5abc8bea1c2be74fbb7e0fb62416"
@@ -1228,9 +1228,9 @@
         },
         {
           "repository_path": "apps/kokoro-iam",
-          "repository_commit": "7215223b2ed27a0d5217f3bbaaabce547006d3bb",
+          "repository_commit": "6a55ffb4c22f0b155ddb83157735c0ace766701d",
           "path": "docs/CURRENT.md",
-          "sha256": "d07ae26487e26c0f978057a660a6f98c4a5832349a1d8dd36d935edefcb42459"
+          "sha256": "9cc9e813d8cd7921a7ef6934047214ae615df4f85a93eb2f7e8f272d3e8faf44"
         }
       ]
     },

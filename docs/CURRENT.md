@@ -1,6 +1,6 @@
 # Root 当前组合
 
-状态日期：2026-09-25。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
+状态日期：2026-09-26。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
@@ -10,7 +10,7 @@
 | `apps/kokoro-app` | `07a30fa2e424307e75390031b458e015dc153d3c` |
 | `apps/kokoro-bff` | `2f1fc3382df31ba107d7eb2b2b6a611fa893bc13` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
-| `apps/kokoro-iam` | `7215223b2ed27a0d5217f3bbaaabce547006d3bb` |
+| `apps/kokoro-iam` | `6a55ffb4c22f0b155ddb83157735c0ace766701d` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `7215223`、BFF `2f1fc33`、Web `07a30fa`。Web 的邀请页已修复真实 Chromium 暴露的 `Referrer-Policy: no-referrer` 导致同源表单 `Origin: null`、POST 403；精确邀请路径改为 `same-origin`，跨站不发送邀请 URL，`/iam/verify-email` 继续 `no-referrer`。Root 已以当前固定三仓 SHA 重跑真实 SMTP/Product Session 组合，首登、在线会话与 Chat proxy PASS、资源0；已有账号 Chromium accept/reject 和新账号 Chromium 注册→验信→accept/reject 均在隔离 HTTPS 组合通过。当前 3310 是 Root 启动的前台临时租户 HTTPS 联调入口，真实邮箱/密码表单可见，但不是正式单租户部署；旧 IAB 的 `http://127.0.0.1:3310` 标签不指向此入口。错误收件人/过期邀请的 Chromium 负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
+Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `07a30fa`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；当前真实 HTTP 请求经 Web→BFF→IAM 为 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200，Root 表单探针验证邮箱/密码真实字段。Codex 浏览器实测时 Mac 处于锁屏，尚未取得当前 IAB 登录、`/app` 与退出的可见证据；不能把 HTTP 路由探针当作用户浏览器闭环。此前邀请/邮件 Chromium 通过的证据绑定原固定 HTTPS SHA，不能外推到新的 IAM pin。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
 
 ## 已验证到的边界
 

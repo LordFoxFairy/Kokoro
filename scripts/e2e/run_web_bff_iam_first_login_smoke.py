@@ -232,12 +232,18 @@ def _iam_json(
         connection.close()
 
 
-def probe_formal_login_entry(web_port: int, web_origin: str, credentials) -> None:
+def probe_formal_login_entry(
+    web_port: int,
+    web_origin: str,
+    credentials,
+    *,
+    browser_request: Callable[..., web_smoke.BrowserResponse] = web_smoke.https_browser,
+) -> None:
     """Require /login to lead straight to the issuer's real credential form."""
     jar = web_smoke.BrowserCookies(credentials.add)
 
     def get(path: str):
-        response = web_smoke.https_browser(
+        response = browser_request(
             web_port,
             path,
             web_origin,
