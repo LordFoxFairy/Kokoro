@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `07a30fa`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；当前真实 HTTP 请求经 Web→BFF→IAM 为 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200，Root 表单探针验证邮箱/密码真实字段。Codex 浏览器实测时 Mac 处于锁屏，尚未取得当前 IAB 登录、`/app` 与退出的可见证据；不能把 HTTP 路由探针当作用户浏览器闭环。此前邀请/邮件 Chromium 通过的证据绑定原固定 HTTPS SHA，不能外推到新的 IAM pin。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
+Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `07a30fa`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；真实 HTTP 请求经 Web→BFF→IAM 为 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200。Codex IAB 已可见真实 IAM 邮箱/密码表单，并用本次临时账号+consent 到达 `/app`；点击应用退出后 Product Session 失效，再进 `/app` 回登录。Issuer 默认英文确认页的最后 POST 在 Codex IAB/受控 Chrome 被浏览器拦截，当前 HTTP 组合尚无该最终确认的可见证据，该页视觉也待改；不能把 Product Session 退出等同于 issuer 完整退出。此前邀请/邮件 Chromium 通过的证据绑定原固定 HTTPS SHA，不能外推到新的 IAM pin。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
 
 ## 已验证到的边界
 
