@@ -29,6 +29,8 @@
 
 Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `71d408e`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；该前台是**早于 Web `71d408e` 的隔离源码副本**，已验证真实 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200，并在 Codex IAB 以临时账号+consent 到达 `/app`、应用退出后 Product Session 失效。Web `71d408e` 已删除旧 IAM 直连、sealed cookie 与两旧 auth route，在独立生产 Next 实测旧 URL GET/POST 404、`/app` 私有 no-store，Root Node22 `pnpm check` 69 contract/36 architecture/1474 tests/lint/typecheck/build 与隔离 E2E 11 pass/1 预期 skip；**尚未把新 Web commit 与当前前台实例做真实组合验收**。Issuer 默认英文确认页的最后 POST 在 Codex IAB/受控 Chrome 被浏览器拦截，当前 HTTP 组合尚无该最终确认的可见证据；不能把 Product Session 退出等同于 issuer 完整退出。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
 
+Root 治理当前实测：新 W1D checkpoint、main-only、topology 均 PASS；完整 compatibility 仍有 11 个 declared broken edge、0 个非法边，十仓标准门仍有 134 项。IAM relay policy provenance 仍钉旧 IAM `7215223`，与当前 `6a55ffb` gitlink 不符，`verify-iam-relay-policy.py` FAIL；IAM allowlist/snapshot/OpenAPI 固定 blob 均未变，下一片由 BFF policy owner 先发布，再由 Web 消费，最后 Root 重钉，不能靠 Root 放宽门禁。
+
 ## 已验证到的边界
 
 - Web `08ef650a` 已把两个不被当前 UI/正式 OIDC 使用的旧 magic-link browser route 实际删除；失败回调不再产出 `/login?auth=link_unavailable`。正式 Auth.js `/api/auth/callback/kokoro-iam` 保留。Root `54e18142` pin 后的隔离 HTTPS first-login smoke 再次 PASS，自有资源0；Web 隔离新目录的 Next typegen、TypeScript 和 production build PASS，未改用户 3310 共享 `.next`。旧 auth helper、Team/其他认证路径尚在，普通 IAB 3310 入口依旧未配 IAM/BFF。
