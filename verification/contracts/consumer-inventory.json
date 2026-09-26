@@ -1212,7 +1212,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "node:fetch@24",
       "state": "broken",
-      "reason": "Capability still expects a handwritten attestation endpoint that IAM 0.5.0 runtime/OpenAPI does not expose; the new execution-authorization verifier has a different Platform-owned use case.",
+      "reason": "Capability still uses handwritten expanded attestation and shared-token identity. IAM 0.6.0 now publishes exact Platform ingress and execution-verifier contracts, but Capability has not consumed them or replaced its runtime; keep broken until the atomic Platform owner cutover and real authorization/replay tests pass.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
