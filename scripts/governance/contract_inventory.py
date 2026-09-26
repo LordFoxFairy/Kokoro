@@ -31,7 +31,7 @@ EXPECTED_EDGE_IDS = frozenset(
         "EDGE-SCHEDULER-AGENT",
     }
 )
-EXPECTED_VIOLATION_IDS = frozenset({"EDGE-WEB-IAM-DIRECT"})
+EXPECTED_VIOLATION_IDS = frozenset()
 OBJECT_ID_PATTERN = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
 EXACT_SEMVER_PATTERN = re.compile(
     r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"

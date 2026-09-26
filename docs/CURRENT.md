@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `832bc8e149857e7248c290d5c6b3a6e669fe68c4` |
+| `apps/kokoro-app` | `71d408e1a36fbe8c3ff7dc350311e5b4eeb8be23` |
 | `apps/kokoro-bff` | `2f1fc3382df31ba107d7eb2b2b6a611fa893bc13` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `6a55ffb4c22f0b155ddb83157735c0ace766701d` |
@@ -27,7 +27,7 @@
 
 ## 当前进行中的固定租户切片
 
-Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `832bc8e`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；真实 HTTP 请求经 Web→BFF→IAM 为 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200。Codex IAB 已可见真实 IAM 邮箱/密码表单，并用本次临时账号+consent 到达 `/app`；点击应用退出后 Product Session 失效，再进 `/app` 回登录。Issuer 默认英文确认页的最后 POST 在 Codex IAB/受控 Chrome 被浏览器拦截，当前 HTTP 组合尚无该最终确认的可见证据，该页视觉也待改；不能把 Product Session 退出等同于 issuer 完整退出。此前邀请/邮件 Chromium 通过的证据绑定原固定 HTTPS SHA，不能外推到新的 IAM pin。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
+Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `71d408e`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；该前台是**早于 Web `71d408e` 的隔离源码副本**，已验证真实 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200，并在 Codex IAB 以临时账号+consent 到达 `/app`、应用退出后 Product Session 失效。Web `71d408e` 已删除旧 IAM 直连、sealed cookie 与两旧 auth route，在独立生产 Next 实测旧 URL GET/POST 404、`/app` 私有 no-store，Root Node22 `pnpm check` 69 contract/36 architecture/1474 tests/lint/typecheck/build 与隔离 E2E 11 pass/1 预期 skip；**尚未把新 Web commit 与当前前台实例做真实组合验收**。Issuer 默认英文确认页的最后 POST 在 Codex IAB/受控 Chrome 被浏览器拦截，当前 HTTP 组合尚无该最终确认的可见证据；不能把 Product Session 退出等同于 issuer 完整退出。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
 
 ## 已验证到的边界
 
@@ -75,10 +75,10 @@ Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `832bc8e`。IAM 已为
    负例以及真实 provider 验收。固定 fixture 不等于正式单租户常驻入口已具备完整能力。
 2. Team Product 的 Web→BFF→IAM 同源 HTTP 读链已通过隔离组合；仍需 Chromium DOM、邀请邮件入口与写操作的浏览器端到端验收。
 3. Storage/Platform/System/Scheduler 各自 owner 的能力调用、契约与数据闭环；Billing 最后。
-4. 当前 inventory 的 11 条 broken edge 与 1 条非法 Web→IAM 旁路，不能因为局部 smoke 通过而标绿。
+4. 当前 inventory 的 11 条 broken edge 仍开放；旧 Web→IAM 非法旁路已删除并从当前 inventory 移除，不能因为局部 smoke 通过而将剩余 edge 标绿。
 
 当前可执行门：`python3 scripts/verify-repository-topology.py`、
-`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1b-iam.json`、
+`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1d-web-iam-cut.json`、
 `python3 scripts/verify-iam-relay-policy.py`、`python3 scripts/verify-main-only.py` 和
 `python3 -m pytest scripts/tests`。旧 `verify-ten-repository-full.sh` 与
 `run_stage2_owner_health.py` 的共享状态编排已暂停；它们不是当前全仓验收证据。

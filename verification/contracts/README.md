@@ -2,7 +2,7 @@
 
 `consumer-inventory.json` is the Root fail-closed inventory for every approved
 cross-repository call edge. It records the owner contract pin, consumer-side
-evidence and the one currently known topology violation.
+evidence. The former Web-to-IAM direct-call violation is preserved only in historical checkpoints, not the current inventory.
 
 ## Evidence model
 
@@ -63,13 +63,14 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/w1b-iam.json
+  --expected verification/contracts/checkpoints/w1d-web-iam-cut.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the frozen Wave 0A baseline returns `1` because it declares fifteen broken
-edges and one illegal edge. The checkpoint CLI instead compares the complete
+the current W1D baseline returns `1` because it declares eleven broken
+edges and no illegal edge. Historical Wave 0A checkpoints record their then-current
+illegal edge. The checkpoint CLI instead compares the complete
 active/broken/illegal ID sets with the selected checkpoint, runs the same
 compatibility verifier, and returns `0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not

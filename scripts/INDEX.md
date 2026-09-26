@@ -17,9 +17,9 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   means the focused verifier tests pass.
 - `python3 scripts/verify-contract-compatibility.py --inventory verification/contracts/consumer-inventory.json` checks every
   approved call edge and recorded violation against the Root index and child commit blobs. Exit `0` means all edges are active
-  with no violations; current `w1b-iam` baseline remains intentionally red with exactly eleven declared broken edges and
-  `EDGE-WEB-IAM-DIRECT`, with no schema, gitlink, digest, evidence or version drift.
-- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1b-iam.json` compares the
+  with no violations; current `w1d-web-iam-cut` baseline remains intentionally red with exactly eleven declared broken edges
+  and no illegal edge, with no schema, gitlink, digest, evidence or version drift.
+- `python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1d-web-iam-cut.json` compares the
   complete active/broken/illegal edge ID sets with a frozen checkpoint and runs the compatibility verifier. Exit `0` accepts
   only the checkpoint's declared broken and illegal outcomes; count-preserving ID swaps and any schema, gitlink, digest,
   evidence or version drift fail.

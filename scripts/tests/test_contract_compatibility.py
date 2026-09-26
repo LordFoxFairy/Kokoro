@@ -58,7 +58,7 @@ def commit_child(root: Path, name: str, files: dict[str, bytes]) -> str:
     return run(repository, "git", "rev-parse", "HEAD")
 
 
-def test_default_topology_baseline_declares_16_edges_and_violation() -> None:
+def test_default_topology_baseline_declares_16_edges_and_no_violation() -> None:
     module_path = ROOT / "scripts/governance/contract_inventory.py"
     spec = importlib.util.spec_from_file_location("contract_inventory", module_path)
     assert spec is not None and spec.loader is not None
@@ -85,7 +85,7 @@ def test_default_topology_baseline_declares_16_edges_and_violation() -> None:
             "EDGE-SCHEDULER-AGENT",
         }
     )
-    assert module.EXPECTED_VIOLATION_IDS == frozenset({"EDGE-WEB-IAM-DIRECT"})
+    assert module.EXPECTED_VIOLATION_IDS == frozenset()
 
 
 def test_scheduler_event_edges_pin_scheduler_owned_contract() -> None:

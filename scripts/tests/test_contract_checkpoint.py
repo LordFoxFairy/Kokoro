@@ -275,6 +275,18 @@ def test_w1b_iam_checkpoint_is_one_edge_successor_of_w0b_exit() -> None:
     assert set(current["active_ids"]) == set(previous["active_ids"]) | {"EDGE-BFF-IAM"}
     assert set(current["broken_ids"]) == set(previous["broken_ids"]) - {"EDGE-BFF-IAM"}
     assert current["illegal_ids"] == previous["illegal_ids"]
+
+
+def test_w1d_web_iam_cut_removes_only_the_illegal_edge() -> None:
+    checkpoints = ROOT / "verification/contracts/checkpoints"
+    previous = json.loads((checkpoints / "w1b-iam.json").read_text())
+    current_path = checkpoints / "w1d-web-iam-cut.json"
+    current = json.loads(current_path.read_text())
+    assert current["schema_version"] == previous["schema_version"] == 1
+    assert current["active_ids"] == previous["active_ids"]
+    assert current["broken_ids"] == previous["broken_ids"]
+    assert previous["illegal_ids"] == ["EDGE-WEB-IAM-DIRECT"]
+    assert current["illegal_ids"] == []
     assert verify_checkpoint(
         ROOT,
         ROOT / "verification/contracts/consumer-inventory.json",
