@@ -7,8 +7,8 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `71d408e1a36fbe8c3ff7dc350311e5b4eeb8be23` |
-| `apps/kokoro-bff` | `2f1fc3382df31ba107d7eb2b2b6a611fa893bc13` |
+| `apps/kokoro-app` | `942d22e4d42ba3abfeb0407f738e8108b7a74eed` |
+| `apps/kokoro-bff` | `bc45632b8654db7e06eb9878bb4d7a609d12dc7b` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `6a55ffb4c22f0b155ddb83157735c0ace766701d` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
@@ -25,11 +25,13 @@
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
 
-## 当前进行中的固定租户切片
+## 当前固定租户登录与 relay 来源
 
-Root 当前精确 pin IAM `6a55ffb`、BFF `2f1fc33`、Web `71d408e`。IAM 已为仅开发/测试的固定 HTTP loopback 注册显式 native OAuth client，生产 web HTTPS 约束不变。Root 前台入口已改为普通 `http://127.0.0.1:3310/login`，不再依赖临时 HTTPS 域名、证书或专用 Chrome profile；该前台是**早于 Web `71d408e` 的隔离源码副本**，已验证真实 `/login` 302 → `/iam/oauth2/authorize` 302 → `/auth/sign-in` 200，并在 Codex IAB 以临时账号+consent 到达 `/app`、应用退出后 Product Session 失效。Web `71d408e` 已删除旧 IAM 直连、sealed cookie 与两旧 auth route，在独立生产 Next 实测旧 URL GET/POST 404、`/app` 私有 no-store，Root Node22 `pnpm check` 69 contract/36 architecture/1474 tests/lint/typecheck/build 与隔离 E2E 11 pass/1 预期 skip；**尚未把新 Web commit 与当前前台实例做真实组合验收**。Issuer 默认英文确认页的最后 POST 在 Codex IAB/受控 Chrome 被浏览器拦截，当前 HTTP 组合尚无该最终确认的可见证据；不能把 Product Session 退出等同于 issuer 完整退出。错误收件人/过期邀请负例、正式租户常驻入口及后续 Chat/Storage 等 owner 闭环仍待验。
+Root 当前固定 IAM `6a55ffb`、BFF `bc45632`、Web `942d22e`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 消费 BFF 已发布 policy 原始字节。Root 独立 Node22 BFF `pnpm format:check && pnpm check` PASS（291 pass/1 skip）；Web `pnpm check` PASS（contract 69、architecture 36、Vitest 1475、lint/typecheck/build），隔离真实 Next/Chromium 登录页面 52 项及移动 axe PASS。
 
-Root 治理当前实测：新 W1D checkpoint、main-only、topology 均 PASS；完整 compatibility 仍有 11 个 declared broken edge、0 个非法边，十仓标准门仍有 134 项。IAM relay policy provenance 仍钉旧 IAM `7215223`，与当前 `6a55ffb` gitlink 不符，`verify-iam-relay-policy.py` FAIL；IAM allowlist/snapshot/OpenAPI 固定 blob 均未变，下一片由 BFF policy owner 先发布，再由 Web 消费，最后 Root 重钉，不能靠 Root 放宽门禁。
+用户正在使用的 3310 是 Root 之前启动的**隔离旧源码副本**；当前源码改动尚未自动进入该进程，Root 将在完成提交/所有权清理后重新生成本地预览并用浏览器复验，不以截图或静态门冒称 3310 已更新。此前该入口真实 `/login` 302→IAM authorize 302→表单 200，临时账号可达 `/app`，应用退出清除 Product Session；Issuer 最终确认 POST 曾被 Codex 浏览器拦截，仍属独立待验。后续 Chat/Storage/其他 11 条 declared broken edge 未因此闭环，Billing 仍最后。
+
+Root 治理本切片对 BFF 146 处、Web 12 处固定来源 commit/blob 重新计算；原 W1D checkpoint 保留 11 broken、0 illegal 的诚实队列。`verify-iam-relay-policy.py`、topology、main-only 和 compatibility 的最终状态以**本次 Root 提交后**重跑结果为准，不以提交前旧 gitlink 导致的暂时失败作结论。十仓标准门先前仍有 134 项未闭环。
 
 ## 已验证到的边界
 
