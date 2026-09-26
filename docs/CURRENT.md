@@ -7,7 +7,7 @@
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `9fc2fefd2b7dad5fae040b670e7f420b3343defc` |
+| `apps/kokoro-app` | `1fa25d2b4760dc428d3fcdf77628ba343a5bc3ff` |
 | `apps/kokoro-bff` | `c586d0bdb42248f206b8adc92784e4c2140d2512` |
 | `apps/kokoro-agent` | `520ec181a101298b4f336aad273ce003b2735955` |
 | `apps/kokoro-iam` | `b720b6dc095b883237682102ca0a87ed6451a968` |
@@ -26,6 +26,8 @@
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
 
 ## 当前固定租户登录与 relay 来源
+
+Web main `1fa25d2b4760dc428d3fcdf77628ba343a5bc3ff` 已发布真实 shadcn 登录表单；Root Node22 `pnpm check` exit0（contract 69、architecture 36、Vitest 1478、lint/typecheck/build），3310 临时组合已按明确文件热同步且未重启进程。全新 Chromium 实测 `/login` 302→302→200 到同一邮箱/密码表单、旧重试/连接状态 0；一次无效凭据提交后仍在表单就近报错且密码清空。下面旧三仓组合与无脚本 Route Handler 描述是此前 Root pin 的历史状态；本次仅提升 Web gitlink，不冒充 IAM 0.6/BFF 来源或 Platform 完整闭环。
 
 Root 当前固定 IAM `b720b6d`、BFF `c586d0b`、Web `9fc2fef`。IAM 仅为本地/测试固定 HTTP loopback 提供显式 native OAuth client，生产 web HTTPS 约束不变。`/login` 在服务端直接启动 Product OIDC，正常 302 经 BFF/IAM 到 Web 唯一签名 `/auth/sign-in` 邮箱/密码表单；没有可见“连接中”或整页重试页。表单为中文紧凑布局，遵循 Web 现有 shadcn 语义色和 Card/Input/Button 尺度；由于它同时签发 Cookie-bound 一次性 CSRF，仍由现有 script-free Route Handler 输出，不冒称直接引用 React 组件。BFF relay policy 已固定当前 IAM commit，Web 原样消费其发布字节。IAM 已发布 `platform:execute` 目录及具名 execution verifier/OpenAPI `0.5.0`/SDK，Root 独立验收 IAM 92 文件/846 单测及真实 PostgreSQL/Redis/JWKS HTTP 8/8；BFF Node22 `pnpm format:check && pnpm check` 292 项中 291 pass/1 既有 skip；Web Node22 `pnpm check` contract 69、architecture 36、Vitest 1475、lint/typecheck/build 均通过。当前三仓精确 SHA 的隔离 HTTPS Product Session S1 已实跑首登邮件→OIDC→会话→issuer logout、Team 同源 HTTP 与 Chat proxy，通过且测试自有资源清零；该 runner 使用 CookieJar/HTTP，Chromium DOM 在这一新组合仍待验。Platform ingress 身份契约、consumer 原子切换、真实 Agent signer 和六 owner 组合也仍未完成，不能将 IAM 单仓 E2 当成授权链闭环。
 
