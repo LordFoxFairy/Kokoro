@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Run-owned BFF project upload -> Storage v2 -> S3/ClamAV integration smoke. */
+/** Run-owned BFF Project and personal Library -> Storage v2 -> S3/ClamAV integration smoke. */
 import { createHash, randomBytes, randomUUID } from "node:crypto"
 import { createServer } from "node:http"
 import { createRequire } from "node:module"
@@ -212,6 +212,34 @@ async function storageReference(base, identity, asset, secret) {
   return result.downloadReference
 }
 
+async function seedPersonalCleanAsset(storageBase, publicOrigin, identity, storageSecret, bytes, filename) {
+  // This test-owned owner fixture seeds Storage directly. BFF/Web personal upload
+  // is a separate Product operation and is not claimed by the Library read smoke.
+  const headers = {
+    "content-type": "application/json", "connect-protocol-version": "1",
+    "x-kokoro-service": "web-bff", "x-kokoro-internal-secret": storageSecret,
+    "x-kokoro-tenant-id": identity.tenant, "x-kokoro-subject-id": identity.owner,
+    "x-kokoro-request-id": randomUUID(), "x-kokoro-scope-kind": "personal", "x-kokoro-scope-id": identity.owner,
+  }
+  const digest = sha256(bytes)
+  const created = await jsonRequest(storageBase, "/kokoro.storage.v2.StorageService/CreateUpload", "POST", headers, JSON.stringify({
+    command: { commandId: randomUUID(), requestDigest: sha256(Buffer.from(`personal-create:${identity.tenant}:${filename}:${digest}`)) },
+    filename, mimeType: "text/plain", sizeBytes: String(bytes.length), contentSha256: digest, uploadPurpose: "UPLOAD_PURPOSE_ASSET",
+  }), 200)
+  const reference = created.uploadReference
+  ensure(created.uploadId && reference?.method === "PUT" && new URL(reference.url).origin === publicOrigin, "personal upload reference drift")
+  ensure(Object.keys(reference.requiredHeaders ?? {}).length === 1 && reference.requiredHeaders["content-type"] === "text/plain", "personal upload headers drift")
+  const put = await fetch(reference.url, { method: "PUT", headers: reference.requiredHeaders, body: new Uint8Array(bytes), redirect: "error", signal: AbortSignal.timeout(15000) })
+  await put.body?.cancel()
+  ensure(put.ok, "personal fixture object PUT failed")
+  const completed = await jsonRequest(storageBase, "/kokoro.storage.v2.StorageService/CompleteUpload", "POST", headers, JSON.stringify({
+    command: { commandId: randomUUID(), requestDigest: sha256(Buffer.from(`personal-complete:${identity.tenant}:${filename}:${digest}`)) },
+    uploadId: created.uploadId, contentSha256: digest, sizeBytes: String(bytes.length),
+  }), 200)
+  ensure(completed.assetId && ["SCAN_STATE_CLEAN", 2].includes(completed.scanState), "personal fixture did not become CLEAN")
+  return { assetId: completed.assetId, digest }
+}
+
 async function runCases(bffBase, storageBase, publicOrigin, identity, tokens, webSecret, storageSecret, database) {
   const auth = token => ({ "x-kokoro-service": "web-bff", "x-kokoro-internal-secret": webSecret, authorization: `Bearer ${token}` })
   const created = await jsonRequest(bffBase, "/v1/projects", "POST", { ...auth(tokens.owner), "content-type": "application/json", "idempotency-key": `project-${identity.tenant}` }, JSON.stringify({ name: "W2 owned project", description: "cross-owner smoke" }), 200)
@@ -270,7 +298,26 @@ async function runCases(bffBase, storageBase, publicOrigin, identity, tokens, we
   ensure(infected.status === 422 && infected.body.error?.code === "resource_file_infected" && !infected.body.data?.resources, "EICAR was not terminally denied")
   const afterInfected = await list(tokens.owner)
   ensure(afterInfected.data?.items?.length === 2 && afterInfected.data.items.every(item => item.scan_state === "clean"), "infected asset appeared in project list")
-  return ["clean_project_upload", "same_key_replay", "owner_signed_get_bytes", "project_list_reload", "project_list_pagination", "cross_subject_denied", "eicar_denied"]
+  const library = (token, query = "?kind=file") => jsonRequest(bffBase, `/v1/library${query}`, "GET", auth(token), undefined, 200)
+  const noPersonalYet = await library(tokens.owner)
+  ensure(noPersonalYet.data?.items?.length === 0 && noPersonalYet.data.next_cursor === null, "project asset leaked into personal Library")
+  const personalOne = await seedPersonalCleanAsset(storageBase, publicOrigin, identity, storageSecret, Buffer.from(`personal one ${identity.tenant}`), "personal-one.txt")
+  const personalTwo = await seedPersonalCleanAsset(storageBase, publicOrigin, identity, storageSecret, Buffer.from(`personal two ${identity.tenant}`), "personal-two.txt")
+  const firstPersonalPage = await library(tokens.owner, "?kind=file&limit=1")
+  const personalCursor = firstPersonalPage.data?.next_cursor
+  ensure(firstPersonalPage.data?.items?.length === 1 && firstPersonalPage.data.items[0].kind === "file" && typeof personalCursor === "string", "personal Library first page drift")
+  const secondPersonalPage = await library(tokens.owner, `?kind=file&limit=1&cursor=${encodeURIComponent(personalCursor)}`)
+  const personalIds = new Set([firstPersonalPage.data.items[0].asset_id, secondPersonalPage.data?.items?.[0]?.asset_id])
+  ensure(secondPersonalPage.data?.items?.length === 1 && secondPersonalPage.data.next_cursor === null && personalIds.size === 2 && personalIds.has(personalOne.assetId) && personalIds.has(personalTwo.assetId), "personal Library pagination lost or mixed assets")
+  const personalFacts = await database.query("SELECT count(*)::int AS n FROM kokoro_storage.storage_asset WHERE tenant_id = $1 AND scope_kind = 'personal' AND scope_id = $2 AND upload_purpose = 'asset' AND scan_state = 'clean'", [identity.tenant, identity.owner])
+  ensure(personalFacts.rows[0]?.n === 2, "personal Library disagrees with Storage durable facts")
+  const otherPersonal = await library(tokens.other)
+  ensure(otherPersonal.data?.items?.length === 0 && otherPersonal.data.next_cursor === null, "other subject saw personal files")
+  const foreignCursor = await jsonRequest(bffBase, `/v1/library?kind=file&limit=1&cursor=${encodeURIComponent(personalCursor)}`, "GET", auth(tokens.other), undefined, 400)
+  ensure(foreignCursor.error?.code === "invalid_library_page", "other subject replayed personal cursor")
+  const missingKind = await jsonRequest(bffBase, "/v1/library", "GET", auth(tokens.owner), undefined, 400)
+  ensure(missingKind.error?.code === "invalid_library_kind", "Library silently defaulted kind")
+  return ["clean_project_upload", "same_key_replay", "owner_signed_get_bytes", "project_list_reload", "project_list_pagination", "cross_subject_denied", "eicar_denied", "personal_library_clean_list", "personal_library_pagination", "personal_library_subject_isolation", "personal_library_explicit_kind"]
 }
 
 async function prepareStorageSchemaFixture(directory) {
