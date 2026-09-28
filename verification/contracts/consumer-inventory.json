@@ -679,16 +679,16 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+        "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
         "contract_version": "kokoro.storage.v2",
         "contract_path": "contract/proto/kokoro/storage/v2/storage.proto",
-        "contract_sha256": "7add201df530ee1600a67c7fdadd9dfcd0edc1e8a0595b8977ac63b30663f049"
+        "contract_sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
       },
       "protocol": "connect-proto",
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "BFF Project POST and GET now consume pinned Storage v2 Connect. Isolated real PostgreSQL/Redis/MinIO/ClamAV composition passed clean upload, same-key replay, signed bytes, persistent list pagination, private denial and infected rejection. Library and other Storage paths remain incomplete; keep the whole edge broken until their owner contracts and composition tests pass.",
+      "reason": "BFF Project POST and GET consume Storage v2 Connect and passed real PostgreSQL/Redis/MinIO/ClamAV and Chromium Project composition. Storage now publishes a personal CLEAN ASSET ListAssets owner contract at 2d87e26, but BFF still pins the previous Proto digest and has not connected the personal Library public API, upload or download; Agent Artifact and other Storage paths are also incomplete. Keep the whole edge broken until consumer provenance, Product operations and real composition tests pass.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -698,15 +698,15 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
           "path": "contract/openapi.json",
           "sha256": "546fe50eb61568441203279858760de6279276945c9e83640fe6e4827acad6de"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
           "path": "contract/proto/kokoro/storage/v2/storage.proto",
-          "sha256": "7add201df530ee1600a67c7fdadd9dfcd0edc1e8a0595b8977ac63b30663f049"
+          "sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
         },
         {
           "repository_path": "apps/kokoro-bff",
@@ -1195,10 +1195,10 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+        "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
         "contract_version": "kokoro.storage.v2",
         "contract_path": "contract/proto/kokoro/storage/v2/storage.proto",
-        "contract_sha256": "7add201df530ee1600a67c7fdadd9dfcd0edc1e8a0595b8977ac63b30663f049"
+        "contract_sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
       },
       "protocol": "connect-proto",
       "code_generator_version": "unmanaged",
@@ -1232,10 +1232,10 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+        "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
         "contract_version": "kokoro.storage.v2",
         "contract_path": "contract/proto/kokoro/storage/v2/storage.proto",
-        "contract_sha256": "7add201df530ee1600a67c7fdadd9dfcd0edc1e8a0595b8977ac63b30663f049"
+        "contract_sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
       },
       "protocol": "connect-proto",
       "code_generator_version": "@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0",
@@ -1263,13 +1263,13 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
           "path": "src/common/auth/service-authorization.ts",
           "sha256": "708db7e16e9650df9c3208d3eb8198aac93a5dc54ad79b44fa6ad98e3bd19624"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "f01d11843d8df6b093a8cc727e01ee16e2c15190",
+          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
           "path": "test/contract/rpc-trust-boundary.test.ts",
           "sha256": "de5ce5cfa3beae6913f8ff6aadb51e40634553518f248c7a8a5a1ec8949f01e1"
         }
