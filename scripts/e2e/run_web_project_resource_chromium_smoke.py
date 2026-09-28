@@ -367,6 +367,15 @@ def _driver_result(
         or personal.get("conflict_status") != 409
         or personal.get("infected_status") != 422
         or personal.get("infected_replay_status") != 422
+        or not isinstance(personal.get("visible_asset_id"), str)
+        or re.fullmatch(r"asset:[a-f0-9]{64}", personal["visible_asset_id"]) is None
+        or personal["visible_asset_id"] == personal["asset_id"]
+        or not isinstance(personal.get("visible_filename"), str)
+        or re.fullmatch(r"visible-w2-[a-f0-9]{24}\.txt", personal["visible_filename"]) is None
+        or not isinstance(personal.get("visible_content_sha256"), str)
+        or re.fullmatch(r"[a-f0-9]{64}", personal["visible_content_sha256"]) is None
+        or personal.get("visible_post_status") != 200
+        or personal.get("visible_owner_get") is not True
         or personal.get("owner_get_after_post") is not True
         or personal.get("owner_get_after_reload") is not True
         or personal.get("member_get_status") != 200
@@ -388,16 +397,17 @@ def _durable_owner_facts(
         ("project", browser["project_id"]),
         ("asset", browser["asset_id"]),
         ("personal_asset", browser["personal"]["asset_id"]),
+        ("visible_asset", browser["personal"]["visible_asset_id"]),
         ("member", browser["member_subject"]),
     )
     for label, value in named_values:
-        pattern = r"asset:[a-f0-9]{64}" if label in {"asset", "personal_asset"} else r"[A-Za-z0-9_-]{1,191}"
+        pattern = r"asset:[a-f0-9]{64}" if label in {"asset", "personal_asset", "visible_asset"} else r"[A-Za-z0-9_-]{1,191}"
         if not isinstance(value, str) or re.fullmatch(pattern, value) is None:
             raise SmokeError(
                 f"browser {label} identifier invalid for durable verification"
             )
     values = tuple(value for _, value in named_values)
-    tenant, owner, project, asset, personal_asset, member = values
+    tenant, owner, project, asset, personal_asset, visible_asset, member = values
     query = (
         "SELECT (SELECT count(*) FROM kokoro_bff.bff_project WHERE tenant_id='"
         + tenant
@@ -430,10 +440,27 @@ def _durable_owner_facts(
         "(SELECT count(*) FROM kokoro_storage.storage_asset WHERE tenant_id='"
         + tenant
         + "' AND scope_kind='personal' AND scope_id='"
+        + owner
+        + "' AND asset_id='"
+        + visible_asset
+        + "' AND scan_state='clean' AND upload_purpose='asset')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_storage.storage_upload WHERE tenant_id='"
+        + tenant
+        + "' AND scope_kind='personal' AND scope_id='"
+        + owner
+        + "' AND asset_id='"
+        + visible_asset
+        + "' AND state='completed')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_storage.storage_asset WHERE tenant_id='"
+        + tenant
+        + "' AND scope_kind='personal' AND scope_id='"
         + member
         + "')::text || ',' || "
         "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND response_body #>> '{data,file,asset_id}'='"
         + personal_asset
+        + "')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND response_body #>> '{data,file,asset_id}'='"
+        + visible_asset
         + "')::text || ',' || "
         "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND scope LIKE '%personal-file-upload:v1%' AND response_body ? 'upload_id')::text || ',' || "
         "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=422 AND response_body #>> '{error,code}'='library_file_infected')::text"
@@ -441,8 +468,8 @@ def _durable_owner_facts(
     actual = resources.command(
         ["psql", database_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", query]
     ).strip()
-    if actual != "1,1,1,1,0,1,2,1":
-        if re.fullmatch(r"[0-9]+(?:,[0-9]+){7}", actual) is None:
+    if actual != "1,1,1,1,1,1,0,1,1,3,1":
+        if re.fullmatch(r"[0-9]+(?:,[0-9]+){10}", actual) is None:
             raise SmokeError("Project or personal Library durable owner fact malformed")
         raise SmokeError(f"Project or personal Library durable owner fact drift: {actual}")
 
@@ -912,7 +939,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Chromium login → Web Project click/upload → concurrent same-key personal Product CLEAN/replay/conflict/EICAR → Storage S3/ClamAV → personal Library UI/reload → member private",
+        "flow": "real IAM Chromium login → Web Project click/upload → concurrent same-key personal Product CLEAN/replay/conflict/EICAR → visible personal Library file-picker upload/GET/reload → Storage S3/ClamAV → member private",
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]

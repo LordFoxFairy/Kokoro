@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Real Chromium click → Project POST → file picker → CLEAN GET → reload. */
+/** Real Chromium IAM → Project upload → personal API/idempotency → visible Library upload/GET/private reload. */
 
 import { createHash, randomUUID } from "node:crypto"
 import { createRequire } from "node:module"
@@ -205,10 +205,34 @@ try {
   assert(libraryPage?.data?.items?.some((item) => item.asset_id === personalFile.asset_id &&
     item.content_sha256 === personalFile.content_sha256 && item.scan_state === "clean"), "Library GET omitted personal CLEAN asset")
   assert(!libraryPage?.data?.items?.some((item) => item.filename === infectedFilename), "Library GET exposed infected file")
-  const libraryGetCount = libraryGet.length
+  phase = "personal-file-visible-upload"
+  const visibleFilename = `visible-${input.filename}`
+  const visibleBytes = Buffer.from(`W2 visible personal file ${input.file_content}`, "utf8")
+  const beforeVisibleGet = libraryObservations.filter((item) => item.status === 200).length
+  const visiblePostPromise = page.waitForResponse((response) => new URL(response.url()).origin === input.web_origin &&
+    new URL(response.url()).pathname === "/api/hub/library/files" && response.request().method() === "POST", { timeout: input.timeout_ms })
+  await page.locator('#library-personal-file[type="file"]').setInputFiles({ name: visibleFilename, mimeType: "text/plain", buffer: visibleBytes })
+  await page.getByRole("button", { name: "Upload personal file", exact: true }).click()
+  const visiblePostResponse = await visiblePostPromise
+  assert(visiblePostResponse.status() === 200, `visible personal upload returned ${visiblePostResponse.status()}`)
+  const visiblePostBody = await visiblePostResponse.json()
+  const visibleFile = visiblePostBody?.data?.file
+  assert(visibleFile?.kind === "file" && /^asset:[a-f0-9]{64}$/u.test(visibleFile.asset_id) &&
+    visibleFile.filename === visibleFilename && visibleFile.size_bytes === String(visibleBytes.length) &&
+    visibleFile.content_sha256 === sha256(visibleBytes) && visibleFile.scan_state === "clean",
+    "visible personal upload did not return CLEAN exact bytes")
+  await page.locator(`[data-testid="library-files"] [data-asset-id="${visibleFile.asset_id}"]`).waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(libraryObservations.filter((item) => item.status === 200).length > beforeVisibleGet,
+    "visible personal upload did not refresh owner GET")
+  const visibleGet = await libraryObservations.filter((item) => item.status === 200).at(-1).response.json()
+  assert(visibleGet?.data?.items?.some((item) => item.asset_id === visibleFile.asset_id && item.scan_state === "clean"),
+    "visible file card did not come from owner GET")
+  process.stderr.write("MILESTONE:personal-visible-upload\n")
+  const libraryGetCount = libraryObservations.filter((item) => item.status === 200).length
   phase = "personal-file-library-reload"
   await page.reload({ waitUntil: "domcontentloaded", timeout: input.timeout_ms })
   await page.locator(`[data-testid="library-files"] [data-asset-id="${personalFile.asset_id}"]`).waitFor({ state: "visible", timeout: input.timeout_ms })
+  await page.locator(`[data-testid="library-files"] [data-asset-id="${visibleFile.asset_id}"]`).waitFor({ state: "visible", timeout: input.timeout_ms })
   assert(libraryObservations.filter((item) => item.status === 200).length > libraryGetCount,
     "Library reload did not issue durable personal GET")
   process.stderr.write("MILESTONE:personal-library-reload\n")
@@ -233,6 +257,7 @@ try {
   await memberPage.goto(`${input.web_origin}/app/library`, { waitUntil: "domcontentloaded", timeout: input.timeout_ms })
   await memberPage.getByTestId("library-files-empty").waitFor({ state: "visible", timeout: input.timeout_ms })
   assert(await memberPage.getByText(personalFilename).count() === 0, "member Library rendered owner's personal file")
+  assert(await memberPage.getByText(visibleFilename).count() === 0, "member Library rendered owner's visibly uploaded file")
   const memberLibrary = await memberPage.evaluate(async () => {
     const response = await fetch("/api/hub/library?kind=file&limit=50", { credentials: "same-origin", cache: "no-store" })
     return { status: response.status, body: await response.json() }
@@ -252,6 +277,8 @@ try {
       post_status: personalPost.status, replay_status: personalReplay.status, conflict_status: personalConflict.status,
       concurrent_statuses: concurrent.map((result) => result.status),
       infected_status: infected.status, infected_replay_status: infectedReplay.status,
+      visible_asset_id: visibleFile.asset_id, visible_filename: visibleFilename,
+      visible_content_sha256: visibleFile.content_sha256, visible_post_status: visiblePostResponse.status(), visible_owner_get: true,
       owner_get_after_post: true, owner_get_after_reload: true, member_get_status: memberLibrary.status, member_empty: true },
     screenshot: input.screenshot, privacy,
   }))
