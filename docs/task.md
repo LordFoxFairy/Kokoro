@@ -1104,3 +1104,5 @@ BFF 文档门已由唯一 writer 从 `a67ae2d` 完成，Root 审查后提交 BFF
 | 代码门与验证 | Root 文档放行后精确限定 feature/client/schema/generated/test/i18n 文件；TDD 覆盖单文件成功、成功后 GET、网络/503/scan pending 同键重试、409 conflict/感染终态、大小与误报成功、双击/切 tab/刷新、两位用户私有、现有作品 tab 不回退。Web Node22 `pnpm check`、隔离 Playwright、Root 当前 SHA 真 IAM→Web→BFF→Storage→MinIO/ClamAV Chromium 从**UI 点击**上传/刷新/隐私，测试资源清零。不碰用户 3310，不能以直接 fetch 代替上传 UI 验收。 |
 
 并行分工：Web 单 writer 先收敛四份设计文档；Root 可独立只读核对 BFF 个人 POST 真实故障矩阵及现有 W2 runner，但不得并发修改 Web 文件或将现有同源 fetch 冒充 UI 上传完成。待 Web 文档门审查后按 owner 顺序继续。
+
+W2-WEB-LIBRARY-PERSONAL-UPLOAD 文档门：Web main `29673babe37d01a2fbf7d0347f99d8e04c22da16` 仅四份三设计/CURRENT 文档，经 Root 对照 BFF `8a90fdd` OpenAPI SHA、现有 UI/代理/Project 上传审查及 diff check 后提交；generated/UI/运行/测试均未改。下一代码门须由同一 Web owner 按明确文件集实施，不能把本次文档当上传可见。
