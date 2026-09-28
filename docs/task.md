@@ -1071,3 +1071,17 @@ W2 当前组合复验：Root `bb6a6502` 固定 Web `c140f3b`/BFF `a67ae2d`/Stora
 | 放置方案 | 采用现有 `src/features/app/kokoro-library-surface.tsx` 作为组装及 tab 容器，在同一 feature 拆文件列表组件/状态与 `src/contract/` 的 wire schema；淘汰新建第二个 `/app/files` 页面（割裂 Library）和在 ArtifactRecord 加可选 asset 字段（混淆 owner/生命周期）。仅在确有独立变化原因时新建文件，不建顶层模块。 |
 | 第一门 / 文件 | 先只修改 Web `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`，四文档简洁对齐当前/目标/来源/错误与下一代码范围；不改生成、UI、机器契约。Root 审查后另授代码文件集，避免让文档门冒充页面可用。 |
 | 依赖 / 测试 | Browser→既有 Web `/api/hub` 同源 adapter→BFF public GET；不直连 Storage/复制数据库或缓存。只有真实 200 空页可显示空态；503/解析错显示错误与重试，异步取消迟到响应、游标环路/跨页去重；其他用户的文件不得显示。上传/下载 Product 契约尚未发布，文件 tab 不借 Project POST 或 Artifact hash 下载，也不放虚假按钮。后续代码先 exact pin BFF OpenAPI、runtime schema/组件测试、Node22 全门与真登录+Library 浏览器验收；不会触碰 3310 用户预览。 |
+
+Web 文档门由唯一 writer 从 `c140f3b` 完成，Root 已审查并提交 Web main `fcf53feab3f47151dec9a86c8caa415a14f560eb`；只涉及上述四份文档，`git diff --check` PASS。整份历史文档 Prettier 在 HEAD 基线即不通过，本次未批量重排；此提交不是 UI 实现。
+
+**W2-WEB-LIBRARY-FILES-CODE 代码门（同一 Web owner，Root 提交）。** 基线 Web `fcf53fe` clean；只准修改既有 Library feature `src/features/app/kokoro-library-*`、`src/contract/` 内本任务独立 wire schema、`src/generated/bff-public-openapi.yaml`、`scripts/generate-bff-team-client.mjs` 及其确定性派生文件、相邻 Library/contract/UI 测试、必要 i18n message 文件与相邻 `INDEX.md`/`docs/CURRENT.md`。不能修改 BFF/Storage/IAM/Root、Web 路由、Project 上传、Agent Artifact wire 事实或全局设计 token。当前 BFF public owner `a67ae2d` 与 SHA-256 `82df2303f9f86e9b4caa4b5965f930735740d8c044c955450e45406dc29cabb9` 必须原字节 pin，并同步旧 contract 测试中的 provenance；只消费已发布 `GET /v1/library?kind=file`。TDD 覆盖 200 空/多页、加载/错误/重试、严格坏页、切换取消、去重/cursor 环、Artifact 旧行为、正式模式不 preview；Node22 `pnpm check` 与隔离 `pnpm test:e2e` 后停写，Root 单独复验、精确暂存/提交。新文件先给出 owner/粒度/依赖放置表；不存在的 Product 上传下载不放按钮。
+
+### W2-BFF-LIBRARY-PERSONAL-UPLOAD / P0（2026-09-28，下一独立纵切）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | BFF `apps/kokoro-bff` main `a67ae2d06b52202f349305ae3723f6e296c087a1` clean；Root 审查/Git index/提交。Storage `2d87e26` 的 personal CreateUpload/Complete/GetAsset/Scan 是 owner 契约，不由 BFF 复制；同仓一个 writer。 |
+| 当前 / 目标 | public Library 只读已发布，个人 Product 上传尚无；目标 `POST /v1/library/files` 单文件有界 multipart，必填 `Idempotency-Key`，当次 IAM subject 派生 personal scope，只有 CLEAN 普通 ASSET 才回应稳定 `asset_id`。感染终态、待扫可重试、未知 Complete 同键重启恢复，当前准入先于 receipt 重放。 |
+| 放置 / 排除 | 采用既有 `src/http/routes/` 具名路由、`src/application/` 上传协调与既有 `src/infrastructure/clients/storage/` Connect adapter、canonical `contract/openapi/v1/openapi.yaml`；淘汰复用 Project predicate/上传 checkpoint namespace 和通用 `mutationTicket` 先重放的路径。先补 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 四文档设计门，Root 审查后另授权代码文件集。不得新增 Schema/role、Storage Proto、Web UI、IAM 权限模型或运维工作。 |
+| SQL / 恢复门 | 既有 `bff_idempotency_receipt` 仅可在身份隔离的独立 namespace 复用：public 终态与 `personal-file-upload:v1+tenant+subject+key` checkpoint 互不碰撞；文件名/MIME/长度/SHA 指纹、Storage 稳定命令身份、原 upload/status/asset 复核需明文固定。`putReceipt` 当前条件写 0 行仍返回成功，代码门必须修复或证明 CAS 持久成功，不能把内存或未知结果当完成。不得清理非测试自有数据。 |
+| 验证 | 先证明现有 Project 上传行为基线和 RED 测试，再 OpenAPI/contract/单仓全门；Root 真 PG+Storage Connect+MinIO+ClamAV 覆盖 POST→CLEAN→GET、同键重放/异文件冲突、Complete 丢响应后重启恢复、并发同键、EICAR/待扫、跨 subject/tenant 不可见；测试自有资源全部清零，不碰 3310。未形成真实证据不升绿。 |
