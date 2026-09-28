@@ -1100,3 +1100,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 ## 2026-09-28 — Web 个人下载文档门
 
 - Web 唯一 writer 仅更新四份设计/CURRENT，main `d1dffdbff4025ebdbf275eac20debe165bed92c0` 已发布；BFF `d5c868f` OpenAPI SHA-256 `3f8aba161444d8b617df7ff1789e698269a4a6dd2c8b2ae7b3aaadb331947681` 与 Web 当前 generated `6fa107540c6cc60ec8b45f1bcc19c8930f19c803b16f4c6d418c2edc9393fc52` 经 Root 原字节核对，草稿旧 digest 笔误已修。Writer Node22 contract 99/99、generated drift 15 文件、Root diff check PASS。仍无 Web 下载按钮/二进制 adapter，未运行真浏览器下载；Root 固定 Web gitlink/库存后进入同一 writer 的代码门，3310 未改动。
+
+## 2026-09-28 — Web 个人文件下载单仓代码已发布，真浏览器门待验
+
+- Web 唯一 writer 交付 main `4829d51b6e52de987755d46be14047a1b5ddf826`：精确 BFF `d5c868f` OpenAPI SHA-256 `3f8aba161444d8b617df7ff1789e698269a4a6dd2c8b2ae7b3aaadb331947681`，同源 `/api/hub/library/files/{asset_id}/content` 完整二进制/安全头白名单，现有个人文件卡 shadcn 下载/取消/重试与 320px 独立行布局，未复用 Artifact。独立审查发现并由原 writer 修复三个 P2：`x-request-id` 丢失、异步 Blob 后取消竞态、窄屏文件名受挤；冻结工作树只读复审无新 P0/P1/P2。Root 独立 Node22 `pnpm check` exit0：contract 100、architecture 36、Vitest 1582、lint/typecheck/build；writer 独立端口 Playwright 11 pass/1 既有 skip，3310 未触碰。
+- Root 已在原 W2 真 Chromium runner 增加当前文件卡按钮触发下载、HTTP 与保存原字节 SHA、文件名/安全头、第二成员同 asset 404、320px 可读/不溢出断言；聚焦治理测试 19/19 与 Node syntax PASS，但此时还没运行当前 Web/BFF/Storage/IAM 的真浏览器组合。`EDGE-WEB-BFF` 仍 broken，登录等局部通过不代表全体 Product 闭环。

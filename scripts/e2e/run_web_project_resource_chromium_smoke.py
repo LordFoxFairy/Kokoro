@@ -378,8 +378,10 @@ def _driver_result(
         or personal.get("visible_owner_get") is not True
         or personal.get("owner_get_after_post") is not True
         or personal.get("owner_get_after_reload") is not True
+        or personal.get("visible_downloads") != 2
         or personal.get("member_get_status") != 200
         or personal.get("member_empty") is not True
+        or personal.get("member_download_status") != 404
     ):
         raise SmokeError("real Chromium personal Library evidence drift")
     return evidence

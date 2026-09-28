@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Real Chromium IAM → Project upload → personal API/idempotency → visible Library upload/GET/private reload. */
+/** Real Chromium IAM → Project upload → personal Library upload/download/private reload. */
 
 import { createHash, randomUUID } from "node:crypto"
 import { createRequire } from "node:module"
@@ -237,6 +237,49 @@ try {
     "Library reload did not issue durable personal GET")
   process.stderr.write("MILESTONE:personal-library-reload\n")
 
+  async function verifyVisibleDownload(file, expectedBytes) {
+    const card = page.locator(`[data-testid="library-files"] [data-asset-id="${file.asset_id}"]`)
+    const pathname = `/api/hub/library/files/${encodeURIComponent(file.asset_id)}/content`
+    const responsePromise = page.waitForResponse((response) => new URL(response.url()).origin === input.web_origin &&
+      new URL(response.url()).pathname === pathname && response.request().method() === "GET", { timeout: input.timeout_ms })
+    const downloadPromise = page.waitForEvent("download", { timeout: input.timeout_ms })
+    await card.getByTestId("library-file-download").click()
+    const [response, download] = await Promise.all([responsePromise, downloadPromise])
+    assert(response.status() === 200, `visible personal download returned ${response.status()}`)
+    const headers = response.headers()
+    assert(headers["cache-control"]?.includes("no-store") && headers["referrer-policy"] === "no-referrer" &&
+      headers["x-content-type-options"] === "nosniff" && headers["content-disposition"]?.startsWith("attachment;") &&
+      /^[\x20-\x7e]{1,128}$/u.test(headers["x-request-id"] ?? ""),
+    "visible personal download lost safe binary headers")
+    assert(Number(headers["content-length"]) === expectedBytes.length, "visible personal download length drift")
+    assert(sha256(await response.body()) === sha256(expectedBytes), "visible personal HTTP bytes drift")
+    assert(download.suggestedFilename() === file.filename, "visible personal download filename drift")
+    assert(sha256(readFileSync(await download.path())) === sha256(expectedBytes), "visible personal saved bytes drift")
+    await download.delete()
+  }
+  phase = "personal-file-visible-download"
+  await verifyVisibleDownload(personalFile, personalBytes)
+  await verifyVisibleDownload(visibleFile, visibleBytes)
+  process.stderr.write("MILESTONE:personal-visible-download\n")
+  phase = "personal-file-mobile-layout"
+  await page.setViewportSize({ width: 320, height: 720 })
+  const mobile = await page.locator(`[data-testid="library-files"] [data-asset-id="${personalFile.asset_id}"]`).evaluate((card, filename) => {
+    const title = [...card.querySelectorAll("span")].find((element) => element.textContent?.trim() === filename)
+    const button = card.querySelector('[data-testid="library-file-download"]')
+    const cardRect = card.getBoundingClientRect()
+    const titleRect = title?.getBoundingClientRect()
+    const buttonRect = button?.getBoundingClientRect()
+    return { viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth,
+      cardLeft: cardRect.left, cardRight: cardRect.right, titleWidth: titleRect?.width ?? 0,
+      buttonLeft: buttonRect?.left ?? -1, buttonRight: buttonRect?.right ?? 9999,
+      titleVisible: title !== null && getComputedStyle(title).visibility !== "hidden", buttonVisible: button !== null && getComputedStyle(button).visibility !== "hidden" }
+  }, personalFilename)
+  assert(mobile.viewport === 320 && mobile.scroll <= mobile.viewport && mobile.cardLeft >= 0 && mobile.cardRight <= mobile.viewport &&
+    mobile.titleVisible && mobile.titleWidth >= 120 && mobile.buttonVisible && mobile.buttonLeft >= 0 && mobile.buttonRight <= mobile.viewport,
+  "personal file card is not readable at 320px")
+  await page.setViewportSize({ width: 1280, height: 720 })
+  process.stderr.write("MILESTONE:personal-mobile-layout\n")
+
   const memberContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "en-US" })
   const memberPage = await memberContext.newPage()
   await memberPage.addInitScript(() => window.localStorage.setItem("kokoro.locale", "en"))
@@ -264,6 +307,14 @@ try {
   })
   assert(memberLibrary.status === 200 && Array.isArray(memberLibrary.body?.data?.items) && memberLibrary.body.data.items.length === 0,
     "member personal Library GET was not an empty own scope")
+  const memberDownload = await memberPage.evaluate(async (assetId) => {
+    const response = await fetch(`/api/hub/library/files/${encodeURIComponent(assetId)}/content`,
+      { credentials: "same-origin", cache: "no-store" })
+    const body = await response.json()
+    return { status: response.status, code: body?.error?.code, disposition: response.headers.get("content-disposition") }
+  }, personalFile.asset_id)
+  assert(memberDownload.status === 404 && typeof memberDownload.code === "string" &&
+    memberDownload.disposition === null, "member received another subject's personal download")
   process.stderr.write("MILESTONE:member-private\n")
   await memberContext.close()
   await context.close()
@@ -279,7 +330,8 @@ try {
       infected_status: infected.status, infected_replay_status: infectedReplay.status,
       visible_asset_id: visibleFile.asset_id, visible_filename: visibleFilename,
       visible_content_sha256: visibleFile.content_sha256, visible_post_status: visiblePostResponse.status(), visible_owner_get: true,
-      owner_get_after_post: true, owner_get_after_reload: true, member_get_status: memberLibrary.status, member_empty: true },
+      owner_get_after_post: true, owner_get_after_reload: true, visible_downloads: 2,
+      member_get_status: memberLibrary.status, member_empty: true, member_download_status: memberDownload.status },
     screenshot: input.screenshot, privacy,
   }))
 } catch {
