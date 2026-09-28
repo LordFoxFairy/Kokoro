@@ -433,13 +433,16 @@ def _durable_owner_facts(
         "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND response_body #>> '{data,file,asset_id}'='"
         + personal_asset
         + "')::text || ',' || "
-        "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND scope LIKE '%personal-file-upload:v1%' AND response_body ? 'upload_id')::text"
+        "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND scope LIKE '%personal-file-upload:v1%' AND response_body ? 'upload_id')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=422 AND response_body #>> '{error,code}'='library_file_infected')::text"
     )
     actual = resources.command(
         ["psql", database_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", query]
     ).strip()
-    if actual != "1,1,1,1,0,1,1":
-        raise SmokeError("Project or personal Library durable owner fact drift")
+    if actual != "1,1,1,1,0,1,2,1":
+        if re.fullmatch(r"[0-9]+(?:,[0-9]+){7}", actual) is None:
+            raise SmokeError("Project or personal Library durable owner fact malformed")
+        raise SmokeError(f"Project or personal Library durable owner fact drift: {actual}")
 
 
 def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, object]:

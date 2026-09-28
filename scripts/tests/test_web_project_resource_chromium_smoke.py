@@ -168,7 +168,7 @@ def test_durable_owner_fact_accepts_storage_asset_digest_id_only() -> None:
     class FakeResources:
         def command(self, command: list[str]) -> str:
             commands.append(command)
-            return "1,1,1,1,0,1,1"
+            return "1,1,1,1,0,1,2,1"
 
     ready = SimpleNamespace(tenant_id="tenant-a")
     browser = {
