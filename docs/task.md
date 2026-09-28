@@ -936,3 +936,34 @@ W1E-PLATFORM-CATALOG-CONTEXT-I 已由 Platform main `f26d147a09350c3a041722107d2
 | 范围 / 验证 | 本文档片仅改 BFF 现有 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`；对照 owner 实际 Proto/response/API，三文档一致、无 TBD、Node22 Prettier/diff/Root 审查后方可改 `contract/openapi/v1/openapi.yaml` 与代码。另一个只读 Agent 独立核 Platform v2 exact 消费面/现有 BFF owner route，不写文件/服务。代码片随后 RED→GREEN、BFF 全门、隔离真 IAM+Platform+PG/Redis CreateDraft 组合。 |
 
 Root 预审阻断点：`src/bootstrap/server.ts` 目前在 `liveOwnerBusiness` 前对通用 mutation 调 `mutationTicket`，命中旧成功时可直接 replay，跳过每次当前 Product 授权。新 Skill command 必须在通用 receipt admission 前走具名路由并绕开该 BFF receipt，逐请求做当前授权，再以相同稳定 command 交由 Platform durable receipt 判冲突/恢复；仅在 `owner.ts` 增加 handler 不构成闭环。首个 user scope 不调用组织 Skill action check；organization 后续须 Web 真申请 `iam:skill-authorization.check`，不可复用当前旧 scope。
+
+W1E-BFF-PRODUCT-CREATE-DRAFT-DOC 已由 BFF main `1c81887fe5f48811320aa4d0d0c9e9e24db5cac6` 发布。设计门三面：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/DATA_MODEL.md`，当前态另见同仓 `docs/CURRENT.md`。只读跨仓审查无 P0/P1，Root 收敛 header-only request ID、`product.skill.create_draft` 分类、machine `UNAUTHENTICATED`→503 与 smoke 验收措辞。Node22 当前 OpenAPI semantic 73 operation PASS、schema governance 5 pass/1 缺 DB skip、`git diff --check` PASS；三份设计文档的整文件 Prettier 在本片前后均不通过（历史表格格式），本片未全文件格式化制造噪声。机器 OpenAPI/Connect/route、真 PostgreSQL 与跨 owner smoke 均未运行或实现，故仅文档门通过，不称用户可用。
+
+### W1E-BFF-PLATFORM-CONSUMER-I / P0（首个代码切片：固定 owner 来源与命令投影）
+
+| 项 | 任务卡 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer，main `1c81887fe5f48811320aa4d0d0c9e9e24db5cac6` clean；Root 唯一 Git index/提交/审查。Platform owner `f26d147a09350c3a041722107d277beb93eaad60`，Proto package `kokoro.platform.v1`，execution artifact **2.0.0**（不是 Proto v2）。 |
+| 范围 | 仅 BFF owner Proto `common.proto`/`platform_runtime.proto` 的只读 vendor+精确 SHA/provenance、execution-operations/v2 的当前生成所需 artifact/vector、确定性生成脚本/config/generated Connect client、窄 CreateDraft request digest projector/测试，以及所需 package/lockfile；新增目录按已有 `src/infrastructure/clients/` 聚合，不把旧 `capability/` HTTP shared-secret client 当 RPC。暂不改 public OpenAPI、server route、数据库、Web、IAM、Platform、3310。 |
+| 位置比较 / 依赖 | 方案 A：新 `src/infrastructure/clients/platform/` 只放 generated wire→本地 adapter 与 projector（采用，HTTP Capability 旧边界不适配）；方案 B：把 Connect 加进现有 `capability/`（淘汰，会混旧 HTTP secret/runtime）。只能消费 owner 发布的精确 contract bytes/commit/digest，generated 文件由脚本产生，无 sibling import/手写 Proto DTO/v1 fallback。 |
+| 数据/API / 删除项 | 无 SQL/Redis/公共 API；user `ProductCatalogContext` 与完整 metadata 将在后续 route 由可信 admission 构造。本片先证明以 owner v2 positive/negative vectors 算出 `skill.create_draft` digest，错版本、错 subject/owner/metadata 拒绝，稳定 command 可跨重试；不把 owner receipt复制到 BFF。旧 HTTP GET 保持，旧 mutation stub 待 route 切片原子删除。 |
+| 验证 / 交付 | RED→GREEN 精确 owner source SHA、生成 drift、v2 vector、binding/version、跨 actor digest 负例；Node22 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build`，Root 独立复验。真实 PG/Connect 由下一 route/smoke 片验，不用本片局部单测称三 owner 闭环。Worker 不碰 Git index/commit，交文件清单、命令、风险。 |
+
+W1E-BFF-PLATFORM-CONSUMER-I owner artifact 前置审计（BFF `1c81887` clean、无代码修改）：Platform v2 `command-identities.json` 的 `commandMembers` 只有字符串描述，schema 不给可独立生成的 command projection；`request-bindings.json` 的 registry 无 `ProductCatalogContext`；CreateDraft 只有 1 条 positive、无 command/CreateDraft negative vector。Platform `docs/ADR/ADR-002` §7 还固定 v1 digest 且遗漏 Product context。BFF 若直接照 Platform `scripts/` runtime/checker 实现，会违反跨仓只消费 owner 机器契约；因此此 BFF digest projector 片暂停，不能自造算法。下一任务由 Platform owner **先发布完整自包含命令投影新版本**，冻结 v1/v2，BFF 再精确 pin。BFF Proto 本身已发布且 SHA 可独立消费，但未用其生成物冒充 command 端到端。
+
+### W1E-PLATFORM-COMMAND-PROJECTION-V3-DOC / P0（消费者发现机器契约缺口）
+
+| 项 | 任务卡 |
+| --- | --- |
+| Owner / 基线 | Platform `apps/kokoro-capability` 唯一 contract writer，main `f26d147a09350c3a041722107d277beb93eaad60` clean；Root 审查/Git index。BFF 只读等待 owner 机器来源，不修改 Platform。 |
+| 当前 / 目标 | v2/2.0.0 runtime digest 已使用 Product context，但 owner artifact 对消费方不自包含；补一份可从已发布 Proto wire 独立生成 CreateDraft（兼顾六 catalog）命令投影的精确 schema/规则、wire→projection 映射、positive/negative vectors 与 drift checker。v1/v2 已发布字节冻结，不同版本不原地改写；目标 v3/3.0.0 唯一 runtime 来源，无 fallback。 |
+| 位置比较 / 粒度 | 方案 A：在现有 `contract/execution-operations/` 下发布独立 v3 artifact 并由现有 checker/profile/generator 消费（采用：同一 owner/版本/聚合）；方案 B：在 BFF 复制 Platform scripts 或另建第二个 editable `command-projector` 根（淘汰：跨仓私有源码/双事实）。新 v3 目录有多份机器文件及 vectors，满足持续职责；现有 v2 原样冻结。 |
+| 依赖 / 数据/API | 不改 Proto tag/方法、SQL/Prisma、Skill 状态机或 IAM/Storage。精确描述 `ProductCatalogContext` 与 `SkillMetadata` 的可消费投影、字段 presence/default、UTF-8/bytes、tenant/fq_method/root/version、规范 JSON/sha256、错 owner/subject/未知/缺字段拒绝；BFF 只消费新 artifact + owner Proto，不 import owner `src/`/`scripts/`。每个 command digest 由相同投影得到相同 64hex，跨 actor/owner/metadata drift 负例。 |
+| 范围 / 删除 / 验证 | 先仅收敛 Platform 既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md` 当前/目标及旧 ADR v1 历史标记；Root 文档审查后再改 v3 artifact/generator/checker/runtime/直接测试，删除 runtime v2 选择、不保留 v2 fallback。RED→GREEN 必须锁 published v1/v2 aggregates、v3 自包含性与正负 vector、BFF 可独立实现证明；Node24 `pnpm format:check && pnpm verify && pnpm build`，真 PG/Connect按可用隔离资源验，未运行明确待验。 |
+
+### W1E-BFF-PLATFORM-PROTO-PIN / P0（与 owner artifact 文档并行的只读消费片）
+
+- BFF 唯一 writer 沿用 `bff_platform_consumer_owner`，基线 main `1c81887` clean；Platform 当前已发布的 `common.proto`/`platform_runtime.proto` 两文件 SHA 分别为 `65025b86a89119954bfbc7ad8eb89d59109ae7f390db5ee1a68f016eefa7da08` / `282bf886ea9648f7ce5208abd36ab47d879b2002a036d90aada2af59e74b4020`。只在 BFF 增加这两个只读 vendor、来源 manifest、确定性生成配置/`src/generated/platform-connect/` 与必要 package/lockfile、直接生成 drift/contract tests；不实现 command digest、catalog credential、public OpenAPI/route/server，不修改其他仓或 3310。
+- 放置沿本仓既有 `contract/vendor` 与 `src/generated`，比较旧 HTTP `capability/`（不适配 Connect）和新独立 `platform-connect` generated（采用）；只读 Proto 已发布，无需等待 owner command artifact v3。若 Platform v3 不改 Proto 字节，后续仅更新来源 commit/aggregate；若 Proto 变则重新生成，不能冒称已消费 v3。
+- Node22 精确来源 SHA、生成两次 byte-identical、lint/typecheck/contract/test/build；Root 审查与独立复验后小切片提交，不以生成 client 存在声称 public CreateDraft 已可用。Root 控 Git index/commit。
+- 执行中确认新增 Connect 依赖改变统一 `pnpm-lock.yaml`：允许同一 writer 仅刷新现有 Agent/Capability/IAM/Scheduler 四份依赖 manifest 的 `lockfile_sha256` 字段，其他 owner SHA、OpenAPI/Proto digest、vendor/generated 字节与声明键必须保持原值；Root 审查精确 diff，防止锁文件合法更新被旧哈希误报。

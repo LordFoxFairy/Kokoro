@@ -7,7 +7,7 @@
 
 ## IAM 0.7 与 BFF 窄消费者已发布，Product 链仍未闭环（2026-09-28）
 
-IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。BFF main `55b2809b2f73addbac2b56bd8a04aa0c1706521b` 已精确固定 IAM 0.7 vendor/generated/relay 来源并提供窄 `SkillAuthorizationClient`；Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` 为 297 pass/1 skip、schema 5 pass/1 skip。当前 Root gitlink 与来源库存固定这两个 SHA，但 BFF Skill client 尚无 Product mutation 调用者，Web 仍请求旧 scope，Platform 仍固定 IAM 0.6 SDK；`EDGE-BFF-IAM` 因缺真实 IAM 0.7/BFF/Web 组合保持 broken。3310 是先前单组临时预览，未以这些新提交热替换运行进程。
+IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。BFF main `1c81887fe5f48811320aa4d0d0c9e9e24db5cac6` 已精确固定 IAM 0.7 vendor/generated/relay 来源并提供窄 `SkillAuthorizationClient`，本次仅追加 user CreateDraft 三设计文档/CURRENT，运行代码未变；前一 BFF 代码 commit `55b2809` 上 Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` 为 297 pass/1 skip、schema 5 pass/1 skip。当前 Root gitlink 与来源库存固定 IAM/BFF 上述 SHA，但 BFF Skill client 尚无 Product mutation 调用者，Web 仍请求旧 scope，Platform 仍固定 IAM 0.6 SDK；`EDGE-BFF-IAM` 因缺真实 IAM 0.7/BFF/Web 组合保持 broken。3310 是先前单组临时预览，未以这些新提交热替换运行进程。
 
 BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，public mutation 运行代码和机器 OpenAPI 未发布。Platform main `f26d147a09350c3a041722107d277beb93eaad60` 已发布六 catalog RPC 的 Product context/owner gate 与 execution artifact v2/2.0.0；旧 v1 artifact 字节冻结且无 runtime fallback。Root 独立 Node24 `pnpm format:check && pnpm verify && pnpm build` 为 819 pass/179 skip，独立只读审查指出的文档与六 RPC 负例 P1 已修正；真 PostgreSQL/Connect 因指定隔离端口不可达仍待验。Storage Begin/Complete 与 Platform 不可变包绑定未接通，因此 Validate/Publish fail closed；BFF public mutation、Web 新 scope 与跨仓消费者亦未完成。不能把 BFF IAM 窄 client 或 Platform 单仓发布列作 Product 闭环。
 
@@ -18,7 +18,7 @@ BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，publi
 | 子仓 | 当前固定提交 |
 | --- | --- |
 | `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
-| `apps/kokoro-bff` | `55b2809b2f73addbac2b56bd8a04aa0c1706521b` |
+| `apps/kokoro-bff` | `1c81887fe5f48811320aa4d0d0c9e9e24db5cac6` |
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `4d981441d154c83b63987f284e3a82a559595870` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
