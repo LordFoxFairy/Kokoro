@@ -1204,3 +1204,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 ## 2026-09-28 — W2-F2-S6 双作品分页补门
 
 - Root `a1f162eb` 仅扩原有隔离 `run_agent_bff_storage_artifact_smoke.py` 与其直接测试，修正第二次派发的 Conversation 身份，新增两件真实作品分页/cursor/原字节验证与受控错误报告。Ruff format/check、直接 pytest **14/14**、diff check PASS；真实 PG/Redis/MinIO/ClamAV run `78ad0b624afb316fe7316ce6` 六组 PASS，固定 BFF `55d3c9c`、Agent `486adb1`、Storage `d5cfc44`；自有数据库/Redis keys/S3 版本均为 0，独占 bucket 已删除。此 runner 仍以 IAM 准入桩替代真实 OAuth，没有 Web/Chromium、模型 worker/provider、delete/commit 竞态或 PG 中断取消；不把 BFF Product 双件分页升格成用户页面闭环。`3310` 未触碰。
+
+## 2026-09-28 — W2-F2-S7 Web 作品单仓代码门
+
+- Web 唯一 writer 在 `ca3a581` 基线上交 45 文件，Root 审查并提交推送 main `561e4c0399ed43715aa16ccff61370f6cd3e9424`：BFF `55d3c9c` OpenAPI 原字节 SHA-256 `8a0849dcf3ae557d5f3166ad624c5eea9f42bc0b65c7a6ae7fda1741224d567b` 精确 pin，Library 正式作品页改 Product 二元身份/分页/详情预检/原生 attachment，精确 Hub 内容 GET 有界流/背压/取消/长度与完整结束校验，删正式旧 hash 列表/下载与死组件。Chat delivery/Canvas、BFF snapshot 仍是独立断链。
+- 两名独立只读审查发现真实 `artifact%3A` 被最终 Next 覆写安全头、背压 pause 时 idle timeout 误判，以及错误响应资源预算等问题；同一 Web writer RED→GREEN 修复，复核未见新 P0/P1/P2。Root 独立 Node22 `pnpm check`：contract **103/103**、architecture **36/36**、Vitest **1585/1585**、lint/typecheck/build exit0；隔离端口 3453 `pnpm test:e2e` **11 pass/1 既有 skip**；生成物精确同 BFF 原字节，diff check PASS。Playwright 是治理回归，**未覆盖真实 Agent 作品下载**；用户 `3310` 未重启/热更新。
+- 跨仓审查仍发现 BFF 作品路由以同一个 120 秒 deadline 包含 ObjectStore 1 GiB spool 与向浏览器传输，Web 30 分钟不能覆盖。该 owner P1 与真实 IAM→Chromium→Web→BFF→Agent→Storage 原字节/私有/320px 浏览器门已入 `docs/task.md`；二者未验前不宣称 1 GiB 慢链路或 Agent Artifact F2 整体完成。
