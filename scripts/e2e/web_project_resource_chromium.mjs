@@ -248,12 +248,18 @@ try {
     const [response, download] = await Promise.all([responsePromise, downloadPromise])
     phase = "personal-download-http-status"
     assert(response.status() === 200, `visible personal download returned ${response.status()}`)
-    phase = "personal-download-headers"
     const headers = response.headers()
-    assert(headers["cache-control"]?.includes("no-store") && headers["referrer-policy"] === "no-referrer" &&
-      headers["x-content-type-options"] === "nosniff" && headers["content-disposition"]?.startsWith("attachment;") &&
-      /^[\x20-\x7e]{1,128}$/u.test(headers["x-request-id"] ?? ""),
-    "visible personal download lost safe binary headers")
+    phase = "personal-download-cache"
+    assert(headers["cache-control"]?.includes("no-store"), "visible personal download cache header drift")
+    phase = "personal-download-referrer"
+    assert(headers["referrer-policy"] === "no-referrer", "visible personal download referrer header drift")
+    phase = "personal-download-nosniff"
+    assert(headers["x-content-type-options"] === "nosniff", "visible personal download type header drift")
+    phase = "personal-download-disposition"
+    assert(headers["content-disposition"]?.startsWith("attachment;"), "visible personal download disposition drift")
+    phase = "personal-download-request-id"
+    assert(/^[\x20-\x7e]{1,128}$/u.test(headers["x-request-id"] ?? ""), "visible personal download request ID drift")
+    phase = "personal-download-length"
     assert(Number(headers["content-length"]) === expectedBytes.length, "visible personal download length drift")
     phase = "personal-download-http-bytes"
     assert(sha256(await response.body()) === sha256(expectedBytes), "visible personal HTTP bytes drift")
