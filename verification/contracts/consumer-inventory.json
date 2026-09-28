@@ -688,7 +688,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "BFF 5add506 pins Storage 2d87e26 Proto and publishes personal CLEAN ASSET GET plus Product POST with durable checkpoint/replay; Project POST/GET remain. Root prior fixed tuple 0a920696 real IAM/Chromium/Storage/PostgreSQL/MinIO/ClamAV UI upload, concurrent same-key, EICAR, privacy and owner SQL facts passed. New BFF test-only commit adds real PostgreSQL A/B instance recovery behind a Connect owner double; true Storage Complete-lost response plus OS BFF restart, personal download, Agent Artifact F2 and current tuple browser composition remain unverified. Keep whole edge broken.",
+      "reason": "BFF 5add506 pins Storage 2d87e26 Proto and publishes personal CLEAN ASSET GET plus Product POST with durable checkpoint/replay; Project POST/GET remain. Root prior fixed tuple 0a920696 real IAM/Chromium/Storage/PostgreSQL/MinIO/ClamAV UI upload, concurrent same-key, EICAR, privacy and owner SQL facts passed. Root run 0cc2f4bdf3407c6e7e5d4e8d then verified true Storage Complete 200 response loss, BFF OS process restart and same-key recovery against real PostgreSQL/MinIO/ClamAV with no duplicate Complete/Upload/Asset/object version/terminal receipt; IAM was a stub. Personal download, Agent Artifact F2 and current Web/browser tuple composition remain unverified. Keep whole edge broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",

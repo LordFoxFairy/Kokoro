@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Run-owned BFF Project and personal Library -> Storage v2 -> S3/ClamAV integration smoke. */
 import { createHash, randomBytes, randomUUID } from "node:crypto"
-import { createServer } from "node:http"
+import { createServer, request as httpRequest } from "node:http"
 import { createRequire } from "node:module"
 import { spawn, execFileSync } from "node:child_process"
 import { mkdtemp, open, rm, chmod, mkdir, copyFile, symlink } from "node:fs/promises"
@@ -119,6 +119,56 @@ async function listen(server) {
   return `http://127.0.0.1:${server.address().port}`
 }
 const closeServer = server => new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()))
+
+// The proxy is inert until armed by the one personal-upload recovery case. It
+// consumes a successful Complete reply before dropping the BFF-facing socket,
+// so the real Storage owner has already committed the upload/scan outcome.
+export async function startCompleteFaultProxy(storageBase) {
+  const target = new URL(storageBase)
+  ensure(target.protocol === "http:" && target.hostname === "127.0.0.1" && target.port, "fault proxy requires an owned loopback Storage origin")
+  const completePath = "/kokoro.storage.v2.StorageService/CompleteUpload"
+  let armed = false, dropped = 0, completeRequests = 0
+  const server = createServer((request, response) => {
+    const path = request.url ?? ""
+    if (request.method === "POST" && path === completePath) completeRequests++
+    const upstream = httpRequest(new URL(path, target), {
+      method: request.method,
+      headers: { ...request.headers, host: target.host, connection: "close" },
+    }, ownerResponse => {
+      const complete = request.method === "POST" && path === completePath
+      if (!complete) {
+        response.writeHead(ownerResponse.statusCode ?? 502, ownerResponse.headers)
+        ownerResponse.pipe(response)
+        return
+      }
+      const chunks = []
+      let size = 0
+      ownerResponse.on("data", chunk => {
+        size += chunk.length
+        if (size > MAX_RESPONSE) { ownerResponse.destroy(); response.destroy(); return }
+        chunks.push(chunk)
+      })
+      ownerResponse.on("error", () => response.destroy())
+      ownerResponse.on("end", () => {
+        if (armed && ownerResponse.statusCode === 200) {
+          armed = false
+          dropped++
+          response.destroy()
+          return
+        }
+        response.writeHead(ownerResponse.statusCode ?? 502, ownerResponse.headers)
+        response.end(Buffer.concat(chunks))
+      })
+    })
+    upstream.setTimeout(15000, () => upstream.destroy())
+    upstream.on("error", () => response.destroy())
+    request.on("aborted", () => upstream.destroy())
+    request.pipe(upstream)
+  })
+  const base = await listen(server)
+  return { base, arm: () => { armed = true }, droppedCount: () => dropped, completeRequests: () => completeRequests,
+    close: async () => { server.closeAllConnections(); await closeServer(server) } }
+}
 
 function spawnOwned(command, args, cwd, env, logFd) {
   return spawn(command, args, { cwd, env, stdin: "ignore", stdio: ["ignore", logFd, logFd], detached: true })
@@ -320,6 +370,54 @@ async function runCases(bffBase, storageBase, publicOrigin, identity, tokens, we
   return ["clean_project_upload", "same_key_replay", "owner_signed_get_bytes", "project_list_reload", "project_list_pagination", "cross_subject_denied", "eicar_denied", "personal_library_clean_list", "personal_library_pagination", "personal_library_subject_isolation", "personal_library_explicit_kind"]
 }
 
+async function runPersonalRestartCase(bffBase, faultProxy, identity, tokens, webSecret, database, restartBff, s3, bucket, prefix) {
+  const key = `personal-complete-lost-${identity.tenant}`
+  const bytes = Buffer.from(`W2 Complete committed before response loss ${identity.tenant}`, "utf8")
+  const filename = "complete-lost.txt"
+  const post = async (content, name = filename) => {
+    const form = new FormData()
+    form.append("files", new File([content], name, { type: "text/plain" }))
+    const response = await fetch(`${bffBase}/v1/library/files`, {
+      method: "POST", headers: { "x-kokoro-service": "web-bff", "x-kokoro-internal-secret": webSecret, authorization: `Bearer ${tokens.owner}`, "idempotency-key": key },
+      body: form, redirect: "error", signal: AbortSignal.timeout(45000),
+    })
+    return { status: response.status, body: await limitedResponse(response, "personal restart upload") }
+  }
+  const facts = async () => {
+    const result = await database.query("SELECT (SELECT count(*)::int FROM kokoro_storage.storage_upload WHERE tenant_id = $1 AND scope_kind = 'personal' AND scope_id = $2) AS uploads, (SELECT count(*)::int FROM kokoro_storage.storage_asset WHERE tenant_id = $1 AND scope_kind = 'personal' AND scope_id = $2) AS assets", [identity.tenant, identity.owner])
+    return result.rows[0]
+  }
+  const before = await facts()
+  const completeCallsBefore = faultProxy.completeRequests()
+  faultProxy.arm()
+  const uncertain = await post(bytes)
+  ensure(uncertain.status === 503 && uncertain.body.error?.code === "storage_unavailable", `Complete response loss did not leave a recoverable 503: ${uncertain.status}/${uncertain.body.error?.code ?? "none"}`)
+  ensure(faultProxy.droppedCount() === 1, "fault proxy did not drop exactly one committed Complete response")
+  ensure(faultProxy.completeRequests() === completeCallsBefore + 1, "faulted upload issued more than one Storage Complete")
+  const committed = await facts()
+  ensure(committed.uploads === before.uploads + 1 && committed.assets === before.assets + 1, "Storage did not commit exactly one personal Upload and Asset before response loss")
+  const versionsAtCommit = (await listOwnedVersions(s3, bucket, prefix)).versions.map(item => `${item.Key}:${item.VersionId}`).sort()
+  const checkpointScope = JSON.stringify([identity.tenant, identity.owner, "personal-file-upload:v1", key])
+  const terminalScope = JSON.stringify([identity.tenant, identity.owner, "POST", "/library/files", key])
+  const checkpoint = await database.query("SELECT status, response_body FROM kokoro_bff.bff_idempotency_receipt WHERE scope = $1", [checkpointScope])
+  ensure(checkpoint.rowCount === 1 && checkpoint.rows[0].status === 200 && checkpoint.rows[0].response_body?.upload_id, "BFF durable personal checkpoint missing before process restart")
+  await restartBff()
+  const recovered = await post(bytes)
+  ensure(recovered.status === 200 && recovered.body.data?.file?.scan_state === "clean" && recovered.body.data.file.content_sha256 === sha256(bytes), "BFF failed to recover CLEAN personal asset after OS process restart")
+  const after = await facts()
+  ensure(after.uploads === committed.uploads && after.assets === committed.assets, "recovery created duplicate Storage Upload or Asset")
+  ensure(faultProxy.completeRequests() === completeCallsBefore + 1, "recovery repeated Storage Complete")
+  const versionsAfter = (await listOwnedVersions(s3, bucket, prefix)).versions.map(item => `${item.Key}:${item.VersionId}`).sort()
+  ensure(JSON.stringify(versionsAfter) === JSON.stringify(versionsAtCommit), "recovery wrote a second object version")
+  const terminal = await database.query("SELECT status, response_body FROM kokoro_bff.bff_idempotency_receipt WHERE scope = $1", [terminalScope])
+  ensure(terminal.rowCount === 1 && terminal.rows[0].status === 200 && terminal.rows[0].response_body?.data?.file?.asset_id === recovered.body.data.file.asset_id, "BFF did not persist one terminal public receipt")
+  const replay = await post(bytes)
+  ensure(replay.status === 200 && replay.body.data?.file?.asset_id === recovered.body.data.file.asset_id, "terminal personal replay changed asset identity")
+  const conflict = await post(bytes, "different-name.txt")
+  ensure(conflict.status === 409, "same key with different personal file did not conflict")
+  return "personal_complete_response_lost_process_restart"
+}
+
 async function prepareStorageSchemaFixture(directory) {
   const fixture = join(directory, "storage-schema")
   await mkdir(join(fixture, "scripts"), { recursive: true })
@@ -365,7 +463,7 @@ async function main() {
   const webSecret = randomBytes(32).toString("hex")
   const tokens = { owner: randomBytes(32).toString("hex"), other: randomBytes(32).toString("hex") }
   const identity = { tenant, owner: `owner-${runId}`, other: `other-${runId}`, projectId: null }
-  let databaseCreated = false, databaseCreateUncertain = false, bff = null, storage = null, iam = null, objectsClean = false, processesStopped = false
+  let databaseCreated = false, databaseCreateUncertain = false, bff = null, storage = null, iam = null, storageFault = null, objectsClean = false, processesStopped = false
   let failure = null, cleanupFailure = null, cases = []
   try {
     await preflightS3(s3, config, prefix)
@@ -391,10 +489,11 @@ async function main() {
     await closeServer(storagePort)
     storage = spawnOwned(process.execPath, [join(STORAGE, "dist/main.js")], STORAGE, storageEnv, log.fd)
     await waitReady(storageBase, "Storage", storage)
+    storageFault = await startCompleteFaultProxy(storageBase)
     iam = startIamStub(tokens, tenant, identity.owner, identity.other)
     const iamBase = await listen(iam)
     bffEnv.KOKORO_IAM_BASE_URL = iamBase
-    bffEnv.KOKORO_STORAGE_RPC_BASE_URL = storageBase
+    bffEnv.KOKORO_STORAGE_RPC_BASE_URL = storageFault.base
     const reservedPort = createServer()
     const candidateUrl = await listen(reservedPort)
     bffEnv.KOKORO_BFF_PORT = new URL(candidateUrl).port
@@ -403,12 +502,20 @@ async function main() {
     const bffBase = candidateUrl
     await waitReady(bffBase, "BFF", bff)
     const db = new Pool({ connectionString: testUrl, max: 1 })
-    try { cases = await runCases(bffBase, storageBase, config.publicEndpoint, identity, tokens, webSecret, storageSecret, db) }
+    try {
+      cases = await runCases(bffBase, storageBase, config.publicEndpoint, identity, tokens, webSecret, storageSecret, db)
+      cases.push(await runPersonalRestartCase(bffBase, storageFault, identity, tokens, webSecret, db, async () => {
+        await stopOwned(bff)
+        bff = spawnOwned(env.KOKORO_W2_BFF_NODE_BIN, [join(BFF, "dist/main.js")], BFF, bffEnv, log.fd)
+        await waitReady(bffBase, "BFF", bff)
+      }, s3, config.bucket, prefix))
+    }
     finally { await db.end() }
   } catch (error) { failure = error }
   try {
     const stopFailures = []
     try { await stopOwned(bff) } catch (error) { stopFailures.push(error) }
+    try { if (storageFault) await storageFault.close() } catch (error) { stopFailures.push(error) }
     try { await stopOwned(storage) } catch (error) { stopFailures.push(error) }
     try { if (iam) await closeServer(iam) } catch (error) { stopFailures.push(error) }
     if (stopFailures.length) throw new AggregateError(stopFailures, "one or more run-owned processes did not stop; retaining objects and database")

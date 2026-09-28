@@ -120,3 +120,52 @@ def test_exact_object_cleanup_and_database_nonadoption() -> None:
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_complete_fault_proxy_drops_only_one_committed_owner_response() -> None:
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node is not available for isolated W2 fault validation")
+    source = f"""
+      import assert from 'node:assert/strict';
+      import {{ createServer }} from 'node:http';
+      import {{ startCompleteFaultProxy }} from '{SCRIPT.as_uri()}';
+      const path = '/kokoro.storage.v2.StorageService/CompleteUpload';
+      let committed = 0;
+      const owner = createServer((request, response) => {{
+        const complete = request.url === path;
+        request.resume();
+        request.on('end', () => {{
+          if (complete) committed++;
+          response.writeHead(200, {{ 'content-type': 'application/json' }});
+          response.end('{{"ok":true}}');
+        }});
+      }});
+      await new Promise(resolve => owner.listen(0, '127.0.0.1', resolve));
+      const base = `http://127.0.0.1:${{owner.address().port}}`;
+      const proxy = await startCompleteFaultProxy(base);
+      try {{
+        assert.equal((await fetch(proxy.base + path, {{ method: 'POST', body: '{{}}' }})).status, 200);
+        proxy.arm();
+        assert.equal((await fetch(proxy.base + '/other', {{ method: 'POST', body: '{{}}' }})).status, 200);
+        await assert.rejects(fetch(proxy.base + path, {{ method: 'POST', body: '{{}}' }}));
+        assert.equal(proxy.droppedCount(), 1);
+        assert.equal(committed, 2, 'owner committed before proxy lost the second response');
+        assert.equal((await fetch(proxy.base + path, {{ method: 'POST', body: '{{}}' }})).status, 200);
+        assert.equal(proxy.droppedCount(), 1);
+        assert.equal(committed, 3);
+        assert.equal(proxy.completeRequests(), 3);
+      }} finally {{
+        await proxy.close();
+        await new Promise(resolve => owner.close(resolve));
+      }}
+    """
+    result = subprocess.run(
+        [node, "--input-type=module", "-e", source],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=12,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr

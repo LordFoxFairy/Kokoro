@@ -1075,3 +1075,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Web 唯一 writer 以真实 Better Auth 200 JSON 回执写 RED，确认旧 Web 原样显示 JSON；补上严格同源固定目标与原 302 固定目标的具名 303 `/login` 映射，恶意目标、坏 JSON、错误状态不放宽。Root 审查仅五个任务卡文件，独立 Node22 `pnpm check` exit0：contract 99/99、architecture 36/36、Vitest 1560/1560、lint/typecheck/build PASS；Web main `224d473758041928a79acfa063eadb13cd779386` clean。
 - Root 向前台 launcher session 36311 发送 Ctrl-C，进程正常退出并报告其自有资源清零；以 Web 新源码重建 session 79837。随后当前 3310 真 Chromium：`/login` 最终 IAM 表单 200、真实邮箱密码/consent 后 `/app` 与 Product Session true、Product signout 200、issuer confirm 303、经 `/login` 回到签名 IAM 表单 200、Product Session false。裸 `/auth/sign-in` 直接 GET 为 404，因此不能作为退出落点；本次已消除原始 JSON/404 用户体验。该 session 仍是临时开发 fixture，非部署持久性证明。
 - 当前 W2 gitlink 将固定 BFF `5add506` 测试证据与 Web `224d473` 退出修复；之前 `0a920696` W2 真 Storage/MinIO/ClamAV 浏览器证据绑定旧 BFF `8a90fdd`/Web `cbae94d`，新 tuple 尚待同范围复验。全仓 compatibility 的 13 broken edges 不因登录/恢复局部证据而关闭。
+
+## 2026-09-28 — W2 BFF→Storage 真故障恢复补门
+
+- BFF `5add506becd39715dc0a469af83e148a5a354515`、Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38` clean/main。Root 在现有 W2 runner 加一次性 Complete 200 应答丢失代理，仅绑定运行自有 loopback Storage；代理消费 owner 完整应答后断开 BFF 侧连接。原请求返回 503，Storage Upload/Asset 已各提交一条；停止原 BFF OS 进程、同一测试库启动新进程后以同一文件/幂等键恢复 CLEAN 200，重放同 Asset、异文件同键 409，未重复 Complete、PUT 版本或 terminal public receipt。
+- 真实 PostgreSQL/Redis/MinIO/ClamAV 运行 `run_id=0cc2f4bdf3407c6e7e5d4e8d`：原 11 项加故障恢复共 **12/12 PASS**；运行自有数据库、对象版本、进程已清理，独占空测试 bucket 删除。初次运行只因 Root 测试把 BFF checkpoint scope 写错而失败，修正与真实 SQL scope 一致后两次全链通过；不改 BFF/Storage runtime。只读审查 P0/P1=0，P2 fake owner unit 的“commit”计数已改为收齐请求后递增，聚焦治理测试 **9/9 PASS**、Node24 syntax、diff check PASS。
+- 该 runner 的 IAM 是身份桩，没有覆盖 Web/Chromium 当前 tuple；个人下载与 Agent Artifact F2 尚未实施。`EDGE-BFF-STORAGE` 保持 broken，不以 12 项局部 smoke 宣称 W2 完成。当前 3310 登录 supervisor 未改动。
