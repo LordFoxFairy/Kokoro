@@ -346,6 +346,7 @@ def deliver_result(
         "status": "delivered",
         "artifact_id": receipt.artifact_id,
         "asset_id": receipt.asset_id,
+        "artifact_kind": receipt.artifact_kind,
         "path": path,
         "title": title,
         "mime": receipt.mime_type,
@@ -361,6 +362,7 @@ def verify_event_chain(
     wire: list[dict[str, object]],
     artifact_id: str,
     tool_call_id: str,
+    artifact_kind: str,
 ) -> None:
     """Require one durable delivery before one terminal across all projections."""
     expected_kinds = ["run.started", "delivery.created", "run.completed"]
@@ -377,6 +379,7 @@ def verify_event_chain(
     if (
         payload.get("artifact_id") != artifact_id
         or payload.get("tool_call_id") != tool_call_id
+        or payload.get("artifact_kind") != artifact_kind
     ):
         raise SmokeError("delivery critical outbox payload drift")
     if [record.get("event_type") for record in chat] != [
@@ -391,6 +394,7 @@ def verify_event_chain(
     if (
         chat_payload.get("artifact_id") != artifact_id
         or chat_payload.get("tool_call_id") != tool_call_id
+        or chat_payload.get("artifact_kind") != artifact_kind
     ):
         raise SmokeError("delivery Chat projection payload drift")
     if [event.get("kind") for event in wire] != expected_kinds:
@@ -404,6 +408,7 @@ def verify_event_chain(
         not isinstance(wire_payload, dict)
         or wire_payload.get("artifact_id") != artifact_id
         or wire_payload.get("tool_call_id") != tool_call_id
+        or wire_payload.get("artifact_kind") != artifact_kind
     ):
         raise SmokeError("delivery live stream payload drift")
 
@@ -454,6 +459,7 @@ async def _assert_agent_event_projection(
     lease: object,
     artifact_id: str,
     tool_call_id: str,
+    artifact_kind: str,
 ) -> None:
     """Use the production emitter, outbox, Redis bus, and Chat repository."""
     from datetime import UTC, datetime
@@ -532,7 +538,9 @@ async def _assert_agent_event_projection(
                     run.session_id,
                 )
             ]
-            verify_event_chain(outbox, chat_events, wire, artifact_id, tool_call_id)
+            verify_event_chain(
+                outbox, chat_events, wire, artifact_id, tool_call_id, artifact_kind
+            )
             if any(
                 frame.run_id == run.run_id
                 for frame in await runs.list_unpublished_outbox()
@@ -673,6 +681,8 @@ async def _agent_cases(
                 journal is None
                 or journal.status != "succeeded"
                 or receipt.artifact_id not in journal.result
+                or DeliverResult.model_validate_json(journal.result).artifact_kind
+                != receipt.artifact_kind
             ):
                 raise SmokeError("Agent journal did not retain final artifact receipt")
             await _assert_agent_event_projection(
@@ -683,6 +693,7 @@ async def _agent_cases(
                 _lease,
                 receipt.artifact_id,
                 clean_request.tool_call_id,
+                receipt.artifact_kind,
             )
             status, own = _storage_read(
                 base, bff_secret, tenant, owner, scope, receipt.artifact_id

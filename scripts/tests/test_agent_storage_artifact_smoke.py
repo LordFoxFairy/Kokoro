@@ -192,6 +192,7 @@ def test_success_journal_has_production_deliver_result_shape() -> None:
     receipt = SimpleNamespace(
         artifact_id="artifact-1",
         asset_id="asset-1",
+        artifact_kind="document",
         mime_type="text/plain",
         size_bytes=5,
         content_sha256="a" * 64,
@@ -200,6 +201,7 @@ def test_success_journal_has_production_deliver_result_shape() -> None:
         "status": "delivered",
         "artifact_id": "artifact-1",
         "asset_id": "asset-1",
+        "artifact_kind": "document",
         "path": "/report.txt",
         "title": "Report",
         "mime": "text/plain",
@@ -251,7 +253,7 @@ def test_event_chain_rejects_missing_delivery_or_wrong_terminal_order() -> None:
         },
     ]
     with pytest.raises(smoke.SmokeError, match="delivery"):
-        smoke.verify_event_chain(outbox, chat, wire, "artifact-1", "tool-1")
+        smoke.verify_event_chain(outbox, chat, wire, "artifact-1", "tool-1", "document")
 
 
 def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
@@ -268,7 +270,7 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
             "durable_seq": 2,
             "index": 1,
             "event_id": "delivery",
-            "payload_json": '{"artifact_id":"artifact-1","tool_call_id":"tool-1"}',
+            "payload_json": '{"artifact_id":"artifact-1","tool_call_id":"tool-1","artifact_kind":"document"}',
         },
         {
             "kind": "run.completed",
@@ -283,7 +285,7 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
         {
             "event_type": "delivery",
             "source_index": 1,
-            "payload_json": '{"artifact_id":"artifact-1","tool_call_id":"tool-1"}',
+            "payload_json": '{"artifact_id":"artifact-1","tool_call_id":"tool-1","artifact_kind":"document"}',
         },
         {
             "event_type": "run.completed",
@@ -304,7 +306,11 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
             "durable_seq": 2,
             "index": 1,
             "event_id": "delivery",
-            "payload": {"artifact_id": "artifact-1", "tool_call_id": "tool-1"},
+            "payload": {
+                "artifact_id": "artifact-1",
+                "tool_call_id": "tool-1",
+                "artifact_kind": "document",
+            },
         },
         {
             "kind": "run.completed",
@@ -314,6 +320,16 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
             "payload": {"status": "completed"},
         },
     ]
-    smoke.verify_event_chain(outbox, chat, wire, "artifact-1", "tool-1")
+    smoke.verify_event_chain(outbox, chat, wire, "artifact-1", "tool-1", "document")
+    missing_kind = [dict(item) for item in outbox]
+    missing_kind[1]["payload_json"] = (
+        '{"artifact_id":"artifact-1","tool_call_id":"tool-1"}'
+    )
+    with pytest.raises(smoke.SmokeError, match="payload drift"):
+        smoke.verify_event_chain(
+            missing_kind, chat, wire, "artifact-1", "tool-1", "document"
+        )
     with pytest.raises(smoke.SmokeError, match="duplicate"):
-        smoke.verify_event_chain(outbox, chat, wire + [wire[1]], "artifact-1", "tool-1")
+        smoke.verify_event_chain(
+            outbox, chat, wire + [wire[1]], "artifact-1", "tool-1", "document"
+        )
