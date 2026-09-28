@@ -299,7 +299,13 @@ def _driver_result(
             if line.startswith("MILESTONE:")
         ]
         stage = stages[-1] if stages else "MILESTONE:unknown"
-        raise SmokeError(f"real Chromium driver failed after {stage}")
+        phases = [
+            line.removeprefix("FAILURE_PHASE:")
+            for line in completed.stderr.splitlines()
+            if re.fullmatch(r"FAILURE_PHASE:[a-z-]{1,48}", line)
+        ]
+        phase = phases[-1] if phases else "unknown"
+        raise SmokeError(f"real Chromium driver failed after {stage}; phase={phase}")
     try:
         evidence = json.loads(completed.stdout)
     except (ValueError, UnicodeError):
@@ -353,18 +359,19 @@ def _durable_owner_facts(
     ready: product.previous.Ready,
     browser: dict[str, object],
 ) -> None:
-    values = (
-        ready.tenant_id,
-        browser["owner_subject"],
-        browser["project_id"],
-        browser["asset_id"],
+    named_values = (
+        ("tenant", ready.tenant_id),
+        ("owner", browser["owner_subject"]),
+        ("project", browser["project_id"]),
+        ("asset", browser["asset_id"]),
     )
-    if any(
-        not isinstance(value, str)
-        or re.fullmatch(r"[A-Za-z0-9_-]{1,191}", value) is None
-        for value in values
-    ):
-        raise SmokeError("browser owner identifiers invalid for durable verification")
+    for label, value in named_values:
+        pattern = r"asset:[a-f0-9]{64}" if label == "asset" else r"[A-Za-z0-9_-]{1,191}"
+        if not isinstance(value, str) or re.fullmatch(pattern, value) is None:
+            raise SmokeError(
+                f"browser {label} identifier invalid for durable verification"
+            )
+    values = tuple(value for _, value in named_values)
     tenant, owner, project, asset = values
     query = (
         "SELECT (SELECT count(*) FROM kokoro_bff.bff_project WHERE tenant_id='"

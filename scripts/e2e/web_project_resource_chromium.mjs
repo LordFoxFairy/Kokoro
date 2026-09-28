@@ -34,8 +34,10 @@ function parseInput() {
 }
 
 let browser
+let phase = "parse-input"
 try {
   const input = parseInput()
+  phase = "launch-browser"
   const require = createRequire(pathToFileURL(path.join(input.web_root, "package.json")))
   const { chromium } = require("@playwright/test")
   browser = await chromium.launch({ headless: true, args: [`--host-resolver-rules=MAP ${input.web_host} 127.0.0.1`, "--no-proxy-server"] })
@@ -82,15 +84,26 @@ try {
   const ownerLogin = await login(page, input.owner_email, input.owner_password)
   const ownerSubject = ownerLogin.subject
   process.stderr.write("MILESTONE:owner-login\n")
+  phase = "expand-project-rail"
+  if (!(await page.getByTestId("rail-new-project").isVisible())) {
+    await page.getByRole("button", { name: "Expand sidebar", exact: true }).click()
+  }
+  await page.getByTestId("rail-new-project").waitFor({ state: "visible", timeout: input.timeout_ms })
+  process.stderr.write("MILESTONE:project-rail-visible\n")
+  phase = "open-project-menu"
   const createResponsePromise = page.waitForResponse((response) => new URL(response.url()).origin === input.web_origin &&
     new URL(response.url()).pathname === "/api/hub/projects" && response.request().method() === "POST", { timeout: input.timeout_ms })
   await page.getByTestId("rail-new-project").click()
+  phase = "select-project-create"
   await page.getByRole("menuitem", { name: "New project", exact: true }).click()
+  phase = "await-project-post"
   const createResponse = await createResponsePromise
+  phase = "validate-project-receipt"
   assert(createResponse.status() === 200, `live Project POST returned ${createResponse.status()}`)
   const projectPayload = await createResponse.json()
   const project = projectPayload?.data?.project
   assert(typeof project?.id === "string" && project.id.length > 0 && typeof project.slug === "string" && project.slug.length > 0, "live Project create receipt invalid")
+  phase = "navigate-project"
   await page.waitForURL((url) => url.origin === input.web_origin && url.pathname === `/app/project/${encodeURIComponent(project.id)}`, { timeout: input.timeout_ms })
   assert(!project.id.startsWith("preview-project"), "new Project clicked into preview fixture")
   process.stderr.write("MILESTONE:live-create\n")
@@ -153,8 +166,11 @@ try {
     upload_status: uploadResponse.status(), owner_get_after_upload: true, owner_get_after_reload: true,
     screenshot: input.screenshot, privacy,
   }))
-} catch (error) {
-  process.stderr.write(`${error instanceof Error ? error.message : "Chromium milestone failed"}\n`)
+} catch {
+  // Playwright exceptions can include signed OAuth URLs and input selectors.
+  // Report only the fixed phase identifier; the runner retains safe ownership
+  // metadata when a phase fails, never raw browser or process logs.
+  process.stderr.write(`FAILURE_PHASE:${phase}\n`)
   process.exitCode = 1
 } finally {
   await browser?.close().catch(() => undefined)

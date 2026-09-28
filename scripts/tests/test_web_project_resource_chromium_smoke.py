@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -123,7 +124,7 @@ def test_browser_driver_rejects_missing_or_untrusted_input_before_launch() -> No
         check=False,
     )
     assert result.returncode != 0
-    assert "invalid Chromium milestone input" in result.stderr
+    assert result.stderr == "FAILURE_PHASE:parse-input\n"
 
 
 def test_owner_source_sha_must_be_full_before_git_admission(
@@ -159,3 +160,31 @@ def test_isolated_owner_copy_never_writes_live_checkout(tmp_path: Path) -> None:
     assert (source / "src" / "main.ts").read_text() == "original"
     assert (isolated / "node_modules").is_symlink()
     assert (isolated / "node_modules").resolve() == source / "node_modules"
+
+
+def test_durable_owner_fact_accepts_storage_asset_digest_id_only() -> None:
+    commands: list[list[str]] = []
+
+    class FakeResources:
+        def command(self, command: list[str]) -> str:
+            commands.append(command)
+            return "1,1"
+
+    ready = SimpleNamespace(tenant_id="tenant-a")
+    browser = {
+        "owner_subject": "user-a",
+        "project_id": "project_a",
+        "asset_id": "asset:" + "a" * 64,
+    }
+    smoke._durable_owner_facts(
+        FakeResources(), "postgresql://localhost/test", ready, browser
+    )
+    assert len(commands) == 1
+    assert "asset:" + "a" * 64 in commands[0][-1]
+
+    browser["asset_id"] = "asset:';DROP TABLE storage_asset;--"
+    with pytest.raises(smoke.SmokeError, match="asset identifier invalid"):
+        smoke._durable_owner_facts(
+            FakeResources(), "postgresql://localhost/test", ready, browser
+        )
+    assert len(commands) == 1
