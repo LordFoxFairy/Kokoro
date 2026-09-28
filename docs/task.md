@@ -975,3 +975,5 @@ W1E-BFF-PLATFORM-PROTO-PIN 已由 BFF main `61b8074ba0264a77496fee8bcb475def4643
 - 首先验证可见的最短真实链：`/login`→IAM 表单提交→OAuth callback→Web/BFF session→新建个人私有对话→发送消息→AG-UI 首帧/终帧→页面显示/刷新恢复。每一跳记录实际 HTTP/UI 结果、当前 commit、失败所在 owner；只修第一个阻断点，先让用户真正完成一次对话，不以表单 200、单仓单测或生成 SDK 替代。
 - IAM `4d98144` 的 0.7 是具名 Skill 授权/集成测试**单仓切片完成**，不是 IAM 所有用户旅程或跨仓集成已完成。先前将其口语称“写完”属完成定义错误；本任务禁止再把“设计门/contract pin/owner pass”写成“整体闭环”。
 - v3 command artifact、组织 Skill 细权限、Storage package、Billing 与运维深化暂不占用上述核心链的执行队列；只有真实用户链需要且属于当前阻断时才恢复对应 owner 任务。浏览器样式沿既有成熟组件/设计体系，避免新建过渡重试页或重做登录 UI。
+
+W1F 首轮事实：旧 3310 匿名 `/login` 可达 IAM 邮箱密码表单，但 `/app` 的 HTTP 200 只是匿名 shell，不能作为 session 证据。Root 以当前 IAM/BFF/Agent 与旧 Web `40a2095` 的隔离真 Chromium 首跑在 `/auth/sign-in` 500：Next 把表单 rewrite 发往公共 TLS 端口的明文 `http://`，`ECONNRESET`；Redis DB7/14/15 与自有进程清零，未扰动 3310。Web owner 最小修 `src/proxy.ts` 目标到已校验 `KOKORO_WEB_ORIGIN`，真实本地 TLS proxy 5/5、Node22 `pnpm check` 1481/1481 等全门 PASS，Web main `a7decb69e3f29bf6d0a1988899f107e39964af99` 已发布。Root 当前 E2E runner 已刷新四仓精确 SHA，下一门是**该提交真实 Chromium 登录→session→首消息→AG-UI/reload**；修前失败不得在修后未跑时改写为已完成。
