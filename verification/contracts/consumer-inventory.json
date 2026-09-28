@@ -709,16 +709,16 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+        "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
         "contract_version": "kokoro.storage.v2",
         "contract_path": "contract/proto/kokoro/storage/v2/storage.proto",
-        "contract_sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
+        "contract_sha256": "5a5dcaec2e1fd0d5eed369b8f79477fd0f8f653b32f9ebe14a8c339f4eb713ac"
       },
       "protocol": "connect-proto",
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "BFF d5c868f pins Storage 2d87e26 Proto and publishes Project upload/list, personal CLEAN list/upload, and bounded complete personal byte download. Root PG/Redis/MinIO/ClamAV owner run 5036454fc7b1397a19695361 passed 14 cases including Complete-response-loss OS restart; IAM was a stub. Root fixed tuple 44ee670f with real IAM/HTTPS Chromium/Web d7848de/BFF/Storage passed personal UI upload, two original-byte downloads, other-subject content GET 404 and Project regression in run fee7b756c799f6e62691e8a3; all owned resources removed. Agent Artifact F2, broader Storage consumers and full product edge remain unverified. Keep whole edge broken.",
+      "reason": "BFF d5c868f pins Storage 2d87e26 Proto and publishes Project upload/list, personal CLEAN list/upload, and bounded complete personal byte download. Root PG/Redis/MinIO/ClamAV owner run 5036454fc7b1397a19695361 passed 14 cases including Complete-response-loss OS restart; IAM was a stub. Root fixed tuple 44ee670f with real IAM/HTTPS Chromium/Web d7848de/BFF/Storage passed personal UI upload, two original-byte downloads, other-subject content GET 404 and Project regression in run fee7b756c799f6e62691e8a3; all owned resources removed. Agent Artifact F2, broader Storage consumers and full product edge remain unverified. Keep whole edge broken. Storage d5cfc44 now publishes final CLEAN Agent Artifact RPC and removes the old generic artifact HTTP list; BFF remains pinned to the preceding Storage Proto and has not implemented F2 Product consumption. Existing personal-file browser proof belongs to the earlier frozen tuple, not this new owner commit.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -728,15 +728,15 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+          "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
           "path": "contract/openapi.json",
-          "sha256": "546fe50eb61568441203279858760de6279276945c9e83640fe6e4827acad6de"
+          "sha256": "3f3cf69fcb875be5959e5d3e570f77e8810025867c6996fcf562f97acc07c861"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+          "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
           "path": "contract/proto/kokoro/storage/v2/storage.proto",
-          "sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
+          "sha256": "5a5dcaec2e1fd0d5eed369b8f79477fd0f8f653b32f9ebe14a8c339f4eb713ac"
         },
         {
           "repository_path": "apps/kokoro-bff",
@@ -1249,16 +1249,16 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+        "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
         "contract_version": "kokoro.storage.v2",
         "contract_path": "contract/proto/kokoro/storage/v2/storage.proto",
-        "contract_sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
+        "contract_sha256": "5a5dcaec2e1fd0d5eed369b8f79477fd0f8f653b32f9ebe14a8c339f4eb713ac"
       },
       "protocol": "connect-proto",
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "Only a Protocol exists; no Storage v2 adapter/generated client is assembled.",
+      "reason": "Storage d5cfc44 publishes F2 final Artifact RPC and scoped Agent delivery operations, but Agent still has only a DeliveryClient Protocol; no generated v2 client or authenticated worker adapter is assembled, and no real Agent→Storage run has passed.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
@@ -1286,16 +1286,16 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+        "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
         "contract_version": "kokoro.storage.v2",
         "contract_path": "contract/proto/kokoro/storage/v2/storage.proto",
-        "contract_sha256": "f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c"
+        "contract_sha256": "5a5dcaec2e1fd0d5eed369b8f79477fd0f8f653b32f9ebe14a8c339f4eb713ac"
       },
       "protocol": "connect-proto",
       "code_generator_version": "@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0",
       "runtime_package_version": "@bufbuild/protobuf@2.14.0+@connectrpc/connect@2.2.0+@connectrpc/connect-node@2.2.0",
       "state": "broken",
-      "reason": "Storage now permits only the authenticated kokoro-platform GetPackageReference operation, but Platform still consumes v1/body tenant/naked URL and lacks original package scope, upload/publish and verified manifest binding; no real cross-owner package flow.",
+      "reason": "Storage now permits only the authenticated kokoro-platform GetPackageReference operation, but Platform still consumes v1/body tenant/naked URL and lacks original package scope, upload/publish and verified manifest binding; no real cross-owner package flow. Storage d5cfc44 changes the same operation allowlist for Agent F2 while preserving Platform package-read scope; Platform consumer remains unupdated and no real cross-owner package flow passed.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
@@ -1317,15 +1317,15 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+          "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
           "path": "src/common/auth/service-authorization.ts",
-          "sha256": "708db7e16e9650df9c3208d3eb8198aac93a5dc54ad79b44fa6ad98e3bd19624"
+          "sha256": "45437edb27c6e67aced6bc7cf4549031618665ab6b2ffc5e1d1de120cb8f3517"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "2d87e26bbaed9a70dcd91ad1e9d126d39d275f38",
+          "repository_commit": "d5cfc442c675e32363ae767f5ec662a9e0d9eaea",
           "path": "test/contract/rpc-trust-boundary.test.ts",
-          "sha256": "de5ce5cfa3beae6913f8ff6aadb51e40634553518f248c7a8a5a1ec8949f01e1"
+          "sha256": "72fbc00e427ab0eef3a8e186dc28d7cb5b248b5995c3f9a51c33bc763be22807"
         }
       ]
     },

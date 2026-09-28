@@ -1,5 +1,36 @@
 # Kokoro 后端闭环任务总表
 
+## 当前关键路径：W2-F2 Storage Agent 作品交付（2026-09-28）
+
+IAM 0.7 是已验的 **owner 授权切片**，不是产品完成状态；本阶段不新增 IAM 权限设计。3310 `/login` 已到 IAM 真实表单，登录故障只按实测缺陷处理。下一项用户可见断链是“对话产生作品 → Library 显示并下载”：个人文件已通过真浏览器纵切，但 Agent Artifact 尚无真 Storage 交付、稳定作品身份及 BFF Product 入口，不能借个人 Asset 或哈希旧路径充数。
+
+| 项 | W2-F2-S1 Storage owner 任务卡（文档门 → 代码门） |
+| --- | --- |
+| 优先级 / 状态 | P0；Storage 文档门 `9e789e5` 与 owner 代码门 `d5cfc442c675e32363ae767f5ec662a9e0d9eaea` 已提交 `main`，Root 独立 Node24 全静态门、默认测试、真实 PostgreSQL 23 文件/190 项通过；Agent、BFF、Web 消费及跨仓浏览器门仍待做，F2 不算闭环。 |
+| Owner / 基线 | `apps/kokoro-storage` 的 `artifacts` 业务域唯一写 Artifact/Asset/Upload；Root 当前 `a46dacb4dea2f4869ca6b5b164702bdde6ff3821`，Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`，均 clean `main`。Root 保留 Git index、提交、跨仓契约与验收；Storage writer 不改其他仓或 3310。 |
+| 当前事实 | v2 已有 Create/Finalize Artifact 与 DownloadReference，但无 `kind/title/source_run_id`、final+CLEAN 专用作品列表/按 artifact_id 单项读取；现列表在 SQL 分页前未排除 draft/非 CLEAN。仅 `web-bff` 获准操作，Agent worker 的 DeliveryClient 仍是未接线的 Protocol；BFF/Web 旧作品请求使用 content hash，不能作为资源 ID。 |
+| 目标职责 | Storage 发布单一最终 CLEAN Artifact 的稳定 ID/metadata/按 scope 先过滤后分页与当前授权下载基础；Create/Finalize receipt 保留稳定 `artifact_id + asset_id + digest`，一 Run 多作品独立。后续 Agent 从可信 Run/lease 冻结 conversation scope 交付，BFF 授权后发布 Product 列表/下载，Web 删除旧哈希路径。 |
+| 目录 / 粒度 | 采用现有 `src/artifacts`、v2 Proto 与唯一 Prisma schema，复用现有 Blob/Asset 生命周期；不在 BFF 建重复 Artifact 表，也不新增泛化 `common` 模块、第二 ORM/schema 或旧 API alias。文档门只准改 Storage `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 顶部当前态与 F2 精确方案；代码文件集在 Root 审查文档门后再锁。 |
+| 依赖 / 数据 API | `tenant + scope_kind=conversation + scope_id` 仅来自已认证服务及 Agent 持久 Run/lease 的冻结上下文，BFF 对当次用户先查自身 Conversation 权限；Storage 不读 Agent/BFF 数据库。F2 字段/操作由 Storage 唯一 Proto/Schema 发布，消费者固定 commit+digest 后再生成；Agent 不得凭 body 自报 scope，BFF 不在全页后过滤。 |
+| 删除 / 验证 | 代码切片须删除被替代的旧哈希作品路径而非保留 fallback；文档门检查三设计相互一致、实际 Proto/Prisma 差距、`git diff --check` 与机器契约/Schema 基线。代码门后以真 PostgreSQL/ObjectStore/扫描证明 final CLEAN 过滤、身份私有、幂等重放和原字节；Root 最后用真 IAM/Agent/BFF/Web/Chromium 复验。未跑的门禁保持待验。 |
+
+执行分工：Storage 唯一 writer 已交付文档和代码，Root 独立审查、复验并提交。下一片依赖 Storage 已发布的机器契约，Agent 先完成可信 Run/lease 到实际作品交付；BFF Product 读取、Web 可见入口顺序跟进。不为 IAM 新增任务，不把 Storage 单仓通过称为 F2 完成。
+
+**W2-F2-S1 Storage 代码门（同一 owner，Root 提交）：** 基线 Storage `9e789e5` clean `main`；唯一 writer 可修改 `contract/proto/kokoro/storage/v2/storage.proto` 及确定性生成物、`prisma/schema.prisma`/Schema 门、现有 `src/artifacts/*`、`src/common/auth/{service-authorization,storage-scope-validation,workload-verifier.service}.ts`、`src/transport/{storage-rpc.service,storage-mapper,storage-list-cursor*,storage-http.contract,storage-http.schema,transport.module}.ts`、`src/integrations/clients/storage-client.ts` 与这些职责的直接测试、`docs/CURRENT.md` 顶部代码交付状态。新具名单责文件须先给 Root 说明位置与变化原因；其他文件/仓、依赖和 lockfile 不改，确需越界先报告。按已冻结七操作 Agent conversation/artifact-purpose 准入、BFF 只读最终作品、非空 F2 metadata 与 final/CLEAN SQL 先筛实现；旧通用 Artifact HTTP 列表在同片退出，不留双轨。先加失败断言，再改 owner 机器源/Schema/运行代码；至少跑 Node24 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm prisma:validate && pnpm test && pnpm build`，真实 PostgreSQL/MinIO/ClamAV 与 Root 跨仓浏览器门由 Root 停写后独立执行。交付文件清单、RED→GREEN、残留/未跑项，不操作 Git index/commit/branch，不碰 3310 或共享数据库清理。
+
+**W2-F2-S1 文件门增补（Root 裁决）：** Storage writer 在 scoped-auth RED（Agent 七操作 1 fail/9 pass）后发现 `src/uploads/uploads.service.ts` 与 `src/assets/assets.service.ts` 仍使用无具名 operation 的默认 `requireStorageContext`。仅靠 transport policy 会留下 Service 内部调用/receipt replay 旁路，因此把上述两个既有 Service 及其直接测试加入本切片允许集，只做 F2 caller×operation×scope/purpose 的统一收紧，不改普通个人/项目 Asset 语义。若还需扩大文件集继续先报告 Root。
+仓内生成客户端 facade 的类型定义实际位于 `src/integrations/clients/storage-client.types.ts`，新 F2 RPC 需要同步 typed 公开面；同意该既有文件及其直接测试并入同一 Storage 代码门，不新建重复手写 DTO。
+Proto 官方再生成使现有 `contract/provenance.json` 的 combinedSha256 必须同步；仅准按本仓生成/校验脚本更新该机器来源摘要，不改 provenance 结构或伪造旧字节，也纳入本代码门。
+F2 非空 Schema/Proto 生成后，旧 Artifact 样本/仓储 double 必须随正式语义一起更新；允许 `test/fixtures/storage-services.ts`、`test/fixtures/rpc-service.ts`、`test/doubles/storage-repository.ts` 及实际受影响的直接 Artifact unit/integration/contract 测试。仅替换假定 BFF 可写 Artifact、缺 metadata 的测试输入/断言；不增加生产兼容默认值、不降低既有无关测试门禁。
+新增 `getFinalArtifact` Store 方法的直接测试装配还涉及 `test/fixtures/storage-data.ts`；仅准同步该 test-only fixture 的新方法和 F2 样本，不借此改生产接口边界。
+为避免逐个测试辅助文件往返审批，同一代码门允许 `test/fixtures/*`、`test/doubles/*` 中**直接服务于 Artifact F2**的现有样本/假实现及相关直接测试一并更新；写入者须在交付文件清单说明每个改动与 F2 新契约的关系，禁止无关测试重构。
+Root 依据现有测试树裁决新 `test/unit/final-artifacts-store.test.ts`：owner 仍是 Storage Artifact；当前无专测 Store final/CLEAN 查询谓词的 unit 文件，扩 `storage-list-cursor.test.ts` 会混淆 cursor 与 SQL Store 两个变化原因，扩真实 PG integration 无法替代查询构造的快速负例，故采用此单责文件。只验证 Store 送往 Prisma 的先筛后 `take=limit+1` 与损坏页失败关闭；真实 SQL/索引/分页仍由独立 PostgreSQL integration 证明，mock 不冒称数据库验收。
+Schema 枚举/列变化导致现有 `scripts/apply-schema.ts` 空库 catalog 断言与官方 `src/generated/prisma/**` 必须同步；HTTP Artifact 路径退出使 `contract/openapi.json` 官方生成物同步，相关直接 architecture test 可更新。仅限确定性派生/Schema 安装断言，不改安装行为、生成脚本或无关架构规则。
+最终作品下载的 Service 内部直接调用也必须核 `artifact_id→final/CLEAN Asset`，不能只依赖 RPC 已先查。Root 裁决保持签发/receipt 在现 `AssetsService`，让该方法在每次执行及重放前经 `ArtifactsListService.get` 核对同 scope final 作品与 asset/digest；`AssetsModule` 单向 import `ArtifactsModule` 以注入该校验，后者不反向 import Assets，避免循环。允许仅因此修改 `src/assets/assets.module.ts` 与直接测试；不把通用 Asset 签发放行到 conversation，不复制 Artifact SQL 谓词。
+Root 真 PostgreSQL 回归发现 `test/integration/scoped-file-lifecycle.test.ts` 原跨 conversation 负例仍期待资源 `NOT_FOUND`，新 caller policy 在资源查询前正确返回 `PERMISSION_DENIED`；仅准按新已裁决权限语义精确更新此直接测试，另外两种已获准 scope 的错 tenant/project 仍须 `NOT_FOUND`。独立质量审查指出 `src/assets/assets-list.service.ts` 与 `src/assets/assets-list.controller.ts` 两个默认 `scope_operation` 调用；Root 真 HTTP 聚焦 11/11 通过，复查发现它们当前被 BFF personal/project 的宽泛“除三项外全准”分支放行，**不是已经复现的 403**。但该分支不符合冻结的显式操作矩阵，新增操作会默认获准。准两文件及直接测试改为具名 `list_assets`，同时把 policy 收敛成个人/项目普通 Asset 的显式 allowlist，保持现有成功路径与 Platform 窄权限，不扩大 BFF conversation。Root 禁止将未复现回归写成通过/失败证据。
+独立规格审查发现最终作品下载持久 receipt 缺 `artifact_id`，与三元组契约不符。准同步既有 `src/assets/reference-receipt.schema.ts`，为 F2 最终作品签发定义含 `artifact_id + asset_id + digest` 的严格回执，普通 Asset/Package reference receipt 不变；直接测试覆盖重放/错 ID。
+Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门通过后，独立质量复审仅余默认操作哨兵 P2：`scope_operation` 仍可在 BFF personal/project 中获准，未来漏传具名 operation 会暗中放行。Root 裁决同片删除该哨兵的默认参数与授权，调用必须在 TypeScript 编译期显式传操作；直接认证/Service 测试同步，不保留兼容兜底。此为防未来默认放行，不冒称当前已发生越权。
+
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 
 | 项 | 裁决 |

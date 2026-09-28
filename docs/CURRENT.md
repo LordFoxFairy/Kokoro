@@ -7,6 +7,8 @@
 
 ## 当前推进边界（2026-09-28）
 
+**W2-F2 当前切片：** Storage owner `d5cfc442c675e32363ae767f5ec662a9e0d9eaea` 已发布最终 CLEAN Agent Artifact 的稳定 ID、metadata、列表/单项/下载引用 RPC 与 Agent 窄交付操作；Root 独立 Node24 全静态/默认测试及隔离真实 PostgreSQL 23 文件/190 项通过。此为单仓门，不是 Agent 已交付作品或用户在 Library 可见；Agent→BFF→Web 消费与真 ObjectStore/扫描/浏览器组合仍待做。IAM 0.7 的 owner 授权切片也不等于整个登录服务或产品完成。
+
 **W2 个人文件下载当前证据（2026-09-28）：用户可见纵切已通过，整体仍未闭环。** Root `44ee670f9133dd1cf2c374bd62d56f4057c8343a` 固定 Web runtime `d7848de1ee053f1ec626e8858144893cf8633412`、BFF `d5c868f8ab8b8a33750e1286e9d020ca72895641`、Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`、IAM `4d981441d154c83b63987f284e3a82a559595870` 的真 IAM/HTTPS Chromium/PG/Redis/MinIO/ClamAV run `fee7b756c799f6e62691e8a3` PASS：个人文件卡两次点击保存原始字节/文件名，下载安全头、列表重载、320px 可读不溢出、同租户他人内容 GET 404；Project/个人上传与 EICAR 原纵切回归。数据库、Redis keys、进程与 S3 版本剩余均0，专用空 bucket 已删除；用户 3310 原登录预览仍在、未热更新。Web 文档证据 commit `eaa7ebd56502cf05b6b402a8a013973c1904b8aa` 不改 runtime。`EDGE-WEB-BFF`/`EDGE-BFF-STORAGE` 及其他 11 条边仍 broken；Agent Artifact F2 与整体产品未完成。以下较早 W2 文字记录历史切片，不覆盖本节当前结论。
 
 IAM `4d981441d154c83b63987f284e3a82a559595870` 的 0.7 owner 切片已发布，不等于整个登录及产品能力完成。固定 Web/BFF/IAM/Agent 组合曾通过隔离真 Chromium 的登录、OAuth 回跳、Product Session、私有聊天、AG-UI 与刷新；其中 System/模型为确定性 fixture，旧 3310 常驻实例没有在本轮热替换。因此“登录写完”是先前错误的完成口径，必须按具体来源与链路分别报告。
