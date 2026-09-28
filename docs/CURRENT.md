@@ -24,7 +24,7 @@ BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，publi
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `094847da9f4f03e5f3dbda06658430c74bc32f54` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
-| `apps/kokoro-capability` | `ee25c1f4d6df08be183ca10f7f5e852e0b21f641` |
+| `apps/kokoro-capability` | `f26d147a09350c3a041722107d277beb93eaad60` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `libs/kokoro-web-shared` | `0c4e87ace01340aaa07bc57935f1d98b8e77af14` |
