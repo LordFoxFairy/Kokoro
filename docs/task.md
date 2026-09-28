@@ -31,6 +31,20 @@ Root 真 PostgreSQL 回归发现 `test/integration/scoped-file-lifecycle.test.ts
 独立规格审查发现最终作品下载持久 receipt 缺 `artifact_id`，与三元组契约不符。准同步既有 `src/assets/reference-receipt.schema.ts`，为 F2 最终作品签发定义含 `artifact_id + asset_id + digest` 的严格回执，普通 Asset/Package reference receipt 不变；直接测试覆盖重放/错 ID。
 Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门通过后，独立质量复审仅余默认操作哨兵 P2：`scope_operation` 仍可在 BFF personal/project 中获准，未来漏传具名 operation 会暗中放行。Root 裁决同片删除该哨兵的默认参数与授权，调用必须在 TypeScript 编译期显式传操作；直接认证/Service 测试同步，不保留兼容兜底。此为防未来默认放行，不冒称当前已发生越权。
 
+### W2-F2-S2 Agent 真作品交付（当前文档门）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-agent` 唯一写 Run、lease、worker 和 Agent delivery event；Storage 唯一写 Artifact/Upload/Asset。Root `ed03b408`、Agent `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0`、Storage `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`，均 clean `main`。 |
+| 当前事实 | BFF launch 的受信 `session_id` 即 Conversation ID，Agent 入站受信 identity 与持久 Run/lease 可回读；`DeliveryClient` 仍仅 Protocol，标准 worker `delivery=None`，普通 `chat` 的 GENERAL_AGENT 未启用 deliver。旧 tool result/event 丢 `artifact_id`，无法构成 BFF/Web 作品 ID。 |
+| 目标职责 | 从已 claim 的持久 Run 与当前 lease 冻结 tenant、user subject、conversation=`session_id`，调用 Storage v2 的 conversation/artifact-purpose 上传→扫描 CLEAN→CreateArtifact→FinalizeArtifact；每次发送前重验 lease，稳定阶段幂等键；最终 receipt 与 `delivery.created` 保留 `artifact_id + asset_id + digest`，普通 chat 明确可使用 deliver 工具但不自动产出虚假作品。 |
+| 目录方案 / 粒度 | 采用现有 `clients/` 的 Storage consumer 与 generated owner Proto、`worker/` 进程资源装配、`tools/deliver.py` 和既有事件类型/投影；淘汰 BFF 代交付、Agent 直接写 Storage SQL、内存-only adapter、把 namespace/hash 当 conversation/artifact ID。只增加确有单责的 adapter/测试文件，不建新顶层模块。 |
+| 依赖 / 数据 API | 固定 Storage owner commit、Proto 原字节 SHA 和生成客户端；受信身份只从 Run admission 与当前 lease 得到，不能从 tool 参数、namespace、文件路径推 tenant/scope。Agent canonical SQL 如无新增持久事实不改；如阶段恢复需要本仓 journal，先在三设计中证明唯一 owner/事务/重放语义，再立代码文件门。不得扩张 IAM 权限模型。 |
+| 删除 / 失败 | 删除旧 hash-only 作品回执/事件和未接线的假正式声明；扫描 pending/infected、网络未知结果、取消、lease 过期、重复/崩溃恢复均不得发 `delivery.created` 假成功；已成功的稳定 Artifact ID 不因重试变化。现有 BFF/Web 消费待 Agent owner commit 后另卡。 |
+| 本片文档门 / 验证 | 唯一 Agent writer 只更新 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 顶部 F2 当前态/目标态与准确机器源；Root 审查后才定代码文件集。文档 `git diff --check` 与相关格式/链接门；代码门须 Ruff/Pyright/contract/full pytest/build、真 PostgreSQL+Storage/ObjectStore/扫描以及 Run/lease/重放/隔离负例。 |
+
+本片不因 Storage 已通过单仓门而标记 Agent 完成；先收敛四文档，再实施并独立验收一个实际聊天 Run 的作品交付。
+
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 
 | 项 | 裁决 |

@@ -1127,3 +1127,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 在提交前独立 Node24 执行 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm prisma:validate && pnpm test && pnpm build && git diff --check`，全部 exit 0；默认 59 文件通过/12 文件跳过，463 通过/154 跳过。另在亲建临时 PostgreSQL 库执行 schema push 与完整 integration 23 文件/190 项通过，数据库已删除。Storage Proto/provenance combined digest `8317e644d45c8db310b44f114afa22892a6a40d6ee7d0c1c4a37a8203e79f427`。
 - 这是 Storage 单仓代码门；真实 ObjectStore/ClamAV 网络、Agent 实际 worker 交付、BFF 当前用户授权与 Product API、Web 可见作品列表/原字节下载和当前 3310 组合均未验。Root 将更新 gitlink/契约库存但继续标注相关边 broken；不把 IAM owner 切片或 Storage 单仓门称作整体完成。
 - Root 暂存新 Storage gitlink 与三条 owner contract/evidence blob pin 后，`python3 scripts/verify-repository-topology.py` PASS（9 runtime owner），`python3 scripts/verify-contract-compatibility.py` 为 16 edges/0 structural violation/13 declared broken，符合未闭环事实；`python3 -m pytest scripts/tests -q` 为 **777 passed、187 subtests passed**；`git diff --cached --check` PASS。提交后再做 main-only/工作树检查。
+
+## 2026-09-28 — W2-F2 下一片 Agent 事实审计
+
+- Root/Storage main 已分别提交并推送 `ed03b408601cd9b7282f5a8019228f3a24a1ea47` / `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`，main-only 检查显示 Root 与全部子仓只留 `main` 且工作树 clean。当前 `GET /login` 跳转到签名 IAM 表单 HTTP 200；这不是本次重新提交凭据或 Agent 作品可见的证据。
+- Agent `d6fcbf2` 只读审计确认：BFF 当前 chat `session_id` 是 Conversation ID，Agent 可从已持久 Run/claim lease 获受信执行上下文；但正式 `DeliveryClient` 仍仅 Protocol，标准 worker `delivery=None`，普通 chat 未装 deliver，旧结果/事件丢 `artifact_id`。因此 Storage F2 owner 发布后，Agent→Storage 当前仍断。Root 已在 `docs/task.md` 立 W2-F2-S2 文档门，后续代码必须实接真 worker/Storage，而不是扩大 IAM 权限设计或继续优化只存在于文档的协议。
