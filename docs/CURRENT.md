@@ -12,7 +12,7 @@
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
-| `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
+| `apps/kokoro-storage` | `838d90e9a2defab6e3d485a814be0e3c6aba6d56` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
 | `apps/kokoro-capability` | `ee25c1f4d6df08be183ca10f7f5e852e0b21f641` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
@@ -24,7 +24,7 @@
 `scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
-Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入、官方 Python Connect generated client 和 24 个 tenant operation 的 request-binding projector，并在 worker 装配租户凭据、IAM token、DB lease 证明与六个 generated Connect RPC。Agent 仍未把 typed Skill/MCP 产品声明接入此 sender，Storage 包体与 BFF/Web 选择链、真实 IAM→Platform→Agent 三 owner 组合也未验收；不能把 transport/loopback fixture 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
+Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入、官方 Python Connect generated client 和 24 个 tenant operation 的 request-binding projector，并在 worker 装配租户凭据、IAM token、DB lease 证明与六个 generated Connect RPC。Agent 仍未把 typed Skill/MCP 产品声明接入此 sender；Storage 已窄放行 Platform 原 scope 干净包的 GetPackageReference，但 Platform 仍消费 v1/body tenant/裸 URL 且缺包 scope/manifest，BFF/Web 选择链与真实 IAM→Platform→Agent 三 owner 组合也未验收；不能把 transport/loopback fixture 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
 
 ## 当前固定租户登录与 relay 来源
 
