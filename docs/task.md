@@ -2,7 +2,7 @@
 
 ## 当前关键路径：W2-F2 Storage Agent 作品交付（2026-09-28）
 
-IAM 0.7 是已验的 **owner 授权切片**，不是产品完成状态；本阶段不新增 IAM 权限设计。3310 `/login` 已到 IAM 真实表单，登录故障只按实测缺陷处理。下一项用户可见断链是“对话产生作品 → Library 显示并下载”：个人文件已通过真浏览器纵切，但 Agent Artifact 尚无真 Storage 交付、稳定作品身份及 BFF Product 入口，不能借个人 Asset 或哈希旧路径充数。
+IAM 0.7 是已验的 **owner 授权切片**，不是产品完成状态；本阶段不新增 IAM 权限设计。3310 `/login` 已到 IAM 真实表单，登录故障只按实测缺陷处理。下一项用户可见断链是“对话产生作品 → Library 显示并下载”：个人文件已通过真浏览器纵切；Agent 已发布受信 Run/lease 的作品交付单仓代码 `96dafec`，但尚无真 Storage/ObjectStore/扫描组合与 BFF Product 入口，不能借个人 Asset 或哈希旧路径充数。
 
 | 项 | W2-F2-S1 Storage owner 任务卡（文档门 → 代码门） |
 | --- | --- |
@@ -14,7 +14,7 @@ IAM 0.7 是已验的 **owner 授权切片**，不是产品完成状态；本阶�
 | 依赖 / 数据 API | `tenant + scope_kind=conversation + scope_id` 仅来自已认证服务及 Agent 持久 Run/lease 的冻结上下文，BFF 对当次用户先查自身 Conversation 权限；Storage 不读 Agent/BFF 数据库。F2 字段/操作由 Storage 唯一 Proto/Schema 发布，消费者固定 commit+digest 后再生成；Agent 不得凭 body 自报 scope，BFF 不在全页后过滤。 |
 | 删除 / 验证 | 代码切片须删除被替代的旧哈希作品路径而非保留 fallback；文档门检查三设计相互一致、实际 Proto/Prisma 差距、`git diff --check` 与机器契约/Schema 基线。代码门后以真 PostgreSQL/ObjectStore/扫描证明 final CLEAN 过滤、身份私有、幂等重放和原字节；Root 最后用真 IAM/Agent/BFF/Web/Chromium 复验。未跑的门禁保持待验。 |
 
-执行分工：Storage 唯一 writer 已交付文档和代码，Root 独立审查、复验并提交。下一片依赖 Storage 已发布的机器契约，Agent 先完成可信 Run/lease 到实际作品交付；BFF Product 读取、Web 可见入口顺序跟进。不为 IAM 新增任务，不把 Storage 单仓通过称为 F2 完成。
+执行分工：Storage 与 Agent 的 owner 单仓代码均已按顺序提交；Root 下一片验证真 Agent→Storage/ObjectStore/扫描，随后 BFF Product 读取、Web 可见入口顺序跟进。不为 IAM 新增任务，不把单仓通过称为 F2 完成。
 
 **W2-F2-S1 Storage 代码门（同一 owner，Root 提交）：** 基线 Storage `9e789e5` clean `main`；唯一 writer 可修改 `contract/proto/kokoro/storage/v2/storage.proto` 及确定性生成物、`prisma/schema.prisma`/Schema 门、现有 `src/artifacts/*`、`src/common/auth/{service-authorization,storage-scope-validation,workload-verifier.service}.ts`、`src/transport/{storage-rpc.service,storage-mapper,storage-list-cursor*,storage-http.contract,storage-http.schema,transport.module}.ts`、`src/integrations/clients/storage-client.ts` 与这些职责的直接测试、`docs/CURRENT.md` 顶部代码交付状态。新具名单责文件须先给 Root 说明位置与变化原因；其他文件/仓、依赖和 lockfile 不改，确需越界先报告。按已冻结七操作 Agent conversation/artifact-purpose 准入、BFF 只读最终作品、非空 F2 metadata 与 final/CLEAN SQL 先筛实现；旧通用 Artifact HTTP 列表在同片退出，不留双轨。先加失败断言，再改 owner 机器源/Schema/运行代码；至少跑 Node24 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm prisma:validate && pnpm test && pnpm build`，真实 PostgreSQL/MinIO/ClamAV 与 Root 跨仓浏览器门由 Root 停写后独立执行。交付文件清单、RED→GREEN、残留/未跑项，不操作 Git index/commit/branch，不碰 3310 或共享数据库清理。
 
@@ -58,6 +58,8 @@ Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门�
 取消与 started deliver 并发门：准同一 Agent writer 扩展既有 `domain/run/repositories.py`、`infrastructure/postgres_run_repository.py`、`infrastructure/postgres_run_leases.py`、`worker/supervisor_control.py`、`tests/support/fakes.py` 与直接测试；只加 claims 行锁下的 journal 快照比较/终态 CAS，不新增表列或跨仓契约。须先以失败测试证明「Storage FINAL 而 Agent journal started」取消时不会先落 terminal 再丢作品/完成事件，并覆盖 snapshot 后新 journal、跨 worker fence、失败后 durable cancel 重试及无重复副作用；若快照方案不能保证这些条件，应继续修正而不是放宽验收。
 续办范围：准最小修改既有 `worker/supervisor_recovery.py` 的存活心跳扫描与直接测试，让延期的 persisted cancel 在本进程存活时也能重试；须同步保证 cancel 未真正完成前命令不被标成 `applied`/`failed`、不会被 `_guarded_control_apply` 的异常路径提前写失败终态，且重复心跳/多 worker 不会双发 control receipt 或终态。无新进程、表或 owner。
 取消崩溃窗裁决：终态 CAS 与 control ledger 成功、`run.control.receipt(applied)`、`run.completed(cancelled)` 两条 critical outbox（递增固定 seq/index、终态 fence）及 sandbox cleanup 必须在 Agent 同库同事务提交；提交前 journal 快照在 claims 行锁内重检，提交后由现有 outbox 按序投影/发布，崩溃后只重发已落账帧，不新造第二终态。准在前述既有 Agent 文件内实现及真 PostgreSQL 反例，不新建跨仓契约/SQL 表列。
+
+**W2-F2-S3 Root 真 Storage 纵切放置门：** Owner 为 Root `scripts/e2e/`，只编排独立测试资源，不拥有 Agent/Storage 业务事实。当前已有 `run_w2_bff_storage_smoke.mjs` 的 Storage/MinIO/ClamAV 与安全清理，但它只准 `web-bff`、不执行 Agent Run；Agent 现有 PG 测试只用 fake Storage。采用新增聚焦 Root runner + 同目录 Agent 客户端驱动（各一文件，及 Root `scripts/tests/` 直接测试），淘汰把 Agent 硬塞进 BFF 上传/浏览器 runner 或仅以 mock PG 代替 owner RPC。依赖方向为 Root 编排→各子仓公开入口/版本化契约；Agent 真 Run/lease→Storage ConnectRPC→签名 ObjectStore PUT，Root 不跨 owner SQL 查业务表。单临时 PG 库内各 owner 独立 schema、独占测试 bucket/对象前缀、已存在 Redis/MinIO/ClamAV 复用；仅删除本次创建的库、桶/精确对象版本与进程，不碰 3310。验证 CLEAN final ID、本人原字节下载、他人/他 scope/tenant 拒绝、过期 lease 无出站、感染样本不 final、资源回收；Root 单测与真实 smoke 留命令/固定 SHA。Agent owner 代码审查/提交先于该跨仓验收，不把临时 smoke 当 BFF/Web 已完成。
 
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 
