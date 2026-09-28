@@ -9,7 +9,7 @@
 
 IAM `4d981441d154c83b63987f284e3a82a559595870` 的 0.7 owner 切片已发布，不等于整个登录及产品能力完成。固定 Web/BFF/IAM/Agent 组合曾通过隔离真 Chromium 的登录、OAuth 回跳、Product Session、私有聊天、AG-UI 与刷新；其中 System/模型为确定性 fixture，旧 3310 常驻实例没有在本轮热替换。因此“登录写完”是先前错误的完成口径，必须按具体来源与链路分别报告。
 
-W2 当前固定 Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`、BFF `8a90fdd9ec3809000924229bfc7b986ba8ba1522`、Web `32b67039bb405d534b0dc8b48ab8991ea7950d17`。Storage 已发布 personal/project CLEAN ASSET owner 列表；BFF 已发布个人 GET 与独立持久幂等的个人文件 POST；Web 资料库使用同页个人文件/Agent 作品页签，个人文件只读消费先前 BFF `a67ae2d` OpenAPI 原字节。Root 独立单仓门：Web Node22 contract 84、architecture 36、Vitest 1521、lint/typecheck/build 及隔离 Playwright 11 pass/1 既有 skip；BFF Node22 format/check 342 pass/1 skip、schema 5 pass/1 skip。独立只读复审修复作品收藏页签切换丢失与 BFF 同键恢复 P1 后，0 P0/P1。当前组合的个人上传真 PG/Storage/MinIO/ClamAV、Web 个人文件 Chromium 刷新/私有负例尚未执行；旧 3310 常驻预览未热替换。
+W2 当前固定 Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`、BFF `8a90fdd9ec3809000924229bfc7b986ba8ba1522`、Web `8debb35b6c9ad3c818282bb2fe3d828ca550d136`。Storage 已发布 personal/project CLEAN ASSET owner 列表；BFF 已发布个人 GET 与独立持久幂等的个人文件 POST；Web 资料库使用同页个人文件/Agent 作品页签，个人文件只读消费先前 BFF `a67ae2d` OpenAPI 原字节。Root 独立单仓门：Web Node22 contract 84、architecture 36、Vitest 1521、lint/typecheck/build 及先前隔离 Playwright 11 pass/1 既有 skip；BFF Node22 format/check 342 pass/1 skip、schema 5 pass/1 skip。独立只读复审修复作品收藏页签切换丢失与 BFF 同键恢复 P1 后，0 P0/P1。Web 新片已将个人 Product POST 同源代理限定 1 MiB/50 秒，并以隔离 Node22 全门复验；当前组合的个人上传真 PG/Storage/MinIO/ClamAV、Web 个人文件 Chromium 刷新/私有负例尚未执行；旧 3310 常驻预览未热替换。
 
 W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 已从用户点击而非测试预造项目完成上述真实 Chromium 验收。当前用户 3310 仍是旧隔离预览进程，未热替换为此提交。
 
@@ -33,7 +33,7 @@ Storage main `91a8748` 仅新增真实个人附件回环测试及测试 fixture 
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `32b67039bb405d534b0dc8b48ab8991ea7950d17` |
+| `apps/kokoro-app` | `8debb35b6c9ad3c818282bb2fe3d828ca550d136` |
 | `apps/kokoro-bff` | `8a90fdd9ec3809000924229bfc7b986ba8ba1522` |
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `4d981441d154c83b63987f284e3a82a559595870` |

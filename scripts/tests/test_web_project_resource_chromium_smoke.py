@@ -168,22 +168,33 @@ def test_durable_owner_fact_accepts_storage_asset_digest_id_only() -> None:
     class FakeResources:
         def command(self, command: list[str]) -> str:
             commands.append(command)
-            return "1,1"
+            return "1,1,1,1,0,1,1"
 
     ready = SimpleNamespace(tenant_id="tenant-a")
     browser = {
         "owner_subject": "user-a",
         "project_id": "project_a",
         "asset_id": "asset:" + "a" * 64,
+        "personal": {"asset_id": "asset:" + "b" * 64},
+        "member_subject": "user-b",
     }
     smoke._durable_owner_facts(
         FakeResources(), "postgresql://localhost/test", ready, browser
     )
     assert len(commands) == 1
     assert "asset:" + "a" * 64 in commands[0][-1]
+    assert "asset:" + "b" * 64 in commands[0][-1]
 
     browser["asset_id"] = "asset:';DROP TABLE storage_asset;--"
     with pytest.raises(smoke.SmokeError, match="asset identifier invalid"):
+        smoke._durable_owner_facts(
+            FakeResources(), "postgresql://localhost/test", ready, browser
+        )
+    assert len(commands) == 1
+
+    browser["asset_id"] = "asset:" + "a" * 64
+    browser["personal"]["asset_id"] = "asset:';DROP TABLE storage_asset;--"
+    with pytest.raises(smoke.SmokeError, match="personal_asset identifier invalid"):
         smoke._durable_owner_facts(
             FakeResources(), "postgresql://localhost/test", ready, browser
         )

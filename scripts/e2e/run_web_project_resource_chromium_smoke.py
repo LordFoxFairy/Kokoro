@@ -350,6 +350,25 @@ def _driver_result(
             or value.get("product_cookie") != "HttpOnly+Secure+Lax"
         ):
             raise SmokeError("current tuple real IAM login evidence drift")
+    personal = evidence.get("personal")
+    if (
+        not isinstance(personal, dict)
+        or not isinstance(personal.get("asset_id"), str)
+        or re.fullmatch(r"asset:[a-f0-9]{64}", personal["asset_id"]) is None
+        or not isinstance(personal.get("filename"), str)
+        or re.fullmatch(r"personal-w2-[a-f0-9]{24}\.txt", personal["filename"])
+        is None
+        or not isinstance(personal.get("content_sha256"), str)
+        or re.fullmatch(r"[a-f0-9]{64}", personal["content_sha256"]) is None
+        or personal.get("post_status") != 200
+        or personal.get("replay_status") != 200
+        or personal.get("conflict_status") != 409
+        or personal.get("owner_get_after_post") is not True
+        or personal.get("owner_get_after_reload") is not True
+        or personal.get("member_get_status") != 200
+        or personal.get("member_empty") is not True
+    ):
+        raise SmokeError("real Chromium personal Library evidence drift")
     return evidence
 
 
@@ -364,15 +383,17 @@ def _durable_owner_facts(
         ("owner", browser["owner_subject"]),
         ("project", browser["project_id"]),
         ("asset", browser["asset_id"]),
+        ("personal_asset", browser["personal"]["asset_id"]),
+        ("member", browser["member_subject"]),
     )
     for label, value in named_values:
-        pattern = r"asset:[a-f0-9]{64}" if label == "asset" else r"[A-Za-z0-9_-]{1,191}"
+        pattern = r"asset:[a-f0-9]{64}" if label in {"asset", "personal_asset"} else r"[A-Za-z0-9_-]{1,191}"
         if not isinstance(value, str) or re.fullmatch(pattern, value) is None:
             raise SmokeError(
                 f"browser {label} identifier invalid for durable verification"
             )
     values = tuple(value for _, value in named_values)
-    tenant, owner, project, asset = values
+    tenant, owner, project, asset, personal_asset, member = values
     query = (
         "SELECT (SELECT count(*) FROM kokoro_bff.bff_project WHERE tenant_id='"
         + tenant
@@ -387,13 +408,36 @@ def _durable_owner_facts(
         + project
         + "' AND asset_id='"
         + asset
-        + "' AND scan_state='clean')::text"
+        + "' AND scan_state='clean')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_storage.storage_asset WHERE tenant_id='"
+        + tenant
+        + "' AND scope_kind='personal' AND scope_id='"
+        + owner
+        + "' AND asset_id='"
+        + personal_asset
+        + "' AND scan_state='clean' AND upload_purpose='asset')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_storage.storage_upload WHERE tenant_id='"
+        + tenant
+        + "' AND scope_kind='personal' AND scope_id='"
+        + owner
+        + "' AND asset_id='"
+        + personal_asset
+        + "' AND state='completed')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_storage.storage_asset WHERE tenant_id='"
+        + tenant
+        + "' AND scope_kind='personal' AND scope_id='"
+        + member
+        + "')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND response_body #>> '{data,file,asset_id}'='"
+        + personal_asset
+        + "')::text || ',' || "
+        "(SELECT count(*) FROM kokoro_bff.bff_idempotency_receipt WHERE status=200 AND scope LIKE '%personal-file-upload:v1%' AND response_body ? 'upload_id')::text"
     )
     actual = resources.command(
         ["psql", database_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", query]
     ).strip()
-    if actual != "1,1":
-        raise SmokeError("BFF Project or Storage CLEAN Asset durable owner fact drift")
+    if actual != "1,1,1,1,0,1,1":
+        raise SmokeError("Project or personal Library durable owner fact drift")
 
 
 def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, object]:
@@ -746,7 +790,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                         raise SmokeError("isolated Next HTTPS origin not ready")
                     time.sleep(0.1)
 
-                stage = "real Chromium Project click and resource upload"
+                stage = "real Chromium Project and personal Library Product flows"
                 screenshot = directory / "project-resource.png"
                 browser = _driver_result(
                     node22, web_origin, ready, member, args.timeout, screenshot, run_id
@@ -861,7 +905,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Chromium login → live Web Project click → BFF Project POST → Storage S3/ClamAV CLEAN → owner GET/reload → member 404",
+        "flow": "real IAM Chromium login → Web Project click/Project upload → browser same-origin personal Product POST → Storage S3/ClamAV CLEAN → personal Library UI/reload → member private",
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]

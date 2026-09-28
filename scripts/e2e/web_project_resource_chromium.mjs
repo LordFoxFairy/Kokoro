@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Real Chromium click → Project POST → file picker → CLEAN GET → reload. */
 
-import { createHash } from "node:crypto"
+import { createHash, randomUUID } from "node:crypto"
 import { createRequire } from "node:module"
 import { readFileSync } from "node:fs"
 import path from "node:path"
@@ -42,6 +42,7 @@ try {
   const { chromium } = require("@playwright/test")
   browser = await chromium.launch({ headless: true, args: [`--host-resolver-rules=MAP ${input.web_host} 127.0.0.1`, "--no-proxy-server"] })
   const observations = []
+  const libraryObservations = []
   const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: "en-US" })
   const page = await context.newPage()
   await page.addInitScript(() => window.localStorage.setItem("kokoro.locale", "en"))
@@ -49,6 +50,9 @@ try {
     const url = new URL(response.url())
     if (url.origin === input.web_origin && url.pathname.startsWith("/api/hub/projects")) {
       observations.push({ method: response.request().method(), path: url.pathname, status: response.status(), response })
+    }
+    if (url.origin === input.web_origin && url.pathname === "/api/hub/library" && response.request().method() === "GET") {
+      libraryObservations.push({ status: response.status(), response })
     }
   })
 
@@ -139,6 +143,55 @@ try {
   await page.screenshot({ path: input.screenshot, fullPage: true })
   process.stderr.write("MILESTONE:reload\n")
 
+  phase = "personal-file-product-post"
+  const personalFilename = `personal-${input.filename}`
+  const personalBytes = Buffer.from(`W2 personal library bytes ${input.file_content}`, "utf8")
+  const personalKey = `w2-personal-${randomUUID()}`
+  const postPersonal = (content) => page.evaluate(async ({ filename, content, key }) => {
+    const form = new FormData()
+    form.append("files", new File([content], filename, { type: "text/plain" }))
+    const response = await fetch("/api/hub/library/files", {
+      method: "POST", credentials: "same-origin", cache: "no-store",
+      headers: { "Idempotency-Key": key }, body: form,
+    })
+    return { status: response.status, body: await response.json(), requestId: response.headers.get("x-request-id"), cacheControl: response.headers.get("cache-control") }
+  }, { filename: personalFilename, content, key: personalKey })
+  const personalPost = await postPersonal(personalBytes.toString("utf8"))
+  const personalFile = personalPost.body?.data?.file
+  assert(personalPost.status === 200 && personalFile?.kind === "file" && /^asset:[a-f0-9]{64}$/u.test(personalFile.asset_id) &&
+    personalFile.filename === personalFilename && personalFile.mime_type === "text/plain" &&
+    personalFile.size_bytes === String(personalBytes.length) && personalFile.content_sha256 === sha256(personalBytes) &&
+    personalFile.scan_state === "clean" && typeof personalPost.body?.meta?.request_id === "string" &&
+    personalPost.cacheControl?.includes("no-store"), "personal Product POST did not return CLEAN exact file")
+  const personalReplay = await postPersonal(personalBytes.toString("utf8"))
+  assert(personalReplay.status === 200 && personalReplay.body?.data?.file?.asset_id === personalFile.asset_id,
+    "same-key personal Product POST did not replay original asset")
+  const personalConflict = await postPersonal(`${personalBytes.toString("utf8")} changed`)
+  assert(personalConflict.status === 409 && personalConflict.body?.error?.code === "idempotency_conflict",
+    "same-key different personal content did not conflict")
+  process.stderr.write("MILESTONE:personal-post-clean-replay\n")
+
+  phase = "personal-file-library-ui"
+  await page.goto(`${input.web_origin}/app/library`, { waitUntil: "domcontentloaded", timeout: input.timeout_ms })
+  await page.getByTestId("library-page").waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await page.getByRole("tab", { name: "Personal files", exact: true }).getAttribute("data-state") === "active",
+    "personal files tab is not default")
+  await page.locator(`[data-testid="library-files"] [data-asset-id="${personalFile.asset_id}"]`).waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await page.locator(`[data-testid="library-files"] [data-asset-id="${personalFile.asset_id}"]`).getByText(personalFilename).count() === 1,
+    "personal file not visible in Library card")
+  const libraryGet = libraryObservations.filter((item) => item.status === 200)
+  assert(libraryGet.length > 0, "Library UI did not issue successful personal GET")
+  const libraryPage = await libraryGet.at(-1).response.json()
+  assert(libraryPage?.data?.items?.some((item) => item.asset_id === personalFile.asset_id &&
+    item.content_sha256 === personalFile.content_sha256 && item.scan_state === "clean"), "Library GET omitted personal CLEAN asset")
+  const libraryGetCount = libraryGet.length
+  phase = "personal-file-library-reload"
+  await page.reload({ waitUntil: "domcontentloaded", timeout: input.timeout_ms })
+  await page.locator(`[data-testid="library-files"] [data-asset-id="${personalFile.asset_id}"]`).waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(libraryObservations.filter((item) => item.status === 200).length > libraryGetCount,
+    "Library reload did not issue durable personal GET")
+  process.stderr.write("MILESTONE:personal-library-reload\n")
+
   const memberContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "en-US" })
   const memberPage = await memberContext.newPage()
   await memberPage.addInitScript(() => window.localStorage.setItem("kokoro.locale", "en"))
@@ -155,6 +208,16 @@ try {
     return { list_status: list.status, list_code: listBody?.error?.code, write_status: write.status, write_code: writeBody?.error?.code }
   }, { resourcePath, filename: input.filename, content: input.file_content })
   assert(privacy.list_status === 404 && privacy.list_code === "project_not_found" && privacy.write_status === 404 && privacy.write_code === "project_not_found", "same-tenant second subject reached private project")
+  phase = "personal-file-member-private"
+  await memberPage.goto(`${input.web_origin}/app/library`, { waitUntil: "domcontentloaded", timeout: input.timeout_ms })
+  await memberPage.getByTestId("library-files-empty").waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await memberPage.getByText(personalFilename).count() === 0, "member Library rendered owner's personal file")
+  const memberLibrary = await memberPage.evaluate(async () => {
+    const response = await fetch("/api/hub/library?kind=file&limit=50", { credentials: "same-origin", cache: "no-store" })
+    return { status: response.status, body: await response.json() }
+  })
+  assert(memberLibrary.status === 200 && Array.isArray(memberLibrary.body?.data?.items) && memberLibrary.body.data.items.length === 0,
+    "member personal Library GET was not an empty own scope")
   process.stderr.write("MILESTONE:member-private\n")
   await memberContext.close()
   await context.close()
@@ -164,6 +227,9 @@ try {
     project_id: project.id, project_slug: project.slug, project_post_status: createResponse.status(),
     asset_id: asset.asset_id, filename: asset.filename, content_sha256: asset.content_sha256,
     upload_status: uploadResponse.status(), owner_get_after_upload: true, owner_get_after_reload: true,
+    personal: { asset_id: personalFile.asset_id, filename: personalFilename, content_sha256: personalFile.content_sha256,
+      post_status: personalPost.status, replay_status: personalReplay.status, conflict_status: personalConflict.status,
+      owner_get_after_post: true, owner_get_after_reload: true, member_get_status: memberLibrary.status, member_empty: true },
     screenshot: input.screenshot, privacy,
   }))
 } catch {
