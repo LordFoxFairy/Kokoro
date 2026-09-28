@@ -49,6 +49,8 @@ Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门�
 
 **W2-F2-S2 Agent 代码门（同一 owner，Root 提交）：** 基线 Agent `53baea8` clean `main`；唯一 writer 可修改本仓 `contract/storage/v2/` 中固定 owner 输入/生成元信息、`src/kokoro_agent/generated/kokoro/{common,storage}/` 确定性派生、`scripts/` 对应 pin/drift 入口、`clients/storage*` 具名 Connect/ObjectStore adapter、`worker/{main,dependencies,storage*}` 资源装配、`tools/{deliver,middleware}.py`、`agents/general.py`、`execution/{events,publish_agent_events}.py`、`protocol/events.py` 与这些变化的直接测试。若复核证明 journal 意图/critical outbox stage 去重必须改变唯一 canonical SQL，可同步 `database/schema.sql`、`domain/run`/`infrastructure/postgres_run_*` 的直接相关代码、schema/catalog 门和测试；先向 Root 报清最小列/约束及事务窗口，不做新总表或其它工具语义泛化。普通 chat 的 deliver 只在真 adapter configured 时显式可用；未配置时保留已定义基础聊天但不得展示空壳成功。先用失败测试锁住当前缺口，再按 Storage 七操作、可信 Run/lease、稳定阶段命令、final→journal→去重 critical frame→Chat 投影→terminal 顺序实施。不得改 IAM/BFF/Web/Storage 或 3310，不碰 Git index；每个扩展文件集先报告 Root。验证：frozen pin/drift、Ruff format/check、Pyright、full pytest、contract/build、真 Agent PG + Storage/MinIO/ClamAV 的本人作品/重试/崩溃/lease/感染负例。Writer 报代码清单与未验门，Root 独立复跑并决定提交；未得真实纵切不标绿。
 
+文件门增补：实际标准 worker 配置入口、Run→tool 装配及交付事件投影需要扩现有 `src/kokoro_agent/config.py`、`agent_factory.py`、`tools/toolset.py`、`domain/chat/projection.py`，并同步本仓 Agent OpenAPI/contract checker 的唯一机器来源与确定性生成物、直接测试。仅限独立 Storage URL/secret、可信 Run/fence 注入及 `artifact_id/asset_id` 事件字段；不改 IAM/BFF/Storage 契约、不造第二应用配置入口。此增补由 Root 在 writer 报告前批准。
+
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 
 | 项 | 裁决 |
