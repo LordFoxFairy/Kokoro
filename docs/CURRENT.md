@@ -5,17 +5,23 @@
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
 
-## IAM 0.7 与 BFF 窄消费者已发布，Product 链仍未闭环（2026-09-28）
+## 当前推进边界（2026-09-28）
+
+IAM `4d981441d154c83b63987f284e3a82a559595870` 的 0.7 owner 切片已发布，不等于整个登录及产品能力完成。固定 Web/BFF/IAM/Agent 组合曾通过隔离真 Chromium 的登录、OAuth 回跳、Product Session、私有聊天、AG-UI 与刷新；其中 System/模型为确定性 fixture，旧 3310 常驻实例没有在本轮热替换。因此“登录写完”是先前错误的完成口径，必须按具体来源与链路分别报告。
+
+W2 当前 Storage `ef0fd7779bf434120ac1f8a58592222f534a7c45` 与 BFF `31c4803b3df0e90c031a97844f89df384ca1a35c` 已发布项目资源 ListAssets→GET；Web `1f36f401b059d83f9c2b183fb34dcfe237c0126c` 已发布多文件逐项上传与 owner GET 列表。Root 在隔离真实 PostgreSQL/Redis/MinIO/ClamAV 组合验证上传、幂等重放、签名 GET 原字节、持久列表重载、cursor 分页、私有拒绝和感染拒绝，自有数据库/对象/bucket 已清理。Web Node22 当前全门 contract 78/78、architecture 36/36、test 1500/1500、lint/typecheck/build PASS；与后端 smoke 并行的首次全量有一条旧 RP 测试失败，聚焦 38/38 和随后全量复验均 PASS，原因未裁定。Root gitlink 和来源库存已指向上述三个提交；**当前 W2 尚无浏览器真项目上传/刷新验收**，不把后端 smoke 与组件测试冒充浏览器产品闭环。
+
+## IAM 0.7 与 BFF 窄消费者历史基线（2026-09-28）
 
 IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。BFF main `815cf564fcbfda9a7d83ab8bb7364fe5fe7df4ff` 已固定 IAM 0.7 窄 Skill client，现另固定 Platform 两份 Proto 并生成 Connect wire；Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` 为 319 pass/1 skip、schema 5 pass/1 skip。**这不是 IAM 或 Product 全链写完**：BFF 尚无 Skill mutation route/credential/digest，Web 仍请求旧 scope，真实 IAM→BFF→Platform 用户链未验，`EDGE-BFF-IAM` 保持 broken。3310 是先前单组临时预览，未以这些新提交热替换运行进程。
 
 BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，public mutation 运行代码和机器 OpenAPI 未发布。Platform main `ae48c894d9034016a16a4cbaa60ab80743d1aab9` 的运行代码仍是前一 `f26d147` 发布的六 catalog RPC Product context/owner gate 与 execution artifact v2/2.0.0；本次仅追加 v3 机器投影目标设计文档，未写 artifact/runtime。Root 独立 Node24 前片 `pnpm format:check && pnpm verify && pnpm build` 为 819 pass/179 skip，本片 `pnpm format:check` PASS；真 PostgreSQL/Connect 因指定隔离端口不可达仍待验。Storage Begin/Complete 与 Platform 不可变包绑定未接通，因此 Validate/Publish fail closed；BFF public mutation、Web 新 scope 与跨仓消费者亦未完成。不能把 BFF IAM 窄 client、Platform 单仓发布或 BFF generated client 列作 Product 闭环。
 
-## W2 项目资源首片（2026-09-28，owner 已发布，Web/跨仓待验）
+## W2 项目资源首片历史基线（2026-09-28）
 
 Storage main `91a8748` 仅新增真实个人附件回环测试及测试 fixture 修复，运行代码/Proto/Schema不变；本地 HTTP MinIO 的真PG/ClamAV验证不代表 production HTTPS。BFF main `815cf56` 固定 Storage v2 Proto `094847da` 的原字节（当前 Storage Proto digest相同），新增 Project 单文件 multipart→CreateUpload→受限PUT→Complete/CLEAN Asset 纵切及持久checkpoint恢复，移除该 POST 的旧503。Root Node22全门319 pass/1 skip、contract28、schema5/1 skip。独立审查指出 Web 仍允许多文件、15秒代理短于 BFF45秒、每次新幂等键且资源列表只保留本地乐观假数据；真实BFF+Storage+ObjectStore/浏览器未跑，`EDGE-BFF-STORAGE`与`EDGE-WEB-BFF`保持broken。本片不是附件/Library/Web完整闭环。
 
-## 3310 临时登录入口（2026-09-28 实测）
+## 3310 临时登录入口历史实测（2026-09-28）
 
 当前 Web main `a7decb69e3f29bf6d0a1988899f107e39964af99` 修复独立 HTTPS TLS 代理下登录表单 rewrite 错误；Root 独立 Node22 `pnpm check` 为 contract 69、architecture 36、unit 1481、lint/typecheck/build PASS。Root 首次以修复前 Web `40a2095` 和当前 IAM/BFF/Agent 执行隔离真 Chromium，在 `/auth/sign-in` 500 停止，Next 将表单 rewrite 错转为 `http://` 公共 TLS 端口（`ECONNRESET`）；修复后首次运行发现 Root 浏览器脚本仍匹配旧英文“Sign in”，已按当前可见中文“欢迎回来/登录”更新脚本与断言。最终固定 Web `a7decb6`、BFF `61b8074`、IAM `4d98144`、Agent `d6fcbf2` 的真 Chromium 隔离组合 **PASS**：同一浏览器完成表单、OAuth/Product Session、DOM 首消息 202、AG-UI 五帧、一次 SSE cursor 断线恢复与刷新后一对 user/assistant；同租户其他成员私有 404，跨租户准入 403。测试自有 PostgreSQL 数据库、Redis DB7/14/15 keys 与进程剩余均为0，旧 3310 未触碰。该组合使用确定性 System/模型 fixture，不是实际模型 provider、常驻 3310 更新或全产品完成证据。
 
@@ -23,12 +29,12 @@ Storage main `91a8748` 仅新增真实个人附件回环测试及测试 fixture 
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `a7decb69e3f29bf6d0a1988899f107e39964af99` |
-| `apps/kokoro-bff` | `815cf564fcbfda9a7d83ab8bb7364fe5fe7df4ff` |
+| `apps/kokoro-app` | `1f36f401b059d83f9c2b183fb34dcfe237c0126c` |
+| `apps/kokoro-bff` | `31c4803b3df0e90c031a97844f89df384ca1a35c` |
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `4d981441d154c83b63987f284e3a82a559595870` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
-| `apps/kokoro-storage` | `91a8748c4317374aadff4a082b49de171397400d` |
+| `apps/kokoro-storage` | `ef0fd7779bf434120ac1f8a58592222f534a7c45` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
 | `apps/kokoro-capability` | `ae48c894d9034016a16a4cbaa60ab80743d1aab9` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |

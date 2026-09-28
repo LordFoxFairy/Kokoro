@@ -981,3 +981,19 @@ W1E-BFF-PLATFORM-PROTO-PIN 已由 BFF main `61b8074ba0264a77496fee8bcb475def4643
 W1F 首轮事实：旧 3310 匿名 `/login` 可达 IAM 邮箱密码表单，但 `/app` 的 HTTP 200 只是匿名 shell，不能作为 session 证据。Root 以当前 IAM/BFF/Agent 与旧 Web `40a2095` 的隔离真 Chromium 首跑在 `/auth/sign-in` 500：Next 把表单 rewrite 发往公共 TLS 端口的明文 `http://`，`ECONNRESET`；Redis DB7/14/15 与自有进程清零，未扰动 3310。Web owner 最小修 `src/proxy.ts` 目标到已校验 `KOKORO_WEB_ORIGIN`，真实本地 TLS proxy 5/5、Node22 `pnpm check` 1481/1481 等全门 PASS，Web main `a7decb69e3f29bf6d0a1988899f107e39964af99` 已发布。Root 当前 E2E runner 已刷新四仓精确 SHA，下一门是**该提交真实 Chromium 登录→session→首消息→AG-UI/reload**；修前失败不得在修后未跑时改写为已完成。
 
 W1F 当前固定组合验收：Root 更新仅浏览器脚本的旧英文登录定位器为当前 Web 真 shadcn 中文“欢迎回来/登录”（Root 单测先 RED 后 GREEN），再运行隔离真 Chromium `run_web_chat_chromium_smoke.py` **PASS**。同一 Context：登录表单→OAuth callback/Product Session→DOM 首发 202→独立 Agent CLI worker→AG-UI 五帧→截断一次后携精确 `Last-Event-ID` 恢复→刷新一条 user/一条 assistant；B 同租户成员对 A 的私有资源 404、C 跨租户 Product Session 准入 403，owner facts 不变。运行源 Web `a7decb6`/BFF `61b8074`/IAM `4d98144`/Agent `d6fcbf2`；System/模型仍为严格确定性 fixture，真实 provider/3310 热替换/全产品剩余 edge 不在本证明。自有 PG/Redis DB7/14/15/进程剩余 0。下一切片转真实 provider/其余 broken edge，不回到长期停留 login 设计。
+
+### W2-PROJECT-RESOURCE-READ / P0（2026-09-28，owner-first 进行中）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | Storage `91a8748` 唯一拥有 Upload/Asset/Scan；BFF `815cf56` 唯一拥有 Project 授权与 public Product API；Web `a7decb6` 唯一拥有资源交互。Root `431e92d`，各仓 main/clean。 |
+| 当前事实 | BFF POST 仅接收一个文件，Web 多选却把所有文件装进同一请求；Web 15 秒代理短于 BFF 45 秒，重试重新生成 key；Web 列表以 preview 资源初始化且成功上传只更新内存。Storage 已有按 tenant/scope 的真实资产列表查询与索引，但 v2 Connect 无 ListAssets，BFF 无 GET。进程内 BFF 上传测试不证明真实 PG/MinIO/ClamAV。 |
+| 目标职责 | 多选按一文件一请求提交并保留各文件重试身份；上传成功后由 BFF 当前 Project owner predicate→Storage v2 ListAssets→Web GET 重载，只显示该项目 CLEAN ASSET，不显示包、未扫描或其他项目资源。 |
+| 目录方案 / 粒度 | 采用 Storage 现有 assets list 查询之上的 v2 Connect RPC、BFF 现有 Project route/Storage client 的 GET、Web 现有 workspace/adapter 更新；淘汰 BFF 新 Asset 映射表（双写真源与回填），淘汰 BFF 新增 Storage HTTP 旁路（新消费协议必须保持 v2 Connect）。不建新一级模块或 schema。 |
+| 依赖 / 数据/API | Storage 先提交机器 Proto、生成物、caller/scope/purpose/scan/cursor 测试；BFF 再固定 owner digest，先按 tenant+subject 查询 canonical Project，再以 trusted project scope 调 ListAssets，发布 GET public OpenAPI；Web 最后固定 BFF contract、删除真实项目的 preview 假列表并刷新 GET。Storage 同项目列表不按上传者过滤，cursor 绑定受信 subject；BFF 当前私人 Project 拒绝其他 subject。GET 列表没有 upload_id，不从 POST 响应伪造。 |
+| 删除项 | Web 批量单请求、每次新 key 的不确定重试、真实项目的 preview 资源与仅内存成功行；不删除 Storage 既有 owner HTTP 列表（保留其独立既有消费者），但 BFF 不新接该协议。 |
+| 验证 / 状态 | Web 唯一 writer 正在 TDD 修多文件/超时/幂等与反馈；Storage 唯一 writer 正在 owner-first 增 RPC。Root 待审查、逐仓主树重验、固定 gitlink/来源；BFF GET 与 Web 重载待 Storage owner 发布。真 BFF→Storage→PG/MinIO/ClamAV 项目上传/分页/刷新浏览器烟测尚未执行，不能称 W2 闭环。 |
+
+W2 当前推进：Storage main `ef0fd7779bf434120ac1f8a58592222f534a7c45` 已发布 ListAssets Connect；BFF main `31c4803b3df0e90c031a97844f89df384ca1a35c` 已发布项目资源 GET；Web main `c4ac886c72c6f040415d8d8ccba0fa6399f6d4aa` 已修多文件逐项上传、稳定重试与超时。Root 已独立在真实隔离 PG/Redis/MinIO/ClamAV 组合验证 BFF→Storage 上传、同键重放、签名原字节 GET、持久列表重载、cursor 分页、跨 subject 404、EICAR 拒绝，测试自有数据库/对象已清理；这是后端链验收，不是 Web 浏览器项目资源重载验收。Web 唯一 writer 正实现固定 BFF GET 契约与真实列表，交付后 Root 复核并固定 gitlink/库存；`EDGE-WEB-BFF` 与 `EDGE-BFF-STORAGE` 在整边闭环前仍为 broken。
+
+W2 Web GET 切片已由 Web main `1f36f401b059d83f9c2b183fb34dcfe237c0126c` 发布，Root 独立 Node22 `pnpm check` 最终 exit0：78 contract、36 architecture、1500 tests、lint/typecheck/build；第一次全量与后端真 smoke 并行时一条既有 RP fixture 用例失败，聚焦 38/38 和随后完整复验通过，原因未裁定，保留该波动记录。Root 已将 Web/BFF/Storage gitlink 与来源库存更新到本次提交，兼容门仍保持 13 broken/0 illegal，拓扑通过。剩余 W2 用户可见门：**隔离真实浏览器**完成项目打开→上传→关闭/刷新→GET 重载、跨个人私有项目不串行；未执行前不宣称浏览器切片完整闭环。整体其他 13 条边、真实 provider 与 Billing 仍在总目标内。
