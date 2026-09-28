@@ -1038,3 +1038,13 @@ W2-LIBRARY-STORAGE-PERSONAL-LIST owner 代码已由 Storage main `2d87e26bbaed9a
 | 数据/依赖/删除/验证 | BFF 无新持久 Asset/Library 表、跨 owner SQL、缓存事实或角色；Storage Proto generated 类型止于 facade，单轨 Connect；未来代码删除固定 503 stub 而不是保留 fallback。文档门 Node22 Prettier/diff、固定 owner Proto digest/当前路径核对；后续代码门 contract:check:storage、OpenAPI generated drift、admission/越权/坏 owner 页/unit/真 Storage 组合、Root 浏览器刷新与隐私。个人上传/下载与 Agent 作品是父目标未完部分，不由文件列表 200 代替。 |
 
 文档门已由 BFF main `d5d7c243db4707645031943a2691d354997b3029` 提交：四份指定文档采用必填 `kind=file`，个人文件与 Agent Artifact 分开，正式个人上传/下载另做纵切。Root 审查 diff 和 `git diff --check`；`docs/CURRENT.md` 整文件 Prettier PASS，三份设计文档在基线与本片均整文件 FAIL，未重排历史内容。机器 OpenAPI、Storage consumer 和运行代码未改，接口仍 503。下一门是 BFF public contract 与个人列表代码，之后做真 owner/browser 验收；不记 Library 完成。
+
+### W2-LIBRARY-BFF-FILE-CODE / P0（2026-09-28，个人文件列表实现）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer，基线 main `d5d7c243db4707645031943a2691d354997b3029` clean；Root `c6e69286f8bd9a1647a906787ace07ed8c852527` 管跨仓来源、审查、Git index/提交。Storage owner main `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`，Web 暂只读。 |
+| 目标 / 完成 | 在现有 `GET /v1/library` 发布真实 `kind=file` 200 个人 CLEAN ASSET 列表、严格 400/502/503，删除固定 503；无 kind/未知 kind 非成功。仅列表，不以此宣称上传、下载、Artifact 或完整 Library 闭环。 |
+| 文件集 | 允许 BFF `contract/openapi/v1/openapi.yaml`、其直接 contract 测试；`contract/vendor/kokoro-storage/` 旧源删除/新源原字节、`contract/dependencies/storage-connect.json`、`scripts/generate-storage-connect-client.mjs`、`buf.storage.json`、`src/generated/storage-connect/`；`src/http/routes/owner.ts`、`src/http/routes/library*.ts` 或现有同责位置、`src/http/library*.ts`、`src/infrastructure/clients/storage/`、直接测试、`package.json` 的测试/格式入口、四份设计/当前文档与 `README.md`/`INDEX.md`/`contract/README.md` 的事实更新。禁改 Schema、IAM/Storage/Web/Root 和其他 owner；如需新文件先用设计门说明变化原因。 |
+| 依赖 / 数据/API | 先固定 Storage 新 Proto/digest并验证生成，再改唯一 public OpenAPI/contract tests，最后实现；当前 IAM admission 后从可信 `RequestContext` 取 tenant/subject，Storage personal `scope_id=subject`。生成类型止于 Storage adapter，不复用 Project predicate 或以 `projectId=subjectId` 冒充个人 scope。无 BFF Library 表、缓存或跨 owner SQL。`x-request-id` 必须有；设计文档与本仓既有 JSON meta 用法若和 API 专项手册冲突，先记录并以最小一致修正解决，不机械扩散新响应形状。 |
+| 验证 / 交付 | TDD 覆盖必填 kind、非法/重复 query、范围/游标、可信 headers、CLEAN ASSET/坏 owner 页、隔离 cursor、每页重新准入、故障不假空页、Project 原行为。Node22 `pnpm format:check && pnpm check && pnpm schema:check`，`pnpm contract:check:storage`、真实隔离 PG/Storage Connect 正反例；单 writer 停写后 Root 独立重跑并提交精确路径，Root 再对当前组合做浏览器验收。测试 fixture 不清理共享资源，不碰 3310。 |
