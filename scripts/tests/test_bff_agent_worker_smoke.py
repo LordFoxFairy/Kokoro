@@ -84,7 +84,7 @@ def resources(recorder: Recorder) -> smoke.OwnedResources:
 
 def test_release_inputs_pin_current_bff_and_agent() -> None:
     assert smoke.EXPECTED_RELEASES == {
-        "kokoro-bff": "61b8074ba0264a77496fee8bcb475def46430a63",
+        "kokoro-bff": "815cf564fcbfda9a7d83ab8bb7364fe5fe7df4ff",
         "kokoro-agent": "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0",
     }
 
