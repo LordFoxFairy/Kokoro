@@ -865,3 +865,5 @@ W1E-IAM-ORG-SKILL-ACTION-DOC 已由 IAM main `99e9b6b3175c20d440680a39af2af1a831
 
 - 当前 `127.0.0.1:3310/login` 302 到同源 IAM authorize，但该 authorize 实测 **503 `iam_relay_unavailable`**；BFF 原预览 PID 88920 仍监听 64015，Web PID 88923 仍监听 3310，而 BFF 指向的 IAM `127.0.0.1:64012` 无进程/连接。此前 Chromium 成功截图是历史状态，不是当前验收。
 - 登录可见路径先恢复独立 IAM owner 服务并做浏览器 `GET /login → IAM 表单 200 → 实际登录 → /app`，随后再对 IAM Skill 0.7、BFF/Web Product consumer、Platform/Storage/Agent 等闭环。不要用登录错误页或新样式遮盖服务缺失；不误杀用户 3310/其他服务，不重复启动多组进程。重启孤儿临时组合须有明确进程所有权和资源隔离，不能靠无限排查或口头历史验收。
+
+P0-LOGIN-3310-CURRENT 本次恢复验收（2026-09-28）：旧 Web/BFF 两进程经 PID/可执行文件/端口核对后仅停止该组；Node24 IAM + Node22 BFF/Web 由现有 `scripts/dev/serve_local_login.py` 以单 supervisor/独立测试 DB+Redis prefix 启动。Root 实测 `/login`→`/auth/sign-in` 200，HTML form 含 CSRF/email/password，浏览器目视无“连接中/重试登录/服务暂不可用”；同一临时账号 HTTP 表单提交→consent→`/app` 200。状态 **当前临时预览已恢复**，不宣称长期 supervisor、正式部署或其他 12 条 broken 边已闭环；后续每次交付须先跑同一活体登录 smoke，若 PID/端口变化按当前事实重验。正式 UI 不为后端缺失新增整页重试设计。

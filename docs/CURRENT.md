@@ -5,6 +5,10 @@
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
 
+## 3310 临时登录入口（2026-09-28 实测）
+
+旧预览的 IAM 后端退出后，`/login` 曾 302 到返回 `iam_relay_unavailable` 503 的 `/iam/oauth2/authorize`；此前截图不证明当时的当前态。Root 仅替换已确认归属的旧 Web/BFF PID 88923/88920，使用 `scripts/dev/serve_local_login.py` 重新启动单组隔离 IAM/BFF/Web（supervisor PID 62862，IAM 62935，BFF 62984，Web 62986；另一个旧 BFF PID 81924 未触碰）。新组合的 `GET /login` 经 IAM 到 `/auth/sign-in` 200，Browser 目视邮箱/密码表单、无连接中/整页重试；同一临时账户 HTTP 实测凭据提交 → consent → `/app` 200。fixture 创建独立测试数据库/Redis 前缀，未改变正式子仓发布 commit 或 Billing/Platform 状态；当前预览是进程存活时的临时开发验收，不是生产部署或长期在线保证。
+
 | 子仓 | 当前固定提交 |
 | --- | --- |
 | `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
