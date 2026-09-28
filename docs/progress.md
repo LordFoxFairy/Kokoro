@@ -1210,3 +1210,7 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Web 唯一 writer 在 `ca3a581` 基线上交 45 文件，Root 审查并提交推送 main `561e4c0399ed43715aa16ccff61370f6cd3e9424`：BFF `55d3c9c` OpenAPI 原字节 SHA-256 `8a0849dcf3ae557d5f3166ad624c5eea9f42bc0b65c7a6ae7fda1741224d567b` 精确 pin，Library 正式作品页改 Product 二元身份/分页/详情预检/原生 attachment，精确 Hub 内容 GET 有界流/背压/取消/长度与完整结束校验，删正式旧 hash 列表/下载与死组件。Chat delivery/Canvas、BFF snapshot 仍是独立断链。
 - 两名独立只读审查发现真实 `artifact%3A` 被最终 Next 覆写安全头、背压 pause 时 idle timeout 误判，以及错误响应资源预算等问题；同一 Web writer RED→GREEN 修复，复核未见新 P0/P1/P2。Root 独立 Node22 `pnpm check`：contract **103/103**、architecture **36/36**、Vitest **1585/1585**、lint/typecheck/build exit0；隔离端口 3453 `pnpm test:e2e` **11 pass/1 既有 skip**；生成物精确同 BFF 原字节，diff check PASS。Playwright 是治理回归，**未覆盖真实 Agent 作品下载**；用户 `3310` 未重启/热更新。
 - 跨仓审查仍发现 BFF 作品路由以同一个 120 秒 deadline 包含 ObjectStore 1 GiB spool 与向浏览器传输，Web 30 分钟不能覆盖。该 owner P1 与真实 IAM→Chromium→Web→BFF→Agent→Storage 原字节/私有/320px 浏览器门已入 `docs/task.md`；二者未验前不宣称 1 GiB 慢链路或 Agent Artifact F2 整体完成。
+
+## 2026-09-28 — W2-F2-S8 BFF 下载时限文档门
+
+- BFF 唯一 writer 先盘点当前单个 120 秒信号贯穿对象取回/校验与出站的事实；Root 为避免 SQL/运维支线将方案收窄到具名作品下载 route：既有最多 120 秒准入/引用阶段不改，新目标为对象取回/校验独立 7 分钟总/45 秒 idle、出站独立 28 分钟总/25 秒 idle、共同客户端取消与临时文件/两个 spool 名额回收，不宣称任意 1 GiB 网络速率 SLA 或 PostgreSQL/磁盘 syscall 硬中止。仅四份 BFF 三设计/CURRENT 文档提交 main `f558acc36bf9947e48753be510499b08a8011e85`；Root Node22 `pnpm contract:semantic` **77 operations PASS**、`pnpm schema:check` **5 pass/1 无库 skip**、diff check PASS。未改运行代码/OpenAPI/SQL/测试，真实大件慢消费者仍未验；后续代码门另授。
