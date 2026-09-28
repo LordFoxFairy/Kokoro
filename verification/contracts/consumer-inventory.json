@@ -72,7 +72,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92",
       "state": "broken",
-      "reason": "Web cbae94d pins BFF 8a90fdd public OpenAPI exact bytes and ships visible personal file upload through the same-origin adapter, strict CLEAN receipt and owner GET refresh; isolated Node22 check/e2e pass. Root current-tuple real Chromium UI click, concurrent same-key, infected and durable owner facts are pending at this commit. Personal download, Agent Artifact F2, other reachable Chat, Hub, Scheduled, Share, System, Agent setup and Billing Product operations still lack full owner-generated coverage and current real browser matrix; keep this whole edge broken.",
+      "reason": "Web cbae94d pins BFF 8a90fdd public OpenAPI exact bytes and ships visible personal file upload through the same-origin adapter, strict CLEAN receipt and owner GET refresh; isolated Node22 check/e2e pass. Root 0a920696 current-tuple real Chromium UI click, concurrent same-key, infected and durable owner facts passed with owned resources cleaned. Personal download, Agent Artifact F2, other reachable Chat, Hub, Scheduled, Share, System, Agent setup and Billing Product operations still lack full owner-generated coverage and current real browser matrix; keep this whole edge broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
