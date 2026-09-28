@@ -1061,3 +1061,13 @@ W2-LIBRARY-STORAGE-PERSONAL-LIST owner 代码已由 Storage main `2d87e26bbaed9a
 W2-WEB-LIBRARY-LIVE-TRUTH 已由 Web main `c140f3b7c2fd09152d0f485e2b6c3580cf02cf49` 发布，Root 独立 Node22 `pnpm check`（contract 83、architecture 36、Vitest 1513、lint/typecheck/build）及隔离 3441 `pnpm test:e2e`（11 pass/1 既有 skip）通过；只修 live/preview 真值，不冒充个人文件 UI。W2-LIBRARY-BFF-FILE-CODE 已由 BFF main `a67ae2d06b52202f349305ae3723f6e296c087a1` 发布：Storage 2d87e26 精确 Proto pin、OpenAPI 200、个人 Connect 列表、旧正式 503 删除；Root 独立 Node22 format/check/schema 332 pass/1 skip、schema 5 pass/1 skip，独立只读审查 0 P0/P1。真正 Storage/PG/browser 的个人文件链、Web 新 OpenAPI pin 与文件 UI、上传/下载和 Agent Artifact 仍待验；本轮不升绿完整边。
 
 W2 当前组合复验：Root `bb6a6502` 固定 Web `c140f3b`/BFF `a67ae2d`/Storage `2d87e26`/IAM `4d98144` 后，隔离真 Chromium Project 创建→文件上传→刷新→另一同租户成员404 PASS，测试自有 PG/Redis/进程/S3 版本均0、独占 bucket 删除。Root `scripts/e2e/run_w2_bff_storage_smoke.mjs` 后端组合新增 test-owned 个人 CLEAN ASSET fixture，BFF public Library 读、双页 cursor、他人空页/跨人 cursor400、必填 kind；与 Project 七项合计 11 cases 真 PG/Storage/MinIO/ClamAV PASS，自有数据库/对象已删。该 runner 已提交 Root `931f3fd3`；不把直接 Storage fixture 上传称作 Web/BFF 个人 Product 上传。Web 文件 UI、个人 Product 上传/下载及 Agent Artifact 仍是 P0 后续。
+
+### W2-WEB-LIBRARY-FILES / P0（2026-09-28，Web 设计门→代码门）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，main `c140f3b7c2fd09152d0f485e2b6c3580cf02cf49` clean；Root `dd6cecee` 审查、Git index/提交。BFF owner `a67ae2d06b52202f349305ae3723f6e296c087a1` 的唯一 public OpenAPI SHA-256 `82df2303f9f86e9b4caa4b5965f930735740d8c044c955450e45406dc29cabb9`；Web 仍 pin 上一 BFF 公开来源。 |
+| 当前 / 目标 | 当前 `/app/library` 只有 Agent `ArtifactRecord(content_hash,session_id,title)`，正式客户端走旧 `/api/session/artifacts`，没有个人 Asset。目标是在现有页面用成熟 shadcn Tabs 分开“个人文件”和“Agent 作品”，默认个人文件；文件走同源 `/api/hub/library?kind=file`，独立 `asset_id` model/Zod/分页/状态。作品 tab 保留原有行为，不把文件 cast 成作品、不复用 hash 下载/来源/收藏。 |
+| 放置方案 | 采用现有 `src/features/app/kokoro-library-surface.tsx` 作为组装及 tab 容器，在同一 feature 拆文件列表组件/状态与 `src/contract/` 的 wire schema；淘汰新建第二个 `/app/files` 页面（割裂 Library）和在 ArtifactRecord 加可选 asset 字段（混淆 owner/生命周期）。仅在确有独立变化原因时新建文件，不建顶层模块。 |
+| 第一门 / 文件 | 先只修改 Web `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`，四文档简洁对齐当前/目标/来源/错误与下一代码范围；不改生成、UI、机器契约。Root 审查后另授代码文件集，避免让文档门冒充页面可用。 |
+| 依赖 / 测试 | Browser→既有 Web `/api/hub` 同源 adapter→BFF public GET；不直连 Storage/复制数据库或缓存。只有真实 200 空页可显示空态；503/解析错显示错误与重试，异步取消迟到响应、游标环路/跨页去重；其他用户的文件不得显示。上传/下载 Product 契约尚未发布，文件 tab 不借 Project POST 或 Artifact hash 下载，也不放虚假按钮。后续代码先 exact pin BFF OpenAPI、runtime schema/组件测试、Node22 全门与真登录+Library 浏览器验收；不会触碰 3310 用户预览。 |
