@@ -15,7 +15,7 @@ W2 已验纵切来源为 Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`、BF
 
 **W2 故障恢复补门（Root 本片）：** BFF `5add506` 与 Storage `2d87e26` 在隔离真实 PostgreSQL、Redis、MinIO、ClamAV 上，Root 故障代理只在 Storage `CompleteUpload` 返回 200 且已读完响应后断开 BFF 侧连接；随后停止原 BFF OS 进程、以同库新进程重试同一文件/幂等键。`run_id=0cc2f4bdf3407c6e7e5d4e8d` 的 12 项 smoke 通过：未知结果先为 503，恢复后 CLEAN 200，Storage Upload/Asset、S3 对象版本、Complete 调用和 BFF terminal receipt 均未重复；异文件同键 409。测试自有数据库、对象版本、进程清零并删除独占空 bucket。此 runner 使用 IAM 身份桩，不证明当前 Web/浏览器 tuple、个人下载或 Agent Artifact F2；`EDGE-BFF-STORAGE` 继续 broken。
 
-BFF `74bb714d5867399bc50806c158c2ffb838c27b40` 仅发布个人下载四文档设计门，未增加 OpenAPI 下载 path、runtime 或 Web 文件卡动作；当前运行行为仍是 `5add506`。Root 对照 Storage v2 及现有同源 adapter 审查了受控二进制、ASSET/CLEAN 双 RPC、1 MiB 完整校验、无新 SQL 的边界；个人下载仍未实现，`EDGE-BFF-STORAGE` 保持 broken。
+BFF main `d5c868f8ab8b8a33750e1286e9d020ca72895641` 已发布个人下载 public OpenAPI 与受控二进制 runtime（代码提交 `318cf6a`），Web 文件卡/同源下载 adapter 尚未接线。Root Node22 全门 347 pass/1 既有 skip、schema 5 pass/1 无库 skip；BFF `318cf6a` 与 Storage `2d87e26` 在隔离真 PostgreSQL/Redis/MinIO/ClamAV 的 Root run `5036454fc7b1397a19695361` 14/14 PASS：本人个人原字节、同租户他人 404、既有上传/列表与 Complete 应答丢失后 OS 重启恢复；自有 DB、对象版本、进程清零，独占 bucket 删除。该 runner 的 IAM 为身份桩，不证明当前 Web/浏览器下载；`EDGE-BFF-STORAGE`、`EDGE-WEB-BFF` 均继续 broken。
 
 W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 已从用户点击而非测试预造项目完成上述真实 Chromium 验收。当前 3310 已重建为登录临时组合，但不代表 W2 Storage 链已在该进程中启用。
 

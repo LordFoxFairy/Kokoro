@@ -351,7 +351,8 @@ async function runCases(bffBase, storageBase, publicOrigin, identity, tokens, we
   const library = (token, query = "?kind=file") => jsonRequest(bffBase, `/v1/library${query}`, "GET", auth(token), undefined, 200)
   const noPersonalYet = await library(tokens.owner)
   ensure(noPersonalYet.data?.items?.length === 0 && noPersonalYet.data.next_cursor === null, "project asset leaked into personal Library")
-  const personalOne = await seedPersonalCleanAsset(storageBase, publicOrigin, identity, storageSecret, Buffer.from(`personal one ${identity.tenant}`), "personal-one.txt")
+  const personalOneBytes = Buffer.from(`personal one ${identity.tenant}`)
+  const personalOne = await seedPersonalCleanAsset(storageBase, publicOrigin, identity, storageSecret, personalOneBytes, "personal-one.txt")
   const personalTwo = await seedPersonalCleanAsset(storageBase, publicOrigin, identity, storageSecret, Buffer.from(`personal two ${identity.tenant}`), "personal-two.txt")
   const firstPersonalPage = await library(tokens.owner, "?kind=file&limit=1")
   const personalCursor = firstPersonalPage.data?.next_cursor
@@ -361,13 +362,20 @@ async function runCases(bffBase, storageBase, publicOrigin, identity, tokens, we
   ensure(secondPersonalPage.data?.items?.length === 1 && secondPersonalPage.data.next_cursor === null && personalIds.size === 2 && personalIds.has(personalOne.assetId) && personalIds.has(personalTwo.assetId), "personal Library pagination lost or mixed assets")
   const personalFacts = await database.query("SELECT count(*)::int AS n FROM kokoro_storage.storage_asset WHERE tenant_id = $1 AND scope_kind = 'personal' AND scope_id = $2 AND upload_purpose = 'asset' AND scan_state = 'clean'", [identity.tenant, identity.owner])
   ensure(personalFacts.rows[0]?.n === 2, "personal Library disagrees with Storage durable facts")
+  const personalDownloadPath = `/v1/library/files/${encodeURIComponent(personalOne.assetId)}/content`
+  const ownDownload = await fetch(`${bffBase}${personalDownloadPath}`, { headers: auth(tokens.owner), redirect: "error", signal: AbortSignal.timeout(20000) })
+  ensure(ownDownload.status === 200 && ownDownload.headers.get("cache-control") === "no-store" && ownDownload.headers.get("referrer-policy") === "no-referrer" && ownDownload.headers.get("content-disposition")?.startsWith("attachment;"), "personal Product download headers/status drift")
+  const personalDownloaded = Buffer.from(await ownDownload.arrayBuffer())
+  ensure(personalDownloaded.equals(personalOneBytes), "personal Product download bytes differ from owned Storage asset")
+  const deniedDownload = await jsonRequest(bffBase, personalDownloadPath, "GET", auth(tokens.other), undefined, 404)
+  ensure(deniedDownload.error?.code === "library_file_not_found", "other subject downloaded a personal file")
   const otherPersonal = await library(tokens.other)
   ensure(otherPersonal.data?.items?.length === 0 && otherPersonal.data.next_cursor === null, "other subject saw personal files")
   const foreignCursor = await jsonRequest(bffBase, `/v1/library?kind=file&limit=1&cursor=${encodeURIComponent(personalCursor)}`, "GET", auth(tokens.other), undefined, 400)
   ensure(foreignCursor.error?.code === "invalid_library_page", "other subject replayed personal cursor")
   const missingKind = await jsonRequest(bffBase, "/v1/library", "GET", auth(tokens.owner), undefined, 400)
   ensure(missingKind.error?.code === "invalid_library_kind", "Library silently defaulted kind")
-  return ["clean_project_upload", "same_key_replay", "owner_signed_get_bytes", "project_list_reload", "project_list_pagination", "cross_subject_denied", "eicar_denied", "personal_library_clean_list", "personal_library_pagination", "personal_library_subject_isolation", "personal_library_explicit_kind"]
+  return ["clean_project_upload", "same_key_replay", "owner_signed_get_bytes", "project_list_reload", "project_list_pagination", "cross_subject_denied", "eicar_denied", "personal_library_clean_list", "personal_library_pagination", "personal_library_subject_isolation", "personal_library_explicit_kind", "personal_download_bytes", "personal_download_subject_isolation"]
 }
 
 async function runPersonalRestartCase(bffBase, faultProxy, identity, tokens, webSecret, database, restartBff, s3, bucket, prefix) {
