@@ -967,3 +967,11 @@ W1E-BFF-PLATFORM-CONSUMER-I owner artifact 前置审计（BFF `1c81887` clean、
 - 放置沿本仓既有 `contract/vendor` 与 `src/generated`，比较旧 HTTP `capability/`（不适配 Connect）和新独立 `platform-connect` generated（采用）；只读 Proto 已发布，无需等待 owner command artifact v3。若 Platform v3 不改 Proto 字节，后续仅更新来源 commit/aggregate；若 Proto 变则重新生成，不能冒称已消费 v3。
 - Node22 精确来源 SHA、生成两次 byte-identical、lint/typecheck/contract/test/build；Root 审查与独立复验后小切片提交，不以生成 client 存在声称 public CreateDraft 已可用。Root 控 Git index/commit。
 - 执行中确认新增 Connect 依赖改变统一 `pnpm-lock.yaml`：允许同一 writer 仅刷新现有 Agent/Capability/IAM/Scheduler 四份依赖 manifest 的 `lockfile_sha256` 字段，其他 owner SHA、OpenAPI/Proto digest、vendor/generated 字节与声明键必须保持原值；Root 审查精确 diff，防止锁文件合法更新被旧哈希误报。
+
+W1E-BFF-PLATFORM-PROTO-PIN 已由 BFF main `61b8074ba0264a77496fee8bcb475def46430a63` 发布：两份 Proto 与 Platform `f26d147` 原字节一致，Buf 1.72.0 / Protobuf-ES 2.14.0 / Connect 2.2.0 两次生成一致，五条新测试通过；四旧 manifest 仅 lockfile SHA 变化。Root 独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0，302 pass/1 skip、schema 5 pass/1 skip；无 digest/token/public API/route/真实 owner 调用。Platform 文档片 main `ae48c894d9034016a16a4cbaa60ab80743d1aab9` 仅冻结 v1/v2 与 v3 目标，未发布 v3 机器 artifact。两仓代码均不构成用户功能闭环。
+
+### W1F-CORE-USER-JOURNEY / P0（用户反馈后的优先级校正）
+
+- 首先验证可见的最短真实链：`/login`→IAM 表单提交→OAuth callback→Web/BFF session→新建个人私有对话→发送消息→AG-UI 首帧/终帧→页面显示/刷新恢复。每一跳记录实际 HTTP/UI 结果、当前 commit、失败所在 owner；只修第一个阻断点，先让用户真正完成一次对话，不以表单 200、单仓单测或生成 SDK 替代。
+- IAM `4d98144` 的 0.7 是具名 Skill 授权/集成测试**单仓切片完成**，不是 IAM 所有用户旅程或跨仓集成已完成。先前将其口语称“写完”属完成定义错误；本任务禁止再把“设计门/contract pin/owner pass”写成“整体闭环”。
+- v3 command artifact、组织 Skill 细权限、Storage package、Billing 与运维深化暂不占用上述核心链的执行队列；只有真实用户链需要且属于当前阻断时才恢复对应 owner 任务。浏览器样式沿既有成熟组件/设计体系，避免新建过渡重试页或重做登录 UI。
