@@ -12,7 +12,7 @@
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
-| `apps/kokoro-storage` | `838d90e9a2defab6e3d485a814be0e3c6aba6d56` |
+| `apps/kokoro-storage` | `094847da9f4f03e5f3dbda06658430c74bc32f54` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
 | `apps/kokoro-capability` | `ee25c1f4d6df08be183ca10f7f5e852e0b21f641` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
