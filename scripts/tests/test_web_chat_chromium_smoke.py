@@ -372,6 +372,8 @@ def test_chromium_driver_submits_real_iam_forms_without_argv_credentials() -> No
     assert "input=json.dumps(" in runner
     assert "email.fill(input.email)" in source
     assert "password.fill(input.password)" in source
+    assert 'name: "欢迎回来", exact: true' in source
+    assert 'name: "登录", exact: true' in source
     assert 'name: "Select tenant"' not in source
     assert "selectOption(input.tenant_id)" not in source
     assert 'name: "Review requested access"' in source

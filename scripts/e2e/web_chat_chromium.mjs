@@ -144,7 +144,7 @@ try {
         `failed=${failedRequests.slice(0, 5).join("|") || "none"}; errors=${browserErrors.slice(0, 5).join("|") || "none"}`,
     )
   }
-  await page.getByRole("heading", { name: "Sign in", exact: true }).waitFor({ state: "visible" })
+  await page.getByRole("heading", { name: "欢迎回来", exact: true }).waitFor({ state: "visible" })
   const email = page.locator('input[name="email"][type="email"]')
   const password = page.locator('input[name="password"][type="password"]')
   await email.waitFor({ state: "visible" })
@@ -156,7 +156,7 @@ try {
   await page.screenshot({ path: input.screenshot, fullPage: true })
   await email.fill(input.email)
   await password.fill(input.password)
-  await page.getByRole("button", { name: "Sign in", exact: true }).click()
+  await page.getByRole("button", { name: "登录", exact: true }).click()
   await page.getByRole("heading", { name: "Review requested access", exact: true }).waitFor({ state: "visible" })
   if (new URL(page.url()).pathname !== "/iam/interactions/consent" ||
       tenantSelectionPosts !== 0 ||

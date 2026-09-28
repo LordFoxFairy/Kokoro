@@ -13,7 +13,7 @@ BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，publi
 
 ## 3310 临时登录入口（2026-09-28 实测）
 
-当前 Web main `a7decb69e3f29bf6d0a1988899f107e39964af99` 修复独立 HTTPS TLS 代理下登录表单 rewrite 错误；Root 独立 Node22 `pnpm check` 为 contract 69、architecture 36、unit 1481、lint/typecheck/build PASS。Root 首次以修复前 Web `40a2095` 和当前 IAM/BFF/Agent 执行隔离真 Chromium，在 `/auth/sign-in` 500 停止，Next 将表单 rewrite 错转为 `http://` 公共 TLS 端口（`ECONNRESET`）；测试自有 Redis DB7/14/15 清零，旧 3310 未触碰。本修复已固定到 Root gitlink，**修复后真 Chromium 组合尚待复验**；不把单仓绿灯当作真实用户登录或聊天通过。
+当前 Web main `a7decb69e3f29bf6d0a1988899f107e39964af99` 修复独立 HTTPS TLS 代理下登录表单 rewrite 错误；Root 独立 Node22 `pnpm check` 为 contract 69、architecture 36、unit 1481、lint/typecheck/build PASS。Root 首次以修复前 Web `40a2095` 和当前 IAM/BFF/Agent 执行隔离真 Chromium，在 `/auth/sign-in` 500 停止，Next 将表单 rewrite 错转为 `http://` 公共 TLS 端口（`ECONNRESET`）；修复后首次运行发现 Root 浏览器脚本仍匹配旧英文“Sign in”，已按当前可见中文“欢迎回来/登录”更新脚本与断言。最终固定 Web `a7decb6`、BFF `61b8074`、IAM `4d98144`、Agent `d6fcbf2` 的真 Chromium 隔离组合 **PASS**：同一浏览器完成表单、OAuth/Product Session、DOM 首消息 202、AG-UI 五帧、一次 SSE cursor 断线恢复与刷新后一对 user/assistant；同租户其他成员私有 404，跨租户准入 403。测试自有 PostgreSQL 数据库、Redis DB7/14/15 keys 与进程剩余均为0，旧 3310 未触碰。该组合使用确定性 System/模型 fixture，不是实际模型 provider、常驻 3310 更新或全产品完成证据。
 
 旧预览的 IAM 后端退出后，`/login` 曾 302 到返回 `iam_relay_unavailable` 503 的 `/iam/oauth2/authorize`；此前截图不证明当时的当前态。Root 仅替换已确认归属的旧 Web/BFF PID 88923/88920，使用 `scripts/dev/serve_local_login.py` 重新启动单组隔离 IAM/BFF/Web（supervisor PID 62862，IAM 62935，BFF 62984，Web 62986；另一个旧 BFF PID 81924 未触碰）。新组合的 `GET /login` 经 IAM 到 `/auth/sign-in` 200，Browser 目视邮箱/密码表单、无连接中/整页重试；同一临时账户 HTTP 实测凭据提交 → consent → `/app` 200。fixture 创建独立测试数据库/Redis 前缀，未改变正式子仓发布 commit 或 Billing/Platform 状态；当前预览是进程存活时的临时开发验收，不是生产部署或长期在线保证。
 
