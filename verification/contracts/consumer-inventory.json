@@ -72,7 +72,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92",
       "state": "broken",
-      "reason": "Web now uses the pinned BFF public Project POST for live creation with stable idempotency and canonical identity, plus per-file upload and owner resource GET; owner composition and Web gates pass, but the current real Chromium creation/upload/reload/login tuple has not yet been verified. Other reachable Chat, Hub, Scheduled, Share, System, Agent setup and Billing Product HTTP operations remain handwritten or lack owner OpenAPI coverage; AG-UI SSE is separately contracted. Keep the whole edge broken until the remaining consumer matrix and real composition tests pass.",
+      "reason": "Web uses pinned BFF public Project POST for live creation with stable idempotency and canonical identity, plus per-file upload and owner resource GET. Root commit 971eea005334ddc806e367a7a8b6bef53c08e5f8 passed an isolated real Chromium login/create/upload/reload/privacy composition with durable BFF Project and Storage CLEAN Asset facts and zero owned resources remaining. Other reachable Chat, Hub, Scheduled, Share, System, Agent setup and Billing Product HTTP operations remain handwritten or lack owner OpenAPI coverage; AG-UI SSE is separately contracted. Keep the whole edge broken until the remaining consumer matrix and real composition tests pass.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",

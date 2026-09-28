@@ -9,9 +9,9 @@
 
 IAM `4d981441d154c83b63987f284e3a82a559595870` 的 0.7 owner 切片已发布，不等于整个登录及产品能力完成。固定 Web/BFF/IAM/Agent 组合曾通过隔离真 Chromium 的登录、OAuth 回跳、Product Session、私有聊天、AG-UI 与刷新；其中 System/模型为确定性 fixture，旧 3310 常驻实例没有在本轮热替换。因此“登录写完”是先前错误的完成口径，必须按具体来源与链路分别报告。
 
-W2 当前 Storage `ef0fd7779bf434120ac1f8a58592222f534a7c45` 与 BFF `31c4803b3df0e90c031a97844f89df384ca1a35c` 已发布项目资源 ListAssets→GET；Web `a0e41a72fe4eae6a8076e5126a8daaa15eecd90a` 已发布正式 Project 创建、多文件逐项上传与 owner GET 列表。Root 在隔离真实 PostgreSQL/Redis/MinIO/ClamAV 组合验证上传、幂等重放、签名 GET 原字节、持久列表重载、cursor 分页、私有拒绝和感染拒绝，自有数据库/对象/bucket 已清理。Web 最终 Node22 全门由 Root 独立复验：contract 83/83、architecture 36/36、test 1511/1511、lint/typecheck/build PASS，独立端口 Playwright 11 pass/1 预期 skip。Root 新增的隔离 Chromium 项目资源 runner 静态/归属检查 18/18、Root 全量 `scripts/tests` 775 pass/187 subtests；**当前精确组合的真实浏览器创建/上传/刷新仍待运行**，不把后端 smoke 或 Web stub 测试冒充浏览器产品闭环。
+W2 当前 Storage `ef0fd7779bf434120ac1f8a58592222f534a7c45` 与 BFF `31c4803b3df0e90c031a97844f89df384ca1a35c` 已发布项目资源 ListAssets→GET；Web `a0e41a72fe4eae6a8076e5126a8daaa15eecd90a` 已发布正式 Project 创建、多文件逐项上传与 owner GET 列表。Root 在隔离真实 PostgreSQL/Redis/MinIO/ClamAV 组合验证上传、幂等重放、签名 GET 原字节、持久列表重载、cursor 分页、私有拒绝和感染拒绝，自有数据库/对象/bucket 已清理。Web 最终 Node22 全门由 Root 独立复验：contract 83/83、architecture 36/36、test 1511/1511、lint/typecheck/build PASS，独立端口 Playwright 11 pass/1 预期 skip。Root runner 已在提交 `971eea005334ddc806e367a7a8b6bef53c08e5f8` 用上述精确四仓来源重新执行隔离真实 Chromium **PASS**：两名用户各自完成 IAM 表单、OAuth callback 与 Product Session，用户点击正式新建项目得到持久 Project，再选文件上传、owner GET/整页刷新重载，另一同租户成员读写均 404；BFF Project 与 Storage CLEAN Asset 持久事实各为 1。测试自有 PostgreSQL 数据库、Redis keys、进程、S3 对象版本剩余均为 0，独占测试 bucket 已删除。Root 全量 `scripts/tests` 776 pass/187 subtests；这证明 W2 项目资源纵切，不代表 Library、其他 Product 操作、真实 provider 或整条 Web→BFF、BFF→Storage edge 闭环。
 
-W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 将从用户点击开始做真实 Chromium 验收，而不是在测试中预造项目掩盖缺口。当前用户 3310 仍是旧隔离预览进程，未热替换为此提交。
+W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 已从用户点击而非测试预造项目完成上述真实 Chromium 验收。当前用户 3310 仍是旧隔离预览进程，未热替换为此提交。
 
 ## IAM 0.7 与 BFF 窄消费者历史基线（2026-09-28）
 
