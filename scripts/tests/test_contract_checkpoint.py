@@ -302,6 +302,21 @@ def test_w1e_platform_code_release_marks_bff_consumer_broken() -> None:
         "EDGE-BFF-CAPABILITY"
     }
     assert current["illegal_ids"] == previous["illegal_ids"] == []
+
+
+def test_w1e_iam07_bff_pin_marks_iam_composition_pending() -> None:
+    checkpoints = ROOT / "verification/contracts/checkpoints"
+    previous = json.loads((checkpoints / "w1e-platform-code-release.json").read_text())
+    current_path = checkpoints / "w1e-iam07-bff-pin.json"
+    current = json.loads(current_path.read_text())
+    assert current["schema_version"] == previous["schema_version"] == 1
+    assert set(current["active_ids"]) == set(previous["active_ids"]) - {
+        "EDGE-BFF-IAM"
+    }
+    assert set(current["broken_ids"]) == set(previous["broken_ids"]) | {
+        "EDGE-BFF-IAM"
+    }
+    assert current["illegal_ids"] == previous["illegal_ids"] == []
     assert verify_checkpoint(
         ROOT,
         ROOT / "verification/contracts/consumer-inventory.json",
