@@ -9,7 +9,7 @@
 
 IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。BFF main `55b2809b2f73addbac2b56bd8a04aa0c1706521b` 已精确固定 IAM 0.7 vendor/generated/relay 来源并提供窄 `SkillAuthorizationClient`；Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` 为 297 pass/1 skip、schema 5 pass/1 skip。当前 Root gitlink 与来源库存固定这两个 SHA，但 BFF Skill client 尚无 Product mutation 调用者，Web 仍请求旧 scope，Platform 仍固定 IAM 0.6 SDK；`EDGE-BFF-IAM` 因缺真实 IAM 0.7/BFF/Web 组合保持 broken。3310 是先前单组临时预览，未以这些新提交热替换运行进程。
 
-BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，public mutation 运行代码和机器 OpenAPI 未发布。Platform Product context 代码当前是未提交候选，独立审查指出已发布 execution artifact 同版本改写、真实 PG fixture 与六 RPC 负例矩阵三项 P1，正在修；Storage Begin/Complete 与不可变包绑定也未接通。不能把 BFF IAM 窄 client、Platform 候选或评审稿列作四 scope 已验收。
+BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，public mutation 运行代码和机器 OpenAPI 未发布。Platform main `f26d147a09350c3a041722107d277beb93eaad60` 已发布六 catalog RPC 的 Product context/owner gate 与 execution artifact v2/2.0.0；旧 v1 artifact 字节冻结且无 runtime fallback。Root 独立 Node24 `pnpm format:check && pnpm verify && pnpm build` 为 819 pass/179 skip，独立只读审查指出的文档与六 RPC 负例 P1 已修正；真 PostgreSQL/Connect 因指定隔离端口不可达仍待验。Storage Begin/Complete 与 Platform 不可变包绑定未接通，因此 Validate/Publish fail closed；BFF public mutation、Web 新 scope 与跨仓消费者亦未完成。不能把 BFF IAM 窄 client 或 Platform 单仓发布列作 Product 闭环。
 
 ## 3310 临时登录入口（2026-09-28 实测）
 
@@ -96,10 +96,10 @@ W1D 历史组合提交 `b5738127ab98e9a2ef1cc2f4ee1d681a88e07255` 已将 IAM/BFF
    负例以及真实 provider 验收。固定 fixture 不等于正式单租户常驻入口已具备完整能力。
 2. Team Product 的 Web→BFF→IAM 同源 HTTP 读链已通过隔离组合；仍需 Chromium DOM、邀请邮件入口与写操作的浏览器端到端验收。
 3. Storage/Platform/System/Scheduler 各自 owner 的能力调用、契约与数据闭环；Billing 最后。
-4. 当前 inventory 的 11 条 broken edge 仍开放；旧 Web→IAM 非法旁路已删除并从当前 inventory 移除，不能因为局部 smoke 通过而将剩余 edge 标绿。
+4. 当前 inventory 的 13 条 broken edge 仍开放；旧 Web→IAM 非法旁路已删除并从当前 inventory 移除，不能因为局部 smoke 通过而将剩余 edge 标绿。
 
 当前可执行门：`python3 scripts/verify-repository-topology.py`、
-`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1d-web-iam-cut.json`、
+`python3 scripts/verify-contract-checkpoint.py --expected verification/contracts/checkpoints/w1e-iam07-bff-pin.json`、
 `python3 scripts/verify-iam-relay-policy.py`、`python3 scripts/verify-main-only.py` 和
 `python3 -m pytest scripts/tests`。旧 `verify-ten-repository-full.sh` 与
 `run_stage2_owner_health.py` 的共享状态编排已暂停；它们不是当前全仓验收证据。
