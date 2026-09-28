@@ -1113,6 +1113,8 @@ W2-WEB-LIBRARY-PERSONAL-UPLOAD-CODE 已由 Web 唯一 writer 完成、Root 审�
 
 ### W2-BFF-PERSONAL-RESTART / P0（2026-09-28，证据补门）
 
+**并行独立现场门：3310 登录已重建，完整退出待修。** Root 先复测旧组 IAM authorize 503；BFF writer 停写后仅清理已核实的旧 Web/BFF 孤儿进程，重建单组受监督 IAM/BFF/Web。真 Chromium 邮箱密码→consent→callback→`/app`/Product Session 已通过；Product signout 后 issuer 确认 POST 返回真实 Better Auth 200 JSON，浏览器显示原始 JSON。完整退出门依下方 `W1F-WEB-ISSUER-LOGOUT-POST-REDIRECT` 修复并真浏览器复验；不能把登录通过说成全身份链通过。
+
 | 项 | 已裁决的任务卡 |
 | --- | --- |
 | Owner / 基线 | `apps/kokoro-bff` main `8a90fdd9ec3809000924229bfc7b986ba8ba1522` clean，唯一 writer 为 BFF Agent；Root 审查/Git index/提交。Storage owner `2d87e26` 契约与个人 CLEAN 路径已真链验证。 |
@@ -1123,3 +1125,17 @@ W2-WEB-LIBRARY-PERSONAL-UPLOAD-CODE 已由 Web 唯一 writer 完成、Root 审�
 | 验证/交付 | 先 RED→GREEN：Node22 格式、lint/typecheck、`pnpm check`、`pnpm schema:check`、真 PG opt-in integration；Root 在主树复验并进一步以独立 Root 当前 tuple 真 Storage/MinIO/ClamAV 故障注入+进程重启放行。worker 停写交文件清单，不操作 Git index/提交。BFF 单仓通过只算待 Root 集成验证。 |
 
 下一片依赖：Storage `GetAsset` 与 `GetDownloadReference` 已有个人下载 owner RPC/Proto，**无需先改 Storage**；BFF 先完成当前 IAM admission→本人 personal `GetAsset` 验普通 ASSET/CLEAN→同 scope 签短期 GET→受控字节转发的机器契约/运行切片，再 Web 同源 adapter 窄转发 Content-Disposition 与文件卡下载动作，最后 Root 真浏览器字节/私有负例。该下载切片不能与本仓恢复测试并发写入。
+
+
+### W1F-WEB-ISSUER-LOGOUT-POST-REDIRECT / P0（2026-09-28，3310 真浏览器发现）
+
+| 项 | 唯一 Web writer 切片 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-app` main `cbae94d30582e6e16f0f8a8f6b8535920af6de32` clean；Root 管跨仓边界、Git 与真浏览器。当前 3310 使用此 Web 来源的临时隔离副本。 |
+| 当前事实 / 目标 | Root 真 Chromium 已走通 `/login`→IAM 表单→`/app` Product Session；Product `POST /api/auth/signout` 200，随后 IAM end-session 确认页表单 POST `/iam/oauth2/end-session/confirm` 经 Web relay 收到 Better Auth **200 JSON** `{redirect:true,url:WEB_ORIGIN/auth/sign-in}`，浏览器停在原始 JSON，而非完成页面跳转。现有 HTTP fixture 只返回 302，故漏测真实 owner 行为。目标仅接受 issuer 精确同源裸 `/auth/sign-in` 确认回执，再转换为浏览器 303 到可用的正式 `/login` 入口（裸 `/auth/sign-in` 无签名 query 现场实测 404），保留 issuer 清 Cookie；原有严格 302 成功形态同样转为 303 `/login`，任何异域/额外字段/错误响应 fail closed。 |
+| 放置 / 数据/API | 扩现有 IAM relay response helper 与唯一 POST Route Handler；不新建模块/目录，不改公开 API、IAM/BFF、Schema、role 或前端布局。这里是 browser-private 文档导航，不改变 IAM 授权/契约 owner。现有 GET authorize JSON→302 helper 不能宽泛套用到所有路由，需具名确认分支和精确目标。 |
+| 写入与验证 | 唯一 Web writer 仅改 `src/lib/server/iam-relay-response.ts`、`src/app/iam/[...path]/route.ts`、直接 `tests/app/iam-relay-route.test.ts`、`tests/system/oidc-rp-next-http.integration.test.ts` 和 `docs/CURRENT.md`（确有必要时相邻直接测试）。先用 200 JSON owner 回执 RED，再实现严格 303/负例；Node22 聚焦、`pnpm check`、`git diff --check` 后停写。Root 独立重跑当前 3310 真 Chromium 登录→Product signout→issuer confirm→session false/正常落地页；当前临时进程若须重建，Root 按进程所有权操作，worker 不碰共享服务/Git index。 |
+
+W1F-WEB-ISSUER-LOGOUT-POST-REDIRECT 已由 Web main `224d473758041928a79acfa063eadb13cd779386` 实施、Root 审查与独立 Node22 `pnpm check` 验收：contract 99、architecture 36、Vitest 1560、lint/typecheck/build 全过。Root 停止并清理上一组 3310 临时组合后用该 Web 源码重建，同一真 Chromium 登录/Product Session→Product signout→真实 IAM 确认 POST **303 `/login`**→签名表单 200、退出后 Session false；裸 `/auth/sign-in` 404 不再成为落点。此登录/退出浏览器切片已验收，不包含正式部署、Storage/Agent/Billing。
+
+W2-BFF-PERSONAL-RESTART 的 BFF 单仓证据已由 BFF main `5add506becd39715dc0a469af83e148a5a354515` 交付并经 Root Node22 `pnpm format:check && pnpm check && pnpm schema:check`（342 pass/1 skip、schema 5 pass/1 skip）、真 PostgreSQL opt-in integration 1/1 复验；随机测试库剩余0。该 integration 使用真实 PG 和 Connect owner double/独立 BFF server+pool，**不是**真实 Storage/MinIO/ClamAV 加 OS 进程重启故障注入；Root 真 owner 组合门与个人下载仍待实施。

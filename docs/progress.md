@@ -1053,3 +1053,25 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 2026-09-28 W2 可见个人文件上传真组合：Root 已提交 `0a9206969b2edfcf40bb8d5f0f2d85952995fb8f` 固定 Web `cbae94d30582e6e16f0f8a8f6b8535920af6de32`、BFF `8a90fdd9ec3809000924229bfc7b986ba8ba1522`、Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`、IAM `4d981441d154c83b63987f284e3a82a559595870`；测试自有 ObjectLock+Versioning bucket 的真 IAM→HTTPS Chromium→Web→BFF→Storage/MinIO/ClamAV **PASS**。真实文件选择器与“Upload personal file”按钮 POST200、严格 CLEAN 回执后本人 GET 出卡/刷新仍可见、同租户另一成员空页；并发同键 409/200、原键重放200、异内容409、EICAR 422/终态重放422；Project 创建/上传/私有原纵切亦回归。BFF 两个 CLEAN public receipt、三个 checkpoint（两个 CLEAN+一个感染）与一条感染422 terminal receipt，Storage 两个个人 CLEAN Asset/Upload 及 Project Asset 持久事实通过 SQL 断言。测试自有 PG 数据库/Redis keys/进程/S3 版本余量0，bucket 删除 exit0；用户 3310 常驻进程未触碰。这证明个人可见上传纵切，不证明下载、Agent Artifact F2、未知 Complete 重启恢复或 W2 全闭环。
 
 - 2026-09-28 W2 可见上传切片最终 Root 门：真实浏览器通过后提交 Root `d1db4a3ad3df37f0aa5c9cbc1a122d56e00e15ac` 同步 CURRENT/task/progress 与边清单；当前 Root 完整 `python3 -m pytest scripts/tests -q` **776 passed/187 subtests**。`verify-repository-topology.py`、`verify-iam-relay-policy.py`、`verify-main-only.py` PASS，Root + 11 子仓本地/远端仍仅 `main` 且工作树 clean。`verify-contract-compatibility.py` 仍 FAIL（16 edges、0 structural violations、13 declared broken），整仓 `verify-ten-repository-standard.py` 仍有既存规范违例，未用 W2 正向切片冒充全仓通过。Web `cbae94d` 与 Root `d1db4a3a` 已按 owner→Root 顺序推送 origin/main；原有 3310 预览进程未热替换。本条台账提交自身会产生下一 Root SHA，不回写为自身通过证据。
+
+
+## 2026-09-28 — 3310 登录现场存活检查（未恢复）
+
+- Root 当前 `ae768388`，IAM gitlink `4d98144`。`curl -L http://127.0.0.1:3310/login` 实测首跳 302，后续 `/iam/oauth2/authorize` 为 HTTP 503；无凭据提交或 Product Session 成功证据。
+- `lsof`/`ps` 证实 3310 Web PID 62986 与 BFF PID 62984 仍在，但上次 `serve_local_login.py` supervisor PID 62862、IAM PID 62935 已不存在；两者为父 PID 1 的孤儿进程，另一个 BFF PID 81924 不属于此组且未触碰。此前 `/auth/sign-in` 页面截图与隔离 Chromium 成功不是当前常驻入口可用性的证明。
+- Root 已在 `docs/task.md` 记录恢复门。BFF 当前唯一 writer 正在修改并运行真 PG 恢复测试，Root 暂不重建会先构建 BFF 的 3310 launcher，避免与其并发写同一仓/构建输出；此项保持待完成。
+
+
+## 2026-09-28 — W2 BFF 恢复证据与 3310 现场登录
+
+- BFF 唯一 writer 交付 `5add506becd39715dc0a469af83e148a5a354515`：新增 opt-in 真 PostgreSQL A/B/C 独立 BFF server/新 pool 同库重放测试，分别注入 Storage Complete 已提交但应答丢失、public 200 已提交但浏览器应答丢失；断言一个上传/无重复 PUT 或 Complete、terminal receipt、异文件 409、撤权 401。Root 独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0（342 pass/1 skip、schema 5 pass/1 skip），`KOKORO_TEST_POSTGRES_URL` 指向本地管理库时聚焦真 PG integration 1/1 PASS，随机测试库剩余0。该测试用 Connect owner double，不能冒充真实 Storage/MinIO/ClamAV + OS 进程重启门；runtime/Proto/Schema 未改。
+- Root 确认旧 3310 的 supervisor/IAM 已退出，HTTP `/login`→`/iam/oauth2/authorize` 为 302→503；只对已知旧 Web/BFF PID 62986/62984 发 TERM，另一个 BFF PID 81924 未触碰。BFF writer 停写后通过 `scripts/dev/serve_local_login.py` 以当前来源启动单组受监督 IAM/BFF/Web（launcher session 36311）；新 HTTP `/login`→authorize→签名 `/auth/sign-in` 为 302→302→200。
+- 新 3310 真 Chromium 从邮箱/密码表单提交，经 consent/OAuth callback 到 `/app`，`GET /api/auth/session` 200 且 `authenticated=true`；Product `POST /api/auth/signout` 200，issuer end-session 确认页可达，确认 POST 200 后 Product Session 为 false。但真实 Better Auth 返回 `{"redirect":true,"url":"http://127.0.0.1:3310/auth/sign-in"}` JSON，浏览器停在 JSON 文本；现有假 upstream 302 fixture 未覆盖此形态。此为 Web 退出浏览器导航 bug，已派唯一 Web writer 按任务卡 RED→GREEN；完整退出门仍失败，3310 是临时测试组合。
+- 隔离 Next workspace package 探针从当前 Web 代码在独立端口访问 `/` 为 HTTP 200，当前未复现旧进程日志的 `@kokoro/i18n` module-not-found；不能据旧日志推断新代码构建失败。Root `scripts/tests/test_serve_local_login.py` 6/6、topology PASS、diff check PASS。
+
+
+## 2026-09-28 — 3310 真实退出完成（Web `224d473`）
+
+- Web 唯一 writer 以真实 Better Auth 200 JSON 回执写 RED，确认旧 Web 原样显示 JSON；补上严格同源固定目标与原 302 固定目标的具名 303 `/login` 映射，恶意目标、坏 JSON、错误状态不放宽。Root 审查仅五个任务卡文件，独立 Node22 `pnpm check` exit0：contract 99/99、architecture 36/36、Vitest 1560/1560、lint/typecheck/build PASS；Web main `224d473758041928a79acfa063eadb13cd779386` clean。
+- Root 向前台 launcher session 36311 发送 Ctrl-C，进程正常退出并报告其自有资源清零；以 Web 新源码重建 session 79837。随后当前 3310 真 Chromium：`/login` 最终 IAM 表单 200、真实邮箱密码/consent 后 `/app` 与 Product Session true、Product signout 200、issuer confirm 303、经 `/login` 回到签名 IAM 表单 200、Product Session false。裸 `/auth/sign-in` 直接 GET 为 404，因此不能作为退出落点；本次已消除原始 JSON/404 用户体验。该 session 仍是临时开发 fixture，非部署持久性证明。
+- 当前 W2 gitlink 将固定 BFF `5add506` 测试证据与 Web `224d473` 退出修复；之前 `0a920696` W2 真 Storage/MinIO/ClamAV 浏览器证据绑定旧 BFF `8a90fdd`/Web `cbae94d`，新 tuple 尚待同范围复验。全仓 compatibility 的 13 broken edges 不因登录/恢复局部证据而关闭。
