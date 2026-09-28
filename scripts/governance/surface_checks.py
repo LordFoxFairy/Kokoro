@@ -272,7 +272,10 @@ def check_agent(failures: list[Failure]) -> None:
                 "production-doubles",
                 f"{relative} contains a production test double",
             )
-        if re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", text, re.IGNORECASE):
+        if (
+            not is_profile_read_only_generated_source(repository_name, relative)
+            and re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", text, re.IGNORECASE)
+        ):
             add(
                 failures,
                 repository_name,

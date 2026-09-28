@@ -113,6 +113,10 @@ REPOSITORY_PROFILES = {
         "database/schema.sql",
         "sql",
         required_source_paths=REQUIRED_AGENT_SOURCE_PATHS,
+        read_only_generated_source_paths=(
+            *DEFAULT_READ_ONLY_GENERATED_SOURCE_PATHS,
+            "src/kokoro_agent/generated/",
+        ),
     ),
     "kokoro-iam": RepositoryProfile(
         "typescript-service",

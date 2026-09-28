@@ -587,7 +587,7 @@ def test_orm_profile_uses_prisma_as_its_only_canonical_schema(name):
     assert profile.schema_kind == "prisma"
 
 
-def test_profile_declares_the_only_non_default_read_only_generated_source_path():
+def test_profiles_declare_exact_non_default_read_only_generated_source_paths():
     assert ten_repository_standard.is_profile_read_only_generated_source(
         "kokoro-billing", "src/generated/client.ts"
     )
@@ -600,6 +600,32 @@ def test_profile_declares_the_only_non_default_read_only_generated_source_path()
     assert not ten_repository_standard.is_profile_read_only_generated_source(
         "kokoro-iam", "src/database/prisma-client-copy/client.ts"
     )
+    assert ten_repository_standard.is_profile_read_only_generated_source(
+        "kokoro-agent", "src/kokoro_agent/generated/kokoro/platform/v1/client.py"
+    )
+    assert not ten_repository_standard.is_profile_read_only_generated_source(
+        "kokoro-agent", "src/kokoro_agent/generated-copy/client.py"
+    )
+
+
+def test_agent_generated_proto_timestamp_name_is_not_a_handwritten_database_fact(
+    tmp_path, monkeypatch
+):
+    repository = tmp_path / "apps/kokoro-agent"
+    generated = repository / "src/kokoro_agent/generated/kokoro/platform/v1/client.py"
+    handwritten = repository / "src/kokoro_agent/execution/client.py"
+    for path in (generated, handwritten):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("updated_at_unix_seconds = 1\n", encoding="utf-8")
+    monkeypatch.setattr(surface_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(contract_checks, "ROOT", tmp_path)
+
+    failures = []
+    surface_checks.check_agent(failures)
+
+    assert [failure.detail for failure in failures if failure.rule == "utc-time"] == [
+        "src/kokoro_agent/execution/client.py models a database fact as Unix seconds"
+    ]
 
 
 @pytest.mark.parametrize(
