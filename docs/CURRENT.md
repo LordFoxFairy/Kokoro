@@ -9,7 +9,7 @@
 | --- | --- |
 | `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
 | `apps/kokoro-bff` | `1105553cfc24d4f44a90f626132bc30323a77946` |
-| `apps/kokoro-agent` | `2ad5efd11048ed813441c00605615efa65b8100d` |
+| `apps/kokoro-agent` | `cf3d9ef103b5f1c3c005ad8fb45862ba83f9a0f8` |
 | `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
@@ -24,7 +24,7 @@
 `scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
-Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入及官方 Python Connect generated client。Agent worker 尚未装配业务 adapter、IAM token、execution proof 与 typed Skill/MCP 声明，BFF/Web 消费者和六 owner 真组合也未完成；不能把 generated client 或文档 gitlink 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
+Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入、官方 Python Connect generated client，以及 24 个 tenant operation 的离线 request-binding projector。Agent worker 尚未装配业务 adapter、IAM token、execution proof 与 typed Skill/MCP 声明，BFF/Web 消费者和六 owner 真组合也未完成；不能把离线 projector、generated client 或文档 gitlink 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
 
 ## 当前固定租户登录与 relay 来源
 
