@@ -890,3 +890,28 @@ W1E-IAM-SKILL-INTEGRATION-0.7 已由 IAM main `4d981441d154c83b63987f284e3a82a55
 - 本片完成条件：四文档一致、绝对路径/当前 SHA/未决点与验证结果交 Root 审查；完整文档门未过前不批量改 Product 代码。BFF 可先做 IAM 0.7 精确来源 pin，但 Product mutation 激活必须等待 Platform 可信上下文/owner/receipt 与 Storage 包契约发布，再完成 BFF consumer、Web scope/UI、Root 端到端。Root 当前 `EDGE-BFF-IAM` 仍是旧 0.6 active，不提前改库存冒充消费成功。
 
 W1E-BFF-SKILL-PRODUCT-DOC 已由 BFF main `9b9aff46205a7bbe486244195b81e1e87e6ec2c6` 发布四文档现状/目标评审；Root/独立审查修正 Validate 不收浏览器 asset/hash、必须依赖 Storage→Platform Begin/Complete 持久包绑定才能激活 Validate/Publish，以及 Project 无 `active` 列只按真实 tenant+owner 行判。Root Node22 新增章 Prettier、CURRENT 全文件、`git diff --check`、schema governance 5 pass/1 skip。**完整代码前置三设计门尚未通过**：Platform Product 可信上下文/owner 查询/撤权时点、Storage package 机器契约和 BFF public request/response 字段仍待 owner 发布后收敛；此提交没有代码/机器契约/SQL/3310 变更，不能进入六 mutation 完成状态。Root gitlink/库存仍为旧 BFF 0.6 来源，下一步按 owner-first 先让 Platform 发布 Product 上下文与包绑定机器契约，再让 BFF 生成并消费，不反向编造 Proto。
+
+### W1E-PLATFORM-CATALOG-CONTEXT-I / P0（首个可运行 Product mutation 的 owner 代码门）
+
+| 项 | 任务卡 |
+| --- | --- |
+| 归属/基线 | Platform `apps/kokoro-capability` 唯一 writer `platform_atomic_owner`，main `ee25c1f`；Root 审查/Git index/提交。四份目标文档已有未提交候选，仅该 writer 可继续编辑。BFF/IAM/Storage/Web 与 3310 不写。 |
+| 当前事实/目标 | 六个 catalog RPC 目前只验 IAM BFF catalog workload/tenant，无 Product actor；首个正向链选 CreateSkillDraft，不依赖 Storage，其他五个同时要求 context 并 fail closed，不能让旧入口裸写。 |
+| 允许范围 | Platform owner Proto、generated、既有 Skills RPC/request-binding、直接 unit/contract/architecture/integration tests 与四份既有设计文档；如需扩展 Prisma/Storage/新模块/非直接文件先报 Root。不加 permission framework、legacy alias、双 Proto 或 IAM 私有事实副本。 |
+| 固定边界 | 统一 `ProductCatalogContext(subject_id, owner_scope)` 加入六 request/digest；IAM introspection 精确 BFF catalog caller/tenant，BFF 负责逐次 Product 当前态核验；Platform 核 user owner、request/持久 owner 与 current state，replay 前重验。owner kind 仍 user/organization/project/session；无 BFF session 映射时该 kind 暂 fail closed，不冒充完成。 |
+| 验收 | 先 RED：缺/错 context、跨 subject/owner、错误 caller/tenant、同 command 跨 actor replay、completed replay owner 漂移；再 GREEN：合法 user CreateDraft 真 DB/Connect，六 mutation 负例零业务/receipt/outbox/Storage 副作用；`pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm contract:check`、Proto breaking/generator 门、隔离 PG/Redis。Root 在主工作树独立复验后才能发布。Storage Begin/Complete 与 Validate/Publish 成功链另片，不在此片冒称。 |
+
+### W1E-BFF-IAM-0.7-PIN / P0（与 Platform 独立文件树并行）
+
+| 项 | 任务卡 |
+| --- | --- |
+| 归属/基线 | BFF `apps/kokoro-bff` 唯一 writer `w1e_bff_skill_product_docs`，main `9b9aff4` clean；Root 管 Git index/提交。IAM owner `4d98144` / OpenAPI 0.7 已发布。Platform writer 不碰 BFF，BFF writer 不碰 Platform/IAM/Web/Root/3310。 |
+| 当前事实/目标 | BFF 仍固定 IAM 0.6 OpenAPI vendor/generated/provenance；升级到精确 IAM 0.7 owner commit/digest，只新增窄 Skill action consumer 的可测试调用，不开放 Product mutation/浏览器 relay。 |
+| 允许范围 | `contract/vendor/kokoro-iam/<owner SHA>/`、`contract/dependencies/iam-http.json`、`openapi-ts.iam.config.ts`、`scripts/generate-iam-http-client.mjs`、`src/generated/iam-http/`；IAM 来源 pin 必须同步 `src/http/routes/iam-protocol-relay.policy.ts` 来源 tuple、`contract/iam-relay-policy.json` 生成物及两个直接来源测试，但 relay 路由/策略不变。窄 Skill action client/types 位于既有 `src/auth/`，共享 transport 只允许固定内部 path/body，不变成任意透传；另含既有 IAM admission 直接文件/测试与必要四设计文档。generated 只由确定性脚本产生；无 SQL/新模块/无关 lockfile。 |
+| 验收 | owner SHA/digest/version 与生成物精确一致；窄 check 使用当前 user Bearer、tenant/action/current subject 匹配，不缓存、不重试写，不以 BFF machine 代替。缺/错/deny/超时/响应错误 fail closed，Team/session 旧功能保持；Node22/pnpm11.25.0 format/lint/typecheck/contract/test/build/schema 门与直接测试。此片单独不宣称 Skill mutation 可用；Root 独立审查复验后才发布。 |
+
+只读审查补充文档一致性 P1：BFF `AGENTS.md`、`README.md`、`contract/README.md` 及 `docs/{API_CONTRACT,TECHNICAL_DESIGN,DATA_MODEL,CURRENT}.md` 的“当前 IAM 0.6”权威措辞须在本片收敛成 0.7，旧 SHA/版本仅保留显式历史段，不保留双轨当前事实。追加上述既有文档为本片写入范围；Root 已独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check` 通过（297 pass/1 skip，schema 5 pass/1 skip），文档修正后仍需格式/一致性/diff 复查。IAM 0.7 pin 当前仍是 consumer 准备，不代表 Product mutation 接通。
+
+W1E-BFF-IAM-0.7-PIN 已由 BFF main `55b2809b2f73addbac2b56bd8a04aa0c1706521b` 提交推送：23 文件精确 IAM 0.7 vendor/generated/relay provenance + 窄 user Bearer Skill check；旧 0.6 vendor 删除，不新增浏览器 relay 或 Product mutation。Root 独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0，contract 28/28、test 297 pass/1 既有 skip、schema 5 pass/1 缺 DB skip、build通过。只读审查指出 AGENTS/README/INDEX/contract README/三设计文档的 0.6 当前措辞 P1，Root 已在同一 BFF commit 前修正并对照历史段与机器来源；BFF clean、仅 main。Root gitlink/库存本轮固定 IAM `4d98144` 与 BFF `55b2809`，但此 edge 因新 Skill client 尚无 Product caller、Web 旧 scope/relay pin、真实 IAM 0.7 组合未验，明确降为 broken，不称业务闭环。
+
+W1E-PLATFORM-CATALOG-CONTEXT-I 独立只读审查在未提交候选发现三项 P1，已续派同一 Platform writer：旧 `platform-execution-operations/1.0.0` 被同版本改写，需冻结 v1 并发布 v2；真实 PG/Connect CreateDraft fixture 缺 `productContext`、本机 55433/56380 当前不可达；六 RPC 缺失/错 owner/session/跨 actor replay/零副作用测试矩阵不足，integration 代理会自动补合法 context。Root Node24 `pnpm verify && pnpm build` 当前候选 **815 pass/179 skip**、contract/artifact/schema/typecheck/build 通过，但上述 P1 未清，故不提交/不提升 Platform gitlink。目标仍是六 mutation fail closed 与合法 user CreateDraft，不把 Validate/Publish 在无包绑定下开放。

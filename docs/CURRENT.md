@@ -5,11 +5,11 @@
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
 
-## IAM 0.7 owner 已发布、Root 消费组合尚未切换（2026-09-28）
+## IAM 0.7 与 BFF 窄消费者已发布，Product 链仍未闭环（2026-09-28）
 
-IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。生产第一方 client/resource 尚未执行新 scope 的受管 provision；BFF 仍精确消费 IAM `0.6.0`，Web 仍请求旧 scope，Platform 尚未接 Product 授权。因此**当前 Root gitlink 与来源库存仍固定旧 IAM/BFF 组合**，下表不把 upstream IAM 新提交冒充已集成的运行组合；待 BFF owner pin/消费、Web scope 与组合验收后一起更新。3310 是先前单组临时预览，不以新 IAM 提交热替换运行进程。
+IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。BFF main `55b2809b2f73addbac2b56bd8a04aa0c1706521b` 已精确固定 IAM 0.7 vendor/generated/relay 来源并提供窄 `SkillAuthorizationClient`；Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` 为 297 pass/1 skip、schema 5 pass/1 skip。当前 Root gitlink 与来源库存固定这两个 SHA，但 BFF Skill client 尚无 Product mutation 调用者，Web 仍请求旧 scope，Platform 仍固定 IAM 0.6 SDK；`EDGE-BFF-IAM` 因缺真实 IAM 0.7/BFF/Web 组合保持 broken。3310 是先前单组临时预览，未以这些新提交热替换运行进程。
 
-BFF main `9b9aff46205a7bbe486244195b81e1e87e6ec2c6` 又发布了 Product Skill 四 scope/六 mutation 的现状与目标评审文档，但运行代码、public 机器契约和 IAM 0.7 consumer 尚未变；Platform/Storage 的 Product 上下文与包绑定契约也未发布。该上游文档提交同样尚未提升 Root gitlink；BFF 完整代码前置文档门仍待 owner 机器契约与 public 字段收敛，不能把评审稿列作四 scope 已验收。
+BFF 的 Product Skill 四 scope/六 mutation 文档仍只是目标评审，public mutation 运行代码和机器 OpenAPI 未发布。Platform Product context 代码当前是未提交候选，独立审查指出已发布 execution artifact 同版本改写、真实 PG fixture 与六 RPC 负例矩阵三项 P1，正在修；Storage Begin/Complete 与不可变包绑定也未接通。不能把 BFF IAM 窄 client、Platform 候选或评审稿列作四 scope 已验收。
 
 ## 3310 临时登录入口（2026-09-28 实测）
 
@@ -18,9 +18,9 @@ BFF main `9b9aff46205a7bbe486244195b81e1e87e6ec2c6` 又发布了 Product Skill �
 | 子仓 | 当前固定提交 |
 | --- | --- |
 | `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
-| `apps/kokoro-bff` | `1105553cfc24d4f44a90f626132bc30323a77946` |
+| `apps/kokoro-bff` | `55b2809b2f73addbac2b56bd8a04aa0c1706521b` |
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
-| `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
+| `apps/kokoro-iam` | `4d981441d154c83b63987f284e3a82a559595870` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `094847da9f4f03e5f3dbda06658430c74bc32f54` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -36,9 +36,9 @@ BFF main `9b9aff46205a7bbe486244195b81e1e87e6ec2c6` 又发布了 Product Skill �
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
 Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入、官方 Python Connect generated client 和 24 个 tenant operation 的 request-binding projector，并在 worker 装配租户凭据、IAM token、DB lease 证明与六个 generated Connect RPC。Agent 仍未把 typed Skill/MCP 产品声明接入此 sender；Storage 已窄放行 Platform 原 scope 干净包的 GetPackageReference，但 Platform 仍消费 v1/body tenant/裸 URL 且缺包 scope/manifest，BFF/Web 选择链与真实 IAM→Platform→Agent 三 owner 组合也未验收；不能把 transport/loopback fixture 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
 
-## 当前固定租户登录与 relay 来源
+## IAM 0.6 固定租户登录与 relay 历史来源
 
-W1E IAM 0.6 来源组合：IAM main `a4c2b61` 已发布 Platform ingress 运行端点/OpenAPI/SDK；BFF main `1105553` 只把完整 IAM owner OpenAPI `0.6.0` 精确 vendor/生成来源/浏览器 policy provenance 重钉，既有 16 个 generated 文件与 browser relay 路由不变；Web main `40a2095` 原样固定 BFF policy `2.1.0` SHA-256 `8f7d4f4cb6fa0ec34d2cce8702d8882d3270a316a6cbdb2d8bdaccefb9c6b4a1`，仅三个 IAM 来源字段变化。IAM Node24 97 文件/883 unit 与 36 文件/265 真实隔离 integration、BFF Node22 292 pass/1 skip、Web Node22 1478/1478 最终全门已由 Root 独立复验；Web 首轮全量一个 OIDC refresh 真 HTTP 用例间歇失败，聚焦 38/38 与第二轮全量均通过，仍需单独稳定化。Root gitlink/库存本节记录新组合；Platform owner 尚未消费/激活 IAM ingress，六 owner 真组合与其他 declared broken edge 仍待执行。
+W1E IAM 0.6 历史组合：IAM main `a4c2b61` 已发布 Platform ingress 运行端点/OpenAPI/SDK；BFF main `1105553` 只把完整 IAM owner OpenAPI `0.6.0` 精确 vendor/生成来源/浏览器 policy provenance 重钉，既有 16 个 generated 文件与 browser relay 路由不变；Web main `40a2095` 当时固定 BFF policy `2.1.0` SHA-256 `8f7d4f4cb6fa0ec34d2cce8702d8882d3270a316a6cbdb2d8bdaccefb9c6b4a1`。IAM Node24 97 文件/883 unit 与 36 文件/265 真实隔离 integration、BFF Node22 292 pass/1 skip、Web Node22 1478/1478 最终全门已由 Root 独立复验；Web 首轮全量一个 OIDC refresh 真 HTTP 用例间歇失败，聚焦 38/38 与第二轮全量均通过，仍需单独稳定化。此段不代表当前 IAM/BFF gitlink；Platform 消费者和六 owner 真组合仍待执行。
 
 以下为先前固定组合的历史验收，不是当前 IAM/BFF/Web 来源：
 
