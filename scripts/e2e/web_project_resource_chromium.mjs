@@ -238,6 +238,7 @@ try {
   process.stderr.write("MILESTONE:personal-library-reload\n")
 
   async function verifyVisibleDownload(file, expectedBytes) {
+    phase = "personal-download-click"
     const card = page.locator(`[data-testid="library-files"] [data-asset-id="${file.asset_id}"]`)
     const pathname = `/api/hub/library/files/${encodeURIComponent(file.asset_id)}/content`
     const responsePromise = page.waitForResponse((response) => new URL(response.url()).origin === input.web_origin &&
@@ -245,20 +246,26 @@ try {
     const downloadPromise = page.waitForEvent("download", { timeout: input.timeout_ms })
     await card.getByTestId("library-file-download").click()
     const [response, download] = await Promise.all([responsePromise, downloadPromise])
+    phase = "personal-download-http-status"
     assert(response.status() === 200, `visible personal download returned ${response.status()}`)
+    phase = "personal-download-headers"
     const headers = response.headers()
     assert(headers["cache-control"]?.includes("no-store") && headers["referrer-policy"] === "no-referrer" &&
       headers["x-content-type-options"] === "nosniff" && headers["content-disposition"]?.startsWith("attachment;") &&
       /^[\x20-\x7e]{1,128}$/u.test(headers["x-request-id"] ?? ""),
     "visible personal download lost safe binary headers")
     assert(Number(headers["content-length"]) === expectedBytes.length, "visible personal download length drift")
+    phase = "personal-download-http-bytes"
     assert(sha256(await response.body()) === sha256(expectedBytes), "visible personal HTTP bytes drift")
+    phase = "personal-download-filename"
     assert(download.suggestedFilename() === file.filename, "visible personal download filename drift")
+    phase = "personal-download-saved-bytes"
     assert(sha256(readFileSync(await download.path())) === sha256(expectedBytes), "visible personal saved bytes drift")
     await download.delete()
   }
   phase = "personal-file-visible-download"
   await verifyVisibleDownload(personalFile, personalBytes)
+  process.stderr.write("MILESTONE:personal-download-first\n")
   await verifyVisibleDownload(visibleFile, visibleBytes)
   process.stderr.write("MILESTONE:personal-visible-download\n")
   phase = "personal-file-mobile-layout"
