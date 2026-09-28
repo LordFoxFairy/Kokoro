@@ -1297,3 +1297,13 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 **W2-F2-S7 Root 真 Chromium 作品门（Web 代码冻结后）：** Root 唯一 runner writer 仅扩既有 `scripts/e2e/run_web_project_resource_chromium_smoke.py`、直接 `scripts/e2e/web_project_resource_chromium.mjs` 与相关 Root 直接测试；沿用现有真实 IAM/HTTPS Web/BFF/Storage/PG/Redis/MinIO/ClamAV 隔离组合，而非嵌套另跑第二套 S6。为 Agent 增独立 schema/HTTP 与 Redis DB9 的独占检查和精确清理，在浏览器登录前由 Product 首消息→Agent pending claim→生产 StorageDeliveryClient/RunEmitter 创两个真实 CLEAN Artifact；浏览器本人作品页点击原生下载并核原字节/安全头/来源/分页，320px 无横向溢出，同租户他人列表空且按二元 ID 直接 GET 为 404。真实 IAM 外租户若登录阶段即拒绝，不得冒充 BFF Artifact 403；另建受信身份路径后才能记这一项。所有新服务短命、只清理自有资源，不碰 3310；当前 Web 未提交时只许只读准备，不能运行最终验收或宣称闭环。
 
 **W2-WEB-AGENT-ARTIFACT-F2-CODE 单仓门：** Web main `561e4c0399ed43715aa16ccff61370f6cd3e9424` 已发布精确 BFF OpenAPI pin、正式作品页二元列表/分页/详情预检与原生 attachment、Hub 1 GiB 有界流/背压/取消/完整结束、最终编码 ID 安全头，并删除正式旧 hash 作品页消费与死 Artifact panel。两名独立只读审查所报背压 idle、`artifact%3A` 最终 `no-referrer`、非 200 错误预算/意外 2xx 均已补测试修复，复核未发现新 P0/P1/P2。Root 独立 Node22 `pnpm check` contract 103、architecture 36、Vitest 1585、lint/typecheck/build exit0；隔离端口 3453 Playwright 11 pass/1 既有 skip；Web `git diff --check` 与 BFF OpenAPI 原字节 SHA-256 `8a0849dc...567b` 一致。**状态仅 Web 单仓已验、Root 真 Chromium 作品下载/私有/320px 待验**，BFF 120s 大件 deadline、Chat live/snapshot/Canvas 未闭环，用户 3310 未热更新。
+
+### W2-F2-S8 BFF 作品下载时限 / P1（文档门→代码门）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-bff` 唯一 writer，main `55d3c9cd55386d9dcc074e893cc388924dd94c13` clean；Root 主控审查/Git index/提交。Storage `d5cfc44` 为对象事实 owner，Web `561e4c0` 为同源消费方。 |
+| 当前事实 / 目标 | `src/http/routes/library-artifact-download.ts` 第 42 行一个 `AbortSignal.timeout(120_000)` 贯穿 IAM/SQL/Storage 引用、最多 1 GiB 取回校验临时文件及最终 response pipeline；慢速合法下载即使 Web 给 30 分钟仍会被 BFF 中断。目标区分准入/引用、可信对象取回校验、已发头出站三阶段的有限总/idle 时限，并保留客户端断开立即取消与 spool 精确释放，不对 1 GiB 宣称无条件速率保障。 |
+| 位置比较 / 粒度 | 扩现有具名 `library-artifact-download.ts` 与同目录/现有 `artifact-download-transfer.ts` 的必要具名计时 helper（采用）；淘汰放宽全局 HTTP timeout、Web 单侧加时或新建泛化下载框架。第一门仅四份 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md` 明确当前/目标与故障语义，不改运行/contract/SQL；Root 文档审查后再授权代码/直接测试文件。 |
+| 数据/API/删除 | 不改 `GET /v1/library/artifacts/{conversation_id}/{artifact_id}/content`、授权/FINAL CLEAN/哈希/大小校验、错误 envelope、Storage Proto、PostgreSQL schema、Redis、并发 spool=2；保留未发头失败稳定 JSON、发头后错误终止不报成功、cancel/timeout/正常完成各清理一次。无兼容双轨或硬编码全局超时。 |
+| 验证 | BFF Node22 `pnpm format:check && pnpm check && pnpm schema:check`、慢消费者可控时钟/流测试和独立 Root 真 owner 字节测试；明确未跑的真 1 GiB/限速测试，不以 5 字节 fixture 证明 1 GiB SLA。worker 不改 Git index/commit，不碰 Web/Agent/Storage/IAM/3310 或共享数据。 |
