@@ -51,6 +51,10 @@ Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门�
 
 文件门增补：实际标准 worker 配置入口、Run→tool 装配及交付事件投影需要扩现有 `src/kokoro_agent/config.py`、`agent_factory.py`、`tools/toolset.py`、`domain/chat/projection.py`，并同步本仓 Agent OpenAPI/contract checker 的唯一机器来源与确定性生成物、直接测试。仅限独立 Storage URL/secret、可信 Run/fence 注入及 `artifact_id/asset_id` 事件字段；不改 IAM/BFF/Storage 契约、不造第二应用配置入口。此增补由 Root 在 writer 报告前批准。
 文件门增补：真实作品事件恢复还必须落在现有 `src/kokoro_agent/worker/supervisor_execution.py` 的终态顺序、`infrastructure/postgres_run_events.py` 的稳定 event_id/outbox 去重、`infrastructure/postgres_run_effects.py` 的 journal 冻结意图；准这三个既有职责文件及直接测试，仅实施 deliver 的 final→journal→critical event→Chat 投影→terminal 机制，不放宽其他工具恢复。若现有列/唯一约束不足，仍先报告最小 canonical SQL 变化再写。
+文件门增补：现有 `RunRepository` port/facade 承接上述窄 journal/outbox 方法，准 `src/kokoro_agent/domain/run/repositories.py`、`infrastructure/postgres_run_repository.py` 及直接测试；仅做已批准方法的类型与委托，不加新 SQL 表/列、不重构通用 repository。
+文件门增补：同 tool 重试复用原 critical frame 的 seq/index 时也必须复用原 `timestamp`，否则 Chat 投影身份冲突；准 `src/kokoro_agent/domain/run/models.py` 的 `StagedFrame` 时间字段及直接测试，仅承载既有 outbox 行的原值，不生成新时间或改变其他事件语义。
+配置裁决：signed PUT 只能去独立受控 ObjectStore origin，准在已批准的 Agent 配置/worker/Storage transport 内新增必填 `KOKORO_STORAGE_OBJECT_ORIGIN`，与 Storage URL、独立 service secret 三项一起启用并在启动时验证；拒绝跨 origin、重定向和危险 header，不把 internal secret 发给对象服务。此为开发正确性边界，不扩运维专项。
+独立代码复审 RED 项：`supervisor_control.py` 的取消终态路径目前可能在成功作品 journal 的 critical event 前封 fence；准该既有文件及直接测试，只补与普通完成/失败相同的 deliver terminal barrier。其余复审发现的永久 ConnectError 分类、Final→journal 崩溃且 workspace 丢失、并发稳定 event ID/重复 live 帧、损坏 succeeded journal 均在已准文件集内修复；先补失败反例，不扩大到 IAM/BFF/Web。
 
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 
