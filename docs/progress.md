@@ -1085,3 +1085,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 ## 2026-09-28 — 个人下载下一切片已立卡（未实施）
 
 - Root 对照 BFF 当前个人上传/列表、Storage v2 `GetAsset`/`GetDownloadReference` 和 Web 同源 adapter 后，在 `docs/task.md` 固定 BFF owner-first 两阶段：先四文档门，再 public OpenAPI+受控 GET 字节转发；Web 仅在 BFF 机器契约与运行发布后接线。存储预签 URL 不交给浏览器，先做当前 IAM admission 与普通 ASSET/CLEAN 校验。此条是任务边界，不是下载已可用的证据。
+
+## 2026-09-28 — BFF 个人下载四文档门
+
+- 唯一 BFF writer `bff_personal_download_docs` 只改 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`，已由 Root 审查并提交/推送 main `74bb714d5867399bc50806c158c2ffb838c27b40`。明确 public `/content` 受控字节转发、IAM 在线准入与同一 personal scope GetAsset 普通 ASSET/CLEAN 前置、签发引用的元数据一致性、限源/无重定向/1 MiB 长度+摘要完整验证、稳定二进制/JSON 错误及无本仓 SQL/receipt。没有改机器 OpenAPI、runtime、测试或 Web。
+- Root 用 Node22 `pnpm contract:semantic` PASS（当前 74 个 operation）、`pnpm schema:check` 5 pass/1 无库 skip、`git diff --check` PASS；这是当前未变机器契约/Schema 的回归门，不证明目标下载已存在。下片 BFF 代码仍待执行，随后 Root 真 Storage/ObjectStore 字节、Web 同源与浏览器点击验收。 Root 固定 BFF 文档 SHA 与两份证据 digest 后 `verify-repository-topology.py` PASS、compatibility 16 edges/0 violation/13 declared broken、全量 Root `scripts/tests` **777 passed/187 subtests**；`verify-main-only.py` 将在本片提交后执行。
