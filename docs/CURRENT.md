@@ -1,6 +1,6 @@
 # Root 当前组合
 
-状态日期：2026-09-26。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
+状态日期：2026-09-27。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
@@ -9,12 +9,12 @@
 | --- | --- |
 | `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
 | `apps/kokoro-bff` | `1105553cfc24d4f44a90f626132bc30323a77946` |
-| `apps/kokoro-agent` | `0d3623af2f4e3b595562566c1098bd6143e56225` |
+| `apps/kokoro-agent` | `2ad5efd11048ed813441c00605615efa65b8100d` |
 | `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
-| `apps/kokoro-capability` | `122c565d87f43f3ab83dfec740719db9ee5a220d` |
+| `apps/kokoro-capability` | `ee25c1f4d6df08be183ca10f7f5e852e0b21f641` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `libs/kokoro-web-shared` | `0c4e87ace01340aaa07bc57935f1d98b8e77af14` |
@@ -24,7 +24,7 @@
 `scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
-Platform 本轮仅把三设计文档与 CURRENT 更新为 IAM 0.6 已发布、本仓尚未消费的当前事实；Proto、认证运行时、Schema 与 SQL installer 仍旧，不能把文档 gitlink 当作能力激活。Root 库存现校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
+Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入及官方 Python Connect generated client。Agent worker 尚未装配业务 adapter、IAM token、execution proof 与 typed Skill/MCP 声明，BFF/Web 消费者和六 owner 真组合也未完成；不能把 generated client 或文档 gitlink 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
 
 ## 当前固定租户登录与 relay 来源
 
