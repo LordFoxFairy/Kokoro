@@ -363,6 +363,8 @@ def _driver_result(
         or personal.get("post_status") != 200
         or personal.get("replay_status") != 200
         or personal.get("conflict_status") != 409
+        or personal.get("infected_status") != 422
+        or personal.get("infected_replay_status") != 422
         or personal.get("owner_get_after_post") is not True
         or personal.get("owner_get_after_reload") is not True
         or personal.get("member_get_status") != 200
@@ -905,7 +907,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Chromium login → Web Project click/Project upload → browser same-origin personal Product POST → Storage S3/ClamAV CLEAN → personal Library UI/reload → member private",
+        "flow": "real IAM Chromium login → Web Project click/upload → browser same-origin personal Product CLEAN/replay/conflict/EICAR → Storage S3/ClamAV → personal Library UI/reload → member private",
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]

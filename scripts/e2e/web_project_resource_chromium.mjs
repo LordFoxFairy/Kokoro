@@ -147,7 +147,7 @@ try {
   const personalFilename = `personal-${input.filename}`
   const personalBytes = Buffer.from(`W2 personal library bytes ${input.file_content}`, "utf8")
   const personalKey = `w2-personal-${randomUUID()}`
-  const postPersonal = (content) => page.evaluate(async ({ filename, content, key }) => {
+  const postPersonal = (content, filename = personalFilename, key = personalKey) => page.evaluate(async ({ filename, content, key }) => {
     const form = new FormData()
     form.append("files", new File([content], filename, { type: "text/plain" }))
     const response = await fetch("/api/hub/library/files", {
@@ -155,7 +155,7 @@ try {
       headers: { "Idempotency-Key": key }, body: form,
     })
     return { status: response.status, body: await response.json(), requestId: response.headers.get("x-request-id"), cacheControl: response.headers.get("cache-control") }
-  }, { filename: personalFilename, content, key: personalKey })
+  }, { filename, content, key })
   const personalPost = await postPersonal(personalBytes.toString("utf8"))
   const personalFile = personalPost.body?.data?.file
   assert(personalPost.status === 200 && personalFile?.kind === "file" && /^asset:[a-f0-9]{64}$/u.test(personalFile.asset_id) &&
@@ -169,7 +169,17 @@ try {
   const personalConflict = await postPersonal(`${personalBytes.toString("utf8")} changed`)
   assert(personalConflict.status === 409 && personalConflict.body?.error?.code === "idempotency_conflict",
     "same-key different personal content did not conflict")
-  process.stderr.write("MILESTONE:personal-post-clean-replay\n")
+  phase = "personal-file-infected"
+  const infectedFilename = `infected-${input.filename}`
+  const infectedKey = `w2-infected-${randomUUID()}`
+  const eicar = "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
+  const infected = await postPersonal(eicar, infectedFilename, infectedKey)
+  assert(infected.status === 422 && infected.body?.error?.code === "library_file_infected",
+    "real ClamAV did not terminally deny infected personal file")
+  const infectedReplay = await postPersonal(eicar, infectedFilename, infectedKey)
+  assert(infectedReplay.status === 422 && infectedReplay.body?.error?.code === "library_file_infected",
+    "infected personal file replay was not terminal")
+  process.stderr.write("MILESTONE:personal-post-clean-replay-infected\n")
 
   phase = "personal-file-library-ui"
   await page.goto(`${input.web_origin}/app/library`, { waitUntil: "domcontentloaded", timeout: input.timeout_ms })
@@ -184,6 +194,7 @@ try {
   const libraryPage = await libraryGet.at(-1).response.json()
   assert(libraryPage?.data?.items?.some((item) => item.asset_id === personalFile.asset_id &&
     item.content_sha256 === personalFile.content_sha256 && item.scan_state === "clean"), "Library GET omitted personal CLEAN asset")
+  assert(!libraryPage?.data?.items?.some((item) => item.filename === infectedFilename), "Library GET exposed infected file")
   const libraryGetCount = libraryGet.length
   phase = "personal-file-library-reload"
   await page.reload({ waitUntil: "domcontentloaded", timeout: input.timeout_ms })
@@ -229,6 +240,7 @@ try {
     upload_status: uploadResponse.status(), owner_get_after_upload: true, owner_get_after_reload: true,
     personal: { asset_id: personalFile.asset_id, filename: personalFilename, content_sha256: personalFile.content_sha256,
       post_status: personalPost.status, replay_status: personalReplay.status, conflict_status: personalConflict.status,
+      infected_status: infected.status, infected_replay_status: infectedReplay.status,
       owner_get_after_post: true, owner_get_after_reload: true, member_get_status: memberLibrary.status, member_empty: true },
     screenshot: input.screenshot, privacy,
   }))
