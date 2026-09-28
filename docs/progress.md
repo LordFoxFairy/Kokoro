@@ -1121,6 +1121,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Storage 唯一 writer 只改四份三设计/CURRENT 文档；独立 reviewer 首轮 P1×3/P2×1，修正非空 clean-slate canonical、SQL 预筛与损坏页 fail-closed、caller×operation×scope/purpose 准入矩阵和历史个人文件时态后放行。Root 独立 Node24 `prettier --check` 四文件、`pnpm contract:check`（Proto/生成/HTTP，digest `11edffcdd668c59ef07c7b4c47d44b38dd95c2b8aee5a4d0c6475fba58850713`）、`pnpm prisma:validate`、`git diff --check` 均 exit0；Storage 文档提交 `9e789e592cd2aaeb0a1baa1d94e7b9a1e4ad86b8`，机器契约/Schema/运行代码未变。文档路径：`apps/kokoro-storage/docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`；未决为代码门及真实 Owner/浏览器组合，绝不以文档门宣称 F2 功能完成。
 - Root 只读核对 BFF 派发将 Conversation ID 作为 Agent `session_id`、Agent Run/Dispatch 保存受信请求与 lease；这为后续 Agent 从持久 Run/lease 冻结 scope 提供输入，**不等于**当前 Storage 能验证 Agent lease 或 Agent 已能交付作品。Storage 代码门已续派同一 owner；当前 Root 源码与库存仍指旧 Storage gitlink，待代码门/Root 集成后统一 pin 并复验，不能用暂时脏 gitlink 冒称当前组合验收。
 
+## 2026-09-28 — W2-F2-S5 BFF Product 作品设计门
+
+- BFF `main` `a0199eb8b64e45f0c2e509ce58cc0d7e34d06596` 只提交 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`：固定 Agent `486adb1` 事件和 Storage `d5cfc44` Proto 目标来源，设计 BFF 自有 Conversation↔Artifact 原子投影、本人跨会话 Library 与原字节下载；首个代码切片不做显式分享、`kind=all` 或新 IAM 权限。当前 BFF OpenAPI/SQL/客户端/运行代码**未实现**这些接口，不把文档当功能。
+- Root 独立 Node22 `pnpm contract:lint && pnpm contract:semantic && pnpm contract:check:agent && pnpm contract:check:storage && pnpm schema:check` exit0；schema 5 pass/1 无库 skip，`git diff --check` exit0。四份旧文档底稿的全文件 Prettier 在 HEAD 基线已不绿，本片新增顶端段落不趁机大面积格式化；后续代码门与真实 PG/Storage/Web/浏览器待验。BFF 设计稿由唯一 writer 提交、Root 审查，代码门范围见 `task.md`。
+- Root repin BFF gitlink 与契约库存 152 处 commit 引用、两份更改文档的真实 blob SHA 后，拓扑 PASS（9 runtime），兼容盘点 16 edges/0 structural violation/13 declared broken；这些 broken 是尚未闭环事实，不刷成通过。完整 Root 测试首轮与库存 SHA 修改并发，曾因读到旧两条文档 SHA 得到 1 failed/797 passed；固定库存后聚焦复验 1/1 与完整重跑 **798 passed/187 subtests passed**，无测试豁免。
+
 ## 2026-09-28 — W2-F2 Storage owner 代码门
 
 - Storage 文档基线 `9e789e592cd2aaeb0a1baa1d94e7b9a1e4ad86b8` 后，唯一 writer 完成 F2 v2 Proto/Prisma/运行代码及直接测试；Root 审查并精确提交 main `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`。最终两名独立只读审查的 P0/P1/P2 为 0；其中修正了 receipt 绑定 artifact ID、重放前重验、显式 caller×operation policy 和所有调用必填操作名。旧通用 Artifact HTTP 列表已删除，个人/项目普通 Asset 保持。
