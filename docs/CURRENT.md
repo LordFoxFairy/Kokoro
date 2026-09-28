@@ -9,9 +9,9 @@
 
 IAM `4d981441d154c83b63987f284e3a82a559595870` 的 0.7 owner 切片已发布，不等于整个登录及产品能力完成。固定 Web/BFF/IAM/Agent 组合曾通过隔离真 Chromium 的登录、OAuth 回跳、Product Session、私有聊天、AG-UI 与刷新；其中 System/模型为确定性 fixture，旧 3310 常驻实例没有在本轮热替换。因此“登录写完”是先前错误的完成口径，必须按具体来源与链路分别报告。
 
-W2 当前 Storage `ef0fd7779bf434120ac1f8a58592222f534a7c45` 与 BFF `31c4803b3df0e90c031a97844f89df384ca1a35c` 已发布项目资源 ListAssets→GET；Web `1f36f401b059d83f9c2b183fb34dcfe237c0126c` 已发布多文件逐项上传与 owner GET 列表。Root 在隔离真实 PostgreSQL/Redis/MinIO/ClamAV 组合验证上传、幂等重放、签名 GET 原字节、持久列表重载、cursor 分页、私有拒绝和感染拒绝，自有数据库/对象/bucket 已清理。Web Node22 当前全门 contract 78/78、architecture 36/36、test 1500/1500、lint/typecheck/build PASS；与后端 smoke 并行的首次全量有一条旧 RP 测试失败，聚焦 38/38 和随后全量复验均 PASS，原因未裁定。Root gitlink 和来源库存已指向上述三个提交；**当前 W2 尚无浏览器真项目上传/刷新验收**，不把后端 smoke 与组件测试冒充浏览器产品闭环。
+W2 当前 Storage `ef0fd7779bf434120ac1f8a58592222f534a7c45` 与 BFF `31c4803b3df0e90c031a97844f89df384ca1a35c` 已发布项目资源 ListAssets→GET；Web `a0e41a72fe4eae6a8076e5126a8daaa15eecd90a` 已发布正式 Project 创建、多文件逐项上传与 owner GET 列表。Root 在隔离真实 PostgreSQL/Redis/MinIO/ClamAV 组合验证上传、幂等重放、签名 GET 原字节、持久列表重载、cursor 分页、私有拒绝和感染拒绝，自有数据库/对象/bucket 已清理。Web 最终 Node22 全门由 Root 独立复验：contract 83/83、architecture 36/36、test 1511/1511、lint/typecheck/build PASS，独立端口 Playwright 11 pass/1 预期 skip。Root 新增的隔离 Chromium 项目资源 runner 静态/归属检查 18/18、Root 全量 `scripts/tests` 775 pass/187 subtests；**当前精确组合的真实浏览器创建/上传/刷新仍待运行**，不把后端 smoke 或 Web stub 测试冒充浏览器产品闭环。
 
-W2 浏览器验收前发现正式 Web “新建项目”默认只生成 `preview-project-*`，没有调用 BFF Project 创建 API；因此已有真实项目的 GET/POST 代码不等于用户可从界面建立项目并上传。Web owner 正修 live 创建入口，Root 将从用户点击开始验收，而不是在测试中预造项目掩盖缺口。
+W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 将从用户点击开始做真实 Chromium 验收，而不是在测试中预造项目掩盖缺口。当前用户 3310 仍是旧隔离预览进程，未热替换为此提交。
 
 ## IAM 0.7 与 BFF 窄消费者历史基线（2026-09-28）
 
@@ -31,7 +31,7 @@ Storage main `91a8748` 仅新增真实个人附件回环测试及测试 fixture 
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `1f36f401b059d83f9c2b183fb34dcfe237c0126c` |
+| `apps/kokoro-app` | `a0e41a72fe4eae6a8076e5126a8daaa15eecd90a` |
 | `apps/kokoro-bff` | `31c4803b3df0e90c031a97844f89df384ca1a35c` |
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `4d981441d154c83b63987f284e3a82a559595870` |
