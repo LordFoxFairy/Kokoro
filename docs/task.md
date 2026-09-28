@@ -57,6 +57,7 @@ Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门�
 独立代码复审 RED 项：`supervisor_control.py` 的取消终态路径目前可能在成功作品 journal 的 critical event 前封 fence；准该既有文件及直接测试，只补与普通完成/失败相同的 deliver terminal barrier。其余复审发现的永久 ConnectError 分类、Final→journal 崩溃且 workspace 丢失、并发稳定 event ID/重复 live 帧、损坏 succeeded journal 均在已准文件集内修复；先补失败反例，不扩大到 IAM/BFF/Web。
 取消与 started deliver 并发门：准同一 Agent writer 扩展既有 `domain/run/repositories.py`、`infrastructure/postgres_run_repository.py`、`infrastructure/postgres_run_leases.py`、`worker/supervisor_control.py`、`tests/support/fakes.py` 与直接测试；只加 claims 行锁下的 journal 快照比较/终态 CAS，不新增表列或跨仓契约。须先以失败测试证明「Storage FINAL 而 Agent journal started」取消时不会先落 terminal 再丢作品/完成事件，并覆盖 snapshot 后新 journal、跨 worker fence、失败后 durable cancel 重试及无重复副作用；若快照方案不能保证这些条件，应继续修正而不是放宽验收。
 续办范围：准最小修改既有 `worker/supervisor_recovery.py` 的存活心跳扫描与直接测试，让延期的 persisted cancel 在本进程存活时也能重试；须同步保证 cancel 未真正完成前命令不被标成 `applied`/`failed`、不会被 `_guarded_control_apply` 的异常路径提前写失败终态，且重复心跳/多 worker 不会双发 control receipt 或终态。无新进程、表或 owner。
+取消崩溃窗裁决：终态 CAS 与 control ledger 成功、`run.control.receipt(applied)`、`run.completed(cancelled)` 两条 critical outbox（递增固定 seq/index、终态 fence）及 sandbox cleanup 必须在 Agent 同库同事务提交；提交前 journal 快照在 claims 行锁内重检，提交后由现有 outbox 按序投影/发布，崩溃后只重发已落账帧，不新造第二终态。准在前述既有 Agent 文件内实现及真 PostgreSQL 反例，不新建跨仓契约/SQL 表列。
 
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 
