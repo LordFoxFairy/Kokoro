@@ -1121,6 +1121,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Storage 唯一 writer 只改四份三设计/CURRENT 文档；独立 reviewer 首轮 P1×3/P2×1，修正非空 clean-slate canonical、SQL 预筛与损坏页 fail-closed、caller×operation×scope/purpose 准入矩阵和历史个人文件时态后放行。Root 独立 Node24 `prettier --check` 四文件、`pnpm contract:check`（Proto/生成/HTTP，digest `11edffcdd668c59ef07c7b4c47d44b38dd95c2b8aee5a4d0c6475fba58850713`）、`pnpm prisma:validate`、`git diff --check` 均 exit0；Storage 文档提交 `9e789e592cd2aaeb0a1baa1d94e7b9a1e4ad86b8`，机器契约/Schema/运行代码未变。文档路径：`apps/kokoro-storage/docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`；未决为代码门及真实 Owner/浏览器组合，绝不以文档门宣称 F2 功能完成。
 - Root 只读核对 BFF 派发将 Conversation ID 作为 Agent `session_id`、Agent Run/Dispatch 保存受信请求与 lease；这为后续 Agent 从持久 Run/lease 冻结 scope 提供输入，**不等于**当前 Storage 能验证 Agent lease 或 Agent 已能交付作品。Storage 代码门已续派同一 owner；当前 Root 源码与库存仍指旧 Storage gitlink，待代码门/Root 集成后统一 pin 并复验，不能用暂时脏 gitlink 冒称当前组合验收。
 
+## 2026-09-28 — W2-F2-S5 BFF 来源与持久关联第一代码片
+
+- 唯一 BFF writer 在四文档门 `a0199eb` 后冻结 Agent `486adb1` 的 `events.py` 原字节（本仓 immutable vendor + 生成器 SHA/allowlist 校验）及 Storage `d5cfc44` Proto/双次确定性生成，typed `delivery` 拒绝缺 ID/kind/hash、非法/缺失 size。`bff_conversation_artifact` 仅存 BFF 关联与不可变 Agent 来源声明，`commitProjection` 在同一 PostgreSQL 事务先锁 active Conversation，核已注册 consumer 与历史不可变 dispatch 的 tenant/conversation/run/owner，再与 source ledger/frame/watermark 同成败；删除 Conversation 同事务清关联。未改 Product OpenAPI/Library、Storage Final Artifact 读取或 Web。
+- Root 首轮自建真 PostgreSQL/Redis integration 发现关联删除 SQL `$2` 缺位（42P18）与旧测试 fixture 的固定租户 403，不把 Node22 默认跳过的集成测试冒充通过。唯一 writer 先加 SQL RED 回归，修连续参数；修两个旧 HTTP fixture 的正常租户配置、跨租户 403 期望，不改生产 admission；补事件同 ID/同序号冲突和批量 source/frame/link 事务回滚负例。第二轮真 integration 41/44，剩旧 Business/AG-UI fixture 403；第三轮全绿。
+- Root 独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check && git diff --check` exit0，contract:test 60/60、默认 353 pass/1 skip、Schema 默认 5 pass/1 skip；自建临时库 `bff_s5_root_7008549bf7db` 真 integration **44/44**、真实 Schema **6/6**。库 DROP、Redis DB8 初末 0，未触碰 3310。独立 SQL/契约只读审查 P0/P1 已清；真实 delete/commit 锁竞态测试尚未单独建立，Root 后续真三仓组合仍待验。BFF first-code `main` `8f46ff6aa96b51a04088a3323d1e1f738d550480` 已提交推送；这不是作品 Product HTTP 或 UI 完成。
+
 ## 2026-09-28 — W2-F2-S5 BFF Product 作品设计门
 
 - BFF `main` `a0199eb8b64e45f0c2e509ce58cc0d7e34d06596` 只提交 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`：固定 Agent `486adb1` 事件和 Storage `d5cfc44` Proto 目标来源，设计 BFF 自有 Conversation↔Artifact 原子投影、本人跨会话 Library 与原字节下载；首个代码切片不做显式分享、`kind=all` 或新 IAM 权限。当前 BFF OpenAPI/SQL/客户端/运行代码**未实现**这些接口，不把文档当功能。
