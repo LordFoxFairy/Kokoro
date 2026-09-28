@@ -147,16 +147,26 @@ try {
   const personalFilename = `personal-${input.filename}`
   const personalBytes = Buffer.from(`W2 personal library bytes ${input.file_content}`, "utf8")
   const personalKey = `w2-personal-${randomUUID()}`
-  const postPersonal = (content, filename = personalFilename, key = personalKey) => page.evaluate(async ({ filename, content, key }) => {
-    const form = new FormData()
-    form.append("files", new File([content], filename, { type: "text/plain" }))
-    const response = await fetch("/api/hub/library/files", {
-      method: "POST", credentials: "same-origin", cache: "no-store",
-      headers: { "Idempotency-Key": key }, body: form,
-    })
-    return { status: response.status, body: await response.json(), requestId: response.headers.get("x-request-id"), cacheControl: response.headers.get("cache-control") }
-  }, { filename, content, key })
-  const personalPost = await postPersonal(personalBytes.toString("utf8"))
+  const postPersonal = (content, filename = personalFilename, key = personalKey, copies = 1) => page.evaluate(async ({ filename, content, key, copies }) => {
+    const send = async () => {
+      const form = new FormData()
+      form.append("files", new File([content], filename, { type: "text/plain" }))
+      const response = await fetch("/api/hub/library/files", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Idempotency-Key": key }, body: form,
+      })
+      return { status: response.status, body: await response.json(), cacheControl: response.headers.get("cache-control") }
+    }
+    const results = await Promise.all(Array.from({ length: copies }, send))
+    return copies === 1 ? results[0] : results
+  }, { filename, content, key, copies })
+  const concurrent = await postPersonal(personalBytes.toString("utf8"), personalFilename, personalKey, 2)
+  assert(Array.isArray(concurrent) && concurrent.length === 2 &&
+    concurrent.every((result) => result.status === 200 || (result.status === 409 && result.body?.error?.code === "idempotency_in_progress")) &&
+    concurrent.some((result) => result.status === 200), "same-key concurrent personal POST was not serialized or replayed")
+  const personalPost = concurrent.find((result) => result.status === 200)
+  assert(concurrent.filter((result) => result.status === 200).every((result) =>
+    result.body?.data?.file?.asset_id === personalPost.body?.data?.file?.asset_id), "concurrent personal POST returned distinct assets")
   const personalFile = personalPost.body?.data?.file
   assert(personalPost.status === 200 && personalFile?.kind === "file" && /^asset:[a-f0-9]{64}$/u.test(personalFile.asset_id) &&
     personalFile.filename === personalFilename && personalFile.mime_type === "text/plain" &&
@@ -240,6 +250,7 @@ try {
     upload_status: uploadResponse.status(), owner_get_after_upload: true, owner_get_after_reload: true,
     personal: { asset_id: personalFile.asset_id, filename: personalFilename, content_sha256: personalFile.content_sha256,
       post_status: personalPost.status, replay_status: personalReplay.status, conflict_status: personalConflict.status,
+      concurrent_statuses: concurrent.map((result) => result.status),
       infected_status: infected.status, infected_replay_status: infectedReplay.status,
       owner_get_after_post: true, owner_get_after_reload: true, member_get_status: memberLibrary.status, member_empty: true },
     screenshot: input.screenshot, privacy,

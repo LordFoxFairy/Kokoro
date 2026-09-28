@@ -361,6 +361,8 @@ def _driver_result(
         or not isinstance(personal.get("content_sha256"), str)
         or re.fullmatch(r"[a-f0-9]{64}", personal["content_sha256"]) is None
         or personal.get("post_status") != 200
+        or not isinstance(personal.get("concurrent_statuses"), list)
+        or sorted(personal["concurrent_statuses"]) not in ([200, 200], [200, 409])
         or personal.get("replay_status") != 200
         or personal.get("conflict_status") != 409
         or personal.get("infected_status") != 422
@@ -910,7 +912,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Chromium login → Web Project click/upload → browser same-origin personal Product CLEAN/replay/conflict/EICAR → Storage S3/ClamAV → personal Library UI/reload → member private",
+        "flow": "real IAM Chromium login → Web Project click/upload → concurrent same-key personal Product CLEAN/replay/conflict/EICAR → Storage S3/ClamAV → personal Library UI/reload → member private",
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]
