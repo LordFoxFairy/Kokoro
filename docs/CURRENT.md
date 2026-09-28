@@ -13,6 +13,8 @@ W2 当前 Storage `ef0fd7779bf434120ac1f8a58592222f534a7c45` 与 BFF `31c4803b3d
 
 W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 已从用户点击而非测试预造项目完成上述真实 Chromium 验收。当前用户 3310 仍是旧隔离预览进程，未热替换为此提交。
 
+下一片 W2 Library 已完成 Storage 与 BFF/Web 两面只读审查，现仅推进 Storage 个人 CLEAN ASSET `ListAssets` 的三设计文档门；BFF `GET /v1/library` 仍固定 503，Web 仍使用旧 Artifact 路径和开发预览空列表。个人文件 Asset 与 Agent 最终 Artifact 不能混同；正式个人上传、Artifact F2、BFF public success、Web 真实调用与浏览器验收均未完成，详见 `task.md` 的 W2-LIBRARY 任务卡。
+
 ## IAM 0.7 与 BFF 窄消费者历史基线（2026-09-28）
 
 IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。BFF main `815cf564fcbfda9a7d83ab8bb7364fe5fe7df4ff` 已固定 IAM 0.7 窄 Skill client，现另固定 Platform 两份 Proto 并生成 Connect wire；Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` 为 319 pass/1 skip、schema 5 pass/1 skip。**这不是 IAM 或 Product 全链写完**：BFF 尚无 Skill mutation route/credential/digest，Web 仍请求旧 scope，真实 IAM→BFF→Platform 用户链未验，`EDGE-BFF-IAM` 保持 broken。3310 是先前单组临时预览，未以这些新提交热替换运行进程。

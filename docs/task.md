@@ -1005,3 +1005,16 @@ W2 正式新建前置已由 Web main `a0e41a72fe4eae6a8076e5126a8daaa15eecd90a` 
 W2 项目资源浏览器纵切验收（2026-09-28）：Root runner 修复实际折叠侧栏的可见点击与 Storage `asset:<64hex>` 精确 ID 守卫后，提交 `971eea005334ddc806e367a7a8b6bef53c08e5f8`；聚焦 Root 19/19、全量 776 pass/187 subtests、Ruff/Node 语法 PASS。**以该已提交 runner 和精确 Web/BFF/Storage/IAM 来源**重跑隔离真 Chromium exit0：owner/member 各自 IAM 表单 200、OAuth callback 303、Product Session 200/安全 Cookie；owner 从 UI 新建正式 Project POST 200、上传 200、owner GET 及整页刷新重载、BFF Project 和 Storage CLEAN Asset 持久事实各 1；同租户另一用户读/写皆 404 `project_not_found`。本次自有 PostgreSQL 数据库、Redis keys、进程、S3 版本余量 0，独占测试 bucket 删除；3310 旧预览未触碰。**仅 W2 Project 创建/资源纵切已验收**；Library、其他 Product 路径和完整 `EDGE-WEB-BFF`/`EDGE-BFF-STORAGE` 仍未闭环，下一片按下述 Library owner-first 顺序推进。
 
 W2 下一片 Library 只读审查结论（待项目浏览器片后派工）：Storage v2 `ListAssets` 当前仅允许 project resource，BFF `GET /v1/library` 固定 503 且 public OpenAPI 无 200，Web Library 当前读 Agent Artifact 的 `content_hash/session_id` 语义；不能把个人 Asset 行直接冒充 Artifact，也不能将 Storage 内部 HTTP 列表接给 BFF 形成协议双轨。顺序为 Storage owner 先冻结个人 scope 的清洁 ASSET 列表 Proto/隔离 cursor/索引事实与真 PG 负例；BFF 再确定 Library public 列表语义及个人 consumer；Web 最后区分个人文件与 Agent 产物并验证刷新、私有和错误态。若 Library 目标含用户上传，现仍缺正式个人文件写入口，须另列契约切片；不以测试预造附件冒充产品能力。完整分工需在进入该片时按三个设计文档门冻结，不在当前项目资源切片同时重写。
+
+### W2-LIBRARY-STORAGE-PERSONAL-LIST / P0（2026-09-28，文档门）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | Storage `apps/kokoro-storage` 的 Asset 查询与 v2 RPC 是唯一 writer，main `ef0fd7779bf434120ac1f8a58592222f534a7c45` clean；Root main `3859d0e828f0340b6690c1a5f42b8a43c091c673` 管设计审查、Git index/commit。BFF `31c4803`、Web `a0e41a7` 本阶段只读。 |
+| 当前事实 / 目标 | `ListAssets` Proto/RPC/facade 目前只接 project；personal scope 上传、扫描、Asset schema/索引和 Store 分页已存在，内部 HTTP 列表虽可读 personal，却包含非 CLEAN/非 ASSET，不作为 BFF 新协议。目标为同一个 v2 Connect 查询明确支持 `web-bff + personal`，受信 `scope_id=subject_id`，只返回 SQL 分页前过滤的 CLEAN ASSET；项目既有语义保持。 |
+| 位置 / 粒度 | 采用现有 `ListAssets` Proto、RPC、assets Store、cursor 及测试扩展；淘汰新建 Library RPC/表或复用内部 HTTP 旁路，前者重复 Asset owner 查询，后者破坏 Connect 单轨与过滤语义。无新目录、模块、进程、数据库表或索引。 |
+| 第一阶段允许文件 | 唯一 Storage writer 先只收敛 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 的当前/目标、scope、cursor、过滤、错误、项目回归和后续 Artifact/下载边界；**文档门由 Root 审查通过前不修改 Proto/运行代码/Schema**。共享 Git index/commit 由 Root 串行执行。 |
+| 后续代码范围 / 删除 | 文档门通过后另授 Storage writer 最小 Proto/comment、RPC/facade/store/cursor、生成物/provenance 和直接测试文件集；若现有 Store 已满足过滤则不机械改 SQL。删除旧 project-only 限制的相关断言而不放宽其他 caller/范围；不改变旧 HTTP 列表，也不新增 fallback。 |
+| 依赖 / 验证 | 每页重验 caller/subject/scope；personal 与 project cursor 种类隔离，跨用户/tenant/列表复用拒绝；感染、待扫描、包文件不得出现，项目列表回归不变。Storage Node24 contract/generated drift、unit/architecture/build、隔离真 PostgreSQL/Redis 分页与负例；Root 独立复验并固定来源后 BFF 才接入。不得启动或清理非本次自有资源。 |
+
+Library 总目标不缩成此个人列表：普通个人文件是 Asset，Agent 最终作品是 Artifact，后者需要 Storage F2 的 kind/title/source、可信 Run/ExecutionIdentity 和正式列表/下载契约，再由 BFF 做具名产品组合。BFF 当前 `GET /v1/library` 仅 503/无机器 200，Web 生产仍走旧 `/api/session/artifacts`→`/v1/artifacts`，开发环境无 live client 时会把 503 掩成预览空列表。BFF/Web 只能在 Storage owner 发布来源后串行设计/实现，不能把个人 Asset 改名伪装成 Agent Artifact；个人上传的 Storage owner 能力已有，但 BFF/Web 正式个人上传入口尚缺，须纳入后续用户纵切。此父目标在 Asset+Artifact+下载+上传+浏览器隐私回归全部验证前仍为进行中。
