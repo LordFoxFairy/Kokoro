@@ -1,6 +1,6 @@
 # Root 当前组合
 
-状态日期：2026-09-27。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
+状态日期：2026-09-28。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
@@ -9,7 +9,7 @@
 | --- | --- |
 | `apps/kokoro-app` | `40a209595da6eac5b85ddc654c1ff094e0340e6b` |
 | `apps/kokoro-bff` | `1105553cfc24d4f44a90f626132bc30323a77946` |
-| `apps/kokoro-agent` | `cf3d9ef103b5f1c3c005ad8fb45862ba83f9a0f8` |
+| `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `a4c2b61467f1fc1772d6b6d8e98f081c090289fb` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
 | `apps/kokoro-storage` | `38be74ef7fb0b1ddd687c67434d898f8628068fb` |
@@ -24,7 +24,7 @@
 `scripts/tests/` 只覆盖 Root 治理脚本，不是业务单元测试总目录。
 子仓的 tests 不迁入 Root；业务回归仍在各自 owner 仓执行。
 `verification/` 保存跨仓来源库存与验收检查点，不承载子仓业务测试代码。
-Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入、官方 Python Connect generated client，以及 24 个 tenant operation 的离线 request-binding projector。Agent worker 尚未装配业务 adapter、IAM token、execution proof 与 typed Skill/MCP 声明，BFF/Web 消费者和六 owner 真组合也未完成；不能把离线 projector、generated client 或文档 gitlink 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
+Platform 已发布单一 `kokoro.platform.v1` Proto、IAM 0.6 ingress 与 `kokoro_platform` 同库 owner schema；Agent 已固定同一 Proto 的只读 vendor 输入、官方 Python Connect generated client 和 24 个 tenant operation 的 request-binding projector，并在 worker 装配租户凭据、IAM token、DB lease 证明与六个 generated Connect RPC。Agent 仍未把 typed Skill/MCP 产品声明接入此 sender，Storage 包体与 BFF/Web 选择链、真实 IAM→Platform→Agent 三 owner 组合也未验收；不能把 transport/loopback fixture 当作能力激活。Root 库存继续校验 owner OpenAPI 的声明版本与已提交 `info.version` 一致。
 
 ## 当前固定租户登录与 relay 来源
 

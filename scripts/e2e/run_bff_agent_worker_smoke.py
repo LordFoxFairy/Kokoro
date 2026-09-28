@@ -49,7 +49,7 @@ BFF = ROOT / "apps" / "kokoro-bff"
 AGENT = ROOT / "apps" / "kokoro-agent"
 EXPECTED_RELEASES = {
     "kokoro-bff": "e0663a8c85f055c2bac5af894070fea8e24ff3ce",
-    "kokoro-agent": "cf3d9ef103b5f1c3c005ad8fb45862ba83f9a0f8",
+    "kokoro-agent": "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0",
 }
 MAX_HTTP_BYTES = 2 * 1024 * 1024
 MAX_DIAGNOSTIC_CHARS = 4_000
