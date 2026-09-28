@@ -718,7 +718,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "Storage F2 final/CLEAN Artifact owner contract is pinned by BFF. BFF 55d3c9c now publishes private cross-conversation Artifact Library/list/detail/content and validates current BFF conversation owner plus Storage final metadata and original bytes; Root independent Node22 full gate and isolated PostgreSQL/Redis integration 44/44, schema 6/6 passed. Real BFF→Storage/ObjectStore and Agent→BFF→Storage combined smoke plus Web/Chromium consumer are still pending, so this edge remains broken.",
+      "reason": "BFF 55d3c9c pins Storage F2 final/CLEAN owner contract and publishes private Artifact list/detail/content. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real Agent→BFF→Storage Product artifact original bytes, final/CLEAN metadata, same-tenant other subject 404 and foreign tenant 403 using PostgreSQL/Redis/MinIO/ClamAV; owned resources were removed. Web/Chromium, two-artifact pagination, share and failure/recovery matrix remain incomplete, so this broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -863,7 +863,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "node:http@22",
       "state": "broken",
-      "reason": "BFF 55d3c9c has committed durable Agent delivery association and private Product Artifact reads; Agent source event is pinned. Root independent BFF PostgreSQL integration 44/44 passed, but real Agent HTTP projector and claimed Run through BFF Product to Storage owner have not yet passed a frozen three-owner combination; edge remains broken.",
+      "reason": "BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. IAM was a test admission stub and no model worker/provider or Web browser participated; full Agent Product and recovery matrix remain incomplete, so this edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
