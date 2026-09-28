@@ -1045,6 +1045,15 @@ W2-LIBRARY-STORAGE-PERSONAL-LIST owner 代码已由 Storage main `2d87e26bbaed9a
 | --- | --- |
 | Owner / 基线 | BFF 唯一 writer，基线 main `d5d7c243db4707645031943a2691d354997b3029` clean；Root `c6e69286f8bd9a1647a906787ace07ed8c852527` 管跨仓来源、审查、Git index/提交。Storage owner main `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`，Web 暂只读。 |
 | 目标 / 完成 | 在现有 `GET /v1/library` 发布真实 `kind=file` 200 个人 CLEAN ASSET 列表、严格 400/502/503，删除固定 503；无 kind/未知 kind 非成功。仅列表，不以此宣称上传、下载、Artifact 或完整 Library 闭环。 |
-| 文件集 | 允许 BFF `contract/openapi/v1/openapi.yaml`、其直接 contract 测试；`contract/vendor/kokoro-storage/` 旧源删除/新源原字节、`contract/dependencies/storage-connect.json`、`scripts/generate-storage-connect-client.mjs`、`buf.storage.json`、`src/generated/storage-connect/`；`src/http/routes/owner.ts`、`src/http/routes/library*.ts` 或现有同责位置、`src/http/library*.ts`、`src/infrastructure/clients/storage/`、直接测试、`package.json` 的测试/格式入口、四份设计/当前文档与 `README.md`/`INDEX.md`/`contract/README.md` 的事实更新。禁改 Schema、IAM/Storage/Web/Root 和其他 owner；如需新文件先用设计门说明变化原因。 |
+| 文件集 | 允许 BFF `contract/openapi/v1/openapi.yaml`、其直接 contract 测试；`contract/vendor/kokoro-storage/` 旧源删除/新源原字节、`contract/dependencies/storage-connect.json`、`scripts/generate-storage-connect-client.mjs`、`buf.storage.json`、`src/generated/storage-connect/`；`src/bootstrap/server.ts` 仅精确增加正式 Library dispatch 并删除旧 stub 入口、`src/http/routes/owner.ts`、`src/http/routes/library*.ts` 或现有同责位置、`src/http/library*.ts`、`src/infrastructure/clients/storage/`、直接测试、`package.json` 的测试/格式入口、四份设计/当前文档与 `README.md`/`INDEX.md`/`contract/README.md` 的事实更新。禁改 Schema、IAM/Storage/Web/Root 和其他 owner；如需新文件先用设计门说明变化原因。 |
 | 依赖 / 数据/API | 先固定 Storage 新 Proto/digest并验证生成，再改唯一 public OpenAPI/contract tests，最后实现；当前 IAM admission 后从可信 `RequestContext` 取 tenant/subject，Storage personal `scope_id=subject`。生成类型止于 Storage adapter，不复用 Project predicate 或以 `projectId=subjectId` 冒充个人 scope。无 BFF Library 表、缓存或跨 owner SQL。`x-request-id` 必须有；设计文档与本仓既有 JSON meta 用法若和 API 专项手册冲突，先记录并以最小一致修正解决，不机械扩散新响应形状。 |
 | 验证 / 交付 | TDD 覆盖必填 kind、非法/重复 query、范围/游标、可信 headers、CLEAN ASSET/坏 owner 页、隔离 cursor、每页重新准入、故障不假空页、Project 原行为。Node22 `pnpm format:check && pnpm check && pnpm schema:check`，`pnpm contract:check:storage`、真实隔离 PG/Storage Connect 正反例；单 writer 停写后 Root 独立重跑并提交精确路径，Root 再对当前组合做浏览器验收。测试 fixture 不清理共享资源，不碰 3310。 |
+
+### W2-WEB-LIBRARY-LIVE-TRUTH / P0（2026-09-28，独立聚焦修复）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，main `a0e41a72fe4eae6a8076e5126a8daaa15eecd90a` clean；Root 审查/提交。BFF Library 新 API 未发布，本片不预接假合同。 |
+| 当前 / 目标 | 正式 `KokoroLibrarySurface` 在任意 development 环境自动把未注入 client 切到 preview，可能用合成空列表掩盖 BFF 故障；目标仅显式 `preview` 或明确 fixture 才使用预览，正式 live 开发也显示真实 loading/error/retry。 |
+| 范围 / 归属 | 仅现有 `src/features/app/kokoro-library-surface.tsx`、其直接 `tests/ui/kokoro-library-surface.test.tsx` 与必要的相邻 `INDEX.md`/`docs/CURRENT.md` 当前态说明；无需新目录、网络契约或样式重写。不得混入个人 File Tab、Artifact F2、BFF/Storage/Root 代码。 |
+| 验证 / 删除 | 先 RED 复现 development+无注入 client 真实传输失败不是成功空态，再 GREEN 删除隐式 NODE_ENV 回退；显式 preview 仍可复现。Node22 Web 全门 `pnpm check`、适用 `pnpm test:e2e`，不触碰 3310、共享数据库/服务；停写后 Root 独立复验和精确提交。 |
