@@ -45,7 +45,7 @@ EXPECTED_RELEASES = {
     "kokoro-app": "0d1802250f94c2ac0f3dd28b5b486ca92a976a1c",
     "kokoro-bff": "e0663a8c85f055c2bac5af894070fea8e24ff3ce",
     "kokoro-iam": "7f39193fff97dbb1398cb536ded7dca0db354213",
-    "kokoro-agent": "520ec181a101298b4f336aad273ce003b2735955",
+    "kokoro-agent": "0d3623af2f4e3b595562566c1098bd6143e56225",
 }
 
 
