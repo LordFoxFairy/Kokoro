@@ -842,3 +842,26 @@ W1E-IAM-ORG-SKILL-ACTION-DOC 已由 IAM main `99e9b6b3175c20d440680a39af2af1a831
 | 范围 | 仅 IAM 现有 `src/modules/tenancy/organization/access-control/{permission-catalog.constants,access-control.config,role-permission.schema,role-permission.policy}.ts` 与直接单测 `test/unit/organization-access-control.test.ts`；不改 endpoint、SDK、Schema、Web/BFF/Platform/Root 其他文件。 |
 | 目标/依赖 | 在唯一 Organization catalog 增加精确 12 个 `skill` action；owner/admin 全部、member 无、dynamic role 显式子集，旧合法 JSON 缺 `skill` 为零，未知/重复 action fail closed；沿用已批准三设计文档和 TS/SQL 手册。 |
 | 验证/交付 | 先 RED→GREEN；聚焦 Vitest、lint/typecheck、Root 复核 diff 与 IAM 当前主线完整门。Agent 只报文件清单和实际命令，不碰 Git index；Root 审查后提交/推送并钉 Root gitlink/库存。 |
+
+### W1E-IAM-SKILL-SCOPE / P0（IAM 单仓第二代码片；依赖 Catalog）
+
+- 唯一 IAM writer 沿用 `w1e_iam_skill_auth_docs`；Root 只读审查/Git 集成。Catalog 5 文件仍在 IAM 工作树，因其改变 OpenAPI role schema，`pnpm verify` 在 `contract:check` 报 0.6.0 drift；等具名 endpoint 完成后一次性发布目标 0.7.0，禁止提前重生旧 0.6.0 artifact 或冒称全门已过。
+- 允许现有 `oauth.constants.ts`、`better-auth.config.ts`、`oauth-client.schema.ts`、`oauth-client.service.ts`、`provisioning.config.ts`、`scripts/provision-oauth.ts` 与直接 4 个 unit tests；不改 Repository/Schema/Web/3310/其他仓。新 scope 只对 user-delegated 与 IAM internal resource 开放，machine 不扩。
+- 现有第一方 Product client/resource 采用 Better Auth 官方原地 PATCH，精确当前 profile/owner/grants/binding/scopes 预检与双回读；更新失败先 readback 判明，再按旧集合回退，异 operator 的 client 不越权更新而要求受控 rotation。旧 token/consent 不自动获得新 scope，Web 在 IAM 发布/readback 前不申请。聚焦 RED→GREEN、lint/typecheck/diff；完整机器 contract/SDK/真实 HTTP、BFF/Web 接线另片。
+
+### W1E-IAM-SKILL-CURRENT-FACTS / P0（IAM 单仓第三代码片；依赖 Catalog/Scope）
+
+- Owner IAM；同一 writer、Root 审查/Git。采用已批准 `authorization/skill-authorizations` 目录，因为随后同目录 Controller/Service/schema 至少三个文件；淘汰扩通用 `authorization/check` 或拼接现有 `SessionAuthorizationRepository` 与 `OrganizationRepository.readRoleState()` 的多快照方案。
+- 首片只新增 `skill-authorization.repository.ts` 与直接 unit test；不改业务入口、模块、OpenAPI、SDK、SQL Schema/迁移。一个有界、只读 `RepeatableRead` Prisma 事务同快照读取 Session/User/Organization/Member/完整 OrganizationRole/OauthClient/OauthResource/绑定，复用唯一 Skill policy；无跨 owner SQL、网络、Audit 或 allow cache。当前态无此 Repository，目标一行一 owner。失败分类：身份失效 401 类、当前租户/成员/动作/调用资格拒绝 403 类、持久角色损坏/事务不确定 503 类；token/issuer/JWKS 在后续 Guard，不交给 Repository 猜。
+- RED→GREEN 覆盖 owner/admin/member、dynamic 子集/撤权/旧 JSON、损坏角色、无 Member、disabled Tenant、Session/User/client/resource/binding 漂移、跨 tenant、事务失败/timeout；Root 复核后再把具名 HTTP Controller/Guard/strict parser/contract 接上。此前 Catalog 已令 0.6.0 OpenAPI drift，完整 `pnpm verify` 暂不得冒称通过；目标 0.7.0 一次生成。
+
+### W1E-IAM-SKILL-HTTP-0.7 / P0（IAM owner 具名入口与机器契约；依赖前三子片）
+
+- Owner IAM；同一 writer，Root 审查/Git。新目录 `src/modules/authorization/skill-authorizations/` 已由 Repository 建立，继续放具名 request/response schema、Service、Controller；不扩通用 `/authorization/check` 或复制角色矩阵。现有 `AuthorizationModule` 注册，`InternalAuthGuard` 只对新 operation 做 user-delegated/专用 scope/精确 path tenant/空 query；新 route 绕过旧通用 Tenant 404/409 与 canRead 的**二次不同快照**，让 Repository 同快照判定，其他 operation 不改变。`application.setup.ts` 新 route 在 Nest body parser 前复用 strict UTF-8/JSON、64KiB、全状态 no-store；全局 request-id 保持。
+- 范围预定：新增同目录 `skill-authorization.{schema,service,controller}.ts` 与直接 unit tests；改 `authorization.module.ts`、`internal-principal.types.ts`、`internal-auth.guard.ts`、`application.setup.ts` 及相邻 guard/contract tests，最终由 IAM owner 生成 `contract/openapi/iam.internal.v1.json`、SDK/版本与产物。机器 source 不手改；目标 0.7.0，避免旧 0.6.0 drift。严拒 machine、缺 scope、错 tenant、额外/重复/未知 action、query、坏角色；200 唯一 `allowed:true`，拒绝 401/403/503，无 allow cache/旧 decision replay。
+- 门禁：RED→GREEN，聚焦 unit/contract、Node24 `pnpm verify`、Prisma validate、隔离真 PG/Redis IAM HTTP 集成；Root 复跑与审查 artifact/version/`contract:breaking`，IAM main 发布后再接 BFF/Web，保留用户 3310 原进程。若实际生成 artifact/测试文件集扩张，writer 先报 Root 决定。
+
+### P0-LOGIN-3310-CURRENT / 用户可见登录优先门（2026-09-28）
+
+- 当前 `127.0.0.1:3310/login` 302 到同源 IAM authorize，但该 authorize 实测 **503 `iam_relay_unavailable`**；BFF 原预览 PID 88920 仍监听 64015，Web PID 88923 仍监听 3310，而 BFF 指向的 IAM `127.0.0.1:64012` 无进程/连接。此前 Chromium 成功截图是历史状态，不是当前验收。
+- 登录可见路径先恢复独立 IAM owner 服务并做浏览器 `GET /login → IAM 表单 200 → 实际登录 → /app`，随后再对 IAM Skill 0.7、BFF/Web Product consumer、Platform/Storage/Agent 等闭环。不要用登录错误页或新样式遮盖服务缺失；不误杀用户 3310/其他服务，不重复启动多组进程。重启孤儿临时组合须有明确进程所有权和资源隔离，不能靠无限排查或口头历史验收。
