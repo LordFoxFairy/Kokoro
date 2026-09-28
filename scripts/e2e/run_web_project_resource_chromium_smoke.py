@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import hashlib
 import json
 import os
@@ -24,6 +25,7 @@ if str(Path(__file__).resolve().parent) not in sys.path:
 import run_web_bff_iam_product_session_smoke as product
 import run_web_chat_chromium_smoke as chromium
 import run_web_chat_worker_smoke as chat_worker
+import run_agent_bff_storage_artifact_smoke as artifact_combo
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -33,6 +35,7 @@ WEB = ROOT / "apps/kokoro-app"
 BFF = ROOT / "apps/kokoro-bff"
 STORAGE = ROOT / "apps/kokoro-storage"
 IAM = ROOT / "apps/kokoro-iam"
+AGENT = ROOT / "apps/kokoro-agent"
 
 
 class SmokeError(RuntimeError):
@@ -137,17 +140,94 @@ def _redis_db(base: str, number: int) -> str:
     return urlunsplit((parts.scheme, parts.netloc, f"/{number}", "", ""))
 
 
-def _storage_database_url(bff_database_url: str) -> str:
+def _owner_schema_database_url(bff_database_url: str, schema: str) -> str:
     parts = urlsplit(bff_database_url)
-    if not parts.path.startswith("/") or parts.fragment:
+    if (
+        not parts.path.startswith("/")
+        or parts.fragment
+        or schema not in {"kokoro_storage", "kokoro_agent"}
+    ):
         raise SmokeError("run-owned PostgreSQL URL invalid")
     query = [
         (key, value)
         for key, value in parse_qsl(parts.query)
         if key.lower() not in {"schema", "options", "search_path"}
     ]
-    query.append(("schema", "kokoro_storage"))
+    # Storage's Node PG client consumes its `schema` URL parameter, while
+    # Agent's psycopg connection requires libpq search_path options.
+    if schema == "kokoro_agent":
+        query.append(("options", "-csearch_path=kokoro_agent"))
+    else:
+        query.append(("schema", schema))
     return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), ""))
+
+
+def _storage_database_url(bff_database_url: str) -> str:
+    return _owner_schema_database_url(bff_database_url, "kokoro_storage")
+
+
+class AgentRedisOwnership:
+    """Claim an empty DB10 and remove only the exact run-owned Agent keys."""
+
+    def __init__(self, base: str, run_id: str) -> None:
+        self.url = _redis_db(base, 10)
+        self.run_id = run_id
+        self.marker = f"kokoro:root:web-artifact:{run_id}:ownership"
+        self.allowed = {self.marker, "kokoro:runs:requests"}
+        self.claimed = False
+
+    def _call(self, *args: str) -> str:
+        return product.runtime.command_output(
+            ["redis-cli", "-e", "-u", self.url, *args]
+        ).strip()
+
+    def claim(self) -> None:
+        if (
+            self._call(
+                "EVAL",
+                artifact_combo.bff_agent._REDIS_CLAIM_SCRIPT,
+                "1",
+                self.marker,
+                self.run_id,
+                "7200",
+            )
+            != "OK"
+        ):
+            raise SmokeError("Agent Redis DB10 is not empty or ownership claim failed")
+        self.claimed = True
+
+    def register_run(self, conversation: str, run: str) -> None:
+        if not self.claimed or not all(
+            re.fullmatch(r"[A-Za-z0-9_.:-]+", value) for value in (conversation, run)
+        ):
+            raise SmokeError("Agent Redis run identity invalid")
+        self.allowed.update(
+            {
+                f"kokoro:run:{run}:events",
+                f"kokoro:run:{run}:control",
+                f"kokoro:session:{conversation}:live",
+                f"kokoro:agent:lease:{run}",
+            }
+        )
+
+    def cleanup(self) -> None:
+        if not self.claimed:
+            return
+        keys = [self.marker, *sorted(self.allowed - {self.marker})]
+        if (
+            self._call(
+                "EVAL",
+                artifact_combo.bff_agent._REDIS_CLEANUP_SCRIPT,
+                str(len(keys)),
+                *keys,
+                self.run_id,
+            )
+            != "OK"
+        ):
+            raise SmokeError(
+                "Agent Redis DB10 ownership/keys changed; preserving resources"
+            )
+        self.claimed = False
 
 
 def _isolated_owner(source: Path, directory: Path, name: str) -> Path:
@@ -263,6 +343,7 @@ def _driver_result(
     timeout: float,
     screenshot: Path,
     run_id: str,
+    artifacts: list[dict[str, object]],
 ) -> dict[str, object]:
     host = urlsplit(origin).hostname
     if host is None or ready.redirect_uri != origin + "/api/auth/callback/kokoro-iam":
@@ -278,6 +359,7 @@ def _driver_result(
         "member_password": member.password,
         "filename": f"w2-{run_id}.txt",
         "file_content": f"W2 project resource browser bytes {run_id}",
+        "artifacts": artifacts,
         "timeout_ms": int(timeout * 1000),
     }
     try:
@@ -302,7 +384,7 @@ def _driver_result(
         phases = [
             line.removeprefix("FAILURE_PHASE:")
             for line in completed.stderr.splitlines()
-            if re.fullmatch(r"FAILURE_PHASE:[a-z-]{1,48}", line)
+            if re.fullmatch(r"FAILURE_PHASE:[a-z0-9-]{1,48}", line)
         ]
         phase = phases[-1] if phases else "unknown"
         raise SmokeError(f"real Chromium driver failed after {stage}; phase={phase}")
@@ -356,8 +438,7 @@ def _driver_result(
         or not isinstance(personal.get("asset_id"), str)
         or re.fullmatch(r"asset:[a-f0-9]{64}", personal["asset_id"]) is None
         or not isinstance(personal.get("filename"), str)
-        or re.fullmatch(r"personal-w2-[a-f0-9]{24}\.txt", personal["filename"])
-        is None
+        or re.fullmatch(r"personal-w2-[a-f0-9]{24}\.txt", personal["filename"]) is None
         or not isinstance(personal.get("content_sha256"), str)
         or re.fullmatch(r"[a-f0-9]{64}", personal["content_sha256"]) is None
         or personal.get("post_status") != 200
@@ -371,7 +452,8 @@ def _driver_result(
         or re.fullmatch(r"asset:[a-f0-9]{64}", personal["visible_asset_id"]) is None
         or personal["visible_asset_id"] == personal["asset_id"]
         or not isinstance(personal.get("visible_filename"), str)
-        or re.fullmatch(r"visible-w2-[a-f0-9]{24}\.txt", personal["visible_filename"]) is None
+        or re.fullmatch(r"visible-w2-[a-f0-9]{24}\.txt", personal["visible_filename"])
+        is None
         or not isinstance(personal.get("visible_content_sha256"), str)
         or re.fullmatch(r"[a-f0-9]{64}", personal["visible_content_sha256"]) is None
         or personal.get("visible_post_status") != 200
@@ -384,6 +466,18 @@ def _driver_result(
         or personal.get("member_download_status") != 404
     ):
         raise SmokeError("real Chromium personal Library evidence drift")
+    artifact_evidence = evidence.get("artifacts")
+    if (
+        not isinstance(artifact_evidence, dict)
+        or artifact_evidence.get("visible_downloads") != 2
+        or artifact_evidence.get("owner_pages") != 2
+        or artifact_evidence.get("owner_after_reload") is not True
+        or artifact_evidence.get("member_empty") is not True
+        or artifact_evidence.get("member_detail_status") != 404
+        or artifact_evidence.get("member_content_status") != 404
+        or artifact_evidence.get("mobile_no_overflow") is not True
+    ):
+        raise SmokeError("real Chromium Agent Artifact evidence drift")
     return evidence
 
 
@@ -403,7 +497,11 @@ def _durable_owner_facts(
         ("member", browser["member_subject"]),
     )
     for label, value in named_values:
-        pattern = r"asset:[a-f0-9]{64}" if label in {"asset", "personal_asset", "visible_asset"} else r"[A-Za-z0-9_-]{1,191}"
+        pattern = (
+            r"asset:[a-f0-9]{64}"
+            if label in {"asset", "personal_asset", "visible_asset"}
+            else r"[A-Za-z0-9_-]{1,191}"
+        )
         if not isinstance(value, str) or re.fullmatch(pattern, value) is None:
             raise SmokeError(
                 f"browser {label} identifier invalid for durable verification"
@@ -473,7 +571,9 @@ def _durable_owner_facts(
     if actual != "1,1,1,1,1,1,0,1,1,3,1":
         if re.fullmatch(r"[0-9]+(?:,[0-9]+){10}", actual) is None:
             raise SmokeError("Project or personal Library durable owner fact malformed")
-        raise SmokeError(f"Project or personal Library durable owner fact drift: {actual}")
+        raise SmokeError(
+            f"Project or personal Library durable owner fact drift: {actual}"
+        )
 
 
 def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, object]:
@@ -492,6 +592,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
             STORAGE, args.expected_storage_sha, "apps/kokoro-storage"
         ),
         "iam": _verify_source(IAM, args.expected_iam_sha, "apps/kokoro-iam"),
+        "agent": _verify_source(AGENT, args.expected_agent_sha, "apps/kokoro-agent"),
     }
     iam_env = product.session.node_environment(iam_node, "v24.20.0", node22.parent)
     node22_env = product.session.node_environment(node22, "v22.22.2", node22.parent)
@@ -500,11 +601,13 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
     bff_redis = _redis_db(config["KOKORO_W2_REDIS_URL"], 8)
     web_iam_redis = _redis_db(config["KOKORO_W2_REDIS_URL"], 7)
     run_id = secrets.token_hex(12)
+    agent_redis = AgentRedisOwnership(config["KOKORO_W2_REDIS_URL"], run_id)
     iam_resource_id = str(uuid4())
     iam_identity = product.named_iam_identity(iam_resource_id)
     iam_owner_token = secrets.token_hex(16)
     bff_secret = secrets.token_urlsafe(32)
     storage_secret = secrets.token_urlsafe(32)
+    agent_secret = secrets.token_urlsafe(32)
     infra = product.runtime.OwnedResources(
         config["KOKORO_W2_POSTGRES_ADMIN_URL"], web_iam_redis, run_id
     )
@@ -518,6 +621,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         iam_owner_token,
         bff_secret,
         storage_secret,
+        agent_secret,
     )
     for raw in (
         config["KOKORO_W2_POSTGRES_ADMIN_URL"],
@@ -540,6 +644,8 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
     cleanup_failures: list[str] = []
     browser: dict[str, object] | None = None
     owner_db_url: str | None = None
+    agent_db_url: str | None = None
+    artifact_fixtures: list[dict[str, object]] = []
     directory = Path(tempfile.mkdtemp(prefix="kokoro-w2-web-project-", dir=ROOT.parent))
     os.chmod(directory, 0o700)
     with chromium.OwnedTlsReservation.reserve() as reservation:
@@ -567,6 +673,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                     ):
                         raise SmokeError(f"{label} Redis unavailable")
                     _assert_empty_redis(infra, url, label)
+                agent_redis.claim()
                 infra.claim_redis_prefix()
                 before_web = product.web_redis_keys(web_iam_redis, web_origin, infra)
                 if product.iam_owned_inventory(infra, iam_identity) != (set(), set()):
@@ -578,6 +685,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                 owner_db_url = infra.create_database("bff")
                 bff_db_url = product.bff_owner_database_url(owner_db_url)
                 storage_db_url = _storage_database_url(owner_db_url)
+                agent_db_url = _owner_schema_database_url(owner_db_url, "kokoro_agent")
                 bff_env = {
                     **node22_env,
                     "NODE_ENV": "development",
@@ -634,6 +742,9 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                     log=log,
                     timeout=90,
                 )
+                asyncio.run(
+                    artifact_combo.agent_storage._install_agent_schema(agent_db_url)
+                )
 
                 stage = "real IAM host"
                 iam_env.update(
@@ -688,7 +799,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                     {
                         "KOKORO_STORAGE_HOST": "127.0.0.1",
                         "KOKORO_STORAGE_PORT": str(storage_port),
-                        "KOKORO_STORAGE_SERVICE_CREDENTIALS": f"web-bff={storage_secret}",
+                        "KOKORO_STORAGE_SERVICE_CREDENTIALS": f"web-bff={storage_secret},kokoro-agent={agent_secret}",
                         "KOKORO_OBJECT_STORE_DRIVER": "s3",
                         "KOKORO_OBJECT_STORE_PROFILE": "custom",
                         "KOKORO_OBJECT_STORE_BUCKET": config["KOKORO_W2_TEST_BUCKET"],
@@ -719,6 +830,37 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                 process_list.append(storage)
                 product.runtime.wait_ready(storage_base, storage)
 
+                stage = "Agent owned HTTP startup"
+                agent_port = product.runtime.free_port()
+                agent_base = f"http://127.0.0.1:{agent_port}"
+                agent_env = {
+                    "PATH": os.environ.get("PATH", ""),
+                    "HOME": os.environ.get("HOME", ""),
+                    "NODE_ENV": "development",
+                    "PYTHON_DOTENV_DISABLED": "1",
+                    "KOKORO_AGENT_DATABASE_URL": agent_db_url,
+                    "KOKORO_AGENT_DATABASE_SCHEMA": "kokoro_agent",
+                    "KOKORO_REDIS_URL": agent_redis.url,
+                    "KOKORO_INTERNAL_SECRET_AGENT": agent_secret,
+                    "KOKORO_AGENT_HTTP_HOST": "127.0.0.1",
+                    "KOKORO_AGENT_HTTP_PORT": str(agent_port),
+                }
+                agent = subprocess.Popen(
+                    [
+                        os.environ.get("KOKORO_W2_UV_BIN", "uv"),
+                        "run",
+                        "kokoro-agent-http",
+                    ],
+                    cwd=AGENT,
+                    env=agent_env,
+                    stdin=subprocess.DEVNULL,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    start_new_session=True,
+                )
+                process_list.append(agent)
+                artifact_combo.bff_agent._wait_ready(agent_base, agent, path="/healthz")
+
                 stage = "BFF real IAM/Storage startup"
                 bff_port = product.runtime.free_port()
                 bff_env.update(
@@ -732,7 +874,9 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                         "KOKORO_IAM_WEB_ORIGIN": web_origin,
                         "KOKORO_IAM_WEB_CALLBACK_URI": ready.redirect_uri,
                         "KOKORO_IAM_WEB_POST_LOGOUT_URI": ready.post_logout_redirect_uri,
-                        "KOKORO_AGENT_ENABLED": "false",
+                        "KOKORO_AGENT_ENABLED": "true",
+                        "KOKORO_AGENT_BASE_URL": agent_base,
+                        "KOKORO_INTERNAL_SECRET_BFF": agent_secret,
                         "KOKORO_TENANT_ID": ready.tenant_id,
                         "KOKORO_DOMAIN": f"{run_id}.smoke.localhost",
                         "KOKORO_BFF_STORAGE_SECRET": storage_secret,
@@ -826,10 +970,128 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                         raise SmokeError("isolated Next HTTPS origin not ready")
                     time.sleep(0.1)
 
-                stage = "real Chromium Project and personal Library Product flows"
+                stage = "real IAM Product authentication before Artifact dispatch"
+
+                def seed_artifacts(request: product.AuthenticatedRequest) -> str:
+                    nonlocal stage
+                    latest_conversation = ""
+                    for index in range(2):
+                        conversation = f"conv_{uuid4()}"
+                        content = f"W2 Agent Artifact {index + 1} {run_id}\n".encode()
+                        stage = f"Artifact {index + 1} Web POST"
+                        response = request(
+                            f"/api/session/sessions/{conversation}/messages",
+                            method="POST",
+                            json_body={
+                                "content": f"Create Agent Artifact {index + 1}."
+                            },
+                            origin=web_origin,
+                            idempotency_key=f"web-artifact:{run_id}:{index}",
+                            accept="application/json",
+                        )
+                        stage = f"Artifact {index + 1} Web receipt"
+                        receipt = chat_worker._web_json(
+                            response, 202, "Product first message"
+                        )
+                        agent_run_id = receipt.get("run_id")
+                        if not isinstance(agent_run_id, str) or not agent_run_id:
+                            raise SmokeError(
+                                "Product Artifact dispatch receipt missing run_id"
+                            )
+                        agent_redis.register_run(conversation, agent_run_id)
+                        stage = f"Artifact {index + 1} Agent pending"
+                        pending = asyncio.run(
+                            artifact_combo._pending_run(agent_db_url, agent_run_id)
+                        )
+                        if (
+                            pending.session_id != conversation
+                            or pending.execution_identity.tenant_ref != ready.tenant_id
+                        ):
+                            raise SmokeError(
+                                "Agent pending Run scope differs from real IAM Product dispatch"
+                            )
+                        stage = f"Artifact {index + 1} Agent delivery"
+                        delivered = asyncio.run(
+                            artifact_combo._deliver_pending(
+                                agent_db_url,
+                                agent_redis.url,
+                                storage_base,
+                                config["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                                agent_secret,
+                                pending,
+                                content,
+                            )
+                        )
+                        stage = f"Artifact {index + 1} Product projection"
+                        deadline = time.monotonic() + 45
+                        while True:
+                            library_response = request(
+                                "/api/hub/library?kind=artifact&limit=50",
+                                accept="application/json",
+                            )
+                            if library_response.status != 200:
+                                raise SmokeError("Product Artifact page unavailable")
+                            try:
+                                page = json.loads(library_response.body)
+                            except (ValueError, UnicodeError):
+                                raise SmokeError(
+                                    "Product Artifact page malformed"
+                                ) from None
+                            data = page.get("data")
+                            items = (
+                                data.get("items") if isinstance(data, dict) else None
+                            )
+                            if isinstance(items, list) and any(
+                                isinstance(item, dict)
+                                and item.get("artifact_id") == delivered.artifact_id
+                                and item.get("conversation_id") == conversation
+                                for item in items
+                            ):
+                                break
+                            if time.monotonic() >= deadline:
+                                raise SmokeError(
+                                    "real IAM Product Artifact projection missing"
+                                )
+                            time.sleep(0.2)
+                        artifact_fixtures.append(
+                            {
+                                "conversation_id": conversation,
+                                "artifact_id": delivered.artifact_id,
+                                "filename": "delivered-work.txt",
+                                "content": content.decode(),
+                                "content_sha256": hashlib.sha256(content).hexdigest(),
+                            }
+                        )
+                        latest_conversation = conversation
+                    stage = "real IAM Product post-action session verification"
+                    return latest_conversation
+
+                product.run_browser(
+                    web_proxy.server_port,
+                    web_origin,
+                    ready,
+                    bff_proxy.observed,
+                    credentials,
+                    authenticated_action=seed_artifacts,
+                )
+                if (
+                    len(artifact_fixtures) != 2
+                    or artifact_fixtures[0]["conversation_id"]
+                    == artifact_fixtures[1]["conversation_id"]
+                ):
+                    raise SmokeError("two independent Agent Artifact fixtures absent")
+
+                stage = "real Chromium Project, personal Library and Agent Artifact Product flows"
                 screenshot = directory / "project-resource.png"
                 browser = _driver_result(
-                    node22, web_origin, ready, member, args.timeout, screenshot, run_id
+                    node22,
+                    web_origin,
+                    ready,
+                    member,
+                    args.timeout,
+                    screenshot,
+                    run_id,
+                    artifact_fixtures,
                 )
                 browser["screenshot_sha256"] = hashlib.sha256(
                     screenshot.read_bytes()
@@ -853,6 +1115,11 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                         product.runtime.stop_owned_process(process)
                     except Exception:
                         cleanup_failures.append("owned process cleanup")
+                if not cleanup_failures:
+                    try:
+                        agent_redis.cleanup()
+                    except Exception:
+                        cleanup_failures.append("owned Agent Redis DB10 cleanup")
                 if not cleanup_failures:
                     if s3_preflight and s3_prefix is not None:
                         try:
@@ -924,6 +1191,8 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
             "iam_redis_prefix": iam_identity.redis_prefix,
             "s3_bucket": config["KOKORO_W2_TEST_BUCKET"],
             "s3_prefix": s3_prefix,
+            "agent_redis_db": 10,
+            "agent_redis_claimed": agent_redis.claimed,
             "sources": {name: source["sha"] for name, source in sources.items()},
         }
         fd = os.open(evidence, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -941,7 +1210,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Chromium login → Web Project click/upload → concurrent same-key personal Product CLEAN/replay/conflict/EICAR → visible personal Library file-picker upload/GET/reload → Storage S3/ClamAV → member private",
+        "flow": "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library native downloads/private; Project and personal file regression → Storage S3/ClamAV",
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]
@@ -954,6 +1223,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "browser": browser,
         "owned_postgres_databases_remaining": 0,
         "owned_redis_keys_remaining": 0,
+        "owned_agent_redis_keys_remaining": 0,
         "owned_processes_remaining": 0,
         "owned_s3_versions_remaining": 0,
     }
@@ -969,6 +1239,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--node24-bin")
     for owner in ("web", "bff", "storage", "iam"):
         parser.add_argument(f"--expected-{owner}-sha")
+    parser.add_argument("--expected-agent-sha")
     parser.add_argument("--timeout", type=float, default=180)
     return parser.parse_args(argv)
 

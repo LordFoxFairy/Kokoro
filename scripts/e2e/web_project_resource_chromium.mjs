@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Real Chromium IAM → Project upload → personal Library upload/download/private reload. */
+/** Real Chromium IAM → Project/personal flows → Agent Artifact Library download/private reload. */
 
 import { createHash, randomUUID } from "node:crypto"
 import { createRequire } from "node:module"
@@ -16,11 +16,20 @@ function parseInput() {
   let value
   try { value = JSON.parse(readFileSync(0, "utf8")) }
   catch { throw new Error("invalid Chromium milestone input") }
-  const fields = ["web_origin", "web_host", "web_root", "screenshot", "owner_email", "owner_password", "member_email", "member_password", "filename", "file_content", "timeout_ms"]
+  const fields = ["web_origin", "web_host", "web_root", "screenshot", "owner_email", "owner_password", "member_email", "member_password", "filename", "file_content", "timeout_ms", "artifacts"]
   if (!value || typeof value !== "object" || Array.isArray(value) ||
       Object.keys(value).sort().join(",") !== fields.sort().join(",") ||
-      !fields.filter((field) => field !== "timeout_ms").every((field) => typeof value[field] === "string" && value[field] !== "") ||
-      !Number.isInteger(value.timeout_ms) || value.timeout_ms < 20_000 || value.timeout_ms > 600_000) {
+      !fields.filter((field) => field !== "timeout_ms" && field !== "artifacts").every((field) => typeof value[field] === "string" && value[field] !== "") ||
+      !Number.isInteger(value.timeout_ms) || value.timeout_ms < 20_000 || value.timeout_ms > 600_000 ||
+      !Array.isArray(value.artifacts) || value.artifacts.length !== 2 ||
+      !value.artifacts.every((artifact) => artifact && typeof artifact === "object" && !Array.isArray(artifact) &&
+        Object.keys(artifact).sort().join(",") === ["conversation_id", "artifact_id", "filename", "content", "content_sha256"].sort().join(",") &&
+        [artifact.conversation_id, artifact.artifact_id].every((id) => typeof id === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,190}$/u.test(id)) &&
+        typeof artifact.filename === "string" && artifact.filename.length > 0 && typeof artifact.content === "string" &&
+        artifact.content.length < 1024 && typeof artifact.content_sha256 === "string" && /^[a-f0-9]{64}$/u.test(artifact.content_sha256) &&
+        sha256(Buffer.from(artifact.content, "utf8")) === artifact.content_sha256) ||
+      value.artifacts[0].conversation_id === value.artifacts[1].conversation_id ||
+      value.artifacts[0].artifact_id === value.artifacts[1].artifact_id) {
     throw new Error("invalid Chromium milestone input")
   }
   let origin
@@ -68,9 +77,12 @@ try {
     await target.locator('input[name="email"][type="email"]').fill(email)
     await target.locator('input[name="password"][type="password"]').fill(password)
     await target.getByRole("button", { name: "登录", exact: true }).click()
-    await target.getByRole("heading", { name: "Review requested access", exact: true }).waitFor({ state: "visible", timeout: input.timeout_ms })
-    assert(new URL(target.url()).pathname === "/iam/interactions/consent", "fixed IAM tenant continuation drift")
-    await target.getByRole("button", { name: "Agree and continue", exact: true }).click()
+    await target.waitForURL((url) => url.pathname === "/iam/interactions/consent" ||
+      (url.origin === input.web_origin && url.pathname === "/app"), { timeout: input.timeout_ms })
+    if (new URL(target.url()).pathname === "/iam/interactions/consent") {
+      await target.getByRole("heading", { name: "Review requested access", exact: true }).waitFor({ state: "visible", timeout: input.timeout_ms })
+      await target.getByRole("button", { name: "Agree and continue", exact: true }).click()
+    }
     await target.waitForURL((url) => url.origin === input.web_origin && url.pathname === "/app", { waitUntil: "domcontentloaded", timeout: input.timeout_ms })
     const projection = await target.evaluate(async () => {
       const response = await fetch("/api/auth/session", { credentials: "same-origin", cache: "no-store" })
@@ -293,6 +305,125 @@ try {
   await page.setViewportSize({ width: 1280, height: 720 })
   process.stderr.write("MILESTONE:personal-mobile-layout\n")
 
+  phase = "artifact-library-owner"
+  await page.getByRole("tab", { name: "Agent artifacts", exact: true }).click()
+  const artifactCards = page.getByTestId("library-artifacts").getByRole("listitem")
+  await artifactCards.first().waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await artifactCards.count() === 2, "owner Library did not render two delivered Artifacts")
+  const artifactPages = await page.evaluate(async () => {
+    const first = await fetch("/api/hub/library?kind=artifact&limit=1", { credentials: "same-origin", cache: "no-store" })
+    const one = await first.json()
+    const cursor = one?.data?.next_cursor
+    if (first.status !== 200 || typeof cursor !== "string" || !cursor) return { first: first.status, one }
+    const second = await fetch(`/api/hub/library?kind=artifact&limit=1&cursor=${encodeURIComponent(cursor)}`,
+      { credentials: "same-origin", cache: "no-store" })
+    return { first: first.status, one, second: second.status, two: await second.json() }
+  })
+  const firstArtifact = artifactPages.one?.data?.items?.[0]
+  const secondArtifact = artifactPages.two?.data?.items?.[0]
+  assert(artifactPages.first === 200 && artifactPages.second === 200 &&
+    artifactPages.one?.data?.items?.length === 1 && artifactPages.two?.data?.items?.length === 1 &&
+    artifactPages.two?.data?.next_cursor === null && firstArtifact && secondArtifact &&
+    input.artifacts.every((fixture) => [firstArtifact, secondArtifact].some((item) =>
+      item.conversation_id === fixture.conversation_id && item.artifact_id === fixture.artifact_id &&
+      item.filename === fixture.filename && item.content_sha256 === fixture.content_sha256)),
+  "owner Artifact cursor pages did not preserve both binary identities")
+  const ordered = await page.evaluate(async () => {
+    const response = await fetch("/api/hub/library?kind=artifact&limit=50", { credentials: "same-origin", cache: "no-store" })
+    return { status: response.status, body: await response.json() }
+  })
+  assert(ordered.status === 200 && ordered.body?.data?.items?.length === 2, "owner Artifact Library page drift")
+  phase = "artifact-click-download"
+  for (const [index, item] of ordered.body.data.items.entries()) {
+    phase = `artifact-${index + 1}-fixture`
+    const fixture = input.artifacts.find((candidate) => candidate.conversation_id === item.conversation_id &&
+      candidate.artifact_id === item.artifact_id)
+    assert(fixture, "visible Artifact lacks exact fixture identity")
+    const selector = `/api/hub/library/artifacts/${encodeURIComponent(item.conversation_id)}/${encodeURIComponent(item.artifact_id)}`
+    const eventTimeout = Math.min(input.timeout_ms, 30_000)
+    const detailPromise = page.waitForResponse((response) => new URL(response.url()).pathname === selector &&
+      response.request().method() === "GET", { timeout: eventTimeout })
+    const downloadPromise = page.waitForEvent("download", { timeout: eventTimeout })
+    const observed = Promise.allSettled([detailPromise, downloadPromise])
+    phase = `artifact-${index + 1}-click-button`
+    await artifactCards.nth(index).getByRole("button", { name: "Download Delivered work", exact: true }).click()
+    phase = `artifact-${index + 1}-await-events`
+    const [detailResult, downloadResult] = await observed
+    phase = `artifact-${index + 1}-detail-observed`
+    assert(detailResult.status === "fulfilled", "visible Artifact detail request absent")
+    const detail = detailResult.value
+    phase = `artifact-${index + 1}-detail-http-${detail.status()}`
+    assert(detail.status() === 200, `visible Artifact detail returned ${detail.status()}`)
+    phase = `artifact-${index + 1}-detail-wire`
+    const detailPayload = await detail.json()
+    assert(detailPayload?.data?.artifact_id === fixture.artifact_id &&
+      detailPayload?.data?.conversation_id === fixture.conversation_id,
+      "visible Artifact detail did not resolve binary identity")
+    phase = `artifact-${index + 1}-download-observed`
+    assert(downloadResult.status === "fulfilled", "visible Artifact browser download event absent")
+    const download = downloadResult.value
+    const expected = Buffer.from(fixture.content, "utf8")
+    phase = `artifact-${index + 1}-suggested-filename`
+    assert(download.suggestedFilename() === fixture.filename,
+      "visible Artifact browser download filename drift")
+    phase = `artifact-${index + 1}-authenticated-content`
+    const content = await page.evaluate(async (path) => {
+      const response = await fetch(path, { credentials: "same-origin", cache: "no-store" })
+      const headers = response.headers
+      const bytes = await response.arrayBuffer()
+      const digest = bytes.byteLength <= 1024
+        ? [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((byte) => byte.toString(16).padStart(2, "0")).join("")
+        : null
+      return { status: response.status, bodySha: digest, bodyLength: bytes.byteLength,
+        cacheNoStore: headers.get("cache-control")?.includes("no-store") === true,
+        referrerNoReferrer: headers.get("referrer-policy") === "no-referrer",
+        nosniff: headers.get("x-content-type-options") === "nosniff",
+        attachment: headers.get("content-disposition")?.startsWith("attachment;") === true,
+        requestIdValid: /^[\x20-\x7e]{1,128}$/u.test(headers.get("x-request-id") ?? ""),
+        contentLength: Number(headers.get("content-length")) }
+    }, `${selector}/content`)
+    phase = `artifact-${index + 1}-content-status`
+    assert(content.status === 200, `authenticated Artifact content returned ${content.status}`)
+    phase = `artifact-${index + 1}-content-headers`
+    assert(content.cacheNoStore && content.referrerNoReferrer && content.nosniff && content.attachment &&
+      content.requestIdValid && content.contentLength === expected.length && content.bodyLength === expected.length,
+    "authenticated Artifact attachment security headers drift")
+    phase = `artifact-${index + 1}-content-bytes`
+    assert(content.bodySha === fixture.content_sha256,
+      "authenticated Artifact content changed original bytes")
+    phase = `artifact-${index + 1}-saved-download`
+    assert(await download.failure() === null,
+      "visible Artifact browser download failed")
+    assert(sha256(readFileSync(await download.path())) === fixture.content_sha256,
+      "visible Artifact browser download changed original bytes")
+    await download.delete()
+  }
+  process.stderr.write("MILESTONE:artifact-two-click-downloads\n")
+  phase = "artifact-reload-mobile-source"
+  await page.reload({ waitUntil: "domcontentloaded", timeout: input.timeout_ms })
+  await page.getByRole("tab", { name: "Agent artifacts", exact: true }).click()
+  await artifactCards.first().waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await artifactCards.count() === 2, "Artifact Library lost delivered cards after reload")
+  await page.setViewportSize({ width: 320, height: 720 })
+  const artifactMobile = await artifactCards.first().evaluate((card) => {
+    const title = card.querySelector("[class*=cardTitle]")
+    const download = card.querySelector("button[aria-label^='Download ']")
+    const rect = card.getBoundingClientRect()
+    const button = download?.getBoundingClientRect()
+    return { viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth,
+      left: rect.left, right: rect.right, titleWidth: title?.getBoundingClientRect().width ?? 0,
+      buttonLeft: button?.left ?? -1, buttonRight: button?.right ?? 9999,
+      titleVisible: title !== null && getComputedStyle(title).visibility !== "hidden" }
+  })
+  assert(artifactMobile.viewport === 320 && artifactMobile.scroll <= 320 && artifactMobile.left >= 0 &&
+    artifactMobile.right <= 320 && artifactMobile.titleVisible && artifactMobile.titleWidth >= 70 &&
+    artifactMobile.buttonLeft >= 0 && artifactMobile.buttonRight <= 320, "Artifact card is not usable at 320px")
+  await page.setViewportSize({ width: 1280, height: 720 })
+  await artifactCards.first().getByRole("button", { name: "Open source session", exact: true }).click()
+  await page.waitForURL((url) => url.origin === input.web_origin && url.searchParams.get("conversation") === ordered.body.data.items[0].conversation_id,
+    { timeout: input.timeout_ms })
+  process.stderr.write("MILESTONE:artifact-reload-mobile-source\n")
+
   const memberContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "en-US" })
   const memberPage = await memberContext.newPage()
   await memberPage.addInitScript(() => window.localStorage.setItem("kokoro.locale", "en"))
@@ -328,6 +459,22 @@ try {
   }, personalFile.asset_id)
   assert(memberDownload.status === 404 && typeof memberDownload.code === "string" &&
     memberDownload.disposition === null, "member received another subject's personal download")
+  phase = "artifact-member-private"
+  await memberPage.getByRole("tab", { name: "Agent artifacts", exact: true }).click()
+  await memberPage.getByTestId("library-empty-state").waitFor({ state: "visible", timeout: input.timeout_ms })
+  const memberArtifact = await memberPage.evaluate(async ({ conversationId, artifactId }) => {
+    const options = { credentials: "same-origin", cache: "no-store" }
+    const list = await fetch("/api/hub/library?kind=artifact&limit=50", options)
+    const listed = await list.json()
+    const selector = `/api/hub/library/artifacts/${encodeURIComponent(conversationId)}/${encodeURIComponent(artifactId)}`
+    const detail = await fetch(selector, options)
+    const content = await fetch(`${selector}/content`, options)
+    return { listStatus: list.status, items: listed?.data?.items, detailStatus: detail.status,
+      contentStatus: content.status, disposition: content.headers.get("content-disposition") }
+  }, { conversationId: input.artifacts[0].conversation_id, artifactId: input.artifacts[0].artifact_id })
+  assert(memberArtifact.listStatus === 200 && Array.isArray(memberArtifact.items) && memberArtifact.items.length === 0 &&
+    memberArtifact.detailStatus === 404 && memberArtifact.contentStatus === 404 && memberArtifact.disposition === null,
+  "same-tenant other subject reached private Agent Artifact")
   process.stderr.write("MILESTONE:member-private\n")
   await memberContext.close()
   await context.close()
@@ -345,6 +492,9 @@ try {
       visible_content_sha256: visibleFile.content_sha256, visible_post_status: visiblePostResponse.status(), visible_owner_get: true,
       owner_get_after_post: true, owner_get_after_reload: true, visible_downloads: 2,
       member_get_status: memberLibrary.status, member_empty: true, member_download_status: memberDownload.status },
+    artifacts: { visible_downloads: 2, owner_pages: 2, owner_after_reload: true, member_empty: true,
+      member_detail_status: memberArtifact.detailStatus, member_content_status: memberArtifact.contentStatus,
+      mobile_no_overflow: true },
     screenshot: input.screenshot, privacy,
   }))
 } catch {

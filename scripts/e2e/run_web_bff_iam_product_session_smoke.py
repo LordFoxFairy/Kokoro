@@ -566,6 +566,49 @@ def require_signout_handoff(
     return target
 
 
+def require_post_logout_login_start(
+    request: AuthenticatedRequest,
+    post_logout: str,
+    web_origin: str,
+    ready: previous.Ready,
+) -> None:
+    """The registered issuer return is relayed to the browser's OIDC start."""
+    if post_logout != "/login":
+        raise SmokeError("issuer post-logout browser navigation invalid")
+    start = request(post_logout)
+    if start.status != 302 or "no-store" not in start.headers.get("cache-control", ""):
+        raise SmokeError("post-logout login start unavailable")
+    authorize = browser_target(start.location(), web_origin)
+    if not authorize.startswith("/iam/oauth2/authorize?"):
+        raise SmokeError("post-logout login did not start OIDC")
+    query = single_query_values(
+        authorize,
+        {
+            "client_id",
+            "redirect_uri",
+            "response_type",
+            "scope",
+            "resource",
+            "state",
+            "nonce",
+            "code_challenge",
+            "code_challenge_method",
+        },
+    )
+    if (
+        query["client_id"] != ready.client_id
+        or query["redirect_uri"] != ready.redirect_uri
+        or query["response_type"] != "code"
+        or query["scope"] != previous.SCOPES
+        or query["resource"] != previous.RESOURCE
+        or query["code_challenge_method"] != "S256"
+        or re.fullmatch(r"[A-Za-z0-9_-]{16,256}", query["state"]) is None
+        or re.fullmatch(r"[A-Za-z0-9_-]{16,256}", query["nonce"]) is None
+        or re.fullmatch(r"[A-Za-z0-9_-]{43}", query["code_challenge"]) is None
+    ):
+        raise SmokeError("post-logout login OIDC contract invalid")
+
+
 def require_stale_signout(response: old.BrowserResponse) -> None:
     if response.status != 200 or "no-store" not in response.headers.get(
         "cache-control", ""
@@ -1064,8 +1107,7 @@ def run_browser(
     post_logout = navigate(
         navigation_location(confirmed, "issuer logout confirmation"), "post logout"
     )
-    if post_logout != browser_target(ready.post_logout_redirect_uri, web_origin):
-        raise SmokeError("issuer post-logout navigation invalid")
+    require_post_logout_login_start(request, post_logout, web_origin, ready)
     # Send the old issuer cookie, not the jar after Set-Cookie deletion, to
     # distinguish server-side invalidation from browser-only cookie clearing.
     require_issuer_session(

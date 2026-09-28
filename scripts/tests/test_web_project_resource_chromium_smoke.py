@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 from types import SimpleNamespace
+from urllib.parse import parse_qsl, urlsplit
 
 import pytest
 
@@ -127,6 +130,165 @@ def test_browser_driver_rejects_missing_or_untrusted_input_before_launch() -> No
     assert result.stderr == "FAILURE_PHASE:parse-input\n"
 
 
+def test_browser_driver_accepts_two_distinct_artifact_fixtures_before_launch() -> None:
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node is unavailable")
+    artifacts = []
+    for index in (1, 2):
+        content = f"artifact {index}\n"
+        artifacts.append(
+            {
+                "conversation_id": f"conv_{index}",
+                "artifact_id": f"artifact:{index:064x}",
+                "filename": "delivered-work.txt",
+                "content": content,
+                "content_sha256": hashlib.sha256(content.encode()).hexdigest(),
+            }
+        )
+    value = {
+        "web_origin": "https://web.example.test:4443",
+        "web_host": "web.example.test",
+        "web_root": "/missing-browser-root",
+        "screenshot": "/missing-browser-image.png",
+        "owner_email": "owner@example.test",
+        "owner_password": "fixture",
+        "member_email": "member@example.test",
+        "member_password": "fixture",
+        "filename": "w2-" + "a" * 24 + ".txt",
+        "file_content": "file bytes",
+        "timeout_ms": 20_000,
+        "artifacts": artifacts,
+    }
+
+    def phase() -> str:
+        result = subprocess.run(
+            [node, str(DRIVER)],
+            cwd=ROOT,
+            input=json.dumps(value),
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        assert result.returncode != 0
+        return result.stderr
+
+    assert phase() == "FAILURE_PHASE:launch-browser\n"
+    artifacts[1]["conversation_id"] = artifacts[0]["conversation_id"]
+    assert phase() == "FAILURE_PHASE:parse-input\n"
+
+
+def test_artifact_browser_failure_phase_reports_only_bounded_safe_identifier(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        smoke.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            returncode=1,
+            stdout="",
+            stderr="MILESTONE:personal-mobile-layout\nFAILURE_PHASE:artifact-1-saved-download\n",
+        ),
+    )
+    ready = SimpleNamespace(
+        redirect_uri="https://web.example.test/api/auth/callback/kokoro-iam",
+        email="owner@example.test",
+        password="fixture",
+    )
+    with pytest.raises(
+        smoke.SmokeError,
+        match="phase=artifact-1-saved-download",
+    ):
+        smoke._driver_result(
+            Path("/missing/node"),
+            "https://web.example.test",
+            ready,
+            SimpleNamespace(email="member@example.test", password="fixture"),
+            20,
+            Path("/missing/image.png"),
+            "a" * 24,
+            [],
+        )
+
+
+def test_agent_redis_claim_registers_only_two_binary_source_runs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    owner = smoke.AgentRedisOwnership("redis://127.0.0.1:6379/6", "a" * 24)
+    calls: list[tuple[str, ...]] = []
+
+    def fake_call(*args: str) -> str:
+        calls.append(args)
+        return "OK"
+
+    monkeypatch.setattr(owner, "_call", fake_call)
+    assert owner.url == "redis://127.0.0.1:6379/10"
+    with pytest.raises(smoke.SmokeError, match="run identity invalid"):
+        owner.register_run("conv_one", "run_one")
+    owner.claim()
+    owner.register_run("conv_one", "run_one")
+    owner.register_run("conv_two", "run_two")
+    with pytest.raises(smoke.SmokeError, match="run identity invalid"):
+        owner.register_run("conv/other", "run_three")
+    owner.cleanup()
+    assert owner.claimed is False
+    assert len(calls) == 2
+    assert calls[0][0] == calls[1][0] == "EVAL"
+    assert calls[0][3] == owner.marker
+    assert set(calls[1][3:-1]) == {
+        owner.marker,
+        "kokoro:runs:requests",
+        "kokoro:run:run_one:events",
+        "kokoro:run:run_one:control",
+        "kokoro:session:conv_one:live",
+        "kokoro:agent:lease:run_one",
+        "kokoro:run:run_two:events",
+        "kokoro:run:run_two:control",
+        "kokoro:session:conv_two:live",
+        "kokoro:agent:lease:run_two",
+    }
+
+
+def test_agent_and_storage_use_distinct_owner_schemas() -> None:
+    bff = "postgresql://localhost/root?schema=kokoro_bff"
+    assert parse_qsl(
+        urlsplit(smoke._owner_schema_database_url(bff, "kokoro_agent")).query
+    ) == [("options", "-csearch_path=kokoro_agent")]
+    assert parse_qsl(urlsplit(smoke._storage_database_url(bff)).query) == [
+        ("schema", "kokoro_storage")
+    ]
+    with pytest.raises(smoke.SmokeError, match="PostgreSQL URL invalid"):
+        smoke._owner_schema_database_url(bff, "public")
+
+
+def test_agent_http_readiness_uses_healthz_capable_s6_helper() -> None:
+    source = RUNNER.read_text()
+    assert (
+        'artifact_combo.bff_agent._wait_ready(agent_base, agent, path="/healthz")'
+        in source
+    )
+    assert (
+        'product.runtime.wait_ready(agent_base, agent, path="/healthz")' not in source
+    )
+
+
+def test_artifact_action_has_safe_per_delivery_diagnostic_stages() -> None:
+    source = RUNNER.read_text()
+    assert "def seed_artifacts(request: product.AuthenticatedRequest) -> str:" in source
+    assert "nonlocal stage" in source
+    for milestone in (
+        "Web POST",
+        "Web receipt",
+        "Agent pending",
+        "Agent delivery",
+        "Product projection",
+    ):
+        assert f'stage = f"Artifact {{index + 1}} {milestone}"' in source
+    assert 'stage = "real IAM Product post-action session verification"' in source
+    assert "authenticated_action=seed_artifacts" in source
+
+
 def test_owner_source_sha_must_be_full_before_git_admission(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -175,7 +337,10 @@ def test_durable_owner_fact_accepts_storage_asset_digest_id_only() -> None:
         "owner_subject": "user-a",
         "project_id": "project_a",
         "asset_id": "asset:" + "a" * 64,
-        "personal": {"asset_id": "asset:" + "b" * 64, "visible_asset_id": "asset:" + "c" * 64},
+        "personal": {
+            "asset_id": "asset:" + "b" * 64,
+            "visible_asset_id": "asset:" + "c" * 64,
+        },
         "member_subject": "user-b",
     }
     smoke._durable_owner_facts(

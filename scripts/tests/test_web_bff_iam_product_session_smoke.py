@@ -8,6 +8,8 @@ from pathlib import Path
 import sys
 import time
 import unittest
+from types import SimpleNamespace
+from urllib.parse import urlencode
 
 
 PATH = (
@@ -23,6 +25,70 @@ spec.loader.exec_module(smoke)
 
 
 class ProductSessionGuards(unittest.TestCase):
+    def test_post_logout_browser_target_starts_fresh_bound_oidc(self):
+        origin = "https://web.example.test"
+        ready = SimpleNamespace(
+            client_id="client-one",
+            redirect_uri=origin + "/api/auth/callback/kokoro-iam",
+        )
+        query = urlencode(
+            {
+                "client_id": ready.client_id,
+                "redirect_uri": ready.redirect_uri,
+                "response_type": "code",
+                "scope": smoke.previous.SCOPES,
+                "resource": smoke.previous.RESOURCE,
+                "state": "s" * 24,
+                "nonce": "n" * 24,
+                "code_challenge": "c" * 43,
+                "code_challenge_method": "S256",
+            }
+        )
+        calls = []
+
+        def request(path):
+            calls.append(path)
+            return smoke.BrowserResponse(
+                302,
+                {
+                    "location": origin + "/iam/oauth2/authorize?" + query,
+                    "cache-control": "no-store",
+                },
+                [],
+                b"",
+            )
+
+        smoke.require_post_logout_login_start(request, "/login", origin, ready)
+        self.assertEqual(calls, ["/login"])
+        for target in ("/auth/sign-in", "/", "/login?next=/app"):
+            with self.subTest(target=target), self.assertRaises(smoke.SmokeError):
+                smoke.require_post_logout_login_start(request, target, origin, ready)
+        self.assertEqual(calls, ["/login"])
+
+        def bare_page(_path):
+            return smoke.BrowserResponse(
+                200, {"content-type": "text/html"}, [], b"<main>Sign in</main>"
+            )
+
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_post_logout_login_start(bare_page, "/login", origin, ready)
+
+        def wrong_client(_path):
+            return smoke.BrowserResponse(
+                302,
+                {
+                    "location": origin
+                    + "/iam/oauth2/authorize?"
+                    + query.replace("client-one", "wrong-client"),
+                    "cache-control": "no-store",
+                },
+                [],
+                b"",
+            )
+
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_post_logout_login_start(wrong_client, "/login", origin, ready)
+
     def test_fixed_tenant_invitation_protocol_is_exact_and_opaque(self):
         valid = {"kind": "invitation", "invitation_id": "invite-one"}
         self.assertEqual(smoke.require_fixed_invitation(valid), "invite-one")

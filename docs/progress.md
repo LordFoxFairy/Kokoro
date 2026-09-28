@@ -1214,3 +1214,12 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 ## 2026-09-28 — W2-F2-S8 BFF 下载时限文档门
 
 - BFF 唯一 writer 先盘点当前单个 120 秒信号贯穿对象取回/校验与出站的事实；Root 为避免 SQL/运维支线将方案收窄到具名作品下载 route：既有最多 120 秒准入/引用阶段不改，新目标为对象取回/校验独立 7 分钟总/45 秒 idle、出站独立 28 分钟总/25 秒 idle、共同客户端取消与临时文件/两个 spool 名额回收，不宣称任意 1 GiB 网络速率 SLA 或 PostgreSQL/磁盘 syscall 硬中止。仅四份 BFF 三设计/CURRENT 文档提交 main `f558acc36bf9947e48753be510499b08a8011e85`；Root Node22 `pnpm contract:semantic` **77 operations PASS**、`pnpm schema:check` **5 pass/1 无库 skip**、diff check PASS。未改运行代码/OpenAPI/SQL/测试，真实大件慢消费者仍未验；后续代码门另授。
+
+## 2026-09-28 — W2-F2-S7 当前真浏览器门：IAM 已过，作品原生附件取消
+
+- Root 在固定 Web `561e4c0`、BFF `f558acc`、IAM `4d98144`、Agent `486adb1`、Storage `d5cfc44` 的独占桶/临时 PG/隔离 Redis 组合中运行真实 IAM→HTTPS Chromium。两件独立 Conversation 经 Product 首消息→Agent Run→Storage FINAL+CLEAN→BFF Library 分页均已走到浏览器，个人文件/Project 回归通过。Root 旧 Product smoke 把注册的上游 `/auth/sign-in` 错当浏览器退出落点；当前 Web 严验上游后正式 303 `/login`，故修正 Root helper 的浏览器落点断言并额外验 `/login` 重新启动绑定 client/redirect/scope/resource/PKCE 的 OIDC。此前“失败在 IAM”的推测已由真运行排除，IAM/Web/BFF 子仓未为该断言改动。
+- 当前失败由真浏览器精确缩小：作品卡 click→二元 detail 200→Playwright download event/正确文件名；同一已登录页面 `fetch` 该 content 为 HTTP 200、正确安全头和原字节 SHA，但原生 `download.failure()=canceled`、无落盘。延迟锚点 `remove()` 1 秒的单变量实验仍取消，临时注入已从 Root runner 清除。每次失败均显示自有 PG/Redis/进程清理无残留，S3 对象版本为 0、独占桶删除；未碰用户 3310。当前 S7 **失败**，不能把页面可见或 fetch 200 冒充可下载。`docs/task.md` 已立 Web 唯一 owner S7B 做流/取消根因审计与修复；BFF 120 秒慢大件 P1 仍独立待办。
+
+## 2026-09-28 — W2-F2-S7B Web 原生附件流修复候选
+
+- Web 唯一 writer 以真实 Chromium 取消证据审计：作品原生 `<a download>` 能触发 download event，header/字节在同页 fetch 正确；延迟锚点 remove 无效。Web Hub route 在 200 响应交付后仍把框架入站 `request.signal` 双重绑定到上游 Node stream/下游 ReadableStream。新增定点 RED：交付后 abort 使 4B body 抛 `AbortError`，另证 downstream cancel 必须传播；仅两文件最小改动后 GREEN。Web main `e4f1f8bce9588e220a99c6d167d31ce4c9a7cf79`，Root 独立 Node22 `pnpm check` contract 103/architecture 36/Vitest 1587、lint/typecheck/build PASS，隔离端口 3453 Playwright 11 pass/1 既有 skip，构建与测试自有产物已清理。Root gitlink/库存待本轮提交，随后以当前 tuple 真 IAM/Chromium 重跑；此刻是**候选而非浏览器已通过**。
