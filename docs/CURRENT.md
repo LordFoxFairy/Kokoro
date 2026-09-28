@@ -9,11 +9,11 @@
 
 IAM `4d981441d154c83b63987f284e3a82a559595870` 的 0.7 owner 切片已发布，不等于整个登录及产品能力完成。固定 Web/BFF/IAM/Agent 组合曾通过隔离真 Chromium 的登录、OAuth 回跳、Product Session、私有聊天、AG-UI 与刷新；其中 System/模型为确定性 fixture，旧 3310 常驻实例没有在本轮热替换。因此“登录写完”是先前错误的完成口径，必须按具体来源与链路分别报告。
 
-W2 当前 Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38` 已发布 personal/project CLEAN ASSET `ListAssets` owner 实现，BFF `a67ae2d06b52202f349305ae3723f6e296c087a1` 已发布个人文件 public 列表与精确新 Storage Proto consumer；Web `c140f3b7c2fd09152d0f485e2b6c3580cf02cf49` 已去掉 Library 开发环境隐式预览回退，但尚未显示个人文件；原 Web Project 切片已发布正式 Project 创建、多文件逐项上传与 owner GET 列表。Root 先前在隔离真实 PostgreSQL/Redis/MinIO/ClamAV 组合验证上传、幂等重放、签名 GET 原字节、持久列表重载、cursor 分页、私有拒绝和感染拒绝，自有数据库/对象/bucket 已清理。Web Node22 全门由 Root 独立复验：contract 83/83、architecture 36/36、test 1511/1511、lint/typecheck/build PASS，独立端口 Playwright 11 pass/1 预期 skip。Root runner 曾在提交 `971eea005334ddc806e367a7a8b6bef53c08e5f8` 用 Web `a0e41a7`/BFF `31c4803`/Storage `ef0fd777`/IAM `4d98144` 精确来源执行隔离真实 Chromium **PASS**：两名用户完成 IAM 表单、OAuth callback 与 Product Session，UI 新建 Project、上传、owner GET/整页刷新重载，另一同租户成员读写 404；BFF Project 与 Storage CLEAN Asset 持久事实各为 1，自有资源清零。Root 在 `bb6a6502c555ebf06e3838430385a59abee7c9e4` 固定新 Web `c140f3b`/BFF `a67ae2d`/Storage `2d87e26`/IAM `4d98144` 组合后，隔离真实 Chromium **再次 PASS** Project 创建/上传/刷新/同租户成员404；四类测试自有资源清零，独占 bucket 已删除。该浏览器纵切没有个人 Library UI，不冒充完整边闭环。
+W2 当前固定 Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38`、BFF `8a90fdd9ec3809000924229bfc7b986ba8ba1522`、Web `32b67039bb405d534b0dc8b48ab8991ea7950d17`。Storage 已发布 personal/project CLEAN ASSET owner 列表；BFF 已发布个人 GET 与独立持久幂等的个人文件 POST；Web 资料库使用同页个人文件/Agent 作品页签，个人文件只读消费先前 BFF `a67ae2d` OpenAPI 原字节。Root 独立单仓门：Web Node22 contract 84、architecture 36、Vitest 1521、lint/typecheck/build 及隔离 Playwright 11 pass/1 既有 skip；BFF Node22 format/check 342 pass/1 skip、schema 5 pass/1 skip。独立只读复审修复作品收藏页签切换丢失与 BFF 同键恢复 P1 后，0 P0/P1。当前组合的个人上传真 PG/Storage/MinIO/ClamAV、Web 个人文件 Chromium 刷新/私有负例尚未执行；旧 3310 常驻预览未热替换。
 
 W2 浏览器验收前发现正式 Web “新建项目”只生成 `preview-project-*`，没有调用 BFF Project 创建 API。Web owner 已修正式侧栏与欢迎页入口：BFF POST 严格回执后按 canonical id 导航，未知结果同键重试，Direct/Project 草稿分键；预览 fixture 独立保留。Root 已从用户点击而非测试预造项目完成上述真实 Chromium 验收。当前用户 3310 仍是旧隔离预览进程，未热替换为此提交。
 
-下一片 W2 Library 的 Storage owner `2d87e26` 已发布 personal CLEAN ASSET `ListAssets` Proto/生成物/运行代码并通过真实隔离 PostgreSQL 与本仓门；BFF `a67ae2d` 已固定新 digest 且发布 `GET /v1/library?kind=file`，且以真实 Storage/PostgreSQL/MinIO/ClamAV 的隔离 BFF 组合通过个人 CLEAN 文件列表、分页、他人空列表/跨人 cursor400；但 Web 浏览器个人文件链尚未验；Web `c140f3b` 删除开发隐式预览回退，正式资料库仍使用旧 Artifact 路径且尚未展示个人文件。个人文件 Asset 与 Agent 最终 Artifact 不能混同；正式个人上传、Artifact F2、BFF public 真跨仓验收、Web 个人文件调用与浏览器验收均未完成，详见 `task.md` 的 W2-LIBRARY 任务卡。
+W2 已有历史组合证据：Root 在 `bb6a6502` 对 Web `c140f3b`/BFF `a67ae2d`/Storage `2d87e26`/IAM `4d98144` 的隔离真 Chromium 验过 Project 创建、上传、刷新、同租户成员 404；另以测试自有直接 Storage fixture 在真实 PG/MinIO/ClamAV 验过 BFF 个人文件 GET、分页、他人空页/跨人 cursor 400。两项证据都不能替代当前 Web `32b6703` 文件界面或 BFF `8a90fdd` 个人 Product POST 的真组合。个人下载、Agent Artifact F2、其他 Product 边及 Billing 仍未闭环；详见 `task.md` 和 `progress.md`。
 
 ## IAM 0.7 与 BFF 窄消费者历史基线（2026-09-28）
 
@@ -33,8 +33,8 @@ Storage main `91a8748` 仅新增真实个人附件回环测试及测试 fixture 
 
 | 子仓 | 当前固定提交 |
 | --- | --- |
-| `apps/kokoro-app` | `c140f3b7c2fd09152d0f485e2b6c3580cf02cf49` |
-| `apps/kokoro-bff` | `a67ae2d06b52202f349305ae3723f6e296c087a1` |
+| `apps/kokoro-app` | `32b67039bb405d534b0dc8b48ab8991ea7950d17` |
+| `apps/kokoro-bff` | `8a90fdd9ec3809000924229bfc7b986ba8ba1522` |
 | `apps/kokoro-agent` | `d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0` |
 | `apps/kokoro-iam` | `4d981441d154c83b63987f284e3a82a559595870` |
 | `apps/kokoro-system` | `c0a76a3a7614bf46ea6e665e523f24261862436f` |
