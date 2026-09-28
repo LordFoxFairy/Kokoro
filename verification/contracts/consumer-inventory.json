@@ -7,7 +7,7 @@
       "owner": {
         "name": "kokoro-app",
         "repository_path": "apps/kokoro-app",
-        "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+        "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
         "contract_version": "browser-private-0.1.0",
         "contract_path": "contract/README.md",
         "contract_sha256": "07088c4105ca84c18216cf3c7f63725f43ea94d3845bafd325846badd4116545"
@@ -20,19 +20,19 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "contract/README.md",
           "sha256": "07088c4105ca84c18216cf3c7f63725f43ea94d3845bafd325846badd4116545"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/app/api/session/[...path]/route.ts",
           "sha256": "0a20570c7b6803cc4b2984581f9eec8eb11db13c7b5829077bc3ce1b25f5c0a4"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "package.json",
           "sha256": "7e2424ec972c7310349f4e60765c206e953579738d4f42a75465de51437d732c"
         }
@@ -45,7 +45,7 @@
           "package_name": "next",
           "version": "16.2.6",
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "package.json",
           "sha256": "7e2424ec972c7310349f4e60765c206e953579738d4f42a75465de51437d732c",
           "json_checks": [
@@ -72,89 +72,89 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92",
       "state": "broken",
-      "reason": "BFF d5c868f publishes the personal binary download operation and Web d7848de pins its exact OpenAPI bytes and implements same-origin binary/file-card download. Root Web Node22 contract 100, architecture 36, Vitest 1583, lint/typecheck/build pass. Real current-tuple Chromium completed Project/personal upload/reload and began a 200 browser download, but exposed Web global Proxy overriding Referrer-Policy; Web d7848de adds exact encoded asset%3A<sha256> no-referrer with real Next HTTP RED/GREEN and negative paths. Root has not yet rerun the current tuple through original downloaded bytes, 320px layout and other-subject 404; Agent Artifact F2 and other Chat/Hub/Scheduled/Share/System/Agent/Billing Product coverage remain incomplete. Keep whole edge broken.",
+      "reason": "Web eaa7ebd pins BFF d5c868f exact public OpenAPI and implements personal file-card download through a narrow same-origin binary adapter. Root fixed tuple 44ee670f with Web runtime d7848de, BFF d5c868f, Storage 2d87e26, IAM 4d98144 passed real IAM/HTTPS Chromium/PG/Redis/MinIO/ClamAV run fee7b756c799f6e62691e8a3: two visible file-card downloads saved exact original bytes and filenames with safe headers, 320px card readable/no overflow, reload durable, same-tenant other subject content GET 404; owned resources and bucket removed. Web evidence-only eaa7ebd did not change runtime. Other Chat/Hub/Scheduled/Share/System/Agent/Billing Product coverage and Agent Artifact F2 are incomplete, so the whole edge remains broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/app/api/session/[...path]/route.ts",
           "sha256": "0a20570c7b6803cc4b2984581f9eec8eb11db13c7b5829077bc3ce1b25f5c0a4"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/engine/agui-chat-transport.ts",
           "sha256": "6bfe4fae8ff2bf86b2ff817c3a918ebcd2a255eb82909f417e742acef27b7de2"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "package.json",
           "sha256": "7e2424ec972c7310349f4e60765c206e953579738d4f42a75465de51437d732c"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/lib/server/product-identity.ts",
           "sha256": "a61593db87ea50a2937300ec0bf49f675df5364d23cd35f115a5829ba8627a38"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/app/api/auth/[...nextauth]/route.ts",
           "sha256": "6a8d8ea9b8b1df69dac29140539070839feb459270c1b39f71be789280261085"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/generated/bff-public-openapi.yaml",
           "sha256": "3f8aba161444d8b617df7ff1789e698269a4a6dd2c8b2ae7b3aaadb331947681"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/team/client.ts",
           "sha256": "a817c4f1907a101fb88b61d4661f11960d0bff8c8ca2ff5752f8d0a77bacc707"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/contract/project-create.ts",
           "sha256": "0bb04adee16d13a7efe24b61e2f151a5ab4789cada39664b005820a2df00d9bb"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/features/app/project-create.ts",
           "sha256": "5334b3ca55762b4cc7693e8fe4e2a54a074f662f3c4bb27a719a7b97da1cf841"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/app/api/hub/[...path]/route.ts",
           "sha256": "43e18ba1ae9f265019af738cf55dd43e535a83a253d93d43924cf70de7538bc3"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/features/app/kokoro-library-file-client.ts",
           "sha256": "272999d8349b55c598647034cceaca54e4f967f334d5e35572a46bbd8cbd509b"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/features/app/kokoro-library-files.tsx",
           "sha256": "2af9048a33acb3d2ff0142fbb531f77a58dd107660ea0c8dbd48c7444b224c75"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/engine/file-fetch.ts",
           "sha256": "697465c3f3719d35b5d3d569162f7c5719235b92d91142b9325911ea49955efd"
         },
         {
           "repository_path": "apps/kokoro-app",
-          "repository_commit": "d7848de1ee053f1ec626e8858144893cf8633412",
+          "repository_commit": "eaa7ebd56502cf05b6b402a8a013973c1904b8aa",
           "path": "src/proxy.ts",
           "sha256": "7ec30108b1e5d779aef82f67b26ab065eb5c87850454d79d13d30025946ad629"
         }
@@ -718,7 +718,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "BFF d5c868f pins Storage 2d87e26 Proto and publishes Project upload/list, personal CLEAN file list/upload, and GET /v1/library/files/{asset_id}/content with current IAM admission, ASSET/CLEAN GetAsset gate, same-scope GetDownloadReference, bounded origin-locked GET and full byte hash verification. Root real PostgreSQL/Redis/MinIO/ClamAV run 5036454fc7b1397a19695361 passed 14 cases including personal original bytes, other subject 404 and Complete-response-loss OS restart with owned resources removed; IAM was a stub. Web still pins the previous public OpenAPI and has no personal download UI/adapter; Agent Artifact F2 and current real browser composition remain unverified. Keep whole edge broken.",
+      "reason": "BFF d5c868f pins Storage 2d87e26 Proto and publishes Project upload/list, personal CLEAN list/upload, and bounded complete personal byte download. Root PG/Redis/MinIO/ClamAV owner run 5036454fc7b1397a19695361 passed 14 cases including Complete-response-loss OS restart; IAM was a stub. Root fixed tuple 44ee670f with real IAM/HTTPS Chromium/Web d7848de/BFF/Storage passed personal UI upload, two original-byte downloads, other-subject content GET 404 and Project regression in run fee7b756c799f6e62691e8a3; all owned resources removed. Agent Artifact F2, broader Storage consumers and full product edge remain unverified. Keep whole edge broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
