@@ -1081,3 +1081,7 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - BFF `5add506becd39715dc0a469af83e148a5a354515`、Storage `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38` clean/main。Root 在现有 W2 runner 加一次性 Complete 200 应答丢失代理，仅绑定运行自有 loopback Storage；代理消费 owner 完整应答后断开 BFF 侧连接。原请求返回 503，Storage Upload/Asset 已各提交一条；停止原 BFF OS 进程、同一测试库启动新进程后以同一文件/幂等键恢复 CLEAN 200，重放同 Asset、异文件同键 409，未重复 Complete、PUT 版本或 terminal public receipt。
 - 真实 PostgreSQL/Redis/MinIO/ClamAV 运行 `run_id=0cc2f4bdf3407c6e7e5d4e8d`：原 11 项加故障恢复共 **12/12 PASS**；运行自有数据库、对象版本、进程已清理，独占空测试 bucket 删除。初次运行只因 Root 测试把 BFF checkpoint scope 写错而失败，修正与真实 SQL scope 一致后两次全链通过；不改 BFF/Storage runtime。只读审查 P0/P1=0，P2 fake owner unit 的“commit”计数已改为收齐请求后递增，聚焦治理测试 **9/9 PASS**、Node24 syntax、diff check PASS。
 - 该 runner 的 IAM 是身份桩，没有覆盖 Web/Chromium 当前 tuple；个人下载与 Agent Artifact F2 尚未实施。`EDGE-BFF-STORAGE` 保持 broken，不以 12 项局部 smoke 宣称 W2 完成。当前 3310 登录 supervisor 未改动。
+
+## 2026-09-28 — 个人下载下一切片已立卡（未实施）
+
+- Root 对照 BFF 当前个人上传/列表、Storage v2 `GetAsset`/`GetDownloadReference` 和 Web 同源 adapter 后，在 `docs/task.md` 固定 BFF owner-first 两阶段：先四文档门，再 public OpenAPI+受控 GET 字节转发；Web 仅在 BFF 机器契约与运行发布后接线。存储预签 URL 不交给浏览器，先做当前 IAM admission 与普通 ASSET/CLEAN 校验。此条是任务边界，不是下载已可用的证据。
