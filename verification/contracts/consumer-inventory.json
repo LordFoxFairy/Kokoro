@@ -730,13 +730,13 @@
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "d5d7c243db4707645031943a2691d354997b3029",
           "path": "docs/API_CONTRACT.md",
-          "sha256": "fd951778d84d3b13fd134a103ad84b6ce63fe09a351b6e1ff0deb35ba6b1a8bc"
+          "sha256": "b3cf1cab15a47185d4389fc8e97b4b8ae4deca9a46c614115130f82e7bb8bae5"
         },
         {
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "d5d7c243db4707645031943a2691d354997b3029",
           "path": "docs/DATA_MODEL.md",
-          "sha256": "8e9ab9e5d4bf2941b93d0c019fbfc88b76b296dbd7cd5a776626d99ddcf6dc44"
+          "sha256": "7c4c280f9f667e1ecc400321a9493cc2c1209954cc6ff0d9225d12be01ad7dbe"
         },
         {
           "repository_path": "apps/kokoro-bff",
