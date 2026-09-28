@@ -1026,3 +1026,13 @@ W2-LIBRARY-STORAGE-PERSONAL-LIST 代码任务卡（Storage `f01d118` main/clean�
 W2 Library BFF/Web 只读设计预审（非代码授权）：比较继续使用 `GET /v1/library` + **必填** `kind=file` 与新建 `/v1/library/files`；Root 暂定前者作为后续 BFF 文档门输入，不允许省略 `kind` 时悄悄把“作品资料库”解释成文件列表，未知/省略 kind 应为稳定 400。首片 200 仅返回判别为 file 的 personal CLEAN Asset，未来 artifact 需 Storage F2+可信 Agent 来源，`all` 需真实双源复合分页后另开；列表不含下载 URL。Web 旧 `content_hash/session_id` Artifact 模型、自动预览空列表与个人文件必须分离，正式个人上传和下载另有验收，不能以可读首片冒充 Library 完成。BFF 可在 Storage owner 机器来源发布后收敛自身三设计文档并裁决最终 public schema；当前不实施、不更改其机器 OpenAPI 或 503 路由。
 
 W2-LIBRARY-STORAGE-PERSONAL-LIST owner 代码已由 Storage main `2d87e26bbaed9a70dcd91ad1e9d126d39d275f38` 发布，Proto 文件 digest `f5c10a92addf689c985359b7d82fdbb6d3c3ac753142620b958d1632ee8e265c`、两文件 aggregate `11edffcdd668c59ef07c7b4c47d44b38dd95c2b8aee5a4d0c6475fba58850713`。唯一 writer RED→GREEN，独立只读审查无 P0/P1，P2 README/索引/BFF接线文档漂移由 Root 同片修复；Root 在已提交 Storage SHA 下独立 Node24 format/lint/typecheck/contract/Prisma validate/build/Buf against `f01d118` 全 PASS，亲建隔离 PG 运行 70 文件/600 tests PASS，测试库已精确删除、generated 空白噪声已归一，Storage clean/main/pushed。当前只证明 owner 个人列表，BFF 仍固定旧 digest 且 Library 503；下一任务 BFF 先三设计文档与机器契约，再 consumer/真实跨仓组合，Web 随后。整条 `EDGE-BFF-STORAGE` 仍 broken；Storage 新 gitlink 的 Project 浏览器回归也尚未执行，不继承旧 tuple 结果。
+
+### W2-LIBRARY-BFF-FILE / P0（2026-09-28，三设计文档门）
+
+| 项 | 任务卡与边界 |
+| --- | --- |
+| Owner / 基线 | BFF `apps/kokoro-bff` 唯一拥有 public Product Library 与个人授权，main `31c4803b3df0e90c031a97844f89df384ca1a35c` clean；Root main `b16820d8` 负责审查/Git；Storage owner `2d87e26` 已发布 personal ListAssets，Web `a0e41a7` 只读等待。 |
+| 当前 / 目标 | 现 `GET /v1/library` 受 IAM admission 后固定 503，OpenAPI 无 200；BFF Storage consumer 仍 pin 上一 Proto digest。目标是显式 `kind=file` 的个人 CLEAN ASSET 列表成功态，省略/未知 kind 不偷偷当文件；BFF 每页从受信 tenant/subject 建 personal scope，固定新 Storage digest，返回稳定判别为 file 的 public schema、分页和错误。Artifact/F2 与 `kind=all` 不冒充本片功能。 |
+| 位置比较 | 方案 A 复用现有 `/v1/library` operationId，强制 kind 以消除无参语义歧义（暂定）；方案 B 新建 `/v1/library/files`，类型最直接但须同时裁决旧 path/operationId，文档门比较后给结论。淘汰复用项目 GET（Project owner predicate 不适用于个人 scope）或 BFF Asset 表（复制 Storage 真源）。 |
+| 第一阶段文件 / 门 | 同一 BFF writer **只改** `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`，收敛当前/目标、来源 pin、受信身份、文件 vs Artifact、空/错误/分页/下载与正式个人上传未决；不改 OpenAPI、generated、运行代码/Schema、Root/Web/Storage。Root 逐项审查后另授代码文件集，不因文档通过宣布接口可用。 |
+| 数据/依赖/删除/验证 | BFF 无新持久 Asset/Library 表、跨 owner SQL、缓存事实或角色；Storage Proto generated 类型止于 facade，单轨 Connect；未来代码删除固定 503 stub 而不是保留 fallback。文档门 Node22 Prettier/diff、固定 owner Proto digest/当前路径核对；后续代码门 contract:check:storage、OpenAPI generated drift、admission/越权/坏 owner 页/unit/真 Storage 组合、Root 浏览器刷新与隐私。个人上传/下载与 Agent 作品是父目标未完部分，不由文件列表 200 代替。 |
