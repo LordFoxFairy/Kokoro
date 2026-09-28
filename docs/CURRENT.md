@@ -5,6 +5,10 @@
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
 
+## IAM 0.7 owner 已发布、Root 消费组合尚未切换（2026-09-28）
+
+IAM main `4d981441d154c83b63987f284e3a82a559595870` 已发布 Organization Skill 12 动作、user-delegated 专用 scope、同快照具名 check、`0.7.0` OpenAPI/公开 SDK 与真实 Better Auth/PostgreSQL/HTTP 测试。Root 独立 `pnpm verify` 为 102 文件/938 测试 PASS，完整 IAM integration 在原代码候选为 37 文件/280 测试 PASS；最终旧/新 refresh+Code/consent 补测后 Root 独立聚焦 OAuth 3/3 PASS、writer 全量 integration 280/280 PASS。生产第一方 client/resource 尚未执行新 scope 的受管 provision；BFF 仍精确消费 IAM `0.6.0`，Web 仍请求旧 scope，Platform 尚未接 Product 授权。因此**当前 Root gitlink 与来源库存仍固定旧 IAM/BFF 组合**，下表不把 upstream IAM 新提交冒充已集成的运行组合；待 BFF owner pin/消费、Web scope 与组合验收后一起更新。3310 是先前单组临时预览，不以新 IAM 提交热替换运行进程。
+
 ## 3310 临时登录入口（2026-09-28 实测）
 
 旧预览的 IAM 后端退出后，`/login` 曾 302 到返回 `iam_relay_unavailable` 503 的 `/iam/oauth2/authorize`；此前截图不证明当时的当前态。Root 仅替换已确认归属的旧 Web/BFF PID 88923/88920，使用 `scripts/dev/serve_local_login.py` 重新启动单组隔离 IAM/BFF/Web（supervisor PID 62862，IAM 62935，BFF 62984，Web 62986；另一个旧 BFF PID 81924 未触碰）。新组合的 `GET /login` 经 IAM 到 `/auth/sign-in` 200，Browser 目视邮箱/密码表单、无连接中/整页重试；同一临时账户 HTTP 实测凭据提交 → consent → `/app` 200。fixture 创建独立测试数据库/Redis 前缀，未改变正式子仓发布 commit 或 Billing/Platform 状态；当前预览是进程存活时的临时开发验收，不是生产部署或长期在线保证。
