@@ -1200,3 +1200,7 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Root 直接核对 BFF live `delivery.created` 已包含 `artifact_id/asset_id/artifact_kind`，但 Web strict Chat schema 只接受 hash、BFF Chat snapshot 仍返回 `deliveries: []`；Library Product 接入与 Chat 卡/Canvas 恢复必须分清，不能用旧 hash URL 或凭列表推造授权。Root `docs/task.md` 增加 W2-WEB-AGENT-ARTIFACT-F2 唯一 owner、三设计文档门、代码门及真 Chromium 验收条件；Web 文档 writer 已派工，代码和 3310 均未改。
 - 对此前“IAM 写完”的口径作证据更正：IAM main `4d98144` 自身 0.7 owner 测试已过，不等于 Web/BFF/Platform 全体 consumer 完成；当前 `3310/login` 实测 302，经签名 authorize 最终到 IAM `/auth/sign-in` 表单 200，HTML 含邮箱/密码。该当前 HTTP 观测不代替正式常驻部署或完整产品授权闭环。
 - Web F2 三设计面/CURRENT 文档门由唯一 Web writer 在 main `ca3a581` 发布，四文件 116 行新增、未改生成物/代码。Root 核对 BFF `55d3c9c` OpenAPI SHA-256 `8a0849dcf3ae557d5f3166ad624c5eea9f42bc0b65c7a6ae7fda1741224d567b`、Web 当前旧快照 `3f8aba16...`，独立 Node22 `pnpm contract` **100/100** 与 diff check PASS。独立流审计明确通用 Hub 16 MiB/15 秒、Node data→Web Stream 无真背压/无完整结束核验、浏览器 Blob 不适用 1 GiB；文档已按原生 attachment“只报发起、不报完成”和精确流式代码门修正。Root 已给同一 Web writer 精确代码文件门；运行/浏览器尚未改验，当前 3310 未触碰。
+
+## 2026-09-28 — W2-F2-S6 双作品分页补门
+
+- Root `a1f162eb` 仅扩原有隔离 `run_agent_bff_storage_artifact_smoke.py` 与其直接测试，修正第二次派发的 Conversation 身份，新增两件真实作品分页/cursor/原字节验证与受控错误报告。Ruff format/check、直接 pytest **14/14**、diff check PASS；真实 PG/Redis/MinIO/ClamAV run `78ad0b624afb316fe7316ce6` 六组 PASS，固定 BFF `55d3c9c`、Agent `486adb1`、Storage `d5cfc44`；自有数据库/Redis keys/S3 版本均为 0，独占 bucket 已删除。此 runner 仍以 IAM 准入桩替代真实 OAuth，没有 Web/Chromium、模型 worker/provider、delete/commit 竞态或 PG 中断取消；不把 BFF Product 双件分页升格成用户页面闭环。`3310` 未触碰。
