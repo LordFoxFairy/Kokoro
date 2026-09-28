@@ -49,6 +49,12 @@ class SmokeError(RuntimeError):
     """Non-secret diagnostic emitted by this runner."""
 
 
+def _safe_error(exc: BaseException | None) -> str | None:
+    if isinstance(exc, SmokeError):
+        return str(exc)
+    return agent_storage._safe_error(exc)
+
+
 def sha256(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
@@ -446,6 +452,48 @@ def _verify_product(
     ]
 
 
+def _verify_two_artifact_pagination(
+    bff_base: str,
+    owner_headers: dict[str, str],
+    expected: dict[str, tuple[str, bytes]],
+) -> None:
+    first = _get_json(bff_base, "/v1/library?kind=artifact&limit=1", owner_headers, 200)
+    first_items = first.get("items")
+    cursor = first.get("next_cursor")
+    if (
+        not isinstance(first_items, list)
+        or len(first_items) != 1
+        or not isinstance(first_items[0], dict)
+        or not isinstance(cursor, str)
+        or not cursor
+    ):
+        raise SmokeError("two-Artifact first page or cursor missing")
+    second = _get_json(
+        bff_base,
+        f"/v1/library?kind=artifact&limit=1&cursor={quote(cursor, safe='')}",
+        owner_headers,
+        200,
+    )
+    second_items = second.get("items")
+    if (
+        not isinstance(second_items, list)
+        or len(second_items) != 1
+        or not isinstance(second_items[0], dict)
+        or second.get("next_cursor") is not None
+    ):
+        raise SmokeError("two-Artifact second page shape invalid")
+    seen = set()
+    for item in (first_items[0], second_items[0]):
+        artifact_id = item.get("artifact_id")
+        if not isinstance(artifact_id, str) or artifact_id not in expected:
+            raise SmokeError("two-Artifact page contained an unexpected identity")
+        conversation, content = expected[artifact_id]
+        verify_artifact_bytes(item, content, artifact_id, conversation)
+        seen.add(artifact_id)
+    if seen != set(expected):
+        raise SmokeError("two-Artifact pages duplicated or omitted an Artifact")
+
+
 def run_smoke(env: dict[str, str], config: dict[str, str]) -> dict[str, object]:
     import psycopg
 
@@ -635,6 +683,7 @@ def run_smoke(env: dict[str, str], config: dict[str, str]) -> dict[str, object]:
                 )
                 other_headers = bff_agent._bff_headers(tokens["other"], web_secret)
                 outside_headers = bff_agent._bff_headers(tokens["outside"], web_secret)
+                second_conversation = f"conv_{uuid4()}"
                 status, payload, _ = bff_agent._request(
                     bff_base,
                     f"/v1/sessions/{conversation}/messages",
@@ -648,12 +697,13 @@ def run_smoke(env: dict[str, str], config: dict[str, str]) -> dict[str, object]:
                     raise SmokeError("Product receipt missing run_id")
                 redis.register_agent_run(conversation, run_id)
                 pending = asyncio.run(_pending_run(urls["agent"], run_id))
-                if (
-                    pending.session_id != conversation
-                    or pending.execution_identity.tenant_ref != tenant
-                ):
+                if pending.session_id != conversation:
                     raise SmokeError(
-                        "Agent pending Run scope differs from Product dispatch"
+                        "Agent pending Run conversation differs from Product dispatch"
+                    )
+                if pending.execution_identity.tenant_ref != tenant:
+                    raise SmokeError(
+                        "Agent pending Run tenant differs from Product dispatch"
                     )
                 content = f"Kokoro artifact {run_token}\n".encode()
                 delivered = asyncio.run(
@@ -676,6 +726,59 @@ def run_smoke(env: dict[str, str], config: dict[str, str]) -> dict[str, object]:
                     other_headers,
                     outside_headers,
                 )
+                status, payload, _ = bff_agent._request(
+                    bff_base,
+                    f"/v1/sessions/{second_conversation}/messages",
+                    method="POST",
+                    headers={
+                        **owner_headers,
+                        "idempotency-key": f"artifact-second:{run_token}",
+                    },
+                    body={"content": "Create one more independent smoke artifact."},
+                )
+                second_receipt = bff_agent._data(
+                    status, payload, 202, "Product second message"
+                )
+                second_run_id = second_receipt.get("run_id")
+                if not isinstance(second_run_id, str) or not second_run_id:
+                    raise SmokeError("Product second receipt missing run_id")
+                redis.register_agent_run(second_conversation, second_run_id)
+                second_pending = asyncio.run(_pending_run(urls["agent"], second_run_id))
+                if second_pending.session_id != second_conversation:
+                    raise SmokeError(
+                        "Agent second pending Run conversation differs from Product dispatch"
+                    )
+                if second_pending.execution_identity.tenant_ref != tenant:
+                    raise SmokeError(
+                        "Agent second pending Run tenant differs from Product dispatch"
+                    )
+                second_content = f"Kokoro second artifact {run_token}\n".encode()
+                second_delivered = asyncio.run(
+                    _deliver_pending(
+                        urls["agent"],
+                        redis.urls[7],
+                        storage_base,
+                        env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                        agent_secret,
+                        second_pending,
+                        second_content,
+                    )
+                )
+                _wait_public_artifact(
+                    bff_base, owner_headers, second_delivered.artifact_id, 45
+                )
+                _verify_two_artifact_pagination(
+                    bff_base,
+                    owner_headers,
+                    {
+                        delivered.artifact_id: (conversation, content),
+                        second_delivered.artifact_id: (
+                            second_conversation,
+                            second_content,
+                        ),
+                    },
+                )
+                cases.append("two_artifact_cursor_pagination")
                 log.flush()
                 diagnostic = (directory / "owners.log").read_text(errors="replace")
                 if any(secret in diagnostic for secret in credentials):
@@ -717,8 +820,8 @@ def run_smoke(env: dict[str, str], config: dict[str, str]) -> dict[str, object]:
         return {
             "result": "failed",
             "sources": sources,
-            "error": agent_storage._safe_error(failure),
-            "cleanup_error": agent_storage._safe_error(cleanup_error),
+            "error": _safe_error(failure),
+            "cleanup_error": _safe_error(cleanup_error),
             "run_id": run_token,
             "database_candidate": database,
             "owned_database": database if database_created else None,
@@ -755,7 +858,7 @@ def main(argv: list[str] | None = None, env: dict[str, str] | None = None) -> in
             return 0
         report = run_smoke(current_env, config)
     except BaseException as exc:
-        report = {"result": "failed", "error": agent_storage._safe_error(exc)}
+        report = {"result": "failed", "error": _safe_error(exc)}
     print(
         json.dumps(report, sort_keys=True),
         file=sys.stdout if report["result"] == "passed" else sys.stderr,

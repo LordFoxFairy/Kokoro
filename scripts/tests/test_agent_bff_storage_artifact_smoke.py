@@ -67,6 +67,13 @@ def test_db_urls_are_distinct_schema_boundaries_in_one_database() -> None:
     assert len(set(urls.values())) == 3
 
 
+def test_runner_reports_only_curated_smoke_error_text() -> None:
+    assert smoke._safe_error(smoke.SmokeError("owned cursor mismatch")) == (
+        "owned cursor mismatch"
+    )
+    assert smoke._safe_error(RuntimeError("secret-bearing error")) == "RuntimeError"
+
+
 def test_cleanup_rejects_foreign_or_unversioned_object() -> None:
     for value in (
         {"Key": "another/final/a", "VersionId": "v1", "ETag": '"x"'},
@@ -91,6 +98,56 @@ def test_public_artifact_requires_stable_ids_and_exact_bytes() -> None:
         )
     with pytest.raises(smoke.SmokeError):
         smoke.verify_artifact_bytes(artifact, b"original", "other", "conversation-1")
+
+
+def test_two_artifact_cursor_pagination_uses_opaque_cursor_and_distinct_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def item(artifact_id: str, content: bytes, conversation: str) -> dict[str, object]:
+        return {
+            "artifact_id": artifact_id,
+            "conversation_id": conversation,
+            "content_sha256": smoke.sha256(content),
+            "size_bytes": str(len(content)),
+        }
+
+    pages = {
+        "/v1/library?kind=artifact&limit=1": {
+            "items": [item("artifact-2", b"second", "conversation-2")],
+            "next_cursor": "opaque/cursor",
+        },
+        "/v1/library?kind=artifact&limit=1&cursor=opaque%2Fcursor": {
+            "items": [item("artifact-1", b"first", "conversation-1")],
+            "next_cursor": None,
+        },
+    }
+
+    def get_page(_base: str, path: str, _headers: dict[str, str], expected: int):
+        assert expected == 200
+        return pages[path]
+
+    monkeypatch.setattr(smoke, "_get_json", get_page)
+    smoke._verify_two_artifact_pagination(
+        "http://127.0.0.1:39000",
+        {},
+        {
+            "artifact-1": ("conversation-1", b"first"),
+            "artifact-2": ("conversation-2", b"second"),
+        },
+    )
+    pages["/v1/library?kind=artifact&limit=1&cursor=opaque%2Fcursor"] = {
+        "items": [item("artifact-2", b"second", "conversation-2")],
+        "next_cursor": None,
+    }
+    with pytest.raises(smoke.SmokeError, match="duplicated or omitted"):
+        smoke._verify_two_artifact_pagination(
+            "http://127.0.0.1:39000",
+            {},
+            {
+                "artifact-1": ("conversation-1", b"first"),
+                "artifact-2": ("conversation-2", b"second"),
+            },
+        )
 
 
 def test_check_config_cli_does_not_touch_provider(
