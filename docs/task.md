@@ -31,7 +31,7 @@ Root 真 PostgreSQL 回归发现 `test/integration/scoped-file-lifecycle.test.ts
 独立规格审查发现最终作品下载持久 receipt 缺 `artifact_id`，与三元组契约不符。准同步既有 `src/assets/reference-receipt.schema.ts`，为 F2 最终作品签发定义含 `artifact_id + asset_id + digest` 的严格回执，普通 Asset/Package reference receipt 不变；直接测试覆盖重放/错 ID。
 Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门通过后，独立质量复审仅余默认操作哨兵 P2：`scope_operation` 仍可在 BFF personal/project 中获准，未来漏传具名 operation 会暗中放行。Root 裁决同片删除该哨兵的默认参数与授权，调用必须在 TypeScript 编译期显式传操作；直接认证/Service 测试同步，不保留兼容兜底。此为防未来默认放行，不冒称当前已发生越权。
 
-### W2-F2-S2 Agent 真作品交付（当前文档门）
+### W2-F2-S2 Agent 真作品交付（文档门通过，代码门进行中）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -44,6 +44,10 @@ Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门�
 | 本片文档门 / 验证 | 唯一 Agent writer 只更新 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 顶部 F2 当前态/目标态与准确机器源；Root 审查后才定代码文件集。文档 `git diff --check` 与相关格式/链接门；代码门须 Ruff/Pyright/contract/full pytest/build、真 PostgreSQL+Storage/ObjectStore/扫描以及 Run/lease/重放/隔离负例。 |
 
 本片不因 Storage 已通过单仓门而标记 Agent 完成；先收敛四文档，再实施并独立验收一个实际聊天 Run 的作品交付。
+
+文档门交付：Agent main `53baea8f701bda88bf814d59f63f77416de72823`，四份三设计/CURRENT 与 Storage `d5cfc44` 机器源对齐；Root 独立 Prettier、`uv run kokoro-agent-contract-check`、diff 门通过。只读初审 1 P1/2 P2 已修，复审无阻塞。此提交没有运行代码/Schema 改动，不算作品交付。
+
+**W2-F2-S2 Agent 代码门（同一 owner，Root 提交）：** 基线 Agent `53baea8` clean `main`；唯一 writer 可修改本仓 `contract/storage/v2/` 中固定 owner 输入/生成元信息、`src/kokoro_agent/generated/kokoro/{common,storage}/` 确定性派生、`scripts/` 对应 pin/drift 入口、`clients/storage*` 具名 Connect/ObjectStore adapter、`worker/{main,dependencies,storage*}` 资源装配、`tools/{deliver,middleware}.py`、`agents/general.py`、`execution/{events,publish_agent_events}.py`、`protocol/events.py` 与这些变化的直接测试。若复核证明 journal 意图/critical outbox stage 去重必须改变唯一 canonical SQL，可同步 `database/schema.sql`、`domain/run`/`infrastructure/postgres_run_*` 的直接相关代码、schema/catalog 门和测试；先向 Root 报清最小列/约束及事务窗口，不做新总表或其它工具语义泛化。普通 chat 的 deliver 只在真 adapter configured 时显式可用；未配置时保留已定义基础聊天但不得展示空壳成功。先用失败测试锁住当前缺口，再按 Storage 七操作、可信 Run/lease、稳定阶段命令、final→journal→去重 critical frame→Chat 投影→terminal 顺序实施。不得改 IAM/BFF/Web/Storage 或 3310，不碰 Git index；每个扩展文件集先报告 Root。验证：frozen pin/drift、Ruff format/check、Pyright、full pytest、contract/build、真 Agent PG + Storage/MinIO/ClamAV 的本人作品/重试/崩溃/lease/感染负例。Writer 报代码清单与未验门，Root 独立复跑并决定提交；未得真实纵切不标绿。
 
 ## W1C-首次登录邮件链（2026-09-24，已验收隔离组合；普通 IAB 未验）
 

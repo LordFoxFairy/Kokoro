@@ -1132,3 +1132,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - Root/Storage main 已分别提交并推送 `ed03b408601cd9b7282f5a8019228f3a24a1ea47` / `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`，main-only 检查显示 Root 与全部子仓只留 `main` 且工作树 clean。当前 `GET /login` 跳转到签名 IAM 表单 HTTP 200；这不是本次重新提交凭据或 Agent 作品可见的证据。
 - Agent `d6fcbf2` 只读审计确认：BFF 当前 chat `session_id` 是 Conversation ID，Agent 可从已持久 Run/claim lease 获受信执行上下文；但正式 `DeliveryClient` 仍仅 Protocol，标准 worker `delivery=None`，普通 chat 未装 deliver，旧结果/事件丢 `artifact_id`。因此 Storage F2 owner 发布后，Agent→Storage 当前仍断。Root 已在 `docs/task.md` 立 W2-F2-S2 文档门，后续代码必须实接真 worker/Storage，而不是扩大 IAM 权限设计或继续优化只存在于文档的协议。
+
+## 2026-09-28 — W2-F2-S2 Agent 四文档门
+
+- Agent 唯一 writer 在 clean `d6fcbf2` 上更新 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`，Root 精确提交 main `53baea8f701bda88bf814d59f63f77416de72823`。Storage `d5cfc44` 两份 Proto 原字节及 provenance digest 已在消费设计固定，机器消费/worker 未实现。
+- 独立只读初审发现 1 P1/2 P2：`delivery.created` 当前非 critical，无法宣称已可 durable 补发；CreateArtifact ID 与 pending Abort 边界未定。原 writer 补清 final→journal→按 tool_call_id 去重 critical stage→Chat 投影→terminal、逐崩溃窗口、owner 派生 Artifact ID 和未知上传先核状态，复审确认阻塞 0。Root 独立四文件 Prettier、`uv run kokoro-agent-contract-check`、`git diff --check` 均 PASS。无 Agent 运行代码或 canonical SQL 变化、无真 Agent→Storage 交付；W2-F2-S2 代码门已立，尚未验收。
+- Root 暂存 Agent 新 gitlink 与既有 Agent evidence pins 后，拓扑 PASS；兼容盘点仍为 16 edges/0 structural violation/13 declared broken；完整 `python3 -m pytest scripts/tests -q` **777 passed、187 subtests passed**，暂存 diff 无空白错误。Agent 代码 writer 此后可在同仓工作树实施下一切片，本条只记录已验证的 docs gitlink 来源。
