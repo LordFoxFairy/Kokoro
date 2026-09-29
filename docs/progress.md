@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF 个人已发布 Skill by-ID 文档/机器候选通过；运行未接
+
+BFF 唯一 public API owner 在 clean `main f316e8485b1d6b953a03971be01c88955daebb91` 只改唯一 OpenAPI、operation inventory/语义门/负例与四份当前设计文档，共 8 个既有文件；未改运行路由、SQL、generated、配置或锁文件。新增**未激活** public `GET /v1/skills/{skill_id}` 候选：当前 IAM session tenant+subject、本人 PERSONAL/ACTIVE、无需安装、严格七安全字段，非本人/非 ACTIVE 404，唯一 path 参数、无 query/body/idempotency，成功/各错误 no-store/request ID。现行四条 GET 的机器响应和运行代码尚未提前切坏；下一原子 runtime cutover 才同步个人列表 `source_ref/revision`、严格 `{data}`、Platform HTTP 3.1.0 专用 `platform:projection.read` Bearer 和 MCP owner-native 六字段，删除旧 2.0.0 client/secret。
+
+首交 `1fa6d827464de8d09db58eed8707d4c569adf6bf` 经双只读审查返修：语义门锁参数、状态/响应/header/error detail、禁止旧 operation 误引严格组件，恢复 Publish `source_ref` 负例；针对 YAML flow inline query 的终审复现再次返修，最终只读实测正常契约 0 错、flow query/额外 ref/多行 query 均被拒；API 与数据终审 **P0/P1/P2=0**。Root 独立 Node22 format/contract **163/163**/check **482 pass、1 skip**/schema **5 pass、1 skip**/build PASS；Root `scripts/tests` **975 pass/265 subtests**、精确 pin 后 topology/checkpoint PASS。**未跑 BFF public by-ID 真 HTTP/浏览器，也未激活 v4；不能当作全产品闭环。** 用户 3310 与任务外 `uv.lock` 未动。
+
 ## 2026-09-29 — Platform malformed workload Bearer 401 真组合 PASS；下一门 BFF public 读回
 
 Platform 唯一 writer `66c11b185c07aaa35e85862739a9b63d210abe7c`→`6a09913a96c686b316bfe707b823d039e625607a` 在既有 IAM authorizer 入站处，仅对坏 compact-JWT 形状/超长的非空 workload Bearer 于读取 credential 或调用 IAM 前返回 401；合法形状坏签名仍由 IAM 判定，真实 network/timeout/依赖错误保留 503。HTTP 与 unit 先对已知 503 行为 RED→GREEN；独立审查发现 malformed HTTP 测试未直接锁 `no-store`，最终通过共享错误 helper 精确补强，终审 P0/P1/P2=0。Root `358bb20f` 精确 pin gitlink、9 处来源 SHA 及变化的 authorizer 原字节证据；topology/checkpoint PASS。Root 独立 Node24 format/lint/typecheck/contract/schema/default test **1003 pass/239 skip**/build PASS。Root `scripts/tests` **975 pass/265 subtests**。
