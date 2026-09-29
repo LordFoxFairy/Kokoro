@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Platform v3 离线消费者通过，运行链未接
+
+BFF main `2a95da2410fd89c300dc18064867ee66617549e2` 已提交并推送：精确固定 Platform `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 的 Proto 与完整 v3 artifact，删除旧 commit vendor；新增独立 CreateDraft raw 投影、JCS/SHA-256 与 45 个 owner 正反向量。发布状态仍 `generated-not-activated`，v3 manifest 仍 `inactive/routable=false`。生产 provenance 检查现递归枚举真实树，额外文件、目录和符号链接均拒绝；独立复审最终无 P0/P1/P2。
+
+Root 当前 Node22 独立 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build` **exit 0**，默认测试 **373 passed/1 skipped**（30 suites），日志 `/tmp/kokoro-bff-v3-root-final2.log`；Proto 双次生成一致。Root `scripts/tests` **924 passed/190 subtests**、topology PASS；全仓标准门仍 **136 violations/0 unverified**。Root inventory **16 边/13 declared broken/0 provenance violation**，此 FAIL 只来自仍声明 broken 的真实断链，未伪改状态。BFF public OpenAPI/route/Connect credential/admission 运行切片、隔离真实 201、Web 入口及六 owner sandbox **均未验**；用户 3310 未触碰。下一门是 BFF user-only CreateDraft 运行候选，不把离线向量当端到端。
+
 ## 2026-09-29 — Platform 激活语义源码/ADR 复核（只读）
 
 独立只读审查 Platform `5b6eb2c…` 的 runtime 与 ADR-002 §13：`src/modules/skills/catalog/skill-catalog.request-binding.ts` 运行摘要已固定 v3 `3.0.0`，`src/rpc/rpc.middleware.ts` 只按 `skill-catalog` surface 注册 SkillCatalogService，运行代码不读取 `contract/execution-operations/v3/manifest.json`。因此该 manifest 的 `inactive/routable=false` 是发布/治理标记，**不是隔离测试环境的运行时断路器**；ADR 明确要求正式激活前跑六 owner 真实 sandbox。BFF 四设计中“任何真实 201 都需先 active”的字面要求会形成循环，已要求唯一 BFF writer 在当前代码片纠正：离线候选之后可在隔离真实 IAM/BFF/Platform(+当前 Platform 启动所需真 Storage readiness) 测 201/replay/撤权，但不得公开发布或改库存 active。正式整体激活仍受全消费者、六 owner sandbox 与协调 stop/switch/start 约束；当前没有已批准的单 operation 激活门。此审查**没有运行**该真链。

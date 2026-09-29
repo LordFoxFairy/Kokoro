@@ -14,13 +14,13 @@
 
 **验收结果：** Platform main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 已提交并推送。根因是 pg adapter 对省略用户名的 URL 使用有效 OS 用户，而 Prisma CLI 的同一 URL 报 P1010；修复只将同一有效身份显式传给 Prisma drift CLI，不改 canonical schema 或放宽漂移门。Root 独立 Node24 静态/Schema/构建通过，`pnpm verify` **853 passed/179 skipped**；自有 PostgreSQL/Redis 全量 integration **22 文件/252 passed/0 skipped**，前后 `schema:check` 均通过；临时库删除、Redis DB6 余量 0。独立复审无 P0/P1/P2。此为 Platform schema 门通过，v3 aggregate 仍 inactive/routable=false，消费者尚未切换。
 
-### 后续唯一消费者切片：W1E-BFF-USER-SKILL-DRAFT（BFF 文档门已验收；机器契约/代码候选待做）
+### 后续唯一消费者切片：W1E-BFF-USER-SKILL-DRAFT（离线来源/投影已验收；运行候选待做）
 
 只读独立审查绑定 Root `f72bfc4b`、Platform `d227a1d`、BFF `bd1f794`：BFF 仅有 `generated-not-activated` 的 Platform Proto 类型，`execution_artifact:null`，仍以 Capability HTTP 四 GET 运行；public OpenAPI 尚无 `POST /v1/skills/drafts`，普通 mutation 会先被 generic `mutationTicket` replay。Platform v3 aggregate `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d` 仍 `inactive/routable=false`，不能写成已消费或已激活。BFF 三设计中历史 v2/f26d147 pin 必须在本代码片前定点更新。
 
 **文档门与后续源码复核：** BFF main `51010fc5885ac44c98a42beb976e2f1d768c015b` 已将四设计目标对齐 Platform owner `5b6eb2c…`、v3 aggregate `324e749…`，保留当前 manifest 旧 Proto pin 与 `execution_artifact:null` 事实。Root Node22 `pnpm contract:check`（72 项）、`pnpm schema:check`（5 pass/1 无库 skip）、diff check 通过。后续只读源码/ADR-002 §13 复核发现该文档把 inactive 误解为**连隔离真实 201 都不能测**：Platform runtime 已注册 v3 SkillCatalog，manifest 不被运行时读取，ADR 恰要求激活前六 owner 真 sandbox。故当前离线来源/设计门可用，但四设计的激活措辞须在 BFF 当前代码片同步纠正：允许隔离候选真实 IAM→BFF→Platform 201 作为**预激活证据**，正式默认入口继续 fail closed，不得宣称 public 产品已激活。正式整体激活仍等待消费者、六 owner sandbox 和 Root 协调切换。
 
-#### W1E-BFF-V3-OFFLINE-CONSUMER（P0，BFF 唯一 writer；当前代码片）
+#### W1E-BFF-V3-OFFLINE-CONSUMER（P0，已验收）
 
 | 项 | 实施边界与验收 |
 | --- | --- |
@@ -31,11 +31,13 @@
 | API / 数据 / 依赖 | 机器 artifact v3 `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d` 仍 inactive/routable=false；本片只做离线 typed CreateDraft 投影/向量，不发布 public route。manifest 是发布标记，不是 Platform runtime RPC 开关；后续可在隔离 sandbox 预激活实测 201，但正式入口仍 fail closed。BFF 无数据 owner 新事实、事务、Redis 或跨 owner SQL；generated wire 止于 consumer。 |
 | 验证 / 交付 | 先 RED 证明旧 manifest 缺 artifact/投影，后 GREEN 证明所有 v3 CreateDraft 正反 raw vectors、method/version/unknown-field/presence/metadata/owner/tenant 变体与独立 JCS digest；精确文件/aggregate tamper 必拒绝，Proto 两次生成字节一致。Node22 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build`；Root 停写后独立复跑。无真 owner 201 或数据库集成宣称，用户 3310 不触碰。 |
 
+**验收结果：** BFF main `2a95da2410fd89c300dc18064867ee66617549e2` 已提交推送；旧 f26d147 vendor 被同字节的新 owner commit 目录替代，完整 17 文件 v3 artifact、aggregate/provenance、独立 raw CreateDraft 投影和 JCS/SHA-256 已固定，`status=generated-not-activated` 保持。Root Node22 独立 `format:check/lint/typecheck/contract:check/test/build` 全部通过，默认测试 **373 pass/1 skip**；生成源双次字节一致，真实 artifact 树的额外文件/目录/符号链接负例拒绝。独立代码复审的 4 项 P1/P2 已返修，最终无 P0/P1/P2。Root 来源库存仍 **16 边/13 declared broken/0 provenance violation**，拓扑 PASS；此为离线消费门，**无 public OpenAPI/route、真 IAM→BFF→Platform 201 或 Web 页面证据**，3310 未触碰。
+
 | 项 | 下一任务卡边界 |
 | --- | --- |
 | Owner / 目标 | BFF 唯一 public Product API、IAM session admission 与 user owner 映射；Platform 唯一 Skill/receipt writer。先做 user-only CreateSkillDraft 机器契约/受信 Connect consumer 候选，保持正式 public fail closed；隔离真实 201 是预激活验证门，公开产品可用性是消费者与六 owner sandbox 后协调激活的独立门，不以六 mutation、四 scope、Skills/MCP 总线或 Web UI 完成冒称。 |
 | 目录 / 粒度 | 复用 BFF `src/http/routes/owner.ts` 与 bootstrap admission，新增具名 Platform consumer adapter 比复用旧 `clients/capability` shared-secret HTTP 更清楚；先比较既有文件可扩性再锁具体文件清单。不新建 BFF Skill SQL、通用 mutation receipt、旧 HTTP alias 或运行时 fallback。 |
-| 前置 / 来源 | Platform schema owner commit 与 BFF 四设计文档已验收；下一代码候选固定相同 Proto 原字节和 inactive v3 artifact/digest，独立实现 v3 command projector/JCS、descriptor/vector/drift 检查，不 import Platform 私有源码。BFF 现有 IAM 0.7 用户 admission 已在，但独立 catalog machine credential/provider 尚缺；普通用户 Bearer 只送 IAM，不送 Platform。v3 激活仍由 Root 六 owner gate 决定。 |
+| 前置 / 来源 | Platform schema owner commit、BFF 四设计及离线 v3 consumer `2a95da2` 已验收，下一片复用固定 Proto/完整 artifact、独立 projector/JCS 与向量门，不 import Platform 私有源码。BFF 现有 IAM 0.7 用户 admission 已在，但独立 catalog machine credential/provider 尚缺；普通用户 Bearer 只送 IAM，不送 Platform。v3 激活仍由 Root 六 owner gate 决定。 |
 | 数据 / API | OpenAPI-first 准备严格 `POST /v1/skills/drafts` 候选、单个 Idempotency-Key、受信 tenant/subject→user owner、稳定 command/digest；generic `mutationTicket` 只为此操作精确退出，重试先做当前 admission，再由 Platform durable receipt replay。正式默认入口在协调激活前 fail closed；隔离候选 sandbox 可使用真实运行代码验证，不改 inventory active。无 BFF Schema 变化；Storage package 不参与 CreateDraft，Validate/Publish 仍 fail closed。 |
 | 验证 / 交付 | 候选阶段 BFF Node22 contract/architecture/test/build/schema 与离线 v3 vectors；BFF 运行候选就绪后，Root **激活前**在自有隔离真 IAM→BFF→Platform+Storage readiness 同库链验首次201、同 key 同 ID/replayed、异 body 409、撤销 session 后同 key 在 Platform socket 前拒、Platform 一份 Skill/receipt、清理0。此为预激活证据，不等于公开入口；正式发布还需 ADR-002 §13 的全消费者/六 owner sandbox 与协调激活。随后才交 Web 同源 adapter/页面可见入口，不把 API 正链冒称浏览器闭环。 |
 
