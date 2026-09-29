@@ -4,6 +4,8 @@
 
 Root `main aa0a757ebe5e88f0a12bd007321173dfb2d0788c` 固定 Platform `391fa9a958744b0cf463484ef869ac3b37c86b3c` 后，在自有真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV sandbox 实际 exit0：BFF 正式 CreateDraft 获取当前 Skill，Platform 正式 Begin/Complete/合法 ZIP Validate→Publish ACTIVE，同 command replay 同 event，错误 visibility/owner 与新 command 对 active 拒绝；数据库只读库存 Skill **1**、receipt **16**、`skill.published` outbox **1**、最终 epoch **6**/active+validated，runner `resources=clean`（`/tmp/kokoro-root-publish-real2.log`）。首次运行仅 Root runner 库存 SQL 将 canonical `skill_id` 误写 `id` 返回 UndefinedColumn；修正后重新运行完整组合 PASS，不是 Platform 代码失败。Root 独立复核 Redis DB14 keys **0**、本次前缀桶余量 **0**，runner 验精确临时库/进程清理，3310 PID 81692 未动。Platform 当前 `main 263a28f1e55745bd1829a61f68228d775751adbc` 仅将该真实证据写回 CURRENT，无代码变化，Root 本提交精确前移 gitlink。
 
+最终 Root 同一来源完整 `scripts/tests` **959 passed/212 subtests**、topology 与精确 checkpoint PASS；兼容验证 **16 边/13 declared broken/0 provenance violation**（仍 FAIL）、十仓标准 **136 既有 violations/0 unverified**（仍 FAIL）。这些广义门未因 Publish 单片变绿。
+
 这证明**隔离 owner Publish 纵切**，不证明 BFF public Begin/Complete/Validate/Publish（当前 public 仅 CreateDraft）、Source 的 Agent request-bound proof、Agent v4 pin、Storage completed Asset 孤儿退役、validated 后主动危险隔离、广义跨进程 ACK/COMMIT unknown/lease takeover 或产品激活。v4 仍 inactive；合同库存 16 边/13 declared broken。十仓标准仍 136 既有违规；依赖审计既有 8 项告警未清。下一步优先 BFF public/session 包命令与 Source 执行证明等实际产品消费链，不转运维。
 
 ## 2026-09-29 — W3 Publish owner 代码与 Root 独立门 PASS，真实组合待验

@@ -1,5 +1,14 @@
 # Kokoro 后端闭环任务总表
 
+## 当前执行：W3-BFF-SKILL-PUBLIC-PREFLIGHT（P0；2026-09-29）
+
+| 项 | 任务卡 / 文档门 |
+| --- | --- |
+| Owner / 基线 | 事实 owner 为 `apps/kokoro-bff` 的 Product Skills API；Root `main 09d466d2d36874e7a875b1eb9ca9d71b729b46ea` 主控。Platform `main 263a28f1e55745bd1829a61f68228d775751adbc` 已经 owner 真验 Begin/Complete/Validate/Publish，但 v4 inactive。当前仅 `/root/agent_consumer_audit` 固定基线只读调查；不派 BFF writer 直至三面设计门明确。 |
+| 当前事实 / 目标 | 当前公开入口仅已验 `CreateDraft` 预激活候选；其余包命令是否存在以 BFF 当前源码/OpenAPI 审计为准，不从 Platform RPC 存在推断 Product 已通。目标是用户从同源 Web，经 BFF 当次 IAM session/owner 授权，严格调用版本固定的 Platform Get/Begin/Complete/Validate/Publish，最终具备可验证的用户操作与撤权重放。 |
+| 边界 / 依赖 | BFF 拥有公开 OpenAPI、用户 session、HTTP 幂等和自己的 receipt；Platform 拥有 Skill/包状态与内部 Connect Proto；Storage 拥有字节/scan，BFF 不读 owner SQL、不复制包状态或 Storage 内部凭据。浏览器的短期签名 PUT 与同源 adapter 选择需在 API/安全文档明确，不能把 owner CLI 当公开链。Proto v4 当前 inactive，消费者固定 commit/digest 后才接；BFF public 可候选但不自动激活。 |
+| 本轮交付 / 排除 | 只读查 BFF TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT、OpenAPI、运行入口、SQL/receipt、集成测试，给出最小切片依赖图、缺失设计与真实浏览器/撤权验收清单。无文件写入、提交、服务启动、共享库清理；用户 3310 与任务外 Root `uv.lock` 不动。Root 审结论后才指定唯一 BFF writer 先过三面文档门。Source Agent proof、Storage orphan retirement、Agent pin、支付后续独立 owner 切片。 |
+
 ## 最近验收：W3-PLATFORM-PUBLISH-CODE（P0；2026-09-29）
 
 | 项 | 任务卡 / 验收门 |
