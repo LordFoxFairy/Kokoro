@@ -1,15 +1,24 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-PUBLISHED-SKILL-READ-RUNTIME（P0；产品读回断点）
+## 下一切片：W3-WEB-SKILL-CONSUMER（P0；正式发布与读回 UI）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
-| Owner / 基线 | BFF 唯一 public Product API owner、唯一写入 Agent；已审文档/机器候选 `main f316e8485b1d6b953a03971be01c88955daebb91`，Root pin 后开工。现四条 GET 仍走 `src/infrastructure/clients/capability/` 的 Capability HTTP 2.0.0 generated/旧 secret，by-ID 候选无运行入口；Platform HTTP 3.1.0 真 IAM projection 当前可用。Root 自身仅写 Root runner/台账/inventory，BFF 单 writer 独占本仓 src、contract/dependencies/vendor/generated 与对应 test/docs/生成配置；不碰 Web/Platform/IAM/Schema/lockfile/Root。 |
+| Owner / 基线 | Web `apps/kokoro-app` 唯一写入 Agent，clean `main 74dcc101f6c457d10db4511365e6898f44f0e625`；BFF public owner `62daba37fc0267830d73590bb5a3499807d46fc6` 已由 Root `2a9b0a99` 精确 pin。Web 现有正式 `SkillUploadDialog`/Skills 页仍旧 preview/confirm、`scope=official|third_party` 与旧 generated；本片不得把 3310 用户进程或显式 preview fixture 当正式验收。Root 只写 Root 任务/库存/隔离 runner，不与 Web writer 抢文件。 |
+| §8 放置 / 依赖 | 方案 A：在现有 `src/ui/skills/` Dialog、`src/features/app/kokoro-skills-surface.tsx`、`src/hub/` client/schema 与同源 `/api/hub/*` route 中原子接 BFF 唯一 OpenAPI/生成 client、个人列表/by-ID、安全上传状态机；采用，保留现有 shadcn Dialog/Button/Alert 与语义 token。方案 B：继续旧 Hub multipart preview/confirm、加正式 fallback 或 Web 直连 Platform；淘汰。新文件只在 wire parser、状态编排等确有不同变化原因时创建；不建新顶层目录/服务、Web SQL/receipt。 |
+| 合同 / 删除 | 先用固定 BFF public OpenAPI 更新 Web pin/generated 与 contract test，再按单 ZIP→Draft/Get/Begin→批准 origin 无凭据 signed PUT→Complete→Validate→零 body Publish 承接；只在严格 ACTIVE Publish 或本人 by-ID 读回后宣布成功。`scope_kind=personal` 的列表必须保留 `source_ref/revision`；MCP 只消费 owner-native 六字段。不保留正式旧 `preview/confirm`、namespace/candidates、`.skill` 容器、伪 `official/third_party` 参数、旧 MCP URL/secret 假字段或双读。刷新/未知 ACK、幂等重放、过期签名、撤权和坏回执都不得伪报完成。 |
+| 验证 / 交付 | Web 先补三文档当前态与现有文件/调用盘点，RED→GREEN 更新正式 UI/adapter/schema/tests；Node22 contract/architecture/lint/typecheck/unit/build/隔离 Playwright、axe/移动端/视觉回归。Root 在固定 Web commit 后用自有临时 HTTPS Chromium→IAM→Web→BFF→Platform→Storage/MinIO/ClamAV 验真实 CORS preflight/原字节 PUT、Publish ACTIVE 后刷新列表/by-ID、个人私有/跨用户/撤权/感染/失败恢复；当前 BFF 写候选默认关闭与 Platform v4 inactive 必须由独占组合显式激活并验证，不把单仓绿灯冒充产品闭环。Billing 最后，3310 与任务外 `uv.lock` 不动。 |
+
+## 已验收：W3-BFF-PUBLISHED-SKILL-READ-RUNTIME（开工基线保留）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 开工基线 | BFF 唯一 public Product API owner；开工前 `main f316e8485b1d6b953a03971be01c88955daebb91` 的四 GET 仍走旧 Capability HTTP 2.0.0，by-ID 只有机器候选。以下各行保留当时任务设计，不再描述当前代码；最终代码与 Root 真组合结果见本表下方验收记录。 |
 | 依赖 / §8 放置 | BFF TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 与唯一 OpenAPI 已定目标：方案 A 在既有 `src/infrastructure/clients/platform/` 增独立 projection credential/token/3.1.0 generated client，并在具名路由替换四条旧读 GET、接 by-ID，随片**删除**旧 Capability 2.0.0 vendor/generated/client/secret 读链；采用。方案 B 复用 catalog manage token、双轨旧 client、BFF 查 Platform SQL 或 Web 直调 owner；淘汰。MCP 目标是 owner-native 六字段，不能保留旧 fabricated URL/revision/tools。无新顶层业务 owner/表/role。 |
 | 合同 / 事务 / 行为 | 当前 IAM Product session 每次准入产 tenant+subject；独立 `platform:projection.read` workload token 只用 BFF→Platform，用户 Bearer 不转发。当前 tenant header 一致性断言；个人列表保留 `source_ref=skill:<id>`/正 revision，ACTIVE 未安装可见、游标原样继续且绑定 tenant/subject/filters；by-ID 仅本人 PERSONAL/ACTIVE，其他 404。Public 读响应一次原子切到 strict `{data}`、typed errors、no-store/request ID；失凭据/坏 owner 5xx、撤权不打 Platform。MCP 六个 owner-native 字段与 Web 后续同步；BFF 不写 Skill SQL/receipt/cache。 |
 | 实施 / 验证 / 交付 | 先在 BFF 做行为 RED→GREEN，精确 pin Platform 3.1.0 owner commit/sha 并生成 client；四 GET+by-ID 一次可审切片提交，旧 generated/vendor/secret route/test 0 残留，更新唯一 public list/MCP machine contract、operation inventory/语义门及测试，不得让新/旧响应双读。Node22 format/lint/typecheck/contract/default test/schema/build、独立 API/数据审查；Root 在主仓重跑并以自有隔离 IAM+BFF+Platform+Storage/PG/Redis/MinIO/ClamAV 真组合检查本人/异用户/跨 tenant/游标/撤权/坏 owner/no-store，然后精确 pin；Web shadcn 消费/Chromium 为下一 owner。3310 和任务外 `uv.lock` 不动。 |
 
-**进行中：** BFF 五条公共读运行切换已交付 `433fcf0`，返修提交 `62daba37fc0267830d73590bb5a3499807d46fc6`：Platform HTTP 3.1.0/独立 IAM projection token 已接，旧 Capability generated/vendor/client 已删除；成功头、状态专属错误码、退役写零 BFF receipt、token 取消边界和配置样例已补。Root 独立 Node22 `pnpm check` **484 pass/1 skip**、`format:check` PASS、`schema:check` **5 pass/1 skip**，API/数据终审 P0/P1/P2=0；额外状态码已 RED→GREEN。Root runner 已加入 public by-ID 发布前/后与撤权断言，**Root 已精确 pin gitlink/来源库存并过 topology/checkpoint、`scripts/tests` 976 pass/265 subtests，但尚未运行新的 BFF public 真组合**；下一门是 Root 隔离 E2E→Web shadcn/Chromium。3310 和任务外 `uv.lock` 不动。
+**验收结果：** BFF 五条公共读切换 `433fcf0`→终审 `62daba37fc0267830d73590bb5a3499807d46fc6`；Platform HTTP 3.1.0/独立 IAM projection token 已接，旧 Capability generated/vendor/client 已删除。Root 独立 Node22 `pnpm check` **484 pass/1 skip**、`format:check` PASS、`schema:check` **5 pass/1 skip**，API/数据终审 P0/P1/P2=0。Root `2a9b0a99` 精确 pin gitlink/来源库存，topology/checkpoint、Root `scripts/tests` **978 pass/273 subtests**。独占 IAM→BFF→Platform→Storage/PostgreSQL/Redis/MinIO/ClamAV 真组合 `/tmp/kokoro-bff-platform-read-e2e-verified.log` exit0：public 草稿 by-ID 404、Publish 后本人 200 七字段并与 owner 相同、个人列表保留 `source_ref/revision` 且 strict item、撤权后 by-ID/列表 401 且无 data、原 Begin/PUT/Complete/Validate/Publish/replay/感染/恢复回归同次 PASS；Skill2/receipt31/outbox2、自有资源 clean、Redis DB14=0、3310 PID 81692 不变。Root runner 只读审查 P1/P2 已返修，终审 P0/P1/P2=0，聚焦 Python **54 pass/83 subtests**；Web 正式 UI/Chromium 和 v4 激活仍待下一片，Billing 最后。
 
 ## 最近验收：W3-BFF-PUBLISHED-SKILL-READ-PREFLIGHT（P0；文档与机器门）
 

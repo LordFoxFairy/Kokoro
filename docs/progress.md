@@ -1,8 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
-## 2026-09-29 — BFF Platform 公共读切换已交付，Root 真组合待验
+## 2026-09-29 — BFF Platform 公共读真组合 PASS；下一 owner Web
 
-BFF `main 62daba37fc0267830d73590bb5a3499807d46fc6` 已将四条列表/MCP GET 和个人已发布 Skill 按 ID GET 从旧 Capability HTTP 2.0.0 切至 Platform HTTP 3.1.0 + 独立 IAM `platform:projection.read`；删掉旧 generated/vendor/client/secret 读链。返修锁定 200 no-store/request ID、状态专属错误码、退役写路径在 BFF receipt 前停止、IAM token 取消不等待、正式配置样例及 test-only mapper 归位。Root 独立 Node22 `pnpm check` **484 pass/1 skip**、`format:check` PASS、`schema:check` **5 pass/1 skip**；API/数据终审 P0/P1/P2=0；额外状态码已 RED→GREEN。Root E2E runner 已加入 public by-ID 草稿 404→Publish 后本人 200→撤权 401 断言，但当前 Root 已精确 pin BFF gitlink/来源库存并通过 topology/checkpoint、Root `scripts/tests` **976 pass/265 subtests**，但尚未执行本次真实组合，不冒充已闭环。支付仍最后；3310/任务外 `uv.lock` 未动。
+BFF `main 62daba37fc0267830d73590bb5a3499807d46fc6` 完成四条列表/MCP GET 与本人 ACTIVE/PERSONAL by-ID 读的 Platform HTTP 3.1.0 + 独立 IAM `platform:projection.read` 切换，旧 Capability HTTP 2.0.0 generated/vendor/client/secret 已删；Node22 `pnpm check` **484 pass/1 skip**、format PASS、schema **5 pass/1 skip**、API/数据终审 P0/P1/P2=0。Root `2a9b0a99` 精确 pin gitlink/库存；topology/checkpoint PASS，`scripts/tests` **978 pass/273 subtests**。
+
+独占真 IAM→BFF→Platform→Storage/PostgreSQL/Redis/MinIO/ClamAV `/tmp/kokoro-bff-platform-read-e2e-verified.log` **exit0/PASS**，新增 BFF public 草稿 404、Publish 后按 ID 200 七字段与 owner 一致、个人列表严格字段/`source_ref/revision`、撤权后 by-ID/列表 401 且唯一错误 envelope，无新 Platform socket；既有 Begin/原字节 signed PUT/Complete/Validate/Publish/replay/感染/恢复同次通过，Skill **2**/receipt **31**/event **2**、`resources=clean`、Redis DB14=0，用户 3310 PID **81692→81692**。首次 `python3` 入口缺 psycopg 在副作用前退出，已用现有 Agent venv 重跑成功，未安装新依赖或启动重复基础设施。runner 独立只读审查 P1 撤权错误体泄漏假阳性、P2 列表字段/撤权覆盖、总结标记及错误消息已 RED→GREEN 返修；聚焦 **54 pass/83 subtests**，终审 P0/P1/P2=0，Root 全 `scripts/tests` **978 pass/273 subtests**。Root 库存审查 P2 的历史 checkpoint README 与漏列 vendor/credential 已修，当前 checkpoint 再验 PASS。Web 正式 UI/Chromium 与 public 跨用户全矩阵、v4 激活仍未验；Billing 最后，3310 和任务外 `uv.lock` 不动。
 
 ## 2026-09-29 — BFF 个人已发布 Skill by-ID 文档/机器候选通过；运行未接
 

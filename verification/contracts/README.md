@@ -66,14 +66,15 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/w1e-platform-code-release.json
+  --expected verification/contracts/checkpoints/w1e-iam07-bff-pin.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current W1E Platform code-release baseline returns `1` because it declares twelve broken
-edges and no illegal edge. Historical W1D and Wave 0A checkpoints record their then-current
-illegal edge. The checkpoint CLI instead compares the complete
+the current W1E IAM07/BFF pin baseline returns `1` because it declares thirteen broken
+edges and no illegal edge (three are active). The older W1E Platform code-release,
+W1D and Wave 0A checkpoints remain historical snapshots; they are not the current
+composition gate. The checkpoint CLI instead compares the complete
 active/broken/illegal ID sets with the selected checkpoint, runs the same
 compatibility verifier, and returns `0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not

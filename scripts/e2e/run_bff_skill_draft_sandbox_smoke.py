@@ -742,6 +742,64 @@ def require_platform_published_skill_read(
         raise SmokeError("Platform published Skill projection invalid")
 
 
+def require_bff_projection_revoked(status: int, body: object) -> None:
+    """A revoked Product session must not return any Skill projection bytes."""
+    if status != 401 or not isinstance(body, dict) or set(body) != {"error"}:
+        raise SmokeError("revoked IAM session exposed BFF Skill projection")
+    error = body["error"]
+    if (
+        not isinstance(error, dict)
+        or set(error) != {"code", "message", "retryable"}
+        or error["code"] != "session_invalid"
+        or error["message"] != "BFF user admission failed"
+        or error["retryable"] is not False
+    ):
+        raise SmokeError("revoked IAM session exposed BFF Skill projection")
+
+
+def require_bff_personal_skill_list(
+    status: int, body: object, skill_id: str, revision: str
+) -> None:
+    """Validate the entire public page, not only one matching reference."""
+    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("BFF personal Skill list envelope invalid")
+    page = body["data"]
+    if not isinstance(page, dict) or not {"skills"} <= set(page) <= {"skills", "next_cursor"}:
+        raise SmokeError("BFF personal Skill list page invalid")
+    if (
+        not isinstance(page["skills"], list)
+        or len(page["skills"]) > 100
+        or ("next_cursor" in page and page["next_cursor"] is not None and (not isinstance(page["next_cursor"], str) or not page["next_cursor"]))
+    ):
+        raise SmokeError("BFF personal Skill list page invalid")
+    required = {"source_ref", "name", "description", "content_hash", "scope", "revision", "enabled", "categories"}
+    matches = 0
+    for item in page["skills"]:
+        if not isinstance(item, dict) or not required <= set(item) <= required | {"installed"}:
+            raise SmokeError("BFF personal Skill list item invalid")
+        item_revision = item["revision"]
+        if (
+            not isinstance(item["source_ref"], str)
+            or not item["source_ref"].startswith("skill:")
+            or any(not isinstance(item[key], str) for key in ("name", "description", "content_hash"))
+            or item["scope"] != "personal"
+            or not isinstance(item_revision, str)
+            or re.fullmatch(r"[1-9][0-9]{0,19}", item_revision) is None
+            or int(item_revision) > 18_446_744_073_709_551_615
+            or not isinstance(item["enabled"], bool)
+            or not isinstance(item["categories"], list)
+            or any(not isinstance(category, str) for category in item["categories"])
+            or ("installed" in item and not isinstance(item["installed"], bool))
+        ):
+            raise SmokeError("BFF personal Skill list item invalid")
+        if item["source_ref"] == "skill:" + skill_id:
+            matches += 1
+            if item_revision != revision:
+                raise SmokeError("BFF personal Skill list revision drift")
+    if matches != 1:
+        raise SmokeError("BFF personal Skill list lost published Skill")
+
+
 def require_package_response_headers(
     headers: list[tuple[str, str]], request_id: str, operation: str
 ) -> None:
@@ -848,6 +906,11 @@ def safe_summary(
             "bff_skill_publish_revoked": "PASS",
             "platform_published_by_id": "PASS",
             "platform_published_private": "PASS",
+            "bff_published_before_publish": "PASS",
+            "bff_published_after_publish": "PASS",
+            "bff_personal_skill_list": "PASS",
+            "bff_published_read_revoked": "PASS",
+            "bff_personal_list_revoked": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -2948,18 +3011,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     token=ready.access_token,
                     secret=web_secret,
                 )
-                if status != 200 or set(public_list) != {"data"}:
-                    raise SmokeError("BFF personal Skill list envelope invalid")
-                page = public_list["data"]
-                if not isinstance(page, dict) or not isinstance(page.get("skills"), list):
-                    raise SmokeError("BFF personal Skill list page invalid")
-                items = [
-                    item for item in page["skills"]
-                    if isinstance(item, dict)
-                    and item.get("source_ref") == "skill:" + begin_skill_id
-                ]
-                if len(items) != 1 or items[0].get("revision") != str(revision):
-                    raise SmokeError("BFF personal Skill list lost source_ref or revision")
+                require_bff_personal_skill_list(
+                    status, public_list, begin_skill_id, str(revision)
+                )
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
@@ -3035,8 +3089,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     token=ready.access_token,
                     secret=web_secret,
                 )
-                if status != 401 or body.get("error", {}).get("code") != "session_invalid":
-                    raise SmokeError("revoked IAM session reached BFF published Skill read")
+                require_bff_projection_revoked(status, body)
+                status, body = _http_get_json(
+                    bff_base,
+                    "/v1/skills?scope_kind=personal&limit=100",
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_bff_projection_revoked(status, body)
                 status, body = _http_json(
                     bff_base,
                     "/v1/skills/drafts",

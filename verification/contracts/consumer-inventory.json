@@ -772,6 +772,18 @@
           "repository_commit": "62daba37fc0267830d73590bb5a3499807d46fc6",
           "path": "test/platform-projection-route.test.mjs",
           "sha256": "311c80dfe713ec8cd6c664577c935876824ff4529cd0cb57fe26f626f67106dd"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "62daba37fc0267830d73590bb5a3499807d46fc6",
+          "path": "contract/vendor/kokoro-platform-http/6a09913a96c686b316bfe707b823d039e625607a/platform-http.openapi.json",
+          "sha256": "21a92c1f7d792cfeae40741e52672954d0c89a6dc6a0e6b51eac3b3895738e72"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "62daba37fc0267830d73590bb5a3499807d46fc6",
+          "path": "src/infrastructure/clients/platform/projection-credential.ts",
+          "sha256": "eafa79cd79fd5959e60001a0b35de88f6bef33152aa4425146d6fb4e636ba9ba"
         }
       ],
       "version_assertions": [

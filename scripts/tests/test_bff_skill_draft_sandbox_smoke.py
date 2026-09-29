@@ -228,6 +228,37 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         with self.assertRaises(smoke.SmokeError):
             smoke.require_platform_published_skill_absent(200, {"data": {}})
 
+    def test_bff_published_read_revocation_does_not_leak_data(self):
+        denied = {"error": {"code": "session_invalid", "message": "BFF user admission failed", "retryable": False}}
+        smoke.require_bff_projection_revoked(401, denied)
+        for status, body in (
+            (200, denied),
+            (401, {**denied, "data": {"name": "private"}}),
+            (401, {"error": {"code": "session_invalid"}}),
+            (401, {"error": {**denied["error"], "retryable": True}}),
+            (401, {"error": {**denied["error"], "message": "Bearer leaked"}}),
+        ):
+            with self.subTest(status=status, body=body), self.assertRaises(smoke.SmokeError):
+                smoke.require_bff_projection_revoked(status, body)
+
+    def test_bff_personal_list_rejects_mixed_scope_or_private_fields(self):
+        item = {
+            "source_ref": "skill:skill-current",
+            "name": "Sandbox skill",
+            "description": "sandbox draft",
+            "content_hash": "sha256:public",
+            "scope": "personal",
+            "revision": "1",
+            "enabled": True,
+            "categories": ["sandbox"],
+        }
+        page = {"data": {"skills": [item], "next_cursor": None}}
+        smoke.require_bff_personal_skill_list(200, page, "skill-current", "1")
+        smoke.require_bff_personal_skill_list(200, {"data": {"skills": [{**item, "description": ""}], "next_cursor": None}}, "skill-current", "1")
+        for mutation in ({"scope": "organization"}, {"package_asset_ref": "private"}, {"revision": "0"}):
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_bff_personal_skill_list(200, {"data": {"skills": [{**item, **mutation}], "next_cursor": None}}, "skill-current", "1")
+
     def test_public_publish_requires_exact_active_owner_event_projection(self):
         valid = {
             "data": {
@@ -650,6 +681,11 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "bff_skill_publish_revoked": "PASS",
                 "platform_published_by_id": "PASS",
                 "platform_published_private": "PASS",
+                "bff_published_before_publish": "PASS",
+                "bff_published_after_publish": "PASS",
+                "bff_personal_skill_list": "PASS",
+                "bff_published_read_revoked": "PASS",
+                "bff_personal_list_revoked": "PASS",
             },
         )
 
