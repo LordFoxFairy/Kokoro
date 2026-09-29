@@ -1,12 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-BEGIN-DOC-GATE（P0；2026-09-29）
+## 当前执行：W3-BFF-SKILL-BEGIN-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 阶段门 |
 | --- | --- |
 | Owner / 基线 | BFF public Product API 唯一 writer；当前 BFF `main f0aaf386bc7f7ca81ff4b996b84d29f0ce05e02f`、Root `main 4300f4fc4a8e29d9afa64b594755035c96715fed`、Platform owner `263a28f1e55745bd1829a61f68228d775751adbc` v4 inactive。先只读盘点现有 Begin Proto、Storage 签名 PUT、BFF OpenAPI/receipt 与 Web 同源 adapter；文档门通过前不写运行路由。 |
 | 目标 / 边界 | user-only Begin public 命令必须先真实 IAM session/tenant/owner admission，再以 BFF workload token 调 Platform；需要独立确定幂等键、command digest、当前 attempt/replace fence、签名 PUT 的浏览器目标源/CORS/必须原样透传的 headers/过期语义、错误与恢复。BFF 不保存 Skill/Upload SQL、不代传文件字节、不泄露 Storage credential；Get 已验证的默认关闭候选与撤权顺序不能回退。 |
 | 放置比较 / 删除 / 验证 | 优先扩 BFF 现有 Skills route、唯一 public OpenAPI、固定 v4 generated Connect client 与本仓三面文档；淘汰复用旧 Capability GET 或新增泛化 RPC proxy、第二 contract、双轨 fallback。文档门先对齐 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 与机器 OpenAPI、状态/事务/错误/tenant/幂等；再设 RED→代码→Node22 全门→Root 独占真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV＋浏览器 PUT/CORS 门。Complete/Validate/Publish public、Agent pin、孤儿资产退役、Billing 分后片，不把本片叫全链。 |
+| 只读预审 / 主控裁决 | 两名独立只读 Agent 固定 BFF `f0aaf386`、Platform `263a28f`、Storage `16a6c1c`、Web `317c74c` 审查 API/RPC 与浏览器数据面：BFF 已 pin 完整 v4，但 public Begin 与 Connect 调用不存在；Platform Begin Proto/持久 receipt/Storage 签名 PUT 已存在。采用 **Web 同源控制面→BFF→Platform、浏览器向已批准 ObjectStore public origin 直传 ZIP 原字节**；淘汰 Web/BFF 代理 32 MiB 字节（额外背压/取消/SSRF/带宽边界）。BFF 此切片只发布未激活候选 OpenAPI，运行时在后续代码片做；Web 旧 preview/confirm multipart UI 不复用为正式包上传。 |
+| 固定候选合同 | `POST /v1/skills/{skill_id}/package-upload`/`beginSkillPackageUpload`、user-only、单个有效 `Idempotency-Key`；body 仅文件名、固定 ZIP MIME、1–33554432 size、lowercase SHA-256、可选当前 `replaces_attempt_id`。当次 IAM+受信 user/tenant；BFF 仅从 path/session 组装 owner Context，按 operation+tenant+user+skill_id+key 派稳定 command ID，用固定 v4 artifact 中 `command_digest_version=3.0.0` 的 schema/JCS/向量生成 digest，不自造 wire；成功 201 严格 data 含当前 attempt/epoch/upload、完整短期 PUT `url/method/required_headers/expires_at`、replayed，no-store/x-request-id；同键重放仍先当前 IAM/Platform，短期 URL 不进 BFF SQL/receipt。明确 400/401/403/404/409/412/413/429/502/503 的独立错误码与旧 operation 不受影响。 |
+| 上传安全 / 实验门 | 后续 BFF runtime 必须把 URL 精确锁到配置的 ObjectStore **public origin**，拒 credential/fragment/非 HTTPS（仅 loopback 开发 HTTP）、非 PUT、超界 expiry/headers；当前 Storage 只签 `content-type: application/zip`，额外签名头须 fail closed 并重审契约。浏览器用 `credentials:omit`、`redirect:error`、原样 required headers PUT，不附 Cookie/Bearer，不改签名 URL；本地独占 bucket 及生产域名 CORS 仅允许获准 Web origin/PUT/Content-Type/无凭据。旧已签 URL 无法随撤权瞬时收回，保证的是不再新签与后续 Complete/Publish 当前授权/attempt fence。真 Chromium 必须测 preflight/PUT/Complete、错 origin/header/hash/size、过期 pending 同键重签、刷新 Get、撤权与旧 attempt。配置/浏览器验证是产品必要边界，不扩展到多角色部署运维。 |
 
 ## 最近验收：W3-BFF-SKILL-GET-RUNTIME（P0；2026-09-29）
 
