@@ -2,6 +2,16 @@
 
 ## 当前下一门：真实模型 → 正式 worker → 浏览器作品（2026-09-29）
 
+### W1E-PLATFORM-SCHEMA-CHECK（P0，唯一 Platform writer）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-capability` 的 Prisma canonical schema 与安装/漂移门；Platform main `d227a1d3103504f876dea3ddd8d8f575c59b5703`、Root `69c36627d1986f0a6dc4c4a857b0e5b9998a8d9b`，均 clean `main`。Root 独占 Git index/commit。 |
+| 当前事实 | Root 自有真 PostgreSQL/Redis integration 22 文件 249 pass/3 fail；三项均在 `schema-installer.integration.test.ts` 的 `pnpm schema:check`，Prisma CLI `migrate diff --from-config-datasource --to-schema` 报 P1010，另一个自有库复现。正式安装与 owner catalog readback 已有独立代码，不能凭静态 846 pass 宣称真实集成通过。 |
+| 目标 / 放置 | 修复 **实际 schema drift 检查**，保持空 owner schema 安装、已安装相等通过、owner 漂移拒绝、同库其他 owner 对象不受影响。优先检查既有 `scripts/canonical-schema-state.ts` 的 Prisma CLI 路径；备选是经负向测试证明本仓 catalog verifier 足以成为唯一 drift 门。不得简单删除失败断言或改 skip。只扩现有 script/test 及其直接文档；无新模块/顶层目录。 |
+| 范围 / 依赖 | Platform 唯一 writer 可改 `scripts/{canonical-schema-state,check-schema}.ts`、直接 unit/integration 测试、`docs/CURRENT.md` 当前事实；需要扩文件先报告 Root。不改 `prisma/schema.prisma`、generated、Proto/OpenAPI、lockfile、其他仓或 Root。继续单库 `kokoro_platform` schema、一个应用 role；没有新数据库角色/部署任务。 |
+| 验证 / 交付 | 先 RED 精确复现 P1010，再 GREEN 跑聚焦真 PostgreSQL `schema-installer` 三失败项和**全仓真实 integration**，以及 format/lint/typecheck/schema:check/verify/build；必须负向证明漂移仍拒绝且非 owner 对象不被清理。测试只建/删自有临时库，复用现有 Redis，记录清理余量；Root 独立重跑后才接收。 |
+
 | 切片 | 当前状态与下一验收 |
 | --- | --- |
 | W2-REAL-MODEL Root runner | Root `5b1b9a5e` 固定 gitlink 后的真实组合 **PASS**：真 IAM/HTTPS Chromium Product 202→System 路由 1 次→本地 Ollama `qwen3:8b` 成功调用 3 次→正式 Agent worker 工作区写入/唯一交付→AG-UI 200→Chat/Canvas 原字节下载/刷新唯一卡/同租户他人 3×404；Run journal/outbox、Storage FINAL CLEAN 数据库事实一致。自有 PostgreSQL、Redis、进程、S3 versions 均 0，专用空桶已删，3310 未触碰。此前两次失败分别为验收脚本拒绝合法 `artifact:` ID 和模型/浏览器帧时序不稳定；脚本已修正 ID 与失败清理，第三次为当前固定来源通过。此为**一个真实模型纵切**，非所有产品能力。 |
