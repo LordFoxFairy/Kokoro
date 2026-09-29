@@ -1249,3 +1249,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - Root `f9f5befa92f30c650397837120b7cc0be8bc37b0` 固定 BFF 运行代码 `b382642affa27332e91b49078e0500c6716b820e`、Web `102033e`、IAM `4d98144`、Agent `486adb1`、Storage `d5cfc44`，独占桶与隔离 PG/Redis/进程跑真 IAM→HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV，exit0/PASS。两件实际 CLEAN 作品经浏览器 UI 原生保存原字节与文件名、本人分页/刷新/320px、同租户另一成员列表空/详情及内容404；个人文件、Project、EICAR 回归通过。测试自有 PostgreSQL database、Redis keys、进程和 S3 versions 剩余 0，专用空桶已删；3310 未触碰。
 - BFF `99b98040ed6ee21d49ddd6a04c9b645222245d1e` 仅把上述真组合事实同步到四份文档，运行代码、OpenAPI、SQL 不变；Root 已重钉 gitlink/来源库存。本门不覆盖代表性 1 GiB 限速或下载时 OS 故障恢复，也不证明 Chat/Canvas 或真实模型 worker/provider。
+
+## 2026-09-28 — W2-F2-S9 Chat 作品快照设计门
+
+- Web 独立只读审查固定 Web `102033e`、BFF `99b9804`：live/replay payload 有二元 ID/kind 与 title/mime/size/tool_call_id/path/hash，Web strict parser 拒新 ID；Chat snapshot 恒 `deliveries: []`，Canvas/卡片仍以 hash/path/Blob 工作。`/content` 是 attachment，不可直接嵌入 iframe 或全量 Blob；消费切片须等 BFF owner 新机器契约发布，再复用已有卡片布局、本人二元详情及原生下载，首片只展示 metadata，预览另做有界小件流。
+- BFF 唯一 writer 仅改四份文档并提交 main `f7a4614eb75f08791a4381fc77e829b35d56be6c`：既有 Chat repeatable-read 事务纳入本人有界关联+同水位，最近 100 件/`has_more`/Library 完整分页，clean-slate 必填 Agent claim 展示字段，无兼容双轨。Root Node22 `pnpm contract:semantic` 77 operations、`pnpm schema:check` 5 pass/1 无库 skip，diff check PASS；四文档旧整文件格式漂移未扩大。此为**设计门**，尚未实施机器契约、SQL、runtime、Web 或 S9 真链。下一代码门需真 PG 验 GC 空 cursor/重快照与索引计划。
