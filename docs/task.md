@@ -1,6 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-PUBLISH-DOC-GATE（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-PUBLISH-RUNTIME（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer，clean `main b357c190e6ab02fdfc217c1db3e7207bda4bb6a1`；Root `5d08f78d` 精确 pin；Platform `263a28f` v4 inactive。Publish 三面/唯一 OpenAPI 的未激活机器候选已过门，但**无运行 route**。先按当前源码 §8 放置与真实 HTTP RED 再实现，不改 Root/其他仓。 |
+| §8 放置 / 删除 | 方案 A：沿 BFF 现有 Skills 具名 route、严格输入/owner v4 `3.0.0` 独立 projector、固定 `CatalogConnectClient` 与 `server.ts` 精确 dispatch；采用，不新建一级模块/进程。方案 B：复用旧 Capability `/hub` 泛路由、增加 BFF Skill SQL/receipt/outbox 或复制 Proto/Visibility 可选 body；淘汰，违反唯一事实源和无双轨。新文件只按独立变化原因放入现有 `src/http/routes/` 与 `src/infrastructure/clients/platform/`；同步移除旧 W1E 误导引用，不建 fallback。 |
+| API / 数据 / 调用 | `POST /v1/skills/{skill_id}/publish` 只 user-owned、单个有效 Idempotency-Key、**零字节原始 body**；每次包括 replay 先当次 IAM/fixed tenant/user，BFF workload→Platform，visibility 固定 PERSONAL(1)。命令 ID 绑定 operation+可信 tenant/user/skill/key，v4 digest 3.0.0/8 向量；严格 owner `source_ref=skill:<path id>`、正 uint64 revision、status ACTIVE、UUID event_id、boolean replayed 投影为公开 `{data}`，无包/Storage 私有字段。Platform 唯一拥有 current validated/Storage fresh CLEAN、短事务 CAS、receipt/outbox；BFF 不读 owner SQL/直接 Storage、不代理字节、不产生第二事件。 |
+| RED / 验证 | 真实 HTTP RED 证明新 path 未实现；覆盖 default-off **503/零 Platform socket**、零字节/非零体与超限、重复/非法 key、owner 8 向量、首发 **200 active**、同键 replay 同 event、异键 active **412**、旧/坏/非 validated/感染 **412**、错 owner/tenant **404**、撤权 replay **401/零新 socket**、owner 坏响应 **502**、unknown ACK 同键恢复、timeout/cancel/限流、有界 x-request-id/no-store；`Code.Aborted` 仅对 owner 稳定 `publish_snapshot_conflict` metadata 映射前置 412，其他真实进行中仍 409，不按 message 猜。Node22 format/contract/check/schema/build 与独立审查 P0/P1/P2=0；Root 再以独占 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 真组合验 public Validate→Publish/同 event replay/撤权/库存和清理。默认关闭、v4 inactive 不因本片自动激活；Web 真 Chromium/CORS/旧 UI 删除、Agent/Storage 后续门与 Billing 另片，3310/`uv.lock` 不动。 |
+
+## 最近验收：W3-BFF-SKILL-PUBLISH-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
@@ -9,6 +18,7 @@
 | 固定边界 / 契约 | 当前 IAM user/tenant 与 Platform 当前 owner/draft/validated/CLEAN 才能发布；public 不接受 caller visibility、asset、manifest、tenant 或 owner，BFF 固定 Platform `SKILL_SCOPE_KIND_PERSONAL`。单个 Idempotency-Key、严格**零长度请求体**，owner `skill.publish` v4 digest `3.0.0`/8 向量。200 仅公开 owner `source_ref`、uint64 revision、`active` status、event_id、replayed；精确 `{data}`/`{error}`、x-request-id/no-store，错误 401/404/409/412/429/502/503 按 owner typed reason/IAM 顺序逐项定稿；不把 validated 当 active，也不暴露 Storage asset/签名引用。 |
 | 数据/事务/恢复 | BFF 仅映射 public command，Platform 独有 current package、事务短 CAS、持久 receipt 与唯一 `skill.published` outbox。首次/重放/ACK unknown 均先新鲜 IAM 与 owner/fresh Storage 检查；同键 replay 同 event、异键 active 拒绝，撤权/旧包/危险态 fail closed。文档门需把状态机、错误、幂等、timeout/取消、分页不适用、breaking 策略与 canonical Schema 的“无 BFF Skill owner”对齐。 |
 | RED / 验收 / 后续 | RED 证明 OpenAPI/operation inventory 尚无 Publish；本片仅 BFF 四文档、唯一 OpenAPI、operation-scoped checker/直接 contract tests，Platform Proto/generated/SQL/lockfile 不改。Node22 format/contract/check/schema/build、独立 API/SQL 审查 P0/P1/P2=0 后 Root 精确 pin；下一片再由唯一 BFF writer 实现默认关闭运行候选与真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 同 event replay/撤权/坏包组合。之后 Web 现有 shadcn 入口一次替换并做真 Chromium/CORS，3310 与任务外 `uv.lock` 不动；支付最后。 |
+| 实际交付 / 证据 | BFF `b357c190e6ab02fdfc217c1db3e7207bda4bb6a1` 仅 8 个机器/测试/当前文档文件，RED 缺 Publish 后 GREEN；严格零字节体、固定 PERSONAL(1)、8 条 v4 digest 向量、正 uint64 revision/ACTIVE/UUID event 与状态独立错误均有负例，OpenAPI 83 frozen operations，未改 `src/`/SQL/generated/lockfile。独立终审 P0/P1/P2=0；Root Node22 format/contract **147/147**、check **466 pass/1 skip**、schema **5 pass/1 skip**、build PASS；Root `5d08f78d` 精确 pin gitlink/库存 **168** 处 BFF commit、4 处 blob digest，topology/checkpoint PASS；revision 正 uint64 regex 随机/边界 **100010** 组额外抽检 PASS。**只是未激活文档/机器候选，BFF Publish 运行与真用户调用未验；v4 仍 inactive。** |
 
 ## 最近验收：W3-BFF-SKILL-VALIDATE-RUNTIME（P0；2026-09-29）
 

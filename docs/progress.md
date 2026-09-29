@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Publish 三面文档与唯一机器候选门 PASS
+
+BFF `main b357c190e6ab02fdfc217c1db3e7207bda4bb6a1` 只更新唯一 public OpenAPI、operation inventory、operation-scoped checker/直接 contract test 与 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT：user-only `POST /v1/skills/{skill_id}/publish` **尚未激活、没有运行 route**。严格零字节请求体、单个 Idempotency-Key、BFF 未来固定 PERSONAL(1) 而不接受 caller visibility；owner v4 `command_digest_version=3.0.0` 的 **8** 向量，200 只发布 source_ref/正 uint64 revision/ACTIVE/event_id/replayed、状态专属错误，不外露包/Storage 事实。旧 W1E “visibility 可选 body”已标为历史。RED 缺 operation 后 GREEN，独立终审 P0/P1/P2=0；无 `src/`/generated/Proto/SQL/lockfile 改动。
+
+Root 独立 Node22 在 BFF `b357c190` 实跑 format/contract **147/147**、check **466 pass/1 skip**、schema **5 pass/1 skip**、build PASS；Root `5d08f78d` 精确 pin gitlink 与库存 **168** 处 BFF commit，4 处 blob digest 更新，topology/当前 checkpoint PASS；额外抽检 uint64 regex 随机及边界 **100010** 组 PASS。**没有 BFF Publish 运行或真用户调用，Platform v4 仍 inactive**；下一切片是 Publish runtime→真 IAM/Storage/同 event replay，然后 Web 现有 shadcn 入口一次替换及 Chromium/CORS。兼容库存仍 16 边/13 declared broken，十仓标准仍 136 既有违规；3310 与任务外 `uv.lock` 不动。见 [`task.md`](task.md)。
+
 ## 2026-09-29 — BFF Validate 默认关闭候选真实跨 owner 组合 PASS
 
 BFF `8dc767a510e208e44a784ff38b75030d00357499` 交付 user-only Validate route/client/digest projector；独立审查查出 Platform `package_attempt_conflict` 是 `Code.Aborted` 且带稳定 metadata，而 BFF 最初误映射 409，owner `126460791fd90742bccafb1f8d17e143b56c4eb6` 精确改为 412 并用真实 HTTP 三态 RED→GREEN；终审 P0/P1/P2=0。Root `874d2d9089cc14d7d731b9e42da3725f26b5b4ea` 精确 pin 163 处来源；独立 Node22 format/contract **144/144**、check **463 pass/1 skip**、schema **5 pass/1 skip**、build PASS。
