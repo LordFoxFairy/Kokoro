@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — user-only Skill CreateDraft 真四 owner sandbox PASS
+
+Root main `bfab4582cfd6ef2397608283aae470cde60f1be1` 固定 IAM `eb6700c13f84a165620a6be456a25d290bd3da4a`、BFF `caa99d90f57329065eeb0e98168316b2b1874159`、Platform `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`、Storage `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`；新 Root `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 使用 IAM opt-in host 自有 PostgreSQL 临时库与 Redis namespace，在同库安装三 owner schema，复用本机 MinIO/ClamAV但新建独占 ObjectLock/versioning bucket，启动短寿 Storage/Platform/BFF 正式 dist、真实 IAM fixture。`frozen_sources()` 先校验四仓 clean 且 Gitlink 精确等于 Root HEAD；用户 3310 未触碰。
+
+**实际结果：** 默认关闭 BFF 503、计数 proxy 的 Platform TCP 连接 0；仅候选 flag 改为 true 后，普通用户 Bearer 每次先过 IAM，真 catalog machine token/Connect 首次 201，原 key/body 201 且 Skill/Series ID 相同、`replayed=true`，原 key/异 body 409 `skill_idempotency_conflict`；IAM fixture 撤销其 session 后同 key 401 且 Platform proxy 连接数未增；只读 Platform owner schema SQL 证实 Skill 1、durable receipt 1。runner JSON：`{"platform_receipt_count":1,"platform_skill_count":1,"resources":"clean","status":"PASS"}`。四 owner 短寿进程、IAM 命名临时库/Redis namespace、测试凭据目录、独占 S3 versions/markers/bucket 在 finally 清理并核对，Root 额外盘点该前缀桶余量 0。几轮 RED 分别定位 runner helper import、PostgreSQL 省略用户名、BFF HTTP/2 对 Platform Express HTTP/1.1、psycopg 不接受 Prisma schema query，均以当前真实链重跑至 PASS，不把中途失败隐去。
+
+Runner 最终两文件由单一 writer 限定，Root 独立 Ruff 0.15.15 check/format、py_compile、聚焦 pytest **33 pass/22 subtests**；Root 最终全量 `python3 -m pytest -q scripts/tests` **957 pass/212 subtests**，日志 `/tmp/kokoro-skill-root-final-all-tests.log`；不沿用较早 runner 计数。独立只读复审初见 ObjectStore远端配置、中断/子进程/异常清理和ID投影五项 P1/P2，返修后 P0/P1/P2=0；最终真组合在 Ruff 0.15.15 格式化后以相同 Root HEAD/四仓 Gitlink 再次 exit0/PASS。Root topology PASS；来源库存 16 边/13 declared broken/0 provenance violation，compatibility 因真实断链 exit1；全仓标准门仍 136 rule violations/0 unverified（当前非本切片变更）。此为**预激活 user-only CreateDraft**，Platform v3 manifest inactive/routable=false、BFF 正式默认关闭，Web/六 owner/Billing 与整体产品闭环仍未完成。
+
 ## 2026-09-29 — 真 Skill 组合首门 RED 与 BFF HTTP/1.1 返修
 
 Root 自有 IAM→BFF→Platform+Storage readiness 组合在 BFF `18691e6` 固定来源下已实测：四 owner 短寿进程/同一临时库/schema 与 Redis/ObjectStore/Scanner readiness 成立，默认关闭 `POST /v1/skills/drafts` 返回 503 且 Platform proxy 零 socket；显式开启后首请求真实 **502 `skill_response_invalid`**，因此没有 201/replay/撤权验收。前置 runner 两次初始 RED 还暴露日志只写掩盖失败、以及省略 PostgreSQL 用户名使 Storage installer 报 `no PostgreSQL user name specified in startup packet`；Root runner 已按当前有效 OS 用户规范化同一连接身份，不增数据库角色，后续到达真实 BFF 请求。每次失败 runner 都走自有 IAM stop、临时库/Redis/桶核对；独立盘点 `kokoro-skill-sandbox-*` 桶余量 0，用户 3310 未触碰。

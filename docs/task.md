@@ -73,7 +73,7 @@ Root 真实 sandbox 后续复用该 host 的唯一临时库与现有 Storage/Pla
 
 **IAM host 验收：** IAM main `eb6700c13f84a165620a6be456a25d290bd3da4a` 已精确提交并推送，工作树 clean；Root 独立 Node24 `pnpm verify` 102 文件/938 passed、真 PostgreSQL/Redis 聚焦 integration 28/28 passed，临时库清单前后相同，独立复审 P0/P1/P2=0。Root 库存 owner 来源已固定该 SHA，IAM OpenAPI/Schema/生产代码与旧默认 host 形状不变。后续只在 BFF 阶段 B 提交、Root runner 真实 201/撤权/清理通过后验收组合；此处不宣称组合闭环。
 
-#### W1E-SKILL-DRAFT-TRUE-SANDBOX（P0，Root 组合验收；与两仓实现并行准备）
+#### W1E-SKILL-DRAFT-TRUE-SANDBOX（P0，Root 预激活真组合已通过）
 
 | 项 | 放置与阶段门 |
 | --- | --- |
@@ -82,6 +82,8 @@ Root 真实 sandbox 后续复用该 host 的唯一临时库与现有 Storage/Pla
 | 范围 / 依赖 | Root 唯一 runner writer 仅写上述两个新文件；若必须修改既有 shared helper，先报主控扩卡，不自行扩大。以 IAM opt-in host ready/一次性 revoke 为唯一 session owner 通道；以 BFF 阶段 B 同一候选生产代码为唯一 Product route；Platform v3 当前 owner Proto/digest 不复制。源码和运行证据固定四仓 SHA，前置 worktree 未冻结前只做 unit/协议准备，不运行终验或宣称 PASS。 |
 | 数据 / API / 隔离 | IAM host 创建并最终清理一个独占临时 PostgreSQL 数据库和 Redis prefix；在该**同一库**安装 BFF/Storage/Platform 各自 owner schema，一套应用 credential。真实 Storage readiness 使用现有本机 ObjectStore/Scanner/Redis 与 owner 代码，不启动或清理用户共享服务；Platform `skill-catalog` 仅收 IAM tenant-machine/resource-server/tenant-execution 凭据；BFF 仅收 owner-only 0600 credential file。自有短寿进程全由 runner 捕获/关闭，不能用 3310 或改正式 manifest。 |
 | 测试 / 放行 | 先 RED→GREEN：ready/source/config/credential/路径与响应严格校验、异常和中断仍清理，日志与 summary 不泄漏秘密；实际组合须证明默认候选关闭 503 且 Platform 0 socket、开启后首次 201、相同 key/body 同 Skill 且 `replayed=true`、相同 key/异 body 409、IAM revoke 后相同 key 在 Platform socket 前拒、Platform 恰一份 Skill 与一份 durable receipt、前后独占资源库存相同。固定 SHA 后 Root 独立 Python unit、四仓 owner 门与真组合运行，再由主控审查提交。此证据仅为预激活，不等于 Web 浏览器或正式 public 激活。 |
+
+**真组合验收（2026-09-29）：** Root `bfab4582cfd6ef2397608283aae470cde60f1be1` 固定四 owner 后，正式同库/真 IAM/真实 Platform Connect+Storage readiness 的预激活 runner 已返回 `PASS/resources clean`：默认关闭503/Platform零socket，候选首201、同key重放同Skill/Series、异body409、撤销session后同key401且Platform零新增socket，Platform只读SQL Skill/receipt=1/1，自有库/Redis/进程/独占S3桶清理核对。独立复审返修后 P0/P1/P2=0；Root Ruff 0.15.15 与聚焦pytest 33/33 通过。Root 全量 scripts 测试已通过（957 pass/212 subtests）；剩余提交门是精确提交 runner/两台账并重验 Root gitlink；之后仍须六owner/消费者与Web可见入口，**不激活 public/manifest**。
 
 | 项 | 下一任务卡边界 |
 | --- | --- |
