@@ -1223,3 +1223,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 ## 2026-09-28 — W2-F2-S7B Web 原生附件流修复候选
 
 - Web 唯一 writer 以真实 Chromium 取消证据审计：作品原生 `<a download>` 能触发 download event，header/字节在同页 fetch 正确；延迟锚点 remove 无效。Web Hub route 在 200 响应交付后仍把框架入站 `request.signal` 双重绑定到上游 Node stream/下游 ReadableStream。新增定点 RED：交付后 abort 使 4B body 抛 `AbortError`，另证 downstream cancel 必须传播；仅两文件最小改动后 GREEN。Web main `e4f1f8bce9588e220a99c6d167d31ce4c9a7cf79`，Root 独立 Node22 `pnpm check` contract 103/architecture 36/Vitest 1587、lint/typecheck/build PASS，隔离端口 3453 Playwright 11 pass/1 既有 skip，构建与测试自有产物已清理。Root gitlink/库存待本轮提交，随后以当前 tuple 真 IAM/Chromium 重跑；此刻是**候选而非浏览器已通过**。
+
+## 2026-09-28 — IAM 完成口径与 F2 浏览器取消边界复核
+
+- IAM `4d98144` 的认证/授权 owner 切片有单仓验证，真实 IAM→HTTPS Chromium 登录/OAuth/Product Session 在 F2 组合中通过；这不代表全体消费者、全部权限或产品链路完成。此前笼统说“IAM 写完”是错误口径。当前停止新增 IAM 权限/契约分支，除非真实用户链路暴露 IAM owner 缺陷。
+- Root `1a041cad` pin Web `e4f1f8b` 后复跑真 IAM→Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV：作品 UI 点击有真实用户激活和 download event，但 `download.failure()=canceled`；同一会话 fetch 可得 200、正确原字节与安全头。一次性诊断证实连个人内容的原生 attachment 在真实按钮点击下也 canceled，而正式个人 Blob 下载通过，故不能继续把现象归因于 IAM、作品锚点移除或只限 Artifact stream。另以显式 `acceptDownloads:true`、作品 event 后先落盘再同 URL fetch 的单变量运行 `tk841vhu` 仍在 `artifact-1-saved-download` 失败；该 runner 实验不进入正式代码。两次测试自有数据库、Redis、短命进程清理无残留，S3 版本 0、独占桶删除，未碰 3310。浏览器原生保存仍是 RED，F2 未闭环；下一步仅定位下载管理器/网络取消确切边界，不扩大 IAM 设计。
