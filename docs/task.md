@@ -1,13 +1,22 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-BEGIN-RUNTIME（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-COMPLETE-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 目标 | BFF public Skills 唯一 writer，当前 BFF `main 571108b91084bec0be4451b8840a2d7cd9d2496a`、Root 已精确 pin `0aaab19745bac32ab615869bb20d5564e9182726`；Platform v4 仍 inactive。先审 `CompleteSkillPackageUpload` owner v4 Proto/状态/receipt/Storage scan，再定 user-only public Complete 合同，**本片只做三面文档与唯一机器 OpenAPI**，不先写运行代码。 |
+| 边界 / 依赖 | Web 同源控制面→BFF 当次 IAM→Platform，浏览器完成短期签名 PUT 后，`upload_id/attempt_id` 必须绑定当前 Skill attempt；BFF 不接收字节、Asset/hash 自报或 Storage 凭据，不存第二套 Skill/Upload SQL/receipt。POST Complete 的幂等键/command digest/unknown ACK 恢复、PENDING/SCANNING/CLEAN/INFECTED、旧 attempt 与撤权 replay 要与 owner 的当前状态机逐项对齐。 |
+| 三面门 / 验证 | 技术方案、API、数据模型与 machine OpenAPI 一次对齐，明确请求/响应/错误/幂等/timeout/tenant/owner/事务与消费者版本，先 RED 契约断言再 GREEN；独立只读 API/SQL 审查和 Root Node22 format/contract/check/schema 后才放行 runtime。Web 正式 shadcn 入口与真 Chromium CORS/PUT/Complete/刷新是后续独立可见门，不能以当前 Root HTTP 签名 PUT 冒充。支付仍最后，3310 与任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-BFF-SKILL-BEGIN-RUNTIME（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | BFF 唯一 writer，物理仓 `apps/kokoro-bff` clean `main 145c422c052b7409b960deeeb2d185285492e4e8`；Root 管跨仓审查、精确 pin、独占真组合；Platform `263a28f` v4 inactive。三面文档/唯一机器 OpenAPI 的 Begin 候选已过，**BFF 当前仍没有 Begin route/client 方法**。先按本仓 §8 放置表定具体文件，不新建业务模块/服务/DB/role。 |
 | RED→实现 | 先真实 HTTP RED：同路径 POST 被现有 `isSkillPackageGetPath` 抢先送入 Get 400、默认关闭、IAM 撤权/跨 tenant/错 owner/同键重放与异 body 冲突、状态前置、非法签名 URL/headers/expiry、取消/超时；再新增具名 Begin route、独立输入与 owner v4 JCS/digest projector、既有 generated `CatalogConnectClient` 方法，按 method 精确分派 Get/Begin。单个 `Idempotency-Key`，command ID 绑定 operation+受信 tenant/user/skill_id+key；同键 replay 仍先 IAM，BFF 无 Skill/Upload SQL/receipt 或 Storage 服务凭据。多字节 filename **UTF-8 255 bytes 接受、256 bytes 拒绝**，不能把 OpenAPI `x-maxUtf8` 当运行校验。 |
 | 签名/配置 | 只投影 owner 当前 pending 的完整短期 PUT reference；用 BFF 已有 `KOKORO_STORAGE_OBJECT_ORIGIN` 作为唯一批准 public origin，允许它为 Begin 单独配置而不强制启用 BFF Storage RPC secret/client；Create/Get 在未配该 origin 时仍可运行，Begin fail closed。URL 精确 origin、无 userinfo/fragment、生产 HTTPS/隔离 loopback HTTP、PUT、当前仅 exact `content-type:application/zip`、有界未来 expiry；不修改签名 URL/头、不日志输出；返回 201 strict data/no-store/x-request-id。若正式 owner 返回额外 signed header，先停并修 contract，不静默丢弃。 |
-| 验证/边界 | Node22 format/lint/typecheck/contract/平台 v4 provenance/owner向量/test/build/schema 与独立审查 P0/P1/P2=0；Root 在自有 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 组合验 Begin 201/current `upload_pending`/signed PUT/replay/替换/撤权零新 Platform socket、旧 Publish 回归、自有资源清理。随后 Web owner 单独 pin BFF public OpenAPI 并完成同源 Begin＋真 Chromium CORS/preflight/PUT，Complete public 再按设计门串行；单独 BFF 运行代码门不能冒称浏览器或产品激活。用户 3310 与任务外 Root `uv.lock` 不动。 |
+| 验证/边界 | Node22 format/lint/typecheck/contract/平台 v4 provenance/owner向量/test/build/schema 与独立审查 P0/P1/P2=0；Root 在自有 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 组合验 Begin 201/current `upload_pending`/signed PUT/replay/替换/撤权零新 Platform socket、旧 Publish 回归、自有资源清理。后续先完成 Complete public 的设计/运行门，再由 Web owner 单独 pin BFF public OpenAPI 并完成同源 Begin/Complete＋真 Chromium CORS/preflight/PUT；单独 BFF 运行代码门不能冒称浏览器或产品激活。用户 3310 与任务外 Root `uv.lock` 不动。 |
+| 实际交付 / 验收 | BFF 唯一 writer `main 571108b91084bec0be4451b8840a2d7cd9d2496a` 交付默认关闭的具名 Begin route、固定 v4 generated Connect/JCS digest、当次 IAM 与签名 PUT fail-closed；同路径 POST 原先落 Get 400 的 RED→GREEN，独立审查两项 P2 精确返修后 P0/P1/P2=0。Root Node22 format/contract **109/109**/check **428 pass/1 skip**/schema **5 pass/1 skip**/build PASS；Root `0aaab197` 精确 pin 163 处 BFF 来源引用。Root 自有真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 组合 `/tmp/kokoro-bff-begin-real-final.log` exit0：default-off 503/零 Platform socket、Begin 201/current pending、真实签名 PUT、同键 replay/异 body 409、显式替换 epoch 2、撤权 401/零新 socket、旧 ZIP Validate/Publish 回归；Skill **2**/receipt **19**/outbox **1**，`resources=clean`，Redis DB14=0、3310 listener 不变。Root 最终脚本 **964 pass/229 subtests**、聚焦 **40/40**；Root runner 三项 P2 精确返修，独立终审 P0/P1/P2=0；checkpoint/topology PASS；十仓标准 136 既有违规、16 边/13 declared broken 保持。尚无 Web 可见上传或 Chromium CORS/PUT、Complete public、产品激活。 |
 
 ## 最近验收：W3-BFF-SKILL-BEGIN-DOC-GATE（P0；2026-09-29）
 

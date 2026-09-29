@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+from datetime import datetime, timedelta, timezone
 from io import StringIO
 from io import BytesIO
 from pathlib import Path
@@ -53,14 +54,128 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_public_begin_requires_exact_current_signed_put_projection(self):
+        expires = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
+        response = {
+            "data": {
+                "skill_id": "skill-current",
+                "attempt_id": "attempt-one",
+                "attempt_epoch": "1",
+                "upload_id": "upload-one",
+                "transfer_reference": {
+                    "url": "http://127.0.0.1:39190/owned/key?X-Amz-Signature=abc",
+                    "method": "PUT",
+                    "required_headers": {"content-type": "application/zip"},
+                    "expires_at": expires,
+                },
+                "replayed": False,
+            }
+        }
+        reference = smoke.require_public_package_begin(
+            201, response, "skill-current", "http://127.0.0.1:39190"
+        )
+        self.assertEqual(reference["attempt_id"], "attempt-one")
+        self.assertFalse(reference["replayed"])
+        mutations = (
+            {"attempt_epoch": "0"},
+            {"replayed": "false"},
+            {"secret": "leak"},
+            {
+                "transfer_reference": {
+                    **response["data"]["transfer_reference"],
+                    "method": "POST",
+                }
+            },
+            {
+                "transfer_reference": {
+                    **response["data"]["transfer_reference"],
+                    "required_headers": {"authorization": "secret"},
+                }
+            },
+            {
+                "transfer_reference": {
+                    **response["data"]["transfer_reference"],
+                    "url": "http://other.example/key",
+                }
+            },
+            {
+                "transfer_reference": {
+                    **response["data"]["transfer_reference"],
+                    "expires_at": (
+                        datetime.now(timezone.utc) - timedelta(minutes=1)
+                    ).isoformat(),
+                }
+            },
+            {
+                "transfer_reference": {
+                    **response["data"]["transfer_reference"],
+                    "expires_at": (
+                        datetime.now(timezone.utc) + timedelta(minutes=16)
+                    ).isoformat(),
+                }
+            },
+        )
+        for mutation in mutations:
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_public_package_begin(
+                    201,
+                    {"data": {**response["data"], **mutation}},
+                    "skill-current",
+                    "http://127.0.0.1:39190",
+                )
+
+    def test_package_response_request_id_must_match_exactly_once(self):
+        request_id = "skill-sandbox-exact"
+        headers = [("x-request-id", request_id), ("cache-control", "no-store")]
+        smoke.require_package_response_headers(headers, request_id, "Begin")
+        for invalid in (
+            headers + [("X-Request-Id", request_id)],
+            [("x-request-id", "stale"), ("cache-control", "no-store")],
+            [("x-request-id", request_id), ("cache-control", "public")],
+            [("cache-control", "no-store")],
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(smoke.SmokeError):
+                smoke.require_package_response_headers(invalid, request_id, "Begin")
+
+    def test_signed_reference_is_added_to_log_secret_inventory(self):
+        url = "http://127.0.0.1:39190/bucket/key?X-Amz-Signature=long-signature-value&X-Amz-Credential=long-credential-value"
+        values = smoke.signed_reference_secrets(url)
+        self.assertIn(url, values)
+        self.assertIn("X-Amz-Signature=long-signature-value", values)
+        self.assertIn("long-signature-value", values)
+        self.assertIn("long-credential-value", values)
+
+    def test_public_get_requires_current_pending_after_begin(self):
+        pending = {
+            "data": {
+                "skill_id": "skill-current",
+                "attempt_epoch": "1",
+                "phase": "upload_pending",
+                "attempt_id": "attempt-one",
+                "upload_id": "upload-one",
+            }
+        }
+        smoke.require_public_package_pending(
+            200, pending, "skill-current", "attempt-one", "upload-one", "1"
+        )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_public_package_pending(
+                200,
+                {"data": {**pending["data"], "phase": "uploaded"}},
+                "skill-current",
+                "attempt-one",
+                "upload-one",
+                "1",
+            )
+
     def test_success_summary_requires_complete_receipt_inventory(self):
         self.assertEqual(
             smoke.safe_summary(None),
             {
                 "status": "PASS",
                 "resources": "clean",
-                "platform_skill_count": 1,
-                "platform_receipt_count": 16,
+                "platform_skill_count": 2,
+                "platform_receipt_count": 19,
                 "platform_publish_event_count": 1,
                 "platform_package_begin": "PASS",
                 "platform_package_complete": "PASS",
@@ -73,6 +188,11 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "bff_skill_package_get": "PASS",
                 "bff_skill_package_get_published": "PASS",
                 "bff_skill_package_get_revoked": "PASS",
+                "bff_skill_package_begin": "PASS",
+                "bff_skill_package_begin_replay": "PASS",
+                "bff_skill_package_begin_replace": "PASS",
+                "bff_skill_package_signed_put": "PASS",
+                "bff_skill_package_begin_revoked": "PASS",
             },
         )
 

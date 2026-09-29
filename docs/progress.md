@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Begin 默认关闭候选真实跨 owner 组合 PASS
+
+BFF `main 571108b91084bec0be4451b8840a2d7cd9d2496a` 实现了正式 user-only `POST /v1/skills/{skill_id}/package-upload` 默认关闭运行候选：同路径按方法区分 Get/Begin、当次 IAM/受信 tenant/user→固定 Platform v4 Connect、owner `command_digest_version=3.0.0` JCS、稳定幂等身份；BFF 不存包状态/签名 URL、不代理字节。签名 URL 精确批准 ObjectStore public origin、PUT/唯一 ZIP header/有界到期，`KOKORO_STORAGE_OBJECT_ORIGIN` 可独立于 BFF Storage RPC secret 配置。直接 HTTP 测试先证旧 POST 误落 Get 400 的 RED，再 GREEN；独立审查旧 OpenAPI 句子和畸形 ID 类型两项 P2，owner 精确返修，终审 P0/P1/P2=0。Root Node22 独立 format、`contract:check` **109/109**、`check` **428 pass/1 skip**、`schema:check` **5 pass/1 skip**、build PASS；Root `0aaab19745bac32ab615869bb20d5564e9182726` 精确 pin BFF 与库存 163 处来源引用。BFF 未改 SQL Schema/生成 owner wire/锁文件。Root runner 独立审查发现 15 分钟有效期、响应 request ID 精确关联、签名 URL 日志扫描三项 P2，已补 RED→GREEN 负例并重跑真组合；独立终审 P0/P1/P2=0。
+
+Root 扩现有独占 sandbox，`/tmp/kokoro-bff-begin-real-final.log` 用真实 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV exit0：默认关闭 Create/Get/Begin **503** 且 Platform 零新 socket；现有 Published owner ZIP Validate/Publish 回归；第二 fresh draft 经 BFF public Begin **201** 后 Get 为 `upload_pending/epoch 1`，用完整短期 signed URL 和唯一 `content-type: application/zip` 对 MinIO 真实 **PUT**，同键重放返回同 attempt/upload 且有效短期 reference、异 body **409**，新键+当前 attempt 显式替换为 epoch **2**，Get 指向新 attempt；撤销同一 IAM session 后 Begin/Get **401** 且 Platform 零新增 socket。Platform Skill **2**/receipt **19**/发布 outbox **1**，runner `resources=clean`、Redis DB14=0、用户 3310 listener 前后相同；只清理自有资源，不碰历史库。Root runner 聚焦 **40/40**、最终完整 `scripts/tests` **964 pass/229 subtests**；topology 与 `w1e-iam07-bff-pin` checkpoint PASS。十仓标准仍 **136 既有 violations/0 unverified** FAIL；compatibility **16 边/13 declared broken/0 provenance violation** 仍 exit1，不升 active。
+
+这是真实 HTTP signed PUT，不是浏览器 CORS/preflight、Web 可见 shadcn 上传或 Complete public；Platform v4 仍 inactive/default closed，产品全链未激活。下一片按 [`task.md`](task.md) 先定 BFF Complete 三面/机器契约，再实现运行与 Web 真 Chromium 入口；不将单仓/单纵切写作全体闭环。
+
 ## 2026-09-29 — BFF Begin 三面文档与唯一 public 机器候选门 PASS
 
 BFF `main 145c422c052b7409b960deeeb2d185285492e4e8` 将 user-only `POST /v1/skills/{skill_id}/package-upload` 只加入**未激活**的唯一 OpenAPI、operation inventory/semantic checker/直接契约测试与四份当前文档；没有新增 BFF Begin `src/` route、Connect 调用、配置、SQL/Redis、receipt 或浏览器入口。候选固定单个必需 `Idempotency-Key`、owner v4 artifact 中仍为 `3.0.0` 的 digest schema/JCS、严格文件元数据/可选当前 replace、201 完整短期 PUT reference、每状态独立错误码、当次 IAM user/tenant 与默认关闭边界。Root 裁决 Web 同源控制面＋浏览器向精确批准 ObjectStore public origin 直 PUT 原字节，不采用 Web/BFF 代理 32 MiB 字节；CORS、批准 origin/headers/expiry 与真 Chromium 留运行门。

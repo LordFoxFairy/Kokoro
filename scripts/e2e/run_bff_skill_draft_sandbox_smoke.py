@@ -11,9 +11,12 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import dataclass
 import argparse
+from datetime import datetime, timedelta, timezone
 import getpass
 from enum import Enum
+import hashlib
 import http.client
+import io
 import json
 import os
 from pathlib import Path
@@ -27,6 +30,7 @@ import subprocess
 import tempfile
 import threading
 import time
+import zipfile
 from typing import Callable, Iterator, Protocol
 from uuid import uuid4
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
@@ -58,6 +62,8 @@ class Phase(str, Enum):
     CANDIDATE_CREATE = "candidate_create"
     CANDIDATE_REPLAY_CONFLICT = "candidate_replay_conflict"
     CANDIDATE_PACKAGE_GET = "candidate_package_get"
+    CANDIDATE_PACKAGE_BEGIN = "candidate_package_begin"
+    CANDIDATE_SIGNED_PUT = "candidate_signed_put"
     PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
@@ -380,6 +386,120 @@ def require_public_package_get(status: int, body: object, skill_id: str) -> None
         raise SmokeError("BFF current Skill package GET projection invalid")
 
 
+def require_public_package_pending(
+    status: int,
+    body: object,
+    skill_id: str,
+    attempt_id: str,
+    upload_id: str,
+    attempt_epoch: str,
+) -> None:
+    """Observe the same owner attempt through BFF's non-signing recovery read."""
+    if status != 200 or body != {
+        "data": {
+            "skill_id": skill_id,
+            "attempt_epoch": attempt_epoch,
+            "phase": "upload_pending",
+            "attempt_id": attempt_id,
+            "upload_id": upload_id,
+        }
+    }:
+        raise SmokeError("BFF current Skill package pending projection invalid")
+
+
+def require_public_package_begin(
+    status: int, body: object, skill_id: str, approved_origin: str
+) -> dict[str, object]:
+    """Reject expanded or off-origin owner references before a real signed PUT."""
+    if status != 201 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("BFF Skill package Begin response invalid")
+    data = body["data"]
+    if not isinstance(data, dict) or set(data) != {
+        "skill_id",
+        "attempt_id",
+        "attempt_epoch",
+        "upload_id",
+        "transfer_reference",
+        "replayed",
+    }:
+        raise SmokeError("BFF Skill package Begin data invalid")
+    typed_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}\Z")
+    if (
+        data["skill_id"] != skill_id
+        or any(
+            not isinstance(data[name], str) or typed_id.fullmatch(data[name]) is None
+            for name in ("attempt_id", "upload_id")
+        )
+        or not isinstance(data["attempt_epoch"], str)
+        or re.fullmatch(r"[1-9][0-9]{0,19}", data["attempt_epoch"]) is None
+        or int(data["attempt_epoch"]) > 18_446_744_073_709_551_615
+        or type(data["replayed"]) is not bool
+    ):
+        raise SmokeError("BFF Skill package Begin attempt invalid")
+    reference = data["transfer_reference"]
+    if not isinstance(reference, dict) or set(reference) != {
+        "url",
+        "method",
+        "required_headers",
+        "expires_at",
+    }:
+        raise SmokeError("BFF Skill package Begin transfer invalid")
+    if (
+        reference["method"] != "PUT"
+        or reference["required_headers"] != {"content-type": "application/zip"}
+        or not isinstance(reference["url"], str)
+        or not isinstance(reference["expires_at"], str)
+    ):
+        raise SmokeError("BFF Skill package Begin signed PUT invalid")
+    try:
+        parsed = urlsplit(reference["url"])
+        expected = urlsplit(approved_origin)
+        expires_at = datetime.fromisoformat(
+            reference["expires_at"].replace("Z", "+00:00")
+        )
+    except (TypeError, ValueError):
+        raise SmokeError("BFF Skill package Begin reference invalid") from None
+    if (
+        parsed.scheme != expected.scheme
+        or parsed.netloc != expected.netloc
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.fragment
+        or not parsed.path.startswith("/")
+        or not parsed.query
+        or expires_at.tzinfo is None
+    ):
+        raise SmokeError("BFF Skill package Begin reference origin invalid")
+    remaining = expires_at - datetime.now(timezone.utc)
+    if not timedelta(0) < remaining <= timedelta(minutes=15):
+        raise SmokeError("BFF Skill package Begin reference expiry invalid")
+    return data
+
+
+def require_package_response_headers(
+    headers: list[tuple[str, str]], request_id: str, operation: str
+) -> None:
+    """A response must correlate to this request, not merely contain an ID."""
+    values = [value for name, value in headers if name.lower() == "x-request-id"]
+    cache = [value for name, value in headers if name.lower() == "cache-control"]
+    if values != [request_id] or cache != ["no-store"]:
+        raise SmokeError(f"BFF package {operation} response headers invalid")
+
+
+def signed_reference_secrets(url: str) -> tuple[str, ...]:
+    """Keep short-lived URL/query material in the in-memory redaction inventory."""
+    query = urlsplit(url).query
+    values = [url, query]
+    for name, value in parse_qsl(query, keep_blank_values=True):
+        if any(
+            marker in name.lower() for marker in ("signature", "credential", "token")
+        ):
+            values.append(f"{name}={value}")
+            if len(value) >= 8:
+                values.append(value)
+    return tuple(value for value in values if value)
+
+
 def exercise_http_contract(
     request: JsonRequest,
     ready: SandboxReady,
@@ -425,8 +545,8 @@ def safe_summary(
         return {
             "status": "PASS",
             "resources": "clean",
-            "platform_skill_count": 1,
-            "platform_receipt_count": 16,
+            "platform_skill_count": 2,
+            "platform_receipt_count": 19,
             "platform_publish_event_count": 1,
             "platform_package_begin": "PASS",
             "platform_package_complete": "PASS",
@@ -439,6 +559,11 @@ def safe_summary(
             "bff_skill_package_get": "PASS",
             "bff_skill_package_get_published": "PASS",
             "bff_skill_package_get_revoked": "PASS",
+            "bff_skill_package_begin": "PASS",
+            "bff_skill_package_begin_replay": "PASS",
+            "bff_skill_package_begin_replace": "PASS",
+            "bff_skill_package_signed_put": "PASS",
+            "bff_skill_package_begin_revoked": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -584,6 +709,7 @@ def _http_json(
     parsed = urlsplit(base)
     connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
     encoded = json.dumps(body, separators=(",", ":")).encode()
+    request_id = "skill-sandbox-" + secrets.token_hex(8)
     try:
         connection.request(
             "POST",
@@ -593,17 +719,20 @@ def _http_json(
                 "authorization": "Bearer " + token,
                 "x-kokoro-service": "web-bff",
                 "x-kokoro-internal-secret": secret,
-                "x-kokoro-request-id": "skill-sandbox-" + secrets.token_hex(8),
+                "x-kokoro-request-id": request_id,
                 "idempotency-key": key,
                 "content-type": "application/json",
             },
         )
         response = connection.getresponse()
         raw = response.read(1_048_577)
+        headers = response.getheaders()
     finally:
         connection.close()
     if len(raw) > 1_048_576:
         raise SmokeError("BFF response too large")
+    if path.endswith("/package-upload"):
+        require_package_response_headers(headers, request_id, "Begin")
     try:
         value = json.loads(raw)
     except (ValueError, UnicodeError):
@@ -618,6 +747,7 @@ def _http_get_json(
 ) -> tuple[int, dict[str, object]]:
     parsed = urlsplit(base)
     connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
+    request_id = "skill-sandbox-" + secrets.token_hex(8)
     try:
         connection.request(
             "GET",
@@ -626,18 +756,17 @@ def _http_get_json(
                 "authorization": "Bearer " + token,
                 "x-kokoro-service": "web-bff",
                 "x-kokoro-internal-secret": secret,
-                "x-kokoro-request-id": "skill-sandbox-" + secrets.token_hex(8),
+                "x-kokoro-request-id": request_id,
             },
         )
         response = connection.getresponse()
         raw = response.read(1_048_577)
-        headers = {name.lower(): value for name, value in response.getheaders()}
+        headers = response.getheaders()
     finally:
         connection.close()
     if len(raw) > 1_048_576:
         raise SmokeError("BFF package GET response too large")
-    if not headers.get("x-request-id") or headers.get("cache-control") != "no-store":
-        raise SmokeError("BFF package GET response headers invalid")
+    require_package_response_headers(headers, request_id, "GET")
     try:
         value = json.loads(raw)
     except (ValueError, UnicodeError):
@@ -645,6 +774,37 @@ def _http_get_json(
     if not isinstance(value, dict):
         raise SmokeError("BFF package GET response envelope invalid")
     return response.status, value
+
+
+def upload_zip_bytes() -> bytes:
+    """A bounded package payload whose bytes and hash are submitted to Begin."""
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("SKILL.md", "# Sandbox\n\nOwned signed PUT smoke.\n")
+        archive.writestr("manifest.json", '{"schema_version":1,"name":"sandbox"}')
+    return stream.getvalue()
+
+
+def signed_put(reference: dict[str, object], payload: bytes) -> None:
+    """Send bytes only to the already-validated signed origin, without IAM headers."""
+    transfer = reference["transfer_reference"]
+    if not isinstance(transfer, dict):
+        raise SmokeError("BFF signed PUT transfer missing")
+    parsed = urlsplit(str(transfer["url"]))
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=12)
+    try:
+        connection.request(
+            "PUT",
+            urlunsplit(("", "", parsed.path, parsed.query, "")),
+            body=payload,
+            headers={"content-type": "application/zip"},
+        )
+        response = connection.getresponse()
+        response.read(1024)
+        if response.status not in {200, 204}:
+            raise SmokeError("signed package PUT was rejected")
+    finally:
+        connection.close()
 
 
 def _wait_ready(
@@ -1259,6 +1419,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_DOMAIN": f"{run_id}.smoke.localhost",
                 "KOKORO_IAM_BASE_URL": ready.base_url,
                 "KOKORO_AGENT_ENABLED": "false",
+                "KOKORO_STORAGE_OBJECT_ORIGIN": source_env[
+                    "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"
+                ],
             }
             _run(
                 [
@@ -1356,6 +1519,27 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     != "skill_dependency_unavailable"
                 ):
                     raise SmokeError("default-off BFF package GET did not fail closed")
+                status, body = _http_json(
+                    bff_base,
+                    get_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="closed-begin",
+                    body={
+                        "filename": "closed.zip",
+                        "mime_type": "application/zip",
+                        "size_bytes": 1,
+                        "content_sha256": "0" * 64,
+                    },
+                )
+                if (
+                    status != 503
+                    or body.get("error", {}).get("code")
+                    != "skill_dependency_unavailable"
+                ):
+                    raise SmokeError(
+                        "default-off BFF package Begin did not fail closed"
+                    )
                 if proxy.count != 0:
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
@@ -1438,6 +1622,153 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError(
                         "published Skill package GET did not reject non-draft"
                     )
+                # Keep the owner CLI's published fixture intact; a second fresh
+                # draft proves the BFF public Begin and direct data plane.
+                phase = Phase.CANDIDATE_PACKAGE_BEGIN
+                status, body = _http_json(
+                    bff_base,
+                    "/v1/skills/drafts",
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-begin-draft-" + run_id,
+                    body={
+                        "display_name": "Signed PUT sandbox skill",
+                        "summary": "public Begin probe",
+                        "tags": ["sandbox"],
+                    },
+                )
+                begin_skill_id, _, replayed, _ = _draft(body, status)
+                if status != 201 or replayed is not False or begin_skill_id is None:
+                    raise SmokeError("BFF Begin fixture draft was not created")
+                begin_path = (
+                    "/v1/skills/" + quote(begin_skill_id, safe="") + "/package-upload"
+                )
+                payload = upload_zip_bytes()
+                begin_body = {
+                    "filename": "sandbox.zip",
+                    "mime_type": "application/zip",
+                    "size_bytes": len(payload),
+                    "content_sha256": hashlib.sha256(payload).hexdigest(),
+                }
+                begin_key = "package-begin-" + run_id
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=begin_key,
+                    body=begin_body,
+                )
+                first_begin = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(first_begin["transfer_reference"]["url"])
+                )
+                if (
+                    first_begin["replayed"] is not False
+                    or first_begin["attempt_epoch"] != "1"
+                ):
+                    raise SmokeError("BFF initial Begin did not create attempt one")
+                status, body = _http_get_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_public_package_pending(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(first_begin["attempt_id"]),
+                    str(first_begin["upload_id"]),
+                    "1",
+                )
+                phase = Phase.CANDIDATE_SIGNED_PUT
+                signed_put(first_begin, payload)
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=begin_key,
+                    body=begin_body,
+                )
+                repeated_begin = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(repeated_begin["transfer_reference"]["url"])
+                )
+                if (
+                    repeated_begin["replayed"] is not True
+                    or repeated_begin["attempt_id"] != first_begin["attempt_id"]
+                    or repeated_begin["upload_id"] != first_begin["upload_id"]
+                ):
+                    raise SmokeError("BFF Begin same-command replay drift")
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=begin_key,
+                    body={**begin_body, "filename": "different.zip"},
+                )
+                if (
+                    status != 409
+                    or body.get("error", {}).get("code") != "skill_idempotency_conflict"
+                ):
+                    raise SmokeError("BFF Begin same-key conflict drift")
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-begin-replace-" + run_id,
+                    body={
+                        **begin_body,
+                        "replaces_attempt_id": first_begin["attempt_id"],
+                    },
+                )
+                replacement = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(replacement["transfer_reference"]["url"])
+                )
+                if (
+                    replacement["replayed"] is not False
+                    or replacement["attempt_id"] == first_begin["attempt_id"]
+                    or replacement["attempt_epoch"] != "2"
+                ):
+                    raise SmokeError("BFF Begin replacement did not advance attempt")
+                status, body = _http_get_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_public_package_pending(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(replacement["attempt_id"]),
+                    str(replacement["upload_id"]),
+                    "2",
+                )
+                if platform_inventory(
+                    urls["kokoro_platform"], ready.tenant_id, str(result["skill_id"])
+                ) != (2, 19, 1, 1):
+                    raise SmokeError("Platform public Begin inventory is not unique")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
                 phase = Phase.REVOKE
@@ -1466,6 +1797,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or body.get("error", {}).get("code") != "session_invalid"
                 ):
                     raise SmokeError("revoked IAM session reached BFF package GET")
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=begin_key,
+                    body=begin_body,
+                )
+                if (
+                    status != 401
+                    or body.get("error", {}).get("code") != "session_invalid"
+                ):
+                    raise SmokeError("revoked IAM session reached BFF package Begin")
                 time.sleep(0.2)
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")
