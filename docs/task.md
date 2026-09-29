@@ -63,6 +63,8 @@
 
 Root 真实 sandbox 后续复用该 host 的唯一临时库与现有 Storage/Platform 正式源码启动，真 Storage readiness 必须连 PostgreSQL/Redis/ObjectStore/Scanner；BFF 正式候选代码只在 loopback 显式开启。单库 host 不是新增运维角色/实例。Root 以自有隔离 runner 证明 Skill/receipt 唯一、撤权同 key 在 Platform socket 前拒；用户 3310 不触碰。
 
+**IAM host 精确扩卡（2026-09-29）：** Root 真 runner 只读发现 `skill_sandbox.tenant_execution_credential` 当前仅有 access token，而 Platform 正式 `KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE` 必须使用同一 IAM owner 提供的 `clientId/clientSecret` 再行 client credentials 交换；Root 不从 access token 伪造 secret、不改 Platform 生产验证。IAM 原唯一 writer 仅可继续窄改原两个 test fixture/integration 文件，在 opt-in ready 输出该现有 tenant-execution client 的 ID/secret 并用真实 token endpoint/Platform introspection 证明；默认 ready 不变，凭据只走受控 NDJSON，不新增生产 API/schema/role。Root 随后重验并冻结 IAM gitlink，runner 必须按最终协议消费。
+
 #### W1E-SKILL-DRAFT-TRUE-SANDBOX（P0，Root 组合验收；与两仓实现并行准备）
 
 | 项 | 放置与阶段门 |
