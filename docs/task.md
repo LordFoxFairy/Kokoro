@@ -1,5 +1,17 @@
 # Kokoro 后端闭环任务总表
 
+## 当前执行：W3-STORAGE-SKILL-PACKAGE-SCOPE（P0；2026-09-29）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-storage` 唯一 writer；Storage `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`、Platform `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`、Root `422833263e52da1fa451f6bb9acb23173fb6a7d6`。Storage clean `main`；Root 另有既存任务外 `uv.lock` 修改，绝不暂存/覆盖。Root 管理 Git index、审查、独立验证。 |
+| 当前事实 / 目标 | Storage v2 当前仅 personal/project/conversation 三 scope；Platform 仅旧 scope `GetPackageReference`；BFF 仍可能创建/读取 `capability_package` 旧包。目标为具体 Skill revision 的 `scope_kind=skill_package,scope_id=skill_id`，仅已认证 `kokoro-platform` 准六项包操作，上传 purpose 固定 `capability_package`；BFF/Agent 与普通 HTTP/列表/下载不能绕行。Storage 只管 bytes/hash/scan/短期 transfer，不拥有 Skill/安装/授权事实。 |
+| 文档门 A | 既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md` 的 W1E 目标决策已相互一致，但顶部 F2 旧状态/11 RPC、八 enum 等与当前 14 RPC/九 enum 不符；`docs/SCHEMA_BOOTSTRAP.md`、`contract/README.md` 亦有旧计数。唯一 writer 先**只修这六份既有文件**的当前态和目标态，Root 独立审查三设计一致、机器 Proto/Schema 现状与 `git diff --check` 后再放行代码门 B；不新增 ADR/模块。 |
+| 代码门 B 放置 | 采用现有 `prisma/schema.prisma` 的一个 enum 增值、现有 v2 Proto 的 metadata scope 注释、`src/common/auth/` 的 operation/scope policy、`uploads/` 与 `assets/` 现有状态机、生成物与直接测试。淘汰新 Package 表/RPC/role、旧 scope 映射、BFF 包双轨。唯一 canonical Prisma；同一 PostgreSQL 库内 `kokoro_storage` schema、一套应用 credential，无跨 owner SQL。 |
+| 待放行写入集 | 文档门通过后可改 Storage `contract/proto/kokoro/storage/v2/storage.proto`、`contract/provenance.json`、官方 `src/generated/proto/**`；`prisma/schema.prisma`、官方 `src/generated/prisma/**`、schema installer/drift 直接断言；`src/common/auth/{storage-scope.schema,service-authorization}.ts`、`src/uploads/uploads.service.ts`、`src/assets/{assets.service,assets.store}.ts`、`src/integrations/clients/storage-client.types.ts`、必要的现有 transport 服务/HTTP schema 与直接 unit/contract/integration/smoke 测试。确需额外文件先报 Root。不改 Platform/BFF/Agent、lockfile、Root、3310；不启用旧未隔离 smoke。 |
+| 规则 / 删除项 | Platform 只在 skill_package 范围准 Create/Complete/Abort/Status Upload、Scan、PackageReference 六操作，其余拒绝；CreateUpload 仅 package purpose，后续资源与 receipt 重放逐次验同 purpose/scope/caller/subject。旧 scope 的 package 不能由 BFF 通过 GetAsset、GetDownloadReference、HTTP 列表、Upload 状态/receipt、Artifact 间接读取；非包个人/项目/作品行为保持。短期 URL 不持久化，已签 URL 自然到期；旧包 metadata 不擅自迁移。 |
+| 验证 / 交付 | 先 RED：Platform 六正项/其他拒绝、BFF 旧包目的读写旁路、跨 tenant/revision/subject、receipt replay 与非 CLEAN/对象失效；后 GREEN：Node24 format/lint/typecheck/contract/Prisma validate/test/build、Buf 兼容、fresh owner schema 安装/drift、独占临时 PG+Redis 的真实 integration/compiled smoke。真 S3/ClamAV 外部资格和 Platform v2 消费另门，不以 doubles 冒称；只清亲建资源。writer 不操作 Git index/commit，交文件清单、实际结果、风险。 |
+
 ## 最近验收：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
 
 | 项 | 裁决 |
