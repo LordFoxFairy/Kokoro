@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform→Storage v2 真实包对象组合 PASS，Begin 下一门
+
+Platform `1042bb97753507a3a534fdec6b819fe263bc40c0` 已提交推送测试专用 owner CLI（生产 `ConnectStoragePackageClient` 不另造客户端），Root `88a7ba0af2a4d6e17074c95e258c1e324220971b` 固定 gitlink 并接入已有 Skill sandbox。Platform Root 独立 Node24 format/lint/typecheck/default test **891 pass/186 skip**/build exit0，CLI 无 env 固定 `FAIL/preflight` exit1；两轮只读复审末轮 P0/P1/P2=0。Root Python 焦点 **34 pass/22 subtests**。Root 真隔离运行 exit0：真实 BFF CreateDraft 得当前 `skill_id`，同一独占库/tenant/subject/Storage service secret 下执行 Storage v2 CreateUpload 重放→签名 PUT→Complete+ClamAV CLEAN 重放→正式 Platform adapter GetPackageReference 同命令重放→携 required headers 的 GET 原始 ZIP 字节/SHA 校验；新错 SHA、同命令异 digest、异 skill scope、坏 credential 均精确拒绝。输出 `PASS/storage_v2_package_reference=PASS/resources clean`；自有进程、库、Redis、独占 ObjectLock bucket 均由 runner 核验清理，3310 未触碰。使用本地 HTTP MinIO development profile，**并非 production HTTPS 资格或 Platform validated/Source/Install/Begin/Complete/ZIP Validate/Publish/Agent 端到端验收**。Root 本次 gitlink 后 `scripts/tests` **958 pass/212 subtests**、topology/checkpoint PASS，compatibility **16 边/13 declared broken/0 额外来源漂移**。两项独立只读 Begin 审查已明确下一片的真实 RPC、Skill/receipt 双 CAS、Storage 出站恢复和真 PG 失败矩阵；v4 仍 inactive 且未消费，可按 owner 规则原子演进，不误建 v5。下一门见 [`task.md`](task.md)。
+
 ## 2026-09-29 — Platform Storage v2 消费代码门通过；真实跨 owner 门待验
 
 Platform `main cede13a679b85713779365daef3dc02293121747` 已提交推送 52 文件：唯一 Storage 包客户端由 v1 切 v2，受信 Platform secret/tenant/subject/skill scope 与定长 command ID，Source 完整 GET TransferReference，Install 当前包及 manifest 事务二次校验；旧 v1 Proto/生成物与 Catalog 假验证 helper 删除。validated 包的禁用/撤回仅窄写 status 并用全包快照 CAS，损坏 active 包仍能限制访问；重新启用、Validate/Publish 继续 fail closed。两个独立只读复审最终 P0/P1/P2=0。

@@ -1,12 +1,23 @@
 # Kokoro 后端闭环任务总表
 
-## 下一验收门：W3-PLATFORM-STORAGE-V2-REAL-COMPOSITION（P0；2026-09-29）
+## 下一验收门：W3-PLATFORM-PACKAGE-BEGIN（P0；2026-09-29）
+
+| 设计门 | 当前裁决与完成条件 |
+| --- | --- |
+| Owner / 基线 | 唯一写入 owner 为 `apps/kokoro-capability`（物理仓名尚未 cutover），当前 `main 1042bb97753507a3a534fdec6b819fe263bc40c0`；Storage owner `16a6c1ce95832df6dc839e0d50e957405c5c7005`。Root 管任务卡、审查、Git index 与组合验证；用户 3310、Root 任务外 `uv.lock` 均不动。 |
+| 当前事实 / 目标 | 真实 Storage v2 包对象组合已通过，但 Platform 仅有只读 Get、package recovery 基础和单一认证 v2 GetReference；没有正式 Begin RPC、Storage CreateUpload adapter、Skill+receipt 原子意图/CAS 或可恢复签名 PUT。下一片交付**真实 Begin**，不是仅增 Proto/空 handler/本地假上传。v4 仍 inactive、未被消费者 pin，可作为候选原子演进；v1–v3 原字节冻结。 |
+| 归属 / 文件方案 | 扩现有唯一 Proto、`catalog/` binding/RPC、`package/` Begin 编排、现有 `skill.repository.ts` 或专用 package repository、Storage client/port、`skills.module.ts` 与直接测试/生成物；不另起服务、数据库、根目录或第二套 Storage 客户端。当前通用 `skill-transaction.ts` 是 local-only，不借它包装外部 I/O；既有 recovery phase/receipt 基础要复用并补业务 handler。 |
+| API / 数据 / 失败恢复 | 仅当前 IAM Product user 且为 draft owner；输入固定 ZIP MIME、≤32MiB、正 size、合法小写 SHA256、文件名及可选精确 `replaces_attempt_id`。descriptor-backed digest 绑定 trusted tenant/subject/Skill/replacement/文件事实，异 digest/跨人/撤权先拒绝。短 Serializable 事务以 Skill 全包状态、attempt/epoch/version/owner/phase 严格 CAS 写 intent 与同事务 external receipt；`callIntended` 持久后才发 Storage v2 `CreateUpload(skill_package, skill_id)`，不在事务内网络调用。未知 ACK 原命令重试/查状态；末次短事务以 Skill+receipt lease/epoch/phase 双 fence 写当前 `upload_pending`。只有当前 intent/upload_pending 且 Storage pending 可重签完整 PUT transfer；旧 attempt/终态/撤权均不返 URL。签名 URL/header/expiry 不入持久状态/日志。 |
+| 依赖 / 删除项 | 无跨 owner SQL、无新 role/库；Storage 已完成 Asset 仍缺退役/释放，Begin 不冒称解决产品激活。旧 full-row `updateSkill` 已设安全闸，不再用其写包；不能新建 v1 fallback、UNIMPLEMENTED 空路由、双写或绕开 receipt。若现有 Begin pointer 四 phase 与设计文字不一，随真实 handler 同步文档和测试，不增虚构 `ack_unknown` 状态。 |
+| 验证 / 出门条件 | Platform Node24 format/lint/typecheck/contract/artifact/schema/test/build；自有真 PostgreSQL/Redis：初次与替换 CAS、同/异 digest replay、并发仅一胜、Skill 与 receipt 双 fence、撤权零副作用、call-intended 前后崩溃/ACK unknown/COMMIT unknown/重启恢复、旧 attempt 迟到结果拒绝。Root 真 Storage v2/MinIO/ClamAV 独占 sandbox 跑正式 Begin→签名 PUT/重放/拒绝与资源清理；独立审查 P0/P1/P2=0 后再 pin。此门不宣称 Complete/ZIP Validate/Publish/Agent 产品闭环。 |
+
+## 最近验收：W3-PLATFORM-STORAGE-V2-REAL-COMPOSITION（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
-| Owner / 基线 | Root 固定 Platform `cede13a679b85713779365daef3dc02293121747`、Storage `16a6c1ce95832df6dc839e0d50e957405c5c7005`；Platform/Storage 子仓保持 clean main，用户 3310 不动。 |
-| 当前事实 / 目标 | Platform 已删 Storage v1、接单一认证 v2 GetPackageReference 与完整 GET TransferReference；Node24 全静态/默认 891 pass、隔离真 PostgreSQL/Redis 24 文件 260 pass、独立复审 P0/P1/P2=0。**跨 owner 真实 Storage 进程/对象健康仍未测**，故下一门以独占临时库、Redis namespace、对象前缀完成可信 metadata、CLEAN 对象、真实引用、重放和拒绝，并精确清理；不得以单仓 fake transport 冒充组合证据。 |
-| 后续代码顺序 | 真 Storage 门通过后，由 Platform 唯一 writer 原子实现 Begin+外部 receipt/CAS/恢复，再 Complete/ZIP V1/Validate/Publish；Agent 在 owner 机器契约稳定后独立 pin，BFF/Web 消费随后推进。v4 仍 inactive，当前 Validate/Publish fail closed；不做多角色数据库或运维扩展。 |
+| Owner / 基线 | Root 固定 Platform `1042bb97753507a3a534fdec6b819fe263bc40c0`、Storage `16a6c1ce95832df6dc839e0d50e957405c5c7005`；用户 3310 不动。 |
+| 验收结果 | Platform owner CLI、Root 既有独占 Skill sandbox 真实组合 **PASS**：BFF CreateDraft 当前 Skill→Storage v2 CreateUpload/PUT/Complete CLEAN→正式 Platform adapter GetPackageReference/GET 原始 ZIP；同命令重放、错 digest/scope/credential 拒绝；runner 报资源清理。Platform 独立 Node24 默认 **891 pass/186 skip**、Root 脚本 **958 pass/212 subtests**、topology/checkpoint PASS，compatibility 16 边/13 declared broken，无额外来源漂移。此为本地 HTTP MinIO development profile，不是正式 Begin/Complete、validated 包、Agent 或生产 HTTPS 验收。 |
+| 后续代码顺序 | Platform 唯一 writer 原子实现 Begin+外部 receipt/CAS/恢复，再 Complete/ZIP V1/Validate/Publish；Agent 在 owner 机器契约稳定后独立 pin，BFF/Web 消费随后推进。v4 仍 inactive，当前 Validate/Publish fail closed；不做多角色数据库或运维扩展。 |
 
 ### 真实包引用组合任务卡（唯一新入口先由 Platform owner 交付）
 
