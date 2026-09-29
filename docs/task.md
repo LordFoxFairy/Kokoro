@@ -47,6 +47,8 @@
 
 两个只读并行审查分别覆盖 BFF 入站与 IAM/Platform owner 契约；已确认 IAM 现有 tenant-machine catalog provisioning、token endpoint 与 Platform current-owner/receipt gate 可复用，无 IAM API/Schema 新任务。正式 Platform active artifact 仍需 owner 机器新版本、全消费者/六 owner sandbox 与 Root 协调发布，不能靠候选开关跳过。
 
+**阶段 A 验收：** BFF main `5d26f09cc1b425926f49b284a31136ce8ff2da03` 已提交推送，唯一 OpenAPI 新增严格 user-only CreateDraft 候选，冻结 operation 从 77→78；新操作 `{data}`/`{error}`、413/既有 IAM 准入码、429 可控 Retry-After 与专用 key 由语义门精确锁住，其他 77 operation 规则保留。独立复审两轮返修后 P0/P1/P2=0；Root Node22 `format:check/lint/typecheck/contract:check/test/build` 全部 PASS，默认 **376 pass/1 skip**。Root topology PASS，inventory **16 边/13 declared broken/0 provenance violation**。此片**只发布机器候选契约，不含 runtime route、真实 201、Web 更新或正式激活**；下一唯一 writer 进入阶段 B，Root 保留 Git/index。
+
 | 项 | 下一任务卡边界 |
 | --- | --- |
 | Owner / 目标 | BFF 唯一 public Product API、IAM session admission 与 user owner 映射；Platform 唯一 Skill/receipt writer。先做 user-only CreateSkillDraft 机器契约/受信 Connect consumer 候选，保持正式 public fail closed；隔离真实 201 是预激活验证门，公开产品可用性是消费者与六 owner sandbox 后协调激活的独立门，不以六 mutation、四 scope、Skills/MCP 总线或 Web UI 完成冒称。 |

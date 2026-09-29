@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF CreateDraft 阶段 A 机器契约通过，运行候选下一门
+
+BFF main `5d26f09cc1b425926f49b284a31136ce8ff2da03` 已提交推送：唯一 public OpenAPI 增 `POST /v1/skills/drafts` 的**未激活候选**，operation surface 77→78；严格三字段与专用单值 raw `Idempotency-Key`、201 data-only、稳定错误 error-only/413/既有 IAM 准入码/可控 429 Retry-After，以及 `x-request-id`/`no-store` 均进入机器契约。语义门以具名结构断言和 canonical block digest 防止新操作退化；旧 77 操作保持。BFF 四设计纠正当前新 Platform pin 与 inactive sandbox 时序。独立代码复审初审 3 P1/2 P2、复审后 3 P1，经两轮返修最终 P0/P1/P2=0。Root Node22 独立 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build` **exit 0**、默认 **376 pass/1 skip**，日志 `/tmp/kokoro-bff-skill-stage-a-root-final2.log`。Root inventory **16 边/13 declared broken/0 provenance violation**，topology PASS。阶段 A 没有 runtime route/机器 credential/真 IAM→BFF→Platform 201，默认入口仍 503；不能称 Skill 产品或 Web 页面闭环。
+
 ## 2026-09-29 — BFF CreateDraft 运行候选放置与依赖审查
 
 Root `db5c80dd`、BFF `2a95da2`、Platform `5b6eb2c` clean 基线下，两名并行只读审查分别复核 BFF 入站与 IAM/Platform 契约，均未改文件或启动服务。BFF 当前 IAM admission 每次执行，但通用 key 解析会 trim/合并重复 header、通用 receipt 在 owner route 前 replay、旧 envelope 的 `meta.request_id` 不符合新操作；因此新操作必须在 admission 后、通用 key/body/receipt 前精确分派。IAM 现有 tenant-machine catalog provisioning、client-credentials token endpoint 和 Platform v3 current-owner/receipt gate 可复用，不需新 IAM Schema/API。BFF 技术设计后段“active 前不能跑真 201”与当前 Root/Platform ADR 的激活前 sandbox 要求矛盾，已列入下一唯一 writer 的阶段 A 纠偏。下一阶段先机器 OpenAPI/contract 与文档门，再运行候选；**此审查本身没有新增 public route 或真实 201 证据**。
