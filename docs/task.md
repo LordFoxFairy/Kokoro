@@ -1,6 +1,17 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-PLATFORM-ZIP-VALIDATE（P0；2026-09-29）
+## 当前执行：W3-PLATFORM-PUBLISH-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 阶段门 |
+| --- | --- |
+| Owner / 基线 | 物理子仓 `apps/kokoro-capability` Skills 唯一 writer `/root/platform_complete_owner`，基线 Platform `main 6ae056bba74330014a94992b25cfcc1208792b7f`；Root `main cb4f773d81904758cf511ca9258a8928ad2cc0b6` 主控、审查与后续精确 pin。两名独立只读审查员分别查 SQL/事务和 API/RPC/安全；固定基线审查，不与 writer 争文件。 |
+| 当前事实 / 目标 | Root 已真组合验收 Begin→Complete→ZIP Validate，当前最终 Skill 为 validated；正式 `PublishSkill` 仍固定拒绝、v4 inactive，BFF public/Agent 消费/Storage orphan retirement 尚未闭环。本阶段只审定从 validated 到 active 的 Publish 业务切片及失败恢复，不提前称产品激活。 |
+| 放置比较 / 粒度 | 候选 A：在 Skills 既有 `catalog/` 增窄 Publish 编排/事务边界，复用现有 receipt、Storage v2、outbox；候选 B：继续堆入 RPC/Catalog 大文件。优先 A，具体文件粒度待三面文档门和当前代码审查定稿；不新建服务/顶层业务模块。旧 Publish 固定拒绝只在正式代码片可删除，不建双轨。 |
+| API / SQL / 依赖 | 先审既有 `PublishSkill` Proto/descriptor/digest 是否足以绑定当前 attempt/manifest/visibility；当次 IAM 与 Product owner/draft、current validated snapshot、Storage fresh CLEAN/固定 Asset/hash/对象健康必须先于成功。Platform `Skill`/CommandReceipt/Outbox 是唯一写入，沿本仓 `kokoro_platform` schema，不跨 Storage SQL、不加角色或应用数据库。Storage orphan retirement 是激活前另 owner 门，不用 Publish 假装已清理。 |
+| 事务 / 验证 | 文档须明确事务外网络与事务内 current attempt/epoch/version/manifest+receipt 双 fence、active/outbox 原子性、重放/并发/撤权/外部失败/COMMIT unknown、validated 后危险隔离与 active 后重新扫描风险。阶段 A 仅 Platform TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 四文档一致、Root 独立审查与命令证据；阶段 B 才准 RED→实现→Node24 全门/真 PostgreSQL→Root 真组合。BFF public、Agent pin、孤儿退役与最终激活后续单独验收。 |
+| 范围 / 交付 | 本轮 writer 仅四份 Platform 文档并在子仓 main 独立提交；Root 只更新本任务表、审查、精确 pin 与进度，不触碰用户 3310 或任务外 `uv.lock`。只读审查员不改文件/提交/启动共享服务。提交 SHA、验证结果、未决项写入 `docs/progress.md` 后才放行代码片。 |
+
+## 最近验收：W3-PLATFORM-ZIP-VALIDATE（P0；2026-09-29）
 
 | 项 | 裁决与验收门 |
 | --- | --- |
