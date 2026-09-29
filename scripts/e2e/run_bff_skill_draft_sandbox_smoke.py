@@ -938,8 +938,13 @@ def normalized_postgres_admin_url(
 
 def platform_credential_payloads(
     ready: SandboxReady,
-) -> tuple[dict[str, object], list[dict[str, object]], list[dict[str, object]]]:
-    """Project IAM handles into the three owner-defined credential snapshots."""
+) -> tuple[
+    dict[str, object],
+    list[dict[str, object]],
+    list[dict[str, object]],
+    list[dict[str, object]],
+]:
+    """Project IAM handles into owner-defined, scope-separated snapshots."""
     common = {"generation": 1, "credentialRefVersion": "sandbox-v1"}
     resource = {
         **common,
@@ -966,13 +971,28 @@ def platform_credential_payloads(
             "scope": "platform:skill-catalog.manage",
         }
     ]
-    return resource, execution, catalog
+    projection = [
+        {
+            **common,
+            "tenantId": ready.tenant_id,
+            "clientId": ready.projection.client_id,
+            "clientSecret": ready.projection.client_secret,
+            "resource": "https://kokoro.dev/resources/platform-internal",
+            "scope": "platform:projection.read",
+        }
+    ]
+    return resource, execution, catalog, projection
 
 
 @contextmanager
 def credential_files(directory: Path, ready: SandboxReady) -> Iterator[dict[str, Path]]:
     payloads = platform_credential_payloads(ready)
-    names = ("resource-server.json", "tenant-execution.json", "bff-catalog.json")
+    names = (
+        "resource-server.json",
+        "tenant-execution.json",
+        "bff-catalog.json",
+        "bff-projection.json",
+    )
     paths: dict[str, Path] = {}
     try:
         for name, payload in zip(names, payloads, strict=True):
@@ -1954,6 +1974,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         "KOKORO_PLATFORM_BASE_URL": proxied_platform,
                         "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE": str(
                             files["bff-catalog.json"]
+                        ),
+                        "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": str(
+                            files["bff-projection.json"]
                         ),
                         "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "false",
                     }

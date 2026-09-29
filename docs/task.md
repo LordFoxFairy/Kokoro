@@ -9,6 +9,8 @@
 | 合同 / 事务 / 行为 | 当前 IAM Product session 每次准入产 tenant+subject；独立 `platform:projection.read` workload token 只用 BFF→Platform，用户 Bearer 不转发。当前 tenant header 一致性断言；个人列表保留 `source_ref=skill:<id>`/正 revision，ACTIVE 未安装可见、游标原样继续且绑定 tenant/subject/filters；by-ID 仅本人 PERSONAL/ACTIVE，其他 404。Public 读响应一次原子切到 strict `{data}`、typed errors、no-store/request ID；失凭据/坏 owner 5xx、撤权不打 Platform。MCP 六个 owner-native 字段与 Web 后续同步；BFF 不写 Skill SQL/receipt/cache。 |
 | 实施 / 验证 / 交付 | 先在 BFF 做行为 RED→GREEN，精确 pin Platform 3.1.0 owner commit/sha 并生成 client；四 GET+by-ID 一次可审切片提交，旧 generated/vendor/secret route/test 0 残留，更新唯一 public list/MCP machine contract、operation inventory/语义门及测试，不得让新/旧响应双读。Node22 format/lint/typecheck/contract/default test/schema/build、独立 API/数据审查；Root 在主仓重跑并以自有隔离 IAM+BFF+Platform+Storage/PG/Redis/MinIO/ClamAV 真组合检查本人/异用户/跨 tenant/游标/撤权/坏 owner/no-store，然后精确 pin；Web shadcn 消费/Chromium 为下一 owner。3310 和任务外 `uv.lock` 不动。 |
 
+**进行中：** BFF writer 已盘点旧读链并裁决 public 列表使用 Platform 3.1.0 owner-native item（保留 `source_ref/revision`，不伪造 `skill_id/status`），by-ID 使用已审七字段；当前正在先交 inert、`generated-not-activated` 的 Platform 3.1.0 artifact 作为自洽子提交，再交 credential/五 GET/旧链删除的原子运行提交；Root **只 pin 最终运行 SHA**，不把中间生成物冒充 cutover。Root 在自有短寿组合 runner 已独立加入 IAM projection client 的专用 0600 凭据快照，和 catalog manage 分离；runner 聚焦 **52 pass/75 subtests**、Root 全 `scripts/tests` **976 pass/265 subtests**，尚未运行新的 BFF public 真组合。
+
 ## 最近验收：W3-BFF-PUBLISHED-SKILL-READ-PREFLIGHT（P0；文档与机器门）
 
 | 项 | 任务卡 / 放行门 |

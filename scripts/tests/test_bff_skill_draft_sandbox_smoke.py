@@ -750,7 +750,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
 
     def test_owner_credential_projections_are_exact(self):
         parsed = smoke.require_sandbox_ready(ready())
-        resource, execution, catalog = smoke.platform_credential_payloads(parsed)
+        resource, execution, catalog, projection = smoke.platform_credential_payloads(parsed)
         self.assertEqual(
             resource,
             {
@@ -766,11 +766,38 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         )
         self.assertEqual(catalog[0]["scope"], "platform:skill-catalog.manage")
         self.assertEqual(
+            projection,
+            [
+                {
+                    "generation": 1,
+                    "credentialRefVersion": "sandbox-v1",
+                    "tenantId": "tenant-one",
+                    "clientId": "projection",
+                    "clientSecret": "projection-secret",
+                    "resource": "https://kokoro.dev/resources/platform-internal",
+                    "scope": "platform:projection.read",
+                }
+            ],
+        )
+        self.assertEqual(
             execution[0]["resource"], "https://kokoro.dev/resources/iam-internal"
         )
         self.assertEqual(execution[0]["scope"], "iam:execution-authorization.verify")
         self.assertEqual(execution[0]["clientId"], "execution")
         self.assertEqual(execution[0]["clientSecret"], "execution-secret")
+
+    def test_projection_credential_file_is_owned_and_removed(self):
+        parsed = smoke.require_sandbox_ready(ready())
+        with tempfile.TemporaryDirectory() as owned:
+            directory = Path(owned)
+            with smoke.credential_files(directory, parsed) as paths:
+                projection = paths["bff-projection.json"]
+                self.assertEqual(projection.stat().st_mode & 0o777, 0o600)
+                self.assertEqual(
+                    json.loads(projection.read_text()),
+                    smoke.platform_credential_payloads(parsed)[3],
+                )
+            self.assertFalse(projection.exists())
 
     def test_cleanup_verification_attempts_every_inventory_after_failures(self):
         calls = []
@@ -929,6 +956,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         base = {
             "KOKORO_PLATFORM_BASE_URL": "http://127.0.0.1:4400",
             "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE": "/owned/catalog.json",
+            "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": "/owned/projection.json",
             "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "false",
         }
         active = {**base, "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "true"}
