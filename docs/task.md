@@ -20,6 +20,17 @@
 
 **文档门结果：** BFF main `51010fc5885ac44c98a42beb976e2f1d768c015b` 已将四份既有设计的当前态/目标态统一到 Platform owner `5b6eb2c…`、v3 aggregate `324e749…`，保留机器 manifest 的旧 Proto pin 与 `execution_artifact:null` 事实。Root Node22 `pnpm contract:check`（72 项）与 `pnpm schema:check`（5 pass/1 无库 skip）及 diff check 通过；只读复审指出初稿把 inactive artifact 当真实 201 前置的 P1，返修后复审无 P0/P1/P2。该 v3 **只能用于离线生成/向量/候选代码**：Platform owner 先发布 active/routable=true artifact，BFF 再精确重钉并由 Root 协调激活，才允许 public route 可用及真实 201/replay smoke；文档通过不等于机器契约或产品正链通过。
 
+#### W1E-BFF-V3-OFFLINE-CONSUMER（P0，BFF 唯一 writer；当前代码片）
+
+| 项 | 实施边界与验收 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-bff` main `51010fc5885ac44c98a42beb976e2f1d768c015b` clean；Root main `9c8b583fc1e61e3c7909a7e6e9132905c84f0167`。BFF 只拥有 consumer provenance/typed projector；Platform `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 唯一发布 Proto 与 v3 artifact。Root 保留 Git index/commit。 |
+| 当前事实 / 目标 | 现 `contract/dependencies/platform-connect.json` 只 pin f26d147 的两份 Proto、`execution_artifact:null`，生成客户端已有但无 digest projector；这不能消费 CreateDraft。代码片精确 pin owner 当前 commit、相同 Proto bytes、完整 v3 artifact/provenance，独立实现 user CreateDraft 业务投影与 RFC 8785 JCS/SHA-256，运行入口仍 fail closed。 |
+| 目录比较 / 粒度 | 采用既有 `contract/vendor/kokoro-platform/<owner-commit>/` 固定不可编辑 owner 原字节；旧 f26d147 vendor 在原子替换后删除。淘汰把 v3 JSON 塞入 `src/generated/` 或从兄弟仓运行时 import。投影/JCS 放在现有 `src/infrastructure/clients/` 下具名 `platform/` consumer 边界，分别按来源校验、投影、编码变化原因拆文件；不建新顶层模块/进程/Schema。 |
+| 写入集 / 删除项 | 仅 BFF `contract/vendor/kokoro-platform/**`、`contract/dependencies/platform-connect.json`、`contract/README.md`、`scripts/generate-platform-connect-client.mjs` 与直接 provenance/check 脚本、`src/infrastructure/clients/platform/**`、直接 `test/platform*`/contract/architecture 测试、`docs/CURRENT.md` 交付事实。若需要 `buf.platform.json`、生成物、package/lockfile 或其他文件先向 Root 报告理由；旧 vendor/断言随原子 pin 删除，不留旧来源 fallback。不得改 public OpenAPI、owner route、bootstrap admission、SQL、IAM/Platform/Root 文件。 |
+| API / 数据 / 依赖 | 机器 artifact v3 `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d` 仍 inactive/routable=false；只允许离线 typed CreateDraft command 投影/向量，不激活 RPC、public 201 或旧 Capability HTTP 双轨 mutation。BFF 无数据 owner 新事实、事务、Redis 或跨 owner SQL；generated wire 止于 consumer。 |
+| 验证 / 交付 | 先 RED 证明旧 manifest 缺 artifact/投影，后 GREEN 证明所有 v3 CreateDraft 正反 raw vectors、method/version/unknown-field/presence/metadata/owner/tenant 变体与独立 JCS digest；精确文件/aggregate tamper 必拒绝，Proto 两次生成字节一致。Node22 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build`；Root 停写后独立复跑。无真 owner 201 或数据库集成宣称，用户 3310 不触碰。 |
+
 | 项 | 下一任务卡边界 |
 | --- | --- |
 | Owner / 目标 | BFF 唯一 public Product API、IAM session admission 与 user owner 映射；Platform 唯一 Skill/receipt writer。先做 user-only CreateSkillDraft 机器契约/受信 Connect consumer 候选，保持 public fail closed；真实 201 是 active artifact 与消费者协调激活后的独立门，不以六 mutation、四 scope、Skills/MCP 总线或 Web UI 完成冒称。 |
