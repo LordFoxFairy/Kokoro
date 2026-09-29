@@ -1,12 +1,22 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；BFF 六操作运行候选已验）
+## 下一切片：W3-PLATFORM-PUBLISHED-SKILL-READ-DOC-GATE（P0；Web 真闭环前置）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | Platform Skills Source 投影唯一 owner，物理仓 `apps/kokoro-capability` clean `main 263a28f1e55745bd1829a61f68228d775751adbc`；BFF `55ca6c1` 六项默认关闭写候选，Web `74dcc10` 四文档门已审。Root `80060ae6` pin Web。此任务先只改 owner TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 与唯一 `contract/openapi/platform-http.openapi.json`、operation-scoped 契约检查/直接测试；唯一 OpenAPI 更新需同步既有 `contract/provenance.json` 的对应 combinedSha256，其他 Proto/source/version digest 原样；不改 runtime/SQL/Proto/generated/lockfile，不激活 v4。 |
+| 当前事实 / P1 阻断 | Root 两只读审查确认 Web 正式 catalog 发旧 `scope=official|third_party`，BFF/Platform 仅接受 `scope_kind=personal|project|organization|session`，当前直接 400；pool 只列已安装且 enabled，Publish 只 ACTIVE/事件不自动安装，所以新个人 Skill 不出现。Platform BFF workload HTTP `/v1/skills?scope_kind=personal` 可列 user owner ACTIVE，返回 source_ref/revision，但 BFF 当前丢字段；现无 exact by-ID Product read。执行 Proto `ResolveVisibleSkill/DiscoverVisibleSkills` 要 Agent execution_proof、可能要求安装并含私有 package asset，不能复用给 BFF 或扫描列表冒充按 ID 读取。Publish ACK/key 刷新丢失时，Web Get 只看 draft，无法判断 ACTIVE。 |
+| §8 放置与目标 | 方案 A（采用）：在既有 Skills Source/BFF projection guard 下增 **只读、按 canonical skill_id 精确定位** 的 internal-owner HTTP `GET /v1/skills/{skill_id}`，只回同 tenant、当前 user owner、PERSONAL、ACTIVE 的安全投影（至少 skill_id/source_ref/正 revision/status/name/summary/tags），非 owner/跨 tenant/非 ACTIVE 统一 404；无安装前置、不返回 packageAsset/manifest/签名 URL。BFF 后续精确 pin 并发布 Product `GET /v1/skills/{skill_id}`，列表使用现有 owner `scope_kind=personal` 并保留 source_ref/revision，Web 才可展示/恢复。方案 B：BFF 复用 execution-only Source RPC、逐页扫 catalog 或继续旧 scope/name/revisions；淘汰，权限/隐私/完整性均不成立。无新模块/进程/owner、无 Web/BFF SQL。 |
+| API/数据/失败/验证 | Platform 当前 tenant+subject 必须由既有 BFF projection guard 受信身份产生，不从 body/query 自报；GET 无 body/idempotency，原子读取当前 ACTIVE 用户私有 Skill，未知/非本人/非 ACTIVE 404、鉴权失败 401/403、依赖 503，稳定 error/no-store/request ID；不得借旧执行 proof 或公开私有包字段。以 owner canonical schema/现有索引读取，不新建数据库/角色、不跨 owner SQL；分页不适用，breaking 策略由唯一 OpenAPI additive contract 管。先在三面与 OpenAPI 对齐当前/目标、operation/test RED→GREEN，Node24 format/lint/typecheck/contract/schema/default test/build + 独立 API/SQL 审查；Root pin 后才开始 Platform runtime 真 PG/当前 IAM/BFF projection 组合，再串行 BFF public read/list 修复，最后 Web 旧 UI 一次替换/Chromium。3310/任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，当前 clean `main 317c74c2048829471b0c4196df98dd6d2dcf5e36`；Root 只读裁决/审查/集成。BFF `55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9` 已有默认关闭的 CreateDraft/Get/Begin/Complete/Validate/Publish 六项公开运行候选，并由 Root `4d338089` 真 owner 组合验 Publish；Platform `263a28f` v4 仍 inactive。先读 Web 三面文档、唯一 BFF public OpenAPI 与现有 Skills/Settings UI，出 §8 放置表及精确合同；不把旧 preview/confirm 作为正式上传。本切片唯一允许 Web 四份当前设计文档，不改代码/机器契约/生成物。 |
 | 目标 / 边界 | 用现有 shadcn/ui 与品牌 token 一次替换正式旧 Skill Dialog：单 ZIP/元信息→本地 SHA/大小→同源 CreateDraft/Get/Begin→批准 ObjectStore origin 无凭据、禁重定向、原样 header 直 PUT→同源 Complete→Validate→**零字节 body** Publish，只有 `active`+owner event 回执才宣称发布。Get 仅返回当前 draft attempt，不是 active 发布读取；刷新丢失 Publish key/ACK 时明确“状态未知/需重新核对”，不从 validated 或旧 Hub 缓存猜成功。Complete 丢失原文件 hash/size 时要求重选原文件重算或显式新 Begin，不伪造恢复；个人私有、当前 IAM、撤权、感染、替换与同键重试显式建模。Web 不直连 Platform/Storage 控制面，不复制 owner SQL/receipt 或第二协议。 |
 | 先行门 / 验证 | Web 当前 `/app/skills` 与 Settings 共用旧 `SkillUploadDialog`，经 `/api/hub/self/skills/upload/{preview,confirm}` 代理 multipart；BFF 六路没有旧 preview/confirm，namespace/candidates/多选/直接 published 语义不能映射单 Skill attempt。Web 固定旧 BFF OpenAPI 快照，后续代码门须精确 pin 新来源/重生；本片只在 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 对齐当前/目标、owner/依赖/事务与恢复、删除清单、测试。机器 API 仍由 BFF 唯一维护。随后单一 Web writer 做 RED→实现→Node22 全门与隔离 Playwright；Root 真 IAM→Chromium→Web→BFF→Platform→Storage/MinIO/ClamAV 验 CORS preflight/PUT、CLEAN/INFECTED/恢复/刷新/撤权和发布。3310 用户进程不热替换；此门不冒称浏览器已打通。 |
+| 实际交付 / 后续阻断 | Web 唯一 writer `74dcc101f6c457d10db4511365e6898f44f0e625` 仅四文档；独立终审先发现刷新 pending/已上传恢复矛盾 P2，返修后 P0/P1/P2=0。Root 独立 Node22 `pnpm contract` **105/105**、`pnpm test:architecture` **36/36**、diff-check PASS；Root `80060ae6` 精确 pin Web 23 个来源引用/0 blob digest 变化、topology/checkpoint PASS。无 UI/code/generated/lockfile；默认关闭/v4 inactive。随后独立 Product 读回审计发现上段 P1：发布个人 ACTIVE 不进当前正式列表，且刷新丢 ACK 后无 by-ID 查询；故 Web 代码/真 Chromium 门必须待 Platform→BFF 读回 contract 先闭环，不凭文档宣称用户可见。 |
 
 ## 最近验收：W3-BFF-SKILL-PUBLISH-RUNTIME（P0；2026-09-29）
 

@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Web 四文档门通过；发布后读回 P1 阻断已定位
+
+Web `main 74dcc101f6c457d10db4511365e6898f44f0e625` 仅更新 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT：沿已有 shadcn Dialog、同源 Product adapter、单 ZIP→CreateDraft/Get/Begin→批准 ObjectStore signed PUT→Complete→Validate→**零字节** Publish，严格区分刷新后 pending replacement、uploaded 由 owner 校验重选文件、Publish ACK 丢失“状态未知”；当前代码/旧 generated/旧 preview-confirm 未改。独立只读审查 P2 刷新恢复矛盾经精确返修后终审 P0/P1/P2=0；Root 独立 Node22 `pnpm contract` **105/105**、`pnpm test:architecture` **36/36**、diff-check PASS，`80060ae6` pin Web 23 个 commit 证据引用且无 blob 改动，topology/checkpoint PASS。
+
+随后双只读调查定位**产品 P1 阻断**：Web 正式 catalog 请求 `scope=official|third_party` 被 BFF/Platform 的 `scope_kind` 契约以 400 拒绝；Publish 不自动安装，故新 ACTIVE PERSONAL Skill 不进入仅已安装+enabled 的 pool，正式 Skills 页不会出现。BFF 旧 catalog 投影剥掉 owner 已有的 `source_ref/revision`，Web 用 name/scope 无法稳定关联发布回执；刷新丢失 Publish key/ACK 后也没有安全的 published by-ID read。Platform Source `ResolveVisibleSkill/DiscoverVisibleSkills` 需要 Agent execution proof、已安装路径且含包内部字段，不能让 BFF 借用；列表遍历猜 ID 亦不可用。已将前置改为 Platform BFF-projection 下的当前 user/PERSONAL/ACTIVE exact by-ID 安全读契约→runtime 真 PG/IAM→BFF public read/个人列表投影→Web 旧 UI 一次替换/Chromium；`official/third_party` 不可假映射为 owner scope。Web doc 门不是 Web 产品可用证据；Platform/BFF 写端仍默认关闭/v4 inactive，3310 未动。见 [`task.md`](task.md)。
+
 ## 2026-09-29 — BFF Publish 默认关闭候选真跨 owner 组合 PASS
 
 BFF `main 55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9` 已交付 user-only Publish 运行 route、固定 Platform Connect client 与 v4 `3.0.0`/8 向量 projector：严格零原始请求字节、单个 Idempotency-Key、每次含 replay 先当前 IAM、固定 PERSONAL(1)，严格校验 owner ACTIVE/source_ref/正 uint64 revision/event_id/replayed。真实 HTTP RED 2 失败→GREEN 聚焦 14/14；独立终审 P0/P1/P2=0。Root 独立 Node22 format/contract **161/161**、check **480 pass/1 skip**、schema **5 pass/1 skip**、build PASS；`7a174002` pin gitlink 与库存 **168** 个 BFF commit 引用、16 个变化 blob SHA，当前 topology/checkpoint PASS。
