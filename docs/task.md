@@ -1,5 +1,19 @@
 # Kokoro 后端闭环任务总表
 
+## 当前代码门：真实模型作品所需的 Agent 工作区写入（2026-09-29）
+
+**W2-REAL-MODEL-AGENT-WRITE（P0，Agent 唯一 writer，待验）：** Root 真模型 runner 已独立实现但尚未跑组合；静态审计发现 `GENERAL_AGENT` 声明 `delivery=True`，却继承 `Permissions.filesystem="read_only"`。`agent_factory.build_deep_agent` 将此策略传给 DeepAgents，`sandbox.build_filesystem_permissions` 对所有写操作返回 deny，故正式 `write_file`→`deliver` 作品链必然断在写入前。Agent 基线 `486adb1539dd8a06ca90684e66f91be031aa70cf`、clean `main`；Root `172f2374`，主控独占各仓 Git index/commit。
+
+| 放置门 | 裁决 |
+| --- | --- |
+| Owner / 目标 | Agent 自有静态 `general` Chat 能力决定工作区权限；允许模型在本 Run 隔离的 DeepAgents `state` backend 写作品文件并让同一 backend 的正式 `deliver` 读取，保持 `/.skills/` 能力包只读、其他 Agent 默认 read-only，不能由用户请求体或模型自报扩大权限。 |
+| 当前事实 / 目录比较 | 采用既有 `src/kokoro_agent/agents/general.py` 对 GENERAL_AGENT 显式设置 `Permissions(filesystem="workspace_write")`，现有 `agent_factory.py`/`sandbox/backend.py` 按原单一路径传递；淘汰修改全局 `Permissions` 默认或在测试 runner/worker env 绕过权限。先证明 `state` backend 中 DeepAgents `write_file` 与 `deliver` 的 backend 文件视图一致；若不一致，先报告 Root 裁决，不暗换宿主 `local_shell` 或开新适配层。 |
+| 粒度 / 文件集 | 唯一 writer 可窄改 `src/kokoro_agent/agents/general.py`、`tests/unit/agents/{test_assembly,test_feature_catalog,test_factory}.py`、`tests/unit/tools/{test_toolset,test_deliver}.py` 中直接断言，及 `docs/{TECHNICAL_DESIGN,CURRENT}.md` 顶部当前事实；确需其他文件先报 Root。无新目录、跨仓文件、Proto/OpenAPI/SQL/lockfile/生成物。 |
+| 依赖 / 删除项 | 依赖已发布 Storage F2 与 Agent delivery；仅更正可信 Feature 的静态能力声明，不给 `MUSIC_AGENT`、请求方或一般 Agent 默认放权。删除的是 GENERAL_AGENT 的隐式 read-only 矛盾，不保留第二条 delivery path 或宽松 fallback。 |
+| 验证 / 交付 | 先 RED 证明正式 General 写工具被拒，再 GREEN 证明同一 run/backend 写→读→deliver（若只能作组件级验证须明确），`/.skills/` 写拒绝、其他默认 read-only、用户无法从 wire 改策略。writer 运行 `uv lock --check`、Ruff format/check、Pyright、contract checker、聚焦/全量 pytest、build；Root 停写后独立复跑并在**真实 System+Ollama+IAM/浏览器/Storage**链验作品，失败原样记录。无共享服务清理、3310、Git index 操作。 |
+
+本片不把本机 `qwen3:8b` 当生产 Gateway，不把组件 GREEN 当真实 Product 通过；用户私有性仍由 BFF 授权，不由工作区写权限推导。
+
 **当前 P0 登录实测（2026-09-28）：** 旧签名 `/auth/sign-in` 链接过期与一次性 CSRF 失效曾导致浏览器显示原始 `iam_interaction_csrf_rejected`，不是 IAM 凭据验证结果。Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 已把过期 GET 和浏览器 CSRF 失效 POST 正确 303 回固定 `/login`，非浏览器仍 403；真实 Next HTTP 回归补出并修复了最初相对 Location 引发的 500。Root 在**当前 3310 运行进程**的真实 Chromium 中完成 IAM 邮箱密码→consent→OAuth callback→`/app`，Product Session 200、`authenticated=true`、HttpOnly 会话 cookie；现有 IAB 标签已重新打开新表单。Web Node22 `pnpm check`（contract 105、architecture 36、Vitest 1600、lint/typecheck/build）通过。该临时登录组合未启用 Agent/Storage 完整产品链；S9 Chat 的 live/410/Canvas 已另在隔离真浏览器通过，整体 Product 仍未闭环。
 
 ## 当前关键路径：W2-F2 Storage Agent 作品交付（2026-09-28）
