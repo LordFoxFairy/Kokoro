@@ -1358,6 +1358,15 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 
 **S9-ROOT-GC 已验收（Root `7bbd836b037432a38624786040b9f6f3b5b31b65`，2026-09-29）：** 五个 owner runtime gitlink 不变。Root 独立真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 证明同一浏览器、同会话两次 Product POST202/两次受信 CLEAN 交付；原浏览器旧水位 SSE 被保留，BFF owner `collectGarbage` 真删旧帧并写 tombstone 后，原请求正式 HTTP410 `event_cursor_expired`，Web 自动快照200/新水位 SSE200，两件作品卡各唯一、两次 Canvas 保存原字节。自有 PG/Redis/进程/S3 余量0，独占桶删除，用户3310未动。Root 相邻测试903 passed/190 subtests、Ruff/Node/拓扑PASS，独立只读审查无P0/P1/P2。全仓标准136违规、合同16边中13条broken仍未闭环；下一任务不再重复此GC门，按当前 Product edge/模型 worker 等剩余真实断链逐项验收。
 
+## 2026-09-29 — 下一纵切并行只读审计（未授权业务写入）
+
+基线 Root `a7ab6b63a2f90302774c20061eb07d1878cf776f`、Agent `486adb1539dd8a06ca90684e66f91be031aa70cf`、BFF `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7`、Web `317c74c2048829471b0c4196df98dd6d2dcf5e36`、System `c0a76a3a7614bf46ea6e665e523f24261862436f`、Platform 物理仓 `ae48c894d9034016a16a4cbaa60ab80743d1aab9`，均 main/clean。以下为两项互不写入的调查；Root 审查、裁决依赖顺序和后续唯一 writer，用户3310与共享数据库/进程不触碰。每项只读 owner docs/contract/schema/source/tests、Root `docs/CODEBASE_MAP.md` 与 inventory；不编辑、不提交、不运行服务、不清理资源。
+
+| ID / 优先级 | 审计面 / 负责人 | 必须回答与交付 | 验证边界 / 后续 |
+| --- | --- | --- | --- |
+| W2-NEXT-MODEL-AUDIT / P0 | Agent 标准 worker→System 模型解析→实际 provider/Chat/作品；独立只读 Agent | 按当前 commit 追踪 Product POST→pending Run→claim/lease→System resolve→真实 model stream→工具 deliver→Agent durable events→BFF AG-UI，列首个实际断点、当前 fixture 替身、已存在测试/contract、精确下一 owner 文件集和 RED→GREEN/真纵切验收；区分“缺实现”“仅缺真集成证据”“配置/凭据边界”，不得凭旧文档推断。 | 无写入；不把确定性模型 fixture 或手动 emitter 视为真 worker。Root 决定是否先做 Agent 文档门/代码门。 |
+| W1E-NEXT-PLATFORM-AUDIT / P0 | Platform Skills/MCP→IAM/Storage→Agent/BFF；独立只读 Agent | 对照库存 13 broken 边，确认当前 Platform 物理仓/IAM 0.7/Storage package 文档门、BFF Product mutation、Agent typed selection 的实际机器契约与调用点；指出最早未发布的 owner contract、阻断后继的精确决策、可并行/必须串行项和下一最小完整业务切片，明确不能跳过授权或包体。 | 无写入；不要改名/重构/部署；Root 依据 owner-first 顺序派唯一 writer，先三设计文档再代码。 |
+
 **S9-WEB-CODE 任务卡（P0，唯一 Web writer）：** 基线 Web main `3a0ad22563458621a9d2d4b10ff3a2c45adcac6e` clean，Root main `7bc6d8f69cb198b99c9521e9f3b9d15e83570793`；依赖已通过的 Web 四文档门及 BFF owner main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7`/OpenAPI SHA-256 `a224b186813615467b6c045d3be83082d3e164e140d6da9722bf3f8d7e33b219`。沿用文档负责人作为同仓唯一代码 writer；Root 独占 Git index/commit、来源库存、审查和真实浏览器。先读本仓 Next 16 已安装文档相关段落，先以直接测试观察 RED，再实施 GREEN；分阶段报告 contract/core 与 UI，但不得把只做 core 的候选发布为 S9 完成。
 
 | 文件门 | 精确允许范围与裁决 |
