@@ -299,11 +299,25 @@ def data_of(envelope: dict[str, object]) -> dict[str, object]:
 
 
 def seed_control_plane(
-    base: str, tenant: str, token: str, run_id: str, *, feature_key: str | None = None
+    base: str,
+    tenant: str,
+    token: str,
+    run_id: str,
+    *,
+    feature_key: str | None = None,
+    provider: str = "fixture",
+    model_name: str = "smoke-model",
 ) -> dict[str, str]:
     """Seed through the authoritative HTTP API, never through business table SQL."""
     if feature_key not in (None, "chat"):
         raise SmokeError("Unsupported smoke feature key")
+
+    if provider not in {"fixture", "ollama"} or not (
+        1 <= len(model_name) <= 255
+        and model_name.strip() == model_name
+        and all(ord(c) > 32 for c in model_name)
+    ):
+        raise SmokeError("Invalid provider model seed")
 
     def mutate(
         path: str,
@@ -494,12 +508,12 @@ def seed_control_plane(
             "release_id": release["id"],
         },
     )
-    provider = mutate(
+    provider_record = mutate(
         "model-catalog/providers",
         {
-            "provider": "fixture",
-            "provider_key": f"fixture-{run_id}",
-            "display_name": "Smoke fixture provider",
+            "provider": provider,
+            "provider_key": f"{provider}-{run_id}",
+            "display_name": f"Smoke {provider} provider",
             "secret_handle_ref": f"secret://smoke/{run_id}",
             "transport": "litellm",
             "priority": 0,
@@ -508,22 +522,22 @@ def seed_control_plane(
     )
     model = mutate(
         "model-catalog/definitions",
-        {"model_key": f"fixture/{run_id}", "display_name": "Smoke model"},
+        {"model_key": f"{provider}/{run_id}", "display_name": "Smoke model"},
         global_scope=True,
     )
     revision = mutate(
         "model-catalog/revisions",
         {
             "model_id": model["id"],
-            "provider_id": provider["id"],
+            "provider_id": provider_record["id"],
             "revision": 1,
-            "provider_model_name": "smoke-model",
+            "provider_model_name": model_name,
             "display_name": "Smoke model",
             "feature_key": feature_key,
             "input_modalities": ["text"],
             "output_modalities": ["text"],
             "transport": "litellm",
-            "gateway_model_name": "smoke-model",
+            "gateway_model_name": model_name,
             "context_window": 8192,
             "priority": 0,
         },
@@ -546,7 +560,7 @@ def seed_control_plane(
         global_scope=True,
     )
     mutate(
-        f"model-catalog/providers/{provider['id']}/health",
+        f"model-catalog/providers/{provider_record['id']}/health",
         {
             "status": "healthy",
             "observed_at": datetime.now(timezone.utc)
@@ -569,6 +583,8 @@ def seed_control_plane(
         create=True,
     )
     return {
+        "provider_id": str(provider_record["id"]),
+        "model_name": model_name,
         "product_key": product_key,
         "site_id": str(site["id"]),
         "feature_key": feature_key,

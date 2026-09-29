@@ -297,7 +297,9 @@ def test_http_smoke_does_not_follow_owner_redirects() -> None:
 
 
 @pytest.mark.parametrize("feature_key", [None, "chat"])
-def test_seed_uses_formal_http_and_scoped_preconditions(monkeypatch, feature_key) -> None:
+def test_seed_uses_formal_http_and_scoped_preconditions(
+    monkeypatch, feature_key
+) -> None:
     calls: list[tuple[str, dict]] = []
 
     def http(_base: str, path: str, **kwargs) -> dict:
@@ -305,7 +307,9 @@ def test_seed_uses_formal_http_and_scoped_preconditions(monkeypatch, feature_key
         return {"data": {"id": str(len(calls)), "version": "1"}}
 
     monkeypatch.setattr("scripts.e2e.run_system_owner_smoke.http_json", http)
-    values = seed_control_plane("http://system.test", "tenant", "token", "a" * 24, feature_key=feature_key)
+    values = seed_control_plane(
+        "http://system.test", "tenant", "token", "a" * 24, feature_key=feature_key
+    )
     assert values["feature_key"] == (feature_key or "chat." + "a" * 24)
     assert values["release_id"]
     assert len(calls) == 22
@@ -514,3 +518,48 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
     (apps / changed_owner).unlink()
     with pytest.raises(SmokeError, match="release"):
         smoke.verify_release_inputs()
+
+
+def test_seed_pins_real_provider_names_without_fixture_fallback(monkeypatch) -> None:
+    calls = []
+
+    def http(_base, path, **kwargs):
+        calls.append((path, kwargs))
+        return {"data": {"id": str(len(calls)), "version": "1"}}
+
+    monkeypatch.setattr("scripts.e2e.run_system_owner_smoke.http_json", http)
+    values = seed_control_plane(
+        "http://system.test",
+        "tenant",
+        "token",
+        "a" * 24,
+        feature_key="chat",
+        provider="ollama",
+        model_name="qwen3:8b",
+    )
+    revision = next(kw["body"] for path, kw in calls if path.endswith("/revisions"))
+    provider = next(kw["body"] for path, kw in calls if path.endswith("/providers"))
+    assert (
+        revision["provider_model_name"] == revision["gateway_model_name"] == "qwen3:8b"
+    )
+    assert revision["feature_key"] == "chat"
+    assert provider["provider"] == "ollama"
+    assert values["provider_id"]
+    assert values["model_name"] == "qwen3:8b"
+
+
+@pytest.mark.parametrize("name", ["", " ", "qwen\n3", "x" * 256])
+def test_seed_rejects_invalid_provider_model_before_owner_calls(monkeypatch, name):
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("invalid seed must not contact owner")
+
+    monkeypatch.setattr("scripts.e2e.run_system_owner_smoke.http_json", forbidden)
+    with pytest.raises(SmokeError, match="model"):
+        seed_control_plane(
+            "http://system.test",
+            "tenant",
+            "token",
+            "a" * 24,
+            provider="ollama",
+            model_name=name,
+        )

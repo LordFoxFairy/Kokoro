@@ -617,7 +617,16 @@ def _run_smoke(
     *,
     live_scenario: Callable[..., dict[str, object]] | None = None,
     gc_scenario: Callable[..., dict[str, object]] | None = None,
+    real_model_scenario: Callable[..., dict[str, object]] | None = None,
 ) -> dict[str, object]:
+    if (
+        sum(
+            item is not None
+            for item in (live_scenario, gc_scenario, real_model_scenario)
+        )
+        > 1
+    ):
+        raise SmokeError("scenario callbacks must be exclusive")
     iam_node = _node_path(args.iam_node_bin, "iam-node-bin")
     node22 = _node_path(args.node22_bin, "node22-bin")
     node24 = _node_path(args.node24_bin, "node24-bin")
@@ -1012,9 +1021,14 @@ def _run_smoke(
                         raise SmokeError("isolated Next HTTPS origin not ready")
                     time.sleep(0.1)
 
-                if live_scenario is not None or gc_scenario is not None:
+                if any(
+                    item is not None
+                    for item in (live_scenario, gc_scenario, real_model_scenario)
+                ):
                     stage = (
-                        "browser real owner GC and cursor recovery"
+                        "browser real System and model worker"
+                        if real_model_scenario is not None
+                        else "browser real owner GC and cursor recovery"
                         if gc_scenario is not None
                         else "browser subscribed live Chat Artifact delivery"
                     )
@@ -1023,7 +1037,7 @@ def _run_smoke(
                         if gc_scenario is not None
                         else "chat-delivery.png"
                     )
-                    scenario = gc_scenario or live_scenario
+                    scenario = real_model_scenario or gc_scenario or live_scenario
                     assert scenario is not None
                     scenario_extra = (
                         {
@@ -1035,6 +1049,19 @@ def _run_smoke(
                         if gc_scenario is not None
                         else {}
                     )
+                    if real_model_scenario is not None:
+                        scenario_extra = {
+                            "infra": infra,
+                            "processes": process_list,
+                            "proxies": proxies,
+                            "directory": directory,
+                            "log": log,
+                            "credentials": credentials,
+                            "node24": node24,
+                            "agent_env": agent_env,
+                            "owner_db_url": owner_db_url,
+                            "system_redis_url": web_iam_redis,
+                        }
                     browser = scenario(
                         node=node22,
                         origin=web_origin,
@@ -1309,7 +1336,9 @@ def _run_smoke(
         "root_commit": root_commit,
         "sources": sources,
         "flow": (
-            "real IAM Chromium two Product/Agent/Storage deliveries → BFF owner GC → original browser SSE410 → snapshot/new-watermark continuation"
+            "real IAM Chromium Product → standard Agent worker → real System → actual local Ollama → durable Chat/Storage Artifact"
+            if real_model_scenario is not None
+            else "real IAM Chromium two Product/Agent/Storage deliveries → BFF owner GC → original browser SSE410 → snapshot/new-watermark continuation"
             if gc_scenario is not None
             else "real IAM Chromium Product POST202 → subscribed SSE200 → Agent pending Run/lease → Storage CLEAN Artifact → BFF live Chat Delivery/Canvas/download/reload/private"
             if live_scenario is not None
