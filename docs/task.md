@@ -1,5 +1,14 @@
 # Kokoro 后端闭环任务总表
 
+## 当前执行：W3-BFF-SKILL-GET-RUNTIME（P0；2026-09-29）
+
+| 项 | 任务卡 / 验收门 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer `/root/agent_consumer_audit`，物理仓 `apps/kokoro-bff` clean `main 58bcfc7da656981c1a43a9918ab9f96d207bbecc`；Root `main d412136300e48a2f7eba9fc5c2ec2e93e97dc6e5` 主控审查/精确 pin/真实组合，Platform owner `263a28f1e55745bd1829a61f68228d775751adbc` v4 inactive。三面文档与候选 OpenAPI 已通过，现进入代码门。 |
+| 当前事实 / 目标 | 运行中 BFF 仍仅默认关闭的 CreateDraft 候选；Get OpenAPI 已是未激活机器候选。先把 Platform owner **完整 v4 artifact/Proto/generated/read binding** 以固定 commit+digest 精确 pin 到 BFF，再实现同一 owner user-only `GET /v1/skills/{skill_id}/package-upload` 运行路径，真实返回 current Skill phase/attempt/epoch/upload；不能 handwrite wire、直接读 Platform SQL、复用旧 Capability HTTP 或同时偷开 Begin。 |
+| 文件与依赖 | 允许 BFF 既有 `contract/dependencies/platform-connect.json`、固定 vendor/generated client 及生成校验脚本、`src/infrastructure/clients/platform/catalog-connect.ts`、`src/http/routes/`、`src/bootstrap/server.ts`/runtime、直接 contract/unit/integration tests 与必要四文档。若需超出上述共享入口由唯一 writer先报告 Root。Web 同源→BFF 当次 IAM session/user/tenant→BFF catalog workload token→Platform Get；Get 非 command、无 BFF receipt、无 Storage 签名、无 owner SQL、无新应用库/role。v4 仍 inactive，候选默认关闭，不能冒称产品激活。 |
+| RED→GREEN / 放行 | 先 RED 路由缺失/撤权重放/错 owner/跨 tenant/无 Platform socket/状态 oneOf 违反，后精确 pin+实现；每次请求先 IAM session，错误/200 严格匹配已发布 OpenAPI、`x-request-id` 与 no-store，不把 bearer 传 Platform。Node22 format/lint/typecheck/contract semantic/platform provenance/test/build/schema 与隔离真 PG/Redis owner tests；停写交付 SHA。Root 独立复审后在独占真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV runner 验 Get phase none→后续实际状态、撤销同用户 session 后 401 且 Platform 零新增 socket、资源清理。Begin/Complete/Validate/Publish public 和浏览器 PUT/CORS 后续串行切片。 |
+
 ## 最近验收：W3-BFF-SKILL-GET-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 阶段门 |
