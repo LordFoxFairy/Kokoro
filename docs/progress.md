@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Platform 公共读切换已交付，Root 真组合待验
+
+BFF `main 62daba37fc0267830d73590bb5a3499807d46fc6` 已将四条列表/MCP GET 和个人已发布 Skill 按 ID GET 从旧 Capability HTTP 2.0.0 切至 Platform HTTP 3.1.0 + 独立 IAM `platform:projection.read`；删掉旧 generated/vendor/client/secret 读链。返修锁定 200 no-store/request ID、状态专属错误码、退役写路径在 BFF receipt 前停止、IAM token 取消不等待、正式配置样例及 test-only mapper 归位。Root 独立 Node22 `pnpm check` **484 pass/1 skip**、`format:check` PASS、`schema:check` **5 pass/1 skip**；API/数据终审 P0/P1/P2=0；额外状态码已 RED→GREEN。Root E2E runner 已加入 public by-ID 草稿 404→Publish 后本人 200→撤权 401 断言，但当前 Root 已精确 pin BFF gitlink/来源库存并通过 topology/checkpoint、Root `scripts/tests` **976 pass/265 subtests**，但尚未执行本次真实组合，不冒充已闭环。支付仍最后；3310/任务外 `uv.lock` 未动。
+
 ## 2026-09-29 — BFF 个人已发布 Skill by-ID 文档/机器候选通过；运行未接
 
 BFF 唯一 public API owner 在 clean `main f316e8485b1d6b953a03971be01c88955daebb91` 只改唯一 OpenAPI、operation inventory/语义门/负例与四份当前设计文档，共 8 个既有文件；未改运行路由、SQL、generated、配置或锁文件。新增**未激活** public `GET /v1/skills/{skill_id}` 候选：当前 IAM session tenant+subject、本人 PERSONAL/ACTIVE、无需安装、严格七安全字段，非本人/非 ACTIVE 404，唯一 path 参数、无 query/body/idempotency，成功/各错误 no-store/request ID。现行四条 GET 的机器响应和运行代码尚未提前切坏；下一原子 runtime cutover 才同步个人列表 `source_ref/revision`、严格 `{data}`、Platform HTTP 3.1.0 专用 `platform:projection.read` Bearer 和 MCP owner-native 六字段，删除旧 2.0.0 client/secret。

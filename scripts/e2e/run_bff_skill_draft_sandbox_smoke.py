@@ -2186,6 +2186,21 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 if status != 201 or replayed is not False or begin_skill_id is None:
                     raise SmokeError("BFF Begin fixture draft was not created")
                 phase = Phase.PROJECTION_READ
+                published_path = "/v1/skills/" + quote(begin_skill_id, safe="")
+                status, body = _http_get_json(
+                    bff_base,
+                    published_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if status != 404 or body != {
+                    "error": {
+                        "code": "skill_not_found",
+                        "message": "Skill was not found",
+                        "retryable": False,
+                    }
+                }:
+                    raise SmokeError("BFF unpublished Skill read was not private 404")
                 projection_token = issue_projection_token(ready)
                 secret_values += (projection_token,)
                 status, body = platform_published_skill_get(
@@ -2916,6 +2931,35 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "tags": ["sandbox"],
                 }:
                     raise SmokeError("Platform published Skill content drift")
+                status, public_read = _http_get_json(
+                    bff_base,
+                    published_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_platform_published_skill_read(
+                    status, public_read, begin_skill_id, str(revision)
+                )
+                if public_read != body:
+                    raise SmokeError("BFF published Skill projection drifted from owner")
+                status, public_list = _http_get_json(
+                    bff_base,
+                    "/v1/skills?scope_kind=personal&limit=100",
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if status != 200 or set(public_list) != {"data"}:
+                    raise SmokeError("BFF personal Skill list envelope invalid")
+                page = public_list["data"]
+                if not isinstance(page, dict) or not isinstance(page.get("skills"), list):
+                    raise SmokeError("BFF personal Skill list page invalid")
+                items = [
+                    item for item in page["skills"]
+                    if isinstance(item, dict)
+                    and item.get("source_ref") == "skill:" + begin_skill_id
+                ]
+                if len(items) != 1 or items[0].get("revision") != str(revision):
+                    raise SmokeError("BFF personal Skill list lost source_ref or revision")
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
@@ -2985,6 +3029,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 iam.stdin.flush()
                 require_revoke_result(reader.record(timeout=30))
                 before_revoked = proxy.count
+                status, body = _http_get_json(
+                    bff_base,
+                    published_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if status != 401 or body.get("error", {}).get("code") != "session_invalid":
+                    raise SmokeError("revoked IAM session reached BFF published Skill read")
                 status, body = _http_json(
                     bff_base,
                     "/v1/skills/drafts",
