@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform Skill 包 canonical Schema 已验收；上传链未激活
+
+Platform `main bfa614b4ad6bcdd6e3c767b9c291bd43f4f60bf8` 已提交推送：唯一 Prisma `Skill` 行新增包阶段、当前 attempt/epoch/version/原 subject/预期大小/文件元信息/Begin identity/Storage upload/manifest 预留列与官方生成类型；无第二绑定表、角色或跨 owner SQL。旧 Validate/Publish 仍固定拒绝，v3 Proto/artifact 未改。Root 首次独立空库安装 **RED**：新列和 enum 改变完整 owner catalog，但 pinned digest 未更新，安装回滚；同 writer 修复摘要并加 fresh install 字段默认值/nullable、包列/enum 漂移拒绝负例。末轮独立复审 P0/P1/P2=0。
+
+Root 独立 Node24 `format:check/lint/typecheck/prisma:validate/schema:check/test/build` 全过，默认 **854 pass/179 skip**；`iam-sdk:check/contract:check/platform-artifact:check` 全过，机器摘要不变。Root 独占新 PostgreSQL 临时库 `db:apply-schema → schema:check → test:integration → schema:check` **252 pass**，实际读回 `package_phase=none`、epoch/version 0、attempt nullable；临时库 DROP 后 0，Redis DB13 0→0，未启动或清理用户 3310。下一 owner 门是新 Proto/机器 artifact，再接 Storage v2 与真 IAM→Platform→Storage 包纵切；**本片不是上传/发布或全产品端到端完成**。Root 仍保留任务外 `uv.lock` 未暂存。
+
 ## 2026-09-29 — Platform Skill 包设计门已验收，Schema 代码片下一门
 
 Platform `main 737b53fcee0ffe45a11396f4ea816979ccb01d2d` 已只提交并推送四份既有技术/API/数据/当前文档。Root 独立核对当前 Proto 31 RPC、v3/3.0.0 artifact 31 operation/24 tenant binding/15 command（inactive）与 Prisma 九表，Node24 Prettier 四文档、diff check、`platform-artifact:check`（aggregate `324e749d…`）、`prisma:validate` 和 `contract:check`（combined `7dd99350…`）均通过。SQL/契约独立审查指出的 Complete 刷新死路、替换 Begin 重放、外部副作用断言、user-only 撤权语义和 external receipt 恢复五项 P1 及 ZIP V1 profile 已返修；终审 P0/P1=0，Get epoch 的 P2 文档微漂移由 Root 修正。**未修改 Proto、Prisma、生成物或运行码，未运行真包 E2E。**

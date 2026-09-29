@@ -1,6 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码门：W3-PLATFORM-PACKAGE-SCHEMA（P0；2026-09-29）
+## 下一代码门：W3-PLATFORM-PACKAGE-CONTRACT（P0；2026-09-29）
+
+| 项 | 冻结范围与验收 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-capability` 唯一 writer，`main bfa614b4ad6bcdd6e3c767b9c291bd43f4f60bf8`；Root 独占 Git index、审查与验收。 |
+| 目标 | 在 owner 新机器 release 中发布只读 `GetSkillPackageUpload`、命令 `BeginSkillPackageUpload`/`CompleteSkillPackageUpload`，完整短期 `TransferReference`，并版本化 ZIP V1 profile 与正反向量。既有 v3/3.0.0 原字节、inactive 标记不改，不用旧 URL 字符串或请求自报 tenant 兼容层。 |
+| 范围 / 依赖 | 先固定 Proto、operation/command/request binding、错误和生成物的一致机器事实，再进入 Storage v2 运行实现；本门不冒充 RPC handler、真上传/发布可用。更新对应契约测试及必要设计文档，不改 BFF/Agent/Storage，消费者须在 owner 提交后顺序 repin。 |
+| 验证 | RED→GREEN Buf lint/breaking、contract/artifact、format/lint/typecheck/test/build、向量与 digest 重生稳定性；Root 独立复验并记录当前 commit。 |
+
+## 最近验收：W3-PLATFORM-PACKAGE-SCHEMA（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
@@ -10,6 +19,7 @@
 | 本片范围 | **仅 schema 与直接 schema/install/drift/Prisma 类型测试及必要的 mapper/fixture 机械闭包**；不先激活 Get/Begin/Complete、不接 Storage、不写占位业务 handler，不改 Proto/v3 历史/BFF/Agent/Storage/Root/lockfile。新增字段初值必须对应 none/epoch0/version0；当前运行仍固定拒绝 Validate/Publish，不能因字段存在放行。确需扩大现有文件时先报告 Root。 |
 | 数据不变量 | 明确 nullable 阶段矩阵、BIGINT 上限 fail closed、attempt/epoch/version 单调、tenant+skill_id+status/phase/epoch/version 条件写的后续 CAS 入口；旧全行 `updateSkill` 在下一业务代码片必须移除/收窄，不能让它覆盖包字段。已发布/安装/Source 在业务片只信 validated 并 fresh Storage；本片不冒称这些行为已上线。 |
 | 验证 / 交付 | 先 RED 旧 Prisma 缺阶段字段，再 GREEN Node24 format/lint/typecheck/Prisma validate+generate/schema:check/test/build；Root 自有独占 PostgreSQL 临时库做 fresh owner schema install/drift 与直接真实 integration，证明同库他 owner 对象不被触及，临时资源精确清理。Writer 只交文件清单、测试输出和未跑项，不操作 Git index/提交/用户 3310。Root 独立复跑后提交。 |
+| 验收结果 | Platform `main bfa614b4ad6bcdd6e3c767b9c291bd43f4f60bf8` 已提交推送 11 文件。首次 Root 空库安装 RED 揭出完整 catalog pinned digest 未随新增 enum/列更新；同 writer 修复固定摘要并补真实安装默认值、nullable、字段/enum 漂移拒绝负例。Root 独立 Node24 format/lint/typecheck/Prisma validate/schema:check/default test **854 pass/179 skip**/build、IAM SDK/contract/artifact、真 PostgreSQL 空库 install→drift 与 integration **252 pass**；临时库删除、Redis DB13 余量 0。独立末轮复审 P0/P1/P2=0。此门只有 canonical schema/生成物，未接新 RPC、Storage v2 或 Skill 包业务链。 |
 
 
 ## 已验收设计门：W3-PLATFORM-SKILL-PACKAGE-DESIGN（P0；2026-09-29）
