@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Web Skills/MCP 契约 pin 第一阶段通过，运行 UI 待切换
+
+Web sole writer `7db8c05`→终审修复 `c97cbf7`→`53760a2c4c9b0420e2a8bb4db8be66d8160169af`：四当前文档明确旧运行态与目标态，BFF `62daba37fc0267830d73590bb5a3499807d46fc6` public OpenAPI 原字节 SHA-256 `5553b798446c8b764fc33d3ccdba6185c3c308213f712cdcf34e751166e0e923` 已固定；Team 派生文件无漂移，Skills/MCP GET 状态/headers、个人 ACTIVE/by-ID/列表、owner-native 六字段及变异负例有直接门。独立审查发现过期 commit 与新 digest 混用及详情 `data.$ref` 未锁，均由唯一 Web writer RED→GREEN 修复；Root 复核 `git show | cmp` PASS。Root 当前 commit 独立 Node22 `pnpm check`：contract **108/108**、architecture **36/36**、unit/system **1603/1603**、lint/typecheck/build PASS；首次整套旧 OIDC 集成例 30 秒超时，隔离重跑 **1/1**、完整重跑 PASS。**本片没有改正式 UI**：旧 preview/confirm、`scope=official|third_party` 与 MCP 假字段仍在运行，六写候选 default-off、Platform v4 inactive；Browser 真链另验。Root 精确 gitlink/来源库存 pin 后进入 Web runtime 切片，Billing 最后，3310 和任务外 `uv.lock` 不动。
+
 ## 2026-09-29 — BFF Platform 公共读真组合 PASS；下一 owner Web
 
 BFF `main 62daba37fc0267830d73590bb5a3499807d46fc6` 完成四条列表/MCP GET 与本人 ACTIVE/PERSONAL by-ID 读的 Platform HTTP 3.1.0 + 独立 IAM `platform:projection.read` 切换，旧 Capability HTTP 2.0.0 generated/vendor/client/secret 已删；Node22 `pnpm check` **484 pass/1 skip**、format PASS、schema **5 pass/1 skip**、API/数据终审 P0/P1/P2=0。Root `2a9b0a99` 精确 pin gitlink/库存；topology/checkpoint PASS，`scripts/tests` **978 pass/273 subtests**。

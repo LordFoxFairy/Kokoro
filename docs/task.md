@@ -2,6 +2,8 @@
 
 ## 下一切片：W3-WEB-SKILL-CONSUMER（P0；正式发布与读回 UI）
 
+**阶段状态（2026-09-29）：** 机器/文档门 Web `53760a2c4c9b0420e2a8bb4db8be66d8160169af` 已由 Root 独立 Node22 全门与 BFF 原字节比对通过，Web 仓 clean main；下一个唯一写入切片只处理正式运行 UI/同源 adapter 与对应 tests，现有 3310 不作验收。以下表格保留整条业务放行条件，机器 pin 不等于用户可用。
+
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | Web `apps/kokoro-app` 唯一写入 Agent，clean `main 74dcc101f6c457d10db4511365e6898f44f0e625`；BFF public owner `62daba37fc0267830d73590bb5a3499807d46fc6` 已由 Root `2a9b0a99` 精确 pin。Web 现有正式 `SkillUploadDialog`/Skills 页仍旧 preview/confirm、`scope=official|third_party` 与旧 generated；本片不得把 3310 用户进程或显式 preview fixture 当正式验收。Root 只写 Root 任务/库存/隔离 runner，不与 Web writer 抢文件。 |
