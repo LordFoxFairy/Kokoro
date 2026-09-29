@@ -1470,7 +1470,7 @@
           "repository_path": "apps/kokoro-capability",
           "repository_commit": "391fa9a958744b0cf463484ef869ac3b37c86b3c",
           "path": "src/modules/skills/skills.module.ts",
-          "sha256": "8a4e14dca60f6d7769d05281ba108b9b51449f495b0ab1791222d4a7b28bd0b2"
+          "sha256": "b39a91f4099efeeaa28a94905f5e7b05079ecedcf71c446dc8d79fe436fa6058"
         },
         {
           "repository_path": "apps/kokoro-iam",
