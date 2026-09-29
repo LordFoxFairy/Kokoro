@@ -8,6 +8,8 @@ Storage main `16a6c1ce95832df6dc839e0d50e957405c5c7005` 已提交推送：在现
 
 **边界：** Storage owner 字节/hash/scan/短期引用已具备专用包范围，Platform 仍是 Storage v1/body tenant/裸 URL consumer，缺可信 Product 当前 subject/owner 授权、持久 revision package 绑定和 v2 接线；BFF/Agent 产品链及六 owner 激活均未完成。下一门由 Platform owner 先对齐三设计/机器契约/Schema，再单一 consumer 切换和真组合，不让 Storage credential 代替 Skill 权限。
 
+**Root 提交后来源门：** 固定 Storage gitlink 后，Root 首次完整 `scripts/tests` 为 **956 pass/1 fail**：历史 checkpoint 测试揭示 `consumer-inventory.json` 仍钉旧 Agent/Storage gitlink 与证据 digest，不能以 13 条 declared broken 掩盖来源漂移。Root 随后仅将 Agent `7dfcfa9`、Storage `16a6c1c` 的 owner/evidence commit 与当前原字节 SHA 重钉，并修正 `EDGE-CAPABILITY-STORAGE` 的过时理由，不把任何 broken 边升 active。重新运行 checkpoint **11 pass**、`verify-contract-checkpoint.py` PASS、Root 全量 `scripts/tests` **957 pass/212 subtests**、拓扑 PASS；compatibility 仍为 **16 边/13 declared broken/0 额外来源错误**，符合未闭环事实。全仓标准门仍 **136 既有规则违例/0 未核验**，不谎称标准绿；Root 原有任务外 `uv.lock` 改动保持未暂存。
+
 ## 2026-09-29 — Storage Skill revision 包范围文档门通过，代码门未开始
 
 Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 只修六份既有文档：将 F2 已实施的 14 RPC/一个 Asset HTTP/七表九枚举、固定旧 SHA 的 Agent/BFF/Web 作品浏览器纵切，与 W1E 尚未实施的 `skill_package + skill_id`、Platform 六项包操作和旧 BFF package purpose 收口分开。Root 独立 Node24 六文件 Prettier、diff check、Proto/Prisma 计数通过；独立复审两轮纠正当前/历史状态与 provenance 摘要，终审 P0/P1/P2=0。**只通过文档门**；Storage Proto/Prisma/授权代码未改，真实包链、Platform v2 consumer、六 owner sandbox仍待实施。Root 原有任务外 `uv.lock` 工作树改动未纳入本片，3310/共享服务未触碰。

@@ -32,6 +32,8 @@
 
 **代码门 B 已验收：** Storage main `16a6c1ce95832df6dc839e0d50e957405c5c7005` 已精确提交推送 41 文件，Root 独立 Node24 format/lint/typecheck/contract:check/Prisma validate/test/build、Buf breaking 与 diff check 全绿；默认 **468 pass/156 skip**。自有临时 PostgreSQL 单库 owner schema apply/drift、integration **23 文件/192 pass**、compiled smoke **6 pass**，测试库已删除、Redis DB14 0→0。独立审查 1 P1/2 P2 已返修，最终 P0/P1/P2=0；Storage 源码/README/三设计/contract/provenance 与正式生成同步。此前 RED、191 pass 中间态与扩围条目是审计记录，不覆盖本最终证据。两条外部 smoke 的旧调用身份已改，但真实 S3/ClamAV、旧 Docker smoke/OCI 未运行；Platform v1 消费、可信授权、持久 revision 绑定、BFF/Agent 与六 owner 真组合仍待后片，库存不因 Storage 单仓绿而升绿。
 
+**Root 来源台账补门：** Storage/Agent gitlink 推进后，Root 完整测试首次 **956 pass/1 fail** 定位旧 `consumer-inventory.json` evidence commit/digest 未随当前 Gitlink 更新；仅重钉 Agent `7dfcfa9`、Storage `16a6c1c` 的 owner/evidence 原字节 SHA 并纠正 Platform→Storage 理由，所有边状态仍为 3 active/13 broken。随后 checkpoint 11 pass、全量 `scripts/tests` **957 pass/212 subtests**、拓扑 PASS；compatibility 无额外来源错误。全仓标准门仍 136 既有违例，外部 provider/OCI smoke 未跑；不把子仓单项验收升级为整体系绿。
+
 **下一门（Platform owner，尚未启动）：** 先基于 Storage `16a6c1c` 做 Platform `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md` 与机器 contract/Prisma 的设计门，裁决 user-only 当前 Product subject/owner 授权、具体 `skill_id` 包绑定/恢复和 Begin/Complete/Validate 具名操作。随后唯一 Platform writer pin Storage v2 Proto/provenance、带服务凭据和受信 tenant/subject/skill_package metadata 的 Connect client，保留完整 `TransferReference` 并删 v1/body tenant/裸 URL 运行路径；业务链以真 IAM→Platform→Storage 持久事实验收。不得因 Storage 已开六操作就直接激活或让 service credential 充当 Skill grant；Billing 最后。
 
 ## 最近验收：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
