@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Complete 只读预审完成，文档门待写
+
+两名只读 Agent 固定 Root `2df63b0`、BFF `571108b`、Platform `263a28f` 核对 owner v4 Proto/11 条 Complete 命令向量、Storage scan、BFF 当前路由与唯一 OpenAPI：BFF 尚无 public Complete，Platform 已有正式 Complete/持久回执/当前 Storage 扫描恢复。Root 在 [`task.md`](task.md) 裁决 public 仅回显 attempt/upload/hash/size 作不受信匹配，不接受字节、asset/scan/tenant/URL；200 只公开 uploaded + clean/pending/unknown，不暴露内部 asset_id，不把 CLEAN 说成 ZIP validated，感染和旧 attempt 412。发现原任务卡误写“不接收 hash”和不存在的 SCANNING wire enum，已改为 owner 实际字段与 `pending` 状态。Get 不返回 hash/size，Web 刷新时须保留描述符、重选原文件重算或显式替换 Begin，不得在 BFF 加缓存/SQL 伪造事实。本次仅预审/任务裁决，**未写 BFF Complete OpenAPI/代码/测试，未启动服务**；文档门随后由唯一 BFF writer 开始，3310 与任务外 `uv.lock` 不动。
+
 ## 2026-09-29 — BFF Begin 默认关闭候选真实跨 owner 组合 PASS
 
 BFF `main 571108b91084bec0be4451b8840a2d7cd9d2496a` 实现了正式 user-only `POST /v1/skills/{skill_id}/package-upload` 默认关闭运行候选：同路径按方法区分 Get/Begin、当次 IAM/受信 tenant/user→固定 Platform v4 Connect、owner `command_digest_version=3.0.0` JCS、稳定幂等身份；BFF 不存包状态/签名 URL、不代理字节。签名 URL 精确批准 ObjectStore public origin、PUT/唯一 ZIP header/有界到期，`KOKORO_STORAGE_OBJECT_ORIGIN` 可独立于 BFF Storage RPC secret 配置。直接 HTTP 测试先证旧 POST 误落 Get 400 的 RED，再 GREEN；独立审查旧 OpenAPI 句子和畸形 ID 类型两项 P2，owner 精确返修，终审 P0/P1/P2=0。Root Node22 独立 format、`contract:check` **109/109**、`check` **428 pass/1 skip**、`schema:check` **5 pass/1 skip**、build PASS；Root `0aaab19745bac32ab615869bb20d5564e9182726` 精确 pin BFF 与库存 163 处来源引用。BFF 未改 SQL Schema/生成 owner wire/锁文件。Root runner 独立审查发现 15 分钟有效期、响应 request ID 精确关联、签名 URL 日志扫描三项 P2，已补 RED→GREEN 负例并重跑真组合；独立终审 P0/P1/P2=0。
