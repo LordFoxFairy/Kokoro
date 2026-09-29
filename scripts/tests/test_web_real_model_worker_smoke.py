@@ -289,6 +289,26 @@ def test_durable_evidence_accepts_owner_resource_ids_but_rejects_sql_input(monke
             )
 
 
+def test_failed_browser_still_registers_exact_owned_run_for_cleanup(monkeypatch):
+    m = module()
+    registered = []
+
+    class Ownership:
+        def register_run(self, session, run):
+            registered.append((session, run))
+
+    monkeypatch.setattr(
+        m,
+        "_query",
+        lambda *_: [{"run": "run_bff_123", "session": "conv_123"}],
+    )
+    m.register_owned_worker_runs(None, "owned-db", Ownership())
+    assert registered == [("conv_123", "run_bff_123")]
+    monkeypatch.setattr(m, "_query", lambda *_: [{}, {}])
+    with pytest.raises(m.SmokeError, match="inventory drift"):
+        m.register_owned_worker_runs(None, "owned-db", Ownership())
+
+
 def test_harness_registers_system_in_existing_owned_lifecycle():
     source = Path("scripts/e2e/run_web_project_resource_chromium_smoke.py").read_text()
     assert '"owner_db_url": owner_db_url' in source

@@ -226,6 +226,23 @@ def _query(infra, database_url: str, query: str) -> object:
     )
 
 
+def register_owned_worker_runs(infra, database_url: str, ownership) -> None:
+    """Allow cleanup of the one real run even when Chromium reports a failure."""
+    rows = _query(
+        infra,
+        database_url,
+        """SELECT coalesce(json_agg(json_build_object(
+          'run',run_id,'session',request_json::jsonb->>'session_id')),
+          '[]'::json) FROM kokoro_agent.kokoro_agent_run""",
+    )
+    if not isinstance(rows, list) or len(rows) > 1:
+        raise SmokeError("real model owned Run inventory drift")
+    for row in rows:
+        if not isinstance(row, dict):
+            raise SmokeError("real model owned Run identity drift")
+        ownership.register_run(row.get("session"), row.get("run"))
+
+
 def worker_owns_lease(owner: object, process_group: int) -> bool:
     if not isinstance(owner, str):
         return False
@@ -435,6 +452,8 @@ def real_scenario(config: RealModelConfig, **context) -> dict[str, object]:
         )
     except subprocess.TimeoutExpired:
         raise SmokeError("real model Chromium deadline") from None
+    finally:
+        register_owned_worker_runs(infra, c["agent_db_url"], c["agent_redis"])
     if browser_process.returncode != 0:
         # Driver emits only stage names, not provider payloads or credentials.
         phase = errors.strip()
