@@ -49,6 +49,8 @@
 
 **阶段 A 验收：** BFF main `5d26f09cc1b425926f49b284a31136ce8ff2da03` 已提交推送，唯一 OpenAPI 新增严格 user-only CreateDraft 候选，冻结 operation 从 77→78；新操作 `{data}`/`{error}`、413/既有 IAM 准入码、429 可控 Retry-After 与专用 key 由语义门精确锁住，其他 77 operation 规则保留。独立复审两轮返修后 P0/P1/P2=0；Root Node22 `format:check/lint/typecheck/contract:check/test/build` 全部 PASS，默认 **376 pass/1 skip**。Root topology PASS，inventory **16 边/13 declared broken/0 provenance violation**。此片**只发布机器候选契约，不含 runtime route、真实 201、Web 更新或正式激活**；下一唯一 writer 进入阶段 B，Root 保留 Git/index。
 
+**阶段 B 复审扩卡（仍在进行）：** 首轮虽有 Node22 静态绿，但独立审查发现真实 IAM token URL/scope/resource、credential wire 与 v3 `{}` 摘要三个 P0；唯一 writer 已按 owner 契约返修，Root复跑默认门绿。第二轮仍有断开后 mutation 未取消等 1 P0/4 P1/2 P2，不得进入真 sandbox 或提交为完成。为在本操作流式拒绝 >65,536-byte body，唯一 BFF writer 额外获准**仅窄改既有 `src/http/request.ts` 的 `readBody` 可选字节上限**并补直接测试；旧调用者的默认 1 MiB 语义和其他路由不得改。继续在原阶段 B 文件集内修 request/response signal 全程、Connect 1 MiB、可控 429 Retry-After、generation 正整数/同 fd 防替换、逐请求 token 取消、严格 Skill ID；以实际 Node22 门、独立复审和后续真组合放行，未完成项不降级为文档建议。
+
 #### W1E-SKILL-SANDBOX-IAM-HOST（P0，阶段 C 前置；与 BFF 阶段 B 独立）
 
 | 项 | 放置与验证门 |
