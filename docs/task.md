@@ -53,6 +53,10 @@
 
 **阶段 B 验收（2026-09-29）：** BFF main `18691e646a7f54cda9e764f776a86a9f4c08fd6e` 已提交推送且 clean；Root 独立 Node22 format/lint/typecheck/contract/test/build/schema 全门通过，contract 75/75、默认 test 392 pass/1 skip、schema 5 pass/1 无库 skip；独立复审最终 P0/P1/P2=0。默认关闭候选、IAM 每次 admission、独立 catalog 凭据/Connect、幂等重放与断连已在本仓直接门固定，**真跨 owner 201/replay/撤权仍待 Root runner**，正式 public/Platform artifact 保持 inactive。下一唯一门是冻结 Root gitlink 后以自有隔离资源运行真组合，不以静态通过宣称闭环。
 
+**真组合 RED → BFF 精确协议返修卡（P0，2026-09-29）：** Root 固定 IAM `eb6700c`、BFF `18691e6`、Platform `5b6eb2c`、Storage `d5cfc44` 的独占单库/Redis/S3/短寿进程 runner 已通过四 owner readiness 和默认关闭 503/Platform 0 socket，但候选首请求真实返回 `502 skill_response_invalid`；所有自有资源清理检查通过、3310 未触碰。源码对照显示 Platform 正式 `expressConnectMiddleware` 与 `test/integration/nest-ingress.test.ts` 用 HTTP/1.1，BFF 新 `catalog-connect.ts` 却强制 `httpVersion:"2"`，此前 BFF 超限 double 也只启动 HTTP/2，故静态绿漏检真实 owner 协议。**唯一 BFF writer** 仅可改 `src/infrastructure/clients/platform/catalog-connect.ts`、`test/skill-create-draft-http.test.mjs` 及直接证据文档（若需），把 Connect 改为 owner 实际 HTTP/1.1 并令 >1MiB 测试在 HTTP/1.1 `node:http` server 精确证明客户端 read limit；不得改 Platform、Root runner、Proto/manifest、SQL/其他路由。先 RED 测真实协议错，再 GREEN Node22 全门；Root 独立复审/重验、提交 pin 后重跑同一真组合，若仍非 201 按新证据定位，绝不将 502 降级为预期。此返修不撤销阶段 B 的本仓门通过，但真组合仍未验收。
+
+**协议返修验收：** BFF main `caa99d90f57329065eeb0e98168316b2b1874159` 已提交推送、clean；Root 独立 Node22 全门 exit0（test 392 pass/1 skip、schema 5 pass/1 无库 skip），独立复审 P0/P1/P2=0。修复只改变 BFF Connect transport HTTP/1.1 与真实本地 HTTP/1.1 超限测试；Root 已将 consumer 来源库存重钉当前 SHA，**尚须 Root 真组合再次验证**。
+
 #### W1E-SKILL-SANDBOX-IAM-HOST（P0，阶段 C 前置；与 BFF 阶段 B 独立）
 
 | 项 | 放置与验证门 |

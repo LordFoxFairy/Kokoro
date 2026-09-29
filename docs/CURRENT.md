@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 Skill 真组合协议返修：** BFF main 已前移到 `caa99d90f57329065eeb0e98168316b2b1874159`。Root 用固定四 owner 在自有单库/Redis/MinIO/ClamAV 短寿组合确认 readiness、默认关闭 503 且 Platform 零 socket；启用后首请求曾返回 `502 skill_response_invalid`。根因是 BFF Connect 客户端误用 HTTP/2，而 Platform 正式 Express Connect ingress 使用 HTTP/1.1；BFF 已精确改为 HTTP/1.1，本仓 Root Node22 全门 392 pass/1 skip、独立复审 0 P0/P1/P2。**修复后的真 201/replay/撤权仍待复跑**，前段旧 SHA 只代表修复前阶段 B；3310 未触碰。
+
 **2026-09-29 BFF Skill Draft 阶段 B 已发布、真组合待验：** BFF main `18691e646a7f54cda9e764f776a86a9f4c08fd6e` 已实现 user-only `POST /v1/skills/drafts` 的默认关闭候选：每次先 IAM admission，再由独立 catalog machine token 与 generated Connect 调 Platform；同操作在通用 BFF mutation receipt 前精确分派。Root 独立 Node22 format/lint/typecheck/contract/test/build/schema 全门 exit0，默认测试 392 pass/1 skip、Schema 5 pass/1 无库 skip；独立复审最终 P0/P1/P2=0。**未运行真实 IAM→BFF→Platform 201/replay/撤权组合**，Platform v3 artifact 仍 inactive，Web 未接、正式 public 未激活、旧 Capability 四 GET 仍在；3310 未触碰。
 
 **2026-09-29 IAM Skill sandbox host 已发布：** IAM main `eb6700c13f84a165620a6be456a25d290bd3da4a` 只扩展测试 fixture 的显式 opt-in 协议，提供真实 Skill 用户 session、catalog/Platform 机器凭据及 IAM execution-authorization credential，并由 IAM 自己执行一次性 session 撤销；默认 Web OIDC host 协议不变。Root 独立 Node24 `pnpm verify` 102 文件/938 passed，真 PostgreSQL/Redis 聚焦 integration 28/28 passed，独立复审 P0/P1/P2=0；不代表 BFF/Platform 的真实 201 或 Web 产品入口。下文历史组合仍固定其原 SHA。

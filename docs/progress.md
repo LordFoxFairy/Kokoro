@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 真 Skill 组合首门 RED 与 BFF HTTP/1.1 返修
+
+Root 自有 IAM→BFF→Platform+Storage readiness 组合在 BFF `18691e6` 固定来源下已实测：四 owner 短寿进程/同一临时库/schema 与 Redis/ObjectStore/Scanner readiness 成立，默认关闭 `POST /v1/skills/drafts` 返回 503 且 Platform proxy 零 socket；显式开启后首请求真实 **502 `skill_response_invalid`**，因此没有 201/replay/撤权验收。前置 runner 两次初始 RED 还暴露日志只写掩盖失败、以及省略 PostgreSQL 用户名使 Storage installer 报 `no PostgreSQL user name specified in startup packet`；Root runner 已按当前有效 OS 用户规范化同一连接身份，不增数据库角色，后续到达真实 BFF 请求。每次失败 runner 都走自有 IAM stop、临时库/Redis/桶核对；独立盘点 `kokoro-skill-sandbox-*` 桶余量 0，用户 3310 未触碰。
+
+源码对照 Platform 正式 Express Connect 和其自身 HTTP/1.1 integration，BFF 新 consumer 原硬设 HTTP/2，且本仓超限 double 亦只用 HTTP/2，解释静态全绿漏检。BFF main `caa99d90f57329065eeb0e98168316b2b1874159` 已仅改 Connect 协议及直接 HTTP/1.1 超限测试，Root 独立 Node22 format/lint/typecheck/contract/test/build/schema 全门 exit0，contract 75/75、默认 test **392 pass/1 skip**、schema **5 pass/1 无库 skip**，日志 `/tmp/kokoro-bff-skill-h1-root-final.log`；独立复审 P0/P1/P2=0。**当前没有修复后真实 201 证据**，下一门是重钉 Root gitlink 后原 runner复测，不把协议定位当业务闭环。
+
 ## 2026-09-29 — BFF user Skill Draft 默认关闭运行候选已发布
 
 BFF main `18691e646a7f54cda9e764f776a86a9f4c08fd6e` 精确提交推送 17 文件：IAM admission 后、通用 receipt 前的 `POST /v1/skills/drafts` 专用分派；严格 JSON/单值 raw 幂等键、固定 user owner/摘要/command ID，owner-only 0600 catalog credential、IAM client_credentials token、generated Connect 1 MiB 限额及断连取消。默认关闭时返回 503 且不接 Platform；仅完整 loopback 隔离配置可开启同一生产 handler。无 BFF Skill SQL/receipt 或 Platform Proto/Schema 变更。Root 独立 Node22 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build && pnpm schema:check` 全部 exit0；contract 75/75、test **392 pass/1 skip**、schema **5 pass/1 无库 skip**，日志 `/tmp/kokoro-bff-skill-stage-b-root-final3.log`。独立审查多轮 P0/P1/P2 最终 0；本仓直接测试覆盖重放仍 IAM admission、撤权 401 后零新增 Platform I/O、credential symlink/权限与 Connect 读限额。真实 IAM→BFF→Platform+Storage readiness 的 Root runner **尚未执行**，不能把本仓静态/双测当真 201 或 Web 产品闭环；3310 未触碰。
