@@ -1,18 +1,30 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-PLATFORM-SKILL-PACKAGE-DESIGN（P0；2026-09-29）
+## 下一代码门：W3-PLATFORM-PACKAGE-SCHEMA（P0；2026-09-29）
+
+| 项 | 冻结范围与验收 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-capability` 唯一 writer，以设计门 `main 737b53fcee0ffe45a11396f4ea816979ccb01d2d` 为基线；Storage `16a6c1c`。Root 独占 Git index/commit/推送和独立验证，不与 Platform writer 同写文件。Root 保留既有任务外 `uv.lock`。 |
+| 文档门证据 | Platform 四份既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md` 已澄清已提交 v3 vs W3 目标，user-only、3 新 RPC/2 command、同 revision attempt+CAS、Storage v2、external receipt、ZIP V1 与 Storage 退役依赖；独立复审五 P1 修复后 P0/P1=0、P2 Get epoch 已修。Root Node24 Prettier、`git diff --check`、`platform-artifact:check`（v3 digest `324e749d…`）、Prisma validate、contract:check（`7dd99350…`）PASS。该提交不含运行码，不能称包链可用。 |
+| 本片 Owner/放置 | 唯一 canonical `prisma/schema.prisma` 增 `SkillPackagePhase` 与现有 `Skill` 行的 attempt/epoch/version/subject/size/name/MIME/Begin identity/upload/manifest 字段，保留当前 asset/hash 作为**当前 attempt** 唯一事实。选现有 Skill 一行而不建无 FK 第二 binding 表；生成物仅 `src/generated/prisma/**`。DB 同一个应用数据库、`kokoro_platform` schema、一套 credential；不跨 owner SQL，不增 role/migration 镜像。 |
+| 本片范围 | **仅 schema 与直接 schema/install/drift/Prisma 类型测试及必要的 mapper/fixture 机械闭包**；不先激活 Get/Begin/Complete、不接 Storage、不写占位业务 handler，不改 Proto/v3 历史/BFF/Agent/Storage/Root/lockfile。新增字段初值必须对应 none/epoch0/version0；当前运行仍固定拒绝 Validate/Publish，不能因字段存在放行。确需扩大现有文件时先报告 Root。 |
+| 数据不变量 | 明确 nullable 阶段矩阵、BIGINT 上限 fail closed、attempt/epoch/version 单调、tenant+skill_id+status/phase/epoch/version 条件写的后续 CAS 入口；旧全行 `updateSkill` 在下一业务代码片必须移除/收窄，不能让它覆盖包字段。已发布/安装/Source 在业务片只信 validated 并 fresh Storage；本片不冒称这些行为已上线。 |
+| 验证 / 交付 | 先 RED 旧 Prisma 缺阶段字段，再 GREEN Node24 format/lint/typecheck/Prisma validate+generate/schema:check/test/build；Root 自有独占 PostgreSQL 临时库做 fresh owner schema install/drift 与直接真实 integration，证明同库他 owner 对象不被触及，临时资源精确清理。Writer 只交文件清单、测试输出和未跑项，不操作 Git index/提交/用户 3310。Root 独立复跑后提交。 |
+
+
+## 已验收设计门：W3-PLATFORM-SKILL-PACKAGE-DESIGN（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
 | Owner / 基线 | `apps/kokoro-capability` 是当前物理 Platform 仓及唯一业务 writer，`main 5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`；Storage owner 已发布 `main 16a6c1ce95832df6dc839e0d50e957405c5c7005`。Root `f03fd51e91e3c978baacea715d29a238614c85f3` 管 Git index、审查、集成验证。Root 既有任务外 `uv.lock` 修改保留、不暂存。 |
 | 当前事实 | Platform 仍消费 Storage v1、body 自报 tenant 与裸 URL；Validate/Publish 受缺少包绑定固定阻断；`Skill` 只有 nullable asset/hash，缺持久 upload/subject/阶段；取包 RPC 丢失 Storage v2 的 method/headers/expiry。现行 v3 机器产物 31 operation/15 command 已冻结，不能原地暗改或标成 active。 |
 | 目标 / Owner 边界 | 先完成 Platform 自己的 Skill revision 包设计门，再进入实现。只开放 user owner 首片：BFF 每次通过 IAM session 取得 tenant/user 并固定 `owner=user/id=userId`，Platform 每次确认 IAM catalog workload/tenant、持久 Skill tenant/current user owner/draft；project/session 不伪造 grant。Platform 拥有授权、包绑定、ZIP manifest/`SKILL.md` 规则；Storage v2 只拥有 bytes/hash/scan/短期签名，`skill_package` 精确 scope_id=`skill_id`。不增数据库角色、不跨 owner SQL。 |
-| API 决策 | Platform 发布具名 `BeginSkillPackageUpload` / `CompleteSkillPackageUpload`，请求携 ProductCatalogContext、受信 command identity 与期望 hash/size；Validate 只使用本地完成且 CLEAN 的 binding，不再收 caller asset/hash。Platform 对外返回完整、短期 `TransferReference` 语义（URL、method、required_headers、expires_at），不持久化签名；读包逐次按当前授权和 Storage scan 重签。v3 历史不改，新 operation/command 必须新机器 release、生成物及消费者固定版本。BFF 不直连 Storage 代行 Skill 授权。 |
-| 数据/事务决策 | **复用 `Skill` 一行=一个 revision 的唯一包身份事实**，扩展 package phase、origin subject、期望 size/hash、Storage upload_id 与经过验证的 manifest；`package_asset_ref` 只在 Storage 完成后写，`content_sha256` 从 Begin 固定且不可改，只有 `validated` phase 才可 Publish/Install/Source。淘汰独立 binding 表：若保留现列会双真源，若删除则引入无 FK 的 1:1 orphan/跨 tenant 复杂度。现有 `updateSkill` 按 tenant+id 全行覆盖必须改成 draft+phase/版本 CAS 与 Serializable 短事务；不增第二套可编辑 SQL、数据库角色或跨 owner JOIN。 |
+| API 决策 | Platform 发布具名 `BeginSkillPackageUpload` / `CompleteSkillPackageUpload` 两命令与只读 `GetSkillPackageUpload`（刷新/丢 key 后查询当前 attempt，不调用 Storage Create）；请求携 ProductCatalogContext，命令另携受信 command identity 与固定 hash/size。Begin 可带当前 `replaces_attempt_id` 显式替换失败/废弃 attempt，CAS 拒绝旧命令与迟到响应。Validate 只使用本地完成且 CLEAN 的 binding，不再收 caller asset/hash。Platform 对外返回完整、短期 `TransferReference` 语义（URL、method、required_headers、expires_at），不持久化签名；读包逐次按当前授权和 Storage scan 重签。v3 历史不改，新 operation/command 必须新机器 release、生成物及消费者固定版本。BFF 不直连 Storage 代行 Skill 授权。 |
+| 数据/事务决策 | **复用 `Skill` 一行=一个 revision 的唯一当前包身份事实**，扩展 attempt ID/epoch、package phase、origin subject、期望 size/hash、Storage upload_id 与经过验证的 manifest；`package_asset_ref` 只在 Storage 完成后写，hash/size 在**当前 attempt 内**固定，显式替换失败 attempt 用 epoch/CAS 原子清旧包字段并使旧 receipt 不可重签或覆盖，`validated` 后不可替换。只有 `validated` phase 可 Publish/Install/Source。淘汰独立 binding 表：若保留现列会双真源，若删除则引入无 FK 的 1:1 orphan/跨 tenant 复杂度。现有 `updateSkill` 按 tenant+id 全行覆盖必须改成 draft+phase/版本 CAS 与 Serializable 短事务；不增第二套可编辑 SQL、数据库角色或跨 owner JOIN。 |
 | 文档门写入集 | 单一 Platform writer 仅修改既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`；先纠正仍把已提交 v3 描述成未提交候选的过期当前态，再写已裁决目标态/失败恢复/测试门。三设计与当前 Proto/Prisma 事实对齐，**此片不改** Proto、Prisma、生成物、运行码、其他仓、lockfile 或用户 3310。若确需新增目录/文件，先回报 Root 放置评审。 |
-| 顺序/验证 | 文档门 Root 审查当前/目标态及 `git diff --check` 后，才按 owner 顺序拆机器 Proto+新 artifact → canonical Prisma/持久 binding → Storage v2 单一路径受信 client → Begin/Complete/Validate/Publish/取包 → BFF user-only API → Agent reader。各代码片 RED→GREEN、真 PG/Storage/IAM 组合、同命令重放/异义冲突/未知结果/撤权/跨 tenant、user、revision/非 CLEAN/ZIP 不符。Root 最终不以 mock 或 Storage 六操作存在宣称闭环。 |
-| 未知结果与授权边界 | Begin 先在 Platform 持久化固定意图、原 subject 与稳定 Storage command，再出事务调用 Storage；ACK 丢失仅原 subject 且本次仍授权时同命令恢复并重签 PUT。若原 subject 已撤权且本地没有 upload_id，现 Storage 六 RPC 无跨 subject 找回操作：fail closed，孤儿由 Storage 生命周期清理，新 draft 重来，不伪称完全恢复。Complete 已知 upload_id 的未知结果用同命令/GetUploadStatus/ScanStatus 读回；所有 IAM/Storage/ZIP I/O 在短事务外。receipt 仅存稳定身份/阶段，不存短期签名；replay 先重新授权。 |
-| 任务状态 | 设计门进行中；Platform API/授权与 SQL/事务两项独立只读审查已完成，唯一 Platform 文档 writer 待派；尚无 Platform 代码交付、无真包 E2E。 |
+| 顺序/验证 | 文档门已通过；按 owner 顺序做 canonical Prisma 包阶段 → Platform 新 Proto/机器 artifact 与可构建 runtime → Storage v2 单一路径受信 client及 Begin/Complete/Validate/Publish/取包 → BFF user-only API → Agent reader。各代码片 RED→GREEN、真 PG/Storage/IAM 组合、同命令重放/异义冲突/未知结果/撤权/跨 tenant、user、revision/非 CLEAN/ZIP 不符。Root 最终不以 mock 或 Storage 六操作存在宣称闭环。 |
+| 未知结果与授权边界 | Begin 先在 Platform 持久化固定意图、原 subject 与稳定 Storage command，再出事务调用 Storage；ACK 丢失仅原 subject 且本次仍授权时同命令恢复并重签 PUT。若原 subject 已撤权且本地没有 upload_id，现 Storage 六 RPC 无跨 subject 找回操作：fail closed，不伪称完全恢复。Complete 已知 upload_id 的未知结果用同命令/GetUploadStatus/ScanStatus 读回；所有 IAM/Storage/ZIP I/O 在短事务外。receipt 仅存稳定身份/阶段，不存短期签名；replay 先重新授权。Storage 当前**没有自动 retention 执行器或已完成包删除 API**，未知/废弃对象可能残留；Platform 包产品激活前另设 Storage owner 退役代码片与真实清理证据，而不是把“以后 GC”当已实现。 |
+| 任务状态 | 四文档已由唯一 writer 提交 Platform `737b53fcee0ffe45a11396f4ea816979ccb01d2d`；独立复审五项 P1 返修后 P0/P1=0，Root Node24 文档/机器来源检查通过。此门仅设计，Proto/Prisma/运行码/真包 E2E 均未改或未跑；下一代码门见本文件顶部。 |
 
 
 ## 最近验收：W3-STORAGE-SKILL-PACKAGE-SCOPE（P0；2026-09-29）

@@ -1,10 +1,17 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform Skill 包设计门已验收，Schema 代码片下一门
+
+Platform `main 737b53fcee0ffe45a11396f4ea816979ccb01d2d` 已只提交并推送四份既有技术/API/数据/当前文档。Root 独立核对当前 Proto 31 RPC、v3/3.0.0 artifact 31 operation/24 tenant binding/15 command（inactive）与 Prisma 九表，Node24 Prettier 四文档、diff check、`platform-artifact:check`（aggregate `324e749d…`）、`prisma:validate` 和 `contract:check`（combined `7dd99350…`）均通过。SQL/契约独立审查指出的 Complete 刷新死路、替换 Begin 重放、外部副作用断言、user-only 撤权语义和 external receipt 恢复五项 P1 及 ZIP V1 profile 已返修；终审 P0/P1=0，Get epoch 的 P2 文档微漂移由 Root 修正。**未修改 Proto、Prisma、生成物或运行码，未运行真包 E2E。**
+
+Storage `16a6c1c` 的并行只读审查确认：当前只可恢复同命令 pending Upload、Abort pending；已完成 Asset 没有 Release RPC/删除状态，已有 object retirement 仅覆盖 canonical repair 的已知旧版本，未知对象只是报告。Platform 显式替换若留下已完成/未知孤儿，产品激活前必须由 Storage owner 增加包 Asset 释放与持久退休恢复代码门，不能把签名到期或未来 GC 说成现有闭环。下一唯一 Platform writer 先实现当前 `Skill` 行的 canonical 包阶段/attempt/epoch/版本及真实 PostgreSQL 约束验证，随后 owner-first 发布新 RPC/artifact/Storage v2 运行链。Root 仍有任务外 `uv.lock` 修改，未暂存/覆盖；用户 3310 未触碰。
+
+
 ## 2026-09-29 — Platform Skill 包链设计门启动（运行链未完成）
 
 Root 以 Platform `main 5b6eb2c`、Storage `main 16a6c1c` 和当前源码复核下一关键断链，并在 [`task.md`](task.md) 顶部冻结 `W3-PLATFORM-SKILL-PACKAGE-DESIGN`。API/授权与 SQL/事务两项独立只读审查已完成，未改文件、Git 或服务。当前 Platform 仍使用 Storage v1/body tenant/裸 URL，Validate/Publish 缺包绑定而固定拒绝；Storage 六操作存在不等于 Skill 产品可用。
 
-设计裁决：首片只准 user owner，Platform 本次 IAM catalog 与本地 current Skill 复核；具名 Begin/Complete、新机器版本；Storage v2 的 `skill_package/skill_id` 和完整短期 transfer；复用一行一个 revision 的 `Skill` 作为唯一包身份真源，不加重复绑定表。Begin 意图先持久化，Storage ACK 丢失以原 subject/同命令恢复；若原 subject 撤权且本地尚无 upload_id，则 fail closed，不假称可恢复。唯一 Platform 文档 writer 现只处理既有四份设计/当前文档，Proto/Prisma/运行码尚未变，真包 E2E 尚未执行。Root 既有任务外 `uv.lock` 修改保留；用户 3310 未触碰。
+设计裁决：首片只准 user owner，Platform 本次 IAM catalog 与本地 current Skill 复核；具名 Begin/Complete、新机器版本；Storage v2 的 `skill_package/skill_id` 和完整短期 transfer；复用一行一个 revision 的 `Skill` 作为唯一包身份真源，不加重复绑定表。Begin 意图先持久化，Storage ACK 丢失以原 subject/同命令恢复；若原 subject 撤权且本地尚无 upload_id，则 fail closed，不假称可恢复。Root 复核 Storage 当前还没有自动 retention 执行器或完成包删除 API，孤儿对象退役须在产品激活前单列 Storage owner 代码门，不把未来 GC 写作当前能力。唯一 Platform 文档 writer 现只处理既有四份设计/当前文档，Proto/Prisma/运行码尚未变，真包 E2E 尚未执行。Root 既有任务外 `uv.lock` 修改保留；用户 3310 未触碰。
 
 
 ## 2026-09-29 — Storage Skill revision 包范围代码门通过，Platform 消费未接
