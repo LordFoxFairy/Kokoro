@@ -55,6 +55,97 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_public_publish_requires_exact_active_owner_event_projection(self):
+        valid = {
+            "data": {
+                "source_ref": "skill:skill-current",
+                "revision": "1",
+                "status": "active",
+                "event_id": "123e4567-e89b-12d3-a456-426614174000",
+                "replayed": False,
+            }
+        }
+        self.assertFalse(
+            smoke.require_public_skill_publish(200, valid, "skill-current")["replayed"]
+        )
+        self.assertFalse(
+            smoke.require_public_skill_publish(
+                200,
+                {
+                    "data": {
+                        **valid["data"],
+                        "revision": "18446744073709551615",
+                    }
+                },
+                "skill-current",
+            )["replayed"]
+        )
+        for mutation in (
+            {"source_ref": "skill:other"},
+            {"revision": "0"},
+            {"revision": "01"},
+            {"revision": "18446744073709551616"},
+            {"revision": "9" * 21},
+            {"status": "validated"},
+            {"event_id": "NOT-UUID"},
+            {"replayed": "false"},
+            {"asset_id": "private"},
+        ):
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_public_skill_publish(
+                    200,
+                    {"data": {**valid["data"], **mutation}},
+                    "skill-current",
+                )
+
+    def test_publish_request_sends_zero_bytes_without_json_content_type(self):
+        sent = []
+
+        class Response:
+            status = 200
+
+            def read(self, _limit):
+                return b'{"data":{"source_ref":"skill:skill-current","revision":"1","status":"active","event_id":"123e4567-e89b-12d3-a456-426614174000","replayed":false}}'
+
+            def getheaders(self):
+                return [
+                    ("x-request-id", "skill-sandbox-abc"),
+                    ("cache-control", "no-store"),
+                ]
+
+        class Connection:
+            def __init__(self, *_args, **_kwargs):
+                pass
+
+            def request(self, *args, **kwargs):
+                sent.append((args, kwargs))
+
+            def getresponse(self):
+                return Response()
+
+            def close(self):
+                pass
+
+        with (
+            patch.object(smoke.http.client, "HTTPConnection", Connection),
+            patch.object(smoke.secrets, "token_hex", return_value="abc"),
+        ):
+            status, body = smoke._http_publish_empty(
+                "http://127.0.0.1:4401",
+                "/v1/skills/skill-current/publish",
+                token="TOKEN",
+                secret="SECRET",
+                key="publish-key",
+            )
+        self.assertEqual(status, 200)
+        self.assertEqual(body["data"]["status"], "active")
+        self.assertEqual(len(sent), 1)
+        args, kwargs = sent[0]
+        self.assertEqual(args, ("POST", "/v1/skills/skill-current/publish"))
+        self.assertEqual(kwargs["body"], b"")
+        self.assertEqual(kwargs["headers"]["content-length"], "0")
+        self.assertNotIn("content-type", kwargs["headers"])
+
     def test_signed_put_zip_fixture_binds_current_draft_identity(self):
         payload = smoke.upload_zip_bytes("skill-current", 1)
         with zipfile.ZipFile(BytesIO(payload)) as archive:
@@ -350,8 +441,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "status": "PASS",
                 "resources": "clean",
                 "platform_skill_count": 2,
-                "platform_receipt_count": 30,
-                "platform_publish_event_count": 1,
+                "platform_receipt_count": 31,
+                "platform_publish_event_count": 2,
                 "platform_package_begin": "PASS",
                 "platform_package_complete": "PASS",
                 "platform_package_infected": "PASS",
@@ -379,6 +470,11 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "bff_skill_validate_replay": "PASS",
                 "bff_skill_validate_stale_attempt": "PASS",
                 "bff_skill_validate_revoked": "PASS",
+                "bff_skill_publish": "PASS",
+                "bff_skill_publish_replay": "PASS",
+                "bff_skill_publish_conflict": "PASS",
+                "bff_skill_publish_event_durable": "PASS",
+                "bff_skill_publish_revoked": "PASS",
             },
         )
 

@@ -32,7 +32,7 @@ import threading
 import time
 import zipfile
 from typing import Callable, Iterator, Protocol
-from uuid import uuid4
+from uuid import UUID, uuid4
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 
@@ -66,6 +66,7 @@ class Phase(str, Enum):
     CANDIDATE_SIGNED_PUT = "candidate_signed_put"
     CANDIDATE_PACKAGE_COMPLETE = "candidate_package_complete"
     CANDIDATE_PACKAGE_VALIDATE = "candidate_package_validate"
+    CANDIDATE_PUBLISH = "candidate_publish"
     PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
@@ -626,6 +627,42 @@ def require_public_skill_validate(
     return data
 
 
+def require_public_skill_publish(
+    status: int, body: object, skill_id: str
+) -> dict[str, object]:
+    """Accept only the owner-backed active publication and public fields."""
+    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("BFF Skill Publish response invalid")
+    data = body["data"]
+    if not isinstance(data, dict) or set(data) != {
+        "source_ref",
+        "revision",
+        "status",
+        "event_id",
+        "replayed",
+    }:
+        raise SmokeError("BFF Skill Publish data invalid")
+    revision = data["revision"]
+    event_id = data["event_id"]
+    if (
+        data["source_ref"] != "skill:" + skill_id
+        or not isinstance(revision, str)
+        or len(revision) > 20
+        or re.fullmatch(r"[1-9][0-9]*", revision) is None
+        or int(revision) > 18_446_744_073_709_551_615
+        or data["status"] != "active"
+        or not isinstance(event_id, str)
+        or type(data["replayed"]) is not bool
+    ):
+        raise SmokeError("BFF Skill Publish projection invalid")
+    try:
+        if str(UUID(event_id)) != event_id:
+            raise ValueError("noncanonical UUID")
+    except ValueError:
+        raise SmokeError("BFF Skill Publish event invalid") from None
+    return data
+
+
 def require_package_response_headers(
     headers: list[tuple[str, str]], request_id: str, operation: str
 ) -> None:
@@ -696,8 +733,8 @@ def safe_summary(
             "status": "PASS",
             "resources": "clean",
             "platform_skill_count": 2,
-            "platform_receipt_count": 30,
-            "platform_publish_event_count": 1,
+            "platform_receipt_count": 31,
+            "platform_publish_event_count": 2,
             "platform_package_begin": "PASS",
             "platform_package_complete": "PASS",
             "platform_package_infected": "PASS",
@@ -725,6 +762,11 @@ def safe_summary(
             "bff_skill_validate_replay": "PASS",
             "bff_skill_validate_stale_attempt": "PASS",
             "bff_skill_validate_revoked": "PASS",
+            "bff_skill_publish": "PASS",
+            "bff_skill_publish_replay": "PASS",
+            "bff_skill_publish_conflict": "PASS",
+            "bff_skill_publish_event_durable": "PASS",
+            "bff_skill_publish_revoked": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -908,6 +950,44 @@ def _http_json(
         raise SmokeError("BFF response is not JSON") from None
     if not isinstance(value, dict):
         raise SmokeError("BFF response envelope invalid")
+    return response.status, value
+
+
+def _http_publish_empty(
+    base: str, path: str, *, token: str, secret: str, key: str
+) -> tuple[int, dict[str, object]]:
+    """Send exactly zero body bytes for the fixed PERSONAL Publish command."""
+    parsed = urlsplit(base)
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
+    request_id = "skill-sandbox-" + secrets.token_hex(8)
+    try:
+        connection.request(
+            "POST",
+            path,
+            body=b"",
+            headers={
+                "authorization": "Bearer " + token,
+                "x-kokoro-service": "web-bff",
+                "x-kokoro-internal-secret": secret,
+                "x-kokoro-request-id": request_id,
+                "idempotency-key": key,
+                "content-length": "0",
+            },
+        )
+        response = connection.getresponse()
+        raw = response.read(1_048_577)
+        headers = response.getheaders()
+    finally:
+        connection.close()
+    if len(raw) > 1_048_576:
+        raise SmokeError("BFF Publish response too large")
+    require_package_response_headers(headers, request_id, "Publish")
+    try:
+        value = json.loads(raw)
+    except (ValueError, UnicodeError):
+        raise SmokeError("BFF Publish response is not JSON") from None
+    if not isinstance(value, dict):
+        raise SmokeError("BFF Publish response envelope invalid")
     return response.status, value
 
 
@@ -1195,6 +1275,44 @@ def platform_inventory(
         )
         active_validated = int(cursor.fetchone()[0])
     return skills, receipts, publish_events, active_validated
+
+
+def platform_publish_event(
+    database_url: str,
+    tenant: str,
+    skill_id: str,
+    event_id: str,
+    revision: str,
+    attempt_id: str,
+) -> int:
+    """Read only the owner outbox row bound to this public Publish result."""
+    import psycopg
+
+    with (
+        psycopg.connect(
+            platform_inventory_connection_url(database_url), connect_timeout=5
+        ) as connection,
+        connection.cursor() as cursor,
+    ):
+        cursor.execute(
+            'SELECT count(*) FROM "kokoro_platform"."outbox_event" '
+            "WHERE tenant_id = %s AND event_id = %s AND event_type = %s "
+            "AND aggregate_type = %s AND aggregate_id = %s "
+            "AND payload_json ->> 'source_ref' = %s "
+            "AND payload_json ->> 'revision' = %s "
+            "AND payload_json -> 'package' ->> 'attempt_id' = %s",
+            (
+                tenant,
+                event_id,
+                "skill.published",
+                "skill",
+                skill_id,
+                "skill:" + skill_id,
+                revision,
+                attempt_id,
+            ),
+        )
+        return int(cursor.fetchone()[0])
 
 
 def _redis_keys(url: str, pattern: str) -> set[str]:
@@ -1755,6 +1873,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     != "skill_dependency_unavailable"
                 ):
                     raise SmokeError("default-off BFF Validate did not fail closed")
+                status, body = _http_publish_empty(
+                    bff_base,
+                    "/v1/skills/sandbox-closed/publish",
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="closed-publish",
+                )
+                if (
+                    status != 503
+                    or body.get("error", {}).get("code")
+                    != "skill_dependency_unavailable"
+                ):
+                    raise SmokeError("default-off BFF Publish did not fail closed")
                 if proxy.count != 0:
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
@@ -2501,10 +2632,76 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or body.get("error", {}).get("code") != "skill_precondition_failed"
                 ):
                     raise SmokeError("BFF stale Validate attempt did not reject")
+                phase = Phase.CANDIDATE_PUBLISH
+                publish_path = (
+                    "/v1/skills/" + quote(begin_skill_id, safe="") + "/publish"
+                )
+                publish_key = "package-publish-" + run_id
+                status, body = _http_publish_empty(
+                    bff_base,
+                    publish_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=publish_key,
+                )
+                publication = require_public_skill_publish(status, body, begin_skill_id)
+                if publication["replayed"] is not False:
+                    raise SmokeError("BFF first Publish was unexpectedly replayed")
+                event_id = publication["event_id"]
+                revision = publication["revision"]
+                status, body = _http_publish_empty(
+                    bff_base,
+                    publish_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=publish_key,
+                )
+                publication = require_public_skill_publish(status, body, begin_skill_id)
+                if (
+                    publication["replayed"] is not True
+                    or publication["event_id"] != event_id
+                    or publication["revision"] != revision
+                ):
+                    raise SmokeError("BFF Publish replay changed the owner event")
+                status, body = _http_publish_empty(
+                    bff_base,
+                    publish_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-publish-second-" + run_id,
+                )
+                if (
+                    status != 412
+                    or body.get("error", {}).get("code") != "skill_precondition_failed"
+                ):
+                    raise SmokeError("BFF second Publish on active Skill was accepted")
+                status, body = _http_get_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if (
+                    status != 412
+                    or body.get("error", {}).get("code") != "skill_precondition_failed"
+                ):
+                    raise SmokeError("BFF published Skill package GET stayed draft")
                 if platform_inventory(
-                    urls["kokoro_platform"], ready.tenant_id, str(result["skill_id"])
-                ) != (2, 30, 1, 1):
-                    raise SmokeError("Platform public Validate inventory is not unique")
+                    urls["kokoro_platform"], ready.tenant_id, begin_skill_id
+                ) != (2, 31, 2, 1):
+                    raise SmokeError("Platform public Publish inventory is not unique")
+                if (
+                    platform_publish_event(
+                        urls["kokoro_platform"],
+                        ready.tenant_id,
+                        begin_skill_id,
+                        str(event_id),
+                        str(revision),
+                        str(zip_recovered["attempt_id"]),
+                    )
+                    != 1
+                ):
+                    raise SmokeError("Platform public Publish event was not durable")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
                 phase = Phase.REVOKE
@@ -2572,6 +2769,18 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or body.get("error", {}).get("code") != "session_invalid"
                 ):
                     raise SmokeError("revoked IAM session reached BFF Skill Validate")
+                status, body = _http_publish_empty(
+                    bff_base,
+                    publish_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=publish_key,
+                )
+                if (
+                    status != 401
+                    or body.get("error", {}).get("code") != "session_invalid"
+                ):
+                    raise SmokeError("revoked IAM session reached BFF Skill Publish")
                 time.sleep(0.2)
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")
