@@ -57,6 +57,7 @@ class Phase(str, Enum):
     DEFAULT_OFF = "default_off"
     CANDIDATE_CREATE = "candidate_create"
     CANDIDATE_REPLAY_CONFLICT = "candidate_replay_conflict"
+    CANDIDATE_PACKAGE_GET = "candidate_package_get"
     PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
@@ -371,6 +372,14 @@ def public_error_code(value: object) -> str:
     return "unknown"
 
 
+def require_public_package_get(status: int, body: object, skill_id: str) -> None:
+    """The fresh draft has no package attempt; reject stale or expanded public data."""
+    if status != 200 or body != {
+        "data": {"skill_id": skill_id, "attempt_epoch": "0", "phase": "none"}
+    }:
+        raise SmokeError("BFF current Skill package GET projection invalid")
+
+
 def exercise_http_contract(
     request: JsonRequest,
     ready: SandboxReady,
@@ -427,6 +436,9 @@ def safe_summary(
             "platform_publish": "PASS",
             "platform_publish_replay": "PASS",
             "platform_publish_negative": "PASS",
+            "bff_skill_package_get": "PASS",
+            "bff_skill_package_get_published": "PASS",
+            "bff_skill_package_get_revoked": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -598,6 +610,40 @@ def _http_json(
         raise SmokeError("BFF response is not JSON") from None
     if not isinstance(value, dict):
         raise SmokeError("BFF response envelope invalid")
+    return response.status, value
+
+
+def _http_get_json(
+    base: str, path: str, *, token: str, secret: str
+) -> tuple[int, dict[str, object]]:
+    parsed = urlsplit(base)
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
+    try:
+        connection.request(
+            "GET",
+            path,
+            headers={
+                "authorization": "Bearer " + token,
+                "x-kokoro-service": "web-bff",
+                "x-kokoro-internal-secret": secret,
+                "x-kokoro-request-id": "skill-sandbox-" + secrets.token_hex(8),
+            },
+        )
+        response = connection.getresponse()
+        raw = response.read(1_048_577)
+        headers = {name.lower(): value for name, value in response.getheaders()}
+    finally:
+        connection.close()
+    if len(raw) > 1_048_576:
+        raise SmokeError("BFF package GET response too large")
+    if not headers.get("x-request-id") or headers.get("cache-control") != "no-store":
+        raise SmokeError("BFF package GET response headers invalid")
+    try:
+        value = json.loads(raw)
+    except (ValueError, UnicodeError):
+        raise SmokeError("BFF package GET response is not JSON") from None
+    if not isinstance(value, dict):
+        raise SmokeError("BFF package GET response envelope invalid")
     return response.status, value
 
 
@@ -797,14 +843,14 @@ def platform_inventory(
         receipts = int(cursor.fetchone()[0])
         cursor.execute(
             'SELECT count(*) FROM "kokoro_platform"."outbox_event" '
-            'WHERE tenant_id = %s AND event_type = %s',
+            "WHERE tenant_id = %s AND event_type = %s",
             (tenant, "skill.published"),
         )
         publish_events = int(cursor.fetchone()[0])
         cursor.execute(
             'SELECT count(*) FROM "kokoro_platform"."skill" '
-            'WHERE tenant_id = %s AND skill_id = %s AND status::text = %s '
-            'AND package_phase::text = %s AND package_attempt_epoch = %s',
+            "WHERE tenant_id = %s AND skill_id = %s AND status::text = %s "
+            "AND package_phase::text = %s AND package_attempt_epoch = %s",
             (tenant, skill_id, "active", "validated", 6),
         )
         active_validated = int(cursor.fetchone()[0])
@@ -1297,6 +1343,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     != "skill_dependency_unavailable"
                 ):
                     raise SmokeError("default-off BFF candidate did not fail closed")
+                get_path = "/v1/skills/sandbox-closed/package-upload"
+                status, body = _http_get_json(
+                    bff_base,
+                    get_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if (
+                    status != 503
+                    or body.get("error", {}).get("code")
+                    != "skill_dependency_unavailable"
+                ):
+                    raise SmokeError("default-off BFF package GET did not fail closed")
                 if proxy.count != 0:
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
@@ -1322,6 +1381,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     ready,
                     observe,
                 )
+                phase = Phase.CANDIDATE_PACKAGE_GET
+                get_path = (
+                    "/v1/skills/"
+                    + quote(str(result["skill_id"]), safe="")
+                    + "/package-upload"
+                )
+                status, body = _http_get_json(
+                    bff_base,
+                    get_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_public_package_get(status, body, str(result["skill_id"]))
                 phase = Phase.PACKAGE_REFERENCE
                 _run(
                     [
@@ -1353,6 +1425,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     1,
                 ):
                     raise SmokeError("Platform Publish inventory is not unique")
+                status, body = _http_get_json(
+                    bff_base,
+                    get_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if (
+                    status != 412
+                    or body.get("error", {}).get("code") != "skill_precondition_failed"
+                ):
+                    raise SmokeError(
+                        "published Skill package GET did not reject non-draft"
+                    )
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
                 phase = Phase.REVOKE
@@ -1370,6 +1455,17 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 )
                 if status != 401:
                     raise SmokeError("revoked IAM session was not rejected")
+                status, body = _http_get_json(
+                    bff_base,
+                    get_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                if (
+                    status != 401
+                    or body.get("error", {}).get("code") != "session_invalid"
+                ):
+                    raise SmokeError("revoked IAM session reached BFF package GET")
                 time.sleep(0.2)
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")

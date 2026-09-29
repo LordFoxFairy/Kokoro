@@ -70,8 +70,26 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "platform_publish": "PASS",
                 "platform_publish_replay": "PASS",
                 "platform_publish_negative": "PASS",
+                "bff_skill_package_get": "PASS",
+                "bff_skill_package_get_published": "PASS",
+                "bff_skill_package_get_revoked": "PASS",
             },
         )
+
+    def test_public_get_requires_exact_current_none_state(self):
+        expected = {
+            "data": {"skill_id": "skill-current", "attempt_epoch": "0", "phase": "none"}
+        }
+        smoke.require_public_package_get(200, expected, "skill-current")
+        for body in (
+            {"data": {**expected["data"], "attempt_id": "attempt-old"}},
+            {"data": {**expected["data"], "attempt_epoch": "1"}},
+            {"data": {**expected["data"], "phase": "uploaded"}},
+            {"data": {**expected["data"], "secret": "leak"}},
+            {"data": {**expected["data"], "skill_id": "other"}},
+        ):
+            with self.subTest(body=body), self.assertRaises(smoke.SmokeError):
+                smoke.require_public_package_get(200, body, "skill-current")
 
     def test_package_probe_receives_only_storage_boundary_and_current_skill(self):
         parsed = smoke.require_sandbox_ready(ready())
