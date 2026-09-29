@@ -1,5 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 ZIP Validate 三面文档门 PASS，代码门待实施
+
+Platform `main 252a53afa019980d2d8dcd4c3d720a33262c5240` 已提交推送四份文档：[技术设计](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/TECHNICAL_DESIGN.md)、[API 契约](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/API_CONTRACT.md)、[数据模型](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/DATA_MODEL.md)、[当前事实](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/CURRENT.md)。明确 Complete 真 CLEAN/INFECTED 已验、Validate/Publish 固定拒绝仍是当前源码；单独 Validate 的 `attempt_id=7`、ZIP V1 上限/严格结构、manifest 原字节身份、typed reason、Storage 当前 CLEAN/GET、receipt 与 Skill 双 fence、无新表/role/DB 已相互对齐。Root 独立 Node24 `format:check`、`contract:lint`、`platform-artifact:check`（55 正/142 负）、`schema:check` 与 diff check 均 PASS；schema 只有既有 relationMode 提示。Root 将 Platform gitlink 与库存 9 处 provenance commit 精确前移，当前 checkpoint/topology PASS；Root 全 `scripts/tests` **959 pass/212 subtests**。compatibility 仍 16 边/13 declared broken/0 额外来源错误，不将 broken 升绿。本片没有依赖安装、Proto、代码、真实 PG/ZIP/Storage Validate 证据，不把文档门写成业务闭环。下一门为 owner 唯一 writer 实现、Root 独立验收，Publish 再后。
+
+
 ## 2026-09-29 — W3 ZIP Validate 文档门进行中（尚未验收）
 
 在 Root `7bd4749b` / Platform `62417f9` 的 CLEAN 与 INFECTED 真组合基线上，Root 已把下一片限定为 Platform 正式 ZIP V1 Validate，Publish 另片；任务与门禁见 [`task.md`](task.md)。两项独立只读预审确认当前 Validate RPC 和 catalog 实现仍固定 fail closed、Storage `verifyPackage` 只核 CLEAN/引用而不下载 ZIP、manifest 尚无机器 profile；因此**当前没有 ZIP Validate 功能通过证据**。Platform 唯一 writer 正先对齐 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 四份文档，代码须等文档门审查；Root 未改用户 3310，未动任务外 `uv.lock`，无新增数据库/角色/服务。依赖初核 `yauzl@3.4.0` MIT + Node24 CRC32 可用，但其默认路径行为、CRC 与本地头校验不能当成已覆盖，须由 profile 与测试明定。本段仅为阶段状态，不计代码或端到端完成。
