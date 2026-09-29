@@ -1266,3 +1266,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Web 唯一写入负责人仅改 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`，Root 审查提交 Web main `3a0ad22563458621a9d2d4b10ff3a2c45adcac6e`。四文档把当前 hash/Blob Chat 断链与 BFF owner `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7` 新 Delivery/has_more 机器契约分开，设计精确二元身份、旧 cursor 410 重快照、live/snapshot 竞态与 Canvas 首片 metadata/原生附件；没有 Web 运行、生成或 Schema 修改。
 - Root 独立 SHA-256：BFF owner OpenAPI `a224b186813615467b6c045d3be83082d3e164e140d6da9722bf3f8d7e33b219`，Web 当前 generated `8a0849dcf3ae557d5f3166ad624c5eea9f42bc0b65c7a6ae7fda1741224d567b`。独立 Node22 `pnpm contract` 16 文件/103 测试、旧来源生成检查 15 文件均 PASS；`git diff --check` PASS。旧 pin 仍在，`EDGE-WEB-BFF` 保持 declared broken；真 S9 Chat 浏览器与 410/GC 恢复测试未运行，不以 S7 Library 浏览器结果充数。
 - 只读 Web 审计指出正式 AG-UI 新字段和 BFF snapshot 目前都会被 Web strict schema 拒绝，卡/Canvas 仍 hash/Blob，且流 410 只转 FAIL、终态 sync 可覆盖新 live。Root 浏览器 runner 审计确认已有两件作品在浏览器启动前投递，只能证明 snapshot；S9 真 live 须加隔离、有界 handoff，GC/410 另以 owner/transport 测试证明。下一步先锁 Web 代码文件集，再派唯一 writer；无新增 IAM 权限或部署任务，3310 未触碰。
+
+## 2026-09-28 — 3310 过期登录交互故障（P0）
+
+- 现场 3310 原始 `iam_interaction_csrf_rejected` 是 Web `/auth/sign-in` POST 的 CSRF 拒绝，在 IAM 凭据检查之前；用户标签的签名 query `exp` 已过期约 11 小时，Web CSRF 令牌有效期 5 分钟且一次性。Root 使用现有 IAB 标签重新访问 `/login`，确见 IAM 邮箱/密码表单；旧 JSON 页面被替换，但这只验 GET，不是完整登录。
+- Root 唯一 Web writer 暂停 S9 后先加 2 项 RED，再最小修改 GET 过期 query 与浏览器 POST 失效 CSRF：均 303 重启 `/login`，保留非浏览器 403、来源检查与清除旧 CSRF cookie。Web main `a5418c67d4e8d3af5e1dae9130d9326578f31c75` 已推送；Root 复跑相邻测试 **60/60 PASS**、定向 ESLint 与 typecheck exit0。没有改 IAM 或放宽令牌校验。
+- 3310 为运行约 11 小时的旧隔离构建，尚未热更新到新 Web commit，也未在该常驻进程做凭据→`/app` 全链回归。S9 Web 代码仍在唯一 writer 的未提交工作树，尚未通过全门；Root 历史隔离 E2E 不能替代当前 3310 或全产品验收。

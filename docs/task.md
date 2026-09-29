@@ -1,5 +1,7 @@
 # Kokoro 后端闭环任务总表
 
+**当前 P0 登录实测（2026-09-28）：** 3310 用户停留的 `/auth/sign-in` 带 10 分钟有效的签名 query，已过期约 11 小时；表单 CSRF 是 5 分钟/一次性，旧页面提交由 Web 在调用 IAM 前返回裸 JSON `iam_interaction_csrf_rejected`。Web main `a5418c67d4e8d3af5e1dae9130d9326578f31c75` 已在现有 GET/POST 路径做最小修复：过期签名入口和浏览器 CSRF 失效 303 重开固定 `/login`，非浏览器 403 不变；两文件 60/60、聚焦 lint/typecheck 通过。Root 在当前 3310 将用户标签重新打开 `/login`，真页面显示 IAM 邮箱/密码表单，但 3310 仍是旧运行构建，**尚未在该进程完整提交凭据走到 `/app`，新修复也尚未部署到该进程**。不要把历史隔离 E2E 成功说成当前 3310 全链正常；下门为 S9 Web 停写冻结后全门、当前入口版本刷新与真浏览器登录/Chat 回归。
+
 ## 当前关键路径：W2-F2 Storage Agent 作品交付（2026-09-28）
 
 IAM 0.7 是已验的 **owner 授权切片**，不是产品完成状态；本阶段不新增 IAM 权限设计。3310 `/login` 已到 IAM 真实表单，登录故障只按实测缺陷处理。下一项用户可见断链是“对话产生作品 → Library 显示并下载”：个人文件已通过真浏览器纵切；Agent 受信 Run/lease 作品交付代码 `96dafec` 与 Storage `d5cfc44` 已通过 Root 独立真实服务纵切，但该纵切由测试驱动调用生产客户端/事件 emitter，**不是完整 worker/模型/BFF/Web 浏览器链**。后续先补 Agent 作品种类的权威事件字段，再按 BFF→Web 顺序提供正式 Product 入口；不借个人 Asset 或哈希旧路径充数。
