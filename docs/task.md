@@ -33,7 +33,7 @@
 
 **验收结果：** BFF main `2a95da2410fd89c300dc18064867ee66617549e2` 已提交推送；旧 f26d147 vendor 被同字节的新 owner commit 目录替代，完整 17 文件 v3 artifact、aggregate/provenance、独立 raw CreateDraft 投影和 JCS/SHA-256 已固定，`status=generated-not-activated` 保持。Root Node22 独立 `format:check/lint/typecheck/contract:check/test/build` 全部通过，默认测试 **373 pass/1 skip**；生成源双次字节一致，真实 artifact 树的额外文件/目录/符号链接负例拒绝。独立代码复审的 4 项 P1/P2 已返修，最终无 P0/P1/P2。Root 来源库存仍 **16 边/13 declared broken/0 provenance violation**，拓扑 PASS；此为离线消费门，**无 public OpenAPI/route、真 IAM→BFF→Platform 201 或 Web 页面证据**，3310 未触碰。
 
-#### W1E-BFF-SKILL-DRAFT-RUNTIME-CANDIDATE（P0，下一唯一写入切片）
+#### W1E-BFF-SKILL-DRAFT-RUNTIME-CANDIDATE（P0，阶段 B 已验收；真组合待验）
 
 | 项 | 实施决策与阶段门 |
 | --- | --- |
@@ -49,7 +49,9 @@
 
 **阶段 A 验收：** BFF main `5d26f09cc1b425926f49b284a31136ce8ff2da03` 已提交推送，唯一 OpenAPI 新增严格 user-only CreateDraft 候选，冻结 operation 从 77→78；新操作 `{data}`/`{error}`、413/既有 IAM 准入码、429 可控 Retry-After 与专用 key 由语义门精确锁住，其他 77 operation 规则保留。独立复审两轮返修后 P0/P1/P2=0；Root Node22 `format:check/lint/typecheck/contract:check/test/build` 全部 PASS，默认 **376 pass/1 skip**。Root topology PASS，inventory **16 边/13 declared broken/0 provenance violation**。此片**只发布机器候选契约，不含 runtime route、真实 201、Web 更新或正式激活**；下一唯一 writer 进入阶段 B，Root 保留 Git/index。
 
-**阶段 B 复审扩卡（仍在进行）：** 首轮虽有 Node22 静态绿，但独立审查发现真实 IAM token URL/scope/resource、credential wire 与 v3 `{}` 摘要三个 P0；唯一 writer 已按 owner 契约返修，Root复跑默认门绿。第二轮仍有断开后 mutation 未取消等 1 P0/4 P1/2 P2，不得进入真 sandbox 或提交为完成。为在本操作流式拒绝 >65,536-byte body，唯一 BFF writer 额外获准**仅窄改既有 `src/http/request.ts` 的 `readBody` 可选字节上限**并补直接测试；旧调用者的默认 1 MiB 语义和其他路由不得改。继续在原阶段 B 文件集内修 request/response signal 全程、Connect 1 MiB、可控 429 Retry-After、generation 正整数/同 fd 防替换、逐请求 token 取消、严格 Skill ID；以实际 Node22 门、独立复审和后续真组合放行，未完成项不降级为文档建议。
+**阶段 B 历史复审扩卡（已关闭）：** 首轮虽有 Node22 静态绿，但独立审查发现真实 IAM token URL/scope/resource、credential wire 与 v3 `{}` 摘要三个 P0；唯一 writer 已按 owner 契约返修，Root复跑默认门绿。第二轮仍有断开后 mutation 未取消等 1 P0/4 P1/2 P2，不得进入真 sandbox 或提交为完成。为在本操作流式拒绝 >65,536-byte body，唯一 BFF writer 额外获准**仅窄改既有 `src/http/request.ts` 的 `readBody` 可选字节上限**并补直接测试；旧调用者的默认 1 MiB 语义和其他路由不得改。继续在原阶段 B 文件集内修 request/response signal 全程、Connect 1 MiB、可控 429 Retry-After、generation 正整数/同 fd 防替换、逐请求 token 取消、严格 Skill ID；以实际 Node22 门、独立复审和后续真组合放行，未完成项不降级为文档建议。
+
+**阶段 B 验收（2026-09-29）：** BFF main `18691e646a7f54cda9e764f776a86a9f4c08fd6e` 已提交推送且 clean；Root 独立 Node22 format/lint/typecheck/contract/test/build/schema 全门通过，contract 75/75、默认 test 392 pass/1 skip、schema 5 pass/1 无库 skip；独立复审最终 P0/P1/P2=0。默认关闭候选、IAM 每次 admission、独立 catalog 凭据/Connect、幂等重放与断连已在本仓直接门固定，**真跨 owner 201/replay/撤权仍待 Root runner**，正式 public/Platform artifact 保持 inactive。下一唯一门是冻结 Root gitlink 后以自有隔离资源运行真组合，不以静态通过宣称闭环。
 
 #### W1E-SKILL-SANDBOX-IAM-HOST（P0，阶段 C 前置；与 BFF 阶段 B 独立）
 

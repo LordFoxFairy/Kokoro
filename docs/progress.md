@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF user Skill Draft 默认关闭运行候选已发布
+
+BFF main `18691e646a7f54cda9e764f776a86a9f4c08fd6e` 精确提交推送 17 文件：IAM admission 后、通用 receipt 前的 `POST /v1/skills/drafts` 专用分派；严格 JSON/单值 raw 幂等键、固定 user owner/摘要/command ID，owner-only 0600 catalog credential、IAM client_credentials token、generated Connect 1 MiB 限额及断连取消。默认关闭时返回 503 且不接 Platform；仅完整 loopback 隔离配置可开启同一生产 handler。无 BFF Skill SQL/receipt 或 Platform Proto/Schema 变更。Root 独立 Node22 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build && pnpm schema:check` 全部 exit0；contract 75/75、test **392 pass/1 skip**、schema **5 pass/1 无库 skip**，日志 `/tmp/kokoro-bff-skill-stage-b-root-final3.log`。独立审查多轮 P0/P1/P2 最终 0；本仓直接测试覆盖重放仍 IAM admission、撤权 401 后零新增 Platform I/O、credential symlink/权限与 Connect 读限额。真实 IAM→BFF→Platform+Storage readiness 的 Root runner **尚未执行**，不能把本仓静态/双测当真 201 或 Web 产品闭环；3310 未触碰。
+
 ## 2026-09-29 — IAM Skill sandbox host 前置已发布
 
 IAM main `eb6700c13f84a165620a6be456a25d290bd3da4a` 只修改 `test/fixtures/web-oidc-flow-host.ts`、`test/integration/web-oidc-flow-host.test.ts`；显式 Skill sandbox opt-in 由真实 IAM fixture provision user session、catalog 与 Platform resource-server、IAM execution-authorization tenant client，默认 host ready 保持原形状。一次性 `revoke-user-session` 由 IAM 删除其自有 session；测试证明撤销后相同用户 Bearer admission 401，执行授权 client_credentials 使用 IAM INTERNAL resource 与 `iam:execution-authorization.verify`，非 Platform ingress token。Root 独立 Node24 `pnpm verify` **102 文件/938 passed**（`/tmp/kokoro-iam-skill-root-final2-verify.log`），真实 PostgreSQL/Redis 聚焦 integration **28/28 passed**（`/tmp/kokoro-iam-skill-root-final2-integration.log`），临时数据库清单前后相同；独立复审 P0/P1/P2=0。此为组合 runner 的身份前置，**未证明** BFF/Platform 真 201、Skill 激活或 Web 可见入口；3310 未触碰。
