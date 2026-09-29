@@ -1,6 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-PLATFORM-PUBLISH-DOC-GATE（P0；2026-09-29）
+## 当前执行：W3-PLATFORM-PUBLISH-CODE（P0；2026-09-29）
+
+| 项 | 任务卡 / 验收门 |
+| --- | --- |
+| Owner / 基线 | Platform 唯一 writer `/root/platform_complete_owner`，物理仓 `apps/kokoro-capability` `main 594ac64a84d8ac6887f0a759fa89ba676cef8432`；Root `main 00a27dfd4d6173bad98439e8e9535ef8793733ea` 管跨仓边界、审查、精确 pin 与真实组合，不并发写 Platform。已通过的三面设计见本仓 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL；独立 API/SQL 审查固定该设计门。 |
+| 范围 / 排除 | 仅 Skills 现有 RPC/catalog/transaction/repository/Storage port 所需代码、相关 `test/`、v4 inactive 机器 fixture 与必要文档、既有 `scripts/smoke-storage-package.mjs` owner CLI。允许按 §8 已批准的粒度在既有 Skills/package/catalog 或 infrastructure repository 中添具名文件；不改 Prisma canonical schema、v1–v3、其他子仓、Root index/`uv.lock`、用户 3310、服务拓扑、数据库角色。越界先报告 Root。 |
+| RED→GREEN 目标 | 正式 Publish 从 current user/PERSONAL 的 draft+validated 到 active；每次首次/同命令重放/ACK unknown 先当次 IAM/current owner 与 fresh Storage CLEAN/固定包/对象健康，事务外网络、事务内整包快照 CAS + 唯一 `skill.published` outbox + local receipt 原子完成。Publish 专用内部 result codec 绑定 attempt/epoch/upload/asset/hash/manifest；同命令同 event 重放，不同命令对 active 拒绝；disabled/withdrawn/quarantined 旧重放拒绝。`schema_version:1` 在事件 payload 而非已有 envelope；v4 保持 inactive。 |
+| 验证 / 交付 | 先 RED 单测/真 PG 覆盖权限、visibility、非 validated、并发、失败回滚、lease/COMMIT unknown、Storage 非 CLEAN、completed receipt fresh 快路与不重复事件，再代码 GREEN。Node24 format/lint/typecheck/contract/artifact/cutover/schema/default test/build 与隔离真 PG 全门；owner CLI 用合法 ZIP→Validate→Publish→Source 和同命令重放/反例。Platform writer 独占子仓 main 提交推送，报告 SHA/实际命令/结果/风险；Root 停写后独立审查、复跑和独占真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 组合，才可标已验。BFF public/session、Agent pin、Storage orphan retirement、危险包主动隔离与产品激活另片。 |
+
+## 最近验收：W3-PLATFORM-PUBLISH-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 阶段门 |
 | --- | --- |
