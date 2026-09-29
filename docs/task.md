@@ -1,6 +1,14 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-VALIDATE-DOC-GATE（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-VALIDATE-RUNTIME（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer，clean `main 8396b0708d86cf1016ca3dfaab7dc4e734d60417`；Root `e673b937e3115a4ccdd738f07e5f7e066297063f` 精确 pin；Platform `263a28f` v4 inactive。Validate 三面/唯一 OpenAPI 的未激活候选已过代码前门，但**无运行 route**。先用 BFF 当前 route 的真实 HTTP RED 核 `/v1/skills/{skill_id}/validate` 不可用与默认关闭零 Platform socket，再实现；同仓单 writer，不动 Root/别仓。 |
+| 实现 / 数据方向 | 具名 Validate route、strict `attempt_id` 输入与单个 Idempotency-Key、operation+受信 tenant/user/skill/key 稳定命令 ID、owner v4 digest **3.0.0 / 8 向量** projector；扩现有 `CatalogConnectClient` generated 调用，`server.ts` 精确 dispatch 且共用默认关闭 flag。每次含 replay 先 IAM current user/fixed tenant，再 BFF workload→Platform current owner/attempt/Storage CLEAN/ZIP V1；内部严格核 owner skill/series/valid=true/lowercase digest/manifest/replayed 后公开 `{data}`。不从 body 取 asset/hash/tenant/owner，不把 uploaded/CLEAN 或 validated 当 published；BFF 无新 SQL/receipt/Storage 字节代理、无旧 Capability fallback。 |
+| RED / 验收 | 覆盖有效 ZIP Validate 200、同键 replay、旧/错 attempt/坏 ZIP/感染/未完成 412、IAM 撤权先于 Platform socket、owner 坏响应 502、幂等冲突 409、unknown ACK 同键恢复、timeout/cancel、严格 x-request-id/no-store；直接 HTTP 与 digest 8 向量 GREEN。Node22 format/contract/check/schema/build、独立终审 P0/P1/P2=0；Root 自有真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 经 public Begin→signed PUT→Complete→Validate、Get validated/replay/坏 ZIP/撤权及旧 Publish 回归，验独占资源清理。该片仍默认关闭且非 public Publish/Web Chromium/产品激活；随后 Publish 文档→运行，再一次性替换 Web 旧上传。3310 与任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-BFF-SKILL-VALIDATE-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
@@ -8,6 +16,7 @@
 | 目标职责 / 合同 | 先只做 user-owned draft Validate 的三面文档与唯一 public OpenAPI：建议 `POST /v1/skills/{skill_id}/validate`，单个 Idempotency-Key、严格 `attempt_id`、当前 IAM/fixed tenant/user，BFF catalog workload→Platform owner `ValidateSkillDraft`。owner v4 `command_digest_version=3.0.0` 的 Validate **8** 向量、Get current attempt/owner/scan/ZIP 状态、200 valid/content_digest/manifest_identity/skill_id/series_id/replayed、拒绝/重放/未知 ACK 与每状态错误需同机对齐；不接受 asset/hash/tenant/owner 自报。Publish 的 PERSONAL scope/事件/幂等另紧接文档与代码片，不让上传完成冒充发布。 |
 | §8 放置 / 依赖 / 删除 | 方案 A：扩本仓 `contract/openapi/v1/openapi.yaml`、operation inventory/语义门及 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT，运行片沿现有 `src/http/routes/` 具名 route、`src/http/` strict input、`src/infrastructure/clients/platform/` 独立 projector/既有 generated Connect、`src/bootstrap/server.ts` 精确 dispatch；采用，文件各有单一变化原因。方案 B：复用旧 Capability/Begin 泛路由、BFF generic receipt 或另建 contract/Skill SQL；淘汰，方向错误且重复 owner。无新 schema、DB role、事务或 Redis 事实；Platform 自持 receipt/CAS/Storage 检查，BFF 不代理 ZIP。下一运行片删除被替代的旧路径/误导文档，不留 fallback。 |
 | 文档门 / 运行门 | 本片先 RED 唯一 machine operation 缺失，再补语义/错误/8 digest 向量与三面一致性；Root Node22 format/contract/check/schema、独立 API/SQL 只读审查 P0/P1/P2=0 才放行。后续 Validate runtime+真 IAM/Platform/Storage/ZIP/撤权组合；再做 Publish 文档→runtime+真同 event replay；**两命令通过后** Web 一次替换旧 multipart preview/confirm 为完整 shadcn ZIP 选取→Begin→直 PUT→Complete→Validate→Publish，Root 真 Chromium/CORS 验收。v4 不因文档自动激活，3310 与任务外 `uv.lock` 不动，支付最后。 |
+| 实际交付 / 证据 | BFF 唯一 writer `1c245540a4e0c76e392528c2655fb1cab9d9359b` 的 8 文件机器/文档片经独立复审发现 W1E 历史“无 body” P2；BFF `8396b0708d86cf1016ca3dfaab7dc4e734d60417` 单文件标废止基线并明确 v4 tag7，终审 P0/P1/P2=0。Node22 Root 独立 format、contract **130/130**、check **449 pass/1 skip**、schema **5 pass/1 skip**、build PASS；Root `e673b937` 精确 pin BFF/库存 163 处来源，Root 完整 `scripts/tests` **966 pass/239 subtests**、checkpoint/topology PASS。兼容库存 **16 边/13 declared broken/0 provenance violation**、十仓标准 **136 既有违规/0 unverified** 仍红。机器候选未激活、无 Validate route/真实调用；v4 仍 inactive。 |
 
 ## 待前置：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；需 BFF Validate/Publish）
 

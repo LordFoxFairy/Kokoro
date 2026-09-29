@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Validate 三面文档与唯一机器候选门 PASS
+
+BFF `main 1c245540a4e0c76e392528c2655fb1cab9d9359b` 仅更新唯一 public OpenAPI、operation inventory、operation-scoped semantic checker/直接 contract test 与 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT：user-only `POST /v1/skills/{skill_id}/validate` **尚未激活、没有运行 route**。strict body 仅必填 `attempt_id`（owner v4 Proto tag 7），单个 Idempotency-Key，owner v4 command digest version `3.0.0` 的 **8** 向量；200 valid=true/skill/series/lowercase digest/manifest/replayed，错误按状态收窄，不把 Complete CLEAN 当 validated/published。原旧 W1E 表“Validate 无 body”经独立审查指出 P2，owner `main 8396b0708d86cf1016ca3dfaab7dc4e734d60417` 只精确标为废止历史并链接当前机器事实，最终独立终审 P0/P1/P2=0；无 src/generated/Proto/SQL/lockfile 或服务改动。
+
+Root 独立 Node22 在最终 BFF `8396b070` 实跑 format、contract **130/130**、check **449 pass/1 skip**、schema **5 pass/1 skip**、build 全 PASS；Root `e673b937e3115a4ccdd738f07e5f7e066297063f` 精确 pin gitlink 与库存 **163** 处 BFF commit，四处 blob digest 因三条路径变化更新，Root 完整 `scripts/tests` **966 pass/239 subtests**、当前 checkpoint 与 topology PASS。兼容库存 **16 边/13 declared broken/0 provenance violation** 仍 exit1，十仓标准 **136 既有违规/0 unverified** 仍 FAIL；不因文档门升绿。下一片是 Validate 运行候选与真 IAM/Storage ZIP，随后 Publish 文档/运行和 Web 一次替换；不冒称 Validate public 可调用、浏览器链或产品激活。3310 未触碰，任务外 `uv.lock` 不暂存。
+
 ## 2026-09-29 — 下一序列裁决：先 BFF Validate/Publish，再一次替换 Web 旧上传
 
 Root 并行只读核 BFF `1aee402`/Platform `263a28f` 与 Web `317c74c`：BFF public/运行仅有默认关闭 CreateDraft/Get/Begin/Complete，owner Proto 已有 Validate/Publish；Validate v4 明确需要 `attempt_id=7`，各有 **8** 条 v4 命令投影向量。Web 正式两处复用的 `SkillUploadDialog` 仍向旧 `/api/hub/self/skills/upload/{preview,confirm}` 发 ZIP multipart，并以 namespace/candidates 多选后直接展示 published；当前 BFF 没有该路由，亦没有 Validate/Publish public。若先接 Web 半条上传链，会把 uploaded 误认完成并再重写 UI/测试。因此下一片先由 BFF 唯一 writer 完成 Validate 文档/机器→代码/真 owner，再 Publish 文档/机器→代码/真 owner；Web 在两命令稳定后沿已有 shadcn Dialog/语义 token 一次性删除旧正式 preview/confirm 并完成真 Chromium/CORS/发布。只读审计未改子仓或启服务；该顺序是计划，不是已验收能力。见 [`task.md`](task.md)。
