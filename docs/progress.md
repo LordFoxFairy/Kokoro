@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 下一序列裁决：先 BFF Validate/Publish，再一次替换 Web 旧上传
+
+Root 并行只读核 BFF `1aee402`/Platform `263a28f` 与 Web `317c74c`：BFF public/运行仅有默认关闭 CreateDraft/Get/Begin/Complete，owner Proto 已有 Validate/Publish；Validate v4 明确需要 `attempt_id=7`，各有 **8** 条 v4 命令投影向量。Web 正式两处复用的 `SkillUploadDialog` 仍向旧 `/api/hub/self/skills/upload/{preview,confirm}` 发 ZIP multipart，并以 namespace/candidates 多选后直接展示 published；当前 BFF 没有该路由，亦没有 Validate/Publish public。若先接 Web 半条上传链，会把 uploaded 误认完成并再重写 UI/测试。因此下一片先由 BFF 唯一 writer 完成 Validate 文档/机器→代码/真 owner，再 Publish 文档/机器→代码/真 owner；Web 在两命令稳定后沿已有 shadcn Dialog/语义 token 一次性删除旧正式 preview/confirm 并完成真 Chromium/CORS/发布。只读审计未改子仓或启服务；该顺序是计划，不是已验收能力。见 [`task.md`](task.md)。
+
 ## 2026-09-29 — BFF Complete 默认关闭候选真实跨 owner 组合 PASS
 
 BFF `main 1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 已交付 user-only public Complete 运行候选，Root `036d12e7c7f460d885f085162baf5f1dde61248c` 精确 pin；仍由同一 loopback flag 默认关闭，Platform v4 inactive。Root 独立 Node22 format、contract **127/127**、check **446 pass/1 skip**、schema **5 pass/1 skip**、build PASS；BFF 独立终审 P0/P1/P2=0。BFF 不新增 Skill SQL/receipt/Storage 字节代理，内部校验 asset_id 但 public 严格省略。

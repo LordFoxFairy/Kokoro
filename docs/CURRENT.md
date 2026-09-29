@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**下一代码顺序：** 先补 BFF user-only Validate（owner v4 必填 attempt_id）与 Publish 的 public 契约、运行和真 owner 验证，再一次性替换 Web 旧 multipart preview/confirm；现有 Web Dialog 的“多选候选→直接发布”与单 Skill ZIP 状态机不兼容。详见 [`task.md`](task.md) 与 [`progress.md`](progress.md)。
+
 **2026-09-29 BFF Complete 真组合已验、产品仍默认关闭：** BFF `1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 的 user-only Complete 运行候选由 Root `036d12e7` 精确 pin；Root Node22 format/contract **127/127**/check **446 pass、1 skip**/schema **5 pass、1 skip**/build PASS。隔离真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV `/tmp/kokoro-bff-complete-final.log` exit0：public CLEAN/replay、错摘要 412、EICAR public 412/aborted/同键拒绝/显式恢复再 CLEAN、撤权 401/零新 Platform socket、旧 ZIP Validate/Publish 回归；Skill **2**/receipt **24**/outbox **1**、资源 clean、Redis DB14=0、3310 PID 81692 未变。Root runner 独立终审 P0/P1/P2=0、全 `scripts/tests` **966 pass/239 subtests**、topology/当前 checkpoint PASS；compatibility 13 条 declared broken 仍红。**Web 可见上传/Chromium CORS/PUT、Validate/Publish public、v4 激活与全产品闭环未完成**；下一切片见 [`task.md`](task.md)。
 
 **2026-09-29 BFF Complete 仅三面/机器候选门通过：** BFF `457472dd14f26219473d30f9b763c2d345be03a0` 在唯一 OpenAPI 增 user-only Complete 未激活候选，三面文档、语义门与直接契约对齐；Root `cafdfc60` 精确 pin。Node22 contract 112/112、check 431 pass/1 skip、schema 5 pass/1 skip、format PASS，独立终审 P0/P1/P2=0；Platform v4 仍 inactive。**BFF 尚无 public Complete 运行路由/真 owner 组合，更无 Web 浏览器上传闭环。**下一切片见 [`task.md`](task.md)，先运行候选再真 IAM/Storage 验收；3310 未动。

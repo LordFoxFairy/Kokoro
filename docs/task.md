@@ -1,12 +1,21 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-VALIDATE-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 当前事实 | BFF `apps/kokoro-bff` 唯一 writer，clean `main 1aee40265a57a120fc2ba43c1d7a5ca547690ae9`；Root `dc5d2e67` 精确 pin；Platform `263a28f` v4 inactive。唯一 BFF OpenAPI 和运行层目前仅有默认关闭 CreateDraft/Get/Begin/Complete，**没有 public Validate/Publish**；旧 Capability Skills 路由继续存在。Platform owner Proto/generated 已有 ValidateSkillDraft/PublishSkill；Validate v4 请求 **attempt_id tag 7**，旧 BFF 目标文档“仅 path/无 body”过时。 |
+| 目标职责 / 合同 | 先只做 user-owned draft Validate 的三面文档与唯一 public OpenAPI：建议 `POST /v1/skills/{skill_id}/validate`，单个 Idempotency-Key、严格 `attempt_id`、当前 IAM/fixed tenant/user，BFF catalog workload→Platform owner `ValidateSkillDraft`。owner v4 `command_digest_version=3.0.0` 的 Validate **8** 向量、Get current attempt/owner/scan/ZIP 状态、200 valid/content_digest/manifest_identity/skill_id/series_id/replayed、拒绝/重放/未知 ACK 与每状态错误需同机对齐；不接受 asset/hash/tenant/owner 自报。Publish 的 PERSONAL scope/事件/幂等另紧接文档与代码片，不让上传完成冒充发布。 |
+| §8 放置 / 依赖 / 删除 | 方案 A：扩本仓 `contract/openapi/v1/openapi.yaml`、operation inventory/语义门及 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT，运行片沿现有 `src/http/routes/` 具名 route、`src/http/` strict input、`src/infrastructure/clients/platform/` 独立 projector/既有 generated Connect、`src/bootstrap/server.ts` 精确 dispatch；采用，文件各有单一变化原因。方案 B：复用旧 Capability/Begin 泛路由、BFF generic receipt 或另建 contract/Skill SQL；淘汰，方向错误且重复 owner。无新 schema、DB role、事务或 Redis 事实；Platform 自持 receipt/CAS/Storage 检查，BFF 不代理 ZIP。下一运行片删除被替代的旧路径/误导文档，不留 fallback。 |
+| 文档门 / 运行门 | 本片先 RED 唯一 machine operation 缺失，再补语义/错误/8 digest 向量与三面一致性；Root Node22 format/contract/check/schema、独立 API/SQL 只读审查 P0/P1/P2=0 才放行。后续 Validate runtime+真 IAM/Platform/Storage/ZIP/撤权组合；再做 Publish 文档→runtime+真同 event replay；**两命令通过后** Web 一次替换旧 multipart preview/confirm 为完整 shadcn ZIP 选取→Begin→直 PUT→Complete→Validate→Publish，Root 真 Chromium/CORS 验收。v4 不因文档自动激活，3310 与任务外 `uv.lock` 不动，支付最后。 |
+
+## 待前置：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；需 BFF Validate/Publish）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，当前 `main 317c74c2048829471b0c4196df98dd6d2dcf5e36`；Root 只读裁决/审查/集成。BFF `1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 已有默认关闭的 Get/Begin/Complete，Platform `263a28f` v4 仍 inactive。先读 Web 三面文档、唯一 BFF public OpenAPI 与现有 Skills/Library UI，出 §8 放置表及精确合同；不把旧 preview/confirm 作为正式上传。 |
-| 目标 / 边界 | 用现有 shadcn/ui 与品牌 token 建正式可见 Skill ZIP 上传：选文件→计算 SHA/大小→同源 Begin→批准 ObjectStore origin 无凭据、禁重定向、原样 header 直 PUT→同源 Complete→Get 当前状态；刷新/断线保留可靠描述符或明确要求重选原文件，不伪造 Complete。个人私有、当前 IAM、撤权、错误/扫描 pending/infected、替换与重试在设计中显式建模。Web 不直连 Platform/Storage 控制面，不复制 owner SQL、receipt 或第二套协议。 |
-| 先行门 / 验证 | 先把 `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`DATA_MODEL.md` 与已有 Web 路由/测试收敛为当前方案，机器 API 仍由 BFF owner 唯一维护；若无需新 schema/contract，文档写明。之后单一 Web writer 做 RED→实现→Node22 lint/typecheck/test/build/Playwright；Root 独占真 IAM→Chromium→Web→BFF→Platform→Storage/MinIO/ClamAV 验 CORS preflight/PUT、CLEAN/INFECTED/恢复/刷新/撤权、自有资源清理。3310 用户进程不热替换，支付最后。此门只评审设计，不冒称浏览器已经打通。 |
+| 目标 / 边界 | 用现有 shadcn/ui 与品牌 token 一次替换正式旧 Skill Dialog：单 ZIP 选取→计算 SHA/大小→同源 Begin→批准 ObjectStore origin 无凭据、禁重定向、原样 header 直 PUT→同源 Complete→Validate→Publish，Get 仅用于当前包恢复、不是 active 发布读取。刷新/断线保留可靠描述符或明确要求重选原文件，不伪造 Complete；个人私有、当前 IAM、撤权、错误/感染、替换与重试显式建模。Web 不直连 Platform/Storage 控制面，不复制 owner SQL/receipt 或第二协议。 |
+| 先行门 / 验证 | Web 当前 `/app/skills` 与 Settings 共用旧 `SkillUploadDialog`，经 `/api/hub/self/skills/upload/{preview,confirm}` 代理 multipart；BFF 当前无该 public 路由，namespace/candidates/多选/直接 published 语义不能映射单 Skill attempt。先由 BFF owner 完成 Validate/Publish public 与真组合，再将 Web TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 与现有路由/测试收敛；机器 API 仍由 BFF 唯一维护。随后单一 Web writer 做 RED→实现→Node22 全门与隔离 Playwright；Root 真 IAM→Chromium→Web→BFF→Platform→Storage/MinIO/ClamAV 验 CORS preflight/PUT、CLEAN/INFECTED/恢复/刷新/撤权和发布。3310 用户进程不热替换；此门不冒称浏览器已打通。 |
 
 ## 最近验收：W3-BFF-SKILL-COMPLETE-RUNTIME（P0；2026-09-29）
 
