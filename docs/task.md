@@ -49,6 +49,18 @@
 
 **阶段 A 验收：** BFF main `5d26f09cc1b425926f49b284a31136ce8ff2da03` 已提交推送，唯一 OpenAPI 新增严格 user-only CreateDraft 候选，冻结 operation 从 77→78；新操作 `{data}`/`{error}`、413/既有 IAM 准入码、429 可控 Retry-After 与专用 key 由语义门精确锁住，其他 77 operation 规则保留。独立复审两轮返修后 P0/P1/P2=0；Root Node22 `format:check/lint/typecheck/contract:check/test/build` 全部 PASS，默认 **376 pass/1 skip**。Root topology PASS，inventory **16 边/13 declared broken/0 provenance violation**。此片**只发布机器候选契约，不含 runtime route、真实 201、Web 更新或正式激活**；下一唯一 writer 进入阶段 B，Root 保留 Git/index。
 
+#### W1E-SKILL-SANDBOX-IAM-HOST（P0，阶段 C 前置；与 BFF 阶段 B 独立）
+
+| 项 | 放置与验证门 |
+| --- | --- |
+| Owner / 当前事实 | `apps/kokoro-iam` main `4d981441d154c83b63987f284e3a82a559595870` 唯一 writer，仅测试 host/fixture 协议。现有 `test/fixtures/internal-http-application.ts` 已可真 provision Platform resource、catalog tenant-machine、resource-server、tenant-execution 和签发有 Session 的 user token；`test/fixtures/web-oidc-flow-host.ts` 自建/清理唯一临时数据库与 Redis prefix，但未启用 `platform/skill`，ready 未导出上述证据，也无 revoke 指令。Root 不得跨 owner SQL 撤 session。 |
+| 目标 / 目录比较 | **采用**扩展既有 `test/fixtures/web-oidc-flow-host.ts` 的显式 opt-in sandbox mode 与其现有 integration test；淘汰在 Root 复制 IAM fixture/SQL 或新建第二 IAM host/数据库。仅增加测试协议，不改正式 IAM OpenAPI、Schema、权限策略或运行服务；每个新字段/命令有固定用途。 |
+| 文件集 / 身份 | IAM 唯一 writer 可改 `test/fixtures/web-oidc-flow-host.ts` 与 `test/integration/web-oidc-flow-host.test.ts`，如 `internal-http-application.ts` 已有返回形状不足先报告 Root，不预设扩围。opt-in 时传 `platform:true, skill:true`，ready 只在该模式输出签发的 fixture user Bearer、tenant/subject、catalog client、Platform resource-server Basic 和 tenant-execution credential 所需最小值；默认 ready 形状完全不变。新增一次性 `revoke-user-session` 指令只在该模式内由 IAM fixture 自身删除其 `userSessionId`，返回无 secret 的确认。凭据只走受控 stdout 协议，不写日志/文件；Root runner 后续负责 0600 临时文件。 |
+| 数据/API / 删除 | IAM fixture 拥有临时库生命周期；Root 取 ready `database_name` 后在**同一临时库**安装 BFF/Storage/Platform 各自 schema，一个应用 role，停止各消费者后 IAM host 最后 DROP 整库。无跨 owner SQL/JOIN、无新持久表、无 production API、无双轨旧 host；默认 Web OIDC 测试不受 opt-in 影响。 |
+| 验证 | 先 RED：默认 host ready/指令不变；opt-in 真 resource/client/user token 可被 IAM 真实 introspection/session admission 接受；revoke 后同一 user token 的 session admission 401；重复 revoke/未知命令 fail closed；异常与 SIGTERM 自有库/Redis prefix 清零，stdout 不泄漏诊断、stderr 不记录 token/secret。Node24 IAM format/lint/typecheck/contract/test/build 与聚焦真 PostgreSQL/Redis integration，Root 独立重跑；本片不声称 BFF/Platform 201。 |
+
+Root 真实 sandbox 后续复用该 host 的唯一临时库与现有 Storage/Platform 正式源码启动，真 Storage readiness 必须连 PostgreSQL/Redis/ObjectStore/Scanner；BFF 正式候选代码只在 loopback 显式开启。单库 host 不是新增运维角色/实例。Root 以自有隔离 runner 证明 Skill/receipt 唯一、撤权同 key 在 Platform socket 前拒；用户 3310 不触碰。
+
 | 项 | 下一任务卡边界 |
 | --- | --- |
 | Owner / 目标 | BFF 唯一 public Product API、IAM session admission 与 user owner 映射；Platform 唯一 Skill/receipt writer。先做 user-only CreateSkillDraft 机器契约/受信 Connect consumer 候选，保持正式 public fail closed；隔离真实 201 是预激活验证门，公开产品可用性是消费者与六 owner sandbox 后协调激活的独立门，不以六 mutation、四 scope、Skills/MCP 总线或 Web UI 完成冒称。 |
