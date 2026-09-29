@@ -1,5 +1,15 @@
 # Kokoro 后端闭环任务总表
 
+## 当前切片：W3-PLATFORM-COMPLETE-REAL-NONCLEAN（P0；2026-09-29）
+
+| 项 | 执行边界与验收 |
+| --- | --- |
+| Owner / 基线 | Platform 唯一 writer `/root/platform_complete_owner`，clean `main 80f294645d1c658ae198acb54766c37c10d314db`；Root 管审查、gitlink、独占真组合与提交。Storage `16a6c1c` 已有同 scope EICAR→ClamAV infected 的 owner smoke；不改 Storage、BFF、IAM 或用户 3310。 |
+| 位置 / 职责 | 只扩现有 Platform `scripts/smoke-storage-package.mjs` 的正式 owner probe，再调整 Root 既有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 的精确 receipt/结果断言。采用这两处既有入口而非新 runner、假 scanner 或第二套 Storage client；不改生产 API、Proto、Schema、role/DB。 |
+| 必须证明 | 当前 Skill 的 CLEAN Complete 后，以显式新 Begin 替换为感染测试包，携完整签名 PUT headers 上传，正式 Complete 必须稳定 fail closed；正式 Get 显示当前 attempt `aborted`，Storage Status/Scan 显示同 asset `completed/INFECTED`；同命令再试不得创建第二 Asset，旧 attempt 不得覆盖；新的 Begin command + 精确 replace ID 可从 aborted 恢复。测试字节是 ClamAV EICAR fixture，**不**代表 ZIP V1 格式/manifest 验证。 |
+| 证据门 | Platform 停写后 Root 独立 CLI 静态/聚焦测试、精确 pin、现有独占真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV runner、Skill/receipt/Asset 数与自有资源清理；Root scripts/topology/checkpoint/十仓标准门及库存来源保持如实。若真扫描结果与设计不符，保留失败证据并返修，不把本地 doubles 算真实感染。 |
+
+
 ## 最近验收：W3-PLATFORM-COMPLETE-REAL-STORAGE（P0；2026-09-29）
 
 | 项 | 当前事实与下一门 |
