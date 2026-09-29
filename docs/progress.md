@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Skill Get 三面文档与 public 机器候选门 PASS
+
+BFF `main 58bcfc7da656981c1a43a9918ab9f96d207bbecc` 只更新 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT、唯一 public OpenAPI 的 user-only `GET /v1/skills/{skill_id}/package-upload` 候选、operation inventory 与精确 semantic checker/负例；不改路由、SQL、Platform v3 旧 pin 或生成 client。Get 是无 Idempotency-Key 的只读 current phase/attempt/epoch/upload，严格 `{data}`/`{error}` 与 `x-request-id`，无 asset/hash/短期签名。独立审查先指出 machine oneOf 状态不变量与非 Get 误引新 envelope 的两项 P1，以及错误码/429 header 不符；owner 两轮返修为 uint64 与 phase/ID 严格约束、operation-scoped 旧门隔离、按现有 admission 状态收窄错误、可选有界 Retry-After，终审 P0/P1/P2=0。Root 独立 Node22 format、`contract:check` **80/80**、`check` **397 pass/1 skip**、`schema:check` **5 pass/1 skip** 全 PASS。**这是未激活候选契约，不是 Get 可调用**；下一切片才 pin Platform v4 与实现 BFF runtime/真实 IAM session 撤权、随后 Begin/Complete/Validate/Publish。用户 3310 未动，Root 任务外 `uv.lock` 未暂存。
+
 ## 2026-09-29 — W3 Publish 真实跨 owner 组合 PASS
 
 Root `main aa0a757ebe5e88f0a12bd007321173dfb2d0788c` 固定 Platform `391fa9a958744b0cf463484ef869ac3b37c86b3c` 后，在自有真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV sandbox 实际 exit0：BFF 正式 CreateDraft 获取当前 Skill，Platform 正式 Begin/Complete/合法 ZIP Validate→Publish ACTIVE，同 command replay 同 event，错误 visibility/owner 与新 command 对 active 拒绝；数据库只读库存 Skill **1**、receipt **16**、`skill.published` outbox **1**、最终 epoch **6**/active+validated，runner `resources=clean`（`/tmp/kokoro-root-publish-real2.log`）。首次运行仅 Root runner 库存 SQL 将 canonical `skill_id` 误写 `id` 返回 UndefinedColumn；修正后重新运行完整组合 PASS，不是 Platform 代码失败。Root 独立复核 Redis DB14 keys **0**、本次前缀桶余量 **0**，runner 验精确临时库/进程清理，3310 PID 81692 未动。Platform 当前 `main 263a28f1e55745bd1829a61f68228d775751adbc` 仅将该真实证据写回 CURRENT，无代码变化，Root 本提交精确前移 gitlink。
