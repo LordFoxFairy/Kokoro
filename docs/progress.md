@@ -1254,3 +1254,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - Web 独立只读审查固定 Web `102033e`、BFF `99b9804`：live/replay payload 有二元 ID/kind 与 title/mime/size/tool_call_id/path/hash，Web strict parser 拒新 ID；Chat snapshot 恒 `deliveries: []`，Canvas/卡片仍以 hash/path/Blob 工作。`/content` 是 attachment，不可直接嵌入 iframe 或全量 Blob；消费切片须等 BFF owner 新机器契约发布，再复用已有卡片布局、本人二元详情及原生下载，首片只展示 metadata，预览另做有界小件流。
 - BFF 唯一 writer 仅改四份文档并提交 main `f7a4614eb75f08791a4381fc77e829b35d56be6c`：既有 Chat repeatable-read 事务纳入本人有界关联+同水位，最近 100 件/`has_more`/Library 完整分页，clean-slate 必填 Agent claim 展示字段，无兼容双轨。Root Node22 `pnpm contract:semantic` 77 operations、`pnpm schema:check` 5 pass/1 无库 skip，diff check PASS；四文档旧整文件格式漂移未扩大。此为**设计门**，尚未实施机器契约、SQL、runtime、Web 或 S9 真链。下一代码门需真 PG 验 GC 空 cursor/重快照与索引计划。
+
+## 2026-09-28 — W2-F2-S9 BFF Chat 作品快照代码门
+
+- BFF 唯一 writer 以 main `f7a4614` 为基线先观察聚焦测试 **4 项 RED**（受信 claim、Chat snapshot、OpenAPI、Schema），再实施并由 Root 审查提交 main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7`：22 文件含 owner OpenAPI、canonical SQL、Agent 受信展示字段、同 RR 本人/Project 有界交付+公开水位、单会话索引、share 私有空投影与死 hash builder 删除。正常 GC 后旧 cursor expired、重取 snapshot 持久二元作品/当前水位，同时间 ID 排序、非法/超安全整数均有直接及真 PG 断言；不把 Artifact 卡当下载授权。
+- Root 独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0：默认 **366 pass/1 无库 skip**、Schema 默认 **5 pass/1 无库 skip**；Root 自建独立 PostgreSQL 临时数据库+Redis DB15，真实 `agui-projection.integration.mjs` **24/24**、真 Schema **6/6**，自有数据库删除、Redis DB15 **0→0**。独立只读最终复审无 P0/P1，P2 的 GC/tie-break/size 测试缺口已关闭。EXPLAIN 20k/100 会话样本，旧全局索引 109 shared buffers/0.288ms，新会话索引 6 buffers/0.037ms；仅本次样本，不冒充生产指标。
+- Web 当前仍 pin BFF 旧 hash-only Chat Delivery OpenAPI，机器契约消费者尚未切换；`EDGE-WEB-BFF` 保持 broken，Root 真 IAM/Chromium Chat 卡/刷新/Canvas 未验。此记录只验 BFF owner，不把 S7 Library 下载或 mock Share 误报为 S9 全链。
