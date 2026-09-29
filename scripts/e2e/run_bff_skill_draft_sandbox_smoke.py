@@ -417,8 +417,9 @@ def safe_summary(
             "status": "PASS",
             "resources": "clean",
             "platform_skill_count": 1,
-            "platform_receipt_count": 2,
+            "platform_receipt_count": 5,
             "platform_package_begin": "PASS",
+            "platform_package_complete": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -1317,13 +1318,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         str(result["skill_id"]),
                     ),
                     log,
-                    "Platform real Storage v2 package reference and Begin",
+                    "Platform real Storage v2 package reference, Begin and Complete",
                     secret_values,
                 )
                 phase = Phase.INVENTORY
                 if platform_inventory(urls["kokoro_platform"], ready.tenant_id) != (
                     1,
-                    2,
+                    5,
                 ):
                     raise SmokeError(
                         "Platform Skill or receipt inventory is not unique"

@@ -53,6 +53,19 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_success_summary_requires_complete_receipt_inventory(self):
+        self.assertEqual(
+            smoke.safe_summary(None),
+            {
+                "status": "PASS",
+                "resources": "clean",
+                "platform_skill_count": 1,
+                "platform_receipt_count": 5,
+                "platform_package_begin": "PASS",
+                "platform_package_complete": "PASS",
+            },
+        )
+
     def test_package_probe_receives_only_storage_boundary_and_current_skill(self):
         parsed = smoke.require_sandbox_ready(ready())
         env = smoke.platform_package_probe_env(
