@@ -60,9 +60,10 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "status": "PASS",
                 "resources": "clean",
                 "platform_skill_count": 1,
-                "platform_receipt_count": 5,
+                "platform_receipt_count": 8,
                 "platform_package_begin": "PASS",
                 "platform_package_complete": "PASS",
+                "platform_package_infected": "PASS",
             },
         )
 
