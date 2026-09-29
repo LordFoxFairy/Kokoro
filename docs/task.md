@@ -1316,6 +1316,8 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 
 **W2-F2-S8 代码门已验，跨仓门待验：** BFF main `b382642affa27332e91b49078e0500c6716b820e` 只改本卡两份运行文件、一份直接测试与四份设计/当前文档。准入 120s、对象 7min/45s、出站 28min/25s 已按独立时钟实现，早期异常 body cancel 不阻塞 spool 名额回收，迟返 404 不覆盖已发生的准入超时；未发头保持 JSON，已发头失败断开。Root 独立 Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0（默认 365 pass/1 无库 skip，Schema 5 pass/1 无库 skip）；独立只读复审无 P0/P1。**下一门**为固定本 commit 的真 IAM/Chromium→Web→BFF→Agent→Storage 原字节、私有/取消回归及自有资源清理；代表性 1 GiB 限速尚未执行，不能宣称容量 SLA。S8 通过后再让 BFF 同一 writer 进入 S9。
 
+**W2-F2-S8 真用户链路已验：** Root `f9f5befa92f30c650397837120b7cc0be8bc37b0` 固定 BFF `b382642` run exit0/PASS：真 IAM/HTTPS Chromium 登录、Product 首消息、两件 Agent/Storage CLEAN 作品、UI 原生下载原字节/正确文件名、同租户他人空页和内容 404，个人文件/Project/EICAR 回归；自有 PG/Redis/进程/S3 版本均 0，独占桶删除。BFF 后续 `99b98040ed6ee21d49ddd6a04c9b645222245d1e` 仅同步四份文档，无运行/契约/SQL 变化。S8 小件 owner 链通过；真 1 GiB 限速、下载时故障恢复另卡，不能由本次小件推断。S9 BFF→Web 顺序现在可启动。
+
 ### W2-F2-S9 Chat 作品 live/replay/snapshot/Canvas 闭环（S8 后串行；P0）
 
 **当前断点与 owner：** S7 已验的本人 Library 不等于 Chat 作品卡。BFF 已把 Agent `delivery.created` 的二元 Artifact ID 与 kind 作为 AG-UI live/replay 帧持久化，但 `ChatService` snapshot 固定 `deliveries: []`，OpenAPI Delivery 仍 hash-only；Web 严格事件 schema 拒新增 `artifact_id/asset_id/artifact_kind`，reducer/hydration/卡片/Canvas 仍按 `content_hash` 与旧 Blob 路径工作。BFF 帧有 GC，刷新按 snapshot watermark 续流，故不能从已过水位的旧帧恢复作品。IAM 不新增权限；默认本人私有，Project/Team 不自动共享。

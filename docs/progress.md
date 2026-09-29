@@ -1244,3 +1244,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 - BFF 唯一 writer 在文档门 `f558acc` 之后仅修改具名 Artifact 下载 route、对象 spooler、直接测试与四份设计/当前文档，Root 复核并在 BFF main 提交 `b382642affa27332e91b49078e0500c6716b820e`。准入/取回/出站阶段分别限时，直接假钟测试覆盖总时限、idle、迟返准入、已发头截断与异常 `cancel()` 后 spool slot 释放；独立只读复审无 P0/P1。
 - Root 独立 Node 22 `pnpm format:check && pnpm check && pnpm schema:check` exit 0：默认 365 pass/1 无库 skip，Schema 5 pass/1 无库 skip；`git diff --check` PASS。本记录为**单仓代码门**；新的 Root 固定来源真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 原字节/私有/清理验收仍待执行，1 GiB 限速尚未跑，不能据此宣称慢大件成功 SLA。用户 3310 未触碰。
+
+## 2026-09-28 — W2-F2-S8 真浏览器/owner 组合门
+
+- Root `f9f5befa92f30c650397837120b7cc0be8bc37b0` 固定 BFF 运行代码 `b382642affa27332e91b49078e0500c6716b820e`、Web `102033e`、IAM `4d98144`、Agent `486adb1`、Storage `d5cfc44`，独占桶与隔离 PG/Redis/进程跑真 IAM→HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV，exit0/PASS。两件实际 CLEAN 作品经浏览器 UI 原生保存原字节与文件名、本人分页/刷新/320px、同租户另一成员列表空/详情及内容404；个人文件、Project、EICAR 回归通过。测试自有 PostgreSQL database、Redis keys、进程和 S3 versions 剩余 0，专用空桶已删；3310 未触碰。
+- BFF `99b98040ed6ee21d49ddd6a04c9b645222245d1e` 仅把上述真组合事实同步到四份文档，运行代码、OpenAPI、SQL 不变；Root 已重钉 gitlink/来源库存。本门不覆盖代表性 1 GiB 限速或下载时 OS 故障恢复，也不证明 Chat/Canvas 或真实模型 worker/provider。
