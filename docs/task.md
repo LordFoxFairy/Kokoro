@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
+## 最近验收：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -16,6 +16,8 @@
 **独立审查扩围（同一 Agent writer 返修）：** 准 `apps/kokoro-agent/contract/README.md` 仅纠正当前来源/计数（原仍写 ee25c1f/v1）；现有 `scripts/generate_platform_consumer.py --check` 必须拒绝 OUTPUT 中多出的旧 Platform 生成文件，同时保留 Storage 生成树；直接生成检查测试可精确扩充。六项实际 RPC 投影 parity 的 `mcp.authorize_tool` 不再仅自产哈希自证，应以 owner 独立 typed-arguments bytes 向量验证原字节 SHA，并组合 owner binding 投影的其余字段比较 canonical/SHA。15 个 Product command projector 不在本片实现范围；只需静态完整来源/结构验收。
 
 **验收结果：** Agent main `7dfcfa936d0b51244683ffd66d16ea937fe510a6` 已提交并推送，Root 独立 `uv lock --check`、Ruff format/check、Pyright 0、contract checker、Platform generator `--check`、全量默认 pytest **1312 pass/6 skip/172 deselected**、wheel/sdist build与 diff check 均通过；独立复审三项 P2 返修后 P0/P1/P2=0。原 14 文件 v1 consumer vendor 已由 owner v3 17 文件替代，Proto/生成 PB 精确重生，六项 RPC 中 Authorize 的期望来自 owner canonical 原字节/独立 bytes 向量。**只验机器消费准备**，真实 IAM→Platform 六 RPC/proof/撤权、typed 产品选择、Storage 包与六 owner 激活仍待后片；库存 13 declared broken 不升绿。
+
+**下一门：** 先在 Agent 三设计中冻结 typed Skill/MCP 选择如何进入受信 Run/lease（不再用名称代替 owner opaque ID），再做业务 adapter 的逐次授权调用；Storage revision package v2 与 System operator-machine caller 可作为独立 owner 切片，但各自设计门与契约先行。Root 真六 owner sandbox 只在这些消费者具备实际调用后执行，不把当前离线投影或 BFF 单操作纵切重复包装成整体完成。
 
 ## 已验收基线：Platform v3 → BFF 用户 Skill 草稿消费（2026-09-29）
 
