@@ -803,7 +803,7 @@ def platform_inventory(
         publish_events = int(cursor.fetchone()[0])
         cursor.execute(
             'SELECT count(*) FROM "kokoro_platform"."skill" '
-            'WHERE tenant_id = %s AND id = %s AND status::text = %s '
+            'WHERE tenant_id = %s AND skill_id = %s AND status::text = %s '
             'AND package_phase::text = %s AND package_attempt_epoch = %s',
             (tenant, skill_id, "active", "validated", 6),
         )

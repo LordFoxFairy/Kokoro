@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 Publish 真实跨 owner 组合 PASS
+
+Root `main aa0a757ebe5e88f0a12bd007321173dfb2d0788c` 固定 Platform `391fa9a958744b0cf463484ef869ac3b37c86b3c` 后，在自有真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV sandbox 实际 exit0：BFF 正式 CreateDraft 获取当前 Skill，Platform 正式 Begin/Complete/合法 ZIP Validate→Publish ACTIVE，同 command replay 同 event，错误 visibility/owner 与新 command 对 active 拒绝；数据库只读库存 Skill **1**、receipt **16**、`skill.published` outbox **1**、最终 epoch **6**/active+validated，runner `resources=clean`（`/tmp/kokoro-root-publish-real2.log`）。首次运行仅 Root runner 库存 SQL 将 canonical `skill_id` 误写 `id` 返回 UndefinedColumn；修正后重新运行完整组合 PASS，不是 Platform 代码失败。Root 独立复核 Redis DB14 keys **0**、本次前缀桶余量 **0**，runner 验精确临时库/进程清理，3310 PID 81692 未动。Platform 当前 `main 263a28f1e55745bd1829a61f68228d775751adbc` 仅将该真实证据写回 CURRENT，无代码变化，Root 本提交精确前移 gitlink。
+
+这证明**隔离 owner Publish 纵切**，不证明 BFF public Begin/Complete/Validate/Publish（当前 public 仅 CreateDraft）、Source 的 Agent request-bound proof、Agent v4 pin、Storage completed Asset 孤儿退役、validated 后主动危险隔离、广义跨进程 ACK/COMMIT unknown/lease takeover 或产品激活。v4 仍 inactive；合同库存 16 边/13 declared broken。十仓标准仍 136 既有违规；依赖审计既有 8 项告警未清。下一步优先 BFF public/session 包命令与 Source 执行证明等实际产品消费链，不转运维。
+
 ## 2026-09-29 — W3 Publish owner 代码与 Root 独立门 PASS，真实组合待验
 
 Platform `main 391fa9a958744b0cf463484ef869ac3b37c86b3c` 已提交正式 user/PERSONAL Publish：事务外 fresh IAM/current 包+Storage CLEAN/对象健康，独立 local receipt+整包 CAS+status/outbox 原子，所有 completed replay/ACK unknown 先 fresh；专用内部 codec 固定 package identity，`skill.published` payload 的 schema_version=1，v4 机器 fixture 仍 inactive，v1–v3/Proto/Prisma 不改。独立审查在首版发现20秒总预算从 IAM 后才起算的 P2，owner 补 RED/GREEN 返修后终审 P0/P1/P2=0。Root 独立 Node24 format/lint/typecheck/contract/artifact/cutover/schema/default **985 pass/238 skip**/build 全 PASS，隔离真 PostgreSQL Begin8+Complete14+Validate10+Publish20＝**52/52** PASS。Root 同仓 runner 已改为验 Skill1/receipt16/outbox1/epoch6 active+validated；**真实 IAM/BFF/Platform/Storage/MinIO/ClamAV 组合尚待精确 pin 后运行**，不把 owner CLI 或单仓 PG 冒充跨服务完成。Source 真 Agent request-bound proof、BFF public/session、Storage orphan retirement、危险包主动隔离、Agent pin 均另门；用户 3310 与任务外 `uv.lock` 未动。
