@@ -7,7 +7,7 @@
 
 ## 当前推进边界（2026-09-28）
 
-**S9 Chat 当前边界：** BFF main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7` 已发布二元 Chat Delivery OpenAPI、Agent 受信展示字段、同一 repeatable-read 本人/Project 快照最近100件/has_more/公开水位及单会话索引。Root 独立 Node22 单仓全门（366 pass/1 无库 skip）与隔离真 PG 集成 24/24、真 Schema 6/6 通过，数据库/Redis 自有资源归零；独立复审无 P0/P1。Web 当前仍固定旧 hash-only BFF OpenAPI，严格 live/parser、刷新水合和 Canvas 未切换；真实页面仍会丢已过水位作品。下一步 Web 唯一 writer 精确 pin 新契约、统一二元身份并复用已验 Library 原生下载，然后 Root 跑真 IAM/Chromium/Agent/Storage Chat 链；不回到 IAM 权限扩张或运维设计。
+**S9 Chat 当前边界：** BFF main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7` 已发布二元 Chat Delivery OpenAPI、Agent 受信展示字段、同一 repeatable-read 本人/Project 快照最近100件/has_more/公开水位及单会话索引。Root 独立 Node22 单仓全门（366 pass/1 无库 skip）与隔离真 PG 集成 24/24、真 Schema 6/6 通过，数据库/Redis 自有资源归零；独立复审无 P0/P1。Web main `3a0ad22563458621a9d2d4b10ff3a2c45adcac6e` 已完成四份 Chat/Canvas 消费设计文档门，Root Node22 contract 103/103 通过，**但仍固定旧 hash-only BFF OpenAPI**；严格 live/parser、刷新水合和 Canvas 运行代码未切换，真实页面仍会丢已过水位作品。下一步 Web 唯一 writer 精确 pin 新契约、统一二元身份并复用已验 Library 原生下载，然后 Root 跑真 IAM/Chromium/Agent/Storage Chat 链；不回到 IAM 权限扩张或运维设计。
 
 **最新 S8 边界：** BFF main `b382642affa27332e91b49078e0500c6716b820e` 已把作品原字节下载的单一 120 秒预算拆为准入 120 秒、对象取回/校验 7 分钟总及 45 秒无落盘进度、出站 28 分钟总及 25 秒无完成写入进度；异常取消仍释放临时文件和两份 spool 名额。Root 独立 Node 22 单仓门通过（默认 365 pass/1 无库 skip，Schema 5 pass/1 无库 skip），并在 Root `f9f5befa` 固定运行来源下真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 两件 CLEAN 作品原生下载原字节、同租户他人 404 与自有资源清零 exit0/PASS。BFF `99b98040ed6ee21d49ddd6a04c9b645222245d1e` 只同步四文档，无运行/契约/SQL 变化。代表性 1 GiB 限速与下载时故障恢复仍待验；下文旧 BFF SHA 为历史切片。S9 Chat snapshot/Canvas 仍有真实断链，未进入新代码片。3310 用户预览不在本切片重启范围。
 
