@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Begin 只读预审完成，三面文档/机器契约门进行中
+
+两名只读审查员固定 Root `ff52ebae`、BFF `f0aaf386`、Platform `263a28f`、Storage `16a6c1c`、Web `317c74c`：BFF 已 pin 完整 inactive v4，但唯一 public OpenAPI 与运行代码均没有 Begin；Platform owner 正式 Begin、短期签名 PUT 与持久 receipt 已存在。Root 在 [`task.md`](task.md) 裁决：控制面经 Web 同源 adapter→BFF 当次 IAM→Platform，ZIP 原字节由浏览器以无凭据、禁重定向方式直 PUT 到精确批准的 ObjectStore public origin；不新增 Web/BFF 32 MiB 字节代理。公开契约先固定 user-only、Idempotency-Key、完整短期 TransferReference、状态/错误与恢复；BFF 不建 Skill SQL/receipt，浏览器旧 preview/confirm multipart 不能冒充正式包上传。ObjectStore origin、签名 header/expiry、CORS/preflight/真实 Chromium 与旧 URL 撤权窗口均为后续代码/浏览器放行门，不属于本次仅文档成果。
+
+当前 BFF 唯一 writer 正在本仓四文档、唯一 OpenAPI 与直接契约门 RED→GREEN；Root 不并发写 BFF、不改用户 3310，任务外 `uv.lock` 不暂存。**尚无 Begin public 可调用或浏览器 PUT 通过证据。**
+
 ## 2026-09-29 — BFF Skill Get 默认关闭候选真实跨 owner 组合 PASS
 
 BFF `main f0aaf386bc7f7ca81ff4b996b84d29f0ce05e02f` 已将 Platform owner `263a28f1e55745bd1829a61f68228d775751adbc` 的完整 v4 Proto/artifact/provenance **23 件逐字节精确 pin**，删除旧 v3 vendor，增加当次 IAM user/tenant→BFF catalog workload token→Platform Get 的只读 public 候选。默认关闭，无新增 Skill SQL/数据库角色。独立审查指出 OpenAPI 旧描述与无界 `x-request-id` 两项 P2，owner 用真实 HTTP RED→GREEN 返修；终审 P0/P1/P2=0。Root Node22 独立 `format:check`、`contract:check` **91/91**、`check` **409 pass/1 skip**、`schema:check` **5 pass/1 skip** 全 PASS。
