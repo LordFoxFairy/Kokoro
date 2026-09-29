@@ -199,7 +199,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin request before Platform access, including same-command replay. Root 2df63b0 passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Begin/Get 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Complete/Validate/Publish public, Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken.",
+      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin/Complete request before Platform access, including replay. Root 4bb8dc4a passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Begin/Get/Complete 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Validate/Publish public, Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -531,7 +531,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF pins Platform 263a28f inactive v4 and has default-off user CreateDraft, Get and Begin Connect candidates. Root 2df63b0 passed real current-source IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV Create/Get/Begin, signed PUT, replay/replacement, revocation and old owner Publish regression with owned cleanup. Complete is currently only a public contract candidate with no BFF runtime; Validate/Publish public, Web signed PUT/CORS, Agent pin, old Capability cutover and v4 activation remain unverified, so the broad edge stays broken.",
+      "reason": "BFF pins Platform 263a28f inactive v4 and has default-off user CreateDraft, Get, Begin and Complete Connect candidates. Root 4bb8dc4a passed real current-source IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV public Begin/signed PUT/Complete CLEAN, EICAR infected abort/replay/explicit recovery, revoked-session rejection and old owner ZIP Validate/Publish regression with owned cleanup. Validate/Publish public, Web Chromium signed PUT/CORS, Agent pin, old Capability cutover and v4 activation remain unverified, so the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1409,7 +1409,7 @@
       "code_generator_version": "@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0",
       "runtime_package_version": "@bufbuild/protobuf@2.14.0+@connectrpc/connect@2.2.0+@connectrpc/connect-node@2.2.0",
       "state": "broken",
-      "reason": "Platform 391fa9a publishes formal Begin, Complete, ZIP V1 Validate and user/PERSONAL Publish on authenticated Storage v2 with current-attempt Skill/receipt fences; v4 remains inactive. Root aa0a757e owned real IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV composition passed CLEAN Complete, INFECTED and malformed-ZIP abort/recovery, legal ZIP Validate, Publish active and same-event replay/negative cases, with Skill 1/receipt 16/skill.published outbox 1/epoch 6 active+validated and owned resources clean. This broad edge remains broken until Source/Install execution-proof and product gating, BFF public user-session admission, Agent pin, process-crash/unknown-commit and lease recovery, Storage orphan retirement, validated dangerous-package isolation and wider failure behavior are verified.",
+      "reason": "Platform 391fa9a publishes formal Begin, Complete, ZIP V1 Validate and user/PERSONAL Publish on authenticated Storage v2 with current-attempt Skill/receipt fences; v4 remains inactive. Root aa0a757e owned real IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV composition passed CLEAN Complete, INFECTED and malformed-ZIP abort/recovery, legal ZIP Validate, Publish active and same-event replay/negative cases, with Skill 1/receipt 16/skill.published outbox 1/epoch 6 active+validated and owned resources clean. Root 4bb8dc4a additionally proved BFF public user-session Begin/Complete CLEAN, infected abort and explicit recovery, but this broad edge remains broken until Source/Install execution-proof and product gating, Agent pin, process-crash/unknown-commit and lease recovery, Storage orphan retirement, validated dangerous-package isolation and wider failure behavior are verified.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
