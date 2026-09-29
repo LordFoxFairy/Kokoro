@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Skill Get 默认关闭候选真实跨 owner 组合 PASS
+
+BFF `main f0aaf386bc7f7ca81ff4b996b84d29f0ce05e02f` 已将 Platform owner `263a28f1e55745bd1829a61f68228d775751adbc` 的完整 v4 Proto/artifact/provenance **23 件逐字节精确 pin**，删除旧 v3 vendor，增加当次 IAM user/tenant→BFF catalog workload token→Platform Get 的只读 public 候选。默认关闭，无新增 Skill SQL/数据库角色。独立审查指出 OpenAPI 旧描述与无界 `x-request-id` 两项 P2，owner 用真实 HTTP RED→GREEN 返修；终审 P0/P1/P2=0。Root Node22 独立 `format:check`、`contract:check` **91/91**、`check` **409 pass/1 skip**、`schema:check` **5 pass/1 skip** 全 PASS。
+
+Root `main 4300f4fc4a8e29d9afa64b594755035c96715fed` 精确 pin BFF 并扩原有独占 runner；`/tmp/kokoro-bff-get-real.log` 真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV exit0：默认关闭 GET **503** 且 Platform 零 socket；启用后正式 CreateDraft 的 GET **200** 严格 `none/epoch 0`；随后原有合法 ZIP Validate→Publish、真实感染/坏 ZIP 恢复、重放/拒绝链全部回归，已 Publish 非 draft GET **412**；撤销同一 IAM session 后 GET **401** 且 Platform 零新增 socket。Skill **1**、receipt **16**、发布 outbox **1**、`resources=clean`；runner 核精确自有数据库、进程/Redis namespace/桶清理，Root 额外复核 Redis DB14 **0**、3310 listener 不变。两个其他历史 `iam_web_oidc_*` 数据库仍存在，非本次 runner 自有，未清理。Root 聚焦 Python **36 pass/27 subtests**；Root 全 `scripts/tests` **960 pass/217 subtests**、topology/checkpoint PASS；compatibility **16 边/13 declared broken/0 provenance violation**、十仓标准 **136 既有 violations/0 unverified** 仍 FAIL，main-only 因任务外 `uv.lock` 脏态 FAIL，未暂存/回滚该文件。
+
+该组合仅证明 Get 的 fresh draft none、已发布 412、撤权 401 与旧包链回归；中途 `intent/upload_pending/uploaded/validated` 的 public GET 只有 BFF 直接 HTTP 投影测试，尚无同进程真 owner 采样。v4/公开 Product 能力仍 inactive/default-closed，Begin/Complete/Validate/Publish public、浏览器签名 PUT/CORS、Agent pin、Source 真 execution proof、Storage orphan retirement 与 Billing 后续独立门，不能称全产品闭环。下一片先做 BFF Begin 三面文档/机器契约门，再实现与真浏览器组合。
+
 ## 2026-09-29 — BFF Skill Get 三面文档与 public 机器候选门 PASS
 
 BFF `main 58bcfc7da656981c1a43a9918ab9f96d207bbecc` 只更新 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT、唯一 public OpenAPI 的 user-only `GET /v1/skills/{skill_id}/package-upload` 候选、operation inventory 与精确 semantic checker/负例；不改路由、SQL、Platform v3 旧 pin 或生成 client。Get 是无 Idempotency-Key 的只读 current phase/attempt/epoch/upload，严格 `{data}`/`{error}` 与 `x-request-id`，无 asset/hash/短期签名。独立审查先指出 machine oneOf 状态不变量与非 Get 误引新 envelope 的两项 P1，以及错误码/429 header 不符；owner 两轮返修为 uint64 与 phase/ID 严格约束、operation-scoped 旧门隔离、按现有 admission 状态收窄错误、可选有界 Retry-After，终审 P0/P1/P2=0。Root 独立 Node22 format、`contract:check` **80/80**、`check` **397 pass/1 skip**、`schema:check` **5 pass/1 skip** 全 PASS。**这是未激活候选契约，不是 Get 可调用**；下一切片才 pin Platform v4 与实现 BFF runtime/真实 IAM session 撤权、随后 Begin/Complete/Validate/Publish。用户 3310 未动，Root 任务外 `uv.lock` 未暂存。

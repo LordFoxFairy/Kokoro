@@ -1,6 +1,14 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-BFF-SKILL-GET-RUNTIME（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-BEGIN-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 阶段门 |
+| --- | --- |
+| Owner / 基线 | BFF public Product API 唯一 writer；当前 BFF `main f0aaf386bc7f7ca81ff4b996b84d29f0ce05e02f`、Root `main 4300f4fc4a8e29d9afa64b594755035c96715fed`、Platform owner `263a28f1e55745bd1829a61f68228d775751adbc` v4 inactive。先只读盘点现有 Begin Proto、Storage 签名 PUT、BFF OpenAPI/receipt 与 Web 同源 adapter；文档门通过前不写运行路由。 |
+| 目标 / 边界 | user-only Begin public 命令必须先真实 IAM session/tenant/owner admission，再以 BFF workload token 调 Platform；需要独立确定幂等键、command digest、当前 attempt/replace fence、签名 PUT 的浏览器目标源/CORS/必须原样透传的 headers/过期语义、错误与恢复。BFF 不保存 Skill/Upload SQL、不代传文件字节、不泄露 Storage credential；Get 已验证的默认关闭候选与撤权顺序不能回退。 |
+| 放置比较 / 删除 / 验证 | 优先扩 BFF 现有 Skills route、唯一 public OpenAPI、固定 v4 generated Connect client 与本仓三面文档；淘汰复用旧 Capability GET 或新增泛化 RPC proxy、第二 contract、双轨 fallback。文档门先对齐 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 与机器 OpenAPI、状态/事务/错误/tenant/幂等；再设 RED→代码→Node22 全门→Root 独占真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV＋浏览器 PUT/CORS 门。Complete/Validate/Publish public、Agent pin、孤儿资产退役、Billing 分后片，不把本片叫全链。 |
+
+## 最近验收：W3-BFF-SKILL-GET-RUNTIME（P0；2026-09-29）
 
 | 项 | 任务卡 / 验收门 |
 | --- | --- |
@@ -8,6 +16,7 @@
 | 当前事实 / 目标 | 运行中 BFF 仍仅默认关闭的 CreateDraft 候选；Get OpenAPI 已是未激活机器候选。先把 Platform owner **完整 v4 artifact/Proto/generated/read binding** 以固定 commit+digest 精确 pin 到 BFF，再实现同一 owner user-only `GET /v1/skills/{skill_id}/package-upload` 运行路径，真实返回 current Skill phase/attempt/epoch/upload；不能 handwrite wire、直接读 Platform SQL、复用旧 Capability HTTP 或同时偷开 Begin。 |
 | 文件与依赖 | 允许 BFF 既有 `contract/dependencies/platform-connect.json`、固定 vendor/generated client 及生成校验脚本、`src/infrastructure/clients/platform/catalog-connect.ts`、`src/http/routes/`、`src/bootstrap/server.ts`/runtime、直接 contract/unit/integration tests 与必要四文档。若需超出上述共享入口由唯一 writer先报告 Root。Web 同源→BFF 当次 IAM session/user/tenant→BFF catalog workload token→Platform Get；Get 非 command、无 BFF receipt、无 Storage 签名、无 owner SQL、无新应用库/role。v4 仍 inactive，候选默认关闭，不能冒称产品激活。 |
 | RED→GREEN / 放行 | 先 RED 路由缺失/撤权重放/错 owner/跨 tenant/无 Platform socket/状态 oneOf 违反，后精确 pin+实现；每次请求先 IAM session，错误/200 严格匹配已发布 OpenAPI、`x-request-id` 与 no-store，不把 bearer 传 Platform。Node22 format/lint/typecheck/contract semantic/platform provenance/test/build/schema 与隔离真 PG/Redis owner tests；停写交付 SHA。Root 独立复审后在独占真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV runner 验 Get phase none→后续实际状态、撤销同用户 session 后 401 且 Platform 零新增 socket、资源清理。Begin/Complete/Validate/Publish public 和浏览器 PUT/CORS 后续串行切片。 |
+| 实际交付 / 验收 | BFF `main f0aaf386bc7f7ca81ff4b996b84d29f0ce05e02f` 精确 pin Platform `263a28f` 的 23 个 v4 Proto/artifact/provenance 原字节、删除旧 v3 vendor，正式 Get 使用当前 IAM user/tenant 与独立 catalog workload token；默认关闭仍 503/零 Platform socket。独立审查发现 OpenAPI 旧描述及无界 request ID 两项 P2，owner RED→GREEN 修复后终审 P0/P1/P2=0。Root Node22 独立 format/contract **91/91**/check **409 pass/1 skip**/schema **5 pass/1 skip**；Root `4300f4fc` 精确 pin 与 runner 真组合 exit0：新 Draft GET `none/epoch 0`，合法 ZIP/感染/坏 ZIP/Publish 旧链回归，Published GET **412**，撤销同一 IAM session 后 GET **401** 且 Platform 零新增 socket；Skill **1**/receipt **16**/发布 outbox **1**、`resources=clean`，用户 3310 listener 未变化。Root 聚焦 Python **36 pass/27 subtests**、全脚本 **960 pass/217 subtests**；compatibility 16 边/13 declared broken/0 provenance，checkpoint/topology PASS。真组合未在中途暂停采样 `intent/upload_pending/uploaded/validated` 的 public GET；这些相位仅 BFF 直接 HTTP 投影测试覆盖，不冒称跨 owner 已验。v4 仍 inactive，Begin/Complete/Validate/Publish public 和浏览器 PUT/CORS 未闭环。 |
 
 ## 最近验收：W3-BFF-SKILL-GET-DOC-GATE（P0；2026-09-29）
 
