@@ -53,6 +53,32 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_package_probe_receives_only_storage_boundary_and_current_skill(self):
+        parsed = smoke.require_sandbox_ready(ready())
+        env = smoke.platform_package_probe_env(
+            {"PATH": "/usr/bin", "NODE_ENV": "development"},
+            Path("/opt/node24/bin/node"),
+            "http://127.0.0.1:4402",
+            "platform-secret",
+            parsed,
+            "skill-current",
+        )
+        self.assertEqual(env["KOKORO_SMOKE_TENANT_ID"], "tenant-one")
+        self.assertEqual(env["KOKORO_SMOKE_SUBJECT_ID"], "user-one")
+        self.assertEqual(env["KOKORO_SMOKE_SKILL_ID"], "skill-current")
+        self.assertEqual(env["KOKORO_STORAGE_URL"], "http://127.0.0.1:4402")
+        self.assertEqual(env["PATH"], "/opt/node24/bin:/usr/bin")
+        self.assertNotIn("KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE", env)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.platform_package_probe_env(
+                {"PATH": "/usr/bin"},
+                Path("/opt/node24/bin/node"),
+                "http://127.0.0.1:4402",
+                "platform-secret",
+                parsed,
+                " ",
+            )
+
     def test_ready_protocol_is_exact_and_loopback(self):
         value = smoke.require_sandbox_ready(ready())
         self.assertEqual(value.tenant_id, "tenant-one")

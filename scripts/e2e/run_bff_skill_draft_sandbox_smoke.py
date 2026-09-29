@@ -57,6 +57,7 @@ class Phase(str, Enum):
     DEFAULT_OFF = "default_off"
     CANDIDATE_CREATE = "candidate_create"
     CANDIDATE_REPLAY_CONFLICT = "candidate_replay_conflict"
+    PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
     CLEANUP = "cleanup"
@@ -422,6 +423,28 @@ def safe_summary(
     if any(secret and secret in detail for secret in secrets):
         detail = "smoke execution failed"
     return {"status": "FAIL", "error": detail}
+
+
+def platform_package_probe_env(
+    base: dict[str, str],
+    platform_node: Path,
+    storage_base: str,
+    service_secret: str,
+    ready: SandboxReady,
+    skill_id: str,
+) -> dict[str, str]:
+    """Give the owner probe only its own Storage boundary and current Skill identity."""
+    if not skill_id or skill_id != skill_id.strip():
+        raise SmokeError("current Skill id invalid for Storage package probe")
+    return {
+        **base,
+        "PATH": f"{platform_node.parent}:{base['PATH']}",
+        "KOKORO_STORAGE_URL": storage_base,
+        "KOKORO_PLATFORM_STORAGE_SERVICE_CREDENTIAL": service_secret,
+        "KOKORO_SMOKE_TENANT_ID": ready.tenant_id,
+        "KOKORO_SMOKE_SUBJECT_ID": ready.subject_id,
+        "KOKORO_SMOKE_SKILL_ID": skill_id,
+    }
 
 
 def owner_database_url(admin_url: str, database: str, schema: str) -> str:
@@ -1269,6 +1292,25 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     ready,
                     observe,
                 )
+                phase = Phase.PACKAGE_REFERENCE
+                _run(
+                    [
+                        str(args.platform_node),
+                        str(OWNERS["platform"] / "scripts/smoke-storage-package.mjs"),
+                    ],
+                    OWNERS["platform"],
+                    platform_package_probe_env(
+                        base,
+                        args.platform_node,
+                        storage_base,
+                        storage_platform_secret,
+                        ready,
+                        str(result["skill_id"]),
+                    ),
+                    log,
+                    "Platform real Storage v2 package reference",
+                    secret_values,
+                )
                 phase = Phase.INVENTORY
                 if platform_inventory(urls["kokoro_platform"], ready.tenant_id) != (
                     1,
@@ -1298,6 +1340,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")
                 summary = safe_summary(None)
+                summary["storage_v2_package_reference"] = "PASS"
     except BaseException as exc:
         error = (
             exc

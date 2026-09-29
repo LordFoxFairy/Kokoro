@@ -8,6 +8,16 @@
 | 当前事实 / 目标 | Platform 已删 Storage v1、接单一认证 v2 GetPackageReference 与完整 GET TransferReference；Node24 全静态/默认 891 pass、隔离真 PostgreSQL/Redis 24 文件 260 pass、独立复审 P0/P1/P2=0。**跨 owner 真实 Storage 进程/对象健康仍未测**，故下一门以独占临时库、Redis namespace、对象前缀完成可信 metadata、CLEAN 对象、真实引用、重放和拒绝，并精确清理；不得以单仓 fake transport 冒充组合证据。 |
 | 后续代码顺序 | 真 Storage 门通过后，由 Platform 唯一 writer 原子实现 Begin+外部 receipt/CAS/恢复，再 Complete/ZIP V1/Validate/Publish；Agent 在 owner 机器契约稳定后独立 pin，BFF/Web 消费随后推进。v4 仍 inactive，当前 Validate/Publish fail closed；不做多角色数据库或运维扩展。 |
 
+### 真实包引用组合任务卡（唯一新入口先由 Platform owner 交付）
+
+| 设计门 | 裁决 |
+| --- | --- |
+| Owner / 当前事实 | Platform 现有生产 `src/modules/skills/storage-package.client.ts` 是唯一 v2 消费边界；Storage owner 已有 v2 Create/Complete/Get 与 MinIO/ClamAV 真实 smoke；Root `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 已持有独占库、Redis namespace、短寿 Storage/Platform/BFF/IAM 进程和空 ObjectLock bucket。Root `uv.lock` 任务外改动保留。 |
+| 目标职责 / API | Platform 增一个**测试专用 CLI**：用本仓 vendor v2 机器契约在 Root 所属 Storage 进程内上传字节、完成 CLEAN 扫描，然后经正式 `ConnectStoragePackageClient.verifyPackage` 取完整 GET 引用，按 headers 原样读取、校验字节/SHA；同 request ID 重放和错 digest/scope/credential 拒绝。CLI 只输出无签名 URL/secret 的通过摘要，不提供生产 API。Root 在已有隔离 runner 内通过子进程调用，不 import 子仓私有文件。 |
+| 目录与粒度 | 采用 Platform 既有 `scripts/` 下单一 `smoke-storage-package.mjs` 与 `package.json` 命令；Root 扩展既有 Skill sandbox 的独占 Storage 生命周期。淘汰 Root 新建第二套 IAM/PG/S3 启动器、在 Root 复制 owner DTO/SQL 或相对 import 私有源码。测试入口是单一组合职责，不新建业务模块/目录/数据库。 |
+| 依赖/数据/删除 | Root 先通过正式 BFF CreateDraft 获本次真实 `skill_id`，把受信 tenant/subject/skill_id 与同一个独立 `kokoro-platform` secret 交 Platform CLI；Storage 只通过 v2 RPC 接收命令，不跨 owner SQL。短期 URL/header 不记录；测试对象仅由 Root 独占 bucket 生命周期删除。此门不写 Platform 包绑定、无 Validate/Publish/Agent pin，不能冒充产品链。 |
+| 验证/交付 | Platform Node24 format/lint/typecheck/test/build，Root 真 MinIO/ClamAV/Storage v2/Platform adapter 的正反向组合、Root Python 聚焦及全门、资源清理；两仓固定 SHA。Platform 唯一 writer 不碰 Root/Git；Root 复验、提交 gitlink/文档/来源。若 Storage production HTTPS 公网 endpoint 限制与本地 HTTP MinIO 冲突，只运行现有隔离 development profile 并如实标注，不演变成运维改造。 |
+
 ## 最近验收：W3-PLATFORM-STORAGE-V2-CUTOVER（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
