@@ -1272,3 +1272,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 现场 3310 原始 `iam_interaction_csrf_rejected` 是 Web `/auth/sign-in` POST 的 CSRF 拒绝，在 IAM 凭据检查之前；用户标签的签名 query `exp` 已过期约 11 小时，Web CSRF 令牌有效期 5 分钟且一次性。Root 使用现有 IAB 标签重新访问 `/login`，确见 IAM 邮箱/密码表单；旧 JSON 页面被替换，但这只验 GET，不是完整登录。
 - Root 唯一 Web writer 暂停 S9 后先加 2 项 RED，再最小修改 GET 过期 query 与浏览器 POST 失效 CSRF：均 303 重启 `/login`，保留非浏览器 403、来源检查与清除旧 CSRF cookie。Web main `a5418c67d4e8d3af5e1dae9130d9326578f31c75` 已推送；Root 复跑相邻测试 **60/60 PASS**、定向 ESLint 与 typecheck exit0。没有改 IAM 或放宽令牌校验。
 - 3310 为运行约 11 小时的旧隔离构建，尚未热更新到新 Web commit，也未在该常驻进程做凭据→`/app` 全链回归。S9 Web 代码仍在唯一 writer 的未提交工作树，尚未通过全门；Root 历史隔离 E2E 不能替代当前 3310 或全产品验收。
+
+
+## 2026-09-28 — 当前 3310 登录与 S9 Web 代码复验
+
+- Web `d7d3cec44ffca081a8bee0536e4a79e09ad13fec` 发布 S9 Chat Delivery 二元身份、live/snapshot 分离、410 权威水合、卡片/Canvas metadata 与原生下载。独立审查发现旧 phase/metadata/异步控制回调污染与恢复窗口问题；Root 加失败测试并修复。最终 Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 同时修正过期签名的真实 Next HTTP 303（初版相对 Location 在当前 3310 返回 500），Node22 `pnpm check` exit0：contract 105、architecture 36、Vitest 1600、lint/typecheck/build PASS。
+- Root 只停止自己上一组 3310 supervisor，重启到上述 Web 当前源码；真实 HTTP 过期签名 GET 返回 303 `/login`，新 `/login` 进入 IAM 邮箱密码表单。Root 用真实 headless Chromium 对**当前 3310**实测：表单 HTTP 200、提交后 OAuth callback 303、落到 `/app`、Product Session 200/`authenticated=true`，会话 cookie 为 HttpOnly。用户 IAB 标签也已重新打开新表单。这证明当前登录纵切，不证明服务长期在线、正式部署或 Chat/Agent/Storage 全链。
+- S9 的真浏览器 live Delivery、GC/410、刷新/Canvas 与 13 条 declared broken 边仍是后续门；不把现有单仓测试或历史独立组合写成此门通过。

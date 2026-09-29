@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-**当前 P0 登录实测（2026-09-28）：** 3310 用户停留的 `/auth/sign-in` 带 10 分钟有效的签名 query，已过期约 11 小时；表单 CSRF 是 5 分钟/一次性，旧页面提交由 Web 在调用 IAM 前返回裸 JSON `iam_interaction_csrf_rejected`。Web main `a5418c67d4e8d3af5e1dae9130d9326578f31c75` 已在现有 GET/POST 路径做最小修复：过期签名入口和浏览器 CSRF 失效 303 重开固定 `/login`，非浏览器 403 不变；两文件 60/60、聚焦 lint/typecheck 通过。Root 在当前 3310 将用户标签重新打开 `/login`，真页面显示 IAM 邮箱/密码表单，但 3310 仍是旧运行构建，**尚未在该进程完整提交凭据走到 `/app`，新修复也尚未部署到该进程**。不要把历史隔离 E2E 成功说成当前 3310 全链正常；下门为 S9 Web 停写冻结后全门、当前入口版本刷新与真浏览器登录/Chat 回归。
+**当前 P0 登录实测（2026-09-28）：** 旧签名 `/auth/sign-in` 链接过期与一次性 CSRF 失效曾导致浏览器显示原始 `iam_interaction_csrf_rejected`，不是 IAM 凭据验证结果。Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 已把过期 GET 和浏览器 CSRF 失效 POST 正确 303 回固定 `/login`，非浏览器仍 403；真实 Next HTTP 回归补出并修复了最初相对 Location 引发的 500。Root 在**当前 3310 运行进程**的真实 Chromium 中完成 IAM 邮箱密码→consent→OAuth callback→`/app`，Product Session 200、`authenticated=true`、HttpOnly 会话 cookie；现有 IAB 标签已重新打开新表单。Web Node22 `pnpm check`（contract 105、architecture 36、Vitest 1600、lint/typecheck/build）通过。该临时登录组合未启用 Agent/Storage 完整产品链；S9 Chat live/410/Canvas 真浏览器与整体闭环仍待验。
 
 ## 当前关键路径：W2-F2 Storage Agent 作品交付（2026-09-28）
 
