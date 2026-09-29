@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform malformed workload Bearer 401 真组合 PASS；下一门 BFF public 读回
+
+Platform 唯一 writer `66c11b185c07aaa35e85862739a9b63d210abe7c`→`6a09913a96c686b316bfe707b823d039e625607a` 在既有 IAM authorizer 入站处，仅对坏 compact-JWT 形状/超长的非空 workload Bearer 于读取 credential 或调用 IAM 前返回 401；合法形状坏签名仍由 IAM 判定，真实 network/timeout/依赖错误保留 503。HTTP 与 unit 先对已知 503 行为 RED→GREEN；独立审查发现 malformed HTTP 测试未直接锁 `no-store`，最终通过共享错误 helper 精确补强，终审 P0/P1/P2=0。Root `358bb20f` 精确 pin gitlink、9 处来源 SHA 及变化的 authorizer 原字节证据；topology/checkpoint PASS。Root 独立 Node24 format/lint/typecheck/contract/schema/default test **1003 pass/239 skip**/build PASS。Root `scripts/tests` **975 pass/265 subtests**。
+
+Root runner 将空 Bearer 与非空 `invalid-projection-token` 分开断言 401 exact code/message，不用假 token 冒充有效 IAM；有效错 tenant 403、真 projection token 本人 ACTIVE 未安装 by-ID 200 七字段、异 subject 404 保留，所有响应 no-store/request ID。固定 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 的同一次真组合 `/tmp/kokoro-platform-malformed-root-composition.log` **exit0/PASS**，原 BFF Validate→Publish/同事件 replay/撤权/持久库存回归同次 PASS，Skill **2**/receipt **31**/outbox **2**、`resources=clean`；用户 3310 PID 81692 未变。Root runner 独立终审 P0/P1/P2=0。**此只证明 Platform internal-owner 与 Root 组合，不是 BFF public by-ID/list、Web/Chromium 可见或 v4 激活。** 下一片先 BFF 三面/唯一 public OpenAPI 文档机器门，再运行消费和 Web shadcn UI；Billing 最后。
+
 ## 2026-09-29 — IAM projection fixture 与真 Platform 发布读回组合 PASS；malformed bearer P1 另立
 
 IAM 唯一 fixture writer `e6fb1b1`→返修 `36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9`（Root `9a733477` 精确 pin）仅改 opt-in `skill_sandbox` 凭据与集成测试：真实 token endpoint 签发 `platform:projection.read`/Platform audience，真实 introspection 对 projection caller/client/profile/scope/tenant 成功，catalog token 冒用 projection surface 403，默认 OIDC host payload 不变；catalog/projection bearer 与 client secret 均加入 host diagnostics 不泄露断言。独立终审 P0/P1/P2=0。Root 独立 Node24 `pnpm verify` **102 files/938 pass**，真 PG/Redis `web-oidc-flow-host.test.ts` **28/28**；只清理每次自有数据库与 prefix，IAM checkout clean。Root pin 后 topology/checkpoint PASS。

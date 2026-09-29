@@ -681,18 +681,17 @@ def require_platform_published_skill_absent(status: int, body: object) -> None:
         raise SmokeError("Platform unpublished Skill read was not private 404")
 
 
-def require_platform_guard_denial(status: int, body: object, code: str) -> None:
-    expected = {
-        "capability.service_auth_failed": (
-            401,
-            "BFF workload bearer is required",
-        ),
-        "capability.tenant_mismatch": (403, "BFF tenant does not match IAM"),
-    }.get(code)
-    if expected is None or (status, body) != (
-        expected[0],
-        {"error": {"code": code, "message": expected[1], "retryable": False}},
-    ):
+def require_platform_guard_denial(
+    status: int, body: object, code: str, message: str
+) -> None:
+    allowed = {
+        (401, "capability.service_auth_failed", "BFF workload bearer is required"),
+        (401, "capability.service_auth_failed", "BFF workload authentication failed"),
+        (403, "capability.tenant_mismatch", "BFF tenant does not match IAM"),
+    }
+    if (status, code, message) not in allowed or body != {
+        "error": {"code": code, "message": message, "retryable": False}
+    }:
         observed_code = (
             body.get("error", {}).get("code")
             if isinstance(body, dict) and isinstance(body.get("error"), dict)
@@ -2845,7 +2844,22 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     ready,
                 )
                 require_platform_guard_denial(
-                    status, body, "capability.service_auth_failed"
+                    status,
+                    body,
+                    "capability.service_auth_failed",
+                    "BFF workload bearer is required",
+                )
+                status, body = platform_published_skill_get(
+                    platform_base,
+                    begin_skill_id,
+                    "invalid-projection-token",
+                    ready,
+                )
+                require_platform_guard_denial(
+                    status,
+                    body,
+                    "capability.service_auth_failed",
+                    "BFF workload authentication failed",
                 )
                 status, body = platform_published_skill_get(
                     platform_base,
@@ -2855,7 +2869,10 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     tenant_assertion="other-tenant",
                 )
                 require_platform_guard_denial(
-                    status, body, "capability.tenant_mismatch"
+                    status,
+                    body,
+                    "capability.tenant_mismatch",
+                    "BFF tenant does not match IAM",
                 )
                 status, body = platform_published_skill_get(
                     platform_base,

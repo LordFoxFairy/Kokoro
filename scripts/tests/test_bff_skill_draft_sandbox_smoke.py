@@ -63,14 +63,19 @@ class SkillDraftSandboxGuards(unittest.TestCase):
     def test_platform_guard_denials_are_exact_and_do_not_return_data(self):
         for status, code, message in (
             (401, "capability.service_auth_failed", "BFF workload bearer is required"),
+            (
+                401,
+                "capability.service_auth_failed",
+                "BFF workload authentication failed",
+            ),
             (403, "capability.tenant_mismatch", "BFF tenant does not match IAM"),
         ):
             body = {"error": {"code": code, "message": message, "retryable": False}}
-            with self.subTest(status=status):
-                smoke.require_platform_guard_denial(status, body, code)
+            with self.subTest(status=status, message=message):
+                smoke.require_platform_guard_denial(status, body, code, message)
                 with self.assertRaises(smoke.SmokeError):
                     smoke.require_platform_guard_denial(
-                        status, {**body, "data": {"skill_id": "private"}}, code
+                        status, {**body, "data": {"skill_id": "private"}}, code, message
                     )
                 with self.assertRaisesRegex(
                     smoke.SmokeError,
@@ -86,6 +91,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                             }
                         },
                         code,
+                        message,
                     )
 
     def test_iam_projection_token_uses_only_dedicated_client_and_scope(self):

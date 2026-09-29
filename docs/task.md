@@ -1,12 +1,23 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-PLATFORM-MALFORMED-WORKLOAD-BEARER（P1；真实组合发现）
+## 下一切片：W3-BFF-PUBLISHED-SKILL-READ-PREFLIGHT（P0；产品读回断点）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 当前事实 | BFF Product Skills API 是唯一公开契约 owner 与 writer；Root `358bb20f` 已 pin Platform `6a09913a96c686b316bfe707b823d039e625607a`。Platform internal-owner HTTP 3.1.0 可用当前 IAM projection workload token 按 ID 读本人 PERSONAL/ACTIVE、未安装 Skill，Root 真实组合已验；BFF 仍钉旧 Capability HTTP/generated 与 secret 头，公开 by-ID 不存在，个人 ACTIVE 列表丢 `source_ref/revision`。Web 旧 `scope=official|third_party` 直达 400、发布后不自动安装，正式页不可见。BFF v4 候选仍 default-off。 |
+| §8 放置 / 比较 | 方案 A（采用）：先在 BFF 既有 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md` 与唯一 public OpenAPI 收敛 by-ID 与个人 ACTIVE list，再由 BFF 单 writer 精确 repin Platform HTTP 3.1.0/generated、专用 projection credential/Bearer/current IAM admission，复用现有 Skills route/投影模块；不建 BFF Skill SQL。方案 B：继续旧 secret client、扫 catalog 分页或让 Web 直调 Platform；淘汰，协议、隐私、恢复和 owner 边界均不成立。不新建顶层目录/进程/角色，先文档机器门后运行切片。 |
+| 合同 / 数据 / 删除 | Public by-ID 仅当前 IAM tenant+user，未安装 PERSONAL/ACTIVE 本人 200、异用户/非 ACTIVE 404；安全字段与 Platform 投影对齐，列表保留稳定 `skill_id/source_ref/revision`，分页/错误/no-store/request ID 按 owner OpenAPI；发布后刷新/丢 ACK 可按 ID 回读。删除正式旧 `scope=official|third_party`、旧 secret/source_selector 与 fallback，不复制 Platform SQL/包私有字段、不用 Agent execution proof。Web 仅在 BFF 运行与真组合之后改。 |
+| 验收 / 并行 | 先只读盘点 BFF 当前三面文档、OpenAPI、generated pin 与实际 route/测试并给精确 §8 放置表；文档/机器候选 RED→GREEN、独立 API/SQL 审查后才启用唯一 BFF writer 做运行代码；Node22 全门、当前 IAM/Platform 真组合和 user 3310 隔离回归。Root 维护本表/进度并审查，其他审查员只读并行；Billing 最后，任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-PLATFORM-MALFORMED-WORKLOAD-BEARER（P1；真实组合发现并修复）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 当前事实 | Platform IAM ingress/HTTP projection 唯一 writer；当前 clean `main f727a1d9224e8c110a6dec10aabec616294379d6`、Root `3687e1b3` pin。Root 真独占 IAM→Platform 组合中，`Bearer invalid-projection-token` 得 503 `capability.dependencies_unavailable`，空 Bearer guard 本地 401，专用真 token 正常 200、错 tenant 403。只读审计定位根因：Platform guard 只检查非空，IAM SDK 0.6.0 在 HTTP 前用三段 compact JWT schema 拒 `invalid-projection-token`，抛 `IamClientError.request(kind=request,status=null)`；Platform `classifyIamFailure` 把非 api 统一映为 unavailable→503，根本没到 IAM。Root runner 当前保留独立已验空 Bearer 401，不冒称 malformed JWT 已修。 |
 | §8 放置 / 备选 | 方案 A（采用）：Platform 既有 `src/iam/platform-workload-authorizer.ts` 在读取 credential/调用 SDK 前，按 owner 三段 compact JWT 长度与形状窄校验非空 workload token；明确坏形状抛 unauthenticated→guard 401，合法形状的验签、过期/撤权仍交 IAM；`iam-failure.ts` 对其他 SDK request/network 保持 unavailable→503。测试只扩既有 unit/HTTP 文件，不新建模块/进程/contract/SQL。方案 B：Root runner 把 malformed 改为空 token、BFF 吞 503 或对所有 IAM 错误一律 401；淘汰，会隐藏真实依赖故障或保留认证分类债。 |
 | 验收 / 后续 | 真 HTTP RED 保留 malformed bearer 当前 503，直接错误类型测试覆盖 invalid→401、真正 IAM timeout/network→503、permission 403、成功 200/no-store/request ID；Node24 Platform format/lint/typecheck/contract/schema/test/build、独立审查 P0/P1/P2=0，Root 真独占 IAM/Platform/BFF/Storage 组合重跑并核原 Publish/读回与清理。Platform owner 完成后精确 pin，再串行 BFF public by-ID/个人 ACTIVE list 的三文档/机器契约/代码门；最后 Web shadcn/Chromium。3310、任务外 `uv.lock` 不动。 |
+
+**验收结果：** Platform `66c11b185c07aaa35e85862739a9b63d210abe7c`→`6a09913a96c686b316bfe707b823d039e625607a`（no-store 测试补强）已推 `main`，Root `358bb20f` 精确 pin；独立终审 P0/P1/P2=0，Root Node24 format/lint/typecheck/contract/schema/test **1003 pass/239 skip**/build PASS。Root `scripts/tests` **975 pass/265 subtests**。Root 真独占 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 组合中，空 Bearer 401、**非空 malformed Bearer 401**、有效错 tenant 403、本人 ACTIVE 未安装 200、他人 404、Publish/同事件 replay/撤权回归同次 PASS，每次 no-store/request ID、`resources=clean`，3310 未触碰。Root runner 差异独立终审 P0/P1/P2=0；BFF public/Web 路径仍未闭环，v4 inactive。
 
 ## 最近验收：W3-IAM-PROJECTION-FIXTURE + ROOT 真读回组合（P0；2026-09-29）
 
