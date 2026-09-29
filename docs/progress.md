@@ -1279,3 +1279,10 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - Web `d7d3cec44ffca081a8bee0536e4a79e09ad13fec` 发布 S9 Chat Delivery 二元身份、live/snapshot 分离、410 权威水合、卡片/Canvas metadata 与原生下载。独立审查发现旧 phase/metadata/异步控制回调污染与恢复窗口问题；Root 加失败测试并修复。最终 Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 同时修正过期签名的真实 Next HTTP 303（初版相对 Location 在当前 3310 返回 500），Node22 `pnpm check` exit0：contract 105、architecture 36、Vitest 1600、lint/typecheck/build PASS。
 - Root 只停止自己上一组 3310 supervisor，重启到上述 Web 当前源码；真实 HTTP 过期签名 GET 返回 303 `/login`，新 `/login` 进入 IAM 邮箱密码表单。Root 用真实 headless Chromium 对**当前 3310**实测：表单 HTTP 200、提交后 OAuth callback 303、落到 `/app`、Product Session 200/`authenticated=true`，会话 cookie 为 HttpOnly。用户 IAB 标签也已重新打开新表单。这证明当前登录纵切，不证明服务长期在线、正式部署或 Chat/Agent/Storage 全链。
 - S9 的真浏览器 live Delivery、GC/410、刷新/Canvas 与 13 条 declared broken 边仍是后续门；不把现有单仓测试或历史独立组合写成此门通过。
+
+
+## 2026-09-28 — S9 Chat snapshot/Canvas 真浏览器子门
+
+- Root 仅扩现有 `scripts/e2e/run_web_project_resource_chromium_smoke.py` 与 `scripts/e2e/web_project_resource_chromium.mjs` 的已投递作品浏览器断言，保留原 Project/个人文件/Library 回归；不动子仓 runtime 或 3310。第一次使用系统 Python 在隔离 schema 阶段因缺 Agent 模块退出，归属清理无错误；随后使用 Agent 自仓 `.venv` 运行。第一轮新 Chat 断言在 `artifact-chat-snapshot` RED，原因是测试将 Web 同源已解包 snapshot 错读成 BFF 原始 `data`；修正测试 wire 后，固定当前 Web/BFF/Agent/Storage/IAM SHA 的真 IAM→HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 组合 exit0/PASS。
+- 实测预先投递作品在 Chat snapshot 保留唯一二元 ID、作品元数据与公开水位；从 Library 进入源对话显示唯一 Delivery 卡，打开 Canvas 原生下载并核对文件名/原字节 SHA，刷新后卡片仍唯一；同租户第二成员 Chat snapshot 返回 404。原 Project/个人文件/Library 两件作品回归仍随同一组合通过。runner 报自有 PostgreSQL 数据库、Redis keys、进程、S3 versions 剩余均 0；新建独占对象桶确认空后删除。机器上原有其他临时库未动。Root 相邻脚本 25/25 通过。
+- 此验收是**投递先于浏览器启动**的 snapshot/Canvas 子门，不证明 live/replay 实时交付或 GC 后旧 cursor 410 重水合。S9 和 `EDGE-WEB-BFF` 保持未闭环；下一步单独构造浏览器已订阅、Product POST 202 后受控 Agent 交付的真 live 门，以及 owner 定向 GC/410 浏览器恢复门。

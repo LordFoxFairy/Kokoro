@@ -1346,6 +1346,8 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 
 **S9-WEB-DOC 已验收，代码门待派：** Web main `3a0ad22563458621a9d2d4b10ff3a2c45adcac6e` 仅四份现有设计/CURRENT 文档，明确旧 Web pin 与 BFF `bd1f794` 新 OpenAPI、live 完整 payload 与 snapshot 九字段差异、410 `event_cursor_expired` 重快照（区别 snapshot 410 软删）、终态旧快照覆盖新 live 风险、最近 100/has_more→Library、Canvas metadata+二元原生下载和正式 hash/Blob 删除。Root 对 BFF/Web 两份原字节 digest 与源代码逐项审查，并独立 Node22 `pnpm contract` 16 文件/103 测试及 15 个旧来源生成漂移检查通过、`git diff --check` PASS；这仅证明**旧消费基线自洽**，不证明 Web 已切新 BFF 契约。独立只读代码审计发现当前 live/new snapshot 严格解析必失败、410 被普通错误吞、卡/Canvas 仍 hash+Blob；下一代码门须同时修恢复与 UI，不只改 Zod。Root 真 S9 browser live/refresh/Canvas 及 GC 专测仍待验，3310 未触碰。
 
+**S9 浏览器分门当前态：** Root 在现有 W2 真浏览器组合脚本增 Chat 专门断言；固定 Web `317c74c`、BFF `bd1f794`、Agent `486adb1`、Storage `d5cfc44`、IAM `4d98144` 的隔离组合已 PASS：预先投递的作品经对话 snapshot→卡片→Canvas 原生保存原字节→刷新重显，同租户第二成员 Chat 404；测试自有数据库、Redis keys、进程、S3 版本为 0。此为 snapshot/Canvas 子门，不是 live 投递或 GC/410；S9 仍进行中，下一门先做浏览器订阅后受控 Agent 交付，再做真 owner GC/410。
+
 **S9-WEB-CODE 任务卡（P0，唯一 Web writer）：** 基线 Web main `3a0ad22563458621a9d2d4b10ff3a2c45adcac6e` clean，Root main `7bc6d8f69cb198b99c9521e9f3b9d15e83570793`；依赖已通过的 Web 四文档门及 BFF owner main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7`/OpenAPI SHA-256 `a224b186813615467b6c045d3be83082d3e164e140d6da9722bf3f8d7e33b219`。沿用文档负责人作为同仓唯一代码 writer；Root 独占 Git index/commit、来源库存、审查和真实浏览器。先读本仓 Next 16 已安装文档相关段落，先以直接测试观察 RED，再实施 GREEN；分阶段报告 contract/core 与 UI，但不得把只做 core 的候选发布为 S9 完成。
 
 | 文件门 | 精确允许范围与裁决 |

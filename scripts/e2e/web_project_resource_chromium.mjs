@@ -431,6 +431,59 @@ try {
     { timeout: input.timeout_ms })
   process.stderr.write("MILESTONE:artifact-reload-mobile-source\n")
 
+  // Library is not the Chat delivery surface. The same durable binary ID must
+  // hydrate a conversation card and Canvas after crossing back into Chat.
+  phase = "artifact-chat-snapshot"
+  const sourceArtifact = input.artifacts.find((candidate) =>
+    candidate.conversation_id === ordered.body.data.items[0].conversation_id)
+  assert(sourceArtifact, "source conversation lacks exact Artifact fixture")
+  const sourceSnapshotPath = `/api/session/sessions/${encodeURIComponent(sourceArtifact.conversation_id)}`
+  const sourceSnapshot = await page.evaluate(async (target) => {
+    const response = await fetch(target, { credentials: "same-origin", cache: "no-store" })
+    return { status: response.status, body: await response.json() }
+  }, sourceSnapshotPath)
+  const sourceDeliveries = sourceSnapshot.body?.deliveries
+  phase = "artifact-chat-snapshot-status"
+  assert(sourceSnapshot.status === 200, "owner Chat snapshot unavailable")
+  phase = "artifact-chat-snapshot-count"
+  assert(Array.isArray(sourceDeliveries) && sourceDeliveries.length === 1,
+    "owner Chat snapshot lost durable Delivery")
+  phase = "artifact-chat-snapshot-watermark"
+  assert(sourceSnapshot.body?.deliveries_has_more === false &&
+    typeof sourceSnapshot.body?.event_watermark === "string",
+  "owner Chat snapshot watermark drift")
+  phase = "artifact-chat-snapshot-identity"
+  assert(sourceDeliveries[0].conversation_id === sourceArtifact.conversation_id &&
+    sourceDeliveries[0].artifact_id === sourceArtifact.artifact_id,
+  "owner Chat snapshot binary identity drift")
+  phase = "artifact-chat-snapshot-metadata"
+  assert(sourceDeliveries[0].title === "Delivered work" &&
+    sourceDeliveries[0].size === Buffer.byteLength(sourceArtifact.content, "utf8"),
+  "owner Chat snapshot Delivery metadata drift")
+  phase = "artifact-chat-card"
+  const chatDelivery = page.getByRole("button", { name: `Open delivery ${sourceDeliveries[0].title}`, exact: true })
+  await chatDelivery.waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await chatDelivery.count() === 1, "source Chat rendered duplicate Delivery cards")
+  phase = "artifact-chat-canvas"
+  await chatDelivery.click()
+  const canvas = page.getByRole("complementary", { name: `canvas details ${sourceDeliveries[0].title}`, exact: true })
+  await canvas.waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await canvas.getByRole("heading", { name: sourceDeliveries[0].title, exact: true }).count() === 1,
+    "Chat Canvas did not resolve binary Delivery metadata")
+  const canvasDownloadPromise = page.waitForEvent("download", { timeout: input.timeout_ms })
+  await canvas.getByRole("button", { name: "Download", exact: true }).click()
+  const canvasDownload = await canvasDownloadPromise
+  assert(canvasDownload.suggestedFilename() === sourceArtifact.filename &&
+    await canvasDownload.failure() === null &&
+    sha256(readFileSync(await canvasDownload.path())) === sourceArtifact.content_sha256,
+  "Chat Canvas native download lost original Artifact bytes")
+  await canvasDownload.delete()
+  phase = "artifact-chat-reload"
+  await page.reload({ waitUntil: "domcontentloaded", timeout: input.timeout_ms })
+  await chatDelivery.waitFor({ state: "visible", timeout: input.timeout_ms })
+  assert(await chatDelivery.count() === 1, "Chat refresh lost or duplicated durable Delivery")
+  process.stderr.write("MILESTONE:artifact-chat-snapshot-canvas-reload\n")
+
   const memberContext = await browser.newContext({ ignoreHTTPSErrors: true, locale: "en-US" })
   const memberPage = await memberContext.newPage()
   await memberPage.addInitScript(() => window.localStorage.setItem("kokoro.locale", "en"))
@@ -482,6 +535,14 @@ try {
   assert(memberArtifact.listStatus === 200 && Array.isArray(memberArtifact.items) && memberArtifact.items.length === 0 &&
     memberArtifact.detailStatus === 404 && memberArtifact.contentStatus === 404 && memberArtifact.disposition === null,
   "same-tenant other subject reached private Agent Artifact")
+  const memberChat = await memberPage.evaluate(async (conversationId) => {
+    const response = await fetch(`/api/session/sessions/${encodeURIComponent(conversationId)}`,
+      { credentials: "same-origin", cache: "no-store" })
+    return { status: response.status, body: await response.json() }
+  }, sourceArtifact.conversation_id)
+  assert(memberChat.status === 404 && !Array.isArray(memberChat.body?.deliveries) &&
+    !Array.isArray(memberChat.body?.data?.deliveries),
+    "same-tenant other subject reached private Chat Delivery snapshot")
   process.stderr.write("MILESTONE:member-private\n")
   await memberContext.close()
   await context.close()
@@ -501,7 +562,8 @@ try {
       member_get_status: memberLibrary.status, member_empty: true, member_download_status: memberDownload.status },
     artifacts: { visible_downloads: 2, owner_pages: 2, owner_after_reload: true, member_empty: true,
       member_detail_status: memberArtifact.detailStatus, member_content_status: memberArtifact.contentStatus,
-      mobile_no_overflow: true },
+      mobile_no_overflow: true, chat_snapshot: true, chat_canvas_native_download: true,
+      chat_after_reload: true, member_chat_status: memberChat.status },
     screenshot: input.screenshot, privacy,
   }))
 } catch {

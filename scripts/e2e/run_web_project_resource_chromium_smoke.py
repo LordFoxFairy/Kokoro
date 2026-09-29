@@ -484,6 +484,10 @@ def _driver_result(
         or artifact_evidence.get("member_detail_status") != 404
         or artifact_evidence.get("member_content_status") != 404
         or artifact_evidence.get("mobile_no_overflow") is not True
+        or artifact_evidence.get("chat_snapshot") is not True
+        or artifact_evidence.get("chat_canvas_native_download") is not True
+        or artifact_evidence.get("chat_after_reload") is not True
+        or artifact_evidence.get("member_chat_status") != 404
     ):
         raise SmokeError("real Chromium Agent Artifact evidence drift")
     return evidence
@@ -1220,7 +1224,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library native downloads/private; Project and personal file regression → Storage S3/ClamAV",
+        "flow": "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library and Chat snapshot/Canvas native downloads/private; Project and personal file regression → Storage S3/ClamAV",
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]
