@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Get/Begin/Complete 调整为真实 RPC 逐片发布
+
+Root 对下一“纯机器契约”任务做源码与独立只读可执行性审查：Platform 唯一 Proto 一旦增加 `SkillCatalogService` 方法，现有强类型 `ServiceImpl` 会要求真实 handler；用 `Partial` 会让 Connect 自动注册 `UNIMPLEMENTED`，而只加请求消息仍触发 descriptor typed identity 门。因此取消“Proto 先行但可构建”的假切片，改先交付**真实只读 Get**（本次 IAM user owner/current draft + Prisma 当前 attempt；零 Storage/receipt/outbox），再将 Begin/Complete 各连同 Storage v2、外部 receipt/CAS/恢复原子实现。任务边界见 [`task.md`](task.md) 顶部；本条是裁决，不是 Get 已完成。
+
 ## 2026-09-29 — Platform Skill 包 canonical Schema 已验收；上传链未激活
 
 Platform `main bfa614b4ad6bcdd6e3c767b9c291bd43f4f60bf8` 已提交推送：唯一 Prisma `Skill` 行新增包阶段、当前 attempt/epoch/version/原 subject/预期大小/文件元信息/Begin identity/Storage upload/manifest 预留列与官方生成类型；无第二绑定表、角色或跨 owner SQL。旧 Validate/Publish 仍固定拒绝，v3 Proto/artifact 未改。Root 首次独立空库安装 **RED**：新列和 enum 改变完整 owner catalog，但 pinned digest 未更新，安装回滚；同 writer 修复摘要并加 fresh install 字段默认值/nullable、包列/enum 漂移拒绝负例。末轮独立复审 P0/P1/P2=0。

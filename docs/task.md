@@ -1,13 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码门：W3-PLATFORM-PACKAGE-CONTRACT（P0；2026-09-29）
+## 下一代码门：W3-PLATFORM-PACKAGE-GET（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
 | Owner / 基线 | `apps/kokoro-capability` 唯一 writer，`main bfa614b4ad6bcdd6e3c767b9c291bd43f4f60bf8`；Root 独占 Git index、审查与验收。 |
-| 目标 | 在 owner 新机器 release 中发布只读 `GetSkillPackageUpload`、命令 `BeginSkillPackageUpload`/`CompleteSkillPackageUpload`，完整短期 `TransferReference`，并版本化 ZIP V1 profile 与正反向量。既有 v3/3.0.0 原字节、inactive 标记不改，不用旧 URL 字符串或请求自报 tenant 兼容层。 |
-| 范围 / 依赖 | 先固定 Proto、operation/command/request binding、错误和生成物的一致机器事实，再进入 Storage v2 运行实现；本门不冒充 RPC handler、真上传/发布可用。更新对应契约测试及必要设计文档，不改 BFF/Agent/Storage，消费者须在 owner 提交后顺序 repin。 |
-| 验证 | RED→GREEN Buf lint/breaking、contract/artifact、format/lint/typecheck/test/build、向量与 digest 重生稳定性；Root 独立复验并记录当前 commit。 |
+| 技术裁决 | 独立只读审查确认：当前 Proto 是**唯一可路由服务**，增加 RPC 后 `ServiceImpl` 必须有真实 handler；靠 `Partial` 躲过类型检查会自动暴露 `UNIMPLEMENTED` 假入口。即使 messages-only 也触发 typed identity/descriptor 门，纯机器片不是有效闭环。故改为**逐个真实 RPC 原子发布**，先 Get，再 Begin/Complete；v3/3.0.0 原字节冻结，不建立空 handler 或双轨。 |
+| 本片目标 | 发布 owner-only `GetSkillPackageUpload`：本次 IAM catalog workload/tenant 与 Product user/owner/current draft 验证后，只从 Platform canonical `Skill` 行读取当前 attempt ID/epoch/phase/已知 upload ID；`none` 时不伪造 attempt，不查询 Storage、不重签 URL、不查 receipt。请求/响应、operation、typed identity、binding、生成物、候选新 artifact 与**真实 handler**同片落地。新机器版在完整包链/消费者验收前仍 inactive，不把 Get 宣称上传可用。 |
+| 文件/边界 | Platform 唯一 writer 可修改既有 Proto、contract/descriptor/provenance、新机器 artifact/其 checker/vector、官方 generated、Skills RPC/catalog/repository 的必要既有文件和直接测试、当前文档；创建新 artifact 版本目录须先给第 8 节放置表。不得改 v1–v3 历史字节、BFF/Agent/Storage/Root/lockfile，也不放宽固定 counts 门、返回统一 `UNIMPLEMENTED` 或混入 Begin/Complete 假路由。遇超界先报告 Root。 |
+| 新目录放置预裁决 | 若当前 checker 要求新 artifact，采用既有 `contract/execution-operations/v1..v3` 的同级下一候选版本，唯一 owner 仍为 Platform contract；淘汰覆盖冻结 v3 或另建可编辑 Root contract。必须同时更新 runtime 唯一绑定和双向 descriptor/count/vector 门，并保留 v3 原字节断言。普通新文件按职责拆，不新建空业务模块。 |
+| 验证 | RED→GREEN Buf lint/普通 breaking 与既有自定义 cutover、contract/artifact、format/lint/typecheck/test/build、Get 跨 tenant/user/非 draft/撤权/无包/当前 attempt 正例及零 Storage/receipt/outbox 副作用；Root 真 PostgreSQL 独占临时库复验、独立审查并记录 commit。后续 Begin/Complete 必须各含 Storage v2、external receipt/CAS/恢复与真实组合，不拆成只有 Proto 的片。 |
 
 ## 最近验收：W3-PLATFORM-PACKAGE-SCHEMA（P0；2026-09-29）
 
