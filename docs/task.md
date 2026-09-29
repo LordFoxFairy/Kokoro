@@ -61,6 +61,16 @@
 
 Root 真实 sandbox 后续复用该 host 的唯一临时库与现有 Storage/Platform 正式源码启动，真 Storage readiness 必须连 PostgreSQL/Redis/ObjectStore/Scanner；BFF 正式候选代码只在 loopback 显式开启。单库 host 不是新增运维角色/实例。Root 以自有隔离 runner 证明 Skill/receipt 唯一、撤权同 key 在 Platform socket 前拒；用户 3310 不触碰。
 
+#### W1E-SKILL-DRAFT-TRUE-SANDBOX（P0，Root 组合验收；与两仓实现并行准备）
+
+| 项 | 放置与阶段门 |
+| --- | --- |
+| Owner / 当前事实 | Root 只拥有跨仓真实 HTTP/Connect 组合验收与进程/临时资源生命周期；IAM、BFF、Platform、Storage 分别拥有身份、public API、Skill/receipt、对象与 readiness 事实。Root `2f42a892d8935014fa565957868ecb2878cba7c9`，IAM/BFF 两个唯一 writer 正在实现前置；当前没有真 CreateDraft 组合 runner 或 201 证据。Root runner writer 不改任何子仓、Git index、task/progress 或用户 3310。 |
+| 位置 / 备选 | **采用**现有 `scripts/e2e/` 中新建单责 `run_bff_skill_draft_sandbox_smoke.py` 与 `scripts/tests/test_bff_skill_draft_sandbox_smoke.py`，复用已存在的 owned-process/PG/Redis/Storage 启动与清理 helper；不把五服务协议塞进已有 System/Chat runner。淘汰在 BFF 或 IAM 内复制其他 owner fixture、在 Root 写跨 owner SQL、用模拟 IAM/Storage/Platform 响应冒充真实链。无新顶层目录、生产进程或 Schema。 |
+| 范围 / 依赖 | Root 唯一 runner writer 仅写上述两个新文件；若必须修改既有 shared helper，先报主控扩卡，不自行扩大。以 IAM opt-in host ready/一次性 revoke 为唯一 session owner 通道；以 BFF 阶段 B 同一候选生产代码为唯一 Product route；Platform v3 当前 owner Proto/digest 不复制。源码和运行证据固定四仓 SHA，前置 worktree 未冻结前只做 unit/协议准备，不运行终验或宣称 PASS。 |
+| 数据 / API / 隔离 | IAM host 创建并最终清理一个独占临时 PostgreSQL 数据库和 Redis prefix；在该**同一库**安装 BFF/Storage/Platform 各自 owner schema，一套应用 credential。真实 Storage readiness 使用现有本机 ObjectStore/Scanner/Redis 与 owner 代码，不启动或清理用户共享服务；Platform `skill-catalog` 仅收 IAM tenant-machine/resource-server/tenant-execution 凭据；BFF 仅收 owner-only 0600 credential file。自有短寿进程全由 runner 捕获/关闭，不能用 3310 或改正式 manifest。 |
+| 测试 / 放行 | 先 RED→GREEN：ready/source/config/credential/路径与响应严格校验、异常和中断仍清理，日志与 summary 不泄漏秘密；实际组合须证明默认候选关闭 503 且 Platform 0 socket、开启后首次 201、相同 key/body 同 Skill 且 `replayed=true`、相同 key/异 body 409、IAM revoke 后相同 key 在 Platform socket 前拒、Platform 恰一份 Skill 与一份 durable receipt、前后独占资源库存相同。固定 SHA 后 Root 独立 Python unit、四仓 owner 门与真组合运行，再由主控审查提交。此证据仅为预激活，不等于 Web 浏览器或正式 public 激活。 |
+
 | 项 | 下一任务卡边界 |
 | --- | --- |
 | Owner / 目标 | BFF 唯一 public Product API、IAM session admission 与 user owner 映射；Platform 唯一 Skill/receipt writer。先做 user-only CreateSkillDraft 机器契约/受信 Connect consumer 候选，保持正式 public fail closed；隔离真实 201 是预激活验证门，公开产品可用性是消费者与六 owner sandbox 后协调激活的独立门，不以六 mutation、四 scope、Skills/MCP 总线或 Web UI 完成冒称。 |
