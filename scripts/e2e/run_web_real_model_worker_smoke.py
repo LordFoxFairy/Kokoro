@@ -251,7 +251,7 @@ def durable_evidence(
         for key in ("run_id", "conversation_id", "artifact_id", "asset_id")
     )
     if any(
-        re.fullmatch(r"[A-Za-z0-9_-]{1,191}", v) is None
+        re.fullmatch(r"[A-Za-z0-9_:-]{1,191}", v) is None
         for v in (run, conversation, artifact, asset, tenant)
     ):
         raise SmokeError("SQL evidence identity rejected")

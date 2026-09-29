@@ -258,6 +258,37 @@ def test_durable_evidence_requires_worker_owned_write_and_single_delivery(monkey
             )["storage"] == {"count": 1}
 
 
+def test_durable_evidence_accepts_owner_resource_ids_but_rejects_sql_input(monkeypatch):
+    m = module()
+    monkeypatch.setattr(m, "worker_owns_lease", lambda *_: True)
+    row = {
+        "terminal": True,
+        "generation": 1,
+        "owner": "worker",
+        "file_writes": 1,
+        "deliveries": 1,
+        "events": ["delivery.created", "run.completed"],
+    }
+    evidence = {
+        **valid_evidence(),
+        "artifact_id": "artifact:abc123",
+        "asset_id": "asset:abc123",
+    }
+    results = iter([row, {"count": 1}])
+    monkeypatch.setattr(m, "_query", lambda *_: next(results))
+    assert m.durable_evidence(None, "owned-db", evidence, "tenant", 42, "b" * 64)
+    for malicious in ("artifact:' OR true --", "artifact:abc;", "artifact:abc\n"):
+        with pytest.raises(m.SmokeError, match="SQL evidence identity rejected"):
+            m.durable_evidence(
+                None,
+                "owned-db",
+                {**evidence, "artifact_id": malicious},
+                "tenant",
+                42,
+                "b" * 64,
+            )
+
+
 def test_harness_registers_system_in_existing_owned_lifecycle():
     source = Path("scripts/e2e/run_web_project_resource_chromium_smoke.py").read_text()
     assert '"owner_db_url": owner_db_url' in source
