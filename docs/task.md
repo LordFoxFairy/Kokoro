@@ -1,6 +1,23 @@
 # Kokoro 后端闭环任务总表
 
-## 当前下一门：Platform v3 → BFF 用户 Skill 草稿消费（2026-09-29）
+## 当前执行：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-agent` 唯一 writer；Agent `cbb2719997b146ebd1b458ee0fe5b349bd551fc3`、Platform owner `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`、Root `c5b2d1a5dfe3b2b70a023c9ded3238a264256529`，开始均 clean `main`。Root 保留 Git index/commit 与跨仓验收。 |
+| 当前事实 | Agent 仍 pin Platform `ee25c1f` 的 Proto SHA `7c55fcad…` 与 execution artifact v1 `bindingVersion=1.0.0`；Platform 当前 Proto SHA `282bf886…`、v3 aggregate `324e749d…`、唯一 runtime binding `3.0.0`。Agent 六 RPC transport 虽存在，但尚无业务调用；直接接线会发旧 binding。BFF CreateDraft 真隔离纵切已过，**不代表** Agent consumer 可互操作。 |
+| 目标 / 位置 | 先把 Agent 的唯一 Platform consumer 来源钉到 owner 当前 Proto 与完整 v3 artifact，官方再生 generated client，使用本仓现有 `execution/` request projector 对齐 owner 六项正反向量；保留业务 Skill/MCP typed selection 到后片。采用既有 `contract/platform/v1/` 只读 owner vendor、`generated/` 与 `execution/`（分别是来源、生成物、consumer 计算）；淘汰在 `clients/skills.py` 复制算法或新增第二个 contract 中心。删 Agent vendor 的 v1 execution artifact，运行时无双轨。 |
+| 文件边界 | Agent writer 可改 `contract/platform/v1/proto/kokoro/platform/v1/platform_runtime.proto`、`contract/platform/v1/execution-operations/{v1,v3}/**`、`contract/platform/v1/provenance.json`、既有 `scripts/generate_platform_consumer.py`、`src/kokoro_agent/{platform_binding_contract.py,execution/platform_request_binding.py,execution/platform_request_binding_values.py,generated/platform_request_projector.py,generated/kokoro/platform/v1/*}`、直接 contract/unit/architecture 测试，以及 `docs/{CURRENT,TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md` 精确当前态。发现确需超界先报告 Root；不改 Platform/IAM/Storage/Root、Agent SQL/RunRequest/公开 HTTP、lockfile、用户 3310。 |
+| 数据 / API / 删除 | 不新增 Agent 持久事实、事务、Redis key 或授权 fallback；只消费 Platform 已发布机器字节，不修改 owner Proto。Agent 的 v1 vendor 14 文件随 v3 原子替换，不保留 runtime alias；Platform owner 仓的冻结历史不动。v3 manifest `inactive/routable=false` 仍是发布态，不能把此片称为业务激活。 |
+| 验证 / 交付 | 先 RED 证明当前 v1 与 v3 不匹配；后 GREEN 精确 owner 字节+digest、24 tenant request 中六 RPC parity、正反向量/未知字段/重放语义，生成两次字节稳定；`uv run python scripts/generate_platform_consumer.py --check`、`uv run kokoro-agent-contract-check`、Ruff format/check、Pyright、聚焦与全量 pytest、`uv build --wheel --sdist`。真实 IAM→Platform 六 RPC 另设 Root sandbox 门；本片只称机器消费准备。Writer 交文件清单/RED→GREEN/未跑风险，不操作共享 Git index；Root 独立审查重跑后提交。 |
+
+**后续依赖，不并行改写：** Agent v3 来源门后仍须 typed Skill/MCP 选择进入受信 Run 并逐次真实调用；Storage 当前只支持旧三种包 scope，Platform 仍消费 Storage v1，需 Storage 发布 revision package v2 边界后 Platform 才能切；System 尚无 operator-machine Platform 出站调用。三者与六 owner 真 sandbox、正式 `kokoro-capability`→`kokoro-platform` 原子切换分别验收；当前库存 16 边/13 declared broken，不因 BFF 单个 CreateDraft 纵切或本片机器 pin 升绿。
+
+**独立审查扩围（同一 Agent writer 返修）：** 准 `apps/kokoro-agent/contract/README.md` 仅纠正当前来源/计数（原仍写 ee25c1f/v1）；现有 `scripts/generate_platform_consumer.py --check` 必须拒绝 OUTPUT 中多出的旧 Platform 生成文件，同时保留 Storage 生成树；直接生成检查测试可精确扩充。六项实际 RPC 投影 parity 的 `mcp.authorize_tool` 不再仅自产哈希自证，应以 owner 独立 typed-arguments bytes 向量验证原字节 SHA，并组合 owner binding 投影的其余字段比较 canonical/SHA。15 个 Product command projector 不在本片实现范围；只需静态完整来源/结构验收。
+
+**验收结果：** Agent main `7dfcfa936d0b51244683ffd66d16ea937fe510a6` 已提交并推送，Root 独立 `uv lock --check`、Ruff format/check、Pyright 0、contract checker、Platform generator `--check`、全量默认 pytest **1312 pass/6 skip/172 deselected**、wheel/sdist build与 diff check 均通过；独立复审三项 P2 返修后 P0/P1/P2=0。原 14 文件 v1 consumer vendor 已由 owner v3 17 文件替代，Proto/生成 PB 精确重生，六项 RPC 中 Authorize 的期望来自 owner canonical 原字节/独立 bytes 向量。**只验机器消费准备**，真实 IAM→Platform 六 RPC/proof/撤权、typed 产品选择、Storage 包与六 owner 激活仍待后片；库存 13 declared broken 不升绿。
+
+## 已验收基线：Platform v3 → BFF 用户 Skill 草稿消费（2026-09-29）
 
 ### W1E-PLATFORM-SCHEMA-CHECK（P0，已验收）
 

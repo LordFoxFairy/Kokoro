@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 Agent Platform v3 机器 consumer 前置通过
+
+Root `c5b2d1a5` 与三项并行只读审查确认：BFF user-only CreateDraft 真隔离纵切已过，但 Agent pin Platform v1 binding 而 owner 当前运行 v3。Root 在 `docs/task.md` 顶部冻结 W3-AGENT-PLATFORM-V3-PIN，Agent 唯一 writer 完成 v3 17 文件、Proto/生成 PB、完整来源与 31/24/15 registry/53+142+139 向量门，删除 v1 vendor；Agent main `7dfcfa936d0b51244683ffd66d16ea937fe510a6` 已提交推送。独立审查三项 P2（旧 README、残留生成文件漏检、Authorize 自证 oracle）逐项返修，终审 P0/P1/P2=0。Root 独立 `uv lock --check`、Ruff format/check、Pyright 0、contract checker、生成校验、默认 pytest **1312 pass/6 skip/172 deselected**、wheel/sdist build和 diff check 均通过；第一次 Root 测试前发现上轮 build 自有 `build/` 产物被 Ruff 扫到，已只删除该自有目录并重跑全门通过。此只证明 Agent **机器契约/离线投影**，不证明产品接线或真实 IAM→Platform；System operator-machine 与 Storage revision package/v2 仍缺，库存 16 边/13 declared broken，3310 未触碰。
+
 ## 2026-09-29 — user-only Skill CreateDraft 真四 owner sandbox PASS
 
 **提交后复验：** Root main `f4efc66ce9b6b28ae2bf92dd8bdfe7f41b37201a` 已仅提交并推送 runner 两文件与 Root 当前/任务/进度记录；`git status` Root及四 owner均 clean main。该提交后同一 runner再次返回 `PASS/resources clean/Skill 1/receipt 1`，`verify-repository-topology.py` PASS；用户 3310 未触碰。
