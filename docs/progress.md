@@ -2,6 +2,8 @@
 
 ## 2026-09-29 — user-only Skill CreateDraft 真四 owner sandbox PASS
 
+**提交后复验：** Root main `f4efc66ce9b6b28ae2bf92dd8bdfe7f41b37201a` 已仅提交并推送 runner 两文件与 Root 当前/任务/进度记录；`git status` Root及四 owner均 clean main。该提交后同一 runner再次返回 `PASS/resources clean/Skill 1/receipt 1`，`verify-repository-topology.py` PASS；用户 3310 未触碰。
+
 Root main `bfab4582cfd6ef2397608283aae470cde60f1be1` 固定 IAM `eb6700c13f84a165620a6be456a25d290bd3da4a`、BFF `caa99d90f57329065eeb0e98168316b2b1874159`、Platform `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`、Storage `d5cfc442c675e32363ae767f5ec662a9e0d9eaea`；新 Root `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 使用 IAM opt-in host 自有 PostgreSQL 临时库与 Redis namespace，在同库安装三 owner schema，复用本机 MinIO/ClamAV但新建独占 ObjectLock/versioning bucket，启动短寿 Storage/Platform/BFF 正式 dist、真实 IAM fixture。`frozen_sources()` 先校验四仓 clean 且 Gitlink 精确等于 Root HEAD；用户 3310 未触碰。
 
 **实际结果：** 默认关闭 BFF 503、计数 proxy 的 Platform TCP 连接 0；仅候选 flag 改为 true 后，普通用户 Bearer 每次先过 IAM，真 catalog machine token/Connect 首次 201，原 key/body 201 且 Skill/Series ID 相同、`replayed=true`，原 key/异 body 409 `skill_idempotency_conflict`；IAM fixture 撤销其 session 后同 key 401 且 Platform proxy 连接数未增；只读 Platform owner schema SQL 证实 Skill 1、durable receipt 1。runner JSON：`{"platform_receipt_count":1,"platform_skill_count":1,"resources":"clean","status":"PASS"}`。四 owner 短寿进程、IAM 命名临时库/Redis namespace、测试凭据目录、独占 S3 versions/markers/bucket 在 finally 清理并核对，Root 额外盘点该前缀桶余量 0。几轮 RED 分别定位 runner helper import、PostgreSQL 省略用户名、BFF HTTP/2 对 Platform Express HTTP/1.1、psycopg 不接受 Prisma schema query，均以当前真实链重跑至 PASS，不把中途失败隐去。
