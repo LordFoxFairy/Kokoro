@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from typing import Callable
 from urllib.parse import parse_qsl, urlencode, unquote, urlsplit, urlunsplit
 from uuid import uuid4
 
@@ -588,7 +589,12 @@ def _durable_owner_facts(
         )
 
 
-def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, object]:
+def _run_smoke(
+    args: argparse.Namespace,
+    config: dict[str, str],
+    *,
+    live_scenario: Callable[..., dict[str, object]] | None = None,
+) -> dict[str, object]:
     iam_node = _node_path(args.iam_node_bin, "iam-node-bin")
     node22 = _node_path(args.node22_bin, "node22-bin")
     node24 = _node_path(args.node24_bin, "node24-bin")
@@ -983,135 +989,169 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                         raise SmokeError("isolated Next HTTPS origin not ready")
                     time.sleep(0.1)
 
-                stage = "real IAM Product authentication before Artifact dispatch"
+                if live_scenario is not None:
+                    stage = "browser subscribed live Chat Artifact delivery"
+                    screenshot = directory / "chat-delivery.png"
+                    browser = live_scenario(
+                        node=node22,
+                        origin=web_origin,
+                        ready=ready,
+                        member=member,
+                        timeout=args.timeout,
+                        screenshot=screenshot,
+                        certificate=web_certificate[0],
+                        run_id=run_id,
+                        agent_db_url=agent_db_url,
+                        agent_redis=agent_redis,
+                        storage_base=storage_base,
+                        object_origin=config["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                        agent_secret=agent_secret,
+                    )
+                    browser["screenshot_sha256"] = hashlib.sha256(
+                        screenshot.read_bytes()
+                    ).hexdigest()
+                    del browser["screenshot"]
+                else:
+                    stage = "real IAM Product authentication before Artifact dispatch"
 
-                def seed_artifacts(request: product.AuthenticatedRequest) -> str:
-                    nonlocal stage
-                    latest_conversation = ""
-                    for index in range(2):
-                        conversation = f"conv_{uuid4()}"
-                        content = f"W2 Agent Artifact {index + 1} {run_id}\n".encode()
-                        stage = f"Artifact {index + 1} Web POST"
-                        response = request(
-                            f"/api/session/sessions/{conversation}/messages",
-                            method="POST",
-                            json_body={
-                                "content": f"Create Agent Artifact {index + 1}."
-                            },
-                            origin=web_origin,
-                            idempotency_key=f"web-artifact:{run_id}:{index}",
-                            accept="application/json",
-                        )
-                        stage = f"Artifact {index + 1} Web receipt"
-                        receipt = chat_worker._web_json(
-                            response, 202, "Product first message"
-                        )
-                        agent_run_id = receipt.get("run_id")
-                        if not isinstance(agent_run_id, str) or not agent_run_id:
-                            raise SmokeError(
-                                "Product Artifact dispatch receipt missing run_id"
+                    def seed_artifacts(request: product.AuthenticatedRequest) -> str:
+                        nonlocal stage
+                        latest_conversation = ""
+                        for index in range(2):
+                            conversation = f"conv_{uuid4()}"
+                            content = (
+                                f"W2 Agent Artifact {index + 1} {run_id}\n".encode()
                             )
-                        agent_redis.register_run(conversation, agent_run_id)
-                        stage = f"Artifact {index + 1} Agent pending"
-                        pending = asyncio.run(
-                            artifact_combo._pending_run(agent_db_url, agent_run_id)
-                        )
-                        if (
-                            pending.session_id != conversation
-                            or pending.execution_identity.tenant_ref != ready.tenant_id
-                        ):
-                            raise SmokeError(
-                                "Agent pending Run scope differs from real IAM Product dispatch"
-                            )
-                        stage = f"Artifact {index + 1} Agent delivery"
-                        delivered = asyncio.run(
-                            artifact_combo._deliver_pending(
-                                agent_db_url,
-                                agent_redis.url,
-                                storage_base,
-                                config["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
-                                agent_secret,
-                                pending,
-                                content,
-                            )
-                        )
-                        stage = f"Artifact {index + 1} Product projection"
-                        deadline = time.monotonic() + 45
-                        while True:
-                            library_response = request(
-                                "/api/hub/library?kind=artifact&limit=50",
+                            stage = f"Artifact {index + 1} Web POST"
+                            response = request(
+                                f"/api/session/sessions/{conversation}/messages",
+                                method="POST",
+                                json_body={
+                                    "content": f"Create Agent Artifact {index + 1}."
+                                },
+                                origin=web_origin,
+                                idempotency_key=f"web-artifact:{run_id}:{index}",
                                 accept="application/json",
                             )
-                            if library_response.status != 200:
-                                raise SmokeError("Product Artifact page unavailable")
-                            try:
-                                page = json.loads(library_response.body)
-                            except (ValueError, UnicodeError):
-                                raise SmokeError(
-                                    "Product Artifact page malformed"
-                                ) from None
-                            data = page.get("data")
-                            items = (
-                                data.get("items") if isinstance(data, dict) else None
+                            stage = f"Artifact {index + 1} Web receipt"
+                            receipt = chat_worker._web_json(
+                                response, 202, "Product first message"
                             )
-                            if isinstance(items, list) and any(
-                                isinstance(item, dict)
-                                and item.get("artifact_id") == delivered.artifact_id
-                                and item.get("conversation_id") == conversation
-                                for item in items
-                            ):
-                                break
-                            if time.monotonic() >= deadline:
+                            agent_run_id = receipt.get("run_id")
+                            if not isinstance(agent_run_id, str) or not agent_run_id:
                                 raise SmokeError(
-                                    "real IAM Product Artifact projection missing"
+                                    "Product Artifact dispatch receipt missing run_id"
                                 )
-                            time.sleep(0.2)
-                        artifact_fixtures.append(
-                            {
-                                "conversation_id": conversation,
-                                "artifact_id": delivered.artifact_id,
-                                "filename": "delivered-work.txt",
-                                "content": content.decode(),
-                                "content_sha256": hashlib.sha256(content).hexdigest(),
-                            }
+                            agent_redis.register_run(conversation, agent_run_id)
+                            stage = f"Artifact {index + 1} Agent pending"
+                            pending = asyncio.run(
+                                artifact_combo._pending_run(agent_db_url, agent_run_id)
+                            )
+                            if (
+                                pending.session_id != conversation
+                                or pending.execution_identity.tenant_ref
+                                != ready.tenant_id
+                            ):
+                                raise SmokeError(
+                                    "Agent pending Run scope differs from real IAM Product dispatch"
+                                )
+                            stage = f"Artifact {index + 1} Agent delivery"
+                            delivered = asyncio.run(
+                                artifact_combo._deliver_pending(
+                                    agent_db_url,
+                                    agent_redis.url,
+                                    storage_base,
+                                    config["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                                    agent_secret,
+                                    pending,
+                                    content,
+                                )
+                            )
+                            stage = f"Artifact {index + 1} Product projection"
+                            deadline = time.monotonic() + 45
+                            while True:
+                                library_response = request(
+                                    "/api/hub/library?kind=artifact&limit=50",
+                                    accept="application/json",
+                                )
+                                if library_response.status != 200:
+                                    raise SmokeError(
+                                        "Product Artifact page unavailable"
+                                    )
+                                try:
+                                    page = json.loads(library_response.body)
+                                except (ValueError, UnicodeError):
+                                    raise SmokeError(
+                                        "Product Artifact page malformed"
+                                    ) from None
+                                data = page.get("data")
+                                items = (
+                                    data.get("items")
+                                    if isinstance(data, dict)
+                                    else None
+                                )
+                                if isinstance(items, list) and any(
+                                    isinstance(item, dict)
+                                    and item.get("artifact_id") == delivered.artifact_id
+                                    and item.get("conversation_id") == conversation
+                                    for item in items
+                                ):
+                                    break
+                                if time.monotonic() >= deadline:
+                                    raise SmokeError(
+                                        "real IAM Product Artifact projection missing"
+                                    )
+                                time.sleep(0.2)
+                            artifact_fixtures.append(
+                                {
+                                    "conversation_id": conversation,
+                                    "artifact_id": delivered.artifact_id,
+                                    "filename": "delivered-work.txt",
+                                    "content": content.decode(),
+                                    "content_sha256": hashlib.sha256(
+                                        content
+                                    ).hexdigest(),
+                                }
+                            )
+                            latest_conversation = conversation
+                        stage = "real IAM Product post-action session verification"
+                        return latest_conversation
+
+                    product.run_browser(
+                        web_proxy.server_port,
+                        web_origin,
+                        ready,
+                        bff_proxy.observed,
+                        credentials,
+                        authenticated_action=seed_artifacts,
+                    )
+                    if (
+                        len(artifact_fixtures) != 2
+                        or artifact_fixtures[0]["conversation_id"]
+                        == artifact_fixtures[1]["conversation_id"]
+                    ):
+                        raise SmokeError(
+                            "two independent Agent Artifact fixtures absent"
                         )
-                        latest_conversation = conversation
-                    stage = "real IAM Product post-action session verification"
-                    return latest_conversation
 
-                product.run_browser(
-                    web_proxy.server_port,
-                    web_origin,
-                    ready,
-                    bff_proxy.observed,
-                    credentials,
-                    authenticated_action=seed_artifacts,
-                )
-                if (
-                    len(artifact_fixtures) != 2
-                    or artifact_fixtures[0]["conversation_id"]
-                    == artifact_fixtures[1]["conversation_id"]
-                ):
-                    raise SmokeError("two independent Agent Artifact fixtures absent")
-
-                stage = "real Chromium Project, personal Library and Agent Artifact Product flows"
-                screenshot = directory / "project-resource.png"
-                browser = _driver_result(
-                    node22,
-                    web_origin,
-                    ready,
-                    member,
-                    args.timeout,
-                    screenshot,
-                    web_certificate[0],
-                    run_id,
-                    artifact_fixtures,
-                )
-                browser["screenshot_sha256"] = hashlib.sha256(
-                    screenshot.read_bytes()
-                ).hexdigest()
-                del browser["screenshot"]
-                _durable_owner_facts(infra, owner_db_url, ready, browser)
+                    stage = "real Chromium Project, personal Library and Agent Artifact Product flows"
+                    screenshot = directory / "project-resource.png"
+                    browser = _driver_result(
+                        node22,
+                        web_origin,
+                        ready,
+                        member,
+                        args.timeout,
+                        screenshot,
+                        web_certificate[0],
+                        run_id,
+                        artifact_fixtures,
+                    )
+                    browser["screenshot_sha256"] = hashlib.sha256(
+                        screenshot.read_bytes()
+                    ).hexdigest()
+                    del browser["screenshot"]
+                    _durable_owner_facts(infra, owner_db_url, ready, browser)
                 log.flush()
                 product.previous.assert_log_clean(
                     directory / "process.log", credentials.values()
@@ -1224,7 +1264,11 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
         "status": "PASS",
         "root_commit": root_commit,
         "sources": sources,
-        "flow": "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library and Chat snapshot/Canvas native downloads/private; Project and personal file regression → Storage S3/ClamAV",
+        "flow": (
+            "real IAM Chromium Product POST202 → subscribed SSE200 → Agent pending Run/lease → Storage CLEAN Artifact → BFF live Chat Delivery/Canvas/download/reload/private"
+            if live_scenario is not None
+            else "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library and Chat snapshot/Canvas native downloads/private; Project and personal file regression → Storage S3/ClamAV"
+        ),
         "login_boundary": {
             "source_tuple": {
                 name: source["sha"]
