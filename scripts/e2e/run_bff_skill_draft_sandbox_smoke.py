@@ -65,6 +65,7 @@ class Phase(str, Enum):
     CANDIDATE_PACKAGE_BEGIN = "candidate_package_begin"
     CANDIDATE_SIGNED_PUT = "candidate_signed_put"
     CANDIDATE_PACKAGE_COMPLETE = "candidate_package_complete"
+    CANDIDATE_PACKAGE_VALIDATE = "candidate_package_validate"
     PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
@@ -428,6 +429,26 @@ def require_public_package_uploaded(
         raise SmokeError("BFF current Skill package uploaded projection invalid")
 
 
+def require_public_package_validated(
+    status: int,
+    body: object,
+    skill_id: str,
+    attempt_id: str,
+    upload_id: str,
+    attempt_epoch: str,
+) -> None:
+    if status != 200 or body != {
+        "data": {
+            "skill_id": skill_id,
+            "attempt_epoch": attempt_epoch,
+            "phase": "validated",
+            "attempt_id": attempt_id,
+            "upload_id": upload_id,
+        }
+    }:
+        raise SmokeError("BFF current Skill package validated projection invalid")
+
+
 def require_public_package_aborted(
     status: int,
     body: object,
@@ -571,6 +592,40 @@ def require_public_package_complete(
     return data
 
 
+def require_public_skill_validate(
+    status: int,
+    body: object,
+    skill_id: str,
+    series_id: str,
+    content_sha256: str,
+) -> dict[str, object]:
+    """Validate projects an owner-verified ZIP result, never a publication."""
+    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("BFF Skill Validate response invalid")
+    data = body["data"]
+    if not isinstance(data, dict) or set(data) != {
+        "skill_id",
+        "series_id",
+        "valid",
+        "content_digest",
+        "manifest_identity",
+        "replayed",
+    }:
+        raise SmokeError("BFF Skill Validate data invalid")
+    if (
+        data["skill_id"] != skill_id
+        or data["series_id"] != series_id
+        or data["valid"] is not True
+        or data["content_digest"] != content_sha256
+        or not isinstance(data["manifest_identity"], str)
+        or re.fullmatch(r"zip-v1:sha256:[a-f0-9]{64}", data["manifest_identity"])
+        is None
+        or type(data["replayed"]) is not bool
+    ):
+        raise SmokeError("BFF Skill Validate projection invalid")
+    return data
+
+
 def require_package_response_headers(
     headers: list[tuple[str, str]], request_id: str, operation: str
 ) -> None:
@@ -641,7 +696,7 @@ def safe_summary(
             "status": "PASS",
             "resources": "clean",
             "platform_skill_count": 2,
-            "platform_receipt_count": 24,
+            "platform_receipt_count": 30,
             "platform_publish_event_count": 1,
             "platform_package_begin": "PASS",
             "platform_package_complete": "PASS",
@@ -664,6 +719,12 @@ def safe_summary(
             "bff_skill_package_complete_infected": "PASS",
             "bff_skill_package_complete_recovery": "PASS",
             "bff_skill_package_complete_revoked": "PASS",
+            "bff_skill_validate": "PASS",
+            "bff_skill_validate_bad_zip": "PASS",
+            "bff_skill_validate_recovery": "PASS",
+            "bff_skill_validate_replay": "PASS",
+            "bff_skill_validate_stale_attempt": "PASS",
+            "bff_skill_validate_revoked": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -831,9 +892,15 @@ def _http_json(
         connection.close()
     if len(raw) > 1_048_576:
         raise SmokeError("BFF response too large")
-    if path.endswith("/package-upload") or path.endswith("/package-upload/complete"):
+    if path.endswith(("/package-upload", "/package-upload/complete", "/validate")):
         require_package_response_headers(
-            headers, request_id, "Complete" if path.endswith("/complete") else "Begin"
+            headers,
+            request_id,
+            "Validate"
+            if path.endswith("/validate")
+            else "Complete"
+            if path.endswith("/complete")
+            else "Begin",
         )
     try:
         value = json.loads(raw)
@@ -878,12 +945,23 @@ def _http_get_json(
     return response.status, value
 
 
-def upload_zip_bytes() -> bytes:
-    """A bounded package payload whose bytes and hash are submitted to Begin."""
+def upload_zip_bytes(skill_id: str, revision: int) -> bytes:
+    """A bounded owner ZIP V1 bound to the fresh draft's identity."""
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", skill_id) or revision < 1:
+        raise SmokeError("ZIP fixture Skill identity invalid")
+    manifest = json.dumps(
+        {
+            "schema_version": 1,
+            "skill_id": skill_id,
+            "revision": revision,
+            "entry": "SKILL.md",
+        },
+        separators=(",", ":"),
+    )
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("manifest.json", manifest)
         archive.writestr("SKILL.md", "# Sandbox\n\nOwned signed PUT smoke.\n")
-        archive.writestr("manifest.json", '{"schema_version":1,"name":"sandbox"}')
     return stream.getvalue()
 
 
@@ -1663,6 +1741,20 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError(
                         "default-off BFF package Complete did not fail closed"
                     )
+                status, body = _http_json(
+                    bff_base,
+                    "/v1/skills/sandbox-closed/validate",
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="closed-validate",
+                    body={"attempt_id": "attempt-closed"},
+                )
+                if (
+                    status != 503
+                    or body.get("error", {}).get("code")
+                    != "skill_dependency_unavailable"
+                ):
+                    raise SmokeError("default-off BFF Validate did not fail closed")
                 if proxy.count != 0:
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
@@ -1760,13 +1852,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         "tags": ["sandbox"],
                     },
                 )
-                begin_skill_id, _, replayed, _ = _draft(body, status)
+                begin_skill_id, begin_series_id, replayed, _ = _draft(body, status)
                 if status != 201 or replayed is not False or begin_skill_id is None:
                     raise SmokeError("BFF Begin fixture draft was not created")
                 begin_path = (
                     "/v1/skills/" + quote(begin_skill_id, safe="") + "/package-upload"
                 )
-                payload = upload_zip_bytes()
+                payload = upload_zip_bytes(begin_skill_id, 1)
                 begin_body = {
                     "filename": "sandbox.zip",
                     "mime_type": "application/zip",
@@ -2161,10 +2253,258 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     )
                 if recovered_complete["scan_state"] != "clean":
                     raise SmokeError("BFF recovered Complete was not CLEAN")
+                phase = Phase.CANDIDATE_PACKAGE_VALIDATE
+                bad_payload = b"CLEAN scan is not ZIP validation"
+                bad_begin_body = {
+                    **begin_body,
+                    "content_sha256": hashlib.sha256(bad_payload).hexdigest(),
+                    "size_bytes": len(bad_payload),
+                    "replaces_attempt_id": recovered["attempt_id"],
+                }
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-bad-zip-begin-" + run_id,
+                    body=bad_begin_body,
+                )
+                bad_begin = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(bad_begin["transfer_reference"]["url"])
+                )
+                if (
+                    bad_begin["replayed"] is not False
+                    or bad_begin["attempt_epoch"] != "5"
+                ):
+                    raise SmokeError("BFF bad ZIP Begin attempt drift")
+                signed_put(bad_begin, bad_payload)
+                bad_complete_body = {
+                    "attempt_id": bad_begin["attempt_id"],
+                    "upload_id": bad_begin["upload_id"],
+                    "content_sha256": bad_begin_body["content_sha256"],
+                    "size_bytes": len(bad_payload),
+                }
+                bad_complete_key = "package-bad-zip-complete-" + run_id
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=bad_complete_key,
+                    body=bad_complete_body,
+                )
+                bad_complete = require_public_package_complete(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(bad_begin["attempt_id"]),
+                    str(bad_begin["upload_id"]),
+                    "5",
+                    str(bad_begin_body["content_sha256"]),
+                )
+                deadline = time.monotonic() + 25
+                while (
+                    bad_complete["scan_state"] != "clean"
+                    and time.monotonic() < deadline
+                ):
+                    time.sleep(0.25)
+                    status, body = _http_json(
+                        bff_base,
+                        complete_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                        key=bad_complete_key,
+                        body=bad_complete_body,
+                    )
+                    bad_complete = require_public_package_complete(
+                        status,
+                        body,
+                        begin_skill_id,
+                        str(bad_begin["attempt_id"]),
+                        str(bad_begin["upload_id"]),
+                        "5",
+                        str(bad_begin_body["content_sha256"]),
+                    )
+                if bad_complete["scan_state"] != "clean":
+                    raise SmokeError("BFF bad ZIP did not reach CLEAN scan")
+                validate_path = (
+                    "/v1/skills/" + quote(begin_skill_id, safe="") + "/validate"
+                )
+                bad_validate_body = {"attempt_id": bad_begin["attempt_id"]}
+                bad_validate_key = "package-bad-zip-validate-" + run_id
+                for _ in range(2):
+                    status, body = _http_json(
+                        bff_base,
+                        validate_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                        key=bad_validate_key,
+                        body=bad_validate_body,
+                    )
+                    if (
+                        status != 412
+                        or body.get("error", {}).get("code")
+                        != "skill_precondition_failed"
+                    ):
+                        raise SmokeError("BFF CLEAN bad ZIP Validate did not reject")
+                    status, body = _http_get_json(
+                        bff_base,
+                        begin_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                    )
+                    require_public_package_aborted(
+                        status,
+                        body,
+                        begin_skill_id,
+                        str(bad_begin["attempt_id"]),
+                        str(bad_begin["upload_id"]),
+                        "5",
+                    )
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-zip-recover-begin-" + run_id,
+                    body={**begin_body, "replaces_attempt_id": bad_begin["attempt_id"]},
+                )
+                zip_recovered = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(zip_recovered["transfer_reference"]["url"])
+                )
+                if (
+                    zip_recovered["replayed"] is not False
+                    or zip_recovered["attempt_epoch"] != "6"
+                ):
+                    raise SmokeError("BFF bad ZIP recovery attempt drift")
+                signed_put(zip_recovered, payload)
+                zip_complete_body = {
+                    **complete_body,
+                    "attempt_id": zip_recovered["attempt_id"],
+                    "upload_id": zip_recovered["upload_id"],
+                }
+                zip_complete_key = "package-zip-recover-complete-" + run_id
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=zip_complete_key,
+                    body=zip_complete_body,
+                )
+                zip_complete = require_public_package_complete(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(zip_recovered["attempt_id"]),
+                    str(zip_recovered["upload_id"]),
+                    "6",
+                    str(begin_body["content_sha256"]),
+                )
+                deadline = time.monotonic() + 25
+                while (
+                    zip_complete["scan_state"] != "clean"
+                    and time.monotonic() < deadline
+                ):
+                    time.sleep(0.25)
+                    status, body = _http_json(
+                        bff_base,
+                        complete_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                        key=zip_complete_key,
+                        body=zip_complete_body,
+                    )
+                    zip_complete = require_public_package_complete(
+                        status,
+                        body,
+                        begin_skill_id,
+                        str(zip_recovered["attempt_id"]),
+                        str(zip_recovered["upload_id"]),
+                        "6",
+                        str(begin_body["content_sha256"]),
+                    )
+                if zip_complete["scan_state"] != "clean":
+                    raise SmokeError("BFF ZIP recovery Complete was not CLEAN")
+                validate_body = {"attempt_id": zip_recovered["attempt_id"]}
+                validate_key = "package-zip-validate-" + run_id
+                status, body = _http_json(
+                    bff_base,
+                    validate_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=validate_key,
+                    body=validate_body,
+                )
+                validation = require_public_skill_validate(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(begin_series_id),
+                    str(begin_body["content_sha256"]),
+                )
+                if validation["replayed"] is not False:
+                    raise SmokeError("BFF first Validate was unexpectedly replayed")
+                status, body = _http_json(
+                    bff_base,
+                    validate_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=validate_key,
+                    body=validate_body,
+                )
+                validation = require_public_skill_validate(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(begin_series_id),
+                    str(begin_body["content_sha256"]),
+                )
+                if validation["replayed"] is not True:
+                    raise SmokeError("BFF Validate replay drift")
+                status, body = _http_get_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_public_package_validated(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(zip_recovered["attempt_id"]),
+                    str(zip_recovered["upload_id"]),
+                    "6",
+                )
+                status, body = _http_json(
+                    bff_base,
+                    validate_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-stale-validate-" + run_id,
+                    body={"attempt_id": bad_begin["attempt_id"]},
+                )
+                if (
+                    status != 412
+                    or body.get("error", {}).get("code") != "skill_precondition_failed"
+                ):
+                    raise SmokeError("BFF stale Validate attempt did not reject")
                 if platform_inventory(
                     urls["kokoro_platform"], ready.tenant_id, str(result["skill_id"])
-                ) != (2, 24, 1, 1):
-                    raise SmokeError("Platform public Complete inventory is not unique")
+                ) != (2, 30, 1, 1):
+                    raise SmokeError("Platform public Validate inventory is not unique")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
                 phase = Phase.REVOKE
@@ -2219,6 +2559,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or body.get("error", {}).get("code") != "session_invalid"
                 ):
                     raise SmokeError("revoked IAM session reached BFF package Complete")
+                status, body = _http_json(
+                    bff_base,
+                    validate_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=validate_key,
+                    body=validate_body,
+                )
+                if (
+                    status != 401
+                    or body.get("error", {}).get("code") != "session_invalid"
+                ):
+                    raise SmokeError("revoked IAM session reached BFF Skill Validate")
                 time.sleep(0.2)
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")

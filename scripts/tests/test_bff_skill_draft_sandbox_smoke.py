@@ -10,6 +10,7 @@ import stat
 import sys
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 
@@ -54,6 +55,57 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_signed_put_zip_fixture_binds_current_draft_identity(self):
+        payload = smoke.upload_zip_bytes("skill-current", 1)
+        with zipfile.ZipFile(BytesIO(payload)) as archive:
+            self.assertEqual(archive.namelist(), ["manifest.json", "SKILL.md"])
+            self.assertEqual(
+                json.loads(archive.read("manifest.json")),
+                {
+                    "schema_version": 1,
+                    "skill_id": "skill-current",
+                    "revision": 1,
+                    "entry": "SKILL.md",
+                },
+            )
+            self.assertIn(b"# Sandbox", archive.read("SKILL.md"))
+        with self.assertRaises(smoke.SmokeError):
+            smoke.upload_zip_bytes("../other", 1)
+
+    def test_public_validate_requires_exact_owner_verified_zip_projection(self):
+        valid = {
+            "data": {
+                "skill_id": "skill-current",
+                "series_id": "series-current",
+                "valid": True,
+                "content_digest": "a" * 64,
+                "manifest_identity": "zip-v1:sha256:" + "b" * 64,
+                "replayed": False,
+            }
+        }
+        self.assertFalse(
+            smoke.require_public_skill_validate(
+                200, valid, "skill-current", "series-current", "a" * 64
+            )["replayed"]
+        )
+        for mutation in (
+            {"skill_id": "other"},
+            {"series_id": "other"},
+            {"valid": False},
+            {"content_digest": "A" * 64},
+            {"manifest_identity": "zip-v1:sha256:INVALID"},
+            {"replayed": "false"},
+            {"asset_id": "private"},
+        ):
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_public_skill_validate(
+                    200,
+                    {"data": {**valid["data"], **mutation}},
+                    "skill-current",
+                    "series-current",
+                    "a" * 64,
+                )
+
     def test_public_complete_requires_current_uploaded_projection(self):
         valid = {
             "data": {
@@ -228,6 +280,29 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         smoke.require_public_package_uploaded(
             200, uploaded, "skill-current", "attempt-two", "upload-two", "2"
         )
+        smoke.require_public_package_validated(
+            200,
+            {"data": {**uploaded["data"], "phase": "validated"}},
+            "skill-current",
+            "attempt-two",
+            "upload-two",
+            "2",
+        )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_public_package_validated(
+                200,
+                {
+                    "data": {
+                        **uploaded["data"],
+                        "phase": "validated",
+                        "asset_id": "leak",
+                    }
+                },
+                "skill-current",
+                "attempt-two",
+                "upload-two",
+                "2",
+            )
         aborted = {
             "data": {
                 "skill_id": "skill-current",
@@ -275,7 +350,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "status": "PASS",
                 "resources": "clean",
                 "platform_skill_count": 2,
-                "platform_receipt_count": 24,
+                "platform_receipt_count": 30,
                 "platform_publish_event_count": 1,
                 "platform_package_begin": "PASS",
                 "platform_package_complete": "PASS",
@@ -298,6 +373,12 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "bff_skill_package_complete_infected": "PASS",
                 "bff_skill_package_complete_recovery": "PASS",
                 "bff_skill_package_complete_revoked": "PASS",
+                "bff_skill_validate": "PASS",
+                "bff_skill_validate_bad_zip": "PASS",
+                "bff_skill_validate_recovery": "PASS",
+                "bff_skill_validate_replay": "PASS",
+                "bff_skill_validate_stale_attempt": "PASS",
+                "bff_skill_validate_revoked": "PASS",
             },
         )
 
