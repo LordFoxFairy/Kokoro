@@ -12,6 +12,18 @@
 | 范围 / 依赖 | Platform 唯一 writer 可改 `scripts/{canonical-schema-state,check-schema}.ts`、直接 unit/integration 测试、`docs/CURRENT.md` 当前事实；需要扩文件先报告 Root。不改 `prisma/schema.prisma`、generated、Proto/OpenAPI、lockfile、其他仓或 Root。继续单库 `kokoro_platform` schema、一个应用 role；没有新数据库角色/部署任务。 |
 | 验证 / 交付 | 先 RED 精确复现 P1010，再 GREEN 跑聚焦真 PostgreSQL `schema-installer` 三失败项和**全仓真实 integration**，以及 format/lint/typecheck/schema:check/verify/build；必须负向证明漂移仍拒绝且非 owner 对象不被清理。测试只建/删自有临时库，复用现有 Redis，记录清理余量；Root 独立重跑后才接收。 |
 
+### 后续唯一消费者切片：W1E-BFF-USER-SKILL-DRAFT（待 Platform schema 门验收）
+
+只读独立审查绑定 Root `f72bfc4b`、Platform `d227a1d`、BFF `bd1f794`：BFF 仅有 `generated-not-activated` 的 Platform Proto 类型，`execution_artifact:null`，仍以 Capability HTTP 四 GET 运行；public OpenAPI 尚无 `POST /v1/skills/drafts`，普通 mutation 会先被 generic `mutationTicket` replay。Platform v3 aggregate `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d` 仍 `inactive/routable=false`，不能写成已消费或已激活。BFF 三设计中历史 v2/f26d147 pin 必须在本代码片前定点更新。
+
+| 项 | 下一任务卡边界 |
+| --- | --- |
+| Owner / 目标 | BFF 唯一 public Product API、IAM session admission 与 user owner 映射；Platform 唯一 Skill/receipt writer。首片仅 user-only CreateSkillDraft 机器契约/受信 Connect consumer/201 正链，不以六 mutation、四 scope、Skills/MCP 总线或 Web UI 完成冒称。 |
+| 目录 / 粒度 | 复用 BFF `src/http/routes/owner.ts` 与 bootstrap admission，新增具名 Platform consumer adapter 比复用旧 `clients/capability` shared-secret HTTP 更清楚；先比较既有文件可扩性再锁具体文件清单。不新建 BFF Skill SQL、通用 mutation receipt、旧 HTTP alias 或运行时 fallback。 |
+| 前置 / 来源 | 先接收 Platform schema 真集成修复后的 owner commit；再 pin 相同 Proto 原字节和 v3 artifact/digest，独立实现 v3 command projector/JCS、descriptor/vector/drift 检查，不 import Platform 私有源码。BFF 现有 IAM 0.7 用户 admission 已在，但独立 catalog machine credential/provider 尚缺；普通用户 Bearer 只送 IAM，不送 Platform。v3 inactive 的协调激活仍由 Root 六 owner gate 决定。 |
+| 数据 / API | OpenAPI-first 发布严格 `POST /v1/skills/drafts`、单个 Idempotency-Key、受信 tenant/subject→user owner、稳定 command/digest；generic `mutationTicket` 只为此操作精确退出，重试先做当前 admission，再由 Platform durable receipt replay。无 BFF Schema 变化；Storage package 不参与 CreateDraft，Validate/Publish 仍 fail closed。 |
+| 验证 / 交付 | BFF Node22 contract/architecture/test/build/schema；Root 自有真 IAM→BFF→Platform 同库隔离链：首次201、同 key 同 ID/replayed、异 body 409、撤销 session 后同 key 在 Platform socket 前拒、Platform 一份 Skill/receipt、清理0。随后才交 Web 同源 adapter/页面可见入口，不把 API 正链冒称浏览器闭环。 |
+
 | 切片 | 当前状态与下一验收 |
 | --- | --- |
 | W2-REAL-MODEL Root runner | Root `5b1b9a5e` 固定 gitlink 后的真实组合 **PASS**：真 IAM/HTTPS Chromium Product 202→System 路由 1 次→本地 Ollama `qwen3:8b` 成功调用 3 次→正式 Agent worker 工作区写入/唯一交付→AG-UI 200→Chat/Canvas 原字节下载/刷新唯一卡/同租户他人 3×404；Run journal/outbox、Storage FINAL CLEAN 数据库事实一致。自有 PostgreSQL、Redis、进程、S3 versions 均 0，专用空桶已删，3310 未触碰。此前两次失败分别为验收脚本拒绝合法 `artifact:` ID 和模型/浏览器帧时序不稳定；脚本已修正 ID 与失败清理，第三次为当前固定来源通过。此为**一个真实模型纵切**，非所有产品能力。 |
