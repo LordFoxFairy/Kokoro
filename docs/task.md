@@ -1,12 +1,23 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-VALIDATE-RUNTIME（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-PUBLISH-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-bff` Product Skills public contract 唯一 writer；clean `main 126460791fd90742bccafb1f8d17e143b56c4eb6`，Root `874d2d9089cc14d7d731b9e42da3725f26b5b4ea` 已精确 pin；Platform `263a28f` 拥有正式 Publish 状态、receipt、outbox，v4 仍 inactive。只读核 BFF/Platform 当前三面、owner Proto、v4 `3.0.0` Publish **8** 向量后，先完成文档/唯一机器候选，不写 runtime。 |
+| §8 放置 / 目标 | 方案 A：在 BFF 既有 `contract/openapi/v1/openapi.yaml`、operation inventory/语义校验/直接契约测试及 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 收敛 user-only `POST /v1/skills/{skill_id}/publish`；采用，继续唯一 public contract。方案 B：复用旧 Capability `/hub` publish、复制 Platform Proto/SQL 或在 BFF 建 Skill/receipt/outbox；淘汰，违反 owner 与无双轨方向。无新顶层目录/Schema/角色/进程；后续代码才扩具名 route/projector/fixed Connect client。历史 W1E visibility 可选规划须标废止，不能成为当前机器输入。 |
+| 固定边界 / 契约 | 当前 IAM user/tenant 与 Platform 当前 owner/draft/validated/CLEAN 才能发布；public 不接受 caller visibility、asset、manifest、tenant 或 owner，BFF 固定 Platform `SKILL_SCOPE_KIND_PERSONAL`。单个 Idempotency-Key、严格**零长度请求体**，owner `skill.publish` v4 digest `3.0.0`/8 向量。200 仅公开 owner `source_ref`、uint64 revision、`active` status、event_id、replayed；精确 `{data}`/`{error}`、x-request-id/no-store，错误 401/404/409/412/429/502/503 按 owner typed reason/IAM 顺序逐项定稿；不把 validated 当 active，也不暴露 Storage asset/签名引用。 |
+| 数据/事务/恢复 | BFF 仅映射 public command，Platform 独有 current package、事务短 CAS、持久 receipt 与唯一 `skill.published` outbox。首次/重放/ACK unknown 均先新鲜 IAM 与 owner/fresh Storage 检查；同键 replay 同 event、异键 active 拒绝，撤权/旧包/危险态 fail closed。文档门需把状态机、错误、幂等、timeout/取消、分页不适用、breaking 策略与 canonical Schema 的“无 BFF Skill owner”对齐。 |
+| RED / 验收 / 后续 | RED 证明 OpenAPI/operation inventory 尚无 Publish；本片仅 BFF 四文档、唯一 OpenAPI、operation-scoped checker/直接 contract tests，Platform Proto/generated/SQL/lockfile 不改。Node22 format/contract/check/schema/build、独立 API/SQL 审查 P0/P1/P2=0 后 Root 精确 pin；下一片再由唯一 BFF writer 实现默认关闭运行候选与真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 同 event replay/撤权/坏包组合。之后 Web 现有 shadcn 入口一次替换并做真 Chromium/CORS，3310 与任务外 `uv.lock` 不动；支付最后。 |
+
+## 最近验收：W3-BFF-SKILL-VALIDATE-RUNTIME（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | BFF 唯一 writer，clean `main 8396b0708d86cf1016ca3dfaab7dc4e734d60417`；Root `e673b937e3115a4ccdd738f07e5f7e066297063f` 精确 pin；Platform `263a28f` v4 inactive。Validate 三面/唯一 OpenAPI 的未激活候选已过代码前门，但**无运行 route**。先用 BFF 当前 route 的真实 HTTP RED 核 `/v1/skills/{skill_id}/validate` 不可用与默认关闭零 Platform socket，再实现；同仓单 writer，不动 Root/别仓。 |
 | 实现 / 数据方向 | 具名 Validate route、strict `attempt_id` 输入与单个 Idempotency-Key、operation+受信 tenant/user/skill/key 稳定命令 ID、owner v4 digest **3.0.0 / 8 向量** projector；扩现有 `CatalogConnectClient` generated 调用，`server.ts` 精确 dispatch 且共用默认关闭 flag。每次含 replay 先 IAM current user/fixed tenant，再 BFF workload→Platform current owner/attempt/Storage CLEAN/ZIP V1；内部严格核 owner skill/series/valid=true/lowercase digest/manifest/replayed 后公开 `{data}`。不从 body 取 asset/hash/tenant/owner，不把 uploaded/CLEAN 或 validated 当 published；BFF 无新 SQL/receipt/Storage 字节代理、无旧 Capability fallback。 |
 | RED / 验收 | 覆盖有效 ZIP Validate 200、同键 replay、旧/错 attempt/坏 ZIP/感染/未完成 412、IAM 撤权先于 Platform socket、owner 坏响应 502、幂等冲突 409、unknown ACK 同键恢复、timeout/cancel、严格 x-request-id/no-store；直接 HTTP 与 digest 8 向量 GREEN。Node22 format/contract/check/schema/build、独立终审 P0/P1/P2=0；Root 自有真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 经 public Begin→signed PUT→Complete→Validate、Get validated/replay/坏 ZIP/撤权及旧 Publish 回归，验独占资源清理。该片仍默认关闭且非 public Publish/Web Chromium/产品激活；随后 Publish 文档→运行，再一次性替换 Web 旧上传。3310 与任务外 `uv.lock` 不动。 |
+| 实际交付 / 边界 | BFF `8dc767a` 实现默认关闭的 Validate，独立审查发现 owner stale-attempt `Code.Aborted` metadata 被误映射 409 的 P1；同一 writer `126460791fd90742bccafb1f8d17e143b56c4eb6` 精确改为 412 并补 HTTP 三态 RED→GREEN，终审 P0/P1/P2=0。Root `874d2d90` 精确 pin gitlink/163 处来源、独立 Node22 format/contract **144/144**/check **463 pass、1 skip**/schema **5 pass、1 skip**/build PASS。Root runner 审查发现旧签名 PUT ZIP manifest 缺 Skill ID/revision 的 P1，`2b3b79d9` 绑定合法 ZIP V1 后，`/tmp/kokoro-bff-validate-real.log` 真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV exit0：default-off Validate 503/零 Platform socket、public CLEAN 后合法 ZIP Validate **200**/同键 replay、Get validated；CLEAN 非 ZIP **412**/aborted/新 Begin 恢复；旧 attempt **412**；撤权 Validate **401**/零新 socket；旧 owner Publish 回归。Skill **2**/receipt **30**/outbox **1**，`resources=clean`、Redis DB14=0，3310 PID 81692 未变。Root 聚焦 **44 pass/56 subtests**、完整 `scripts/tests` **968 pass/246 subtests**，topology/checkpoint PASS；runner 终审 P0/P1/P2=0。兼容 **16 边/13 declared broken/0 provenance violation**、十仓标准 **136 既有违规/0 unverified** 仍红；Publish public、Web Chromium/CORS、v4 激活、Agent/Billing 未验。 |
 
 ## 最近验收：W3-BFF-SKILL-VALIDATE-DOC-GATE（P0；2026-09-29）
 

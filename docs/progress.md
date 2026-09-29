@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Validate 默认关闭候选真实跨 owner 组合 PASS
+
+BFF `8dc767a510e208e44a784ff38b75030d00357499` 交付 user-only Validate route/client/digest projector；独立审查查出 Platform `package_attempt_conflict` 是 `Code.Aborted` 且带稳定 metadata，而 BFF 最初误映射 409，owner `126460791fd90742bccafb1f8d17e143b56c4eb6` 精确改为 412 并用真实 HTTP 三态 RED→GREEN；终审 P0/P1/P2=0。Root `874d2d9089cc14d7d731b9e42da3725f26b5b4ea` 精确 pin 163 处来源；独立 Node22 format/contract **144/144**、check **463 pass/1 skip**、schema **5 pass/1 skip**、build PASS。
+
+Root 的独占 runner 曾用只有 `schema_version/name` 的 ZIP 测 Complete，独立复核发现它不符合 owner ZIP V1 的 Skill ID/revision/entry，若直接复用 Validate 会假失败。Root `2b3b79d90533bd63c246ca9e85ee45ef5d1daa97` 修为绑定当前 draft 的四字段 manifest，并加直接测试；复审 P0/P1/P2=0，聚焦 Python **44 pass/56 subtests**。`/tmp/kokoro-bff-validate-real.log` 在固定 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 真组合 exit0：默认关闭 Validate **503** 且 Platform 零 socket；公开 Begin→签名 PUT→Complete CLEAN 后合法 ZIP Validate **200**、同键 replay、Get `validated`；CLEAN 非 ZIP Validate **412**/aborted，显式新 Begin 后合法包恢复；旧 attempt **412**；IAM 撤权后 Validate **401**/零新增 Platform socket；旧 owner Publish 回归。Skill **2**、receipt **30**、`skill.published` outbox **1**，`resources=clean`、Redis DB14=0，3310 PID **81692→81692**。Root 完整 `scripts/tests` **968 pass/246 subtests**、topology/当前 checkpoint PASS。
+
+这仍是**默认关闭候选的隔离 HTTP 组合**，不是 Web 可见上传/真 Chromium CORS、BFF public Publish、Platform v4 产品激活或全产品闭环。兼容库存 **16 边/13 declared broken/0 provenance violation** exit1，十仓标准 **136 既有违规/0 unverified** exit1，Root main-only 因任务外 `uv.lock` 脏态 exit1；均不升绿。下一片按 [`task.md`](task.md) 做 BFF Publish 三面/唯一机器候选，再运行/真组合，之后 Web 一次替换；支付最后。
+
 ## 2026-09-29 — BFF Validate 三面文档与唯一机器候选门 PASS
 
 BFF `main 1c245540a4e0c76e392528c2655fb1cab9d9359b` 仅更新唯一 public OpenAPI、operation inventory、operation-scoped semantic checker/直接 contract test 与 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT：user-only `POST /v1/skills/{skill_id}/validate` **尚未激活、没有运行 route**。strict body 仅必填 `attempt_id`（owner v4 Proto tag 7），单个 Idempotency-Key，owner v4 command digest version `3.0.0` 的 **8** 向量；200 valid=true/skill/series/lowercase digest/manifest/replayed，错误按状态收窄，不把 Complete CLEAN 当 validated/published。原旧 W1E 表“Validate 无 body”经独立审查指出 P2，owner `main 8396b0708d86cf1016ca3dfaab7dc4e734d60417` 只精确标为废止历史并链接当前机器事实，最终独立终审 P0/P1/P2=0；无 src/generated/Proto/SQL/lockfile 或服务改动。
