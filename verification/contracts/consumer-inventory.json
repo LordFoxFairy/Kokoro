@@ -72,7 +72,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92",
       "state": "broken",
-      "reason": "Web 102033e now pins BFF f558acc public OpenAPI (same owner bytes as 55d3c9c) exact bytes and consumes private two-part Artifact Library/list/detail/content through same-origin Hub with bounded streaming; Web Node22 checks and isolated governance Playwright pass. Real IAM + Agent + Storage + Chromium reached Artifact click, but the native save was canceled by the test-only self-signed HTTPS certificate; the SPKI-scoped fixture correction is not yet rerun. Chat live/snapshot/Canvas and other Product edges remain incomplete; whole edge stays broken.",
+      "reason": "Web 102033e now pins BFF f558acc public OpenAPI (same owner bytes as 55d3c9c) exact bytes and consumes private two-part Artifact Library/list/detail/content through same-origin Hub with bounded streaming; Web Node22 checks and isolated governance Playwright pass. Root 851326dc passed real IAM/HTTPS Chromium, Product first message, two Agent CLEAN Artifacts, private Web Library pagination/detail and two native original-byte downloads after SPKI-pinning only its owned test certificate; mobile and same-tenant other-member 404 passed. Chat live/snapshot/Canvas, share and other Product flows remain incomplete; the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
@@ -742,7 +742,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "BFF 55d3c9c pins Storage F2 final/CLEAN owner contract and publishes private Artifact list/detail/content. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real Agent→BFF→Storage Product artifact original bytes, final/CLEAN metadata, same-tenant other subject 404 and foreign tenant 403 using PostgreSQL/Redis/MinIO/ClamAV; owned resources were removed. Web/Chromium, share and failure/recovery matrix remain incomplete, so this broad edge stays broken.",
+      "reason": "BFF 55d3c9c pins Storage F2 final/CLEAN owner contract and publishes private Artifact list/detail/content. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real Agent→BFF→Storage Product artifact original bytes, final/CLEAN metadata, same-tenant other subject 404 and foreign tenant 403 using PostgreSQL/Redis/MinIO/ClamAV; owned resources were removed. Real IAM/Chromium Web Library native download/private/mobile passed later in Root 851326dc; share and failure/recovery matrix remain incomplete, so this broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -887,7 +887,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "node:http@22",
       "state": "broken",
-      "reason": "BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. IAM was a test admission stub and no model worker/provider or Web browser participated; full Agent Product and recovery matrix remain incomplete, so this edge stays broken.",
+      "reason": "BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Full Agent Product and recovery matrix remain incomplete, so this edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1348,7 +1348,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "Agent 96dafec pins Storage d5cfc44 v2 Proto and generated Connect client, assembles the run-fenced seven-operation delivery transport and durable final Artifact outbox. Root local static/default/real PostgreSQL gates pass; real Agent→Storage/ObjectStore/scan and BFF/Web Product visibility are not yet verified, so this edge remains broken.",
+      "reason": "Agent 96dafec pins Storage d5cfc44 v2 Proto and generated Connect client, assembles the run-fenced seven-operation delivery transport and durable final Artifact outbox. Root 59560852 and 851326dc passed real Agent delivery transport→Storage/ObjectStore/ClamAV and BFF/Web Product Artifact visibility/download with owned cleanup; a full model worker/provider execution and failure/recovery matrix remain unverified, so this broad edge remains broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
