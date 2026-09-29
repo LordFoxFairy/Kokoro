@@ -1,8 +1,14 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform schema drift 门独立复验通过
+
+Platform main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 已提交并推送。先前 `d227a1d` 的真 PostgreSQL integration 249 pass/3 fail 是 P1010 的故障基线；根因是同一省略用户名连接串在 pg adapter 与 Prisma CLI 中采用不同的有效身份。修复在既有 canonical schema 检查中仅将 pg 解析出的有效用户/密码显式传给 Prisma CLI；canonical schema、Proto、生成客户端和锁文件未变，漂移拒绝及其他 owner 对象隔离仍被测试覆盖。
+
+Root 独立 Node24 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm schema:check && pnpm verify && pnpm build` 全部 exit 0；verify **82 文件/853 passed/179 skipped**。在独占 PostgreSQL 临时库与现有 Redis DB6，`pnpm db:apply-schema`→`pnpm schema:check`→`pnpm test:integration`→`pnpm schema:check` 全部 exit 0，integration **22 文件/252 passed/0 skipped**。独占库删除、库清单前后相同、DB6 keys 0；日志 `/tmp/kokoro-platform-root-final-static.log` 与 `/tmp/kokoro-platform-root-final-integration.log`。独立复审无 P0/P1/P2。此门只验收 Platform owner；v3 aggregate 仍 inactive/routable=false，BFF/Storage/Agent 消费和六 owner 链仍待做。下一切片是 BFF user-only Skill draft 文档/契约门。
+
 ## 2026-09-29 — 真实模型浏览器门准备及 Platform/Agent owner 交付
 
-**后续实测（Root `5b1b9a5e78d6aaea2e5b66bd4c202efb1b6e740a`）：** 隔离真 IAM/HTTPS Chromium→Web→BFF→System 真实 HTTP 路由 1 次→现有 Ollama `qwen3:8b` 真实流式模型 3 次→正式 Agent worker 受信 Run/lease→`write_file`→`deliver`→Storage/MinIO/ClamAV FINAL CLEAN→BFF durable AG-UI→Chat/Canvas 原字节下载、刷新唯一卡、同租户他人 3×404，**PASS**。浏览器 Product POST 202、AG-UI 200、marker 可见；Agent durable journal 写/交付各 1、`delivery.created` 在 `run.completed` 前，Storage FINAL CLEAN 1，模型成功调用 3。自有 PG 数据库、Redis key、进程、S3 versions 余量均 0，独占空桶删除，3310 未触碰。第一次组合在真实浏览器完成后，Root SQL 断言误拒合法 `artifact:` ID；第二次模型调用/交付成功但浏览器末端帧未通过，Root 修正验收脚本 ID、失败清理并增加最小失败阶段诊断；第三次固定来源通过。Root 当前源码 `python3 -m pytest -q scripts/tests` **924 passed/190 subtests**；来源库存 **16 边/13 declared broken/0 provenance violation**，拓扑门 PASS。**只证明这一次真实模型作品纵切**，不推导模型稳定性或全产品闭环。Platform 三项真实集成失败仍开放。
+**后续实测（Root `5b1b9a5e78d6aaea2e5b66bd4c202efb1b6e740a`）：** 隔离真 IAM/HTTPS Chromium→Web→BFF→System 真实 HTTP 路由 1 次→现有 Ollama `qwen3:8b` 真实流式模型 3 次→正式 Agent worker 受信 Run/lease→`write_file`→`deliver`→Storage/MinIO/ClamAV FINAL CLEAN→BFF durable AG-UI→Chat/Canvas 原字节下载、刷新唯一卡、同租户他人 3×404，**PASS**。浏览器 Product POST 202、AG-UI 200、marker 可见；Agent durable journal 写/交付各 1、`delivery.created` 在 `run.completed` 前，Storage FINAL CLEAN 1，模型成功调用 3。自有 PG 数据库、Redis key、进程、S3 versions 余量均 0，独占空桶删除，3310 未触碰。第一次组合在真实浏览器完成后，Root SQL 断言误拒合法 `artifact:` ID；第二次模型调用/交付成功但浏览器末端帧未通过，Root 修正验收脚本 ID、失败清理并增加最小失败阶段诊断；第三次固定来源通过。Root 当时源码 `python3 -m pytest -q scripts/tests` **924 passed/190 subtests**；来源库存 **16 边/13 declared broken/0 provenance violation**，拓扑门 PASS。**只证明这一次真实模型作品纵切**，不推导模型稳定性或全产品闭环。其时 Platform 三项真实集成失败已由上节后续 owner commit 关闭。
 
 - Root `a3e067c3` 新增不伪造模型/worker/交付的真实浏览器验收 runner；Root 独立 Ruff、Node syntax、`python3 -m pytest -q scripts/tests` 为 **922 passed/190 subtests**。真实组合此时尚未执行。
 - Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3`：General Agent 仅在隔离 `state` 工作区可写。Root 独立 `uv lock --check`、Ruff、Pyright、contract checker、默认 pytest **1307 passed/6 skipped/172 deselected**、wheel/sdist build 均通过；直接 DeepAgents 工具链证明写→读→正式 deliver，同仓组件证据不等于真实模型浏览器证据。

@@ -1,8 +1,8 @@
 # Kokoro 后端闭环任务总表
 
-## 当前下一门：真实模型 → 正式 worker → 浏览器作品（2026-09-29）
+## 当前下一门：Platform v3 → BFF 用户 Skill 草稿消费（2026-09-29）
 
-### W1E-PLATFORM-SCHEMA-CHECK（P0，唯一 Platform writer）
+### W1E-PLATFORM-SCHEMA-CHECK（P0，已验收）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -12,7 +12,9 @@
 | 范围 / 依赖 | Platform 唯一 writer 可改 `scripts/{canonical-schema-state,check-schema}.ts`、直接 unit/integration 测试、`docs/CURRENT.md` 当前事实；需要扩文件先报告 Root。不改 `prisma/schema.prisma`、generated、Proto/OpenAPI、lockfile、其他仓或 Root。继续单库 `kokoro_platform` schema、一个应用 role；没有新数据库角色/部署任务。 |
 | 验证 / 交付 | 先 RED 精确复现 P1010，再 GREEN 跑聚焦真 PostgreSQL `schema-installer` 三失败项和**全仓真实 integration**，以及 format/lint/typecheck/schema:check/verify/build；必须负向证明漂移仍拒绝且非 owner 对象不被清理。测试只建/删自有临时库，复用现有 Redis，记录清理余量；Root 独立重跑后才接收。 |
 
-### 后续唯一消费者切片：W1E-BFF-USER-SKILL-DRAFT（待 Platform schema 门验收）
+**验收结果：** Platform main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 已提交并推送。根因是 pg adapter 对省略用户名的 URL 使用有效 OS 用户，而 Prisma CLI 的同一 URL 报 P1010；修复只将同一有效身份显式传给 Prisma drift CLI，不改 canonical schema 或放宽漂移门。Root 独立 Node24 静态/Schema/构建通过，`pnpm verify` **853 passed/179 skipped**；自有 PostgreSQL/Redis 全量 integration **22 文件/252 passed/0 skipped**，前后 `schema:check` 均通过；临时库删除、Redis DB6 余量 0。独立复审无 P0/P1/P2。此为 Platform schema 门通过，v3 aggregate 仍 inactive/routable=false，消费者尚未切换。
+
+### 后续唯一消费者切片：W1E-BFF-USER-SKILL-DRAFT（Platform schema 门已验收；BFF 文档门待做）
 
 只读独立审查绑定 Root `f72bfc4b`、Platform `d227a1d`、BFF `bd1f794`：BFF 仅有 `generated-not-activated` 的 Platform Proto 类型，`execution_artifact:null`，仍以 Capability HTTP 四 GET 运行；public OpenAPI 尚无 `POST /v1/skills/drafts`，普通 mutation 会先被 generic `mutationTicket` replay。Platform v3 aggregate `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d` 仍 `inactive/routable=false`，不能写成已消费或已激活。BFF 三设计中历史 v2/f26d147 pin 必须在本代码片前定点更新。
 
@@ -27,10 +29,10 @@
 | 切片 | 当前状态与下一验收 |
 | --- | --- |
 | W2-REAL-MODEL Root runner | Root `5b1b9a5e` 固定 gitlink 后的真实组合 **PASS**：真 IAM/HTTPS Chromium Product 202→System 路由 1 次→本地 Ollama `qwen3:8b` 成功调用 3 次→正式 Agent worker 工作区写入/唯一交付→AG-UI 200→Chat/Canvas 原字节下载/刷新唯一卡/同租户他人 3×404；Run journal/outbox、Storage FINAL CLEAN 数据库事实一致。自有 PostgreSQL、Redis、进程、S3 versions 均 0，专用空桶已删，3310 未触碰。此前两次失败分别为验收脚本拒绝合法 `artifact:` ID 和模型/浏览器帧时序不稳定；脚本已修正 ID 与失败清理，第三次为当前固定来源通过。此为**一个真实模型纵切**，非所有产品能力。 |
-| Agent General 写作品 | Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3` 已只给 `GENERAL_AGENT` 启用隔离工作区写入；Root 静态、类型、契约、默认 1307 passed/6 skipped/172 deselected、build 通过。组件级真实 DeepAgents `write_file→read_file→deliver` 通过，**真实 Product 组合待验**。 |
-| Platform v3 | `kokoro-capability` main `d227a1d3103504f876dea3ddd8d8f575c59b5703` 已发布自包含 v3 命令投影，独立复审无 P0/P1/P2；Root 静态/构建、artifact 79 测试、verify 846 passed/179 skipped 通过。Root 隔离真 PostgreSQL/Redis integration **249 passed/3 failed**，三项均为 `schema-installer` 的 `migrate diff` P1010；先窄修这一代码门，再验 BFF/Storage/Agent 消费，不能宣称 Platform 闭环。 |
+| Agent General 写作品 | Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3` 已只给 `GENERAL_AGENT` 启用隔离工作区写入；Root 静态、类型、契约、默认 1307 passed/6 skipped/172 deselected、build 通过。组件级真实 DeepAgents `write_file→read_file→deliver` 与其后一次真实 Product 模型/worker/浏览器作品纵切均通过；不代表多模型稳定性或全部 Agent 能力。 |
+| Platform v3 | `kokoro-capability` main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 已发布自包含 v3 命令投影并修复 Prisma drift CLI 身份门；Root 当前独立真 PostgreSQL/Redis **22 文件/252 passed/0 skipped**，静态/构建与 verify **853 passed/179 skipped**，独立复审无 P0/P1/P2。v3 aggregate 仍 inactive/routable=false，BFF/Storage/Agent 消费者与六 owner 产品链待验，不能宣称 Platform 闭环。 |
 
-本波只推进开发和代码级端到端；3310 用户预览进程不重启。下一优先级：Platform `schema-installer` 三项 P1010 真实集成失败；随后接 BFF/Storage/Agent 对 v3 的正式消费者；其他 Product 边与慢大件/失败恢复逐片验。总体仍有 16 条跨仓边中的 13 条 declared broken，不能把本纵切写成产品完成。
+本波只推进开发和代码级端到端；3310 用户预览进程不重启。下一优先级：BFF 先收敛当前三设计与 Platform v3 来源，再实现 user-only Skill draft 正式消费者；随后按 owner 顺序接 Storage/Agent，其他 Product 边与慢大件/失败恢复逐片验。总体仍有 16 条跨仓边中的 13 条 declared broken，不能把本纵切写成产品完成。
 
 ## 当前代码门：真实模型作品所需的 Agent 工作区写入（2026-09-29）
 

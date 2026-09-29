@@ -1,8 +1,8 @@
 # Root 当前组合
 
-**2026-09-29 owner 边界：** Agent main `cbb2719` 的 General 工作区写入通过单仓组件门，Platform main `d227a1d` 的 v3 artifact 通过静态/构建和独立复审。Platform 隔离真 PostgreSQL/Redis integration 是 **249 pass/3 fail（Prisma schema-installer P1010）**，非通过。下文 S9 真浏览器证据固定旧 Agent SHA，只能证明当时的确定性投递组合。3310 登录预览未由这次代码门更新。
+**2026-09-29 owner 边界：** Agent main `cbb2719` 的 General 工作区写入通过单仓组件门及一次真实模型/浏览器作品纵切。Platform main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 的 v3 artifact 与 Prisma schema drift CLI 身份修复通过 Root 独立 Node24 静态/构建、verify **853 pass/179 skip**、隔离真 PostgreSQL/Redis integration **22 文件/252 pass/0 skip**，独立复审无 P0/P1/P2。此前 `d227a1d` 的 249 pass/3 fail 是历史故障基线，现已关闭；v3 aggregate 仍 inactive/routable=false，BFF/Storage/Agent 消费和六 owner 产品链未验。下文 S9 真浏览器证据固定旧 Agent SHA，只能证明当时的确定性投递组合。3310 登录预览未由这次代码门更新。
 
-**2026-09-29 真实模型纵切更新：** Root `5b1b9a5e` 当前 gitlink 的隔离真 IAM/HTTPS Chromium→Web→BFF→System→现有 Ollama `qwen3:8b`→正式 Agent worker→Storage/MinIO/ClamAV→durable AG-UI/Chat/Canvas **PASS**：Product 202、System 1 次、模型成功 3 次、Agent `write_file`/`deliver` journal 各 1、唯一 `delivery.created`/`run.completed`、Storage FINAL CLEAN、作品原字节下载/刷新唯一卡、同租户他人 3×404。自有数据库、Redis、进程、S3 versions 均清零，独占桶删除；3310 未触碰。此前同门失败和修复详见 progress；这不是多模型稳定性、Platform v3 消费或全部 Product 能力完成。Platform 249 pass/3 fail 保持开放。
+**2026-09-29 真实模型纵切更新：** Root `5b1b9a5e` 固定 gitlink 的隔离真 IAM/HTTPS Chromium→Web→BFF→System→现有 Ollama `qwen3:8b`→正式 Agent worker→Storage/MinIO/ClamAV→durable AG-UI/Chat/Canvas **PASS**：Product 202、System 1 次、模型成功 3 次、Agent `write_file`/`deliver` journal 各 1、唯一 `delivery.created`/`run.completed`、Storage FINAL CLEAN、作品原字节下载/刷新唯一卡、同租户他人 3×404。自有数据库、Redis、进程、S3 versions 均清零，独占桶删除；3310 未触碰。此前同门失败和修复详见 progress；这不是多模型稳定性、Platform v3 消费或全部 Product 能力完成。Platform schema 门已在后续 owner commit 通过。
 
 状态日期：2026-09-29。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。
