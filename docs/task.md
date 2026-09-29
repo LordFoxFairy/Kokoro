@@ -1,5 +1,20 @@
 # Kokoro 后端闭环任务总表
 
+## 当前执行：W3-PLATFORM-SKILL-PACKAGE-DESIGN（P0；2026-09-29）
+
+| 项 | 冻结范围与验收 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-capability` 是当前物理 Platform 仓及唯一业务 writer，`main 5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`；Storage owner 已发布 `main 16a6c1ce95832df6dc839e0d50e957405c5c7005`。Root `f03fd51e91e3c978baacea715d29a238614c85f3` 管 Git index、审查、集成验证。Root 既有任务外 `uv.lock` 修改保留、不暂存。 |
+| 当前事实 | Platform 仍消费 Storage v1、body 自报 tenant 与裸 URL；Validate/Publish 受缺少包绑定固定阻断；`Skill` 只有 nullable asset/hash，缺持久 upload/subject/阶段；取包 RPC 丢失 Storage v2 的 method/headers/expiry。现行 v3 机器产物 31 operation/15 command 已冻结，不能原地暗改或标成 active。 |
+| 目标 / Owner 边界 | 先完成 Platform 自己的 Skill revision 包设计门，再进入实现。只开放 user owner 首片：BFF 每次通过 IAM session 取得 tenant/user 并固定 `owner=user/id=userId`，Platform 每次确认 IAM catalog workload/tenant、持久 Skill tenant/current user owner/draft；project/session 不伪造 grant。Platform 拥有授权、包绑定、ZIP manifest/`SKILL.md` 规则；Storage v2 只拥有 bytes/hash/scan/短期签名，`skill_package` 精确 scope_id=`skill_id`。不增数据库角色、不跨 owner SQL。 |
+| API 决策 | Platform 发布具名 `BeginSkillPackageUpload` / `CompleteSkillPackageUpload`，请求携 ProductCatalogContext、受信 command identity 与期望 hash/size；Validate 只使用本地完成且 CLEAN 的 binding，不再收 caller asset/hash。Platform 对外返回完整、短期 `TransferReference` 语义（URL、method、required_headers、expires_at），不持久化签名；读包逐次按当前授权和 Storage scan 重签。v3 历史不改，新 operation/command 必须新机器 release、生成物及消费者固定版本。BFF 不直连 Storage 代行 Skill 授权。 |
+| 数据/事务决策 | **复用 `Skill` 一行=一个 revision 的唯一包身份事实**，扩展 package phase、origin subject、期望 size/hash、Storage upload_id 与经过验证的 manifest；`package_asset_ref` 只在 Storage 完成后写，`content_sha256` 从 Begin 固定且不可改，只有 `validated` phase 才可 Publish/Install/Source。淘汰独立 binding 表：若保留现列会双真源，若删除则引入无 FK 的 1:1 orphan/跨 tenant 复杂度。现有 `updateSkill` 按 tenant+id 全行覆盖必须改成 draft+phase/版本 CAS 与 Serializable 短事务；不增第二套可编辑 SQL、数据库角色或跨 owner JOIN。 |
+| 文档门写入集 | 单一 Platform writer 仅修改既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`；先纠正仍把已提交 v3 描述成未提交候选的过期当前态，再写已裁决目标态/失败恢复/测试门。三设计与当前 Proto/Prisma 事实对齐，**此片不改** Proto、Prisma、生成物、运行码、其他仓、lockfile 或用户 3310。若确需新增目录/文件，先回报 Root 放置评审。 |
+| 顺序/验证 | 文档门 Root 审查当前/目标态及 `git diff --check` 后，才按 owner 顺序拆机器 Proto+新 artifact → canonical Prisma/持久 binding → Storage v2 单一路径受信 client → Begin/Complete/Validate/Publish/取包 → BFF user-only API → Agent reader。各代码片 RED→GREEN、真 PG/Storage/IAM 组合、同命令重放/异义冲突/未知结果/撤权/跨 tenant、user、revision/非 CLEAN/ZIP 不符。Root 最终不以 mock 或 Storage 六操作存在宣称闭环。 |
+| 未知结果与授权边界 | Begin 先在 Platform 持久化固定意图、原 subject 与稳定 Storage command，再出事务调用 Storage；ACK 丢失仅原 subject 且本次仍授权时同命令恢复并重签 PUT。若原 subject 已撤权且本地没有 upload_id，现 Storage 六 RPC 无跨 subject 找回操作：fail closed，孤儿由 Storage 生命周期清理，新 draft 重来，不伪称完全恢复。Complete 已知 upload_id 的未知结果用同命令/GetUploadStatus/ScanStatus 读回；所有 IAM/Storage/ZIP I/O 在短事务外。receipt 仅存稳定身份/阶段，不存短期签名；replay 先重新授权。 |
+| 任务状态 | 设计门进行中；Platform API/授权与 SQL/事务两项独立只读审查已完成，唯一 Platform 文档 writer 待派；尚无 Platform 代码交付、无真包 E2E。 |
+
+
 ## 最近验收：W3-STORAGE-SKILL-PACKAGE-SCOPE（P0；2026-09-29）
 
 | 项 | 裁决 |

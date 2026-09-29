@@ -1,5 +1,12 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform Skill 包链设计门启动（运行链未完成）
+
+Root 以 Platform `main 5b6eb2c`、Storage `main 16a6c1c` 和当前源码复核下一关键断链，并在 [`task.md`](task.md) 顶部冻结 `W3-PLATFORM-SKILL-PACKAGE-DESIGN`。API/授权与 SQL/事务两项独立只读审查已完成，未改文件、Git 或服务。当前 Platform 仍使用 Storage v1/body tenant/裸 URL，Validate/Publish 缺包绑定而固定拒绝；Storage 六操作存在不等于 Skill 产品可用。
+
+设计裁决：首片只准 user owner，Platform 本次 IAM catalog 与本地 current Skill 复核；具名 Begin/Complete、新机器版本；Storage v2 的 `skill_package/skill_id` 和完整短期 transfer；复用一行一个 revision 的 `Skill` 作为唯一包身份真源，不加重复绑定表。Begin 意图先持久化，Storage ACK 丢失以原 subject/同命令恢复；若原 subject 撤权且本地尚无 upload_id，则 fail closed，不假称可恢复。唯一 Platform 文档 writer 现只处理既有四份设计/当前文档，Proto/Prisma/运行码尚未变，真包 E2E 尚未执行。Root 既有任务外 `uv.lock` 修改保留；用户 3310 未触碰。
+
+
 ## 2026-09-29 — Storage Skill revision 包范围代码门通过，Platform 消费未接
 
 Storage main `16a6c1ce95832df6dc839e0d50e957405c5c7005` 已提交推送：在现有 `kokoro.storage.v2` 十四 RPC 中增加 `skill_package + skill_id` scope，而非新增 RPC/表/role；认证 Platform 只在包目的可调用 Create/Complete/Abort Upload、Upload/Scan Status、PackageReference 六项，其他八 RPC 与 Asset HTTP 列表拒绝。旧 BFF 个人/项目包写读、状态、普通下载、Artifact 与 receipt replay 旁路收口；已完成 Upload/Asset 当前 purpose、creator、digest、size、MIME/filename 关系和 replay 逐次重验。历史普通文件/作品行为保持。正式文档、Proto provenance `e0954a00…`、官方生成与唯一 Prisma enum 同步；两条显式外部 smoke 的调用身份/目的已改为新边界，但尚未实际跑外部 S3/ClamAV。
