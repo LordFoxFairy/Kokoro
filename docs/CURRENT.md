@@ -1,15 +1,17 @@
 # Root 当前组合
 
-状态日期：2026-09-28。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
+状态日期：2026-09-29。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，
 已执行命令与失败记录见 [`progress.md`](progress.md)。
 
-## 当前推进边界（2026-09-28）
+## 当前推进边界（2026-09-29）
+
+**S9 Chat GC/410 真浏览器门已通过（Root `7bbd836b037432a38624786040b9f6f3b5b31b65`）：** 固定 Web `317c74c`、BFF `bd1f794`、Agent `486adb1`、Storage `d5cfc44`、IAM `4d98144`，隔离真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV：同一浏览器先后两次 Product POST 202 和受信 Agent CLEAN 交付，首轮浏览器旧水位的原始 SSE 请求保留；BFF owner `collectGarbage` 在未来 8 日执行既定 7 日保留/30 日 tombstone，实测删除旧帧 3、插入 tombstone 3、`retention_floor=3`，旧 cursor 正式 replay 为 expired。释放原始浏览器请求后，同源 HTTP 真实返回 410 `event_cursor_expired`；Web 自动 GET 权威 snapshot 200，保留两件不同二元作品和新水位，再以新 cursor SSE 200，Chat 两卡唯一、两次 Canvas 原生保存分别与原字节 SHA 匹配。自有数据库、Redis keys、进程、S3 versions 余量 0，独占空桶删除，用户 3310 未触碰。Root 独立 `scripts/tests` **903 passed/190 subtests**、Ruff/Node、拓扑门通过；只读复审无 P0/P1/P2。全仓标准门仍 **136** 违规、合同库存 **16 边中 13 条 broken/0 来源违规**。这证明 S9 GC/410 子门，不等于其余 Product、真实模型 provider/worker、代表性大件故障恢复或整体闭环。
 
 **3310 登录当前态（2026-09-28）：** Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 已修正过期签名 GET、浏览器 CSRF 失效 POST，均通过 303 重启固定 `/login`；非浏览器仍 403。真实 Next HTTP 测试发现并修复曾导致 500 的相对 Location。Root 以当前 3310 运行进程和真实 Chromium 完成 IAM 表单→consent→OAuth callback→`/app`，Product Session HTTP 200、`authenticated=true`、HttpOnly cookie；新表单已在用户 IAB 标签显示。Web Node22 全门 contract 105、architecture 36、Vitest 1600、lint/typecheck/build PASS。3310 是临时测试租户登录组合，不含完整 Agent/Storage；不能由此宣称 Chat 或全产品闭环。
 
-**S9 Chat 当前边界：** BFF main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7` 已发布本人/Project 最近 100 件作品与公开水位的 Chat snapshot；Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 已固定新 owner OpenAPI、二元作品身份、AG-UI live/snapshot 严格消费、410 重水合与 Chat 卡片/Canvas 原生下载。Root 独立 Node22 `pnpm check` 为 contract 105、architecture 36、Vitest 1600、lint/typecheck/build PASS。Root 在当前来源的隔离真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 先验**预先投递的 snapshot→卡片→Canvas 原字节→刷新/成员 404**，随后 Root main `600192ec04bd4e2b404e3497cd68abd578e9d984` 新增专门 live 浏览器门并验**浏览器 POST 202/初始 SSE 200 后才交付、同一开放 SSE 的真实 Delivery、卡片早于终态快照 GET、Canvas 原字节/刷新唯一/成员 404**；两次组合均清零自有 PostgreSQL/Redis/进程/S3 资源，不触碰用户 3310。Root 相邻测试 853 passed/190 subtests；全仓标准门仍 136 违规、合同库存 13 条 declared broken。**owner GC 后旧 cursor 410→权威快照/水位的真浏览器恢复与其余 Product 边仍待验**，不把 S9 两个子门当整体闭环。
+**S9 Chat 当前边界：** BFF main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7` 已发布本人/Project 最近 100 件作品与公开水位的 Chat snapshot；Web main `317c74c2048829471b0c4196df98dd6d2dcf5e36` 已固定新 owner OpenAPI、二元作品身份、AG-UI live/snapshot 严格消费、410 重水合与 Chat 卡片/Canvas 原生下载。Root 独立 Node22 `pnpm check` 为 contract 105、architecture 36、Vitest 1600、lint/typecheck/build PASS。隔离真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 已分别通过**预投递 snapshot/Canvas、订阅后实时交付，以及 owner GC 后旧 cursor 真实 410→快照/新水位/SSE 恢复**三个子门；均仅清理测试自有资源，不触碰用户 3310。Root 相邻测试 903 passed/190 subtests；全仓标准门仍 136 违规、合同库存 13 条 declared broken。**其余 Product 边、真实模型 provider/worker、慢大件与故障恢复仍待验**，不把 S9 子门当整体闭环。
 
 **最新 S8 边界：** BFF main `b382642affa27332e91b49078e0500c6716b820e` 已把作品原字节下载的单一 120 秒预算拆为准入 120 秒、对象取回/校验 7 分钟总及 45 秒无落盘进度、出站 28 分钟总及 25 秒无完成写入进度；异常取消仍释放临时文件和两份 spool 名额。Root 独立 Node 22 单仓门通过（默认 365 pass/1 无库 skip，Schema 5 pass/1 无库 skip），并在 Root `f9f5befa` 固定运行来源下真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 两件 CLEAN 作品原生下载原字节、同租户他人 404 与自有资源清零 exit0/PASS。BFF `99b98040ed6ee21d49ddd6a04c9b645222245d1e` 只同步四文档，无运行/契约/SQL 变化。代表性 1 GiB 限速与下载时故障恢复仍待验；下文旧 BFF SHA 为历史切片。S9 Chat snapshot/Canvas 仍有真实断链，未进入新代码片。3310 用户预览不在本切片重启范围。
 
