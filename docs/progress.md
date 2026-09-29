@@ -1,5 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 ZIP Validate 代码片进行中（工作树候选，未验收）
+
+Platform 唯一 writer `/root/platform_complete_owner` 从已发布的 `main 252a53a` 文档门进入正式实现；当前仅是该子仓未提交工作树，不是 Root pin 或发布证据。已先写 ZIP/download RED，随后 owner 报告聚焦 **18 unit PASS**；真实 PostgreSQL Validate RED 已记录并正在实现 Skill/receipt 双 fence。工作树已有 ZIP 结构与 manifest 检查、受限 GET、Validate service/窄 transaction，以及 Proto v4 `attempt_id=7`、生成物/投影候选；但 RPC/artifact/完整真实 PG/跨 owner CLI 尚未全验。Root 不并发修改该子仓，完成后逐项审查并在 Root 重新运行全门禁。用户 3310、Root 任务外 `uv.lock` 未动；本阶段不宣称 Validate 功能或产品链已闭环。
+
+
 ## 2026-09-29 — W3 ZIP Validate 三面文档门 PASS，代码门待实施
 
 Platform `main 252a53afa019980d2d8dcd4c3d720a33262c5240` 已提交推送四份文档：[技术设计](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/TECHNICAL_DESIGN.md)、[API 契约](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/API_CONTRACT.md)、[数据模型](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/DATA_MODEL.md)、[当前事实](/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/docs/CURRENT.md)。明确 Complete 真 CLEAN/INFECTED 已验、Validate/Publish 固定拒绝仍是当前源码；单独 Validate 的 `attempt_id=7`、ZIP V1 上限/严格结构、manifest 原字节身份、typed reason、Storage 当前 CLEAN/GET、receipt 与 Skill 双 fence、无新表/role/DB 已相互对齐。Root 独立 Node24 `format:check`、`contract:lint`、`platform-artifact:check`（55 正/142 负）、`schema:check` 与 diff check 均 PASS；schema 只有既有 relationMode 提示。Root 将 Platform gitlink 与库存 9 处 provenance commit 精确前移，当前 checkpoint/topology PASS；Root 全 `scripts/tests` **959 pass/212 subtests**。compatibility 仍 16 边/13 declared broken/0 额外来源错误，不将 broken 升绿。本片没有依赖安装、Proto、代码、真实 PG/ZIP/Storage Validate 证据，不把文档门写成业务闭环。下一门为 owner 唯一 writer 实现、Root 独立验收，Publish 再后。
