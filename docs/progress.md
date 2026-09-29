@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF user Skill draft 文档门完成，运行仍 inactive
+
+BFF main `51010fc5885ac44c98a42beb976e2f1d768c015b` 已提交并推送四份既有设计文档，明确当前 `contract/dependencies/platform-connect.json` 仍是 `generated-not-activated`/`execution_artifact:null`、旧 Capability 四 GET 正在运行，public `POST /v1/skills/drafts` 尚无机器 OpenAPI/route；目标仅 user-only CreateDraft，Platform owner 来源为 `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`、v3 aggregate `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d`。Root Node22 `pnpm contract:check` **72/72**、`pnpm contract:check:platform` 双生成字节一致、`pnpm schema:check` **5 pass/1 无库 skip**、`git diff --check` 通过；四文档无 Schema/机器契约/运行代码变更。第一次用本机默认 Node24 执行 Platform 生成检查因仓库精确要求 Node22 失败，换固定 Node22.22.2/pnpm11.25.0 重跑通过；不是 owner contract 漂移。
+
+只读审查先发现 P1：目标文字把 `inactive/routable=false` v3 artifact 直接当真实 201 的可路由前置。Root 返修为**候选实现与激活分门**：当前只允许离线生成/projector/vector 与 fail-closed 候选；Platform 后续提交 active/routable=true artifact、BFF 重新固定精确 commit/aggregate、Root 协调激活后，才发布 public route 并跑真 IAM→BFF→Platform 201/replay/撤权/唯一 receipt。复审 P1 关闭，当前四文档 diff 无 P0/P1/P2。此文档门通过不等于代码、Web 页面、六 owner 或整体闭环。
+
 ## 2026-09-29 — Platform schema drift 门独立复验通过
 
 Platform main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 已提交并推送。先前 `d227a1d` 的真 PostgreSQL integration 249 pass/3 fail 是 P1010 的故障基线；根因是同一省略用户名连接串在 pg adapter 与 Prisma CLI 中采用不同的有效身份。修复在既有 canonical schema 检查中仅将 pg 解析出的有效用户/密码显式传给 Prisma CLI；canonical schema、Proto、生成客户端和锁文件未变，漂移拒绝及其他 owner 对象隔离仍被测试覆盖。
