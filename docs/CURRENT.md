@@ -1,6 +1,8 @@
 # Root 当前组合
 
-**2026-09-29 新提交边界：** Root `a3e067c3` 的真实模型浏览器验收代码已通过自身 922 项测试，尚未跑真实组合；Agent main `cbb2719` 的 General 工作区写入通过单仓组件门，Platform main `d227a1d` 的 v3 artifact 通过静态/构建和独立复审。Platform 隔离真 PostgreSQL/Redis integration 是 **249 pass/3 fail（Prisma schema-installer P1010）**，非通过。下文 S9 真浏览器证据固定旧 Agent SHA，只能证明当时的确定性投递组合。3310 登录预览未由这次代码门更新；产品端到端仍待当前 gitlink 的真实模型/browser 运行。
+**2026-09-29 owner 边界：** Agent main `cbb2719` 的 General 工作区写入通过单仓组件门，Platform main `d227a1d` 的 v3 artifact 通过静态/构建和独立复审。Platform 隔离真 PostgreSQL/Redis integration 是 **249 pass/3 fail（Prisma schema-installer P1010）**，非通过。下文 S9 真浏览器证据固定旧 Agent SHA，只能证明当时的确定性投递组合。3310 登录预览未由这次代码门更新。
+
+**2026-09-29 真实模型纵切更新：** Root `5b1b9a5e` 当前 gitlink 的隔离真 IAM/HTTPS Chromium→Web→BFF→System→现有 Ollama `qwen3:8b`→正式 Agent worker→Storage/MinIO/ClamAV→durable AG-UI/Chat/Canvas **PASS**：Product 202、System 1 次、模型成功 3 次、Agent `write_file`/`deliver` journal 各 1、唯一 `delivery.created`/`run.completed`、Storage FINAL CLEAN、作品原字节下载/刷新唯一卡、同租户他人 3×404。自有数据库、Redis、进程、S3 versions 均清零，独占桶删除；3310 未触碰。此前同门失败和修复详见 progress；这不是多模型稳定性、Platform v3 消费或全部 Product 能力完成。Platform 249 pass/3 fail 保持开放。
 
 状态日期：2026-09-29。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。

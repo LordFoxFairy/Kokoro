@@ -4,11 +4,11 @@
 
 | 切片 | 当前状态与下一验收 |
 | --- | --- |
-| W2-REAL-MODEL Root runner | Root `a3e067c3` 已提交隔离真 System/Ollama/IAM/Web/BFF/Agent/Storage/Chromium 验收代码；Root 922 passed、190 subtests，但**组合尚未运行**。先冻结新 gitlink 与来源库存，再在自有数据库/Redis 命名空间/独占桶运行；不得代替 worker claim、模型或作品事件。 |
+| W2-REAL-MODEL Root runner | Root `5b1b9a5e` 固定 gitlink 后的真实组合 **PASS**：真 IAM/HTTPS Chromium Product 202→System 路由 1 次→本地 Ollama `qwen3:8b` 成功调用 3 次→正式 Agent worker 工作区写入/唯一交付→AG-UI 200→Chat/Canvas 原字节下载/刷新唯一卡/同租户他人 3×404；Run journal/outbox、Storage FINAL CLEAN 数据库事实一致。自有 PostgreSQL、Redis、进程、S3 versions 均 0，专用空桶已删，3310 未触碰。此前两次失败分别为验收脚本拒绝合法 `artifact:` ID 和模型/浏览器帧时序不稳定；脚本已修正 ID 与失败清理，第三次为当前固定来源通过。此为**一个真实模型纵切**，非所有产品能力。 |
 | Agent General 写作品 | Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3` 已只给 `GENERAL_AGENT` 启用隔离工作区写入；Root 静态、类型、契约、默认 1307 passed/6 skipped/172 deselected、build 通过。组件级真实 DeepAgents `write_file→read_file→deliver` 通过，**真实 Product 组合待验**。 |
 | Platform v3 | `kokoro-capability` main `d227a1d3103504f876dea3ddd8d8f575c59b5703` 已发布自包含 v3 命令投影，独立复审无 P0/P1/P2；Root 静态/构建、artifact 79 测试、verify 846 passed/179 skipped 通过。Root 隔离真 PostgreSQL/Redis integration **249 passed/3 failed**，三项均为 `schema-installer` 的 `migrate diff` P1010；先窄修这一代码门，再验 BFF/Storage/Agent 消费，不能宣称 Platform 闭环。 |
 
-本波只推进开发和代码级端到端；3310 用户预览进程不重启。总体仍有 16 条跨仓边中的 13 条 declared broken，不能把上述单仓/组件门写成产品完成。
+本波只推进开发和代码级端到端；3310 用户预览进程不重启。下一优先级：Platform `schema-installer` 三项 P1010 真实集成失败；随后接 BFF/Storage/Agent 对 v3 的正式消费者；其他 Product 边与慢大件/失败恢复逐片验。总体仍有 16 条跨仓边中的 13 条 declared broken，不能把本纵切写成产品完成。
 
 ## 当前代码门：真实模型作品所需的 Agent 工作区写入（2026-09-29）
 

@@ -887,7 +887,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "node:http@22",
       "state": "broken",
-      "reason": "BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Full Agent Product and recovery matrix remain incomplete, so this edge stays broken.",
+      "reason": "BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Root 5b1b9a5e later passed one current-source real System/Ollama/standard-worker/Chromium Product run with durable delivery, but the wider Agent Product and recovery matrix remain incomplete, so this edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1220,7 +1220,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "httpx@0.28.1",
       "state": "broken",
-      "reason": "Runtime works through handwritten HTTP and the recorded System commit pin is stale.",
+      "reason": "Root 5b1b9a5e passed one true System route→Ollama→standard Agent worker/Chromium run, but the runtime still uses handwritten HTTP and the recorded System consumer commit pin is stale; wider contract/recovery work remains.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
@@ -1348,7 +1348,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "Agent 96dafec pins Storage d5cfc44 v2 Proto and generated Connect client, assembles the run-fenced seven-operation delivery transport and durable final Artifact outbox. Root 59560852 and 851326dc passed real Agent delivery transport→Storage/ObjectStore/ClamAV and BFF/Web Product Artifact visibility/download with owned cleanup; a full model worker/provider execution and failure/recovery matrix remain unverified, so this broad edge remains broken.",
+      "reason": "Agent 96dafec pins Storage d5cfc44 v2 Proto and generated Connect client, assembles the run-fenced seven-operation delivery transport and durable final Artifact outbox. Root 59560852 and 851326dc passed real Agent delivery transport→Storage/ObjectStore/ClamAV and BFF/Web Product Artifact visibility/download with owned cleanup; Root 5b1b9a5e then passed one current-source real System/Ollama/standard-worker/Chromium write_file→deliver→FINAL CLEAN/Canvas original-byte/private-404 run. The wider failure/recovery matrix remains unverified, so this broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",

@@ -2,6 +2,8 @@
 
 ## 2026-09-29 — 真实模型浏览器门准备及 Platform/Agent owner 交付
 
+**后续实测（Root `5b1b9a5e78d6aaea2e5b66bd4c202efb1b6e740a`）：** 隔离真 IAM/HTTPS Chromium→Web→BFF→System 真实 HTTP 路由 1 次→现有 Ollama `qwen3:8b` 真实流式模型 3 次→正式 Agent worker 受信 Run/lease→`write_file`→`deliver`→Storage/MinIO/ClamAV FINAL CLEAN→BFF durable AG-UI→Chat/Canvas 原字节下载、刷新唯一卡、同租户他人 3×404，**PASS**。浏览器 Product POST 202、AG-UI 200、marker 可见；Agent durable journal 写/交付各 1、`delivery.created` 在 `run.completed` 前，Storage FINAL CLEAN 1，模型成功调用 3。自有 PG 数据库、Redis key、进程、S3 versions 余量均 0，独占空桶删除，3310 未触碰。第一次组合在真实浏览器完成后，Root SQL 断言误拒合法 `artifact:` ID；第二次模型调用/交付成功但浏览器末端帧未通过，Root 修正验收脚本 ID、失败清理并增加最小失败阶段诊断；第三次固定来源通过。Root 当前源码 `python3 -m pytest -q scripts/tests` **924 passed/190 subtests**；来源库存 **16 边/13 declared broken/0 provenance violation**，拓扑门 PASS。**只证明这一次真实模型作品纵切**，不推导模型稳定性或全产品闭环。Platform 三项真实集成失败仍开放。
+
 - Root `a3e067c3` 新增不伪造模型/worker/交付的真实浏览器验收 runner；Root 独立 Ruff、Node syntax、`python3 -m pytest -q scripts/tests` 为 **922 passed/190 subtests**。真实组合此时尚未执行。
 - Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3`：General Agent 仅在隔离 `state` 工作区可写。Root 独立 `uv lock --check`、Ruff、Pyright、contract checker、默认 pytest **1307 passed/6 skipped/172 deselected**、wheel/sdist build 均通过；直接 DeepAgents 工具链证明写→读→正式 deliver，同仓组件证据不等于真实模型浏览器证据。
 - Platform main `d227a1d3103504f876dea3ddd8d8f575c59b5703`：v3 artifact 发布，独立复审无阻塞；Root Node24 静态/契约/构建全绿，artifact 79 测试、verify **846 passed/179 skipped**。Root 自有单库/schema 与 Redis DB6 的真实 integration **249 passed/3 failed**；失败集中 `schema-installer` 的 Prisma `migrate diff` P1010，复现于另一自有临时库。仅清理本轮自有库，DB6 剩余 0；不把真实集成写成通过。
