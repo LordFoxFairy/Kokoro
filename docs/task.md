@@ -8,7 +8,7 @@
 | 当前事实 / 目标 | 只读预审确认 BFF 当前公开新 Skill catalog 仅默认关闭 CreateDraft；其余旧 Capability route/503 不是 Platform 包产品能力。先以 **GetSkillPackageUpload user-only 只读 public 切片**确定 current attempt/phase/upload 的浏览器恢复入口，再顺序 Begin→Complete→Validate→Publish，不能一次批量开放或把 owner CLI 当公开验收。 |
 | 放置比较 / 粒度 | 复用 BFF `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 与唯一 OpenAPI `contract/openapi/v1/openapi.yaml` 描述候选 Get；淘汰在旧 `owner.ts` Capability GET 上拼接新语义，也不建第二 contract 或通用 RPC proxy。文档门须明确当前态与目标态，机器 OpenAPI 候选不冒称运行路由已实现。 |
 | 边界 / 依赖 | Web 同源→BFF public→当次 IAM session/user tenant/owner→版本固定 Platform generated Connect Get，BFF 不访问 owner SQL、不建 Skill 表或二次幂等 receipt。Get 是非 command，不要 Idempotency-Key；只返回 owner current attempt/epoch/phase/upload，不泄漏 Storage 凭据/签名 URL/asset/hash。后续 Begin 的浏览器原样 signed PUT、批准对象源/CORS/header/expiry 单独设计，不由 Get 偷带实现。 |
-| 本轮交付 / 验证 | Writer 只更新 BFF 四文档与 OpenAPI 候选 Get 及其直接契约测试/fixture（若为保持机器门必需），先输出 §8 放置表；不改运行代码、SQL Schema、生成 Platform client/依赖、其他仓或用户 3310。Node22 format/contract lint/semantic/check 与 diff，报告当前 commit、机器事实/未决项；Root 独立审查通过后另派唯一 writer 实施 v4 精确 pin+Get runtime。若 OpenAPI 当前校验不允许未实现候选，先报告并裁决，不制造假 route。 |
+| 本轮交付 / 验证 | Writer 只更新 BFF 四文档与 OpenAPI 候选 Get、直接契约测试/fixture；已查明现有 `scripts/verify-openapi.ts` 的严格 envelope 门只认识 CreateDraft，Root 准确授权本片扩该**既有** checker 中 Get operation-scoped 的 strict `{data}`/`{error}`、x-request-id 校验及篡改负例，不可泛用跳过或放宽其他 operation。先输出 §8 放置表；不改运行代码、SQL Schema、生成 Platform client/依赖、其他仓或用户 3310。Node22 format/contract lint/semantic/check 与 diff，报告当前 commit、机器事实/未决项；Root 独立审查通过后另派唯一 writer 实施 v4 精确 pin+Get runtime。若 OpenAPI 当前校验不允许未实现候选，先报告并裁决，不制造假 route。 |
 
 ## 最近预审：W3-BFF-SKILL-PUBLIC-PREFLIGHT（P0；2026-09-29）
 
