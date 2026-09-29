@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 ZIP Validate 真实跨 owner 组合 PASS
+
+Root `main da05a65ee884d8262f480178ed0d124931b6eb05` 精确 pin Platform `main 6ae056bba74330014a94992b25cfcc1208792b7f` 后，独占运行真实 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 组合，exit0：正式 Begin→Complete→合法 ZIP V1/manifest Validate、重复命令收敛、CLEAN 非 ZIP 的 `package_zip_invalid` 终结与显式恢复、真实感染包拒绝与恢复均 PASS；最终 Skill **1**、external receipt **15**、当前包 epoch **6**/`validated`，runner `resources=clean`。Root 独立复核本次 Redis DB14 无残留、本次前缀桶无残留；runner 核对其精确临时数据库已删除，未清理其他历史数据库或触碰用户 3310。证据日志 `/tmp/kokoro-root-zip-validate-real.log`。这证明本片 owner Validate 真组合，不证明 Publish、BFF public Begin/Complete/Validate、Agent pin、跨进程最终 ACK/COMMIT unknown/lease takeover 或 Storage completed Asset 孤儿退役。
+
+Root 同一来源独立复跑 Platform Node24 format/lint/typecheck/contract/artifact/cutover/schema/default **962 pass/218 skip**/build、真实 PG Begin+Complete+Validate **32/32**、Root `scripts/tests` **959 pass/212 subtests**、topology 与精确 checkpoint PASS；独立终审 P0/P1/P2=0。十仓标准仍 **136 既有 violations/0 unverified**（FAIL），兼容库存 **16 边/13 declared broken/0 provenance violation**，`pnpm audit --prod` **8 项既有 Prisma/Nest 传递依赖告警**（FAIL，独立债务）；不把这些门伪称全绿。下一代码片按 owner 设计门推进 Publish，产品消费与资产退役另片闭环。
+
 ## 2026-09-29 — W3 ZIP Validate owner 代码发布，Root 真组合待验
 
 Platform `main 6ae056bba74330014a94992b25cfcc1208792b7f` 已提交/推送正式 Validate：强类型 RPC、v4 inactive 的 `attempt_id=7` descriptor/digest 与 ZIP V1 机器 profile/raw corpus、受限签名 GET、ZIP/local-central/CRC/manifest 原字节身份、当前 Skill/receipt 双 fence 与 terminal/recoverable 分流；Publish 仍关闭。Root 在最终停写候选上独立 Node24 全 format/lint/typecheck/contract/artifact/cutover/schema/default **962 passed/218 skipped**/build exit0，真隔离 PG Begin8+Complete14+Validate10 **32/32** PASS、临时库余量0；独立审查 BOM 伪根文件与烟测顺序两个 P2 已返修并复核到 P0/P1/P2=0。Root 聚焦 runner 35 pass/22 subtests、暂存态 topology/checkpoint PASS，正式 Root pin/真实组合尚未提交/运行。`pnpm audit --prod` 仍 FAIL：8 项现存 Prisma/Nest 传递依赖告警，新增 ZIP 库未出现在该批；安全门不能写 PASS。下一步是提交固定来源、跑独占真包链/资源清理，再按实际结果修复，不以 owner CLI 或假 Storage 替代。

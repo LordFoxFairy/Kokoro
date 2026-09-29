@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 Platform ZIP Validate 真组合已验收：** Root `da05a65ee884d8262f480178ed0d124931b6eb05` 固定 Platform `6ae056bba74330014a94992b25cfcc1208792b7f`，独占真实 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 跑通正式 Begin/Complete、合法 ZIP V1/manifest Validate、CLEAN 坏 ZIP 终结/恢复和感染包拒绝/恢复；Skill 1、receipt 15、最终 epoch 6 validated、`resources=clean`。Root 独立 Node24 默认 962 pass/218 skip、真 PG 32/32、Root scripts 959 pass/212 subtests、topology/checkpoint PASS；独立复审 P0/P1/P2=0。**Publish、BFF public/session、Agent pin、最终未知提交/租约接管、Storage 孤儿退役仍未闭环**，兼容库存 13 条 declared broken、十仓标准 136 既有违规、依赖审计 8 项告警；用户 3310 未触碰。详见 [`progress.md`](progress.md)。
+
 **2026-09-29 正式 Platform Complete→真实 ClamAV 感染终结 PASS：** Root `014d6f3b` pin Platform `62417f97423007b2bd48731427e7b1ab70ef062b`，独占真 IAM/BFF/Platform/Storage/MinIO/ClamAV 组合同时保持 CLEAN 完成回归，并在 `skill_package` 范围用 EICAR 字节证明 `FAILED_PRECONDITION`、当前 attempt `aborted`、Storage 固定 Asset 当前扫描 `INFECTED`、同命令重放不变、显式新 Begin 从 aborted 恢复（epoch 4）。Skill 1/receipt 8/resources clean，独立核临时数据库/Redis/桶余量均 0；3310 未触碰。该 fixture **不是合法 ZIP**，ZIP Validate/Publish、BFF/Agent 消费、跨进程未知提交与孤儿退役均未验；广义边仍 broken。
 
 
