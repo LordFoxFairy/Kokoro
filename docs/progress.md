@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Complete 默认关闭候选真实跨 owner 组合 PASS
+
+BFF `main 1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 已交付 user-only public Complete 运行候选，Root `036d12e7c7f460d885f085162baf5f1dde61248c` 精确 pin；仍由同一 loopback flag 默认关闭，Platform v4 inactive。Root 独立 Node22 format、contract **127/127**、check **446 pass/1 skip**、schema **5 pass/1 skip**、build PASS；BFF 独立终审 P0/P1/P2=0。BFF 不新增 Skill SQL/receipt/Storage 字节代理，内部校验 asset_id 但 public 严格省略。
+
+Root 扩现有独占 sandbox，`/tmp/kokoro-bff-complete-final.log` 真 IAM→BFF→Platform→Storage/PostgreSQL/Redis/MinIO/ClamAV exit0：默认关闭 Complete **503** 且 Platform 零 socket；fresh Skill 经 BFF Begin/真实签名 PUT→Complete **200 CLEAN**、同键 replay，错摘要沿 owner **当前描述符先验 412**（不是泛称所有异 body 均 409）；EICAR 测试字节经 public Begin/PUT/Complete **412**、Get `aborted`、同键再拒，显式新 Begin epoch **4** 后旧 Complete 412/当前仍 pending，再签名 PUT→Complete **200 CLEAN**；撤销 IAM session 后 Complete **401**/零新增 Platform socket。旧 owner ZIP Validate/Publish 回归、Skill **2**/receipt **24**/发布 outbox **1**，runner `resources=clean`，Redis DB14=0，用户 3310 PID **81692→81692**。独立 Root runner 审查先指出 public 感染/恢复缺口 P1 与 aborted upload_id/恢复状态 P2，均已按真链补上，最终只读复审 P0/P1/P2=0。Root 当前源码完整 `scripts/tests` **966 pass/239 subtests**、topology/精确 checkpoint PASS；compatibility 因 13 条已登记 broken 仍 exit1，不升绿。
+
+**边界：** 该证据是默认关闭的 HTTP owner 组合，不是 Web 可见 shadcn 上传、真实 Chromium CORS/preflight/PUT/刷新，也不代表 Validate/Publish public、Platform v4 激活、Agent 消费、Billing 或全产品闭环。下一片在 Web 三面文档/现有路由设计门后做可见上传与浏览器验收；不为了测试更换 3310 用户进程。任务外 `uv.lock` 原有脏态不暂存。
+
 ## 2026-09-29 — BFF Complete 三面文档与唯一机器候选门 PASS
 
 BFF `main 457472dd14f26219473d30f9b763c2d345be03a0` 仅更新唯一 public OpenAPI、operation inventory、operation-scoped semantic checker/直接契约测试与 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 四文档；`POST /v1/skills/{skill_id}/package-upload/complete` 目前**只是未激活候选，BFF 尚无运行 route/client**。严格四字段是未受信 Begin 描述符回显；当次 IAM/固定 tenant/user、owner v4 `command_digest_version=3.0.0` 的 11 向量、200 uploaded + clean/pending/unknown、不公开但未来运行必须校验内部 asset_id、感染/旧 attempt 412、Get 无 hash/size 的刷新恢复，与 Platform 当前 Proto/状态机对齐。RED operation 缺失后 GREEN；独立审查 P0/P1/P2=0。Root Node22 实跑 format、contract **112/112**、check **431 pass/1 skip**、schema **5 pass/1 skip**；reviewer 直接 24/24、OpenAPI 语义 81 operations 与 fixed generated 校验 PASS。Root `cafdfc60` 精确 pin BFF 并更新库存 163 处引用、三种变化 blob digest，topology/当前 checkpoint PASS；完整 Root `scripts/tests` **964 pass/229 subtests**；compatibility **16 边/13 declared broken/0 provenance violation** 仍 exit1，十仓标准 **136 既有违规/0 unverified** 仍 exit1。无 SQL/角色/receipt/第二可编辑 contract。下一片仅实现 Complete 运行候选并真 IAM/Storage 组合，Web Chromium CORS/PUT 和 Platform v4 激活仍另门；用户 3310 与任务外 `uv.lock` 未动。

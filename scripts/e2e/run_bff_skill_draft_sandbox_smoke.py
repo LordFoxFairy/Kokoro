@@ -64,6 +64,7 @@ class Phase(str, Enum):
     CANDIDATE_PACKAGE_GET = "candidate_package_get"
     CANDIDATE_PACKAGE_BEGIN = "candidate_package_begin"
     CANDIDATE_SIGNED_PUT = "candidate_signed_put"
+    CANDIDATE_PACKAGE_COMPLETE = "candidate_package_complete"
     PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
@@ -407,6 +408,60 @@ def require_public_package_pending(
         raise SmokeError("BFF current Skill package pending projection invalid")
 
 
+def require_public_package_uploaded(
+    status: int,
+    body: object,
+    skill_id: str,
+    attempt_id: str,
+    upload_id: str,
+    attempt_epoch: str,
+) -> None:
+    if status != 200 or body != {
+        "data": {
+            "skill_id": skill_id,
+            "attempt_epoch": attempt_epoch,
+            "phase": "uploaded",
+            "attempt_id": attempt_id,
+            "upload_id": upload_id,
+        }
+    }:
+        raise SmokeError("BFF current Skill package uploaded projection invalid")
+
+
+def require_public_package_aborted(
+    status: int,
+    body: object,
+    skill_id: str,
+    attempt_id: str,
+    upload_id: str,
+    attempt_epoch: str,
+) -> None:
+    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("BFF current Skill package aborted projection invalid")
+    data = body["data"]
+    if not isinstance(data, dict) or set(data) not in (
+        {"skill_id", "attempt_epoch", "phase", "attempt_id"},
+        {"skill_id", "attempt_epoch", "phase", "attempt_id", "upload_id"},
+    ):
+        raise SmokeError("BFF current Skill package aborted fields invalid")
+    if (
+        data["skill_id"] != skill_id
+        or data["attempt_epoch"] != attempt_epoch
+        or data["phase"] != "aborted"
+        or data["attempt_id"] != attempt_id
+        or (
+            "upload_id" in data
+            and (
+                not isinstance(data["upload_id"], str)
+                or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", data["upload_id"])
+                is None
+                or data["upload_id"] != upload_id
+            )
+        )
+    ):
+        raise SmokeError("BFF current Skill package aborted state invalid")
+
+
 def require_public_package_begin(
     status: int, body: object, skill_id: str, approved_origin: str
 ) -> dict[str, object]:
@@ -473,6 +528,46 @@ def require_public_package_begin(
     remaining = expires_at - datetime.now(timezone.utc)
     if not timedelta(0) < remaining <= timedelta(minutes=15):
         raise SmokeError("BFF Skill package Begin reference expiry invalid")
+    return data
+
+
+def require_public_package_complete(
+    status: int,
+    body: object,
+    skill_id: str,
+    attempt_id: str,
+    upload_id: str,
+    attempt_epoch: str,
+    content_sha256: str,
+) -> dict[str, object]:
+    """Complete may expose scan status, but never owner Asset or signed URL."""
+    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("BFF Skill package Complete response invalid")
+    data = body["data"]
+    if not isinstance(data, dict) or set(data) != {
+        "skill_id",
+        "attempt_id",
+        "attempt_epoch",
+        "upload_id",
+        "phase",
+        "replayed",
+        "content_sha256",
+        "scan_state",
+    }:
+        raise SmokeError("BFF Skill package Complete data invalid")
+    if (
+        data["skill_id"] != skill_id
+        or data["attempt_id"] != attempt_id
+        or data["upload_id"] != upload_id
+        or data["attempt_epoch"] != attempt_epoch
+        or re.fullmatch(r"[1-9][0-9]{0,19}", attempt_epoch) is None
+        or int(attempt_epoch) > 18_446_744_073_709_551_615
+        or data["content_sha256"] != content_sha256
+        or data["phase"] != "uploaded"
+        or data["scan_state"] not in {"clean", "pending", "unknown"}
+        or type(data["replayed"]) is not bool
+    ):
+        raise SmokeError("BFF Skill package Complete projection invalid")
     return data
 
 
@@ -546,7 +641,7 @@ def safe_summary(
             "status": "PASS",
             "resources": "clean",
             "platform_skill_count": 2,
-            "platform_receipt_count": 19,
+            "platform_receipt_count": 24,
             "platform_publish_event_count": 1,
             "platform_package_begin": "PASS",
             "platform_package_complete": "PASS",
@@ -564,6 +659,11 @@ def safe_summary(
             "bff_skill_package_begin_replace": "PASS",
             "bff_skill_package_signed_put": "PASS",
             "bff_skill_package_begin_revoked": "PASS",
+            "bff_skill_package_complete": "PASS",
+            "bff_skill_package_complete_replay": "PASS",
+            "bff_skill_package_complete_infected": "PASS",
+            "bff_skill_package_complete_recovery": "PASS",
+            "bff_skill_package_complete_revoked": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -731,8 +831,10 @@ def _http_json(
         connection.close()
     if len(raw) > 1_048_576:
         raise SmokeError("BFF response too large")
-    if path.endswith("/package-upload"):
-        require_package_response_headers(headers, request_id, "Begin")
+    if path.endswith("/package-upload") or path.endswith("/package-upload/complete"):
+        require_package_response_headers(
+            headers, request_id, "Complete" if path.endswith("/complete") else "Begin"
+        )
     try:
         value = json.loads(raw)
     except (ValueError, UnicodeError):
@@ -1540,6 +1642,27 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError(
                         "default-off BFF package Begin did not fail closed"
                     )
+                status, body = _http_json(
+                    bff_base,
+                    get_path + "/complete",
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="closed-complete",
+                    body={
+                        "attempt_id": "attempt-closed",
+                        "upload_id": "upload-closed",
+                        "content_sha256": "0" * 64,
+                        "size_bytes": 1,
+                    },
+                )
+                if (
+                    status != 503
+                    or body.get("error", {}).get("code")
+                    != "skill_dependency_unavailable"
+                ):
+                    raise SmokeError(
+                        "default-off BFF package Complete did not fail closed"
+                    )
                 if proxy.count != 0:
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
@@ -1765,10 +1888,283 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     str(replacement["upload_id"]),
                     "2",
                 )
+                phase = Phase.CANDIDATE_PACKAGE_COMPLETE
+                signed_put(replacement, payload)
+                complete_path = begin_path + "/complete"
+                complete_body = {
+                    "attempt_id": replacement["attempt_id"],
+                    "upload_id": replacement["upload_id"],
+                    "content_sha256": begin_body["content_sha256"],
+                    "size_bytes": len(payload),
+                }
+                complete_key = "package-complete-" + run_id
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=complete_key,
+                    body=complete_body,
+                )
+                completed = require_public_package_complete(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(replacement["attempt_id"]),
+                    str(replacement["upload_id"]),
+                    "2",
+                    str(begin_body["content_sha256"]),
+                )
+                if completed["replayed"] is not False:
+                    raise SmokeError("BFF first Complete was unexpectedly replayed")
+                deadline = time.monotonic() + 25
+                while (
+                    completed["scan_state"] != "clean" and time.monotonic() < deadline
+                ):
+                    time.sleep(0.25)
+                    status, body = _http_json(
+                        bff_base,
+                        complete_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                        key=complete_key,
+                        body=complete_body,
+                    )
+                    completed = require_public_package_complete(
+                        status,
+                        body,
+                        begin_skill_id,
+                        str(replacement["attempt_id"]),
+                        str(replacement["upload_id"]),
+                        "2",
+                        str(begin_body["content_sha256"]),
+                    )
+                if completed["scan_state"] != "clean":
+                    raise SmokeError("BFF Complete did not observe current CLEAN scan")
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=complete_key,
+                    body=complete_body,
+                )
+                repeated_complete = require_public_package_complete(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(replacement["attempt_id"]),
+                    str(replacement["upload_id"]),
+                    "2",
+                    str(begin_body["content_sha256"]),
+                )
+                if repeated_complete["replayed"] is not True:
+                    raise SmokeError("BFF Complete replay drift")
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=complete_key,
+                    body={**complete_body, "content_sha256": "0" * 64},
+                )
+                if (
+                    status != 412
+                    or body.get("error", {}).get("code") != "skill_precondition_failed"
+                ):
+                    raise SmokeError(
+                        "BFF Complete current descriptor precondition drift "
+                        f"(status={status}, code={public_error_code(body.get('error', {}).get('code'))})"
+                    )
+                status, body = _http_get_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_public_package_uploaded(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(replacement["attempt_id"]),
+                    str(replacement["upload_id"]),
+                    "2",
+                )
+                # EICAR is the Storage scanner's test fixture. It deliberately
+                # is not a valid ZIP and proves rejection before ZIP validation.
+                infected_payload = (
+                    b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-"
+                    b"ANTIVIRUS-TEST-FILE!$H+H*"
+                )
+                infected_body = {
+                    **begin_body,
+                    "filename": "scanner-fixture.zip",
+                    "size_bytes": len(infected_payload),
+                    "content_sha256": hashlib.sha256(infected_payload).hexdigest(),
+                    "replaces_attempt_id": replacement["attempt_id"],
+                }
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-infected-begin-" + run_id,
+                    body=infected_body,
+                )
+                infected = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(infected["transfer_reference"]["url"])
+                )
+                if (
+                    infected["replayed"] is not False
+                    or infected["attempt_epoch"] != "3"
+                ):
+                    raise SmokeError("BFF infected Begin attempt drift")
+                signed_put(infected, infected_payload)
+                infected_complete_body = {
+                    "attempt_id": infected["attempt_id"],
+                    "upload_id": infected["upload_id"],
+                    "content_sha256": infected_body["content_sha256"],
+                    "size_bytes": len(infected_payload),
+                }
+                infected_complete_key = "package-infected-complete-" + run_id
+                for _ in range(2):
+                    status, body = _http_json(
+                        bff_base,
+                        complete_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                        key=infected_complete_key,
+                        body=infected_complete_body,
+                    )
+                    if (
+                        status != 412
+                        or body.get("error", {}).get("code")
+                        != "skill_precondition_failed"
+                    ):
+                        raise SmokeError("BFF infected Complete did not reject")
+                    status, body = _http_get_json(
+                        bff_base,
+                        begin_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                    )
+                    require_public_package_aborted(
+                        status,
+                        body,
+                        begin_skill_id,
+                        str(infected["attempt_id"]),
+                        str(infected["upload_id"]),
+                        "3",
+                    )
+                status, body = _http_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-recover-begin-" + run_id,
+                    body={**begin_body, "replaces_attempt_id": infected["attempt_id"]},
+                )
+                recovered = require_public_package_begin(
+                    status,
+                    body,
+                    begin_skill_id,
+                    source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                )
+                secret_values += signed_reference_secrets(
+                    str(recovered["transfer_reference"]["url"])
+                )
+                if (
+                    recovered["replayed"] is not False
+                    or recovered["attempt_epoch"] != "4"
+                ):
+                    raise SmokeError("BFF infected attempt recovery drift")
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=infected_complete_key,
+                    body=infected_complete_body,
+                )
+                if (
+                    status != 412
+                    or body.get("error", {}).get("code") != "skill_precondition_failed"
+                ):
+                    raise SmokeError("stale infected Complete reached new attempt")
+                status, body = _http_get_json(
+                    bff_base,
+                    begin_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                )
+                require_public_package_pending(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(recovered["attempt_id"]),
+                    str(recovered["upload_id"]),
+                    "4",
+                )
+                signed_put(recovered, payload)
+                recovered_complete_body = {
+                    **complete_body,
+                    "attempt_id": recovered["attempt_id"],
+                    "upload_id": recovered["upload_id"],
+                }
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key="package-recover-complete-" + run_id,
+                    body=recovered_complete_body,
+                )
+                recovered_complete = require_public_package_complete(
+                    status,
+                    body,
+                    begin_skill_id,
+                    str(recovered["attempt_id"]),
+                    str(recovered["upload_id"]),
+                    "4",
+                    str(begin_body["content_sha256"]),
+                )
+                if recovered_complete["replayed"] is not False:
+                    raise SmokeError("BFF recovered Complete was unexpectedly replayed")
+                deadline = time.monotonic() + 25
+                while (
+                    recovered_complete["scan_state"] != "clean"
+                    and time.monotonic() < deadline
+                ):
+                    time.sleep(0.25)
+                    status, body = _http_json(
+                        bff_base,
+                        complete_path,
+                        token=ready.access_token,
+                        secret=web_secret,
+                        key="package-recover-complete-" + run_id,
+                        body=recovered_complete_body,
+                    )
+                    recovered_complete = require_public_package_complete(
+                        status,
+                        body,
+                        begin_skill_id,
+                        str(recovered["attempt_id"]),
+                        str(recovered["upload_id"]),
+                        "4",
+                        str(begin_body["content_sha256"]),
+                    )
+                if recovered_complete["scan_state"] != "clean":
+                    raise SmokeError("BFF recovered Complete was not CLEAN")
                 if platform_inventory(
                     urls["kokoro_platform"], ready.tenant_id, str(result["skill_id"])
-                ) != (2, 19, 1, 1):
-                    raise SmokeError("Platform public Begin inventory is not unique")
+                ) != (2, 24, 1, 1):
+                    raise SmokeError("Platform public Complete inventory is not unique")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
                 phase = Phase.REVOKE
@@ -1810,6 +2206,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or body.get("error", {}).get("code") != "session_invalid"
                 ):
                     raise SmokeError("revoked IAM session reached BFF package Begin")
+                status, body = _http_json(
+                    bff_base,
+                    complete_path,
+                    token=ready.access_token,
+                    secret=web_secret,
+                    key=complete_key,
+                    body=complete_body,
+                )
+                if (
+                    status != 401
+                    or body.get("error", {}).get("code") != "session_invalid"
+                ):
+                    raise SmokeError("revoked IAM session reached BFF package Complete")
                 time.sleep(0.2)
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")

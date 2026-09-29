@@ -1,12 +1,21 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-COMPLETE-RUNTIME（P0；2026-09-29）
+## 下一切片：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，当前 `main 317c74c2048829471b0c4196df98dd6d2dcf5e36`；Root 只读裁决/审查/集成。BFF `1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 已有默认关闭的 Get/Begin/Complete，Platform `263a28f` v4 仍 inactive。先读 Web 三面文档、唯一 BFF public OpenAPI 与现有 Skills/Library UI，出 §8 放置表及精确合同；不把旧 preview/confirm 作为正式上传。 |
+| 目标 / 边界 | 用现有 shadcn/ui 与品牌 token 建正式可见 Skill ZIP 上传：选文件→计算 SHA/大小→同源 Begin→批准 ObjectStore origin 无凭据、禁重定向、原样 header 直 PUT→同源 Complete→Get 当前状态；刷新/断线保留可靠描述符或明确要求重选原文件，不伪造 Complete。个人私有、当前 IAM、撤权、错误/扫描 pending/infected、替换与重试在设计中显式建模。Web 不直连 Platform/Storage 控制面，不复制 owner SQL、receipt 或第二套协议。 |
+| 先行门 / 验证 | 先把 `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`DATA_MODEL.md` 与已有 Web 路由/测试收敛为当前方案，机器 API 仍由 BFF owner 唯一维护；若无需新 schema/contract，文档写明。之后单一 Web writer 做 RED→实现→Node22 lint/typecheck/test/build/Playwright；Root 独占真 IAM→Chromium→Web→BFF→Platform→Storage/MinIO/ClamAV 验 CORS preflight/PUT、CLEAN/INFECTED/恢复/刷新/撤权、自有资源清理。3310 用户进程不热替换，支付最后。此门只评审设计，不冒称浏览器已经打通。 |
+
+## 最近验收：W3-BFF-SKILL-COMPLETE-RUNTIME（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | BFF 唯一 writer，物理仓 clean `main 457472dd14f26219473d30f9b763c2d345be03a0`；Root 主控 pin `cafdfc60`，Platform `263a28f` v4 inactive。Complete 三面文档/唯一 OpenAPI 的默认关闭候选已通过独立审查，**运行 route/client 仍不存在**。先输出本仓 §8 放置表与 RED 基线，不新建模块/服务/SQL/role。 |
 | 实现 / 依赖 | 新建具名 Complete route、严格输入/稳定命令 ID 与 owner v4 `command_digest_version=3.0.0` 的 11 向量 projector，扩现有 fixed `CatalogConnectClient` generated 方法，在 server 精确 dispatch `/complete`，共用默认关闭 flag。当次每次含 replay 先 IAM current session/fixed tenant/user，再 BFF 独立 catalog workload token→Platform；BFF 不用 generic receipt/Storage RPC/SQL、无字节代理。public 四字段是未受信回显；owner result 必须核 skill/attempt/upload/hash 与请求相等、epoch 正数、内部 asset_id 合法非空、phase=UPLOADED、scan 仅 CLEAN/PENDING/UNKNOWN，然后省略 asset_id 投影。感染/旧 attempt 不因重放绕过。 |
-| RED / 验收 | 直接 HTTP 先证当前新 path 落旧 Capability 503、默认关闭与零 Platform socket；随后覆盖成功 clean/pending/unknown、同键 replay/异 body 409、新命令同 Asset 收敛、IAM 撤权/错 tenant/owner、旧 attempt/感染 412、非法 owner PB/epoch/asset/scan 502、timeout/cancel/Unknown ACK 503、x-request-id/no-store。Node22 format/contract/check/schema/build、独立审查 P0/P1/P2=0；Root 再在自有真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 上完成 signed PUT→BFF public Complete CLEAN/INFECTED/恢复/撤权与旧 Publish 回归、自有资源清理。后续 Web shadcn 可见入口与真 Chromium CORS/preflight/PUT 另门；v4 不因本片自动激活，3310 和 Root 任务外 `uv.lock` 不动。 |
+| RED / 验收 | 直接 HTTP 先证当前新 path 落旧 Capability 503、默认关闭与零 Platform socket；随后覆盖成功 clean/pending/unknown、同键 replay、owner 明确报幂等冲突时 409、当前描述符先拒时 412、新命令同 Asset 收敛、IAM 撤权/错 tenant/owner、旧 attempt/感染 412、非法 owner PB/epoch/asset/scan 502、timeout/cancel/Unknown ACK 503、x-request-id/no-store。Node22 format/contract/check/schema/build、独立审查 P0/P1/P2=0；Root 再在自有真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 上完成 signed PUT→BFF public Complete CLEAN/INFECTED/恢复/撤权与旧 Publish 回归、自有资源清理。后续 Web shadcn 可见入口与真 Chromium CORS/preflight/PUT 另门；v4 不因本片自动激活，3310 和 Root 任务外 `uv.lock` 不动。 |
+| 实际交付 / 验收 | BFF 唯一 writer `main 1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 发布默认关闭 Complete 运行候选；Root `036d12e7` 精确 pin，Node22 format、contract **127/127**、check **446 pass/1 skip**、schema **5 pass/1 skip**、build PASS，独立代码终审 P0/P1/P2=0。Root 真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV `/tmp/kokoro-bff-complete-final.log` exit0：default-off 503/零 Platform socket、public CLEAN/replay、当前错 SHA 412、EICAR public 412+aborted/同键重试、新 Begin epoch4/旧命令 412/真 PUT+Complete CLEAN、撤权 401/零新 socket、旧 ZIP Validate/Publish 回归；Skill **2**/receipt **24**/outbox **1**，`resources=clean`、Redis DB14=0、3310 PID 81692 未变。Root 聚焦 Python **42/42**、最终完整 `scripts/tests` **966 pass/239 subtests**、topology/当前 checkpoint PASS；Root runner 独立审查 P1 感染链与 P2 aborted ID/恢复状态已返修，末次 P0/P1/P2=0。兼容库存仍 13 条 declared broken，不能冒称全绿。**这是默认关闭的 HTTP owner 组合，不是 Web Chromium/CORS、产品激活或全项目闭环。** |
 
 ## 最近验收：W3-BFF-SKILL-COMPLETE-DOC-GATE（P0；2026-09-29）
 

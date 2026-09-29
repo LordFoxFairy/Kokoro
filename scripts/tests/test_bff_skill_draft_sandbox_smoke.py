@@ -54,6 +54,53 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_public_complete_requires_current_uploaded_projection(self):
+        valid = {
+            "data": {
+                "skill_id": "skill-current",
+                "attempt_id": "attempt-current",
+                "attempt_epoch": "2",
+                "upload_id": "upload-current",
+                "phase": "uploaded",
+                "replayed": False,
+                "content_sha256": "a" * 64,
+                "scan_state": "clean",
+            }
+        }
+        for scan in ("clean", "pending", "unknown"):
+            smoke.require_public_package_complete(
+                200,
+                {"data": {**valid["data"], "scan_state": scan}},
+                "skill-current",
+                "attempt-current",
+                "upload-current",
+                "2",
+                "a" * 64,
+            )
+        mutations = (
+            {"skill_id": "other"},
+            {"attempt_id": "old"},
+            {"attempt_epoch": "0"},
+            {"upload_id": "other"},
+            {"content_sha256": "b" * 64},
+            {"phase": "validated"},
+            {"scan_state": "infected"},
+            {"scan_state": "scanning"},
+            {"replayed": "false"},
+            {"asset_id": "internal"},
+        )
+        for mutation in mutations:
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_public_package_complete(
+                    200,
+                    {"data": {**valid["data"], **mutation}},
+                    "skill-current",
+                    "attempt-current",
+                    "upload-current",
+                    "2",
+                    "a" * 64,
+                )
+
     def test_public_begin_requires_exact_current_signed_put_projection(self):
         expires = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
         response = {
@@ -168,6 +215,59 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "1",
             )
 
+    def test_public_get_uploaded_and_aborted_remain_current_and_minimal(self):
+        uploaded = {
+            "data": {
+                "skill_id": "skill-current",
+                "attempt_epoch": "2",
+                "phase": "uploaded",
+                "attempt_id": "attempt-two",
+                "upload_id": "upload-two",
+            }
+        }
+        smoke.require_public_package_uploaded(
+            200, uploaded, "skill-current", "attempt-two", "upload-two", "2"
+        )
+        aborted = {
+            "data": {
+                "skill_id": "skill-current",
+                "attempt_epoch": "3",
+                "phase": "aborted",
+                "attempt_id": "attempt-three",
+                "upload_id": "upload-three",
+            }
+        }
+        smoke.require_public_package_aborted(
+            200, aborted, "skill-current", "attempt-three", "upload-three", "3"
+        )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_public_package_uploaded(
+                200,
+                {"data": {**uploaded["data"], "asset_id": "leak"}},
+                "skill-current",
+                "attempt-two",
+                "upload-two",
+                "2",
+            )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_public_package_aborted(
+                200,
+                {"data": {**aborted["data"], "phase": "uploaded"}},
+                "skill-current",
+                "attempt-three",
+                "upload-three",
+                "3",
+            )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_public_package_aborted(
+                200,
+                {"data": {**aborted["data"], "upload_id": "upload-other"}},
+                "skill-current",
+                "attempt-three",
+                "upload-three",
+                "3",
+            )
+
     def test_success_summary_requires_complete_receipt_inventory(self):
         self.assertEqual(
             smoke.safe_summary(None),
@@ -175,7 +275,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "status": "PASS",
                 "resources": "clean",
                 "platform_skill_count": 2,
-                "platform_receipt_count": 19,
+                "platform_receipt_count": 24,
                 "platform_publish_event_count": 1,
                 "platform_package_begin": "PASS",
                 "platform_package_complete": "PASS",
@@ -193,6 +293,11 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "bff_skill_package_begin_replace": "PASS",
                 "bff_skill_package_signed_put": "PASS",
                 "bff_skill_package_begin_revoked": "PASS",
+                "bff_skill_package_complete": "PASS",
+                "bff_skill_package_complete_replay": "PASS",
+                "bff_skill_package_complete_infected": "PASS",
+                "bff_skill_package_complete_recovery": "PASS",
+                "bff_skill_package_complete_revoked": "PASS",
             },
         )
 
