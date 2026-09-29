@@ -522,7 +522,7 @@
       "owner": {
         "name": "kokoro-capability",
         "repository_path": "apps/kokoro-capability",
-        "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+        "repository_commit": "cede13a679b85713779365daef3dc02293121747",
         "contract_version": "3.0.0",
         "contract_path": "contract/openapi/platform-http.openapi.json",
         "contract_sha256": "06609154e16769a99c29b4b28f04b61725e9a4ca46980b3defbf845ba10cf896"
@@ -685,13 +685,13 @@
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
           "path": "src/modules/skills/source/skill-projection.controller.ts",
           "sha256": "eefee0be9b2c08c3ad795fbf63f7298fb4beab4f12af73bebe56d3217c92a4e6"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
           "path": "src/modules/mcp/server/mcp-server-projection.controller.ts",
           "sha256": "9d0e44d4af015ed1c92b5b87f88b32e584039e529dfe396d7d69ca86104e54f0"
         }
@@ -1254,16 +1254,16 @@
       "owner": {
         "name": "kokoro-capability",
         "repository_path": "apps/kokoro-capability",
-        "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+        "repository_commit": "cede13a679b85713779365daef3dc02293121747",
         "contract_version": "kokoro.platform.v1",
         "contract_path": "contract/proto/kokoro/platform/v1/platform_runtime.proto",
-        "contract_sha256": "7dfde99f40c35281dc3dec2040313cc120294d39046785e5773e891b82f05b68"
+        "contract_sha256": "15d13cfef2911734e795a697e4373e4e6dc3ffaba55b4683106d5c1605c8d707"
       },
       "protocol": "connect-proto",
       "code_generator_version": "buf-bin@1.73.0+protoc-gen-py@0.1.1+protoc-gen-connectrpc@0.11.1",
       "runtime_package_version": "connectrpc@0.12.1+protobuf-py@0.3.0+pyqwest@0.10.0",
       "state": "broken",
-      "reason": "Agent pins the prior Platform v3 Proto/Connect transport, while Platform now has an additive inactive v4 Get candidate that Agent has not repinned. Its worker owns tenant IAM tokens and DB-lease proofs, but no typed Skill/MCP product selection or Storage package reader invokes this sender; real IAM→Platform→Agent owner composition remains unverified.",
+      "reason": "Agent pins the prior Platform v3 Proto/Connect transport; Platform cede13a has an additive inactive v4 Get candidate and typed Source transfer reference that Agent has not repinned. Its worker owns tenant IAM tokens and DB-lease proofs, but no typed Skill/MCP product selection or Storage package reader invokes this sender; real IAM→Platform→Agent owner composition remains unverified.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
@@ -1409,23 +1409,23 @@
       "code_generator_version": "@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0",
       "runtime_package_version": "@bufbuild/protobuf@2.14.0+@connectrpc/connect@2.2.0+@connectrpc/connect-node@2.2.0",
       "state": "broken",
-      "reason": "Storage 16a6c1c now admits authenticated kokoro-platform only for six capability-package operations in revision-specific skill_package scope and rejects old BFF package bypasses. Platform still consumes Storage v1/body tenant/naked URL and lacks current Product subject authorization, persistent revision package binding, and the v2 consumer; no real Platform→Storage package composition has passed. Keep this edge broken.",
+      "reason": "Platform cede13a now uses only the owner-pinned Storage v2 GetPackageReference client with trusted kokoro-platform credential, tenant/subject/skill scope, current validated Skill package binding and full short-lived GET TransferReference; owner-only static/default and real PostgreSQL/Redis gates pass. Real Storage v2 process/object-health composition, package Begin/Complete/ZIP/Publish, Agent consumer pin and broader product flow remain pending; keep this cross-owner edge broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
           "path": "src/modules/skills/storage-package.client.ts",
-          "sha256": "623c6c84ed3ef596f302fe5d1779e08c1c832d1a8d31d39303e9b79eca020de2"
+          "sha256": "64662d528c56984e03bcb8fab13ac08af2bd2d74d697869bd5b2251a4a61e2f0"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
-          "path": "src/generated/proto/kokoro/storage/v1/storage_pb.ts",
-          "sha256": "e1a877974c55519add2fa43fd111801bd2013e9d8b02fe515348743018cce1fc"
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
+          "path": "src/generated/proto/kokoro/storage/v2/storage_pb.ts",
+          "sha256": "d65b51c0fa460c77e6c785e6558548a647155a366587beaf1177f3eebb20524b"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
           "path": "package.json",
           "sha256": "3cd914ab985792bc9b5725a81d02fe6ef42ad6979fa8d09a23b73125e174c1da"
         },
@@ -1462,15 +1462,15 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
           "path": "src/iam/platform-workload-authorizer.ts",
           "sha256": "20392c3b92b02669178605555ffed2cd33890b455619c66f2262e13c14f8b6fd"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f",
+          "repository_commit": "cede13a679b85713779365daef3dc02293121747",
           "path": "src/modules/skills/skills.module.ts",
-          "sha256": "2bad83d5431f72f3e48f4b3dd4bfbb0ad047dd6757904ffe2c01481c3dc0b03f"
+          "sha256": "66e026c4309df004d79f724a5cfa2bcbed63d9ccb7dcff4e886b854b942da9fc"
         },
         {
           "repository_path": "apps/kokoro-iam",

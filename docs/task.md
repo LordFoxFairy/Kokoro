@@ -1,6 +1,14 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码门：W3-PLATFORM-STORAGE-V2-CUTOVER（P0；2026-09-29）
+## 下一验收门：W3-PLATFORM-STORAGE-V2-REAL-COMPOSITION（P0；2026-09-29）
+
+| 项 | 冻结范围与验收 |
+| --- | --- |
+| Owner / 基线 | Root 固定 Platform `cede13a679b85713779365daef3dc02293121747`、Storage `16a6c1ce95832df6dc839e0d50e957405c5c7005`；Platform/Storage 子仓保持 clean main，用户 3310 不动。 |
+| 当前事实 / 目标 | Platform 已删 Storage v1、接单一认证 v2 GetPackageReference 与完整 GET TransferReference；Node24 全静态/默认 891 pass、隔离真 PostgreSQL/Redis 24 文件 260 pass、独立复审 P0/P1/P2=0。**跨 owner 真实 Storage 进程/对象健康仍未测**，故下一门以独占临时库、Redis namespace、对象前缀完成可信 metadata、CLEAN 对象、真实引用、重放和拒绝，并精确清理；不得以单仓 fake transport 冒充组合证据。 |
+| 后续代码顺序 | 真 Storage 门通过后，由 Platform 唯一 writer 原子实现 Begin+外部 receipt/CAS/恢复，再 Complete/ZIP V1/Validate/Publish；Agent 在 owner 机器契约稳定后独立 pin，BFF/Web 消费随后推进。v4 仍 inactive，当前 Validate/Publish fail closed；不做多角色数据库或运维扩展。 |
+
+## 最近验收：W3-PLATFORM-STORAGE-V2-CUTOVER（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
@@ -9,6 +17,7 @@
 | Owner / 目录 / 契约 | 优先改既有 `storage-package.client.ts`、`skill-package.port.ts`、`skills.module.ts` 和 Catalog/Source/Install 调用处；淘汰另建并行 v2 client 或新增包事实表。Platform 唯一 Proto 的 Source response reserve 旧 `read_reference` tag/name，新增明确 transfer message/tag，生成物/descriptor/provenance/候选 machine artifact 与真实 handler 同步；Agent 随后以独立 consumer 片 pin，不能把未更新的旧 consumer 宣称兼容。确认 v4 candidate 是否可演进或须新版本后再动机器文件，不猜版本。 |
 | 数据/API/删除 | 不增数据库角色/表、不跨 owner SQL；Source/Install 每次当前 IAM/Skill 授权后请求 Storage CLEAN/asset/digest/对象健康，短期 URL/header/expiry 不入 Skill/receipt/日志。清除所有 Storage v1 package 路径和 body tenant；Validate 在完成包绑定与 ZIP 前仍 fail closed，不以 v2 transport 代替产品能力。 |
 | 验证 / 依赖 | RED→GREEN 缺/错凭据、伪 tenant/subject/scope、跨 skill/asset/digest、非 CLEAN、method/header/expiry 丢失、撤权后新签与 replay、旧 Source/Install 绕过；Node24 format/lint/typecheck/contract/artifact/schema/test/build、真 Storage v2/PG 隔离组合，Root 独立复跑。Owner Platform 先发布，Agent 再精确 pin；其后回到真实 Begin+恢复、Complete/ZIP/Validate/Publish。用户 3310 不在本片范围。 |
+| 验收结果 | Platform `main cede13a679b85713779365daef3dc02293121747` 已提交推送。Root 独立 Node24 全静态/契约/构建、默认 **891 pass/186 skip**；隔离真 PostgreSQL/Redis **24 文件/260 pass**，临时库与 Redis DB13 清理通过；两只读复审 P0/P1/P2=0。真实 Storage v2 进程/对象健康组合尚未执行，归上方下一验收门；v4 inactive、Agent 未 pin、Begin/Complete/Validate/Publish 未激活。 |
 
 ## 最近验收：W3-PLATFORM-PACKAGE-SAFETY（P0；2026-09-29）
 

@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform Storage v2 消费代码门通过；真实跨 owner 门待验
+
+Platform `main cede13a679b85713779365daef3dc02293121747` 已提交推送 52 文件：唯一 Storage 包客户端由 v1 切 v2，受信 Platform secret/tenant/subject/skill scope 与定长 command ID，Source 完整 GET TransferReference，Install 当前包及 manifest 事务二次校验；旧 v1 Proto/生成物与 Catalog 假验证 helper 删除。validated 包的禁用/撤回仅窄写 status 并用全包快照 CAS，损坏 active 包仍能限制访问；重新启用、Validate/Publish 继续 fail closed。两个独立只读复审最终 P0/P1/P2=0。
+
+Root 在**已停写候选**上独立执行 Node24 format/lint/typecheck/Prisma validate/IAM SDK/contract/cutover/artifact/schema/default test/build，均 exit 0，默认 **891 pass/186 skip**（`/tmp/kokoro-platform-v2-root-static-final2.log`）。Root 独占临时 PostgreSQL 库、复用空 Redis DB13 执行 schema install→check→`REQUIRE_REAL_INTEGRATION=1` 全 integration→post-check：**24 文件/260 pass/0 skip**（`/tmp/kokoro-platform-v2-root-integration-final.log`）；库已 DROP、DB13 0→0。Root 自有 CreateDraft sandbox 增补 Platform/Storage 对等测试 secret，聚焦 Python **33 pass/22 subtests**，但 Root 完整真实 sandbox 尚未复跑。**真 Storage v2 进程/对象健康与 Agent pin 未验**；下一门见 [`task.md`](task.md)，用户 3310 未触碰，Root 任务外 `uv.lock` 未暂存。
+
 ## 2026-09-29 — Platform 包安全基础已验收；Storage v2 单路径切换在前
 
 Platform `main 32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f` 已提交推送 9 文件。先在真 PostgreSQL 复现旧全行 `updateSkill` 可用陈旧 SkillState 覆盖包 asset/hash，再以 `phase=none`、空 attempt/upload、epoch/version 0 条件写拒绝已开始的当前包；外部 recovery 针对 Skill Begin 有独立 pointer/phase/backoff，`completeExternal` 以 receipt owner/lease epoch/expiry/phase fence 更新，真 PG 在**同一 Serializable 事务样例**验证 Skill attempt/epoch/version CAS 与 receipt 双 fence，失败全回滚。没有新增 Begin handler、Storage 调用或签名 URL。

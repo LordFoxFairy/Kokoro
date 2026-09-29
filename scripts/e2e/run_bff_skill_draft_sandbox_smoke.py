@@ -1073,6 +1073,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             bff_base = f"http://127.0.0.1:{bff_port}"
             storage_secret = secrets.token_hex(32)
             storage_agent_secret = secrets.token_hex(32)
+            storage_platform_secret = secrets.token_hex(32)
             web_secret = secrets.token_hex(32)
             secret_values = tuple(
                 {
@@ -1080,6 +1081,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     *ready.secrets,
                     storage_secret,
                     storage_agent_secret,
+                    storage_platform_secret,
                     web_secret,
                 }
                 - {""}
@@ -1117,6 +1119,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 storage_secret,
                 storage_port,
             )
+            storage_env["KOKORO_STORAGE_SERVICE_CREDENTIALS"] += (
+                f",kokoro-platform={storage_platform_secret}"
+            )
             fixture = storage_helper._storage_schema_fixture(directory)
             _run(
                 [
@@ -1136,6 +1141,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_POSTGRES_URL": urls["kokoro_platform"],
                 "KOKORO_REDIS_URL": args.redis_url,
                 "KOKORO_STORAGE_URL": storage_base,
+                "KOKORO_PLATFORM_STORAGE_SERVICE_CREDENTIAL": storage_platform_secret,
                 "KOKORO_IAM_BASE_URL": ready.base_url,
                 "KOKORO_PLATFORM_HOST": "127.0.0.1",
                 "KOKORO_PLATFORM_PORT": str(platform_port),
