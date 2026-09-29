@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform 包安全基础已验收；Storage v2 单路径切换在前
+
+Platform `main 32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f` 已提交推送 9 文件。先在真 PostgreSQL 复现旧全行 `updateSkill` 可用陈旧 SkillState 覆盖包 asset/hash，再以 `phase=none`、空 attempt/upload、epoch/version 0 条件写拒绝已开始的当前包；外部 recovery 针对 Skill Begin 有独立 pointer/phase/backoff，`completeExternal` 以 receipt owner/lease epoch/expiry/phase fence 更新，真 PG 在**同一 Serializable 事务样例**验证 Skill attempt/epoch/version CAS 与 receipt 双 fence，失败全回滚。没有新增 Begin handler、Storage 调用或签名 URL。
+
+Root 独立 Node24 `format:check/lint/typecheck/prisma:validate/schema:check/contract:check/platform-artifact:check/test/build` 全过，默认 **873 pass/182 skip**；隔离 PostgreSQL Get+Safety+原 MCP recovery **43 pass**，自有临时库均删除；只读独立复审 P0/P1/P2=0。首次 Root 焦点命令错误地把未安装的 maintenance DB 当 Get 业务库，Get suite 因缺表失败；随后建自有临时库、安装 canonical schema、原焦点组 43/43 PASS，确认不是代码回归。Root 任务外 `uv.lock` 不暂存，用户 3310 未触碰。
+
+原计划直接 Begin 经源码审查发现三处共用 Storage v1/body tenant/裸 URL 客户端，若 Begin 单独引入 v2 将形成双活；Source Proto 仍裸 read_reference，Agent pin v3。因此先做 Platform 全 v2 transport/response cutover、Agent 精确 pin，再做真实 Begin/Complete/ZIP；下一门见 [`task.md`](task.md) 顶部。本片未完成上传或 Product 闭环。
+
 ## 2026-09-29 — Platform 真实 Get Skill 包状态已发布，Begin 下一门
 
 Platform `main ddd9e60e7199a52280833a4ede245d7cad22ff35` 已提交推送 45 文件：唯一 Proto 增 `GetSkillPackageUpload` 只读 RPC，正式 Nest `ServiceImpl` handler 本次 IAM catalog 与 Product user==owner/draft 校验，tenant-scoped Skill 窄投影返回当前 attempt/epoch/phase/可选 upload ID；不走 Storage、receipt、outbox 或缓存。v4 inactive machine artifact 为 32 operation/24 proof binding/15 旧 command/1 新 Product read binding，旧 3.0.0 proof/command 不假升，v1–v3 冻结。正式 generated Connect client 经路由实测 NONE/epoch0 正例和跨 user PermissionDenied，不是靠 `Partial` 暴露 UNIMPLEMENTED。两独立只读复审 P0/P1/P2=0；末轮已收紧 intent 不可携 upload ID、精确 Connect 错误码、数据库测试清理并统一 DATA_MODEL 阶段矩阵。

@@ -1,14 +1,18 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码门：W3-PLATFORM-PACKAGE-BEGIN（P0；2026-09-29）
+## 下一代码门：W3-PLATFORM-STORAGE-V2-CUTOVER（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
-| Owner / 基线 | `apps/kokoro-capability` 唯一 writer，`main ddd9e60e7199a52280833a4ede245d7cad22ff35`，Storage owner `16a6c1c`；Root 管 Git index、审查和独立真库/组合复验。当前 v4 artifact 是 inactive 候选、尚无 consumer pin，v1–v3 冻结。 |
-| 目标 | 在既有 SkillCatalogService 增**真实** user-only `BeginSkillPackageUpload`：本次 IAM catalog 与当前 Product user/owner/draft 检查，短 Serializable CAS 固定当前 attempt/epoch/version、原 subject、SHA/size/name/MIME 与稳定 Storage command；事务外以受信 Platform 服务身份和 `skill_package/skill_id` 调 Storage v2 CreateUpload，回读 pending 并返回完整短期 PUT TransferReference，不持久 URL/签名头。明确 `replaces_attempt_id` 才能在同 revision 替换非 validated 旧 attempt。 |
-| 必须先解决 | 旧 `skill.repository.ts` 全行 `updateSkill` 会用陈旧 SkillState 清空/回写 `package_asset_ref/content_sha256`，Begin 入码前先收窄写入或以 tenant+status+phase+attempt/epoch/version CAS 防旧快照覆盖，真 PG 竞争负例验证；不得让新包事实与旧 mapper 双真源。外部 recovery 用现有 coordinator 的 lease/receipt 双 fence，Storage ACK/COMMIT unknown 不盲重执；原 subject 撤权时不以服务身份接管。 |
-| 机器/目录 | 更新 Platform 唯一 Proto、inactive v4 候选 machine artifact/typed binding/new command vectors、官方 generated、runtime handler 与 Storage v2 固定来源；v4 尚未激活/冻结，可在这一原子切片演进，既有 v1–v3 原字节不可改。比较现有 Skills 模块扩展与另建 package 模块/表：采用现有 Skills+单行，淘汰第二事实源。新文件先给第 8 节放置表，不改 Root/BFF/Agent/Storage/lockfile。 |
-| 验证 | RED→GREEN 真实 PostgreSQL/Storage owner sandbox 覆盖 first Begin、同命令 pending replay 重签、异义 key、显式替换 CAS、旧 receipt/迟到响应、ACK unknown、撤权/跨 tenant/user/非 draft、非法大小/哈希、零前置副作用和旧资产防覆盖；Node24 format/lint/typecheck/contract/artifact/schema/test/build、Root 独立复跑。此片只验 Begin，Complete/Validate/Publish、包退役和消费者仍待后片，不假称上传链已闭环。 |
+| Owner / 基线 | `apps/kokoro-capability` 唯一 writer，`main 32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f`；Storage owner `16a6c1c`，Agent consumer 当前 `7dfcfa9`。Root 管 Git index、独立验证；v4 inactive、consumer 未 pin，v1–v3 冻结。 |
+| 当前事实 / 目标 | Catalog 旧 helper、Source GetApproved 与 Install 共用 Storage v1/body tenant/裸 URL 客户端；真实 Validate 仍固定拒绝。下一片只完成 Platform 的**单一 v2 transport/response cutover**：受信 `kokoro-platform` credential 与 tenant/subject/request/`skill_package + skill_id` metadata、Storage v2 六项中实际所需 GetPackageReference、完整 GET TransferReference；三处现有调用边界同时改，删除 v1 import/generated/裸 URL。此片不冒称 Validate 或 Begin/Complete 可用。 |
+| Owner / 目录 / 契约 | 优先改既有 `storage-package.client.ts`、`skill-package.port.ts`、`skills.module.ts` 和 Catalog/Source/Install 调用处；淘汰另建并行 v2 client 或新增包事实表。Platform 唯一 Proto 的 Source response reserve 旧 `read_reference` tag/name，新增明确 transfer message/tag，生成物/descriptor/provenance/候选 machine artifact 与真实 handler 同步；Agent 随后以独立 consumer 片 pin，不能把未更新的旧 consumer 宣称兼容。确认 v4 candidate 是否可演进或须新版本后再动机器文件，不猜版本。 |
+| 数据/API/删除 | 不增数据库角色/表、不跨 owner SQL；Source/Install 每次当前 IAM/Skill 授权后请求 Storage CLEAN/asset/digest/对象健康，短期 URL/header/expiry 不入 Skill/receipt/日志。清除所有 Storage v1 package 路径和 body tenant；Validate 在完成包绑定与 ZIP 前仍 fail closed，不以 v2 transport 代替产品能力。 |
+| 验证 / 依赖 | RED→GREEN 缺/错凭据、伪 tenant/subject/scope、跨 skill/asset/digest、非 CLEAN、method/header/expiry 丢失、撤权后新签与 replay、旧 Source/Install 绕过；Node24 format/lint/typecheck/contract/artifact/schema/test/build、真 Storage v2/PG 隔离组合，Root 独立复跑。Owner Platform 先发布，Agent 再精确 pin；其后回到真实 Begin+恢复、Complete/ZIP/Validate/Publish。用户 3310 不在本片范围。 |
+
+## 最近验收：W3-PLATFORM-PACKAGE-SAFETY（P0；2026-09-29）
+
+Platform `main 32a4f467caa2c9c8fcfa05e3e7b0cafd923b798f` 已提交推送：旧 `SkillState` 全行更新仅允许包 `none`/空 attempt/epoch0/version0/空 upload，包开始后旧快照条件写失败；为未来 Begin 外部 receipt 增 operation-specific recovery 阶段与带 lease/phase 的 `completeExternal`，真 PostgreSQL 同 Serializable 事务验证 Skill attempt/version CAS 与 receipt 双 fence/回滚。Root Node24 format/lint/typecheck/Prisma/schema/contract/artifact/test/build PASS，默认 **873 pass/182 skip**；隔离真 PostgreSQL Get+Safety+MCP recovery **43 pass**，临时库清零；独立只读审查 P0/P1/P2=0。此片没有 Begin RPC、Storage v2、上传或产品闭环；原计划 Begin 被 v1 共用客户端和 Source 裸 URL 的实际依赖阻断，先做上方单路径 v2 cutover。
 
 ## 最近验收：W3-PLATFORM-PACKAGE-GET（P0；2026-09-29）
 
