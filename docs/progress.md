@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform 真实 Get Skill 包状态已发布，Begin 下一门
+
+Platform `main ddd9e60e7199a52280833a4ede245d7cad22ff35` 已提交推送 45 文件：唯一 Proto 增 `GetSkillPackageUpload` 只读 RPC，正式 Nest `ServiceImpl` handler 本次 IAM catalog 与 Product user==owner/draft 校验，tenant-scoped Skill 窄投影返回当前 attempt/epoch/phase/可选 upload ID；不走 Storage、receipt、outbox 或缓存。v4 inactive machine artifact 为 32 operation/24 proof binding/15 旧 command/1 新 Product read binding，旧 3.0.0 proof/command 不假升，v1–v3 冻结。正式 generated Connect client 经路由实测 NONE/epoch0 正例和跨 user PermissionDenied，不是靠 `Partial` 暴露 UNIMPLEMENTED。两独立只读复审 P0/P1/P2=0；末轮已收紧 intent 不可携 upload ID、精确 Connect 错误码、数据库测试清理并统一 DATA_MODEL 阶段矩阵。
+
+Root 独立 Node24 `format:check/lint/typecheck/prisma:validate/schema:check/iam-sdk:check/contract:check/platform-artifact:check/platform-contract-cutover:check/test/build` 全过，默认 **871 pass/180 skip**；在自有 PostgreSQL 临时库先安装/漂移检查、全真实 integration **23 文件/253 pass**，随后焦点 Get 真 PG **1 pass**，两库均 DROP，Redis DB13 0→0。当前只有读当前包状态；Begin/Complete、Storage v2、ZIP Validate/Publish、Storage 退役与 BFF/Agent 消费仍待代码和跨 owner 组合，不称端到端完成。下一门须先移除旧全行更新对未来包 asset/hash 的覆盖风险，再做真实 Begin+外部恢复；Root 任务外 `uv.lock` 未暂存。
+
 ## 2026-09-29 — Get/Begin/Complete 调整为真实 RPC 逐片发布
 
 Root 对下一“纯机器契约”任务做源码与独立只读可执行性审查：Platform 唯一 Proto 一旦增加 `SkillCatalogService` 方法，现有强类型 `ServiceImpl` 会要求真实 handler；用 `Partial` 会让 Connect 自动注册 `UNIMPLEMENTED`，而只加请求消息仍触发 descriptor typed identity 门。因此取消“Proto 先行但可构建”的假切片，改先交付**真实只读 Get**（本次 IAM user owner/current draft + Prisma 当前 attempt；零 Storage/receipt/outbox），再将 Begin/Complete 各连同 Storage v2、外部 receipt/CAS/恢复原子实现。任务边界见 [`task.md`](task.md) 顶部；本条是裁决，不是 Get 已完成。

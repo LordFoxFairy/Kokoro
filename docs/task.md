@@ -1,6 +1,16 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码门：W3-PLATFORM-PACKAGE-GET（P0；2026-09-29）
+## 下一代码门：W3-PLATFORM-PACKAGE-BEGIN（P0；2026-09-29）
+
+| 项 | 冻结范围与验收 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-capability` 唯一 writer，`main ddd9e60e7199a52280833a4ede245d7cad22ff35`，Storage owner `16a6c1c`；Root 管 Git index、审查和独立真库/组合复验。当前 v4 artifact 是 inactive 候选、尚无 consumer pin，v1–v3 冻结。 |
+| 目标 | 在既有 SkillCatalogService 增**真实** user-only `BeginSkillPackageUpload`：本次 IAM catalog 与当前 Product user/owner/draft 检查，短 Serializable CAS 固定当前 attempt/epoch/version、原 subject、SHA/size/name/MIME 与稳定 Storage command；事务外以受信 Platform 服务身份和 `skill_package/skill_id` 调 Storage v2 CreateUpload，回读 pending 并返回完整短期 PUT TransferReference，不持久 URL/签名头。明确 `replaces_attempt_id` 才能在同 revision 替换非 validated 旧 attempt。 |
+| 必须先解决 | 旧 `skill.repository.ts` 全行 `updateSkill` 会用陈旧 SkillState 清空/回写 `package_asset_ref/content_sha256`，Begin 入码前先收窄写入或以 tenant+status+phase+attempt/epoch/version CAS 防旧快照覆盖，真 PG 竞争负例验证；不得让新包事实与旧 mapper 双真源。外部 recovery 用现有 coordinator 的 lease/receipt 双 fence，Storage ACK/COMMIT unknown 不盲重执；原 subject 撤权时不以服务身份接管。 |
+| 机器/目录 | 更新 Platform 唯一 Proto、inactive v4 候选 machine artifact/typed binding/new command vectors、官方 generated、runtime handler 与 Storage v2 固定来源；v4 尚未激活/冻结，可在这一原子切片演进，既有 v1–v3 原字节不可改。比较现有 Skills 模块扩展与另建 package 模块/表：采用现有 Skills+单行，淘汰第二事实源。新文件先给第 8 节放置表，不改 Root/BFF/Agent/Storage/lockfile。 |
+| 验证 | RED→GREEN 真实 PostgreSQL/Storage owner sandbox 覆盖 first Begin、同命令 pending replay 重签、异义 key、显式替换 CAS、旧 receipt/迟到响应、ACK unknown、撤权/跨 tenant/user/非 draft、非法大小/哈希、零前置副作用和旧资产防覆盖；Node24 format/lint/typecheck/contract/artifact/schema/test/build、Root 独立复跑。此片只验 Begin，Complete/Validate/Publish、包退役和消费者仍待后片，不假称上传链已闭环。 |
+
+## 最近验收：W3-PLATFORM-PACKAGE-GET（P0；2026-09-29）
 
 | 项 | 冻结范围与验收 |
 | --- | --- |
@@ -10,6 +20,7 @@
 | 文件/边界 | Platform 唯一 writer 可修改既有 Proto、contract/descriptor/provenance、新机器 artifact/其 checker/vector、官方 generated、Skills RPC/catalog/repository 的必要既有文件和直接测试、当前文档；创建新 artifact 版本目录须先给第 8 节放置表。不得改 v1–v3 历史字节、BFF/Agent/Storage/Root/lockfile，也不放宽固定 counts 门、返回统一 `UNIMPLEMENTED` 或混入 Begin/Complete 假路由。遇超界先报告 Root。 |
 | 新目录放置预裁决 | 若当前 checker 要求新 artifact，采用既有 `contract/execution-operations/v1..v3` 的同级下一候选版本，唯一 owner 仍为 Platform contract；淘汰覆盖冻结 v3 或另建可编辑 Root contract。必须同时更新 runtime 唯一绑定和双向 descriptor/count/vector 门，并保留 v3 原字节断言。普通新文件按职责拆，不新建空业务模块。 |
 | 验证 | RED→GREEN Buf lint/普通 breaking 与既有自定义 cutover、contract/artifact、format/lint/typecheck/test/build、Get 跨 tenant/user/非 draft/撤权/无包/当前 attempt 正例及零 Storage/receipt/outbox 副作用；Root 真 PostgreSQL 独占临时库复验、独立审查并记录 commit。后续 Begin/Complete 必须各含 Storage v2、external receipt/CAS/恢复与真实组合，不拆成只有 Proto 的片。 |
+| 验收结果 | Platform `main ddd9e60e7199a52280833a4ede245d7cad22ff35` 已提交推送：真实 Get handler/tenant 窄只读、32 RPC Proto 与 inactive v4（32 operation、24 proof、15 旧 command、1 Product read binding），v1–v3 byte-frozen；旧 proof/command 真实 3.0.0 未假升。Root Node24 format/lint/typecheck/Prisma/schema/IAM SDK/contract/artifact/cutover/default test **871 pass/180 skip**/build 全过；真 PostgreSQL 自有临时库全 integration **23 文件/253 pass**，末轮焦点真 PG 1 pass；正式 Nest 路由+generated Connect client 证明 Get 非 UNIMPLEMENTED，他人 owner 拒绝。两只读复审 P0/P1/P2=0；临时库删除、Redis DB13 余量 0。Get 只读，不是 Begin/Complete/Storage v2 或包产品闭环。 |
 
 ## 最近验收：W3-PLATFORM-PACKAGE-SCHEMA（P0；2026-09-29）
 
