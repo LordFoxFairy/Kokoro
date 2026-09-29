@@ -417,12 +417,16 @@ def safe_summary(
             "status": "PASS",
             "resources": "clean",
             "platform_skill_count": 1,
-            "platform_receipt_count": 15,
+            "platform_receipt_count": 16,
+            "platform_publish_event_count": 1,
             "platform_package_begin": "PASS",
             "platform_package_complete": "PASS",
             "platform_package_infected": "PASS",
             "platform_package_validate": "PASS",
             "platform_package_bad_zip": "PASS",
+            "platform_publish": "PASS",
+            "platform_publish_replay": "PASS",
+            "platform_publish_negative": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -769,7 +773,9 @@ def platform_inventory_connection_url(database_url: str) -> str:
     )
 
 
-def platform_inventory(database_url: str, tenant: str) -> tuple[int, int]:
+def platform_inventory(
+    database_url: str, tenant: str, skill_id: str
+) -> tuple[int, int, int, int]:
     """Read only Platform-owned tables; never join or mutate another owner."""
     import psycopg
 
@@ -789,7 +795,20 @@ def platform_inventory(database_url: str, tenant: str) -> tuple[int, int]:
             (tenant,),
         )
         receipts = int(cursor.fetchone()[0])
-    return skills, receipts
+        cursor.execute(
+            'SELECT count(*) FROM "kokoro_platform"."outbox_event" '
+            'WHERE tenant_id = %s AND event_type = %s',
+            (tenant, "skill.published"),
+        )
+        publish_events = int(cursor.fetchone()[0])
+        cursor.execute(
+            'SELECT count(*) FROM "kokoro_platform"."skill" '
+            'WHERE tenant_id = %s AND id = %s AND status::text = %s '
+            'AND package_phase::text = %s AND package_attempt_epoch = %s',
+            (tenant, skill_id, "active", "validated", 6),
+        )
+        active_validated = int(cursor.fetchone()[0])
+    return skills, receipts, publish_events, active_validated
 
 
 def _redis_keys(url: str, pattern: str) -> set[str]:
@@ -1321,17 +1340,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         str(result["skill_id"]),
                     ),
                     log,
-                    "Platform real Storage v2 Complete, infected recovery and ZIP Validate",
+                    "Platform real Storage v2 Complete, ZIP Validate and Publish",
                     secret_values,
                 )
                 phase = Phase.INVENTORY
-                if platform_inventory(urls["kokoro_platform"], ready.tenant_id) != (
+                if platform_inventory(
+                    urls["kokoro_platform"], ready.tenant_id, str(result["skill_id"])
+                ) != (
                     1,
-                    15,
+                    16,
+                    1,
+                    1,
                 ):
-                    raise SmokeError(
-                        "Platform Skill or receipt inventory is not unique"
-                    )
+                    raise SmokeError("Platform Publish inventory is not unique")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
                 phase = Phase.REVOKE

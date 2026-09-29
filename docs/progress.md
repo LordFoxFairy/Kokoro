@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 Publish owner 代码与 Root 独立门 PASS，真实组合待验
+
+Platform `main 391fa9a958744b0cf463484ef869ac3b37c86b3c` 已提交正式 user/PERSONAL Publish：事务外 fresh IAM/current 包+Storage CLEAN/对象健康，独立 local receipt+整包 CAS+status/outbox 原子，所有 completed replay/ACK unknown 先 fresh；专用内部 codec 固定 package identity，`skill.published` payload 的 schema_version=1，v4 机器 fixture 仍 inactive，v1–v3/Proto/Prisma 不改。独立审查在首版发现20秒总预算从 IAM 后才起算的 P2，owner 补 RED/GREEN 返修后终审 P0/P1/P2=0。Root 独立 Node24 format/lint/typecheck/contract/artifact/cutover/schema/default **985 pass/238 skip**/build 全 PASS，隔离真 PostgreSQL Begin8+Complete14+Validate10+Publish20＝**52/52** PASS。Root 同仓 runner 已改为验 Skill1/receipt16/outbox1/epoch6 active+validated；**真实 IAM/BFF/Platform/Storage/MinIO/ClamAV 组合尚待精确 pin 后运行**，不把 owner CLI 或单仓 PG 冒充跨服务完成。Source 真 Agent request-bound proof、BFF public/session、Storage orphan retirement、危险包主动隔离、Agent pin 均另门；用户 3310 与任务外 `uv.lock` 未动。
+
 ## 2026-09-29 — W3 Publish 三面文档门 PASS，代码仍关闭
 
 Platform `main 594ac64a84d8ac6887f0a759fa89ba676cef8432` 仅更新 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 四文档，Root 精确 pin；裁决 V1 仅 user→PERSONAL，visibility 是 owner scope 的请求确认，不增列或允许“更窄”而丢失事实。首次/同命令 completed replay/COMMIT unknown 都必须当次 IAM/current 包身份与 Storage CLEAN/对象健康；复用 local receipt、短 Serializable CAS、内部 outbox 原子提交，v4 仍 inactive。独立 API 与 SQL 预审对照源码，先发现事件 `schema_version` 被误说成既有 envelope 的 P2，owner 第二提交修为 payload 字段；终审无遗留 P0/P1/P2。Root 独立 Node24 format、contract lint、artifact、schema、diff check PASS，artifact digest `c482cbecc8ecb5f106aace62636c059cab49470aaeb38df449103969d166b83d` 未变。**本门只有文档，Publish 生产路径仍固定拒绝**；下一片才做 RED→代码→真 PostgreSQL/Storage 组合。Storage orphan retirement、validated 危险包隔离、BFF public/session、Agent pin 仍为各自激活前门，用户 3310 未触碰。
