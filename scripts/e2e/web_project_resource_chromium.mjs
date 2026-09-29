@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Real Chromium IAM → Project/personal flows → Agent Artifact Library download/private reload. */
 
-import { createHash, randomUUID } from "node:crypto"
+import { createHash, randomUUID, X509Certificate } from "node:crypto"
 import { createRequire } from "node:module"
 import { readFileSync } from "node:fs"
 import path from "node:path"
@@ -16,7 +16,7 @@ function parseInput() {
   let value
   try { value = JSON.parse(readFileSync(0, "utf8")) }
   catch { throw new Error("invalid Chromium milestone input") }
-  const fields = ["web_origin", "web_host", "web_root", "screenshot", "owner_email", "owner_password", "member_email", "member_password", "filename", "file_content", "timeout_ms", "artifacts"]
+  const fields = ["web_origin", "web_host", "web_root", "screenshot", "web_certificate", "owner_email", "owner_password", "member_email", "member_password", "filename", "file_content", "timeout_ms", "artifacts"]
   if (!value || typeof value !== "object" || Array.isArray(value) ||
       Object.keys(value).sort().join(",") !== fields.sort().join(",") ||
       !fields.filter((field) => field !== "timeout_ms" && field !== "artifacts").every((field) => typeof value[field] === "string" && value[field] !== "") ||
@@ -36,6 +36,8 @@ function parseInput() {
   try { origin = new URL(value.web_origin) }
   catch { throw new Error("invalid Chromium milestone input") }
   if (origin.origin !== value.web_origin || origin.protocol !== "https:" || origin.hostname !== value.web_host ||
+      !path.isAbsolute(value.screenshot) || !path.isAbsolute(value.web_certificate) ||
+      path.basename(value.web_certificate) !== "web.crt" || path.dirname(value.web_certificate) !== path.dirname(value.screenshot) ||
       !/^w2-[a-f0-9]{24}\.txt$/u.test(value.filename) || Buffer.byteLength(value.file_content) > 1024) {
     throw new Error("invalid Chromium milestone input")
   }
@@ -46,10 +48,15 @@ let browser
 let phase = "parse-input"
 try {
   const input = parseInput()
+  phase = "certificate-pin"
+  const certificate = new X509Certificate(readFileSync(input.web_certificate))
+  assert(certificate.checkHost(input.web_host) === input.web_host, "isolated browser certificate host drift")
+  const spki = certificate.publicKey.export({ type: "spki", format: "der" })
+  const certificatePin = createHash("sha256").update(spki).digest("base64")
   phase = "launch-browser"
   const require = createRequire(pathToFileURL(path.join(input.web_root, "package.json")))
   const { chromium } = require("@playwright/test")
-  browser = await chromium.launch({ headless: true, args: [`--host-resolver-rules=MAP ${input.web_host} 127.0.0.1`, "--no-proxy-server"] })
+  browser = await chromium.launch({ headless: true, args: [`--host-resolver-rules=MAP ${input.web_host} 127.0.0.1`, "--no-proxy-server", `--ignore-certificate-errors-spki-list=${certificatePin}`] })
   const observations = []
   const libraryObservations = []
   const context = await browser.newContext({ ignoreHTTPSErrors: true, locale: "en-US" })

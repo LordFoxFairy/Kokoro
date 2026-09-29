@@ -342,17 +342,25 @@ def _driver_result(
     member: product.ActorIdentity,
     timeout: float,
     screenshot: Path,
+    public_certificate: Path,
     run_id: str,
     artifacts: list[dict[str, object]],
 ) -> dict[str, object]:
     host = urlsplit(origin).hostname
     if host is None or ready.redirect_uri != origin + "/api/auth/callback/kokoro-iam":
         raise SmokeError("real Chromium origin or IAM redirect drift")
+    if (
+        public_certificate.name != "web.crt"
+        or public_certificate.parent != screenshot.parent
+        or not public_certificate.is_file()
+    ):
+        raise SmokeError("isolated browser public certificate absent")
     input_value = {
         "web_origin": origin,
         "web_host": host,
         "web_root": str(WEB),
         "screenshot": str(screenshot),
+        "web_certificate": str(public_certificate),
         "owner_email": ready.email,
         "owner_password": ready.password,
         "member_email": member.email,
@@ -941,12 +949,13 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                     start_new_session=True,
                 )
                 process_list.append(next_process)
+                web_certificate = product.certificate(directory, host)
                 web_proxy = chromium.OwnedBrowserTlsProxy.from_reservation(
                     reservation,
                     next_port,
                     host,
                     f"{host}:{tls_port}",
-                    product.certificate(directory, host),
+                    web_certificate,
                 )
                 proxies.append(web_proxy)
                 stage = "Web HTTPS origin preflight"
@@ -1090,6 +1099,7 @@ def _run_smoke(args: argparse.Namespace, config: dict[str, str]) -> dict[str, ob
                     member,
                     args.timeout,
                     screenshot,
+                    web_certificate[0],
                     run_id,
                     artifact_fixtures,
                 )

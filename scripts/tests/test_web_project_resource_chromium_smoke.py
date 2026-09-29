@@ -130,10 +130,15 @@ def test_browser_driver_rejects_missing_or_untrusted_input_before_launch() -> No
     assert result.stderr == "FAILURE_PHASE:parse-input\n"
 
 
-def test_browser_driver_accepts_two_distinct_artifact_fixtures_before_launch() -> None:
+def test_browser_driver_accepts_two_distinct_artifact_fixtures_before_launch(
+    tmp_path: Path,
+) -> None:
     node = shutil.which("node")
     if node is None:
         pytest.skip("Node is unavailable")
+    public_certificate, _private_key = smoke.product.certificate(
+        tmp_path, "web.example.test"
+    )
     artifacts = []
     for index in (1, 2):
         content = f"artifact {index}\n"
@@ -150,7 +155,8 @@ def test_browser_driver_accepts_two_distinct_artifact_fixtures_before_launch() -
         "web_origin": "https://web.example.test:4443",
         "web_host": "web.example.test",
         "web_root": "/missing-browser-root",
-        "screenshot": "/missing-browser-image.png",
+        "screenshot": str(tmp_path / "project-resource.png"),
+        "web_certificate": str(public_certificate),
         "owner_email": "owner@example.test",
         "owner_password": "fixture",
         "member_email": "member@example.test",
@@ -175,21 +181,35 @@ def test_browser_driver_accepts_two_distinct_artifact_fixtures_before_launch() -
         return result.stderr
 
     assert phase() == "FAILURE_PHASE:launch-browser\n"
+    smoke.product.certificate(tmp_path, "other.example.test")
+    assert phase() == "FAILURE_PHASE:certificate-pin\n"
+    public_certificate.write_text("not a public certificate")
+    assert phase() == "FAILURE_PHASE:certificate-pin\n"
     artifacts[1]["conversation_id"] = artifacts[0]["conversation_id"]
     assert phase() == "FAILURE_PHASE:parse-input\n"
 
 
 def test_artifact_browser_failure_phase_reports_only_bounded_safe_identifier(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(
-        smoke.subprocess,
-        "run",
-        lambda *_args, **_kwargs: SimpleNamespace(
+    public_certificate = tmp_path / "web.crt"
+    public_certificate.write_text("public test fixture")
+
+    def failed_driver(*_args: object, **kwargs: object) -> SimpleNamespace:
+        payload = json.loads(str(kwargs["input"]))
+        assert payload["web_certificate"] == str(public_certificate)
+        assert "web.key" not in kwargs["input"]
+        return SimpleNamespace(
             returncode=1,
             stdout="",
             stderr="MILESTONE:personal-mobile-layout\nFAILURE_PHASE:artifact-1-saved-download\n",
-        ),
+        )
+
+    monkeypatch.setattr(
+        smoke.subprocess,
+        "run",
+        failed_driver,
     )
     ready = SimpleNamespace(
         redirect_uri="https://web.example.test/api/auth/callback/kokoro-iam",
@@ -206,7 +226,8 @@ def test_artifact_browser_failure_phase_reports_only_bounded_safe_identifier(
             ready,
             SimpleNamespace(email="member@example.test", password="fixture"),
             20,
-            Path("/missing/image.png"),
+            tmp_path / "project-resource.png",
+            public_certificate,
             "a" * 24,
             [],
         )
