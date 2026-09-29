@@ -1,5 +1,12 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 正式 Platform Complete→真实 Storage CLEAN 纵切 PASS
+
+Root `main b602589e89a960a493d83825a62d4496cc365c61` 固定 Platform `80f294645d1c658ae198acb54766c37c10d314db`，原独占 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV runner 实际 exit0：BFF CreateDraft 当前 Skill→IAM catalog→正式 Begin/签名 PUT→显式替换得到 epoch 2→正式 Complete，Storage 当前 ClamAV CLEAN、Platform `uploaded` 与固定 Asset 一致；同 Complete command 异 request_id 重放、新 command 同 upload 收敛同 Asset；错 SHA/owner/旧 attempt 拒绝，两个 upload 的 Storage pending 负例读回不变。旧 Storage v2 CLEAN/GET 原字节回归仍 PASS。输出 `platform_package_begin=PASS`、`platform_package_complete=PASS`、`storage_v2_package_reference=PASS`、Skill **1**/receipt **5**、`resources=clean`（`/tmp/kokoro-root-complete-real-storage.log`）。Runner 自有临时数据库/Redis/独占 bucket 清理，Root 独立核对数据库 **0**、Redis 目标 pattern **0**、同前缀 S3 bucket **0**；未触碰用户 3310。
+
+Root 同一 pin 的 Python 聚焦 **35 pass/22 subtests**、全 `scripts/tests` **959 pass/212 subtests**，topology/checkpoint PASS；compatibility 仍 **16 边/13 declared broken**，非来源漂移；十仓标准仍 **136 既有 violations/0 unverified**（FAIL）。这一门证明真实 CLEAN Complete，不证明真实感染/非 CLEAN、最终跨进程 ACK/COMMIT unknown/lease takeover、BFF public/session 撤权、ZIP Validate/Publish、Agent pin、Storage completed Asset 退役或整产品闭环。任务外 `uv.lock` 仍未暂存。
+
+
 ## 2026-09-29 — Complete owner 代码片已提交，真实组合仍待验
 
 Platform `main f645bff9a9aa3a1bf442d251851c896c696d9a04` 已提交推送正式 `CompleteSkillPackageUpload`：强类型 Connect handler、v4 inactive 34 operation/17 command、独立持久 external receipt、Storage v2 Status→Complete→当前 Scan、同短事务 Skill CAS+receipt lease 双 fence、ACK/COMMIT unknown 恢复与感染 attempt terminal aborted。先有只读预审指出感染无限重试 P1，原 writer 修复并补真 PostgreSQL 感染终结/显式新 Begin、lease fence 回滚；停写后最终只读审查 P0/P1/P2=0。Root 独立 Node24 format/lint/typecheck/contract/artifact/cutover/schema/default **905 pass/208 skip**/build；真 PostgreSQL Begin **8/8** 与 Complete **14/14**、自有临时库余量 0。测试日志 `/tmp/kokoro-platform-complete-root-{static,pg}.log`。

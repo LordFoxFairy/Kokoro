@@ -1,5 +1,14 @@
 # Kokoro 后端闭环任务总表
 
+## 最近验收：W3-PLATFORM-COMPLETE-REAL-STORAGE（P0；2026-09-29）
+
+| 项 | 当前事实与下一门 |
+| --- | --- |
+| 固定来源 | Root `main b602589e89a960a493d83825a62d4496cc365c61` 精确 pin Platform `main 80f294645d1c658ae198acb54766c37c10d314db`、Storage `16a6c1c`；用户 3310 未触碰。 |
+| 独立验收 | Root Node24 Platform 全静态/default **905 pass/208 skip**/build、真 PostgreSQL Begin+Complete **22/22**、最终只读审查 P0/P1/P2=0。Root 独占 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 真组合 exit0：CreateDraft→Begin→签名 PUT→显式替换新 attempt→正式 Complete→CLEAN/`uploaded`，同命令重放与新命令收敛同 Asset；错 SHA/owner/旧 attempt 拒绝；旧 Storage v2 包 GET 原字节回归 PASS。结果 Skill 1、receipt 5、`resources=clean`；独立临时库/Redis/桶余量 0。Root `scripts/tests` **959 pass/212 subtests**、topology/checkpoint PASS；十仓标准仍 **136 既有 violations/0 unverified**，compatibility 16 边/13 declared broken。 |
+| 未闭环 / 下一步 | 这是 owner 正式 Complete 的真实 CLEAN 纵切，不是 ZIP Validate/Publish、BFF Begin/Complete public/session 撤权、Agent pin 或全产品激活。真 ClamAV **非 CLEAN** 完成态、广义 ACK/COMMIT unknown 进程崩溃/lease takeover、已完成 Asset 退役与产品消费链仍待各自门；本地 PG 注入测试不冒充真实 provider 注入。下一 owner 切片先证明非 CLEAN/感染 fail-closed，再推进 ZIP V1 Validate/Publish；Storage orphan retirement 在激活前独立完成。 |
+
+
 ## 最近验收：W3-PLATFORM-BEGIN-ARCH-QUALITY（P0；2026-09-29）
 
 | 设计门 | 裁决与验收 |
@@ -10,7 +19,7 @@
 | 验证 / 放行 | 先 RED 旧职责违规，再 GREEN Platform format/lint/typecheck/contract/artifact/default test/build、独占真 PostgreSQL Begin/receipt/Source 测试；Root 十仓静态门须回到不高于历史 136 violations，其他规范违规如实保留。Root 再跑现有真 IAM/BFF/Platform/Storage/MinIO/ClamAV Begin+GET sandbox，要求 signed PUT/replay/拒绝及清理仍 PASS；只读独立审查 P0/P1/P2=0。用户 3310、Root 任务外 `uv.lock` 不动。 |
 | 验收结果 | Platform `main a4feaf0320946755aec0dfc16750eb048bd1657f` 已提交推送，RPC 主文件 954→692 行、Begin service 780→322 行；Source/Package 传输和 Prisma transaction 分责、没有双入口/改机器契约。Root 独立 Node24 全静态/default **894 pass/194 skip**/build、真 PostgreSQL Begin **8/8** 与独占单库 receipt+Get **37/37**；首次把 admin URL 误作 app schema 的两套 setup 失败已在正确自有 DB 重跑通过，非代码断言失败。两只读终审 P0/P1/P2=0；十仓标准由 138 回到历史 **136 violations/0 unverified**（仍 FAIL，不冒称全仓合规）。Root `9d0d288b` 固定后真实 IAM/BFF/Platform/Storage/MinIO/ClamAV Begin+旧 CLEAN GET 组合再次 PASS、Skill 1/receipt 2/resources clean；Root `scripts/tests` 958 pass/212 subtests、topology/checkpoint PASS，compatibility 16 边/13 declared broken/0 来源违规。用户 3310 未触碰。 |
 
-## 下一验收门：W3-PLATFORM-PACKAGE-COMPLETE（P0；2026-09-29）
+## 历史任务门：W3-PLATFORM-PACKAGE-COMPLETE 代码与组合（P0；2026-09-29）
 
 | 设计门 | 当前裁决 |
 | --- | --- |
