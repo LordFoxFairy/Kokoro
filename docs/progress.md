@@ -1239,3 +1239,8 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 ## 2026-09-28 — S9 Chat 作品断点只读审计
 
 - 独立只读审查确认：BFF 的 Agent `delivery.created` AG-UI live/replay 已有二元 ID 与种类且帧同事务持久；Web strict payload schema 仍拒这些字段。BFF `ChatService` snapshot 恒 `deliveries: []`，底层 repeatable-read 只查消息与 cursor；Web 刷新后按 snapshot watermark 续流，已过水位的作品不会回到 Chat。Web reducer/hydration、thread card 与 Canvas 仍是 hash URL/Blob 链，不能把已验 Library 页面当 Chat 闭环。审查只读、未运行测试/服务；具体文件证据与 BFF→Web 串行切片写入 `docs/task.md` S9。S8 BFF 下载时限先完成，同仓不并发写。
+
+## 2026-09-28 — W2-F2-S8 BFF 下载时限代码门
+
+- BFF 唯一 writer 在文档门 `f558acc` 之后仅修改具名 Artifact 下载 route、对象 spooler、直接测试与四份设计/当前文档，Root 复核并在 BFF main 提交 `b382642affa27332e91b49078e0500c6716b820e`。准入/取回/出站阶段分别限时，直接假钟测试覆盖总时限、idle、迟返准入、已发头截断与异常 `cancel()` 后 spool slot 释放；独立只读复审无 P0/P1。
+- Root 独立 Node 22 `pnpm format:check && pnpm check && pnpm schema:check` exit 0：默认 365 pass/1 无库 skip，Schema 5 pass/1 无库 skip；`git diff --check` PASS。本记录为**单仓代码门**；新的 Root 固定来源真 IAM/HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 原字节/私有/清理验收仍待执行，1 GiB 限速尚未跑，不能据此宣称慢大件成功 SLA。用户 3310 未触碰。
