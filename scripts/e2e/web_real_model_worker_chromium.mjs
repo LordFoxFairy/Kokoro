@@ -130,7 +130,12 @@ try {
   phase="model-text"
   await page.waitForFunction(marker=>[...document.querySelectorAll('[data-slot="markdown-message"]')].some(node=>node.textContent.includes(marker)),input.marker,{timeout:input.timeout_ms})
   phase="model-tools-delivery-terminal"
-  await page.waitForFunction(({run,path})=>window.__modelFrames.some(f=>f.path===path && f.event.type==="RUN_FINISHED" && (f.event.runId??f.event.metadata?.kokoro?.run_id)===run),{run,path:eventPath},{timeout:input.timeout_ms})
+  try {
+    await page.waitForFunction(({run,path})=>window.__modelFrames.some(f=>f.path===path && f.event.type==="RUN_FINISHED" && (f.event.runId??f.event.metadata?.kokoro?.run_id)===run),{run,path:eventPath},{timeout:input.timeout_ms})
+  } catch {
+    phase="model-terminal-frame-missing"
+    throw new Error("terminal")
+  }
   const wire = await page.evaluate(({run,path,marker})=>{
     const all=window.__modelFrames.filter(f=>f.path===path && (f.event.runId??f.event.metadata?.kokoro?.run_id)===run)
     const unique=[...new Map(all.map(f=>[f.id,f])).values()]
@@ -141,7 +146,10 @@ try {
       errors:unique.filter(f=>f.event.type==="RUN_ERROR").length+window.__modelStreamErrors,
       streams:window.__modelStreams.filter(s=>s.path===path && s.status===200),marker}
   },{run,path:eventPath,marker:input.marker})
-  assert(wire.starts===1 && wire.finishes===1 && wire.errors===0 && wire.text.includes(input.marker) && wire.delivery.length===1 && wire.streams.length>0,"wire")
+  if (!(wire.starts===1 && wire.finishes===1 && wire.errors===0 && wire.text.includes(input.marker) && wire.delivery.length===1 && wire.streams.length>0)) {
+    phase=`model-wire-s${wire.starts}-f${wire.finishes}-e${wire.errors}-t${Number(wire.text.includes(input.marker))}-d${wire.delivery.length}-h${wire.streams.length}`
+    throw new Error("wire")
+  }
   const delivered=wire.delivery[0].event.value
   assert(wire.delivery[0].event.metadata?.kokoro?.session_id===conversation && delivered.content_hash===input.content_sha256 && delivered.size===Buffer.byteLength(input.marker) && typeof delivered.artifact_id==="string" && typeof delivered.asset_id==="string","delivery")
   phase="chat-card"
