@@ -1,5 +1,6 @@
 """Protocol and isolation guards for the Skill draft composition runner."""
 
+import base64
 import importlib.util
 import json
 from datetime import datetime, timedelta, timezone
@@ -42,6 +43,10 @@ def ready():
                 "client_id": "catalog",
                 "client_secret": "catalog-secret",
             },
+            "projection_client": {
+                "client_id": "projection",
+                "client_secret": "projection-secret",
+            },
             "resource_server_basic": {
                 "client_id": "resource",
                 "client_secret": "resource-secret",
@@ -55,6 +60,168 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_platform_guard_denials_are_exact_and_do_not_return_data(self):
+        for status, code, message in (
+            (401, "capability.service_auth_failed", "BFF workload bearer is required"),
+            (403, "capability.tenant_mismatch", "BFF tenant does not match IAM"),
+        ):
+            body = {"error": {"code": code, "message": message, "retryable": False}}
+            with self.subTest(status=status):
+                smoke.require_platform_guard_denial(status, body, code)
+                with self.assertRaises(smoke.SmokeError):
+                    smoke.require_platform_guard_denial(
+                        status, {**body, "data": {"skill_id": "private"}}, code
+                    )
+                with self.assertRaisesRegex(
+                    smoke.SmokeError,
+                    "observed status=404 code=capability.route_not_found",
+                ):
+                    smoke.require_platform_guard_denial(
+                        404,
+                        {
+                            "error": {
+                                "code": "capability.route_not_found",
+                                "message": "Not found",
+                                "retryable": False,
+                            }
+                        },
+                        code,
+                    )
+
+    def test_iam_projection_token_uses_only_dedicated_client_and_scope(self):
+        sent = []
+
+        class Response:
+            status = 200
+
+            def read(self, _limit):
+                return b'{"access_token":"projection-token","token_type":"Bearer"}'
+
+        class Connection:
+            def __init__(self, *_args, **_kwargs):
+                pass
+
+            def request(self, *args, **kwargs):
+                sent.append((args, kwargs))
+
+            def getresponse(self):
+                return Response()
+
+            def close(self):
+                pass
+
+        with patch.object(smoke.http.client, "HTTPConnection", Connection):
+            token = smoke.issue_projection_token(smoke.require_sandbox_ready(ready()))
+        self.assertEqual(token, "projection-token")
+        args, kwargs = sent[0]
+        self.assertEqual(args, ("POST", "/iam/oauth2/token"))
+        credential = kwargs["headers"]["authorization"].removeprefix("Basic ")
+        self.assertEqual(base64.b64decode(credential), b"projection:projection-secret")
+        self.assertIn(b"scope=platform%3Aprojection.read", kwargs["body"])
+        self.assertIn(
+            b"resource=https%3A%2F%2Fkokoro.dev%2Fresources%2Fplatform-internal",
+            kwargs["body"],
+        )
+
+    def test_platform_by_id_http_sends_trusted_bff_projection_and_checks_headers(self):
+        sent = []
+
+        class Response:
+            status = 404
+
+            def read(self, _limit):
+                return b'{"error":{"code":"capability.route_not_found","message":"Capability BFF route was not found","retryable":false}}'
+
+            def getheaders(self):
+                return [
+                    ("x-kokoro-request-id", "skill-sandbox-abc"),
+                    ("cache-control", "no-store"),
+                ]
+
+        class Connection:
+            def __init__(self, *_args, **_kwargs):
+                pass
+
+            def request(self, *args, **kwargs):
+                sent.append((args, kwargs))
+
+            def getresponse(self):
+                return Response()
+
+            def close(self):
+                pass
+
+        with (
+            patch.object(smoke.http.client, "HTTPConnection", Connection),
+            patch.object(smoke.secrets, "token_hex", return_value="abc"),
+        ):
+            status, body = smoke.platform_published_skill_get(
+                "http://127.0.0.1:4402",
+                "skill-current",
+                "projection-token",
+                smoke.require_sandbox_ready(ready()),
+            )
+        smoke.require_platform_published_skill_absent(status, body)
+        args, kwargs = sent[0]
+        self.assertEqual(args, ("GET", "/v1/skills/skill-current"))
+        self.assertEqual(kwargs["headers"]["authorization"], "Bearer projection-token")
+        self.assertEqual(kwargs["headers"]["x-kokoro-tenant-id"], "tenant-one")
+        self.assertEqual(kwargs["headers"]["x-kokoro-subject"], "user-one")
+        self.assertNotIn("x-kokoro-internal-secret", kwargs["headers"])
+        with (
+            patch.object(smoke.http.client, "HTTPConnection", Connection),
+            patch.object(smoke.secrets, "token_hex", return_value="abc"),
+        ):
+            smoke.platform_published_skill_get(
+                "http://127.0.0.1:4402",
+                "skill-current",
+                "projection-token",
+                smoke.require_sandbox_ready(ready()),
+                tenant_assertion="other-tenant",
+            )
+        self.assertEqual(sent[1][1]["headers"]["x-kokoro-tenant-id"], "other-tenant")
+
+    def test_platform_published_read_accepts_only_exact_safe_owner_projection(self):
+        data = {
+            "skill_id": "skill-current",
+            "source_ref": "skill:skill-current",
+            "revision": "1",
+            "status": "active",
+            "name": "Sandbox skill",
+            "summary": "sandbox draft",
+            "tags": ["sandbox"],
+        }
+        smoke.require_platform_published_skill_read(
+            200, {"data": data}, "skill-current", "1"
+        )
+        for mutation in (
+            {"skill_id": "skill-other"},
+            {"source_ref": "skill:skill-other"},
+            {"revision": "0"},
+            {"revision": "2"},
+            {"status": "draft"},
+            {"tags": "sandbox"},
+            {"package_asset_ref": "private"},
+        ):
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_platform_published_skill_read(
+                    200, {"data": {**data, **mutation}}, "skill-current", "1"
+                )
+
+    def test_platform_published_read_requires_not_found_before_publish(self):
+        smoke.require_platform_published_skill_absent(
+            404,
+            {
+                "error": {
+                    "code": "capability.route_not_found",
+                    "message": "Capability BFF route was not found",
+                    "retryable": False,
+                }
+            },
+        )
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_platform_published_skill_absent(200, {"data": {}})
+
     def test_public_publish_requires_exact_active_owner_event_projection(self):
         valid = {
             "data": {
@@ -475,6 +642,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "bff_skill_publish_conflict": "PASS",
                 "bff_skill_publish_event_durable": "PASS",
                 "bff_skill_publish_revoked": "PASS",
+                "platform_published_by_id": "PASS",
+                "platform_published_private": "PASS",
             },
         )
 
@@ -530,7 +699,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
     def test_ready_protocol_is_exact_and_loopback(self):
         value = smoke.require_sandbox_ready(ready())
         self.assertEqual(value.tenant_id, "tenant-one")
-        self.assertEqual(len(value.secrets), 6)
+        self.assertEqual(value.projection.client_id, "projection")
+        self.assertEqual(len(value.secrets), 7)
         self.assertIn("web-secret", value.secrets)
         self.assertIn("password", value.secrets)
         for mutation in (

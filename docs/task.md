@@ -1,6 +1,30 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-PLATFORM-PUBLISHED-SKILL-READ-RUNTIME（P0；Web 真闭环前置）
+## 下一切片：W3-PLATFORM-MALFORMED-WORKLOAD-BEARER（P1；真实组合发现）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 当前事实 | Platform IAM ingress/HTTP projection 唯一 writer；当前 clean `main f727a1d9224e8c110a6dec10aabec616294379d6`、Root `3687e1b3` pin。Root 真独占 IAM→Platform 组合中，`Bearer invalid-projection-token` 得 503 `capability.dependencies_unavailable`，空 Bearer guard 本地 401，专用真 token 正常 200、错 tenant 403。只读审计定位根因：Platform guard 只检查非空，IAM SDK 0.6.0 在 HTTP 前用三段 compact JWT schema 拒 `invalid-projection-token`，抛 `IamClientError.request(kind=request,status=null)`；Platform `classifyIamFailure` 把非 api 统一映为 unavailable→503，根本没到 IAM。Root runner 当前保留独立已验空 Bearer 401，不冒称 malformed JWT 已修。 |
+| §8 放置 / 备选 | 方案 A（采用）：Platform 既有 `src/iam/platform-workload-authorizer.ts` 在读取 credential/调用 SDK 前，按 owner 三段 compact JWT 长度与形状窄校验非空 workload token；明确坏形状抛 unauthenticated→guard 401，合法形状的验签、过期/撤权仍交 IAM；`iam-failure.ts` 对其他 SDK request/network 保持 unavailable→503。测试只扩既有 unit/HTTP 文件，不新建模块/进程/contract/SQL。方案 B：Root runner 把 malformed 改为空 token、BFF 吞 503 或对所有 IAM 错误一律 401；淘汰，会隐藏真实依赖故障或保留认证分类债。 |
+| 验收 / 后续 | 真 HTTP RED 保留 malformed bearer 当前 503，直接错误类型测试覆盖 invalid→401、真正 IAM timeout/network→503、permission 403、成功 200/no-store/request ID；Node24 Platform format/lint/typecheck/contract/schema/test/build、独立审查 P0/P1/P2=0，Root 真独占 IAM/Platform/BFF/Storage 组合重跑并核原 Publish/读回与清理。Platform owner 完成后精确 pin，再串行 BFF public by-ID/个人 ACTIVE list 的三文档/机器契约/代码门；最后 Web shadcn/Chromium。3310、任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-IAM-PROJECTION-FIXTURE + ROOT 真读回组合（P0；2026-09-29）
+
+IAM fixture sole writer `e6fb1b1`→`36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9`，Root `9a733477` 精确 pin；Node24 `pnpm verify` 102 files/938 pass、真 PG/Redis Web OIDC host 28/28，独立审查 P0/P1/P2=0。Root 独占真 IAM→BFF→Platform→Storage/PG/Redis/MinIO/ClamAV 组合已验当前个人草稿 by-ID 404、ACTIVE 未安装本人 200 七字段、异用户 404、空 Bearer 401、有效 Bearer+异租户断言 403、no-store/request ID；原 Validate→Publish、同 event replay/撤权回归同次 PASS，Skill2/receipt31/outbox2、resources clean，3310 未触碰。第一次真组合揭露 sandbox 原只装 catalog、不装 source controller，已精确启用 `skill-catalog,skill-source`；malformed bearer→503 偏差仍在上述 P1 卡。Root runner/unit 最终只读终审 P0/P1/P2=0，详见 [`progress.md`](progress.md)。这仍非 BFF public by-ID/list 或 Web/Chromium/正式激活。
+
+## 已验收：W3-IAM-PROJECTION-FIXTURE 任务卡（历史基线）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | IAM `apps/kokoro-iam` 唯一 fixture writer，clean `main eb6700c13f84a165620a6be456a25d290bd3da4a`；Root `3687e1b3` 已 pin Platform `f727a1d`。只改 IAM `test/fixtures/web-oidc-flow-host.ts`、对应 `test/integration/web-oidc-flow-host.test.ts` 和必要当前事实，不改生产 IAM/契约/Schema/lockfile、Root 或其他子仓。Root 同时独占编辑 Root E2E runner/任务台账，不碰 IAM 文件；双方不操作共享 Git index。 |
+| §8 放置 / 依赖 | 方案 A（采用）：复用现有 opt-in `skill_sandbox` ready payload，在 catalog client 旁显式暴露 `created.platform.callers.projection.client`（已有持久 fixture，当前未导出）；消费方用其换 `platform:projection.read` 的专用 machine token。方案 B：把 catalog/manage 或 execution client 当 projection、伪造 Bearer/直读数据库；淘汰，scope 和事实边界错误。仅测试协议扩展，不建新模块/进程/角色/表；默认 Web OIDC host payload 不变。 |
+| RED / 验证 / 后续 | 先在 IAM 真 PG/Redis opt-in fixture 测试证明 projection client 缺失，再加最小 ready 字段并用真实 IAM token endpoint 验证专用 audience/scope，catalog token 不能读投影。Node24 `pnpm verify`、独占真 PG/Redis `web-oidc-flow-host.test.ts`、独立审查；Root 精确 pin 后在现有隔离 Skill sandbox 中真 IAM→Platform HTTP by-ID 验发布前 404、ACTIVE 本人 200、安全字段与 no-store/请求 ID、他人/错租户/非 ACTIVE 404。Web/BFF public by-ID 尚未接，v4 仍 inactive；3310 和任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-PLATFORM-PUBLISHED-SKILL-READ-RUNTIME（P0；2026-09-29）
+
+Platform sole writer `f727a1d9224e8c110a6dec10aabec616294379d6` 已在现有 Source/controller/tenant-scoped repository 和精确 projection guard 实现机器契约 3.1.0 的 `GET /v1/skills/{skill_id}`；真 HTTP RED 证明缺路由，GREEN 聚焦 12/12，独立终审 P0/P1/P2=0。Root 独立 Node24 format/lint/typecheck/contract/schema/default test **997 pass/239 skip**/build 均 PASS；Root 自建/删除隔离 PostgreSQL 数据库，fresh schema 与投影集成 **4/4** PASS，Redis DB14=0，3310 PID 81692 未变。Root `3687e1b3` 精确 pin Platform gitlink、9 处来源 commit、实际 controller SHA，并通过 topology/checkpoint。该门证明单仓运行与真数据库，**尚未证明真实 IAM projection token、BFF public read/list、Web/Chromium 可见或 v4 激活**。
+
+## 已验收：W3-PLATFORM-PUBLISHED-SKILL-READ-RUNTIME 任务卡（历史基线）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |

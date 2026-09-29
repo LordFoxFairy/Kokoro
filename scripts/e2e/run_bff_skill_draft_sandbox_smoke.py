@@ -11,6 +11,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import dataclass
 import argparse
+import base64
 from datetime import datetime, timedelta, timezone
 import getpass
 from enum import Enum
@@ -67,6 +68,7 @@ class Phase(str, Enum):
     CANDIDATE_PACKAGE_COMPLETE = "candidate_package_complete"
     CANDIDATE_PACKAGE_VALIDATE = "candidate_package_validate"
     CANDIDATE_PUBLISH = "candidate_publish"
+    PROJECTION_READ = "projection_read"
     PACKAGE_REFERENCE = "package_reference"
     INVENTORY = "inventory"
     REVOKE = "revoke"
@@ -88,6 +90,7 @@ class SandboxReady:
     subject_id: str
     access_token: str
     catalog: CatalogCredential
+    projection: CatalogCredential
     resource_server: CatalogCredential
     execution_authorization: CatalogCredential
     web_client_secret: str
@@ -98,6 +101,7 @@ class SandboxReady:
         return (
             self.access_token,
             self.catalog.client_secret,
+            self.projection.client_secret,
             self.resource_server.client_secret,
             self.execution_authorization.client_secret,
             self.web_client_secret,
@@ -148,6 +152,7 @@ def require_sandbox_ready(record: object) -> SandboxReady:
         "access_token",
         "subject_id",
         "catalog_client",
+        "projection_client",
         "resource_server_basic",
         "execution_authorization_client",
     }:
@@ -181,6 +186,7 @@ def require_sandbox_ready(record: object) -> SandboxReady:
         _nonempty(sandbox["subject_id"], "subject id"),
         _nonempty(sandbox["access_token"], "access token"),
         _credential(sandbox["catalog_client"], "catalog client"),
+        _credential(sandbox["projection_client"], "projection client"),
         _credential(sandbox["resource_server_basic"], "resource server"),
         _credential(execution, "execution authorization client"),
         _nonempty(record["client_secret"], "Web client secret"),
@@ -663,6 +669,80 @@ def require_public_skill_publish(
     return data
 
 
+def require_platform_published_skill_absent(status: int, body: object) -> None:
+    """A draft, foreign or non-active Skill is indistinguishable from missing."""
+    if status != 404 or body != {
+        "error": {
+            "code": "capability.route_not_found",
+            "message": "Capability BFF route was not found",
+            "retryable": False,
+        }
+    }:
+        raise SmokeError("Platform unpublished Skill read was not private 404")
+
+
+def require_platform_guard_denial(status: int, body: object, code: str) -> None:
+    expected = {
+        "capability.service_auth_failed": (
+            401,
+            "BFF workload bearer is required",
+        ),
+        "capability.tenant_mismatch": (403, "BFF tenant does not match IAM"),
+    }.get(code)
+    if expected is None or (status, body) != (
+        expected[0],
+        {"error": {"code": code, "message": expected[1], "retryable": False}},
+    ):
+        observed_code = (
+            body.get("error", {}).get("code")
+            if isinstance(body, dict) and isinstance(body.get("error"), dict)
+            else None
+        )
+        safe_code = (
+            observed_code
+            if isinstance(observed_code, str)
+            and re.fullmatch(r"[a-z][a-z0-9_.]{0,63}", observed_code)
+            else "unknown"
+        )
+        raise SmokeError(
+            "Platform projection guard did not fail closed: "
+            f"observed status={status} code={safe_code}"
+        )
+
+
+def require_platform_published_skill_read(
+    status: int, body: object, skill_id: str, revision: str
+) -> None:
+    """Accept only the public-safe owner projection, never package metadata."""
+    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+        raise SmokeError("Platform published Skill response invalid")
+    data = body["data"]
+    if not isinstance(data, dict) or set(data) != {
+        "skill_id",
+        "source_ref",
+        "revision",
+        "status",
+        "name",
+        "summary",
+        "tags",
+    }:
+        raise SmokeError("Platform published Skill fields invalid")
+    if (
+        data["skill_id"] != skill_id
+        or data["source_ref"] != "skill:" + skill_id
+        or data["revision"] != revision
+        or not isinstance(revision, str)
+        or re.fullmatch(r"[1-9][0-9]{0,19}", revision) is None
+        or int(revision) > 18_446_744_073_709_551_615
+        or data["status"] != "active"
+        or not isinstance(data["name"], str)
+        or not isinstance(data["summary"], str)
+        or not isinstance(data["tags"], list)
+        or any(not isinstance(tag, str) for tag in data["tags"])
+    ):
+        raise SmokeError("Platform published Skill projection invalid")
+
+
 def require_package_response_headers(
     headers: list[tuple[str, str]], request_id: str, operation: str
 ) -> None:
@@ -767,6 +847,8 @@ def safe_summary(
             "bff_skill_publish_conflict": "PASS",
             "bff_skill_publish_event_durable": "PASS",
             "bff_skill_publish_revoked": "PASS",
+            "platform_published_by_id": "PASS",
+            "platform_published_private": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -1022,6 +1104,101 @@ def _http_get_json(
         raise SmokeError("BFF package GET response is not JSON") from None
     if not isinstance(value, dict):
         raise SmokeError("BFF package GET response envelope invalid")
+    return response.status, value
+
+
+def issue_projection_token(ready: SandboxReady) -> str:
+    """Exchange only IAM's BFF projection client for its exact workload scope."""
+    parsed = urlsplit(local_http_origin(ready.base_url, "IAM"))
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
+    credential = base64.b64encode(
+        f"{ready.projection.client_id}:{ready.projection.client_secret}".encode()
+    ).decode("ascii")
+    body = urlencode(
+        {
+            "grant_type": "client_credentials",
+            "scope": "platform:projection.read",
+            "resource": "https://kokoro.dev/resources/platform-internal",
+        }
+    ).encode("ascii")
+    try:
+        connection.request(
+            "POST",
+            "/iam/oauth2/token",
+            body=body,
+            headers={
+                "authorization": "Basic " + credential,
+                "content-type": "application/x-www-form-urlencoded",
+            },
+        )
+        response = connection.getresponse()
+        raw = response.read(16_385)
+    finally:
+        connection.close()
+    if response.status != 200 or len(raw) > 16_384:
+        raise SmokeError("IAM projection token exchange failed")
+    try:
+        value = json.loads(raw)
+    except (ValueError, UnicodeError):
+        raise SmokeError("IAM projection token response invalid") from None
+    if (
+        not isinstance(value, dict)
+        or value.get("token_type") != "Bearer"
+        or not isinstance(value.get("access_token"), str)
+        or not value["access_token"]
+    ):
+        raise SmokeError("IAM projection token response invalid")
+    return value["access_token"]
+
+
+def platform_published_skill_get(
+    base: str,
+    skill_id: str,
+    token: str,
+    ready: SandboxReady,
+    *,
+    subject: str | None = None,
+    tenant_assertion: str | None = None,
+) -> tuple[int, dict[str, object]]:
+    """Probe Platform HTTP through its real IAM workload guard, not BFF SQL."""
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", skill_id) is None:
+        raise SmokeError("Platform published Skill ID invalid")
+    tenant = ready.tenant_id if tenant_assertion is None else tenant_assertion
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", tenant) is None:
+        raise SmokeError("Platform tenant assertion invalid")
+    parsed = urlsplit(local_http_origin(base, "Platform"))
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
+    request_id = "skill-sandbox-" + secrets.token_hex(8)
+    try:
+        connection.request(
+            "GET",
+            "/v1/skills/" + quote(skill_id, safe=""),
+            headers={
+                "authorization": "Bearer " + token,
+                "x-kokoro-tenant-id": tenant,
+                "x-kokoro-subject": ready.subject_id if subject is None else subject,
+                "x-kokoro-request-id": request_id,
+            },
+        )
+        response = connection.getresponse()
+        raw = response.read(1_048_577)
+        headers = response.getheaders()
+    finally:
+        connection.close()
+    if len(raw) > 1_048_576:
+        raise SmokeError("Platform published Skill response too large")
+    returned_id = [
+        value for name, value in headers if name.lower() == "x-kokoro-request-id"
+    ]
+    cache = [value for name, value in headers if name.lower() == "cache-control"]
+    if returned_id != [request_id] or cache != ["no-store"]:
+        raise SmokeError("Platform by-ID response headers invalid")
+    try:
+        value = json.loads(raw)
+    except (ValueError, UnicodeError):
+        raise SmokeError("Platform published Skill response not JSON") from None
+    if not isinstance(value, dict):
+        raise SmokeError("Platform published Skill response envelope invalid")
     return response.status, value
 
 
@@ -1702,7 +1879,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_IAM_BASE_URL": ready.base_url,
                 "KOKORO_PLATFORM_HOST": "127.0.0.1",
                 "KOKORO_PLATFORM_PORT": str(platform_port),
-                "KOKORO_PLATFORM_SURFACES": "skill-catalog",
+                "KOKORO_PLATFORM_SURFACES": "skill-catalog,skill-source",
             }
             bff_env = {
                 **base,
@@ -1986,6 +2163,17 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 begin_skill_id, begin_series_id, replayed, _ = _draft(body, status)
                 if status != 201 or replayed is not False or begin_skill_id is None:
                     raise SmokeError("BFF Begin fixture draft was not created")
+                phase = Phase.PROJECTION_READ
+                projection_token = issue_projection_token(ready)
+                secret_values += (projection_token,)
+                status, body = platform_published_skill_get(
+                    platform_base,
+                    begin_skill_id,
+                    projection_token,
+                    ready,
+                )
+                require_platform_published_skill_absent(status, body)
+                phase = Phase.CANDIDATE_PACKAGE_BEGIN
                 begin_path = (
                     "/v1/skills/" + quote(begin_skill_id, safe="") + "/package-upload"
                 )
@@ -2649,6 +2837,54 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("BFF first Publish was unexpectedly replayed")
                 event_id = publication["event_id"]
                 revision = publication["revision"]
+                phase = Phase.PROJECTION_READ
+                status, body = platform_published_skill_get(
+                    platform_base,
+                    begin_skill_id,
+                    "",
+                    ready,
+                )
+                require_platform_guard_denial(
+                    status, body, "capability.service_auth_failed"
+                )
+                status, body = platform_published_skill_get(
+                    platform_base,
+                    begin_skill_id,
+                    projection_token,
+                    ready,
+                    tenant_assertion="other-tenant",
+                )
+                require_platform_guard_denial(
+                    status, body, "capability.tenant_mismatch"
+                )
+                status, body = platform_published_skill_get(
+                    platform_base,
+                    begin_skill_id,
+                    projection_token,
+                    ready,
+                )
+                require_platform_published_skill_read(
+                    status, body, begin_skill_id, str(revision)
+                )
+                if body["data"] != {
+                    "skill_id": begin_skill_id,
+                    "source_ref": "skill:" + begin_skill_id,
+                    "revision": revision,
+                    "status": "active",
+                    "name": "Signed PUT sandbox skill",
+                    "summary": "public Begin probe",
+                    "tags": ["sandbox"],
+                }:
+                    raise SmokeError("Platform published Skill content drift")
+                status, body = platform_published_skill_get(
+                    platform_base,
+                    begin_skill_id,
+                    projection_token,
+                    ready,
+                    subject="other-user",
+                )
+                require_platform_published_skill_absent(status, body)
+                phase = Phase.CANDIDATE_PUBLISH
                 status, body = _http_publish_empty(
                     bff_base,
                     publish_path,

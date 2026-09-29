@@ -1,5 +1,19 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — IAM projection fixture 与真 Platform 发布读回组合 PASS；malformed bearer P1 另立
+
+IAM 唯一 fixture writer `e6fb1b1`→返修 `36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9`（Root `9a733477` 精确 pin）仅改 opt-in `skill_sandbox` 凭据与集成测试：真实 token endpoint 签发 `platform:projection.read`/Platform audience，真实 introspection 对 projection caller/client/profile/scope/tenant 成功，catalog token 冒用 projection surface 403，默认 OIDC host payload 不变；catalog/projection bearer 与 client secret 均加入 host diagnostics 不泄露断言。独立终审 P0/P1/P2=0。Root 独立 Node24 `pnpm verify` **102 files/938 pass**，真 PG/Redis `web-oidc-flow-host.test.ts` **28/28**；只清理每次自有数据库与 prefix，IAM checkout clean。Root pin 后 topology/checkpoint PASS。
+
+Root 将现有独占 Skill sandbox 增真 IAM 专用 projection token→Platform HTTP by-ID，不建第二套编排或直接查 BFF owner SQL；Python 先 RED→GREEN，`scripts/tests` **975 pass/264 subtests**，独立代码复审初次 P1/P2 已返修。第一次真实组合揭露既有 sandbox 只启 `skill-catalog`，没有注册 `skill-source` HTTP controller，伪 404；改为两个既有正式 surface 后，**草稿 404**、发布后**缺 Bearer 401**、有效 Bearer+异 tenant 403、本人 ACTIVE/未安装 **200 严格七字段**、异 subject 404、每次 no-store/request ID，BFF Validate→Publish/同 event replay/撤权原有负例与持久库存回归同一次 `exit0/PASS`。Skill **2**/receipt **31**/publish outbox **2**，runner 报自有 PG/Redis/进程/桶清理完成；Redis DB14=0、3310 PID 81692 未变。此证据仍非 BFF public by-ID/list 或 Web/Chromium 可见，v4 inactive。
+
+真实组合还揭露：`Bearer invalid-projection-token` 经过 Platform→IAM SDK 路径返回 **503 `capability.dependencies_unavailable`**，而空 Bearer 在 Platform guard 本地返回预期 401；Root 没有把空 Bearer 检查冒充 malformed bearer 正确性。该分类偏差另立 Platform owner P1，修复前不能声称所有认证错误闭环。BFF 旧 Capability HTTP pin/legacy secret、个人 ACTIVE 列表与 Web 正式 UI 仍待后继切片；支付最后。
+
+## 2026-09-29 — Platform 个人已发布 Skill 按 ID 运行/真 PG 单仓门 PASS
+
+Platform sole writer `f727a1d9224e8c110a6dec10aabec616294379d6` 在既有 Source/controller/tenant-scoped repository、精确 projection guard 实现唯一 HTTP OpenAPI 3.1.0 的 `GET /v1/skills/{skill_id}`：当前 tenant+user/PERSONAL/ACTIVE、无需安装、非本人/非 ACTIVE 统一 404、安全七字段、成功/错误 no-store/request ID。先真 HTTP RED 缺路由，后聚焦 12/12 GREEN；独立终审 P0/P1/P2=0。Root 独立 Node24 format/lint/typecheck/contract/schema/default test **997 pass/239 skip**/build PASS；Root 自建/删除隔离 PostgreSQL 数据库 fresh schema 与真 HTTP projection 集成 **4/4**，Redis DB14=0、用户 3310 PID 81692 未变。
+
+Root `3687e1b3` 仅精确 pin Platform gitlink、9 个 commit 来源引用和实际 controller SHA；topology/checkpoint PASS。此证据覆盖 owner 运行与真库，不覆盖**真实 IAM projection token→Platform**，更不覆盖 BFF public by-ID/list、Web/Chromium 与 v4 激活。下一片 IAM opt-in sandbox 已存在 projection client 的显式 fixture 导出，再由 Root 在现有独占 Skill sandbox 测真实 Bearer 读回，随后 BFF 消费与 Web；见 [`task.md`](task.md)。
+
 ## 2026-09-29 — Platform 个人已发布 Skill 按 ID 读回文档/机器门 PASS
 
 Platform 物理 `apps/kokoro-capability` 的唯一 writer 在 `main 63cc15a4f906d607506cffd421e5e8fcbe15f6e0` 发布 HTTP OpenAPI **3.1.0** 新 `GET /v1/skills/{skill_id}` internal-owner 候选：当前 IAM tenant + BFF 受信 Product subject、user/PERSONAL/ACTIVE、无需安装，非本人/跨 tenant/非 ACTIVE 统一 404；200 只安全公布 skill_id/source_ref/revision/status/name/summary/tags，不含 asset/manifest/签名 URL。只更新唯一 OpenAPI、provenance、contract README、四当前设计文档、operation checker 与直接负例，没有 runtime handler/Proto/SQL/generated/lockfile 变化。直接 RED 缺 operation/schema 2 失败；初次交付 `5f503544` 被独立审查指出新操作成功/错误未声明 no-store P1 与入口 README 旧版 P2；owner 返修后 200/六类错误均用 operation-scoped response 机器要求 request ID + `Cache-Control:no-store`，旧四路对象语义不变，终审 P0/P1/P2=0。
