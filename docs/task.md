@@ -1,6 +1,14 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-PUBLISH-RUNTIME（P0；2026-09-29）
+## 下一切片：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；BFF 六操作运行候选已验）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，当前 clean `main 317c74c2048829471b0c4196df98dd6d2dcf5e36`；Root 只读裁决/审查/集成。BFF `55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9` 已有默认关闭的 CreateDraft/Get/Begin/Complete/Validate/Publish 六项公开运行候选，并由 Root `4d338089` 真 owner 组合验 Publish；Platform `263a28f` v4 仍 inactive。先读 Web 三面文档、唯一 BFF public OpenAPI 与现有 Skills/Settings UI，出 §8 放置表及精确合同；不把旧 preview/confirm 作为正式上传。本切片唯一允许 Web 四份当前设计文档，不改代码/机器契约/生成物。 |
+| 目标 / 边界 | 用现有 shadcn/ui 与品牌 token 一次替换正式旧 Skill Dialog：单 ZIP/元信息→本地 SHA/大小→同源 CreateDraft/Get/Begin→批准 ObjectStore origin 无凭据、禁重定向、原样 header 直 PUT→同源 Complete→Validate→**零字节 body** Publish，只有 `active`+owner event 回执才宣称发布。Get 仅返回当前 draft attempt，不是 active 发布读取；刷新丢失 Publish key/ACK 时明确“状态未知/需重新核对”，不从 validated 或旧 Hub 缓存猜成功。Complete 丢失原文件 hash/size 时要求重选原文件重算或显式新 Begin，不伪造恢复；个人私有、当前 IAM、撤权、感染、替换与同键重试显式建模。Web 不直连 Platform/Storage 控制面，不复制 owner SQL/receipt 或第二协议。 |
+| 先行门 / 验证 | Web 当前 `/app/skills` 与 Settings 共用旧 `SkillUploadDialog`，经 `/api/hub/self/skills/upload/{preview,confirm}` 代理 multipart；BFF 六路没有旧 preview/confirm，namespace/candidates/多选/直接 published 语义不能映射单 Skill attempt。Web 固定旧 BFF OpenAPI 快照，后续代码门须精确 pin 新来源/重生；本片只在 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 对齐当前/目标、owner/依赖/事务与恢复、删除清单、测试。机器 API 仍由 BFF 唯一维护。随后单一 Web writer 做 RED→实现→Node22 全门与隔离 Playwright；Root 真 IAM→Chromium→Web→BFF→Platform→Storage/MinIO/ClamAV 验 CORS preflight/PUT、CLEAN/INFECTED/恢复/刷新/撤权和发布。3310 用户进程不热替换；此门不冒称浏览器已打通。 |
+
+## 最近验收：W3-BFF-SKILL-PUBLISH-RUNTIME（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
@@ -8,6 +16,7 @@
 | §8 放置 / 删除 | 方案 A：沿 BFF 现有 Skills 具名 route、严格输入/owner v4 `3.0.0` 独立 projector、固定 `CatalogConnectClient` 与 `server.ts` 精确 dispatch；采用，不新建一级模块/进程。方案 B：复用旧 Capability `/hub` 泛路由、增加 BFF Skill SQL/receipt/outbox 或复制 Proto/Visibility 可选 body；淘汰，违反唯一事实源和无双轨。新文件只按独立变化原因放入现有 `src/http/routes/` 与 `src/infrastructure/clients/platform/`；同步移除旧 W1E 误导引用，不建 fallback。 |
 | API / 数据 / 调用 | `POST /v1/skills/{skill_id}/publish` 只 user-owned、单个有效 Idempotency-Key、**零字节原始 body**；每次包括 replay 先当次 IAM/fixed tenant/user，BFF workload→Platform，visibility 固定 PERSONAL(1)。命令 ID 绑定 operation+可信 tenant/user/skill/key，v4 digest 3.0.0/8 向量；严格 owner `source_ref=skill:<path id>`、正 uint64 revision、status ACTIVE、UUID event_id、boolean replayed 投影为公开 `{data}`，无包/Storage 私有字段。Platform 唯一拥有 current validated/Storage fresh CLEAN、短事务 CAS、receipt/outbox；BFF 不读 owner SQL/直接 Storage、不代理字节、不产生第二事件。 |
 | RED / 验证 | 真实 HTTP RED 证明新 path 未实现；覆盖 default-off **503/零 Platform socket**、零字节/非零体与超限、重复/非法 key、owner 8 向量、首发 **200 active**、同键 replay 同 event、异键 active **412**、旧/坏/非 validated/感染 **412**、错 owner/tenant **404**、撤权 replay **401/零新 socket**、owner 坏响应 **502**、unknown ACK 同键恢复、timeout/cancel/限流、有界 x-request-id/no-store；`Code.Aborted` 仅对 owner 稳定 `publish_snapshot_conflict` metadata 映射前置 412，其他真实进行中仍 409，不按 message 猜。Node22 format/contract/check/schema/build 与独立审查 P0/P1/P2=0；Root 再以独占 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 真组合验 public Validate→Publish/同 event replay/撤权/库存和清理。默认关闭、v4 inactive 不因本片自动激活；Web 真 Chromium/CORS/旧 UI 删除、Agent/Storage 后续门与 Billing 另片，3310/`uv.lock` 不动。 |
+| 实际交付 / 证据 | BFF sole writer `55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9` clean/pushed，真实 HTTP RED 2 失败→GREEN 聚焦 14/14；独立终审 P0/P1/P2=0。Root 独立 Node22 format、contract **161/161**、check **480 pass/1 skip**、schema **5 pass/1 skip**、build PASS；Root `7a174002` 精确 pin 168 处 BFF 来源并更新 16 处原字节 digest。Root `4d338089` 的独占 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 真组合 exit0：默认关闭 Publish 503/零 Platform socket，合法 ZIP Validate→public Publish 200 ACTIVE→同键同 event/revision replay，异键 active 412、持久 outbox 精确关联，IAM 撤权 Publish 401/零新 socket，旧路径负例回归；Skill **2**/receipt **31**/outbox **2**/resources clean，Redis DB14=0，用户 3310 PID **81692→81692**。此为**默认关闭候选真实组合**，非 Web 可见/Chromium CORS/v4 激活或全产品完成。 |
 
 ## 最近验收：W3-BFF-SKILL-PUBLISH-DOC-GATE（P0；2026-09-29）
 
@@ -38,14 +47,6 @@
 | §8 放置 / 依赖 / 删除 | 方案 A：扩本仓 `contract/openapi/v1/openapi.yaml`、operation inventory/语义门及 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT，运行片沿现有 `src/http/routes/` 具名 route、`src/http/` strict input、`src/infrastructure/clients/platform/` 独立 projector/既有 generated Connect、`src/bootstrap/server.ts` 精确 dispatch；采用，文件各有单一变化原因。方案 B：复用旧 Capability/Begin 泛路由、BFF generic receipt 或另建 contract/Skill SQL；淘汰，方向错误且重复 owner。无新 schema、DB role、事务或 Redis 事实；Platform 自持 receipt/CAS/Storage 检查，BFF 不代理 ZIP。下一运行片删除被替代的旧路径/误导文档，不留 fallback。 |
 | 文档门 / 运行门 | 本片先 RED 唯一 machine operation 缺失，再补语义/错误/8 digest 向量与三面一致性；Root Node22 format/contract/check/schema、独立 API/SQL 只读审查 P0/P1/P2=0 才放行。后续 Validate runtime+真 IAM/Platform/Storage/ZIP/撤权组合；再做 Publish 文档→runtime+真同 event replay；**两命令通过后** Web 一次替换旧 multipart preview/confirm 为完整 shadcn ZIP 选取→Begin→直 PUT→Complete→Validate→Publish，Root 真 Chromium/CORS 验收。v4 不因文档自动激活，3310 与任务外 `uv.lock` 不动，支付最后。 |
 | 实际交付 / 证据 | BFF 唯一 writer `1c245540a4e0c76e392528c2655fb1cab9d9359b` 的 8 文件机器/文档片经独立复审发现 W1E 历史“无 body” P2；BFF `8396b0708d86cf1016ca3dfaab7dc4e734d60417` 单文件标废止基线并明确 v4 tag7，终审 P0/P1/P2=0。Node22 Root 独立 format、contract **130/130**、check **449 pass/1 skip**、schema **5 pass/1 skip**、build PASS；Root `e673b937` 精确 pin BFF/库存 163 处来源，Root 完整 `scripts/tests` **966 pass/239 subtests**、checkpoint/topology PASS。兼容库存 **16 边/13 declared broken/0 provenance violation**、十仓标准 **136 既有违规/0 unverified** 仍红。机器候选未激活、无 Validate route/真实调用；v4 仍 inactive。 |
-
-## 待前置：W3-WEB-SKILL-UPLOAD-DOC-GATE（P0；需 BFF Validate/Publish）
-
-| 项 | 任务卡 / 放行门 |
-| --- | --- |
-| Owner / 基线 | Web `apps/kokoro-app` 唯一 writer，当前 `main 317c74c2048829471b0c4196df98dd6d2dcf5e36`；Root 只读裁决/审查/集成。BFF `1aee40265a57a120fc2ba43c1d7a5ca547690ae9` 已有默认关闭的 Get/Begin/Complete，Platform `263a28f` v4 仍 inactive。先读 Web 三面文档、唯一 BFF public OpenAPI 与现有 Skills/Library UI，出 §8 放置表及精确合同；不把旧 preview/confirm 作为正式上传。 |
-| 目标 / 边界 | 用现有 shadcn/ui 与品牌 token 一次替换正式旧 Skill Dialog：单 ZIP 选取→计算 SHA/大小→同源 Begin→批准 ObjectStore origin 无凭据、禁重定向、原样 header 直 PUT→同源 Complete→Validate→Publish，Get 仅用于当前包恢复、不是 active 发布读取。刷新/断线保留可靠描述符或明确要求重选原文件，不伪造 Complete；个人私有、当前 IAM、撤权、错误/感染、替换与重试显式建模。Web 不直连 Platform/Storage 控制面，不复制 owner SQL/receipt 或第二协议。 |
-| 先行门 / 验证 | Web 当前 `/app/skills` 与 Settings 共用旧 `SkillUploadDialog`，经 `/api/hub/self/skills/upload/{preview,confirm}` 代理 multipart；BFF 当前无该 public 路由，namespace/candidates/多选/直接 published 语义不能映射单 Skill attempt。先由 BFF owner 完成 Validate/Publish public 与真组合，再将 Web TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 与现有路由/测试收敛；机器 API 仍由 BFF 唯一维护。随后单一 Web writer 做 RED→实现→Node22 全门与隔离 Playwright；Root 真 IAM→Chromium→Web→BFF→Platform→Storage/MinIO/ClamAV 验 CORS preflight/PUT、CLEAN/INFECTED/恢复/刷新/撤权和发布。3310 用户进程不热替换；此门不冒称浏览器已打通。 |
 
 ## 最近验收：W3-BFF-SKILL-COMPLETE-RUNTIME（P0；2026-09-29）
 

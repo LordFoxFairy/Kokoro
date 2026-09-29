@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Publish 默认关闭候选真跨 owner 组合 PASS
+
+BFF `main 55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9` 已交付 user-only Publish 运行 route、固定 Platform Connect client 与 v4 `3.0.0`/8 向量 projector：严格零原始请求字节、单个 Idempotency-Key、每次含 replay 先当前 IAM、固定 PERSONAL(1)，严格校验 owner ACTIVE/source_ref/正 uint64 revision/event_id/replayed。真实 HTTP RED 2 失败→GREEN 聚焦 14/14；独立终审 P0/P1/P2=0。Root 独立 Node22 format/contract **161/161**、check **480 pass/1 skip**、schema **5 pass/1 skip**、build PASS；`7a174002` pin gitlink 与库存 **168** 个 BFF commit 引用、16 个变化 blob SHA，当前 topology/checkpoint PASS。
+
+Root `4d338089` 在独占 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 的 `/tmp/kokoro-bff-publish-real.log` exit0：默认关闭 Publish **503**/零 Platform socket；合法 ZIP 经 public Begin→签名 PUT→Complete CLEAN→Validate **200**→Publish **200 ACTIVE**，同键 replay 的 event_id/revision 均不变，异键 active **412**；持久 `skill.published` outbox 精确对应 owner event/attempt/revision。CLEAN 非 ZIP **412**/aborted/恢复、旧 attempt **412**、EICAR 感染与撤权 Publish **401**/零新 Platform socket 继续通过。Skill **2**/receipt **31**/outbox **2**、`resources=clean`、Redis DB14=0，用户 3310 PID **81692→81692**；Root runner 独立终审 P0/P1/P2=0，聚焦 Python **46 pass/65 subtests**、全 `scripts/tests` **970 pass/255 subtests**。当前 topology/checkpoint PASS；compatibility **16 边/13 declared broken/0 额外来源错误** exit1，十仓标准 **136 既有违规/0 unverified** exit1，任务外 `uv.lock` 保持未暂存。本证据仅为**默认关闭的真实 HTTP 候选组合**：Web 仍是旧 multipart preview/confirm，Chromium 直 PUT/CORS、Platform v4 激活、Agent pin/后续 Storage 切片及 Billing 未完成。Web 四文档门和旧 UI 一次替换已成为下一切片，见 [`task.md`](task.md)。
+
 ## 2026-09-29 — BFF Publish 三面文档与唯一机器候选门 PASS
 
 BFF `main b357c190e6ab02fdfc217c1db3e7207bda4bb6a1` 只更新唯一 public OpenAPI、operation inventory、operation-scoped checker/直接 contract test 与 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT：user-only `POST /v1/skills/{skill_id}/publish` **尚未激活、没有运行 route**。严格零字节请求体、单个 Idempotency-Key、BFF 未来固定 PERSONAL(1) 而不接受 caller visibility；owner v4 `command_digest_version=3.0.0` 的 **8** 向量，200 只发布 source_ref/正 uint64 revision/ACTIVE/event_id/replayed、状态专属错误，不外露包/Storage 事实。旧 W1E “visibility 可选 body”已标为历史。RED 缺 operation 后 GREEN，独立终审 P0/P1/P2=0；无 `src/`/generated/Proto/SQL/lockfile 改动。

@@ -199,7 +199,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin/Complete/Validate request before Platform access, including replay. Root 2b3b79d9 passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Begin/Get/Complete/Validate 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Publish public, Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken.",
+      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin/Complete/Validate/Publish request before Platform access, including replay. Root 4d338089 passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Publish 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -452,6 +452,18 @@
           "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
           "path": "test/skill-validate-http.test.mjs",
           "sha256": "cf54b5d54d6e7292a9764d1927eac594287d63689c3181910db61183540dbda3"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
+          "path": "src/http/routes/publish-skill.ts",
+          "sha256": "9f4e676e33d98c4094e595530889e37565ea4bb64c5e6491385af1173f10b7ff"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
+          "path": "test/skill-publish-http.test.mjs",
+          "sha256": "d7664babbb08e7be166fe43e115d8a564a868a54fc763e7df1d7244f8194526c"
         }
       ],
       "version_assertions": [
@@ -543,7 +555,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF pins Platform 263a28f inactive v4 and has default-off user CreateDraft, Get, Begin, Complete and Validate Connect candidates. Root 2b3b79d9 passed real current-source IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV public Begin/signed PUT/Complete CLEAN, Validate legal ZIP 200/replay/Get validated, CLEAN bad ZIP 412/aborted/recovery, stale attempt 412, EICAR infection, revoked-session 401 and old owner Publish regression with owned cleanup (Skill 2/receipt 30/outbox 1). Publish public, Web Chromium signed PUT/CORS, Agent pin, old Capability cutover and v4 activation remain unverified, so the broad edge stays broken.",
+      "reason": "BFF pins Platform 263a28f inactive v4 and has default-off user CreateDraft, Get, Begin, Complete, Validate and Publish Connect candidates. Root 4d338089 passed real current-source IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV public Begin/signed PUT/Complete CLEAN, Validate legal ZIP 200/replay/Get validated, CLEAN bad ZIP 412/aborted/recovery, stale attempt 412, Publish ACTIVE 200/same-event replay/different-key 412/durable outbox, EICAR infection and revoked-session 401/zero new Platform socket with owned cleanup (Skill 2/receipt 31/outbox 2). Web Chromium signed PUT/CORS, Agent pin, old Capability cutover and v4 activation remain unverified, so the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -724,6 +736,30 @@
           "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
           "path": "test/skill-validate-http.test.mjs",
           "sha256": "cf54b5d54d6e7292a9764d1927eac594287d63689c3181910db61183540dbda3"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
+          "path": "src/http/routes/publish-skill.ts",
+          "sha256": "9f4e676e33d98c4094e595530889e37565ea4bb64c5e6491385af1173f10b7ff"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
+          "path": "src/infrastructure/clients/platform/catalog-connect.ts",
+          "sha256": "23fe204605c80884dc4475179e65f4fe2bf96529458137ee74aa98ea8ddfa7f9"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
+          "path": "src/infrastructure/clients/platform/publish-skill-projector.ts",
+          "sha256": "67565073f64a5d0662c6fcb65dde4a054c64bad00eb9f3607a84823eddb0bd9b"
+        },
+        {
+          "repository_path": "apps/kokoro-bff",
+          "repository_commit": "55ca6c1d8a7fbd0a21bea8d3539667a68d67e9d9",
+          "path": "test/skill-publish-http.test.mjs",
+          "sha256": "d7664babbb08e7be166fe43e115d8a564a868a54fc763e7df1d7244f8194526c"
         }
       ],
       "version_assertions": [
