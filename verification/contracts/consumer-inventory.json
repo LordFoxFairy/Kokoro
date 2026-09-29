@@ -72,7 +72,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "next@16.2.6+@ag-ui/core@0.0.59+ai@7.0.92",
       "state": "broken",
-      "reason": "BFF bd1f794 publishes durable private Chat Delivery snapshot and same-MVCC watermark. Web 317c74c pins the exact owner OpenAPI and implements binary identity, AG-UI live/snapshot, GC/410 recovery and Chat/Canvas metadata with native download. Root independently passed Web check and a real IAM/Chromium/Agent/Storage pre-delivered Chat snapshot→card→Canvas original-byte download→reload/private 404 composition. This broad edge remains broken until browser-subscribed live Delivery, GC/410 rehydration and remaining Product surfaces pass current-source composition.",
+      "reason": "BFF bd1f794 publishes durable private Chat Delivery snapshot and same-MVCC watermark. Web 317c74c pins the exact owner OpenAPI and implements binary identity, AG-UI live/snapshot, GC/410 recovery and Chat/Canvas metadata with native download. Root 53596ec independently passed the pre-delivered real IAM/Chromium/Agent/Storage Chat snapshot→card→Canvas native original-byte download→reload/private 404 composition. Root 600192ec independently passed real browser POST202→initial open SSE200→Agent CLEAN delivery, proving the original live CUSTOM frame renders one Chat card before any terminal snapshot GET, plus Canvas original bytes, reload and same-tenant privacy. The broad edge remains broken until owner GC/410 browser rehydration and remaining Product surfaces pass current-source composition.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-app",
