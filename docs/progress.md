@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Begin 架构回归已清，真实组合重验 PASS；Complete 下一门
+
+Platform `main a4feaf0320946755aec0dfc16750eb048bd1657f` 以真实职责拆分收口 Begin：Source 与 Package Connect transport 分离，主 RPC 文件 **954→692 行**；Begin service **780→322 行**，Prisma Skill CAS+external receipt 同短事务移至基础设施 adapter、窄 port 定义业务快照，Storage 出站仍在事务外，不改 Proto/Schema/v4 机器契约。Root 独立 Node24 format/lint/typecheck/contract/artifact/cutover/schema/default **894 pass/194 skip**/build；独占真 PostgreSQL Begin **8/8**、正确自建 schema 的 receipt+Get **37/37**，临时库清理。先前把无 app schema 的 admin URL 直接喂给两套 integration 导致 setup fail，改为独占 app DB 安装 canonical schema 后原两套 **37/37** PASS；没有放宽断言。两个只读终审 P0/P1/P2=0。Root 十仓标准从 Begin 引入时 **138** 回到历史 **136 violations/0 unverified**，仍 FAIL，既有 136 项待全仓治理。
+
+Root `9d0d288b768c5783ee20b0508b7599b72a1685b8` 精确 pin 后再次运行同一独占真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV sandbox：正式 Begin→重放重签→带 headers 的 signed PUT→Get upload_pending、错 digest/owner/filename/replacement 拒绝与旧 CLEAN 对象/adapter GET 回归均 **PASS**，runner 输出 `platform_package_begin=PASS`、`storage_v2_package_reference=PASS`、Skill 1/receipt 2/`resources=clean`；3310 未触碰。该 gitlink 下 Root `scripts/tests` **958 pass/212 subtests**、topology/checkpoint PASS，compatibility **16 边/13 declared broken/0 来源违规**。此为 Begin owner 纵切和架构质量回归，**不是 Complete/ZIP Validate/Publish 或 BFF 用户 public/session 撤权闭环**。下一门见 [`task.md`](task.md)。
+
 ## 2026-09-29 — Platform 正式 Begin→真实 Storage 纵切 PASS；Complete 下一门
 
 Platform `main 371a39c` 发布真实 `BeginSkillPackageUpload`：inactive v4 机器候选、typed Product/descriptor digest、Skill 与 external receipt 原子 intent/final CAS、Storage v2 Create/Status、ACK 未知恢复及仅当前 pending attempt 可重签完整 PUT。两轮独立只读审查的 4 P1/2 P2 与末轮取消 P2 均已修复，终审 P0/P1/P2=0。Root 独立 Node24 format/lint/typecheck/contract/artifact/cutover/schema/default test **893 pass/194 skip**/build 与自有真 PostgreSQL Begin **8/8**；Platform `main 10fdeda5f60c478439b0743faa753e1e183b2896` 随后只扩 owner 测试 CLI/复用生产 digest helper，Root 独立 Node24 format/lint/typecheck/default test **893 pass/194 skip**/build。Root `3b00a40cc04a31283ee53a564244f7e6ea1c3e1d` 固定 gitlink 与库存，聚焦 Python **34 pass/22 subtests**、完整 `scripts/tests` **958 pass/212 subtests**、topology/checkpoint PASS、compatibility **16 边/13 declared broken/0 来源违规**。

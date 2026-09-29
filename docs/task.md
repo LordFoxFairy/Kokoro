@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 下一验收门：W3-PLATFORM-BEGIN-ARCH-QUALITY（P0；2026-09-29）
+## 最近验收：W3-PLATFORM-BEGIN-ARCH-QUALITY（P0；2026-09-29）
 
 | 设计门 | 裁决与验收 |
 | --- | --- |
@@ -8,12 +8,13 @@
 | 当前职责 / 位置比较 | 技术/API/数据三面已定，无新 owner/contract/schema。采用现有 `source/` 的 `skill-source.rpc.ts` 与 `package/` 的 `skill-package.rpc.ts` 承接 Connect/IAM/wire，减少原巨型 RPC 文件；淘汰继续在一个 RPC 文件叠加 Source/Begin/Get。采用 `package/skill-package-begin.port.ts`（窄业务快照/事务接口）与既有 `infrastructure/repository/capability/` 下 `prisma-skill-package-begin.transaction.ts`（同短事务 Skill CAS+external receipt）拆分；淘汰在业务 Begin service 直用生成 Prisma 或把网络放进事务、改 checker/重导出掩盖违规。普通文件均在已有目录，唯一变化原因明确。 |
 | 依赖与数据/API | Begin service 只编排当前 attempt、Storage port、receipt recovery 和短期签名；infra 实现唯一 Platform Skill/receipt 持久写入，不跨 owner SQL。`prepareIntent` 同事务 CAS+receipt claim，`finalizeBinding` 同事务 attempt/version/lease 双 fence+receipt complete；网络调用仍在事务外。Source/Package RPC 只负责入站 IAM、typed digest、错误与 wire 映射，不复制业务状态。Proto、Prisma schema、Storage v2 与 v4 digest/签名语义不变，无 fallback/alias/第二入口。 |
 | 验证 / 放行 | 先 RED 旧职责违规，再 GREEN Platform format/lint/typecheck/contract/artifact/default test/build、独占真 PostgreSQL Begin/receipt/Source 测试；Root 十仓静态门须回到不高于历史 136 violations，其他规范违规如实保留。Root 再跑现有真 IAM/BFF/Platform/Storage/MinIO/ClamAV Begin+GET sandbox，要求 signed PUT/replay/拒绝及清理仍 PASS；只读独立审查 P0/P1/P2=0。用户 3310、Root 任务外 `uv.lock` 不动。 |
+| 验收结果 | Platform `main a4feaf0320946755aec0dfc16750eb048bd1657f` 已提交推送，RPC 主文件 954→692 行、Begin service 780→322 行；Source/Package 传输和 Prisma transaction 分责、没有双入口/改机器契约。Root 独立 Node24 全静态/default **894 pass/194 skip**/build、真 PostgreSQL Begin **8/8** 与独占单库 receipt+Get **37/37**；首次把 admin URL 误作 app schema 的两套 setup 失败已在正确自有 DB 重跑通过，非代码断言失败。两只读终审 P0/P1/P2=0；十仓标准由 138 回到历史 **136 violations/0 unverified**（仍 FAIL，不冒称全仓合规）。Root `9d0d288b` 固定后真实 IAM/BFF/Platform/Storage/MinIO/ClamAV Begin+旧 CLEAN GET 组合再次 PASS、Skill 1/receipt 2/resources clean；Root `scripts/tests` 958 pass/212 subtests、topology/checkpoint PASS，compatibility 16 边/13 declared broken/0 来源违规。用户 3310 未触碰。 |
 
-## 后续代码门：W3-PLATFORM-PACKAGE-COMPLETE（P0；2026-09-29）
+## 下一验收门：W3-PLATFORM-PACKAGE-COMPLETE（P0；2026-09-29）
 
 | 设计门 | 当前裁决 |
 | --- | --- |
-| Owner / 基线 | Platform `main 10fdeda5f60c478439b0743faa753e1e183b2896` 唯一 writer；Storage `16a6c1c` 的 v2 skill_package 边界已过。Root `3b00a40c` 已在独占真 IAM/BFF/Platform/Storage/MinIO/ClamAV sandbox 验证正式 Begin 与带 headers 的签名 PUT；用户 3310 不动。 |
+| Owner / 基线 | Platform `main a4feaf0320946755aec0dfc16750eb048bd1657f` 唯一 writer；Storage `16a6c1c` 的 v2 skill_package 边界已过。Root `9d0d288b` 已在独占真 IAM/BFF/Platform/Storage/MinIO/ClamAV sandbox 重验正式 Begin 与带 headers 的签名 PUT；用户 3310 不动。 |
 | 当前事实 / 目标 | Skill 当前可在 `upload_pending` 持久绑定 attempt/epoch/upload，正式 Get 与 Begin 存在、v4 inactive。下一代码片必须将**真实 CompleteSkillPackageUpload**、Storage v2 Complete/GetStatus/GetScan 与同一当前 attempt 的外部 receipt/重放/失败恢复原子落地，并在独占真 Storage/ClamAV 上证明 CLEAN、非 CLEAN、重复/丢 ACK、替换旧 attempt 拒绝；不能仅增 Proto 或把 Begin 证明冒充 Complete。 |
 | 归属 / 依赖 | 扩现有 Platform `SkillCatalogService`、`package/`、Storage v2 client/port 与 canonical Skill 单行；每次仍验 BFF catalog workload/typed Product user/current draft。Storage bytes/scan 不复制到 Platform，短期 URL 不落库，无新 role/数据库/进程/兼容 v1。v4 未被消费者 pin，允许 owner 原子演进，v1–v3 冻结；BFF/Agent 只在 owner 契约稳定后消费。 |
 | 验证 / 风险 | 先审当前 Complete 文档、receipt 与 Storage v2 实际行为，补 RED 真 PostgreSQL/CAS/recovery、机器 descriptor/vectors，再做真实组合。最终 COMMIT ACK unknown、双替换并发、lease takeover、BFF 用户 session 撤权和已完成 Storage Asset 退役仍是显式验收缺口，不用本地默认测试代替。Complete 之后才进入 ZIP V1 Validate/Publish/Source/Install 与 Agent pin。 |
