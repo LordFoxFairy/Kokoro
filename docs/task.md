@@ -15,6 +15,7 @@
 | 设计门 | 当前裁决 |
 | --- | --- |
 | Owner / 基线 | Platform `main a4feaf0320946755aec0dfc16750eb048bd1657f` 唯一 writer；Storage `16a6c1c` 的 v2 skill_package 边界已过。Root `9d0d288b` 已在独占真 IAM/BFF/Platform/Storage/MinIO/ClamAV sandbox 重验正式 Begin 与带 headers 的签名 PUT；用户 3310 不动。 |
+| 当前执行 | Platform 唯一写入 Agent `/root/platform_complete_owner` 正在实现此门，起点为上列 clean main；只允许修改 `apps/kokoro-capability` 的正式 Complete 契约、handler、持久事务、Storage v2 adapter、测试与生成物，不操作 Git index/提交。Root 负责停写后独立审查、主仓组合验证与提交；此行仅记录进行中，不表示验收。 |
 | 当前事实 / 目标 | Skill 当前可在 `upload_pending` 持久绑定 attempt/epoch/upload，正式 Get 与 Begin 存在、v4 inactive。下一代码片必须将**真实 CompleteSkillPackageUpload**、Storage v2 Complete/GetStatus/GetScan 与同一当前 attempt 的外部 receipt/重放/失败恢复原子落地，并在独占真 Storage/ClamAV 上证明 CLEAN、非 CLEAN、重复/丢 ACK、替换旧 attempt 拒绝；不能仅增 Proto 或把 Begin 证明冒充 Complete。 |
 | 归属 / 依赖 | 扩现有 Platform `SkillCatalogService`、`package/`、Storage v2 client/port 与 canonical Skill 单行；每次仍验 BFF catalog workload/typed Product user/current draft。Storage bytes/scan 不复制到 Platform，短期 URL 不落库，无新 role/数据库/进程/兼容 v1。v4 未被消费者 pin，允许 owner 原子演进，v1–v3 冻结；BFF/Agent 只在 owner 契约稳定后消费。 |
 | 验证 / 风险 | 先审当前 Complete 文档、receipt 与 Storage v2 实际行为，补 RED 真 PostgreSQL/CAS/recovery、机器 descriptor/vectors，再做真实组合。最终 COMMIT ACK unknown、双替换并发、lease takeover、BFF 用户 session 撤权和已完成 Storage Asset 退役仍是显式验收缺口，不用本地默认测试代替。Complete 之后才进入 ZIP V1 Validate/Publish/Source/Install 与 Agent pin。 |

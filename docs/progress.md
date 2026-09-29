@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Complete 唯一 owner 已开工（未验收）
+
+Platform `/root/platform_complete_owner` 在 `main a4feaf0320946755aec0dfc16750eb048bd1657f` 的 clean 基线开始正式 Complete 代码片：先做失败测试，再接强类型 RPC、独立 receipt/双 fence 与 Storage v2 当前扫描状态。Root 仅并行检查既有独占组合 runner 和 Web 已有 shadcn token，不触碰 Platform 写入集、用户 3310 或任务外 `uv.lock`。当前尚无 Complete 构建、真 PostgreSQL 或真 Storage PASS 证据；仍以此片出门条件为准。
+
 ## 2026-09-29 — Begin 架构回归已清，真实组合重验 PASS；Complete 下一门
 
 Platform `main a4feaf0320946755aec0dfc16750eb048bd1657f` 以真实职责拆分收口 Begin：Source 与 Package Connect transport 分离，主 RPC 文件 **954→692 行**；Begin service **780→322 行**，Prisma Skill CAS+external receipt 同短事务移至基础设施 adapter、窄 port 定义业务快照，Storage 出站仍在事务外，不改 Proto/Schema/v4 机器契约。Root 独立 Node24 format/lint/typecheck/contract/artifact/cutover/schema/default **894 pass/194 skip**/build；独占真 PostgreSQL Begin **8/8**、正确自建 schema 的 receipt+Get **37/37**，临时库清理。先前把无 app schema 的 admin URL 直接喂给两套 integration 导致 setup fail，改为独占 app DB 安装 canonical schema 后原两套 **37/37** PASS；没有放宽断言。两个只读终审 P0/P1/P2=0。Root 十仓标准从 Begin 引入时 **138** 回到历史 **136 violations/0 unverified**，仍 FAIL，既有 136 项待全仓治理。
