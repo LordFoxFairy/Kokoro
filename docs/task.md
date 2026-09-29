@@ -1313,3 +1313,11 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 | 验证 | BFF Node22 `pnpm format:check && pnpm check && pnpm schema:check`、慢消费者可控时钟/流测试和独立 Root 真 owner 字节测试；明确未跑的真 1 GiB/限速测试，不以 5 字节 fixture 证明 1 GiB SLA。worker 不改 Git index/commit，不碰 Web/Agent/Storage/IAM/3310 或共享数据。 |
 
 **W2-F2-S8 文档门已验：** BFF main `f558acc36bf9947e48753be510499b08a8011e85` 仅改上述四文档，保留现有最多 120s 准入/引用阶段，目标改为独立 7min 对象取回总/45s idle 和 28min 出站总/25s idle，2+7min 对 Web 10min 未发头留约 1min；不扩 SQL repository/port，也不冒称不可取消 PostgreSQL/磁盘 I/O 硬中止。Root Node22 `pnpm contract:semantic` 77 operations、`pnpm schema:check` 5 pass/1 无库 skip，diff check PASS。代码、机器契约、真实慢消费者尚未修改/验证；下一代码门需 Root 明确文件集后再派同一 BFF owner。
+
+### W2-F2-S9 Chat 作品 live/replay/snapshot/Canvas 闭环（S8 后串行；P0）
+
+**当前断点与 owner：** S7 已验的本人 Library 不等于 Chat 作品卡。BFF 已把 Agent `delivery.created` 的二元 Artifact ID 与 kind 作为 AG-UI live/replay 帧持久化，但 `ChatService` snapshot 固定 `deliveries: []`，OpenAPI Delivery 仍 hash-only；Web 严格事件 schema 拒新增 `artifact_id/asset_id/artifact_kind`，reducer/hydration/卡片/Canvas 仍按 `content_hash` 与旧 Blob 路径工作。BFF 帧有 GC，刷新按 snapshot watermark 续流，故不能从已过水位的旧帧恢复作品。IAM 不新增权限；默认本人私有，Project/Team 不自动共享。
+
+**依赖与放置门：** 先由 BFF 同一 owner 在 S8 验收并停写后收敛 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md` 与唯一 OpenAPI/SQL 目标：snapshot 同一 repeatable-read 边界读取 BFF 持久 Conversation↔Artifact 关联与 watermark，并按本人 active Conversation/Project 过滤；展示字段若确需持久化，限从 Agent immutable delivery claim 入本关联，不复制 Storage canonical metadata。比较在既有 Chat repository/query 扩展与另建独立投影，禁止从可 GC 帧拼快照、运行时跨库 SQL 或伪造空 Delivery。BFF owner contract/Schema 提交后，Web 唯一 writer 再 pin 精确 OpenAPI，统一 live/replay/snapshot、hydration/reducer/卡片/Canvas `(conversation_id,artifact_id)`，复用已发布本人同源 detail/content 原生下载；删除正式 hash `deliveryPath`/`contentHash` 双轨，preview fixture 保持隔离。共享契约、Schema、Web generated 和 Root 库存各指定单一 writer；不与 S8 并发改 BFF。
+
+**验收门：** BFF OpenAPI/schema drift、同事务 watermark+Delivery、重复 source/重放、GC 后刷新、软删/本人/Project ACL、event/snapshot 竞态与真实 PG；Web 严格坏字段拒绝、live→断线 replay→snapshot 水合/去重、同 hash 双作品不合并、Canvas 二元详情/原生下载/取消；Root 固定来源的真实 IAM→Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 验 live 卡、恢复、刷新、Canvas 原字节和同租户他人404，清理自有资源。真实模型 worker/provider、显式分享、慢 1 GiB 另卡，不以此片冒充全产品。
