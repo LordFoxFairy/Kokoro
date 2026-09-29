@@ -1,5 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — W3 ZIP Validate 文档门进行中（尚未验收）
+
+在 Root `7bd4749b` / Platform `62417f9` 的 CLEAN 与 INFECTED 真组合基线上，Root 已把下一片限定为 Platform 正式 ZIP V1 Validate，Publish 另片；任务与门禁见 [`task.md`](task.md)。两项独立只读预审确认当前 Validate RPC 和 catalog 实现仍固定 fail closed、Storage `verifyPackage` 只核 CLEAN/引用而不下载 ZIP、manifest 尚无机器 profile；因此**当前没有 ZIP Validate 功能通过证据**。Platform 唯一 writer 正先对齐 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 四份文档，代码须等文档门审查；Root 未改用户 3310，未动任务外 `uv.lock`，无新增数据库/角色/服务。依赖初核 `yauzl@3.4.0` MIT + Node24 CRC32 可用，但其默认路径行为、CRC 与本地头校验不能当成已覆盖，须由 profile 与测试明定。本段仅为阶段状态，不计代码或端到端完成。
+
+
 ## 2026-09-29 — 正式 Platform Complete→真实 ClamAV 感染终结与恢复 PASS
 
 Platform `main 62417f97423007b2bd48731427e7b1ab70ef062b` 仅扩现有 owner probe，Root `main 014d6f3b` 精确 pin；Node24 CLI 语法/格式/目标 ESLint、Root 聚焦 Python **35 pass/22 subtests**。同一独占 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 组合实际 exit0：先保留真实 CLEAN Complete/重放/同 Asset 收敛，再显式替换当前 Skill 为 EICAR attempt（epoch 3），正式 `skill_package` + ZIP MIME Begin/签名 PUT/Complete 返回 `FAILED_PRECONDITION`；正式 Get 显示当前 `aborted`，Storage Status 固定 completed Asset，GetScanStatus 当前 `INFECTED` 且同命令重放不变；新 Begin command + 精确 replace ID 从 aborted 恢复 epoch 4/pending，旧感染 Complete 不能覆盖。Runner 输出 `platform_package_infected=PASS`、此前 Begin/Complete/Storage GET 亦 PASS，Skill **1**/receipt **8**/`resources=clean`（`/tmp/kokoro-root-complete-infected-real.log`）。Root 独立核临时库、Redis 目标 pattern、同前缀 bucket 余量均 **0**；用户 3310 未触碰。

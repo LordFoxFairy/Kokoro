@@ -1,5 +1,17 @@
 # Kokoro 后端闭环任务总表
 
+## 当前执行：W3-PLATFORM-ZIP-VALIDATE（P0；2026-09-29）
+
+| 项 | 裁决与验收门 |
+| --- | --- |
+| Owner / 基线 | 唯一业务 writer 为物理子仓 `apps/kokoro-capability` 的 Skills package 模块，基线 `main 62417f97423007b2bd48731427e7b1ab70ef062b`；Root 基线 `7bd4749bf0cbe80baaf67975e7ae58e315132d46`，负责设计/审查/精确 pin/组合。Storage 只拥有字节和扫描事实。用户 3310 与 Root 非任务 `uv.lock` 不动。 |
+| 当前事实 / 目标 | 正式 Begin/Complete 已在真 Storage/MinIO/ClamAV 上证明 CLEAN 与 INFECTED、替换恢复；`ValidateSkillDraft` 仍固定拒绝，不能宣称 ZIP/manifest/Publish 已通。本片只交付正式 Validate：当前已上传的 draft 由同一 owner 经新鲜 IAM/本地授权、Storage 当前 CLEAN 与对象健康、限界 GET、ZIP V1/manifest 验证后，短事务 CAS 进入 `validated`；Publish 另片，不合并。 |
+| 放置比较 / 粒度 | 扩既有 `src/modules/skills/package/` 的 Validate 编排/包 profile 与现有 `src/infrastructure/repository/capability/` 的窄事务，现有 RPC 做入站/出站映射；不继续把下载、解压、事务塞入 catalog/RPC 巨文件，也不新建顶层目录或第二 Storage client。ZIP parser 选型需核官方 API、维护/许可证、Node 24 与 lockfile；若新增依赖，固定实际版本并记录拒绝 ZIP64、加密、多卷、软链、本地/中央头不一致及 CRC 等缺口由哪层覆盖。 |
+| API / 数据 / 依赖 | Proto v4 inactive 已有 Validate 基础输入，本片拟增显式 `attempt_id=7` 绑定用户所见当前上传，不复用 4/5 reserved、不信任 caller asset/hash；必须同片更新 Proto/generated/descriptor/command projection/schema/vectors/digest，v1–v3 原字节冻结。仅从 Platform canonical Skill 行绑定当前 attempt/upload/asset/hash/size，Storage v2 owner contract 取当次 authorized GET，不直接读 Storage 库。压缩≤32 MiB、展开≤128 MiB、条目≤128、单文件≤16 MiB、manifest≤16 KiB、路径 NFC UTF-8≤256 bytes；根 `manifest.json` 与 `SKILL.md`，严格字段/身份；raw manifest SHA-256 与 profile version 1 组成稳定身份。无新表、角色、数据库、跨 owner SQL、兼容路径；错误为稳定 typed reason，不按 message 分支。 |
+| 事务 / 失败恢复 | IAM/Storage/下载/ZIP 均在事务外；现有 receipt 先持久 call-intended，再以 tenant/owner/status=draft/attempt/epoch/version/asset/hash/receipt lease 双 fence 做末次短事务。确定性恶意 ZIP/身份失败在本地事务原子标记 aborted + failed receipt，允许显式新 Begin；暂时性网络/未知 ACK 不误判 aborted，读权威状态恢复。旧 attempt 不得覆盖新 attempt；validated 不自动 Publish/安装/执行。 |
+| 阶段门 / 证据 | **A 文档门**：目标仓 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 同步当前态、ZIP 精确 profile、编码/错误/事务及机器 profile 计划；Root 审查后才开代码。**B 代码门**：RED→GREEN ZIP 正反向向量、真 PG CAS/receipt/rollback/replay、真实 Storage CLEAN+恶意 ZIP 组合，contract/artifact digest/生成与全 format/lint/typecheck/test/build。**C 集成门**：Root 独占真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV、资源归零、Root scripts/topology/checkpoint/库存，独立只读审查；Publish/BFF public/Agent pin/Asset 退役依次后续。进度只按当前 commit 的真实输出记录，十仓既有 violations 不漂白。 |
+
+
 ## 最近验收：W3-PLATFORM-COMPLETE-REAL-NONCLEAN（P0；2026-09-29）
 
 | 项 | 执行边界与验收 |
