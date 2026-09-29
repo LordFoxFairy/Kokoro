@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — IAM Skill sandbox host 前置已发布
+
+IAM main `eb6700c13f84a165620a6be456a25d290bd3da4a` 只修改 `test/fixtures/web-oidc-flow-host.ts`、`test/integration/web-oidc-flow-host.test.ts`；显式 Skill sandbox opt-in 由真实 IAM fixture provision user session、catalog 与 Platform resource-server、IAM execution-authorization tenant client，默认 host ready 保持原形状。一次性 `revoke-user-session` 由 IAM 删除其自有 session；测试证明撤销后相同用户 Bearer admission 401，执行授权 client_credentials 使用 IAM INTERNAL resource 与 `iam:execution-authorization.verify`，非 Platform ingress token。Root 独立 Node24 `pnpm verify` **102 文件/938 passed**（`/tmp/kokoro-iam-skill-root-final2-verify.log`），真实 PostgreSQL/Redis 聚焦 integration **28/28 passed**（`/tmp/kokoro-iam-skill-root-final2-integration.log`），临时数据库清单前后相同；独立复审 P0/P1/P2=0。此为组合 runner 的身份前置，**未证明** BFF/Platform 真 201、Skill 激活或 Web 可见入口；3310 未触碰。
+
 ## 2026-09-29 — BFF CreateDraft 阶段 A 机器契约通过，运行候选下一门
 
 BFF main `5d26f09cc1b425926f49b284a31136ce8ff2da03` 已提交推送：唯一 public OpenAPI 增 `POST /v1/skills/drafts` 的**未激活候选**，operation surface 77→78；严格三字段与专用单值 raw `Idempotency-Key`、201 data-only、稳定错误 error-only/413/既有 IAM 准入码/可控 429 Retry-After，以及 `x-request-id`/`no-store` 均进入机器契约。语义门以具名结构断言和 canonical block digest 防止新操作退化；旧 77 操作保持。BFF 四设计纠正当前新 Platform pin 与 inactive sandbox 时序。独立代码复审初审 3 P1/2 P2、复审后 3 P1，经两轮返修最终 P0/P1/P2=0。Root Node22 独立 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build` **exit 0**、默认 **376 pass/1 skip**，日志 `/tmp/kokoro-bff-skill-stage-a-root-final2.log`。Root inventory **16 边/13 declared broken/0 provenance violation**，topology PASS。阶段 A 没有 runtime route/机器 credential/真 IAM→BFF→Platform 201，默认入口仍 503；不能称 Skill 产品或 Web 页面闭环。

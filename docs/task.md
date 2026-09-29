@@ -65,6 +65,8 @@ Root 真实 sandbox 后续复用该 host 的唯一临时库与现有 Storage/Pla
 
 **IAM host 精确扩卡（2026-09-29，已纠正凭据 owner）：** Root 真 runner 只读发现 `skill_sandbox.tenant_execution_credential` 当前仅有 Platform ingress token，而 Platform 正式 `KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE` 要求的是**另一种** IAM execution-authorization tenant client：resource=`https://kokoro.dev/resources/iam-internal`、scope=`iam:execution-authorization.verify`、client ID/secret。IAM fixture 的 `created.executionClient` 仅在既有 `executionProof` opt-in 时创建，不能拿 `created.platform.callers.tenant_execution`（scope=`platform:execution.invoke`）冒充。IAM 原唯一 writer 仅可窄改原两个 test fixture/integration 文件，为 Skill sandbox 启用现有测试 `executionProof` 选项并在 opt-in ready 输出该真实 execution client 的 ID/secret；测试用真 client_credentials 验精确 resource/scope。默认 ready 不变，凭据只走受控 NDJSON，不新增生产 API/schema/role；若需要改 `internal-http-application.ts` 先报 Root 扩围。Root 随后重验并冻结 IAM gitlink，runner 必须按最终协议消费。
 
+**IAM host 验收：** IAM main `eb6700c13f84a165620a6be456a25d290bd3da4a` 已精确提交并推送，工作树 clean；Root 独立 Node24 `pnpm verify` 102 文件/938 passed、真 PostgreSQL/Redis 聚焦 integration 28/28 passed，临时库清单前后相同，独立复审 P0/P1/P2=0。Root 库存 owner 来源已固定该 SHA，IAM OpenAPI/Schema/生产代码与旧默认 host 形状不变。后续只在 BFF 阶段 B 提交、Root runner 真实 201/撤权/清理通过后验收组合；此处不宣称组合闭环。
+
 #### W1E-SKILL-DRAFT-TRUE-SANDBOX（P0，Root 组合验收；与两仓实现并行准备）
 
 | 项 | 放置与阶段门 |
