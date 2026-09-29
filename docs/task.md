@@ -1,6 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-BFF-SKILL-BEGIN-DOC-GATE（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-BEGIN-RUNTIME（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer，物理仓 `apps/kokoro-bff` clean `main 145c422c052b7409b960deeeb2d185285492e4e8`；Root 管跨仓审查、精确 pin、独占真组合；Platform `263a28f` v4 inactive。三面文档/唯一机器 OpenAPI 的 Begin 候选已过，**BFF 当前仍没有 Begin route/client 方法**。先按本仓 §8 放置表定具体文件，不新建业务模块/服务/DB/role。 |
+| RED→实现 | 先真实 HTTP RED：同路径 POST 被现有 `isSkillPackageGetPath` 抢先送入 Get 400、默认关闭、IAM 撤权/跨 tenant/错 owner/同键重放与异 body 冲突、状态前置、非法签名 URL/headers/expiry、取消/超时；再新增具名 Begin route、独立输入与 owner v4 JCS/digest projector、既有 generated `CatalogConnectClient` 方法，按 method 精确分派 Get/Begin。单个 `Idempotency-Key`，command ID 绑定 operation+受信 tenant/user/skill_id+key；同键 replay 仍先 IAM，BFF 无 Skill/Upload SQL/receipt 或 Storage 服务凭据。多字节 filename **UTF-8 255 bytes 接受、256 bytes 拒绝**，不能把 OpenAPI `x-maxUtf8` 当运行校验。 |
+| 签名/配置 | 只投影 owner 当前 pending 的完整短期 PUT reference；用 BFF 已有 `KOKORO_STORAGE_OBJECT_ORIGIN` 作为唯一批准 public origin，允许它为 Begin 单独配置而不强制启用 BFF Storage RPC secret/client；Create/Get 在未配该 origin 时仍可运行，Begin fail closed。URL 精确 origin、无 userinfo/fragment、生产 HTTPS/隔离 loopback HTTP、PUT、当前仅 exact `content-type:application/zip`、有界未来 expiry；不修改签名 URL/头、不日志输出；返回 201 strict data/no-store/x-request-id。若正式 owner 返回额外 signed header，先停并修 contract，不静默丢弃。 |
+| 验证/边界 | Node22 format/lint/typecheck/contract/平台 v4 provenance/owner向量/test/build/schema 与独立审查 P0/P1/P2=0；Root 在自有 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 组合验 Begin 201/current `upload_pending`/signed PUT/replay/替换/撤权零新 Platform socket、旧 Publish 回归、自有资源清理。随后 Web owner 单独 pin BFF public OpenAPI 并完成同源 Begin＋真 Chromium CORS/preflight/PUT，Complete public 再按设计门串行；单独 BFF 运行代码门不能冒称浏览器或产品激活。用户 3310 与任务外 Root `uv.lock` 不动。 |
+
+## 最近验收：W3-BFF-SKILL-BEGIN-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 阶段门 |
 | --- | --- |
@@ -10,6 +19,7 @@
 | 只读预审 / 主控裁决 | 两名独立只读 Agent 固定 BFF `f0aaf386`、Platform `263a28f`、Storage `16a6c1c`、Web `317c74c` 审查 API/RPC 与浏览器数据面：BFF 已 pin 完整 v4，但 public Begin 与 Connect 调用不存在；Platform Begin Proto/持久 receipt/Storage 签名 PUT 已存在。采用 **Web 同源控制面→BFF→Platform、浏览器向已批准 ObjectStore public origin 直传 ZIP 原字节**；淘汰 Web/BFF 代理 32 MiB 字节（额外背压/取消/SSRF/带宽边界）。BFF 此切片只发布未激活候选 OpenAPI，运行时在后续代码片做；Web 旧 preview/confirm multipart UI 不复用为正式包上传。 |
 | 固定候选合同 | `POST /v1/skills/{skill_id}/package-upload`/`beginSkillPackageUpload`、user-only、单个有效 `Idempotency-Key`；body 仅文件名、固定 ZIP MIME、1–33554432 size、lowercase SHA-256、可选当前 `replaces_attempt_id`。当次 IAM+受信 user/tenant；BFF 仅从 path/session 组装 owner Context，按 operation+tenant+user+skill_id+key 派稳定 command ID，用固定 v4 artifact 中 `command_digest_version=3.0.0` 的 schema/JCS/向量生成 digest，不自造 wire；成功 201 严格 data 含当前 attempt/epoch/upload、完整短期 PUT `url/method/required_headers/expires_at`、replayed，no-store/x-request-id；同键重放仍先当前 IAM/Platform，短期 URL 不进 BFF SQL/receipt。明确 400/401/403/404/409/412/413/429/502/503 的独立错误码与旧 operation 不受影响。 |
 | 上传安全 / 实验门 | 后续 BFF runtime 必须把 URL 精确锁到配置的 ObjectStore **public origin**，拒 credential/fragment/非 HTTPS（仅 loopback 开发 HTTP）、非 PUT、超界 expiry/headers；当前 Storage 只签 `content-type: application/zip`，额外签名头须 fail closed 并重审契约。浏览器用 `credentials:omit`、`redirect:error`、原样 required headers PUT，不附 Cookie/Bearer，不改签名 URL；本地独占 bucket 及生产域名 CORS 仅允许获准 Web origin/PUT/Content-Type/无凭据。旧已签 URL 无法随撤权瞬时收回，保证的是不再新签与后续 Complete/Publish 当前授权/attempt fence。真 Chromium 必须测 preflight/PUT/Complete、错 origin/header/hash/size、过期 pending 同键重签、刷新 Get、撤权与旧 attempt。配置/浏览器验证是产品必要边界，不扩展到多角色部署运维。 |
+| 实际文档/机器门 | BFF `main 145c422c052b7409b960deeeb2d185285492e4e8` 只更新唯一 public OpenAPI、operation inventory/semantic checker/直接契约测试及 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT，未改 `src/`、config、generated、SQL/Redis；Begin 仍无运行路由。直接 RED 缺 operation 后 GREEN；Root Node22 独立 format、contract **94/94**、check **412 pass/1 skip**、schema **5 pass/1 skip**；只读审查机器/Proto/digest/错误/签名边界无 P0/P1，指出三处 Get 当前证据旧句 P2，owner 精确返修后 Root 复核 P0/P1/P2=0。v4 仍 inactive/default closed，真浏览器 PUT/CORS/Begin public 未验。 |
 
 ## 最近验收：W3-BFF-SKILL-GET-RUNTIME（P0；2026-09-29）
 

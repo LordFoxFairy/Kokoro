@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF Begin 三面文档与唯一 public 机器候选门 PASS
+
+BFF `main 145c422c052b7409b960deeeb2d185285492e4e8` 将 user-only `POST /v1/skills/{skill_id}/package-upload` 只加入**未激活**的唯一 OpenAPI、operation inventory/semantic checker/直接契约测试与四份当前文档；没有新增 BFF Begin `src/` route、Connect 调用、配置、SQL/Redis、receipt 或浏览器入口。候选固定单个必需 `Idempotency-Key`、owner v4 artifact 中仍为 `3.0.0` 的 digest schema/JCS、严格文件元数据/可选当前 replace、201 完整短期 PUT reference、每状态独立错误码、当次 IAM user/tenant 与默认关闭边界。Root 裁决 Web 同源控制面＋浏览器向精确批准 ObjectStore public origin 直 PUT 原字节，不采用 Web/BFF 代理 32 MiB 字节；CORS、批准 origin/headers/expiry 与真 Chromium 留运行门。
+
+独立只读审查 BFF `75ced851` 的机器契约与 Platform Proto/向量无 P0/P1，指出三份 Get 当前文档仍说真实 IAM/撤权未验的 P2；owner 后续 `145c422c` 仅精确改为已验 fresh draft `none` 200、Publish 后 412、撤权 401/零新增 Platform socket及仍未验的中间 phase，主控 diff 复核后 P0/P1/P2=0。Root Node22 独立 format/contract **94/94**/check **412 pass/1 skip**/schema **5 pass/1 skip**，Root `7c29332cdbf13d6fc11373c864e40902cd7f7aa5` 精确 pin BFF 与 163 处来源引用，Root `scripts/tests` **960 pass/217 subtests**、topology/checkpoint PASS；兼容库存 **16 边/13 declared broken/0 provenance violation**，十仓标准 **136 既有 violations/0 unverified** 仍 FAIL。下一片 BFF Begin runtime 须先修同路径 POST 被现有 Get router 抢先返回 400、运行时 UTF-8 filename 255/256 字节边界与签名引用拒绝，再做真 IAM/Storage signed PUT；**本轮没有 Begin 可调用或浏览器闭环**。3310 与任务外 `uv.lock` 未动。
+
 ## 2026-09-29 — BFF Begin 只读预审完成，三面文档/机器契约门进行中
 
 两名只读审查员固定 Root `ff52ebae`、BFF `f0aaf386`、Platform `263a28f`、Storage `16a6c1c`、Web `317c74c`：BFF 已 pin 完整 inactive v4，但唯一 public OpenAPI 与运行代码均没有 Begin；Platform owner 正式 Begin、短期签名 PUT 与持久 receipt 已存在。Root 在 [`task.md`](task.md) 裁决：控制面经 Web 同源 adapter→BFF 当次 IAM→Platform，ZIP 原字节由浏览器以无凭据、禁重定向方式直 PUT 到精确批准的 ObjectStore public origin；不新增 Web/BFF 32 MiB 字节代理。公开契约先固定 user-only、Idempotency-Key、完整短期 TransferReference、状态/错误与恢复；BFF 不建 Skill SQL/receipt，浏览器旧 preview/confirm multipart 不能冒充正式包上传。ObjectStore origin、签名 header/expiry、CORS/preflight/真实 Chromium 与旧 URL 撤权窗口均为后续代码/浏览器放行门，不属于本次仅文档成果。
