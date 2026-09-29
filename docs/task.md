@@ -212,7 +212,7 @@ Storage 修复候选经 Root 真 PostgreSQL 23 文件/190 项和 Node24 全门�
 
 ### 1.1 主控优先看这里
 
-- 当前关键路径：**W1F 已在固定四仓 SHA 的隔离真实 Chromium 完成 IAM 表单→OAuth/Product Session→DOM 聊天→Agent worker→AG-UI 断线续流→刷新历史，下一步 W2 实码接通 Storage 项目资源/个人附件。**固定来源 Web `a7decb6`、BFF `61b8074`、IAM `4d98144`、Agent `d6fcbf2`；同团队另一成员 404、跨租户 403，Root 749 tests/187 subtests 通过。该证据使用确定性 System/model fixture，不是正式 provider，也不等于用户现有 3310 已升级至这些 SHA。3310 当前 `/login` 能进入 IAM 正式表单（只读 HTTP 200），匿名 Product Session 仍未认证；前述“3310 只有 Web/空 503”是历史快照，不再是当前事实。Storage/BFF 项目资源与聊天附件仍未接通，W2 未验收。
+- 当前关键路径（2026-09-29）：**W2 的 Project/个人文件上传下载、Agent FINAL+CLEAN 作品 Library/Chat/Canvas，以及 S9 的实时交付与 owner GC 后浏览器旧 cursor 410 重水合均已有当前来源真 IAM/HTTPS Chromium 纵切证据；下一步核真实模型 worker/provider 与 Platform Skills/MCP 的首个 owner 断点。**固定运行来源 Web `317c74c`、BFF `bd1f794`、IAM `4d98144`、Agent `486adb1`、Storage `d5cfc44`；S9 GC Root `7bbd836b`，Root 903 tests/190 subtests 通过。上述 Chat 作品由测试按受信 Run/lease 触发 Agent 交付，**不是完整真实模型 worker/provider**；13 条 declared broken edge、单应用库所有 owner schema 与其他 Product 面仍未闭环。当前 3310 的真实 IAM 表单→OAuth callback→`/app`/Product Session 曾在 Web `317c74c` 实测通过，但 3310 未启用本轮 Agent/Storage 组合，不能把隔离 Chat 证据写成该常驻页面当前能力。
 - 后续按能力依赖推进 Storage → Platform → 聊天执行链 → System；支付最后。聊天的完成定义以本文第7节能力矩阵为准，包含消息落库、流式恢复、取消、HITL、附件/产物，而不是仅页面能展示文本。
 - 每片交付必须是可运行代码、对应行为测试和必要契约/SQL更新；文档整理或生成客户端不单独等于功能完成。
 - 当前不深入部署、生产角色隔离、镜像、SLO、网络硬化和重复全仓审计；这些进入统一发布收尾。身份/越权、事务、幂等、取消和故障恢复属于产品正确性，继续随代码验证。
@@ -340,7 +340,9 @@ commit：<子仓 SHA；Root 集成后再补 Root SHA>
 | W1A-1 | 发布用户session admission；已验收 | IAM / w1_iam_owner_auditor / gpt-5.6-sol high；Root审查 | main35d868a4，绝对目录及精确文件集见当前计划；P1/P2盘点完成，682测试基线；不写Root/BFF/Web/schema；真实撤销矩阵+全门；Root唯一Git提交人 |
 | W1A-2 | Root review/组合；已验收 | Root主控 + 独立审查 | 依赖W1A-1停写交付；计划Task2精确Root集成范围，edge状态不变，main-only/remote/clean真实审计 |
 
-## 7. 核心聊天体验验收矩阵（P2 盘点，不是完成证据）
+## 7. 核心聊天体验历史盘点（2026-09-20 基线，不是当前完成证据）
+
+下表保留启动时的缺口基线；当前来源与真浏览器证据见本文件顶部、底部 S9 卡及 `docs/CURRENT.md`，不得把表中“旧”描述当作现行实现。
 
 | 面 | 当前可验证代码事实 | 必须交付的真实闭环 | 后续owner |
 | --- | --- | --- | --- |
@@ -1366,6 +1368,20 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 | --- | --- | --- | --- |
 | W2-NEXT-MODEL-AUDIT / P0 | Agent 标准 worker→System 模型解析→实际 provider/Chat/作品；独立只读 Agent | 按当前 commit 追踪 Product POST→pending Run→claim/lease→System resolve→真实 model stream→工具 deliver→Agent durable events→BFF AG-UI，列首个实际断点、当前 fixture 替身、已存在测试/contract、精确下一 owner 文件集和 RED→GREEN/真纵切验收；区分“缺实现”“仅缺真集成证据”“配置/凭据边界”，不得凭旧文档推断。 | 无写入；不把确定性模型 fixture 或手动 emitter 视为真 worker。Root 决定是否先做 Agent 文档门/代码门。 |
 | W1E-NEXT-PLATFORM-AUDIT / P0 | Platform Skills/MCP→IAM/Storage→Agent/BFF；独立只读 Agent | 对照库存 13 broken 边，确认当前 Platform 物理仓/IAM 0.7/Storage package 文档门、BFF Product mutation、Agent typed selection 的实际机器契约与调用点；指出最早未发布的 owner contract、阻断后继的精确决策、可并行/必须串行项和下一最小完整业务切片，明确不能跳过授权或包体。 | 无写入；不要改名/重构/部署；Root 依据 owner-first 顺序派唯一 writer，先三设计文档再代码。 |
+
+**并行审计结论（均只读，Root 核源码后裁决）：** W2-NEXT-MODEL-AUDIT 确认标准 Agent worker 已装 System model resolve、ChatOpenAI/LiteLLM compatible 与 `deliver`；现有浏览器作品门在 pending 后改由 Root helper 手动 claim/journal/emitter，旧真实 worker 门则以 System/provider 双 fixture 代替，故先补真 System+本地实际模型标准 worker 纵切，不预判生产代码缺实现。W1E-NEXT-PLATFORM-AUDIT 确认 IAM 0.7 user-delegated Skill action 与 BFF 窄 client 已发布；最早未发布的 owner 机器源是 Platform command projection v3，BFF Product mutation 及 Storage revision 包链依赖其后续 owner release。两项审计**未运行服务/测试**，不计功能验收。
+
+### W1E-PLATFORM-V3-CODE / P0（唯一 Platform writer；BFF/CreateDraft 前置）
+
+| 放置门 | 决定 |
+| --- | --- |
+| Owner / 基线 | `apps/kokoro-capability` 物理仓当前 main `ae48c894d9034016a16a4cbaa60ab80743d1aab9` clean；Platform 唯一拥有 execution-operations artifact、15 command projection、运行时 digest。Root `c5259377` 为审计基线，Root 独占 Git index/commit/push/来源库存，审查人与 writer 分离。 |
+| 当前事实 | 三设计文档已有 v3 目标门：`docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md`；现行 `contract/execution-operations/v2/` 2.0.0 的 `commandMembers` 是字符串，缺完整 ProductCatalogContext schema/registry/拒绝向量，`scripts/platform-execution-operations/profile.ts` 与运行时仍选 v2；v1/v2 均须 byte-frozen。Proto/current IAM ingress 与 `kokoro_platform` canonical Prisma schema 已发布，BFF 只固定 generated Proto，未有 Product mutation。 |
+| 目标职责 / API | 发布唯一自包含 `contract/execution-operations/v3/` 3.0.0：结构化 registry、descriptor-backed wire→projection 映射、15 command schema、严格 raw 正负向量与 direct/aggregate provenance；Platform runtime 原子只选 v3 digest，无 v2 fallback。消费者仅凭 owner Proto+v3 artifact 复现 CreateDraft 等 command digest，不能 import Platform 私有源码。现有 Proto 方法/tag、IAM admission、SQL 事务、Product 授权不因版本切换改变。 |
+| 目录方案 / 粒度 | 采用既有 artifact 版本目录与现有 `scripts/platform-execution-operations/` checker/`src/modules/{skills,mcp}/` request-binding 运行点；淘汰“BFF 复制 Platform 私有 projector”和“新增第二可编辑 contract 根/并行 v2 runtime”。v3 的多文件结构因机器独立消费者、schema、向量、provenance 有不同变化原因；不新建一级业务模块/进程。 |
+| 写入范围 | 准唯一 writer 新建 `contract/execution-operations/v3/**`，窄改现有 `scripts/platform-execution-operations/{profile,artifact,schema,vectors,provenance}.ts`、`scripts/check-platform-execution-operations.ts`、`package.json` 仅将格式/门禁含 v3，及直接 `test/{contract,architecture,unit}/**` 中与 projection/digest 相关的测试；运行时仅可窄改现有 `src/modules/skills/{catalog,installation}/*request-binding*.ts`、`src/modules/mcp/**/*request-binding*.ts` 与相关直接测试，必要的现有 `src/rpc` 共享 digest adapter 须先报 Root 明确文件名。同步 `contract/README.md` 与四份 `docs/{CURRENT,TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md` 的当前态和实际证据。若实际文件路径不同或需扩大范围，先发精确清单/理由，不自行扩权。 |
+| 数据/依赖/删除 | 无 Prisma/SQL/Redis/Proto/OpenAPI/lockfile 改动；受信 tenant、Product context、owner scope 来自现有 IAM+Proto，不能从 body/headers 重新自报。保留 v1/v2 发布字节与冻结 digest 用于历史校验，但 release runtime/新消费者不得选择 v2；删被替代的运行版本选择与 alias，不建立双轨。BFF 消费必须等此 Platform owner 提交及 Root 独立验收后才开始。 |
+| RED→GREEN / 验证 | 先以失败测试证明 v3 缺失且 v2 无法独立描述 Product context，锁 v1/v2 aggregate 不变；再验证 registry 引用闭包、Proto descriptor field/tag/type/cardinality、15 双向 command 覆盖、presence/default、UTF-8/JCS、owner/actor/metadata digest 漂移、缺/多/错 raw 字段与 CreateDraft user/nonuser/撤权类向量。Node24 `pnpm format:check && pnpm lint && pnpm typecheck && pnpm platform-artifact:check && pnpm platform-contract-cutover:check && pnpm test:platform-artifact && pnpm verify && pnpm build`；不凭 worker 报告放行，Root 在停写后独立复跑适用门。真实 BFF+IAM+Platform CreateDraft 是下一个消费者切片，v3 artifact 单仓通过不等于用户能力完成。 |
 
 **S9-WEB-CODE 任务卡（P0，唯一 Web writer）：** 基线 Web main `3a0ad22563458621a9d2d4b10ff3a2c45adcac6e` clean，Root main `7bc6d8f69cb198b99c9521e9f3b9d15e83570793`；依赖已通过的 Web 四文档门及 BFF owner main `bd1f794e7b1115d96965aa03d8a3a83a33c42fd7`/OpenAPI SHA-256 `a224b186813615467b6c045d3be83082d3e164e140d6da9722bf3f8d7e33b219`。沿用文档负责人作为同仓唯一代码 writer；Root 独占 Git index/commit、来源库存、审查和真实浏览器。先读本仓 Next 16 已安装文档相关段落，先以直接测试观察 RED，再实施 GREEN；分阶段报告 contract/core 与 UI，但不得把只做 core 的候选发布为 S9 完成。
 
