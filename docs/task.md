@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 当前切片：W3-PLATFORM-COMPLETE-REAL-NONCLEAN（P0；2026-09-29）
+## 最近验收：W3-PLATFORM-COMPLETE-REAL-NONCLEAN（P0；2026-09-29）
 
 | 项 | 执行边界与验收 |
 | --- | --- |
@@ -8,6 +8,7 @@
 | 位置 / 职责 | 只扩现有 Platform `scripts/smoke-storage-package.mjs` 的正式 owner probe，再调整 Root 既有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 的精确 receipt/结果断言。采用这两处既有入口而非新 runner、假 scanner 或第二套 Storage client；不改生产 API、Proto、Schema、role/DB。 |
 | 必须证明 | 当前 Skill 的 CLEAN Complete 后，以显式新 Begin 替换为感染测试包，携完整签名 PUT headers 上传，正式 Complete 必须稳定 fail closed；正式 Get 显示当前 attempt `aborted`，Storage Status/Scan 显示同 asset `completed/INFECTED`；同命令再试不得创建第二 Asset，旧 attempt 不得覆盖；新的 Begin command + 精确 replace ID 可从 aborted 恢复。测试字节是 ClamAV EICAR fixture，**不**代表 ZIP V1 格式/manifest 验证。 |
 | 证据门 | Platform 停写后 Root 独立 CLI 静态/聚焦测试、精确 pin、现有独占真 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV runner、Skill/receipt/Asset 数与自有资源清理；Root scripts/topology/checkpoint/十仓标准门及库存来源保持如实。若真扫描结果与设计不符，保留失败证据并返修，不把本地 doubles 算真实感染。 |
+| 实际结果 / 边界 | Platform `main 62417f97423007b2bd48731427e7b1ab70ef062b` 只扩 owner probe，Root `main 014d6f3b` 精确 pin、聚焦 Python **35 pass/22 subtests**、Node24 CLI 语法/格式/ESLint PASS。独占真组合 exit0：CLEAN Complete 后 epoch 3 以 `skill_package`/ZIP MIME 上传 EICAR，正式 Complete 返回 `FAILED_PRECONDITION`，Get 为 `aborted`，Storage 同 upload 固定 Asset 当前扫描 `INFECTED`；同命令重放不变，显式 Begin 新命令从 aborted 恢复 epoch 4/pending，旧感染命令不能覆盖。Skill **1**/receipt **8**、`resources=clean`；Root 独立核数据库/Redis/本次桶余量均 **0**。此字节只是 ClamAV 扫描 fixture，**不是有效 ZIP，也不证明 ZIP V1/Publish**；跨进程最终 ACK/COMMIT unknown/lease takeover、BFF public/session、Agent pin、Storage orphan retirement 仍待验。Root 全 `scripts/tests` **959 pass/212 subtests**、topology/checkpoint PASS；十仓标准仍 **136 既有 violations/0 unverified**，compatibility **16 边/13 declared broken/0 来源违规**。 |
 
 
 ## 最近验收：W3-PLATFORM-COMPLETE-REAL-STORAGE（P0；2026-09-29）

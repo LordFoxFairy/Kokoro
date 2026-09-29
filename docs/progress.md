@@ -1,5 +1,12 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 正式 Platform Complete→真实 ClamAV 感染终结与恢复 PASS
+
+Platform `main 62417f97423007b2bd48731427e7b1ab70ef062b` 仅扩现有 owner probe，Root `main 014d6f3b` 精确 pin；Node24 CLI 语法/格式/目标 ESLint、Root 聚焦 Python **35 pass/22 subtests**。同一独占 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV 组合实际 exit0：先保留真实 CLEAN Complete/重放/同 Asset 收敛，再显式替换当前 Skill 为 EICAR attempt（epoch 3），正式 `skill_package` + ZIP MIME Begin/签名 PUT/Complete 返回 `FAILED_PRECONDITION`；正式 Get 显示当前 `aborted`，Storage Status 固定 completed Asset，GetScanStatus 当前 `INFECTED` 且同命令重放不变；新 Begin command + 精确 replace ID 从 aborted 恢复 epoch 4/pending，旧感染 Complete 不能覆盖。Runner 输出 `platform_package_infected=PASS`、此前 Begin/Complete/Storage GET 亦 PASS，Skill **1**/receipt **8**/`resources=clean`（`/tmp/kokoro-root-complete-infected-real.log`）。Root 独立核临时库、Redis 目标 pattern、同前缀 bucket 余量均 **0**；用户 3310 未触碰。
+
+EICAR 原字节仅证明 ClamAV/Platform **扫描拒绝与状态恢复**，不是合法 ZIP，不证明 ZIP V1、manifest、Validate/Publish。最终跨进程 ACK/COMMIT unknown/lease takeover、BFF public/session 撤权、Agent pin、Storage completed Asset 退役和全产品链仍待验；Root 全 `scripts/tests` **959 pass/212 subtests**、topology/checkpoint PASS；兼容库存 **16 边/13 declared broken/0 来源违规**，十仓标准 **136 既有 violations/0 unverified**（FAIL）。任务外 `uv.lock` 未暂存。
+
+
 ## 2026-09-29 — 正式 Platform Complete→真实 Storage CLEAN 纵切 PASS
 
 Root `main b602589e89a960a493d83825a62d4496cc365c61` 固定 Platform `80f294645d1c658ae198acb54766c37c10d314db`，原独占 IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV runner 实际 exit0：BFF CreateDraft 当前 Skill→IAM catalog→正式 Begin/签名 PUT→显式替换得到 epoch 2→正式 Complete，Storage 当前 ClamAV CLEAN、Platform `uploaded` 与固定 Asset 一致；同 Complete command 异 request_id 重放、新 command 同 upload 收敛同 Asset；错 SHA/owner/旧 attempt 拒绝，两个 upload 的 Storage pending 负例读回不变。旧 Storage v2 CLEAN/GET 原字节回归仍 PASS。输出 `platform_package_begin=PASS`、`platform_package_complete=PASS`、`storage_v2_package_reference=PASS`、Skill **1**/receipt **5**、`resources=clean`（`/tmp/kokoro-root-complete-real-storage.log`）。Runner 自有临时数据库/Redis/独占 bucket 清理，Root 独立核对数据库 **0**、Redis 目标 pattern **0**、同前缀 S3 bucket **0**；未触碰用户 3310。

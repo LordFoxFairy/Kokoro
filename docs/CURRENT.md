@@ -1,5 +1,8 @@
 # Root 当前组合
 
+**2026-09-29 正式 Platform Complete→真实 ClamAV 感染终结 PASS：** Root `014d6f3b` pin Platform `62417f97423007b2bd48731427e7b1ab70ef062b`，独占真 IAM/BFF/Platform/Storage/MinIO/ClamAV 组合同时保持 CLEAN 完成回归，并在 `skill_package` 范围用 EICAR 字节证明 `FAILED_PRECONDITION`、当前 attempt `aborted`、Storage 固定 Asset 当前扫描 `INFECTED`、同命令重放不变、显式新 Begin 从 aborted 恢复（epoch 4）。Skill 1/receipt 8/resources clean，独立核临时数据库/Redis/桶余量均 0；3310 未触碰。该 fixture **不是合法 ZIP**，ZIP Validate/Publish、BFF/Agent 消费、跨进程未知提交与孤儿退役均未验；广义边仍 broken。
+
+
 **2026-09-29 正式 Platform Complete→真实 Storage CLEAN 纵切已验收：** Root `b602589e89a960a493d83825a62d4496cc365c61` pin Platform `80f294645d1c658ae198acb54766c37c10d314db`，Node24 全静态/default **905 pass/208 skip**/build、真 PostgreSQL Begin+Complete **22/22**、最终独立只读审查 P0/P1/P2=0。独占 IAM/BFF/Platform/Storage/MinIO/ClamAV 真组合的 Begin→PUT→替换→正式 Complete CLEAN/`uploaded`、同命令重放、新命令同 Asset 收敛、错 SHA/owner/旧 attempt 拒绝与旧 GET 原字节回归均 **PASS**；Skill 1/receipt 5/resources clean，独立资源余量 0。Root `scripts/tests` **959 pass/212 subtests**、topology/checkpoint PASS；十仓标准仍 136 既有违规、兼容库存仍 13 条 declared broken。下一门是真非 CLEAN、ZIP Validate/Publish 与产品消费；**不是全产品闭环**，用户 3310 未触碰。
 
 
