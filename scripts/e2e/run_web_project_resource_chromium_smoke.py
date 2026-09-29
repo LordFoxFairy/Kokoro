@@ -589,11 +589,34 @@ def _durable_owner_facts(
         )
 
 
+def _login_boundary(
+    browser: dict[str, object],
+    sources: dict[str, dict[str, object]],
+    *,
+    owner_only: bool,
+) -> dict[str, object]:
+    login = browser["login"]
+    if not isinstance(login, dict):
+        raise SmokeError("browser IAM login proof malformed")
+    boundary = {
+        "source_tuple": {
+            name: source["sha"]
+            for name, source in sources.items()
+            if name in {"web", "bff", "iam"}
+        },
+        "owner": login["owner"],
+    }
+    if not owner_only:
+        boundary["member"] = login["member"]
+    return boundary
+
+
 def _run_smoke(
     args: argparse.Namespace,
     config: dict[str, str],
     *,
     live_scenario: Callable[..., dict[str, object]] | None = None,
+    gc_scenario: Callable[..., dict[str, object]] | None = None,
 ) -> dict[str, object]:
     iam_node = _node_path(args.iam_node_bin, "iam-node-bin")
     node22 = _node_path(args.node22_bin, "node22-bin")
@@ -989,10 +1012,30 @@ def _run_smoke(
                         raise SmokeError("isolated Next HTTPS origin not ready")
                     time.sleep(0.1)
 
-                if live_scenario is not None:
-                    stage = "browser subscribed live Chat Artifact delivery"
-                    screenshot = directory / "chat-delivery.png"
-                    browser = live_scenario(
+                if live_scenario is not None or gc_scenario is not None:
+                    stage = (
+                        "browser real owner GC and cursor recovery"
+                        if gc_scenario is not None
+                        else "browser subscribed live Chat Artifact delivery"
+                    )
+                    screenshot = directory / (
+                        "chat-gc.png"
+                        if gc_scenario is not None
+                        else "chat-delivery.png"
+                    )
+                    scenario = gc_scenario or live_scenario
+                    assert scenario is not None
+                    scenario_extra = (
+                        {
+                            "bff_root": bff_root,
+                            "bff_db_url": bff_db_url,
+                            "bff_redis_url": bff_redis,
+                            "tenant_id": ready.tenant_id,
+                        }
+                        if gc_scenario is not None
+                        else {}
+                    )
+                    browser = scenario(
                         node=node22,
                         origin=web_origin,
                         ready=ready,
@@ -1006,6 +1049,7 @@ def _run_smoke(
                         storage_base=storage_base,
                         object_origin=config["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
                         agent_secret=agent_secret,
+                        **scenario_extra,
                     )
                     browser["screenshot_sha256"] = hashlib.sha256(
                         screenshot.read_bytes()
@@ -1265,19 +1309,15 @@ def _run_smoke(
         "root_commit": root_commit,
         "sources": sources,
         "flow": (
-            "real IAM Chromium Product POST202 → subscribed SSE200 → Agent pending Run/lease → Storage CLEAN Artifact → BFF live Chat Delivery/Canvas/download/reload/private"
+            "real IAM Chromium two Product/Agent/Storage deliveries → BFF owner GC → original browser SSE410 → snapshot/new-watermark continuation"
+            if gc_scenario is not None
+            else "real IAM Chromium Product POST202 → subscribed SSE200 → Agent pending Run/lease → Storage CLEAN Artifact → BFF live Chat Delivery/Canvas/download/reload/private"
             if live_scenario is not None
             else "real IAM Product dispatch → Agent claimed Runs/CLEAN Artifacts → Chromium Library and Chat snapshot/Canvas native downloads/private; Project and personal file regression → Storage S3/ClamAV"
         ),
-        "login_boundary": {
-            "source_tuple": {
-                name: source["sha"]
-                for name, source in sources.items()
-                if name in {"web", "bff", "iam"}
-            },
-            "owner": browser["login"]["owner"],
-            "member": browser["login"]["member"],
-        },
+        "login_boundary": _login_boundary(
+            browser, sources, owner_only=gc_scenario is not None
+        ),
         "browser": browser,
         "owned_postgres_databases_remaining": 0,
         "owned_redis_keys_remaining": 0,

@@ -356,6 +356,18 @@ def deliver_result(
     }
 
 
+def select_run_chat_events(
+    session_events: list[dict[str, object]], run_id: str
+) -> list[dict[str, object]]:
+    """Select exactly this Run's projection, never fill gaps from another Run."""
+    if not run_id:
+        raise SmokeError("delivery Chat run identity missing")
+    selected = [event for event in session_events if event.get("run_id") == run_id]
+    if len(selected) != 3:
+        raise SmokeError("delivery Chat run event cardinality drift")
+    return selected
+
+
 def verify_event_chain(
     outbox: list[dict[str, object]],
     chat: list[dict[str, object]],
@@ -530,7 +542,7 @@ async def _assert_agent_event_projection(
             wire = [item.event for item in await bus.read_all(stream)]
             reconcile = await runs.reconcile_receipts(run.run_id, republish_grace_ms=0)
             outbox = [frame.model_dump() for frame in reconcile.republish]
-            chat_events = [
+            session_chat_events = [
                 record.model_dump()
                 for record in await chat.replay(
                     run.execution_identity.tenant_ref,
@@ -538,6 +550,7 @@ async def _assert_agent_event_projection(
                     run.session_id,
                 )
             ]
+            chat_events = select_run_chat_events(session_chat_events, run.run_id)
             verify_event_chain(
                 outbox, chat_events, wire, artifact_id, tool_call_id, artifact_kind
             )

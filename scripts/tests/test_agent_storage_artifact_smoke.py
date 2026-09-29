@@ -256,6 +256,28 @@ def test_event_chain_rejects_missing_delivery_or_wrong_terminal_order() -> None:
         smoke.verify_event_chain(outbox, chat, wire, "artifact-1", "tool-1", "document")
 
 
+def test_chat_event_selection_keeps_only_current_run_in_same_session() -> None:
+    prior = [
+        {"run_id": "run_first", "source_index": index, "event_type": kind}
+        for index, kind in enumerate(("run.started", "delivery", "run.completed"))
+    ]
+    current = [
+        {"run_id": "run_second", "source_index": index, "event_type": kind}
+        for index, kind in enumerate(("run.started", "delivery", "run.completed"))
+    ]
+    assert smoke.select_run_chat_events([*prior, *current], "run_second") == current
+
+
+def test_chat_event_selection_rejects_cross_run_delivery_mix() -> None:
+    mixed = [
+        {"run_id": "run_second", "source_index": 0, "event_type": "run.started"},
+        {"run_id": "run_first", "source_index": 1, "event_type": "delivery"},
+        {"run_id": "run_second", "source_index": 2, "event_type": "run.completed"},
+    ]
+    with pytest.raises(smoke.SmokeError, match="run event cardinality"):
+        smoke.select_run_chat_events(mixed, "run_second")
+
+
 def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
     outbox = [
         {
@@ -321,6 +343,12 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
         },
     ]
     smoke.verify_event_chain(outbox, chat, wire, "artifact-1", "tool-1", "document")
+    previous_run = [{**record, "run_id": "run_previous"} for record in chat]
+    current_run = [{**record, "run_id": "run_current"} for record in chat]
+    selected = smoke.select_run_chat_events(
+        [*previous_run, *current_run], "run_current"
+    )
+    smoke.verify_event_chain(outbox, selected, wire, "artifact-1", "tool-1", "document")
     missing_kind = [dict(item) for item in outbox]
     missing_kind[1]["payload_json"] = (
         '{"artifact_id":"artifact-1","tool_call_id":"tool-1"}'
