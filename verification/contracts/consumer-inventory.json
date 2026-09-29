@@ -199,7 +199,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF pins IAM 0.7.0 owner bytes and now has an explicit default-off user Skill draft runtime candidate that re-admits each request before replay; local IAM doubles and direct tests pass. True current-source IAM→BFF→Platform sandbox, browser scope provision and public activation remain unverified. This broad edge stays broken; local doubles are not owner integration.",
+      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin request before Platform access, including same-command replay. Root 2df63b0 passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Begin/Get 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Complete/Validate/Publish public, Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -531,7 +531,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF retains the old Capability HTTP v2 four-GET surface, while its new Platform v3 CreateDraft Connect consumer is only a default-off loopback candidate. True IAM→BFF→Platform owner composition, other catalog operations, consumer cutover and six-owner activation remain unverified; keep the broad edge broken.",
+      "reason": "BFF pins Platform 263a28f inactive v4 and has default-off user CreateDraft, Get and Begin Connect candidates. Root 2df63b0 passed real current-source IAM/BFF/Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV Create/Get/Begin, signed PUT, replay/replacement, revocation and old owner Publish regression with owned cleanup. Complete is currently only a public contract candidate with no BFF runtime; Validate/Publish public, Web signed PUT/CORS, Agent pin, old Capability cutover and v4 activation remain unverified, so the broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",

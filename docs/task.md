@@ -1,6 +1,14 @@
 # Kokoro 后端闭环任务总表
 
-## 下一切片：W3-BFF-SKILL-COMPLETE-DOC-GATE（P0；2026-09-29）
+## 下一切片：W3-BFF-SKILL-COMPLETE-RUNTIME（P0；2026-09-29）
+
+| 项 | 任务卡 / 放行门 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer，物理仓 clean `main 457472dd14f26219473d30f9b763c2d345be03a0`；Root 主控 pin `cafdfc60`，Platform `263a28f` v4 inactive。Complete 三面文档/唯一 OpenAPI 的默认关闭候选已通过独立审查，**运行 route/client 仍不存在**。先输出本仓 §8 放置表与 RED 基线，不新建模块/服务/SQL/role。 |
+| 实现 / 依赖 | 新建具名 Complete route、严格输入/稳定命令 ID 与 owner v4 `command_digest_version=3.0.0` 的 11 向量 projector，扩现有 fixed `CatalogConnectClient` generated 方法，在 server 精确 dispatch `/complete`，共用默认关闭 flag。当次每次含 replay 先 IAM current session/fixed tenant/user，再 BFF 独立 catalog workload token→Platform；BFF 不用 generic receipt/Storage RPC/SQL、无字节代理。public 四字段是未受信回显；owner result 必须核 skill/attempt/upload/hash 与请求相等、epoch 正数、内部 asset_id 合法非空、phase=UPLOADED、scan 仅 CLEAN/PENDING/UNKNOWN，然后省略 asset_id 投影。感染/旧 attempt 不因重放绕过。 |
+| RED / 验收 | 直接 HTTP 先证当前新 path 落旧 Capability 503、默认关闭与零 Platform socket；随后覆盖成功 clean/pending/unknown、同键 replay/异 body 409、新命令同 Asset 收敛、IAM 撤权/错 tenant/owner、旧 attempt/感染 412、非法 owner PB/epoch/asset/scan 502、timeout/cancel/Unknown ACK 503、x-request-id/no-store。Node22 format/contract/check/schema/build、独立审查 P0/P1/P2=0；Root 再在自有真 IAM/BFF/Platform/Storage/PG/Redis/MinIO/ClamAV 上完成 signed PUT→BFF public Complete CLEAN/INFECTED/恢复/撤权与旧 Publish 回归、自有资源清理。后续 Web shadcn 可见入口与真 Chromium CORS/preflight/PUT 另门；v4 不因本片自动激活，3310 和 Root 任务外 `uv.lock` 不动。 |
+
+## 最近验收：W3-BFF-SKILL-COMPLETE-DOC-GATE（P0；2026-09-29）
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
@@ -8,6 +16,7 @@
 | 边界 / 依赖 | Web 同源控制面→BFF 当次 IAM→Platform，浏览器完成短期签名 PUT 后，`upload_id/attempt_id` 必须绑定当前 Skill attempt；BFF 不接收字节、`asset_id`/扫描状态/Storage 凭据，不存第二套 Skill/Upload SQL/receipt；public Complete 可回显 Begin 描述符中的 `content_sha256/size_bytes`，但仅作不受信匹配输入，Platform 必须与 current Skill/Storage 事实逐项校验。POST Complete 的幂等键/command digest/unknown ACK 恢复、`pending/clean/unknown` 成功状态与感染 412/aborted、旧 attempt 与撤权 replay 要与 owner 的当前状态机逐项对齐。 |
 | 只读预审裁决 | 固定 Root `2df63b0`、BFF `571108b`、Platform `263a28f`：唯一候选 `POST /v1/skills/{skill_id}/package-upload/complete`，严格 body 为 attempt_id/upload_id/lowercase SHA-256/1–33554432 size，单个必填 Idempotency-Key；owner v4 digest version **3.0.0** 的 **11** 向量逐一绑定受信 identity 和四字段。成功 **200** 严格 `{data:{skill_id,attempt_id,attempt_epoch,upload_id,phase:'uploaded',replayed,content_sha256,scan_state:'clean|pending|unknown'}}`；内部须校验但不公开 owner asset_id，CLEAN 也不等于 ZIP validated。不可见 404、感染/旧 attempt 412、冲突 409、坏 owner 502、未知 ACK 503，错误文案不用于分支。采用现有 OpenAPI/清单/具名语义门与四文档；不复用旧 Capability 泛路由或建 BFF SQL。此为预审裁决，非 public Complete 已实现。 |
 | 三面门 / 验证 | 技术方案、API、数据模型与 machine OpenAPI 一次对齐，明确请求/响应/错误/幂等/timeout/tenant/owner/事务与消费者版本，先 RED 契约断言再 GREEN；独立只读 API/SQL 审查和 Root Node22 format/contract/check/schema 后才放行 runtime。Get 不携原 hash/size；Web 刷新后只能保留原文件描述符或让用户重选同一原文件重算，若两者都无则显式新 Begin 替换，不能伪造 Complete 或在 BFF 新建缓存/SQL。Web 正式 shadcn 入口与真 Chromium CORS/PUT/Complete/刷新是后续独立可见门，不能以当前 Root HTTP 签名 PUT 冒充。支付仍最后，3310 与任务外 `uv.lock` 不动。 |
+| 实际文档/机器门 | BFF 唯一 writer `main 457472dd14f26219473d30f9b763c2d345be03a0` 仅编辑 canonical OpenAPI、operation inventory/semantic checker/直接契约测试与 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT 四文档；无 `src/`、config、generated、Schema、lockfile 或 Root 代码改动。RED inventory 缺 Complete 后 GREEN，Root Node22 独立 format、contract **112/112**、check **431 pass/1 skip**、schema **5 pass/1 skip**；只读 reviewer 检机器/owner Proto/11 向量/状态/刷新恢复无 P0/P1/P2，直接 24/24 与语义 81 operations PASS。Root `cafdfc60` 精确 pin BFF/库存 163 处引用，checkpoint/topology PASS。**只有未激活机器/文档候选，仍没有 public Complete runtime、真实组合或浏览器链。** |
 
 ## 最近验收：W3-BFF-SKILL-BEGIN-RUNTIME（P0；2026-09-29）
 
