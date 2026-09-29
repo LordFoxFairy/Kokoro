@@ -1,5 +1,15 @@
 # Kokoro 后端闭环任务总表
 
+## 当前下一门：真实模型 → 正式 worker → 浏览器作品（2026-09-29）
+
+| 切片 | 当前状态与下一验收 |
+| --- | --- |
+| W2-REAL-MODEL Root runner | Root `a3e067c3` 已提交隔离真 System/Ollama/IAM/Web/BFF/Agent/Storage/Chromium 验收代码；Root 922 passed、190 subtests，但**组合尚未运行**。先冻结新 gitlink 与来源库存，再在自有数据库/Redis 命名空间/独占桶运行；不得代替 worker claim、模型或作品事件。 |
+| Agent General 写作品 | Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3` 已只给 `GENERAL_AGENT` 启用隔离工作区写入；Root 静态、类型、契约、默认 1307 passed/6 skipped/172 deselected、build 通过。组件级真实 DeepAgents `write_file→read_file→deliver` 通过，**真实 Product 组合待验**。 |
+| Platform v3 | `kokoro-capability` main `d227a1d3103504f876dea3ddd8d8f575c59b5703` 已发布自包含 v3 命令投影，独立复审无 P0/P1/P2；Root 静态/构建、artifact 79 测试、verify 846 passed/179 skipped 通过。Root 隔离真 PostgreSQL/Redis integration **249 passed/3 failed**，三项均为 `schema-installer` 的 `migrate diff` P1010；先窄修这一代码门，再验 BFF/Storage/Agent 消费，不能宣称 Platform 闭环。 |
+
+本波只推进开发和代码级端到端；3310 用户预览进程不重启。总体仍有 16 条跨仓边中的 13 条 declared broken，不能把上述单仓/组件门写成产品完成。
+
 ## 当前代码门：真实模型作品所需的 Agent 工作区写入（2026-09-29）
 
 **W2-REAL-MODEL-AGENT-WRITE（P0，Agent 唯一 writer，待验）：** Root 真模型 runner 已独立实现但尚未跑组合；静态审计发现 `GENERAL_AGENT` 声明 `delivery=True`，却继承 `Permissions.filesystem="read_only"`。`agent_factory.build_deep_agent` 将此策略传给 DeepAgents，`sandbox.build_filesystem_permissions` 对所有写操作返回 deny，故正式 `write_file`→`deliver` 作品链必然断在写入前。Agent 基线 `486adb1539dd8a06ca90684e66f91be031aa70cf`、clean `main`；Root `172f2374`，主控独占各仓 Git index/commit。

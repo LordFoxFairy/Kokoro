@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 新提交边界：** Root `a3e067c3` 的真实模型浏览器验收代码已通过自身 922 项测试，尚未跑真实组合；Agent main `cbb2719` 的 General 工作区写入通过单仓组件门，Platform main `d227a1d` 的 v3 artifact 通过静态/构建和独立复审。Platform 隔离真 PostgreSQL/Redis integration 是 **249 pass/3 fail（Prisma schema-installer P1010）**，非通过。下文 S9 真浏览器证据固定旧 Agent SHA，只能证明当时的确定性投递组合。3310 登录预览未由这次代码门更新；产品端到端仍待当前 gitlink 的真实模型/browser 运行。
+
 状态日期：2026-09-29。Root 是 Git superproject，精确组合以当前提交的 gitlink、`.gitmodules` 与
 [`verification/contracts/consumer-inventory.json`](../verification/contracts/consumer-inventory.json) 为准。
 业务源码、canonical Schema 和可编辑契约仍由各子仓 owner 维护。实施任务见 [`task.md`](task.md)，

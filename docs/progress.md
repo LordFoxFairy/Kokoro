@@ -1,5 +1,12 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 真实模型浏览器门准备及 Platform/Agent owner 交付
+
+- Root `a3e067c3` 新增不伪造模型/worker/交付的真实浏览器验收 runner；Root 独立 Ruff、Node syntax、`python3 -m pytest -q scripts/tests` 为 **922 passed/190 subtests**。真实组合此时尚未执行。
+- Agent main `cbb2719997b146ebd1b458ee0fe5b349bd551fc3`：General Agent 仅在隔离 `state` 工作区可写。Root 独立 `uv lock --check`、Ruff、Pyright、contract checker、默认 pytest **1307 passed/6 skipped/172 deselected**、wheel/sdist build 均通过；直接 DeepAgents 工具链证明写→读→正式 deliver，同仓组件证据不等于真实模型浏览器证据。
+- Platform main `d227a1d3103504f876dea3ddd8d8f575c59b5703`：v3 artifact 发布，独立复审无阻塞；Root Node24 静态/契约/构建全绿，artifact 79 测试、verify **846 passed/179 skipped**。Root 自有单库/schema 与 Redis DB6 的真实 integration **249 passed/3 failed**；失败集中 `schema-installer` 的 Prisma `migrate diff` P1010，复现于另一自有临时库。仅清理本轮自有库，DB6 剩余 0；不把真实集成写成通过。
+- 当前清单仍为 16 边/13 declared broken；模型纵切与 System owner-schema cutover 未被以上组件门证明。下一证据是固定 gitlink 后运行真实 Ollama/标准 worker/Chromium 组合，并记录真实失败点。
+
 本文件只追加已执行事实，任务状态以 [`task.md`](task.md) 为准，目标设计以 [`superpowers/specs/2026-09-20-kokoro-backend-closure-design.md`](superpowers/specs/2026-09-20-kokoro-backend-closure-design.md) 为准。没有命令输出、commit 或冻结 SHA 的事项不得写成完成。
 
 阅读入口：当前执行记录见本文末尾的 W1F/W2 小节；能力边界与下一步见 [`task.md`](task.md) 当前任务卡。此前日期的通过数只证明对应提交，不代表最新工作树或整体系统已完成。
