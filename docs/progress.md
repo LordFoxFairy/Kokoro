@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Storage Skill revision 包范围文档门通过，代码门未开始
+
+Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 只修六份既有文档：将 F2 已实施的 14 RPC/一个 Asset HTTP/七表九枚举、固定旧 SHA 的 Agent/BFF/Web 作品浏览器纵切，与 W1E 尚未实施的 `skill_package + skill_id`、Platform 六项包操作和旧 BFF package purpose 收口分开。Root 独立 Node24 六文件 Prettier、diff check、Proto/Prisma 计数通过；独立复审两轮纠正当前/历史状态与 provenance 摘要，终审 P0/P1/P2=0。**只通过文档门**；Storage Proto/Prisma/授权代码未改，真实包链、Platform v2 consumer、六 owner sandbox仍待实施。Root 原有任务外 `uv.lock` 工作树改动未纳入本片，3310/共享服务未触碰。
+
 ## 2026-09-29 — W3 Agent Platform v3 机器 consumer 前置通过
 
 Root `c5b2d1a5` 与三项并行只读审查确认：BFF user-only CreateDraft 真隔离纵切已过，但 Agent pin Platform v1 binding 而 owner 当前运行 v3。Root 在 `docs/task.md` 顶部冻结 W3-AGENT-PLATFORM-V3-PIN，Agent 唯一 writer 完成 v3 17 文件、Proto/生成 PB、完整来源与 31/24/15 registry/53+142+139 向量门，删除 v1 vendor；Agent main `7dfcfa936d0b51244683ffd66d16ea937fe510a6` 已提交推送。独立审查三项 P2（旧 README、残留生成文件漏检、Authorize 自证 oracle）逐项返修，终审 P0/P1/P2=0。Root 独立 `uv lock --check`、Ruff format/check、Pyright 0、contract checker、生成校验、默认 pytest **1312 pass/6 skip/172 deselected**、wheel/sdist build和 diff check 均通过；第一次 Root 测试前发现上轮 build 自有 `build/` 产物被 Ruff 扫到，已只删除该自有目录并重跑全门通过。此只证明 Agent **机器契约/离线投影**，不证明产品接线或真实 IAM→Platform；System operator-machine 与 Storage revision package/v2 仍缺，库存 16 边/13 declared broken，3310 未触碰。

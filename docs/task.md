@@ -12,6 +12,8 @@
 | 规则 / 删除项 | Platform 只在 skill_package 范围准 Create/Complete/Abort/Status Upload、Scan、PackageReference 六操作，其余拒绝；CreateUpload 仅 package purpose，后续资源与 receipt 重放逐次验同 purpose/scope/caller/subject。旧 scope 的 package 不能由 BFF 通过 GetAsset、GetDownloadReference、HTTP 列表、Upload 状态/receipt、Artifact 间接读取；非包个人/项目/作品行为保持。短期 URL 不持久化，已签 URL 自然到期；旧包 metadata 不擅自迁移。 |
 | 验证 / 交付 | 先 RED：Platform 六正项/其他拒绝、BFF 旧包目的读写旁路、跨 tenant/revision/subject、receipt replay 与非 CLEAN/对象失效；后 GREEN：Node24 format/lint/typecheck/contract/Prisma validate/test/build、Buf 兼容、fresh owner schema 安装/drift、独占临时 PG+Redis 的真实 integration/compiled smoke。真 S3/ClamAV 外部资格和 Platform v2 消费另门，不以 doubles 冒称；只清亲建资源。writer 不操作 Git index/commit，交文件清单、实际结果、风险。 |
 
+**文档门 A 已验收：** Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 已仅修六份既有文档并推送；Root 独立 Node24/Prettier 六文件、`git diff --check` 通过，并核当前 Proto 14 RPC、Prisma 七表九 enum。独立审查纠正 F2 作品纵切已验与 W1E 包链待验混淆及历史/当前 provenance 摘要后 P0/P1/P2=0。此门没有 Proto/Schema/运行码变化，不等于 skill_package 可用。代码门 B 以该 Storage SHA 为唯一 writer 基线，按上表 scope/purpose/旧包旁路 RED→GREEN 开始。
+
 ## 最近验收：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
 
 | 项 | 裁决 |
