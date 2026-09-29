@@ -1,13 +1,23 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-BFF-SKILL-PUBLIC-PREFLIGHT（P0；2026-09-29）
+## 当前执行：W3-BFF-SKILL-GET-DOC-GATE（P0；2026-09-29）
+
+| 项 | 任务卡 / 阶段门 |
+| --- | --- |
+| Owner / 基线 | BFF 唯一 writer `/root/agent_consumer_audit`，物理仓 `apps/kokoro-bff` clean `main caa99d90f57329065eeb0e98168316b2b1874159`；Root `main 39e1ada58902b15c6aff74282dd6d08c71c3b707` 管合同/SQL/调用方向、审查与后续精确 pin。Platform owner `263a28f` v4 inactive，不由 BFF 修改。 |
+| 当前事实 / 目标 | 只读预审确认 BFF 当前公开新 Skill catalog 仅默认关闭 CreateDraft；其余旧 Capability route/503 不是 Platform 包产品能力。先以 **GetSkillPackageUpload user-only 只读 public 切片**确定 current attempt/phase/upload 的浏览器恢复入口，再顺序 Begin→Complete→Validate→Publish，不能一次批量开放或把 owner CLI 当公开验收。 |
+| 放置比较 / 粒度 | 复用 BFF `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md` 与唯一 OpenAPI `contract/openapi/v1/openapi.yaml` 描述候选 Get；淘汰在旧 `owner.ts` Capability GET 上拼接新语义，也不建第二 contract 或通用 RPC proxy。文档门须明确当前态与目标态，机器 OpenAPI 候选不冒称运行路由已实现。 |
+| 边界 / 依赖 | Web 同源→BFF public→当次 IAM session/user tenant/owner→版本固定 Platform generated Connect Get，BFF 不访问 owner SQL、不建 Skill 表或二次幂等 receipt。Get 是非 command，不要 Idempotency-Key；只返回 owner current attempt/epoch/phase/upload，不泄漏 Storage 凭据/签名 URL/asset/hash。后续 Begin 的浏览器原样 signed PUT、批准对象源/CORS/header/expiry 单独设计，不由 Get 偷带实现。 |
+| 本轮交付 / 验证 | Writer 只更新 BFF 四文档与 OpenAPI 候选 Get 及其直接契约测试/fixture（若为保持机器门必需），先输出 §8 放置表；不改运行代码、SQL Schema、生成 Platform client/依赖、其他仓或用户 3310。Node22 format/contract lint/semantic/check 与 diff，报告当前 commit、机器事实/未决项；Root 独立审查通过后另派唯一 writer 实施 v4 精确 pin+Get runtime。若 OpenAPI 当前校验不允许未实现候选，先报告并裁决，不制造假 route。 |
+
+## 最近预审：W3-BFF-SKILL-PUBLIC-PREFLIGHT（P0；2026-09-29）
 
 | 项 | 任务卡 / 文档门 |
 | --- | --- |
 | Owner / 基线 | 事实 owner 为 `apps/kokoro-bff` 的 Product Skills API；Root `main 09d466d2d36874e7a875b1eb9ca9d71b729b46ea` 主控。Platform `main 263a28f1e55745bd1829a61f68228d775751adbc` 已经 owner 真验 Begin/Complete/Validate/Publish，但 v4 inactive。当前仅 `/root/agent_consumer_audit` 固定基线只读调查；不派 BFF writer 直至三面设计门明确。 |
 | 当前事实 / 目标 | 当前公开入口仅已验 `CreateDraft` 预激活候选；其余包命令是否存在以 BFF 当前源码/OpenAPI 审计为准，不从 Platform RPC 存在推断 Product 已通。目标是用户从同源 Web，经 BFF 当次 IAM session/owner 授权，严格调用版本固定的 Platform Get/Begin/Complete/Validate/Publish，最终具备可验证的用户操作与撤权重放。 |
 | 边界 / 依赖 | BFF 拥有公开 OpenAPI、用户 session、HTTP 幂等和自己的 receipt；Platform 拥有 Skill/包状态与内部 Connect Proto；Storage 拥有字节/scan，BFF 不读 owner SQL、不复制包状态或 Storage 内部凭据。浏览器的短期签名 PUT 与同源 adapter 选择需在 API/安全文档明确，不能把 owner CLI 当公开链。Proto v4 当前 inactive，消费者固定 commit/digest 后才接；BFF public 可候选但不自动激活。 |
-| 本轮交付 / 排除 | 只读查 BFF TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT、OpenAPI、运行入口、SQL/receipt、集成测试，给出最小切片依赖图、缺失设计与真实浏览器/撤权验收清单。无文件写入、提交、服务启动、共享库清理；用户 3310 与任务外 Root `uv.lock` 不动。Root 审结论后才指定唯一 BFF writer 先过三面文档门。Source Agent proof、Storage orphan retirement、Agent pin、支付后续独立 owner 切片。 |
+| 预审结果 / 排除 | BFF `caa99d9` OpenAPI/运行路由只有默认关闭的正式 CreateDraft 候选；三设计顶端仍把旧 Platform v3/未验真组合当当前事实，Get/Begin/Complete/Validate/Publish 无精确 public contract；BFF pin 仍 `5b6eb2c` v3，故**文档门未过，不能直接开码**。按 Get→Begin→Complete→Validate→Publish 顺序推进，首片 Get 非 command/无签名和无 BFF Skill SQL；每次包括重放都先 IAM session。签名 PUT/CORS/header/TTL、旧 Capability 503、Source Agent proof、Storage orphan retirement、Agent pin、支付分别留边界；本次只读未改文件/服务，3310 与 Root `uv.lock` 未动。 |
 
 ## 最近验收：W3-PLATFORM-PUBLISH-CODE（P0；2026-09-29）
 
