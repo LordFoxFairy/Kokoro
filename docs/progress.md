@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF CreateDraft 运行候选放置与依赖审查
+
+Root `db5c80dd`、BFF `2a95da2`、Platform `5b6eb2c` clean 基线下，两名并行只读审查分别复核 BFF 入站与 IAM/Platform 契约，均未改文件或启动服务。BFF 当前 IAM admission 每次执行，但通用 key 解析会 trim/合并重复 header、通用 receipt 在 owner route 前 replay、旧 envelope 的 `meta.request_id` 不符合新操作；因此新操作必须在 admission 后、通用 key/body/receipt 前精确分派。IAM 现有 tenant-machine catalog provisioning、client-credentials token endpoint 和 Platform v3 current-owner/receipt gate 可复用，不需新 IAM Schema/API。BFF 技术设计后段“active 前不能跑真 201”与当前 Root/Platform ADR 的激活前 sandbox 要求矛盾，已列入下一唯一 writer 的阶段 A 纠偏。下一阶段先机器 OpenAPI/contract 与文档门，再运行候选；**此审查本身没有新增 public route 或真实 201 证据**。
+
 ## 2026-09-29 — BFF Platform v3 离线消费者通过，运行链未接
 
 BFF main `2a95da2410fd89c300dc18064867ee66617549e2` 已提交并推送：精确固定 Platform `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 的 Proto 与完整 v3 artifact，删除旧 commit vendor；新增独立 CreateDraft raw 投影、JCS/SHA-256 与 45 个 owner 正反向量。发布状态仍 `generated-not-activated`，v3 manifest 仍 `inactive/routable=false`。生产 provenance 检查现递归枚举真实树，额外文件、目录和符号链接均拒绝；独立复审最终无 P0/P1/P2。
