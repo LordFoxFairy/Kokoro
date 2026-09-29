@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 当前执行：W3-STORAGE-SKILL-PACKAGE-SCOPE（P0；2026-09-29）
+## 最近验收：W3-STORAGE-SKILL-PACKAGE-SCOPE（P0；2026-09-29）
 
 | 项 | 裁决 |
 | --- | --- |
@@ -14,6 +14,26 @@
 
 **文档门 A 已验收：** Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 已仅修六份既有文档并推送；Root 独立 Node24/Prettier 六文件、`git diff --check` 通过，并核当前 Proto 14 RPC、Prisma 七表九 enum。独立审查纠正 F2 作品纵切已验与 W1E 包链待验混淆及历史/当前 provenance 摘要后 P0/P1/P2=0。此门没有 Proto/Schema/运行码变化，不等于 skill_package 可用。代码门 B 以该 Storage SHA 为唯一 writer 基线，按上表 scope/purpose/旧包旁路 RED→GREEN 开始。
 
+**代码门 B 精确类型闭包扩围（2026-09-29）：** 新增 canonical `skill_package` enum 后，既有旧三值局部 union 阻断 typecheck；准唯一 Storage writer 仅窄改 `src/common/commands/{command.types,commands-store.types}.ts`、`src/assets/assets-list.types.ts`、`src/artifacts/artifacts-list.types.ts`、`test/doubles/storage-repository.ts`，必要时在 `src/assets/assets-list.service.ts` 精确收窄。不得借类型扩围放行 Artifact、HTTP/列表等额外操作；`skill_package` 对 Create/FinalizeArtifact 等仍须受信 operation policy 拒绝并有直接负例，不改 `artifacts.service.ts` 业务流程。
+
+**代码门 B 直接测试扩围：** 既有 30 个断言依赖旧包 policy 或过早的 receipt 前置；仅准 `test/integration/{lifecycle,upload-admission,scoped-file-lifecycle,package-purpose}.test.ts`、`test/unit/{scoped-file-lifecycle,application-semantic-vectors}.test.ts`、`test/contract/rpc-trust-boundary.test.ts` 保留普通文件行为、将新 Platform 正项改为具体 `skill_package`/`capability_package`、历史旧包直种后断言拒绝，并在语义向量之前创建合法 upload。不得 skip 或弱化 digest/权限断言。
+
+**代码门 B 持久路径 validator 扩围：** 默认 Mock 门未触及真写入前，writer 自审发现 `src/common/commands/command-identity.schema.ts` claim 与 `src/uploads/upload-write-validation.ts` admission 仍仅含旧三 scope；准这两个既有文件窄改为复用 canonical scope schema 并补正反例。`src/transport/storage-list-cursor.schema.ts` 与 HTTP schema 保持旧范围，Platform 没有列表/HTTP。Root 必须在独占临时 PostgreSQL 验真写入，不能用默认 Mock 465 pass 替代。
+
+**代码门 B client 契约测试扩围：** `test/contract/client.test.ts` 原 GetPackageReference 成功样本为旧 BFF/project；准仅改为 Platform/`skill_package` 可信 metadata，并断言本地 facade 列表拒绝 `skill_package`。正式 client 不新增功能或放宽其他验证。
+
+**代码门 B 元数据 smoke fixture 扩围：** `test/integration/smoke-storage-metadata.test.ts` 两处旧 BFF/personal package purpose 是普通元数据 smoke 的遗留输入；准仅改为普通 Asset 目的，保留个人 scope/凭据/原断言；`test/fixtures/smoke-storage-metadata.ts` 不动。随后 writer 停写交付，Root 真 PostgreSQL 与独立审查接手，不无限扩围。
+
+**Root 真 PG RED（待返修）：** Root 独立 Node24 format/lint/typecheck/contract/Prisma validate/default test 468 pass/155 skip/build 全绿；自有临时 PG 库安装/drift 通过，集成 23 文件 **190 pass/1 fail**，失败 `test/integration/prisma-command-lifecycle.test.ts:402`：新增 upload purpose 前置使旧 missing-upload 命令的二次异 payload 从 digest conflict 变为 `upload not found`。临时库已删除；唯一 Storage writer 获准仅窄改该直接测试与已批准源码，保持同命令异 payload 冲突和旧包 fail-closed，不能以改 NOT_FOUND/skip 清零。compiled smoke 尚未运行；独立代码审查进行中。
+
+**Root 真 PG 复测 / 独立审查待修：** 同 writer 保持缺失 upload 的原 digest-conflict 不变量并逐次校验已定位旧包后，Root 自有独占 PG schema apply/drift、integration **23 文件/191 pass**、compiled smoke **6 pass**；临时 DB 已删除，Redis DB14 0→0。独立只读审查指出 1 P1（两项显式真实 smoke 仍以 BFF/personal 上传包）与 2 P2（完成态 Upload/Asset purpose 关系漂移，Platform Abort/UploadStatus/ScanStatus 缺真 Prisma 正例）。批准同 writer 仅窄改 `test/smoke/{capability-package,production-runtime}.e2e.test.ts`、`src/uploads/uploads.service.ts`、`test/integration/scoped-file-lifecycle.test.ts`：包烟测用 Platform/skill_package、普通 ClamAV smoke 用 Asset；关系漂移 fail closed 并补真 PG 负例；三项正向真 Prisma。此前旧 `scripts/docker-smoke.sh` env/route 是基线既存问题，本片不作运维扩围，不将未跑的外部 smoke 称通过。
+
+**审查返修精确 fixture 扩围：** 真包 smoke 的既有 proof `test/fixtures/smoke-storage-metadata.ts` 固定 personal/web-bff，会错误拒绝新合法 Platform 包。仅准构造时显式 scope/service 注入，默认 personal/web-bff 保持，包 smoke 传 Platform/skill_package/具体 skill_id；不得弱化 proof 断言或改其他 provider fixture。
+
+**代码门 B 已验收：** Storage main `16a6c1ce95832df6dc839e0d50e957405c5c7005` 已精确提交推送 41 文件，Root 独立 Node24 format/lint/typecheck/contract:check/Prisma validate/test/build、Buf breaking 与 diff check 全绿；默认 **468 pass/156 skip**。自有临时 PostgreSQL 单库 owner schema apply/drift、integration **23 文件/192 pass**、compiled smoke **6 pass**，测试库已删除、Redis DB14 0→0。独立审查 1 P1/2 P2 已返修，最终 P0/P1/P2=0；Storage 源码/README/三设计/contract/provenance 与正式生成同步。此前 RED、191 pass 中间态与扩围条目是审计记录，不覆盖本最终证据。两条外部 smoke 的旧调用身份已改，但真实 S3/ClamAV、旧 Docker smoke/OCI 未运行；Platform v1 消费、可信授权、持久 revision 绑定、BFF/Agent 与六 owner 真组合仍待后片，库存不因 Storage 单仓绿而升绿。
+
+**下一门（Platform owner，尚未启动）：** 先基于 Storage `16a6c1c` 做 Platform `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md` 与机器 contract/Prisma 的设计门，裁决 user-only 当前 Product subject/owner 授权、具体 `skill_id` 包绑定/恢复和 Begin/Complete/Validate 具名操作。随后唯一 Platform writer pin Storage v2 Proto/provenance、带服务凭据和受信 tenant/subject/skill_package metadata 的 Connect client，保留完整 `TransferReference` 并删 v1/body tenant/裸 URL 运行路径；业务链以真 IAM→Platform→Storage 持久事实验收。不得因 Storage 已开六操作就直接激活或让 service credential 充当 Skill grant；Billing 最后。
+
 ## 最近验收：W3-AGENT-PLATFORM-V3-PIN（P0；2026-09-29）
 
 | 项 | 裁决 |
@@ -25,7 +45,7 @@
 | 数据 / API / 删除 | 不新增 Agent 持久事实、事务、Redis key 或授权 fallback；只消费 Platform 已发布机器字节，不修改 owner Proto。Agent 的 v1 vendor 14 文件随 v3 原子替换，不保留 runtime alias；Platform owner 仓的冻结历史不动。v3 manifest `inactive/routable=false` 仍是发布态，不能把此片称为业务激活。 |
 | 验证 / 交付 | 先 RED 证明当前 v1 与 v3 不匹配；后 GREEN 精确 owner 字节+digest、24 tenant request 中六 RPC parity、正反向量/未知字段/重放语义，生成两次字节稳定；`uv run python scripts/generate_platform_consumer.py --check`、`uv run kokoro-agent-contract-check`、Ruff format/check、Pyright、聚焦与全量 pytest、`uv build --wheel --sdist`。真实 IAM→Platform 六 RPC 另设 Root sandbox 门；本片只称机器消费准备。Writer 交文件清单/RED→GREEN/未跑风险，不操作共享 Git index；Root 独立审查重跑后提交。 |
 
-**后续依赖，不并行改写：** Agent v3 来源门后仍须 typed Skill/MCP 选择进入受信 Run 并逐次真实调用；Storage 当前只支持旧三种包 scope，Platform 仍消费 Storage v1，需 Storage 发布 revision package v2 边界后 Platform 才能切；System 尚无 operator-machine Platform 出站调用。三者与六 owner 真 sandbox、正式 `kokoro-capability`→`kokoro-platform` 原子切换分别验收；当前库存 16 边/13 declared broken，不因 BFF 单个 CreateDraft 纵切或本片机器 pin 升绿。
+**后续依赖，不并行改写：** Agent v3 来源门后仍须 typed Skill/MCP 选择进入受信 Run 并逐次真实调用；Storage 后续已发布 `skill_package` 六操作，但 Platform 仍消费 Storage v1 且无 revision 包绑定，须 Platform owner 设计门和 v2 消费切片后才可联接；System 尚无 operator-machine Platform 出站调用。三者与六 owner 真 sandbox、正式 `kokoro-capability`→`kokoro-platform` 原子切换分别验收；当前库存 16 边/13 declared broken，不因 BFF 单个 CreateDraft 纵切或本片机器 pin 升绿。
 
 **独立审查扩围（同一 Agent writer 返修）：** 准 `apps/kokoro-agent/contract/README.md` 仅纠正当前来源/计数（原仍写 ee25c1f/v1）；现有 `scripts/generate_platform_consumer.py --check` 必须拒绝 OUTPUT 中多出的旧 Platform 生成文件，同时保留 Storage 生成树；直接生成检查测试可精确扩充。六项实际 RPC 投影 parity 的 `mcp.authorize_tool` 不再仅自产哈希自证，应以 owner 独立 typed-arguments bytes 向量验证原字节 SHA，并组合 owner binding 投影的其余字段比较 canonical/SHA。15 个 Product command projector 不在本片实现范围；只需静态完整来源/结构验收。
 

@@ -1,6 +1,8 @@
 # Root 当前组合
 
-**2026-09-29 Storage 包范围文档门：** Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 已同步 F2 当前事实与 W1E `skill_package` 目标，六文档经 Root 独立格式/机器计数核对和终审 P0/P1/P2=0；**仅文档变更**。当前 Storage 仍只有三 scope，Platform 仅旧范围包引用资格且仍用 Storage v1 consumer；六项 revision 包操作与旧 BFF 包旁路收口进入代码门，未激活。
+**2026-09-29 Storage Skill revision 包边界已通过单仓代码门：** Storage main `16a6c1ce95832df6dc839e0d50e957405c5c7005` 已在既有 v2 十四 RPC 中实现 `skill_package + skill_id` 专用范围，仅认证 `kokoro-platform` 可用六项包操作；旧 BFF 包写读、状态、列表、下载、Artifact 与 receipt 旁路关闭，普通文件/作品路径保留。Root 独立 Node24 格式、lint、类型、契约/provenance、Prisma validate、默认测试 **468 pass/156 skip**、构建和 Buf breaking 全过；自有单库 owner schema 安装/drift、真 PostgreSQL integration **23 文件/192 pass**、compiled smoke **6 pass**，临时库已删、Redis DB14 0→0。独立复审 1 P1/2 P2 已返修，最终 P0/P1/P2=0。**这只是 Storage owner 边界**：Platform 仍用 Storage v1，可信 Product 授权、持久 revision 包绑定、v2 consumer、真实外部 S3/ClamAV/六 owner 组合均待验；不改用户 3310。
+
+**2026-09-29 Storage 包范围历史文档门：** Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 当时仅同步 F2 当前事实与 W1E `skill_package` 目标，六文档经 Root 独立格式/机器计数核对和终审 P0/P1/P2=0；**该 SHA 仅文档变更**。当时 Storage 仍只有三 scope，Platform 仅旧范围包引用资格且仍用 Storage v1 consumer；后续代码门结果见上段。
 
 **2026-09-29 Agent Platform v3 机器消费者前置已验：** Agent main `7dfcfa936d0b51244683ffd66d16ea937fe510a6` 已将唯一 Platform Proto/完整 17 文件 v3 execution artifact 固定到 owner `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`，删除 Agent v1 vendor；六项技术 RPC 的投影对齐 owner 向量，生成树精确拒绝残留 Platform 文件。Root 独立 `uv lock --check`、Ruff、Pyright、contract、生成校验、默认 pytest **1312 pass/6 skip/172 deselected**、wheel/sdist build 通过；独立复审 P0/P1/P2=0。此为机器来源/离线投影门，**未接入 typed Skill/MCP 产品选择、未执行真实 Agent→IAM→Platform 六 RPC**；Platform manifest 仍 inactive，库存 Agent 边保持 broken。用户 3310 未触碰。
 

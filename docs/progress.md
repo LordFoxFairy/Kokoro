@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Storage Skill revision 包范围代码门通过，Platform 消费未接
+
+Storage main `16a6c1ce95832df6dc839e0d50e957405c5c7005` 已提交推送：在现有 `kokoro.storage.v2` 十四 RPC 中增加 `skill_package + skill_id` scope，而非新增 RPC/表/role；认证 Platform 只在包目的可调用 Create/Complete/Abort Upload、Upload/Scan Status、PackageReference 六项，其他八 RPC 与 Asset HTTP 列表拒绝。旧 BFF 个人/项目包写读、状态、普通下载、Artifact 与 receipt replay 旁路收口；已完成 Upload/Asset 当前 purpose、creator、digest、size、MIME/filename 关系和 replay 逐次重验。历史普通文件/作品行为保持。正式文档、Proto provenance `e0954a00…`、官方生成与唯一 Prisma enum 同步；两条显式外部 smoke 的调用身份/目的已改为新边界，但尚未实际跑外部 S3/ClamAV。
+
+先 RED：旧 schema 拒新 scope、旧 BFF 包写可过；第一次 Root 真 PostgreSQL 23 文件 **190 pass/1 fail**，揭示新增 purpose 前置盖住缺失 upload 的原 digest-conflict 不变量，已同 writer 保持 claim/fingerprint 和旧包 fail-closed 后复验。独立代码审查再发现 1 P1（两条真实 smoke 沿用旧包身份）和 2 P2（完成态关系漂移、Platform 三项真实 Prisma 正例空缺），同 writer 修复，最终复审 P0/P1/P2=0。Root 独立 Node24 `format:check/lint/typecheck/contract:check/prisma:validate/test/build` 与 Buf breaking 全过，默认 **468 pass/156 skip**；自有临时 PostgreSQL 单库 owner schema apply/drift、integration **23 文件/192 pass**、compiled smoke **6 pass**。测试临时库已 DROP，Redis DB14 0→0；Root 未启动/清理共享服务，也未触碰用户 3310。旧 `scripts/docker-smoke.sh` 的废弃 env/route 属基线债，不以本次未跑的完整 CI/OCI/外部 provider 冒称通过。
+
+**边界：** Storage owner 字节/hash/scan/短期引用已具备专用包范围，Platform 仍是 Storage v1/body tenant/裸 URL consumer，缺可信 Product 当前 subject/owner 授权、持久 revision package 绑定和 v2 接线；BFF/Agent 产品链及六 owner 激活均未完成。下一门由 Platform owner 先对齐三设计/机器契约/Schema，再单一 consumer 切换和真组合，不让 Storage credential 代替 Skill 权限。
+
 ## 2026-09-29 — Storage Skill revision 包范围文档门通过，代码门未开始
 
 Storage main `4f092fa3abbfbf3bb6b6a22129e1f914ff8fd3c2` 只修六份既有文档：将 F2 已实施的 14 RPC/一个 Asset HTTP/七表九枚举、固定旧 SHA 的 Agent/BFF/Web 作品浏览器纵切，与 W1E 尚未实施的 `skill_package + skill_id`、Platform 六项包操作和旧 BFF package purpose 收口分开。Root 独立 Node24 六文件 Prettier、diff check、Proto/Prisma 计数通过；独立复审两轮纠正当前/历史状态与 provenance 摘要，终审 P0/P1/P2=0。**只通过文档门**；Storage Proto/Prisma/授权代码未改，真实包链、Platform v2 consumer、六 owner sandbox仍待实施。Root 原有任务外 `uv.lock` 工作树改动未纳入本片，3310/共享服务未触碰。
