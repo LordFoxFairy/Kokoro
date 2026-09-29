@@ -417,7 +417,8 @@ def safe_summary(
             "status": "PASS",
             "resources": "clean",
             "platform_skill_count": 1,
-            "platform_receipt_count": 1,
+            "platform_receipt_count": 2,
+            "platform_package_begin": "PASS",
         }
     detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
     if any(secret and secret in detail for secret in secrets):
@@ -429,11 +430,13 @@ def platform_package_probe_env(
     base: dict[str, str],
     platform_node: Path,
     storage_base: str,
+    platform_base: str,
+    iam_base: str,
     service_secret: str,
     ready: SandboxReady,
     skill_id: str,
 ) -> dict[str, str]:
-    """Give the owner probe only its own Storage boundary and current Skill identity."""
+    """Give the owner probe only current Skill and short-lived owner boundary inputs."""
     if not skill_id or skill_id != skill_id.strip():
         raise SmokeError("current Skill id invalid for Storage package probe")
     return {
@@ -441,6 +444,10 @@ def platform_package_probe_env(
         "PATH": f"{platform_node.parent}:{base['PATH']}",
         "KOKORO_STORAGE_URL": storage_base,
         "KOKORO_PLATFORM_STORAGE_SERVICE_CREDENTIAL": service_secret,
+        "KOKORO_SMOKE_PLATFORM_URL": platform_base,
+        "KOKORO_SMOKE_IAM_URL": iam_base,
+        "KOKORO_SMOKE_CATALOG_CLIENT_ID": ready.catalog.client_id,
+        "KOKORO_SMOKE_CATALOG_CLIENT_SECRET": ready.catalog.client_secret,
         "KOKORO_SMOKE_TENANT_ID": ready.tenant_id,
         "KOKORO_SMOKE_SUBJECT_ID": ready.subject_id,
         "KOKORO_SMOKE_SKILL_ID": skill_id,
@@ -1303,18 +1310,20 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         base,
                         args.platform_node,
                         storage_base,
+                        platform_base,
+                        ready.base_url,
                         storage_platform_secret,
                         ready,
                         str(result["skill_id"]),
                     ),
                     log,
-                    "Platform real Storage v2 package reference",
+                    "Platform real Storage v2 package reference and Begin",
                     secret_values,
                 )
                 phase = Phase.INVENTORY
                 if platform_inventory(urls["kokoro_platform"], ready.tenant_id) != (
                     1,
-                    1,
+                    2,
                 ):
                     raise SmokeError(
                         "Platform Skill or receipt inventory is not unique"

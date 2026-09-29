@@ -59,6 +59,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             {"PATH": "/usr/bin", "NODE_ENV": "development"},
             Path("/opt/node24/bin/node"),
             "http://127.0.0.1:4402",
+            "http://127.0.0.1:4403",
+            "http://127.0.0.1:4404",
             "platform-secret",
             parsed,
             "skill-current",
@@ -67,6 +69,10 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertEqual(env["KOKORO_SMOKE_SUBJECT_ID"], "user-one")
         self.assertEqual(env["KOKORO_SMOKE_SKILL_ID"], "skill-current")
         self.assertEqual(env["KOKORO_STORAGE_URL"], "http://127.0.0.1:4402")
+        self.assertEqual(env["KOKORO_SMOKE_PLATFORM_URL"], "http://127.0.0.1:4403")
+        self.assertEqual(env["KOKORO_SMOKE_IAM_URL"], "http://127.0.0.1:4404")
+        self.assertEqual(env["KOKORO_SMOKE_CATALOG_CLIENT_ID"], "catalog")
+        self.assertEqual(env["KOKORO_SMOKE_CATALOG_CLIENT_SECRET"], "catalog-secret")
         self.assertEqual(env["PATH"], "/opt/node24/bin:/usr/bin")
         self.assertNotIn("KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE", env)
         with self.assertRaises(smoke.SmokeError):
@@ -74,6 +80,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 {"PATH": "/usr/bin"},
                 Path("/opt/node24/bin/node"),
                 "http://127.0.0.1:4402",
+                "http://127.0.0.1:4403",
+                "http://127.0.0.1:4404",
                 "platform-secret",
                 parsed,
                 " ",

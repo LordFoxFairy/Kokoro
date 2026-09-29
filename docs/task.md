@@ -1,6 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 下一验收门：W3-PLATFORM-PACKAGE-BEGIN（P0；2026-09-29）
+## 下一验收门：W3-PLATFORM-BEGIN-REAL-STORAGE（P0；2026-09-29）
+
+| 设计门 | 裁决与验收 |
+| --- | --- |
+| Owner / 基线 | Platform `main 371a39c` 已提交真实 Begin、inactive v4、同事务 intent/receipt 与 Storage v2 adapter；Storage `16a6c1c`。Root 尚未 pin 新 Platform，现有独占 IAM/BFF/Platform/Storage/MinIO/ClamAV Skill sandbox 仍只验真实包引用。 |
+| 当前事实 / 目标 | Platform Node24 静态/默认 **893 pass/194 skip**、自有真 PostgreSQL Begin **8/8**、两项独立审查复审 P0/P1/P2=0；**尚无正式 Begin→真实 Storage 进程/对象的组合证据**。用 BFF 创建的当前 Skill、IAM sandbox 的已认证 catalog workload 与同源受信 Product context 调正式 Begin RPC，签名 PUT 原始 ZIP，同 command 重放重新签发且 attempt/upload 不变，Get 当前为 upload_pending；错 digest、错 owner、错 replacement/文件名及 Storage 状态终态不得产生第二当前包。 |
+| 放置 / 依赖 | 扩 Platform 既有 `scripts/smoke-storage-package.mjs` 测试入口和现有 Root `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py`，复用测试独占库、Redis、bucket、短寿进程；不新建第二基础设施编排器、业务服务、role/库，也不复制 owner Proto/DTO 到 Root。Platform CLI 从 IAM sandbox catalog client 取短期 token，经 generated Connect client 调正式 RPC；Root 只传本次 tenant/subject/skill 与临时凭据，不 import Platform 私有代码。 |
+| 验证 / 交付 | Platform Node24 完整静态/default test/build、Root Python 聚焦/全 scripts、同一次真 Storage/MinIO/ClamAV sandbox 与自有对象/DB/Redis/进程清理、两仓 SHA/库存 pin；用户 3310 不动，URL/headers/token 不记日志。只算 Begin+Storage 纵切，不宣称 Complete/ZIP Validate/Publish、BFF Begin public、用户 session 撤权、孤儿退役或生产 HTTPS。 |
+
+## 最近代码门：W3-PLATFORM-PACKAGE-BEGIN（P0；2026-09-29）
 
 | 设计门 | 当前裁决与完成条件 |
 | --- | --- |
@@ -10,6 +19,7 @@
 | API / 数据 / 失败恢复 | 仅当前 IAM Product user 且为 draft owner；输入固定 ZIP MIME、≤32MiB、正 size、合法小写 SHA256、文件名及可选精确 `replaces_attempt_id`。descriptor-backed digest 绑定 trusted tenant/subject/Skill/replacement/文件事实，异 digest/跨人/撤权先拒绝。短 Serializable 事务以 Skill 全包状态、attempt/epoch/version/owner/phase 严格 CAS 写 intent 与同事务 external receipt；`callIntended` 持久后才发 Storage v2 `CreateUpload(skill_package, skill_id)`，不在事务内网络调用。未知 ACK 原命令重试/查状态；末次短事务以 Skill+receipt lease/epoch/phase 双 fence 写当前 `upload_pending`。只有当前 intent/upload_pending 且 Storage pending 可重签完整 PUT transfer；旧 attempt/终态/撤权均不返 URL。签名 URL/header/expiry 不入持久状态/日志。 |
 | 依赖 / 删除项 | 无跨 owner SQL、无新 role/库；Storage 已完成 Asset 仍缺退役/释放，Begin 不冒称解决产品激活。旧 full-row `updateSkill` 已设安全闸，不再用其写包；不能新建 v1 fallback、UNIMPLEMENTED 空路由、双写或绕开 receipt。若现有 Begin pointer 四 phase 与设计文字不一，随真实 handler 同步文档和测试，不增虚构 `ack_unknown` 状态。 |
 | 验证 / 出门条件 | Platform Node24 format/lint/typecheck/contract/artifact/schema/test/build；自有真 PostgreSQL/Redis：初次与替换 CAS、同/异 digest replay、并发仅一胜、Skill 与 receipt 双 fence、撤权零副作用、call-intended 前后崩溃/ACK unknown/COMMIT unknown/重启恢复、旧 attempt 迟到结果拒绝。Root 真 Storage v2/MinIO/ClamAV 独占 sandbox 跑正式 Begin→签名 PUT/重放/拒绝与资源清理；独立审查 P0/P1/P2=0 后再 pin。此门不宣称 Complete/ZIP Validate/Publish/Agent 产品闭环。 |
+| 代码门结果 / 剩余 | Platform `main 371a39c` 已提交推送真实 Begin RPC、v4 inactive 33 operation/16 command 候选、Storage v2 Create/Status 和持久外部恢复。Root 独立 Node24 全静态/default **893 pass/194 skip**/build、真 PostgreSQL Begin **8/8**；两只读终审 P0/P1/P2=0。旧迟到、ACK unknown、取消、异 digest、非法文件名等焦点已验；**真 Storage 组合、最终 COMMIT ACK unknown 注入、BFF 用户 session 撤权、并发双替换/lease takeover 完整矩阵仍待验**。因此这是已提交代码切片，不是本表全部出门条件或产品激活；下一门为上方 real-Storage 纵切。 |
 
 ## 最近验收：W3-PLATFORM-STORAGE-V2-REAL-COMPOSITION（P0；2026-09-29）
 

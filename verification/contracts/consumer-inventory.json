@@ -522,7 +522,7 @@
       "owner": {
         "name": "kokoro-capability",
         "repository_path": "apps/kokoro-capability",
-        "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+        "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
         "contract_version": "3.0.0",
         "contract_path": "contract/openapi/platform-http.openapi.json",
         "contract_sha256": "06609154e16769a99c29b4b28f04b61725e9a4ca46980b3defbf845ba10cf896"
@@ -685,13 +685,13 @@
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "src/modules/skills/source/skill-projection.controller.ts",
           "sha256": "eefee0be9b2c08c3ad795fbf63f7298fb4beab4f12af73bebe56d3217c92a4e6"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "src/modules/mcp/server/mcp-server-projection.controller.ts",
           "sha256": "9d0e44d4af015ed1c92b5b87f88b32e584039e529dfe396d7d69ca86104e54f0"
         }
@@ -1254,10 +1254,10 @@
       "owner": {
         "name": "kokoro-capability",
         "repository_path": "apps/kokoro-capability",
-        "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+        "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
         "contract_version": "kokoro.platform.v1",
         "contract_path": "contract/proto/kokoro/platform/v1/platform_runtime.proto",
-        "contract_sha256": "15d13cfef2911734e795a697e4373e4e6dc3ffaba55b4683106d5c1605c8d707"
+        "contract_sha256": "85e0549cf64e6ee3f563493eb806679af9b593b817d4279cedb31e5116973bd1"
       },
       "protocol": "connect-proto",
       "code_generator_version": "buf-bin@1.73.0+protoc-gen-py@0.1.1+protoc-gen-connectrpc@0.11.1",
@@ -1413,19 +1413,19 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "src/modules/skills/storage-package.client.ts",
-          "sha256": "64662d528c56984e03bcb8fab13ac08af2bd2d74d697869bd5b2251a4a61e2f0"
+          "sha256": "b8e17bbd47987bb1e80503dd5e54cb709f3b3f8e1ab3ba5eef355724d40da632"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "src/generated/proto/kokoro/storage/v2/storage_pb.ts",
           "sha256": "d65b51c0fa460c77e6c785e6558548a647155a366587beaf1177f3eebb20524b"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "package.json",
           "sha256": "b540b1b91427d45bbba5dd97c0c3bf464a57a6b894258c20445567831759f80b"
         },
@@ -1462,15 +1462,15 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "src/iam/platform-workload-authorizer.ts",
           "sha256": "20392c3b92b02669178605555ffed2cd33890b455619c66f2262e13c14f8b6fd"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "1042bb97753507a3a534fdec6b819fe263bc40c0",
+          "repository_commit": "10fdeda5f60c478439b0743faa753e1e183b2896",
           "path": "src/modules/skills/skills.module.ts",
-          "sha256": "66e026c4309df004d79f724a5cfa2bcbed63d9ccb7dcff4e886b854b942da9fc"
+          "sha256": "04250e5c3c382aa85a715e710a480b08b5b7c6bc665ae281274264c7f5dee320"
         },
         {
           "repository_path": "apps/kokoro-iam",
