@@ -1,10 +1,16 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Platform 激活语义源码/ADR 复核（只读）
+
+独立只读审查 Platform `5b6eb2c…` 的 runtime 与 ADR-002 §13：`src/modules/skills/catalog/skill-catalog.request-binding.ts` 运行摘要已固定 v3 `3.0.0`，`src/rpc/rpc.middleware.ts` 只按 `skill-catalog` surface 注册 SkillCatalogService，运行代码不读取 `contract/execution-operations/v3/manifest.json`。因此该 manifest 的 `inactive/routable=false` 是发布/治理标记，**不是隔离测试环境的运行时断路器**；ADR 明确要求正式激活前跑六 owner 真实 sandbox。BFF 四设计中“任何真实 201 都需先 active”的字面要求会形成循环，已要求唯一 BFF writer 在当前代码片纠正：离线候选之后可在隔离真实 IAM/BFF/Platform(+当前 Platform 启动所需真 Storage readiness) 测 201/replay/撤权，但不得公开发布或改库存 active。正式整体激活仍受全消费者、六 owner sandbox 与协调 stop/switch/start 约束；当前没有已批准的单 operation 激活门。此审查**没有运行**该真链。
+
+额外发现：CreateDraft 业务本身不取 Storage 包，但 Platform `src/config/runtime.ts` 将 `skill-catalog` 列入 Storage readiness surface，原样启动仍需健康的 Storage 服务；其 IAM providers 也要求合法 resource-server 与 tenant execution credential 文件。Root 后续隔离 runner 应提供这些真实前置，不借用用户 Bearer、假 readiness 或无关部署扩展。active artifact 也不是单改 JSON 两字段：当前 checker/schema/provenance 固定 inactive，若正式发布需独立 owner 机器版本、重新 pin 与验证。
+
 ## 2026-09-29 — BFF user Skill draft 文档门完成，运行仍 inactive
 
 BFF main `51010fc5885ac44c98a42beb976e2f1d768c015b` 已提交并推送四份既有设计文档，明确当前 `contract/dependencies/platform-connect.json` 仍是 `generated-not-activated`/`execution_artifact:null`、旧 Capability 四 GET 正在运行，public `POST /v1/skills/drafts` 尚无机器 OpenAPI/route；目标仅 user-only CreateDraft，Platform owner 来源为 `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0`、v3 aggregate `324e749da1bc66c1ff03de74e7299716f798f5f5bb5fa19556033b79fa09ff8d`。Root Node22 `pnpm contract:check` **72/72**、`pnpm contract:check:platform` 双生成字节一致、`pnpm schema:check` **5 pass/1 无库 skip**、`git diff --check` 通过；四文档无 Schema/机器契约/运行代码变更。第一次用本机默认 Node24 执行 Platform 生成检查因仓库精确要求 Node22 失败，换固定 Node22.22.2/pnpm11.25.0 重跑通过；不是 owner contract 漂移。
 
-只读审查先发现 P1：目标文字把 `inactive/routable=false` v3 artifact 直接当真实 201 的可路由前置。Root 返修为**候选实现与激活分门**：当前只允许离线生成/projector/vector 与 fail-closed 候选；Platform 后续提交 active/routable=true artifact、BFF 重新固定精确 commit/aggregate、Root 协调激活后，才发布 public route 并跑真 IAM→BFF→Platform 201/replay/撤权/唯一 receipt。复审 P1 关闭，当前四文档 diff 无 P0/P1/P2。此文档门通过不等于代码、Web 页面、六 owner 或整体闭环。
+只读审查先发现 P1：目标文字把 `inactive/routable=false` v3 artifact 直接当正式 public 201 的可路由前置。Root 当时返修为候选实现与激活分门，复审按该未提交 diff 关闭 P1；**上述源码/ADR 复核进一步发现其“连隔离真实 201 也要等 active”的措辞过严**。当前正确边界是离线 consumer 候选→隔离真实 IAM/BFF/Platform 201/replay/撤权预激活证据→全消费者/六 owner sandbox→正式 public 协调激活，期间默认入口 fail closed；已要求 BFF 同步修文档。文档门通过不等于代码、Web 页面、六 owner 或整体闭环。
 
 ## 2026-09-29 — Platform schema drift 门独立复验通过
 

@@ -1,6 +1,6 @@
 # Root 当前组合
 
-**2026-09-29 BFF Skill 文档门：** BFF main `51010fc5885ac44c98a42beb976e2f1d768c015b` 已把四设计对齐 Platform v3 当前机器来源，Root Node22 contract 72/72、schema 5 pass/1 无库 skip，独立复审关闭 inactive artifact 误当真实 201 前置的 P1。BFF runtime/机器 OpenAPI 仍无 user-only `POST /v1/skills/drafts`，manifest 仍 `generated-not-activated`、`execution_artifact:null`；Platform v3 `inactive/routable=false` 仅可供离线消费者候选。真实 201 需 owner active artifact、BFF 精确重 pin 与 Root 协调激活后另验。此片没有更新用户 3310 预览。
+**2026-09-29 BFF Skill 文档门与激活语义复核：** BFF main `51010fc5885ac44c98a42beb976e2f1d768c015b` 已把四设计目标对齐 Platform v3 机器来源，Root Node22 contract 72/72、schema 5 pass/1 无库 skip。后续 Platform runtime/ADR-002 §13 只读复核纠正其过严措辞：v3 `inactive/routable=false` 是发布标记，运行时代码不读取 manifest；隔离真实 IAM/BFF/Platform 201 是**正式激活前**六 owner sandbox 的一部分，不必等 active artifact 才测试。BFF 当前 runtime/机器 OpenAPI 仍无 user-only `POST /v1/skills/drafts`，consumer manifest 仍 `generated-not-activated`、`execution_artifact:null`；当前代码片仅做离线 pin/projector，并同步四设计纠偏。正式默认入口仍 fail closed，只有全消费者和六 owner 验收后才协调激活；这两种状态不可混写。3310 未更新。
 
 **2026-09-29 owner 边界：** Agent main `cbb2719` 的 General 工作区写入通过单仓组件门及一次真实模型/浏览器作品纵切。Platform main `5b6eb2c1532b23b9747bc4bf6ac99f69ad453de0` 的 v3 artifact 与 Prisma schema drift CLI 身份修复通过 Root 独立 Node24 静态/构建、verify **853 pass/179 skip**、隔离真 PostgreSQL/Redis integration **22 文件/252 pass/0 skip**，独立复审无 P0/P1/P2。此前 `d227a1d` 的 249 pass/3 fail 是历史故障基线，现已关闭；v3 aggregate 仍 inactive/routable=false，BFF/Storage/Agent 消费和六 owner 产品链未验。下文 S9 真浏览器证据固定旧 Agent SHA，只能证明当时的确定性投递组合。3310 登录预览未由这次代码门更新。
 
