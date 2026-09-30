@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 正规当前登录已真通过，删除 Chat 路径多余测试代理
+
+Rootdfb63eae新3310真实System/Ollama/标准Agent worker已ready，Root亲跑正常IAM表单/CSRF→consent→callback→app200、session authenticated=true（本次也独立断言resource）。首条约200字节Chat请求却413；准确边界不是登录：launcher旧BFF观察Proxy拒任何chunked transfer，而正式Web Node upstream正常chunked。已直接删除本launcher观察Proxy全部创建/监测/关闭，Web直连真实BFF listener；没有修补代理兼容、放宽body限制、绕过IAM/Origin或改生产Web/BFF。两文件RED2→GREEN，Root聚焦35/13subtests与Ruff、独立8pass/0缺陷；接下来仅替换自有10137并重跑当前Chat HTTP门。新失败保留 `/tmp/kokoro-current-chat-http-acceptance.log`，不以登录成功冒称消息已通。
+
+另一独立owner实交付：Platform个人安装v5 machine已Root Node24 format/lint/typecheck/contract/artifact/cutover/schema/default/build全部通过，1030pass/239真实依赖skip；38文件独立审查0缺陷，已提交0dd60af4799cb2f0b410ded5ffb9c1402a55c641、clean main。五Product方法/九safe/三摘要、optional分页presence通过，仍inactive/unroutable，无runtime/UI成功声明。原负责人正准备下一runtime精确文件集，与当前Chat独立；Root库存/gitlink精准集成另行审查。
+
 ## 2026-09-30 — 首次当前真实 Chat 启动揭示凭据落盘 TypeError，未报启动成功
 
 Root84c6b15c停止旧71981（exit0/resources removed/组三PID退出）后，受管88684真实启动System owner路由、Agent schema/HTTP health/标准worker、BFF与Web/form probe，随后凭据文件写入失败exit1。准确原因 `Path.open(opener=...)` 不支持参数，独立private file未产生；不是IAM登录或模型权限失败。原两个生命周期P1的清理已实际执行，日志无清理失败、Redis10=0、3310释放；证据目录 `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-csz8tbjw` 保留。原writer仅launcher/test两文件真实TemporaryDirectory RED2→GREEN18，改内置exclusive open0600，并单独private credential setup阶段、成功才宣告入口；Root复验后再次真启动，不用已通过代码门掩盖实际启动FAIL。

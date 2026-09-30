@@ -89,12 +89,8 @@ def install_node_parent_guard(directory: Path, *environments: dict[str, str]) ->
     return guard
 
 
-def require_owned_stack_alive(
-    processes: list[subprocess.Popen[bytes]], proxies: list[web_smoke.Proxy]
-) -> None:
-    if any(process.poll() is not None for process in processes) or any(
-        not proxy.thread.is_alive() for proxy in proxies
-    ):
+def require_owned_stack_alive(processes: list[subprocess.Popen[bytes]]) -> None:
+    if any(process.poll() is not None for process in processes):
         raise LaunchError("owned service exited")
 
 
@@ -253,7 +249,6 @@ def main(argv: list[str] | None = None) -> int:
         if len(password) >= 12:
             credentials.add(password)
     processes: list[subprocess.Popen[bytes]] = []
-    proxies: list[web_smoke.Proxy] = []
     reader: session.ProtocolReader | None = None
     before_web: set[str] | None = None
     iam_attempted = False
@@ -406,8 +401,6 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 processes.append(bff)
                 runtime.wait_ready(f"http://127.0.0.1:{bff_port}", bff)
-                bff_proxy = web_smoke.Proxy(bff_port, credentials=credentials)
-                proxies.append(bff_proxy)
                 stage = "Web startup"
                 next_root = web_smoke.isolated_next(directory)
                 server_path = next_root / "server.cjs"
@@ -416,7 +409,7 @@ def main(argv: list[str] | None = None) -> int:
                     {
                         "KOKORO_WEB_ORIGIN": origin,
                         "KOKORO_DOMAIN": host_name,
-                        "KOKORO_BFF_BASE_URL": f"http://127.0.0.1:{bff_proxy.server_port}",
+                        "KOKORO_BFF_BASE_URL": f"http://127.0.0.1:{bff_port}",
                         "KOKORO_INTERNAL_SECRET_WEB_BFF": secret,
                         "KOKORO_WEB_REDIS_URL": args.redis_url,
                         "KOKORO_TENANT_ID": ready.tenant_id,
@@ -464,7 +457,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 stage = "serving"
                 while True:
-                    require_owned_stack_alive(processes, proxies)
+                    require_owned_stack_alive(processes)
                     if chat is not None:
                         chat.tick()
                     time.sleep(0.5)
@@ -485,11 +478,6 @@ def main(argv: list[str] | None = None) -> int:
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
                 signal.signal(signal.SIGTERM, signal.SIG_IGN)
                 signal.signal(signal.SIGHUP, signal.SIG_IGN)
-                for proxy in reversed(proxies):
-                    try:
-                        proxy.close()
-                    except Exception:
-                        failures.append("owned proxy cleanup")
                 owned_processes_stopped = True
                 for process in reversed(processes[1:]):
                     try:

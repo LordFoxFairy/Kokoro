@@ -209,13 +209,12 @@ class LocalLoginGuards(unittest.TestCase):
                 if child_pid and not self.wait_for_process_exit(child_pid, 0.1):
                     os.kill(child_pid, signal.SIGKILL)
 
-    def test_proxy_thread_death_fails_the_owned_stack_monitor(self):
+    def test_process_death_fails_the_owned_stack_monitor(self):
         running = SimpleNamespace(poll=lambda: None)
-        live_proxy = SimpleNamespace(thread=SimpleNamespace(is_alive=lambda: True))
-        dead_proxy = SimpleNamespace(thread=SimpleNamespace(is_alive=lambda: False))
-        launcher.require_owned_stack_alive([running], [live_proxy])
+        exited = SimpleNamespace(poll=lambda: 1)
+        launcher.require_owned_stack_alive([running])
         with self.assertRaisesRegex(launcher.LaunchError, "owned service exited"):
-            launcher.require_owned_stack_alive([running], [dead_proxy])
+            launcher.require_owned_stack_alive([running, exited])
 
     def test_next_normalized_origin_is_not_used_as_browser_authority(self):
         origin = "http://127.0.0.1:3310"
@@ -559,3 +558,44 @@ class PrivateCredentialFileTests(unittest.TestCase):
                         self.assertIn("Local login:", ast.unparse(node.body[index + 1]))
                         return
         self.fail("main must create private credentials in a dedicated stage")
+
+
+class DirectBffConnectionTests(unittest.TestCase):
+    def test_web_environment_uses_real_bff_listener_not_observer(self):
+        import ast
+
+        tree = ast.parse(SCRIPT.read_text())
+        updates = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "web_env"
+            and node.func.attr == "update"
+        ]
+        self.assertEqual(len(updates), 1)
+        settings = updates[0].args[0]
+        expression = next(
+            value
+            for key, value in zip(settings.keys, settings.values)
+            if isinstance(key, ast.Constant) and key.value == "KOKORO_BFF_BASE_URL"
+        )
+        url = eval(
+            compile(ast.Expression(expression), str(SCRIPT), "eval"),
+            {},
+            {"bff_port": 41234, "bff_proxy": SimpleNamespace(server_port=41235)},
+        )
+        self.assertEqual(url, "http://127.0.0.1:41234")
+
+    def test_launcher_constructs_no_bff_observer_proxy(self):
+        import ast
+
+        calls = [
+            node
+            for node in ast.walk(ast.parse(SCRIPT.read_text()))
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "Proxy"
+        ]
+        self.assertEqual(calls, [])

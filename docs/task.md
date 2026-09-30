@@ -21,6 +21,8 @@
 
 **首次真实启动结果：** Root84c6b15c旧71981已exit0/clean；新88684 System/AgentHTTP/标准worker/BFF/Web已启动，凭据落盘Path.open(opener=) TypeError退出1，清理无失败/Redis10=0/3310释放。原writer仅launcher/test两文件窄修内置exclusive0600和准确stage，Root复验中；候选启动失败如实保留，不标当前Chat通过。
 
+**当前正规调用切片：** Root真实新3310登录→callback→app/session true已通过，message413由launcher测试观察Proxy拒chunked导致。现删除本launcher该层全部代码，Web直连真实BFF；Root35/13subtests/Ruff及独立8pass/0缺陷，随后仅重启自己10137进行真Chat。Platform机器切片已独立验收并提交0dd60af clean main、Root1030/239skip/9门；后继Product runtime精确范围只读准备中，尚未授写或宣称产品完成。
+
 ## 当前优先级重新对齐（2026-09-30，用户明确要求聚焦）
 
 总体目标不变：九owner独立闭环、SQL/RPC依赖组合、用户可见完整产品、Billing最后。当前主控先交付用户能验的一条链，不用测试数/文档/生成物代替产品进度。
