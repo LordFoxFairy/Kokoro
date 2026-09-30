@@ -48,8 +48,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BFF = ROOT / "apps" / "kokoro-bff"
 AGENT = ROOT / "apps" / "kokoro-agent"
 EXPECTED_RELEASES = {
-    "kokoro-bff": "31c4803b3df0e90c031a97844f89df384ca1a35c",
-    "kokoro-agent": "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0",
+    "kokoro-bff": "571b51de2057905c74c78ac966c8cf5ac11eca93",
+    "kokoro-agent": "dd34a4800b4ce0cc61eb80dd715e528b9d4517da",
 }
 MAX_HTTP_BYTES = 2 * 1024 * 1024
 MAX_DIAGNOSTIC_CHARS = 4_000

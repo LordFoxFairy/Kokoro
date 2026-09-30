@@ -1,6 +1,12 @@
 # Kokoro 后端闭环任务总表
 
-## 当前待派工：W3-WEB-CHAT-SKILL-SELECTION（先现有文档门，再消费者代码）
+## Root 已验收：W3-BFF-AGENT-WORKER-REFREEZE
+
+Root独占既有 `scripts/e2e/run_bff_agent_worker_smoke.py` 与相邻测试，基线 `d72ff9d8`；仅把旧精确发布pin更新为已集成BFF `571b51de`/Agent `dd34a48`，不放宽clean/gitlink/资源所有权门。先固定新pin断言RED→GREEN，再用独占临时PG库及原子领取空Redis14/15执行真实BFF/Agent HTTP/worker/AG-UI；IAM/System/model仍是具名确定性fixture，不冒称真实身份/模型供应商。仅清理本次精确登记资源，不碰3310/共享数据/uv.lock。若新版链失败，保留具体阶段与证据，由实际owner处理。
+
+**真实执行结果：** run `909613820172d6d8189a27d9` PASS；真实独立Agent CLI worker完成一轮回复，BFF outbox=succeeded、assistant=completed、Agent terminal=true、4条Agent事件→5帧durable AG-UI。同键重放/异内容冲突/异用户不可见与reload断言通过；IAM/System/model仍fixture而非真实服务/供应商。自有PG数据库、Redis keys和进程余量均0；日志 `/tmp/kokoro-bff-agent-571-worker.log`。pin断言RED1fail→GREEN19pass。 Root最终全 `scripts/tests` **991 pass/281 subtests（98.60s，exit0）**，topology/checkpoint PASS；独立pin更新审查P0/P1/P2=0。
+
+## 当前文档 owner：W3-WEB-CHAT-SKILL-SELECTION（先现有文档门，再消费者代码）
 
 | 项 | 任务卡与放置裁决 |
 | --- | --- |

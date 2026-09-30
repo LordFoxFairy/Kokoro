@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 当前后端普通Chat真实worker补验通过：** 固定BFF `571b51de` / Agent `dd34a48`，真实独立CLI worker完成回复、BFF outbox成功、助手消息完成、Agent终态及4事件→5帧durable AG-UI、reload/幂等/异用户门PASS，测试资源剩余0。IAM/System/model为确定性fixture；这不证明当前3310登录/浏览器、真实推理供应商或非空Skill reader。下一关键路径是Web exact-ref消费者，登录重启另待用户许可。
+
 **2026-09-29 BFF Chat/Scheduler 消费已验收，Web 待同步：** BFF `571b51de2057905c74c78ac966c8cf5ac11eca93` 已接 Agent `dd34a4800b4ce0cc61eb80dd715e528b9d4517da` HTTP2.0.0，Chat exact refs/顺序摘要/v2 durable outbox 与 Scheduler v2冻结空选择落地。Root独立 format/check **488 pass/1 skip**、schema **5 pass/1 skip**，真实隔离PG **13/13**，生产BFF Chat空/非空及Scheduler builder→真实Agent HTTP/PG claim/replay/Redis三条dispatch和异序409均通过，自有资源已清理；此为准入持久化门，不含模型执行/IAM浏览器。独立终审P0/P1/P2=0。Web旧名称localStorage与pinned字段仍待删除，Agent非空reader/Skill安装/支付仍未闭环。Root登录夹具修复 `7d9ea65b` 已经12项聚焦/全Root991项验收，真实3310重启待许可，不宣称登录完成。
 
 **2026-09-29 Agent typed Skill Source 仅设计门：** Agent `main 7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2` 五份文档把 Run 选择 fence、Platform v4/Storage v2 来源、signed GET/ZIP、只读虚拟路径及撤权失败关闭定案；独立审查 P0/P1=0，路径碰撞 P2 已由确定性的无填充 base64url(SkillId) 规则返修。Root 独立契约/架构门 **26 pass**、四份 owner hash 核对通过；本次**没有** Agent typed 运行代码、Platform v4 pin 或真实 Skill 执行。下一片仅 Agent launch 机器契约/持久 fence，库存边继续 broken，BFF/Platform 未激活；3310 与任务外 `uv.lock` 不动。

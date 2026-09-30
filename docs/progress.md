@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 当前BFF→真实Agent worker→durable AG-UI执行PASS
+
+既有runner仅精确refreeze至BFF `571b51de` / Agent `dd34a48`，clean/Root gitlink/资源所有权门不放宽；pin断言RED1fail→GREEN19pass。 Root最终全 `scripts/tests` **991 pass/281 subtests（98.60s，exit0）**，topology/checkpoint PASS；独立pin更新审查P0/P1/P2=0。真实独立CLI worker run `909613820172d6d8189a27d9` 完成回复并通过BFF snapshot reload、同键重放/异内容409/异用户404：Agent4事件、BFF5帧durable AG-UI、outbox=succeeded、assistant=completed、Agent terminal=true。IAM admission、System/model边界为明确确定性fixture，真实浏览器/真实供应商不在本验收范围。`/tmp/kokoro-bff-agent-571-worker.log` exit0；自有PG库/Redis key/进程剩余均0，3310未碰。Web旧名称wire清理文档门已派 `web_chat_selection_owner`，仍未将完整产品边改为兼容。
+
 ## 2026-09-29 — BFF typed Chat/Scheduler 消费独立验收
 
 固定BFF `571b51de` / Agent `dd34a48`。Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0（默认488 pass/1 skip；schema5 pass/1 skip），独立审查P0/P1/P2=0。独占临时PG库执行既有Chat/Scheduler integration两文件 **13/13**，包含真实JSONB/replay/异序冲突与旧envelope拒绝；Redis复用8仅连接/随机tenant通知，无共享清理。另由BFF生产builder生成Chat空/有序typed与Scheduler请求，经真实Agent HTTP→PG claim/get_request/replay/Redis，三次首发202、三次重放、异序409、恰3条dispatch；独占PG与随机stream全部清理。此非模型worker或IAM浏览器门。Web旧名称store仍会发旧字段，下一任务修Web消费者；非空Skill reader/安装与全产品/支付仍未闭环。
