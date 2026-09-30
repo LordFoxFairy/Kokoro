@@ -6,6 +6,8 @@ Web 唯一 writer 从 `98aad4c` 分三片 `7568519`→`667d82b`→同意图恢�
 
 Root 独立 Node22 `pnpm check` 首轮 contract **108**、architecture **36**、Vitest **1656/1656**、lint/typecheck PASS，但旧 Billing UI 的 jsdom/Radix focus 异步异常令进程 exit1；隔离 `billing-panel.test.tsx` **12/12**，第二次**默认**全门 **108/36/1656** 与 build PASS。隔离 Playwright 3487 **11 pass/1 既有 skip**，只测未配置登录/预览治理；自有进程退出、生成物清理、Web 工作树干净、3310 listener 保持 PID 81692。正式 UI 代码与严格同源边界可审，但 BFF 写候选默认关、Platform v4 inactive、真 IAM/双 HTTPS ObjectStore/CORS Chromium 尚未过，**不能称端到端产品发布可用**。下一代码片依 [`task.md`](task.md) 先 Platform owner active artifact，再 BFF consumer 激活；Billing 最后。
 
+Root `b52e884c4765e6158c945a685f486da0358b48bd` 已精确 pin Web gitlink `12f9dff`、31 处 Web 来源 commit/digest 并新增 7 条正式写链证据；当前 topology、精确 compatibility checkpoint 均 PASS，Root 完整 `python3 -m pytest scripts/tests` **985 pass**。Root 工作树仅任务外既有 `uv.lock` 修改未暂存；广义 EDGE-WEB-BFF 仍标 broken，不因单仓门变 active。
+
 
 ## 2026-09-29 — Skill 正式激活只读预审完成，未写代码或启服务
 

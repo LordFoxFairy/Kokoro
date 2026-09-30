@@ -28,6 +28,8 @@
 
 **阶段状态（2026-09-29）：** Web 正式单 ZIP UI/adapter `12f9dff909b8e2e8694a96f510676f90d375ecdc` 已交付且 clean；Root Node22 第二次默认 `pnpm check` contract **108**、architecture **36**、tests **1656**、lint/typecheck/build PASS，独立终审 P0/P1/P2=0；首轮旧 Billing UI 异步测试进程错误和隔离重跑记录在 [`progress.md`](progress.md)。Root 隔离 Playwright 3487 **11 pass/1 既有 skip**，该套没有真 IAM/Skill publish；真 Chromium 必须用独占 HTTPS Web + HTTPS ObjectStore origin 与精确 CORS/preflight，目前本地 CORS API 501。下表保留原开工基线与完整产品放行条件，**单仓代码门不是激活或端到端**。
 
+**Root pin 验收：** `b52e884c4765e6158c945a685f486da0358b48bd` 已精确固定 Web `12f9dff`、来源库存与 7 条正式写链证据；当前 topology/checkpoint PASS、Root 全 `scripts/tests` **985 pass**。下一 owner 是 Platform active v4 machine artifact，之后 BFF 激活；浏览器门仍因本地 ObjectStore CORS 501 单独阻断。
+
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
 | Owner / 基线 | Web `apps/kokoro-app` 唯一写入 Agent，clean `main 74dcc101f6c457d10db4511365e6898f44f0e625`；BFF public owner `62daba37fc0267830d73590bb5a3499807d46fc6` 已由 Root `2a9b0a99` 精确 pin。Web 现有正式 `SkillUploadDialog`/Skills 页仍旧 preview/confirm、`scope=official|third_party` 与旧 generated；本片不得把 3310 用户进程或显式 preview fixture 当正式验收。Root 只写 Root 任务/库存/隔离 runner，不与 Web writer 抢文件。 |

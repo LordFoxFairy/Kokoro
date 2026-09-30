@@ -2,6 +2,8 @@
 
 **2026-09-29 Web 正式单 ZIP Skill 发布代码门已验，产品链未激活：** Web `main 12f9dff909b8e2e8694a96f510676f90d375ecdc` 已在正式 Skills/Settings 沿现有 shadcn Dialog 接同源 Draft/Get/Begin→批准的 signed PUT 原字节→Complete/扫描等待→Validate→零 body Publish；只在 ACTIVE 回执或本人 by-ID 权威恢复后显示成功。旧 multipart preview/confirm/GitHub 入口仅留显式 preview fixture，正式非 self Skill/MCP alias 404；同意图保留 ZIP、原幂等 key 与取消/撤权语义，Draft 65,536 字节和 Begin 文件名在建草稿前预检。独立终审 P0/P1/P2=0；Root Node22 `pnpm check` 第二次默认全门 PASS（contract **108**、architecture **36**、tests **1656**、lint/typecheck/build），首轮仅旧 Billing UI 的 jsdom/Radix focus 异步未处理异常，隔离该文件 **12/12**、完整重跑 PASS；隔离 Playwright 3487 **11 pass/1 既有 skip**，它只验未配置登录/预览治理，**不是真 IAM→Skill 发布的 Chromium 链**。BFF 六写候选仍 default-off、Platform v4 inactive，真实 HTTPS ObjectStore CORS 在当前本地 fixture 501；不得称用户端已可发布。3310 与任务外 `uv.lock` 未动。
 
+Root `b52e884c4765e6158c945a685f486da0358b48bd` 精确 pin Web gitlink/来源库存；当前 topology/checkpoint PASS、Root `scripts/tests` **985 pass**。EDGE-WEB-BFF 继续 broken，任务外 `uv.lock` 保持未暂存。
+
 
 **2026-09-29 浏览器 CORS 真门状态：** 自有随机 bucket 的精确 CORS 预检在当前本地 MinIO 得 **NotImplemented / HTTP 501**，runner exit 2、bucket 清理余量 0，未启动 PG/Redis/IAM/Web/Chromium；Root `scripts/tests` **985 pass/281 subtests**、独立终审 P0/P1/P2=0。完整浏览器链标 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`，不把 HTTP signed PUT、Playwright preview 或注入假 CORS 当通过；Web 正式单 ZIP 代码开发继续，3310 不动。
 
