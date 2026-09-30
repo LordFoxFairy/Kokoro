@@ -1,5 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — ADR-002 §13 激活顺序纠偏；Storage 孤儿包缺口已只读确认
+
+Root 固定 Platform ADR-002 §13 复核后，撤销“Web 单仓门后立即把 v4 manifest 改 active”的过早顺序：Agent 当前有 Run-scoped Platform sender，但正式 Skill 仍是 name/Capability 读取；System operator consumer、Storage 退役与六 owner 真 sandbox 均未齐。固定 Storage `16a6c1c` 只读审查发现 v2 仅能 Abort 未完成 Upload，已完成 Asset 没有退役 RPC/状态；对象 reconcile 只执行已有 canonical repair retirement，未知 final 只报告，aborted staging 删除失败无持久重试。Platform 文档也将此列为激活前门。下一代码顺序先 Agent typed Skill Source 的三面设计/实现，再由 Storage owner 单独收敛 `RetirePackageUpload`/Asset-Blob 生命周期及 Platform 消费，随后余下消费者/六 owner sandbox；**本次只有审查与任务纠偏，没有修改 Agent/Storage/Platform 业务代码或激活**。Billing 最后。
+
+
 ## 2026-09-29 — Web 正式 Skill 单 ZIP 发布代码门通过，跨仓浏览器门未过
 
 Web 唯一 writer 从 `98aad4c` 分三片 `7568519`→`667d82b`→同意图恢复 `73c22d5`，Root 终审补出 Publish ACK 双网络失败、连续 by-ID 404 时永久未知的 P1；独立审查补出建 Draft 后非法文件名 UI 死局、非 self 同源路径绕过正式门的 2 项 P2。Web `12f9dff909b8e2e8694a96f510676f90d375ecdc` 以相同 Publish key/零 body 在再次权威 404 后安全重发，401/403 保留原码不重发；文件名/真实 JSON UTF-8 65,536-byte 上限提前验证，正式非 self Skill/MCP alias 404，负例 RED→GREEN。显式 preview 旧菜单经早返回核实**未在正式页挂载**，该审查意见为误报；正式入口负例已加。最终独立终审 P0/P1/P2=0。

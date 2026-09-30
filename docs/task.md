@@ -15,6 +15,8 @@
 
 **只读结论，不是已激活：** BFF 六条 Skill 写路由已接线，但同受 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED` 默认关闭保护；`true` 只允许 BFF loopback 独占 smoke。Platform v4 `inactive/routable=false` 是机器契约发布标记，不是运行 kill switch。不能把临时开关改成产品上线，也不能把 Web 静态测试或 HTTP owner smoke 当正式产品闭环。
 
+**Storage 后续 owner 门：** 固定 `16a6c1c` 只读核 v2 只有未完成 Upload Abort；已完成 Skill Asset 缺受信退役 RPC/持久意图，`reconcile:objects` 不能把未知 final 当孤儿直接删。Agent 片之后由 Storage 唯一 writer 先完成 `RetirePackageUpload` 三面文档门（原 Create command+原 subject 定位、Asset/Blob 共享、已签 GET 宽限、事务/receipt/失败重试），再做真实 PG/ObjectStore 代码；Platform 后续必须持久旧 Attempt 退役意图并调用，validated/active 包不得按年龄清理。没有两 owner 组合前不标 Storage 生命周期通过。
+
 | 项 | 下一切片边界 |
 | --- | --- |
 | Owner / 当前事实 | Platform `apps/kokoro-capability` 为 v4 owner machine artifact 唯一 writer，当前 pin `6a09913`；BFF `apps/kokoro-bff` 为 public Product API 唯一 writer，当前 pin `62daba37`。`apps/kokoro-bff/src/config/runtime.ts` 的候选开关默认 false，`src/bootstrap/runtime.ts` 关闭时不构造 CatalogConnectClient；Platform `contract/execution-operations/v4/manifest.json`、schema/checker 与 BFF generated/dependency/test 均明确 inactive。两仓当前无本任务写入。 |
