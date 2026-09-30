@@ -1,3 +1,17 @@
+## WEB-COMPOSER-VISUAL-ALIGN 已验收（2026-09-30）
+
+Root集成独立只读审查0/0/0；relay/topology与 `--expected verification/contracts/checkpoints/w1e-iam07-bff-pin.json` 的checkpoint实测PASS；相关三文件54 tests通过（39.22s，`/tmp/kokoro-composer-root-focused.log`）。首次checkpoint漏传必需参数exit2，只是CLI调用错误，已按原门补参数重跑，不改断言。Root首次纯check受shell工具链影响运行Node24成功但不作为Node22证据，最终显式Node22.22.2完整重跑成功。未运行本次全Root1103测试或隔离Playwright全套；本次新增视觉证据来自原生IAB实际正式页面。
+
+Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本片已固定该gitlink与38个consumer证据指针，原契约摘要无变化。内部直角框移除、键盘token焦点在圆角shell、thread与composer统一48rem、手机viewport不误用桌面32px。Root Node22.22.2 `pnpm check` exit0（contract109/architecture37/全量1800/lint/typecheck/build）；日志 `/tmp/kokoro-web-composer-align-root-node22-check.log`。独立只读返修后0/0/0；单独prettier六文件检查FAIL、未全仓格式化，不称全格式门通过。
+
+真实 IAB：桌面两轴x282/w768，390px content x15.59/w358.81与form x16/w358、无横向溢出，欢迎/线程聚焦均无可见内框；多行38→100→38，Shift+Enter不提交，Tab可达。owned runtime仅两CSS同步并核对旧baseline，无重启/新模型调用。原消息全文数组在恢复原conversation并reload后与修前严格相等。截图 `/tmp/kokoro-composer-desktop-after.jpg`、`/tmp/kokoro-composer-mobile-after.jpg`、`/tmp/kokoro-composer-welcome-after.jpg`。
+
+新发现同pathname query-only导航漏接，new conversation后URL可能被stale eviction清空；显式goto+reload已重新恢复原conversation，非owner删除或丢数据。原Web负责人已只读定位，后继需deferred snapshot RED与严格失败清理断言，暂未授写。重复user/空failed assistant、完整failure契约与整个Wave0–7仍未闭环；未隐藏消息冒充布局完成。Agent cursor docs/tests已冻结RED，源码未授写。保留任务外Agent/Billing/Root uv.lock变更。
+
+## 2026-09-30 — 用户可见 Composer/对话布局修复进行中
+
+真实 IAB 已复现内部直角 outline2px、textarea圆角0、消息736px/输入768px。只读子 Agent 找到局部CSS根因；原 Agent cursor writer已停写，Web同一负责人切换为唯一writer，批准现2CSS/2tests/2docs。Root负责实际页面与最终验收，不以登录/回答通过冒充视觉通过。不改消息事实、兼容层或后台计费；本轮尚未有GREEN/浏览器修后证据。
+
 ## 2026-09-30 — BFF activeRun owner片已验收提交，Root集成进行中
 
 - 当前交付SHA `15e07fa44670bc13705ce3f6f700e73afcb72ccc`（BFF main clean），Root独立核hash/审查后统一提交12文件，200+/4−；公开OpenAPI/Schema/generated无变化。

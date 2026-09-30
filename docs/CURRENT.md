@@ -1,3 +1,11 @@
+## WEB-COMPOSER-VISUAL-ALIGN 已验收（2026-09-30）
+
+Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本片已固定该gitlink与38个consumer证据指针，原契约摘要无变化。内部直角框移除、键盘token焦点在圆角shell、thread与composer统一48rem、手机viewport不误用桌面32px。Root Node22.22.2 `pnpm check` exit0（contract109/architecture37/全量1800/lint/typecheck/build）；日志 `/tmp/kokoro-web-composer-align-root-node22-check.log`。独立只读返修后0/0/0；单独prettier六文件检查FAIL、未全仓格式化，不称全格式门通过。
+
+真实 IAB：桌面两轴x282/w768，390px content x15.59/w358.81与form x16/w358、无横向溢出，欢迎/线程聚焦均无可见内框；多行38→100→38，Shift+Enter不提交，Tab可达。owned runtime仅两CSS同步并核对旧baseline，无重启/新模型调用。原消息全文数组在恢复原conversation并reload后与修前严格相等。截图 `/tmp/kokoro-composer-desktop-after.jpg`、`/tmp/kokoro-composer-mobile-after.jpg`、`/tmp/kokoro-composer-welcome-after.jpg`。
+
+新发现同pathname query-only导航漏接，new conversation后URL可能被stale eviction清空；显式goto+reload已重新恢复原conversation，非owner删除或丢数据。原Web负责人已只读定位，后继需deferred snapshot RED与严格失败清理断言，暂未授写。重复user/空failed assistant、完整failure契约与整个Wave0–7仍未闭环；未隐藏消息冒充布局完成。Agent cursor docs/tests已冻结RED，源码未授写。保留任务外Agent/Billing/Root uv.lock变更。
+
 # Root 当前组合
 
 **Agent当前推进（2026-09-30）：** 已冻结安全失败3.0候选，26文件独立review0/0/0；Root真实完整pure1505pass/6既定skip/174deselect（57.88s）、Ruff/Pyright/generator/contract/build通过。真实PG/Redis/HTTP两例尚未通过：首轮test把superseded审计误计发布帧，修后第二轮outbox/Chat/Redis safe且single断言通过，HTTP Run evidence初始after_seq0漏合法terminal index0，actual2fail/20deselect（1.91s）；自有DB和Redis15均精确回收0。已按独立确认P1缺陷开Run-only初始cursor=-1文档/tests RED窄门，Chat AfterSeq0、event index、SQL/proof不动。候选未提交/协调发布，当前受管组仍旧2.0，BFF/Web消费者未切换。Web5058通用失败恢复与一次真实retry回答/终态reload窄证据保持，重复原问题产品语义仍待对齐。

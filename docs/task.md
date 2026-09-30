@@ -1,3 +1,21 @@
+## WEB-COMPOSER-VISUAL-ALIGN 已验收（2026-09-30）
+
+Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本片已固定该gitlink与38个consumer证据指针，原契约摘要无变化。内部直角框移除、键盘token焦点在圆角shell、thread与composer统一48rem、手机viewport不误用桌面32px。Root Node22.22.2 `pnpm check` exit0（contract109/architecture37/全量1800/lint/typecheck/build）；日志 `/tmp/kokoro-web-composer-align-root-node22-check.log`。独立只读返修后0/0/0；单独prettier六文件检查FAIL、未全仓格式化，不称全格式门通过。
+
+真实 IAB：桌面两轴x282/w768，390px content x15.59/w358.81与form x16/w358、无横向溢出，欢迎/线程聚焦均无可见内框；多行38→100→38，Shift+Enter不提交，Tab可达。owned runtime仅两CSS同步并核对旧baseline，无重启/新模型调用。原消息全文数组在恢复原conversation并reload后与修前严格相等。截图 `/tmp/kokoro-composer-desktop-after.jpg`、`/tmp/kokoro-composer-mobile-after.jpg`、`/tmp/kokoro-composer-welcome-after.jpg`。
+
+新发现同pathname query-only导航漏接，new conversation后URL可能被stale eviction清空；显式goto+reload已重新恢复原conversation，非owner删除或丢数据。原Web负责人已只读定位，后继需deferred snapshot RED与严格失败清理断言，暂未授写。重复user/空failed assistant、完整failure契约与整个Wave0–7仍未闭环；未隐藏消息冒充布局完成。Agent cursor docs/tests已冻结RED，源码未授写。保留任务外Agent/Billing/Root uv.lock变更。
+
+## WEB-COMPOSER-VISUAL-ALIGN：当前用户可见优先切片（2026-09-30）
+
+- P0：修复真实 `/app` 输入框直角焦点框、消息/编辑器宽度冲突和手机错误桌面边距，不再新增 UI 方案。
+- 基线：Web main `5058ae2c400dd8be1964bba5df03fd7ce5b52133` clean；Root main `9e58b5f8`；Agent 已完成 Run evidence cursor docs/tests RED 并停写，源代码下一门暂不授写。
+- Owner/writer：`bff_personal_installation_owner` 为本片 Web 唯一 writer；Root 浏览器、审查、主树复验与 index/commit。只读调查已交付，未派外部进程。
+- 写集：现 `composer.module.css`、`app-frame-main.module.css`、两现 UI tests、TECHNICAL_DESIGN/CURRENT。无新文件/依赖/contract/schema/generated；不改 retry、消息去重或持久事实。
+- 已复现：原生 IAB 正式会话 textarea focused outline 2px/radius 0；composer 768px/content 736px，同一个 content DOM 被46rem覆盖。用户与空失败消息产生的重复/间距事实不靠隐藏来解决。
+- 方案：现圆角 form shell 保留 token keyboard focus、textarea 不画内部方框；同轴48rem；手机按 viewport收紧边距。复用既有设计与 owner 边界，无不可逆决定。
+- 完成条件：RED→GREEN、Node22 check、Root重跑相关门；真实桌面/窄屏、键盘焦点/多行/底部布局验证及截图。测试通过不替代视觉验收，未通过前不称闭环。
+
 ## 当前执行摘要：真实用户旅程（2026-09-30）
 
 本轮不是再建一套 UI 或计划中心。当前 Root main `7c13378e`（生命周期代码 `9e77ac17`），BFF `15e07fa4` 已验收并集成，Web `840fa7e0` 删除虚构收费文案已验收；strict relay/checkpoint/topology及Root1103pass/3依赖skip/455subtests通过。3310唯一受管session29394已启动，原生IAB已完成登录、真实首回答及终态刷新全文一致；流式中途刷新尚未捕获，历史严格全文门FAIL保留。以下是执行优先级，不是整体已完成声明。用户已要求每10分钟检查并继续推进；Codex当前线程heartbeat `kokoro-10` 已创建ACTIVE并回读展示，不另建独立cron任务。无变化保持安静，有实质完成/失败/偏差/决策再通知。
