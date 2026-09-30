@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — BFF typed Chat/Scheduler 消费独立验收
+
+固定BFF `571b51de` / Agent `dd34a48`。Root Node22 `pnpm format:check && pnpm check && pnpm schema:check` exit0（默认488 pass/1 skip；schema5 pass/1 skip），独立审查P0/P1/P2=0。独占临时PG库执行既有Chat/Scheduler integration两文件 **13/13**，包含真实JSONB/replay/异序冲突与旧envelope拒绝；Redis复用8仅连接/随机tenant通知，无共享清理。另由BFF生产builder生成Chat空/有序typed与Scheduler请求，经真实Agent HTTP→PG claim/get_request/replay/Redis，三次首发202、三次重放、异序409、恰3条dispatch；独占PG与随机stream全部清理。此非模型worker或IAM浏览器门。Web旧名称store仍会发旧字段，下一任务修Web消费者；非空Skill reader/安装与全产品/支付仍未闭环。
+
 ## 2026-09-29 — 登录夹具生命周期代码修复验收
 
 可见协助任务完成并停写，仅现有 `scripts/dev/serve_local_login.py` 与相邻测试变更：Node 使用各自实际父 PID 的 unref 守卫，父退出后 SIGTERM/5秒强杀，proxy 线程纳入既有运行监测。不新建运维服务或持久清单。Root 精确工作树复跑聚焦 **12/12**、全 `scripts/tests` **991 pass/281 subtests（102.83s，exit0）**；独立终审 P0/P1/P2=0。测试前后两文件摘要不变。3310残留未清理，重启许可未答；本片不是IAM凭据登录、callback或应用页验收。任务外 `uv.lock` 未改未暂存。

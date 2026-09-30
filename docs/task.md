@@ -1,5 +1,17 @@
 # Kokoro 后端闭环任务总表
 
+## 当前待派工：W3-WEB-CHAT-SKILL-SELECTION（先现有文档门，再消费者代码）
+
+| 项 | 任务卡与放置裁决 |
+| --- | --- |
+| Owner/基线 | Web 唯一writer `web_chat_selection_owner`（gpt-5.6-sol），Root审查/集成；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` clean main `12f9dff909b8e2e8694a96f510676f90d375ecdc`。BFF已验 `571b51de` public SHA `f49023882315a4f46e46e95595a02eaa7bb85475d5f46d2b945bc0555edb0c90`。 |
+| 当前事实/目标 | 正式PersonalSkillsRead已有source_ref/revision但没有选择入口；旧全局usePinnedSkills读取localStorage名称并注入engine，可能发旧pinned_skills→新版BFF400。目标沿现有contract/engine/composer承接exact refs，默认[]，未知响应重试保留原选择；删除名称偏好到正式请求的路径。 |
+| 方案/粒度 | A采用现有chat schema、engine execution options/frozen submission和现有shadcn组件，选择限当前会话内存且以sourceRef为identity，显示名仅标签。B淘汰名称拼skill前缀、旧store双读、兼容wire或新状态平台。不新增顶层目录/进程/持久层；先更新既有三面设计与CURRENT/ACCEPTANCE，主控审后授权代码文件集。 |
+| 依赖/数据/API | Browser→同源Web→BFF；无Web SQL/Redis或安装事实。精确pin BFF原字节，用本仓生成器更新不手改generated；exact/no-trim/绝对末尾/16项/4KiB/唯一有序。非空Agent reader尚未接通，本片不新增假可执行入口，不改变安装裁决；完整可选可执行Skill仍后续必须完成。 |
+| 删除/排除 | 删除正式旧pinned_skills/name store注入，不读取/迁移旧localStorage；preview名称动作隔离，不污染正式engine。不改登录UI、BFF/Agent/Platform、支付、锁文件、3310服务或Root任务外uv.lock。 |
+| 验证/交付 | RED→GREEN：旧localStorage及preview不污染正式请求、strict refs、默认[]、未知ACK原选择重试；本仓contract/architecture/lint/typecheck/test/build/隔离e2e。独立审查、Root复跑后提交/pin；普通Chat真实产品链仍独立验收。主控拥有Root台账和跨仓集成Git；Web独占checkout可按已授权切片提交，报SHA/文件/实际结果后停写。 |
+
+
 ## 已验收代码：W3-ROOT-LOGIN-LIFECYCLE（真实3310重启待许可）
 
 可见协助任务 `01a0f010-3073-7a22-900a-8d9e8d586f3f` 只读实测新 `/login` 302后authorize返回503 `iam_relay_unavailable`；Web3310/BFF残留，launcher及其proxy/IAM已退出。本片只修开发启动脚本生命周期，不改Web/IAM认证规则或部署架构。是否重启用户3310已询问，等待答复；代码修复可继续。
@@ -13,7 +25,7 @@
 | 边界 | 不修改认证/CSRF/OIDC，不自动杀未知pid，不清共享数据库/Redis；本任务只执行自建dummy子进程回归。用户许可前不动3310残留，真实登录重启另门。 |
 | 验证 | 新增父正常退出/硬退出→自有服务有界退出、proxy线程死→整体收尾及正常启动回归；Root复跑脚本测试/全门。交付文件与证据后停止写入，主控审查提交，再按用户许可恢复真实登录栈。 |
 
-## 当前代码 owner：W3-BFF-CHAT-SKILL-SELECTION-CONSUMER（P0；基础 Chat/Scheduler 同步）
+## 已验收：W3-BFF-CHAT-SKILL-SELECTION-CONSUMER（P0；基础 Chat/Scheduler 同步）
 
 | 项 | 代码任务卡 |
 | --- | --- |
@@ -22,7 +34,7 @@
 | 行为门 | public 缺字段规范化 []，Agent wire 始终显式 []；exact ref/绝对末尾/16 项/4 KiB/重复/顺序验证，同键变选择 409；恢复只读已持久 v2，旧 v1 明确拒绝，不自动重写共享数据。非空尚无 reader 时 Agent 明确失败，未安装和用户自动可用决定不伪造。 |
 | 验证/交付 | RED→GREEN；Agent 原字节来源/生成 drift、BFF format/check/schema/build 和负例；Root 再验真实 Agent HTTP/隔离 PG 的基础 Chat/Scheduler 准入及恢复。普通 Chat 先恢复，不等完整 Skill 包读/安装；Billing 最后。 |
 
-并行只读任务：可见任务 **Kokoro IAM 登录链路验收**（`01a0f010-3073-7a22-900a-8d9e8d586f3f`）只检查新 /login→IAM→callback，暂不改文件/共享服务；主控跟踪结果后单仓授权修复。禁止把其可见表单当真实登录通过。
+**验收：** BFF `571b51de`，Root独立 format/check（488 pass/1 skip）/schema（5 pass/1 skip），真实隔离PG两文件13/13；生产Chat空/非空与Scheduler builder经真实Agent HTTP→PG/Redis，首发/claim/原值replay/异序409通过。未跑模型worker或当前Web/IAM浏览器；独立终审P0/P1/P2=0。日志：`/tmp/kokoro-bff-571-postgres.log`、`/tmp/kokoro-bff-agent-571-http.log`，自有临时资源清理。可见登录任务已停写，Root修复见 `7d9ea65b`，真实3310另门。
 
 ## 已过 Agent 单仓代码门：W3-AGENT-SKILL-LAUNCH-CONTRACT（P0；产品调用仍待 BFF 同步）
 

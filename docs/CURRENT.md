@@ -1,6 +1,6 @@
 # Root 当前组合
 
-**2026-09-29 Agent launch 已落地，BFF 正在同步：** Agent `dd34a4800b4ce0cc61eb80dd715e528b9d4517da` 发布 HTTP2.0.0 required typed选择/持久Run fence，并在reader未接时对非空选择于执行前明确失败。Root默认 **1328 pass/6 skip/172 deselected**；业务提交 `2d03689` 的真实隔离PG/Redis HTTP **5/5** 与build通过，最终三文件只修schema尾随换行P2。BFF `78c92c0` 目前仅五文档门，旧Chat/Scheduler缺字段仍会Agent400；唯一writer正在改真实durable outbox与snapshot，而非仅旧helper。个人Skill安装体验待用户裁决，非空执行/完整浏览器/支付尚未闭环；可见IAM登录协助任务只读并行，3310不动。
+**2026-09-29 BFF Chat/Scheduler 消费已验收，Web 待同步：** BFF `571b51de2057905c74c78ac966c8cf5ac11eca93` 已接 Agent `dd34a4800b4ce0cc61eb80dd715e528b9d4517da` HTTP2.0.0，Chat exact refs/顺序摘要/v2 durable outbox 与 Scheduler v2冻结空选择落地。Root独立 format/check **488 pass/1 skip**、schema **5 pass/1 skip**，真实隔离PG **13/13**，生产BFF Chat空/非空及Scheduler builder→真实Agent HTTP/PG claim/replay/Redis三条dispatch和异序409均通过，自有资源已清理；此为准入持久化门，不含模型执行/IAM浏览器。独立终审P0/P1/P2=0。Web旧名称localStorage与pinned字段仍待删除，Agent非空reader/Skill安装/支付仍未闭环。Root登录夹具修复 `7d9ea65b` 已经12项聚焦/全Root991项验收，真实3310重启待许可，不宣称登录完成。
 
 **2026-09-29 Agent typed Skill Source 仅设计门：** Agent `main 7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2` 五份文档把 Run 选择 fence、Platform v4/Storage v2 来源、signed GET/ZIP、只读虚拟路径及撤权失败关闭定案；独立审查 P0/P1=0，路径碰撞 P2 已由确定性的无填充 base64url(SkillId) 规则返修。Root 独立契约/架构门 **26 pass**、四份 owner hash 核对通过；本次**没有** Agent typed 运行代码、Platform v4 pin 或真实 Skill 执行。下一片仅 Agent launch 机器契约/持久 fence，库存边继续 broken，BFF/Platform 未激活；3310 与任务外 `uv.lock` 不动。
 
