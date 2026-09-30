@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 当前入口的实际缺口已定位：仅登录启动器明确关闭Agent
+
+新3310/login当前HTTP实测200/两重定向，有邮箱/密码input、无连接/重试中转；这不是可见浏览器E2E。现launcher明确KOKORO_AGENT_ENABLED=false，运行范围只有IAM/BFF/Web，登录成功不等于聊天可用。Root新切片接既有正式System/Agent HTTP/worker与已有Ollama，优先真实基本Chat，不把单仓测试或Source读取当用户产品。CUA screenshot/focus继续超时、native Codex窗口控制明确拒绝，停止旁路尝试并请用户手动新/login；继续独立代码。
+
 ## 2026-09-30 — 用户要求聚焦：可见产品先于后台切片计数
 
 当前主控优先级改为3310真实登录→app→刷新，再同用户基本真实聊天；不以历史隔离Chromium或当前Source helper冒充用户页面交付。Platform既有v5机器切片继续小片收尾、不自动扩runtime；BFF只读prep已一次交付，未改文件/运行测试。所有后继owner/SQL/RPC/MCP/生命周期及Billing最后目标不缩小，唯执行顺序聚焦。当前服务组3898/4007/4113存活，右侧可见E2E仍未验。

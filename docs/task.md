@@ -1,5 +1,20 @@
 # Kokoro 后端闭环任务总表
 
+## P1-LOCAL-REAL-CHAT：当前3310从登录专用组合接真实聊天（2026-09-30）
+
+本轮根因实证：现scripts/dev/serve_local_login.py硬编码KOKORO_AGENT_ENABLED=false，当前服务只有IAM/BFF/Web；新/login已实测200、两重定向到邮箱/密码表单、无旧重试中转。右侧旧标签的CUA focus/screenshot超时，Codex native app控制明确拒绝，已请用户手动打开新/login；不尝试旁路控制。
+
+| 项 | 放置/任务卡裁决 |
+| --- | --- |
+| Owner/执行/基线 | Root开发组合，不是新业务owner；agent_typed_skill_reader_owner唯一writer，Root审查/提交/启动。Root bc4cc529/main，任务外uv.lock和Platformwriter不动。 |
+| 当前/目标 | 现有登录launcher及相邻tests；既有real model烟测已用标准System→已有Ollama→CLI worker。扩现launcher显式chat模式，开启BFF Agent、正式Agent HTTP与worker、正式System当前路由；用户3310登录后真实空Skill Chat、持久消息/AG-UI/刷新。先基础聊天，不声称非空Skill/Storage/所有能力。 |
+| 两位置/粒度 | 采用scripts/dev/local_chat_runtime.py普通helper（已存在dev目录），聚合新Chat资源启动/关闭；既有serve_local_login.py只接显式flag/生命周期钩子。不把新增200行System/worker生命周期堆入490行login文件，不在owner或新顶层目录建测试服务。相邻scripts/tests/test_local_chat_runtime.py单测。无新应用进程类型，复用已批准的System/Agent HTTP/worker。 |
+| 允许写入 | scripts/dev/serve_local_login.py、scripts/tests/test_serve_local_login.py、scripts/dev/local_chat_runtime.py、scripts/tests/test_local_chat_runtime.py；仅四文件，Root台账/README共享文件由Root另负责。不得改任何子仓源码/contract/Schema/lock/generated/index/分支/提交。 |
+| 依赖/数据 | 读取AGENTS/CODEBASE_MAP、Python09/SQL03、现System/Agent/BFF三设计；从源码运行owner CLI/installer，System Node24、BFF/Web Node22、Agent frozen环境。复用现PG/Redis/本机Ollama已存在qwen3:8b，不下载/启新infra，不假System/model，不直写owner业务表。System路由用既有ownerseed HTTP方法；BFF/Agent/System在一个自有应用临时库内各schema（System当前public锁保留明确边界），IAM测试host原隔离fixture保持。 |
+| 配置/边界 | 显式--chat启动，旧login-only测试模式仍明确不代表产品；CLI参数model origin/固定支持模型及Agent Redis URL需预检，使用现realmodel exact loopback shape。Agent selected_skill_source_refs=[]、Platform未装配，不假Run/proof/Skill成功；Storage未装配不显示能力已通。所有secret只注册/私有log，不出普通日志或repr。model resolve必须经过真实System，不直接默认硬塞模型。 |
+| 资源/恢复 | 同组记录仅自有PID，System隔离build防共享dist冲突；worker/HTTP健康/启动失败不静默退回login-only，foreground监测含新服务。复用既有AgentRedisOwnership对显式空DB的原子占有、不FLUSH；动态用户Run只在资源归属内登记/清理，停止worker/drain/HTTP后清理own keys/database，预览现组三PID仅Root明确停/重启，writer不能启动/终止任何服务。 |
+| 验证/交付 | 先默认login零Chat启动/显式trueBFFenv/真实HTTP+worker命令/预算与亲属guard/任何阶段失败清理/已有Redis不清/取消与非活跃资源门RED→GREEN。纯测试不接infra/provider；RootRuff、相邻tests/fullscripts/独立review后commit并接真实当前3310启动及实际login/chat/reload门；原浏览器控制限制保留，不把HTTP/headless假称右侧可见。writer交付停写精确diff/hash/RED与GREEN日志，不提交。 |
+
 ## 当前优先级重新对齐（2026-09-30，用户明确要求聚焦）
 
 总体目标不变：九owner独立闭环、SQL/RPC依赖组合、用户可见完整产品、Billing最后。当前主控先交付用户能验的一条链，不用测试数/文档/生成物代替产品进度。
