@@ -1,5 +1,22 @@
 # Kokoro 后端闭环任务总表
 
+## 并行验收支撑：W3-IAM-AGENT-SOURCE-HOST（仅测试夹具，不改业务）
+
+| 项 | 任务卡 / 放置门 |
+| --- | --- |
+| Owner/执行/基线 | IAM测试夹具，由可见会话「Kokoro IAM 登录链路验收」唯一writer，Root审查；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam` clean main `36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9`。与Agent业务实现并行的独立验收支撑，不并行重写两个业务服务。 |
+| 现状/目标 | internal-http fixture已创建tenant_execution client，但web-oidc host的skill_sandbox ready只导出catalog/projection/execution-authorization credentials；Agent JWKS固定不可达示例URL。真实Agent→Platform→IAM签名proof验收缺少自有Agent workload凭据及实际公钥HTTP地址。保持IAM生产认证/配置/OpenAPI/SQL不变。 |
+| 位置/两案 | 采用既有 `test/fixtures/web-oidc-flow-host.ts` 增显式source-test opt-in和既有 `test/integration/web-oidc-flow-host.test.ts` 验证；拒绝Root另造IAM身份实现、导出私钥、mock允许决策或修改生产verifier。无新文件/目录/进程类别。 |
+| 设计/边界 | `IAM_TEST_AGENT_SKILL_SOURCE_MODE=1` 仅与既有skill sandbox显式开启一起使用，并要求 `IAM_TEST_AGENT_JWKS_URL` 为精确loopback HTTP `/v1/execution-proof/jwks`、合法端口、无userinfo/query/fragment；默认关闭/非法组合在建资源前失败。issuer沿现有固定测试issuer，不新增任意远端网络入口。只在新模式ready增加既有tenant_execution client凭据，旧默认/旧sandbox协议原样；不打印secret到诊断或文档。 |
+| 文件/删除/数据 | 仅上述两测试文件及本仓CURRENT/ACCEPTANCE相应证据说明；允许现有internal-http fixture极小参数传递修正（有必要先报Root），不动src/生成物/契约/Schema/锁文件。关闭模式不导出新增credential，不保留另一套host。测试只使用fixture自有临时PG库/Redis prefix，不重置共享数据或3310。 |
+| 验证/交付 | RED→GREEN覆盖默认/显式关闭/继承环境隔离、非法mode/URL组合启动前拒绝、新模式ready字段、真实client_credentials的platform:execution.invoke及关闭资源清理。独立本地Node24静态/default gates可执行；真实PG/Redis integration由Root串行运行，不自行启动共享服务。修改前读Root/本仓规范与三面设计，确认仅测试配置不改API/SQL；小commit交付后停写，Root复验/pin后才用于六owner链。 |
+
+## 已完成只读：W3-SKILL-INSTALL-CONSUMER-PREFLIGHT
+
+Root指定 `bff_chat_selection_owner` 只读审查BFF `571b51de` 与Platform `6a09913` 的既有安装/启用能力，工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro`，基线Root `e96c745b`。目标仅确认owner已实现的RPC、输入/幂等/当前身份与状态机、BFF public缺口及下一最小消费者文件集，不重写owner设计、不决定自动安装产品偏好、不把ACTIVE读权限当执行授权。允许读取两仓文档/Proto/generated/运行与测试，不改文件/Git/数据库，不运行服务/全门。Agent typed reader由另一负责人独占写入，不读取变化中实现来作最终证据。交付精确路径/固定SHA/未决问题，Root负责后续排期和三面门。
+
+**真实缺口与顺序：** Platform installation service/RPC已有Install/SetEnabled/Remove/Get/List、完整事务/receipt、初装enabled=true；但 `installation/skill-installation.rpc.ts` 的authorize只走 `authorizeExecution`，workload只接受kokoro-agent/`platform:execution.invoke`及Run proof。BFF catalog/projection身份没有Product安装准入，public仍残留按name enable/disable并返回503。因此下一产品安装片必须先Platform沿既有installation owner补受信Product契约/准入，再BFF exact安装资源和Web消费者；不由BFF伪造Run/proof或直接写Platform表。发布是否自动安装仍产品未决，不影响先完善显式安装能力的owner设计；ACTIVE可读与可执行继续分开。
+
 ## 当前代码 owner：W3-AGENT-TYPED-SKILL-READER（P0，沿已批准设计实施）
 
 | 项 | 任务卡 / §8 放置门 |

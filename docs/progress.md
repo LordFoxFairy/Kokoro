@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Agent读取推进中，提前查明安装入口及真实验收缺口
+
+固定Platform `6a09913`/BFF `571b51de`只读源码核实：安装/启用/移除业务和幂等事务已实现，但RPC只接受Agent Run execution proof；BFF的catalog/projection凭据没有Product安装入口，不能靠新增BFF路由完成。后续先Platform沿既有installation owner补Product准入契约，再BFF/Web消费者；不把ACTIVE发布当安装授权，也不伪造Run。审查未运行服务/测试。
+
+Root另核现有IAM真实host：已创建tenant_execution client但ready未导出，Agent JWKS仍固定示例地址。因此将最小opt-in测试夹具切片派给可见协助窗口，仅IAM两既有测试文件/必要文档，与Agent业务reader独立并行。生产认证/公开契约/SQL不改，所有真实PG/Redis集成由Root串行运行；默认旧fixture协议保留原样，新增模式必须严格显式开启。Agent负责人已推进v4 vendor/生成物与ZIP reader代码，不因上述产品/验收前置停工。
+
 ## 2026-09-29 — 当前固定四仓真实Chromium登录与普通Chat通过
 
 Root `772208ba` 固定Web `1dc211bb`/BFF `571b51de`/IAM `36242fd`/Agent `dd34a48`，执行既有 `run_web_chat_chromium_smoke.py`，run `226e62b13189e8b90e1812aa` **PASS/exit0**。同一真实Chromium Context：IAM邮箱/密码表单→consent/固定tenant→Product Session→app→消息POST202→独立Agent CLI worker→5帧AG-UI→一次受控断线Last-Event-ID恢复→刷新仍1用户/1助手。BFF outbox成功、助手completed、Agent终态；同tenant其他用户资源404、其他tenant准入403。模型/System为严格确定性fixture，不是真供应商/Skill执行，也未操作3310。自有进程/PG数据库/Redis键全部0，Redis14/15复查0。日志 `/tmp/kokoro-web-1dc211b-real-chromium.log`，实际登录/聊天截图在 `output/playwright/r2c-login/` 对应run文件。

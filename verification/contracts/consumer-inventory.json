@@ -645,7 +645,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "Platform HTTP 3.1.0 read projection and published personal Skill by-ID are now consumed by BFF via generated client and dedicated IAM workload token; old Capability HTTP 2.0.0 client/vendor/secret were deleted. Root real BFF public cross-owner smoke remains pending, as do Web Chromium signed PUT/CORS, Agent pin and inactive Platform v4 candidate activation. Broad edge remains broken until those gates are verified.",
+      "reason": "Platform HTTP 3.1.0 read projection and published personal Skill by-ID are now consumed by BFF via generated client and dedicated IAM workload token; old Capability HTTP 2.0.0 client/vendor/secret were deleted. Root real BFF public cross-owner smoke remains pending, as do Web Chromium signed PUT/CORS, Agent pin and inactive Platform v4 candidate activation. Broad edge remains broken until those gates are verified. Fixed-source preflight additionally confirms that existing Skill installation RPCs require Agent Run execution proof and the kokoro-agent execution workload; BFF catalog/projection credentials have no Product installation admission. Platform owner must publish that Product boundary before BFF/Web installation consumers; no fake Run or direct owner SQL is acceptable.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
