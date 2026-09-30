@@ -10,7 +10,7 @@
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
 | `apps/kokoro-app` | `1dc211bb61030926177b72b3dff2061562a1015b` |
-| `apps/kokoro-bff` | `571b51de2057905c74c78ac966c8cf5ac11eca93` |
+| `apps/kokoro-bff` | `c4c4cbccee68eee95c1b89548abb6302b80e58e6` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `0dd60af4799cb2f0b410ded5ffb9c1402a55c641` |
 | `apps/kokoro-iam` | `e3c035b99cf9479ac8357c7d38147f1541dcbcac` |

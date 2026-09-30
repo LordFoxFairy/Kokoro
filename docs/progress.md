@@ -1,5 +1,12 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — BFF文档门已验收提交；Web退出P1拦截
+
+BFF三发现返修独立P0/P1/P2=0，Root精确提交原四docs `c4c4cbccee68eee95c1b89548abb6302b80e58e6`。Node22 contract179/179、architecture27/27、schema5pass/1无PG skip，机器/API/runtime仍未变化。Root来源库存184个BFF来源节点更新及2个文档digest，所有broken状态不变；提交gitlink前严格checkpoint/95test为1fail/94pass（HEAD gitlink仍旧，属真实未集成拒绝），提交后再次完整相关门，不放宽规则。
+
+Web生产expiry修复及夹具73GREEN已交付，但Root再次发现测试stop发送signal/timer结束不证明真实退出；独立审查纠正为P1=1，旧0缺陷结论撤回。原writer仅既有test生命周期窄返修真实终态/保留句柄/静止后清自身目录与keys，并加确定性RED；未提交Web、未重启3310。用户可见登录仍未验收。
+
+
 ## 2026-09-30 — 独立审查拒绝错误的安装投影；真实浏览器夹具回归已跑
 
 BFF四文档独立审查 P0=0/P1=1/P2=2：Root先前DELETE `removed=true` 裁决发明owner九字段没有的boolean，已撤回，改owner原生 `installed=false/enabled=false/removed_at`；写receipt精确envelope与change/event/replay，以及资源缺失404/session401需先收敛。原BFF文档owner返修，未授消费者代码，不能冒称文档门通过。Root Node22 当前contract179/179、architecture27/27、schema5pass/1无PG fixture skip；首次umask077让既有broad-permission测试fixture成为0600而1fail，失败日志保留，正常022重跑通过；该fixture环境依赖待消除，不当作产品权限通过证据。

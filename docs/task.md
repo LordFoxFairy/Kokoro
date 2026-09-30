@@ -9,6 +9,7 @@
 - 两位置选择：采用现 server-only target helper，避免GET/POST判定漂移；淘汰新 auth module、新页面或 duplicated expiration helper。普通扩现文件、不新目录/新owner/Schema/依赖/锁/alias/fallback。
 - 验证：先过期且有效CSRF的明确RED；原生旧DOM失效点击与新CSRF/无CSP violation，登记浏览器签发CSRF精确清理；修复后上述GREEN、现unit/contract/architecture/lint/typecheck/build；Root再独立复验。过期恢复是新OIDC交互，不放宽签名/期限、不绕过凭据/CSRF/同源，机器403行为保留。
 - 资源：允许现隔离Next+mockBFF动态端口和现Redis7仅自有prefix/token，无PG/新infra/3310操作；停止测试进程并清理全部自身keys/tmp，权限/日志不输出密码/token/完整签名query。
+- Root复审追加P1：测试stop必须真实终态才成功，失败保留句柄，不删仍活动Next目录/CSRF；仅现systemtest确定性取消窗口RED/GREEN，生产认证不扩大。
 - 交付：停写精确文件/hash、RED/GREEN/实际exit与未验项；不得提交/shared index、改Root或其他仓。Root可见真实IAM/当前3310验收仍独立开放，不把fixture当用户窗口。
 
 ## 当前用户失败优先与并行验收（2026-09-30）
