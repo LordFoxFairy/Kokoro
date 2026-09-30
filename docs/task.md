@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码切片预审：W3-SKILL-ACTIVATION（Web 正式写 UI 验收后串行）
+## 下一代码切片预审：W3-SKILL-ACTIVATION（Web 单仓代码门后串行）
 
 **只读结论，不是已激活：** BFF 六条 Skill 写路由已接线，但同受 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED` 默认关闭保护；`true` 只允许 BFF loopback 独占 smoke。Platform v4 `inactive/routable=false` 是机器契约发布标记，不是运行 kill switch。不能把临时开关改成产品上线，也不能把 Web 静态测试或 HTTP owner smoke 当正式产品闭环。
 
@@ -8,25 +8,25 @@
 | --- | --- |
 | Owner / 当前事实 | Platform `apps/kokoro-capability` 为 v4 owner machine artifact 唯一 writer，当前 pin `6a09913`；BFF `apps/kokoro-bff` 为 public Product API 唯一 writer，当前 pin `62daba37`。`apps/kokoro-bff/src/config/runtime.ts` 的候选开关默认 false，`src/bootstrap/runtime.ts` 关闭时不构造 CatalogConnectClient；Platform `contract/execution-operations/v4/manifest.json`、schema/checker 与 BFF generated/dependency/test 均明确 inactive。两仓当前无本任务写入。 |
 | 方案与顺序 | A（采用）：先由 Platform owner 原子发布 active/routable 机器 artifact、schema/checker/provenance 与直接测试，Root 验证并精确 pin；再由 BFF 单 writer 固定新 owner commit/aggregate，移除 loopback 候选限制并定义正式启用策略、路由/API 状态与负例；最后 Root 隔离真 IAM→BFF→Platform/Storage 验默认/启用、撤权、同键恢复。B（淘汰）：只把环境变量设 true、只改 manifest、让 Web 绕过 BFF 或为测试假装 CORS 已通过；会造成契约/运行双轨及错误产品声明。 |
-| 依赖 / 数据与删除 | 必须等 Web 当前单 ZIP 正式写 UI 的 P1/P2 修复及 Root 验收，不与 Web 同仓争写；先 owner contract，后消费者。无新数据库、role 或跨 owner SQL。删除候选命名/限制与旧 inactive 引用要和 BFF cutover 同片完成，保持当次 IAM/owner 准入。Browser CORS 501 是独立验收阻断，不作为本代码片运维排查。 |
+| 依赖 / 数据与删除 | Web 单 ZIP 正式 UI `12f9dff` 已通过独立审查及 Root 单仓门；先 owner contract，后消费者。无新数据库、role 或跨 owner SQL。删除候选命名/限制与旧 inactive 引用要和 BFF cutover 同片完成，保持当次 IAM/owner 准入。Browser CORS 501 是独立验收阻断，不作为本代码片运维排查。 |
 | 验证 / 未决 | Platform artifact/contract/test/build；BFF contract/check/schema/build 与默认关/启用路由测试；Root 真跨 owner 回归和精确 gitlink/库存 pin。六 owner 消费、Agent source、Storage orphan retirement 与完整 Chromium 仍各有独立门，不能在本片宣称全产品闭环。Billing 最后。 |
 
 
 ## 并行测试切片：W3-ROOT-SKILL-CHROMIUM（P0；独占真浏览器组合）
 
-**2026-09-29 子门实测：** Root 新 runner 只做随机 owned bucket 的精确 CORS API/readback 预检，实际本地 MinIO `PutBucketCors` 返回 **NotImplemented / HTTP 501**，exit 2、owned bucket 余量 0；尚未启动 PG/Redis/IAM/Web 或 Chromium。Python 7 tests/8 subtests、Root full 985 tests/281 subtests、独立终审 P0/P1/P2=0。完整浏览器链明确 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`，不再在该运维点深挖或注入代理假 CORS；继续推进 Web 正式写 UI，待开发 fixture 能真实处理精确 CORS 后再跑完整门。
+**2026-09-29 子门实测：** Root 新 runner 只做随机 owned bucket 的精确 CORS API/readback 预检，实际本地 MinIO `PutBucketCors` 返回 **NotImplemented / HTTP 501**，exit 2、owned bucket 余量 0；尚未启动 PG/Redis/IAM/Web 或 Chromium。Python 7 tests/8 subtests、Root full 985 tests/281 subtests、独立终审 P0/P1/P2=0。Web 单 ZIP UI `12f9dff` 已过单仓代码门，但完整浏览器链仍是 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`；不在运维点深挖或注入代理假 CORS，待开发 fixture 能真实处理精确 CORS 后再跑完整门。下表是 runner 开工基线与未过的最终放行条件。
 
 | 项 | 放置与阶段门 |
 | --- | --- |
-| Owner / 当前事实 | Root `main 8d025447` 拥有跨仓验收 runner，不拥有 Skill/Upload 业务事实；Web `98aad4c` 正式只读已 pin，正式写 UI 未交付。现有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 只有 HTTP signed PUT、HTTP loopback ObjectStore；`run_web_project_resource_chromium_smoke.py` 有独占 HTTPS Web/真 IAM/Chromium，却只验 Project/Library。Root `uv.lock` 任务外脏态不可暂存。 |
+| Owner / 开工基线 | Root `main 8d025447` 拥有跨仓验收 runner，不拥有 Skill/Upload 业务事实；当时 Web `98aad4c` 只读已 pin，单 ZIP UI 尚未交付，现已到 `12f9dff` 单仓代码门。现有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 只有 HTTP signed PUT、HTTP loopback ObjectStore；`run_web_project_resource_chromium_smoke.py` 有独占 HTTPS Web/真 IAM/Chromium，却只验 Project/Library。Root `uv.lock` 任务外脏态不可暂存。 |
 | 放置方案 | A（采用）：在 Root `scripts/e2e/` 建专用 Skill Chromium 编排/driver，`scripts/tests/` 放安全预检/清理/证据负例；复用旧两 runner 的纯 helper/独占资源而不改已验 monolith。B（淘汰）：把 Chromium 注入旧 Skill 单体 `execute()`、复用 Project UI/旧 HTTP signed PUT 或让 BFF 代理 ZIP；会混淆 owner、CORS 和真字节证据。无新顶层模块/服务/数据库角色。 |
 | 依赖与目标 | Browser→隔离 HTTPS Web 同源→BFF→IAM/Platform/Storage；唯一 ZIP 原字节经另一个隔离 HTTPS ObjectStore origin，以精确 Web origin/PUT/Content-Type、无 credentials 的 bucket CORS 完成真实 OPTIONS+PUT。Web 与 BFF 不能直连 owner 数据库。显式 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED=true`/Platform skill-source 只在本次独占组合，先证明默认关闭，不能改生产默认。 |
 | 范围 / 删除 | 新 runner、Chromium driver 与 Python guard tests 可由一名 Root writer 并行于唯一 Web writer；Root 主控不抢写这些文件。无旧正式 runner 删除项；若需重构公共 helper，先报告并调整任务卡，不先复制巨型编排。Web UI selectors 稳定前先实现/验证独占 HTTPS/CORS/cleanup 子门，不伪造最终 PASS；最终脚本必须审计/清理自有 PG/Redis/bucket/process，不碰 3310、他人数据、任务外 `uv.lock`。 |
 | 验证 | Python guard RED→GREEN、`python3 -m pytest scripts/tests`、Root topology/checkpoint；Web 正式写 UI commit 后真 Chromium 登录/303/HttpOnly、CORS OPTIONS、无 Cookie/Bearer PUT 原字节、Complete→Validate→零 body Publish、ACTIVE 刷新读回、撤权/感染/错误恢复、资源 clean。只有最终真组合 exit0 才可标浏览器闭环。 |
 
-## 下一切片：W3-WEB-SKILL-CONSUMER（P0；正式发布与读回 UI）
+## 已过单仓代码门：W3-WEB-SKILL-CONSUMER（P0；正式发布与读回 UI）
 
-**阶段状态（2026-09-29）：** 机器/文档门 Web `53760a2` 与正式个人 ACTIVE/MCP 只读 UI `98aad4cddb231ef7d1363f00630b9b41f51a743f` 已由 Root Node22 全门通过；终审 P0/P1/P2=0。下一唯一 Web writer 切片是**单 ZIP 正式写入 UI**：沿现有 shadcn Dialog/同源 adapter 原子删除旧 preview/confirm、namespace/multi-candidate/`.skill` 正式调用，接 Draft/Get/Begin→ObjectStore 原字节 PUT→Complete→Validate→零 body Publish/本人 by-ID 恢复。Root 真 Chromium 要用独占 HTTPS Web + HTTPS ObjectStore origin 与精确 CORS/preflight，不能把现有 HTTP signed PUT 或 preview Playwright 冒充浏览器链；3310 不作验收。以下表格保留整条业务放行条件，机器 pin/静态 UI 不是产品激活。
+**阶段状态（2026-09-29）：** Web 正式单 ZIP UI/adapter `12f9dff909b8e2e8694a96f510676f90d375ecdc` 已交付且 clean；Root Node22 第二次默认 `pnpm check` contract **108**、architecture **36**、tests **1656**、lint/typecheck/build PASS，独立终审 P0/P1/P2=0；首轮旧 Billing UI 异步测试进程错误和隔离重跑记录在 [`progress.md`](progress.md)。Root 隔离 Playwright 3487 **11 pass/1 既有 skip**，该套没有真 IAM/Skill publish；真 Chromium 必须用独占 HTTPS Web + HTTPS ObjectStore origin 与精确 CORS/preflight，目前本地 CORS API 501。下表保留原开工基线与完整产品放行条件，**单仓代码门不是激活或端到端**。
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |

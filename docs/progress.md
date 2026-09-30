@@ -1,5 +1,12 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Web 正式 Skill 单 ZIP 发布代码门通过，跨仓浏览器门未过
+
+Web 唯一 writer 从 `98aad4c` 分三片 `7568519`→`667d82b`→同意图恢复 `73c22d5`，Root 终审补出 Publish ACK 双网络失败、连续 by-ID 404 时永久未知的 P1；独立审查补出建 Draft 后非法文件名 UI 死局、非 self 同源路径绕过正式门的 2 项 P2。Web `12f9dff909b8e2e8694a96f510676f90d375ecdc` 以相同 Publish key/零 body 在再次权威 404 后安全重发，401/403 保留原码不重发；文件名/真实 JSON UTF-8 65,536-byte 上限提前验证，正式非 self Skill/MCP alias 404，负例 RED→GREEN。显式 preview 旧菜单经早返回核实**未在正式页挂载**，该审查意见为误报；正式入口负例已加。最终独立终审 P0/P1/P2=0。
+
+Root 独立 Node22 `pnpm check` 首轮 contract **108**、architecture **36**、Vitest **1656/1656**、lint/typecheck PASS，但旧 Billing UI 的 jsdom/Radix focus 异步异常令进程 exit1；隔离 `billing-panel.test.tsx` **12/12**，第二次**默认**全门 **108/36/1656** 与 build PASS。隔离 Playwright 3487 **11 pass/1 既有 skip**，只测未配置登录/预览治理；自有进程退出、生成物清理、Web 工作树干净、3310 listener 保持 PID 81692。正式 UI 代码与严格同源边界可审，但 BFF 写候选默认关、Platform v4 inactive、真 IAM/双 HTTPS ObjectStore/CORS Chromium 尚未过，**不能称端到端产品发布可用**。下一代码片依 [`task.md`](task.md) 先 Platform owner active artifact，再 BFF consumer 激活；Billing 最后。
+
+
 ## 2026-09-29 — Skill 正式激活只读预审完成，未写代码或启服务
 
 独立只读核 BFF `62daba37`/Platform `6a09913`：BFF 六条写路由虽已接线，但共享默认关闭、仅 loopback 独占 smoke 可启的候选开关；Platform v4 机器 artifact、schema/checker 以及 BFF generated/dependency/直接测试仍明确 inactive。正式产品激活需按 owner 顺序先 Platform 发布 active/routable artifact，再 BFF 重钉并收敛候选限制与运行测试，Root 真 IAM/owner 组合验收；不能只改 env 或文档。本次 **没有修改子仓、没有启动服务、没有产品激活**。Web 单 ZIP 正式 UI 当前仍由唯一 writer 修正独立审查发现的旧入口、极值 body、Publish 恢复/撤权与取消 P1/P2，等待 Root 验收；浏览器 CORS 501 独立保留，不继续深挖运维。后续任务边界见 [`task.md`](task.md)。
