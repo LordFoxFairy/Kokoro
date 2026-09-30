@@ -1,6 +1,6 @@
 # Root 当前组合
 
-**Agent当前推进（2026-09-30）：** Agent main58b59cf7固定运行组仍2.0；四docs＋四tests R4候选已核，Root实际 RED52fail/121pass（1.91s、exit1、无collection error），独立最终0/0/0；缺code/strict tuple/secret/closed profile负例齐全。已放原负责人精准GREEN源码/机器3.0候选，尚未完成/提交/消费者切换；无SQL/依赖/共享运行组变更。BFF负责人并行只读准备消费文件门，禁止先复制未发布artifact。Web5058失败水合和原生一次手动retry真实回答/终态reload窄证据保持，重复原问题产品语义仍待对齐。
+**Agent当前推进（2026-09-30）：** 已冻结安全失败3.0候选，26文件独立review0/0/0；Root真实完整pure1505pass/6既定skip/174deselect（57.88s）、Ruff/Pyright/generator/contract/build通过。真实PG/Redis/HTTP两例尚未通过：首轮test把superseded审计误计发布帧，修后第二轮outbox/Chat/Redis safe且single断言通过，HTTP Run evidence初始after_seq0漏合法terminal index0，actual2fail/20deselect（1.91s）；自有DB和Redis15均精确回收0。已按独立确认P1缺陷开Run-only初始cursor=-1文档/tests RED窄门，Chat AfterSeq0、event index、SQL/proof不动。候选未提交/协调发布，当前受管组仍旧2.0，BFF/Web消费者未切换。Web5058通用失败恢复与一次真实retry回答/终态reload窄证据保持，重复原问题产品语义仍待对齐。
 
 **BFF已验收组合（Root `7c13378e3e752b72c170cfdf3629cca743db5b81`，Web新片另见下段）：** BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已验收、clean并集成。Root提交后strict relay/checkpoint/topology均独立exit0；完整 `scripts/tests` **1103 passed / 3 native依赖skip / 455 subtests**，108.74秒。新全仓标准门实际exit1，仍137违例/0 unverified；main-only实际exit1，主仓和11子仓本地/远端均只有main，但Billing五docs候选及任务外Root `uv.lock` 未提交，不称全体clean。此前BFF pure506pass1skip、fresh install/target8/full47真实owner integration通过及fixture失败历史保留；来源库存仍3active/13broken。
 

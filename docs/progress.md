@@ -2187,3 +2187,11 @@ Agent首tests-onlyRED报告42fail/114pass、1.82s，无collectionerror。Root读
 Root独立R3 52fail/121pass（1.93s）、最终R4同52fail/121pass（1.91s）均actual exit1、session77096/11770已消费，无collectionerror。原review缺code负例P2已关闭，R4四hash精确/原docs不变，独立最终0/0/0；新增code×retryable、System declared status×bool、strict未知/错tuple/secret、初次/恢复与safe Chat矩阵保持。生产/机器仍2.0，只有docs/tests候选；放行原Agent单writer精准GREEN到task现文件门，停写后Root独立完整门与自有资源验证，再发布owner commit。无第二子仓writer/共享服务重启/计费动作。真正重试回答窄PASS保留，重复原问题语义仍待用户对齐；整体goal active。
 
 BFF只读消费门完成：现2.0 pin、retryable实时丢失与snapshot缺profile已具名定位；后继必须同message事实持久化才能独立于AGUI GC。cancelled/permanent dispatch状态裁决仍未定，未改contract/SQL/source/运行组。Root当前三台账独立审查0/0/0，三聚焦治理tests实际54pass（40.34s），日志 `/tmp/kokoro-agent-failure-green-gate-ledger-tests.log`、session41874exit0已消费。仅本三台账提交，Agent在途、Billing五docs及任务外uv.lock排除。
+
+Agent26文件候选冻结，Root逐hash及5protected bytes通过；首完整pure50fail/Pyright10项在获批集合内返修，contract_check<200既有门不放宽、唯一编译移现chat_contract_check。最终worker1505pass/6既定skip/174deselect不是Root验收；新增真PG/Redis/HTTP两例仅收集。Root独立完整pure与code review开始，现PG/Redis前置SELECT1/PING可达，无新设施/运行组重启。原IAB5已不存在，原3仍焦点超时；同browser新6读正式/app仍见真实END回复及两原问题，markDeliverable保留；未再次发送/授权/改数据，不覆盖原窄门或重复问题风险。
+
+Root独立code review0/0/0，pure全部1505pass6既定skip174deselect57.88s、Ruff/Pyright/codegen/contract/build exit0；完整落盘 `/tmp/kokoro-agent-failure-root-green-pure.log`。真实两例PG/Redis/HTTP首次2fail20deselect1.70s，资源精确回收DB0/Redis15=0；不是绕过或放绿。Root读生产SQL与独立review确认superseded审计被test误计published帧，以及dict_row整数索引潜在错误，已仅返修acceptance以强化两审计row/一可见terminal事实，source不动。当前组与消费者仍旧固定组合，Agent尚未提交发布。
+
+真实R2再次2fail20deselect1.91s，cleanup精确DB0/Redis15=0，outbox/Chat/Redis全部safe且single，正式Run evidence漏首index0。已由独立review确认P1现API缺陷：exclusive after_seq初始0不可读0，不伪造START或降terminal预期。Root裁决Run-only EvidenceAfterSeq=-1，与Chat seq初始0隔离；先四docs/现tests RED、再窄放HTTP机器/ingress/server，不改event index/SQL/proof。本门尚未实现，原pure1505通过不代替真实门。
+
+本轮Root三台账diff独立最终0/0/0；Root治理三文件实际54pass（40.43s），`/tmp/kokoro-agent-failure-review-progress-tests.log`、session94226exit0已消费。原3310组八PID均live/无Z、Redis测试DB15为0；未新增常驻进程/重启或收费动作。只提交三台账，子仓26文件候选与新cursor docs/tests在途、Billing五docs、任务外uv.lock排除；完整goal保持active。

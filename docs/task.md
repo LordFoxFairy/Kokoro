@@ -2755,3 +2755,27 @@ Root基线580161a7、Agent main58b59cf7；唯一writer agent_typed_skill_reader_
 负责人bff_personal_installation_owner，Root审查；目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`、main15e07fa4 clean。范围现Agent固定consumer、AG-UI RUN_ERROR持久投影/snapshot、三设计面/现tests与精确后继文件门；无需新文件。依赖Agent目标已审设计但未发布3.0，禁止下载/复制未发布机器contract、源码写入/Git/infra/provider/共享进程操作。交付实际pin、required安全message/strict retryable与精确失败snapshot缺口、API/SQL影响、RED和最小文档/代码门，Root确认后等待owner commit再实施；retry/regenerate产品决策另门。并行调查不等于第二子仓writer，主控保持当前Agent关键路径。
 
 BFF只读交接结论（15e07fa4）：现HTTP pin2.0/dd34a480、event来源486adb，严格等Agent正式3.0再repin。现RUN_ERROR投影丢retryable，snapshot只有message status，不能在GC后从ledger反推profile。后继候选为现bff_message同投影事务保存稳定code/retryable，RR/ACL snapshot与list一致；不得新表/协议/Agent SQL。BFF cancelled与本地permanent dispatch writer的状态/profile要先裁决，不猜Agent码、不把取消冒充模型失败；机器/schema与Web strict消费同步为独立breaking门。此只读发现不是DDL授权，三面文档门/Root状态裁决/Agent发布均前置，完整presence invariant未验。
+
+### AGENT-FAILURE-CONTRACT 候选冻结 / Root独立门
+
+原负责人26文件已停写，manifest `/tmp/kokoro-agent-failure-green-manifest.json` SHA0b5f0ed9c72ed0d594ec15e14a13515bf72c9306f2701b7bb8b145f03cbfe7e5；Root26/26 hash及canonical SQL/uv.lock/pyproject/proof schema/vectors原字节5/5核过。目标HTTP3.0 digestd88241e9未发布。worker定点175pass、完整1505pass/6既定skip/174deselect、Ruff/Pyright/generator/checker/wheel通过仅待验候选，Root独立session89488在途、独立code review已派。
+
+Root可在既有PG5432/Redis6379执行新增两参数化acceptance：生产typed failure→terminal CAS/RunEmitter→durable outbox/Chat→Redis→正式HTTP evidence/replay并重开repository，严格profile/secret/单终态。使用自身随机临时测试数据库（不新增应用库/role）、Agent随机schema和原子claim的空Redis逻辑DB15，绝不应用DB10；无共享reset/FLUSH、无provider/3310请求。仅测试线程HTTP临时端口，fixturefinally关闭；Root finally只删除自己创建的数据库及持有marker证明的精确键，异常保留非本次数据。先记录实际命令/退出码/0skip/cleanup再谈持久验收，整文件/其他真实owner gates后继。
+
+Root26文件独立code review0/0/0、完整pure实际exit0：1505pass/6既定skip/174deselect（57.88s）、Ruff251/Pyright0/generator/checker/lock/sync/wheel通过，日志 `/tmp/kokoro-agent-failure-root-green-pure.log`、session14135已消费；前一session89488完整命令exit0但stdout过长，第二轮为完整落盘证据。
+
+首真实two-parameter acceptance actual exit1 **2fail/20deselect（1.70s）**，日志 `/tmp/kokoro-agent-failure-root-real-acceptance.log`；自有测试DB0/Redis15键0/cleanup无错。Root与独立审查定位test错误：outbox应保留第二superseded/indexNULL审计row，并非两个published终态；connect_pg为dict_row，原test整数索引也不正确。只准原owner返修该现acceptance文件：不WHERE过滤，显式两row status/seq/index和safe bytes，Chat/Redis/HTTP仍一可见帧，列名访问；不改production/Schema/取消/CAS/四docs或放宽断言。其他25hash冻结保留，当前26manifest随后由新manifest替代；真实复验未执行前不称已过。
+
+### AGENT-RUN-EVIDENCE-INITIAL-CURSOR / P1 owner 修复设计门
+
+R2真实two acceptance仍actual2fail/20deselect（1.91s，exit1），DB/Redis15均0。新profile的outbox audit/Chat/Redis strict bytes、bool和single visible断言已通过，独立HTTP证据读在terminalFalse失败。Root和独立review定位真实API缺陷：Run index从0，evidence exclusive index>after_seq，但默认/下限0使初始terminal index0不可读。不能伪造run.started/index1或把terminal预期降False。
+
+| 放置项 | 裁决 |
+|---|---|
+| Owner/当前 | Agent内已有HTTP evidence，main58b59cf7+26冻结候选R2；session Chat seq从1、共享AfterSeq0；Run event index0合法。 |
+| 目标/两案 | 采用仅run evidence具名EvidenceAfterSeq minimum/default=-1，exclusive last-seen index；淘汰改共享AfterSeq（破坏Chat）、变更所有event起点/伪造START（越界/假证据）。空页next_seq回显-1，continuation0保持exclusive。 |
+| 目录/粒度 | 仅扩现OpenAPI参数/EvidencePage（若现named schema存在则扩，不建新HTTP模块），现interfaces/http/ingress.py、server.py窄逻辑；不新文件/目录/owner/进程。 |
+| API/数据 | 当前未发布3.0内同步机器/文档/生成source digest/provenance；Run index/Chat AfterSeq0/SQL/proof schema/vector不变。BFF只在发布后repin，不消费在途。 |
+| 删除/验证 | 删除Run默认0漏首帧实现，非兼容alias。现tests/unit/http/test_ingress.py与test_machine_contract.py先RED：首index0、省略/显式-1、empty后迟到index0、after0 continuation、-2/非整数400、Run/Chat参数隔离。实际PG/Redis/HTTP两例必须terminalTrue且同safe bytes。 |
+
+原Agent负责人先四现docs收敛三面并补上述两个现tests-only RED，acceptance现请求改正式初始cursor（source仍锁）。文档/RED冻结后Root独立审查及复现，才能放现ingress/server/OpenAPI源、再生故障模型header及provenance。这是当前3.0候选内真实闭环漏洞，不扩BFF/SQL/proof或放宽门；旧R2 hash/失败日志保留。
