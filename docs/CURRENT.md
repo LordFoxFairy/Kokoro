@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-30 两切片最新事实：** Source安全来源诊断Rootc8e1def9经native6/65、ordinary86/3skip/140与独立审查0缺陷；未修真实disable UNAVAILABLE。Platform个人Product三面设计e510c04已提交/clean，Root七纯静态门与独立审查通过，尚未发布v5机器/运行安装入口，不以文档称可用。Root来源集成后继续正常Source分类和owner修复；当前右侧登录仍待手动/login与可见回调/刷新，3310保留，13broken与任务外uv.lock保留。以下每个日期条目是历史门，不覆盖本段边界。
+
 **2026-09-30 最新实际阻断：** Root6c1fe846正常Source首次disable SetEnabled明确UNAVAILABLE；不是已通过，后续re-enable/lease/撤权未验。生产TS/Python同样本bool双值binding/command摘要完全一致，根因仍只读窄查；安全诊断全Root1023 pass/3skip/325subtests及native3/34已验。Platform只推进Product PERSONAL四文档候选，未有机器/运行产品入口。右侧登录仍旧过期标签CUA超时待手动/login，原3310受管服务保留不重复启动。详细当前任务与证据见task/progress。
 
 **2026-09-30 最新加速波：** 用户批准多工作面并行。Root6fc47c93已集成Agent58b，提交后topology/checkpoint PASS，Root完整1023 pass/2skip/325subtests（115.72秒）。正常无wrapper真实Source已越过OAuth/安装/typed原字节/native读取，在SetEnabled遇ConnectError，尚未通过；原负责人限定Root四driver文件排查，生产bug需按owner另派，不放宽门。独立Platform负责人仅收敛PERSONAL Product安装三面文档，未修改contract/源码/schema或宣称产品可用。Root保留3310可见登录关键路径；CUA超时/旧标签待用户手动/login，不再反复重启。任务外uv.lock不动，宽泛13broken保留，完整goal仍active。

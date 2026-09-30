@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 两负责人切片收口：安全来源诊断与个人安装三面设计
+
+Root `c8e1def9` 提交Source来源诊断helper/test；Root独立Ruff check/format、native6 pass/65subtests、ordinary86 pass/3skip/140subtests，日志 `/tmp/kokoro-source-origin-root-{native,focused}.log`，独立固定hash审查P0/P1/P2=0。只保留标准code/cause是否存在/精确class固定label/8fixedmessage exact标签；子类/任意未知闭合unknown/unclassified，不渲染原文/context/secret，call/proof/digest/timeout/取消登记与清理未动。这不是底层UNAVAILABLE修复。纯generated client无网络实测local ConnectionError与server503都可UNAVAILABLE，分别cause true/false，故下一正常一次运行分类来源，不凭code归罪IAM。
+
+Platform `e510c04bfacb76f35a6b09a2ac8a48b1961d5534` 四文档局部140增/1删由Root提交/clean，独立固定hash三面审查P0/P1/P2=0；Root Node24.20.0实际7纯静态门exit0（`/tmp/kokoro-platform-personal-design-root-gates.log`）：read-only contract、buf lint、schema validate、v4 55正/142负向量、read-only cutover、四文档Prettier/diff。Prisma relationMode既有索引提示保留，未运行/冒称fresh install或真PG。设计复用唯一installation事实，PERSONAL本人Product五具名RPC、既有catalog/projection scope、独立digest、安全九字段、current/replay/fresh门与限制性操作对齐；未改源码/Proto/schema/v4 bytes/generated/lock，机器v5仍待发布，不授权runtime/BFF/Web提前实现。Root更新Platform gitlink/库存来源，不改13broken宽泛边或uv.lock。
+
 ## 2026-09-30 — 正常Source准确拒绝码已取得，摘要错配假设以双语言实测排除
 
 Root `6c1fe846` 诊断代码提交后完整Root scripts/tests **1023 pass/3 native skip/325subtests**、100.78秒、exit0（`/tmp/kokoro-root-source-diagnostic-tests.log`）；native组件3/34已独立通过，不把默认依赖skip当代码未测。Platform临时冻结clean6a后Root沿原正常文件入口实跑 `/tmp/kokoro-source-enable-code.log`：首次disable `SetSkillInstallationEnabled UNAVAILABLE`、exit1；没有-c/fixturetoken/人为允许，也未到re-enable/旧lease/撤权。ownedPID18879已退出、session37068终态已消费、Redis15回0，未留重复服务。
