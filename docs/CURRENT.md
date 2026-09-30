@@ -9,7 +9,7 @@
 | 路径 | 固定 commit |
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
-| `apps/kokoro-app` | `752aff9d0744cd55c556079a08a2a28e393e50e4` |
+| `apps/kokoro-app` | `840fa7e0ff9c4d241daca0c297b120f34821018e` |
 | `apps/kokoro-bff` | `d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |
@@ -64,7 +64,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 3. Browser signed PUT/CORS：已探测本地MinIO返回501；HTTP Source GET/PUT或预览Playwright不替代浏览器发布门。Storage orphan retirement/quarantine 等生命周期仍开放。
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
 5. 最近全仓标准门137项违规（旧136非当前），来源库存16边/13 declared broken；这些是仍开放队列，不因局部PASS改绿。完整goal仍active，Billing最后。
-6. BFF d654a1bc已完成IAMe3来源重钉，16SDK与owner inputs原bytes，policy语义不变；Root库存/gitlink集成中，预提交relay门HEAD/index不一致FAIL须提交后实际重跑。Web仍更旧a4/0.6 relay消费者，后继原字节消费未完成，不把BFF provenance PASS当Web闭环。
+6. BFF d654a1bc已完成IAMe3来源重钉，16SDK与owner inputs原bytes，policy语义不变；Root3bdf27db已集成，提交后relay/checkpoint/topology实际PASS；预提交HEAD/index不一致FAIL为历史证据保留。Web仍更旧a4/0.6 relay消费者，后继原字节消费未完成，不把BFF provenance PASS当Web闭环。
 7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮实际main-only核对主仓+11子仓本地/远端全仅main、当时11子仓clean；当前BFF文档候选和Web修复在途，整体gate因Root在途改动及任务外uv.lock FAIL，后者保留，不称全体clean，不新建分支/PR。
 
 ## 验证和归属
@@ -88,4 +88,8 @@ python3 -m pytest scripts/tests
 
 ## 正式积分流程最新核对（2026-09-30）
 
-用户已授权当前测试帐号后台积分入账；尚未执行，不称已充值。Web“本次由 Kokoro 承担费用，不消耗点数”是 taskTitle 条件下的静态 Badge，未消费计费 owner 决策，九语言对收费说法矛盾；删除片进行中，placeholder亦不得无依据宣称免费。Billing `63e0ab6` 已有32表 canonical 与新 CreditService 的事务组件，但生产主入口仍旧 pg/旧表，新 grant/operator入口与 Run准入/结算未接，CURRENT明确M3/M4前不可部署。Web余额 DTO 与BFF public契约及标准402 error code消费也有缺口，不能以移除Badge宣布账务闭环。支付渠道仍最后；积分正式赠送、reserve/capture/release 和余额/流水按owner后续逐片验收。
+用户已授权当前测试帐号后台积分入账；尚未执行，不称已充值。Web“本次由 Kokoro 承担费用，不消耗点数”是 taskTitle 条件下的静态 Badge，未消费计费 owner 决策，九语言对收费说法矛盾；删除片已提交Web840fa7e0、独立0/0/0、Root重跑完整1784tests/162files、contract109/architecture37/lint/typecheck/build PASS；未启动预览/未真实浏览器验收，placeholder亦已中性。Billing `63e0ab6` 已有32表 canonical 与新 CreditService 的事务组件，但生产主入口仍旧 pg/旧表，新 grant/operator入口与 Run准入/结算未接，CURRENT明确M3/M4前不可部署。Web余额 DTO 与BFF public契约及标准402 error code消费也有缺口，不能以移除Badge宣布账务闭环。支付渠道仍最后；积分正式赠送、reserve/capture/release 和余额/流水按owner后续逐片验收。
+
+## WEB-BILLING-TRUTH 集成证据
+
+Web `840fa7e0ff9c4d241daca0c297b120f34821018e`：16现文件已冻结hash核验、独立0/0/0与Root Node22主树完整门后提交。Root日志 `/tmp/kokoro-web-billing-truth-root-gates.log`；162文件1784通过（含worker未跑的8个integration命名文件119项，无skip），contract109/architecture37/lint/typecheck/build/diff PASS。这里的测试名称integration不据此冒充真实Billing/provider组合；未充值、未Run扣费/浏览器验收。Root后继只更新Web gitlink/来源库存/blob digest与driver固定SHA，不改任何业务或放宽门。BFF active文档独立2P1/1P2（版本策略、非法stream矩阵、永久失败测试允许集）尚未通过，未授权源码；Billing新正式admin grant五文档门进行中。

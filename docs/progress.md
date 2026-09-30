@@ -2088,3 +2088,11 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 用户拒绝静态“本次由Kokoro承担费用，不消耗点数”，允许当前本人测试帐号后台入账。Root采用systematic-debugging与原生并行：Web原负责人只读53tests通过后获16现文件删除片；bff_personal_consumer_review只读核Billing。证据：AssistantTurn仅taskTitle即渲染，中文免费而英文uses credits；九locale directPlaceholder也含免费承诺、现fast运行实际用中性placeholder。Billing当前canonical32表但启动旧pg/entitlement writer，正式CreditService组件尚无runtime/HTTP/CLI grant入口；禁止旧表恢复/盲SQL/假付款。Web余额wire/标准error code还需owner契约统一。尚未真实充值、尚未积分计费E2E，状态不冒充PASS。
 
 最新受管session92720已消耗权威exit1；日志精确stage=provider，3310无listener。只证明库存观测失败，不推断请求HTTP状态或推理失败；隔离生命周期为后续正确修复，不盲restart。原两次真实推理和中途刷新E2E FAIL均保留。Root BFF来源集成聚焦正确门80pass、库存77pass；曾两次误指不存在test文件均exit4/no tests后已纠正，不计PASS。
+
+## 2026-09-30 WEB-BILLING-TRUTH 正式删除片验收
+
+Web840fa7e0已精确16文件提交：静态收费Badge/九locale key/两CSS彻底删；九语言直接提问中性且brand插值，没改为另一收费承诺。TDD RED11fail/81pass，聚焦GREEN92/3。Worker纯门1665/154明确排除了8integration命名文件119项；独立审查0/0/0，Root Node22完整contract109/architecture37/lint/typecheck/全test1784/162/build/diff全部exit0（session21843已消费），日志`/tmp/kokoro-web-billing-truth-root-gates.log`。无skip/删除原测试/放宽门。Root16hash原manifest19b633核完再提交，Webclean。当前没有线上预览加载证据、没有充值/扣费E2E，不将源码删除冒充运行页面已更新。Root当前3bdf27db提交后IAMrelay/checkpoint/topology实际PASS。
+
+BFF active四文档独立审查2P1/1P2：break版本策略冲突、非法stream矩阵漏项、允许测试集漏permanent failure；Gate未通过不推进源码，原writer停写。用户最新优先正式积分，Billing admin grant现五文档由原writer转任，沿M3唯一Nest/Prisma，不绕CLI/SQL/恢复旧表/假支付。精确目标帐号和额度仍待正式可信上下文确认，未入账。
+
+Root Web组合预提交门156pass/1fail（59.86s）：库存已固定Web840，但Root HEAD gitlink仍752，checkpoint真实输入核对准确拒绝混合组合。先集成gitlink再原门复验，不放宽验证规则；此预提交FAIL保留，日志`/tmp/kokoro-web-billing-root-pin-green.log`。

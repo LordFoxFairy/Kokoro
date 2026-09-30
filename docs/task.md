@@ -1,4 +1,20 @@
-## WEB-BILLING-TRUTH：删除无事实依据的收费承诺（2026-09-30）
+## ROOT-WEB-BILLING-INTEGRATION（2026-09-30）
+
+Root唯一writer/index；Web840fa7e0已独立0/0/0与Root完整1784/162、contract109/architecture37/lint/typecheck/build验收。只现gitlink/库存来源+实际blob digest、run_web_chat_worker_smoke.py固定SHA及对应测试、CURRENT/task/progress。固定断言先RED1fail/32pass，更新source常量后GREEN；状态/13broken不改绿。uv.lock任务外保留。当前无受管组，Web源码提交不等于右侧页面已热更新，更不是正式充值成功；Billing五文档当前唯一writer。提交后重新运行policy/checkpoint/topology与Root纯门；BFF候选四文档尚有2P1/1P2且未源码授权。
+
+## BILLING-ADMIN-GRANT-DOC：正式测试入账与计费前置（2026-09-30）
+
+| 项 | 已定结论 |
+| --- | --- |
+| Owner / 当前事实 | Billing Credit 唯一writer。main `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` clean；canonical32表及新CreditService组件已在，旧bootstrap/HTTP仍写已删除旧表；admin grant无运行入口，BFF/Agent亦未接准入与结算。不声称充值成功。 |
+| 职责 / 位置比较 | 采用Billing现Credit模块＋正式v2 internal admin HTTP command；淘汰Root直SQL、独立旁路充值CLI或从Web伪造余额/付款。沿已批准M3唯一Nest/Prisma composition，未整体完成前不部署旧runtime，不添加兼容表/双writer。支付/退款/订阅渠道仍最后，积分测试grant不是支付模拟。 |
+| 粒度 / 依赖 | 本阶段仅收敛现TECH/API/DATA/CURRENT/IMPLEMENTATION_PLAN五文档；现任务板复用，列精确下阶段machine/权限/代码/test文件，不授权源码。增加具名admin grant operation属于Credit已有能力，不新模块/进程。Root裁决跨仓顺序；Billing发布唯一机器contract后，BFF再固定消费，Web最后按原字段显示。 |
+| 数据与API | tenant/operator来自可信管理上下文，target subject需当前IAM帐号确认；grant amount是正整数micros，不能从模型价格或Web旧转换猜。sourceKind=admin、稳定sourceRef/program/key/commandIdentity；同事务grant/account/journal/audit/receipt、重放不二次赠送、相同身份不同payload冲突。DTO不接普通body自报tenant/actor。现v2的admin auth与稳定error/status/request-id/idempotency/返回grant+journal身份必须对齐；是否新增schema仅依据实际用例，不机械建表。 |
+| 运行链 / 删除 | 正式账户赠送入账→可用余额→admission reserve→Run→capture/失败或取消release→余额及ledger；当前未知结果不自动换key补账。旧AdminGrantService/old表写入随M3唯一cutover退出；当前source-only helper/Badge都不作为收费事实。精确定义用户显示积分与owner micros比例；本阶段不猜金额、不执行充值。 |
+| 验证 / 交付 | 三面一致设计、当前/目标清楚；单份grant/journal/receipt/audit、key/identity重放冲突、tenant/subject/operator越权、并发/回滚、源码/dist HTTP、Run故障释放/未知结果恢复/余额ledger一致、正规浏览器全链验收。剩余C1/C2/M3具体依赖和顺序继续留原任务板，不称仅admin grant即可部署整仓。停写manifest→独立review→Root提交，再源码授权。 |
+| 角色 / 允许集 / 排除 | bff_personal_installation_owner转任Billing文档负责人唯一writer，只五现文档；Root sole index/commit，未审BFF四文档保持原候选不碰。禁止其他源码/machine/schema/generated/lock/deps/Git/服务/真实数据/模型/网络；先读本仓AGENTS、Root MAP、TS08/SQL03/API05及原M3实施卡。 |
+
+## WEB-BILLING-TRUTH：删除无事实依据的收费承诺（已验收Web840fa7e0）（2026-09-30）
 
 P0 用户要求正式积分流程，并允许为当前本人测试帐号后台入账；授权不是已经完成充值的证据。Web main `752aff9d0744cd55c556079a08a2a28e393e50e4` clean，agent_typed_skill_reader_owner 唯一 writer，Root sole index/commit。局部修复归现 AssistantTurn/Composer 文案展示，不改变 owner/契约/数据；先 RED 真实 render 与九语言承诺断言，再删除无 owner 决策的 credit-note 和免费 placeholder，运行 UI/i18n、contract/architecture/lint/typecheck/full test/build，停写 hash 后独立审查与 Root 主树复验。
 
