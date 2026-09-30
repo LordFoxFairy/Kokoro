@@ -1,3 +1,36 @@
+## AGENT-FAILURE-3.0 与 Run 首事件已完成 owner 验收（2026-09-30）
+
+Agent main `da056b0103cced10188cdc1f5baef841d8333889` 已由 Root 按冻结 29 文件精确提交、子仓 clean。
+独立最终 review P0/P1/P2=0/0/0、29/29 hash 吻合；Root fresh 完整离线门 actual exit0：
+Ruff251/Pyright0/generator/contract/lock/frozen sync、1518 passed/6既有skip/174deselect/364warnings（58.74s）、wheel/sdist。
+日志 `/tmp/kokoro-agent-evidence-cursor-root-final-gates.log`。
+Root 完整真实 PG/Redis/HTTP owner acceptance 22 passed/100warnings/7.31s、exit0、无跳过，
+包含安全失败 true/false、index0 terminal replay、tenant/fence；System/model 为 test doubles，不是外部推理 E2E。
+自有 fixture 数据库和 Redis15 残留均0/cleanup_errors[]，不触活跃 DB10/共享schema。
+证据 `/tmp/kokoro-agent-evidence-cursor-root-real-acceptance-all{.log,-result.json}`。
+旧 after_seq0 漏 index0 及此前 driver 解析失败记录为历史，未伪造 START、重排索引或放宽断言。
+
+Root 仅更新当前 Agent owner/source 指针与 commit blob 摘要；BFF 的实际 2.0 vendor/generated 不改写成3.0，
+库存维持3active/13broken。BFF 精确失败持久化及公开契约、Web严格消费、受管服务协调发布仍未完成；
+现3310组仍原Agent58b/BFF15e组合，没有热加载半套契约。Billing五docs与Root uv.lock保留。
+后续在清除本片新增两项粒度问题后进入 BFF 文档门及严格消费，不以 owner acceptance 代替整个产品闭环。
+
+Root 冻结来源后完整 `python3 -m pytest -q scripts/tests` 实测1103 passed/3既有skip/455 subtests，
+123.78s exit0，日志 `/tmp/kokoro-agent3-root-final-tests.log`；先前变化中定点131pass只作历史，未用作最终放行。
+Root fresh全仓标准门 actual FAIL：139 violations/0 unverified，比既有137新增Agent
+`execution/events.py`806行与`execution_proof_contract.py`804行两项800行粒度违例。
+因此本片仅行为/契约来源验收，不宣称整个Agent工程标准清零。先按变化原因清这两项再BFF发布；
+不得压空行、挤tuple或豁免阈值冒充修复，独立只读后继设计审查已派发。
+原标准输出 `/tmp/kokoro-agent3-root-standard-first.log`（text），首次摘要读取误当JSON保留为调用错误；
+显式JSON格式复验 `/tmp/kokoro-agent3-root-standard.json`。Billing/Root uv.lock未暂存。
+
+本轮再验正式 IAB：聚焦 textarea border0/box-shadow none/透明outline；composer x282/768px，无横向溢出。
+原问题重复提问仍真实可见，不隐藏数据冒充布局修好；截图 `/tmp/kokoro-chat-layout-current-verified.jpg`。
+只读追踪确认当前终态“重试”调用普通createMessage新key，BFF创建第二user/assistant/run；不是CSS重复。
+目标采用BFF正式同user重试command，复用原user、冻结输入/选项，只创建新assistant/run/outbox；
+先完成failure profile再明确server retryable=true准入，不让Web猜失败文案。未知POST结果恢复继续原key，
+与终态重试分开；原重复数据不隐藏、删除或合并，不建立兼容分支。命令路径与机器契约由BFF文档门确定。
+
 ## WEB-READING-AXIS-ALLWIDTH 已验收（2026-09-30）
 
 Web main `30545c55625fb257ac17ce2199e8fa1000f3ecae` 已由Root按五文件精确提交，子仓clean；只改现AppFrame阅读轨、两测试及两文档。Root独立Node22完整check实际exit0（contract109/architecture37/1800 tests/lint/typecheck/build），日志 `/tmp/kokoro-web-reading-axis-root-final-check.log`，独立最终审查0/0/0及5/5冻结hash核对。
@@ -24,7 +57,7 @@ Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本
 
 # Root 当前组合
 
-**Agent当前推进（2026-09-30）：** 已冻结安全失败3.0候选，26文件独立review0/0/0；Root真实完整pure1505pass/6既定skip/174deselect（57.88s）、Ruff/Pyright/generator/contract/build通过。真实PG/Redis/HTTP两例尚未通过：首轮test把superseded审计误计发布帧，修后第二轮outbox/Chat/Redis safe且single断言通过，HTTP Run evidence初始after_seq0漏合法terminal index0，actual2fail/20deselect（1.91s）；自有DB和Redis15均精确回收0。已按独立确认P1缺陷开Run-only初始cursor=-1文档/tests RED窄门，Chat AfterSeq0、event index、SQL/proof不动。候选未提交/协调发布，当前受管组仍旧2.0，BFF/Web消费者未切换。Web5058通用失败恢复与一次真实retry回答/终态reload窄证据保持，重复原问题产品语义仍待对齐。
+**Agent当前来源（2026-09-30）：** 已验收提交 `da056b0103cced10188cdc1f5baef841d8333889`，完整22例真实owner HTTP acceptance与Root1518纯门均通过，详见顶部。此前safe failure两例因Run初始cursor漏index0失败的记录为历史；Run-only -1修复保留Chat0、索引与fence。BFF/Web未切新版，运行组仍2.0，重复提问语义未完成。
 
 **BFF已验收组合（Root `7c13378e3e752b72c170cfdf3629cca743db5b81`，Web新片另见下段）：** BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已验收、clean并集成。Root提交后strict relay/checkpoint/topology均独立exit0；完整 `scripts/tests` **1103 passed / 3 native依赖skip / 455 subtests**，108.74秒。新全仓标准门实际exit1，仍137违例/0 unverified；main-only实际exit1，主仓和11子仓本地/远端均只有main，但Billing五docs候选及任务外Root `uv.lock` 未提交，不称全体clean。此前BFF pure506pass1skip、fresh install/target8/full47真实owner integration通过及fixture失败历史保留；来源库存仍3active/13broken。
 

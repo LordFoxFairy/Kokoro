@@ -1058,16 +1058,16 @@
       "owner": {
         "name": "kokoro-agent",
         "repository_path": "apps/kokoro-agent",
-        "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
-        "contract_version": "2.0.0",
+        "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
+        "contract_version": "3.0.0",
         "contract_path": "contract/openapi/v1/openapi.json",
-        "contract_sha256": "20398c59f42031c1b6ae2e2c3708e63ec8b5645baf741bf831bc67e14625ef99"
+        "contract_sha256": "e9f0a543f74dee34212f0ea4fe366d46218268462ac54dce08e41965f34d2d2c"
       },
       "protocol": "http-openapi",
       "code_generator_version": "unmanaged",
       "runtime_package_version": "node:http@22",
       "state": "broken",
-      "reason": "BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Root 5b1b9a5e later passed one current-source real System/Ollama/standard-worker/Chromium Product run with durable delivery, but the wider Agent Product and recovery matrix remain incomplete, so this edge stays broken. Current BFF 571b51de consumes Agent dd34a48 HTTP2.0.0: Chat v2 durable payload includes exact ordered selected_skill_source_refs, Scheduler v2 snapshot explicitly freezes []. Root independently passed BFF check (488 pass/1 skip), isolated PostgreSQL Chat/Scheduler integration (13/13), and production BFF builders through real Agent HTTP/PostgreSQL/Redis admission, durable claim, replay and changed-order 409. These tests do not execute a model worker or real IAM browser flow. Web old name state and Agent nonempty typed reader remain incomplete; broad edge stays broken. Subsequent Root run 909613820172d6d8189a27d9 at the same pins passed a real independent Agent CLI worker, one durable completed assistant, succeeded BFF dispatch, four Agent events projected to five AG-UI frames, replay/conflict/privacy and snapshot reload. IAM admission and System/model were deterministic fixtures, not real identity/provider services; all owned databases/processes/Redis keys were removed. Full Web login and nonempty Skill execution still remain incomplete.",
+      "reason": "Owner-source update 2026-09-30: Agent da056b0103cced10188cdc1f5baef841d8333889 publishes HTTP artifact 3.0.0 with closed safe Failure code/retryable and Run-only initial evidence cursor -1. Root independently passed all pure gates (1518 tests, existing 6 skips/174 deselections) and complete real PostgreSQL/Redis/HTTP owner acceptance (22/22; System/model doubles), with owned resource cleanup verified. BFF 15e07fa44670bc13705ce3f6f700e73afcb72ccc still vendors Agent dd34a48 HTTP2.0.0; strict 3.0 generation, Message failure persistence/public contract and Web repin remain pending. The live managed services still use the prior 2.0 combination. This source update does not prove consumer or runtime compatibility; edge stays broken. Earlier evidence: BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Root 5b1b9a5e later passed one current-source real System/Ollama/standard-worker/Chromium Product run with durable delivery, but the wider Agent Product and recovery matrix remain incomplete, so this edge stays broken. Historical BFF 571b51de consumes Agent dd34a48 HTTP2.0.0: Chat v2 durable payload includes exact ordered selected_skill_source_refs, Scheduler v2 snapshot explicitly freezes []. Root independently passed BFF check (488 pass/1 skip), isolated PostgreSQL Chat/Scheduler integration (13/13), and production BFF builders through real Agent HTTP/PostgreSQL/Redis admission, durable claim, replay and changed-order 409. These tests do not execute a model worker or real IAM browser flow. Web old name state and Agent nonempty typed reader remain incomplete; broad edge stays broken. Subsequent Root run 909613820172d6d8189a27d9 at the same pins passed a real independent Agent CLI worker, one durable completed assistant, succeeded BFF dispatch, four Agent events projected to five AG-UI frames, replay/conflict/privacy and snapshot reload. IAM admission and System/model were deterministic fixtures, not real identity/provider services; all owned databases/processes/Redis keys were removed. Full Web login and nonempty Skill execution still remain incomplete.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1440,25 +1440,25 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/system.py",
-          "sha256": "fba3952752e7719d6c780e519861f0187888dc872908d17548de8ac11301aac3"
+          "sha256": "601d3fae72374c393d6073885abe51266b623141c16e6bbba6221684eff763c2"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/worker/main.py",
           "sha256": "9c7860d2117810492b1d515c3e58b79ebd7447671caf161beb063020a3f8fd6d"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "contract/provenance.json",
-          "sha256": "284b947e948eadfd2a150bfcc6dda9e2ee871c9b32e250f729c1259d11c83f22"
+          "sha256": "d116657f65027de8bd829dc0408fd86046da0ac0a1d2934bd2a87e835c897b5f"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "uv.lock",
           "sha256": "45904f638064cd6278c27cb3972b7a70192da736cb45f92864befe670b4fc891"
         }
@@ -1483,103 +1483,103 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/skills.py",
           "sha256": "5bda6dd45e43345d6ac3cc7788ac74a3abb6d357037f9cf99cadd1e9a80fc468"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/mcp.py",
           "sha256": "17e0351720c7bdcda2db045df5282ef1ad2f84f40442e6af76e1bd570be7c4cc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/worker/dependencies.py",
           "sha256": "eb0772eb1b06a4c30429730aafa5e31f1fff67d22413651d64e38a59e4aa1f5b"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/worker/main.py",
           "sha256": "9c7860d2117810492b1d515c3e58b79ebd7447671caf161beb063020a3f8fd6d"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "contract/platform/v1/provenance.json",
           "sha256": "4192e453d9962e01129cb40bb24a19f910265d5fd05da3e69033976622bc8ffc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/generated/kokoro/platform/v1/platform_runtime_connect.py",
           "sha256": "0f4d2a93b917b2af1b28e0e4ec7e6dbf571bdafc97e02e2abff018d5d32fe477"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "scripts/generate_platform_consumer.py",
           "sha256": "4e442e2b08dadaa842d29949241610574ad7122bba19c2eb7867e1ede6776b65"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/platform_credentials.py",
           "sha256": "ad3938e6edd69e929d4c2fd70b3703abbeeb5863fdb12a68f5fdc6c07c3729bf"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/platform_tokens.py",
           "sha256": "6e3a1ebe886146e830ce3d42933a826b345613aa323ceb9536d60a6ae18e7c60"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/platform_transport.py",
           "sha256": "81ea63cfa65ddab237949ba9cab951eb6ad9e42e58035e822187f2c4f09cd5ba"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/worker/platform.py",
           "sha256": "6039255832edd899b27e7f835e9293fe4f410b907e2d9f54d37d6de5ac67dfd5"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "docs/TECHNICAL_DESIGN.md",
-          "sha256": "380f1f7405fc14f5d25df4e21fb1fcf6c0282d7b6ca589886f5e1098c6225d37"
+          "sha256": "c84f9a43701dcb4fb8b15906e76f4b0600516c634690c5be5621179bc46285c9"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/skills/backend.py",
           "sha256": "7e08268c16d8f6f73c95827eeae84cdbc9e3650bd357e760886b486154d2a024"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/skills/package.py",
           "sha256": "3aca874abe90582156b646bbbfd7c8e01bd269b104319c8695e5004b71838f4c"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/skills/middleware.py",
           "sha256": "8f78d3b005cbb14f3133e745b14a600f63a4ed64869a5fabf92215b833b202c5"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/agent_factory.py",
           "sha256": "c75ae882dd7c28f08fd322d954e35a8e1e8ffd7abd007fa81668d9e52ccc7606"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "tests/unit/agents/test_factory.py",
           "sha256": "7675f2524a224900ce6faf0eed6564b7dc7d0355800d6f4b67814360c2199487"
         }
@@ -1604,43 +1604,43 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/storage.py",
           "sha256": "d05621077e8decf5d87de38d8aaeb67d19a66bfa0b292aca7b0f8d38f5d7c5a6"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/worker/dependencies.py",
           "sha256": "eb0772eb1b06a4c30429730aafa5e31f1fff67d22413651d64e38a59e4aa1f5b"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/worker/main.py",
           "sha256": "9c7860d2117810492b1d515c3e58b79ebd7447671caf161beb063020a3f8fd6d"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "contract/storage/v2/provenance.json",
           "sha256": "d2edb264d523dfc41b6557be9c259839c3a0342388748ea89ab665c9b949b333"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/storage_delivery.py",
           "sha256": "edf6e17f03c05bf68471136e93c93cba4a3d5384959798d1961f103c818ed33c"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "src/kokoro_agent/clients/storage_transport.py",
           "sha256": "20454756ac6be5bfa2b05888a88eec895be8d4f358b4de3cab9732106ae2ce75"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "tests/integration/database/test_delivery_outbox.py",
           "sha256": "24095fe2f05ec62c5e1f359d7c6ed3c357d339fa176a38a0becb22c761675e0c"
         }
@@ -2008,9 +2008,9 @@
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
+          "repository_commit": "da056b0103cced10188cdc1f5baef841d8333889",
           "path": "contract/openapi/v1/openapi.json",
-          "sha256": "20398c59f42031c1b6ae2e2c3708e63ec8b5645baf741bf831bc67e14625ef99"
+          "sha256": "e9f0a543f74dee34212f0ea4fe366d46218268462ac54dce08e41965f34d2d2c"
         }
       ]
     }

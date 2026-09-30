@@ -1,3 +1,37 @@
+## AGENT-FAILURE-3.0 Root验收切片（2026-09-30）
+
+- 状态：owner 已验收、Root 精确29文件提交 Agent main `da056b0103cced10188cdc1f5baef841d8333889`、子仓clean；Root集成后治理门待运行，BFF/Web与当前运行组仍未切换。
+- Root frozen完整scripts/tests1103pass/3既有skip/455subtests/123.78s exit0；全仓standard freshFAIL139/0unverified，新增Agent events806与proof_contract804两项800行门。后继先由Agent reviewer只读收敛按变化原因拆分，Root再授唯一writer小切片；不压行数骗门、不豁免，清两项后再BFF发布。owner行为通过不代表工程标准全绿。
+- 实测：完整真实 PG/Redis/HTTP acceptance22pass/100warn/7.31s，无skip/deselect；自有DB/Redis15残留0/cleanup_errors[]。fresh纯门1518pass/6既有skip/174deselect/364warn/58.74s、Ruff251/Pyright0/generator/contract/lock/frozen/build全部exit0，独立review0/0/0。
+- 分类：上一轮Web305/Rootb85提交与真实矩阵为progress；本轮恢复全Wave后端关键路径，不缩为UI完成。
+- 基线：Root main `b85b95cac87c0d4c5f61dfb7476b684b613dea88`；Agent main `58b59cf7cdc4132042d25460b4928d71a66ae7ec`，29文件候选逐hash吻合冻结manifest `a517ac70a57777b534a3da7db7ac2e1158d406cc1e22970defac735c6d5f023e`。保留Billing五docs/Root uv.lock，不改当前受管3310组合。
+- Owner：Agent Run/Chat safe-failure wire与Run-only evidence cursor；Root为本片唯一验收/证据writer/index负责人，原 `agent_failure_cursor_owner` 已停写。`agent_contract_independent_review` 只读29文件最终review；不授权新源码、BFF、schema或依赖写入。
+- 范围：Root仅现三台账、验收后Agent CURRENT证据更新、精确29文件提交/来源组合；先不写BFF消费者、不更换运行组。真实test file冻结SHA不变，不增加START/改索引/改变Chat after_seq/弱化fence。
+- 验证：修正上一driver对象manifest解析，Root逐29hash预检；复用PG5432/Redis6379，同role唯一随机fixture临时库及原子空Redis15占有lease，完整22个现HTTP acceptance而不止两例，180s有界。仅按marker/token+明确fixture流名白名单回收，非owned不清；不触活跃Redis10、共享owner schema、模型或账务。纯门重新执行，完整后固定Agent3.0 owner再BFF doc/strict消费/SQL门。
+- 完成条件：22例真实PG/Redis/HTTP、原safe retryable true/false、index0 terminal回放及tenant/fence全部通过，资源回收0；独立review/Root纯门/准确docs/逐路径commit；不把本片验收说成全子仓或浏览器/模型/账务闭环。
+
+### 后继 AGENT-FAILURE3-GRANULARITY / P1 / 独立建议已交接、尚未授写
+
+- 基线Agent main `da056b0103cced10188cdc1f5baef841d8333889` clean；Python09 §12 >800门。目标是按变化原因拆分，不改变failure/cursor/lease/fence/proof语义，不压行或改门。
+- execution/events.py的完整失败分类与run_failed_payload应归现execution包独立failures.py（新文件需要先在TECH设计记录、Root放置门批准），不放System client、不保留events兼容re-export；run_agent/supervisor及精确现tests改import，execution INDEX更新。
+- execution_proof_contract.py的具名negative-spec metadata校验归现execution_proof_negative_specs.py，保留JSON bool/int精确区分、避免循环import；拒绝新通用helper空层。当前只读建议，不把移动文件当自动通过。
+- 验证：原标准139→137且无新违例；相关业务/contract tests、Ruff/Pyright/generator/checker、完整pure1518与Root隔离真实HTTP22重跑；不得引用旧da056日志替代改后验收。SQL/OpenAPI/generated/proof schema/vector/lock不改；provenance是否受影响按实际inventory检查，不预判忽略。
+- 交付：一个单仓单writer行为不变小切片，Root负责index/精确commit与来源集成；发布/消费者固定之前关闭新增两项。Root现片先记录139真实状态，无实施Agent在后台修改。
+
+### 后继 BFF 文档门：精确 Agent 失败事实 / P1 / 待设计收敛
+
+- 基线：BFF main `15e07fa44670bc13705ce3f6f700e73afcb72ccc` clean，实际vendor为Agent2.0。只读 `bff_personal_consumer_review` 已报告2P1/1P2：failure未入Message/snapshot；Agent failed与cancel/dispatch/delete不可混同；3.0 pin及Web breaking需联动。
+- Root方向：扩现 `bff_message` 的nullable Agent专属 code/retryable列、成对CHECK、只对verified run.failed写入，同projection事务/source/frame/watermark，GC后仍由同RR snapshot读。拒绝新表/JSON fallback/AG-UI retention重建/伪造BFF Agent code。正式公开 `ChatMessage.failure` 为optional closed Agent profile；已显式分享的会话可携带这组安全字段，不包含原异常/敏感诊断。
+- 依赖：先固定Agent owner commit与生成来源，再严格10码/合法bool parser和BFF公开契约/SQL；Web后继pin，无双读旧契约。retry身份/重复user独立下一任务，不用CSS隐藏。
+- 文档门未通过前不授源码/schema/contract或runtime写入；三份设计与contract现事实要对齐，并记录fresh install、rollback/GC/ACL、非Agent失败NULL负例及严格解析矩阵。
+
+### 后继 BFF-RETRY-IDENTITY / P1 / 只读调查完成、源码未授写
+
+- 负责人 `bff_personal_consumer_review`，BFF15e/Web305 clean基线；P0=0/P1=1/P2=1。Web terminal retry在machine.ts生成新key并调用普通createMessage；BFF以key生成新user/assistant/run，snapshot有两个user是现持久语义，不是渲染去重问题。
+- Root选择真正同user retry方向，不选改名“重新发送”作为产品闭环：BFF Message/attempt command复用原user与已冻结输入/launch options，仅新增assistant/run/outbox；幂等、ACL、tail/无active run、事务rollback由BFF owner负责。
+- 前置Agent profile持久化与Web严格消费；server retryable=true为retry准入，false及无Agent profile不得由Web文案猜允许。成功回答再生成/本地dispatch失败恢复是另明确用例，不塞进同一command。未知POST回执恢复仍复用原key，不能误转为terminal retry。
+- RED门：snapshot user数保持1/assistant2、samekey单attempt、foreign/nonfailed/nontail/active拒绝零写、冻结options、rollback无半事实、reload/AGUI正确attempt绑定。不删除/隐藏历史duplicate，不兼容旧双轨。正式command路径待BFF三设计/机器文档门确定，当前不写代码。
+
 ## 当前 UI 验收与剩余任务（2026-09-30）
 
 - `WEB-READING-AXIS-ALLWIDTH` / P1 / 已验收：Root正式IAB复现700px content x2/w696 vs form x16/w668；800px（collapsed rail）x84/w684 vs x68/w716；961px展开300px侧栏 content x332/w597 vs form x348/w565。当前大桌面/390px通过不再代表全断点布局验收。

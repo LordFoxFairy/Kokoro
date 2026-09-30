@@ -1,3 +1,15 @@
+## 2026-09-30 — 返回Agent安全失败与Run首事件验收
+
+本轮实际progress：Agent29文件已验收提交main `da056b0103cced10188cdc1f5baef841d8333889`，子仓clean。Root fresh完整离线纯门1518pass/6既有skip/174deselect/364warn/58.74s与所有静态/生成/build exit0；真实完整HTTP acceptance22pass/100warn/7.31s、无skip/deselect，PG/Redis15自有fixture残留0/cleanup_errors[]。独立最终29hash/证据审查0/0/0，仅CURRENT增加真实结果，其余28冻结bytes不变。日志 `/tmp/kokoro-agent-evidence-cursor-root-{final-gates.log,real-acceptance-all.log,real-acceptance-all-result.json}`。System/model为double，不冒称外部模型或浏览器全链。
+
+Root冻结staged来源后完整scripts/tests1103pass/3既有skip/455subtests/123.78s exit0（session87512已消费）；之前定点131pass/64.96s在gitlink暂存中不作最终证据。fresh全仓standard实际FAIL139/0unverified，新增Agent events.py806与execution_proof_contract.py804两个800行违例。先清新增粒度问题再BFF发布；真实owner行为通过不冒称全部工程门绿。标准CLI初次默认text被摘要程序误当JSON，调用错误保留；显式--format json后续复验，不改变门禁规则。relay第一次误传不存在--strict退出2，正确原CLI actual exit0，checkpoint/topology预提交亦0；最终commit后仍重验。Root并行安排Agent只读拆分建议、BFF只读retry身份审计，不授权服务/数据库/源码写入。
+
+正式IAB新同browser tab9再验：focused textarea border0/透明outline/no shadow、composer768px、无横溢；重复提问仍可见，截图 `/tmp/kokoro-chat-layout-current-verified.jpg`。没有重写UI或掩藏数据。BFF只读审查明确2P1/1P2，下一门需Message原子持久化安全failure、区分本地失败来源与Agent3.0严格生成，文档门前不写源代码；现在Root只集成Agentowner来源，broken依赖不改绿，运行组保持原2.0。
+
+BFF-RETRY-IDENTITY独立只读调查0P0/1P1/1P2：终态按钮实际ordinary createMessage新key，BFF新建第二user/assistant/run，现测试只测调用未测reload数量。Root选择正式同user retry而非CSS去重/改名resend；先failureprofile，server true准入，锁定tail/无active run/原输入与options，单事务新增attempt；unknown POST transport重试保留原key。方案与RED断言入同task，源码/contract仍未授写，不把只读报告当实现完成。
+
+上一goal轮为progress：Web305、Rootb85已实际提交、真实10断点、1800纯门和Root54/三CLI门通过。本轮以HEAD b85与Agent58b29文件冻结manifest逐hash复核为起点，支付仍最后，全Wave0–7不缩减。恢复Root真实PG/Redis/HTTP验收；先前manifest解析在资源访问前失败，现改用entries数组，不是重启或伪造生产行为。单仓仅Root证据writer，独立只读review并行，无额外常驻进程。
+
 ## 2026-09-30 — WEB-READING-AXIS-ALLWIDTH 两级验收结束
 
 Root集成commit `2b9d6379` 后strict IAM relay、topology、指定 `w1e-iam07-bff-pin.json` checkpoint分别实测PASS/exit0，session32068已消费；三JSON日志 `/tmp/kokoro-web-reading-axis-root-{relay,topology,checkpoint}.json`。独立Root终审0/0/0，旧7c2历史段歧义P2已最小关闭，raw证据不变。Web305主仓指针已固定，源码/库存不再变；本提交仅三台账补实际验收结果。
