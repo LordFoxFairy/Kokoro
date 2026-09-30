@@ -40,6 +40,17 @@ Root新增完整scripts/tests候选 **1010 pass/2 Agent依赖skip/317subtests（
 
 证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），固定SHA独立审查P0/P1/P2=0、聚焦11 pass/44 deselected；Root已复验并集成Agent gitlink/库存来源，所有宽泛broken边保持；完整Root994 pass/291 subtests（120.49秒），现有worker/浏览器composer版本锁2 RED→52 GREEN。真实Source组合仍待验。用户已授权3310重启，Root不以返修代替可见登录验收。
 
+## 当前真实组合阻断：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
+
+| 项 | 任务卡 |
+| --- | --- |
+| Owner/基线/执行 | Agent OAuth consumer；原负责人 `agent_typed_skill_reader_owner` 为唯一writer，Root提交/审查。绝对目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent` clean main e728fe24；Root4ae92d9d，任务外uv.lock不动。 |
+| 实证/归属 | 正常Source真实组合安装阶段PlatformTokenError；只读响应shape诊断200响应含access_token/整数expires_in/整数expires_at/token_type/scope，后二者匹配。Agent _TokenResponse extra=forbid误拒标准OAuth扩展字段；按RFC6749§5.1忽略不认识的响应成员，绝不在fixture删字段或模拟token。现有client局部修复，不改变owner/API/SQL/六sender职责。 |
+| 范围/策略 | 仅既有 clients/platform_tokens.py、tests/unit/execution/test_platform_credentials.py 及TECHNICAL_DESIGN/API_CONTRACT/CURRENT/ACCEPTANCE相关段。保留已知必填字段strict类型、Bearer、正TTL、scope相等、token语法、1MiB/deadline/拒重定向/secret-free错误/单飞取消/credential generation。未知扩展不持久、不repr、不决定有效期或权限；expires_in仍唯一cache依据。 |
+| 验证/交付 | 先actual响应shape回归RED，再最小GREEN；任意扩展、非法known字段/TTL/scope/token、credential及secret负例均不退步。uv lock/sync frozen、Ruff/Pyright/contract/default pytest/build；无服务、不改Root/其他仓/Schema/lock/generated/3310，不自行提交。文件清单停写后Root独立复验/审查/pin，再无诊断wrapper真实组合。 |
+
+Source driver已提交4ae92d9d；Root完整1023 pass/2skip/325subtests、原生2/2与固定hash独立复审P0/P1/P2=0，原SIGTERM P1已关。真实组合两次仍FAIL：第一次正常driver，第二次仅响应shape/code诊断（无业务替代），明确PLATFORM_TOKEN_INVALID_RESPONSE；日志 `/tmp/kokoro-source-real-composition.log`、`/tmp/kokoro-source-token-diagnostic.log`。Agent Redis15回到0、3310原PID保持；产品执行链尚未通过。
+
 ## 并行只读准备：W3-PRODUCT-SKILL-INSTALL-ADMISSION-AUDIT
 
 | 项 | 任务卡 |
