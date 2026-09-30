@@ -64,10 +64,12 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 3. Browser signed PUT/CORS：已探测本地MinIO返回501；HTTP Source GET/PUT或预览Playwright不替代浏览器发布门。Storage orphan retirement/quarantine 等生命周期仍开放。
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
 5. 最近全仓标准门137项违规（旧136非当前），来源库存16边/13 declared broken；这些是仍开放队列，不因局部PASS改绿。完整goal仍active，Billing最后。
-6. BFF d654a1bc已完成IAMe3来源重钉，16SDK与owner inputs原bytes，policy语义不变；Root3bdf27db已集成，提交后relay/checkpoint/topology实际PASS；预提交HEAD/index不一致FAIL为历史证据保留。Web仍更旧a4/0.6 relay消费者，后继原字节消费未完成，不把BFF provenance PASS当Web闭环。
+6. BFF d654a1bc已完成IAMe3来源重钉，16SDK与owner inputs原bytes，policy语义不变；Root3bdf27db已集成；提交后relay实际FAIL（BFF四文档候选仍dirty），前一组合命令尾部git status掩盖前面退出码，原PASS描述已纠正；预提交HEAD/index不一致FAIL也保留。checkpoint/topology须独立记录，不以整段shell末尾exit0推定。Web仍更旧a4/0.6 relay消费者，后继原字节消费未完成，不把BFF provenance PASS当Web闭环。
 7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮实际main-only核对主仓+11子仓本地/远端全仅main、当时11子仓clean；当前BFF文档候选和Web修复在途，整体gate因Root在途改动及任务外uv.lock FAIL，后者保留，不称全体clean，不新建分支/PR。
 
 ## 验证和归属
+
+- 最新Root `a0b95a31`发布组合：独立checkpoint/topology实际exit0；完整`scripts/tests` **1094 passed / 3 native依赖skip / 409 subtests**，100.52s（session75632 exit0已消费），日志`/tmp/kokoro-web-billing-root-full-tests.log`。严格IAMrelay门仍FAIL：BFF候选四文档dirty；不以Root纯门PASS将该门改绿、不称整体clean或收费已完成。Web840完整owner门1784/162无skip已独立验收；受管3310仍未重新启动。
 
 - Root当前`c3fa4271`组合checkpoint/topology PASS；同handle91663全量`scripts/tests` **1090 passed/3 native依赖skip/395 subtests**，117.49s，exit0已消费，日志`/tmp/kokoro-product-final-root-tests.log`。Product selector独立0/0/0、聚焦86/98subtests，原入口真实owned组合PASS；3个native skip不以Agentvenv真实组合覆盖为本runtime全绿。全仓标准门最近仍FAIL137/0 unverified，不更改门禁清零。
 - Root `4aef9d1c` 提交后的topology9runtime/checkpoint通过。新增候选仍须独立验收和最终集成复验。
@@ -93,3 +95,7 @@ python3 -m pytest scripts/tests
 ## WEB-BILLING-TRUTH 集成证据
 
 Web `840fa7e0ff9c4d241daca0c297b120f34821018e`：16现文件已冻结hash核验、独立0/0/0与Root Node22主树完整门后提交。Root日志 `/tmp/kokoro-web-billing-truth-root-gates.log`；162文件1784通过（含worker未跑的8个integration命名文件119项，无skip），contract109/architecture37/lint/typecheck/build/diff PASS。这里的测试名称integration不据此冒充真实Billing/provider组合；未充值、未Run扣费/浏览器验收。Root后继只更新Web gitlink/来源库存/blob digest与driver固定SHA，不改任何业务或放宽门。BFF active文档独立2P1/1P2（版本策略、非法stream矩阵、永久失败测试允许集）尚未通过，未授权源码；Billing新正式admin grant五文档门进行中。
+
+### a0b95a31 后置门事实修正
+
+Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree is dirty`，由尚未通过独立审查的BFF四文档候选触发。首前置shell尾部git status曾掩盖门exit1，Root读取原JSON后已纠正全部本轮relay PASS断言。原失败日志保留，严格门不放宽，也不回滚/覆盖worker候选。Web1784/162完整owner测试/构建为独立已实跑exit0，和Rootdirty gate分别记录。Root随后各门独立执行，不再以shell最后命令冒充前面门通过。

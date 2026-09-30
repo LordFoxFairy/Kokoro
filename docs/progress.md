@@ -2091,8 +2091,16 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 
 ## 2026-09-30 WEB-BILLING-TRUTH 正式删除片验收
 
-Web840fa7e0已精确16文件提交：静态收费Badge/九locale key/两CSS彻底删；九语言直接提问中性且brand插值，没改为另一收费承诺。TDD RED11fail/81pass，聚焦GREEN92/3。Worker纯门1665/154明确排除了8integration命名文件119项；独立审查0/0/0，Root Node22完整contract109/architecture37/lint/typecheck/全test1784/162/build/diff全部exit0（session21843已消费），日志`/tmp/kokoro-web-billing-truth-root-gates.log`。无skip/删除原测试/放宽门。Root16hash原manifest19b633核完再提交，Webclean。当前没有线上预览加载证据、没有充值/扣费E2E，不将源码删除冒充运行页面已更新。Root当前3bdf27db提交后IAMrelay/checkpoint/topology实际PASS。
+Web840fa7e0已精确16文件提交：静态收费Badge/九locale key/两CSS彻底删；九语言直接提问中性且brand插值，没改为另一收费承诺。TDD RED11fail/81pass，聚焦GREEN92/3。Worker纯门1665/154明确排除了8integration命名文件119项；独立审查0/0/0，Root Node22完整contract109/architecture37/lint/typecheck/全test1784/162/build/diff全部exit0（session21843已消费），日志`/tmp/kokoro-web-billing-truth-root-gates.log`。无skip/删除原测试/放宽门。Root16hash原manifest19b633核完再提交，Webclean。当前没有线上预览加载证据、没有充值/扣费E2E，不将源码删除冒充运行页面已更新。Root3bdf27db后IAMrelay实际FAIL：BFF四文档候选dirty；前次复合命令尾部git status exit0掩盖该失败，已重新读原JSON并纠正。checkpoint/topology须独立复验，不继续错误宣称PASS。
 
 BFF active四文档独立审查2P1/1P2：break版本策略冲突、非法stream矩阵漏项、允许测试集漏permanent failure；Gate未通过不推进源码，原writer停写。用户最新优先正式积分，Billing admin grant现五文档由原writer转任，沿M3唯一Nest/Prisma，不绕CLI/SQL/恢复旧表/假支付。精确目标帐号和额度仍待正式可信上下文确认，未入账。
 
 Root Web组合预提交门156pass/1fail（59.86s）：库存已固定Web840，但Root HEAD gitlink仍752，checkpoint真实输入核对准确拒绝混合组合。先集成gitlink再原门复验，不放宽验证规则；此预提交FAIL保留，日志`/tmp/kokoro-web-billing-root-pin-green.log`。
+
+### a0b95a31 后置门事实修正
+
+Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree is dirty`，由尚未通过独立审查的BFF四文档候选触发。首前置shell尾部git status曾掩盖门exit1，Root读取原JSON后已纠正全部本轮relay PASS断言。原失败日志保留，严格门不放宽，也不回滚/覆盖worker候选。Web1784/162完整owner测试/构建为独立已实跑exit0，和Rootdirty gate分别记录。Root随后各门独立执行，不再以shell最后命令冒充前面门通过。
+
+### Root a0b95a31 最终本轮纯门
+
+独立checkpoint/topology均exit0；同session75632已消费最终exit0，完整Root1094pass/3native skip/409subtests（100.52s），日志`/tmp/kokoro-web-billing-root-full-tests.log`。relay真实FAIL因未审通过BFF四文档dirty，保持原严格门；Web840已提交/clean，Billing五文档writer仍在途。没有上线加载/当前账户充值/Run真实扣费或全产品闭环证据。

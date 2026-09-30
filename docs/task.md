@@ -2588,3 +2588,11 @@ W2-WEB-PERSONAL-DOWNLOAD-LIVE-REFERRER/浏览器验收已通过：Root `44ee670f
 | Chat UI / Canvas / Library | 可改既有 `src/ui/{thread/delivery-card,thread/conversation-thread,shell/use-canvas-workspace,canvas/canvas-store,canvas/canvas-panel}.ts(x)` 与紧邻 CSS/直接 `tests/ui/**`；确为显示 `has_more` 及导航可窄改承接 `ConversationThread` 的既有 AppFrame/shell 调用文件；只复用 `src/features/app/kokoro-library-artifact-client.ts` 的二元详情/原生附件，不重写下载代理。允许 `src/features/app/kokoro-library-surface.tsx` 及直接测试仅让 `/app/library?tab=artifacts` 深链选中作品 Tab，避免“查看全部作品”落到默认个人文件。Canvas 首片 metadata+二元详情/原生下载，不使用 `PreviewBody`/Blob/iframe 加载 1 GiB；保留 workspace File 小件预览。新文案限 `src/i18n/*.ts` 的本业务 key 和必要现有 locale 覆盖，不扩大设计系统。 |
 | Fixture / 文档 | 可改 `src/dev/preview-transport.ts` 与直接 tests，使显式 preview 适配新内部事件/快照形状，但不得成为 live fallback；同步 Web `INDEX.md`、相邻 `src/{core,engine,ui/thread,ui/canvas}/INDEX.md` 中受影响条目、四份设计/CURRENT 顶部状态。不得创建顶层目录、改 IAM/BFF/Storage/Agent/Root、Schema/依赖/lockfile、3310 或共享数据库/进程；范围外先报 Root。 |
 | 验证与放行 | 定点 RED→GREEN：坏/缺 ID、kind、size、同 hash 双 ID、live→replay→snapshot、正常/过期 cursor、非目标 410 不吞、watermark/终态竞态、100+ CTA→Library 作品 Tab、Canvas 失效/私有/取消与原字节发起、Share 空 Delivery、preview 隔离；Node22 `pnpm check`（contract/architecture/lint/typecheck/test/build）、隔离端口 `pnpm test:e2e`，diff check。Web writer 停写后 Root 独立重跑门禁并在隔离真 IAM→HTTPS Chromium→Web→BFF→Agent→Storage/MinIO/ClamAV 验真 live、刷新 snapshot、Canvas 原字节/他人404/320px；GC 410 另以隔离 owner/transport 测，不把预投递 Library 浏览器当 live。 |
+
+### a0b95a31 后置门事实修正
+
+Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree is dirty`，由尚未通过独立审查的BFF四文档候选触发。首前置shell尾部git status曾掩盖门exit1，Root读取原JSON后已纠正全部本轮relay PASS断言。原失败日志保留，严格门不放宽，也不回滚/覆盖worker候选。Web1784/162完整owner测试/构建为独立已实跑exit0，和Rootdirty gate分别记录。Root随后各门独立执行，不再以shell最后命令冒充前面门通过。
+
+### Root a0b95a31 最终本轮纯门
+
+独立checkpoint/topology均exit0；同session75632已消费最终exit0，完整Root1094pass/3native skip/409subtests（100.52s），日志`/tmp/kokoro-web-billing-root-full-tests.log`。relay真实FAIL因未审通过BFF四文档dirty，保持原严格门；Web840已提交/clean，Billing五文档writer仍在途。没有上线加载/当前账户充值/Run真实扣费或全产品闭环证据。
