@@ -1,3 +1,9 @@
+## 2026-09-30 — Chat周期退出安全分支证据已落地并全门验收
+
+Root ce74fc41基线，原runtime负责人仅现runtime/test两文件TDD：RED11失败，六固定process/provider/agent_ownership/application_ownership/health_request/health_receipt阶段只写原受限binary process.log，不输出异常/message/类名/URL/key/body，日志write/flush失败不盖原异常；原健康检查/60秒频率/renew/CAS/guard/cleanup不变。Root核对hash与binary真实句柄，49pass/68subtests、完整1094pass/3native依赖skip/409subtests（106.91s，/tmp/kokoro-chat-tick-full-root-tests.log、handle42615 exit0已消费）、Ruff/format/diff通过；独立0/0/0。只是补齐真故障分支留证，不把历史根因称已修；下一Root唯一原入口启动。当前只读/models库存PASS（/tmp/kokoro-gpt56-luna-current-inventory.json），没有推理消耗。
+
+main-only原工具已实际跑完handle42880：主仓+11子仓本地/远端都仅main，11子仓clean；整体gate FAIL仅Root在途task/runtime/test与既有uv.lock dirty，日志/tmp/kokoro-main-only-current.json，不删除/夹带任务外lock、不冒称全体clean。最新IAM relay门实际FAIL唯一iamOwnerCommit!=IAM gitlink，保持错误未放宽；原BFF审查员正在只读核对bytes/provenance以确定下一切片。
+
 ## 2026-09-30 — 当前真实安装后端PASS；网页组退出已纠正，模型仍选gpt-5.6-luna
 
 - 用户再次明确选择`gpt-5.6-luna`。Root只核对现私有profile的model/base_url/credential presence/0600，不输出key、不追加付费推理、不把直接probe当全链验收。

@@ -810,3 +810,171 @@ class ShortCommandRegistrationTests(unittest.TestCase):
                 obj._command("installer", ["unused"], cwd=ROOT, env={}, timeout=120)
         self.assertEqual(obj.processes, [("installer", process)])
         self.assertFalse(obj.quiescent)
+
+
+class TickDiagnosticTests(unittest.TestCase):
+    def runtime(self):
+        import io
+
+        m = importlib.import_module("local_chat_runtime")
+        obj = m.LocalChatRuntime.__new__(m.LocalChatRuntime)
+        obj.processes = [("worker", Mock())]
+        obj.processes[0][1].poll.return_value = None
+        obj.next_refresh, obj.config = 0, object()
+        obj.ownership = SimpleNamespace(url="redis://local/10", marker="SECRET_MARKER")
+        obj.resources = Mock(
+            redis_url="redis://local/0",
+            redis_prefix="SECRET_PREFIX",
+            run_id="SECRET_RUN",
+        )
+        obj.resources.command.return_value = "1"
+        obj.system_base, obj._token, obj.health_generation = (
+            "http://local",
+            "SECRET_TOKEN",
+            "1",
+        )
+        obj.route = {"provider_id": "provider"}
+        obj.log = io.BytesIO()
+        return m, obj
+
+    def test_each_failure_stage_logs_only_fixed_label_and_preserves_original(self):
+        stages = [
+            "process",
+            "provider",
+            "agent_ownership",
+            "application_ownership",
+            "health_request",
+            "health_receipt",
+        ]
+        for stage in stages:
+            with self.subTest(stage=stage):
+                m, obj = self.runtime()
+                events = []
+
+                def no_render(_self):
+                    raise AssertionError("exception must not be rendered")
+
+                error = type(
+                    "SECRET_DYNAMIC_CLASS", (Exception,), {"__str__": no_render}
+                )("SECRET_KEY PASSWORD BODY URL?SECRET")
+
+                def visit(name, value):
+                    events.append(name)
+                    if name == stage:
+                        raise error
+                    return value
+
+                renewals = iter(["agent_ownership", "application_ownership"])
+                obj.processes[0][1].poll.side_effect = lambda: visit("process", None)
+                obj.resources.command.side_effect = lambda *_: visit(
+                    next(renewals), "1"
+                )
+                with (
+                    patch.object(
+                        m,
+                        "provider_preflight",
+                        side_effect=lambda *_: visit("provider", None),
+                    ),
+                    patch.object(
+                        m.system,
+                        "http_json",
+                        side_effect=lambda *a, **k: visit("health_request", {}),
+                    ),
+                    patch.object(
+                        m.system,
+                        "data_of",
+                        side_effect=lambda *_: visit("health_receipt", {}),
+                    ),
+                    self.assertRaises(Exception) as raised,
+                ):
+                    obj.tick()
+                self.assertIs(raised.exception, error)
+                self.assertEqual(events, stages[: stages.index(stage) + 1])
+                self.assertEqual(
+                    obj.log.getvalue(),
+                    f"Local Chat tick failed: stage={stage}\n".encode(),
+                )
+                self.assertEqual(obj.health_generation, "1")
+                self.assertEqual(obj.next_refresh, 0)
+
+    def test_existing_guard_rejections_have_stage_without_weakening_checks(self):
+        cases = [
+            ("process", "process"),
+            ("agent_ownership", "agent_ownership"),
+            ("application_ownership", "application_ownership"),
+            ("wrong_provider", "health_receipt"),
+            ("invalid_generation", "health_receipt"),
+        ]
+        for failure, stage in cases:
+            with self.subTest(failure=failure):
+                m, obj = self.runtime()
+                if failure == "process":
+                    obj.processes[0][1].poll.return_value = 1
+                if failure == "agent_ownership":
+                    obj.resources.command.side_effect = ["0"]
+                if failure == "application_ownership":
+                    obj.resources.command.side_effect = ["1", "0"]
+                result = {
+                    "provider_id": "other"
+                    if failure == "wrong_provider"
+                    else "provider",
+                    "generation": "0" if failure == "invalid_generation" else "2",
+                }
+                with (
+                    patch.object(m, "provider_preflight") as provider,
+                    patch.object(
+                        m.system, "http_json", return_value={"data": result}
+                    ) as http,
+                    self.assertRaises(m.ChatError),
+                ):
+                    obj.tick()
+                self.assertEqual(
+                    obj.log.getvalue(),
+                    f"Local Chat tick failed: stage={stage}\n".encode(),
+                )
+                self.assertEqual(obj.next_refresh, 0)
+                self.assertEqual(obj.health_generation, "1")
+                if failure == "process":
+                    provider.assert_not_called()
+                    obj.resources.command.assert_not_called()
+                if stage != "health_receipt":
+                    http.assert_not_called()
+
+    def test_missing_or_broken_log_never_replaces_original_failure(self):
+        for failure in ("missing", "write", "flush"):
+            with self.subTest(log=failure):
+                m, obj = self.runtime()
+                if failure == "missing":
+                    del obj.log
+                else:
+                    obj.log = Mock()
+                    getattr(obj.log, failure).side_effect = OSError("SECRET_LOG_ERROR")
+                error = m.ChatError("SECRET_ORIGINAL_ERROR")
+                with (
+                    patch.object(m, "provider_preflight", side_effect=error),
+                    self.assertRaises(m.ChatError) as raised,
+                ):
+                    obj.tick()
+                self.assertIs(raised.exception, error)
+
+    def test_success_and_not_due_ticks_do_not_log_or_change_frequency(self):
+        m, obj = self.runtime()
+        with (
+            patch.object(m, "provider_preflight") as provider,
+            patch.object(
+                m.system,
+                "http_json",
+                return_value={"data": {"provider_id": "provider", "generation": "2"}},
+            ) as http,
+            patch.object(m.time, "monotonic", return_value=100),
+        ):
+            obj.tick()
+            self.assertEqual(obj.next_refresh, 160)
+            self.assertEqual(obj.health_generation, "2")
+            self.assertEqual(obj.resources.command.call_count, 2)
+            self.assertEqual(http.call_args.kwargs["headers"]["if-match"], '"1"')
+            obj.tick()
+            provider.assert_called_once()
+            http.assert_called_once()
+            self.assertEqual(obj.resources.command.call_count, 2)
+        self.assertEqual(obj.log.getvalue(), b"")

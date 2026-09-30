@@ -24,7 +24,7 @@
 
 **历史用户链证据（当前3310已停止）：** 3310曾唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
 
-**当前运行更新：** 新session14183/launcher9072/Web9451已权威exit1，直接进程均退出，3310无监听；最新日志为固定脱敏`serving chat tick (chat) failed`。启动时正规登录预探测和Web752四生产文件hash匹配是历史证据，不再表示在线。workspace`kokoro-local-login-vuag0zbp`已保留；只读源码复核确认provider库存错误也被包装成ChatError；当前类别覆盖子进程、provider、两种资源ownership或health receipt，具体触发尚未证明。下一片仅现runtime/test固定分支证据，不盲目重复重启或放宽健康保护。
+**当前运行更新：** 新session14183/launcher9072/Web9451已权威exit1，直接进程均退出，3310无监听；最新日志为固定脱敏`serving chat tick (chat) failed`。启动时正规登录预探测和Web752四生产文件hash匹配是历史证据，不再表示在线。workspace`kokoro-local-login-vuag0zbp`已保留；只读源码复核确认provider库存错误也被包装成ChatError；当前类别覆盖子进程、provider、两种资源ownership或health receipt，具体触发尚未证明。现runtime/test已补六固定分支日志，独立0/0/0与Root1094pass/3skip/409subtests通过；尚未重跑真实故障，下一由Root单组原入口取证，不放宽健康保护。
 
 **真实Product安装当前：** Root `c3fa42710334bf1b9dc00f9be0f8b6a21a647e78` 原入口`run_bff_skill_draft_sandbox_smoke.py --product-installation`已真实exit0/PASS（session78975），日志`/tmp/kokoro-product-installation-real-surface.log`。固定IAMe3c/BFF677/Platform6519/Storage16a6，复用现PG/Redis/MinIO/ClamAV，五public操作、same-key历史ACK→GET当前、false筛选/opaque两页、移除/稳定ID重装、撤权五方法在owner前拒绝均通过；两不同已发布Skill、39receipt/2publish事件，resources clean。此前native依赖缺失与Root误开legacy surface的真实FAIL保留。此为后端组合，不是浏览器安装UI、同租户第二用户或标准worker非空Skill模型验证；Agent关闭仅结构证据，不冒充Run数据库观测。
 
@@ -63,7 +63,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
 5. 最近全仓标准门137项违规（旧136非当前），来源库存16边/13 declared broken；这些是仍开放队列，不因局部PASS改绿。完整goal仍active，Billing最后。
 6. 最新Root IAM relay门FAIL：BFF policy iamOwnerCommit仍4d981441而IAM gitlink为e3c035b；这是未完成来源对齐，不能把HTTP通过当作此门通过。BFF当前个人安装切片不抢改IAM相关source，后续独立精确pin修复需保持机器bytes验证与Web消费同步。
-7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。历史12仓main-only来源记录不替代当前门；本轮Web/BFF/Platform工作树clean且main，Root任务外uv.lock保留，不称全体clean，不新建分支/PR。
+7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮实际main-only核对主仓+11子仓本地/远端全仅main、11子仓clean；整体gate因Root在途改动及任务外uv.lock FAIL，后者保留，不称全体clean，不新建分支/PR。
 
 ## 验证和归属
 

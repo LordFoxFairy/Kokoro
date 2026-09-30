@@ -1,3 +1,11 @@
+## ROOT-CHAT-TICK-DIAGNOSTIC 已独立验收（2026-09-30）
+
+两文件冻结hash：runtime fe941b19d63079b14e59a509ab4e4b8ece594838db1d9316733eaa3273b1bd20；test423098431d70ac9eee3b30fc6d5ae8273b1bb05721dcee28d55f5325d9a9f7b1。RED11失败、Root49pass/68subtests、完整1094pass/3native skip/409subtests（106.91s，handle42615 exit0已消费）、Ruff/format/diff；独立0/0/0并确认真实launcher二进制log一致。原writer已停写；本次提交后由Root一次唯一原入口启动取证，模型仍gpt-5.6-luna。实际历史根因尚未证明；BFF pin审查另只读进行，不修改当前冻结组合。
+
+## ROOT-CHAT-TICK-DIAGNOSTIC：现文件单职责窄片（2026-09-30）
+
+Owner Root受管开发生命周期，不新建业务owner/运维模块。基线main ce74fc411144a02fedd0982c372ebfdee4bdbd52；uv.lock任务外不碰。agent_typed_skill_reader_owner唯一writer，Root停止源码和文档写入直到停写交接；Root sole Git index。仅现scripts/dev/local_chat_runtime.py及scripts/tests/test_local_chat_runtime.py两文件。采用现tick内固定子阶段与现受限process.log留证，淘汰新增logger模块/输出异常message或动态类名/修改launcher第二诊断系统。阶段区分process/provider/agent ownership/application ownership/health request/receipt，失败仍抛原异常、执行原清理，失败后不运行后续步骤；不改preflight频率、health/guard/renew/CAS/timeout/重试，不把ProviderError wrapper当已定位根因。先逐阶段失败注入RED，再固定安全输出GREEN与现相邻门；含secret/body/dynamic-class sentinel不出日志，日志写失败不得遮蔽原业务异常。独立只读审查后Root重跑门、精确提交，再原入口唯一启动做分支证据。writer禁止联网/模型/服务/真实数据/其他仓/Git提交。此前安装真组合PASS与外部Chat首轮FAIL不改写，Billing最后。
+
 ## 当前任务对齐（2026-09-30；Root c3fa4271）
 
 | ID | 归属 / 执行与范围 | 状态 / 证据 / 下一步 |

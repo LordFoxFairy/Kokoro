@@ -434,41 +434,45 @@ class LocalChatRuntime:
         }
 
     def tick(self) -> None:
-        if any(process.poll() is not None for _, process in self.processes):
-            raise ChatError("owned Chat service exited")
-        if time.monotonic() < self.next_refresh:
-            return
-        # Foreground, bounded, no timer threads/queued retries. Failed observation
-        # never publishes healthy and stops this explicit Chat composition.
-        provider_preflight(self.config)
-        for url, marker, ttl in (
-            (self.ownership.url, self.ownership.marker, "7200"),
-            (
-                self.resources.redis_url,
-                self.resources.redis_prefix + "ownership",
-                "600",
-            ),
-        ):
-            if (
-                self.resources.command(
-                    [
-                        "redis-cli",
-                        "-e",
-                        "-u",
-                        url,
-                        "EVAL",
-                        RENEW,
-                        "1",
-                        marker,
-                        self.resources.run_id,
-                        ttl,
-                    ]
-                ).strip()
-                != "1"
+        stage = "process"
+        try:
+            if any(process.poll() is not None for _, process in self.processes):
+                raise ChatError("owned Chat service exited")
+            if time.monotonic() < self.next_refresh:
+                return
+            # Foreground, bounded, no timer threads/queued retries. Failed observation
+            # never publishes healthy and stops this explicit Chat composition.
+            stage = "provider"
+            provider_preflight(self.config)
+            for stage, url, marker, ttl in (
+                ("agent_ownership", self.ownership.url, self.ownership.marker, "7200"),
+                (
+                    "application_ownership",
+                    self.resources.redis_url,
+                    self.resources.redis_prefix + "ownership",
+                    "600",
+                ),
             ):
-                raise ChatError("Chat resource ownership lost")
-        result = system.data_of(
-            system.http_json(
+                if (
+                    self.resources.command(
+                        [
+                            "redis-cli",
+                            "-e",
+                            "-u",
+                            url,
+                            "EVAL",
+                            RENEW,
+                            "1",
+                            marker,
+                            self.resources.run_id,
+                            ttl,
+                        ]
+                    ).strip()
+                    != "1"
+                ):
+                    raise ChatError("Chat resource ownership lost")
+            stage = "health_request"
+            response = system.http_json(
                 self.system_base,
                 f"/v1/system/model-catalog/providers/{self.route['provider_id']}/health",
                 method="PUT",
@@ -488,16 +492,29 @@ class LocalChatRuntime:
                     .replace("+00:00", "Z"),
                 },
             )
-        )
-        generation = result.get("generation")
-        if (
-            result.get("provider_id") != self.route["provider_id"]
-            or not isinstance(generation, str)
-            or not re.fullmatch(r"[1-9][0-9]*", generation)
-        ):
-            raise ChatError("System health receipt invalid")
-        self.health_generation = generation
-        self.next_refresh = time.monotonic() + 60
+            stage = "health_receipt"
+            result = system.data_of(response)
+            generation = result.get("generation")
+            if (
+                result.get("provider_id") != self.route["provider_id"]
+                or not isinstance(generation, str)
+                or not re.fullmatch(r"[1-9][0-9]*", generation)
+            ):
+                raise ChatError("System health receipt invalid")
+            self.health_generation = generation
+            self.next_refresh = time.monotonic() + 60
+        except Exception:
+            # Diagnostics are fixed labels only and must never mask the failure.
+            try:
+                log = getattr(self, "log", None)
+                if log is not None:
+                    log.write(
+                        f"Local Chat tick failed: stage={stage}\n".encode("ascii")
+                    )
+                    log.flush()
+            except Exception:
+                pass
+            raise
 
     def close(self) -> list[str]:
         for label, process in reversed(self.processes):
