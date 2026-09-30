@@ -1,3 +1,13 @@
+## 2026-09-30 — BFF activeRun owner片已验收提交，Root集成进行中
+
+- 当前交付SHA `15e07fa44670bc13705ce3f6f700e73afcb72ccc`（BFF main clean），Root独立核hash/审查后统一提交12文件，200+/4−；公开OpenAPI/Schema/generated无变化。
+- 原PG7/1失败通过正式ChatTurn.submit补正常assistant/dispatch绑定，不改生产guard，保留全部矩阵。新12manifest713d37ae→Root仅证据docs同步fa9fa186，独立两次0/0/0；三src/五test最终hash未动。
+- Root最终Node22 format/lint/typecheck/contract191/architecture27/test506pass1skip/build实际exit0，session69811已消费，日志`/tmp/kokoro-bff-active-run-root-pg-fixture-final-gates.log`。
+- Root同现PG/Redis自有临时库：canonical fresh install PASS、同RED pattern **8pass/0fail/0skip**、全部7 integration文件 **47pass/0fail/0skip**，16.17s，session47069 exit0已消费。日志`/tmp/kokoro-bff-active-run-real-pg-final-green.log`；回收created/new数据库0，Redis新增0/baseline完整。HTTP upstream doubles不冒充真实Agent/model，浏览器未验。
+- Root固定SHA测试RED **1fail/32pass**，10.71s，session42645已消费，日志`/tmp/kokoro-bff-active-run-root-pin-red.log`；已更新runner。库存184指针/134路径从新commit blob重算，只API_CONTRACT/DATA_MODEL/chat-facts test共3path digest变；3active/13broken不改。聚焦与提交后Root门待执行，3310未重新启动。
+- Root集成聚焦第一次未stage gitlink，checkpoint真实FAIL1/163pass（旧index d654与新inventory不匹配），日志`/tmp/kokoro-bff-active-run-root-integration-focused.log`；未放宽门，随后按唯一index负责人stage批准gitlink，重跑同五文件 **164pass/0fail**，64.44s，session65807 exit0已消费，日志`/tmp/kokoro-bff-active-run-root-integration-focused-staged.log`。独立Root集成审查0/0/0，184/134blob逐条核对；Ruff check/format、diff check实际PASS。提交后strict relay仍需HEAD/index/child一致复验，不能用此聚焦代替。
+- Root之前记录fixture失败的台账提交ae98609c保留；task顶部过期派工已统一为当前BFF验收/Root集成。全Wave0–7仍active，积分倍率基准待用户确认，未充值/扣款或虚构免费。
+
 ## 2026-09-30 — IAM来源已验收提交；真实续流缺口已有纯当前源码对照证据
 
 ## 2026-09-30：BFF真实PG复验揭露fixture缺口（待修，不伪造GREEN）

@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**当前最新验收：BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已提交且clean。** 同ACL/RR snapshot恢复existing `active_run.running`：Root Node22全部纯门（contract191、architecture27、test506pass1skip）与fresh install、定向8/8及全部7文件真实PG/Redis/localhost HTTP integration47/47通过；首次7/1 fixture失败保留，未弱化guard。独立最终代码/文档均0/0/0，源码测试最终hash冻结。Root正集成gitlink、184来源指针及从新commit blob核出的digest、Web composition固定SHA和断言；库存3active/13broken不改绿。Root集成聚焦164pass/0fail、独立0/0/0、Ruff/diff PASS；提交后strict relay/checkpoint/topology/fullRoot与浏览器仍待验，3310未重启。以下较早候选/失败记录为历史，不是当前派工。
+
 **最新复验（BFF activeRun候选，Root604dc12f）：** 12文件冻结hash核对，独立最终源码审查0/0/0、无infra聚焦20pass；Root Node22 format/lint/typecheck/contract191/architecture27/test506pass1skip/build全部exit0，日志`/tmp/kokoro-bff-active-run-root-final-gates.log`。真实自有PG首次GREEN尝试为7pass/1fail/0skip（`/tmp/kokoro-bff-active-run-real-pg-green.log`）：newer-run终态因fixture只有consumer registration、缺正常ChatTurn assistant/dispatch绑定而触发`AGUI_ASSISTANT_BINDING_MISSING`。未放宽生产guard，原owner仅修fixture和CURRENT；自有库/新增库0、Redis新增0/baseline保留。仍未验收/提交BFF、未启动3310、未通过浏览器全文门。Billing只读核查确认新Metering当前按功能quantity=1定价，无成本倍率规则；1.4与9.4基准待用户确认，未写配置或执行账务。
 
 **本轮后置更新（Root代码9e77ac17）：** checkpoint/topology分别实际exit0；使用用户指定私有profile，一次真实免费库存GET成功、未调用推理。BFF tests-only已冻结，Root复用现PG/Redis在唯一自有临时库执行真实RED：3pass/5fail/0skip、2.31s，均缺active_run或缺非法marker拒绝；自有库0、Redis新增0/baseline保留，日志`/tmp/kokoro-bff-active-run-real-pg-red.log`，原owner已获GREEN源码授权。Billing五docs修订独立0/0/0，但IAM任意target能力未发布，源码/入账仍阻塞。用户要求的当前线程每10分钟检查并推进heartbeat `kokoro-10` 已创建ACTIVE并回读；静默无变化、实质进展/失败/偏差/决策通知。3310仍未重启，完整goal未闭环。
@@ -22,7 +24,7 @@ Root `6fdcba6e` 基线的三文件生命周期切片已由原writer停写、独�
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
 | `apps/kokoro-app` | `840fa7e0ff9c4d241daca0c297b120f34821018e` |
-| `apps/kokoro-bff` | `d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed` |
+| `apps/kokoro-bff` | `15e07fa44670bc13705ce3f6f700e73afcb72ccc` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |
 | `apps/kokoro-iam` | `e3c035b99cf9479ac8357c7d38147f1541dcbcac` |
