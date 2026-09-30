@@ -1,3 +1,17 @@
+## 2026-09-30 — 当前服务终态与真实拦截
+
+本轮新ps显示30171/31351及其余owner PID均missing；同一session53033权威exit1已消费、3310无监听，原launcher日志serving failed。与观察超时区分，未重复启动/假称在线。原workspace保留，窄查只证明最终graceful drain和System shutdown；现入口将异常丢成serving failed，具体触发尚无证据，周期性receipt_state_lost不能臆定是根因。旧服务live描述为历史，CURRENT已纠正。Root Product helper独立发现1P1路径误用Web self前缀、1P2无Run证据边界；已真实RED2failed后改canonical BFF /v1/skill-installations＋绑定五机器operation，GREEN84/98subtests；明确Agent未启动仅结构证据，不冒称Run-store观测，正在复审。
+
+## 2026-09-30 — Web个人安装consumer已验收提交
+
+Web 752aff9d0744cd55c556079a08a2a28e393e50e4，29/29 hash核准，独立P0/P1/P2=0/0/0+153聚焦PASS；Root在Web Node22主树 serial contract109/architecture37/lint/typecheck/默认test1773(162文件)/build/diff 全exit0（session71040已终态消费，/tmp/kokoro-web-personal-root-gates.log）。默认test含重复contract/architecture，不与writer pure1654混计；现jsdom navigation warning不冒称无warning。Root库存固定commit与exact blob同步，13broken不改；composer来源只合法repin。3310仍加载既有14a，不声称本片正式可见/安装真实PASS；Root Product helper在独立审查。
+
+## 2026-09-30 — 本人安装真组合 driver 已实施，进入独立验收
+
+Root df930f7d，上一turn只重核既有model/进程并回复为no-progress；本轮改进权威源码。Root新增单责Product helper及原owned sandbox三个hook/显式互斥flag，不另起服务。独立核对own draft=412、missing=404，复用两现有不同series active包，避免同source重复安装伪造分页；覆盖五public、same-key历史ACK、GET当前、false筛选/opaque两页、移除/稳定ID重装、撤权五方法在owner之前拒绝。没有业务owner/SQL/contract/lock变化；新增纯测试先18 RED，模式/恶意change 4 RED及mutation身份漂移1 RED，GREEN相关83pass/98subtests，Ruff/diff通过。仅证据工具门，真实组合尚未执行，原model首轮FAIL保留。
+
+Web原writer29既有文件已停写，报告221直接/109contract/37architecture/1654pure与lint/type/build通过；Root独立审查和主树全门已启动，尚未提交/加载候选。当前30171服务保留，uv.lock任务外保留。完整goal active、Billing最后。
+
 ## 2026-09-30 — 下一切片已开始真实代码推进
 
 Web-PERSONAL-CODE原writer仍live、尚未交付：既有schemas/client/严格Hub route/contract原字节pin/i18n/相关测试已在写入；Root不抢写、不暂存/加载在途候选，也不把当前源码修改计为验收。并行ROOT-PERSONAL-INTEGRATION-AUDIT只读梳理现真实发布组合接入5public安装路由，准备后端独立真纵切，禁止生产启用/重复infra/付费模型/3310重启。Root当前受管30171/31351已ps复核live。
