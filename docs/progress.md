@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 授权后恢复3310，仍保留可见登录未验边界
+
+用户明确允许重启；Root精确停止旧同组Web81692/BFF81690，未动独立BFF81924、Docker、其他数据或旧目录。旧Web释放超过首次5秒等待，第一启动在端口门退出未建资源；确认端口释放后现有启动器session71981启动成功。受管launcher3898、IAM4007、Web4113均存活且Web监听3310，当前源码Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`，log `/tmp/kokoro-local-login-current.log` 0600，专用账号不入文档。此组保留供用户验证，由launcher统一管理退出和自有资源。
+
+右侧原标签仍是旧过期交互；CUA本次读取AX和DOM均CDP focus超时，未实际提交凭据、回调或进入/app。已请用户手动打开 `/login` 再继续，未绕过此前浏览器阻止。当前登录仅运行恢复，不报浏览器E2E通过。
+
+Agent原writer交付返修 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main停写，报告同session四RED→GREEN、默认1410 pass/6 skip/172 deselected及HITL恢复/guard。Root主树独立完整门exit0：1410 pass/6 skip/172 deselected（默认仍1父examples/5未配置MinIO跳过）、Ruff249文件/Pyright0/contract/lock/frozen sync及wheel/sdist通过，日志 `/tmp/kokoro-agent-e728-root-gates.log`。固定SHA只读审查 `run_metadata_independent_review` 进行中，尚未最终验收或pin。真实Source owner组合/安装产品入口不在该返修通过范围。
+
 ## 2026-09-30 — 切回用户右侧真实登录，记录现场阻断与未放行候选
 
 Root通过CUA绑定右侧用户原有标签，实际读取邮箱/密码表单与截图；从该标签打开 `/login` 返回 `ERR_BLOCKED_BY_CLIENT`，页面未导航。只读进程检查3310旧PID81692仍监听，登录启动器/IAM host未出现在进程列表；尚未提交凭据、完成回调或进入/app。已请求仅重启对应开发服务及专用测试账号验收、用户手动导航；未绕过浏览器阻止、未重启/清理用户进程/数据。当前3310登录未通过。

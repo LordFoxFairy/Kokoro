@@ -1,8 +1,22 @@
 # Kokoro 后端闭环任务总表
 
+## 返修：W3-AGENT-RUN-SKILL-METADATA（P1，固定候选未放行）
+
+| 项 | 任务卡与放置门 |
+| --- | --- |
+| Owner/执行/基线 | Agent原负责人`agent_typed_skill_reader_owner`唯一writer，Root复现/审查；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent` clean main `534d3f80efb158910fde73e2a8ecf5390f874bba`，不切新分支。 |
+| 实证/目标 | Root同一真实DeepAgents graph/checkpointer会话实验：[]→alpha/beta持续metadata=[]，alpha→beta/[]持续metadata=[alpha]，后续reader_calls=0。SDK按session缓存metadata，与每Run冻结refs冲突。目标当前Run选择是唯一可见能力，新的Run刷新metadata/旧load_errors，保持同RunHITL resume/checkpoint和guard。 |
+| 位置/方案 | 首选沿官方SkillsMiddleware公开扩展点作极小Run-bound lifecycle adapter，新普通文件可放既有skills目录（元数据装配职责），拒绝塞入backend解析/传输或重写SDK加载器；若无需新文件以既有factory公开接口直接正确收敛优先。新文件前负责人补TECHNICAL_DESIGN接口/职责，比较skills/middleware与tools/middleware位置。 |
+| 范围/边界 | 限Agent factory、既有skills模块必要一个生命周期文件、直接unit/architecture/native checkpoint组件测试及INDEX/TECHNICAL_DESIGN/CURRENT/ACCEPTANCE。其他clients/ZIP/传输/SQL/Proto/generated/lockfile/仓库不改。不得复制frontmatter解析或手造skills_metadata第二事实源，不取消checkpointer/换每Run thread_id来回避会话问题。 |
+| 验证/交付 | 生产Factory+真实DeepAgents+InMemorySaver同session覆盖[]→A、A→B、A→[]、连续同refs及同Runinterrupt/resume；模型观察当前metadata，不仅看返回值（metadata是PrivateStateAttr），用真实checkpoint snapshot核实并覆盖旧load_errors清除和空refs零Skill依赖。先RED→GREEN，恢复/取消/授权失败不退回旧元数据。default gates与隔离组件、固定SHA交付停写，Root复验后才pin。无需共享PG/Redis或新后台进程。 |
+
+证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），Root负责集成和提交，尚不pin。用户已授权3310重启，Root不以返修代替可见登录验收。
+
 ## 用户当前最高优先级：右侧3310真实登录验收
 
-2026-09-30 用户要求主窗口直接操控右侧浏览器，不再以隔离结果代替可见成果。Root已读到现有标签的真实邮箱/密码表单；从该标签导航 `/login` 被浏览器以 `net::ERR_BLOCKED_BY_CLIENT` 阻止，未通过其他通道绕过。现场3310监听仍旧PID81692，进程列表未见登录启动器/IAM host。已向用户请求仅重启这组本地Web/IAM/BFF及使用专用测试账号，并请手动打开登录入口；答复前不重启用户预览或变更基础设施。通过条件是同一右侧标签实际提交→回调→进入/app→刷新仍登录，保留截图与当前源码/进程证据，不能只报GET表单通过。
+2026-09-30 用户已明确授权重启。Root只停止确认同组的旧Web81692/BFF81690，保留其他BFF81924、旧临时目录及共享基础设施。现有启动器已重建当前Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`，前台受管session71981、launcher3898/IAM4007/Web4113，3310真实监听；日志 `/tmp/kokoro-local-login-current.log` 权限0600，专用账号秘密不写入文档。旧进程首次5秒等待不足导致启动前occupied失败，后续确认端口释放后仅启动一组，失败session已结束。
+
+右侧用户原标签仍保留已过期签名地址；此前 `/login` 导航为 `ERR_BLOCKED_BY_CLIENT`，本次AX与DOM读取均因CDP focus操作超时，无凭据提交或回调证据。请用户手动打开 `/login` 后继续同一标签提交→回调→/app→刷新验收，不通过其他通道绕过浏览器阻止、不把隔离Chromium旧结果移作当前验收。启动成功仅算运行恢复，当前可见登录仍待验。
 
 Agent `534d3f80efb158910fde73e2a8ecf5390f874bba` 已交付clean、Root默认门1399 pass/6 skip/172 deselected，但暂不pin：一条独立安全审查已通过，另一审查在发现会话checkpoint复用skills_metadata后因额度终止。Root纯DeepAgents同session实验已确认空选择→alpha/beta后middleware读取次数均0；还须用checkpoint内部state及生产Factory回归补全证据，再由单writer修复。默认测试通过不代表当前refs实际进入模型。用户可见登录优先；Skill真组合仍保留完整范围，不标完成。
 
