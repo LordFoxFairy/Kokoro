@@ -1710,7 +1710,7 @@ class AgentSourceOptInTests(unittest.TestCase):
             "product_helper.preflight(args.product_installation, args.agent_source)",
             code,
         )
-        self.assertIn("args.agent_source or args.product_installation", code)
+        self.assertIn("platform_surfaces(args)", code)
         self.assertIn(
             "product_installation.before_publish('skill:' + begin_skill_id)", code
         )
@@ -1727,6 +1727,29 @@ class AgentSourceOptInTests(unittest.TestCase):
         )
         self.assertIn("parser.add_mutually_exclusive_group()", code)
         self.assertIn("summary['product_execution_boundary']", code)
+
+    def test_product_mode_selects_its_own_registered_rpc_surface_not_execution(self):
+        from dataclasses import replace
+
+        args = smoke.RunArguments(
+            "postgresql://user@127.0.0.1/db",
+            "redis://127.0.0.1/0",
+            *(Path("/node") for _ in range(4)),
+            "test-bucket",
+        )
+        self.assertEqual(smoke.platform_surfaces(args), "skill-catalog,skill-source")
+        self.assertEqual(
+            smoke.platform_surfaces(replace(args, agent_source=True)),
+            "skill-catalog,skill-source,skill-installation",
+        )
+        self.assertEqual(
+            smoke.platform_surfaces(replace(args, product_installation=True)),
+            "skill-catalog,skill-source,skill-installation-product",
+        )
+        with self.assertRaises(smoke.product_helper.ProductError):
+            smoke.platform_surfaces(
+                replace(args, agent_source=True, product_installation=True)
+            )
 
     def test_source_hooks_preserve_default_gate_and_cleanup_order(self):
         import ast

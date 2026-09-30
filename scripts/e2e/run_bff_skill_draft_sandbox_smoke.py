@@ -1790,6 +1790,16 @@ class RunArguments:
     product_installation: bool = False
 
 
+def platform_surfaces(args: RunArguments) -> str:
+    product_helper.preflight(args.product_installation, args.agent_source)
+    base = "skill-catalog,skill-source"
+    if args.product_installation:
+        return base + ",skill-installation-product"
+    if args.agent_source:
+        return base + ",skill-installation"
+    return base
+
+
 def owned_bucket_name(prefix: str, run_id: str) -> str:
     base = prefix.rstrip(".-")[: 63 - len(run_id) - 1].rstrip(".-")
     if not base or re.fullmatch(r"[a-z0-9][a-z0-9.-]*", base) is None:
@@ -2057,11 +2067,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_IAM_BASE_URL": ready.base_url,
                 "KOKORO_PLATFORM_HOST": "127.0.0.1",
                 "KOKORO_PLATFORM_PORT": str(platform_port),
-                "KOKORO_PLATFORM_SURFACES": (
-                    "skill-catalog,skill-source,skill-installation"
-                    if args.agent_source or args.product_installation
-                    else "skill-catalog,skill-source"
-                ),
+                "KOKORO_PLATFORM_SURFACES": platform_surfaces(args),
             }
             bff_env = {
                 **base,

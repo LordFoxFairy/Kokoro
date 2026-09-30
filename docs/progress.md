@@ -1,3 +1,7 @@
+## 2026-09-30 — 真组合502已定位并TDD修正Root接线
+
+原入口session27298真实exit1，安全证据为http502/expected412/code skill_installation_response_invalid（/tmp/kokoro-product-installation-real-status.log）。Root和独立owner源码/文档核查确认不是业务数据校验故障：Product五RPC只有skill-installation-product独立surface才注册，原Root错开legacy execution surface。Root两现parent/test做纯selector，默认catalog/source、Agent仅legacy安装、Product仅Product安装，保持互斥/默认off。先2RED/61pass、GREEN相关86pass/98subtests及Ruff/diff；不改owner/contract/guard，不同时全开，不改502断言。原失败保留，下一原入口真实重跑后才判闭环。当前9072/9451同组仍live，不受owned组合资源影响。
+
 ## 2026-09-30 — 已唯一恢复当前Web752开发服务
 
 旧session53033已exit1且其PID/3310监听全部消失，Root没有因观察超时重复启动。launcher96636a01两源码独立0/0/0，Root相关130pass/152subtests及Ruff/diff通过后，唯一新session14183/launcher9072/Web9451启动正规login预探测成功，workspace vuag0zbp、3310已监听。Web752aff9四安装生产文件与受管dev snapshot hash全等；使用现Agentvenv native依赖和私有gpt-5.6-luna profile，不新infra。只证明当前服务与源码加载，未重跑模型回复/安装UI；emptySkills/Storage未配置仍不冒称全闭环。

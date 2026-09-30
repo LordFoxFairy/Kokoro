@@ -26,7 +26,7 @@
 
 **当前运行更新：** 旧session53033/30171已权威exit1且所有直接子PID消失，历史触发未保留。launcher96636a01已加固定stage/异常类别，不泄露原message、不削弱健康/回收；独立0/0/0、Root相关130pass/152subtests通过后，Root唯一启动新session14183/launcher9072/Web9451，workspace`kokoro-local-login-vuag0zbp`，3310现已监听，启动正规登录预探测通过。Web752aff9四安装生产源码与dev snapshot逐一hash相等；本新组尚未实际重跑模型回复或安装，不把加载源码等同真实闭环。
 
-**真实Product安装当前：** 原入口已执行，native缺依赖首次失败保留；改用现Agentvenv固定native依赖后真实owner组合FAIL于预期错误响应断言。已增安全http/expected/code证据（85聚焦/98subtests、独立0/0/0），尚未证明五API完整真实通过，下一原入口定位实际HTTP而不放宽断言。
+**真实Product安装当前：** 原入口已执行，native缺依赖首次失败保留；改用现Agentvenv固定native依赖后真实owner组合FAIL于预期错误响应断言。已增安全http/expected/code证据（85聚焦/98subtests、独立0/0/0），真实status诊断已定位Root误开legacy surface导致502；独立源码/文档核对后，现纯selector精确开启Product独立surface（86聚焦/98subtests），仍待原入口真实五API全通过，不放宽断言。
 
 ## 最新验收边界
 
