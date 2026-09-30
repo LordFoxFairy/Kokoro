@@ -1,15 +1,15 @@
 # Kokoro 后端闭环任务总表
 
-## 下一代码切片预审：W3-SKILL-ACTIVATION（Web 单仓代码门后串行）
+## 激活前门预审：W3-SKILL-ACTIVATION（六 owner readiness 未齐，暂不切 active）
 
 **只读结论，不是已激活：** BFF 六条 Skill 写路由已接线，但同受 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED` 默认关闭保护；`true` 只允许 BFF loopback 独占 smoke。Platform v4 `inactive/routable=false` 是机器契约发布标记，不是运行 kill switch。不能把临时开关改成产品上线，也不能把 Web 静态测试或 HTTP owner smoke 当正式产品闭环。
 
 | 项 | 下一切片边界 |
 | --- | --- |
 | Owner / 当前事实 | Platform `apps/kokoro-capability` 为 v4 owner machine artifact 唯一 writer，当前 pin `6a09913`；BFF `apps/kokoro-bff` 为 public Product API 唯一 writer，当前 pin `62daba37`。`apps/kokoro-bff/src/config/runtime.ts` 的候选开关默认 false，`src/bootstrap/runtime.ts` 关闭时不构造 CatalogConnectClient；Platform `contract/execution-operations/v4/manifest.json`、schema/checker 与 BFF generated/dependency/test 均明确 inactive。两仓当前无本任务写入。 |
-| 方案与顺序 | A（采用）：先由 Platform owner 原子发布 active/routable 机器 artifact、schema/checker/provenance 与直接测试，Root 验证并精确 pin；再由 BFF 单 writer 固定新 owner commit/aggregate，移除 loopback 候选限制并定义正式启用策略、路由/API 状态与负例；最后 Root 隔离真 IAM→BFF→Platform/Storage 验默认/启用、撤权、同键恢复。B（淘汰）：只把环境变量设 true、只改 manifest、让 Web 绕过 BFF 或为测试假装 CORS 已通过；会造成契约/运行双轨及错误产品声明。 |
-| 依赖 / 数据与删除 | Web 单 ZIP 正式 UI `12f9dff` 已通过独立审查及 Root 单仓门；先 owner contract，后消费者。无新数据库、role 或跨 owner SQL。删除候选命名/限制与旧 inactive 引用要和 BFF cutover 同片完成，保持当次 IAM/owner 准入。Browser CORS 501 是独立验收阻断，不作为本代码片运维排查。 |
-| 验证 / 未决 | Platform artifact/contract/test/build；BFF contract/check/schema/build 与默认关/启用路由测试；Root 真跨 owner 回归和精确 gitlink/库存 pin。六 owner 消费、Agent source、Storage orphan retirement 与完整 Chromium 仍各有独立门，不能在本片宣称全产品闭环。Billing 最后。 |
+| 方案与顺序 | A（采用）：先按 Platform ADR-002 §13 逐一补齐 IAM/Agent/BFF/System/Storage/Root/Web 的固定版本消费者与 Storage 包孤儿生命周期，完成六 owner 真 sandbox；届时才由 Platform owner 原子发布 active/routable 机器 artifact、schema/checker/provenance，BFF 单 writer 固定最终 owner 并收敛候选限制，Root 再验正式启用。B（淘汰）：Web 单仓通过后立即改 manifest/env、绕过消费者和生命周期门或为测试假装 CORS 已通过；会造成契约/运行双轨及错误产品声明。 |
+| 依赖 / 数据与删除 | Web 单 ZIP 正式 UI `12f9dff` 已通过独立审查及 Root 单仓门；但 ADR-002 §13 的消费者/六 owner sandbox 与 Storage orphan retirement 尚未完成，下一安全 owner 切片待固定现态只读审查后定。先 owner contract，后消费者。无新数据库、role 或跨 owner SQL。删除候选命名/限制与旧 inactive 引用要和 BFF cutover 同片完成，保持当次 IAM/owner 准入。Browser CORS 501 是独立验收阻断，不作为本代码片运维排查。 |
+| 验证 / 未决 | 每个缺口 owner 自有 contract/test/build 与 Root 精确 pin；六 owner 真 sandbox、Agent source、Storage orphan retirement、Platform active artifact、BFF 正式开关及完整 Chromium 依依赖串行验收，不能以任一片宣称全产品闭环。Billing 最后。 |
 
 
 ## 并行测试切片：W3-ROOT-SKILL-CHROMIUM（P0；独占真浏览器组合）
@@ -28,7 +28,7 @@
 
 **阶段状态（2026-09-29）：** Web 正式单 ZIP UI/adapter `12f9dff909b8e2e8694a96f510676f90d375ecdc` 已交付且 clean；Root Node22 第二次默认 `pnpm check` contract **108**、architecture **36**、tests **1656**、lint/typecheck/build PASS，独立终审 P0/P1/P2=0；首轮旧 Billing UI 异步测试进程错误和隔离重跑记录在 [`progress.md`](progress.md)。Root 隔离 Playwright 3487 **11 pass/1 既有 skip**，该套没有真 IAM/Skill publish；真 Chromium 必须用独占 HTTPS Web + HTTPS ObjectStore origin 与精确 CORS/preflight，目前本地 CORS API 501。下表保留原开工基线与完整产品放行条件，**单仓代码门不是激活或端到端**。
 
-**Root pin 验收：** `b52e884c4765e6158c945a685f486da0358b48bd` 已精确固定 Web `12f9dff`、来源库存与 7 条正式写链证据；当前 topology/checkpoint PASS、Root 全 `scripts/tests` **985 pass**。下一 owner 是 Platform active v4 machine artifact，之后 BFF 激活；浏览器门仍因本地 ObjectStore CORS 501 单独阻断。
+**Root pin 验收：** `b52e884c4765e6158c945a685f486da0358b48bd` 已精确固定 Web `12f9dff`、来源库存与 7 条正式写链证据；当前 topology/checkpoint PASS、Root 全 `scripts/tests` **985 pass**。下一 owner 尚需按 ADR-002 §13/Storage 生命周期 readiness 裁决，**不立即切 Platform active v4**；浏览器门仍因本地 ObjectStore CORS 501 单独阻断。
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |
