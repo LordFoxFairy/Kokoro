@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Agent typed Skill Source 三面设计门通过，运行未接
+
+Agent 唯一 writer `cbbdd84` 收敛 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE；独立审查 P0/P1=0，指出同名多 Skill 虚拟路径未唯一裁决的 P2。返修 `7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2` 以具体版本 SkillId ASCII 原字节的无填充 base64url 作为只读 `/.skills/` 唯一目录，并锁同名/同 series 多版本不覆盖和跨 lease 稳定测试。Root 核 Platform v4 Proto/manifest/ZIP 与 Storage v2 Proto 四份原字节 SHA、Agent 当前 Run/SQL/HTTP，独立 `uv lock --check`、contract checker 与架构测试 **26 pass**。设计明确 Agent Run 输入/持久 fence、fresh Resolve/Get、签名 GET/ZIP 和撤权失败关闭，但**本次没有 Agent 业务代码、机器契约或 SQL 改动，也没有产品端到端执行证据**。下一单仓代码片只做 Agent launch typed 选择与现有 Run fence，Platform v4 pin/包读另片，BFF 安装选择与六 owner sandbox 后续。Root 精确 pin 后仍保持 `EDGE-AGENT-CAPABILITY` broken；Billing 最后。
+
 ## 2026-09-29 — ADR-002 §13 激活顺序纠偏；Storage 孤儿包缺口已只读确认
 
 Root 固定 Platform ADR-002 §13 复核后，撤销“Web 单仓门后立即把 v4 manifest 改 active”的过早顺序：Agent 当前有 Run-scoped Platform sender，但正式 Skill 仍是 name/Capability 读取；System operator consumer、Storage 退役与六 owner 真 sandbox 均未齐。固定 Storage `16a6c1c` 只读审查发现 v2 仅能 Abort 未完成 Upload，已完成 Asset 没有退役 RPC/状态；对象 reconcile 只执行已有 canonical repair retirement，未知 final 只报告，aborted staging 删除失败无持久重试。Platform 文档也将此列为激活前门。下一代码顺序先 Agent typed Skill Source 的三面设计/实现，再由 Storage owner 单独收敛 `RetirePackageUpload`/Asset-Blob 生命周期及 Platform 消费，随后余下消费者/六 owner sandbox；**本次只有审查与任务纠偏，没有修改 Agent/Storage/Platform 业务代码或激活**。Billing 最后。

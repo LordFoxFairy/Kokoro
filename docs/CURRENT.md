@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 Agent typed Skill Source 仅设计门：** Agent `main 7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2` 五份文档把 Run 选择 fence、Platform v4/Storage v2 来源、signed GET/ZIP、只读虚拟路径及撤权失败关闭定案；独立审查 P0/P1=0，路径碰撞 P2 已由确定性的无填充 base64url(SkillId) 规则返修。Root 独立契约/架构门 **26 pass**、四份 owner hash 核对通过；本次**没有** Agent typed 运行代码、Platform v4 pin 或真实 Skill 执行。下一片仅 Agent launch 机器契约/持久 fence，库存边继续 broken，BFF/Platform 未激活；3310 与任务外 `uv.lock` 不动。
+
 **2026-09-29 Web 正式单 ZIP Skill 发布代码门已验，产品链未激活：** Web `main 12f9dff909b8e2e8694a96f510676f90d375ecdc` 已在正式 Skills/Settings 沿现有 shadcn Dialog 接同源 Draft/Get/Begin→批准的 signed PUT 原字节→Complete/扫描等待→Validate→零 body Publish；只在 ACTIVE 回执或本人 by-ID 权威恢复后显示成功。旧 multipart preview/confirm/GitHub 入口仅留显式 preview fixture，正式非 self Skill/MCP alias 404；同意图保留 ZIP、原幂等 key 与取消/撤权语义，Draft 65,536 字节和 Begin 文件名在建草稿前预检。独立终审 P0/P1/P2=0；Root Node22 `pnpm check` 第二次默认全门 PASS（contract **108**、architecture **36**、tests **1656**、lint/typecheck/build），首轮仅旧 Billing UI 的 jsdom/Radix focus 异步未处理异常，隔离该文件 **12/12**、完整重跑 PASS；隔离 Playwright 3487 **11 pass/1 既有 skip**，它只验未配置登录/预览治理，**不是真 IAM→Skill 发布的 Chromium 链**。BFF 六写候选仍 default-off、Platform v4 inactive；ADR-002 §13 消费者/六 owner sandbox 和 Storage orphan retirement 未闭环，真实 HTTPS ObjectStore CORS 在当前本地 fixture 501；不得称用户端已可发布，也不提前切 active。3310 与任务外 `uv.lock` 未动。
 
 Root `b52e884c4765e6158c945a685f486da0358b48bd` 精确 pin Web gitlink/来源库存；当前 topology/checkpoint PASS、Root `scripts/tests` **985 pass**。EDGE-WEB-BFF 继续 broken，任务外 `uv.lock` 保持未暂存。

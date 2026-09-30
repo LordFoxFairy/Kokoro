@@ -1,6 +1,18 @@
 # Kokoro 后端闭环任务总表
 
-## 当前下一 owner：W3-AGENT-TYPED-SKILL-SOURCE-DESIGN（P0；只做三面文档门）
+## 当前下一 owner：W3-AGENT-SKILL-LAUNCH-CONTRACT（P0；Agent 输入与持久 fence 代码片）
+
+| 项 | 本片裁决与验收 |
+| --- | --- |
+| Owner / 基线 | Agent 唯一 writer，`apps/kokoro-agent` clean `main 7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2`；Root 本次精确 pin。Platform v4 `6a09913` 仍 inactive，Storage `16a6c1c` 不变。Agent 三面与验收设计门已过，尚无 typed 选择代码。 |
+| §8 位置 / 两案 | 采用现有 `protocol/control.py` 的 `RunRequest`、`interfaces/http/ingress.py` 的 `LaunchBody`、唯一 `contract/openapi/v1/openapi.json` 与相邻测试：新增严格 `selected_skill_source_refs` 并复用现有 canonical request/fence/dispatch/Run JSON。淘汰另建 Skill 选择表、Redis 临时选择、worker 从名称/Feature 补选和未接消费者时假称可执行。无新目录/SQL/owner/进程。 |
+| 本片范围 | 只做 Agent-owned wire、严格解析/数量/4 KiB 约束、显式空数组、同 `run_id` 漂移 409、持久化/重领 roundtrip 和机器契约 provenance；必要的直接调用 fixture 与本仓文档同步更新。**不接** Platform v4 运行、signed GET/ZIP、`/.skills/` backend、BFF/Web 用户选择；原 `music` 旧执行路径留待单一 cutover 片删除，不作为新字段 fallback。 |
+| 依赖与 RED | 先证当前 HTTP/OpenAPI 拒绝 typed refs、旧 RunRequest 无该字段；GREEN 覆盖 canonical 语法 `skill:<SkillId>`、去重/顺序、16 项、4 KiB、非数组/alias/多余字段、空数组与重放冲突。`request_json` 仍由 Agent 本仓两表拥有，identity 来自受信上下文，不从 body 自报。无新跨仓 SQL 或角色。 |
+| 验证/交付 | Agent `uv lock --check`、`uv sync --frozen`、Ruff、Pyright、contract checker、相关 unit/contract/architecture/default pytest、wheel/sdist、必要隔离 PG/Redis admission；独立审查与 Root 同 commit 复验后精确 pin。此片最多证明 launch/fence，不宣称 Skill 可执行或六 owner 产品闭环。Billing 最后，3310/Root 任务外 `uv.lock` 不动。 |
+
+## 已通过设计门：W3-AGENT-TYPED-SKILL-SOURCE-DESIGN（P0；只做三面文档门）
+
+Agent `cbbdd84` 冻结五文档，独立审查 P0/P1=0、P2=1（多 Skill 同名虚拟路径未裁决）；返修 `7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2` 使用具体版本 SkillId 原始 ASCII 的无填充 base64url 唯一目录，补同名/同 series 多版本与路径稳定负例。Root 独立核四份 owner digest、Agent Proto/SQL/Run 当前态及差异，并重跑 `uv lock --check`、`kokoro-agent-contract-check`、架构测试 **26 pass**；这只是三面设计门，**Agent runtime 仍是旧 name/Capability**。
 
 | 项 | 本片裁决与验收 |
 | --- | --- |
