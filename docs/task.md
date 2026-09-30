@@ -1,3 +1,21 @@
+## WEB-VISUAL-CURRENT-AUDIT / P1 / 已验收（2026-09-30）
+
+Root五项冻结来源下relay/checkpoint/topology三个CLI实测PASS/exit0。topology首次在gitlink暂存前exit1（checkout与旧记录不一致），精确暂存后原门通过；未修改门禁。日志 `/tmp/kokoro-web-visual-current-root-{relay,checkpoint,topology-final}.log`。本轮未运行全Root治理测试、完整Playwright或标准全门；历史结果不作本轮重跑。
+
+- 最终：Web main `65e328755774080fc37a4d12d2b9f9b2e21a22bf` 七文件已精确提交、clean。Root最终Node22 check109/49/1822（37.72s）/lint/type/build actual0，独立R3 0/0/0；真实触屏失焦/聚焦、默认桌面、390px、多行和高对比通过局部修复验收。继承primitive内shadow与forced透明outline被系统着色两种内框均修；成果null不留wrapper。消息全文逐项exact不变，重复user/历史failed仍未闭，不称完整ChatGPT/Manus体验。自有runtime仅两源码同步，无重启/模型/数据改写，override恢复。完整Playwright、本轮全Root1103与全标准门未执行；后继BFF失败持久化/同user retry继续，支付最后。日志 `/tmp/kokoro-web-visual-current-root-r3-check.log`、矩阵 `/tmp/kokoro-web-visual-current-real-matrix-r2.json`。Root保护Billing五docs与uv.lock，来源库存仍3active/13broken。
+
+- 用户当前要求：实际输入框方框、对话整体布局，不用历史纯测试代替视觉验收；本轮先复现，不延续误指向的BFF实施。
+- 基线：Root main5402017c，Web mainbef68a0386a902bbe4747c5795d8222d1d91fa51 clean；任务外Billing/uv.lock保留。3310唯一PID65590保持。
+- 分工：Root真实IAB验证；web_visual_source_audit只读输入框级联/运行副本审查；web_conversation_layout_audit只读消息布局/间距审查。所有子Agent禁止写入、Git、启动服务、模型请求、基础设施操作。
+- 读取：Root CODEBASE_MAP、Web AGENTS/INDEX/CURRENT/TECH/API，TS规范适用部分。当前阶段写集仅Root现task/progress；发现源码原因后再明确单writer局部文件集，不创建新组件/目录/框架。
+- 验收：真实当前DOM/CSS与截图、click/Tab/blur、desktop/mobile、消息内容与身份不改变；源码/运行副本字节比较；修复须先RED再GREEN并Root复验。历史bef68焦点修复不等于本次投诉闭环。
+- R3门禁协调：Root最终check在CSS architecture真实FAIL1/36；既有门禁止所有outline:none，即使有替代焦点。扩授唯一writer现tests/architecture/css-quality.test.mjs（第7文件），保留原全仓禁令，仅识别明确Composer forced-colors焦点移交契约，并对缺shell系统outline/错误scope/普通移除的突变负例验证拒绝；不改阈值、不泛化豁免，不改CSS写法绕regex。
+- R2真实返修：Root首完整check109/37/1809全部0，但forced-colors实际input透明outline被系统映射为2pxHighlight，截图仍见内直角框。不得据纯门宣称全态通过；同六文件增加高对比仅textarea focus-visible outline:none，保留shell Highlight替代焦点，先RED/GREEN后重验。未设forced-color-adjust:none。
+- Root局部修复授写：web_visual_source_audit转Web唯一writer，范围现src/ui/composer/composer.module.css、src/ui/thread/conversation-thread.tsx、tests/ui/composer.test.tsx、tests/ui/conversation-failure.test.tsx、docs/TECHNICAL_DESIGN.md、docs/CURRENT.md六文件。只扩现职责，不改contract/数据/model/依赖/Git。
+- 放置比较：去阴影归局部Composer基础input而非共享Textarea（后者影响全部表单）；空成果wrapper归既有ConversationThread条件而非CSS隐藏（后者保留虚假scroll项）。保持sessionId非null且(deliveries非空或hasMore)才渲染wrapper，与DeliverySection语义一致。failed空assistant/重复user不掩盖，留后继准确状态消费。
+- 证据：Root真实touch emulation已确认pointer coarse=true/fine=false，blur textarea继承shadow-xs；fine无shadow不是全态验收。测试先精准RED（coarse基础规则与deliveries空/null/hasMore/非空边界），再源码GREEN；Root完整check和实际触屏/桌面聚焦/失焦、多行、消息不变矩阵。
+- 已观察：旧tab10连接超时，只在同browser3新建一次tab11成功。当前textarea computed border0、shadow none、outline透明；shell为单2px圆角环，768px宽，页面仍有两条持久重复user。不据此否定用户体验，不用CSS隐藏真实重复事实。
+
 ## WEB-COMPOSER-SINGLE-FOCUS 已验收（2026-09-30）
 
 - Root集成：commit4133174c后relay/topology/指定checkpoint实际PASS/exit0，冻结full1103/3skip/455subtests与doc依赖门298pass；来源库存3active/13broken不变。Billing五docs/Rootuv.lock仍任务外保留，目标未完成，不称全体clean。

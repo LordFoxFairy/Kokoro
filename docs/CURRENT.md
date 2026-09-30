@@ -1,3 +1,11 @@
+## Web 输入框与空成果项当前组合（2026-09-30）
+
+Root五项冻结来源下relay/checkpoint/topology三个CLI实测PASS/exit0。topology首次在gitlink暂存前exit1（checkout与旧记录不一致），精确暂存后原门通过；未修改门禁。日志 `/tmp/kokoro-web-visual-current-root-{relay,checkpoint,topology-final}.log`。本轮未运行全Root治理测试、完整Playwright或标准全门；历史结果不作本轮重跑。
+
+Web main `65e328755774080fc37a4d12d2b9f9b2e21a22bf` 七文件已精确提交、clean。Root最终Node22 check109/49/1822（37.72s）/lint/type/build actual0，独立R3 0/0/0；真实触屏失焦/聚焦、默认桌面、390px、多行和高对比通过局部修复验收。继承primitive内shadow与forced透明outline被系统着色两种内框均修；成果null不留wrapper。消息全文逐项exact不变，重复user/历史failed仍未闭，不称完整ChatGPT/Manus体验。自有runtime仅两源码同步，无重启/模型/数据改写，override恢复。完整Playwright、本轮全Root1103与全标准门未执行；后继BFF失败持久化/同user retry继续，支付最后。日志 `/tmp/kokoro-web-visual-current-root-r3-check.log`、矩阵 `/tmp/kokoro-web-visual-current-real-matrix-r2.json`。Root保护Billing五docs与uv.lock，来源库存仍3active/13broken。
+
+下面bef68与f3be切片保留为历史验收，Web来源现由65e3287后继；Agent/BFF来源未改变。
+
 ## 本轮Composer焦点与Agent粒度切片已验收（2026-09-30）
 
 Web main `bef68a0386a902bbe4747c5795d8222d1d91fa51` 4文件精确提交、clean：内框保持移除，shell深border/3pxhalo双圈改为单2px环，forced-colors系统色outline保留键盘指示。Root显式Node22最终check109/37/1800（44.86s）/lint/type/build actual0、独立0/0/0；日志 `/tmp/kokoro-web-single-focus-root-r2-final-check.log`。真实IAB鼠标/Tab/blur、390px/1280px与forced-colors均检查，默认媒体/viewport恢复、article全文严格相等；现3310仅同步自有单CSS，无重启/模型/数据变更。截图 `/tmp/kokoro-composer-single-focus-desktop.jpg`、矩阵 `/tmp/kokoro-composer-single-focus-real-matrix.json`。重复user及视口切换后通用failed卡仍真实可见，精确失败/同user重试与深链仍开放，不以CSS遮盖。

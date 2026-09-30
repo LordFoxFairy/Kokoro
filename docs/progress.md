@@ -1,3 +1,15 @@
+## 2026-09-30 — 输入框跨状态与空成果项已验收
+
+Root五项冻结来源下relay/checkpoint/topology三个CLI实测PASS/exit0。topology首次在gitlink暂存前exit1（checkout与旧记录不一致），精确暂存后原门通过；未修改门禁。日志 `/tmp/kokoro-web-visual-current-root-{relay,checkpoint,topology-final}.log`。本轮未运行全Root治理测试、完整Playwright或标准全门；历史结果不作本轮重跑。
+
+Web main `65e328755774080fc37a4d12d2b9f9b2e21a22bf` 七文件已精确提交、clean。Root最终Node22 check109/49/1822（37.72s）/lint/type/build actual0，独立R3 0/0/0；真实触屏失焦/聚焦、默认桌面、390px、多行和高对比通过局部修复验收。继承primitive内shadow与forced透明outline被系统着色两种内框均修；成果null不留wrapper。消息全文逐项exact不变，重复user/历史failed仍未闭，不称完整ChatGPT/Manus体验。自有runtime仅两源码同步，无重启/模型/数据改写，override恢复。完整Playwright、本轮全Root1103与全标准门未执行；后继BFF失败持久化/同user retry继续，支付最后。日志 `/tmp/kokoro-web-visual-current-root-r3-check.log`、矩阵 `/tmp/kokoro-web-visual-current-real-matrix-r2.json`。Root保护Billing五docs与uv.lock，来源库存仍3active/13broken。
+
+## 2026-09-30 — 回到用户当前输入框与布局投诉
+
+Root首完整Node22 check109/37/1809/lint/type/build actual0；真实coarse blur已none、空delivery项0、四态消息全文exact不变。但高对比实际还出现内直角outline，当前同写集返修，不把纯门当全部视觉通过。
+
+本轮以真实用户请求为准，暂停尚未授写的BFF后继。Root重新检查3310当前页面，textarea内框computed透明/无shadow，但外shell单2px环仍突出，页面仍显示持久重复user。旧tab10控制超时，只恢复一次同浏览器tab11；未重启服务或新增模型调用。安排两项具名只读审查，先区分CSS级联、运行副本、消息状态/间距，不把历史check通过称为此次体验已修好。当前无子仓写入授权；任务外Billing/uv.lock保留。
+
 ## 本轮代码交付与主控实测（2026-09-30）
 
 Web bef68a03/4files与Agent f3be3b97/15files均main精确提交、clean，唯一writer已停写，独立最终审查均0/0/0。Web最终RootNode22全门109/37/1800/build0，真实单环/keyboard/mobile/forcedcolors与全文不变；初两次worker fixture503/timeout失败及forcedcolors P1返修历史保留，不放宽。AgentRoot pure1520/6skip/174deselect/build0，真实22HTTP与资源残留0；标准139→137仅清新增两项。没有额外常驻进程/重启/模型/计费改动。Root来源库存按commit blob更新68refs，3active/13broken原样；Root冻结完整治理门实测1103passed/3既有skip/455subtests（122.91s）exit0，日志`/tmp/kokoro-single-focus-agent-granularity-root-tests.log`；Root集成commit `4133174cfc5e356acb4cabb9d0c67340f1e82197` 后relay/topology/指定checkpoint actual PASS/exit0，session46296已消费；三JSON `/tmp/kokoro-single-focus-agent-granularity-root-{relay,topology,checkpoint}.json`，不冒称整体完成。重复user/通用failed/精确profile/true retry/完整能力继续开放，支付最后。
