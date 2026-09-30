@@ -1,6 +1,6 @@
 ## 本轮代码交付与主控实测（2026-09-30）
 
-Web bef68a03/4files与Agent f3be3b97/15files均main精确提交、clean，唯一writer已停写，独立最终审查均0/0/0。Web最终RootNode22全门109/37/1800/build0，真实单环/keyboard/mobile/forcedcolors与全文不变；初两次worker fixture503/timeout失败及forcedcolors P1返修历史保留，不放宽。AgentRoot pure1520/6skip/174deselect/build0，真实22HTTP与资源残留0；标准139→137仅清新增两项。没有额外常驻进程/重启/模型/计费改动。Root来源库存按commit blob更新68refs，3active/13broken原样；Root冻结完整治理门实测1103passed/3既有skip/455subtests（122.91s）exit0，日志`/tmp/kokoro-single-focus-agent-granularity-root-tests.log`；提交后CLI仍待，不冒称整体完成。重复user/通用failed/精确profile/true retry/完整能力继续开放，支付最后。
+Web bef68a03/4files与Agent f3be3b97/15files均main精确提交、clean，唯一writer已停写，独立最终审查均0/0/0。Web最终RootNode22全门109/37/1800/build0，真实单环/keyboard/mobile/forcedcolors与全文不变；初两次worker fixture503/timeout失败及forcedcolors P1返修历史保留，不放宽。AgentRoot pure1520/6skip/174deselect/build0，真实22HTTP与资源残留0；标准139→137仅清新增两项。没有额外常驻进程/重启/模型/计费改动。Root来源库存按commit blob更新68refs，3active/13broken原样；Root冻结完整治理门实测1103passed/3既有skip/455subtests（122.91s）exit0，日志`/tmp/kokoro-single-focus-agent-granularity-root-tests.log`；Root集成commit `4133174cfc5e356acb4cabb9d0c67340f1e82197` 后relay/topology/指定checkpoint actual PASS/exit0，session46296已消费；三JSON `/tmp/kokoro-single-focus-agent-granularity-root-{relay,topology,checkpoint}.json`，不冒称整体完成。重复user/通用failed/精确profile/true retry/完整能力继续开放，支付最后。
 
 ## 本轮正式页面复验（2026-09-30）
 

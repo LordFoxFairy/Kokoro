@@ -1,5 +1,6 @@
 ## WEB-COMPOSER-SINGLE-FOCUS 已验收（2026-09-30）
 
+- Root集成：commit4133174c后relay/topology/指定checkpoint实际PASS/exit0，冻结full1103/3skip/455subtests与doc依赖门298pass；来源库存3active/13broken不变。Billing五docs/Rootuv.lock仍任务外保留，目标未完成，不称全体clean。
 - 状态：Web main bef68a0386a902bbe4747c5795d8222d1d91fa51，4文件精确提交、clean；Root最终Node22 check109/37/1800/lint/type/build0，独立0/0/0、真实normal/keyboard/mobile/forcedcolors通过，现3310只同步一CSS。完整failure/retry/重复user仍开放，不称全goal完成。
 - Owner：Web现Composer CSS；仅消除同shell焦点border与3px halo叠加的双圈，不改布局、消息/重试身份、网络或数据。
 - 基线：apps/kokoro-app main30545c55625fb257ac17ce2199e8fa1000f3ecae clean；Root525e244d。负责人复用bff_personal_consumer_review转Web唯一writer，Root集成/浏览器/index，独立review只读。
