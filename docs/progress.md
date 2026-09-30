@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Source正常入口安全RPC分类门验收
+
+原负责人停写交付helper/test，Root独立Ruff check/format及原生3 pass/34subtests、ordinary85 pass/3native skip/127subtests通过（`/tmp/kokoro-source-enable-root-{native,focused}.log`），固定hash独立审查P0/P1/P2=0、复跑1native/34subtests。标准Code.name+固定阶段/validated method、unknown→UNKNOWN，不读取message/details或保留异常context，不更改call/proof/digest/10s timeout/资源关闭。writer RED32→GREEN34已记录；此前-c提前失败为plain helper imports缺文件入口的脚本目录，不继续包装。此片只恢复准确诊断，不宣称enable修好了，下一正常实跑取code。
+
 ## 2026-09-30 — 实际并行两负责人，Root保留登录与集成验收
 
 Root `6fc47c93` 精确集成Agent58b；独立来源锁审查P0/P1/P2=0，30个commit/2blob digest及四composer pin固定源码匹配，非Agent事实/edge状态不变。提交后拓扑9runtime与精确checkpoint PASS；完整Root脚本1023 pass/2skip/325subtests，115.72秒，`/tmp/kokoro-root-58b-integration-tests.log` exit0。

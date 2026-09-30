@@ -649,6 +649,85 @@ class SourceCleanupTests(unittest.TestCase):
     "native component requires Agent .venv Python",
 )
 class SourceNativeComponentTests(unittest.TestCase):
+    def test_setup_rpc_reports_only_standard_code_and_owned_stage(self):
+        import asyncio
+        from types import SimpleNamespace
+        from unittest.mock import AsyncMock
+        from connectrpc.code import Code
+        from connectrpc.errors import ConnectError
+        from kokoro_agent.generated.kokoro.platform.v1 import platform_runtime_pb as pb
+        from kokoro_agent.execution import execution_proof_supplier
+
+        for enabled in (False, True):
+            for code in (*Code, "PRIVATE_CODE_SENTINEL"):
+                label = code.name if isinstance(code, Code) else "UNKNOWN"
+                with self.subTest(enabled=enabled, code=label):
+                    driver = source.AgentSourceDriver(
+                        Path("/tmp"), "db", "redis://localhost/15", "diagnostic"
+                    )
+                    driver.phase = (
+                        "installation disable"
+                        if not enabled
+                        else "installation re-enable"
+                    )
+                    driver.runtime = SimpleNamespace(
+                        tokens=SimpleNamespace(
+                            token=AsyncMock(return_value="TOKEN_SENTINEL")
+                        ),
+                        lease_reader=object(),
+                        signer=object(),
+                    )
+                    rpc = AsyncMock(
+                        side_effect=ConnectError(
+                            code, "PRIVATE_MESSAGE TOKEN_SENTINEL PROOF_SENTINEL"
+                        )
+                    )
+                    driver.installer = SimpleNamespace(
+                        set_skill_installation_enabled=rpc
+                    )
+                    supplier = SimpleNamespace(
+                        issue=AsyncMock(return_value="PROOF_SENTINEL")
+                    )
+                    request = pb.SetSkillInstallationEnabledRequest(
+                        installation_id=pb.SkillInstallationId(value="installation-1"),
+                        enabled=enabled,
+                    )
+                    with patch.object(
+                        execution_proof_supplier,
+                        "create_execution_proof_supplier",
+                        return_value=supplier,
+                    ):
+                        with self.assertRaises(source.SourceError) as captured:
+                            asyncio.run(
+                                driver._command(
+                                    SimpleNamespace(tenant_id="tenant-1"),
+                                    object(),
+                                    "SetSkillInstallationEnabled",
+                                    {
+                                        "installation_id": {
+                                            "present": True,
+                                            "value": "installation-1",
+                                        },
+                                        "enabled": enabled,
+                                    },
+                                    request,
+                                )
+                            )
+                    self.assertEqual(
+                        str(captured.exception),
+                        f"Agent source {driver.phase} SetSkillInstallationEnabled failed ({label})",
+                    )
+                    self.assertIsNone(captured.exception.__context__)
+                    rpc.assert_awaited_once()
+                    self.assertEqual(
+                        rpc.await_args.kwargs["headers"],
+                        {"authorization": "Bearer TOKEN_SENTINEL"},
+                    )
+                    self.assertEqual(request.execution_proof, "PROOF_SENTINEL")
+                    self.assertEqual(request.enabled, enabled)
+                    self.assertNotIn("SENTINEL", str(captured.exception))
+                    self.assertNotIn("PRIVATE", str(captured.exception))
+
     def test_real_native_metadata_and_original_bytes_without_services(self):
         import asyncio
         from kokoro_agent.clients.skills import ResolvedSkill

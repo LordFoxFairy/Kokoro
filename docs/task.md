@@ -7,12 +7,14 @@ Root main `6fc47c93`；Agent58b/BFF571/Platform6a/IAMe3/Web1dc clean。Root task
 | ID / 状态 | 目标 / 唯一负责人 | 允许文件 / 依赖 / 验收 |
 | --- | --- | --- |
 | LOGIN-VISIBLE / 待用户导航 | Root：当前3310真实可见登录→callback→app→刷新 | 现受管3898/4007/4113保留；CUA AX持续超时、原标签过期。用户手动/login后继续，无可见中转页，不以headless/服务存活代替右侧证据。 |
-| SOURCE-ENABLE / 进行中 | 原Agent负责人 `agent_typed_skill_reader_owner`：定位AgentSourceDriver启用ConnectError | 仅Root scripts/e2e/agent_skill_source_smoke.py及对应test、主sandbox runner及对应test允许窄修；生产owner如有bug先报Root，不越仓改。Root normal无wrapper Source在6fc/58b已安装/resolve/原字节/native成功后enable FAIL；先准确安全code诊断/RED再修，不弱化proof/digest/撤权。无服务、真实组合由Root；不提交/暂存。 |
+| SOURCE-ENABLE / 诊断代码已验、真实code待验 | 原Agent负责人 `agent_typed_skill_reader_owner`：定位AgentSourceDriver启用ConnectError | 仅Root scripts/e2e/agent_skill_source_smoke.py及对应test、主sandbox runner及对应test允许窄修；生产owner如有bug先报Root，不越仓改。Root normal无wrapper Source在6fc/58b已安装/resolve/原字节/native成功后enable FAIL；先准确安全code诊断/RED再修，不弱化proof/digest/撤权。无服务、真实组合由Root；不提交/暂存。 |
 | PLATFORM-PERSONAL-DESIGN / 进行中 | `platform_personal_installation_owner`：个人产品安装三面设计门 | 仅Platform docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md；现有installation owner/单事实writer，读取原proto/service/schema/IAM规则，比较同Service新增Product入口与独立Product adapter，输出明确选案。Root已裁决PERSONAL/self优先，tenant/subject/target取受信BFF上下文，source_ref精确、后续installation_id，safe投影、不暴露package/hash，无BFF installation表；ORG等关闭留后继。此片不改源码/proto/schema/generated/lock、不启动服务不提交。owner docs验收后再机器契约→owner runtime→BFF→Web，各阶段续派。 |
 
 Platform §8放置裁决：事实owner仍现有Skills/installation，非新服务或顶层模块；当前5RPC仅Agent execution-proof，产品准入缺失。优先现有installation子能力内具名Product admission/adapter复用Service、receipt、事务/outbox；不复制installation事实到BFF、不发虚假Run。新Product RPC与现execution RPC是不同授权surface而非legacy兼容双轨；具体机器资源/投影/鉴权绑定由三面设计一次定案，文档先行再实现。Schema首片无新表/列，当前current/replay授权、同command异digest/撤权零泄露/并发回滚继续必验。
 
 Root正常Source `/tmp/kokoro-source-58b-real-composition.log` exit1：OAuth不再误拒、已安装、typed bytes/native discovery通过后SetEnabled ConnectError；native name/path规范警告也保留不误称完美。随后只读诊断-c调用提前generic FAIL、尚无错误分类，不作为第二个业务repro。Root全scripts/tests1023 pass/2skip/325subtests、115.72秒；pin独立审查0缺陷、提交后topology/checkpoint PASS，13broken未漂白。下一真正Source组合要等两writer停写、Root审查与精确pin后执行。
+
+Source安全诊断两文件交付停写，Root独立Ruff check/format PASS、85 pass/3native skip/127subtests及Agent原生3 pass/34subtests，独立固定hash审查P0/P1/P2=0。仅分类标准Connect Code.name+固定disable/re-enable阶段，unknown→UNKNOWN、无message/details/context/凭据，RPC/proof/digest/timeout/生命周期不变；不是启用根因修复。Root提交后沿原文件入口正常实跑，不再-c导入路径包装。
 
 ## 当前真实组合复验：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
 

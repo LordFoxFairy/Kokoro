@@ -616,6 +616,8 @@ class AgentSourceDriver:
         fields: dict[str, object],
         request: object,
     ) -> object:
+        from connectrpc.code import Code
+        from connectrpc.errors import ConnectError
         from kokoro_agent.generated.kokoro.common.v1 import common_pb
         from kokoro_agent.execution.platform_request_binding import (
             project_request_binding,
@@ -646,9 +648,18 @@ class AgentSourceDriver:
             if method == "InstallSkill"
             else self.installer.set_skill_installation_enabled
         )
-        return await call(
-            request, headers={"authorization": "Bearer " + token}, timeout_ms=10_000
-        )
+        try:
+            return await call(
+                request, headers={"authorization": "Bearer " + token}, timeout_ms=10_000
+            )
+        except ConnectError as error:
+            # Standard enum only: never inspect message/details or render the RPC
+            # exception, bearer, proof, identifiers or request/response contents.
+            code = error.code
+            label = code.name if isinstance(code, Code) else "UNKNOWN"
+        raise SourceError(
+            f"Agent source {self.phase} {method} failed ({label})"
+        ) from None
 
     async def _exercise(
         self,
@@ -767,8 +778,8 @@ class AgentSourceDriver:
         self.phase = "native discovery"
         await verify_native_metadata(backend, resolved[0].path_segment)
         await read(backend)
-        self.phase = "installation enablement"
         for enabled in (False, True):
+            self.phase = "installation re-enable" if enabled else "installation disable"
             result = await self._command(
                 ready,
                 leased,
