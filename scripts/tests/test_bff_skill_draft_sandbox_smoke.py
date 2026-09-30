@@ -1680,6 +1680,54 @@ class AgentSourceOptInTests(unittest.TestCase):
             frozen.assert_not_called()
             directory.assert_not_called()
 
+    def test_product_mode_is_explicit_and_disjoint_before_source_resources(self):
+        self.assertIn("product_installation", smoke.RunArguments.__dataclass_fields__)
+        args = smoke.RunArguments(
+            "postgresql://user@127.0.0.1/db",
+            "redis://127.0.0.1/0",
+            *(Path("/node") for _ in range(4)),
+            "test-bucket",
+            agent_source=True,
+            product_installation=True,
+        )
+        with (
+            patch.object(smoke, "frozen_sources") as frozen,
+            patch.object(smoke.tempfile, "mkdtemp") as directory,
+        ):
+            with self.assertRaisesRegex(smoke.product_helper.ProductError, "mode"):
+                smoke.execute(args, {})
+            frozen.assert_not_called()
+            directory.assert_not_called()
+
+    def test_product_mode_hooks_use_both_real_published_sources_and_existing_revoke(
+        self,
+    ):
+        import ast
+
+        tree = ast.parse(PATH.read_text())
+        code = ast.unparse(tree)
+        self.assertIn(
+            "product_helper.preflight(args.product_installation, args.agent_source)",
+            code,
+        )
+        self.assertIn("args.agent_source or args.product_installation", code)
+        self.assertIn(
+            "product_installation.before_publish('skill:' + begin_skill_id)", code
+        )
+        self.assertIn(
+            "product_installation.exercise(('skill:' + str(result['skill_id']), 'skill:' + begin_skill_id))",
+            code,
+        )
+        self.assertIn(
+            "product_installation.require_revoked('skill:' + begin_skill_id)", code
+        )
+        self.assertLess(
+            code.index("product_installation.exercise("),
+            code.index('iam.stdin.write(b\'{"command":"revoke-user-session"}\\n\')'),
+        )
+        self.assertIn("parser.add_mutually_exclusive_group()", code)
+        self.assertIn("summary['product_execution_boundary']", code)
+
     def test_source_hooks_preserve_default_gate_and_cleanup_order(self):
         import ast
 

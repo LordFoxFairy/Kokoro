@@ -39,8 +39,10 @@ from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 try:
     from scripts.e2e import agent_skill_source_smoke as source_helper
+    from scripts.e2e import product_skill_installation_smoke as product_helper
 except ModuleNotFoundError:
     import agent_skill_source_smoke as source_helper
+    import product_skill_installation_smoke as product_helper
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -81,6 +83,7 @@ class Phase(str, Enum):
     PROJECTION_READ = "projection_read"
     PACKAGE_REFERENCE = "package_reference"
     AGENT_SOURCE = "agent_source"
+    PRODUCT_INSTALLATION = "product_installation"
     INVENTORY = "inventory"
     REVOKE = "revoke"
     CLEANUP = "cleanup"
@@ -960,7 +963,9 @@ def safe_summary(
         }
     detail = (
         str(error)
-        if isinstance(error, (SmokeError, source_helper.SourceError))
+        if isinstance(
+            error, (SmokeError, source_helper.SourceError, product_helper.ProductError)
+        )
         else "smoke execution failed"
     )
     if any(secret and secret in detail for secret in secrets):
@@ -1782,6 +1787,7 @@ class RunArguments:
     bucket: str
     agent_source: bool = False
     agent_redis_url: str | None = None
+    product_installation: bool = False
 
 
 def owned_bucket_name(prefix: str, run_id: str) -> str:
@@ -1793,6 +1799,7 @@ def owned_bucket_name(prefix: str, run_id: str) -> str:
 
 def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, object]:
     """Run the real composition. Source freezing happens before all side effects."""
+    product_helper.preflight(args.product_installation, args.agent_source)
     source_helper.preflight(args.agent_source, args.agent_redis_url, args.redis_url)
     frozen_sources()
     source_env = dict(os.environ if env is None else env)
@@ -1888,6 +1895,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     source_dependencies_retained = False
     source_execution_error: str | None = None
     source_result = None
+    product_installation = None
+    product_result = None
+    product_inventory = None
     log_path = directory / "owners.log"
     restore_sigterm = install_sigterm_cleanup_handler()
     try:
@@ -2049,7 +2059,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_PLATFORM_PORT": str(platform_port),
                 "KOKORO_PLATFORM_SURFACES": (
                     "skill-catalog,skill-source,skill-installation"
-                    if args.agent_source
+                    if args.agent_source or args.product_installation
                     else "skill-catalog,skill-source"
                 ),
             }
@@ -2338,6 +2348,15 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 begin_skill_id, begin_series_id, replayed, _ = _draft(body, status)
                 if status != 201 or replayed is not False or begin_skill_id is None:
                     raise SmokeError("BFF Begin fixture draft was not created")
+                if args.product_installation:
+                    phase = Phase.PRODUCT_INSTALLATION
+                    product_installation = product_helper.ProductInstallationSmoke(
+                        product_helper.PublicInstallationHttp(
+                            bff_base, ready.access_token, web_secret
+                        ),
+                        run_id,
+                    )
+                    product_installation.before_publish("skill:" + begin_skill_id)
                 phase = Phase.PROJECTION_READ
                 published_path = "/v1/skills/" + quote(begin_skill_id, safe="")
                 status, body = _http_get_json(
@@ -3172,6 +3191,21 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("Platform public Publish event was not durable")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
+                if product_installation is not None:
+                    phase = Phase.PRODUCT_INSTALLATION
+                    # Catalog probes and Product reads share IAM's resource-client
+                    # window. Yield before exercising the full public sequence.
+                    source_helper.wait_for_iam_window(args.product_installation)
+                    product_result = product_installation.exercise(
+                        ("skill:" + str(result["skill_id"]), "skill:" + begin_skill_id)
+                    )
+                    product_inventory = platform_inventory(
+                        urls["kokoro_platform"], ready.tenant_id, begin_skill_id
+                    )
+                    if product_inventory[0] != 2 or product_inventory[2:] != (2, 1):
+                        raise SmokeError(
+                            "Product installation changed publication facts"
+                        )
                 if agent_source is not None:
                     phase = Phase.AGENT_SOURCE
                     before_source = platform_inventory(
@@ -3208,6 +3242,8 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 iam.stdin.flush()
                 require_revoke_result(reader.record(timeout=30))
                 before_revoked = proxy.count
+                if product_installation is not None:
+                    product_installation.require_revoked("skill:" + begin_skill_id)
                 status, body = _http_get_json(
                     bff_base,
                     published_path,
@@ -3302,10 +3338,24 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 if source_result is not None:
                     summary["agent_source"] = source_result
                     summary["platform_source_final_receipt_count"] = 34
+                if product_result is not None and product_inventory is not None:
+                    summary["product_installation"] = {
+                        **product_result,
+                        "unpublished_own_source_precondition": True,
+                        "missing_source_private_not_found": True,
+                        "revoked_five_operations_before_owner": True,
+                    }
+                    summary["platform_receipt_count"] = product_inventory[1]
+                    summary["product_execution_boundary"] = (
+                        "Agent disabled; no SourceDriver (structural, not Run-store observation)"
+                    )
     except BaseException as exc:
         error = (
             exc
-            if isinstance(exc, (SmokeError, source_helper.SourceError))
+            if isinstance(
+                exc,
+                (SmokeError, source_helper.SourceError, product_helper.ProductError),
+            )
             else SmokeError(f"{phase.value} failed ({type(exc).__name__})")
         )
         source_execution_error = str(error)
@@ -3434,7 +3484,9 @@ def main() -> int:
     parser.add_argument("--platform-node", required=True, type=Path)
     parser.add_argument("--storage-node", required=True, type=Path)
     parser.add_argument("--exclusive-bucket", required=True)
-    parser.add_argument("--agent-source", action="store_true")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--agent-source", action="store_true")
+    modes.add_argument("--product-installation", action="store_true")
     parser.add_argument("--agent-redis-url")
     try:
         ns = parser.parse_args()
@@ -3449,6 +3501,7 @@ def main() -> int:
                 ns.exclusive_bucket,
                 ns.agent_source,
                 ns.agent_redis_url,
+                ns.product_installation,
             )
         )
     except BaseException as exc:

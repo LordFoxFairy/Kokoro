@@ -1,3 +1,11 @@
+## 2026-09-30 — Root Product安装driver集成前全门
+
+Root a36bf45e checkpoint/topology PASS，完整scripts/tests1086pass/3native skip/377subtests（111.13秒，/tmp/kokoro-product-root-full-tests.log），session58034已exit0消费；4源码冻结hash不变，Ruffformat/lint/diff通过、独立0/0/0。按精确Root文件提交，不触uv.lock。真实组合下一步只复用已有PG/Redis/MinIO/ClamAV，沿原入口owned临时资源，不请求模型或启动Run；尚未运行不标real PASS。
+
+## ROOT-PRODUCT-INSTALLATION 返修独立放行
+
+4/4冻结hash核准，manifest320289e55d8c125dddb91fa3ee0bd088d560e7089f0a8c3dd5f567fa5a85eae1，独立P0/P1/P2=0/0/0，主树聚焦84pass/98subtests、Ruff/diff通过；旧错/self路径及纯测试漏检保留RED，增加固定BFF机器五method/path断言后关闭P1。No Run仅结构性边界明确，未冒充Run-store观测。Root当前a36bf45e已集成Web752aff9，checkpoint/topology与全Root测试在同handle58034运行，未因等待另起；真实Product组合待原入口owned验收，不标PASS。
+
 ## 2026-09-30 — 当前服务终态与真实拦截
 
 本轮新ps显示30171/31351及其余owner PID均missing；同一session53033权威exit1已消费、3310无监听，原launcher日志serving failed。与观察超时区分，未重复启动/假称在线。原workspace保留，窄查只证明最终graceful drain和System shutdown；现入口将异常丢成serving failed，具体触发尚无证据，周期性receipt_state_lost不能臆定是根因。旧服务live描述为历史，CURRENT已纠正。Root Product helper独立发现1P1路径误用Web self前缀、1P2无Run证据边界；已真实RED2failed后改canonical BFF /v1/skill-installations＋绑定五机器operation，GREEN84/98subtests；明确Agent未启动仅结构证据，不冒称Run-store观测，正在复审。

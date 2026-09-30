@@ -1,3 +1,16 @@
+## ROOT-PRODUCT-INSTALLATION：真实五 public 操作验收切片（代码已独立复审，真实待执行）
+
+| 项 | 已定结论 |
+| --- | --- |
+| Owner / 基线 / 角色 | Root E2E编排唯一 writer 与 Git index；main df930f7d，任务外 uv.lock 不碰；Web原writer仍独立在途。BFF67755d16/Platform6519/IAMe3c/Storage16a6均已提交且由原 frozen_sources 校验。 |
+| 当前事实 | 原 run_bff_skill_draft_sandbox_smoke.py 已有真实 IAM、两件完成/发布的本人 Skill、Storage/扫描/PG owner schemas、三写catalog/二读projection credential与统一回收；目前只有Agent Source helper直调安装，无BFF五public真组合。 |
+| 职责 / 目录比较 | 新 scripts/e2e/product_skill_installation_smoke.py 仅拥有本场景 HTTP证据校验与序列，现parent仅显式flag/三处hook/summary；淘汰把完整新序列/字段校验塞进3500行parent，亦不新建服务或第二runner/infra。新helper位于既有e2e目录，无新目录。 |
+| 依赖 / 数据API | stdlib bounded loopback HTTP，读取owner公开九字段/receipt/分页，可信Bearer+Web服务secret，禁止自报tenant/subject；不复制owner模型/SQL/contract。BFF→Platform official Connect保持，无公开CAS、执行proof或Run。 |
+| 序列 / 失败恢复 | 先本人未发布412与不存在404（不得将自己的draft状态冒充私有404），Publish后List空证明不自动安装；两个既有不同已发布source做Install/Get/disable/Delete、same-key原ACK、历史ACK后Get当前、false filter/opaque两页、remove/reinstall。撤权后五方法401且owner proxy计数不变。key一次生成、重放原method/path/body/key，不自动retry。parent负责原owned资源反序回收；helper不拥有进程/PG/Redis/桶。 |
+| 模式 / 删除 / 排除 | --product-installation 与 --agent-source 显式互斥，避免Source旧安装receipt预期被Product状态污染；默认不变。无旧数据/alias/fallback，禁止其他owner/contract/schema/lockfile、共享资源/3310/付费模型修改。 |
+| 文件集 / 验证 | 新helper、新 scripts/tests/test_product_skill_installation_smoke.py；现parent及其tests；Root MAP/CURRENT/task/progress。先codec/transport/序列失败RED与flag先资源拒绝RED，再pytest/Ruff/全Root门；独立冻结hash审查；最后原入口真实owned组合，未运行不能标real PASS。 |
+| 未决 / 交付 | 同租户第二用户fixture仍后续，不假称覆盖；已独立核对own draft412/missing404与两已发布不同series；canonical路径拦截已修并绑定机器五operation。Root提交且重跑集成门；原外部Chat首轮FAIL仍保留，不以本安装切片替代全goal。 |
+
 ## ROOT-PERSONAL-INTEGRATION-AUDIT：后端真组合前置只读
 
 Owner Root验收编排；bff_personal_installation_owner只读，Root ce53e149，BFF677/Platform6519/IAMe3c/Storage16a6均已提交，Web49adb4b当前另有唯一writer在途。仅审已有scripts/e2e/run_bff_skill_draft_sandbox_smoke.py与agent_skill_source_smoke.py和owner bootstrap/client/contract；不写文件/Git、不开服务/PG/Redis/MinIO/模型。当前Root正式sandbox已真实发布/Source但未从五public安装路由证明消费者链；默认Platform surfaces不含installation（仅agent_source显式包含）。需要提出独立显式Product安装模式在原owned单库/schemas/credentials/桶/进程生命周期的最小插入点、5操作/幂等/当前态/撤权/私密负例及回收，不让Publish自动Install、不让安装触Run。比较现parent追加一大块vs单责Roothelper，列准确下一允许集和所需可信token上下文；不改BFF/Platform/IAM契约或生产启用，不能mock receipt/DB事实。为Root下一阶段代码门准备，不是本轮已真运行。

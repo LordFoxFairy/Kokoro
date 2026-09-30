@@ -23,6 +23,11 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 - `scripts/e2e/chat_snapshot_evidence.mjs`：fresh单run真实Chat验收的纯内存Message全文/身份/状态/watermark冻结与脱敏差异；正式real-model Chromium driver在RUN_FINISHED后及reload后调用，不拥有Message事实，不适用历史会话必须恰两条。
 - 工具测试在既有`scripts/tests/`；正式System/Agent模型owner仍在各自仓，Root不持有第二可编辑contract/SQL。
 
+## Root 个人安装真实组合
+
+- `scripts/e2e/product_skill_installation_smoke.py`：仅校验BFF public本人安装五操作、原ACK/当前读、false筛选/两页、remove/reinstall及撤权证据，无进程/数据owner。
+- `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py --product-installation`：复用已有IAM/BFF/Platform/Storage、两已发布不同series、owned单库schemas/桶与统一回收；与`--agent-source`互斥，默认模式不变，不启动Run。
+
 ## 子仓路径与 owner
 
 | 仓库 | Root 路径 | owner |
