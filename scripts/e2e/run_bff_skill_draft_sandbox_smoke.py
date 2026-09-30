@@ -37,6 +37,12 @@ from uuid import UUID, uuid4
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 
+try:
+    from scripts.e2e import agent_skill_source_smoke as source_helper
+except ModuleNotFoundError:
+    import agent_skill_source_smoke as source_helper
+
+
 ROOT = Path(__file__).resolve().parents[2]
 OWNERS = {
     "iam": ROOT / "apps/kokoro-iam",
@@ -45,6 +51,10 @@ OWNERS = {
     "storage": ROOT / "apps/kokoro-storage",
 }
 LOCAL_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+# Keep stdin/protocol handles alive after a failed drain: GC/EOF can otherwise
+# make IAM tear down its DB while a Source executor still uses it. No new work
+# is scheduled; these exceptional resources need explicit operator cleanup.
+_RETAINED_SOURCE_RESOURCES: list[tuple[object, ...]] = []
 
 
 class SmokeError(RuntimeError):
@@ -70,6 +80,7 @@ class Phase(str, Enum):
     CANDIDATE_PUBLISH = "candidate_publish"
     PROJECTION_READ = "projection_read"
     PACKAGE_REFERENCE = "package_reference"
+    AGENT_SOURCE = "agent_source"
     INVENTORY = "inventory"
     REVOKE = "revoke"
     CLEANUP = "cleanup"
@@ -947,7 +958,11 @@ def safe_summary(
             "bff_published_read_revoked": "PASS",
             "bff_personal_list_revoked": "PASS",
         }
-    detail = str(error) if isinstance(error, SmokeError) else "smoke execution failed"
+    detail = (
+        str(error)
+        if isinstance(error, (SmokeError, source_helper.SourceError))
+        else "smoke execution failed"
+    )
     if any(secret and secret in detail for secret in secrets):
         detail = "smoke execution failed"
     return {"status": "FAIL", "error": detail}
@@ -1319,8 +1334,12 @@ def platform_published_skill_get(
     return response.status, value
 
 
-def upload_zip_bytes(skill_id: str, revision: int) -> bytes:
+def upload_zip_bytes(
+    skill_id: str, revision: int, *, agent_source: bool = False
+) -> bytes:
     """A bounded owner ZIP V1 bound to the fresh draft's identity."""
+    if type(agent_source) is not bool:
+        raise SmokeError("ZIP Source mode must be explicit")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", skill_id) or revision < 1:
         raise SmokeError("ZIP fixture Skill identity invalid")
     manifest = json.dumps(
@@ -1335,7 +1354,12 @@ def upload_zip_bytes(skill_id: str, revision: int) -> bytes:
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("manifest.json", manifest)
-        archive.writestr("SKILL.md", "# Sandbox\n\nOwned signed PUT smoke.\n")
+        archive.writestr(
+            "SKILL.md",
+            source_helper.SKILL_BYTES
+            if agent_source
+            else b"# Sandbox\n\nOwned signed PUT smoke.\n",
+        )
     return stream.getvalue()
 
 
@@ -1756,6 +1780,8 @@ class RunArguments:
     platform_node: Path
     storage_node: Path
     bucket: str
+    agent_source: bool = False
+    agent_redis_url: str | None = None
 
 
 def owned_bucket_name(prefix: str, run_id: str) -> str:
@@ -1767,6 +1793,7 @@ def owned_bucket_name(prefix: str, run_id: str) -> str:
 
 def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, object]:
     """Run the real composition. Source freezing happens before all side effects."""
+    source_helper.preflight(args.agent_source, args.agent_redis_url, args.redis_url)
     frozen_sources()
     source_env = dict(os.environ if env is None else env)
     admin_url = normalized_postgres_admin_url(args.postgres_admin_url)
@@ -1856,6 +1883,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     error: BaseException | None = None
     summary: dict[str, object] | None = None
     phase = Phase.IAM_READY
+    agent_source = None
+    source_cleanup_failures: list[str] = []
+    source_dependencies_retained = False
+    source_execution_error: str | None = None
+    source_result = None
     log_path = directory / "owners.log"
     restore_sigterm = install_sigterm_cleanup_handler()
     try:
@@ -1885,6 +1917,23 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "NODE_ENV": "test",
                 }
             )
+            # Never inherit opt-in mode or a JWKS target from the caller environment.
+            iam_env["IAM_TEST_AGENT_SKILL_SOURCE_MODE"] = "0"
+            iam_env.pop("IAM_TEST_AGENT_JWKS_URL", None)
+            if args.agent_source:
+                agent_source = source_helper.AgentSourceDriver(
+                    directory,
+                    source_helper.database_url(admin_url, expected_database),
+                    args.agent_redis_url,
+                    run_id,
+                )
+                secret_values += (
+                    agent_source.secret,
+                    urlsplit(args.agent_redis_url).password or "",
+                )
+                agent_source.start_http()
+                iam_env["IAM_TEST_AGENT_SKILL_SOURCE_MODE"] = "1"
+                iam_env["IAM_TEST_AGENT_JWKS_URL"] = agent_source.jwks_url
             database_name = expected_database
             redis_prefix = expected_redis_prefix
             iam = subprocess.Popen(
@@ -1906,7 +1955,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             if iam.stdout is None:
                 raise SmokeError("IAM host protocol absent")
             reader = session.ProtocolReader(iam.stdout.fileno())
-            ready = require_sandbox_ready(reader.record(timeout=60))
+            ready = require_sandbox_ready(
+                reader.record(timeout=60), agent_source=args.agent_source
+            )
             if (
                 ready.database_name != expected_database
                 or ready.redis_prefix != expected_redis_prefix
@@ -1996,7 +2047,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_IAM_BASE_URL": ready.base_url,
                 "KOKORO_PLATFORM_HOST": "127.0.0.1",
                 "KOKORO_PLATFORM_PORT": str(platform_port),
-                "KOKORO_PLATFORM_SURFACES": "skill-catalog,skill-source",
+                "KOKORO_PLATFORM_SURFACES": (
+                    "skill-catalog,skill-source,skill-installation"
+                    if args.agent_source
+                    else "skill-catalog,skill-source"
+                ),
             }
             bff_env = {
                 **base,
@@ -2312,7 +2367,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 begin_path = (
                     "/v1/skills/" + quote(begin_skill_id, safe="") + "/package-upload"
                 )
-                payload = upload_zip_bytes(begin_skill_id, 1)
+                payload = upload_zip_bytes(
+                    begin_skill_id, 1, agent_source=args.agent_source
+                )
                 begin_body = {
                     "filename": "sandbox.zip",
                     "mime_type": "application/zip",
@@ -3115,6 +3172,34 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("Platform public Publish event was not durable")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
+                if agent_source is not None:
+                    phase = Phase.AGENT_SOURCE
+                    before_source = platform_inventory(
+                        urls["kokoro_platform"], ready.tenant_id, begin_skill_id
+                    )
+
+                    def revoke_execution() -> object:
+                        iam.stdin.write(b'{"command":"revoke-agent-execution"}\n')
+                        iam.stdin.flush()
+                        return reader.record(timeout=30)
+
+                    with zipfile.ZipFile(io.BytesIO(payload)) as original_package:
+                        expected_skill = original_package.read("SKILL.md")
+                    source_result = agent_source.exercise(
+                        ready,
+                        platform_base,
+                        source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
+                        begin_skill_id,
+                        int(revision),
+                        expected_skill,
+                        revoke_execution,
+                    )
+                    source_helper.require_inventory(
+                        before_source,
+                        platform_inventory(
+                            urls["kokoro_platform"], ready.tenant_id, begin_skill_id
+                        ),
+                    )
                 phase = Phase.REVOKE
                 iam.stdin.write(b'{"command":"revoke-user-session"}\n')
                 iam.stdin.flush()
@@ -3211,35 +3296,53 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("revoked request opened a Platform socket")
                 summary = safe_summary(None)
                 summary["storage_v2_package_reference"] = "PASS"
+                if source_result is not None:
+                    summary["agent_source"] = source_result
+                    summary["platform_source_final_receipt_count"] = 34
     except BaseException as exc:
         error = (
             exc
-            if isinstance(exc, SmokeError)
+            if isinstance(exc, (SmokeError, source_helper.SourceError))
             else SmokeError(f"{phase.value} failed ({type(exc).__name__})")
         )
+        source_execution_error = str(error)
     finally:
         phase = Phase.CLEANUP
-        if proxy is not None:
-            try:
-                proxy.close()
-            except BaseException:
-                if error is None:
-                    error = SmokeError("owned proxy cleanup failed")
-                else:
-                    error = SmokeError(
-                        "smoke execution failed; owned proxy cleanup failed"
-                    )
-        iam_process = processes[0] if processes else None
-        process_failures = stop_owned_processes(processes[1:], iam_process, reader)
-        if process_failures and error is None:
-            error = SmokeError(process_failures[0])
-        elif process_failures:
-            error = SmokeError("smoke execution failed; " + process_failures[0])
-        if reader is not None:
-            try:
-                reader.close()
-            except Exception:
-                pass
+        # Agent pools/HTTP/owned Redis close before IAM drops the shared temporary DB.
+        if agent_source is not None:
+            source_cleanup_failures = agent_source.close()
+            source_dependencies_retained = not agent_source.dependencies_quiescent
+            if source_dependencies_retained:
+                _RETAINED_SOURCE_RESOURCES.append(
+                    (agent_source, tuple(processes), reader, proxy, s3)
+                )
+            if source_cleanup_failures:
+                original = "" if error is None else str(error) + "; "
+                error = SmokeError(original + "; ".join(source_cleanup_failures))
+        # A timed-out executor may still be using IAM/HTTP/DB/object resources.
+        # Preserve them for explicit operator cleanup, rather than deleting under it.
+        if not source_dependencies_retained:
+            if proxy is not None:
+                try:
+                    proxy.close()
+                except BaseException:
+                    if error is None:
+                        error = SmokeError("owned proxy cleanup failed")
+                    else:
+                        error = SmokeError(
+                            "smoke execution failed; owned proxy cleanup failed"
+                        )
+            iam_process = processes[0] if processes else None
+            process_failures = stop_owned_processes(processes[1:], iam_process, reader)
+            if process_failures and error is None:
+                error = SmokeError(process_failures[0])
+            elif process_failures:
+                error = SmokeError("smoke execution failed; " + process_failures[0])
+            if reader is not None:
+                try:
+                    reader.close()
+                except Exception:
+                    pass
         try:
             log_bytes = log_path.read_bytes()
             if any(secret and secret.encode() in log_bytes for secret in secret_values):
@@ -3250,8 +3353,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             if error is None:
                 error = SmokeError("owner log verification failed")
         try:
-            shutil.rmtree(directory)
-            if directory.exists():
+            if not source_cleanup_failures:
+                shutil.rmtree(directory)
+            if not source_cleanup_failures and directory.exists():
                 raise OSError("directory remained")
         except OSError:
             if error is None:
@@ -3260,7 +3364,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 error = SmokeError(
                     "smoke execution failed; temporary credential directory cleanup failed"
                 )
-    if bucket_state["created"] and s3 is not None:
+    if not source_dependencies_retained and bucket_state["created"] and s3 is not None:
         try:
             delete_owned_bucket(s3, owned_bucket, storage_helper)
             require_bucket_absent(s3, owned_bucket)
@@ -3294,11 +3398,24 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     elif cleanup_failures:
         error = SmokeError("smoke execution failed; " + cleanup_failures[0])
     restore_sigterm()
-    return (
+    result = (
         summary
         if error is None and summary is not None
         else safe_summary(error, secret_values)
     )
+    if source_dependencies_retained:
+        result["agent_source_dependencies"] = "retained: activity not quiescent"
+        result["agent_source_retained_process_ids"] = [
+            process.pid for process in processes
+        ]
+    if source_cleanup_failures:
+        result["agent_source_cleanup"] = source_cleanup_failures
+        result["agent_source_evidence_directory"] = str(directory)
+        if source_execution_error is not None:
+            result["agent_source_execution_error"] = safe_summary(
+                SmokeError(source_execution_error), secret_values
+            )["error"]
+    return result
 
 
 def main() -> int:
@@ -3314,6 +3431,8 @@ def main() -> int:
     parser.add_argument("--platform-node", required=True, type=Path)
     parser.add_argument("--storage-node", required=True, type=Path)
     parser.add_argument("--exclusive-bucket", required=True)
+    parser.add_argument("--agent-source", action="store_true")
+    parser.add_argument("--agent-redis-url")
     try:
         ns = parser.parse_args()
         result = execute(
@@ -3325,6 +3444,8 @@ def main() -> int:
                 ns.platform_node,
                 ns.storage_node,
                 ns.exclusive_bucket,
+                ns.agent_source,
+                ns.agent_redis_url,
             )
         )
     except BaseException as exc:

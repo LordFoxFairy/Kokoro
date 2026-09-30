@@ -1503,5 +1503,210 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             )
 
 
+class AgentSourceOptInTests(unittest.TestCase):
+    def test_unquiet_source_retains_owner_processes_database_and_bucket(self):
+        from contextlib import ExitStack
+        from dataclasses import replace
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        from uuid import UUID
+
+        storage_helper = SimpleNamespace(_s3=Mock(), preflight_bucket=Mock())
+        oidc = SimpleNamespace(runtime=SimpleNamespace(free_port=Mock()))
+        session = SimpleNamespace(node_environment=Mock(), ProtocolReader=Mock())
+
+        resource_id = UUID("11111111-1111-1111-1111-111111111111")
+        args = smoke.RunArguments(
+            "postgresql://user@127.0.0.1/db",
+            "redis://127.0.0.1/0",
+            *(Path("/node") for _ in range(4)),
+            "test-bucket",
+            True,
+            "redis://127.0.0.1/15",
+        )
+        env = {
+            "KOKORO_OBJECT_STORE_ENDPOINT": "http://127.0.0.1:9000",
+            "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": "http://127.0.0.1:9000",
+            "KOKORO_OBJECT_STORE_REGION": "us-east-1",
+            "KOKORO_OBJECT_STORE_ACCESS_KEY_ID": "private-key",
+            "KOKORO_OBJECT_STORE_SECRET_ACCESS_KEY": "private-secret",
+            "KOKORO_OBJECT_STORE_PROFILE": "custom",
+            "KOKORO_OBJECT_STORE_FORCE_PATH_STYLE": "true",
+            "KOKORO_SCANNER_HOST": "127.0.0.1",
+            "KOKORO_SCANNER_PORT": "3311",
+        }
+        current = replace(
+            smoke.require_sandbox_ready(ready()),
+            database_name="iam_web_oidc_" + resource_id.hex,
+            redis_prefix=f"iam:test:web-oidc-flow-host:{resource_id}:",
+        )
+        for quiescent in (False, True):
+            with (
+                self.subTest(quiescent=quiescent),
+                tempfile.TemporaryDirectory() as directory,
+                ExitStack() as stack,
+            ):
+                stack.enter_context(
+                    patch.dict(
+                        sys.modules,
+                        {
+                            "run_agent_storage_artifact_smoke": storage_helper,
+                            "run_web_bff_iam_oidc_smoke": oidc,
+                            "run_bff_iam_session_smoke": session,
+                        },
+                    )
+                )
+                driver = SimpleNamespace(
+                    secret="private-agent",
+                    jwks_url="http://127.0.0.1:4400/v1/execution-proof/jwks",
+                    start_http=Mock(),
+                    dependencies_quiescent=quiescent,
+                    close=Mock(
+                        return_value=["Agent source executor thread drain timed out"]
+                        if not quiescent
+                        else ["Agent source runtime/Redis cleanup failed"]
+                    ),
+                )
+                process = Mock(pid=43210)
+                reader = Mock()
+
+                def stub(target, name, **kwargs):
+                    return stack.enter_context(patch.object(target, name, **kwargs))
+
+                retained = []
+                stack.enter_context(
+                    patch.object(smoke, "_RETAINED_SOURCE_RESOURCES", retained)
+                )
+                stub(smoke.source_helper, "preflight")
+                stub(smoke.source_helper, "AgentSourceDriver", return_value=driver)
+                stub(smoke, "frozen_sources")
+                stub(smoke, "uuid4", return_value=resource_id)
+                stub(smoke.tempfile, "mkdtemp", return_value=directory)
+                stub(smoke, "_database_exists", return_value=False)
+                stub(smoke, "_redis_keys", return_value=set())
+                stub(session, "node_environment", return_value={})
+                stub(smoke.subprocess, "Popen", return_value=process)
+                stub(session, "ProtocolReader", return_value=reader)
+                stub(smoke, "require_sandbox_ready", return_value=current)
+                stub(oidc.runtime, "free_port", return_value=4400)
+                stub(storage_helper, "_s3", return_value=object())
+                stub(
+                    smoke,
+                    "create_owned_bucket",
+                    side_effect=lambda _s3, _bucket, _region, claim: claim(),
+                )
+                stub(
+                    storage_helper,
+                    "preflight_bucket",
+                    side_effect=smoke.TerminationRequested(
+                        "runner termination requested"
+                    ),
+                )
+                stop = stub(smoke, "stop_owned_processes", return_value=[])
+                delete = stub(smoke, "delete_owned_bucket")
+                absent = stub(smoke, "require_bucket_absent")
+                stub(smoke, "verify_cleanup", return_value=[])
+                result = smoke.execute(args, env)
+                self.assertEqual(result["status"], "FAIL")
+                self.assertEqual(
+                    result["agent_source_execution_error"],
+                    "runner termination requested",
+                )
+                self.assertEqual(result["agent_source_evidence_directory"], directory)
+                self.assertTrue(Path(directory).exists())
+                if quiescent:
+                    self.assertEqual(retained, [])
+                    stop.assert_called_once()
+                    delete.assert_called_once()
+                    absent.assert_called_once()
+                    reader.close.assert_called_once()
+                    self.assertNotIn("agent_source_retained_process_ids", result)
+                else:
+                    self.assertIs(retained[0][0], driver)
+                    self.assertEqual(retained[0][1], (process,))
+                    self.assertIs(retained[0][2], reader)
+                    stop.assert_not_called()
+                    delete.assert_not_called()
+                    absent.assert_not_called()
+                    reader.close.assert_not_called()
+                    self.assertEqual(
+                        result["agent_source_retained_process_ids"], [43210]
+                    )
+                    self.assertEqual(
+                        result["agent_source_dependencies"],
+                        "retained: activity not quiescent",
+                    )
+                self.assertNotIn("private", json.dumps(result))
+
+    def test_default_zip_unchanged_and_source_frontmatter_explicit(self):
+        for enabled in (False, True):
+            with zipfile.ZipFile(
+                BytesIO(smoke.upload_zip_bytes("skill-one", 1, agent_source=enabled))
+            ) as archive:
+                content = archive.read("SKILL.md")
+                self.assertEqual(
+                    content,
+                    smoke.source_helper.SKILL_BYTES
+                    if enabled
+                    else b"# Sandbox\n\nOwned signed PUT smoke.\n",
+                )
+                self.assertEqual(
+                    json.loads(archive.read("manifest.json"))["skill_id"], "skill-one"
+                )
+        for enabled in ("1", 1, None):
+            with self.subTest(enabled=enabled), self.assertRaises(smoke.SmokeError):
+                smoke.upload_zip_bytes("skill-one", 1, agent_source=enabled)
+
+    def test_mode_preflight_before_frozen_sources_and_resources(self):
+        args = smoke.RunArguments(
+            "postgresql://user@127.0.0.1/db",
+            "redis://127.0.0.1/0",
+            *(Path("/node") for _ in range(4)),
+            "test-bucket",
+            True,
+            "redis://127.0.0.1/15",
+        )
+        with (
+            patch.object(
+                smoke.source_helper,
+                "preflight",
+                side_effect=smoke.source_helper.SourceError("missing installation"),
+            ),
+            patch.object(smoke, "frozen_sources") as frozen,
+            patch.object(smoke.tempfile, "mkdtemp") as directory,
+        ):
+            with self.assertRaises(smoke.source_helper.SourceError):
+                smoke.execute(args, {})
+            frozen.assert_not_called()
+            directory.assert_not_called()
+
+    def test_source_hooks_preserve_default_gate_and_cleanup_order(self):
+        import ast
+
+        tree = ast.parse(PATH.read_text())
+        code = ast.unparse(tree)
+        self.assertIn("iam_env['IAM_TEST_AGENT_SKILL_SOURCE_MODE'] = '0'", code)
+        self.assertIn("iam_env.pop('IAM_TEST_AGENT_JWKS_URL', None)", code)
+        self.assertIn("(2, 31, 2, 1)", code)
+        execute = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "execute"
+        )
+        body = ast.unparse(execute)
+        self.assertLess(
+            body.index("source_result = agent_source.exercise("),
+            body.index("phase = Phase.REVOKE"),
+        )
+        self.assertLess(
+            body.index("source_cleanup_failures = agent_source.close()"),
+            body.index("process_failures = stop_owned_processes("),
+        )
+        self.assertIn(
+            "require_sandbox_ready(reader.record(timeout=60), agent_source=args.agent_source)",
+            body,
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
