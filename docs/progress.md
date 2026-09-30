@@ -1,5 +1,7 @@
 ## 2026-09-30 — 返回Agent安全失败与Run首事件验收
 
+Root精确五项来源集成 `e2ef2866fd9a3de9b1b1ae2cef107bb9282d8fdc` 后，正式relay/topology/指定checkpoint均PASS/exit0，session62704已消费；三JSON `/tmp/kokoro-agent3-root-{relay,topology,checkpoint}-final.json`。独立最终台账review0/0/0，139违例与后继未授写原样保留。Agent/BFF/Web clean；Billing五docs/Root uv.lock仍未提交，不称全仓clean。本更新仅补实际后置验收记录，无代码/库存/gitlink或运行组变化。
+
 本轮实际progress：Agent29文件已验收提交main `da056b0103cced10188cdc1f5baef841d8333889`，子仓clean。Root fresh完整离线纯门1518pass/6既有skip/174deselect/364warn/58.74s与所有静态/生成/build exit0；真实完整HTTP acceptance22pass/100warn/7.31s、无skip/deselect，PG/Redis15自有fixture残留0/cleanup_errors[]。独立最终29hash/证据审查0/0/0，仅CURRENT增加真实结果，其余28冻结bytes不变。日志 `/tmp/kokoro-agent-evidence-cursor-root-{final-gates.log,real-acceptance-all.log,real-acceptance-all-result.json}`。System/model为double，不冒称外部模型或浏览器全链。
 
 Root冻结staged来源后完整scripts/tests1103pass/3既有skip/455subtests/123.78s exit0（session87512已消费）；之前定点131pass/64.96s在gitlink暂存中不作最终证据。fresh全仓standard实际FAIL139/0unverified，新增Agent events.py806与execution_proof_contract.py804两个800行违例。先清新增粒度问题再BFF发布；真实owner行为通过不冒称全部工程门绿。标准CLI初次默认text被摘要程序误当JSON，调用错误保留；显式--format json后续复验，不改变门禁规则。relay第一次误传不存在--strict退出2，正确原CLI actual exit0，checkpoint/topology预提交亦0；最终commit后仍重验。Root并行安排Agent只读拆分建议、BFF只读retry身份审计，不授权服务/数据库/源码写入。

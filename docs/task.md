@@ -1,6 +1,6 @@
 ## AGENT-FAILURE-3.0 Root验收切片（2026-09-30）
 
-- 状态：owner 已验收、Root 精确29文件提交 Agent main `da056b0103cced10188cdc1f5baef841d8333889`、子仓clean；Root集成后治理门待运行，BFF/Web与当前运行组仍未切换。
+- 状态：owner行为已验收、Root精确29文件提交Agent main `da056b0103cced10188cdc1f5baef841d8333889`、子仓clean；Root集成 `e2ef2866fd9a3de9b1b1ae2cef107bb9282d8fdc` 后relay/topology/指定checkpoint均actual0（session62704已消费）。新增2项粒度未闭，BFF/Web与当前运行组仍未切换；任务外Billing五docs/uv.lock保留。
 - Root frozen完整scripts/tests1103pass/3既有skip/455subtests/123.78s exit0；全仓standard freshFAIL139/0unverified，新增Agent events806与proof_contract804两项800行门。后继先由Agent reviewer只读收敛按变化原因拆分，Root再授唯一writer小切片；不压行数骗门、不豁免，清两项后再BFF发布。owner行为通过不代表工程标准全绿。
 - 实测：完整真实 PG/Redis/HTTP acceptance22pass/100warn/7.31s，无skip/deselect；自有DB/Redis15残留0/cleanup_errors[]。fresh纯门1518pass/6既有skip/174deselect/364warn/58.74s、Ruff251/Pyright0/generator/contract/lock/frozen/build全部exit0，独立review0/0/0。
 - 分类：上一轮Web305/Rootb85提交与真实矩阵为progress；本轮恢复全Wave后端关键路径，不缩为UI完成。

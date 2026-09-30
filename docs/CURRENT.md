@@ -1,5 +1,10 @@
 ## AGENT-FAILURE-3.0 与 Run 首事件已完成 owner 验收（2026-09-30）
 
+Root 来源集成 commit `e2ef2866fd9a3de9b1b1ae2cef107bb9282d8fdc` 后，正式 IAM relay、repository topology、
+指定 `w1e-iam07-bff-pin` checkpoint 均 actual PASS/exit0，session62704 已消费；
+证据 `/tmp/kokoro-agent3-root-{relay,topology,checkpoint}-final.json`。只提交本片5项，
+Agent/BFF/Web子仓clean；Billing五docs与Root uv.lock仍未提交，不称全体clean。本段仅追加验收记录。
+
 Agent main `da056b0103cced10188cdc1f5baef841d8333889` 已由 Root 按冻结 29 文件精确提交、子仓 clean。
 独立最终 review P0/P1/P2=0/0/0、29/29 hash 吻合；Root fresh 完整离线门 actual exit0：
 Ruff251/Pyright0/generator/contract/lock/frozen sync、1518 passed/6既有skip/174deselect/364warnings（58.74s）、wheel/sdist。
