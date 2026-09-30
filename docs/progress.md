@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 并行IAM验收支撑交付，Root真实复验通过
+
+可见协助会话「Kokoro IAM 登录链路验收」提交 `a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b` 后停写，仅既有两测试文件与CURRENT/ACCEPTANCE；新增显式Agent source sandbox，默认不导出执行凭据，非法配置建资源前拒绝，生产认证/契约/SQL未改。独立固定SHA审查P0/P1/P2=0。Root重跑Node24完整 `pnpm verify` exit0，102文件/938测试及format/lint/typecheck/contract/breaking/SDK/build通过；真实PG/Redis单文件集成 **46/46**、62.91秒、exit0，包含client_credentials、tenant_execution introspection和自有资源清理。日志 `/tmp/kokoro-iam-a6df-root-verify.log`、`/tmp/kokoro-iam-a6df-root-integration.log`。
+
+Agent业务reader仍由另一唯一writer进行；早期审查实测signed GET端口0归一错误，已派回原writer补负例，并要求保留传输timeout/取消与日志防泄露。未把早期29 ZIP向量观察当最终SHA验收。Root更新IAM gitlink/库存；所有宽泛broken边保持原状态，当前3310和任务外uv.lock未动。真实Agent proof→Platform→Storage读取及安装产品入口仍待后续闭环。
+
 ## 2026-09-29 — Agent读取推进中，提前查明安装入口及真实验收缺口
 
 固定Platform `6a09913`/BFF `571b51de`只读源码核实：安装/启用/移除业务和幂等事务已实现，但RPC只接受Agent Run execution proof；BFF的catalog/projection凭据没有Product安装入口，不能靠新增BFF路由完成。后续先Platform沿既有installation owner补Product准入契约，再BFF/Web消费者；不把ACTIVE发布当安装授权，也不伪造Run。审查未运行服务/测试。

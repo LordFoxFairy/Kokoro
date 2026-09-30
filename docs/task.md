@@ -11,6 +11,8 @@
 | 文件/删除/数据 | 仅上述两测试文件及本仓CURRENT/ACCEPTANCE相应证据说明；允许现有internal-http fixture极小参数传递修正（有必要先报Root），不动src/生成物/契约/Schema/锁文件。关闭模式不导出新增credential，不保留另一套host。测试只使用fixture自有临时PG库/Redis prefix，不重置共享数据或3310。 |
 | 验证/交付 | RED→GREEN覆盖默认/显式关闭/继承环境隔离、非法mode/URL组合启动前拒绝、新模式ready字段、真实client_credentials的platform:execution.invoke及关闭资源清理。独立本地Node24静态/default gates可执行；真实PG/Redis integration由Root串行运行，不自行启动共享服务。修改前读Root/本仓规范与三面设计，确认仅测试配置不改API/SQL；小commit交付后停写，Root复验/pin后才用于六owner链。 |
 
+**固定交付已验收：** IAM `a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b`，仅任务卡四文件；独立 reviewer `bff_chat_selection_owner` 对固定SHA审查 P0/P1/P2=0。Root Node24 `VITEST_MAX_WORKERS=1 pnpm verify` exit0（102文件/938测试，format/lint/typecheck/contract/breaking/SDK/build通过）；真实自有PG/Redis `pnpm exec vitest run test/integration/web-oidc-flow-host.test.ts --maxWorkers=1` **46/46**、62.91秒、exit0，覆盖新Agent凭据/introspection及原登录fixture、stop和自有资源清理。日志 `/tmp/kokoro-iam-a6df-root-verify.log`、`/tmp/kokoro-iam-a6df-root-integration.log`。不含真实Agent签名proof→Platform包读取；该组合等待Agent reader交付。3310不动，旧浏览器验收仍绑定IAM36242fd，不移植到新SHA。
+
 ## 已完成只读：W3-SKILL-INSTALL-CONSUMER-PREFLIGHT
 
 Root指定 `bff_chat_selection_owner` 只读审查BFF `571b51de` 与Platform `6a09913` 的既有安装/启用能力，工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro`，基线Root `e96c745b`。目标仅确认owner已实现的RPC、输入/幂等/当前身份与状态机、BFF public缺口及下一最小消费者文件集，不重写owner设计、不决定自动安装产品偏好、不把ACTIVE读权限当执行授权。允许读取两仓文档/Proto/generated/运行与测试，不改文件/Git/数据库，不运行服务/全门。Agent typed reader由另一负责人独占写入，不读取变化中实现来作最终证据。交付精确路径/固定SHA/未决问题，Root负责后续排期和三面门。
