@@ -1,3 +1,29 @@
+Root集成补充：相关relay/topology/checkpoint三测试文件54pass、39.18s、session29696已消费exit0；日志 `/tmp/kokoro-web-reading-axis-root-integration-tests.log`。独立Root五项范围审查0P0/0P1/1P2：库存38/34、raw摘要及3active/13broken全原样；P2为上一轮7c2证据段混用“当前/本轮”，已明确改历史且由305后继，不改历史结果。Agent/Billing/uv.lock均未暂存。提交后CLI门仍待真实运行。
+
+## 2026-09-30 — Web全断点修复已验收提交，Root集成
+
+Web `30545c55625fb257ac17ce2199e8fa1000f3ecae` 五文件已精确提交、main clean；Root逐hash接收后独立Node22完整check109/37/1800（49.11s）/lint/type/build全部exit0，session23021已消费，日志 `/tmp/kokoro-web-reading-axis-root-final-check.log`。仅CURRENT追加Root证据变hash，另4文件仍冻结原bytes；独立两轮最终0/0/0。worker已启动完整重跑亦1800pass/build0，之前1799/1800 timeout原失败与隔离3/3保留。全十断点/实际侧栏矩阵PASS，消息全文严格相等，不改消息/重试/账务事实。
+
+Root库存38指针/34路径从新commit blob重算，0digest变化，broken依赖原样保留。这里只集成gitlink/库存与三台账，保护Agent29候选、Billing五docs和Root uv.lock；Root后置门待执行，不称全仓干净/全能力完成。
+
+## 2026-09-30 — 全断点真实矩阵揭露第二处宽度缺陷并返修
+
+只读审查先发现641–960px gutter错轴；Root真IAB再证明961px展开300px侧栏同样错16px。首候选唯一writer按Composer合成gutter修3rem/1rem/.125rem并规范pointer类型，纯RED1fail/68pass→69pass，完整check1800pass/build通过；但Root十宽度矩阵仍在960px实测FAIL（content768、form876，左右drift54）。没有拿纯门覆盖真实失败；max960的form width100%必须同样保留48rem cap，追加纯RED1fail→69pass后返修。
+
+最终原生IAB矩阵 `/tmp/kokoro-web-reading-axis-real-matrix-final.json`：390/640左右差0.40625px，其余641/700/767/768/800/960/961/1280均0，全部无横向溢出。800/960明确collapsed、961/1280明确expanded；首次driver用AX diff判断切换导致961仍collapsed，仅测试调用缺陷，改完整AX观察后真正重验。只更新自有runtime一CSS且逐bytes核对、无重启/模型/账务；复原默认1280×720及原collapsed侧栏，article全文数组严格一致。截图 `/tmp/kokoro-web-reading-axis-desktop-final.jpg`、`/tmp/kokoro-web-reading-axis-mobile-final.jpg`。
+
+返修二次worker完整门实际1799pass/1fail：既有product-bff-next-http.integration用例5s超时，不能称全门通过；保留 `/tmp/kokoro-web-reading-axis-cap-check.log`。唯一writer隔离该文件后停写，Root接收后独立完整复验；不放宽timeout或改任务外测试。完整Playwright尚未运行，新增fixture几何测试不冒称已执行，当前实时行为证据来自正式IAB。
+
+## 2026-09-30 — 用户指出输入框后，正式页面再验
+
+重新检查受管3310实际原生IAB。旧tab7焦点检查通道超时，按文档在同browser3只新建tab8；没有重选浏览器或换底层控制方式。桌面/390px几何及内部焦点框检查通过，Shift+Enter两行/51px不提交，Tab可达文件控件；草稿清空、默认viewport恢复、消息全文数组严格不变。截图 `/tmp/kokoro-chat-layout-current-desktop.jpg`、`/tmp/kokoro-chat-layout-current-mobile.jpg`。Root显式Node22.22.2定点UI/architecture164pass，7.22s exit0。既有Web7c2已clean，本轮未改业务源码、计费或后台服务；完整门不冒充本轮重跑。
+
+重复user/历史空failed仍可见，继续列为真正未完成。原生只读样式审查Agent为 `web_chat_layout_review`，Root保持唯一写入和验收责任。Agent cursor实现已冻结，Root1518/6skip/174deselect/build实际exit0；原owned acceptance driver把manifest对象当path映射，预检FileNotFoundError发生在Redis/PG触达前，不改生产断言、没有资源遗留、真实门仍待验。
+
+## 2026-09-30 — 回到Agent安全失败关键链
+
+上一goal轮为progress：Web7c2b4d7/Root6291692d已真实修复视觉并验桌面/手机、多行/键盘，1800 tests；仍不冒充整个产品闭环。本轮核当前HEAD/dirty及Agent7文件冻结hash，在主树独立复现Run evidence cursor RED，沿已批准Run-only -1设计授权原位源码切片；不继续堆泛化架构、运维或兼容。Agent原会话不在当前live agent清单，按原冻结manifest交接新owner；消费者只读与Root真实验收并行，单仓单writer不变。
+
 ## WEB-COMPOSER-VISUAL-ALIGN 已验收（2026-09-30）
 
 Root集成独立只读审查0/0/0；relay/topology与 `--expected verification/contracts/checkpoints/w1e-iam07-bff-pin.json` 的checkpoint实测PASS；相关三文件54 tests通过（39.22s，`/tmp/kokoro-composer-root-focused.log`）。首次checkpoint漏传必需参数exit2，只是CLI调用错误，已按原门补参数重跑，不改断言。Root首次纯check受shell工具链影响运行Node24成功但不作为Node22证据，最终显式Node22.22.2完整重跑成功。未运行本次全Root1103测试或隔离Playwright全套；本次新增视觉证据来自原生IAB实际正式页面。

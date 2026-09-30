@@ -1,3 +1,27 @@
+## 当前 UI 验收与剩余任务（2026-09-30）
+
+- `WEB-READING-AXIS-ALLWIDTH` / P1 / Web已验收、Root集成验证中：Root正式IAB复现700px content x2/w696 vs form x16/w668；800px（collapsed rail）x84/w684 vs x68/w716；961px展开300px侧栏 content x332/w597 vs form x348/w565。当前大桌面/390px通过不再代表全断点布局验收。
+- 交付：Web main `30545c55625fb257ac17ce2199e8fa1000f3ecae` 五文件已提交且clean；Root Node22完整109/37/1800/lint/type/build实际exit0，独立最终0/0/0、5/5hash。真实十宽度全部<=1px，无横溢，明确侧栏状态；首候选960实测FAIL与既有5s HTTP timeout保留，未放宽门。Root已接sole writer与index，现只gitlink/38来源指针及三台账集成，支付/全能力仍开放。
+
+- 归属与基线：Web AppFrame现布局CSS唯一owner，main `7c2b4d7` clean；Root `6291692d` 保留Agent/Billing/uv.lock及Root台账在途变更。`web_chat_layout_review` 从只读转为本片唯一writer，Root不抢写子仓，负责实际矩阵、独立复审、集成/Git提交。
+- 写集：现 `src/components/blocks/app-frame/app-frame-main.module.css`、`tests/ui/app-frame.smoke.test.tsx`、`tests/e2e/web-governance.spec.ts`、`docs/TECHNICAL_DESIGN.md`、`docs/CURRENT.md`。排除其他文件、依赖/契约/SQL/数据/服务/模型/Git；无新目录或文件。扩展已有几何规则优于新组件/全局重设计，不改消息/重试/焦点事实。
+- 设计与验收：根据Composer实际合成gutter统一阅读轴，不机械只改768断点；>960包含wrap24px及form额外24px，641–960合成16px，<=640复用thread外垫与光学内缩。先纯RED再最小CSS、700/800/961展开及1280/390矩阵；Node22完整check、主控复验/截图；现Playwright几何回归以正式preview fixture测试，不伪造owner数据或触碰共享服务。完成后冻结manifest，Root提交，未过真实矩阵前不标已验收。
+
+- 已验收：Web `7c2b4d7` 的内层焦点方框删除、48rem同轴和手机边距，本轮正式IAB再验；新定点164pass，保留修后桌面/手机截图。Root负责实际页面；`web_chat_layout_review`（gpt-5.6-sol/high）初期只读发现P1后，按上表转为本片唯一writer，未获服务或Git权限。
+- 未完成：重复提问/空失败轮次、mounted query-only深链、精确failure持久消费、完整流式中途刷新。按对应owner修复真实状态与消息/attempt身份，不用CSS隐藏数据或伪造成功。
+- 本轮不新增UI框架、登录中转页、进程、模型调用或运维任务。全Wave0–7与正式积分链继续开放，局部视觉通过不等于全部能力闭环。
+
+## AGENT-RUN-EVIDENCE-INITIAL-CURSOR：Root复现后源码实施（2026-09-30）
+
+- P0 owner：Agent Run evidence 查询。Root基线6291692d；子仓main58b59cf7，已有安全failure3.0未提交候选27文件，保持不回滚。
+- Docs/tests gate：TECH/API/DATA/CURRENT已一致，7文件manifest f24bcb05哈希逐一核对；Root在主树独立定点RED为8fail/28pass、1.88s exit1；日志 `/tmp/kokoro-agent-evidence-cursor-root-red.log`，失败目标为漏index0/不接受-1/空页cursor和Run-only机器断言，非collection或依赖故障。
+- 放置：扩展现 interfaces/http/ingress.py、server.py，是唯一Run evidence transport/read writer；淘汰修改共享Chat cursor、补造START、重编号或新wrapper。无新模块/进程/数据owner。
+- 目标：Run-only EvidenceAfterSeq int64 min/default -1；exclusive index>cursor；empty next_seq原样回显-1；after0继续只读后续；Chat AfterSeq0与index0起点/terminal fence保持。
+- 实施负责人：新会话 `agent_failure_cursor_owner`（gpt-5.6-sol/high）接原Agent负责人冻结交接；Root审查、真实PG/Redis/HTTP、index/commit。独立API/消费者只读审查并行，不开第二writer。
+- 写集：现ingress/server、OpenAPI/provenance（同尚未发布3.0）、按唯一generator再生run_failure_generated.py header；确需checker时只现chat_contract_check.py/contract_check.py。原4docs与已批准unit/contract/acceptance tests可更新证据。禁止新文件、新failure语义、SQL/proof/vector/lock/dependency、BFF/Web及共享服务/数据/Git操作。
+- 验证：原RED完整转GREEN，新增负例保持；Ruff/Pyright/generator/contract/defaultpytest/uvlock+sync+build；Root另自有临时库+已空Redis15占有lease执行原两真实acceptance，不复用活跃DB10、不flush。全部消费者固定新版后才切受管应用，当前3310仍旧2.0。
+- 状态：源码已冻结停写，独立review0/0/0；Root完整纯门1518pass/6既定skip/174deselect及build通过。真实acceptance driver首次manifest解析错误在任何资源创建前退出，尚不构成PG/Redis/HTTP通过；修正调用后复验仍为下一门。全Wave0–7目标不变，owner验收/提交后再BFF doc/strict consumer/SQL，支付最后。
+
 ## WEB-COMPOSER-VISUAL-ALIGN 已验收（2026-09-30）
 
 Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本片已固定该gitlink与38个consumer证据指针，原契约摘要无变化。内部直角框移除、键盘token焦点在圆角shell、thread与composer统一48rem、手机viewport不误用桌面32px。Root Node22.22.2 `pnpm check` exit0（contract109/architecture37/全量1800/lint/typecheck/build）；日志 `/tmp/kokoro-web-composer-align-root-node22-check.log`。独立只读返修后0/0/0；单独prettier六文件检查FAIL、未全仓格式化，不称全格式门通过。

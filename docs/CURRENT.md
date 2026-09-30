@@ -1,3 +1,19 @@
+## WEB-READING-AXIS-ALLWIDTH 已验收（2026-09-30）
+
+Web main `30545c55625fb257ac17ce2199e8fa1000f3ecae` 已由Root按五文件精确提交，子仓clean；只改现AppFrame阅读轨、两测试及两文档。Root独立Node22完整check实际exit0（contract109/architecture37/1800 tests/lint/typecheck/build），日志 `/tmp/kokoro-web-reading-axis-root-final-check.log`，独立最终审查0/0/0及5/5冻结hash核对。
+
+正式3310原生IAB十宽度/侧栏真实矩阵全过：390/640漂移0.40625px，其余641/700/767/768/800/960/961/1280均0、无横向溢出；800/960收起，961/1280展开。焦点内框仍透明、圆角shell可键盘定位，全文数组未变。只同步自有runtime一个CSS、不重启、不调用模型或计费；窗口/侧栏恢复原状。截图 `/tmp/kokoro-web-reading-axis-desktop-final.jpg`、`/tmp/kokoro-web-reading-axis-mobile-final.jpg`，数据 `/tmp/kokoro-web-reading-axis-real-matrix-final.json`。
+
+保留两类真实失败：首候选纯1800pass但960px漂移54px，追加RED后修form的48rem上限；返修worker完整首跑既有HTTP5s超时1799/1800，隔离3/3与完整重跑1800、Root独立全门均通过。没有放宽断言或timeout。新增Preview Playwright几何源码未执行，不冒称自动浏览器全套PASS。重复user、空/失败状态、sidebar列表加载错误及query-only深链仍开放；本片不是所有能力闭环。
+
+Root本片38个Web来源指针与34个commit blob路径重新核对，digest没有变化，现有broken依赖不改绿。Root相关三文件治理测试54pass（39.18s，`/tmp/kokoro-web-reading-axis-root-integration-tests.log`）；提交后三项治理CLI门待实跑。task/progress保留未完成后端与Agent/Billing/uv.lock在途状态。
+
+## 历史用户页面复验（Web 7c2b4d7，已由30545c55后继）
+
+以下为修复前Web `7c2b4d700c8a4399fae68012c1db7423d790abd7` 的历史证据：当时重新操作正式3310原生IAB，而非只检查源码。桌面 textarea 为透明 outline、无内层 box-shadow；form/content 同 x282、768px。390px 窄屏 form x16/358px、content x15.59/358.81px，无横向溢出。Shift+Enter 保留两行并增高至51px，没有提交消息；清空测试草稿、恢复默认窗口，原 article 全文数组严格不变。截图 `/tmp/kokoro-chat-layout-current-desktop.jpg`、`/tmp/kokoro-chat-layout-current-mobile.jpg`；新 Node22 定点 Composer/AppFrame/architecture **164 passed / 6 files / 7.22s / exit0**，日志 `/tmp/kokoro-chat-layout-current-tests.log`。本轮未重跑完整 build/Playwright，也未调用模型或充值。
+
+仍可见重复提问与历史空失败轮次；不是以 CSS 隐藏或去重解决的布局事实。深链、重试身份及精确安全失败的 Agent→BFF→Web 持久消费仍待闭环，不称完整产品完成。Agent cursor 已由唯一 writer 实现并冻结、独立审查0/0/0；Root纯门1518pass与build已过，真实PG/Redis/HTTP复验尚未执行成功，未发布切换当前受管2.0组合。
+
 ## WEB-COMPOSER-VISUAL-ALIGN 已验收（2026-09-30）
 
 Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本片已固定该gitlink与38个consumer证据指针，原契约摘要无变化。内部直角框移除、键盘token焦点在圆角shell、thread与composer统一48rem、手机viewport不误用桌面32px。Root Node22.22.2 `pnpm check` exit0（contract109/architecture37/全量1800/lint/typecheck/build）；日志 `/tmp/kokoro-web-composer-align-root-node22-check.log`。独立只读返修后0/0/0；单独prettier六文件检查FAIL、未全仓格式化，不称全格式门通过。
@@ -41,7 +57,7 @@ Root `6fdcba6e` 基线的三文件生命周期切片已由原writer停写、独�
 | 路径 | 固定 commit |
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
-| `apps/kokoro-app` | `5058ae2c400dd8be1964bba5df03fd7ce5b52133` |
+| `apps/kokoro-app` | `30545c55625fb257ac17ce2199e8fa1000f3ecae` |
 | `apps/kokoro-bff` | `15e07fa44670bc13705ce3f6f700e73afcb72ccc` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |
