@@ -1,5 +1,15 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 当前3310正规登录与真实Chat/持久化亲跑通过
+
+Root当前常驻加载c94a4c79的直连launcher（受管session65687、launcher7399、Web7874监听3310），真实IAM/System/BFF/Web、标准Agent HTTP/worker与已有本机Ollama，未启动新PG/Redis/模型、未假System或模型。Root亲跑 `/tmp/kokoro-current-chat-http-acceptance.log` **PASS/exit0**：新/login→IAM表单CSRF→consent→callback→app200/sessiontrue，消息202→SSE200、10帧含RUN_STARTED/非空TEXT_MESSAGE_CONTENT/END/RUN_FINISHED且无RUN_ERROR，receipt与thread/run相等；同键202同receipt，snapshot/messages200且exact两条completed消息；HTTP刷新app后仍认证、相同正文/watermark、不重复、列表存在；自身CSRF正式logout200/sessionfalse。System结构化日志两次resolveModel success，标准worker实际消费。Private credential0600、不在普通log输出；证据不打印正文/身份/token。
+
+保留两个验证脚本自身失败：首次logout误带经典NextAuth callbackUrl/json额外字段，被正式strict API rp_csrf_rejected403（没有改生产CSRF）；第二次测试未考虑已批准consent自动redirect到callback，修正测试在callback前停再验证state/issuer，不改登录实现。随后沿正式请求只有csrfToken并真实重跑全链通过，非放宽验收。前413由已删除Root观察Proxy引起，正规直连未兼容代理。
+
+**仍不是右侧DOM：** CUA getState本轮15秒再次超时/reset，当前用户标签可见链未验，HTTP结果不冒充浏览器交互。Skills选择为空、Storage未装配；10帧普通Chat不是完整Manus能力。整体goal active，所有owner/SQL/权限/HITL/tools/MCP/作品/调度/最后Billing不缩减。当前服务保持一组受管，已退出71981/88684/10137 handles均消费，均无残留清理失败，非无主后台进程。
+
+Rootf393365c集成后topology/checkpoint PASS，当前全scripts/tests **1049 passed/3 native skip/354subtests、111.60秒**（`/tmp/kokoro-platform-v5-current-entrance-root-tests.log`，session5751 exit0）；预提交库存9pins与旧HEAD不符的聚焦1FAIL/94PASS属正确拒绝，提交后完整复验已过，不隐藏失败或漂白13broken。Platform0dd60af runtime正式授写，BFF固定机器三面文档门独立并行；不再把这些任务等在登录后面。
+
 ## 2026-09-30 — Platform v5 机器契约正式交付，Root 精确来源集成
 
 Platform0dd60af4799cb2f0b410ded5ffb9c1402a55c641 clean main：Root自己Node24全9门、1030pass/239真实依赖skip/build通过（`/tmp/platform-personal-v5-root-gates.log`，session16772 exit0已消费），独立38文件审查0缺陷，冻结历史与latest语义门/optional实际wire/13独立负例通过。Root只更新Platform gitlink、库存9commit和2真实blob digest；16edges/13declared broken/消费者固定v4来源不漂白，不升级成已激活Product。后三面runtime既有设计已定，由原负责人准备精确文件集；新五RPC不是旧接口fallback或两份安装事实，不支持旧数据迁移或旧生产路径兼容。

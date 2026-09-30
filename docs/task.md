@@ -1,5 +1,20 @@
 # Kokoro 后端闭环任务总表
 
+## PLATFORM-PERSONAL-RUNTIME：已授写；BFF-PERSONAL-DOC-GATE：独立并行文档门（2026-09-30）
+
+| 项 | Root 裁决/任务卡 |
+| --- | --- |
+| 目标/依赖 | P2个人发布→显式安装→启停/移除→选择→真实聊天。机器owner0dd60af已发布并Rootf393365c精确集成；runtime和BFF文档门可独立推进固定契约，消费者代码须其三面门通过后另行授写，真实组合等owner runtime验收。 |
+| 归属/基线 | Platform原负责人唯一writer，Root审查/shared index/提交；apps/kokoro-capability clean main0dd60af。BFF文档负责人独占本仓文档，clean main571b51de；Root继续当前3310真实产品验收。沿现会话实际模型，无切换主控。 |
+| 设计门/位置 | Platform已批准TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL三面与唯一Proto/Prisma，0dd60af机器门0缺陷。采用现skills/installation具名Product adapter复用同一Service/事务，不把execution proof变可选、不建新module/目录/事实/表；淘汰Product→execution代理或第二安装实现。BFF只在现三设计文件修当前态/目标态，未来named route/client放已有目录，不复制Platform业务。 |
+| Platform允许源码 | 现installation/下skill-installation.model.ts/service.ts/rpc.ts/transaction.ts；skills/skill.context.ts、skill-source-reference.ts、skills.module.ts；rpc/rpc.middleware.ts、config/runtime.ts。新普通文件仅installation/下skill-installation-product.rpc.ts/admission.ts/request-binding.ts/mapper.ts，各一个变化原因。 |
+| Platform允许测试 | 新unit四Product admission/request-binding/rpc/mapper测试；现unit skill-installation.test.ts/skills-module.test.ts、integration nest-ingress.test.ts/skill-installation.integration.test.ts、fixtures nest-application.ts、architecture platform-execution-operations.test.ts。现四设计/CURRENT、contract/README及package格式范围可同步，无依赖升级。 |
+| Product语义 | 五Personal方法、exact本tenant本人source/user target、可信BFFmetadata且先当前IAM；9safe白名单/三独立digest/optional分页presence与独立cursor绑定。复用既有catalog写/projection读scope，不新role或IAMsurface。所有receipt出口当前授权及身份绑定；true-enable含no-op/replay须freshCLEAN/health及事务source/install fence，false/remove不因坏包阻止收紧。20秒同预算/5秒fresh、Serializable receipt/business/outbox唯一事务，ACK unknown不重施状态。 |
+| clean-slate/排除 | 删除被替代parser/input/重复编排；不迁移旧数据，不增加legacy alias/fallback/双写。execution保留有效Agent proof职责而非生产兼容入口。不改Prisma/schema/Proto/generated/v1–v5发布bytes/provenance/lock/IAM/BFF/Web/Root/3310；实际越界先报Root。 |
+| BFF文档裁决 | 仅docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md/CURRENT.md；机器源固定Platform0dd60af/v5 aggregate bc233fe3…b4d6ca，当前caller仍v4而非已升级。公开目标/v1/skill-installations POST+GET、/{installation_id} GET+DELETE、/{installation_id}/enabled PUT；写200（已存在receipt语义），删除返回removed=true/enabled=false。BFF自己canonical OpenAPI后继发布，9safe只做wire到JSON的整数/UTC映射，不新SQL/Redis安装表/receipt。替换旧安装503stub相关契约/路径，不留alias；原五owner方法、当前IAM/同源/public边界相互一致，Publish显式不自动安装已裁决，不重复询问。 |
+| 验证/交接 | Platform先权限/receipt/fresh/parser/分页/digest/CAS/取消RED→GREEN，Node24静态/默认/build与原execution回归；真PG/integration由Root批准独占fixture后单独验，无自启共享infra/清库/服务。BFF doc门仅文档/现契约schema引用校验，给绝对三文档路径、未决项、实际命令与起始SHA；无contract/src搬迁。writer停写精确文件/hash/日志，Root独立审查再提交；机器/runtime代码不冒充BFF/Web可用。 |
+
+
 ## P1-LOCAL-REAL-CHAT：当前3310从登录专用组合接真实聊天（2026-09-30）
 
 本轮根因实证：现scripts/dev/serve_local_login.py硬编码KOKORO_AGENT_ENABLED=false，当前服务只有IAM/BFF/Web；新/login已实测200、两重定向到邮箱/密码表单、无旧重试中转。右侧旧标签的CUA focus/screenshot超时，Codex native app控制明确拒绝，已请用户手动打开新/login；不尝试旁路控制。
