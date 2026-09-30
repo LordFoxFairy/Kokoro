@@ -2169,3 +2169,13 @@ Web测试独立预审0P0/0P1/1P2，与Root发现同项：非pending pause正例�
 Root首次独立check命令登录shell自动切到Node24.20（log明确engine warning），该轮不作为Node22验收；待其自有session7326终止后显式PATH固定22.22.2重跑，保留首次日志。worker日志无此warning，仍必须Root正确runtime独立验收，不凭默认which结果断言后续命令runtime。
 
 Web候选c2727c93最终独立0/0/0，8/8 frozen hashes在Root完整检查前后相同；原P2三非pending暂停边界闭合。Root首次Node24 check实际exit0但不作为Node22门；显式22.22.2重跑session69649实际exit0已消费：contract109、arch37、162文件1799tests、lint/typecheck/build通过，`/tmp/kokoro-web-failed-snapshot-root-node22-check.log`。隔离3387 CI治理Playwrightsession40750实际exit0已消费，11pass/1既定mobile rail skip（8.3s），`/tmp/kokoro-web-failed-snapshot-root-e2e.log`；3387监听0，仅自身next-env exactdev生成差异还原，report/testresults移到/tmp保留。没有拿unconfigured预览测试冒充正式IAM/真实failure门。Root精确提交Web八文件5058ae2c，子仓clean。Root随后仅38Web来源指针重钉34raw路径到5058，digest实际0变化，3active/13broken不改；组合后置门待提交后实跑。
+
+Root集成1e7b721b后置独立relay/checkpoint/topology均actual_exit0，`/tmp/kokoro-web-failed-snapshot-post-exits.json`；完整1103pass/3native依赖skip/455subtests（119.07s），session46697exit0已消费，`/tmp/kokoro-web-failed-snapshot-post-full-tests.log`。Root54聚焦（38.64s）预提交实际exit0、session83852已消费。
+
+Root只给明确自有runtime next/src/core/hydration.ts加载accepted5058：先实际旧840bytes相等，再新blob1826628f相等；未重启/新增进程或碰账户/权限/基础设施。旧IAB3焦点超时，按同browser3恢复新5正规app而非绕过snapshot；generic failed卡/重试新UI可见且reload稳定。原生仅一次retry，真实gpt56回答中文并发建议及END_KOKORO_FOLLOWUP，Stop0；terminal reload前后3article全文数组相同，真实窄门通过。原失败未漂白、精确code/流式中间reload/完整产品未验。新reload发现追问用户泡泡exact text count2，手动重试当前新turn重发造成UI差异需正式owner语义审查；新增只读调查，不扩大本次source。旧agent tab3 close也CDP超时，不宣称已关闭；新5markHandoff保留，未重复提交。
+
+Webowner停写后Agent原负责人仅四docs方案冻结，未source/机器/SQL/锁/服务修改；System固定OpenAPIbytes与pin同digest、未知旧client code无正式tuple不臆造。独立docreview后续，整个目标继续active，支付最后、倍率未配置、账户未充值。
+
+Agent四docs最终独立0/0/0、Root逐hash/HEAD58b59/exact范围及canonical SQL原bytes通过。现2.0 `uv run --frozen kokoro-agent-contract-check`实际exit0（`/tmp/kokoro-agent-failure-doc-current-contract.log`）仅当前机器，不声称3.0。Root四现test baseline101pass（1.78s），`/tmp/kokoro-agent-failure-baseline.log`、session5325exit0已消费；原owner获四tests-only RED，source/机器/生成仍锁。BFF/Web只读确认retry是新turn重发、Web少optimistic user才live/reload不一致，已询问用户正规单原问题重新回答vs重发；此产品契约决策不阻塞独立Agent推进，尚未写该source/隐藏重复事实。
+
+本轮最后三台账diff独立0/0/0；Root再跑三个聚焦治理文件实际54pass（39.60s），`/tmp/kokoro-web-failed-snapshot-final-ledger-tests.log`，session78436exit0已消费。只提交三台账，排除Agent四docs/四RED tests、Billing五docs候选与任务外uv.lock；受管原组PID65119及七服务均live/无Z，唯一3310保持。Agent writer下一source门尚未授权，RED日志/冻结待交接；新tab5已markHandoff保留，旧3关闭尝试超时如实记录。完整goal active，不以窄门完成替代全能力。

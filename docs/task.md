@@ -2708,7 +2708,7 @@ P0；Web唯一writer续派bff_personal_installation_owner（此前只读已停�
 
 Root重新核tests当前28c19a5a/a77df4a0、小patchdabdd065，独立定点RED实际3fail/45pass（48），五docs冻结不变；worker先前清整文件格式噪声时临时恢复其自有两tests，旧c150/68ee manifest废止，不是并发他人回滚。当前基线与现测试证明后放行唯一Web writer仅src/core/hydration.ts。首定点GREEN48通过但完整check在typecheck FAIL（异构it.each table类型），允许现测试显式tuple标注。Root源码审查捕获pending_pauses全length判断过严；正式pause状态允许pending/resolved/cancelled/expired，批准规则仅未决pending阻挡。允许现hydration测试增加三终态pause RED，再复用现pending筛选GREEN，不改其他职责/契约或自动retry。独立审查与Root最终完整门仍待执行。
 
-### AGENT-FAILURE-CONTRACT-DOC-GATE 精确后继卡（尚未派写）
+### AGENT-FAILURE-CONTRACT-DOC-GATE 精确后继卡（已派四文档，待独立审查）
 
 P0；前置Web失败水合切片提交/Root验收，Agent58b59cf7 main clean。原Agent负责人agent_typed_skill_reader_owner为候选唯一writer，Root唯一index/commit；只读当前三面审计已完成。第一阶段只准docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md与CURRENT记录当前/目标；三面必须符合上文整体放置裁决。Owner仍Agent，SQL canonical database/schema.sql原bytes、不新增DDL/owner/进程/目录。冻结→Root/独立review→机器/tests RED→source分阶段，尚不放源码。
 
@@ -2721,3 +2721,19 @@ P0；前置Web失败水合切片提交/Root验收，Agent58b59cf7 main clean。�
 Web5058ae2c400dd8be1964bba5df03fd7ce5b52133 main clean，原writer停写。八文件c2727c93清单，独立最终0/0/0关闭原P2；Root显式Node22完整contract109/arch37/lint/typecheck/test1799/build exit0。隔离3387 Web治理E2E11pass/1既定mobile rail skip（8.3s）、端口已回收；自身next-env生成dev路径经精确bytes核对恢复，reports移/tmp保留、不入Git。原Node24首check不当Node22证据。此为通用failed水合/显式retry窄片；精确错误与真实整链后继。
 
 Root现唯一writer/index仅apps/kokoro-app gitlink、consumer-inventory.json与三台账；38Web来源指针/34路径从5058blob重算，引用artifact digest实际0改变，generated/机器/SQL均原bytes，状态3active/13broken原样。无新业务owner/目录/依赖；既有治理tests验证来源一致性。提交后strict relay/checkpoint/topology、完整Root scripts/tests；uv.lock/Billing候选不暂存。后继Agent文档门仍未派写。
+
+### ROOT-1e7b721b 后置验收与原生重试证据
+
+strict relay/checkpoint/topology分别actual0；完整Root1103pass/3native依赖skip/455subtests（119.07s），session46697最终exit0已消费。Web accepted5058的唯一runtime差异hydration.ts已由Root在自有xm_q35q2/next复制处，先核实际bytes=840旧blob，再写5058正式blob（1826628f），无新进程/重启/配置/登录数据变更；原组source现在仅Web hydration更新，其余旧固定组合不变。原IABtab3两次CDP焦点超时，未重发登录或访问被拒snapshot；同browser3新tab5正常正式app同会话，失败generic卡/重试可见，reload后仍可见。仅点击一次重试，实际生成中文并发建议+END_KOKORO_FOLLOWUP，Stop消失；末次reload前后3article全文数组完全相等/Stop0。此是真实generic failure恢复→明确retry→真实回答→terminal reload窄PASS，不推断失败Run code/owner IDs，不替代整体Chat/流式中途刷新/HITL/计费。
+
+原生终态reload又揭示真实差异：同追问user文本现在DOM exact count2（live重试阶段仅一条可见），需对齐正规的retry/regenerate持久语义；新增只读任务BFF-WEB-RETRY-SEMANTICS-AUDIT：原Web负责人bff_personal_installation_owner只读，基线BFF15e/Web5058/Root1e7，范围现machine.retry、snapshot/render及BFF普通ChatTurn/createMessage契约/测试，不访问被拒snapshot/其他通道/ownerDB/provider/进程/Git。比较同一失败turn重新执行vs新turn重发的正式owner事实，给最小owner-first方案和RED，无源码授权。原先水合恢复窄PASS保持，但不把重复user外观当完整retry产品PASS。
+
+Agent四docs已由原负责人冻结并停写；Root核HEAD58b59cf7/只有四docs，后继独立审查bff_personal_consumer_review。System固定pin f570/2.0/f9ea与当前机器bytes相同，机器未枚举error code、仅响应状态/envelope，文档不把旧allowlist当发布证据；未发布service_auth_not_configured按未知owner internal_error false。本阶段没有3.0机器/生成器/runtime/SQL/消费者切换证据，先审文档后源码tests RED。
+
+### AGENT-FAILURE-CONTRACT-DOC-GATE 通过 / tests-only RED 放行
+
+四文档绝对根 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent/docs/`：TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md/CURRENT.md，Root4/4hash与HEAD58b59cf7核对、exactdirty仅四docs、canonical SQL原bytes；冻结 `/tmp/kokoro-agent-failure-doc-gate-hashes.json`。独立0/0/0，未决实现/消费者/真实资源门仍开放。Root当前2.0 contract checker实际exit0，只现机器校验，不代表目标3.0；Root四tests未修改baseline101/101（1.78s）、session5325exit0已消费。
+
+原Agent负责人唯一writer，下一阶段只准四现测试：tests/unit/model/test_system_client.py、tests/unit/execution/test_supervisor.py、tests/unit/chat/test_projection.py、tests/contract/test_machine_contract.py；锁System tuple/原bool/unknown/非法响应/secret sentinel、初次及恢复typed失败、safe code+required retryable/raw缺席、唯一base/profile/HTTP3.0/decoded绑定/closed JSON组合。不要导入尚不存在模块造成collection error当RED，不修改源码/机器/生成/其他tests/锁/数据库/进程/provider/Git。先定点真RED输出/assertion与文件hash停写交接；Root独立复现后再放GREEN/机器生成，四docs先不再改。其余精确file门仍为待审候选。
+
+BFF/Web retry只读已完成：现contract新key=全新Run/user/assistant；Web终态retry未append optimistic user导致live一条/reload两条，现投影逐事实渲染并无duplicate合并owner规则。原问题重新执行需要BFF正式retry command与事务/幂等/变体状态，Web不能过滤伪造单条。Root已向用户对齐“原问题下重新回答（推荐）/新问题重发”；无回答前不发BFF新契约/不采用临时乐观resend修补，Agent失败合同与现门继续推进不等待该产品决策。
