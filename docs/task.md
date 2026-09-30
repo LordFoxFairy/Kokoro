@@ -1,3 +1,7 @@
+## WEB-PRODUCT-IA 最终代码验收（2026-09-30）
+
+Web main `14a54b4b8da68b37d83a13402bc8abb87001574e`；Root验44路径hash（42存在/2删除），独立复审0/0/0，Root Node22 lint/typecheck/contract108/architecture37/全Vitest1702/build/diff-check通过。旧Project Task DOM/CSS/组件身份与假推广退出，正式任务复用既有ScheduledTask入口；Project全量typed列表及任务关联仍开放。Root同步gitlink/来源库存/固定组合，3310尚未重启，不把纯测试当浏览器通过。
+
 # Kokoro 后端闭环任务总表
 
 ## WEB-PRODUCT-IA-REVIEW-FIX：清除会话残留任务命名（2026-09-30）

@@ -9,7 +9,7 @@
 | 路径 | 固定 commit |
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
-| `apps/kokoro-app` | `70872250814b7e1795c89bbd6bc3af42c96f5a20` |
+| `apps/kokoro-app` | `14a54b4b8da68b37d83a13402bc8abb87001574e` |
 | `apps/kokoro-bff` | `67755d16ff0f40ea02d71a6dad7108507a04766a` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |

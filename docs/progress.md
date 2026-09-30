@@ -1,3 +1,7 @@
+## 2026-09-30 — Web IA final 验收与外部模型切换准备
+
+Web `14a54b4b8da68b37d83a13402bc8abb87001574e` 已由Root精确提交；manifest `97359d4dc0da50daa944465502a42930aa9767251f36c841eb55a74cdb72bc04`，独立最终审查0/0/0。Root Node22门实际Vitest **1702/162文件**（包含contract/architecture重复收集，不等同worker pure1583），独立contract108/architecture37、lint/typecheck/build/diff-check通过，日志 `/tmp/kokoro-web-ia-naming-root-gates.log`。真实UI尚未复验；当前Ollama组仍保留，下一步唯一有序切换已验外部模型profile，禁止模拟推理或跳过IAM。
+
 # Kokoro 后端闭环进度证据账
 
 ## 2026-09-30 — 外部模型正式组合工具已审查，尚未重启或宣称正式推理
