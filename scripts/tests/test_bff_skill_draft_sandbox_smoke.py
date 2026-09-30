@@ -757,6 +757,52 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
                 smoke.require_sandbox_ready(mutation)
 
+    def test_agent_source_ready_requires_explicit_mode_and_exact_credential(self):
+        record = ready()
+        record["skill_sandbox"]["tenant_execution_client"] = {
+            "client_id": "agent-source",
+            "client_secret": "agent-source-secret",
+        }
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_sandbox_ready(record)
+        parsed = smoke.require_sandbox_ready(record, agent_source=True)
+        self.assertEqual(parsed.tenant_execution.client_id, "agent-source")
+        self.assertIn("agent-source-secret", parsed.secrets)
+        self.assertEqual(len(parsed.secrets), 8)
+        self.assertIsNone(smoke.require_sandbox_ready(ready()).tenant_execution)
+        for invalid_mode in ("1", "0", 1, 0, None):
+            with self.subTest(mode=invalid_mode), self.assertRaises(smoke.SmokeError):
+                smoke.require_sandbox_ready(record, agent_source=invalid_mode)
+        for invalid in (
+            None,
+            {},
+            {"client_id": "agent"},
+            {
+                "client_id": "agent",
+                "client_secret": "secret",
+                "private_key": "forbidden",
+            },
+            {"client_id": "agent", "client_secret": " "},
+        ):
+            changed = ready()
+            changed["skill_sandbox"]["tenant_execution_client"] = invalid
+            with self.subTest(invalid=invalid), self.assertRaises(smoke.SmokeError):
+                smoke.require_sandbox_ready(changed, agent_source=True)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_sandbox_ready(ready(), agent_source=True)
+
+    def test_agent_source_credentials_are_redacted_from_diagnostics(self):
+        record = ready()
+        record["skill_sandbox"]["tenant_execution_client"] = {
+            "client_id": "agent-source",
+            "client_secret": "agent-source-secret",
+        }
+        parsed = smoke.require_sandbox_ready(record, agent_source=True)
+        summary = smoke.safe_summary(
+            smoke.SmokeError("failure agent-source-secret"), parsed.secrets
+        )
+        self.assertNotIn("agent-source-secret", json.dumps(summary))
+
     def test_revoke_protocol_is_exact(self):
         smoke.require_revoke_result(
             {"kind": "result", "command": "revoke-user-session", "status": "ok"}

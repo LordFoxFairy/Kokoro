@@ -95,10 +95,11 @@ class SandboxReady:
     execution_authorization: CatalogCredential
     web_client_secret: str
     user_password: str
+    tenant_execution: CatalogCredential | None = None
 
     @property
     def secrets(self) -> tuple[str, ...]:
-        return (
+        values = (
             self.access_token,
             self.catalog.client_secret,
             self.projection.client_secret,
@@ -107,6 +108,9 @@ class SandboxReady:
             self.web_client_secret,
             self.user_password,
         )
+        if self.tenant_execution is not None:
+            values += (self.tenant_execution.client_secret,)
+        return values
 
 
 def _nonempty(value: object, label: str) -> str:
@@ -124,8 +128,12 @@ def _credential(value: object, label: str) -> CatalogCredential:
     )
 
 
-def require_sandbox_ready(record: object) -> SandboxReady:
+def require_sandbox_ready(
+    record: object, *, agent_source: bool = False
+) -> SandboxReady:
     """Strictly accept the IAM opt-in protocol without copying owner policy."""
+    if type(agent_source) is not bool:
+        raise SmokeError("IAM Agent source mode must be an explicit boolean")
     base = {
         "kind",
         "base_url",
@@ -148,14 +156,17 @@ def require_sandbox_ready(record: object) -> SandboxReady:
     ):
         raise SmokeError("IAM skill sandbox ready protocol invalid")
     sandbox = record.get("skill_sandbox")
-    if not isinstance(sandbox, dict) or set(sandbox) != {
+    sandbox_fields = {
         "access_token",
         "subject_id",
         "catalog_client",
         "projection_client",
         "resource_server_basic",
         "execution_authorization_client",
-    }:
+    }
+    if agent_source:
+        sandbox_fields.add("tenant_execution_client")
+    if not isinstance(sandbox, dict) or set(sandbox) != sandbox_fields:
         raise SmokeError("IAM skill sandbox evidence invalid")
     execution = sandbox["execution_authorization_client"]
     if not isinstance(execution, dict) or set(execution) != {
@@ -191,6 +202,9 @@ def require_sandbox_ready(record: object) -> SandboxReady:
         _credential(execution, "execution authorization client"),
         _nonempty(record["client_secret"], "Web client secret"),
         _nonempty(record["password"], "user password"),
+        _credential(sandbox["tenant_execution_client"], "Agent execution client")
+        if agent_source
+        else None,
     )
 
 

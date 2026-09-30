@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Root接入Source验收身份协议，保留默认严格边界
+
+Root在既有Skill sandbox runner准备显式`agent_source=True` ready消费，默认拒绝新增credential，显式模式要求完整且只有`tenant_execution_client`新增字段；其secret加入已有错误/日志脱敏清单。不改启动器服务行为、不自动启用模式、不修改生产owner。两项新增测试先RED2（尚无参数）后GREEN56/93subtests，最终完整Root `python3 -m pytest -q scripts/tests` **994 pass/291 subtests**（117.20秒、exit0）；Ruff check及diff-check通过。日志 `/tmp/kokoro-source-ready-red.log`、`/tmp/kokoro-source-ready-green.log`、`/tmp/kokoro-root-source-ready-tests.log`。独立审查P0/P1/P2=0，复跑56/93subtests通过。只准备协议，真实Run/lease→proof→IAM→Platform→Storage读取尚未运行。
+
+只读接线审计确认可复用Agent生产HTTP JWKS、repository claim、proof supplier和generated InstallSkill；后者通过测试setup单独调用，不扩大生产六请求sender。安装command digest沿owner固定3.0.0规则，与request-binding digest不同；下一阶段同库独立Agent schema、现有发布完成后运行reader、停用/撤权/lease失败用例，结束先关闭Agent资源再清IAM/数据库/桶。Agent writer最终门仍进行，Root不抢写子仓。
+
 ## 2026-09-29 — 并行IAM验收支撑交付，Root真实复验通过
 
 可见协助会话「Kokoro IAM 登录链路验收」提交 `a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b` 后停写，仅既有两测试文件与CURRENT/ACCEPTANCE；新增显式Agent source sandbox，默认不导出执行凭据，非法配置建资源前拒绝，生产认证/契约/SQL未改。独立固定SHA审查P0/P1/P2=0。Root重跑Node24完整 `pnpm verify` exit0，102文件/938测试及format/lint/typecheck/contract/breaking/SDK/build通过；真实PG/Redis单文件集成 **46/46**、62.91秒、exit0，包含client_credentials、tenant_execution introspection和自有资源清理。日志 `/tmp/kokoro-iam-a6df-root-verify.log`、`/tmp/kokoro-iam-a6df-root-integration.log`。

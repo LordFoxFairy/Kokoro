@@ -1,5 +1,13 @@
 # Kokoro 后端闭环任务总表
 
+## 进行中：W3-ROOT-AGENT-SOURCE-COMPOSITION（真实读取验收）
+
+Root唯一writer，基线 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro` main `4df6ff89`，任务外`uv.lock`保留；Agent runtime由原writer独占。本片先复用 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 与对应Root测试，扩展已有IAM ready边界的显式Source模式、严格额外凭据及secret清单，不新增文件或改变生产契约。原模式拒绝新增credential，新模式要求精确字段；本步不自行启动任何服务。只读 `agent_launch_fixed_review` 已核Agent固定dd34 claim/proof/generated InstallSkill接线，变化中reader仅作接口准备，不作验收。
+
+后续编排在同一自有临时库增加Agent独立schema，经owner installer/真实HTTP入站及repo claim生成LeasedRun，生产signer/lease reader与生产HTTP JWKS供IAM验签；Platform测试surfaces显式加skill-installation，使用generated InstallSkill RPC准备安装，不扩大生产6请求sender。生产typed reader/backend验证原字节、fresh授权、停用/撤权/lease失效拒读。复用现有发布与资源清理，不复制整套runner、伪造proof或跨ownerSQL。较大owner驱动优先独立Root E2E辅助文件（跨owner场景由Root持有），与放Agent tests/e2e比较并登记接口/cleanup后才新建；现阶段仅既有两文件协议消费。全链须待Agent固定SHA、独立审查与Root全门，必要hook/driver完成后真实执行，不以协议单测标完成。
+
+**当前证据：** IAM `a6dfd196`已验；Root `4df6ff89`完整scripts/tests **992 pass/281 subtests**（120.21秒）、topology/checkpoint PASS。新增Source ready两测试先RED2（入口缺少显式参数）再GREEN56/93subtests，最终全Root **994 pass/291 subtests**（117.20秒）；仅准备协议，不是签名proof/包读取实测。Root负责提交、后续可用固定SHA审查与组合验证；3310不动。
+
 ## 并行验收支撑：W3-IAM-AGENT-SOURCE-HOST（仅测试夹具，不改业务）
 
 | 项 | 任务卡 / 放置门 |
