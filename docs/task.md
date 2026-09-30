@@ -2655,3 +2655,69 @@ AGENT-HITL-EVENT-CONTRACT → BFF-HITL-DOC-GATE：先由Agent发布可固定消�
 ### ROOT-LIVE-FOLLOWUP-FAIL-READONLY 交接
 
 原只读Agent续派已停。源码确认System对unknown没有可用候选时正式503 MODEL_UNAVAILABLE/retryable=true；Agent client保留字段，但supervisor统一转assembly_failed，BFF固定详情Agent run failed，Web错解释为配置问题。此是独立源码可复现的错误分类缺陷，不足以将日志224关联本次Run。Root真实追问UI已FAIL且后续失败/重试卡消失；直接同源snapshot被IAB客户端阻止，未改走curl/其他浏览器/注入fetch。下一P0先做Agent owner错误机器分类文档/契约门，再固定消费者和durable失败水合验证；不把中性文案当精准分类修复，不新增healthy回退、重试循环或兼容双轨。
+
+## 2026-09-30 — P0失败语义与恢复并行调查
+
+上一goal轮归类为progress：BFF已集成来源后置门、原生IAB真实登录/首回答/终态刷新及续问FAIL提供新证据，台账6dac1d96已提交。本轮重读当前工作树；保留Root uv.lock/Billing五docs候选。已重poll唯一受管29394，仍live，未重启。
+
+| ID / 状态 | Owner / Agent / 模式 | 基线、范围、依赖、验收与交付 |
+| --- | --- | --- |
+| AGENT-FAILURE-CONTRACT-DESIGN / 已审查（仅设计） | Agent执行错误owner；agent_typed_skill_reader_owner，只读；Root审查 | Root6dac1d96/Agent58b59cf7 main clean；仅现3设计面、protocol/HTTP机器/provenance/checker/生成入口及相关tests。目标比较机器契约发布方案，决定安全分类与发布/consumer顺序，SQL影响和精准文件门；无写入/运行数据/进程/网络/Git权限。交付源码/文档缺口、机器放置表、RED方案、后续owner；不把unknown健康回退或改中性文案当闭环。 |
+| BFF-FAILED-HYDRATION-AUDIT / 已审查（只读调查） | BFF/Web失败投影与水合；bff_personal_installation_owner，只读；Root审查 | BFF15e07fa4/Web840fa7e0 main clean；只现设计/contract/failed projection、message持久化、水合reducer及tests。定位为何失败/重试卡消失，区分现字段能否修复与需新contract；禁止访问被IAB拒绝的snapshot/改通道验证、共享服务或数据。交付可证伪断言、源码行号、定点RED及精准owner范围，不推断本次Run身份。 |
+
+Root保留总体契约裁决、文档门、Git和浏览器；两独立只读面并行，一名Agent writer后续只在已审文档门获授权；尚未允许业务源码修改。无新目录/进程/owner/数据writer。失败分类由Agent持久执行事实发布，BFF安全Product投影，Web只按固定机器码本地化；拒绝Web猜上游message/暴露原异常、System忽略unknown或无限retry。现payload_json wire是否引入typed owner机器artifact须先比较现checker/provenance生成边界，不在Root新建可编辑契约中心。HITL/files原完整后继目标不删除，但P0失败传播先于其实施。
+
+### WEB-FAILED-SNAPSHOT-RESTORE / 文档与RED阶段任务卡
+
+P0；Web唯一writer续派bff_personal_installation_owner（此前只读已停），Root独占index/commit与集成验证，bff_personal_consumer_review独立只读审查。基线 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` main `840fa7e0ff9c4d241daca0c297b120f34821018e` clean；Root6dac1d96 +本任务表在途，仅Root本表dirty/Billing候选/uv.lock须保留。依赖BFF15e07fa4的未变v1 OpenAPI40578534、现message.status failed；无新API/SQL/生成物/目录/依赖，Owner仍Web的`core/hydration.ts`。淘汰在UI猜空正文或在machine保留旧内存错误方案，采用权威snapshot实际failed事实；细节code/retryable仍等Agent→BFF正式契约，不以本片宣布精准失败链完成。
+
+目标规则：按owner数组顺序的最后message必须是failed assistant，且没有active_run及未决pending pause，才恢复runStatus=failed；runError=null，不编造code/message/run或重放watermark前事件。后续completed/pending/streaming、尾部新user、空snapshot、active_run/未决pause均不能因历史failed而标本轮failed；保留唯一messages/steps/resumeCursor等事实。沿现UI通用failure/手动retry，无自动重跑。若源码中“last message”不足以符合真实排序/状态契约先报告Root，不自行扩大语义。
+
+现阶段只允许现Web `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT,ACCEPTANCE}.md` 收敛该窄设计与待验声明，以及 `tests/core/hydration.test.ts`、`tests/engine/machine.test.ts` 的目标RED断言。先五docs冻结→Root/独立review文档门，再tests-only观察RED；业务source暂不授权。完整代码阶段只拟增加现`src/core/hydration.ts`、必要现`tests/ui/app-frame.smoke.test.tsx`（恢复失败卡/点击retry行为），不创建文件/修改UI设计/i18n/其他仓/lockfile或启动共享服务。worker提交责任为交文件清单/hash，由Root精确提交。
+
+验证：先现定点baseline与RED的生产水合/machine实际断言；GREEN后Node22完整pnpm check（contract、arch、lint、typecheck、全test、build），现隔离E2E仅使用测试自身资源且不得3310/共享infra；Root独立重跑。真正IAB reload/失败/手动retry为后继组合门，被拒snapshot不换通道。交付阶段、命令实际退出码/数量、hash、未决风险和剩余精确错误契约owner。
+
+### AGENT-FAILURE-CONTRACT 放置裁决（待Web切片后实施）
+
+| 项 | 当前事实与目标结论 |
+| --- | --- |
+| Owner/当前事实 | Agent58b59cf7执行failure唯一writer；System client保存code/retryable，初次与恢复装配统一assembly_failed；Run payload含异常类名/原文，Chat投影只留status/code。HTTP2.0 payload_json仅string，Redis Pydantic与HTTP安全投影不是同一形状。 |
+| 目标职责 | Agent发布不含诊断原文的RunFailure={code,retryable}、ChatFailure={status:failed,code,retryable}；精确typed ModelResolutionError+allowlist分类，未知失败不猜str，不改变准入/取消/幂等/计费或自动retry。 |
+| 目录两案/粒度 | 采用既有手审canonical OpenAPI schema-first两个decoded profile与event_type=run.failed的具名映射，复用现contract/OpenAPI；淘汰新全事件sidecar/所有payload强制failure contentSchema。由单责`scripts/generate_failure_models.py`单向生成现protocol内`run_failure_generated.py`，不新目录。相比generated/agent_run_failure.py避免protocol向内依赖例外；protocol仅stdlib/Pydantic规则不放宽。 |
+| 依赖 | OpenAPI唯一可编辑failure schema，生成类型/闭集code只读；protocol/events、execution归码、chat projection使用同一生成failure事实。初次/恢复worker仅调用唯一归码收口，禁止客户端业务/Row进入wire。不动外部Platform/Storage生成树与proof schema/vector。 |
+| 数据/API | HTTP artifact3.0.0、URL沿既有/v1，明确prelaunch coordinated breaking；required retryable、删除raw error_kind/message、新enum同时发布；status/code/retryable沿现outbox+Chat JSON持久化，无DDL/事务重写。旧retained JSON不默读/补字段/guess；本地测试用正常自有fresh资源，真实切换由Root在精确owned组合最后有序停止/清理/新fresh启动，不清共享/他人数据。 |
+| 分类 | MODEL_UNAVAILABLE→model_unavailable，retryable取client已严格校验的owner bool（现System正式为true）；SYSTEM_UNAVAILABLE→dependency_unavailable，同样取严格owner bool；本地MODEL_RESOLUTION_UNAVAILABLE→dependency_unavailable，取Agent client自身明确产生的true。POLICY_DENIED/FORBIDDEN→model_access_denied、已验证false；ROUTE_NOT_FOUND/INVALID_ARGUMENT及服务身份配置/认证类→assembly_failed、已验证false；本地MODEL_RESOLVER_NOT_CONFIGURED/MODEL_REQUEST_INVALID→assembly_failed false；MODEL_RESPONSE_INVALID/TOO_LARGE→contract_incompatible false；未知owner归MODEL_RESOLUTION_FAILED→internal_error false。非bool标记或owner已定义不可重试code却给true均视为contract_incompatible false，不继承不可信tuple。其他既有错误false；取消继续传播。retryable只是分类/手动提示，不自动重跑或承诺无收费。 |
+| 删除 | 现手写failure enum/model与raw异常wire、catch-all覆盖已知typed模型错误；不是仅改文案。BFF/Web必须固定新机器artifact后才能展示精准语义。 |
+| 验证/切换 | 三设计面先审，再runtime/codegen drift/strict坏字段/secret sentinel、初次+恢复、Chat安全投影、lease/cancel/单终态；完整uv门与自有PG/Redis持久回放。Agent固定commit→BFF strict消费/发布Product+AG-UI→Web固定消费→Rootinventory/composition/真实failed snapshot/replay/手动retry，顺序不得颠倒；当前未发布/未验。 |
+
+新增文件仅两个普通文件，均有独立变化原因（确定性机器生成/纯wire生成物），不存在新一级模块/进程/owner。所有业务源码范围和三面门须由后继Agent唯一writer按精确任务卡获批，本裁决不授权当前写入。
+
+#### AGENT-FAILURE-CONTRACT 设计评审修订（Root裁决）
+
+独立审查初版0P0/2P1/1P2，不放行源码。修正为：
+
+1. 上表逐条明确retryable来源/值，MODEL_UNAVAILABLE使用owner严格bool，现事实true；本地transport由Agent自身生成true。非bool及不可重试code/true矛盾tuple关闭为contract_incompatible/false。RED至少含MODEL_UNAVAILABLE true/false忠实保留、SYSTEM_UNAVAILABLE、local transport、POLICY_DENIED/FORBIDDEN false及true拒绝、unknown/invalid false；模型unknown准入不变。公开schema与生成模型只能允许model_unavailable/dependency_unavailable标true，其余code必须false，不靠TS/Python类型提示假校验。
+2. 删除仅指Agent RunFailure原始error_kind/message，ChatFailure仅status/code/retryable；不是删除标准AG-UI RUN_ERROR.message。BFF将按正式safe code映射固定脱敏标准message，durable失败事实保留code/retryable，Web按code本地化/分支，不用message猜原因。BFF后继RED覆盖每code固定message、任意exception/secret不进入message、未知code fail closed；不把私有Agent payload直接发布给Browser。
+3. 唯一基础Failure schema定义code+retryable及合法tuple，RunFailure引用它，ChatFailure组合引用再加const failed；两个profile不得复制可漂移枚举。生成器check必须核完整bytes、source digest/header、严格models、闭集/tuple相同、唯一event_type=run.failed映射、generated direct digest及aggregate。protocol零向内依赖无例外。旧字段清理包括protocol/events.py、execution/events.py、domain/chat/projection.py和相关public/invoke/supervisor/chat tests；execution-proof同名error_kind属于另一contract，不动proof schema/vectors/direct digest。
+
+精确文件门与Agent三文档后继仍待审；本修订只更新Root总设计，不表示子仓实现/生成入口已经存在。
+
+设计复审0/0/0已关闭原2P1/1P2。后继Agent精确source文件门必须包含`clients/system.py`：现client按HTTPstatus掩码owner retryable，会丢失原tuple；需按正式owner code/响应合同校验tuple，矛盾回contract-invalid，不把未经验证的字段直接保留。生成/公开模型、supervisor归码与client边界的RED共同证明源语义。此仍为后继目标，现Agent source不写。
+
+### WEB-FAILED-SNAPSHOT-RESTORE GREEN 放行与边界修复
+
+Root重新核tests当前28c19a5a/a77df4a0、小patchdabdd065，独立定点RED实际3fail/45pass（48），五docs冻结不变；worker先前清整文件格式噪声时临时恢复其自有两tests，旧c150/68ee manifest废止，不是并发他人回滚。当前基线与现测试证明后放行唯一Web writer仅src/core/hydration.ts。首定点GREEN48通过但完整check在typecheck FAIL（异构it.each table类型），允许现测试显式tuple标注。Root源码审查捕获pending_pauses全length判断过严；正式pause状态允许pending/resolved/cancelled/expired，批准规则仅未决pending阻挡。允许现hydration测试增加三终态pause RED，再复用现pending筛选GREEN，不改其他职责/契约或自动retry。独立审查与Root最终完整门仍待执行。
+
+### AGENT-FAILURE-CONTRACT-DOC-GATE 精确后继卡（尚未派写）
+
+P0；前置Web失败水合切片提交/Root验收，Agent58b59cf7 main clean。原Agent负责人agent_typed_skill_reader_owner为候选唯一writer，Root唯一index/commit；只读当前三面审计已完成。第一阶段只准docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md与CURRENT记录当前/目标；三面必须符合上文整体放置裁决。Owner仍Agent，SQL canonical database/schema.sql原bytes、不新增DDL/owner/进程/目录。冻结→Root/独立review→机器/tests RED→source分阶段，尚不放源码。
+
+后继精确候选：contract/openapi/v1/openapi.json、contract/provenance.json、contract/README.md；仅两新普通文件scripts/generate_failure_models.py及src/kokoro_agent/protocol/run_failure_generated.py；既有clients/system.py、protocol/events.py、protocol/__init__.py、execution/events.py、domain/chat/projection.py、worker/supervisor_execution.py、worker/supervisor_control.py、contract_check.py、chat_contract_check.py、execution_proof_contract.py。最后者只owner inventory/provenance，不改proof schema/vector/digest/签名验证。现tests/unit/model/test_system_client.py、tests/unit/execution/{test_invoke,test_supervisor}.py、tests/unit/chat/test_projection.py、tests/contract/{test_machine_contract,test_public_contract,test_chat_response_envelopes,test_execution_proof_artifact,test_execution_proof_jwks_http}.py、tests/acceptance/test_http_ingress.py；HTTP/JWKS版本断言明确从2.0到3.0，其proof不变。此集合待三文档审查后按最小切片授权，不一次执行全部。
+
+验证：唯一base枚举/合法tuple、RunFailure ref、ChatFailure status=failed与run.failed decoded映射；generator完整bytes/header/hash drift与严格runtime；client code+HTTP+retryable合同与secret sentinel；初次/恢复/取消/lease/单终态；安全Run→Chat durable投影。完整uv门/architecture保持不放宽；真实integration测试使用Root确认的owned PG/Redis资源。现acceptance虽随机schema却写固定REQUESTS_STREAM，禁止与活跃Agent RedisDB10并发，不仅凭schema隔离就宣称安全，另用已确认空的测试logical DB及owned keys，不flush共享。公开3.0 commit后BFF严格消费、Web固定消费、Root组合切换真实E2E，不能以owner tests替代整链。
+
+### WEB-FAILED-SNAPSHOT-RESTORE 已验收 / ROOT-WEB-FAILED-INTEGRATION
+
+Web5058ae2c400dd8be1964bba5df03fd7ce5b52133 main clean，原writer停写。八文件c2727c93清单，独立最终0/0/0关闭原P2；Root显式Node22完整contract109/arch37/lint/typecheck/test1799/build exit0。隔离3387 Web治理E2E11pass/1既定mobile rail skip（8.3s）、端口已回收；自身next-env生成dev路径经精确bytes核对恢复，reports移/tmp保留、不入Git。原Node24首check不当Node22证据。此为通用failed水合/显式retry窄片；精确错误与真实整链后继。
+
+Root现唯一writer/index仅apps/kokoro-app gitlink、consumer-inventory.json与三台账；38Web来源指针/34路径从5058blob重算，引用artifact digest实际0改变，generated/机器/SQL均原bytes，状态3active/13broken原样。无新业务owner/目录/依赖；既有治理tests验证来源一致性。提交后strict relay/checkpoint/topology、完整Root scripts/tests；uv.lock/Billing候选不暂存。后继Agent文档门仍未派写。

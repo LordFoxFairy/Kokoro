@@ -2151,3 +2151,21 @@ Root原受管入口成功启动唯一session29394/launcher65119，workspace `/Us
 原生IAB读取当前正式同源snapshot导航实际ERR_BLOCKED_BY_CLIENT，Root未换通道/注入fetch/内部认证访问绕过；失败身份关联未取得。只读Agent续派确认System unknown→503 MODEL_UNAVAILABLE/retryable=true是既定准入，Agent catch-all→assembly_failed/BFF generic详情/Web配置错误文案是确定源码语义丢失；同期日志不能证明追问具体错误码。只读员未写/测试/推理/访问数据，已停。该P0错误分类/失败持久展示待owner契约门，完整Chat E2E保持FAIL，非全局blocked/complete。
 
 三台账本轮只读审查bff_personal_consumer_review为0/0/0；Root独立`python3 -m pytest -q scripts/tests/test_contract_checkpoint.py scripts/tests/test_iam_relay_policy.py scripts/tests/test_repository_topology.py`实际54pass（39.44s），日志`/tmp/kokoro-iab-consent-current-ledger-tests.log`，session81980exit0已消费。diff check通过；最终进程观测同29394自有组均live、无Z、3310仍仅该组监听。只提交三台账，任务外uv.lock/Billing候选不暂存。此为台账/现组合验收，不改变追问FAIL或整体goal状态。
+
+## 2026-09-30 — P0失败契约/水合新轮
+
+当前Root6dac1d96；上一goal轮为progress（新IAB窄门/追问FAIL与台账提交）。重poll唯一29394仍live，未重启/新增后台进程。两原生只读任务已停：Agent audit证实初次和恢复装配都覆盖ModelResolutionError；Run→Chat安全投影还丢retryable，HTTP payload_json未描述decoded failure。Root裁决现OpenAPI两个profile为唯一可编辑、单向生成protocol内只读类型、保留零向内依赖，3.0prelaunch Agent→BFF→Web→Root有序切换；不放宽unknown、不自动重跑、不转发异常原文。
+
+BFF/Web只读证实snapshot水合丢messages[].status，RUN_ERROR已被watermark覆盖因而不会再replay，failed/重试卡可能回idle；这是可测通用缺陷，未冒称本次唯一根因。现contract足以恢复通用failure，精确code/retryable仍需后继发布。Web原只读员续派唯一Web docs writer，先现五docs→审查→tests-only RED→授权source，其他仓无人写；Root独占本台账/Git。RootNode22未改source/tests基线 `pnpm exec vitest run tests/core/hydration.test.ts tests/engine/machine.test.ts` exit0 **36/36**（770ms），`/tmp/kokoro-web-failed-snapshot-baseline.log`，session88133已消费；只是行为基线，不是目标通过。
+
+Web五docs46insert文档门冻结manifest f0ddbc26，Root5/5实际hash及HEAD840fa7e0核过；独立0/0/0通过，Node22 contract109/18 exit0仅文档/现合同验证。审查员一次误写基线旧49后缀，已明确更正为840fa7e0ff9c4d241daca0c297b120f34821018e，不沿用误写。Root已放两现tests-only RED，source仍锁。
+
+Agent总体failure设计初审0P0/2P1/1P2（retryable来源、标准AGUI message区别、唯一profile/生成清理边界）；Root现task修订逐条规则及strict非法tuple、不改proof、保留标准RUN_ERROR固定安全message，复审0/0/0原项关闭。该设计通过不等于Agent3文档/runtime已发布，仍在Web切片后串行推进；client当前按HTTPstatus掩码retryability也需入精确Agent门，不能只改supervisor。无人访问被拒snapshot、无人更改真实积分。
+
+Web RED当前小patchRoot实际3fail/45pass/48、exit1（561ms），日志`/tmp/kokoro-web-failed-snapshot-root-red.log`。worker短暂恢复其自有两tests去除整文件Prettier噪声后重施，当前hash28c19a5a/a77df4a0及小patchdabdd065已复核，旧tests manifest不再引用；五docs未变。GREEN已放行仅既有hydration源；首定点48pass但完整check真实typecheck FAIL（异构测试表推断），未声明整体通过。Root同时指出全pause length过严，合同允许三非pending终态，后续approved三case RED→仅pending阻挡GREEN；原断言不放宽。Agent下一门精确文件表只读并行，未有第二子仓writer/额外服务/积分变更。
+
+Web测试独立预审0P0/0P1/1P2，与Root发现同项：非pending pause正例缺口。已授权三非pending状态RED→复用pending；现AppFrame以thread.runStatus显示失败，既有failure UI测试及新增engine retry覆盖足够，不扩UI布局/另建组件。Agent精确只读文件门完成，HTTP/JWKS版本断言与clients/system.py纳入后继，acceptance固定Redis stream必须隔离DB10；当前无Agent writer。原生IAB现tab3观测命令超时，文档排障/现tab清单确认/app仍存在，仅markHandoff，不重登/换浏览器/访问被拒API；本轮浏览器没有新的通过证据。
+
+Root首次独立check命令登录shell自动切到Node24.20（log明确engine warning），该轮不作为Node22验收；待其自有session7326终止后显式PATH固定22.22.2重跑，保留首次日志。worker日志无此warning，仍必须Root正确runtime独立验收，不凭默认which结果断言后续命令runtime。
+
+Web候选c2727c93最终独立0/0/0，8/8 frozen hashes在Root完整检查前后相同；原P2三非pending暂停边界闭合。Root首次Node24 check实际exit0但不作为Node22门；显式22.22.2重跑session69649实际exit0已消费：contract109、arch37、162文件1799tests、lint/typecheck/build通过，`/tmp/kokoro-web-failed-snapshot-root-node22-check.log`。隔离3387 CI治理Playwrightsession40750实际exit0已消费，11pass/1既定mobile rail skip（8.3s），`/tmp/kokoro-web-failed-snapshot-root-e2e.log`；3387监听0，仅自身next-env exactdev生成差异还原，report/testresults移到/tmp保留。没有拿unconfigured预览测试冒充正式IAM/真实failure门。Root精确提交Web八文件5058ae2c，子仓clean。Root随后仅38Web来源指针重钉34raw路径到5058，digest实际0变化，3active/13broken不改；组合后置门待提交后实跑。

@@ -2,6 +2,9 @@
 
 **当前最新验收（Root `7c13378e3e752b72c170cfdf3629cca743db5b81`）：** BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已验收、clean并集成。Root提交后strict relay/checkpoint/topology均独立exit0；完整 `scripts/tests` **1103 passed / 3 native依赖skip / 455 subtests**，108.74秒。新全仓标准门实际exit1，仍137违例/0 unverified；main-only实际exit1，主仓和11子仓本地/远端均只有main，但Billing五docs候选及任务外Root `uv.lock` 未提交，不称全体clean。此前BFF pure506pass1skip、fresh install/target8/full47真实owner integration通过及fixture失败历史保留；来源库存仍3active/13broken。
 
+
+**Web最新owner验收（2026-09-30）：** `5058ae2c400dd8be1964bba5df03fd7ce5b52133` 已由Root精确提交八文件，子仓clean。独立最终review0/0/0、8/8冻结hash一致；Root显式Node22.22.2完整 `pnpm check` exit0：contract109、architecture37、lint/typecheck、162文件1799tests、build；隔离3387 Web治理Playwright11pass/1既定mobile rail skip（8.3s），不是真实IAM/模型E2E。首Root check误用Node24，保留原日志而不当Node22验收；worker首typecheck与非pending pause RED缺陷已严格修复。仅恢复owner snapshot绝对尾failed assistant且无active_run/未决pause的通用failed/error=null，不自动重跑、无新contract/SQL/兼容层。Root组合库存38个Web来源指针重钉，34路径raw digest原bytes，3active/13broken不变；Root组合后置门待本片提交后运行。
+
 **当前运行与原生浏览器：** 唯一受管组session29394/launcher65119已正常启动3310，workspace `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-xm_q35q2`，加载当前固定Web840/BFF15e/Agent58b/Systemc0a来源，用户指定gpt-5.6-luna私有profile；空Skills、Storage未配置。新原生IAB tab3走正式 `/login`，账号提交通过。经用户明确同意首次权限，原签名过期后重新进入同范围新签名并完成consent/callback，已实际回到 `/app`。原生UI首消息得到30条建议及END标记，终态Stop消失；刷新前后回答全文453个JS字符口径（string.length）一致、article唯一。这仅证明新登录/真实回答/终态刷新子门，未捕获流式中途刷新，历史terminal DOM失败不改为PASS。同会话追问实际失败：曾显示“空间配置有误”/Agent run failed，后续状态观察中失败卡与重试入口消失，仅留下用户消息；续问及失败持久展示门FAIL。同期System日志有unknown与resolve error，但未取得同Run身份关联，不能确认本次根因。原生IAB访问正式同源snapshot被浏览器ERR_BLOCKED_BY_CLIENT拒绝，未换通道绕过。全部能力、正式积分链仍未闭环。下文较早运行停止/候选记录为历史，不是当前派工。
 
 **最新复验（BFF activeRun候选，Root604dc12f）：** 12文件冻结hash核对，独立最终源码审查0/0/0、无infra聚焦20pass；Root Node22 format/lint/typecheck/contract191/architecture27/test506pass1skip/build全部exit0，日志`/tmp/kokoro-bff-active-run-root-final-gates.log`。真实自有PG首次GREEN尝试为7pass/1fail/0skip（`/tmp/kokoro-bff-active-run-real-pg-green.log`）：newer-run终态因fixture只有consumer registration、缺正常ChatTurn assistant/dispatch绑定而触发`AGUI_ASSISTANT_BINDING_MISSING`。未放宽生产guard，原owner仅修fixture和CURRENT；自有库/新增库0、Redis新增0/baseline保留。仍未验收/提交BFF、未启动3310、未通过浏览器全文门。Billing只读核查确认新Metering当前按功能quantity=1定价，无成本倍率规则；1.4与9.4基准待用户确认，未写配置或执行账务。
@@ -25,7 +28,7 @@ Root `6fdcba6e` 基线的三文件生命周期切片已由原writer停写、独�
 | 路径 | 固定 commit |
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
-| `apps/kokoro-app` | `840fa7e0ff9c4d241daca0c297b120f34821018e` |
+| `apps/kokoro-app` | `5058ae2c400dd8be1964bba5df03fd7ce5b52133` |
 | `apps/kokoro-bff` | `15e07fa44670bc13705ce3f6f700e73afcb72ccc` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |
