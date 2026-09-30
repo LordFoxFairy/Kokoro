@@ -21,7 +21,7 @@
 
 | 优先级 | 目标 / 验收定义 | 当前事实 / 负责人 |
 | --- | --- | --- |
-| P0 | 当前3310：真实表单登录→callback→/app→刷新仍登录；无可见连接/整页重试中转 | Root；服务存活不等于验收。当前右侧仍旧交互，CUA focus超时，可见链未验；不扩大IAM权限设计，不让此问题卡所有owner |
+| P0 | 当前3310：真实表单登录→callback→/app→刷新仍登录；无可见连接/整页重试中转 | Root最终验收；run_metadata_independent_review负责独立当前HTTP登录验证（不是右侧DOM），范围仅现3310同源API、专用临时测试凭据与私有cookie jar；不改文件/index、不启动或重启服务、不访问SQL/清Redis/用户账号，不操作浏览器。只报告状态码/布尔证据不输出密码/token/签名query；自身session可用时依现logout仅退出自己的session，拒绝全成员/全租户撤销。基线Root ad9a74ed/当前服务原组三PID；服务存活不等于验收。当前右侧仍旧交互，CUA focus超时，可见链未验；不扩大IAM权限设计，不让此问题卡所有owner |
 | P1 | 同一用户实际发送→标准worker/真实模型→AG-UI回复→刷新保留 | Root；历史固定组合通过不是当前3310产品已交付。先基本可见链，再非空Skill链，不以Source helper替代模型 |
 | P2 | 个人Skill：发布→显式安装/启用→选择→聊天执行 | Platform当前v5机器writer继续已批准切片、完成即停；BFF只读prep已交付，无文件或测试执行，待owner机器/runtime后固定消费；未交付产品 |
 | 后继 | MCP/其他能力、owner生命周期/SQL/契约、完整组合、最后Billing | 全目标保留，不本轮另开大范围研究/运维或同时重写所有仓 |
