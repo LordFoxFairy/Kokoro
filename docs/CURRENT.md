@@ -22,6 +22,8 @@
 
 `apps/kokoro-app` 是本轮唯一正式前端；Mori 不参与本轮业务重构。当前物理名称仍为 `apps/kokoro-capability`，业务目标为 Platform，重命名/cutover 未完成；不使用 `apps/kokoro/` alias。模型目录归 System，不新建 kokoro-model。
 
+**用户可见失败仍为P0：** 用户已确认 IAM 表单点击登录未进入应用；当前 HTTP 登录/聊天 PASS 不替代用户交互验收，整体尚未闭环。主控不再要求用户辨认按钮，不以重启或继续改样式代替故障证据。
+
 ## 最新验收边界
 
 | 能力 | 当前证据 | 尚未证明 |
@@ -48,7 +50,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 3. Browser signed PUT/CORS：已探测本地MinIO返回501；HTTP Source GET/PUT或预览Playwright不替代浏览器发布门。Storage orphan retirement/quarantine 等生命周期仍开放。
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
 5. 最近全仓标准门136项违规，来源库存16边/13 declared broken；这些是仍开放队列，不因局部PASS改绿。完整goal仍active，Billing最后。
-6. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。main-only最近12仓验证通过，后续以实际分支门为准，不新建分支/PR。
+6. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮12仓本地/远程均只有main；完整main-only门因Root任务外uv.lock及Web/BFF/Platform在途修改FAIL，不称全体clean，不新建分支/PR。
 
 ## 验证和归属
 

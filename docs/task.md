@@ -1,5 +1,29 @@
 # Kokoro 后端闭环任务总表
 
+## WEB-EXPIRED-SUBMIT：既有认证边界窄修授写（2026-09-30）
+
+归属 Web 既有签名交互/CSRF 同源 adapter，不改变 IAM owner、身份契约或 UI 设计；现三面文档的 signed query/一次CSRF方案继续有效。Root授原 Web 负责人唯一 writer，main1dc211bb clean基线，Root提交/重启/集成验收。
+
+- 目标：用稳定 RED 证明“签名已到期、CSRF仍有效”不得先提交密码；原生旧DOM点击后进入新正规表单，不出现JSON错误/中转重试页。此为确认源码边界，不冒称已找到用户这次点击根因。
+- 写入集：现 `src/lib/server/iam-sign-in-target.ts`（既有raw target职责内收敛GET/POST共用到期判断）、`src/proxy.ts`、`src/app/auth/sign-in/route.ts`；现 `tests/system/iam-relay-next-http.integration.test.ts`、`tests/server/proxy-sign-in.test.ts`、必要 `tests/app/iam-relay-route.test.ts`；只同步 `docs/CURRENT.md` 本片事实。
+- 两位置选择：采用现 server-only target helper，避免GET/POST判定漂移；淘汰新 auth module、新页面或 duplicated expiration helper。普通扩现文件、不新目录/新owner/Schema/依赖/锁/alias/fallback。
+- 验证：先过期且有效CSRF的明确RED；原生旧DOM失效点击与新CSRF/无CSP violation，登记浏览器签发CSRF精确清理；修复后上述GREEN、现unit/contract/architecture/lint/typecheck/build；Root再独立复验。过期恢复是新OIDC交互，不放宽签名/期限、不绕过凭据/CSRF/同源，机器403行为保留。
+- 资源：允许现隔离Next+mockBFF动态端口和现Redis7仅自有prefix/token，无PG/新infra/3310操作；停止测试进程并清理全部自身keys/tmp，权限/日志不输出密码/token/完整签名query。
+- 交付：停写精确文件/hash、RED/GREEN/实际exit与未验项；不得提交/shared index、改Root或其他仓。Root可见真实IAM/当前3310验收仍独立开放，不把fixture当用户窗口。
+
+## 当前用户失败优先与并行验收（2026-09-30）
+
+用户已明确截图为 IAM 原生登录表单；不再询问入口或解释按钮。用户报告点击仍未进入应用，**P0 可见登录未验收**；当前 3310 HTTP PASS 不替代这一失败，更不替代全部产品。整体九 owner/全部产品能力目标不缩减。
+
+| 任务 | 负责人、基线、范围 | 完成条件与约束 |
+| --- | --- | --- |
+| WEB-LOGIN-SUBMIT-REGRESSION | Web 原负责人；main 1dc211bb；只读诊断、执行现有 tests/system/iam-relay-next-http.integration.test.ts 中真实 Chromium 表单测试 | Node22，复用现 Redis、动态独占 Next/mock BFF fixture，清理仅本 fixture prefix/token；不改文件、不接3310、不重启用户服务。报告实际 submit/POST/反馈，fixture 不冒称真实 IAM 或右侧浏览器。下一窄修须先给稳定 RED 与文件集再授写。已确认 POST signed-exp 边界缺口与当前用户根因分开记录，不猜修。 |
+| BFF-PERSONAL-DOC-REVIEW | 独立只读审查员；BFF main571b51de + 四已交付 docs diff | 对照 Platform 固定0dd60af/v5及 TS08/SQL03/API05 检查当前态/目标态、owner/五方法/九安全字段/receipt与分页；不改文件/index、无服务/数据操作。Root Node22复跑门，精确提交后授消费者代码片，与 Platform runtime 并行。 |
+| PLATFORM-PERSONAL-RUNTIME | 原 Platform owner；既有精确任务卡持续有效 | 正式个人安装五方法实现与真实权限/事务/重放测试；不扩大 Schema、契约、锁或其他仓。当前进行中，不冒称产品完成。 |
+| ROOT-INTEGRATION | 主控；main58b69b2f；共享台账/index/当前唯一受管65687 | 审查、提交、来源 pin 与集成验证；当前右侧控制20秒超时，不旁路、不循环重启。保留用户失败为P0，同时推进独立能力链。 |
+
+全部产品验收仍包含登录/会话、真实聊天与流式恢复、非空Skill/MCP/工具、审批/恢复/取消、文件与作品、私有性/显式分享、项目/团队、调度与恢复、最后支付。每项须具备当前来源代码、独立门与实际用户流程证据；测试数量不是完成比例。
+
 ## PLATFORM-PERSONAL-RUNTIME：已授写；BFF-PERSONAL-DOC-GATE：独立并行文档门（2026-09-30）
 
 | 项 | Root 裁决/任务卡 |
@@ -11,8 +35,8 @@
 | Platform允许测试 | 新unit四Product admission/request-binding/rpc/mapper测试；现unit skill-installation.test.ts/skills-module.test.ts、integration nest-ingress.test.ts/skill-installation.integration.test.ts、fixtures nest-application.ts、architecture platform-execution-operations.test.ts。现四设计/CURRENT、contract/README及package格式范围可同步，无依赖升级。 |
 | Product语义 | 五Personal方法、exact本tenant本人source/user target、可信BFFmetadata且先当前IAM；9safe白名单/三独立digest/optional分页presence与独立cursor绑定。复用既有catalog写/projection读scope，不新role或IAMsurface。所有receipt出口当前授权及身份绑定；true-enable含no-op/replay须freshCLEAN/health及事务source/install fence，false/remove不因坏包阻止收紧。20秒同预算/5秒fresh、Serializable receipt/business/outbox唯一事务，ACK unknown不重施状态。 |
 | clean-slate/排除 | 删除被替代parser/input/重复编排；不迁移旧数据，不增加legacy alias/fallback/双写。execution保留有效Agent proof职责而非生产兼容入口。不改Prisma/schema/Proto/generated/v1–v5发布bytes/provenance/lock/IAM/BFF/Web/Root/3310；实际越界先报Root。 |
-| BFF文档裁决 | 仅docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md/CURRENT.md；机器源固定Platform0dd60af/v5 aggregate bc233fe3…b4d6ca，当前caller仍v4而非已升级。公开目标/v1/skill-installations POST+GET、/{installation_id} GET+DELETE、/{installation_id}/enabled PUT；写200（已存在receipt语义），删除返回removed=true/enabled=false。BFF自己canonical OpenAPI后继发布，9safe只做wire到JSON的整数/UTC映射，不新SQL/Redis安装表/receipt。替换旧安装503stub相关契约/路径，不留alias；原五owner方法、当前IAM/同源/public边界相互一致，Publish显式不自动安装已裁决，不重复询问。 |
-| 验证/交接 | Platform先权限/receipt/fresh/parser/分页/digest/CAS/取消RED→GREEN，Node24静态/默认/build与原execution回归；真PG/integration由Root批准独占fixture后单独验，无自启共享infra/清库/服务。BFF doc门仅文档/现契约schema引用校验，给绝对三文档路径、未决项、实际命令与起始SHA；无contract/src搬迁。writer停写精确文件/hash/日志，Root独立审查再提交；机器/runtime代码不冒充BFF/Web可用。 |
+| BFF文档裁决 | 仅docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md/CURRENT.md；机器源固定Platform0dd60af/v5 aggregate bc233fe3…b4d6ca，当前caller仍v4而非已升级。公开目标/v1/skill-installations POST+GET、/{installation_id} GET+DELETE、/{installation_id}/enabled PUT；写200（已存在receipt语义），删除返回owner installation的installed=false/enabled=false/removed_at存在。BFF自己canonical OpenAPI后继发布，9safe只做wire到JSON的整数/UTC映射，不新SQL/Redis安装表/receipt。替换旧安装503stub相关契约/路径，不留alias；原五owner方法、当前IAM/同源/public边界相互一致，Publish显式不自动安装已裁决，不重复询问。 |
+| 验证/交接 | Platform先权限/receipt/fresh/parser/分页/digest/CAS/取消RED→GREEN，Node24静态/默认/build与原execution回归；真PG/integration由Root批准独占fixture后单独验，无自启共享infra/清库/服务。BFF doc门须精确public receipt形状且不得发明owner不存在的removed字段；仅文档/现契约schema引用校验，给绝对三文档路径、未决项、实际命令与起始SHA；无contract/src搬迁。writer停写精确文件/hash/日志，Root独立审查再提交；机器/runtime代码不冒充BFF/Web可用。 |
 
 
 ## P1-LOCAL-REAL-CHAT：当前3310从登录专用组合接真实聊天（2026-09-30）

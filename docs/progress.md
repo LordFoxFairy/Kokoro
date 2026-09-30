@@ -1,5 +1,17 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 独立审查拒绝错误的安装投影；真实浏览器夹具回归已跑
+
+BFF四文档独立审查 P0=0/P1=1/P2=2：Root先前DELETE `removed=true` 裁决发明owner九字段没有的boolean，已撤回，改owner原生 `installed=false/enabled=false/removed_at`；写receipt精确envelope与change/event/replay，以及资源缺失404/session401需先收敛。原BFF文档owner返修，未授消费者代码，不能冒称文档门通过。Root Node22 当前contract179/179、architecture27/27、schema5pass/1无PG fixture skip；首次umask077让既有broad-permission测试fixture成为0600而1fail，失败日志保留，正常022重跑通过；该fixture环境依赖待消除，不当作产品权限通过证据。
+
+Web原负责人Node22真实Chromium点击错误密码1pass、现过期GET/失效CSRF HTTP2pass；这不是实际IAM/用户窗口。发现浏览器CSRF签发漏登记，Root仅批准本fixture动态origin精确1键清理，已归零/进程退出。Web已获窄片授权，先expired+有效CSRF RED→同源原生旧DOM恢复GREEN与准确清理，再Root独立验；当前用户登录失败仍开放。 Root当前topology/checkpoint PASS；iam-relay-policy因BFF在途dirty FAIL，完整main-only因四工作树在途/任务外变更FAIL，但12仓本地/远程分支均仅main。未放宽检查。
+
+
+## 2026-09-30 — 对齐全产品目标，用户实际登录仍未验收
+
+用户确认问题是 IAM 原生表单提交；停止反复澄清入口。当前受管3310 HTTP 登录/真实空Skill Chat 已通过，但用户点击失败仍是P0，未清零。右侧 CUA getState 本轮20秒超时；不旁路、不重启循环。并行安排 Web 原负责人执行隔离 Chromium 提交门、独立 BFF 三面文档审查，Platform 原负责人继续已授权 runtime。Root统一当前来源、审查/精确提交与真实集成；无兼容旧代码/旧数据的要求继续执行，全部能力目标保留。
+
+
 ## 2026-09-30 — 当前3310正规登录与真实Chat/持久化亲跑通过
 
 Root当前常驻加载c94a4c79的直连launcher（受管session65687、launcher7399、Web7874监听3310），真实IAM/System/BFF/Web、标准Agent HTTP/worker与已有本机Ollama，未启动新PG/Redis/模型、未假System或模型。Root亲跑 `/tmp/kokoro-current-chat-http-acceptance.log` **PASS/exit0**：新/login→IAM表单CSRF→consent→callback→app200/sessiontrue，消息202→SSE200、10帧含RUN_STARTED/非空TEXT_MESSAGE_CONTENT/END/RUN_FINISHED且无RUN_ERROR，receipt与thread/run相等；同键202同receipt，snapshot/messages200且exact两条completed消息；HTTP刷新app后仍认证、相同正文/watermark、不重复、列表存在；自身CSRF正式logout200/sessionfalse。System结构化日志两次resolveModel success，标准worker实际消费。Private credential0600、不在普通log输出；证据不打印正文/身份/token。
