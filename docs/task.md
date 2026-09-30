@@ -2737,3 +2737,21 @@ Agent四docs已由原负责人冻结并停写；Root核HEAD58b59cf7/只有四doc
 原Agent负责人唯一writer，下一阶段只准四现测试：tests/unit/model/test_system_client.py、tests/unit/execution/test_supervisor.py、tests/unit/chat/test_projection.py、tests/contract/test_machine_contract.py；锁System tuple/原bool/unknown/非法响应/secret sentinel、初次及恢复typed失败、safe code+required retryable/raw缺席、唯一base/profile/HTTP3.0/decoded绑定/closed JSON组合。不要导入尚不存在模块造成collection error当RED，不修改源码/机器/生成/其他tests/锁/数据库/进程/provider/Git。先定点真RED输出/assertion与文件hash停写交接；Root独立复现后再放GREEN/机器生成，四docs先不再改。其余精确file门仍为待审候选。
 
 BFF/Web retry只读已完成：现contract新key=全新Run/user/assistant；Web终态retry未append optimistic user导致live一条/reload两条，现投影逐事实渲染并无duplicate合并owner规则。原问题重新执行需要BFF正式retry command与事务/幂等/变体状态，Web不能过滤伪造单条。Root已向用户对齐“原问题下重新回答（推荐）/新问题重发”；无回答前不发BFF新契约/不采用临时乐观resend修补，Agent失败合同与现门继续推进不等待该产品决策。
+
+### Agent RED 审查发现：profile 组合闭合不能与纯 alias 混用
+
+worker首四tests RED实际42fail/114pass（1.82s，无collectionerror），尚未Root独立复现/放GREEN。Root先读patch发现machine test过度要求RunFailure纯`$ref` alias：若该alias/base必须拒status，Chat allOf再引用同closed base又无法接受status。已要求只更正该不合理形状断言，不放宽行为矩阵。明确OpenAPI3.1方案为Failure唯一字段/tuple约束开放供组合，RunFailure引用base后在最终profile以unevaluatedProperties=false封闭；ChatFailure同base+statusconst failed、最终profile同样封闭。closed profiles严格拒额外诊断/status错误/非法tuple，runtime生成模型也extra-forbid；不会让Base闭合阻碍Chat扩展、不复制enum。machine具名decoded扩展锁ChatEvent.x-kokoro-decoded-payloads discriminator=event_type/property=payload_json/mapping.run.failed=#/components/schemas/ChatFailure。修正后的tests冻结/Root实际RED仍是source下一门前置。
+
+### AGENT-FAILURE-CONTRACT GREEN 精确放行（2026-09-30）
+
+Root基线580161a7、Agent main58b59cf7；唯一writer agent_typed_skill_reader_owner，审查bff_personal_consumer_review，Root sole index/commit。四docs设计门已独立0/0/0；四tests最终R4 Root独立实际exit1 **52 failed / 121 passed，1.91s**（无collection error），日志 `/tmp/kokoro-agent-failure-root-red-r4.log`，hash清单 `/tmp/kokoro-agent-failure-root-red-r4-hashes.json`。R2开放base/最终profile闭合、R3未知声明HTTP×bool及初次/恢复补码、R4缺code负例均审查关闭，最终P0/P1/P2=0/0/0。历史首42fail/114pass不替代当前RED。
+
+放行本卡2715精确候选生产/机器/两普通新文件，并允许所列现unit/contract tests同步正式breaking字段及生成漂移断言；acceptance文件只改正式字段测试，不运行共享infra。保留RunErrorCode/RunFailedPayload作为直接生成wire符号（不是旧字段兼容alias），ChatFailure为直接生成profile；删除原手写定义，无第二套schema。生成器必须严格验证canonical形状/合法tuple/具名decoded映射，再确定性生成全部bytes，--check拒stale；checker验证生成完整bytes/header/source/direct/aggregate digest，protocol仍零向内依赖。extra-forbid/strict bool与runtime tuple矩阵必须直接验证，不能只检查文本。
+
+先完成pure GREEN及现contract/checker、Ruff/Pyright/打包，冻结完整文件/hash停写；Root独立审查与完整pure门通过后才由Root运行自有PG/Redis acceptance，当前应用DB10/3310组不动。不得改SQL/lock/deps/System/Platform/Storage生成树/proof schema或vectors/directdigest，不放宽unknown/健康/取消/单终态，不自动重跑、不保留旧JSON双读。新文件仅 scripts/generate_failure_models.py 与 src/kokoro_agent/protocol/run_failure_generated.py。CURRENT只记实际实现候选/待发布，不虚构commit或运行时已切3.0。BFF/Web repin及Root真实整链仍后继，不修改消费者。
+
+### BFF-FAILURE-CONSUMER-CUT-PLAN / 并行只读
+
+负责人bff_personal_installation_owner，Root审查；目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff`、main15e07fa4 clean。范围现Agent固定consumer、AG-UI RUN_ERROR持久投影/snapshot、三设计面/现tests与精确后继文件门；无需新文件。依赖Agent目标已审设计但未发布3.0，禁止下载/复制未发布机器contract、源码写入/Git/infra/provider/共享进程操作。交付实际pin、required安全message/strict retryable与精确失败snapshot缺口、API/SQL影响、RED和最小文档/代码门，Root确认后等待owner commit再实施；retry/regenerate产品决策另门。并行调查不等于第二子仓writer，主控保持当前Agent关键路径。
+
+BFF只读交接结论（15e07fa4）：现HTTP pin2.0/dd34a480、event来源486adb，严格等Agent正式3.0再repin。现RUN_ERROR投影丢retryable，snapshot只有message status，不能在GC后从ledger反推profile。后继候选为现bff_message同投影事务保存稳定code/retryable，RR/ACL snapshot与list一致；不得新表/协议/Agent SQL。BFF cancelled与本地permanent dispatch writer的状态/profile要先裁决，不猜Agent码、不把取消冒充模型失败；机器/schema与Web strict消费同步为独立breaking门。此只读发现不是DDL授权，三面文档门/Root状态裁决/Agent发布均前置，完整presence invariant未验。

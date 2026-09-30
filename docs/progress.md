@@ -2179,3 +2179,11 @@ Webowner停写后Agent原负责人仅四docs方案冻结，未source/机器/SQL/
 Agent四docs最终独立0/0/0、Root逐hash/HEAD58b59/exact范围及canonical SQL原bytes通过。现2.0 `uv run --frozen kokoro-agent-contract-check`实际exit0（`/tmp/kokoro-agent-failure-doc-current-contract.log`）仅当前机器，不声称3.0。Root四现test baseline101pass（1.78s），`/tmp/kokoro-agent-failure-baseline.log`、session5325exit0已消费；原owner获四tests-only RED，source/机器/生成仍锁。BFF/Web只读确认retry是新turn重发、Web少optimistic user才live/reload不一致，已询问用户正规单原问题重新回答vs重发；此产品契约决策不阻塞独立Agent推进，尚未写该source/隐藏重复事实。
 
 本轮最后三台账diff独立0/0/0；Root再跑三个聚焦治理文件实际54pass（39.60s），`/tmp/kokoro-web-failed-snapshot-final-ledger-tests.log`，session78436exit0已消费。只提交三台账，排除Agent四docs/四RED tests、Billing五docs候选与任务外uv.lock；受管原组PID65119及七服务均live/无Z，唯一3310保持。Agent writer下一source门尚未授权，RED日志/冻结待交接；新tab5已markHandoff保留，旧3关闭尝试超时如实记录。完整goal active，不以窄门完成替代全能力。
+
+Agent首tests-onlyRED报告42fail/114pass、1.82s，无collectionerror。Root读patch先发现一个形状断言过度指定RunFailure纯alias，与closed Run/可扩展Chat同时成立矛盾；已让原writer仅修此断言采用开放base+最终closed profile，不放宽全部合法/非法tuple与secret/raw矩阵、不动source/机器。Root独立RED暂未执行，不把worker exit当放行，等待新hash。
+
+## 2026-09-30 — Agent R4 真RED通过审查，精准GREEN派原负责人
+
+Root独立R3 52fail/121pass（1.93s）、最终R4同52fail/121pass（1.91s）均actual exit1、session77096/11770已消费，无collectionerror。原review缺code负例P2已关闭，R4四hash精确/原docs不变，独立最终0/0/0；新增code×retryable、System declared status×bool、strict未知/错tuple/secret、初次/恢复与safe Chat矩阵保持。生产/机器仍2.0，只有docs/tests候选；放行原Agent单writer精准GREEN到task现文件门，停写后Root独立完整门与自有资源验证，再发布owner commit。无第二子仓writer/共享服务重启/计费动作。真正重试回答窄PASS保留，重复原问题语义仍待用户对齐；整体goal active。
+
+BFF只读消费门完成：现2.0 pin、retryable实时丢失与snapshot缺profile已具名定位；后继必须同message事实持久化才能独立于AGUI GC。cancelled/permanent dispatch状态裁决仍未定，未改contract/SQL/source/运行组。Root当前三台账独立审查0/0/0，三聚焦治理tests实际54pass（40.34s），日志 `/tmp/kokoro-agent-failure-green-gate-ledger-tests.log`、session41874exit0已消费。仅本三台账提交，Agent在途、Billing五docs及任务外uv.lock排除。
