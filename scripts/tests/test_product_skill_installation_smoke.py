@@ -209,6 +209,45 @@ def test_strict_error_never_accepts_private_success_or_wrong_code():
             m.require_error(response, 404, "skill_installation_not_found")
 
 
+def test_real_error_diagnostic_keeps_status_and_known_code_without_body():
+    m = helper()
+    with pytest.raises(m.ProductError) as caught:
+        m.require_error(
+            (
+                503,
+                {
+                    "error": {
+                        "code": "skill_installation_dependency_unavailable",
+                        "message": "PRIVATE_TEST_BODY",
+                        "retryable": True,
+                    }
+                },
+            ),
+            412,
+            "skill_installation_precondition_failed",
+        )
+    assert "http=503" in str(caught.value)
+    assert "expected_http=412" in str(caught.value)
+    assert "code=skill_installation_dependency_unavailable" in str(caught.value)
+    assert "PRIVATE_TEST_BODY" not in str(caught.value)
+    with pytest.raises(m.ProductError) as caught:
+        m.require_error(
+            (404, {"error": {"code": "PRIVATE_TEST_BODY"}}),
+            404,
+            "skill_installation_not_found",
+        )
+    assert "code=invalid" in str(caught.value)
+    assert "PRIVATE_TEST_BODY" not in str(caught.value)
+    with pytest.raises(m.ProductError) as caught:
+        m.require_error(
+            (404, error("skill_installation_not_found")),
+            "PRIVATE_TEST_BODY",
+            "skill_installation_not_found",
+        )
+    assert "expected_http=invalid" in str(caught.value)
+    assert "PRIVATE_TEST_BODY" not in str(caught.value)
+
+
 def test_http_wire_has_exact_trusted_headers_delete_no_body_and_closes():
     m = helper()
     sent, closed = [], []

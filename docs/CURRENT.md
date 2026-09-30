@@ -24,7 +24,9 @@
 
 **当前用户链状态：** 3310已唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
 
-**当前运行更新（本轮权威观测）：** session53033已exit1，launcher30171与原六子PID均不存在、3310无监听；日志末尾serving failed。已停止，不属于观察超时。现日志只证明进入有序清理，周期性Agent receipt_state_lost此前已存在，停止触发尚未确定；不要把历史成功回复或旧PID当当前服务在线。未自动重启，先窄查触发及owned回收边界。
+**当前运行更新：** 旧session53033/30171已权威exit1且所有直接子PID消失，历史触发未保留。launcher96636a01已加固定stage/异常类别，不泄露原message、不削弱健康/回收；独立0/0/0、Root相关130pass/152subtests通过后，Root唯一启动新session14183/launcher9072/Web9451，workspace`kokoro-local-login-vuag0zbp`，3310现已监听，启动正规登录预探测通过。Web752aff9四安装生产源码与dev snapshot逐一hash相等；本新组尚未实际重跑模型回复或安装，不把加载源码等同真实闭环。
+
+**真实Product安装当前：** 原入口已执行，native缺依赖首次失败保留；改用现Agentvenv固定native依赖后真实owner组合FAIL于预期错误响应断言。已增安全http/expected/code证据（85聚焦/98subtests、独立0/0/0），尚未证明五API完整真实通过，下一原入口定位实际HTTP而不放宽断言。
 
 ## 最新验收边界
 

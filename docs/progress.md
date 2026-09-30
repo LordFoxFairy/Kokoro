@@ -1,3 +1,9 @@
+## 2026-09-30 — 已唯一恢复当前Web752开发服务
+
+旧session53033已exit1且其PID/3310监听全部消失，Root没有因观察超时重复启动。launcher96636a01两源码独立0/0/0，Root相关130pass/152subtests及Ruff/diff通过后，唯一新session14183/launcher9072/Web9451启动正规login预探测成功，workspace vuag0zbp、3310已监听。Web752aff9四安装生产文件与受管dev snapshot hash全等；使用现Agentvenv native依赖和私有gpt-5.6-luna profile，不新infra。只证明当前服务与源码加载，未重跑模型回复/安装UI；emptySkills/Storage未配置仍不冒称全闭环。
+
+Product安全诊断expected_http P2另获RED1，投影非bool的100..599否则invalid，GREEN85/98subtests，独立0/0/0；原成功条件不变、敏感body/message不输出。旧真组合FAIL未改写，下一按实际status定位。
+
 ## 2026-09-30 — launcher安全停止诊断已独立验收；真实Product首轮仍FAIL
 
 Root0abb3993后，原Web负责人仅Root现launcher/test两文件：固定serving stack guard/chat tick/wait及固定异常类别，原健康/重试/guard/清理不改；先18subtest RED、完整相邻45pass/54subtests，独立0/0/0。Root同时补Product require_error安全status/固定code诊断（先1RED），当前相关130pass/152subtests及Ruff/diff通过，session41258已exit0。模型provider原异常message/key/body/动态class不输出，历史停止根因依然未定。即将Root精确提交launcher再唯一启动，不冒称已在线。

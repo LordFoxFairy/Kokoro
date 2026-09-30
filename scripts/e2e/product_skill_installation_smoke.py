@@ -195,12 +195,40 @@ def require_error(
     response: tuple[int, object], expected_status: int, code: str
 ) -> None:
     status, body = response
+    # Fixed public diagnostic labels only, never arbitrary upstream messages.
+    known_codes = {
+        "skill_installation_not_found",
+        "skill_installation_precondition_failed",
+        "skill_installation_forbidden",
+        "skill_installation_dependency_unavailable",
+        "skill_installation_dependency_timeout",
+        "skill_installation_response_invalid",
+        "skill_installation_rate_limited",
+        "skill_installation_idempotency_conflict",
+        "skill_installation_command_in_progress",
+        "session_invalid",
+        "bff_route_not_found",
+        "invalid_skill_installation_request",
+        "skill_installation_idempotency_key_required",
+    }
+    observed = body.get("error") if isinstance(body, dict) else None
+    observed = observed.get("code") if isinstance(observed, dict) else None
+    safe_code = (
+        observed if isinstance(observed, str) and observed in known_codes else "invalid"
+    )
+    safe_status = status if type(status) is int and 100 <= status <= 599 else "invalid"
+    safe_expected = (
+        expected_status
+        if type(expected_status) is int and 100 <= expected_status <= 599
+        else "invalid"
+    )
+    detail = f" http={safe_status} expected_http={safe_expected} code={safe_code}"
     if (
         status != expected_status
         or not isinstance(body, dict)
         or set(body) != {"error"}
     ):
-        raise ProductError("product_installation_error_envelope_invalid")
+        raise ProductError("product_installation_error_envelope_invalid" + detail)
     error = body["error"]
     if (
         not isinstance(error, dict)
@@ -210,7 +238,7 @@ def require_error(
         or not error["message"]
         or error["retryable"] is not False
     ):
-        raise ProductError("product_installation_error_invalid")
+        raise ProductError("product_installation_error_invalid" + detail)
 
 
 @dataclass(frozen=True, slots=True)
