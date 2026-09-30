@@ -1,5 +1,15 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Agent launch 代码与真实持久准入通过，BFF 消费代码已启动
+
+Agent `2d03689` 增 required `selected_skill_source_refs`/HTTP2.0.0、严格 exact refs 与不可变有序 Run fence；非空选择在 reader 未实现前于模型/backend/tool之前明确失败，避免静默忽略。Root 独立 lock/sync、Ruff、Pyright、contract、默认 **1323 pass/6 skip/172 deselected**、wheel/sdist 通过；独占真 PostgreSQL 临时库/随机 Redis stream 的 HTTP readiness、选项持久化/claim/replay/顺序冲突、pending恢复/claim冲突、旧 payload拒绝 **5/5**，自有资源清理完成，未触碰3310。独立代码审查未发现问题，Root另用真实JSON Schema证明尾随换行仍通过的P2，`dd34a48` 修正绝对末尾锚点/来源digest/5类负例；末次默认 **1328 pass/6 skip/172 deselected**，首次shell结果包装误用zsh只读变量，测试本身通过，已修包装重跑。
+
+BFF `78c92c0` 五文档门已由Root核过，固定最终Agent `dd34a48` 后单一writer开始 public exact选择/真实Chat durable outbox/Scheduler snapshot v2代码，不再等安装产品决策或Skill reader才修基础调用。个人发布后是否免额外安装已向用户询问，未答不阻塞无Skill路径。可见并行任务 `01a0f010-3073-7a22-900a-8d9e8d586f3f` 专责新登录入口只读验收，不重启用户服务。**当前组合尚未闭环：BFF旧payload缺字段，非空Skill reader未接，浏览器Skill CORS门未过，Billing未做。**
+
+## 2026-09-29 — BFF Chat→Agent typed 选择跨仓断口只读预审
+
+固定 BFF `62daba37` 的只读审计确认：普通 Chat 走持久 `agent-dispatch.ts` outbox v1，`pinned_skills` 名称仅在 trace；worker 原样 POST Agent，先 public 202 再后台失败。Agent 新 required `selected_skill_source_refs` 启用后，**无 Skill 的基础 Chat 也会因缺字段得到 Agent 400**，Scheduler launch 同样缺 `[]`；非生产 `buildAgentLaunch` helper 的修复不能覆盖该路径。Web 仍按名称保存/发送 pinned Skill，Platform Publish 不自动 installed+enabled。未改 BFF/Web/Platform 文件或启服务；下一 owner 顺序是 Agent 新 OpenAPI 提交与 Root 精确 pin → BFF 三面设计和 public/持久 dispatch/Scheduler consumer → BFF 安装/启用 Product 链 → Web exact ref UI → Agent current Source/包真实组合。详见 [`task.md`](task.md)；现阶段不把任何一条边升为 active。
+
 ## 2026-09-29 — Agent typed Skill Source 三面设计门通过，运行未接
 
 Agent 唯一 writer `cbbdd84` 收敛 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE；独立审查 P0/P1=0，指出同名多 Skill 虚拟路径未唯一裁决的 P2。返修 `7e529f9d29a6bf78fa93ee0f89504d0a1cfe0ae2` 以具体版本 SkillId ASCII 原字节的无填充 base64url 作为只读 `/.skills/` 唯一目录，并锁同名/同 series 多版本不覆盖和跨 lease 稳定测试。Root 核 Platform v4 Proto/manifest/ZIP 与 Storage v2 Proto 四份原字节 SHA、Agent 当前 Run/SQL/HTTP，独立 `uv lock --check`、contract checker 与架构测试 **26 pass**。设计明确 Agent Run 输入/持久 fence、fresh Resolve/Get、签名 GET/ZIP 和撤权失败关闭，但**本次没有 Agent 业务代码、机器契约或 SQL 改动，也没有产品端到端执行证据**。下一单仓代码片只做 Agent launch typed 选择与现有 Run fence，Platform v4 pin/包读另片，BFF 安装选择与六 owner sandbox 后续。Root 精确 pin 后仍保持 `EDGE-AGENT-CAPABILITY` broken；Billing 最后。

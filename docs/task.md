@@ -1,6 +1,19 @@
 # Kokoro 后端闭环任务总表
 
-## 当前下一 owner：W3-AGENT-SKILL-LAUNCH-CONTRACT（P0；Agent 输入与持久 fence 代码片）
+## 当前代码 owner：W3-BFF-CHAT-SKILL-SELECTION-CONSUMER（P0；基础 Chat/Scheduler 同步）
+
+| 项 | 代码任务卡 |
+| --- | --- |
+| Owner/基线 | `bff_chat_selection_owner` 独占 BFF writer，Root 审查/提交集成；BFF `main 78c92c09ea056e5b9901342fd6cd875cd9de5ce0` 三面文档门已审，Agent 固定 `dd34a4800b4ce0cc61eb80dd715e528b9d4517da`/HTTP 2.0.0，OpenAPI SHA `20398c59f42031c1b6ae2e2c3708e63ec8b5645baf741bf831bc67e14625ef99`。 |
+| 范围/设计 | 依已审五文档改 public MessageCreate、真实 durable outbox/digest/payload v2、Scheduler receipt/snapshot v2、Agent consumer dependency/vendor/generated/相邻测试；现有 `domain/chat/skill-source-selection.ts` 所在目录新增唯一选择值校验文件，避免 HTTP 和 durable parser 复制规则。删除旧 pinned_skills/name/trace 和无生产调用的 buildAgentLaunch；不改 SQL/锁文件/其他仓。 |
+| 行为门 | public 缺字段规范化 []，Agent wire 始终显式 []；exact ref/绝对末尾/16 项/4 KiB/重复/顺序验证，同键变选择 409；恢复只读已持久 v2，旧 v1 明确拒绝，不自动重写共享数据。非空尚无 reader 时 Agent 明确失败，未安装和用户自动可用决定不伪造。 |
+| 验证/交付 | RED→GREEN；Agent 原字节来源/生成 drift、BFF format/check/schema/build 和负例；Root 再验真实 Agent HTTP/隔离 PG 的基础 Chat/Scheduler 准入及恢复。普通 Chat 先恢复，不等完整 Skill 包读/安装；Billing 最后。 |
+
+并行只读任务：可见任务 **Kokoro IAM 登录链路验收**（`01a0f010-3073-7a22-900a-8d9e8d586f3f`）只检查新 /login→IAM→callback，暂不改文件/共享服务；主控跟踪结果后单仓授权修复。禁止把其可见表单当真实登录通过。
+
+## 已过 Agent 单仓代码门：W3-AGENT-SKILL-LAUNCH-CONTRACT（P0；产品调用仍待 BFF 同步）
+
+Agent `2d03689` 实现 required typed refs/Run fence 与执行前非空明确失败；Root 独立默认 **1323 pass/6 skip/172 deselected**、格式/类型/contract/build 通过，独占临时 PostgreSQL 数据库和随机 Redis stream 的真实 HTTP **5/5** 通过且资源清理。Root 补出 schema `$` 锚点允许尾随换行 P2；`dd34a48` 仅修 OpenAPI/provenance 和 5 类负例，最终默认测试 **1328 pass/6 skip/172 deselected**。Agent typed reader/Platform v4 尚未接，当前 BFF 旧payload仍会400；下一代码片见上表。
 
 | 项 | 本片裁决与验收 |
 | --- | --- |
@@ -9,6 +22,17 @@
 | 本片范围 | 只做 Agent-owned wire、严格解析/数量/4 KiB 约束、显式空数组、同 `run_id` 漂移 409、持久化/重领 roundtrip 和机器契约 provenance；必要的直接调用 fixture 与本仓文档同步更新。**不接** Platform v4 运行、signed GET/ZIP、`/.skills/` backend、BFF/Web 用户选择；原 `music` 旧执行路径留待单一 cutover 片删除，不作为新字段 fallback。 |
 | 依赖与 RED | 先证当前 HTTP/OpenAPI 拒绝 typed refs、旧 RunRequest 无该字段；GREEN 覆盖 canonical 语法 `skill:<SkillId>`、去重/顺序、16 项、4 KiB、非数组/alias/多余字段、空数组与重放冲突。`request_json` 仍由 Agent 本仓两表拥有，identity 来自受信上下文，不从 body 自报。无新跨仓 SQL 或角色。 |
 | 验证/交付 | Agent `uv lock --check`、`uv sync --frozen`、Ruff、Pyright、contract checker、相关 unit/contract/architecture/default pytest、wheel/sdist、必要隔离 PG/Redis admission；独立审查与 Root 同 commit 复验后精确 pin。此片最多证明 launch/fence，不宣称 Skill 可执行或六 owner 产品闭环。Billing 最后，3310/Root 任务外 `uv.lock` 不动。 |
+
+## 紧接的跨仓消费者门：W3-BFF-CHAT-SKILL-SELECTION-DESIGN（文档准备并行，代码等待 Agent owner 契约提交）
+
+BFF `62daba37` 当前 public `MessageCreateRequest.pinned_skills` 是任意非空名称；`src/domain/chat/agent-dispatch.ts` 的持久 outbox v1 仅把它放进 `trace.pinned_skills`，`outbox-delivery.ts` 原样异步 POST Agent。Agent required typed 字段落地后，**普通空 Skill Chat 也会先 public 202、后台 Agent 400**；Scheduler `buildScheduledAgentLaunch` 也缺显式 `[]`。`buildAgentLaunch` helper 不是普通 Chat 的生产路径。Web 当前以 Skill name 存本地 pinned 偏好并上送名称，不能把它当 typed ID。Platform Publish 仅 ACTIVE、不自动 install/enable；BFF by-ID 本人可见不等于 Agent 可执行。
+
+| 项 | 下一 owner 文档门（Agent 新 OpenAPI 固定后才实施） |
+| --- | --- |
+| Owner/基线 | BFF `62daba37` 唯一文档 writer 为 `bff_chat_skill_consumer_audit`，允许先并行收敛现有五文档当前/目标，Agent 新 HTTP `2.0.0` 的 SHA/digest 明确待定；代码/生成/pin 须等 Agent 提交及 Root 文档审查。Web/Platform 只读。 |
+| 目标/两案 | A：BFF public Chat 从 name `pinned_skills` clean-slate 改 exact `selected_skill_source_refs`，当前 IAM 准入后以同一有序集合进入 Product request digest、持久 outbox JSONB、Agent top-level launch；无选择也显式发 `[]`，Scheduler snapshot 同步。另明确个人 Skill install/enable 的 BFF Product owner 转发及 Platform installed+enabled 门。B：继续旧 trace/name、只修非生产 helper、偷偷把公开列表当安装、让 Agent 缺字段默认为空；淘汰。 |
+| 放置/依赖/删除 | 先仅收敛 BFF `docs/TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`DATA_MODEL.md`、`CURRENT.md` 和验收矩阵，核对唯一 public OpenAPI/Agent generated 及 owner Install RPC；不先写代码/SQL/新目录。随后 BFF 消费片才改 `message-create-input.ts`、`agent-dispatch.ts`、outbox/worker、Scheduler、contract/dependencies/generated 和测试，删除旧 `pinned_skills` public/trace 双轨；Web 再固定 BFF 机器契约换 exact refs、安装/启用 UI。 |
+| 验证 | 文档门列缺字段导致的 202→后台 400 RED；代码门至少覆盖普通 Chat/Scheduler 显式空数组、同键同 refs 重放/异 refs 409、持久 JSONB/recovery、错误 Skill ref、当前 IAM/Platform 安装授权、真实 Agent HTTP 与 PG。BFF owner `pnpm` 全门、独立审查、Root 精确 pin/组合；Product 安装/启用与 Agent 包读未过前仍标广义边 broken。 |
 
 ## 已通过设计门：W3-AGENT-TYPED-SKILL-SOURCE-DESIGN（P0；只做三面文档门）
 
