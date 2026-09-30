@@ -1,3 +1,10 @@
+## 2026-09-30 — 当前真实安装后端PASS；网页组退出已纠正，模型仍选gpt-5.6-luna
+
+- 用户再次明确选择`gpt-5.6-luna`。Root只核对现私有profile的model/base_url/credential presence/0600，不输出key、不追加付费推理、不把直接probe当全链验收。
+- Root `c3fa42710334bf1b9dc00f9be0f8b6a21a647e78` 原入口`run_bff_skill_draft_sandbox_smoke.py --product-installation`真实session78975 **exit0/PASS**，日志`/tmp/kokoro-product-installation-real-surface.log`。IAMe3c/BFF677/Platform6519/Storage16a6固定来源，现Agentvenv Python3.14 native依赖，复用现PG/Redis/MinIO/ClamAV；两已发布不同Skill、39receipt/2publish事件，五public、same-key原ACK与当前GET、false筛选opaque两页、移除/稳定ID重装、撤权五方法先于owner通过，**resources clean**。此前Python3.13 ModuleNotFound与真实502/expected412误开legacy surface的FAIL保留，不放宽断言。没有启Agent/SourceDriver仅结构性无Run，不冒充Run-store观测；同租户第二用户、浏览器安装、非空Skill模型运行仍开放。
+- 同handle91663 **exit0已消费**：checkpoint/topology PASS，Root完整`scripts/tests` **1090 passed/3 native依赖skip/395 subtests**，117.49s，`/tmp/kokoro-product-final-root-tests.log`。没有因等待另起测试；独立c3 selector复核0/0/0、86聚焦/98subtests。全仓最近137违规/13broken不改绿，uv.lock任务外保留。
+- 新受管session14183 **exit1已消费**，9072/9451及直接组进程消失、3310无监听；最新`/tmp/kokoro-local-gpt56-luna-next.log`为`serving chat tick (chat) failed`。启动时登录预探测和Web752 hash一致是历史，不再说在线；保留vuag0zbp workspace。只证明Chat周期检查异常，具体触发未知；原Agent已交付只读源码核查：provider库存失败被wrapper转ChatError，因此现chat类别不能排除provider；四ChatError来源、两种ownership尚未分辨。安全操作日志8次health success（seed1+tick7）后清理，不反推根因；聚焦纯测试5pass/4subtests。下一现runtime/test固定分支证据窄片，无联网/服务/数据/模型，不盲重启或削弱健康保护。以下在线描述均是对应历史时间点。
+
 ## 2026-09-30 — 真组合502已定位并TDD修正Root接线
 
 原入口session27298真实exit1，安全证据为http502/expected412/code skill_installation_response_invalid（/tmp/kokoro-product-installation-real-status.log）。Root和独立owner源码/文档核查确认不是业务数据校验故障：Product五RPC只有skill-installation-product独立surface才注册，原Root错开legacy execution surface。Root两现parent/test做纯selector，默认catalog/source、Agent仅legacy安装、Product仅Product安装，保持互斥/默认off。先2RED/61pass、GREEN相关86pass/98subtests及Ruff/diff；不改owner/contract/guard，不同时全开，不改502断言。原失败保留，下一原入口真实重跑后才判闭环。当前9072/9451同组仍live，不受owned组合资源影响。

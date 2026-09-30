@@ -22,11 +22,11 @@
 
 `apps/kokoro-app` 是本轮唯一正式前端；Mori 不参与本轮业务重构。当前物理名称仍为 `apps/kokoro-capability`，业务目标为 Platform，重命名/cutover 未完成；不使用 `apps/kokoro/` alias。模型目录归 System，不新建 kokoro-model。
 
-**当前用户链状态：** 3310已唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
+**历史用户链证据（当前3310已停止）：** 3310曾唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
 
-**当前运行更新：** 旧session53033/30171已权威exit1且所有直接子PID消失，历史触发未保留。launcher96636a01已加固定stage/异常类别，不泄露原message、不削弱健康/回收；独立0/0/0、Root相关130pass/152subtests通过后，Root唯一启动新session14183/launcher9072/Web9451，workspace`kokoro-local-login-vuag0zbp`，3310现已监听，启动正规登录预探测通过。Web752aff9四安装生产源码与dev snapshot逐一hash相等；本新组尚未实际重跑模型回复或安装，不把加载源码等同真实闭环。
+**当前运行更新：** 新session14183/launcher9072/Web9451已权威exit1，直接进程均退出，3310无监听；最新日志为固定脱敏`serving chat tick (chat) failed`。启动时正规登录预探测和Web752四生产文件hash匹配是历史证据，不再表示在线。workspace`kokoro-local-login-vuag0zbp`已保留；只读源码复核确认provider库存错误也被包装成ChatError；当前类别覆盖子进程、provider、两种资源ownership或health receipt，具体触发尚未证明。下一片仅现runtime/test固定分支证据，不盲目重复重启或放宽健康保护。
 
-**真实Product安装当前：** 原入口已执行，native缺依赖首次失败保留；改用现Agentvenv固定native依赖后真实owner组合FAIL于预期错误响应断言。已增安全http/expected/code证据（85聚焦/98subtests、独立0/0/0），真实status诊断已定位Root误开legacy surface导致502；独立源码/文档核对后，现纯selector精确开启Product独立surface（86聚焦/98subtests），仍待原入口真实五API全通过，不放宽断言。
+**真实Product安装当前：** Root `c3fa42710334bf1b9dc00f9be0f8b6a21a647e78` 原入口`run_bff_skill_draft_sandbox_smoke.py --product-installation`已真实exit0/PASS（session78975），日志`/tmp/kokoro-product-installation-real-surface.log`。固定IAMe3c/BFF677/Platform6519/Storage16a6，复用现PG/Redis/MinIO/ClamAV，五public操作、same-key历史ACK→GET当前、false筛选/opaque两页、移除/稳定ID重装、撤权五方法在owner前拒绝均通过；两不同已发布Skill、39receipt/2publish事件，resources clean。此前native依赖缺失与Root误开legacy surface的真实FAIL保留。此为后端组合，不是浏览器安装UI、同租户第二用户或标准worker非空Skill模型验证；Agent关闭仅结构证据，不冒充Run数据库观测。
 
 ## 最新验收边界
 
@@ -34,7 +34,7 @@
 | --- | --- | --- |
 | 非空 typed Skill Source | Root `4aef9d1c` 正常原文件入口真实 IAM/BFF/Platform/Storage/Agent/PG/Redis/MinIO/ClamAV，exit0/PASS；安装、原字节、native metadata、只读、停用拒读/重新启用、旧 lease 拒读、IAM 执行撤权均通过；receipt31→34/outbox2；resources clean、Redis15=0。日志 `/tmp/kokoro-source-window-real-composition.log` | 标准 worker＋真实模型的非空 Skill 运行、个人 Product 安装 UI、正式激活。native name 与 opaque 目录不匹配警告仍开放 |
 | 普通 Chat/作品 | 历史固定组合已验真实 Chromium 登录、标准 worker、durable AG-UI、live Delivery、刷新、Canvas 下载、GC/410 恢复与个人私有性；历史 `5b1b9a5e` 还验真实 System→已有 Ollama→worker→Storage 作品链，精确来源/边界见 progress | 历史普通 Chat 或空选择模型结果不替代当前非空 Skill 模型运行，也不证明所有产品能力 |
-| 个人 Skill 安装 | Platform runtime `d93e8a59` 已独立审查0缺陷＋RootNode24全门1185pass/243依赖skip＋真实ownedPG安装事务27/27（含ACKlost/CAS），自有库已回收。旧v5机器候选发现List has_more与唯一Proto optional next_cursor矛盾，已在6519ae9以5.0.1纠正，Root全门1196pass/243skip与独立0缺陷；仍inactive | Product owner runtime切片已验收；机器wire窄片已验收，BFF public固定消费、Web UI 和真实产品验收仍待完成；runtime单仓通过不是全产品可用 |
+| 个人 Skill 安装 | Platform runtime `d93e8a59` 已独立审查0缺陷＋RootNode24全门1185pass/243依赖skip＋真实ownedPG安装事务27/27（含ACKlost/CAS），自有库已回收。旧v5机器候选发现List has_more与唯一Proto optional next_cursor矛盾，已在6519ae9以5.0.1纠正，Root全门1196pass/243skip与独立0缺陷；仍inactive | owner runtime、机器wire、BFF固定消费者、Web纯门与真实后端五API组合已验；浏览器安装、正式激活、非空Skill模型运行仍待验，不是全产品可用 |
 | 最近3310留证（现已停止） | 原受管session53033/launcher30171：IAM30877/System31271/Agent HTTP31307/worker31309/BFF31346/Web31351。精确Web14a54b4/BFF67755d16/Systemc0a76a3a/Agent58b59cf7；用户指定gpt-5.6-luna，经私有profile正式System路由/标准Agent。首轮正常登录和UI消息202、非空流式prefix/中途刷新、可见真实回复；同一会话后验两条完整owner内容及ID750ms稳定、DOM全文一致、原生logout/session=false。证据`/tmp/kokoro-gpt56-ui.CsnuNA`（首轮FAIL）和`/tmp/kokoro-gpt56-diag.hVEygz`（只读诊断PASS）。 | 首轮严格terminal E_FLOW未存当时shape/hash，历史具体子断言不可后验臆定；不能称首轮E2E PASS。Root新增正式快照全文/身份/watermark证据门仅纯测试通过，真实模型门尚未重跑。右侧IAB未验，Skills空选择/Storage未配置/完整产品未闭环。 |
 
 Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒窗口；默认模式不等待，SIGTERM可中断。没有改生产限流、权限、凭据或 Redis 计数；这是测试资源礼让，不是应用重试/fallback。
@@ -44,20 +44,20 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 用户选择 `gpt-5.6-luna`，指定HTTPS接口真实 `/chat/completions` 已200、返回该ID及非空回复，
 结果 `/tmp/kokoro-gpt56-luna-probe.json`（0600、无key/body）。Root现组合工具支持显式私有profile，
 七源码/测试文件独立0缺陷、Root87tests/36subtests与Ruff通过；不改System/Agent owner API或原Ollama guard。
-当前3310已切换外部profile：正式System→标准Agent→UI已产生真实回复；完整首轮E2E仍FAIL，后验持久态/DOM一致不改写历史失败。旧7399及其六直接子进程已全部退出、session65687已回收，首启动因3310临时bind占用exit1，等原guard释放后再成功启动，无kill-all/端口guard放宽。
+历史3310外部profile经正式System→标准Agent→UI已产生真实回复；当前受管组已停止，完整首轮E2E仍FAIL，后验持久态/DOM一致不改写历史失败。旧7399及其六直接子进程已全部退出、session65687已回收，首启动因3310临时bind占用exit1，等原guard释放后再成功启动，无kill-all/端口guard放宽。
 
 ## 当前优先级与正在推进
 
 - Platform 原负责人：runtime已验收提交d93e8a59；已提交6519ae9未激活v5候选5.0.1 wire矛盾纠正，唯一Proto/Schema/runtime源码冻结，无兼容字段/双轨。
-- BFF消费者67755d16已独立0缺陷与Root Node22全门验收提交；五本人安装路由固定Platform6519/5.0.1，读projection/写catalog分离，默认新增测试已纳入，413/504真实状态契约。真实IAM→BFF→Platform组合与Web安装UI仍未验。
-- Web原负责人：个人安装consumer已提交752aff9d，29文件独立0/0/0、Root contract109/architecture37/lint/typecheck/test1773/build通过；五client/严格同源adapter/UI未知同key/currentGET/分页取消已验纯门。真实owner组合与浏览器仍待验，常驻3310未加载本片。完整Project typed全集及任务关联仍后继切片。
-- Root主线：gpt-5.6-luna正式链真实回复已见，首轮中途刷新严格断言失败待精确定位；已完成的Web/BFF候选统一提交并加载，唯一受管session53033只由Root管理。继续按owner推进非空Skill/安装Web、Project真实全集及全产品闭环，不把直接provider probe/后验快照冒充完整E2E。
+- BFF消费者67755d16已独立0缺陷与Root Node22全门验收提交；五本人安装路由固定Platform6519/5.0.1，读projection/写catalog分离，默认新增测试已纳入，413/504真实状态契约。真实IAM→BFF→Platform安装组合已PASS；Web安装浏览器仍待验。
+- Web原负责人：个人安装consumer已提交752aff9d，29文件独立0/0/0、Root contract109/architecture37/lint/typecheck/test1773/build通过；五client/严格同源adapter/UI未知同key/currentGET/分页取消已验纯门。真实后端组合已PASS；新3310启动时加载本片后退出，浏览器安装仍待验。完整Project typed全集及任务关联仍后继切片。
+- Root主线：gpt-5.6-luna正式链真实回复已见，首轮中途刷新严格断言失败待精确定位；已完成的Web/BFF候选统一提交并加载，两受管session53033/14183均已退出，当前3310无监听，由Root单一管理恢复。继续按owner推进非空Skill/安装Web、Project真实全集及全产品闭环，不把直接provider probe/后验快照冒充完整E2E。
 
 同仓单writer；worker不自行启动共享PG/Redis或重置数据。子仓 CURRENT 中“候选待Root”属于交付时快照，Root已验收状态以本表和绑定commit的task/progress为准；在owner下一代码切片同步文档，不因纯文案制造另一轮依赖升级。
 
 ## 未闭环清单
 
-1. 当前个人安装链的 machine→owner runtime→BFF→Web→真实端到端及Platform原子命名/激活cutover。
+1. 当前个人安装machine→owner runtime→BFF真实后端组合已验；Web浏览器安装、Platform原子命名/激活cutover仍开放。
 2. 非空Skill真实worker/模型、MCP执行与其他Agent能力；不以Source helper读取替代真实运行。
 3. Browser signed PUT/CORS：已探测本地MinIO返回501；HTTP Source GET/PUT或预览Playwright不替代浏览器发布门。Storage orphan retirement/quarantine 等生命周期仍开放。
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
@@ -67,7 +67,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 
 ## 验证和归属
 
-- Root当前a36bf45e组合checkpoint/topology PASS；全量`scripts/tests` **1086 passed/3 native依赖skip/377 subtests**，111.13s，日志`/tmp/kokoro-product-root-full-tests.log`；Root Product driver独立0/0/0与聚焦84/98subtests通过，真实owned组合待执行。全仓标准门仍FAIL137/0 unverified：相对旧136，Agent平台契约文件>800与Platform README provenance两项显现，Web app-frame>500已消除；不更改门禁清零。
+- Root当前`c3fa4271`组合checkpoint/topology PASS；同handle91663全量`scripts/tests` **1090 passed/3 native依赖skip/395 subtests**，117.49s，exit0已消费，日志`/tmp/kokoro-product-final-root-tests.log`。Product selector独立0/0/0、聚焦86/98subtests，原入口真实owned组合PASS；3个native skip不以Agentvenv真实组合覆盖为本runtime全绿。全仓标准门最近仍FAIL137/0 unverified，不更改门禁清零。
 - Root `4aef9d1c` 提交后的topology9runtime/checkpoint通过。新增候选仍须独立验收和最终集成复验。
 - 子仓的 tests 不迁入 Root；`scripts/tests/` 只覆盖 Root 治理脚本（含Root自有组合driver边界），业务unit/integration/contract/build仍在owner仓。`verification/` 保存跨仓来源库存与检查点，不复制业务测试。
 - 本地应用使用一个PG数据库/一套credential、独立owner schema和共享Redis namespace；测试临时库用于运行隔离，不是多应用角色/部署方案。禁止跨owner业务SQL。

@@ -1,3 +1,14 @@
+## 当前任务对齐（2026-09-30；Root c3fa4271）
+
+| ID | 归属 / 执行与范围 | 状态 / 证据 / 下一步 |
+| --- | --- | --- |
+| MODEL-GPT56-LUNA | Root正式System→Agent组装；私有profile，不改owner契约 | 用户指定`gpt-5.6-luna`，HTTPS连接/private0600字段已再次核对；历史真实网页回复已见，首轮严格E2E FAIL保留。不是改主控Agent模型。 |
+| ROOT-PRODUCT-INSTALLATION | Root唯一writer/index；原owned组合driver、固定IAM/BFF/Platform/Storage | 已验收后端真组合：session78975 exit0/PASS、五public、历史ACK/当前GET、两页、撤权、resources clean；Web浏览器与非空Skill执行未验。Root c3fa4271完整门1090pass/3skip/395subtests。 |
+| ROOT-CHAT-TICK-AUDIT | agent_typed_skill_reader_owner只读；main c3fa4271；现local_chat_runtime.py/model_provider.py/test及保留安全操作日志，禁止写/Git/服务/数据/联网/模型 | 只读已交付：session14183权威exit1、3310无监听；ChatError也含provider wrapper，四来源未精确留证。纯测试5pass/4subtests，下一窄片仅现runtime/test固定阶段证据；不从graceful shutdown反推触发。引用docs/CODEBASE_MAP.md/Python09手册。Root只写本组三文档，源码无人写。 |
+| WEB-PERSONAL-BROWSER | Web752已提交；Root最终真实浏览器验收 | 待验；后端PASS不代替浏览器能力。依赖受管组稳定和Platform/Storage正式组合装配。 |
+
+以下任务卡保留实施与失败历史，以本表与CURRENT最新证据为当前状态。Root任务外uv.lock不触；Billing最后，整体goal仍active。
+
 ## ROOT-LOCAL-LAUNCH-DIAGNOSTIC：现文件窄片授权
 
 归属Root受管开发入口，不是业务owner/运维扩展。基线main0abb3993；本仓仅agent_typed_skill_reader_owner写入，Root停止源码/文档编辑直到停写交接、仅管理独立真实Product进程与Git index。允许现scripts/dev/serve_local_login.py、scripts/tests/test_serve_local_login.py两文件；不新增文件/依赖/改contract/Schema/guard/retry/健康语义/清理顺序。现异常被压成serving failed，采用原launcher局部固定阶段＋固定错误类别安全记录，淘汰另建日志模块或输出原exception message/body。分开serving stack guard、chat tick、wait阶段，既有异常清理仍正常触发；不臆定历史根因。TDD证明已知异常类别与含secret/message/动态类名均不泄露，已有生命周期/清理门不变；聚焦pytest/Ruff/语法/diff，停写hash→Root独立审查/提交后才能唯一重启。worker不得启动任何服务/数据/模型/Git/3310；全Root门只在冻结后跑。Product原入口真实owned组合session42936 live，与该launcher文件无读写重叠。
