@@ -1,3 +1,7 @@
+## ROOT-PERSONAL-INTEGRATION-AUDIT：后端真组合前置只读
+
+Owner Root验收编排；bff_personal_installation_owner只读，Root ce53e149，BFF677/Platform6519/IAMe3c/Storage16a6均已提交，Web49adb4b当前另有唯一writer在途。仅审已有scripts/e2e/run_bff_skill_draft_sandbox_smoke.py与agent_skill_source_smoke.py和owner bootstrap/client/contract；不写文件/Git、不开服务/PG/Redis/MinIO/模型。当前Root正式sandbox已真实发布/Source但未从五public安装路由证明消费者链；默认Platform surfaces不含installation（仅agent_source显式包含）。需要提出独立显式Product安装模式在原owned单库/schemas/credentials/桶/进程生命周期的最小插入点、5操作/幂等/当前态/撤权/私密负例及回收，不让Publish自动Install、不让安装触Run。比较现parent追加一大块vs单责Roothelper，列准确下一允许集和所需可信token上下文；不改BFF/Platform/IAM契约或生产启用，不能mock receipt/DB事实。为Root下一阶段代码门准备，不是本轮已真运行。
+
 ## WEB-PERSONAL-CODE：唯一消费者实现切片（2026-09-30；Root全量验证结束后派工）
 
 | 项 | 执行卡 |
