@@ -9,7 +9,7 @@
 | 路径 | 固定 commit |
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
-| `apps/kokoro-app` | `1dc211bb61030926177b72b3dff2061562a1015b` |
+| `apps/kokoro-app` | `9590a741448923c63eb4f4ff46379135d21061bd` |
 | `apps/kokoro-bff` | `c4c4cbccee68eee95c1b89548abb6302b80e58e6` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `0dd60af4799cb2f0b410ded5ffb9c1402a55c641` |
@@ -31,14 +31,14 @@
 | 非空 typed Skill Source | Root `4aef9d1c` 正常原文件入口真实 IAM/BFF/Platform/Storage/Agent/PG/Redis/MinIO/ClamAV，exit0/PASS；安装、原字节、native metadata、只读、停用拒读/重新启用、旧 lease 拒读、IAM 执行撤权均通过；receipt31→34/outbox2；resources clean、Redis15=0。日志 `/tmp/kokoro-source-window-real-composition.log` | 标准 worker＋真实模型的非空 Skill 运行、个人 Product 安装 UI、正式激活。native name 与 opaque 目录不匹配警告仍开放 |
 | 普通 Chat/作品 | 历史固定组合已验真实 Chromium 登录、标准 worker、durable AG-UI、live Delivery、刷新、Canvas 下载、GC/410 恢复与个人私有性；历史 `5b1b9a5e` 还验真实 System→已有 Ollama→worker→Storage 作品链，精确来源/边界见 progress | 历史普通 Chat 或空选择模型结果不替代当前非空 Skill 模型运行，也不证明所有产品能力 |
 | 个人 Skill 安装 | Platform `0dd60af` 三面设计及v5机器契约已Root全9门1030pass/239真实依赖skip与独立审查0缺陷；五方法/九safe/三摘要和optional分页已验，候选inactive | Product owner runtime、BFF public固定消费、Web UI 和真实产品验收仍待完成；机器门不是产品可用 |
-| 当前 3310 | 一组受管65687/launcher7399/Web7874，真实IAM/System/BFF/Web与标准Agent HTTP/worker、已有Ollama。Root当前HTTP全链PASS：正规表单登录→消息202→10帧非空AG-UI终态→同键不重复→刷新持久→自身logout200。日志 `/tmp/kokoro-current-chat-http-acceptance.log`；System resolveModel success | 右侧IAB控制再次超时、DOM未验；HTTP不是浏览器交互。Skills空选择、Storage未装配，完整能力体系仍待逐片接通 |
+| 当前 3310 | 一组受管65687/launcher7399/Web7874，真实IAM/System/BFF/Web与标准Agent HTTP/worker、已有Ollama。Root当前HTTP全链PASS：正规表单登录→消息202→10帧非空AG-UI终态→同键不重复→刷新持久→自身logout200。日志 `/tmp/kokoro-current-chat-http-acceptance.log`；System resolveModel success | 右侧IAB控制再次超时、DOM未验；HTTP不是浏览器交互。已将Web9590a74三生产文件精确同步受管dev snapshot，未重启BFF加载在途代码；同步后HTTP复验进行中。Skills空选择、Storage未装配，完整能力体系仍待逐片接通 |
 
 Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒窗口；默认模式不等待，SIGTERM可中断。没有改生产限流、权限、凭据或 Redis 计数；这是测试资源礼让，不是应用重试/fallback。
 
 ## 当前优先级与正在推进
 
 - Platform 原负责人：v5 machine已验收0dd60af；现获个人安装Product runtime唯一写权限，复用现安装事实、fresh/receipt/安全投影，无新Schema/兼容双轨。
-- BFF负责人：固定已发布v5机器输入的个人安装三面文档门独立并行；代码消费待本仓门通过另授写，真实组合等owner runtime，不发明第二契约。
+- BFF负责人：三面文档门已独立审查通过并提交c4c4cbc；固定v5的五本人安装public/Connect消费正式授写，与Platform runtime并行；真实组合等owner runtime，读projection与写catalog scope分离。
 - Root主线：当前3310可见登录→app→基本真实聊天；暂停新研究面，测试/生成物不冒充产品交付。继续统一审查、shared index、真实组合资源/进程和跨仓集成；已结束的 Source ownedPID53717/session80848均终态消费，当前65687保持运行，只由Root管理。
 
 同仓单writer；worker不自行启动共享PG/Redis或重置数据。子仓 CURRENT 中“候选待Root”属于交付时快照，Root已验收状态以本表和绑定commit的task/progress为准；在owner下一代码切片同步文档，不因纯文案制造另一轮依赖升级。
@@ -50,7 +50,8 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 3. Browser signed PUT/CORS：已探测本地MinIO返回501；HTTP Source GET/PUT或预览Playwright不替代浏览器发布门。Storage orphan retirement/quarantine 等生命周期仍开放。
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
 5. 最近全仓标准门136项违规，来源库存16边/13 declared broken；这些是仍开放队列，不因局部PASS改绿。完整goal仍active，Billing最后。
-6. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮12仓本地/远程均只有main；完整main-only门因Root任务外uv.lock及Web/BFF/Platform在途修改FAIL，不称全体clean，不新建分支/PR。
+6. 最新Root IAM relay门FAIL：BFF policy iamOwnerCommit仍4d981441而IAM gitlink为e3c035b；这是未完成来源对齐，不能把HTTP通过当作此门通过。BFF当前个人安装切片不抢改IAM相关source，后续独立精确pin修复需保持机器bytes验证与Web消费同步。
+7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮12仓本地/远程均只有main；完整main-only门因Root任务外uv.lock及Web/BFF/Platform在途修改FAIL，不称全体clean，不新建分支/PR。
 
 ## 验证和归属
 

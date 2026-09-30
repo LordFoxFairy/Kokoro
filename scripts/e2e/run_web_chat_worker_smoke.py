@@ -42,8 +42,8 @@ BFF = worker.BFF
 IAM = product.IAM
 AGENT = worker.AGENT
 EXPECTED_RELEASES = {
-    "kokoro-app": "1dc211bb61030926177b72b3dff2061562a1015b",
-    "kokoro-bff": "571b51de2057905c74c78ac966c8cf5ac11eca93",
+    "kokoro-app": "9590a741448923c63eb4f4ff46379135d21061bd",
+    "kokoro-bff": "c4c4cbccee68eee95c1b89548abb6302b80e58e6",
     "kokoro-iam": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
     "kokoro-agent": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
 }

@@ -1,5 +1,20 @@
 # Kokoro 后端闭环任务总表
 
+## BFF-PERSONAL-CONSUMER：文档门已通过，固定v5正式消费授写（2026-09-30）
+
+Owner BFF原负责人唯一writer；main c4c4cbc clean，Root eefcae6f已集成；Root index/commit/独立审查。三面绝对路径为 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`（后两同一绝对目录）。对应四文档hash和独立0缺陷见progress/交接；contract179、architecture27、schema5pass/1无PG skip已Root Node22验证。无未决业务裁决，整体产品仍未验。
+
+- 目标/依赖：固定Platform0dd60af/v5，五本人public安装路由→官方Connect→owner，现发布不自动安装。可与Platform runtime并行开发；真实组合/激活等其验收，Web消费另片，不改其他仓。
+- 位置比较：复用现http/routes、http输入与infrastructure/clients/platform；不建新业务module/事务/表。Root纠正prep：不把五Product方法堆入CatalogConnectClient并用catalog scope读数据；采用现目录新的personal-installation-connect.ts和personal-installation-response.ts分离具名Product调用/安全wire投影。读用现ProjectionTokenSource，写用现CatalogTokenSource，两个严格scope来源不互换，不增加身份/role/数据库或fallback。
+- 新普通文件：src/http/skill-installation-input.ts、src/http/routes/skill-installations.ts；现clients/platform/personal-installation-projector.ts（仅3digest）、personal-installation-connect.ts（仅五official调用与metadata/deadline）、personal-installation-response.ts（仅安全ACK/get/list映射）；test/skill-installation-input.test.ts、test/skill-installation-http.test.mjs。禁止把input/schema、wire response、digest、route编排混成大文件。
+- 既有允许文件：scripts/generate-platform-connect-client.mjs、buf.platform.json仅vendor源路径、contract/dependencies/platform-connect.json、两platform-connect生成TS（仅生成）、test/platform-connect-contract.test.mjs、bootstrap/server.ts/runtime.ts、test/bff.test.ts/architecture.test.ts、contract/openapi/v1/openapi.yaml、contract/tests/v1-operations.json、scripts/verify-openapi.ts、test/contract/openapi-contract.test.mjs/contract-governance.test.mjs、package.json仅format文件列表、上述四docs实现当前段。
+- 机器/删除：移除旧263a28f整棵vendor，以owner发布0dd60af proto＋v5原字节替换；v5引用的固定历史验证bytes须按发布工具事实处理，禁止伪造缺失引用/复制runtime校验器/消费相邻源码；旧v4运行vendor、enableSkill/disableSkill按name paths与503stub删除，404不可达而非alias，保持其余有效catalog职责。
+- 已确认fixture债务：允许test/platform-projection-credential.test.mjs与test/skill-create-draft-credential.test.mjs显式chmod广权限fixture并finally清自身tmp，Root首次失败实际为前者；077/022均真实断言拒绝，生产权限不放宽。
+- API/数据：精确owner-native九字段，移除安装installed=false/enabled=false/removed_at存在而无removed字段；publicdata/change1..7小写/eventpresence/replayed原ACK；next_cursor保presence；可信tenant/user仅current IAM+metadata，3digest/key绑定；Abort/deadline贯穿整个路径。同owner facts/receipt/outbox唯一，不新增BFF SQL/Redis/receipt缓存，无旧数据兼容。
+- 验证/交付：先输入/presence/跨身份/错误scope/安全投影/3发布digest vectors/receipt/event/page/unknownACK/取消及旧path不可达RED→GREEN；Node22 format/lint/typecheck/contract/schema/architecture/test/build，已存在077/022 permission门。无共享PG/服务/3310/锁/index操作；如需新的真实fixture先报Root。完成停写精确files/hash/实际日志与资源终态，Root独立审查/提交/主树复验，再真实owner组合。
+
+Root集成此Web片同时只更新现 `scripts/e2e/run_web_chat_worker_smoke.py` 与 `scripts/tests/test_web_chat_worker_smoke.py` 的固定Web/BFF来源SHA，保持行为/门禁不变；采用现composer，不新driver或fallback。Root将已提交的三生产源码精确同步自有Next dev snapshot，复核hash，不重启BFF加载在途代码；源码来源/加载事实与用户DOM证据分开。
+
 ## WEB-EXPIRED-SUBMIT：既有认证边界窄修授写（2026-09-30）
 
 归属 Web 既有签名交互/CSRF 同源 adapter，不改变 IAM owner、身份契约或 UI 设计；现三面文档的 signed query/一次CSRF方案继续有效。Root授原 Web 负责人唯一 writer，main1dc211bb clean基线，Root提交/重启/集成验收。
@@ -32,7 +47,7 @@
 | 目标/依赖 | P2个人发布→显式安装→启停/移除→选择→真实聊天。机器owner0dd60af已发布并Rootf393365c精确集成；runtime和BFF文档门可独立推进固定契约，消费者代码须其三面门通过后另行授写，真实组合等owner runtime验收。 |
 | 归属/基线 | Platform原负责人唯一writer，Root审查/shared index/提交；apps/kokoro-capability clean main0dd60af。BFF文档负责人独占本仓文档，clean main571b51de；Root继续当前3310真实产品验收。沿现会话实际模型，无切换主控。 |
 | 设计门/位置 | Platform已批准TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL三面与唯一Proto/Prisma，0dd60af机器门0缺陷。采用现skills/installation具名Product adapter复用同一Service/事务，不把execution proof变可选、不建新module/目录/事实/表；淘汰Product→execution代理或第二安装实现。BFF只在现三设计文件修当前态/目标态，未来named route/client放已有目录，不复制Platform业务。 |
-| Platform允许源码 | 现installation/下skill-installation.model.ts/service.ts/rpc.ts/transaction.ts；skills/skill.context.ts、skill-source-reference.ts、skills.module.ts；rpc/rpc.middleware.ts、config/runtime.ts。新普通文件仅installation/下skill-installation-product.rpc.ts/admission.ts/request-binding.ts/mapper.ts，各一个变化原因。 |
+| Platform允许源码 | 现installation/下skill-installation.model.ts/service.ts/rpc.ts/transaction.ts；skills/skill.context.ts、skill-source-reference.ts、skills.module.ts；rpc/rpc.middleware.ts、config/runtime.ts。新普通文件仅installation/下skill-installation-product.rpc.ts/admission.ts/request-binding.ts/mapper.ts，各一个变化原因。新增现同目录skill-installation.errors.ts只承载CAS stale-generation具名业务错误，Service不依赖Connect类型，Product adapter映射ABORTED；淘汰把错误混入model或transport穿透Service。 |
 | Platform允许测试 | 新unit四Product admission/request-binding/rpc/mapper测试；现unit skill-installation.test.ts/skills-module.test.ts、integration nest-ingress.test.ts/skill-installation.integration.test.ts、fixtures nest-application.ts、architecture platform-execution-operations.test.ts。现四设计/CURRENT、contract/README及package格式范围可同步，无依赖升级。 |
 | Product语义 | 五Personal方法、exact本tenant本人source/user target、可信BFFmetadata且先当前IAM；9safe白名单/三独立digest/optional分页presence与独立cursor绑定。复用既有catalog写/projection读scope，不新role或IAMsurface。所有receipt出口当前授权及身份绑定；true-enable含no-op/replay须freshCLEAN/health及事务source/install fence，false/remove不因坏包阻止收紧。20秒同预算/5秒fresh、Serializable receipt/business/outbox唯一事务，ACK unknown不重施状态。 |
 | clean-slate/排除 | 删除被替代parser/input/重复编排；不迁移旧数据，不增加legacy alias/fallback/双写。execution保留有效Agent proof职责而非生产兼容入口。不改Prisma/schema/Proto/generated/v1–v5发布bytes/provenance/lock/IAM/BFF/Web/Root/3310；实际越界先报Root。 |

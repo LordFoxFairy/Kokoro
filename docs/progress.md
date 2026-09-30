@@ -1,5 +1,17 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Web窄修已提交并同步实际受管dev源码
+
+Web原生命周期P1返修独立P0/P1/P2=0；Root主树Node22 system/proxy77、纯unit1555、contract108、architecture37、lint/typecheck/build全部exit0，日志 `/tmp/kokoro-web-expired-submit-root-gates.log`。Root精确提交六files `9590a741448923c63eb4f4ff46379135d21061bd`，无API/Schema/依赖/旧兼容层变更。Root只把此commit三生产文件同步自己受管Next snapshot并核bytes相等（launcher7399/Web7874不变），避免重启BFF加载其在途consumer源码；当前HTTP登录/聊天/刷新独立复验已启动。右侧用户DOM仍未验，不能称原用户故障已解决或所有能力完成。
+
+Root当前库存38个Web节点来源及1文档digest同步，所有broken状态不变；既有WebChat composer及其测试只更新Web/BFF固定SHA，IAM/Agent pin与实际断言不变。Platform小片actual native RPC/ingress45PASS（JSON/binary及strictraw负例），真PG尚未执行；BFF消费者已在实施，三面文档不是API可用。
+
+
+## 2026-09-30 — 已集成BFF文档来源复验，三条代码并行
+
+Root eefcae6f精确集成BFF c4c4cbc后，checkpoint PASS、相关Root 95/95（35.13秒）通过；前述未集成1FAIL已关闭，原库存13broken仍不变。最新IAM relay检查则实际FAIL：BFF policy iamOwnerCommit仍4d981441，IAM gitlink e3c035b，需后续来源精确对齐，HTTP登录PASS不覆盖这个门。BFF个人安装消费者已正式授写，读ProjectionTokenSource/写CatalogTokenSource分离，不能把读请求挂catalog scope；新mapper/client仍落既有目录，不建module/表/缓存/兼容。Web原writer返修进程真实终态P1、Platform继续runtime，Root统一审查与最终组合；当前3310服务保持原加载版本。
+
+
 ## 2026-09-30 — BFF文档门已验收提交；Web退出P1拦截
 
 BFF三发现返修独立P0/P1/P2=0，Root精确提交原四docs `c4c4cbccee68eee95c1b89548abb6302b80e58e6`。Node22 contract179/179、architecture27/27、schema5pass/1无PG skip，机器/API/runtime仍未变化。Root来源库存184个BFF来源节点更新及2个文档digest，所有broken状态不变；提交gitlink前严格checkpoint/95test为1fail/94pass（HEAD gitlink仍旧，属真实未集成拒绝），提交后再次完整相关门，不放宽规则。
