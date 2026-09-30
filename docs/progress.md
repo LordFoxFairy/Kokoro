@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Web续流返修已验收提交；BFF四P1待独立复审
+
+Web精确11文件提交 79f19df3167e56d1d3ed517266427443363d5005；completed历史不阻止唯一in-progress前缀、两个streaming仍不盲拼。独立审查144测试/P0P1P2=0；Root144相关测试及lint/typecheck/build/diff实际exit0，日志 /tmp/kokoro-web-reload-root-p1-tests.log、/tmp/kokoro-web-reload-root-final-gates.log。writer1570纯测试/108contract/37architecture通过不替代真实当前浏览器；受管源码同步和严格终态/刷新仍待验。BFF4P1返修及Platform6519/5.0.1固定已交付停写，Root独立复审与主树门未完成，不视Agent退出为验收。Web同一writer进入四文档IA门，不并发改源码；全goal仍active。
+
 ## 2026-09-30 — 当前用户对齐与独立审查实际拦截
 
 Root86f41738集成Platform6519ae9后checkpoint/topology/95项主树来源测试通过（52.24秒，`/tmp/kokoro-platform-wire-root-pin-tests.log`）。Web续流独立发现1P1：先统计同run全部assistant令completed历史段阻止唯一streaming prefix认领，已续派现hydration与相邻测试稳定RED→GREEN；旧142tests和Root原候选全门PASS不覆盖此组合，不提交错误候选。BFF原owner并行返修4P1，已获唯一纠正机器source。

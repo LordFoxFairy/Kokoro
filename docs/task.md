@@ -1,5 +1,9 @@
 # Kokoro 后端闭环任务总表
 
+## WEB-PRODUCT-IA：三面文档门（2026-09-30；进行中）
+
+Owner Web原负责人唯一writer；基线 main 79f19df3167e56d1d3ed517266427443363d5005，工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；Root唯一index/审查/提交，已有工作树仅Root刚验收11文件，无其他Web改动。只允许四既有docs TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT；本阶段不改源码/生成物/契约/服务。依赖已验收续流79f19df；独立BFF审查可并行。用户已定Conversation/Project/ScheduledTask独立、Run执行归属、零正式preview/fake成功/猜ID，沿现shadcn修brand与单focus，保留IME/autogrow。完成条件三面当前/目标/owner一致＋精确下一代码文件集、无新owner/store/Schema/API、hash/未决项与验证命令；代码须Root放行后续派。
+
 ## 当前用户Web可用性与信息架构对齐（2026-09-30）
 
 用户新增明确要求：输入框、首页快捷操作/推广区、会话/专案/任务独立；样式沿正式shadcn，不重写新设计体系。Root并行只读定位，Web单writer先完成已定位续流短片再进入此片；不以首页广告替代真实能力。
