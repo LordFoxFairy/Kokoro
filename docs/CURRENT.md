@@ -1,3 +1,11 @@
+## WEB-CHAT-CURRENT-FEEDBACK 源码门通过，视觉待验（2026-09-30）
+
+Root组合CLI实际结果：topology=0、指定checkpoint=0；strict IAM relay=1，准确原因是保留的BFF四docs候选使child worktree dirty，未stash/回滚候选或放宽门禁。三日志 `/tmp/kokoro-web-chat-current-feedback-root-{relay,topology,checkpoint}.json`。本轮未跑全Root治理测试、全标准门或完整Playwright；Web纯门通过不代表这些门通过。
+
+Web main `5b77798be7a407c3f0a82d47841f1e141021de02` 四文件精确提交、clean；删除11行按message ID后缀施加全用户正负margin/translate的错误规则，保留AppFrame首项几何、消息/重复事实、Composer和失败卡。Node22主控完整 `pnpm check` actual0：contract109、architecture49、全量1823（39.18s）、lint/typecheck/build；独立4hash审查0/0/0。Prettier四文件及HEAD基线均FAIL既有格式，不宣称全部格式门绿。日志 `/tmp/kokoro-web-chat-current-feedback-root-check.log`。
+
+仅受管3310 PID65590目标Thread CSS逐bytes同步，无重启/模型/积分/数据库操作。本轮IAB含原user tab6的读取/截图均超时，fresh desktop/mobile视觉、当前输入框与失败卡观感尚未验收；已请求用户刷新并提供当前图。历史65e输入框矩阵不代替本轮证明。来源库存38个Web引用指向新commit、0digest变化，3active/13broken不变；BFF四docs候选仍有独立3P1/2P2未放行，Billing五docs与uv.lock保留。目标仍active，不称整体ChatGPT/Manus体验完成。
+
 ## Web 输入框与空成果项当前组合（2026-09-30）
 
 Root五项冻结来源下relay/checkpoint/topology三个CLI实测PASS/exit0。topology首次在gitlink暂存前exit1（checkout与旧记录不一致），精确暂存后原门通过；未修改门禁。日志 `/tmp/kokoro-web-visual-current-root-{relay,checkpoint,topology-final}.log`。本轮未运行全Root治理测试、完整Playwright或标准全门；历史结果不作本轮重跑。

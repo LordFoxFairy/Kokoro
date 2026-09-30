@@ -1,3 +1,41 @@
+## WEB-CHAT-CURRENT-FEEDBACK / P1 / 源码门通过、视觉待验（2026-09-30）
+
+- Root组合CLI：topology/checkpoint各0；strict IAM relay=1（BFF docs候选dirty）；保持候选与原门禁，未冒称全组合PASS。
+- 源码交付：Web 5b77798be7a407c3f0a82d47841f1e141021de02 四文件精确提交，Root完整check109/49/1823/lint/type/build实际0；独立0/0/0；Thread CSS同步3310原进程，未重启。当前输入框/fresh视觉未验，详细证据见CURRENT。
+- 当前用户明确要求输入框内方框与整体会话布局，优先于自动推进BFF。Root不把历史65e局部验收当本次页面通过。
+- 基线：Root main5a5ebeb9、Web main65e3287 clean；BFF四docs候选保留只读审查、不授源码；Billing/uv.lock不动。
+- 分工：Root实际IAB/运行副本核对；agent_failure_cursor_owner转Web只读布局/级联审查（原生续派、无外部worker）。当前阶段只允许Root写本task/progress；Web零授写。
+- 已知事实：现Composer与Thread源码同受管next副本逐bytes相等（cmp=0）；3310 /app HTTP200，0.038s。历史截图显示独立full-width失败Alert与真实重复user，但不作为本次鲜活浏览器证据。
+- 当前实际阻碍：IAB tab11焦点通道、同browser唯一新tab12导航及截图均30s超时；不反复新建tab、不另换浏览器工具。open_in_codex返回queued，不冒称展示成功。待用户前台浏览器通道恢复后真实重验。
+- 调查范围：现Composer CSS/primitive、Thread CSS/组件、AppFrame/MessageScroller与UI/架构测试，只读判断具体级联/间距/滚动根因；不改Message身份、重试、模型、数据库或隐藏历史事实。报告指出可验证缺陷及精确最小文件集，未证实不盲改CSS。
+- 验证：fresh screenshot/computed styles desktop/mobile focus/blur；精确RED/GREEN+Root相关门；浏览器仍超时时明确未验、不称完成。
+- 已确认局部修复归属：Web Thread样式，删除thread.module.css内基于data-message-id后缀的全用户margin/translate规则；已有AppFrame :first-child保持唯一首项几何owner。无需新目录/对象/contract/API/数据变更。仅样式与现测试，不猜失败卡宽度、不改Composer。
+- 唯一writer续派agent_failure_cursor_owner；精确四文件 src/ui/thread/thread.module.css、tests/ui/app-frame.smoke.test.tsx、docs/TECHNICAL_DESIGN.md、docs/CURRENT.md。先RED新增无ID布局依赖/保留首项几何断言，再CSS GREEN；保留DOM事实原测试。Root唯一Git/受管副本同步，主树重跑UI/architecture/typecheck/lint。当前浏览器E2E未验收。
+- BFF冻结4docs独立复审P0/1/2=0/3/2；未放行。后继需补contract README范围、public presence exact required guard、AGUI无顶层retryable负例与schema/provenance明确机器验证，不抢写当前UI。
+
+## BFF-AGENT-FAILURE3 / P1 / 文档门进行中（2026-09-30）
+
+- 上轮分类progress：Web65e3287与Root5a5ebeb9真实提交，1822/49/109与浏览器局部门、Root三后置CLI均actual0。本轮保持全Wave0–7目标，回后端关键链，不重复实施已验收UI。
+- 归属/基线：Root main5a5ebeb9；BFF main15e07fa44670bc13705ce3f6f700e73afcb72ccc clean；Agent mainf3be3b97dd67df69ed3c6cb88c59f3bc2db97703 clean，Web65e3287 clean。Root Billing五docs/uv.lock保留；当前3310原Agent2.0组合不热切半套。Root唯一index/commit。
+- 执行：原BFF负责人不在当前live清单，按现文件与task交接bff_failure_profile_owner（gpt-5.6-sol/high）为唯一writer；bff_failure_contract_review（gpt-5.6-sol/high）为只读契约审查；agent_failure_cursor_owner为只读SQL/失败writer审查；Root裁决/集成/资源/实际验证。只读不得改文件/启动共享服务/清数据/Git。第一门仅BFF docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md；不写源码/机器/SQL/generated/lock/Root文档。
+
+| 项 | Root确定结论 |
+| --- | --- |
+| Owner | BFF Message与durable AG-UI projection拥有安全失败快照；Agent拥有失败分类；仅verified run.failed沿现projection事务写入 |
+| 当前事实 | projection.ts手写七码fallback丢retryable；Message表/读model无failure；public1.0.0，实际AgentHTTP2.0pin；取消/dispatch/delete也写failed，须保持区别 |
+| 目标职责 | Message可选closed failure={source:agent,code,retryable}；reload/list/明确Share均保留安全facts，不返回原诊断；完整页非法零推进、只block对应consumer |
+| 目录方案 | 扩现Message表与现repository优于独立failure表（无独立生命周期/避免第二真源）；现generator生成failure-profile.gen.ts优于手写client allowlist/全量orphans |
+| 粒度 | 只扩现业务/ports/mappers/clients及tests；仅新增现generated内单个只读严格validator与固定commit vendor目录，后续精确授写；不做Nest搬目录或机械新层 |
+| 依赖 | Agent已发布3.0先固定，BFF2.0发布后Web再pin；generated仅infraclient导入，不将Zod/ORM泄漏domain；delivery独立历史event pin原bytes保持 |
+| 数据/API | bff_message新增nullable agent_failure_code/agent_failure_retryable；两null或两nonnull的CHECK、10码、true仅model/dependency unavailable、assistant/failed/非空run；现同projection/source/frame/watermark事务与ACL先行RR读取；无新索引/迁移/角色 |
+| 删除项 | 旧HTTP2.0 vendor与其consumer pin替换、源码七码allowlist/unknown->internal_error删除；不兼容旧failure、无JSON fallback/ledgerGC重建/双轨。delivery旧独立发布snapshot不误删 |
+| 验证 | 精准RED→strict10码/所有bool/extra/unknown矩阵、非法整页零写与tenant/leaseblock、DB CHECK/事务rollback/RR/GC/ACL/Share、非Agent失败null；完整format/lint/typecheck/contract/architecture/test/build/schema/fresh install与owner7文件真PG/Redis/HTTP；Root重跑不转broken绿 |
+
+- 固定Agent HTTP：f3be3b97dd67df69ed3c6cb88c59f3bc2db97703，3.0.0，OpenAPI sha e9f0a543f74dee34212f0ea4fe366d46218268462ac54dce08e41965f34d2d2c，provenance sha d116657f65027de8bd829dc0408fd86046da0ac0a1d2934bd2a87e835c897b5f；Root从现owner文件实际重算一致。
+- public info.version1.0.0→2.0.0协调breaking、HTTP /v1不变；ChatMessage failure presence仅assistant failed且run_id非空。两true合法码/其他八码false限定，所有十码false合法。Web.strict后继明确更新，不先放宽。
+- 实时链Root补齐裁决：标准AG-UI RUN_ERROR保留code/安全固定message，精确safe failure放现metadata.kokoro.failure，shape与Message.failure相同、code一致；仅Agent verified failure携带，不增第二网络协议/额外CUSTOM/复制raw exception。当前@ag-ui/core0.0.59的BaseEvent metadata与EventSchemas实际支持；官方events文档已核2026-09-30。消费者后继必须同快照/实时一组safe事实。
+- 第一门交付：三设计顶部明确当前15e/目标、精确文件清单/失败writers/SQL CHECK null语义/契约schema版本/生成determinism/negative矩阵，CURRENT不冒称完成。Root与独立审查通过后授机器+schema+tests RED，后再授源码；本轮不发起真实provider、充值、服务重启或数据库清理。
+
 ## WEB-VISUAL-CURRENT-AUDIT / P1 / 已验收（2026-09-30）
 
 Root五项冻结来源下relay/checkpoint/topology三个CLI实测PASS/exit0。topology首次在gitlink暂存前exit1（checkout与旧记录不一致），精确暂存后原门通过；未修改门禁。日志 `/tmp/kokoro-web-visual-current-root-{relay,checkpoint,topology-final}.log`。本轮未运行全Root治理测试、完整Playwright或标准全门；历史结果不作本轮重跑。

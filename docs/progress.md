@@ -1,3 +1,19 @@
+## WEB-CHAT-CURRENT-FEEDBACK 源码门通过，视觉待验（2026-09-30）
+
+Root组合CLI实际结果：topology=0、指定checkpoint=0；strict IAM relay=1，准确原因是保留的BFF四docs候选使child worktree dirty，未stash/回滚候选或放宽门禁。三日志 `/tmp/kokoro-web-chat-current-feedback-root-{relay,topology,checkpoint}.json`。本轮未跑全Root治理测试、全标准门或完整Playwright；Web纯门通过不代表这些门通过。
+
+Web main `5b77798be7a407c3f0a82d47841f1e141021de02` 四文件精确提交、clean；删除11行按message ID后缀施加全用户正负margin/translate的错误规则，保留AppFrame首项几何、消息/重复事实、Composer和失败卡。Node22主控完整 `pnpm check` actual0：contract109、architecture49、全量1823（39.18s）、lint/typecheck/build；独立4hash审查0/0/0。Prettier四文件及HEAD基线均FAIL既有格式，不宣称全部格式门绿。日志 `/tmp/kokoro-web-chat-current-feedback-root-check.log`。
+
+仅受管3310 PID65590目标Thread CSS逐bytes同步，无重启/模型/积分/数据库操作。本轮IAB含原user tab6的读取/截图均超时，fresh desktop/mobile视觉、当前输入框与失败卡观感尚未验收；已请求用户刷新并提供当前图。历史65e输入框矩阵不代替本轮证明。来源库存38个Web引用指向新commit、0digest变化，3active/13broken不变；BFF四docs候选仍有独立3P1/2P2未放行，Billing五docs与uv.lock保留。目标仍active，不称整体ChatGPT/Manus体验完成。
+
+## 2026-09-30 — 用户当前反馈优先，返回实际UI调查
+
+用户再次指出输入框方框与对话布局。Root停止本轮BFF源码推进，四docs候选只读审查保留；Web65e源码与受管next的Composer/Thread逐bytes一致，HTTP200（0.038s），不假设旧tab缓存已证实。实际IAB tab11 focus、唯一新tab12 navigate与截图均超时，open_in_codex只queued；无新服务/重启/模型/积分/数据操作，不将历史截图称本轮页面通过。续派原生只读Web布局审查，Root负责现页面与精确后继scope。已验小修不等于用户认可整体体验，重复消息/失败卡语义仍开放。
+
+## 2026-09-30 — BFF安全失败持久化关键链启动
+
+上一轮progress：Web65e3287/Root5a5ebeb9已提交并局部实测，仍有重复user/历史failed与全Wave目标未闭。本轮核BFF15e clean、Agent f3be3.0原bytes和当前7码fallback，复用既有BFF方向，不新增架构/运维范围。Root补齐实时AG-UI metadata.kokoro.failure与snapshot同shape裁决；明确Message nullable两列/完整CHECK/public2.0/严格生成，不兼容旧分支。BFF唯一writer先四docs，独立契约/SQL只读并行；文档门前不写源码/SQL/机器，不切3310半套。支付最后，任务外Billing/uv.lock保留。
+
 ## 2026-09-30 — 输入框跨状态与空成果项已验收
 
 Root五项冻结来源下relay/checkpoint/topology三个CLI实测PASS/exit0。topology首次在gitlink暂存前exit1（checkout与旧记录不一致），精确暂存后原门通过；未修改门禁。日志 `/tmp/kokoro-web-visual-current-root-{relay,checkpoint,topology-final}.log`。本轮未运行全Root治理测试、完整Playwright或标准全门；历史结果不作本轮重跑。
