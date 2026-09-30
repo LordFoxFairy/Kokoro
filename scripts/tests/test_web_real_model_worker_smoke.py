@@ -45,6 +45,9 @@ def valid_evidence():
         reload_card_count=1,
         download_sha256="b" * 64,
         member_statuses=[404, 404, 404],
+        owner_snapshot_immutable=True,
+        completed_reload_content_equal=True,
+        assistant_content_sha256="d" * 64,
     )
 
 
@@ -60,9 +63,92 @@ def test_stage_validation_requires_text_and_artifact_from_one_run():
         ("reload_card_count", 2),
         ("download_sha256", "c" * 64),
         ("member_statuses", [200, 404, 404]),
+        ("owner_snapshot_immutable", False),
+        ("completed_reload_content_equal", False),
+        ("assistant_content_sha256", ""),
     ]:
         with pytest.raises(m.SmokeError):
             m.validate_browser_evidence({**evidence, key: bad}, "b" * 64)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "owner_snapshot_immutable",
+        "completed_reload_content_equal",
+        "assistant_content_sha256",
+    ],
+)
+def test_model_browser_evidence_rejects_missing_snapshot_proof(field):
+    evidence = valid_evidence()
+    del evidence[field]
+    with pytest.raises(module().SmokeError):
+        module().validate_browser_evidence(evidence, "b" * 64)
+
+
+def test_terminal_chat_snapshot_evidence_has_precise_non_sensitive_failures():
+    import json
+    import subprocess
+
+    helper = Path("scripts/e2e/chat_snapshot_evidence.mjs").resolve().as_uri()
+    source = """
+import assert from 'node:assert/strict';
+import { terminalChatSnapshot, assertChatSnapshotUnchanged } from HELPER;
+const snapshot = {event_watermark:'cursor_1',messages:[
+  {message_id:'msg_u',role:'user',status:'completed',content:'prompt',run_id:'run_1'},
+  {message_id:'msg_a',role:'assistant',status:'completed',content:'PRIVATE_TEST_BODY',run_id:'run_1'}
+]};
+const expected=terminalChatSnapshot(snapshot,'run_1');
+assert.equal(Object.isFrozen(expected),true);
+assert.equal(expected.assistant_content_sha256.length,64);
+assertChatSnapshotUnchanged(expected,terminalChatSnapshot(structuredClone(snapshot),'run_1'));
+const invalid=[
+  [{messages:[]},'CHAT_SNAPSHOT_COUNT'],
+  [{messages:[snapshot.messages[1],snapshot.messages[0]]},'CHAT_SNAPSHOT_ORDER'],
+  [{messages:[snapshot.messages[0],{...snapshot.messages[1],message_id:null}]},'CHAT_SNAPSHOT_ID'],
+  [{messages:[snapshot.messages[0],{...snapshot.messages[1],message_id:'msg_u'}]},'CHAT_SNAPSHOT_ID'],
+  [{messages:[snapshot.messages[0],{...snapshot.messages[1],status:'streaming'}]},'CHAT_SNAPSHOT_STATUS'],
+  [{messages:[snapshot.messages[0],{...snapshot.messages[1],content:''}]},'CHAT_SNAPSHOT_CONTENT'],
+  [{messages:[snapshot.messages[0],{...snapshot.messages[1],run_id:'run_other'}]},'CHAT_SNAPSHOT_RUN']
+];
+invalid.push([{...snapshot,event_watermark:null},'CHAT_SNAPSHOT_WATERMARK']);
+for(const [body,code] of invalid){
+ assert.throws(()=>terminalChatSnapshot(body,'run_1'),e=>e.code===code&&!e.message.includes('PRIVATE_TEST_BODY'));
+}
+for(const [key,value,code] of [
+ ['message_id','other','CHAT_SNAPSHOT_ID_CHANGED'],
+ ['content','PRIVATE_TEST_BODY plus text','CHAT_SNAPSHOT_CONTENT_CHANGED']
+]){
+ const changed=structuredClone(snapshot);changed.messages[1][key]=value;
+ assert.throws(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changed,'run_1')),
+  e=>e.code===code&&!e.message.includes('PRIVATE_TEST_BODY')&&
+  e.evidence.before.assistant_content_sha256===expected.assistant_content_sha256);
+}
+for(const [key,value,code] of [
+ ['run_id','run_other','CHAT_SNAPSHOT_RUN_CHANGED'],
+ ['role','user','CHAT_SNAPSHOT_ORDER_CHANGED'],
+ ['status','streaming','CHAT_SNAPSHOT_STATUS_CHANGED']
+]){
+ const changed=structuredClone(expected);changed.messages[1][key]=value;
+ assert.throws(()=>assertChatSnapshotUnchanged(expected,changed),
+  e=>e.code===code&&!JSON.stringify(e.evidence).includes('PRIVATE_TEST_BODY'));
+}
+const changedWatermark=structuredClone(snapshot);changedWatermark.event_watermark='cursor_2';
+assert.throws(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changedWatermark,'run_1')),
+ e=>e.code==='CHAT_SNAPSHOT_WATERMARK_CHANGED');
+snapshot.messages[1].content='mutated original';
+assert.equal(expected.messages[1].content,'PRIVATE_TEST_BODY');
+process.stdout.write('snapshot assertions passed\\n');
+""".replace("HELPER", json.dumps(helper))
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=5,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == "snapshot assertions passed\n"
 
 
 def test_runner_never_calls_manual_execution_or_fixture_boundary():

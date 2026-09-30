@@ -95,6 +95,10 @@ def validate_browser_evidence(value: dict[str, object], digest: str) -> None:
         or value.get("reload_card_count") != 1
         or value.get("download_sha256") != digest
         or value.get("member_statuses") != [404, 404, 404]
+        or value.get("owner_snapshot_immutable") is not True
+        or value.get("completed_reload_content_equal") is not True
+        or not isinstance(value.get("assistant_content_sha256"), str)
+        or re.fullmatch(r"[a-f0-9]{64}", value["assistant_content_sha256"]) is None
         or any(
             not isinstance(value.get(key), str) or not value[key]
             for key in ("conversation_id", "run_id", "artifact_id", "asset_id")

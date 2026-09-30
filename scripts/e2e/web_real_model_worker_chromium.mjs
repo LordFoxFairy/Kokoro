@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import { pathToFileURL } from "node:url"
+import { ChatSnapshotEvidenceError, terminalChatSnapshot, assertChatSnapshotUnchanged } from "./chat_snapshot_evidence.mjs"
 
 const assert = (condition, message) => { if (!condition) throw new Error(message) }
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex")
@@ -152,6 +153,19 @@ try {
   }
   const delivered=wire.delivery[0].event.value
   assert(wire.delivery[0].event.metadata?.kokoro?.session_id===conversation && delivered.content_hash===input.content_sha256 && delivered.size===Buffer.byteLength(input.marker) && typeof delivered.artifact_id==="string" && typeof delivered.asset_id==="string","delivery")
+  phase="terminal-owner-first-snapshot"
+  async function readTerminalSnapshot() {
+    const result=await page.evaluate(async target=>{
+      const response=await fetch(target,{cache:"no-store",credentials:"same-origin"})
+      return {status:response.status,body:await response.json()}
+    },snapshotPath)
+    assert(result.status===200,"snapshot HTTP")
+    return terminalChatSnapshot(result.body,run)
+  }
+  const terminalSnapshot=await readTerminalSnapshot()
+  phase="terminal-owner-immutable-snapshot"
+  await new Promise(resolve=>setTimeout(resolve,750))
+  assertChatSnapshotUnchanged(terminalSnapshot,await readTerminalSnapshot())
   phase="chat-card"
   const card=page.getByRole("button",{name:"Open delivery Real model work",exact:true})
   await card.waitFor({state:"visible",timeout:input.timeout_ms})
@@ -175,6 +189,7 @@ try {
   assert(snapshot.status===200 && snapshot.body.deliveries.length===1 && snapshot.body.deliveries[0].artifact_id===delivered.artifact_id &&
     snapshot.body.deliveries[0].conversation_id===conversation && snapshot.body.deliveries[0].run_id===run &&
     snapshot.body.messages.some(m=>m.role==="assistant" && m.status==="completed" && m.content.includes(input.marker)),"snapshot")
+  assertChatSnapshotUnchanged(terminalSnapshot,terminalChatSnapshot(snapshot.body,run))
   await page.screenshot({path:input.screenshot,fullPage:true})
   phase="member-private"
   const memberContext=await browser.newContext({ignoreHTTPSErrors:true,locale:"en-US"})
@@ -194,9 +209,14 @@ try {
   assert(memberStatuses.every(status=>status===404),"privacy")
   process.stdout.write(JSON.stringify({browser:"chromium",login:{owner,member},screenshot:input.screenshot,
     message_post_status:202,agui_status:200,conversation_id:conversation,run_id:run,artifact_id:delivered.artifact_id,asset_id:delivered.asset_id,
-    text_marker_visible:true,live_delivery:true,reload_card_count:1,download_sha256:digest,member_statuses:memberStatuses})+"\n")
-} catch {
+    text_marker_visible:true,live_delivery:true,reload_card_count:1,download_sha256:digest,member_statuses:memberStatuses,
+    owner_snapshot_immutable:true,completed_reload_content_equal:true,
+    assistant_content_sha256:terminalSnapshot.assistant_content_sha256})+"\n")
+} catch (error) {
   process.stderr.write(`REAL_MODEL_FAILURE:${phase}\n`)
+  if (error instanceof ChatSnapshotEvidenceError) {
+    process.stderr.write(JSON.stringify({code:error.code,evidence:error.evidence})+"\n")
+  }
   process.exitCode=1
 } finally {
   if(browser) await browser.close()

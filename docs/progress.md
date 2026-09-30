@@ -1,3 +1,7 @@
+## ROOT-CHAT-SNAPSHOT-EVIDENCE 最终独立放行
+
+冻结四源码/测试hash最终4/4匹配，独立P0/P1/P2=0/0/0，补齐run/role/status三分支和watermark缺失负例；Root聚焦18pass/格式与lint/Node语法/diff-check通过。正式source/helper与MAP单独提交，不夹带Web业务或uv.lock；真实模型/E2E本轮尚未重跑，历史FAIL不覆盖。
+
 ## 2026-09-30 — 正式快照验收证据门与个人安装Web文档门
 
 - 上一turn为progress；本轮复核受管30171/31351仍live，没有因观察超时重启。BFF独立源码审计及Root核对：readSnapshot明确REPEATABLE READ READ ONLY，消息全文/AGUI frame/terminal watermark同事务，completed后SQL封口；未证明生产owner race，历史E_FLOW原失败保留，不盲改生产。
