@@ -2104,3 +2104,12 @@ Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree i
 ### Root a0b95a31 最终本轮纯门
 
 独立checkpoint/topology均exit0；同session75632已消费最终exit0，完整Root1094pass/3native skip/409subtests（100.52s），日志`/tmp/kokoro-web-billing-root-full-tests.log`。relay真实FAIL因未审通过BFF四文档dirty，保持原严格门；Web840已提交/clean，Billing五文档writer仍在途。没有上线加载/当前账户充值/Run真实扣费或全产品闭环证据。
+## 2026-09-30 ROOT-PROVIDER-LIFECYCLE 与正式交互对齐
+
+基线Root main6fdcba6e，唯一writer仅三现文件，源码未触任何子仓/业务Schema/契约/依赖。根因证据是旧受管组stage=provider；预计外部库存失败曾被wrapper压成ChatError并清整组。独立类型区分observation，周期unknown继续两ownership/CAS回执；不凭库存失败宣称推理down、不伪healthy。启动/Ollama/非观察错误仍严格、清理策略不动，无后台线程/重试/付费health call。
+
+首RED29failure含subtests/30pass/51subtests、HTTP本地状态错误补RED1fail；首GREEN57pass/98subtests，Root全量1102pass/3skip/439subtests，但独立审查1P1：unknown命令接受healthy/不同时刻receipt。再RED16场景，保存发出的UTC Zms timestamp并严格绑定receipt status/time，最终聚焦58pass/114subtests、独立复审0/0/0。Root重跑完整 **1103pass/3native-depsskip/455subtests**、114.87s、session2944 exit0已消费，日志`/tmp/kokoro-provider-lifecycle-final-root-tests.log`，Ruff/format/diff exit0。最终hash:model e37ab303d3f19cfbda896535d3e6da529a0f96736421f4c79c45f966b885db4d；runtime16e4bbf625ab126cbcb88997049e4e69bde209fd76b0711265796621eaa8727d；test8f40ad366fa833a4d32efed561cf9a069fc696c810366d35ee68560693c11164。未真实启动或周期恢复验证，3310仍offline，原Chat terminal DOM FAIL不改绿。
+
+BFF四docs原2P1/1P2返修独立0/0/0：v1机器原字节恢复existing running，同RR afterACL；Root指出terminal后lateoldSTART造成(X,O,X)是实际可达、不能误判500。T=E无论L省略；Tnull LE才running、queued/lateoldstart漏报保守省略；blank/foreignterminal非法具体码。文档冻结191e530d已验，五现tests RED阶段已派原负责人，源码仍等待RED/PG阶段门。Billing原五docs独立3P1/1P2；Root锁200command无虚构Location、1Credit=1e6micros非现金价格，reason进入effect/digest/audit及onlyreason冲突；IAM任意target解析实际无operation，必须owner-first，准确记阻塞不编造现contract。修订五docs已冻结1ab8acf8待复审，未入账、不假计费。
+
+核验ChatGPT Projects与Manus Projects/Connectors/Scheduled Tasks官方说明，参照来源与项目取舍进入同一task顶部，不新建第二计划中心。会话独立、Project可关联上下文、调度定义/occurrence/Run独立、默认个人私有显式分享为验收对象；不以品牌参照或外观承诺功能齐全。Root只提交自有三源码/测试及台账，不暂存任务外uv.lock、BFF/Billing候选gitlink；完整goal仍active、支付渠道最后。

@@ -130,6 +130,8 @@ def provider_preflight(config) -> None:
     if isinstance(config, model_provider.ExternalModelConfig):
         try:
             model_provider.provider_preflight(config)
+        except model_provider.ProviderObservationError:
+            raise
         except model_provider.ProviderError:
             raise ChatError("external model inventory unavailable") from None
     else:
@@ -440,10 +442,23 @@ class LocalChatRuntime:
                 raise ChatError("owned Chat service exited")
             if time.monotonic() < self.next_refresh:
                 return
-            # Foreground, bounded, no timer threads/queued retries. Failed observation
-            # never publishes healthy and stops this explicit Chat composition.
+            # Foreground, bounded, no timer threads/queued retries. An expected
+            # external inventory failure blocks new routing, not auth/Web lifetime.
             stage = "provider"
-            provider_preflight(self.config)
+            health_status = "healthy"
+            try:
+                provider_preflight(self.config)
+            except model_provider.ProviderObservationError:
+                health_status = "unknown"
+                try:
+                    log = getattr(self, "log", None)
+                    if log is not None:
+                        log.write(
+                            b"Local Chat provider observation unavailable; health=unknown\n"
+                        )
+                        log.flush()
+                except Exception:
+                    pass
             for stage, url, marker, ttl in (
                 ("agent_ownership", self.ownership.url, self.ownership.marker, "7200"),
                 (
@@ -472,6 +487,11 @@ class LocalChatRuntime:
                 ):
                     raise ChatError("Chat resource ownership lost")
             stage = "health_request"
+            observed_at = (
+                datetime.now(timezone.utc)
+                .isoformat(timespec="milliseconds")
+                .replace("+00:00", "Z")
+            )
             response = system.http_json(
                 self.system_base,
                 f"/v1/system/model-catalog/providers/{self.route['provider_id']}/health",
@@ -486,10 +506,8 @@ class LocalChatRuntime:
                     "if-match": f'"{self.health_generation}"',
                 },
                 body={
-                    "status": "healthy",
-                    "observed_at": datetime.now(timezone.utc)
-                    .isoformat(timespec="milliseconds")
-                    .replace("+00:00", "Z"),
+                    "status": health_status,
+                    "observed_at": observed_at,
                 },
             )
             stage = "health_receipt"
@@ -497,6 +515,10 @@ class LocalChatRuntime:
             generation = result.get("generation")
             if (
                 result.get("provider_id") != self.route["provider_id"]
+                or result.get("status") != health_status
+                # System serializes Date with UTC Z and millisecond precision.
+                # Require the receipt to confirm this exact sent observation.
+                or result.get("observed_at") != observed_at
                 or not isinstance(generation, str)
                 or not re.fullmatch(r"[1-9][0-9]*", generation)
             ):

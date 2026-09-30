@@ -7,6 +7,7 @@ Inventory observations establish reachability, not successful inference.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from http.client import BadStatusLine, IncompleteRead, LineTooLong
 import json
 import os
 from pathlib import Path
@@ -28,6 +29,10 @@ MAX_INVENTORY_BYTES = 1_048_576
 
 class ProviderError(RuntimeError):
     """Sanitized provider boundary failure; never includes upstream content."""
+
+
+class ProviderObservationError(ProviderError):
+    """Expected inventory observation failure; does not establish provider health."""
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -70,7 +75,7 @@ def _unique_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result = {}
     for key, value in pairs:
         if key in result:
-            raise ProviderError("provider JSON has duplicate fields")
+            raise json.JSONDecodeError("provider JSON has duplicate fields", "", 0)
         result[key] = value
     return result
 
@@ -117,31 +122,36 @@ class NoRedirect(HTTPRedirectHandler):
 
 def provider_preflight(config: ExternalModelConfig) -> None:
     """Read bounded model inventory with verified TLS; never do paid health inference."""
+    opener = build_opener(
+        ProxyHandler({}),
+        HTTPSHandler(context=ssl.create_default_context()),
+        NoRedirect(),
+    )
+    request = Request(
+        config.base_url + "/models",
+        headers={
+            "Authorization": "Bearer " + config.api_key,
+            "Accept": "application/json",
+            "User-Agent": "OpenAI/Python",
+        },
+    )
     try:
-        opener = build_opener(
-            ProxyHandler({}),
-            HTTPSHandler(context=ssl.create_default_context()),
-            NoRedirect(),
-        )
-        request = Request(
-            config.base_url + "/models",
-            headers={
-                "Authorization": "Bearer " + config.api_key,
-                "Accept": "application/json",
-                "User-Agent": "OpenAI/Python",
-            },
-        )
         with opener.open(request, timeout=10) as response:
             raw = response.read(MAX_INVENTORY_BYTES + 1)
             if response.status != 200 or len(raw) > MAX_INVENTORY_BYTES:
-                raise ProviderError("external model inventory rejected")
+                raise ProviderObservationError(
+                    "external model inventory rejected"
+                ) from None
+    except (OSError, URLError, BadStatusLine, IncompleteRead, LineTooLong):
+        raise ProviderObservationError("external model inventory unavailable") from None
+    try:
         value = json.loads(raw, object_pairs_hook=_unique_object)
-        items = value.get("data") if isinstance(value, dict) else None
-        if not isinstance(items, list) or any(
-            not isinstance(item, dict) for item in items
-        ):
-            raise ProviderError("external model inventory invalid")
-        if sum(item.get("id") == config.model for item in items) != 1:
-            raise ProviderError("explicit external model is absent or ambiguous")
-    except (OSError, ValueError, TypeError, URLError):
-        raise ProviderError("external model inventory unavailable") from None
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        raise ProviderObservationError("external model inventory invalid") from None
+    items = value.get("data") if isinstance(value, dict) else None
+    if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+        raise ProviderObservationError("external model inventory invalid") from None
+    if sum(item.get("id") == config.model for item in items) != 1:
+        raise ProviderObservationError(
+            "explicit external model is absent or ambiguous"
+        ) from None

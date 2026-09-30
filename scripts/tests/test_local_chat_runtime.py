@@ -14,6 +14,18 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/dev"))
 
 
+def health_receipt(body, generation="2"):
+    """System's complete health shape, echoing the observation it persisted."""
+    return {
+        "data": {
+            **body,
+            "provider_id": "provider",
+            "generation": generation,
+            "updated_at": body["observed_at"],
+        }
+    }
+
+
 class ExternalModelBoundaryTests(unittest.TestCase):
     def module(self):
         return importlib.import_module("model_provider")
@@ -173,6 +185,101 @@ class ExternalModelBoundaryTests(unittest.TestCase):
                     m.provider_preflight(config)
                 self.assertNotIn("test-private-provider-key", str(caught.exception))
                 self.assertNotIn("secret upstream body", str(caught.exception))
+
+    def test_expected_inventory_failures_have_a_distinct_sanitized_type(self):
+        from http.client import IncompleteRead
+        from urllib.error import HTTPError, URLError
+
+        m = self.module()
+        config = m.ExternalModelConfig(
+            base_url="https://provider.example/v1", model="selected", api_key="SECRET"
+        )
+        cases = [
+            TimeoutError("SECRET"),
+            OSError("SECRET"),
+            URLError("SECRET"),
+            IncompleteRead(b"SECRET"),
+            *(
+                HTTPError("SECRET", status, "SECRET", {}, None)
+                for status in (302, 403, 429, 503)
+            ),
+            b"not-json SECRET",
+            b"\xff",
+            b'{"data":[],"data":[]}',
+            b"{}",
+            b'{"data":[null]}',
+            b'{"data":[]}',
+            b'{"data":[{"id":"other"}]}',
+            b'{"data":[{"id":"selected"},{"id":"selected"}]}',
+            b"x" * (m.MAX_INVENTORY_BYTES + 1),
+        ]
+        for index, value in enumerate(cases):
+            with self.subTest(case=index):
+                response = Mock(status=200)
+                response.__enter__ = Mock(return_value=response)
+                response.__exit__ = Mock(return_value=False)
+                response.read.return_value = value
+                opener = Mock()
+                opener.open.return_value = response
+                if isinstance(value, Exception):
+                    opener.open.side_effect = value
+                with patch.object(m, "build_opener", return_value=opener):
+                    with self.assertRaises(m.ProviderObservationError) as caught:
+                        m.provider_preflight(config)
+                self.assertNotIn("SECRET", str(caught.exception))
+                self.assertTrue(caught.exception.__suppress_context__)
+                opener.open.assert_called_once()
+
+    def test_http_client_state_error_is_not_a_provider_observation(self):
+        from http.client import CannotSendRequest
+
+        m = self.module()
+        config = m.ExternalModelConfig(
+            base_url="https://provider.example/v1", model="selected", api_key="SECRET"
+        )
+        error = CannotSendRequest("SECRET local state defect")
+        opener = Mock()
+        opener.open.side_effect = error
+        with (
+            patch.object(m, "build_opener", return_value=opener),
+            self.assertRaises(CannotSendRequest) as caught,
+        ):
+            m.provider_preflight(config)
+        self.assertIs(caught.exception, error)
+
+    def test_inventory_programming_errors_are_not_observation_failures(self):
+        m = self.module()
+        config = m.ExternalModelConfig(
+            base_url="https://provider.example/v1", model="selected", api_key="SECRET"
+        )
+        for phase in ("setup", "request", "parse"):
+            with self.subTest(phase=phase):
+                error = TypeError("SECRET programming defect")
+                response = Mock(status=200)
+                response.__enter__ = Mock(return_value=response)
+                response.__exit__ = Mock(return_value=False)
+                response.read.return_value = b'{"data":[{"id":"selected"}]}'
+                opener = Mock()
+                opener.open.return_value = response
+                if phase == "request":
+                    opener.open.side_effect = error
+                with (
+                    patch.object(
+                        m,
+                        "build_opener",
+                        side_effect=error if phase == "setup" else None,
+                        return_value=opener,
+                    ),
+                    patch.object(
+                        m.json,
+                        "loads",
+                        side_effect=error if phase == "parse" else None,
+                        return_value={"data": [{"id": "selected"}]},
+                    ),
+                    self.assertRaises(TypeError) as caught,
+                ):
+                    m.provider_preflight(config)
+                self.assertIs(caught.exception, error)
 
 
 class LocalChatRuntimeTests(unittest.TestCase):
@@ -649,8 +756,7 @@ class LocalChatFailureTests(unittest.TestCase):
                 m.system,
                 "http_json",
                 side_effect=lambda *a, **k: (
-                    events.append(k)
-                    or {"data": {"provider_id": "provider", "generation": "2"}}
+                    events.append(k) or health_receipt(k["body"])
                 ),
             ),
         ):
@@ -923,7 +1029,11 @@ class TickDiagnosticTests(unittest.TestCase):
                 with (
                     patch.object(m, "provider_preflight") as provider,
                     patch.object(
-                        m.system, "http_json", return_value={"data": result}
+                        m.system,
+                        "http_json",
+                        side_effect=lambda *a, **k: {
+                            "data": {**health_receipt(k["body"])["data"], **result}
+                        },
                     ) as http,
                     self.assertRaises(m.ChatError),
                 ):
@@ -964,7 +1074,7 @@ class TickDiagnosticTests(unittest.TestCase):
             patch.object(
                 m.system,
                 "http_json",
-                return_value={"data": {"provider_id": "provider", "generation": "2"}},
+                side_effect=lambda *a, **k: health_receipt(k["body"]),
             ) as http,
             patch.object(m.time, "monotonic", return_value=100),
         ):
@@ -978,3 +1088,253 @@ class TickDiagnosticTests(unittest.TestCase):
             http.assert_called_once()
             self.assertEqual(obj.resources.command.call_count, 2)
         self.assertEqual(obj.log.getvalue(), b"")
+
+    def test_external_observation_unknown_then_healthy_preserves_cas_and_interval(self):
+        m, obj = self.runtime()
+        obj.config = m.model_provider.ExternalModelConfig(
+            base_url="https://provider.example/v1", model="selected", api_key="SECRET"
+        )
+
+        def no_render(_self):
+            raise AssertionError("observation exception must not be rendered")
+
+        error = type(
+            "SECRET_DYNAMIC_CLASS",
+            (m.model_provider.ProviderObservationError,),
+            {"__str__": no_render},
+        )("SECRET body")
+        generations = iter(("2", "3"))
+        with (
+            patch.object(
+                m.model_provider, "provider_preflight", side_effect=[error, None]
+            ) as probe,
+            patch.object(
+                m.system,
+                "http_json",
+                side_effect=lambda *a, **k: health_receipt(
+                    k["body"], next(generations)
+                ),
+            ) as http,
+            patch.object(m.time, "monotonic", return_value=100) as clock,
+        ):
+            obj.tick()
+            self.assertEqual(http.call_args.kwargs["body"]["status"], "unknown")
+            self.assertEqual(http.call_args.kwargs["headers"]["if-match"], '"1"')
+            self.assertEqual(obj.resources.command.call_count, 2)
+            self.assertEqual(obj.health_generation, "2")
+            self.assertEqual(obj.next_refresh, 160)
+            obj.tick()
+            probe.assert_called_once()
+            http.assert_called_once()
+            self.assertEqual(obj.resources.command.call_count, 2)
+            clock.return_value = 160
+            obj.tick()
+            self.assertEqual(http.call_args.kwargs["body"]["status"], "healthy")
+            self.assertEqual(http.call_args.kwargs["headers"]["if-match"], '"2"')
+            self.assertEqual(obj.resources.command.call_count, 4)
+            self.assertEqual(obj.health_generation, "3")
+            self.assertEqual(obj.next_refresh, 220)
+        self.assertEqual(
+            obj.log.getvalue(),
+            b"Local Chat provider observation unavailable; health=unknown\n",
+        )
+
+    def test_unknown_observation_does_not_hide_ownership_http_or_receipt_failure(self):
+        for stage in (
+            "agent_ownership",
+            "application_ownership",
+            "health_request",
+            "health_receipt",
+        ):
+            with self.subTest(stage=stage):
+                m, obj = self.runtime()
+                if stage == "agent_ownership":
+                    obj.resources.command.side_effect = ["0"]
+                elif stage == "application_ownership":
+                    obj.resources.command.side_effect = ["1", "0"]
+                error = m.ChatError("SECRET CAS or transport")
+                with (
+                    patch.object(
+                        m,
+                        "provider_preflight",
+                        side_effect=m.model_provider.ProviderObservationError("SECRET"),
+                    ),
+                    patch.object(
+                        m.system,
+                        "http_json",
+                        side_effect=error if stage == "health_request" else None,
+                        return_value={
+                            "data": {"provider_id": "wrong", "generation": "0"}
+                        },
+                    ) as http,
+                    self.assertRaises(m.ChatError),
+                ):
+                    obj.tick()
+                if stage.endswith("ownership"):
+                    http.assert_not_called()
+                self.assertEqual(obj.health_generation, "1")
+                self.assertEqual(obj.next_refresh, 0)
+                self.assertTrue(
+                    obj.log.getvalue().endswith(
+                        f"Local Chat tick failed: stage={stage}\n".encode()
+                    )
+                )
+                self.assertNotIn(b"SECRET", obj.log.getvalue())
+
+    def test_observation_log_failure_is_safe_and_generic_errors_still_fatal(self):
+        for log_failure in ("missing", "write", "flush"):
+            with self.subTest(log=log_failure):
+                m, obj = self.runtime()
+                if log_failure == "missing":
+                    del obj.log
+                else:
+                    obj.log = Mock()
+                    getattr(obj.log, log_failure).side_effect = OSError("SECRET")
+                with (
+                    patch.object(
+                        m,
+                        "provider_preflight",
+                        side_effect=m.model_provider.ProviderObservationError("SECRET"),
+                    ),
+                    patch.object(
+                        m.system,
+                        "http_json",
+                        side_effect=lambda *a, **k: health_receipt(k["body"]),
+                    ),
+                ):
+                    obj.tick()
+                self.assertEqual(obj.health_generation, "2")
+        m, obj = self.runtime()
+        for error in (
+            TypeError("SECRET"),
+            m.ChatError("SECRET"),
+            m.model_provider.ProviderError("SECRET"),
+        ):
+            with (
+                self.subTest(error=type(error)),
+                patch.object(m, "provider_preflight", side_effect=error),
+                patch.object(m.system, "http_json") as http,
+                self.assertRaises(type(error)) as caught,
+            ):
+                obj.tick()
+            self.assertIs(caught.exception, error)
+            obj.resources.command.assert_not_called()
+            http.assert_not_called()
+
+    def test_external_wrapper_preserves_observation_type_but_startup_still_raises(self):
+        m, _ = self.runtime()
+        config = m.model_provider.ExternalModelConfig(
+            base_url="https://provider.example/v1", model="selected", api_key="SECRET"
+        )
+        error = m.model_provider.ProviderObservationError("sanitized")
+        with (
+            patch.object(m.model_provider, "provider_preflight", side_effect=error),
+            patch.object(m.runtime, "command_output", return_value="a" * 40),
+            patch.object(m.owned, "_verify_source"),
+            patch.object(m.runtime, "run_owned_command") as command,
+            self.assertRaises(m.model_provider.ProviderObservationError) as caught,
+        ):
+            m.preflight(Path("/unused/uv"), "unused", "unused", Mock(), config)
+        self.assertIs(caught.exception, error)
+        command.assert_not_called()
+
+    def test_second_startup_observation_failure_never_seeds_health_or_agent(self):
+        m, obj = self.runtime()
+        obj.config = m.model_provider.ExternalModelConfig(
+            base_url="https://provider.example/v1", model="selected", api_key="SECRET"
+        )
+        obj.node_env, obj.node, obj.directory, obj.tenant = (
+            {},
+            Path("/unused/node"),
+            Path("/unused"),
+            "tenant",
+        )
+        obj.ownership = Mock()
+        error = m.model_provider.ProviderObservationError("sanitized")
+        with (
+            patch.object(
+                m.owned, "_isolated_owner", return_value=Path("/unused/system")
+            ),
+            patch.object(m.runtime, "free_port", return_value=4100),
+            patch.object(obj, "_command") as command,
+            patch.object(obj, "_start") as start,
+            patch.object(m.system, "wait_ready"),
+            patch.object(m.model_provider, "provider_preflight", side_effect=error),
+            patch.object(m.system, "seed_control_plane") as seed,
+            self.assertRaises(m.model_provider.ProviderObservationError) as caught,
+        ):
+            obj.start("postgresql://unused")
+        self.assertIs(caught.exception, error)
+        seed.assert_not_called()
+        start.assert_called_once()
+        self.assertEqual(start.call_args.args[0], "system")
+        self.assertEqual(command.call_count, 2)
+
+    def test_health_receipt_must_confirm_sent_status_and_exact_utc_observation(self):
+        cases = (
+            "wrong_status",
+            "missing_status",
+            "wrong_time",
+            "missing_time",
+            "invalid_time",
+            "naive_time",
+            "non_millisecond_time",
+            "non_utc_time",
+        )
+        for status in ("healthy", "unknown"):
+            for failure in cases:
+                with self.subTest(status=status, failure=failure):
+                    m, obj = self.runtime()
+
+                    def reply(*_args, **kwargs):
+                        result = {
+                            **kwargs["body"],
+                            "provider_id": "provider",
+                            "generation": "2",
+                            "updated_at": kwargs["body"]["observed_at"],
+                        }
+                        if failure == "wrong_status":
+                            result["status"] = (
+                                "healthy" if status == "unknown" else "unknown"
+                            )
+                        elif failure == "missing_status":
+                            del result["status"]
+                        elif failure == "missing_time":
+                            del result["observed_at"]
+                        else:
+                            result["observed_at"] = {
+                                "wrong_time": "2000-01-01T00:00:00.000Z",
+                                "invalid_time": "2026-99-99T25:99:99.999Z",
+                                "naive_time": kwargs["body"]["observed_at"][:-1],
+                                "non_millisecond_time": kwargs["body"]["observed_at"][
+                                    :-1
+                                ]
+                                + "000Z",
+                                "non_utc_time": kwargs["body"]["observed_at"][:-1]
+                                + "+01:00",
+                            }[failure]
+                        return {"data": result}
+
+                    with (
+                        patch.object(
+                            m,
+                            "provider_preflight",
+                            side_effect=(
+                                m.model_provider.ProviderObservationError("sanitized")
+                                if status == "unknown"
+                                else None
+                            ),
+                        ),
+                        patch.object(m.system, "http_json", side_effect=reply) as http,
+                    ):
+                        with self.assertRaises(m.ChatError):
+                            obj.tick()
+                        self.assertEqual(obj.health_generation, "1")
+                        self.assertEqual(obj.next_refresh, 0)
+                        self.assertEqual(obj.resources.command.call_count, 2)
+                        http.assert_called_once()
+                        self.assertTrue(
+                            obj.log.getvalue().endswith(
+                                b"Local Chat tick failed: stage=health_receipt\n"
+                            )
+                        )

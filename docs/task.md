@@ -1,3 +1,27 @@
+## 当前执行摘要：真实用户旅程（2026-09-30）
+
+本轮不是再建一套 UI 或计划中心。当前 Root main `6fdcba6e`，Web `840fa7e0` 删除虚构收费文案已验收；3310 已停止，真实模型 Chat 的 terminal DOM 全文门仍 FAIL。以下是执行优先级，不是已完成声明。
+
+| 优先级 | 交付门 | 当前责任与状态 |
+| --- | --- | --- |
+| P0 | 正规登录、页面不被模型库存观测拖停 | Root 三文件生命周期修复已冻结，独立审查与 Root 全门进行；预期观察失败写 System unknown，认证/Web 保留，非观察/ownership/CAS失败仍 fatal。 |
+| P0 | 发消息→流式→刷新续流→终态全文→再次追问 | BFF 四文档修复进行：先恢复 v1 已定义 running 的同 RR snapshot，不改 enum/消费者契约；Root纠正晚到旧 START 后 terminal/latest 可不同的合法矩阵。真实 Chromium 门仍待完整重跑。 |
+| P1 | 会话、项目、定时任务分开，关联不混淆身份 | 复用既有 Web 信息架构切片；后继验真实创建/移动/移出/刷新/深链，Project 上下文与 ScheduledTask/Run 独立，不能把预览列表算数据能力。 |
+| P1 | 文件、作品、审批、Skills/MCP 可运行 | 已有后端安装及历史作品/GC门；安装浏览器、非空Skill标准worker、MCP和完整HITL仍开放，按owner顺序推进。 |
+| P1 | 正式积分而非“免费”静态承诺 | Billing文档独立3P1/1P2已留证；Root裁决展示单位1 Credit=1,000,000 micros、同步grant command ACK=200无虚构Location。管理员target解析必须IAM owner-first，不冒称现接口存在；reason必须进入effect/digest/audit及冲突测试。未入账、未计费E2E；支付渠道仍最后。 |
+
+### 官方参照与 Kokoro 验收取舍
+
+- [ChatGPT Projects](https://help.openai.com/en/articles/10169521-projects-in-chatgpt)：项目收集会话、文件与指令，已有会话可移入/移出。Kokoro验收：会话独立存在，Project只增加明确关联和上下文，不把项目当会话、把执行Run当定时任务。
+- [Manus Projects/Connectors](https://manus.im/blog/projects-connectors)：共享工作指令与个人任务/app数据可区分。Kokoro继续遵守用户已裁决的默认个人私有、显式分享；不直接照搬ChatGPT共享项目成员可见所有项目聊天的规则。
+- [Manus Scheduled Tasks](https://manus.im/blog/manus-schedules)：调度可继续同会话或产生独立任务，并能查看执行历史/结果。Kokoro验收：调度定义、occurrence、Agent Run与Conversation身份各有owner；显示下一次执行与真实结果，不伪造静态任务卡。不因参考竞品就扩大本轮Schema/HITL切片。
+
+核验日期2026-09-30。上述是公开交互参考；实现方案是Kokoro取舍，不是竞品私有架构或“已具备同等能力”的证据。样式复用现有shadcn/ui组件和设计token；验收包含键盘/输入法、长文本、移动端、取消、刷新与错误状态，不另写中转登录页。
+
+### 当前派工补充
+
+ROOT-PROVIDER-LIFECYCLE-CODE 首候选已停写：Root完整纯门1102pass/3依赖skip/439subtests，独立审查发现1P1：unknown命令回执未绑定返回status/observed_at，未验收。原Root writer获同三文件续派修复，先RED，receipt必须匹配本次status与UTC毫秒instant，缺失/错误即fatal，不推进generation/next-refresh；既有成功test fixture按真实owner shape补齐。Root再次暂停本仓写入，修后冻结→独立复审→重新全门。BFF原负责人只修四docs（基线d654），源码仍禁。Billing五docs修审查项列为下一续派，未派工，基线63e0+原53/3行候选；只TECH/API/DATA/CURRENT/IMPLEMENTATION_PLAN，不改contract/源码/SQL/任何真实资金。固定单位是显示定义、不是现金兑换或已给账户充值；已有余额/价格/消费者须owner artifact后统一，无旧比例兼容分支。IAM target具名operation尚不存在，先列准确阻塞与owner发布门，不编造已pin接口。Root独占全部Git index与提交，uv.lock不动。
+
 ## ROOT-WEB-BILLING-INTEGRATION（2026-09-30）
 
 Root唯一writer/index；Web840fa7e0已独立0/0/0与Root完整1784/162、contract109/architecture37/lint/typecheck/build验收。只现gitlink/库存来源+实际blob digest、run_web_chat_worker_smoke.py固定SHA及对应测试、CURRENT/task/progress。固定断言先RED1fail/32pass，更新source常量后GREEN；状态/13broken不改绿。uv.lock任务外保留。当前无受管组，Web源码提交不等于右侧页面已热更新，更不是正式充值成功；Billing五文档当前唯一writer。提交后重新运行policy/checkpoint/topology与Root纯门；BFF候选四文档尚有2P1/1P2且未源码授权。
@@ -2596,3 +2620,18 @@ Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree i
 ### Root a0b95a31 最终本轮纯门
 
 独立checkpoint/topology均exit0；同session75632已消费最终exit0，完整Root1094pass/3native skip/409subtests（100.52s），日志`/tmp/kokoro-web-billing-root-full-tests.log`。relay真实FAIL因未审通过BFF四文档dirty，保持原严格门；Web840已提交/clean，Billing五文档writer仍在途。没有上线加载/当前账户充值/Run真实扣费或全产品闭环证据。
+## 2026-09-30 — 当前关键路径并行切片
+
+| ID / 状态 | Owner / 负责人 | 基线、范围与验收 |
+| --- | --- | --- |
+| ROOT-PROVIDER-LIFECYCLE-CODE / 进行中 | Root 开发组合；agent_typed_skill_reader_owner 唯一写入，Root 审查提交 | Root main `6fdcba6e`；仅 `scripts/dev/model_provider.py`、`scripts/dev/local_chat_runtime.py`、`scripts/tests/test_local_chat_runtime.py`。任务外 `uv.lock` 保留。已有 `stage=provider` 失败与只读根因调查：外部库存异常丢失类型，周期观察退出导致 IAM/Web 全组清理。沿现入口区分预期 observation 异常，周期失败发布 System `unknown`、继续原 ownership/CAS/receipt；非观察错误仍 fatal，启动两次 preflight 仍严格，Ollama不变、不做付费健康推理。先 RED，再 GREEN；worker 仅纯测试/Ruff，停写后独立审查与 Root 完整测试。Root派工期间暂停本仓所有写入；无新文件/进程/契约/数据。 |
+| BILLING-ADMIN-GRANT-REVIEW / 待审查 | Billing；bff_personal_consumer_review 只读 | main `63e0ab6e` 五文档候选，manifest `fcfa0fea529a95a23c5fc2a7524ee773c62e03a84abeeed97a4751ee60112ad2`。核真实管理员身份、subject归属、金额单位、事务/幂等/audit、响应语义和完整M3运行切换；不写源码、不充值、不访问服务/数据。 |
+| BFF-ACTIVE-RUN-DOC-REPAIR / 待 Root 裁决 | BFF 原负责人；Root 本轮只读核 writer 状态矩阵 | main `d654a1bc` 四文档候选仍2P1/1P2：版本策略、非法/合法 stream 矩阵、永久失败测试范围。未授权源码。当前真实模型浏览器 terminal DOM 全文断言仍 FAIL，不以模型有回复或纯测试替代。 |
+
+放置：Root 生命周期修复只扩既有开发组合文件；业务模型健康事实仍由 System 接口写入，淘汰在 launcher 吞全部异常或另加后台保活进程。Billing 只读审查可与 Root 代码切片并行；BFF 依赖文档裁决后串行写入。ChatGPT/Manus 官方交互参照用于验收旅程，不复制私有实现、不以外观或参考文档宣称功能完成。
+### BILLING-ADMIN-GRANT-DOC-REPAIR 续派卡（2026-09-30）
+
+Billing main `63e0ab6e` 与冻结五docs候选；agent_typed_skill_reader_owner 接任唯一Billing文档writer，原负责人已转BFF且停写Billing。只现TECH/API/DATA/CURRENT/IMPLEMENTATION_PLAN；Root提交与审查，不访问钱/服务/网络/锁/生成物。Root已裁决：200同步command结果、无Location/新增GET；显示1 Credit=1,000,000micros，不是现金价格，新价格/grant/所有consumer随owner发布原子对齐且不兼容旧显示比例；现runtime/账户数据未改。reason须入effect/type、versioned digest、audit.reason，only-reason变更同key/identity冲突与持久audit由直接测试覆盖。IAM尚无管理员target canonical解析operation，准确记录owner-first阻塞和所需公开语义/发布证据，不冒称已有接口；未发布前不得放行Billing消费者源码/实际入账。修五docs冻结hash→独立审查，保留整M3运行切换/所有既有门，支付渠道最后。
+### BFF-ACTIVE-RUN-CODE 续派卡（2026-09-30）
+
+四文档191e530d冻结清单已独立0/0/0通过，Root核三面与现writer后放行existing-running首片；基线BFF main d654+四docs。bff_personal_installation_owner唯一BFF writer，Rootsole index/commit与真PG资源。仅三src（chat-repository port、postgres/chat-repository、chat-service）和五既有tests（chat-service、agui-http.integration、agui-projection.integration、agent-dispatch-outbox、chat-facts.integration）；四docs只同步实现/实际证据，无任意重构。机器/生成物/schema/lock/deps/其他仓不改。先写直接pure与真PG测试并停写交接RED阶段；worker运行pure，Root在自有临时PG数据库/隔离Redis key跑PG RED，再授权GREEN；不重置共享数据/开新基础设施。实现同RR、ACL后查询、合法/非法矩阵、rollback/release与终态省略，不拼START/改Web。候选冻结后独立review、Root Node22所有owner门＋真实PG/Redis integration；完整浏览器模型门后继，queued/HITL/lateoldSTART漏报仍开放，不以running首片宣称整体闭环。
