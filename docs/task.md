@@ -23,6 +23,8 @@
 
 **当前正规调用切片：** Root真实新3310登录→callback→app/session true已通过，message413由launcher测试观察Proxy拒chunked导致。现删除本launcher该层全部代码，Web直连真实BFF；Root35/13subtests/Ruff及独立8pass/0缺陷，随后仅重启自己10137进行真Chat。Platform机器切片已独立验收并提交0dd60af clean main、Root1030/239skip/9门；后继Product runtime精确范围只读准备中，尚未授写或宣称产品完成。
 
+**PLATFORM-PERSONAL-V5 / 已验收机器切片：** owner0dd60af，Root9门1030pass/239真实依赖skip/独立0缺陷；Root精确gitlink＋库存9commit/2blob集成，旧broken状态不变。原owner仅只读准备Product runtime文件集，未默认扩大写权限；固定机器输入后owner runtime→BFF→Web按依赖接续，其他独立切片可并行。
+
 ## 当前优先级重新对齐（2026-09-30，用户明确要求聚焦）
 
 总体目标不变：九owner独立闭环、SQL/RPC依赖组合、用户可见完整产品、Billing最后。当前主控先交付用户能验的一条链，不用测试数/文档/生成物代替产品进度。

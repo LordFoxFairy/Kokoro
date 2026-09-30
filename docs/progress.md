@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Platform v5 机器契约正式交付，Root 精确来源集成
+
+Platform0dd60af4799cb2f0b410ded5ffb9c1402a55c641 clean main：Root自己Node24全9门、1030pass/239真实依赖skip/build通过（`/tmp/platform-personal-v5-root-gates.log`，session16772 exit0已消费），独立38文件审查0缺陷，冻结历史与latest语义门/optional实际wire/13独立负例通过。Root只更新Platform gitlink、库存9commit和2真实blob digest；16edges/13declared broken/消费者固定v4来源不漂白，不升级成已激活Product。后三面runtime既有设计已定，由原负责人准备精确文件集；新五RPC不是旧接口fallback或两份安装事实，不支持旧数据迁移或旧生产路径兼容。
+
 ## 2026-09-30 — 正规当前登录已真通过，删除 Chat 路径多余测试代理
 
 Rootdfb63eae新3310真实System/Ollama/标准Agent worker已ready，Root亲跑正常IAM表单/CSRF→consent→callback→app200、session authenticated=true（本次也独立断言resource）。首条约200字节Chat请求却413；准确边界不是登录：launcher旧BFF观察Proxy拒任何chunked transfer，而正式Web Node upstream正常chunked。已直接删除本launcher观察Proxy全部创建/监测/关闭，Web直连真实BFF listener；没有修补代理兼容、放宽body限制、绕过IAM/Origin或改生产Web/BFF。两文件RED2→GREEN，Root聚焦35/13subtests与Ruff、独立8pass/0缺陷；接下来仅替换自有10137并重跑当前Chat HTTP门。新失败保留 `/tmp/kokoro-current-chat-http-acceptance.log`，不以登录成功冒称消息已通。
