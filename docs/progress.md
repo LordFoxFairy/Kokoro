@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 浏览器 ObjectStore CORS 子门真实阻断，Web 代码继续
+
+Root 独占随机 ObjectLock/versioned bucket 的预检 runner 已按先严格 HTTPS Web origin/本地 S3/profile 校验、成功 create ACK 后才负责删除、精确 `AllowedOrigins=[web_origin]`/PUT/Content-Type 配置与 readback 落地；没有 Chromium driver 死代码。当前本地 MinIO 对 `PutBucketCors` 实际返回 **NotImplemented / HTTP 501**，Root 独立复跑 CLI exit **2**，自有 `kokoro-skill-browser-*` 桶余量 **0**；未启动 PG/Redis/IAM/Web，不碰 3310。Python 聚焦 **7 pass/8 subtests**、Root 全 `scripts/tests` **985 pass/281 subtests**、独立终审 P0/P1/P2=0。状态仅 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`，不是 UI Publish/CORS/PUT 已过；不插入测试代理冒充生产 CORS，也不陷入运维排查。Web 单 ZIP 代码切片照常推进，待可用的本地开发 ObjectStore fixture 再运行真 Chromium。
+
 ## 2026-09-29 — Web 正式 Skills/MCP 只读消费完成；上传写 UI 未接
 
 Web 唯一 writer `4e2d534`→错误边界 `b4a9957`→终审 `98aad4cddb231ef7d1363f00630b9b41f51a743f`：正式 Skills/Settings 消费 `scope_kind=personal`、`source_ref/revision` 与本人 ACTIVE by-ID，MCP 仅六字段只读；旧 pool/catalog/quota/secrets GET 在正式同源 route 拒绝，旧控件仅显式 preview fixture。独立审查发现本地 early-return flat 错误/缺安全头、非 JSON 可混入及错误码不属 BFF owner 枚举，逐项 RED→GREEN 修复，终审 P0/P1/P2=0。Root 独立 Node22 `pnpm check`：contract **108/108**、architecture **36/36**、tests **1621/1621**、lint/typecheck/build PASS；隔离 Playwright 3472 **11 pass/1 既有 skip**。后者仅测试未配置登录/预览治理，**不代表真 IAM/Skills 浏览器链**。旧 ZIP preview/confirm 写 UI 尚未迁移，BFF 六写候选 default-off、Platform v4 inactive。Root 只读浏览器验收预审发现 HTTPS Web 对现有 HTTP ObjectStore signed PUT 会触发 mixed-content；下一隔离组合需独占 HTTPS ObjectStore origin、精确 CORS/preflight、浏览器原字节 PUT/ACTIVE 刷新读回。Billing 最后，不碰 3310/任务外 `uv.lock`。

@@ -2,6 +2,8 @@
 
 ## 并行测试切片：W3-ROOT-SKILL-CHROMIUM（P0；独占真浏览器组合）
 
+**2026-09-29 子门实测：** Root 新 runner 只做随机 owned bucket 的精确 CORS API/readback 预检，实际本地 MinIO `PutBucketCors` 返回 **NotImplemented / HTTP 501**，exit 2、owned bucket 余量 0；尚未启动 PG/Redis/IAM/Web 或 Chromium。Python 7 tests/8 subtests、Root full 985 tests/281 subtests、独立终审 P0/P1/P2=0。完整浏览器链明确 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`，不再在该运维点深挖或注入代理假 CORS；继续推进 Web 正式写 UI，待开发 fixture 能真实处理精确 CORS 后再跑完整门。
+
 | 项 | 放置与阶段门 |
 | --- | --- |
 | Owner / 当前事实 | Root `main 8d025447` 拥有跨仓验收 runner，不拥有 Skill/Upload 业务事实；Web `98aad4c` 正式只读已 pin，正式写 UI 未交付。现有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 只有 HTTP signed PUT、HTTP loopback ObjectStore；`run_web_project_resource_chromium_smoke.py` 有独占 HTTPS Web/真 IAM/Chromium，却只验 Project/Library。Root `uv.lock` 任务外脏态不可暂存。 |
