@@ -38,6 +38,15 @@ Root新增完整scripts/tests候选 **1010 pass/2 Agent依赖skip/317subtests（
 
 证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），固定SHA独立审查P0/P1/P2=0、聚焦11 pass/44 deselected；Root已复验并集成Agent gitlink/库存来源，所有宽泛broken边保持；完整Root994 pass/291 subtests（120.49秒），现有worker/浏览器composer版本锁2 RED→52 GREEN。真实Source组合仍待验。用户已授权3310重启，Root不以返修代替可见登录验收。
 
+## 并行只读准备：W3-PRODUCT-SKILL-INSTALL-ADMISSION-AUDIT
+
+| 项 | 任务卡 |
+| --- | --- |
+| 目标/归属 | 为Source组合后的真实产品安装入口确定最小owner切片；Platform拥有installation，IAM拥有当前身份/授权，BFF只消费；不把发布ACTIVE当已安装。 |
+| 执行/基线 | `iam_execution_revoke_fixture_owner`转只读调查；Root main9482d0cb、Platform6a09913/IAMe3c035b/BFF571b51de/Web1dc211bb，绝对根目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro`。 |
+| 范围/边界 | 只读四仓当前设计、契约、安装/启用代码与测试；不改文件/提交/启动服务/重置数据，不做运维或复制新业务协议。与Root Source取消返修独立。 |
+| 交付/验证 | 给出既有安装RPC准入证据、Product调用缺口、可沿用的IAM受信subject边界与最小先owner后consumer顺序；精确文件/字段/测试入口、未决选择，区分事实与建议。Root裁决后再派唯一Platform writer，当前未授权实现。 |
+
 ## 用户当前最高优先级：右侧3310真实登录验收
 
 2026-09-30 用户已明确授权重启。Root只停止确认同组的旧Web81692/BFF81690，保留其他BFF81924、旧临时目录及共享基础设施。现有启动器已重建当前Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`，前台受管session71981、launcher3898/IAM4007/Web4113，3310真实监听；日志 `/tmp/kokoro-local-login-current.log` 权限0600，专用账号秘密不写入文档。旧进程首次5秒等待不足导致启动前occupied失败，后续确认端口释放后仅启动一组，失败session已结束。
