@@ -35,6 +35,7 @@ import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import local_chat_runtime as chat_runtime  # noqa: E402
+import model_provider  # noqa: E402
 
 WEB_PORT = 3310
 NODE_PARENT_GUARD = """\
@@ -183,15 +184,34 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--chat",
         action="store_true",
-        help="Enable real System/Ollama/Agent Chat; never falls back to login-only",
+        help="Enable real System/provider/Agent Chat; never falls back to login-only",
     )
     parser.add_argument("--agent-redis-url", default="")
     parser.add_argument("--uv-bin", type=Path)
-    parser.add_argument("--model-origin", default="http://127.0.0.1:11434")
-    parser.add_argument("--model", default="qwen3:8b")
+    parser.add_argument("--model-origin")
+    parser.add_argument("--model")
+    parser.add_argument("--external-model-credential-file", type=Path)
     args = parser.parse_args(argv)
     args.postgres_admin_url = os.environ.get("KOKORO_LOCAL_POSTGRES_URL", "")
     args.redis_url = os.environ.get("KOKORO_LOCAL_REDIS_URL", "")
+    args.external_model = None
+    if args.external_model_credential_file is not None:
+        if not args.chat or args.model_origin is not None or args.model is not None:
+            parser.error(
+                "external provider requires --chat and is exclusive with Ollama options"
+            )
+        try:
+            args.external_model = model_provider.load_external(
+                args.external_model_credential_file
+            )
+        except model_provider.ProviderError:
+            parser.error("external provider requires a valid private credential file")
+    args.model_origin = args.model_origin or "http://127.0.0.1:11434"
+    args.model = (
+        args.external_model.model
+        if args.external_model is not None
+        else args.model or "qwen3:8b"
+    )
     if urlsplit(args.postgres_admin_url).scheme != "postgresql" or urlsplit(
         args.redis_url
     ).scheme not in {"redis", "rediss"}:
@@ -206,11 +226,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     if args.chat:
         try:
             chat_runtime.validate_options(
-                args.redis_url, args.agent_redis_url, args.model_origin, args.model
+                args.redis_url,
+                args.agent_redis_url,
+                args.model_origin,
+                args.model,
+                args.external_model,
             )
         except chat_runtime.ChatError:
             parser.error(
-                "chat requires a distinct explicit Agent Redis DB and existing loopback qwen3:8b"
+                "chat requires a distinct explicit Agent Redis DB and a valid selected provider"
             )
         if (
             args.uv_bin is None
@@ -268,7 +292,11 @@ def main(argv: list[str] | None = None) -> int:
                 if args.chat:
                     stage = "real Chat preflight"
                     chat_config = chat_runtime.preflight(
-                        args.uv_bin, args.model_origin, args.model, log
+                        args.uv_bin,
+                        args.model_origin,
+                        args.model,
+                        log,
+                        getattr(args, "external_model", None),
                     )
                 stage = "BFF build"
                 if (

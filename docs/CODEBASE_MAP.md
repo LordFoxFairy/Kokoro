@@ -14,6 +14,14 @@
 
 Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfile 或子仓 unit/integration 测试。`scripts/tests/` 是 Root Python 治理工具的测试，不是应用测试总目录。
 
+## Root 本地受管开发入口
+
+- `scripts/dev/serve_local_login.py`：唯一3310前台组合，IAM/BFF/Web正规登录与可选真实Chat。
+- `scripts/dev/local_chat_runtime.py`：同一组合的System＋标准Agent HTTP/worker与反序清理；不拥有业务事实。
+- `scripts/dev/model_provider.py`：显式外部OpenAI兼容profile的私有文件校验与HTTPS模型库存观测；无导入时网络/secret副作用。
+- 原 `scripts/e2e/run_web_real_model_worker_smoke.py` 的Ollama-only guard保持，不作任意远端放行。
+- 工具测试在既有`scripts/tests/`；正式System/Agent模型owner仍在各自仓，Root不持有第二可编辑contract/SQL。
+
 ## 子仓路径与 owner
 
 | 仓库 | Root 路径 | owner |

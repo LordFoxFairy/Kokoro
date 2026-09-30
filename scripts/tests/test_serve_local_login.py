@@ -325,6 +325,69 @@ if __name__ == "__main__":
 
 
 class ExplicitChatOptions(unittest.TestCase):
+    def test_external_model_private_file_is_explicit_and_exclusive(self):
+        import contextlib
+        import io
+        import json
+
+        with tempfile.TemporaryDirectory() as directory:
+            credential = Path(directory) / "provider.json"
+            credential.write_text(
+                json.dumps(
+                    {
+                        "base_url": "https://provider.example/v1",
+                        "model": "gpt-5.6-luna",
+                        "api_key": "test-private-provider-key",
+                    }
+                )
+            )
+            credential.chmod(0o600)
+            argv = [
+                "--iam-node-bin",
+                "/bin/echo",
+                "--bff-node-bin",
+                "/bin/echo",
+                "--web-node-bin",
+                "/bin/echo",
+                "--chat",
+                "--uv-bin",
+                "/bin/echo",
+                "--agent-redis-url",
+                "redis://127.0.0.1:6379/10",
+                "--external-model-credential-file",
+                str(credential),
+            ]
+            with patch.dict(
+                os.environ,
+                {
+                    "KOKORO_LOCAL_POSTGRES_URL": "postgresql://localhost/postgres",
+                    "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+                },
+            ):
+                args = launcher.parse_args(argv)
+                self.assertEqual(args.external_model.model, "gpt-5.6-luna")
+                for extra in (
+                    ["--model-origin", "http://127.0.0.1:11434"],
+                    ["--model", "qwen3:8b"],
+                ):
+                    with (
+                        self.subTest(extra=extra),
+                        self.assertRaises(SystemExit),
+                        contextlib.redirect_stderr(io.StringIO()),
+                    ):
+                        launcher.parse_args(argv + extra)
+                without_chat = [arg for arg in argv if arg != "--chat"]
+                with (
+                    self.assertRaises(SystemExit),
+                    contextlib.redirect_stderr(io.StringIO()),
+                ):
+                    launcher.parse_args(without_chat)
+                credential.chmod(0o644)
+                output = io.StringIO()
+                with self.assertRaises(SystemExit), contextlib.redirect_stderr(output):
+                    launcher.parse_args(argv)
+                self.assertNotIn("test-private-provider-key", output.getvalue())
+
     def test_default_is_login_only_even_with_inherited_agent_configuration(self):
         argv = [
             "--iam-node-bin",

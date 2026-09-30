@@ -520,7 +520,13 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
         smoke.verify_release_inputs()
 
 
-def test_seed_pins_real_provider_names_without_fixture_fallback(monkeypatch) -> None:
+@pytest.mark.parametrize(
+    "provider_name,model_name",
+    [("ollama", "qwen3:8b"), ("openai-compatible", "gpt-5.6-luna")],
+)
+def test_seed_pins_real_provider_names_without_fixture_fallback(
+    monkeypatch, provider_name, model_name
+) -> None:
     calls = []
 
     def http(_base, path, **kwargs):
@@ -534,18 +540,18 @@ def test_seed_pins_real_provider_names_without_fixture_fallback(monkeypatch) -> 
         "token",
         "a" * 24,
         feature_key="chat",
-        provider="ollama",
-        model_name="qwen3:8b",
+        provider=provider_name,
+        model_name=model_name,
     )
     revision = next(kw["body"] for path, kw in calls if path.endswith("/revisions"))
     provider = next(kw["body"] for path, kw in calls if path.endswith("/providers"))
     assert (
-        revision["provider_model_name"] == revision["gateway_model_name"] == "qwen3:8b"
+        revision["provider_model_name"] == revision["gateway_model_name"] == model_name
     )
     assert revision["feature_key"] == "chat"
-    assert provider["provider"] == "ollama"
+    assert provider["provider"] == provider_name
     assert values["provider_id"]
-    assert values["model_name"] == "qwen3:8b"
+    assert values["model_name"] == model_name
 
 
 @pytest.mark.parametrize("name", ["", " ", "qwen\n3", "x" * 256])

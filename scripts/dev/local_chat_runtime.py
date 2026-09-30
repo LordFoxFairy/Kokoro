@@ -1,4 +1,4 @@
-"""Explicit local System → Ollama and standard Agent processes for Chat.
+"""Explicit System → selected provider and standard Agent processes for Chat.
 
 No infrastructure, model, owner business code, or authorization is emulated.
 """
@@ -17,6 +17,8 @@ import subprocess
 import sys
 import time
 from urllib.parse import urlsplit
+
+import model_provider
 
 E2E = Path(__file__).resolve().parents[1] / "e2e"
 if str(E2E) not in sys.path:
@@ -75,7 +77,11 @@ def registration_guard():
 
 
 def validate_options(
-    base_redis: str, agent_redis: str, origin: str, model: str
+    base_redis: str,
+    agent_redis: str,
+    origin: str,
+    model: str,
+    external_config: model_provider.ExternalModelConfig | None = None,
 ) -> None:
     try:
         base, target = urlsplit(base_redis), urlsplit(agent_redis)
@@ -93,10 +99,13 @@ def validate_options(
             or agent_runtime.redis_database_number(base_redis) == int(target.path[1:])
         ):
             raise ValueError
-        real_model.RealModelConfig(origin, model, "0" * 40)
+        if external_config is None:
+            real_model.RealModelConfig(origin, model, "0" * 40)
+        elif not isinstance(external_config, model_provider.ExternalModelConfig):
+            raise ValueError
     except (ValueError, runtime.SmokeError, agent_runtime.SmokeError, owned.SmokeError):
         raise ChatError(
-            "explicit distinct Agent Redis DB and existing local Ollama required"
+            "explicit distinct Agent Redis DB and a valid selected provider required"
         ) from None
 
 
@@ -117,7 +126,23 @@ def install_python_parent_guard(
     env["KOKORO_LOCAL_CHAT_PARENT_PID"] = str(os.getpid())
 
 
-def preflight(uv: Path, origin: str, model: str, log) -> real_model.RealModelConfig:
+def provider_preflight(config) -> None:
+    if isinstance(config, model_provider.ExternalModelConfig):
+        try:
+            model_provider.provider_preflight(config)
+        except model_provider.ProviderError:
+            raise ChatError("external model inventory unavailable") from None
+    else:
+        real_model.provider_preflight(config)
+
+
+def preflight(
+    uv: Path,
+    origin: str,
+    model: str,
+    log,
+    external_config: model_provider.ExternalModelConfig | None = None,
+) -> real_model.RealModelConfig | model_provider.ExternalModelConfig:
     sha = runtime.command_output(
         ["git", "rev-parse", "HEAD:apps/kokoro-system"], cwd=ROOT
     ).strip()
@@ -127,8 +152,8 @@ def preflight(uv: Path, origin: str, model: str, log) -> real_model.RealModelCon
             ["git", "rev-parse", f"HEAD:apps/{owner}"], cwd=ROOT
         ).strip()
         owned._verify_source(ROOT / "apps" / owner, pinned, f"apps/{owner}")
-    config = real_model.RealModelConfig(origin, model, sha)
-    real_model.provider_preflight(config)
+    config = external_config or real_model.RealModelConfig(origin, model, sha)
+    provider_preflight(config)
     environment = agent_runtime._agent_environment([uv.parent])
     if (
         runtime.run_owned_command(
@@ -228,7 +253,11 @@ class LocalChatRuntime:
         self.quiescent = True
         self.database_url = ""
         self._token = secrets.token_urlsafe(32)
-        self._model_key = secrets.token_urlsafe(32)
+        self._model_key = (
+            config.api_key
+            if isinstance(config, model_provider.ExternalModelConfig)
+            else secrets.token_urlsafe(32)
+        )
         credentials.add(self._token, self._model_key)
         self.route: dict[str, str] = {}
         self.health_generation = (
@@ -332,14 +361,18 @@ class LocalChatRuntime:
             env,
         )
         system.wait_ready(self.system_base, process)
-        real_model.provider_preflight(self.config)
+        provider_preflight(self.config)
         self.route = system.seed_control_plane(
             self.system_base,
             self.tenant,
             self._token,
             self.resources.run_id,
             feature_key="chat",
-            provider="ollama",
+            provider=(
+                "openai-compatible"
+                if isinstance(self.config, model_provider.ExternalModelConfig)
+                else "ollama"
+            ),
             model_name=self.config.model,
         )
         agent_env = {
@@ -350,7 +383,11 @@ class LocalChatRuntime:
             "KOKORO_INTERNAL_SECRET_AGENT": self._token,
             "KOKORO_SYSTEM_BASE_URL": self.system_base,
             "KOKORO_LITELLM_ENABLED": "1",
-            "KOKORO_LITELLM_BASE_URL": self.config.endpoint + "/v1",
+            "KOKORO_LITELLM_BASE_URL": (
+                self.config.base_url
+                if isinstance(self.config, model_provider.ExternalModelConfig)
+                else self.config.endpoint + "/v1"
+            ),
             "KOKORO_LITELLM_API_KEY": self._model_key,
             "KOKORO_DISABLE_STREAMING": "0",
             "KOKORO_MCP_EGRESS_MODE": "deny",
@@ -403,7 +440,7 @@ class LocalChatRuntime:
             return
         # Foreground, bounded, no timer threads/queued retries. Failed observation
         # never publishes healthy and stops this explicit Chat composition.
-        real_model.provider_preflight(self.config)
+        provider_preflight(self.config)
         for url, marker, ttl in (
             (self.ownership.url, self.ownership.marker, "7200"),
             (

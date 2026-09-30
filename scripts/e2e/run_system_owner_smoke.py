@@ -312,7 +312,7 @@ def seed_control_plane(
     if feature_key not in (None, "chat"):
         raise SmokeError("Unsupported smoke feature key")
 
-    if provider not in {"fixture", "ollama"} or not (
+    if provider not in {"fixture", "ollama", "openai-compatible"} or not (
         1 <= len(model_name) <= 255
         and model_name.strip() == model_name
         and all(ord(c) > 32 for c in model_name)

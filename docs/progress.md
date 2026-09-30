@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 外部模型正式组合工具已审查，尚未重启或宣称正式推理
+
+Root新私有profile边界先5个RED，补JSON duplicate/空query等严格负例3个RED，GREEN87tests/36subtests；Ruff检查/格式通过，独立七文件审查73tests/36subtests/P0P1P2=0，哈希冻结。复用唯一launcher生命周期和现System HTTP/Agent gateway，不改Ollama-only guard、不新增业务owner/SQL/角色/第二launcher；每分钟健康只读库存不消耗推理。新/tmp用户指定gpt-5.6-luna profile0600已准备，不入源码/普通log。此为组合代码门，不是正在3310正式外部推理；当前组仍Ollama，须Web/BFF全部验收后Root一次有序切换再真实UI。Web旧38候选本仓全门PASS但独立发现任务selector/CSS旧名与图标残留，原writer正在clean-slate原位rename，不提交旧候选。
+
 ## 2026-09-30 — BFF本人安装消费者已验收提交
 
 独立v2清单66/66 hash匹配、P0P1P2=0；Root当前Node22 format/lint/typecheck/contract/schema/test/build/diff全部exit0，contract191/191、默认test498pass/1skip、schema5pass/1无PGskip（/tmp/kokoro-bff-personal-root-v2-gates.log）。精确提交67755d16ff0f40ea02d71a6dad7108507a04766a（Git rename统计62路径），Platform6519/5.0.1五方法/三写二读可信IAM、九字段、全预算/取消/状态/机器门正确；Root库存184来源节点与实际新blob同步，不改broken状态。真实owner组合、Web安装UI/非空模型仍待验。前两版真实P1/门遗漏未漂白；当前常驻BFF仍旧loaded进程，未重启加载在途Web。

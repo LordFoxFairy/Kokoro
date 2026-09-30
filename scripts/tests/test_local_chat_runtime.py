@@ -4,11 +4,175 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 import importlib
+import json
+import os
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts/dev"))
+
+
+class ExternalModelBoundaryTests(unittest.TestCase):
+    def module(self):
+        return importlib.import_module("model_provider")
+
+    def credential(self, directory, **changes):
+        path = Path(directory) / "provider.json"
+        value = {
+            "base_url": "https://provider.example/v1",
+            "model": "gpt-5.6-luna",
+            "api_key": "test-private-provider-key",
+        }
+        value.update(changes)
+        path.write_text(json.dumps(value))
+        path.chmod(0o600)
+        return path
+
+    def test_private_config_hides_key_and_has_exact_explicit_model(self):
+        m = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            config = m.load_external(self.credential(directory))
+        self.assertEqual(config.base_url, "https://provider.example/v1")
+        self.assertEqual(config.model, "gpt-5.6-luna")
+        self.assertNotIn("test-private-provider-key", repr(config))
+
+    def test_invalid_json_oversize_and_relative_file_are_rejected(self):
+        m = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.credential(directory)
+            for raw in (
+                b"\xff",
+                b"not-json",
+                b"x" * 16_385,
+                b'{"base_url":"https://provider.example/v1","model":"other","model":"gpt-5.6-luna","api_key":"test-private-provider-key"}',
+            ):
+                path.write_bytes(raw)
+                with self.subTest(size=len(raw)), self.assertRaises(m.ProviderError):
+                    m.load_external(path)
+        with self.assertRaises(m.ProviderError):
+            m.load_external(Path("relative.json"))
+
+    def test_credential_file_rejects_permission_symlink_and_owner(self):
+        m = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            path = self.credential(directory)
+            path.chmod(0o644)
+            with self.assertRaises(m.ProviderError):
+                m.load_external(path)
+            path.chmod(0o600)
+            link = Path(directory) / "alias.json"
+            link.symlink_to(path)
+            with self.assertRaises(m.ProviderError):
+                m.load_external(link)
+            with patch.object(m.os, "getuid", return_value=os.getuid() + 1):
+                with self.assertRaises(m.ProviderError):
+                    m.load_external(path)
+
+    def test_invalid_profiles_never_expose_secret(self):
+        m = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            cases = [
+                {"base_url": value}
+                for value in (
+                    "http://provider.example/v1",
+                    "https://user:pass@provider.example/v1",
+                    "https://provider.example/v1?key=secret",
+                    "https://provider.example/v1#fragment",
+                    "https://provider.example/v1?",
+                    "https://provider.example/v1#",
+                    "https://@provider.example/v1",
+                    "https://provider.example/other",
+                    "https://provider.example:444/v1",
+                )
+            ]
+            cases += [
+                {"model": ""},
+                {"model": "bad\nmodel"},
+                {"extra": True},
+                {"api_key": ""},
+            ]
+            for value in cases:
+                with (
+                    self.subTest(value=value),
+                    self.assertRaises(m.ProviderError) as caught,
+                ):
+                    m.load_external(self.credential(directory, **value))
+                self.assertNotIn("test-private-provider-key", str(caught.exception))
+
+    def test_provider_inventory_request_is_bounded_tls_and_no_redirect(self):
+        m = self.module()
+        response = Mock(status=200)
+        response.read.return_value = b'{"data":[{"id":"gpt-5.6-luna"}]}'
+        response.__enter__ = Mock(return_value=response)
+        response.__exit__ = Mock(return_value=False)
+        opener = Mock()
+        opener.open.return_value = response
+        with tempfile.TemporaryDirectory() as directory:
+            config = m.load_external(self.credential(directory))
+        with patch.object(m, "build_opener", return_value=opener) as build:
+            m.provider_preflight(config)
+        request = opener.open.call_args.args[0]
+        self.assertEqual(request.full_url, "https://provider.example/v1/models")
+        self.assertEqual(request.get_method(), "GET")
+        self.assertEqual(
+            request.get_header("Authorization"), "Bearer test-private-provider-key"
+        )
+        self.assertEqual(opener.open.call_args.kwargs["timeout"], 10)
+        response.read.assert_called_once_with(1_048_577)
+        handlers = build.call_args.args
+        self.assertTrue(any(isinstance(handler, m.NoRedirect) for handler in handlers))
+        self.assertTrue(
+            any(
+                isinstance(handler, m.ProxyHandler) and handler.proxies == {}
+                for handler in handlers
+            )
+        )
+        self.assertIsNone(
+            m.NoRedirect().redirect_request(
+                None, None, 302, "redirect", {}, "https://other.example"
+            )
+        )
+
+    def test_inventory_missing_duplicate_or_oversized_never_publishes_healthy(self):
+        m = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            config = m.load_external(self.credential(directory))
+        for raw in (
+            b'{"data":[]}',
+            b'{"data":[{"id":"gpt-5.6-luna"},{"id":"gpt-5.6-luna"}]}',
+            b"x" * 1_048_577,
+            b'{"data":[{"id":"other"}]}',
+        ):
+            response = Mock(status=200)
+            response.read.return_value = raw
+            response.__enter__ = Mock(return_value=response)
+            response.__exit__ = Mock(return_value=False)
+            opener = Mock()
+            opener.open.return_value = response
+            with (
+                self.subTest(size=len(raw)),
+                patch.object(m, "build_opener", return_value=opener),
+            ):
+                with self.assertRaises(m.ProviderError):
+                    m.provider_preflight(config)
+
+    def test_upstream_error_body_and_key_never_escape_boundary(self):
+        m = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            config = m.load_external(self.credential(directory))
+        for error in (
+            TimeoutError("test-private-provider-key"),
+            OSError("secret upstream body"),
+        ):
+            opener = Mock()
+            opener.open.side_effect = error
+            with patch.object(m, "build_opener", return_value=opener):
+                with self.assertRaises(m.ProviderError) as caught:
+                    m.provider_preflight(config)
+                self.assertNotIn("test-private-provider-key", str(caught.exception))
+                self.assertNotIn("secret upstream body", str(caught.exception))
 
 
 class LocalChatRuntimeTests(unittest.TestCase):
@@ -132,7 +296,9 @@ class LocalChatCompositionTests(unittest.TestCase):
             patches.enter_context(patch.object(m.agent_runtime, "_wait_ready"))
             patches.enter_context(patch.object(m.LocalChatRuntime, "_command"))
             patches.enter_context(
-                patch.object(m.runtime, "free_port", side_effect=[4100, 4200])
+                patch.object(
+                    m.runtime, "free_port", side_effect=[4100, 4200, 4300, 4400]
+                )
             )
             ownership = Mock(claimed=True)
             ownership._call.return_value = "1"
@@ -195,6 +361,61 @@ class LocalChatCompositionTests(unittest.TestCase):
             )
             self.assertEqual(
                 [label for label, _ in obj.processes], ["system", "http", "worker"]
+            )
+
+            provider = importlib.import_module("model_provider")
+            config = provider.ExternalModelConfig(
+                base_url="https://provider.example/v1",
+                model="gpt-5.6-luna",
+                api_key="test-private-provider-key",
+            )
+            external_directory = Path(temp) / "external"
+            external_directory.mkdir()
+            credentials = Mock()
+            external = m.LocalChatRuntime(
+                config=config,
+                uv=Path("/uv"),
+                node=Path("/node"),
+                node_env={"NODE_OPTIONS": "--import=guard"},
+                directory=external_directory,
+                resources=resources,
+                credentials=credentials,
+                log=Mock(),
+                tenant="tenant",
+                agent_redis_url="redis://localhost/10",
+            )
+            with patch.object(provider, "provider_preflight") as check:
+                external.start("postgresql://localhost/owned")
+            check.assert_called_once_with(config)
+            system_env, http_env, worker_env = [
+                call.kwargs["env"] for call in popen.call_args_list[-3:]
+            ]
+            self.assertEqual(
+                worker_env["KOKORO_LITELLM_BASE_URL"], "https://provider.example/v1"
+            )
+            self.assertEqual(
+                worker_env["KOKORO_LITELLM_API_KEY"], "test-private-provider-key"
+            )
+            self.assertEqual(
+                http_env["KOKORO_LITELLM_API_KEY"], "test-private-provider-key"
+            )
+            self.assertNotIn("test-private-provider-key", str(system_env))
+            self.assertEqual(
+                m.system.seed_control_plane.call_args.kwargs["provider"],
+                "openai-compatible",
+            )
+            self.assertEqual(
+                m.system.seed_control_plane.call_args.kwargs["model_name"],
+                "gpt-5.6-luna",
+            )
+            self.assertNotIn(
+                "test-private-provider-key", str(m.system.seed_control_plane.call_args)
+            )
+            self.assertTrue(
+                any(
+                    "test-private-provider-key" in call.args
+                    for call in credentials.add.call_args_list
+                )
             )
 
     def test_health_failure_does_not_publish_or_silently_continue(self):
