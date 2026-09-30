@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 当前用户对齐与独立审查实际拦截
+
+Root86f41738集成Platform6519ae9后checkpoint/topology/95项主树来源测试通过（52.24秒，`/tmp/kokoro-platform-wire-root-pin-tests.log`）。Web续流独立发现1P1：先统计同run全部assistant令completed历史段阻止唯一streaming prefix认领，已续派现hydration与相邻测试稳定RED→GREEN；旧142tests和Root原候选全门PASS不覆盖此组合，不提交错误候选。BFF原owner并行返修4P1，已获唯一纠正机器source。
+
+用户UI独立QA新增确认：Project正式页含previewScheduledTasks；missing owner callback后仍本地scheduled成功；默认硬编码project/kokoro/预览ID；会话列表误称任务与newTask→newConversation别名。Composer double focus ring真实，autogrow/IME Enter已有正确规则，不凭截图重写其有效逻辑。Root后继方案须将Conversation/Project/ScheduledTask/Run身份和入口分开，零正式fake rows，无重复store或兼容。
+
+用户要求自行查模型，Root已停止反问modelID：仅用私有0600凭据与指定https origin、不跨redirect；GET models用标准SDK User-Agent实际200，列表包含gpt-5.4-mini等。最小无项目数据probe选该真实列表model，先400、随后429且provider报告上游账号当前限流；没有非空回复证据，不能称正式System→Agent外部模型测试通过，不影响既有Ollama真链和UI代码推进。临时request handles96282/45780/33893均已终态消费，无凭据stdout/仓库写入。
+
 ## 2026-09-30 — 5.0.1 wire纠正已验收；用户首页与导航新增反馈对齐
 
 Platform21files精确提交 `6519ae9a7dba63586474d2860f6725d3165b701e`，候选5.0.1 aggregate3f97b3c98fd8e7ce46e4a8ea73237ddb85e764849d2b15dd28d0a3a58a69e42f；RootNode24 format/lint/typecheck/contractlint+只读checker/artifact/schema/test/build/diff全exit0，1196pass/243依赖skip（`/tmp/kokoro-platform-wire-root-gates.log`），独立142tests/P0/P1/P2=0。158原向量155原对象不变/3仅删非法has_more/metadata和负例意图不变＋8独立负例=166，261 runtime/Proto/schema/历史artifact等冻结hash不变。未激活产品，BFF已获唯一新SHA固定消费，4个P1独立拦截后按精确卡返修，不以旧53tests绿灯放行。

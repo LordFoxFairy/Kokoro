@@ -5,9 +5,10 @@
 用户新增明确要求：输入框、首页快捷操作/推广区、会话/专案/任务独立；样式沿正式shadcn，不重写新设计体系。Root并行只读定位，Web单writer先完成已定位续流短片再进入此片；不以首页广告替代真实能力。
 
 - 已确认源码缺陷：kokoro-welcome-content.tsx推广标题/hint调用t未传brand，截图{brand}原样显示；固定desktopBanners无论真实集成是否可用都展示Slack/Zapier；workspace-rail-session-list将project scoped conversations标为tasks，shell又onCreateTask??onNewChat，造成会话/任务语义混合。输入框已有shadcn Textarea，继续核实际聚焦边框/自动高度/中文输入法/Enter及Shift+Enter/移动端溢出，不先凭截图猜CSS根因。
+- 独立QA确认额外P1：Project页scheduledItems无条件previewScheduledTasks、save缺正式callback仍插假scheduled记录；Project fallback硬编码/app/project/kokoro/预览ID。后继清除正式模式fake rows与canonical ID猜测，无owner成功回执不显示成功。
 - 产品边界：会话是独立资源，可选属于专案；专案是独立容器/详情/会话筛选；真实任务归ScheduledTask/Agent Run，不能把一条conversation改称task或借任务入口新建聊天。新会话/专案/任务入口分别命名、分别按正式owner接口，未接通能力不宣传已集成或提供假成功。
 - 后继Web片采用现welcome/composer/rail/locale与相邻测试，不新UI框架/store/顶层模块。Root将给精确文件集、当前/目标与行为门后续派同一writer；不同时两writer编辑Web，不改BFF/数据库契约绕开语义。独立只读QA可并行。
-- 模型凭据：用户给定外部endpoint仅用于真实测试；Root已存/tmp私有0600，不入repo/普通log、不跨redirect转送。模型列表GET返回403，不能据此断言chat不可用/密钥错误；具体model ID待用户给出，后续须走正式System→Agent真推理而非假响应。UI修复不等此确认，不把provider连接名OpenAI猜成model ID。
+- 模型凭据：用户给定外部endpoint仅用于真实测试；Root已存/tmp私有0600，不入repo/普通log、不跨redirect转送。初次Python默认UA模型列表GET403，Root用正常SDK User-Agent后已自行GET200读取真实模型列表，选择列表中gpt-5.4-mini做最小probe；一次400 invalid_request_error、随后真实429且provider提示其上游账号当前限流，未取得推理成功。停止要求用户给模型ID，不暴力重试；后续走正式System→Agent真推理，直接provider probe不等于该链通过，现本机真实模型链保持运行。UI修复并行不等待。
 
 ## BFF-PERSONAL-REVIEW-FIX：当前审查拦截，尚未验收（2026-09-30）
 
