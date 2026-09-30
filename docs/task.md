@@ -1,5 +1,17 @@
 # Kokoro 后端闭环任务总表
 
+## 下一代码切片预审：W3-SKILL-ACTIVATION（Web 正式写 UI 验收后串行）
+
+**只读结论，不是已激活：** BFF 六条 Skill 写路由已接线，但同受 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED` 默认关闭保护；`true` 只允许 BFF loopback 独占 smoke。Platform v4 `inactive/routable=false` 是机器契约发布标记，不是运行 kill switch。不能把临时开关改成产品上线，也不能把 Web 静态测试或 HTTP owner smoke 当正式产品闭环。
+
+| 项 | 下一切片边界 |
+| --- | --- |
+| Owner / 当前事实 | Platform `apps/kokoro-capability` 为 v4 owner machine artifact 唯一 writer，当前 pin `6a09913`；BFF `apps/kokoro-bff` 为 public Product API 唯一 writer，当前 pin `62daba37`。`apps/kokoro-bff/src/config/runtime.ts` 的候选开关默认 false，`src/bootstrap/runtime.ts` 关闭时不构造 CatalogConnectClient；Platform `contract/execution-operations/v4/manifest.json`、schema/checker 与 BFF generated/dependency/test 均明确 inactive。两仓当前无本任务写入。 |
+| 方案与顺序 | A（采用）：先由 Platform owner 原子发布 active/routable 机器 artifact、schema/checker/provenance 与直接测试，Root 验证并精确 pin；再由 BFF 单 writer 固定新 owner commit/aggregate，移除 loopback 候选限制并定义正式启用策略、路由/API 状态与负例；最后 Root 隔离真 IAM→BFF→Platform/Storage 验默认/启用、撤权、同键恢复。B（淘汰）：只把环境变量设 true、只改 manifest、让 Web 绕过 BFF 或为测试假装 CORS 已通过；会造成契约/运行双轨及错误产品声明。 |
+| 依赖 / 数据与删除 | 必须等 Web 当前单 ZIP 正式写 UI 的 P1/P2 修复及 Root 验收，不与 Web 同仓争写；先 owner contract，后消费者。无新数据库、role 或跨 owner SQL。删除候选命名/限制与旧 inactive 引用要和 BFF cutover 同片完成，保持当次 IAM/owner 准入。Browser CORS 501 是独立验收阻断，不作为本代码片运维排查。 |
+| 验证 / 未决 | Platform artifact/contract/test/build；BFF contract/check/schema/build 与默认关/启用路由测试；Root 真跨 owner 回归和精确 gitlink/库存 pin。六 owner 消费、Agent source、Storage orphan retirement 与完整 Chromium 仍各有独立门，不能在本片宣称全产品闭环。Billing 最后。 |
+
+
 ## 并行测试切片：W3-ROOT-SKILL-CHROMIUM（P0；独占真浏览器组合）
 
 **2026-09-29 子门实测：** Root 新 runner 只做随机 owned bucket 的精确 CORS API/readback 预检，实际本地 MinIO `PutBucketCors` 返回 **NotImplemented / HTTP 501**，exit 2、owned bucket 余量 0；尚未启动 PG/Redis/IAM/Web 或 Chromium。Python 7 tests/8 subtests、Root full 985 tests/281 subtests、独立终审 P0/P1/P2=0。完整浏览器链明确 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`，不再在该运维点深挖或注入代理假 CORS；继续推进 Web 正式写 UI，待开发 fixture 能真实处理精确 CORS 后再跑完整门。

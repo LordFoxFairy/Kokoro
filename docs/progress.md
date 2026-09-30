@@ -1,5 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Skill 正式激活只读预审完成，未写代码或启服务
+
+独立只读核 BFF `62daba37`/Platform `6a09913`：BFF 六条写路由虽已接线，但共享默认关闭、仅 loopback 独占 smoke 可启的候选开关；Platform v4 机器 artifact、schema/checker 以及 BFF generated/dependency/直接测试仍明确 inactive。正式产品激活需按 owner 顺序先 Platform 发布 active/routable artifact，再 BFF 重钉并收敛候选限制与运行测试，Root 真 IAM/owner 组合验收；不能只改 env 或文档。本次 **没有修改子仓、没有启动服务、没有产品激活**。Web 单 ZIP 正式 UI 当前仍由唯一 writer 修正独立审查发现的旧入口、极值 body、Publish 恢复/撤权与取消 P1/P2，等待 Root 验收；浏览器 CORS 501 独立保留，不继续深挖运维。后续任务边界见 [`task.md`](task.md)。
+
+
 ## 2026-09-29 — 浏览器 ObjectStore CORS 子门真实阻断，Web 代码继续
 
 Root 独占随机 ObjectLock/versioned bucket 的预检 runner 已按先严格 HTTPS Web origin/本地 S3/profile 校验、成功 create ACK 后才负责删除、精确 `AllowedOrigins=[web_origin]`/PUT/Content-Type 配置与 readback 落地；没有 Chromium driver 死代码。当前本地 MinIO 对 `PutBucketCors` 实际返回 **NotImplemented / HTTP 501**，Root 独立复跑 CLI exit **2**，自有 `kokoro-skill-browser-*` 桶余量 **0**；未启动 PG/Redis/IAM/Web，不碰 3310。Python 聚焦 **7 pass/8 subtests**、Root 全 `scripts/tests` **985 pass/281 subtests**、独立终审 P0/P1/P2=0。状态仅 `BLOCKED_BY_LOCAL_OBJECTSTORE_CORS`，不是 UI Publish/CORS/PUT 已过；不插入测试代理冒充生产 CORS，也不陷入运维排查。Web 单 ZIP 代码切片照常推进，待可用的本地开发 ObjectStore fixture 再运行真 Chromium。
