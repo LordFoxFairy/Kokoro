@@ -1,5 +1,16 @@
 # Kokoro 后端闭环任务总表
 
+## 并行修复：W3-ROOT-LOGIN-LIFECYCLE（当前可见登录503的直接原因）
+
+可见协助任务 `01a0f010-3073-7a22-900a-8d9e8d586f3f` 只读实测新 `/login` 302后authorize返回503 `iam_relay_unavailable`；Web3310/BFF残留，launcher及其proxy/IAM已退出。本片只修开发启动脚本生命周期，不改Web/IAM认证规则或部署架构。是否重启用户3310已询问，等待答复；代码修复可继续。
+
+| 项 | 放置、权限与验收 |
+| --- | --- |
+| Owner/基线 | 上述可见任务作为Root脚本唯一writer；Root主窗口暂不改Root文件，BFF writer仅改子仓。允许现有 `scripts/dev/serve_local_login.py`、`scripts/tests/test_serve_local_login.py`；Root串行负责stage/commit，不碰任务外uv.lock。 |
+| 方案 | 优先在已有临时运行目录/子进程环境加入最小父进程存活守卫，父退出则已有Node子进程自动退出，并把proxy线程存活加入现有监测；不另建通用运维平台/持久daemon/多重supervisor。若守卫由Node启动注入，需考虑Next派生子进程只监测自身实际父、守卫不延长正常退出、不输出secret。扩大文件/进程范围须报告。 |
+| 边界 | 不修改认证/CSRF/OIDC，不自动杀未知pid，不清共享数据库/Redis；本任务只执行自建dummy子进程回归。用户许可前不动3310残留，真实登录重启另门。 |
+| 验证 | 新增父正常退出/硬退出→自有服务有界退出、proxy线程死→整体收尾及正常启动回归；Root复跑脚本测试/全门。交付文件与证据后停止写入，主控审查提交，再按用户许可恢复真实登录栈。 |
+
 ## 当前代码 owner：W3-BFF-CHAT-SKILL-SELECTION-CONSUMER（P0；基础 Chat/Scheduler 同步）
 
 | 项 | 代码任务卡 |

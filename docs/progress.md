@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Root固定Agent与BFF设计；可见登录失败定位到开发进程生命周期
+
+Root `87897e012cd112a201da1dadcbdfd509d034f13a` 精确pin Agent `dd34a48`/BFF文档 `78c92c0` 及consumer来源，topology/checkpoint通过，Root **985 tests/281 subtests passed**。BFF真实消费者代码继续由唯一writer推进，广义边保持broken。
+
+可见登录审查任务实测新的3310 `/login` 能建立新OIDC状态并302，但authorize relay返回503 `iam_relay_unavailable`；launcher消失后proxy与IAM已停，独立session的Web/BFF留存，形成残缺拓扑。此时没有到达IAM，未复验账号登录/CSRF/callback。Root已询问用户是否可清理这组残留并重启；并行只授权现有启动脚本/测试的生命周期修复，禁止改认证逻辑或深入部署运维，不在答复前动3310。
+
 ## 2026-09-29 — Agent launch 代码与真实持久准入通过，BFF 消费代码已启动
 
 Agent `2d03689` 增 required `selected_skill_source_refs`/HTTP2.0.0、严格 exact refs 与不可变有序 Run fence；非空选择在 reader 未实现前于模型/backend/tool之前明确失败，避免静默忽略。Root 独立 lock/sync、Ruff、Pyright、contract、默认 **1323 pass/6 skip/172 deselected**、wheel/sdist 通过；独占真 PostgreSQL 临时库/随机 Redis stream 的 HTTP readiness、选项持久化/claim/replay/顺序冲突、pending恢复/claim冲突、旧 payload拒绝 **5/5**，自有资源清理完成，未触碰3310。独立代码审查未发现问题，Root另用真实JSON Schema证明尾随换行仍通过的P2，`dd34a48` 修正绝对末尾锚点/来源digest/5类负例；末次默认 **1328 pass/6 skip/172 deselected**，首次shell结果包装误用zsh只读变量，测试本身通过，已修包装重跑。
