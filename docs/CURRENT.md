@@ -1,3 +1,13 @@
+## 本轮Composer焦点与Agent粒度切片已验收（2026-09-30）
+
+Web main `bef68a0386a902bbe4747c5795d8222d1d91fa51` 4文件精确提交、clean：内框保持移除，shell深border/3pxhalo双圈改为单2px环，forced-colors系统色outline保留键盘指示。Root显式Node22最终check109/37/1800（44.86s）/lint/type/build actual0、独立0/0/0；日志 `/tmp/kokoro-web-single-focus-root-r2-final-check.log`。真实IAB鼠标/Tab/blur、390px/1280px与forced-colors均检查，默认媒体/viewport恢复、article全文严格相等；现3310仅同步自有单CSS，无重启/模型/数据变更。截图 `/tmp/kokoro-composer-single-focus-desktop.jpg`、矩阵 `/tmp/kokoro-composer-single-focus-real-matrix.json`。重复user及视口切换后通用failed卡仍真实可见，精确失败/同user重试与深链仍开放，不以CSS遮盖。
+
+Agent main `f3be3b97dd67df69ed3c6cb88c59f3bc2db97703` 15文件精确提交、clean；完整分类与唯一proof metadata/comparator按职责搬移，无alias/兼容层/机器SQL变化。Root fresh252Ruff/Pyright0/generator/checker/1520pass6既有skip174deselect/build actual0，真实PG/Redis/HTTP22pass无skip，fixture残留0/cleanup[]，System/model为double；日志 `/tmp/kokoro-agent-granularity-root-{final-gates.log,real-acceptance.log,real-acceptance-result.json}`。标准实际FAIL137/0，仅移除本片新增2项，无新项；不称全工程标准清零。BFF vendor/runtime仍原2.0，后继按strict3.0持久failure/public breaking/Web协调推进。Root更新68来源指针，3active/13broken不变；Root冻结六项来源后完整治理测试实测1103passed/3既有skip/455subtests（122.91s，exit0），日志`/tmp/kokoro-single-focus-agent-granularity-root-tests.log`；提交后CLI仍待，Billing五docs与Root uv.lock保留，完整目标仍active。
+
+# 历史切片与组合记录
+
+以下为当时的来源、失败和验收证据，保留用于追溯，不作为当前来源或授写指令。当前组合及未完成项以本文件顶部本轮记录和 task 顶部为准。
+
 ## AGENT-FAILURE-3.0 与 Run 首事件已完成 owner 验收（2026-09-30）
 
 Root 来源集成 commit `e2ef2866fd9a3de9b1b1ae2cef107bb9282d8fdc` 后，正式 IAM relay、repository topology、
@@ -60,14 +70,14 @@ Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本
 
 新发现同pathname query-only导航漏接，new conversation后URL可能被stale eviction清空；显式goto+reload已重新恢复原conversation，非owner删除或丢数据。原Web负责人已只读定位，后继需deferred snapshot RED与严格失败清理断言，暂未授写。重复user/空failed assistant、完整failure契约与整个Wave0–7仍未闭环；未隐藏消息冒充布局完成。Agent cursor docs/tests已冻结RED，源码未授写。保留任务外Agent/Billing/Root uv.lock变更。
 
-# Root 当前组合
+# Root 历史组合（已由文件顶部当前组合后继）
 
-**Agent当前来源（2026-09-30）：** 已验收提交 `da056b0103cced10188cdc1f5baef841d8333889`，完整22例真实owner HTTP acceptance与Root1518纯门均通过，详见顶部。此前safe failure两例因Run初始cursor漏index0失败的记录为历史；Run-only -1修复保留Chat0、索引与fence。BFF/Web未切新版，运行组仍2.0，重复提问语义未完成。
+**Agent当时来源（2026-09-30）：** 已验收提交 `da056b0103cced10188cdc1f5baef841d8333889`，完整22例真实owner HTTP acceptance与Root1518纯门均通过，详见顶部。此前safe failure两例因Run初始cursor漏index0失败的记录为历史；Run-only -1修复保留Chat0、索引与fence。BFF/Web未切新版，运行组仍2.0，重复提问语义未完成。
 
 **BFF已验收组合（Root `7c13378e3e752b72c170cfdf3629cca743db5b81`，Web新片另见下段）：** BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已验收、clean并集成。Root提交后strict relay/checkpoint/topology均独立exit0；完整 `scripts/tests` **1103 passed / 3 native依赖skip / 455 subtests**，108.74秒。新全仓标准门实际exit1，仍137违例/0 unverified；main-only实际exit1，主仓和11子仓本地/远端均只有main，但Billing五docs候选及任务外Root `uv.lock` 未提交，不称全体clean。此前BFF pure506pass1skip、fresh install/target8/full47真实owner integration通过及fixture失败历史保留；来源库存仍3active/13broken。
 
 
-**Web最新owner验收（2026-09-30）：** `5058ae2c400dd8be1964bba5df03fd7ce5b52133` 已由Root精确提交八文件，子仓clean。独立最终review0/0/0、8/8冻结hash一致；Root显式Node22.22.2完整 `pnpm check` exit0：contract109、architecture37、lint/typecheck、162文件1799tests、build；隔离3387 Web治理Playwright11pass/1既定mobile rail skip（8.3s），不是真实IAM/模型E2E。首Root check误用Node24，保留原日志而不当Node22验收；worker首typecheck与非pending pause RED缺陷已严格修复。仅恢复owner snapshot绝对尾failed assistant且无active_run/未决pause的通用failed/error=null，不自动重跑、无新contract/SQL/兼容层。Root组合库存38个Web来源指针重钉，34路径raw digest原bytes，3active/13broken不变；Root集成`1e7b721b7b725166570da844ec8b3fee0e7b634f`后strict relay/checkpoint/topology分别actual0；完整Root1103pass/3native依赖skip/455subtests（119.07s），均实际终止。
+**Web当时owner验收（2026-09-30）：** `5058ae2c400dd8be1964bba5df03fd7ce5b52133` 已由Root精确提交八文件，子仓clean。独立最终review0/0/0、8/8冻结hash一致；Root显式Node22.22.2完整 `pnpm check` exit0：contract109、architecture37、lint/typecheck、162文件1799tests、build；隔离3387 Web治理Playwright11pass/1既定mobile rail skip（8.3s），不是真实IAM/模型E2E。首Root check误用Node24，保留原日志而不当Node22验收；worker首typecheck与非pending pause RED缺陷已严格修复。仅恢复owner snapshot绝对尾failed assistant且无active_run/未决pause的通用failed/error=null，不自动重跑、无新contract/SQL/兼容层。Root组合库存38个Web来源指针重钉，34路径raw digest原bytes，3active/13broken不变；Root集成`1e7b721b7b725166570da844ec8b3fee0e7b634f`后strict relay/checkpoint/topology分别actual0；完整Root1103pass/3native依赖skip/455subtests（119.07s），均实际终止。
 
 
 **本轮原生窄闭环：** Root只将自有受管Web复制处hydration.ts从经bytes确认的840更新为accepted5058，其他服务/权限/登录/配置/进程不变。原IABtab3焦点超时，新同browser3 tab5正常/app同会话；真实失败generic提示与retry在reload后保持。一次手动retry得到真实中文追问回答和END标记，Stop消失，terminal reload前后3article全文数组一致。新发现刷新后同追问用户泡泡exact count2；retry当前按新turn提交的持久语义仍须BFF/Web只读审查，不称完整retry产品PASS。精确failure合同、流式中途reload、全部能力/计费仍未闭环。Agent四文档冻结已通过独立0/0/0及Root逐hash/SQL原bytes核对；当前2.0 checker实际exit0、四tests baseline101pass，仅作为现态证据。原owner已获四tests-only RED，机器/source仍2.0/runtime58，未发布3.0。
@@ -86,11 +96,11 @@ Root `6fdcba6e` 基线的三文件生命周期切片已由原writer停写、独�
 
 官方ChatGPT Projects、Manus Projects/Connectors及Scheduled Tasks参照和Kokoro验收取舍已进入既有 `docs/task.md` 顶部：会话/项目/调度定义/Run身份分离、默认个人私有显式分享、真实文件与结果；不另建UI/计划中心。BFF四文档修复独立0/0/0通过，原2P1/1P2关闭，仅恢复既有v1 running的同RR snapshot方案已放行测试RED阶段；OpenAPI原字节、不改enum/消费者契约，源码与真PG/浏览器尚未验收。Billing五文档修订候选已停写，200command ACK/1Credit=1e6micros/reason贯穿已统一，IAM任意target能力明确owner-first阻塞；未充值、未计费E2E，文档待复审。
 
-状态日期：2026-09-30。这里只记录当前组合和已验证边界；执行任务见 [task.md](task.md)，逐轮证据及失败历史见 [progress.md](progress.md)。旧 CURRENT 时间线保存在 Git `51bd4a2f40aab98b253329c0a5e9d110b7e77211`，不是并列的当前方案。
+状态日期：2026-09-30。这里只记录历史组合和已验证边界；执行任务见 [task.md](task.md)，逐轮证据及失败历史见 [progress.md](progress.md)。旧 CURRENT 时间线保存在 Git `51bd4a2f40aab98b253329c0a5e9d110b7e77211`，不是并列的当前方案。
 
-## 已锁定的组合
+## 当时锁定的历史组合
 
-下表与本次 Root 集成提交的 gitlink 一致，不代表正在修改的子仓工作树或常驻预览的加载版本。Root 是 Git superproject，`.gitmodules` 的 branch 只是提示，精确发布来源由 gitlink 与 owner artifact digest 锁定。
+下表与当时 Root 集成提交的 gitlink 一致，不代表正在修改的子仓工作树或常驻预览的加载版本。Root 是 Git superproject，`.gitmodules` 的 branch 只是提示，精确发布来源由 gitlink 与 owner artifact digest 锁定。
 
 | 路径 | 固定 commit |
 | --- | --- |

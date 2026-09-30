@@ -1,3 +1,15 @@
+## 本轮代码交付与主控实测（2026-09-30）
+
+Web bef68a03/4files与Agent f3be3b97/15files均main精确提交、clean，唯一writer已停写，独立最终审查均0/0/0。Web最终RootNode22全门109/37/1800/build0，真实单环/keyboard/mobile/forcedcolors与全文不变；初两次worker fixture503/timeout失败及forcedcolors P1返修历史保留，不放宽。AgentRoot pure1520/6skip/174deselect/build0，真实22HTTP与资源残留0；标准139→137仅清新增两项。没有额外常驻进程/重启/模型/计费改动。Root来源库存按commit blob更新68refs，3active/13broken原样；Root冻结完整治理门实测1103passed/3既有skip/455subtests（122.91s）exit0，日志`/tmp/kokoro-single-focus-agent-granularity-root-tests.log`；提交后CLI仍待，不冒称整体完成。重复user/通用failed/精确profile/true retry/完整能力继续开放，支付最后。
+
+## 本轮正式页面复验（2026-09-30）
+
+旧tab9焦点通道超时，按已选browser3新tab10复验，未改协议/服务/数据。实际聚焦textarea border0、box-shadow none、透明outline，composer x282/768px、无横向溢出；截图 `/tmp/kokoro-chat-layout-latest-verified.jpg`。重复user仍真实可见，未CSS遮盖。新增只读审查外shell焦点双圈是否过重，不将已验内框与未完成状态/重试混称完整产品。
+
+## 2026-09-30 — 清除Agent3新增粒度缺口，再推进BFF消费
+
+前轮分类progress，当前HEAD525e244d；Agent da056b0 clean，标准实际139中新增events806/proof804已定位。Root按已批准能力边界续派原owner，第一门R2已逐6+7hash复核并独立RED（2failed/97passed/4deselect/2.72s）；独立审查0/0/0后授权明确源码集，原owner实施，Root不抢写；主控只管台账/设计/验收/index。两个位置已比较：failure归execution而非System client，negative metadata归既有spec模块而非新helper层。当前3310、共享PG/Redis、Billing/uv.lock不动，无额外常驻进程。全Wave0–7、真正浏览器与正式积分目标保持；本片不冒称全仓标准PASS。
+
 ## 2026-09-30 — 返回Agent安全失败与Run首事件验收
 
 Root精确五项来源集成 `e2ef2866fd9a3de9b1b1ae2cef107bb9282d8fdc` 后，正式relay/topology/指定checkpoint均PASS/exit0，session62704已消费；三JSON `/tmp/kokoro-agent3-root-{relay,topology,checkpoint}-final.json`。独立最终台账review0/0/0，139违例与后继未授写原样保留。Agent/BFF/Web clean；Billing五docs/Root uv.lock仍未提交，不称全仓clean。本更新仅补实际后置验收记录，无代码/库存/gitlink或运行组变化。

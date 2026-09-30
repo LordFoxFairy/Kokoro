@@ -1,4 +1,25 @@
-## AGENT-FAILURE-3.0 Root验收切片（2026-09-30）
+## WEB-COMPOSER-SINGLE-FOCUS 已验收（2026-09-30）
+
+- 状态：Web main bef68a0386a902bbe4747c5795d8222d1d91fa51，4文件精确提交、clean；Root最终Node22 check109/37/1800/lint/type/build0，独立0/0/0、真实normal/keyboard/mobile/forcedcolors通过，现3310只同步一CSS。完整failure/retry/重复user仍开放，不称全goal完成。
+- Owner：Web现Composer CSS；仅消除同shell焦点border与3px halo叠加的双圈，不改布局、消息/重试身份、网络或数据。
+- 基线：apps/kokoro-app main30545c55625fb257ac17ce2199e8fa1000f3ecae clean；Root525e244d。负责人复用bff_personal_consumer_review转Web唯一writer，Root集成/浏览器/index，独立review只读。
+- 放置与范围：扩现src/ui/composer/composer.module.css、tests/ui/composer.test.tsx、docs/TECHNICAL_DESIGN.md、docs/CURRENT.md四文件；不改primitive/AppFrame/其他仓/lock。两个位置比较：局部Composer token优于公共Textarea primitive，后者影响其他表单。
+- 规则：保留:has(.input:focus-visible)，transparent shell border+单一2px var(--ring) shadow，textarea原透明outline/forced colors不删；无focus-within、JS modality或额外组件。先新精准RED，再一处CSS GREEN；Node22完整check，Root点击/Tab/blur、移动宽度/读轴与全文不变真实验收。
+- 资源：不由worker启动服务/浏览器/模型，Root仅精确同步owned runtime CSS无需重启。共享PG/Redis与任务外Billing/uv.lock不动；与Agent独立source切片并行，主控不抢写。
+
+## AGENT-FAILURE3-GRANULARITY 已验收（2026-09-30）
+
+- 验收：Agent main f3be3b97dd67df69ed3c6cb88c59f3bc2db97703，15文件精确提交、clean；Root fresh纯门1520/6既有skip/174deselect/build0，真实HTTP22/0skip与资源残留0；标准139→137仅清本片2项、无新增。BFF实际vendor仍2.0，runtime不切半套。
+- 分类：上一goal轮为progress；Agent da056b0、Root525e244d真实提交，1518纯门/22真HTTP/1103Root与三CLI门有证据；新两项粒度由139标准门实际发现，不缩减Wave0–7。
+- ID/P1/完成条件：清除execution/events.py与execution_proof_contract.py新增>800违例，按变化原因拆分；现failure/cursor/lease/取消/终态/proof所有行为不变，无alias。标准139→137且无新项，完整pure及真HTTP后精确提交，再BFF文档与3.0消费。两项本轮已清；全目标仍开放，支付最后。
+- 基线：Root main525e244dd82df699696d0b13c4c88514b4c25d9e，Agent main da056b0103cced10188cdc1f5baef841d8333889 clean。Root uv.lock/Billing五docs保留，当前3310组保持旧2.0。主控Root唯一index/commit；原负责人 agent_failure_cursor_owner（gpt-5.6-sol/high）续派，独立 agent_contract_independent_review 只读spec及质量审查。
+- 第一门写集（docs/tests-only）：Agent现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT，现 tests/unit/execution/test_invoke.py、tests/contract/test_execution_proof_artifact.py。只写放置、当前da056 owner真实证据与行为保留/归属RED，不改机器/source/SQL/provenance/generated/lock/INDEX/服务/Git。Root收到冻结manifest、独立审查及主树RED后再授源码。
+- 源码门已授写（R2审查后）：新execution/failures.py，现execution/events.py/run_agent.py、worker/supervisor_execution.py、execution_proof_contract.py/execution_proof_negative_specs.py、execution/INDEX.md；原6docs/tests及直接import消费者test_projection.py、test_http_ingress.py。Root主树R2 RED实测2failed/97passed/4deselect，6文件+7保护hash全吻合，独立审查0/0/0；唯一json_exact同negative specs，无别名兼容。禁止新目录、广泛重构、删空行挤tuple、修改阈值/豁免，越界先报。
+- 放置决定：执行归码独立于RunEmitter，是execution能力内纯函数；System client不拥有Run分类；negative metadata归现immutable named-negative policy，避checker循环和新helper层。OpenAPI/SQL/proof schema/vector原bytes保留，生成/aggregate是否受影响核实际inventory，不直接改摘要掩盖。
+- 验证：先目标归属断言RED且既有业务baseline GREEN；完成后Ruff251+新文件、Pyright/generator/checker/uv锁与frozen/build、defaultpytest、Root standard；Root独立owned PG/Redis15完整22 HTTP，复用共享服务且不触DB10/flush/模型/账务。代码停写后Root接手复验。
+- 交付：中文文件绝对路径、manifest SHA、RED/GREEN命令真实日志与状态，worker不commit；Root按精确文件集提交、库存原blob重算、不把broken转绿。当前BFF只读可并行，无第二Agent writer。
+
+## 历史 AGENT-FAILURE-3.0 Root验收切片（已由顶部f3be后继）
 
 - 状态：owner行为已验收、Root精确29文件提交Agent main `da056b0103cced10188cdc1f5baef841d8333889`、子仓clean；Root集成 `e2ef2866fd9a3de9b1b1ae2cef107bb9282d8fdc` 后relay/topology/指定checkpoint均actual0（session62704已消费）。新增2项粒度未闭，BFF/Web与当前运行组仍未切换；任务外Billing五docs/uv.lock保留。
 - Root frozen完整scripts/tests1103pass/3既有skip/455subtests/123.78s exit0；全仓standard freshFAIL139/0unverified，新增Agent events806与proof_contract804两项800行门。后继先由Agent reviewer只读收敛按变化原因拆分，Root再授唯一writer小切片；不压行数骗门、不豁免，清两项后再BFF发布。owner行为通过不代表工程标准全绿。
@@ -10,7 +31,7 @@
 - 验证：修正上一driver对象manifest解析，Root逐29hash预检；复用PG5432/Redis6379，同role唯一随机fixture临时库及原子空Redis15占有lease，完整22个现HTTP acceptance而不止两例，180s有界。仅按marker/token+明确fixture流名白名单回收，非owned不清；不触活跃Redis10、共享owner schema、模型或账务。纯门重新执行，完整后固定Agent3.0 owner再BFF doc/strict消费/SQL门。
 - 完成条件：22例真实PG/Redis/HTTP、原safe retryable true/false、index0 terminal回放及tenant/fence全部通过，资源回收0；独立review/Root纯门/准确docs/逐路径commit；不把本片验收说成全子仓或浏览器/模型/账务闭环。
 
-### 后继 AGENT-FAILURE3-GRANULARITY / P1 / 独立建议已交接、尚未授写
+### 历史 AGENT-FAILURE3-GRANULARITY 前置建议（已由顶部验收片完成）
 
 - 基线Agent main `da056b0103cced10188cdc1f5baef841d8333889` clean；Python09 §12 >800门。目标是按变化原因拆分，不改变failure/cursor/lease/fence/proof语义，不压行或改门。
 - execution/events.py的完整失败分类与run_failed_payload应归现execution包独立failures.py（新文件需要先在TECH设计记录、Root放置门批准），不放System client、不保留events兼容re-export；run_agent/supervisor及精确现tests改import，execution INDEX更新。
@@ -21,6 +42,7 @@
 ### 后继 BFF 文档门：精确 Agent 失败事实 / P1 / 待设计收敛
 
 - 基线：BFF main `15e07fa44670bc13705ce3f6f700e73afcb72ccc` clean，实际vendor为Agent2.0。只读 `bff_personal_consumer_review` 已报告2P1/1P2：failure未入Message/snapshot；Agent failed与cancel/dispatch/delete不可混同；3.0 pin及Web breaking需联动。
+- Root后继裁决：public OpenAPI info.version 1.0.0→2.0.0 coordinated breaking，路径仍/v1；从owner3.0在现generator机械派生严格failure validator，不靠未证明的HeyAPI if/then输出、不启orphans全量。BFF三设计/机器/SQL文档门一致后才授源码；BFF owner先提交，Web固定新artifact再消费。
 - Root方向：扩现 `bff_message` 的nullable Agent专属 code/retryable列、成对CHECK、只对verified run.failed写入，同projection事务/source/frame/watermark，GC后仍由同RR snapshot读。拒绝新表/JSON fallback/AG-UI retention重建/伪造BFF Agent code。正式公开 `ChatMessage.failure` 为optional closed Agent profile；已显式分享的会话可携带这组安全字段，不包含原异常/敏感诊断。
 - 依赖：先固定Agent owner commit与生成来源，再严格10码/合法bool parser和BFF公开契约/SQL；Web后继pin，无双读旧契约。retry身份/重复user独立下一任务，不用CSS隐藏。
 - 文档门未通过前不授源码/schema/contract或runtime写入；三份设计与contract现事实要对齐，并记录fresh install、rollback/GC/ACL、非Agent失败NULL负例及严格解析矩阵。
@@ -32,7 +54,11 @@
 - 前置Agent profile持久化与Web严格消费；server retryable=true为retry准入，false及无Agent profile不得由Web文案猜允许。成功回答再生成/本地dispatch失败恢复是另明确用例，不塞进同一command。未知POST回执恢复仍复用原key，不能误转为terminal retry。
 - RED门：snapshot user数保持1/assistant2、samekey单attempt、foreign/nonfailed/nontail/active拒绝零写、冻结options、rollback无半事实、reload/AGUI正确attempt绑定。不删除/隐藏历史duplicate，不兼容旧双轨。正式command路径待BFF三设计/机器文档门确定，当前不写代码。
 
-## 当前 UI 验收与剩余任务（2026-09-30）
+# 历史任务卡与交接（不再作为授写指令）
+
+以下保存各切片当时的基线、未授写/待验状态与结果；现已完成的状态以顶部本轮卡为准，当前未完成的failure/retry/深链/全Wave任务仍保留在顶部及后继BFF段。
+
+## 历史 UI 验收与当时剩余任务（2026-09-30）
 
 - `WEB-READING-AXIS-ALLWIDTH` / P1 / 已验收：Root正式IAB复现700px content x2/w696 vs form x16/w668；800px（collapsed rail）x84/w684 vs x68/w716；961px展开300px侧栏 content x332/w597 vs form x348/w565。当前大桌面/390px通过不再代表全断点布局验收。
 - 交付：Web main `30545c55625fb257ac17ce2199e8fa1000f3ecae` 五文件已提交且clean；Root Node22完整109/37/1800/lint/type/build实际exit0，独立最终0/0/0、5/5hash。真实十宽度全部<=1px，无横溢，明确侧栏状态；首候选960实测FAIL与既有5s HTTP timeout保留，未放宽门。Root已接sole writer与index，现只gitlink/38来源指针及三台账集成，支付/全能力仍开放。
@@ -44,7 +70,7 @@
 - 设计与验收：根据Composer实际合成gutter统一阅读轴，不机械只改768断点；>960包含wrap24px及form额外24px，641–960合成16px，<=640复用thread外垫与光学内缩。先纯RED再最小CSS、700/800/961展开及1280/390矩阵；Node22完整check、主控复验/截图；现Playwright几何回归以正式preview fixture测试，不伪造owner数据或触碰共享服务。完成后冻结manifest，Root提交，未过真实矩阵前不标已验收。
 
 - 已验收：Web `7c2b4d7` 的内层焦点方框删除、48rem同轴和手机边距，本轮正式IAB再验；新定点164pass，保留修后桌面/手机截图。Root负责实际页面；`web_chat_layout_review`（gpt-5.6-sol/high）初期只读发现P1后，按上表转为本片唯一writer，未获服务或Git权限。
-- 未完成：重复提问/空失败轮次、mounted query-only深链、精确failure持久消费、完整流式中途刷新。按对应owner修复真实状态与消息/attempt身份，不用CSS隐藏数据或伪造成功。
+- 未完成：重复提问/空失败轮次、mounted query-only深链、精确failure持久消费、完整流式中途刷新。 本轮布局验收时通用failed卡随后出现，当前只读未发现viewport创建/重启engine；未捕获状态/event/cursor，不将时序误判为CSS根因或新模型调用，article相等也不代表Alert状态相等。按对应owner修复真实状态与消息/attempt身份，不用CSS隐藏数据或伪造成功。
 - 本轮不新增UI框架、登录中转页、进程、模型调用或运维任务。全Wave0–7与正式积分链继续开放，局部视觉通过不等于全部能力闭环。
 
 ## AGENT-RUN-EVIDENCE-INITIAL-CURSOR：Root复现后源码实施（2026-09-30）
@@ -66,7 +92,7 @@ Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本
 
 新发现同pathname query-only导航漏接，new conversation后URL可能被stale eviction清空；显式goto+reload已重新恢复原conversation，非owner删除或丢数据。原Web负责人已只读定位，后继需deferred snapshot RED与严格失败清理断言，暂未授写。重复user/空failed assistant、完整failure契约与整个Wave0–7仍未闭环；未隐藏消息冒充布局完成。Agent cursor docs/tests已冻结RED，源码未授写。保留任务外Agent/Billing/Root uv.lock变更。
 
-## WEB-COMPOSER-VISUAL-ALIGN：当前用户可见优先切片（2026-09-30）
+## WEB-COMPOSER-VISUAL-ALIGN：当时用户可见优先切片（2026-09-30）
 
 - P0：修复真实 `/app` 输入框直角焦点框、消息/编辑器宽度冲突和手机错误桌面边距，不再新增 UI 方案。
 - 基线：Web main `5058ae2c400dd8be1964bba5df03fd7ce5b52133` clean；Root main `9e58b5f8`；Agent 已完成 Run evidence cursor docs/tests RED 并停写，源代码下一门暂不授写。
@@ -76,7 +102,7 @@ Web main `7c2b4d700c8a4399fae68012c1db7423d790abd7` 六文件已提交；Root本
 - 方案：现圆角 form shell 保留 token keyboard focus、textarea 不画内部方框；同轴48rem；手机按 viewport收紧边距。复用既有设计与 owner 边界，无不可逆决定。
 - 完成条件：RED→GREEN、Node22 check、Root重跑相关门；真实桌面/窄屏、键盘焦点/多行/底部布局验证及截图。测试通过不替代视觉验收，未通过前不称闭环。
 
-## 当前执行摘要：真实用户旅程（2026-09-30）
+## 历史执行摘要：真实用户旅程（2026-09-30）
 
 本轮不是再建一套 UI 或计划中心。当前 Root main `7c13378e`（生命周期代码 `9e77ac17`），BFF `15e07fa4` 已验收并集成，Web `840fa7e0` 删除虚构收费文案已验收；strict relay/checkpoint/topology及Root1103pass/3依赖skip/455subtests通过。3310唯一受管session29394已启动，原生IAB已完成登录、真实首回答及终态刷新全文一致；流式中途刷新尚未捕获，历史严格全文门FAIL保留。以下是执行优先级，不是整体已完成声明。用户已要求每10分钟检查并继续推进；Codex当前线程heartbeat `kokoro-10` 已创建ACTIVE并回读展示，不另建独立cron任务。无变化保持安静，有实质完成/失败/偏差/决策再通知。
 
