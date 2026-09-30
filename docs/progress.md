@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Web typed Chat消费者文档门通过，代码续派
+
+Web仅五份既有文档 `2857fed`→`9e0a3e7`，明确删除旧localStorage名称注入、不迁移/拼ID、typed refs默认[]和pending冻结重试。Root发现API pattern尾部`$`的P2，已改owner绝对末尾并写LF/CR/Unicode换行负例；Root显式Node22架构 **36/36**、三面与BFF `571b51de` SHA核对通过，工作树clean。本片无runtime/generated变更，旧浏览器Chat仍待代码修复。续派同一Web负责人限定现有消费者/测试/文档，Agent typed reader先并行只读预检，非空Skill执行仍未闭环。
+
 ## 2026-09-29 — 当前BFF→真实Agent worker→durable AG-UI执行PASS
 
 既有runner仅精确refreeze至BFF `571b51de` / Agent `dd34a48`，clean/Root gitlink/资源所有权门不放宽；pin断言RED1fail→GREEN19pass。 Root最终全 `scripts/tests` **991 pass/281 subtests（98.60s，exit0）**，topology/checkpoint PASS；独立pin更新审查P0/P1/P2=0。真实独立CLI worker run `909613820172d6d8189a27d9` 完成回复并通过BFF snapshot reload、同键重放/异内容409/异用户404：Agent4事件、BFF5帧durable AG-UI、outbox=succeeded、assistant=completed、Agent terminal=true。IAM admission、System/model边界为明确确定性fixture，真实浏览器/真实供应商不在本验收范围。`/tmp/kokoro-bff-agent-571-worker.log` exit0；自有PG库/Redis key/进程剩余均0，3310未碰。Web旧名称wire清理文档门已派 `web_chat_selection_owner`，仍未将完整产品边改为兼容。

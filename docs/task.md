@@ -6,17 +6,23 @@ Root独占既有 `scripts/e2e/run_bff_agent_worker_smoke.py` 与相邻测试，�
 
 **真实执行结果：** run `909613820172d6d8189a27d9` PASS；真实独立Agent CLI worker完成一轮回复，BFF outbox=succeeded、assistant=completed、Agent terminal=true、4条Agent事件→5帧durable AG-UI。同键重放/异内容冲突/异用户不可见与reload断言通过；IAM/System/model仍fixture而非真实服务/供应商。自有PG数据库、Redis keys和进程余量均0；日志 `/tmp/kokoro-bff-agent-571-worker.log`。pin断言RED1fail→GREEN19pass。 Root最终全 `scripts/tests` **991 pass/281 subtests（98.60s，exit0）**，topology/checkpoint PASS；独立pin更新审查P0/P1/P2=0。
 
-## 当前文档 owner：W3-WEB-CHAT-SKILL-SELECTION（先现有文档门，再消费者代码）
+## 并行只读：W3-AGENT-TYPED-READER-PREFLIGHT
+
+Root指定 `agent_launch_fixed_review` 只读Agent `dd34a48`（不写仓、不启动服务、不提交），依据已批准Agent三面设计检查下一typed reader完整实施切片：当前Platform v4 fixed client/pin、Resolve/ApprovedPackage/fresh proof、Storage signed GET/ZIP profile、只读虚拟backend及删除旧name客户端/静态music路径。输出准确缺口、最小文件集、前置owner契约与可执行验收，不重做架构裁决、不等待UI而新增旁路。允许并行于Web消费者写入；后续代码仍等Web验收后独占Agent。
+
+## 当前代码 owner：W3-WEB-CHAT-SKILL-SELECTION（文档门已通过）
 
 | 项 | 任务卡与放置裁决 |
 | --- | --- |
-| Owner/基线 | Web 唯一writer `web_chat_selection_owner`（gpt-5.6-sol），Root审查/集成；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` clean main `12f9dff909b8e2e8694a96f510676f90d375ecdc`。BFF已验 `571b51de` public SHA `f49023882315a4f46e46e95595a02eaa7bb85475d5f46d2b945bc0555edb0c90`。 |
+| Owner/基线 | Web 唯一writer `web_chat_selection_owner`（gpt-5.6-sol），Root审查/集成；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` clean main文档交付 `9e0a3e76fcee0a395b4b0441631f65003e1430c1`（代码仍12f9dff基线）。BFF已验 `571b51de` public SHA `f49023882315a4f46e46e95595a02eaa7bb85475d5f46d2b945bc0555edb0c90`。 |
 | 当前事实/目标 | 正式PersonalSkillsRead已有source_ref/revision但没有选择入口；旧全局usePinnedSkills读取localStorage名称并注入engine，可能发旧pinned_skills→新版BFF400。目标沿现有contract/engine/composer承接exact refs，默认[]，未知响应重试保留原选择；删除名称偏好到正式请求的路径。 |
 | 方案/粒度 | A采用现有chat schema、engine execution options/frozen submission和现有shadcn组件，选择限当前会话内存且以sourceRef为identity，显示名仅标签。B淘汰名称拼skill前缀、旧store双读、兼容wire或新状态平台。不新增顶层目录/进程/持久层；先更新既有三面设计与CURRENT/ACCEPTANCE，主控审后授权代码文件集。 |
 | 依赖/数据/API | Browser→同源Web→BFF；无Web SQL/Redis或安装事实。精确pin BFF原字节，用本仓生成器更新不手改generated；exact/no-trim/绝对末尾/16项/4KiB/唯一有序。非空Agent reader尚未接通，本片不新增假可执行入口，不改变安装裁决；完整可选可执行Skill仍后续必须完成。 |
 | 删除/排除 | 删除正式旧pinned_skills/name store注入，不读取/迁移旧localStorage；preview名称动作隔离，不污染正式engine。不改登录UI、BFF/Agent/Platform、支付、锁文件、3310服务或Root任务外uv.lock。 |
 | 验证/交付 | RED→GREEN：旧localStorage及preview不污染正式请求、strict refs、默认[]、未知ACK原选择重试；本仓contract/architecture/lint/typecheck/test/build/隔离e2e。独立审查、Root复跑后提交/pin；普通Chat真实产品链仍独立验收。主控拥有Root台账和跨仓集成Git；Web独占checkout可按已授权切片提交，报SHA/文件/实际结果后停写。 |
 
+
+**文档放行与代码写入集：** 五文档首交2857fed，Root指出API pattern旧`$`的尾随换行P2，9e0a3e7已精确改为owner绝对末尾；Root Node22架构36/36、原字节BFF SHA及三面无SQL/无安装事实核对通过。授权同Web负责人修改现有 `src/contract/chat.ts`、`src/engine/{machine,engine-types,execution-adapter}.ts`、`src/components/blocks/app-frame/{app-frame.tsx,use-app-frame-actions.ts}`、`src/ui/{shell/use-pinned-skills.ts,settings/settings-modal.tsx,composer/*}`、既有BFF snapshot/生成校验脚本及其直接contract/engine/UI/architecture/e2e测试、五当前文档与相邻INDEX。旧hook可删除；新增文件或超出集合先报放置理由。正式PersonalSkillsRead不新增假执行动作，preview无权改正式engine；代码必须同时清理旧名称读链与wire。Node22全门、独立审查与Root复验后才验收，不触碰3310。
 
 ## 已验收代码：W3-ROOT-LOGIN-LIFECYCLE（真实3310重启待许可）
 
