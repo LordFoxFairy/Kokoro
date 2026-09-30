@@ -1,3 +1,27 @@
+## BFF R5 RED 门通过，进入完整代码实施（2026-09-30）
+
+- R5 tests-only RED已Root按12/12冻结hash复核，显式Node22 build0；七文件141项=70pass/38目标fail/33infra skip，日志`/tmp/kokoro-bff-failure3-root-r5-red.log`。R3独立契约1P1旧vendor path与SQL1P2空白code矩阵已在R4/R5最窄返修，Root直接读两delta确认，无新路径/fallback。先RED的门已通过，33skip不是integration通过。
+- 现授bff_failure_profile_owner唯一BFF writer进入完整GREEN：仅R2 TECH“后续两阶段精确允许集”既有完整机器/schema/generator/generated/源码列表+原12tests+四docs。新增仅f3be固定2份只读vendor与单个failure-profile.gen.ts；17生成allowlist与provenance/hash/可达图语义突变检查，同提交删除旧HTTPvendor/七码fallback。delivery486独立来源保持；public2.0/完整CHECK/全页拒绝/同TX/安全快照AGUI统一，不加兼容/依赖/角色/新模块。越界先报Root。
+- writer仅纯门、不得启动服务/访问共享PG/Redis/模型/浏览器/运行副本或操作Git；全部source与SQL冻结后Root独立完整门与自有隔离真实7integration、Web协调消费者再切运行组。不让一半新协议上线，不以GREEN候选宣称整体完成。
+
+## WEB-EMPTY-FAILED-TURN 源码切片验收与同步（2026-09-30）
+
+Root 本轮相关治理测试47/47（40.73s）实际通过；指定w1e-iam07-bff-pin checkpoint与topology CLI均exit0，strict IAM relay仍exit1，准确原因为BFF工作树候选dirty，未清理候选/放宽门。完整Root测试、完整标准门、Playwright与fresh输入框视觉本轮未执行。日志 `/tmp/kokoro-web-empty-failed-turn-root-{governance.log,checkpoint.json,topology.json,relay.json}`。
+
+Web main `8205fa003d5ea269741df359d4d6881dd0f1e0f8` 精确四文件提交、clean；仅把严格终态空assistant与原失败反馈归同原MessageScrollerItem，保留article/run/message事实、普通/credit动作、详情与query hook，无CSS负margin/隐藏/去重。Root Node22完整check实际0：contract109、architecture49、1836tests（40.87s）、lint/type/build；独立四hash审查0/0/0，Root HEAD组件RED2失败/30通过→恢复候选GREEN。日志 `/tmp/kokoro-web-empty-failed-turn-root-{red,check}.log`。
+
+仅原3310受管副本一个ConversationThread文件核f958baseline后逐字节同步，无重启/新进程/provider/积分/数据库操作。当前浏览器tab6焦点与selected13截图实际超时；fresh页面间距/输入框方框仍未验，已请求截图，不宣称整体UI完成。库存38Web commit引用更新、0contract digest变化；BFF R3纯REDRoot70pass/38fail/33infra skip，契约1P1旧testvendor路径与SQL1P2空白code负例已派R4，不授GREEN。Billing五docs与Root uv.lock保留。
+
+## 2026-09-30 — 当前输入框与会话布局核对
+
+Root实际读取右侧user tab6 focus超时，selected tab13截图亦等待初始navigation超时；未新增标签/未更换控制通道。运行3310 PID65590，Composer/Thread/textarea三来源hash分别f90e03b/061e516/3ff1d56，与受管副本一致。Node22定向Composer/ConversationFailure/AppFrame三文件151通过7.06s，日志`/tmp/kokoro-ui-current-complaint-root-target.log`；这不证明当前内方框消失。已请求fresh完整截图。
+
+只读审查定位确定性布局缺陷：末个空失败assistant保留独立Item，后续error另占Item，column gap重复。采用将原反馈归回原消息项而非负margin/隐藏事实；四既有文件独占Web writer，Root负责最终复验。BFF五文件RED首交69pass/38fail/1skip仍被独立SQL矩阵缺失P1拒，已窄返修tests并持续并行，不授源码GREEN、不切半套运行组。Billing/uv.lock保留，payment最后。
+
+## 2026-09-30 — BFF failure 持久化进入真实断言RED
+
+前轮为progress：Web f9587ac/Root81867074提交，完整1825测试与build0，源码同步原运行组；当前内框/视觉未验。本轮返回完整后端goal，不把浏览器等待当所有工作阻塞。Root实核BFF15e只有R2四docs、hash4/4仍冻结；Agentf3be3.0/contract/provenance原bytes/clean。R2已独立契约与SQL0/0/0，本轮授权原BFF owner tests-only RED，Root负责复现与后继精确GREEN；payment最后、不改运维/角色/共享服务。
+
 ## WEB-FAILURE-FEEDBACK-FLAT：源码通过，当前内框与视觉未验（2026-09-30）
 
 Root本轮治理：指定当前 `w1e-iam07-bff-pin.json` checkpoint与topology实际0；相关Root治理tests88/88（47.08s）通过。误选历史platform-code-release checkpoint首次exit1（历史4active不同于当前3active），已保留原日志并改用既定当前checkpoint，未修改任何门。strict IAM relay仍exit1，原因BFF四docs候选dirty，未stash/放宽或冒称全组合绿。日志 `/tmp/kokoro-web-failure-feedback-root-{topology,checkpoint-current,relay}.json` 与 `-governance.log`；本轮完整Root/全标准/Playwright未运行。

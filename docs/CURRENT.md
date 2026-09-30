@@ -1,3 +1,11 @@
+## WEB-EMPTY-FAILED-TURN：源码与运行副本同步，视觉未验（2026-09-30）
+
+Root 本轮相关治理测试47/47（40.73s）实际通过；指定w1e-iam07-bff-pin checkpoint与topology CLI均exit0，strict IAM relay仍exit1，准确原因为BFF工作树候选dirty，未清理候选/放宽门。完整Root测试、完整标准门、Playwright与fresh输入框视觉本轮未执行。日志 `/tmp/kokoro-web-empty-failed-turn-root-{governance.log,checkpoint.json,topology.json,relay.json}`。
+
+Web main `8205fa003d5ea269741df359d4d6881dd0f1e0f8` 精确四文件提交、clean；仅把严格终态空assistant与原失败反馈归同原MessageScrollerItem，保留article/run/message事实、普通/credit动作、详情与query hook，无CSS负margin/隐藏/去重。Root Node22完整check实际0：contract109、architecture49、1836tests（40.87s）、lint/type/build；独立四hash审查0/0/0，Root HEAD组件RED2失败/30通过→恢复候选GREEN。日志 `/tmp/kokoro-web-empty-failed-turn-root-{red,check}.log`。
+
+仅原3310受管副本一个ConversationThread文件核f958baseline后逐字节同步，无重启/新进程/provider/积分/数据库操作。当前浏览器tab6焦点与selected13截图实际超时；fresh页面间距/输入框方框仍未验，已请求截图，不宣称整体UI完成。库存38Web commit引用更新、0contract digest变化；BFF R3纯REDRoot70pass/38fail/33infra skip，契约1P1旧testvendor路径与SQL1P2空白code负例已派R4，不授GREEN。Billing五docs与Root uv.lock保留。
+
 ## WEB-FAILURE-FEEDBACK-FLAT：源码通过，当前内框与视觉未验（2026-09-30）
 
 Root本轮治理：指定当前 `w1e-iam07-bff-pin.json` checkpoint与topology实际0；相关Root治理tests88/88（47.08s）通过。误选历史platform-code-release checkpoint首次exit1（历史4active不同于当前3active），已保留原日志并改用既定当前checkpoint，未修改任何门。strict IAM relay仍exit1，原因BFF四docs候选dirty，未stash/放宽或冒称全组合绿。日志 `/tmp/kokoro-web-failure-feedback-root-{topology,checkpoint-current,relay}.json` 与 `-governance.log`；本轮完整Root/全标准/Playwright未运行。

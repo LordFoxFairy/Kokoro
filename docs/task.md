@@ -1,3 +1,16 @@
+## WEB-EMPTY-FAILED-TURN / P1 / 源码已验收，视觉待验（2026-09-30）
+
+Web main `8205fa003d5ea269741df359d4d6881dd0f1e0f8` 精确四文件提交、clean；仅把严格终态空assistant与原失败反馈归同原MessageScrollerItem，保留article/run/message事实、普通/credit动作、详情与query hook，无CSS负margin/隐藏/去重。Root Node22完整check实际0：contract109、architecture49、1836tests（40.87s）、lint/type/build；独立四hash审查0/0/0，Root HEAD组件RED2失败/30通过→恢复候选GREEN。日志 `/tmp/kokoro-web-empty-failed-turn-root-{red,check}.log`。
+
+仅原3310受管副本一个ConversationThread文件核f958baseline后逐字节同步，无重启/新进程/provider/积分/数据库操作。当前浏览器tab6焦点与selected13截图实际超时；fresh页面间距/输入框方框仍未验，已请求截图，不宣称整体UI完成。库存38Web commit引用更新、0contract digest变化；BFF R3纯REDRoot70pass/38fail/33infra skip，契约1P1旧testvendor路径与SQL1P2空白code负例已派R4，不授GREEN。Billing五docs与Root uv.lock保留。
+
+- 当前用户要求：输入框内框与整体对话布局。Root当前浏览器读取实际超时，fresh视觉未验；Web main f9587ac clean，3310 PID65590，Composer/Thread/textarea源码与运行副本逐字节一致。Node22定向三文件151/151通过，但现测试未约束空失败项的双gap。
+- Owner/局部归属：Web既有ConversationThread负责消息与失败反馈的渲染分组；只扩现组件，不改Message事实/协议/重试身份/Composer/shared primitive。空终态助手消息与自身失败反馈同一滚动项，不采用负margin抵消、隐藏消息或改共享Scroller。
+- 基线：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；main f9587ac9a008c7183b875e096be504fb5c0b69ef；无原有未提交变更。执行agent_failure_cursor_owner为唯一Web writer，Root审查/测试/提交；BFF writer仅自己的tests。
+- 写集：src/ui/thread/conversation-thread.tsx、tests/ui/conversation-failure.test.tsx、docs/TECHNICAL_DESIGN.md、docs/CURRENT.md。不创建新文件/目录、不改CSS/token/锁/generated/API/其他仓/Git/运行副本/服务/数据。
+- 规则：仅hasFailed且非stream/reconnect/HITL、末项确为最后持久化assistant run、其所有message正文精确空串、所有steps仅text，且无可渲染Delivery时，把现唯一失败反馈嵌入该原滚动项；保留article/消息身份。正文/过程/旧失败/孤立过程/在途/成果/无assistant保持原布局与动作。共用一份Alert JSX，保留详情ref、普通/credit动作和失败反馈可访问性。
+- 验收：先测试RED（滚动项与事实/动作/详情/反例），再局部GREEN；RootNode22重跑target与完整check，独立diff审查。浏览器当前超时；最终视觉仍待fresh，不以单测宣称输入框已修或ChatGPT体验闭环。
+
 ## WEB-CHAT-CURRENT-FEEDBACK / P1 / 用户再次指出内框与布局，当前调查中（2026-09-30）
 
 - 当前组合治理：topology/current-checkpoint0、相关Root88/88；strict relay1（保留BFF四docsdirty），完整Root/全标准/Playwright未跑。误选历史checkpoint的首次失败日志保留，不改门禁。
@@ -19,7 +32,17 @@
 - 唯一writer续派agent_failure_cursor_owner；精确四文件 src/ui/thread/thread.module.css、tests/ui/app-frame.smoke.test.tsx、docs/TECHNICAL_DESIGN.md、docs/CURRENT.md。先RED新增无ID布局依赖/保留首项几何断言，再CSS GREEN；保留DOM事实原测试。Root唯一Git/受管副本同步，主树重跑UI/architecture/typecheck/lint。当前浏览器E2E未验收。
 - BFF R2冻结四docs独立契约与SQL复审均0/0/0，已关闭原3P1/2P2；仅文档门，tests-only RED未派发，不抢写当前UI。
 
-## BFF-AGENT-FAILURE3 / P1 / R2文档冻结复审通过，当前UI优先（2026-09-30）
+## BFF-AGENT-FAILURE3 / P1 / GREEN 实施授写（2026-09-30）
+
+- R5 tests-only RED已Root按12/12冻结hash复核，显式Node22 build0；七文件141项=70pass/38目标fail/33infra skip，日志`/tmp/kokoro-bff-failure3-root-r5-red.log`。R3独立契约1P1旧vendor path与SQL1P2空白code矩阵已在R4/R5最窄返修，Root直接读两delta确认，无新路径/fallback。先RED的门已通过，33skip不是integration通过。
+- 现授bff_failure_profile_owner唯一BFF writer进入完整GREEN：仅R2 TECH“后续两阶段精确允许集”既有完整机器/schema/generator/generated/源码列表+原12tests+四docs。新增仅f3be固定2份只读vendor与单个failure-profile.gen.ts；17生成allowlist与provenance/hash/可达图语义突变检查，同提交删除旧HTTPvendor/七码fallback。delivery486独立来源保持；public2.0/完整CHECK/全页拒绝/同TX/安全快照AGUI统一，不加兼容/依赖/角色/新模块。越界先报Root。
+- writer仅纯门、不得启动服务/访问共享PG/Redis/模型/浏览器/运行副本或操作Git；全部source与SQL冻结后Root独立完整门与自有隔离真实7integration、Web协调消费者再切运行组。不让一半新协议上线，不以GREEN候选宣称整体完成。
+
+- 本轮基线Root81867074、BFF main15e07fa4、Agentf3be3b97 clean；R2四docs hash仍与冻结manifest完全一致，独立契约/SQL复审0/0/0，Root重新读TECH目标/SQL完整CHECK/public presence与pin。唯一BFF writer bff_failure_profile_owner（gpt-5.6-sol/high），Root sole Git/资源/验收；只读契约审查bff_failure_contract_review、SQL审查agent_failure_cursor_owner，当前不写Web。
+- 精确当前授写集仅R2 TECH中的12个既有test文件；canonical/public/schema/vendor/manifest/generator/generated/source与四docs保持冻结原bytes，不因module缺失/undefined_column产生假RED。先交接映射strict矩阵、AGUI安全shape/public presence/两列CHECK等真实断言RED的实际命令/日志/hash，Root重跑后才授完整GREEN。
+- 当前验证不用共享数据库/Redis/provider，不改3310；GREEN真实门由Root另分配自有temp数据库/occupied Redis范围，7file串行。子仓固定owner3与BFF2齐套后才消费者/真实运行组合切换；不混旧新协议。
+历史阶段：BFF-AGENT-FAILURE3 / P1 / R2文档冻结复审通过，当前UI优先
+
 
 - 本轮基线Root ebe570e8、Web5b77798 clean、BFF15e四docs候选，上一轮classification=progress（代码提交与主控1823全量纯门）；UI鲜活通道待恢复不阻塞独立后端写入。BFF续派原唯一writer bff_failure_profile_owner；contract reviewer bff_failure_contract_review、SQL reviewer agent_failure_cursor_owner均只读；不写Web/受管运行组、不启动共享资源。
 - R2文档返修仍仅四docs：TECH/API/DATA/CURRENT。修独立3P1/2P2：将contract/README.md列后继实施允许集；public failure presence明确if.required=[failure]而非properties-only；AGUI serialized keys负例；完整ChatFailure status/unevaluated/if-then drift突变；固定owner provenance进入vendor/manifest机器验证而非仅文字证据。
