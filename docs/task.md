@@ -16,6 +16,8 @@ Root正常Source `/tmp/kokoro-source-58b-real-composition.log` exit1：OAuth不�
 
 Source安全诊断两文件交付停写，Root独立Ruff check/format PASS、85 pass/3native skip/127subtests及Agent原生3 pass/34subtests，独立固定hash审查P0/P1/P2=0。仅分类标准Connect Code.name+固定disable/re-enable阶段，unknown→UNKNOWN、无message/details/context/凭据，RPC/proof/digest/timeout/生命周期不变；不是启用根因修复。Root提交后沿原文件入口正常实跑，不再-c导入路径包装。
 
+**最新实际code（Root6c1fe846）：** 正常Source `/tmp/kokoro-source-enable-code.log` exit1，固定诊断 `installation disable SetSkillInstallationEnabled failed (UNAVAILABLE)`；未到re-enable/lease/撤权，不宣称通过。Root生产TS/Python双语言false/true纯比较request-binding和command摘要完全同值，排除本样本bool/presence摘要错配，不能凭UNAVAILABLE定责IAM或transport。原负责人现只读调查真实错误来源，Platform四文档写入已放行；再真实组合前由Root冻结/pin候选。完整Root新diagnostic门1023 pass/3 native skip/325subtests、100.78秒；单独原生3/34仍通过。Source进程18879已exit1/session消费、Redis15=0，3310仍保留。上一goal turn有commit/真实code等实际进展，非仅状态重述。
+
 ## 当前真实组合复验：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
 
 | 项 | 任务卡 |

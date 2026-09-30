@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-30 最新实际阻断：** Root6c1fe846正常Source首次disable SetEnabled明确UNAVAILABLE；不是已通过，后续re-enable/lease/撤权未验。生产TS/Python同样本bool双值binding/command摘要完全一致，根因仍只读窄查；安全诊断全Root1023 pass/3skip/325subtests及native3/34已验。Platform只推进Product PERSONAL四文档候选，未有机器/运行产品入口。右侧登录仍旧过期标签CUA超时待手动/login，原3310受管服务保留不重复启动。详细当前任务与证据见task/progress。
+
 **2026-09-30 最新加速波：** 用户批准多工作面并行。Root6fc47c93已集成Agent58b，提交后topology/checkpoint PASS，Root完整1023 pass/2skip/325subtests（115.72秒）。正常无wrapper真实Source已越过OAuth/安装/typed原字节/native读取，在SetEnabled遇ConnectError，尚未通过；原负责人限定Root四driver文件排查，生产bug需按owner另派，不放宽门。独立Platform负责人仅收敛PERSONAL Product安装三面文档，未修改contract/源码/schema或宣称产品可用。Root保留3310可见登录关键路径；CUA超时/旧标签待用户手动/login，不再反复重启。任务外uv.lock不动，宽泛13broken保留，完整goal仍active。
 
 **2026-09-30 当前代码与验收边界：** Agent OAuth parser窄修58b59cf已提交/clean：允许未知成功扩展、strict已知字段不变；Root单仓1431 pass/6skip/172deselected、canonical Pyright0/Ruff/contract/build与独立审查0缺陷。Root来源锁集成中，聚焦52/52；Source正常真组合仍待复验，前次expires_at误拒FAIL不抹除。Source driver4ae92d9d的SIGTERM注册/关闭门已验，13broken宽泛边维持。3310登录组3898/4007/4113仍存活未重复重启，右侧旧过期标签CUA再次读取超时，已请手动/login；没有可见提交/回调/刷新证据。下方均为有日期历史记录，不替代本段当前边界。

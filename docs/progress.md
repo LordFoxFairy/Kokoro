@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 正常Source准确拒绝码已取得，摘要错配假设以双语言实测排除
+
+Root `6c1fe846` 诊断代码提交后完整Root scripts/tests **1023 pass/3 native skip/325subtests**、100.78秒、exit0（`/tmp/kokoro-root-source-diagnostic-tests.log`）；native组件3/34已独立通过，不把默认依赖skip当代码未测。Platform临时冻结clean6a后Root沿原正常文件入口实跑 `/tmp/kokoro-source-enable-code.log`：首次disable `SetSkillInstallationEnabled UNAVAILABLE`、exit1；没有-c/fixturetoken/人为允许，也未到re-enable/旧lease/撤权。ownedPID18879已退出、session37068终态已消费、Redis15回0，未留重复服务。
+
+Root以生产TS protobuf/create+installation request-binding、Python58b generated projector及driver command_document对同fake tenant/ID/command做false/true纯比较，binding/command四摘要逐项相同：false 79dbc73f…/fba34024…，true f91c3de…/fe176156…。这排除该样本bool/presence错配，不证明真实签名/IAM/transport正确。原负责人只读窄查UNAVAILABLE来源，Platform负责人已放行仅四文档写入；下一正常组合须冻结候选重新pin，错误未修不漂白。为取得实际code暂中断仍clean的文档worker后已续派，并要求局部交付避免无限调研；整体goal active，13broken/登录待验保留。
+
 ## 2026-09-30 — Source正常入口安全RPC分类门验收
 
 原负责人停写交付helper/test，Root独立Ruff check/format及原生3 pass/34subtests、ordinary85 pass/3native skip/127subtests通过（`/tmp/kokoro-source-enable-root-{native,focused}.log`），固定hash独立审查P0/P1/P2=0、复跑1native/34subtests。标准Code.name+固定阶段/validated method、unknown→UNKNOWN，不读取message/details或保留异常context，不更改call/proof/digest/10s timeout/资源关闭。writer RED32→GREEN34已记录；此前-c提前失败为plain helper imports缺文件入口的脚本目录，不继续包装。此片只恢复准确诊断，不宣称enable修好了，下一正常实跑取code。
