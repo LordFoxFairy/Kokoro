@@ -229,7 +229,13 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             smoke.require_platform_published_skill_absent(200, {"data": {}})
 
     def test_bff_published_read_revocation_does_not_leak_data(self):
-        denied = {"error": {"code": "session_invalid", "message": "BFF user admission failed", "retryable": False}}
+        denied = {
+            "error": {
+                "code": "session_invalid",
+                "message": "BFF user admission failed",
+                "retryable": False,
+            }
+        }
         smoke.require_bff_projection_revoked(401, denied)
         for status, body in (
             (200, denied),
@@ -238,7 +244,10 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             (401, {"error": {**denied["error"], "retryable": True}}),
             (401, {"error": {**denied["error"], "message": "Bearer leaked"}}),
         ):
-            with self.subTest(status=status, body=body), self.assertRaises(smoke.SmokeError):
+            with (
+                self.subTest(status=status, body=body),
+                self.assertRaises(smoke.SmokeError),
+            ):
                 smoke.require_bff_projection_revoked(status, body)
 
     def test_bff_personal_list_rejects_mixed_scope_or_private_fields(self):
@@ -254,10 +263,24 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         }
         page = {"data": {"skills": [item], "next_cursor": None}}
         smoke.require_bff_personal_skill_list(200, page, "skill-current", "1")
-        smoke.require_bff_personal_skill_list(200, {"data": {"skills": [{**item, "description": ""}], "next_cursor": None}}, "skill-current", "1")
-        for mutation in ({"scope": "organization"}, {"package_asset_ref": "private"}, {"revision": "0"}):
+        smoke.require_bff_personal_skill_list(
+            200,
+            {"data": {"skills": [{**item, "description": ""}], "next_cursor": None}},
+            "skill-current",
+            "1",
+        )
+        for mutation in (
+            {"scope": "organization"},
+            {"package_asset_ref": "private"},
+            {"revision": "0"},
+        ):
             with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
-                smoke.require_bff_personal_skill_list(200, {"data": {"skills": [{**item, **mutation}], "next_cursor": None}}, "skill-current", "1")
+                smoke.require_bff_personal_skill_list(
+                    200,
+                    {"data": {"skills": [{**item, **mutation}], "next_cursor": None}},
+                    "skill-current",
+                    "1",
+                )
 
     def test_public_publish_requires_exact_active_owner_event_projection(self):
         valid = {
@@ -832,7 +855,9 @@ class SkillDraftSandboxGuards(unittest.TestCase):
 
     def test_owner_credential_projections_are_exact(self):
         parsed = smoke.require_sandbox_ready(ready())
-        resource, execution, catalog, projection = smoke.platform_credential_payloads(parsed)
+        resource, execution, catalog, projection = smoke.platform_credential_payloads(
+            parsed
+        )
         self.assertEqual(
             resource,
             {

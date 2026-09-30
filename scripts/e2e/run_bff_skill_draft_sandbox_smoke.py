@@ -778,24 +778,45 @@ def require_bff_personal_skill_list(
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("BFF personal Skill list envelope invalid")
     page = body["data"]
-    if not isinstance(page, dict) or not {"skills"} <= set(page) <= {"skills", "next_cursor"}:
+    if not isinstance(page, dict) or not {"skills"} <= set(page) <= {
+        "skills",
+        "next_cursor",
+    }:
         raise SmokeError("BFF personal Skill list page invalid")
     if (
         not isinstance(page["skills"], list)
         or len(page["skills"]) > 100
-        or ("next_cursor" in page and page["next_cursor"] is not None and (not isinstance(page["next_cursor"], str) or not page["next_cursor"]))
+        or (
+            "next_cursor" in page
+            and page["next_cursor"] is not None
+            and (not isinstance(page["next_cursor"], str) or not page["next_cursor"])
+        )
     ):
         raise SmokeError("BFF personal Skill list page invalid")
-    required = {"source_ref", "name", "description", "content_hash", "scope", "revision", "enabled", "categories"}
+    required = {
+        "source_ref",
+        "name",
+        "description",
+        "content_hash",
+        "scope",
+        "revision",
+        "enabled",
+        "categories",
+    }
     matches = 0
     for item in page["skills"]:
-        if not isinstance(item, dict) or not required <= set(item) <= required | {"installed"}:
+        if not isinstance(item, dict) or not required <= set(item) <= required | {
+            "installed"
+        }:
             raise SmokeError("BFF personal Skill list item invalid")
         item_revision = item["revision"]
         if (
             not isinstance(item["source_ref"], str)
             or not item["source_ref"].startswith("skill:")
-            or any(not isinstance(item[key], str) for key in ("name", "description", "content_hash"))
+            or any(
+                not isinstance(item[key], str)
+                for key in ("name", "description", "content_hash")
+            )
             or item["scope"] != "personal"
             or not isinstance(item_revision, str)
             or re.fullmatch(r"[1-9][0-9]{0,19}", item_revision) is None
@@ -3018,7 +3039,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, public_read, begin_skill_id, str(revision)
                 )
                 if public_read != body:
-                    raise SmokeError("BFF published Skill projection drifted from owner")
+                    raise SmokeError(
+                        "BFF published Skill projection drifted from owner"
+                    )
                 status, public_list = _http_get_json(
                     bff_base,
                     "/v1/skills?scope_kind=personal&limit=100",
