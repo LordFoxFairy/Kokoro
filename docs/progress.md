@@ -1,12 +1,22 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 5.0.1 wire纠正已验收；用户首页与导航新增反馈对齐
+
+Platform21files精确提交 `6519ae9a7dba63586474d2860f6725d3165b701e`，候选5.0.1 aggregate3f97b3c98fd8e7ce46e4a8ea73237ddb85e764849d2b15dd28d0a3a58a69e42f；RootNode24 format/lint/typecheck/contractlint+只读checker/artifact/schema/test/build/diff全exit0，1196pass/243依赖skip（`/tmp/kokoro-platform-wire-root-gates.log`），独立142tests/P0/P1/P2=0。158原向量155原对象不变/3仅删非法has_more/metadata和负例意图不变＋8独立负例=166，261 runtime/Proto/schema/历史artifact等冻结hash不变。未激活产品，BFF已获唯一新SHA固定消费，4个P1独立拦截后按精确卡返修，不以旧53tests绿灯放行。
+
+用户当前/app反馈首页卡片{brand}、输入框、侧栏专案/任务语义。Root已源码核推广翻译没传brand、固定Slack/Zapier未按真实能力显示、项目会话列表标task且onCreateTask??onNewChat别名；不宣称UI已修，先独立只读QA/既有shadcn方案，Web单writer先收尾已定位续流短片再续派首页/输入框/导航。用户明确会话可属于专案，但任务独立，后继禁止用conversation别名假装任务。用户指定模型接口私有0600凭据仅本地/tmp，GET模型列表403，未把连接名当modelID或宣称推理成功；已询问具体modelID，UI代码推进不等待。
+
+## 2026-09-30 — runtime来源集成后主树复验
+
+Root `1ff5887a` 精确集成Platform d93e8a59（9来源节点、1变更blob，13broken状态保留）后checkpoint/topology PASS、主树来源/拓扑95/95（41.42秒；`/tmp/kokoro-platform-runtime-root-pin-tests.log`）。提交前新库存与旧Root HEAD 0dd gitlink不同造成真实checkpoint FAIL已保留，未放宽核验。全产品仍未闭环；当前切片仅owner安装runtime。Web现已定位水合续流倒序窄片，Platform5.0.1机器纠正与BFF消费者独立审查并行，Root管理唯一受管服务。
+
 ## 2026-09-30 — Platform runtime真实事务已验收；当前UI缺陷与错误验收脚本均保留
 
 Root精确提交Platform29文件 `d93e8a59a656e427f9780d2ee0d64ea5b6ef0904`；独立214纯测试/typecheck/29hash0漂移且P0/P1/P2=0，Root主树Node24 format/lint/typecheck/contractlint+只读checker/artifact/schema/test/build/diff exit0，1185pass/243真实依赖skip（`/tmp/kokoro-platform-runtime-root-gates.log`）。Root复用owner createOwnedPostgresDatabase、现localhost PG/相同credential、独立owner schema和现Redis仅连接，真实skill-installation.integration **27/27**包含新增4Product ACKlost/CAS，`OWNED_PG_CLOSED`（`/tmp/kokoro-platform-runtime-root-pg-r2.log`）。首次临时driver错误cwd找Root prisma失败已保留 `/tmp/kokoro-platform-runtime-root-pg.log`，改owner cwd后通过；无更改生产或测试断言/基础设施，受管65687/7399组始终不动。
 
 新确认机器债务：旧0dd60af v5 List buildtime validator/vectors要求has_more，但唯一Proto/实际runtime PageResult仅optional next_cursor。旧机器PASS不覆盖真实wire一致性；原owner已续派精确5.0.1纠正（v1–v4/Proto/generated/Schema/runtime冻结）。BFF五路由/client/projector已在途，但最终vendor/SHA/digest等待纠正版，未增加has_more/fallback/假Run。
 
-独立实际3310 Chromium：R1强制等待consent而超时，实际已进app；R2真实completed/UI回复/刷新各1，但脚本猜logout /confirm路径而超时；这些均是验收脚本错误而非应用失败根因。R3按真实原生Confirm logout按钮完成Web+issuer logout、session=false；真实登录/UI POST202/助手可见。但脚本未严格等待terminal、同JSON terminal=false/assistant DOM2却误标passed，结论撤销为FAIL，禁止引用误标为完成。Root查看 `/tmp/kokoro-current-3310-browser-e2e-r3/03-app-reload.png` 发现生成中reload助手分段倒序，已交Web原owner只读诊断/最小RED，不丢partials规避。浏览器全部自有context/PID已关闭，用户右侧IAB仍未验；agents404/runtime-manifest404/billing503仍明确未通，Skills/Storage尚未装配。
+独立实际3310 Chromium：R1强制等待consent而超时，实际已进app；R2真实completed/UI回复/刷新各1，但脚本猜logout /confirm路径而超时；这些均是验收脚本错误而非应用失败根因。R3按真实原生Confirm logout按钮完成Web+issuer logout、session=false；真实登录/UI POST202/助手可见。但脚本未严格等待terminal、同JSON terminal=false/assistant Markdown段2却误标passed，结论撤销为验收FAIL，禁止引用误标为完成。Root查看 `/tmp/kokoro-current-3310-browser-e2e-r3/03-app-reload.png` 发现生成中reload助手分段倒序（不是owner两条assistant消息）；Web原owner已纯内存稳定复现同run snapshot/segment不同ID导致前缀被补到后段之后，现129tests虽绿却缺此组合；已授现core/mapper五源码及五测试窄片RED→GREEN，不丢partials规避。浏览器全部自有context/PID已关闭，用户右侧IAB仍未验；agents404/runtime-manifest404/billing503仍明确未通，Skills/Storage尚未装配。
 
 
 ## 2026-09-30 — 当前加载Web9590后实际HTTP重新通过

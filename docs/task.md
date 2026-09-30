@@ -1,5 +1,33 @@
 # Kokoro 后端闭环任务总表
 
+## 当前用户Web可用性与信息架构对齐（2026-09-30）
+
+用户新增明确要求：输入框、首页快捷操作/推广区、会话/专案/任务独立；样式沿正式shadcn，不重写新设计体系。Root并行只读定位，Web单writer先完成已定位续流短片再进入此片；不以首页广告替代真实能力。
+
+- 已确认源码缺陷：kokoro-welcome-content.tsx推广标题/hint调用t未传brand，截图{brand}原样显示；固定desktopBanners无论真实集成是否可用都展示Slack/Zapier；workspace-rail-session-list将project scoped conversations标为tasks，shell又onCreateTask??onNewChat，造成会话/任务语义混合。输入框已有shadcn Textarea，继续核实际聚焦边框/自动高度/中文输入法/Enter及Shift+Enter/移动端溢出，不先凭截图猜CSS根因。
+- 产品边界：会话是独立资源，可选属于专案；专案是独立容器/详情/会话筛选；真实任务归ScheduledTask/Agent Run，不能把一条conversation改称task或借任务入口新建聊天。新会话/专案/任务入口分别命名、分别按正式owner接口，未接通能力不宣传已集成或提供假成功。
+- 后继Web片采用现welcome/composer/rail/locale与相邻测试，不新UI框架/store/顶层模块。Root将给精确文件集、当前/目标与行为门后续派同一writer；不同时两writer编辑Web，不改BFF/数据库契约绕开语义。独立只读QA可并行。
+- 模型凭据：用户给定外部endpoint仅用于真实测试；Root已存/tmp私有0600，不入repo/普通log、不跨redirect转送。模型列表GET返回403，不能据此断言chat不可用/密钥错误；具体model ID待用户给出，后续须走正式System→Agent真推理而非假响应。UI修复不等此确认，不把provider连接名OpenAI猜成model ID。
+
+## BFF-PERSONAL-REVIEW-FIX：当前审查拦截，尚未验收（2026-09-30）
+
+BFF原writer唯一负责既有consumer授权文件；基线c4c4cbc＋在途修改，Root sole index。独立当前审查P1=4：token与RPC分别重置预算；PermissionDenied/DeadlineExceeded错误码错位；OpenAPI envelope/必需headers漂移且verifier整类豁免；写query/list body/header未拒绝。瞬时server send多一个200未在Root当前文件存在，撤回此项，不作为当前缺陷。
+
+仅续修既有personal-installation-connect.ts、http/routes/skill-installations.ts与skill-installation-input.ts、existing OpenAPI/verify-openapi与原合同/http/input测试、四docs本片。不得增身份/SQL/依赖/锁/兼容路由；callback+token+officialConnect同一caller取消和最大20s绝对预算，RPC仅剩余timeout；403权限/404本人不可见/504deadline按已批准三面合同；专属严格error-only/no-store/x-request-id响应及逐operation/status门，不以路径全类跳过。写所有query、List body及mutation key拒绝，完整unknown/presence/raw重复门保留。先每项稳定RED→GREEN，再Node22全format/lint/typecheck/contract/schema/architecture/test/build；测试若需要动态mock token/Connect HTTP只能自有临时port/进程、关闭后报终态，不接3310/共享PG/Redis。最终固定vendor等待Platform5.0.1 Root验收新commit/digest，不双版本或手改生成。Root独立复审与真实owner组合另门。
+
+
+## WEB-CHAT-RELOAD-CONTINUATION：已定位现adapter窄修（2026-09-30）
+
+Web原负责人只读纯内存稳定复现：非空在途snapshot使用BFF durable message_id，后续AG-UI同run segment_id不同，水合无text锚点且mapper丢START/END区分，续流另建segment后snapshot前缀被补在其后。R3 assistant:2只是Markdown段，不是两条owner消息；其缺最终断言的临时脚本false PASS已撤回，owner终态未证，不误归类owner失败。
+
+- Owner/基线：Web已有AG-UI内部投影、hydration/reducer，唯一writer agent_typed_skill_reader_owner；main9590a74 clean，Root shared index/审查/提交。既有TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL批准browser内存projection，外部BFF/AG-UI契约与持久owner不变，此片是原职责窄修不是新module/协议/Schema。
+- 位置比较：采用既有core state/hydration/reducer内部恢复关联与text锚点，engine mapper保留真实文本边界；淘汰改UI/projections显示排序掩盖身份、BFF额外网络协议、删除partials或重播watermark前全部events。无需新文件/目录/依赖。
+- 唯一允许源码：src/core/state.ts、hydration.ts、reducer.ts、chat-projection-event.ts，src/engine/agui-event-mapper.ts；原API/network/generated/transport/UI/BFF/SQL/Redis/锁/projections不改。docs/CURRENT.md只同步本片；如果真实调用方越界，先报范围/理由。
+- 允许既有测试：tests/core/hydration.test.ts、reducer.test.ts、projections.test.ts；tests/engine/agui-event-mapper.test.ts、engine.test.ts。先将已复现snapshot＋不同ID的同run CONTENT/END→最终整句与顺序断言稳定RED，再实现GREEN。旧129pass不覆盖此组合，不能跳RED。
+- 身份/恢复：durable message_id与segment_id保持不同，仅内部关联；唯一同run未认领活跃前缀才可接续，新START保留新段，完整snapshot/不同run/多个候选不盲拼；重复cursor幂等、水位不回退、后续text/tool真实顺序与终态不重建重复，不伪造snapshot没提供的历史。
+- 验证/资源：Node22上述测试/纯unit、contract/architecture/lint/typecheck/build；无mock新服务/PG/Redis/3310/用户browser操作。结束停写文件集/hash、RED/GREEN日志、实际exit；Root独立审查/主树重跑、精确提交后同步自有dev snapshot，再真Chromium正规login→生成中刷新顺序→终态→完成后刷新→自身logout（真模型/owner），不拿fixture冒充当前UI。
+
+
 ## PLATFORM-PERSONAL-WIRE-CORRECTION：未激活候选纠正与真实事务验收（2026-09-30）
 
 Root确认新缺陷：唯一Proto PageResult只允许optional next_cursor，旧0dd60af候选的List buildtime validator/vectors却要求has_more；旧机器门PASS不再作为完整wire一致性证据，不能通过运行时发明字段掩盖。runtime29文件已停写，先独立审查和Root复跑/真实PG验收，之后另授机器窄修；同仓仍只有原Platform writer。
