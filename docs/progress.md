@@ -1,3 +1,11 @@
+## 2026-09-30 — gpt-5.6-luna 已正式装配并产生网页回复；E2E边界保留
+
+- Root7b9c797c，Web14a54b4/BFF67755d16/Systemc0a76a3a/Agent58b59cf7。原受管7399六子进程SIGINT反序停止/session65687 exit0；首次启动guard端口占用exit1，无监听但bind尚未释放，bounded等待guard自然通过后新session53033/launcher30171，IAM30877/System31271/Agent31307+31309/BFF31346/Web31351。只复用原PG/Redis，不起第二基础设施/kill-all；新private workspace69isk74y。
+- 正式System发布模型路由openai-compatible/gpt-5.6-luna、标准Agent已有ChatOpenAI adapter使用私有key和HTTPS/v1；System实际resolveModel success。credential key不在process.log，不进Git/CLI/System。Web四可见生产修复文件及core五文件dev snapshot核准精确字节（见Root检查），无mock推理/兼容fallback。
+- 独立真实Chromium首轮正常IAM登录→app→composer原生消息202→非空流式前缀/Stop途中reload→可见真实回复。严格terminal阶段E_FLOW，原脚本没分ID/immutable子错误及保存当时hash，因此**首轮FAIL**：`/tmp/kokoro-gpt56-ui.CsnuNA`。只读同一会话诊断（不再消息/推理）：2条user→assistant均completed、distinct string IDs、750ms两份完整content hash稳定，DOM每条全文规范化与owner相等、原生logout/session=false，诊断PASS `/tmp/kokoro-gpt56-diag.hVEygz`。该后验不能改写历史失败，也不凭推断声称已定位瞬态根因；所有自有Chromium/context关闭。
+- 右侧IAB cua.getState/getTab被平台URL policy拒绝，停止该surface，不CDP/间接绕过；上述产品自动化非右侧IAB已验。其他开放agents404/billing503/emptySkills/Storage未装配仍记录，不称全产品通过。
+- Root全量1058pass/3skip/377subtests（108.58s），checkpoint/topology PASS。标准门当前137违规/0 unverified，相对旧136增Agent platform_binding_contract>800和Platform README provenance两项、消除Web app-frame>500；无门禁放宽。保留任务外uv.lock，不称工作区全clean。
+
 ## 2026-09-30 — Web IA final 验收与外部模型切换准备
 
 Web `14a54b4b8da68b37d83a13402bc8abb87001574e` 已由Root精确提交；manifest `97359d4dc0da50daa944465502a42930aa9767251f36c841eb55a74cdb72bc04`，独立最终审查0/0/0。Root Node22门实际Vitest **1702/162文件**（包含contract/architecture重复收集，不等同worker pure1583），独立contract108/architecture37、lint/typecheck/build/diff-check通过，日志 `/tmp/kokoro-web-ia-naming-root-gates.log`。真实UI尚未复验；当前Ollama组仍保留，下一步唯一有序切换已验外部模型profile，禁止模拟推理或跳过IAM。

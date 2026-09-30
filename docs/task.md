@@ -1,3 +1,15 @@
+## ROOT-GPT56 当前交付/未闭环（2026-09-30）
+
+选定`gpt-5.6-luna`，私有profile→正式System→标准Agent→网页真实回复已见；唯一组30171/session53033。首轮UI202/真实prefix中途刷新，但terminal E_FLOW未精确保存子断言，状态仍FAIL；只读同一会话后验2条completed/完整内容ID稳定750ms/DOM全文相等/原生logout均通过，不覆写原FAIL。不追加付费推理重试、不扩大数据/权限，下一片先改验收诊断以捕获当时子断言，不凭推断重写owner。Root本轮全测试1058pass/3skip/377subtests，checkpoint/topology PASS，标准137违规仍未闭环；Billing最后。
+
+## ROOT-GPT56-UI 单轮失败后只读诊断
+
+首轮实际IAM→app→composer202、非空流式prefix中途刷新→可见完整回复；严格terminal阶段E_FLOW，未验完整内容比较/完成刷新/logout。Root授权同一只读验收Agent正常登录，只GET原同一conversation的2份snapshot＋DOM精确差异，不发第二条消息、不再推理、不放宽原失败；/tmp证据，结束原生logout/关context。依赖现服务30171，仓库/infra/Git仍禁止。必须细分count/order/status/ID/content与immutable，先因后改，Root独立裁决；不是右侧IAB，原fail结果保留。
+
+## ROOT-GPT56-UI：正式外部模型浏览器验收（2026-09-30；待服务ready）
+
+Owner Root组合，执行bff_personal_consumer_review只读验收Agent，Root复核；基线Root7b9c797c/Web14a54b4/BFF67755d16/Systemc0a76a3a/Agent58b59cf7，main，uv.lock任务外保留。只可/tmp自有0700证据目录/0600文件及自有Chromium上下文，不写仓库、不操作Git/共享服务/数据库/Redis/凭据日志。依赖Root唯一有序停旧7399/session65687及新external profile启动ready；禁止mock/post直达/注入cookie。实际IAM表单→app原生send→标准worker非空终态→完整内容/ID/order刷新一致→原生logout；prefix仅真实捕获非空streaming才标exercised，否则not_exercised。对比owner完整content SHA与UI规范化文本，不把非空/metadata当内容一致；仅泛用短输出、限一次，不传项目数据。UI/layout实见单独记录，右侧IAB未验不冒称。Agent交付脚本断言、结果、截图和资源关闭，Root结合System resolve和真实Agent日志裁定，不把直接provider200当正式链。
+
 ## WEB-PRODUCT-IA 最终代码验收（2026-09-30）
 
 Web main `14a54b4b8da68b37d83a13402bc8abb87001574e`；Root验44路径hash（42存在/2删除），独立复审0/0/0，Root Node22 lint/typecheck/contract108/architecture37/全Vitest1702/build/diff-check通过。旧Project Task DOM/CSS/组件身份与假推广退出，正式任务复用既有ScheduledTask入口；Project全量typed列表及任务关联仍开放。Root同步gitlink/来源库存/固定组合，3310尚未重启，不把纯测试当浏览器通过。
@@ -8,7 +20,7 @@ Web main `14a54b4b8da68b37d83a13402bc8abb87001574e`；Root验44路径hash（42�
 
 独立38hash审查拦截1P1/1P2：非真正Task的project-task DOM/selectors/CSS/旧文件名及ListTodo图标残留。Web同一writer只原源码/相邻测试/四docs，追加workspace-rail-items.module.css、kokoro-welcome.module.css；app-command-menu.tsx唯一onNewChat标签改现有conversation key及现tests/ui/command-menu.test.tsx与原smoke对应断言。既有两文件明确rename kokoro-project-task-welcome.tsx→kokoro-project-conversation-welcome.tsx、project-task-empty.tsx→project-conversation-empty.tsx，并更新唯一调用imports/component、样式/heading/testid到conversation，无alias/双文件，不改真实ScheduledTask名称/owner/契约。比较原位置rename职责正确vs新module迁移无收益，采用前者；如INDEX引用旧名只同位置更新，未发现则不动。先当前selectors稳定RED，Green/layout/keyboard保持；Root已跑旧候选全门但不据此放行命名遗漏，新候选再审/hash。
 
-## WEB-PRODUCT-IA-CODE：正式入口与交互清理（2026-09-30；进行中）
+## WEB-PRODUCT-IA-CODE：正式入口与交互清理（2026-09-30；已验收14a54b4，以下为授权历史）
 
 Web唯一writer原负责人，基线main7087225（四设计门已Root审查提交），Root index/提交，当前Web clean；Root真contract108/architecture37，日志/tmp/kokoro-web-ia-doc-root.log。复用三面设计§8，不新目录/文件/owner/store/Schema/网络API/generated/deps，不操作服务/3310/数据。优先级P1，清会话任务混名、正式假scheduled/猜项目ID、未接通推广与brand、重复focus；正式任务复用/app/scheduled真实surface。
 
@@ -16,7 +28,7 @@ Web唯一writer原负责人，基线main7087225（四设计门已Root审查提�
 
 完成条件：稳定RED→GREEN，不删有效能力/放宽真实断言；formal无样例假成功、Conversation命名正确、task导航不newConversation、opaque owner ID、仅真实入口、品牌插值、单focus同时保持IME/autogrow/ShiftEnter/键盘。Node22相关/fullpure/contract/architecture/lint/typecheck/build及资源终态/hash停写；Root独立复审与同步自有snapshot后真实browser验，Project全集及项目专属任务owner消费仍独立后继，不能假称全部UI完。
 
-## WEB-PRODUCT-IA：三面文档门（2026-09-30；进行中）
+## WEB-PRODUCT-IA：三面文档门（2026-09-30；已验收7087225，以下为授权历史）
 
 Owner Web原负责人唯一writer；基线 main 79f19df3167e56d1d3ed517266427443363d5005，工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；Root唯一index/审查/提交，已有工作树仅Root刚验收11文件，无其他Web改动。只允许四既有docs TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT；本阶段不改源码/生成物/契约/服务。依赖已验收续流79f19df；独立BFF审查可并行。用户已定Conversation/Project/ScheduledTask独立、Run执行归属、零正式preview/fake成功/猜ID，沿现shadcn修brand与单focus，保留IME/autogrow。完成条件三面当前/目标/owner一致＋精确下一代码文件集、无新owner/store/Schema/API、hash/未决项与验证命令；代码须Root放行后续派。
 
