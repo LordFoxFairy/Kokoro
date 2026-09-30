@@ -1,5 +1,17 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 当前 Chat 启动器代码放行，转真实3310组合验收
+
+四文件原两个P1返修完成：System/Agent短命命令原子Popen＋登记，wait仍及时可中断、stop成功才移除；所有自有进程停止失败时不清WebRedis。Root全scripts/tests **1044 passed/3 native skip/354subtests、112.22秒**（`/tmp/kokoro-local-chat-root-full-tests.log`，session51741 exit0已消费），四文件Ruff check/format和diff通过。独立固定hash审查0缺陷，真实SIGTERM复现现在tracked1→interrupted→child-stopped→Redis-cleanup；非静止前端UNLINK=false/deferred=true；8聚焦pass/3subtests。仅放行当前代码，不是聊天已通过。Root下一仅停止旧受管71981，再显式真实System/Ollama/标准Agent HTTP与worker启动同3310；不碰其他常驻服务/共享PG/Redis。Platform v5仍独立writer进行中，候选未pin。
+
+## 2026-09-30 — 当前登录 HTTP 独立通过；真实 Chat 候选因两项 P1 返修
+
+独立审查员针对当前3310实际登录一次：新/login302→IAM邮箱密码表单200→提交303→租户/consent→callback303→/app200，/api/auth/session认证true；刷新/app200后仍true。仅退出自身Product session后认证false；未执行issuer全局退出，issuer session自然过期。私有cookie jar已销毁。证据 `/tmp/kokoro-current-login-http-acceptance.log`（0600），仅状态码/布尔，不含凭据或签名query。scope/callback/S256/state/issuer/same-origin独立断言；resource由生产构造但本次未独立断言。此项是HTTP门，不是右侧DOM或真实聊天。
+
+当前Chat四文件交付：Root独立26 passed/10subtests、Ruff check/format/diff通过（session57995已终态消费），但固定hash独立审查发现两项P1：System/Agent短命installer创建登记SIGTERM窗口可漏进程，及前端停止失败仍UNLINK Web session依赖。候选不启动、不提交、不宣称Chat可用；原writer已续派四文件窄返修、要求真实信号/不清Redis确定性RED→GREEN。Platform唯一writer继续个人安装v5机器切片；Root保留当前3310原组直至Chat最终放行，再仅替换自己受管组。已有Ollama inventory确认qwen3:8b存在，不启动或下载provider。
+
+完整goal仍active：九owner独立闭环与真实用户产品全部能力、Billing最后。没有以26测试或HTTP登录为整体完成；任务外uv.lock保留。右侧旧签名交互/控制超时尚未解决，等待用户手动新/login，非应用失败证据。
+
 ## 2026-09-30 — 当前入口的实际缺口已定位：仅登录启动器明确关闭Agent
 
 新3310/login当前HTTP实测200/两重定向，有邮箱/密码input、无连接/重试中转；这不是可见浏览器E2E。现launcher明确KOKORO_AGENT_ENABLED=false，运行范围只有IAM/BFF/Web，登录成功不等于聊天可用。Root新切片接既有正式System/Agent HTTP/worker与已有Ollama，优先真实基本Chat，不把单仓测试或Source读取当用户产品。CUA screenshot/focus继续超时、native Codex窗口控制明确拒绝，停止旁路尝试并请用户手动新/login；继续独立代码。

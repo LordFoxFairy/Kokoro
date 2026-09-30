@@ -29,7 +29,7 @@
 | 非空 typed Skill Source | Root `4aef9d1c` 正常原文件入口真实 IAM/BFF/Platform/Storage/Agent/PG/Redis/MinIO/ClamAV，exit0/PASS；安装、原字节、native metadata、只读、停用拒读/重新启用、旧 lease 拒读、IAM 执行撤权均通过；receipt31→34/outbox2；resources clean、Redis15=0。日志 `/tmp/kokoro-source-window-real-composition.log` | 标准 worker＋真实模型的非空 Skill 运行、个人 Product 安装 UI、正式激活。native name 与 opaque 目录不匹配警告仍开放 |
 | 普通 Chat/作品 | 历史固定组合已验真实 Chromium 登录、标准 worker、durable AG-UI、live Delivery、刷新、Canvas 下载、GC/410 恢复与个人私有性；历史 `5b1b9a5e` 还验真实 System→已有 Ollama→worker→Storage 作品链，精确来源/边界见 progress | 历史普通 Chat 或空选择模型结果不替代当前非空 Skill 模型运行，也不证明所有产品能力 |
 | 个人 Skill 安装 | Platform `e510c04` 三面设计经 Root 七静态门和独立审查接受 | v5 机器契约、Product owner runtime、BFF public 消费、Web UI 和真实产品验收仍待完成 |
-| 当前 3310 | 用户批准重启后受管 IAM/BFF/Web；最近 PID3898/4007/4113、4113监听3310。加载 Web1dc211bb/BFF571b51de/IAMa6dfd196 的隔离 fixture，Agent disabled；不当作完整产品服务 | 右侧 IAB 当前标签仍过期；CUA可枚举，但 DOM focus 命令超时。当前可见凭据提交→callback→app→刷新未验，控制超时不冒充应用失败，不重复重启 |
+| 当前 3310 | 当前受管IAM/BFF/Web、Agent disabled。独立HTTP新/login→表单→callback→/app→刷新认证true、自身Product logout false通过；0600证据 `/tmp/kokoro-current-login-http-acceptance.log`。Chat接入代码Root1044/3skip/354subtests与Ruff通过、两P1独立复验关闭，待实际启动 | 右侧旧IAB交互仍过期、CUA焦点超时，真实DOM未验；HTTP不替代可见浏览器。标准worker/真实模型当前Chat未验，四文件代码已放行，下一仅替换自有受管组 |
 
 Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒窗口；默认模式不等待，SIGTERM可中断。没有改生产限流、权限、凭据或 Redis 计数；这是测试资源礼让，不是应用重试/fallback。
 

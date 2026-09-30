@@ -15,6 +15,10 @@
 | 资源/恢复 | 同组记录仅自有PID，System隔离build防共享dist冲突；worker/HTTP健康/启动失败不静默退回login-only，foreground监测含新服务。复用既有AgentRedisOwnership对显式空DB的原子占有、不FLUSH；动态用户Run只在资源归属内登记/清理，停止worker/drain/HTTP后清理own keys/database，预览现组三PID仅Root明确停/重启，writer不能启动/终止任何服务。 |
 | 验证/交付 | 先默认login零Chat启动/显式trueBFFenv/真实HTTP+worker命令/预算与亲属guard/任何阶段失败清理/已有Redis不清/取消与非活跃资源门RED→GREEN。纯测试不接infra/provider；RootRuff、相邻tests/fullscripts/独立review后commit并接真实当前3310启动及实际login/chat/reload门；原浏览器控制限制保留，不把HTTP/headless假称右侧可见。writer交付停写精确diff/hash/RED与GREEN日志，不提交。 |
 
+**本轮验收/返修：** 当前3310独立HTTP登录→callback→app→刷新认证true→仅自身Product logout false已通过，0600证据 `/tmp/kokoro-current-login-http-acceptance.log`；非右侧DOM。Chat四文件Root26/10subtests与Ruff通过，但独立审查两个P1阻止放行：短命installer SIGTERM漏登记，以及非静止前端仍清WebRedis。原writer已续派同四文件返修，Root台账/index独占；修复并独立复验前不启动、不提交。审查员同时只读准备精确Chat HTTP验收步骤，无文件/服务写入。
+
+**返修已验收代码：** 原两个P1经真实SIGTERM返回窗口及WebRedis AST复验关闭，独立P0/P1/P2=0；四文件固定hash278aca41/dde4987e/2dc388fc/04e85e92。Root完整scripts/tests1044 passed/3 native skip/354subtests（112.22s）、Ruff check/format/diff通过；只表示launcher代码放行。Root接下来停止仅旧受管session71981，显式--chat启动并实际验发送/AG-UI/刷新；当前Chat业务未验，不能标已闭环。
+
 ## 当前优先级重新对齐（2026-09-30，用户明确要求聚焦）
 
 总体目标不变：九owner独立闭环、SQL/RPC依赖组合、用户可见完整产品、Billing最后。当前主控先交付用户能验的一条链，不用测试数/文档/生成物代替产品进度。

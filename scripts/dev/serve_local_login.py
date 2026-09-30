@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import shutil
 import signal
 import socket
 import subprocess
@@ -31,6 +32,9 @@ import run_bff_iam_oidc_smoke as previous  # noqa: E402
 import run_bff_iam_session_smoke as session  # noqa: E402
 import run_web_bff_iam_oidc_smoke as web_smoke  # noqa: E402
 import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import local_chat_runtime as chat_runtime  # noqa: E402
 
 WEB_PORT = 3310
 NODE_PARENT_GUARD = """\
@@ -167,6 +171,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--iam-node-bin", type=Path, required=True)
     parser.add_argument("--bff-node-bin", type=Path, required=True)
     parser.add_argument("--web-node-bin", type=Path, required=True)
+    parser.add_argument(
+        "--chat",
+        action="store_true",
+        help="Enable real System/Ollama/Agent Chat; never falls back to login-only",
+    )
+    parser.add_argument("--agent-redis-url", default="")
+    parser.add_argument("--uv-bin", type=Path)
+    parser.add_argument("--model-origin", default="http://127.0.0.1:11434")
+    parser.add_argument("--model", default="qwen3:8b")
     args = parser.parse_args(argv)
     args.postgres_admin_url = os.environ.get("KOKORO_LOCAL_POSTGRES_URL", "")
     args.redis_url = os.environ.get("KOKORO_LOCAL_REDIS_URL", "")
@@ -181,6 +194,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         if not node.is_file() or not os.access(node, os.X_OK):
             parser.error(f"{name} must be executable")
         setattr(args, name, node)
+    if args.chat:
+        try:
+            chat_runtime.validate_options(
+                args.redis_url, args.agent_redis_url, args.model_origin, args.model
+            )
+        except chat_runtime.ChatError:
+            parser.error(
+                "chat requires a distinct explicit Agent Redis DB and existing loopback qwen3:8b"
+            )
+        if (
+            args.uv_bin is None
+            or not args.uv_bin.is_file()
+            or not os.access(args.uv_bin, os.X_OK)
+        ):
+            parser.error("chat requires executable --uv-bin")
+        args.uv_bin = args.uv_bin.absolute()
     return args
 
 
@@ -217,14 +246,22 @@ def main(argv: list[str] | None = None) -> int:
     iam_attempted = False
     stage = "preflight"
     failures: list[str] = []
+    chat = None
+    chat_config = None
     with tempfile.TemporaryDirectory(
-        prefix="kokoro-local-login-", dir=web_smoke.ROOT.parent
+        prefix="kokoro-local-login-", dir=web_smoke.ROOT.parent, delete=False
     ) as temp:
         directory = Path(temp)
         install_node_parent_guard(directory, iam_env, bff_env, web_env)
         log_path = directory / "process.log"
+        log_path.touch(mode=0o600)
         with log_path.open("w+b") as log:
             try:
+                if args.chat:
+                    stage = "real Chat preflight"
+                    chat_config = chat_runtime.preflight(
+                        args.uv_bin, args.model_origin, args.model, log
+                    )
                 stage = "BFF build"
                 if (
                     runtime.run_owned_command(
@@ -258,7 +295,8 @@ def main(argv: list[str] | None = None) -> int:
                     raise LaunchError("Redis unavailable")
                 before_web = web_smoke.web_redis_keys(args.redis_url, origin, resources)
                 stage = "BFF database"
-                db_url = bff_owner_database_url(resources.create_database("bff"))
+                application_db_url = resources.create_database("bff")
+                db_url = bff_owner_database_url(application_db_url)
                 bff_env.update(
                     {
                         "KOKORO_BFF_POSTGRES_URL": db_url,
@@ -334,6 +372,22 @@ def main(argv: list[str] | None = None) -> int:
                         "KOKORO_DOMAIN": host_name,
                     }
                 )
+                if args.chat:
+                    stage = "real Chat startup"
+                    chat = chat_runtime.LocalChatRuntime(
+                        config=chat_config,
+                        uv=args.uv_bin,
+                        node=args.iam_node_bin,
+                        node_env=iam_env,
+                        directory=directory,
+                        resources=resources,
+                        credentials=credentials,
+                        log=log,
+                        tenant=ready.tenant_id,
+                        agent_redis_url=args.agent_redis_url,
+                    )
+                    bff_env.update(chat.start(application_db_url))
+                stage = "BFF startup"
                 bff = runtime.start_process(
                     args.bff_node_bin, web_smoke.BFF, bff_env, log
                 )
@@ -381,14 +435,29 @@ def main(argv: list[str] | None = None) -> int:
                     WEB_PORT, origin, credentials, browser_request=http_browser
                 )
                 print(f"Local login: {origin}/login", flush=True)
-                print(f"Temporary email: {ready.email}", flush=True)
-                print(f"Temporary password: {ready.password}", flush=True)
+                credential_path = directory / "login-credentials.json"
+                with credential_path.open(
+                    "x", opener=lambda path, flags: os.open(path, flags, 0o600)
+                ) as credential_file:
+                    json.dump(
+                        {"email": ready.email, "password": ready.password},
+                        credential_file,
+                    )
+                print(f"Private login credentials: {credential_path}", flush=True)
+                print(
+                    "Mode: real Chat (empty Skills; Storage not configured)"
+                    if args.chat
+                    else "Mode: login only",
+                    flush=True,
+                )
                 print(
                     "Press Ctrl-C to stop and remove this run's resources.", flush=True
                 )
                 stage = "serving"
                 while True:
                     require_owned_stack_alive(processes, proxies)
+                    if chat is not None:
+                        chat.tick()
                     time.sleep(0.5)
             except KeyboardInterrupt:
                 pass
@@ -413,18 +482,35 @@ def main(argv: list[str] | None = None) -> int:
                     except Exception:
                         failures.append("owned proxy cleanup")
                 owned_processes_stopped = True
-                for process in reversed(processes):
+                for process in reversed(processes[1:]):
                     try:
                         runtime.stop_owned_process(process)
                     except Exception:
                         owned_processes_stopped = False
                         failures.append("owned process cleanup")
+                chat_failures = []
+                if chat is not None:
+                    if owned_processes_stopped:
+                        chat_failures = chat.close()
+                    else:
+                        chat_failures = [
+                            "Chat dependencies preserved for active frontend"
+                        ]
+                failures.extend(chat_failures)
+                if chat is not None and not chat.quiescent:
+                    owned_processes_stopped = False
+                if owned_processes_stopped and processes:
+                    try:
+                        runtime.stop_owned_process(processes[0])
+                    except Exception:
+                        owned_processes_stopped = False
+                        failures.append("IAM process cleanup")
                 if reader is not None:
                     try:
                         reader.close()
                     except Exception:
                         failures.append("IAM protocol cleanup")
-                if before_web is not None:
+                if before_web is not None and owned_processes_stopped:
                     try:
                         extras = (
                             web_smoke.web_redis_keys(args.redis_url, origin, resources)
@@ -448,9 +534,14 @@ def main(argv: list[str] | None = None) -> int:
                             failures.append("Web Redis cleanup")
                     except Exception:
                         failures.append("Web Redis cleanup")
+                elif before_web is not None:
+                    failures.append("Web Redis cleanup deferred; owned services active")
                 try:
-                    resources.cleanup()
-                    resources.verify_clean()
+                    if owned_processes_stopped and not chat_failures:
+                        resources.cleanup()
+                        resources.verify_clean()
+                    else:
+                        failures.append("application resources preserved")
                 except Exception:
                     failures.append("BFF database cleanup")
                 if iam_attempted and owned_processes_stopped:
@@ -468,7 +559,9 @@ def main(argv: list[str] | None = None) -> int:
                 except Exception:
                     failures.append("credential log scan")
     if failures:
+        print(f"Local evidence preserved: {directory}", file=sys.stderr)
         raise LaunchError("; ".join(sorted(set(failures))) + " failed")
+    shutil.rmtree(directory)
     print("Local login stopped; owned resources removed.", flush=True)
     return 0
 

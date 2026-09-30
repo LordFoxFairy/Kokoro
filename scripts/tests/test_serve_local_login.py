@@ -323,3 +323,173 @@ class LocalLoginGuards(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExplicitChatOptions(unittest.TestCase):
+    def test_default_is_login_only_even_with_inherited_agent_configuration(self):
+        argv = [
+            "--iam-node-bin",
+            "/bin/echo",
+            "--bff-node-bin",
+            "/bin/echo",
+            "--web-node-bin",
+            "/bin/echo",
+        ]
+        with patch.dict(
+            os.environ,
+            {
+                "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+                "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+                "KOKORO_AGENT_ENABLED": "true",
+            },
+        ):
+            args = launcher.parse_args(argv)
+        self.assertFalse(args.chat)
+        self.assertEqual(args.agent_redis_url, "")
+
+    def test_chat_missing_resources_does_not_fall_back_to_login(self):
+        argv = [
+            "--iam-node-bin",
+            "/bin/echo",
+            "--bff-node-bin",
+            "/bin/echo",
+            "--web-node-bin",
+            "/bin/echo",
+            "--chat",
+        ]
+        with patch.dict(
+            os.environ,
+            {
+                "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+                "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+            },
+        ):
+            with self.assertRaises(SystemExit):
+                launcher.parse_args(argv)
+            args = launcher.parse_args(
+                argv
+                + [
+                    "--agent-redis-url",
+                    "redis://127.0.0.1:6379/10",
+                    "--uv-bin",
+                    "/bin/echo",
+                ]
+            )
+        self.assertTrue(args.chat)
+
+
+class FailedShutdownRedisTests(unittest.TestCase):
+    def test_failed_owned_process_stop_preserves_web_sessions(self):
+        from contextlib import ExitStack
+        from unittest.mock import Mock
+
+        args = SimpleNamespace(
+            chat=False,
+            postgres_admin_url="postgresql://local/postgres",
+            redis_url="redis://local/0",
+            iam_node_bin=Path("/node24"),
+            bff_node_bin=Path("/node22"),
+            web_node_bin=Path("/node22"),
+        )
+        resources = Mock()
+        resources.command.return_value = "PONG"
+        resources.create_database.return_value = "postgresql://local/owned"
+        ready = SimpleNamespace(
+            database_name="owned-iam",
+            redis_prefix="own-iam:",
+            client_secret="secret-iam",
+            password="password-iam",
+            base_url="http://local/iam",
+            issuer_url="http://local/issuer",
+            redirect_uri="http://local/callback",
+            post_logout_redirect_uri="http://local/logout",
+            tenant_id="tenant",
+        )
+        process = Mock()
+        process.poll.return_value = None
+        signals = {
+            sig: signal.getsignal(sig)
+            for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
+        }
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as patches:
+            patches.enter_context(
+                patch.object(launcher, "parse_args", return_value=args)
+            )
+            patches.enter_context(patch.object(launcher, "require_free_web_port"))
+            # Keep the launcher's evidence within this test-owned temporary tree.
+            from contextlib import nullcontext
+
+            patches.enter_context(
+                patch.object(
+                    launcher.tempfile,
+                    "TemporaryDirectory",
+                    return_value=nullcontext(directory),
+                )
+            )
+            patches.enter_context(
+                patch.object(launcher.runtime, "OwnedResources", return_value=resources)
+            )
+            patches.enter_context(
+                patch.object(launcher.session, "node_environment", return_value={})
+            )
+            patches.enter_context(
+                patch.object(launcher.runtime, "run_owned_command", return_value=0)
+            )
+            patches.enter_context(patch.object(launcher.runtime, "install_schema"))
+            patches.enter_context(
+                patch.object(
+                    launcher.web_smoke, "named_iam_identity", return_value=ready
+                )
+            )
+            patches.enter_context(
+                patch.object(
+                    launcher.web_smoke,
+                    "iam_owned_inventory",
+                    side_effect=[(set(), set()), ({"owned-iam"}, set())],
+                )
+            )
+            patches.enter_context(
+                patch.object(launcher.web_smoke, "validate_ready", return_value=ready)
+            )
+            patches.enter_context(
+                patch.object(
+                    launcher.web_smoke,
+                    "web_redis_keys",
+                    side_effect=[set(), {"owned-session"}, set()],
+                )
+            )
+            patches.enter_context(patch.object(launcher.session, "ProtocolReader"))
+            patches.enter_context(
+                patch.object(launcher.subprocess, "Popen", return_value=process)
+            )
+            patches.enter_context(
+                patch.object(launcher.runtime, "start_process", return_value=process)
+            )
+            patches.enter_context(
+                patch.object(
+                    launcher.runtime,
+                    "wait_ready",
+                    side_effect=launcher.LaunchError("startup"),
+                )
+            )
+            patches.enter_context(
+                patch.object(
+                    launcher.runtime,
+                    "stop_owned_process",
+                    side_effect=launcher.LaunchError("still active"),
+                )
+            )
+            patches.enter_context(patch.object(launcher.previous, "assert_log_clean"))
+            try:
+                with self.assertRaises(launcher.LaunchError):
+                    launcher.main([])
+                self.assertFalse(
+                    any(
+                        "UNLINK" in call.args[0]
+                        for call in resources.command.call_args_list
+                    )
+                )
+                resources.cleanup.assert_not_called()
+            finally:
+                for sig, handler in signals.items():
+                    signal.signal(sig, handler)
