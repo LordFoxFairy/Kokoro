@@ -1,3 +1,9 @@
+## 2026-09-30 — WEB-READING-AXIS-ALLWIDTH 两级验收结束
+
+Root集成commit `2b9d6379` 后strict IAM relay、topology、指定 `w1e-iam07-bff-pin.json` checkpoint分别实测PASS/exit0，session32068已消费；三JSON日志 `/tmp/kokoro-web-reading-axis-root-{relay,topology,checkpoint}.json`。独立Root终审0/0/0，旧7c2历史段歧义P2已最小关闭，raw证据不变。Web305主仓指针已固定，源码/库存不再变；本提交仅三台账补实际验收结果。
+
+全量Playwright与全Root1103测试未在本片执行，真实布局矩阵不是全部登录/模型/账务能力验收。仍有重复消息、历史失败态/空轮、sidebar列表加载与query-only深链待对应owner；Agent真实PG/Redis门、BFF3.0消费与Billing正式链继续开放。保护既有Agent/Billing/uv.lock，不把局部修复说成整体clean或全goal完成。
+
 Root集成补充：相关relay/topology/checkpoint三测试文件54pass、39.18s、session29696已消费exit0；日志 `/tmp/kokoro-web-reading-axis-root-integration-tests.log`。独立Root五项范围审查0P0/0P1/1P2：库存38/34、raw摘要及3active/13broken全原样；P2为上一轮7c2证据段混用“当前/本轮”，已明确改历史且由305后继，不改历史结果。Agent/Billing/uv.lock均未暂存。提交后CLI门仍待真实运行。
 
 ## 2026-09-30 — Web全断点修复已验收提交，Root集成

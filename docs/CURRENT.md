@@ -6,7 +6,7 @@ Web main `30545c55625fb257ac17ce2199e8fa1000f3ecae` 已由Root按五文件精确
 
 保留两类真实失败：首候选纯1800pass但960px漂移54px，追加RED后修form的48rem上限；返修worker完整首跑既有HTTP5s超时1799/1800，隔离3/3与完整重跑1800、Root独立全门均通过。没有放宽断言或timeout。新增Preview Playwright几何源码未执行，不冒称自动浏览器全套PASS。重复user、空/失败状态、sidebar列表加载错误及query-only深链仍开放；本片不是所有能力闭环。
 
-Root本片38个Web来源指针与34个commit blob路径重新核对，digest没有变化，现有broken依赖不改绿。Root相关三文件治理测试54pass（39.18s，`/tmp/kokoro-web-reading-axis-root-integration-tests.log`）；提交后三项治理CLI门待实跑。task/progress保留未完成后端与Agent/Billing/uv.lock在途状态。
+Root本片38个Web来源指针与34个commit blob路径重新核对，digest没有变化，现有broken依赖不改绿。Root相关三文件治理测试54pass（39.18s，`/tmp/kokoro-web-reading-axis-root-integration-tests.log`）。Root集成commit `2b9d6379` 后，strict IAM relay、repository topology、指定w1e-iam07-bff-pin checkpoint三门均actual PASS/exit0，session32068已消费；证据 `/tmp/kokoro-web-reading-axis-root-{relay,topology,checkpoint}.json`。独立Root最终0/0/0；本段为验收记录补充，代码/gitlink/库存未再变。task/progress保留未完成后端与Agent/Billing/uv.lock在途状态。
 
 ## 历史用户页面复验（Web 7c2b4d7，已由30545c55后继）
 

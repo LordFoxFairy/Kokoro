@@ -1,7 +1,9 @@
 ## 当前 UI 验收与剩余任务（2026-09-30）
 
-- `WEB-READING-AXIS-ALLWIDTH` / P1 / Web已验收、Root集成验证中：Root正式IAB复现700px content x2/w696 vs form x16/w668；800px（collapsed rail）x84/w684 vs x68/w716；961px展开300px侧栏 content x332/w597 vs form x348/w565。当前大桌面/390px通过不再代表全断点布局验收。
+- `WEB-READING-AXIS-ALLWIDTH` / P1 / 已验收：Root正式IAB复现700px content x2/w696 vs form x16/w668；800px（collapsed rail）x84/w684 vs x68/w716；961px展开300px侧栏 content x332/w597 vs form x348/w565。当前大桌面/390px通过不再代表全断点布局验收。
 - 交付：Web main `30545c55625fb257ac17ce2199e8fa1000f3ecae` 五文件已提交且clean；Root Node22完整109/37/1800/lint/type/build实际exit0，独立最终0/0/0、5/5hash。真实十宽度全部<=1px，无横溢，明确侧栏状态；首候选960实测FAIL与既有5s HTTP timeout保留，未放宽门。Root已接sole writer与index，现只gitlink/38来源指针及三台账集成，支付/全能力仍开放。
+
+- 集成放行：Root `2b9d6379` 五项commit后strict relay/topology/指定checkpoint实测均0，相关三文件54pass，独立最终0/0/0。当前Web切片结束，无writer在后台继续改文件；保留重复消息/失败持久态/深链与全Wave目标，不称所有能力已完成。
 
 - 归属与基线：Web AppFrame现布局CSS唯一owner，main `7c2b4d7` clean；Root `6291692d` 保留Agent/Billing/uv.lock及Root台账在途变更。`web_chat_layout_review` 从只读转为本片唯一writer，Root不抢写子仓，负责实际矩阵、独立复审、集成/Git提交。
 - 写集：现 `src/components/blocks/app-frame/app-frame-main.module.css`、`tests/ui/app-frame.smoke.test.tsx`、`tests/e2e/web-governance.spec.ts`、`docs/TECHNICAL_DESIGN.md`、`docs/CURRENT.md`。排除其他文件、依赖/契约/SQL/数据/服务/模型/Git；无新目录或文件。扩展已有几何规则优于新组件/全局重设计，不改消息/重试/焦点事实。
