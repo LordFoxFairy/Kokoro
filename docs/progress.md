@@ -1,5 +1,17 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Web exact-ref消费者单仓验收完成，真实Chromium组合待跑
+
+最终Web `1dc211bb61030926177b72b3dff2061562a1015b` 已修复跨会话选择泄漏，独立终审P0/P1/P2=0。Root显式Node22独立 `pnpm check` PASS：contract108、architecture37、默认1658、lint/typecheck/build；隔离3489 Playwright11 pass/1 skip，日志 `/tmp/kokoro-web-1dc211b-root-{check,e2e}.log`。测试生成的next-env路由路径已恢复，自有Playwright产物已清理，Web工作区clean。旧localStorage名称注入与旧wire已删除，选择仅当前会话内存，pending冻结重试保留原值。Root真实浏览器composer四pin及精确断言已更新，聚焦49/49通过、独立审查通过；待Rootgitlink提交后执行真实IAM→Web→BFF→Agent。非空Skill reader/安装/v4激活仍未闭环。
+
+## 2026-09-29 — Web 消费代码已复验，独立审查发现会话选择隔离 P2
+
+Web `04ae9edd8d3a879c3025e16132b46df375acfd50` Root 独立 Node22 `pnpm check` 全 PASS（contract108、architecture37、tests1656、lint/typecheck/build），隔离3489 Playwright11 pass/1 skip，日志 `/tmp/kokoro-web-04ae9ed-root-{check,e2e}.log`。独立审查发现新增 engine Skill 选择在新建/切换会话后继承，违反当前会话内存边界；已交原 writer 做最小生命周期修复与回归，当前尚未验收/pin。可见协助窗口已交付最短真实 Chromium runner 预检；Root 精确 pin 断言已 RED（1 fail），待最终 Web SHA 后 GREEN 与真实组合。无3310操作，不宣称当前登录完成。
+
+## 2026-09-29 — 复用可见协助窗口，分离编码与浏览器验收准备
+
+用户明确要求 agent 会话协助加速；复用「Kokoro IAM 登录链路验收」，任务卡 `W3-BROWSER-CURRENT-PREFLIGHT` 只读检查当前 Chromium 验收入口与资源前置。Web 唯一负责人继续消费者代码，Root 负责审查与集成；不重复启动后台服务、不并发改同仓、不把预检记为端到端通过。最终结果待交付。
+
 ## 2026-09-29 — 当前BFF/IAM真实OIDC relay复验42项通过
 
 BFF `571b51de` 与IAM `36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9` 均通过clean/Root gitlink校验。Root实际运行既有OIDC runner：真实密码登录、首次授权/tenant/consent、Code+S256交换、userinfo、团队读写/邀请、异租户拒绝、token撤销及退出session清除，共 **42项PASS**，exit0。IAM身份/数据库是本次自有测试数据，不使用用户账号；资源余量0，Redis14复查0。日志 `/tmp/kokoro-bff-571-iam-oidc.log`。这是无Web的真实服务链，不是浏览器3310验收；预览残留未动。Agent typed reader只读交接确认已有Platform v4前置契约、21 JSON/29 ZIP向量，下一代码片在Web消费者验收后实施。

@@ -1,5 +1,21 @@
 # Kokoro 后端闭环任务总表
 
+## 当前 Root 验收：W3-WEB-CHAT-CHROMIUM-REFREEZE
+
+Root 唯一 writer，基线 `69034681`；复用既有 `scripts/e2e/run_web_chat_worker_smoke.py` 与 `scripts/tests/test_web_chat_worker_smoke.py`，只更新四仓固定版本并补精确 pin 断言，不改认证、浏览器 driver、业务代码或资源清理机制。采用既有真实 Chromium composer，淘汰新建第二套登录/聊天 runner。Web `04ae9ed` 已停写且 Root 独立 Node22 check（108 contract/37 architecture/1656 tests/build）与隔离 Playwright（11 pass/1 skip）通过，待独立审查及 Root gitlink 集成后跑真实浏览器组合。先 pin 断言 RED→GREEN，再验证 clean/gitlink/独占资源门和现有 runner 回归；组合包含真实 IAM/Web/BFF/Agent/PG/Redis，System/model 仍是明确 fixture，不含3310、真实推理或Skill执行。Root负责提交与结果台账，不碰任务外 `uv.lock`。
+
+最终候选 Web `1dc211bb61030926177b72b3dff2061562a1015b` 已修独立审查的会话选择隔离P2；Root独立 Node22 check：108 contract/37 architecture/1658 tests/build PASS，隔离3489 Playwright11 pass/1 skip，独立终审P0/P1/P2=0。Root runner最终四pin已更新，聚焦49项PASS（精确pin断言先RED），独立脚本审查P0/P1/P2=0；待Root提交gitlink后跑真实组合，不能将preview测试冒充真实登录。
+
+## 已交付只读：W3-BROWSER-CURRENT-PREFLIGHT
+
+- 负责人：复用可见会话「Kokoro IAM 登录链路验收」`01a0f010-3073-7a22-900a-8d9e8d586f3f`；Root 审查。基线 Root `main 69034681`，工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro`。
+- 目标：检查现有 Chromium 登录→普通 Chat→刷新恢复验收入口，给出当前固定版本可执行命令、准确旧 pin/依赖缺口和最小修复文件集；不是新增设计或重新调查已定位的 3310 故障。
+- 范围：只读 `scripts/e2e/run_web*smoke.py`、对应 Chromium driver/测试与依赖声明；可做有界只读端口/provider 存在探测，不登录用户账号、不输出凭据、不启动进程或修改文件/Git/数据库/Redis。
+- 依赖：Web `9e0a3e7` 后续消费者工作树由 `web_chat_selection_owner` 独占写入，等待固定提交后才能最终验收；BFF `571b51de`、IAM `36242fd`、Agent `dd34a48`、System `c0a76a3`。不触碰 3310 或任务外 `uv.lock`。
+- 交付：现有 runner 是否支持当前版本、真实与 fixture 边界、前置资源缺口、精确命令和待验项；完成即停止。Root 负责后续改动、真实运行及提交。并行于 Web 编码，不重复执行全门。
+
+结论：最短入口为既有 `run_web_chat_chromium_smoke.py`，仅 composer 四仓固定 pin 与相邻断言/Root Web gitlink 待更新；driver 已覆盖真实 IAM 表单、Product Session、Chat、durable AG-UI、受控断线恢复与刷新。真实 System/Ollama/Storage 另有现成 runner，不混入此基础链。现有端口/provider/Chromium 只读前置存在，不等于可运行验收已通过。Web `04ae9ed` 独立审查另发现当前会话 Skill 选择跨新建/切换继承 P2，已续派原 writer 返修，Root 将以最终修复 SHA 运行而非冻结缺陷版本。
+
 ## 已复验：W3-BFF-IAM-OIDC-CURRENT（不含Web3310）
 
 Root固定当前BFF `571b51de`/IAM `36242fd`，复用既有 `scripts/e2e/run_bff_iam_oidc_smoke.py`、显式两仓SHA、Node22/24与自有临时数据；实际42项PASS：首次未同意authorize、密码登录、tenant/consent、Code+S256/token/userinfo、团队读写/邀请、异tenant403、撤销及退出session清除。两仓clean/gitlink校验通过，日志 `/tmp/kokoro-bff-571-iam-oidc.log` exit0，owned_resources_remaining=0、Redis14复查0。没有Web/浏览器参与，也未恢复3310，不替代Product Session端到端。
@@ -16,7 +32,7 @@ Root指定 `agent_launch_fixed_review` 只读Agent `dd34a48`（不写仓、不�
 
 **盘点结论（Agent dd34a48）：** 前置Platform `6a09913` v4契约已具备；Agent仍pin旧5b6eb2c/v3，需同步21个JSON/29条ZIP向量与保留24个binding断言。现有Run-bound sender `for_run(LeasedRun)`可复用但未被生产factory调用；须原子替换name/scope/hash客户端、name缓存backend及静态music声明。建议在既有clients增加独立有界GET transport、既有skills增加ZIP解析职责文件；复用Run lease/token/fresh proof，每次文件访问重验授权，保留bytes。现有object origin与Storage写凭据三者绑定需按读包需求明确解耦，不额外要求Storage service secret。无新SQL/服务/角色。下一Agent唯一writer先在现有已批准设计补这两文件放置表，再一次闭环v4/reader/backend删除，不重开架构讨论；在Web验收后进入代码片。
 
-## 当前代码 owner：W3-WEB-CHAT-SKILL-SELECTION（文档门已通过）
+## 已验收单仓：W3-WEB-CHAT-SKILL-SELECTION
 
 | 项 | 任务卡与放置裁决 |
 | --- | --- |

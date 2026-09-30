@@ -16,6 +16,15 @@ ROOT = Path(__file__).resolve().parents[2]
 RUNNER = ROOT / "scripts" / "e2e" / "run_web_chat_worker_smoke.py"
 
 
+def test_release_inputs_pin_current_web_bff_iam_and_agent() -> None:
+    assert smoke.EXPECTED_RELEASES == {
+        "kokoro-app": "1dc211bb61030926177b72b3dff2061562a1015b",
+        "kokoro-bff": "571b51de2057905c74c78ac966c8cf5ac11eca93",
+        "kokoro-iam": "36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9",
+        "kokoro-agent": "dd34a4800b4ce0cc61eb80dd715e528b9d4517da",
+    }
+
+
 def test_runner_exists_as_a_narrow_composer() -> None:
     assert RUNNER.is_file()
 

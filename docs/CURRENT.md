@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 Web Chat消费者单仓验收完成：** Web `1dc211bb` 已删除旧名称localStorage/旧pinned wire，显式typed refs默认[]、当前会话隔离及未知ACK冻结重试。Root独立Node22 check通过（contract108/architecture37/tests1658/lint/typecheck/build），隔离Playwright11 pass/1 skip，独立终审P0/P1/P2=0。真实Chromium composer已固定当前四仓，Root聚焦49项通过；真实浏览器组合仍待运行，3310未重启、非空Skill执行未完成。
+
 **2026-09-29 当前BFF/IAM登录后端复验：** BFF `571b51de` / IAM `36242fd` 真实OIDC relay 42项通过（密码、Code+S256、当前身份/团队、邀请、跨租户拒绝、撤销/退出），自有资源余量0。未使用Web或用户账号，当前3310未重启，浏览器登录仍待许可及真实回调验收。Web `9e0a3e7` 三面文档门已过，exact-ref消费者代码由唯一负责人进行中；Agent非空reader下一片。
 
 **2026-09-29 当前后端普通Chat真实worker补验通过：** 固定BFF `571b51de` / Agent `dd34a48`，真实独立CLI worker完成回复、BFF outbox成功、助手消息完成、Agent终态及4事件→5帧durable AG-UI、reload/幂等/异用户门PASS，测试资源剩余0。IAM/System/model为确定性fixture；这不证明当前3310登录/浏览器、真实推理供应商或非空Skill reader。下一关键路径是Web exact-ref消费者，登录重启另待用户许可。
