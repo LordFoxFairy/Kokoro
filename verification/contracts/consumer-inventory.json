@@ -289,7 +289,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin/Complete/Validate/Publish request before Platform access, including replay. Root 4d338089 passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Publish 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken.",
+      "reason": "BFF pins IAM 0.7.0 and re-admits each default-off Skill Create/Get/Begin/Complete/Validate/Publish request before Platform access, including replay. Root 4d338089 passed real current-source IAM/BFF/Platform/Storage sandbox: revoked IAM session caused Publish 401 with zero new Platform sockets; tenant/user context came from IAM, not request body. Web browser Product flow and broader scope/authorization matrix remain unverified, so the broad edge stays broken. Root subsequently revalidated current clean/published BFF 571b51de with IAM 36242fd via the real BFF IAM OIDC relay: 42 cases passed, including password sign-in, first consent and tenant selection, Code+S256, userinfo, Team reads/writes/invitations, foreign-tenant rejection, revoke and logout session clearing. All owned test resources were removed. No Web/browser participated; the wider edge remains broken rather than treating this backend gate as Product login completion.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",

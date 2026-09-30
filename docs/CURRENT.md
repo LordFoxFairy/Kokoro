@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-29 当前BFF/IAM登录后端复验：** BFF `571b51de` / IAM `36242fd` 真实OIDC relay 42项通过（密码、Code+S256、当前身份/团队、邀请、跨租户拒绝、撤销/退出），自有资源余量0。未使用Web或用户账号，当前3310未重启，浏览器登录仍待许可及真实回调验收。Web `9e0a3e7` 三面文档门已过，exact-ref消费者代码由唯一负责人进行中；Agent非空reader下一片。
+
 **2026-09-29 当前后端普通Chat真实worker补验通过：** 固定BFF `571b51de` / Agent `dd34a48`，真实独立CLI worker完成回复、BFF outbox成功、助手消息完成、Agent终态及4事件→5帧durable AG-UI、reload/幂等/异用户门PASS，测试资源剩余0。IAM/System/model为确定性fixture；这不证明当前3310登录/浏览器、真实推理供应商或非空Skill reader。下一关键路径是Web exact-ref消费者，登录重启另待用户许可。
 
 **2026-09-29 BFF Chat/Scheduler 消费已验收，Web 待同步：** BFF `571b51de2057905c74c78ac966c8cf5ac11eca93` 已接 Agent `dd34a4800b4ce0cc61eb80dd715e528b9d4517da` HTTP2.0.0，Chat exact refs/顺序摘要/v2 durable outbox 与 Scheduler v2冻结空选择落地。Root独立 format/check **488 pass/1 skip**、schema **5 pass/1 skip**，真实隔离PG **13/13**，生产BFF Chat空/非空及Scheduler builder→真实Agent HTTP/PG claim/replay/Redis三条dispatch和异序409均通过，自有资源已清理；此为准入持久化门，不含模型执行/IAM浏览器。独立终审P0/P1/P2=0。Web旧名称localStorage与pinned字段仍待删除，Agent非空reader/Skill安装/支付仍未闭环。Root登录夹具修复 `7d9ea65b` 已经12项聚焦/全Root991项验收，真实3310重启待许可，不宣称登录完成。

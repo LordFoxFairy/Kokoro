@@ -1,14 +1,20 @@
 # Kokoro 后端闭环任务总表
 
+## 已复验：W3-BFF-IAM-OIDC-CURRENT（不含Web3310）
+
+Root固定当前BFF `571b51de`/IAM `36242fd`，复用既有 `scripts/e2e/run_bff_iam_oidc_smoke.py`、显式两仓SHA、Node22/24与自有临时数据；实际42项PASS：首次未同意authorize、密码登录、tenant/consent、Code+S256/token/userinfo、团队读写/邀请、异tenant403、撤销及退出session清除。两仓clean/gitlink校验通过，日志 `/tmp/kokoro-bff-571-iam-oidc.log` exit0，owned_resources_remaining=0、Redis14复查0。没有Web/浏览器参与，也未恢复3310，不替代Product Session端到端。
+
 ## Root 已验收：W3-BFF-AGENT-WORKER-REFREEZE
 
 Root独占既有 `scripts/e2e/run_bff_agent_worker_smoke.py` 与相邻测试，基线 `d72ff9d8`；仅把旧精确发布pin更新为已集成BFF `571b51de`/Agent `dd34a48`，不放宽clean/gitlink/资源所有权门。先固定新pin断言RED→GREEN，再用独占临时PG库及原子领取空Redis14/15执行真实BFF/Agent HTTP/worker/AG-UI；IAM/System/model仍是具名确定性fixture，不冒称真实身份/模型供应商。仅清理本次精确登记资源，不碰3310/共享数据/uv.lock。若新版链失败，保留具体阶段与证据，由实际owner处理。
 
 **真实执行结果：** run `909613820172d6d8189a27d9` PASS；真实独立Agent CLI worker完成一轮回复，BFF outbox=succeeded、assistant=completed、Agent terminal=true、4条Agent事件→5帧durable AG-UI。同键重放/异内容冲突/异用户不可见与reload断言通过；IAM/System/model仍fixture而非真实服务/供应商。自有PG数据库、Redis keys和进程余量均0；日志 `/tmp/kokoro-bff-agent-571-worker.log`。pin断言RED1fail→GREEN19pass。 Root最终全 `scripts/tests` **991 pass/281 subtests（98.60s，exit0）**，topology/checkpoint PASS；独立pin更新审查P0/P1/P2=0。
 
-## 并行只读：W3-AGENT-TYPED-READER-PREFLIGHT
+## 已完成只读：W3-AGENT-TYPED-READER-PREFLIGHT
 
 Root指定 `agent_launch_fixed_review` 只读Agent `dd34a48`（不写仓、不启动服务、不提交），依据已批准Agent三面设计检查下一typed reader完整实施切片：当前Platform v4 fixed client/pin、Resolve/ApprovedPackage/fresh proof、Storage signed GET/ZIP profile、只读虚拟backend及删除旧name客户端/静态music路径。输出准确缺口、最小文件集、前置owner契约与可执行验收，不重做架构裁决、不等待UI而新增旁路。允许并行于Web消费者写入；后续代码仍等Web验收后独占Agent。
+
+**盘点结论（Agent dd34a48）：** 前置Platform `6a09913` v4契约已具备；Agent仍pin旧5b6eb2c/v3，需同步21个JSON/29条ZIP向量与保留24个binding断言。现有Run-bound sender `for_run(LeasedRun)`可复用但未被生产factory调用；须原子替换name/scope/hash客户端、name缓存backend及静态music声明。建议在既有clients增加独立有界GET transport、既有skills增加ZIP解析职责文件；复用Run lease/token/fresh proof，每次文件访问重验授权，保留bytes。现有object origin与Storage写凭据三者绑定需按读包需求明确解耦，不额外要求Storage service secret。无新SQL/服务/角色。下一Agent唯一writer先在现有已批准设计补这两文件放置表，再一次闭环v4/reader/backend删除，不重开架构讨论；在Web验收后进入代码片。
 
 ## 当前代码 owner：W3-WEB-CHAT-SKILL-SELECTION（文档门已通过）
 

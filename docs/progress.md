@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 当前BFF/IAM真实OIDC relay复验42项通过
+
+BFF `571b51de` 与IAM `36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9` 均通过clean/Root gitlink校验。Root实际运行既有OIDC runner：真实密码登录、首次授权/tenant/consent、Code+S256交换、userinfo、团队读写/邀请、异租户拒绝、token撤销及退出session清除，共 **42项PASS**，exit0。IAM身份/数据库是本次自有测试数据，不使用用户账号；资源余量0，Redis14复查0。日志 `/tmp/kokoro-bff-571-iam-oidc.log`。这是无Web的真实服务链，不是浏览器3310验收；预览残留未动。Agent typed reader只读交接确认已有Platform v4前置契约、21 JSON/29 ZIP向量，下一代码片在Web消费者验收后实施。
+
 ## 2026-09-29 — Web typed Chat消费者文档门通过，代码续派
 
 Web仅五份既有文档 `2857fed`→`9e0a3e7`，明确删除旧localStorage名称注入、不迁移/拼ID、typed refs默认[]和pending冻结重试。Root发现API pattern尾部`$`的P2，已改owner绝对末尾并写LF/CR/Unicode换行负例；Root显式Node22架构 **36/36**、三面与BFF `571b51de` SHA核对通过，工作树clean。本片无runtime/generated变更，旧浏览器Chat仍待代码修复。续派同一Web负责人限定现有消费者/测试/文档，Agent typed reader先并行只读预检，非空Skill执行仍未闭环。
