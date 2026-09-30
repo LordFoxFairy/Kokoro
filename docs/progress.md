@@ -2139,3 +2139,15 @@ BFF四docs原2P1/1P2返修独立0/0/0：v1机器原字节恢复existing running�
 Root代码提交9e77ac17bb82d4f508c2d8ed01a3e8ec41fff065后checkpoint/topology各exit0；一次真实用户指定外部inventory GET PASS，paid requests0，不替代推理/周期恢复。BFF tests-only冻结c0c4073d，原pure12pass/1fail，Root自有临时PG数据库+现Redis15真实执行三integration文件选定pattern：3pass/5fail/0skip/0cancel，8cases含一额外stale-projector匹配，2.31s，缺active_run/应拒非法row为正确RED。session54888真实exit1已消费，日志`/tmp/kokoro-bff-active-run-real-pg-red.log`；自有数据库0、Redis新增0/baseline保留；没有新角色/基础设施、共享reset或provider推理。原负责人已获三src GREEN，五tests与四docs范围保持，不改机器/Schema。Billing五docs修订1ab8acf8独立0/0/0，原3P1/1P2关闭；仅文档一致性通过，IAM任意target发布/wholeM3/runtime/入账与收费仍未完成。
 
 用户明确要求每10分钟检查并继续推进。已通过Codex应用创建当前线程heartbeat `kokoro-10` ACTIVE并回读展示，初次工具参数缺destination被拒绝、补thread后实际创建成功，不存在首失败创建的重复任务。沿原goal和台账、自有资源/原句柄/同仓单writer/Root验证；无变化静默，实质完成/失败/偏差/需要用户决定时通知。没有用shell循环或额外常驻进程代替调度，也未把排程创建说成产品能力完成。
+
+## 2026-09-30 — BFF集成后置门与当前IAB真实子门
+
+Root7c13378e已精确集成BFF15e07fa4。strict relay/checkpoint/topology分别actual_exit0，日志 `/tmp/kokoro-bff-active-run-post-{relay,checkpoint,topology}.json`；完整Root1103passed/3native依赖skip/455subtests（108.74s），`/tmp/kokoro-bff-active-run-root-full-tests.log`、session85800exit0已消费。此前prestage1fail/163pass与stage后164pass均保留。标准门actual_exit1仍137违例/0unverified，`/tmp/kokoro-bff-active-run-post-standard.json`实际内容为文本而非JSON，第一次按JSON读的解析失败不计测试失败/通过；main-only actual_exit1，12仓本地/远端都仅main，但Billing五docs与Root uv.lock dirty。库存13broken不变。
+
+Root原受管入口成功启动唯一session29394/launcher65119，workspace `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-xm_q35q2`；IAM65331/System65473/Agent HTTP65539/worker65542/BFF65570/Web65635，复用现PG/Redis，不重复开服务。空Skills/Storage未配置，用户指定外部gpt-5.6-luna经私有profile；不记录key。新原生IAB HTTPtab3账号验证→首次consent；用户直接确认同意后，原签名已过期且按钮无跳转，Root重新正式/login生成新签名，同范围consent成功callback落到/app，无CSRF或权限绕过。首UI发送30条测试建议，System resolveModel success，约数分钟等待后真实回答及END标记/Stop消失；刷新前后同article全文string.length453且相等、article1、Stop0。这是登录/首真实回答/终态刷新窄证据，不是流式中途刷新或全产品PASS，历史terminal_dom_full_content FAIL保留。同会话追问随后实际FAIL，曾显示配置有误/Agent run failed并有重试，稍后同页状态只剩追问用户消息，错误/重试消失。
+
+并行仅只读ROOT-LIVE-CHAT-READONLY，由agent_typed_skill_reader_owner核当前日志/正式owner状态读取；Root保留浏览器关键路径及唯一台账写入。后继只读gap审计确认BFF E/L/T不能独立表达queued，pending/files仍空、Agent typed await尚未固化机器字段；下一门Agent owner契约先行，再BFF三设计面，尚未授权源码重写。Billing1.4/9.4计价基准仍待用户确认，未落倍率配置/入账/扣费；支付最后，goal全Wave保持active。
+
+原生IAB读取当前正式同源snapshot导航实际ERR_BLOCKED_BY_CLIENT，Root未换通道/注入fetch/内部认证访问绕过；失败身份关联未取得。只读Agent续派确认System unknown→503 MODEL_UNAVAILABLE/retryable=true是既定准入，Agent catch-all→assembly_failed/BFF generic详情/Web配置错误文案是确定源码语义丢失；同期日志不能证明追问具体错误码。只读员未写/测试/推理/访问数据，已停。该P0错误分类/失败持久展示待owner契约门，完整Chat E2E保持FAIL，非全局blocked/complete。
+
+三台账本轮只读审查bff_personal_consumer_review为0/0/0；Root独立`python3 -m pytest -q scripts/tests/test_contract_checkpoint.py scripts/tests/test_iam_relay_policy.py scripts/tests/test_repository_topology.py`实际54pass（39.44s），日志`/tmp/kokoro-iab-consent-current-ledger-tests.log`，session81980exit0已消费。diff check通过；最终进程观测同29394自有组均live、无Z、3310仍仅该组监听。只提交三台账，任务外uv.lock/Billing候选不暂存。此为台账/现组合验收，不改变追问FAIL或整体goal状态。

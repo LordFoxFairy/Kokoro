@@ -1,6 +1,8 @@
 # Root 当前组合
 
-**当前最新验收：BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已提交且clean。** 同ACL/RR snapshot恢复existing `active_run.running`：Root Node22全部纯门（contract191、architecture27、test506pass1skip）与fresh install、定向8/8及全部7文件真实PG/Redis/localhost HTTP integration47/47通过；首次7/1 fixture失败保留，未弱化guard。独立最终代码/文档均0/0/0，源码测试最终hash冻结。Root正集成gitlink、184来源指针及从新commit blob核出的digest、Web composition固定SHA和断言；库存3active/13broken不改绿。Root集成聚焦164pass/0fail、独立0/0/0、Ruff/diff PASS；提交后strict relay/checkpoint/topology/fullRoot与浏览器仍待验，3310未重启。以下较早候选/失败记录为历史，不是当前派工。
+**当前最新验收（Root `7c13378e3e752b72c170cfdf3629cca743db5b81`）：** BFF `15e07fa44670bc13705ce3f6f700e73afcb72ccc` 已验收、clean并集成。Root提交后strict relay/checkpoint/topology均独立exit0；完整 `scripts/tests` **1103 passed / 3 native依赖skip / 455 subtests**，108.74秒。新全仓标准门实际exit1，仍137违例/0 unverified；main-only实际exit1，主仓和11子仓本地/远端均只有main，但Billing五docs候选及任务外Root `uv.lock` 未提交，不称全体clean。此前BFF pure506pass1skip、fresh install/target8/full47真实owner integration通过及fixture失败历史保留；来源库存仍3active/13broken。
+
+**当前运行与原生浏览器：** 唯一受管组session29394/launcher65119已正常启动3310，workspace `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-xm_q35q2`，加载当前固定Web840/BFF15e/Agent58b/Systemc0a来源，用户指定gpt-5.6-luna私有profile；空Skills、Storage未配置。新原生IAB tab3走正式 `/login`，账号提交通过。经用户明确同意首次权限，原签名过期后重新进入同范围新签名并完成consent/callback，已实际回到 `/app`。原生UI首消息得到30条建议及END标记，终态Stop消失；刷新前后回答全文453个JS字符口径（string.length）一致、article唯一。这仅证明新登录/真实回答/终态刷新子门，未捕获流式中途刷新，历史terminal DOM失败不改为PASS。同会话追问实际失败：曾显示“空间配置有误”/Agent run failed，后续状态观察中失败卡与重试入口消失，仅留下用户消息；续问及失败持久展示门FAIL。同期System日志有unknown与resolve error，但未取得同Run身份关联，不能确认本次根因。原生IAB访问正式同源snapshot被浏览器ERR_BLOCKED_BY_CLIENT拒绝，未换通道绕过。全部能力、正式积分链仍未闭环。下文较早运行停止/候选记录为历史，不是当前派工。
 
 **最新复验（BFF activeRun候选，Root604dc12f）：** 12文件冻结hash核对，独立最终源码审查0/0/0、无infra聚焦20pass；Root Node22 format/lint/typecheck/contract191/architecture27/test506pass1skip/build全部exit0，日志`/tmp/kokoro-bff-active-run-root-final-gates.log`。真实自有PG首次GREEN尝试为7pass/1fail/0skip（`/tmp/kokoro-bff-active-run-real-pg-green.log`）：newer-run终态因fixture只有consumer registration、缺正常ChatTurn assistant/dispatch绑定而触发`AGUI_ASSISTANT_BINDING_MISSING`。未放宽生产guard，原owner仅修fixture和CURRENT；自有库/新增库0、Redis新增0/baseline保留。仍未验收/提交BFF、未启动3310、未通过浏览器全文门。Billing只读核查确认新Metering当前按功能quantity=1定价，无成本倍率规则；1.4与9.4基准待用户确认，未写配置或执行账务。
 
@@ -38,9 +40,9 @@ Root `6fdcba6e` 基线的三文件生命周期切片已由原writer停写、独�
 
 **历史用户链证据（当前组另见下文）：** 3310曾唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
 
-**当前运行更新：** Root ee22bacd原受管session92720/launcher39290/Web39688已exit1且3310无监听，workspace`kokoro-local-login-he2cz0xc`保留。固定安全日志明确实际失败分支`stage=provider`，即模型库存观测失败导致整组清理；并非已经证明真实推理失败或具体HTTP状态。该组实际曾加载Web752/BFF677、emptySkills/Storage未装配。后继须隔离模型库存观测与独立IAM/Web生命周期，不放宽ownership/CAS或伪造healthy，不盲目重复重启。
+**历史运行更新（已被当前29394组替代）：** Root ee22bacd原受管session92720/launcher39290/Web39688已exit1且3310无监听，workspace`kokoro-local-login-he2cz0xc`保留。固定安全日志明确实际失败分支`stage=provider`，即模型库存观测失败导致整组清理；并非已经证明真实推理失败或具体HTTP状态。该组实际曾加载Web752/BFF677、emptySkills/Storage未装配。后继须隔离模型库存观测与独立IAM/Web生命周期，不放宽ownership/CAS或伪造healthy，不盲目重复重启。
 
-**当前真实Chat验收：** 新独立产品Chromium第二轮已越过真实login/UI202/非空prefix途中reload/RUN_FINISHED、owner completed、Stop detached、两份正式terminal snapshot全文/ID/run/status/watermark比较；FAIL精确为`terminal_dom_full_content`，最后owner有效、Stop0/user1/markdown-message2。这两DOM parts不等同重复Message；已纯当前源码对照复现：BFF snapshot缺active_run时无法认领同run前缀，补合法active_run则一段。真实轮reload瞬间shape未捕获；后继BFF同RR projection文档门进行，不加Web猜测或盲拼START。证据`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-gpt56-await-proof.h4b1tsvz`，非右侧IAB。原首轮及历史E_FLOW失败保留，无完整E2E PASS。
+**历史真实Chat失败验收：** 新独立产品Chromium第二轮已越过真实login/UI202/非空prefix途中reload/RUN_FINISHED、owner completed、Stop detached、两份正式terminal snapshot全文/ID/run/status/watermark比较；FAIL精确为`terminal_dom_full_content`，最后owner有效、Stop0/user1/markdown-message2。这两DOM parts不等同重复Message；已纯当前源码对照复现：BFF snapshot缺active_run时无法认领同run前缀，补合法active_run则一段。真实轮reload瞬间shape未捕获；后继BFF同RR projection文档门进行，不加Web猜测或盲拼START。证据`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-gpt56-await-proof.h4b1tsvz`，非右侧IAB。原首轮及历史E_FLOW失败保留，无完整E2E PASS。
 
 **真实Product安装当前：** Root `c3fa42710334bf1b9dc00f9be0f8b6a21a647e78` 原入口`run_bff_skill_draft_sandbox_smoke.py --product-installation`已真实exit0/PASS（session78975），日志`/tmp/kokoro-product-installation-real-surface.log`。固定IAMe3c/BFF677/Platform6519/Storage16a6，复用现PG/Redis/MinIO/ClamAV，五public操作、same-key历史ACK→GET当前、false筛选/opaque两页、移除/稳定ID重装、撤权五方法在owner前拒绝均通过；两不同已发布Skill、39receipt/2publish事件，resources clean。此前native依赖缺失与Root误开legacy surface的真实FAIL保留。此为后端组合，不是浏览器安装UI、同租户第二用户或标准worker非空Skill模型验证；Agent关闭仅结构证据，不冒充Run数据库观测。
 
@@ -67,7 +69,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 - Platform 原负责人：runtime已验收提交d93e8a59；已提交6519ae9未激活v5候选5.0.1 wire矛盾纠正，唯一Proto/Schema/runtime源码冻结，无兼容字段/双轨。
 - BFF消费者67755d16已独立0缺陷与Root Node22全门验收提交；五本人安装路由固定Platform6519/5.0.1，读projection/写catalog分离，默认新增测试已纳入，413/504真实状态契约。真实IAM→BFF→Platform安装组合已PASS；Web安装浏览器仍待验。
 - Web原负责人：个人安装consumer已提交752aff9d，29文件独立0/0/0、Root contract109/architecture37/lint/typecheck/test1773/build通过；五client/严格同源adapter/UI未知同key/currentGET/分页取消已验纯门。真实后端组合已PASS；新3310启动时加载本片后退出，浏览器安装仍待验。完整Project typed全集及任务关联仍后继切片。
-- Root主线：gpt-5.6-luna正式链真实回复已见，首轮中途刷新严格断言失败待精确定位；已完成的Web/BFF候选统一提交并加载，旧session53033/14183已退出，最新92720已退出、当前无受管在线组；BFF新pin不得宣称其已加载。继续按owner推进非空Skill/安装Web、Project真实全集及全产品闭环，不把直接provider probe/后验快照冒充完整E2E。
+- Root主线：gpt-5.6-luna正式链真实回复已见，首轮中途刷新严格断言失败待精确定位；已完成的Web/BFF候选统一提交并加载，旧session53033/14183已退出，旧92720已退出；当前29394唯一受管组已加载BFF15e07fa4，并按顶部记录做原生IAB验证。继续按owner推进非空Skill/安装Web、Project真实全集及全产品闭环，不把直接provider probe/后验快照冒充完整E2E。
 
 同仓单writer；worker不自行启动共享PG/Redis或重置数据。子仓 CURRENT 中“候选待Root”属于交付时快照，Root已验收状态以本表和绑定commit的task/progress为准；在owner下一代码切片同步文档，不因纯文案制造另一轮依赖升级。
 
