@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — BFF本人安装消费者已验收提交
+
+独立v2清单66/66 hash匹配、P0P1P2=0；Root当前Node22 format/lint/typecheck/contract/schema/test/build/diff全部exit0，contract191/191、默认test498pass/1skip、schema5pass/1无PGskip（/tmp/kokoro-bff-personal-root-v2-gates.log）。精确提交67755d16ff0f40ea02d71a6dad7108507a04766a（Git rename统计62路径），Platform6519/5.0.1五方法/三写二读可信IAM、九字段、全预算/取消/状态/机器门正确；Root库存184来源节点与实际新blob同步，不改broken状态。真实owner组合、Web安装UI/非空模型仍待验。前两版真实P1/门遗漏未漂白；当前常驻BFF仍旧loaded进程，未重启加载在途Web。
+
 ## 2026-09-30 — 用户指定gpt-5.6-luna真实接口已成功
 
 Root使用指定endpoint私有0600凭据，仅HTTPS原origin、不转redirect、通用最小prompt，无项目数据。真实POST /chat/completions HTTP200、returned_model=gpt-5.6-luna、nonempty_reply=true、expected_probe_reply=true；脱敏结果/tmp/kokoro-gpt56-luna-probe.json0600，短进程45331已exit0。这是直接provider可调用证据，不是当前正式System→Agent/Web已切换；当前本机Ollama真链保持。Web79f集成后Root7348bf5c来源checkpoint/topology/128tests PASS（52.93秒）；Web7087225四docs门已Root验收，源码切片进行中。BFF三P1再修已停写等待独立复审，不白化产品状态。

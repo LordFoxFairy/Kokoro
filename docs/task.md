@@ -1,16 +1,33 @@
 # Kokoro 后端闭环任务总表
 
+## WEB-PRODUCT-IA-REVIEW-FIX：清除会话残留任务命名（2026-09-30）
+
+独立38hash审查拦截1P1/1P2：非真正Task的project-task DOM/selectors/CSS/旧文件名及ListTodo图标残留。Web同一writer只原源码/相邻测试/四docs，追加workspace-rail-items.module.css、kokoro-welcome.module.css；app-command-menu.tsx唯一onNewChat标签改现有conversation key及现tests/ui/command-menu.test.tsx与原smoke对应断言。既有两文件明确rename kokoro-project-task-welcome.tsx→kokoro-project-conversation-welcome.tsx、project-task-empty.tsx→project-conversation-empty.tsx，并更新唯一调用imports/component、样式/heading/testid到conversation，无alias/双文件，不改真实ScheduledTask名称/owner/契约。比较原位置rename职责正确vs新module迁移无收益，采用前者；如INDEX引用旧名只同位置更新，未发现则不动。先当前selectors稳定RED，Green/layout/keyboard保持；Root已跑旧候选全门但不据此放行命名遗漏，新候选再审/hash。
+
 ## WEB-PRODUCT-IA-CODE：正式入口与交互清理（2026-09-30；进行中）
 
 Web唯一writer原负责人，基线main7087225（四设计门已Root审查提交），Root index/提交，当前Web clean；Root真contract108/architecture37，日志/tmp/kokoro-web-ia-doc-root.log。复用三面设计§8，不新目录/文件/owner/store/Schema/网络API/generated/deps，不操作服务/3310/数据。优先级P1，清会话任务混名、正式假scheduled/猜项目ID、未接通推广与brand、重复focus；正式任务复用/app/scheduled真实surface。
 
-精确授权既有文件：workspace-rail/{workspace-rail-types.ts,workspace-rail-shell.tsx,workspace-rail-session-list.tsx,workspace-rail-navigation.tsx,workspace-rail-actions.ts}；app-frame/{app-frame.tsx,app-frame.types.ts,app-frame-main-surface.tsx,use-app-frame-actions.ts,use-app-frame-project.ts}；features/app/{kokoro-project-workspace.tsx,project-workspace-model.ts,project-workspace-dialogs.tsx,project-task-empty.tsx,kokoro-project-task-welcome.tsx,kokoro-welcome.tsx,kokoro-welcome-content.tsx}；ui/composer/composer.module.css；i18n/{messages.ts,en.ts}；tests/ui/{workspace-rail.test.tsx,app-frame-rail.test.tsx,app-frame.smoke.test.tsx,kokoro-project-workspace.test.tsx,kokoro-welcome.test.tsx,composer.test.tsx}；必要现tests/i18n/{resolve.test.ts,no-hardcoded-ui.test.ts}和workspace-rail/workspace-rail-split.test.mjs；四设计/CURRENT只本片当前态。文件前缀均apps/kokoro-app/src/components/blocks、src、tests以实际现目录为准。其他需要先报范围。
+精确授权既有文件：workspace-rail/{workspace-rail-types.ts,workspace-rail-shell.tsx,workspace-rail-session-list.tsx,workspace-rail-navigation.tsx,workspace-rail-actions.ts}；app-frame/{app-frame.tsx,app-frame.types.ts,app-frame-main-surface.tsx,use-app-frame-actions.ts,use-app-frame-project.ts,app-frame-composer.tsx}；features/app/{kokoro-project-workspace.tsx,project-workspace-model.ts,project-workspace-dialogs.tsx,project-task-empty.tsx,kokoro-project-task-welcome.tsx,kokoro-welcome.tsx,kokoro-welcome-content.tsx}；ui/composer/composer.module.css；i18n/{messages.ts,en.ts,de.ts,es.ts,fr.ts,ja.ts,ko.ts,pt.ts,ru.ts}；tests/ui/{workspace-rail.test.tsx,app-frame-rail.test.tsx,app-frame.smoke.test.tsx,kokoro-project-workspace.test.tsx,kokoro-welcome.test.tsx,composer.test.tsx}；必要现tests/i18n/{resolve.test.ts,no-hardcoded-ui.test.ts}和workspace-rail/workspace-rail-split.test.mjs；四设计/CURRENT只本片当前态。文件前缀均apps/kokoro-app/src/components/blocks、src、tests以实际现目录为准。其他需要先报范围。
 
 完成条件：稳定RED→GREEN，不删有效能力/放宽真实断言；formal无样例假成功、Conversation命名正确、task导航不newConversation、opaque owner ID、仅真实入口、品牌插值、单focus同时保持IME/autogrow/ShiftEnter/键盘。Node22相关/fullpure/contract/architecture/lint/typecheck/build及资源终态/hash停写；Root独立复审与同步自有snapshot后真实browser验，Project全集及项目专属任务owner消费仍独立后继，不能假称全部UI完。
 
 ## WEB-PRODUCT-IA：三面文档门（2026-09-30；进行中）
 
 Owner Web原负责人唯一writer；基线 main 79f19df3167e56d1d3ed517266427443363d5005，工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；Root唯一index/审查/提交，已有工作树仅Root刚验收11文件，无其他Web改动。只允许四既有docs TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT；本阶段不改源码/生成物/契约/服务。依赖已验收续流79f19df；独立BFF审查可并行。用户已定Conversation/Project/ScheduledTask独立、Run执行归属、零正式preview/fake成功/猜ID，沿现shadcn修brand与单focus，保留IME/autogrow。完成条件三面当前/目标/owner一致＋精确下一代码文件集、无新owner/store/Schema/API、hash/未决项与验证命令；代码须Root放行后续派。
+
+## ROOT-EXTERNAL-MODEL：现有受管运行链支持用户指定模型（2026-09-30；设计已定）
+
+| 项 | 结论 |
+| --- | --- |
+| Owner/基线 | Root仅组合工具；main b118c74d，Root唯一writer/index，uv.lock无关保留；System c0a76a3a、Agent58b59cf7已有正式HTTP route/LiteLLM，不改owner代码/数据契约。当前3310仍已有Ollama，BFF/Web在途不可重启加载未验源码。 |
+| 当前/目标 | 现launcher只明确qwen3:8b loopback；用户选择gpt-5.6-luna且真实provider已200，目标从私有file配置→正式System模型目录/resolve→标准Agent→真实UI，不用直连probe替代。 |
+| 位置比较/粒度 | 采用既有serve_local_login/local_chat_runtime生命周期＋scripts/dev/model_provider.py单一外部provider配置/preflight边界；淘汰第二launcher/进程owner和修改Ollama-only e2e guard。现dev目录无新目录，helper避免把secret解析/HTTPS边界混入进程注册/清理。 |
+| 依赖/API | 新helper只stdlib、不可反向importruntime；runtime用明确ExternalModelConfig或既有RealModelConfig，不fallback；seed_control_plane仅批准openai-compatible provider值、仍正式System HTTP和transport litellm。Agent仅现KOKORO_LITELLM_BASE_URL/API_KEY，不public/body自报身份。 |
+| 凭据/健康 | exact keys base_url/model/api_key；absolute regular currentuid mode0600、拒symlink/extra/oversize/invalidUTF8、模型非空不含控制符、HTTPS /v1无userinfo/query/fragment，TLS验证/no redirects/no继承proxy；secret repr隐藏、注册脱敏器，不进CLI/log/System。preflight/每分钟health仅bounded GET /models核选定ID，不周期调用付费推理或伪称推理健康；一次正式Agent真推理另验。 |
+| 数据/删除 | 不改SQL/Schema/Redis角色/网络协议；复用现owned PG/Redis/cleanup并不得碰他人key。外部profile与Ollama显式CLI互斥，原Ollama guard保持，不给错配fallback，无兼容alias/第二客户端。 |
+| 文件集 | scripts/dev/model_provider.py新文件；现scripts/dev/serve_local_login.py、local_chat_runtime.py、scripts/e2e/run_system_owner_smoke.py；现scripts/tests/test_serve_local_login.py、test_local_chat_runtime.py、test_system_owner_smoke.py；Root README/MAP/CURRENT/task/progress仅此片。不改其他仓或uv.lock。 |
+| 验证/阶段 | 稳定RED文件权限/url/重定向/模型缺失/畸形/超限/CLI冲突/secret脱敏；GREEN既有Ollama/进程反序关闭/真实exit保留；Root相关pytest/Ruff/defaultgovernance。仅BFF/Web停止且Root验收commits后由Root关唯一受管旧组、验证真实终态再启动新同入口组，浏览器正规login→model回复→严格终态/内容刷新→logout，不假称右侧IAB或全产品已完。 |
 
 ## USER-MODEL-GPT56-LUNA：已选并直接验证，正式链待接入
 
@@ -26,9 +43,9 @@ Owner Web原负责人唯一writer；基线 main 79f19df3167e56d1d3ed517266427443
 - 后继Web片采用现welcome/composer/rail/locale与相邻测试，不新UI框架/store/顶层模块。Root将给精确文件集、当前/目标与行为门后续派同一writer；不同时两writer编辑Web，不改BFF/数据库契约绕开语义。独立只读QA可并行。
 - 模型凭据：用户给定外部endpoint仅用于真实测试；Root已存/tmp私有0600，不入repo/普通log、不跨redirect转送。初次Python默认UA模型列表GET403，Root用正常SDK User-Agent后已自行GET200读取真实模型列表，选择列表中gpt-5.4-mini做最小probe；一次400 invalid_request_error、随后真实429且provider提示其上游账号当前限流，未取得推理成功。停止要求用户给模型ID，不暴力重试；后续走正式System→Agent真推理，直接provider probe不等于该链通过，现本机真实模型链保持运行。UI修复并行不等待。
 
-## BFF-PERSONAL-REVIEW-FIX：当前审查拦截，尚未验收（2026-09-30）
+## BFF-PERSONAL-REVIEW-FIX：代码门已验收，正式组合待验（2026-09-30）
 
-BFF原writer唯一负责既有consumer授权文件；基线c4c4cbc＋在途修改，Root sole index。独立当前审查P1=4：token与RPC分别重置预算；PermissionDenied/DeadlineExceeded错误码错位；OpenAPI envelope/必需headers漂移且verifier整类豁免；写query/list body/header未拒绝。瞬时server send多一个200未在Root当前文件存在，撤回此项，不作为当前缺陷。
+本片现精确commit67755d16，独立v2/Root主树门通过；下文保留返修卡历史，不代表仍在修改。真实组合与Web消费者另门。BFF原writer唯一负责既有consumer授权文件；基线c4c4cbc＋在途修改，Root sole index。独立当前审查P1=4：token与RPC分别重置预算；PermissionDenied/DeadlineExceeded错误码错位；OpenAPI envelope/必需headers漂移且verifier整类豁免；写query/list body/header未拒绝。瞬时server send多一个200未在Root当前文件存在，撤回此项，不作为当前缺陷。
 
 仅续修既有personal-installation-connect.ts、http/routes/skill-installations.ts与skill-installation-input.ts、existing OpenAPI/verify-openapi与原合同/http/input测试、四docs本片。不得增身份/SQL/依赖/锁/兼容路由；callback+token+officialConnect同一caller取消和最大20s绝对预算，RPC仅剩余timeout；403权限/404本人不可见/504deadline按已批准三面合同；专属严格error-only/no-store/x-request-id响应及逐operation/status门，不以路径全类跳过。写所有query、List body及mutation key拒绝，完整unknown/presence/raw重复门保留。先每项稳定RED→GREEN，再Node22全format/lint/typecheck/contract/schema/architecture/test/build；测试若需要动态mock token/Connect HTTP只能自有临时port/进程、关闭后报终态，不接3310/共享PG/Redis。最终固定vendor等待Platform5.0.1 Root验收新commit/digest，不双版本或手改生成。Root独立复审与真实owner组合另门。
 

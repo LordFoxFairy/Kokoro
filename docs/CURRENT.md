@@ -10,7 +10,7 @@
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
 | `apps/kokoro-app` | `70872250814b7e1795c89bbd6bc3af42c96f5a20` |
-| `apps/kokoro-bff` | `c4c4cbccee68eee95c1b89548abb6302b80e58e6` |
+| `apps/kokoro-bff` | `67755d16ff0f40ea02d71a6dad7108507a04766a` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |
 | `apps/kokoro-iam` | `e3c035b99cf9479ac8357c7d38147f1541dcbcac` |
@@ -38,7 +38,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 ## 当前优先级与正在推进
 
 - Platform 原负责人：runtime已验收提交d93e8a59；已提交6519ae9未激活v5候选5.0.1 wire矛盾纠正，唯一Proto/Schema/runtime源码冻结，无兼容字段/双轨。
-- BFF负责人：三面已通过c4c4cbc，五安装消费在途；独立4P1（同预算/稳定错误/精确OpenAPI/严格输入）已拦截返修，最终固定Platform6519ae9/5.0.1，读projection/写catalog分离。真实组合未验。
+- BFF消费者67755d16已独立0缺陷与Root Node22全门验收提交；五本人安装路由固定Platform6519/5.0.1，读projection/写catalog分离，默认新增测试已纳入，413/504真实状态契约。真实IAM→BFF→Platform组合与Web安装UI仍未验。
 - Web原负责人：已纯复现同run snapshot/segment不同ID导致前缀倒序，获现core/mapper五源码＋五测试窄片授权，先稳定RED后修复；不改UI/BFF协议或丢partials。
 - Root主线：当前3310可见登录→app→基本真实聊天；暂停新研究面，测试/生成物不冒充产品交付。并行只读梳理用户新增首页/输入框/会话-专案-任务语义；继续统一审查、shared index、真实组合资源/进程和跨仓集成；已结束的 Source ownedPID53717/session80848均终态消费，当前65687保持运行，只由Root管理。
 
