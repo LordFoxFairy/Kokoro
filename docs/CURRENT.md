@@ -1,3 +1,11 @@
+## WEB-FAILURE-FEEDBACK-FLAT：源码通过，当前内框与视觉未验（2026-09-30）
+
+Root本轮治理：指定当前 `w1e-iam07-bff-pin.json` checkpoint与topology实际0；相关Root治理tests88/88（47.08s）通过。误选历史platform-code-release checkpoint首次exit1（历史4active不同于当前3active），已保留原日志并改用既定当前checkpoint，未修改任何门。strict IAM relay仍exit1，原因BFF四docs候选dirty，未stash/放宽或冒称全组合绿。日志 `/tmp/kokoro-web-failure-feedback-root-{topology,checkpoint-current,relay}.json` 与 `-governance.log`；本轮完整Root/全标准/Playwright未运行。
+
+Web main `f9587ac9a008c7183b875e096be504fb5c0b69ef` 四文件精确提交、clean。Thread失败反馈由固定48rem圆角阴影卡改为内容宽度透明无外卡反馈；保留shadcn Alert/标题/详情/动作与全部Message事实，未改Composer。Root显式Node22完整check实际exit0：contract109、architecture49、全量1825（41.43s）、lint/typecheck/build；独立冻结审查0/0/0；主控HEAD CSS复现RED1失败/20通过，恢复候选GREEN21/21，日志 `/tmp/kokoro-web-failure-feedback-root-{check,red,target-green}.log`。
+
+仅精确核HEAD baseline后同步受管3310原进程的Thread CSS，未重启/模型/计费/数据库操作。本轮CUA user tab6两种正式绑定均焦点超时，无fresh截图；输入框用户所见方框仍未定位，桌面/窄屏视觉与全Playwright未运行，不称整体对话体验完成。库存38个Webcommit引用更新，0个digest变化；BFF R2四docs契约/SQL独立复审均0/0/0，仅文档门不代表实现；Billing/uv.lock保留不提交。
+
 ## WEB-CHAT-CURRENT-FEEDBACK 源码门通过，视觉待验（2026-09-30）
 
 Root组合CLI实际结果：topology=0、指定checkpoint=0；strict IAM relay=1，准确原因是保留的BFF四docs候选使child worktree dirty，未stash/回滚候选或放宽门禁。三日志 `/tmp/kokoro-web-chat-current-feedback-root-{relay,topology,checkpoint}.json`。本轮未跑全Root治理测试、全标准门或完整Playwright；Web纯门通过不代表这些门通过。

@@ -1,3 +1,19 @@
+## WEB-FAILURE-FEEDBACK-FLAT：源码通过，当前内框与视觉未验（2026-09-30）
+
+Root本轮治理：指定当前 `w1e-iam07-bff-pin.json` checkpoint与topology实际0；相关Root治理tests88/88（47.08s）通过。误选历史platform-code-release checkpoint首次exit1（历史4active不同于当前3active），已保留原日志并改用既定当前checkpoint，未修改任何门。strict IAM relay仍exit1，原因BFF四docs候选dirty，未stash/放宽或冒称全组合绿。日志 `/tmp/kokoro-web-failure-feedback-root-{topology,checkpoint-current,relay}.json` 与 `-governance.log`；本轮完整Root/全标准/Playwright未运行。
+
+Web main `f9587ac9a008c7183b875e096be504fb5c0b69ef` 四文件精确提交、clean。Thread失败反馈由固定48rem圆角阴影卡改为内容宽度透明无外卡反馈；保留shadcn Alert/标题/详情/动作与全部Message事实，未改Composer。Root显式Node22完整check实际exit0：contract109、architecture49、全量1825（41.43s）、lint/typecheck/build；独立冻结审查0/0/0；主控HEAD CSS复现RED1失败/20通过，恢复候选GREEN21/21，日志 `/tmp/kokoro-web-failure-feedback-root-{check,red,target-green}.log`。
+
+仅精确核HEAD baseline后同步受管3310原进程的Thread CSS，未重启/模型/计费/数据库操作。本轮CUA user tab6两种正式绑定均焦点超时，无fresh截图；输入框用户所见方框仍未定位，桌面/窄屏视觉与全Playwright未运行，不称整体对话体验完成。库存38个Webcommit引用更新，0个digest变化；BFF R2四docs契约/SQL独立复审均0/0/0，仅文档门不代表实现；Billing/uv.lock保留不提交。
+
+## 2026-09-30 — 当前用户输入框与会话布局继续调查
+
+本回合优先当前UI反馈，不推进BFF源码；BFF R2四文档冻结后契约与SQL独立审查均0/0/0，仅文档门，不代表实现。Root核Web5b77798 clean、3310 PID65590，Composer源码与受管next SHA一致；当前user tab6两种CUA绑定均Emulation焦点超时，无fresh截图/视觉结论。已向用户请求当前方框截图，不继续新增浏览器标签。原负责人转只读Web审查，Root已定位现failure Alert强制48rem宽度及其与Composer堆叠的布局风险；未盲改输入框或隐去失败/消息。任务外Billing/uv.lock与BFF四docs保留，无服务/模型/积分/数据库操作。
+
+## 2026-09-30 — 回到BFF失败持久化关键链
+
+上一轮progress：Web5b77798与Rootebe570e8已实际提交，Root完整check109/49/1823/lint/type/build0；fresh视觉未验，strict relay因BFF四docs候选dirty实际1，记录不掩盖。本轮保留Web视觉待验，不扩大CSS；续派BFF负责人修已确认3P1/2P2文档门，独立契约与SQL审查并行。先固定public presence、AGUI精确safe shape、provenance机器验证及failure/cancel强判别，再RED→实现。共享3310/PG/Redis、Billing与uv.lock不动，支付最后，goal保持完整active。
+
 ## WEB-CHAT-CURRENT-FEEDBACK 源码门通过，视觉待验（2026-09-30）
 
 Root组合CLI实际结果：topology=0、指定checkpoint=0；strict IAM relay=1，准确原因是保留的BFF四docs候选使child worktree dirty，未stash/回滚候选或放宽门禁。三日志 `/tmp/kokoro-web-chat-current-feedback-root-{relay,topology,checkpoint}.json`。本轮未跑全Root治理测试、全标准门或完整Playwright；Web纯门通过不代表这些门通过。

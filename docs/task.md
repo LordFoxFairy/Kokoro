@@ -1,4 +1,10 @@
-## WEB-CHAT-CURRENT-FEEDBACK / P1 / 源码门通过、视觉待验（2026-09-30）
+## WEB-CHAT-CURRENT-FEEDBACK / P1 / 用户再次指出内框与布局，当前调查中（2026-09-30）
+
+- 当前组合治理：topology/current-checkpoint0、相关Root88/88；strict relay1（保留BFF四docsdirty），完整Root/全标准/Playwright未跑。误选历史checkpoint的首次失败日志保留，不改门禁。
+- 当前窄片已交付：Webf9587ac9a008c7183b875e096be504fb5c0b69ef；Root完整check109/49/1825/lint/type/build0，独立0/0/0；Root定点RED1失败/20通过→GREEN21/21；Thread CSS已同步原3310，fresh内框及整体视觉未验，完整Playwright未跑。
+- 当前最小放行：agent_failure_cursor_owner为唯一Web writer，四现文件Thread CSS、conversation-failure UI tests、TECHNICAL_DESIGN、CURRENT；先RED再GREEN。取消failure整列宽度与圆角卡片装饰、保留shadcn Alert/重试/详情/窄屏/键盘；不改Composer，不改数据。Root实际集成验证及fresh视觉仍待验。
+- 当前回合：Root基线ebe570e8、Web5b77798 clean；唯一Web只读审查员agent_failure_cursor_owner，此前只读调查完成后仅上述四文件授写。实际3310 PID65590；Composer源码与受管next均SHA f90e03b146c82de2bba1627e12741edaf57e02b4e11a06b2c0c88996c765464e。当前用户tab6两种正式绑定均焦点超时，fresh内框仍未定位；已请求截图，不再新增tab或假称视觉已好。
+- 已核样式问题：现Thread失败Alert强制48rem全宽，历史真实图显示其与Composer上下形成两个编辑框般的卡片；考虑在现Thread owner内收敛为内容宽度/单行反馈，不隐藏failure、重试、详情或Message事实。待独立审查交接精确最小文件门，非盲改Composer。
 
 - Root组合CLI：topology/checkpoint各0；strict IAM relay=1（BFF docs候选dirty）；保持候选与原门禁，未冒称全组合PASS。
 - 源码交付：Web 5b77798be7a407c3f0a82d47841f1e141021de02 四文件精确提交，Root完整check109/49/1823/lint/type/build实际0；独立0/0/0；Thread CSS同步3310原进程，未重启。当前输入框/fresh视觉未验，详细证据见CURRENT。
@@ -11,9 +17,15 @@
 - 验证：fresh screenshot/computed styles desktop/mobile focus/blur；精确RED/GREEN+Root相关门；浏览器仍超时时明确未验、不称完成。
 - 已确认局部修复归属：Web Thread样式，删除thread.module.css内基于data-message-id后缀的全用户margin/translate规则；已有AppFrame :first-child保持唯一首项几何owner。无需新目录/对象/contract/API/数据变更。仅样式与现测试，不猜失败卡宽度、不改Composer。
 - 唯一writer续派agent_failure_cursor_owner；精确四文件 src/ui/thread/thread.module.css、tests/ui/app-frame.smoke.test.tsx、docs/TECHNICAL_DESIGN.md、docs/CURRENT.md。先RED新增无ID布局依赖/保留首项几何断言，再CSS GREEN；保留DOM事实原测试。Root唯一Git/受管副本同步，主树重跑UI/architecture/typecheck/lint。当前浏览器E2E未验收。
-- BFF冻结4docs独立复审P0/1/2=0/3/2；未放行。后继需补contract README范围、public presence exact required guard、AGUI无顶层retryable负例与schema/provenance明确机器验证，不抢写当前UI。
+- BFF R2冻结四docs独立契约与SQL复审均0/0/0，已关闭原3P1/2P2；仅文档门，tests-only RED未派发，不抢写当前UI。
 
-## BFF-AGENT-FAILURE3 / P1 / 文档门进行中（2026-09-30）
+## BFF-AGENT-FAILURE3 / P1 / R2文档冻结复审通过，当前UI优先（2026-09-30）
+
+- 本轮基线Root ebe570e8、Web5b77798 clean、BFF15e四docs候选，上一轮classification=progress（代码提交与主控1823全量纯门）；UI鲜活通道待恢复不阻塞独立后端写入。BFF续派原唯一writer bff_failure_profile_owner；contract reviewer bff_failure_contract_review、SQL reviewer agent_failure_cursor_owner均只读；不写Web/受管运行组、不启动共享资源。
+- R2文档返修仍仅四docs：TECH/API/DATA/CURRENT。修独立3P1/2P2：将contract/README.md列后继实施允许集；public failure presence明确if.required=[failure]而非properties-only；AGUI serialized keys负例；完整ChatFailure status/unevaluated/if-then drift突变；固定owner provenance进入vendor/manifest机器验证而非仅文字证据。
+- Root补齐判别决定：AgUiAssistantUpdate Agent fail必须带完整已验safe profile，本地取消用独立cancel判别；无optional failure混合来源。cancel/dispatch/delete失败两列NULL。
+- provenance固定同f3be vendor目录openapi.json+provenance.json两份只读owner bytes，manifest同时记录文件SHA与http_contract.version/path/sha并生成器校验。delivery独立486来源不动。
+- 独立复审与Root实际机器/Schema一致性检查通过后，第二门裁决为tests-only RED，15e machine/schema/vendor/generator/runtime全部保持；Root实际复现后才放行canonical/schema/vendor/manifest/generated/source一次GREEN。测试必须通过真实断言失败而非missing-module编译错误。Root可独立重跑RED，之后精确授权源码/generated GREEN。
 
 - 上轮分类progress：Web65e3287与Root5a5ebeb9真实提交，1822/49/109与浏览器局部门、Root三后置CLI均actual0。本轮保持全Wave0–7目标，回后端关键链，不重复实施已验收UI。
 - 归属/基线：Root main5a5ebeb9；BFF main15e07fa44670bc13705ce3f6f700e73afcb72ccc clean；Agent mainf3be3b97dd67df69ed3c6cb88c59f3bc2db97703 clean，Web65e3287 clean。Root Billing五docs/uv.lock保留；当前3310原Agent2.0组合不热切半套。Root唯一index/commit。
@@ -34,7 +46,7 @@
 - 固定Agent HTTP：f3be3b97dd67df69ed3c6cb88c59f3bc2db97703，3.0.0，OpenAPI sha e9f0a543f74dee34212f0ea4fe366d46218268462ac54dce08e41965f34d2d2c，provenance sha d116657f65027de8bd829dc0408fd86046da0ac0a1d2934bd2a87e835c897b5f；Root从现owner文件实际重算一致。
 - public info.version1.0.0→2.0.0协调breaking、HTTP /v1不变；ChatMessage failure presence仅assistant failed且run_id非空。两true合法码/其他八码false限定，所有十码false合法。Web.strict后继明确更新，不先放宽。
 - 实时链Root补齐裁决：标准AG-UI RUN_ERROR保留code/安全固定message，精确safe failure放现metadata.kokoro.failure，shape与Message.failure相同、code一致；仅Agent verified failure携带，不增第二网络协议/额外CUSTOM/复制raw exception。当前@ag-ui/core0.0.59的BaseEvent metadata与EventSchemas实际支持；官方events文档已核2026-09-30。消费者后继必须同快照/实时一组safe事实。
-- 第一门交付：三设计顶部明确当前15e/目标、精确文件清单/失败writers/SQL CHECK null语义/契约schema版本/生成determinism/negative矩阵，CURRENT不冒称完成。Root与独立审查通过后授机器+schema+tests RED，后再授源码；本轮不发起真实provider、充值、服务重启或数据库清理。
+- 第一门交付：三设计顶部明确当前15e/目标、精确文件清单/失败writers/SQL CHECK null语义/契约schema版本/生成determinism/negative矩阵，CURRENT不冒称完成。Root与独立审查通过后先tests-only RED、再完整机器/schema/generated/source GREEN；当前UI优先尚未派RED，本轮不发起真实provider、充值、服务重启或数据库清理。
 
 ## WEB-VISUAL-CURRENT-AUDIT / P1 / 已验收（2026-09-30）
 
