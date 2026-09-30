@@ -20,8 +20,8 @@ def test_release_inputs_pin_current_web_bff_iam_and_agent() -> None:
     assert smoke.EXPECTED_RELEASES == {
         "kokoro-app": "1dc211bb61030926177b72b3dff2061562a1015b",
         "kokoro-bff": "571b51de2057905c74c78ac966c8cf5ac11eca93",
-        "kokoro-iam": "36242fd29e3f0bc41201bcd74ae106a2e6b1e4d9",
-        "kokoro-agent": "dd34a4800b4ce0cc61eb80dd715e528b9d4517da",
+        "kokoro-iam": "a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b",
+        "kokoro-agent": "e728fe24d9528efe02a53282f1dfd8328a122f9a",
     }
 
 

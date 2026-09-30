@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 集成Agent reader固定来源，下一Source真组合
+
+Agent e728fe24在主树独立默认1410 pass/6 skip/172 deselected、static/contract/build及独立审查P0/P1/P2=0；Root更新gitlink与全部Agent来源digest、补reader/backend/lifecycle证据，所有宽泛边维持broken。现有BFF worker与Web composer版本锁先2 RED再52 GREEN，同时Web composer IAM固定当前a6dfd196；未改任何运行断言或安全门。Root全scripts/tests **994 pass/291 subtests**（120.49秒）、拓扑/checkpoint PASS（库存16边/13 broken）；日志 `/tmp/kokoro-root-e728-integration-tests.log`。这次仅代码/来源集成，未执行当前Source真组合或再次操作用户右侧登录。
+
+下一两独立写面已锁任务卡：Root跨owner Source driver由原Agent负责人唯一writer，IAM测试host执行撤权支撑由独立IAM writer。Root负责共享index/台账/审查与串行真实资源。只读接线确认浏览器session删除不影响Agent execution权限，故必须撤当前执行permission/member事实，不能把现有revoke-user-session当Source撤权证据。
+
 ## 2026-09-30 — 授权后恢复3310，仍保留可见登录未验边界
 
 用户明确允许重启；Root精确停止旧同组Web81692/BFF81690，未动独立BFF81924、Docker、其他数据或旧目录。旧Web释放超过首次5秒等待，第一启动在端口门退出未建资源；确认端口释放后现有启动器session71981启动成功。受管launcher3898、IAM4007、Web4113均存活且Web监听3310，当前源码Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`，log `/tmp/kokoro-local-login-current.log` 0600，专用账号不入文档。此组保留供用户验证，由launcher统一管理退出和自有资源。

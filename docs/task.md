@@ -1,6 +1,24 @@
 # Kokoro 后端闭环任务总表
 
-## 返修：W3-AGENT-RUN-SKILL-METADATA（P1已修复，Root集成待办）
+## 下一独立切片：W3-ROOT-AGENT-SOURCE-DRIVER 与 W3-IAM-EXECUTION-REVOKE-FIXTURE
+
+| 项 | Source driver 任务卡 / §8放置门 |
+| --- | --- |
+| Owner/执行/审查/基线 | Root跨owner测试编排唯一writer `agent_typed_skill_reader_owner`（沿用原负责人模型），Root审查/提交；绝对目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro` main，基线为本表同次提交，Root已有uv.lock任务外变化不动。Agent固定e728fe24/IAMa6dfd196/BFF571b51de/Platform6a09913/Storage16a6c1c。 |
+| 当前/目标 | 已有3300行sandbox runner完成真实发布/读取投影，Source模式ready协议仅单测；接入真实Agent schema/HTTP/JWKS/claim→freshproof/IAM→generated安装setup→typed reader→原字节、停用、旧lease拒读，明确不含模型/UI或产品安装API。 |
+| 位置/粒度/两案 | 新普通辅助文件 `scripts/e2e/agent_skill_source_smoke.py` 承担Agent Source测试资源/场景，既有主runner只加显式钩子；拒绝把全部Agent生命周期塞入已3300行主文件或Agent tests/e2e（跨owner资源由Root持有）。新直接单测 `scripts/tests/test_agent_skill_source_smoke.py` 负责协议/边界/摘要与资源关闭；不创建新目录/新应用进程类型。 |
+| 范围/排除 | 仅上述两新文件、现有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` / `scripts/tests/test_bff_skill_draft_sandbox_smoke.py`；Root台账/库存/gitlink/shared index由Root独占，worker不提交/暂存/修改这些或任何子仓/lock/schema。 |
+| 依赖/数据 | 使用owner installer同一自有临时数据库内独立Agent schema；HTTP/repo/proof保持同schema。生产JWKS/signer/supplier/lease reader/token/typed backend，generated Install仅测试setup不扩大生产六sender。IAM执行撤权取新测试命令，不把浏览器session撤销误报执行撤权、不由Root直接改IAM SQL。无mock允许决定/伪造proof/双写。 |
+| API/删除/生命周期 | 默认模式不变，显式 `agent_source` bool/CLI开启，继承环境不得隐式启动；Agent依赖不足/非法配置建资源前拒绝。原发布/感染/恢复/撤session门保留；仅本次注册Agent资源有界关闭且在IAM/DB/bucket清理前完成。log秘密脱敏，不打印proof/signedquery/密码。 |
+| 验证/阶段 | 先协议/命令摘要/配置/cleanup RED→GREEN；默认Root聚焦单测无共享资源。writer不得启动PG/Redis/owner或3310、不得执行真实组合；完整Root门、固定SHA审查、真实组合由Root在IAM新fixture验收后串行执行。不以driver代码完成标Source验收。 |
+
+| 项 | IAM撤权夹具任务卡 |
+| --- | --- |
+| Owner/执行/基线 | IAM唯一writer `iam_execution_revoke_fixture_owner`（当前默认模型），Root审查/提交；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam` clean main a6dfd196；与Root Source driver独立并行，不切分支。 |
+| 范围/位置 | 只改既有 `test/fixtures/web-oidc-flow-host.ts`、`test/integration/web-oidc-flow-host.test.ts`、docs/CURRENT与ACCEPTANCE。Source测试身份需要撤销当前execution权限/成员事实，采用既有host严格opt-in命令；淘汰Root跨ownerSQL和删除浏览器session冒充execution撤权，无生产API/SQL/生成物变化。 |
+| 规则/验证 | 仅Agent source显式模式可用，自有fixture的精确tenant/user/member/permission事实；非法模式/重复/协议按本host严格行为，secret不外泄。实际execution授权成功→撤销→同用户当前校验拒绝，其他身份与原浏览器撤session协议不混淆；静态/默认门可运行，真实PG/Redis集成由Root串行执行。worker不启动服务/清理共享数据、不提交，交付文件清单停写，Root统一提交与集成。 |
+
+## 返修：W3-AGENT-RUN-SKILL-METADATA（P1已修复，Root已复验并集成）
 
 | 项 | 任务卡与放置门 |
 | --- | --- |
@@ -10,7 +28,7 @@
 | 范围/边界 | 限Agent factory、既有skills模块必要一个生命周期文件、直接unit/architecture/native checkpoint组件测试及INDEX/TECHNICAL_DESIGN/CURRENT/ACCEPTANCE。其他clients/ZIP/传输/SQL/Proto/generated/lockfile/仓库不改。不得复制frontmatter解析或手造skills_metadata第二事实源，不取消checkpointer/换每Run thread_id来回避会话问题。 |
 | 验证/交付 | 生产Factory+真实DeepAgents+InMemorySaver同session覆盖[]→A、A→B、A→[]、连续同refs及同Runinterrupt/resume；模型观察当前metadata，不仅看返回值（metadata是PrivateStateAttr），用真实checkpoint snapshot核实并覆盖旧load_errors清除和空refs零Skill依赖。先RED→GREEN，恢复/取消/授权失败不退回旧元数据。default gates与隔离组件、固定SHA交付停写，Root复验后才pin。无需共享PG/Redis或新后台进程。 |
 
-证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），固定SHA独立审查P0/P1/P2=0、聚焦11 pass/44 deselected；代码门已复验，Root负责后续gitlink/库存集成，真实Source组合仍待验。用户已授权3310重启，Root不以返修代替可见登录验收。
+证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），固定SHA独立审查P0/P1/P2=0、聚焦11 pass/44 deselected；Root已复验并集成Agent gitlink/库存来源，所有宽泛broken边保持；完整Root994 pass/291 subtests（120.49秒），现有worker/浏览器composer版本锁2 RED→52 GREEN。真实Source组合仍待验。用户已授权3310重启，Root不以返修代替可见登录验收。
 
 ## 用户当前最高优先级：右侧3310真实登录验收
 
@@ -18,7 +36,7 @@
 
 右侧用户原标签仍保留已过期签名地址；此前 `/login` 导航为 `ERR_BLOCKED_BY_CLIENT`，本次AX与DOM读取均因CDP focus操作超时，无凭据提交或回调证据。请用户手动打开 `/login` 后继续同一标签提交→回调→/app→刷新验收，不通过其他通道绕过浏览器阻止、不把隔离Chromium旧结果移作当前验收。启动成功仅算运行恢复，当前可见登录仍待验。
 
-Agent `534d3f80efb158910fde73e2a8ecf5390f874bba` 已交付clean、Root默认门1399 pass/6 skip/172 deselected，但暂不pin：一条独立安全审查已通过，另一审查在发现会话checkpoint复用skills_metadata后因额度终止。Root纯DeepAgents同session实验已确认空选择→alpha/beta后middleware读取次数均0；还须用checkpoint内部state及生产Factory回归补全证据，再由单writer修复。默认测试通过不代表当前refs实际进入模型。用户可见登录优先；Skill真组合仍保留完整范围，不标完成。
+历史候选534d3f80未放行，checkpoint真实复现触发返修e728fe24，现已完成Root代码门/独立审查及来源集成。用户可见登录仍独立待验；Skill真组合保留完整范围，不标完成。
 
 ## 进行中：W3-ROOT-AGENT-SOURCE-COMPOSITION（真实读取验收）
 
