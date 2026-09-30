@@ -1,5 +1,16 @@
 # Kokoro 后端闭环任务总表
 
+## 当前下一 owner：W3-AGENT-TYPED-SKILL-SOURCE-DESIGN（P0；只做三面文档门）
+
+| 项 | 本片裁决与验收 |
+| --- | --- |
+| Owner / 基线 | Agent `apps/kokoro-agent` 唯一 writer，clean `main 7dfcfa936d0b51244683ffd66d16ea937fe510a6`；Root 当前 `4c3388a6` pin。Platform `apps/kokoro-capability` `6a09913` 独占 Skill/Source/包事实，Storage `16a6c1c` 独占字节/扫描，IAM 独占当前授权。Agent 已有 worker-only Run-scoped token/proof sender 和六个具名 Platform RPC；`clients/skills.py`、`agent_factory.py`、`skills/backend.py` 仍用旧 name/Capability grant，正式产品调用未接。 |
+| 目标职责 / 两案 | A（采用为设计目标）：冻结受信 typed `SkillSourceRef` 于 Agent Run/lease 边界，按当前 Run/fence 调 Platform `ResolveVisibleSkill` 与 `GetApprovedSkillPackageReference`，再有界读取/验证 Owner 已批准的包；不把显示名、部署 YAML 或过期 grant 当身份。B（淘汰）：继续名称解析/Capability fallback 或由 BFF/Web 直读 Platform/Storage、把发布列表当执行 proof；授权、幂等与包健康不成立。文档必须核对 Platform 当前 v3 consumer 与 owner v4 兼容/差异，不自行发明新 Proto。 |
+| 位置 / 粒度 | 本片只允许 Agent 既有 `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/CURRENT.md`（必要时 `docs/ACCEPTANCE.md`），先把当前态/目标态、Run/Skill owner、契约、状态机、失败恢复、依赖方向、包大小/摘要/ZIP 身份与目标文件放置收敛；不新建目录、代码、SQL、generated 或别仓副本。代码片后续再在 `clients/skills.py`、`skills/backend.py`、`agent_factory.py`、`worker` 现有职责处做唯一 cutover，不能在本片抢写。 |
+| 数据/API / 删除 | 冻结选择进入 Run 后的幂等与 lease fence、当前授权/撤权、IAM token/proof、独立 signed GET 字节边界；明确是否复用现有 Run 持久 JSON 或需 canonical SQL 变更，不从 body 自报 tenant/actor。目标删除旧 name selector、Capability grant/reader、静默 fallback、双轨包缓存；MCP 与 BFF/Web consumer 是后续各自 owner，不能在 Agent 文档门假称已联通。 |
+| 验证 / 交付 | Agent 四当前文档互相一致，精确指向 Platform/Storage owner machine paths/commit，列未决 upstream 与下一代码片 file set/RED 场景；`uv lock --check`、相关 contract/architecture/docs 检查和 diff-check。Root 审查文档门后才派同仓代码，后续真 IAM→Platform/Storage→leased Run 与撤权/感染负例另验。Billing 最后，不碰 3310、Root 任务外 `uv.lock` 或共享服务。 |
+
+
 ## 激活前门预审：W3-SKILL-ACTIVATION（六 owner readiness 未齐，暂不切 active）
 
 **只读结论，不是已激活：** BFF 六条 Skill 写路由已接线，但同受 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED` 默认关闭保护；`true` 只允许 BFF loopback 独占 smoke。Platform v4 `inactive/routable=false` 是机器契约发布标记，不是运行 kill switch。不能把临时开关改成产品上线，也不能把 Web 静态测试或 HTTP owner smoke 当正式产品闭环。
