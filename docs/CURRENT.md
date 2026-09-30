@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**本轮后置更新（Root代码9e77ac17）：** checkpoint/topology分别实际exit0；使用用户指定私有profile，一次真实免费库存GET成功、未调用推理。BFF tests-only已冻结，Root复用现PG/Redis在唯一自有临时库执行真实RED：3pass/5fail/0skip、2.31s，均缺active_run或缺非法marker拒绝；自有库0、Redis新增0/baseline保留，日志`/tmp/kokoro-bff-active-run-real-pg-red.log`，原owner已获GREEN源码授权。Billing五docs修订独立0/0/0，但IAM任意target能力未发布，源码/入账仍阻塞。用户要求的当前线程每10分钟检查并推进heartbeat `kokoro-10` 已创建ACTIVE并回读；静默无变化、实质进展/失败/偏差/决策通知。3310仍未重启，完整goal未闭环。
+
 ## 本轮最新：开发入口稳定性与竞品交互对齐（2026-09-30）
 
 Root `6fdcba6e` 基线的三文件生命周期切片已由原writer停写、独立复审0/0/0、Root主树完整纯门 **1103 passed / 3 native依赖skip / 455 subtests**（114.87s，session2944 exit0已消费）后验收。日志 `/tmp/kokoro-provider-lifecycle-final-root-tests.log`；Ruff check/format/diff均exit0。外部周期库存的预期传输/格式失败只写System `unknown`，继续原两ownership续租、health CAS与严格status/observed_at/provider/generation回执；不伪造healthy，不退出独立IAM/Web。下一正常60s周期可恢复healthy。配置/代码、owned进程、ownership、CAS/回执错误仍fatal，启动两个preflight和Ollama严格不变，无后台保活/自动重试/付费健康推理。

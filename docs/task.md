@@ -1,14 +1,14 @@
 ## 当前执行摘要：真实用户旅程（2026-09-30）
 
-本轮不是再建一套 UI 或计划中心。当前 Root main `6fdcba6e`，Web `840fa7e0` 删除虚构收费文案已验收；3310 已停止，真实模型 Chat 的 terminal DOM 全文门仍 FAIL。以下是执行优先级，不是已完成声明。
+本轮不是再建一套 UI 或计划中心。当前 Root main `9e77ac17`，Web `840fa7e0` 删除虚构收费文案已验收；3310 已停止，真实模型 Chat 的 terminal DOM 全文门仍 FAIL。以下是执行优先级，不是整体已完成声明。用户已要求每10分钟检查并继续推进；Codex当前线程heartbeat `kokoro-10` 已创建ACTIVE并回读展示，不另建独立cron任务。无变化保持安静，有实质完成/失败/偏差/决策再通知。
 
 | 优先级 | 交付门 | 当前责任与状态 |
 | --- | --- | --- |
-| P0 | 正规登录、页面不被模型库存观测拖停 | Root 三文件生命周期修复已冻结，独立审查与 Root 全门进行；预期观察失败写 System unknown，认证/Web 保留，非观察/ownership/CAS失败仍 fatal。 |
-| P0 | 发消息→流式→刷新续流→终态全文→再次追问 | BFF 四文档修复进行：先恢复 v1 已定义 running 的同 RR snapshot，不改 enum/消费者契约；Root纠正晚到旧 START 后 terminal/latest 可不同的合法矩阵。真实 Chromium 门仍待完整重跑。 |
+| P0 | 正规登录、页面不被模型库存观测拖停 | Root三文件已提交9e77ac17，独立0/0/0、完整1103pass/3依赖skip/455subtests、后置checkpoint/topology PASS；一次真实外部库存GET亦PASS且无付费推理。尚未重新启动或验真实周期恢复。 |
+| P0 | 发消息→流式→刷新续流→终态全文→再次追问 | BFF四文档独立0/0/0通过；tests-only纯RED12pass/1fail，Root真自有PG RED3pass/5fail/0skip（8case含一额外pattern匹配），failure均缺active_run/应拒非法marker。资源回收DB0/Redis新增0。原owner获三src GREEN授权，源码/最终门/浏览器仍待验。 |
 | P1 | 会话、项目、定时任务分开，关联不混淆身份 | 复用既有 Web 信息架构切片；后继验真实创建/移动/移出/刷新/深链，Project 上下文与 ScheduledTask/Run 独立，不能把预览列表算数据能力。 |
 | P1 | 文件、作品、审批、Skills/MCP 可运行 | 已有后端安装及历史作品/GC门；安装浏览器、非空Skill标准worker、MCP和完整HITL仍开放，按owner顺序推进。 |
-| P1 | 正式积分而非“免费”静态承诺 | Billing文档独立3P1/1P2已留证；Root裁决展示单位1 Credit=1,000,000 micros、同步grant command ACK=200无虚构Location。管理员target解析必须IAM owner-first，不冒称现接口存在；reason必须进入effect/digest/audit及冲突测试。未入账、未计费E2E；支付渠道仍最后。 |
+| P1 | 正式积分而非“免费”静态承诺 | Billing五文档修订独立0/0/0，原3P1/1P2已纠正；展示1Credit=1e6micros、200同步grant ACK、reason进入effect/digest/audit已锁。IAM任意target解析仍真实owner-first阻塞，未放行Billing消费者源码/入账；未计费E2E，支付渠道最后。 |
 
 ### 官方参照与 Kokoro 验收取舍
 

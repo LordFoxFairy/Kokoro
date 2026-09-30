@@ -2113,3 +2113,8 @@ Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree i
 BFF四docs原2P1/1P2返修独立0/0/0：v1机器原字节恢复existing running，同RR afterACL；Root指出terminal后lateoldSTART造成(X,O,X)是实际可达、不能误判500。T=E无论L省略；Tnull LE才running、queued/lateoldstart漏报保守省略；blank/foreignterminal非法具体码。文档冻结191e530d已验，五现tests RED阶段已派原负责人，源码仍等待RED/PG阶段门。Billing原五docs独立3P1/1P2；Root锁200command无虚构Location、1Credit=1e6micros非现金价格，reason进入effect/digest/audit及onlyreason冲突；IAM任意target解析实际无operation，必须owner-first，准确记阻塞不编造现contract。修订五docs已冻结1ab8acf8待复审，未入账、不假计费。
 
 核验ChatGPT Projects与Manus Projects/Connectors/Scheduled Tasks官方说明，参照来源与项目取舍进入同一task顶部，不新建第二计划中心。会话独立、Project可关联上下文、调度定义/occurrence/Run独立、默认个人私有显式分享为验收对象；不以品牌参照或外观承诺功能齐全。Root只提交自有三源码/测试及台账，不暂存任务外uv.lock、BFF/Billing候选gitlink；完整goal仍active、支付渠道最后。
+## 2026-09-30 — Root9e77后置门、BFF真实RED与10分钟推进检查
+
+Root代码提交9e77ac17bb82d4f508c2d8ed01a3e8ec41fff065后checkpoint/topology各exit0；一次真实用户指定外部inventory GET PASS，paid requests0，不替代推理/周期恢复。BFF tests-only冻结c0c4073d，原pure12pass/1fail，Root自有临时PG数据库+现Redis15真实执行三integration文件选定pattern：3pass/5fail/0skip/0cancel，8cases含一额外stale-projector匹配，2.31s，缺active_run/应拒非法row为正确RED。session54888真实exit1已消费，日志`/tmp/kokoro-bff-active-run-real-pg-red.log`；自有数据库0、Redis新增0/baseline保留；没有新角色/基础设施、共享reset或provider推理。原负责人已获三src GREEN，五tests与四docs范围保持，不改机器/Schema。Billing五docs修订1ab8acf8独立0/0/0，原3P1/1P2关闭；仅文档一致性通过，IAM任意target发布/wholeM3/runtime/入账与收费仍未完成。
+
+用户明确要求每10分钟检查并继续推进。已通过Codex应用创建当前线程heartbeat `kokoro-10` ACTIVE并回读展示，初次工具参数缺destination被拒绝、补thread后实际创建成功，不存在首失败创建的重复任务。沿原goal和台账、自有资源/原句柄/同仓单writer/Root验证；无变化静默，实质完成/失败/偏差/需要用户决定时通知。没有用shell循环或额外常驻进程代替调度，也未把排程创建说成产品能力完成。
