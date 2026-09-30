@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 用户要求聚焦：可见产品先于后台切片计数
+
+当前主控优先级改为3310真实登录→app→刷新，再同用户基本真实聊天；不以历史隔离Chromium或当前Source helper冒充用户页面交付。Platform既有v5机器切片继续小片收尾、不自动扩runtime；BFF只读prep已一次交付，未改文件/运行测试。所有后继owner/SQL/RPC/MCP/生命周期及Billing最后目标不缩小，唯执行顺序聚焦。当前服务组3898/4007/4113存活，右侧可见E2E仍未验。
+
+## 2026-09-30 — 主控当前台账去重，防止历史失败覆盖已验收事实
+
+Root 51bd4a2f 的 CURRENT 混入大量过时“当前”和候选记录，读者容易把旧来源/旧未验当作现态。本轮仅重写同一 CURRENT：从gitlink生成精确组合、集中列当前Source真实PASS/个人Product待实现/3310可见未验/13broken和136队列；历史逐轮日志仍在本progress，原完整CURRENT由Git51bd4a2f保留。没有改owner源码、机器契约、edge状态、锁或运行服务。下一非空真实模型门须在既有System/worker/浏览器组合加入已安装typed选择，旧空选择模型和本轮Source helper不是同一门；不重跑普通Chat冒充新增覆盖。
+
 ## 2026-09-30 — Source正常真实跨owner门首次全通过，Platform代码已放行
 
 Root提交4aef9d1c后沿原文件入口真实Source `/tmp/kokoro-source-window-real-composition.log` **exit0/PASS**：真实IAM凭据/内省→Agent HTTP Run/claim/production lease proof→Platform安装与typed ref→Storage signed GET原字节/native metadata/read-only，安装false拒读/true恢复、旧lease拒读、IAM成员执行撤权拒读均通过。原BFF Begin/PUT/Complete/Validate/Publish/回放/感染恢复/个人公开读/撤session门随同PASS；Source增加3receipt，31→34，Publish outbox仍2，无应用auth/计数/阈值修改。资源报告clean、owned53717已退出/session80848消费、Root额外Redis15 DBSIZE=0；无新PG/Redis/3310重启。保留native name与opaque目录规范警告，不把此fixture读取链当真实模型执行或个人Product安装UI。

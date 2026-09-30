@@ -1,5 +1,18 @@
 # Kokoro 后端闭环任务总表
 
+## 当前优先级重新对齐（2026-09-30，用户明确要求聚焦）
+
+总体目标不变：九owner独立闭环、SQL/RPC依赖组合、用户可见完整产品、Billing最后。当前主控先交付用户能验的一条链，不用测试数/文档/生成物代替产品进度。
+
+| 优先级 | 目标 / 验收定义 | 当前事实 / 负责人 |
+| --- | --- | --- |
+| P0 | 当前3310：真实表单登录→callback→/app→刷新仍登录；无可见连接/整页重试中转 | Root；服务存活不等于验收。当前右侧仍旧交互，CUA focus超时，可见链未验；不扩大IAM权限设计，不让此问题卡所有owner |
+| P1 | 同一用户实际发送→标准worker/真实模型→AG-UI回复→刷新保留 | Root；历史固定组合通过不是当前3310产品已交付。先基本可见链，再非空Skill链，不以Source helper替代模型 |
+| P2 | 个人Skill：发布→显式安装/启用→选择→聊天执行 | Platform当前v5机器writer继续已批准切片、完成即停；BFF只读prep已交付，无文件或测试执行，待owner机器/runtime后固定消费；未交付产品 |
+| 后继 | MCP/其他能力、owner生命周期/SQL/契约、完整组合、最后Billing | 全目标保留，不本轮另开大范围研究/运维或同时重写所有仓 |
+
+近期实际交付只有边界限定的Source后台纵切PASS和Root代码回归；当前网页未交付完整，禁止汇报为整体完成。Root CURRENT已收敛成单份当前快照，失败/历史证据留progress与Git，不继续重复追加“当前”。
+
 ## 当前执行结果与并行任务（2026-09-30；Source真实门已通过）
 
 Root main4aef9d1c正常原文件入口，无诊断wrapper、无假token/计数清理/放宽规则，真实IAM/BFF/Platform/Storage/Agent与现PG/Redis/MinIO/ClamAV组合exit0/PASS；Source安装/停用拒读/重新启用原字节、native metadata、read-only、old lease拒读、IAM执行撤权均通过，setup receipts3、总receipt31→34/outbox仍2，resources clean。日志/tmp/kokoro-source-window-real-composition.log；ownedPID53717已退出/session80848终态已消费，Redis15=0。native name与opaque目录不匹配规范警告保留，非零风险。此为非模型Source纵切，不是个人Product安装UI、浏览器发布/CORS、当前3310或全项目通过。
@@ -8,7 +21,7 @@ Root main4aef9d1c正常原文件入口，无诊断wrapper、无假token/计数�
 | --- | --- |
 | SOURCE-IAM-WINDOW / 已验收 / Root | commit4aef9d1c，Root全1026/3 native skip/341subtests、原生5/55、独立0缺陷、真实normal Source PASS；topology9runtime/checkpoint PASS。后续非空Skill真实worker/模型另门。 |
 | PLATFORM-PERSONAL-V5 / 已放行写入、进行中 / platform_personal_installation_owner | e510c04 clean起点，沿下方精确机器任务卡；Source冻结结束已明确放行，只改Platform机器/测试/相关当前docs，不改runtime/SQL/其他仓，Root最终review/commit。 |
-| BFF-PERSONAL-PREP / 只读并行 / agent_typed_skill_reader_owner | apps/kokoro-bff main571b51de；读已批准Platform PERSONAL四文档与本仓三设计/contract/入口，形成后继五Product方法消费的最小准确文件集/既有组件复用/当前vs目标与测试命令。仅只读，不写BFF公共契约/runtime/SQL/锁，不发明或复制owner machine/digest，不启动任何服务/真实数据库。Platform机器发布固定commit后才开消费者writer；20分钟内一次交付，不反复大范围审计。 |
+| BFF-PERSONAL-PREP / 只读已交付 / agent_typed_skill_reader_owner | apps/kokoro-bff main571b51de；读已批准Platform PERSONAL四文档与本仓三设计/contract/入口，形成后继五Product方法消费的最小准确文件集/既有组件复用/当前vs目标与测试命令。仅只读，不写BFF公共契约/runtime/SQL/锁，不发明或复制owner machine/digest，不启动任何服务/真实数据库。Platform机器发布固定commit后才开消费者writer；20分钟内一次交付，不反复大范围审计。 |
 
 Root当前右侧IAB可枚举标签，但domSnapshot明确focus命令超时；可见提交/callback/app/reload仍待验，应用3310原组保留，不因该控制问题暂停其他owner开发。整体goal active，13broken/标准136/任务外uv.lock仍保留。
 
