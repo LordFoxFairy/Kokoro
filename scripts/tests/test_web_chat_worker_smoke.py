@@ -19,7 +19,7 @@ RUNNER = ROOT / "scripts" / "e2e" / "run_web_chat_worker_smoke.py"
 def test_release_inputs_pin_current_web_bff_iam_and_agent() -> None:
     assert smoke.EXPECTED_RELEASES == {
         "kokoro-app": "752aff9d0744cd55c556079a08a2a28e393e50e4",
-        "kokoro-bff": "67755d16ff0f40ea02d71a6dad7108507a04766a",
+        "kokoro-bff": "d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed",
         "kokoro-iam": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
         "kokoro-agent": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
     }

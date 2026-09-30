@@ -1,3 +1,41 @@
+## WEB-BILLING-TRUTH：删除无事实依据的收费承诺（2026-09-30）
+
+P0 用户要求正式积分流程，并允许为当前本人测试帐号后台入账；授权不是已经完成充值的证据。Web main `752aff9d0744cd55c556079a08a2a28e393e50e4` clean，agent_typed_skill_reader_owner 唯一 writer，Root sole index/commit。局部修复归现 AssistantTurn/Composer 文案展示，不改变 owner/契约/数据；先 RED 真实 render 与九语言承诺断言，再删除无 owner 决策的 credit-note 和免费 placeholder，运行 UI/i18n、contract/architecture/lint/typecheck/full test/build，停写 hash 后独立审查与 Root 主树复验。
+
+- 允许16现文件：`src/ui/thread/assistant-turn.tsx`、`src/ui/thread/thread.module.css`、`src/components/blocks/app-frame/app-frame-main.module.css`；九语言 `src/i18n/{messages,en,de,es,fr,ja,ko,pt,ru}.ts`；`tests/ui/conversation-failure.test.tsx`、`tests/ui/composer.test.tsx`、`tests/i18n/resolve.test.ts`；`docs/CURRENT.md`。
+- 删除：Badge 与唯一 import、creditNote CSS 和 desktop 强制可见 override、九语言废弃 thread.creditNote；九语言 directPlaceholder 仅保留中性提问及品牌插值。不以“会扣积分”替换另一无依据承诺，不隐藏真余额不足/错账。
+- 排除：owner/generated/API/SQL/lock/依赖、402 code/machine语义、余额 DTO、服务/数据/模型/Git操作。独立只读调查并行，现Web唯一writer，Root不抢写。
+- Billing current `63e0ab6` canonical 32表与新 CreditService 已有组件，但主入口仍旧 pg writer，新正式 grant/admin入口未接；不部署旧表、不直接SQL改余额、不伪造付款。正式赠送积分需可信当前帐号、具名额度、幂等 source/key、grant/journal/audit/receipt，再验证预留/结算/释放及余额；此仍待实现、未入账。
+- 额外发现：Web余额字段与BFF机器契约不一致，标准错误code被丢弃可能绕过402专属UI；作为后续owner固定契约切片，不以本删除片宣称 Billing闭环。完整支付最后，积分基础链按最新用户要求前置。
+
+## BFF-CHAT-ACTIVE-DOC：一致快照现职责文档门（2026-09-30）
+
+Owner BFF public Chat snapshot与durable AGUI projection；BFF clean d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed。bff_personal_installation_owner唯一writer，仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md，Root sole index/commit；先文档三面一致，不写源码/机器契约/SQL/SDK/其他仓/网络/服务/data/model/Git。现接口已有optional active_run但实现从不输出；已纯Web复现无activeRun时同run CONTENT/END无法认领prefix，保留合法START新segment语义，不加Webfallback。
+
+已定位置：扩现Chat readSnapshot同RR只读事务读取本owner bff_agui_stream expected/latest/terminal，与messages/cursor同视图；弃service另注入repository跨事务读、从message.status/outbox/frame扫描猜Run事实。expected唯一身份；无expected或expected terminal省略；expected未start queued、latest==expected且未terminal running。不新增Run owner/表/role/infra，不读Agent SQL；tenant/session查询须在现owner/project ACL成功后、DB/非法存储组合fail closed无降级。queued/running阶段无Schema变化，文档明确真正waiting/pending_pauses当前没有可证明持久事实，仍属完整goal后继，不从GCable事件虚构waiting。
+
+机器当前ChatRun enum漏queued且有terminal值；目标active-only queued|running|waiting：queued须补、terminal值应去除；waiting保留完整HITL目标但本轮不得虚假输出，后继必须持久合法等待/恢复/终态清除事实与pending metadata。本卡只收敛方案，不修改机器enum。核实src/contracts/chat.ts到底手写wire类型还是有正式generator（无确证不冒称generated/不手改派生物），并给下一机器/source/test精确允许集、版本/消费者影响及事务并发/GC/权限/真实ownedPG验收。确认ChatRun只用于active_run，不删除其他Run查询状态模型；不为过门缩小完整goal或将pending/files空占位当完成。
+
+## ROOT-BFF-IAM-INTEGRATION（2026-09-30）
+
+BFF d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed provenance-only已独立0/0/0、Root Node22全门498pass/1既有skip验收并精确提交；12存在hash已核。Root唯一writer/index，允许现consumer-inventory.json的BFF gitlink/evidence commit与实际blob hash/vendor路径更新、现run_web_chat_worker_smoke.py及test纯fixed BFF source pin，及CURRENT/task/progress；先测试期望新源RED后更新source常量，禁止逻辑/门/contract bytes变更。现受管39290仍启动旧BFF677，不能称新pin已加载；Web旧relay消费独立后继，13broken不改绿。Root更新gitlink后实际policy/checkpoint/topology/相关Root测试，全门在新稳定组合跑。
+
+## 当前追加任务：CHAT-MIDSTREAM-DOM-AUDIT（2026-09-30）
+
+Web752 clean，agent_typed_skill_reader_owner仅只读engine transport/event mapper/snapshot/UI parts与现测试；真失败已定位terminal_dom_full_content，owner formal snapshot有效，Stop0/user1/markdown2，不直接当重复消息。禁止写/网络/服务/模型/Git/数据，交可复现路径或测试单part假设依据；Root当前sole组92720 live，严禁第三次推理/盲重启。BFF新pin原writer停写，独立审查及Root完整门87513正在运行，不称已提交。前轮状态以CURRENT最新组与progress真实FAIL为准。
+
+## BFF-IAM-REPIN：唯一来源闭环窄片（2026-09-30）
+
+| 项 | 放置与执行结论 |
+| --- | --- |
+| Owner / 基线 / 角色 | BFF fixed IAM消费者，不新owner；BFF main67755d16ff0f40ea02d71a6dad7108507a04766a clean，IAMe3c035b已发布；bff_personal_installation_owner唯一writer，Root sole index/提交。 |
+| 当前事实 / 文档门 | 独立只读已验4d→e3四owner输入逐blob同字节，IAM仅docs/test变化；BFF TECH/API/DATA方案职责不变，实施前先核对并更新TECH/API/CURRENT当前pin说明，不修改DATA无新数据事实。Root relay门唯一iamOwnerCommit!=gitlink，Web仍更旧a4/0.6后继消费独立。 |
+| 目标 / 目录 / 粒度 | 在既有BFF vendor commit目录重钉e3并删除4d唯一旧路径；淘汰Root复制contract或第二editable DTO，不新一级目录。16派生SDK文件应逐byte不变；唯一手写policy仍现http/routes原位置。 |
+| 数据API / 依赖 / 删除 | 不改0.7.0 OpenAPI bytes/2.1.0 policy版本/routes/limits/Cookies/表/状态/DTO/权限语义；只commit provenance/vendor位置/受影响config和manifest digest。IAM→BFF提交→Web原字节消费提交→Root inventory/gitlink最终验证，不能只改Root期望。 |
+| 允许集 | openapi-ts.iam.config.ts、scripts/generate-iam-http-client.mjs、contract/dependencies/iam-http.json、vendor旧4d/新e3对应iam.internal.v1.json、src/http/routes/iam-protocol-relay.policy.ts及确定生成contract/iam-relay-policy.json、test/contract-governance.test.mjs、test/iam-protocol-relay-policy.test.ts、contract/README.md、docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/CURRENT.md；16 SDK只现generator验证，若diff先报告；不手改。 |
+| 测试 / 验收 | 固定source断言先RED→repin GREEN，不放宽route/schema/hash，pnpm contract:check:iam（16文件两次确定）、contract:check:iam-relay、format/lint/typecheck/test/build/diff；生成原bytes与四ownerinputhash比对；停写清单/hash/原变更，独立审查+Root在主树重新跑门后精确提交。 |
+| 排除 / 资源 | 其他仓/Root docs库存/lockfiles/deps/业务API或SQL/任何infra/数据库/网络/provider/3310/Git操作；当前ee22受管组记录的是旧固定BFF677，不称在途新pin已上线。历史CURRENT条目保留历史语义，禁止机械改所有旧SHA。 |
+
 ## ROOT-CHAT-TICK-DIAGNOSTIC 已独立验收（2026-09-30）
 
 两文件冻结hash：runtime fe941b19d63079b14e59a509ab4e4b8ece594838db1d9316733eaa3273b1bd20；test423098431d70ac9eee3b30fc6d5ae8273b1bb05721dcee28d55f5325d9a9f7b1。RED11失败、Root49pass/68subtests、完整1094pass/3native skip/409subtests（106.91s，handle42615 exit0已消费）、Ruff/format/diff；独立0/0/0并确认真实launcher二进制log一致。原writer已停写；本次提交后由Root一次唯一原入口启动取证，模型仍gpt-5.6-luna。实际历史根因尚未证明；BFF pin审查另只读进行，不修改当前冻结组合。

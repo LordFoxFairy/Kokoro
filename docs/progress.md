@@ -1,3 +1,21 @@
+## 2026-09-30 — IAM来源已验收提交；真实续流缺口已有纯当前源码对照证据
+
+BFF d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed已由Root精确提交，12文件含vendor100%同byte路径替换；16SDK零diff，policy只iamOwnerCommit。独立0/0/0（P2无关文档format已由原writer回退），RootNode22全门498pass/1既有noPGskip/format/contract两门/lint/type/build通过，最新两docs再format/20相关/build通过。Root184个BFF owner/evidence refs从实际新commit blob重核（134唯一path），仅provenance/hash/合法新vendor路径，13broken不改绿；composer纯source pin RED1/32pass已见，相关Root门与最终集成尚在推进。预提交Root relay门因HEAD/index暂不同FAIL不能称PASS，checkpoint已PASS；完成Root提交后重跑。
+
+Root查明chat-service.snapshot根本未输出既有optional active_run，端口readSnapshot亦不读Run projection。原Web负责人直接当前源码内存转译对照：相同streaming前缀'A warm '+postwatermark CONTENT('drink.')/END、无START：BFF现shape无active_run→activeRunId null、1turn/2segment；补合法同run active_run→1turn/1segment'A warm drink.'；都无文本丢失、水位不变，不读真实数据/模型、不改源码。已证实owner产出缺口会稳定影响续流；真实轮reload瞬间shape仍未捕获，不冒称现场因果全部证明。临时验收1Markdown==1助手的假设也不成立；修复应按turn/正文验证而不简单拼接/放宽全文身份门。
+
+BFF设计只读审查确认现durable stream expected/latest/terminal可以同Chat RR视图合法产出queued/running/终态省略；current waiting/pending并无足够持久事实，禁止臆造，完整HITL仍目标未闭环。下一仅四既有文档门授权，不先写机器/source/SQL；不将局部queued/running改善替代全goal。Root唯一39290组仍固定旧BFF677，模型/greeting已真实两次，不再第三次推理或盲重启。
+
+## 2026-09-30 — 唯一新受管组已启动；真实途中刷新故障已缩小到DOM文本部分
+
+Root ee22bacd，原入口唯一session92720/launcher39290/Web39688，workspace he2cz0xc，当前3310监听与原handle live已复核；仍fixedWeb752/BFF677/Systemc0/Agent58/IAMe3，gpt-5.6-luna private profile，emptySkills/Storage未配置，不宣称全产品。六固定tick分支诊断已加载，尚无实际failure-stage；历史退出根因未证明。
+
+独立真实产品Chromium（非右侧IAB）第一轮 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-gpt56-staged-ui.dp6n7mc_：正规IAM登录/原生UI202/非空prefix中途reload/RUN_FINISHED，terminal阶段E_TIMEOUT，原FAIL保留。无追加模型的同会话只读 /tmp/kokoro-gpt56-staged-read-diag：formal terminalChatSnapshot全文/唯一message_id/run/status/watermark与750ms比较通过，DOM全文、Stop零、logout/session=false通过，不改写首轮。
+
+第二轮只一条新UI消息并逐await阶段留证，/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-gpt56-await-proof.h4b1tsvz：login/202/prefix途中reload/RUN_FINISHED/owner completed/Stop detached/两份正式terminal snapshot比较均越过，**FAIL terminal_dom_full_content**，最后http200/owner_terminal_valid=true/Stop0/user1/markdown-message2，完整assistant hash c2729a65b4a3febdffe6298bcce0376e4c32b2cee678c5abdd6bca344c019251、ids hashfc73b63b59a4bc34ddb3d72add5e9b7008b14488e3b45676498f10db18f981b0，page errors0。原syntactic-check失败已先修，未调用模型；两个真实browser handles均exit1/contexts finally关闭，无第三次推理。两Markdown parts不等于两assistant message，源码/UI只读审计已派原Web负责人，核实snapshot前缀+AGUI恢复拆段还是单Markdown断言不成立，不盲改BFF owner或放宽全文/身份门。原历史首轮E_FLOW仍保留。
+
+BFF provenance-only重钉e3原writer已停写：四ownerinput原bytes、16SDK零diff、policy唯一iamOwnerCommit变化；RED3/GREEN20、writerNode22全门498pass/1既有noPGskip。Root12存在hash+旧路径删除已核对，主树全门handle87513 live；独立原审查员并行复核。BFF尚未提交/集成，Web更旧a4/0.6 relay后继消费不能混做已完成。
+
 ## 2026-09-30 — Chat周期退出安全分支证据已落地并全门验收
 
 Root ce74fc41基线，原runtime负责人仅现runtime/test两文件TDD：RED11失败，六固定process/provider/agent_ownership/application_ownership/health_request/health_receipt阶段只写原受限binary process.log，不输出异常/message/类名/URL/key/body，日志write/flush失败不盖原异常；原健康检查/60秒频率/renew/CAS/guard/cleanup不变。Root核对hash与binary真实句柄，49pass/68subtests、完整1094pass/3native依赖skip/409subtests（106.91s，/tmp/kokoro-chat-tick-full-root-tests.log、handle42615 exit0已消费）、Ruff/format/diff通过；独立0/0/0。只是补齐真故障分支留证，不把历史根因称已修；下一Root唯一原入口启动。当前只读/models库存PASS（/tmp/kokoro-gpt56-luna-current-inventory.json），没有推理消耗。
@@ -2064,3 +2082,9 @@ W0B-1 由 Root governance 子 Agent 实现 consumer/producer manifest 解析和�
 - 两名独立审计员在 Root `c5259377` 及固定各 owner main/clean 来源上核当前源码、机器契约与三设计文档，均未改仓库、启动服务或运行测试。Root 静态标准门复核仍为 136 违规/0 未核，库存为 16 边中 13 broken；本节仅改变下一切片判断，不把静态审计算运行验收。
 - Agent 标准 worker 并非未实现：`worker/main.py` 已装真实 SystemModelClient、LiteLLM-compatible ChatOpenAI 和 Storage delivery；`agent_factory.py` 解析真实 System route。S9 浏览器作品门的第一个替身是 Root 在 pending 后手动 claim/journal/emitter；旧 worker smoke 的首个替身是 System HTTP fixture，第二个是模型 SSE fixture。现有 System owner smoke 只做 resolve，不做推理。下一真组合先验当前 worker，不在 RED 前重写 Agent runtime；本机已有 Ollama 可用模型，但这还不是已验的 System→真实模型→Storage 同链。
 - Platform 的 IAM 0.7 Skill user-delegated 动作与 BFF 窄 client 已发布，不能重复安排 IAM；Platform runtime 使用 v2 command digest，v3 仅三文档目标，BFF 四个 GET 外 Skills/MCP 仍 503，Storage revision `skill_package` 与包体仍是文档门。故 owner-first 下一代码源为 Platform v3 自包含 projection artifact，发布并复验后 BFF 个人 CreateDraft 才可固定消费；可用 Skill 发布/安装仍需 Storage 包与 Agent typed selection 后继切片。文件门与未验边界见 `docs/task.md`。
+
+## 2026-09-30 WEB-BILLING-TRUTH / 正式积分链重新核对
+
+用户拒绝静态“本次由Kokoro承担费用，不消耗点数”，允许当前本人测试帐号后台入账。Root采用systematic-debugging与原生并行：Web原负责人只读53tests通过后获16现文件删除片；bff_personal_consumer_review只读核Billing。证据：AssistantTurn仅taskTitle即渲染，中文免费而英文uses credits；九locale directPlaceholder也含免费承诺、现fast运行实际用中性placeholder。Billing当前canonical32表但启动旧pg/entitlement writer，正式CreditService组件尚无runtime/HTTP/CLI grant入口；禁止旧表恢复/盲SQL/假付款。Web余额wire/标准error code还需owner契约统一。尚未真实充值、尚未积分计费E2E，状态不冒充PASS。
+
+最新受管session92720已消耗权威exit1；日志精确stage=provider，3310无listener。只证明库存观测失败，不推断请求HTTP状态或推理失败；隔离生命周期为后续正确修复，不盲restart。原两次真实推理和中途刷新E2E FAIL均保留。Root BFF来源集成聚焦正确门80pass、库存77pass；曾两次误指不存在test文件均exit4/no tests后已纠正，不计PASS。

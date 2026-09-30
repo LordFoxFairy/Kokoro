@@ -10,7 +10,7 @@
 | --- | --- |
 | `apps/kokoro-agent` | `58b59cf7cdc4132042d25460b4928d71a66ae7ec` |
 | `apps/kokoro-app` | `752aff9d0744cd55c556079a08a2a28e393e50e4` |
-| `apps/kokoro-bff` | `67755d16ff0f40ea02d71a6dad7108507a04766a` |
+| `apps/kokoro-bff` | `d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
 | `apps/kokoro-capability` | `6519ae9a7dba63586474d2860f6725d3165b701e` |
 | `apps/kokoro-iam` | `e3c035b99cf9479ac8357c7d38147f1541dcbcac` |
@@ -22,9 +22,11 @@
 
 `apps/kokoro-app` 是本轮唯一正式前端；Mori 不参与本轮业务重构。当前物理名称仍为 `apps/kokoro-capability`，业务目标为 Platform，重命名/cutover 未完成；不使用 `apps/kokoro/` alias。模型目录归 System，不新建 kokoro-model。
 
-**历史用户链证据（当前3310已停止）：** 3310曾唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
+**历史用户链证据（当前组另见下文）：** 3310曾唯一有序切换到用户指定外部`gpt-5.6-luna`；正规IAM登录→app原生发送202→正式System resolveModel success→标准Agent真实可见回复。独立首轮捕获流式前缀并途中刷新，但terminal严格组合断言E_FLOW，原失败保留。同一会话后验GET两份完整snapshot稳定、DOM全文一致、原生logout成功；不能以后验改称首轮全通过，途中刷新的瞬态断言仍待定位。右侧IAB操作被平台URL policy拒绝，未绕过，独立Chromium不是右侧IAB已验。
 
-**当前运行更新：** 新session14183/launcher9072/Web9451已权威exit1，直接进程均退出，3310无监听；最新日志为固定脱敏`serving chat tick (chat) failed`。启动时正规登录预探测和Web752四生产文件hash匹配是历史证据，不再表示在线。workspace`kokoro-local-login-vuag0zbp`已保留；只读源码复核确认provider库存错误也被包装成ChatError；当前类别覆盖子进程、provider、两种资源ownership或health receipt，具体触发尚未证明。现runtime/test已补六固定分支日志，独立0/0/0与Root1094pass/3skip/409subtests通过；尚未重跑真实故障，下一由Root单组原入口取证，不放宽健康保护。
+**当前运行更新：** Root ee22bacd原受管session92720/launcher39290/Web39688已exit1且3310无监听，workspace`kokoro-local-login-he2cz0xc`保留。固定安全日志明确实际失败分支`stage=provider`，即模型库存观测失败导致整组清理；并非已经证明真实推理失败或具体HTTP状态。该组实际曾加载Web752/BFF677、emptySkills/Storage未装配。后继须隔离模型库存观测与独立IAM/Web生命周期，不放宽ownership/CAS或伪造healthy，不盲目重复重启。
+
+**当前真实Chat验收：** 新独立产品Chromium第二轮已越过真实login/UI202/非空prefix途中reload/RUN_FINISHED、owner completed、Stop detached、两份正式terminal snapshot全文/ID/run/status/watermark比较；FAIL精确为`terminal_dom_full_content`，最后owner有效、Stop0/user1/markdown-message2。这两DOM parts不等同重复Message；已纯当前源码对照复现：BFF snapshot缺active_run时无法认领同run前缀，补合法active_run则一段。真实轮reload瞬间shape未捕获；后继BFF同RR projection文档门进行，不加Web猜测或盲拼START。证据`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-gpt56-await-proof.h4b1tsvz`，非右侧IAB。原首轮及历史E_FLOW失败保留，无完整E2E PASS。
 
 **真实Product安装当前：** Root `c3fa42710334bf1b9dc00f9be0f8b6a21a647e78` 原入口`run_bff_skill_draft_sandbox_smoke.py --product-installation`已真实exit0/PASS（session78975），日志`/tmp/kokoro-product-installation-real-surface.log`。固定IAMe3c/BFF677/Platform6519/Storage16a6，复用现PG/Redis/MinIO/ClamAV，五public操作、same-key历史ACK→GET当前、false筛选/opaque两页、移除/稳定ID重装、撤权五方法在owner前拒绝均通过；两不同已发布Skill、39receipt/2publish事件，resources clean。此前native依赖缺失与Root误开legacy surface的真实FAIL保留。此为后端组合，不是浏览器安装UI、同租户第二用户或标准worker非空Skill模型验证；Agent关闭仅结构证据，不冒充Run数据库观测。
 
@@ -44,14 +46,14 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 用户选择 `gpt-5.6-luna`，指定HTTPS接口真实 `/chat/completions` 已200、返回该ID及非空回复，
 结果 `/tmp/kokoro-gpt56-luna-probe.json`（0600、无key/body）。Root现组合工具支持显式私有profile，
 七源码/测试文件独立0缺陷、Root87tests/36subtests与Ruff通过；不改System/Agent owner API或原Ollama guard。
-历史3310外部profile经正式System→标准Agent→UI已产生真实回复；当前受管组已停止，完整首轮E2E仍FAIL，后验持久态/DOM一致不改写历史失败。旧7399及其六直接子进程已全部退出、session65687已回收，首启动因3310临时bind占用exit1，等原guard释放后再成功启动，无kill-all/端口guard放宽。
+历史3310外部profile经正式System→标准Agent→UI已产生真实回复；最新受管组另见上文，完整首轮E2E仍FAIL，后验持久态/DOM一致不改写历史失败。旧7399及其六直接子进程已全部退出、session65687已回收，首启动因3310临时bind占用exit1，等原guard释放后再成功启动，无kill-all/端口guard放宽。
 
 ## 当前优先级与正在推进
 
 - Platform 原负责人：runtime已验收提交d93e8a59；已提交6519ae9未激活v5候选5.0.1 wire矛盾纠正，唯一Proto/Schema/runtime源码冻结，无兼容字段/双轨。
 - BFF消费者67755d16已独立0缺陷与Root Node22全门验收提交；五本人安装路由固定Platform6519/5.0.1，读projection/写catalog分离，默认新增测试已纳入，413/504真实状态契约。真实IAM→BFF→Platform安装组合已PASS；Web安装浏览器仍待验。
 - Web原负责人：个人安装consumer已提交752aff9d，29文件独立0/0/0、Root contract109/architecture37/lint/typecheck/test1773/build通过；五client/严格同源adapter/UI未知同key/currentGET/分页取消已验纯门。真实后端组合已PASS；新3310启动时加载本片后退出，浏览器安装仍待验。完整Project typed全集及任务关联仍后继切片。
-- Root主线：gpt-5.6-luna正式链真实回复已见，首轮中途刷新严格断言失败待精确定位；已完成的Web/BFF候选统一提交并加载，两受管session53033/14183均已退出，当前3310无监听，由Root单一管理恢复。继续按owner推进非空Skill/安装Web、Project真实全集及全产品闭环，不把直接provider probe/后验快照冒充完整E2E。
+- Root主线：gpt-5.6-luna正式链真实回复已见，首轮中途刷新严格断言失败待精确定位；已完成的Web/BFF候选统一提交并加载，旧session53033/14183已退出，最新92720已退出、当前无受管在线组；BFF新pin不得宣称其已加载。继续按owner推进非空Skill/安装Web、Project真实全集及全产品闭环，不把直接provider probe/后验快照冒充完整E2E。
 
 同仓单writer；worker不自行启动共享PG/Redis或重置数据。子仓 CURRENT 中“候选待Root”属于交付时快照，Root已验收状态以本表和绑定commit的task/progress为准；在owner下一代码切片同步文档，不因纯文案制造另一轮依赖升级。
 
@@ -62,8 +64,8 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 3. Browser signed PUT/CORS：已探测本地MinIO返回501；HTTP Source GET/PUT或预览Playwright不替代浏览器发布门。Storage orphan retirement/quarantine 等生命周期仍开放。
 4. System 部分 installer 仍锁 public/整库空白；同库owner schema组合边界须继续修正。Team DOM/邀请邮件/写操作、Scheduler调用/恢复与其他Product surface均须按owner闭环。
 5. 最近全仓标准门137项违规（旧136非当前），来源库存16边/13 declared broken；这些是仍开放队列，不因局部PASS改绿。完整goal仍active，Billing最后。
-6. 最新Root IAM relay门FAIL：BFF policy iamOwnerCommit仍4d981441而IAM gitlink为e3c035b；这是未完成来源对齐，不能把HTTP通过当作此门通过。BFF当前个人安装切片不抢改IAM相关source，后续独立精确pin修复需保持机器bytes验证与Web消费同步。
-7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮实际main-only核对主仓+11子仓本地/远端全仅main、11子仓clean；整体gate因Root在途改动及任务外uv.lock FAIL，后者保留，不称全体clean，不新建分支/PR。
+6. BFF d654a1bc已完成IAMe3来源重钉，16SDK与owner inputs原bytes，policy语义不变；Root库存/gitlink集成中，预提交relay门HEAD/index不一致FAIL须提交后实际重跑。Web仍更旧a4/0.6 relay消费者，后继原字节消费未完成，不把BFF provenance PASS当Web闭环。
+7. 工作树任务外Root `uv.lock` 变化保留不暂存；不称全体clean。本轮实际main-only核对主仓+11子仓本地/远端全仅main、当时11子仓clean；当前BFF文档候选和Web修复在途，整体gate因Root在途改动及任务外uv.lock FAIL，后者保留，不称全体clean，不新建分支/PR。
 
 ## 验证和归属
 
@@ -83,3 +85,7 @@ python3 -m pytest scripts/tests
 ```
 
 旧 `verify-ten-repository-full.sh` 与 `run_stage2_owner_health.py` 的共享状态编排暂停，不能当作全仓验收；完整单仓门、真实模型和浏览器门按task依赖逐片执行。
+
+## 正式积分流程最新核对（2026-09-30）
+
+用户已授权当前测试帐号后台积分入账；尚未执行，不称已充值。Web“本次由 Kokoro 承担费用，不消耗点数”是 taskTitle 条件下的静态 Badge，未消费计费 owner 决策，九语言对收费说法矛盾；删除片进行中，placeholder亦不得无依据宣称免费。Billing `63e0ab6` 已有32表 canonical 与新 CreditService 的事务组件，但生产主入口仍旧 pg/旧表，新 grant/operator入口与 Run准入/结算未接，CURRENT明确M3/M4前不可部署。Web余额 DTO 与BFF public契约及标准402 error code消费也有缺口，不能以移除Badge宣布账务闭环。支付渠道仍最后；积分正式赠送、reserve/capture/release 和余额/流水按owner后续逐片验收。
