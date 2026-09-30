@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 实际并行两负责人，Root保留登录与集成验收
+
+Root `6fc47c93` 精确集成Agent58b；独立来源锁审查P0/P1/P2=0，30个commit/2blob digest及四composer pin固定源码匹配，非Agent事实/edge状态不变。提交后拓扑9runtime与精确checkpoint PASS；完整Root脚本1023 pass/2skip/325subtests，115.72秒，`/tmp/kokoro-root-58b-integration-tests.log` exit0。
+
+正常无诊断wrapper Source `/tmp/kokoro-source-58b-real-composition.log` exit1：已越过OAuth token、安装、typed原字节和native metadata，SetEnabled ConnectError；native目录name规范警告保留。另-c安全诊断包装提前generic FAIL未分类，不作为业务复验通过。两owned subprocess97000/5281已退出、session终态消费，Redis15=0；3310原3898/4007/4113仍活且4113监听，未启动重复基础设施。
+
+用户明确批准同时推进多个，已实际续派 `agent_typed_skill_reader_owner` 排查/窄修Root Source四文件，另启动 `platform_personal_installation_owner` 仅个人安装三面文档门；写入范围互不重叠、无服务启动权限/无index提交权限，Root独占台账/index与真实组合资源，验收后串行owner→BFF→Web依赖。当前两个候选均进行中，未把Agent报告/退出码当完成。右侧旧签名标签CUA读取再超时，用户手动新/login待答，当前没有可见表单提交/callback/app/reload证据；明确保留未验边界。
+
 ## 2026-09-30 — OAuth成功扩展消费者窄修验收，正常Source复验待执行
 
 Agent `58b59cf7cdc4132042d25460b4928d71a66ae7ec` 六具名文件已由Root提交，clean main。修复 `_TokenResponse` 未知OAuth成功成员（实际IAM expires_at）的误拒，保留已知required/strict/Bearer/TTL/scope/token/secret/传输/credential单飞取消门；扩展丢弃且不决定cache。writer实际RED4→GREEN42，Root完整 canonical门 `/tmp/kokoro-agent-oauth-root-gates.log` exit0：1431 pass/6 skip/172 deselected（56.94秒）、Ruff249/Pyright0/contract/lock/sync/build；固定hash独立终审P0/P1/P2=0、42聚焦及扩展不入repr/dump实测。初次Root直接调用 `.venv/bin/pyright` 因全局解释器产生1250缺import/type错误，按 `uv run --frozen pyright` 正确环境重跑0，未为此改代码/门禁。
