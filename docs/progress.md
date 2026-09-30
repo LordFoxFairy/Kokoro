@@ -6,7 +6,7 @@
 
 右侧原标签仍是旧过期交互；CUA本次读取AX和DOM均CDP focus超时，未实际提交凭据、回调或进入/app。已请用户手动打开 `/login` 再继续，未绕过此前浏览器阻止。当前登录仅运行恢复，不报浏览器E2E通过。
 
-Agent原writer交付返修 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main停写，报告同session四RED→GREEN、默认1410 pass/6 skip/172 deselected及HITL恢复/guard。Root主树独立完整门exit0：1410 pass/6 skip/172 deselected（默认仍1父examples/5未配置MinIO跳过）、Ruff249文件/Pyright0/contract/lock/frozen sync及wheel/sdist通过，日志 `/tmp/kokoro-agent-e728-root-gates.log`。固定SHA只读审查 `run_metadata_independent_review` 进行中，尚未最终验收或pin。真实Source owner组合/安装产品入口不在该返修通过范围。
+Agent原writer交付返修 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main停写，报告同session四RED→GREEN、默认1410 pass/6 skip/172 deselected及HITL恢复/guard。Root主树独立完整门exit0：1410 pass/6 skip/172 deselected（默认仍1父examples/5未配置MinIO跳过）、Ruff249文件/Pyright0/contract/lock/frozen sync及wheel/sdist通过，日志 `/tmp/kokoro-agent-e728-root-gates.log`。固定SHA只读审查 `run_metadata_independent_review` 已通过：P0/P1/P2=0，独立11 pass/44 deselected，确认生产worker同Run Command resume不重入discovery且原guard保留。单仓代码门已复验，Root gitlink/库存集成仍待办。真实Source owner组合/安装产品入口不在该返修通过范围。
 
 ## 2026-09-30 — 切回用户右侧真实登录，记录现场阻断与未放行候选
 

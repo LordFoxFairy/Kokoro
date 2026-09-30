@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 返修：W3-AGENT-RUN-SKILL-METADATA（P1，固定候选未放行）
+## 返修：W3-AGENT-RUN-SKILL-METADATA（P1已修复，Root集成待办）
 
 | 项 | 任务卡与放置门 |
 | --- | --- |
@@ -10,7 +10,7 @@
 | 范围/边界 | 限Agent factory、既有skills模块必要一个生命周期文件、直接unit/architecture/native checkpoint组件测试及INDEX/TECHNICAL_DESIGN/CURRENT/ACCEPTANCE。其他clients/ZIP/传输/SQL/Proto/generated/lockfile/仓库不改。不得复制frontmatter解析或手造skills_metadata第二事实源，不取消checkpointer/换每Run thread_id来回避会话问题。 |
 | 验证/交付 | 生产Factory+真实DeepAgents+InMemorySaver同session覆盖[]→A、A→B、A→[]、连续同refs及同Runinterrupt/resume；模型观察当前metadata，不仅看返回值（metadata是PrivateStateAttr），用真实checkpoint snapshot核实并覆盖旧load_errors清除和空refs零Skill依赖。先RED→GREEN，恢复/取消/授权失败不退回旧元数据。default gates与隔离组件、固定SHA交付停写，Root复验后才pin。无需共享PG/Redis或新后台进程。 |
 
-证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），Root负责集成和提交，尚不pin。用户已授权3310重启，Root不以返修代替可见登录验收。
+证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），固定SHA独立审查P0/P1/P2=0、聚焦11 pass/44 deselected；代码门已复验，Root负责后续gitlink/库存集成，真实Source组合仍待验。用户已授权3310重启，Root不以返修代替可见登录验收。
 
 ## 用户当前最高优先级：右侧3310真实登录验收
 

@@ -1,6 +1,6 @@
 # Root 当前组合
 
-**2026-09-30 用户授权后3310运行已恢复、可见登录待验：** Root仅停止旧同组Web/BFF并用现有受管启动器启动当前Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`（session71981，Web4113监听3310）。右侧仍是旧过期交互，CUA读取超时，已请用户手动打开 `/login`；未提交/回调/刷新，不宣称可见E2E通过。Agent reader返修 `e728fe24` 已交付，Root全门/独立审查进行，gitlink尚未放行；下方3310旧实例记录均是历史状态，见task/progress。
+**2026-09-30 用户授权后3310运行已恢复、可见登录待验：** Root仅停止旧同组Web/BFF并用现有受管启动器启动当前Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`（session71981，Web4113监听3310）。右侧仍是旧过期交互，CUA读取超时，已请用户手动打开 `/login`；未提交/回调/刷新，不宣称可见E2E通过。Agent reader返修 `e728fe24` 已交付，Root全门1410 pass/6 skip/172 deselected及独立审查P0/P1/P2=0，gitlink/库存集成待办；下方3310旧实例记录均是历史状态，见task/progress。
 
 **2026-09-29 IAM并行测试支撑已验收：** IAM `a6dfd196` 仅新增真实Agent source验收所需opt-in测试凭据/JWKS地址，生产契约未改。Root Node24全verify 938项、真实PG/Redis host集成46项均通过，独立固定SHA审查P0/P1/P2=0；Agent typed reader进行中，尚非Skill执行全链。下列真实Chromium结果仍绑定IAM `36242fd`，3310旧实例未更新。
 
