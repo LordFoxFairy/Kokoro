@@ -1,3 +1,37 @@
+## CONTINUE-20260930-B 审查派工
+
+Root snapshot evidence四文件冻结hash见/tmp/kokoro-snapshot-evidence-hashes.txt，独立bff_personal_consumer_review只读；Web四docs原writer停写hash已交接，独立bff_personal_installation_owner只读。两者仅原职责/事实核对及纯门，不写文件/Git/服务/真实数据/模型。Root重新在Web cwd用其正确11.25 pnpm跑doc门（先前Root -C方式被Corepack挑Root12.3.4拒绝，退出1，不放宽版本检查）；文档门通过后才源码授权。
+
+## WEB-PERSONAL-DOC-WRITE：四文档门授权
+
+Root已审只读放置表：沿既有Hub/PersonalSkillsRead，Browser→Web同源具名严格分支→BFF67755d16 public→Platform6519，弃新顶层store/安装塞Publish。Web原负责人唯一writer，基线14a54b4 clean，Root sole index/commit；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md。只收敛当前/目标和下一源码集，不写业务/API/generated/锁。POST/PUT/DELETE冻结意图+key、未知结果只显式同key重试、replayed receipt后Get当前、无public CAS自造字段；个人发布/安装/Run选择分离。List top data+optional meta/next_cursor、过滤三态、removed disabled、严格错误/头/同源/权限。四docs一致、hash、未决项/命令/来源SHA/digest交付后Root评审与contract108/architecture37验证才能源码授权。
+
+## ROOT-CHAT-SNAPSHOT-EVIDENCE：验收诊断窄片放置门
+
+| 项 | 结论 |
+| --- | --- |
+| Owner/基线 | Root E2E验收，不拥有Message/Run事实。main07c584b2，Root唯一writer/index，uv.lock保留；Web/BFF/Agent不改。 |
+| 当前事实 | 正式web_real_model_worker_chromium.mjs已有真System/worker/tools/delivery/RUN_FINISHED/下载/私有与snapshot marker门，但缺全文/ID稳定、精确快照失败；临时accept.mjs E_FLOW把错误混叠，历史当时内容不可后验恢复。 |
+| 职责/位置比较 | 采用scripts/e2e/chat_snapshot_evidence.mjs单责纯内存snapshot证据校验＋现真实driver调用；淘汰第二常驻服务/临时脚本作为永久门，以及在已有browser脚本混合一大块schema/错误/helper。现目录不新增目录/module。 |
+| 粒度/API | 纯函数冻结正式message_id/run_id/role/status/content并产安全hash，精确拒count/order/id/status/content/run漂移；只验本driver新建一问一答，不能推广历史会话必须两条。真实RUN_FINISHED后GET、750ms后GET、完成reload后GET同内容/身份；不抹字/丢部分/排序掩盖。 |
+| 依赖 | stdlib node crypto，无I/O/import副作用；现Chromium driver调用，Python阶段validator核新增evidence。无新deps/SQL/Redis/owner contract，现HTTPS/SPI/calling guard保持。 |
+| 数据/删除 | 只内存原文比较，输出hash/固定code而非正文/credential；不共享新canonical Schema，不建立id alias，沿唯一message_id。原历史FAIL保留，后验不覆盖。不减少已有真实tools/delivery/private/下载门。 |
+| 文件集 | 新scripts/e2e/chat_snapshot_evidence.mjs；现scripts/e2e/web_real_model_worker_chromium.mjs、run_web_real_model_worker_smoke.py、scripts/tests/test_web_real_model_worker_smoke.py；Root MAP/CURRENT/task/progress。 |
+| 验证 | 先Python已存在stage validator对缺失/false/hash漂移稳定RED，再纯Node helper单独边界测试/坏数据/immutable精确码；pytest/Ruff/Node syntax、默认Root全门。真实模型门不因unit通过宣称PASS，不额外启动infra/重启30171。 |
+
+BFF只读源码已核snapshot是REPEATABLE READ READ ONLY，终态SQL仅pending/streaming可变；当前未证明owner race，不先改生产投影。
+
+## CONTINUE-20260930-B：两个独立审计面
+
+上一轮为progress：Root07c584b2/Web14a54b4/BFF67755d16提交、1058测试、真实模型UI和同会话全文诊断产生新证据。当前Root main07c584b2，uv.lock任务外保留；受管30171/53033仍live，不重启。
+
+| ID/目标 | Owner/Agent/模式 | 范围/基线 | 验收/依赖 |
+| --- | --- | --- | --- |
+| WEB-PERSONAL-DOC-GATE | Web原负责人agent_typed_skill_reader_owner；当前只读 | Web14a54b4 clean，AGENTS/三面docs/既有Hub与Skills client/generated pin；不写文件，不Git/infra | 固定BFF67755d16五本人安装API与当前client对比，提供三面文档门最小放置/文件表，后续Root才授权写；无新owner/store/compat。 |
+| BFF-TERMINAL-RACE-AUDIT | BFF原负责人bff_personal_installation_owner；只读 | BFF67755d16与Agent58b59cf7发布/投影源码及Root旧accept.mjs/diag.mjs；不写文件，不服务/数据/Git | 从真实completed状态与content更新事务/事件顺序判断初次terminal750ms变化可能性；提供精确源码/现测试覆盖和可稳定纯复现，不凭后验推出历史根因。 |
+
+Root保留真实刷新验收关键路径：先读生产状态/原脚本，区分断言缺诊断与owner bug；不额外调用付费模型或改门清零。只读Agent可并行，同仓后续只有一writer；本片不是整目标完结。
+
 ## ROOT-GPT56 当前交付/未闭环（2026-09-30）
 
 选定`gpt-5.6-luna`，私有profile→正式System→标准Agent→网页真实回复已见；唯一组30171/session53033。首轮UI202/真实prefix中途刷新，但terminal E_FLOW未精确保存子断言，状态仍FAIL；只读同一会话后验2条completed/完整内容ID稳定750ms/DOM全文相等/原生logout均通过，不覆写原FAIL。不追加付费推理重试、不扩大数据/权限，下一片先改验收诊断以捕获当时子断言，不凭推断重写owner。Root本轮全测试1058pass/3skip/377subtests，checkpoint/topology PASS，标准137违规仍未闭环；Billing最后。

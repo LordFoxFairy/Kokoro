@@ -1,3 +1,9 @@
+## 2026-09-30 — 正式快照验收证据门与个人安装Web文档门
+
+- 上一turn为progress；本轮复核受管30171/31351仍live，没有因观察超时重启。BFF独立源码审计及Root核对：readSnapshot明确REPEATABLE READ READ ONLY，消息全文/AGUI frame/terminal watermark同事务，completed后SQL封口；未证明生产owner race，历史E_FLOW原失败保留，不盲改生产。
+- Root在既有real-model driver增加真实RUN_FINISHED后首snapshot、750ms另snapshot、完成reload全文/ID/run/status/watermark冻结门，新单责纯helper无I/O/secret副作用、仅唯一message_id、错误固定code＋hash/枚举。Pythonstage validator拒缺/假proof。RED4 failed/13 deselected与helper缺失1 failed/17 deselected；GREEN18pass（新增Node子断言），Ruff/Node语法通过；首轮Ruff格式失败已只格式化本测试修复。独立P0/P1=0、P2覆盖3比较分支已补，不放宽原真实tools/delivery/download/privacy/HTTPS/Ollama-only。真实外部/非空Skill模型门本轮没额外调用，不能把unit门称UI全PASS。
+- Web49adb4b仅四文档209行，明确BFF67755d16/OpenAPI40578534与Platform6519事实、五本人安装消费/严格响应头/分页presence/原意图同key/receipt历史Get当前/无public CAS，发布安装Run独立。独立0/0/0，Root在Web cwd contract108/architecture37 PASS。最初Root -C用法被Corepack以Root12.3.4拒绝exit1，已在Web正确11.25上下文重跑，无版本guard放宽。未实现安装UI，下一授权另卡。
+
 ## 2026-09-30 — gpt-5.6-luna 已正式装配并产生网页回复；E2E边界保留
 
 - Root7b9c797c，Web14a54b4/BFF67755d16/Systemc0a76a3a/Agent58b59cf7。原受管7399六子进程SIGINT反序停止/session65687 exit0；首次启动guard端口占用exit1，无监听但bind尚未释放，bounded等待guard自然通过后新session53033/launcher30171，IAM30877/System31271/Agent31307+31309/BFF31346/Web31351。只复用原PG/Redis，不起第二基础设施/kill-all；新private workspace69isk74y。
