@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-30 最新根因确认：** Root正常Source服务端iam_ingress拒绝，另只读观察本fixture同resource客户端精确counter101/TTL55；IAM100/60窗口第101次必RATE_LIMITED（Platform429归UNAVAILABLE）。Root下一仅使高请求量测试阶段在Run/lease前遵守窗口，不改鉴权/阈值/Redis计数或应用sleep。Source完整仍FAIL未验，Root1024 pass/3skip/338subtests与topology/checkpoint通过不替代真实链。Platforme510仅Product文档门，v5原负责人先只读准备；source冻结结束再写机器，13broken/当前右侧登录待验保留。
+
 **2026-09-30 两切片最新事实：** Source安全来源诊断Rootc8e1def9经native6/65、ordinary86/3skip/140与独立审查0缺陷；未修真实disable UNAVAILABLE。Platform个人Product三面设计e510c04已提交/clean，Root七纯静态门与独立审查通过，尚未发布v5机器/运行安装入口，不以文档称可用。Root来源集成后继续正常Source分类和owner修复；当前右侧登录仍待手动/login与可见回调/刷新，3310保留，13broken与任务外uv.lock保留。以下每个日期条目是历史门，不覆盖本段边界。
 
 **2026-09-30 最新实际阻断：** Root6c1fe846正常Source首次disable SetEnabled明确UNAVAILABLE；不是已通过，后续re-enable/lease/撤权未验。生产TS/Python同样本bool双值binding/command摘要完全一致，根因仍只读窄查；安全诊断全Root1023 pass/3skip/325subtests及native3/34已验。Platform只推进Product PERSONAL四文档候选，未有机器/运行产品入口。右侧登录仍旧过期标签CUA超时待手动/login，原3310受管服务保留不重复启动。详细当前任务与证据见task/progress。

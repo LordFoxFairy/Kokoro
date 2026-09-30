@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 根因确认：组合请求超过同资源客户端IAM内省窗口
+
+Root b7df7f4a正常Source `/tmp/kokoro-source-origin-code.log` exit1：disable SetEnabled UNAVAILABLE/cause=false/cause_type=none/category=iam_ingress。Root另只读诊断正确加入脚本import路径，业务请求未变，仅失败点GET本fixture ready.redis_prefix/资源客户端精确rate计数和TTL，不打印key/ID/token、不清计数或改规则；`/tmp/kokoro-source-owned-rate-counter.log` 实测 **101 / TTL55秒**、同错误。IAM生产consume先原子INCR，100/60秒，第101次必RATE_LIMITED，Platform typed429归UNAVAILABLE；结合当前request边界可确认此为测试同client窗口耗尽，不是抽象认证/Connect池问题。
+
+诊断PID38244/session25759已exit1消费，Redis15=0、自有资源清理未报错；正常PID28795/session18218也终态已消费。当前Root完整 **1024 pass/3 native skip/338subtests**、119.85秒（`/tmp/kokoro-root-personal-source-integration-tests.log`）exit0，提交后拓扑/checkpoint PASS，13broken未漂白。当前不把窗口等待或诊断当真实Source通过，后续等明确Source-only阶段礼让窗口代码、取消时序与完整normal门。
+
+下一并行Source原负责人限定Root四文件writer，Platform原负责人只读准备v5机器字段/向量/生成文件集；source真实冻结时不改Platform，结束后继续owner机器切片。并行推进保留有效依赖，不以dirty来源或跳鉴权伪绿。新增等待只在Root高请求量组合fixture、Run/lease创建前，应用代码不加入魔法sleep，IAM阈值/role/credential/权限不动；运维不展开。整体goal仍active，右侧登录未完成可见验收。
+
 ## 2026-09-30 — 两负责人切片收口：安全来源诊断与个人安装三面设计
 
 Root `c8e1def9` 提交Source来源诊断helper/test；Root独立Ruff check/format、native6 pass/65subtests、ordinary86 pass/3skip/140subtests，日志 `/tmp/kokoro-source-origin-root-{native,focused}.log`，独立固定hash审查P0/P1/P2=0。只保留标准code/cause是否存在/精确class固定label/8fixedmessage exact标签；子类/任意未知闭合unknown/unclassified，不渲染原文/context/secret，call/proof/digest/timeout/取消登记与清理未动。这不是底层UNAVAILABLE修复。纯generated client无网络实测local ConnectionError与server503都可UNAVAILABLE，分别cause true/false，故下一正常一次运行分类来源，不凭code归罪IAM。

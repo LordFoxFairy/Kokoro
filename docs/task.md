@@ -1,5 +1,16 @@
 # Kokoro 后端闭环任务总表
 
+## 当前确认根因与下一并行切片（2026-09-30）
+
+Root b7df7f4a；Source正常origin日志确认服务端IAM ingress UNAVAILABLE，诊断只读观察本fixture精确资源客户端key在拒绝时counter=101/remainingTTL55，IAM源码RateLimitStorage仅用官方原子INCR，PlatformWorkloadService 100/60秒，consume101必RATE_LIMITED→429→PlatformUNAVAILABLE。这是Root组合请求压满共享资源客户端窗口，非bool摘要/本地Connect池或已完成执行撤权。无计数删除/阈值修改/假token；资源全部正常退出，Redis15=0，当前Source仍FAIL。
+
+| ID / 单一负责人 | 基线 / 写入范围 / 完成条件 |
+| --- | --- |
+| SOURCE-IAM-WINDOW / agent_typed_skill_reader_owner（写） | Root b7df7f4a，已有uv.lock任务外；仅Root source/helper/test与既有sandbox/test四文件。利用显式Source模式的测试阶段边界，在开始真实Agent Run/lease前等待一个当前IAM 60s固定窗口，默认模式不等待；不读写IAM业务事实/不删Redis计数/不改limit/凭据/身份/生产auth。等待在主线程或可取消已有流程，不新增不可取消60s executor（close35s门不接受），现SIGTERM清理规则不变。先注入wait时序RED→GREEN，严格before lease、Source-only、取消后不进入业务；Root真实normal最后验，writer不启动服务/提交。该pause是高请求量Rootfixture资源礼让，不加入应用重试/兼容代码。 |
+| PLATFORM-PERSONAL-V5-PREP / platform_personal_installation_owner（只读准备） | Platform e510c04 clean；先只读核当前v4发布工具/Proto/provenance与新Product五方法独立字段/编号、9字段safeprojection、3command摘要+vectors计划。归属已有contract/proto唯一机器源和版本化contract/execution-operations/v5；比较往v4改bytes（淘汰）与新v5候选（采用），旧v1–v4/hash/binding24原字节冻结。Root Source正式冻结运行结束后才放行机器写入；此阶段不写任何文件/启动资源/index。形成精确新增文件集、39RPC/20command/24proof目标门、生成/漂移和未决，下一轮直接实现不再大范围讨论。 |
+
+机器阶段后继写入范围（Root待放行）：唯一proto、contract descriptor/provenance、v5候选payload/schema/vector/provenance、只读生成物src/generated/proto与必要现有检查脚本/contract和architecture tests/package格式范围及四当前文档；不改production Service/HTTP/Schema/IAM/BFF/Web/依赖/lock。若冻结v4/checker约束与v5冲突必须报告并明确当前canonical/latest候选和历史artifact验证边界，不能削弱旧向量或发布检查伪绿。candidate unroutable直到owner runtime/BFF/Web/真实组合与激活门，不因为新增generated stub称可调用。
+
 ## 当前加速波：用户批准多个独立工作面并行（2026-09-30）
 
 Root main `6fc47c93`；Agent58b/BFF571/Platform6a/IAMe3/Web1dc clean。Root task/progress/shared index唯一Root负责，uv.lock任务外不动。用户明确要求同时推进多个，覆盖默认逐仓串行偏好；仍同仓单writer，真实共享资源由Root串行运行。
