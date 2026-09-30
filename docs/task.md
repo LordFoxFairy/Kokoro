@@ -1,5 +1,15 @@
 # Kokoro 后端闭环任务总表
 
+## 并行测试切片：W3-ROOT-SKILL-CHROMIUM（P0；独占真浏览器组合）
+
+| 项 | 放置与阶段门 |
+| --- | --- |
+| Owner / 当前事实 | Root `main 8d025447` 拥有跨仓验收 runner，不拥有 Skill/Upload 业务事实；Web `98aad4c` 正式只读已 pin，正式写 UI 未交付。现有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 只有 HTTP signed PUT、HTTP loopback ObjectStore；`run_web_project_resource_chromium_smoke.py` 有独占 HTTPS Web/真 IAM/Chromium，却只验 Project/Library。Root `uv.lock` 任务外脏态不可暂存。 |
+| 放置方案 | A（采用）：在 Root `scripts/e2e/` 建专用 Skill Chromium 编排/driver，`scripts/tests/` 放安全预检/清理/证据负例；复用旧两 runner 的纯 helper/独占资源而不改已验 monolith。B（淘汰）：把 Chromium 注入旧 Skill 单体 `execute()`、复用 Project UI/旧 HTTP signed PUT 或让 BFF 代理 ZIP；会混淆 owner、CORS 和真字节证据。无新顶层模块/服务/数据库角色。 |
+| 依赖与目标 | Browser→隔离 HTTPS Web 同源→BFF→IAM/Platform/Storage；唯一 ZIP 原字节经另一个隔离 HTTPS ObjectStore origin，以精确 Web origin/PUT/Content-Type、无 credentials 的 bucket CORS 完成真实 OPTIONS+PUT。Web 与 BFF 不能直连 owner 数据库。显式 `KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED=true`/Platform skill-source 只在本次独占组合，先证明默认关闭，不能改生产默认。 |
+| 范围 / 删除 | 新 runner、Chromium driver 与 Python guard tests 可由一名 Root writer 并行于唯一 Web writer；Root 主控不抢写这些文件。无旧正式 runner 删除项；若需重构公共 helper，先报告并调整任务卡，不先复制巨型编排。Web UI selectors 稳定前先实现/验证独占 HTTPS/CORS/cleanup 子门，不伪造最终 PASS；最终脚本必须审计/清理自有 PG/Redis/bucket/process，不碰 3310、他人数据、任务外 `uv.lock`。 |
+| 验证 | Python guard RED→GREEN、`python3 -m pytest scripts/tests`、Root topology/checkpoint；Web 正式写 UI commit 后真 Chromium 登录/303/HttpOnly、CORS OPTIONS、无 Cookie/Bearer PUT 原字节、Complete→Validate→零 body Publish、ACTIVE 刷新读回、撤权/感染/错误恢复、资源 clean。只有最终真组合 exit0 才可标浏览器闭环。 |
+
 ## 下一切片：W3-WEB-SKILL-CONSUMER（P0；正式发布与读回 UI）
 
 **阶段状态（2026-09-29）：** 机器/文档门 Web `53760a2` 与正式个人 ACTIVE/MCP 只读 UI `98aad4cddb231ef7d1363f00630b9b41f51a743f` 已由 Root Node22 全门通过；终审 P0/P1/P2=0。下一唯一 Web writer 切片是**单 ZIP 正式写入 UI**：沿现有 shadcn Dialog/同源 adapter 原子删除旧 preview/confirm、namespace/multi-candidate/`.skill` 正式调用，接 Draft/Get/Begin→ObjectStore 原字节 PUT→Complete→Validate→零 body Publish/本人 by-ID 恢复。Root 真 Chromium 要用独占 HTTPS Web + HTTPS ObjectStore origin 与精确 CORS/preflight，不能把现有 HTTP signed PUT 或 preview Playwright 冒充浏览器链；3310 不作验收。以下表格保留整条业务放行条件，机器 pin/静态 UI 不是产品激活。
