@@ -1,5 +1,11 @@
 # Kokoro 后端闭环任务总表
 
+## 用户当前最高优先级：右侧3310真实登录验收
+
+2026-09-30 用户要求主窗口直接操控右侧浏览器，不再以隔离结果代替可见成果。Root已读到现有标签的真实邮箱/密码表单；从该标签导航 `/login` 被浏览器以 `net::ERR_BLOCKED_BY_CLIENT` 阻止，未通过其他通道绕过。现场3310监听仍旧PID81692，进程列表未见登录启动器/IAM host。已向用户请求仅重启这组本地Web/IAM/BFF及使用专用测试账号，并请手动打开登录入口；答复前不重启用户预览或变更基础设施。通过条件是同一右侧标签实际提交→回调→进入/app→刷新仍登录，保留截图与当前源码/进程证据，不能只报GET表单通过。
+
+Agent `534d3f80efb158910fde73e2a8ecf5390f874bba` 已交付clean、Root默认门1399 pass/6 skip/172 deselected，但暂不pin：一条独立安全审查已通过，另一审查在发现会话checkpoint复用skills_metadata后因额度终止。Root纯DeepAgents同session实验已确认空选择→alpha/beta后middleware读取次数均0；还须用checkpoint内部state及生产Factory回归补全证据，再由单writer修复。默认测试通过不代表当前refs实际进入模型。用户可见登录优先；Skill真组合仍保留完整范围，不标完成。
+
 ## 进行中：W3-ROOT-AGENT-SOURCE-COMPOSITION（真实读取验收）
 
 Root唯一writer，基线 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro` main `4df6ff89`，任务外`uv.lock`保留；Agent runtime由原writer独占。本片先复用 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` 与对应Root测试，扩展已有IAM ready边界的显式Source模式、严格额外凭据及secret清单，不新增文件或改变生产契约。原模式拒绝新增credential，新模式要求精确字段；本步不自行启动任何服务。只读 `agent_launch_fixed_review` 已核Agent固定dd34 claim/proof/generated InstallSkill接线，变化中reader仅作接口准备，不作验收。

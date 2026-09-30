@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 切回用户右侧真实登录，记录现场阻断与未放行候选
+
+Root通过CUA绑定右侧用户原有标签，实际读取邮箱/密码表单与截图；从该标签打开 `/login` 返回 `ERR_BLOCKED_BY_CLIENT`，页面未导航。只读进程检查3310旧PID81692仍监听，登录启动器/IAM host未出现在进程列表；尚未提交凭据、完成回调或进入/app。已请求仅重启对应开发服务及专用测试账号验收、用户手动导航；未绕过浏览器阻止、未重启/清理用户进程/数据。当前3310登录未通过。
+
+Agent534d3f80的Root独立lock/sync、Ruff248文件、Pyright0、contract以及默认pytest1399 pass/6 skip/172 deselected已执行（56.98秒）；6skip仍1父examples缺失/5未配置MinIO9100。GET/ZIP/client固定SHA独立审查P0/P1/P2=0、68组件测试通过；backend/factory审查因Agent额度中断，发现checkpoint保留旧skills_metadata风险。Root纯SDK同session实验日志 `/tmp/kokoro-agent-534-checkpoint-repro.log` 证实首轮空列表后再选Skill未重新加载（reader_calls=0）；完整Factory/checkpoint断言与修复未完成，因此不集成该gitlink或宣称reader已验收。无新的共享服务或常驻后台进程。
+
 ## 2026-09-29 — Root接入Source验收身份协议，保留默认严格边界
 
 Root在既有Skill sandbox runner准备显式`agent_source=True` ready消费，默认拒绝新增credential，显式模式要求完整且只有`tenant_execution_client`新增字段；其secret加入已有错误/日志脱敏清单。不改启动器服务行为、不自动启用模式、不修改生产owner。两项新增测试先RED2（尚无参数）后GREEN56/93subtests，最终完整Root `python3 -m pytest -q scripts/tests` **994 pass/291 subtests**（117.20秒、exit0）；Ruff check及diff-check通过。日志 `/tmp/kokoro-source-ready-red.log`、`/tmp/kokoro-source-ready-green.log`、`/tmp/kokoro-root-source-ready-tests.log`。独立审查P0/P1/P2=0，复跑56/93subtests通过。只准备协议，真实Run/lease→proof→IAM→Platform→Storage读取尚未运行。
