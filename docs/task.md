@@ -44,6 +44,8 @@ Root新增完整scripts/tests候选 **1010 pass/2 Agent依赖skip/317subtests（
 
 右侧用户原标签仍保留已过期签名地址；此前 `/login` 导航为 `ERR_BLOCKED_BY_CLIENT`，本次AX与DOM读取均因CDP focus操作超时，无凭据提交或回调证据。请用户手动打开 `/login` 后继续同一标签提交→回调→/app→刷新验收，不通过其他通道绕过浏览器阻止、不把隔离Chromium旧结果移作当前验收。启动成功仅算运行恢复，当前可见登录仍待验。
 
+本轮复查 launcher3898/IAM4007/Web4113 存活、3310监听；右侧标签URL仍旧，AX再次focus超时，未提交账号。Source取消返修已续派原负责人，仅两文件，不占用3310。
+
 历史候选534d3f80未放行，checkpoint真实复现触发返修e728fe24，现已完成Root代码门/独立审查及来源集成。用户可见登录仍独立待验；Skill真组合保留完整范围，不标完成。
 
 ## 进行中：W3-ROOT-AGENT-SOURCE-COMPOSITION（真实读取验收）

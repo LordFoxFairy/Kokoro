@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 登录现场复查与取消返修续派
+
+用户再次明确允许重启；现有授权重启后的受管实例仍正常，launcher3898/IAM4007/Web4113存活，3310实际监听，不重复开第二组服务。右侧用户标签仍旧过期URL，CUA AX读取再次focus超时；已请用户手动打开/login，当前没有账号提交、回调、刷新证据。Source SIGTERM P1已续派原负责人仅helper/直接tests修复，Root不抢写；未启动新服务、未改变共享数据。
+
 ## 2026-09-30 — Source候选完整门通过仍被取消P1拦截
 
 Root新增driver候选完整scripts/tests **1010 pass/2 Agent依赖skip/317subtests（113.18秒，exit0）**，日志 `/tmp/kokoro-root-source-driver-tests.log`；Agent .venv native2/2、Ruff四文件通过、checkpoint PASS。固定工作树独立审查却真实SIGTERM复现：exercise异常返回→resource-close启动→旧exercise继续副作用→cleanup返回[]。P0=0/P1=1/P2=0，因此候选不提交、不跑真实owner组合。原负责人将仅helper及直接测试返修cancel/drain次序，主控与独立review复验后放行；默认绿门不掩盖实际生命周期失败。IAM e3c035b四文件已真verify938/host51及独立review通过，其来源集成不等待该独立Root返修。
