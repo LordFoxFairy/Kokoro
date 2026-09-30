@@ -1,3 +1,16 @@
+## WEB-PERSONAL-CODE：唯一消费者实现切片（2026-09-30；Root全量验证结束后派工）
+
+| 项 | 执行卡 |
+| --- | --- |
+| Owner/角色/基线 | Web原负责人agent_typed_skill_reader_owner唯一writer；Web main49adb4bae88e45fc40489c2d297775e08a70faa4 clean、四文档门0/0/0+contract108/architecture37已通过；Rootsole index/commit，Root d4b49c88。 |
+| 目标/优先级 | P1正式个人发布/本人安装管理消费，五API具名严格client/同源adapter＋真实UI状态，不以预览installed或发布代替安装，不触Run/选择。 |
+| 核心范围 | 现src/hub/schemas.ts、client.ts；src/ui/skills/personal-skills-read.tsx；src/app/api/hub/[...path]/route.ts。按已批准四文档，只同业务职责，不引新schemaowner/目录/store。任何新单责helper或>800TS/>500React风险先报告粒度放置再授权，不堆超限。 |
+| pin/共享生成 | 原字节BFF67755d16 OpenAPI40578534da44dff8fcb7bb6812d43753542528b379d684a19100c35a62c60114→src/generated/bff-public-openapi.yaml；现scripts/generate-bff-team-client.mjs仅更新固定来源，15既有派生物仅原generator --write，不手改。现tests/contract/bff-{skills-mcp,team,library-file,library-artifact,project-create,project-resource}-public.test.ts只合法repin/新断言、不放宽。 |
+| UI/测试/docs | 现九i18n messages/en/de/es/fr/ja/ko/pt/ru与resolve；tests/hub/client.test.ts、tests/app/hub-proxy.test.ts、tests/ui/kokoro-skills-surface.test.tsx、skills-panel.test.tsx、personal-skill-publish-dialog.test.tsx；四docs本片current/技术触点更新，INDEX仅已有文件引用变化需要时报告。 |
+| 排除 | AppFrame/Chat/AG-UI/draft上传发布状态机/preview假数据/其他仓/任何lock或deps/SQL/Redis/session配置；不得操作3310/共享infra/Git索引/commit/新分支。 |
+| 依赖/恢复 | owner677/6519已正式提交，Web消费后仍待Root真IAM→BFF→Platform→Web验收。POST/PUT/DELETE冻结原method/path/body/key；未知结果明确同key重试，bad receipt/transport 502/504不能显示成功或自动换key；receipt成功后只读current，读失败不重发。各installation本视图串行、切页/卸载abort+fence；false/absent筛选和opaque cursor各自严格。 |
+| 验证/交付 | 先稳定RED新列表/安全头/DELETE非法body、历史receipt反当前/未知同key、分页重置/迟到、Publish零Install/Install零Run；Node22相关/fullpure(2worker)/contract/architecture/lint/typecheck/build/diff；停写path/hash/RED-GREEN/skip与未验真实门，由Root审查后exact提交。无外部模型/真实owner资源自启动。 |
+
 ## CONTINUE-20260930-B 审查派工
 
 Root snapshot evidence四文件冻结hash见/tmp/kokoro-snapshot-evidence-hashes.txt，独立bff_personal_consumer_review只读；Web四docs原writer停写hash已交接，独立bff_personal_installation_owner只读。两者仅原职责/事实核对及纯门，不写文件/Git/服务/真实数据/模型。Root重新在Web cwd用其正确11.25 pnpm跑doc门（先前Root -C方式被Corepack挑Root12.3.4拒绝，退出1，不放宽版本检查）；文档门通过后才源码授权。

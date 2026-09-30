@@ -63,7 +63,7 @@ Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒�
 
 ## 验证和归属
 
-- Root当前7b9c797c组合checkpoint/topology PASS；全量`scripts/tests` **1058 passed/3 native依赖skip/377 subtests**，108.58s，日志`/tmp/kokoro-gpt56-root-full-tests.log`。全仓标准门仍FAIL137/0 unverified：相对旧136，Agent平台契约文件>800与Platform README provenance两项显现，Web app-frame>500已消除；不更改门禁清零。
+- Root当前d4b49c88组合checkpoint/topology PASS；全量`scripts/tests` **1062 passed/3 native依赖skip/377 subtests**，111.65s，日志`/tmp/kokoro-snapshot-root-full-tests.log`。全仓标准门仍FAIL137/0 unverified：相对旧136，Agent平台契约文件>800与Platform README provenance两项显现，Web app-frame>500已消除；不更改门禁清零。
 - Root `4aef9d1c` 提交后的topology9runtime/checkpoint通过。新增候选仍须独立验收和最终集成复验。
 - 子仓的 tests 不迁入 Root；`scripts/tests/` 只覆盖 Root 治理脚本（含Root自有组合driver边界），业务unit/integration/contract/build仍在owner仓。`verification/` 保存跨仓来源库存与检查点，不复制业务测试。
 - 本地应用使用一个PG数据库/一套credential、独立owner schema和共享Redis namespace；测试临时库用于运行隔离，不是多应用角色/部署方案。禁止跨owner业务SQL。

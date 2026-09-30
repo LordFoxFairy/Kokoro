@@ -1,3 +1,7 @@
+## 2026-09-30 — d4b49c88 集成复验通过
+
+Root当前checkpoint/topology PASS；完整scripts/tests **1062pass/3native依赖skip/377subtests**，111.65秒，日志/tmp/kokoro-snapshot-root-full-tests.log。Web49adb4b clean才跑此门，未在其业务编辑中声称最终验收。Root源码helper独立0/0/0，保留首轮真实UI FAIL及后验诊断PASS边界、137既有静态门违规与13broken。现在进入已定Web-PERSONAL-CODE，原writer单仓写，Root管理唯一30171/53033组且不加载候选、不碰uv.lock。
+
 ## ROOT-CHAT-SNAPSHOT-EVIDENCE 最终独立放行
 
 冻结四源码/测试hash最终4/4匹配，独立P0/P1/P2=0/0/0，补齐run/role/status三分支和watermark缺失负例；Root聚焦18pass/格式与lint/Node语法/diff-check通过。正式source/helper与MAP单独提交，不夹带Web业务或uv.lock；真实模型/E2E本轮尚未重跑，历史FAIL不覆盖。
