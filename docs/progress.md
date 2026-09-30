@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Source正常真实跨owner门首次全通过，Platform代码已放行
+
+Root提交4aef9d1c后沿原文件入口真实Source `/tmp/kokoro-source-window-real-composition.log` **exit0/PASS**：真实IAM凭据/内省→Agent HTTP Run/claim/production lease proof→Platform安装与typed ref→Storage signed GET原字节/native metadata/read-only，安装false拒读/true恢复、旧lease拒读、IAM成员执行撤权拒读均通过。原BFF Begin/PUT/Complete/Validate/Publish/回放/感染恢复/个人公开读/撤session门随同PASS；Source增加3receipt，31→34，Publish outbox仍2，无应用auth/计数/阈值修改。资源报告clean、owned53717已退出/session80848消费、Root额外Redis15 DBSIZE=0；无新PG/Redis/3310重启。保留native name与opaque目录规范警告，不把此fixture读取链当真实模型执行或个人Product安装UI。
+
+Root完整1026 passed/3 native skip/341subtests、121.97秒；原生5/55、Ruff/diff、独立审查0缺陷；提交后topology9runtime/checkpoint PASS。Platform原负责人现正式放行v5 machine写入（e510c04起点），与Source后继BFF只读消费准备并行；依赖machine正式发布后再允许BFF源码消费，不dirty pin、不发明第二契约。
+
+右侧CUA本轮getBrowser/listTabs成功但当前DOM焦点命令超时；未获实际可见提交/回调/刷新。3310仍保留，后端测试成功不代替右侧浏览器验收。宽泛13broken/标准136与uv.lock任务外不动，整体goal未完成。
+
 ## 2026-09-30 — Source阶段窗口代码已复验，独立Platform机器切片准备就绪
 
 Source唯一writer四文件停写，Root独立普通88 passed/3 native skip/143subtests；Agent原生及窗口5 passed/55subtests，Ruff check/format及diff通过。独立审查P0/P1/P2=0、15pass/9subtests，并实测默认主线程time.sleep(60)被20ms后SIGTERM在<1秒打断、业务零调用。生产限流/计数/auth/RPC/proof未改；Source-before-Run窗口不是应用魔法sleep。Root全scripts门1026 passed/3 native skip/341subtests、121.97秒通过（/tmp/kokoro-root-source-window-tests.log），真实正常组合仍待验收，不因修复代码称通过。

@@ -1,5 +1,17 @@
 # Kokoro 后端闭环任务总表
 
+## 当前执行结果与并行任务（2026-09-30；Source真实门已通过）
+
+Root main4aef9d1c正常原文件入口，无诊断wrapper、无假token/计数清理/放宽规则，真实IAM/BFF/Platform/Storage/Agent与现PG/Redis/MinIO/ClamAV组合exit0/PASS；Source安装/停用拒读/重新启用原字节、native metadata、read-only、old lease拒读、IAM执行撤权均通过，setup receipts3、总receipt31→34/outbox仍2，resources clean。日志/tmp/kokoro-source-window-real-composition.log；ownedPID53717已退出/session80848终态已消费，Redis15=0。native name与opaque目录不匹配规范警告保留，非零风险。此为非模型Source纵切，不是个人Product安装UI、浏览器发布/CORS、当前3310或全项目通过。
+
+| ID / 状态 / 单一负责人 | 基线、范围、交付 |
+| --- | --- |
+| SOURCE-IAM-WINDOW / 已验收 / Root | commit4aef9d1c，Root全1026/3 native skip/341subtests、原生5/55、独立0缺陷、真实normal Source PASS；topology9runtime/checkpoint PASS。后续非空Skill真实worker/模型另门。 |
+| PLATFORM-PERSONAL-V5 / 已放行写入、进行中 / platform_personal_installation_owner | e510c04 clean起点，沿下方精确机器任务卡；Source冻结结束已明确放行，只改Platform机器/测试/相关当前docs，不改runtime/SQL/其他仓，Root最终review/commit。 |
+| BFF-PERSONAL-PREP / 只读并行 / agent_typed_skill_reader_owner | apps/kokoro-bff main571b51de；读已批准Platform PERSONAL四文档与本仓三设计/contract/入口，形成后继五Product方法消费的最小准确文件集/既有组件复用/当前vs目标与测试命令。仅只读，不写BFF公共契约/runtime/SQL/锁，不发明或复制owner machine/digest，不启动任何服务/真实数据库。Platform机器发布固定commit后才开消费者writer；20分钟内一次交付，不反复大范围审计。 |
+
+Root当前右侧IAB可枚举标签，但domSnapshot明确focus命令超时；可见提交/callback/app/reload仍待验，应用3310原组保留，不因该控制问题暂停其他owner开发。整体goal active，13broken/标准136/任务外uv.lock仍保留。
+
 ## 当前并行波：Source 集成验收与 Product v5 机器切片（2026-09-30）
 
 用户再次要求同时推进。Root负责当前可见登录和最终集成；同仓仍单writer，不让可见浏览器控制故障阻塞独立owner开发。当前3310进程存活；本轮CUA读取再次15秒超时，没有提交/callback/app/reload证据，不重复重启服务。

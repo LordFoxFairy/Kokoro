@@ -1,5 +1,7 @@
 # Root 当前组合
 
+**2026-09-30 最新真实结果：** Root4aef9d1c正常Source真组合exit0/PASS，安装/typed原字节/native/read-only、停用拒读与重新启用、旧lease和IAM执行撤权通过；Source receipts31→34/outbox仍2，resources clean且Redis15=0。完整Root1026/3 native skip/341subtests、原生5/55、独立0缺陷、topology/checkpoint通过。Platform v5机器writer已正式放行，BFF消费者只读准备并行；尚无个人Product运行/UI。native name/目录规范警告、当前右侧DOM控制超时与可见登录未验、13broken/标准136保留，不宣称整体闭环。下方有日期条目为历史。
+
 **2026-09-30 当前并行执行：** Source窗口代码四文件Root聚焦88/3 native skip/143subtests及原生5/55、独立审查0缺陷通过，完整scripts1026 passed/3 native skip/341subtests通过，正常真实Source验收待完；这是测试阶段礼让现IAM窗口，不改应用auth/阈值/计数。Platform原负责人v5机器准备39RPC/20command/24proof已定，Source一次短冻结结束即开机器writer，与右侧登录互不等待。当前3310存活、CUA本轮15秒读取超时，没有当前右侧提交/回调/刷新证据；不重复重启。详见task/progress，13broken与标准136仍未清零。
 
 **2026-09-30 最新根因确认：** Root正常Source服务端iam_ingress拒绝，另只读观察本fixture同resource客户端精确counter101/TTL55；IAM100/60窗口第101次必RATE_LIMITED（Platform429归UNAVAILABLE）。Root下一仅使高请求量测试阶段在Run/lease前遵守窗口，不改鉴权/阈值/Redis计数或应用sleep。Source完整仍FAIL未验，Root1024 pass/3skip/338subtests与topology/checkpoint通过不替代真实链。Platforme510仅Product文档门，v5原负责人先只读准备；source冻结结束再写机器，13broken/当前右侧登录待验保留。
