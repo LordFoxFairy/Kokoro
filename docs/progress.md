@@ -1,5 +1,10 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 当前加载Web9590后实际HTTP重新通过
+
+Root160e3f50集成Web9590及固定Web/BFF composer SHA后，主树相关128/128（日志 `/tmp/kokoro-web9590-root-pin-tests.log`）通过；Ruff两来源文件/diff通过。现受管7399/7874未重启，新三生产源码精确同步后当前3310独立HTTP再次PASS：正常IAM登录/回调、真实空Skill聊天/AG-UI终态、同键无重复、消息持久与刷新、自身logout；日志 `/tmp/kokoro-current-chat-http-acceptance.log`，同步前证据保留 `/tmp/kokoro-current-chat-http-before-web9590.log`。私有cookiejar已清，不触用户会话/全租户撤销。请求App展示新/login返回queued，仅表示待显示，未取得右侧用户点击DOM证据，P0不标验收；当前Skill/Storage完整能力仍未接入此组合。Platform/BFF两个writer继续各自正式能力实现，goal active。
+
+
 ## 2026-09-30 — Web窄修已提交并同步实际受管dev源码
 
 Web原生命周期P1返修独立P0/P1/P2=0；Root主树Node22 system/proxy77、纯unit1555、contract108、architecture37、lint/typecheck/build全部exit0，日志 `/tmp/kokoro-web-expired-submit-root-gates.log`。Root精确提交六files `9590a741448923c63eb4f4ff46379135d21061bd`，无API/Schema/依赖/旧兼容层变更。Root只把此commit三生产文件同步自己受管Next snapshot并核bytes相等（launcher7399/Web7874不变），避免重启BFF加载其在途consumer源码；当前HTTP登录/聊天/刷新独立复验已启动。右侧用户DOM仍未验，不能称原用户故障已解决或所有能力完成。

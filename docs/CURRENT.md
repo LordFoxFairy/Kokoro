@@ -31,7 +31,7 @@
 | 非空 typed Skill Source | Root `4aef9d1c` 正常原文件入口真实 IAM/BFF/Platform/Storage/Agent/PG/Redis/MinIO/ClamAV，exit0/PASS；安装、原字节、native metadata、只读、停用拒读/重新启用、旧 lease 拒读、IAM 执行撤权均通过；receipt31→34/outbox2；resources clean、Redis15=0。日志 `/tmp/kokoro-source-window-real-composition.log` | 标准 worker＋真实模型的非空 Skill 运行、个人 Product 安装 UI、正式激活。native name 与 opaque 目录不匹配警告仍开放 |
 | 普通 Chat/作品 | 历史固定组合已验真实 Chromium 登录、标准 worker、durable AG-UI、live Delivery、刷新、Canvas 下载、GC/410 恢复与个人私有性；历史 `5b1b9a5e` 还验真实 System→已有 Ollama→worker→Storage 作品链，精确来源/边界见 progress | 历史普通 Chat 或空选择模型结果不替代当前非空 Skill 模型运行，也不证明所有产品能力 |
 | 个人 Skill 安装 | Platform `0dd60af` 三面设计及v5机器契约已Root全9门1030pass/239真实依赖skip与独立审查0缺陷；五方法/九safe/三摘要和optional分页已验，候选inactive | Product owner runtime、BFF public固定消费、Web UI 和真实产品验收仍待完成；机器门不是产品可用 |
-| 当前 3310 | 一组受管65687/launcher7399/Web7874，真实IAM/System/BFF/Web与标准Agent HTTP/worker、已有Ollama。Root当前HTTP全链PASS：正规表单登录→消息202→10帧非空AG-UI终态→同键不重复→刷新持久→自身logout200。日志 `/tmp/kokoro-current-chat-http-acceptance.log`；System resolveModel success | 右侧IAB控制再次超时、DOM未验；HTTP不是浏览器交互。已将Web9590a74三生产文件精确同步受管dev snapshot，未重启BFF加载在途代码；同步后HTTP复验进行中。Skills空选择、Storage未装配，完整能力体系仍待逐片接通 |
+| 当前 3310 | 一组受管65687/launcher7399/Web7874，真实IAM/System/BFF/Web与标准Agent HTTP/worker、已有Ollama。Root当前HTTP全链PASS：正规表单登录→消息202→10帧非空AG-UI终态→同键不重复→刷新持久→自身logout200。日志 `/tmp/kokoro-current-chat-http-acceptance.log`；System resolveModel success | 右侧IAB控制再次超时、DOM未验；HTTP不是浏览器交互。已将Web9590a74三生产文件精确同步受管dev snapshot，未重启BFF加载在途代码；同步后当前HTTP登录→真实模型回复→持久消息/刷新→自身logout再次PASS，仍非右侧DOM。Skills空选择、Storage未装配，完整能力体系仍待逐片接通 |
 
 Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒窗口；默认模式不等待，SIGTERM可中断。没有改生产限流、权限、凭据或 Redis 计数；这是测试资源礼让，不是应用重试/fallback。
 
