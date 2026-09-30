@@ -662,3 +662,166 @@ class DirectBffConnectionTests(unittest.TestCase):
             and node.func.attr == "Proxy"
         ]
         self.assertEqual(calls, [])
+
+
+class SafeLaunchDiagnosticTests(unittest.TestCase):
+    def test_categories_never_render_messages_or_dynamic_class_names(self):
+        secret = "KEY_PASSWORD_RAW_MESSAGE_SENTINEL"
+
+        def forbidden_string(_self):
+            raise AssertionError("exception rendering is forbidden")
+
+        unknown = type(
+            "DYNAMIC_SECRET_CLASS_SENTINEL", (Exception,), {"__str__": forbidden_string}
+        )(secret)
+        cases = [
+            (launcher.LaunchError(secret), "launcher"),
+            (launcher.chat_runtime.ChatError(secret), "chat"),
+            (launcher.model_provider.ProviderError(secret), "provider"),
+            (OSError(secret), "io"),
+            (FileNotFoundError(secret), "io"),
+            (subprocess.CalledProcessError(1, [secret], output=secret), "subprocess"),
+            (subprocess.TimeoutExpired([secret], 1, stderr=secret), "subprocess"),
+            (launcher.runtime.SmokeError(secret), "owner_smoke"),
+            (launcher.session.SmokeError(secret), "owner_smoke"),
+            (launcher.web_smoke.SmokeError(secret), "owner_smoke"),
+            (launcher.previous.SmokeError(secret), "owner_smoke"),
+            (launcher.first_login.FirstLoginError(secret), "owner_smoke"),
+            (unknown, "unexpected"),
+        ]
+        for error, expected in cases:
+            with self.subTest(category=expected):
+                self.assertEqual(launcher.failure_category(error), expected)
+
+    def test_serving_stages_keep_fixed_category_and_cleanup_without_secret(self):
+        import io
+        from contextlib import ExitStack, nullcontext, redirect_stderr, redirect_stdout
+        from unittest.mock import Mock
+
+        secret = "KEY_PASSWORD_RAW_MESSAGE_SENTINEL"
+        unknown = type("DYNAMIC_SECRET_CLASS_SENTINEL", (Exception,), {})(secret)
+        cases = [
+            ("stack", launcher.LaunchError(secret), "serving stack guard (launcher)"),
+            (
+                "chat",
+                launcher.chat_runtime.ChatError(secret),
+                "serving chat tick (chat)",
+            ),
+            (
+                "chat",
+                launcher.model_provider.ProviderError(secret),
+                "serving chat tick (provider)",
+            ),
+            ("wait", OSError(secret), "serving wait (io)"),
+            ("wait", unknown, "serving wait (unexpected)"),
+        ]
+        for operation, error, expected in cases:
+            with self.subTest(operation=operation, expected=expected):
+                with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+                    args = SimpleNamespace(
+                        chat=True,
+                        postgres_admin_url="postgresql://local/postgres",
+                        redis_url="redis://local/0",
+                        agent_redis_url="redis://local/10",
+                        iam_node_bin=Path("/node24"),
+                        bff_node_bin=Path("/node22"),
+                        web_node_bin=Path("/node22"),
+                        uv_bin=Path("/uv"),
+                        model_origin="http://local",
+                        model="fixture",
+                    )
+                    ready = SimpleNamespace(
+                        database_name="owned-iam",
+                        redis_prefix="own-iam:",
+                        client_secret=secret,
+                        password=secret,
+                        email="owner@example.test",
+                        base_url="http://local/iam",
+                        issuer_url="http://local/issuer",
+                        redirect_uri="http://local/callback",
+                        post_logout_redirect_uri="http://local/logout",
+                        tenant_id="tenant",
+                        client_id="client",
+                    )
+                    resources, process, chat = Mock(), Mock(), Mock()
+                    resources.command.return_value = "PONG"
+                    resources.create_database.return_value = "postgresql://local/owned"
+                    process.poll.return_value = None
+                    chat.start.return_value = {}
+                    chat.close.return_value = []
+                    chat.quiescent = True
+                    root = Path(directory)
+                    (root / "server.cjs").write_text("port: 443")
+                    patches = [
+                        (launcher, "parse_args", {"return_value": args}),
+                        (launcher, "require_free_web_port", {}),
+                        (launcher, "wait_for_web", {}),
+                        (
+                            launcher.tempfile,
+                            "TemporaryDirectory",
+                            {"return_value": nullcontext(directory)},
+                        ),
+                        (
+                            launcher.runtime,
+                            "OwnedResources",
+                            {"return_value": resources},
+                        ),
+                        (launcher.runtime, "run_owned_command", {"return_value": 0}),
+                        (launcher.runtime, "install_schema", {}),
+                        (launcher.runtime, "free_port", {"return_value": 12345}),
+                        (launcher.runtime, "start_process", {"return_value": process}),
+                        (launcher.runtime, "wait_ready", {}),
+                        (launcher.runtime, "stop_owned_process", {}),
+                        (launcher.session, "node_environment", {"return_value": {}}),
+                        (launcher.session, "ProtocolReader", {}),
+                        (launcher.subprocess, "Popen", {"return_value": process}),
+                        (
+                            launcher.web_smoke,
+                            "named_iam_identity",
+                            {"return_value": ready},
+                        ),
+                        (launcher.web_smoke, "validate_ready", {"return_value": ready}),
+                        (
+                            launcher.web_smoke,
+                            "iam_owned_inventory",
+                            {"side_effect": [(set(), set()), ({"owned-iam"}, set())]},
+                        ),
+                        (launcher.web_smoke, "web_redis_keys", {"return_value": set()}),
+                        (launcher.web_smoke, "isolated_next", {"return_value": root}),
+                        (launcher.web_smoke, "reconcile_iam_identity", {}),
+                        (launcher.previous, "assert_log_clean", {}),
+                        (launcher.first_login, "probe_formal_login_entry", {}),
+                        (launcher.chat_runtime, "preflight", {}),
+                        (
+                            launcher.chat_runtime,
+                            "LocalChatRuntime",
+                            {"return_value": chat},
+                        ),
+                        (launcher.signal, "signal", {}),
+                    ]
+                    for target, name, kwargs in patches:
+                        stack.enter_context(patch.object(target, name, **kwargs))
+                    guard = stack.enter_context(
+                        patch.object(launcher, "require_owned_stack_alive")
+                    )
+                    wait = stack.enter_context(patch.object(launcher.time, "sleep"))
+                    {"stack": guard, "chat": chat.tick, "wait": wait}[
+                        operation
+                    ].side_effect = error
+                    output = io.StringIO()
+                    with redirect_stdout(output), redirect_stderr(output):
+                        with self.assertRaises(launcher.LaunchError) as raised:
+                            launcher.main([])
+                    self.assertEqual(str(raised.exception), expected + " failed")
+                    self.assertNotIn(secret, output.getvalue() + str(raised.exception))
+                    self.assertNotIn(
+                        "DYNAMIC_SECRET_CLASS_SENTINEL",
+                        output.getvalue() + str(raised.exception),
+                    )
+                    resources.cleanup.assert_called_once()
+                    chat.close.assert_called_once()
+                    self.assertEqual(launcher.runtime.stop_owned_process.call_count, 3)
+                    if operation == "stack":
+                        chat.tick.assert_not_called()
+                    if operation != "wait":
+                        wait.assert_not_called()

@@ -1,3 +1,9 @@
+## 2026-09-30 — launcher安全停止诊断已独立验收；真实Product首轮仍FAIL
+
+Root0abb3993后，原Web负责人仅Root现launcher/test两文件：固定serving stack guard/chat tick/wait及固定异常类别，原健康/重试/guard/清理不改；先18subtest RED、完整相邻45pass/54subtests，独立0/0/0。Root同时补Product require_error安全status/固定code诊断（先1RED），当前相关130pass/152subtests及Ruff/diff通过，session41258已exit0。模型provider原异常message/key/body/动态class不输出，历史停止根因依然未定。即将Root精确提交launcher再唯一启动，不冒称已在线。
+
+真实Product原入口第一轮系统Python3.13无psycopg/boto3：FAIL iam_ready ModuleNotFoundError，/tmp/kokoro-product-installation-real-native-missing.log；没有补锁/装依赖，改用现已固定Agentvenv native依赖。第二轮真实IAM/BFF/Platform/Storage已启动，但FAIL product_installation_error_envelope_invalid（/tmp/kokoro-product-installation-real.log；session59227已exit1）。原断言不放宽，现留status诊断后才能确定真正HTTP/code；失败不标闭环、不归因猜测。无新infra/3310监听/付费模型调用，原owned finally已执行。
+
 ## 2026-09-30 — Root Product安装driver集成前全门
 
 Root a36bf45e checkpoint/topology PASS，完整scripts/tests1086pass/3native skip/377subtests（111.13秒，/tmp/kokoro-product-root-full-tests.log），session58034已exit0消费；4源码冻结hash不变，Ruffformat/lint/diff通过、独立0/0/0。按精确Root文件提交，不触uv.lock。真实组合下一步只复用已有PG/Redis/MinIO/ClamAV，沿原入口owned临时资源，不请求模型或启动Run；尚未运行不标real PASS。

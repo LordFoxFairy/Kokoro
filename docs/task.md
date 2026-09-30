@@ -1,3 +1,7 @@
+## ROOT-LOCAL-LAUNCH-DIAGNOSTIC：现文件窄片授权
+
+归属Root受管开发入口，不是业务owner/运维扩展。基线main0abb3993；本仓仅agent_typed_skill_reader_owner写入，Root停止源码/文档编辑直到停写交接、仅管理独立真实Product进程与Git index。允许现scripts/dev/serve_local_login.py、scripts/tests/test_serve_local_login.py两文件；不新增文件/依赖/改contract/Schema/guard/retry/健康语义/清理顺序。现异常被压成serving failed，采用原launcher局部固定阶段＋固定错误类别安全记录，淘汰另建日志模块或输出原exception message/body。分开serving stack guard、chat tick、wait阶段，既有异常清理仍正常触发；不臆定历史根因。TDD证明已知异常类别与含secret/message/动态类名均不泄露，已有生命周期/清理门不变；聚焦pytest/Ruff/语法/diff，停写hash→Root独立审查/提交后才能唯一重启。worker不得启动任何服务/数据/模型/Git/3310；全Root门只在冻结后跑。Product原入口真实owned组合session42936 live，与该launcher文件无读写重叠。
+
 ## ROOT-PRODUCT-INSTALLATION：真实五 public 操作验收切片（代码已独立复审，真实待执行）
 
 | 项 | 已定结论 |

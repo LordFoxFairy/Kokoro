@@ -63,6 +63,30 @@ class LaunchError(RuntimeError):
     """A sanitized launcher failure, without credential-bearing data."""
 
 
+def failure_category(error: Exception) -> str:
+    """Classify only by trusted types; never render an exception or its class name."""
+    for types, category in (
+        ((LaunchError,), "launcher"),
+        ((chat_runtime.ChatError,), "chat"),
+        ((model_provider.ProviderError,), "provider"),
+        ((OSError,), "io"),
+        ((subprocess.SubprocessError,), "subprocess"),
+        (
+            (
+                runtime.SmokeError,
+                session.SmokeError,
+                web_smoke.SmokeError,
+                previous.SmokeError,
+                first_login.FirstLoginError,
+            ),
+            "owner_smoke",
+        ),
+    ):
+        if isinstance(error, types):
+            return category
+    return "unexpected"
+
+
 def require_free_web_port() -> None:
     """Fail before creating resources when another process owns the entrance."""
     try:
@@ -483,11 +507,13 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     "Press Ctrl-C to stop and remove this run's resources.", flush=True
                 )
-                stage = "serving"
                 while True:
+                    stage = "serving stack guard"
                     require_owned_stack_alive(processes)
                     if chat is not None:
+                        stage = "serving chat tick"
                         chat.tick()
+                    stage = "serving wait"
                     time.sleep(0.5)
             except KeyboardInterrupt:
                 pass
@@ -498,10 +524,10 @@ def main(argv: list[str] | None = None) -> int:
                 session.SmokeError,
                 OSError,
                 subprocess.SubprocessError,
-            ):
-                failures.append(stage)
-            except Exception:
-                failures.append(stage)
+            ) as error:
+                failures.append(f"{stage} ({failure_category(error)})")
+            except Exception as error:
+                failures.append(f"{stage} ({failure_category(error)})")
             finally:
                 signal.signal(signal.SIGINT, signal.SIG_IGN)
                 signal.signal(signal.SIGTERM, signal.SIG_IGN)
