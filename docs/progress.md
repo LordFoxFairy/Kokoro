@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Source代码门闭环，真实组合定位OAuth扩展解析缺陷
+
+Source登记窗口两RED→GREEN后writer停写，Root完整1023 pass/2skip/325subtests（113.04秒）、Agent原生2/2、Ruff四文件PASS；独立最终真实SIGTERM复现tracked1→thread-end→resource-close，12pass/15deselected/6subtests，P0/P1/P2=0。四文件由Root提交4ae92d9d。日志 `/tmp/kokoro-root-source-registration-final-tests.log`。
+
+Root正常真实IAM/BFF/Platform/Storage/Agent/PG/Redis/MinIO/ClamAV组合exit1：Agent安装阶段PlatformTokenError。随后无业务替代的只读token shape/code诊断证实IAM200含expires_at整数扩展，token_type/scope精确正确，但Agentstrict extra=forbid拒绝为PLATFORM_TOKEN_INVALID_RESPONSE。RFC6749§5.1官方核实客户端忽略未知响应成员；原Agent负责人已续派仅tokenclient/直接test/相关文档修复，不改安全known字段、fixture、SQL或六sender。两日志 `/tmp/kokoro-source-real-composition.log`、`/tmp/kokoro-source-token-diagnostic.log`；两次资源清理无报错，Redis15=0，3310原PID保持。真实Source未通过。
+
+PERSONAL installation只读审计完成：缺Platform Product准入而非安装状态机；Root选择显式安装、trusted BFF本人身份、精确ID/当前授权及安全projection，组织权限后续不扩权。Platform尚未获写入权，先闭当前真实Source，再owner契约→BFF→Web。
+
 ## 2026-09-30 — Source取消返修第一轮主控复验，残余登记窗口仍未放行
 
 唯一writer四文件停写后Root完整门1019 pass/2 native依赖skip/323subtests（110.05秒），Agent原生2/2、Ruff四文件通过；日志 `/tmp/kokoro-root-source-cancellation-tests.log`。独立审查固定四hash实测executor提交尚未返回即SIGTERM：thread-start→tracked0→resource-close→thread-end，cleanup[]，残余P1；原负责人已续修提交+登记信号临界区及Task创建同类窗口，仍不启动真组合、不声称完成。

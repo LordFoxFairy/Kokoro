@@ -1,6 +1,18 @@
 # Kokoro 后端闭环任务总表
 
-## 已交付、Root验收中：W3-ROOT-AGENT-SOURCE-DRIVER 与 W3-IAM-EXECUTION-REVOKE-FIXTURE
+## 当前真实组合阻断：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
+
+| 项 | 任务卡 |
+| --- | --- |
+| Owner/基线/执行 | Agent OAuth consumer；原负责人 `agent_typed_skill_reader_owner` 为唯一writer，Root提交/审查。绝对目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent` clean main e728fe24；Root4ae92d9d，任务外uv.lock不动。 |
+| 实证/归属 | 正常Source真实组合安装阶段PlatformTokenError；只读响应shape诊断200响应含access_token/整数expires_in/整数expires_at/token_type/scope，后二者匹配。Agent _TokenResponse extra=forbid误拒标准OAuth扩展字段；按RFC6749§5.1忽略不认识的响应成员，绝不在fixture删字段或模拟token。现有client局部修复，不改变owner/API/SQL/六sender职责。 |
+| 范围/策略 | 仅既有 clients/platform_tokens.py、tests/unit/execution/test_platform_credentials.py 及TECHNICAL_DESIGN/API_CONTRACT/CURRENT/ACCEPTANCE相关段。保留已知必填字段strict类型、Bearer、正TTL、scope相等、token语法、1MiB/deadline/拒重定向/secret-free错误/单飞取消/credential generation。未知扩展不持久、不repr、不决定有效期或权限；expires_in仍唯一cache依据。 |
+| 验证/交付 | 先actual响应shape回归RED，再最小GREEN；任意扩展、非法known字段/TTL/scope/token、credential及secret负例均不退步。uv lock/sync frozen、Ruff/Pyright/contract/default pytest/build；无服务、不改Root/其他仓/Schema/lock/generated/3310，不自行提交。文件清单停写后Root独立复验/审查/pin，再无诊断wrapper真实组合。 |
+
+Source driver已提交4ae92d9d；Root完整1023 pass/2skip/325subtests、原生2/2与固定hash独立复审P0/P1/P2=0，原SIGTERM P1已关。真实组合两次仍FAIL：第一次正常driver，第二次仅响应shape/code诊断（无业务替代），明确PLATFORM_TOKEN_INVALID_RESPONSE；日志 `/tmp/kokoro-source-real-composition.log`、`/tmp/kokoro-source-token-diagnostic.log`。Agent Redis15回到0、3310原PID保持；产品执行链尚未通过。
+
+
+## 已验收代码支撑（以下过程记录）：W3-ROOT-AGENT-SOURCE-DRIVER 与 W3-IAM-EXECUTION-REVOKE-FIXTURE
 
 | 项 | Source driver 任务卡 / §8放置门 |
 | --- | --- |
@@ -22,7 +34,7 @@
 
 **当前worker补验：** 固定Agent e728/BFF571的真实独立CLI worker已PASS/exit0，4执行事件→5帧durableAG-UI、outbox成功、助手completed、Agentterminal；自有PG/process/Redis余量0，日志 `/tmp/kokoro-bff-agent-e728-worker.log`。IAM/System/model仍具名确定性fixture，非Source或浏览器3310。
 
-**Source取消P1返修（当前不放行）：** 独立工作树审查基线f905087a四文件hash固定，实测真实SIGTERM打断Runner后，close()重启loop会恢复旧业务协程并在resource-close期间再执行副作用，cleanup却报[]。原Source负责人再任仅helper/直接test唯一writer，其他Root文件排除；保存活动Task，异常/信号后首先cancel＋有界await/drain，再关HTTP/runtime/Redis。同步launch/revoke的已开始线程须在销毁owner前退出，不能由最后Runner.close才隐式取消；源码callback本身已有HTTP10s/协议30s边界。补确定性无服务SIGTERM回归与在途thread关闭次序/异常传播，先RED→GREEN，主控复验/独立审查通过后才真组合；不加服务/运维体系或放宽清理失败门。
+**历史Source取消P1返修（已由4ae92d9d关闭，当前真实组合改由OAuth阻断）：** 独立工作树审查基线f905087a四文件hash固定，实测真实SIGTERM打断Runner后，close()重启loop会恢复旧业务协程并在resource-close期间再执行副作用，cleanup却报[]。原Source负责人再任仅helper/直接test唯一writer，其他Root文件排除；保存活动Task，异常/信号后首先cancel＋有界await/drain，再关HTTP/runtime/Redis。同步launch/revoke的已开始线程须在销毁owner前退出，不能由最后Runner.close才隐式取消；源码callback本身已有HTTP10s/协议30s边界。补确定性无服务SIGTERM回归与在途thread关闭次序/异常传播，先RED→GREEN，主控复验/独立审查通过后才真组合；不加服务/运维体系或放宽清理失败门。
 
 第二候选Root完整门 **1019 pass/2 skip/323 subtests（110.05秒）**、原生2/2/Ruff四文件PASS，但独立审查真实SIGTERM在executor提交→登记之间仍能留下未跟踪线程，P1仍未放行；负责人继续同一根因窄返修（含Task创建登记中断安全），不启动真实组合。
 
@@ -40,18 +52,7 @@ Root新增完整scripts/tests候选 **1010 pass/2 Agent依赖skip/317subtests（
 
 证据：`/tmp/kokoro-agent-534-checkpoint-state.log`，纯SDK/内存checkpoint而非真实owner组合；上一候选默认1399通过不足以覆盖本缺陷。返修已交付 `e728fe24d9528efe02a53282f1dfd8328a122f9a`、clean main且writer停写；Root完整默认门已exit0：1410 pass/6 skip/172 deselected，lock/sync/Ruff/Pyright/contract/build均通过（日志 `/tmp/kokoro-agent-e728-root-gates.log`）。独立只读 `run_metadata_independent_review` 负责固定SHA生命周期/安全审查（仅8文件，无服务操作），固定SHA独立审查P0/P1/P2=0、聚焦11 pass/44 deselected；Root已复验并集成Agent gitlink/库存来源，所有宽泛broken边保持；完整Root994 pass/291 subtests（120.49秒），现有worker/浏览器composer版本锁2 RED→52 GREEN。真实Source组合仍待验。用户已授权3310重启，Root不以返修代替可见登录验收。
 
-## 当前真实组合阻断：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
-
-| 项 | 任务卡 |
-| --- | --- |
-| Owner/基线/执行 | Agent OAuth consumer；原负责人 `agent_typed_skill_reader_owner` 为唯一writer，Root提交/审查。绝对目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent` clean main e728fe24；Root4ae92d9d，任务外uv.lock不动。 |
-| 实证/归属 | 正常Source真实组合安装阶段PlatformTokenError；只读响应shape诊断200响应含access_token/整数expires_in/整数expires_at/token_type/scope，后二者匹配。Agent _TokenResponse extra=forbid误拒标准OAuth扩展字段；按RFC6749§5.1忽略不认识的响应成员，绝不在fixture删字段或模拟token。现有client局部修复，不改变owner/API/SQL/六sender职责。 |
-| 范围/策略 | 仅既有 clients/platform_tokens.py、tests/unit/execution/test_platform_credentials.py 及TECHNICAL_DESIGN/API_CONTRACT/CURRENT/ACCEPTANCE相关段。保留已知必填字段strict类型、Bearer、正TTL、scope相等、token语法、1MiB/deadline/拒重定向/secret-free错误/单飞取消/credential generation。未知扩展不持久、不repr、不决定有效期或权限；expires_in仍唯一cache依据。 |
-| 验证/交付 | 先actual响应shape回归RED，再最小GREEN；任意扩展、非法known字段/TTL/scope/token、credential及secret负例均不退步。uv lock/sync frozen、Ruff/Pyright/contract/default pytest/build；无服务、不改Root/其他仓/Schema/lock/generated/3310，不自行提交。文件清单停写后Root独立复验/审查/pin，再无诊断wrapper真实组合。 |
-
-Source driver已提交4ae92d9d；Root完整1023 pass/2skip/325subtests、原生2/2与固定hash独立复审P0/P1/P2=0，原SIGTERM P1已关。真实组合两次仍FAIL：第一次正常driver，第二次仅响应shape/code诊断（无业务替代），明确PLATFORM_TOKEN_INVALID_RESPONSE；日志 `/tmp/kokoro-source-real-composition.log`、`/tmp/kokoro-source-token-diagnostic.log`。Agent Redis15回到0、3310原PID保持；产品执行链尚未通过。
-
-## 并行只读准备：W3-PRODUCT-SKILL-INSTALL-ADMISSION-AUDIT
+## 已完成只读准备：W3-PRODUCT-SKILL-INSTALL-ADMISSION-AUDIT
 
 | 项 | 任务卡 |
 | --- | --- |
@@ -59,6 +60,8 @@ Source driver已提交4ae92d9d；Root完整1023 pass/2skip/325subtests、原生2
 | 执行/基线 | `iam_execution_revoke_fixture_owner`转只读调查；Root main9482d0cb、Platform6a09913/IAMe3c035b/BFF571b51de/Web1dc211bb，绝对根目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro`。 |
 | 范围/边界 | 只读四仓当前设计、契约、安装/启用代码与测试；不改文件/提交/启动服务/重置数据，不做运维或复制新业务协议。与Root Source取消返修独立。 |
 | 交付/验证 | 给出既有安装RPC准入证据、Product调用缺口、可沿用的IAM受信subject边界与最小先owner后consumer顺序；精确文件/字段/测试入口、未决选择，区分事实与建议。Root裁决后再派唯一Platform writer，当前未授权实现。 |
+
+审计已交付（只读、无服务）：五Installation RPC仅Agent proof准入，IAM0.7组织动作不等于PERSONAL安装权；不存在catalog.self.write这一scope。Root后续裁决沿已批准trusted BFF本人边界做PERSONAL installation，发布与安装显式分开、source/ref与installation_id精确操作、本人projection不含私有package字段，每次及重放重新授权；ORG不扩权、不以platform:execute代替安装。Platform先契约文档/机器门，再BFF/Web，当前不授Platform写入，保持Source组合固定clean基线。
 
 ## 用户当前最高优先级：右侧3310真实登录验收
 

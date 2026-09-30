@@ -1,6 +1,6 @@
 # Root 当前组合
 
-**2026-09-30 当前代码与验收边界：** Agent e728已集成、当前真实独立worker普通Chat PASS（模型/System/IAM fixture）；IAM e3c035b测试撤权支撑由Root真host51/51及verify938验收，生产契约未改。Root Source驱动代码已交付，Root完整门1010 pass/2 skip但独立SIGTERM审查P1未过，真实proof→IAM→Platform→Storage读取待取消返修后组合运行；所有宽泛broken边维持。用户3310受管运行保持，右侧旧过期标签仍待手动/login，不移用历史Chromium结果。
+**2026-09-30 当前代码与验收边界：** Source driver4ae92d9d已通过Root1023 pass/2skip/325subtests、原生2/2和独立SIGTERM复审0缺陷；真实组合已经执行，安装阶段Agent OAuth token parser误拒IAM成功响应的expires_at扩展，PLATFORM_TOKEN_INVALID_RESPONSE，尚未通过。当前唯一Agent writer正在现有token client窄修RFC6749§5.1扩展解析，严守known字段/权限/secret门；不在fixture剪响应或用假token。IAMe3/Agente728已pin，普通workerPASS范围仍IAM/System/model具名fixture；13broken宽泛边维持。3310保留、右侧旧过期标签手动/login待验。下方未过SIGTERM过程记录已由4ae关闭，不作为当前阻断。
 
 **2026-09-30 用户授权后3310运行已恢复、可见登录待验：** Root仅停止旧同组Web/BFF并用现有受管启动器启动当前Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`（session71981，Web4113监听3310）。右侧仍是旧过期交互，CUA读取超时，已请用户手动打开 `/login`；未提交/回调/刷新，不宣称可见E2E通过。Agent reader返修 `e728fe24` 已交付，Root全门1410 pass/6 skip/172 deselected及独立审查P0/P1/P2=0，gitlink/库存已集成，Root994 pass/291 subtests，当前Source真组合仍待验；下方3310旧实例记录均是历史状态，见task/progress。
 
