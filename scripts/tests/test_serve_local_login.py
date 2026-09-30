@@ -1,11 +1,17 @@
 """Focused guards for the local, real three-owner login launcher."""
 
 import importlib.util
+import os
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import signal
 import socket
+import subprocess
 import sys
+import tempfile
 from threading import Thread
+import time
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -19,6 +25,198 @@ spec.loader.exec_module(launcher)
 
 
 class LocalLoginGuards(unittest.TestCase):
+    def wait_for_process_exit(self, pid: int, timeout: float = 5.0) -> bool:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            result = subprocess.run(
+                ["ps", "-o", "stat=", "-p", str(pid)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if result.returncode != 0 or result.stdout.strip().startswith("Z"):
+                return True
+            time.sleep(0.05)
+        return False
+
+    def test_node_parent_guard_does_not_keep_normal_process_alive(self):
+        with tempfile.TemporaryDirectory(prefix="node guard with spaces ") as directory:
+            environment = os.environ.copy()
+            launcher.install_node_parent_guard(Path(directory), environment)
+            completed = subprocess.run(
+                ["node", "-e", "process.stdout.write('normal-exit')"],
+                env=environment,
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+        self.assertEqual(completed.returncode, 0)
+        self.assertEqual(completed.stdout, "normal-exit")
+        self.assertEqual(completed.stderr, "")
+
+    def test_node_parent_guard_stops_child_after_hard_parent_exit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            environment = os.environ.copy()
+            launcher.install_node_parent_guard(root, environment)
+            pid_file = root / "child.pid"
+            parent = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import pathlib, subprocess, sys, time; "
+                        "child=subprocess.Popen(['node','-e','setInterval(()=>{}, 1000)']); "
+                        "pathlib.Path(sys.argv[1]).write_text(str(child.pid)); "
+                        "time.sleep(30)"
+                    ),
+                    str(pid_file),
+                ],
+                env=environment,
+                start_new_session=True,
+            )
+            child_pid = 0
+            try:
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline and not pid_file.exists():
+                    time.sleep(0.05)
+                self.assertTrue(pid_file.exists())
+                child_pid = int(pid_file.read_text())
+                os.kill(parent.pid, signal.SIGKILL)
+                parent.wait(timeout=5)
+                self.assertTrue(self.wait_for_process_exit(child_pid))
+            finally:
+                if parent.poll() is None:
+                    os.kill(parent.pid, signal.SIGKILL)
+                    parent.wait(timeout=5)
+                if child_pid and not self.wait_for_process_exit(child_pid, 0.1):
+                    os.kill(child_pid, signal.SIGKILL)
+
+    def test_node_parent_guard_force_kills_child_that_ignores_sigterm(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            environment = os.environ.copy()
+            launcher.install_node_parent_guard(root, environment)
+            pid_file = root / "child.pid"
+            ready_file = root / "child.ready"
+            node_script = (
+                "process.on('SIGTERM',()=>{});"
+                "require('node:fs').writeFileSync(process.argv[1],'ready');"
+                "setInterval(()=>{},1000);"
+            )
+            parent = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import pathlib, subprocess, sys, time; "
+                        "child=subprocess.Popen(['node','-e',sys.argv[2],sys.argv[3]]); "
+                        "pathlib.Path(sys.argv[1]).write_text(str(child.pid)); "
+                        "time.sleep(30)"
+                    ),
+                    str(pid_file),
+                    node_script,
+                    str(ready_file),
+                ],
+                env=environment,
+                start_new_session=True,
+            )
+            child_pid = 0
+            try:
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline and not (
+                    pid_file.exists() and ready_file.exists()
+                ):
+                    time.sleep(0.05)
+                self.assertTrue(pid_file.exists())
+                self.assertTrue(ready_file.exists())
+                child_pid = int(pid_file.read_text())
+                os.kill(parent.pid, signal.SIGKILL)
+                parent.wait(timeout=5)
+                self.assertTrue(self.wait_for_process_exit(child_pid, 7))
+            finally:
+                if parent.poll() is None:
+                    os.kill(parent.pid, signal.SIGKILL)
+                    parent.wait(timeout=5)
+                if child_pid and not self.wait_for_process_exit(child_pid, 0.1):
+                    os.kill(child_pid, signal.SIGKILL)
+
+    def test_node_parent_guard_stops_child_after_normal_parent_exit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            environment = os.environ.copy()
+            launcher.install_node_parent_guard(root, environment)
+            pid_file = root / "child.pid"
+            parent = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    (
+                        "import pathlib, subprocess, sys; "
+                        "child=subprocess.Popen(['node','-e','setInterval(()=>{}, 1000)']); "
+                        "pathlib.Path(sys.argv[1]).write_text(str(child.pid))"
+                    ),
+                    str(pid_file),
+                ],
+                env=environment,
+                start_new_session=True,
+                timeout=5,
+                check=False,
+            )
+            self.assertEqual(parent.returncode, 0)
+            self.assertTrue(pid_file.exists())
+            child_pid = int(pid_file.read_text())
+            try:
+                self.assertTrue(self.wait_for_process_exit(child_pid))
+            finally:
+                if not self.wait_for_process_exit(child_pid, 0.1):
+                    os.kill(child_pid, signal.SIGKILL)
+
+    def test_inherited_guard_tracks_each_node_actual_parent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            environment = os.environ.copy()
+            launcher.install_node_parent_guard(root, environment)
+            pid_file = root / "grandchild.pid"
+            script = (
+                "const {spawn}=require('node:child_process');"
+                "const fs=require('node:fs');"
+                "const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});"
+                "fs.writeFileSync(process.argv[1],String(child.pid));"
+                "setInterval(()=>{},1000);"
+            )
+            parent = subprocess.Popen(
+                ["node", "-e", script, str(pid_file)],
+                env=environment,
+                start_new_session=True,
+            )
+            child_pid = 0
+            try:
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline and not pid_file.exists():
+                    time.sleep(0.05)
+                self.assertTrue(pid_file.exists())
+                child_pid = int(pid_file.read_text())
+                self.assertFalse(self.wait_for_process_exit(child_pid, 0.35))
+                os.kill(parent.pid, signal.SIGKILL)
+                parent.wait(timeout=5)
+                self.assertTrue(self.wait_for_process_exit(child_pid))
+            finally:
+                if parent.poll() is None:
+                    os.kill(parent.pid, signal.SIGKILL)
+                    parent.wait(timeout=5)
+                if child_pid and not self.wait_for_process_exit(child_pid, 0.1):
+                    os.kill(child_pid, signal.SIGKILL)
+
+    def test_proxy_thread_death_fails_the_owned_stack_monitor(self):
+        running = SimpleNamespace(poll=lambda: None)
+        live_proxy = SimpleNamespace(thread=SimpleNamespace(is_alive=lambda: True))
+        dead_proxy = SimpleNamespace(thread=SimpleNamespace(is_alive=lambda: False))
+        launcher.require_owned_stack_alive([running], [live_proxy])
+        with self.assertRaisesRegex(launcher.LaunchError, "owned service exited"):
+            launcher.require_owned_stack_alive([running], [dead_proxy])
+
     def test_next_normalized_origin_is_not_used_as_browser_authority(self):
         origin = "http://127.0.0.1:3310"
         self.assertTrue(

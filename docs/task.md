@@ -1,8 +1,10 @@
 # Kokoro 后端闭环任务总表
 
-## 并行修复：W3-ROOT-LOGIN-LIFECYCLE（当前可见登录503的直接原因）
+## 已验收代码：W3-ROOT-LOGIN-LIFECYCLE（真实3310重启待许可）
 
 可见协助任务 `01a0f010-3073-7a22-900a-8d9e8d586f3f` 只读实测新 `/login` 302后authorize返回503 `iam_relay_unavailable`；Web3310/BFF残留，launcher及其proxy/IAM已退出。本片只修开发启动脚本生命周期，不改Web/IAM认证规则或部署架构。是否重启用户3310已询问，等待答复；代码修复可继续。
+
+**代码验收：** 两文件守卫实现已交接停写；Root 聚焦 **12/12**、完整 `python3 -m pytest -q scripts/tests` **991 pass / 281 subtests**，独立终审 P0/P1/P2=0。覆盖父正常/硬退出、忽略 SIGTERM 后强杀、Next 式继承、含空格路径和 unref；proxy 失活监测有测试，生产 main 的 finally 收尾仅代码审查。未重启3310、未声称真实登录成功。
 
 | 项 | 放置、权限与验收 |
 | --- | --- |

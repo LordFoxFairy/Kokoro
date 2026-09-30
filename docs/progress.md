@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 登录夹具生命周期代码修复验收
+
+可见协助任务完成并停写，仅现有 `scripts/dev/serve_local_login.py` 与相邻测试变更：Node 使用各自实际父 PID 的 unref 守卫，父退出后 SIGTERM/5秒强杀，proxy 线程纳入既有运行监测。不新建运维服务或持久清单。Root 精确工作树复跑聚焦 **12/12**、全 `scripts/tests` **991 pass/281 subtests（102.83s，exit0）**；独立终审 P0/P1/P2=0。测试前后两文件摘要不变。3310残留未清理，重启许可未答；本片不是IAM凭据登录、callback或应用页验收。任务外 `uv.lock` 未改未暂存。
+
 ## 2026-09-29 — Root固定Agent与BFF设计；可见登录失败定位到开发进程生命周期
 
 Root `87897e012cd112a201da1dadcbdfd509d034f13a` 精确pin Agent `dd34a48`/BFF文档 `78c92c0` 及consumer来源，topology/checkpoint通过，Root **985 tests/281 subtests passed**。BFF真实消费者代码继续由唯一writer推进，广义边保持broken。

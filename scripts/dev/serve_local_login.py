@@ -33,6 +33,21 @@ import run_web_bff_iam_oidc_smoke as web_smoke  # noqa: E402
 import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
 
 WEB_PORT = 3310
+NODE_PARENT_GUARD = """\
+const expectedParent = process.ppid
+let orphanedAt = 0
+const watcher = setInterval(() => {
+  if (expectedParent > 1 && process.ppid === expectedParent) return
+  const now = Date.now()
+  if (orphanedAt === 0) {
+    orphanedAt = now
+    process.kill(process.pid, "SIGTERM")
+    return
+  }
+  if (now - orphanedAt >= 5000) process.kill(process.pid, "SIGKILL")
+}, 100)
+watcher.unref()
+"""
 
 
 def web_origin(_run_id: str) -> str:
@@ -57,6 +72,26 @@ def local_next_server(source: str) -> str:
     if source.count(marker) != 1:
         raise LaunchError("isolated Next server template changed")
     return source.replace(marker, f"port: {WEB_PORT}")
+
+
+def install_node_parent_guard(directory: Path, *environments: dict[str, str]) -> Path:
+    """Make each Node process exit when its own direct parent disappears."""
+    guard = directory / "node-parent-guard.mjs"
+    guard.write_text(NODE_PARENT_GUARD, encoding="utf-8")
+    option = f"--import={guard.as_uri()}"
+    for environment in environments:
+        existing = environment.get("NODE_OPTIONS", "").strip()
+        environment["NODE_OPTIONS"] = f"{existing} {option}".strip()
+    return guard
+
+
+def require_owned_stack_alive(
+    processes: list[subprocess.Popen[bytes]], proxies: list[web_smoke.Proxy]
+) -> None:
+    if any(process.poll() is not None for process in processes) or any(
+        not proxy.thread.is_alive() for proxy in proxies
+    ):
+        raise LaunchError("owned service exited")
 
 
 def http_browser(
@@ -186,6 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         prefix="kokoro-local-login-", dir=web_smoke.ROOT.parent
     ) as temp:
         directory = Path(temp)
+        install_node_parent_guard(directory, iam_env, bff_env, web_env)
         log_path = directory / "process.log"
         with log_path.open("w+b") as log:
             try:
@@ -352,8 +388,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 stage = "serving"
                 while True:
-                    if any(process.poll() is not None for process in processes):
-                        raise LaunchError("owned service exited")
+                    require_owned_stack_alive(processes, proxies)
                     time.sleep(0.5)
             except KeyboardInterrupt:
                 pass
