@@ -21,7 +21,7 @@ def test_release_inputs_pin_current_web_bff_iam_and_agent() -> None:
         "kokoro-app": "1dc211bb61030926177b72b3dff2061562a1015b",
         "kokoro-bff": "571b51de2057905c74c78ac966c8cf5ac11eca93",
         "kokoro-iam": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
-        "kokoro-agent": "e728fe24d9528efe02a53282f1dfd8328a122f9a",
+        "kokoro-agent": "58b59cf7cdc4132042d25460b4928d71a66ae7ec",
     }
 
 

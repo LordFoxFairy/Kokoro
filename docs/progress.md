@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — OAuth成功扩展消费者窄修验收，正常Source复验待执行
+
+Agent `58b59cf7cdc4132042d25460b4928d71a66ae7ec` 六具名文件已由Root提交，clean main。修复 `_TokenResponse` 未知OAuth成功成员（实际IAM expires_at）的误拒，保留已知required/strict/Bearer/TTL/scope/token/secret/传输/credential单飞取消门；扩展丢弃且不决定cache。writer实际RED4→GREEN42，Root完整 canonical门 `/tmp/kokoro-agent-oauth-root-gates.log` exit0：1431 pass/6 skip/172 deselected（56.94秒）、Ruff249/Pyright0/contract/lock/sync/build；固定hash独立终审P0/P1/P2=0、42聚焦及扩展不入repr/dump实测。初次Root直接调用 `.venv/bin/pyright` 因全局解释器产生1250缺import/type错误，按 `uv run --frozen pyright` 正确环境重跑0，未为此改代码/门禁。
+
+Root四composer版本锁先RED2/50deselected，再52GREEN；库存30 Agent commit tuple/2真实blob digest更新，宽泛edge状态不变。尚未commit gitlink时拓扑/checkpoint按设计拒旧HEAD，须集成commit后复验，不把该预提交拒绝当通过。Source正常无诊断wrapper组合待复验，前次实际OAuth FAIL保留。3310当前原受管组三PID存活，右侧原标签CUA再次AX超时且kernel重置，已请求用户手动打开/login；不重复重启服务、不以历史Chromium代替当前右侧验收。任务外uv.lock保持未暂存。
+
 ## 2026-09-30 — Source代码门闭环，真实组合定位OAuth扩展解析缺陷
 
 Source登记窗口两RED→GREEN后writer停写，Root完整1023 pass/2skip/325subtests（113.04秒）、Agent原生2/2、Ruff四文件PASS；独立最终真实SIGTERM复现tracked1→thread-end→resource-close，12pass/15deselected/6subtests，P0/P1/P2=0。四文件由Root提交4ae92d9d。日志 `/tmp/kokoro-root-source-registration-final-tests.log`。

@@ -1,6 +1,6 @@
 # Root 当前组合
 
-**2026-09-30 当前代码与验收边界：** Source driver4ae92d9d已通过Root1023 pass/2skip/325subtests、原生2/2和独立SIGTERM复审0缺陷；真实组合已经执行，安装阶段Agent OAuth token parser误拒IAM成功响应的expires_at扩展，PLATFORM_TOKEN_INVALID_RESPONSE，尚未通过。当前唯一Agent writer正在现有token client窄修RFC6749§5.1扩展解析，严守known字段/权限/secret门；不在fixture剪响应或用假token。IAMe3/Agente728已pin，普通workerPASS范围仍IAM/System/model具名fixture；13broken宽泛边维持。3310保留、右侧旧过期标签手动/login待验。下方未过SIGTERM过程记录已由4ae关闭，不作为当前阻断。
+**2026-09-30 当前代码与验收边界：** Agent OAuth parser窄修58b59cf已提交/clean：允许未知成功扩展、strict已知字段不变；Root单仓1431 pass/6skip/172deselected、canonical Pyright0/Ruff/contract/build与独立审查0缺陷。Root来源锁集成中，聚焦52/52；Source正常真组合仍待复验，前次expires_at误拒FAIL不抹除。Source driver4ae92d9d的SIGTERM注册/关闭门已验，13broken宽泛边维持。3310登录组3898/4007/4113仍存活未重复重启，右侧旧过期标签CUA再次读取超时，已请手动/login；没有可见提交/回调/刷新证据。下方均为有日期历史记录，不替代本段当前边界。
 
 **2026-09-30 用户授权后3310运行已恢复、可见登录待验：** Root仅停止旧同组Web/BFF并用现有受管启动器启动当前Web `1dc211bb` / BFF `571b51de` / IAM `a6dfd196`（session71981，Web4113监听3310）。右侧仍是旧过期交互，CUA读取超时，已请用户手动打开 `/login`；未提交/回调/刷新，不宣称可见E2E通过。Agent reader返修 `e728fe24` 已交付，Root全门1410 pass/6 skip/172 deselected及独立审查P0/P1/P2=0，gitlink/库存已集成，Root994 pass/291 subtests，当前Source真组合仍待验；下方3310旧实例记录均是历史状态，见task/progress。
 

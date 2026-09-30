@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 当前真实组合阻断：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
+## 当前真实组合复验：W3-AGENT-OAUTH-TOKEN-EXTENSIONS
 
 | 项 | 任务卡 |
 | --- | --- |
@@ -9,7 +9,7 @@
 | 范围/策略 | 仅既有 clients/platform_tokens.py、tests/unit/execution/test_platform_credentials.py 及TECHNICAL_DESIGN/API_CONTRACT/CURRENT/ACCEPTANCE相关段。保留已知必填字段strict类型、Bearer、正TTL、scope相等、token语法、1MiB/deadline/拒重定向/secret-free错误/单飞取消/credential generation。未知扩展不持久、不repr、不决定有效期或权限；expires_in仍唯一cache依据。 |
 | 验证/交付 | 先actual响应shape回归RED，再最小GREEN；任意扩展、非法known字段/TTL/scope/token、credential及secret负例均不退步。uv lock/sync frozen、Ruff/Pyright/contract/default pytest/build；无服务、不改Root/其他仓/Schema/lock/generated/3310，不自行提交。文件清单停写后Root独立复验/审查/pin，再无诊断wrapper真实组合。 |
 
-Source driver已提交4ae92d9d；Root完整1023 pass/2skip/325subtests、原生2/2与固定hash独立复审P0/P1/P2=0，原SIGTERM P1已关。真实组合两次仍FAIL：第一次正常driver，第二次仅响应shape/code诊断（无业务替代），明确PLATFORM_TOKEN_INVALID_RESPONSE；日志 `/tmp/kokoro-source-real-composition.log`、`/tmp/kokoro-source-token-diagnostic.log`。Agent Redis15回到0、3310原PID保持；产品执行链尚未通过。
+**2026-09-30 当前交付：** Agent窄修已由Root提交 `58b59cf7cdc4132042d25460b4928d71a66ae7ec`，clean main；仅OAuth成功响应未知字段忽略，已知字段/权限/TTL/秘密门不变。Root独立 canonical `uv run --frozen pyright` 0、Ruff249、contract、lock/frozen sync、默认1431 pass/6 skip/172 deselected及wheel/sdist通过；固定hash独立审查P0/P1/P2=0。初次直接 `.venv/bin/pyright` 选错全局解释器失败，未改代码，按canonical环境重跑通过。下一步Root gitlink/30 evidence与两个digest集成，四composer锁先2 RED后52 GREEN；正常无诊断wrapper Source复验待执行。Source driver4ae92d9d自身Root1023 pass/2skip/325subtests、原生2/2及SIGTERM复审已通过，原两个真实FAIL保留日志，不以修复代码替代真组合通过。
 
 
 ## 已验收代码支撑（以下过程记录）：W3-ROOT-AGENT-SOURCE-DRIVER 与 W3-IAM-EXECUTION-REVOKE-FIXTURE
