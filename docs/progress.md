@@ -1,5 +1,14 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Platform runtime真实事务已验收；当前UI缺陷与错误验收脚本均保留
+
+Root精确提交Platform29文件 `d93e8a59a656e427f9780d2ee0d64ea5b6ef0904`；独立214纯测试/typecheck/29hash0漂移且P0/P1/P2=0，Root主树Node24 format/lint/typecheck/contractlint+只读checker/artifact/schema/test/build/diff exit0，1185pass/243真实依赖skip（`/tmp/kokoro-platform-runtime-root-gates.log`）。Root复用owner createOwnedPostgresDatabase、现localhost PG/相同credential、独立owner schema和现Redis仅连接，真实skill-installation.integration **27/27**包含新增4Product ACKlost/CAS，`OWNED_PG_CLOSED`（`/tmp/kokoro-platform-runtime-root-pg-r2.log`）。首次临时driver错误cwd找Root prisma失败已保留 `/tmp/kokoro-platform-runtime-root-pg.log`，改owner cwd后通过；无更改生产或测试断言/基础设施，受管65687/7399组始终不动。
+
+新确认机器债务：旧0dd60af v5 List buildtime validator/vectors要求has_more，但唯一Proto/实际runtime PageResult仅optional next_cursor。旧机器PASS不覆盖真实wire一致性；原owner已续派精确5.0.1纠正（v1–v4/Proto/generated/Schema/runtime冻结）。BFF五路由/client/projector已在途，但最终vendor/SHA/digest等待纠正版，未增加has_more/fallback/假Run。
+
+独立实际3310 Chromium：R1强制等待consent而超时，实际已进app；R2真实completed/UI回复/刷新各1，但脚本猜logout /confirm路径而超时；这些均是验收脚本错误而非应用失败根因。R3按真实原生Confirm logout按钮完成Web+issuer logout、session=false；真实登录/UI POST202/助手可见。但脚本未严格等待terminal、同JSON terminal=false/assistant DOM2却误标passed，结论撤销为FAIL，禁止引用误标为完成。Root查看 `/tmp/kokoro-current-3310-browser-e2e-r3/03-app-reload.png` 发现生成中reload助手分段倒序，已交Web原owner只读诊断/最小RED，不丢partials规避。浏览器全部自有context/PID已关闭，用户右侧IAB仍未验；agents404/runtime-manifest404/billing503仍明确未通，Skills/Storage尚未装配。
+
+
 ## 2026-09-30 — 当前加载Web9590后实际HTTP重新通过
 
 Root160e3f50集成Web9590及固定Web/BFF composer SHA后，主树相关128/128（日志 `/tmp/kokoro-web9590-root-pin-tests.log`）通过；Ruff两来源文件/diff通过。现受管7399/7874未重启，新三生产源码精确同步后当前3310独立HTTP再次PASS：正常IAM登录/回调、真实空Skill聊天/AG-UI终态、同键无重复、消息持久与刷新、自身logout；日志 `/tmp/kokoro-current-chat-http-acceptance.log`，同步前证据保留 `/tmp/kokoro-current-chat-http-before-web9590.log`。私有cookiejar已清，不触用户会话/全租户撤销。请求App展示新/login返回queued，仅表示待显示，未取得右侧用户点击DOM证据，P0不标验收；当前Skill/Storage完整能力仍未接入此组合。Platform/BFF两个writer继续各自正式能力实现，goal active。

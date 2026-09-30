@@ -1,5 +1,32 @@
 # Kokoro 后端闭环任务总表
 
+## PLATFORM-PERSONAL-WIRE-CORRECTION：未激活候选纠正与真实事务验收（2026-09-30）
+
+Root确认新缺陷：唯一Proto PageResult只允许optional next_cursor，旧0dd60af候选的List buildtime validator/vectors却要求has_more；旧机器门PASS不再作为完整wire一致性证据，不能通过运行时发明字段掩盖。runtime29文件已停写，先独立审查和Root复跑/真实PG验收，之后另授机器窄修；同仓仍只有原Platform writer。
+
+| 项 | 放置/任务卡 |
+| --- | --- |
+| Owner/基线 | Platform既有Skills/installation机器artifact能力，main0dd60af＋冻结29 runtime文件/hash；Root唯一index/提交，独立runtime审查只读。Root/浏览器/BFF可并行，不抢写Platform。 |
+| 当前/目标 | 唯一Proto/generated与runtime next_cursor正确；错误位于既有product-installation.ts与vectors。恢复真实官方JSON/binary PageResult与profile一致，拒绝不存在的has_more；不改RPC/Schema/摘要算法或调用身份。 |
+| 位置比较/删除 | 采用已有v5候选发布能力纠正为artifact5.0.1、精确新commit/digest；淘汰新增v6目录复制及运行时兼容字段。0dd60af Git历史原字节仍可追溯，工作树仅保留纠正后的单一未激活候选，无双读/fallback。v1–v4目录与历史descriptor所有原字节冻结。 |
+| 机器授权（runtime已验收d93e8a59，已续派） | 仅scripts/platform-execution-operations/product-installation.ts、product-installation-vectors.ts、v5-profile.ts、必要v5-artifact.ts/v5-schema.ts；现test/contract/platform-personal-installation-v5.test.ts与platform-execution-operations.test.ts；test/unit/skill-installation-product-request-binding.test.ts仅精确新增向量库存数量断言，原158身份/负例意图全保留；现contract/execution-operations/v5生成输出/provenance和contract README、四设计/CURRENT候选版本/证据。不得手改generated/proto、canonical Proto、Schema/依赖锁、其他仓、runtime29冻结源码。 |
+| 验证 | 先official toJson/fromJson/toBinary/fromBinary真实空页与next_cursor拒绝旧validator的RED；修复GREEN并保留未知has_more/null/空cursor/重复/顺序/所有158负例门，不为保持测试数放宽断言。发布输出从既有确定性expected documents/schema/provenance生成，Node24 contract/artifact/format/lint/typecheck/test/build；独立审查＋Root复验。新candidate仍inactive，BFF最后只固定纠正owner SHA/digest。 |
+| Root真PG资源 | Root可用现owner createOwnedPostgresDatabase fixture，在已有localhost PostgreSQL/相同credential临时自有随机数据库/独立kokoro_platform schema安装canonical；只跑现skill-installation.integration（含新4Product事务/ACKlost/CAS）。共享Redis7仅连接及spec自有随机key，不FLUSH/新infra；test进程关闭连接后仅回收所创数据库，主预览65687不动。现有fixtures不增加业务源码或新目录。失败不标通过。 |
+
+当前浏览器验收纠正：consent是合法条件分支，已授权会话可直接进入/app；前次脚本强制等待consent而超时并非用户登录失败证明，历史原结果保留。新自有context按真实分支验登录、聊天、刷新、自身logout，不重置授权或操作用户会话。
+
+## CURRENT-3310-BROWSER-E2E：当前实际运行组合验收（2026-09-30）
+
+上一goal turn为真实进展：Web9590/Root160e3f50提交、主树回归、已加载源码后的当前HTTP链PASS；不据此关闭整个goal。此任务由独立浏览器验收Agent负责，Root复核证据；Platform/BFF既有writer并行不抢写。
+
+| 项 | 精确边界 |
+| --- | --- |
+| 基线/目标 | Root7cb4541f、Web9590a74受管Next dev snapshot、BFF进程7855当前已加载旧已验代码；实际3310，非mockBFF/另起应用组合。临时独立Chromium context正常点击/login、原生登录/consent、/app、真实发消息/流式回复/刷新/自身logout。 |
+| 位置/范围 | 复用本仓既有Playwright依赖/浏览器E2E方式与实际mounted页面；临时验收脚本、固定无secret截图及脱敏日志仅/tmp私有目录，无业务仓或Root源码写入。采用现运行环境而不是启动第二系统、fakeRuntime/model/BFF、cookie注入跳登录或API发消息代替UI。 |
+| 身份/资源 | 仅Rootowned fixture0600 credentials JSON，读不输出。独立browser context/session/临时会话通过正式UI；不改用户现有会话/配置/账号、不全员logout、不SQL/Redis操作、不共享service restart、不新PG/Redis/模型下载、不CDP attach用户浏览器/旁路原生Codex限制。 |
+| 证据 | 实际按钮POST/callback/app、渲染可交互composer、UI消息与真实AG-UI/终态、刷新不重复；证据只status/path/布尔，不输出token/密码/完整签名query/正文。截图在新输入敏感值前或app完成后，固定脱敏text；不留cookie/trace/storage-state。 |
+| 验收/恢复 | 成功范围只当前基本Chat，无Skills/Storage完整体系承诺；真实可见故障立即记录当前stage/安全errorcode/截图，停止猜测。结束关闭owned browser/context并仅正式自身logout，资源终态；用户右侧CUA本轮20秒读超时仍独立未验，不把此Chromium假称右侧窗口。 |
+
 ## BFF-PERSONAL-CONSUMER：文档门已通过，固定v5正式消费授写（2026-09-30）
 
 Owner BFF原负责人唯一writer；main c4c4cbc clean，Root eefcae6f已集成；Root index/commit/独立审查。三面绝对路径为 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff/docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`（后两同一绝对目录）。对应四文档hash和独立0缺陷见progress/交接；contract179、architecture27、schema5pass/1无PG skip已Root Node22验证。无未决业务裁决，整体产品仍未验。

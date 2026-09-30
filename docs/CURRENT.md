@@ -12,7 +12,7 @@
 | `apps/kokoro-app` | `9590a741448923c63eb4f4ff46379135d21061bd` |
 | `apps/kokoro-bff` | `c4c4cbccee68eee95c1b89548abb6302b80e58e6` |
 | `apps/kokoro-billing` | `63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa` |
-| `apps/kokoro-capability` | `0dd60af4799cb2f0b410ded5ffb9c1402a55c641` |
+| `apps/kokoro-capability` | `d93e8a59a656e427f9780d2ee0d64ea5b6ef0904` |
 | `apps/kokoro-iam` | `e3c035b99cf9479ac8357c7d38147f1541dcbcac` |
 | `apps/kokoro-mori` | `ca76c2e12861a2e4a6af3049f6df8c34b417c158` |
 | `apps/kokoro-scheduler` | `975dee59616a1e0eda609aa69283401344900d83` |
@@ -22,7 +22,7 @@
 
 `apps/kokoro-app` 是本轮唯一正式前端；Mori 不参与本轮业务重构。当前物理名称仍为 `apps/kokoro-capability`，业务目标为 Platform，重命名/cutover 未完成；不使用 `apps/kokoro/` alias。模型目录归 System，不新建 kokoro-model。
 
-**用户可见失败仍为P0：** 用户已确认 IAM 表单点击登录未进入应用；当前 HTTP 登录/聊天 PASS 不替代用户交互验收，整体尚未闭环。主控不再要求用户辨认按钮，不以重启或继续改样式代替故障证据。
+**当前用户链仍为P0：** 独立Chromium对实际3310正常提交登录已进入/app、正常确认退出也通过；不是用户右侧IAB已验。浏览器中途刷新发现助手文本分片次序异常，且临时验收脚本未严格等待终态/误标passed已撤销，真实终态和刷新一致性仍须返验；整体尚未闭环。主控不再要求用户辨认按钮，不以重启或继续改样式代替故障证据。
 
 ## 最新验收边界
 
@@ -30,15 +30,16 @@
 | --- | --- | --- |
 | 非空 typed Skill Source | Root `4aef9d1c` 正常原文件入口真实 IAM/BFF/Platform/Storage/Agent/PG/Redis/MinIO/ClamAV，exit0/PASS；安装、原字节、native metadata、只读、停用拒读/重新启用、旧 lease 拒读、IAM 执行撤权均通过；receipt31→34/outbox2；resources clean、Redis15=0。日志 `/tmp/kokoro-source-window-real-composition.log` | 标准 worker＋真实模型的非空 Skill 运行、个人 Product 安装 UI、正式激活。native name 与 opaque 目录不匹配警告仍开放 |
 | 普通 Chat/作品 | 历史固定组合已验真实 Chromium 登录、标准 worker、durable AG-UI、live Delivery、刷新、Canvas 下载、GC/410 恢复与个人私有性；历史 `5b1b9a5e` 还验真实 System→已有 Ollama→worker→Storage 作品链，精确来源/边界见 progress | 历史普通 Chat 或空选择模型结果不替代当前非空 Skill 模型运行，也不证明所有产品能力 |
-| 个人 Skill 安装 | Platform `0dd60af` 三面设计及v5机器契约已Root全9门1030pass/239真实依赖skip与独立审查0缺陷；五方法/九safe/三摘要和optional分页已验，候选inactive | Product owner runtime、BFF public固定消费、Web UI 和真实产品验收仍待完成；机器门不是产品可用 |
+| 个人 Skill 安装 | Platform runtime `d93e8a59` 已独立审查0缺陷＋RootNode24全门1185pass/243依赖skip＋真实ownedPG安装事务27/27（含ACKlost/CAS），自有库已回收。旧v5机器候选发现List has_more与唯一Proto optional next_cursor矛盾，5.0.1窄纠正进行中，仍inactive | Product owner runtime切片已验收；机器wire一致性纠正、BFF public固定消费、Web UI 和真实产品验收仍待完成；runtime单仓通过不是全产品可用 |
 | 当前 3310 | 一组受管65687/launcher7399/Web7874，真实IAM/System/BFF/Web与标准Agent HTTP/worker、已有Ollama。Root当前HTTP全链PASS：正规表单登录→消息202→10帧非空AG-UI终态→同键不重复→刷新持久→自身logout200。日志 `/tmp/kokoro-current-chat-http-acceptance.log`；System resolveModel success | 右侧IAB控制再次超时、DOM未验；HTTP不是浏览器交互。已将Web9590a74三生产文件精确同步受管dev snapshot，未重启BFF加载在途代码；同步后当前HTTP登录→真实模型回复→持久消息/刷新→自身logout再次PASS，仍非右侧DOM。Skills空选择、Storage未装配，完整能力体系仍待逐片接通 |
 
 Root Source-only 高请求量测试在 Run/lease 前主线程等待现 IAM60秒窗口；默认模式不等待，SIGTERM可中断。没有改生产限流、权限、凭据或 Redis 计数；这是测试资源礼让，不是应用重试/fallback。
 
 ## 当前优先级与正在推进
 
-- Platform 原负责人：v5 machine已验收0dd60af；现获个人安装Product runtime唯一写权限，复用现安装事实、fresh/receipt/安全投影，无新Schema/兼容双轨。
+- Platform 原负责人：runtime已验收提交d93e8a59；已续派未激活v5候选5.0.1 wire矛盾窄修，唯一Proto/Schema/runtime源码冻结，无兼容字段/双轨。
 - BFF负责人：三面文档门已独立审查通过并提交c4c4cbc；固定v5的五本人安装public/Connect消费正式授写，与Platform runtime并行；真实组合等owner runtime，读projection与写catalog scope分离。
+- Web原负责人：只读定位实际浏览器中途刷新助手分片顺序问题，先稳定RED与精确范围，尚未授写。
 - Root主线：当前3310可见登录→app→基本真实聊天；暂停新研究面，测试/生成物不冒充产品交付。继续统一审查、shared index、真实组合资源/进程和跨仓集成；已结束的 Source ownedPID53717/session80848均终态消费，当前65687保持运行，只由Root管理。
 
 同仓单writer；worker不自行启动共享PG/Redis或重置数据。子仓 CURRENT 中“候选待Root”属于交付时快照，Root已验收状态以本表和绑定commit的task/progress为准；在owner下一代码切片同步文档，不因纯文案制造另一轮依赖升级。
