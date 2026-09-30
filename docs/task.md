@@ -1,10 +1,25 @@
 # Kokoro 后端闭环任务总表
 
-## 当前 Root 验收：W3-WEB-CHAT-CHROMIUM-REFREEZE
+## 当前代码 owner：W3-AGENT-TYPED-SKILL-READER（P0，沿已批准设计实施）
+
+| 项 | 任务卡 / §8 放置门 |
+| --- | --- |
+| Owner/负责人/基线 | Agent唯一writer `agent_typed_skill_reader_owner`（gpt-6-astra），Root审查/集成；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent` clean main `dd34a4800b4ce0cc61eb80dd715e528b9d4517da`。Root `772208ba`，Web消费者已验收；Agent三面设计已在7e529f9→dd34收敛，本片引用其读取状态机，不重新设计owner。 |
+| 当前事实/目标 | typed launch/持久化/[]真实worker已通，非空在factory明确拒绝；现有Run-bound sender尚未被Skill生产路径使用，consumer仍Platform v3，旧name客户端/backend/music声明仍在。目标让冻结exact refs经当前leased Run/IAM/Platform批准、signed GET与ZIP验证，形成DeepAgents只读虚拟文件；空refs不触发任何Skill依赖。 |
+| 位置/两案 | 采用现有clients/skills.py做typed Source adapter、worker/platform.py做资源装配；新增clients/skill_package_transport.py仅接批准GET引用并返回有界原始bytes，新增skills/package.py仅校验ZIP/manifest并返回已验证文件。拒绝塞进Artifact PUT transport（不同生命周期/契约）或新顶层platform/ports/通用工具层。粒度若需分离manifest解析，应先在既有技术设计补清职责/文件集再报Root，不机械拆层。 |
+| 写入集 | Agent现有Platform provenance/vendor/生成脚本/checker/generated及v3→v4原字节替换；clients/skills.py与上述新transport/package；skills/backend.py及exports、agent_factory.py、worker/{platform,dependencies,main}.py、config.py、agents/{definition,music}.py、inspect.py及直接受影响测试/INDEX/README/五当前文档。不修改其他仓、SQL、锁文件、新服务或部署。 |
+| 依赖/数据/API | 固定Platform `6a09913a96c686b316bfe707b823d039e625607a` v4、既有Storage `16a6c1ce95832df6dc839e0d50e957405c5c7005`；消费owner机器定义，不发明Proto。既有Run.request_json选择fence不变，禁止跨owner SQL。每次ls/read/glob/grep/download用fresh lease/proof/当前授权；缓存bytes不缓存授权。GET origin与Storage写credential配置按既有批准设计解耦，不能绕过egress限制。 |
+| 删除/边界 | 同片删除旧name/scope/content_hash grant、按name回空/隐藏失败、静态Agent.skills/music声明与旧注入/测试双轨。base64url exact SkillId只读路径、原字节下载；不执行ZIP脚本、不写宿主、不记录签名URL/包/token。MCP不是本片，不删除仍有效职责。Platform v4 active、安装/启用产品链、Storage退役另门，不能以本片宣称全产品可执行。 |
+| 文档门/验证 | 开始先核三面文档和当前commit，修正BFF尚未接线等过时当前态；在既有TECHNICAL_DESIGN写上述新增两文件接口/粒度后沿已批方案实现。RED→GREEN覆盖v4完整21 JSON/29 ZIP向量/24 binding、空选择零依赖、每次访问重新授权与lease接管/撤权、GET限制/超时取消/32MiB/hash、ZIP身份/边界、二进制/非UTF8文本、路径无别名及所有写拒。uv lock/sync frozen、Ruff、Pyright、contract、default pytest、build；真实owner组合由Root统一调度，不启动/重置共享服务。 |
+| 交付/放行 | 先报文档核验与明确文件集，独占checkout可按自洽业务片提交（共享Root index由Root持有）；实际结果/失败/未运行原因/最终SHA齐全后停写。独立审查和Root固定SHA复验后才pin。3310、Root任务外uv.lock不动；有真实边界卡点立即报告，不在运维/架构循环中停留。 |
+
+## 已验收基础浏览器链：W3-WEB-CHAT-CHROMIUM-REFREEZE
 
 Root 唯一 writer，基线 `69034681`；复用既有 `scripts/e2e/run_web_chat_worker_smoke.py` 与 `scripts/tests/test_web_chat_worker_smoke.py`，只更新四仓固定版本并补精确 pin 断言，不改认证、浏览器 driver、业务代码或资源清理机制。采用既有真实 Chromium composer，淘汰新建第二套登录/聊天 runner。Web `04ae9ed` 已停写且 Root 独立 Node22 check（108 contract/37 architecture/1656 tests/build）与隔离 Playwright（11 pass/1 skip）通过，待独立审查及 Root gitlink 集成后跑真实浏览器组合。先 pin 断言 RED→GREEN，再验证 clean/gitlink/独占资源门和现有 runner 回归；组合包含真实 IAM/Web/BFF/Agent/PG/Redis，System/model 仍是明确 fixture，不含3310、真实推理或Skill执行。Root负责提交与结果台账，不碰任务外 `uv.lock`。
 
 最终候选 Web `1dc211bb61030926177b72b3dff2061562a1015b` 已修独立审查的会话选择隔离P2；Root独立 Node22 check：108 contract/37 architecture/1658 tests/build PASS，隔离3489 Playwright11 pass/1 skip，独立终审P0/P1/P2=0。Root runner最终四pin已更新，聚焦49项PASS（精确pin断言先RED），独立脚本审查P0/P1/P2=0；待Root提交gitlink后跑真实组合，不能将preview测试冒充真实登录。
+
+**当前验收：** Root `772208ba` 提交精确gitlink后，真实Chromium run `226e62b13189e8b90e1812aa` PASS，IAM表单/consent→Product Session→普通Chat→独立worker→5帧AG-UI→断线恢复/刷新保留通过，私有性404/跨tenant403，自有进程/PG/Redis余量0。System/model仍fixture，3310未操作。Root最终 `scripts/tests` 992 pass/281 subtests、topology/checkpoint PASS。详见progress；已把后续代码权交Agent reader负责人，Web停写。
 
 ## 已交付只读：W3-BROWSER-CURRENT-PREFLIGHT
 

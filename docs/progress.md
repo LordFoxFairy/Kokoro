@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — 当前固定四仓真实Chromium登录与普通Chat通过
+
+Root `772208ba` 固定Web `1dc211bb`/BFF `571b51de`/IAM `36242fd`/Agent `dd34a48`，执行既有 `run_web_chat_chromium_smoke.py`，run `226e62b13189e8b90e1812aa` **PASS/exit0**。同一真实Chromium Context：IAM邮箱/密码表单→consent/固定tenant→Product Session→app→消息POST202→独立Agent CLI worker→5帧AG-UI→一次受控断线Last-Event-ID恢复→刷新仍1用户/1助手。BFF outbox成功、助手completed、Agent终态；同tenant其他用户资源404、其他tenant准入403。模型/System为严格确定性fixture，不是真供应商/Skill执行，也未操作3310。自有进程/PG数据库/Redis键全部0，Redis14/15复查0。日志 `/tmp/kokoro-web-1dc211b-real-chromium.log`，实际登录/聊天截图在 `output/playwright/r2c-login/` 对应run文件。
+
+Root首次全门在gitlink提交前运行，得到991 pass/1 fail（checkpoint正确拒绝新inventory与旧HEAD gitlink）；提交772208ba后topology/checkpoint已PASS，完整重跑 **992 pass/281 subtests（95.45s，exit0）**，日志 `/tmp/kokoro-root-web-refreeze-final.log`，未放宽断言。下一Agent reader已派 `agent_typed_skill_reader_owner`（gpt-6-astra）为唯一writer，任务卡给出完整文件集/验证边界，沿既有设计推进而非新架构讨论。非空Skill/安装/退役/v4激活/真实模型与整体产品仍非本轮通过范围。
+
 ## 2026-09-29 — Web exact-ref消费者单仓验收完成，真实Chromium组合待跑
 
 最终Web `1dc211bb61030926177b72b3dff2061562a1015b` 已修复跨会话选择泄漏，独立终审P0/P1/P2=0。Root显式Node22独立 `pnpm check` PASS：contract108、architecture37、默认1658、lint/typecheck/build；隔离3489 Playwright11 pass/1 skip，日志 `/tmp/kokoro-web-1dc211b-root-{check,e2e}.log`。测试生成的next-env路由路径已恢复，自有Playwright产物已清理，Web工作区clean。旧localStorage名称注入与旧wire已删除，选择仅当前会话内存，pending冻结重试保留原值。Root真实浏览器composer四pin及精确断言已更新，聚焦49/49通过、独立审查通过；待Rootgitlink提交后执行真实IAM→Web→BFF→Agent。非空Skill reader/安装/v4激活仍未闭环。
