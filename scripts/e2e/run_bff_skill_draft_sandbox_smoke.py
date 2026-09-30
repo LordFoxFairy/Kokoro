@@ -3185,6 +3185,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
 
                     with zipfile.ZipFile(io.BytesIO(payload)) as original_package:
                         expected_skill = original_package.read("SKILL.md")
+                    # Prior catalog/projection probes share IAM's resource-client
+                    # quota. Yield its full window before creating any Agent lease.
+                    source_helper.wait_for_iam_window(args.agent_source)
                     source_result = agent_source.exercise(
                         ready,
                         platform_base,

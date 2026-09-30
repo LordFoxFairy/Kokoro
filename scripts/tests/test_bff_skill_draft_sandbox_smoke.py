@@ -1694,6 +1694,20 @@ class AgentSourceOptInTests(unittest.TestCase):
             if isinstance(node, ast.FunctionDef) and node.name == "execute"
         )
         body = ast.unparse(execute)
+        source_branch = next(
+            node
+            for node in ast.walk(execute)
+            if isinstance(node, ast.If)
+            and ast.unparse(node.test) == "agent_source is not None"
+            and "source_result = agent_source.exercise(" in ast.unparse(node)
+        )
+        source_body = ast.unparse(source_branch)
+        wait_call = "source_helper.wait_for_iam_window(args.agent_source)"
+        self.assertEqual(body.count(wait_call), 1)
+        self.assertLess(
+            source_body.index(wait_call),
+            source_body.index("source_result = agent_source.exercise("),
+        )
         self.assertLess(
             body.index("source_result = agent_source.exercise("),
             body.index("phase = Phase.REVOKE"),

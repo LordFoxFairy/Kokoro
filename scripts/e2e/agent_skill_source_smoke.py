@@ -22,6 +22,7 @@ import signal
 import subprocess
 import sys
 import threading
+import time
 from typing import Callable, Iterator
 from urllib.parse import parse_qsl, urlsplit, urlunsplit
 from uuid import uuid4
@@ -166,6 +167,20 @@ def database_url(admin: str, name: str) -> str:
     ):
         raise SourceError("Agent source database target invalid")
     return urlunsplit((parsed.scheme, parsed.netloc, "/" + name, parsed.query, ""))
+
+
+def wait_for_iam_window(
+    enabled: bool, *, wait: Callable[[float], None] = time.sleep
+) -> None:
+    """Yield the existing IAM 60s quota window between high-volume test phases.
+
+    This main-thread wait precedes Run/lease creation and stays SIGTERM-interruptible.
+    It is not an application retry or a counter reset, and never enters an executor.
+    """
+    if type(enabled) is not bool:
+        raise SourceError("Agent source mode must be explicit")
+    if enabled:
+        wait(60)
 
 
 def setup_failure_category(message: object) -> str:

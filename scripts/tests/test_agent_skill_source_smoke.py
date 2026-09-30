@@ -15,6 +15,68 @@ spec.loader.exec_module(source)
 
 
 class SourceBoundaries(unittest.TestCase):
+    def test_iam_window_wait_is_source_only_and_precedes_business(self):
+        import threading
+
+        events = []
+
+        def wait(seconds):
+            self.assertIs(threading.current_thread(), threading.main_thread())
+            events.append(("wait", seconds))
+
+        source.wait_for_iam_window(False, wait=wait)
+        self.assertEqual(events, [])
+        source.wait_for_iam_window(True, wait=wait)
+        events.append("business")
+        self.assertEqual(events, [("wait", 60), "business"])
+        for invalid in (1, "true", None):
+            with self.subTest(invalid=invalid), self.assertRaises(source.SourceError):
+                source.wait_for_iam_window(invalid, wait=wait)
+        self.assertEqual(events, [("wait", 60), "business"])
+
+    def test_sigterm_during_iam_window_never_starts_run_and_closes_resources(self):
+        import asyncio
+        import os
+        import signal
+        import tempfile
+
+        class Interrupted(RuntimeError):
+            pass
+
+        def terminate(_signum, _frame):
+            raise Interrupted("termination requested")
+
+        def wait(seconds):
+            self.assertEqual(seconds, 60)
+            os.kill(os.getpid(), signal.SIGTERM)
+
+        with tempfile.TemporaryDirectory() as directory:
+            driver = source.AgentSourceDriver(
+                Path(directory), "db", "redis://localhost/15", "window"
+            )
+            driver.runner = asyncio.Runner()
+            secret = Path(directory) / "owned-secret"
+            secret.write_text("private")
+            driver._files.append(secret)
+            previous = signal.signal(signal.SIGTERM, terminate)
+            try:
+                with patch.object(driver, "exercise") as business:
+                    with self.assertRaises(Interrupted):
+                        try:
+                            source.wait_for_iam_window(True, wait=wait)
+                            business(None, "", "", "", 1, b"", lambda: None)
+                        finally:
+                            failures = driver.close()
+                    business.assert_not_called()
+                self.assertEqual(failures, [])
+                self.assertIsNone(driver._exercise_task)
+                self.assertEqual(driver._blocking_futures, {})
+                self.assertTrue(driver.dependencies_quiescent)
+                self.assertFalse(secret.exists())
+            finally:
+                signal.signal(signal.SIGTERM, previous)
+                driver.runner.close()
+
     def test_setup_failure_category_is_exact_allowlist_without_raw_messages(self):
         cases = {
             "IAM Platform introspection failed": "iam_ingress",

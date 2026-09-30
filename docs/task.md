@@ -1,5 +1,18 @@
 # Kokoro 后端闭环任务总表
 
+## 当前并行波：Source 集成验收与 Product v5 机器切片（2026-09-30）
+
+用户再次要求同时推进。Root负责当前可见登录和最终集成；同仓仍单writer，不让可见浏览器控制故障阻塞独立owner开发。当前3310进程存活；本轮CUA读取再次15秒超时，没有提交/callback/app/reload证据，不重复重启服务。
+
+| ID / 负责人 / 状态 | 精确范围与验收 |
+| --- | --- |
+| SOURCE-IAM-WINDOW / 原Source负责人交付、Root待正常组合验收 | 基线cd62ae1d；Root四Source文件已停写。Root普通88 pass/3 native skip/143 subtests、原生及窗口5 pass/55 subtests、Ruff/diff通过；独立复审P0/P1/P2=0、15 pass/9subtests及真实time.sleep默认SIGTERM<1秒中断。仅Source fixture主线程60s礼让、Run/lease前、默认零等待，生产auth/限流/计数不变。Root全scripts门1026 passed/3 native skip/341subtests、121.97秒通过（/tmp/kokoro-root-source-window-tests.log），随后commit并正常无诊断wrapper Source；尚不称真实通过。 |
+| PLATFORM-PERSONAL-V5 / 原Platform负责人、待Source短期冻结结束即写入 | main e510c04，四文档设计已验。只读prep已定39RPC/20command/24proof，五Personal RPC、九safe字段、三独立product-personal-installation/1.0.0摘要。Root完成一次正常Source后立即放行machine slice，不等待可见登录。 |
+
+Platform放置门：唯一事实owner仍Skills/installation；唯一可编辑机器源仍contract/proto/kokoro/platform/v1/platform_runtime.proto。比较改写v4历史bytes（淘汰）与新增v5候选+引用冻结v4（采用）；v5完整operation/command inventory，旧17command/24proof逐行继承相等，不复制旧payload、不改算法。canonical latest descriptor/provenance/generated只从唯一Proto生成；新增contract/descriptor/platform-v4.binpb是固定历史验证输入（SHA81f06be6ee4867676e13c3146dd21b69a61ef07e02dbdd483891427ee53b95a5），不是第二editable canonical。v4 aggregate902f8f2c2fbeb95a441820c1cf16b0a9c793eadac7106f9fcd5e41e3878b7f79及v1–v4目录原bytes冻结。现v4门对历史descriptor保持严格34/17/24，latest v5严格39/20/24且旧symbol/wire/tag/cardinality全量additive相等；不得简单把硬编码数字改宽冒充通过。
+
+下一writer允许范围：canonical Proto、latest descriptor/provenance、generated TS、固定历史descriptor、contract/execution-operations/v5候选及现scripts/platform-execution-operations下具名profile/validator/vector模块、必要既有checker/直接contract及architecture tests、package仅format v5范围、contract README/四当前文档。不改production Service/registration/Schema/IAM/BFF/Web/依赖/lock，不启动基础设施，不自行index/提交。新增普通文件归属已有machine-artifact能力，不新建业务模块；runtime不import测试validator。先39/20/24+历史hash+safeprojection负例RED，再GREEN；Node24 format/lint/typecheck/contract/artifact/cutover/tests/build及Root独立复验。候选始终inactive/unroutable，后继runtime→BFF固定消费→Web正式shadcn→真实产品验收，当前不越门。
+
 ## 当前确认根因与下一并行切片（2026-09-30）
 
 Root b7df7f4a；Source正常origin日志确认服务端IAM ingress UNAVAILABLE，诊断只读观察本fixture精确资源客户端key在拒绝时counter=101/remainingTTL55，IAM源码RateLimitStorage仅用官方原子INCR，PlatformWorkloadService 100/60秒，consume101必RATE_LIMITED→429→PlatformUNAVAILABLE。这是Root组合请求压满共享资源客户端窗口，非bool摘要/本地Connect池或已完成执行撤权。无计数删除/阈值修改/假token；资源全部正常退出，Redis15=0，当前Source仍FAIL。

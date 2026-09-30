@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Source阶段窗口代码已复验，独立Platform机器切片准备就绪
+
+Source唯一writer四文件停写，Root独立普通88 passed/3 native skip/143subtests；Agent原生及窗口5 passed/55subtests，Ruff check/format及diff通过。独立审查P0/P1/P2=0、15pass/9subtests，并实测默认主线程time.sleep(60)被20ms后SIGTERM在<1秒打断、业务零调用。生产限流/计数/auth/RPC/proof未改；Source-before-Run窗口不是应用魔法sleep。Root全scripts门1026 passed/3 native skip/341subtests、121.97秒通过（/tmp/kokoro-root-source-window-tests.log），真实正常组合仍待验收，不因修复代码称通过。
+
+Platform原负责人只读准备完整交付：固定v4 bytes/aggregate/descriptor输入、latest v5 39/20/24严格门、旧所有wire符号additive相等；新五Personal RPC/九safeprojection/三独立digest目标已定。Root正常Source短冻结结束即放行机器writer，与可见登录独立，不再重复讨论。当前v5仍无运行实现，13broken/标准136债务保留。
+
+本轮3310原3898/4007/4113仍存活且4113监听。CUA getState 15秒超时并reset，右侧可见E2E未完成；保留服务，不将控制接口超时归为应用auth故障，不反复重启。主控负责集成资源/提交，其他writer不启动共享基础设施。任务外uv.lock不动。
+
 ## 2026-09-30 — 根因确认：组合请求超过同资源客户端IAM内省窗口
 
 Root b7df7f4a正常Source `/tmp/kokoro-source-origin-code.log` exit1：disable SetEnabled UNAVAILABLE/cause=false/cause_type=none/category=iam_ingress。Root另只读诊断正确加入脚本import路径，业务请求未变，仅失败点GET本fixture ready.redis_prefix/资源客户端精确rate计数和TTL，不打印key/ID/token、不清计数或改规则；`/tmp/kokoro-source-owned-rate-counter.log` 实测 **101 / TTL55秒**、同错误。IAM生产consume先原子INCR，100/60秒，第101次必RATE_LIMITED，Platform typed429归UNAVAILABLE；结合当前request边界可确认此为测试同client窗口耗尽，不是抽象认证/Connect池问题。
