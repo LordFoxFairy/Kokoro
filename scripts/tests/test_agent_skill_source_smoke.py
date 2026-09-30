@@ -15,6 +15,28 @@ spec.loader.exec_module(source)
 
 
 class SourceBoundaries(unittest.TestCase):
+    def test_setup_failure_category_is_exact_allowlist_without_raw_messages(self):
+        cases = {
+            "IAM Platform introspection failed": "iam_ingress",
+            "IAM outbound credential is unavailable": "iam_outbound_token",
+            "IAM execution authorization failed": "iam_execution",
+            "IAM execution authorization identity mismatch": "iam_identity",
+            "transaction admission is unavailable": "transaction_admission",
+            "skill installation receipt claim outcome is unknown": "receipt_claim_unknown",
+            "skill installation command outcome is unknown": "command_outcome_unknown",
+            "Capability runtime dependency is unavailable": "runtime_dependency",
+        }
+        for message, label in cases.items():
+            with self.subTest(label=label):
+                self.assertEqual(source.setup_failure_category(message), label)
+                self.assertEqual(
+                    source.setup_failure_category(message + " PRIVATE_SENTINEL"),
+                    "unclassified",
+                )
+        for unknown in ("PRIVATE_SENTINEL", "", None, {}, ["SECRET"]):
+            with self.subTest(kind=type(unknown).__name__):
+                self.assertEqual(source.setup_failure_category(unknown), "unclassified")
+
     def test_import_does_not_load_agent(self):
         self.assertNotIn("kokoro_agent.worker.platform", sys.modules)
 
@@ -658,8 +680,26 @@ class SourceNativeComponentTests(unittest.TestCase):
         from kokoro_agent.generated.kokoro.platform.v1 import platform_runtime_pb as pb
         from kokoro_agent.execution import execution_proof_supplier
 
+        from pyqwest import ConnectTimeout, RemoteProtocolError, StreamError
+
+        class PRIVATE_UNKNOWN_SENTINEL(ValueError):
+            pass
+
+        causes = [
+            (ValueError("PRIVATE_SENTINEL"), "value_error"),
+            (TypeError("PRIVATE_SENTINEL"), "type_error"),
+            (ConnectionError("PRIVATE_SENTINEL"), "connection_error"),
+            (OSError("PRIVATE_SENTINEL"), "os_error"),
+            (RemoteProtocolError("PRIVATE_SENTINEL"), "remote_protocol_error"),
+            (StreamError("PRIVATE_SENTINEL", 7), "stream_error"),
+            (ConnectTimeout("PRIVATE_SENTINEL"), "connect_timeout"),
+            (RuntimeError("PRIVATE_SENTINEL"), "unknown"),
+            (PRIVATE_UNKNOWN_SENTINEL("PRIVATE_SENTINEL"), "unknown"),
+        ]
+        cases = [(code, None, "none") for code in (*Code, "PRIVATE_CODE_SENTINEL")]
+        cases.extend((Code.UNAVAILABLE, cause, kind) for cause, kind in causes)
         for enabled in (False, True):
-            for code in (*Code, "PRIVATE_CODE_SENTINEL"):
+            for code, cause, cause_kind in cases:
                 label = code.name if isinstance(code, Code) else "UNKNOWN"
                 with self.subTest(enabled=enabled, code=label):
                     driver = source.AgentSourceDriver(
@@ -677,11 +717,14 @@ class SourceNativeComponentTests(unittest.TestCase):
                         lease_reader=object(),
                         signer=object(),
                     )
-                    rpc = AsyncMock(
-                        side_effect=ConnectError(
-                            code, "PRIVATE_MESSAGE TOKEN_SENTINEL PROOF_SENTINEL"
-                        )
+                    error = ConnectError(
+                        code,
+                        "IAM execution authorization failed"
+                        if enabled
+                        else "PRIVATE_MESSAGE TOKEN_SENTINEL PROOF_SENTINEL",
                     )
+                    error.__cause__ = cause
+                    rpc = AsyncMock(side_effect=error)
                     driver.installer = SimpleNamespace(
                         set_skill_installation_enabled=rpc
                     )
@@ -715,7 +758,9 @@ class SourceNativeComponentTests(unittest.TestCase):
                             )
                     self.assertEqual(
                         str(captured.exception),
-                        f"Agent source {driver.phase} SetSkillInstallationEnabled failed ({label})",
+                        f"Agent source {driver.phase} SetSkillInstallationEnabled failed ({label}; "
+                        f"cause={str(cause is not None).lower()}; cause_type={cause_kind}; "
+                        f"category={'iam_execution' if enabled else 'unclassified'})",
                     )
                     self.assertIsNone(captured.exception.__context__)
                     rpc.assert_awaited_once()
@@ -723,6 +768,7 @@ class SourceNativeComponentTests(unittest.TestCase):
                         rpc.await_args.kwargs["headers"],
                         {"authorization": "Bearer TOKEN_SENTINEL"},
                     )
+                    self.assertEqual(rpc.await_args.kwargs["timeout_ms"], 10_000)
                     self.assertEqual(request.execution_proof, "PROOF_SENTINEL")
                     self.assertEqual(request.enabled, enabled)
                     self.assertNotIn("SENTINEL", str(captured.exception))

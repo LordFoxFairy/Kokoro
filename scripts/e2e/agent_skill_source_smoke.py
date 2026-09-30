@@ -168,6 +168,23 @@ def database_url(admin: str, name: str) -> str:
     return urlunsplit((parsed.scheme, parsed.netloc, "/" + name, parsed.query, ""))
 
 
+def setup_failure_category(message: object) -> str:
+    """Root-only diagnostic: exact fixed owner messages, never arbitrary output."""
+    labels = {
+        "IAM Platform introspection failed": "iam_ingress",
+        "IAM outbound credential is unavailable": "iam_outbound_token",
+        "IAM execution authorization failed": "iam_execution",
+        "IAM execution authorization identity mismatch": "iam_identity",
+        "transaction admission is unavailable": "transaction_admission",
+        "skill installation receipt claim outcome is unknown": "receipt_claim_unknown",
+        "skill installation command outcome is unknown": "command_outcome_unknown",
+        "Capability runtime dependency is unavailable": "runtime_dependency",
+    }
+    return (
+        labels.get(message, "unclassified") if type(message) is str else "unclassified"
+    )
+
+
 def command_document(
     tenant: str, method: str, fields: dict[str, object]
 ) -> dict[str, object]:
@@ -618,6 +635,7 @@ class AgentSourceDriver:
     ) -> object:
         from connectrpc.code import Code
         from connectrpc.errors import ConnectError
+        from pyqwest import ConnectTimeout, RemoteProtocolError, StreamError
         from kokoro_agent.generated.kokoro.common.v1 import common_pb
         from kokoro_agent.execution.platform_request_binding import (
             project_request_binding,
@@ -653,12 +671,25 @@ class AgentSourceDriver:
                 request, headers={"authorization": "Bearer " + token}, timeout_ms=10_000
             )
         except ConnectError as error:
-            # Standard enum only: never inspect message/details or render the RPC
-            # exception, bearer, proof, identifiers or request/response contents.
+            # Only an enum, cause presence and fixed message equality labels leave
+            # this block. Never render message/cause/details or request contents.
             code = error.code
             label = code.name if isinstance(code, Code) else "UNKNOWN"
+            has_cause = error.__cause__ is not None
+            cause_kind = {
+                type(None): "none",
+                ValueError: "value_error",
+                TypeError: "type_error",
+                ConnectionError: "connection_error",
+                OSError: "os_error",
+                RemoteProtocolError: "remote_protocol_error",
+                StreamError: "stream_error",
+                ConnectTimeout: "connect_timeout",
+            }.get(type(error.__cause__), "unknown")
+            category = setup_failure_category(error.message)
         raise SourceError(
-            f"Agent source {self.phase} {method} failed ({label})"
+            f"Agent source {self.phase} {method} failed ({label}; "
+            f"cause={str(has_cause).lower()}; cause_type={cause_kind}; category={category})"
         ) from None
 
     async def _exercise(
