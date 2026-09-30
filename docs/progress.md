@@ -1,5 +1,13 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 用户指定gpt-5.6-luna真实接口已成功
+
+Root使用指定endpoint私有0600凭据，仅HTTPS原origin、不转redirect、通用最小prompt，无项目数据。真实POST /chat/completions HTTP200、returned_model=gpt-5.6-luna、nonempty_reply=true、expected_probe_reply=true；脱敏结果/tmp/kokoro-gpt56-luna-probe.json0600，短进程45331已exit0。这是直接provider可调用证据，不是当前正式System→Agent/Web已切换；当前本机Ollama真链保持。Web79f集成后Root7348bf5c来源checkpoint/topology/128tests PASS（52.93秒）；Web7087225四docs门已Root验收，源码切片进行中。BFF三P1再修已停写等待独立复审，不白化产品状态。
+
+## 2026-09-30 — IA文档门已验收，BFF再次拦截而非假放行
+
+Web7087225四文档Root审查并主树contract108/architecture37，等待精确源码切片派发，不称UI已实现。BFF独立51tests虽通过仍发现3P1：token阶段TimeoutError→503而非504、各status机器error.code未锁、文档首段仍旧v4/无runtime；原writer仅既有scope继续RED/GREEN，无重复服务。独立审查员转实际3310严格browser任务（自有context，不是用户右侧），Root保留来源/最终验收。Root首次checkpoint误用参数/不存在文件及历史checkpoint失败，不更改门，现按CURRENT指定w1e-iam07-bff-pin重跑；这些命令错误不计产品失败或PASS。
+
 ## 2026-09-30 — Web续流返修已验收提交；BFF四P1待独立复审
 
 Web精确11文件提交 79f19df3167e56d1d3ed517266427443363d5005；completed历史不阻止唯一in-progress前缀、两个streaming仍不盲拼。独立审查144测试/P0P1P2=0；Root144相关测试及lint/typecheck/build/diff实际exit0，日志 /tmp/kokoro-web-reload-root-p1-tests.log、/tmp/kokoro-web-reload-root-final-gates.log。writer1570纯测试/108contract/37architecture通过不替代真实当前浏览器；受管源码同步和严格终态/刷新仍待验。BFF4P1返修及Platform6519/5.0.1固定已交付停写，Root独立复审与主树门未完成，不视Agent退出为验收。Web同一writer进入四文档IA门，不并发改源码；全goal仍active。

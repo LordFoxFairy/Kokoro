@@ -1,8 +1,20 @@
 # Kokoro 后端闭环任务总表
 
+## WEB-PRODUCT-IA-CODE：正式入口与交互清理（2026-09-30；进行中）
+
+Web唯一writer原负责人，基线main7087225（四设计门已Root审查提交），Root index/提交，当前Web clean；Root真contract108/architecture37，日志/tmp/kokoro-web-ia-doc-root.log。复用三面设计§8，不新目录/文件/owner/store/Schema/网络API/generated/deps，不操作服务/3310/数据。优先级P1，清会话任务混名、正式假scheduled/猜项目ID、未接通推广与brand、重复focus；正式任务复用/app/scheduled真实surface。
+
+精确授权既有文件：workspace-rail/{workspace-rail-types.ts,workspace-rail-shell.tsx,workspace-rail-session-list.tsx,workspace-rail-navigation.tsx,workspace-rail-actions.ts}；app-frame/{app-frame.tsx,app-frame.types.ts,app-frame-main-surface.tsx,use-app-frame-actions.ts,use-app-frame-project.ts}；features/app/{kokoro-project-workspace.tsx,project-workspace-model.ts,project-workspace-dialogs.tsx,project-task-empty.tsx,kokoro-project-task-welcome.tsx,kokoro-welcome.tsx,kokoro-welcome-content.tsx}；ui/composer/composer.module.css；i18n/{messages.ts,en.ts}；tests/ui/{workspace-rail.test.tsx,app-frame-rail.test.tsx,app-frame.smoke.test.tsx,kokoro-project-workspace.test.tsx,kokoro-welcome.test.tsx,composer.test.tsx}；必要现tests/i18n/{resolve.test.ts,no-hardcoded-ui.test.ts}和workspace-rail/workspace-rail-split.test.mjs；四设计/CURRENT只本片当前态。文件前缀均apps/kokoro-app/src/components/blocks、src、tests以实际现目录为准。其他需要先报范围。
+
+完成条件：稳定RED→GREEN，不删有效能力/放宽真实断言；formal无样例假成功、Conversation命名正确、task导航不newConversation、opaque owner ID、仅真实入口、品牌插值、单focus同时保持IME/autogrow/ShiftEnter/键盘。Node22相关/fullpure/contract/architecture/lint/typecheck/build及资源终态/hash停写；Root独立复审与同步自有snapshot后真实browser验，Project全集及项目专属任务owner消费仍独立后继，不能假称全部UI完。
+
 ## WEB-PRODUCT-IA：三面文档门（2026-09-30；进行中）
 
 Owner Web原负责人唯一writer；基线 main 79f19df3167e56d1d3ed517266427443363d5005，工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；Root唯一index/审查/提交，已有工作树仅Root刚验收11文件，无其他Web改动。只允许四既有docs TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT；本阶段不改源码/生成物/契约/服务。依赖已验收续流79f19df；独立BFF审查可并行。用户已定Conversation/Project/ScheduledTask独立、Run执行归属、零正式preview/fake成功/猜ID，沿现shadcn修brand与单focus，保留IME/autogrow。完成条件三面当前/目标/owner一致＋精确下一代码文件集、无新owner/store/Schema/API、hash/未决项与验证命令；代码须Root放行后续派。
+
+## USER-MODEL-GPT56-LUNA：已选并直接验证，正式链待接入
+
+用户明确选择gpt-5.6-luna；Root仅指定HTTPS origin、私有0600凭据、无redirect、无项目数据真实POST /chat/completions已返回200/model=gpt-5.6-luna/非空回复且probe预期正确，/tmp/kokoro-gpt56-luna-probe.json0600。现常驻System→Agent仍原Ollama，不能将直连探测称正式链或UI已切换；后继由Root经既有System模型目录/路由与Agent正式契约配置并UI实测，不把连接名当modelID，不改本地Ollama guard假装接入。前端/BFF既有切片并行不等待，凭据不入repo/普通log。
 
 ## 当前用户Web可用性与信息架构对齐（2026-09-30）
 
