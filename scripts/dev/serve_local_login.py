@@ -166,6 +166,19 @@ def wait_for_web(process: subprocess.Popen[bytes], origin: str) -> None:
     raise LaunchError("local Web login page did not become ready")
 
 
+def write_private_credentials(directory: Path, email: str, password: str) -> Path:
+    """Create one exclusive private credential file; never emit its contents."""
+    path = directory / "login-credentials.json"
+    with open(
+        path,
+        "x",
+        encoding="utf-8",
+        opener=lambda name, flags: os.open(name, flags, 0o600),
+    ) as credential_file:
+        json.dump({"email": email, "password": password}, credential_file)
+    return path
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--iam-node-bin", type=Path, required=True)
@@ -434,15 +447,11 @@ def main(argv: list[str] | None = None) -> int:
                 first_login.probe_formal_login_entry(
                     WEB_PORT, origin, credentials, browser_request=http_browser
                 )
+                stage = "private credential setup"
+                credential_path = write_private_credentials(
+                    directory, ready.email, ready.password
+                )
                 print(f"Local login: {origin}/login", flush=True)
-                credential_path = directory / "login-credentials.json"
-                with credential_path.open(
-                    "x", opener=lambda path, flags: os.open(path, flags, 0o600)
-                ) as credential_file:
-                    json.dump(
-                        {"email": ready.email, "password": ready.password},
-                        credential_file,
-                    )
                 print(f"Private login credentials: {credential_path}", flush=True)
                 print(
                     "Mode: real Chat (empty Skills; Storage not configured)"

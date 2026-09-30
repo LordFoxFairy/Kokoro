@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — 首次当前真实 Chat 启动揭示凭据落盘 TypeError，未报启动成功
+
+Root84c6b15c停止旧71981（exit0/resources removed/组三PID退出）后，受管88684真实启动System owner路由、Agent schema/HTTP health/标准worker、BFF与Web/form probe，随后凭据文件写入失败exit1。准确原因 `Path.open(opener=...)` 不支持参数，独立private file未产生；不是IAM登录或模型权限失败。原两个生命周期P1的清理已实际执行，日志无清理失败、Redis10=0、3310释放；证据目录 `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-csz8tbjw` 保留。原writer仅launcher/test两文件真实TemporaryDirectory RED2→GREEN18，改内置exclusive open0600，并单独private credential setup阶段、成功才宣告入口；Root复验后再次真启动，不用已通过代码门掩盖实际启动FAIL。
+
 ## 2026-09-30 — 当前 Chat 启动器代码放行，转真实3310组合验收
 
 四文件原两个P1返修完成：System/Agent短命命令原子Popen＋登记，wait仍及时可中断、stop成功才移除；所有自有进程停止失败时不清WebRedis。Root全scripts/tests **1044 passed/3 native skip/354subtests、112.22秒**（`/tmp/kokoro-local-chat-root-full-tests.log`，session51741 exit0已消费），四文件Ruff check/format和diff通过。独立固定hash审查0缺陷，真实SIGTERM复现现在tracked1→interrupted→child-stopped→Redis-cleanup；非静止前端UNLINK=false/deferred=true；8聚焦pass/3subtests。仅放行当前代码，不是聊天已通过。Root下一仅停止旧受管71981，再显式真实System/Ollama/标准Agent HTTP与worker启动同3310；不碰其他常驻服务/共享PG/Redis。Platform v5仍独立writer进行中，候选未pin。

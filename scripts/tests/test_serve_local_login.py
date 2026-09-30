@@ -493,3 +493,69 @@ class FailedShutdownRedisTests(unittest.TestCase):
             finally:
                 for sig, handler in signals.items():
                     signal.signal(sig, handler)
+
+
+class PrivateCredentialFileTests(unittest.TestCase):
+    def test_real_private_file_is_exclusive_0600_and_never_logged(self):
+        import io
+        import json
+        import stat
+        from contextlib import redirect_stdout, redirect_stderr
+
+        with tempfile.TemporaryDirectory() as directory:
+            output, errors = io.StringIO(), io.StringIO()
+            old_umask = os.umask(0o022)
+            try:
+                with redirect_stdout(output), redirect_stderr(errors):
+                    path = launcher.write_private_credentials(
+                        Path(directory), "local@example.test", "SECRET_SENTINEL"
+                    )
+            finally:
+                os.umask(old_umask)
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
+            self.assertEqual(
+                json.loads(path.read_text()),
+                {"email": "local@example.test", "password": "SECRET_SENTINEL"},
+            )
+            self.assertEqual(output.getvalue(), "")
+            self.assertEqual(errors.getvalue(), "")
+
+    def test_existing_target_is_not_overwritten_or_chmodded(self):
+        import stat
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "login-credentials.json"
+            path.write_text("original")
+            path.chmod(0o640)
+            with self.assertRaises(FileExistsError):
+                launcher.write_private_credentials(
+                    Path(directory), "other@example.test", "NEW_SECRET"
+                )
+            self.assertEqual(path.read_text(), "original")
+            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o640)
+
+    def test_credential_failure_has_dedicated_stage_before_advertising_ready(self):
+        import ast
+
+        tree = ast.parse(SCRIPT.read_text())
+        main = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "main"
+        )
+        for node in ast.walk(main):
+            if isinstance(node, ast.Try):
+                for index, statement in enumerate(node.body):
+                    if isinstance(statement, ast.Assign) and any(
+                        isinstance(child, ast.Call)
+                        and isinstance(child.func, ast.Name)
+                        and child.func.id == "write_private_credentials"
+                        for child in ast.walk(statement)
+                    ):
+                        self.assertEqual(
+                            ast.literal_eval(node.body[index - 1].value),
+                            "private credential setup",
+                        )
+                        self.assertIn("Local login:", ast.unparse(node.body[index + 1]))
+                        return
+        self.fail("main must create private credentials in a dedicated stage")
