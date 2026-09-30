@@ -1,5 +1,17 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Source候选完整门通过仍被取消P1拦截
+
+Root新增driver候选完整scripts/tests **1010 pass/2 Agent依赖skip/317subtests（113.18秒，exit0）**，日志 `/tmp/kokoro-root-source-driver-tests.log`；Agent .venv native2/2、Ruff四文件通过、checkpoint PASS。固定工作树独立审查却真实SIGTERM复现：exercise异常返回→resource-close启动→旧exercise继续副作用→cleanup返回[]。P0=0/P1=1/P2=0，因此候选不提交、不跑真实owner组合。原负责人将仅helper及直接测试返修cancel/drain次序，主控与独立review复验后放行；默认绿门不掩盖实际生命周期失败。IAM e3c035b四文件已真verify938/host51及独立review通过，其来源集成不等待该独立Root返修。
+
+## 2026-09-30 — 当前worker实跑、IAM撤权夹具真验、Source驱动待真组合
+
+Root在当前Agent e728/BFF571上运行既有真实CLI worker组合，run7ca11f7db5c8497db55a2d18 PASS/exit0：1回复、1模型请求、Agent4事件/终态、BFF outbox成功与5帧AG-UI；自有PG库/进程/Redis键全0、14/15复查0。IAM/System/model为确定性fixture，非供应商或Source链。日志 `/tmp/kokoro-bff-agent-e728-worker.log`；3310受管launcher/Web/IAM持续存活，未重启或替代右侧验证。
+
+IAM测试owner e3c035b四文件strict Source-only撤当前Member，Root亲跑真实Ed25519/JWKS/current policy RED1→GREEN1：删浏览器Session后同proof仍允许，撤精确Member后同token/proof拒绝，其他Member保持。Root Node24完整verify **938 pass/102文件**、真实host **51/51（70.86秒）**、exit0；固定SHA独立审查P0/P1/P2=0。日志 `/tmp/kokoro-iam-execution-revoke-{red,green}.log`、`/tmp/kokoro-iam-revoke-root-{verify,integration}.log`。在途Member事务SIGTERM确定性测试未新增，现仅静态确认close等待；生产契约/SQL未改。
+
+Source负责人四文件交付停写，Root独立ordinary聚焦 **72 pass/2 Agent依赖skip/119subtests**，Agent .venv native parser/lifecycle **2/2**、Ruff四文件检查通过，日志 `/tmp/kokoro-root-source-focused.log`、`/tmp/kokoro-source-root-native.log`。Source explicit配置/原子Redis占有/精确cleanup、旧31receipt门与新34receipt门、native可发现frontmatter和bytes、停用/旧lease/执行撤权均有driver实现，完整Root门、固定SHA审查和当前实际跨owner运行仍待验。既有两个Root guard格式债务单独f905087a修正，不混入业务commit；任务外uv.lock保留。
+
 ## 2026-09-30 — 集成Agent reader固定来源，下一Source真组合
 
 Agent e728fe24在主树独立默认1410 pass/6 skip/172 deselected、static/contract/build及独立审查P0/P1/P2=0；Root更新gitlink与全部Agent来源digest、补reader/backend/lifecycle证据，所有宽泛边维持broken。现有BFF worker与Web composer版本锁先2 RED再52 GREEN，同时Web composer IAM固定当前a6dfd196；未改任何运行断言或安全门。Root全scripts/tests **994 pass/291 subtests**（120.49秒）、拓扑/checkpoint PASS（库存16边/13 broken）；日志 `/tmp/kokoro-root-e728-integration-tests.log`。这次仅代码/来源集成，未执行当前Source真组合或再次操作用户右侧登录。

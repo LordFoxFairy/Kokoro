@@ -280,7 +280,7 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b",
+        "repository_commit": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
         "contract_version": "0.7.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "c8d7af8a365ad5d13eaabccf7f31133e0918ef198bdc3e7c790d90933eae91b2"
@@ -1701,7 +1701,7 @@
       "owner": {
         "name": "kokoro-iam",
         "repository_path": "apps/kokoro-iam",
-        "repository_commit": "a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b",
+        "repository_commit": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
         "contract_version": "0.7.0",
         "contract_path": "contract/openapi/iam.internal.v1.json",
         "contract_sha256": "c8d7af8a365ad5d13eaabccf7f31133e0918ef198bdc3e7c790d90933eae91b2"
@@ -1726,9 +1726,9 @@
         },
         {
           "repository_path": "apps/kokoro-iam",
-          "repository_commit": "a6dfd19679a63b7084e0e1ef0a0b9ab2ec31d32b",
+          "repository_commit": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
           "path": "docs/CURRENT.md",
-          "sha256": "53949a1ce7a1cb9d2ca5153d918a15231804e7931ac112324c42fc4566c0bf0a"
+          "sha256": "c9cd4489e651ab78be6912677b67bd16f499301313b8f2abda333bb98374a6b4"
         }
       ]
     },

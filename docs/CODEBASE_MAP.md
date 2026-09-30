@@ -49,3 +49,9 @@ python3 -m pytest scripts/tests
 ```
 
 `kokoro-model` 与 `kokoro-mori-p1-arrangement-recording` 不属于 Root 组合；历史文档只作为考古，不构成当前实现入口。
+
+## Root typed Skill Source 验收入口（2026-09-30）
+
+- `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py`：沿既有IAM/BFF/Platform/Storage发布组合，显式 `--agent-source` 接独立Source测试切片；默认模式不启动Agent。
+- `scripts/e2e/agent_skill_source_smoke.py`：跨owner测试driver，使用生产Agent HTTP/JWKS/installer/repository/proof/typed reader；不是业务服务、SDK或另一套模型执行器。仅显式模式、Agent安装环境和精确gitlink通过后启动；自有schema/Redis占有资源在IAM库回收前关闭。
+- `scripts/tests/test_agent_skill_source_smoke.py`：Root driver协议/资源边界与纯原生组件，子仓业务测试仍各自维护。代码/单测成功不构成真实owner组合或浏览器通过，当前结果见CURRENT/task/progress。

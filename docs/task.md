@@ -1,6 +1,6 @@
 # Kokoro 后端闭环任务总表
 
-## 下一独立切片：W3-ROOT-AGENT-SOURCE-DRIVER 与 W3-IAM-EXECUTION-REVOKE-FIXTURE
+## 已交付、Root验收中：W3-ROOT-AGENT-SOURCE-DRIVER 与 W3-IAM-EXECUTION-REVOKE-FIXTURE
 
 | 项 | Source driver 任务卡 / §8放置门 |
 | --- | --- |
@@ -17,6 +17,14 @@
 | Owner/执行/基线 | IAM唯一writer `iam_execution_revoke_fixture_owner`（当前默认模型），Root审查/提交；`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam` clean main a6dfd196；与Root Source driver独立并行，不切分支。 |
 | 范围/位置 | 只改既有 `test/fixtures/web-oidc-flow-host.ts`、`test/integration/web-oidc-flow-host.test.ts`、docs/CURRENT与ACCEPTANCE。Source测试身份需要撤销当前execution权限/成员事实，采用既有host严格opt-in命令；淘汰Root跨ownerSQL和删除浏览器session冒充execution撤权，无生产API/SQL/生成物变化。 |
 | 规则/验证 | 仅Agent source显式模式可用，自有fixture的精确tenant/user/member/permission事实；非法模式/重复/协议按本host严格行为，secret不外泄。实际execution授权成功→撤销→同用户当前校验拒绝，其他身份与原浏览器撤session协议不混淆；静态/默认门可运行，真实PG/Redis集成由Root串行执行。worker不启动服务/清理共享数据、不提交，交付文件清单停写，Root统一提交与集成。 |
+
+**交付与Root验证：** IAM四文件已交付停写并提交e3c035b99cf9479ac8357c7d38147f1541dcbcac；Root真实聚焦RED1→GREEN1、完整Node24verify938/102文件及真实host **51/51（70.86秒）**，固定SHA独立审查P0/P1/P2=0。Member在途SIGTERM确定性新测试未执行，仅静态确认既有close等待路径。Source四文件交付停写，Root ordinary聚焦72 pass/2依赖skip/119subtests、Agent .venv原生2/2，Ruff四文件PASS；Root分离既有guard纯格式修正到f905087a。Root完整新增driver门与当前源码真组合仍待运行，绝不将driver代码门标执行链通过。
+
+**当前worker补验：** 固定Agent e728/BFF571的真实独立CLI worker已PASS/exit0，4执行事件→5帧durableAG-UI、outbox成功、助手completed、Agentterminal；自有PG/process/Redis余量0，日志 `/tmp/kokoro-bff-agent-e728-worker.log`。IAM/System/model仍具名确定性fixture，非Source或浏览器3310。
+
+**Source取消P1返修（当前不放行）：** 独立工作树审查基线f905087a四文件hash固定，实测真实SIGTERM打断Runner后，close()重启loop会恢复旧业务协程并在resource-close期间再执行副作用，cleanup却报[]。原Source负责人再任仅helper/直接test唯一writer，其他Root文件排除；保存活动Task，异常/信号后首先cancel＋有界await/drain，再关HTTP/runtime/Redis。同步launch/revoke的已开始线程须在销毁owner前退出，不能由最后Runner.close才隐式取消；源码callback本身已有HTTP10s/协议30s边界。补确定性无服务SIGTERM回归与在途thread关闭次序/异常传播，先RED→GREEN，主控复验/独立审查通过后才真组合；不加服务/运维体系或放宽清理失败门。
+
+Root新增完整scripts/tests候选 **1010 pass/2 Agent依赖skip/317subtests（113.18秒）**、原生组件2/2、Ruff四文件通过；这些未覆盖发现的SIGTERM缺陷，不能替代返修。IAM e3c035b代码/真实51门独立通过并集成来源，Source仍保留P1待办。
 
 ## 返修：W3-AGENT-RUN-SKILL-METADATA（P1已修复，Root已复验并集成）
 
