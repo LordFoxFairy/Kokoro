@@ -4,7 +4,7 @@
 
 | 项 | Source driver 任务卡 / §8放置门 |
 | --- | --- |
-| Owner/执行/审查/基线 | Root跨owner测试编排唯一writer `agent_typed_skill_reader_owner`（沿用原负责人模型），Root审查/提交；绝对目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro` main，基线为本表同次提交，Root已有uv.lock任务外变化不动。Agent固定e728fe24/IAMa6dfd196/BFF571b51de/Platform6a09913/Storage16a6c1c。 |
+| Owner/执行/审查/基线 | Root跨owner测试编排唯一writer `agent_typed_skill_reader_owner`（沿用原负责人模型），Root审查/提交；绝对目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro` main，基线为本表同次提交，Root已有uv.lock任务外变化不动。Agent固定e728fe24/IAMe3c035b/BFF571b51de/Platform6a09913/Storage16a6c1c。 |
 | 当前/目标 | 已有3300行sandbox runner完成真实发布/读取投影，Source模式ready协议仅单测；接入真实Agent schema/HTTP/JWKS/claim→freshproof/IAM→generated安装setup→typed reader→原字节、停用、旧lease拒读，明确不含模型/UI或产品安装API。 |
 | 位置/粒度/两案 | 新普通辅助文件 `scripts/e2e/agent_skill_source_smoke.py` 承担Agent Source测试资源/场景，既有主runner只加显式钩子；拒绝把全部Agent生命周期塞入已3300行主文件或Agent tests/e2e（跨owner资源由Root持有）。新直接单测 `scripts/tests/test_agent_skill_source_smoke.py` 负责协议/边界/摘要与资源关闭；不创建新目录/新应用进程类型。 |
 | 范围/排除 | 仅上述两新文件、现有 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py` / `scripts/tests/test_bff_skill_draft_sandbox_smoke.py`；Root台账/库存/gitlink/shared index由Root独占，worker不提交/暂存/修改这些或任何子仓/lock/schema。 |
@@ -23,6 +23,8 @@
 **当前worker补验：** 固定Agent e728/BFF571的真实独立CLI worker已PASS/exit0，4执行事件→5帧durableAG-UI、outbox成功、助手completed、Agentterminal；自有PG/process/Redis余量0，日志 `/tmp/kokoro-bff-agent-e728-worker.log`。IAM/System/model仍具名确定性fixture，非Source或浏览器3310。
 
 **Source取消P1返修（当前不放行）：** 独立工作树审查基线f905087a四文件hash固定，实测真实SIGTERM打断Runner后，close()重启loop会恢复旧业务协程并在resource-close期间再执行副作用，cleanup却报[]。原Source负责人再任仅helper/直接test唯一writer，其他Root文件排除；保存活动Task，异常/信号后首先cancel＋有界await/drain，再关HTTP/runtime/Redis。同步launch/revoke的已开始线程须在销毁owner前退出，不能由最后Runner.close才隐式取消；源码callback本身已有HTTP10s/协议30s边界。补确定性无服务SIGTERM回归与在途thread关闭次序/异常传播，先RED→GREEN，主控复验/独立审查通过后才真组合；不加服务/运维体系或放宽清理失败门。
+
+第二候选Root完整门 **1019 pass/2 skip/323 subtests（110.05秒）**、原生2/2/Ruff四文件PASS，但独立审查真实SIGTERM在executor提交→登记之间仍能留下未跟踪线程，P1仍未放行；负责人继续同一根因窄返修（含Task创建登记中断安全），不启动真实组合。
 
 Root新增完整scripts/tests候选 **1010 pass/2 Agent依赖skip/317subtests（113.18秒）**、原生组件2/2、Ruff四文件通过；这些未覆盖发现的SIGTERM缺陷，不能替代返修。IAM e3c035b代码/真实51门独立通过并集成来源，Source仍保留P1待办。
 

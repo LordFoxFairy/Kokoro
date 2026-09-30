@@ -1,5 +1,11 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-30 — Source取消返修第一轮主控复验，残余登记窗口仍未放行
+
+唯一writer四文件停写后Root完整门1019 pass/2 native依赖skip/323subtests（110.05秒），Agent原生2/2、Ruff四文件通过；日志 `/tmp/kokoro-root-source-cancellation-tests.log`。独立审查固定四hash实测executor提交尚未返回即SIGTERM：thread-start→tracked0→resource-close→thread-end，cleanup[]，残余P1；原负责人已续修提交+登记信号临界区及Task创建同类窗口，仍不启动真组合、不声称完成。
+
+当前topology与精确checkpoint PASS；main-only审计12仓本地/远端分支均仅main，但Root有Source候选和任务外uv.lock，所以工作树clean门FAIL。首次checkpoint漏--expected仅usage exit2，随后的正确w1e-iam07-bff-pin命令exit0；不掩盖命令失败。Product个人安装准入只读调查进行，不授写入权。
+
 ## 2026-09-30 — 登录现场复查与取消返修续派
 
 用户再次明确允许重启；现有授权重启后的受管实例仍正常，launcher3898/IAM4007/Web4113存活，3310实际监听，不重复开第二组服务。右侧用户标签仍旧过期URL，CUA AX读取再次focus超时；已请用户手动打开/login，当前没有账号提交、回调、刷新证据。Source SIGTERM P1已续派原负责人仅helper/直接tests修复，Root不抢写；未启动新服务、未改变共享数据。
