@@ -2,7 +2,7 @@
 
 ## 下一切片：W3-WEB-SKILL-CONSUMER（P0；正式发布与读回 UI）
 
-**阶段状态（2026-09-29）：** 机器/文档门 Web `53760a2c4c9b0420e2a8bb4db8be66d8160169af` 已由 Root 独立 Node22 全门与 BFF 原字节比对通过，Web 仓 clean main；下一个唯一写入切片只处理正式运行 UI/同源 adapter 与对应 tests，现有 3310 不作验收。以下表格保留整条业务放行条件，机器 pin 不等于用户可用。
+**阶段状态（2026-09-29）：** 机器/文档门 Web `53760a2` 与正式个人 ACTIVE/MCP 只读 UI `98aad4cddb231ef7d1363f00630b9b41f51a743f` 已由 Root Node22 全门通过；终审 P0/P1/P2=0。下一唯一 Web writer 切片是**单 ZIP 正式写入 UI**：沿现有 shadcn Dialog/同源 adapter 原子删除旧 preview/confirm、namespace/multi-candidate/`.skill` 正式调用，接 Draft/Get/Begin→ObjectStore 原字节 PUT→Complete→Validate→零 body Publish/本人 by-ID 恢复。Root 真 Chromium 要用独占 HTTPS Web + HTTPS ObjectStore origin 与精确 CORS/preflight，不能把现有 HTTP signed PUT 或 preview Playwright 冒充浏览器链；3310 不作验收。以下表格保留整条业务放行条件，机器 pin/静态 UI 不是产品激活。
 
 | 项 | 任务卡 / 放行门 |
 | --- | --- |

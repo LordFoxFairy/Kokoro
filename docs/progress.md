@@ -1,5 +1,9 @@
 # Kokoro 后端闭环进度证据账
 
+## 2026-09-29 — Web 正式 Skills/MCP 只读消费完成；上传写 UI 未接
+
+Web 唯一 writer `4e2d534`→错误边界 `b4a9957`→终审 `98aad4cddb231ef7d1363f00630b9b41f51a743f`：正式 Skills/Settings 消费 `scope_kind=personal`、`source_ref/revision` 与本人 ACTIVE by-ID，MCP 仅六字段只读；旧 pool/catalog/quota/secrets GET 在正式同源 route 拒绝，旧控件仅显式 preview fixture。独立审查发现本地 early-return flat 错误/缺安全头、非 JSON 可混入及错误码不属 BFF owner 枚举，逐项 RED→GREEN 修复，终审 P0/P1/P2=0。Root 独立 Node22 `pnpm check`：contract **108/108**、architecture **36/36**、tests **1621/1621**、lint/typecheck/build PASS；隔离 Playwright 3472 **11 pass/1 既有 skip**。后者仅测试未配置登录/预览治理，**不代表真 IAM/Skills 浏览器链**。旧 ZIP preview/confirm 写 UI 尚未迁移，BFF 六写候选 default-off、Platform v4 inactive。Root 只读浏览器验收预审发现 HTTPS Web 对现有 HTTP ObjectStore signed PUT 会触发 mixed-content；下一隔离组合需独占 HTTPS ObjectStore origin、精确 CORS/preflight、浏览器原字节 PUT/ACTIVE 刷新读回。Billing 最后，不碰 3310/任务外 `uv.lock`。
+
 ## 2026-09-29 — Web Skills/MCP 契约 pin 第一阶段通过，运行 UI 待切换
 
 Web sole writer `7db8c05`→终审修复 `c97cbf7`→`53760a2c4c9b0420e2a8bb4db8be66d8160169af`：四当前文档明确旧运行态与目标态，BFF `62daba37fc0267830d73590bb5a3499807d46fc6` public OpenAPI 原字节 SHA-256 `5553b798446c8b764fc33d3ccdba6185c3c308213f712cdcf34e751166e0e923` 已固定；Team 派生文件无漂移，Skills/MCP GET 状态/headers、个人 ACTIVE/by-ID/列表、owner-native 六字段及变异负例有直接门。独立审查发现过期 commit 与新 digest 混用及详情 `data.$ref` 未锁，均由唯一 Web writer RED→GREEN 修复；Root 复核 `git show | cmp` PASS。Root 当前 commit 独立 Node22 `pnpm check`：contract **108/108**、architecture **36/36**、unit/system **1603/1603**、lint/typecheck/build PASS；首次整套旧 OIDC 集成例 30 秒超时，隔离重跑 **1/1**、完整重跑 PASS。**本片没有改正式 UI**：旧 preview/confirm、`scope=official|third_party` 与 MCP 假字段仍在运行，六写候选 default-off、Platform v4 inactive；Browser 真链另验。Root 精确 gitlink/来源库存 pin 后进入 Web runtime 切片，Billing 最后，3310 和任务外 `uv.lock` 不动。
