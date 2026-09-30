@@ -1,11 +1,11 @@
 ## 当前执行摘要：真实用户旅程（2026-09-30）
 
-本轮不是再建一套 UI 或计划中心。当前 Root main `9e77ac17`，Web `840fa7e0` 删除虚构收费文案已验收；3310 已停止，真实模型 Chat 的 terminal DOM 全文门仍 FAIL。以下是执行优先级，不是整体已完成声明。用户已要求每10分钟检查并继续推进；Codex当前线程heartbeat `kokoro-10` 已创建ACTIVE并回读展示，不另建独立cron任务。无变化保持安静，有实质完成/失败/偏差/决策再通知。
+本轮不是再建一套 UI 或计划中心。当前 Root main `604dc12f`（生命周期代码 `9e77ac17`），Web `840fa7e0` 删除虚构收费文案已验收；3310 已停止，真实模型 Chat 的 terminal DOM 全文门仍 FAIL。以下是执行优先级，不是整体已完成声明。用户已要求每10分钟检查并继续推进；Codex当前线程heartbeat `kokoro-10` 已创建ACTIVE并回读展示，不另建独立cron任务。无变化保持安静，有实质完成/失败/偏差/决策再通知。
 
 | 优先级 | 交付门 | 当前责任与状态 |
 | --- | --- | --- |
 | P0 | 正规登录、页面不被模型库存观测拖停 | Root三文件已提交9e77ac17，独立0/0/0、完整1103pass/3依赖skip/455subtests、后置checkpoint/topology PASS；一次真实外部库存GET亦PASS且无付费推理。尚未重新启动或验真实周期恢复。 |
-| P0 | 发消息→流式→刷新续流→终态全文→再次追问 | BFF四文档独立0/0/0通过；tests-only纯RED12pass/1fail，Root真自有PG RED3pass/5fail/0skip（8case含一额外pattern匹配），failure均缺active_run/应拒非法marker。资源回收DB0/Redis新增0。原owner获三src GREEN授权，源码/最终门/浏览器仍待验。 |
+| P0 | 发消息→流式→刷新续流→终态全文→再次追问 | BFF四文档独立0/0/0通过；tests-only纯RED12pass/1fail，Root真自有PG RED3pass/5fail/0skip（8case含一额外pattern匹配），failure均缺active_run/应拒非法marker。资源回收DB0/Redis新增0。三src候选已独立0/0/0与Root纯门506pass1skip；真实PG GREEN尝试7pass/1fail（正常Run绑定fixture缺口），原owner仅修该fixture。最终验收/提交/浏览器仍待验。 |
 | P1 | 会话、项目、定时任务分开，关联不混淆身份 | 复用既有 Web 信息架构切片；后继验真实创建/移动/移出/刷新/深链，Project 上下文与 ScheduledTask/Run 独立，不能把预览列表算数据能力。 |
 | P1 | 文件、作品、审批、Skills/MCP 可运行 | 已有后端安装及历史作品/GC门；安装浏览器、非空Skill标准worker、MCP和完整HITL仍开放，按owner顺序推进。 |
 | P1 | 正式积分而非“免费”静态承诺 | Billing五文档修订独立0/0/0，原3P1/1P2已纠正；展示1Credit=1e6micros、200同步grant ACK、reason进入effect/digest/audit已锁。IAM任意target解析仍真实owner-first阻塞，未放行Billing消费者源码/入账；未计费E2E，支付渠道最后。 |
@@ -20,7 +20,11 @@
 
 ### 当前派工补充
 
-ROOT-PROVIDER-LIFECYCLE-CODE 首候选已停写：Root完整纯门1102pass/3依赖skip/439subtests，独立审查发现1P1：unknown命令回执未绑定返回status/observed_at，未验收。原Root writer获同三文件续派修复，先RED，receipt必须匹配本次status与UTC毫秒instant，缺失/错误即fatal，不推进generation/next-refresh；既有成功test fixture按真实owner shape补齐。Root再次暂停本仓写入，修后冻结→独立复审→重新全门。BFF原负责人只修四docs（基线d654），源码仍禁。Billing五docs修审查项列为下一续派，未派工，基线63e0+原53/3行候选；只TECH/API/DATA/CURRENT/IMPLEMENTATION_PLAN，不改contract/源码/SQL/任何真实资金。固定单位是显示定义、不是现金兑换或已给账户充值；已有余额/价格/消费者须owner artifact后统一，无旧比例兼容分支。IAM target具名operation尚不存在，先列准确阻塞与owner发布门，不编造已pin接口。Root独占全部Git index与提交，uv.lock不动。
+- Root 主控：生命周期代码 `9e77ac17` 已验收；首候选的回执 P1 与追加 RED 是历史，不是仍在派工。Root 独占 Git index/提交，保留任务外 `uv.lock`。
+- BFF 唯一 writer `bff_personal_installation_owner`：12文件 running snapshot候选已冻结，独立最终审查0/0/0；Root Node22 format/lint/typecheck/contract191/architecture27/test506pass1skip/build PASS。真实隔离PG首次GREEN尝试7pass/1fail/0skip：newer-run fixture通过registerConsumer准入但没有正常ChatTurn assistant/dispatch绑定，run.completed被`AGUI_ASSISTANT_BINDING_MISSING`拒绝。已续派仅该用例和CURRENT，正常submit建立绑定，不放宽生产guard、不删断言；源码候选尚未验收/提交。Root原自有临时库0、Redis新增0/baseline保留。修后冻结→独立审查→Root全部门/真实PG→子仓提交→Root固定来源集成→浏览器。
+- 独立审查员 `bff_personal_consumer_review`：只读。原“现Project非owner用户可以读消息却缺activeRun”的P1已撤回：当前Conversation必须owner；额外consumer_subject筛选属于P2设计偏差，已删除。真实PGfixture失败不被纯门或0/0/0审查掩盖。
+- Billing五docs修订独立0/0/0且停写；新Nest组件尚未接运行入口/正式Run扣款。IAM任意target能力未发布，充值/消费者源码不放行。`agent_typed_skill_reader_owner`只读倍率核查完成：当前Metering为quantity=1按功能固定价，未实现成本乘倍率。用户“1.4倍/盈利9.4倍”的成本基准待确认，未落配置/数据库。1Credit=1e6micros只定义显示单位，不定义现金兑换价。真实账务及支付最后仍在全Wave目标中。
+
 
 ## ROOT-WEB-BILLING-INTEGRATION（2026-09-30）
 

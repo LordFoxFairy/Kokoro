@@ -1,5 +1,16 @@
 ## 2026-09-30 — IAM来源已验收提交；真实续流缺口已有纯当前源码对照证据
 
+## 2026-09-30：BFF真实PG复验揭露fixture缺口（待修，不伪造GREEN）
+
+上一目标轮分类为**progress**：只读核查确认Billing实际按功能定价而非成本倍率，改变下一计费设计决策；1.4/9.4已提基准确认，未擅自落库。本轮继续原完整Wave0–7，而非缩为聊天片。
+
+- BFF d654a1bc基线12文件hash完整匹配冻结manifest SHA `4dd34cd56e2951e0b314c96417aea5f06715949fe92d55bf2afc7c76d9c4ab07`。独立最终0/0/0、无infra20pass；Root主树Node22重跑format/lint/typecheck/contract191/architecture27/test506pass1skip/build实际exit0，session50380已消费，日志`/tmp/kokoro-bff-active-run-root-final-gates.log`。
+- Root复用现PG/Redis，在自有临时库执行同RED pattern：**7pass/1fail/0skip**，session22776 exit1已消费，日志`/tmp/kokoro-bff-active-run-real-pg-green.log`。失败不是运行环境：newer-run case在run.completed触发`AGUI_ASSISTANT_BINDING_MISSING`，fixture手工registerConsumer而未通过正常submit创建assistant/dispatch绑定。完整7文件integration未执行，不能记为PASS。
+- 原BFF writer续派仅该用例和CURRENT，保留全部状态矩阵，通过现ChatTurn.submit建立绑定；不弱化guard、不删除失败断言、不增加兼容路径。修后重新冻结/审查/全部门/ownedPG。
+- finally实际回收：created/new databases剩余0、Redis新增0/baseline完整保留，无共享reset/新role/重复服务。Root先清理任务台账顶部过期的“代码禁止/回执待修”指令；历史失败保留。
+- Billing只读事实：Metering quantity=1 + feature price revision，Credit组件有部分capture/余量release但正式运行消费未接；倍率可调与成本定义是后继owner设计，尚未实现。用户公式歧义仍待确认，支付仍最后；当前3310未重新启动/浏览器未验，全goal继续active。
+
+
 BFF d654a1bc6ce0347e28dd90a0ce0ee1553b8d67ed已由Root精确提交，12文件含vendor100%同byte路径替换；16SDK零diff，policy只iamOwnerCommit。独立0/0/0（P2无关文档format已由原writer回退），RootNode22全门498pass/1既有noPGskip/format/contract两门/lint/type/build通过，最新两docs再format/20相关/build通过。Root184个BFF owner/evidence refs从实际新commit blob重核（134唯一path），仅provenance/hash/合法新vendor路径，13broken不改绿；composer纯source pin RED1/32pass已见，相关Root门与最终集成尚在推进。预提交Root relay门因HEAD/index暂不同FAIL不能称PASS，checkpoint已PASS；完成Root提交后重跑。
 
 Root查明chat-service.snapshot根本未输出既有optional active_run，端口readSnapshot亦不读Run projection。原Web负责人直接当前源码内存转译对照：相同streaming前缀'A warm '+postwatermark CONTENT('drink.')/END、无START：BFF现shape无active_run→activeRunId null、1turn/2segment；补合法同run active_run→1turn/1segment'A warm drink.'；都无文本丢失、水位不变，不读真实数据/模型、不改源码。已证实owner产出缺口会稳定影响续流；真实轮reload瞬间shape仍未捕获，不冒称现场因果全部证明。临时验收1Markdown==1助手的假设也不成立；修复应按turn/正文验证而不简单拼接/放宽全文身份门。
