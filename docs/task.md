@@ -1,3 +1,48 @@
+### R44 Root 发布后置门已通过
+
+新51条metadata独立0P0/0P1/0P2、51/51 Gitblob匹配（49Web＋2System）；仅一条已删除旧project-create schema的evidence改为真实新project.ts。Root正确两contracts文件实际88passed/47.00s、现checkpoint CLI PASS/exit0、topology exit0；日志/tmp/kokoro-root-r44-{published-pin-focused,published-pin-green,topology}.log。新的pub后metadata仅此focused门，不把此前1122full称为pub后再次全量；3active13broken0illegal保持。Agent额外组件由WIN03实际5passed0skip0fail0.24s，MCP loopback线程退出/egress恢复；不是typed授权/真实推理/费用通过。Root此次只集成两个owner gitlink、inventory及三台账，uv.lock/AgentP3B/BFF/Billing/Scheduler在途修改不暂存。
+
+### R44 实质发布与真实失败（不冒充整体闭环）
+
+Web30path已独立index0审，Root Node22完整contract224/architecture50/full2136（44.78s）、lint/typecheck/build全通过；隔离preview Playwright14pass/4条件skip11.1s，非正式IAM/模型/积分E2E。main5f2ab341d5fc5ddee5e08d785dc7aaf391b7e9d8已推送，子仓clean；仅自身Next dev生成一行经exactbytes确认恢复，3387listener已收，report移/tmp。System23path独立index0审，Root Node24完整verify176pass56.47s＋fresh23assert/22table/fullcanonical match，PG18.4，前后76数据库名单字节相同；main6ca96180749d4842c2ee0628328f372d114e320f已推送，子仓clean。PG16/crossowner待验。日志/tmp/kokoro-{web-project-r44-root-full-check,web-project-r44-root-preview-e2e,system-schema-r44-root-full-verify}.log。
+
+Root完整治理在发布元数据更新前实际1122passed/3skip119.91s，/tmp/kokoro-root-r44-full-governance.log；51条Web/System新Gitblob发布指针待focused/独立审，状态3active13broken0illegal不变。初metadata自动更新遇已删Webschema path而中止、初focused误文件名exit4/no-tests均非业务RED，已沿真实新project.ts及正确test_contract_checkpoint/test_contract_compatibility重跑，不放宽验证器。
+
+BFF Node22真3failed/0pass/0skip：queued CUSTOM故障未触发、RR检查通过但execution_head缺失、历史A terminal把B queued流提前EOF；/tmp/kokoro-bff-r44-root-three-red.log。owned bff_r44_ec340323996c4f9e closed=true/Redis15 remaining0/cleanup_errors=[]。已授原WIN02仅五现内部源，先同事务队列与head-aware replay/RR内部head/GC，不偷增public3尚未定义的execution_head或假empty pause；完整公开/HITL consumer4紧接后继。原三RED/八dirty保持。Scheduler原WIN09已授两现源/测试真实fullcatalog接入，不以missing符号充RED；Billing四doc0P0/0P1/2P2精确返修，不改历史body后再授新只读integration。10原窗口已续派，完整Wave0–7 active，正规登录→多轮Chat/Project→正式费用链仍未验收，支付最后。
+
+### R44-BFF 源码第一片：先修内部原子队列，不偷发未定义 wire
+
+Root真实三个^R43集成均行为失败：queued写故障未触发、旧RR snapshot无execution_head（RR隔离检查已通过，不重写事务）、历史A terminal令B queued SSE EOF。自有bff_r44_ec340323996c4f9e closed=true/Redis15 remaining0，/tmp/kokoro-bff-r44-root-three-red.log；Node24首次build不作支持版本门，随后Node22 build exit0。
+
+WIN02唯一writer，仅五现生产路径：src/infrastructure/postgres/agent-dispatch-outbox-repository.ts、agui-projection-repository.ts、chat-repository.ts、agui-consumer-repository.ts，以及src/application/ports/chat-repository.ts。queued atomic/terminal或never-admitted failure→B head/queued/cursor同txn，Conversation-first锁、head-aware replay、RR内部typed head与GC保护；sticky unknown/old-run guards/exactduplicate/DBclock/fence保持。不授src/contracts/chat.ts、chat-service.ts、public机器/SQL/pin/gen，不通过type cast发未定义execution_head或假empty pending。当前public3无execution_head，完整第二RED/第三后段应保持待后继contract4/fullHITL，不以内部修复冒充全GREEN。四doc仅现R43新增阶段边界与HTTP4已发布事实；三RED与原8dirty字节锁。内部freeze后Root复跑，随后由同owner三面Agent4完整pause契约门承接，不删除旧marker/伪造B START/兼容fallback；不无限搁置consumer升级。
+
+### R44-Billing D0 精准返修卡
+
+独立审0P0/0P1/2P2：机器源真实24 operations/24 paths（21 v2＋3 probes），只纠新R43前缀计数，不碰历史正文。采用CreditService显式注入现CreditRepository，不通过Effects承接read、不可选/自行new；后继GREEN追加credit.module.ts DI及旧credit-metering.test.ts三个构造调用机械注入，原断言不变。WIN06本阶段只修四doc新前缀以上图/文件范围，原五dirtybody、机器SQL/source/tests锁；新freeze Root复核后仅新增test/integration/credit-read.test.ts，R01–R18含no-FK wrongtenant/负累计/read-only拒写/精确资金与零写/高水位，编译需运行时能力断言，不把missingimport作为RED。
+
+### R44-Scheduler 下一源码卡（独立 D0 审 0P0/0P1/0P2）
+
+Owner Scheduler，WIN09唯一writer，Root审查/Git；基线9a4effd150ab739acaed2579faa94618bb26f772，现20冻结路径/R43四prefix。仅授权现 internal/adapters/postgres/bootstrap.go、test/integration/postgres_test.go，四doc仅新增本卡接口/真实证据小前缀；其他18路径/SQL/store/config/runtime/CLI/RUNBOOK/依赖锁。选择现bootstrap adapter扩展具名只读采集而不混入Store业务读写；同adapter普通catalog.go可合理拆分，但本片不新增目录/文件。新增内部导出 ReadSchemaCatalog(ctx,pool,target)->(SchemaCatalog,error)、CompareSchemaCatalog(actual,reference)->[]SchemaCatalogDifference，类型只描述结构，不泄漏业务/网络。先沿现installer补function/type占用正负例，若现已GREEN如实记；真实collector必须可编译并采集真实PG，禁止空stub/不存在符号作为RED。单session READ ONLY RR、bounded context/rollback、完整列/default/约束/index/关联对象、OID逻辑身份仅归一、表达式字面量不替换；reference只在自有fixture沿原installer/embedded canonical构建。行为矩阵落现test并保原17核心断言，Root独占资源实跑后才转实际GREEN/提交；worker只纯编译/gofmt/无资源collect，提交文件集/hash与保护清单。
+
+## R44 十窗口续接：从冻结交付进入验收与下一代码门
+
+Root 基线 fae2fa7a；完整 Wave 0–7 active，不新建窗口或计划中心。已有 WIN01–10 均沿原职责续接；独立工作并行，同仓一名 writer，Root 独占 Git/真实共享资源。Agent e977923 已发布不等于 BFF/Web 已消费。原 uv.lock、BFF 八份旧修改、Billing 五份旧文档、Agent P3B 保留。
+
+| 任务 | 负责人 / 阶段 / 精确边界 | 下一可验收动作 |
+| --- | --- | --- |
+| R44-Web | WIN01 30-path 候选冻结，原 Sol 独立只读审；Root 唯一验收 | Node22 完整 pnpm check（句柄52366，日志 /tmp/kokoro-web-project-r44-root-full-check.log）；原 RP500/welcome 失败不靠定点绿抹去 |
+| R44-BFF | WIN02 三现 integration tests 已冻结，生产/pin锁 | Root 自有 PG/Redis 串行 ^R43 行为 RED，再批准源码；历史 A terminal 不能关闭 B queued 会话流 |
+| R44-Agent | WIN03 只读 / 无共享资源组件回归 | 已发布 e977923 的 skills reader 与 MCP loopback 组件，不冒充真实 provider/typed授权/费用 |
+| R44-IAM | WIN04 只读 | 现普通登录用户链与赠送人类资格分开；仅核正规登录剩余门，不擅自授予赠送 |
+| R44-System | WIN05 23-source冻结 / Root 真验 | Node24 完整 pnpm verify（句柄47030，日志 /tmp/kokoro-system-schema-r44-root-full-verify.log）；记录自有库前后名单，不按通用前缀清理 |
+| R44-Billing | WIN06 四doc D0冻结 / 原只读审查员 | R01–R18 本人 wallet/ledger 三面门后续授精确 tests；旧 v1/Nest/gift/runtime 不假激活 |
+| R44-Platform | WIN07 只读 | per-invoke typed MCP 接入以 Agent4 当前 e977923 作基线，输出下一准确 source/test 集，不重写 wire failure code |
+| R44-Storage | WIN08 只读 | 补明确 durable ownership 清理凭证字段、持久化时机与精确资源回收；当前内存 preflight 不充持久所有权 |
+| R44-Scheduler | WIN09 四doc D0冻结 / 原 Astra 独立审 | 锁可编译真实 catalog 接入，再行为 RED；17PG不是fullcatalog |
+| R44-E2E | WIN10 只读 | 四既有 driver 多轮/项目/正式账务断言保持，核 compiler-safe 先RED入口；Root 未授 source/Git/资源 |
+
+当前确认十个窗口均存在但前阶段均已停写/交付，不能称十个 writer 一直运行。Root本轮重新续派可执行独立范围；不为凑并行数重复研究已交矩阵。尚未运行的登录、真实多轮模型、项目与费用链明确待验，支付最后。完成以本轮命令/冻结commit/真实旅程为准。
+
 ### R43 放行边界与最新通过证据
 
 发布inventory漂移已精准修订，Root两个contracts相关文件 **88passed/46.72s**；现checkpoint CLI **PASS/exit0**，只表示3active/13broken/0illegal与声明基线一致，不表示13broken调用闭环。日志 /tmp/kokoro-root-r43-{contracts-focused-green,checkpoint-green}.log；原full1fail1121pass3skip保留，完整full未重跑，不把相关88pass冒充全门。System最终alias/catalog/fresh独立0P0/0P1/0P2，23path摘要11b6f2f1；13真PGcase＋原23fresh业务门真实通过，其余6旧lifecycle case/cross-owner待验；System不提前提交发布。Agent e977923正式owner交付/Rootgitlink同步；BFF已续授现test/三个integration files-only，先真实失败再source，同时保持Agent3旧consumer，不能假pin4。10原职责窗口已全部续派，原共享基础设施/owner变更保持，不追加重复服务或窗口。
