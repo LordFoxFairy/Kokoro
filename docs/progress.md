@@ -1,3 +1,23 @@
+## PARALLEL-R18：两个独立实现已验收提交，Root 组合治理复验（2026-10-01）
+
+本轮确实并行：BFF writer `bff_fifo_owner_r9` 与 Agent writer `web_interaction_audit` 独立写入，`agent4_lifecycle_review` 只读审查，Root 管理资源/Git并独立重跑；没有多个writer抢同仓。已验收的是两个明确切片，不是九owner/Wave0–7最终完成。
+
+- BFF main `e7a325ce232f4be052aa498020bb24e217de4cfa`，27路径提交且origin/main已推送。Root七文件真实PG/Redis50/50、0失败/取消/跳过；完整门默认549/549、contract193/architecture27、format/lint/typecheck/build成功。临时DB已回收、Redis14剩0。原四docs495行草案未纳提交且逐byte保留，仍dirty，不称BFF全仓clean。证据 `/tmp/kokoro-bff-fifo-root-full-{integration,gates}-r17.log`。
+- Agent main `224d0f19ff2199c38b95f621015ea7856f589454`，9路径提交，源码与原子rollback fixture一起闭环。Root最终真实PG+HTTP135/135（15.73s）、fresh默认1530通过/6既定跳过/192排除（57.63s），lock/Ruff/Pyright/contract/build成功。自有DBb9312aeba3e448fe已回收；首轮134/1 RED及其正式admission fixture返修保留。证据 `/tmp/kokoro-agent-durable-ingress-root-{pg,full-gates}-r2.log`。本片仅备用RunRequest复用durable入口，不提前实现scope/FIFO/4.0；schema/wire未改。
+- Web `9204bfe6` 已在Root `d79a779c` 集成；本轮Root更新BFF187条与Agent30条committed来源，不把owner默认门冒充跨owner/provider/browser验证；inventory仍3active/13broken。Root仅精确暂存两个gitlink、inventory及三台账，共6路径，不触Billing草案/uv.lock。
+
+未完成：完整Agent4/scope/native/retention、正式queued/原user retry、Scheduled同session门、Platform物理切换、真实模型与浏览器组合、积分/Billing最终链。Conversation删除引用释放产品决定仍待回复，不新增临时advisory状态机。用户3310 PID65590未重启/未同步本轮source，不称用户页面已更新。总goal保持active。
+
+Root 最终本波集成：Agent origin/main 已确认224d0f19、BFF origin/main已确认e7a325ce；精确六路径暂存后 current checkpoint/topology均PASS/exit0，相关治理测试95/95（43.99s），日志 `/tmp/kokoro-parallel-r18-root-{checkpoint,topology,tests}.log`。BFF R17 contract test实际193/193；旧191计数只保留为历史记录，当前以原始R17日志为准。不改historical checkpoint、不清3active/13broken、不纳Billing/uv.lock草案，未执行全Root1103门或完整九owner/browser/provider验收。所有Root本波测试/preview均退出，用户3310不变。
+
+## PARALLEL-R17：BFF 实测已提交，Agent 独立入口切片继续（2026-10-01）
+
+BFF 本片已验收提交 `e7a325ce232f4be052aa498020bb24e217de4cfa`（27路径）：严格ACK只admitted，只有durable terminal projection与消息/source/watermark同事务释放Chat FIFO；unknown恢复固定run/key；租约锁后DBclock、正预算与commit耗时扣减。Root七真实integration文件50/50、0失败/取消/跳过（16.41s），默认549/549（2.72s），format/lint/typecheck/contract193/architecture27/build均成功。日志 `/tmp/kokoro-bff-fifo-root-full-{integration,gates}-r17.log`；自有DB603074e8766f432f与4789659a6d0042d1已回收、Redis14剩0。独立审查绑定R17 27hash、无源码P0/P1。四docs只提交FIFO前缀，原495行草案逐byte保留、未纳提交。
+
+Agent 与 BFF 同时实施的备用入口硬化：唯一writer web_interaction_audit，基线main64665cb；Root fresh默认1530通过/6既定跳过/192排除（58.34s），lock/format/ruff/pyright/contract/build成功。Root真实PG+HTTP134通过/1失败（15.78s）：原terminal rollback acceptance直接dispatch无durable intent，现正确no-op；已批准仅该现用例先建立真实PG admission，保完整rollback断言，不生产fallback。自有DBb1c40f3a66ce4f19已回收。日志 `/tmp/kokoro-agent-durable-ingress-root-{full-gates,pg}.log`；9路径候选仍待Root真实终验/提交，不能记为已闭环。
+
+Root Web gitlink已集成 `d79a779c`、派工事实提交 `1b6ba49f`。下一Root集成只提升已验收BFF gitlink与187个committed来源，inventory保持3active/13broken；Agent待验不提前提升。所有owner/正式queued与原user retry/Agent4/Scheduled/真实provider浏览器/积分及Billing仍未完成。用户3310运行副本未重启，本片不是用户整体UI已同步。
+
 ## PARALLEL-R14：三名子 Agent 同时推进，Root 集成（2026-10-01）
 
 总目标仍为九 owner / Wave 0–7 研发闭环，Billing 最后；未宣称整产品完成。基线 Root main `1226d095`、Web main `9204bfe6139e496df5ebd99e4ceab9fb31fab5a7`、BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada` + R13 27路径候选。Root 保护 uv.lock、Billing 五文档、BFF 原四文档495行草案；Git/index、基础设施与最终验收只由 Root 管理。
