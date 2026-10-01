@@ -1,3 +1,22 @@
+## PARALLEL-R14：三名子 Agent 同时推进，Root 集成（2026-10-01）
+
+总目标仍为九 owner / Wave 0–7 研发闭环，Billing 最后；未宣称整产品完成。基线 Root main `1226d095`、Web main `9204bfe6139e496df5ebd99e4ceab9fb31fab5a7`、BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada` + R13 27路径候选。Root 保护 uv.lock、Billing 五文档、BFF 原四文档495行草案；Git/index、基础设施与最终验收只由 Root 管理。
+
+| 任务 | Agent / 范围 | 状态与验收 |
+| --- | --- | --- |
+| BFF-FIFO-R14 / P0 | bff_fifo_owner_r9，gpt-5.6-sol，唯一 BFF writer；原授权27路径，不扩 contract/生成物/lock。 | 已实际续派。修准确 source contract error 断言和真实双连接租约测试挂起；核对目标 consumer lease、backend PID barrier、finally 释放与 X/A 不假定赢家。冻结 hash 后 Root 重跑完整七文件 PG/Redis，不提高 timeout。 |
+| BFF-R14-REVIEW / P0 | agent4_lifecycle_review，gpt-5.6-sol，只读 BFF 租约、锁序、测试与预算边界。 | 已实际续派，与 writer 并行定位；不能改文件/数据库/服务。最终绑定冻结 hash 审查，报告缺失证据。 |
+| NEXT-CLOSURE-MAP / P1 | web_interaction_audit，gpt-5.6-sol，只读 Web→BFF→System→Agent 真实模型、Project/Conversation/ScheduledTask 与 Billing 链现状。 | 已实际续派，交最多5个可执行 owner 切片及文件范围/前置 contract/真实验收入口；不重复已验 composer，不提前实现未发布 queued/retry 协议。 |
+| ROOT-INTEGRATION / P0 | Root：Web gitlink、committed consumer inventory、当前三台账；独占 Git/index。 | Web12文件已提交并推送 origin/main；本轮提升 Root 指针并重新验证 checkpoint/topology/相关治理测试。BFF 仍待验，不提升 gitlink。 |
+
+Web 本片 `9204bfe6` 已验收：未接纳提交保留草稿/创建意图/URL；运行中停止始终可达，不因草稿非空消失。Root 实跑 contract219、architecture50、完整测试2070/2070、lint/typecheck/build成功，独立 preview Playwright14通过/4既定条件跳过、后置typecheck成功；日志 `/tmp/kokoro-web-composer-p0-root-check-r2.log`、`/tmp/kokoro-web-composer-p0-root-e2e.log`。12个 committed blob 与 `/tmp/kokoro-web-composer-p0-root-final-manifest.json` 一致。preview34120已关闭；这不是用户3310/IAM/provider组合验收。
+
+BFF R13 Root 实跑：format/lint/typecheck/contract191/architecture27/build成功，默认测试549/549；七文件真PG/Redis47通过/1失败/1取消/0跳过，41.92s、exit1，日志 `/tmp/kokoro-bff-fifo-root-full-integration-r13.log`。五个 AG-UI HTTP 场景全部通过，剩 source错误文字断言与 chat-facts 租约 mega测试30s取消，已精确返修。临时 DB `bff_fifo_44bef4a4436e466c` 已回收、Redis14剩0；不把离线全绿当组合完成。
+
+未完成：正式 queued/原 user retry、Agent完整4.0、Scheduled 同sessionFIFO、Platform物理切换、跨 owner 真实模型/browser、积分与 Billing最终闭环。Web只刷新49个 committed来源，inventory仍3active/13broken；不改历史checkpoint与状态门。用户3310运行副本未同步本片，不称用户界面已经更新。
+
+Root 本次 Web 指针集成复验：精准暂存五路径后，当前 checkpoint 与 topology 均 PASS/exit0；三文件相关治理测试95/95（42.80s），日志 `/tmp/kokoro-web-composer-p0-root-integration-{checkpoint,topology,tests}.log`。未运行全Root门；BFF/Billing/uv.lock未暂存。R14独立审查另外发现consumer预算identity与DBclock往返漏扣，已加入返修，仍待真PG终验。
+
 ## PARALLEL-R11：集成返修继续（2026-10-01）
 
 上一goal turn分类为progress：Root真实R9诊断与两份派工提交 `4ab9a150`、`3bf87e7c` 已完成；不是仅状态复述。总目标九owner/Wave0–7不变，Billing最后。当前两独立writer分别为BFF bff_fifo_owner_r9与Web web_interaction_audit，Root统一资源/Git，独立review只读。
