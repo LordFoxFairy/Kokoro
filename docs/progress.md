@@ -1,6 +1,10 @@
-## 当前UI投诉：只读排查完成，视觉仍未验收（2026-09-30）
+## 当前UI投诉：首轮间距源码已修，输入内框仍待定位（2026-09-30）
 
-用户指出输入框方框与布局。Root当前IAB3 tab6绑定及DOM读取实际均超时；未新增页面、未改运行副本、未启动进程。只读agent_failure_cursor_owner完成现Web8205fa0级联/滚动审查：未证明内输入框根因，发现computed-style/pixel门与非2项短线程垂直几何覆盖缺口。当前Web无代码变更；不把历史截图/源码门作当前视觉通过。需恢复实际页面观测或接收当前截图后定位。最新Root cc2e2df9后relay/checkpoint/topology三个CLI均已消费exit0，仅来源组合门通过，与本次UI无关。Billing/uv.lock继续保留。
+Web main `13b881d242b59d23e18c0b0cd4f5fcb266cb3d60`，四文件切片已提交、工作树clean。已删除AppFrame首Item正负margin补丁，恢复content统一1.75rem gap；viewport继续拥有顶部留白。原测试锁定错误首轮几何，已改为禁止首Item补丁。独立冻结审查0/0/0；Root显式Node22.22.2/pnpm11.25完整check exit0：contract109、architecture49、全量1836（41.01s）、lint/typecheck/build。日志 `/tmp/kokoro-web-uniform-turn-gap-root-node22-check.log`。首次误用Node24的自有检查已精确终止并消费143，不计通过；worker任务外导航首次超时保留，随后两次70/70。
+
+Root只同步原3310受管副本单个CSS，更新前确认其bytes等于8205基线，更新后确认等于已审源码；无重启、模型调用或数据修改。当前IAB inventory成功、tab6绑定仍实际20秒超时；已请求fresh完整截图标出内框。**输入方框、完整桌面/窄屏视觉和滚动仍未验收，完整Playwright未执行**；compact两项限定/末项几何启发式的另一P1保留，不再以源码测试冒充页面通过。
+
+后端retry的Agent/BFF各四docs已freeze待审，没有新源码或机器契约发布，不算本次UI成果。Root保护这些候选、Billing五docs与uv.lock；全goal继续active，整仓/产品E2E未完成。
 
 ## BFF-AGENT-FAILURE3：owner源码已提交，组合待闭环（2026-09-30）
 

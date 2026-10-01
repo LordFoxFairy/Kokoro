@@ -1,3 +1,27 @@
+## 当前用户任务：输入框与对话布局（2026-09-30；优先于下列后端续推）
+
+- 目标：定位并修复用户实际看到的输入框内框、对话几何；历史源码门通过不作为当前视觉通过证据。
+- Root负责浏览器与最终验证；agent_failure_cursor_owner只读核现Web布局，禁止写入/服务/数据/Git，范围为现Composer、Textarea、Thread、AppFrame、MessageScroller和相邻测试。
+- 最新观察：当前IAB inventory读取成功，tab6仍为用户指定conversation；绑定该tab实际20秒超时并reset。未新增tab、未换工具绕过、未改CSS；已请求当前完整截图标框。
+- 只读审查已交付P0=0/P1=2：首Item正负margin把首轮1.75rem间距压半；两项限定/末项测量的compact纠偏可能漏态或抢滚动。输入框当前根因仍待像素，不据此盲改。
+- WEB-UNIFORM-TURN-GAP / P1：agent_failure_cursor_owner唯一Web writer；Root审查/提交/主树验证。main8205fa0 clean基线；仅app-frame-main.module.css、app-frame.smoke.test.tsx、TECHNICAL_DESIGN.md、CURRENT.md四既有文件。先RED禁止首项margin补丁、保留统一1.75rem gap与viewport顶部留白，再删CSS块并纠正旧设计描述。契约/SQL/消息/Composer/滚动逻辑/依赖不变；禁止Git/服务/数据/runtime同步。已提交13b881d，Root完整check109/49/1836/lint/type/build实际0；独立0/0/0；原3310单CSS基线核对后同步，当前视觉仍待验。
+- compact纠偏P1暂不授源码，先保留具体反例与行为测试方案，不用另一个几何启发式替代旧猜测。
+- 后端两owner四docs分别冻结待审，不授源码，不把docs设计计作本次UI修复。Web已提交main13b881d242b59d23e18c0b0cd4f5fcb266cb3d60、clean；当前UI未闭环。
+
+## GOAL 后继关键链：正式原消息重试（2026-09-30）
+
+上一回合 classification=no progress（重复静态UI证据与台账不构成修复）。当前视觉观测仍待恢复，但有独立后端安全动作，故全goal不blocked、不complete。
+
+| 任务 | 归属/执行/审查 | 基线/范围 | 当前状态与验收 |
+| --- | --- | --- | --- |
+| RETRY-OWNER-CONTRACT-READ | Root主控；bff_failure_contract_review只读契约 | Root main e27ae207；BFF ccb8e14；Agent f3be3b97；双方现contract/入口/worker/repository/docs | 调查已交付：user identity/new run冲突及native重复Human已复现；契约尚未发布；禁止写入/Git/infra |
+| RETRY-OWNER-SQL-READ | agent_failure_cursor_owner只读SQL/事务；Root裁决 | 同基线；BFF conversation/message/outbox/AGUI/receipt及Agent chat projection | 调查已交付：BFF零DDL、same-key恢复先于tail、outbox→stream→message锁序；Agent baseline/head/fenced saver前置未闭；当前审查员转UI |
+| AGENT-RETRY-DESIGN | agent_retry_owner / gpt-6-astra 唯一Agent四docs writer；Root待审 | Agent main f3be3b97；仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT | 四docs冻结停写；同连接native saver事务/lease-head CAS、Delta/子图闭包仍待spike，文档门未过，不授源码 |
+| BFF-RETRY-DESIGN | bff_failure_profile_owner唯一BFF文档writer；Root/独立两面审查 | BFF ccb8e14 clean；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md四文件，禁止源码/机器/SQL/tests/Git/infra | 四docs冻结停写待审；Root已确定POST sessions/{id}/messages/{assistant_id}/retry、空JSON、202现receipt、public2.1 additive；原user/冻结选项、samekey回收先于tail、no active/HITL；Agent语义前置仍待裁决 |
+| WEB-CURRENT-VISUAL | Root；现Web8205无写入 | 当前IAB3 tab6超时，当前截图请求未答 | 保持未验收；与readonly后端设计并行，不盲改/重开tab |
+
+Root已无网络实际复现same-run replay通过、同原user只换run_id抛ChatIdentityConflict；安装LangGraph add_messages按当前两run native ID实际返回2Human。Root已确认Agent worker每run保存input.message_id，而Agentchatmessage PK(tenant,message_id)与全字段identity包含run_id：同原user+新run按现实现会冲突；这改变下一步依赖，不先在BFF假装重试可用。是否最小修正为稳定user事实供多个attempt引用，需核同namespace/session/content/权限和上下文构建，禁止全message identity放宽。保护Billing五docs与Root uv.lock；无新进程/数据清理/provider/3310重启。
+
 ## WEB-CURRENT-COMPOSER-READ / P1 / 当前视觉问题优先（2026-09-30）
 
 - 用户再次指出输入框方框与对话布局；当前任务先定位用户实际页面，不继续用后端门禁替代 UI 验收。
