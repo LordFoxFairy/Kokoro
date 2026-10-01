@@ -988,7 +988,7 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "BFF 55d3c9c pins Storage F2 final/CLEAN owner contract and publishes private Artifact list/detail/content. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real Agent\u2192BFF\u2192Storage Product artifact original bytes, final/CLEAN metadata, same-tenant other subject 404 and foreign tenant 403 using PostgreSQL/Redis/MinIO/ClamAV; owned resources were removed. Real IAM/Chromium Web Library native download/private/mobile passed later in Root 851326dc; share and failure/recovery matrix remain incomplete, so this broad edge stays broken.",
+      "reason": "BFF 55d3c9c pins Storage F2 final/CLEAN owner contract and publishes private Artifact list/detail/content. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real Agent→BFF→Storage Product artifact original bytes, final/CLEAN metadata, same-tenant other subject 404 and foreign tenant 403 using PostgreSQL/Redis/MinIO/ClamAV; owned resources were removed. Real IAM/Chromium Web Library native download/private/mobile passed later in Root 851326dc; share and failure/recovery matrix remain incomplete, so this broad edge stays broken.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1124,16 +1124,16 @@
       "owner": {
         "name": "kokoro-agent",
         "repository_path": "apps/kokoro-agent",
-        "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
-        "contract_version": "3.0.0",
+        "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
+        "contract_version": "4.0.0",
         "contract_path": "contract/openapi/v1/openapi.json",
-        "contract_sha256": "e9f0a543f74dee34212f0ea4fe366d46218268462ac54dce08e41965f34d2d2c"
+        "contract_sha256": "763ff7a9cf668eb59ae7cfb59b2fd4f84fafde124063d9a365f138b6a30cf04f"
       },
       "protocol": "http-openapi",
       "code_generator_version": "unmanaged",
       "runtime_package_version": "node:http@22",
       "state": "broken",
-      "reason": "Current owner-consumer source slice 2026-09-30: BFF ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d uniquely vendors Agent f3be3b97dd67df69ed3c6cb88c59f3bc2db97703 HTTP3.0/provenance, deletes old HTTP2/7-code fallback, persists closed safe failure in Message and standard durable RUN_ERROR. Root Node22 fullcheck contract193/main545pass1schema skip, canonical fresh install/schema7/architecture27 and all seven true PostgreSQL/Redis/localhost-HTTP integration47 passed at frozen source; GC after an actual old RUN_ERROR retains the profile in snapshot/list/valid Share. Owned run f1db3932a3edbe3f195580f1 cleaned its database and Redis15; upstreams remained test doubles. Web public2 repin, formal original-user retry and real Agent/provider/browser deployment are not verified; managed3310 remains prior runtime. This improves source evidence, not broad-edge acceptance; state stays broken. Historical evidence: Owner-source update 2026-09-30: Agent da056b0103cced10188cdc1f5baef841d8333889 publishes HTTP artifact 3.0.0 with closed safe Failure code/retryable and Run-only initial evidence cursor -1. Root independently passed all pure gates (1518 tests, existing 6 skips/174 deselections) and complete real PostgreSQL/Redis/HTTP owner acceptance (22/22; System/model doubles), with owned resource cleanup verified. BFF 15e07fa44670bc13705ce3f6f700e73afcb72ccc still vendors Agent dd34a48 HTTP2.0.0; strict 3.0 generation, Message failure persistence/public contract and Web repin remain pending. The live managed services still use the prior 2.0 combination. This source update does not prove consumer or runtime compatibility; edge stays broken. Earlier evidence: BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Root 5b1b9a5e later passed one current-source real System/Ollama/standard-worker/Chromium Product run with durable delivery, but the wider Agent Product and recovery matrix remain incomplete, so this edge stays broken. Historical BFF 571b51de consumes Agent dd34a48 HTTP2.0.0: Chat v2 durable payload includes exact ordered selected_skill_source_refs, Scheduler v2 snapshot explicitly freezes []. Root independently passed BFF check (488 pass/1 skip), isolated PostgreSQL Chat/Scheduler integration (13/13), and production BFF builders through real Agent HTTP/PostgreSQL/Redis admission, durable claim, replay and changed-order 409. These tests do not execute a model worker or real IAM browser flow. Web old name state and Agent nonempty typed reader remain incomplete; broad edge stays broken. Subsequent Root run 909613820172d6d8189a27d9 at the same pins passed a real independent Agent CLI worker, one durable completed assistant, succeeded BFF dispatch, four Agent events projected to five AG-UI frames, replay/conflict/privacy and snapshot reload. IAM admission and System/model were deterministic fixtures, not real identity/provider services; all owned databases/processes/Redis keys were removed. Full Web login and nonempty Skill execution still remain incomplete.",
+      "reason": "Root R43 owner-source release: Agent e977923ea9992cbddaf0cdbc6c8f8d23b3af120e publishes strict HTTP4.0.0 full-revision/pause_ref/item resume and durable interaction.state. Root pure1799, real database196, HTTP/PG80 and unit-resource18 passed; BFF still pins its prior HTTP3 artifact and has not consumed this breaking revision, so this edge remains broken. Historical source evidence below is not current full composition acceptance. Current owner-consumer source slice 2026-09-30: BFF ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d uniquely vendors Agent f3be3b97dd67df69ed3c6cb88c59f3bc2db97703 HTTP3.0/provenance, deletes old HTTP2/7-code fallback, persists closed safe failure in Message and standard durable RUN_ERROR. Root Node22 fullcheck contract193/main545pass1schema skip, canonical fresh install/schema7/architecture27 and all seven true PostgreSQL/Redis/localhost-HTTP integration47 passed at frozen source; GC after an actual old RUN_ERROR retains the profile in snapshot/list/valid Share. Owned run f1db3932a3edbe3f195580f1 cleaned its database and Redis15; upstreams remained test doubles. Web public2 repin, formal original-user retry and real Agent/provider/browser deployment are not verified; managed3310 remains prior runtime. This improves source evidence, not broad-edge acceptance; state stays broken. Historical evidence: Owner-source update 2026-09-30: Agent da056b0103cced10188cdc1f5baef841d8333889 publishes HTTP artifact 3.0.0 with closed safe Failure code/retryable and Run-only initial evidence cursor -1. Root independently passed all pure gates (1518 tests, existing 6 skips/174 deselections) and complete real PostgreSQL/Redis/HTTP owner acceptance (22/22; System/model doubles), with owned resource cleanup verified. BFF 15e07fa44670bc13705ce3f6f700e73afcb72ccc still vendors Agent dd34a48 HTTP2.0.0; strict 3.0 generation, Message failure persistence/public contract and Web repin remain pending. The live managed services still use the prior 2.0 combination. This source update does not prove consumer or runtime compatibility; edge stays broken. Earlier evidence: BFF 55d3c9c pins Agent event-protocol and persists durable delivery association. Root owned run 8cc05bb6e9adf87be46f9cf6 passed real BFF Product first message, Agent HTTP pending Run/claim/production delivery event, BFF projector and private Artifact list/detail/download across PostgreSQL/Redis/Storage/MinIO/ClamAV. That earlier run used an IAM admission stub; Root 851326dc later passed real IAM/HTTPS Chromium and two final CLEAN Artifact downloads, but did not execute a model worker/provider. Root 5b1b9a5e later passed one current-source real System/Ollama/standard-worker/Chromium Product run with durable delivery, but the wider Agent Product and recovery matrix remain incomplete, so this edge stays broken. Historical BFF 571b51de consumes Agent dd34a48 HTTP2.0.0: Chat v2 durable payload includes exact ordered selected_skill_source_refs, Scheduler v2 snapshot explicitly freezes []. Root independently passed BFF check (488 pass/1 skip), isolated PostgreSQL Chat/Scheduler integration (13/13), and production BFF builders through real Agent HTTP/PostgreSQL/Redis admission, durable claim, replay and changed-order 409. These tests do not execute a model worker or real IAM browser flow. Web old name state and Agent nonempty typed reader remain incomplete; broad edge stays broken. Subsequent Root run 909613820172d6d8189a27d9 at the same pins passed a real independent Agent CLI worker, one durable completed assistant, succeeded BFF dispatch, four Agent events projected to five AG-UI frames, replay/conflict/privacy and snapshot reload. IAM admission and System/model were deterministic fixtures, not real identity/provider services; all owned databases/processes/Redis keys were removed. Full Web login and nonempty Skill execution still remain incomplete.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -1474,7 +1474,7 @@
       "owner": {
         "name": "kokoro-billing",
         "repository_path": "apps/kokoro-billing",
-        "repository_commit": "78aa2a3a88107ca1014893b10ae08150bb78ad7a",
+        "repository_commit": "07fdd0746f99f718c042f0b7bee54e524d2f2a79",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
         "contract_sha256": "58fbe4fea083ba12e0db23f49e995b96500d01af0013febf40eba3093510ef63"
@@ -1499,9 +1499,9 @@
         },
         {
           "repository_path": "apps/kokoro-billing",
-          "repository_commit": "78aa2a3a88107ca1014893b10ae08150bb78ad7a",
+          "repository_commit": "07fdd0746f99f718c042f0b7bee54e524d2f2a79",
           "path": "docs/CURRENT.md",
-          "sha256": "26938fbe8013efb338b284badf596dee5aeddbe425815c2941ed30c7ce8b7959"
+          "sha256": "22ce52571d7fb756984b2305dd6a1dd6ac60a1c76b405ba6c65625d0c67d43f8"
         }
       ]
     },
@@ -1520,29 +1520,29 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "httpx@0.28.1",
       "state": "broken",
-      "reason": "Root 5b1b9a5e passed one true System route\u2192Ollama\u2192standard Agent worker/Chromium run, but the runtime still uses handwritten HTTP and the recorded System consumer commit pin is stale; wider contract/recovery work remains.",
+      "reason": "Root 5b1b9a5e passed one true System route→Ollama→standard Agent worker/Chromium run, but the runtime still uses handwritten HTTP and the recorded System consumer commit pin is stale; wider contract/recovery work remains.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/system.py",
           "sha256": "601d3fae72374c393d6073885abe51266b623141c16e6bbba6221684eff763c2"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/worker/main.py",
-          "sha256": "24f200ad5143ee580e87a6ab9259929f10afc1e5f916634216aca6ab03d237be"
+          "sha256": "d8da1a2a5d1197774e044d786e415ec82c3412ceddaad79de79c377f760852dc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "contract/provenance.json",
-          "sha256": "d116657f65027de8bd829dc0408fd86046da0ac0a1d2934bd2a87e835c897b5f"
+          "sha256": "e2e6cd9f2228900d0c0a8d795f19815a145bd8f0d18c785ffbe059214b5ed99a"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "uv.lock",
           "sha256": "45904f638064cd6278c27cb3972b7a70192da736cb45f92864befe670b4fc891"
         }
@@ -1567,103 +1567,103 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/skills.py",
           "sha256": "5bda6dd45e43345d6ac3cc7788ac74a3abb6d357037f9cf99cadd1e9a80fc468"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/mcp.py",
           "sha256": "17e0351720c7bdcda2db045df5282ef1ad2f84f40442e6af76e1bd570be7c4cc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/worker/dependencies.py",
           "sha256": "72dbfdccbc20c6016de1662fbb1bae33959b73ff5e58d9cb2189ebd8c0ad1b3b"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/worker/main.py",
-          "sha256": "24f200ad5143ee580e87a6ab9259929f10afc1e5f916634216aca6ab03d237be"
+          "sha256": "d8da1a2a5d1197774e044d786e415ec82c3412ceddaad79de79c377f760852dc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "contract/platform/v1/provenance.json",
           "sha256": "4192e453d9962e01129cb40bb24a19f910265d5fd05da3e69033976622bc8ffc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/generated/kokoro/platform/v1/platform_runtime_connect.py",
           "sha256": "0f4d2a93b917b2af1b28e0e4ec7e6dbf571bdafc97e02e2abff018d5d32fe477"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "scripts/generate_platform_consumer.py",
           "sha256": "4e442e2b08dadaa842d29949241610574ad7122bba19c2eb7867e1ede6776b65"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/platform_credentials.py",
           "sha256": "ad3938e6edd69e929d4c2fd70b3703abbeeb5863fdb12a68f5fdc6c07c3729bf"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/platform_tokens.py",
           "sha256": "6e3a1ebe886146e830ce3d42933a826b345613aa323ceb9536d60a6ae18e7c60"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/platform_transport.py",
           "sha256": "81ea63cfa65ddab237949ba9cab951eb6ad9e42e58035e822187f2c4f09cd5ba"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/worker/platform.py",
           "sha256": "6039255832edd899b27e7f835e9293fe4f410b907e2d9f54d37d6de5ac67dfd5"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "docs/TECHNICAL_DESIGN.md",
-          "sha256": "f4b1040a8930a1a582f6376e2c1863d4ffa37097b1989dec59ae87cc0bcce7c1"
+          "sha256": "c8ba03f62bf179ab92c8c09d62b124b7be541a1bd3eb97ab5c07018faf19ffec"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/skills/backend.py",
           "sha256": "7e08268c16d8f6f73c95827eeae84cdbc9e3650bd357e760886b486154d2a024"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/skills/package.py",
           "sha256": "3aca874abe90582156b646bbbfd7c8e01bd269b104319c8695e5004b71838f4c"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/skills/middleware.py",
           "sha256": "8f78d3b005cbb14f3133e745b14a600f63a4ed64869a5fabf92215b833b202c5"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/agent_factory.py",
           "sha256": "8b894bc03c5a0e2cafb11b735b5f3ca05e224628b67c295b41295a5d16582560"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "tests/unit/agents/test_factory.py",
           "sha256": "2127cbf61c206a3de4481576037cf8d1527716257573f3b20e7826b0dc6417a8"
         }
@@ -1684,49 +1684,49 @@
       "code_generator_version": "unmanaged",
       "runtime_package_version": "unmanaged",
       "state": "broken",
-      "reason": "Agent 96dafec pins Storage d5cfc44 v2 Proto and generated Connect client, assembles the run-fenced seven-operation delivery transport and durable final Artifact outbox. Root 59560852 and 851326dc passed real Agent delivery transport\u2192Storage/ObjectStore/ClamAV and BFF/Web Product Artifact visibility/download with owned cleanup; Root 5b1b9a5e then passed one current-source real System/Ollama/standard-worker/Chromium write_file\u2192deliver\u2192FINAL CLEAN/Canvas original-byte/private-404 run. The wider failure/recovery matrix remains unverified, so this broad edge stays broken. Agent e728fe24 additionally implements fresh authorized bounded signed GET for typed Skill ZIP bytes, independently tested without a cross-owner real Source composition yet; this does not activate the broad edge.",
+      "reason": "Agent 96dafec pins Storage d5cfc44 v2 Proto and generated Connect client, assembles the run-fenced seven-operation delivery transport and durable final Artifact outbox. Root 59560852 and 851326dc passed real Agent delivery transport→Storage/ObjectStore/ClamAV and BFF/Web Product Artifact visibility/download with owned cleanup; Root 5b1b9a5e then passed one current-source real System/Ollama/standard-worker/Chromium write_file→deliver→FINAL CLEAN/Canvas original-byte/private-404 run. The wider failure/recovery matrix remains unverified, so this broad edge stays broken. Agent e728fe24 additionally implements fresh authorized bounded signed GET for typed Skill ZIP bytes, independently tested without a cross-owner real Source composition yet; this does not activate the broad edge.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/storage.py",
           "sha256": "d05621077e8decf5d87de38d8aaeb67d19a66bfa0b292aca7b0f8d38f5d7c5a6"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/worker/dependencies.py",
           "sha256": "72dbfdccbc20c6016de1662fbb1bae33959b73ff5e58d9cb2189ebd8c0ad1b3b"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/worker/main.py",
-          "sha256": "24f200ad5143ee580e87a6ab9259929f10afc1e5f916634216aca6ab03d237be"
+          "sha256": "d8da1a2a5d1197774e044d786e415ec82c3412ceddaad79de79c377f760852dc"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "contract/storage/v2/provenance.json",
           "sha256": "d2edb264d523dfc41b6557be9c259839c3a0342388748ea89ab665c9b949b333"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/storage_delivery.py",
           "sha256": "edf6e17f03c05bf68471136e93c93cba4a3d5384959798d1961f103c818ed33c"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "src/kokoro_agent/clients/storage_transport.py",
           "sha256": "20454756ac6be5bfa2b05888a88eec895be8d4f358b4de3cab9732106ae2ce75"
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "tests/integration/database/test_delivery_outbox.py",
-          "sha256": "77c6ce5aaae78ece6f144a7a86a79b98f0eeaaf2b966109116ff80e1407a2889"
+          "sha256": "e6e26530967611f0153a609cba300f7153371ca63c16f74771983605cedca1b2"
         }
       ]
     },
@@ -2116,9 +2116,9 @@
         },
         {
           "repository_path": "apps/kokoro-agent",
-          "repository_commit": "0245a36c85422b4e0e85cc22aba426b0e30fec12",
+          "repository_commit": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
           "path": "contract/openapi/v1/openapi.json",
-          "sha256": "e9f0a543f74dee34212f0ea4fe366d46218268462ac54dce08e41965f34d2d2c"
+          "sha256": "763ff7a9cf668eb59ae7cfb59b2fd4f84fafde124063d9a365f138b6a30cf04f"
         }
       ]
     }

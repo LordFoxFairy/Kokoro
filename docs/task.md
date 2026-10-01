@@ -1,3 +1,25 @@
+### R43 放行边界与最新通过证据
+
+发布inventory漂移已精准修订，Root两个contracts相关文件 **88passed/46.72s**；现checkpoint CLI **PASS/exit0**，只表示3active/13broken/0illegal与声明基线一致，不表示13broken调用闭环。日志 /tmp/kokoro-root-r43-{contracts-focused-green,checkpoint-green}.log；原full1fail1121pass3skip保留，完整full未重跑，不把相关88pass冒充全门。System最终alias/catalog/fresh独立0P0/0P1/0P2，23path摘要11b6f2f1；13真PGcase＋原23fresh业务门真实通过，其余6旧lifecycle case/cross-owner待验；System不提前提交发布。Agent e977923正式owner交付/Rootgitlink同步；BFF已续授现test/三个integration files-only，先真实失败再source，同时保持Agent3旧consumer，不能假pin4。10原职责窗口已全部续派，原共享基础设施/owner变更保持，不追加重复服务或窗口。
+
+### R43 最新真实后置门（不覆盖原失败）
+
+System最终helper22308bbd：Root13真实namespace/catalog case通过、6旧lifecycle按selector未执行；fresh同唯一SQL参考全catalog一致、原23业务断言通过（22表），/tmp/kokoro-system-schema-r43-root-{catalog-green-r2,fresh}.log；ownedfresh system_g1_c6147d4fbcc848518e606e169cddcf72 与resource自有库已回收，完整owner运行门仍后继。Root完整治理实际**1failed/1121passed/3skip118.29s**，原失败为发布后inventory旧pin：完整checkpoint32漂移=30Agent＋2Billing（已发布07fdd074仍指78aa），无证据表明业务已闭环。Root精准元数据收敛：只inventory32条commit/精确Git blob digest，Agent owner4.0.0，Billing现v1冻结bytes/version不变；全部active/broken状态与BFF旧consumer pin保持，验证器/断言未改。topology通过；main-only综合gate因Root及6owner dirty明确exit1，虽现local/remote分支列表只有main，不称全体clean。focused/独立审待结果后放行，不用文档隐藏RED。
+
+### R43-Root 发布元数据收敛卡
+
+Root唯一writer：只更新verification/contracts/consumer-inventory.json内Agent已发布commit与精确Git blob digest/version，现active/broken集合及BFF旧consumer pin保持；不改验证器/断言、无新checkpoint、不假激活。前置e977923已推送；真实checkpoint完整RED诊断后按精确path更正、独立审与focused contracts门，再提交Agent gitlink＋现3docs＋inventory。原Rootuv.lock/各owner候选保留。
+
+## R43 实质交付：Agent完整切片已发布，消费者与用户整链未闭环
+
+Agent main `e977923ea9992cbddaf0cdbc6c8f8d23b3af120e` 已提交推送，Root集成gitlink。独立index审0P0/0P1/0P2，66路径精确=62全文件（含唯一approvals删除）＋4doc批准prefix，历史HEAD正文不删，P3B与两nativeproof字节保持；不是只提20HTTP。Root最终Ruff267format/check、Pyright0、contract/check/generator、uvlock/build全部exit0；pure **1799passed/6skipped/288deselected，96.81s/364warnings**。前序冻结资源196PG、80PG+HTTP、最终unit **18passed/1356deselected，3.32s/1034warnings**均真实证据；自有库closed=true，unit精删17streams/remaining0。最终wheel167Python源与唯一canonical SQL字节完全一致，SHA f9dddacaa665109cffed9eeaa5056e5cdaef8feda23c65d5932ff5d1e6315060；/tmp/kokoro-agent-r43-root-final-pure.log 与 /tmp/kokoro-agent-r43-root-wheel-source.json。Agent原工作树只剩四P3B dirty docs，未清理/回滚；exact-source守卫继续拒脏树，后继使用完整accepted checkout，不绕门。
+
+WIN01四doc与两真实AppFrame身份RED冻结：Root2failed18passed2.65s，/tmp/kokoro-web-project-r43-root-boundary-red.log；已精准授七现source GREEN＋四doc当前段，原18/HEAD52/accepted61核心断言与pin锁。WIN02仅四doc FIFO/RR门、WIN06仅四doc本人wallet/ledger门、WIN09仅四doc fullcatalog门分别在途，同仓唯一writer。WIN03/04/07/08/10独立只读卡已全部续派；未创建重复窗口、未称十个writer同时跑。
+
+System实际候选为**23 paths**，旧22计数/摘要失效；Root新helper复验仍7fail6pass6筛选skip3.27s，fresh未到，不能称GREEN。Rootowned空probe实际SQL42601 position5477首错为collation.value，而非原review推断a.operator；live PG18.4 pg_get_keywords显示operator U/unreserved、collation T、analyze/variadic R。已精准授原writer仅上述关键字alias及引用，不改JSONliteral或catalog语义；/tmp/kokoro-system-schema-r43-root-syntax-position.log，probe库closed=true。SchedulerRUNBOOK五处当前语义独立0审，core四源hash锁；旧R41原文缺失，五行外byte保留未独立证明，不以manifest旧SHA冒充比较。17PG不替代fullcatalog。
+
+完整Wave0–7仍active：BFF固定Agent4 artifact与durable queued/RR/完整pause、Web正式消费、正规IAM→多轮Chat/Project→费用ledger→作品/Skills/MCP仍须逐切片真实E2E；支付渠道最后。3310无监听，本轮未操作浏览器/provider或假赠送，不宣称用户闭环。
+
 ## R43 同步推进：复用十窗口，不新建任务中心
 
 用户再次要求10+窗口加速。现 WIN01–10 原窗口继续分工；独立写入可并行，同仓仍唯一writer；Root负责真实资源、集成和Git。当前进度不是全链闭环：Web full r2实际3failed/2133passed/42.25s（两个新身份RED＋welcome旧路径失败），原RP500本次未复现但旧失败保留；Agent资源r3实际2failed/16passed/1356deselected/3.17s，仅official saver list/tuple断言未达child，原Astra已精准续授两函数r4，其他65path锁，owned库closed/Redis15精删16stream remaining0。System两catalog脚本已冻结，Root资源46263在途＋独立审；Scheduler17PG已通过，五处RUNBOOK已冻、待复审。
