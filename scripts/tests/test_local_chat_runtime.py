@@ -435,6 +435,8 @@ class LocalChatCompositionTests(unittest.TestCase):
                 credentials=Mock(),
                 log=Mock(),
                 tenant="tenant",
+                product_key="kokoro",
+                hostname="127.0.0.1",
                 agent_redis_url="redis://localhost/10",
             )
             result = obj.start("postgresql://localhost/owned")
@@ -489,6 +491,8 @@ class LocalChatCompositionTests(unittest.TestCase):
                 credentials=credentials,
                 log=Mock(),
                 tenant="tenant",
+                product_key="kokoro",
+                hostname="127.0.0.1",
                 agent_redis_url="redis://localhost/10",
             )
             with patch.object(provider, "provider_preflight") as check:
@@ -514,6 +518,14 @@ class LocalChatCompositionTests(unittest.TestCase):
             self.assertEqual(
                 m.system.seed_control_plane.call_args.kwargs["model_name"],
                 "gpt-5.6-luna",
+            )
+            self.assertEqual(
+                m.system.seed_control_plane.call_args.kwargs["product_key"],
+                "kokoro",
+            )
+            self.assertEqual(
+                m.system.seed_control_plane.call_args.kwargs["hostname"],
+                "127.0.0.1",
             )
             self.assertNotIn(
                 "test-private-provider-key", str(m.system.seed_control_plane.call_args)
@@ -717,6 +729,8 @@ class LocalChatFailureTests(unittest.TestCase):
                     credentials=Mock(),
                     log=Mock(),
                     tenant="tenant",
+                    product_key="kokoro",
+                    hostname="127.0.0.1",
                     agent_redis_url="redis://localhost/10",
                 )
                 with self.assertRaises(m.ChatError):
@@ -831,6 +845,8 @@ class ShortCommandRegistrationTests(unittest.TestCase):
                     credentials=Mock(),
                     log=Mock(),
                     tenant="tenant",
+                    product_key="kokoro",
+                    hostname="127.0.0.1",
                     agent_redis_url="redis://localhost/10",
                 )
                 created = []

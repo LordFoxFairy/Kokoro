@@ -1,3 +1,79 @@
+## R28 Agent PG RED 如实留存
+
+新六冻结0ff5546d真PG8实际 **5 failed /3 passed（0.82s）**；/tmp/kokoro-agent-hitl-proof-r28-r2-root-real-pg.log。新test-only observer错误将NULL_TASK scalar RESUME也强制assert list，干扰native执行；并非证明新的生产行为故障。原负责人只原6范围修observer：区分输入/消费、await前冻向量副本，保invalid→valid最终持久语义断言。独立Astra已获变动基线提示，终审等新冻。自有agent_terminal_atomic_9781de9e7c7441ab已drop；无共享清理。不提交native候选、不把纯19通过当PG通过；Root seed自身107/真实System404→200与0/0/0仍独立有效。
+
+## R28 System seed 局部已验收与 native 终轮验证
+
+Root真实System-only HTTP：先manifest404，使用正式owner API按kokoro/127.0.0.1 seed→validate→publish后 **200**，重复读取完全一致；错误host、产品及异tenant均404。System clean c0a76a3/Root gitlink固定，源码过程PID87103组已关闭，自有DBsystem_smoke_e8726b1fd0809cbdff55330d_system不存在，本Redis前缀零余留；脱敏record /tmp/kokoro-root-seed-r28-system-http-record.json，日志 /tmp/kokoro-root-seed-r28-system-http.log。这是Root seed修复真owner证明，不是当前3310重新seed或全BFF/Agent/Web组合已通过。五代码hash保持7781a4ab；107相关pure＋Ruff/compile、独立0/0/0已验，Root只精确提交5源码测试＋本3台账，保护uv.lock和所有子仓候选。
+
+AGENT-HITL-PROOF-R28终轮六manifest0ff5546d（纯contract19、PG8仅收集），含重复invalid→invalid→valid独立读取持久向量对照。Root马上自有PG跑全部8；同时 AGENT-HITL-PROOF-REVIEW-R28 / 独立Astra只读审六文件，基线af45817＋0ff5546d，核因果successor/特殊与混合batch语义、unknown不盲投、测试证据边界及52最小实现设计门；零写/Git/基础设施。不依赖自审代替独立review、不把native8绿当生产HITL闭环。
+
+## R28 Root seed 当前验收与 System-only 真 HTTP 范围
+
+Root R3最终5/5 hash/compile、Ruff format/check通过；三相关测试 **107 passed（8.81s）**（/tmp/kokoro-root-local-manifest-seed-r28-r3-root-check.log）；原Luna独立复审0P0/0P1/0P2。新增2IPv6 RED已保留。只修开发组合产品/host传参，其他Billing/agents缺口不在本片。
+
+Root执行既有System owner API的独立真实HTTP seed/manifest验证：System当前clean c0a76a3与Root gitlink及已有EXPECTED_RELEASES的System固定值一致；只用现run_system_owner_smoke模块OwnedResources/run_owned_command/stop_owned_process/seed/http helper，自有随机临时PG/Redis前缀与一个短命源码System进程，结束核process group/DB/本前缀关闭。不执行或放宽全三仓verify_release_inputs，不把此子范围冒成BFF/Agent组合通过；不接IAM/provider、不重启现PID65590、不读写用户库。参数kokoro/127.0.0.1走正式System HTTP创建→validate→publish→manifest同tenant/site/release校验，再错误hostname/产品与异tenant负例。现scope默认只是System owner seed，不是3310页面200证据。Root独占临时验证与Git，子Agent继续自己隔离任务。
+
+## R28 native PG 真实结果与补充证明卡
+
+Root Agent HITL native7真PG **7 passed /0skip（0.45s）**，自有agent_terminal_atomic_6962ec63453642ca已drop，日志 /tmp/kokoro-agent-hitl-proof-r28-root-real-pg.log。此仅固定native持久语义，不是生产恢复/HITL4发布；原六hash未变。原负责人只读自审发现AsyncPostgresSaver混合RESUME＋普通输出采用ON CONFLICT DO NOTHING，重复validation后的旧RESUME向量可能残留，原7reask例未覆盖最后valid成功。批准 AGENT-HITL-PROOF-R28-PG-VALIDATION：原agent4_scope_gate_r19 / Astra唯一本仓writer，仅现tests/integration/database/test_run_interactions.py与原四docs批准HITL prefix（必要时现contract/test_deepagents.py对照），原P3B后缀/26源码保护。不生产/SQL/机器/依赖/Git/服务/DB，worker只构造确切invalid→valid完整向量／观察丢失测试与分类，Root自有PG运行真实RED。若saver成功不保证新向量入库，明确unknown/因果successor界限，不放宽断言或归因“已提交”。仅证明卡，不授权52生产。
+
+Root seed R3已5hash冻，84纯测试worker绿，原Luna独立复审与Root三相关门进行中；当前用户运行未重seed、不声称manifest200。BFF queued此前39/2实际RED留存，目标与后继owner依赖不缩减。
+
+## R28 继续既有任务：精确返修与真实 native PG 门
+
+ROOT-LOCAL-MANIFEST-SEED-R27-R3：原 web_connection_review_r25 / Sol，Root main427f511f；只写现 run_system_owner_smoke.py、test_system_owner_smoke.py，原5文件其余3保持R2 hash。R2 Root102/102＋114subtests通过，但独立发现 IPv6 方括号丢失P1，尚未提交。Root裁决保留IPv6方括号与System URL.hostname一致；合法端口有意忽略（owner hostname身份不含port），补[::1]、[::1]:3310、IPv4:8080及非法port在HTTP前失败的精确RED→GREEN，不自造DNS规范。零基础设施/Git/provider；冻结后Root独立重验/审查/提交，真实manifest200仍待fresh组合。
+
+AGENT-HITL-PROOF-R27冻结 b34be947 / 6文件，worker18纯native通过、PG7仅收集。Root独占自有临时PG真实运行7，并回收；原Agent负责人只读复核native证据/52候选边界，禁止生产写入。BFF queued Root真实PG/Redis RED已39pass/2fail/0skip，失败均execution_head缺失；早期断言后续未到达不冒称完整矩阵已测。三路既有owner不重起用户PID65590，不重置共享PG/Redis；完整Wave0–7不变。
+
+## R27 Root seed 独立审查返修卡
+
+Root fresh相关三测试91/91 passed＋114subtests、Ruff/compile/5hash通过，但独立review发现seed product正则自设63字符/字符集与System实际1..128 trim字段不符，暂不提交。Root实际源码已反驳review中“uppercase host经HTTP会DB失败”说法：System sites.service先normalizeHost lower后写，并非该错误。ROOT-LOCAL-MANIFEST-SEED-R27原writer只返原5范围中的run_system_owner_smoke.py/test_system_owner_smoke.py（其余3hash保），按owner真实bounded输入/host语义与显式本fixture要求补类型/长度/非法host、128 product/255 host/大小写及合法IP边界RED→GREEN；不拷贝通用DNS validator、无HTTP/基础设施。Root停止本仓文件编辑直到冻结；最终仍不以pure门代表manifest200。
+
+BFF queued原tests四已冻：unit12pass/4真实fail、typecheck通过，当前生产snapshot确缺execution_head；Root将仅自有临时PG运行3integration文件，零共享清理。Agent native可行性探针已确认取消后RESUME/ERROR可能都未持久，不能用缺write判没执行；原owner修精确unknown证据边界而非native强求写入。
+
+## R27 后继代码派工与设计可行性结果
+
+BFF execution-head四docs最终60eb2d2f等经Root4whole/4suffix核对、独立0/0/0；resuming与精确writer/GC已闭合。完整机器/schema实现仍等Agent HITL正式artifact，当前可先执行 **BFF-QUEUED-RED-R27**：原bff_fifo_owner_r9唯一writer、基线d6b7da5＋本四docs，允许仅现test/chat-service.test.ts、test/chat-facts.integration.mjs、test/agui-projection.integration.mjs、test/agui-http.integration.mjs（只用必要文件，不为凑四个修改）；在本仓CURRENT批准prefix先记此tests-only卡，随后queued identity/cursor/原子enqueue/replay/FIFO handoff/GC预期失败。禁生产/schema/machine/generated/README/Git/DB/Redis/服务，Root独占临时PG真RED；不猜Agentpending schema，红测试不提交为“通过”。
+
+Root local manifest5文件dce6e9db候选已冻，worker68纯测试绿，Root第一次相关测试命令误写不存在test_local_login_dev.py导致exit4/零测试，现已纠正为实际test_serve_local_login.py并重跑；未声称错误命令通过。此源码只修future seed身份，当前System仍未切换数据，manifest200真组合未验。
+
+Agent恢复桥review0/1/1，51生产不放，原owner只四docs＋两native可行性test授权进行中，真PG由Root隔离；不会因语义证据不足盲重投native或误杀健康长任务。Root代码5文件冻结后本仓writer已交回，台账实际继续更新。
+
+## R27 Agent 恢复桥可行性验证卡（非51路径生产授权）
+
+AGENT-HITL-PROOF-R27 / 原agent4_scope_gate_r19 Astra / Agentmainaf45817＋8c6ed31f docs冻结。独立0P0/1P1/1P2：真实固定LangGraph的RESUME先内存且可与ERROR/INTERRUPT共存，NULL_TASK输入写不等于消费，健康长任务不得三读即失败；新观察表清理尚缺postgres_run_context.py精确落点。先四docs补可执行证据分类/健康vs失联判据、现统一GC落点与晚到观察竞争，生产范围仅候选增现context文件（52），不获实现权。
+
+仅设计可行性tests授权：现 tests/contract/test_deepagents.py＋新普通 tests/integration/database/test_run_interactions.py（已放置门：现database测试目录，本测试只真实native/saver证据，不新模块/协议/SQL业务表；相比塞入schema安装测试职责不符故另普通文件）。当前机器/生产/schema/依赖/site-packages/Git/共享基础设施均不写。测试内有限saver观察器与显式barrier，不替换真实native调度、不provider、不sleep抬timeout；原生多interrupt映射/同IDvalidation/namespace、NULL_TASK vs真实消费/ERROR重问、效果发生但写未提交unknown不重投、观察丢失精确证据恢复、健康长任务不误fail。Root独占创建/回收本片临时PG并执行真实测试，worker只纯native测试与四docs/两test冻结。不把test-only假predicate冒成已生产恢复。可证边界/不能证边界分别交接，Root复审后再放机器/SQL/业务片。
+
+Root已记录本门，ROOT-LOCAL-MANIFEST-SEED-R27 5文件writer交出后停止Root台账修改直到该writer冻结；Agent/BFF本仓单writer，各测试禁止占共享数据库。完整Wave0–7目标不变。
+
+## R27 下一并行代码与文档切片卡
+
+| 项 | Root dev-runtime 局部修复放置 |
+| --- | --- |
+| Owner / writer | Root开发编排；web_connection_review_r25唯一源码writer，Root停止本仓文件编辑直到冻结，仅审查/验证/Git。 |
+| 当前事实 | 通用System smoke seed固定smoke产品/域；LocalChatRuntime调用它，Web/BFF实际请求kokoro/127.0.0.1，真实manifest404。其余Billing/agents缺契约独立，不以此片解决。 |
+| 目标 / 位置 | 在现seed_control_plane增加显式产品/hostname参数，smoke默认保持隔离，现LocalChatRuntime沿serve_local_login实际host传kokoro；采用既有3入口而非新seed模块/配置owner，不跨owner SQL。 |
+| 范围 | 仅scripts/dev/serve_local_login.py、scripts/dev/local_chat_runtime.py、scripts/e2e/run_system_owner_smoke.py、scripts/tests/test_local_chat_runtime.py、scripts/tests/test_system_owner_smoke.py（5现文件，无新文件/目录/依赖）。 |
+| 契约 / 删除 | 内部Root helper参数，System owner正式HTTP写不变；消除local产品/域错配，不增fallback、重复seed实现或localhost映射。无DB/Redis/schema变化。 |
+| 验证 / 发布 | 先现两测试RED，参数校验须在任何HTTP前，smoke原默认保持；GREEN/Root重跑全部相关纯门、diff/独立review后提交。真实manifest200仍需fresh owner组合验收，本片不重启或补写用户运行DB。 |
+
+ROOT-LOCAL-MANIFEST-SEED-R27 / main427f511f＋Root三docs当前任务卡修改；worker上述5代码文件，禁止Root台账/uv.lock/Billing/BFF/Agent/infra/provider/browser/Git。Root唯一提交，现PID65590不动。
+
+BFF-D0-R27-final / 原bff_fifo_owner_r9仅四docsprefix继续返修：Root裁决execution_head state加入 **resuming** 第四态；Agent受信durable resuming revision保原集合、submitted项禁止重复决策，native consumed/newpause/terminal下一revision整体替换。不得用浏览器ACK推断。精确producer/helper/route文件全名列出，消除最后通配措辞；4保护suffix不动。候选Source/SQL仍禁写，先最终三面审通过再queued tests-only RED。
+
+## R27 冻结三面候选独立复审卡
+
+- AGENT-HITL-D0-REVIEW-R27 / Astra只读 / Agentmainaf45817 +manifest8c6ed31f（现四docs）。核完整collection/revision/resuming/native多interrupt映射、checkpoint bridge真实固定版本可证性、同Run/Chat事务与恢复故障矩阵、schema/contract一致、51精确候选集及4.0单路径。零写/Git/基础设施。Root未批准51代码，审查后可先明确tests-only RED门，不拿当前3.0 contract-check当候选4已通。
+- BFF-EXECUTION-HEAD-D0-REVIEW-R27续派原只读reviewer：四docs R27新prefix、4suffix不变。复核原2P1/1P2与完整collection原子替换、resuming和state/pending/cursor同RR、精确全部writer/GC、public4.0corrective裁决，依赖Agent4源先发布。零写/Git/基础设施。
+
+两个owner已停写；Root同步审查真正代码/提交边界，另一只读运行路由调查继续，最多4个原生执行槽，不启动新后台服务。
+
+## R27 当前组合入口只读排障卡
+
+ROOT-RUNTIME-ROUTES-AUDIT-R27 / web_connection_review_r25（Sol只读） / Root427f511f、Web30055e8、BFFd6b7da5。范围：Root scripts/dev/serve_local_login.py、local_chat_runtime.py 与Web/BFF/System/Billing现router/consumer固定contract；根据真实浏览器billing summary503、agents404、runtime-manifest404定位源码与当前运行副本差异、未接线路/配置/契约来源，给精确下一writer/切片/真实验收。禁止读/输出secret值，禁止浏览器/网络provider/写入/Git/服务启动重启/DB/Redis。可读已有脱敏证据与源文件，只以实际调用方向说明owner，不把路由拼接fallback当方案。两名owner四docswriter并行；Root继续独立集成/验证。
+
 ## R27 Root 当前集成验证
 
 Root再次对本片gitlink与committed inventory执行topology/checkpoint（exit0）及三治理文件 **95/95 passed，37.19s**；日志 /tmp/kokoro-parallel-r27-{topology,checkpoint,tests}.log。仅Web30055e8/inventory/同三台账共5路径提交；未暂存Agent/BFF文档候选、Billing5docs、Rootuv.lock。旧应用后端、计费503/404与各owner依赖尚未整体验收，不更改edge3/13事实。全部Root测试句柄已收，无新增服务或共享数据重置。

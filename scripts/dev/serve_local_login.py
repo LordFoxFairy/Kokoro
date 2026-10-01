@@ -444,6 +444,8 @@ def main(argv: list[str] | None = None) -> int:
                         credentials=credentials,
                         log=log,
                         tenant=ready.tenant_id,
+                        product_key="kokoro",
+                        hostname=host_name,
                         agent_redis_url=args.agent_redis_url,
                     )
                     bff_env.update(chat.start(application_db_url))

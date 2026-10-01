@@ -298,6 +298,46 @@ def data_of(envelope: dict[str, object]) -> dict[str, object]:
     return data
 
 
+def fixture_control_plane_identity(
+    product_key: object, hostname: object
+) -> tuple[str, str]:
+    """Validate bounded launcher input and mirror the owner's canonical strings."""
+    if not isinstance(product_key, str) or not isinstance(hostname, str):
+        raise SmokeError("Invalid control-plane identity")
+    product = product_key.strip()
+    host_input = hostname.strip()
+    if (
+        not 1 <= len(product) <= 128
+        or not 1 <= len(host_input) <= 255
+        or any(ord(character) < 0x20 or ord(character) == 0x7F for character in product)
+        or any(
+            ord(character) <= 0x20 or ord(character) == 0x7F for character in host_input
+        )
+        or any(character in host_input for character in "/?#@\\")
+    ):
+        raise SmokeError("Invalid control-plane identity")
+    try:
+        parsed = urlsplit(f"http://{host_input}")
+        host = (parsed.hostname or "").lower().removesuffix(".")
+        # Force validation of a malformed port without imposing a fixture port policy.
+        parsed.port
+    except ValueError:
+        raise SmokeError("Invalid control-plane identity") from None
+    if (
+        parsed.username
+        or parsed.password
+        or parsed.path not in {"", "/"}
+        or parsed.query
+        or parsed.fragment
+        or not host
+        or host == "*"
+    ):
+        raise SmokeError("Invalid control-plane identity")
+    if ":" in host:
+        host = f"[{host}]"
+    return product, host
+
+
 def seed_control_plane(
     base: str,
     tenant: str,
@@ -307,11 +347,17 @@ def seed_control_plane(
     feature_key: str | None = None,
     provider: str = "fixture",
     model_name: str = "smoke-model",
+    product_key: str | None = None,
+    hostname: str | None = None,
 ) -> dict[str, str]:
     """Seed through the authoritative HTTP API, never through business table SQL."""
     if feature_key not in (None, "chat"):
         raise SmokeError("Unsupported smoke feature key")
 
+    product_key, hostname = fixture_control_plane_identity(
+        product_key if product_key is not None else f"smoke-{run_id}",
+        hostname if hostname is not None else f"{run_id}.smoke.localhost",
+    )
     if provider not in {"fixture", "ollama", "openai-compatible"} or not (
         1 <= len(model_name) <= 255
         and model_name.strip() == model_name
@@ -358,9 +404,7 @@ def seed_control_plane(
         require(set(result) == {"data"}, "System success envelope drift")
         return data_of(result)
 
-    product_key = f"smoke-{run_id}"
     feature_key = feature_key or f"chat.{run_id}"
-    hostname = f"{run_id}.smoke.localhost"
     product = mutate(
         "products",
         {"product_key": product_key, "name": "Smoke product"},

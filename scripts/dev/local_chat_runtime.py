@@ -235,6 +235,8 @@ class LocalChatRuntime:
         credentials,
         log,
         tenant: str,
+        product_key: str,
+        hostname: str,
         agent_redis_url: str,
     ):
         self.config, self.uv, self.node = config, uv, node
@@ -246,6 +248,8 @@ class LocalChatRuntime:
             log,
         )
         self.tenant = tenant
+        self.product_key = product_key
+        self.hostname = hostname
         self.ownership = owned.AgentRedisOwnership(agent_redis_url, resources.run_id)
         self.ownership.url = (
             agent_redis_url  # explicit validated DB, not helper's DB10 default
@@ -376,6 +380,8 @@ class LocalChatRuntime:
                 else "ollama"
             ),
             model_name=self.config.model,
+            product_key=self.product_key,
+            hostname=self.hostname,
         )
         agent_env = {
             **agent_runtime._agent_environment([self.uv.parent]),

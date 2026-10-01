@@ -336,6 +336,78 @@ def test_seed_uses_formal_http_and_scoped_preconditions(
     assert calls[1][1]["headers"]["x-kokoro-tenant-id"] == "tenant"
 
 
+@pytest.mark.parametrize(
+    ("product_key", "hostname", "expected_product", "expected_hostname"),
+    [
+        ("p" * 128, "h" * 251 + ".com", "p" * 128, "h" * 251 + ".com"),
+        ("Kokoro Product", "LOCALHOST.EXAMPLE", "Kokoro Product", "localhost.example"),
+        ("kokoro", "127.0.0.1", "kokoro", "127.0.0.1"),
+        ("kokoro", "[::1]", "kokoro", "[::1]"),
+        ("kokoro", "[::1]:3310", "kokoro", "[::1]"),
+        ("kokoro", "127.0.0.1:8080", "kokoro", "127.0.0.1"),
+    ],
+)
+def test_seed_accepts_explicit_local_product_and_hostname(
+    monkeypatch, product_key, hostname, expected_product, expected_hostname
+) -> None:
+    calls: list[tuple[str, dict]] = []
+
+    def http(_base: str, path: str, **kwargs) -> dict:
+        calls.append((path, kwargs))
+        return {"data": {"id": str(len(calls)), "version": "1"}}
+
+    monkeypatch.setattr("scripts.e2e.run_system_owner_smoke.http_json", http)
+    values = seed_control_plane(
+        "http://system.test",
+        "tenant",
+        "token",
+        "a" * 24,
+        product_key=product_key,
+        hostname=hostname,
+    )
+
+    assert values["product_key"] == expected_product
+    assert values["hostname"] == expected_hostname
+    assert calls[0][1]["body"]["product_key"] == expected_product
+    assert calls[1][1]["body"]["hostname"] == expected_hostname
+
+
+@pytest.mark.parametrize(
+    ("product_key", "hostname"),
+    [
+        (1, "127.0.0.1"),
+        ("", "127.0.0.1"),
+        ("p" * 129, "127.0.0.1"),
+        ("bad\nproduct", "127.0.0.1"),
+        ("kokoro", 1),
+        ("kokoro", ""),
+        ("kokoro", "h" * 256),
+        ("kokoro", "bad\nhost"),
+        ("kokoro", "https://127.0.0.1"),
+        ("kokoro", "user@127.0.0.1"),
+        ("kokoro", "127.0.0.1/path"),
+        ("kokoro", "127.0.0.1:not-a-port"),
+        ("kokoro", "[::1]:70000"),
+    ],
+)
+def test_seed_rejects_invalid_explicit_identity_before_http(
+    monkeypatch, product_key, hostname
+) -> None:
+    monkeypatch.setattr(
+        "scripts.e2e.run_system_owner_smoke.http_json",
+        lambda *_args, **_kwargs: pytest.fail("HTTP must not run"),
+    )
+    with pytest.raises(SmokeError, match="control-plane identity"):
+        seed_control_plane(
+            "http://system.test",
+            "tenant",
+            "token",
+            "a" * 24,
+            product_key=product_key,
+            hostname=hostname,
+        )
+
+
 def test_consumer_smoke_checks_manifest_and_catalog_tenant_isolation(
     monkeypatch,
 ) -> None:
