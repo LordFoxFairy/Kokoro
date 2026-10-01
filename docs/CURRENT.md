@@ -1,12 +1,12 @@
-## R31 原Agent从真实RED进入持久事务核代码
+## R32 Billing C1 reserve 局部已验；Agent 事务核仍在实现
 
-Root实际PG6fail缺record_pause（非collection），五rollback尚未到达，自有DB已drop。独立RED审P1序列化链/P2完整公开source已具名；批准同task.md精确生产子集由原owner实现并同时补断言，不再只停设计。机器4发布/完整消费者/桥及原P3B未授权；Billing独立reserve测试在WIN06继续，Root其他四局部owner已验交付不等于整目标完成。
+Root组合已实跑 topology与固定w1e-iam07 checkpoint PASS/exit0、四治理测试 **386/386（50.42s）**，/tmp/kokoro-r32-root-{topology,checkpoint,governance}.log。Billing精确5c45f22已推main，inventory仅两committed引用升级、contract digest零变、3active/13broken保持。原WIN02追加BFF既有scheduled accept锁后lease测试RED（单现文件），不动8受保护内容；原Agent继续当前事务核。Root所有测试/推送句柄已收，无新常驻服务。
 
-## R31 Root 组合验收与提交范围
+Billing 已提交 **5c45f22419db43ae9a128543a056cd1c4a6ff013**：业务幂等摘要排除传输 key，首效果/永久 binding 保留。Root 真 PG RED 2fail/22pass → GREEN **24pass/0skip**；新 receipt 真 PG **5pass**，两旧套件23skip不计通过；随机 fixture 前后库集合相同，cleanup0。Root pnpm verify exit0（format/lint/typecheck/build/sql/contract、529pass/280既有资源skip），最终独立Sol 0/0/0。日志 /tmp/kokoro-billing-reserve-r32-root-{red-r2,green,receipts,verify}.log。只接两冻结文件与CURRENT新记录prefix，原五dirty docs完整保留；非Billing v2 runtime/赠送/结算完整闭环。
 
-Root 拓扑与固定w1e-iam07 checkpoint均actual exit0；四治理门首轮385pass/1fail为Scheduler已验commit后的字面SHA过期，保留原日志。仅现test_contract_compatibility.py将精确SHA升级4abacf9，digest/owner/状态与其余断言不变；fresh重跑 **386/386（50.29s）**，/tmp/kokoro-r31-root-governance-r2.log。80处四owner evidence从当前已提交blob核SHA，digest0变化，ASCII serialization与3active/13broken保持。Root只提交四gitlink、inventory、该一测试与同三台账，保uv.lock/BFF8/Billing5/AgentP3B及三RED测试。
+原 WIN06已冻结停写；原Agent唯一writer继续 Run-command-Chat 同事务/不可逆resume事务核，typed body/digest同源已裁决，真实PG仍待冻结重跑。Root实读确认必要现 infrastructure/chat_mappers.py _event_type decoder，只增该现文件为interaction.state唯一值替换，无旧值fallback；其余机器4发布/native bridge/消费者范围仍未授权。没有重复进程/服务或共享清理；3310当前未重启，未有本轮正式浏览器结果。完整Wave0–7仍active，10可见窗口复用而非以completed数量当闭环。
 
-Agent真实PG6fail缺持久能力，已独立review queued；原writer停写待精准GREEN授权。Billing WIN06现只一existing integration测试文件获reserve换key语义RED授权，原五docs保护；二者独立推进，不跑新服务/造积分。本轮预览3310仍offline，正式浏览器及完整积分/审批链未验；完整goal active，无完整完成声明。
+## 既往验收记录（以下状态以当轮证据为准）
 
 ## R31 四局部修复已在主树重验并提交
 

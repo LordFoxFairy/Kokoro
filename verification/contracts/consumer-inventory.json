@@ -1474,7 +1474,7 @@
       "owner": {
         "name": "kokoro-billing",
         "repository_path": "apps/kokoro-billing",
-        "repository_commit": "63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa",
+        "repository_commit": "5c45f22419db43ae9a128543a056cd1c4a6ff013",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
         "contract_sha256": "58fbe4fea083ba12e0db23f49e995b96500d01af0013febf40eba3093510ef63"
@@ -1499,9 +1499,9 @@
         },
         {
           "repository_path": "apps/kokoro-billing",
-          "repository_commit": "63e0ab6e61b397f23f7ab71f5d6dc9df3d6de0fa",
+          "repository_commit": "5c45f22419db43ae9a128543a056cd1c4a6ff013",
           "path": "docs/CURRENT.md",
-          "sha256": "cd1d900ee6036896a48bd1675c81c1ed1f9ac8b73fc6e17de71edcba0a5d4a16"
+          "sha256": "8bad11ce1f85f30170172e00779f8a2fb0041209c23d3f21388280ab9f4e480e"
         }
       ]
     },

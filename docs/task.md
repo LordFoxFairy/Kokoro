@@ -1,3 +1,31 @@
+## BFF-SCHEDULED-ACCEPT-LEASE-RED-R32：原 WIN02 独立测试切片
+
+Root组合已实跑 topology与固定w1e-iam07 checkpoint PASS/exit0、四治理测试 **386/386（50.42s）**，/tmp/kokoro-r32-root-{topology,checkpoint,governance}.log。Billing精确5c45f22已推main，inventory仅两committed引用升级、contract digest零变、3active/13broken保持。原WIN02追加BFF既有scheduled accept锁后lease测试RED（单现文件），不动8受保护内容；原Agent继续当前事务核。Root所有测试/推送句柄已收，无新常驻服务。
+
+Owner BFF ScheduledTask／原WIN02唯一writer，Root审查/资源/Git；main d6b7da5200784ed1838de396011d3ed6a8934124，原4docs+4Chat RED测试受保护。Root实读 accept 的 receipt锁后clock在等待task/scope锁之前，当前批准R25设计明确锁后clock；仅现test/scheduled-agent-dispatch.integration.mjs获测试RED写入（该文件原clean）。不改任何源码/contract/schema/docs/其他测试或依赖，不新文件。与Agent/Billing owner独立，不依赖尚未发布4。
+
+覆盖首次accept在task锁、既有scope锁barrier后claim lease已过期，应false并全事务零新dispatch/scope/receipt终态；正常未到期成功控制及已有terminal重放不应重新启动/破坏ACK。按真实pg lock等待与DB clock构造，避免靠恰好sleep时间宣称已到达阻塞。可复用现repository/test fixture，不写fake生产SQL路径。worker仅语法/格式/编译/collect，不启动PG/Redis/服务或执行fixture（测试入口会TRUNCATE，只允许Root隔离自有库运行）；freeze现文件hash与原8dirty内容保护。Root实际RED后再授原现repository最小锁后lease复验代码；不提前授GREEN，不扩大到整scheduled能力或CLI窗口。
+
+## R32 Billing C1 reserve 局部已验；Agent 事务核仍在实现
+
+Billing 已提交 **5c45f22419db43ae9a128543a056cd1c4a6ff013**：业务幂等摘要排除传输 key，首效果/永久 binding 保留。Root 真 PG RED 2fail/22pass → GREEN **24pass/0skip**；新 receipt 真 PG **5pass**，两旧套件23skip不计通过；随机 fixture 前后库集合相同，cleanup0。Root pnpm verify exit0（format/lint/typecheck/build/sql/contract、529pass/280既有资源skip），最终独立Sol 0/0/0。日志 /tmp/kokoro-billing-reserve-r32-root-{red-r2,green,receipts,verify}.log。只接两冻结文件与CURRENT新记录prefix，原五dirty docs完整保留；非Billing v2 runtime/赠送/结算完整闭环。
+
+原 WIN06已冻结停写；原Agent唯一writer继续 Run-command-Chat 同事务/不可逆resume事务核，typed body/digest同源已裁决，真实PG仍待冻结重跑。Root实读确认必要现 infrastructure/chat_mappers.py _event_type decoder，只增该现文件为interaction.state唯一值替换，无旧值fallback；其余机器4发布/native bridge/消费者范围仍未授权。没有重复进程/服务或共享清理；3310当前未重启，未有本轮正式浏览器结果。完整Wave0–7仍active，10可见窗口复用而非以completed数量当闭环。
+
+## BILLING-C1-RESERVE-GREEN-R32：原 WIN06 两文件代码授权
+
+Root正式Node24.20独占真实PG重跑24例 **2 failed/22 passed/0 skip（4.25s），exit1**，同identity换key和并发换key为真实receipt digest冲突；前后billing_reference库集合相同，cleanup_diff_exit0，/tmp/kokoro-billing-reserve-r32-root-red-r2.log。首包装路径错误日志保留，不重启或清资源。独立Sol冻结test/hash/HEAD审0P0/P1/P2。
+
+沿原C1 only：原WIN06 sole writer，main63e0ab6，允许src/modules/credit/credit.service.ts只让reserve commandDigest显式覆盖tenant/account/requested/expiry/feature而排除transport idempotencyKey；该key仍传effect首次建hold及receipt永久binding。现test/integration/credit-metering.test.ts frozen ec271ead保持（确需修测试必须先报告），5dirty docs、receipt/schema/HTTP/runtime/types/generated/其他功能不写，零新文件/依赖。worker只离线format/lint/typecheck+collect；Root亲跑24真PG、receipt回归及必要纯门后精确提交。保持现command/version/Date表示，不接历史digest fallback、不伪造积分或admin授权。
+
+## R32 当前实作与真实资源门
+
+上一goal轮判为progress：四owner修复代码及Root03548d6b已提交推main，386真实治理门及Agent6真PG RED改变后继动作；不是状态复述。本轮原Agent生产writer原句柄live，Billing WIN06测试冻结已completed/idle，不重启服务。
+
+BILLING-C1-RESERVE-RED-R32：main63e0ab6，现integration test SHA ec271ead541aea41924e166b26c29dcf8eb38c73553da0161bf8ef98f1d96fa5，worker仅collect24（13旧+11新）。沿原R31卡Root独占Node24.20与已有PG，仅此文件、一worker、fixture自行建回收随机临时库，前后库集合精确差集核清理，不清共享数据/角色/Redis或实际账号。独立Sol只读test与credit/receipt事实，保5dirty docs；真实RED后才授权原WIN06仅credit.service.ts digest/key分离，不动receipt/schema/runtime/v1。Root首包装检查cwd误用Root相对路径失败，后续test已启动未重复；使用绝对路径补核冻结hash。
+
+Agent canonical事实纠正：command.body=typed model_dump_json，request_digest=sha256前缀＋sort_keys compact {run_id,...ControlBody exclude_none}，不是同一bytes。新4 resume在入口严格typed归一后对唯一规范化body算同算法digest；锁内stored body typed重建核digest与精确bytes。cancel/steer表示不动，不存原raw第二事实、不保旧resume歧义、不为required revision/ref/item造默认；原owner同步三面与同源反例继续代码。
+
 ## AGENT-HITL-P2-CORE-GREEN-R31：原 owner 转入生产事务核
 
 基线Agent0245a36＋RED manifest e5be36b6，Root真实PG6fail/0skip且ownedDB已drop；独立RED审0P0/1P1/1P2。原agent4_scope_gate_r19 Astra仍唯一writer，Root审查/PG/Git独占。不是完整36放行、不是后继22、不是半4发布。
