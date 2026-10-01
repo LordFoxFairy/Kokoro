@@ -1,3 +1,20 @@
+## GOAL 当前续推：WEB-FAILURE3-CONSUMER（2026-09-30）
+
+- 上一 turn 为 progress：Web `399f863` / Root `d88ca38b` 已提交，完整1846测试与build、相关治理18项、topology/checkpoint真实通过；当前输入内框仍未验。无活跃验证进程，不重启服务。
+- 业务目标：Web正式消费BFF已发布public2.0的safe failure，snapshot/live/reload/shared保持相同失败事实，不丢分类、不展示Agent原始异常，不再凭未知code猜internal_error。
+- 基线：Root main `d88ca38b7bff200875e7535e4378232f741f70fc`；Web main `399f863277f6b62e42772042bc940c62f33dc724` clean；BFF机器来源commit `ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d`、OpenAPI SHA256 `ba10f89baf0fdd8cd4da58947b0411da8c84294dfe77e278533aeda59a905773`。Agent/BFF/Billing docs候选和Root uv.lock保护，禁止静默读取未发布Agent4.0。
+- WEB-FAILURE3-DESIGN：agent_failure_cursor_owner唯一Web文档writer，暂仅四既有docs：TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT。先核实际consumer与发布机器源，给精确source/tests/generated文件集与三文档一致方案；不授权代码/依赖/Git/服务/数据/browser/runtime。
+- WEB-FAILURE3-CONTRACT-REVIEW：bff_failure_contract_review只读 published BFF/现Web，审合法12tuple、Message role/status/run约束、RUN_ERROR元数据/code/identity、正常事件禁止failure、BFF自有dispatch-error合法边界及seq，不发明契约，不写文件/测试/数据/服务。
+- Root保留架构裁决与最终验证：Web不拥有失败事实或新的public schema；同一fixed owner源供runtime validator和drift证据。snapshots保留optional failure（合法无agent failure不是兼容旧版），typed Agent事件严格校验safe profile与run identity；BFF dispatch admission失败不得冒充Agent profile。UI不得展示owner原exception/error_kind/message栈。
+- 正式原消息retry仍等Agent4/BFF2.1发布，不能把public2.0说成已有retry command、不能用重发user冒充重试。此片先核数据/渲染边界，不通过临时按钮设计替代最终retry目标。
+- 阶段门：当前先四docs gate+精确allowlist，独立审查后Root授权tests-first/source GREEN，再主工作树check/契约突变与组合验证；运行组仅协调冷切，不热加载半套BFF/Web协议。输入视觉与backend推进独立，支付最后。
+- 文档门R2：Root实核四hash741c2182/4a9b3a52/720cde07/4f87fc92及发布源；独立R1发现dispatch非空身份不同、opaque code与固定message反例缺口1P1，R2窄修独立最终0/0/0。system无failure现consumer drift仍明确开放，文档门不等于运行闭环。
+- WEB-FAILURE3-RED首门：仅授权agent_failure_cursor_owner写Web两个既有测试 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app/contract/api-contract.test.ts` 与 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app/tests/contract/agui-events.test.ts`；四docs冻结、生产/fixture/generated/其他仓/服务/Git零授写。Root Node22先实跑两文件40/40与原四文件70/70保留行为基线；日志 `/tmp/kokoro-web-failure3-root-contract-baseline.log` 与 `/tmp/kokoro-web-failure3-root-behavior-baseline.log`。RED必须当前parser实际行为失败，不能import未建模块制造collection error；Root另行重跑确认后再裁决源码阶段。
+- UI只读复核：active thread的AppFrame高特异度已覆盖组件44rem默认，与thread同48rem；不把局部默认误判宽度bug、不盲改CSS。既有真实responsive reading-axis测试才是几何门，当前未执行；内框根因与fresh视觉仍开放。
+- 首门Root实际RED为25失败/93通过（118），0collection/import error；25反例为12合法Message、12合法Agent RUN_ERROR、1合法dispatch。独立测试审查发现旧failureless RUN_ERROR正例与目标冲突，及dispatch额外反例遗漏；R2授权仍仅同两tests，改旧正例为严格目标负例、补numeric seq/错误owner/伪profile/非canonical string/空白code与run。当前绿负例因基准shape尚拒绝，不证明各语义守卫；GREEN后必须mutation复核。
+- 首门R2已冻结：Root再跑actual exit1，26失败/100通过（126），0collectionerror；两个hash2fbb79a7/14ce463e，日志 `/tmp/kokoro-web-failure3-root-red-r2.log`，独立最终0/0/0。此门只证明缺口，下一pin/generator仍须另授；Web六候选文件不提交/不热切，Root仅记录进度。
+- 当前UI实际再读原tab6，焦点命令31秒超时；未新开tab、未改CSS/运行副本或绕过native限制。用户截图请求仍待答；浏览器失败不包装成页面已验。
+
 ## 当前用户优先：WEB-COMPACT-GEOMETRY（2026-09-30）
 
 - 目标：修复已证实的短线程滚动误判；输入框内框和完整视觉另保留未验，不以测试数量冒充页面正确。

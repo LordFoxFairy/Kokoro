@@ -1,3 +1,10 @@
+## 本轮进度：Web consumer 真 RED；输入方框仍未修（2026-09-30）
+
+- 已推进：唯一Web writer完成四docs门及两现contract测试；两轮独立审查关闭dispatch身份守卫与旧failureless正例冲突，最终0/0/0。Root主树Node22实跑baseline40/40，最终126项=26目标RED/100通过，0collectionerror，日志 `/tmp/kokoro-web-failure3-root-red-r2.log`；不把负例绿误报strict语义已证。
+- 尚未实现：Web public2原字节repin、单源failure生成、state/engine/Share安全事实消费与UI动作删除；源代码/运行组均未改，正式原消息retry未发布，system role consumer drift明确保留。两tests与四docs已冻结待后继，不声称消费者闭环。
+- 当前用户UI：输入框方框未定位，真实布局未验；静态核完整AppFrame级联后，局部44rem不代表active thread宽度bug，未盲改CSS。原tab6再读31秒焦点超时；未新开tab、无native绕过，截图请求仍待答。本片未执行Playwright/full check，历史1846门不替代fresh页面。
+- 管理：没有后台验证进程/新服务/数据/provider操作；Root唯一Git，保护Agent/BFF/Billing候选与uv.lock，Payment最后，全goal active。详情与精确allowlist见本轮task/CURRENT。
+
 ## 当前UI：短线程滚动源码切片已验，输入内框仍开放（2026-09-30）
 
 Web main `399f863277f6b62e42772042bc940c62f33dc724` 精确四文件已提交、clean。已删仅两项/只量末项的 compact 判断；现在只在 settled、非重连/HITL/详情展开，所有实际项（含成果/失败）的跨度与双层 padding 真正 fit 时清 native spacer。ResizeObserver+rAF 合并、无反向跳尾，卸载清理。Composer/CSS/消息/契约/SQL未改。

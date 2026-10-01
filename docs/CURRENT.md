@@ -1,3 +1,15 @@
+## 当前续推：Web failure consumer 设计与真实 RED，UI 未闭（2026-09-30）
+
+基线 Root main `d88ca38b7bff200875e7535e4378232f741f70fc`、Web main `399f863277f6b62e42772042bc940c62f33dc724`、BFF已发布 `ccb8e144` public2.0；Web机器pin仍1.0。本片只产生Web四docs候选和两个现contract测试，不改任何生产源码、生成物、运行副本、服务、数据库、provider或积分。
+
+Root先跑两目标40/40和四相关70/70保留行为基线；再在主树复现最终RED：两文件126项=26目标失败/100通过、0collection/import error，actual exit1。12合法Message与12合法Agent RUN_ERROR被现strict schema拒绝，合法dispatch string seq/source_owner也被拒；旧failureless Agent RUN_ERROR却被接受。这些是当前consumer真实缺口，不是已修成果。日志 `/tmp/kokoro-web-failure3-root-{contract-baseline,behavior-baseline,red-r2}.log`。负例绿可能只是旧schema同因拒绝，不能宣称各守卫已经证明；GREEN后须mutation。
+
+唯一Web writer agent_failure_cursor_owner、只读契约/测试审查 bff_failure_contract_review；Root重跑并实核冻结hash。四docs741c2182/4a9b3a52/720cde07/4f87fc92，两个tests2fbb79a7/14ce463e；设计R1 dispatch身份/code/message漏项和测试R1旧正例冲突已窄修，最终各0/0/0。严格区分Agent安全三键与BFF opaque dispatch，不Number化BIGINT，不展示raw异常，不把terminal重发user冒充正式retry。public system role现consumer drift仍开放。下一pin/generator阶段尚未授权，正式retry仍等Agent4/BFF2.1及生命周期门。
+
+当前UI复核没有发现所谓48/44宽度缺陷：active AppFrame更高特异度会覆盖组件默认44rem；禁止凭局部CSS误判而再加补丁。输入方框根因与真实桌面/窄屏视觉仍未验。原tab6一次读取实际焦点命令31秒超时，未新开tab或换工具绕过，当前截图请求仍待答。既有bounding-box Playwright本片未运行；不以contract RED或历史1846测试代替用户可见页面验收。
+
+整产品/Wave0–7未完成，历史完整标准137FAIL不清零；Agent/BFF/Billing docs候选与Root uv.lock保护。Web六文件保留为未提交下一实现切片，Root本片只记录任务/进度，不更新gitlink、不发布半套协议。
+
 ## 当前UI：短线程滚动源码切片已验，输入内框仍开放（2026-09-30）
 
 Web main `399f863277f6b62e42772042bc940c62f33dc724` 精确四文件已提交、clean。已删仅两项/只量末项的 compact 判断；现在只在 settled、非重连/HITL/详情展开，所有实际项（含成果/失败）的跨度与双层 padding 真正 fit 时清 native spacer。ResizeObserver+rAF 合并、无反向跳尾，卸载清理。Composer/CSS/消息/契约/SQL未改。
