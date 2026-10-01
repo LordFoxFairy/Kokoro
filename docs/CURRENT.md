@@ -1,3 +1,27 @@
+## PARALLEL-R20：三路已实际启动（2026-10-01）
+
+已派 native 子 Agent：`agent4_scope_gate_r19`（gpt-6-astra，Agent四设计整合writer）、`bff_fifo_owner_r9`（gpt-5.6-sol，BFF Scheduled四设计writer）、`web_chat_audit_r20`（gpt-5.6-sol，Web只读局部交互审查）。Root留守浏览器/集成关键路径；每仓单writer，Git/index/服务统一控制，交付未复验前状态为进行中而非完成。精确任务卡见 task.md R20。
+
+R19只读结果已定位真实缺口：Agent当前3.0仍无durable scope/profile/native fence，不能把已验terminal/ingress切片称4.0完成；Scheduled callback202后Scheduler occurrence已settle，不能证明同scheduled session的Run已terminal，因此下一occurrence可并发。BFF采用ScheduledTask自己持久排队/终态门，沿现正式Agent wire推进，不用未发布4.0 busy协议拖住独立排序；4.0仍是第二道防线。生命周期产品未决只保留完整引用释放/发布门，独立pure profile继续。
+
+Root实际操作右侧IAB现tab13，DOM与截图成功。旧3310显示重复followup用户消息、空article及完整文本之后的失败alert；这是19小时的旧受管运行副本，不是9204/e7a325/224d0f19新组合验收。tab6绑定超时后换同浏览器现tab13成功，没有创建额外tab或因观察错误重启服务。已把具体现象交Web审查，但不以有文本为由吞terminal失败。用户3310保持原运行、未改共享数据，真实新组合仍待验。
+
+当前总goal active；九owner/Wave0–7、正式retry/queued、scope/native/retention、Platform cutover及最终Billing未完成。本波不缩小目标，不触protected uv.lock、Billing5docs、BFF原495行草案。
+
+R20 实际推进：Agent D0四hash/范围/diff-check经Root复核后精确4docs提交 `757014139cce9e6eb73a1b62e9420917a1e984a0`，同负责人已升级AGENT-PROFILE-P1(11精确路径)开始纯profile/同源选择代码。Web只读报告经Root源码核对，已升级WEB-FOOTER-COMPOSER-R20(5现路径)修每轮复制与ghost静态内框；不是等待再次审计。BFF D0初稿已交，Root发现实际task为物理删除、Agent seq为session级、迟到earlier不能换active head三处问题并返修，未将错误草图放行实现。Root fresh topology/checkpoint均exit0，相关治理95/95（47.80s），日志 `/tmp/kokoro-parallel-r20-{topology,checkpoint,tests}.log`；该治理不证明正在实施的owner代码GREEN。当前Web五文件运行对比4异1同，证据 `/tmp/kokoro-parallel-r20-web-live-source.json`；3310未切换，不称用户页面已同步。
+
+## PARALLEL-R19：当前运行版本与下一个执行边界（2026-10-01）
+
+上一goal turn为progress：Root70dc145b已集成BFF e7a325ce与Agent224d0f19，真实owner门与Root95项治理完成。九owner/Wave0–7目标不缩小，Billing最后；本轮不重做已验切片。
+
+| 任务 / 角色 | 基线与允许范围 | 阶段门与交付 |
+| --- | --- | --- |
+| BFF-SCHEDULED-GATE / P0 / bff_fifo_owner_r9只读负责人 | BFF main e7a325ce，原4docs495行草案保护；现Scheduler receiver、receipt/outbox、Chat FIFO与三设计/contract。 | 先核同scheduled session能否并发Run、current producer与terminal信号，给唯一owner放置表与最小正式实施切片；不写/Git/DB/服务，Root裁决后才写。 |
+| AGENT4-SCOPE-GATE / P0 / 独立架构Agent只读 | Agent main224d0f19 clean，当前三设计/approved4.0/Schema/admission/profile/checkpoint/retention引用。 | 确认已批准4.0的依赖顺序与可实施文档门，不另造advisory/3.0临时状态机；明确当前事实、真正产品未决与下一可执行代码切片。 |
+| ROOT-RUNTIME-E2E / P0 / Root | Root70dc145b，Web9204bfe6，当前3310受管运行副本；仅本地编排/浏览器验证与现台账。 | 先核当前源码与运行副本差异、进程/服务/自有资源，操作真实浏览器；不以旧页面/fixture冒称新源码已上线，不清共享数据/新建角色。需要运行切换先完成资源与schema边界裁决。 |
+
+Root仍唯一Git/index/共享服务控制人；同仓单writer。四保护docs、Billing5docs、uv.lock不改。下一切片只有三设计一致、contract/schema明确、RED证明缺口后才授权实现；最终绑定freeze hash与Root实测。
+
 ## PARALLEL-R18：两个独立实现已验收提交，Root 组合治理复验（2026-10-01）
 
 本轮确实并行：BFF writer `bff_fifo_owner_r9` 与 Agent writer `web_interaction_audit` 独立写入，`agent4_lifecycle_review` 只读审查，Root 管理资源/Git并独立重跑；没有多个writer抢同仓。已验收的是两个明确切片，不是九owner/Wave0–7最终完成。
