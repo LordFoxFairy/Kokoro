@@ -1,3 +1,7 @@
+## R29 后继状态
+
+Agent纯domain已在0245a36、Root集成c3700724推main；持久P2只授权原四设计前缀收敛，详见同docs/task.md当前卡，源码/机器/测试未授。Billing readonly首报告因误把既定1e6和v2路线当未决退回，重复提问已撤回；待纠正不走v1补丁。3310当前offline，未启动新服务或改用户数据。
+
 ## R29 Agent纯规则已验收并推main；整条聊天仍未闭环
 
 Agent **0245a36c85422b4e0e85cc22aba426b0e30fec12**：仅2新纯域/测试文件＋4批准HITL前缀，独立Astra0/0/0；Root frozen源码测试hash一致，Ruff265/check、Pyright0、3.0契约检查及offline wheel/sdist构建退出0。Root fresh默认 **1695 passed/6既定skip/242 deselected/364 warnings（94.62s）**，/tmp/kokoro-agent-domain-p1-r29-root-default.log；新增38规则随全门执行。构建只改ignored egg-info/SOURCES.txt，331/332原保护hash保持，4P3B suffix全同，构建物未暂存。精确六路径已提交推main，不含P3B/业务SQL/协议4/worker接线；批准范围只纯资格/不可逆状态，不声称durable HITL。

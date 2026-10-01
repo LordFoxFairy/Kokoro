@@ -1,3 +1,17 @@
+## AGENT-HITL-PERSIST-P2-D0-R29：事务核精确准入（沿原HITL卡，不新计划中心）
+
+| 项 | 当前裁决与范围 |
+| --- | --- |
+| Owner/基线 | 原agent4_scope_gate_r19 Astra，Agent Run/HITL唯一writer；main0245a36，Rootc3700724；四docs P3B完整suffix保留，332保护中仅ignored SOURCES为Rootbuild变动。 |
+| 阶段/文件 | 先仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT的批准HITL前缀，完成精确持久D0并freeze；Root独立review后才授权tests/源码，不授整52。 |
+| 已采纳 | waiting/accept/start/unknown/terminal三个真实事务边界，Run→command→Chat同连接；accept专用waiting领取、锁后DBclock/fence、started_now vs replayed，admission/purge Run-first防孤儿，terminal唯一finalizer。 |
+| 目录/数据 | 比扩admission混合职责，采用现infrastructure一新普通postgres_run_interactions.py（后继授权）；不新目录。复用Run/control command两表，不提前造无writer observation表；精确字段/Row/CHECK/索引/序列化和现pure域差异须在本D0确定。观察表在真实bridge片承接，不降低GC目标。 |
+| 契约 | 完整HITL4 owner候选须先一致typed interaction.state/control/errors，仍原/v1一次clean-slate；本门不发布4、不改机器/consumer，不塞旧interaction/activity假payload。协议/schema/生产实施候选留待审查后的明确授权，不盲列52。 |
+| 未来测试位置 | 真事务与native saver证明职责不同：比较既有test_run_interactions.py混入与新普通tests/integration/database/test_run_interaction_transactions.py，优先后者复用现database目录；Root先审精确行为/API/全scope，再真实PG RED。 |
+| 验证/交接 | 精确列允许候选文件、已有runtime profile闭包/port/SQL/catalog、三设计一致且无未决身份/不变量；freeze四whole/P3B suffix，Root独立审＋真门后代码授权。worker不操作Git/DB/Redis/provider/services，不写其他源或contract。native证明8与pure38只是前置，不冒称P2已验。 |
+
+BILLING-CHAT-READ-AUDIT-R29首报告有方向偏差，已退回纠正：v1 only诊断不能新建补丁支线；Root/Billing现批准设计已定1Credit=1e6、目标v2/Nest/删除旧pg，IAM admin target机器仍是硬依赖。重复积分选择提问已公开撤回；沿原BILLING-ADMIN-GRANT/C1/C2/C3任务，不将readonly报告建议冒成授权。现预览offline未证明停止原因，不为展示重启不完整正式计费链。
+
 ## R29 Agent纯规则已验收并推main；整条聊天仍未闭环
 
 Agent **0245a36c85422b4e0e85cc22aba426b0e30fec12**：仅2新纯域/测试文件＋4批准HITL前缀，独立Astra0/0/0；Root frozen源码测试hash一致，Ruff265/check、Pyright0、3.0契约检查及offline wheel/sdist构建退出0。Root fresh默认 **1695 passed/6既定skip/242 deselected/364 warnings（94.62s）**，/tmp/kokoro-agent-domain-p1-r29-root-default.log；新增38规则随全门执行。构建只改ignored egg-info/SOURCES.txt，331/332原保护hash保持，4P3B suffix全同，构建物未暂存。精确六路径已提交推main，不含P3B/业务SQL/协议4/worker接线；批准范围只纯资格/不可逆状态，不声称durable HITL。
