@@ -1,3 +1,40 @@
+## R31 Root 组合验收与提交范围
+
+Root 拓扑与固定w1e-iam07 checkpoint均actual exit0；四治理门首轮385pass/1fail为Scheduler已验commit后的字面SHA过期，保留原日志。仅现test_contract_compatibility.py将精确SHA升级4abacf9，digest/owner/状态与其余断言不变；fresh重跑 **386/386（50.29s）**，/tmp/kokoro-r31-root-governance-r2.log。80处四owner evidence从当前已提交blob核SHA，digest0变化，ASCII serialization与3active/13broken保持。Root只提交四gitlink、inventory、该一测试与同三台账，保uv.lock/BFF8/Billing5/AgentP3B及三RED测试。
+
+Agent真实PG6fail缺持久能力，已独立review queued；原writer停写待精准GREEN授权。Billing WIN06现只一existing integration测试文件获reserve换key语义RED授权，原五docs保护；二者独立推进，不跑新服务/造积分。本轮预览3310仍offline，正式浏览器及完整积分/审批链未验；完整goal active，无完整完成声明。
+
+## R31 当前关键路径：HITL 真实 RED 已落地
+
+Root frozen Agent7/7、P3B4/4精确匹配。自有真实PG先安装/claim后 **6 failed/0 skip（0.53s）**，全部明确缺record_pause测试体assert；五rollback断言尚未到达，不冒充事务已验证。/tmp/kokoro-agent-hitl-p2-red-r31-root-real-pg.log；agent_terminal_atomic_fd5871b8baf84c06已drop/closed=true，无Redis变更。原Agent继续停写，Root给独立Sol三测试只读审（源manifest e5be36b6），通过后按36内必要生产集合放行，仍不发布半4/不授后继22。
+
+BILLING-C1-RESERVE-RED-R31 / 既有WIN06 sole Billing tests writer / main63e0ab6、保护5dirty docs / Root审与真实PG执行：仅现test/integration/credit-metering.test.ts新增已批准receipt identity重放断言：换key同identity同business参数同一hold、两个key永久绑定；同key/identity业务漂移冲突零新增效果；并发换key单一hold/audit与余额，audit故障整组rollback。无source/schema/contract/newfile/docs/Git/资源权限；可collect不运行PG，由Root真实RED后按原C1卡单独授credit.service.ts。不是admin grant或v1修补，不需IAM赠送权限才能推进既有reserve规则。读RootAGENTS/CODEBASE_MAP/TS/SQL、Billing三面/current/既有IMPLEMENTATION_PLAN后实施；冻结精确test hash与实际collect/static结果，Root负责后继。
+
+## R31 四局部修复已在主树重验并提交
+
+四 owner 当前代码提交：Web 882937a、Platform 6759130、Storage 191164f、Scheduler 4abacf9；均main，Root精确每仓两源码/测试＋CURRENT，不含其他候选。Web Root先真实2104pass/1fail，严格等待fixture就绪返修后fresh contract219/arch50/full2105/lint/typecheck/build通过；Platform独立P1完整raw字符缺口已返修关闭，Root1233pass/243既有skip；Storage Root476pass/156既有skip；Scheduler vet/test/build0、82主测试pass/12既有资源skip。四片独立终审0/0/0；详见各CURRENT及 /tmp/kokoro-r31-*-root-full*.log。所有Root测试/推送句柄消费后收口，无新常驻服务。
+
+仅局部实现已验，不是九仓全功能或真实浏览器闭环：本轮不运行PG/S3/MCP/native浏览器，3310仍offline，正式Billing/C3及IAM赠送权限未接线。完整Wave0–7保持active。原Agent持久HITL P2三测试RED正在原owner推进（生产/机器未授），5只读报告已收并记真实依赖；不把十会话completed等同产品完成。四owner inventory仅重新固定当前committed blobs，原3active/13broken不变。Root拓扑/固定checkpoint actual exit0；四治理测试真实385pass/1fail（Scheduler test精确SHA仍975dee5）。ROOT-PIN-R31由Root仅改现test_contract_compatibility.py里Scheduler字面值到已验4abacf9，保所有hash/owner/状态断言，不放宽门；更新后重新实跑。
+
+## R31 十会话首轮交付与下一执行卡（2026-10-01）
+
+十个既有任务会话均真实 completed/idle，不是十仓闭环。WIN01/07/08/09各两现文件局部候选已停写；WIN05零修改、8局部测试，不制造补丁。Root将四候选冻结至 /tmp/kokoro-r31-four-fixes-manifest.json 后在主树重验。WIN02/04/06/10交只读依赖与风险，不计实现完成。
+
+| 卡 | Owner / 执行 / 审查 | 范围与完成条件 | 状态与依赖 |
+|---|---|---|---|
+| R31-FOUR-REVIEW | 四owner只读 / native独立Sol / Root | 只读冻结manifest八文件及邻接源码；不测试/写/Git/资源，核IME229、MCP原URL控制字符、Abort receipt完整关系、cron整数边界；P0/P1/P2绑定hash | 独立Sol已审8/8 hash：0P0/1P1/0P2；三候选可重验，Platform原writer返修同两文件，Root独占提交 |
+| AGENT-HITL-P2-RED-R31 | Agent / 原agent4_scope_gate_r19 Astra sole writer / Root+WIN03独立D0审 | tests/contract/test_machine_contract.py、test_chat_response_envelopes.py、新增tests/integration/database/test_run_interaction_transactions.py；现四docs仅批准HITL前缀可记本卡和P2修正，保护P3B suffix。先contract强制完整revision/ref/items旧寻址拒绝与真实PG pause/accept原子/回滚断言，不以import error当事务RED；Root执行隔离PG | WIN03 0P0/0P1/2P2；TIMESTAMPTZ(3)与bridge待新增已裁决。仅tests/doc授权，36生产仍下一明确门，不发布半4 |
+| WIN04-POLICY | IAM/Billing / Root+用户 | 平台独立运营赠送权限 vs 租户管理员；默认不扩大owner catalog。已定1Credit=1e6无需再问。权限待确认不阻独立切片 | 真产品权限待确认；IAM grant未授权实现 |
+
+Root Web全门真实失败：contract219/arch50/lint/typecheck通过，full2104pass/1fail（新project IME预设intent=null未成立），/tmp/kokoro-r31-web-root-full.log；build未到达。原WIN01同两文件返修测试fixture/挂载时序，保IME零submit/草稿/URL/意图不被按键消费与后续Enter一次，不盲改production或放宽门。首定点只执行app-frame81，误写另不存在filter不能当143。
+Root Scheduler full vet/test/build退出0，82主测试pass/12既有资源skip，gofmt/diff-check通过，真实PG/Redis/重启仍未验。
+
+R31-FOUR-REVIEW唯一P1：MCP仅rawPath过滤，authority/host里的TAB/LF/CR仍被URL parser删除；WIN07续派同两路径先host/authority负例RED，解析前完整raw拒绝三字符，保rawPath隐藏dot检查，冻结后独立复审。不扩全部C0/协议/文件。
+
+WIN06记录四C1候选缺口：reserve将transport key计入semantic digest；capture replay缺精确hold/source绑定；expired grant有hold时release不能重新放为可用；metering subject/feature需绑定hold。同v2/C1路线，非v1补丁，未获源码授权、未跑新integration，不把只读发现冒成已证RED。
+WIN02新增候选：Scheduled首次接纳最终锁后lease/time未复验；未实跑，原8dirty保护。聊天head与完整等待仍等Agent正式4 artifact，不伪造字段。
+WIN10当前3310无监听；日志application_ownership续租失败是新定位线索，具体Redis失败原因未证。旧E2E固定来源落后，先精确收敛来源与契约，不放宽pin校验。Root未重启/造积分/使用历史截图当本轮在线。
+
 ## R30 用户明确要求十个可见任务会话并行
 沿现Wave0–7任务，不建第二计划中心；项目Kokoro、local同checkout，Root独占所有Git/index/提交及基础设施/E2E。创建任务会话不等于十个都已运行，逐个记录threadId和真实状态。现Agent原writer不变，WIN03只读；BFF8dirty/Billing5dirty/AgentP3B/Rootuv.lock保护。
 有界局部修复窗口仅当前已批准三面下、现有文件/相邻测试、无owner/契约/schema/依赖变化的小bug允许TDD；任何新文件/结构/协议或复杂重写先只读交精确范围待Root放行。同repo单writer、每窗先一个切片/一个受限纯测试进程，不再spawn/新会话，不跑全仓大门/外部资源。

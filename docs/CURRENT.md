@@ -1,3 +1,19 @@
+## R31 Root 组合验收与提交范围
+
+Root 拓扑与固定w1e-iam07 checkpoint均actual exit0；四治理门首轮385pass/1fail为Scheduler已验commit后的字面SHA过期，保留原日志。仅现test_contract_compatibility.py将精确SHA升级4abacf9，digest/owner/状态与其余断言不变；fresh重跑 **386/386（50.29s）**，/tmp/kokoro-r31-root-governance-r2.log。80处四owner evidence从当前已提交blob核SHA，digest0变化，ASCII serialization与3active/13broken保持。Root只提交四gitlink、inventory、该一测试与同三台账，保uv.lock/BFF8/Billing5/AgentP3B及三RED测试。
+
+Agent真实PG6fail缺持久能力，已独立review queued；原writer停写待精准GREEN授权。Billing WIN06现只一existing integration测试文件获reserve换key语义RED授权，原五docs保护；二者独立推进，不跑新服务/造积分。本轮预览3310仍offline，正式浏览器及完整积分/审批链未验；完整goal active，无完整完成声明。
+
+## R31 四局部修复已在主树重验并提交
+
+四 owner 当前代码提交：Web 882937a、Platform 6759130、Storage 191164f、Scheduler 4abacf9；均main，Root精确每仓两源码/测试＋CURRENT，不含其他候选。Web Root先真实2104pass/1fail，严格等待fixture就绪返修后fresh contract219/arch50/full2105/lint/typecheck/build通过；Platform独立P1完整raw字符缺口已返修关闭，Root1233pass/243既有skip；Storage Root476pass/156既有skip；Scheduler vet/test/build0、82主测试pass/12既有资源skip。四片独立终审0/0/0；详见各CURRENT及 /tmp/kokoro-r31-*-root-full*.log。所有Root测试/推送句柄消费后收口，无新常驻服务。
+
+仅局部实现已验，不是九仓全功能或真实浏览器闭环：本轮不运行PG/S3/MCP/native浏览器，3310仍offline，正式Billing/C3及IAM赠送权限未接线。完整Wave0–7保持active。原Agent持久HITL P2三测试RED正在原owner推进（生产/机器未授），5只读报告已收并记真实依赖；不把十会话completed等同产品完成。四owner inventory仅重新固定当前committed blobs，原3active/13broken不变；Root组合门另行实跑记录。
+
+## R31 十会话首轮已收，四源码候选转 Root 复验
+
+实际逐窗wait确认10/10 completed/idle：Web IME、Platform MCP路径、Storage abort回执、Scheduler cron各两文件已冻结待审（共8），System零改；5只读交付揭示正式依赖，不称九仓闭环。原Agent获P2三测试路径RED阶段，4docs只批准HITL前缀，生产/机器/资源仍锁；独立D0 0P0/0P1/2P2已记录同task.md。Root同时审/重验四候选，不重复开服务；3310offline及正式IAM grant/Billing runtime/Chat head依赖未消失。全部Git由Root，保护uv.lock/BFF8/Billing5/P3B。
+
 ## R30 十会话已创建并核实运行
 
 用户明确要求10窗口；已创建10个独立local任务会话，首次wait_threads逐个确认active/inProgress，threadId在同task.md WIN01–10卡。5个独立owner有界局部TDD writer＋5个只读审查面，原Agent writer不变且P2四docs已冻57140f75；WIN03承接独立审，Root重验/集成/基础设施/E2E独占。仅任务已运行，不声称已有10份修复或完整闭环。不新开兼容/v1补丁，不重启共享服务，不新建第二计划中心。
