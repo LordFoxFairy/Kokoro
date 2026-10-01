@@ -1,3 +1,13 @@
+## 当前UI：短线程滚动源码切片已验，输入内框仍开放（2026-09-30）
+
+Web main `399f863277f6b62e42772042bc940c62f33dc724` 精确四文件已提交、clean。已删仅两项/只量末项的 compact 判断；现在只在 settled、非重连/HITL/详情展开，所有实际项（含成果/失败）的跨度与双层 padding 真正 fit 时清 native spacer。ResizeObserver+rAF 合并、无反向跳尾，卸载清理。Composer/CSS/消息/契约/SQL未改。
+
+Root 最终源码/测试哈希复核，HEAD 原生产配最终测试 RED5失败/37通过；最终完整 `pnpm check` actual0：contract109、architecture49、1846全量（45.14s）、lint/typecheck/build。独立最终0/0/0，HITL用例P2已窄修并mutation RED。证据 `/tmp/kokoro-web-compact-geometry-root-red.log`、`/tmp/kokoro-web-compact-geometry-root-final-check.log`。Root 相关治理测试18/18（20.65s）actual0，日志 `/tmp/kokoro-web-compact-geometry-root-governance.log`；仅在核原aacd baseline后同步原3310单个Thread文件，无重启/provider/数据操作；源码同步不等于视觉验收。
+
+当前用户输入框方框仍未定位，fresh桌面/窄屏视觉与完整Playwright未验。IAB tab6焦点读取超时；native Codex app读取被工具限制后停止，未绕过。已请求当前截图标框。不得声明整个对话体验、登录或产品E2E完成。Agent/BFF四docs候选、Billing五docs与Root uv.lock继续保护；正式retry仍有lifecycle前置，全goal active。
+
+原生retry R4实际PG spike11/11（含两native HITL）通过，自有fixture已回收、cleanup_errors=[]；证据 `/tmp/kokoro-retry-native-pg-spike-r4-result.json`。仅证明native库实验，不证明生产Run/lease/HTTP/provider/browser。双方R2新契约/SQL缺陷已闭，retention/activation未决，无源码授权。
+
 ## 当前输入框与对话布局：源码局部修复，视觉未验（2026-09-30）
 
 Web main `13b881d242b59d23e18c0b0cd4f5fcb266cb3d60`，四文件切片已提交、工作树clean。已删除AppFrame首Item正负margin补丁，恢复content统一1.75rem gap；viewport继续拥有顶部留白。原测试锁定错误首轮几何，已改为禁止首Item补丁。独立冻结审查0/0/0；Root显式Node22.22.2/pnpm11.25完整check exit0：contract109、architecture49、全量1836（41.01s）、lint/typecheck/build。日志 `/tmp/kokoro-web-uniform-turn-gap-root-node22-check.log`。首次误用Node24的自有检查已精确终止并消费143，不计通过；worker任务外导航首次超时保留，随后两次70/70。

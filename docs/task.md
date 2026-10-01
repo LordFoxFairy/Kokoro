@@ -1,11 +1,32 @@
-## 当前用户任务：输入框与对话布局（2026-09-30；优先于下列后端续推）
+## 当前用户优先：WEB-COMPACT-GEOMETRY（2026-09-30）
+
+- 目标：修复已证实的短线程滚动误判；输入框内框和完整视觉另保留未验，不以测试数量冒充页面正确。
+- 归属：Web ConversationThread 既有滚动编排；不改 Composer、shared primitive、消息事实、API、SQL 或依赖。现有位置承担该职责，局部修复不新增目录/契约。
+- 基线：Web main `13b881d242b59d23e18c0b0cd4f5fcb266cb3d60`、clean；Root main `bf038a25`。Root/Billing/Agent/BFF 既有未提交变更保护，Root 唯一 Git/index。
+- Writer：agent_failure_cursor_owner；Root 审查及主工作树验证。精确四既有文件：`src/ui/thread/conversation-thread.tsx`、`tests/ui/conversation-failure.test.tsx`、`docs/TECHNICAL_DESIGN.md`、`docs/CURRENT.md`（均位于 apps/kokoro-app）。不授权其他文件、服务、数据、浏览器、runtime 同步或 Git。
+- 已证反例：长 user + 短 assistant 总高超出 viewport 却被末项高度误判；3+ 短项被两项限定漏掉；HITL 中调用 start 会使 native mode 变为 free-scrolling。先写聚合几何 RED，再最小 GREEN。
+- 规则：只处理 settled、非 reconnect、非 HITL、非详情展开；全实际 item（含成果/失败）跨度与 viewport/content padding 真正 fit 才清 spacer/start。长内容与用户阅读位置不反向跳尾；ResizeObserver+rAF 合并且无重复清理循环，卸载取消/断开。
+- 已验收源码切片：Web main `399f863277f6b62e42772042bc940c62f33dc724`、clean。Root final RED5失败/37通过、完整check109/49/1846/lint/type/build actual0；独立0/0/0，HITL测试P2已mutation RED后修。仅核原aacd baseline后同步原3310单Thread文件，无重启/数据/provider。日志 `/tmp/kokoro-web-compact-geometry-root-final-check.log`；真实桌面/窄屏视觉与输入内框仍未验。
+- Root 相关治理测试18/18（20.65s）actual0；完整Root/工程标准/Playwright本片未重跑，历史137FAIL不清零。当前浏览器inventory可读、tab6焦点超时；未新增tab，native Codex app读取被限制后停止，不绕过。当前截图请求仍待答。
+
+## GOAL 当前续推：正式重试的原生状态与事务门（2026-09-30）
+
+- 上一goal turn分类progress：Web13b881d源码修复、Rootbf038a25集成、完整109/49/1836门与运行单CSS同步已落地；视觉不算通过。当前截图待答不是全后端goal blocker。
+- 当前基线：Root mainbf038a25；Agent mainf3be3b97四docs候选冻结；BFF mainccb8e14四docs候选冻结；Billing五docs/Root uv.lock继续保护。Root唯一Git/index，子仓没有源码授权。
+- RETRY-DESIGN-CONTRACT-REVIEW：bff_failure_contract_review只读核Agent/BFF四docs及现机器源/callers，范围限定版本、身份、幂等、owner发布顺序及错误/HITL语义；禁止写入/测试/服务。
+- RETRY-DESIGN-SQL-REVIEW：agent_failure_cursor_owner只读核Agent目标scope/dispatch/run/native写与BFF零DDL事务，验证锁序、CAS、基线引用/retention及崩溃；禁止写入/测试/服务。
+- RETRY-NATIVE-SPIKE：Root仅现安装native API与自有临时资源实验，先Memory、再同现PG的自有临时fixture；不触用户数据、共享Redis、provider、浏览器或运行3310。需验证显式empty、精确baseline fork、pending写是否污染baseline、同连接pipeline回滚/lease-head fencing。正式新文件/SQL/contract必须四docs gate后另列精确授写。
+- 已查上轮EMPTY断言失败原因：`empty_checkpoint`真实channel/pending为空，native StateGraph投影却给`messages=[]`默认值；不是genesis缺失。保留原失败日志，下一实验按checkpoint原事实及next/tasks/interrupt共同断言，不把“删掉失败断言”算解决。
+- R4 原生 PG 实验实际11/11通过：Delta root/child 精确 fork 与 restart、五事务 rollback/commit、两 native HITL 不继承旧 approval；自有数据库已回收，cleanup_errors=[]。证据 `/tmp/kokoro-retry-native-pg-spike-r4-result.json`；不证明生产 lease/fence、HTTP/provider/browser 或完整 middleware。R2 契约缺陷0/0/0、SQL新缺陷0/0/0；retention/activation 生命周期未决，双方四docs继续冻结，无源码授权。
+
+## 当前用户任务：输入框与对话布局（2026-09-30；视觉未闭，后端独立续推）
 
 - 目标：定位并修复用户实际看到的输入框内框、对话几何；历史源码门通过不作为当前视觉通过证据。
 - Root负责浏览器与最终验证；agent_failure_cursor_owner只读核现Web布局，禁止写入/服务/数据/Git，范围为现Composer、Textarea、Thread、AppFrame、MessageScroller和相邻测试。
 - 最新观察：当前IAB inventory读取成功，tab6仍为用户指定conversation；绑定该tab实际20秒超时并reset。未新增tab、未换工具绕过、未改CSS；已请求当前完整截图标框。
 - 只读审查已交付P0=0/P1=2：首Item正负margin把首轮1.75rem间距压半；两项限定/末项测量的compact纠偏可能漏态或抢滚动。输入框当前根因仍待像素，不据此盲改。
 - WEB-UNIFORM-TURN-GAP / P1：agent_failure_cursor_owner唯一Web writer；Root审查/提交/主树验证。main8205fa0 clean基线；仅app-frame-main.module.css、app-frame.smoke.test.tsx、TECHNICAL_DESIGN.md、CURRENT.md四既有文件。先RED禁止首项margin补丁、保留统一1.75rem gap与viewport顶部留白，再删CSS块并纠正旧设计描述。契约/SQL/消息/Composer/滚动逻辑/依赖不变；禁止Git/服务/数据/runtime同步。已提交13b881d，Root完整check109/49/1836/lint/type/build实际0；独立0/0/0；原3310单CSS基线核对后同步，当前视觉仍待验。
-- compact纠偏P1暂不授源码，先保留具体反例与行为测试方案，不用另一个几何启发式替代旧猜测。
+- compact纠偏已由本文件顶部 WEB-COMPACT-GEOMETRY 接续并验收源码；当前像素仍未验，不再沿用此历史待授写状态。
 - 后端两owner四docs分别冻结待审，不授源码，不把docs设计计作本次UI修复。Web已提交main13b881d242b59d23e18c0b0cd4f5fcb266cb3d60、clean；当前UI未闭环。
 
 ## GOAL 后继关键链：正式原消息重试（2026-09-30）
