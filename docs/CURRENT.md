@@ -1,3 +1,24 @@
+## R34 两门独立审已收，Billing 原 owner 转真实 RED 准备
+
+Agent R3 终审绑定009917d6，30/30 hash一致、原25不变，0P0/0P1/0P2；purge双向四竞争及正式launch/七固定触发器无放宽。Root26真PG已实到达，native桥/完整4仍待后继。Billing R2四whole/prefix已Root与Sol双核，0P0/0P1/0P2，exactly-one debit与T09 duplicate/cross-account反例一致，原P2关闭；只是D0门，不是源码或Schema通过。
+
+BILLING-C1-TERMINAL-RED-R34：原WIN06 sole writer，main5c45f22419db43ae9a128543a056cd1c4a6ff013。仅允许现 test/integration/credit-metering.test.ts 和 test/integration/target-schema.test.ts 添加已批准T01–T10行为/CHECK/catalog RED；保留R32 reserve全部断言、现32-table/noFK及全部原回归。对未有terminal_source_ref列用真实PG运行时catalog/raw SQL确认，不以无法编译生成类型/collection失败充RED；行为先走现正式Credit effect并独立核完整facts/audit/generation。worker允许定点静态与collect，不运行PG；Root亲跑独占fixture得到真实RED后再给源码/SQL与官方生成权限。四R2 docs冻结与原5dirty保护，零新文件、schema、源码、生成、HTTP、依赖、Git、服务/DB/Redis/provider操作。冻结两test精确hash、例数和预期行为失败，Root审/真实资源/提交；与原Agent桥范围、WIN01展示、WIN10验收只读独立并行。
+
+## R34 原窗口续派与 Agent 真实事务 GREEN
+
+完整 Wave0–7 goal active，不新开计划中心。Root 当前 main55cdcd57；Agent R3 frozen manifest009917d6逐30/30核同，实际自有PG **26 passed/0skip（2.51s），exit0**，数据库 agent_terminal_atomic_038fac55de8f4dd0 已 closed=true；/tmp/kokoro-agent-hitl-p2-core-r33-r3-root-real-pg.log。首16/6与R2 24/2日志保留；只证明事务核，不是native桥、机器4、正式浏览器或整仓闭环。原25生产等hash未变，独立Sol只审5 delta关闭此前purge并发P2；原Astra只读承接现已批准native桥下一RED范围，不写冻结文件。旧43type/30contract RED仍待完整后继4，不放宽或兼容。
+
+Billing原WIN06 C1 D0 R2已冻结停写，Root四整file与prefix hash实测4/4一致；正capture replay exactly-one debit与T09重复流水负例已写设计。独立终审后仅授权现两integration测试RED，再按真实失败转代码；保护原5dirty docs/R32内容，不造积分/资源。原WIN01只读追踪Web积分显示与输入布局事实；原WIN10只读核端到端launcher/进程和正式路径准备，不启动共享服务。复用原10可见会话，不把10 idle/completed算10个正在执行，不并发抢Git/DB；Root统一真实资源验证和提交。
+
+当前任务卡：
+| ID | Owner / Agent | 范围 / 依赖 / 验收 |
+| --- | --- | --- |
+| R34-AGENT-CORE-REVIEW | Agent / 原Sol readonly | R3 PG测试+四HITL prefix delta，基线0245a36/manifest009917d6；原25保持，关闭实际purge竞争P2，不写资源/Git |
+| R34-AGENT-BRIDGE-SCOPE | Agent / 原Astra readonly | 已批准三面中的native桥、消费入口及首RED准确范围；不写30冻结路径/P3B或发布半4 |
+| R34-BILLING-C1-D0-REVIEW | Billing / 原WIN06停写、Root与Sol审 | main5c45f22四prefix R2；exact-one debit/重复流水负例，原文保护；随后现credit-metering/target-schema tests-only RED |
+| R34-WEB-DISPLAY-AUDIT | Web / WIN01 readonly | main882937a现积分换算/输入layout调用链与可复现测试；不改业务计费规则、不新UI设计/资源/文件 |
+| R34-E2E-READINESS | Root组合 / WIN10 readonly | main55cdcd57/当前工作树下launcher与真实用户旅程准备；不弱化source pin、启动服务或provider调用；给下一可执行缺口 |
+
 ## R33 BFF 局部真实 GREEN 已提交；Agent PG 首轮失败已定位
 
 Root BFF集成仅187处当前committed SHA升级，source/contract digest **0变化**，3active/13broken保持；topology/固定checkpoint exit0，四治理 **386/386（50.67s）**，/tmp/kokoro-r33-root-{topology,checkpoint,governance}.log。Agent R2正式launch fixture后真实 **24pass/2fail/0skip（2.62s）**，新增4purge/control竞争已到达通过；两fail是触发器helper拒绝dispatch_started/terminal而未安装注入，原owner仅该固定白名单返修，原25生产等保持。其自有DB已drop，/tmp/kokoro-agent-hitl-p2-core-r33-r2-root-real-pg.log。Billing prefix hash与第一separator+6字节口径4/4实测一致，非内容漂移；独立审only P2 exactly-one debit负例由原WIN06补，不称新Schema已验。
