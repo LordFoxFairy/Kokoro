@@ -1,5 +1,7 @@
 ## BFF-AGENT-FAILURE3：owner源码已提交，组合待闭环（2026-09-30）
 
+Root组合提交 `8ed71e9e211c1e6ca1504aaa67df18a122b11545` 后，strict IAM relay、指定current checkpoint与topology三CLI实际PASS/exit0，均已完成且无待消费进程。日志 `/tmp/kokoro-bff-failure3-root-final-{iam-relay,checkpoint,topology}.json`。原提交前HEAD/index差异exit1保留作阶段证据，未改门。Root全量1103passed/3skip结果仍绑定同一源码/来源；Billing五docs与Root uv.lock继续保留。整个goal仍active，Web消费与正式原user重试是下一条关键链。
+
 BFF main `ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d`，clean，Root精确33路径（32现文件+旧HTTPvendor删除，Git显示32changes含rename）提交。
 Agent HTTP3.0/provenance exact2与17 deterministic生成、strict10false/2true、Message两列完整CHECK、同TX失败事实与safe snapshot/list/Share/标准RUN_ERROR闭环；无旧七码fallback/HTTP双vendor。独立契约/SQL及四docsmetadata最终0/0/0，schema-extra约束与Share/GC两个测试盲点本片已修而非延期。
 

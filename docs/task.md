@@ -2,7 +2,7 @@
 
 - BFF main ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d clean；唯一owner实现、两独立审查、Root全门与真7integration47/47已完成。并非整个BFF/Wave全闭环；当前完整standard FAIL137/BFF31。
 - Root最终freeze c12ced8d32entries，4docs验收metadata后其余28source/machine/SQL/tests不变；精确33paths提交，旧HTTPvendor删除而delivery486保留。
-- Root本轮集成仅BFF gitlink、既有consumer-inventory与CURRENT/task/progress；保护Billing五docs/uv.lock。完整治理tests1103passed/3skip（119.19s）exit0；currentcheckpoint/topology0，IAM relay等Root提交后重验。
+- Root本轮集成仅BFF gitlink、既有consumer-inventory与CURRENT/task/progress；保护Billing五docs/uv.lock。完整治理tests1103passed/3skip（119.19s）exit0；Root8ed71e9e后strict IAM relay/currentcheckpoint/topology三CLI实际PASS/exit0；不放宽门，历史precommit差异已闭。
 - WEB-FAILURE3后继：已发布public2 digest ba10f89baf0fdd8cd4da58947b0411da8c84294dfe77e278533aeda59a905773；Web main8205仍1.0，不先放宽/schema或热切半套。原只读消费文件表可复用，但写入前仍须当前文档门、明确唯一Web writer和Root验收。
 - BFF-RETRY-OWNER后继：正式重试必须复用原user message及其冻结配置、只新建assistant/run/outbox，不继续Web resend复制用户；由BFF裁决权限、tail/state、profile.retryable与幂等/并发，先三设计门再RED/GREEN。现仅排队，未授源码写入，不能声称已实现。
 - 当前输入框/整体布局fresh视觉未验，浏览器通道超时且截图请求未答，不重复猜CSS；全产品真实IAM/Agent/provider/browser矩阵、owner单库组合、Skills/MCP/Storage及Billing最终阶段仍按总goal继续。
