@@ -1,3 +1,90 @@
+## R39 Root 冻结复验与已续派原负责人
+
+Agent冻结23/bridge/protected/native-proof HASH重核无漂移；独立审0P0/P1/P2。Root当前全pure实际 **37failed/1722passed/6skipped/287deselected（96.91s）**，/tmp/kokoro-agent-callers-r39-root-full-pure.log，session81309已收；37全属尚锁machine/public/chat/proof旧契约，不是推算或全绿。Root完整Ruff267/0、Pyright0，/tmp/kokoro-agent-callers-r39-root-static.log，session2225已收；新版Pyright提示未升级不夹带依赖。45真PG证据前段保持。Root本轮零剩余执行柄。
+
+原Astra续派仅现HTTP4最小完整文件集/三面一致核对，保持23冻结不提前改machine；原WIN05 tests-only R1目前真实57fail10pass且类型问题待改，不冒充resource RED；原WIN06已授点号binding位置返修；原WIN09四docs D0候选已冻待审；原WIN01正式项目列表四docs D0在写。原其余只读报告已停，10职责面共享原计划，不让闲置窗口占测试/数据库或虚称10writer。
+
+Billing Root70/593pass383skip之前纯门仅中间证据，发现P2后不放行，须71/frozen/rootreview。整体Wave0–7 active，AgentHTTP4→BFF刷新续流→Web固定消费→受管正规login/chat/费用旅程仍未闭环。没有新增服务/假充值/provider/browserPASS；单库schema为开发owner切片不建设运维roles。
+
+## R39 十窗口只读后继交付与 Web 真缺口切片
+
+WIN01/02/03/04/07/08/10原窗口均已只读交付停；不是十writer仍运行。实证缺口：Web正式rail未消费ProjectList；BFF余额wire与Web schema不一致且Billing未pin；IAM无正式gift权限，用户两方案待回；MCP未接逐次typed授权；Storage产物链已接消费者但正规launcher缺delivery装配，分享作品尚无正式契约。现输入框/terminal footer已有保护，不凭旧截图盲改；3310仍offline且exact-source dirty门有效。Root按owner切片接续，不用只读报告冒充closed。
+
+Web原WIN01后继D0候选：main343aea36 clean，事实owner仍BFF，沿已发布ProjectList canonical list/detail与同源/api/hub读取，列表独立于会话；每个项目canonical id/name，Direct Chat/Project scope不串，会话重命名不改项目名，不用current-project通用fallback假全集。只现TECH/API/DATA/CURRENT四doc D0，比较扩现project-create wire/helper vs现contract/features/app普通project-list文件，按单一变化原因/实际client复用决定，无新目录/组件框架/owner；列表加载失败不得伪造empty-success或preview事实。数据页生命周期/请求代际、旧用户清理/取消、pagination按BFF机器事实明确。审后只现app-frame-rail.test.tsx先RED，再精确source冻结/真实UI。暂不授源码、金额或样式重写。
+
+## R39 Agent 首次worker真实PG45通过，当前纯门Root复验
+
+Root核23path frozen manifest96d5b236，在自有agent_terminal_atomic_2972312a1e4c4b57实际执行45：45passed/0failed/0skip（6.88s），55 SDK beta/deprecated warnings保留；/tmp/kokoro-agent-hitl-first-worker-r39-root-real-pg.log，session25109结束，created=true/closed=true，既有共享库Redis不清理。新增首次worker dispatch→正式saver/独立reader/officialtransformers→nativepause→真实7/3usage→waiting，零预先graph.ainvoke；原44保持。不冒充真实provider/HTTP4/browser通过。
+
+内部caller438pass worker已交，Root冻结全pure真实复验在途（剩machine/proof37锁仍未切换）；独立review原four_owner_fixes_review_r31读23边界+当前bridge全源不跑资源。Root已精准授权现test_interactions valid dict仅补action_result:None，保empty/private负例，不重复writer全纯。P3B/proof/source保护与完整HTTP4仍未闭环，无Agent半4提交。下一行动按Root实际结果与独立审放行同owner后继。
+
+## R39 单位引用位置门独立审真实失败（不放宽冻结断言）
+
+Root单位70/70与fullverify593pass383skip0fail已独立重跑，session66772完成，日志 /tmp/kokoro-billing-unit-r39-root-green-full.log。独立review发现P2：validator用未转义点号path作为allowlist，合法含点component key可碰撞七binding位置；Root真实内存payload新增CatalogItem.properties.credit_micros CreditMicros ref，errors=[]且应拒断言退出1，/tmp/kokoro-billing-unit-r39-root-dot-key-red.log。不得忽略P2宣称验收。精确续授原WIN06仅现test追加此负例（原70字节前段保持），及现validator改节点identity/结构化segment定位；YAML与金额/其他旧check全部锁；只doc现prefix记真实返修。原pureGREEN非最终门，修后Root重跑71/full与review。无PG资源/服务/生成新链。
+
+## R39 System 文档门通过，原负责人两 test-only RED
+
+四doc冻结SHA实核及独立review P0/P1/P2=0，Root已读DATA全新catalog归一与技术放置方案，三面一致；源码mainc0a76a3a未变。仅续授原WIN05现 test/unit/system-kernel.test.ts 与 test/integration/system-lifecycle.test.ts 的 R1唯一URL/控制/options纯配置、R2邻居非空仍安装空目标、R3真实选址与UTC/缺失namespace ready测试。不得导入不存在helper用collection错误代替RED；原断言保留，原四docs冻结，production/SQL/machine/generated/其他sixfixtures锁。Worker只纯单进程与resource collect，Root独占实际PG/Redis；freeze两SHA与创建/清理所有权说明后停，Root重跑RED再授精确GREEN。本门不是runtime完成。
+
+## R39 十职责面原窗口续派（不扩增空窗口）
+
+用户再次明确并行授权。沿原WIN01–10续派；原Astra是Agent唯一writer、WIN06是Billing唯一writer；System四doc冻结，Root/独立review后才授现tests。其他只读不能写文件/Git/启动服务或操作共享资源。Root main250294cf，保留uv/BFF8dirty/Billing5正文/Agent原proof与P3B。3310无监听，未称浏览器通过。
+
+| ID | 任务/角色 | 当前基线 | 范围与依赖 |
+|---|---|---|---|
+| R39-WIN01 | Web聊天交互只读D0 | 343aea36f15f | 现composer/message/sidebar代码与tests，仅列先失败测试，不改倍率；Billing发布后消费 |
+| R39-WIN02 | BFF单位artifact消费只读D0 | 759bfe0a8c52 | 现owner.ts/projections/contracts，v1/v2现状与固定digest单位提取方案；原8dirty保持 |
+| R39-WIN03 | Agent生命周期未决只读核对 | 0245a36c8542 | 现Agent源只读变化树标基线，不重跑writer进程；未决race/终态/usage对照 |
+| R39-WIN04 | IAM赠送授权决策证据只读 | e3c035b99cf9 | IAM已发布权限事实与赠送两方案最小差异；用户授权选择未回不实施 |
+| R39-WIN05 | System四docs冻结审查，待tests-only授权 | c0a76a3a7614 | 只四已冻结TECH/API/DATA/CURRENT独立审；源码/其他tests锁 |
+| R39-WIN06 | Billing单位GREEN原writer | 78aa2a3a8810 | 既定8路径，70 frozen tests不变，冻结后Root复验提交；无资源 |
+| R39-WIN07 | Platform安装→执行能力缺口只读 | f884048b69eb | 现published Skill/MCP→Agent执行调用边与3最小真实验收断言；无资源 |
+| R39-WIN08 | Storage作品→下载缺口只读 | 861af89732e7 | 现Artifact/Get/Download owner到BFF/Web缺口与最小负例；无资源 |
+| R39-WIN09 | Scheduler owner-schema四docs D0候选 | 9a4effd150ab | 现四docs一致D0；canonical/API/fixture/源码锁；审后再授RED |
+| R39-WIN10 | E2E现启动阻断与进程只读 | 250294cf9aa4 | 现3310监听/句柄与正式launcher guard精确阻断，零服务/资源/Git写 |
+
+全部读docs/CODEBASE_MAP及目标仓三面文档/专项手册，原窗口小报告≤1200字、绝对路径/基线/未决与下一最小片；停止后复用不重复派工。只读报告是待裁决证据，不是能力完成；冻结源Root重跑实际门与真实旅程才验收。
+
+## R39 Billing 单位 GREEN 精确授权
+
+三面prefix与frozen test252f2895独立审0P0/P1/P2，Root实际57fail/13pass闭合（版本1＋源定义绑定9＋validator47）。批准原WIN06继续sole writer，仅现 contract/openapi/v2/openapi.yaml、scripts/openapi-v2-target.ts、contract/README.md GREEN＋三批准文档现prefix同步与CURRENT新当前prefix；原五dirty正文/C1 source+SQL/生成/其他tests/依赖全部锁。测试252f2895整字节保持，不改diagnostic/断言为放绿。YAML info2.0.1、两Credit schema/唯一metadata、七引用，现金sequence/24operations/整数wire/全其他字段保持；validator用现真实visit拒错误location/类型/值/集合，不硬绕ref/删旧operation/auth门。README记录实际新SHA与experimental未runtime，不制造已发布client。
+
+只纯契约/format/lint/type/fullverify单进程、无PG/Redis/provider/服务/Git；full资源skip列明，默认test若需URL要明确exclude不可silent。生成仅已有contract检查，无新增业务查询/生成器/第二unit配置。冻结新SHA与8路径清单、原5正文逐字保护报告后停，Root重跑70/全门和独立审再提交限定prefix+source。后继消费者需固定version/commit/digest，不直改Web常量或cash/price/grant/policy。
+
+## R39 Billing 单位真实 RED 与独立 Scheduler 后继
+
+Root核Bill单位四冻结SHA及三prefix，剥unit与C1prefix后原dirty body逐字匹配；三面owner/metadata/wire/SQL一致，独立审在原billing_chat_read_audit_r29。Root首命令误带Vitest5已删除minWorkers选项（CLI退出，不计RED），日志 `/tmp/kokoro-billing-unit-r39-root-red.log`；纠正后实际 **57failed/13passed/0skip（70，1.42s）**，`/tmp/kokoro-billing-unit-r39-root-red-r2.log`，session8601结束。不是无效refs/版本其他错误充单位校验，合法与现金sequence控制13通过。YAML/validator保持锁，审后精确GREEN，不重复PG。
+
+R39-WIN09-schema沿原Scheduler负责人只读D0：main9a4effd clean，刚验收独立fixture不是production URL选址切换。Root实读现config.Load/cmd pool/Store/bootstrap定位生产URL仍裸传，原cardproduction URL/catalog未完成。范围只现三面docs/config/bootstrap/cmd与测试读取，给最小统一显式owner schema/UTC/同库安装验证设计与精确3个先RED现test位置；不写/Git/进程/资源，不新计划。固定单库/单role，非运维GRANT/部署；API与canonical SQL不动，不能借fixture已修掩盖production。独立于Agent/Billing/System，Root先裁方案与三面门再授实现。
+
+## R39 沿原负责人推进（上一轮为实质 progress）
+
+上一轮Root实际提交推送250294cf、四owner78aa2a3/f884048/861af89/9a4effd及386复验，非状态复述。当前目标保持完整Wave0–7 active；原Astra仍live、原WIN06-unit live，两既有句柄在跑不重启。Root无遗留执行session。
+
+System原WIN05 D0已实读并核main c0a76a3a clean：src/config纯URL解析负责显式唯一owner schema/移除消费selector/统一UTC选址，DatabaseService仅生命周期；比放database连接模块更贴配置边界，也禁止复制parser。catalog现scripts普通文件只读owner快照，期望取自Root测试自有参考namespace的同canonical SQL，不创建第二可编辑Schema/catalog、不让正常runtime安装任意参考schema。22表/SQL/机器HTTP契约不变，其他owner非空允许。本轮不授新文件/源码GREEN。
+
+| 项 | 当前批准范围/边界 |
+|---|---|
+| Owner/writer | System原WIN05唯一writer；Root独占Git/resource/验收 |
+| 当前/目标 | 现public锁/选址/空白/fixtures → 显式schema同一解析规则与namespace边界；非生产role/运维拆库 |
+| 目录/粒度 | 目标现src/config普通database-url.ts与scripts普通system-schema-catalog.ts，无新目录/module/process；本阶段锁 |
+| 数据/API | 唯一SQL保持，UTC与查询选址一致，ready须验证目标namespace存在且不自动创建/fallback；API生成/digest不变 |
+| 删除目标 | public硬编码、URL options覆盖、固定安装锁、整库空白及fixture public业务引用；无alias/双轨 |
+| 本阶段授权 | 现TECH/API/DATA/CURRENT四docs完成一致D0并核commit；通过后现test/unit/system-kernel.test.ts及test/integration/system-lifecycle.test.ts tests-only R1/R2/R3，原断言保留 |
+| URL | schema恰一小写安全ASCII≤63字节，拒空/重复/列表/public/pg_*与URL options；raw控制字符不让URL构造器洗掉后放过；TLS普通参数保持，不回显secret |
+| 测试隔离 | 自有随机库中新建目标＋neighbor sentinel，Root真PG/Redis既有实例；创建标志/有界finally只清自有；worker纯RED、resource仅collect |
+| 阶段门 | 三面D0由Root先核 → R1配置纯实际RED/R2外部非空目标安装/R3同名marker实际选址真RED由Root → 精确GREEN与全Gate；不先发布半cutover |
+
+第一阶段目标文档四绝对路径均在 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-system/docs/ 下，未决：最小catalog snapshot归一须详列现函数/trigger/default等自带schema身份的处理，正常runtime不跑参考DDL；ready现SELECT1的namespace检查要承接，无新service/role。正反门命令为owner pnpm check/contract:check与真实 test/schema:fresh、Root topology/checkpoint；现原194余tracked保持。其他owner/System six fixtures与Root组合URL消费属于GREEN一次切换精确后继，不由本阶段暗改。
+
+## R38 Agent 首次 pause 的 usage 生命周期精准切片
+
+Root已实读 invoke_once、真实add_usage与on_native_settled：callback先record_pause/reconcile释放lease，随后usage入段必然拒NULL fence；原pure迁移9同根fail，`/tmp/kokoro-agent-callers-r38-supervisor-r3.log`。只把已知SDK interrupted分支前移不够，独立reader可以非interrupted→waiting，同样释放lease。不得放宽PG/fake lease谓词或把terminal usage拆为非原子写。
+
+批准原Astra sole writer仅再解冻现 execution/run_agent.py 与现 worker/supervisor_execution.py：必需on_native_settled接本次真实usage闭包seal_usage，由waiting/unknown正式分支在释放lease之前调用；active不调用，正常completed/failed仍唯一finalizer内同事务写usage。闭包绑定真实usage callback累计和原record_usage/fence，成功后至多一次；记录失败/reader持久失败原样抛，不伪造第二终态。不新增协议/表/owner/optional空callback。现已授test_invoke/shared fake/r0 caller可相应更新，明确covered非interrupted waiting、unknown、重复seal及usage失败零terminal。interrupted但active不发completed，须保实际段且不借authority，不静默漏记。
+
+第一步现test_invoke准确顺序真RED，然后GREEN冻源。定向允许现 tests/integration/database/test_run_interaction_transactions.py 仅追加真实首次worker dispatch→正式saver/独立reader/native projections→pause/usage/waiting的用例，不预先graph.ainvoke，原44/原8proof断言与P3B均保持；Root自有PG重跑新例+原44。三面owner文档只现批准前缀更新，原body保护。所有源/测试hash刷新，Root再独立审并全门，旧44预建graph不冒充新worker旅程。
+
 ## R38 Root 四 owner 集成复验 GREEN／单位 owner 原卡后继
 
 R3四治理 **386passed/0failed（51.06s）**，`/tmp/kokoro-r38-root-owner-integration-gates-r3.log`，session38256结束；前两失败与exact-pin单行返修保留，不弱门。来源更新恰33 committed SHA＋2实际source bytes SHA，无artifact digest/边状态变化，仍3active/13broken；四gitlinks绑定已独立验收commit，uv/BFF/Agent及Billing原5设计候选保护。
