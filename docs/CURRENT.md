@@ -492,3 +492,10 @@ Web `840fa7e0ff9c4d241daca0c297b120f34821018e`：16现文件已冻结hash核验�
 ### a0b95a31 后置门事实修正
 
 Root已集成Web840fa7e0；relay门实际FAIL `apps/kokoro-bff: child worktree is dirty`，由尚未通过独立审查的BFF四文档候选触发。首前置shell尾部git status曾掩盖门exit1，Root读取原JSON后已纠正全部本轮relay PASS断言。原失败日志保留，严格门不放宽，也不回滚/覆盖worker候选。Web1784/162完整owner测试/构建为独立已实跑exit0，和Rootdirty gate分别记录。Root随后各门独立执行，不再以shell最后命令冒充前面门通过。
+## PARALLEL-EXECUTION-NEXT：Web 一片已提交；Agent/BFF继续推进（2026-10-01）
+
+Web main `54a1bd6df3cc6b8ce0309600de1af3162a782d5d`：精确四路径删除项目会话未消费的虚构run状态producer与死类型、补负向回归与CURRENT；746其他tracked文件字节不变，独立审查0/0/0。Root fresh两UI文件90/90、完整2065/2065、contract219/219、architecture50/50、lint/typecheck/build0；隔离preview Playwright14通过/4既定条件跳过，后置typecheck0，34118退出。49 Web来源commit刷新而artifact digest全不变，库存仍3active/13broken；精确暂存Web gitlink后checkpoint/topology均PASS/exit0。用户3310运行副本未激活新源码，不称正式登录/真实模型或整个UI修复完成。
+
+Agent唯一writer已取得3项unit RED与Root真实PG terminal Chat故障RED（terminal错误为true）；新coordinator变化树上该PG诊断1通过/1.34秒，两自有DB均closed=true。尚未冻结、尚未完整owner验收/提交，不能当最终GREEN。Agent正常terminal同txn usage/outbox/Chat/cleanup；NACK唯一typed quarantine私有审计，不恢复被拒公开流。BFF负责人四doc局部门候选待纠正极速terminal先于HTTP ACK、sticky unknown与历史terminal source保护；未授BFF源码/DDL/test。独立审查与Root集成并行，不以Agent退出码代验收。
+
+三位native Agent具名：agent4_execution_owner（Agent实现）、web_failure_wire_review（Web交付后转BFF FIFO设计/实施）、agent4_lifecycle_review（独立审查）。没有外部worker/额外用户任务或重复PG/Redis；Git由Root串行。全4/retention、BFF/Scheduled FIFO、原user retry、ChatGPT回复布局、九owner组合与最终Billing均尚未完整闭环，goal保持active。日志与冻结manifest位于 `/tmp/kokoro-web-empty-status-*`、`/tmp/kokoro-terminal-atomic-*.log`。

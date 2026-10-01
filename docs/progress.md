@@ -1,3 +1,15 @@
+## PARALLEL-EXECUTION-NEXT：三条线并行推进（2026-10-01）
+
+上一goal turn实际progress：Agent候选dd5afc3/Root e398aebe提交，真实PG复现terminal丢失窗口；不是执行修复完成。现进入正式源码切片准备，不再重复已完成profile/native探型或pin。
+
+| 任务/优先级 | 负责人/基线/范围 | 阶段与完成条件 |
+| --- | --- | --- |
+| AGENT-TERMINAL-ATOMIC/P0 | agent4_execution_owner（既有gpt-6-astra），Agent唯一writer；main dd5afc3528fe3a835756bc3ff55dfacaa8ca76d3 clean；四docs候选外仅现Run/Chat/execution/worker/test范围待明确，不碰其他owner。 | 先将当前HTTP3.0已有终态一致性修复的三设计面单独收敛，映射自然/异常/build/cancel/invalid-resume全部入口，记录准确方法/类型/测试集合；这是完整Agent4同事务terminal边界的前置实现，不以3.0保持为目标、不增alias/fallback或第二收口路径。Root核门后tests-only RED，再唯一terminal coordinator生产替换、真实PG/Redis/HTTP与完整门；当前仅授四doc写入。 |
+| BFF-FIFO-CONSUMER-READY/P0 | agent4_lifecycle_review（既有gpt-5.6-sol），只读BFF main88c54dbc、Agentdd5afc3；保护BFF既有四doc495行草案，禁止写/提交/数据库/服务。 | 在已有队列方案基础上交可执行消费任务图：queued facts、expected registration、terminal release、original-user retry、postterminal source阻断、normal Chat/Scheduled发送方nullable parent与全部消费路径。列最小正式owner wire/schema变更、precise文件及独立真实验收；不再仅重复HTTP202不等于terminal结论，不提前切4.0。 |
+| WEB-CHATGPT-UX-READY/P1 | web_failure_wire_review（既有子Agent），只读Web main34dc40c及现UI测试/运行副本source。Root独占用户浏览器与runtime操作；不启服务、不改数据/发模型/写文件。 | 在已定位回复失败布局基础上，补输入框/会话vs项目/queued-HITL-cancel-reconnect真实状态行为图与复用shadcn/Vercel组件、精确测试/文件切片；不发明未发布mutation、不重复57已有基线，pending详细视觉确认保留。 |
+
+Root负责总架构/放置门、只写统一task/progress/CURRENT、Git index/提交与真实隔离验证。三任务负责人具名，同仓一个writer；没有外部CLI或额外用户窗口，不让worker操作共享服务。完整目标九owner/Wave0–7/最终Billing与组合验收不变；Conversation删除/retention用户决定继续单列，不能阻断与其无关的已批准局部一致性修复，也不得借局部切片把完整Agent4数据门改为已通过。
+
 ## AGENT4-DOC-CORRECTION：设计候选已提交；缺陷尚待源码修复（2026-10-01）
 
 Root本片fresh集成：精确暂存后checkpoint/topology均PASS/exit0；完整 `python3 -m pytest scripts/tests` 1103通过/3跳过（101.06s），3个需Agent依赖的原生测试用其.venv补验3通过/52 subtests（0.36s）。fresh全仓标准仍FAIL137、unverified0/exit1，不放宽门。日志 `/tmp/kokoro-agent4-doc-correction-root-{checkpoint-final,topology-final,tests,native}.log` 与 `...-root-standard.json`；未跑新实现integration/acceptance/真实provider/browser，不能由这些工具门推断研发整体闭环。
@@ -2613,3 +2625,12 @@ Root独立code review0/0/0，pure全部1505pass6既定skip174deselect57.88s、Ru
 真实R2再次2fail20deselect1.91s，cleanup精确DB0/Redis15=0，outbox/Chat/Redis全部safe且single，正式Run evidence漏首index0。已由独立review确认P1现API缺陷：exclusive after_seq初始0不可读0，不伪造START或降terminal预期。Root裁决Run-only EvidenceAfterSeq=-1，与Chat seq初始0隔离；先四docs/现tests RED、再窄放HTTP机器/ingress/server，不改event index/SQL/proof。本门尚未实现，原pure1505通过不代替真实门。
 
 本轮Root三台账diff独立最终0/0/0；Root治理三文件实际54pass（40.43s），`/tmp/kokoro-agent-failure-review-progress-tests.log`、session94226exit0已消费。原3310组八PID均live/无Z、Redis测试DB15为0；未新增常驻进程/重启或收费动作。只提交三台账，子仓26文件候选与新cursor docs/tests在途、Billing五docs、任务外uv.lock排除；完整goal保持active。
+# PARALLEL-EXECUTION-NEXT：从审查转入源码切片（2026-10-01）
+
+实际可审查交付：Web main54a1bd6df3cc6b8ce0309600de1af3162a782d5d，Root精确四文件提交46新增/16删除；746其他tracked字节保护，独立review0/0/0。Root两UI90/90、full2065/2065、contract219/219、architecture50/50、lint/typecheck/build0，preview Chromium14通过/4既定条件skip（13.5s），34118退出、后置typecheck0。原运行3310PID65590未触；49 Web inventory source刷新、所有digest不变、3active/13broken仍原状态。Root精确暂存gitlink后fresh checkpoint/topology均PASS/exit0，日志/tmp/kokoro-parallel-execution-root-{checkpoint,topology}.log；此次未重复Root1103完整治理门，上一片结果不冒充本片fresh。
+
+Agent当前只可称进展：3unit RED（terminal usage失败/晚写usage/错误NACK identity）＋Root真正PG terminal Chat失败1failed/1.18s；新production变化树单项PG诊断1passed/1.34s，未冻结/全owner验收/提交。自有DB agent_terminal_atomic_0b383284b49a40a9/ec9d9577cc6c42d4已回收。BFF doc gate独立审出3P0/2P1并返修，尚未授源码；不是所有子仓已完成。
+
+实际三位具名Agent续派：agent4_execution_owner收敛NACK裁决与terminal原子事务RED；web_failure_wire_review为Web唯一writer修空会话虚构queued字段；agent4_lifecycle_review完成BFF FIFO方案后独立审Agent事务。Root负责资源/审查/集成验证；未启动外部worker或更多预览进程。Web代码证据修正：queued目前为未消费字段，不能声称页面已渲染badge；删除死类型与推断，不留兼容optional。BFF方案确认HTTP投递succeeded已放行后继、enqueue覆盖expected、Scheduled绕过FIFO，尚未修复。
+
+Root NACK裁决保留毒化流隔离：同唯一typed finalize的quarantined结果，核持久rejected receipt/fence，私有superseded审计+terminal/cleanup，不追加公开Chat/Redis；正常terminal仍同txn Chat。实际index/DBtimestamp/usage后锁内pure projection。全4发布/数据生命周期/九owner组合门仍未通过，后续按RED→源码→Root重跑，不以并行报告当完成。
