@@ -1,3 +1,17 @@
+## BFF-SCHEDULED-ACCEPT-LEASE-GREEN-R33：原 WIN02 两文件授权
+
+Root Node22 fresh build0，首pattern运行因排除旧first-test schema安装而4fail（relation missing，非业务RED）；日志保留 /tmp/kokoro-bff-scheduled-lease-r33-root-red.log，自有库closed/Redis0。完整file真实 **9 passed/2 failed/0skip（2.70s）**，task/scope锁等待过期后错误accept=true/写dispatch/202；/tmp/kokoro-bff-scheduled-lease-r33-root-red-r2.log，自有bff_fifo_d757884568334492已drop/Redis0。冻结test64dc8294，独立Sol 0P0/P1/P2，真实RED可放行。
+
+原WIN02 sole writer：仅 src/infrastructure/postgres/scheduled-agent-dispatch-repository.ts 的accept保持原receipt→task→scope→dispatch锁和receipt FOR UPDATE，等待所有必要锁之后用DB clock重新确认原lease未过期，失效ROLLBACK/false；建议紧贴terminal receipt更新、dispatch write/exact检查之后覆盖全部实际等待，事务内scope/dispatch都回滚。无Node时钟/延长lease/改claim/envelope/schema/错误或兼容。现scheduled-agent-dispatch.integration.mjs冻hash保持不改（确需变先报告），原8dirty逐byte保护。worker离线format/lint/typecheck/build、freeze两个文件及保护hash后停写，不PG/Redis/Git/服务；Root完整11真PG＋纯scheduled/门、独立review后精确提交，原Chat owner4未验候选仍不混入。
+
+## BILLING-C1-TERMINAL-D0-R33：沿原 C1 收敛 hold 终态来源
+
+上一goal轮是progress：Billing5c45f22/Rootd1ff97fe已推main，真实24PG/5receipt及386治理门改变代码事实；完整goal不缩减。本轮原Agent与WIN02实际live，Root不重复开服务。Billing原WIN06可独立接本C1文档门，Root审查/Git/资源；基线main5c45f22419db43ae9a128543a056cd1c4a6ff013＋原5dirty设计文档。
+
+Root实读credit.repository #finishHold：已终态capture仅在全account任取usage journal后比较source，零amount无journal且不核source；hold无不可变terminal source引用，多个hold会错误重放/拒绝。本卡仅现docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md新增C1批准前缀，原五脏内容及R32已验prefix逐byte保护；IMPLEMENTATION_PLAN不写。三面明确唯一owner、exact capture/release replay、zerocharge、审计不重复、终态金额/来源漂移整事务零写、expiry分类、锁顺序/尾部rollback和fresh schema/Prisma生成边界。比较hold自有不可变source与ledger可空关联等至少两位置，不拿任意account journal或audit payload当第二事实，不加兼容/新API/表/跨仓依赖。可提最小必要hold列与CHECK，但源码/schema/生成/测试/依赖尚未授权。
+
+Worker给精确现文件与RED矩阵、文档prefix hash/保护结果，离线只读schema/contract校验后停写；Root独立门审后立即授权真实RED及代码，不让重新做全Billing重构规划。此前真实reserve已验保留，gift IAM政策不阻塞本独立账务组件；后继仍C1/C2/C3/M5，支付最后。
+
 ## BFF-SCHEDULED-ACCEPT-LEASE-RED-R32：原 WIN02 独立测试切片
 
 Root组合已实跑 topology与固定w1e-iam07 checkpoint PASS/exit0、四治理测试 **386/386（50.42s）**，/tmp/kokoro-r32-root-{topology,checkpoint,governance}.log。Billing精确5c45f22已推main，inventory仅两committed引用升级、contract digest零变、3active/13broken保持。原WIN02追加BFF既有scheduled accept锁后lease测试RED（单现文件），不动8受保护内容；原Agent继续当前事务核。Root所有测试/推送句柄已收，无新常驻服务。

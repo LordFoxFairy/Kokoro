@@ -1,3 +1,9 @@
+## R33 BFF scheduled 锁等待过期已真实复现，继续原 owner 修复
+
+Root新完整11-case真实PG **9pass/2fail/0skip**：task/scope barrier后lease过期仍错误accept/dispatch/202，非collection失败。首pattern排除了既有first-test安装导致4 relation missing，原日志保留且不计业务RED；纠正整file后命中预期，两个自有随机DB都已drop、Redis14余0。Node22 fresh build退出0，独立Sol0/0/0，原WIN02仅现repository accept最终锁后DBclock复验转GREEN，冻结测试及原8dirty保护。日志 /tmp/kokoro-bff-scheduled-lease-r33-root-{build,red,red-r2}.log。
+
+本轮原Agent事务核持续live（22 PG例仅collect，真实PG待冻结）；原WIN06独立C1 hold终态来源三面门live，只新增四docs前缀，不授权SQL/代码/生成。上一轮Billing5c45f22/Rootd1ff97fe已验提交是progress；fullWave0–7仍active。没有新服务或共享清理，不以离线测试替代3310浏览器/正式积分与审批闭环。
+
 ## R32 Billing C1 reserve 局部已验；Agent 事务核仍在实现
 
 Root组合已实跑 topology与固定w1e-iam07 checkpoint PASS/exit0、四治理测试 **386/386（50.42s）**，/tmp/kokoro-r32-root-{topology,checkpoint,governance}.log。Billing精确5c45f22已推main，inventory仅两committed引用升级、contract digest零变、3active/13broken保持。原WIN02追加BFF既有scheduled accept锁后lease测试RED（单现文件），不动8受保护内容；原Agent继续当前事务核。Root所有测试/推送句柄已收，无新常驻服务。
