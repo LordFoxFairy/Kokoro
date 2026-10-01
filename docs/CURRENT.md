@@ -1,3 +1,7 @@
+## R29 Billing只读审计已纠正收口
+
+Root独立核v2 digest eb95b6dd与IAM仅credit.consume schema；已有单位1Credit=1e6保持，无新产品决策。唯一路线B8-M3/C1/C2/C3/M5，v2现字段足够但Nest runtime/BFF可信身份/固定consumer尚未完成；正式grant等待IAM target artifact。详见同docs/task.md当前结果。未动五受保护docs/源码/资源、不补v1、不免费造余额；原Agent P2四设计前缀仍在途。
+
 ## R29 后继状态
 
 Agent纯domain已在0245a36、Root集成c3700724推main；持久P2只授权原四设计前缀收敛，详见同docs/task.md当前卡，源码/机器/测试未授。Billing readonly首报告因误把既定1e6和v2路线当未决退回，重复提问已撤回；待纠正不走v1补丁。3310当前offline，未启动新服务或改用户数据。

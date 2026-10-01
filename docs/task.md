@@ -1,3 +1,7 @@
+## BILLING-CHAT-READ-AUDIT-R29：纠正后只读审计已收
+
+未改Billing/BFF/Web/IAM源码、五受保护docs或资源。Root核实Billing v2 artifact digest **eb95b6ddf4c3e611ff3eb065bcb39dad97d47cbf2203f8d6fd8105f17a5b42ad**；现getMyCreditAccount提供available/held/status，字段足够但只有userBearer且runtime未接线，不能直接宣称BFF消费通过。IAM **e3c035b99cf9479ac8357c7d38147f1541dcbcac**当前schema严格action=credit.consume，没有admin任意target/current-scope；正式grant入账仍等owner机器能力。沿既有B8-M3/C1→C2→C3→M5：C3现v2 operation收敛BFF可信身份/Nest单runtime/删旧pg-v1，发布后BFF固定pin与专用summary、Web删quota并统一10^6、最后Root生命周期。原审计扩v1建议已撤回，不授权新read API，不新建Billing支线；无新的产品决策。历史503只诊断，当前3310offline不混称在线503；不得零值/免费/直接SQL补账。
+
 ## AGENT-HITL-PERSIST-P2-D0-R29：事务核精确准入（沿原HITL卡，不新计划中心）
 
 | 项 | 当前裁决与范围 |
