@@ -1,3 +1,16 @@
+## R42 发布收敛与完整门真实缺口
+
+上一轮为progress：Agent196真PG修订通过、Scheduler15PG＋1重启通过，Root986bfb85已推送。沿原owner续接，本轮不新窗口/不改目标。Web28path ProjectRead冻结，原WIN01停写，独立审查由原billing_chat_read_audit_r29负责；Root Node22完整pnpm check实际**1failed/2133passed**（44.06s），失败为既有RP pending-refresh signout500，不是ProjectRead定点失败。定点同例真实fixture复验1pass/38选择skip（6.96s），仍不以单例绿覆盖full失败；原WIN01仅只读定位，Root单独Next build已exit0；full失败仍原样保留。日志 `/tmp/kokoro-web-project-r42-root-{full-check,logout-repro,build}.log`，93402/96806已收。
+
+Agent此前pure排除的unit resource闭包：Root实际**6failed/12passed/1356deselected，697warnings，4.66s**，`/tmp/kokoro-agent-r42-root-unit-resources.log`；owned `agent_unit_r42_fc0df9d9af7548c0` closed=true，空Redis15由reservation marker独占，精确删除14个本次stream、remaining0、cleanup_errors=[]，83032已收。不是provider/Docker真实能力通过。原Astra已只读判定三现test装配/旧契约断言：structured validation、subagent native saver pending与safe failure、memory checkpointer缺失。
+
+R42-Agent精准write卡：main0245a36＋66冻结候选；仅现test_request_input一个函数、test_subagent_hitl三函数/import/docstring、test_memory _context/_run及三资源函数/import。保持完整InputValidation、真实PG root/child pending全集、approval0→1/reviewcache1→1、GP调用计数＋safeprofile、perRun独立checkpoint但同memory namespace、tenant isolation与invalid零写。其他生产/SQL/protocol/fakes/proof/P3B及剩余冻结源锁；Root真实18复验/审查后才发布Agent，不伪interaction/恢复旧selector/no-checkpoint fallback。Root已准备四docs批准prefix的index候选到/tmp，HEAD历史tail与P3B工作树保持，尚无owner index/commit变更。
+
+System原WIN05 catalog、Scheduler原WIN09并发/回滚test与两运维文案小门继续各自writer；正式消费者/费用/browser整链未闭环。
+
+
+R42 Web独立审发现P1：现use-app-frame-project第二detail/history GET未进入新boundary，A已加载或pending指令在重核换B后仍可能可见；metadata原expect计数61实际HEAD52为P2。原WIN01只批准四doc当前段＋现workspace tests追加到达真实GET的两身份负例，旧28source先锁；后继复用validated detail/history同boundary、取消/deadline，迟到PATCH也不得回写新身份，不保留双shape fallback。单行RP安全diagnostic另精确批准，Rootdefault full重跑后不能用单例过关抹去原500。
+
 ### R41 Agent 六失败修订真实转绿
 
 三现文件fixture/README冻结manifest922a7d33，原63源/native两proof/P3B锁全部保持；独立复审0P0/0P1/0P2。Root在自有 `agent_terminal_atomic_508f2f048ac44497` 重跑完整database：**196 passed /0failed /0skip，55warnings，17.67s，exit0**；created/closed=true，session91209已消费，日志 `/tmp/kokoro-agent-hitl-r41-root-all-database-r2.log`。原6fail190pass RED仍保留。新增terminal interaction以完整typed payload/identity/source联合序列断言承接，未过滤帧、伪造started或放宽GC/usage/lease约束。
