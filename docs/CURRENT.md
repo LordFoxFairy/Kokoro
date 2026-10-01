@@ -17,6 +17,16 @@ BFF R13 Root 实跑：format/lint/typecheck/contract191/architecture27/build成�
 
 Root 本次 Web 指针集成复验：精准暂存五路径后，当前 checkpoint 与 topology 均 PASS/exit0；三文件相关治理测试95/95（42.80s），日志 `/tmp/kokoro-web-composer-p0-root-integration-{checkpoint,topology,tests}.log`。未运行全Root门；BFF/Billing/uv.lock未暂存。R14独立审查另外发现consumer预算identity与DBclock往返漏扣，已加入返修，仍待真PG终验。
 
+### AGENT-DURABLE-INGRESS-P0：与 BFF R16 并行的独立代码切片
+
+Root 采用独立审查裁决：停止临时 advisory normal-admission 方案，不建立第三套 scope 状态机；正式 scope/retry 仍按批准4.0依赖推进。正常 Redis serve 已走 durable `get_pending_dispatch → claim_dispatch`，缺口是备用 `SupervisorControlMixin.dispatch → _on_request → try_claim`，不能误称正常主路径绕行。
+
+任务 owner Agent；负责人 web_interaction_audit（gpt-5.6-sol，此阶段仅 Agent writer），基线 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent` main `64665cb0e5a0bca1cb4ff08147e0119aff769d6b` clean；Root 审查/提交与基础设施，agent4_lifecycle_review独立只读审查。仅收敛现 RunRequest 备用入口到既有 durable consume，不改scope/DDL/机器wire/409/retention/Provider/BFF。先在三现设计文档明确本片当前语义，单仓文档门通过再 tests RED→实现。允许现 `worker/supervisor_control.py`、`supervisor_context.py`、`supervisor_execution.py`、对应现 `tests/unit/execution/test_supervisor*.py`、`tests/support` 中实际引用的repository double（发现需要先报绝对路径）、现durable dispatch integration测试及四设计docs。不新文件、不扩大模型/lease/terminal实现；`try_claim`全面删除若牵连大范围先交引用清单，本片不顺带重写整个port。
+
+验收：缺失 durable dispatch 的 RunRequest 不创建Run/不调用build；精确持久 envelope 覆盖伪造/陈旧Redis输入；已有 pending恰一次claim/启动，重放不重复；控制resume/steer/cancel行为与session校验不变。全默认门和真实PG/Redis入口回归由Root重跑；只读review绑定冻结hash。独立于BFF test返修，禁止双方修改共享资源/Git；本片不宣称已实现session FIFO或完整Agent4。
+
+当前追加真实结果：BFF R14七文件47/2/0取消（14.79s），R15为48/1/0（13.86s），R16新增commit-budget用例后48/2/0（14.51s），均exit1；各自临时DB已回收/Redis14剩0。mega锁等待与五HTTP已通过；剩测试误读未公开stream marker，以及commit延迟decorator错选exhaustion探测事务，R17已精准返修。R16独立静态审查不替代这些真实失败，Root不接受“已放行”口头报告。R16完整静态门format/lint/typecheck/contract191/architecture27/build成功（`/tmp/kokoro-bff-fifo-root-full-static-r16.log`）；最终真实门通过前不提交BFF源码、不提高timeout。
+
 ## PARALLEL-R11：集成返修继续（2026-10-01）
 
 上一goal turn分类为progress：Root真实R9诊断与两份派工提交 `4ab9a150`、`3bf87e7c` 已完成；不是仅状态复述。总目标九owner/Wave0–7不变，Billing最后。当前两独立writer分别为BFF bff_fifo_owner_r9与Web web_interaction_audit，Root统一资源/Git，独立review只读。
