@@ -1,3 +1,29 @@
+## AGENT4-DOC-CORRECTION：设计候选已提交；缺陷尚待源码修复（2026-10-01）
+
+Root本片fresh集成：精确暂存后checkpoint/topology均PASS/exit0；完整 `python3 -m pytest scripts/tests` 1103通过/3跳过（101.06s），3个需Agent依赖的原生测试用其.venv补验3通过/52 subtests（0.36s）。fresh全仓标准仍FAIL137、unverified0/exit1，不放宽门。日志 `/tmp/kokoro-agent4-doc-correction-root-{checkpoint-final,topology-final,tests,native}.log` 与 `...-root-standard.json`；未跑新实现integration/acceptance/真实provider/browser，不能由这些工具门推断研发整体闭环。
+
+Agent main `dd5afc3528fe3a835756bc3ff55dfacaa8ca76d3`，Root精确四doc提交454新增行，子仓clean；独立最终四hash评审0/0/0，349其他tracked字节不变。terminal Chat identity/session event seq必须与最终usage/outbox/head/active释放同连接同事务，提交后只Redis；live保持reserve→fenced Chat提交→无锁publish。BFF正式源是HTTP Chat replay，现postterminal连续source门并未实现。profile v1编码/无secret字段/稳定source已明确，必须早于retryable外部preflight冻结。完整三设计门仍因Conversation删除/retention未决而未通过；source/DDL/HTTP3/generated未改，Agent4 artifact未发布。
+
+Root实跑旧源码基线lock/format/Ruff/contract0、默认pytest1520pass/6skip/174设施等排除（57.17s），不是新功能GREEN；裸pyright误选Python环境1262错/exit1日志保留，正式`uv run --frozen pyright`0 errors/0 warnings/exit0。wheel/sdist0输出自有tmp，repo自有build目录已回收。日志`/tmp/kokoro-agent4-doc-correction-{baseline,pyright-uv,build}.log`；冻结`/tmp/kokoro-agent4-doc-correction-final.json`。
+
+Root真实PG生产repo诊断：自有fresh DB `agent_terminal_gap_bf8ba506757f4d54`，schema安装→claim/run.started→terminal提交后模拟中断；新连接恢复观测terminal=true、terminal_fence_seq=null、lease清空、queued terminal0/reclaim0。`/tmp/kokoro-agent-terminal-gap-probe-result.json` gap_reproduced/closed均true；脚本0表示成功复现旧缺陷，不是修复或截图根因。应用数据/Redis/3310/provider未触。30Agent committed来源刷新；29字节digest不变，仅真实TECH文档digest改变，机器contract3.0原字节不变；inventory仍3active/13broken。
+
+Root首轮source刷新错误假定30digest全不变（实际TECH改变），断言中断未写inventory/收尾docs；checkpoint又误把短名当路径，exit1。历史`/tmp/kokoro-agent4-doc-correction-root-checkpoint.log`保留；现按实际doc digest和完整checkpoint路径修正，不改snapshot或状态门。Root集成fresh验证随后记录。全goalactive：Agent4执行/GC→BFF FIFO/原user retry→Web queued/ChatGPT→Root真实组合，Billing最后，未称137静态缺口或整体能力完成。
+
+## CHATGPT-THREAD-UX：最新截图复核（2026-10-01；尚未实现）
+
+用户再次明确喜欢 ChatGPT 风格。Root 与 web_failure_wire_review 并行只读核对 Web main `34dc40c0f92fb440dc241643b491cdc3e61f9f1c`；同一会话的已有正文失败被拆成独立滚动项，是 `conversation-thread.tsx` 的空正文/纯text限制所致。Alert grid 和默认36px outline重试形成孤立红色提示/大按钮；3310运行副本仍无条件显示旧重试，不能把它当正式terminal retry能力。
+
+最小方案沿既有任务A：归属匹配末轮的失败收在同一回复内，保留正文；使用现Alert语义、中性色紧凑footer、真实可用时紧邻ghost xs动作。无assistant/后有新user/活跃执行/重连/HITL/deliveries仍不得错挂。限现Thread组件/CSS/失败测试，无新组件体系、协议或数据库；正式原user重试仍依赖Agent/BFF发布，不通过新建user假装重新生成。详细设计尚未取得明确确认，未授权源码写入。
+
+`END_KOKORO_FOLLOWUP` 未见于renderer或生产源码；旧任务记录确认它出现在真实模型验收回复，不能用字符串过滤伪造修复，也不擅删用户历史。后续验收会话应与正式使用会话分开。
+
+Root本次新跑 `pnpm exec vitest run tests/ui/conversation-failure.test.tsx`：57/57，exit0（1.52s），日志 `/tmp/kokoro-chatgpt-thread-ux-baseline.log`；这是当前行为基线，不是新设计GREEN。IAB同browser3可列出7现有tab，但getTab6在20s超时并reset；未点击重试/发送/刷新/开tab/改数据或重启3310，实际浏览器新设计验收未通过。Web仍clean，未声称视觉已修复。
+
+### AGENT4-EXECUTION-GATE：并行审查实际交付，完整设计门未通过
+
+Agent main `f3be3b97dd67df69ed3c6cb88c59f3bc2db97703` 四候选文档仍原322行；两位审查员均只读，无源码/contract/SQL/基础设施变化。实际定位：terminal先提交、usage与terminal outbox后写，现恢复不能补缺失payload；Redis live publication当前持Run行锁await网络；profile尚未在可重试外部preflight前冻结；Run TTL不保护将新增scope/lineage/native引用。Root下一步须收敛typed terminal单事务、commit后持久身份发布、无secret canonical profile与引用感知GC设计，不能照旧候选直接实施。产品Conversation deletion/retention决定仍待回复；完整owner4发布、BFF FIFO/原user retry、Webqueued及真实跨owner组合均未完成。审查报告不是已实现能力，整体goal保持active。
+
 ## BFF-CHAT-PAGING1：源码已提交，真实owner门通过（2026-10-01）
 
 BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada`，Root唯一精准7路径提交；生产仅1行mixed-direction keyset修复。

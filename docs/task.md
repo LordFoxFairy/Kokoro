@@ -1,3 +1,56 @@
+## AGENT4-DOC-CORRECTION：设计候选已提交；缺陷尚待源码修复（2026-10-01）
+
+Root本片fresh集成：精确暂存后checkpoint/topology均PASS/exit0；完整 `python3 -m pytest scripts/tests` 1103通过/3跳过（101.06s），3个需Agent依赖的原生测试用其.venv补验3通过/52 subtests（0.36s）。fresh全仓标准仍FAIL137、unverified0/exit1，不放宽门。日志 `/tmp/kokoro-agent4-doc-correction-root-{checkpoint-final,topology-final,tests,native}.log` 与 `...-root-standard.json`；未跑新实现integration/acceptance/真实provider/browser，不能由这些工具门推断研发整体闭环。
+
+Agent main `dd5afc3528fe3a835756bc3ff55dfacaa8ca76d3`，Root精确四doc提交454新增行，子仓clean；独立最终四hash评审0/0/0，349其他tracked字节不变。terminal Chat identity/session event seq必须与最终usage/outbox/head/active释放同连接同事务，提交后只Redis；live保持reserve→fenced Chat提交→无锁publish。BFF正式源是HTTP Chat replay，现postterminal连续source门并未实现。profile v1编码/无secret字段/稳定source已明确，必须早于retryable外部preflight冻结。完整三设计门仍因Conversation删除/retention未决而未通过；source/DDL/HTTP3/generated未改，Agent4 artifact未发布。
+
+Root实跑旧源码基线lock/format/Ruff/contract0、默认pytest1520pass/6skip/174设施等排除（57.17s），不是新功能GREEN；裸pyright误选Python环境1262错/exit1日志保留，正式`uv run --frozen pyright`0 errors/0 warnings/exit0。wheel/sdist0输出自有tmp，repo自有build目录已回收。日志`/tmp/kokoro-agent4-doc-correction-{baseline,pyright-uv,build}.log`；冻结`/tmp/kokoro-agent4-doc-correction-final.json`。
+
+Root真实PG生产repo诊断：自有fresh DB `agent_terminal_gap_bf8ba506757f4d54`，schema安装→claim/run.started→terminal提交后模拟中断；新连接恢复观测terminal=true、terminal_fence_seq=null、lease清空、queued terminal0/reclaim0。`/tmp/kokoro-agent-terminal-gap-probe-result.json` gap_reproduced/closed均true；脚本0表示成功复现旧缺陷，不是修复或截图根因。应用数据/Redis/3310/provider未触。30Agent committed来源刷新；29字节digest不变，仅真实TECH文档digest改变，机器contract3.0原字节不变；inventory仍3active/13broken。
+
+Root首轮source刷新错误假定30digest全不变（实际TECH改变），断言中断未写inventory/收尾docs；checkpoint又误把短名当路径，exit1。历史`/tmp/kokoro-agent4-doc-correction-root-checkpoint.log`保留；现按实际doc digest和完整checkpoint路径修正，不改snapshot或状态门。Root集成fresh验证随后记录。全goalactive：Agent4执行/GC→BFF FIFO/原user retry→Web queued/ChatGPT→Root真实组合，Billing最后，未称137静态缺口或整体能力完成。
+
+## AGENT4-DOC-CORRECTION：真实终态与发布边界修订（2026-10-01）
+
+| 项 | 本轮任务卡 |
+| --- | --- |
+| 目标/Owner | Agent执行事实。修正现retry4候选中的已证伪恢复描述，补齐profile与发布事务边界；不降低九owner/Wave0–7目标，不提前发布4.0。 |
+| 基线 | Root maind32e76e0；Agent mainf3be3b97、四dirty doc322行。原候选完整bytes冻结/tmp/kokoro-agent4-gate-baseline.json；Root另有上一轮task/progress/CURRENT更新与任务外uv.lock、BFF/Billing草案。 |
+| 负责人 | agent4_execution_owner（gpt-6-astra）为Agent唯一writer，只授权docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md；Root源码核对、Git和最终验证；独立review只读冻结候选。 |
+| Root内部裁决 | typed terminal outcome在同scope/lease事务确定最终usage、delivery barrier、终态/outbox、cleanup、成功head/userseq晋升及active释放；删除先terminal后outbox窗口，不宣称旧recovery能补缺payload。Redis发布在commit之后；PG持久identity/index+terminal水位是事实，消费者排除迟到事件，不承诺跨PG/Redis瞬时原子或绝无迟到字节。live与critical既有durability差异明确，不无证据建设第二ledger。 |
+| Profile裁决 | static canonical profile在任何可能产生retryable失败的外部preflight之前冻结；版本化UTF-8 canonical JSON与SHA256；完整实际Feature/Agent/子代理/工具schema及稳定source、无secret执行业务选项。namespace/受信identity与租约fence遵原设计，不复制token或System动态route。字段与canonical编码由实际源码穷举，禁止repr和任意hash整个请求。 |
+| 生命周期 | 待用户Conversation删除/retention决定仍明确未决。先写引用感知、scope-first、有限batch的Run purge及native reachability验收，不将保护引用称最终GC；不新增DELETE契约/tombstone字段/永久免清理、不实际删除用户数据。完整数据门及发布仍未通过。 |
+| 文件/放置 | 只修改四现设计文档中的retry候选段及CURRENT；不新建文档中心/目录。补真实遗漏入口execution/events.py、worker/main.py、worker/supervisor_recovery.py、domain/run/repositories.py等，内部新typed值遵Python09不泄漏native类型。禁止生产源码/DDL/机器contract/generated/lock/外部fixture修改。 |
+| 验收/交付 | writer交四dochash/diff/未决项；Root源码crosscheck、docs一致性和原HEAD历史保护，独立review后精准候选提交或留明确未决；本轮不跑provider/重启3310/改共享PG Redis。已有nativeR3/R4不重复充当production验收。 |
+
+## CHATGPT-THREAD-UX：最新截图复核（2026-10-01；尚未实现）
+
+用户再次明确喜欢 ChatGPT 风格。Root 与 web_failure_wire_review 并行只读核对 Web main `34dc40c0f92fb440dc241643b491cdc3e61f9f1c`；同一会话的已有正文失败被拆成独立滚动项，是 `conversation-thread.tsx` 的空正文/纯text限制所致。Alert grid 和默认36px outline重试形成孤立红色提示/大按钮；3310运行副本仍无条件显示旧重试，不能把它当正式terminal retry能力。
+
+最小方案沿既有任务A：归属匹配末轮的失败收在同一回复内，保留正文；使用现Alert语义、中性色紧凑footer、真实可用时紧邻ghost xs动作。无assistant/后有新user/活跃执行/重连/HITL/deliveries仍不得错挂。限现Thread组件/CSS/失败测试，无新组件体系、协议或数据库；正式原user重试仍依赖Agent/BFF发布，不通过新建user假装重新生成。详细设计尚未取得明确确认，未授权源码写入。
+
+`END_KOKORO_FOLLOWUP` 未见于renderer或生产源码；旧任务记录确认它出现在真实模型验收回复，不能用字符串过滤伪造修复，也不擅删用户历史。后续验收会话应与正式使用会话分开。
+
+Root本次新跑 `pnpm exec vitest run tests/ui/conversation-failure.test.tsx`：57/57，exit0（1.52s），日志 `/tmp/kokoro-chatgpt-thread-ux-baseline.log`；这是当前行为基线，不是新设计GREEN。IAB同browser3可列出7现有tab，但getTab6在20s超时并reset；未点击重试/发送/刷新/开tab/改数据或重启3310，实际浏览器新设计验收未通过。Web仍clean，未声称视觉已修复。
+
+### AGENT4-EXECUTION-GATE：并行审查实际交付，完整设计门未通过
+
+Agent main `f3be3b97dd67df69ed3c6cb88c59f3bc2db97703` 四候选文档仍原322行；两位审查员均只读，无源码/contract/SQL/基础设施变化。实际定位：terminal先提交、usage与terminal outbox后写，现恢复不能补缺失payload；Redis live publication当前持Run行锁await网络；profile尚未在可重试外部preflight前冻结；Run TTL不保护将新增scope/lineage/native引用。Root下一步须收敛typed terminal单事务、commit后持久身份发布、无secret canonical profile与引用感知GC设计，不能照旧候选直接实施。产品Conversation deletion/retention决定仍待回复；完整owner4发布、BFF FIFO/原user retry、Webqueued及真实跨owner组合均未完成。审查报告不是已实现能力，整体goal保持active。
+
+## AGENT4-EXECUTION-GATE：执行锁与原消息重试关键链（2026-10-01）
+
+上一goal turn为progress：BFF88c54dbc/Rootd32e76e0真实提交；完整BFF548/548、真实owner48/48、Root1103+3 native补验、提交后checkpoint/topology0。当前不重复这些门来代替Agent实现。
+
+| 项 | 当前任务卡 |
+|---|---|
+| 目标/依赖 | 原目标九owner/Wave0–7，关键链Agent scope/native/profile/fence→BFF terminal-gated FIFO/原user retry→Web正式queued与ChatGPT交互→Root真实组合，Billing最后；不发布半实现required字段。 |
+| 基线 | Root maind32e76e0，Agent mainf3be3b97＋四dirty doc322行候选，冻结/tmp/kokoro-agent4-gate-baseline.json；BFF/Billing草案与Rootuv.lock保护。 |
+| Owner/角色 | Root整体技术/API/数据裁决；agent4_execution_owner(gpt-6-astra)只读三设计/实际入口映射及阶段门收敛；agent4_lifecycle_review(gpt-5.6-sol)只读生命周期/GC/当前失败路径独立评审。现在均不授权写入。 |
+| 调查范围 | 现run admission/dispatch/leases/events/native saver/worker build/resume/terminal/GC和canonical schema/contract；给逐入口需改文件与严格行为断言，不重做已通过R3/R4 native公共API实验。 |
+| 阶段门 | 先核完整三设计一致性与剩余未决项，区分产品生命周期决定和实现可验证点；本轮不得静默覆盖待用户retention决定、永久豁免GC或降retryable来躲实现。设计门通过后才定唯一writer/文件集、tests RED、整owner实现和真实PG/Redis/HTTP，最后发布artifact不激活半套服务。 |
+| 资源/验证 | Root保留现PG/Redis/3310，审查员不跑服务/数据库/tests/Git写；Root验证安装源码、既有fail状态和调用边界，不因浏览器超时重启。shared checkout Root唯一Git。 |
+| 交付 | 精确三设计门通过/未通过原因、类型/字段/锁/失败恢复与真实验收矩阵，后继代码任务卡。审查报告不是实现完成，不把同会话HTTP ACK当Run terminal。 |
+
 ## BFF-CHAT-PAGING1：源码已提交，真实owner门通过（2026-10-01）
 
 BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada`，Root唯一精准7路径提交；生产仅1行mixed-direction keyset修复。
