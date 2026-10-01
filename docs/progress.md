@@ -1,3 +1,64 @@
+## R37 Agent 组合验证选择失误保留
+
+原Astra报告一次误用 `-m not resource` 且清addopts，3个既有integration fixture尝试本地56380连接后 ConnectionRefused；日志 `/tmp/kokoro-agent-bridge-r37-pure-final.log` 为20failed/56passed/3setup errors，不计纯门或业务真实PG证据。该进程已结束，无成功连接/服务启动/数据清理，后续只按既定排除 integration/e2e/acceptance 标记重跑。原owner继续冻精确集合，生产定点静态/11个review单测报告非Root全门验收；145旧consumer/fake与跨takeover边界保持未闭环。Root不重复跑变化树真实PG。
+
+## R37 三个独立后继转 tests-only RED（同原窗口）
+
+Root已实读以下现文件，均是原职责内的局部验证补强，不新owner/契约/表/目录。原WIN07（Platform基线67591308，clean）唯一writer仅 `test/integration/schema-installer.integration.test.ts`：先用有界子命令证明 REQUIRE_REAL_INTEGRATION=1 且没有 KOKORO_POSTGRES_URL 时既有定点套件应非零而非skip；清除子命令URL，防递归，不触PG；原tests/assertions保留。仅加失败断言，暂不改现skip guard；若同文件运行设计冲突先报告，Root取得真实RED后放窄guard。
+
+原WIN08（Storage191164fd，clean）唯一writer仅 `test/architecture/migration-ledger.test.ts`：新增现apply-schema.ts两处故障诊断不得指导 discard 整个database，必须限定本次partial owner schema与创建者处理的断言；实读源码当前仍discard partial database，测试需实际RED，原assertions保持。源码/scripts暂锁。
+
+原WIN09（Scheduler4abacf95，clean）唯一tests-only writer仅 `test/integration/postgres_test.go`：原helper前缀准入后仍TRUNCATE共享namespace，先新增same base独立store schema、neighbor sentinel保持、cleanup只删ownnamespace断言；不改现helper/生产/Schema/文档。仅编译/收集/格式检查，真实PG由Root在自有临时fixture执行；无shared reset/原SQL门弱化。设计测试fixture须有精确finally/cleanup，测试基准namespace本身也是Root自有隔离库，不对应用库做RED。
+
+三者没有生成/lock/公共共享文件权限，不能测试时启动服务或数据库；各自冻hash+范围即停，Root独立失败→定向GREEN→复验。整体Wave/现同task是唯一计划中心，Agent/原Billing仍独立writer；Root独占Git/共享资源与总验收，不以这些RED任务代替聊天/正式计费关键路径。
+
+## R37 Billing 全门真实失败，原 owner 精确返修
+
+Root `pnpm prisma:check` actual exit0，reference清理diff0；完整 `pnpm verify` format/lint/typecheck/build/sql/contract皆0，最终test **2failed/701passed/209skipped（912，44.24s），exit1**。日志 `/tmp/kokoro-billing-terminal-r37-root-verify.log`；session27326已消费。两个失败共同指向既有 production-prisma 门：credit.repository新直接引入 generated value Prisma 与三Row types。不改变架构白名单/测试断言/TransactionService首因。131真实终态通过不覆盖该门，未验收提交。
+
+原WIN06现在续接唯一Billing writer，只准现 credit.repository.ts 局部返修：移除直接 generated imports，私有持久类型从现批准 TransactionClient/真实delegate返回类型推导，不复制generated/加别名绕门。新P2002捕获在root transaction保存SQL首因后实际不能归一，删除此无效局部catch/判定 helper，不建立结构duck-check替代假归一；预查与partial UNIQUE/事务回滚保持，真正最外HTTP冲突归一及真实跨account竞态保持C3未闭环。不改SQL/generated/frozen两tests/设计doc/架构门/依赖/Git/DB；必要类型若需范围外改先报告。先本两个架构RED的纯定点返修，再原冻结源码交Root，Root重跑131/full及独立审。本Root不再写Billing文件。
+
+## R37 Billing 定点终态真实 GREEN：131/131
+
+Root Node24.20 在正规生成5864752d/b2acd1fa后，冻结两tests 2d937c4d/ead891d4真PG **131passed/0failed/0skip，20.07s，exit0**；source/SQL冻结保持。`/tmp/kokoro-billing-terminal-r37-root-green.log`，session28181已结束并消费，前后referenceDB集合相同 CLEANUP_DIFF_EXIT=0。对应R2真RED94fail/37pass到当前GREEN；不把131作为跨account capture-source竞态、expiry、formal grant、完整计费/浏览器通过。生成检查与完整门仍在后继，source未验收提交。Root fresh checkpoint PASS/exit0，日志 `/tmp/kokoro-r37-root-checkpoint.log`，session33533已消费。
+
+WIN01已停写，worker报告现两UI74/74和相关207/207通过、dirty0、没有可复现目标bug，因此不制造RED/不改源码；Root尚未独立重跑，不算新UI验收，真实浏览器IME/视觉未验。WIN03只读定位现范围外8 tests+shared fake调用者，属于新required reader/callback后继，原Astra当前scope不自动扩大、原8proof保持。其余原窗口有限报告在途，完整goal active。
+
+## R37 Billing 正规生成已通过，131 真PG正在重跑
+
+Root诊断确认失败在 Prisma db pull：P1010（URL未显式指定现有登录用户）；Node pg/psql省略user的本地默认不等于Prisma登录信息。使用实际 current_user 同一现有role补全执行URL后，原 `pnpm prisma:refresh` actual exit0；没有新增role/凭据/应用库，代码与Schema未为排障改动，随机reference已回收。失败/诊断保留 `/tmp/kokoro-billing-terminal-r37-root-prisma-stderr.log`，成功 `/tmp/kokoro-billing-terminal-r37-root-generation-r2.log`。两正规生成 SHA：schema5864752d、provenanceb2acd1fa；canonical5fbc6146，Prisma/client/adapter7.10.0，ignored client由同流水生成，未手改。
+
+两冻结tests hash仍2d937c4d/ead891d4；Root单一真实PG session28181正在131定点，不重复启动/不把在跑写成通过。9个原窗口续派API成功，WIN01/02/03/04/05/07/08/09/10实核active，原WIN06停写，原Astra继续桥实现；窗口角色包括只读，不称10名并行写代码。
+
+## R37 Agent 真正 result-review consumer 精确追加
+
+Root实读现 `src/kokoro_agent/tools/middleware.py` 的 `_ReviewDecision`/`_parse_review_decision` 与 `tests/unit/tools/test_result_review.py`：旧内部 resume decoder 实用 tool_id，新 HumanRequest 统一 request_id，mixed native probe不能证明此实际consumer已切。准确授原Astra sole writer仅追加这两个现文件：内部 decoder/匹配改唯一 request_id，保工具效果 journal/cache 与真实工具 call id，不创建 tool_id alias/双读；同测试先以正规 request_id RED，再切源码，保 approve/respond/reject/非法/缺项/双执行防护断言。现8 native proof保持；若fake/composition范围外依赖须先具名，不能补fallback。Root独立审/重跑后接收；无新模块/契约/数据事实。
+
+初pause未落durable时失联且expired reclaim换generation：当前generation归属证明不足，严格拒旧native归属与零再次invoke正确；缺绝对execution期限/跨takeover恢复仍明确未闭环，不能把TTL reclaim当业务期限、不能伪造新authority为旧执行发终态。该缺口保留在完整Agent验收，暂不新增 schema deadline/修改D0批准authority；不以44矩阵或纯probe代表该路径通过。
+
+## R37 原窗口并行续派与真实失败记录
+
+已实核 WIN01/02/06/10 原句柄 idle，复用原10窗口而非重建。原 Astra Agent GREEN active；Billing Root 正规 prisma:refresh 首次实际 exit1，日志 `/tmp/kokoro-billing-terminal-r36-root-generation.log`，自有参考库前后集合相同 cleanup0；safe error 尚未给出根因，不能称生成通过。冻结 Billing 五 source/SQL+两tests 独立 review 0P0/P1/P2，但真实131 GREEN与新生成仍待 Root。本轮原窗口独立分工/基线/写入集已列同一 task R37 表；不承诺10名同时写仓，不启动额外常驻进程。
+
+## R36 Billing source/SQL 已冻结，Root 正规生成接手
+
+原WIN06 main5c45f22已terminal/停写，源码与SQL五hash Root逐核一致：schema5fbc6146、repo f13c412e、service a4837451、types51f0110b、error35772364；两tests frozen2d937c4d/ead891d4，原五docs/四R2whole与299保护保持。only四源码format0，不算lint/type/真实GREEN；cross-account source UNIQUE错误首因风险明确保留。Root当前为Billing唯一writer/资源owner，以现prisma:refresh在自有随机fixture生成database/generated/schema.prisma、provenance及ignored client，回收参考库与临时staging；不手改生成、不清应用库/Redis。生成后Root真跑131＋schema/receipt/全门，原Sol只读代码与SQL冻结审；原WIN06停写待Root准确失败返修或后继测试授权，Agent仍独立写桥。
+
+## R36 原桥 GREEN 准确追加既有 supervisor 职责文件
+
+上一goal轮判为progress：Web343aea36/Roota1469865已推、386治理真通过、Agent44真PG18fail26pass与Billing131真PG94fail37pass改变后继，Root62094918已推代码任务放行记录。本轮实核原Agent writer active、Billing原句柄turn01a0f8fc-81f7-7851-8a41-f59399311b61 active；不重复服务或测试。
+
+Root实读现SupervisorContext、Control/Execution/Recovery mixin，唯一resume路径确在supervisor_control::_on_resume，初pause/真实native调用与退出在supervisor_execution::_spawn_agent/_invoke_agent，heartbeat/旧adopt在supervisor_recovery，类型callback归supervisor_context。将其移到门面会混责，已批准D0历史候选明确四文件。原Astra sole writer GREEN额外允许现src/kokoro_agent/worker/{supervisor_context,supervisor_control,supervisor_execution,supervisor_recovery}.py：只承接现7ports reader、StartedResume调用门、trusted metadata、初pause与unknown恢复/health/local_drained规则，删除本路径旧adopt/第二resume selector；cancel/steer/dispatch语义保持，真实必要后继依赖先具名。无新目录/进程/契约/namespace/P3B/旧兼容。Root源/SQL/契约冻结后审，原4tests/8proof与准确资源门保持。
+
+Agent新桥后段fixture校正：Root实读混合graph节点注册approval但edge为approval_node，state也已有approval key；先前缺port遮住构建问题。批准原writer仅同现PG测试统一节点名approval_node，mixed并行全集/一次map/所有断言保留。此为测试构建修正，不计生产GREEN，后续冻新hash并Root真实运行确认；不解冻原八proof。
+
+
+Root再实读execution/run_agent.py：invoke_once在interrupt时旧awaiting_payloads发partial source，在返回supervisor前已finalize正常终态。批准原writer精准追加现src/kokoro_agent/execution/run_agent.py：删除此实际路径旧selector/emit，必需on_native_settled callback在真实native context drain之后、正常finalizer之前执行正式durable read/reconcile；unknown/waiting不得发completed，callback持久失败必须原样传播，不能被native异常wrapper转换成另一个终态。保usage/pump与真实异常唯一finalizer，不设默认空callback/fallback；实际CLI等其他consumer后继切换仍明确待验，不宣称全仓已更新。
+
+
+Billing新风险实读：TransactionService query extension在SQL失败时保存首因，Repository把P2002再包CreditError仍会被root首因恢复；禁止改首因/吞rollback-only或把预查当并发证明。原WIN06继续冻结已授source/SQL；跨账户同tenant/capture-source UNIQUE竞态须后继真实barrier测错误归一与零二次流水，API规范错误只在真正最外业务/HTTP边界映射具名constraint，未发布v2 runtime的C3边界目前不能冒称已解决。现131 GREEN不足以证明该竞态，Root保留为C1终审风险/后继实际断言，不通过裸catch/新增任意lock假装关闭。
+
+
 ## R35 Billing 原 owner 正式进入终态代码 GREEN
 
 Root Node24.20 R2冻结两tests真PG **94fail/37pass/0skip（131，20.01s），exit1**；T05精确PID/barrier已实际到达，identical失败于重复audit4≠3，source竞争两者成功≠唯一，其余后段缺terminal source catalog明确。/tmp/kokoro-billing-terminal-r35-root-red-r2.log，前后fixture库集合同/CLEANUP_DIFF_EXIT=0。独立Sol delta0P0/P1/P2，原并发证明P1关闭；四R2整doc Root核同，不减失败门。
