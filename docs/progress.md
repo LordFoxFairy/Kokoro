@@ -1,3 +1,35 @@
+## R26 Root 集成与下一并行任务卡
+
+Root已暂存/核本波3gitlinks+consumer committed来源+同三台账共7路径；topology、当前checkpoint exit0，相关治理三文件 **95 passed（46.26s）**（/tmp/kokoro-parallel-r26-{topology,checkpoint,tests}.log）。旧uv.lock/Billing5docs/BFF495草案不暂存，状态3active/13broken不擅改。此证据只源组合治理，不是全部owner组合运行。
+
+| 任务 / writer / baseline | 精确范围与完成条件 | 权限与依赖 |
+| --- | --- | --- |
+| WEB-IDLE-TERMINAL-P1-R26 / web_chat_audit_r20 / Webmainc83f1b4 | 原7现路径+machine.test.ts参数化断言=8；settled零SSE仍可续聊、active EOF保写闸/Stop、410 deferredreceipt保exactidentity；Rootfreshfull/review/live后验 | soleWeb writer，不Git/服务/DB/provider/新wire，当前写入进行中 |
+| AGENT-P3B-D0 / agent4_scope_gate_r19 / Agentmainaf45817 | 仅现TECH/API/DATA/CURRENT四docs，真实native观察接口/安全deferredbackend/全peer commit屏障/版本依赖与退出路径，4hash及Root设计审查 | 仅docs writer，库fork/新目录/依赖/源码/SQL/protocol未放行；不能无限等上游，正式fullscope仍保 |
+| BFF-EXECUTION-HEAD-D0 / bff_fifo_owner_r9 / BFFmaind6b7da5 | 四docs批准新增prefix，queued/active/waiting durablehead与同事务cursor/FIFO/HITL/版本替换裁决和10组RED，4保护suffix原值 | 仅docs writer，4docs495草案保护；版本机器/SQL/生产/Webconsumer未放行，owner先提交后consumer |
+
+## BFF R26 正式切片验收（2026-10-01）
+
+BFF **d6b7da5200784ed1838de396011d3ed6a8934124** 已Root精确31提交：Node22完整563/0/1、真实PG/Redis8files **59/59、0fail/0cancel/0skip（16.88s）**，独立review0/0/0、最终hash与4suffix一致；日志 /tmp/kokoro-bff-scheduled-r26-r4-root-{static,integration}.log。自有DBa432245aad4f4e40已drop/Redis14=0。四docs只新增批准prefix+HEAD进入commit，原未提交草案仍114+73+143+165=495行完整保留，其他source树clean。Scheduled enqueue/receipt transaction、terminal跨页drain/非零cursor重开repo/身份摘要冲突零写/expiry fence/有界并行/stop drain当前owner门通过；不代表当前旧运行组合或所有业务已切新DDL/源码。
+
+原BFF owner进入只读 queued snapshot admission→RUN_STARTED刷新窗口契约门，与Web idle订阅修复并行。Agent effective-native P3B已完成实际技术调查，公开材料化接口缺口与安全disarmed backend边界明确，但新library依赖方案未批准不偷改依赖/安装目录；尚未宣称effective完成。Root consumer BFF187来源仅从此committed blob更新，状态3active/13broken不改；完整Wave0–7仍推进。
+
+## R26 主控已验代码与真实旅程剩余项（2026-10-01）
+
+- Agent **af45817260478f1ee755d8e6e6963051e2049062**：22路径正式持久static recipe已精确提交；Root默认完整1649/6/234、真PG43/43、独立review0/0/0、Root独立wheel230资源/115依赖/12动态边及canonicalSQL/adapter一致，target与临时PG已回收。不热修改当前应用旧schema，P3B effective/native/all-peer及完整scope/retry/retention/4.0后继。
+- Web **c83f1b4013ea8f895699ceed9793ccaeae63842a**：28路径连接/写fence/timeout/late receipt正式提交推main，Root2096/219/50全check、独立0/0/0；19个已提交src bytes同步现PID65590复制，未改配置/启动服务。实际tab18已验证历史footer=1/额外genericRunerror=0，却发现settled历史仍重复200SSE/EOF→重连中→发送disabled，稍后hard不可用。证据 /tmp/kokoro-web-r26-idle-reconnecting.jpg；临时tab已关。因此正式继续对话仍未闭环，原Web负责人正修现订阅生命周期，不撤写闸掩盖。BFF预RUN_STARTED queued snapshot identity缺口归下一owner契约切片，不猜正文活性。
+- BFF最终31源码candidate r4已Roothash，完整静态及真实8files在途；原digest P1已共享application helper+标准NodeSHA256，不收手写密码轮函数；callback/delete PID wait graph/冲突矩阵补齐待真实结果。4保护suffix/原495行及其他dirty保留，未提交，不伪称Scheduled完成。
+
+当前正式consumer inventory只从committed blob更新Agent30/Web49来源，仍3active/13broken。全九owner/Wave0–7、真实用户登录→连续对话→刷新→文件/审批→正规积分→支付最后总goal active；本片不代表整个产品完成。Root任务/进度同一文件更新，不新中心。
+
+## R26 并行验收进展（2026-10-01）
+
+- Web：28文件最终51c56c6d冻结，Root完整Node22门 **2096/2096**、contract219、architecture50、lint/typecheck/build exit0；独立复审0P0/0P1/0P2。原2P1及410 null与迟到receipt两时序已以RED→GREEN补齐，尚待提交来源同步及真实浏览器，不能称组合完成。
+- BFF：Root矩阵r2静态563/0/1，真实8files **58 passed/1 failed/0 cancelled/0 skipped（41.48s）**；callback/delete双waiter仅直接blocking PID的测试屏障仍失败，当前DB8c4b5efd990e4c54已drop/Redis14=0。独立复审又发现source payload digest不重算的实际P1以及duplicate/event-id碰撞缺例，继续原writer修，未提交。上一轮56/2的夹具失败修正已真实通过，不把新58绿项等同完整15矩阵。
+- Agent P3A：22冻结5fe2d6bf独立review0P0/0P1/0P2；Root真实PG43 **41 passed/2 failed（13.23s）**，两个同/异配方竞争测试用direct blocker count2未考虑等待链，实际schema catalog检查通过；DB843c903debef4573已drop，无Redis/provider访问。Root完整默认链仍在执行，先收句柄再返同writer精确PG测试补丁。
+
+Root职责仍是独立审查、共享Git/index、真正隔离测试与组合验证。三面并行没有共享writer，未重启用户3310或清共享数据；九owner/Wave0–7/Billing/真实模型/积分总goal仍active。
+
 
 R25 Root组合集成复验：仅6路径暂存，topology与当前contract checkpoint均exit0，相关3治理文件 **95 passed（39.96s）**（`/tmp/kokoro-parallel-r25-{topology,checkpoint,tests}.log`）；不包含Billing/uv.lock/BFF candidate，不代表九owner全门。R26 BFF Root真实50/1/0（15.28s）新失败为旧consumer barrier期待null与terminal drain新语义冲突，原owner在真正PID barrier下保留锁后clock验证并拆独立case，R26-r2 frozen30正在Root复跑；自有DBf6447ad64d2a4275已回收/Redis14=0。Agent P3 D0独立审查1P1 request权威字节相等歧义已返原writer四docs修正；Web R26同writer已获准关闭2P1，并非已验收。
 

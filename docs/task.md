@@ -1,3 +1,84 @@
+## R26 Root 集成与下一并行任务卡
+
+Root已暂存/核本波3gitlinks+consumer committed来源+同三台账共7路径；topology、当前checkpoint exit0，相关治理三文件 **95 passed（46.26s）**（/tmp/kokoro-parallel-r26-{topology,checkpoint,tests}.log）。旧uv.lock/Billing5docs/BFF495草案不暂存，状态3active/13broken不擅改。此证据只源组合治理，不是全部owner组合运行。
+
+| 任务 / writer / baseline | 精确范围与完成条件 | 权限与依赖 |
+| --- | --- | --- |
+| WEB-IDLE-TERMINAL-P1-R26 / web_chat_audit_r20 / Webmainc83f1b4 | 原7现路径+machine.test.ts参数化断言=8；settled零SSE仍可续聊、active EOF保写闸/Stop、410 deferredreceipt保exactidentity；Rootfreshfull/review/live后验 | soleWeb writer，不Git/服务/DB/provider/新wire，当前写入进行中 |
+| AGENT-P3B-D0 / agent4_scope_gate_r19 / Agentmainaf45817 | 仅现TECH/API/DATA/CURRENT四docs，真实native观察接口/安全deferredbackend/全peer commit屏障/版本依赖与退出路径，4hash及Root设计审查 | 仅docs writer，库fork/新目录/依赖/源码/SQL/protocol未放行；不能无限等上游，正式fullscope仍保 |
+| BFF-EXECUTION-HEAD-D0 / bff_fifo_owner_r9 / BFFmaind6b7da5 | 四docs批准新增prefix，queued/active/waiting durablehead与同事务cursor/FIFO/HITL/版本替换裁决和10组RED，4保护suffix原值 | 仅docs writer，4docs495草案保护；版本机器/SQL/生产/Webconsumer未放行，owner先提交后consumer |
+
+WEB-IDLE-TERMINAL-R26精确测试补充授权：完整门actual2086/2098有12个合法terminal failed tuple旧断言仍要求lastStream，现 `tests/engine/machine.test.ts:88`。Root核与既有settled零SSE裁决矛盾，准原writer第8既有文件仅将该同一参数化断言改streams.length=0并可加强connected/footer保真；不改tuple/失败渲染/跳过/生产为迎合旧断言。原7路径继续范围，无newfile；重新完整门与8hash冻结后Root独立审查/复验/浏览器。
+
+## 下一轮设计裁决：BFF execution head / Agent effective materialization
+
+BFF原owner只读证实durable enqueue→RUN_STARTED前snapshot确实漏run，不能以Web停止idle SSE遮住刷新queued窗口。Root拟下一三面门方向：同事务outbox精确head+durable stream markers，queued/active/waiting完整且waiting仅受信未决审批标记，enqueue/handoff时BFF-owned严格AG-UI CUSTOM事件与cursor原子写；不再解pending Message正文或event尾项猜活性。用户已明确未上线、无旧兼容，发布策略须在D0比较首次上线前一次corrective单版本替换（严格bump机器contract+消费者pin）与新/v2完整替换（删除旧路径/旧artifact，无长期双轨），以现README规则/已发布消费者真实事实为准，Root审定而不是worker自己增路由版本。当前没有生产/机器/SQL授权，先四docs批准prefix设计收敛；精确write集合与必要版本治理随后统一放行。
+
+Agent P3B原owner已只读定位DeepAgents/LangChain真实一次constructor的工具归一化/GP/middleware政策无公开完整observer；真实disarmed BackendProtocol可保现能力检验并commit后绑定，不采用callable/假proxy。下一设计门沿现四docs比较受维护的最小显式library observation接口及现公共能力边界，记录精确upstream版本/许可证/源码commit/wheelhash测试/退出路径与动态政策语义；Root尚未批准fork目录、安装patch、依赖变更、新runtime/额外owner。P3A已验代码不是完整effective/native，scope/retry/retention目标保留。
+
+## BFF R26 正式切片验收（2026-10-01）
+
+BFF **d6b7da5200784ed1838de396011d3ed6a8934124** 已Root精确31提交：Node22完整563/0/1、真实PG/Redis8files **59/59、0fail/0cancel/0skip（16.88s）**，独立review0/0/0、最终hash与4suffix一致；日志 /tmp/kokoro-bff-scheduled-r26-r4-root-{static,integration}.log。自有DBa432245aad4f4e40已drop/Redis14=0。四docs只新增批准prefix+HEAD进入commit，原未提交草案仍114+73+143+165=495行完整保留，其他source树clean。Scheduled enqueue/receipt transaction、terminal跨页drain/非零cursor重开repo/身份摘要冲突零写/expiry fence/有界并行/stop drain当前owner门通过；不代表当前旧运行组合或所有业务已切新DDL/源码。
+
+原BFF owner进入只读 queued snapshot admission→RUN_STARTED刷新窗口契约门，与Web idle订阅修复并行。Agent effective-native P3B已完成实际技术调查，公开材料化接口缺口与安全disarmed backend边界明确，但新library依赖方案未批准不偷改依赖/安装目录；尚未宣称effective完成。Root consumer BFF187来源仅从此committed blob更新，状态3active/13broken不改；完整Wave0–7仍推进。
+
+## BFF-QUEUED-SNAPSHOT-R26（下一 owner 只读契约门）
+
+已验BFF Scheduled切片d6b7da5200784ed1838de396011d3ed6a8934124精确31提交，原4docs495行保护仍未暂存。原 bff_fifo_owner_r9 sole owner，下一阶段仅只读main已提交快照/公开contract/SQL/tests实际行为（四dirtydocs标基线，保护草案不作为当前合同）。当前Web settled订阅局部修复由其他owner并行；真正缺口是新消息已接收但Agent RUN_STARTED未到时，刷新snapshot active_run是否省略queued identity，从而失去可信待执行关联。审计同事务Conversation/message/dispatch读面，明确权威queued/waiting/active状态、同会话FIFOhead与exact run身份、snapshot cursor原子性/tenant-actor保护、公开breaking版本及消费固定pin，给三面最小文件/RED矩阵与owner-first依赖。不得正文/pending尾项猜run，不改生产/机器/SQL/consumer/Git/基础设施；Root统一裁决、owner contract提交后消费者再实施。不以Scheduled59绿当聊天刷新窗口闭环。
+
+## R26 主控已验代码与真实旅程剩余项（2026-10-01）
+
+- Agent **af45817260478f1ee755d8e6e6963051e2049062**：22路径正式持久static recipe已精确提交；Root默认完整1649/6/234、真PG43/43、独立review0/0/0、Root独立wheel230资源/115依赖/12动态边及canonicalSQL/adapter一致，target与临时PG已回收。不热修改当前应用旧schema，P3B effective/native/all-peer及完整scope/retry/retention/4.0后继。
+- Web **c83f1b4013ea8f895699ceed9793ccaeae63842a**：28路径连接/写fence/timeout/late receipt正式提交推main，Root2096/219/50全check、独立0/0/0；19个已提交src bytes同步现PID65590复制，未改配置/启动服务。实际tab18已验证历史footer=1/额外genericRunerror=0，却发现settled历史仍重复200SSE/EOF→重连中→发送disabled，稍后hard不可用。证据 /tmp/kokoro-web-r26-idle-reconnecting.jpg；临时tab已关。因此正式继续对话仍未闭环，原Web负责人正修现订阅生命周期，不撤写闸掩盖。BFF预RUN_STARTED queued snapshot identity缺口归下一owner契约切片，不猜正文活性。
+- BFF最终31源码candidate r4已Roothash，完整静态及真实8files在途；原digest P1已共享application helper+标准NodeSHA256，不收手写密码轮函数；callback/delete PID wait graph/冲突矩阵补齐待真实结果。4保护suffix/原495行及其他dirty保留，未提交，不伪称Scheduled完成。
+
+当前正式consumer inventory只从committed blob更新Agent30/Web49来源，仍3active/13broken。全九owner/Wave0–7、真实用户登录→连续对话→刷新→文件/审批→正规积分→支付最后总goal active；本片不代表整个产品完成。Root任务/进度同一文件更新，不新中心。
+
+## WEB-IDLE-TERMINAL-P1-R26：既有订阅生命周期局部修复
+
+Owner仍Web engine浏览器状态，BFF/Agent active/terminal事实不改，现machine是唯一writer入口；main c83f1b4 clean。原web_chat_audit_r20唯一writer；Root+独立review审查。已通过只读真实端链定位：历史settled无条件stream→BFF合法terminal200EOF→2s重连→写闸，这不是活跃run断连，也不能放宽写闸掩盖。仅现7路径：machine.ts、tests/engine/engine.test.ts、tests/ui/app-frame.smoke.test.tsx（必要时）、TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT；无新文件/目录/协议/SQL/owner/模块。四docs局部先对齐本卡已决语义，然后tests RED→source：snapshot或已获本页exact receipt提供active identity才subscribe；idle settled零SSE且connected（意为没有待恢复活跃执行，不声称实时订阅），保真实failed footer/body/copy并可继续提交；receipt新run正常开流。hydrate先identity→deferred receipt→有active则open，410 pending/late两时序原fence不退；active EOF仍严格重连并拒写、Stop保留、terminalframe唯一关流。不从pending正文/尾项猜owner身份、不新增legacyfallback/网络字段。冻结后Root fresh fullcheck+独立review+真正历史会话继续输入旅程，现旧组合BFF queued预RUN_STARTED snapshot缺identity归下一owner契约门，不把此局部修复当全链完成。worker无Git/服务/DB/provider/browser。范围外需先报。
+
+## BFF 摘要实现返修：使用成熟 SHA-256，不手写密码算法
+
+R26-r3冻结31出现74行手写SHA256轮函数。Root拒收此实现：本需求只需既有Node标准crypto，architecture约束不构成自行实现密码原语的理由。放置表修订为 **src/application/scheduled-source-event-digest.ts**（替换尚未提交domain/source-event-digest.ts，仍31路径）：领域表示规则+标准crypto在现application边界，PG/client基础设施共同向内依赖；domain保持无Node平台import，source ledger表示是一项应用能力，不增加module。淘汰domain手写算法与infra反向client import。删除未提交domain候选，不保alias，沿现纯应用使用node:crypto已有事实；canonical规则继续排序keys/保数组顺序，非有限/undefined拒绝。新函数只canonical表示+createHash，不I/O/框架/DB/provider，不新依赖，现测试覆盖标准向量/嵌套key顺序/Unicode及wrongdigest真PG。四docs允许prefix同步原保护suffix。其他原review3P1修复保持；Root31新hash/full/PG/review后放行。
+
+## AGENT-P3B-MATERIALIZATION-R26（只读技术落点）
+
+原Agent负责人 agent4_scope_gate_r19 / gpt-6-astra，当前P3A 22冻结52e4a9f9，Root真实43/43（2.72s）但默认全门/包与集成仍待；不写冻结树。只读已固定DeepAgents0.6.6本地源码/现factory/backend/model/harness实际入口，明确真实单次构造如何产生完整有效native policy（prompt/ordered tools/schema/overrides/middleware/GP/source）且所有peer完成绑定前无sandbox/provider/tool执行。比较只使用现公开接口与最小上游显式observation/materialization接口两案，给可运行源码证据/精确改动范围与退出路径；拒第二selector、两遍constructor、global monkeypatch、闭包repr猜测或static recipe冒充effective。未批准新依赖/vendoring/上游patch/生产源码/contract，无DB/provider/服务/Git。输出真实技术方案供Root第8节三面门授权，不无限“等上游”、不在同一冻结树偷偷实施。
+
+## WEB-IDLE-TERMINAL-EOF-R26（只读真实旅程诊断）
+
+Web已验源码c83f1b4同步19src至现PID65590副本（无新进程/配置），Root新IABtab18真实GET snapshot与events200；历史completed且无active会话一直反复200 EOF/重连中，写闸使发送disabled。没有新的run-error，但这不是正式可用聊天闭环。已知BFFdurableAgentEventStream drainLedger terminal会end；Web hydration无条件openStream且transport EOF按网络重连，疑似合法idle terminal生命周期被误当断线。原Web负责人只读现Web/BFF对应stream/state/tests三面入口，确认当前accepted源码与旧运行组合是否相同、owner能力/事件/取消语义及最短RED/精确局部设计；不操作Git/源码/DB/provider/服务/浏览器。Root保真实浏览器与集成，BFF另writer不可抢写。仅诊断，不擅自解除nonconnected写闸。Root裁决后代码授权。
+
+### BFF source digest 唯一算法放置门（原30扩至31）
+
+| 项 | Root裁决 |
+| --- | --- |
+| Owner/当前 | BFF ScheduledTask源ledger唯一writer，bff_fifo_owner_r9；目前算法在clients/agent/scheduled-terminal-source.ts而repository未验证；main e7a325ce + frozen30未提交，四docs保护suffix不动 |
+| 目标/两案 | 采用新普通文件 src/domain/scheduled-task/source-event-digest.ts 只负责确定性无I/O payload digest；淘汰repository import client（依赖反向）与往agent-dispatch.ts混入第三变化原因；现domain目录不新增目录/module |
+| 粒度/依赖 | 1纯算法函数，source adapter与PGadapter共同import；只使用node:crypto/纯JSON规则，不调用框架/DB/provider，不import生成wire/另owner；测试在既有source与PG文件 |
+| 数据/API | 不变owner/schema/wire字段及外部契约；按现已设计source digest明确唯一deterministic表示，源writer与checker同一函数；若要改变排序/表示必须现三设计批准prefix同步，而不是两算法兼容 |
+| 删除 | 删除client原helper与export alias，改现两个测试的导入到domain事实源；无旧helper转发/第二算法 |
+| 范围/验证 | 原30加上述唯一新普通文件=31；原writer可同步现source adapter/repository、test/scheduled-agent-terminal-source.test.mjs/test/scheduled-agent-dispatch.integration.mjs以及四docs允许prefix。Root Node22 full、真实PG错误digest/duplicate/eventid零写、原15矩阵、保护suffix4/4、架构/独立review；无新进程/lock/generated |
+
+## BFF-SOURCE-DIGEST-R26 / AGENT-P3A-PG-BARRIER-R26 返修门
+
+BFF原唯一writer原30路径：共享确定性source payload digest helper须使用现文件放置裁决，不新建未经授权模块；adapter与repository共同消费，不跨层import adapter、不复制算法。严格持久前验证wrong 64hex digest，真实PG整批零写；补已存seq duplicate与event-id碰撞。callback/delete双winner屏障应观测从本owned DB精确PID rooted wait graph（包括队列soft blocking）而非期待每个PID都直接被外部blocker锁住；保独立winner/最终事实断言，不改合法锁语义/增timeout掩盖。Root真实58/1及独立1P1拒收，先补测试再源码，原4保护suffix不动。
+
+Agent原唯一writer只tests/integration/database/test_run_profiles.py与CURRENT：Root真实41/2失败为两竞争case的barrier direct count2，须精确owned DB/PID rooted wait graph证明两操作真的已阻塞（间接soft blocking算），不能泛数任何全实例waiter、sleep或增加timeout。22scope其他20hash保持；Root正在跑默认全链先收结果后返修，不混用动态树验收。
+
+## WEB-CONNECTION-R26-LATE-RECEIPT：末项竞态补齐
+
+Web R26 frozen7db24603 Root28/28核，Node22完整check2094/219/50/lint/typecheck/build exit0（/tmp/kokoro-web-connection-r26-root-check.log）；独立复审0P0/0P1但发现P2：410 snapshot=null 驱逐时pending/deferred receipt被清空，迟到accepted run可能失去明确cancel。Root不以“暂未证明互斥”遗留已知缺口，续派同writer仅现machine.ts、tests/engine/engine.test.ts与CURRENT局部：先RED覆盖null先receipt后、receipt先null后两次序；前者保存key供late cancel，后者对已deferred receipt发同run一次best-effort cancel，其他conversation null初始/owner terminal/切会话保真。原28路径其余hash冻结；无BFF契约假定、无新文件/wire/进程。Root及独立原review复验后再提交，不抢写。
+
+## AGENT-PROFILE-P3A-R25：设计门通过，持久配方代码授权
+
+P3D0-r2 manifest a4c5444f已Root4/4核、三设计唯一request.model_dump_json().encode("utf-8")原TEXT相等语义/正常首次claim资格对齐，关闭独立设计审查1P1；fresh contract-check exit0（`/tmp/kokoro-agent-p3-d0-r25-root-contract.log`）。四docs精确提交 **a37e8f1e308286d922212f2d5365634fd3ff2c21**。
+
+任务ID AGENT-PROFILE-P3A-R25 / Agent唯一writer agent4_scope_gate_r19 / gpt-6-astra / main a37e8f1 clean / Root审查集成。允许manifest `/tmp/kokoro-agent-p3-d0-r2-manifest.json` 的proposed_next_scope精确22绝对路径（20既有+2新，无新目录）；排除HTTP机器contract/protocol/generated、lock、其他owner及scope/native第二阶段。先RED真实factory顺序/原request字节/原authority与schema drift、现fake端口完整；真PG14矩阵代码在获准现目录新test_run_profiles.py，Root掌握隔离资源与运行。fresh DDL不迁移/补值/兼容；无optional gate/第二selector/跨owner SQL，prepared同plan commit后才全peer preflight/System。失败不能借新lease/generation收口；仅未执行fresh Run可首次freeze，started/paused缺值failclosed；不把静态fingerprint当完整profile或发布4。worker不Git/index/基础设施/provider/浏览器。冻结准确hash/范围/默认全门与PG用例后Root实测复审提交，P3B真实单次native输出/all-peer屏障后继继续，不以其技术落点未完成替代总目标。
+
+Root此前0ac5d2f1已集成验收代码7e902c0；本D0 pointer/inventory将在后续集成波随接受的来源统一更新，不宣称当下topology全clean。
+
 
 R25 Root组合集成复验：仅6路径暂存，topology与当前contract checkpoint均exit0，相关3治理文件 **95 passed（39.96s）**（`/tmp/kokoro-parallel-r25-{topology,checkpoint,tests}.log`）；不包含Billing/uv.lock/BFF candidate，不代表九owner全门。R26 BFF Root真实50/1/0（15.28s）新失败为旧consumer barrier期待null与terminal drain新语义冲突，原owner在真正PID barrier下保留锁后clock验证并拆独立case，R26-r2 frozen30正在Root复跑；自有DBf6447ad64d2a4275已回收/Redis14=0。Agent P3 D0独立审查1P1 request权威字节相等歧义已返原writer四docs修正；Web R26同writer已获准关闭2P1，并非已验收。
 
