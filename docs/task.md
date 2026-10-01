@@ -1,3 +1,11 @@
+## R39 Agent HTTP4原卡精确实施与Scheduler tests-only
+
+Root37契约真实RED＋45真PG＋静态全绿＋独立23path0P0/P1/P2闭合前置，原Astra唯一writer进入已批准HITL4现19path：contract/{openapi/v1/openapi.json,provenance.json,README.md}；src/{contract_check.py,chat_contract_check.py,protocol/run_failure_generated.py,interfaces/http/ingress.py,worker/supervisor_control.py}；原3contract tests、unit/http两tests、unit/execution/test_control_commands、acceptance/test_http_ingress；四docs仅HITL批准前缀。位置/owner仍已批准三面D0，无新文件目录/schema/owner。只使用既有failure generator实际输出，不手改generated/provenance hash；generator薄CLI无需改。Control/events已typed4且HTTP parse已严验，不倒退/扩旧字段alias；完整machine/checker/decoded mapping及公开positive一次切4，旧tool/request寻址正例按breaking换item+必需pause并新增旧寻址拒，其他业务负例不被缺pause遮住。
+
+Root裁决receipt保持当前error_code表示，仅真正InteractionConflict记稳定interaction_conflict，不新增公开reason字段；历史候选细分reason承诺由新当前段明确撤销，内部安全分类不作为wire事实。不能把任意缺context、读取失败、authority_lost统一冒充interaction_conflict，Run/command/head/source零错误副作用需覆盖；正常current等待不被拒命令清空。先现HTTP/receipt负例真实RED→GREEN→机器/provenance确定性生成/frozen门；SQL/proof/Storage/Platform pins/P3B/原native proofs锁。Root独占Git/真实HTTP/PG/最终commit，不能半4发布或先改BFF/Web pin。
+
+Scheduler四docsSHA冻结独立0P0/P1/P2，Root实读新API/DATA目标命名空间边界；原WIN09仅现internal/config/config_test.go＋test/integration/postgres_test.go tests-only RED：配置非法selector、目标only-view应拒安装、缺目标且邻居完整应拒Ping/ready。旧fixture13＋3全部断言/源码保持，资源仅collect与Root-ownedPG；测试不调用不存在新API造成compile failure。源/SQL/API/其他files锁，先Root真实RED后精准GREEN。
+
 ## R39 Root 冻结复验与已续派原负责人
 
 Agent冻结23/bridge/protected/native-proof HASH重核无漂移；独立审0P0/P1/P2。Root当前全pure实际 **37failed/1722passed/6skipped/287deselected（96.91s）**，/tmp/kokoro-agent-callers-r39-root-full-pure.log，session81309已收；37全属尚锁machine/public/chat/proof旧契约，不是推算或全绿。Root完整Ruff267/0、Pyright0，/tmp/kokoro-agent-callers-r39-root-static.log，session2225已收；新版Pyright提示未升级不夹带依赖。45真PG证据前段保持。Root本轮零剩余执行柄。
