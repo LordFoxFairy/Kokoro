@@ -1,3 +1,46 @@
+Root集成复验：精确5路径暂存后checkpoint/topology PASS/0；相关治理pytest95/95（47.31s），日志 `/tmp/kokoro-composer-action1-root-governance.log`。3310公共首页HTTP200、原PID65590，34117测试服务退出；用户当前聊天像素/内框仍未验，3active/13broken不变。
+
+## 2026-10-01 WEB-COMPOSER-ACTION1：实际操作行修复与渲染回归已验
+
+Web main `42df17b8e3cd01d58c929cd83de1e2bc0b93e630`（6文件、clean）；唯一Root提交，writer agent_failure_cursor_owner，独立终审web_failure_wire_review P0/P1/P2=0/0/0。VoiceActions引用不存在CSS Module类导致宽屏发送组左靠，旧coarse reset又撤销auto；组内视觉归controls module，父级仅稳定slot定位，删除死/重复规则及coarse reset。无新组件体系、依赖、API、SQL或其他子仓改动。
+
+Root独占34117真实preview填写/提交与PNG：桌面640右缘偏移386.8125px RED，触屏640偏移372.421875px RED；最终完整Playwright **13通过/3项目分工跳过（11.3s）**，desktop10宽度390–1280、Pixel7 390/640右缘<=1px，原轴线/overflow不放宽。Root已查看桌面全页/blur/Tab focus/三行与触屏640图片，操作组右靠。Node22/pnpm11 fresh完整check **contract218/architecture49/全test2053（40.79s）/lint/typecheck/build exit0**；日志 `/tmp/kokoro-composer-action1-{red,touch-red,final-e2e}.log`、`/tmp/kokoro-composer-action1-root-final-check.log`。首次check的257error/2773warning来自本轮generated HTML trace bundle；报告移出仓到/tmp后fresh全门通过，不加ignore/改门槛；原失败log保留。
+
+Root仅把3个UI源码通过旧hash精确检查后同步受管3310，备份/manifest `/tmp/kokoro-composer-action1-runtime-{backup,sync.json}`；PID65590保持，34117测试服务已退出，无PG/Redis/共享数据操作。未混入46文件failure切片，未半切contract。用户IAB tab6再截图35s超时kernel reset；这不是UI根因。独立fixture textarea实测border0/shadow none、blur/focus/multiline未出现内框，但**用户当前输入内方框与整体对话视觉仍未验，不宣称用户问题全解决或整产品完成**。当前截图请求仍待回复。
+
+库存刷新43条原Web来源至精确commit/blob，并加4个UI证据；仍3active/13broken。BFF只读后继P1：删除无producer的system角色是breaking，现version政策与同/v1 3.0候选冲突；fresh installer不会更改已有CHECK。尚未源码授权，避免分散UI关键路径。BFF/Agent/Billing docs及Root uv.lock保护。
+
+## WEB-COMPOSER-ACTION1 触屏补门（2026-10-01）
+
+Root真实desktop RED640偏移386.8125px→GREEN全10宽度1/1（5.6s），PNG确认发送组回到右缘；独立终审P1指出coarse max640的旧voice margin reset会抵消auto，desktop绿色不覆盖。扩展唯一writer测试范围：现web-governance.spec.ts新增mobile-only同preview真实提交后390/640右缘断言/截图，不改desktop10width/timeout；先Root mobile真实RED再仅删该coarse reset。未复现则不盲改。其余3source与当前test frozen。
+
+首次Root pnpm check contract通过后lint exit1，3030条均新生成playwright-report/trace/assets第三方bundle；已把本轮自有报告移到/tmp隔离，保留失败log，不增加lintignore或放宽门禁。后继Playwright CLI显式reporter=list，完整check待最终源码后fresh重跑。
+
+## WEB-COMPOSER-ACTION1：已复现的宽屏操作行错位（2026-10-01）
+
+Root独占Playwright真实1/1通过（6.2s），10width/30PNG/10computed附件；查看1280全页及961多行PNG，发送按钮实际紧挨左侧工具，390因container规则正常右靠。唯一根因：ComposerVoiceActions引用composer-controls.module.css不存在的trailingActions；定义却在另一个composer.module.css，CSS Module类未挂DOM，宽屏auto margin失效。输入textarea实测border0/shadow none，当前fixture未复现用户内方框，不据此关闭用户原问题。
+
+|项|任务卡|
+|---|---|
+|Owner/基线|Web现Composer操作行；agent_failure_cursor_owner唯一writer；Root main41337aca/Web8a2d771 + VISUAL1 test候选6b72ed32，Root sole Git。|
+|当前职责/放置|现VoiceActions组件负责语音组内部flex/color/button，controls.module.css为其CSS；现composer.module.css负责组间margin和响应式控制行。位置A双import父CSS可修但耦合布局；采用B：把组内规则移回controls.module.css，父布局通过语义data-slot=composer-voice-actions选中组，删除死类/重复empty auto。不新文件/目录/模块。|
+|写集/排除|先仅tests/e2e/web-governance.spec.ts加实际submit(send或stop)右缘等于controls右缘<=1px断言，原全width/axis/overflow/截图保留；Root先跑真实RED。然后明确授权现src/ui/composer/{composer-voice-actions.tsx,composer.module.css,composer-controls.module.css}；不改primitive/API/SQL/generated/依赖/运行副本或其他仓。|
+|边界/验证|沿Web三设计文档既有UI职责，无契约/状态机/数据变化。保留可见键盘ring/coarse/窄container/voice状态，不用important或叠重复CSS。独立审查，Root单worker34117 fixture RED→GREEN、查看宽/窄blur/focus/multiline，lint/typecheck/UI/architecture/fullcheck；真实3310当前图仍独立未验。|
+|交付|worker先交tests RED候选hash，待Root授权GREEN再源码；不自行测试/服务/Git。Root图像+fresh门验收提交，小切片不包含其他dirty。|
+
+## WEB-COMPOSER-VISUAL1：先取得当前渲染证据（2026-10-01）
+
+|项|任务卡|
+|---|---|
+|目标/完成条件|用户输入框内方框与对话布局仍未验；在既有真实 preview Chat fixture 留下当前 commit 的全页/Composer blur、键盘focus、多行截图，Root查看像素后才确定局部修复。此片仅诊断，不宣称修复用户页面。|
+|Owner/分工|Web UI；agent_failure_cursor_owner 唯一 Web writer（继承模型），web_failure_wire_review 只读 fixture 审查；Root运行独占测试、看图、sole Git。|
+|基线/保护|Root main41337aca / Web main8a2d771，Web clean；BFF/Agent/Billing dirty docs及Root uv.lock保护。|
+|允许范围|仅既有 tests/e2e/web-governance.spec.ts 的reading-axis测试：testInfo.outputPath截图；不新fixture/新服务定义/源码CSS，不改原轴线及overflow断言。|
+|依赖/验证|现源码、preview transport、shadcn Textarea与AppFrame职责不变；无API/SQL/依赖影响。Root Node22独占34117端口、workers1、独立/tmp output，仅自动测试fixture，非绕过CUA控制用户IAB；不复用/重启3310，不访问PG/Redis。定点Playwright及lint/typecheck，查截图/实际computed层后再派修复。|
+|交付|writer交文件hash/精确差异不提交；Root串行复核/提交，UI仍未验直到当前像素与用户页面一致核验。|
+
+BFF-CHAT-ROLE2只读审查已经完成：无system Message producer，SQL/domain/public/OpenAPI声明漂移属breaking；3.0同/v1需先明确现版本政策例外，既有schema不被fresh installer自动更新。后继独立owner切片暂不实施，避免冲散用户当前视觉关键路径。
+
 Root集成门：精确暂存5路径后checkpoint/topology均PASS/0，相关治理pytest95/95（46.76s）；没有放宽broken状态、清理共享数据或包含其他子仓/uv.lock。
 
 ## 2026-10-01 Web失败消费源码已提交，用户视觉问题仍未验

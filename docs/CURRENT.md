@@ -1,3 +1,15 @@
+Root集成复验：精确5路径暂存后checkpoint/topology PASS/0；相关治理pytest95/95（47.31s），日志 `/tmp/kokoro-composer-action1-root-governance.log`。3310公共首页HTTP200、原PID65590，34117测试服务退出；用户当前聊天像素/内框仍未验，3active/13broken不变。
+
+## 2026-10-01 WEB-COMPOSER-ACTION1：实际操作行修复与渲染回归已验
+
+Web main `42df17b8e3cd01d58c929cd83de1e2bc0b93e630`（6文件、clean）；唯一Root提交，writer agent_failure_cursor_owner，独立终审web_failure_wire_review P0/P1/P2=0/0/0。VoiceActions引用不存在CSS Module类导致宽屏发送组左靠，旧coarse reset又撤销auto；组内视觉归controls module，父级仅稳定slot定位，删除死/重复规则及coarse reset。无新组件体系、依赖、API、SQL或其他子仓改动。
+
+Root独占34117真实preview填写/提交与PNG：桌面640右缘偏移386.8125px RED，触屏640偏移372.421875px RED；最终完整Playwright **13通过/3项目分工跳过（11.3s）**，desktop10宽度390–1280、Pixel7 390/640右缘<=1px，原轴线/overflow不放宽。Root已查看桌面全页/blur/Tab focus/三行与触屏640图片，操作组右靠。Node22/pnpm11 fresh完整check **contract218/architecture49/全test2053（40.79s）/lint/typecheck/build exit0**；日志 `/tmp/kokoro-composer-action1-{red,touch-red,final-e2e}.log`、`/tmp/kokoro-composer-action1-root-final-check.log`。首次check的257error/2773warning来自本轮generated HTML trace bundle；报告移出仓到/tmp后fresh全门通过，不加ignore/改门槛；原失败log保留。
+
+Root仅把3个UI源码通过旧hash精确检查后同步受管3310，备份/manifest `/tmp/kokoro-composer-action1-runtime-{backup,sync.json}`；PID65590保持，34117测试服务已退出，无PG/Redis/共享数据操作。未混入46文件failure切片，未半切contract。用户IAB tab6再截图35s超时kernel reset；这不是UI根因。独立fixture textarea实测border0/shadow none、blur/focus/multiline未出现内框，但**用户当前输入内方框与整体对话视觉仍未验，不宣称用户问题全解决或整产品完成**。当前截图请求仍待回复。
+
+库存刷新43条原Web来源至精确commit/blob，并加4个UI证据；仍3active/13broken。BFF只读后继P1：删除无producer的system角色是breaking，现version政策与同/v1 3.0候选冲突；fresh installer不会更改已有CHECK。尚未源码授权，避免分散UI关键路径。BFF/Agent/Billing docs及Root uv.lock保护。
+
 Root集成门：精确暂存5路径后checkpoint/topology均PASS/0，相关治理pytest95/95（46.76s）；没有放宽broken状态、清理共享数据或包含其他子仓/uv.lock。
 
 ## 2026-10-01 Web失败消费源码已提交，用户视觉问题仍未验
