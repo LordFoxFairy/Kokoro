@@ -1,3 +1,23 @@
+## R29 Agent纯规则已验收并推main；整条聊天仍未闭环
+
+Agent **0245a36c85422b4e0e85cc22aba426b0e30fec12**：仅2新纯域/测试文件＋4批准HITL前缀，独立Astra0/0/0；Root frozen源码测试hash一致，Ruff265/check、Pyright0、3.0契约检查及offline wheel/sdist构建退出0。Root fresh默认 **1695 passed/6既定skip/242 deselected/364 warnings（94.62s）**，/tmp/kokoro-agent-domain-p1-r29-root-default.log；新增38规则随全门执行。构建只改ignored egg-info/SOURCES.txt，331/332原保护hash保持，4P3B suffix全同，构建物未暂存。精确六路径已提交推main，不含P3B/业务SQL/协议4/worker接线；批准范围只纯资格/不可逆状态，不声称durable HITL。
+
+Root从0245a36 committed blobs更新Agent30引用及TECH digest，保持原JSON编码与3active/13broken；第一次topology在尚未stage gitlink时真实exit1（/tmp/kokoro-domain-r29-topology.log），已stage后fresh topology/固定checkpoint均PASS/exit0。四治理测试 **386/386（45.17s）**，/tmp/kokoro-domain-r29-root-governance.log；不冒充全仓标准零违规。Root只接Agentgitlink/inventory/同三台账，uv.lock/Billing5docs/BFF四docs与四RED测试/P3B都保护。
+
+完整Wave0–7继续原路线：BFF当前39pass/2真实fail等正式Agent artifact；Agent持久Run-command-Chat/dispatch fence/native证据/GC真实门未完成；Billing summary正式读/授权赠送到结算组合及agents目录缺口仍待owner。3310当前无监听（旧PID65590消失）是新真实失败；未证明停止原因、未重启，不引用历史浏览器截图为本轮在线结果。原Agent只读后继持久范围审计、Sol只读Billing聊天边界审计并行在途，当前无Root未收测试或服务句柄；goal工具仍blocked非active，不新建重复目标。
+
+## R29 冻结验收与后继持久切片边界审计
+
+Agent DOMAIN-P1六hash已冻8f684dc0；独立Astra0/0/0（6/6、P3B4/4、保护332/332），Root fresh完整门句柄56842在途，尚未合入。原owner停写。Root核实旧预览PID65590已不存在、3310无监听、HTTP000连接失败；受管process.log最后更新时间2026-10-01 13:00:29本地，存在shutdown记录但未证明具体停止原因。未重启或修改共享资源，不引用历史截图为当前在线证据。
+
+AGENT-HITL-PERSIST-SCOPE-R29 / 原agent4_scope_gate_r19 Astra只读：基线512a846＋已冻domain8f684dc0；仅分析已批准HITL D0的后继Run→command→Chat同事务、durable start/lease/fence、terminal/GC边界，列最小准确现文件/新增表与测试集及前置契约，不写任何文件/Git/DB/Redis/服务。先比较可自洽持久切片与机械拆分风险；不得提前授权52文件、发布半4协议或把unknown再投、三读失败替代native证据。只交范围/设计门供Root裁决；P3B保持。
+
+## R29 heartbeat：继续原代码 owner，并行核验聊天积分读边界
+
+Rootmain b39aa532、Agentmain512a846；原Agent DOMAIN-P1-R28 writer仍在原2新普通文件＋4批准prefix。实际模块缺失RED→31pure通过，追加revision不变量当前2fail/36pass正在修；无运行测试/进程句柄，不重复启动。Root不抢写，冻结后独立审查/主树重验。完整Wave0–7与BFF同事务head/刷新、正式登录/真实聊天目标不变；当前goal工具仍blocked（未新建/冒称active），本轮存在实际可推进任务。
+
+BILLING-CHAT-READ-AUDIT-R29 / Sol原生只读 / Rootb39aa532、BFFd6b7da5、Billing63e0ab6、Web30055e8。范围仅Web billing summary adapter/类型、BFF现summary路由/窄client/contract、Billing正式credit-account/grant/reserve/settle/release机器与运行源码、Rootlocal运行挂接点；保Billing5未提交docs，零写/Git/DB/Redis/浏览器/provider/服务。不是新Billing重写波，只清点真实聊天的既有503依赖：确定是否能由当前owner artifact做正式read投影、可信身份与单位/余额/预占语义，列缺失machine/consumer/运行接线和最小精确后继writer；不得猜充值、免费fallback、点数换算或从业务DB读。与Agent纯规则独立，不缩小其审批/队列目标。Root只做冻结代码集成与现进程句柄核对。
+
 ## R28 Root 已提交证明组合的集成门
 
 Root staged仅Agent512a846 gitlink、committed inventory30与同三台账共5路径；topology exit0，checkpoint按现w1e-iam07-bff-pin **PASS/exit0**；第一次漏--expected导致usage exit2的原日志保留 /tmp/kokoro-parallel-r28-checkpoint.log，不以尾部pytest成功掩盖。纠正命令日志 /tmp/kokoro-parallel-r28-checkpoint-r2.log。Root相关三治理测试 **309/309（19.04s）**，另contract compatibility **77/77（19.97s）**，分别 /tmp/kokoro-parallel-r28-tests.log、-contract-tests.log；30来源再独立从512a846 blobs核digest。仅当前固定治理预期通过，不将3active/13broken或历史全仓标准违规改绿。Agent下一纯domain原owner在途不计本片已验代码，保护全部任务外修改；Root测试/临时服务/PG句柄已收。
