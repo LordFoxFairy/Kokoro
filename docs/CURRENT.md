@@ -1,3 +1,35 @@
+## WEB-COMPOSER-RHYTHM2 源码已验，视觉仍开放（2026-09-30）
+
+Root组合验收：首次未暂存gitlink时checkpoint/topology均exit1（来源新SHA与旧index不一致，日志保留），精确暂存上述5路径后两CLI fresh PASS/0；日志 `/tmp/kokoro-web-composer-rhythm2-root-staged-{checkpoint,topology}.json`，不放宽门禁。
+
+Web main `daaf45b132e30fe5bff3ee9a3234363b5be3d12d` 两文件窄片已提交：max960 active form padding由1.7/.85/.3修为.7/.85/.6，删除重复顶部留白；不改内框、焦点、宽度、controls或消息状态。独立终审P0/P1/P2=0/0/0，Root同树UI131/131、architecture49/49、owned test lint、typecheck、build实际exit0，日志 `/tmp/kokoro-web-composer-rhythm2-root-{result.json,typecheck.log}`；不冒称全lint通过（冻结failure test既有unused warning）或完整test/E2E通过。
+
+Root核runtime原CSS精确等于daaf45b父commit，后仅同步该文件到原3310受管副本，hash513b1f4a；没有重启/新服务/provider/数据操作。源码热同步不是当前画面证据。CUA tab6焦点读取31秒超时；当前输入方框、整个对话视觉和真实浏览器E2E仍未验，截图请求待答。以下任务仍开放，不把此padding切片宣称整体布局闭环。
+
+failure R3仅测试仍冻结：Root9/9hash、8files126失败/194通过、0collection（1.77s），日志 `/tmp/kokoro-web-runtime-red-root-r3.log`；独立审查仍有dispatch tool run-1与terminal run_1不一致的1P1，source GREEN未放行。原11候选hash保留，其他子仓候选/Root uv.lock保护。
+
+## 用户优先：WEB-COMPOSER-RHYTHM2（2026-09-30）
+
+用户再次指出输入方框与整体对话布局，Root切回UI关键路径，不继续让failure测试返修占据可见验收。当前Root main c8d71517/Web main3c4e739；原runtime候选11路径冻结，唯一writer先收尾一个dispatch测试身份修正，然后交接同仓局部UI切片。所有其他仓未提交变更、Root uv.lock保护。
+
+| 任务卡 | WEB-COMPOSER-RHYTHM2 |
+| --- | --- |
+| owner/writer/review | Web AppFrame响应式Composer外壳；agent_failure_cursor_owner唯一writer，Root主树复验；原failure审查只读并行 |
+| 当前事实/职责 | src/ui/composer/composer.module.css为编辑器本体；AppFrame max960规则以更高特异度把active form padding改成1.7rem .85rem .3rem，覆盖coarse≤640组件0.7rem；不改消息/契约/交互 |
+| 局部范围 | 仅src/components/blocks/app-frame/app-frame-main.module.css及tests/ui/app-frame.smoke.test.tsx；扩展现文件，不创建目录/组件/协议，不把重设计塞入本片 |
+| 方案与粒度 | 改现max960 form padding为紧凑0.7rem .85rem .6rem并更新过时注释；不追加更高特异度补丁，不改宽度/底部safe-area/焦点/多行增高/controls |
+| 依赖/数据/删除 | 仅现shell CSS；无schema/API/generated/SQL变化；删除过量上留白与错误参考注释，不删除键盘focus保障 |
+| 验证 | TDD先锁原1.7rem失败、再同测试绿色；Composer/AppFrame相关unit、architecture/lint/typecheck；完整test目前含冻结failure RED如实保留，不清门；浏览器当前读取超时，未视觉验收 |
+| 排除/交付 | 不改Composer/primitive/Thread/消息样式/原11候选/子仓docs/依赖/运行副本/服务/Git；Root sole commit。内方框根因仍未确定，当前截图请求待答，不将padding修复冒称方框修复 |
+
+新鲜UI证据：CUA inventory返回当前tab6，getTab实际Emulation.setFocusEmulationEnabled超时31.36s；未新建tab、未重启/绕过。受管3310 PID65590存在，源码五文件（Composer CSS/TSX、AppFrame CSS、Thread TSX、Textarea primitive）与主树逐字节相同，排除这些文件未同步这一假设；不证明浏览器CSS实际生效。当前回归仍优先真实画面。
+
+## 当前goal：runtime RED已Root真实复现，R2仅测试返修（2026-09-30）
+
+Root mainc8d71517/Web main3c4e739；新九候选R1 hash9/9及原两contractRED保护复核。Root Node22 fresh typecheck0，定点8文件114失败/190通过，0collectionerror，日志 `/tmp/kokoro-web-runtime-red-root-final-{result.json,red.log}`；40188已终态消费。未receipt初始筛选3项通过含2恢复+1双发guard，不称全engine通过。
+
+独立R1发现Share精确copy、dispatch工具/历史run、profile快照阻断、generic原user retry四P1测试缺口；Root补creditRejected为admission失败的边界裁决，保留其三独立动作与冻结意图恢复，不与owner terminal混淆。R2只同九tests返修，生产/生成/docs/Git/服务无worker授权，源码GREEN尚未放行。机器切片已验不等于runtime/UI/全产品完成。以下为历史门记录。
+
 ## 当前goal：Web机器切片3c4e739已提交，runtime门继续（2026-09-30）
 
 Root基线main8a3940fe，Web main `3c4e7394ce5219906530d5077a3ae163c2b1c0fc`。Root已精确提交18 pin/generator/provenance/docs路径，两runtime RED未纳入；新鲜完整结果为artifact46/49architecture/lint/typecheck/build通过、fulltest26失败/1928通过，失败仅两冻结runtime文件。日志 `/tmp/kokoro-web-pin-release-root-result.json`，两generatorcheck及owner原blob/Team15逐hash也通过，独立release0/0/0。不能据此声明运行时失败消费或产品闭环完成。
