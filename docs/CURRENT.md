@@ -1,3 +1,20 @@
+## PARALLEL-EXECUTION-NEXT：当前唯一任务看板（2026-10-01）
+
+总目标仍为九 owner、Wave 0–7 的研发闭环，支付最后；本波先关闭“发送→执行→持久回复→下一条”的一致性缺口，不扩展运维配置。当前 Root main `21fd6a87`；Agent main `dd5afc3528fe3a835756bc3ff55dfacaa8ca76d3`、BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada` 均存在本波未提交实现。不能用默认离线测试或上一切片完成替代整产品验收。
+
+| 任务 | 负责人 / 允许范围 | 当前状态与放行条件 |
+| --- | --- | --- |
+| AGENT-TERMINAL-ATOMIC / P0 | agent4_execution_owner，gpt-6-astra，Agent 唯一 writer；现 Run/Chat、execution/worker、相关测试及四文档；无 DDL/public wire/generated/lock 变更。 | 已将正常/失败/cancel/NACK 收敛为唯一 finalize_terminal，同一 PG 事务提交最终 usage、outbox、Chat、终态/fence/cleanup。writer 默认离线 1528通过/6跳过/180排除，不是最终放行。Root fresh PG database + HTTP acceptance R1为122通过/4失败，R2为125通过/2失败：cleanup真实DB时钟及两例安全错误HTTP已恢复，cancel-natural receipt fixture仍需精确身份，新增active delivery ACK/GC→ensure身份漂移真实RED；原断言不放宽。GC生产返修已授权。独立审查另发现暂停usage应用clock与NACK私有audit replay核验缺口，先真实RED再源码修。 |
+| BFF-FIFO-ATOMIC / P0 | web_failure_wire_review，BFF 唯一 writer；现 dispatch/projection/chat-delete/DDL、5测试及窄 architecture 门、四文档。既有四文档495行候选草案受保护。 | 当前3.0内部FIFO实现待验；HTTP ACK 只 admitted 不释放，terminal 同事务释放，sticky unknown 以同 Run/key bounded paced recovery，不把耗尽当未入场。Root fresh schema首轮0/3失败揭示两列错表，已返修；R2 2通过/1失败揭示null terminal误判，R3普通批已修、剩序列fixture错误（拒绝的10未消费、合法下一条仍从11开始）；独立审查另发现claim/fail的dispatch→stream与terminal/delete反锁序，以及failed历史source挡板遗漏，现writer返修并补真实两连接矩阵。生产/DDL已授权，不再是“仅文档/tests-only”。 |
+| 独立审查 / P0 | agent4_lifecycle_review，gpt-5.6-sol，只读变化树；无写/Git/数据库/服务权限。 | 已定位 Agent active delivery GC P0并交最小方案；已审BFF两P0及Agent两一致性缺口并返负责人；现变化树结论不等于最终放行，必须绑定冻结hash复核。 |
+| 集成与真实验收 | Root：唯一 Git/index writer、共享资源管理、现task/progress/CURRENT；不抢写子仓授权范围。 | owner fresh PG/Redis + 全门、独立审查通过后才精准提交，再按owner contract依赖推进消费者与真实浏览器/provider组合。临时数据库每次finally回收，Redis不flush；用户3310不重启。 |
+
+当前实测失败日志：`/tmp/kokoro-terminal-atomic-root-expanded-pg.log`（122/4，15.99s，自有DB4fcddfb3f1ed4257回收）；`/tmp/kokoro-bff-fifo-root-green-pg.log`（DDL失败0/3）和 `...-green-pg-r2.log`（2/1，自有DB6ee75e7b4b9b4f6d回收、Redis14剩余0）。新增日志 `...-expanded-pg-r2.log`（125/2，15.55s，自有DB8dd39bb1caf74348回收）与BFF `...-green-pg-r3.log`（2/1，自有DBc0fad7a4a9354ca1回收）。这些是返修证据，不记为GREEN。
+
+已验收前置：Web `54a1bd6df3cc6b8ce0309600de1af3162a782d5d` 仅删除未消费的空会话虚构queued字段；Root 上一波2065全测试/90 UI/219contract/50architecture通过，独立preview14通过/4条件跳过，不能称用户3310的ChatGPT视觉或真实模型闭环。独立preview已关闭。
+
+未完成边界：Scheduled同session launch仍独立P0；Agent完整4.0 scope/profile/retention/native、BFF原user retry/queued wire、Web ChatGPT失败footer与输入交互、跨owner真实模型/browser及Billing尚未闭环。Conversation deletion/retention产品决定仍待回复，不阻断独立一致性修复，也不假称完整4.0设计门通过。上一全仓审计137失败/0未核仍为历史证据，本轮未重跑全审计。
+
 ## AGENT4-DOC-CORRECTION：设计候选已提交；缺陷尚待源码修复（2026-10-01）
 
 Root本片fresh集成：精确暂存后checkpoint/topology均PASS/exit0；完整 `python3 -m pytest scripts/tests` 1103通过/3跳过（101.06s），3个需Agent依赖的原生测试用其.venv补验3通过/52 subtests（0.36s）。fresh全仓标准仍FAIL137、unverified0/exit1，不放宽门。日志 `/tmp/kokoro-agent4-doc-correction-root-{checkpoint-final,topology-final,tests,native}.log` 与 `...-root-standard.json`；未跑新实现integration/acceptance/真实provider/browser，不能由这些工具门推断研发整体闭环。
