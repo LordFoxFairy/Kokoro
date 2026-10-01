@@ -1,3 +1,33 @@
+
+R25 Root组合集成复验：仅6路径暂存，topology与当前contract checkpoint均exit0，相关3治理文件 **95 passed（39.96s）**（`/tmp/kokoro-parallel-r25-{topology,checkpoint,tests}.log`）；不包含Billing/uv.lock/BFF candidate，不代表九owner全门。R26 BFF Root真实50/1/0（15.28s）新失败为旧consumer barrier期待null与terminal drain新语义冲突，原owner在真正PID barrier下保留锁后clock验证并拆独立case，R26-r2 frozen30正在Root复跑；自有DBf6447ad64d2a4275已回收/Redis14=0。Agent P3 D0独立审查1P1 request权威字节相等歧义已返原writer四docs修正；Web R26同writer已获准关闭2P1，并非已验收。
+
+## R25 当前代码交付与拒收事实（2026-10-01）
+
+Agent **7e902c08296cacdacfe810ccbb4a6233d1b2ca7b** 已精确26路径提交推main：Root完整离线链exit0（1627 passed/6 skipped/192 deselected，83.20s）、独立review0P0/0P1；Root自己的wheel安装229资源/115依赖/12动态边与三Feature匹配、缺memory fail-closed。本片是正式static recipe/生产来源与真实装配，后置native policy持久绑定/SQL/scope/retention仍未完成，原owner进入仅四docs P3设计门。
+
+Web D0 **6e3858f37e44d1e169adeae789d14806d2ccf2f4** 已提交推main；后继28路径连接修复Root完整check2088/219/50/build成功，却被独立审查2P1拒收（unavailable仍可写与reattach超时被静默）。未提交该源码/未同步用户运行；同writer按Root裁决补连接写动作fence、保Stop、超时按connection反馈及动态恢复断言。
+
+BFF R25 Root离线559/0/1但真实8files50/1/0失败：neverSent timestamp表达式错误42804；独立review另3P1（consumer吞错、并发stop早返回、15真故障矩阵不足），未提交。自有DBfaaed6cba93a4d72回收/Redis14=0。TECH误formatter损坏保护suffix已从已校验原始content+基线+HEAD三方精确恢复hash，R25prefix原样留存。R26原writer修SQL/观测/drain后已冻30候选，Root正复跑；剩独立故障矩阵不靠旧51绿色冒称完成。
+
+真实浏览器tab17确认snapshot200/events连续200/SSE后429触发额外run-error；未读取响应body/token/cookie/SSE，容量具体原因未证明。billing summary503/agents404/runtime-manifest404是另行组合缺口。临时tab已关、未重启服务/修改共享数据。当前inventory只刷新已提交来源，仍3 active/13 broken；全九owner/Wave0–7、真实模型/积分/Billing最后仍active。任务详见同一task.md，Root保护uv.lock/Billing五docs/BFF原495行。
+
+## WEB-CONNECTION-P1-R25：设计门放行后的代码切片（2026-10-01）
+
+上一 goal turn 有真实进展：Root `e40e3e81524a5a43887cbea209d6c4d7d53579d6` 已提交推送已验 Web/Agent 指针与任务治理。本轮三个负责人实际 running；Web D0 四份文档 Root 4/4 hash、范围、三设计和 fresh contract **219/219** 验证后提交 `6e3858f37e44d1e169adeae789d14806d2ccf2f4`（仅设计，源码仍 ed496fd 行为）。
+
+Root tab17 网络复现证据：snapshot200、events连续200/SSE 后 **429/application-json**（request-id 1981e7ed-e435-4b34-b552-ffe54ddffe2d），随后 exact footer=1/generic run-error=1；未读响应body/cookie/token/SSE payload。直接 hard HTTP 触发已确认，具体容量/租约原因未证明，不能混称速率限流。billing summary503、agents404、runtime-manifest404 独立记录为旧组合缺口；tab17 已回收，不重启/修改用户页面、数据或后台。
+
+| 任务卡 | 结论 |
+| --- | --- |
+| ID / 目标 | WEB-CONNECTION-P1-R25 / P0：正式连接恢复与 owner terminal 正交，不能以隐藏提示代替恢复 |
+| owner / writer / review | Web / web_chat_audit_r20 / gpt-5.6-sol / Root + 后继独立只读审查；同仓单 writer |
+| 基线 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` / main / 6e3858f / 交接时无其他未提交文件 |
+| 写入集 | 已有 engine 的 agui-chat-transport.ts、client.ts、execution-adapter.ts、engine-types.ts、machine.ts；已有 app-frame 的 use-app-frame-engine.ts、app-frame.tsx、app-frame-main-surface.tsx、app-frame-status-surfaces.tsx、app-frame-status.module.css；i18n messages.ts/en.ts/ja.ts/ko.ts/es.ts/fr.ts/de.ts/pt.ts/ru.ts 仅相同连接文案键；tests/engine/{agui-chat-transport.test.ts,execution-adapter.test.ts,engine.test.ts,fakes.ts}、tests/ui/{app-frame.smoke.test.tsx,conversation-failure.test.tsx}；四份设计/CURRENT；共29既有路径，仅确有必要者修改 |
+| 排除 | core failure map、contract/generated、route、lock、README、其他仓、new process/file/目录；需 client-error.ts 新字段或额外路径先报告 |
+| 已裁决 | transient EOF/network 按现 opaque cursor恢复；hard HTTP/parse/replay 是 connection unavailable，不合成 Run error；显式恢复 snapshot-first，不 POST 原 user；initial snapshot/pre-receipt/exact/unattributed terminal 保留；active identity/partial/Stop保留，session/generation 防迟到 |
+| 验证 | TECH 9 项 RED→GREEN；重点增加真实已观察429路径，证明正文/owner footer未损、紧凑连接状态与恢复动作、零线程run-error。完整 contract/architecture/lint/typecheck/test/build，Root冻结后重跑与浏览器；不放宽限流/坏帧/timeout/skip，不增legacy fallback |
+| 交付 | Worker不操作Git/index/服务/DB/provider/浏览器；冻结manifest与文件清单、RED/GREEN输出、未完成项。Root统一审查、提交、运行同步与组合验收 |
+
 ## 当前并行任务与验收口径（2026-10-01 / R24→R25）
 
 | 负责人 | 正在推进 | 当前验收状态 |

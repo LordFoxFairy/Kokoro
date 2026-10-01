@@ -1,3 +1,55 @@
+
+R25 Root组合集成复验：仅6路径暂存，topology与当前contract checkpoint均exit0，相关3治理文件 **95 passed（39.96s）**（`/tmp/kokoro-parallel-r25-{topology,checkpoint,tests}.log`）；不包含Billing/uv.lock/BFF candidate，不代表九owner全门。R26 BFF Root真实50/1/0（15.28s）新失败为旧consumer barrier期待null与terminal drain新语义冲突，原owner在真正PID barrier下保留锁后clock验证并拆独立case，R26-r2 frozen30正在Root复跑；自有DBf6447ad64d2a4275已回收/Redis14=0。Agent P3 D0独立审查1P1 request权威字节相等歧义已返原writer四docs修正；Web R26同writer已获准关闭2P1，并非已验收。
+
+## AGENT-P3-D0-REVIEW-R25（只读设计审查）
+
+原 agent_p2_review_r25（gpt-5.6-sol）续审 main7e902c0 + 四docs frozen71fb0251；只读三设计/现Run与native实际入口，核22路径P3A持久static freeze的事务/原authority、fresh schema drift、四build/resume/fingerprint/takeover入口与P3B硬门不虚报，检查是否仍保正式两阶段目标。不得写/Git/DB/服务；Root核4hash及全scope，审查后再contract/源码授权。P3A不是总goal替代，P3B真实native materialization与all-peer执行前屏障技术落点须明确后续owner，不无限“等待上游”。
+
+## WEB-CONNECTION-R26：Root 拒收后的局部语义裁决
+
+R25候选28/28 hash且Root Node22完整check2088/219/50/lint/typecheck/build exit0（`/tmp/kokoro-web-connection-p1-r25-root-check.log`），独立复审仍P1=2，不提交/不同步运行。Root核实际源码：hard unavailable窗口submit/HITL仍可写；AppFrame只按canRetryPendingSubmission展示error，令reattach TIMEOUT静默。
+
+原writer继续同29路径：先在四docs更新以下现有语义再同片RED→GREEN，不另造owner契约。**hydrated连接非connected时拒新submit与HITL resume且保草稿，不阻Stop/cancel与snapshot-first reconnect；空新会话默认connected不受误拦。reattach无事件等待窗口超时是连接/对账不可用，不是owner Run失败：保持active identity/partial/Stop，紧凑unavailable反馈，Web本地reason可加timeout（只改既有engine-types），不本地transition Run terminal、不恢复伪run-error。**其他真实unattributed terminal/pre-receipt/initial snapshot错误必须可见、可按原约定恢复；不得只用canRetry决定全部error显示。补unavailable/reconnecting窗口零message/resume POST且cancel仍可用、timer与真实owner后继事件收口、切会话迟到snapshot/cancel、410期间旧HITL/create回调动态测试。新文件/超29路径仍先报；Root复审与全门/浏览器后才提交。
+
+## R25 最终复验与后继任务卡（2026-10-01）
+
+- Agent P2 Root完整离线链exit0：1627 passed/6 skipped/192 deselected（83.20s）、Ruff260、Pyright0、contract/generated/build成功；独立审查26/26 P0=P1=0。Root自己构建wheel/独立目标安装，229实际资源/115依赖/12动态边与三Feature源码fingerprint匹配、缺memory fail-closed。精确26路径已提交 **7e902c08296cacdacfe810ccbb4a6233d1b2ca7b**，不是完整4.0/持久freeze完成。
+- BFF R25 Root Node22完整离线559/0/1成功，但Root真PG8files **50 passed/1 failed/0 cancelled/0 skipped（16.75s）**，releaseNeverSent SQL `available_at` interval/timestamptz类型错误（42804）；自有DBfaaed6cba93a4d72已回收/Redis14=0。独立审查又发现consumer吞source/commit/release错误导致onError/backoff不生效、Promise.all早拒绝使stop漏drain，以及15项真实故障矩阵缺证据。候选不提交。
+
+| 任务 | owner / writer / 基线 / 范围 | 门与依赖 |
+| --- | --- | --- |
+| BFF-SCHEDULED-R26 | BFF / bff_fifo_owner_r9 / maine7a325ce+R25 frozen30 / 原30路径 | 修实际SQL RED及3P1；两个runner failure+slow sibling drain/无新claim、consumer三类观测与bounded backoff；在现integration文件拆独立真实故障/PID屏障/非零N/跨页restart/conflict零写/expiry/真实跨scope并行测试；不得扩生产契约/放宽门/整份保护docs格式化。Root真PG与复审后才能提交 |
+| WEB-CONNECTION-REVIEW-R25 | Web / web_connection_review_r25 / main6e3858f+28 frozen ed7ea016 / 只读 | 4状态正交、429/parse/410恢复、generation/active/Stop/正文/copy、零POST及owner terminal/pre-receipt/initial snapshot保真；不写/Git/服务；Root另完整check与浏览器 |
+| AGENT-PROFILE-P3-D0 | Agent / agent4_scope_gate_r19 / main7e902c0 clean / 仅现四docs | 沿已批准两阶段正式profile把静态recipe持久冻结、post-route有效native政策绑定、fenced retry/resume/takeover比较收敛成下一实际SQL/事务/运行切片；当前SQL尚无profile字段必须诚实列出。不重做已验P2/不兼容旧schema/不拆新服务/不跳过所有peer执行前约束；三设计+最小精确文件/真实PG故障矩阵一致后Root放行源码。Conversation最终释放未决不阻此独立切片 |
+
+## R25 冻结候选审查与资源恢复
+
+- BFF writer 报告误格式化 TECH 保护后缀后立即停写。Root 保存损坏文件，通过 `/tmp/kokoro-bff-conversation-scope-baseline.json` 已校验原文 + 293dfe 基线 + 当前 HEAD 三方重建；merge0、原 suffix SHA **c2c2a406…976d14f** 精确一致，只恢复该 suffix，R25 prefix 保留。四保护 suffix 已复核；不将可恢复事故掩盖为格式升级，不以HEAD丢弃原草案。后续禁止整份保护docs格式化。
+
+| 审查任务 | 基线、范围、负责人 | 验收/权限 |
+| --- | --- | --- |
+| AGENT-P2-REVIEW-R25 | Agent main9dcaa34 + frozen26，manifest5d5e07a9；agent_p2_review_r25 / gpt-5.6-sol，只读 | 26hash、生产manifest/动态边闭包、插件零副作用、同计划真实factory/worker预算、wheel证据与未实现持久边界；禁止写/Git/进程/基础设施，提供P0/P1实际代码证据；Root另复跑完整门 |
+| BFF-R25-REVIEW | BFF maine7a325ce + frozen30，manifestb54f1ff7；bff_r25_review / gpt-5.6-sol，只读 | 5P1返修正确性与15矩阵实际覆盖/缺口，4保护suffix；禁止写/Git/基础设施。Root独立隔离PG门，缺故障点返唯一writer补充，不以559离线门和旧51PG放行 |
+
+Agent writer1627/6/192与BFF writer559/0/1均仅交付报告，当前源码尚未Root验收。Web P1代码仍独立进行，Root不抢写。
+
+## WEB-CONNECTION-P1-R25：设计门放行后的代码切片（2026-10-01）
+
+上一 goal turn 有真实进展：Root `e40e3e81524a5a43887cbea209d6c4d7d53579d6` 已提交推送已验 Web/Agent 指针与任务治理。本轮三个负责人实际 running；Web D0 四份文档 Root 4/4 hash、范围、三设计和 fresh contract **219/219** 验证后提交 `6e3858f37e44d1e169adeae789d14806d2ccf2f4`（仅设计，源码仍 ed496fd 行为）。
+
+Root tab17 网络复现证据：snapshot200、events连续200/SSE 后 **429/application-json**（request-id 1981e7ed-e435-4b34-b552-ffe54ddffe2d），随后 exact footer=1/generic run-error=1；未读响应body/cookie/token/SSE payload。直接 hard HTTP 触发已确认，具体容量/租约原因未证明，不能混称速率限流。billing summary503、agents404、runtime-manifest404 独立记录为旧组合缺口；tab17 已回收，不重启/修改用户页面、数据或后台。
+
+| 任务卡 | 结论 |
+| --- | --- |
+| ID / 目标 | WEB-CONNECTION-P1-R25 / P0：正式连接恢复与 owner terminal 正交，不能以隐藏提示代替恢复 |
+| owner / writer / review | Web / web_chat_audit_r20 / gpt-5.6-sol / Root + 后继独立只读审查；同仓单 writer |
+| 基线 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` / main / 6e3858f / 交接时无其他未提交文件 |
+| 写入集 | 已有 engine 的 agui-chat-transport.ts、client.ts、execution-adapter.ts、engine-types.ts、machine.ts；已有 app-frame 的 use-app-frame-engine.ts、app-frame.tsx、app-frame-main-surface.tsx、app-frame-status-surfaces.tsx、app-frame-status.module.css；i18n messages.ts/en.ts/ja.ts/ko.ts/es.ts/fr.ts/de.ts/pt.ts/ru.ts 仅相同连接文案键；tests/engine/{agui-chat-transport.test.ts,execution-adapter.test.ts,engine.test.ts,fakes.ts}、tests/ui/{app-frame.smoke.test.tsx,conversation-failure.test.tsx}；四份设计/CURRENT；共29既有路径，仅确有必要者修改 |
+| 排除 | core failure map、contract/generated、route、lock、README、其他仓、new process/file/目录；需 client-error.ts 新字段或额外路径先报告 |
+| 已裁决 | transient EOF/network 按现 opaque cursor恢复；hard HTTP/parse/replay 是 connection unavailable，不合成 Run error；显式恢复 snapshot-first，不 POST 原 user；initial snapshot/pre-receipt/exact/unattributed terminal 保留；active identity/partial/Stop保留，session/generation 防迟到 |
+| 验证 | TECH 9 项 RED→GREEN；重点增加真实已观察429路径，证明正文/owner footer未损、紧凑连接状态与恢复动作、零线程run-error。完整 contract/architecture/lint/typecheck/test/build，Root冻结后重跑与浏览器；不放宽限流/坏帧/timeout/skip，不增legacy fallback |
+| 交付 | Worker不操作Git/index/服务/DB/provider/浏览器；冻结manifest与文件清单、RED/GREEN输出、未完成项。Root统一审查、提交、运行同步与组合验收 |
+
 ## 当前并行任务与验收口径（2026-10-01 / R24→R25）
 
 | 负责人 | 正在推进 | 当前验收状态 |
