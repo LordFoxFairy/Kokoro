@@ -1,3 +1,28 @@
+## R43 同步推进：复用十窗口，不新建任务中心
+
+用户再次要求10+窗口加速。现 WIN01–10 原窗口继续分工；独立写入可并行，同仓仍唯一writer；Root负责真实资源、集成和Git。当前进度不是全链闭环：Web full r2实际3failed/2133passed/42.25s（两个新身份RED＋welcome旧路径失败），原RP500本次未复现但旧失败保留；Agent资源r3实际2failed/16passed/1356deselected/3.17s，仅official saver list/tuple断言未达child，原Astra已精准续授两函数r4，其他65path锁，owned库closed/Redis15精删16stream remaining0。System两catalog脚本已冻结，Root资源46263在途＋独立审；Scheduler17PG已通过，五处RUNBOOK已冻、待复审。
+
+| 当前任务 | owner / 唯一写入或只读职责 | 范围 / 前置 / 放行条件 |
+| --- | --- | --- |
+| R43-WIN01 | Web原负责人；doc/tests-only | 四批准doc段＋现workspace两身份RED，冻结后Root重跑才授现hook/validated detail/history GREEN；welcome路径另只读定位 |
+| R43-Agent | 原Astra sole writer；WIN03只读审 | 仅subagent两函数official saver list严格验证再tuple比较；Root18资源全通过才发布66path，保P3B/nativeproof |
+| R43-WIN02 | BFF原负责人 | 先四doc现FIFO/RR段明确queued head时历史terminal不关闭流；交doc门后只授现chat-facts/agui-projection/agui-http三个tests，原8dirty保持，不改source/pin |
+| R43-WIN04 | IAM原窗口只读 | 核当前gift权限决策两方案事实与正规登录真实旅程最小缺口；不擅设授权或新服务 |
+| R43-WIN05 | System原负责人已冻；Root真验＋独立只读审 | 只两catalog脚本/四批准段已交；当前22path与23业务不变量锁，7漂移＋3非空对象及fresh实际证据才放行 |
+| R43-WIN06 | Billing原负责人doc-only | 四dirty设计文档仅插当前Credit本人钱包/ledger设计段；复用canonical Credit owner，可信tenant/subject、有界游标/十进制单位、零写入；不激活gift/旧v1 alias/runtime |
+| R43-WIN07 | Platform原窗口只读 | 把已交per-invoke typed MCP负例对齐Agent4新pause/revision；旧生产/contract锁，后继实现依赖正式Agent发布 |
+| R43-WIN08 | Storage原窗口只读 | Root launcher五文件已有D0，核显式S3/scanner完整配置槽和精确owned cleanup RED；Root先裁输入槽，不新service/不清资源 |
+| R43-WIN09 | Scheduler原负责人doc-only | 既有namespace20path锁，四doc当前段补只读全catalog＋unique SQL reference设计/精确RED；不写source/test直到doc门 |
+| R43-WIN10 | E2E原窗口只读 | 既有四driver正式多轮/project/积分断言精确测试范围，accepted完整checkout不复制dirty；整链尚未运行 |
+
+Root主控不接管已派文件，不以窗口数量、静态审0或局部PASS冒充整体。各子仓main；不重复启动服务、不深入运维、不伪造赠送或扣款。
+
+### R42 实际后置结果（不以静态审查替代运行）
+
+Root Scheduler17真PG全通过（1.110s/0skip），新双backend installer锁与第二表DDL失败notice/完整rollback均到达原断言，owned `kokoro_scheduler_test_r42_25b7c773a588` closed=true；`/tmp/kokoro-scheduler-schema-r42-root-resource-green.log`，48256已收。原WIN09追加现RUNBOOK5/12/17/32/38旧namespace/readiness文案精确授权，canonical/source锁；全catalog后继未实施。
+
+Agent18资源r2 **2failed/16passed/1356deselected（3.81s，866warnings）**，`/tmp/kokoro-agent-r42-root-unit-resources-r2.log`；owned `agent_unit_r42_daae725b16cf427a` closed=true，Redis15精确16stream删除/remaining0，44847已收。Structured input、GP guard计数/safeprofile与跨namespace memory后半真实通过；两subagent新增namespace断言错误将root合法空namespace当child，不能靠放宽或忽略child证明转绿。原owner仅只读追官方root传播/child saver证据，其他冻结锁；当前静态0审不冒充动态全部通过。四doc prepared prefix隔离独立0审，仅批准HITL插入/HEADtail保持/P3B未混入，尚未操作owner index。
+
 ## R42 发布收敛与完整门真实缺口
 
 上一轮为progress：Agent196真PG修订通过、Scheduler15PG＋1重启通过，Root986bfb85已推送。沿原owner续接，本轮不新窗口/不改目标。Web28path ProjectRead冻结，原WIN01停写，独立审查由原billing_chat_read_audit_r29负责；Root Node22完整pnpm check实际**1failed/2133passed**（44.06s），失败为既有RP pending-refresh signout500，不是ProjectRead定点失败。定点同例真实fixture复验1pass/38选择skip（6.96s），仍不以单例绿覆盖full失败；原WIN01仅只读定位，Root单独Next build已exit0；full失败仍原样保留。日志 `/tmp/kokoro-web-project-r42-root-{full-check,logout-repro,build}.log`，93402/96806已收。
