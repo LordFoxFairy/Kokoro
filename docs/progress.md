@@ -1,3 +1,33 @@
+## R35 Root 集成门真实通过
+
+Web当前gitlink343aea36，inventory从HEAD committed blob核49处SHA升级、source/contract digest0变化，3active/13broken保持。首topology因未暂存新gitlink而expected checkout mismatch/exit1，日志保留；暂存精确gitlink后fresh topology PASS、固定w1e-iam07 checkpoint PASS，四治理 **386/386（50.43s），exit0**，/tmp/kokoro-r35-root-{topology-r2,checkpoint,governance}.log。只集成Web已验提交与inventory/同三台账；Root uv.lock、Agent候选、BFF8、Billing5与新tests不暂存。完整浏览器/正式账务审批链仍未验，goal active。
+
+## R35 Billing 真实 RED 已到达；只修 T05 并发证明
+
+Root Node24.20两冻结文件实际真PG **94failed/37passed/0skip（131例，19.31s），exit1**，不是collection失败；credit90为57fail/33pass，schema41为37fail/4pass。/tmp/kokoro-billing-terminal-r35-root-red.log，fixture前后billing_reference库集合一致/CLEANUP_DIFF_EXIT=0。formal effect、缺终态source及约束、重复审计/漂移缺口已到达；原28全部回归通过。Root保留首日志，不把缺catalog后的未到达断言称通过。
+
+独立Sol冻结两hash审0P0/1P1/0P2：T05现Promise.allSettled没有锁等待证据，可能串行完成；生产GREEN尚未放行。原WIN06 sole writer仅现credit-metering.test.ts T05六矩阵及同文件必要helper允许改：持account/hold行锁、两个独立backend精确PID/pg_blocking_pids均确认阻塞且未settle再释放，保原结果/全facts。target-schema冻结不动；其余T01–T10/旧28/R2 docs/302保护不变，静态+collect后冻结停写。Root同fixture亲跑新PG并独立复审后，只授既定四credit source/canonical/正式生成，不加HTTP/receipt/Metering/新文件/共享资源。Root审/资源/Git，无新计划中心。
+
+## R35 Web 真实展示切片已验收；Billing 终态测试冻结待真 PG
+
+Web main **343aea36f15f0ed5b7b9f41a599c066b510b066a** 已提交推送，Root接入gitlink与当前committed inventory。删除首页虚构1000/Free/每日300弹层，复用现shadcn正式积分按钮直接打开credits设置；无callback禁用，不改余额请求、费率、单位、扣款或非空workspace升级逻辑。独立Sol精确hash审0P0/P1/P2。Root旧component＋冻结新测试实际RED **5fail/14pass**，恢复新实现后全门实际 **contract219、architecture50、tests2109/2109（163files/180.24s）、lint/typecheck/build exit0**；证据 /tmp/kokoro-web-home-credit-r35-root-{red.log,evidence.json}。清理7组无引用CSS，Root仅删EOF额外空行。键盘为JSdom事件＋显式click，不冒充真实浏览器；3310仍offline，首页真实余额及1e6消费转换待Billing artifact，非整产品闭环。
+
+BILLING-C1-TERMINAL-REAL-RED-R35：原WIN06冻结停写，main5c45f22，现两test哈希 credit-metering=f488da3535350975febb93a807c1a027a221d001d35742f4583035a4b775ebf8、target-schema=ead891d4d1f538451157e58402c7490c68dbb181514733c50d98b311c7f51da6。runtime collect131（90/41），103新＋28原保留；worker静态format/lint/tsc exit0，不算真实PG。Root独占真实临时fixture验证、原Sol只读T01–T10/事务与catalog审查并行；保护302tracked及五dirty docs/四R2prefix，不授production/schema/generated至行为RED与审查到达。允许Root单worker Node24与现SCHEMA_ADMIN_URL；只创建回收fixture自有随机库，不重置应用库/Redis/角色或伪造账号赠送。
+
+Agent D0 R2补名690a7a9e四whole/P3B核同，独立Sol0P0/P1/P2；第7只读历史上下文port与official saver/独立reader factory分支已批准，原Astra继续四现tests RED。没有新SQL事实、重投许可、服务或第二实现。完整Wave0–7 active，十个可见原窗口复用不重复创建；当前代码关键路径Agent、Billing与Root集成验证独立并行。
+
+## R35 Agent 桥设计门通过，原 owner 立即进入四测试 RED
+
+Root实读三面、独立Sol绑定9e0c5c7e四whole hash精确，0P0/0P1/0P2；18生产、现已验PG与原8native proof不动。AGENT-HITL-NATIVE-BRIDGE-RED-R35 / 原Astra sole writer / Agentmain0245a36＋已冻事务核：只授现tests/unit/execution/{test_hitl,test_request_input,test_control_commands}.py及tests/integration/database/test_run_interaction_transactions.py，沿已批准R35接口添加全集map/安全validation、StartedResume唯一许可、真实saver-observation-source回滚/缺证据与双向purge竞争、健康长任务三读保护等RED。保26已验事务与原证明；测试体明确能力assert，不拿缺module import/collection或无PGskip为行为RED。前三可单pure进程真实执行，新PG只collect由Root建独占fixture执行，暂不改source/schema/机器/生成/fakes或四冻结docs/P3B；必要能力形状只引用已批准签名，不另发明API。冻四test hash与真实RED到达范围，Root审后授准确生产/native实现，正式full4/fullDefault门仍保留。
+
+## R35 真 PG 扩展回归与两独立原 owner 代码推进
+
+上一goal轮为progress：Root26真PG、独立两门审与676f9d98实际更新并推main，不以派工数当完成。本轮Root四现AgentPG文件fresh **71passed/0skip（5.56s），exit0**，native可行性/静态profile/outbox/事务核，自有agent_terminal_atomic_4cfae4d5876b4924已closed，/tmp/kokoro-agent-hitl-p2-r34-root-related-pg.log。不是正式native桥/外部副作用证明；全Pyright fresh43error旧approvals/test_hitl；Root完整默认门实际 **78failed/1664passed/6skip/268deselected（97.96s）**，/tmp/kokoro-agent-hitl-p2-r34-root-{pyright,default}.log。失败位于完整4机器/旧HITL与supervisor七文件，原owner已获准确分布；不可用71局部门称Agent整仓完成。句柄66845已terminal/消费，无新常驻服务。
+
+WEB-HOME-CREDITS-TRUTH-R35：原WIN01 sole writer，Web main882937a，工作树干净；Root实际读现workspace-header-upgrade-action.tsx确有无条件1000/Free/每日300，既有share-button测试锁样例。只改现该component与tests/ui/share-button.test.tsx，Root额外实测其已删popovers的7组CSS selector全src/test零引用，批准原WIN01仅删除现workspace-header-popovers.module.css第93行起至EOF孤立credits/usage规则，前92行agent规则逐byte保留、原两冻结文件不动；TDD先证明首页不显示这些虚构余额/赠送、点击正式积分入口调onOpenSettings('credits')一次、缺callback禁用且键盘可操作；随后删除整fake popover及其独有import，复用现shadcn Button/Sparkles/语义文案，直接打开已有正式credits页。非空workspace升级入口/项目路径/分享/模型菜单保持，保现回归。无新目录/文件/props/API/新CSS/余额请求/数据，Root不抢写。定位归属Web Header现交互，非账务owner；定点RED→GREEN/lint/typecheck及Root适当全门验证。真实首页余额未来必须接owner summary，不以隐藏样例宣称已具备余额链；1e6 formatter需Billing owner单位artifact后一次切换，本卡不改比例或threshold。
+
+AGENT-HITL-NATIVE-BRIDGE-D0-R35：原Astra唯一writer，只补现TECH/API/DATA/CURRENT四HITL前缀，P3B suffix及18生产/新旧测试/机器冻结保持。已有设计不重写整体，补三处准确接口：observation精确列/类型/CHECK/完整identity/索引和Run-first GC；ConsumedPauseEvidence及健康/失联静止attempt持久三读规则；消费结果同事务head/command/Chat source映射。初pause command/attempt明确nullable身份不得空串伪造；received batch与官方独立持久读取证据分开，saver正常返回不证明新值覆盖，缺证据unknown零重投。仅StartedResume许可native调用；terminal唯一finalizer、健康tracked task/有效lease/读失败不累计；新validation直接waiting不先空active。reuse已验port/adapter及现worker装配，不新服务/namespace/fork/P3B，后三面精确freeze门过后原owner立即按已列四现tests写RED。Root批准目标与边界，writer填写SQL/port细节并给三面一致差异，不复刻52路径或重开plan。零Git/DB/Redis/provider/服务；Root统一审/真实资源。
+
 ## R34 两门独立审已收，Billing 原 owner 转真实 RED 准备
 
 Agent R3 终审绑定009917d6，30/30 hash一致、原25不变，0P0/0P1/0P2；purge双向四竞争及正式launch/七固定触发器无放宽。Root26真PG已实到达，native桥/完整4仍待后继。Billing R2四whole/prefix已Root与Sol双核，0P0/0P1/0P2，exactly-one debit与T09 duplicate/cross-account反例一致，原P2关闭；只是D0门，不是源码或Schema通过。
