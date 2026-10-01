@@ -1,3 +1,13 @@
+## 2026-10-01 下一owner Agent4：设计门具体缺口已定位，未授权重写
+
+Web consumer/source片e17c039已由Root b1e53f91精确集成；提交后checkpoint/topology均PASS（`/tmp/kokoro-web-public3-postcommit-{checkpoint,topology}.log`），全goal保持active，137规则失败/真实整体能力待验未清零。
+
+只读Agent审计已交6项实施前约束建议：retryable失败前profile freeze、scope latest/active与terminal协调时点、tenant/subject scope身份、native saver同事务写入+exact checkpoint、所有入口scope-first与generation/head fence、原Human与工具副作用边界。Root已读取当前三设计/Current的候选字段、native/retention边界，并核BFF TECH49–50/100–101明确复用原user、仅新assistant/run/outbox；未据审计报告宣称现代码已实现，后续逐项核源码。
+
+Root锁死两条既有目标：retry绝不新建原user消息；四阶段只是实现切片，Agent4 artifact必须等全owner实现与真实PG/Redis/HTTP门通过再发布，不能先发布required字段而执行器仍旧。Agent四dirty候选doc与BFF/Billing/uv.lock仍原样保护。
+
+Agent DATA_MODEL78–83/Current15明确retention释放未裁决会阻断完整文档门，不能用永久跳过purge假闭环。已异步向用户确认删除会话是否取消执行并清理执行记录/检查点（账本不含对话内容），这是研发契约/隐私生命周期，不是运维角色部署。尚未授权新DELETE API/旧数据兼容/共享数据清理；下一阶段先收敛已批准设计的具体约束与该生命周期决定。
+
 ## 2026-10-01 WEB-BFF-PUBLIC3 源码消费已验收；整产品仍未完成
 
 Web main `e17c039c7e3a629e9815026206d08bcbcb4381bd`（16文件、clean），Root唯一提交；BFF public3精确committed blob与两角色消费已对齐，旧public2 pin删除，无fallback/alias。Root独立整份parsed spec只差version/role、owner bytes equality、Team15再生零字节变化；safe failure12tuple/guard/全部operation不变。Agent4/BFF3.1 retry未发布，不提前开放terminal mutation。
