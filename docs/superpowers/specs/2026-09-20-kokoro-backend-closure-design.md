@@ -14,7 +14,7 @@
 4. 同步内部协议按语义选择：Platform/Storage 使用 ConnectRPC + Proto；IAM/System/Agent/Scheduler/Billing 保留 owner HTTP/OpenAPI。
 5. 异步调度、outbox 投递、支付 webhook 使用版本化 HTTP event protocol，不用同步 RPC 冒充 durable delivery。
 6. Billing 最后处理；在 Billing runtime 与唯一首发契约对齐前，不扩大新 consumer。
-7. 本地和 CI 共用一个 PostgreSQL 实例、一个应用角色与一套凭据；每个 owner 仍使用独立 database 或 schema。独立 production role、GRANT/REVOKE、mTLS 和 NetworkPolicy 属于部署阶段，不是本轮闭环门禁。
+7. 本地和 CI 共用一个 PostgreSQL 实例、一个应用数据库、一个应用角色与一套凭据；每个数据 owner 使用独立 schema 与指向该 schema 的连接 URL，禁止跨 owner SQL/JOIN。测试临时库仅用于 fixture 隔离，不是新增应用数据库。按当前 SQL 手册执行 owner-scoped fresh install/drift；仍锁定 `public` 或整库空白的 installer 先修复再验组合。独立 production role、GRANT/REVOKE、mTLS 和 NetworkPolicy 属于部署阶段，不是本轮闭环门禁。
 8. 每个事实只有一个 owner 和 writer；服务只通过版本化 contract 访问其他 owner，不共享 ORM schema、SQL、业务 DTO 或源码。
 
 ### 1.1 聊天与文件默认可见性（2026-09-22 用户确认）

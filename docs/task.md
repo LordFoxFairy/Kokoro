@@ -1,3 +1,12 @@
+## PARALLEL-R11：集成返修继续（2026-10-01）
+
+上一goal turn分类为progress：Root真实R9诊断与两份派工提交 `4ab9a150`、`3bf87e7c` 已完成；不是仅状态复述。总目标九owner/Wave0–7不变，Billing最后。当前两独立writer分别为BFF bff_fifo_owner_r9与Web web_interaction_audit，Root统一资源/Git，独立review只读。
+
+- BFF Root fresh build0；七文件真PG/Redis40通过/4失败/1取消/0跳过，37.72s，exit1。HTTP第一live/restart/replay场景已通过，第二pagination仍30秒超时；GC16/17、foreign-history断言、delete never-sent断言继续返修。日志 `/tmp/kokoro-bff-fifo-root-full-integration-r10.log`；自有DB `bff_fifo_783ae67e778646b3` closed、Redis14剩0。R11已明确保留lossless合法history但不改变expected/current marker或释放FIFO；真实source身份冲突与已terminal/failed历史新source仍全回滚。剩锁后DBclock、预算与四barrier待完整验证。
+- Web12路径候选实现草稿接纳boolean与stop始终可达，独立冻结审查P0/P1=0；Root fresh check的contract219/architecture50/lint/typecheck0，但完整测试2069通过/1失败，build未进入。失败是post-receipt用例混入列表错误第二alert；已交writer隔离明确成功ListClient fixture，保原threaderror/no retry断言，不隐藏生产错误或放宽门。旧writer全测OIDC500及38项隔离成功保留为失败/诊断，不能冒充full GREEN。Root日志 `/tmp/kokoro-web-composer-p0-root-check.log`；旧12hash冻结已因授权返修测试失效，需新manifest终审。
+- Root fresh main-only门exit1仅未提交工作树（Root/Web/BFF/Billing），未发现分支错误；不宣称全仓clean。日志 `/tmp/kokoro-parallel-r11-main-only.log`。Root同步整体批准spec第1节DB基线为单实例/单应用DB/单role、owner schema，与当前AGENTS/SQL03一致；不改变运维范围或业务schema。
+- 当前未运行真实用户3310/IAM/provider新组合；3310仍65590未重启。正式queued/原user retry、完整Agent4、Scheduled同sessionFIFO、Platform物理切换、System/Billing及所有Wave最终门均未完成，不因组件修复缩小总目标。
+
 ## PARALLEL-R10：本轮并行任务卡（2026-10-01）
 
 基线：Root main `eb0f6687`；BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada`，26路径R9候选 `/tmp/kokoro-bff-fifo-atomic-worker-r9.json`（SHA256 `22527cc6107602ad65e11d727c25f59ebbc86ee6b1ecd8a647f5bfda73e7277b`）。Agent main64665cb与Web main54a1bd6 clean；Billing草案、Root uv.lock、BFF原四文档495行草案保护。goal保持active，上一轮有源码进展，不称整体闭环。
