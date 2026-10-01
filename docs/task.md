@@ -18,6 +18,8 @@
 
 Root集成候选主树再验：current checkpoint与topology CLI均actual0，相关governance两文件88/88（47.00s）actual0；7749已终态消费，日志 `/tmp/kokoro-web-pin-root-{checkpoint.json,topology.json,governance.log}`。只验证本次来源/拓扑，不替代完整标准、全Root tests、真实owner/provider/browser。下一9tests仍进行中、未冻结/未验收；Root只提交已接受子仓gitlink、inventory与现三台账，保护其余dirty。
 
+Root组合已提交 `56ee865abfac2aa83fa55e97d88f829870a404b2`，提交后current checkpoint/topology再次actualPASS/0（94852已终态消费），日志 `/tmp/kokoro-web-pin-root-postcommit-{checkpoint,topology}.json`。新9tests首轮worker实际107失败/197通过、0collectionerror，但typecheck有12未来payload/prop类型错误，尚未通过RED门；Root已要求用现parser/hydration/reducer真实入口产生typed state，不cast、不添旧code/message占位、不放宽生产type。首轮日志 `/tmp/kokoro-web-failure3-runtime-red-worker-{target,typecheck}.log` 保留，后继冻结与Root复验待交付。Root确认原两contractREDhash不变、index空、没有残留本轮Vitest/build/tsc/pytest进程；native Web writer已由list_agents证实仍running，不另起替身。
+
 ## 当前用户优先：输入内框与对话布局真实验收（2026-09-30）
 
 - 当前任务仅定位用户可见的输入内方框与阅读布局；不以后台契约进度、旧截图或测试数量替代页面验收。

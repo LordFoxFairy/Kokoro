@@ -6,6 +6,8 @@ Root库存38 refs、6 hash与2生成来源证据更新，3active/13broken保留�
 
 Root相关治理已独立完成88/88（47.00s），current checkpoint与topology CLI实际exit0，句柄7749已终态消费；日志 `/tmp/kokoro-web-pin-root-{governance.log,checkpoint.json,topology.json}`。runtime RED前8文件228/228保留行为baseline已通过，唯一writer现仅改已授9测试路径；源码GREEN尚未授权。完整标准/全Root tests/真实组合与浏览器本轮未运行，历史137FAIL不清零。
 
+Root组合提交56ee865a后，两CLI再次actualPASS。9tests首轮worker107失败/197通过但有12类型错误，RED门未放行；已窄返修真实typed入口，不改生产、不保留旧占位/fallback。当前writer仍running、未冻结，Root未在变化树声称最终验证。Root本轮有限验证进程均已回收，其他仓/uv.lock保留。
+
 ## 当前用户UI优先：输入方框仍未定位，不宣称修复（2026-09-30）
 
 Root本轮读取现有IAB inventory成功，但用户tab6绑定在焦点命令31秒超时，尚未取得当前截图。已并行续派原Web负责人只读定位级联/布局；不新开页、不重启、不盲改CSS。历史截图不作当前验收，当前UI问题保持开放。

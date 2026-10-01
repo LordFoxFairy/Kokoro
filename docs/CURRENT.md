@@ -6,6 +6,8 @@ Root基线main8a3940fe，Web main `3c4e7394ce5219906530d5077a3ae163c2b1c0fc`。R
 
 Root主工作树相关治理88/88（47.00s）及current checkpoint/topology CLI已新鲜actual0；日志 `/tmp/kokoro-web-pin-root-{governance.log,checkpoint.json,topology.json}`。runtime下一RED基线8test files228/228通过，唯一writer仅授9tests、生产零授写。全Root tests/完整标准/组合/browser本轮未执行，不把来源检查通过包装成产品全部闭环。
 
+Root组合main已提交56ee865a，提交后checkpoint/topology再验PASS；本轮终态句柄均已消费，无残留验证进程。下一9tests首轮107失败/197通过但12类型错误，仍草稿、未通过RED门，writer返修真实typed入口中；原两contractRED仍冻结，Root不称当前变化树全量通过。机器切片、runtime消费与UI验收是三个不同状态。
+
 ## 当前用户优先：输入框与对话布局尚未视觉验收（2026-09-30）
 
 Root main `8a3940fe`、Web main `399f863`；当前18机器候选+两runtime RED未提交，生产聊天UI未新修改。现有IAB tab6读取实际焦点命令超时31秒，当前页面画面缺证据；只读负责人核级联/布局，不重启服务或重复添加CSS补丁。历史图片、源码断言均不作为用户当前方框的已修证明。
