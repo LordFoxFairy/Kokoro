@@ -1,3 +1,19 @@
+## PLATFORM-IAM07-PIN：源码已提交，整体授权组合仍待验（2026-10-01）
+
+Platform physical apps/kokoro-capability main `a77ad403095ae6314485e13298b7afa175932c8b`、13文件、clean；Root唯一提交，最终独立13hash/274保护终审0/0/0。正式IAM0.7来自clean e3c035b9的sdk:pack，archive3d9abf77/96entries；旧0.6包删除、manifest/lock只6+/6-IAM file pin，没有其他依赖升级。完整内外provenance/archive/package/dependency/lock三section/default importer门及28真实CLI用例；生产src/Prisma/Platform v5.0.1契约274hash冻结，两个现IAM method兼容，新增Skill authorization方法未消费。
+
+Root fresh R3离线门 actual0：frozen offline install、format/lint/typecheck/checker、contract lint/read-check、execution artifact/cutover、Prisma/schema/test/build；102files pass/19skip、1224tests pass/243既定设施skip（6.96s）。日志 `/tmp/kokoro-platform-iam07-root-full-gates-r3.log`，最终manifest `/tmp/kokoro-platform-iam07-final-manifest-r3.json`。保留旧pin4fail7pass、Root wrong-section checker0、四section/default importer4fail24pass→GREEN、R2两个regex lint错误及未进入tests；Root独立原negative现exit1。没有ignore/放宽门、没有依据旧full绿误认返修通过。
+
+这关闭的是SDK消费者来源漂移，不是live IAM/Product激活、同会话执行FIFO或整产品完成。没有真实IAM/PG/Redis/Storage/provider/浏览器，243设施用例未验；db:apply-schema未跑（Schema冻结），受管3310 PID65590未动。Agent/BFF/Billing候选docs/Rootuv.lock保护。Root刷新9条既有Platform committed来源并新增4项SDK证据（当前共13条），inventory继续3active/13broken，不把组件绿升级成实际能力。Root首轮集成未先暂存新gitlink，checkpoint/topology1、治理1fail/94pass（50.37s），历史日志 `/tmp/kokoro-platform-iam07-root-{checkpoint,topology,governance}.log` 保留；精确5路径暂存后两CLI fresh PASS/0，相关治理pytest95/95（50.94s）exit0，日志 `/tmp/kokoro-platform-iam07-root-{checkpoint-final,topology-final,governance-final}.log`；独立5路径审查0/0/0，不改snapshot/门槛。后继BFF direct会话列表与Project归属隔离/Agent4 terminal-gated FIFO继续依赖正式owner切片；retention与ChatGPT风格待回复，不缩小九owner/Wave0–7目标。
+
+## PLATFORM-IAM07-PIN：进入正式消费者切片（2026-10-01）
+
+上一goal turn为progress：Web34dc40c/Root865ba1fd已提交，提交后checkpoint/topology0；实际用户会话清单恢复，聊天重复与失败/重试交互仍未完成。整体goal不变。
+
+当前Platform physical apps/kokoro-capability main6519ae9 clean，IAM e3c035b9 clean。Root正式Node24.20.0/pnpm12.3.4 sdk:pack exit0，0.7archive SHA256 `3d9abf77393944592d2fa32f5f67fe2aeda32cfc6995f7a021a414c7aecd4439`、96entries；内provenance contract/generator config/lock三个hash与owner committed blobs一致；IAM仍clean。Platform旧SDK checker0+15相关文件115/115基线0，日志 `/tmp/kokoro-platform-iam07-{owner-pack,baseline}.log`。src/Prisma/contract274文件冻结 `/tmp/kokoro-platform-iam07-protected-baseline.json`。
+
+platform_iam07_owner(gpt-5.6-sol)当前只授权四docs门，Root管理Git/全部实际验收，未半切pin/runtime。并行只读bff_chat_role_owner交付terminal-gated FIFO方案：现Agent durable completed/cancelled/failed outbox足够，不需新terminal协议；BFF必须拆enqueue与release/expected registration、2xx不能释放下一turn，Agent仍加session防御fence。尚未源码实施或真实组合验证。retention与ChatGPT样式确认待回复，不靠该等待停止独立可执行工作；不重启3310，不触共享PG/Redis/provider。
+
 ## WEB-PROJECT-FLOW：源码提交与实际清单恢复（2026-10-01）
 
 Web main `34dc40c0f92fb440dc241643b491cdc3e61f9f1c`，18文件、clean；Root sole commit，独立最终18hash审查0/0/0。BFF required string|null正式消费、null唯一终页、view显式映射、preview/fixtures同shape；项目loading/error优先，不改API/SQL/用户数据/模型。Root实际完整check contract219/architecture50/tests2064/163files/lint/typecheck/build exit0；preview Playwright14pass/4既定skip（13.7s），后置typecheck0，34117退出。

@@ -702,7 +702,7 @@
       "owner": {
         "name": "kokoro-capability",
         "repository_path": "apps/kokoro-capability",
-        "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+        "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
         "contract_version": "3.1.0",
         "contract_path": "contract/openapi/platform-http.openapi.json",
         "contract_sha256": "21a92c1f7d792cfeae40741e52672954d0c89a6dc6a0e6b51eac3b3895738e72"
@@ -711,7 +711,7 @@
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@22.22.2",
       "state": "broken",
-      "reason": "Current source audit 2026-10-01: Platform6519ae9 v5.0.1 Product Skill installations, BFF exact generated Connect consumer and public five operations, and Web same-origin/PersonalSkillsRead source consumers already exist. The former assertion that Product admission was unpublished is stale and removed. Platform still pins IAM SDK0.6 while current owner is0.7; fixed-pin admission/revoke/replay verification and managed runtime activation of the Platform/BFF/Web tuple remain pending. Signed object-store PUT/CORS and Agent activation remain independent open gates. Source publication or component tests do not close this broad edge; no fake Run or direct owner SQL.",
+      "reason": "Current source audit 2026-10-01: Platform a77ad403 v5.0.1 Product Skill installations, BFF exact generated Connect consumer and public five operations, and Web same-origin/PersonalSkillsRead source consumers already exist. The former assertion that Product admission was unpublished is stale and removed. Platform a77ad403 now pins exact formal IAM0.7 and passed Root offline1224/243; this closes old SDK source drift, not live current-owner admission/revoke/replay or managed Platform/BFF/Web tuple activation, which remain pending. Signed object-store PUT/CORS and Agent activation remain independent open gates. Source publication or component tests do not close this broad edge; no fake Run or direct owner SQL.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -733,13 +733,13 @@
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "src/modules/skills/source/skill-projection.controller.ts",
           "sha256": "45daab465922c64e0ec4e1ba904cccf21123900a0f6d7208b3f8025293321c3a"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "src/modules/mcp/server/mcp-server-projection.controller.ts",
           "sha256": "9d0e44d4af015ed1c92b5b87f88b32e584039e529dfe396d7d69ca86104e54f0"
         },
@@ -1554,7 +1554,7 @@
       "owner": {
         "name": "kokoro-capability",
         "repository_path": "apps/kokoro-capability",
-        "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+        "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
         "contract_version": "kokoro.platform.v1",
         "contract_path": "contract/proto/kokoro/platform/v1/platform_runtime.proto",
         "contract_sha256": "841d0e146d6fe25728fac967862ff5969a2cbc9c1ad4cde3d35e0e1ef61ea0e0"
@@ -1749,21 +1749,21 @@
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "src/modules/skills/storage-package.client.ts",
           "sha256": "2e9ca1b464fd5f040031d5f1c54e01bca3b25488f7cdad0b220493dfcaa260e1"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "src/generated/proto/kokoro/storage/v2/storage_pb.ts",
           "sha256": "d65b51c0fa460c77e6c785e6558548a647155a366587beaf1177f3eebb20524b"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "package.json",
-          "sha256": "bfbc7e50687b148cf40bc0cb8d456b33b2306581affefe9ccc4f80edc4e74abc"
+          "sha256": "aa5f60936a56da7a2700ccf0b81ff6e75ee6db6b8a31ecd2b9a21720ed2c897f"
         },
         {
           "repository_path": "apps/kokoro-storage",
@@ -1791,20 +1791,20 @@
         "contract_sha256": "c8d7af8a365ad5d13eaabccf7f31133e0918ef198bdc3e7c790d90933eae91b2"
       },
       "protocol": "http-openapi",
-      "code_generator_version": "unmanaged",
-      "runtime_package_version": "node:fetch@24",
+      "code_generator_version": "@hey-api/openapi-ts@0.99.0",
+      "runtime_package_version": "@kokoro/iam-client@0.7.0",
       "state": "broken",
-      "reason": "IAM owner is now 0.7.0, while Platform still pins IAM 0.6.0 SDK for ingress and execution authorization. The edge remains broken pending exact Platform consumer provenance update, workload credential provision/readback, caller rotation across replicas and six-owner sandbox authorization/replay verification.",
+      "reason": "Source acceptance 2026-10-01: Platform a77ad403 exactly pins the formal clean IAM e3c035b99cf9479ac8357c7d38147f1541dcbcac SDK0.7 archive SHA256 3d9abf77393944592d2fa32f5f67fe2aeda32cfc6995f7a021a414c7aecd4439. Old0.6 archive/dependency are deleted; complete inner/sidecar provenance, default importer/packages/snapshots and integrity are gated, including real CLI negative fixtures. Root fresh offline gates passed1224 tests/243 existing infrastructure skips, lint/typecheck/build and immutable274 source/schema/contract hashes; local generated HTTP transport is controlled, not a live IAM owner. This closes SDK source drift only. Edge stays broken pending actual current-owner credential/readback, caller/surface/tenant authorization, revoke/replay and coordinated multi-owner runtime verification. Deployment-only replica/network/role configuration is not a current R&D prerequisite; no source pin or fake Run substitutes for live authorization evidence.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "src/iam/platform-workload-authorizer.ts",
           "sha256": "c820c5c1dd83d3d6d95781e19c184c67ebad2cabfda723d63bb2dc4df18fea95"
         },
         {
           "repository_path": "apps/kokoro-capability",
-          "repository_commit": "6519ae9a7dba63586474d2860f6725d3165b701e",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
           "path": "src/modules/skills/skills.module.ts",
           "sha256": "96e4838b6cbdfa834b7f4528496f885c6bcb392c937d46fc1e3ff9d322e007bf"
         },
@@ -1813,6 +1813,30 @@
           "repository_commit": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
           "path": "docs/CURRENT.md",
           "sha256": "c9cd4489e651ab78be6912677b67bd16f499301313b8f2abda333bb98374a6b4"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
+          "path": "scripts/check-iam-sdk-artifact.ts",
+          "sha256": "5c611146097d82bcae327af8a54dda48340d91b013bdef04649a464ed07dfcc3"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
+          "path": "test/architecture/iam-sdk-artifact.test.ts",
+          "sha256": "e4ba5ea248be49e5449bcd7ffa29403f6b437ccf7588afd548793cf2a14a8b55"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
+          "path": "vendor/iam/provenance.json",
+          "sha256": "755694b332f4080b3b7b4f2d5a0b6641d98ba4f6d9abd8d46de4522cfcd8a394"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "a77ad403095ae6314485e13298b7afa175932c8b",
+          "path": "package.json",
+          "sha256": "aa5f60936a56da7a2700ccf0b81ff6e75ee6db6b8a31ecd2b9a21720ed2c897f"
         }
       ]
     },

@@ -1,3 +1,42 @@
+## PLATFORM-IAM07-PIN：源码已提交，整体授权组合仍待验（2026-10-01）
+
+Platform physical apps/kokoro-capability main `a77ad403095ae6314485e13298b7afa175932c8b`、13文件、clean；Root唯一提交，最终独立13hash/274保护终审0/0/0。正式IAM0.7来自clean e3c035b9的sdk:pack，archive3d9abf77/96entries；旧0.6包删除、manifest/lock只6+/6-IAM file pin，没有其他依赖升级。完整内外provenance/archive/package/dependency/lock三section/default importer门及28真实CLI用例；生产src/Prisma/Platform v5.0.1契约274hash冻结，两个现IAM method兼容，新增Skill authorization方法未消费。
+
+Root fresh R3离线门 actual0：frozen offline install、format/lint/typecheck/checker、contract lint/read-check、execution artifact/cutover、Prisma/schema/test/build；102files pass/19skip、1224tests pass/243既定设施skip（6.96s）。日志 `/tmp/kokoro-platform-iam07-root-full-gates-r3.log`，最终manifest `/tmp/kokoro-platform-iam07-final-manifest-r3.json`。保留旧pin4fail7pass、Root wrong-section checker0、四section/default importer4fail24pass→GREEN、R2两个regex lint错误及未进入tests；Root独立原negative现exit1。没有ignore/放宽门、没有依据旧full绿误认返修通过。
+
+这关闭的是SDK消费者来源漂移，不是live IAM/Product激活、同会话执行FIFO或整产品完成。没有真实IAM/PG/Redis/Storage/provider/浏览器，243设施用例未验；db:apply-schema未跑（Schema冻结），受管3310 PID65590未动。Agent/BFF/Billing候选docs/Rootuv.lock保护。Root刷新9条既有Platform committed来源并新增4项SDK证据（当前共13条），inventory继续3active/13broken，不把组件绿升级成实际能力。Root首轮集成未先暂存新gitlink，checkpoint/topology1、治理1fail/94pass（50.37s），历史日志 `/tmp/kokoro-platform-iam07-root-{checkpoint,topology,governance}.log` 保留；精确5路径暂存后两CLI fresh PASS/0，相关治理pytest95/95（50.94s）exit0，日志 `/tmp/kokoro-platform-iam07-root-{checkpoint-final,topology-final,governance-final}.log`；独立5路径审查0/0/0，不改snapshot/门槛。后继BFF direct会话列表与Project归属隔离/Agent4 terminal-gated FIFO继续依赖正式owner切片；retention与ChatGPT风格待回复，不缩小九owner/Wave0–7目标。
+
+## PLATFORM-IAM07-PIN：正式授权消费者来源收敛（2026-10-01）
+
+上一goal turn为progress：Web34dc40c、Root865ba1fd已提交；提交后checkpoint/topology实际PASS，治理95/95。整体goal保持九owner/Wave0–7研发与真实组合，不以局部green缩小。
+
+| 项 | 任务卡 |
+|---|---|
+| 目标/优先级 | Platform current SDK0.6→已发布IAM0.7 exact consumer，关闭旧授权客户端来源漂移；不提前宣称Product activation或同会话队列完成。 |
+| Owner/执行 | 物理apps/kokoro-capability，平台Skills/MCP唯一writer。platform_iam07_owner（gpt-5.6-sol）先四docs设计门再独占实现；Root唯一Git/集成验证，独立readonly审查。 |
+| 基线 | Root main865ba1fde80c442601ed5efe9cb5f8b0a272008b；Platform main6519ae9a7dba63586474d2860f6725d3165b701e clean；IAM maine3c035b99cf9479ac8357c7d38147f1541dcbcac clean。保护Agent/BFF/Billing候选docs和Rootuv.lock。 |
+| 文件集 | vendor/iam/archive+provenance、package.json、pnpm-lock.yaml、scripts/check-iam-sdk-artifact.ts、新test/architecture/iam-sdk-artifact.test.ts（现目录内独立SDK来源门）、test/integration/iam-platform-sdk.integration.test.ts（版本标题/既有transport断言）、INDEX.md、docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md。不改src业务/Prisma/Proto/generated/Platform v5.0.1。Root读门后批准一个具名测试文件，不新目录，保留原Platform contract/provenance.test.ts职责和原字节。 |
+| 放置/依赖 | 复用vendor固定包与现checker；淘汰新wrapper/通用pin中心。只调用已消费的introspectPlatformWorkloadToken/verifyExecutionAuthorization，不新增checkTenantSkillAuthorization消费者、policy、身份或表。Root以IAM原sdk:pack在Node24.20/pnpm12.3.4 clean source生成archive，worker不手抄dist或伪造digest。实际pack exit0：archive0.7 SHA256 3d9abf77393944592d2fa32f5f67fe2aeda32cfc6995f7a021a414c7aecd4439/96entries，sourcee3c035b9 clean；三个contract/generatorConfig/lockfile provenance对committed blobs验证一致。 |
+| 阶段门 | Worker先读取三手册、CODEBASE_MAP、本仓AGENTS/三设计/contract/CURRENT并更新四docs当前与目标一致，报告待Root放行；未放行不写production/pin/lock。之后tests-only RED→固定来源GREEN；旧包删除，精确来源及内外provenance一致性纳入门，零fallback。 |
+| 验证 | Root Node24.20/pnpm11.25 frozen install、format/lint/typecheck/contract/schema/Prisma/test/build；正式generated SDK transport HTTP组合验证不冒充真实IAM。生产业务与Schema冻结hash；如需要PG/Redis仅Root自有隔离资源，不重启3310或reset共享数据。 |
+| 后继并行 | bff_chat_role_owner只读收敛同会话排队/Agent4 fence实施依赖，不写文件/运行/数据库/Git，不重复已完成native R3/R4实验；retention与CHATGPT风格确认仍待用户答复，独立SDK切片不以该等待为总阻塞。 |
+| 交付 | Root精确提交，worker报告文件/hash/命令/风险；来源和full gate通过后才发布消费者commit。真实整产品/137历史标准缺口继续留明。 |
+
+
+Root实际阶段证据：旧pin基线115/115，tests-only独立typecheck0+artifact4fail/transport7pass；首GREEN13path冻结和274保护均一致。第一次完整离线门0：102files pass/19skip、1220pass/243skip（6.60s）、frozenoffline/format/lint/typecheck/checker/contractlint+readchecks/artifact/cutover/prisma/schema/build全部通过，日志 `/tmp/kokoro-platform-iam07-root-full-gates.log`。最终Root独立tmp负例把packages改为ignored_packages却checker0，说明全局canonical文字匹配未绑定section；证据 `/tmp/kokoro-platform-iam07-section-negative.json`。已返同writer补section/defaultimporter RED→GREEN；不靠先前full0或worker/reviewer报告冒称该盲点关闭，最终完整门/重新冻结审查仍待。
+
+### CHAT-SERIAL-NEXT-SLICE：Root 收敛后继（只读方案，2026-10-01）
+
+绑定Root865ba1fd/Web34dc40c/Agentf3be3b97/BFF293dfe7，来自bff_chat_role_owner实际源码审计。Agent现durable run.completed（completed/cancelled）与run.failed、BFF source continuity/幂等投影足够terminal信号，不新增terminal协议或队列服务/表。问题是BFF enqueue提前切expected_run_id到后续turn，以及HTTP2xx后dispatch succeeded允许下一head。
+
+目标同(tenant,subject,namespace,session)一个active；BFF enqueue可原子持久user+assistant+outbox，但仅最早eligible head在PG重读前attempt terminal后才register expected并lease launch。HTTP admission/ACK unknown/retry/lease expiry/HITL不释放下一turn；trusted completed/failed/cancelled连续投影事务提交后通知dispatcher，release仍以PG为准。永久dispatch_failed只在从未跨Agent且本地durable失败提交后释放。重复/迟到terminal、source gap/poison fail closed；不同session可各释放一个，不搞全局串行。Agent同scope admission/claim/terminal/reclaim/late write fence是防御门，不把Redis通知当锁。
+
+实施依赖：Agent4 native/profile/scope fence全门后发布→BFF同一consumer片全部normal Chat+Scheduled producer显式null retry_of_run_id、原user retry新assistant/run/outbox与FIFO/terminal释放→Web固定明确queued receipt/snapshot与engine状态，普通新turn排队、真正steer走control。阶段源码不提前发布机器版本。精确后续集合沿现Agent4/BFF3.1任务，不在Root复制新contract。
+
+Root常规产品裁决：取消当前active仅取消该run，durable cancelled后继续已排队下一turn；queued单独撤回功能首片不新增公开命令。Conversation删除不得留下仍可launch的queued条目，具体与Agent purge/retention待用户决定一起对齐。队列状态由BFF公开契约owner定义，Web不猜字段或队列位置；Agent race冲突沿owner合同，不先制造busy码。
+
+验收必须真PG/Redis/barrier：A/B/C同会话2xx后B不可claim，三terminal/未跨Agent永久dispatch失败恰一次释放，HITL/重试/crash不释放，duplicate/late零二次推进；异session同时claim/active；HTTP ACK lost/terminal replay；Web双击同key、运行中新turn queued仍锚A、Aterminal后锚B、reload/切会话隔离。该方案未实施，不冒称现功能已有队列。
+
 ## WEB-PROJECT-FLOW：源码提交与实际清单恢复（2026-10-01）
 
 Web main `34dc40c0f92fb440dc241643b491cdc3e61f9f1c`，18文件、clean；Root sole commit，独立最终18hash审查0/0/0。BFF required string|null正式消费、null唯一终页、view显式映射、preview/fixtures同shape；项目loading/error优先，不改API/SQL/用户数据/模型。Root实际完整check contract219/architecture50/tests2064/163files/lint/typecheck/build exit0；preview Playwright14pass/4既定skip（13.7s），后置typecheck0，34117退出。
