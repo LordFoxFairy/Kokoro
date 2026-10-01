@@ -1,3 +1,9 @@
+## R22 第二诊断与当前真实并行（2026-10-01）
+
+Root再次在writer停写后实跑8文件真PG/Redis：**50 passed/1 failed/0 cancelled/0 skipped（15.70s）**，`/tmp/kokoro-bff-scheduled-r22-root-diagnostic-r2.log`；原两fixture空body崩溃与30s取消均消失，剩新scheduled场景 L111 `SCHEDULED_AGENT_CONSUMER_LEASE_LOST`，原owner继续查CAS/锁后clock与补完整15矩阵。自有DB回收/Redis14剩0；仍不是最终验收。
+
+Web失败归属D0四设计hash/一致性经Root核，fresh contract **219/219** exit0（`/tmp/kokoro-web-failure-d0-root-contract.log`），精确四docs提交 `2cb03500b05dfaddbd9296614f8dc8552e022581`；当前Root gitlink/inventory仍绑定已验源码d2b，D0及后继代码统一在下一集成波推进，不称此刻topology clean。P1源码已明确授权同负责人按D0现文件集RED→GREEN；Agent P2-D0仍写设计。native live inventory实查Root+BFF+Agent+Web共4 running，3子Agent同时推进，不依靠锁文件推测。Root现无遗留测试会话，临时验证资源已回收，不动用户3310或共享infra。
+
 ## R22 最新实际进度（2026-10-01）
 
 Root `6162cec8792d80a17ed68dd57f1caf40b03e7fe8` 已集成Agent ec65/Web d2b与current79refs，95项治理通过。BFF首批返修暂停写入后Root实跑8文件真PG诊断：**49 passed/2 failed/1 cancelled/0 skipped（50.25s）**，`/tmp/kokoro-bff-scheduled-r22-root-diagnostic.log`；两个现Agent fixture未区分source GET而JSON.parse空body，receipt仍30s取消。自有DB回收/Redis14剩0。已回传原owner修严格HTTP fixture并继续15项矩阵，未冻/未提交/未放行。chat-facts授权仅2处reset新三表，发现额外格式化已要求恢复，不覆盖有效职责。
