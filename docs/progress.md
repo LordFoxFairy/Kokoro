@@ -1,3 +1,23 @@
+## 当前并行任务与验收口径（2026-10-01 / R24→R25）
+
+| 负责人 | 正在推进 | 当前验收状态 |
+| --- | --- | --- |
+| agent4_scope_gate_r19 / Agent | 生产 profile 装配、真实 factory 消费、插件与测试隔离；26 个授权路径 | 设计已提交；源码进行中，未最终验收 |
+| bff_fifo_owner_r9 / BFF | 修复跨页终态消费、预算与租约、跨 scope 并发、错误退避及真实故障矩阵；原 30 路径 | R25 设计已放行并续派实施；旧候选虽 51 项真实测试通过，5 类 P1 尚待关闭 |
+| web_chat_audit_r20 / Web | 将快照加载后连接失败与真实 Run 失败分离，保留正文、恢复及取消语义 | 上一失败归属切片 ed496fd 已验收；本连接恢复切片先完成四份文档门，再放行源码 |
+| Root | 跨仓边界、Git/index、资源管理、独立审查及最终组合验证 | 已实际确认三个子 Agent 同时 running；同仓单 writer，不重复启动服务 |
+
+Root 本轮组合治理复验：topology、当前 contract checkpoint 均 exit0；相关三文件测试 **95 passed（43.09s）**。证据 `/tmp/kokoro-parallel-r24-topology.log`、`/tmp/kokoro-parallel-r24-checkpoint.log`、`/tmp/kokoro-parallel-r24-tests.log`。这不等于九仓全部闭环。仅集成已提交 Web ed496fd、Agent 9dcaa34 的指针及当前 consumer 来源；BFF 候选、Billing 五份文档、Root uv.lock 和 BFF 原有 495 行草案不纳入提交。完整端到端模型、积分和全部 owner 组合仍待验。
+
+## PARALLEL-R24：三个工作面真实并行与主控验收（2026-10-01）
+
+- **Web代码已验收提交**：main `ed496fd53621bfbf28b7a73780f7559e12bedc8a`（20路径），与D0一起推origin/main。Root20hash范围复核、独立复审原3P1关闭/P0=P1=0；Node22 fresh完整check exit0：contract219、architecture50、tests2079、lint/typecheck/build成功，日志 `/tmp/kokoro-web-failure-p1-root-r24-check-r2.log`。第一轮2076绿色仍被审查拒收，返修RED5/62历史保留。
+- **真实页面只验本片边界**：committed466src同步自有Next dev副本（9更新/0创建、PID65590不重启），`/tmp/kokoro-web-live-sync-r24.json`；IAB自有tab16 desktop/reload及390px无横溢，known failed run同article唯一footer、2copy按钮、工具/textarea边框0、keyboard 3px ring、无伪retry。viewport恢复/tab关闭。generic线程级错误在reload后异步重现，未隐藏/未称已修，由Web原负责人只读跟正式transport/engine定位；复制全文readback和新provider/积分/新后端组合未验。截图 `/tmp/kokoro-web-r24-desktop-reload.jpg`、`/tmp/kokoro-web-r24-mobile.jpg`。
+- **BFF候选仍拒收**：现8文件真PG/Redis从48/3/0→50/1/0→**51/51、0fail/0cancel/0skip（16.66s）**，日志 `/tmp/kokoro-bff-scheduled-r24-root-integration-r3.log`，自有DBa0f251823b7840df回收/Redis14=0。Root Node22完整check555/0/1 exit0（`/tmp/kokoro-bff-scheduled-r24-root-static-r2.log`）；先前误用Node24触pinned generator失败保留。独立复审30hash稳定/P0=0/P1=5：跨页terminal drain、零预算已提交lease、慢scope全局HOL、周期错误/参数、15矩阵故障注入不足且文档超报。未提交/未更新BFF gitlink；原owner先最小四docs前缀状态/事务修订再代码，保护旧495行。API实际保护SHA中段1d，R21与R24 whole文件SHA完全一致，摘要1b转录错误不作文件损坏。
+- **Agent新设计门已提交并进入代码**：四docs `9dcaa34a3664668c3ad2da6adcc71f271ea96224` 已推main。Root4hash范围/三设计一致与fresh contract-check exit0（`/tmp/kokoro-agent-p2-d0-r24-root-contract.log`）；明确pre-System recipe + post-route有效native政策两阶段，插件纯metadata前置拒unknown/冲突/late mutation。本P2仅production source manifest +真实factory同plan消费，非完整Run持久freeze。原Astra负责人实施26路径（原25+精确native registry测试隔离），RED8历史保留，未验收代码；无SQL/wire/新服务。
+
+Root仍负责Git/index/集成/资源/浏览器；三个原负责人并行Agent代码、BFF返修、Web source-replay定位，同仓单writer。当前consumer inventory仅刷新已提交Web49/Agent30来源SHA/digest，状态仍3 active/13 broken，历史checkpoint不改；BFF e7a325ce保持。Root uv.lock/Billing5docs/BFF旧495行不暂存。总goal仍active：全九owner/Wave0–7、正式retry/queued、Agent持久scope/native/retention、Platform物理cutover、全组合真实模型/积分与Billing最后均未完成。
+
 ## R22 第二诊断与当前真实并行（2026-10-01）
 
 Root再次在writer停写后实跑8文件真PG/Redis：**50 passed/1 failed/0 cancelled/0 skipped（15.70s）**，`/tmp/kokoro-bff-scheduled-r22-root-diagnostic-r2.log`；原两fixture空body崩溃与30s取消均消失，剩新scheduled场景 L111 `SCHEDULED_AGENT_CONSUMER_LEASE_LOST`，原owner继续查CAS/锁后clock与补完整15矩阵。自有DB回收/Redis14剩0；仍不是最终验收。
