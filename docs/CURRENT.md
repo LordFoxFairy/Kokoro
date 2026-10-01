@@ -1,3 +1,18 @@
+## PARALLEL-R10：本轮并行任务卡（2026-10-01）
+
+基线：Root main `eb0f6687`；BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada`，26路径R9候选 `/tmp/kokoro-bff-fifo-atomic-worker-r9.json`（SHA256 `22527cc6107602ad65e11d727c25f59ebbc86ee6b1ecd8a647f5bfda73e7277b`）。Agent main64665cb与Web main54a1bd6 clean；Billing草案、Root uv.lock、BFF原四文档495行草案保护。goal保持active，上一轮有源码进展，不称整体闭环。
+
+| 任务 / 优先级 | Agent / owner / 允许文件 | 依赖、验收与提交 |
+| --- | --- | --- |
+| BFF-R10 / P0 | bff_fifo_owner_r9，gpt-5.6-sol，唯一BFF writer。R9 manifest26路径追加现 `src/infrastructure/postgres/agui-consumer-repository.ts` 共27路径；barrier放现Chat/AG-UI测试，不新文件。 | Root先冻结R9七文件真PG诊断，再通知续写。补旧ledger fixture、四组并发与跨expiry；保留权限/分页/GC/fence断言。先补四现文档FIFO租约规则，再改consumer实现。交最终hash与离线门；Root统一Git与真实PG/Redis，不以548pass/1schema skip替代集成。 |
+| BFF-CLOCK-REVIEW / P0 | agent4_lifecycle_review，gpt-5.6-sol，只读dispatch/projection/consumer与测试，变化树绑定manifest/hash。 | 检查DBclock是否真正锁后求值、预算<=0不返回、terminal/unknown/delete锁序。无写/Git/DB/服务；报告具体行号与最小方案，终审冻结后复核。 |
+| WEB-INTERACTION-AUDIT / P1 | web_interaction_audit，gpt-5.6-sol，只读apps/kokoro-app main54a1bd6，Thread/composer/会话与项目rail、现测试和文档。 | 与BFF独立盘点，区分可立即修UI与未发布retry/queued契约；交最小现文件切片/测试命令，不新协议、不改代码/启动浏览器/服务/provider/Git。详细视觉待确认，不阻塞BFF。 |
+| ROOT-INTEGRATION / P0 | Root：三份现台账、资源、审查、真实集成与精准提交。 | 不重启用户3310；只自有临时DB/Redis14，finally回收；本轮实际结果后更新看板。 |
+
+R9冻结候选Root真实诊断：七integration文件35通过/9失败/1取消/0跳过，37.26s、exit1；日志 `/tmp/kokoro-bff-fifo-root-full-integration-r9.log`。临时DB `bff_fifo_17558f41a8654b96`已finally回收、Redis14剩0，3310仍65590未重启。对比R7的27通过/17失败/1取消有实际进展，尚非GREEN；R10 writer获准续写。剩旧replay/snapshot/consumer/GC正式head fixture、source sequence/stale owner、删除同会话admitted+inflight不合法fixture、AG-UI HTTP30s等待。独立审查指出R9仅clock_timestamp替换仍缺显式锁后取时与真实预算，已纳入R10；不增加timeout、不删除安全断言。三名子Agent均已实际派发，不称交付已验收。
+
+放置裁决：追加consumer文件本来就唯一拥有AG-UI consumer claim/renew/settle，与现projection共享BFF stream authority；无新owner/目录/API/DDL。淘汰跨ownerhelper、JS时钟兜底和冻结事务时钟；取得目标行锁后读实际DB时间再验证。普通Agent terminal事实不加dispatch lease到期限制，consumer authority仍严格租约。
+
 ## PARALLEL-EXECUTION-NEXT：当前唯一任务看板（2026-10-01）
 
 总目标仍为九 owner、Wave 0–7 的研发闭环，支付最后；本波先关闭“发送→执行→持久回复→下一条”的一致性缺口，不扩展运维配置。本轮起始 Root main `21fd6a87`、进度提交 `9be5cd6e`；Agent main现 `64665cb0e5a0bca1cb4ff08147e0119aff769d6b` 已精准提交33路径、clean；BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada` 本波实现仍未提交。不能用默认离线测试或上一切片完成替代整产品验收。
