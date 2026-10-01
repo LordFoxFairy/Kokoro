@@ -1,3 +1,38 @@
+## R40 十窗口续派与当前可执行切片（2026-10-01）
+
+沿既有10窗口/同一Wave0–7，非新增任务中心。用户再次要求并行；独立surface续派原负责人，同仓一writer，Root独占Git/实际资源/复验。原生Agent原Astra与两独立审查复用。窗口数量不是完成证据，已交接的只读任务停下，不靠空进程凑十个writer。
+
+| 原任务 | 当前交付/下一行动 | writer与依赖 |
+| --- | --- | --- |
+| WIN01 Web ProjectRead | D0四doc及独立0审；Root真实1fail7pass（3.36s）缺两canonical项目。已授精准GREEN与读取身份代际/原draft保护 | 原WIN01；固定BFF已发布3.0，金额/Chat协议锁 |
+| WIN02 BFF快照续流 | 只读后继交付；queued/RR恢复有现Schema，完整HITL projection仍须正式Agent4和SQL设计收敛 | 源码未授，原8dirty保持；不提前pin |
+| WIN03 Agent生命周期 | crash/takeover/deadline三断言设计已交；saver先于seal，pre-seal用量无恢复证据 | 原writer未来phase，SQL/期限契约须独立门 |
+| WIN04 IAM登录 | 正式表单submit链核证；旧callback仍JSON拒，双tab/session过期真实旅程待验 | 只读已交，gift权限人类选择仍待 |
+| WIN05 System namespace | Root真实配置57fail10pass、PG3fail；已授parser/runtime/installer精准GREEN | 原WIN05唯一writer；catalog新RED后实现 |
+| WIN06 Billing单位 | Root限定8path提交并推送07fdd0746f99f718c042f0b7bee54e524d2f2a79；72/595纯门与位置probe通过 | 原writer停；Root保原5dirty正文；v2/runtime/消费者未验 |
+| WIN07 Platform MCP | 逐次typed授权消费D0已交，已有owner contract足够；typedconnector映射尚待裁定 | Agent HTTP4后继；不重写Platform事实 |
+| WIN08 Storage作品 | 正规launcher5现文件装配/实际worker→CLEAN→下载D0交付 | 依赖精确source/System/Agent/BFF；无manual publish替代 |
+| WIN09 Scheduler namespace | RootR1真31非法case失败；新helper误表已修并重跑PG真实2fail，已授精准GREEN | 原WIN09唯一writer；canonical/API锁 |
+| WIN10 E2E路线 | 既有driver四现文件多轮/project/费用三断言交付；source gate/正式赠送未满足 | 只读停，Rootowner冻结后真实浏览器 |
+
+Agent原Astra另卡：20path manifest0ee7149f冻结独立0P0/P1/P2，Root完整pure1799pass6skip288deselect（97.25s），资源80实跑76pass4fail（16.45s），新HTTP4case通过不等于整组通过。失败是empty_final的无checkpointer fixture、safe failure terminal interaction＋failed两事件旧断言、tamper两行同ID冲突；原writer仅只读诊断，未授production放宽/跳过。Root测试选择首次误含acceptance（35连接错误）已SIGINT并收95089，日志selection-error单独保留，不计业务RED；纠正44651全纯通过。
+
+Root已重跑386治理测试通过（51.88s）；checkpoint0。首次topology因新Billing未stagegitlink失败，stage精确apps/kokoro-billing后真重跑0，未放宽门。PG owned agent_terminal_atomic_e3f7c80914274cba与kokoro_scheduler_test_r40_ff3a31d51082均created/closed=true；helper首次owned库亦closed。3310无监听；零新服务/假充值/浏览器PASS。任务外uv.lock/其余dirty不接。下一步沿已授Web/System/Scheduler并行与Agent真实HTTP返修，Root冻结集成。
+
+## R40 单位门别名真实返修（不忽略第二个位置绕行）
+
+71/594pass383skip纯门及独立0审已获得，但Root进一步经真实YAML stringify→parse生成anchor/alias，ExtraCreditAlias复用CatalogItem.credit_micros同一ref节点，validator仍errors=[]，应拒断言真实exit1：/tmp/kokoro-billing-unit-r40-root-alias-red.log。节点identity能挡点号key，却不代表出现位置，YAML合法共享节点可绕“仅七binding”。不放行有已知缺口的source。原WIN06继续最小返修：原71字节保持，仅追加别名位置负例和合法非Credit alias控制；现visit扩展结构化segments回调，允许集合按JSON编码segment数组精确定位，保原display path诊断和其他旧validator调用；不复制walker/禁用合法YAML/手造secondunit配置。YAML f632ddec/README/SQL/runtime与原dirtybody冻结，doc仅现prefix记事实。先真实RED再GREEN/freeze，Root原probe+72/full重跑才提交。
+
+## R40 真验推进（上一轮为实质 progress）
+
+上一轮已推送Root 2c604acd/3af8fe26、完成Agent45真PG/1722pass37fail纯门与精确HTTP4/Scheduler后继，不是无进度复述。现原AgentHTTP4/原WIN01 D0/原WIN09 RED句柄已核live；原Billing单位P2与原SystemRED冻结停写，Root不重复启动服务。
+
+Billing Root冻结71/71＋fullverify594pass383skip0fail（14.81s）已真重跑，/tmp/kokoro-billing-unit-r40-root-green-full.log，session84074结束；独立P2返修审0P0/P1/P2，旧20558bytes test SHA252f2895保持。System Root纯67实际57fail10pass（266ms），R2/R3真实PG3fail6旧case过滤skip（1.34s），非collection/URL缺失错误：安装拒邻居public非空、runtime误读public marker、缺目标ready仍true，/tmp/kokoro-system-schema-r40-root-red.log，session77621已收。新helper本次owned临时库afterfinally完成，无system_r39/system_g5_lifecycle残留查询；未清他人库Redis。
+
+System原WIN05 sole writer精准GREEN采用已批准两现目录普通文件：src/config/database-url.ts纯URL与scripts/system-schema-catalog.ts只读metadata，无新模块/依赖/role/process。允许现src/config/system-config.ts、src/database/database.service.ts、scripts/apply-schema.ts、scripts/verify-system-fresh-schema.ts；7现integration tests仅URL/setup/owner引用一次切换，原业务/负例保持，frozen R1及新增R2/R3核心断言不能改；scripts/system-runtime-smoke.ts及README/.env.example/INDEX/两workflow仅URL/启动文案必要一致。四doc现R39前缀记实际进度，不泛格式旧正文。
+
+Runtime/helper/parser/installer/fresh必须同规则消费显式schema、UTC、TLS，拒override/rawcontrols；installer同事务全目标对象empty/owner锁，不查跨owner业务/删库。原23schema业务断言保留，fresh从Root-owned同SQLreference生成catalog期望，追加同22表下列/default/index/function/trigger漂移拒绝与target only-view/function/type非空拒；先新断言实际RED再实现，不用第二catalog事实源/宽忽略。canonical22SQL/HTTP machine+provenance/生成/业务modules/manifest/lock全部锁，无外仓写入。Worker只纯门及resource compile/collect，Root真全部PG/fresh/HTTP；精确freeze后0P0/P1/P2+Root全verify才能称本namespace切片验收。
+
 ## R39 Agent HTTP4原卡精确实施与Scheduler tests-only
 
 Root37契约真实RED＋45真PG＋静态全绿＋独立23path0P0/P1/P2闭合前置，原Astra唯一writer进入已批准HITL4现19path：contract/{openapi/v1/openapi.json,provenance.json,README.md}；src/{contract_check.py,chat_contract_check.py,protocol/run_failure_generated.py,interfaces/http/ingress.py,worker/supervisor_control.py}；原3contract tests、unit/http两tests、unit/execution/test_control_commands、acceptance/test_http_ingress；四docs仅HITL批准前缀。位置/owner仍已批准三面D0，无新文件目录/schema/owner。只使用既有failure generator实际输出，不手改generated/provenance hash；generator薄CLI无需改。Control/events已typed4且HTTP parse已严验，不倒退/扩旧字段alias；完整machine/checker/decoded mapping及公开positive一次切4，旧tool/request寻址正例按breaking换item+必需pause并新增旧寻址拒，其他业务负例不被缺pause遮住。

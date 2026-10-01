@@ -1,3 +1,27 @@
+## R40 实际续派与交付
+
+原10职责窗口全部已续派/核句柄，独立只读后继已交后停，不称10writer同时跑。Web四doc D0及独立审通过，Root正式ProjectList RED 1fail7pass，原负责人已授精准GREEN；System/Scheduler各自源码GREEN并行，单仓单writer。
+
+Billing积分单位source/位置门Root已验72pass、595pass383skip0fail（14.77s），dot/sharedCredit alias拒、cash alias允；独立0审。限定8path owner提交推送07fdd0746f99f718c042f0b7bee54e524d2f2a79，Root仅stage此gitlink；原5dirty设计正文完整留工作树。v2 HTTP/正式赠送/消费者/费用链未闭环。Root治理386pass、checkpoint0、精确gitlinkstage后topology0；不是全仓运行通过。
+
+Agent20path冻结0审，Root完整纯1799pass6skip288deselect（97.25s）；真实PG/HTTP80实际76pass4fail（16.45s），新完整HTTP4 case通过但旧4fixture问题仍返修，不提交半完成owner。实际日志 /tmp/kokoro-agent-http4-r40-root-{full-pure,real-pg-http}.log。首次Root错误选择acceptance导致35连接错误已中断收柄95089，仅记selection-error；正确44651全纯过，不混算。
+
+Scheduler Root首次snapshot helper误表失败不是业务RED；原worker修后Root真2fail（0.375s）：view-only竟装4表、缺目标ready200。原31非法URL RED保持；两个owned库created/closed=true已回收，已授现parser/runtime/installer精准GREEN。Web真RED日志 /tmp/kokoro-web-project-r40-root-red.log；Billing真验 /tmp/kokoro-billing-unit-r40-root-72-full.log。所有已结束执行柄已收；没有启动3310或浏览器、清共享Redis/库、假充值或全链PASS。详细同一任务表见docs/task.md，完整Wave0–7 active。
+
+## R40 单位门别名真实返修（不忽略第二个位置绕行）
+
+71/594pass383skip纯门及独立0审已获得，但Root进一步经真实YAML stringify→parse生成anchor/alias，ExtraCreditAlias复用CatalogItem.credit_micros同一ref节点，validator仍errors=[]，应拒断言真实exit1：/tmp/kokoro-billing-unit-r40-root-alias-red.log。节点identity能挡点号key，却不代表出现位置，YAML合法共享节点可绕“仅七binding”。不放行有已知缺口的source。原WIN06继续最小返修：原71字节保持，仅追加别名位置负例和合法非Credit alias控制；现visit扩展结构化segments回调，允许集合按JSON编码segment数组精确定位，保原display path诊断和其他旧validator调用；不复制walker/禁用合法YAML/手造secondunit配置。YAML f632ddec/README/SQL/runtime与原dirtybody冻结，doc仅现prefix记事实。先真实RED再GREEN/freeze，Root原probe+72/full重跑才提交。
+
+## R40 真验推进（上一轮为实质 progress）
+
+上一轮已推送Root 2c604acd/3af8fe26、完成Agent45真PG/1722pass37fail纯门与精确HTTP4/Scheduler后继，不是无进度复述。现原AgentHTTP4/原WIN01 D0/原WIN09 RED句柄已核live；原Billing单位P2与原SystemRED冻结停写，Root不重复启动服务。
+
+Billing Root冻结71/71＋fullverify594pass383skip0fail（14.81s）已真重跑，/tmp/kokoro-billing-unit-r40-root-green-full.log，session84074结束；独立P2返修审0P0/P1/P2，旧20558bytes test SHA252f2895保持。System Root纯67实际57fail10pass（266ms），R2/R3真实PG3fail6旧case过滤skip（1.34s），非collection/URL缺失错误：安装拒邻居public非空、runtime误读public marker、缺目标ready仍true，/tmp/kokoro-system-schema-r40-root-red.log，session77621已收。新helper本次owned临时库afterfinally完成，无system_r39/system_g5_lifecycle残留查询；未清他人库Redis。
+
+System原WIN05 sole writer精准GREEN采用已批准两现目录普通文件：src/config/database-url.ts纯URL与scripts/system-schema-catalog.ts只读metadata，无新模块/依赖/role/process。允许现src/config/system-config.ts、src/database/database.service.ts、scripts/apply-schema.ts、scripts/verify-system-fresh-schema.ts；7现integration tests仅URL/setup/owner引用一次切换，原业务/负例保持，frozen R1及新增R2/R3核心断言不能改；scripts/system-runtime-smoke.ts及README/.env.example/INDEX/两workflow仅URL/启动文案必要一致。四doc现R39前缀记实际进度，不泛格式旧正文。
+
+Runtime/helper/parser/installer/fresh必须同规则消费显式schema、UTC、TLS，拒override/rawcontrols；installer同事务全目标对象empty/owner锁，不查跨owner业务/删库。原23schema业务断言保留，fresh从Root-owned同SQLreference生成catalog期望，追加同22表下列/default/index/function/trigger漂移拒绝与target only-view/function/type非空拒；先新断言实际RED再实现，不用第二catalog事实源/宽忽略。canonical22SQL/HTTP machine+provenance/生成/业务modules/manifest/lock全部锁，无外仓写入。Worker只纯门及resource compile/collect，Root真全部PG/fresh/HTTP；精确freeze后0P0/P1/P2+Root全verify才能称本namespace切片验收。
+
 ## R39 Agent HTTP4原卡精确实施与Scheduler tests-only
 
 Root37契约真实RED＋45真PG＋静态全绿＋独立23path0P0/P1/P2闭合前置，原Astra唯一writer进入已批准HITL4现19path：contract/{openapi/v1/openapi.json,provenance.json,README.md}；src/{contract_check.py,chat_contract_check.py,protocol/run_failure_generated.py,interfaces/http/ingress.py,worker/supervisor_control.py}；原3contract tests、unit/http两tests、unit/execution/test_control_commands、acceptance/test_http_ingress；四docs仅HITL批准前缀。位置/owner仍已批准三面D0，无新文件目录/schema/owner。只使用既有failure generator实际输出，不手改generated/provenance hash；generator薄CLI无需改。Control/events已typed4且HTTP parse已严验，不倒退/扩旧字段alias；完整machine/checker/decoded mapping及公开positive一次切4，旧tool/request寻址正例按breaking换item+必需pause并新增旧寻址拒，其他业务负例不被缺pause遮住。
