@@ -1,3 +1,9 @@
+### R41 Agent 六失败修订真实转绿
+
+三现文件fixture/README冻结manifest922a7d33，原63源/native两proof/P3B锁全部保持；独立复审0P0/0P1/0P2。Root在自有 `agent_terminal_atomic_508f2f048ac44497` 重跑完整database：**196 passed /0failed /0skip，55warnings，17.67s，exit0**；created/closed=true，session91209已消费，日志 `/tmp/kokoro-agent-hitl-r41-root-all-database-r2.log`。原6fail190pass RED仍保留。新增terminal interaction以完整typed payload/identity/source联合序列断言承接，未过滤帧、伪造started或放宽GC/usage/lease约束。
+
+Wheel已在独立临时venv安装，两个adapter实际origin与canonical SQL实际path均位于installed prefix，SQL bytes匹配；仅借既有frozen环境依赖，不导入脏source package，`/tmp/kokoro-agent-hitl-r41-root-wheel-install.log`。Root cwd Python<3.14提示与Agent manifest≥3.11区分记录，不改任何版本/lock。此artifact检查在README四条修订前执行，最终发布build仍须绑定最终source。当前Agent累计66路径候选未提交；完整消费者、其他资源selector及浏览器/费用验收后继，不称全Wave0–7完成。
+
 ## R41 十窗口复用与真实回归（2026-10-01）
 
 沿现 Wave 0–7 继续，不新建窗口/任务中心。原 WIN01–10 均已续派：Web项目集合实现、System catalog实现、Scheduler双安装/回滚tests-only；BFF原子快照RED、IAM登录边界、Billing v2运行差距、Platform MCP负例、Storage装配负例、Agent额外资源selector、E2E accepted-source路径独立只读。各仓唯一writer，Root独占真实资源/集成/Git。句柄沿 `/tmp/kokoro-r30-window-handles.json`，不是十个同时改同仓的writer。
