@@ -1,3 +1,48 @@
+## BFF-AGENT-FAILURE3 / 已验收切片与后继（2026-09-30）
+
+- BFF main ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d clean；唯一owner实现、两独立审查、Root全门与真7integration47/47已完成。并非整个BFF/Wave全闭环；当前完整standard FAIL137/BFF31。
+- Root最终freeze c12ced8d32entries，4docs验收metadata后其余28source/machine/SQL/tests不变；精确33paths提交，旧HTTPvendor删除而delivery486保留。
+- Root本轮集成仅BFF gitlink、既有consumer-inventory与CURRENT/task/progress；保护Billing五docs/uv.lock。完整治理tests1103passed/3skip（119.19s）exit0；currentcheckpoint/topology0，IAM relay等Root提交后重验。
+- WEB-FAILURE3后继：已发布public2 digest ba10f89baf0fdd8cd4da58947b0411da8c84294dfe77e278533aeda59a905773；Web main8205仍1.0，不先放宽/schema或热切半套。原只读消费文件表可复用，但写入前仍须当前文档门、明确唯一Web writer和Root验收。
+- BFF-RETRY-OWNER后继：正式重试必须复用原user message及其冻结配置、只新建assistant/run/outbox，不继续Web resend复制用户；由BFF裁决权限、tail/state、profile.retryable与幂等/并发，先三设计门再RED/GREEN。现仅排队，未授源码写入，不能声称已实现。
+- 当前输入框/整体布局fresh视觉未验，浏览器通道超时且截图请求未答，不重复猜CSS；全产品真实IAM/Agent/provider/browser矩阵、owner单库组合、Skills/MCP/Storage及Billing最终阶段仍按总goal继续。
+
+## 本轮 GOAL 续推：BFF failure3 主控验收（2026-09-30）
+
+- 上轮分类 progress：八份Web source/live一致的只读证据排除副本漂移，但视觉未验；BFF32文件候选冻结，独立终审发现生成reachable-schema额外限制漂移1P1，已窄派修复，不作整仓完成。
+- BFF writer bff_failure_profile_owner：仅scripts/generate-agent-http-client.mjs、test/agent-http-wire.test.mjs返修exact Failure/ChatFailure整shape及restrictive-extra mutants，先RED→GREEN→新32manifest冻结；不改其他候选/Git/服务/数据。原32文件+1删除授权保持。
+- 契约审查 bff_failure_contract_review：复核新冻结hash及上述1P1，不重复所有已确认面；主控最终diff/门禁仍独立运行。
+- SQL/事务审查 agent_failure_cursor_owner：只读15e07fa4+当前候选canonical/Message writes/select/Share/事务/12tests，先读CODEBASE_MAP/SQL/TS手册/BFF设计；不运行测试/写入/Git/共享infra/browser。给P0/P1/P2及原文路径，冻结SQL不受本轮generator两文件返修影响。
+- Root唯一Git与验收：源冻结后Node22完整check、format/schema/architecture；独占自有随机tempDB、复用同role/PG实例，Redis15先原子空库claim后只清自己marker/明确测试keys；真实七integration串行、finally回收并反查残留。无新角色/实例/服务、无模型或3310数据访问，不放宽原门禁。
+- 独立SQL终审P0/P1=0、P2=2，Root裁决本片修复不延期：仅test/chat-facts.integration.mjs把revoke拒绝读对象改为active replacementId并核DB revoked_at；仅test/agui-projection.integration.mjs在现GC用例补Message list+合法Share安全failure保留。唯一writer仍bff_failure_profile_owner，禁止源码/契约/SQL/其他tests/Git/infra。交付新32manifest停写；Root真实两文件及全7重跑，最终证据绑定新hash，不沿用旧17a70清单。
+- 通过后只提交明确候选路径并更新同一Root来源/任务/进度，public2发布后Web才消费；UI截图/视觉仍开放，Payment最后。
+
+## WEB-CURRENT-INPUT-AND-LAYOUT / P1 / 当前用户任务（2026-09-30）
+
+- 目标：定位用户所见输入框内方框与整体会话布局，未取得 fresh 视觉前不宣称已修；既有8205源码通过不等于当前页面正常。
+- 基线：Web `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` main8205fa003d5ea269741df359d4d6881dd0f1e0f8、clean；3310 PID65590。Root owns task/progress 与浏览器验证。
+- 只读负责人：agent_failure_cursor_owner，检查现Composer/Textarea/Thread/AppFrame/Scroller及受管运行副本的CSS与导入一致性；不得写文件/Git/运行测试/服务/模型/基础设施/浏览器。交付必须区分真实缺陷与视觉假设、说明已修与未修，不再重复既有历史修复。
+- 文件范围：Web src/ui/composer、src/ui/thread、src/ui/app-frame、src/components/ui/textarea.tsx、对应现测试/样式入口/TECH/CURRENT；受管 `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-xm_q35q2/next` 仅同路径只读比较；Root docs/CODEBASE_MAP.md与手册先读。任何源码授写另列精确集与RED/GREEN，不改消息事实/重试协议/契约。
+- 当前浏览器：正式IAB tab6焦点读取超时；同browser一次fresh tab14导航亦超时，停止重复新开。需要实际页面截图定位具体方框；不以源码检查冒充视觉结论。
+- 只读复核已完成：八份关键source/live同bytes，无可证明的新内框根因；当前源码零授写，待fresh截图/计算样式，不能以声明正确否认用户所见。
+- BFF候选已冻结（32文件manifest +1删除），bff_failure_contract_review继续只读最终审查；Root真实完整集成未验收，不热切3310半套协议。
+
+## 当前执行面（2026-09-30；以本节为准）
+
+上一轮 classification=progress：Web8205fa0与Rootdd734ea4已提交；1836全量Web测试与完整check实际0；当前输入框/fresh视觉仍未验。完整Wave0–7目标保持，支付最后。
+
+| ID | Owner / Agent | 状态 | 当前工作 / 放行证据 |
+| --- | --- | --- | --- |
+| BFF-AGENT-FAILURE3 | BFF / bff_failure_profile_owner | GREEN候选冻结，待主控验收 | R2文档门及R5测试RED已Root复现；严格3.0来源→Message/AGUI安全failure→list/snapshot/share同事实；只在已授权精确文件集实现，尚未验收 |
+| BFF-AGENT-FAILURE3-REVIEW | bff_failure_contract_review | 只读审查 | 源码冻结后对pin/生成/协议/SQL一致性独立评审，不改文件/数据/服务 |
+| WEB-FAILURE3-CONSUMER-READ | Web / agent_failure_cursor_owner | 只读准备，未授写 | 以现Web8205fa0和BFF已批准R2目标盘点snapshot/AGUI/UI安全failure消费者，给后继精确文件与阶段门；不伪造未发布owner字节、不改任一仓 |
+| ROOT-FAILURE3-VERIFY | Root | 准备验收资源 | 冻结前仅资源探测；冻结后以自有临时DB与明确Redis范围跑owner完整门/7integration和schema动态矩阵；不碰3310应用数据 |
+| WEB-CURRENT-VISUAL | Root | 待fresh页面证据 | 代码修复不等于当前方框/整体视觉已验；现浏览器通道超时，用户截图请求未答复，不反复新开页 |
+
+Web只读任务基线：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main8205fa003d5ea269741df359d4d6881dd0f1e0f8 clean。允许读取Web与BFF R2目标docs；禁止写文件/Git/generated/服务/浏览器/模型/基础设施。交付必须区分现态、已批准目标、需BFF正式发布后才能执行的依赖，并列最小精确文件集与真实验收矩阵。
+
+下列条目保留为切片授权和历史证据。旧条目的“当前/本轮/仅tests授写”不覆盖本节和BFF GREEN授写段；已完成Web切片不重复派发。
+
 ## WEB-EMPTY-FAILED-TURN / P1 / 源码已验收，视觉待验（2026-09-30）
 
 Web main `8205fa003d5ea269741df359d4d6881dd0f1e0f8` 精确四文件提交、clean；仅把严格终态空assistant与原失败反馈归同原MessageScrollerItem，保留article/run/message事实、普通/credit动作、详情与query hook，无CSS负margin/隐藏/去重。Root Node22完整check实际0：contract109、architecture49、1836tests（40.87s）、lint/type/build；独立四hash审查0/0/0，Root HEAD组件RED2失败/30通过→恢复候选GREEN。日志 `/tmp/kokoro-web-empty-failed-turn-root-{red,check}.log`。

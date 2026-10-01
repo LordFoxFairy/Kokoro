@@ -1,3 +1,16 @@
+## BFF-AGENT-FAILURE3：owner源码已提交，组合待闭环（2026-09-30）
+
+BFF main `ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d`，clean，Root精确33路径（32现文件+旧HTTPvendor删除，Git显示32changes含rename）提交。
+Agent HTTP3.0/provenance exact2与17 deterministic生成、strict10false/2true、Message两列完整CHECK、同TX失败事实与safe snapshot/list/Share/标准RUN_ERROR闭环；无旧七码fallback/HTTP双vendor。独立契约/SQL及四docsmetadata最终0/0/0，schema-extra约束与Share/GC两个测试盲点本片已修而非延期。
+
+Root Node22/pnpm11.25最终format与完整check exit0：contract193/193，主545pass/0fail/1schema-fixture skip，lint/typecheck/build；在自有随机DB、复用同PG/Redis/role且原子claim Redis15，fresh canonical install、动态schema7/7、architecture27/27、全部七integration47/47（14.08s），0skip。实际旧RUN_ERROR GC后snapshot/list/有效Share保留同safe profile已执行，当前active Share撤销拒绝也核；上游服务/模型仍double，不称真实owner/provider/browserE2E。
+
+证据 `/tmp/kokoro-bff-failure3-root-final-{format,full-check}.log`、`/tmp/kokoro-bff-failure3-root-real-acceptance-r2{.log,-result.json}`。run f1db3932a3edbe3f195580f1 source/tests前后hash稳定、DB残留false/fixture增量[]/Redis15keys0/cleanup[]，独立残留probe也0；Root仅最后四docsmetadata改动，其他28entries仍c12ced8d冻结bytes，release manifest `/tmp/kokoro-bff-failure3-root-final-release-manifest.sha256`。
+
+Root来源库存184个BFFcommit refs/10 digest更新，新增3固定Agent3来源证据，public owner2.0，但Web仍public1；edge仍3active/13broken、不转绿。指定current checkpoint与topology已经实际exit0。strict IAM relay提交前暂exit1仅Root HEAD/index新gitlink不同，需Root提交后原门重验；main-only列出的所有本地/远端branch都是main，但整门exit1因Root/Billing未提交变更，保护Billing五docs/uv.lock，不称整体clean。
+
+完整工程标准门仍FAIL137（BFF31），未放宽；Root完整治理tests1103passed/3skip、119.19s、exit0，日志 `/tmp/kokoro-bff-failure3-root-governance-tests.log`。Web consumer2、正式原user重试、fresh输入框视觉、运行组协调/真实E2E与其余Wave0–7仍开放，Payment最后。3310未重启/无半套热切，provider/积分未操作。
+
 ## WEB-EMPTY-FAILED-TURN：源码与运行副本同步，视觉未验（2026-09-30）
 
 Root 本轮相关治理测试47/47（40.73s）实际通过；指定w1e-iam07-bff-pin checkpoint与topology CLI均exit0，strict IAM relay仍exit1，准确原因为BFF工作树候选dirty，未清理候选/放宽门。完整Root测试、完整标准门、Playwright与fresh输入框视觉本轮未执行。日志 `/tmp/kokoro-web-empty-failed-turn-root-{governance.log,checkpoint.json,topology.json,relay.json}`。

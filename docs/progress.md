@@ -1,3 +1,28 @@
+## BFF-AGENT-FAILURE3：owner源码已提交，组合待闭环（2026-09-30）
+
+BFF main `ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d`，clean，Root精确33路径（32现文件+旧HTTPvendor删除，Git显示32changes含rename）提交。
+Agent HTTP3.0/provenance exact2与17 deterministic生成、strict10false/2true、Message两列完整CHECK、同TX失败事实与safe snapshot/list/Share/标准RUN_ERROR闭环；无旧七码fallback/HTTP双vendor。独立契约/SQL及四docsmetadata最终0/0/0，schema-extra约束与Share/GC两个测试盲点本片已修而非延期。
+
+Root Node22/pnpm11.25最终format与完整check exit0：contract193/193，主545pass/0fail/1schema-fixture skip，lint/typecheck/build；在自有随机DB、复用同PG/Redis/role且原子claim Redis15，fresh canonical install、动态schema7/7、architecture27/27、全部七integration47/47（14.08s），0skip。实际旧RUN_ERROR GC后snapshot/list/有效Share保留同safe profile已执行，当前active Share撤销拒绝也核；上游服务/模型仍double，不称真实owner/provider/browserE2E。
+
+证据 `/tmp/kokoro-bff-failure3-root-final-{format,full-check}.log`、`/tmp/kokoro-bff-failure3-root-real-acceptance-r2{.log,-result.json}`。run f1db3932a3edbe3f195580f1 source/tests前后hash稳定、DB残留false/fixture增量[]/Redis15keys0/cleanup[]，独立残留probe也0；Root仅最后四docsmetadata改动，其他28entries仍c12ced8d冻结bytes，release manifest `/tmp/kokoro-bff-failure3-root-final-release-manifest.sha256`。
+
+Root来源库存184个BFFcommit refs/10 digest更新，新增3固定Agent3来源证据，public owner2.0，但Web仍public1；edge仍3active/13broken、不转绿。指定current checkpoint与topology已经实际exit0。strict IAM relay提交前暂exit1仅Root HEAD/index新gitlink不同，需Root提交后原门重验；main-only列出的所有本地/远端branch都是main，但整门exit1因Root/Billing未提交变更，保护Billing五docs/uv.lock，不称整体clean。
+
+完整工程标准门仍FAIL137（BFF31），未放宽；Root完整治理tests1103passed/3skip、119.19s、exit0，日志 `/tmp/kokoro-bff-failure3-root-governance-tests.log`。Web consumer2、正式原user重试、fresh输入框视觉、运行组协调/真实E2E与其余Wave0–7仍开放，Payment最后。3310未重启/无半套热切，provider/积分未操作。
+
+## WEB-CURRENT-INPUT-AND-LAYOUT：再次实查，当前视觉仍未验（2026-09-30）
+
+独立只读复核已交付：八份关键source/live文件逐字节一致。现输入框局部CSS按声明清除primitive内border/shadow/ring，但这不是当前页面像素证明；消息阅读轴按声明一致，短会话Scroller end/spacer仍须测实屏。当前不授源码写入，防止重复既有修复或盲调CSS。官方shadcn InputGroup组合已核（https://ui.shadcn.com/docs/components/base/input-group），仅作后续组件组成参考，未安装或替换当前Composer。
+
+当前用户要求输入框内方框与对话整体布局，Root优先本任务而非自动转述BFF进度。Web main8205fa003d5ea269741df359d4d6881dd0f1e0f8 clean；3310原PID65590在运行。Composer CSS、Composer组件、Textarea primitive、Thread CSS、ConversationThread五份源码与受管next逐字节一致；不把问题归咎于未同步源码。当前IAB tab6 focus读取实际超时；同browser一次fresh tab14导航实际超时；selected14关闭亦超时并REPL reset，临时tab回收未确认，未重复开页或重启服务。已请求当前整页截图；未取得fresh计算样式/截图，不宣称内框或ChatGPT布局验收通过，也未再盲改CSS。agent_failure_cursor_owner续派只读现态级联/几何核对，Root只写任务与证据。
+
+BFF完整GREEN候选已停写冻结32文件+1删除，独立最终只读审查继续；Root完整门/真实7integration/消费者协调仍待验收。此前Root真实canonical schema precheck 7/7、0skip、schema/test双hash稳定，只是局部预检，不作为BFF全链通过；本轮用户UI任务未运行新Web测试/构建/Playwright。Billing/uv.lock保持。
+
+## 2026-09-30 — 继续已授权BFF代码闭环，消费者准备并行
+
+Root实核dd734ea4、Web8205fa0 clean，BFF仍15e候选四docs+七tests；原BFF owner工具状态running，已在GREEN授权，不重派/重启。上一轮为progress，未把视觉缺失改成整个goal阻塞。本轮唯一BFF writer实施；契约审查只读，原Web owner只读准备failure3消费者；Root负责独立完整门与真实隔离资源。当前台账顶部收敛有效状态，旧授权留历史，不同时发出冲突写权限。Billing/uv.lock保留，运维不扩展，payment最后。
+
 ## BFF R5 RED 门通过，进入完整代码实施（2026-09-30）
 
 - R5 tests-only RED已Root按12/12冻结hash复核，显式Node22 build0；七文件141项=70pass/38目标fail/33infra skip，日志`/tmp/kokoro-bff-failure3-root-r5-red.log`。R3独立契约1P1旧vendor path与SQL1P2空白code矩阵已在R4/R5最窄返修，Root直接读两delta确认，无新路径/fallback。先RED的门已通过，33skip不是integration通过。
