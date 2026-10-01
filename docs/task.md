@@ -1,3 +1,15 @@
+## R28 Root 已提交证明组合的集成门
+
+Root staged仅Agent512a846 gitlink、committed inventory30与同三台账共5路径；topology exit0，checkpoint按现w1e-iam07-bff-pin **PASS/exit0**；第一次漏--expected导致usage exit2的原日志保留 /tmp/kokoro-parallel-r28-checkpoint.log，不以尾部pytest成功掩盖。纠正命令日志 /tmp/kokoro-parallel-r28-checkpoint-r2.log。Root相关三治理测试 **309/309（19.04s）**，另contract compatibility **77/77（19.97s）**，分别 /tmp/kokoro-parallel-r28-tests.log、-contract-tests.log；30来源再独立从512a846 blobs核digest。仅当前固定治理预期通过，不将3active/13broken或历史全仓标准违规改绿。Agent下一纯domain原owner在途不计本片已验代码，保护全部任务外修改；Root测试/临时服务/PG句柄已收。
+
+## R28 当前交付与下一最小生产切片（2026-10-01）
+
+已推main：Root **378acfae**（local seed5代码＋台账），System真实404→200/错误host-product-tenant404，107pure；当前3310未重seed，全产品仍未闭环。Agent **512a8462c52acfc1d87ee20c71bccea04ce63b98**（六文件native证明＋批准HITL D0；不含P3B后缀），Root默认1657/6skip/242deselect/364warnings（90.67s）、真实PG8/0skip（0.51s）、定点Ruff/Pyright0/contract19/机器3.0check成功，独立Astra0/0/0。首次5/3与后续1/7真实RED保留；完整SDK config复制导致观测器越界，最终只scalar定位＋一次map前独立真实commit核验，非降低native断言。所有本轮临时PG/进程已回收，PID65590未动；当前无Root未收测试句柄。Root只从512a846 committed blobs更新Agent30证据，保持3active/13broken，不伪称4已发布。
+
+AGENT-HITL-DOMAIN-P1-R28 / 原agent4_scope_gate_r19 Astra sole writer / Agentmain512a846＋四docs未批准P3B后缀。独立review与Root批准仅2新普通文件：src/kokoro_agent/domain/run/interactions.py（运输无关的完整集合/分组、revision、全集决定/intent及不可逆状态规则）＋tests/unit/execution/test_interactions.py；原四docs仅HITL批准prefix记卡/精确设计/实际结果。现domain/run与execution测试目录已有，无新目录；比扩充execution/approvals.py混入SDK/SQL职责，采用独立纯域文件；没有schema/HTTP/SDK/DB/Redis/worker wiring/契约发布/依赖/生成/Git授权。测试覆盖missing-extra-duplicate-stale整批拒绝零转换、同ID validation新轮次、保全部分组顺序、accepted→dispatch_started不可退回、unknown零再投、terminal吸收与精确重放/冲突。先真实RED再GREEN，Pure/Ruff/Pyright/架构门，冻结六范围hash、保P3B整后缀与其他源码；Root独立审查/重跑/提交。仅纯规则不称durable或HITL4已上线。
+
+后继持久切片才写Run→command→Chat同连接intent/start与集合原子转换，锁后lease/fence与late observation/terminal/GC竞争真PG；由Root另卡放行，不一次授全部52。BFF queued true39pass/2fail及完整waiting/resuming仍等Agent正式artifact；正规Billing及agents目录仍是现页面503/404未闭环，不藏错误、不免费绕积分；支付最后，全Wave0–7保留。
+
 ## R28 Agent PG RED 如实留存
 
 新六冻结0ff5546d真PG8实际 **5 failed /3 passed（0.82s）**；/tmp/kokoro-agent-hitl-proof-r28-r2-root-real-pg.log。新test-only observer错误将NULL_TASK scalar RESUME也强制assert list，干扰native执行；并非证明新的生产行为故障。原负责人只原6范围修observer：区分输入/消费、await前冻向量副本，保invalid→valid最终持久语义断言。独立Astra已获变动基线提示，终审等新冻。自有agent_terminal_atomic_9781de9e7c7441ab已drop；无共享清理。不提交native候选、不把纯19通过当PG通过；Root seed自身107/真实System404→200与0/0/0仍独立有效。
