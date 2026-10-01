@@ -1,3 +1,13 @@
+## R41 十窗口复用与真实回归（2026-10-01）
+
+沿现 Wave 0–7 继续，不新建窗口/任务中心。原 WIN01–10 均已续派：Web项目集合实现、System catalog实现、Scheduler双安装/回滚tests-only；BFF原子快照RED、IAM登录边界、Billing v2运行差距、Platform MCP负例、Storage装配负例、Agent额外资源selector、E2E accepted-source路径独立只读。各仓唯一writer，Root独占真实资源/集成/Git。句柄沿 `/tmp/kokoro-r30-window-handles.json`，不是十个同时改同仓的writer。
+
+Root实际：Agent全database **6 failed /190 passed（17.86s）**，`/tmp/kokoro-agent-hitl-r41-root-all-database.log`；owned `agent_terminal_atomic_08125d1381664d32` created/closed=true，session69517已收。5个delivery outbox新增interaction帧相关断言及1个proof-lease terminal fixture CHECK失败，原Astra仅定位根因，不宽改旧断言/生产约束；63累计切片仍未提交。lock --check/build退出0，wheel167 Python源、两个新adapter和唯一canonical SQL bytes全部与source一致（`/tmp/kokoro-agent-hitl-r41-root-wheel-source.json`），不代表全部资源门完成。
+
+Scheduler冻结18SHA全匹配；Root真实PG **15顶层case PASS /0skip（0.806s）**、真实源码服务重启receipt **1 PASS（10.291s）**；自有 `kokoro_scheduler_test_r41_f3674daed0e1/eca87c57f761` 均created/closed=true。日志 `/tmp/kokoro-scheduler-schema-r41-root-resource-green.log`、`/tmp/kokoro-scheduler-schema-r41-root-source-smoke.log`。纯门166pass17资源skip0fail；gofmt输出空/vet/build0。完整catalog/新并发与rollback仍待验，不发布半cutover。Root执行95424/26493/65494均已结束消费，3310无监听，未请求provider/浏览器、清共享Redis或假充值。
+
+下一关键路径：原Agent根因→精准修复→Root全资源重跑→完整owner commit→BFF固定消费；Web/System/Scheduler并行按冻结证据独立验收。正规login/chat/项目/费用整链仍未闭环。
+
 ## R40 十窗口续派与当前可执行切片（2026-10-01）
 
 Agent HTTP4接受测试r2已Root真复验80/80通过（45PG＋35HTTP，16.97s），153 SDK warnings保留；/tmp/kokoro-agent-http4-r40-root-real-pg-http-r2.log，owned agent_terminal_atomic_90f0cf3418784f7a created/closed=true，25928已收。仅授权三fixture修订，独立r2审0P0/P1/P2；当前manifest345643b5，test22805701，生产19/保护232不变。1799纯门/Root静态与此资源证据均已获得，尚待Agent完整切片提交/发布与BFF→Web消费，不冒称浏览器全链闭环。System核心6源/fixture独立审0P0/P1/P2，catalog后继仍按真实七RED在实现。Root零遗留测试句柄。
