@@ -1,3 +1,13 @@
+## R33 BFF 局部真实 GREEN 已提交；Agent PG 首轮失败已定位
+
+Root BFF集成仅187处当前committed SHA升级，source/contract digest **0变化**，3active/13broken保持；topology/固定checkpoint exit0，四治理 **386/386（50.67s）**，/tmp/kokoro-r33-root-{topology,checkpoint,governance}.log。Agent R2正式launch fixture后真实 **24pass/2fail/0skip（2.62s）**，新增4purge/control竞争已到达通过；两fail是触发器helper拒绝dispatch_started/terminal而未安装注入，原owner仅该固定白名单返修，原25生产等保持。其自有DB已drop，/tmp/kokoro-agent-hitl-p2-core-r33-r2-root-real-pg.log。Billing prefix hash与第一separator+6字节口径4/4实测一致，非内容漂移；独立审only P2 exactly-one debit负例由原WIN06补，不称新Schema已验。
+
+BFF **759bfe0a8c521946cae31a74b6426f43b063bae1**：只接accept锁后lease复验与200行测试、CURRENT新记录，原8dirty内容逐byte保留。Root真实11/11、三相关PG **19/19/0skip**、pure26/26及lint/typecheck/build0，独立Sol0/0/0；自有DB全drop/Redis14余0，/tmp/kokoro-bff-scheduled-lease-r33-root-{green,related-pg,pure}.log。原WIN02已停写；不是完整BFF/浏览器闭环。
+
+Agent30路径freeze e2442d6c，Root首实际PG22 **16fail/6pass/0skip（1.78s）**，/tmp/kokoro-agent-hitl-p2-core-r33-root-real-pg.log、自有agent_terminal_atomic_ae114cc6b71e483e已drop。16共同早停是fixture只try_claim无正式dispatch而Ingress正确scoped join返回404；未到达accept/start等不计通过。原owner仅现PG文件＋批准prefix纠正正式launch→原RunRequest→claim，并补独立审P2双向purge/control PID竞争（原串行不证明并发）；原生产冻结保持，机器3/后继43type错误与30contract RED保持，不弱化身份查询。
+
+Billing C1 hold终态source四prefix D0已冻，Root三面核一致，独立Sol门审在途；此前reserve24真PG已验不重复。完整Wave0–7继续，当前无Root运行测试/进程句柄，不重启共享服务、不造赠送或上线完成声明。
+
 ## BFF-SCHEDULED-ACCEPT-LEASE-GREEN-R33：原 WIN02 两文件授权
 
 Root Node22 fresh build0，首pattern运行因排除旧first-test schema安装而4fail（relation missing，非业务RED）；日志保留 /tmp/kokoro-bff-scheduled-lease-r33-root-red.log，自有库closed/Redis0。完整file真实 **9 passed/2 failed/0skip（2.70s）**，task/scope锁等待过期后错误accept=true/写dispatch/202；/tmp/kokoro-bff-scheduled-lease-r33-root-red-r2.log，自有bff_fifo_d757884568334492已drop/Redis0。冻结test64dc8294，独立Sol 0P0/P1/P2，真实RED可放行。
