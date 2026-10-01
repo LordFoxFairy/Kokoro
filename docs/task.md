@@ -1,3 +1,38 @@
+## 2026-10-01 WEB-BFF-PUBLIC3 源码消费已验收；整产品仍未完成
+
+Web main `e17c039c7e3a629e9815026206d08bcbcb4381bd`（16文件、clean），Root唯一提交；BFF public3精确committed blob与两角色消费已对齐，旧public2 pin删除，无fallback/alias。Root独立整份parsed spec只差version/role、owner bytes equality、Team15再生零字节变化；safe failure12tuple/guard/全部operation不变。Agent4/BFF3.1 retry未发布，不提前开放terminal mutation。
+
+Root真实RED35通过/12失败→完整`pnpm check` exit0（contract219/architecture50/tests2055、41.02s、lint/typecheck/build）；完整preview Playwright14通过/4项目跳过、14.1s；后置typegen/typecheck exit0且next-env生成变化自动恢复，34117退出。两次冻结16hash独立终审0/0/0。日志 `/tmp/kokoro-web-public3-{red,check,e2e,final-typecheck}.log`，final manifest `/tmp/kokoro-web-public3-final-manifest.json`。
+
+Root刷新Web48条evidence及Browser→Web owner contract共49个committed来源，inventory仍3active/13broken。首轮刷新脚本错误预期47而实际48，断言中断docs更新；随后checkpoint实际FAIL因遗漏Browser→Web owner旧gitlink，topology PASS；原log `/tmp/kokoro-web-public3-root-checkpoint.log`保留，现补齐owner commit/digest后重验，不放宽门。
+
+这里关闭的是消费者source漂移，不是整条用户能力。未热切3310、改schema/用户数据或调用收费模型；用户输入内框和真实IAM→BFF→System→Agent→能力/Storage→Billing组合仍须验。Root本轮全仓标准仍137失败/0unverified；main-only实跑FAIL仅因候选及受保护BFF/Agent/Billing/uv.lock dirty，各head/local/remote仍main，不宣称clean。Root最终精确五路径集成checkpoint/topology均PASS，相关治理pytest95/95（47.15s），日志 `/tmp/kokoro-web-public3-root-{checkpoint-final,topology-final,governance}.log`；下一owner Agent4只读设计门已派 bff_chat_role_owner，代码写入未授权。继续按依赖闭环真实consumer与能力，不深挖部署运维。
+
+## AGENT-RETRY4-GATE：下一owner实现前的精确设计门（2026-10-01）
+
+|项|裁决|
+|---|---|
+|目标/角色|Agent4原user terminal retry闭环，先核现4份dirty候选是否技术/API/数据一致；bff_chat_role_owner只读设计审计，Root唯一架构裁决，不授权源码重写。|
+|基线/范围|Agent main f3be3b97 +4份docs未提交；Web e17c039已提交/source门通过，Root集成复验已完成，集成提交待执行。读取Agent TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT、contract/canonical schema、checkpoint/fork/head fence/Run admission与tests；不改文件/提交/测试/infra。|
+|依赖/完成条件|Owner唯一Agent Run/Checkpoint/Lease/ToolJournal，BFF Message/原user与producer各自owner。必须指出现实现到Agent4 exact缺口、恢复parent checkpoint如何不重复原user/tool副作用、当前所有BFF chat/scheduled producer是否一致、幂等/fence/取消/失败恢复/tenant，给精确后续允许文件集和RED/真实PGRedisHTTP验收命令。|
+|文档/保护|先读Root AGENTS、Python09/SQL03/API05、CODEBASE_MAP和现task；仅提出文档门通过/具体未决，不重开已批准设计、不把旧candidate当完成，不读写共享用户数据。保留原4doc候选字节，Root随后决定writer/实现阶段。|
+
+## WEB-BFF-PUBLIC3：正式消费者对齐（2026-10-01）
+
+上一goal turn分类为progress：两child源码commit与Root55dd9fa集成已改变权威状态，整体目标保持Wave0–7，不缩减为pin单片。
+
+|项|当前任务卡/设计门|
+|---|---|
+|Owner/Agent|Web唯一writer web_failure_wire_review；只读独审 bff_failure_contract_review；Root唯一Git/index、验证、运行资源与跨仓裁决。|
+|基线|Root main55dd9fa；Web main9c428bf clean；BFF main293dfe7，仅四份retry候选doc495行dirty，其他Agent/Billing/Root uv.lock保护。|
+|目标|Web单一原字节snapshot固定BFF293dfe7638e5dea0df2bee6dfdd8483b53fc9df6/public3.0.0/digest acd92ed2fa3e84032e824e1462d67a007c4a94a7e79b7bda8fd5a66f9d51cd3b；唯一ChatMessage roles user/assistant，failure12tuple/所有operation保持，拒绝恢复system或旧pin。|
+|位置/粒度|采用现两generator、generated snapshot/failure artifact及七public测试；淘汰新contract中心/通用pin模块，因为现来源已经明确且本片只替换来源。Team现15派生文件由generator再生，预期字节不变，若有差异须报告；禁止手改生成物。|
+|文档门|五docs门经Root与独立review通过；两个generator证据边界校正为Team digest/failure version+provenance、Root committed blob核commit。Root七tests真实RED35pass/12fail（/tmp/kokoro-web-public3-red.log），现授权两generator/原字节snapshot与再生failure artifact，Team15必须不变；完整验证待验。|
+|允许写集|docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md、contract/README.md；tests/contract/bff-{agent-failure,team,project-create,project-resource,library-file,library-artifact,skills-mcp}-public.test.ts；scripts/generate-bff-{agent-failure,team-client}.mjs；src/generated/bff-public-openapi.yaml、bff-agent-failure.ts；Team15只允许运行generator输出且须证明不变。其他源码/lock/其他仓/运行副本排除。|
+|依赖/删除|源来自BFF committed blob，不读取dirty草案；删除当前旧2.0pin与system来源约束，不建双读/alias/fallback；runtime Message本来即两roles无需改，Agent4/BFF3.1retry未发布不提前开放mutation。|
+|API/数据|仍/v1与AG-UI唯一网络协议；Web无SQL写边界，原应用库schema不热更新；源码pin完成不等于3310全组合激活，禁止半切/服务重启/用户数据清理。|
+|验证/交付|Root Node22/pnpm11先现contract基线、批准tests-only RED；再generator --write/--check、owner blob equality、Team15 byte equality、语义mutant恢复system拒绝、完整pnpm check与既有Playwright独占fixture；只读审查，Root精确切片commit与库存source更新/治理验证。|
+
 ## 2026-10-01 研发闭环当前事实：Web/BFF两片已提交，整体未完成
 
 用户重申边界：研发负责实现、契约/SQL、测试/build与真实端到端；部署运维配置后移，不把独立roles/GRANT/集群配置前置。
@@ -16,8 +51,8 @@
 
 |owner|本轮主控状态/剩余研发验收|
 |---|---|
-|kokoro-app|输入内框当前用户页仍待核对；Markdown列表marker修复已提交9c428bf，长文/多轮/窄屏回归及完整门已通过；public3消费对齐和真实产品组合待验。保持AG-UI/Vercel UI/shadcn唯一职责。|
-|kokoro-bff|ROLE2 293dfe7已独立终审和选择性提交；Root realPG8/8、fullcheck546+1skip；Web exact repin、fresh真实组合待验。正式retry依赖Agent4，个人/项目/Share/任务不得混写owner。|
+|kokoro-app|输入内框当前用户页仍待核对；Markdown列表marker修复已提交9c428bf，长文/多轮/窄屏回归及完整门已通过；public3精确消费e17c039已验，真实产品组合待验。保持AG-UI/Vercel UI/shadcn唯一职责。|
+|kokoro-bff|ROLE2 293dfe7已独立终审和选择性提交；Root realPG8/8、fullcheck546+1skip；Web exact public3 repin已验；fresh真实组合待验。正式retry依赖Agent4，个人/项目/Share/任务不得混写owner。|
 |kokoro-agent|HTTP3来源已在既有目标中发布；Agent4原user retry设计仍未实施，checkpoint fork/fence与所有producer消费须一条真实链验证。|
 |kokoro-iam|作为认证授权owner继续真实login→consent→callback→session/revoke链验收；历史单门不重复当完成，运行用户数据保留。|
 |kokoro-system|模型目录/路由owner；fixed artifact→BFF/Agent正式consumer→真实provider/失败恢复组合仍需验。|

@@ -1,3 +1,21 @@
+## 2026-10-01 WEB-BFF-PUBLIC3 源码消费已验收；整产品仍未完成
+
+Web main `e17c039c7e3a629e9815026206d08bcbcb4381bd`（16文件、clean），Root唯一提交；BFF public3精确committed blob与两角色消费已对齐，旧public2 pin删除，无fallback/alias。Root独立整份parsed spec只差version/role、owner bytes equality、Team15再生零字节变化；safe failure12tuple/guard/全部operation不变。Agent4/BFF3.1 retry未发布，不提前开放terminal mutation。
+
+Root真实RED35通过/12失败→完整`pnpm check` exit0（contract219/architecture50/tests2055、41.02s、lint/typecheck/build）；完整preview Playwright14通过/4项目跳过、14.1s；后置typegen/typecheck exit0且next-env生成变化自动恢复，34117退出。两次冻结16hash独立终审0/0/0。日志 `/tmp/kokoro-web-public3-{red,check,e2e,final-typecheck}.log`，final manifest `/tmp/kokoro-web-public3-final-manifest.json`。
+
+Root刷新Web48条evidence及Browser→Web owner contract共49个committed来源，inventory仍3active/13broken。首轮刷新脚本错误预期47而实际48，断言中断docs更新；随后checkpoint实际FAIL因遗漏Browser→Web owner旧gitlink，topology PASS；原log `/tmp/kokoro-web-public3-root-checkpoint.log`保留，现补齐owner commit/digest后重验，不放宽门。
+
+这里关闭的是消费者source漂移，不是整条用户能力。未热切3310、改schema/用户数据或调用收费模型；用户输入内框和真实IAM→BFF→System→Agent→能力/Storage→Billing组合仍须验。Root本轮全仓标准仍137失败/0unverified；main-only实跑FAIL仅因候选及受保护BFF/Agent/Billing/uv.lock dirty，各head/local/remote仍main，不宣称clean。Root最终精确五路径集成checkpoint/topology均PASS，相关治理pytest95/95（47.15s），日志 `/tmp/kokoro-web-public3-root-{checkpoint-final,topology-final,governance}.log`；下一owner Agent4只读设计门已派 bff_chat_role_owner，代码写入未授权。继续按依赖闭环真实consumer与能力，不深挖部署运维。
+
+## 2026-10-01 WEB-BFF-PUBLIC3 正式消费对齐进行中
+
+上一goal turn是progress（Web9c428bf/BFF293dfe7/Root55dd9fa真实提交），本goal仍是九owner/Wave0–7研发+整体真实端到端，不缩小为单仓静态门。Root确认Web9c428bf clean、BFF原四份retry候选495行及Agent/Billing/uv.lock未动；沿同task卡续派Web sole writer及独立只读contract审查，Git/验证/运行由Root管理。
+
+Root已独立核对BFF293dfe7 committed public3原字节digest acd92ed2fa3e84032e824e1462d67a007c4a94a7e79b7bda8fd5a66f9d51cd3b；旧spec仅version与role更新后整份parsed deepEqual PASS，operations/12tuple/presence guards不变。旧Web基线完整pnpm contract218/19files exit0，日志 `/tmp/kokoro-web-public3-baseline-contract.log`。Team15基线hash `/tmp/kokoro-web-public3-baseline.json`，owner blob `/tmp/kokoro-bff-public3-owner.yaml`。
+
+三设计/contract README门已由Root读审；Team仅digest校验、failure version/provenance与Rootblob核commit边界已要求窄修。现授权七tests-only RED，尚未授权generator/snapshot；不新目录/依赖、不热切3310，不以pin或preview冒充真实产品/积分完成。全仓137失败及3active/13broken保留，下一阶段必须有实际RED再GREEN证据。
+
 ## 2026-10-01 研发闭环当前事实：Web/BFF两片已提交，整体未完成
 
 用户重申边界：研发负责实现、契约/SQL、测试/build与真实端到端；部署运维配置后移，不把独立roles/GRANT/集群配置前置。
