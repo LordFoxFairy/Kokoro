@@ -1,3 +1,21 @@
+## WEB-FAILURE3-GREEN 已授权的必要边界补充（2026-09-30）
+
+R4身份与unused清理独立已通过；审查提出的fail.showDetail测试引用冲突已归入GREEN迁移授权：原11tests不再要求字节冻结，必须保留行为/负断言，原tr(showDetail)改为无Collapsible DOM断言，不能保留孤儿key迁就测试。该P1不是新增设计阻塞，源码与测试在一个自洽切片闭合。
+
+Root采纳只读审查的恢复capability：EngineSnapshot新增唯一只读 `canRetryPendingSubmission:boolean`，由现pendingSubmission+同session+合法error恢复态计算，不暴露body；AppFrame传给ConversationThread必填同名prop、Share显式false。Owner terminal与post-receipt SSE error均false，未receipt transport/credit恢复才true；不以runError=null盲目提供noop恢复，不新增endpoint/重试command。新增授权现tests/ui/app-frame.smoke.test.tsx只加post-receipt error无retry与未receipt能力接线回归；engine现tests在改源前toMatchObject验证true/false能力（不import未来类型，不靠类型错误RED），Conversation tests显式传能力。MainSurface/Shell只转conversationProps无需改。
+
+追加devharness仅现src/dev/preview-transport.ts+tests/dev/preview-transport.test.ts：unknown !fail须在title/message.user/history等任何副作用前拒绝，不留下半轮；合法code从唯一generated/schema选择false profile，不建码表。原Thread raw detail相关state/ref/callback/props/effect依赖及CSS孤儿清理纳入删除责任，但errorCard几何ref如仍用于failureItem保留。四docs窄更新明确实现候选与未验组合。Root已读当前本仓Next use-client官方文档，无新Next API/依赖，三设计文档现方案可直接沿用。
+
+## WEB-FAILURE3-GREEN 当前推进（2026-09-30）
+
+R4测试身份/清洁已复验，Root126fail/194pass（真实行为RED、0collection）、lint/typecheck通过、engine/UI恢复各2通过。精确源码任务与追加恢复capability放在 `docs/task.md` 顶部同一任务卡，不复制成第二计划。唯一Web writer已获phase3+4源码授权；本轮不切换运行组，不将即将实施代码当成完成证据。独立wire审查 `/root/web_failure_wire_review` 已启动，模型gpt-5.6-sol，只读published owner/方案，冻结后再审candidate；工程审查bff_failure_contract_review，Root主树验收与sole Git。
+
+## GOAL 续推：WEB-FAILURE3-RUNTIME-RED R4 → 正式源码消费（2026-09-30）
+
+上一turn为progress：Web daaf45b两文件真实源码修复、Root 3d3589e9组合提交，UI131/131、architecture49/49、typecheck/build与提交后checkpoint/topology PASS。内方框和整体视觉仍开放，未以局部green缩小全goal。
+
+当前Root main3d3589e9/Web maindaaf45b；Web原11测试候选及其他子仓docs/Root uv.lock保护。唯一writer agent_failure_cursor_owner，审查 bff_failure_contract_review只读，Root sole Git与主树验收。R4仅tests/engine/event-reducer.test.ts统一tool/dispatch/machine的run_id=run_1，及tests/ui/conversation-failure.test.tsx删除失效unused消息参数和对应调用值（不加lintignore或void掩盖）。不改断言/测试集合/producer/源码；交新9hash/2protected，真实8文件RED、typecheck及精确2未receipt恢复。独立清零且Root复验后，进入既有TECH phase3+4同一类型闭合切片；源码授权另发，当前仍无源码写权。
+
 ## WEB-COMPOSER-RHYTHM2 源码已验，视觉仍开放（2026-09-30）
 
 Root组合验收：首次未暂存gitlink时checkpoint/topology均exit1（来源新SHA与旧index不一致，日志保留），精确暂存上述5路径后两CLI fresh PASS/0；日志 `/tmp/kokoro-web-composer-rhythm2-root-staged-{checkpoint,topology}.json`，不放宽门禁。

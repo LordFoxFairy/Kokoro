@@ -1,3 +1,33 @@
+## WEB-FAILURE3-GREEN 已授权的必要边界补充（2026-09-30）
+
+R4身份与unused清理独立已通过；审查提出的fail.showDetail测试引用冲突已归入GREEN迁移授权：原11tests不再要求字节冻结，必须保留行为/负断言，原tr(showDetail)改为无Collapsible DOM断言，不能保留孤儿key迁就测试。该P1不是新增设计阻塞，源码与测试在一个自洽切片闭合。
+
+Root采纳只读审查的恢复capability：EngineSnapshot新增唯一只读 `canRetryPendingSubmission:boolean`，由现pendingSubmission+同session+合法error恢复态计算，不暴露body；AppFrame传给ConversationThread必填同名prop、Share显式false。Owner terminal与post-receipt SSE error均false，未receipt transport/credit恢复才true；不以runError=null盲目提供noop恢复，不新增endpoint/重试command。新增授权现tests/ui/app-frame.smoke.test.tsx只加post-receipt error无retry与未receipt能力接线回归；engine现tests在改源前toMatchObject验证true/false能力（不import未来类型，不靠类型错误RED），Conversation tests显式传能力。MainSurface/Shell只转conversationProps无需改。
+
+追加devharness仅现src/dev/preview-transport.ts+tests/dev/preview-transport.test.ts：unknown !fail须在title/message.user/history等任何副作用前拒绝，不留下半轮；合法code从唯一generated/schema选择false profile，不建码表。原Thread raw detail相关state/ref/callback/props/effect依赖及CSS孤儿清理纳入删除责任，但errorCard几何ref如仍用于failureItem保留。四docs窄更新明确实现候选与未验组合。Root已读当前本仓Next use-client官方文档，无新Next API/依赖，三设计文档现方案可直接沿用。
+
+## WEB-FAILURE3-GREEN：来源与回归门通过，源码切片进行中（2026-09-30）
+
+Root基线3d3589e9/Web daaf45b；R4冻结manifest88324617，Root9runtime+2protected逐hash通过，8files真实126fail/194pass/0collection（1.94s），全lint/typecheck exit0。两个未receipt engine恢复正例2/2，两个UI恢复正例2/2（精确中文testname重跑）；首次UI英文filter全部skip、一次误在Root跑pnpm缺vitest均不算通过，日志保留。最终日志 `/tmp/kokoro-web-failure3-runtime-red-root-r4-{result.json,red.log,ui-recovery-exact.log}`。这只证明待实现行为真实失败，不称consumer完成。
+
+|任务卡|WEB-FAILURE3-GREEN|
+|---|---|
+|owner/模型/分工|Web失败消费；agent_failure_cursor_owner唯一writer（继承模型），bff_failure_contract_review只读工程审查；Root边界与主树验收/sole Git；只读wire审查web_failure_wire_review，实际gpt-5.6-sol（已派发）|
+|放置依据|引用Web docs/TECHNICAL_DESIGN.md顶部WEB-FAILURE3-DESIGN九项放置表与三文档门。contract/agent-failure.ts为generated唯一tuple之上的窄schema/type；不在core继续保存第二七码，不新业务模块/顶层目录|
+|类型闭合/范围|phase3+4作为同一实现切片，防止半套类型协议与UIfallback。新src/contract/agent-failure.ts；现src/contract/{chat,agui-events}.ts，src/core/{chat-projection-event,state,reducer,hydration}.ts，src/engine/{agui-event-mapper,event-reducer,machine-state,machine,engine-types}.ts，src/ui/{thread/conversation-thread,shared/shared-thread}.tsx，src/components/blocks/app-frame/app-frame.tsx（仅确需接线），src/i18n/{messages,en,de,es,fr,ja,ko,pt,ru}.ts|
+|必要旧引用删除|删除RUN_FAILURE_CODES会断现src/dev/preview-transport.ts及tests/dev/preview-transport.test.ts：只迁移该已有显式devharness到同一schema/profile，unknown !fail拒绝，不再unknown→internal_error；不新生产mock/存储。删除raw detail后仅清src/ui/thread/thread.module.css孤儿errorDetail/errorDetailTrigger/pre与data-error-detail=open .jump规则、九locale孤儿fail.showDetail；不做Composer/布局重设计|
+|测试/文档写集|原11冻结tests允许GREEN迁移但保留新增strict/recovery/fence断言；新增授权现tests/dev/preview-transport.test.ts纯契约迁移。四docs TECH/API/DATA/CURRENT及INDEX.md、src/core/INDEX.md、src/engine/INDEX.md仅事实/入口窄更新，不复制owner契约。不扩大其他测试helper默认行为，不整体format|
+|依赖与数据|固定BFF ccb8e144/public2原blob及generated12tuple不改；Web仅内存投影，无SQL/Redis/schema角色/依赖lock/APIroute/协议新增。独立dispatch opaque decimal sourceSequence不Number化、不进Agent lastSeq；snapshot/live/Share同helper/profile|
+|动作与删除|Agent/dispatch/generic owner terminal无重发按钮/新keyPOST；只保留pendingSubmission原key/body意图恢复和credit三动作，Share只读。删除raw code/message/error_kind/oldcancelled RUN_ERROR、unknownfallback、旧码表及rawdetail；保留正式RUN_FINISHED cancel、unfinishedtools及历史run隔离|
+|验证/阶段|源授权须R4只读无P0/P1后明确发；目标11tests+preview绿、contract/architecture/full lint/typecheck/fulltest/build；每个strict guard做mutation实败，重点身份/tuple/extra/BIGINT/retained samebody/fence。Root冻结后复跑，真实组合/browser仍独立后门，不热切运行组|
+|排除/交付|其他仓/Root文件/依赖generated/package/route/Composer/AppFrame CSS/任意运行副本/服务/data/Git不可写；越界先报告。交文件hash与实际日志，不自提交。未闭合system无failure角色与整产品/browser依旧留在总goal|
+
+## GOAL 续推：WEB-FAILURE3-RUNTIME-RED R4 → 正式源码消费（2026-09-30）
+
+上一turn为progress：Web daaf45b两文件真实源码修复、Root 3d3589e9组合提交，UI131/131、architecture49/49、typecheck/build与提交后checkpoint/topology PASS。内方框和整体视觉仍开放，未以局部green缩小全goal。
+
+当前Root main3d3589e9/Web maindaaf45b；Web原11测试候选及其他子仓docs/Root uv.lock保护。唯一writer agent_failure_cursor_owner，审查 bff_failure_contract_review只读，Root sole Git与主树验收。R4仅tests/engine/event-reducer.test.ts统一tool/dispatch/machine的run_id=run_1，及tests/ui/conversation-failure.test.tsx删除失效unused消息参数和对应调用值（不加lintignore或void掩盖）。不改断言/测试集合/producer/源码；交新9hash/2protected，真实8文件RED、typecheck及精确2未receipt恢复。独立清零且Root复验后，进入既有TECH phase3+4同一类型闭合切片；源码授权另发，当前仍无源码写权。
+
 ## WEB-COMPOSER-RHYTHM2 源码已验，视觉仍开放（2026-09-30）
 
 Root组合验收：首次未暂存gitlink时checkpoint/topology均exit1（来源新SHA与旧index不一致，日志保留），精确暂存上述5路径后两CLI fresh PASS/0；日志 `/tmp/kokoro-web-composer-rhythm2-root-staged-{checkpoint,topology}.json`，不放宽门禁。
