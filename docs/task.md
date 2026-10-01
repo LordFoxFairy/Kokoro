@@ -1,3 +1,41 @@
+Root集成门：精确暂存5路径后checkpoint/topology均PASS/0，相关治理pytest95/95（46.76s）；没有放宽broken状态、清理共享数据或包含其他子仓/uv.lock。
+
+## 2026-10-01 Web失败消费源码已提交，用户视觉问题仍未验
+
+Web main `8a2d771e5ed106f93473ac3d1b5efb793b9b32ab`，46文件自洽切片、clean；固定public2唯一tuple/profile严格消费、Agent/dispatch隔离与string seq、snapshot/live/Share安全投影，移除raw详情/terminal重发，只保留未receipt同key/body恢复；另修两条旧submission晚到污染新submission竞态。最终manifest2837a89046+9全部Root复核，13项有效guard mutation真实AssertionError并恢复；两个独立源码复审最后0/0/0。
+
+Root Node22/pnpm11 fresh `pnpm check` contract218/architecture49/lint/typecheck/test2052/build exit0；最后仅新增same-session catch case，Root专属lint0+fulltest2053 exit0（43.76s）。不可删除的失败证据：该最后测试首次2fail/2051pass，均IAM /login内部csrf_status；原file隔离64/64、随后同源码full2053均通过，未加重试/timeout/预热或放宽断言，精确偶发原因尚未确定（不是已修复声明）。日志 `/tmp/kokoro-web-failure3-green-root-{check-r3,final-test,final-iam-isolated,final-test-r2}.log`。
+
+Root库存仅刷新Web精确来源/digest与已验局部事实，仍3active/13broken；public角色漂移、正式retry与整产品组合继续留红。原3310运行副本未加载此46文件切片；Composer方框/全对话视觉仍最高用户未验项，不以这次source提交冒充可见UI修复。Root仅3台账/库存/gitlink集成，其他子仓候选与uv.lock保护。
+
+## 用户当前优先：Composer 方框与对话布局（2026-10-01）
+
+Root 按用户实际可见问题复核，不能以 failure 消费门通过替代视觉验收。CUA 只使用既有 IAB3/tab6；截图 timeout、DOM 与受支持 CDP 读取均在 Emulation focus 处超时；已有 tab13 initial navigation 也超时，未新建标签或绕过浏览器权限。当前没有新截图/computed-style 证据。
+
+独立只读 CSS 审查更正 Root 初步判断：Composer fine-pointer 的44rem被 active-thread AppFrame48rem规则覆盖；源中 textarea border/shadow 已归零、唯一键盘 ring由shell承接，不能把基础704px或shared Textarea默认border当已证根因。Root逐字节比较受管3310与源码的 globals、Composer TSX/CSS、Textarea、AppFrame-main CSS/TSX、postcss均相同；Thread CSS仅本次未加载failure删除有差，不改布局。源码一致仍不证明用户DOM实际匹配/样式生效。停止猜数值修复；当前内方框、轮间距、滚动留白的视觉任务保持未验，待当前截图或浏览器连接恢复后核具体元素及computed样式。
+
+并行角色：Root负责真实页面/源码与运行副本排查；web_failure_wire_review只读CSS与e2e断言审查；agent_failure_cursor_owner唯一Web writer，仅收尾已有failure切片，不改Composer或重设计。布局候选建议只复用shadcn输入组合、消息列表与现token，删除已证重复chrome；不得仅叠更高特异度CSS或削掉键盘可见焦点。
+
+## WEB-FAILURE3终审返修与真实异步身份缺陷（2026-10-01）
+
+wire终审P0=0/P1=2：failureless负例使用合法固定message，仅缺failure；Message补三空格run负例。system由基础role failclosed，现合法user+failed+run负例独立锁assistant presence guard，不放宽生产角色。工程P2删除未读errorCardRef与过时折叠详情注释。随后只读追加发现beginRun旧请求身份竞态：A late reject可把新B submitting错切error；S→T→S旧A receipt可清B pending/错误对账并开A流。授权仅machine.ts/engine.test.ts修复，先RED 2fail/66pass，GREEN68/68；then/catch绑定同一pendingSubmission对象及session，取消旧回执优先逻辑保留。
+
+Root已消费前版fullcheck终态exit0（contract217/architecture49/tests2049/build），新冻结c5051c7c46+9需再跑；原Root错误pnpm主目录选择12.3.4退出1保留，不算验证通过。最后临时mutation限12独立不变量/两分钟，最终源码必须恢复manifest hash；由同writer完成，Root freshcheck与独立返修复审后才可提交。不热切运行组，不把source门替代视觉或全产品闭环。
+
+## WEB-PUBLIC-ROLE-AUDIT 已核事实（2026-10-01）
+
+只读固定BFF ccb8e144/Web daaf45b：SQL/schema/public读声明允许system，但唯一message INSERT只写user/assistant，其他writer仅更新assistant；Agent contract也只有两角色，无system产品producer/生命周期。Web只收两角色且其投影else会把system误当assistant，故不得为清门盲放宽parser。独立结论P0=0/P1=1/P2=0，具体证据见task后继卡；未查询运行DB，不能宣称没有历史/manual行。当前failure源片不扩角色。
+
+Root后继方向：先由BFF owner删除没有实现职责的system声明，按现breaking政策发布SQL/types/public合同一致切片，再由Web精确repin，关闭角色漂移；如发现真实通知职责则先明确该通知owner/producer/Share安全语义，不暴露Agent内部system prompt。不在Root直接改子仓schema，不静默删除/改写运行数据。该P1继续使整体Web↔BFF edge待闭，failure局部green不等于完整public消费。
+
+## GREEN 范围窄补充：test fake cursor（2026-10-01）
+
+Root已核tests/engine/fakes.ts:112与engine dispatch真实用例：独立run.dispatch_failed没有numeric seq且测试显式提供CURSOR_7；通用fake旧event.seq访问产生类型错误。授权同一writer只在该existing fake emit内给numeric事件生成默认cursor；dispatch未显式cursor须明确拒绝，不伪造0或Number(sourceSequence)。不改变正式协议/其他默认行为，不新测试API。纳入最终manifest和Root复验，排除其余fake重构。
+
+## WEB-PUBLIC-ROLE-AUDIT（2026-10-01，只读并行）
+
+Web唯一writer继续failure消费；独立审查bff_failure_contract_review先核public合法system角色的owner事实，不改变化中的Web文件。基线BFF main ccb8e144/Web maindaaf45b，读BFF canonical SQL、消息写入用例/运行时schema/OpenAPI与Web角色模型；目标确认system是真实产品能力还是API漂移并交最小后继方案。只读、模型继承、无Git/测试数据/服务/contract发布权；不把调查结论直接纳入当前failure源切片或另建兼容层。Root负责后继owner决定和跨仓顺序，避免无限保留已知contract drift。
+
 ## WEB-FAILURE3-GREEN 已授权的必要边界补充（2026-09-30）
 
 R4身份与unused清理独立已通过；审查提出的fail.showDetail测试引用冲突已归入GREEN迁移授权：原11tests不再要求字节冻结，必须保留行为/负断言，原tr(showDetail)改为无Collapsible DOM断言，不能保留孤儿key迁就测试。该P1不是新增设计阻塞，源码与测试在一个自洽切片闭合。

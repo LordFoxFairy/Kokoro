@@ -1,3 +1,25 @@
+Root集成门：精确暂存5路径后checkpoint/topology均PASS/0，相关治理pytest95/95（46.76s）；没有放宽broken状态、清理共享数据或包含其他子仓/uv.lock。
+
+## 2026-10-01 Web失败消费源码已提交，用户视觉问题仍未验
+
+Web main `8a2d771e5ed106f93473ac3d1b5efb793b9b32ab`，46文件自洽切片、clean；固定public2唯一tuple/profile严格消费、Agent/dispatch隔离与string seq、snapshot/live/Share安全投影，移除raw详情/terminal重发，只保留未receipt同key/body恢复；另修两条旧submission晚到污染新submission竞态。最终manifest2837a89046+9全部Root复核，13项有效guard mutation真实AssertionError并恢复；两个独立源码复审最后0/0/0。
+
+Root Node22/pnpm11 fresh `pnpm check` contract218/architecture49/lint/typecheck/test2052/build exit0；最后仅新增same-session catch case，Root专属lint0+fulltest2053 exit0（43.76s）。不可删除的失败证据：该最后测试首次2fail/2051pass，均IAM /login内部csrf_status；原file隔离64/64、随后同源码full2053均通过，未加重试/timeout/预热或放宽断言，精确偶发原因尚未确定（不是已修复声明）。日志 `/tmp/kokoro-web-failure3-green-root-{check-r3,final-test,final-iam-isolated,final-test-r2}.log`。
+
+Root库存仅刷新Web精确来源/digest与已验局部事实，仍3active/13broken；public角色漂移、正式retry与整产品组合继续留红。原3310运行副本未加载此46文件切片；Composer方框/全对话视觉仍最高用户未验项，不以这次source提交冒充可见UI修复。Root仅3台账/库存/gitlink集成，其他子仓候选与uv.lock保护。
+
+## 2026-10-01 当前用户视觉问题：未闭合
+
+输入内方框与整体对话布局仍以用户实际页面为准。Root与独立只读CSS审查确认：active thread覆盖到48rem、textarea源中border/shadow归零；受管3310对应Globals/Composer/primitive/AppFrame源码逐字节一致。Root初步704/768判断忽略了外层cascade，已公开更正，未据此改代码。IAB6截图/DOM/CDP均focus超时，已有tab13navigation超时，未新增重复标签；native Codex surface被明确禁止后即停止。当前截图请求待用户答复。源码/功能门不是视觉验收，禁止报告方框已修复、布局与ChatGPT对齐或整体闭环。
+
+已有Web失败消费候选另行收尾：两项负例盲点与未读ref/注释已修正；追加真实旧submission晚到污染新submission竞态，RED2→GREEN68，身份绑定修正保留原key/body与late cancel。最终source门/manifest/独立复审待Root，用户视觉任务不由此清零。
+
+## WEB-PUBLIC-ROLE-AUDIT 已核事实（2026-10-01）
+
+只读固定BFF ccb8e144/Web daaf45b：SQL/schema/public读声明允许system，但唯一message INSERT只写user/assistant，其他writer仅更新assistant；Agent contract也只有两角色，无system产品producer/生命周期。Web只收两角色且其投影else会把system误当assistant，故不得为清门盲放宽parser。独立结论P0=0/P1=1/P2=0，具体证据见task后继卡；未查询运行DB，不能宣称没有历史/manual行。当前failure源片不扩角色。
+
+Root后继方向：先由BFF owner删除没有实现职责的system声明，按现breaking政策发布SQL/types/public合同一致切片，再由Web精确repin，关闭角色漂移；如发现真实通知职责则先明确该通知owner/producer/Share安全语义，不暴露Agent内部system prompt。不在Root直接改子仓schema，不静默删除/改写运行数据。该P1继续使整体Web↔BFF edge待闭，failure局部green不等于完整public消费。
+
 ## WEB-FAILURE3-GREEN 已授权的必要边界补充（2026-09-30）
 
 R4身份与unused清理独立已通过；审查提出的fail.showDetail测试引用冲突已归入GREEN迁移授权：原11tests不再要求字节冻结，必须保留行为/负断言，原tr(showDetail)改为无Collapsible DOM断言，不能保留孤儿key迁就测试。该P1不是新增设计阻塞，源码与测试在一个自洽切片闭合。
