@@ -13,6 +13,13 @@ R9冻结候选Root真实诊断：七integration文件35通过/9失败/1取消/0�
 
 放置裁决：追加consumer文件本来就唯一拥有AG-UI consumer claim/renew/settle，与现projection共享BFF stream authority；无新owner/目录/API/DDL。淘汰跨ownerhelper、JS时钟兜底和冻结事务时钟；取得目标行锁后读实际DB时间再验证。普通Agent terminal事实不加dispatch lease到期限制，consumer authority仍严格租约。
 
+
+### WEB-COMPOSER-P0：独立写入切片（与BFF并行）
+
+负责人web_interaction_audit（gpt-5.6-sol）升级为Web唯一writer，Root统一审查/Git/最终验证。基线Web main `54a1bd6df3cc6b8ce0309600de1af3162a782d5d` clean。Root已核实际源码：engine拒绝submitting二次SUBMIT，AppFrame却无条件clearDraft；stop仅isStreaming&&!canSend，草稿非空隐藏停止。目标仅修Web内存交互：同步未接纳提交保留草稿/创建意图/URL，无多余POST；运行中停止始终可达且不清草稿。不是视觉重设计，也不发布queued/retry/steer协议。
+
+允许现文件：`src/engine/{engine-types,machine}.ts`、`src/components/blocks/app-frame/use-app-frame-actions.ts`、`src/ui/composer/composer-submit-action.tsx`及必要现`composer.tsx`/`composer-controls.module.css`、`tests/engine/engine.test.ts`、`tests/ui/{composer.test,app-frame.smoke.test}.tsx`、`docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`与相关现INDEX.md；须先核三文档一致后局部补设计说明、tests RED，源码GREEN。新增消费者/fixture越界先报告，不改网络/生成物/锁/数据库/Threadfooter/BFF/Root台账。保留现streaming输入提交行为，不把它称正规steer或queued；本片优先保障stop与草稿。精确文件清单/hash、RED/GREEN日志、完整Web门待Root重跑；不启动共享服务/浏览器/provider，不同步3310运行副本。
+
 ## PARALLEL-EXECUTION-NEXT：当前唯一任务看板（2026-10-01）
 
 总目标仍为九 owner、Wave 0–7 的研发闭环，支付最后；本波先关闭“发送→执行→持久回复→下一条”的一致性缺口，不扩展运维配置。本轮起始 Root main `21fd6a87`、进度提交 `9be5cd6e`；Agent main现 `64665cb0e5a0bca1cb4ff08147e0119aff769d6b` 已精准提交33路径、clean；BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada` 本波实现仍未提交。不能用默认离线测试或上一切片完成替代整产品验收。
