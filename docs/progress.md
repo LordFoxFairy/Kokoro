@@ -1,3 +1,7 @@
+### R44-Billing 精准返修冻结与 tests-only 卡
+
+两个P2已独立关闭，Root最终五doc SHA复核通过：TECH637edb67/API9db0a457/DATAf0ae2f58/CURRENTd7595fda/原第五baf87ae；审查期间API采样9cf82446发生漂移，Root初验断言失败即暂停tests，采用原worker停写后的最终9db0a457重新核验，未在失败时宣称五SHA通过。最终API显式credit.module DI与24/24/R01–18边界保持，原body保留。WIN06后继正式仅授新增 apps/kokoro-billing/test/integration/credit-read.test.ts，R01–18（含wrongtenant journal/负累计/非法row failclosed），Node24可编译窄接口/typeof能力断言；原source/tests/codec/机器SQL/gen/deps/Git锁。worker只静态门，Root自有SCHEMA_ADMIN_URL资源；能力RED与实际业务RED分开，不冒充walletHTTP/赠送/费用已闭环。
+
 ### R44 Root 发布后置门已通过
 
 新51条metadata独立0P0/0P1/0P2、51/51 Gitblob匹配（49Web＋2System）；仅一条已删除旧project-create schema的evidence改为真实新project.ts。Root正确两contracts文件实际88passed/47.00s、现checkpoint CLI PASS/exit0、topology exit0；日志/tmp/kokoro-root-r44-{published-pin-focused,published-pin-green,topology}.log。新的pub后metadata仅此focused门，不把此前1122full称为pub后再次全量；3active13broken0illegal保持。Agent额外组件由WIN03实际5passed0skip0fail0.24s，MCP loopback线程退出/egress恢复；不是typed授权/真实推理/费用通过。Root此次只集成两个owner gitlink、inventory及三台账，uv.lock/AgentP3B/BFF/Billing/Scheduler在途修改不暂存。
