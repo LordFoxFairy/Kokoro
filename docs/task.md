@@ -1,5 +1,9 @@
 ## PARALLEL-EXECUTION-NEXT：三条线并行推进（2026-10-01）
 
+当前续派权限（Web交付Root22645dd3后）：Agent唯一writer已首版统一finalize，149关键unit由writer通过，Root尚待冻结整owner实测；许可增加现tests/conftest.py为同一自有schema提供Run/Chat fixture。独立reviewer审变化source，未作最终放行。BFF三设计按Root裁决收敛后授tests-only RED：现test/{agent-dispatch-outbox.test.ts,agent-http-wire.test.mjs,schema-governance.test.mjs,chat-facts.integration.mjs,agui-projection.integration.mjs}，实际stat确认5路径；不存在的agent-dispatch-outbox.integration.mjs不新建、不列验收。production/DDL仍待Root见RED授权。
+
+BFF恢复裁决：sticky admission_unknown_seen，极速terminal可自leased/retryable/admitted原子收口；历史terminal dispatch挡旧Run迟到source，late settlement fence no-op。unknown耗尽不能只等source或告警：同durable outbox/Run/idempotency以30s cap available_at paced admission reconciliation；每claim单HTTP timeout、现每cycle16上限，不新run/不释放。Scheduled同session FIFO仍独立P0，不能由Conversation片声称全launch完成。
+
 本波交付：Web `54a1bd6df3cc6b8ce0309600de1af3162a782d5d` 精确4路径已提交，Root fresh2065全测试/90聚焦UI/219contract/50architecture/lint/typecheck/build0；preview14通过4条件skip/13.5s，不是用户3310/真实IAM/modelE2E。Agent变化树仅真实PG rollback诊断1通过，owner实现仍未冻结，不宣称完整GREEN。BFF候选3P0/2P1已返修（terminal先ACK、sticky unknown、历史terminal source、锁序/恢复），暂未授source/tests。全目标继续。
 
 续派实际阶段：Agent唯一writer进入四doc收敛＋tests-only RED；Web唯一writer实施WEB-EMPTY-STATUS，删除空会话虚构queued的未消费字段/死类型，现AppFrame/types/聚焦UI测试，不改协议或运行副本；BFF只读负责人完成FIFO任务图后转Agent事务独立审查。Root保留PG fixture、Git和最终验收。不是三个仓各写一套契约。
