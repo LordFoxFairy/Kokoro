@@ -1,3 +1,11 @@
+## R26 后继设计与旅程拒收（继续原 owner，不冒闭环）
+
+Web idle8冻结a2b1d1c Root2098/219/50/lint/typecheck/build exit0，但独立review1P1：首次hydrate尚未返回时receipt先到会提前开流，旧settled snapshot随后覆盖新user并可能重复开流/保持错active。原writer仅原8范围返修：initial hydration也defer exact receipt；snapshot owner active/该runterminal与pending输入/receipt原identity一致收敛后只开必要一次流，参数化completed/failed历史×receipt先到×snapshot含该runterminal/不含该run；保正文/canonical user/footer/active EOF/Stop/410/null late。当前8不提交/不同步；2098绿不是浏览器闭环。
+
+BFF execution-head D0独立2P1/1P2未放行：拟stream-first与现Artifact先Conversation锁反序，需盘点全部writer并确定唯一全局事务锁图及扩精确实施集；waiting解除不能任意更晚活动/HTTP ACK猜，需Agent owner受信durable pending集合/解除契约与同RR pending_pauses动作事实。四docs仅批准prefix继续返修，不改生产/机器/SQL，4保护suffix原样；不得把owner缺事件半实现成waiting active。
+
+Agent原owner下一只读 AGENT-HITL-DURABLE-SOURCE-AUDIT，基线已验af45817+P3B四docs冻结；调查现固定source/interrupt/resume真正pending集合/处理结果/持久事件，是否有合法可信完整解除marker、partial审批/unknown ACK/拒绝/取消/terminal/重启。只读代码/机器/owner设计，不写/Git/基础设施/provider；以实际contract说明最小owner-first后继，不能在BFF发明Agent事件。P3B依赖方案仍独立设计待Root审，当前不创建fork/依赖/额外服务。
+
 ## R26 Root 集成与下一并行任务卡
 
 Root已暂存/核本波3gitlinks+consumer committed来源+同三台账共7路径；topology、当前checkpoint exit0，相关治理三文件 **95 passed（46.26s）**（/tmp/kokoro-parallel-r26-{topology,checkpoint,tests}.log）。旧uv.lock/Billing5docs/BFF495草案不暂存，状态3active/13broken不擅改。此证据只源组合治理，不是全部owner组合运行。

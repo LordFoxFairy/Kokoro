@@ -1,3 +1,11 @@
+## R26 本波收尾与实际并行（2026-10-01）
+
+已验并推：Agent af45817（Root真PG43/43、默认1649/6/234、独立wheel）；BFF d6b7da5（Root真PG/Redis59/59、静态563/0/1）；Web c83f1b4（2096/219/50及原3问题review0/0/0）；Root0ffe63bb三gitlinks/committed inventory、治理95/95/topology/checkpoint。当前旧运行BFF未切fresh schema，不宣称新后端组合已上线。
+
+后继Web idle8 Root全check2098绿却独立1P1（initial hydrate/receipt竞态）拒收，仍未提交/同步，原writer继续8路径；BFF execution-head四D0独立2P1/1P2（锁反序、waiting可信解除及pending_pauses），只修保护prefix并等Agent owner契约；Agent P3B四D0候选待依赖与接口门，原负责人正只读HITL durable source真实audit支持BFF。三路均已实际续派，不新建重复计划，不将review失败隐藏或降门。
+
+现运行页面history额外genericRunerror已为0，但历史续聊仍受idle终态重连影响，证据/tmp/kokoro-web-r26-idle-reconnecting.jpg；临时浏览器tab18已关，未重启用户PID65590/改变配置，无新Root后台进程、临时数据库全部回收。完整Wave0–7、正规登录/连续真实模型/刷新/文件/审批/正规积分及支付最后总goal继续active。Billing5docs、Rootuv.lock、BFF原495草案继续保留。
+
 ## R26 Root 集成与下一并行任务卡
 
 Root已暂存/核本波3gitlinks+consumer committed来源+同三台账共7路径；topology、当前checkpoint exit0，相关治理三文件 **95 passed（46.26s）**（/tmp/kokoro-parallel-r26-{topology,checkpoint,tests}.log）。旧uv.lock/Billing5docs/BFF495草案不暂存，状态3active/13broken不擅改。此证据只源组合治理，不是全部owner组合运行。
