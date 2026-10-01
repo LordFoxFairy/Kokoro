@@ -1,3 +1,7 @@
+## R31 原Agent从真实RED进入持久事务核代码
+
+Root实际PG6fail缺record_pause（非collection），五rollback尚未到达，自有DB已drop。独立RED审P1序列化链/P2完整公开source已具名；批准同task.md精确生产子集由原owner实现并同时补断言，不再只停设计。机器4发布/完整消费者/桥及原P3B未授权；Billing独立reserve测试在WIN06继续，Root其他四局部owner已验交付不等于整目标完成。
+
 ## R31 Root 组合验收与提交范围
 
 Root 拓扑与固定w1e-iam07 checkpoint均actual exit0；四治理门首轮385pass/1fail为Scheduler已验commit后的字面SHA过期，保留原日志。仅现test_contract_compatibility.py将精确SHA升级4abacf9，digest/owner/状态与其余断言不变；fresh重跑 **386/386（50.29s）**，/tmp/kokoro-r31-root-governance-r2.log。80处四owner evidence从当前已提交blob核SHA，digest0变化，ASCII serialization与3active/13broken保持。Root只提交四gitlink、inventory、该一测试与同三台账，保uv.lock/BFF8/Billing5/AgentP3B及三RED测试。

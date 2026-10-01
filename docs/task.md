@@ -1,3 +1,12 @@
+## AGENT-HITL-P2-CORE-GREEN-R31：原 owner 转入生产事务核
+
+基线Agent0245a36＋RED manifest e5be36b6，Root真实PG6fail/0skip且ownedDB已drop；独立RED审0P0/1P1/1P2。原agent4_scope_gate_r19 Astra仍唯一writer，Root审查/PG/Git独占。不是完整36放行、不是后继22、不是半4发布。
+
+明确允许生产子集（均36候选内）：database/schema.sql；src/kokoro_agent/domain/run/{interactions,repositories,repository}.py；domain/chat/{models,projection}.py；infrastructure/{postgres_run_interactions,postgres_run_repository,postgres_run_admission,postgres_run_leases,postgres_run_context,schema}.py；interfaces/http/ingress.py；execution/runtime_profile_sources.py；protocol/{control,events,__init__}.py；tests/support/fakes.py。仅一个新普通生产文件postgres_run_interactions.py，复用现目录；Row/codec在本文件，五port与真实事务不与native桥混责。
+测试仅原三RED＋现tests/unit/execution/{test_interactions,test_runtime_profile}.py、tests/unit/chat/test_projection.py、tests/unit/http/test_control_receipts.py，以及原四docs批准HITL前缀；P3B完整suffix、原8 native proof及其他222来源保护（已授权源变更除外）。机器OpenAPI/provenance/生成发布、本批未列26内路径、真实bridge/supervisor/消费者22、Billing/BFF/资源/Git禁止；需要范围外真实依赖先具名报告，不加alias/fallback。
+
+实施条件：先在本批修正RED审P1，accept必须消费真实Ingress command request_json经正式typed decoder的同一canonical请求，不手造第二Submission；独立读取核stored bytes/digest/pause identity。P2：真实waiting/resuming持久source全payload过候选ChatInteractionState模型，核revision/ref/原group顺序，无任意私有locator/decision bytes。随后按批准D0实现record_pause/accept_resume/start_resume/mark_resume_unknown、Run-first admission/terminal/purge必要锁，三事实同连接/fence/锁后DBclock、精确historical source、StartedResume唯一许可，TIMESTAMPTZ(3)。能力落地后Root运行6真PG及新增真正start/replay/lease/terminal竞争测试；旧3契约RED继续明确保留直到后继完整4生成/桥/消费者一次cutover，不为全门绿复用旧event或兼容寻址。Worker单pure进程/PG仅collect，Root亲建资源，冻结逐file hash/已到达与未到达断言，不提交未完整发布4。
+
 ## R31 Root 组合验收与提交范围
 
 Root 拓扑与固定w1e-iam07 checkpoint均actual exit0；四治理门首轮385pass/1fail为Scheduler已验commit后的字面SHA过期，保留原日志。仅现test_contract_compatibility.py将精确SHA升级4abacf9，digest/owner/状态与其余断言不变；fresh重跑 **386/386（50.29s）**，/tmp/kokoro-r31-root-governance-r2.log。80处四owner evidence从当前已提交blob核SHA，digest0变化，ASCII serialization与3active/13broken保持。Root只提交四gitlink、inventory、该一测试与同三台账，保uv.lock/BFF8/Billing5/AgentP3B及三RED测试。
