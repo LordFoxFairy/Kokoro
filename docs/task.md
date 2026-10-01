@@ -1,3 +1,11 @@
+## WEB-CURRENT-COMPOSER-READ / P1 / 当前视觉问题优先（2026-09-30）
+
+- 用户再次指出输入框方框与对话布局；当前任务先定位用户实际页面，不继续用后端门禁替代 UI 验收。
+- 基线：Root main cc2e2df924f9009595773b3e0ff739ceb4bf367e；Web main 8205fa003d5ea269741df359d4d6881dd0f1e0f8 clean。Root负责当前IAB，agent_failure_cursor_owner只读样式/滚动审查；没有Web写入授权。
+- 本轮实际：IAB3能列出用户tab6，但绑定/DOM读取均在页面焦点命令超时；未新增tab、未换浏览器或绕过控制工具。未取得当前截图/computed style/rect，截图请求仍待用户回复。
+- 静态结论：Textarea border/shadow/ring有现Composer覆盖；内控件另有outline，尚未定位用户所指元素。短线程顶部纠正只覆盖2项，1/3+项与delivery/HITL垂直几何缺测试；现纯测试不足以证明页面正确，不据此盲改。
+- 下一验收：当前截图定位内框；实际blur/focus/forced-colors computed style；短/长线程滚动与几何、窄屏、消息事实保持。确认根因后单一Web writer最小RED→GREEN，再由Root浏览器复验。状态为未验收，不能声明已修复。
+
 ## BFF-AGENT-FAILURE3 / 已验收切片与后继（2026-09-30）
 
 - BFF main ccb8e144d72e35d90f9edc23f8b3ed0c82fde98d clean；唯一owner实现、两独立审查、Root全门与真7integration47/47已完成。并非整个BFF/Wave全闭环；当前完整standard FAIL137/BFF31。

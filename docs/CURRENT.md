@@ -1,3 +1,9 @@
+## 当前输入框与对话布局：未验收（2026-09-30）
+
+本轮以用户当前UI投诉为优先。Web main8205fa003d5ea269741df359d4d6881dd0f1e0f8 clean，无源码/运行副本变更。IAB3可列tab6，但用户页绑定/DOM读取在焦点命令均超时，未取得fresh截图/computed style/rect；未另建tab或换控制工具。只读审查发现现CSS已经清除内Textarea边框/阴影/焦点环，但独立按钮轮廓及短线程锚定仍需实测；源码字符串测试不是视觉证据。当前截图请求待回复，不宣称输入框或整体布局已修。
+
+Root cc2e2df924f9009595773b3e0ff739ceb4bf367e后relay/checkpoint/topology实际exit0，最后session15359已消费；这只确认上轮BFF来源集成，不证明UI或全产品E2E。本轮未运行新Web门禁，未启动服务/操作provider或数据库，Billing五docs/uv.lock保护不变。
+
 ## BFF-AGENT-FAILURE3：owner源码已提交，组合待闭环（2026-09-30）
 
 Root组合提交 `8ed71e9e211c1e6ca1504aaa67df18a122b11545` 后，strict IAM relay、指定current checkpoint与topology三CLI实际PASS/exit0，均已完成且无待消费进程。日志 `/tmp/kokoro-bff-failure3-root-final-{iam-relay,checkpoint,topology}.json`。原提交前HEAD/index差异exit1保留作阶段证据，未改门。Root全量1103passed/3skip结果仍绑定同一源码/来源；Billing五docs与Root uv.lock继续保留。整个goal仍active，Web消费与正式原user重试是下一条关键链。

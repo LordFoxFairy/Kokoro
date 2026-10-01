@@ -1,3 +1,7 @@
+## 当前UI投诉：只读排查完成，视觉仍未验收（2026-09-30）
+
+用户指出输入框方框与布局。Root当前IAB3 tab6绑定及DOM读取实际均超时；未新增页面、未改运行副本、未启动进程。只读agent_failure_cursor_owner完成现Web8205fa0级联/滚动审查：未证明内输入框根因，发现computed-style/pixel门与非2项短线程垂直几何覆盖缺口。当前Web无代码变更；不把历史截图/源码门作当前视觉通过。需恢复实际页面观测或接收当前截图后定位。最新Root cc2e2df9后relay/checkpoint/topology三个CLI均已消费exit0，仅来源组合门通过，与本次UI无关。Billing/uv.lock继续保留。
+
 ## BFF-AGENT-FAILURE3：owner源码已提交，组合待闭环（2026-09-30）
 
 Root组合提交 `8ed71e9e211c1e6ca1504aaa67df18a122b11545` 后，strict IAM relay、指定current checkpoint与topology三CLI实际PASS/exit0，均已完成且无待消费进程。日志 `/tmp/kokoro-bff-failure3-root-final-{iam-relay,checkpoint,topology}.json`。原提交前HEAD/index差异exit1保留作阶段证据，未改门。Root全量1103passed/3skip结果仍绑定同一源码/来源；Billing五docs与Root uv.lock继续保留。整个goal仍active，Web消费与正式原user重试是下一条关键链。
