@@ -1,3 +1,33 @@
+## R27 Root 当前集成验证
+
+Root再次对本片gitlink与committed inventory执行topology/checkpoint（exit0）及三治理文件 **95/95 passed，37.19s**；日志 /tmp/kokoro-parallel-r27-{topology,checkpoint,tests}.log。仅Web30055e8/inventory/同三台账共5路径提交；未暂存Agent/BFF文档候选、Billing5docs、Rootuv.lock。旧应用后端、计费503/404与各owner依赖尚未整体验收，不更改edge3/13事实。全部Root测试句柄已收，无新增服务或共享数据重置。
+
+## R27 Agent 发布版本裁决（不缩减完整能力目标）
+
+Root批准版本顺序：完整HITL owner独立breaking切片发布 **Agent HTTP4.0.0 / 原/v1单路径clean-slate**（机器目前3.0不变，实际schema/protocol/native恢复/RED/真PG/包与Root集成门全部通过后才发布）。不以3.1掩盖required pause revision/ref与payload替换，也不把HTTP4号冒充完整架构第四阶段已完成。fullscope/retry/effective-native/retention仍在既有全goal推进；后续再breaking时使用Agent5.0.0（此处只记录版本策略，不批准源码/依赖）。BFF public4.0与未来4.1独立治理。Agent HITL D051精确候选路径待三面审查，当前只四docs，库fork/生产SQL/机器实现未授权。
+
+## R27 浏览器实际修复验收与剩余组合缺口（2026-10-01）
+
+Web **30055e8947b1df679785c3bff43c358291ba84ba** main已推，8路径局部订阅修复；Root fresh完整check exit0：2103/2103、contract219、architecture50、lint/typecheck/build通过（/tmp/kokoro-web-idle-terminal-r26-rereview-root-check.log），独立0/0/0。仅committed machine.ts同步现PID65590副本，前后bytes核对，不重启/改配置。真实IAB临时tab19在历史会话首次打开、输入、刷新后：原完整正文/单个真实失败footer保留，无额外generic error、无重连/不可用，输入可用且草稿发送按钮enabled、水平溢出false；刷新网络观察完整未截断、snapshot200，零/events请求。证据 /tmp/kokoro-web-r27-idle-input-ready.jpg。仅输入未发送，已清草稿/关临时tab；没有新模型或计费交易，不能冒称真实推理及积分已通过。
+
+浏览器同轮真实剩余：/api/session/billing/summary 503（两请求）、/api/session/agents 404、/api/system/runtime-manifest 404；完整组合仍需owner契约/固定pin/运行切换验证。BFF queued首次快照、审批revision/native恢复、正规积分、文件/项目/任务与全Wave0–7目标保留。BFF D0复审新2P1/1P2按精确GC/cancel writer与Root public4.0.0 corrective裁决返原owner四docs；Agent HITL四docsD0独立并行在写，不放未审源码/SQL/contract。
+
+Root consumer49个Web来源仅从30055e8 committed blobs更新，仍3active/13broken，不抹掉失效edge；仅本片Web gitlink/inventory+三台账进入下一Root提交，Billing5docs/Rootuv.lock/BFF495/P3B与HITL候选不夹带。
+
+## R27 BFF 单路径发布裁决与返修卡
+
+用户明确尚未上线、不兼容旧代码/数据；BFF当前canonical public3.0.0、无本地release tag，现正式代码和Web已有3.0消费。Root裁决 execution-head breaking发布采用 **public4.0.0、原/v1 Product API单路径corrective baseline**，不是backward compatible；删除active_run旧schema/consumer，owner artifact先提交、Web锁步固定commit/version/digest，fresh组合验收后激活；不另造仅snapshot/v2或全v1/v2双轨。未来retry目标顺延4.1.0，仅在owner retry前置通过后发布，不把旧候选3.1当可用。本裁决仅设计版本，机器/生产/SQL尚未放行。
+
+BFF-EXECUTION-HEAD-D0-R27 / 原bff_fifo_owner_r9 sole docs writer / maind6b7da5：独立review新2P1/1P2返修，仅现四docs批准prefix。把全部事务入口精确到文件/函数，包括agui-consumer-repository GC/claim、delete及有无Chat状态变化的cancel/retry；确定Conversation一次全排序→stream→dispatch，尾部对象由同Conversation锁串行或明确顺序。无通配“必要helper/实际文件”，新增source未知则标依赖而非假精确。修版本/root裁决说明；完整pending应随Agent当前D0的revisioned atomic collection/resuming校准，不先自创opened/resolved wire或宣称server partial支持。原4suffix/495行保护，无源码/SQL/machine/Git/基础设施授权。Root复审后才放可独立代码片。
+
+## R27 并行推进任务卡（2026-10-01）
+
+- WEB-IDLE-TERMINAL-P1-R26：8文件7ae902e1冻结，独立复审0/0/0；Root重新完整门与现浏览器验证，未提交、不提前称闭环。原pnpm从Root --dir调用命中Root12.3.4导致版本拒绝，现回正确Web工作目录使用本仓固定11.25.0，不修改版本门。
+- AGENT-HITL-D0-R27：Agent owner agent4_scope_gate_r19 / Astra，main af45817＋既有P3B四docs候选；仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT现四docs允许补HITL三面D0，保P3B方案而不误称已批准。目标：完整revisioned pending集合、validation刷新、durable resuming与native消费/重暂停、checkpoint独立提交的恢复桥与故障矩阵。必须引用实际Chat source已有durable interaction，不误称完全无持久化。禁止源码、SQL、机器协议、生成物、依赖、库fork、Git、共享基础设施；交付四hash、未决版本和精确后继范围，Root设计复审后才放实现。
+- BFF-EXECUTION-HEAD-D0-REVIEW-R27：只读审查 corrected 四docs prefix，以d6b7da5＋冻结prefix为基线；复核全局Conversation-first锁序、queued同事务cursor/identity、完整pending集合及Agent发布前置依赖，4原保护suffix不动。首次上线前允许正式版本增量的单路径clean-slate corrective方案作为Root拟裁决，待文档明确发布/删除/消费者pin门；无新/v2长期双轨、无machine实现授权。审查零写/Git/DB/服务。
+
+Root负责现Web验证/精确提交/源码同步与浏览器；Agent仅本仓docs writer、BFF只读review可并行。当前goal工具返回blocked（不是本波无动作），完整Wave0–7继续既有任务推进；本工具不提供改回active权限，不另建goal冒充。全owner组合、真实模型和正式积分旅程仍待验。
+
 ## R26 后继设计与旅程拒收（继续原 owner，不冒闭环）
 
 Web idle8冻结a2b1d1c Root2098/219/50/lint/typecheck/build exit0，但独立review1P1：首次hydrate尚未返回时receipt先到会提前开流，旧settled snapshot随后覆盖新user并可能重复开流/保持错active。原writer仅原8范围返修：initial hydration也defer exact receipt；snapshot owner active/该runterminal与pending输入/receipt原identity一致收敛后只开必要一次流，参数化completed/failed历史×receipt先到×snapshot含该runterminal/不含该run；保正文/canonical user/footer/active EOF/Stop/410/null late。当前8不提交/不同步；2098绿不是浏览器闭环。
