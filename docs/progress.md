@@ -1,3 +1,23 @@
+## R35 Billing 原 owner 正式进入终态代码 GREEN
+
+Root Node24.20 R2冻结两tests真PG **94fail/37pass/0skip（131，20.01s），exit1**；T05精确PID/barrier已实际到达，identical失败于重复audit4≠3，source竞争两者成功≠唯一，其余后段缺terminal source catalog明确。/tmp/kokoro-billing-terminal-r35-root-red-r2.log，前后fixture库集合同/CLEANUP_DIFF_EXIT=0。独立Sol delta0P0/P1/P2，原并发证明P1关闭；四R2整doc Root核同，不减失败门。
+
+BILLING-C1-TERMINAL-GREEN-R35：原WIN06 sole writer main5c45f22，Root资源/Git/审查。只准src/modules/credit/{credit.repository,credit.service,credit.types,credit.error}.ts与database/schema.sql；冻结两integration tests仅必要已批准矛盾报告后可修，不放宽断言。实现D0R2 single terminal_source_ref/CHECK/partial captured UNIQUE、所有动作/金额/来源exact replay零写、内部applied控制audit、positive journal exactly-one广查询后核account/amount、关系/amount integrity/Unicode opaque边界、固定锁序同事务rollback；旧account-wide lookup/无来源zero fallback删除。无新文件/HTTP/receipt/Metering/public/module/依赖/C3/P3B/旧兼容；原五dirty设计文档逐byte保护，本卡不改docs。先完成并冻结source/SQL通知Root，Root独占以现正规prisma:refresh/生成流程在自有fixture刷新database/generated/{schema.prisma,provenance.json}及ignored client；worker停写交接，不自行访问PG/Redis/provider。之后原writer离线静态+collect，Root真实131/必要回归/全门/独立review后只提交完整自洽切片，完整C1 expiry/C2/C3仍待后继。与Agent桥代码独立并行。
+
+## R35 Agent 原 owner 转桥 GREEN；Billing T05 冻结返审
+
+Agent独立Sol绑定5369a609四tests/四D0/27保护0P0/P1/P2，Root真实18fail/26pass。AGENT-HITL-NATIVE-BRIDGE-GREEN-R35：原Astra sole writer main0245a36＋已验P2，Root审/资源/Git。仅准database/schema.sql；src/kokoro_agent/domain/run/{interactions,repositories,repository}.py；新普通infrastructure/checkpoint_interactions.py；现infrastructure/{postgres_run_interactions,postgres_run_context,postgres_run_repository,schema,chat_mappers}.py；domain/chat/{models,projection}.py、protocol/events.py；agent_factory.py、execution/protocols.py、worker/{supervisor,main}.py、execution/runtime_profile_sources.py及hitl/input.py（原始validation值泄露实RED）；同四tests/四批准HITL前缀。D0R2接口/7ports/observation完整SQL/StartedResume唯一许可/同事务source/独立reader/unknown零调用/健康三读固定；若现文件不需改则缩减，实际需范围外路径先具名报告。不改机器contract/generated/依赖/P3B/原八nativeproof、不发布半4或兼容，不改其他owner，不运行PG/Redis/provider/服务/Git。允许一纯/静态进程，PGcollect；冻精确修改集、失败到达范围和保护。Root44真PG/适当回归后再完整4 artifact及消费者一次cutover；不将桥局部GREEN称整仓上线。
+
+Billing R35-R2仅修T05真实account行锁屏障：credit-metering新SHA2d937c4dfcfb6757a2e0fdab64bb13e7d61cc486e980ebcdc673f5525d442198，target-schema ead891d4不变；131名称不变、其余tests字节相同、303保护核同，workerstatic0/collect131。原WIN06停写。Root独占PG重跑131，原Sol只读helper/twoT05 delta关P1；真实RED及复审后立即授原四credit＋SQL/生成。无新任务中心/共享清理。
+
+## R35 Agent 桥真实 RED 已到达
+
+Root冻结四tests实际owned PG **18failed/26passed/0skip（4.61s），exit1**，/tmp/kokoro-agent-hitl-native-bridge-r35-root-real-pg-red.log。新18首失败明确1观察表不存在、17真实RunRepository bridge port缺失；原26全部保持通过，后段SDK/map/reconcile/竞争尚未到达，不冒称已证。自有agent_terminal_atomic_e3e9e16321fe4603 closed=true。原Sol在途独立审新四test与D0R2，原Astra停写待精准GREEN；与Billing T05返修并行，未启动3310或其他常驻服务。
+
+## R35 Agent 四测试冻结，Root 转真实资源与独立审查
+
+AGENT-HITL-NATIVE-BRIDGE-RED-R35冻结manifest5369a609（/tmp/kokoro-agent-hitl-native-bridge-red-r35-manifest.json），原Astra停写，无句柄；Root实核四tests/四D0/27protected hash一致。worker三纯文件实际30fail/35pass/3资源deselected，新增15 RED，PG44仅collect=原26＋新18，Ruff0/Pyright仅既有8error；不把未到达native后段断言当成功。Root现以原owned runner隔离临时PG执行完整44并回收自有库，独立原Sol只读四测试增量与D0吻合、Start许可/native证据/barrier/未知零重投审查；原八proof/P3B保持。暂不授生产/SQL/机器，真实RED与独立审到达后原Astra承接精准GREEN。与原WIN06 T05返修独立。
+
 ## R35 Root 集成门真实通过
 
 Web当前gitlink343aea36，inventory从HEAD committed blob核49处SHA升级、source/contract digest0变化，3active/13broken保持。首topology因未暂存新gitlink而expected checkout mismatch/exit1，日志保留；暂存精确gitlink后fresh topology PASS、固定w1e-iam07 checkpoint PASS，四治理 **386/386（50.43s），exit0**，/tmp/kokoro-r35-root-{topology-r2,checkpoint,governance}.log。只集成Web已验提交与inventory/同三台账；Root uv.lock、Agent候选、BFF8、Billing5与新tests不暂存。完整浏览器/正式账务审批链仍未验，goal active。
