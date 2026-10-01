@@ -5,7 +5,7 @@
 | 任务 | 负责人 / 允许范围 | 当前状态与放行条件 |
 | --- | --- | --- |
 | AGENT-TERMINAL-ATOMIC / P0 | agent4_execution_owner，gpt-6-astra，已交接停写；Root统一33路径提交。独立审查绑定最终hash，源码P0/P1=0、320保护文件不变。 | 本片已验收提交 `64665cb0e5a0bca1cb4ff08147e0119aff769d6b`。唯一finalize原子usage/outbox/Chat/终态/fence/cleanup；active delivery ACK/GC身份恒定、锁后DBclock、私有NACK审计严格重放、HTTP恢复。Root fresh PG database+HTTP135/135、15.58s；default1528通过/6跳过/192排除、57.97s；lock/format/Ruff/Pyright/contract/build均0。不是完整Agent4或真实provider组合完成。 |
-| BFF-FIFO-ATOMIC / P0 | web_failure_wire_review，BFF 唯一 writer；现 dispatch/projection/chat-delete/DDL、5测试及窄 architecture 门、四文档。既有四文档495行候选草案受保护。 | 当前3.0内部FIFO实现待验；HTTP ACK 只 admitted 不释放，terminal 同事务释放，sticky unknown 以同 Run/key bounded paced recovery，不把耗尽当未入场。Root fresh schema首轮0/3失败揭示两列错表，已返修；R2 2通过/1失败揭示null terminal误判，R3普通批已修、剩序列fixture错误（拒绝的10未消费、合法下一条仍从11开始）；独立审查另发现claim/fail的dispatch→stream与terminal/delete反锁序，以及failed历史source挡板遗漏，现writer返修并补真实两连接矩阵。生产/DDL已授权，不再是“仅文档/tests-only”。R7全7文件集成27通过/17失败/1取消（41.55s）：旧fixture无正式admitted head、旧自动expected/succeeded语义与分页/fence/GC/删除覆盖需整体对齐；并发barrier与零frame历史source仍待最后矩阵，writer与只读审查员并行分类，不删除安全断言。 |
+| BFF-FIFO-ATOMIC / P0 | 原web_failure_wire_review已停止写入并交接R8；新bff_fifo_owner_r9（gpt-5.6-sol）为BFF唯一writer；现 dispatch/projection/chat-delete/DDL、5测试及窄 architecture 门、四文档。既有四文档495行候选草案受保护。 | 当前3.0内部FIFO实现待验；HTTP ACK 只 admitted 不释放，terminal 同事务释放，sticky unknown 以同 Run/key bounded paced recovery，不把耗尽当未入场。Root fresh schema首轮0/3失败揭示两列错表，已返修；R2 2通过/1失败揭示null terminal误判，R3普通批已修、剩序列fixture错误（拒绝的10未消费、合法下一条仍从11开始）；独立审查另发现claim/fail的dispatch→stream与terminal/delete反锁序，以及failed历史source挡板遗漏，现writer返修并补真实两连接矩阵。生产/DDL已授权，不再是“仅文档/tests-only”。R7全7文件集成27通过/17失败/1取消（41.55s）：旧fixture无正式admitted head、旧自动expected/succeeded语义与分页/fence/GC/删除覆盖需整体对齐；并发barrier与零frame历史source仍待最后矩阵，writer与只读审查员并行分类，不删除安全断言。 |
 | 独立审查 / P0 | agent4_lifecycle_review，gpt-5.6-sol，只读变化树；无写/Git/数据库/服务权限。 | 已定位 Agent active delivery GC P0并交最小方案；Agent33hash终审与Root门已闭环；现并行BFF完整失败分类与分页/fence/GC原义保留审查。BFF仍须最终冻结hash与真实门，不能因局部PG通过放行。 |
 | WEB-CHATGPT-UX-READY / P1 | agent4_execution_owner已完成Agent交接后续派只读Web；main54a1bd6，现Thread/thread.module.css/失败测试、composer与rail行为地图。 | 与BFF返修并行准备成熟组件复用与精确行为断言；详细视觉确认尚未回复，暂不写代码/启动浏览器或服务/发模型。公开terminal retry未发布，不用新user或假按钮替代；先交Root独立slice/文件集。 |
 | 集成与真实验收 | Root：唯一 Git/index writer、共享资源管理、现task/progress/CURRENT；不抢写子仓授权范围。 | owner fresh PG/Redis + 全门、独立审查通过后才精准提交，再按owner contract依赖推进消费者与真实浏览器/provider组合。临时数据库每次finally回收，Redis不flush；用户3310不重启。 |
@@ -21,6 +21,8 @@
 Root30个Agent committed来源刷新到64665cb；机器contract/generated/schema摘要不变；本次TECH文档及既有delivery_outbox验证源两处摘要按committed blob更新。inventory状态仍3active/13broken；未改状态门或historical checkpoint。全仓标准137缺口为上一审计，本轮未重跑全审计；未称所有owner或UI正式闭环。
 
 Root 本次集成 fresh：精准暂存 Agent gitlink + 三份台账 + inventory 五路径后，current checkpoint/topology均PASS/exit0；相关 Root三文件治理测试95/95（46.09s）通过，日志 `/tmp/kokoro-terminal-atomic-root-integration-{checkpoint,topology,tests}.log`。未重跑全Root1103测试或全标准审计，不把95项称完整Root门。其他Root uv.lock、BFF/Billing草案未暂存；Agent committed33hash在集成后仍一致。
+
+BFF R8交接：`/tmp/kokoro-bff-fifo-atomic-worker-r8.json`，26路径manifest `215c11952984c174875b27080cad3dbd89694a716417231f3bafc8552a97a2ba`；只离线66unit/build/lint通过，不是最终集成。旧writer上下文预算临界且已明确停写，Root改派新上下文 bff_fifo_owner_r9，沿相同26路径补约8个正式head fixture与4组真实barrier、零frame/mixed/session-null矩阵；不并发两个writer、不扩大owner/wire/DDL，不重复PG3当完成。Root仍唯一Git/设施/最终验证。
 
 ## AGENT4-DOC-CORRECTION：设计候选已提交；缺陷尚待源码修复（2026-10-01）
 
