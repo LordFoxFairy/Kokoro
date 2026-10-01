@@ -1,3 +1,11 @@
+## R30 十会话已创建并核实运行
+
+用户明确要求10窗口；已创建10个独立local任务会话，首次wait_threads逐个确认active/inProgress，threadId在同task.md WIN01–10卡。5个独立owner有界局部TDD writer＋5个只读审查面，原Agent writer不变且P2四docs已冻57140f75；WIN03承接独立审，Root重验/集成/基础设施/E2E独占。仅任务已运行，不声称已有10份修复或完整闭环。不新开兼容/v1补丁，不重启共享服务，不新建第二计划中心。
+
+## R30 当前推进
+
+Goal现已active，完整Wave0–7保留；上一goal轮0245a36及真实门是progress。原Agent P2-D0 writer仍running，Root不重复派发或抢写；并行Sol只读核原admin-grant的IAM target前置（范围见同task.md），不抢跑Billing/v1或造余额。
+
 ## R29 Billing只读审计已纠正收口
 
 Root独立核v2 digest eb95b6dd与IAM仅credit.consume schema；已有单位1Credit=1e6保持，无新产品决策。唯一路线B8-M3/C1/C2/C3/M5，v2现字段足够但Nest runtime/BFF可信身份/固定consumer尚未完成；正式grant等待IAM target artifact。详见同docs/task.md当前结果。未动五受保护docs/源码/资源、不补v1、不免费造余额；原Agent P2四设计前缀仍在途。

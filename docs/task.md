@@ -1,3 +1,25 @@
+## R30 用户明确要求十个可见任务会话并行
+沿现Wave0–7任务，不建第二计划中心；项目Kokoro、local同checkout，Root独占所有Git/index/提交及基础设施/E2E。创建任务会话不等于十个都已运行，逐个记录threadId和真实状态。现Agent原writer不变，WIN03只读；BFF8dirty/Billing5dirty/AgentP3B/Rootuv.lock保护。
+有界局部修复窗口仅当前已批准三面下、现有文件/相邻测试、无owner/契约/schema/依赖变化的小bug允许TDD；任何新文件/结构/协议或复杂重写先只读交精确范围待Root放行。同repo单writer、每窗先一个切片/一个受限纯测试进程，不再spawn/新会话，不跑全仓大门/外部资源。
+| ID | 会话任务 | Owner/模式 | 范围 | 初始状态 |
+|---|---|---|---|---|
+| WIN01 | Kokoro · Web 输入与会话交互 | kokoro-app/有界局部修复 | 输入框/IME/发送状态、会话列表与Project关联交互；不改Billing换算、generated/API、session安全或计费。不复刻新的聊天框架。 | thread 01a0f887-9099-7743-8e21-2e865aac3aec / local / 已观察inProgress |
+| WIN02 | Kokoro · BFF 项目与定时任务边界 | kokoro-bff/只读依赖审查 | Project/Conversation/ScheduledTask独立身份与调用链；核当前完整execution_head方案及Agent4依赖。保护全部8个脏文件，禁止写文件、生成、修改现4个RED测试。给真实业务缺口和最小正式后继测试切片，不虚构Agent字段。 | thread 01a0f887-9487-7233-90d1-d401b3244086 / local / 已观察inProgress |
+| WIN03 | Kokoro · Agent HITL 独立审查 | kokoro-agent/只读设计审查 | 审当前冻结P2四docs：manifest /tmp/kokoro-agent-hitl-p2-d0-manifest.json SHA57140f75bf5c88bac3adc715eb312d6c322aba27de4e4db7d180e6db295a4228，基线0245a36；快照/历史source/started_now/Run锁/GC及36+22实际依赖。原agent4_scope_gate_r19是唯一writer，你零写/零测试/零资源，不复写完整4、不授旧alias。给P0/P1/P2及首真实TDD放行条件。 | thread 01a0f887-9797-7021-9b00-afae40b8429d / local / 已观察inProgress |
+| WIN04 | Kokoro · IAM 登录与授权前置 | kokoro-iam/只读设计审查 | 正规登录及已有Billing-admin-target前置：现credit.consume非grant，机器/委托/actor/session/target安全。先核Root任务IAM-BILLING-TARGET-READ-R30与Billing已批准admin grant，提出最小owner D0。重点判定积分授予应由平台运营权限还是租户管理员控制；该产品权限未裁决，不默认赋owner/admin造积分。不得写文件或生成SDK。 | thread 01a0f887-9a9f-7b00-a2a6-e455e8b01f95 / local / 已观察inProgress |
+| WIN05 | Kokoro · System 模型路由可靠性 | kokoro-system/有界局部修复 | 现model-catalog模型选择/路由及runtime-manifest纯规则的真实缺口；Rootseed产品host修复已在378acfae，不重复实现。禁止访问provider、私有credential/profile或新建配置垃圾桶。 | thread 01a0f887-9e01-7e11-8e18-7158dd0ea192 / local / 已观察inProgress |
+| WIN06 | Kokoro · Billing 正式积分组件 | kokoro-billing/只读组件审查 | 沿既有B8-M3/C1/C2/C3/M5检验credit/metering整数精算、reserve/capture/release、receipt/ledger事实与未接线边界；1Credit=1e6已定，收费倍率另义。保护5份脏docs；不写源码或contract、不改v1、免费fallback/SQL入账/admin授权。报告最小C1下一实际代码切片及失败测试，支付最后。 | thread 01a0f887-a1b4-7603-bcdd-cdead53e1857 / local / 已观察inProgress |
+| WIN07 | Kokoro · Platform Skills 与 MCP | kokoro-capability/有界局部修复 | 现个人Skill安装、Agent授权消费与MCP控制面的既有纯逻辑局部缺陷；物理仓仍kokoro-capability，目标platform，不自行改仓名/gitlink或协议。不得跨仓导入/恢复归档实现。 | thread 01a0f887-a505-7ee2-a39e-d3eef6a83dc1 / local / 已观察inProgress |
+| WIN08 | Kokoro · Storage 文件与作品 | kokoro-storage/有界局部修复 | 现上传/资产/作品生命周期与个人可见性安全投影的纯规则局部缺陷；不读外部对象存储/启动MinIO/ClamAV、不改schema/API、签名URL策略或跨owner权限契约。 | thread 01a0f887-a8ad-7603-9225-abae06744fc6 / local / 已观察inProgress |
+| WIN09 | Kokoro · Scheduler 独立任务恢复 | kokoro-scheduler/有界局部修复 | 现schedule/occurrence/dispatch/重启重放/misfire/timezone纯状态规则局部缺陷；不拥有BFF ScheduledTask，不把Conversation和Run混成任务；不改gocron版本/契约/schema或启动worker。 | thread 01a0f887-abce-7263-8eaf-8ab5306a7695 / local / 已观察inProgress |
+| WIN10 | Kokoro · 端到端验收与进程审查 | Root/只读验收准备 | Root受管3310进程停止事实、现正式浏览器旅程/owner E2E runner的固定来源、隔离资源/句柄/清理边界。核有哪些测试真能证明完整用户路径，给下一可执行清单；不运行浏览器/infra/provider/集成测试、启动重启服务或写Root文件，Root唯一集成与E2E执行者。 | thread 01a0f887-afa6-7480-b63a-8d94792302a6 / local / 已观察inProgress |
+
+## R30：继续原目标与独立 IAM 前置审计
+
+上一goal工作轮为progress：Agent0245a36生产纯规则已集成Rootc3700724，真实1695/386门改变下一执行范围；上一用户问答仅澄清展示不是扣款，不计代码进度。本轮get_goal已**active**，覆盖旧blocked记录，完整Wave0–7不变。Rootmain40c02654；Agent原P2-D0 writer仍running，不重复启动。
+
+IAM-BILLING-TARGET-READ-R30 / billing_chat_read_audit_r29 Sol只读 / IAMmain e3c035b、Billing63e0ab6+保护5docs。只核既有BILLING-ADMIN-GRANT所需admin/current-scope/canonical target：现IAM auth/member/role/permission/billing contract真实可复用入口，给唯一owner operation设计与最小三面/测试范围供Root裁决。无写/Git/DB/Redis/provider/service；不提前做Billing消费、默认授admin、不虚构scope/充值。依据Root AGENTS、CODEBASE_MAP、TS/SQL手册、IAM三面/current与Billing已批准admin-grant段；保两仓所有变更。与Agent事务设计独立并行，后继机器/代码必须IAM owner门通过后明确授权。
+
 ## BILLING-CHAT-READ-AUDIT-R29：纠正后只读审计已收
 
 未改Billing/BFF/Web/IAM源码、五受保护docs或资源。Root核实Billing v2 artifact digest **eb95b6ddf4c3e611ff3eb065bcb39dad97d47cbf2203f8d6fd8105f17a5b42ad**；现getMyCreditAccount提供available/held/status，字段足够但只有userBearer且runtime未接线，不能直接宣称BFF消费通过。IAM **e3c035b99cf9479ac8357c7d38147f1541dcbcac**当前schema严格action=credit.consume，没有admin任意target/current-scope；正式grant入账仍等owner机器能力。沿既有B8-M3/C1→C2→C3→M5：C3现v2 operation收敛BFF可信身份/Nest单runtime/删旧pg-v1，发布后BFF固定pin与专用summary、Web删quota并统一10^6、最后Root生命周期。原审计扩v1建议已撤回，不授权新read API，不新建Billing支线；无新的产品决策。历史503只诊断，当前3310offline不混称在线503；不得零值/免费/直接SQL补账。
