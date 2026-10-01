@@ -1,3 +1,19 @@
+
+R21 Root指针集成复验：精准暂存6路径后topology与当前checkpoint均PASS/exit0；相关三文件治理测试 **95/95（51.58s）**，日志 `/tmp/kokoro-parallel-r21-topology-final.log`、`/tmp/kokoro-parallel-r21-checkpoint.log`、`/tmp/kokoro-parallel-r21-tests.log`。未运行全Root/九owner完整门，不纳BFF/Billing/uv.lock。
+## PARALLEL-R21 / R22：两仓代码已验收，BFF 真PG拒收返修（2026-10-01）
+
+| owner | 本次实际结果 | 当前交付状态 |
+| --- | --- | --- |
+| Agent | Root离线完整门exit0：lock/sync、Ruff254/check、Pyright0、contract/generator、pytest **1588 passed/6 skipped/192 deselected（58.24s）**、wheel/sdist；Root wheel四资源逐byte核对。独立审查11/11hash、P0/P1=0。 | 11路径 `ec65d04f9915580eb57629126fffffc20f4c4033` 已提交推main；仅pure profile/共享选择，不是完整manifest/worker freeze/scope/native/4.0。P2-D0四设计已续派。 |
+| Web | Root完整check exit0：contract **219/219**、architecture **50/50**、全测试 **2074/2074**、lint/typecheck/build成功；独立审查6/6hash、本片P0/P1=0。 | UI5 `47ac6cdbde0452f6d3600851af30edaef2c2b936`、OIDC1 `d2b717501349c8d8c43c13c7682e218f999297e3` 分片提交推main。逐轮复制/ghost静态框和fixture生命周期修复；不把它称生产auth间歇根因已解决。后继失败归属D0四设计已续派。 |
+| BFF | Root稳定dist真实8files PostgreSQL/Redis **44 passed/7 failed/1 cancelled/0 skipped（43.72s）**，不是writer552/0/1离线绿的验收；独立review P1=8。 | maine7a325ce不提升，27路径候选不提交；R22原owner返修HOL/source lossless/strictfailure/consumer clock/backoff/3xx/旧tests/CURRENT。保护四docs原495行；chat-facts仅reset新三表获准。 |
+
+Root日志：Agent `/tmp/kokoro-agent-profile-p1-root-r21-check.log`；Web `/tmp/kokoro-web-footer-oidc-r21-root-check-r2.log`；BFF `/tmp/kokoro-bff-scheduled-r21-root-integration-final.log`。Web旧2072/1失败保留：undefined Location导致请求首页，500并非callback失败的证据；新fixture禁止非法target并输出受控首坏阶段，未提高timeout。首轮zsh status包装错误保留，修正rc变量后完整Rootcheck才绑定exit0。BFF首诊断与重建dist重合不作验收，以上正式第二轮稳定dist仍失败，自有DB已回收/Redis14剩0。
+
+3310现监听PID65590仍原后端，Root仅把已验Webcommit d2b7175的 **466 tracked src** 逐hash同步自有Next副本，36更新、fixture-origin保留，不改账号、用户数据、backend SQL或凭据；证据 `/tmp/kokoro-web-live-sync-r21.json`。右侧浏览器现tab13/7 CDP观察超时、截图调用kernel reset，原tabs未关/未增；本轮没有新画面证据，不宣称UI视觉或fresh组合已验收，也不为观察超时清数据/反复重启。
+
+Root current consumer inventory只刷新已提交Web49/Agent30来源SHA/digest，不改历史checkpoint或broken状态。总goal继续active，九owner/Wave0–7与Billing最后保持；正式queued/原user retry、完整Agent4、Scheduled真PG、Platform物理cutover、System/Storage/Scheduler/Billing全组合及provider/browser正式积分闭环仍未完成。Root uv.lock/Billing5docs/BFF旧495行未暂存。
+
 ## PARALLEL-R20：三路已实际启动（2026-10-01）
 
 已派 native 子 Agent：`agent4_scope_gate_r19`（gpt-6-astra，Agent四设计整合writer）、`bff_fifo_owner_r9`（gpt-5.6-sol，BFF Scheduled四设计writer）、`web_chat_audit_r20`（gpt-5.6-sol，Web只读局部交互审查）。Root留守浏览器/集成关键路径；每仓单writer，Git/index/服务统一控制，交付未复验前状态为进行中而非完成。精确任务卡见 task.md R20。

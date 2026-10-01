@@ -1,3 +1,47 @@
+
+R21 Root指针集成复验：精准暂存6路径后topology与当前checkpoint均PASS/exit0；相关三文件治理测试 **95/95（51.58s）**，日志 `/tmp/kokoro-parallel-r21-topology-final.log`、`/tmp/kokoro-parallel-r21-checkpoint.log`、`/tmp/kokoro-parallel-r21-tests.log`。未运行全Root/九owner完整门，不纳BFF/Billing/uv.lock。
+### 下一独立切片：Agent 装配门与 Web 失败归属门（2026-10-01）
+
+| 任务 | owner / Agent / 模型 / 基线 / 范围 | 依赖与验收 |
+| --- | --- | --- |
+| AGENT-PROFILE-P2-D0 | Agent / agent4_scope_gate_r19 / gpt-6-astra / mainec65d04 clean；仅现四docs TECH/API/DATA/CURRENT | P1已Root验收，梳理完整生产manifest/worker装配实际闭包与最小实施切片；先第8节放置表/三设计一致，精确生产与测试范围，未获Root源码许可前不改Python/SQL/wire。最终Conversation释放只阻完整发布，不回退纯profile。 |
+| WEB-FAILURE-PLACEMENT-D0 | Web / web_chat_audit_r20 / gpt-5.6-sol / maind2b7175 clean；仅现TECH/API/DATA/CURRENT四docs | failedRunId内存归属与每轮compact失败/动作，snapshot/live一致，真实partial正文保留；不视觉dedup、不隐藏真正terminal失败、不伪造正式retry或queued协议。先核data owner/strict3.0约束/可验UI状态，给最小精确文件集RED矩阵；Root审过再代码。 |
+
+Git/index/服务仍Root独占；BFF R22仍唯一writer返修中。两D0仅当前态前缀与方案，不复制规范/建立新任务中心，保历史SHA。Root正在集成已验Agent/Web gitlinks与inventory。3310已将Web466个committed source逐hash同步（36更新），保fixture-origin/所有账号数据/backend/SQL/凭据；浏览器CDP两tab观察超时且截屏kernel reset，本轮未取得新画面，不称已完成UI视觉验收，不反复重启猜原因。
+
+### BFF-SCHEDULED-R22：正式拒收并返修原 owner
+
+Root稳定build后的8文件真PG/Redis **44 passed/7 failed/1 cancelled/0 skipped（43.72s）**，日志 `/tmp/kokoro-bff-scheduled-r21-root-integration-final.log`，自有DB已关/Redis14剩0。27路径manifest仅是候选，未提交。独立review发现7项P1：跨scope HOL、合法terminal后foreign/history被错误拒整页、failure tuple不严格、consumer锁后clock不完整、固定1s retry/未校验options、旧integration仍同步callback及缺taskRevision、新CURRENT自述过时。
+
+续派BFF唯一writer bff_fifo_owner_r9(gpt-5.6-sol)，仅原27+先前已批准existing `test/business-store.integration.mjs`；若需 `test/chat-facts.integration.mjs`只允许本片测试资源reset清理新增scheduled三表，不改Chat业务断言，须先报告原因。本波测试旧错误/失败证据不删。Root停止BFF门后才派写；reviewer停止读冻结候选。先RED补严格failure/HOL/valid foreign history page/barrier/budget/backoff/真实callback无网络，再实现，矩阵15明确列已测/未测。不得提高timeout、保留同步fallback、放宽门、Git/PG/Redis自启。四docs保护suffix495行仍原byte不动。Root重跑完整相关真实integration与静态门，候选有失败不放行。
+
+### R21冻结后的并行独立验收
+
+| 任务 | Agent / 模型 / 只读范围 | 验收条件 |
+| --- | --- | --- |
+| BFF-SCHEDULED-REVIEW-R21 | profile_p1_review_r21 / gpt-5.6-sol / BFF27路径冻结manifest，maine7a325ce | 审Scope/dispatch/source事务、租约预算、terminal/unknown与生命周期；无写入、Git、基础设施。Root持有真实PG/Redis门。 |
+| WEB-UI-OIDC-REVIEW-R21 | agent4_scope_gate_r19 / gpt-6-astra / Web原5路径+单OIDC fixture | 审ghost焦点、逐轮复制、safe诊断与连接终态，UI/测试边界不漂移；只读不跑共享服务。Root重跑完整check并负责用户运行副本。 |
+
+Agent P1独立审查11/11冻结hash、P0/P1=0已交；Root fresh离线全门exit0、1588 passed/6 skipped/192 deselected（58.24s），wheel/sdist成功。Web旧2072/1失败保留，新第6文件已交付等待Root全门；BFF27路径候选离线552/0/1只是writer证据，真实PG尚待Root。三writer均停写；本表不宣称组合闭环。
+
+## PARALLEL-R21：并行代码实施与 Root 正式验收（2026-10-01）
+
+上一goal turn为progress：Root728b3898记录真实派工与95项治理结果；Agent四设计提交7570141，明确纯profile不等待最终Conversation生命周期。当前3名native子Agent均曾确认running，不依赖锁文件推断。
+
+| 任务 | owner / writer / 基线 | 精确范围、门与证据 |
+| --- | --- | --- |
+| AGENT-PROFILE-P1 | Agent / agent4_scope_gate_r19(gpt-6-astra) / main7570141 | 延续R20已批准11路径，纯选择计划与编码代码实施；不扩SQL/wire/profile持久化/worker装配。Root最终按冻结hash与离线全门验收。 |
+| BFF-SCHEDULED-D1–D3 | BFF / bff_fifo_owner_r9(gpt-5.6-sol) / maine7a325ce +四保护docs495行 | Root核D0三设计，批准三表(scope/dispatch/session-source)，task物理delete不改、scope独立存活；active head固定与待选纳秒排序分开。依SQL03正式三表全部无FK：scope存在性/身份、dispatch指向、source完整性在scope锁+同事务检查，不cascade。先纠偏D0仅scope-FK句，再RED→代码。允许D0明确9新增路径、原精确文件集，另新增同既有Agent client目录 `scheduled-dispatch-delivery.ts` 与application/ports `scheduled-agent-dispatch-delivery.ts`：采用Scheduled窄transport，不伪造Chat command或conversation字段；复用现http-wire/identity/upstream。两文件有现持续职责，无新目录。原四docs只改本波prefix，原保护suffix不动。当前Agent3正式wire、公契约/锁/生成物不改。完整队列、unknown恢复、terminal gate/restart一起候选，不半运行替代旧同步路径；Git/PG/Redis由Root。 |
+| WEB-FOOTER-COMPOSER-R20 | Web / web_chat_audit_r20(gpt-5.6-sol) / main9204bfe6 | writer5路径已冻结报告；Root核实际2行呈现修复与3RED测试，重跑完整check2073及独立浏览器，不将worker exit0算完成。验收提交后只将当前已验Web源码同步既有自有Next开发副本，不改用户账号/数据、backend schema/凭据或旧后端进程；Web热更新并不证明完整后端组合通过。 |
+
+R21补充精确授权：现 `apps/kokoro-bff/src/bootstrap/server.ts` 为worker listen后唯一start入口，允许新两runner start及外层presence谓词，现runtime统一stop/drain并补生命周期测试；不在构造器提前start。发现越界应先报告再编辑，本次已Root核实际入口后纳范围。
+
+R21另补精确授权：BFF现 `package.json` scripts是显式枚举，允许新3test纳默认/集成门及本片手写文件纳format:check；不改依赖版本/lock或放宽既有门。
+
+WEB-OIDC-DIAG-R21已查明测试链错误归因：authorize无Location时`as string`不作运行校验，Node path undefined实际请求`/`，旧622的500不证明callback500；不得把2072/1称已验收。批准同Web负责人仅现 `tests/system/oidc-rp-next-http.integration.test.ts` 诊断/fixture生命周期切片，UI5保持冻结：http拒绝undefined/non-relative target、先assert authorize302/Location；只输出受控stage/status/已知错误码与剥query path的安全诊断；断连await request/reply终态与CSRF readiness，破坏性请求agent:false，不增加timeout或吞真实错误。先针对非法redirect RED，再GREEN与原38(新增case后实际计数)。Root旧邻接3例基线运行结束后才通知worker写入，避免编辑中测试宣称freeze。生产auth/state/Redis/其他test禁写；此风险修复与UI两片分别审查/提交，不夹杂泛化架构更改。
+
+Root仍唯一Git/index/基础设施控制人；所有切片commit按明确路径，不纳Billing5docs、uv.lock或BFF旧495行。新运行对比/浏览器要绑定已验源码，最终九owner/Wave0–7与Billing最后保持active。
+
 ## PARALLEL-R20：用户要求的三路实际派工（2026-10-01）
 
 Root 保持九 owner / Wave0–7 总目标与唯一 Git/index/基础设施控制权。复用现主控任务中心；不是全仓完成声明。
