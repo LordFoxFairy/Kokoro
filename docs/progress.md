@@ -1,3 +1,17 @@
+## Web契约生成准备切片已提交，runtime继续推进（2026-09-30）
+
+Web main `3c4e7394ce5219906530d5077a3ae163c2b1c0fc`，精确18路径提交；仅两原runtime RED草稿保留。Root Node22新鲜复验artifact46/46、architecture49/49、lint/typecheck/build0；全量26失败/1928通过，不称consumer已通过。独立终审0/0/0，Team15bytes不变，exact owner来源已核。完整结果 `/tmp/kokoro-web-pin-release-root-result.json`，源码未切3310、未改provider/数据/积分。
+
+Root库存38 refs、6 hash与2生成来源证据更新，3active/13broken保留；9既有测试的runtime RED卡已列明确边界，Root先复验8文件行为基线，writer/只读审查并行准备。当前UI只读确认窄屏padding规则冲突P1，方框根因与fresh视觉仍未验；两者不混入failure消费切片。其他仓候选/uv.lock继续保护，完整目标active。
+
+Root相关治理已独立完成88/88（47.00s），current checkpoint与topology CLI实际exit0，句柄7749已终态消费；日志 `/tmp/kokoro-web-pin-root-{governance.log,checkpoint.json,topology.json}`。runtime RED前8文件228/228保留行为baseline已通过，唯一writer现仅改已授9测试路径；源码GREEN尚未授权。完整标准/全Root tests/真实组合与浏览器本轮未运行，历史137FAIL不清零。
+
+## 当前用户UI优先：输入方框仍未定位，不宣称修复（2026-09-30）
+
+Root本轮读取现有IAB inventory成功，但用户tab6绑定在焦点命令31秒超时，尚未取得当前截图。已并行续派原Web负责人只读定位级联/布局；不新开页、不重启、不盲改CSS。历史截图不作当前验收，当前UI问题保持开放。
+
+上一机器候选的Root最终证据已经产生：artifact/provenance46/46、architecture49/49、lint/typecheck/build exit0；完整测试26失败/1928通过，失败为两冻结runtime契约文件，不能声明Web消费者通过。18候选冻结未提交/未同步运行组，日志 `/tmp/kokoro-web-failure3-pin-generator-root-final-quality-result.json`；本轮未执行新测试或浏览器视觉门。用户UI与完整产品闭环仍未完成。
+
 ## 本轮进度：Web consumer 真 RED；输入方框仍未修（2026-09-30）
 
 - 已推进：唯一Web writer完成四docs门及两现contract测试；两轮独立审查关闭dispatch身份守卫与旧failureless正例冲突，最终0/0/0。Root主树Node22实跑baseline40/40，最终126项=26目标RED/100通过，0collectionerror，日志 `/tmp/kokoro-web-failure3-root-red-r2.log`；不把负例绿误报strict语义已证。

@@ -1,3 +1,17 @@
+## 当前goal：Web机器切片3c4e739已提交，runtime门继续（2026-09-30）
+
+Root基线main8a3940fe，Web main `3c4e7394ce5219906530d5077a3ae163c2b1c0fc`。Root已精确提交18 pin/generator/provenance/docs路径，两runtime RED未纳入；新鲜完整结果为artifact46/49architecture/lint/typecheck/build通过、fulltest26失败/1928通过，失败仅两冻结runtime文件。日志 `/tmp/kokoro-web-pin-release-root-result.json`，两generatorcheck及owner原blob/Team15逐hash也通过，独立release0/0/0。不能据此声明运行时失败消费或产品闭环完成。
+
+库存38Webrefs/6来源hash已更新，新增2单源artifact证据；3active/13broken不变。后继runtime RED仅9既有tests，见task；生产/source GREEN另授。当前UI只读审查确认coarse≤640输入外层1.7rem覆盖内部0.7rem的几何冲突P1，实际方框/全布局仍须当前页面证据，不在本次机器切片改CSS。未热同步3310、未启动服务或访问模型/PG/Redis/积分；其他仓候选及uv.lock保留。
+
+Root主工作树相关治理88/88（47.00s）及current checkpoint/topology CLI已新鲜actual0；日志 `/tmp/kokoro-web-pin-root-{governance.log,checkpoint.json,topology.json}`。runtime下一RED基线8test files228/228通过，唯一writer仅授9tests、生产零授写。全Root tests/完整标准/组合/browser本轮未执行，不把来源检查通过包装成产品全部闭环。
+
+## 当前用户优先：输入框与对话布局尚未视觉验收（2026-09-30）
+
+Root main `8a3940fe`、Web main `399f863`；当前18机器候选+两runtime RED未提交，生产聊天UI未新修改。现有IAB tab6读取实际焦点命令超时31秒，当前页面画面缺证据；只读负责人核级联/布局，不重启服务或重复添加CSS补丁。历史图片、源码断言均不作为用户当前方框的已修证明。
+
+机器候选Root最终实测artifact46/46、architecture49/49与lint/typecheck/build通过；完整测试26失败/1928通过，runtime消费者仍未实现。日志 `/tmp/kokoro-web-failure3-pin-generator-root-final-quality-result.json`。当前输入框/整体视觉、运行时consumer、完整浏览器E2E仍开放；保护其他仓候选及uv.lock。以下为历史阶段记录，以本段及当前task为准。
+
 ## 当前续推：Web failure consumer 设计与真实 RED，UI 未闭（2026-09-30）
 
 基线 Root main `d88ca38b7bff200875e7535e4378232f741f70fc`、Web main `399f863277f6b62e42772042bc940c62f33dc724`、BFF已发布 `ccb8e144` public2.0；Web机器pin仍1.0。本片只产生Web四docs候选和两个现contract测试，不改任何生产源码、生成物、运行副本、服务、数据库、provider或积分。

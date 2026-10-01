@@ -1,4 +1,55 @@
-## GOAL 当前续推：WEB-FAILURE3-CONSUMER（2026-09-30）
+## GOAL 当前执行：Web 机器切片提交与 runtime RED 门（2026-09-30）
+
+- 上轮为定位进展：只读证据确认窄屏active Composer外层1.7rem覆盖内部coarse0.7rem；这不是方框已修或视觉验收。当前没有活跃验证旧句柄，63296/71804/46624均已终态消费，不重启验证。
+- Web机器切片已Root精确18路径提交 `3c4e7394ce5219906530d5077a3ae163c2b1c0fc`；其余仅两冻结runtime RED未提交。Node22新鲜artifact46/46、architecture49/49、lint/typecheck/build0；全量26失败/1928通过，失败只有两runtime契约文件。独立release metadata审查0/0/0；日志 `/tmp/kokoro-web-pin-release-root-result.json`，18manifest `/tmp/kokoro-web-pin-release-root-manifest.json`。不热同步运行组。
+
+| 任务卡 | WEB-FAILURE3-RUNTIME-RED |
+| --- | --- |
+| Owner / writer / review | Web内存failure消费；agent_failure_cursor_owner唯一writer，bff_failure_contract_review只读，Root重跑与sole Git |
+| 基线 / 范围 | Web main3c4e739；两原contract RED哈希冻结。仅既有 tests/core/fixtures.ts、tests/core/{hydration,reducer}.test.ts、tests/engine/{agui-event-mapper,event-reducer,machine,engine}.test.ts、tests/ui/{shared-thread,conversation-failure}.test.tsx，共9文件，无新文件/目录 |
+| 目标 / 依据 | 引用已审Web TECHNICAL_DESIGN八矩阵、三文档门与generated唯一12tuple。证明snapshot/live/reload/share同profile、generic/dispatch独立、BIGINT string保真且不入lastSeq、terminal禁重发与未receipt同key冻结意图恢复区分 |
+| 删除旧正例 | raw exception/detail、terminal新key重发、failureless/cancelled RUN_ERROR旧成功假设不得留双轨；真实取消保留已发布BFF RUN_FINISHED(status cancelled/result/interrupt)，不是RUN_ERROR code cancelled |
+| 限制 | 先主控8test files行为baseline与只读卡审查，再仅tests RED授权；当前生产/生成/contract两tests/4docs/CSS/Composer/其他仓/运行副本/服务/数据/Git零授写，fixture不得扩大改变其他测试默认语义 |
+| 验收 / 阶段 | 通过现parser/mapper/reducer/engine/component实际执行失败，不用TS/collection错误冒充RED；由Root复跑冻结9文件与审查后才另授源码GREEN。尚未授源码实现或运行组切换 |
+
+库存38Web commit refs和6来源hash已更新至已提交3c4e739，并加入2固定生成证据；3active/13broken不变，EDGE-WEB-BFF继续broken。Root整体验证/组合闭环仍待后继。
+
+本门Root行为baseline已实跑8test files228/228（1.79s）actual0，日志 `/tmp/kokoro-web-runtime-red-root-baseline.log`；46624已终态消费。独立tests卡审查同意上述范围，明确是8个test文件+1个fixture=9总路径，不是额外第十文件。现仅授权该9路径tests-only RED：取消用真实RUN_FINISHED；dispatch独立envelope保存exact string，不宽化普通numeric seq、不写lastSeq但收束当前run/tools/phase；tuple唯一generated来源、仅测试体内现入口失败，不以collection/类型错误造RED。两既有contractRED继续冻结，源码/Git/服务零授写。
+
+Root集成候选主树再验：current checkpoint与topology CLI均actual0，相关governance两文件88/88（47.00s）actual0；7749已终态消费，日志 `/tmp/kokoro-web-pin-root-{checkpoint.json,topology.json,governance.log}`。只验证本次来源/拓扑，不替代完整标准、全Root tests、真实owner/provider/browser。下一9tests仍进行中、未冻结/未验收；Root只提交已接受子仓gitlink、inventory与现三台账，保护其余dirty。
+
+## 当前用户优先：输入内框与对话布局真实验收（2026-09-30）
+
+- 当前任务仅定位用户可见的输入内方框与阅读布局；不以后台契约进度、旧截图或测试数量替代页面验收。
+- Root控制现有IAB用户tab6；inventory可读，绑定实际在 `Emulation.setFocusEmulationEnabled` 超时31秒。未新开页、未重启、未绕过浏览器控制限制；当前像素仍缺证据。
+- 原Web负责人 `agent_failure_cursor_owner` 只读核 Composer/primitive/AppFrame/Thread 级联和已有响应式门；不授源码写入。Root复核官方shadcn InputGroup组合，未安装新依赖或盲替换组件。
+- 现18个pin/generator候选及两runtime RED冻结保护；其他仓和uv.lock不动。需要当前输入框点击前后截图以区分内边框、焦点环与按钮；没有新图时不重复猜测CSS。
+- 验收条件：同一个实际入口，桌面/窄屏、失焦/键盘聚焦、多行输入与滚动均可见核对；内输入无独立卡框，外容器保留可访问焦点，消息与输入阅读轴一致。当前未验收。
+
+## GOAL 当前续推：WEB-FAILURE3-PIN-GENERATOR（2026-09-30）
+
+上一turn分类progress：Root8a3940fe记录当前源码真实26 RED/100pass，独立设计/测试门均0/0/0；不是consumer或UI完成。当前无活跃验证进程。Web main399f863，六已冻结docs/tests候选保护；Root uv.lock及Agent/BFF/Billing候选不动。
+
+| 项 | 本门裁决 |
+| --- | --- |
+| Owner/业务 | Web消费BFF已发布public2.0，生成只读failure tuple/provenance；BFF仍唯一事实owner，无新网络/SQL事实 |
+| 位置/粒度 | 采用既有scripts下单个generate-bff-agent-failure.mjs、既有generated下单个bff-agent-failure.ts、既有tests/contract下单个bff-agent-failure-public.test.ts；不建目录。与塞入Team生成/test比较，failure单独变化原因，淘汰混入Team职责 |
+| writer/审查 | agent_failure_cursor_owner唯一Web writer；bff_failure_contract_review只读审来源/schema/生成；Root sole Git/集成与重跑 |
+| 基线 | Root main8a3940fe，Web399f863，BFF机器ccb8e144 public2 digest ba10f89b...；Root已从git HEAD提取原字节/tmp/kokoro-bff-public2-ccb8e144.yaml，Team15文件baseline /tmp/kokoro-web-failure3-root-team-baseline.json |
+| 精确写集 | Web package.json、scripts/generate-bff-team-client.mjs、新scripts/generate-bff-agent-failure.mjs、src/generated/bff-public-openapi.yaml、新src/generated/bff-agent-failure.ts、新tests/contract/bff-agent-failure-public.test.ts、既有tests/contract/bff-team-public.test.ts、四docs；Team15仅原generator输出且预期字节不变；上一两RED测试冻结不改 |
+| 流程/依赖 | 新artifact测试先RED实际旧digest/缺failure；Root确认后才repin+generator GREEN。运行时contract/core/engine/UI所有源码零授写，26RED本门保持开放；不手改生成、加依赖/lock、伪造未发布Agent4。generated供下一运行时门唯一tuple来源 |
+| 数据/API/删除 | 无owner SQL/Redis/provider/服务/runtime；同一fixed owner原字节，不造第二可编辑contract。删除旧snapshot/pin值的当前来源，不保留双snapshot/fallback；历史记录不改 |
+| 验证 | exact owner digest/版本/failure形状/presence guard、12tuple、生成--check、源码与生成漂移/语义mutation、Team15byte equality、定点contract/architecture/lint/typecheck/build；Root主树重跑，未运行全门如实列出 |
+
+Root当前发现同一public snapshot还有五处固定provenance消费者：tests/contract/bff-{project-create,project-resource,library-file,library-artifact,skills-mcp}-public.test.ts。本门额外只授权这五文件的BFF owner commit/digest两元数据更新，其他owner pin与业务字段/assert不改；先与Team metadata同入RED，避免新blob落地后遗留旧来源断言。writer在四docs本门allowlist写明此窄例外，Root最后核实际diff。
+
+本门R2 tests-only已Root主树复现7文件45项=27目标失败/18通过，0collectionerror（日志/tmp/kokoro-web-failure3-pin-generator-root-red-r2.log）；新test d5a6148b，6metadata冻结manifest /tmp/kokoro-web-failure3-pin-generator-red-worker-r2-manifest.json。独立最终0/0/0，additionalProperties/true condition/required run/assistant/反向failure及exactrender来源缺口已修。现授权同一writer进入上述精确写集GREEN；不放行runtime源码/旧两个RED测试，不热切。纯inspector语义拒绝须独立于CLI raw digest验证，码表由fixed owner导出；原字节与生成bytes漂移各拒绝。Root最终冻结复验后再裁决下一runtime门。
+
+工程索引窄授权：Web INDEX.md增加本门generator/generated/test入口；同一contract表将不存在的session-events路径纠正为现core/chat-projection-event，并纠正AGUI parser不负责投影、http只是canonical barrel的旧描述，不改其他业务/架构目录。Root已实核旧session-events文件不存在；这是现入口说明修正而非新增兼容方案。
+
+GREEN主控首验：17/17freeze、19精确dirty paths、owner原字节、Team15 equality与两生成check通过，artifact45/45。Root完整quality进程45778已终态并消费：lint/typecheck/build0，architecture1、fulltest27失败/1926通过（1953）；额外1失败为governance精确script仍锁旧chain，26为冻结runtime目标RED，不把总体标绿。独立源码0/0/1另发现import入口realpath对不存在caller argv抛ENOENT，RootNode22实际复现（/tmp/kokoro-web-failure3-pin-generator-root-import-argv.log）。现只返修generator入口、新artifact test及五docs验收metadata；额外授权tests/architecture/governance.test.ts仅精确contract chain断言增加已批准failure check，不删/放宽其他门。原两runtimeRED、Team bytes与6metadata冻结不改；返修前后Root再次验证。
+
+## GOAL 上轮证据：WEB-FAILURE3-CONSUMER（2026-09-30）
 
 - 上一 turn 为 progress：Web `399f863` / Root `d88ca38b` 已提交，完整1846测试与build、相关治理18项、topology/checkpoint真实通过；当前输入内框仍未验。无活跃验证进程，不重启服务。
 - 业务目标：Web正式消费BFF已发布public2.0的safe failure，snapshot/live/reload/shared保持相同失败事实，不丢分类、不展示Agent原始异常，不再凭未知code猜internal_error。
