@@ -1,3 +1,9 @@
+## R22 最新实际进度（2026-10-01）
+
+Root `6162cec8792d80a17ed68dd57f1caf40b03e7fe8` 已集成Agent ec65/Web d2b与current79refs，95项治理通过。BFF首批返修暂停写入后Root实跑8文件真PG诊断：**49 passed/2 failed/1 cancelled/0 skipped（50.25s）**，`/tmp/kokoro-bff-scheduled-r22-root-diagnostic.log`；两个现Agent fixture未区分source GET而JSON.parse空body，receipt仍30s取消。自有DB回收/Redis14剩0。已回传原owner修严格HTTP fixture并继续15项矩阵，未冻/未提交/未放行。chat-facts授权仅2处reset新三表，发现额外格式化已要求恢复，不覆盖有效职责。
+
+当前三个native子Agent同时推进：BFF R22代码与测试返修；Agent P2完整装配四设计门；Web run级失败归属四设计门。Root负责当前已验集成/资源/浏览器验收；后两者先文档门再授源码，不授全仓修改。九owner目标仍active，不把中间切片等同最终闭环。
+
 
 R21 Root指针集成复验：精准暂存6路径后topology与当前checkpoint均PASS/exit0；相关三文件治理测试 **95/95（51.58s）**，日志 `/tmp/kokoro-parallel-r21-topology-final.log`、`/tmp/kokoro-parallel-r21-checkpoint.log`、`/tmp/kokoro-parallel-r21-tests.log`。未运行全Root/九owner完整门，不纳BFF/Billing/uv.lock。
 ## PARALLEL-R21 / R22：两仓代码已验收，BFF 真PG拒收返修（2026-10-01）
