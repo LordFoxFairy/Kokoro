@@ -1,3 +1,60 @@
+## 2026-10-01 研发闭环当前事实：Web/BFF两片已提交，整体未完成
+
+用户重申边界：研发负责实现、契约/SQL、测试/build与真实端到端；部署运维配置后移，不把独立roles/GRANT/集群配置前置。
+九owner总验收表在同一 `docs/task.md`，不新建第二任务中心。源码组件green ≠ 服务激活 ≠ 整产品完成。
+
+- Web main `9c428bf8cfdbdafae1d0cc0c3ed807fa8defa591`（5文件、clean）：普通Markdown UL/OL marker在Thread scope恢复，literal GFM task-list排除免CSS Module哈希；Root真实RED→GREEN，最后完整Playwright14通过/4项目分工跳过（14.3s），完整check contract218/architecture50/tests2054（45.55s）/lint/typecheck/build exit0。真实390x620 overflow、wheel脱离/公开smooth回尾、tail不遮挡、48rem轴/两轮三gap；Root查看3PNG。独立终审0/0/0。日志 `/tmp/kokoro-long-thread-final-e2e-ol.log`、`/tmp/kokoro-long-thread-check-ol.log`；R2/R3/R4测试语义失败与GFM UL/OL RED日志保留，不通过删断言/加timeout掩盖。
+- 受管3310仅本片6行CSS及属性排除窄sync，其余字节保存；backup/hash `/tmp/kokoro-long-thread-runtime-sync.json`，PID65590、首页HTTP200，34117测试退出，不改PG/Redis/user rows。用户tab6当前读取仍CDP超时，输入内框与实际整会话未验；既有failure源码没有半切激活。
+- BFF main `293dfe7638e5dea0df2bee6dfdd8483b53fc9df6`（11路径自有片）：public3.0 pre-release同/v1 corrective两角色声明，SQL/domain/public/OpenAPI一致、failureguard/query/mapper/operation/pins不变。Root public真实RED35/2→提交后37/37；realPGschema6/2→8/8/0skip；完整check546通过/1动态schema跳过（PG另跑0skip）、format/lint/typecheck/contract/build exit0，独立终审0/0/0。日志 `/tmp/kokoro-bff-role2-{red-openapi,red-schema,green-schema,check,format-child}.log`。仅Root随机临时库，原应用DB不变，旧CHECK不被installer更新；source发布不代表3310激活。
+- BFF原4doc retry候选495新增行保留（3.1目标对齐），通过commit-only快照选择性暂存，没有把未实现retry草案混入发布。Agent/Billing docs与Root uv.lock保护。Web仍exact public2 pin，下一片先精确repin已发布BFF public3，再做fresh真实组合；Agent4/BFF3.1原user retry尚未实现。
+- 三仓只读来源盘点校正：Platform v5.0.1、BFF五项Personal API及Web同源/UI**源码已有**，不能再据旧inventory否认；开放项是当前真实三仓组合激活和Platform IAM0.6→owner0.7精确pin。库存reason已校正，状态仍3active/13broken，未假造Run或改门槛。
+- Root当前默认全仓静态门**137规则失败/0未验证**（Agent5、Web12、BFF31、Billing33、Platform12、IAM30、Scheduler3、Storage11；System该门无失败），日志 `/tmp/kokoro-long-role2-root-standard.log`。这是代码目录/职责、TS严格性、API版本/owner标注与wire泄漏等研发缺口，不是运维；BFF test:architecture27/27并不等于Root标准31项通过。相关治理pytest95/95（73.93s）；最终精确6路径暂存的两gitlink/inventory组合checkpoint与topology均PASS/exit0，日志 `/tmp/kokoro-long-role2-final-checkpoint.log`、`/tmp/kokoro-long-role2-final-topology.log`。全仓137失败仍保留，未把这两片或库存一致性当成九仓研发完成。
+
+## 研发上线闭环：当前总验收边界（2026-10-01，用户再次确认）
+
+目标不缩小：九个正式运行owner逐仓研发门 + 跨仓真实用户能力验收。部署后的独立数据库role/GRANT、NetworkPolicy、域名证书和集群运维不前置；开发使用现单PG实例/数据库owner schemas与单Redis，运行隔离fixture不等于新增应用库。不得以历史报告/纯mock/单仓test冒充全产品完成。
+
+|owner|本轮主控状态/剩余研发验收|
+|---|---|
+|kokoro-app|输入内框当前用户页仍待核对；Markdown列表marker修复已提交9c428bf，长文/多轮/窄屏回归及完整门已通过；public3消费对齐和真实产品组合待验。保持AG-UI/Vercel UI/shadcn唯一职责。|
+|kokoro-bff|ROLE2 293dfe7已独立终审和选择性提交；Root realPG8/8、fullcheck546+1skip；Web exact repin、fresh真实组合待验。正式retry依赖Agent4，个人/项目/Share/任务不得混写owner。|
+|kokoro-agent|HTTP3来源已在既有目标中发布；Agent4原user retry设计仍未实施，checkpoint fork/fence与所有producer消费须一条真实链验证。|
+|kokoro-iam|作为认证授权owner继续真实login→consent→callback→session/revoke链验收；历史单门不重复当完成，运行用户数据保留。|
+|kokoro-system|模型目录/路由owner；fixed artifact→BFF/Agent正式consumer→真实provider/失败恢复组合仍需验。|
+|kokoro-platform（当前physical kokoro-capability）|Personal源码/contract切片与正式服务激活分开；Skill/MCP owner与BFF/Web/Agent精确pins、撤权/幂等真实组合待验。不得根据旧inventory reason否认已有实现。|
+|kokoro-storage|上传/扫描/asset/artifact读写与访问授权、浏览器CORS/真实对象存储链待验，禁止fake/501当通过。|
+|kokoro-scheduler|Schedule/Occurrence/lease/outbox持久化恢复与BFF ScheduledTask/Agent Run独立owner组合待验。|
+|kokoro-billing|真实Credit/Ledger/Metering幂等扣款/退款/余额链必须验，不使用免费兜底；计价可配置。Payment/Checkout支付最后，运维配置后移。|
+
+每片状态仅待派工→进行中→待审查→待集成验证→已验收；完成绑定实际commit与命令、真实端到端行为。主控保留关键路径并审查，native agents按独立面并行、每仓sole writer，测试/服务由Root管理，禁止僵尸进程和共享数据reset。consumer inventory当前仍3active/13broken，不放宽来清零。
+
+## WEB-LONG-THREAD-VISUAL：当前用户布局反馈优先（2026-10-01）
+
+|项|裁决|
+|---|---|
+|目标/Owner|Web聊天布局当前证据只含单行；Root负责视觉验收，web_failure_wire_review改任仅测试writer，独立源码审查由Root承担。|
+|基线/范围|Web main42df17b clean；现tests/e2e/web-governance.spec.ts新增local-preview desktop长Markdown/双轮场景；现tests/architecture/css-quality.test.mjs锁scoped ul/ol。Root看真实PNG确认list marker缺失，Root真实RED为UL none≠disc及静态marker缺失，已授权仅现src/ui/thread/thread.module.css恢复.md ul disc/.md ol decimal，另现Thread INDEX/Web CURRENT窄记录；contract/SQL/lock与BFF切片排除。|
+|放置/依赖|复用现 !long preview和MessageScroller/Composer，不新文件/目录/组件体系；Web三设计文档既有owner无变化。IAB tab6重新读取31s超时；不绕过受限capture、不启动用户浏览器替代通道。|
+|验证|Root独占34117自动fixture，desktop1280x900/390x620长文截图、标题列表与实际bullet、无横溢、阅读轴、窄屏真实overflow及末项可滚动可见、terminal idle双轮实测间距；不访问PG/Redis/真实provider，不重启3310、不删除用户数据。现source输入border0/shadow none不代表用户当前方框已消失。|
+|交付|writer只交现test文件hash，不测试/服务/Git；Root真实执行、看图、发现具体问题才改相应owner源码；本场景不冒称整产品完成。|
+
+## BFF-CHAT-ROLE2：无 producer 角色声明收敛（2026-10-01）
+
+上一goal turn=progress：Web42df17b源码修复+真实浏览器TDD/全门，Root076aa277集成；不是全goal完成。用户输入内框/整体视觉当前图仍待确认，不据此阻断其他明确owner能力。
+
+|项|任务卡与Root裁决|
+|---|---|
+|Owner/角色|BFF Chat独占writer bff_chat_role_owner（gpt-5.6-sol）；bff_failure_contract_review独立只读契约/SQL审查，Root方向、阶段放行、真实PG与sole Git。|
+|基线/保护|Root main076aa277；BFF mainccb8e144，原4docs有495行retry候选仅新增，已按/tmp/kokoro-bff-role2-baseline.json冻结全部字节。其他子仓和Root uv.lock排除。主仓/子仓main不建分支。|
+|事实/目标|唯一Message INSERT只user/assistant，Agent contract/Web parser亦两角色；SQL/domain/public/OpenAPI却宣告system且读映射信任row。删除无producer system，不引入prompt通知能力、兼容/过滤/转assistant；两角色唯一集合在fresh schema+public合同闭合。|
+|放置/粒度|采用现database/schema.sql、domain/chat/message.ts、contracts/chat.ts及canonical OpenAPI与两个现test；淘汰新role目录/新通用parser/第二contract，因为事实仅声明漂移，writer/查询用例无新增职责。|
+|版本裁决|未上线clean-slate、Root批准本次public3.0.0同/v1 corrective baseline例外，operation inventory不改；contract/README必须明确该例外仅pre-release，两角色响应收窄属breaking且不冒充兼容，正式发布后/v2规则保持。未来additive retry目标3.1，Agent4.0不变、不在本片实现retry。|
+|数据/激活|source发布与运行激活分离。验证只用Root独占随机临时库中的空kokoro_bff schema、同一现PG实例/role；证明fresh apply及两角色CHECK。当前用户DB/schema/rows一律不改、不删；旧三角色约束不会被installer自动修复。本片不热切3310或claim整链，后续BFF+Web锁步fresh组合通过才激活，不建ALTER兼容链。|
+|阶段1 docs门|唯一允许写docs/TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、CURRENT和contract/README：prepend本片同一当前/目标方案+放置表；明确完整契约/schema命令及待验。保护原retry候选正文，只在该未提交候选范围把未来2.1目标对齐3.1并标明role3先行，不改历史failure2.0。另交每份文档HEAD+ROLE2自有增量的commit-only快照，Root选择性暂存，不把未验retry候选夹入本片提交。此阶段源码/test未授权。|
+|阶段2 RED|docs门通过后，现test/contract/openapi-contract.test.mjs锁public3.0与exact两角色、恢复system mutant；现test/schema-governance.test.mjs锁role CHECK，真PG普通user/assistant通过、普通system以ck_bff_message_role失败，旧failure负例只user避免双guard。Root取得真实RED后源码授权。|
+|阶段3 GREEN/删除|只改schema role CHECK、domain/public角色类型与canonical OpenAPI version/enum，删除system声明；现失败tuple/guard、Agent pin、API operation/路径、query/writer保持。不改generated/vendor、其他repo、lock、installer/DB连接规则、其他test或生产运行组。|
+|验证/交付|Node22/pnpm11 定点test+真PGfresh schema、contract/check/lint/typecheck/build/test:architecture/fulltest/format实际执行且记录既有失败，源冻结独立审查；Root串行仅11路径自有片段提交，复核原retry候选残留，随后Web精确repin另owner切片。worker无Git/index/共享服务/data权限，不自行启动PG/Redis。|
+
 Root集成复验：精确5路径暂存后checkpoint/topology PASS/0；相关治理pytest95/95（47.31s），日志 `/tmp/kokoro-composer-action1-root-governance.log`。3310公共首页HTTP200、原PID65590，34117测试服务退出；用户当前聊天像素/内框仍未验，3active/13broken不变。
 
 ## 2026-10-01 WEB-COMPOSER-ACTION1：实际操作行修复与渲染回归已验

@@ -1,3 +1,15 @@
+## 2026-10-01 研发闭环当前事实：Web/BFF两片已提交，整体未完成
+
+用户重申边界：研发负责实现、契约/SQL、测试/build与真实端到端；部署运维配置后移，不把独立roles/GRANT/集群配置前置。
+九owner总验收表在同一 `docs/task.md`，不新建第二任务中心。源码组件green ≠ 服务激活 ≠ 整产品完成。
+
+- Web main `9c428bf8cfdbdafae1d0cc0c3ed807fa8defa591`（5文件、clean）：普通Markdown UL/OL marker在Thread scope恢复，literal GFM task-list排除免CSS Module哈希；Root真实RED→GREEN，最后完整Playwright14通过/4项目分工跳过（14.3s），完整check contract218/architecture50/tests2054（45.55s）/lint/typecheck/build exit0。真实390x620 overflow、wheel脱离/公开smooth回尾、tail不遮挡、48rem轴/两轮三gap；Root查看3PNG。独立终审0/0/0。日志 `/tmp/kokoro-long-thread-final-e2e-ol.log`、`/tmp/kokoro-long-thread-check-ol.log`；R2/R3/R4测试语义失败与GFM UL/OL RED日志保留，不通过删断言/加timeout掩盖。
+- 受管3310仅本片6行CSS及属性排除窄sync，其余字节保存；backup/hash `/tmp/kokoro-long-thread-runtime-sync.json`，PID65590、首页HTTP200，34117测试退出，不改PG/Redis/user rows。用户tab6当前读取仍CDP超时，输入内框与实际整会话未验；既有failure源码没有半切激活。
+- BFF main `293dfe7638e5dea0df2bee6dfdd8483b53fc9df6`（11路径自有片）：public3.0 pre-release同/v1 corrective两角色声明，SQL/domain/public/OpenAPI一致、failureguard/query/mapper/operation/pins不变。Root public真实RED35/2→提交后37/37；realPGschema6/2→8/8/0skip；完整check546通过/1动态schema跳过（PG另跑0skip）、format/lint/typecheck/contract/build exit0，独立终审0/0/0。日志 `/tmp/kokoro-bff-role2-{red-openapi,red-schema,green-schema,check,format-child}.log`。仅Root随机临时库，原应用DB不变，旧CHECK不被installer更新；source发布不代表3310激活。
+- BFF原4doc retry候选495新增行保留（3.1目标对齐），通过commit-only快照选择性暂存，没有把未实现retry草案混入发布。Agent/Billing docs与Root uv.lock保护。Web仍exact public2 pin，下一片先精确repin已发布BFF public3，再做fresh真实组合；Agent4/BFF3.1原user retry尚未实现。
+- 三仓只读来源盘点校正：Platform v5.0.1、BFF五项Personal API及Web同源/UI**源码已有**，不能再据旧inventory否认；开放项是当前真实三仓组合激活和Platform IAM0.6→owner0.7精确pin。库存reason已校正，状态仍3active/13broken，未假造Run或改门槛。
+- Root当前默认全仓静态门**137规则失败/0未验证**（Agent5、Web12、BFF31、Billing33、Platform12、IAM30、Scheduler3、Storage11；System该门无失败），日志 `/tmp/kokoro-long-role2-root-standard.log`。这是代码目录/职责、TS严格性、API版本/owner标注与wire泄漏等研发缺口，不是运维；BFF test:architecture27/27并不等于Root标准31项通过。相关治理pytest95/95（73.93s）；最终精确6路径暂存的两gitlink/inventory组合checkpoint与topology均PASS/exit0，日志 `/tmp/kokoro-long-role2-final-checkpoint.log`、`/tmp/kokoro-long-role2-final-topology.log`。全仓137失败仍保留，未把这两片或库存一致性当成九仓研发完成。
+
 Root集成复验：精确5路径暂存后checkpoint/topology PASS/0；相关治理pytest95/95（47.31s），日志 `/tmp/kokoro-composer-action1-root-governance.log`。3310公共首页HTTP200、原PID65590，34117测试服务退出；用户当前聊天像素/内框仍未验，3active/13broken不变。
 
 ## 2026-10-01 WEB-COMPOSER-ACTION1：实际操作行修复与渲染回归已验
