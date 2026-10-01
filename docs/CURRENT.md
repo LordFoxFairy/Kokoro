@@ -1,3 +1,14 @@
+## BFF-CHAT-PAGING1：源码已提交，真实owner门通过（2026-10-01）
+
+BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada`，Root唯一精准7路径提交；生产仅1行mixed-direction keyset修复。
+原四候选doc495行完整保留，提交只含本片四前缀（40行）与source/test，不发布retry草案。414其他tracked文件保护，最终独立7hash review0/0/0；初评CURRENT过期阶段P1已按实测更新。public3.0机器contract/DDL/generated/scope/FIFO/retry不变，Web无需重发相同机器artifact。
+
+Root实际RED：unit11pass/1fail；真实PG HTTP0pass/1fail明确漏tie_b/tie_c。GREEN unit12/12与Chat PG/Redis9/9；完整format/lint/typecheck/build、contract193/193、architecture27/27通过。第一次full547pass/1既定schema skip保留；fresh full提供同现PG实例/role自有fixture，548/548零skip，完整owner integration48/48（13.95s）exit0。静态可见集合时间ties/跨边界/limit1、2/末cursor与Project/tenant/subject/deleted/orphan均验，不冒称跨页更新snapshot一致性。
+
+两Root自有临时DB正常回收，schema治理测试自身临时库亦finally回收；Redis未flush，3310仍PID65590。日志 `/tmp/kokoro-bff-chat-paging1-{red-unit,red-pg,green-unit,green-pg,full,full-real}.log`；manifest `/tmp/kokoro-bff-chat-paging1-final-manifest.json`记录working候选与committed7路径分别hash，draft不混发布。187条BFF committed来源已刷新，inventory仍3active/13broken；Root已精确暂存gitlink后执行checkpoint/topology，均PASS/exit0。完整 `python3 -m pytest scripts/tests` 当前实际1103通过/3跳过（125.84s）；3项明确需Agent .venv，用该Python独立补验3通过/52 subtests，不能把先前95项报告当当前完整Root门。fresh全仓标准审计仍FAIL：137项、0未核，按owner持续推进，不放宽门禁或称全部完成。日志 `/tmp/kokoro-bff-chat-paging1-root-{checkpoint,topology,governance,native}.log` 与 `...-root-standard.json`。
+
+PG/Redis真实，IAM/Agent/Storage等外部HTTP仍测试double；未跑真实外部存储/provider/浏览器，不宣称全产品完成。ChatGPT回复区方案待确认；同会话terminal-gated FIFO、Agent4/原user retry、direct inbox语义及所有九owner/Wave0–7继续原目标，Billing最后。当前BFF/Agent/Billing仍有候选doc、Rootuv.lock任务外修改受保护，不称全仓clean。
+
 ## PLATFORM-IAM07-PIN：源码已提交，整体授权组合仍待验（2026-10-01）
 
 Platform physical apps/kokoro-capability main `a77ad403095ae6314485e13298b7afa175932c8b`、13文件、clean；Root唯一提交，最终独立13hash/274保护终审0/0/0。正式IAM0.7来自clean e3c035b9的sdk:pack，archive3d9abf77/96entries；旧0.6包删除、manifest/lock只6+/6-IAM file pin，没有其他依赖升级。完整内外provenance/archive/package/dependency/lock三section/default importer门及28真实CLI用例；生产src/Prisma/Platform v5.0.1契约274hash冻结，两个现IAM method兼容，新增Skill authorization方法未消费。

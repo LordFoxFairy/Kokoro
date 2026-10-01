@@ -1,3 +1,58 @@
+## BFF-CHAT-PAGING1：源码已提交，真实owner门通过（2026-10-01）
+
+BFF main `88c54dbc1a67beba13c7bc159b7cb42cbb202ada`，Root唯一精准7路径提交；生产仅1行mixed-direction keyset修复。
+原四候选doc495行完整保留，提交只含本片四前缀（40行）与source/test，不发布retry草案。414其他tracked文件保护，最终独立7hash review0/0/0；初评CURRENT过期阶段P1已按实测更新。public3.0机器contract/DDL/generated/scope/FIFO/retry不变，Web无需重发相同机器artifact。
+
+Root实际RED：unit11pass/1fail；真实PG HTTP0pass/1fail明确漏tie_b/tie_c。GREEN unit12/12与Chat PG/Redis9/9；完整format/lint/typecheck/build、contract193/193、architecture27/27通过。第一次full547pass/1既定schema skip保留；fresh full提供同现PG实例/role自有fixture，548/548零skip，完整owner integration48/48（13.95s）exit0。静态可见集合时间ties/跨边界/limit1、2/末cursor与Project/tenant/subject/deleted/orphan均验，不冒称跨页更新snapshot一致性。
+
+两Root自有临时DB正常回收，schema治理测试自身临时库亦finally回收；Redis未flush，3310仍PID65590。日志 `/tmp/kokoro-bff-chat-paging1-{red-unit,red-pg,green-unit,green-pg,full,full-real}.log`；manifest `/tmp/kokoro-bff-chat-paging1-final-manifest.json`记录working候选与committed7路径分别hash，draft不混发布。187条BFF committed来源已刷新，inventory仍3active/13broken；Root已精确暂存gitlink后执行checkpoint/topology，均PASS/exit0。完整 `python3 -m pytest scripts/tests` 当前实际1103通过/3跳过（125.84s）；3项明确需Agent .venv，用该Python独立补验3通过/52 subtests，不能把先前95项报告当当前完整Root门。fresh全仓标准审计仍FAIL：137项、0未核，按owner持续推进，不放宽门禁或称全部完成。日志 `/tmp/kokoro-bff-chat-paging1-root-{checkpoint,topology,governance,native}.log` 与 `...-root-standard.json`。
+
+PG/Redis真实，IAM/Agent/Storage等外部HTTP仍测试double；未跑真实外部存储/provider/浏览器，不宣称全产品完成。ChatGPT回复区方案待确认；同会话terminal-gated FIFO、Agent4/原user retry、direct inbox语义及所有九owner/Wave0–7继续原目标，Billing最后。当前BFF/Agent/Billing仍有候选doc、Rootuv.lock任务外修改受保护，不称全仓clean。
+
+## BFF-CHAT-PAGING1：真实分页漏项修复（2026-10-01）
+
+上一goal turn为progress：只读调查得到具体UI根因与源码/3310差异，改变了实施边界；不把调查当UI完成。UI方案仍待确认，独立后端正确性继续推进。
+
+| 项 | 放置/任务门 |
+|---|---|
+| Owner/基线 | BFF Conversation main293dfe7，Root59df142c；4候选doc495行受保护；Root唯一Git，bff_conversation_scope_owner负责现查询与测试，不碰Web运行副本/Agent/Billing/uv.lock。 |
+| 当前/目标 | updated_at DESC、conversation_id ASC与row comparison小于冲突；恢复同timestamp ID向后分页，无改变direct/all-private语义。 |
+| 目录/粒度 | 扩现PostgresChatRepository具名list查询及现chat-service.test.ts/chat-facts.integration.mjs；淘汰新模块/反向排序/Web过滤。无新文件/目录。 |
+| 数据/API | canonical TIMESTAMPTZ(3)/索引、public3机器字节、cursor位置形状、limit+1、null末页、tenant/subject/Project准入保持；不发新版本或terminal retry。 |
+| 三设计门 | 本片前缀写入BFF TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT，与既有事实一致；保护495草案，Root选择性提交。阶段已按tests-only RED→唯一production GREEN完成；交付88c54dbc，实际门与后继见本片收尾证据。 |
+| Agent/范围 | bff_conversation_scope_owner(gpt-5.6-sol)测试writer；允许现两test文件，生产chat-repository.ts仅Root看到RED后放行；独立审查readonly，无Git/服务/数据权限。 |
+| 验证 | Root新随机临时库、同PG实例/role、现Redis不flush；db:apply-schema→真实HTTP ties/multi-page/filter/身份→full BFF门→固定文件hash独立审查→精准提交。 |
+| 交付 | Root sole commit，仅本片source/tests及四doc前缀；现API文档历史状态单独标明，不夹带retry草案。整个九owner/Wave0–7目标保持active。 |
+
+## CHATGPT-THREAD-UX：用户可见回复区优先（2026-10-01；调查完成，设计待确认）
+
+| 项 | 当前任务卡 |
+|---|---|
+| 目标 | 按用户截图收敛回复正文、就近失败状态与紧凑操作层级；优先用户所见交互，不继续以无关SDK/分页进展代替视觉成果。 |
+| Owner/基线 | Web UI唯一owner；main34dc40c clean。Root负责裁决、运行副本和真实页面验收；web_failure_wire_review只读审查，未授源码写入。Root59df142c；BFF/Agent/Billing候选docs与uv.lock保护。 |
+| 已核根因 | conversation-thread.tsx仅在空正文、纯text末轮嵌入失败，已有正文/过程走独立scroller项；Alert默认grid让title与description/action上下分层；retry默认36px按钮与紧凑正文密度不一致。 |
+| 运行差异 | 3310源码副本仍无条件显示retry/raw error detail；committed Web只在未获receipt的冻结提交时允许同key/body恢复。不能仅热改CSS或展示尚未发布的terminal retry。 |
+| 方案比较 | A推荐：现ConversationThread内失败归属对应末轮、inline/wrap中性色状态与ghost小按钮，保留alert/a11y；B：AssistantTurn加入反馈slot，边界更整齐但扩大API；C：CSS-only不解决独立消息项，淘汰。具体复制/恢复操作只展示真实支持能力。 |
+| 范围/依赖 | 优先现conversation-thread.tsx、thread.module.css与conversation-failure既有测试；若合并复制操作需要AssistantTurn slot先更新放置门。无新模块/依赖/表/协议。原user retry依赖正式BFF/Agent发布，不伪造重新生成。 |
+| 阶段/验证 | 已提交简短方案给用户确认；之后三设计一致→现tests RED/GREEN→完整Web门→完整职责运行切片→desktop/mobile与键盘/真实页。当前未改Web/运行副本，未称UI完成。 |
+| 页面证据 | 同一IAB列出7现有tab，tab6 URL与截图会话一致；绑定/只读DOM两次均CDP focus超时，未点击retry/发送/刷新/新增tab，浏览器实际验收未通过。源代码证据不替代该验收。 |
+
+BFF-CONVERSATION-SCOPE两只读审查已交付，暂保留待Root版本裁决：direct当前all-private不是tenant越权；显式未归属筛选需正式owner语义与consumer锁步，同timestamp cursor谓词方向有缺陷。未授生产写入，不以该支线占用用户当前UI关键路径。
+
+## BFF-CONVERSATION-SCOPE：普通会话与Project查询闭环（2026-10-01）
+
+上一goal turn为progress：Platforma77ad403/Root59df142c真实提交，full离线1224/243、治理95/95、提交后checkpoint/topology均PASS；本轮不重复pin或把它当全目标完成。
+
+| 项 | 调查任务卡 |
+|---|---|
+| 目标/Priority | 完成用户要求会话列表与Project独立但可归属的查询语义；先核owner contract，禁止以Web临时过滤掩盖SQL/route差异。 |
+| 基线 | Root main59df142c，BFF main293dfe7＋4候选doc495行（冻结 `/tmp/kokoro-bff-conversation-scope-baseline.json`）；Web main34dc40c clean。Agent/Billing/uv.lock保护。 |
+| Owner/角色 | BFF Conversation/Project唯一facts writer；bff_conversation_scope_owner(gpt-5.6-sol)先只读contract/SQL与设计；web_failure_wire_review只读Web scope和consumer；Root裁决API/SQL/状态、唯一Git、真实PG/浏览器验证。 |
+| 现证据 | Web SessionScope注释direct inbox或project、list默认scope=direct/Project仅project_ref；BFF DirectScopeQuery当前只声明private filtering且不越IAM身份，解析校验后未保留direct selector；SQL未指定project返回当前subject全部可见private。是否是合法global API与direct UI不匹配须先收敛，不能把global列表当tenant越权。 |
+| 暂定范围 | list与projection/cursor语义、既有ChatApplicationService/Repository/route、对应现unit/publicHTTP/真实PG tests；无新数据表/模块/进程，不碰Retry/Agent4、executionFIFO/ScheduledTask、Billing。机器语义版本由owner先论证，不复用role-only breaking例外或谎称compatible。 |
+| 阶段门 | 当前只读调查，未授写。之后Root放置表/三设计门→tests-only RED→源码GREEN；文档prefix与已有495候选严格隔离，Root选择性提交，不发布retry草案。 |
+| 验证/交付 | 绑定当前commit，查direct/project/omitted/empty/组合filter、tenant/subject、project不存在/删除/slug归属、cursor稳定与paging ties；Root实际自有PG/schema fixture、不清应用数据；完整BFF门和独立审查，owner发布后Web exact repin/实际页面再验。 |
+
 ## PLATFORM-IAM07-PIN：源码已提交，整体授权组合仍待验（2026-10-01）
 
 Platform physical apps/kokoro-capability main `a77ad403095ae6314485e13298b7afa175932c8b`、13文件、clean；Root唯一提交，最终独立13hash/274保护终审0/0/0。正式IAM0.7来自clean e3c035b9的sdk:pack，archive3d9abf77/96entries；旧0.6包删除、manifest/lock只6+/6-IAM file pin，没有其他依赖升级。完整内外provenance/archive/package/dependency/lock三section/default importer门及28真实CLI用例；生产src/Prisma/Platform v5.0.1契约274hash冻结，两个现IAM method兼容，新增Skill authorization方法未消费。
