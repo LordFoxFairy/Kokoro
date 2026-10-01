@@ -1,3 +1,30 @@
+## WEB-PROJECT-FLOW：源码提交与实际清单恢复（2026-10-01）
+
+Web main `34dc40c0f92fb440dc241643b491cdc3e61f9f1c`，18文件、clean；Root sole commit，独立最终18hash审查0/0/0。BFF required string|null正式消费、null唯一终页、view显式映射、preview/fixtures同shape；项目loading/error优先，不改API/SQL/用户数据/模型。Root实际完整check contract219/architecture50/tests2064/163files/lint/typecheck/build exit0；preview Playwright14pass/4既定skip（13.7s），后置typecheck0，34117退出。
+
+保留全部失败证据：最初9fail/113pass；第一fullcontract1/218（旧合法fixtures缺cursor）；R2–R4fulltest2fail/2062pass、定点3pass但整文件2/70，最终定位同文件共享ListClient in-flight。仅恢复用例使用独立稳定ListClient与finally恢复spy、没有timeout/retry/reset或放宽原snapshot/URL断言。最后整文件72/72和freshfull2064通过；日志 `/tmp/kokoro-web-project-flow-*.log`、冻结 `/tmp/kokoro-web-project-flow-final-manifest.json`。
+
+受管3310 PID65590/parent65119未重启，四个独立职责窄patch通过旧hash门，原failure46文件未半切；backup/manifest `/tmp/kokoro-web-project-runtime-{backup,sync.json}`。Root真实tab6侧栏展开已显示会话清单，不再误报加载失败；截图 `/tmp/kokoro-web-project-flow-user-page.jpg` 仍明确显示重复user及旧失败/重试反馈，未称用户整体交互已修。没有收费provider/PG/Redis清理。
+
+Root只刷新49个Web committed来源，inventory仍3active/13broken；Agent/BFF/Billing候选docs及Root uv.lock保护。总goal保持active，137研发规则缺口不因本片清零。下一关键链为同会话执行串行/正式原user retry与队列UX；用户明确喜欢ChatGPT风格，已提出中性色正文/紧凑操作栏/就近低干扰失败反馈，异步风格确认待回复。不能靠隐藏错误、过滤历史user或再生一次新消息来假闭环。Root实际集成复验：当前 w1e-iam07-bff-pin checkpoint PASS/0、topology PASS/0；治理 pytest 95/95（44.61s）。首轮 missing path、随后误选历史 platform-code-release 的4/12快照失败均保留，不修改快照或3/13状态。实际日志 `/tmp/kokoro-web-project-flow-root-{checkpoint-final,topology,tests}.log`；组合命令因历史checkpoint失败退出1，pytest本身95通过，最终正确checkpoint单独退出0。
+
+### 执行串行审计：尚未实现目标队列（只读，2026-10-01）
+
+已核Web machine.ts481–512运行中分支实际普通createMessage，而注释声称转steer；MachinePhase无queued。BFF当前dispatch FIFO仅等待HTTP admission回执（Agent outbox delivery），不是Run terminal；Agent现Schema只有per-Run lease/generation，未有session-active唯一约束。Redis通知不是现有会话锁。因此“同会话上一轮结束后下一轮执行”是明确目标，不是当前已验事实。
+
+后继最高能力切片：BFF持久用户轮FIFO/terminal释放，Agent防御session active fence（沿retry4既有scope方案），Web后续turn queued与run.steer分离。真实PG/Redis验证A/B同会话只有A执行、A各终态B恰一次释放，跨会话A/X可并行；浏览器刷新/停止/重复点击不重复原user或Run。没有双扣款观测证据，不冒称已双扣，也不使用Redis锁/组件mock代替组合验收。
+
+## WEB-PROJECT-FLOW：用户实际交互故障优先（2026-10-01）
+
+| 项 | 当前任务卡 |
+|---|---|
+| 目标/Owner | 修复当前项目会话加载与状态投影，Web负责严格wire消费/界面状态，BFF仍唯一Conversation/Message owner；Root实际浏览器、验证、Git负责人。 |
+| 基线/范围 | Web main e17c039 clean；Root main1f20be65。当前3310/tab6项目会话URL复现，不修改原用户数据。web_failure_wire_review只读cursor与项目状态审计；bff_chat_role_owner只读其他Chat/Project wire差异；bff_failure_contract_review并行只读Platform IAM0.7来源，未授权任何源码写入。 |
+| 已复现 | 点击侧栏“重试加载”，GET /api/session/sessions?project_ref=...返回HTTP200、sessions=[]、next_cursor=null；Web sessionListSchema只允许optional string，合法响应进入catch/error。正文projectConversation提前return welcome又忽略loading/error，显示错误空态。不是Redis并发或CSS根因。 |
+| 放置/选案 | 优先扩现src/contract/chat.ts、rail hook、现project workspace与相邻tests；淘汰代理临时删null、宽松unknown/fallback及新store。精确required/nullable须先核固定BFF committed spec；三设计文档收敛后tests RED再源码。 |
+| 依赖/数据 | Browser→Web同源→BFF不变，无新SQL/owner/队列/角色；同会话用户轮串行，Redis协调但不替代DB幂等与执行身份。任务、项目、会话保持独立。 |
+| 验证/交付 | 主树实际RED/GREEN、完整Web门、独立fixture与用户tab刷新/项目列表/已有会话回读；用户页未见正常前不称完成。冻结manifest、独立review、Root精准提交；运行副本仅经旧hash验证的完整职责切片更新，其他已发布failure合同不半切。 |
+
 ## 2026-10-01 下一owner Agent4：设计门具体缺口已定位，未授权重写
 
 Web consumer/source片e17c039已由Root b1e53f91精确集成；提交后checkpoint/topology均PASS（`/tmp/kokoro-web-public3-postcommit-{checkpoint,topology}.log`），全goal保持active，137规则失败/真实整体能力待验未清零。
