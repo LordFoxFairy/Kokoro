@@ -1,5 +1,7 @@
 ## R40 实际续派与交付
 
+Agent HTTP4接受测试r2已Root真复验80/80通过（45PG＋35HTTP，16.97s），153 SDK warnings保留；/tmp/kokoro-agent-http4-r40-root-real-pg-http-r2.log，owned agent_terminal_atomic_90f0cf3418784f7a created/closed=true，25928已收。仅授权三fixture修订，独立r2审0P0/P1/P2；当前manifest345643b5，test22805701，生产19/保护232不变。1799纯门/Root静态与此资源证据均已获得，尚待Agent完整切片提交/发布与BFF→Web消费，不冒称浏览器全链闭环。System核心6源/fixture独立审0P0/P1/P2，catalog后继仍按真实七RED在实现。Root零遗留测试句柄。
+
 System最新真实门：Root15966已收，冻结R1 67pass；R39 namespace3与R40 view/function/type非空3通过，7个同22表catalog语义漂移真实失败（resource7fail6pass6旧case过滤skip，3.27s），/tmp/kokoro-system-schema-r40-root-core-and-catalog-red.log。owned临时库清理后指定前缀查询无残留，未清共享库。原WIN05仅现catalog helper/fresh脚本＋批准doc段后继GREEN；core22文件仍冻由独立审核，未发布System。Root所有执行session均已收，继续Web/Scheduler/Agent4fixture并行。
 
 原10职责窗口全部已续派/核句柄，独立只读后继已交后停，不称10writer同时跑。Web四doc D0及独立审通过，Root正式ProjectList RED 1fail7pass，原负责人已授精准GREEN；System/Scheduler各自源码GREEN并行，单仓单writer。
