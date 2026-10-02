@@ -1,3 +1,33 @@
+## R111 冻结候选独立验收（2026-10-02）
+
+上一goal回合R110为progress（真实验证与f775be11提交）；随后仅回答测试进度不计新增progress。本回合已重新读取原 WIN03 实际句柄：turn 01a0fe38-aacb-77a2-8585-7df00bcc351c completed/idle，收到 archive GREEN 交付，继续可执行验收，不新建计划中心或重启服务。完整 Wave0–7 目标保持 active。
+
+|任务/测试ID|Owner、基线与范围|完成条件、依赖与交付|
+|---|---|---|
+|R111-ARCHIVE-ROOT / T-Q03、T-R01|Root 验证；Root f775be11 / Agent 17c73541 + 已交付 archive test f1a5f88f；原 owner 停写，全部源码冻结；只独有 /tmp 验证输出|独立复跑 import、默认15纯/5 integration未选、原3架构+140回归、Ruff/类型/checker/Failure；核范围与回收。完整source/wheel/安装和真实S3另门，不据局部通过关闭T-Q03|
+|R111-ARCHIVE-REVIEW / T-Q03、T-R01|原 agent_machine_final_review_r98 只读；同 frozen 候选及 manifest /tmp/kokoro-r110-agent-archive-green.json；仅独有 /tmp 报告|审保留13函数/20case/18assert、lazy UUID桶归属、404边界、分页/所有cleanup/primary保留、真实client tracker；不运行资源、不写仓、不操作Git；Root独立实际验证+审查一起放行|
+|R111-NEXT-DOCKER-PREFLIGHT / T-Q03|原 agent4_execution_owner 只读；现 architecture 和 Docker integration test；当前冻结候选；只 /tmp 报告|确定下一真实import副作用RED recorder与最小单file lazy fixture方案；仅静态设计，不调用Docker/MinIO/网络或改源码。Root裁决后原WIN03 tests-first实现|
+
+R111-ARCHIVE-ROOT 终态：Root42165实际九门exit0，import1、archive15/5 integration未选、原架构3、四文件140通过，完整Ruff/类型/owner/Failure0；369文件hash保持、resource attempts0、精确Failure子进程6。manifest /tmp/kokoro-r111-agent-archive-root.json SHA9752df1925f7c18f3c1f8b1f9d3d196d6c85f588c573369649082914e8f54b54；独立spec/quality0/0/0，旧报告root误引worker历史b298已另存更正，当前f775be11。仅archive测试切片验收，不关闭完整T-Q03/E49/生产archiver生命周期。
+
+|任务/测试ID|Owner、精确范围与基线|阶段门|
+|---|---|---|
+|R111-DOCKER-IMPORT-RED / T-Q03|原WIN03唯一Agent tests writer；仅tests/contract/test_architecture.py；Agent17c73541+已验archive f1a5f88f，原architecture93000280及其余369清单保护；Root唯一Git|沿只读预审c18be648：追加成功真实import后calls非空回归；仅无害minio_creds/subprocess.run recorder，绝不执行真实Docker/资源。原33 test functions/原assert与archive回归保持。只精确新node RED+Ruff/类型，交付新0600 /tmp/kokoro-r111-agent-docker-import-red.json后停写；Root复现和审后另授权Docker test GREEN|
+
+R111-SYSTEM-FRESH-PREFLIGHT / T-Q12、T-R02：原agent4_execution_owner只读，System aa4e42e5 + 已验fresh脚本366b886b/teste97a5e00/helper efd2f061；只新0600 /tmp/kokoro-r111-system-fresh-preflight.md。审现verify-system-fresh-schema脚本实际UUID DB身份、受信URL入口、先登记再CREATE与DROP/终态/超时失败回收，给Root下一有界真实PG单门方案；仅读私有env键名/布尔，禁止资源探测/凭据输出/写仓/Git/新服务。与Agent Docker tests写入独立并行；本阶段不称资源通过。
+
+R111-TEST-LEDGER-REVIEW：原four_owner_fixes_review_r31只读审当前四docs与70稳定ID/计数/历史suffix/证据hash，Root f775be11；只新0600 /tmp/kokoro-r111-test-ledger-review.md，不运行资源/Git写；Root另跑原309治理并精确四docs提交。开发candidate与整组测试状态分开。
+
+R111-DOCKER-ROOT-RED 终态：Root1597原node实际pytest exit1/预期wrapper0，1行为fail/0 setup/0资源尝试/369hash保持；成功import后calls=['minio_creds',['docker','info']]。manifest /tmp/kokoro-r111-agent-docker-red-root.json SHA9731a502173acbc4ad8060b18d1ccc26ab5f21e3f47e7cea665c6d1282e6095d；独立RED审0/0/0，/tmp/kokoro-r111-agent-docker-red-review.md SHAa755444cc6a6eb75d9e5ecac678940b9a69e4a79bce66755a29b67ed465a70a9。初始Root wrapper索引guard argv错误在任何测试/资源前失败，修正后才是真实RED，不混同。
+
+|任务/测试ID|Owner、精确写集与基线|阶段门|
+|---|---|---|
+|R111-DOCKER-IMPORT-GREEN / T-Q03|原WIN03唯一Agent writer；仅现tests/integration/sandbox/test_docker_backend.py，原SHA0851b004a2f898c79ab5d455d585310c8f8e255b2c1a93ee9120e91416f6e337；architecture85b39c7a/原全部33函数61assert、新RED/archive f1a5f88f及其余源/锁/docs冻结；Root唯一Git|原两class静态integration+lazy docker_ready；MinIO credentials仅S3用例lazy读取。Root明确批准显式资源选择时daemon/credentials缺失fail-loud，不保动态skip假成功；保全部10cases/17assert和missing-image异常断言。精确import GREEN、显式2原纯节点/其余8资源未跑、archive15/5未选、原架构3+140、完整Ruff/类型/checker/Failure无资源；新0600 /tmp/kokoro-r111-agent-docker-import-green.json后停。真实Docker/PG/S3执行前另收口既有容器/桶清理债，本阶段不授权资源或生产重写|
+
+放置：此阶段无新业务文件/目录/owner；沿既有测试职责及原任务卡推进。Root独占Git，保留Agent/System/Billing/uv.lock任务外修改，来源报告不得覆盖；原archiver生产close缺口不因测试fixture回收而关闭。
+
+R111台账收口：Root63619治理309pass/22.01s；E69更新后Root99160同门再跑exit0/309pass22.10s，日志 /tmp/kokoro-r111-test-ledger-final-governance.log SHA65b0afd5ed11f3a15947189da84985e94323bfdb7fa6d1073910c00c0fab8cfa。最初计数wrapper以Counter与含0键dict比较误报，在测试执行前修正，不改变70状态也不当产品失败。独立最终台账审0/0/0，/tmp/kokoro-r111-test-ledger-final-review.md SHAa4d76955f6d26cf516f8749d967fcef07c2b77d7919ec80363324c927a4bb918，绑定追加此终态说明前四docs。只台账治理，不是全部用户链复测；原Docker GREEN writer继续现实际句柄，未复启共享设施，任务外修改保留。
+
 ## R110 Agent候选验收与完整源码门推进（2026-10-02）
 
 上回合progress：Root b2983007已提交四台账；真实治理309pass/22.19s与独立台账审0，70组12/1/0/13/41/2/1。完整Wave0–7保持，Agent候选不是安装完成，不重启共享服务。
