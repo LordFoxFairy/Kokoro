@@ -1,3 +1,7 @@
+## R93 当前发布与测试进度（2026-10-02）
+
+完整Wave0–7保持active，Root基线6d68bcc3。IAM缺提交导致fresh clone失败已修：原e3c源及新两doc70a2b015普通发布main；Root938纯门与现host51真实PG/Redis通过、独立最终0；同fresh目录原54930初始化exit0。Root仍以标准submodule固定e3c运行/SDK/relay pin，main70引用保留，不为doc提交改安全版本。Web正规BFF6消费Root249contract/50architecture/2309tests、独立0，17路径已精确发布a6c651b；未变UI/Team15/生命周期三源。Root两gitlink及49Web/186BFF来源当前组合95pure pass/独立Astra0/topology PASS；compat仍16edges/13declaredbroken/3active、0新增误差，不称全链通过。Agent原五unit真实19fail/229pass/4deselected、独立0，原WIN03已授现15source/caller/fakes GREEN；机器/SQL/资源仍锁。测试台账70组现9限定通过/1最近失败/16待复测/41未验/2决策阻塞/1支付后置；T-C06真实聊天仍原product-send-click失败未复跑，不称完整闭环。
+
 ## R92 测试计划核对与最新失败（2026-10-02）
 
 测试唯一台账仍为docs/test-cases.md，共70组：7通过、2最近失败、0执行中、17待复测、41未验、2决策阻塞、1支付后置。通过均限具名切片，不是完整产品比例。Root eaeaa86b的fresh clone在IAM固定提交获取处exit128（远端not our ref），未启动运行资源；T-Q10由待复测改失败。Web BFF6消费Root真实RED为13失败/123通过，生成GREEN尚未验收；真实两轮聊天T-C06仍保留最近product-send-click失败，未复跑。下一行动为IAM精确提交发布核查与Web6正规消费，随后同一隔离checkout组合及浏览器验收。证据E12/E13见同测试台账与progress。

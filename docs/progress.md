@@ -1,3 +1,19 @@
+## R93 发布缺口修复、消费验收与Agent实施（2026-10-02）
+
+上一回合progress：Root四台账已提交6d68bcc3，70组测试按实际失败追踪；本回合沿同goal不缩小Wave0–7。先核原WIN01/03 actual handles：均idle/完成后才续派，不重复启动。任务外uv.lock、Billing原dirty与Agent四D0保护；Root唯一Git/index/资源执行者。
+
+### 已验收与已发布
+
+- IAM根因实测：clean main e3c035b，相对远端36242fd ahead2；remote ls-remote与祖先验证一致，未丢commit或改pin。Root原27902 Node24完整verify exit0：102files938pass/0fail/0skip及format/lint/type/contract/breaking/SDK/build；/tmp/kokoro-r93-root-iam-verify.log。原73738现host真实PG/Redis51/51pass、71.80s/exit0及fixture清理断言，/tmp/kokoro-r93-root-iam-host.log。独立Sol原0/0/1只候选文案，Root仅CURRENT/ACCEPTANCE补当前证据与历史标注后最终0/0/0（/tmp/kokoro-r93-iam-publish-final-review.md）。Root仅两doc新commit70a2b01554eee39520a9dc2b27cbb649954cf413，fetch复核祖先后普通push，远端main同SHA，原46105终态0。源/contract/schema/lock不变；Root运行仍标准固定e3c，main70保留，不强推或为doc改SDK/relay。只有限定owner门，不替浏览器登录。
+- 同fresh执行树继续初始化：原54930终态exit0，六owner原固定pin获取成功；/tmp/kokoro-r92-w2-source-prep.json/log保存R92 exit128和R93 exit0两attempts。只关闭缺提交分支，尚未同步新Root组合/依赖/运行；runtime_resources_created=false，未新建模型/应用资源。
+- Web public6消费：原WIN01停写后Root17授权与735外围hash、owner canonical原bytes均确认；Team15和生命周期三hash不变。Root原81297 Node22完整pnpm check exit0：249contract/50architecture/163files2309tests及lint/types/build；/tmp/kokoro-r93-root-web-public6-check.log。独立Sol0/0/0，/tmp/kokoro-r93-web-public6-review.md。Root只补现CURRENT验收摘要，精确17路径commit/push a6c651b1c22a86cacfe282486193d743fca3ca3a，原35622终态0。无format脚本N/A；不改UI，不替独立/项目真实浏览器列表或发送成功。
+
+### 当前执行与未关闭门
+
+- Agent五unit Root原25171真实exit1：19fail/229pass/4deselected、724既有warnings，22.46s；/tmp/kokoro-r93-root-agent-red.log；五SHA与worker冻结一致。独立Astra0/0/0，/tmp/kokoro-r93-agent-red-review.md。19为真实缺投影/raw泄漏/无durable phase/started及错误终态行为，24新增例含5正控，非setup/签名错误；未到达的深层断言在review记录。原WIN03现15source及明确caller/fakes获GREEN；四D0/机器/生成/SQL/依赖/资源仍锁，Root不抢写或把RED基线当实现通过。
+- Root旧组合topology真实exit1存/tmp/kokoro-r93-pre-composition-topology.json；正规更新已发布Web49/BFF186 provenance和两gitlink后topology PASS，/tmp/kokoro-r93-composition-topology.json。compat原99544终态exit1仅原13declaredbroken、16edges、0violations，无新增错误，/tmp/kokoro-r93-composition-compatibility.json；不放宽checker/清零边。原70947三pure测试已终态exit0，95pass/0fail、48.88s，/tmp/kokoro-r93-root-composition.log；独立Astra0/0/0，核304总引用/234去重blob均正确，/tmp/kokoro-r93-composition-review.md。仅这两gitlink/JSON/四台账进入Root精确提交，新完整用户旅程仍未验。
+- 测试台账70组更新为9通过/1最近失败/0执行中/16待复测/41未验/2阻塞/1支付后置：T-Q01/T-Q04本次有限纯门通过，T-Q10缺提交分支复测0后回待完整组合复测；不增加组数，不删除E12原失败。T-C06仍原W2 product-send-click失败，未做新模型/浏览器旅程或Billing收费。
+
 ## R92 测试台账核实（2026-10-02）
 
 Root基线eaeaa86b4d92b44c1a70789b95e0219651f191e9。本次核对已有终态命令、当前工作树及70组矩阵，不重跑全部业务测试；Root唯一编辑同四台账，无子仓写入、服务重启或共享资源清理。

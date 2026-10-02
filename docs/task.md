@@ -1,3 +1,27 @@
+## R93 发布源修复与消费/行为测试并行（2026-10-02）
+
+上一回合为progress：Root提交6d68bcc3，70组测试按真实fresh clone失败更新，完整Wave0–7范围不变。当前IAM clean main e3c035b，远端main实测36242fd，fast-forward缺两提交；尚未push。原WIN01已获R91精确17路径正规生成GREEN；原WIN03五unit测试已冻结停写，报告19fail/229pass/4deselected，Root尚待复跑。
+
+|任务|角色/模型/基线与范围|依赖/验收/提交|
+|---|---|---|
+|R93-IAM-PUBLISH / T-Q10|Root唯一IAM发布者；main e3c035b clean，对比远端36242fd；核两现fixture提交，现docs/CURRENT.md与docs/ACCEPTANCE.md仅补当前证据/关闭候选措辞P2，不改源/契约/SQL|独立Sol审两提交，Root现纯门与精确source fixture测试；两doc交接再审，非强推原main后继续同fresh fixture初始化；Root独占Git，真实登录尚待浏览器复验|
+|R93-IAM-READ|four_owner_fixes_review_r31 / gpt-5.6-sol / 只读；apps/kokoro-iam origin/main..e3c035b四路径及Root原证据|不得改文件/Git/数据或启服务；报告当前提交、风险与发布条件到/tmp/kokoro-r93-iam-publish-review.md，审查不替Root复跑|
+|R93-AGENT-RED-READ|agent4_scope_gate_r19 / gpt-6-astra / 只读；Agent17c73541+九dirty，四D0及五unit当前diff|只核24新增case是否真实行为RED/既有断言保留/闭集符合批准D0，报告/tmp/kokoro-r93-agent-red-review.md；Root原五测试复跑后才授source，不授本轮writer/Git/资源|
+
+只读Agent均注入现docs/CODEBASE_MAP.md、相关唯一语言/测试手册与owner三D0，不新造契约/模块。测试与源码分阶段，独立Web写入与Root IAM纯验收可并行；Agent源码此刻锁定，所有Root/owner任务外dirty保留。Root负责同台账与最终集成提交；不因纯门成功关闭T-C06真实聊天。
+
+R93-AGENT-GREEN：Root原25171已终态exit1，五unit实测19fail/229pass/4deselected、724既有warnings，22.46s，/tmp/kokoro-r93-root-agent-red.log；五hash与冻结完全匹配。独立Astra0P0/P1/P2，/tmp/kokoro-r93-agent-red-review.md，24新增case有效、旧断言未弱化。现授原WIN03唯一Agent writer按R90已批D0的现生产15路径与caller/fakes实施GREEN，Root不抢写。
+
+精确生产写集（S=src/kokoro_agent/）：protocol/events.py、protocol/__init__.py、domain/chat/models.py、domain/chat/projection.py、execution/events.py、execution/publish_agent_events.py、execution/run_agent.py、agent_factory.py、worker/supervisor_context.py、worker/supervisor_execution.py、worker/supervisor_control.py、worker/supervisor_recovery.py、worker/supervisor.py、worker/main.py、infrastructure/postgres_run_events.py。不新增目录/模块/依赖；domain/run/repositories.py与postgres_run_repository.py、postgres_chat_repository.py、postgres_run_context.py本轮只读，需改先报。
+
+测试写集：原五unit；tests/unit/execution/test_control_commands.py、test_r0_fault_matrix.py、test_subagent_hitl.py、test_deliver_event.py、test_steering.py；tests/unit/tools/test_memory.py；tests/unit/worker/test_dependencies.py；tests/support/fakes.py；tests/acceptance/test_http_ingress.py；tests/integration/database/test_run_interaction_transactions.py、test_run_outbox_filter.py、test_delivery_outbox.py。只承接真实caller签名/锁内started语义及新增现路径行为边界；Root真PG资源另授。原五新增行为断言保护；旧raw正例按已批safe闭集迁移、保secret负例，不保双轨。型别化回调/recovery及容量/Unicode/presence/多peer在现测试补真实RED后GREEN。四D0冻结；机器/contract/provenance/generated、schema/lock和收费全部仍锁，纯源码阶段交接后单独授机器发布，不冒充HTTP5已发布。停写交付文件集/hash、RED/GREEN日志与外围保护，Root统一审查/验证/提交。
+
+R93-WEB-FINAL / T-Q01、T-Q10：原WIN01 public6精确17路径已停写冻结，manifest /tmp/kokoro-r92-web-public6-green-final.json。Root Node22完整check原81297已终态exit0，249contract/50architecture/2309tests及lint/types/build；Sol独立0P0/P1/P2，/tmp/kokoro-r93-web-public6-review.md；17授权/735外围与canonical原字节一致。Root仅补CURRENT验收摘要后精确17路径提交/普通push a6c651b1c22a86cacfe282486193d743fca3ca3a。运行与浏览器仍后继。IAM已实际普通push70a2b015（含原e3c源），同fresh目录原54930终态exit0，六owner初始化已成功，不改pin。
+
+R93-ROOT-COMPOSITION：Root唯一writer仅更新 apps/kokoro-app、apps/kokoro-bff 两gitlink、verification/contracts/consumer-inventory.json已发布blob provenance与现四台账；不改机器checker、runner或任何owner源。当前旧pin真实topology exit1，/tmp/kokoro-r93-pre-composition-topology.json。Web来源统一取已发布a6c651b、BFF bb610ea/public6与owner canonical75ef，重算实际committed blob SHA，保16edges/13broken/3active与历史证据。IAM Root运行pin仍固定已正式发布e3c035b（SDK/relay/验收同一版本），新70a2b015仅两doc并已发布main；不为文档提交强迫重打不可变SDK或改消费者安全pin，primary按标准git submodule update恢复该固定checkout，main ref及远端70保留，无未提交改动丢弃。Root集成适当纯门、拓扑/compatibility并独立审后提交；最终同fresh执行树同步新RootSHA，严格真实旅程另验。独立Astra agent4_scope_gate_r19只读审同JSON及两gitlink，基线6d68bcc3+当前235来源更新，报告/tmp/kokoro-r93-composition-review.md，不改文件/Git/资源，不清零broken边。
+
+R93 Root组合验收：原70947终态exit0，95pass/0fail/48.88s；topology PASS，compat原99544 exit1仅13原declaredbroken/0violations。独立Astra0P0/P1/P2，304引用/234去重blob核正确；/tmp/kokoro-r93-composition-review.md。Root仅两gitlink/JSON及现四台账精确提交，任务外uv.lock/Billing/Agent source保留，随后原fresh执行树同步这个已发布组合，不称运行旅程已完成。
+
 ## R92 已发布组合的隔离验收准备（2026-10-02）
 
 上一goal回合progress：Web生命周期真实RED→Root完整门/独立审后发布a52a623，T-C11关闭；R91两原writer已通过原句柄确认active，继续同任务而非重启。Root基线eaeaa86b，任务外uv.lock/Billing dirty及Agent D0/tests保护。
