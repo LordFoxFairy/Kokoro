@@ -1,3 +1,11 @@
+## R88 当前测试任务总览（2026-10-02）
+
+R88盘点：恢复既有test-cases.md当前测试矩阵，70组稳定ID与九owner pure/resource/process/consumer覆盖；旧历史原文保留禁用。读取已有实测输出、核诊断两hash/BFF canonical/Plugins已发布双文件及Billing冻结3hash；本次没有重新运行业务测试。状态6通过仅局部范围、2最近失败保留、其余待复测/未验/阻塞/后置。测试源变更与修复提交须原ID重新Root验证，不据此直接关测试。
+
+R88独立只读复核提出P1漏Wave7 backup/restore、P2资源skip与纯门PASS口径；Root在原T-R04补隔离fixture恢复目标（仍未验），并明确仅本行必需skip阻止该行通过、拆出的资源仍未验。补IAM成员/邀请/角色权限T-L05待复测后共70唯一ID；不是新增计划中心或新验收成功。Root结构核状态6/2/0/18/41/2/1、历史原文逐字节保留、10证据路径存在、diff-check0；未新增运维深究或执行业务测试。
+
+R88返修最终独立复核0P0/P1/P2，报告/tmp/kokoro-r88-test-ledger-final-review.md，SHA256 c126963c51fdf7546374db1fb9e603537bfabf39f03b485be9bd7585c760c21b；Root最终结构验证70唯一ID、计数与三台账同步，旧历史字节不变。仅精确提交五份现文档，不收任何子仓/uv.lock，业务测试状态没有因文档提交而改变。
+
 ## R87 三面交互继续推进（2026-10-02）
 
 原R82三面清单保持，精确续派见同task.md的R87任务卡。BFF direct候选已停写交接，Root完整门/真实PG HTTP验收与独立审查进行中；Web生命周期实际RED证明共享owner释放缺陷但仍一次POST，不是原W2根因，Root复跑后原WIN01精确三路径GREEN。Agent原WIN03仅四现文档收敛安全用户过程D0，不授源码/contract或资源。R86诊断已发布Root3c94bea9；真实用户聊天、Skills/MCP使用与过程硬刷新尚未闭环，Billing纯772不替代正式费用链。保留uv.lock和Billing原dirty正文。

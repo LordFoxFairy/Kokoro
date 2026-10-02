@@ -1,3 +1,14 @@
+## R88 测试任务与开发任务分开追踪（2026-10-02）
+
+测试总台账唯一入口：[test-cases.md](test-cases.md)。本文件只记录派工/依赖，不复制测试状态矩阵；progress记录实测证据。复用原测试页恢复current区，旧L1–L5保留历史禁用原文，新增未测试任务不被历史PASS抹掉。
+
+|任务|负责人/范围|完成条件与当前结果|
+|---|---|---|
+|R88-TEST-LEDGER|Root唯一docs writer：现test-cases/task/progress/CURRENT/INDEX；原billing_chat_read_audit_r29只读完整性审|当前70组/九owner四层覆盖，稳定ID、预期/负例、当前结果、版本证据/缺陷/复测/资源；6具名限定通过、2最近失败、18待复测、41未验、2决策阻塞、1后置；不是产品完成百分比|
+|测试关键路径|沿原WIN01/Web与Root，不重复开worker|T-C11最近RED失败修复中→Web固定BFF6/T-Q10→T-C02及T-C06/C09/C10/F03真实旅程；原失败不因提交/纯门而消失|
+
+本次是测试计划盘点与文档整合，没有重跑全部测试；核Root诊断/BFF public6/Plugins两文件/Billing三文件当前hash与已验版本匹配。只读审提出历史页无current矩阵/状态混用缺陷，已恢复独立current测试台账与九owner四层覆盖，待最终只读复核。当前Web/Agent仍在原任务写入，Root不抢写、不声称他们已验收。
+
 ## R87 三条用户路径的实施与验收（2026-10-02）
 
 复用R82交互清单与Wave0–7，不另建计划中心。Root基线3c94bea9；BFF b1ea063/public6候选已停写冻结，Web5e538f69仅生命周期RED，Agent17c73541工作树待原owner复核。Root独占Git、共享资源和最终验收。

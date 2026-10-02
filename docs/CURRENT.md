@@ -1,3 +1,7 @@
+## R88 当前测试任务总览（2026-10-02）
+
+当前测试台账已恢复为docs/test-cases.md；测试与开发派工分开，70组覆盖九owner与完整用户路径。6具名限定通过、2最近失败、18待复测、41未验、2决策阻塞、1支付后置；不算产品完成比例。当前两失败分别真实W2发送与Web缓存owner生命周期，原worker继续修复；整个产品未闭环。
+
 ## R87 三面交互继续推进（2026-10-02）
 
 原R82三面清单保持，精确续派见同task.md的R87任务卡。BFF direct候选已停写交接，Root完整门/真实PG HTTP验收与独立审查进行中；Web生命周期实际RED证明共享owner释放缺陷但仍一次POST，不是原W2根因，Root复跑后原WIN01精确三路径GREEN。Agent原WIN03仅四现文档收敛安全用户过程D0，不授源码/contract或资源。R86诊断已发布Root3c94bea9；真实用户聊天、Skills/MCP使用与过程硬刷新尚未闭环，Billing纯772不替代正式费用链。保留uv.lock和Billing原dirty正文。
