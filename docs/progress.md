@@ -1,3 +1,13 @@
+## R89 最新测试结果与缺陷记录（2026-10-02）
+
+Root基线5b6bbc3d；继续复用test-cases.md的70组，不把开发任务当测试完成。Root唯一Web check原句柄28836已实际终态exit0，Node22.22.2 pnpm check：contract246、architecture50、163文件2302tests通过，lint/typecheck/build通过，日志/tmp/kokoro-r89-root-web-lifecycle-check.log。本轮未执行format/浏览器/W2；候选未发布，不以纯门关闭T-C11或用户旅程T-C06。
+
+独立Web审查0P0/1P1/0P2：render阶段创建engine但未commit/acquire时，零owner条目不会回收，构造已订阅storage并可能hydrate/SSE；报告/tmp/kokoro-r89-web-lifecycle-final-review.md。需新增aborted render与延迟commit回归，不能盲目在render创建后加timer导致commit拿到disposed engine。原三路径保持冻结，未重新授权写入，Root不抢写。冻结SHA256：page-clients.ts=8cebd785ae04b8239321190a6c9d5841f374096161249761983d2f083b12d936；use-app-frame-engine.ts=94285b94d87960669133dcee20b874aa32bc49e208024c3b4f24b000b9b88c0c；app-frame.smoke.test.tsx=98051723cc24efab3f27701608da4fcdd5c114259053db1a5b9e582bf09484aa。
+
+独立Agent四文档D0审查0P0/1P1/0P2：安全枚举、presence、容量与preflight轮次身份未锁，完整协议测试缺唯一预期；报告/tmp/kokoro-r89-agent-progress-d0-review.md，四hash/旧全文/370外围保护匹配。仅设计证据，不计功能通过；Root先裁定闭集，再沿原WIN03已定不变量tests-only及后继owner artifact顺序推进。
+
+测试计数仍6通过/2最近失败/0执行中/18待复测/41未验/2决策阻塞/1支付后置；候选测试通过但验收缺陷未关，状态保留且追加E08/E09。无服务重启/新增资源/数据库清理/充值或收费动作；所有子仓dirty与任务外uv.lock保留。
+
 ## R88 当前测试任务总览（2026-10-02）
 
 R88盘点：恢复既有test-cases.md当前测试矩阵，70组稳定ID与九owner pure/resource/process/consumer覆盖；旧历史原文保留禁用。读取已有实测输出、核诊断两hash/BFF canonical/Plugins已发布双文件及Billing冻结3hash；本次没有重新运行业务测试。状态6通过仅局部范围、2最近失败保留、其余待复测/未验/阻塞/后置。测试源变更与修复提交须原ID重新Root验证，不据此直接关测试。

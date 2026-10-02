@@ -1,13 +1,13 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R88；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R89；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root c68c111e；BFF bb610ea/public6已发布但Root/Web未同步；Web5e538f69存在lease修复dirty；Agent17c73541文档D0进行中；Billing e04bff9纯codec冻结未发布。活动工作树不作为最终验收源。
+- 截至本次盘点：Root 5b6bbc3d；BFF bb610ea/public6已发布但Root/Web未同步；Web5e538f69生命周期候选已冻结、Root check通过但独立P1未关；Agent17c73541四文档D0冻结、协议闭集P1待裁定；Billing e04bff9纯codec冻结未发布。活动工作树不作为最终验收源。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
@@ -46,7 +46,7 @@
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
 | T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 未验 | 完整用户旅程仍未通过 |
 | T-C10 | BFF→Web | SSE断线/cursor replay/重复/间隙/过期与GC；不丢字、不双气泡 | 未验 | 真实断连/重启，禁止localStorage成为事实源 |
-| T-C11 | Web | 同scope真实重挂/双owner/StrictMode；最后卸载才close SSE；injected不被释放 | 失败 | E05：Root已复现1fail/1pass；原WIN01 lease GREEN尚待冻结验收 |
+| T-C11 | Web | 同scope真实重挂/双owner/StrictMode；最后卸载才close SSE；injected不被释放 | 失败 | E05/E08：原RED保留；候选Root check通过，但发现未commit render的零owner资源泄漏P1，须新增回归并复验 |
 | T-P01 | BFF→Scheduler→Agent | 独立任务不进入会话列表；project_id仅关联；创建/修改/暂停/删除/权限 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P02 | BFF→Scheduler→Agent | IANA timezone/DST、周期/一次、边界时间与misfire | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P03 | BFF→Scheduler→Agent | 重复唤醒/投递、幂等receipt、ACK unknown与Outbox恢复 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
@@ -64,12 +64,12 @@
 | T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 未验 | 正式管理mutation与凭据/audience边界待实现发布 |
 | T-K06 | Web→BFF→Agent→Platform | MCP opaque refs选择、每次调用fresh授权、args identity；撤销零调用 | 未验 | 旧free-text mcp_servers需owner-first替换，无fallback |
 | T-K07 | Platform→Agent | 工具schema closed profile/输入输出校验/超时取消/越权/注入 | 未验 | 不能把协议profile文档当执行测试 |
-| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | R87安全过程D0并行中；现HITL局部实现不证明整链 |
-| T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 未验 | R87安全过程D0并行中；现HITL局部实现不证明整链 |
-| T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 未验 | R87安全过程D0并行中；现HITL局部实现不证明整链 |
-| T-A04 | Agent→BFF→Web | 完整多项HITL pause→一次决策→resume；stale/重复/unknown/刷新正负例 | 未验 | R87安全过程D0并行中；现HITL局部实现不证明整链 |
-| T-A05 | Agent→BFF→Web | Todo/Skill/tool/HITL/delivery五时点刷新：恢复同水位，无重复或丢失 | 未验 | R87安全过程D0并行中；现HITL局部实现不证明整链 |
-| T-A06 | Agent→BFF→Web | 子Agent身份/状态/失败/取消/汇总；不混入主回复或泄露私有过程 | 未验 | R87安全过程D0并行中；现HITL局部实现不证明整链 |
+| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E09：安全过程四文档D0已审；枚举/字段/容量/轮次身份P1未定，尚无本切片业务测试 |
+| T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 未验 | E09：安全过程四文档D0已审；枚举/字段/容量/轮次身份P1未定，尚无本切片业务测试 |
+| T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 未验 | E09：安全过程四文档D0已审；枚举/字段/容量/轮次身份P1未定，尚无本切片业务测试 |
+| T-A04 | Agent→BFF→Web | 完整多项HITL pause→一次决策→resume；stale/重复/unknown/刷新正负例 | 未验 | E09：安全过程四文档D0已审；枚举/字段/容量/轮次身份P1未定，尚无本切片业务测试 |
+| T-A05 | Agent→BFF→Web | Todo/Skill/tool/HITL/delivery五时点刷新：恢复同水位，无重复或丢失 | 未验 | E09：安全过程四文档D0已审；枚举/字段/容量/轮次身份P1未定，尚无本切片业务测试 |
+| T-A06 | Agent→BFF→Web | 子Agent身份/状态/失败/取消/汇总；不混入主回复或泄露私有过程 | 未验 | E09：安全过程四文档D0已审；枚举/字段/容量/轮次身份P1未定，尚无本切片业务测试 |
 | T-B01 | Billing | 定价revision纯codec：strict格式/不可变摘要/整数/rational/边界/恶意结构 | 通过 | E07：772 unit/静态通过，仅冻结3文件；未验真实收费 |
 | T-B02 | System→Agent | 实际provider/model/route revision绑定；逐call/attempt证据，不补零/猜用量 | 未验 | ADR-033；System仅技术路由，Agent仅事实证据 |
 | T-B03 | Billing→BFF→Web | 授权赠送/余额/流水/撤权；前端只读owner结果，无假充值/免费补偿 | 未验 | 真实Billing命令+持久ledger；不直接改数据库充当授权 |
@@ -115,6 +115,8 @@
 |E05|Web5e538f69+tests-only frozen2fd0d1ed；修复尚未验收|Root1fail/1pass/88filtered；/tmp/kokoro-r87-root-web-lifecycle-red.log。真实旧cleanup处置新owner，但fixture仍1POST，非W2根因证明|
 |E06|Web5e538f69 Plugins/source+test两字节本次与commit匹配|Root发布前完整check2299test/246contract/50architecture及静态/build0；R85 progress、/tmp/kokoro-r85-root-web-truth-full-check.log。当前全Web dirty，不能沿用全仓GREEN|
 |E07|Billing e04bff9+3纯codec未发布，完整hash记录在R86证据|24files772unit pass/0fail/0skip，format/lint/两个no-emit门0；/tmp/kokoro-r86-root-billing-verification.json及对应log。无DB/provider/真实扣款|
+|E08|Web5e538f69+冻结生命周期3文件；完整SHA记录在R89 progress|Root Node22 pnpm check exit0：246contract/50architecture/2302tests，lint/typecheck/build通过；/tmp/kokoro-r89-root-web-lifecycle-check.log，原28836已终态。独立审0P0/1P1/0P2，/tmp/kokoro-r89-web-lifecycle-final-review.md；未commit render仍泄漏资源，T-C11不关闭。未执行本轮format、真实浏览器或W2|
+|E09|Agent17c73541+冻结安全过程四文档D0；仅设计审查|独立审0P0/1P1/0P2；/tmp/kokoro-r89-agent-progress-d0-review.md。四hash/旧全文/370外围保护匹配；安全协议闭集未锁定，无本切片业务测试通过|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 
@@ -134,7 +136,7 @@
 
 ## 下一测试批次（依赖顺序）
 
-1. T-C11：原WIN01 lease修复冻结→Root独立审查/真实RED→GREEN/完整Web门；原失败记录保留。
+1. T-C11：候选完整Web门已通过，但独立P1未关闭；追加未commit render及延迟commit回归→原WIN01修复→Root完整门/审查。不得仅加render阶段零owner定时释放而忽略延迟commit竞态；原失败保留。
 2. T-Q10/T-C02：Web正规固定BFF6→Root组合provenance/机器门→独立与项目浏览器列表。
 3. T-C06/T-C09/T-C10/T-F03：原严格两轮真实模型旅程，含活动/终态刷新、全文、receipt下载及另一用户拒绝；不放宽预算与断言。
 4. T-K04–07/T-A01–06：按owner artifact先后接选择/授权/安全过程，实际Skill/MCP/审批/作品与五时点刷新。

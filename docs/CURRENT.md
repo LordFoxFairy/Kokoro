@@ -1,3 +1,7 @@
+## R89 当前测试与返修状态（2026-10-02）
+
+测试台账仍为docs/test-cases.md：70组，6限定通过/2最近失败/18待复测/41未验/2决策阻塞/1支付后置。Root fresh Web check已exit0（246contract/50architecture/2302tests及lint/types/build），但独立审发现未commit render零owner资源泄漏P1，T-C11不关闭；完整用户旅程T-C06最近失败未复测。Agent安全过程四文档D0审发现协议闭集P1，尚非运行链完成。证据E08/E09及冻结hash见同progress。当前没有因通过纯门而发布候选或宣称产品闭环。
+
 ## R88 当前测试任务总览（2026-10-02）
 
 当前测试台账已恢复为docs/test-cases.md；测试与开发派工分开，70组覆盖九owner与完整用户路径。6具名限定通过、2最近失败、18待复测、41未验、2决策阻塞、1支付后置；不算产品完成比例。当前两失败分别真实W2发送与Web缓存owner生命周期，原worker继续修复；整个产品未闭环。
