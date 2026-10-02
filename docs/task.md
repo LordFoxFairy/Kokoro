@@ -1,3 +1,33 @@
+## R94 第二轮真实发送卡点定位（2026-10-02）
+
+上一回合为progress：Root c76195bc将当前六owner真实W2失败写入70组测试；原3023已终态，cleanup=[]/桶删除404。当前Web a6c651b与BFF bb610ea clean，Agent原WIN03源实现仍active；Billing/uv.lock任务外修改保留。不缩小Wave0–7，不重复启动服务。
+
+|任务|角色/基线/精确范围|依赖/验收/交付|
+|---|---|---|
+|R94-W01-READ / T-C06|原WIN01只读Web；a6c651b clean。现engine machine/admission/execution adapter/AgUi transport、app-frame提交入口及相邻engine/UI测试；不授任何写入|沿E17第二轮req0/准入拒绝/reconnecting，查终态→刷新→连接→第二轮准入的实际状态转换。读owner D0与CURRENT、Root CODEBASE_MAP/TS/测试手册；报告具体行、最小现测试RED落点、保护控制，不能猜原因或将普通reconnecting一律放行。报告/tmp/kokoro-r94-web-second-send-read.md；Root之后决定tests-only|
+|R94-W10-READ / T-C06|原WIN10只读Root；c76195bc。现web_real_model_worker_chromium.mjs及run_web_real_model_worker_smoke.py/现测试；R93日志与owned evidence|核第二轮前实际等待/刷新/点击和脱敏closed观测的含义，证明是否测试流程提前点击还是产品连接状态卡住；仅/tmp/kokoro-r94-w2-second-send-read.md，不改仓/Git/资源/runner/预算/断言，不输出secret/正文。Root独占测试与集成|
+|R94-BFF-READ / T-C06|Root只读BFF bb610ea发布代码，现AG-UI streaming/cursor/snapshot入口与测试|查终态流关闭、replay与重连边界，独立于Web/driver调查，不改业务源码/contract/SQL。三面结论交叉后再授唯一owner回归切片|
+|R94-HOME-READ / T-U01|four_owner_fixes_review_r31 / gpt-5.6-sol只读；Web a6c651b clean，现Home welcome/suggestions/plugins、i18n与相邻UI tests|沿R82批准Home只填草稿零自动POST/真实能力、不显示未接通营销；核真实route与组件、raw brand/推荐能力是否真实、最小现tests-only落点。仅/tmp/kokoro-r94-home-truth-read.md，不改任何源码/文档/Git/资源，Root稍后独立授Web writer，不抢R94发送修复|
+|R94-AGENT-SOURCE-GATE / T-Q03、T-A01–06|Root复验+agent4_scope_gate_r19 / gpt-6-astra独立只读；原WIN03已停写，Agent17c73541+冻结28源/test，四D0及346外围保护|manifest /tmp/kokoro-agent-r93-green-a3q57jrk/manifest.json SHA0295ba70；只审源阶段符合已批D0/RED保护/取消持久边界/锁内started。Root原checkout重跑无网络收集unit/Ruff/types，机器尚冻结其失败如实保留。独立/tmp/kokoro-r94-agent-source-review.md，不改文件/Git/共享资源；收口后再授权机器发布与真PG|
+
+R94-W01-RED：Root只读BFF合法terminal EOF与Web transport EOF→reconnecting链交叉核实；原WIN01静态报告81626bc0仅假设，不是已修。现授原WIN01仅tests/engine/engine.test.ts tests-only：真实engine terminal事件→老stream reconnecting→延迟的已授权quiet snapshot无head，应恢复connected并再次submit且只有第二POST；原text/cursor/lease不丢。另测试新successor head在新流onConnected前仍拒绝submit，老回调被close代际丢弃；失败/null snapshot不借它假称恢复成功。source machine/transport、其余tests/Team15/public6/lifecycle三源全部冻结；Baseline /tmp/kokoro-r94-web-second-send-baseline.json。仅真实现函数时序、不直接赋engine私有状态/改fake默认/放宽断言；停写交付Root重跑真实RED后才授GREEN。局部归属既有Web engine syncWorkspaceFiles终态连接收口；无新目录/SQL/contract/配置/依赖。
+
+R94-W03-FAILURE-RED：独立Astra已定位候选P1：新strict Todo在_consume的四路gather中先抛错，其他native子迭代器不自动取消；顶层producer已done，仅顶层finally无法收束叶子任务。Root当前源码交叉核相同路径（publish_agent_events.py::_consume/_consume_messages/pump_run）。续授原WIN03仅tests/unit/execution/test_invoke.py测试追加，旧28源/test与四D0 frozen不变：真实todo validation先失败、至少custom/message或subagent挂起，调用pump_run应传播原错误且所有已启动子生产者finally在返回前完成；并覆盖嵌套message/text-reasoning或subagent取消与现drainer-persistence控制，不以外层timeout取消假称自动收束。先实际RED停写Root重跑，生产只能后继同文件局部GREEN；不建新helper模块/改contract/SQL/依赖/资源/Git。与独立review一致后Root裁定层级；无资源测试。
+
+R94-W03-ROW-RED：独立Astra另定位P1，Root当前源码核实：ChatEventType/projector新增todo.updated，但现infrastructure/chat_mappers.py::_event_type未承接，真实PG replay及同source identity append读回会TypeError。并入同原WIN03 tests-only切片，仅额外tests/unit/chat/test_projection.py正负例：真实todo projection完整/空表→真实row decoder保type与canonical bytes；未知/旧alias拒绝。source mapper暂锁，Root真实RED后方授该现文件一项白名单更新。无Schema/新表/第二协议，后续Root真PG append/replay/幂等必须验。独立review绑定原0295源冻结，新增两tests另stage hash，不混为冻结原tests。
+
+R94-W01-GREEN：Root Node22原12962已终态exit1，engine134项1真实失败/133通过/1.05s；日志/tmp/kokoro-r94-root-web-second-send-red.log。唯一tests hash f45cd3f610，751外围实际不变，所有旧assert保留。现授原WIN01仅src/engine/machine.ts局部quiet terminal权威snapshot收口close+connected，以及src/engine/INDEX.md相邻职责一句；test全文冻结。只在现session/generation/idle/quiet判据下恢复connected，不放宽canSubmitMessage、active/successor/failed/null读取规则；无wire/SQL/缓存/依赖/newfile。Root最终CURRENT补实际证据，worker不写其他docs。现四新测试/旧134与完整pnpm check需复跑，冻结交接Root独立审查与当前完整门/真实W2后提交。
+
+R94-W03-GREEN：独立Astra完整源审0P0/2P1/0P2、/tmp/kokoro-r94-agent-source-review.md；Root当前71909实际RED exit1：4fail/104pass/4deselected/0.82s、/tmp/kokoro-r94-root-agent-failure-red.log。两tests hash84f16d8e/e2c35c7e与原372外围匹配、旧全文追加保护。现授原WIN03仅execution/publish_agent_events.py和infrastructure/chat_mappers.py生产局部GREEN：前者四路与nested text/reasoning边界显式持有并取消/await全部tasks，原ValidationError/ProgressPersistenceError/CancelledError保持、不包ExceptionGroup误判业务失败；递归subagent复用同收束逻辑。后者严格增加唯一todo.updated读回分支，未知/旧alias仍拒绝。两test全文冻结；其余R93源/test/D0/contract/SQL/lock/依赖/资源/Git全部锁。定点GREEN→资源隔离全unit/Ruff/format/types、停写新stage freeze及独立P1复审；机器/真PG另授，不跳过整行验收。
+
+R94-WEB-FINAL-GATE：原WIN01最终v2已停写，source0928eaa5/test f45cd3f610，保原!liveAdvanced；750外围不变，原worker249contract/50architecture/2313tests/check0。Root接当前唯一Web发布写权，重跑Node22完整check；Sol four_owner_fixes_review_r31仅只读审两源/test与Root后补CURRENT/engine INDEX，报告/tmp/kokoro-r94-web-final-review.md。Root仅同两源/test+两现doc精确commit，真实W2仍失败未复跑，Root组合/fresh新pin后另验。不得将worker check作为Root结果。
+
+Agent原R93生产已停写冻结，原WIN03当前仅R94两测试追加授权，不引入网络资源测试；当前阶段为源审查返修，不以worker纯测宣称已验收。Root本轮同台账唯一writer，所有交付仅作为待核证据，修复后需完整门和真实两轮原硬断言。
+
+R94-GATE-FAILURE-READ：four_owner_fixes_review_r31 / gpt-5.6-sol，只读Web；基线main a6c651b+冻结候选machine0928eaa5/test f45cd3f610，Root c76195bc。原58933完整门实际exit1（249contract/50architecture，2312unit通过/1欢迎页项目路由失败），build未执行。精确只读范围：现tests/ui/app-frame.smoke.test.tsx:欢迎页未知结果重进用例、现项目创建/重进/路由逻辑、Vitest设置及/tmp/kokoro-r94-root-web-full-check.log；注入Root CODEBASE_MAP、TS/测试手册和Web D0。只输出/tmp/kokoro-r94-web-check-failure-read.md，解释真实产品缺陷/测试隔离/环境的证据与最小后继验证。不得改任何源码/test/doc/Git、启共享服务或执行资源测试，不增加timeout、放宽断言。Root同时独占测试台账盘点，不授新的Web writer。
+
+R94测试盘点：原58933失败终态已收取，不再称Root完整门LIVE或成功；T-Q01由待复测改最近失败，70组8通过/2失败/0执行中/16待复测/41未验/2决策阻塞/1支付后置。Agent原WIN03已idle交接R94两production候选，worker1406unit不是Root验收；机器/PG/HTTP5仍未授权。test-cases维护完整测试范围/缺陷/结果，task是开发派工，两者不混。
+
 ## R93 发布源修复与消费/行为测试并行（2026-10-02）
 
 上一回合为progress：Root提交6d68bcc3，70组测试按真实fresh clone失败更新，完整Wave0–7范围不变。当前IAM clean main e3c035b，远端main实测36242fd，fast-forward缺两提交；尚未push。原WIN01已获R91精确17路径正规生成GREEN；原WIN03五unit测试已冻结停写，报告19fail/229pass/4deselected，Root尚待复跑。

@@ -1,3 +1,29 @@
+## R94 测试计划最新核对（2026-10-02）
+
+Root基线c76195bcc48ce18bf53ba67bc5adcb03f2600bb1。本次只盘点同测试台账、收取原句柄终态与原Agent交接，不重跑全部测试、不启动服务/修改子仓。
+
+- 原58933 Web完整check已实际exit1：249contract、50architecture及lint/types通过；163文件2312unit通过、1失败。欢迎页未知结果重进项目测试tests/ui/app-frame.smoke.test.tsx:1215期望/app/project/project_welcome-a、实际/；build因失败未执行。日志/tmp/kokoro-r94-root-web-full-check.log，SHA256 8a7c92a0d06030e3b9e4e241fc01ae1a547e1464d231802584f90aaa274c91e4。machine0928eaa5f6f2d23de8554712571f32068153645f7b10ecb54ede8a7630fd9be7、test f45cd3f610f4d1dd10cee5a3ac19a018182d0de3ee022d2503e49dcc9fa492ca仍匹配。原worker完整通过不代替Root最新失败，暂不发布Web修复；失败类别待只读调查。
+- 原WIN03实际turn01a0fcd2-11f1-7373-b0c6-417a90bed5e2已completed、cursor92 idle。R94两production候选f0cdcdf1948889bea337674db44345f0930fc54cdc178d47ac7526886e43b4a1 / 930c86115ceb56d4179f5690b9ea49ca0ccaf6da4c2d194379f759ba2e00f240交接；manifest /tmp/kokoro-agent-r94-green-h75elxn2/manifest.json，worker报focused108、unit1406/1skip/18deselected、静态0。仅交付待验，Root未重跑此新候选；机器摘要过期、build/真实PG/完整链未验，T-Q03/T-A不关闭。
+- 同test-cases保持70稳定ID：8限定通过/2最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置。新增E18–E20与6条缺陷关联；旧L1–L5保留字节，不混为当前成果。完整测试计划覆盖12能力类，组下正负/异常/恢复/权限全部满足才关闭，不以自动化用例数计算产品完成百分比。
+- 下一动作：Sol只读R94-GATE-FAILURE-READ与Root台账盘点独立并行；随后准确修复/复测欢迎页门，Agent当前候选Root复验与独立复审，再实际原严格W2。无共享清理/充值/新进程；uv.lock、Billing和Agent/Web任务外修改保留。
+
+## R94 当前并行推进与源阶段复验（2026-10-02）
+
+上一goal回合为progress：Root c76195bc保存当前W2真实失败与测试矩阵。现沿同Wave0–7，不重新规划目标。原3023已终态、cleanup=[]与桶404，不盲重启。
+
+- 原WIN01只读终态报告/tmp/kokoro-r94-web-second-send-read.md（81626bc0）：BFF合法terminal EOF→Web transport reconnecting→quiet owner snapshot关闭旧流而连接状态未归一，静态高置信假设；Root另从BFF现流/replay源码交叉核证，/tmp/kokoro-r94-bff-stream-boundary-read.json。原WIN10只读终态报告/tmp/kokoro-r94-w2-second-send-read.md（db29146f）：第一轮terminal/snapshot/DOM/provider观察关闭后直接第二次click，两轮间无reload；req0仅消息POST、admission-rejected来自UI，不是BFF403。原worker相邻诊断22pass/509deselected不冒称业务通过。Root已授原WIN01仅engine.test.ts真实时序RED与successor/失败控制，源码仍冻结。
+- Agent原WIN03已停写交接13生产+15测试、346外围/四D0/SQL/机器/依赖保护。manifest0295ba70、Root当前verify-freeze PASS。Root当前原32024无网络收集unit终态exit0：1397pass/1skip（缺parent examples）/18deselected、544warnings/89.22s，/tmp/kokoro-r94-root-agent-source-unit.log；原51793 Ruff/format/Pyright全exit0（267formatted/0errors），/tmp/kokoro-r94-root-agent-source-static.log。独立Astra源审进行中；contract stale digest仍未授机器修改，真实PG/运行链与build未验，T-Q03/T-A不关闭。
+- 原worker前两次broad unit导入MinIO探测事件保留：两原进程均终态，create桶未见成功、精确桶名未记录，存在与否未知；未继续访问/清理。Root现unit从收集前ignore该模块，不把资源skip清零。后续测试隔离修复作为单独切片，不污染现源阶段。
+- Home只读Sol报告/tmp/kokoro-r94-home-truth-read.md：P1三项（提示切本地创作mode而非填draft；无owner Free plan声明；Header假model tiers）/P2静态目录可用性文案。当前formal neutral Home已拒raw brand/Zapier；历史截图不替当前浏览器。留T-U01已知缺陷、待发送关键路径后授独占Web切片；不冒造Billing/model事实或自建第二状态源。
+
+独立Agent源审另发现两项候选P1，Root源码交叉核实并续派原WIN03仅现test_invoke.py/test_projection.py tests-only：producer先失败时四路gather叶子任务未收束；todo.updated未进入真实PG row mapper白名单。Root实际mapper probe首命令误用dataclasses.asdict于Pydantic，exit1属于setup（原日志/tmp/kokoro-r94-root-agent-row-readback-probe.log保留）；修正model_dump后run.started对照通过、真实Todo projection读回TypeError，actualexit1，/tmp/kokoro-r94-root-agent-row-readback-probe-corrected.log。这是无PG的真实decoder失败，不冒称数据库测试。源/机器阶段放行暂停至回归RED/GREEN与独立复审；不因1397纯门放行漏测链路。
+
+Root Web真实RED原12962终态exit1：134项1fail/133pass，1.05s、/tmp/kokoro-r94-root-web-second-send-red.log；quiet snapshot后状态reconnecting/第二submit false/只有1POST，三个successor/失败/缺snapshot控制有效，751外围保持。原WIN01仅machine局部GREEN（既有liveAdvanced因果保护保留）及相邻INDEX，test f45cd3f610冻结，完整门后仍需Root及浏览器。
+
+Agent两P1回归Root原71909终态exit1：4fail/104pass/4deselected、149warnings/0.82s，/tmp/kokoro-r94-root-agent-failure-red.log；真实native非法Todo/text叶子未join、完整/空Todo row拒绝。两新tests84f16d8e/e2c35c7e与其余372文件匹配。Astra最终0P0/2P1/0P2，原四D0与14函数56assert保护；已仅授原WIN03两现production局部GREEN，不修改机器/SQL/dep/资源，后继独立复审/真实PG还未完成。
+
+Web生产候选开始变化后T-Q01由通过回待复测；70组当前8/1/0/17/41/2/1，E15原已发纯门保留历史，冻结候选经Root再验才关闭。调查/源纯门没有完成完整用户路径，不新增通过组。Root独占三台账/集成与资源，保所有任务外dirty。
+
 ## R93 最新测试执行记录 / T-C06（2026-10-02）
 
 Root820eb8c4当前六owner发布组合真实W2已终态exit1；第二轮发送观测为req0/res0/fail0、admission-rejected、reconnecting，尚未证明具体根因。原PTY3023/PID47969已终态；cleanup=[]，独有桶删除且404确认，未含Billing收费。完整两轮/刷新/作品/他人拒绝目标仍失败，不用已通过纯门代替。

@@ -1,3 +1,7 @@
+## R94 当前测试与关键路径（2026-10-02）
+
+当前测试唯一台账docs/test-cases.md，70稳定组：8限定通过/2最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置。最新真实六owner两轮聊天T-C06仍失败（Root820eb8c4/E17）；已真实回归复现终态后连接状态未归一，Web候选未发布。Root原58933完整门exit1：249contract/50architecture及lint/types通过，unit2312通过/1欢迎页项目路由失败，build未执行（E20）；不得沿用worker GREEN或历史E15关闭T-Q01。Agent原WIN03已idle交接R94两production修复候选，worker1406unit结果待Root复验与独立两P1复审，机器/真实PG/运行链未验。Home三P1后继修复；完整Wave0–7目标不缩小，不称整体闭环。Root唯一台账writer与集成提交者，既有子仓/uv.lock修改保留；任务分工与下一动作见同task/progress。
+
 ## R93 最新真实旅程结果与测试台账（2026-10-02）
 
 Root820eb8c4当前六owner发布组合真实W2已终态exit1；第二轮发送观测为req0/res0/fail0、admission-rejected、reconnecting，尚未证明具体根因。原PTY3023/PID47969已终态；cleanup=[]，独有桶删除且404确认，未含Billing收费。完整两轮/刷新/作品/他人拒绝目标仍失败，不用已通过纯门代替。 测试仍70组：9限定通过、1最近失败、0执行中、16待复测、41未验、2决策阻塞、1支付后置。详见test-cases E17；后续定位第二轮准入/重连边界并原ID复测。
