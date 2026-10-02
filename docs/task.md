@@ -9,6 +9,10 @@
 
 |R105-AGENT-INSTALLED-RED / T-Q03|原WIN03；Agent17c73541+四docs冻结修正；仅现tests/contract/test_machine_contract.py、test_execution_proof_artifact.py、test_canonical_database_schema.py、test_platform_generated_consumer.py、test_architecture.py、tests/unit/test_cli.py及scripts/check_platform_wheel.py；生产/contract/SQL/生成/锁/docs冻结，Root独占Git与安装资源|四docs修正独立P0/P1/P2=0，Root采B方案。先纯tests固化原E49真安装缺资源、缺失/漂移时operator零connect与installer零ensure/DDL及合法原顺序；绑定真实现入口，不以不存在helper/import失败冒充行为RED。安装venv/target与篡改全门先测试声明/静态可收集，实际build/install资源由Root另授权。保原控制/provenance/raw/vector/HTTP门；只运行无外部I/O的精确纯测，RED冻结后Root复现+审再源码授权；manifest/tmp/kokoro-r105-agent-installed-red.json|
 
+|R105-W2-STRICT / T-C06|Root唯一资源/Git owner；已发布cc7bfb78+原六owner正式SHA；同fresh source准备74938 exit0/clean/head/gitlink/4harness hash通过；私有/tmp/kokoro-r105-real-w2.py SHA226d46b1|资源窄审原桶前缀与helper regex不匹配P1在任何执行前已修，最终0；Root原58200已实际终态exit0/E53，子PID52070终止/五owned残留0/桶删除404，独立终态0，原600s/两POST四Message/活动硬刷新/全文/真实作品hash/他人404严格旅程，Billing收费明确不包含。独有manifest/log0600/open-x/桶及owner fixture exactcleanup；原E48失败不抹除，原严格T-C06/T-L01依终态证据关闭，其他范围不冒称通过。不得重启3310或共享基础设施|
+
+|R105-SYSTEM-PURE-PREFLIGHT / T-Q05|原WIN05只读；Systemaa4e42e5/clean，Rootcc7bfb78；仅/tmp独有审计报告，无仓库writer|核现format/lint/type/build/unit/contract/architecture全部纯门的精确入口、skip分支与import时资源副作用；明确test与verify是否会连共享PG/Redis/provider及安全选择，不运行资源、不改源码/锁/Git、不重复历史97。报告/tmp/kokoro-r105-system-pure-preflight.md后停；Root后继单独授权当前完整纯门，未授权直接verify/test:schema:fresh|
+
 Root保Agent/Billing/uv.lock；资源/构建/安装由Root单独放行。测试台账状态跟随当前实测，E51真实9 RED→592 GREEN均保留；原T-C06/E48失败与T-Q03/E49安装失败保持。
 
 ## R104 真实429定位与Agent发布门（2026-10-02，历史）

@@ -7,33 +7,33 @@
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root正式组合fa4525e4、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48严格两轮聊天仍失败，活动快照GET返回429/code-other，资源已回收。当前没有整组测试运行；仅核已有终态，不冒充重新测试全部能力。 E49现wheel安装后checker真实失败，T-Q03转失败；原WIN03仅四docs补设计。
+- 截至本次盘点：Root本轮正式组合cc7bfb78、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48失败历史保留；E53严格T-C06已终态PASS、正规登录T-L01通过，五项owned残留0/桶回收404；其余按原状态记录，不冒充全部重测。 E49现wheel安装后checker真实失败，T-Q03转失败；原WIN03仅四docs补设计。
 
 ## R105 最新测试切片
 
-E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0；仅测试探针在真实UI文本前零snapshot，原活动刷新/全文/作品/隐私硬门不变。原T-C06/E48实际用户旅程仍失败，尚未新W2。E52：Agent安装设计唯一P1已修复复审0、tests-only在途；T-Q03/E49安装失败仍未关闭。两切片不增加业务任务组通过数。
+E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0；仅测试探针在真实UI文本前零snapshot，原活动刷新/全文/作品/隐私硬门不变。T-C06原E48失败已由E53本轮严格旅程通过关闭，T-L01本轮正向登录通过；其余能力不据此关闭。E52：Agent安装设计唯一P1已修复复审0、tests-only在途；T-Q03/E49安装失败仍未关闭。两切片不增加业务任务组通过数。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
-共 **70** 组：**通过9**；**失败2**；**执行中0**；**待复测15**；**未验41**；**阻塞2**；**后置1**。
+共 **70** 组：**通过11**；**失败1**；**执行中0**；**待复测14**；**未验41**；**阻塞2**；**后置1**。
 
-通过仅限下表具名范围；完整用户两轮真实聊天E48最新复测失败、E40/E28失败历史保留，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
+通过仅限下表具名范围；完整用户两轮真实聊天E53本轮通过、E48/E40/E28失败历史保留，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
 
 ## 本次已完成与未完成（可直接巡检）
 
-**已通过9组**：T-Q01 Webddd38c5纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有资源回收。各自只覆盖矩阵具名范围，不是九服务或用户全链全部完成。
+**已通过11组**：T-C06本轮完整严格两轮真实模型旅程、T-L01正规IAM表单正向登录，以及T-Q01 Webddd38c5纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有资源回收。各自只覆盖矩阵具名范围，不是九服务或用户全链全部完成。
 
-**失败2组**：T-Q03，E49实际安装后checker缺机器契约资源；T-C06，E48严格真实旅程终态exit1，第二轮活动快照GET返回429（请求过于频繁）/code-other。需定位限流与测试轮询边界，未证明唯一产品根因；不把已越过提交步骤计为整组成功。
+**失败1组**：T-Q03，E49实际安装后checker缺机器契约资源；精确tests-only在途，未称安装修好。T-C06旧E48失败在E53修复后严格旅程通过，失败历史不抹除。
 
-**执行中0组**：最新W2原99439与Agent HTTP原97725均已结束，不再展示为live。
+**执行中0组**：原58200已终态exit0、owned残留五项均0/桶已回收，不等待已结束进程；Agent tests-only实施不是整组安装资源运行。
 
-**待复测15组**：T-Q05–10、T-L01–05、T-F01–02、T-K02–03；历史证据或版本变化都须按当前组合重验。
+**待复测14组**：T-Q05–10、T-L02–05、T-F01–02、T-K02–03；历史证据或版本变化都须按当前组合重验。
 
 **未验41组**：详见矩阵。Todo新增六项实际PG通过（总65）、E47 HTTP文件36通过是T-A01的局部证据；复杂任务策略/BFF/Web仍未验。Home语义纯测通过不关闭T-U01浏览器验收。
 
 **阻塞2组**：T-C05项目移动/归档/删除生命周期、T-B07失败/部分输出/未知成本收费业务规则；T-B08支付后置。
 
-**当前下一步**：E50已真实复现25ms额外probe触发准入429；Root tests-first改为只观察本Run真实UI/SSE进展后才读活动快照，原硬断言保持，再原ID严格复测；Agent HTTP typed独立最终审及正式发布/消费者展示后继；Home真实浏览器仍未验。正式积分与其余能力按既有依赖顺序推进，支付最后。
+**当前下一步**：T-C06与T-L01依E53关闭具名范围；原WIN03安装tests-only继续，Root随后复现/审/源码/真实安装；System纯门安全预审并行。登录负例、项目/独立任务、Skills/MCP、Agent安全过程消费者、正式积分及UI真实矩阵保持原状态，按既有依赖继续，支付最后。
 
 ## 范围与记录方式
 
@@ -69,7 +69,7 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 | T-Q10 | Root | 精确gitlink、main-only、发布contract/version/digest/client drift、fresh clone | 待复测 | E12原IAM缺提交分支已由E14发布及同fresh目录真实初始化0关闭，E13消费RED已由E15收口；新Root组合及完整fresh/主分支检查仍待验，不计整行通过 |
 | T-Q11 | Root | 发送失败诊断有界/脱敏、两轮归属、失败仍非零退出、原硬断言不变 | 通过 | E51：Root93085实际9fail/583pass，37740修复后592pass/13.34s及Nodecheck0、独立0；本Run合法UI文本前零snapshot，terminal/observer/deadline封闭；原所有硬断言与控制保留，session_rate_limited闭集补齐。仅当前冻结driver b83525de/test fee45056测试工具门，不是T-C06真实用户旅程通过 |
 | T-Q12 | 各数据owner | 同应用库独立schema fresh install/drift/拒重入/零跨owner SQL/失败回滚 | 未验 | E32仅Agent fresh install/拒重入/catalog drift7通过；未证明所有数据owner单应用库组合与零跨owner访问，逐owner继续验证 |
-| T-L01 | IAM→Web→BFF | 真实IAM表单→授权→callback→HttpOnly session→/app；无中转/整页重试 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
+| T-L01 | IAM→Web→BFF | 真实IAM表单→授权→callback→HttpOnly session→/app；无中转/整页重试 | 通过 | E53：本轮fresh owner/member两账号真实IAM表单200/nativeconsent200+一次303提交/callback303/HttpOnly+Secure+Lax cookie/session200与app200；浏览器精确导航与单次计数验证无可见中转，独立终态0。仅正向入口；其他登录/权限负例另T-L02–05待复测 |
 | T-L02 | IAM→Web→BFF | 错误密码/CSRF/state/nonce/PKCE/redirect篡改拒绝且无session | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
 | T-L03 | IAM→Web→BFF | 刷新/到期/退出/退出后重登与后退；禁止过期签名URL无限重试 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
 | T-L04 | IAM→Web→BFF | 固定tenant准入、撤销/禁用、同tenant另一用户及跨tenant隔离 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
@@ -79,10 +79,10 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 | T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 未验 | R82已知delete fire-and-forget竞态 |
 | T-C04 | BFF→Web | 显式分享/撤销；私有链接不冒充公开分享；另一用户不可读/控制 | 未验 | R82分享文案与真实权限不一致；正负例都需验 |
 | T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 阻塞 | 产品删除/移动规则与正式API未裁决；不猜级联行为 |
-| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E48：Rootfa4525e4/Webddd38c5六发布owner原99439终态exit1；second-partial-active快照GET返回429/code-other，last-success=active-match/4messages/pending-empty/finish-absent；cleanup=[]、桶回收0。仅限流响应已证实，唯一根因待查；不含Billing或Agent5候选，原E40等失败保留 |
+| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 通过 | E53：Rootcc7bfb78六owner fresh/clean/发布hash，原58200实际exit0；两POST202/四completed、真实模型全文SHA、首轮保留、active非空文本硬刷新+同watermark续流、真实作品下载hash/刷新一卡/另一用户三404；五owned残留0/子terminal/桶删除404，独立终态0。实际模型为本地Ollama qwen3:8b，不含Billing/Agent5候选或用户OpenAI网关；E48失败历史保留 |
 | T-C07 | BFF→Agent | 同会话FIFO/同key重放/双tab同时提交；一活动head，无重复执行 | 未验 | 队列正常也须竞争负例；跨会话允许并行 |
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
-| T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 未验 | 完整用户旅程仍未通过 |
+| T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 未验 | E53已证明活动硬刷新与同watermark续流；尚未独立证明Message/执行head/安全过程/event_watermark全分支同事务一致性，不关闭本行 |
 | T-C10 | BFF→Web | SSE断线/cursor replay/重复/间隙/过期与GC；不丢字、不双气泡 | 未验 | 真实断连/重启，禁止localStorage成为事实源 |
 | T-C11 | Web | 同scope真实重挂/双owner/StrictMode；最后卸载才close SSE；injected不被释放 | 通过 | E11：Root真实RED→完整门及独立审，已提交/推送a52a623；仅生命周期组件切片，不证明W2 |
 | T-P01 | BFF→Scheduler→Agent | 独立任务不进入会话列表；project_id仅关联；创建/修改/暂停/删除/权限 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
