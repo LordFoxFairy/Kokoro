@@ -2543,7 +2543,10 @@ def test_r73_model_call_details_are_actual_bounded_and_sum_to_durable_usage(muta
         ("composer-fill-pending-rejection", "product-composer-fill"),
         ("observation-open", "product-observation-open"),
         ("send-click", "product-send-click"),
-        ("response-await", "product-response-await"),
+        (
+            "response-await",
+            "product-response-await-t1-req0-res0-fail0-net-none-ui-ready-admission-accepted-conn-connected",
+        ),
         ("http-json", "product-http-status"),
         ("http-non-json", "product-http-status"),
         ("receipt-json", "product-receipt-json"),
@@ -2563,6 +2566,13 @@ def test_r79_actual_submit_failure_has_static_specific_phase_without_sensitive_e
     import subprocess
 
     driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    helpers_start = driver.find("const PRODUCT_COUNT_TOKENS")
+    helpers_end = driver.find("\nlet browser", helpers_start)
+    helpers = (
+        driver[helpers_start:helpers_end]
+        if helpers_start >= 0 and helpers_end > helpers_start
+        else ""
+    )
     start = driver.index("  async function submit(content) {")
     end = driver.index("\n  const uiFrames =", start)
     submit = driver[start:end]
@@ -2578,13 +2588,14 @@ const fail = () => { throw new Error(secret) };
 const input = {web_origin:'https://web-fixture.example.test',timeout_ms:20000};
 let phase='owner-login',conversation,eventPath,snapshotPath;
 const receipts=[],posts=[],boundaries=[],steps=[];
-let currentResponse;
+let currentResponse,currentProductAttempt=null;
 const isFailure = name => failure===name || (failure==='second-composer-fill' && name==='composer-fill' && receipts.length===1);
 const composer = {
  waitFor:async options=>{steps.push('wait');assert(options.timeout===20000,'timeout');if(isFailure('composer-visible'))fail()},
  fill:async content=>{steps.push('fill');if(isFailure('composer-fill') || failure==='composer-fill-pending-rejection')fail()}
 };
 const page = {
+ evaluate:async()=>({valid:true,known:true,ready:true,admission:'accepted',conn:'connected'}),
  waitForResponse:(predicate,options)=>{
   steps.push('arm');assert(options.timeout===20000,'timeout');if(isFailure('response-arm'))fail();
   const request={method:()=> 'POST'};
@@ -2610,6 +2621,7 @@ async function observationBoundary(stage,index,receipt){
  boundaries.push({stage,index});
  if(isFailure('observation-'+stage))fail();
 }
+HELPERS
 SUBMIT
 try {
  await submit('PRIVATE_CONTENT');
@@ -2623,6 +2635,7 @@ CATCH
 """
     source = (
         source.replace("FAILURE", json.dumps(failure))
+        .replace("HELPERS", helpers)
         .replace("SUBMIT", submit)
         .replace("CATCH", catch)
     )
@@ -2652,3 +2665,149 @@ CATCH
                 "PRIVATE_DOM",
             )
         )
+
+
+def test_r81_product_response_await_diagnostics_are_bounded_closed_and_safe():
+    import subprocess
+
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    start = driver.index("const PRODUCT_COUNT_TOKENS")
+    end = driver.index("\nlet browser", start)
+    helpers = driver[start:end]
+    source = r"""
+import assert from 'node:assert/strict';
+HELPERS
+const expected = new Map([
+ ['net::ERR_ABORTED','aborted'],
+ ['net::ERR_TIMED_OUT','timeout'],
+ ['net::ERR_NAME_NOT_RESOLVED','dns'],
+ ['net::ERR_CERT_AUTHORITY_INVALID','tls'],
+ ['net::ERR_CONNECTION_REFUSED','connection'],
+ ['PRIVATE_ERROR_TEXT PRIVATE_TOKEN PRIVATE_BODY','other'],
+ [undefined,'other'],
+]);
+for (const [value,kind] of expected) assert.equal(classifyProductRequestFailure(value),kind);
+const empty = newProductAttempt(1);
+assert.equal(productAwaitFailurePhase(empty),
+ 'product-response-await-t1-req0-res0-fail0-net-none-ui-unknown-admission-unknown-conn-unknown');
+const failed = newProductAttempt(2);
+recordProductNetwork(failed,'request');
+recordProductNetwork(failed,'failed','PRIVATE_ERROR_TEXT PRIVATE_TOKEN PRIVATE_BODY');
+failed.preClickUi={known:true,ready:true,admission:'rejected',conn:'connected'};
+failed.finalUi={known:true,ready:false,admission:'accepted',conn:'reconnecting'};
+const phase=productAwaitFailurePhase(failed);
+assert.equal(phase,
+ 'product-response-await-t2-req1-res0-fail1-net-other-ui-ready-admission-accepted-conn-reconnecting');
+for (const marker of ['PRIVATE_ERROR_TEXT','PRIVATE_TOKEN','PRIVATE_BODY']) assert(!phase.includes(marker));
+const bounded = newProductAttempt(1);
+for (let index=0;index<4;index++) recordProductNetwork(bounded,'request');
+assert.equal(productAwaitFailurePhase(bounded),
+ 'product-response-await-t1-reqoverflow-res0-fail0-net-none-ui-unknown-admission-unknown-conn-unknown');
+assert.match(phase,/^product-response-await-[a-z0-9-]+$/u);
+const unknown=await boundedProductUi({evaluate:()=>new Promise(()=>{})},1);
+assert.deepEqual(unknown,UNKNOWN_PRODUCT_UI);
+""".replace("HELPERS", helpers)
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == result.stderr == ""
+    assert 'page.on("response"' in driver
+    assert 'page.on("requestfailed"' in driver
+    assert "timeoutMs = 250" in helpers
+    assert "error.message" not in helpers
+    assert "error.stack" not in helpers
+    assert "-engine-" not in helpers
+    assert "-conn-" in helpers
+    assert "roots.length !== 1" in helpers
+    assert 'root.querySelectorAll(":scope > [data-connection-status]")' in helpers
+
+
+def test_r81_diagnostics_preserve_real_journey_and_failure_channel_contracts():
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    assert "input.timeout_ms <= 600000" in driver
+    assert "},{timeout:input.timeout_ms})" in driver
+    assert "const firstReceipt = await submit(firstContent)" in driver
+    assert "const receipt = await submit(content), run = receipt.run_id" in driver
+    assert 'await page.reload({waitUntil:"domcontentloaded",timeout:input.timeout_ms})' in driver
+    assert 'assert(!observerFailure && posts.length===2' in driver
+    assert 'process.stderr.write(`REAL_MODEL_FAILURE:${phase}\\n`)' in driver
+    assert "safeProductAwaitFailurePhase(originalPhase,currentProductAttempt,page)" in driver
+    assert "process.stdout.write(JSON.stringify({kind:\"product" not in driver
+
+
+def test_r81_request_binding_keeps_late_first_turn_events_out_of_second_turn():
+    import subprocess
+
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    start = driver.index("const PRODUCT_COUNT_TOKENS")
+    end = driver.index("\nlet browser", start)
+    helpers = driver[start:end]
+    source = r"""
+import assert from 'node:assert/strict';
+HELPERS
+const bindings=new WeakMap();
+const first=newProductAttempt(1),second=newProductAttempt(2);
+const firstRequest={},secondRequest={},unbound={};
+bindProductRequest(bindings,firstRequest,first);
+bindProductRequest(bindings,secondRequest,second);
+recordBoundProductNetwork(bindings,firstRequest,'response');
+recordBoundProductNetwork(bindings,secondRequest,'failed','net::ERR_TIMED_OUT');
+recordBoundProductNetwork(bindings,unbound,'response');
+assert.deepEqual([first.requestCount,first.responseCount,first.failedCount],[1,1,0]);
+assert.deepEqual([second.requestCount,second.responseCount,second.failedCount],[1,0,1]);
+assert.equal(second.failureClass,'timeout');
+recordBoundProductNetwork(bindings,firstRequest,'failed','PRIVATE_LATE_ERROR');
+assert.deepEqual([first.responseCount,first.failedCount],[1,0]);
+""".replace("HELPERS", helpers)
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == result.stderr == ""
+    assert "const productAttemptsByRequest = new WeakMap()" in driver
+
+
+def test_r81_failure_diagnostics_fall_back_on_ui_or_formatter_faults():
+    import subprocess
+
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    start = driver.index("const PRODUCT_COUNT_TOKENS")
+    end = driver.index("\nlet browser", start)
+    helpers = driver[start:end]
+    source = r"""
+import assert from 'node:assert/strict';
+HELPERS
+const original='product-response-await';
+const valid={evaluate:async()=>({valid:true,known:true,ready:true,admission:'accepted',conn:'connected'})};
+const enriched=await safeProductAwaitFailurePhase(original,newProductAttempt(1),valid);
+assert.equal(enriched,'product-response-await-t1-req0-res0-fail0-net-none-ui-unknown-admission-accepted-conn-connected');
+const pending=await safeProductAwaitFailurePhase(original,newProductAttempt(1),{evaluate:()=>new Promise(()=>{})});
+assert.equal(pending,'product-response-await-t1-req0-res0-fail0-net-none-ui-unknown-admission-unknown-conn-unknown');
+for (const page of [
+ {evaluate:async()=>{throw new Error('PRIVATE_EVALUATE_ERROR')}},
+ {evaluate:async()=>{throw new Error('Target page has been closed')}},
+ {evaluate:async()=>({valid:false})},
+ {evaluate:async()=>({valid:true,known:true,ready:true,admission:'PRIVATE_BAD',conn:'connected'})},
+]) assert.equal(await safeProductAwaitFailurePhase(original,newProductAttempt(1),page),original);
+const formatterFault=newProductAttempt(1);
+Object.defineProperty(formatterFault,'failureClass',{get(){throw new Error('PRIVATE_FORMATTER_ERROR')}});
+assert.equal(await safeProductAwaitFailurePhase(original,formatterFault,valid),original);
+""".replace("HELPERS", helpers)
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == result.stderr == ""

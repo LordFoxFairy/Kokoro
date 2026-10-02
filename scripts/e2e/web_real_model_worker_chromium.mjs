@@ -12,7 +12,138 @@ import { ChatSnapshotEvidenceError, terminalChatSnapshot, assertChatSnapshotUnch
 
 const assert = (condition, message) => { if (!condition) throw new Error(message) }
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex")
-let browser
+const PRODUCT_COUNT_TOKENS = new Set([0, 1, 2, "overflow"])
+const PRODUCT_FAILURE_CLASSES = new Set(["none", "aborted", "timeout", "dns", "tls", "connection", "other"])
+const PRODUCT_ADMISSION_STATES = new Set(["accepted", "rejected", "unknown"])
+const PRODUCT_CONN_STATES = new Set(["connected", "reconnecting", "unavailable", "unknown"])
+const UNKNOWN_PRODUCT_UI = Object.freeze({known:false,ready:false,admission:"unknown",conn:"unknown"})
+
+function newProductAttempt(turn) {
+  if (turn !== 1 && turn !== 2) throw new Error("product attempt bound")
+  return {turn,requestCount:0,responseCount:0,failedCount:0,failureClass:"none",
+    preClickUi:UNKNOWN_PRODUCT_UI,postClickUi:UNKNOWN_PRODUCT_UI,finalUi:UNKNOWN_PRODUCT_UI}
+}
+
+function incrementProductCount(attempt, field) {
+  const value = attempt[field]
+  attempt[field] = value === "overflow" || value === 2 ? "overflow" : value + 1
+}
+
+function classifyProductRequestFailure(value) {
+  const text = typeof value === "string" ? value.toUpperCase() : ""
+  if (text.includes("ABORT") || text.includes("CANCEL")) return "aborted"
+  if (text.includes("TIMEOUT") || text.includes("TIMED_OUT")) return "timeout"
+  if (text.includes("NAME_NOT_RESOLVED") || text.includes("DNS")) return "dns"
+  if (text.includes("CERT") || text.includes("TLS") || text.includes("SSL")) return "tls"
+  if (text.includes("CONNECTION") || text.includes("RESET") || text.includes("REFUSED") || text.includes("CLOSED")) return "connection"
+  return "other"
+}
+
+function recordProductNetwork(attempt, kind, failureText) {
+  if (!attempt) return
+  if (kind === "request") incrementProductCount(attempt,"requestCount")
+  else if (kind === "response") incrementProductCount(attempt,"responseCount")
+  else if (kind === "failed") {
+    incrementProductCount(attempt,"failedCount")
+    const classified = classifyProductRequestFailure(failureText)
+    attempt.failureClass = attempt.failureClass === "none" || attempt.failureClass === classified ? classified : "other"
+  }
+}
+
+function bindProductRequest(bindings, request, attempt) {
+  if (!attempt) return
+  bindings.set(request,attempt)
+  recordProductNetwork(attempt,"request")
+}
+
+function recordBoundProductNetwork(bindings, request, kind, failureText) {
+  const attempt = bindings.get(request)
+  if (!attempt) return
+  bindings.delete(request)
+  recordProductNetwork(attempt,kind,failureText)
+}
+
+function isProductMessagePost(value, method, origin) {
+  try {
+    const url = new URL(value)
+    return url.origin === origin && method === "POST" && /^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname)
+  } catch { return false }
+}
+
+function closedProductUi(value) {
+  return value && value.known === true && typeof value.ready === "boolean" &&
+    PRODUCT_ADMISSION_STATES.has(value.admission) && PRODUCT_CONN_STATES.has(value.conn)
+    ? {known:true,ready:value.ready,admission:value.admission,conn:value.conn}
+    : UNKNOWN_PRODUCT_UI
+}
+
+async function readProductUi(page) {
+  const value = await page.evaluate(() => {
+    const roots = [...document.querySelectorAll('[data-app-frame-main="true"]')]
+    if (roots.length !== 1) return {valid:false}
+    const root = roots[0]
+    const composers = [...root.querySelectorAll('[data-slot="composer-input"]')]
+    const sends = [...root.querySelectorAll('[data-composer-action="send"]')]
+    const stops = [...root.querySelectorAll('[data-composer-action="stop"]')]
+    const connections = [...root.querySelectorAll(":scope > [data-connection-status]")]
+    const composer = composers.length === 1 ? composers[0] : null
+    const form = composer?.closest("form") ?? null
+    const formState = form?.getAttribute("data-state")
+    const busy = form?.getAttribute("aria-busy")
+    const connValue = connections[0]?.getAttribute("data-connection-status")
+    if (!composer || !form || !root.contains(form) || sends.length > 1 || stops.length > 1 ||
+      connections.length > 1 || !["idle","running"].includes(formState) || !["true","false"].includes(busy) ||
+      (connections.length === 1 && !["reconnecting","unavailable"].includes(connValue))) return {valid:false}
+    const visible = element => Boolean(element && element.getClientRects().length > 0 &&
+      getComputedStyle(element).visibility !== "hidden")
+    const draftNonempty = composer.value.length > 0
+    const conn = connections.length === 0 ? "connected" : connValue
+    const ready = visible(composer) && !composer.disabled && !composer.readOnly && draftNonempty &&
+      sends.length === 1 && visible(sends[0]) && !sends[0].disabled && formState === "idle" &&
+      busy !== "true" && conn === "connected"
+    let admission = "unknown"
+    if (!draftNonempty || formState === "running" || stops.length === 1) admission = "accepted"
+    else if (draftNonempty && formState === "idle" && sends.length === 1) admission = "rejected"
+    return {valid:true,known:true,ready,admission,conn}
+  })
+  if (!value || value.valid !== true) throw new Error("product UI projection")
+  const closed = closedProductUi(value)
+  if (!closed.known) throw new Error("product UI projection")
+  return closed
+}
+
+async function boundedProductUi(page, timeoutMs = 250, strict = false) {
+  let timer
+  try {
+    const sample = Promise.resolve().then(()=>readProductUi(page))
+    return await Promise.race([
+      strict ? sample : sample.catch(()=>UNKNOWN_PRODUCT_UI),
+      new Promise(resolve=>{timer=setTimeout(()=>resolve(UNKNOWN_PRODUCT_UI),timeoutMs)}),
+    ])
+  } finally { clearTimeout(timer) }
+}
+
+function productAwaitFailurePhase(attempt) {
+  const count = value => PRODUCT_COUNT_TOKENS.has(value) ? String(value) : "overflow"
+  const network = PRODUCT_FAILURE_CLASSES.has(attempt?.failureClass) ? attempt.failureClass : "other"
+  const turn = attempt?.turn === 2 ? 2 : 1
+  const before = closedProductUi(attempt?.preClickUi)
+  const final = closedProductUi(attempt?.finalUi)
+  const after = final.known ? final : closedProductUi(attempt?.postClickUi)
+  const phase = `product-response-await-t${turn}-req${count(attempt?.requestCount)}-res${count(attempt?.responseCount)}-fail${count(attempt?.failedCount)}-net-${network}-ui-${before.known ? before.ready ? "ready" : "blocked" : "unknown"}-admission-${after.admission}-conn-${after.conn}`
+  return phase.length <= 240 ? phase : "product-response-await-diagnostic-bound"
+}
+
+async function safeProductAwaitFailurePhase(originalPhase, attempt, page) {
+  try {
+    if (originalPhase !== "product-response-await" || !attempt) return originalPhase
+    attempt.finalUi = await boundedProductUi(page,250,true)
+    const diagnostic = productAwaitFailurePhase(attempt)
+    return /^product-response-await-[a-z0-9-]{1,220}$/u.test(diagnostic) ? diagnostic : originalPhase
+  } catch { return originalPhase }
+}
+
+let browser, page, currentProductAttempt = null
 const inputReader = createInterface({input:process.stdin,crlfDelay:Infinity})
 const inputLines = inputReader[Symbol.asyncIterator]()
 let phase = "input"
@@ -38,11 +169,12 @@ try {
   phase = "browser"
   browser = await chromium.launch({headless:true,args:[`--host-resolver-rules=MAP ${origin.hostname} 127.0.0.1`,"--no-proxy-server",`--ignore-certificate-errors-spki-list=${pin}`]})
   const context = await browser.newContext({ignoreHTTPSErrors:true,locale:"en-US"})
-  const page = await context.newPage()
+  page = await context.newPage()
   page.setDefaultTimeout(Math.min(input.timeout_ms, 60000))
   // Evidence lives in Node, not in a document that navigation will destroy.
   let epoch = 0, observedBytes = 0, observerFailure = false
   const documents = new Map(), posts = [], frames = [], streams = [], snapshots = [], ended = new Set()
+  const productAttemptsByRequest = new WeakMap()
   await page.exposeBinding("__rootEvidence", ({frame}, record) => {
     try {
       assert(frame === page.mainFrame() && record && typeof record.document === "string", "observer source")
@@ -67,13 +199,22 @@ try {
     } catch { observerFailure = true }
   })
   page.on("request", request => {
-    const url = new URL(request.url())
-    if (url.origin !== input.web_origin || !/^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) || request.method() !== "POST") return
+    if (!isProductMessagePost(request.url(),request.method(),input.web_origin)) return
+    bindProductRequest(productAttemptsByRequest,request,currentProductAttempt)
     try {
+      const pathname = new URL(request.url()).pathname
       const body = request.postDataJSON()
       assert(posts.length < 2 && typeof body.content === "string" && body.content.length > 0 && Buffer.byteLength(body.content) <= 8388608, "post bound")
-      posts.push({request, path:url.pathname, content:body.content})
+      posts.push({request, path:pathname, content:body.content})
     } catch { observerFailure = true }
+  })
+  page.on("response", response => {
+    try { recordBoundProductNetwork(productAttemptsByRequest,response.request(),"response") }
+    catch { /* Diagnostics never replace the journey's original result. */ }
+  })
+  page.on("requestfailed", request => {
+    try { recordBoundProductNetwork(productAttemptsByRequest,request,"failed",request.failure()?.errorText) }
+    catch { recordBoundProductNetwork(productAttemptsByRequest,request,"failed") }
   })
   await page.addInitScript(() => {
     window.localStorage.setItem("kokoro.locale", "en")
@@ -246,10 +387,10 @@ try {
   async function submit(content) {
     phase = "product-composer-visible"
     await composer.waitFor({state:"visible",timeout:input.timeout_ms})
+    currentProductAttempt = newProductAttempt(receipts.length+1)
     phase = "product-response-arm"
     const receiptPromise = page.waitForResponse(response => {
-      const url=new URL(response.url())
-      return url.origin===input.web_origin && /^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) && response.request().method()==="POST"
+      return isProductMessagePost(response.url(),response.request().method(),input.web_origin)
     },{timeout:input.timeout_ms})
     // Observe the armed waiter even if an earlier UI step fails; the awaited
     // original promise still propagates its failure below without raw diagnostics.
@@ -259,7 +400,9 @@ try {
     phase = "product-observation-open"
     await observationBoundary("open",receipts.length)
     phase = "product-send-click"
+    currentProductAttempt.preClickUi = await boundedProductUi(page)
     await page.locator('[data-composer-action="send"]').click()
+    currentProductAttempt.postClickUi = await boundedProductUi(page)
     phase = "product-response-await"
     const response = await receiptPromise
     phase = response.status()===202 ? "product-receipt-json" : "product-http-status"
@@ -461,6 +604,8 @@ try {
     message_post_count:posts.length,message_post_statuses:[202,202],completed_message_count:terminalSnapshot.messages.length,
     first_turn_preserved:true,turns,active_reload:activeReload})+"\n")
 } catch (error) {
+  const originalPhase = phase
+  phase = await safeProductAwaitFailurePhase(originalPhase,currentProductAttempt,page)
   process.stderr.write(`REAL_MODEL_FAILURE:${phase}\n`)
   if (error instanceof ChatSnapshotEvidenceError) {
     process.stderr.write(JSON.stringify({code:error.code,evidence:error.evidence})+"\n")
