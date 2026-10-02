@@ -5788,3 +5788,14 @@ R2真实two acceptance仍actual2fail/20deselect（1.91s，exit1），DB/Redis15�
 R98-WEB-HOME-GREEN-ASSERTION：原WIN01已停写交接141pass/1fail；Root核tests/ui/app-frame.smoke.test.tsx:480确为旧“Kokoro 工作区”按钮/“Kokoro 1.6”断言，与批准全部上下文readonly品牌目标冲突。仅追加授权迁移这一条：断言workspace-brand只读Kokoro、无该交互按钮/假1.6/tier；同测试其他项目路由/导航/输入/文件资源断言及7新RED全部保留，不增timeout/skip。沿原写集完成聚焦142及完整pnpm check，停写交付；Root再独立完整门/审查/实际浏览器，不靠改旧断言关闭T-U01。Root仅本台账writer/Git，其他源码/contract/资源/依赖禁止扩大。
 
 R98-TEST-LEDGER-STATUS：本次用户询问的是测试task而非开发task；同test-cases70稳定组状态已核8/1/0/17/41/2/1，E29 Home真实RED、E30 Root Agent限定纯门追加，原失败不删除，legacy L1–L5字节保护。Root HEAD48d008d5，Agent候选未发布；主控仅文档核对/证据记录，不新建计划中心。已验8组、待复测17组及未验41组逐行保留，后继按原ID关联缺陷/修复commit/复测。
+
+## R99 严格两轮原因诊断与Agent真实数据验证
+
+上一goal回合为progress：Root5c705286提交四台账、Root28685机器限定纯门exit0及47371治理95通过，原WIN01 Home后继实际active turn01a0fd1a-ffe9-7fb3-bae9-a5baa1464265/cursor199。完整Wave0–7及70测试ID不变。
+
+|任务|owner/基线/唯一writer/写集|边界、依赖与验收|
+|---|---|---|
+|R99-ROOT-PARTIAL-DIAGNOSTIC-RED / T-Q11、T-C06|Rootmain5c705286；原WIN10唯一Root writer；仅scripts/tests/test_web_real_model_worker_smoke.py追加纯行为测试。driver6275077b、runner88622c54/test1cd84579为原运行基线；uv.lock既有dirty排除|沿/tmp/kokoro-r98-w2-partial-read.md现strict inline阶段真实执行，不把missing helper名称当RED。分别observer/read/http/shape/提前terminal/deadline及closed投影，合法active streaming正例；敏感标记零输出、240字符上限、失败非零。所有原assert/25ms/600s/active reload时点/两POST/四Message/receipt/privacy/清理不变。tests-only实际RED后停写manifest；Root复现后才授driver源GREEN，不改runner/provider。Root在worker写入期间不写Root项目文件/Git/台账，保留子仓资源审查关键路径|
+|R99-AGENT-PG-VERIFY-PREP / T-A01、T-R02、T-Q03|Root只读已冻结Agent17c73541+R94源与R97机器；原agent4_execution_owner仅只读测试/fixture/设计，报告/tmp/kokoro-r99-agent-pg-plan.md|核现tests/integration/database/test_run_outbox_filter.py、test_run_interaction_transactions.py、test_delivery_outbox.py与tests/conftest.py的所有资源访问/精确清理、started并发lostACK与Todo append/replay/idempotence缺口。不给源码/测试/台账/Git/服务/数据库写权，不导入app或跑资源；Root可用现PG及自有临时库/schema，不reset共享PG/Redis/MinIO，真实资源门另给精确命令|
+
+Root诊断设计归属现真实旅程driver及既有pure test；采用扩现私有函数/闭集projection，淘汰新helper模块/网络协议/目录。唯一public output仍原REAL_MODEL_FAILURE:[a-z0-9-]；仅second-partial-active输出cause(observer/snapshot-read/snapshot-http/snapshot-shape/terminal-before-partial/deadline/unknown)及固定head/count/partial/finish枚举，不含body、ID、URL、异常、精确时长。失败记录最后原观测，不在catch追加网络/DOM读取；成功仍原body且只随后原hard reload。数据/API/SQL/依赖版本不变，旧flat归因被替换、不保留fallback。测试GREEN只证明诊断，不关完整旅程T-C06。Root负责资源/审查/集成，worker仅交文件与证据。
