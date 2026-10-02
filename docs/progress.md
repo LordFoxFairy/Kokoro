@@ -1,3 +1,13 @@
+## R80 主控已发布诊断切片与定价ADR（2026-10-02）
+
+Root main5e09fc8acbd4c96bf768a5c84ba959d8cd910209已commit/push/remote exact，仅5路径（两diagnostic源码+同三台账），finalindex独立0P0/P1/P2、fresh647pass/0fail26.34s；原uv.lock及在途子仓均未暂存。本turn进一步Root治理三测试文件375pass/0fail43.00s，/tmp/kokoro-root-r80-metadata-tests.log，topology PASS；是Root治理纯门，不是子仓在途实现验收或实际浏览器通过。旧14891终态和3310无listener/82316 pid absent本turn再次实核，无Root新资源进程。
+
+ADR-033候选位于docs/kokoro-handbook/decisions/ADR-033-actual-usage-and-pricing-ownership.md，仅跨仓decision与现两导航入口；独立Astra0P0/P1/P2、三hash与原导航正文保护检查均实际通过。明确Billing单一定价owner、Agent严格actualusage、System技术facts；覆盖B8-R3固定quantity1目标，未虚报源码已切，失败收费规则仍未答。本切片Root只提交自身ADR/导航/三台账，不夹带owner D0或uv.lock；Agent/System/Billing原writer继续收敛D0。
+
+Web原WIN01已报告实际RED74=66pass8fail、完整collect，/tmp/kokoro-web-r80-project-real-red.log，正进入原10source GREEN；该RED尚未Root复跑，不称已修。BFF/WIN02和端到端/WIN10只读交付均已终态：当前最强候选为浏览器到Web准入/receipt粗phase盲区，未证实BFF或模型根因；System/Ollama在durable202之后调用，不能用旧product-post直接归责。R79已发布细phase保持完整原旅程断言，下一真实六owner重跑仍须等clean已发布source tuple，未放宽guard。WIN10提出canSend与engine同步拒绝可能导致零POST，仍是候选，Root不按猜测改业务或延长timeout。
+
+完整Wave0–7继续active。原10窗口按独立任务继续，不强求完成任务永久占用；完成切片释放writer。Root后继：Web/source、Agent/Billing/System三面冻结后独立审与适当fresh门；成本/非零收费/登录聊天及全能力实际路径仍未全闭环，支付最后。
+
 ## R80 十窗口续派与主控验收（2026-10-02）
 
 选模：WIN03/06 gpt-6-astra，WIN01/02/05/07/10 gpt-5.6-sol，WIN04/08/09 gpt-5.6-luna；Root模型不变。用户本轮明确要求尽可能并行；Root逐一核对原十句柄，派工前均为idle/notLoaded、上轮completed，不存在仍运行的资源验收。复用原窗口不建重复任务中心。Root main bc0ecf04eb7a19808cc03a73d5cc9d279412ed68；所有仓main，以下仓基线及原修改保护。Root唯一Git/index/资源/台账writer，同仓单writer，独立仓D0或纯验证可并行；已向原十窗口实际发送续派，均返回成功threadId；运行状态以原句柄为准，不把派发成功当完成。

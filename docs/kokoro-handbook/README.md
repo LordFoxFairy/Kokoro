@@ -234,6 +234,7 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 - [ADR-001 站点边界](decisions/ADR-001-site-boundary.md)
 - [ADR-002 用户身份](decisions/ADR-002-user-identity.md)
 - [ADR-003 credit 账本](decisions/ADR-003-credit-ledger.md)
+- [ADR-033 逐实际调用用量与 Billing 单一定价 owner](decisions/ADR-033-actual-usage-and-pricing-ownership.md)
 - [ADR-004 agent 编排](decisions/ADR-004-agent-orchestration.md)
 - [ADR-005 MySQL 与 Mongo](decisions/ADR-005-mysql-and-mongo.md)
 - [ADR-006 agent sandbox runtime](decisions/ADR-006-agent-sandbox-runtime.md)（历史 V1 sandbox 实现）
