@@ -1,3 +1,26 @@
+R78 Root fresh组合门：95pass/0fail38.09s，/tmp/kokoro-root-r78-metadata-tests.log；topology PASS、compatibility exit1只有13个既定declared broken，额外机器错误0。不是用户/费用整链通过。
+
+### R78 Billing 组件已发布与并行状态
+
+Root已22精确路径commit/push/remote exact：Billing main3e27eac22a782b3c9437c0ea47922b73a3db91ad；source及final index独立0P0/P1/P2，原五dirtydoc保留未提交。Root完整离线0、1038纯/9真实PG门事实如上，不是main/C3或收费整链；Root组合仅同步其gitlink和2个已发布commit/blob证据，不改变13broken/3active或v1当前runtime合同事实。原WIN06后继只读C3回合因模型capacity系统错误终止，已在原同窗口切可用gpt-5.6-sol重续；不是代码失败/无进度，不新开重复窗口。WIN01项目UI与WIN05成本owner已有真实inProgress快照；Root实际W2原柄14891还在运行，未声称通过。
+
+### R78 真实旅程执行记录
+
+首次W2已真实执行并在schema阶段失败：Root治理venv未安装kokoro_agent（原生installer运行时import）；独立无资源import再现同名ModuleNotFoundError，既有Agent venv同import通过。不改harness/业务或放宽sourceguard，使用现owner Python环境重跑，原柄14891与 /tmp/kokoro-r78b-root-w2-owned.json 持有Root资源；当前running，不计通过。首轮cleanup=[]，本次独有空ObjectLock/versioned桶已删除/404确认，无共享桶/DB/Redis reset；安全证据 /Users/nako/WebstormProjects/github/thefoxfairy/kokoro-w2-web-project-ymk91ln3.evidence.json。原失败/日志保留，后续只按实际结果推进。
+
+## R78 并行续接任务卡：复用十窗口，不重复创建（2026-10-02）
+
+Root 当前 main46d48ed01c260875e4486efbd766f8c83c37c38a 已 push/remote exact。Billing冻结20path+R73依赖2path已独立 source审0P0/P1/P2；Root fresh pure1038pass/0fail/0skip19.26s，真实PG个人读9pass/0fail/0skip2.11s，owned数据库全回收/tracked保持。日志 /tmp/kokoro-billing-r77-root-{pure,real-pg}.log；不是正式赠送、main/source-dist、预占扣费闭环。Root Node24离线门原柄36247已结束exit0；synthetic CURRENT只包含Root新前缀+3118-byte worker前缀+HEAD，22path终审0且已发布，保护旧五dirty文档。
+
+|任务/完成条件|owner/原执行窗口/模式|基线及允许范围|依赖/验证/提交|
+|---|---|---|---|
+|R78-WEB-PROJECT：确定既有project_id Draft/client/live UI缺口的最小实际行为RED与文件集|Web / WIN01 / 只读；Root审查|/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main dc330a99332be28bb74a4fa2d2196ba8425f9dc5，当前clean；只读现TECH/API/已有表单和测试，不改文件|已发布BFF479d4/public5，冻结W2六owner期间禁止写；报告具体测试和批准范围，后继Root授实现；Root sole Git|
+|R78-BILLING-C3：基于已冻结正式个人读，定位唯一main/source-dist完整切换的下一业务切片|Billing / WIN06 / 只读；Root审查|/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-billing，当前main3e27eac22a782b3c9437c0ea47922b73a3db91ad，已发布20+2组件，5dirty docs全部保护|本片source审/PG9/全部离线门/index终审及发布已完成；只报告C3既定入口/所有旧有效writer承接/失败测试/删除集，禁止提前写main或兼容双轨|
+|R78-SYSTEM-COST：确定实际provider per-call usage/版本化价格可配置1.4的owner最小先行切片|System / WIN05 / 只读；Root审查|/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-system，main6ca96180749d4842c2ee0628328f372d114e320f，源码/SQL/机器契约只读|沿原成本调查，给具体source/contract/SQL缺口与owner-first先行RED，不把积分10^6当倍率、不杜撰价格；后继跨owner顺序Root裁决|
+|R78-W2-ACTUAL：实际IAM登录同意→双轮模型→活动刷新→全文/作品下载/私有404|Root / Root / 唯一资源与六仓freezeowner|沿已发布cbc13eb5 harness，六已发布HEAD/gitlink与独有桶；不改business源码、不清共享资源|复用原现基础设施；实际成功/失败及cleanup证据更新同台账；此六owner不含Billing，不能冒称收费全链|
+
+十个窗口按现owner持续复用；本轮独立三面续接，已完成切片释放writer，不假称十个永久同时写入或用窗口数代替进度。Native原审查员可并行独立冻结/index审。完整Wave0–7与原13broken/3active、真实成本×可配置1.4、正式积分和MCP凭据新owner待决保持，支付最后。
+
 ## R77 当前：Web public5组件发布，进入真实双轮用户路径验收
 
 Root本片实际组合治理：topology exit0、compatibility exit1只有13个既定broken且额外机器证据错误0；fresh三文件metadata95pass/0fail47.95s，/tmp/kokoro-root-r77-metadata-tests.log。49个Webrefs皆由dc330a9实际commit blob重算，状态不改，当前Web/BFF public5固定消费组件对齐；不以此冒称产品链成功。
