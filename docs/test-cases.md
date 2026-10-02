@@ -1,17 +1,17 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R91；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R92；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root030c6b89；BFF bb610ea/public6已发布但Root/Web组合未同步；Web正式a52a623生命周期已验，后继BFF6 D0/tests-only进行；Agent17c73541四D0闭集审通过，后继五unit tests-only；Billing e04bff9纯codec冻结未发布。活动工作树不作为最终验收源。
+- 截至本次盘点：Root eaeaa86b；BFF bb610ea/public6已发布但Root/Web组合未同步；Web正式a52a623生命周期已验，后继BFF6消费测试Root复跑13失败/123通过（预期RED，尚未修复生成消费）；Agent17c73541四D0闭集审通过，后继五unit tests-only；Billing e04bff9纯codec冻结未发布。Root fresh clone实际失败，见E12。活动工作树不作为最终验收源。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
-共 **70** 组：**通过7**；**失败1**；**执行中0**；**待复测18**；**未验41**；**阻塞2**；**后置1**。
+共 **70** 组：**通过7**；**失败2**；**执行中0**；**待复测17**；**未验41**；**阻塞2**；**后置1**。
 
 通过仅限下表具名范围；完整用户两轮真实聊天最近失败，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
 
@@ -28,7 +28,7 @@
 | T-Q07 | Platform | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q08 | Storage | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q09 | Scheduler | gofmt/vet/test/build；OpenAPI/event protocol/schema/架构；skip说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
-| T-Q10 | Root | 精确gitlink、main-only、发布contract/version/digest/client drift、fresh clone | 待复测 | BFF6已发布，Web/Root组合尚未迁移；旧95仅历史 |
+| T-Q10 | Root | 精确gitlink、main-only、发布contract/version/digest/client drift、fresh clone | 失败 | E12：fresh clone在IAM固定提交获取处exit128，远端not our ref；E13消费RED13失败。先核IAM发布可达性及Web6正规生成，再复测组合；旧95仅历史 |
 | T-Q11 | Root | 发送失败诊断有界/脱敏、两轮归属、失败仍非零退出、原硬断言不变 | 通过 | E02：诊断纯门，不是发送成功 |
 | T-Q12 | 各数据owner | 同应用库独立schema fresh install/drift/拒重入/零跨owner SQL/失败回滚 | 未验 | 逐owner实资源；不增加应用角色，不用单仓结果代替组合 |
 | T-L01 | IAM→Web→BFF | 真实IAM表单→授权→callback→HttpOnly session→/app；无中转/整页重试 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
@@ -119,6 +119,8 @@
 |E09|Agent17c73541+冻结安全过程四文档D0；仅设计审查|独立审0P0/1P1/0P2；/tmp/kokoro-r89-agent-progress-d0-review.md。四hash/旧全文/370外围保护匹配；R90 Root已裁定闭集并经独立0/0/0复核，owner四D0收敛/运行测试仍待验，无本切片业务测试通过|
 |E10|Web5e538f69+tests-only cb138727；production仍E08的8ceb/9428|Root Node22原12482实际exit1：2failed/91filtered，/tmp/kokoro-r90-root-web-aborted-render-red.log；aborted render factory/storage/snapshot/SSE各1与cache残留，delayed commit前factory/storage各1。fake一次POST正常，不称W2根因；已授原writer精准GREEN，尚未最终验收|
 |E11|Web正式a52a6230e4f8e54f95b1f0322adbf1f187aacaae；三source/test hash见R90 progress与review|Root Node22原47394实际exit0：246contract/50architecture/2306tests及lint/typecheck/build；/tmp/kokoro-r90-root-web-full-check.log。独立Sol0P0/P1/P2，/tmp/kokoro-r90-web-final-review.md；原P1闭合，四路径精确提交/推送；无format脚本，未做本轮浏览器/W2|
+|E12|Root已发布eaeaa86b4d92b44c1a70789b95e0219651f191e9；独立fresh Root与六owner初始化|原86929终态exit128；Root clone成功、六owner初始化在IAM gitlink获取失败，远端返回not our ref。/tmp/kokoro-r92-w2-source-prep.json与.log；phase=source-preparation-failed，runtime_resources_created=false。未启动应用/DB/Redis/模型调用，非新一轮聊天运行失败；Root先核精确提交发布可达性，不换pin掩盖|
+|E13|Web a52a623+R91冻结五D0/八测试；仍旧public5 snapshot，目标已发布BFF bb610ea/public6|Root原81402终态exit1：8测试文件、13失败/123通过/136总计，2.52s；/tmp/kokoro-r92-root-web-public6-red.log。消费版本/digest/scope契约RED真实成立，尚未完成生成GREEN，不增加测试组数或当作用户聊天通过|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 
@@ -139,7 +141,7 @@
 ## 下一测试批次（依赖顺序）
 
 1. T-C11已在Web a52a623按真实RED→GREEN/Root完整门/独立审验收；E05/E08/E10原失败保留历史。下一原WIN01正规BFF6 D0/tests-only RED→生成消费，不把生命周期验收当真实聊天通过。
-2. T-Q10/T-C02：Web正规固定BFF6→Root组合provenance/机器门→独立与项目浏览器列表。
+2. T-Q10/T-C02：Root先核IAM固定提交远端可达性；Web正规固定BFF6→Root组合provenance/机器门与同一fresh checkout复验→独立与项目浏览器列表。两项修复独立可并行；不重复clone或启动服务。
 3. T-C06/T-C09/T-C10/T-F03：原严格两轮真实模型旅程，含活动/终态刷新、全文、receipt下载及另一用户拒绝；不放宽预算与断言。
 4. T-K04–07/T-A01–06：按owner artifact先后接选择/授权/安全过程，实际Skill/MCP/审批/作品与五时点刷新。
 5. T-B02–07：真实证据→授权赠送/余额→预占→结算或恢复；支付T-B08最后。其余矩阵随对应切片持续复测，不能遗忘到最后。

@@ -1,3 +1,11 @@
+## R92 测试台账核实（2026-10-02）
+
+Root基线eaeaa86b4d92b44c1a70789b95e0219651f191e9。本次核对已有终态命令、当前工作树及70组矩阵，不重跑全部业务测试；Root唯一编辑同四台账，无子仓写入、服务重启或共享资源清理。
+
+- T-Q10 / E12：原86929终态exit128，Root远端clone成功，六owner初始化在IAM固定gitlink获取失败，远端not our ref。证据/tmp/kokoro-r92-w2-source-prep.json及.log，manifest明确source-preparation-failed、runtime_resources_created=false；临时源码树保留，尚无依赖预热/模型/应用运行。失败分类为发布源码可复现性，下一owner Root核精确IAM提交远端可达性，不以换pin或盲重试消除失败。
+- E13：原81402终态exit1，Web八消费契约文件13失败/123通过/136总计、2.52s；/tmp/kokoro-r92-root-web-public6-red.log。这是预期tests-first RED，证明旧public5消费尚未接已发布BFF6；下一原WIN01正规生成GREEN、Root复测，不修改UI或生命周期已验切片。
+- 计数从7/1/0/18/41/2/1变为7/2/0/17/41/2/1，仅T-Q10待复测→失败；70个稳定ID不变，不重复计入13断言失败。T-C06最近真实聊天失败仍未关闭；两个决策阻塞仍为项目移动/归档/删除生命周期及失败/部分输出/未知成本收费策略，支付后置。
+
 ## R90 真实RED与三面并行推进（2026-10-02）
 
 R90生命周期最终验收：原WIN01已停写冻结，Root actual47394终态exit0，Node22 pnpm check contract246/architecture50/2306tests及lint/typecheck/build通过；/tmp/kokoro-r90-root-web-full-check.log。独立Sol0P0/P1/P2，/tmp/kokoro-r90-web-final-review.md；三hash在Root门后匹配：page-clients5d8d6cc82423eae0b3738180e184ebc60d20e8c37f87f10c8d4d5b402af9821b、hook7ee5e094aed93c98751b52f1ae1477a6f2d387df6523a73fe5ae0a0316d29140、testaf3f15e2681796975734d242d021965a835c351ce6ac65dddc7d45aa1253c2cd。Root仅三source/test+CURRENT提交/推送Web main a52a6230e4f8e54f95b1f0322adbf1f187aacaae，clean；无format脚本明确N/A，diff-check0。T-C11关闭为限定组件通过，测试台账现7通过/1最近失败/18待复测/41未验/2阻塞/1支付后置，不扩大为W2或费用完成。

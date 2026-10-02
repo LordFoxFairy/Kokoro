@@ -1,3 +1,15 @@
+## R92 已发布组合的隔离验收准备（2026-10-02）
+
+上一goal回合progress：Web生命周期真实RED→Root完整门/独立审后发布a52a623，T-C11关闭；R91两原writer已通过原句柄确认active，继续同任务而非重启。Root基线eaeaa86b，任务外uv.lock/Billing dirty及Agent D0/tests保护。
+
+|任务|owner/角色/范围|阶段与验收|
+|---|---|---|
+|R92-W2-SOURCE-PREP / T-C06|Root独占/tmp/kokoro-r92-w2-published.*的一个fresh源码执行树与/tmp/kokoro-r92-w2-source-prep.json/log；不改任何子仓或共享index|先从已发布Root eaeaa86b clone，只初始化Web/BFF/Agent/IAM/Storage/System六gitlink；frozen依赖可并行预热。此基线尚旧Web/BFF，不能跑W2或称新组合ready；Web6/Root组合发布后同目录fetch+detach最终SHA、submodule update并复核六source guard/依赖lock一致，再Root受管真W2。原600s/两POST四Message/刷新/作品hash/隐私与回收硬门不变|
+
+放置：Root现W2 runner/harness唯一owner不变，新增仅临时运行产物，不建新服务/协议/源码目录。采用独立完整Root+六owner Git checkout，可证明HEAD/clean/gitlink与实际Agent/IAM cwd；淘汰复制当前dirty树、单独替Agent目录、archive无Git、allow-dirty/改guard。Root独占新fixture全部Git/资源，不创建应用DB/Redis/ObjectStore资源或后台服务；只在源门/模型preflight后进入原W2 runtime。依赖按各已发布lockfilehydrate，不复用当前dirty源码/ignored配置；磁盘实测90Gi可用，最终只回收记录的本fixture。正在运行的原两worker仍本仓唯一writer。
+
+实际结果：原86929终态exit128，Root clone成功但IAM固定gitlink远端not our ref，manifest=source-preparation-failed且未创建运行资源。T-Q10失败/E12已记同test-cases与progress；本卡先Root核精确提交发布可达性，再继续同fixture，不盲重启clone或改变验收pin。独立Web消费原81402真实RED13失败/123通过/E13，原WIN01后继正规生成GREEN仍待验收；不据测试基线通过关闭T-C02或真实聊天T-C06。
+
 ## R91 后继契约与Agent测试切片（2026-10-02）
 
 |任务|owner/唯一writer与精确文件集|依赖/门/交付|

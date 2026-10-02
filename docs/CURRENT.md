@@ -1,3 +1,7 @@
+## R92 测试计划核对与最新失败（2026-10-02）
+
+测试唯一台账仍为docs/test-cases.md，共70组：7通过、2最近失败、0执行中、17待复测、41未验、2决策阻塞、1支付后置。通过均限具名切片，不是完整产品比例。Root eaeaa86b的fresh clone在IAM固定提交获取处exit128（远端not our ref），未启动运行资源；T-Q10由待复测改失败。Web BFF6消费Root真实RED为13失败/123通过，生成GREEN尚未验收；真实两轮聊天T-C06仍保留最近product-send-click失败，未复跑。下一行动为IAM精确提交发布核查与Web6正规消费，随后同一隔离checkout组合及浏览器验收。证据E12/E13见同测试台账与progress。
+
 ## R91 当前验收与下一切片（2026-10-02）
 
 Web生命周期已由Root真实RED→完整check/独立0P0/P1/P2验收并发布main a52a623，T-C11限定组件通过；测试台账7通过/1失败/18待复测/41未验/2阻塞/1支付后置。原WIN01继续五D0/八tests-only接已发布BFF6；Root gitlink/provenance仍待完整消费组合，真实W2未复跑。Agent R90四D0最终审0，下一五unit tests-only，HTTP4/source仍不变。原WIN10只读确认fresh已发布Root执行树可在保留Agent/Billing dirty下按原严格guard复验；尚未clone/启动资源。旧失败留档，不把2306纯测或模型库存当真实聊天/费用闭环。
