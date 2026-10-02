@@ -1,3 +1,19 @@
+## R54 BFF 公平性已证实、进入代码修复
+
+Root新GC合法A/B+batch1真PG例实际1fail0skip：A live queued pin抢候选而B不获回收；独立窄审0问题，已仅授权同owner现consumer共享query精准修复。自有PG/Redis15已回收，tracked未改，不冒充public4。
+
+Web显示单位新24项12pass12fail已Root复验，进入embedded金额精度/未知事实tests-only；单位显示不是markup/扣费逻辑。Platform本人六字段读取资格已按现session+BFF可信主体+self事实收敛，不扩IAM权限；原完整执行授权与凭据门保持。
+
+## R53 真实资源门推进
+
+Platform新31项实际3pass/28fail：本人connection HTTP入口缺失（18项404，后续查询未到），授权响应实际身份及receipt稳定拒绝缺口10项；不是单纯mock/missing method。自有库已回收、tracked未改、其他库未删。原窗口独立审在途，随后同owner精准源码/机器切片；普通IAM→模型→账务整链仍未过。
+
+## R52 十窗口续接与实际发布
+
+Root main bf3c2dee已推送（System schema消费九path）；1128治理门不代表用户整链通过。BFF四D0及Platform六RED tests、Billing R51 tests均已冻结交付。Root复验Billing 74pure：59pass/15fail；21真PG：20pass/1fail（合法191/255域cursor），R18合法timeout fixture已通过。原十窗口按task.md R52精准续派：三个仓tests/codec写入、其余独立审查与无资源回归；同仓single writer/Root共享资源与Git。
+
+纠正R50 Web费用只读预期：实际发现10^4旧显示单位、BFF/Web钱包wire/路径未一致及formal免费fallback；正式单位是Billing已发布experimental v2的10^6，不是markup。未找到可追踪1.4计价执行链，不能称该政策已生效；后续owner发布再consumer源码切换。完整Wave0–7仍active。
+
 ## R51 Billing 未放行项
 
 独立查实cursor合法身份容量P1与subject255被限制191，以及R18 idle参数P2；Root已裁决未发布v1固定identityDigest clean-slate格式，不缩合法身份/放宽2048/兼容旧token。只原WIN06先纯RED＋合法域两页资源断言和timeout fixture精准返修，详细授权唯一见task.md。其他写入边界保持；正规账务未验收。

@@ -1,3 +1,40 @@
+## R55 Root 单一发布身份与正规登录前置 RED 卡
+
+R52-W10只读裁决已交付：System旧EXPECTED_RELEASES与Root已发布gitlinks不一致；login-only缺实际Web/IAM/BFF源码准入。唯一发布身份采用一次冻结Root commit的已提交gitlinks，不从owner HEAD/index/旧常量拼装；现clean/mode/path/index/symlink控制全部保留，显式expected SHA只作该身份断言，不绕dirty。
+
+原WIN10为Root唯一tests writer，Root台账本前缀提交后让出写入。仅scripts/tests/test_system_owner_smoke.py与scripts/tests/test_serve_local_login.py全文末追加编译可运行行为RED：合法已接受组合应过、读取中Root HEAD变化不能拼混；login-only Web/IAM/BFF dirty（含文档/untracked）必须在build/资源/进程前拒绝且零调用。所有源码/旧tests/台账/uv.lock/其他Rootfiles锁。现同责任测试位置优于新通用release模块/新manifest/计划中心，无新file/contract/infra。纯pytest冻结两SHA/oldprefix，Root复验＋独立审后只两现源码consumer精确GREEN。Root独占Git/资源；owner发布先于真实组合。
+
+## R54 已证实失败后的精准源码切片
+
+- **R54-BFF-GC / 原WIN02唯一writer**：Root真PG新R52例1fail0skip275.35975ms，A完整事实/snapshot不变先过，B未回收失败；原Sol独立test/source范围审0P0/P1/P2。仅现src/infrastructure/postgres/agui-consumer-repository.ts共享candidate query与循环boundary计算使用一致effective_retain_from=min(latestSTART, livequeued or latestSTART)，首次LIMIT前＋锁后二次requery均以该boundary检查真实expired prefix；queued pin/parent lock/历史source/retained guards/DELETE统计/其他源码/四D0/全tests/SQL/API冻结。无新file/contract/schema。Node22静态门＋冻manifest，Root同真PGRED与全projection回归，之后独立源码审/Git。
+- **R54-Web-precision-RED / 原WIN01唯一tests writer**：Root现unit24项12pass12fail472ms（旧10^4单位实际失败）。后继显示职责属Web，不拥有计价/markup/ledger。暂只现tests/ui/billing-panel.test.tsx全文末追加embedded余额/流水1micro与>2^53精确字符串、不凭缺plan/free_credit推免费事实；现tests/billing/format.test.ts追加坏金额为未知“—”而非零的RED（现金valid语义不动）。现所有source/原测试prefix/contract/path/i18n锁；Node22实际RED冻结后再授现format.ts与summary/ledger display窄GREEN、必要旧数值断言机械迁移。BFF钱包wire/HTTP/正式费用仍另owner发布后消费，不假激活。
+- **R54-Platform待源码门 / 原WIN07**：Root31资源RED已到（3pass28fail）；WIN03冻结tests审未完成，未先授源码。Root依据Astra只读事实裁定首版本人六字段读取复用当前IAM session资格＋可信BFF subject＋严格same-tenant user/self/active-approved-registered关联，不新增MCP human permission或假Run/proof，不把projection当grant；credential delivery/typed Agent消费另门。只原writer后继先收敛五D0当前前缀并给机器v6/历史v1-v5验证输入与精准source集，Root确认后授权，不手改generated/旧artifact。
+
+## R53 Root Platform 真资源失败与边界审
+
+前轮为progress：Billing合法域真RED与十窗口实际active，未假称闭环。Root本轮按冻结R48六tests只运行两现integration文件的R48选择集：31项3pass/28fail，另18旧例按name过滤未执行；owner canonical installer成功。18 projection HTTP例实际404，后续query/RR业务断言未到；10授权例含首次identity缺失及坏receipt现INTERNAL而非规定FAILED_PRECONDITION，3原审计/幂等边界通过。不得把404当eligibility查询已测。
+
+Root唯一owned库platform_r53_11b5638d336c41c7已回收，全部tracked bytes未改、未删除其他库，/tmp/kokoro-platform-r53-owned-resource.json；无Redis/外部provider。WIN03冻结tests独立审、WIN07安全交接继续，审后精准授权同owner GREEN。额外原Astra只读审现IAM/Platform/BFF的本人projection资格边界，不写文件、不用假Run/Skill权限；目标是裁定是否真缺独立人类MCP-read契约，非扩权或重复测试。Root仍独占共享资源/Git。
+
+## R52 原十窗口同步推进卡（Root bf3c2dee，2026-10-01）
+
+复用WIN01–10原句柄，不增重复窗口。Root负责文档/index/Git、真实PG/Redis与浏览器验收；无worker启动共享服务或资源。各仓main基线及原任务外dirty继续保护，所有worker先读本仓AGENTS、Root CODEBASE_MAP和相关手册。以下任务独立并行；consumer源码切换仍等待owner发布。
+
+|卡/窗口|角色、基线、允许文件集|验收及依赖|
+|---|---|---|
+|R52-W01|Web唯一tests writer，5f2ab341；仅apps/kokoro-app/tests/billing/format.test.ts全文末追加10^6单位/1micro/大整数/sign RED；原全文与所有source锁|Node22定点vitest，冻结hash+原前缀；正式wire/价格/免费fallback另待Billing→BFF发布，不先改展示source。|
+|R52-W02|BFF唯一tests writer，759bfe0a；仅test/agui-projection.integration.mjs末追加合法A/B、batch1 GC公平性RED；四R48 D0/五source/旧测试冻结|精确旧prefix，纯collect；Root真实PG验证。必须两合法Conversation、A的live queued保留、B可回收历史，不以缺父fixture或删除queued pin造绿。|
+|R52-W03|Platform六test冻结独立只读审，f884048b+R48六SHA|区分3行为/10能力/4静态RED；检资源清理与negative controls、receipt字节保护，0改文件/进程/共享资源，给P0/P1/P2与精准返修。|
+|R52-W04|IAM只读现普通登录策略回归，e3c035b9|Node24 unit oauth-authorize-form.policy/session-authorization.service/provision-oauth，无PG/issuer启动；实际数量/日志/资源边界，不冒充浏览器登录通过。|
+|R52-W05|BFF四R48 D0独立只读审，759bfe0a＋09e48fe8/2d8c2601/e86b006b/c05dda05|固定Agent HTTP4六字段、full revision/CAS/RR/DDL/锁图/ACK≠消费、三面一致；不审变化中W02新test，不改文件。|
+|R52-W06|Billing唯一GREEN writer，07fdd074；只现codec、两cursor/read tests必要wire fixture迁移、四D0当前前缀|Root已真RED：74pure59pass15fail；21真PG20pass1fail，R19合法域cursor失败，R18已过。按R51 identityDigest精准GREEN；不改2048/合法域/其他六source/旧write/SQL/contracts/HTTP/policy。原测试意图保留：raw wire负例迁为新closed wire真实验证；subject非法边界192→256是已裁定255合法域纠正；原body保护。冻结后Root/独立审。|
+|R52-W07|Platform原writer保持六tests/source冻结，仅只读交付31资源断言的安全运行输入与清理核查|绑定六SHA、数据库installer/schema/env、有限文件/用例入口与资源范围；不得启动PG/Redis/HTTP或改source；Root串行真实RED后再授GREEN。|
+|R52-W08|Billing冻结R51 tests独立只读审；74unit与21read tests|先核容量RED/旧prefix/R18精确literal/R19真实两页零写；当前W06源码变动另标，不把动态源码作为最终审。本阶段0文件/资源写，提交P0/P1/P2。|
+|R52-W09|Scheduler只读已发布9e88fe5回归|现Go unit/contract非资源门（不设置PG/Redis变量），禁format/source修改、服务/installer；绑定commit/命令/pass/skip，发现失败才返修，不冒充独立任务用户旅程。|
+|R52-W10|Root运行组合独立只读裁决稿，bf3c2dee|查正式smoke历史EXPECTED_RELEASES、已接受gitlinks、owner dirty与source guard。给现文件内去重复release常量的最小方案/真实RED集；保留clean/source校验，禁止放松guard/复制dirty代码/启动服务。|
+
+交付为待审，Root不把十窗口活跃当十仓已闭环。当前3310正式预览仍未恢复；完整用户登录→双轮/刷新→正式积分未验收。支付最后；无部署运维深挖。
+
 ## R51 Billing cursor 身份容量精准返修卡
 
 R49候选独立0P0/1P1/1P2：合法tenant191/subject255 Unicode域使raw cursor超2048且旧codec误将subject限制191；不能缩合法域或假设UUID。采用原未发布v1 closed token以固定43字符base64url SHA-256 identityDigest替代raw tenantId/subjectId；domain-separated length-prefixed UTF-8两个identity，decode用受信context重算、任何SQL前绑定，raw旧格式直接拒绝不双读。account/bigint双界/2048/无secret权限模型保持，内部CreditLedgerCursor可继续tenant/subject语义对象；wire codec与内部类型生命周期不同故无机械改名。

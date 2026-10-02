@@ -1,3 +1,21 @@
+## R54 Root 行为RED与独立放行
+
+BFF build exit0；node --test --test-concurrency=1 --test-name-pattern='^R52 GC batch one' test/agui-projection.integration.mjs：1fail/0skip275.35975ms，失败2848 B应少一frame却保原值，前置合法父/实际head与A零写控制已通过。/tmp/kokoro-bff-r53-root-gc-red.log；owned bff_gc_r53_c966f4bbc76d4c68 closed=true、Redis15余0、tracked_unchanged=true、unrelated_databases_removed=[]，/tmp/kokoro-bff-r53-owned-resource.json。原Sol独立freeze6e1f1a78/oldprefix55cc7cfd审0P0/P1/P2。
+
+Web Node22现format test：12pass12fail/0skip472ms，/tmp/kokoro-web-r53-root-unit-red.log，冻结c28ec413/原2979bytes8c95513e保持。Astra只读资格链结论依据现IAM在线session授权、BFF可信tenant/user、Platform专用projection workload与资源self关联；首版不新增人类MCP读取权限，不等于执行权。
+
+## R53 Platform Root 真PG/HTTP RED
+
+Node24 owner pnpm db:apply-schema exit0；pnpm exec vitest run --no-file-parallelism test/integration/{mcp-p3b-postgres.integration,bff-projection}.test.ts --testNamePattern R48 实际31项3pass/28fail，18旧例因name selection未执行，2.16s。日志/tmp/kokoro-platform-r53-root-install.log、/tmp/kokoro-platform-r53-root-resource-red.log。28=18缺HTTProute＋2首次/ACKlost响应身份＋8旧坏receipt拒绝代码差异；3通过为当前audit drift两例与same-key/different-decision一例。
+
+Root提前fsync0600 ownership manifest，数据库platform_r53_11b5638d336c41c7 created/closed=true、tracked_unchanged=true、cleanup_errors=[]、unrelated_databases_removed=[]，/tmp/kokoro-platform-r53-owned-resource.json。原句柄19145终态exit0表示runner清理正常，内部tests exit1仍保留，不冒充资源GREEN。3310实际无listener。
+
+## R52 原窗口推进证据
+
+Root九path bf3c2dee push exit0（22efc5f8..bf3c2dee），原owner dirty及uv.lock未暂存。Billing Root重跑 /tmp/kokoro-billing-r52-root-cursor-red.log：59pass/15fail/0skip，129ms；/tmp/kokoro-billing-r52-root-capacity-red.log：20pass/1fail/0skip，3.11s，R19 cursor真实失败，R18恢复断言已通过。使用fixture自有库，无共享reset；后置只读inventory为空。Root Python缺psycopg初查询未执行SQL，改用现Agent依赖环境完成，不安装依赖。
+
+W02四D0冻结SHA09e48fe8/2d8c2601/e86b006b/c05dda05；W07六tests冻结68a68322/5f94a1aa/f644017d/b65d7444/adc228a9/5dca5651。十次派发均返回成功，wait_threads两组即时快照确认WIN01–10全部active/inProgress。原十窗口新派工详细范围唯一见task.md R52，交付/资源复验/完整用户旅程继续分开登记，不以窗口数或历史纯门宣称成功。
+
 ## R51 Billing 未放行项
 
 独立查实cursor合法身份容量P1与subject255被限制191，以及R18 idle参数P2；Root已裁决未发布v1固定identityDigest clean-slate格式，不缩合法身份/放宽2048/兼容旧token。只原WIN06先纯RED＋合法域两页资源断言和timeout fixture精准返修，详细授权唯一见task.md。其他写入边界保持；正规账务未验收。
