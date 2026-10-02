@@ -1,3 +1,34 @@
+R80当前Root组合fresh治理门：95pass/0fail46.99s、exit0（/tmp/kokoro-root-r80-composition-metadata.log）；两gitlink精确暂存后topology PASS，compatibility exit1仅13declared broken/violation0/extra0（/tmp/kokoro-root-r80-composition-compatibility-staged.log）。初次尚未暂存gitlink的预检错配如实保留在旧log，不作为终态；没有修改门禁来清零。组合仅两已发布子仓gitlink、49Web+2System原blob引用、现三台账，state13broken/3active不变。
+
+## R80 项目任务组件已发布与登录窄切片续派（2026-10-02）
+
+Web main96b6ac2331893a9093d088a0b7f82b8fbb9c2e26已Root精确20path提交/push/remote exact，原项目任务上下文及卸载迟回执P2修复；finalindex独立0P0/P1/P2，Root fresh pnpm check246contract/50architecture/2294unit0fail0skip+lint/typecheck/build0。System四D0 mainaa4e42e50fd3d342df4b6753547488eee122684b已发布且clean，Root四文档原文重建byte-exact/Prettier0；两子仓gitlink组合待Root同步，尚非全链通过。
+
+R80-W04-CONSENT-P1沿原任务卡现进入test-only：唯一Web writer原WIN01，在96b6ac2 clean基线上仅现tests/system/iam-relay-next-http.integration.test.ts追加真实Next+Redis测试。先旧nonce的精确fixture键删除模拟过期，合法同源HTML POST期望固定空303/login、no-store/no-referrer/request-id和精确CSRF clear cookie、上游0；JSON403及恶意Origin/畸形query/validCSRF owner503控制保持。Root独占资源命令与RED结果，原worker不得启动服务/浏览器/Redis或改route；确认为行为RED后再授现consent route局部GREEN，保所有安全检查。已授权测试文件旧正文保护，未授新文件/依赖/contract/SQL/UI中转。
+
+Agent四D0已冻结待独立审；Billing原WIN06 M1A纯算法仍进行中，真实用量/预占/结算未完成。Storage50纯和Scheduler47顶层/82事件纯结果只是worker报告，Root尚未重验，不称资源集成。完整Wave0–7、13broken/3active与实际W2失败保持；uv.lock和Billing原五dirty全文保护。
+
+## R80-M1A Billing 已审精确计价基础续派（2026-10-02）
+
+原WIN06五D0前缀独立Sol门审0P0/P1/P2，只是目标方案，不是新wire/SQL/费用链通过。沿现Billing TECH R80放置表、PLAN R80-M1，不另建模块/目录或计划；Root允许以下纯算法子集与Web窄P2并行，资源/SQL/最终收费等待各owner正式artifact。
+
+|任务/owner/角色|基线/范围/删除与依赖|完成门/提交|
+|---|---|---|
+|R80-M1A / Billing Metering / 原WIN06唯一writer；Sol独立审、Root集成|apps/kokoro-billing main3e27eac+五D0当前候选；只新建同现metering目录metering-pricing.types.ts、metering-pricing.ts与现test/unit下metering-pricing.test.ts，必要现metering.public.ts只增加明确内部业务导出；其余source/contract/SQL/gen/manifest/五dirty原全文和R80前缀全保护。普通职责文件不建子目录；精确算法与内部单位类型分开，淘汰塞现Service大杂烩或Root共享utils方案。Billing own内部数学输入不是Agent wire，禁止复制actualusage协议。暂不替换旧main/quote、不开新默认收费路、不seed价/兑换，不造第二价格service|先最小可编译算法seam及合法zero/control，然后真行为RED（重叠桶/分数成本/7:5/一次最终ceil/zero/溢出/缺换算）；GREEN精确有理数，费用fixture均显式synthetic。类别规则取批准D0 profile，缺实际usage≠zero。只纯门+Node24 format/lint/typecheck/build/旧contract；不得执行generate/SQL/资源操作，编译需regen先报告。冻结新4以内paths与保护hash；Root sole Git，正式PG费率发布/usage/admission/结算后继另授。|
+
+M1A为完整收费链基础，不是缩水完成：immutablerate/policy发布SQL与strict evidence/actualbinding/dispatch/settlement恢复、IAM付款授权、main/source-dist及真实非零收费仍待owner-first切片。失败收费政策未答仍明确pending，不借此默认免费或扣费。原task/progress同台账继续推进完整Wave0–7。
+
+## R80 主控验收发现与窄修复（2026-10-02）
+
+前goal turnprogress继续有效：Root诊断5e09fc8与定价ADR32dc3fbb59be4099a2804d7744558841eb6ca1ad均已发布/remote exact。Web原WIN01项目15source/tests候选f8c85a36已freeze；Root fresh完整pnpm check终态exit0（/tmp/kokoro-web-r80-root-full-check.log），但独立Astra审0P0/0P1/1P2，故不提交未修候选、不把GREEN等同放行。
+
+|任务|owner/唯一writer/基线/范围|真实失败与验证/交付|
+|---|---|---|
+|R80-W01-P2：whole Scheduled surface卸载隔离|Web/原WIN01；dc330a9+当前冻结20path候选。仅use-scheduled-task-editor.ts与tests/ui/kokoro-scheduled-surface.test.tsx在原15内续修；其余18当前hash保护；Root sole Git|pending mutation→whole unmount→回执会旧reload发GET，现无hook unmount守卫。先create/update真实RED+connected control，添加卸载失效条件；新instance草稿/错误/close不受影响。原Root GREEN只修前证据，freeze后Astra复审与Root fresh完整门后提交。无资源/服务。|
+|R80-W04-CONSENT-P1：正式浏览器过期恢复后继|Web/原WIN01后继，当前未授源写；仅consent route+现iam-relay-next-http.integration.test.ts两现文件。原WIN04与独立Sol均确认0P0/1P1/0P2|同意页CSRF失效总403JSON，HTML应固定空303/login+原clearcookie/no-store/no-referrer/request-id，JSON仍403，上游0，Origin/query/issuer检查顺序及Redis/owner故障503保持；不造中转页。等项目切片冻结验收，先只授test，由Root独占现Next+Redis fixture跑真实RED，再授局部source。不是原product-post已证实原因。|
+
+原WIN06 Billing D0已报freeze，仅五新前缀/原五dirty全文保护；原WIN03/05及其他句柄按真实状态继续，停写者不强求永久满窗。ADR不替代费用实现，完整Wave0–7仍active。所有资源门先确认原句柄终态，不重复起服务、不重置共享状态。
+
 ## R80 主控已发布诊断切片与定价ADR（2026-10-02）
 
 Root main5e09fc8acbd4c96bf768a5c84ba959d8cd910209已commit/push/remote exact，仅5路径（两diagnostic源码+同三台账），finalindex独立0P0/P1/P2、fresh647pass/0fail26.34s；原uv.lock及在途子仓均未暂存。本turn进一步Root治理三测试文件375pass/0fail43.00s，/tmp/kokoro-root-r80-metadata-tests.log，topology PASS；是Root治理纯门，不是子仓在途实现验收或实际浏览器通过。旧14891终态和3310无listener/82316 pid absent本turn再次实核，无Root新资源进程。
