@@ -1,3 +1,12 @@
+## R105 测试探针GREEN与安装设计门推进（2026-10-02，当前）
+
+完整Wave0–7保持active。上回合progress：原main推送83607实际exit0，Root4a648d17已发布。70稳定测试组仍为9限定通过/2最近失败/0整组执行中/15待复测/41未验/2决策阻塞/1支付后置，不是产品完成比例。
+
+- E51 / T-Q11→T-C06：原WIN10停写后Root93085独立真实RED=9fail/583pass/10.80s；修复后原37740实际exit0、592pass/13.34s及Node22语法检查0，log /tmp/kokoro-r105-root-probe-green-root.log SHA06c06505bac7f2588153f648b3db7a34a9c6f25ab795047c79515f5ba4d1570c。driver b83525de/test fee45056冻结，runner/helper/uv.lock不变；独立最终P0/P1/P2=0（/tmp/kokoro-r105-root-probe-green-review.md）。仅本Run/本UI路径合法非空文本前纯内存等待、零snapshot；terminal优先且保read后/post-until围栏、原四消息/全文/作品/硬刷新与600s。旧fixture仅补合法UI上下文，原断言保留；追加session_rate_limited闭集。此为测试访问修复，不关闭T-C06/E48失败，也未执行新真实W2。
+- E52 / T-Q03：原WIN03四docs安装B方案经独立发现唯一P1：operator连接与installer创建schema先于DDL资源预检。四docs已仅修当前前缀并冻结（/tmp/kokoro-r105-agent-installed-d0-correction.json）；Root选只读audit树/metadata确定绑定、canonical唯一编辑，复审P0/P1/P2=0（/tmp/kokoro-r105-agent-installed-correction-review.md），370外围及历史正文不变。现续派原WIN03精确tests-only，source/contract/SQL/锁继续冻结；不把方案或后继测试定义当安装通过。E49 installed checker失败仍保留。
+- Root56014实际exit0：治理309pass/22.02s（/tmp/kokoro-r105-ledger-governance.log）；稳定70ID与归档suffix逐字节一致，源码切片独立0，台账独立审P0/P1/P2=0（/tmp/kokoro-r105-ledger-review.md）；治理终态由Root随后核实，不冒称审查员提前看到输出。
+- Root仅集成现driver/test及四台账，保Agent/Billing/uv.lock任务外修改；原E48与E49、HTTP原RED rawlog覆盖缺口保留。正规积分、Skills/MCP、审批、定时任务、文件作品、整体UI及九owner全链未关闭，支付最后。
+
 ## R104 实际安装后失败与429归因推进（2026-10-02，当前）
 
 上一goal回合为progress：264de6b8提交完整测试台账、309治理/独立0，E48真实429改变下一行动。完整Wave0–7 active，不重新定义目标。

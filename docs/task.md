@@ -1,4 +1,17 @@
-## R104 真实429定位与Agent发布门（2026-10-02，当前）
+## R105 原任务续接：测试探针与安装发布门（2026-10-02，当前）
+
+完整 Wave0–7 不变。上回合为 progress：原推送83607已核实exit0/main=4a648d17，原两个owner句柄确认仍active；本回合继续现任务，不新建计划中心。Root已在原WIN10停写后独立执行93085：现592测试实际9fail/583pass/10.80s；test8e6a1d1e/driver00a12288/runner/helper/uv.lock均与RED冻结manifest匹配。原对照与失败历史保持。
+
+|任务/测试ID|Owner、基线与精确范围|阶段门与实际状态|
+|---|---|---|
+|R105-ROOT-PROBE-GREEN / T-Q11、T-C06|原WIN10；Root4a648d17；拟仅现driver及现test harness最小合法UI内存fixture；runner/helper/600s/两POST四Message/全文/作品/隐私硬门与其他路径冻结；Root独占Git|真实RED已Root93085复现9fail/583pass，独立RED0；GREEN已Root37740复跑592pass/13.34s/Nodecheck0与独立最终0，原WIN10已停写。内存等待本Run合法UI文本前零snapshot，terminal/observer/deadline封闭；文本后仍实际SQL快照与活动硬刷新。不得新网络/协议、制造流或调高IAM限额。纯门与Root严格W2后继，不把测试修复叫用户闭环|
+|R105-AGENT-D0-CORRECTION / T-Q03|原WIN03；Agent17c73541+冻结候选；仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT四docs当前前缀；其余370文件冻结|原设计独立P1=1：资产连接前preflight遗漏application/schema.py且installer先ensure_schema。只补后继范围及零connect/零schema副作用测试，不改代码。Root已采B方案，修正后独立复审0且四docs哈希核对通过，原WIN03后继tests-only已派；manifest/tmp/kokoro-r105-agent-installed-d0-correction.json|
+
+|R105-AGENT-INSTALLED-RED / T-Q03|原WIN03；Agent17c73541+四docs冻结修正；仅现tests/contract/test_machine_contract.py、test_execution_proof_artifact.py、test_canonical_database_schema.py、test_platform_generated_consumer.py、test_architecture.py、tests/unit/test_cli.py及scripts/check_platform_wheel.py；生产/contract/SQL/生成/锁/docs冻结，Root独占Git与安装资源|四docs修正独立P0/P1/P2=0，Root采B方案。先纯tests固化原E49真安装缺资源、缺失/漂移时operator零connect与installer零ensure/DDL及合法原顺序；绑定真实现入口，不以不存在helper/import失败冒充行为RED。安装venv/target与篡改全门先测试声明/静态可收集，实际build/install资源由Root另授权。保原控制/provenance/raw/vector/HTTP门；只运行无外部I/O的精确纯测，RED冻结后Root复现+审再源码授权；manifest/tmp/kokoro-r105-agent-installed-red.json|
+
+Root保Agent/Billing/uv.lock；资源/构建/安装由Root单独放行。测试台账状态跟随当前实测，E51真实9 RED→592 GREEN均保留；原T-C06/E48失败与T-Q03/E49安装失败保持。
+
+## R104 真实429定位与Agent发布门（2026-10-02，历史）
 
 上一goal回合是progress：四台账264de6b8已提交，Root治理309pass，E48真实429与E47 HTTP36通过进入同一测试矩阵。本轮不缩小Wave0–7。Root唯一写入/资源/Git owner；Agent/Billing/uv.lock保持。暂无原共享测试进程live，不重启3310/PG/Redis。
 

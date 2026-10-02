@@ -1,6 +1,6 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R104；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R105；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
@@ -8,6 +8,10 @@
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
 - 截至本次盘点：Root正式组合fa4525e4、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48严格两轮聊天仍失败，活动快照GET返回429/code-other，资源已回收。当前没有整组测试运行；仅核已有终态，不冒充重新测试全部能力。 E49现wheel安装后checker真实失败，T-Q03转失败；原WIN03仅四docs补设计。
+
+## R105 最新测试切片
+
+E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0；仅测试探针在真实UI文本前零snapshot，原活动刷新/全文/作品/隐私硬门不变。原T-C06/E48实际用户旅程仍失败，尚未新W2。E52：Agent安装设计唯一P1已修复复审0、tests-only在途；T-Q03/E49安装失败仍未关闭。两切片不增加业务任务组通过数。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
@@ -63,7 +67,7 @@
 | T-Q08 | Storage | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q09 | Scheduler | gofmt/vet/test/build；OpenAPI/event protocol/schema/架构；skip说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q10 | Root | 精确gitlink、main-only、发布contract/version/digest/client drift、fresh clone | 待复测 | E12原IAM缺提交分支已由E14发布及同fresh目录真实初始化0关闭，E13消费RED已由E15收口；新Root组合及完整fresh/主分支检查仍待验，不计整行通过 |
-| T-Q11 | Root | 发送失败诊断有界/脱敏、两轮归属、失败仍非零退出、原硬断言不变 | 通过 | E44：Root52486整文件582pass/11.51s、Nodecheck0、独立最终0；status13/code14闭集实际wrapper覆盖、无新增I/O/敏感或硬门变化。E43真实RED保留；诊断通过不关闭T-C06 |
+| T-Q11 | Root | 发送失败诊断有界/脱敏、两轮归属、失败仍非零退出、原硬断言不变 | 通过 | E51：Root93085实际9fail/583pass，37740修复后592pass/13.34s及Nodecheck0、独立0；本Run合法UI文本前零snapshot，terminal/observer/deadline封闭；原所有硬断言与控制保留，session_rate_limited闭集补齐。仅当前冻结driver b83525de/test fee45056测试工具门，不是T-C06真实用户旅程通过 |
 | T-Q12 | 各数据owner | 同应用库独立schema fresh install/drift/拒重入/零跨owner SQL/失败回滚 | 未验 | E32仅Agent fresh install/拒重入/catalog drift7通过；未证明所有数据owner单应用库组合与零跨owner访问，逐owner继续验证 |
 | T-L01 | IAM→Web→BFF | 真实IAM表单→授权→callback→HttpOnly session→/app；无中转/整页重试 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
 | T-L02 | IAM→Web→BFF | 错误密码/CSRF/state/nonce/PKCE/redirect篡改拒绝且无session | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |

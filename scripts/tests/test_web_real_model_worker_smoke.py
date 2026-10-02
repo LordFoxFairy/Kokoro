@@ -2895,6 +2895,9 @@ def _run_r99_actual_second_partial_block(
     finished_start = driver.index("  const finished = run => {")
     finished_end = driver.index("\n  async function readSnapshot", finished_start)
     finished = driver[finished_start:finished_end]
+    ui_frames_start = driver.index("  const uiFrames = () =>")
+    ui_frames_end = driver.index("\n  const finished = run =>", ui_frames_start)
+    ui_frames = driver[ui_frames_start:ui_frames_end]
     partial_start = driver.index('  phase = "second-partial-active"')
     partial_end = driver.index('\n  phase = "second-active-reload"', partial_start)
     partial = driver[partial_start:partial_end]
@@ -2905,7 +2908,8 @@ def _run_r99_actual_second_partial_block(
     snapshot_helper = Path("scripts/e2e/chat_snapshot_evidence.mjs").resolve().as_uri()
     source = r"""
 import assert from 'node:assert/strict';
-import {ChatSnapshotEvidenceError,assertCompletedMessagePrefixUnchanged as actualPrefix}
+import {ChatSnapshotEvidenceError,assertCompletedMessagePrefixUnchanged as actualPrefix,
+ uniqueRunFrames as actualUniqueRunFrames}
  from '__R101_SNAPSHOT_HELPER__';
 __R99_HELPERS__
 __R99_GLOBALS__
@@ -2943,6 +2947,7 @@ const bodyForScenario=()=>{
 let evaluateCalls=0;
 page={evaluate:async()=>{
  evaluateCalls+=1;
+ if(gateScenario && !gateReady) throw new Error(secret);
  if(scenario==='snapshot-http-detail' && evaluateCalls>=2) return httpFixture;
  if(scenario==='snapshot-read') throw new Error(secret);
  if(scenario==='snapshot-http') return {status:503,body:{private:secret}};
@@ -2951,7 +2956,7 @@ page={evaluate:async()=>{
 currentProductAttempt=null;
 const snapshotPath='/api/session/sessions/fixture';
 const input={timeout_ms:20000};
-let observerFailure=scenario==='observer';
+let observerFailure=scenario==='observer' || scenario==='gate-observer';
 let prefixChecks=0;
 const assertCompletedMessagePrefixUnchanged=(expected,messages)=>{
  prefixChecks+=1;
@@ -2959,12 +2964,35 @@ const assertCompletedMessagePrefixUnchanged=(expected,messages)=>{
  return actualPrefix(expected,messages);
 };
 const controlledFrames=[];
+const frames=controlledFrames;
+const eventPath='/api/session/sessions/fixture/events';
+const gateScenario=scenario.startsWith('gate-');
+let gateReady=false;
+let gateFrameSequence=0;
+const gateFrame=(tag,path,event)=>({tag,path,id:'gate_'+(++gateFrameSequence),event});
+if(!gateScenario) frames.push(gateFrame('ui',eventPath,
+ {type:'TEXT_MESSAGE_CONTENT',runId:run,delta:'partial'}));
+if(scenario==='gate-delayed-wrong-run') frames.push(gateFrame('ui',eventPath,
+ {type:'TEXT_MESSAGE_CONTENT',runId:'run_other',delta:'PRIVATE_WRONG_RUN'}));
+if(scenario==='gate-delayed-audit') frames.push(gateFrame('audit',eventPath,
+ {type:'TEXT_MESSAGE_CONTENT',runId:run,delta:'PRIVATE_AUDIT'}));
+if(scenario==='gate-delayed-empty') frames.push(gateFrame('ui',eventPath,
+ {type:'TEXT_MESSAGE_CONTENT',runId:run,delta:''}));
+if(scenario==='gate-delayed-invalid') frames.push(gateFrame('ui',eventPath,
+ {type:'TEXT_MESSAGE_CONTENT',runId:run,delta:{private:secret}}));
+if(scenario==='gate-delayed-wrong-path') frames.push(gateFrame('ui','/api/session/sessions/other/events',
+ {type:'TEXT_MESSAGE_CONTENT',runId:run,delta:'PRIVATE_WRONG_PATH'}));
+if(scenario.startsWith('gate-delayed-')) setTimeout(()=>{
+ gateReady=true;
+ frames.push(gateFrame('ui',eventPath,{type:'TEXT_MESSAGE_CONTENT',runId:run,delta:'partial'}));
+},75);
+if(scenario==='gate-terminal') frames.push(gateFrame('ui',eventPath,{type:'RUN_FINISHED',runId:run}));
 let finishedCalls=0;
 const finishedRuns=[];
-const uiFrames=()=>controlledFrames;
+__R104_UI_FRAMES__
 const uniqueRunFrames=(frames,value)=>{
- assert.equal(frames,controlledFrames);
  assert.equal(value,run);
+ if(gateScenario) return actualUniqueRunFrames(frames,value);
  finishedCalls+=1;
  finishedRuns.push(value);
  assert.ok(finishedCalls<=2);
@@ -2974,7 +3002,8 @@ const uniqueRunFrames=(frames,value)=>{
 };
 __R101_FINISHED__
 const deadline=scenario==='positive' || scenario==='terminal-before-partial' ||
- scenario==='post-until-terminal' || scenario==='snapshot-http-detail'
+ scenario==='post-until-terminal' || scenario==='snapshot-http-detail' ||
+ scenario.startsWith('gate-delayed-') || scenario==='gate-terminal' || scenario==='gate-observer'
  ? Date.now()+20000 : Date.now()-1;
 __R99_UNTIL__
 __R99_READ_SNAPSHOT__
@@ -2982,12 +3011,15 @@ let phase='fixture';
 try {
 __R99_PARTIAL__
   phase = "second-active-reload";
-  assert.equal(scenario,'positive');
+  assert.ok(scenario==='positive' || scenario.startsWith('gate-delayed-'));
   assert.equal(beforeReload.execution_head.run_id,run);
   assert.equal(beforeReload.messages.length,4);
   assert.equal(prefixChecks,1);
-  assert.equal(finishedCalls,2);
-  assert.deepEqual(finishedRuns,[run,run]);
+  if(gateScenario) assert.equal(evaluateCalls,1);
+  else {
+   assert.equal(finishedCalls,2);
+   assert.deepEqual(finishedRuns,[run,run]);
+  }
   process.stdout.write('SECOND_PARTIAL_POSITIVE:'+phase+'\n');
 __R99_CATCH__
 }
@@ -3004,6 +3036,7 @@ if(scenario==='snapshot-http-detail') assert.equal(evaluateCalls,2);
         )
         .replace("__R99_UNTIL__", until)
         .replace("__R99_READ_SNAPSHOT__", read_snapshot)
+        .replace("__R104_UI_FRAMES__", ui_frames)
         .replace("__R101_FINISHED__", finished)
         .replace("__R99_PARTIAL__", partial)
         .replace("__R99_CATCH__", catch)
@@ -3218,6 +3251,7 @@ _R102_HTTP_CODE_CASES = [
     (503, "business_store_not_configured", "business-store-not-configured"),
     (404, "session_not_found", "session-not-found"),
     (503, "business_store_unavailable", "business-store-unavailable"),
+    (429, "session_rate_limited", "session-rate-limited"),
 ]
 
 _R102_HTTP_SAFETY_CASES = [
@@ -3317,3 +3351,57 @@ def test_r102_actual_snapshot_http_preserves_closed_status_code_and_projection(
     )
     assert safe_channel
     assert result.stderr == f"REAL_MODEL_FAILURE:{phase}\n"
+
+
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "gate-delayed-none",
+        "gate-delayed-wrong-run",
+        "gate-delayed-audit",
+        "gate-delayed-empty",
+        "gate-delayed-invalid",
+        "gate-delayed-wrong-path",
+    ],
+)
+def test_r104_actual_partial_waits_for_valid_current_ui_text_before_snapshot(scenario):
+    result = _run_r99_actual_second_partial_block(scenario)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == "SECOND_PARTIAL_POSITIVE:second-active-reload\n"
+    assert result.stderr == ""
+
+
+@pytest.mark.parametrize(
+    ("scenario", "expected_phase"),
+    [
+        (
+            "gate-terminal",
+            "second-partial-active-cause-terminal-before-partial-head-unknown-messages-unknown-partial-unknown-finish-present",
+        ),
+        (
+            "gate-deadline",
+            "second-partial-active-cause-deadline-head-unknown-messages-unknown-partial-unknown-finish-absent",
+        ),
+        (
+            "gate-observer",
+            "second-partial-active-cause-observer-head-unknown-messages-unknown-partial-unknown-finish-unknown",
+        ),
+    ],
+)
+def test_r104_actual_partial_gate_fails_closed_without_snapshot(
+    scenario, expected_phase
+):
+    result = _run_r99_actual_second_partial_block(scenario)
+    assert result.returncode != 0
+    assert result.stdout == ""
+    assert result.stderr == f"REAL_MODEL_FAILURE:{expected_phase}\n"
+    assert len(expected_phase) <= 240
+    for marker in (
+        "PRIVATE_WRONG_RUN",
+        "PRIVATE_AUDIT",
+        "PRIVATE_WRONG_PATH",
+        "PRIVATE_URL",
+        "run_fixture",
+        "assistant_fixture",
+    ):
+        assert marker not in result.stderr

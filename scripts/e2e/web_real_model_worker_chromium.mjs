@@ -40,6 +40,7 @@ const SECOND_PARTIAL_HTTP_CODES = new Map([
   ["business_store_not_configured", "business-store-not-configured"],
   ["session_not_found", "session-not-found"],
   ["business_store_unavailable", "business-store-unavailable"],
+  ["session_rate_limited", "session-rate-limited"],
 ])
 const SECOND_PARTIAL_HTTP_CODE_TOKENS = new Set([...SECOND_PARTIAL_HTTP_CODES.values(), "other"])
 
@@ -588,6 +589,17 @@ try {
   phase = "second-partial-active"
   currentSecondPartialObservation = newSecondPartialObservation()
   const beforeReload = await until(async()=>{
+    const currentRunFrames = uiFrames().filter(frame=>(frame.event?.runId ?? frame.event?.metadata?.kokoro?.run_id)===run)
+    if (currentRunFrames.some(frame=>frame.event?.type==="RUN_FINISHED")) {
+      const runFinished = finished(run)
+      recordSecondPartialFinish(runFinished)
+      if (runFinished) { recordSecondPartialCause("terminal-before-partial"); throw new Error("finished before active reload") }
+    }
+    if (!currentRunFrames.some(frame=>frame.event?.type==="TEXT_MESSAGE_CONTENT" &&
+      typeof frame.event.delta==="string" && frame.event.delta.length>0)) {
+      recordSecondPartialFinish(false)
+      return null
+    }
     const body = await readSnapshot()
     recordSecondPartialSnapshot(body,receipt,run)
     const partial = body.messages?.find(message=>message.message_id===receipt.assistant_message_id)
