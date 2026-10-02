@@ -4,6 +4,19 @@
 
 Root R83重跑观测与相邻harness纯门实际624pass0fail22.07s/exit0（/tmp/kokoro-r83-root-diagnostic-adjacent-pure.log）；Node22 driver syntax/diff-check0，两文件精确freeze匹配，除Root当前三台账外862外围逐字节一致；即将仅提交两观测source/tests及三台账，不暂存uv.lock、Web、Billing变更。此结果非业务修复/浏览器E2E。
 
+
+R83-M1B：原WIN06五D0冻结已独立Sol0P0/P1/P2，Root fresh5hash/原dirty正文与Node24 golden5均匹配；续授现Metering内普通types/codec/unit三路径（新文件位置采用R81三面放置，淘汰旧Repository/globaldigest/新模块），精确卡/tmp/kokoro-r83-billing-codec-task.json。只纯编码/校验/摘要，null failure policy不许可执行、不改实际费率/FX/预占/结算；先真实行为RED再GREEN，docs全冻结、其余源/SQL/generated/资源/Git不授。Web与Billing独立writer并行，Root独占审查提交。
+
+R83-W01范围窄扩两现composer透传文件：初次engine聚焦5pass，但两个UI原RED因按钮消失仍fail（非setup）。根因canSend兼任展示与disabled；从现draft派生有内容展示，engine唯一投影仍决定可提交。保Stop与原断言，不另造业务状态/新CSS。卡已精确八路径。
+
+R83-BFF-DIRECT：原WIN02只读准备既有会话scope缺陷的最小同链修复/RED；卡/tmp/kokoro-r83-bff-direct-task.json。未授源/contract/SQL写，不自行发明direct与project_ref冲突策略；输出确切现文件与owner版本发布/消费者依赖，再Root放行。与Web提交和Billing纯codec独立并行。
+
+R83-BFF-DIRECT Root裁决：collection explicit direct+非空project_ref拒400 invalid_scope；omitted/empty全集、project自身与resource授权保持。target public6.0.0，现已发布5.0.0不原位替换digest；owner发布后消费者正规pin。原WIN02只获四现D0文档前缀，canonical/source/test/SQL仍未授；无新schema/index或compatibility。Web八冻结独立Sol0，Root完整check首运行实际末尾build完成但shell readonly status收尾exit1保留，正在原新柄重跑并显式记录pnpm exit，不虚报exit0。
+
+R83 Web已Root exact11paths提交/push/remote exact main52fdd8e7edaad776b64d69de69af5cf3b1c1a347；8源码/test冻结不变，Root仅补相邻INDEX两份和CURRENT。fresh confirmed完整pnpm check246contract/50architecture/2298test0fail0skip、lint/types/build0；实际90572终态0。观测Root eeb2b086已remote exact。Root composition预检因inventory仍旧Webpin真实94pass1fail（/tmp/kokoro-r83-root-composition-pure.log）；现正规迁移已发布Web provenance/精确commit blob hash并保持13broken/3active不变，待重跑，不改门禁或断言。Billing纯codec进行中，BFF四D0已派未授源码。
+
+R83 Root当前组合fresh95pass0fail32秒级/exit0（/tmp/kokoro-r83-root-composition-confirmed.log），topology PASS；Web49provenance精确新committed blob，旧pin造成的原94pass1fail已正规迁移后关闭，未改测试。Root只提交Webgitlink/现inventory与三台账；费用、项目列表过滤及真实聊天全链仍未闭环。
+
 ## R82 整体交互逻辑审计与修复优先级（2026-10-02）
 
 用户本轮明确核对三面：项目内/外会话、Skills/MCP与默认Home、AgentTodo/Skill/AGUI过程展示。沿本task/progress同中心，分派原native只读审查：Astra agent4_scope_gate_r19项目/会话，Sol four_owner_fixes_review_r31能力入口，Sol billing_chat_read_audit_r29执行展示；Root核Home与跨面依赖。任务卡/tmp/kokoro-r82-interaction-read-card.json。未授本轮新模块/contract/SQL/设计改写权，保原WIN01测试、Billing五dirty前缀；R81-W10已冻结停写并交回Root仓writer。
