@@ -1,3 +1,42 @@
+## R70 原十窗口续接：优先研发关键路径，不凑十个 writer
+
+最后逐一snapshot：WIN01/03/05/06/09/10六个active/inProgress；WIN02/04/07/08本轮已结束，尚未逐项接收结论，不再空转续派凑数量。十个原窗口已都收到本轮续接任务（WIN01在审后进入source GREEN）；窗口运行数随交付变化，不声称十个一直同时写入。
+
+R70 Root正式metadata三文件真实95passed/49.88s，/tmp/kokoro-root-r70-metadata-tests.log。此前collect误路径exit4保留；95是组合治理工具门不是真实聊天/账务/浏览器门。R70-01已实际续派完整Web源码GREEN，待冻结审查与Root后继验收。
+
+### R70-01 GREEN 正式放行（替代上表 tests-only 阶段）
+
+R69实际UI两例Root复验2RED/83未选、旧wire缺卡；同native Astra冻结8315ef4d/ccc872c8最终0P0/P1/P2，原P1关闭。原WIN01现授TECH R65精确已批准source/test/pin/生成/现入口集完整GREEN，不先交半套ordinarychat或只改snapshot解析。唯一Web writer；现四D0保持旧正文/既定边界，CURRENT只有真实本片事实可新增，source之外不扩新目录/依赖/SQL/route/CSS主题。
+
+源事实固定已发布BFF3c08a422f3a6aa3cf204c308716cfa64f6d61bb2原v1 public4.0.0 blob5561450b（当前3928043 blob同字节）；只用现两generator正规生成，保持Agent safe12/Team九operation原保障。收敛head/queued/FIFO/START、watermark完整revision先验、全集五decision/staging/ACK与durable/native消费保卡/Stop及scope隔离；删旧alias/fallback，无兼容双轨。原R66/R69新断言冻结；旧tests仅批准breaking语义迁移fixture/旧wire期待，保权限/完整集合/非法数据/cursor/并发/identity/原用户布局保障。Node22定点→contract/generated/architecture/lint/typecheck/fulltest/build冻结交Root，worker不启动e2e/服务/Git/PG/Redis。若需要TECH枚举外文件先报告，不静默扩scope。正式真实登录/provider/双轮刷新与积分仍Root后继用户链验收，不以本片纯门冒称整体通过。
+
+R70 Root追加验证前一次collect路径误写不存在test_repository_standard.py，pytest真实exit4/no tests（日志/tmp/kokoro-root-r70-metadata-collect.log），未运行门、不计通过。随后使用当前存在的compatibility/topology/checkpoint三个文件正式重跑，原柄读取后记录结果；不以shell tail的0掩盖pytest错误。
+
+用户再次明确请求10个或更多窗口。Root先逐一真实snapshot：WIN01 active/inProgress；其余九个 idle 或 notLoaded，前轮任务已完成，不冒称持续十窗口运行。沿原十个thread续派，不新建任务/计划中心；保持当前模型设置，不冒称切换选模。Root HEAD498657933a1d5cb4dc70f81961ea561c7b3c7ad6，BFF3928043已发布且clean，Agent d131c3f4 clean；Web/Billing既有在途文件、Root report RED及uv.lock保护。Root唯一Git/资源/集成负责人。
+
+| 任务 / 优先级 | 归属、角色与范围 | 依赖、验证与交付 |
+|---|---|---|
+| R70-01 / P0 | 原WIN01 Web唯一writer；继续R69实际DOM五类审批tests-only，唯一tests/ui/app-frame.smoke.test.tsx EOF | 不重复下发已运行任务；旧R66八path、四D0/source/pin/generated保护。冻结、实际RED、独立P1关闭后Root授完整消费者GREEN |
+| R70-02 / P1 | 原WIN02 BFF只读；基于3928043当前正式快照/投影，查项目会话归属与独立定时任务入口的具体实现矛盾 | 不重复已关闭Scheduler拒绝审查；最小可复現向量、现文件/owner/契约边界，禁止SQL/服务/Git/写入 |
+| R70-03 / P1 | 原WIN03 Agent唯一writer；仅既有tests/unit/execution/test_control_commands.py与test_hitl.py EOF两类组合回归 | 用R67已定位正式live delivery/native bridge+官方InMemorySaver；旧prefix保持，不改source/contract/依赖。先合法control/定点纯门，冻结交Root |
+| R70-04 / P0 | 原WIN04 IAM只读；正式登录/session/callback问题的当前失败复现入口与最小离线回归 | 不重复赠送政策提案，赠送资格仍待人类回答；不登录真实帐号、不读secret、不改权限或起服务。列当前可执行纯门及准确结果 |
+| R70-05 / P1 | 原WIN05 System只读；当前模型usage细分及冻结价格快照的跨owner可测试输入边界 | 基于原R67草案给最小closed有效/无效样例及字段owner，不重复宽泛调查；无provider/凭据/改源码 |
+| R70-06 / P0 | 原WIN06 Billing原负责人只读精准排障；官方生成重复intersection与新增js-yaml三high | 查正式TS插件可用配置、patched精确版本/官方advisories及narrow override兼容；冻结14path不写。不忽略lint、不手改generated、不接受新增漏洞。Root裁决后同owner实施 |
+| R70-07 / P1 | 原WIN07 Platform只读；审Agent→MCP八字段授权响应消费者的最小安全失败矩阵 | 正式owner发布da813ed4 artifact/current响应校验；同connection/server、expiry/digest/缺字段/撤权，不重复版本盘点，零网络/共享服务/写入 |
+| R70-08 / P1 | 原WIN08 Storage只读；检验本owner取消/下载失败断言是否真正到达对应分支 | 只本owner现纯测试/内存fixture，无Web写入、不重复R67Web问题，定点纯门与具体假阳性证据；无对象库/PG/服务 |
+| R70-09 / P1 | 原WIN09 Scheduler只读；独立ScheduledTask occurrence重启/重复投递的真实receipt事实与现纯门 | 不再审已发布BFF accept；仅本仓现纯tests，准确pass/skip，不以timer或Redis租约替代持久幂等；零共享资源/文件写入 |
+| R70-10 / P0 | 原WIN10 E2E只读；现Root双轮driver给精确实现补丁建议 | 四现路径；已冻结R3 186例185RED/1control；两POST/两receipt/四Message/活动reload/header/2Run durable。不给另一个validator-only切片，不改文件/起浏览器 |
+
+独立审查：原native /root/four_owner_fixes_review_r31（gpt-5.6-sol 当前设置）只读审Billing R67十四path冻结5f052293，检查官方输入/输出闭集、full byte漂移、strict UTF-8、registry43绑定与provenance、source prefix/任务外保护。与WIN06精准工具排障分离，不重复804门、不写文件/资源；报告具体P0/P1/P2，由Root裁决。
+
+所有输出绑定开始/结束HEAD与实际文件字节，结束即停；只读任务发现新增写入需求报告Root，不扩大授权。Owner worker不提交；Root按精确路径审查/复验再小片提交。各任务不使用资源fixture冒称真实模型/积分/浏览器整链通过；完整Wave0–7仍active。当前3310离线，未以扩大窗口数启动应用或重置基础设施；派发后WIN02–10九个真实active/inProgress；WIN01期间R69结束冻结候选待同审，不空转凑十。Root实际两UI测试2fail83未选、8315ef4d与旧108472前缀保持；native Billing十四path审0P0/P1/P2，lint/audit仍open。
+
+## R69 Web 完整 public4 RED Root 复验 / UI P1补例
+
+Root main49865793已推送上轮五metadata路径，新BFF3928043 gitlink/topology与95metadata通过；不是全用户链成功。Web原WIN01 R66冻结1c9bbbd0八tests/fixture EOF，Root已实核8prefix/原hash，定点六完整文件314=274pass40fail0skip，/tmp/kokoro-web-r68-root-public4-red-results.json；原273及1合法control全部pass，41新40行为RED非collection错误，深层旧schema前置未到如实保留。
+
+独立Astra0P0/1P1/0P2：当前“完整用户交互”UI例仅真实approve，edit/reject/respond/submit直接engine staging，不能锁UI可操作性。只续原WIN01唯一writer，仅同tests/ui/app-frame.smoke.test.tsx EOF追加真实用户五项操作及edit schema非法输入零POST；不得用engine.stageToolDecision/Reflect替代点击输入。公开input_schema/allowed_decisions及现卡片标准文案决定DOM；未齐全集0POST、全集齐备唯一closed完整body（required revision/ref/五decision顺序）、ACK/resuming保卡禁重发。审批限定唯一edit时非法输入不得产生决策或POST、合法参数editor确实可进入并提交；拒绝/响应/提交均真实表单/按钮。禁止改原41/其他7tests、四D0/source/pin/生成/样式/依赖；freeze新hash/prefix及原R66段保护，Root RED+同审P1关闭后立即授完整54候选GREEN与immutable public4生成，不拆半套ordinarychat激活。
+
 ## R68 BFF 生命周期切片已正式发布，Root 消费新组合
 
 BFF main3928043ec243eaec28af32c231a0bbf75a8b19ec已Root七path独立final0P0/P1/P2、commit/push并clean；prepared task暂停/删除/owner/revision稳定404/409拒绝，accept三分支与锁后final lease fence同事务收口，原accepted head与202重放不取消。Root八正式integration完整90pass0fail0skip22.741750s，offline unit628pass1资源skip、contract214、arch27、schema8pass1资源skip、format/check/build0，日志/tmp/kokoro-bff-r68-{full-root-integration,root-check}.log。owned bff_full_r68_363d624a343b4696已关闭、源码tracked保持/cleanup空/Redis15余0，无无关库删除或新库剩余。原缺表11fail和业务9/2、旧mock627/1都保留；不称真实IAM/Agent/provider浏览器或ready-null永久修复。
