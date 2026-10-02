@@ -1,3 +1,17 @@
+## R110 当前验收推进（2026-10-02）
+
+完整Wave0–7保持active。上回合progress：Root b2983007已真实提交测试台账/治理309/独立审0；本回合Root独立复测原Agent三失败修复、两codegen及六loopback，archive真实RED后已续派原owner，尚未Root GREEN。70稳定组仍12通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置，不把局部门提升为整owner闭环。
+
+- E64：Root20085实际7门exit0，原三架构项3通过、四文件140通过（含此前未执行Failure generator），全Ruff/直接Node类型/checker/Failure check均0，369文件hash保持，独立源码审0/0/0。原E63三行为失败已在这个切片复测关闭；完整contract/defaultunit/安装仍未验，E49/T-Q03保持失败。
+- E65：离线工具准备原venv0/install1，缺protobuf-py0.1.1，保留失败证据；后继三pin带hash工具供应5步骤0仅缓存准备。Root89877随后真执行两现Platform/Storage generator --check，各exit0，Python3.11.14工具闭包5包/精确版本、UV_OFFLINE与OS禁网，源/generated/pin保持，两个builder临时环境残留0。不是Agent wheel安装。
+- E66：Root84765真实archive import回归1行为fail/0setup，成功执行模块后两无害调用minio_creds/boto3.client导致calls非空，guard0、369hash保持；独立RED审0。原WIN03已获授仅现archive test file修复，尚未Root GREEN。现生产S3Archiver自行创建client而无显式close，测试tracker只回收测试clients；生产生命周期T-A06/T-R02仍待后继实现/验证。
+- E67：Root32696同原6个loopback transport实际6pass/1PG未选/3.46s；只自有127.0.0.1监听，6端口fixture已关闭/serving线程终态/rebind确认、blocked0、冻结target/src/contract保持。是toy IAM/Platform fixture配真实HTTP，不是正式owner或Skills/MCP用户链。
+- 后继full-source静态预审发现Docker integration文件collection先minio_creds和docker info，后才marker；登记为待RED，不伪称新实际失败。仅读取环境配置且无输出/连接不是新增P1，不为零env读取扩成运维/配置重构。先archive GREEN，再Docker collection tests-first、完整defaultsource/构建/安装与当前组合真实验收。
+
+原System已冻结eff656ac报告曾被审员误追加终态：Root从实际新bytes前2605字节精确核原SHA并恢复；完整追加版本另存 /tmp/kokoro-r110-system-root-result-supplement.md SHA665afd6e01bab143ac03a3c3ba46089bd73542f3d643810d75e9f5992620824b，原证据完整。不得覆盖已有证据；本轮未启动/重启业务服务或共享基础设施，不改子仓Git/锁。以下摘要仅保留历史，不覆盖本节。
+
+R110台账收口：Root10896实际exit0，治理309pass/22.14s，日志 /tmp/kokoro-r110-test-ledger-governance.log SHA22ead76682561087ab4fa860e14180b77b2223aa49404305f3efda39c633e522；独立四台账审0/0/0，/tmp/kokoro-r110-test-ledger-review.md SHA66429f030b859c35aa616401df9dea44f257004c34b73bfb3a221a51d1383b34，绑定追加本终态说明前四docs冻结hash。仅台账治理，不当全部业务复测；当前原archive GREEN writer按实际turn继续，无重复服务。
+
 ## R109 测试验收进度（2026-10-02，当前唯一摘要）
 
 测试唯一入口docs/test-cases.md，开发派工docs/task.md，运行证据docs/progress.md。70稳定组：**12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**。完整Wave0–7尚未闭环；这是限定验收任务组，不是产品完成百分比。

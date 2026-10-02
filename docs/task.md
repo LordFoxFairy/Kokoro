@@ -1,3 +1,39 @@
+## R110 Agent候选验收与完整源码门推进（2026-10-02）
+
+上回合progress：Root b2983007已提交四台账；真实治理309pass/22.19s与独立台账审0，70组12/1/0/13/41/2/1。完整Wave0–7保持，Agent候选不是安装完成，不重启共享服务。
+
+|任务/测试ID|Owner、基线与精确范围|完成条件与依赖|
+|---|---|---|
+|R110-AGENT-THREE-FAIL-ROOT / T-Q03|Root唯一验证；b2983007/Agent17c73541+manifestc07dfbd0精确五文件冻结；原WIN03已completed/idle|Root自有/tmp复制现guard仅换fixture路径，原三失败+四文件140及全Ruff/直接NodePyright/checker/Failure check，原OS禁网/只读/精确6子进程保持。369实际Git文件hash前后一致；无loopback/PG/Redis/MinIO/安装/Git。终态及独立源码审后授权archive tests-only|
+|R110-AGENT-THREE-FAIL-REVIEW / T-Q03|原agent_machine_final_review_r98只读；现五文件与worker before快照、Root原RED；只/tmp报告|核Platform路径唯一owner、标准库JSON名义对象实际校验/异常次序、Redis最窄Protocol且308assert不弱化、provenance11项及Failure不变。无测试/资源/Git或仓内写入|
+
+
+R110三失败候选已限定验收：Root20085实际7门exit0，原3项架构及四文件140项通过、Ruff/类型/checker/Failure check均0，369文件hash保持；manifest /tmp/kokoro-r110-agent-three-fail-root.json SHA4cb16756af58e8c9d721d27cbcb209b1a6e2e93a6d094efde97f9ded9963e990，log321a62552b0849c38b0c5783d51c415b8fec4d020d0fee893ec9bde1ceedc85a；独立源码审0/0/0。不是完整contract/安装验收，T-Q03仍失败。
+
+### Archive导入副作用放置门（Root沿既有预审裁决）
+
+Owner为Agent原WIN03唯一writer。当前test/unit/sandbox/test_workspace_archive.py顶层读取minio_creds并boto3 client/create秒级bucket，skip发生在副作用后。采用保现混合测试文件+静态integration class+lazy UUID owned fixture；淘汰移动到新目录（移动仍会被collection导入且改nodeID）。只两现tests文件，生产archive/dev_minio/pyproject/SQL/contract均不变。先architecture真实import回归且零资源，Root RED后才改archive测试fixture；保13函数/20case/18assert与所有异常/正文预期。5资源例后继真实验证，15默认纯例恢复执行，不以排除整个文件收口。详细fixture所有权/cleanup分支按 /tmp/kokoro-r109-agent-archive-preflight.md。
+
+|R110-AGENT-ARCHIVE-RED / T-Q03、T-R01|原WIN03只允许tests/contract/test_architecture.py，Root b2983007/Agent17c73541+已验候选，其余全部冻结；Root唯一Git|追加真实spec.exec_module导入现archive tests回归，预mock minio_creds/boto3.client只记录调用无害sentinel，不吞import异常；唯一sys.modules名字事后清理。现基线应因调用列表非空RED而不是ImportError/setup，OS禁网/只读运行；原architecture断言保留。manifest /tmp/kokoro-r110-agent-archive-red.json后停，Root复现/审查后才GREEN|
+
+|R110-AGENT-CODEGEN-TOOL-PREFLIGHT / T-Q03|原agent4_execution_owner独立只读源码、仅自有/tmp工具环境；读取两现owner pin与冻结generator，禁止修改仓/锁/Git/运行generator|两pin同Python3.11、buf-bin1.73.0/protoc-gen-py0.1.1/protoc-gen-connectrpc0.11.1。先离线现受管3.11.14新tmp venv+固定工具install/metadata/pip check，UV_OFFLINE/禁止解释器下载/OS deny network，120s每步有界。缓存缺失是准备失败不称codegen drift；记录actual tool闭包再只删自有tmp。零业务资源/Agent安装。报告/tmp/kokoro-r110-agent-codegen-tool-preflight.json0600，工具成功也不算生成比对通过|
+
+|R110-AGENT-FULL-SOURCE-PREFLIGHT / T-Q03|原agent_machine_final_review_r98只读Agent现tests/conftest/pyproject及入口；Root b2983007+冻结切片/architecture test在原WIN03写入中|静态核完整默认unit/contract收集是否仍含import-time credentials/client/资源探测/未标记loopback/subprocess；不用glob排除或整文件skip掩盖，给精确来源与后继实际测试包络。只/tmp报告，禁止import应用/测试/网络/源码/Git，不能将静态调查当全测试通过|
+
+|R110-AGENT-ARCHIVE-ROOT-RED / T-Q03|Root只读冻结architecture新增回归及原archive/dev_minio/source，原WIN03已idle；原agent4_execution_owner只读复核|Root复制原guard至自有/tmp，运行唯一新增node，要求实际1行为fail、成功真实导入后calls=[minio_creds,boto3.client]且guard尝试0，所有Git文件hash保持。源码权仍锁，独立审通过后才现archive测试fixtureGREEN|
+
+|R110-AGENT-ARCHIVE-GREEN / T-Q03、T-R01|原WIN03唯一writer，仅tests/unit/sandbox/test_workspace_archive.py；architecture93000280及其他374全部冻结，Root唯一Git|Root84765实际1行为fail/guard0/369hash保持（manifestf5989e55、log5293e22d）；独立RED审e1c3f57c 0/0/0。按现放置门删除顶层credentials/client/probe/bucket，静态integration+lazy UUID自有桶absence/create/finally精确对象/version/marker分页删除+delete桶404+client close，其他错误不吞。纯settings用固定非生产测试凭据/endpoint。保13函数/20case/18assert/所有raises；同回归GREEN+默认15pass/5deselect，完整Ruff/类型与原3+140无资源定点。5真正MinIO另门，不允许真实资源/安装/源变更，manifest后停|
+
+|R110-AGENT-CODEGEN-LOCKED-SUPPLY / T-Q03准备|原agent4_execution_owner只读仓/仅独有tmp，源和两pin冻结；Root授权固定三个codegen工具供应|原离线venv0/install1：protobuf-py0.1.1 cache缺失，不是生成漂移。独立在线供应只用pin三精确版本、既有ali registry解析成带hash的工具闭包requirements，保存原始解析与版本/sha。受管3.11.14新独有venv，require-hashes/only-binary按锁供应缓存、4并发/120s有限步骤，再metadata/pip check且回收自身环境。不改项目锁/解释器/源、不安装Agent/运行generator/业务资源。供应不是codegen通过；后继离线字节验证另门|
+
+|R110-PLATFORM-LOOPBACK-ROOT / T-Q03局部|原agent4_execution_owner独立验证交付+Root重跑，只读冻结tests/contract/test_platform_transport_http.py及其生产引用；与原WIN03仅archive test writer不共享验证目标|明确只6个原loopback语义（compose/proof/retry/close，redirect/large/slow，caller取消，typedreader freshproof/lease），原PG一项仍排除，不改marker/断言/源。只owned127.0.0.1:0绑定、登记后端口连接；OS外网禁止、PG/Redis/subprocess拒绝、私有tmp/只读仓；记录server.close/线程terminal/端口重新绑定清理及frozen target前后hash。不得称真实IAM/Platform或全Agent安装闭环|
+
+|R110-AGENT-CODEGEN-ROOT / T-Q03局部|Root只读两现generator/pin/generated及生产源，原WIN03只写archive测试不共享目标；工具供应已5步骤0且环境回收|Root在独有tmp对现Platform/Storage原generator --check真执行，固定Python3.11工具pin/UV_OFFLINE/禁止解释器下载/固定ali cache；只准精确uv venv/install三pin及owned buf generate，父子OS禁止网络/写仓。核generated source bytes前后无变化、buildertmp回收，实exit和工具闭包记录；不能把供应当生成验证。与wholeAgent源码/安装分开|
+
+R110-AGENT-ARCHIVE-GREEN生命周期裁决：owner实际idle停门，未改文件，发现生产S3Archiver自行构造client且无显式close。测试切片只在现授权test文件增加lazy/function-scoped fixture包装原boto3.client，委派真实factory并记录本fixture创建的所有S3 clients；bucket fixture依赖tracker，先exact bucket回收再逐个close，纯backend构造也纳入tracker。spy不缓存/替换真实资源结果，不在导入安装，不偷关他人client；failure路径所有close尝试，保primary/cleanup错误可见。不扩大源写集。该测试资源回收不等于生产生命周期修复；生产close缺口登记T-A06/T-R02后继，须owner正式实现/验证才闭环。
+
+R110-LEDGER-CLOSE：Root唯一四docs writer，保70ID/归档及12/1/0/13/41/2/1。登记E64局部修复、E65供应与真正offline codegen区分、E66真实archive RED/尚未Root GREEN、E67局部HTTP及所有回收。source writer候选不当wholeAgent完成。原four_owner_fixes_review_r31只读四docs/证据，Root治理重跑后精确四docs提交，保子仓和uv.lock，不更新gitlink或业务服务。
+
 ## R109 当前验收推进（2026-10-02）
 
 当前测试状态12通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置；T-Q05依Root106+源码审0限定验收，Agent三失败候选已交付/停写，尚未Root复测。
