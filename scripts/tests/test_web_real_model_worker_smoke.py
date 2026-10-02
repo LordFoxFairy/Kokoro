@@ -2542,7 +2542,10 @@ def test_r73_model_call_details_are_actual_bounded_and_sum_to_durable_usage(muta
         ("composer-fill", "product-composer-fill"),
         ("composer-fill-pending-rejection", "product-composer-fill"),
         ("observation-open", "product-observation-open"),
-        ("send-click", "product-send-click"),
+        (
+            "send-click",
+            "product-send-click-t1-req0-res0-fail0-net-none-ui-ready-admission-rejected-conn-connected",
+        ),
         (
             "response-await",
             "product-response-await-t1-req0-res0-fail0-net-none-ui-ready-admission-accepted-conn-connected",
@@ -2588,14 +2591,17 @@ const fail = () => { throw new Error(secret) };
 const input = {web_origin:'https://web-fixture.example.test',timeout_ms:20000};
 let phase='owner-login',conversation,eventPath,snapshotPath;
 const receipts=[],posts=[],boundaries=[],steps=[];
-let currentResponse,currentProductAttempt=null;
+let currentResponse,currentProductAttempt=null,uiReads=0;
 const isFailure = name => failure===name || (failure==='second-composer-fill' && name==='composer-fill' && receipts.length===1);
 const composer = {
  waitFor:async options=>{steps.push('wait');assert(options.timeout===20000,'timeout');if(isFailure('composer-visible'))fail()},
  fill:async content=>{steps.push('fill');if(isFailure('composer-fill') || failure==='composer-fill-pending-rejection')fail()}
 };
 const page = {
- evaluate:async()=>({valid:true,known:true,ready:true,admission:'accepted',conn:'connected'}),
+ evaluate:async()=>{
+  const before=++uiReads===1;
+  return {valid:true,known:true,ready:before,admission:failure==='send-click' || before ? 'rejected' : 'accepted',conn:'connected'};
+ },
  waitForResponse:(predicate,options)=>{
   steps.push('arm');assert(options.timeout===20000,'timeout');if(isFailure('response-arm'))fail();
   const request={method:()=> 'POST'};
@@ -2688,20 +2694,20 @@ const expected = new Map([
 ]);
 for (const [value,kind] of expected) assert.equal(classifyProductRequestFailure(value),kind);
 const empty = newProductAttempt(1);
-assert.equal(productAwaitFailurePhase(empty),
+assert.equal(productSubmissionFailurePhase('product-response-await',empty),
  'product-response-await-t1-req0-res0-fail0-net-none-ui-unknown-admission-unknown-conn-unknown');
 const failed = newProductAttempt(2);
 recordProductNetwork(failed,'request');
 recordProductNetwork(failed,'failed','PRIVATE_ERROR_TEXT PRIVATE_TOKEN PRIVATE_BODY');
 failed.preClickUi={known:true,ready:true,admission:'rejected',conn:'connected'};
 failed.finalUi={known:true,ready:false,admission:'accepted',conn:'reconnecting'};
-const phase=productAwaitFailurePhase(failed);
+const phase=productSubmissionFailurePhase('product-response-await',failed);
 assert.equal(phase,
  'product-response-await-t2-req1-res0-fail1-net-other-ui-ready-admission-accepted-conn-reconnecting');
 for (const marker of ['PRIVATE_ERROR_TEXT','PRIVATE_TOKEN','PRIVATE_BODY']) assert(!phase.includes(marker));
 const bounded = newProductAttempt(1);
 for (let index=0;index<4;index++) recordProductNetwork(bounded,'request');
-assert.equal(productAwaitFailurePhase(bounded),
+assert.equal(productSubmissionFailurePhase('product-response-await',bounded),
  'product-response-await-t1-reqoverflow-res0-fail0-net-none-ui-unknown-admission-unknown-conn-unknown');
 assert.match(phase,/^product-response-await-[a-z0-9-]+$/u);
 const unknown=await boundedProductUi({evaluate:()=>new Promise(()=>{})},1);
@@ -2736,8 +2742,11 @@ def test_r81_diagnostics_preserve_real_journey_and_failure_channel_contracts():
     assert 'await page.reload({waitUntil:"domcontentloaded",timeout:input.timeout_ms})' in driver
     assert 'assert(!observerFailure && posts.length===2' in driver
     assert 'process.stderr.write(`REAL_MODEL_FAILURE:${phase}\\n`)' in driver
-    assert "safeProductAwaitFailurePhase(originalPhase,currentProductAttempt,page)" in driver
+    assert "safeProductSubmissionFailurePhase(originalPhase,currentProductAttempt,page)" in driver
     assert "process.stdout.write(JSON.stringify({kind:\"product" not in driver
+    assert "safeProductAwaitFailurePhase" not in driver
+    assert "productAwaitFailurePhase" not in driver
+    assert driver.count("await page.locator('[data-composer-action=\"send\"]').click()") == 1
 
 
 def test_r81_request_binding_keeps_late_first_turn_events_out_of_second_turn():
@@ -2788,19 +2797,70 @@ import assert from 'node:assert/strict';
 HELPERS
 const original='product-response-await';
 const valid={evaluate:async()=>({valid:true,known:true,ready:true,admission:'accepted',conn:'connected'})};
-const enriched=await safeProductAwaitFailurePhase(original,newProductAttempt(1),valid);
+const enriched=await safeProductSubmissionFailurePhase(original,newProductAttempt(1),valid);
 assert.equal(enriched,'product-response-await-t1-req0-res0-fail0-net-none-ui-unknown-admission-accepted-conn-connected');
-const pending=await safeProductAwaitFailurePhase(original,newProductAttempt(1),{evaluate:()=>new Promise(()=>{})});
+const pending=await safeProductSubmissionFailurePhase(original,newProductAttempt(1),{evaluate:()=>new Promise(()=>{})});
 assert.equal(pending,'product-response-await-t1-req0-res0-fail0-net-none-ui-unknown-admission-unknown-conn-unknown');
 for (const page of [
  {evaluate:async()=>{throw new Error('PRIVATE_EVALUATE_ERROR')}},
  {evaluate:async()=>{throw new Error('Target page has been closed')}},
  {evaluate:async()=>({valid:false})},
  {evaluate:async()=>({valid:true,known:true,ready:true,admission:'PRIVATE_BAD',conn:'connected'})},
-]) assert.equal(await safeProductAwaitFailurePhase(original,newProductAttempt(1),page),original);
+]) assert.equal(await safeProductSubmissionFailurePhase(original,newProductAttempt(1),page),original);
 const formatterFault=newProductAttempt(1);
 Object.defineProperty(formatterFault,'failureClass',{get(){throw new Error('PRIVATE_FORMATTER_ERROR')}});
-assert.equal(await safeProductAwaitFailurePhase(original,formatterFault,valid),original);
+assert.equal(await safeProductSubmissionFailurePhase(original,formatterFault,valid),original);
+""".replace("HELPERS", helpers)
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == result.stderr == ""
+
+
+def test_r84_send_click_uses_the_same_closed_attempt_diagnostics_and_fallbacks():
+    import subprocess
+
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    start = driver.index("const PRODUCT_COUNT_TOKENS")
+    end = driver.index("\nlet browser", start)
+    helpers = driver[start:end]
+    source = r"""
+import assert from 'node:assert/strict';
+HELPERS
+const original='product-send-click';
+const accepted={evaluate:async()=>({valid:true,known:true,ready:false,admission:'accepted',conn:'connected'})};
+const partial=newProductAttempt(2);
+recordProductNetwork(partial,'request');
+partial.preClickUi={known:true,ready:true,admission:'rejected',conn:'connected'};
+assert.equal(await safeProductSubmissionFailurePhase(original,partial,accepted),
+ 'product-send-click-t2-req1-res0-fail0-net-none-ui-ready-admission-accepted-conn-connected');
+const rejected={evaluate:async()=>({valid:true,known:true,ready:false,admission:'rejected',conn:'connected'})};
+const unsent=newProductAttempt(1);
+unsent.preClickUi={known:true,ready:true,admission:'rejected',conn:'connected'};
+assert.equal(await safeProductSubmissionFailurePhase(original,unsent,rejected),
+ 'product-send-click-t1-req0-res0-fail0-net-none-ui-ready-admission-rejected-conn-connected');
+const pending=newProductAttempt(1);
+pending.preClickUi={known:true,ready:true,admission:'rejected',conn:'connected'};
+assert.equal(await safeProductSubmissionFailurePhase(original,pending,{evaluate:()=>new Promise(()=>{})}),
+ 'product-send-click-t1-req0-res0-fail0-net-none-ui-ready-admission-unknown-conn-unknown');
+for (const page of [
+ {evaluate:async()=>{throw new Error('PRIVATE_EVALUATE_ERROR')}},
+ {evaluate:async()=>{throw new Error('Target page has been closed')}},
+ {evaluate:async()=>({valid:false})},
+ {evaluate:async()=>({valid:true,known:true,ready:true,admission:'PRIVATE_BAD',conn:'connected'})},
+]) assert.equal(await safeProductSubmissionFailurePhase(original,newProductAttempt(1),page),original);
+const formatterFault=newProductAttempt(1);
+Object.defineProperty(formatterFault,'failureClass',{get(){throw new Error('PRIVATE_FORMATTER_ERROR')}});
+assert.equal(await safeProductSubmissionFailurePhase(original,formatterFault,accepted),original);
+let evaluated=false;
+assert.equal(await safeProductSubmissionFailurePhase('product-composer-fill',newProductAttempt(1),
+ {evaluate:async()=>{evaluated=true;throw new Error('PRIVATE_UNRELATED_ERROR')}}),'product-composer-fill');
+assert.equal(evaluated,false);
 """.replace("HELPERS", helpers)
     result = subprocess.run(
         ["node", "--input-type=module", "-e", source],

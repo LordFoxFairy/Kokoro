@@ -16,6 +16,7 @@ const PRODUCT_COUNT_TOKENS = new Set([0, 1, 2, "overflow"])
 const PRODUCT_FAILURE_CLASSES = new Set(["none", "aborted", "timeout", "dns", "tls", "connection", "other"])
 const PRODUCT_ADMISSION_STATES = new Set(["accepted", "rejected", "unknown"])
 const PRODUCT_CONN_STATES = new Set(["connected", "reconnecting", "unavailable", "unknown"])
+const PRODUCT_DIAGNOSTIC_PHASES = new Set(["product-send-click", "product-response-await"])
 const UNKNOWN_PRODUCT_UI = Object.freeze({known:false,ready:false,admission:"unknown",conn:"unknown"})
 
 function newProductAttempt(turn) {
@@ -123,23 +124,25 @@ async function boundedProductUi(page, timeoutMs = 250, strict = false) {
   } finally { clearTimeout(timer) }
 }
 
-function productAwaitFailurePhase(attempt) {
+function productSubmissionFailurePhase(originalPhase, attempt) {
+  if (!PRODUCT_DIAGNOSTIC_PHASES.has(originalPhase)) throw new Error("product diagnostic phase")
   const count = value => PRODUCT_COUNT_TOKENS.has(value) ? String(value) : "overflow"
   const network = PRODUCT_FAILURE_CLASSES.has(attempt?.failureClass) ? attempt.failureClass : "other"
   const turn = attempt?.turn === 2 ? 2 : 1
   const before = closedProductUi(attempt?.preClickUi)
   const final = closedProductUi(attempt?.finalUi)
   const after = final.known ? final : closedProductUi(attempt?.postClickUi)
-  const phase = `product-response-await-t${turn}-req${count(attempt?.requestCount)}-res${count(attempt?.responseCount)}-fail${count(attempt?.failedCount)}-net-${network}-ui-${before.known ? before.ready ? "ready" : "blocked" : "unknown"}-admission-${after.admission}-conn-${after.conn}`
-  return phase.length <= 240 ? phase : "product-response-await-diagnostic-bound"
+  const phase = `${originalPhase}-t${turn}-req${count(attempt?.requestCount)}-res${count(attempt?.responseCount)}-fail${count(attempt?.failedCount)}-net-${network}-ui-${before.known ? before.ready ? "ready" : "blocked" : "unknown"}-admission-${after.admission}-conn-${after.conn}`
+  return phase.length <= 240 ? phase : `${originalPhase}-diagnostic-bound`
 }
 
-async function safeProductAwaitFailurePhase(originalPhase, attempt, page) {
+async function safeProductSubmissionFailurePhase(originalPhase, attempt, page) {
   try {
-    if (originalPhase !== "product-response-await" || !attempt) return originalPhase
+    if (!PRODUCT_DIAGNOSTIC_PHASES.has(originalPhase) || !attempt) return originalPhase
     attempt.finalUi = await boundedProductUi(page,250,true)
-    const diagnostic = productAwaitFailurePhase(attempt)
-    return /^product-response-await-[a-z0-9-]{1,220}$/u.test(diagnostic) ? diagnostic : originalPhase
+    const diagnostic = productSubmissionFailurePhase(originalPhase,attempt)
+    return diagnostic.startsWith(`${originalPhase}-`) && /^product-(?:send-click|response-await)-[a-z0-9-]{1,220}$/u.test(diagnostic)
+      ? diagnostic : originalPhase
   } catch { return originalPhase }
 }
 
@@ -605,7 +608,7 @@ try {
     first_turn_preserved:true,turns,active_reload:activeReload})+"\n")
 } catch (error) {
   const originalPhase = phase
-  phase = await safeProductAwaitFailurePhase(originalPhase,currentProductAttempt,page)
+  phase = await safeProductSubmissionFailurePhase(originalPhase,currentProductAttempt,page)
   process.stderr.write(`REAL_MODEL_FAILURE:${phase}\n`)
   if (error instanceof ChatSnapshotEvidenceError) {
     process.stderr.write(JSON.stringify({code:error.code,evidence:error.evidence})+"\n")

@@ -1,3 +1,22 @@
+## R86 真实聊天卡点与owner实施并行续接（2026-10-02）
+
+上一goal回合分类progress：Plugins假成功源码已发布Web5e538f69/Root04909add；三面交互目标写入同task/progress，Root真实RED与完整check及95组合改变下一动作，不是整体完成。本回合核实际工作树：Root04909add、原WIN02当前active原GREEN turn01a0fc52-504a-7190-b8e6-85461d0c18be；保Billing五旧dirty和三纯codec、uv.lock。原W2/Root18812/4107/52371/56957均终态，不再复起。
+
+|任务/角色|精确范围/阶段|依赖与完成证据|
+|---|---|---|
+|R83-BFF-DIRECT GREEN / 原WIN02唯一BFF writer|沿上一十现production/contract/governance/CURRENT卡；原两RED冻结|actual主窗口27项22pass5fail为基线；后继同链filter及public6、Root真实PG/隔离owner HTTP/完整门后发布，Web再pin|
+|R84 send-click观测 / 原WIN10唯一Root writer|现scripts/e2e/web_real_model_worker_chromium.mjs与scripts/tests/test_web_real_model_worker_smoke.py；采用/tmp/kokoro-r84-send-click-readonly/REPORT.md|先actual submit/catch真实RED，再泛化同一closed formatter/catch。原click/600s/两轮/receipt/refresh/file/twoPOST/资源guard保留；无secret/正文/异常dump，非业务修复。冻结后Root审查重跑再实际旅程|
+|R81-W01 生命周期RED / 原WIN01唯一Web writer|仅现tests/ui/app-frame.smoke.test.tsx，无production权限；复用现pageClients fixture与真实useAppFrameEngine|真A unmount/B同scope remount在timer前复用cache后，A cleanup不得dispose B；加StrictMode同instance及最终释放positive。若测不到真实cached链先报，不用injected掩盖。该风险不是已证W2根因|
+|R83 Billing pure codec / Root只读离线验证|原三file冻结，五dirty全文/327外围保护；允许test/unit及无emit编译静态门|不运行prisma generate/DB/Redis/provider或formal余额扣款，不占共享资源，正式费用仍后置|
+
+放置：Root harness既有两文件分别拥有浏览器失败观测与纯门；采用延伸已有closed helper，淘汰新增诊断模块/第二JSON协议/改Web生产来隐藏失败。Web只在现AppFrame smoke承载hook生命周期行为，淘汰新增单文件目录/全AppFrame重写。没有新跨仓owner/SQL/wire/依赖。原WIN10获得Root writer期间Root不编辑本仓任何文件、台账、index或commit，只读取/验证日志和独立子仓；三台账此全文与Root其余tracked先冻结。各stage交接后Root收回审查/集成写权。
+
+R86 Root已收回本仓writer：原WIN10 turn01a0fc56-f91d终态、两源码/test冻结；独立Astra0P0/P1/P2，Root865外围hash均相同。Root首次聚焦命令引用不存在的相邻测试路径exit4/0collected，保留/tmp/kokoro-r86-root-diagnostic-adjacent.log，随后按实际现文件重跑目标及BFF-IAM/local-runtime纯门575pass/98subtestpass0fail10.59s、原59316终态0（/tmp/kokoro-r86-root-diagnostic-adjacent-confirmed.log）。Node22 driver syntax/diff-check0；非真实浏览器故障已修复。Root只收2诊断文件和同三台账，真实W2仍原product-send-click失败，待当前owner实施冻结/发布组合后再重验。
+
+R86 Billing离线pure冻结Root实际门：Node24.20.0 format/lint/tsc --noEmit/build config --noEmit均0，test/unit24files772pass0fail0skip4.36s，原21852终态0；三codec hash与327原tracked/generated/五dirty全文均匹配。未运行prisma generate、schema/DB/Redis/provider或正式扣款，不替代完整Billing发布/余额/预占/结算。证据/tmp/kokoro-r86-root-billing-verification.json及/tmp/kokoro-r86-billing-root-*.log。
+
+R86 BFF Root允许原trusted-subject与keyset两个旧internal string第三参改project判别联合，避免双轨兼容；仅原参数类型/call/expected可变，tenant/owner/排序/SQL位置及R85新断言不弱化，integration514c0531仍全文冻结。原WIN02已恢复GREEN active，未授共享资源/Git。Web原WIN01真实cache hook lifecycle tests-only仍active，不猜它是原W2原因。
+
 ## R85 用户三面交互对齐与真实失败续接（2026-10-02）
 
 ### 面向用户的统一交互目标（当前实现与后继明确分开）
