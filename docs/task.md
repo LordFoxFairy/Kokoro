@@ -1,3 +1,56 @@
+## R65 Billing auth-selection 精确 machine GREEN 放行
+
+Root真实206=169pass/37fail/0skip4.26s；Sol冻结68169ba6独立0P0/P1/P2、42471-byte原168前缀保持，合法control先过后35mutants漏拒绝。原WIN06只读固定Prettier内存候选776→791，现同脚本单一契约事实校验职责，不新增文件/目录。仅续授既有三machine文件：YAML两GET新增同exact selection；checker非目标operation拒任何extension、目标使用现matchesContractValue exact四字段对象（presence三marker/full configuredServiceBearer selection/403/no fallback）；原withApprovedPersonalReads合法helper仅一处新增同对象赋值，原168+新38全部断言/mutations保持。其余文件按worker原其他266 tracked冻结清单保护，四D0/旧body/source/README/generator/deps/资源/Git仍锁。freeze+Root206/fullpure/static及独立审通过后再正规生成，不冒称HTTP运行语义已实现。
+
+## R65 Root 已发布组合消费卡（非用户链完成）
+
+Root唯一writer，main52ecc4e8；精确6path：apps/kokoro-bff gitlink→3c08a422、apps/kokoro-agent→d131c3f、verification/contracts/consumer-inventory.json及docs/{CURRENT,task,progress}.md。BFF56path源码已发布/full81真实pass；Agent仅四D0已发布、HTTP源不变。inventory按published Git blob更新217个相关结构化commit引用及真实changed SHA；public owner4.0.0，三个已删除vendor证据分别迁到已发布Agent protocol source及BFF固定e977 HTTP/provenance，不复制契约/不删除证据。两edge仅前置真实组件证据reason，13broken/3active保持；其余owner与历史文字保持。Root暂存精确两gitlink后重跑metadata/topology/compat，独立final index审后提交，排除uv.lock/Billing未交接内容及Web在途D0。全仓standard150fail与正式IAM/model/credit浏览器未验收明确保留。
+
+## R65 用户要求十窗口同步推进：复用原窗口、原负责人
+
+Root实际逐窗口 snapshot：WIN01–10 本轮派发前均 completed/idle（WIN05 notLoaded/completed），不能称此前十个仍在运行。BFF main 3c08a422f3a6aa3cf204c308716cfa64f6d61bb2 已发布且clean，Root全81真实PG/Redis/HTTP通过；Agent仅四D0已独立0审并提交推送 d131c3f4f61b46ed1cca1b8a44fe18e42c8522de、source不变，P3B未实现。Root main52ecc4e8，uv.lock任务外保持；资源/Git由Root独占。
+
+|窗口/角色|当前可执行范围与完成条件|写入/依赖|
+|---|---|---|
+|WIN01 Web负责人|消费BFF已发布public4，先仅四现docs当前前缀给出完整snapshot/queued/full pause/5decision/ACK/FIFO恢复切片，精确原文件/test/删除集与验收；固定3c08a422、YAML5561450b|唯一Web doc writer；旧正文保护，Root D0审后tests/source，不重做UI|
+|WIN02 BFF负责人|仅已发布3c08a422源码只读：真实双轮/刷新/停止/HITL链剩余公开消费缺口，给现文件精确失败断言与可并行后继，原scheduled风险单列|不再改已发布切片，无资源/Git|
+|WIN03 Agent独立协议/执行审|仅已发布Agent d131c3f（HTTP源仍e977）与BFF3c08a422，补此前测试覆盖P2的最小纯回归文件/向量及P3B运行barrier未实现边界|只读，不造新canonical协议/fork决定|
+|WIN04 IAM正式赠送资格|从已完成赠送权限调查给出唯一最小后继权限/契约实施切片与真实负例；列已有授权路径和真正待裁定事项|只读，不发token/赠送/写DB|
+|WIN05 System模型计价追踪|现System/Agent/Billing正式模型route、provider usage、成本/markup调整调用链：逐文件指出1.4是否实际存在及唯一事实owner/最小RED|只读，密钥/网络/运维禁止，不用显示单位冒称计价|
+|WIN06 Billing负责人|38新增auth-selection已冻68169ba6，等待Root真实RED+独立审；保三machine/其他266字节，准备精确GREEN插入与行数拆分需求|原唯一writer停写待续授，不再扩大范围|
+|WIN07 Platform消费审|已发布da813ed Skills本人安装/Skill执行与MCP连接typed选择链，给未完成实际consumer/test入口与owner依赖先后|只读，禁止复制owner和凭据|
+|WIN08 Storage用户旅程审|当前上传→可见文件→会话引用→Agent artifact→Web作品下载各一步实际调用/契约/错误状态，给首个完整失败矩阵|只读，既有RR fixture调查已交付不重复，无共享资源|
+|WIN09 Scheduler独立任务审|正式独立ScheduledTask（不依附Project）创建/暂停/重启/一次occurrence/receipt/任务历史真实公开consumer缺口，产出下一owner最小tests-only范围|只读，不改BFF，不加sleep解决ready-null|
+|WIN10 Root E2E审|基于新发布owner源码，现正规driver双轮+刷新证据实际扩展点/选择器/Run身份/只发两POST/积分事实与cleanup验收断言；先给精确existing文件集|只读，Root仍唯一writer，禁止启动服务/放宽clean守卫|
+
+全部继续同Wave0–7/同task与progress，不新增重复计划。读同AGENTS、CODEBASE_MAP、相关手册与owner三面；每个报告明确commit/文件/实测与未运行项。Window数量不是验收证据，Root重跑冻结门后发布，完整用户链通过之前整体仍未闭环。
+
+## R64 Billing auth-selection P1 tests-only 精准补强
+
+Root冻结三hash与旧72单version/新96suffix独立保持，Node24全733pure通过11.65s、format/lint/两tsc exit0，/tmp/kokoro-billing-r64-root-machine-pure.log；含168不重复累计。native Sol发现1P1：标准OpenAPI OR不能表示已裁定partial-machine出现即拒绝403不得降级JWT，当前机器未记录选择优先级。不放README/generator/source；原WIN06仅现contract test末追加RED，其他machine/source保持。
+
+Root裁定仅两GET x-kokoro-auth-selection精确对象：machine_markers=['x-kokoro-service','x-kokoro-internal-secret','x-kokoro-subject']（这些header按出现而非truthy；共享tenant/Authorization本身不构成机器标记）、service_bearer_selects_machine=true（匹配已配置专用服务凭据才选，不把任意JWT当服务Bearer）、machine_partial_response=403、machine_to_user_fallback=false。这是既定auth规则的机器事实补全，不新增运行协议。先追加两operation source精确断言＋合法target control后的删除/坏标记/删serviceBearer选择/allow fallback/改403/额外scope泄漏mutations；新helper仅克隆已批准withApprovedPersonalReads并补此对象，原168断言/helper先保持，当前正式checker预期真实漏拒绝。冻结后Root实际RED＋审再授YAML/checker及原target helper插入该对象（只补完整合法control，不改原96assert/mutation），所有其他field/GREEN保护继续。源码、HTTP、依赖、生成器、四D0/历史body/资源/Git锁。
+
+## R64 Agent 四文档当前事实精确收敛放行
+
+native原Astra对冻结四D0审0P0/0P1/1P2：仅新增P3B段仍称af458当前/HTTP3/完整HTTP4待发布，实际e977923 HITL4已发布。已证新增段去除＋原三历史标题还原后4/4旧HEAD正文byteequal、whole4hash保持；P3B源尚未实施/fork依赖ADR未批准不得冒称完成。仅原Astra为Agent唯一doc writer修改四现docs P3B新增段的当前commit/HTTP4、旧P3A证据标历史、HITL4发布与P3B/scope/retry/native/retention待实施分离及既定后续breaking5.0表述（不是发布新API）；行号见独立审R64报告，允许CURRENT最顶加一句准确阶段。原HITL/所有其他历史正文、source/SQL/proof/机器/测试/依赖/资源/Git均锁。Root冻结后另Sol审、纯contract/build相关门，只有四doc准确D0才提交，不能通过回滚/忽略dirty启动Chat。
+
+## R64 BFF 第二次真实门与 HTTP 精确迁移
+
+R63freeze78cb0038整436匹配、只有三test变且其他433相同；Root初保护probe误用R62旧byte offset（新增fixture使前缀增长），旧digest本身未变；命令未set-e因此下一owned runner仍启动，完整记录保留。Root改用R63新offset与原六digest独立复算全真，/tmp/kokoro-bff-r64-root-freeze-proof.json；不掩盖初assert失败、不改代码凑hash。完整81真实第二轮77pass4fail0skip23.5208s，日志/tmp/kokoro-bff-r64-full-root-integration.log；此前十项中已关fixture/queued/RR/exhausted，新达到隐藏三个HTTP queued分页断言，同时新增Scheduled ready null（R62同例过）须诊断，不能称其flake已修。
+
+owned bff_full_r64_0c979d6f6d014233已closed/tracked保持/cleanup空/其他库未删/Redis15余0。原WIN02仅再授现test/agui-http.integration.mjs三个旧行为断言：live第二轮含唯一queued(CUSTOM,kokoro.run.queued,确切Run,dispatch_sequence2)＋START＋FINISHED；drain首轮queued seq1及原source分页完全读尽；budget仍2，三页queued＋old START / old FINISHED＋new START / new FINISHED，五cursor互异、严格Last-Event-ID/restart不可丢重，保原所有权限/capacity/错误/预算/terminal。禁止过滤CUSTOM/扩大budget/skip/延时；其他435字节、R57六区保持。worker纯门再freeze，Rootfull81重跑。原WIN09仅只读定点Scheduled scope/null根因，未授Scheduled/source改动，不扩大当前BFF写集。
+
+## R64 Agent 保留四文档只读门
+
+WIN10实际定位正规Chat clean guard还有Agent四D0 dirty；不清理/回滚/绕过guard，也不将未实施P3B文字当源码完成。Root独立冻结四原P3B候选文档/tmp/kokoro-agent-r64-p3b-docs-audit-freeze.json，native原Astra仅审这四working-tree差异相对已发布e977923及当前Python/SQL/contract真实态，输出设计门问题、旧正文保护和是否自洽可提交为明确待实施D0；源码/机器/原八proof/tests/依赖/Git/资源均锁。无Agent writer，不抢原WIN03只读receipt审；只有新owner/不可逆未裁定项才询用户，常规版本/事实漂移由Root收敛。后继原owner更新/发布须另卡，不能为了clean强行提交错误方案。
+
+## R64 续接冻结验收卡
+
+上一goal turn为progress：Root52ecc4e8已实际提交推送三台账、原十窗口全部active确认，BFF完整81资源真实71/10和Billing75/93 RED已改变下一行动；原两writer精准返修在途，不重复开窗口/资源。Root当前main52ecc4e8，index空，任务外uv.lock/Agent4docs保留。BFF原WIN02三现tests修复报告八离线门通过，尚在只读复审/冻结，Root等待具体原句柄而非重启；原WIN06仅两machine/首version字面GREEN在途。新standard实际exit1为150violations/0unverified（/tmp/kokoro-root-r64-standard.log），R62739行拆分已消除新增一项，原150继续未闭合，不以150当绿色。
+
+冻结后Root精确复算manifest全部436及原六区/历史body；复用owned full81 runner，生成独立R64日志/UUID数据库和Redis15占有，不以schema初失败遮住的后段当已验。已静态确认HTTP隐藏三点：live二轮遗漏queued、drain首轮遗漏queued、frame-budget=2的五帧三次分页；暂不预先改assert，先执行真实门达到后Root按证据授权原三test范围迁移，不过滤CUSTOM/增加预算。旧R62资源manifest和失败日志完整保持。Billing冻结后Root同168＋正式机器/纯门重跑、独立3file source审，然后仅官方生成/必要D0产物命名与closed registry接线门，不顺带HTTP/source或倍率。
+
 ## R63 精确源码/机器返修放行（原 owner 单 writer）
 
 Root实际Billing168=75pass93fail且原72全文保持；native Sol冻结c5d72ac0独立0P0/P1/P2。仅原WIN06可改现contract/openapi/v2/openapi.yaml、scripts/openapi-v2-target.ts为既定experimental2.0.2两个本人GET u1/独立JWT OR五因素；保持24operations及其他operation/共享schema、金额/倍率/权限不变。现test/contract/openapi-v2-target.test.ts仅准原首例版本字面2.0.1→2.0.2，新96区及其他原assert全部保持。生成/source/deps/HTTP/SQL/Git/资源继续锁；全部现machine tests/format/lint/tsc后冻结精确文件SHA与单字面prefix保护，Root复验/审后再官方生成/HTTP。四D0的官方schemas.gen.ts/index.ts/closed registry更正先等WIN05精确行报告，独立阶段不抢写。

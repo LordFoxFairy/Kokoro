@@ -1,3 +1,15 @@
+## R65 十窗口真实续派与已发布组件推进
+
+Root逐一检查原WIN01–10，派发前全部已结束（WIN05 notLoaded），并非十个持续运行；现已实际10次续派后逐一snapshot全部active/inProgress。当前同task的R65各仓负责人/只读审/精确范围为唯一任务卡，Web仅四D0当前前缀写入，Billing当前38追加tests冻结并停写等待审核；其他独立用户旅程/模型计价/授权/文件/任务审并行。Root独占Git/共享资源，不开重复窗口、应用或数据库。
+
+BFF main3c08a422f3a6aa3cf204c308716cfa64f6d61bb2已Root审查、提交推送并clean。完整81真实PG/Redis/localhost HTTP最终81pass/0fail/0skip、22.9486s，/tmp/kokoro-bff-r64b-full-root-integration.log；前两次71/10、77/4失败保留，Scheduled ready-null在相同代码下一次通过不证明间歇风险修复。owned bff_full_r64b_73945ee6216a480e已回收、tracked保持/cleanup空/其他库未删/Redis15余0。全离线628pass/1既有资源skip、contract214/architecture27、schema8pass/1资源skip及format/check/build全部exit0，/tmp/kokoro-bff-r64-root-offline-final.log；这些集合不重复累计。final56物理路径（Git rename呈54entries）独立0P0/P1/P2，保R57六区/原body。仅组件源与HTTP doubles通过，真实IAM/Agent/provider浏览器整链未通过。
+
+Agent main d131c3f4f61b46ed1cca1b8a44fe18e42c8522de已提交推送clean：只四D0，独立final index0P0/P1/P2，HTTP4 contract/failure generator --check exit0；源码与原HITL正文不改。e977源码已发布与P3B/scope/retry/native/retention未实施准确分开，不冒称Agent能力新增。
+
+Billing当前新38auth-selection tests冻结68169ba6，Root Node24实际206tests=169pass/37fail/0skip、4.26s，/tmp/kokoro-billing-r65-root-auth-selection-red.log；原168全过，合法新control通过，两GET extension缺失及35mutants漏拒绝真实RED。此前733pure通过不遮盖新P1；仅现machine三文件后继精准GREEN待独立审，正规HTTP/授权赠送/预占/结算释放尚未完成。1.4倍率不是10^6显示单位，未确认实际执行政策。
+
+Root消费新两gitlink及217相关当前证据refs/public4真实digest；Root定点治理95passed、topology PASS、compatibility机器证据0错误但13declared broken故exit1，/tmp/kokoro-root-r65-{metadata-tests,topology,compatibility}.log。三已删vendor证据迁当前owner/source，13broken/3active保持，不伪造全绿色。当前standard仍150violations/0unverified（/tmp/kokoro-root-r64-standard.log）；uv.lock等任务外变更保留。完整Wave0–7 goal active，下一主线Web正式public4消费、授权积分owner与IAM→真实模型双轮/刷新验收；运维不扩范围。
+
 ## R63 十窗口已实际续派，完整资源门发现十项失败
 
 Root复用原WIN01–10完成10次派发，两个即时快照确认全部active/inProgress；具体角色/依赖/文件边界见同task最上R63卡。BFF436/436冻结字节、3删除、R57六保护区域、D0旧body独立核对保持；全离线format/check/architecture/schema exit0，pure628pass/0fail/1既有资源skip，contract214pass、architecture27pass，schema8pass/1资源skip（不重复累计）。
