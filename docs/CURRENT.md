@@ -1,3 +1,17 @@
+## R114 测试进度核对（2026-10-02）
+
+当前70稳定测试组：**12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**。不以自动化断言数量推导产品完成率，完整Wave0–7尚未闭环。本节覆盖下方R113及更早摘要；历史结果保留但不冒充当前组合验收。
+
+- **E76 / T-Q03：安装正向切片已验。** Root实际构建source wheel和sdist，sdist重建wheel全部entry路径/内容相同；source/rebuilt wheel分别在独立venv与target四种布局安装完整115包runtime，installed origin/RECORD/contract通过，venv另有实际console与inspect。两个批次10+16步骤均exit0，临时安装目录已删除，独立终审0/0/0。原E49缺OpenAPI具体缺陷已复验关闭，不再列为当前安装错误；完整负向篡改、installed DDL/HTTP、发布/消费者与资源门尚未验。证据绑定当时冻结artifact，后续README/示例变化不冒充重建后已验。
+- **E77 / T-Q12、T-R02：System单owner真实PG切片已验。** Root运行原fresh入口，23 assertions/22 tables/catalog匹配，重复安装拒绝；自有临时库已由原入口删除，独立精确查询确认不存在，197 tracked hash保持、进程组终态、独立终审0/0/0。不证明全部owner同应用库组合、Redis/业务HTTP或全组恢复。
+- **E78 / T-Q03：配置示例修复待Root复测。** 原skip改为真实测试后Root10pass/1缺文件fail/0skip；原WIN03现已completed/idle交付Agent本仓示例和README/INDEX，owner报告11pass/0skip。该GREEN尚未Root独立复跑/验收，不能用worker报告关闭失败；Root旧样本删除与引用收敛也尚未实施。
+- **E79 / T-Q03、T-R02：170 local测试体已验，回收缺陷未关。** Root170pass/0fail/0skip、510phase通过/blocked0，336保护文件保持、28child/168thread终态、85端口可重绑定；但web_fetch fixture漏server_close，1socket由外层守卫补偿关闭。独立审P1=1明确保留，不以测试体绿色宣称fixture生命周期正确；后继原owner tests-first修复并Root复测。
+- **整体规范检查仍失败。** E75实际152条规则报告保持；R114只读分类不是修复/重新通过。当前无整组测试在跑；原WIN03仅交付待验候选，未重复启动共享服务。本次进度核对没有新跑浏览器或真实模型，不扩大E53历史发布组合的正向登录/严格两轮聊天范围。
+
+测试计划唯一入口仍为`docs/test-cases.md`，开发派工`docs/task.md`，运行证据`docs/progress.md`，组合摘要`docs/CURRENT.md`。接续顺序：配置候选Root复验→fixture回收缺陷→Agent剩余安装/资源及owner组合门；随后逐ID验项目/独立会话与任务、Home/输入框、Skills/MCP/Todo/HITL及正式积分。T-C05项目生命周期、T-B07失败/部分输出/未知成本收费规则待对齐，T-B08支付最后。
+
+R114本次测试进度核对补充：Root现三套工程/规范/拓扑工具测试实际305pass/2.64s/exit0（`scripts/tests/test_engineering_handbooks.py`、`test_ten_repository_standard.py`、`test_repository_topology.py`）；日志 `/tmp/kokoro-r114-test-progress-governance.log` SHAe761dd984fd133e07fc0b0e950788345352169cff73fd7b712d0e0c6bead4c57。仅工具回归与台账核对，不是本次新增业务E2E；70ID/状态及历史归档保持，任务外子仓/uv.lock不提交。
+
 ## R113 当前验收推进（2026-10-02）
 
 上一goal回合为progress：Root c29acd6b已提交测试计划当前态与真实工具测试证据。本回合完成两个独立owner切片的实现与Root实测，完整Wave0–7不缩小。70组当前 **12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**，仅恢复T-Q05当前候选限定纯门，不是产品完成率。

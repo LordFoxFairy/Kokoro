@@ -1,3 +1,38 @@
+## R114 测试进度核对（2026-10-02）
+
+当前70稳定测试组：**12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**。不以自动化断言数量推导产品完成率，完整Wave0–7尚未闭环。本节覆盖下方R113及更早摘要；历史结果保留但不冒充当前组合验收。
+
+- **E76 / T-Q03：安装正向切片已验。** Root实际构建source wheel和sdist，sdist重建wheel全部entry路径/内容相同；source/rebuilt wheel分别在独立venv与target四种布局安装完整115包runtime，installed origin/RECORD/contract通过，venv另有实际console与inspect。两个批次10+16步骤均exit0，临时安装目录已删除，独立终审0/0/0。原E49缺OpenAPI具体缺陷已复验关闭，不再列为当前安装错误；完整负向篡改、installed DDL/HTTP、发布/消费者与资源门尚未验。证据绑定当时冻结artifact，后续README/示例变化不冒充重建后已验。
+- **E77 / T-Q12、T-R02：System单owner真实PG切片已验。** Root运行原fresh入口，23 assertions/22 tables/catalog匹配，重复安装拒绝；自有临时库已由原入口删除，独立精确查询确认不存在，197 tracked hash保持、进程组终态、独立终审0/0/0。不证明全部owner同应用库组合、Redis/业务HTTP或全组恢复。
+- **E78 / T-Q03：配置示例修复待Root复测。** 原skip改为真实测试后Root10pass/1缺文件fail/0skip；原WIN03现已completed/idle交付Agent本仓示例和README/INDEX，owner报告11pass/0skip。该GREEN尚未Root独立复跑/验收，不能用worker报告关闭失败；Root旧样本删除与引用收敛也尚未实施。
+- **E79 / T-Q03、T-R02：170 local测试体已验，回收缺陷未关。** Root170pass/0fail/0skip、510phase通过/blocked0，336保护文件保持、28child/168thread终态、85端口可重绑定；但web_fetch fixture漏server_close，1socket由外层守卫补偿关闭。独立审P1=1明确保留，不以测试体绿色宣称fixture生命周期正确；后继原owner tests-first修复并Root复测。
+- **整体规范检查仍失败。** E75实际152条规则报告保持；R114只读分类不是修复/重新通过。当前无整组测试在跑；原WIN03仅交付待验候选，未重复启动共享服务。本次进度核对没有新跑浏览器或真实模型，不扩大E53历史发布组合的正向登录/严格两轮聊天范围。
+
+测试计划唯一入口仍为`docs/test-cases.md`，开发派工`docs/task.md`，运行证据`docs/progress.md`，组合摘要`docs/CURRENT.md`。接续顺序：配置候选Root复验→fixture回收缺陷→Agent剩余安装/资源及owner组合门；随后逐ID验项目/独立会话与任务、Home/输入框、Skills/MCP/Todo/HITL及正式积分。T-C05项目生命周期、T-B07失败/部分输出/未知成本收费规则待对齐，T-B08支付最后。
+
+R114本次测试进度核对补充：Root现三套工程/规范/拓扑工具测试实际305pass/2.64s/exit0（`scripts/tests/test_engineering_handbooks.py`、`test_ten_repository_standard.py`、`test_repository_topology.py`）；日志 `/tmp/kokoro-r114-test-progress-governance.log` SHAe761dd984fd133e07fc0b0e950788345352169cff73fd7b712d0e0c6bead4c57。仅工具回归与台账核对，不是本次新增业务E2E；70ID/状态及历史归档保持，任务外子仓/uv.lock不提交。
+
+## R114 执行卡（2026-10-02）
+
+上一goal回合为progress：Root df781255提交四台账，E72–75实际证据与整体规范失败已保留。完整Wave0–7保持active；本波继续测试/安装与真实owner门，不新增计划中心。
+
+|任务|Owner / 角色 / 范围 / 基线|完成条件与依赖|
+|---|---|---|
+|R114-AGENT-EXAMPLE-RED / T-Q03|原WIN03唯一Agent writer，gpt-5.6-luna/medium；仅tests/unit/config/test_config_file.py；Agent17c73541+冻结候选、原test70d0a7b5，Rootdf781255|现示例测试去skip、指本仓根agent.example.full.yaml；保四断言并纯AppConfig解析。不写模板/生产源码/锁/SQL/contract/Git；真实缺文件RED后停止，Root复现才授权GREEN|
+|R114-AGENT-LOCAL-PREFLIGHT / T-Q03|原agent4_execution_owner只读验证角色；现partition81914ecd的170local，唯一new私有tmp报告|列明每fixture自有监听/child/FIFO/仓内tmp创建和回收，允许边界精确；不执行业务或更改source；源码writer冻结后才能真实运行最终验收|
+|R114-SYSTEM-FRESH-WRAPPER / T-Q12、T-R02|原four_owner_fixes_review_r31，只读System/current fresh da4675b9/helper efd2f061/schema与预审；只自有tmp测试wrapper|Root随后真实执行现fresh入口、Node24/现pnpm。精确42字符库名事前登记+同admin连接确认不存在，intent落盘，owned PGID120s/终态核验，后查精确库缺失/close，secret不入输出；不改SQL/23断言/共享PG/Redis/服务。仅无资源stub验证wrapper所有权/异常/超时流程，不连接真实PG，Root独占实际资源执行|
+|R114-STANDARD-TRIAGE|原agent_machine_final_review_r98只读Root checker/当前手册与152日志；唯一new0600报告|逐类确认规范一致/真实缺陷/检查器偏差/需owner证据，给最先可独立代码切片；不改checkers/generated/source/Git，不转部署运维|
+
+R114-AGENT-INSTALLED-ROOT / T-Q03：Root独占实际构建/安装资源，Agent当前src/contract/database/scripts/pyproject/uv.lock冻结（配置test并行RED不参与打包源，若源变立即停止）。现uv离线wheel+sdist输出唯一tmp，不执行历史浮动依赖check_platform_wheel。按现frozen lock无dev/no项目导出runtime requirements，记录与已有供应清单比对；受管Python3.11.14新venv从缓存完整安装带hash runtime闭包、再安装本wheel并pip check（--no-deps仅项目wheel且完整闭包已独立装入，不以源码venv代替依赖）。仓外空cwd、清除PYTHONPATH/应用secret、OS禁网，执行实际installed contract-check console与inspect；绑定origin/RECORD/资源/退出/日志/hash，旧E49保留，新结果不代完整wheel/sdist双安装/真实DDL/HTTP/retention。所有owned组终态、自有venv清理，构建物与脱敏摘要保留，不连接共享资源，不改仓/Git。
+
+R114-INSTALLED-MATRIX-ROOT：原r114离线build因默认index缓存缺exit2，未运行安装；r114b沿现镜像缓存、临时精确setuptools84.0.0/wheel0.48.0约束（不改仓依赖）重跑十步骤0，Python3.11.14/完整runtime115/真实wheel安装、origin/RECORD、installed checker/inspect通过。r114c追加target的uv pip check --target是wrapper不支持参数exit2，原记录保留；r114d实际三额外布局16步骤0，sdist→wheel规范化所有路径/内容相等、source target与重建wheel venv/target完整真实安装/metadata依赖及传递extras/checker/console通过，含未跟踪helper的226源corpus保持，四布局安装目录均删除。原E49具体missingOpenAPI失败已关闭，T-Q03整组仍需原配置RED/170清理/完整negative/实际installed DDL/HTTP/其他资源，不提前通过。
+
+R114-LOCAL-ROOT：原native170第一167pass/3guard lexicalfail；b170全pass但guardexit1，吞掉的拒绝为原LiteLLM uname -p，不当产品错误。Root仅两具名LiteLLM nodes/原argv/cwd/解析/usr/bin/uname放行只读平台probe，其他guard保持；24205/PID29249/tmp/kokoro-r114c-local-root-t1mgc7_5实际运行，目标/tmp/kokoro-r114c-agent-local-root.json。原worker61874/88495均实际终态；原web_fetch无server_close导致外层关闭一个自有socket，必须保留待fixture修复，不拿外层代偿宣称fixture正确。Root执行终态后才原WIN03 YAML GREEN，当前无仓源writer。
+
+R114-AGENT-EXAMPLE-GREEN / T-Q03：Root原配置file已真实1缺文件失败/10通过（manifest40c56966、test4044d9fb、OS禁网/0resource），170最终Root87240现真实170pass/0skip/blocked0/整组终态（原fixture强制close缺口另列），source freeze336保持，授权原WIN03仅新根agent.example.full.yaml及现README/INDEX窄入口；原测试4044/sourceconfig/lock/SQL/contract全冻结。按当前唯一config_file映射使用无真实凭据的样本，非旧storage/ledger，不调用factory或worker；全现配置file GREEN、Ruff/Pyright，唯一新0600/tmp/kokoro-r114-agent-example-green.json交付后停写，Root复测/审。随后Root删除自己的旧agent模板并精确改索引，避免双轨；不动其他历史配置模板。
+
+Agent示例放置门（采纳原审8dae2c99，设计面不改变HTTP/SQL/状态机）：owner为Agent配置文档；当前本仓无YAML、原test按不存在的config/examples跳过，Root旧storage/ledger键已漂移。采用现仓根agent.example.full.yaml，与.env.example并列，无单文件目录；淘汰Root样本复用（跨仓/旧键）与config/examples两层（无近期多个样本）。粒度仅新增一个声明性模板、改现测试及窄README/INDEX入口；依赖只当前config_file/AppConfig、无worker/provider调用。无新secret/表/事务/API/generated变化；删除skip和跨仓旧样本编辑入口，不设alias/fallback。先现测试RED→模板GREEN→Root原文件全测/Ruff/Pyright→170local/安装。Root旧模板在owner GREEN验收后另行精确移除与索引改指，不与新版长期双轨。
+
 ## R113 当前验收推进（2026-10-02）
 
 上一goal回合为progress：Root c29acd6b已提交测试计划当前态与真实工具测试证据。本回合完成两个独立owner切片的实现与Root实测，完整Wave0–7不缩小。70组当前 **12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**，仅恢复T-Q05当前候选限定纯门，不是产品完成率。
