@@ -1,19 +1,31 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R94；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R96；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root基线402df94d，最近真实六owner运行组合820eb8c4两轮失败（E17）。Web E20完整门路由失败与E22单worker全Vitest OIDC超时均保留，定点通过不关闭整体；原Web writer仅诊断测试切片。Agent E21源阶段已Root复验与独立0接受，原writer推进机器HTTP5 tests-only，真实PG/发布尚未验。正式积分链、完整能力与最终发布仍未闭环。
+- 截至本次盘点：Root基线6d6a1f22；Web已发布85403f340b6565aeb11d9aa6f90ea7d2ff906fe6，Root完整check终态通过（E24），T-Q01关闭为本仓限定纯门。Root gitlink仍a6c651b，新组合与浏览器尚未复测；最近真实六owner组合820eb8c4两轮仍失败（E17）。Agent源阶段E21接受，机器RED实际132失败/92通过（E25），待机器实现、raw JSON覆盖与真实PG，不算新增已完成任务。正式积分链、完整能力与最终发布均未闭环。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
-共 **70** 组：**通过8**；**失败2**；**执行中0**；**待复测16**；**未验41**；**阻塞2**；**后置1**。
+共 **70** 组：**通过9**；**失败1**；**执行中0**；**待复测16**；**未验41**；**阻塞2**；**后置1**。
 
 通过仅限下表具名范围；完整用户两轮真实聊天最近失败，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
+
+## 本次已完成与未完成（可直接巡检）
+
+**已通过9组**：T-Q01 Web纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有测试资源回收。每组均只覆盖矩阵具名范围，不等于该服务所有功能已验。
+
+**最近失败1组**：T-C06完整真实两轮聊天，第二轮未发出请求。修复已发布，但未按新发布组合复测，继续保留失败。
+
+**待复测16组**：T-Q03、T-Q05–10、T-L01–05、T-F01–02、T-K02–03。其余41组未验，详见逐行owner、通过条件和下一动作，不能省略或改称已完成。
+
+**决策阻塞2组**：T-C05项目移动/归档/删除生命周期；T-B07失败/部分输出/未知成本收费规则。支付T-B08后置，其他积分流程不因支付后置而略过。
+
+本次只核已有终态日志、发布commit与冻结hash并更新台账，未新跑业务/E2E；没有整组测试正在执行。开发阶段新增132个RED断言不是132个测试任务组，也不是额外132项产品完成。
 
 ## 范围与记录方式
 
@@ -25,20 +37,21 @@
 
 |关联测试|问题|状态与下一动作|
 |---|---|---|
-|T-C06 / R94-W01-GREEN|终态旧SSE关闭后仍reconnecting，第二次发送没有POST|真实RED已复现；修复候选待完整门、审查和原严格两轮浏览器复测|
-|T-Q01、T-C02 / R94-GATE-FAILURE-READ|Root完整门中欢迎页重进后项目路由未达预期|最近1失败；先分类产品/测试隔离/环境，不增加timeout或删断言隐藏|
+|T-C06 / R94-W01-GREEN|终态旧SSE关闭后仍reconnecting，第二次发送没有POST|真实RED已复现；E24修复完整纯门与审查通过并发布；原严格两轮浏览器尚未复测，T-C06不关闭|
+|T-Q01、T-C02 / R94-GATE-FAILURE-READ|Root完整门中欢迎页重进后项目路由未达预期|E20/E22保留；E24原配置完整复跑通过，不称已证明历史波动根因；复现时仍按原ID追踪，不增timeout/删断言|
 |T-A01 / R94-W03-GREEN|todo.updated缺持久Row decoder分支|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0接受；真实PG append/replay/幂等仍待验|
 |T-A06、T-R02 / R94-W03-GREEN|生产者先失败时内部子任务未全部取消并等待|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0关闭原P1；递归/nonmodel错误分支及运行链仍待验|
 |T-U01 / R94-HOME-READ|提示入口切本地模式、未绑定owner套餐、硬编码模型档位|只读发现3P1，待Web后继修复/真实浏览器；不是已通过|
+|T-Q03 / R95-AGENT-MACHINE-RED|HTTP4缺新安全过程decoded mapping；raw重复键/整表字节预算校验尚未被完整执行|E25真实132行为RED有效；独立审1P1覆盖缺口；补既有checker与正负例后Root复测，再真实PG/消费者，不另加任务完成数|
 |T-Q03、T-R01|既有archive测试导入时尝试探测ObjectStore，资源归属缺确证|已排除整模块避免纯测访问资源；原事件保留，不声称已清理；后继独立隔离修复|
 
 ## 测试任务矩阵
 
 | ID | Owner/层级 | 测什么与通过条件 | 状态 | 最新证据/未完成原因与下一动作 |
 |---|---|---|---|---|
-| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 失败 | E20完整check路由失败保留；E22 app-frame95复跑通过，但单worker全Vitest2312pass/1 OIDC超时；E23该HTTP单例通过不关闭全门，build仍未验 |
+| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E24：已发布85403f3，Root完整check249contract/50architecture/2313tests、lint/types/build通过，独立0；无format脚本N/A。E20/E22失败保留，非真实浏览器或根因归因全部关闭 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E21源阶段Root108定点/1406隔离unit/静态与独立复审通过；机器baseline provenance失败，现HTTP5 contract tests-only阶段、build/真实PG未验 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E21源阶段Root108定点/1406隔离unit/静态与独立复审通过；E25机器RED132fail/92pass，当前HTTP4/摘要待实现、raw JSON覆盖缺口；build/真实PG/完整owner门未验 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
@@ -58,7 +71,7 @@
 | T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 未验 | R82已知delete fire-and-forget竞态 |
 | T-C04 | BFF→Web | 显式分享/撤销；私有链接不冒充公开分享；另一用户不可读/控制 | 未验 | R82分享文案与真实权限不一致；正负例都需验 |
 | T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 阻塞 | 产品删除/移动规则与正式API未裁决；不猜级联行为 |
-| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E17：当前820eb8c4六owner真实复跑exit1，第二轮零请求、准入拒绝/重连；E18已回归复现终态后连接未归一，修复候选待完整门与真实浏览器复测，E04保留历史 |
+| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E17：当前820eb8c4六owner真实复跑exit1，第二轮零请求、准入拒绝/重连；E18已回归复现终态后连接未归一，修复已按E24发布，Root组合gitlink/provenance与原严格浏览器复测尚未做；E04保留历史 |
 | T-C07 | BFF→Agent | 同会话FIFO/同key重放/双tab同时提交；一活动head，无重复执行 | 未验 | 队列正常也须竞争负例；跨会话允许并行 |
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
 | T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 未验 | 完整用户旅程仍未通过 |
@@ -111,7 +124,7 @@
 
 |Owner|纯门/契约|真实依赖integration|实际进程smoke|跨owner/浏览器消费|
 |---|---|---|---|---|
-|Web|T-Q01当前完整门失败（E20）；E15历史限定纯门保留|无业务数据库；真实session/adapter待验|T-R02未验|T-L/C/K/A/U未验或最近失败|
+|Web|T-Q01本次限定纯门通过（E24）；E20/E22失败历史保留|无业务数据库；真实session/adapter待验|T-R02未验|T-L/C/K/A/U未验或最近失败|
 |BFF|T-Q02通过限定纯门|T-C01过滤切片通过；全owner资源套件未验|T-R02未验|T-Q10/T-C02 Web消费者未验|
 |Agent|T-Q03待复测|真实PG/Redis/checkpointer/lease待验|T-R02未验|真实模型T-C06失败；安全过程T-A未验|
 |IAM|T-Q04本次通过限定纯门|现host51通过；全部真实schema/PG/Redis/OAuth矩阵待复测|T-R02未验|T-L固定tenant浏览器链待复测|
@@ -148,6 +161,8 @@
 |E21|Agent17c73541+冻结R94源 f0cdcdf1/930c8611；两RED tests84f16d8e/e2c35c7e，374文件门前门后匹配|Root76640实际exit0：focused108pass/4deselected、隔离unit1406pass/1skip/18deselected，Ruff/267format/Pyright0；/tmp/kokoro-r95-root-agent-source-gate.log。独立Astra0P0/P1/P2，/tmp/kokoro-r95-agent-source-final-review.md，两P1闭合。contract-check另实际exit1 provenance stale /tmp/kokoro-r95-root-agent-machine-baseline.log；源阶段接受，不计整仓/PG/发布通过|
 |E22|Web a6c651b+两冻结engine候选0928eaa5/f45cd3f610，Root402df94d|原25421完整app-frame95pass/exit0/7.65s；原55271单worker全Vitestexit1、163files2312pass/1fail/207.09s，仅OIDC pending-refresh tombstone30s超时。/tmp/kokoro-r95-root-web-project-smoke.log与/tmp/kokoro-r95-root-web-unit-single-worker.log；原E20不删、不称完整check/build成功。Sol只读安全diagnostic缺口0P0/1P1/0P2，/tmp/kokoro-r95-web-http-failure-read.md，产品或fixture归因待实际诊断|
 |E23|同Web候选、原OIDC测试未修改；独有temporary Next/端口与精确状态清理|Root23020定点pending-refresh例实际exit0：1pass/38名称过滤skip/5.87s；/tmp/kokoro-r95-root-web-oidc-focused.log。单例通过不关闭完整文件顺序超时；原WIN01仅测试诊断后继。不以过滤skip当其余38通过|
+|E24|Web正式85403f340b6565aeb11d9aa6f90ea7d2ff906fe6；OIDC诊断独立commit6da8602；production0928eaa5/engine test f45cd3f610/OIDC test8cb206b0|Root原29612完整pnpm check终态exit0：249contract/50architecture、163files2313tests、lint/typecheck/build通过；/tmp/kokoro-r95-root-web-final-check.log SHA256 ed7c2ad16fa901b248400e428cb6484407ab8f48e189c22b96c171d2c86aa1f7。独立Sol0P0/P1/P2 /tmp/kokoro-r95-web-final-review.md。Root原77117精确两commit/普通push exit0，现HEAD=origin/main且clean；format脚本N/A。E20/E22不删；Root gitlink/provenance尚旧、真实W2与Billing不计通过|
+|E25|Agent17c73541+冻结两contract tests c3fd0e5d/d1267230，源阶段E21不变；manifest8c72ba7e|Root原55117终态exit1：132fail/92pass/1.94s；/tmp/kokoro-r95-root-agent-machine-red.log SHA256 5a3fcdc9c60800987986536ead4bd3ce3d4f7eb0aefba326084372b3a3f7975b。独立Astra0P0/1P1/0P2 /tmp/kokoro-r95-agent-machine-red-review.md；真实版本/闭集映射/非法字段RED，1P1是raw duplicate-key与canonical预算未走owner checker。初13case503/误连尝试及Root相对路径setup错误不算行为RED；最终guard隔离、374hash/372外围保持。机器GREEN/真实PG/发布未完成|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 
@@ -168,8 +183,8 @@
 ## 下一测试批次（依赖顺序）
 
 1. T-C11已在Web a52a623按真实RED→GREEN/Root完整门/独立审验收；E05/E08/E10原失败保留历史。正规BFF6消费已由E15验收发布；不把生命周期或契约验收当真实聊天通过。
-2. T-Q10/T-C02：IAM缺提交发布与Web正规BFF6消费已有限复验；Root组合来源/同fresh最终SHA复验已完成；完整main-only与独立/项目浏览器列表仍待验。不重复clone或启动服务。
-3. T-C06/T-C09/T-C10/T-F03：E17严格真实旅程第二轮失败；先定位准入/重连边界，补对应owner回归再复测活动/终态刷新、全文、receipt下载与另一用户拒绝，不放宽预算与断言。
+2. T-Q10/T-C02：IAM缺提交发布与Web正规BFF6消费已有限复验；E16/E14旧组合来源和同fresh初始化已有限通过；E24新Web发布后的Root组合尚未更新，完整main-only与独立/项目浏览器列表仍待验。不重复clone或启动服务。
+3. T-C06/T-C09/T-C10/T-F03：E17严格真实旅程第二轮失败；定位与对应Web回归已由E18/E24收口发布；下一Root更新已发布gitlink/provenance并验组合，再沿同一隔离checkout复测两轮、活动/终态刷新、全文、receipt下载与另一用户拒绝，不放宽预算与断言。
 4. T-K04–07/T-A01–06：按owner artifact先后接选择/授权/安全过程，实际Skill/MCP/审批/作品与五时点刷新。
 5. T-B02–07：真实证据→授权赠送/余额→预占→结算或恢复；支付T-B08最后。其余矩阵随对应切片持续复测，不能遗忘到最后。
 

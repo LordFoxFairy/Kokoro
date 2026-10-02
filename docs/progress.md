@@ -1,3 +1,14 @@
+## R96 测试台账盘点与最新已执行结果（2026-10-02）
+
+本次基线Root6d6a1f22。Root仅读取现有真实终态日志、发布HEAD/remote ref与冻结hash更新四台账，不重新运行业务/E2E、不启动共享服务或重置数据。Web工作树clean；Agent/Billing与Root uv.lock既有修改保留。独立只读审查沿原代理，不新增窗口。
+
+- **E24 / T-Q01**：Root原29612 Node22完整pnpm check实际exit0，249contract/50architecture、163files2313tests，lint/typecheck/build通过；日志/tmp/kokoro-r95-root-web-final-check.log SHA256 ed7c2ad16fa901b248400e428cb6484407ab8f48e189c22b96c171d2c86aa1f7。source0928eaa5/test f45cd3f610/OIDC8cb206b0与已发布blob一致，独立Sol0P0/P1/P2 /tmp/kokoro-r95-web-final-review.md。Root精确两个commit：6da8602 OIDC严格提前终态诊断、85403f340b6565aeb11d9aa6f90ea7d2ff906fe6终态快照准入；原77117普通push exit0，现HEAD=origin/main且clean。无format脚本N/A；保E20路由/E22 OIDC超时历史，不推断过去所有波动根因已查明。
+- **E25 / T-Q03、T-A**：Root原55117 guarded两contract测试终态exit1，132fail/92pass/1.94s，日志/tmp/kokoro-r95-root-agent-machine-red.log SHA256 5a3fcdc9c60800987986536ead4bd3ce3d4f7eb0aefba326084372b3a3f7975b。manifest8c72ba7e，两test c3fd0e5d/d1267230，374文件匹配/372外围保持，旧69controls未弱化。Astra0P0/1P1/0P2 /tmp/kokoro-r95-agent-machine-red-review.md；132是真实HTTP版本/安全mapping缺失/非法payload拒绝RED，尚未机器GREEN。P1是raw重复键与canonical整表预算未通过owner checker完整执行，需同后继切片补例；首13case503/误连尝试和Root相对文档路径setup错误不作业务RED，不声明未知资源已清理。真实PG/完整Agent门与发布未完成。
+- **统计**：T-Q01由失败→本仓限定通过；70组为9通过/1失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置。未新增ID、未把132断言计成132任务。失败T-C06仍E17真实第二轮零POST，Root组合pin仍旧a6c651b、新Web发布不等于新组合已跑；未做新W2、完整能力/费用链不关闭。
+- **下一批次**：Root先更新并发布新组合，再在同一fresh执行树复测严格W2；Agent机器→真实PG→下游safe过程；随后项目与独立任务、Skills/MCP/作品/审批、正式授权积分→预占→结算/释放与流水，支付最后。项目生命周期/失败计价两决策保留阻塞，不猜级联或免费策略，不扩展运维。
+
+台账校验：70个稳定ID/状态计数/25条证据映射/旧L1–L5字节保护均通过；当前Web已发布五blob与验收hash匹配，记录/tmp/kokoro-r96-test-ledger-validation.json。本轮独立补审已关闭旧统计P1与RED证据P2；新发现“已发布组合”措辞P2已按事实改为“先更新并发布新组合”。未因此增加任何业务通过组。
+
 ## R95 源阶段验收、契约推进与Web完整门差异（2026-10-02）
 
 上一goal回合为progress：402df94d已提交70组测试计划/缺陷/实际失败，未缩小Wave0–7。本回合按真实工作树与原窗口续接，Root唯一Git/台账/集成者，既有Billing/uv.lock保留。

@@ -1,3 +1,16 @@
+## R96 测试任务盘点与后继验收（2026-10-02）
+
+用户本次要求的是完整测试计划和逐项结果，不是再次开发规划。复用docs/test-cases.md 70稳定ID；本节只派工/依赖，progress记录实测，CURRENT记录当前组合，不新建测试中心。
+
+|任务|角色/基线/范围|完成条件与后继|
+|---|---|---|
+|R96-TEST-LEDGER / 全70测试ID|Root唯一四台账writer；Root6d6a1f22，现task两段既有未提交卡保留。只编辑CURRENT/task/progress/test-cases；不改业务源码/gitlink/库存/uv.lock或owner dirty|核终态日志/实际Git与hash、70稳定ID及状态统计、证据映射、旧L1–L5字节保护；独立只读审后精确提交四docs。不是执行全部业务测试|
+|R96-TEST-LEDGER-READ|four_owner_fixes_review_r31 / 原gpt-5.6-sol / 只读；现四台账/CODEBASE_MAP及E24/E25既有日志|核通过范围与缺口、两决策阻塞、无测试/开发混计，报告/tmp/kokoro-r96-test-ledger-read.md；不写项目/Git、不启动测试或共享资源|
+|后继 T-Q10→T-C06/C09/C10/F03|Root独占组合/真实资源；当前Web已发布85403f3，Root gitlink/provenance仍a6c651b|更新真实committed来源并验组合/发布，再同步同owned fresh checkout；原严格两轮/600s/全文/刷新/作品hash/他人404/清理断言不变。该卡只是下一行动，本次未运行|
+|后继 T-Q03→T-A01–06|原WIN03 Agent owner；Root独立审/验证；现源码及两RED test冻结|132行为RED有效；既有checker补raw JSON重复键/预算覆盖及机器HTTP5实现的写入须按原任务卡另授。机器→真实PG→owner发布→BFF/Web消费→浏览器顺序，不以纯源1406pass关整组|
+
+R95-Web交接结案：Root原29612完整check exit0（249/50/2313及静态/build），独立Sol0；精确OIDC commit6da8602与终态快照准入commit85403f3，原77117普通push exit0、现Web clean。仅T-Q01本仓纯门通过；T-C06真实两轮未复测。R95-Agent机器RED交接已由Root55117 132fail/92pass及独立Astra0P0/1P1/0P2核证，1P1覆盖缺口未关闭；没有授予机器GREEN/资源/Git新权限。原R95卡保留作执行历史，不重复启动原终态句柄。
+
 ## R94 第二轮真实发送卡点定位（2026-10-02）
 
 上一回合为progress：Root c76195bc将当前六owner真实W2失败写入70组测试；原3023已终态，cleanup=[]/桶删除404。当前Web a6c651b与BFF bb610ea clean，Agent原WIN03源实现仍active；Billing/uv.lock任务外修改保留。不缩小Wave0–7，不重复启动服务。
@@ -42,6 +55,10 @@ R95-WEB-HTTP-FOCUSED：Root原55271已终态exit1：单worker完整163files2312p
 R95-WEB-HTTP-DIAGNOSTIC（23020已终态exit0，现授原writer）：原WIN01唯一Web writer仅tests/system/oidc-rp-next-http.integration.test.ts的pending-refresh tombstone用例。Sol只读报告/tmp/kokoro-r95-web-http-failure-read.md 0P0/1P1/0P2，started barrier只在fake token refresh分支触发、请求提前HTTP终态仍无限等。目标将started与refreshing提前终态race，使用已有responseDiagnostic输出safe类别/status/path，原未知request拒绝仅固定安全类别，保持原所有tombstone/409/零stale revoke/最后未登录断言与finally释放；started后验证只一实际refresh请求。不得增timeout/删断言/改production/source候选/4D0/机器/依赖/其他tests。Root只读核有效范围，focused诊断复跑根据HTTP终态再裁产品/fixture修复；不当新增失败根因已证明。必须先保存tracked基线、停写manifest/hash/旧assert保护，Root独占Git/最终完整门。
 
 R95-AGENT-MACHINE-RED setup保护补充：cursor94报告原新replay遗漏Run repository fake导致13case503、postgres://unused尝试连接，非行为RED；原日志/终态留档，不探测或清理未知资源。仅原两test范围补Run/Chat/Context全部工厂绑定及未预期DB入口立即固定拒绝，先合法control再目标版本/schema/安全payload RED。不改conftest/source、不拿503或stale digest当新增回归成立；交付仍需外围hash与原setup错误、改正后实际结果。
+
+R95-WEB-FINAL-RECHECK：原WIN01诊断已停写idle，752tracked仅OIDC测试相对阶段基线变化，751外围保护；目标hash8cb206b0、engine0928eaa5/f45cd3f610不变。Root接唯一Web writer，只补现docs/CURRENT.md当前候选/真实证据及src/engine/INDEX.md终态权威连接职责一句，不改production/test。Root原配置Node22完整pnpm check重跑（默认并行/所有断言/timeout不变）；Sol four_owner_fixes_review_r31只读精确三个source/test及两docs，报告/tmp/kokoro-r95-web-final-review.md，核原因果保护/active successor/null失败拒绝、HTTP早终态诊断零泄漏/原assert保护。完整门与独立0才精确提交：OIDC诊断独立一业务测试commit，engine两路径与两个docs另一commit，均Root独占Git；Root组合与fresh新SHA后再原严格真实W2，不以纯门关闭T-C06。
+
+R95-AGENT-MACHINE-RED-RECHECK：原WIN03两contract tests已停写idle，manifest /tmp/kokoro-agent-r95-machine-red-t1g9mhdw/manifest.json；test_machine c3fd0e5d/test_chat_response d1267230，原372外围与HEAD17c73541不变。Root原55117在原checkout重跑这两pure文件、guard隔离所有真实DB入口；native agent4_scope_gate_r19 / Astra只读原测试全文/新155例保护/最终132fail/92pass是否实行为RED，不以首13case503或missing-callable/stale digest冒充。现checker decoded函数缺口仅评估已批D0最小原模块内部入口与测试，不重开owner/API、不新模块；Root裁定后再授测试补口与机器GREEN。报告/tmp/kokoro-r95-agent-machine-red-review.md；不改文件/资源/Git/跑测试，Root独占实际验证。原启动脚本再次在Agent cwd相对读Root docs/task.md而报FileNotFoundError，不属于业务RED；未改子仓/未再启动测试，Root随即绝对路径补卡，后续Root文档一律绝对路径。
 
 ## R93 发布源修复与消费/行为测试并行（2026-10-02）
 

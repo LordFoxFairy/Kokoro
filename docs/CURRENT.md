@@ -1,3 +1,11 @@
+## R96 完整测试计划与当前进度（2026-10-02）
+
+唯一测试台账仍为docs/test-cases.md，70稳定组：9限定通过/1最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置。开发派工在task.md，实测证据在progress.md；测试任务不是开发任务或自动化断言数。
+
+Web已正式发布85403f340b6565aeb11d9aa6f90ea7d2ff906fe6，Root完整check249contract/50architecture/2313tests、lint/types/build通过、独立0（E24）；T-Q01关闭为本仓纯门。Root gitlink/consumer provenance仍a6c651b，尚未进行新组合及原严格真实W2；T-C06保持E17失败，不能用纯门宣称用户旅程闭环。Agent源阶段接受，但机器RED132fail/92pass、raw JSON校验覆盖1P1（E25）；机器/真实PG/下游消费未完成。
+
+本次仅盘点已有终态日志、发布commit与hash并更新同四台账，不启动服务或新跑E2E。完整Wave0–7 goal仍active。两决策阻塞是项目生命周期与失败/部分输出/未知成本收费规则；支付最后，部署运维不纳入当前开发扩张。历史章节是当时记录，最新状态以本节和测试矩阵为准。
+
 ## R95 当前源码与验收状态（2026-10-02）
 
 Agent R94两P1源阶段经Root108定点/1406隔离unit与静态门、独立Astra0P0/P1/P2及374hash核验接受；机器HTTP仍4、provenance baseline实际失败，原WIN03仅两contract tests追加HTTP5真实RED，机器/SQL/真实PG未放行。Web原完整门E20失败保留；完整app-frame95复跑通过，单worker全Vitest仍2312pass/1 OIDC30s超时；该HTTP单例1pass/38过滤skip不关闭整门。原WIN01仅现OIDC测试严格诊断，race started与提前HTTP终态，不增timeout/删断言；生产与engine两个候选冻结。完整70组仍8通过/2失败/16待复测/41未验/2决策阻塞/1支付后置；真实两轮T-C06仍失败、未发布修复，不称闭环。Root最新基线402df94d，任务与实际句柄见同task/progress/test-cases。
