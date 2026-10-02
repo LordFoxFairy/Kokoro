@@ -1,3 +1,24 @@
+## R97 正式机器契约实施与已发布Web组合（2026-10-02）
+
+上一回合是progress：Root d7775567提交完整70组测试台账与E24/E25，未缩小Wave0–7。原WIN01/03真实句柄均idle/last turn completed；不重复启动原终态进程。Root保留Billing/uv.lock与Agent源阶段已验冻结；同仓单writer。
+
+|任务|owner/执行者/基线/精确写集|依赖、验证与提交责任|
+|---|---|---|
+|R97-ROOT-WEB-COMPOSITION / T-Q10→T-C06|Root唯一writer；d7775567，Web已发布85403f340b6565aeb11d9aa6f90ea7d2ff906fe6。仅Web gitlink、verification/contracts/consumer-inventory.json内49个Web已发布commit/blob来源与现四台账|更新真实git show blob SHA，不改16edges/13broken/3active、其他owner/ref、machine检查器/driver。Root三composition pure门/topology/compat；agent4_scope_gate_r19 / 原gpt-6-astra独立只读审（/tmp/kokoro-r97-composition-review.md）、精确提交/普通发布，后续同owned fresh树同步再原严格W2|
+|R97-AGENT-MACHINE-GREEN / T-Q03、T-A01–06|原WIN03唯一Agent writer，保留窗口实际当前模型；Agent17c73541+冻结source13/test15/R94两源与四D0|Root55117真RED132fail/92pass及独立Astra确认有效；沿R90 D0机器候选补R95review唯一raw JSON覆盖P1，不重开owner/API。生成/纯门后停写交接；Root独占Git与真实PG/HTTP资源|
+
+Agent本阶段具名写集（相对apps/kokoro-agent）：contract/openapi/v1/openapi.json、contract/provenance.json、src/kokoro_agent/contract_check.py、chat_contract_check.py、scripts/generate_failure_models.py；execution_proof_contract.py仅OWNER_SOURCE_FILES实际源码依赖列表变化，proof自身1.0.0与安全语义不变；protocol/run_failure_generated.py仅原generator实际差异。测试只授既有tests/contract/下test_public_contract.py、test_machine_contract.py、test_chat_response_envelopes.py、test_execution_proof_artifact.py、test_execution_proof_jwks_http.py、test_canonical_database_schema.py、test_chat_tenant_time_boundary.py；其他tests/源码/D0/Schema/lockfile/env/资源/Git锁定。HTTP acceptance若需版本断言迁移先报路径，不自行扩大。
+
+最小内部入口裁决：现chat_contract_check.py增加validate_decoded_chat_payload(document: dict[str, object], *, event_type: str, payload_json: str) -> None；纯函数按唯一OpenAPI映射取activity/todo.updated/interaction.state/run.failed的owner component，不维护第二schema/DTO、不做I/O。原始JSON先拒任何层duplicate member（含相同值/escaped-key等价）、malformed/trailing、NaN/Infinity、非object和孤立surrogate；合法surrogate pair不误拒。Todo按已批C(x)对整个decoded对象canonical UTF8预算65536（含）/65537，不用raw文本/外层envelope长度，不trim/normalize/truncate。Failure/HITL完整值/tuple/JWKS/proof及普通Message/Delivery边界不扩散；未知/错profile fail closed。
+
+原两contract tests补正式raw入口的65536/65537与等义whitespace/key-order/Unicode escape、重复todos/content/status/等值/escaped-key、JSON malformed/trailing/nonfinite/nonobject/surrogate正负例。入口不存在只记能力前置，不拿missing callable算RED；现132真实RED已充分，补覆盖与实现可同GREEN。现HTTP replay实际payload_json必须调用owner入口，不加unused validator/无校验fallback。原69controls只允许批准HTTP overall4→5机械迁移；Failure/HITL/proof own1.0.0/安全负例及原source已验assert不弱化。
+
+放置沿R90 D0：扩现contract checker/现tests，淘汰新validator模块/第二schema/目录；OpenAPI为机器事实，source安全模型冻结，生成provenance按原链更新。不新增owner/SQL/表/Redis/配置/依赖。阶段保存374 tracked hash，写集外字节保持。纯命令：uv run --frozen pytest tests/contract -q（先确认模块无收集I/O）、uv run --frozen kokoro-agent-contract-check、uv run --frozen python scripts/generate_failure_models.py --check、Ruff check/format、Pyright、uv build。完整unit收集前ignore已知archive模块并排除resource markers；不探MinIO、不起PG/Redis、不访问provider、不reset或清理未知资源。停写交接绝对文件集/阶段hash、实际命令/exit/pass-fail-skip、断言迁移、遗漏与下一owner；Root资源另授。
+
+完整目标与70ID不变；T-C06保持原真实失败直到新组合真实通过。原窗口收到任务后才实际进行中，计划不冒称LIVE。Root独占台账/集成，Agent纯实现与Root已发布fresh运行树互不覆盖。本卡工具JS语法错误导致零执行，随后正式写卡；不计业务RED。Agent原WIN03已实际active turn01a0fd01-8bf8-7ee0-8c90-ac88135718ea，cursor98；非静态计划假称运行。
+
+R97组合实际门：Root原49710终态exit0，95pass/0fail/42.58s；topology PASS、compat exit1仅13declaredbroken/16edges/0violations，无新误差。49Web provenance仅取已发布85403f3的committed blobs；独立Astra0P0/P1/P2、49refs/45发布blob核对匹配（/tmp/kokoro-r97-composition-review.md）；本卡为发布前验收，实际提交/发布以Git和后继runtime manifest为准，尚未跑新W2，T-Q10仍待复测/T-C06仍失败。
+
 ## R96 测试任务盘点与后继验收（2026-10-02）
 
 用户本次要求的是完整测试计划和逐项结果，不是再次开发规划。复用docs/test-cases.md 70稳定ID；本节只派工/依赖，progress记录实测，CURRENT记录当前组合，不新建测试中心。

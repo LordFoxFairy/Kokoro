@@ -1,3 +1,8 @@
+## R97 当前组合候选与真实复测边界（2026-10-02）
+
+Root基线d7775567，正式Web85403f3已纳入gitlink和49个发布blob来源；Root95组合pure通过，topology PASS，compat13declaredbroken/0新增误差。独立Astra0P0/P1/P2、49refs/45blob实核。此节记录发布前验收，实际Root发布SHA以Git/后继运行manifest为准；fresh新pin/严格W2尚待，不是新旅程通过；T-C06仍E17失败，70组计数不变。
+原WIN03实际active机器GREEN，Agent未发布HTTP5，真实PG与下游未验。保留Billing/uv.lock，Root唯一Git/共享资源owner，不重复启动服务。
+
 ## R96 完整测试计划与当前进度（2026-10-02）
 
 唯一测试台账仍为docs/test-cases.md，70稳定组：9限定通过/1最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置。开发派工在task.md，实测证据在progress.md；测试任务不是开发任务或自动化断言数。

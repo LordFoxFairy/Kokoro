@@ -1,3 +1,10 @@
+## R97 已发布Web组合验证与Agent机器实施（2026-10-02）
+
+上一回合为progress：Root d7775567提交四测试台账和E24/E25。Root独占组合/台账/Git，原WIN03独占Agent机器GREEN，两个独立工作面同时推进；完整Wave0–7不缩小，uv.lock/Billing保留。
+- Root原49710实际终态exit0：三组合pure测试95pass/0fail/42.58s；/tmp/kokoro-r97-root-composition.log SHA256 7225a21f3318fd8d7f2e13349970e01eebc925e76e92fad625b356af100ead27。topology exit0/PASS /tmp/kokoro-r97-root-topology.json；compat exit1仅16edges中13原declaredbroken、0violations /tmp/kokoro-r97-root-compatibility.json。不放宽门禁或清零债务边；组合纯门不是用户旅程通过。
+- Web gitlink和49 provenance refs到正式85403f340b6565aeb11d9aa6f90ea7d2ff906fe6，digest从git show已发布blob计算，其他节点/状态/理由/owner pin不变，baseline /tmp/kokoro-r97-composition-baseline.json。独立Astra0P0/P1/P2，只审组合，49refs/45blob核匹配，/tmp/kokoro-r97-composition-review.md；本节为发布前证据，Git与后继manifest记录实际发布；未更新fresh/重跑严格W2，T-Q10与T-C06状态不变。
+- 原WIN03实际turn01a0fd01-8bf8-7ee0-8c90-ac88135718ea/cursor98 active，沿R97写集推进HTTP5/owner raw JSON checker与duplicate/canonical预算；源/D0/SQL/依赖/资源/Git保持锁定。Root132RED及R95唯一P1为前置，不把在写实现当通过。Root工具字符串两次错误均零执行，后续绝对路径重发；不计业务失败，不重复启动进程。
+
 ## R96 测试台账盘点与最新已执行结果（2026-10-02）
 
 本次基线Root6d6a1f22。Root仅读取现有真实终态日志、发布HEAD/remote ref与冻结hash更新四台账，不重新运行业务/E2E、不启动共享服务或重置数据。Web工作树clean；Agent/Billing与Root uv.lock既有修改保留。独立只读审查沿原代理，不新增窗口。
