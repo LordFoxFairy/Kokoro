@@ -1,17 +1,17 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R105；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R106盘点；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root本轮正式组合cc7bfb78、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48失败历史保留；E53严格T-C06已终态PASS、正规登录T-L01通过，五项owned残留0/桶回收404；其余按原状态记录，不冒充全部重测。 E49现wheel安装后checker真实失败，T-Q03转失败；原WIN03仅四docs补设计。
+- 截至本次盘点：Root本轮正式组合cc7bfb78、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48失败历史保留；E53严格T-C06已终态PASS、正规登录T-L01通过，五项owned残留0/桶回收404；其余按原状态记录，不冒充全部重测。 E49现wheel安装后checker真实失败，T-Q03转失败；原WIN03安装tests-only已冻结交付，独立审查0；Root尚未独立复现及完成源码/安装门。
 
 ## R105 最新测试切片
 
-E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0；仅测试探针在真实UI文本前零snapshot，原活动刷新/全文/作品/隐私硬门不变。T-C06原E48失败已由E53本轮严格旅程通过关闭，T-L01本轮正向登录通过；其余能力不据此关闭。E52：Agent安装设计唯一P1已修复复审0、tests-only在途；T-Q03/E49安装失败仍未关闭。两切片不增加业务任务组通过数。
+E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0；仅测试探针在真实UI文本前零snapshot，原活动刷新/全文/作品/隐私硬门不变。T-C06原E48失败已由E53本轮严格旅程通过关闭，T-L01本轮正向登录通过；其余能力不据此关闭。E52：Agent安装设计唯一P1已修复复审0；tests-only已冻结交付，R106独立审查0，Root复现待执行，T-Q03/E49安装失败仍未关闭。E51/E52本身不增加业务通过组；E53实际严格旅程新增关闭T-C06、T-L01两组。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
@@ -23,7 +23,7 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 
 **已通过11组**：T-C06本轮完整严格两轮真实模型旅程、T-L01正规IAM表单正向登录，以及T-Q01 Webddd38c5纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有资源回收。各自只覆盖矩阵具名范围，不是九服务或用户全链全部完成。
 
-**失败1组**：T-Q03，E49实际安装后checker缺机器契约资源；精确tests-only在途，未称安装修好。T-C06旧E48失败在E53修复后严格旅程通过，失败历史不抹除。
+**失败1组**：T-Q03，E49实际安装后checker缺机器契约资源；精确tests-only已冻结交付、独立审查0，Root复现和真实安装复测未完成，未称安装修好。T-C06旧E48失败在E53修复后严格旅程通过，失败历史不抹除。
 
 **执行中0组**：原58200已终态exit0、owned残留五项均0/桶已回收，不等待已结束进程；Agent tests-only实施不是整组安装资源运行。
 
@@ -33,7 +33,7 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 
 **阻塞2组**：T-C05项目移动/归档/删除生命周期、T-B07失败/部分输出/未知成本收费业务规则；T-B08支付后置。
 
-**当前下一步**：T-C06与T-L01依E53关闭具名范围；原WIN03安装tests-only继续，Root随后复现/审/源码/真实安装；System纯门安全预审并行。登录负例、项目/独立任务、Skills/MCP、Agent安全过程消费者、正式积分及UI真实矩阵保持原状态，按既有依赖继续，支付最后。
+**当前下一步**：T-C06与T-L01依E53关闭具名范围；原WIN03安装tests-only已交付且独立审查0，Root随后独立复现/源码审查/真实安装；System纯门安全预审已交付，完整纯门待授权执行。登录负例、项目/独立任务、Skills/MCP、Agent安全过程消费者、正式积分及UI真实矩阵保持原状态，按既有依赖继续，支付最后。
 
 ## 范围与记录方式
 
@@ -45,7 +45,7 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 
 |关联测试|问题|状态与下一动作|
 |---|---|---|
-|T-C06 / R94-W01-GREEN|终态旧SSE关闭后仍reconnecting，第二次发送没有POST|真实RED已复现；E24修复完整纯门与审查通过并发布；新组合已按E28严格复测，仍失败于second-partial-active，T-C06不关闭|
+|T-C06 / R94-W01-GREEN|终态旧SSE关闭后仍reconnecting，第二次发送没有POST|真实RED已复现；E24修复完整纯门与审查通过并发布；E28/E40/E48失败历史保留；E51修复探针访问后，E53实际严格两轮旅程通过，T-C06具名范围已关闭；其他会话分支不据此关闭|
 |T-Q01、T-C02 / R94-GATE-FAILURE-READ|Root完整门中欢迎页重进后项目路由未达预期|E20/E22保留；E24原配置完整复跑通过，不称已证明历史波动根因；复现时仍按原ID追踪，不增timeout/删断言|
 |T-A01 / R94-W03-GREEN|todo.updated缺持久Row decoder分支|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0接受；E35新增6项实际PG验证与独立0已通过；BFF/Web过程消费仍未验|
 |T-A06、T-R02 / R94-W03-GREEN|生产者先失败时内部子任务未全部取消并等待|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0关闭原P1；递归/nonmodel错误分支及运行链仍待验|
@@ -132,14 +132,14 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 
 |Owner|纯门/契约|真实依赖integration|实际进程smoke|跨owner/浏览器消费|
 |---|---|---|---|---|
-|Web|T-Q01正式ddd38c5限定纯门通过（E41/E42）；E20/E22失败历史保留|无业务数据库；真实session/adapter待验|T-R02未验|T-L/C/K/A/U未验或最近失败|
+|Web|T-Q01正式ddd38c5限定纯门通过（E41/E42）；E20/E22失败历史保留|无业务数据库；E53正向session/adapter真实通过，其他分支待验|T-R02全组未验|T-L01/T-C06具名范围通过；其余L/C/K/A/U按原矩阵|
 |BFF|T-Q02通过限定纯门|T-C01过滤切片通过；全owner资源套件未验|T-R02未验|T-Q10/T-C02 Web消费者未验|
-|Agent|T-Q03待复测|真实PG/Redis/checkpointer/lease待验|T-R02未验|真实模型T-C06最新E40失败；安全过程T-A未验|
-|IAM|T-Q04本次通过限定纯门|现host51通过；全部真实schema/PG/Redis/OAuth矩阵待复测|T-R02未验|T-L固定tenant浏览器链待复测|
+|Agent|T-Q03失败：E49安装后checker缺资源；tests-only已交付，Root复现待执行|E35限定PG65、E47限定PG/Redis/HTTP36通过；其他依赖与故障分支待验|T-R02全组未验|已发布HTTP4参加E53真实模型旅程通过；未发布HTTP5安全过程T-A未验|
+|IAM|T-Q04本次通过限定纯门|现host51通过；全部真实schema/PG/Redis/OAuth矩阵待复测|T-R02全组未验|E53固定tenant正向浏览器T-L01通过；T-L02–05负例/权限仍待复测|
 |System|T-Q05待复测|真实PG/HTTP/身份/路由T-S未验|T-R02未验|BFF/Agent实际绑定T-S02未验|
 |Billing|T-Q06待复测；T-B01纯codec通过|真实钱包/ledger/T-B03–07未验或决策阻塞|T-R02未验|正式收费未验；支付后置|
 |Platform|T-Q07待复测|真实PG/IAM/Storage/Connect授权待验|T-R02未验|Skills/MCP使用T-K未验；身份cutover T-G01未验|
-|Storage|T-Q08待复测|真实PG/ObjectStore/scan T-F待复测/未验|T-R02未验|BFF/Agent/Platform新组合未验|
+|Storage|T-Q08待复测|E53限定真实作品/下载hash通过；完整上传/scan/故障/GC T-F待复测或未验|T-R02全组未验|E53发布组合BFF/Agent限定旅程通过；完整T-F与Platform消费未验|
 |Scheduler|T-Q09待复测|真实PG/Redis/lease/outbox T-P未验|T-R02未验|BFF callback/Agent dispatch未验|
 
 ## 已执行证据与版本绑定
@@ -225,11 +225,12 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 
 ## 下一测试批次（依赖顺序）
 
-1. T-C11已在Web a52a623按真实RED→GREEN/Root完整门/独立审验收；E05/E08/E10原失败保留历史。正规BFF6消费已由E15验收发布；不把生命周期或契约验收当真实聊天通过。
-2. T-Q10/T-C02：IAM缺提交发布与Web正规BFF6消费已有限复验；E16/E14旧组合来源和同fresh初始化已有限通过；E26新Web发布后的Root组合95pure有限通过，独立0且Root88a87417已发布，fresh已同步；整行main-only等仍待验，完整main-only与独立/项目浏览器列表仍待验。不重复clone或启动服务。
-3. T-C06/T-C09/T-C10/T-F03：E17严格真实旅程第二轮失败；定位与对应Web回归已由E18/E24收口发布；E26已发布组合并按E28真实复测，现E48诊断已明确second-partial-active snapshot429/code-other；下一定位轮询/限流边界并真实回归，沿原ID修复/复测，不盲跑或放宽预算与断言。
-4. T-K04–07/T-A01–06：按owner artifact先后接选择/授权/安全过程，实际Skill/MCP/审批/作品与五时点刷新。
-5. T-B02–07：真实证据→授权赠送/余额→预占→结算或恢复；支付T-B08最后。其余矩阵随对应切片持续复测，不能遗忘到最后。
+1. T-Q03：安装tests-only已交付并独立审查0；Root先独立复现RED，再最小源码修复与安装后的真实checker/CLI/DDL门。源树或局部PG/HTTP通过不覆盖E49安装失败。
+2. T-Q05：System安全预审已交付，完整纯门待授权执行；明确排除真实PG/Redis/provider套件，不以旧97项结果充当本轮通过。可与Agent独立推进。
+3. T-C02–05、T-C07–10、T-L02–05、T-U01–04：项目/独立会话、路由和草稿、竞争/取消/恢复、登录负例、真实Home/输入框/布局。T-C06、T-L01已按E53关闭具名范围；不反复等待结束句柄或重测已关闭路径来替代推进其他分支。
+4. T-P01–05、T-F01–05、T-K02–07、T-A01–06：按owner artifact与依赖顺序验证独立任务、上传/作品、Skill/MCP选择与授权、Todo/工具/审批/子Agent及五时点刷新。E53限定作品证明不覆盖整组T-F03及其他失败恢复分支。
+5. T-S01–02、T-G01、T-Q10/12、T-R02–04：当前契约组合、单应用库owner schema、系统模型路由、Platform身份收敛及全owner最终研发验收。
+6. T-B02–07：真实证据→授权赠送/余额→预占→结算或恢复；失败收费规则待确认，支付T-B08最后。每个切片都回填同一测试ID，不新增重复计划。
 
 ## 历史验证矩阵（已归档、禁止作为当前门禁）
 

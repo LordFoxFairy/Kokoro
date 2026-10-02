@@ -1,3 +1,10 @@
+## R106 测试计划当前态核对（2026-10-02）
+
+- 任务：R106-TEST-LEDGER-CURRENT；Root唯一docs writer，基线de5ca2f4，范围仅既有test-cases/task/progress/CURRENT四台账；Agent/Billing/uv.lock保留，不改业务、契约、SQL或测试状态。
+- 目标：统一E53后的当前摘要、九owner覆盖表、缺陷状态与下一批测试顺序；70测试ID/计数/历史归档保持，旧失败留证，不把修复提交或worker结果当整组通过。
+- 当前：11通过/1失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置。安装tests-only已冻结交付，原agent4_execution_owner独立复审0；Root RED复现及正式安装仍待执行。System安全预审已交付，完整纯门尚未执行。
+- 验证：Root重新核矩阵计数/证据hash/历史suffix，四台账治理与独立只读审查后提交；本轮不重新运行业务测试，不增加完成数。
+
 ## R105 原任务续接：测试探针与安装发布门（2026-10-02，当前）
 
 完整 Wave0–7 不变。上回合为 progress：原推送83607已核实exit0/main=4a648d17，原两个owner句柄确认仍active；本回合继续现任务，不新建计划中心。Root已在原WIN10停写后独立执行93085：现592测试实际9fail/583pass/10.80s；test8e6a1d1e/driver00a12288/runner/helper/uv.lock均与RED冻结manifest匹配。原对照与失败历史保持。
@@ -13,7 +20,7 @@
 
 |R105-SYSTEM-PURE-PREFLIGHT / T-Q05|原WIN05只读；Systemaa4e42e5/clean，Rootcc7bfb78；仅/tmp独有审计报告，无仓库writer|核现format/lint/type/build/unit/contract/architecture全部纯门的精确入口、skip分支与import时资源副作用；明确test与verify是否会连共享PG/Redis/provider及安全选择，不运行资源、不改源码/锁/Git、不重复历史97。报告/tmp/kokoro-r105-system-pure-preflight.md后停；Root后继单独授权当前完整纯门，未授权直接verify/test:schema:fresh|
 
-Root保Agent/Billing/uv.lock；资源/构建/安装由Root单独放行。测试台账状态跟随当前实测，E51真实9 RED→592 GREEN均保留；原T-C06/E48失败与T-Q03/E49安装失败保持。
+Root保Agent/Billing/uv.lock；资源/构建/安装由Root单独放行。测试台账状态跟随当前实测，E51真实9 RED→592 GREEN均保留；E48失败历史保留，T-C06/T-L01已依E53具名范围通过；T-Q03/E49安装失败仍保持。
 
 ## R104 真实429定位与Agent发布门（2026-10-02，历史）
 

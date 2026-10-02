@@ -1,3 +1,13 @@
+## R106 测试计划盘点（2026-10-02，当前摘要）
+
+测试计划唯一入口为docs/test-cases.md，开发派工为docs/task.md，实际执行证据为docs/progress.md。Root基线de5ca2f4；当前70稳定测试组为11具名通过/1失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置，不是产品完成百分比。
+
+本次重新读取矩阵并核E53原日志f7f83d86与脱敏结果404b93e1，修正当前覆盖表及下一批顺序中旧的T-C06失败、T-L01待复测、T-Q03待复测摘要。E53正规登录与严格两轮真实聊天仍限定通过；本地Ollama qwen3:8b，不含用户OpenAI兼容网关、收费或未发布Agent5。历史证据正文及归档suffix不变，业务状态与完成数量不变。
+
+原WIN03安装tests-only已冻结交付，原agent4_execution_owner复审报告/tmp/kokoro-r106-agent-installed-red-review.md（0600，SHA89fa72a225dd479a4f25bf4fcd6723df9125ecddf8d04c9164e686f290d3b3ff）新增P0/P1/P2=0；Root RED复现/源码/实际安装门未完成，T-Q03仍失败。System安全预审已交付，完整纯门待执行。保留Agent/Billing/uv.lock，不启动服务或重新运行业务测试；完整Wave0–7目标仍active。
+
+本次Root治理原75762实际exit0：三治理文件309pass/21.48s，日志/tmp/kokoro-r106-test-ledger-current-governance.log（0600，SHAff774aa22054c16bd0f87c8515bf41282228c648f3f12a588dcaf5724340afb2）。另独立脚本确认70稳定ID与逐行状态不变、11/1/0/14/41/2/1计数、归档suffix逐字节相同、E53与R106报告hash相符；git diff --check通过。本次仅文档/证据一致性门，不新增业务通过。
+
 ## R105 测试探针GREEN与安装设计门推进（2026-10-02，当前）
 
 完整Wave0–7保持active。上回合progress：原main推送83607实际exit0，Root4a648d17已发布。70稳定测试组仍为11限定通过/1最近失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置，不是产品完成比例。
