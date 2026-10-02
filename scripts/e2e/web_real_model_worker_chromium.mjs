@@ -24,13 +24,42 @@ const SECOND_PARTIAL_COUNTS = new Set(["0", "1", "2", "3", "4", "overflow", "unk
 const SECOND_PARTIAL_MESSAGES = new Set(["missing", "pending-empty", "pending-nonempty", "streaming-empty", "streaming-nonempty", "completed", "failed", "invalid", "unknown"])
 const SECOND_PARTIAL_FINISHES = new Set(["absent", "present", "unknown"])
 const SECOND_PARTIAL_HEAD_STATES = new Set(["queued", "active", "waiting", "resuming", "completed", "failed"])
+const SECOND_PARTIAL_HTTP_STATUSES = new Set(["400", "401", "403", "404", "408", "409", "410", "429", "500", "502", "503", "504", "other"])
+const SECOND_PARTIAL_HTTP_CODES = new Map([
+  ["auth_not_configured", "auth-not-configured"],
+  ["session_unavailable", "session-unavailable"],
+  ["unauthenticated", "unauthenticated"],
+  ["bff_not_configured", "bff-not-configured"],
+  ["bff_unreachable", "bff-unreachable"],
+  ["bff_bad_response", "bff-bad-response"],
+  ["bff_error", "bff-error"],
+  ["service_auth_failed", "service-auth-failed"],
+  ["session_authentication_required", "session-authentication-required"],
+  ["product_tenant_not_configured", "product-tenant-not-configured"],
+  ["product_tenant_forbidden", "product-tenant-forbidden"],
+  ["business_store_not_configured", "business-store-not-configured"],
+  ["session_not_found", "session-not-found"],
+  ["business_store_unavailable", "business-store-unavailable"],
+])
+const SECOND_PARTIAL_HTTP_CODE_TOKENS = new Set([...SECOND_PARTIAL_HTTP_CODES.values(), "other"])
 
 function newSecondPartialObservation() {
-  return {cause:"unknown",head:"unknown",count:"unknown",partial:"unknown",finish:"unknown"}
+  return {cause:"unknown",status:"other",code:"other",head:"unknown",count:"unknown",partial:"unknown",finish:"unknown"}
 }
 
 function recordSecondPartialCause(cause) {
   if (currentSecondPartialObservation && SECOND_PARTIAL_CAUSES.has(cause)) currentSecondPartialObservation.cause = cause
+}
+
+function recordSecondPartialHttp(result) {
+  if (!currentSecondPartialObservation) return
+  const status = Number.isInteger(result?.status) ? String(result.status) : "other"
+  const body = result?.body
+  const error = body && typeof body === "object" && !Array.isArray(body) &&
+    body.error && typeof body.error === "object" && !Array.isArray(body.error) ? body.error : null
+  currentSecondPartialObservation.status = SECOND_PARTIAL_HTTP_STATUSES.has(status) ? status : "other"
+  currentSecondPartialObservation.code = typeof error?.code === "string"
+    ? SECOND_PARTIAL_HTTP_CODES.get(error.code) ?? "other" : "other"
 }
 
 function recordSecondPartialSnapshot(body, receipt, run) {
@@ -71,7 +100,10 @@ function secondPartialFailurePhase(originalPhase, observation) {
   const count = SECOND_PARTIAL_COUNTS.has(value.count) ? value.count : "unknown"
   const partial = SECOND_PARTIAL_MESSAGES.has(value.partial) ? value.partial : "unknown"
   const finish = SECOND_PARTIAL_FINISHES.has(value.finish) ? value.finish : "unknown"
-  const phase = `${originalPhase}-cause-${cause}-head-${head}-messages-${count}-partial-${partial}-finish-${finish}`
+  const status = SECOND_PARTIAL_HTTP_STATUSES.has(value.status) ? value.status : "other"
+  const code = SECOND_PARTIAL_HTTP_CODE_TOKENS.has(value.code) ? value.code : "other"
+  const http = cause === "snapshot-http" ? `-status-${status}-code-${code}` : ""
+  const phase = `${originalPhase}-cause-${cause}${http}-head-${head}-messages-${count}-partial-${partial}-finish-${finish}`
   return phase.length <= 240 && /^second-partial-active-[a-z0-9-]+$/u.test(phase)
     ? phase : `${originalPhase}-cause-unknown-head-unknown-messages-unknown-partial-unknown-finish-unknown`
 }
@@ -505,7 +537,7 @@ try {
     let result
     try { result=await page.evaluate(target=>window.__rootProbeSnapshot(target),snapshotPath) }
     catch (error) { recordSecondPartialCause("snapshot-read"); throw error }
-    if (result?.status !== 200) recordSecondPartialCause("snapshot-http")
+    if (result?.status !== 200) { recordSecondPartialCause("snapshot-http"); recordSecondPartialHttp(result) }
     assert(result.status===200,"snapshot HTTP")
     return result.body
   }

@@ -1,3 +1,15 @@
+## R102 当前研发切片（2026-10-02；诊断已Root接受，Agent待资源）
+
+前一goal回合为progress：Root84255f24提交完整70测试任务终态/证据，309治理通过且独立0；不是产品闭环。当前Root84255f24、Webb497+七冻结候选、Agent17c73541+已验源/机器/Todo候选、Billing与uv.lock修改保留。已用实际wait_threads确认WIN01/WIN03/WIN10原turn completed/idle；没有仍在运行原W2。
+
+|任务/测试ID|Owner、角色、精确写集与基线|阶段门/依赖/验收/提交|
+|---|---|---|
+|R102-SNAPSHOT-HTTP-RED / T-Q11→T-C06|原WIN10唯一Root源码writer；Root84255f24、driver c65d7e8a/test575eb52b；RED已Root54404复现33fail/549pass并独立0；GREEN Root52486现582pass/Nodecheck0、独立0，driver00a12288/test575eb52b冻结，原WIN10idle；排除runner/helper/台账/uv.lock/依赖/业务仓|实际非200遗漏status/code已RO证实。按/tmp/kokoro-r101-snapshot-http-read.md闭集观测现probe结果，真实wrapper/vector先RED，保550原控制、240字符上限/零敏感/零额外I/O/严格600s等。Root先复现RED、独立审再GREEN；worker不Git/资源，冻结后Root集成|
+|R102-AGENT-HTTP-TODO / T-Q03、T-A01|原WIN03唯一Agent测试writer；Agent17c73541+冻结源/机器/PG65；仅tests/acceptance/test_http_ingress.py；原文件03d02a47，所有source/contract/schema/其他tests/锁冻结|沿/tmp/kokoro-r101-agent-http-resource-read.md，tests-only精确owned Redis登记/清理及HTTP drain；增加一个正式RunEmitter Todo非空→空→PG→HTTP cursor/重放/跨tenant与subject空结果组合。旧stale emitter静默断言暂不改，Root后继实际资源RED再裁typed migration。现36安全collect/Ruff/Pyright0后已停写，test6b71e3de/373外围保持；最终fixture审0，首轮真实资源门已执行1fail/35pass；typed tests-only迁移后待全36复验；Root另分配独有PG库和经验证空闲Redis逻辑DB，不用默认DB9/不FLUSH/不清unknown；不恢复旧wire或修改production|
+|R102-HOME-PUBLISH / T-Q01、T-U01|Root唯一Web writer/Git owner；Webb497+冻结7文件及Web docs/CURRENT.md；原WIN01idle停写|已Root84433完整249/50/2328+独立0；新7822定点153/外围保护；8路径已提交ddd38c5/66387普通push exit0且remote同SHA/clean。发布不关浏览器T-U01或W2；Root新gitlink/provenance随后组合|
+
+放置：Root诊断只扩现driver与现工具tests，不新API/DTO/目录，淘汰单一snapshot-http丢失现Response分类；Agent只扩现HTTP acceptance fixture和组合test，不新owner/服务/生产配置，淘汰未登记Redis残留与未证明handler退出的fixture行为；Home只扩现CURRENT证据。两个writer分别独立Root/Agent，Root此卡冻结后不抢写WIN10两源码；Root保留Web发布与资源只读规划，其他台账待交接统一更新。原严格两POST四Message/活动刷新/全文/作品/隐私硬门、完整Wave0–7目标不变；正式积分最后且不采用免费/伪充值。
+
 ## R101 测试盘点交接（2026-10-02，当前）
 
 Root仅更新既有四台账，不改业务源码/contract/schema、不启动或重置共享服务，保留Agent/Billing/uv.lock及Web候选。完整测试70组及结果以test-cases.md当前矩阵为准，开发任务不代替测试任务。
@@ -5855,3 +5867,7 @@ R101-AGENT-HTTP-RESOURCE-READ / T-Q03/A01–06：agent4_execution_owner沿原只
 R101-HOME-FINAL：原WIN01 idle停写，manifest /tmp/kokoro-r101-home-semantics-green.json；四source+三test冻结，Root原84433正在完整Node22 pnpm check，four_owner_fixes_review_r31只读现7路径及manifest/原RED，不审别仓。Root唯一Git/最终验收；source/三test/share/其他745外围hash前后实核后才接受，实际浏览器后继。报告/tmp/kokoro-r101-home-final-review.md 0600。
 
 R101-BFF-SNAPSHOT-HTTP-READ / T-C06/C09：Root新六发布owner严格W2原31330/PID75097已终态exit1：second-partial-active-cause-snapshot-http-head-active-match-messages-4-partial-pending-empty-finish-absent；cleanup=[]、独有桶删除且404。原W2不再live，不盲重启。agent_machine_final_review_r98仅只读已发布BFFbb610ea snapshot handler/同事务service/Message与head解析/AgentHTTP4 fetch边界，以及已发布Webb497同源snapshot relay、Root driver/probe/runner相关代码。核snapshot非200可由哪一层产生、现日志/证据能否定位HTTP status/error-code、当前诊断遗漏与最小现test落点。不把snapshot-http推断成BFF500/权限/模型/terminal，Last成功snapshot只证明active+4条+pending空正文。报告/tmp/kokoro-r101-snapshot-http-read.md 0600；不修改文件/Git/资源、不读取共享业务数据、不审活跃Home实现，不发明新契约或改硬门。
+
+R102-ROOT-COMPOSITION / T-Q10→T-C06：Root独占精确8路径（Webgitlink、consumer-inventory49已发commit来源、driver/test及四台账），基线84255f24；Webddd38c5 remote main已核、其他owner pins不变。Root73614组合386pass/45.98s/topology PASS/compat13declaredbroken0新violations，Root52486诊断582/Nodecheck0与独立0，49refs/45blob已核。原four_owner_fixes_review_r31只读8路径集成最终审，冻结后Root精确提交普通push，再同owned fresh组六发布owner及原600s严格W2；实际启动/终态以后续原句柄为准，不当计划执行。
+
+R102-AGENT-HTTP-TYPED / 同原测试writer：Root78231已真实36项1fail/35pass/100warnings/11.44s，新Todo及另34通过，唯一旧stale await抛ProgressAuthorityLost；数据库deleted/DB15 empty/child terminal/source unchanged/cleanup0。已另授原WIN03同file仅import typed error+pytest.raises(match original progress lease lost)围住原调用，269原assert/新fixture/Todo/373外围冻结，静态后停写；Root后继R102b新资源wrapper全36复验，保原RED。其他源码/contract/schema/锁/Git不授。

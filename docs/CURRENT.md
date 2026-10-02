@@ -1,3 +1,21 @@
+## R102 诊断GREEN与正式Home组合候选（2026-10-02，当前）
+
+70稳定测试组恢复9限定通过/1最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置；完整Wave0–7仍active，不称产品完成。T-C06保持E40真实失败，当前没有新W2。
+
+- E44 Root52486诊断整文件582pass/11.51s与Nodecheck0、独立最终0；driver00a12288/test575eb52b/runner/helper冻结，原32+1真实RED保留。仅snapshot-http增加status13/code14闭集、零额外I/O/敏感输出/硬门变化，T-Q11恢复限定纯门通过，不是产品修复。
+- E42正式Webddd38c5已发布且clean，Root49 Webcommit来源迁至该发布SHA/45独立blob原digest全部匹配，其余owner/边状态/原因不变。Root73614组合386pass/45.98s，精确gitlinkstage后topology PASS、compat仍16edges/13declaredbroken/0violations；不能称全contract闭环。Root精确8路径发布后同fresh六owner再原严格真实旅程，尚未启动。
+- 原WIN03已交接单现HTTP acceptance候选6b71e3de，最终独立0/373外围保持；E46 Root78231真实资源门已终态1fail/35pass/100warnings/11.44s。新Todo实际PG→HTTP成功；唯一失败为旧stale直接await与production ProgressAuthorityLost语义不符，另授tests-only typed迁移。owned库删除、DB15空、child终止、源不变、cleanup=[]；T-Q03/T-A01整链不关闭。不清未知Redis keys或重置共享服务。
+- 两决策请求仍待用户回复（项目生命周期/失败收费），不当默认同意；正式积分、Skills/MCP、审批、定时任务、文件作品及整链仍未验，支付最后。保护Agent/Billing/uv.lock，不夹带owner未交接源。
+
+## R102 已发布Home与诊断真实RED（2026-10-02，当前）
+
+上一goal回合为progress：Root84255f24真实提交70测试任务/终态，309治理与独立0。本回合完整Wave0–7继续active，Root保留Agent/Billing/uv.lock；同一测试台账70组当前8限定通过/2最近失败/0整组执行中/16待复测/41未验/2阻塞/1支付后置。
+
+- E42 Home：Root新7822定点153pass/7.93s、748外围保护通过；七实现/test+Web CURRENT精确8路径提交普通发布ddd38c5bdc1eab01f802e1fc993f7b597d707a64，原66387 push exit0、HEAD=origin/main=remote main且clean，八hash不变。原Root完整249/50/2328与独立0保留；T-Q01纯门仍通过，T-U01实际浏览器未验，Root gitlink/provenance尚b497。
+- E43 诊断：原WIN10 tests-only已停写，Root54404实际33fail/549pass/12.07s；32新probe组合及原1 HTTP expected迁移证明旧driver丢已返回status/code，不是missing-helper/setup或业务根因。独立0，driver/runner/helper/uv.lock冻结；T-Q11暂失败，另授原driver闭集GREEN。不得借诊断新增读取/重试或放宽600s/活动刷新/两POST/全文/作品/隐私标准。
+- 原WIN03独立Agent仅现HTTP acceptance fixture/Todo PG→HTTP组合在途，资源未运行。Root只读核Redis DB15空且无foreign客户端，独有临时PG/HTTP wrapper已独立0但冻结hash尚空，严格禁止提前执行；无FLUSH、未知key删除或共享基础设施重启。
+- T-C06继续E40真实旅程失败。项目生命周期/失败收费两项已再次请求用户决策，不阻独立切片；正式积分、Skills/MCP、审批、独立任务与作品全链仍未验，支付最后。
+
 ## R101 测试任务盘点与终态校正（2026-10-02，当前）
 
 测试任务唯一入口为 docs/test-cases.md，与开发派工 task.md 分开。完整70组：9限定通过、1最近失败、0执行中、16待复测、41未验、2决策阻塞、1支付后置；该计数不是产品完成比例，完整Wave0–7未闭环。以下旧章节为当时记录，不覆盖本节终态。

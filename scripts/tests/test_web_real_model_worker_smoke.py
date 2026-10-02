@@ -2873,7 +2873,10 @@ assert.equal(evaluated,false);
     assert result.stdout == result.stderr == ""
 
 
-def _run_r99_actual_second_partial_block(scenario):
+def _run_r99_actual_second_partial_block(
+    scenario, *, http_status=503, http_body=None
+):
+    import json
     import subprocess
 
     driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
@@ -2907,6 +2910,7 @@ import {ChatSnapshotEvidenceError,assertCompletedMessagePrefixUnchanged as actua
 __R99_HELPERS__
 __R99_GLOBALS__
 const scenario=__R99_SCENARIO__;
+const httpFixture=__R102_HTTP_FIXTURE__;
 const secret='PRIVATE_URL?token=PRIVATE_TOKEN password=PRIVATE_PASSWORD PRIVATE_BODY <div>PRIVATE_DOM</div> PRIVATE_RUN_ID';
 const receipt={run_id:'run_fixture',assistant_message_id:'assistant_fixture'};
 const run=receipt.run_id;
@@ -2922,6 +2926,8 @@ const bodyForScenario=()=>{
  if(scenario==='shape-messages-nonarray') return {execution_head:{run_id:run,state:'active'},messages:{private:secret}};
  if(scenario==='matrix-count-0') return {execution_head:{run_id:run,state:'active'},messages:[]};
  if(scenario==='matrix-count-1') return {execution_head:{run_id:run,state:'active'},messages:[prefix[0]]};
+ if(scenario==='snapshot-http-detail') return {execution_head:{run_id:run,state:'active'},messages:[...prefix,
+  {message_id:'user_second',role:'user',status:'completed',content:'request'},targetPartial('pending','')]};
  if(scenario==='matrix-head-missing') return {messages:prefix};
  if(scenario==='matrix-active-other') return {execution_head:{run_id:'run_other',state:'active'},messages:[...prefix,targetPartial('pending','pending')]};
  if(scenario==='matrix-nonactive-match') return {execution_head:{run_id:run,state:'completed'},messages:[...prefix,{message_id:'user_second',role:'user',status:'completed',content:'request'},targetPartial('completed','done')]};
@@ -2937,6 +2943,7 @@ const bodyForScenario=()=>{
 let evaluateCalls=0;
 page={evaluate:async()=>{
  evaluateCalls+=1;
+ if(scenario==='snapshot-http-detail' && evaluateCalls>=2) return httpFixture;
  if(scenario==='snapshot-read') throw new Error(secret);
  if(scenario==='snapshot-http') return {status:503,body:{private:secret}};
  return {status:200,body:bodyForScenario()};
@@ -2966,7 +2973,8 @@ const uniqueRunFrames=(frames,value)=>{
  return terminal ? [{event:{type:'RUN_FINISHED'}}] : [];
 };
 __R101_FINISHED__
-const deadline=scenario==='positive' || scenario==='terminal-before-partial' || scenario==='post-until-terminal'
+const deadline=scenario==='positive' || scenario==='terminal-before-partial' ||
+ scenario==='post-until-terminal' || scenario==='snapshot-http-detail'
  ? Date.now()+20000 : Date.now()-1;
 __R99_UNTIL__
 __R99_READ_SNAPSHOT__
@@ -2983,12 +2991,17 @@ __R99_PARTIAL__
   process.stdout.write('SECOND_PARTIAL_POSITIVE:'+phase+'\n');
 __R99_CATCH__
 }
+if(scenario==='snapshot-http-detail') assert.equal(evaluateCalls,2);
 """
     source = (
         source.replace("__R99_HELPERS__", helpers)
         .replace("__R101_SNAPSHOT_HELPER__", snapshot_helper)
         .replace("__R99_GLOBALS__", globals_)
         .replace("__R99_SCENARIO__", repr(scenario))
+        .replace(
+            "__R102_HTTP_FIXTURE__",
+            json.dumps({"status": http_status, "body": http_body}),
+        )
         .replace("__R99_UNTIL__", until)
         .replace("__R99_READ_SNAPSHOT__", read_snapshot)
         .replace("__R101_FINISHED__", finished)
@@ -3024,7 +3037,7 @@ def test_r99_actual_second_partial_block_accepts_only_active_streaming_nonempty_
         ),
         (
             "snapshot-http",
-            "second-partial-active-cause-snapshot-http-head-unknown-messages-unknown-partial-unknown-finish-unknown",
+            "second-partial-active-cause-snapshot-http-status-503-code-other-head-unknown-messages-unknown-partial-unknown-finish-unknown",
         ),
         (
             "snapshot-shape",
@@ -3168,3 +3181,139 @@ def test_r99_runner_reads_one_closed_partial_failure_line_from_nonzero_driver():
             child.wait(timeout=2)
         for stream in (child.stdin, child.stdout, child.stderr):
             stream.close()
+
+
+_R102_HTTP_STATUS_CASES = [
+    (400, "400"),
+    (401, "401"),
+    (403, "403"),
+    (404, "404"),
+    (408, "408"),
+    (409, "409"),
+    (410, "410"),
+    (429, "429"),
+    (500, "500"),
+    (502, "502"),
+    (503, "503"),
+    (504, "504"),
+    (418, "other"),
+]
+
+_R102_HTTP_CODE_CASES = [
+    (503, "auth_not_configured", "auth-not-configured"),
+    (503, "session_unavailable", "session-unavailable"),
+    (401, "unauthenticated", "unauthenticated"),
+    (503, "bff_not_configured", "bff-not-configured"),
+    (502, "bff_unreachable", "bff-unreachable"),
+    (502, "bff_bad_response", "bff-bad-response"),
+    (409, "bff_error", "bff-error"),
+    (403, "service_auth_failed", "service-auth-failed"),
+    (
+        401,
+        "session_authentication_required",
+        "session-authentication-required",
+    ),
+    (503, "product_tenant_not_configured", "product-tenant-not-configured"),
+    (403, "product_tenant_forbidden", "product-tenant-forbidden"),
+    (503, "business_store_not_configured", "business-store-not-configured"),
+    (404, "session_not_found", "session-not-found"),
+    (503, "business_store_unavailable", "business-store-unavailable"),
+]
+
+_R102_HTTP_SAFETY_CASES = [
+    pytest.param(
+        503,
+        {"error": {"code": "unlisted_private_code"}},
+        "other",
+        id="unknown-code",
+    ),
+    pytest.param(
+        503,
+        {"error": {"code": "PRIVATE_RAW_CODE?<script>PRIVATE_DOM</script>"}},
+        "other",
+        id="malicious-code",
+    ),
+    pytest.param(
+        503,
+        {"error": {"code": {"private": "PRIVATE_NON_STRING_CODE"}}},
+        "other",
+        id="non-string-code",
+    ),
+    pytest.param(
+        503,
+        [{"error": {"code": "business_store_unavailable"}}, "PRIVATE_ARRAY_BODY"],
+        "other",
+        id="array-body",
+    ),
+    pytest.param(503, None, "other", id="null-body"),
+]
+
+
+@pytest.mark.parametrize(
+    ("status", "body", "status_token", "code_token"),
+    [
+        pytest.param(
+            status,
+            {"error": {"code": "PRIVATE_STATUS_CODE"}},
+            token,
+            "other",
+            id=f"status-{token}",
+        )
+        for status, token in _R102_HTTP_STATUS_CASES
+    ]
+    + [
+        pytest.param(
+            status,
+            {"error": {"code": code}},
+            str(status),
+            token,
+            id=f"code-{token}",
+        )
+        for status, code, token in _R102_HTTP_CODE_CASES
+    ]
+    + [
+        pytest.param(status, body, "503", code_token, id=case.id)
+        for case in _R102_HTTP_SAFETY_CASES
+        for status, body, code_token in [case.values]
+    ],
+)
+def test_r102_actual_snapshot_http_preserves_closed_status_code_and_projection(
+    status, body, status_token, code_token
+):
+    result = _run_r99_actual_second_partial_block(
+        "snapshot-http-detail", http_status=status, http_body=body
+    )
+    phase = (
+        "second-partial-active-cause-snapshot-http-"
+        f"status-{status_token}-code-{code_token}-"
+        "head-active-match-messages-4-partial-pending-empty-finish-absent"
+    )
+    assert result.returncode != 0
+    assert result.stdout == ""
+    assert len(phase) <= 240
+    assert phase.replace("-", "").isalnum()
+    raw_code = body.get("error", {}).get("code") if isinstance(body, dict) else None
+    markers = (
+        "PRIVATE_STATUS_CODE",
+        "unlisted_private_code",
+        "PRIVATE_RAW_CODE",
+        "PRIVATE_DOM",
+        "PRIVATE_NON_STRING_CODE",
+        "PRIVATE_ARRAY_BODY",
+        "run_fixture",
+        "assistant_fixture",
+    )
+    lines = result.stderr.splitlines()
+    safe_channel = (
+        len(lines) == 1
+        and lines[0].startswith("REAL_MODEL_FAILURE:")
+        and lines[0].removeprefix("REAL_MODEL_FAILURE:").replace("-", "").isalnum()
+        and not any(marker in result.stderr for marker in markers)
+        and not (
+            isinstance(raw_code, str)
+            and "_" in raw_code
+            and raw_code in result.stderr
+        )
+    )
+    assert safe_channel
+    assert result.stderr == f"REAL_MODEL_FAILURE:{phase}\n"
