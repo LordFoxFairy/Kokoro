@@ -1,3 +1,25 @@
+## R60 Platform 两旧门必要接线批准
+
+原WIN07仍唯一Platform writer；R58写集只增加现scripts/check-contract.ts与test/contract/platform-descriptor-migration.test.ts。Root已真实复验旧checker在当前3.2.0报version drift exit1；旧migration6例4pass2fail，首次合法transition及Storage mutation被新response tag7/8早拒。允许checker固定HTTP3.2.0/新本人路径与准确response refs/字段/query/security/governance/cache，保持旧全部路径/无任意松比较；migration只从已冻结v5-historical输入验证原迁移，所有原assert/mutations/旧规则不变，当前v6加法严格证明仍由v6门承担，不拿旧历史证明冒充latest。不给新SQL/deps/source范围；Root后续复验同两门+完整离线/真实PG。内部常规文件边界由Root裁定，无需用户确认。
+
+## R60 Web public4 消费只读准备
+
+原WIN01为Web负责人，只读main06a1c866与BFF已批准R48 D0（正在实施，不作为已发布artifact）；源码/文档/测试/pin/generated/Git/资源均不写。列现snapshot/transport/HITL/恢复/提交/retry的实际旧字段、legacy state/cursor映射与public4 ExecutionHead/整组pause/五decision/currentrevision/ref差异，输出后继三面D0与精确文件/测试/删除集、owner发布依赖，不新计划/ UI重设计或猜新wire。不启动Web/浏览器/共享服务；Root14pass/4skip已验preview布局（不是登录模型账务），Web工作树已恢复clean。等BFF发布准确commit/version/digest才切换消费者。
+
+## R60 Root 前端浏览器回归卡
+
+Root为资源/验收唯一执行者；Web main06a1c866 clean，无Web writer，source/tests/配置全锁。仅运行现playwright.config与tests/e2e/web-governance.spec.ts，全desktop/mobile、单worker、无重试追加、不改skip/断言；独立空端口4420（4310为用户QQ，所有非owned MCP进程不动），默认preview SESSION_PREVIEW=1，因此只验UI/未配置登录边界，不是IAM/模型/Billing用户旅程。输出/HTML/trace放/tmp独立目录，有限总预算、记录唯一子进程组并只回收owned服务/Chromium，前后tracked hash核对。原BFF/Platform源码与Billing四D0写入继续独立并行，Root不重复启动共享PG/Redis/3310。
+
+## R59 Billing 本人读取 HTTP 三面收敛卡
+
+原WIN06为Billing唯一writer，main156451051f6ee47ba9b128f481f96094bfb9f731；先仅四现 docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md 当前前缀，原五dirty正文/第五IMPLEMENTATION_PLAN全文保护，源码/机器/SQL/依赖/Git/共享资源全锁。此前本人读组件已真验，现正式runtime仍旧Fastify，两个v2 GET只声明userBearer而BFF实际不转发用户Bearer，身份委派未闭合。目标是C3正式HTTP闭环的后继批准切片，不建第二长期runtime。
+
+Root裁定本人读可显式复用现BFF机器五认证因素（tenantContext/serviceCaller/internalSecret/serviceBearer/subjectContext），固定web-bff且subject mandatory、tenant及subject只能来自已IAM校验BFF context；任何机器因素出现则必须整组满足，不partial降级userBearer。原userBearer合法分支单独JWT issuer/audience/tenant校验，不以机器actor代替本人主体、不body/query自报。凭据显式配置匹配，无upstreamSecret/serviceToken fallback。合法tenant191/subject255 codepoint语义与已发布codec保持；须写明HTTP头实际ASCII/Unicode传输表示及验证，不直接把JS length/HTTP raw header能力视为完整合法身份已支持；若需新wire表示，单独给出精确canonical编码与consumer改动让Root裁定后才改机器/source。
+
+四D0固定Controller复用已发布CreditService与同Repository/DatabaseModule/RR，只有读、无GET创建/刷新/audit/receipt；query闭集、limit/cursor、BigInt decimal string/UTC、request-id/no-store、损坏历史500/依赖503和全部已有状态一致。比较现Credit能力目录 vs 新wallet-read模块并选前者；技术面区分内部Nest HTTP验收检查点与完整C3 main切换/旧v1删除，不接旧server做v2 alias、不提前称上线。DB schema selector仍public的缺口保留，不趁HTTP增DDL。明确机器/generated/adapter/tests/source精准后继文件集，依赖新增须官方核验后独立授权，不先安装或造stub。
+
+admin grant/正式admission/settlement政策与权限不是两个GET授权可代替；无伪造gift/余额/免费/1.4生效声明。本次四D0冻结/原body hash与纯契约现状报告交Root及独立审，然后先机器/测试RED再源码；其余已批准Wave0–7范围保持。
+
 ## R59 BFF fullpause/public4 源码实现卡（已独立放行）
 
 Root上一轮已发布4b772692d9d6b3f8a4d176152b900137dcc62ae0，为progress；Web/Billing新gitlinks已实际消费。原WIN02为BFF唯一writer，main759bfe0a；四D0最终f80de15c/c75a351e/3641623a/d5f41931已审，六R57 tests c4af6f95/56e5f89c/141d62d5/7abe2c51/3e663253/235d72e4已冻结，Root纯57=7pass50fail0skip、真实PG/Redis/HTTP9=0pass9fail0skip，独立0P0/P1/P2，进入已批准完整GREEN。

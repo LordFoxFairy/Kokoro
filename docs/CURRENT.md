@@ -1,8 +1,14 @@
+## R60 当前浏览器回归与新增真实门失败
+
+Web06a1c866现桌面/移动端Playwright原18矩阵：14pass/4原project skip/0fail、14.1s，Root独立4420预览、单worker；/tmp/kokoro-web-r60-browser.log。仅UI/未配置登录边界，不是正式IAM/model/账务。所有owned服务/Chromium已退出、4420关闭，用户4310 QQ及非owned MCP不动。初runner因Next dev自动将next-env.d.ts的routes import改为dev而exit1；Root核仅该一行、预运行clean HEAD，精确恢复生成文件，Web重新clean，owned manifest保留原tracked_unchanged=false并附恢复记录，不掩盖初cleanup失败。第一次恢复命令cwd误在Platform，读Git立即失败零写；随后绝对路径恢复。
+
+Platform旧checker Root实际exit1：3.2.0遇旧3.1.0检查；旧descriptor迁移6例4pass2fail182ms，新的Authorize response字段早拒合法历史迁移及Storage负例，其他4controls通过。两日志/tmp/kokoro-platform-r60-root-{checker,migration}-red.log；仅原WIN07两现checker/test接线获精准授权，原assert保持、历史v5与currentv6证明分开。BFF完整源码、Platform源码、Billing四D0仍各仓单writer并行，完整Wave0–7 active、正规用户链未验收。
+
 ## R59 BFF 已证实完整消费缺口，进入源码切片
 
 Root已推送4b772692（十path release/pins），提交后现System/login两test85passed/8.38s，/tmp/kokoro-root-r59-release-postcommit.log。BFF R57六tests原前缀/其他427tracked保持，Root纯57项7pass50fail0skip524.31ms；/tmp/kokoro-bff-r59-root-pure-red.log。真PG/Redis/localhost HTTP九例0pass9fail0skip1016.74ms：HTTP实际202预期→400、invalid control预期400→502；snapshot execution_head缺失，interaction实际CUSTOM0而非1，混批及故障例没有expected rejection。后段RR/restart/lease多数在缺full-state能力早停，不能称这些后段已测通过。
 
-owned bff_projection_r59_34c6d3f083ab4277 closed=true/tracked_unchanged=true/cleanup_errors=[]/unrelated_databases_removed=[]/Redis15remaining0，/tmp/kokoro-bff-r59-full-owned-resource.json；runner exit0只代表清理，内部tests exit1如实保持。六SHA独立0P0/P1/P2，原WIN02现授TECH既定完整机器/SQL/source GREEN；Platform原WIN07继续独立实现，Billing原WIN06只读准备下一HTTP切片。全仓standard150fail、正规用户与正式账务链仍未通过，完整Wave0–7 active。
+owned bff_projection_r59_34c6d3f083ab4277 closed=true/tracked_unchanged=true/cleanup_errors=[]/unrelated_databases_removed=[]/Redis15remaining0，/tmp/kokoro-bff-r59-full-owned-resource.json；runner exit0只代表清理，内部tests exit1如实保持。六SHA独立0P0/P1/P2，原WIN02现授TECH既定完整机器/SQL/source GREEN；Platform原WIN07继续独立实现，Billing原WIN06已仅获四D0当前前缀的本人HTTP委派收敛写权（机器/source仍锁）。全仓standard150fail、正规用户与正式账务链仍未通过，完整Wave0–7 active。
 
 ## R58 Root 组合切片复验完成，完整用户链仍待验
 
