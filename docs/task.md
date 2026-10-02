@@ -1,3 +1,29 @@
+## R68 BFF 生命周期切片已正式发布，Root 消费新组合
+
+BFF main3928043ec243eaec28af32c231a0bbf75a8b19ec已Root七path独立final0P0/P1/P2、commit/push并clean；prepared task暂停/删除/owner/revision稳定404/409拒绝，accept三分支与锁后final lease fence同事务收口，原accepted head与202重放不取消。Root八正式integration完整90pass0fail0skip22.741750s，offline unit628pass1资源skip、contract214、arch27、schema8pass1资源skip、format/check/build0，日志/tmp/kokoro-bff-r68-{full-root-integration,root-check}.log。owned bff_full_r68_363d624a343b4696已关闭、源码tracked保持/cleanup空/Redis15余0，无无关库删除或新库剩余。原缺表11fail和业务9/2、旧mock627/1都保留；不称真实IAM/Agent/provider浏览器或ready-null永久修复。
+
+Root mainf07e3b90后仅新BFF gitlink/186个inventory当前commit refs与4个真实blob摘要同步、同三台账；16edge状态不改，13broken/3active保持。初topology在gitlink未暂存时真实FAIL checkout HEAD differs，作为prestage前提失败保留，随后暂存精确gitlink复验，不放宽门。Root uv.lock及Web/Billing在途、Root新report tests-only全部不提交此metadata片。 Root当前metadata三文件95passed/49.58s，topology PASS；compatibility16edges、仅13 declared broken、额外机器证据错误0，故原exit1保留。日志/tmp/kokoro-root-r68-{metadata-tests,topology,compatibility}.log。
+
+Root完整两轮报告候选R3已真实186=185fail1合法controlpass40deselect1.15s，源码/driver未改；独立final0审，已关闭初P1与对称P2。旧HEAD31173test prefix原字节保持，新增严格两轮/闭合类型/每轮identities与hash/actual hydration续流/四Message/无第三POST；不是完整模型或浏览器证据。完整driver/validator/durable两Run GREEN为下一Root代码片，同片完成，不先孤立改validator。用户赠送权限边界问题已发出，其他研发不等待该回答；Web tests-only与Billing生成原负责人仍live。完整Wave0–7继续active，standard最近150未清零。
+
+## R68 BFF 六源码候选 Root 完整资源 GREEN / 发布门
+
+冻结90cbefa2/436hash保持；native Astra源码独立0P0/P1/P2。Root以owner canonical fresh installer、现Node22源码执行正式完整八integration文件，90tests90pass0fail0skip22.741750s，/tmp/kokoro-bff-r68-full-root-integration.log。owned bff_full_r68_363d624a343b4696 closed=true、tracked保持、cleanup空、Redis15余0，无无关库删除/新库剩余；安装/build0。它证明本仓receiver状态/事务组件，不证明官方IAM/Agent/provider浏览器或ready-null永久修复。
+
+原WIN02现在仅获docs/CURRENT.md顶部R68实际发布前事实段写入，不改六冻结source/test或原正文；Root离线全门并行重跑，docs冻后七path final index审、Root提交推送。public4/schema/生成与其他owner不变，来源库存下一Root集成精准commit更新，不改edge broken状态。
+
+Root内部browser report RED R2为130tests=129fail1合法controlpass40deselect0.81s；原HEAD31173prefix保持，新结构closed/exact/count严格int/identity191/watermark4096/hash64负矩阵补足首次P1，source/driver仍未改。完整GREEN必须同片实现两轮driver/逐Run durable，不先孤立strict validator；独立R2审中。
+
+## R68 Root 完整双轮/活动刷新证据 tests-only
+
+Owner Root既有真实模型browser driver，唯一writer Root；现run_web_real_model_worker_smoke.py只验单个末轮，现chat_snapshot_evidence.mjs已可比较两receipt/四Message全文但不证明实际POST数/水位来源/与真实文本帧一致。WIN10实际纯16探针确认此边界，不把四Message静态fixture当真实模型。Root采用既有scripts/tests/test_web_real_model_worker_smoke.py EOF追加完整内部browser report矩阵，淘汰仅marker/末轮hash或第三POST补发；不新增文件/目录/协议/owner/资源。
+
+既有报告保末轮artifact/download/private-member证明，但升级完整journey：exact两POST/两个202/两个不同Run和四不同Message；每轮actual submit hash=snapshot user hash，actual去重AGUI text hash=snapshot assistant hash、各唯一START/FINISHED零ERROR。第二Run活动刷新必须head active、partial>0、无FINISHED，新SSE last-event-id等于actual hydration watermark，snapshot基底+tail=最终全文；首轮全文不变，最后snapshot四completed Message/完整reload不变。新增内部报告字段turns/实际post counts/active_reload，不是BFF新网络契约。counts严格int不接bool、receipts closed/exact、身份/sha有界；旧只有单轮报告按新正式完整旅程拒绝，不引入兼容。先用现validate_browser_evidence真实RED，再独立tests审，下一GREEN必须同片更新既有driver/validator/durable两Run证据与原测试fixture；不得只把validators改严格却永久留下单轮driver。成功对exact2receipt，failure cleanup0–2现f07保持。Ollama-only来源、正规的IAM/HttpOnly/公开流程不放宽；不添加sleep或假模型以覆盖active reload。
+
+## R68 BFF 类型消费前置精确放行
+
+上一goal turn有实际推进：Root f07e3b90已commit/push五路径，独立final0审，poststage40pass；十原窗口真实续接。本轮三writer原handle仍active，不重派/重启资源。BFF当前offline627pass1fail1既有skip：scheduler.test.ts:263仍旧accept true mock，新判别结果合法control503≠202；这是真实消费前置，不放宽202。只再授该单行替换为{outcome:accepted}。已有scheduler-dispatch-receipt.integration.mjs callback-delete race的旧delete获胜receipt102/pending断言，按已批准新稳定拒绝事实改404/terminal并核原冻结response/task_not_found；callback获胜保持202/terminal及scope/dispatch数量。原阻塞barrier/锁序/lease、其他assert保持；不保兼容boolean分支。两机械迁移后原owner重跑完整pure并freeze，Root独立与完整资源门后再提交。
+
 ## R67 并行代码续派：复用原十窗口，当前三个仓唯一 writer
 
 Root main939e659f；原十窗口均真实存在；本轮续派前快照Web active，其余阶段交付idle/notLoaded，并非此前十个持续运行。继续原负责人、不新建重复窗口；续派后Root逐一即时快照确认十个均active/inProgress。Web public4 tests-only原授权不变；BFF进入以下实测RED→GREEN；Billing四D0/README独立0P0/P1/P2及Root contract:check 17+24 PASS，进入正式生成精确切片。Root仅本轮五path清理前置发布、Git/index/资源/集成验收。只读窗口按新可执行边界续接，不把重复调查/窗口数量当进度。

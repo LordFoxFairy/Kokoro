@@ -1,3 +1,11 @@
+## R68 BFF 生命周期切片已正式发布，Root 消费新组合
+
+BFF main3928043ec243eaec28af32c231a0bbf75a8b19ec已Root七path独立final0P0/P1/P2、commit/push并clean；prepared task暂停/删除/owner/revision稳定404/409拒绝，accept三分支与锁后final lease fence同事务收口，原accepted head与202重放不取消。Root八正式integration完整90pass0fail0skip22.741750s，offline unit628pass1资源skip、contract214、arch27、schema8pass1资源skip、format/check/build0，日志/tmp/kokoro-bff-r68-{full-root-integration,root-check}.log。owned bff_full_r68_363d624a343b4696已关闭、源码tracked保持/cleanup空/Redis15余0，无无关库删除或新库剩余。原缺表11fail和业务9/2、旧mock627/1都保留；不称真实IAM/Agent/provider浏览器或ready-null永久修复。
+
+Root mainf07e3b90后仅新BFF gitlink/186个inventory当前commit refs与4个真实blob摘要同步、同三台账；16edge状态不改，13broken/3active保持。初topology在gitlink未暂存时真实FAIL checkout HEAD differs，作为prestage前提失败保留，随后暂存精确gitlink复验，不放宽门。Root uv.lock及Web/Billing在途、Root新report tests-only全部不提交此metadata片。 Root当前metadata三文件95passed/49.58s，topology PASS；compatibility16edges、仅13 declared broken、额外机器证据错误0，故原exit1保留。日志/tmp/kokoro-root-r68-{metadata-tests,topology,compatibility}.log。
+
+Root完整两轮报告候选R3已真实186=185fail1合法controlpass40deselect1.15s，源码/driver未改；独立final0审，已关闭初P1与对称P2。旧HEAD31173test prefix原字节保持，新增严格两轮/闭合类型/每轮identities与hash/actual hydration续流/四Message/无第三POST；不是完整模型或浏览器证据。完整driver/validator/durable两Run GREEN为下一Root代码片，同片完成，不先孤立改validator。用户赠送权限边界问题已发出，其他研发不等待该回答；Web tests-only与Billing生成原负责人仍live。完整Wave0–7继续active，standard最近150未清零。
+
 ## R67 原十窗口已实际全部续接
 
 Root逐一即时快照确认WIN01–10均active/inProgress；原WIN01继续Web public4 tests-only，WIN02已从Root真实9pass/2fail进入BFF事务内稳定拒绝修复，WIN06已从独立五D0审通过进入官方生成实现；其余七窗口分别承担Agent语义、IAM资格、计价合同、MCP消费、文件失败矩阵、Scheduler事务审及双轮纯探针。具体精确边界见同task R67，不建立新任务中心。Root不占owner writer，独占Git/资源/集成验收；没有新应用服务/数据库启动。窗口数量不是完成证据，候选仍需独立审与Root复验。
