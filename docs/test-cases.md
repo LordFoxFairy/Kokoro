@@ -1,35 +1,35 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R101；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R103；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root84255f24；Webddd38c5正式发布，Root新组合386纯门已验、发布待审。T-Q11 E44当前582/Nodecheck0与独立0接受；T-C06仍E40真实失败，未新跑。Agent HTTP36实际E46为35pass/1旧stale typed错误，已精确清理；tests-only迁移后另复验，不冒充通过。
+- 截至本次盘点：Root正式组合fa4525e4、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48严格两轮聊天仍失败，活动快照GET返回429/code-other，资源已回收。当前没有整组测试运行；仅核已有终态，不冒充重新测试全部能力。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
 共 **70** 组：**通过9**；**失败1**；**执行中0**；**待复测16**；**未验41**；**阻塞2**；**后置1**。
 
-通过仅限下表具名范围；完整用户两轮真实聊天E40最新复测失败、E28失败历史保留，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
+通过仅限下表具名范围；完整用户两轮真实聊天E48最新复测失败、E40/E28失败历史保留，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
 
 ## 本次已完成与未完成（可直接巡检）
 
 **已通过9组**：T-Q01 Webddd38c5纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有资源回收。各自只覆盖矩阵具名范围，不是九服务或用户全链全部完成。
 
-**失败1组**：T-C06，E40严格真实旅程终态exit1，第二轮活动观测阶段snapshot GET非200；具体status/code未保留，待补最小诊断后定位。不把已越过提交步骤计为整组成功。
+**失败1组**：T-C06，E48严格真实旅程终态exit1，第二轮活动快照GET返回429（请求过于频繁）/code-other。需定位限流与测试轮询边界，未证明唯一产品根因；不把已越过提交步骤计为整组成功。
 
-**执行中0组**：原31330已经结束，台账不再展示为live。
+**执行中0组**：最新W2原99439与Agent HTTP原97725均已结束，不再展示为live。
 
 **待复测16组**：T-Q03、T-Q05–10、T-L01–05、T-F01–02、T-K02–03；历史证据或版本变化都须按当前组合重验。
 
-**未验41组**：详见矩阵。Todo新增六项实际PG通过（总65）是T-A01的局部证据；复杂任务策略/HTTP/BFF/Web仍未验。Home语义纯测通过不关闭T-U01浏览器验收。
+**未验41组**：详见矩阵。Todo新增六项实际PG通过（总65）、E47 HTTP文件36通过是T-A01的局部证据；复杂任务策略/BFF/Web仍未验。Home语义纯测通过不关闭T-U01浏览器验收。
 
 **阻塞2组**：T-C05项目移动/归档/删除生命周期、T-B07失败/部分输出/未知成本收费业务规则；T-B08支付后置。
 
-**当前下一步**：snapshot非200诊断/修复与原ID复测；Web候选发布及真实浏览器；Agent HTTP5、消费者过程展示。Home原writer停写，诊断GREEN已Root接受并停写、Agent首轮真实资源门1fail/35pass，typed tests-only迁移后待全36复验，Root负责集成；整组执行中只在真实启动后记录。
+**当前下一步**：先定位E48快照429与轮询/限流边界，再真实失败回归和原ID复测；Agent HTTP typed独立最终审及正式发布/消费者展示后继；Home真实浏览器仍未验。正式积分与其余能力按既有依赖顺序推进，支付最后。
 
 ## 范围与记录方式
 
@@ -45,17 +45,17 @@
 |T-Q01、T-C02 / R94-GATE-FAILURE-READ|Root完整门中欢迎页重进后项目路由未达预期|E20/E22保留；E24原配置完整复跑通过，不称已证明历史波动根因；复现时仍按原ID追踪，不增timeout/删断言|
 |T-A01 / R94-W03-GREEN|todo.updated缺持久Row decoder分支|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0接受；E35新增6项实际PG验证与独立0已通过；BFF/Web过程消费仍未验|
 |T-A06、T-R02 / R94-W03-GREEN|生产者先失败时内部子任务未全部取消并等待|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0关闭原P1；递归/nonmodel错误分支及运行链仍待验|
-|T-U01 / R94-HOME-READ|提示入口切本地模式、未绑定owner套餐、硬编码模型档位|E29行为RED保留；E33正式Home局部修复与完整纯门已验并发布；E37错配已真实11 RED，E41四source GREEN已Root纯门/独立审接受，未发布，真实浏览器未验，不关闭T-U01|
-|T-Q03 / R95-AGENT-MACHINE-RED|HTTP4缺新安全过程decoded mapping；raw重复键/整表字节预算校验尚未被完整执行|E25真实132行为RED有效；E30 Root候选654contract/1406隔离unit/静态/build与独立0通过，原raw校验缺口已在限定机器切片闭合；E31/E32限定PG已验；真实HTTP/发布/消费者仍待验，不另加整组完成数|
+|T-U01 / R94-HOME-READ|提示入口切本地模式、未绑定owner套餐、硬编码模型档位|E29行为RED保留；E33正式Home局部修复与完整纯门已验并发布；E37错配已真实11 RED，E41四source GREEN已Root纯门/独立审接受，E42已发布ddd38c5且Rootfa4525e4已纳入；真实浏览器未验，不关闭T-U01|
+|T-Q03 / R95-AGENT-MACHINE-RED|HTTP4缺新安全过程decoded mapping；raw重复键/整表字节预算校验尚未被完整执行|E25真实132行为RED有效；E30 Root候选654contract/1406隔离unit/静态/build与独立0通过，原raw校验缺口已在限定机器切片闭合；E31/E32限定PG已验；E47限定HTTP36已通过，正式发布/消费者与其他整门仍待验，不另加整组完成数|
 |T-Q03、T-R01|既有archive测试导入时尝试探测ObjectStore，资源归属缺确证|已排除整模块避免纯测访问资源；原事件保留，不声称已清理；后继独立隔离修复|
 
 ## 测试任务矩阵
 
 | ID | Owner/层级 | 测什么与通过条件 | 状态 | 最新证据/未完成原因与下一动作 |
 |---|---|---|---|---|
-| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验待发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
+| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验且fa4525e4已发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E30限定纯门、E32 fresh schema7、E35真实PG65与独立0通过；R102 E46 HTTP真实35pass/1旧stale typed错误（待迁移复测）；frozen sync/archive隔离/owner HTTP/安装后smoke/retention/发布及消费者仍未验，不能宣称完整Agent闭环 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E30限定纯门、E32 fresh schema7、E35真实PG65、E47真实HTTP文件36通过；原E46 stale失败经typed-only断言迁移。frozen sync/archive隔离/安装后smoke/retention/正式发布与消费者仍未验，不能宣称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
@@ -75,7 +75,7 @@
 | T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 未验 | R82已知delete fire-and-forget竞态 |
 | T-C04 | BFF→Web | 显式分享/撤销；私有链接不冒充公开分享；另一用户不可读/控制 | 未验 | R82分享文案与真实权限不一致；正负例都需验 |
 | T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 阻塞 | 产品删除/移动规则与正式API未裁决；不猜级联行为 |
-| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E40：Root2472a05d六发布owner原31330已exit1；第二轮活动观测snapshot GET可解析JSON非200，last-success为active-match/4messages/pending-empty，未见finish。具体status/code待诊断，不推断根因；cleanup=[]。E39启动及E28/E17/E04历史保留，不含Billing或Agent5候选 |
+| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E48：Rootfa4525e4/Webddd38c5六发布owner原99439终态exit1；second-partial-active快照GET返回429/code-other，last-success=active-match/4messages/pending-empty/finish-absent；cleanup=[]、桶回收0。仅限流响应已证实，唯一根因待查；不含Billing或Agent5候选，原E40等失败保留 |
 | T-C07 | BFF→Agent | 同会话FIFO/同key重放/双tab同时提交；一活动head，无重复执行 | 未验 | 队列正常也须竞争负例；跨会话允许并行 |
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
 | T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 未验 | 完整用户旅程仍未通过 |
@@ -98,7 +98,7 @@
 | T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 未验 | 正式管理mutation与凭据/audience边界待实现发布 |
 | T-K06 | Web→BFF→Agent→Platform | MCP opaque refs选择、每次调用fresh授权、args identity；撤销零调用 | 未验 | 旧free-text mcp_servers需owner-first替换，无fallback |
 | T-K07 | Platform→Agent | 工具schema closed profile/输入输出校验/超时取消/越权/注入 | 未验 | 不能把协议profile文档当执行测试 |
-| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E35 Root真实PG65pass/独立0（原59+新增完整/空Todo、并发lostACK、漂移、围栏/expiry/terminal、live失败耐受6项）；owned库回收0；E46新Todo实际PG→HTTP组合成功，整门1旧stale失败；BFF/Web安全过程呈现与复杂任务策略未验，不关闭整行 |
+| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E35 Root真实PG65pass/独立0（原59+新增完整/空Todo、并发lostACK、漂移、围栏/expiry/terminal、live失败耐受6项）；owned库回收0；E47 HTTP完整36通过，新Todo实际PG→HTTP/分页/replay/身份隔离成立；BFF/Web安全过程呈现与复杂任务策略未验，不关闭整行 |
 | T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
 | T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
 | T-A04 | Agent→BFF→Web | 完整多项HITL pause→一次决策→resume；stale/重复/unknown/刷新正负例 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
@@ -112,7 +112,7 @@
 | T-B06 | Agent→Billing | 真实usage→幂等结算/增额/释放/对账；超时、失fence、晚结果不重扣 | 未验 | 未知成本保留reconcile，不把Run terminal当费用结案 |
 | T-B07 | Billing | 失败/取消/部分输出/未知成本的收费资格与账务分支 | 阻塞 | 收费业务策略待确认；不预设一律免费、一律release或一律收费 |
 | T-B08 | Billing | 支付/订阅/checkout/refund/webhook验签去重及sandbox对账 | 后置 | 用户已明确支付最后；渠道配置属运维，不阻当前聊天研发 |
-| T-U01 | Web | Home提示只填草稿、零自动POST/计费；真实模型/套餐/能力，无错误营销卡 | 未验 | E33局部发布/E37语义11真实RED/E41完整纯门接受/E42已发布ddd38c5，网站/More/零POST正控保护；Root新组合及完整Home真实浏览器未验 |
+| T-U01 | Web | Home提示只填草稿、零自动POST/计费；真实模型/套餐/能力，无错误营销卡 | 未验 | E33局部发布/E37语义11真实RED/E41完整纯门接受/E42已发布ddd38c5，网站/More/零POST正控保护；Root新组合fa4525e4已发布；完整Home真实浏览器未验 |
 | T-U02 | Web | Composer多行/中文输入法/Enter与Shift+Enter/附件/发送禁用与Stop；无内嵌方框 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-U03 | Web | 桌面与窄屏对话/侧栏/项目/作品布局，长文本/代码/表格/错误均可用 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-U04 | Web | 键盘/focus-visible/axe/reduced-motion、全部loading/empty/error/partial状态与视觉/bundle门 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
@@ -194,7 +194,10 @@
 |E44|Root84255f24+driver00a12288de69ea3d0dc331b6fdd2efe9d87e72c502ff0f5e964093d56d70ce8d/test575eb52b；runner/helper/uv.lock不变|Root52486整文件582pass/11.51s、Nodecheck0，/tmp/kokoro-r102-root-snapshot-http-green.log SHAbbaf1411d04fbe5aa722215017bf37cc1772e6fd255c9a4412651b6cc71b4bcf；独立/tmp/kokoro-r102-snapshot-http-final-review.md 0。32 actual HTTP/status-code正负与原550控制，原1expected仅HTTP后缀升级、无敏感/新增I/O/硬门变化；本行仅诊断纯门，真实T-C06仍失败|
 |E45|Root84255f24+Webddd38c5 gitlink/49发布commitrefs（45blob）、两诊断文件及四台账组合候选；其他owner不变|Root73614四组合pure386pass/45.98s，/tmp/kokoro-r102-root-composition.log；topology PASS、compat exit1仅13declaredbroken/16edges/0violations，49refs已核committedblob digest不变。精确8路径最终审/Root发布/fresh严格旅程待后继，不算T-Q10整组或T-C06通过|
 
-|E46|Agent17c73541+冻结源/机器及HTTPtest6b71e3de5e0061e0a194aa53d209b0668227fcb9b0b8319478abfb5041ff747a；最终fixture/Root wrapper独立0|Root78231/child7938终态exit1，36项1fail/35pass/100warnings/11.44s；/tmp/kokoro-r102-agent-http.log SHA2960116c0f8eb0abf934425d4706edc06cba6db47a0b6a055a1ca72501abed82、owned.json。唯一fail旧stale直接await抛ProgressAuthorityLost；新增Todo正式RunEmitter→PG→HTTP分页/replay/tenant+subject隔离通过。owned库deleted=true/DB15endempty=true/childterminal=true/sourceunchanged=true/cleanup=[]。已另授typed expect迁移，未全36通过，不关闭T-Q03/T-A01|
+|E46|Agent17c73541+冻结源/机器及HTTPtest6b71e3de5e0061e0a194aa53d209b0668227fcb9b0b8319478abfb5041ff747a；最终fixture/Root wrapper独立0|Root78231/child7938终态exit1，36项1fail/35pass/100warnings/11.44s；原log记录SHA2960116c0f8eb0abf934425d4706edc06cba6db47a0b6a055a1ca72501abed82；审计更正：该raw文件后被Root第二wrapper误覆，现文件不再匹配原SHA；原owned.json与当时工具捕获保留，不重建伪原log。唯一fail旧stale直接await抛ProgressAuthorityLost；新增Todo正式RunEmitter→PG→HTTP分页/replay/tenant+subject隔离通过。owned库deleted=true/DB15endempty=true/childterminal=true/sourceunchanged=true/cleanup=[]。已另授typed expect迁移，未全36通过，不关闭T-Q03/T-A01|
+
+|E47|Agent17c73541+原冻结源/机器；现HTTPtest2884a4fb7d4ab04e7e4849105fd78a64327b6e7d0366df27333ff8383fd8e0f4；typed-only import/raises，不改production|Root97725终态exit0：36pass/100warnings/11.21s；/tmp/kokoro-r102b-agent-http.log SHA66c0da0e763a4be339cdbe4bcd22100d275b6f06f50f78a5526fd9290d89015a、owned.json。created/deleted=true、DB15首尾空、childterminal/sourceunchanged=true、cleanup=[]。原RED rawlog误覆审计缺口见E46；GREEN字节核验另存且manifest明确collision，wrapper加防覆盖guard。仅本文件真实PG/Redis/HTTP，typed最终只读审 /tmp/kokoro-r103-agent-http-typed-review.md：代码0/0/0、审计P2=1（原RED rawlog覆盖缺口）；不关闭T-Q03/T-A01、不含真实外部模型/BFF/Web展示|
+|E48|正式Rootfa4525e48961bcc6954f453643e3a4c6dfea3b62、Webddd38c5及其余五owner固定版本，见/tmp/kokoro-r102-root-w2-owned.json；同fresh源准备2010 exit0，四harness hash匹配|Root99439终态exit1：REAL_MODEL_FAILURE:second-partial-active-cause-snapshot-http-status-429-code-other-head-active-match-messages-4-partial-pending-empty-finish-absent。/tmp/kokoro-r102-root-real-w2.log SHA3db31d9dedd9346293cfb31a1f62a244b12f84a04342393b9e29286fba4fa9de、owned.json及其中evidence；cleanup=[]、bucket_cleanup_exit0且404。原600s/两POST四Message/活动刷新/全文/作品hash/他人404不变，不含Billing或AgentHTTP5候选。429已观测，不臆断唯一产品根因；T-C06继续失败，原历史保留|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 
@@ -216,7 +219,7 @@
 
 1. T-C11已在Web a52a623按真实RED→GREEN/Root完整门/独立审验收；E05/E08/E10原失败保留历史。正规BFF6消费已由E15验收发布；不把生命周期或契约验收当真实聊天通过。
 2. T-Q10/T-C02：IAM缺提交发布与Web正规BFF6消费已有限复验；E16/E14旧组合来源和同fresh初始化已有限通过；E26新Web发布后的Root组合95pure有限通过，独立0且Root88a87417已发布，fresh已同步；整行main-only等仍待验，完整main-only与独立/项目浏览器列表仍待验。不重复clone或启动服务。
-3. T-C06/T-C09/T-C10/T-F03：E17严格真实旅程第二轮失败；定位与对应Web回归已由E18/E24收口发布；E26已发布组合并按E28真实复测，现失败于second-partial-active；下一先补有界脱敏原因诊断并验证，沿原ID修复/复测，不盲跑或放宽预算与断言。
+3. T-C06/T-C09/T-C10/T-F03：E17严格真实旅程第二轮失败；定位与对应Web回归已由E18/E24收口发布；E26已发布组合并按E28真实复测，现E48诊断已明确second-partial-active snapshot429/code-other；下一定位轮询/限流边界并真实回归，沿原ID修复/复测，不盲跑或放宽预算与断言。
 4. T-K04–07/T-A01–06：按owner artifact先后接选择/授权/安全过程，实际Skill/MCP/审批/作品与五时点刷新。
 5. T-B02–07：真实证据→授权赠送/余额→预占→结算或恢复；支付T-B08最后。其余矩阵随对应切片持续复测，不能遗忘到最后。
 

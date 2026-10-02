@@ -1,3 +1,15 @@
+## R103 测试计划巡检（2026-10-02，当前）
+
+目标是核对既有完整70测试组，防止漏测、失败丢失或开发完成冒充测试通过；不新建重复计划中心。Root基线fa4525e4，仅四台账写入/Git集成，保留Agent/Billing/uv.lock任务外变更；原99439与97725均已终态，不重复启动。
+
+|任务/测试ID|Owner/角色/范围与基线|完成条件及当前事实|
+|---|---|---|
+|R103-TEST-LEDGER / 全70ID|Root唯一writer；docs/test-cases.md、task.md、progress.md、CURRENT.md|核真实日志/manifest/commit；稳定ID与历史矩阵不变，更新E47/E48及覆盖日志审计缺口；重跑治理/独立审后仅四路径提交。9通过/1失败/0执行中/16待复测/41未验/2阻塞/1后置，不是整体比例|
+|R103-AGENT-HTTP-TYPED-READ / T-Q03、T-A01|原agent4_execution_owner只读审；Agent17c73541+现acceptance2884a4fb；只查typed迁移及E47证据；报告/tmp/kokoro-r103-agent-http-typed-review.md|Root真资源36pass/cleanup=[]已终态；原stale调用/其他断言不变，核typed差异，不跑资源/写仓/Git。承认E46 rawlog覆盖缺口，不关闭整体Agent|
+|R103-SNAPSHOT-429-READ / T-C06|原agent_machine_final_review_r98只读审；Rootfa4525e4/Webddd38c5/BFFbb610ea发布源码；报告/tmp/kokoro-r103-snapshot-429-read.md|核新E48实际429与driver轮询/owner限流边界，提出最小真实失败回归；不凭status猜唯一根因，不修改源码/预算/断言、不发请求/新建资源。后继源码另定窄门|
+
+R103-SNAPSHOT-429-READ已交接静态报告：Root额外25ms快照probe与UI主SSE不同，BFF/IAM生产准入100/60秒为候选边界，不称唯一根因。下一个实施门是owned真实同源访问回归；未授权改IAM限额/正式API/600s或硬断言。
+
 ## R102 当前研发切片（2026-10-02；诊断已Root接受，Agent待资源）
 
 前一goal回合为progress：Root84255f24提交完整70测试任务终态/证据，309治理通过且独立0；不是产品闭环。当前Root84255f24、Webb497+七冻结候选、Agent17c73541+已验源/机器/Todo候选、Billing与uv.lock修改保留。已用实际wait_threads确认WIN01/WIN03/WIN10原turn completed/idle；没有仍在运行原W2。

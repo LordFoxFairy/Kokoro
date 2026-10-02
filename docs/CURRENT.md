@@ -1,3 +1,14 @@
+## R103 测试任务核对与实际终态（2026-10-02，当前唯一摘要）
+
+测试计划唯一入口为 `docs/test-cases.md`，开发派工在 `docs/task.md`，运行证据在 `docs/progress.md`。以下旧章节仅保留当时事实，不覆盖本节或测试矩阵。完整Wave0–7仍active；70稳定组为9限定通过/1最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置，不换算成产品完成百分比。
+
+- E48 / T-C06：Root正式发布fa4525e48961bcc6954f453643e3a4c6dfea3b62、Webddd38c5及其余五owner固定发布版本；同fresh源准备2010 exit0。严格真实两轮旅程原99439已终态exit1，最新失败明确为 `second-partial-active-cause-snapshot-http-status-429-code-other-head-active-match-messages-4-partial-pending-empty-finish-absent`。第二轮活动快照GET返回429，安全code归other；不能据此断言唯一产品根因，也不把完成前置步骤算作整链通过。cleanup=[]、独有桶清理exit0且404；当前没有整组测试运行，不等待已终止句柄或盲重跑。下一先只读定位限流/轮询边界，再真实失败回归与最小修复，保原600s、两POST/四Message、活动刷新、全文、作品与隐私硬门。
+- E47 / T-Q03、T-A01：Root97725实际exit0，Agent HTTP文件36pass/100warnings/11.21s，正式RunEmitter Todo→PG→HTTP分页/replay/身份隔离包括在内。唯一旧stale用例改为验证既有typed ProgressAuthorityLost；现文件2884a4fb冻结，未改production。owned fixture库deleted=true、DB15首尾空、child_terminal=true、source_hashes_unchanged=true、cleanup=[]。本仓HTTP限定资源门通过，不关闭完整Agent或复杂任务/BFF/Web展示；typed最终独立审代码P0/P1/P2=0，审计P2=1（原RED rawlog覆盖缺口保留）。候选仍未正式发布，下游未消费。
+- E45后继发布：Root86910精确8路径普通commit/push exit0，remote main同fa4525e4；Home正式Webddd38c5已纳入gitlink及49发布来源，45独立blob digest不变。386组合纯门/topology通过，但兼容仍16edges/13declaredbroken/0violations，不能称全契约闭环。T-Q01限定纯门保持通过，Home真实浏览器T-U01仍未验。
+- 证据审计：Root第二次Agent wrapper误复用首轮log路径，E46原RED raw文件被GREEN覆盖；原RED manifest与当时工具捕获仍保留，但原raw日志SHA已失效，不能宣称完整保留。现GREEN字节核验后独立保存 `/tmp/kokoro-r102b-agent-http.log`，manifest记录collision；wrapper增加目标已存在即拒绝覆盖。此为证据管理缺口，不抹掉首轮1fail/35pass，也不伪造原日志。
+- 429只读调查已交接：`/tmp/kokoro-r103-snapshot-429-read.md`（0600，SHA9be00962b53ad82135b00500b033d4ea1652d5dca11febd020faf54fa34b7d76）。实际driver `scripts/e2e/web_real_model_worker_chromium.mjs` 在25ms循环额外GET快照，正式UI active主走SSE；BFF逐请求在线IAM校验，发布IAM按client/operation限制100次/60秒。该事实支持限流候选，不证明本次唯一来源；下一最小门为自有资源下真实Web→BFF→IAM同源probe回归，不启模型、不调高配额、不放宽聊天硬标准。
+- 项目生命周期T-C05、失败收费T-B07仍待用户决策；授权积分/预占/结算/流水、Skills/MCP、审批、独立任务、文件作品与整体UI仍未完成当前整链测试，支付最后。Root仅更新四台账，保留Agent/Billing/uv.lock，不新增共享服务或重置数据。
+
 ## R102 诊断GREEN与正式Home组合候选（2026-10-02，当前）
 
 70稳定测试组恢复9限定通过/1最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置；完整Wave0–7仍active，不称产品完成。T-C06保持E40真实失败，当前没有新W2。
