@@ -31,11 +31,7 @@ else:
     from bff_owner_schema import bff_owner_database_url
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_RELEASES = {
-    "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
-    "kokoro-bff": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
-    "kokoro-agent": "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0",
-}
+REQUIRED_RELEASE_OWNERS = ("kokoro-system", "kokoro-bff", "kokoro-agent")
 
 
 class SmokeError(RuntimeError):
@@ -822,7 +818,7 @@ asyncio.run(main())
 
 def repository_evidence() -> dict[str, dict[str, str | bool]]:
     states: dict[str, dict[str, str | bool]] = {}
-    for owner in ("kokoro-system", "kokoro-bff", "kokoro-agent"):
+    for owner in REQUIRED_RELEASE_OWNERS:
         command = ["git", "-C", str(ROOT / "apps" / owner)]
         states[owner] = {
             "commit": command_output([*command, "rev-parse", "HEAD"]).strip(),
@@ -836,16 +832,29 @@ def repository_evidence() -> dict[str, dict[str, str | bool]]:
 
 
 def verify_release_inputs() -> dict[str, dict[str, str | bool]]:
-    states = repository_evidence()
     apps = ROOT / "apps"
     if not apps.is_dir() or apps.is_symlink():
         raise SmokeError("Root apps release directory mismatch")
-    for owner, expected in EXPECTED_RELEASES.items():
+    root_commit = command_output(
+        ["git", "-C", str(ROOT), "rev-parse", "HEAD"]
+    ).strip()
+    if re.fullmatch(r"[a-f0-9]{40}", root_commit) is None:
+        raise SmokeError("Root release commit identity mismatch")
+    states = repository_evidence()
+    for owner in REQUIRED_RELEASE_OWNERS:
         state = states[owner]
         checkout = apps / owner
         tree = command_output(
-            ["git", "-C", str(ROOT), "ls-tree", "HEAD", f"apps/{owner}"]
+            ["git", "-C", str(ROOT), "ls-tree", root_commit, f"apps/{owner}"]
         ).split()
+        if (
+            len(tree) != 4
+            or tree[:2] != ["160000", "commit"]
+            or re.fullmatch(r"[a-f0-9]{40}", tree[2]) is None
+            or tree[3] != f"apps/{owner}"
+        ):
+            raise SmokeError(f"{owner} release source or Root gitlink mismatch")
+        expected = tree[2]
         index = command_output(
             ["git", "-C", str(ROOT), "ls-files", "--stage", "--", f"apps/{owner}"]
         ).strip()
@@ -854,10 +863,6 @@ def verify_release_inputs() -> dict[str, dict[str, str | bool]]:
             or checkout.is_symlink()
             or state["commit"] != expected
             or state["working_tree_dirty"]
-            or len(tree) != 4
-            or tree[:2] != ["160000", "commit"]
-            or tree[2] != expected
-            or tree[3] != f"apps/{owner}"
             or index != f"160000 {expected} 0\tapps/{owner}"
         ):
             raise SmokeError(f"{owner} release source or Root gitlink mismatch")

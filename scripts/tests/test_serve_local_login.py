@@ -474,6 +474,7 @@ class FailedShutdownRedisTests(unittest.TestCase):
             for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
         }
         with tempfile.TemporaryDirectory() as directory, ExitStack() as patches:
+            _r57_login_git_inputs(patches, directory)
             patches.enter_context(
                 patch.object(launcher, "parse_args", return_value=args)
             )
@@ -718,6 +719,7 @@ class SafeLaunchDiagnosticTests(unittest.TestCase):
         for operation, error, expected in cases:
             with self.subTest(operation=operation, expected=expected):
                 with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+                    _r57_login_git_inputs(stack, directory)
                     args = SimpleNamespace(
                         chat=True,
                         postgres_admin_url="postgresql://local/postgres",
@@ -825,3 +827,256 @@ class SafeLaunchDiagnosticTests(unittest.TestCase):
                         chat.tick.assert_not_called()
                     if operation != "wait":
                         wait.assert_not_called()
+
+
+def _r55_login_source_probe(
+    monkeypatch, tmp_path, dirty_owner=None, dirty_status="", *,
+    moving_root_head=False, release_trace=None,
+):
+    from contextlib import nullcontext
+    from unittest.mock import Mock
+
+    releases = {
+        "kokoro-app": "5f2ab341d5fc5ddee5e08d785dc7aaf391b7e9d8",
+        "kokoro-iam": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
+        "kokoro-bff": "759bfe0a8c521946cae31a74b6426f43b063bae1",
+    }
+    root_sha = "c" * 40
+    later_root_sha = "d" * 40
+    later_releases = {owner: str(index) * 40 for index, owner in enumerate(releases, 1)}
+    live_root_sha = root_sha
+    trace = release_trace if release_trace is not None else {}
+    trace.update(root_reads=[], gitlinks=[], at_build=None)
+    apps = tmp_path / "apps"
+    apps.mkdir()
+    for owner in releases:
+        (apps / owner).mkdir()
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    observed_statuses = []
+
+    def git(command, *, cwd=None, **_kwargs):
+        nonlocal live_root_sha
+        assert command[0] == "git"
+        if command[1:2] == ["-C"]:
+            repo, args = Path(command[2]), command[3:]
+        else:
+            repo, args = Path(cwd), command[1:]
+        if repo == tmp_path:
+            if args == ["rev-parse", "HEAD"]:
+                resolved = live_root_sha
+                trace["root_reads"].append(resolved)
+                if moving_root_head:
+                    live_root_sha = later_root_sha
+                return resolved + "\n"
+            if len(args) == 2 and args[0] == "rev-parse":
+                revision, path = args[1].split(":", 1)
+                assert revision in ("HEAD", root_sha, later_root_sha)
+                resolved = live_root_sha if revision == "HEAD" else revision
+                pins = releases if resolved == root_sha else later_releases
+                sha = pins[path.removeprefix("apps/")]
+                trace["gitlinks"].append((revision, resolved, path, sha))
+                return sha + "\n"
+            if args[0] == "ls-tree":
+                revision = args[1]
+                assert revision in ("HEAD", root_sha, later_root_sha)
+                resolved = live_root_sha if revision == "HEAD" else revision
+                path = args[-1]
+                pins = releases if resolved == root_sha else later_releases
+                sha = pins[path.removeprefix("apps/")]
+                trace["gitlinks"].append((revision, resolved, path, sha))
+                return f"160000 commit {sha}\t{path}\n"
+            if args[:3] == ["ls-files", "--stage", "--"]:
+                path = args[-1]
+                return f"160000 {releases[path.removeprefix('apps/')]} 0\t{path}\n"
+        assert repo.parent == apps and repo.name in releases
+        if args == ["rev-parse", "HEAD"]:
+            return releases[repo.name] + "\n"
+        if args[:2] == ["status", "--porcelain"]:
+            assert args[2:] in (
+                ["--untracked-files=normal"],
+                ["--untracked-files=all"],
+            )
+            status = dirty_status if repo.name == dirty_owner else ""
+            observed_statuses.append((repo.name, status))
+            return status
+        raise AssertionError(f"unexpected source command: {command}")
+
+    args = SimpleNamespace(
+        chat=False,
+        postgres_admin_url="postgresql://local/owned",
+        redis_url="redis://local/8",
+        iam_node_bin=Path("/unused/node24/node"),
+        bff_node_bin=Path("/unused/node22/node"),
+        web_node_bin=Path("/unused/node22/node"),
+    )
+    for module in (launcher.web_smoke, launcher.session):
+        monkeypatch.setattr(module, "ROOT", tmp_path)
+    for label, owner in (
+        ("WEB", "kokoro-app"), ("IAM", "kokoro-iam"), ("BFF", "kokoro-bff")
+    ):
+        monkeypatch.setattr(launcher.web_smoke, label, apps / owner)
+    monkeypatch.setattr(launcher.runtime, "command_output", git)
+    monkeypatch.setattr(launcher, "parse_args", lambda _argv: args)
+    monkeypatch.setattr(launcher, "require_free_web_port", Mock())
+    monkeypatch.setattr(launcher.session, "node_environment", Mock(return_value={}))
+    monkeypatch.setattr(
+        launcher.tempfile, "TemporaryDirectory", Mock(return_value=nullcontext(evidence))
+    )
+    monkeypatch.setattr(launcher.signal, "signal", Mock())
+    monkeypatch.setattr(launcher.previous, "assert_log_clean", Mock())
+    resources = Mock()
+    monkeypatch.setattr(launcher.runtime, "OwnedResources", Mock(return_value=resources))
+
+    def bounded_build(*_args, **_kwargs):
+        trace["at_build"] = {
+            "root_reads": list(trace["root_reads"]),
+            "gitlinks": list(trace["gitlinks"]),
+            "statuses": list(observed_statuses),
+        }
+        return 1
+
+    effects = {
+        # A bounded build failure proves the clean control reaches the next stage.
+        # It also prevents any real resource or process access on today's RED path.
+        "build": Mock(side_effect=bounded_build),
+        "infrastructure": resources.command,
+        "database": resources.create_database,
+        "schema": Mock(),
+        "owner_process": Mock(),
+        "iam_or_web_process": Mock(),
+        "chat_preflight": Mock(),
+    }
+    for module, name, effect in (
+        (launcher.runtime, "run_owned_command", "build"),
+        (launcher.runtime, "install_schema", "schema"),
+        (launcher.runtime, "start_process", "owner_process"),
+        (launcher.subprocess, "Popen", "iam_or_web_process"),
+        (launcher.chat_runtime, "preflight", "chat_preflight"),
+    ):
+        monkeypatch.setattr(module, name, effects[effect])
+    error = None
+    try:
+        launcher.main([])
+    except (
+        launcher.LaunchError, launcher.session.SmokeError,
+        launcher.runtime.SmokeError, launcher.web_smoke.SmokeError,
+    ) as caught:
+        error = caught
+    return error, effects, observed_statuses
+
+
+def test_r55_login_clean_published_sources_reach_bounded_build(monkeypatch, tmp_path):
+    error, effects, _statuses = _r55_login_source_probe(monkeypatch, tmp_path)
+
+    assert isinstance(error, launcher.LaunchError)
+    assert "BFF build" in str(error)
+    effects["build"].assert_called_once()
+    for name, effect in effects.items():
+        if name != "build":
+            effect.assert_not_called()
+
+
+import pytest
+
+
+@pytest.mark.parametrize("owner", ["kokoro-app", "kokoro-iam", "kokoro-bff"])
+@pytest.mark.parametrize(
+    "dirty_status",
+    [" M src/main.ts\n", " M docs/CURRENT.md\n", "?? unpublished-source.ts\n"],
+    ids=["source", "documentation", "untracked"],
+)
+def test_r55_login_dirty_owner_rejected_before_every_startup_effect(
+    monkeypatch, tmp_path, owner, dirty_status
+):
+    error, effects, statuses = _r55_login_source_probe(
+        monkeypatch, tmp_path, owner, dirty_status
+    )
+
+    calls = {name: effect.call_count for name, effect in effects.items()}
+    assert calls == dict.fromkeys(effects, 0), (
+        "dirty login-only owner must be rejected before build/infra/process: "
+        f"{owner} {dirty_status!r}; observed effects={calls}"
+    )
+    assert (owner, dirty_status) in statuses, "the real source guard must inspect dirtiness"
+    assert error is not None, "dirty source admission must fail, not advertise readiness"
+
+
+def test_r56_login_freezes_one_root_commit_for_all_sources_before_build(
+    monkeypatch, tmp_path
+):
+    trace = {}
+    error, effects, _statuses = _r55_login_source_probe(
+        monkeypatch, tmp_path, moving_root_head=True, release_trace=trace
+    )
+
+    assert isinstance(error, launcher.LaunchError)
+    assert "BFF build" in str(error)
+    effects["build"].assert_called_once()
+    for name, effect in effects.items():
+        if name != "build":
+            effect.assert_not_called()
+    at_build = trace["at_build"]
+    assert at_build is not None
+    assert at_build["root_reads"] == ["c" * 40], (
+        "login-only must read Root HEAD once and freeze it before build; "
+        f"observed={at_build['root_reads']}"
+    )
+    assert trace["root_reads"] == at_build["root_reads"]
+    expected = {
+        "apps/kokoro-app": "5f2ab341d5fc5ddee5e08d785dc7aaf391b7e9d8",
+        "apps/kokoro-iam": "e3c035b99cf9479ac8357c7d38147f1541dcbcac",
+        "apps/kokoro-bff": "759bfe0a8c521946cae31a74b6426f43b063bae1",
+    }
+    assert {record[2] for record in at_build["gitlinks"]} == set(expected)
+    for revision, resolved, path, sha in at_build["gitlinks"]:
+        assert (revision, resolved, sha) == ("c" * 40, "c" * 40, expected[path]), (
+            "every login-only gitlink must bind to the first Root commit, "
+            "not the later HEAD or index"
+        )
+    assert set(at_build["statuses"]) == {
+        (path.removeprefix("apps/"), "") for path in expected
+    }, "all three clean owner guards must complete before build"
+
+
+def _r57_login_git_inputs(patches, directory):
+    """Supply clean published Git inputs to pre-existing startup/cleanup fixtures."""
+    root = Path(directory)
+    apps = root / "apps"
+    apps.mkdir()
+    pins = {
+        "kokoro-app": "1" * 40,
+        "kokoro-iam": "2" * 40,
+        "kokoro-bff": "3" * 40,
+    }
+    root_commit = "e" * 40
+    for owner in pins:
+        (apps / owner).mkdir()
+
+    def git(command, **_kwargs):
+        repo, args = Path(command[2]), command[3:]
+        if command[:2] != ["git", "-C"]:
+            raise AssertionError(command)
+        if repo == root:
+            if args == ["rev-parse", "HEAD"]:
+                return root_commit + "\n"
+            if args[:2] == ["ls-tree", root_commit]:
+                path = args[-1]
+                return f"160000 commit {pins[path.removeprefix('apps/')]}\t{path}\n"
+            if args[:3] == ["ls-files", "--stage", "--"]:
+                path = args[-1]
+                return f"160000 {pins[path.removeprefix('apps/')]} 0\t{path}\n"
+        if repo.parent == apps and repo.name in pins:
+            if args == ["rev-parse", "HEAD"]:
+                return pins[repo.name] + "\n"
+            if args == ["status", "--porcelain", "--untracked-files=all"]:
+                return ""
+        raise AssertionError(command)
+
+    for module in (launcher.web_smoke, launcher.session):
+        patches.enter_context(patch.object(module, "ROOT", root))
+    for label, owner in (
+        ("WEB", "kokoro-app"), ("IAM", "kokoro-iam"), ("BFF", "kokoro-bff")
+    ):
+        patches.enter_context(patch.object(launcher.web_smoke, label, apps / owner))
+    patches.enter_context(patch.object(launcher.runtime, "command_output", side_effect=git))

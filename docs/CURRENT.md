@@ -1,3 +1,19 @@
+## R58 Root 组合切片复验完成，完整用户链仍待验
+
+本轮全仓standard静态检查实际exit1：150 rule violations/0 unverified（/tmp/kokoro-root-r58-standard.log）；这是当前工作树全仓规范缺口，不能用1141工具测试通过遮盖或声称全仓上线就绪。最终10path index独立0P0/P1/P2，Root提交仅本切片，不放宽standard门。
+
+Root release/login 四文件源码已独立审查 0P0/P1/P2；两个入口从同一冻结 Root commit读取gitlink，保持dirty、index、path/source拒绝，144项定点测试通过。全部治理门实际1141passed/3skipped/118.87s，既有w1e-iam07-bff-pin checkpoint PASS、topology PASS；compatibility仍有既有declared broken edges，不称全契约绿色。日志 /tmp/kokoro-root-r58-{release-green,full-governance,checkpoint,topology}.log。
+
+Root正在消费已发布Web06a1c866与Billing1564510：仅51个结构化commit字段与1个Billing已提交CURRENT digest同步，不更改edge状态/reason/schema/contract digest。BFF与Platform原owner分别进行public4 tests-only和MCP v6/source实现；未启动3310，未通过普通登录→模型双轮/刷新→正式赠送、预占、结算/释放完整旅程。任务外uv.lock/各owner未授权dirty保持，完整Wave0–7 active。
+
+## R58 前端已发布、正规入口与 MCP 继续代码推进
+
+Web main06a1c86612d9557d83081bcb67e8fc539ae7eacb已推送且子仓clean：2193全部tests、contract224/architecture50/lint/typecheck/build Root真实通过及两次独立0审；仅金额显示/未知事实，不是正式账务链。Root R57 release两个source已冻结，4tests当前Root复验中；Platform六tests2P2独立关闭0审，跨surface新真实HTTP仍404，现R58机器/source范围已定。完整Wave0–7 active，普通登录→模型双轮/刷新→正式积分用户旅程仍未通过。
+
+## R57 真实组件进展，整链仍未验收
+
+Billing本人账户/流水只读组件main1564510已发布，111真PG/637pure及独立0审；Root组合尚未消费该commit，正式HTTP/赠送/扣费旅程仍待。Web金额显示修复已Root79/79复验，源码审在途，不把显示修复当账务政策。原WIN10开始两现Root入口源码GREEN，原WIN02开始已通过D0的完整public4 tests-only；原十窗口并行机制不变，源/contract依赖按owner顺序。
+
 ## R56 十窗口续接与实际组件进展
 
 现原10窗口沿同task卡续接，写入按仓互斥，独立审/业务消费调查并行。Billing冻结14文件独立审0P0/P1/P2；Root本人读＋原写真实资源111pass/0skip、全纯门637pass及format/lint/typecheck/build exit0。仅组件通过，正式HTTP/赠送/收费用户链未通过。

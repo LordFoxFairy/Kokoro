@@ -521,7 +521,12 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
 ) -> None:
     from scripts.e2e import run_system_owner_smoke as smoke
 
-    expected = smoke.EXPECTED_RELEASES
+    expected = {
+        "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
+        "kokoro-bff": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
+        "kokoro-agent": "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0",
+    }
+    root_commit = "f" * 40
     assert expected["kokoro-bff"] == "eb1eb2926d08b8a3779898b2c31e604a8585ec8b"
     assert expected["kokoro-agent"] == "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0"
     apps = tmp_path / "apps"
@@ -542,7 +547,9 @@ def test_release_inputs_require_exact_clean_head_and_index_gitlinks(
 
     def git(command: list[str]) -> str:
         calls.append(command)
-        if command[3:5] == ["ls-tree", "HEAD"]:
+        if command[2] == str(tmp_path) and command[3:] == ["rev-parse", "HEAD"]:
+            return root_commit + "\n"
+        if command[3:5] == ["ls-tree", root_commit]:
             owner = command[-1].rsplit("/", 1)[1]
             return f"{state['head_mode'] if owner == changed_owner else '160000'} commit {state['head_sha'] if owner == changed_owner else expected[owner]}\tapps/{owner}\n"
         if command[3:6] == ["ls-files", "--stage", "--"]:
@@ -641,3 +648,112 @@ def test_seed_rejects_invalid_provider_model_before_owner_calls(monkeypatch, nam
             provider="ollama",
             model_name=name,
         )
+
+
+def _r55_release_git_fixture(monkeypatch, tmp_path, releases, *, moving_head=False):
+    from scripts.e2e import run_system_owner_smoke as smoke
+
+    first_root, later_root = "a" * 40, "b" * 40
+    later_releases = {
+        "kokoro-system": "6ca96180749d4842c2ee0628328f372d114e320f",
+        "kokoro-bff": "759bfe0a8c521946cae31a74b6426f43b063bae1",
+        "kokoro-agent": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
+    }
+    apps = tmp_path / "apps"
+    apps.mkdir()
+    for owner in releases:
+        (apps / owner).mkdir()
+    observation = {"head": first_root, "root_reads": [], "trees": [], "indexes": []}
+
+    def git(command):
+        assert command[:2] == ["git", "-C"]
+        repo, args = command[2], command[3:]
+        if repo == str(tmp_path):
+            if args == ["rev-parse", "HEAD"]:
+                observation["root_reads"].append(observation["head"])
+                return observation["head"] + "\n"
+            if args[0] == "ls-tree":
+                revision, path = args[1], args[-1]
+                resolved = observation["head"] if revision == "HEAD" else revision
+                assert resolved in (first_root, later_root)
+                owner = path.removeprefix("apps/")
+                pins = releases if resolved == first_root else later_releases
+                observation["trees"].append((resolved, path))
+                if moving_head and owner == "kokoro-system":
+                    observation["head"] = later_root
+                return f"160000 commit {pins[owner]}\t{path}\n"
+            if args[:3] == ["ls-files", "--stage", "--"]:
+                path = args[-1]
+                observation["indexes"].append(path)
+                return f"160000 {releases[path.removeprefix('apps/')]} 0\t{path}\n"
+        owner = Path(repo).name
+        assert Path(repo).parent == apps and owner in releases
+        if args == ["rev-parse", "HEAD"]:
+            return releases[owner] + "\n"
+        if args[:2] == ["status", "--porcelain"]:
+            assert args[2:] in (
+                ["--untracked-files=normal"],
+                ["--untracked-files=all"],
+            )
+            return ""
+        raise AssertionError(f"unexpected release command: {command}")
+
+    from pathlib import Path
+
+    monkeypatch.setattr(smoke, "ROOT", tmp_path)
+    monkeypatch.setattr(smoke, "command_output", git)
+    return smoke, observation, first_root
+
+
+def test_r55_release_accepts_clean_published_root_gitlinks(monkeypatch, tmp_path):
+    # These accepted owner commits are fixture inputs, not a production release map.
+    releases = {
+        "kokoro-system": "6ca96180749d4842c2ee0628328f372d114e320f",
+        "kokoro-bff": "759bfe0a8c521946cae31a74b6426f43b063bae1",
+        "kokoro-agent": "e977923ea9992cbddaf0cdbc6c8f8d23b3af120e",
+    }
+    smoke, observed, root_sha = _r55_release_git_fixture(
+        monkeypatch, tmp_path, releases
+    )
+
+    result = smoke.verify_release_inputs()
+
+    assert result == {
+        owner: {"commit": sha, "working_tree_dirty": False}
+        for owner, sha in releases.items()
+    }
+    assert observed["root_reads"] == [root_sha]
+    assert observed["trees"] == [
+        (root_sha, f"apps/{owner}") for owner in releases
+    ]
+    assert observed["indexes"] == [f"apps/{owner}" for owner in releases]
+
+
+def test_r55_release_binds_every_owner_to_first_root_commit(monkeypatch, tmp_path):
+    # A valid historical Root release isolates the moving-HEAD defect from the
+    # separately tested stale constant. Neither production constants nor guards
+    # are patched; the later Root commit contains the currently accepted owners.
+    releases = {
+        "kokoro-system": "c0a76a3a7614bf46ea6e665e523f24261862436f",
+        "kokoro-bff": "eb1eb2926d08b8a3779898b2c31e604a8585ec8b",
+        "kokoro-agent": "d6fcbf2424ea6a936bb53f4dc1be95d13f78f2e0",
+    }
+    smoke, observed, root_sha = _r55_release_git_fixture(
+        monkeypatch, tmp_path, releases, moving_head=True
+    )
+    failure, result = None, None
+    try:
+        result = smoke.verify_release_inputs()
+    except smoke.SmokeError as error:
+        failure = error
+
+    assert observed["trees"] == [
+        (root_sha, f"apps/{owner}") for owner in releases
+    ], "release identities must all come from the first frozen Root commit"
+    assert observed["root_reads"] == [root_sha]
+    assert failure is None, "a later Root HEAD must not invalidate the frozen release"
+    assert result == {
+        owner: {"commit": sha, "working_tree_dirty": False}
+        for owner, sha in releases.items()
+    }
+    assert observed["indexes"] == [f"apps/{owner}" for owner in releases]

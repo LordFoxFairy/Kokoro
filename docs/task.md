@@ -1,3 +1,36 @@
+## R58 Root 集成提交卡
+
+本轮全仓standard静态检查实际exit1：150 rule violations/0 unverified（/tmp/kokoro-root-r58-standard.log）；这是当前工作树全仓规范缺口，不能用1141工具测试通过遮盖或声称全仓上线就绪。最终10path index独立0P0/P1/P2，Root提交仅本切片，不放宽standard门。
+
+Root唯一writer/index/commit；main基线0ea7839c。允许exact10paths：两已发布gitlinks apps/kokoro-app、apps/kokoro-billing；四release/login source/tests；verification/contracts/consumer-inventory.json；三现台账。144定点与1141全治理通过，源码独立0审；52结构化metadata变更限定两个发布commit及一个CURRENT digest，其余契约状态不变。最终index独立审后Root提交/推送；uv.lock、BFF/Agent/Platform及Billing原dirty正文排除。组件集成不代表用户端到端验收。
+
+## R58 Platform MCP 已证实缺口的机器/源码 GREEN 卡
+
+原WIN07为Platform唯一writer（物理apps/kokoro-capability，main f884048b），Root为审查/Git/资源owner。五D0899c5549/77a0cb93/f89d0556/4ae6e359/d9b59187已经收敛；六tests原2P2已Astra独立0审，Root新增跨surface真实PG/HTTP1fail404≠400，原31真资源3pass28fail。目标仍是本人只读六字段＋Authorize实际身份，不是新权限/secret/执行grant。
+
+放置比较/三面方案引用本仓TECH/API/DATA的R45-MCP-CONNECTION-D0：采用现connection/authorization目录和现HTTP/repository职责，不新Module/Resolve RPC/配置/进程。canonical Prisma不变；可信Session/BFFsubject＋same-tenant user/self active-approved-registered，独立执行proof/lease/IAM仍保。原v1–v5只读历史产物不是旧runtime兼容；当前runtime唯一新响应profile。
+
+|写入组|精确允许路径（相对该owner仓）/责任|
+|---|---|
+|机器事实与正式生成|contract/proto/kokoro/platform/v1/platform_runtime.proto仅response tag7 connection_id/tag8 server_id；contract/openapi/platform-http.openapi.json新本人route+3.2.0；contract/descriptor/platform-v1.binpb、contract/provenance.json、src/generated/proto/kokoro/platform/v1/platform_runtime_pb.ts仅正规生成。请求/39RPC/20command/24proof不改。|
+|历史证明输入|现contract/descriptor目录新增platform-v5.binpb、platform-v5-source.proto.snapshot、platform-v5-provenance.json.snapshot、platform-v5-generated.ts.snapshot、platform-v5-http.openapi.json.snapshot，字节取现已发布v5固定hash；新增scripts/platform-execution-operations/v5-historical-inputs.ts只解析验证输入；现v5-artifact.ts、v5-descriptor.ts、check-platform-execution-operations.ts仅历史输入路由。v1–v5artifact文件/aggregate/V5_SOURCE_PINS原值不可改、不可跳门。|
+|新版本证明|contract/execution-operations/v6/ manifest、authorize-response/projection profiles、三closed schemas、两vectors、provenance；scripts/platform-execution-operations/v6-{profile,artifact,descriptor}.ts及现checker唯一接线。继承已冻结父版本库存，不复制第二可编辑Proto；latest descriptor只剥response7/8后整份应等v5。新目录是独立版本化owner机器产物，技术方案已定6.0.0，不新业务模块。|
+|Authorize实现|现src/modules/mcp/authorization/{mcp-tool-authorization.service,mcp-authorization.rpc}.ts、src/modules/mcp/{mcp-wire,mcp-rpc.service,mcp-rpc.runtime}.ts；新增authorization/mcp-tool-authorization-receipt.ts只strict codec。首次实际prepared identity/receipt/audit/current一致，旧缺/坏wrapperreceipt稳定FAILED_PRECONDITION，不补写/重签发，不改其他command事务/CAS/ACK语义。|
+|本人读取实现|现src/modules/mcp/{mcp-control.repository,mcp.module,mcp.tokens}.ts、src/http/{projection.constants,projection-query,projection.mapper}.ts；现connection目录新增mcp-connection-projection.{controller,reader,types,policy}.ts普通职责文件。窄projection repository接口，Prisma typed own RR snapshot，完整eligibility在limit前；独立surface/cursor含subject/filter，所有GET零业务写/无secret/provider I/O。|
+|必要机械旧断言迁移|现test/contract/{platform-personal-installation-v5,mcp-p3a-contract,bff-projection}.test.ts、test/architecture/platform-execution-operations.test.ts、test/contract/platform-execution-operations.test.ts：只把历史whole-file hash/旧3.1/v5latest解析接冻结历史输入并保旧断言，另断言当前v6。现test/unit/mcp-p3b.test.ts仅原transaction-clock expiry fixture补合法match身份，新R48/R56assertion不改；所有integration既有断言不降标。若发现其他必须接线旧测试先报告路径，不整仓改。|
+|文档阶段|五现D0只改当前前缀写本R58边界/预算/实际阶段，旧body锁；不提前写通过/发布。|
+
+查询预算：每批≤100候选、最多10批/1000候选、最多40delegate查询，typed关联无raw业务SQL/Prisma relation；同RR 2000ms上限、软1000ms预算/取消，完整predicate收集limit+1；预算满且无法证明结束时整体现503 dependencies_unavailable retryable，不部分200/假next。追加现tests预算耗尽/取消/零写真实RED再实现；原所有R48/R56负例与状态/来源guards保留。SQL/schema/installer/依赖/IAM/BFF/Agent/secret/provider/release pin/Git都排除。worker Node24纯门/生成/完整离线门，freeze文件清单与删改摘要停写；Root真PG/HTTP全矩阵与独立源码/产物审后才publish。不得把missing method/404早停当查询行为已通过。
+
+## R57 已验失败的继续实施（沿 R48/R55/R56 卡）
+
+Root0ea7839c，原十窗口责任保持，无新计划中心。Billing组件已发布156451051f6ee47ba9b128f481f96094bfb9f731（14file），Root组合gitlink仍07fdd074，尚未消费/激活HTTP；原五dirty设计正文留存。Web五file冻结待源码独立审，Root79/79已复验。
+
+|任务/窗口|唯一写集与阶段|依赖与验证|
+|---|---|---|
+|R55-Root-release GREEN / WIN10|仅scripts/e2e/run_system_owner_smoke.py、scripts/dev/serve_local_login.py；两既有tests历史release-map/Git mocks精准机械迁移，所有新R55/R56/旧mode/index/path/dirty/symlink断言不动|新增login单commit P2已Root真实1fail0.06s，新test fd0ed375；单次冻结已提交Rootgitlinks、三登录owner build前准入。无新module/manifest/fallback，资源/Git归Root；pure完整两files及相关preflight门、冻结后Root重跑。台账/uv.lock/其他Rootfile锁，授后Root停写。|
+|R48-BFF-public4 RED / WIN02|仅现test/agent-control-adapter.test.ts、agui-source-page.test.mjs、agui.test.ts、chat-service.test.ts、agui-projection.integration.mjs、agui-http.integration.mjs追加/新R48区；所有原prefix不变，GC31与四authority原断言全保|四D0 digest P2已独立0审，Agent e977 HTTP4为事实源。required revision/ref、全部未决集合、五decision形态/业务null、full-state optionalpresence、ACK≠consume、四态公开snapshot与同事务head/watermark、strict source4 decoder。测试可编译实际入口，无missing-import造RED/无stub；源/SQL/machine/vendor/gen/其他files锁。worker纯门、Root真PG/HTTP及独立审后才给完整GREEN。|
+
 ## R56 原十窗口并行续接（Root 87377af9）
 
 用户再次要求10+窗口；复用原 WIN01–10，不另建计划/重复服务。Root维持完整Wave0–7 active；同仓唯一writer，Root资源/Git/验收独占。先RED/冻结独立审后精准GREEN，不扩大旧数据兼容或运维范围。

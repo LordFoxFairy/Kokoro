@@ -12,6 +12,7 @@ import http.client
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import shutil
 import signal
@@ -270,8 +271,55 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
+def verify_login_release_inputs() -> None:
+    """Admit the three login owners from one committed Root release."""
+    root = web_smoke.ROOT
+    apps = root / "apps"
+    if not apps.is_dir() or apps.is_symlink():
+        raise LaunchError("Root apps release directory mismatch")
+    root_commit = runtime.command_output(
+        ["git", "-C", str(root), "rev-parse", "HEAD"]
+    ).strip()
+    if re.fullmatch(r"[a-f0-9]{40}", root_commit) is None:
+        raise LaunchError("Root release commit identity mismatch")
+    for repo, owner in (
+        (web_smoke.WEB, "kokoro-app"),
+        (web_smoke.IAM, "kokoro-iam"),
+        (web_smoke.BFF, "kokoro-bff"),
+    ):
+        path = f"apps/{owner}"
+        if repo != apps / owner or not repo.is_dir() or repo.is_symlink():
+            raise LaunchError(f"{owner} release source or Root gitlink mismatch")
+        tree = runtime.command_output(
+            ["git", "-C", str(root), "ls-tree", root_commit, path]
+        ).split()
+        if (
+            len(tree) != 4
+            or tree[:2] != ["160000", "commit"]
+            or re.fullmatch(r"[a-f0-9]{40}", tree[2]) is None
+            or tree[3] != path
+        ):
+            raise LaunchError(f"{owner} release source or Root gitlink mismatch")
+        expected = tree[2]
+        actual = runtime.command_output(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"]
+        ).strip()
+        dirty = runtime.command_output(
+            ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=all"]
+        ).strip()
+        index = runtime.command_output(
+            ["git", "-C", str(root), "ls-files", "--stage", "--", path]
+        ).strip()
+        if actual != expected or dirty or index != f"160000 {expected} 0\t{path}":
+            raise LaunchError(f"{owner} release source or Root gitlink mismatch")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    try:
+        verify_login_release_inputs()
+    except runtime.SmokeError:
+        raise LaunchError("release source preflight failed") from None
     require_free_web_port()
     run_id = secrets.token_hex(12)
     origin = web_origin(run_id)
