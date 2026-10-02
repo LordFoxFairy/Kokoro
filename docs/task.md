@@ -1,3 +1,13 @@
+## R59 BFF fullpause/public4 源码实现卡（已独立放行）
+
+Root上一轮已发布4b772692d9d6b3f8a4d176152b900137dcc62ae0，为progress；Web/Billing新gitlinks已实际消费。原WIN02为BFF唯一writer，main759bfe0a；四D0最终f80de15c/c75a351e/3641623a/d5f41931已审，六R57 tests c4af6f95/56e5f89c/141d62d5/7abe2c51/3e663253/235d72e4已冻结，Root纯57=7pass50fail0skip、真实PG/Redis/HTTP9=0pass9fail0skip，独立0P0/P1/P2，进入已批准完整GREEN。
+
+精确允许写集及放置理由直接引用 apps/kokoro-bff/docs/TECHNICAL_DESIGN.md R48“精确后继文件集”公共机器/Agent固定消费/窄source decoder/纯投影与ports/持久化/公开映射control/schema回归六组；按此整片实现public4+Agent HTTP4+一张run interaction投影，不另建模块/进程/迁移/第二契约。新增三普通职责文件、新vendor e977固定字节、删除两旧vendor/split event pin、正式生成现generated；权限/operation/path不改，当前唯一runtime，无旧fullpause兼容。完整safe full-state/六字段/revision/ref/五decisions、typed null归一与fullstate presence不同digest、整集合、ACK≠consume、同事务frame/source/HWM、RR授权快照/head/source integrity/GC依赖都保持。
+
+原新六test断言锁；旧九失败仅按TECH“原失败位置”表逐项语义迁移：精确queued完整帧/分页/GC floor；eligible-later只补真实父；B queued时有效terminal null但DB历史保留；stale/CAS/混批零写不降标；R43公开head原assert原样转绿。schema/contract/architecture/旧generated消费者测试只机械消费current4＋fixture TABLES/fingerprint/cleanup补新表，保安全intent；若其他文件必需改先报范围。现冻结outbox/cancellation/artifact/Scheduled业务、Billing/Web/Agent/IAM/Platform、deps/lock/SQL其他表/installer/Root台账/Git/共享资源排除。四D0只当前阶段前缀，原body保护；README/INDEX/docs INDEX/contract README可同步唯一新入口。
+
+实施顺序：先公共机器和固定owner artifact/generated，再decoder/纯rules、canonical schema/projection/RR、control/public映射，最后所有旧回归精确迁移；全片冻结交付，不局部假发布。worker Node22静态/纯门/生成检查，Root完整contract/architecture/schema/fulltest及真PG/Redis/HTTP/双连接barrier/真实owner和后续Web用户旅程独占。最终完成功能要求不降成仅版本号或新tests绿色。
+
 ## R58 Root 集成提交卡
 
 本轮全仓standard静态检查实际exit1：150 rule violations/0 unverified（/tmp/kokoro-root-r58-standard.log）；这是当前工作树全仓规范缺口，不能用1141工具测试通过遮盖或声称全仓上线就绪。最终10path index独立0P0/P1/P2，Root提交仅本切片，不放宽standard门。
