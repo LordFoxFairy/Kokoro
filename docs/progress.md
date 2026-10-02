@@ -9,6 +9,8 @@
 - 原23020启动前Root在Web cwd用相对docs/task.md追加任务卡的台账命令FileNotFoundError；未改子仓，测试随后已启动。保setup错误分类并以Root绝对路径补卡，不重复启动。原55271终态后才起focused；现原WIN01在idle后续派唯一一existing test诊断，保持两个engine候选与所有其他源/test/文档/机器/依赖冻结、不加timeout、不删断言；先完整OIDC39实际命令并停写交接。原测试只用独有temporary Next/端口/随机authsecret/精确Redis state+product ID回收，未重启3310或共享PG/Redis。
 - 70组计数仍8限定通过/2最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置；Owner内部切片正在推进，不能将一源阶段或单例通过当整个组/旅程关闭。新增E21–E23到同测试台账。下一Root接两writer真实RED/安全失败、契约owner先发布及消费者串行；Web完整门通过后当前发布fresh组合原严格W2，Billing后继不被遗忘。
 
+R95后续句柄核对：原WIN01 turn01a0fce5-855a-7a41-beba-52588b89ac25/cursor193 active（严格单test诊断）；原WIN03 turn01a0fce0-d82f-7f93-bd28-bb777479b31f/cursor94 active（仅两contract tests）。WIN03首轮新replay漏Run repository fake，postgres://unused被解析并尝试连接、13case503；原worker说明无连接成功日志，该轮不计行为RED。Root要求原失败/终态与安全资源尝试分类保留、全部Run/Chat/Context绑定与新case未预期DB入口显式拒绝，不访问/清理任何未知资源；只修现两test fixture，机器/source仍锁。不是完整资源验收，也不据此认为数据库已污染或已清理。下一收实际更正后的RED与独立有效性审查。
+
 ## R94 测试计划最新核对（2026-10-02）
 
 Root基线c76195bcc48ce18bf53ba67bc5adcb03f2600bb1。本次只盘点同测试台账、收取原句柄终态与原Agent交接，不重跑全部测试、不启动服务/修改子仓。

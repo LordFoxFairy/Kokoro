@@ -41,6 +41,8 @@ R95-WEB-HTTP-FOCUSED：Root原55271已终态exit1：单worker完整163files2312p
 
 R95-WEB-HTTP-DIAGNOSTIC（23020已终态exit0，现授原writer）：原WIN01唯一Web writer仅tests/system/oidc-rp-next-http.integration.test.ts的pending-refresh tombstone用例。Sol只读报告/tmp/kokoro-r95-web-http-failure-read.md 0P0/1P1/0P2，started barrier只在fake token refresh分支触发、请求提前HTTP终态仍无限等。目标将started与refreshing提前终态race，使用已有responseDiagnostic输出safe类别/status/path，原未知request拒绝仅固定安全类别，保持原所有tombstone/409/零stale revoke/最后未登录断言与finally释放；started后验证只一实际refresh请求。不得增timeout/删断言/改production/source候选/4D0/机器/依赖/其他tests。Root只读核有效范围，focused诊断复跑根据HTTP终态再裁产品/fixture修复；不当新增失败根因已证明。必须先保存tracked基线、停写manifest/hash/旧assert保护，Root独占Git/最终完整门。
 
+R95-AGENT-MACHINE-RED setup保护补充：cursor94报告原新replay遗漏Run repository fake导致13case503、postgres://unused尝试连接，非行为RED；原日志/终态留档，不探测或清理未知资源。仅原两test范围补Run/Chat/Context全部工厂绑定及未预期DB入口立即固定拒绝，先合法control再目标版本/schema/安全payload RED。不改conftest/source、不拿503或stale digest当新增回归成立；交付仍需外围hash与原setup错误、改正后实际结果。
+
 ## R93 发布源修复与消费/行为测试并行（2026-10-02）
 
 上一回合为progress：Root提交6d68bcc3，70组测试按真实fresh clone失败更新，完整Wave0–7范围不变。当前IAM clean main e3c035b，远端main实测36242fd，fast-forward缺两提交；尚未push。原WIN01已获R91精确17路径正规生成GREEN；原WIN03五unit测试已冻结停写，报告19fail/229pass/4deselected，Root尚待复跑。
