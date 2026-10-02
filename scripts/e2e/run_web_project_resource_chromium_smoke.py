@@ -146,7 +146,7 @@ def _owner_schema_database_url(bff_database_url: str, schema: str) -> str:
     if (
         not parts.path.startswith("/")
         or parts.fragment
-        or schema not in {"kokoro_storage", "kokoro_agent"}
+        or schema not in {"kokoro_storage", "kokoro_agent", "system"}
     ):
         raise SmokeError("run-owned PostgreSQL URL invalid")
     query = [
@@ -154,7 +154,7 @@ def _owner_schema_database_url(bff_database_url: str, schema: str) -> str:
         for key, value in parse_qsl(parts.query)
         if key.lower() not in {"schema", "options", "search_path"}
     ]
-    # Storage's Node PG client consumes its `schema` URL parameter, while
+    # Storage and System's Node PG clients consume the `schema` URL parameter;
     # Agent's psycopg connection requires libpq search_path options.
     if schema == "kokoro_agent":
         query.append(("options", "-csearch_path=kokoro_agent"))

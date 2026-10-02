@@ -328,9 +328,7 @@ def real_scenario(config: RealModelConfig, **context) -> dict[str, object]:
     directory, log, infra = c["directory"], c["log"], c["infra"]
     node = c["node24"]
     system_root = stack._isolated_owner(SYSTEM, directory, "system")
-    # System's current canonical installer owns public; all other owners in this
-    # same test-owned database use independent explicit schemas.
-    system_db = c["owner_db_url"]
+    system_db = stack._owner_schema_database_url(c["owner_db_url"], "system")
     token = secrets.token_urlsafe(32)
     model_key = secrets.token_urlsafe(32)
     c["credentials"].add(token, model_key)
@@ -347,8 +345,8 @@ def real_scenario(config: RealModelConfig, **context) -> dict[str, object]:
         KOKORO_SYSTEM_AGENT_SERVICE_TOKEN=c["agent_secret"],
         KOKORO_SYSTEM_ADMIN_SERVICE_TOKEN=token,
         KOKORO_SYSTEM_MODEL_HEALTH_MAX_AGE_MS="300000",
-        PGOPTIONS="-c search_path=public,pg_catalog -c timezone=UTC",
     )
+    env.pop("PGOPTIONS", None)
     for command in (
         [
             str(node),

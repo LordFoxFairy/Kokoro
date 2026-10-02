@@ -333,7 +333,7 @@ class LocalChatRuntime:
         self.system_base = f"http://127.0.0.1:{port}"
         env = {
             **self.node_env,
-            "DATABASE_URL": database_url,
+            "DATABASE_URL": owned._owner_schema_database_url(database_url, "system"),
             "REDIS_URL": self.resources.redis_url,
             "KOKORO_SYSTEM_REDIS_NAMESPACE": self.resources.redis_prefix + "system",
             "KOKORO_SYSTEM_HOST": "127.0.0.1",
@@ -342,8 +342,8 @@ class LocalChatRuntime:
             "KOKORO_SYSTEM_AGENT_SERVICE_TOKEN": self._token,
             "KOKORO_SYSTEM_ADMIN_SERVICE_TOKEN": self._token,
             "KOKORO_SYSTEM_MODEL_HEALTH_MAX_AGE_MS": "300000",
-            "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
         }
+        env.pop("PGOPTIONS", None)
         for command in (
             [
                 str(self.node),

@@ -384,6 +384,7 @@ class LocalChatCompositionTests(unittest.TestCase):
     def test_start_real_owner_and_two_standard_clis_same_database(self):
         import tempfile
         from contextlib import ExitStack
+        from urllib.parse import parse_qs, urlsplit
 
         m = importlib.import_module("local_chat_runtime")
         with tempfile.TemporaryDirectory() as temp, ExitStack() as patches:
@@ -453,9 +454,13 @@ class LocalChatCompositionTests(unittest.TestCase):
             system_env, http_env, worker_env = [
                 call.kwargs["env"] for call in popen.call_args_list
             ]
+            system_url = urlsplit(system_env["DATABASE_URL"])
+            agent_url = urlsplit(http_env["KOKORO_AGENT_DATABASE_URL"])
             self.assertEqual(
-                system_env["DATABASE_URL"], http_env["KOKORO_AGENT_DATABASE_URL"]
+                (system_url.scheme, system_url.netloc, system_url.path),
+                (agent_url.scheme, agent_url.netloc, agent_url.path),
             )
+            self.assertEqual(parse_qs(system_url.query).get("schema"), ["system"])
             self.assertEqual(
                 http_env["KOKORO_AGENT_DATABASE_URL"],
                 worker_env["KOKORO_AGENT_DATABASE_URL"],
@@ -1279,7 +1284,7 @@ class TickDiagnosticTests(unittest.TestCase):
             patch.object(m.system, "seed_control_plane") as seed,
             self.assertRaises(m.model_provider.ProviderObservationError) as caught,
         ):
-            obj.start("postgresql://unused")
+            obj.start("postgresql://unused/owned")
         self.assertIs(caught.exception, error)
         seed.assert_not_called()
         start.assert_called_once()
@@ -1354,3 +1359,102 @@ class TickDiagnosticTests(unittest.TestCase):
                                 b"Local Chat tick failed: stage=health_receipt\n"
                             )
                         )
+
+
+def test_local_chat_start_uses_system_selector_without_changing_agent_ownership():
+    from contextlib import ExitStack
+    from urllib.parse import parse_qs, urlsplit
+
+    m = importlib.import_module("local_chat_runtime")
+    database_url = (
+        "postgresql://owner@localhost/owned"
+        "?sslmode=require&application_name=system-consumer-test"
+    )
+    with tempfile.TemporaryDirectory() as temp, ExitStack() as patches:
+        patches.enter_context(
+            patch.object(m.owned, "_isolated_owner", return_value=Path(temp))
+        )
+        patches.enter_context(patch.object(m, "provider_preflight"))
+        patches.enter_context(patch.object(m.system, "wait_ready"))
+        patches.enter_context(
+            patch.object(
+                m.system,
+                "seed_control_plane",
+                return_value={"provider_id": "p", "revision_id": "r"},
+            )
+        )
+        patches.enter_context(patch.object(m.agent_runtime, "_wait_ready"))
+        commands = patches.enter_context(patch.object(m.LocalChatRuntime, "_command"))
+        patches.enter_context(
+            patch.object(m.runtime, "free_port", side_effect=[4100, 4200])
+        )
+        ownership = Mock(claimed=True)
+        ownership._call.return_value = "1"
+        patches.enter_context(
+            patch.object(m.owned, "AgentRedisOwnership", return_value=ownership)
+        )
+        process = Mock()
+        process.poll.return_value = None
+        popen = patches.enter_context(
+            patch.object(m.subprocess, "Popen", return_value=process)
+        )
+        resources = SimpleNamespace(
+            run_id="a" * 24,
+            redis_url="redis://localhost/0",
+            redis_prefix="own:",
+            claim_redis_prefix=Mock(),
+        )
+        obj = m.LocalChatRuntime(
+            config=SimpleNamespace(
+                endpoint="http://127.0.0.1:11434", model="qwen3:8b"
+            ),
+            uv=Path("/uv"),
+            node=Path("/node"),
+            node_env={
+                "NODE_OPTIONS": "--import=guard",
+                "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
+            },
+            directory=Path(temp),
+            resources=resources,
+            credentials=Mock(),
+            log=Mock(),
+            tenant="tenant",
+            product_key="kokoro",
+            hostname="127.0.0.1",
+            agent_redis_url="redis://localhost/10",
+        )
+        result = obj.start(database_url)
+        system_env, http_env, worker_env = [
+            call.kwargs["env"] for call in popen.call_args_list
+        ]
+        assert result["KOKORO_AGENT_ENABLED"] == "true"
+        assert [label for label, _ in obj.processes] == ["system", "http", "worker"]
+        assert obj.database_url == database_url
+        assert http_env["KOKORO_AGENT_DATABASE_URL"] == database_url
+        assert worker_env["KOKORO_AGENT_DATABASE_URL"] == database_url
+        assert http_env["KOKORO_AGENT_DATABASE_SCHEMA"] == "kokoro_agent"
+        assert worker_env["KOKORO_AGENT_DATABASE_SCHEMA"] == "kokoro_agent"
+        assert ownership.url == "redis://localhost/10"
+        ownership.claim.assert_called_once_with()
+        resources.claim_redis_prefix.assert_called_once_with()
+        assert commands.call_args_list[-1].args[0] == "Agent schema"
+        assert commands.call_args_list[-1].kwargs["env"][
+            "KOKORO_AGENT_DATABASE_URL"
+        ] == database_url
+        source = urlsplit(database_url)
+        actual = urlsplit(system_env["DATABASE_URL"])
+        assert (actual.scheme, actual.netloc, actual.path) == (
+            source.scheme,
+            source.netloc,
+            source.path,
+        )
+        query = parse_qs(actual.query)
+        assert query.get("schema") == ["system"], system_env["DATABASE_URL"]
+        assert query.get("sslmode") == ["require"]
+        assert query.get("application_name") == ["system-consumer-test"]
+        assert "options" not in query and "search_path" not in query
+        assert "PGOPTIONS" not in system_env
+        for call in commands.call_args_list[:2]:
+            assert call.args[0] == "System setup"
+            assert call.kwargs["env"]["DATABASE_URL"] == system_env["DATABASE_URL"]
+            assert "PGOPTIONS" not in call.kwargs["env"]

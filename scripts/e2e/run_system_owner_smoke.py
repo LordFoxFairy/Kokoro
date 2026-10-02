@@ -866,6 +866,12 @@ def verify_release_inputs() -> dict[str, dict[str, str | bool]]:
 
 def run_smoke(args: argparse.Namespace) -> int:
     verify_release_inputs()
+    # Delay the shared composition import until smoke runtime modules are loaded.
+    if __package__:
+        from .run_web_project_resource_chromium_smoke import _owner_schema_database_url
+    else:
+        from run_web_project_resource_chromium_smoke import _owner_schema_database_url
+
     system_env = node_environment(args.node24_bin, 24)
     bff_env = node_environment(args.node22_bin, 22)
     resources = OwnedResources(args.postgres, args.redis, secrets.token_hex(12))
@@ -913,7 +919,9 @@ def run_smoke(args: argparse.Namespace) -> int:
             )
             system_env.update(
                 {
-                    "DATABASE_URL": resources.create_database("system"),
+                    "DATABASE_URL": _owner_schema_database_url(
+                        resources.create_database("system"), "system"
+                    ),
                     "REDIS_URL": args.redis,
                     "KOKORO_SYSTEM_REDIS_NAMESPACE": resources.namespace,
                     "KOKORO_SYSTEM_HOST": "127.0.0.1",
@@ -921,9 +929,9 @@ def run_smoke(args: argparse.Namespace) -> int:
                     "KOKORO_SYSTEM_BFF_SERVICE_TOKEN": bff_token,
                     "KOKORO_SYSTEM_AGENT_SERVICE_TOKEN": agent_token,
                     "KOKORO_SYSTEM_ADMIN_SERVICE_TOKEN": admin_token,
-                    "PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC",
                 }
             )
+            system_env.pop("PGOPTIONS", None)
             bff_env.update(
                 {
                     "KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(

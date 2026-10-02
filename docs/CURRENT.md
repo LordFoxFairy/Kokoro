@@ -1,3 +1,42 @@
+## R51 Billing 未放行项
+
+独立查实cursor合法身份容量P1与subject255被限制191，以及R18 idle参数P2；Root已裁决未发布v1固定identityDigest clean-slate格式，不缩合法身份/放宽2048/兼容旧token。只原WIN06先纯RED＋合法域两页资源断言和timeout fixture精准返修，详细授权唯一见task.md。其他写入边界保持；正规账务未验收。
+
+## R50 当前收敛事实
+
+Root四现组合入口已消费System唯一schema=system，清除URL遗留selectors与继承public PGOPTIONS；Agent输入与ownership/source guards不变。六源码/tests候选独立0P0/P1/P2，Root59纯门＋1128全治理门已过，真实owner installer22表/同库其他事实不动且自有库回收，准备Root九path发布。
+
+BFF完整投影仍9fail，完整HTTP4/fullpause/public4未发布；Billing19/20真PG尾fixture不合法＋cursor容量风险未关闭；Platform身份/本人projection六test RED在途。Agent共享Redis首BLOCK100实际超时、directclaim正常，资源问题未裁成源码bug，不深入运维。普通IAM→真实模型→正式积分整链未验收；详细owner/下一动作只见同task.md，实测日志与历史见progress.md。
+
+## R49 真实缺口与下一源码切片
+
+前轮为progress：BFF4authority资源GREEN，但完整projection30项21pass/9fail/0skip1661.549ms，日志/tmp/kokoro-bff-projection-r48-root-regression.log；自有库回收、Redis15余0，WIN03逐项只读归因，不能以4项遮盖整体9fail。
+
+Root R48四Systemconsumer行为RED已重新4fail55deselect0.10s，/tmp/kokoro-r48-root-system-consumer-red.log；继承PGOPTIONS/options/search_path P2已独立关闭0P0/P1/P2，冻结test bab03e17/776958df。现仅续授WIN10六既有文件：scripts/e2e/run_web_project_resource_chromium_smoke.py现helper加入system Node selector；scripts/dev/local_chat_runtime.py、scripts/e2e/run_web_real_model_worker_smoke.py、scripts/e2e/run_system_owner_smoke.py使用同helper并彻底移除继承/显式System PGOPTIONS；scripts/tests/test_local_chat_runtime.py原System==Agent URL断言只改为同底库同role不同selector；scripts/tests/test_web_real_model_worker_smoke.py原bare assignment静态断言机械改为现helper。其他原函数/新四行为断言、Agent输入/ownership/psql、snapshothelper、所有Root台账/uv.lock/sourceguards/pin均锁。无新文件/模块/进程，保TLS/连接参数，删除public旧注释。同仓WIN10唯一writer；worker纯门、Root集成资源/Git。
+
+另Root检出Agent真实Redis缺口：e977923源码23项22pass1fail0skip2.54s，唯一autoclaim stale PEL超时；8真实Rediscase中7通过，15pure通过。source/test/conftest三SHA保持、owned8UUIDstreamkeys精确回收/Redis15余0，/tmp/kokoro-agent-r48-root-redis.log及owned-resource.json。原Astra只读诊断，未授权源码；不得延timeout/skip掩盖。该失败不称生产原因已确定，Root继续观测复现。现完整Wave0–7 active，正规用户模型账务整链未通过。
+
+## R48 System consumer 负例精确补强
+
+独立审Root四RED：0P0/0P1/1P2，未覆盖宿主继承public PGOPTIONS与helper遗留options/search_path。仅原WIN10在新追加四函数注入污染环境、保持原精确selector/PGOPTIONS缺失断言与原所有全文前缀；source/其他tests/台账/资源仍锁。测试冻结→Root复验与关闭P2→同窗口四既有source GREEN，不靠删断言清门。
+
+## R48 原窗口并行续接（非新增计划）
+
+Root 已复验 BFF authority 四真实 PG 负例 **4passed/0skip/281.213ms**，source b0741f10/test55cc7cfd，独立0P0/P1/P2；owned bff_authority_r47_54b7654bb06f4edf closed=true、Redis15余0。该边界通过不代表完整public4或竞争barrier；原全部投影矩阵待重跑。Root另复验System消费4真实行为RED：三个mocked实际setup环境3failed/56deselected及现helper1failed，Storage/Agentcontrols已先通过；不是资源/浏览器验收。
+
+|卡|窗口/owner/范围|阶段、依赖、交付|
+|---|---|---|
+|R48-BFF-D0|原WIN02，BFF唯一writer；仅现 docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md 新当前前缀，旧body保护|Agent e977923 HTTP4/full pause为owner事实。明确execution_head/四状态/full revision同RR快照，required resume定位/整集合、ACK≠消费、schema+contract精准cut；冻结五内部源/测试/旧dirty/pin/SQL/generated；不先实现public4。Root审D0后精准tests→source。基线759bfe0a。|
+|R48-Platform-RED|原WIN07，Platform唯一writer；仅六现test：unit/{mcp-p3b,bff-projection}.test.ts、contract/{mcp-p3a-contract,bff-projection}.test.ts、integration/{mcp-p3b-postgres.integration,bff-projection}.test.ts；原测试整体前缀保护|五D0 SHA通过独立0审；JSON/binary实际connection/server identity、旧receipt稳定拒绝+byte原值、本人projection路由/eligibility-before-limit/错subject cursor/六字段/零写。现API可编译能力断言，不造未授权stub；缺方法仅能力RED。机器/SQL/gen/deps/docs/source锁，无共享资源/Git；纯门worker，真PG Root。基线f884048b。|
+|R48-Root-System|原WIN10，两tests冻结，Root3入口+helper已真实RED，独立审中；暂不新增source权限|独立放行后仅现helper+三消费者，现两个旧assert机械收敛；显式Node schema=system、删除public override、保持same DB/role/TLS/Agent原URL与ownership。Root台账先记录再让出Root writer；Root真实资源/Git独占。基线22efc5f8。|
+|R47-Billing-GREEN|原WIN06仅已授权Credit六source+codec/unit+三constructor机械迁移|正在实施；新read20test冻结，Root资源门待交付。无HTTP激活/赠送policy猜测/支付/SQL改动。基线07fdd074。|
+
+仍复用原十窗口，不宣称十名writer同时活跃或窗口数等于成果。Root统一审查、原句柄续接、资源和Git单管；依赖owner发布再消费者，完整Wave0–7不缩小。普通IAM→模型双轮/刷新→正式余额预占/结算/释放用户旅程仍未通过，3310暂无正式预览。原uv.lock/Agent P3B/BFF旧8dirty/Billing旧5body继续保护。
+
+## R47 原任务继续实施
+
+Scheduler9e88fe5与Root22efc5f8已提交。BFF authority四例3真实fail1pass且独立0审后仅现consumer源码窄GREEN；Billing cursor P2闭合后依既过D0六source/mandatoryDI/纯codec精准GREEN；Root原WIN10仅两现test验证System URL消费者不匹配。全部同仓single writer/资源Git Root，原dirty保留；正规用户、模型、账务整链仍未验收，完整Wave0–7 active。
+
 ## R46 Root 完整后置门已通过
 
 Scheduler9e88fe5已推送并clean；Root现完整scripts/tests实际1124passed/3skipped/119.00s，/tmp/kokoro-root-r46-full-governance.log。topology PASS、正确既有checkpoint PASS、focused88passed/46.93s与snapshot整文件20passed/1.77s。独立Root九路径index0P0/P1/P2与11metadata重构/真实blob全匹配；现在只增本三台账当前完成证据前缀，历史在途/失败记录不删除。以上都是研发切片/治理验收，不是正式用户模型积分链通过。

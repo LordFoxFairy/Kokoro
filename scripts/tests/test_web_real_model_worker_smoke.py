@@ -408,7 +408,7 @@ def test_harness_registers_system_in_existing_owned_lifecycle():
         "infra.cleanup()"
     )
     real = Path("scripts/e2e/run_web_real_model_worker_smoke.py").read_text()
-    assert 'system_db = c["owner_db_url"]' in real
+    assert 'system_db = stack._owner_schema_database_url(c["owner_db_url"], "system")' in real
     assert 'c["processes"].append(system_process)' in real
     assert 'c["processes"].append(process)' in real
     assert 'c["processes"].append(browser_process)' in real
@@ -584,3 +584,188 @@ process.stdout.write('receipt and history guards passed\n');
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout == "receipt and history guards passed\n"
+
+
+def test_system_owner_selector_preserves_storage_and_agent_positive_controls():
+    from urllib.parse import parse_qs, urlencode, urlsplit
+
+    helper = module().stack._owner_schema_database_url
+    database_url = "postgresql://owner@localhost/owned?" + urlencode(
+        {
+            "sslmode": "require",
+            "application_name": "system-consumer-test",
+            "schema": "kokoro_bff",
+            "options": "-c search_path=public,pg_catalog -c timezone=UTC",
+            "search_path": "public",
+        }
+    )
+    source = urlsplit(database_url)
+    for schema, selector in (
+        ("kokoro_storage", {"schema": ["kokoro_storage"]}),
+        ("kokoro_agent", {"options": ["-csearch_path=kokoro_agent"]}),
+    ):
+        actual = urlsplit(helper(database_url, schema))
+        assert (actual.scheme, actual.netloc, actual.path) == (
+            source.scheme,
+            source.netloc,
+            source.path,
+        )
+        assert parse_qs(actual.query) == {
+            "sslmode": ["require"],
+            "application_name": ["system-consumer-test"],
+            **selector,
+        }
+    system_url = helper(database_url, "system")
+    actual = urlsplit(system_url)
+    assert (actual.scheme, actual.netloc, actual.path) == (
+        source.scheme,
+        source.netloc,
+        source.path,
+    )
+    assert parse_qs(actual.query) == {
+        "sslmode": ["require"],
+        "application_name": ["system-consumer-test"],
+        "schema": ["system"],
+    }
+
+
+def test_real_model_setup_passes_system_selector_to_actual_command_environment(
+    monkeypatch, tmp_path
+):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    from urllib.parse import parse_qs, urlsplit
+
+    m = module()
+    database_url = (
+        "postgresql://owner@localhost/owned"
+        "?sslmode=require&application_name=system-consumer-test"
+    )
+    captured = []
+
+    class SetupObserved(Exception):
+        pass
+
+    def capture_setup(command, **kwargs):
+        captured.append((command, dict(kwargs["env"])))
+        raise SetupObserved
+
+    monkeypatch.setattr(m.stack, "_verify_source", Mock())
+    monkeypatch.setattr(m, "provider_preflight", Mock())
+    monkeypatch.setattr(m.stack, "_isolated_owner", Mock(return_value=tmp_path))
+    monkeypatch.setattr(m.stack.product.runtime, "free_port", Mock(return_value=4100))
+    monkeypatch.setattr(
+        m.stack.product.session,
+        "node_environment",
+        Mock(return_value={"PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC"}),
+    )
+    monkeypatch.setattr(m.stack, "_run_owner_command", capture_setup)
+    processes = []
+    agent_env = {"KOKORO_AGENT_DATABASE_URL": database_url}
+    config = m.RealModelConfig("http://127.0.0.1:11434", "qwen3:8b", "a" * 40)
+    with pytest.raises(SetupObserved):
+        m.real_scenario(
+            config,
+            directory=tmp_path,
+            log=Mock(),
+            infra=SimpleNamespace(redis_prefix="own:"),
+            node24=Path("/node24"),
+            node=Path("/node22"),
+            owner_db_url=database_url,
+            system_redis_url="redis://localhost/0",
+            agent_secret="fixture-agent-secret",
+            credentials=Mock(),
+            processes=processes,
+            agent_env=agent_env,
+        )
+    assert len(captured) == 1
+    command, env = captured[0]
+    assert command[-1] == "scripts/apply-schema.ts"
+    assert processes == []
+    assert agent_env == {"KOKORO_AGENT_DATABASE_URL": database_url}
+    source, actual = urlsplit(database_url), urlsplit(env["DATABASE_URL"])
+    assert (actual.scheme, actual.netloc, actual.path) == (
+        source.scheme,
+        source.netloc,
+        source.path,
+    )
+    assert parse_qs(actual.query) == {
+        "sslmode": ["require"],
+        "application_name": ["system-consumer-test"],
+        "schema": ["system"],
+    }
+    assert "PGOPTIONS" not in env
+
+
+def test_system_owner_smoke_passes_system_selector_to_actual_installer_environment(
+    monkeypatch,
+):
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    from urllib.parse import parse_qs, urlsplit
+
+    smoke = module().system
+    database_url = (
+        "postgresql://owner@localhost/owned"
+        "?sslmode=require&application_name=system-consumer-test"
+    )
+    resources = SimpleNamespace(
+        run_id="a" * 24,
+        postgres="postgresql://owner@localhost/postgres",
+        redis="redis://localhost/0",
+        namespace="own:",
+        create_database=Mock(return_value=database_url),
+        command=Mock(side_effect=lambda command: "PONG" if "PING" in command else "1"),
+        cleanup=Mock(),
+    )
+    captured = []
+
+    class SetupObserved(Exception):
+        pass
+
+    def capture_setup(command, **kwargs):
+        captured.append((command, dict(kwargs["env"])))
+        raise SetupObserved
+
+    monkeypatch.setattr(smoke, "verify_release_inputs", Mock(return_value={}))
+    monkeypatch.setattr(
+        smoke,
+        "node_environment",
+        Mock(side_effect=lambda *_args: {"PGOPTIONS": "-c search_path=public,pg_catalog -c timezone=UTC"}),
+    )
+    monkeypatch.setattr(smoke, "OwnedResources", Mock(return_value=resources))
+    monkeypatch.setattr(smoke, "free_port", Mock(side_effect=[4100, 4200]))
+    monkeypatch.setattr(
+        smoke, "iam_admission_stub", Mock(return_value=nullcontext("http://127.0.0.1:4300"))
+    )
+    monkeypatch.setattr(smoke, "run_owned_command", capture_setup)
+    with pytest.raises(SetupObserved):
+        smoke.run_smoke(
+            SimpleNamespace(
+                node24_bin="/node24",
+                node22_bin="/node22",
+                postgres=resources.postgres,
+                redis=resources.redis,
+            )
+        )
+    assert len(captured) == 1
+    command, env = captured[0]
+    assert command == ["pnpm", "db:apply-schema"]
+    assert resources.create_database.call_args_list[0].args == ("system",)
+    assert resources.command.call_args_list[0].args[0] == [
+        "psql", resources.postgres, "-X", "-Atc", "SELECT 1"
+    ]
+    resources.cleanup.assert_called_once_with()
+    source, actual = urlsplit(database_url), urlsplit(env["DATABASE_URL"])
+    assert (actual.scheme, actual.netloc, actual.path) == (
+        source.scheme,
+        source.netloc,
+        source.path,
+    )
+    assert parse_qs(actual.query) == {
+        "sslmode": ["require"],
+        "application_name": ["system-consumer-test"],
+        "schema": ["system"],
+    }
+    assert "PGOPTIONS" not in env

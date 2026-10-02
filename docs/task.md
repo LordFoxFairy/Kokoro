@@ -1,3 +1,57 @@
+## R51 Billing cursor 身份容量精准返修卡
+
+R49候选独立0P0/1P1/1P2：合法tenant191/subject255 Unicode域使raw cursor超2048且旧codec误将subject限制191；不能缩合法域或假设UUID。采用原未发布v1 closed token以固定43字符base64url SHA-256 identityDigest替代raw tenantId/subjectId；domain-separated length-prefixed UTF-8两个identity，decode用受信context重算、任何SQL前绑定，raw旧格式直接拒绝不双读。account/bigint双界/2048/无secret权限模型保持，内部CreditLedgerCursor可继续tenant/subject语义对象；wire codec与内部类型生命周期不同故无机械改名。
+
+唯一writer仍WIN06，精准范围：现credit-ledger-cursor.ts、现test/unit/credit-ledger-cursor.test.ts追加合法191/255四字节+ambiguous-concat拒绝纯RED，现test/integration/credit-read.test.ts仅R18 idle literal1000→2000、cursor fixture构造机械消费新closed格式+追加R19合法域真实两页零写；现四D0doc只当前前缀登记新格式/实际阶段。其他6source/旧write三constructor/fiftholdbody/SQL/Prisma/机器/YAML/gen/deps/运行HTTP/赠送policy锁。先tests-only RED冻结，Root复验后再只codec与必要wire fixture同步GREEN；允许缺能力与真实容量失败分开，不先改2048或删除安全断言。Root19/20日志和原5c2c1f91完整保护基线保持，旧read例非语义变化正文不动。发布后再BFF/Web消费，支付最后。
+
+## R50 集成放行与剩余关键路径
+
+前轮为progress：Root真实System consumer4RED→源码GREEN，六文件独立0P0/P1/P2；本轮Root两完整test59pass2.41s与全scripts/tests1128pass3skip120.23s。owned System6ca96180真PG安装22表、public sentinel与其他schema不变，库system_consumer_r49_71e9bb30e2a04487已回收。准备只Root六源码/tests+三台账九路径提交，不夹uv.lock/任何owner在途变更；/tmp/kokoro-r49-system-consumer-green-freeze-r2.json绑定冻结。
+
+|任务|执行/范围|下一验收|
+|---|---|---|
+|Root System消费|WIN10交付冻，Root九path index审/提交|59纯门、1128治理门、owned真实owner installer已过；完整System smoke的历史EXPECTED_RELEASES及owner dirty尚需独立Root运行边界片，不改本片guard作假通过。普通IAM/真实模型/账务未通过。|
+|BFF完整HTTP4/fullpause/public4|WIN02四D0doc原body保护，source/tests冻；WIN03九fail只读已完成|7queued/head语义旧断言须精准迁移、1缺父fixture、1缺publichead；另candidate latest start vs retainFrom不一致可能GC饥饿，先真实A/B+batch1 RED再source，不去掉queued保护。D0冻审后同owner最小tests/source。|
+|Billing Credit read|WIN06候选冻，native独立审|Root真PG20项19pass1fail，R18前部非法row断言通过，尾fixture idle1000<timeout2000被合法校验拒绝。待独立裁定只该idle literal改2000保50ms lock timeout/200ms statement及恢复断言。191四字节identity cursor2251>2048容量另审，不擅缩合法identity或放宽限额。|
+|Platform MCP|WIN07六现test追加RED在途|五D0三面独立0审，原body5/5 Root实核。源码/机器/pins/v1-v5全锁；冻结后Root真实PG/HTTP，不用缺方法冒充query行为。|
+|Web计费消费|WIN01只读费用dataflow核对|前端仅显示owner结果、没有独立换算/markup或preview进入formal；正式点数单位与加价倍率分开，支付最后。|
+|Agent Redis恢复|Root真实23项22pass1fail；native只读诊断完成|B首XREADGROUP BLOCK100实际2s超时未到claim；独立raw命令0.7548s也timeout，直接XAUTOCLAIM可收养同cursor且ACK后PEL0。TIME正常，仅证明当前sharedRedis blocking路径异常，不改变Agent算法/timeout/skip，记录待资源恢复；不深入运维。|
+
+所有测试owned资源已回收；首Redis诊断JSON bytes序列化异常已精确只清该run UUIDkey，失败日志保持。原十窗口复用、同仓single writer、Root Git/资源单管；完整Wave0–7保持active。
+
+## R49 真实缺口与下一源码切片
+
+前轮为progress：BFF4authority资源GREEN，但完整projection30项21pass/9fail/0skip1661.549ms，日志/tmp/kokoro-bff-projection-r48-root-regression.log；自有库回收、Redis15余0，WIN03逐项只读归因，不能以4项遮盖整体9fail。
+
+Root R48四Systemconsumer行为RED已重新4fail55deselect0.10s，/tmp/kokoro-r48-root-system-consumer-red.log；继承PGOPTIONS/options/search_path P2已独立关闭0P0/P1/P2，冻结test bab03e17/776958df。现仅续授WIN10六既有文件：scripts/e2e/run_web_project_resource_chromium_smoke.py现helper加入system Node selector；scripts/dev/local_chat_runtime.py、scripts/e2e/run_web_real_model_worker_smoke.py、scripts/e2e/run_system_owner_smoke.py使用同helper并彻底移除继承/显式System PGOPTIONS；scripts/tests/test_local_chat_runtime.py原System==Agent URL断言只改为同底库同role不同selector；scripts/tests/test_web_real_model_worker_smoke.py原bare assignment静态断言机械改为现helper。其他原函数/新四行为断言、Agent输入/ownership/psql、snapshothelper、所有Root台账/uv.lock/sourceguards/pin均锁。无新文件/模块/进程，保TLS/连接参数，删除public旧注释。同仓WIN10唯一writer；worker纯门、Root集成资源/Git。
+
+另Root检出Agent真实Redis缺口：e977923源码23项22pass1fail0skip2.54s，唯一autoclaim stale PEL超时；8真实Rediscase中7通过，15pure通过。source/test/conftest三SHA保持、owned8UUIDstreamkeys精确回收/Redis15余0，/tmp/kokoro-agent-r48-root-redis.log及owned-resource.json。原Astra只读诊断，未授权源码；不得延timeout/skip掩盖。该失败不称生产原因已确定，Root继续观测复现。现完整Wave0–7 active，正规用户模型账务整链未通过。
+
+## R48 System consumer 负例精确补强
+
+独立审Root四RED：0P0/0P1/1P2，未覆盖宿主继承public PGOPTIONS与helper遗留options/search_path。仅原WIN10在新追加四函数注入污染环境、保持原精确selector/PGOPTIONS缺失断言与原所有全文前缀；source/其他tests/台账/资源仍锁。测试冻结→Root复验与关闭P2→同窗口四既有source GREEN，不靠删断言清门。
+
+## R48 原窗口并行续接（非新增计划）
+
+Root 已复验 BFF authority 四真实 PG 负例 **4passed/0skip/281.213ms**，source b0741f10/test55cc7cfd，独立0P0/P1/P2；owned bff_authority_r47_54b7654bb06f4edf closed=true、Redis15余0。该边界通过不代表完整public4或竞争barrier；原全部投影矩阵待重跑。Root另复验System消费4真实行为RED：三个mocked实际setup环境3failed/56deselected及现helper1failed，Storage/Agentcontrols已先通过；不是资源/浏览器验收。
+
+|卡|窗口/owner/范围|阶段、依赖、交付|
+|---|---|---|
+|R48-BFF-D0|原WIN02，BFF唯一writer；仅现 docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md 新当前前缀，旧body保护|Agent e977923 HTTP4/full pause为owner事实。明确execution_head/四状态/full revision同RR快照，required resume定位/整集合、ACK≠消费、schema+contract精准cut；冻结五内部源/测试/旧dirty/pin/SQL/generated；不先实现public4。Root审D0后精准tests→source。基线759bfe0a。|
+|R48-Platform-RED|原WIN07，Platform唯一writer；仅六现test：unit/{mcp-p3b,bff-projection}.test.ts、contract/{mcp-p3a-contract,bff-projection}.test.ts、integration/{mcp-p3b-postgres.integration,bff-projection}.test.ts；原测试整体前缀保护|五D0 SHA通过独立0审；JSON/binary实际connection/server identity、旧receipt稳定拒绝+byte原值、本人projection路由/eligibility-before-limit/错subject cursor/六字段/零写。现API可编译能力断言，不造未授权stub；缺方法仅能力RED。机器/SQL/gen/deps/docs/source锁，无共享资源/Git；纯门worker，真PG Root。基线f884048b。|
+|R48-Root-System|原WIN10，两tests冻结，Root3入口+helper已真实RED，独立审中；暂不新增source权限|独立放行后仅现helper+三消费者，现两个旧assert机械收敛；显式Node schema=system、删除public override、保持same DB/role/TLS/Agent原URL与ownership。Root台账先记录再让出Root writer；Root真实资源/Git独占。基线22efc5f8。|
+|R47-Billing-GREEN|原WIN06仅已授权Credit六source+codec/unit+三constructor机械迁移|正在实施；新read20test冻结，Root资源门待交付。无HTTP激活/赠送policy猜测/支付/SQL改动。基线07fdd074。|
+
+仍复用原十窗口，不宣称十名writer同时活跃或窗口数等于成果。Root统一审查、原句柄续接、资源和Git单管；依赖owner发布再消费者，完整Wave0–7不缩小。普通IAM→模型双轮/刷新→正式余额预占/结算/释放用户旅程仍未通过，3310暂无正式预览。原uv.lock/Agent P3B/BFF旧8dirty/Billing旧5body继续保护。
+
+## R47 三个原 owner 精准继续实施
+
+前轮为progress：Scheduler20path9e88fe5与Root9path22efc5f8已提交、真实资源/完整门证据成立，不缩小Wave0–7。BFF R46四实际authority负例Root3fail1pass0skip308.252ms，独立0P0/P1/P2，owned bff_authority_r46_f1e7e9f04f174fbf closedtrue/Redis15remaining0；register缺父/错tenant真实写孤儿、orphan GC真实改tail，合法GC control已先通过；不单独证明并发锁等待。WIN02仅续授现agui-consumer-repository.ts：锁结果缺Conversation与status/owner错统一现稳定拒绝；GC候选须同tenant父存在，按既定排序取得parent锁后复查候选，不让没有parent的历史孤儿进入stream锁/改tail。原全部有效GC/currentqueued保护/DBclock/fence/sourceguard保持。冻结55cc7cfd test全文与其余4source/4doc/pin/SQL锁；无资源/Git。Root四RED真GREEN和原有效矩阵再审，随后同owner完整Agent4/fullpause/public4三面。
+
+Billing P2修后5c2c1f91与266bytes四cursorentries独立0审。WIN06 GREEN仅批准现src/modules/credit/{credit.service,credit.repository,credit.types,credit.error,credit.public,credit.module}.ts、同现目录新增credit-ledger-cursor.ts、现test/unit目录新增credit-ledger-cursor.test.ts，及现test/integration/credit-metering.test.ts三处构造机械补mandatory第四Repository（44/1703/2039基线，1703 inline repo仅提同一local复用）。位置/粒度与依赖已由四D0批准，不新模块/目录/Pool：Service trusted context与只读RR编排，Repository own account/full-history ledger具名查询，types/error各一职责，codec纯有界closed Base64url规范Decimal解析，单独unit覆盖。SQL/Prisma/机器/YAML/gen/deps/运行入口/赠送权限锁，新read测试27461bytes SHA5c2c1f91全文锁，旧其他assert保持；四D0当前前缀仅新增当前实现/实测阶段，小段外五原body保护。参数cursor错tenant/subject必须零SQL；固定highwater/fullhistorySUM beforepage、numeric text→BigInt、错tenant同account journal不可静默过滤、负累计/非法row failclosed，无account不ensure、disabled可读，sourceDI不optional/自行new/Effects借读。Root前序20capability RED明确业务未到，sourcefreeze后Root正式20资源assert与旧写回归，worker仅Node24pure/lint/typecheck/build。支付/HTTP M3最终clean-slate不在此片偷激活。
+
+Root System consumer独立续授原WIN10仅tests-only：现scripts/tests/test_local_chat_runtime.py与test_web_real_model_worker_smoke.py追加现helper实际行为RED及当前mocked真实LocalChatRuntime.start所捕获System env URL/override断言；原测试全文锁，production/Root其他文件全部锁。Owner Root组合输入配置而非DB业务事实owner；System6ca96180已明确要求唯一非public schema。采用现owner schema URL helper显式System Node selector分支，淘汰Agent libpq options冒充Node或新配置模块；先测试现helperStorage/Agent正control，再System合法selector实际行为（当前抛SmokeError有效参数不支持，不missing symbol）。同时捕获三现组合入口裸URL/public override失配，不用静态文本 alone 冒充真实配置；真实资源仍Root。GREEN后继最小源码为scripts/e2e/run_web_project_resource_chromium_smoke.py现helper、scripts/dev/local_chat_runtime.py、scripts/e2e/run_web_real_model_worker_smoke.py、scripts/e2e/run_system_owner_smoke.py；继承同底库同role/TLS/原Agent与psql输入/ownershipregistration，删除System public override及旧注释，不新owner/进程/secret/fallback。Root22efc5f8accepted三helper冻结不被此片顺手改写，newtests冻后Root真实RED再授SOURCE。Root让出Root仓writer，账本暂不改其他文件，后继Root读取exact accepted checkout来走普通IAM与真实Chat旅程。
+
 ## R46 Root 完整后置门已通过
 
 Scheduler9e88fe5已推送并clean；Root现完整scripts/tests实际1124passed/3skipped/119.00s，/tmp/kokoro-root-r46-full-governance.log。topology PASS、正确既有checkpoint PASS、focused88passed/46.93s与snapshot整文件20passed/1.77s。独立Root九路径index0P0/P1/P2与11metadata重构/真实blob全匹配；现在只增本三台账当前完成证据前缀，历史在途/失败记录不删除。以上都是研发切片/治理验收，不是正式用户模型积分链通过。
