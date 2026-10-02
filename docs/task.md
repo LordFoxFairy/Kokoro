@@ -1,3 +1,15 @@
+## R106 Agent安装源码与System当前纯门（2026-10-02）
+
+上一goal回合为progress：e59f8688测试台账当前态修正已提交/普通push实际0；309治理与独立0，70任务状态保持。完整Wave0–7目标active。
+
+|任务/测试ID|Owner、基线、范围|阶段门/交付/验收|
+|---|---|---|
+|R106-AGENT-ROOT-RED / T-Q03|Root，Agent17c73541+现候选，三test与private guard冻结，其他371清单hash保护；只精确无外部资源测试|Root原16649实际exit1：12行为RED/69PASS/1generator未执行，9.17s/guarded resource_attempts0/374冻结hash不变；manifest /tmp/kokoro-r106-agent-installed-red-root.json，不把worker结果当Root实测。独立RED复审0已交付。实际终态后才源码门|
+|R106-AGENT-INSTALLED-GREEN / T-Q03|原WIN03唯一Agent writer；依四docs已批准B方案，仅pyproject.toml、新src/kokoro_agent/distribution_assets.py、现contract_check.py、application/schema.py、infrastructure/schema.py、execution_proof_contract.py（只追加helper inventory）、contract/provenance.json（原生成器）；Root独占Git|Root实际RED复现后续派。保持三test原103assert、完整validate/raw/vector/provenance/Platform/SQL/HTTP/Todo/锁；禁止checkout fallback/双轨。明确editable绑定，已安装distribution origin/RECORD审计闭包；operator连接前预检、installer ensure前捕获已验SQL且事务内不重读。完整源码门含原generator另受控授权；本轮先精确pure GREEN/静态/冻结，build/install/PG/Redis/HTTP后继Root单独放行，不提前闭T-Q03。源码越界先报告|
+|R106-SYSTEM-PURE / T-Q05|原WIN05，Systemaa4e42e50fd3d342df4b6753547488eee122684b clean；验证唯一owner，无tracked文件writer，build只ignored dist、工具cache允许；Root不并发System门|W2已终态/精确回收，安全预审报告de150e52。按A–E完整format/lint/types/build、5unit/2contract/2architecture与contract lint/provenance --check；Node24、现pnpm不install；清除resource/provider env，显式单worker/no-cache。禁止pnpm test/verify/integration/schema/service/共享PGRedis；owned Node child两项单列实际清理。原WIN05已交付97pass/0fail/0skip并idle；Root原43682独立10gates/97pass/exit0、197tracked hash不变；独立最终审0P0/0P1/1非阻断措辞P2（非OS禁网证据，Root已准确限定），报告/tmp/kokoro-r106-system-pure-final-review.md；T-Q05当前限定纯门已验收，T-S/T-R资源门仍待验|
+|R106-SYSTEM-RESOURCE-PREFLIGHT / T-S01–02、T-Q12、T-R02|原WIN05只读；Systemaa4e42e5 clean，现7integration/3资源scripts/测试fixture与既有D0；不改仓，不运行资源或启动应用|核真实PG/Redis/loopback/owned进程/freshschema门的同一个fixture边界、显式管理员URL与唯一keynamespace、回收与超时/无共享reset；不能依赖默认DB2或只unset env。仅新0600 /tmp/kokoro-r106-system-resource-preflight.md，列出Root可授权的最小真实门/必要环境名称，不输出secret；未核安全不得执行。纯门通过不冒充资源验收，部署运维不扩展|
+
+
 ## R106 测试计划当前态核对（2026-10-02）
 
 - 任务：R106-TEST-LEDGER-CURRENT；Root唯一docs writer，基线de5ca2f4，范围仅既有test-cases/task/progress/CURRENT四台账；Agent/Billing/uv.lock保留，不改业务、契约、SQL或测试状态。

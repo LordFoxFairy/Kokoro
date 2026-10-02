@@ -1,3 +1,15 @@
+## R106 原owner并行推进：Root安装RED与System纯门（2026-10-02，当前）
+
+当前70测试组：12具名通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置。新增关闭仅T-Q05当前纯门，完整产品和Wave0–7仍未闭环。
+
+上回合为progress：e59f8688台账当前态核对已提交/普通push实际0；本回合保持完整Wave0–7，原WIN03 Agent源码GREEN与原WIN05 System纯门独立并行，不新建重复计划。
+
+- E54 / T-Q03：Root原16649实际exit1，12行为fail/69pass/1明确未执行generator/9.17s；guard记录resource_attempts0、374冻结文件hash全相符。/tmp/kokoro-r106-agent-installed-red-root.log SHA9c3dc9bf1666aeb577fe3f0c069d003e763568ffac52d5d1660c7dbb6af48d03及.json。独立RED复审0；已续派原WIN03精确7源码，三test/SQL/HTTP/Todo/锁冻结，实际build/install与完整generator/PG/HTTP另门。T-Q03仍失败，不把纯测修复当安装成功。
+- E55 / T-Q05：原WIN05交付当前完整纯门97pass/0fail/0skip，已idle。Root43682同checkout独立重跑10gates实际exit0：format/lint/types/build、contract lint/provenance、5unit/2contract/2architecture共9files97pass；Node24.20.0、Systemaa4e42e50fd3d342df4b6753547488eee122684b clean、197tracked逐hash保持。/tmp/kokoro-r106-system-pure-root.log SHA409299d54c9e397df41bb5400b9fb3db461842f9747d6762b32d1212e7618d18、.json SHA3d27a96f9e1fd64c2efa4ef71284fb5f30f8cd2b95df5d60b53ff6b4e80d8205。两owned child/process测试通过；实际PG/Redis/provider/freshschema/runtime/image等10资源入口未运行，不声称OS级零网络捕获。原agent4_execution_owner最终独立审0P0/0P1/1非阻断措辞P2：worker network_access=false非OS网络捕获，Root已限定，不抹除该证据措辞问题。报告/tmp/kokoro-r106-system-pure-final-review.md（0600，SHAae3aa73372b51459b8256f02f09ba506629c42c197cc6b3178e9632dc6714af9）允许限定关闭T-Q05；其余T-S/T-R资源门不变。
+- 安装后继安全预审/tmp/kokoro-r106-agent-installed-gate-preflight.md（0600，SHA55b54390a22b4bb53025dc773fe4fa128a3cb4391f6fbb08512f978d213714b6）已交付；现wheel脚本只够旧五模块smoke，不替代完整已安装验收。先冻结GREEN后按既有文件扩验证，无手动checkout补资源或新发布中心。
+
+Root收口治理原66138实际exit0：309pass/21.72s；日志/tmp/kokoro-r106-system-close-governance.log（0600，SHA73631f916aaae2723ca12417d0d121a86db14ba43de56cd9fab9ff0abd75888b）。70稳定ID、历史归档逐字节保持；唯一状态变化T-Q05待复测→当前纯门通过。四台账独立一致性审0P0/0P1/0P2（/tmp/kokoro-r106-system-close-ledger-review.md）；与E55独立验收非阻断措辞P2明确分开。本次只提交Root四docs，Agent源码继续原WIN03、Billing/uv.lock保留。System另续派仅只读资源预审，不启动资源、不扩部署运维。
+
 ## R106 测试计划盘点（2026-10-02，当前摘要）
 
 测试计划唯一入口为docs/test-cases.md，开发派工为docs/task.md，实际执行证据为docs/progress.md。Root基线de5ca2f4；当前70稳定测试组为11具名通过/1失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置，不是产品完成百分比。
