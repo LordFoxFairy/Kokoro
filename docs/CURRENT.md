@@ -1,3 +1,12 @@
+## R98 当前测试与切片状态（2026-10-02，最新）
+
+唯一测试台账仍为docs/test-cases.md：70组，8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置。Home生产变更使T-Q01从历史通过回到待复测，不把历史门当当前通过。既有下文各R96/R97/R98章节保留当时状态，当前计数以本节和测试矩阵为准。
+
+- T-C06：已发布Root88a87417六owner严格真实旅程E28仍失败于second-partial-active；第二提交已越过，活动刷新/后继作品与隐私整链未完成。只读调查确认phase诊断无法区分deadline/提前terminal/snapshot/observer；尚无具体产品根因，先补最小closed诊断，不盲复跑、不改600s/硬断言。
+- T-Q03：Root原28685已终态exit0，654contract通过（1资源过滤），1406隔离unit通过（1缺parent examples skip、18过滤），锁/checker/codegen/Ruff/267format/Pyright0/build通过；独立Sol机器8文件0P0/P1/P2。原输出捕获/tmp/kokoro-r98-root-agent-machine-gate.log中间build复制行被工具截断，结果段完整；没有重跑伪造日志。本次未执行frozen sync，收集前排除archive避免资源探测。真实PG/HTTP/安装后smoke/数据retention/发布/消费者未验，整组仍待复测。
+- T-U01/T-Q01：Root Home RED E29真实7fail/135pass/142。原WIN01局部GREEN交付141pass/1旧假模型断言冲突，其他冻结断言保持；尚未完整pnpm check/Root验收/真实浏览器/发布，未关闭测试。
+- T-C05项目生命周期、T-B07失败/部分输出/未知成本收费规则仍决策阻塞；支付最后，正式积分未验。所有开发任务与测试组分开，不把654/1406断言换算为新增产品完成。
+
 ## R98 最新真实旅程结果（2026-10-02）
 
 Root88a87417/六发布owner（Web85403f3）严格W2原3421/PID4643已实际终态exit1，REAL_MODEL_FAILURE:second-partial-active。流程越过第二次submit/receipt到进行中partial观测，但未满足活动刷新/终态/作品/隐私全部标准，不计两轮通过，不断言具体产品或测试根因。cleanup=[]，独有bucket删除且404；原E17历史保留。70组恢复9通过/1失败/0整组执行中/16待复测/41未验/2阻塞/1支付后置。

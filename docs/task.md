@@ -31,6 +31,16 @@ R97-WEB-HOME-RED / T-U01：原WIN01唯一live Web tests writer，保持窗口实
 
 R98-W2-PARTIAL-READ / T-C06/C09：原WIN10仅只读Root88a87417及现driver second-partial-active/原until/snapshot/frames/runner provider observer；evidence /tmp/kokoro-r97-root-w2-owned.json和其中精确evidence，私密log。新Root3421/PID4643实际终态exit1、cleanup=[]/独有bucket删除后404；原second-send准入阶段已越过，但没有整组通过。核phase不能区分timeout/finished-before-active/读取失败的诊断缺口，提出现driver/test最小closed观测写集/实际RED；不改断言/600s/两POST/硬刷新时点、不换模型/加假延迟/工具暂停/重跑资源、不新增网络协议/测试服务。只报告/tmp/kokoro-r98-w2-partial-read.md（0600），不得写源码/台账/Git/启动进程/查未知数据。Root保持唯一writer、保护live Web/Agent active实现；审查不发明根因。
 
+R98-BFF-PARTIAL-READ / T-C09：原Astra实际capacity错误零交付，改续four_owner_fixes_review_r31 / 原gpt-5.6-sol仅只读已发布BFFbb610ea的真实partial/terminal AG-UI投影→Message与execution_head→同事务snapshot链及相邻测试，Root88a87417 W2新second-partial-active失败作为调查触发，不作具体根因。核delta何时持久/何时可查streaming、actor/subject/project隔离、生命周期/同水位保证与现测试遗漏；对照现严格driver条件，给已证事实/假设和精确existing tests-first落点。报告/tmp/kokoro-r98-bff-partial-read.md（0600）；不改源码/contract/SQL/台账/Git，不启服务/跑资源/读取共享数据。不审活跃Agent/Web工作树、不发明新的wire或owner；Root交叉核证据后决定真正最小修复。
+
+R98-WEB-HOME-RED-RECHECK：原WIN01已idle停写交付/tmp/kokoro-r97-web-home-red-final.json，仅三UI tests追加7真实RED/135pass，752 baseline/749外围保护。Root只复跑原三聚焦tests与hash门，其他业务源码不改；新142断言不是新增测试组。Root真实RED成立后才裁两现production和必要旧错误断言迁移GREEN。当前T-U01仍未验/已知缺陷，不因tests-first或截图变通过。
+
+R98-AGENT-MACHINE-FINAL：原WIN03实际idle停写；manifest /tmp/kokoro-agent-r97-machine-green-d1bbu_dy/manifest.json SHA b72cf61a06b095fce69134cfc12fbe82e5ffb937c219a268ca18cfdf456825d9，8授权机器/test变化、366外围/源阶段冻结保护。Root只重跑当前原checkout contract654/生成/checker/Ruff/format/Pyright/锁/wheel及隔离unit；不运行资源、收集前ignore旧archive。不以worker门代替Root。agent_machine_final_review_r98 / gpt-5.6-sol仅独立只读该机器切片与已批D0，review package /tmp/kokoro-r98-agent-machine-review.diff，报告/tmp/kokoro-r98-agent-machine-final-review.md（0600）。必须核mapping/actual raw入口/duplicate/canonical65536-65537/合法Unicode/原Failure HITL proof不漂移/生成真实来源/旧assert仅机械迁移；不改文件/Git/资源或审活跃Web。Root真实PG/HTTP及数据处置/retention、下游BFF/Web后继，不宣称HTTP5正式发布。
+
+R98-WEB-HOME-GREEN：Root原93588实际RED终态exit1，142项7fail/135pass/9.64s /tmp/kokoro-r98-root-web-home-red.log；源与7新assert受保护、生产阶段保原billing/engine/模型事实边界。原WIN01唯一live Web writer获以下局部GREEN：src/features/app/kokoro-welcome-content.tsx（正式preview=false隐藏无owner的Free plan/升级状态；主要提示统一onPrompt填精确draft/intent，不走无draft创作switch），src/features/app/kokoro-welcome.tsx（仅移除内部无用onCreationIntentSelect传递/解构），src/components/blocks/workspace-header/workspace-header-identity.tsx（所有上下文只读品牌身份，删除假tier/radio/local state，不仅在Home条件遮盖）；删除src/components/blocks/workspace-header/workspace-header-popovers.module.css（Root rg证实唯一import在该假identity，无其他消费者）。复用现design tokens/Tailwind，无新CSS/目录/组件/协议/模型store。
+
+旧错误assert迁移仅tests/ui/kokoro-welcome.test.tsx“能力胶囊只切换…”改为onPrompt精确草稿/intent、零onCreationIntentSelect；tests/ui/share-button.test.tsx原fake-tier切换用例改为所有workspace只读品牌、零假模型radio，对真实Composer模型、分享/credits/项目等assert保留。Preview专用免费套餐示例可保原preview测试，正式结果不得借它声称owner套餐；7新RED与app-frame.smoke.test.tsx全文94e3cc32冻结。锁定其余751/授权范围以阶段snapshot重建（允许仅所列CSS删除），不写CURRENT/其他docs/contract/engine/输入框布局/依赖/资源/Git。聚焦142→默认完整pnpm check，停写交接Root复验/独立审；旧source替代路径随切片删，T-Q01从通过回待复测，T-U01仍未验直到真实浏览器，不冒称整体UI修复。
+
 ## R96 测试任务盘点与后继验收（2026-10-02）
 
 用户本次要求的是完整测试计划和逐项结果，不是再次开发规划。复用docs/test-cases.md 70稳定ID；本节只派工/依赖，progress记录实测，CURRENT记录当前组合，不新建测试中心。
@@ -5774,3 +5784,7 @@ R2真实two acceptance仍actual2fail/20deselect（1.91s，exit1），DB/Redis15�
 | 删除/验证 | 删除Run默认0漏首帧实现，非兼容alias。现tests/unit/http/test_ingress.py与test_machine_contract.py先RED：首index0、省略/显式-1、empty后迟到index0、after0 continuation、-2/非整数400、Run/Chat参数隔离。实际PG/Redis/HTTP两例必须terminalTrue且同safe bytes。 |
 
 原Agent负责人先四现docs收敛三面并补上述两个现tests-only RED，acceptance现请求改正式初始cursor（source仍锁）。文档/RED冻结后Root独立审查及复现，才能放现ingress/server/OpenAPI源、再生故障模型header及provenance。这是当前3.0候选内真实闭环漏洞，不扩BFF/SQL/proof或放宽门；旧R2 hash/失败日志保留。
+
+R98-WEB-HOME-GREEN-ASSERTION：原WIN01已停写交接141pass/1fail；Root核tests/ui/app-frame.smoke.test.tsx:480确为旧“Kokoro 工作区”按钮/“Kokoro 1.6”断言，与批准全部上下文readonly品牌目标冲突。仅追加授权迁移这一条：断言workspace-brand只读Kokoro、无该交互按钮/假1.6/tier；同测试其他项目路由/导航/输入/文件资源断言及7新RED全部保留，不增timeout/skip。沿原写集完成聚焦142及完整pnpm check，停写交付；Root再独立完整门/审查/实际浏览器，不靠改旧断言关闭T-U01。Root仅本台账writer/Git，其他源码/contract/资源/依赖禁止扩大。
+
+R98-TEST-LEDGER-STATUS：本次用户询问的是测试task而非开发task；同test-cases70稳定组状态已核8/1/0/17/41/2/1，E29 Home真实RED、E30 Root Agent限定纯门追加，原失败不删除，legacy L1–L5字节保护。Root HEAD48d008d5，Agent候选未发布；主控仅文档核对/证据记录，不新建计划中心。已验8组、待复测17组及未验41组逐行保留，后继按原ID关联缺陷/修复commit/复测。

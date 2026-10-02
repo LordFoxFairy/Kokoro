@@ -1,3 +1,14 @@
+## R98 测试台账核对与Agent限定纯门终态（2026-10-02，最新）
+
+唯一测试台账仍为docs/test-cases.md：70组，8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置。Home生产变更使T-Q01从历史通过回到待复测，不把历史门当当前通过。既有下文各R96/R97/R98章节保留当时状态，当前计数以本节和测试矩阵为准。
+
+- T-C06：已发布Root88a87417六owner严格真实旅程E28仍失败于second-partial-active；第二提交已越过，活动刷新/后继作品与隐私整链未完成。只读调查确认phase诊断无法区分deadline/提前terminal/snapshot/observer；尚无具体产品根因，先补最小closed诊断，不盲复跑、不改600s/硬断言。
+- T-Q03：Root原28685已终态exit0，654contract通过（1资源过滤），1406隔离unit通过（1缺parent examples skip、18过滤），锁/checker/codegen/Ruff/267format/Pyright0/build通过；独立Sol机器8文件0P0/P1/P2。原输出捕获/tmp/kokoro-r98-root-agent-machine-gate.log中间build复制行被工具截断，结果段完整；没有重跑伪造日志。本次未执行frozen sync，收集前排除archive避免资源探测。真实PG/HTTP/安装后smoke/数据retention/发布/消费者未验，整组仍待复测。
+- T-U01/T-Q01：Root Home RED E29真实7fail/135pass/142。原WIN01局部GREEN交付141pass/1旧假模型断言冲突，其他冻结断言保持；尚未完整pnpm check/Root验收/真实浏览器/发布，未关闭测试。
+- T-C05项目生命周期、T-B07失败/部分输出/未知成本收费规则仍决策阻塞；支付最后，正式积分未验。所有开发任务与测试组分开，不把654/1406断言换算为新增产品完成。
+
+本轮台账核验：70稳定ID、8/1/0/17/41/2/1计数、E01–E30唯一映射、CURRENT/progress最新摘要一致、legacy L1–L5字节不变，/tmp/kokoro-r98-test-ledger-validation.json。Root原47371治理三文件实际exit0：95pass/54.00s，/tmp/kokoro-r98-test-ledger-governance.log；只证明治理/台账相关门，不增加业务完成组。一次JS语法错误零执行，初次校验因Counter零项与文档空白未通过，修正后实际校验与diff check通过，不计产品行为失败。Agent8机器hash在门后仍匹配；本次不重跑真实旅程或启动服务。
+
 ## R98 当前新组合真实W2失败与回收（2026-10-02）
 
 Root88a874174f6daa9d0464fed17f2bf4f2a39c0e62已普通发布，Web85403f3、其余五owner固定同manifest。原3421/PID4643终态exit1，精确REAL_MODEL_FAILURE:second-partial-active；/tmp/kokoro-r97-root-real-w2.log SHA256 610783f465a5475280dac704b08540aa7d8ee30fd65a9152690864b6b41de31c。owned /tmp/kokoro-r97-root-w2-owned.json及evidence /private/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r92-w2-published.nb06wi0e/kokoro-w2-web-project-avgxhy4n.evidence.json。cleanup=[]、bucket_cleanup_exit0、delete-empty确认404；原W2进程不再live，不新起3310/shared设施。
