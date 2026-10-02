@@ -160,7 +160,7 @@ try {
       return {status:response.status,body:await response.json()}
     },snapshotPath)
     assert(result.status===200,"snapshot HTTP")
-    return terminalChatSnapshot(result.body,run)
+    return terminalChatSnapshot(result.body,[receipt])
   }
   const terminalSnapshot=await readTerminalSnapshot()
   phase="terminal-owner-immutable-snapshot"
@@ -189,7 +189,7 @@ try {
   assert(snapshot.status===200 && snapshot.body.deliveries.length===1 && snapshot.body.deliveries[0].artifact_id===delivered.artifact_id &&
     snapshot.body.deliveries[0].conversation_id===conversation && snapshot.body.deliveries[0].run_id===run &&
     snapshot.body.messages.some(m=>m.role==="assistant" && m.status==="completed" && m.content.includes(input.marker)),"snapshot")
-  assertChatSnapshotUnchanged(terminalSnapshot,terminalChatSnapshot(snapshot.body,run))
+  assertChatSnapshotUnchanged(terminalSnapshot,terminalChatSnapshot(snapshot.body,[receipt]))
   await page.screenshot({path:input.screenshot,fullPage:true})
   phase="member-private"
   const memberContext=await browser.newContext({ignoreHTTPSErrors:true,locale:"en-US"})

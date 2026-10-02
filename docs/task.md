@@ -1,3 +1,60 @@
+## R46 Root 完整后置门已通过
+
+Scheduler9e88fe5已推送并clean；Root现完整scripts/tests实际1124passed/3skipped/119.00s，/tmp/kokoro-root-r46-full-governance.log。topology PASS、正确既有checkpoint PASS、focused88passed/46.93s与snapshot整文件20passed/1.77s。独立Root九路径index0P0/P1/P2与11metadata重构/真实blob全匹配；现在只增本三台账当前完成证据前缀，历史在途/失败记录不删除。以上都是研发切片/治理验收，不是正式用户模型积分链通过。
+
+## R46 Scheduler 已发布与 Root 双轮验收器收敛
+
+Scheduler main9e88fe5f5a118114ff34c6703829dfdea209db56已提交推送、子仓clean，最终20path index独立0P0/P1/P2。Root167purepass25资源skip、24真PG顶层PASS（2.632s）及1真实源码重启PASS（1.63s）证明本namespace/fullcatalog切片，不替代Redis/PG16/镜像或独立任务用户旅程。
+
+Root双轮验收器三源冻结已独立0P0/P1/P2，实际完整该测试20pass1.77s；仍是synthetic/helper门，Chromium场景仍单轮，不能称真实多轮模型/积分通过。新Scheduler发布11条metadata与对应测试唯一旧commit literal精准同步，版本/schema原bytes及所有edge状态reason保持；正确既有w1e-iam07-bff-pin CLI PASS，focused88pass46.93s。初CLI缺--expected/误历史checkpoint，以及初2fail86pass均保留，不放宽checker。Root完整scripts/tests句柄27496在途，不先称full通过。日志/tmp/kokoro-root-r46-{correct-pin-green,contract-focused-r2,full-governance}.log。
+
+下一关键消费缺口已精确定位：Root三组合入口仍给已发布System裸URL/public override，需消费owner显式schema selector；BFFmissing Conversation P1先真实负例后源码修，随后完整Agent4/fullpause/public4。Billing缺read能力20RED，strict high-water P2仅补四fixture值；Platform五doc D0继续，同仓single writer。原uv.lock/P3B/owner任务外变更保留，完整Wave0–7 active。
+
+## R46 发布元数据与精确固定断言同步
+
+Scheduler main9e88fe5已提交推送且clean；Root11条inventory仅该owner commit及精确blob digest更新，版本1.0.0/原contractbytes、3active13broken0illegal状态与reason保持。Root新gitlink已入index。首两CLI少--expected均exit2、非业务RED；随后误选历史w1e-platform-code-release产生4active旧baseline差异，非当前产品回归。正确当前baseline为既有w1e-iam07-bff-pin，不改checkpoint/验证器。第一次focused2fail86pass：一项因当时尚未stagegitlink，另一项test_scheduler_event_edges_pin_scheduler_owned_contract固定旧9a4effd SHA。现仅该测试既有expected owner literal更新为实际已发布9e88fe5，其他断言/digest/fixture保持；正确CLI＋focused重跑，再独立审11metadata/1literal与原helper3冻结，共同Root提交。历史日志保留，不冒充首次绿或用户闭环。
+
+## R46 Billing strict high-water tests 精准返修
+
+WIN06唯一writer仅现credit-read.test.ts R12 table追加 highWaterSequence undefined/"01"/"-1"/1 四值，仍CREDIT_INVALID_CURSOR且零observed SQL；其他函数/fixture/source/docs/机器/SQL/gen/deps/Git/资源锁。独立审0P0/P1/1P2指双边界严格性漏例；Root已真实20缺能力失败，无业务断言冒充。返修静态冻结后Root复核＋独立关闭P2再按既过Credit read三面授原六source/DI/纯codec与旧三处构造机械迁移，正式HTTP/runtime/赠送后续，不碰无授权赠送。
+
+## R46 冻结候选真实验收与窄返修
+
+前一goal turn为progress：Root真实双轮RED、Scheduler24资源失败定位、10窗精准续派与独立审。现Root仓WIN10三文件GREEN已冻（a1631bba helper/6c45b7e5 Chromium/24f9c411 test），Root恢复台账writer；完整20test文件复验77909在途、WIN08独立审，不冒充正式用户旅程。
+
+Scheduler source b2706161/test6ad315dc冻结；原17/原installer/14锁定路径独立全部保护，fixture P1已闭合0P0/P1/P2。RootGo1.26.8 gofmt空/vet/build退出0，完整pure含子例167pass25资源skip；PG24顶层全部PASS0skip2.632s（16drift/5extra子例），真实源码binary重启1PASS1.63s（包1.976s）。owned r45_2293f25380ea 与 r46_c580f8fdb189 均closed=true。首资源失败18/6完整log恢复自原完整runner，原R45record保持；新记录不覆盖失败。最终20paths manifest /tmp/kokoro-scheduler-r46-final-working-manifest.json，Root后继只CURRENT补真实证据/index审后提交。Redis可选/镜像/完整独立任务用户链仍未验收。
+
+BFF5source内部RootNode22 build0＋三真实用例仍3fail0skip，但queued insert故障/rollback到1796才失败、RR terminal dispatch交接到2493、restart SSE waiting到759才失败；全部停在public3缺execution_head，不称全GREEN。owned bff_r46_c65e1a90098c48cd closed=true/Redis15remaining0/cleanup_errors[]，/tmp/kokoro-bff-r46-root-internal-integration.log。独立Sol P1：registerConsumer missing Conversation仍upsert孤儿stream（agui-consumer-repository.ts70–75），GC候选亦可无父锁。精确tests-only续派原WIN02：只现 test/agui-projection.integration.mjs 追加具名R46 direct-register missing/wrongtenant/wrongsubject拒绝＋零stream写、历史孤儿GC不无父锁改tail负例；原f691ecdf整体前缀/全部原例与R43三RED断言逐字锁，其余source/docs/pin/SQL/gen/Git/资源全锁。Root真PG复现后再只授现agui-consumer-repository缺父拒绝/GC父存在条件与lock后scope复验，不新增错误代码/假parent/省tenant；原有效GC及queued protection继续验证。该局部patch owner是现AG-UI Consumer Repository边界，不新模块/契约；先测试实际现method可调用，不用missing符号RED。完成后紧接原同owner完整Agent4/fullpause/public4三面，不兼容旧selector，不推迟完整目标。
+
+Billing3618db5e新20test已冻，Root真实20failed0skip2.53s：2capability及18真实fresh PG fixture均因现Service缺getMyAccount/listMyLedger停在显式能力断言，业务R01–18尚未达到；非TypeError/import错误。独立测试审在途；PG前后数据库名单一致，无新billing_reference遗留。缺能力RED不称业务通过或正规赠送/钱包HTTP/费用已闭环。Node24实际命令与日志/tmp/kokoro-billing-r46-root-credit-read-red.log。GREEN源码待审后精准授原Credit owner。
+
+## R45 真实验收返修与双轮 GREEN 精确卡
+
+Root Scheduler自有PG真实24顶层：18pass/6fail（总1.388s）。6新函数均在四表sentinel snapshot先失败，尚未到catalog行为，不能称catalog业务RED；prepareStoreBoundaryFixture只seed schedule/receipt，新函数遗漏现seedNamespaceBoundaryFacts(base/neighbor pools)。owned kokoro_scheduler_test_r45_cff1270f3918 closed=true；/tmp/kokoro-scheduler-catalog-r45-root-resource.log。仅续授WIN09新追加函数在beforeSnapshot前补上述既有full seed，原17全文/assert、bootstrap b2706161/SQL/gen/其他candidate锁；doc只新增此次真实证据，独立审源码继续。
+
+WIN08独立Root双轮test审0P0/0P1/0P2，SHA458a2f26与原14692bytes保持。Root仅续授WIN10三个现文件：scripts/e2e/chat_snapshot_evidence.mjs、scripts/e2e/web_real_model_worker_chromium.mjs、scripts/tests/test_web_real_model_worker_smoke.py。统一terminalChatSnapshot(body,orderedReceipts)必需数组，现receipt三个required fields，无旧string/array双轨；真实Chromium保留POST receipt、单轮也[receipt]。逐轮identity/order/Run/内容、全局唯一、不可变、reload完整长度与全历史；保原负例分类/脱敏，把旧changed identity比较输入与receipt机械同步而不删除ID_CHANGED。新负例覆盖错receipt/重复/cross-turn swap/reload遗漏新增。run_id最后receipt可保持输出含义；零凭据/网络/资源/Git。原helper/driver其他行为、Pythonrunner/其他Rootfiles与台账/uv.lock锁，Root让出Root仓writer，worker纯门冻结后Root全test复验/独立审/提交。 synthetic门仍不代表真实模型与积分。
+
+## R45 十窗口复用派工与 MCP owner 契约门
+
+用户再次要求10+窗口，复用原 WIN01–10；不另开重复窗口或宣称10名writer。现 WIN02/BFF、WIN06/Billing、WIN09/Scheduler 按原精确卡续写；WIN10测试已冻结，Root复验两snapshot用例1failed/1passed/17deselected，四消息CHAT_SNAPSHOT_COUNT是真行为RED（/tmp/kokoro-r45-root-two-turn-red.log）。WIN01审批UI消费、WIN03Agent4→BFF契约、WIN04普通IAM旅程、WIN05单库launcher消费、WIN08双轮RED审查分别只读独立续派；不重做已验收项目/组件门。
+
+新增原WIN07后继仅D0文档：Owner Platform，main f884048b69eb401753078a64713fac125927e720，唯一writer WIN07，Root审查/提交。只授权现 docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md、BFF_HTTP_PROJECTION.md 当前新前缀，原正文与全部生产/机器/SQL/gen/deps锁。采用现MCP connection/authorization模块而非新Resolve RPC/配置模块；当前Authorize输入仅connector_id/tool_selector，响应缺实际connection/server身份。目标在现响应返回decision实际connection_id/server_id，receipt同源；本人active connection只读projection复用IAM BFF guard/current user scope，不伪造Run。BFF拥有选择意图并固化Message/dispatch，Agent required typed connection refs，connection→server由Platform解析、逐次授权核身份/lease/参数/expiry，grant非bearer，strict egress保持；具体机器版本/路由/权限与receipt迁移须本owner三面收敛，不先写源码。删除目标为name/trace猜ID与fallback，实际删除在消费者切片。独立Astra已给静态边界裁决，D0冻结后Root审再授测试/机器/生产，owner先发布再Agent/BFF/Web依赖顺序。现writer前缀为目标方案而非已完成声明。
+
+完整Wave0–7仍active；支付最后，正规用户/真实模型/积分整体未验收。Root只负责集成、真实共享资源与Git，不抢写已派文件。
+
+## R45 按原 owner 继续代码与真实验收
+
+前轮为实质progress：Web5f2ab341/System6ca96180已推送，Root46ba977a/f8ce2ad8已集成，完整与focused证据保留。本轮核WIN02/06/09原句柄均live，不重派writer、不重复基础设施。新增可独立的Root多轮验收先RED卡，由WIN10唯一writer执行；Root期间只读/资源验证/Git协调，不写该仓文件。
+
+| 项 | R45-E2E-two-turn-tests |
+| --- | --- |
+| Owner/基线 | Root验收driver；WIN10唯一writer，Root审查/Git；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro main f8ce2ad8，既有uv.lock任务外保留 |
+| 范围/归属 | 仅现scripts/tests/test_web_real_model_worker_smoke.py追加test_terminal_chat_snapshot_accepts_two_completed_turns_from_receipts；现helper是唯一纯snapshot证据路径，生产owner事实/协议不在Root写 |
+| 当前/目标 | 现helper恰两消息拒合法两轮四消息；先现签名单轮positive control后四消息行为RED，再后继统一显式ordered receipts驱动逐轮identity/order/fullcontent/reload检查，不保留旧string/新receipts双轨 |
+| 依赖/删除 | 当前BFF public3 receipt/schema字段已发布；不虚构project_ref/新的用户事实。source/driver/旧tests/secret/lock/服务保持锁；本阶段不删除有效断言 |
+| 验证 | 新单函数可实际Node import执行，原单轮控制及旧单函数保持；worker可无网络纯门收集，Root同一checkout单函数真RED，再独立审后授helper/所有现caller最小GREEN |
+| 放行边界 | synthetic snapshot只证明验收器，不能称真实模型/IAM/积分通过；缺import、badarg、类型错误不算此行为RED |
+
 ### R44-Billing 精准返修冻结与 tests-only 卡
 
 两个P2已独立关闭，Root最终五doc SHA复核通过：TECH637edb67/API9db0a457/DATAf0ae2f58/CURRENTd7595fda/原第五baf87ae；审查期间API采样9cf82446发生漂移，Root初验断言失败即暂停tests，采用原worker停写后的最终9db0a457重新核验，未在失败时宣称五SHA通过。最终API显式credit.module DI与24/24/R01–18边界保持，原body保留。WIN06后继正式仅授新增 apps/kokoro-billing/test/integration/credit-read.test.ts，R01–18（含wrongtenant journal/负累计/非法row failclosed），Node24可编译窄接口/typeof能力断言；原source/tests/codec/机器SQL/gen/deps/Git锁。worker只静态门，Root自有SCHEMA_ADMIN_URL资源；能力RED与实际业务RED分开，不冒充walletHTTP/赠送/费用已闭环。

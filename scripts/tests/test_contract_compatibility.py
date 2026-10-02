@@ -96,7 +96,7 @@ def test_scheduler_event_edges_pin_scheduler_owned_contract() -> None:
     scheduler_owner = {
         "name": "kokoro-scheduler",
         "repository_path": "apps/kokoro-scheduler",
-        "repository_commit": "9a4effd150ab739acaed2579faa94618bb26f772",
+        "repository_commit": "9e88fe5f5a118114ff34c6703829dfdea209db56",
         "contract_version": "1.0.0",
         "contract_path": "contract/openapi/v1/openapi.yaml",
         "contract_sha256": (

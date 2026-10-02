@@ -1,3 +1,31 @@
+## R46 Root 完整后置门已通过
+
+Scheduler9e88fe5已推送并clean；Root现完整scripts/tests实际1124passed/3skipped/119.00s，/tmp/kokoro-root-r46-full-governance.log。topology PASS、正确既有checkpoint PASS、focused88passed/46.93s与snapshot整文件20passed/1.77s。独立Root九路径index0P0/P1/P2与11metadata重构/真实blob全匹配；现在只增本三台账当前完成证据前缀，历史在途/失败记录不删除。以上都是研发切片/治理验收，不是正式用户模型积分链通过。
+
+## R46 Scheduler 已发布与 Root 双轮验收器收敛
+
+Scheduler main9e88fe5f5a118114ff34c6703829dfdea209db56已提交推送、子仓clean，最终20path index独立0P0/P1/P2。Root167purepass25资源skip、24真PG顶层PASS（2.632s）及1真实源码重启PASS（1.63s）证明本namespace/fullcatalog切片，不替代Redis/PG16/镜像或独立任务用户旅程。
+
+Root双轮验收器三源冻结已独立0P0/P1/P2，实际完整该测试20pass1.77s；仍是synthetic/helper门，Chromium场景仍单轮，不能称真实多轮模型/积分通过。新Scheduler发布11条metadata与对应测试唯一旧commit literal精准同步，版本/schema原bytes及所有edge状态reason保持；正确既有w1e-iam07-bff-pin CLI PASS，focused88pass46.93s。初CLI缺--expected/误历史checkpoint，以及初2fail86pass均保留，不放宽checker。Root完整scripts/tests句柄27496在途，不先称full通过。日志/tmp/kokoro-root-r46-{correct-pin-green,contract-focused-r2,full-governance}.log。
+
+下一关键消费缺口已精确定位：Root三组合入口仍给已发布System裸URL/public override，需消费owner显式schema selector；BFFmissing Conversation P1先真实负例后源码修，随后完整Agent4/fullpause/public4。Billing缺read能力20RED，strict high-water P2仅补四fixture值；Platform五doc D0继续，同仓single writer。原uv.lock/P3B/owner任务外变更保留，完整Wave0–7 active。
+
+## R46 真实验收证据
+
+Scheduler24真PG与1源码重启通过，pure167pass25skip/static0；原fixture失败保持，准备20path审查提交。BFF内部回滚/队列/续流前段通过但完整3例仍缺public4；独立发现missing Conversation孤儿stream P1，先原worker追加真实负例。Billing20例均因缺read能力失败，18业务场景未达到，资源已回收。Root双轮GREEN冻结后完整该test与独立审在途；完整Wave0–7仍active，不称用户/模型/积分闭环。
+
+## R45 验收发现与精准续派
+
+Scheduler真PG18pass6fail，6项为新fixture漏四表哨兵，未到目标catalog；自有库已回收，仅原writer修新fixture。双轮真实RED及独立0审后仅原WIN10三现文件统一receipt GREEN，原断言/秘密/资源/其他Rootfiles锁。详细卡在task.md；完整用户旅程仍待验。
+
+## R45 十窗口任务续派
+
+已复用原10窗口派工：BFF/Billing/Scheduler原writer续接，Web/Agent/IAM/System独立只读交接，Storage窗口独立审Root双轮RED，Platform追加现5doc D0门。Root真实双轮测试1failed/1passed/17deselected，CHAT_SNAPSHOT_COUNT，不冒充真实用户失败/通过。WIN10测试冻结，后继GREEN待独立审；完整目标与单仓writer/共享资源边界保持。详细任务见同task.md。
+
+## R45 接续原 writer 与多轮验收
+
+前轮为progress（两个owner源码已发布、Root已集成）。本轮现WIN02/BFF五内部源、WIN06/Billing只读integration、WIN09/Scheduler fullcatalog句柄核live，沿原卡执行；新增WIN10仅Root现test文件合法双轮四消息先RED，原helper/driver/旧断言锁，Root期间停写Root仓文件，真实资源/Git仍Root独占。具体R45卡在同task.md，不新增计划中心；正规用户与账务完整Wave0–7仍active。
+
 ### R44-Billing 精准返修冻结与 tests-only 卡
 
 两个P2已独立关闭，Root最终五doc SHA复核通过：TECH637edb67/API9db0a457/DATAf0ae2f58/CURRENTd7595fda/原第五baf87ae；审查期间API采样9cf82446发生漂移，Root初验断言失败即暂停tests，采用原worker停写后的最终9db0a457重新核验，未在失败时宣称五SHA通过。最终API显式credit.module DI与24/24/R01–18边界保持，原body保留。WIN06后继正式仅授新增 apps/kokoro-billing/test/integration/credit-read.test.ts，R01–18（含wrongtenant journal/负累计/非法row failclosed），Node24可编译窄接口/typeof能力断言；原source/tests/codec/机器SQL/gen/deps/Git锁。worker只静态门，Root自有SCHEMA_ADMIN_URL资源；能力RED与实际业务RED分开，不冒充walletHTTP/赠送/费用已闭环。

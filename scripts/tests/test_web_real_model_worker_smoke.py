@@ -98,10 +98,11 @@ const snapshot = {event_watermark:'cursor_1',messages:[
   {message_id:'msg_u',role:'user',status:'completed',content:'prompt',run_id:'run_1'},
   {message_id:'msg_a',role:'assistant',status:'completed',content:'PRIVATE_TEST_BODY',run_id:'run_1'}
 ]};
-const expected=terminalChatSnapshot(snapshot,'run_1');
+const receipts=[{run_id:'run_1',user_message_id:'msg_u',assistant_message_id:'msg_a'}];
+const expected=terminalChatSnapshot(snapshot,receipts);
 assert.equal(Object.isFrozen(expected),true);
 assert.equal(expected.assistant_content_sha256.length,64);
-assertChatSnapshotUnchanged(expected,terminalChatSnapshot(structuredClone(snapshot),'run_1'));
+assertChatSnapshotUnchanged(expected,terminalChatSnapshot(structuredClone(snapshot),receipts));
 const invalid=[
   [{messages:[]},'CHAT_SNAPSHOT_COUNT'],
   [{messages:[snapshot.messages[1],snapshot.messages[0]]},'CHAT_SNAPSHOT_ORDER'],
@@ -113,14 +114,16 @@ const invalid=[
 ];
 invalid.push([{...snapshot,event_watermark:null},'CHAT_SNAPSHOT_WATERMARK']);
 for(const [body,code] of invalid){
- assert.throws(()=>terminalChatSnapshot(body,'run_1'),e=>e.code===code&&!e.message.includes('PRIVATE_TEST_BODY'));
+ assert.throws(()=>terminalChatSnapshot(body,receipts),e=>e.code===code&&!e.message.includes('PRIVATE_TEST_BODY'));
 }
 for(const [key,value,code] of [
  ['message_id','other','CHAT_SNAPSHOT_ID_CHANGED'],
  ['content','PRIVATE_TEST_BODY plus text','CHAT_SNAPSHOT_CONTENT_CHANGED']
 ]){
  const changed=structuredClone(snapshot);changed.messages[1][key]=value;
- assert.throws(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changed,'run_1')),
+ const changedReceipts=structuredClone(receipts);
+ if(key==='message_id')changedReceipts[0].assistant_message_id=value;
+ assert.throws(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changed,changedReceipts)),
   e=>e.code===code&&!e.message.includes('PRIVATE_TEST_BODY')&&
   e.evidence.before.assistant_content_sha256===expected.assistant_content_sha256);
 }
@@ -134,7 +137,7 @@ for(const [key,value,code] of [
   e=>e.code===code&&!JSON.stringify(e.evidence).includes('PRIVATE_TEST_BODY'));
 }
 const changedWatermark=structuredClone(snapshot);changedWatermark.event_watermark='cursor_2';
-assert.throws(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changedWatermark,'run_1')),
+assert.throws(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changedWatermark,receipts)),
  e=>e.code==='CHAT_SNAPSHOT_WATERMARK_CHANGED');
 snapshot.messages[1].content='mutated original';
 assert.equal(expected.messages[1].content,'PRIVATE_TEST_BODY');
@@ -409,3 +412,175 @@ def test_harness_registers_system_in_existing_owned_lifecycle():
     assert 'c["processes"].append(system_process)' in real
     assert 'c["processes"].append(process)' in real
     assert 'c["processes"].append(browser_process)' in real
+
+
+def test_terminal_chat_snapshot_accepts_two_completed_turns_from_receipts():
+    import json
+    import subprocess
+
+    helper = Path("scripts/e2e/chat_snapshot_evidence.mjs").resolve().as_uri()
+    source = r"""
+import assert from 'node:assert/strict';
+import {
+  terminalChatSnapshot, assertChatSnapshotUnchanged
+} from HELPER;
+
+const receipts = [
+  {run_id:'run_1', user_message_id:'msg_u1', assistant_message_id:'msg_a1'},
+  {run_id:'run_2', user_message_id:'msg_u2', assistant_message_id:'msg_a2'}
+];
+const instant = '2026-10-01T12:00:00.000Z';
+const messages = receipts.flatMap((receipt, index) => [
+  {
+    message_id:receipt.user_message_id, role:'user',
+    content:`prompt ${index + 1}`, status:'completed',
+    created_at:instant, run_id:receipt.run_id
+  },
+  {
+    message_id:receipt.assistant_message_id, role:'assistant',
+    content:`complete answer ${index + 1}`, status:'completed',
+    created_at:instant, run_id:receipt.run_id
+  }
+]);
+const body = {
+  session:{
+    session_id:'conv_1', title:'Two turns', owner_id:'subject_1',
+    created_at:instant, updated_at:instant
+  },
+  messages, pending_pauses:[], files:[], deliveries:[],
+  deliveries_has_more:false,
+  event_watermark:'agui_0123456789abcdef0123456789abcdef'
+};
+
+// The same explicit receipt-array interface handles one or multiple turns.
+const first = terminalChatSnapshot(
+  {...body, messages:messages.slice(0, 2)}, [receipts[0]]
+);
+assert.equal(first.messages.length, 2);
+process.stdout.write('SINGLE_TURN_CONTROL_OK\n');
+
+const history = terminalChatSnapshot(body, receipts);
+assert.equal(history.messages.length, 4);
+assert.equal(history.run_id, receipts[1].run_id);
+assert.deepEqual(
+  history.messages.map(message => message.message_id),
+  receipts.flatMap(receipt => [
+    receipt.user_message_id, receipt.assistant_message_id
+  ])
+);
+assert.deepEqual(history.messages.slice(0, 2), first.messages);
+assert.deepEqual(
+  history.messages.map(message => message.content),
+  messages.map(message => message.content)
+);
+assert.deepEqual(
+  history.messages.filter(message => message.role === 'assistant')
+    .map(message => message.run_id),
+  receipts.map(receipt => receipt.run_id)
+);
+assertChatSnapshotUnchanged(
+  history, terminalChatSnapshot(structuredClone(body), receipts)
+);
+""".replace("HELPER", json.dumps(helper))
+
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=5,
+        check=False,
+    )
+    assert "SINGLE_TURN_CONTROL_OK\n" in result.stdout, result.stderr
+    assert result.returncode == 0, result.stderr
+
+
+def test_terminal_chat_snapshot_rejects_receipt_and_history_identity_drift():
+    import json
+    import subprocess
+
+    helper = Path("scripts/e2e/chat_snapshot_evidence.mjs").resolve().as_uri()
+    source = r"""
+import assert from 'node:assert/strict';
+import { terminalChatSnapshot, assertChatSnapshotUnchanged } from HELPER;
+const receipts=[
+  {run_id:'run_1',user_message_id:'u1',assistant_message_id:'a1'},
+  {run_id:'run_2',user_message_id:'u2',assistant_message_id:'a2'}
+];
+const body={event_watermark:'cursor_2',messages:receipts.flatMap((receipt,index)=>[
+  {message_id:receipt.user_message_id,role:'user',status:'completed',content:`prompt ${index}`},
+  {message_id:receipt.assistant_message_id,role:'assistant',status:'completed',
+    content:`PRIVATE_HISTORY_BODY ${index}`,run_id:receipt.run_id}
+])};
+const expected=terminalChatSnapshot(body,receipts);
+assert.equal(Object.isFrozen(expected.messages),true);
+assert(expected.messages.every(Object.isFrozen));
+assert.equal(expected.message_contents_sha256.length,64);
+assert.equal(expected.run_id,'run_2');
+function rejects(action,code){
+  assert.throws(action,error=>error.code===code&&
+    !JSON.stringify({message:error.message,evidence:error.evidence}).includes('PRIVATE_HISTORY_BODY'));
+}
+for(const invalid of [undefined,null,'run_2',[],[null],[1],[[]],new Array(1),
+  [{run_id:'run_1',user_message_id:'u1'}],
+  [{run_id:'',user_message_id:'u1',assistant_message_id:'a1'}],
+  [{...receipts[0],extra:'PRIVATE_HISTORY_BODY'}]]){
+  rejects(()=>terminalChatSnapshot(body,invalid),'CHAT_SNAPSHOT_RECEIPT');
+}
+const repeatedRun=structuredClone(receipts);repeatedRun[1].run_id='run_1';
+rejects(()=>terminalChatSnapshot(body,repeatedRun),'CHAT_SNAPSHOT_RUN');
+const repeatedReceiptId=structuredClone(receipts);repeatedReceiptId[1].user_message_id='a1';
+rejects(()=>terminalChatSnapshot(body,repeatedReceiptId),'CHAT_SNAPSHOT_ID');
+const wrongReceipt=structuredClone(receipts);wrongReceipt[1].assistant_message_id='other';
+rejects(()=>terminalChatSnapshot(body,wrongReceipt),'CHAT_SNAPSHOT_ID');
+const wrongReceiptRun=structuredClone(receipts);wrongReceiptRun[1].run_id='other-run';
+rejects(()=>terminalChatSnapshot(body,wrongReceiptRun),'CHAT_SNAPSHOT_RUN');
+rejects(()=>terminalChatSnapshot(body,[receipts[1],receipts[0]]),'CHAT_SNAPSHOT_ID');
+const mutations=[
+  [value=>{value.messages[2].message_id='u1'},'CHAT_SNAPSHOT_ID'],
+  [value=>{[value.messages[0],value.messages[1]]=[value.messages[1],value.messages[0]]},'CHAT_SNAPSHOT_ORDER'],
+  [value=>{value.messages=[...value.messages.slice(2),...value.messages.slice(0,2)]},'CHAT_SNAPSHOT_ID'],
+  [value=>{value.messages[1].run_id='run_2'},'CHAT_SNAPSHOT_RUN'],
+  [value=>{value.messages[3].run_id='run_1'},'CHAT_SNAPSHOT_RUN'],
+  [value=>{value.messages[2].run_id='run_1'},'CHAT_SNAPSHOT_RUN'],
+  [value=>{value.messages[2].run_id=null},'CHAT_SNAPSHOT_RUN'],
+  [value=>{delete value.messages[3].run_id},'CHAT_SNAPSHOT_RUN'],
+  [value=>{value.messages.pop()},'CHAT_SNAPSHOT_COUNT'],
+  [value=>{value.messages.push({...value.messages[3]})},'CHAT_SNAPSHOT_COUNT'],
+  [value=>{value.messages[2].status='streaming'},'CHAT_SNAPSHOT_STATUS'],
+  [value=>{value.messages[3].content=''},'CHAT_SNAPSHOT_CONTENT']
+];
+for(const [mutate,code]of mutations){
+  const changed=structuredClone(body);mutate(changed);
+  rejects(()=>terminalChatSnapshot(changed,receipts),code);
+}
+for(const index of [0,1,2,3]){
+  const changed=structuredClone(body);changed.messages[index].content+=' changed';
+  rejects(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changed,receipts)),
+    'CHAT_SNAPSHOT_CONTENT_CHANGED');
+}
+for(const mutate of [value=>value.messages.pop(),value=>value.messages.push({...value.messages[0]})]){
+  const changed=structuredClone(expected);mutate(changed);
+  rejects(()=>assertChatSnapshotUnchanged(expected,changed),'CHAT_SNAPSHOT_COUNT');
+}
+const changedId=structuredClone(body);changedId.messages[2].message_id='other-user';
+const changedReceipts=structuredClone(receipts);changedReceipts[1].user_message_id='other-user';
+rejects(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changedId,changedReceipts)),
+  'CHAT_SNAPSHOT_ID_CHANGED');
+const changedWatermark=structuredClone(body);changedWatermark.event_watermark='cursor_3';
+rejects(()=>assertChatSnapshotUnchanged(expected,terminalChatSnapshot(changedWatermark,receipts)),
+  'CHAT_SNAPSHOT_WATERMARK_CHANGED');
+body.messages[1].content='changed original';receipts[1].run_id='changed receipt';
+assert.equal(expected.messages[1].content,'PRIVATE_HISTORY_BODY 0');
+assert.equal(expected.run_id,'run_2');
+process.stdout.write('receipt and history guards passed\n');
+""".replace("HELPER", json.dumps(helper))
+
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=5,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == "receipt and history guards passed\n"
