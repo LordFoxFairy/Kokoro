@@ -1,3 +1,13 @@
+## R77 当前：Web public5组件发布，进入真实双轮用户路径验收
+
+Root本片实际组合治理：topology exit0、compatibility exit1只有13个既定broken且额外机器证据错误0；fresh三文件metadata95pass/0fail47.95s，/tmp/kokoro-root-r77-metadata-tests.log。49个Webrefs皆由dc330a9实际commit blob重算，状态不改，当前Web/BFF public5固定消费组件对齐；不以此冒称产品链成功。
+
+Web main dc330a99332be28bb74a4fa2d2196ba8425f9dc5已Root提交/推送/远程精确核验；17文件冻结66fa8c3b/source及final-index独立Astra0P0/P1/P2，Rootfresh Node22完整门244contract/50architecture/2275unit0fail0skip（43.73s）及lint/typecheck/build0。精确消费已发布BFF479d4e8/public5.0.0/3ce25a31，Team15/safe12/fingerprint与原R74三P1源码/测试保持；不是项目关联UI或实际浏览器通过。/tmp/kokoro-web-r77-root-full-check.log、/tmp/kokoro-web-r77-final-index.json。原真实RED13与0collect保留。
+
+Root上一组合28baf39aa2400596980d38cc473a49acf10ee671已push/remote exact、postcommit topologyPASS；本片只随新Web更新gitlink/现inventory49个commit+真实blob摘要/同三台账，13broken3active不变，排除Billing在途源/uv.lock。六个W2owner已明确：Web/BFF/Agent/Storage/IAM/System，不包含Billing，故该真实双轮模型/活动刷新/全文/文件下载与private404即使通过，也不是收费整链完成。复用已发布cbc13eb5完整harness，Root沿owned单库schemas/Redis/独有ObjectLock桶与进程精确回收运行，不重启共享服务，不用静态GREEN代替真实路径。当前资源旅程待执行。
+
+原WIN06 Billing两正式GET源码候选1038pure通过，尚在收尾冻结；第三原失败已证实是inject覆盖而非生产重复头bug，真实重复值已被既有codec/credential拒绝，未人为改helper。Root后继source审/真实PG/运行入口及正式积分赠送资格、预占、结算/释放、流水；成本×可配置1.4仍open，支付渠道最后。Web项目关联等其他Wave0–7能力仍按原owner顺序推进，完整goal active。
+
 ## R76 当前执行：Web 已发布，BFF public5 已发布，消费者与积分并行
 
 Root R76组合治理复验：286个不可变commit/blob引用由各已发布HEAD的git show重算，13broken/3active不变；topology exit0，compatibility exit1只包含13个显式broken、额外机器证据错误0。初三文件metadata门94pass/1fail因测试仍锁旧Scheduler9e88；仅换已验收发布e8dca的精确SHA，原assert全保，fresh95pass/0fail49.27s（/tmp/kokoro-root-r76-metadata-green.log），Ruff/check0。此组合记录Web28672公开4消费者、BFF479d4公开5，明确Web5在途，不把metadata当产品消费或端到端通过；Billing仅记录已发布a49c787，不带其在途源码。
