@@ -1,3 +1,16 @@
+## R104 真实429定位与Agent发布门（2026-10-02，当前）
+
+上一goal回合是progress：四台账264de6b8已提交，Root治理309pass，E48真实429与E47 HTTP36通过进入同一测试矩阵。本轮不缩小Wave0–7。Root唯一写入/资源/Git owner；Agent/Billing/uv.lock保持。暂无原共享测试进程live，不重启3310/PG/Redis。
+
+|任务/测试ID|Owner/角色/精确范围|完成条件与依赖|
+|---|---|---|
+|R104-429-REAL-REPRO / T-C06、T-Q11|Root；基线264de6b8，正式六owner fresh来源沿fa4525e4；私有/tmp独占探针wrapper复用现run_web_bff_iam_product_session_smoke.py，不改业务仓/runner/hard断言；报告和句柄/tmp独立名|真实Web→BFF→IAM正规登录后先会话列表200正控，再固定本轮不存在的会话snapshot404正控及25ms序列观察429/安全code/Retry-After存在性；read-only阶段零mutation，避免为准入诊断额外创建Run/Message；404仅证明正常授权后的资源拒绝，不冒充完整快照200；无需模型/Agent/Storage。独立资源门最终0后Root58343实际exit0/E50：97个样本首次429/session_rate_limited，4.933s/零mutation/精确清理；不是完整聊天通过|
+|R104-AGENT-PUBLISH-GAP-READ / T-Q03|原agent4_execution_owner只读；Agent17c73541+冻结候选；只读pyproject/contract_check/wheel资源清单及现ACCEPTANCE，报告/tmp/kokoro-r104-agent-publish-gap.md|列出安装后CLI/checker/DDL/HTTP契约与数据retention需要的最小真实门，核已构建wheel是否含必需资源；不导入可能访问ObjectStore的archive、不运行共享资源、不改仓/锁/Git；Root后继定授权切片|
+|R104-AGENT-INSTALLED-D0 / T-Q03|原WIN03 Agent唯一四docs writer，实际idle后续派；Agent17c73541+冻结候选；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md|Root已真实安装checker RED（r104b），先比较至少两方案/闭合owner与只读artifact/资源定位及精确后继tests/source集；不删checker或fallback源码、不改生产/合同/SQL/锁、不build/sync/资源/Git。四docs冻结manifest/tmp/kokoro-r104-agent-installed-d0.json后停写，Root独立门再授权|
+|R104-ROOT-PROBE-RED / T-Q11、T-C06|原WIN10 Root唯一tests writer；Root264de6b8/driver00a12288；仅scripts/tests/test_web_real_model_worker_smoke.py，driver/runner/helper/台账/uv.lock与业务仓冻结|E50已真实复现高频snapshot准入429。先现实际until/partial wrapper测试：无本Run非空合法UI文本时零snapshot GET；本RunUI已有文本后仍必须实际snapshot head/四消息/非空streaming/prefix/未finished与硬reload；wrong run/empty delta/audit不放行，终态/observer/deadline仍失败。追加session_rate_limited闭集RED。不得制造UI/SQL/模型流或放宽budget/hard断言；保既有32+550控制断言，必要fixture新增真实SSE上下文先具名解释。RED冻结Root复现+审后才driver源码门；不执行共享资源/Git|
+
+放置：429首先用已有product-session组合的authenticated_probe钩子，淘汰启动完整六owner/model/Storage来定位一个准入429；私有脚本只是本轮真实诊断，不建立第二运行服务或永久测试中心。永久回归待失败证据与设计裁决后扩现Root测试/driver，Agent原只读调查已交付；现原WIN03仅四docs设计writer，source仍冻结。
+
 ## R103 测试计划巡检（2026-10-02，当前）
 
 目标是核对既有完整70测试组，防止漏测、失败丢失或开发完成冒充测试通过；不新建重复计划中心。Root基线fa4525e4，仅四台账写入/Git集成，保留Agent/Billing/uv.lock任务外变更；原99439与97725均已终态，不重复启动。

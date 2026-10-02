@@ -1,3 +1,15 @@
+## R104 实际安装后失败与429归因推进（2026-10-02，当前）
+
+本轮Root98264治理终态exit0：三既有topology/standard/checkpoint测试文件309pass/22.12s，日志 `/tmp/kokoro-r104-ledger-governance.log`（0600），SHA097c7feba155bfa450b8f8adbd19a1ccf3f08d69de6b3033ba5c3d9638d65e7c。70ID/9-2-0-15-41-2-1计数与历史suffix相对264de6b8逐字节相同、diff check通过；独立四台账 `/tmp/kokoro-r104-ledger-review.md` 0P0/P1/P2。独立安装RED复核成立，治理不计产品通过组。
+
+上一goal回合为progress：264de6b8提交完整测试台账、309治理/独立0，E48真实429改变下一行动。完整Wave0–7 active，不重新定义目标。
+
+- E49 / T-Q03：Root真实把现wheel230b41bc0038927f5ad5abf588c6ffa6f5fd22dbe7c78472fd810749e4692c25离线/no-deps安装到独有临时target，安装exit0；checkout之外cwd/Python -I/已安装distribution入口/实际origin验证/网络守卫下执行checker，实际exit1 `missing-installed-openapi`、network_attempts=0（现venv实际Python3.14.3，不冒称3.11正式安装门），临时安装已删除。日志/tmp/kokoro-r104b-installed-checker-red.log SHA745410339bbac33ba78c00a400ffbb599e79199864fc68607d4fd3dcf775881d、manifest同名.json。源树654/PG65/HTTP36成功不掩盖此安装发布缺口；T-Q03由待复测转失败，70组变为9限定通过/2最近失败/0整组执行中/15待复测/41未验/2决策阻塞/1支付后置。
+- 独立Agent发布只读报告/tmp/kokoro-r104-agent-publish-gap.md确认wheel源码/DDL与冻结候选相符但缺contract机器资源、checker仍按checkout目录定位；原WIN03实际idle后仅续派四docs设计门，不删checker/fallback源树/放宽provenance/原始JSON或SQL门。production/contract/SQL/锁仍冻结；Root后继独立审再放tests-only。
+- T-C06保持E48严格两轮失败。Root新私有真实Web→BFF→IAM准入探针复用现product-session fixture，先列表200及本轮不存在会话snapshot404正控，再25ms/max120/50s的GET-only序列复现429与exact owner code，不创建Run/Message或启模型/Agent/Storage；404不冒充完整snapshot200。资源门最终0后单次执行且实际复现成功，见E50；后继不盲跑完整W2。
+- E50真实准入复现：Root58343实际exit0，正规IAM表单/授权/callback后列表GET200、unique不存在会话snapshot404；25ms只读probe序列第97个本轮样本收到429/exact `session_rate_limited`/Retry-After存在，4.933s、probe_mutations=0；三Node组已终止，BFF/IAM/Web自有资源清理verified。log/tmp/kokoro-r104-snapshot-quota-probe.log SHA39b122ff6768d0b06eb92d4c71701968e7a7f85aec0f1f59168a0bbaf4fb4de4；manifest同名.json SHA6c3bc9f7978619711f8fb206f8aa6795d4cdd79fb5ba2400737d1e323bc517a1。只证现访问形态可触发真实IAM准入限流，不断言原E48唯一来源/第101个全窗口请求，不关闭聊天。下一Root tests-only为本Run UI原生SSE非空文本前不做额外snapshot探针，文本后仍真实查SQL快照/活动head/四消息/未terminal/prefix并硬刷新；保持IAM100/60规则和原600s标准。
+- 首安装轮r104真实exit1确为缺contract ValueError，但私有wrapper最初只catch FileNotFoundError、未产结构化分类；原日志保留。r104b仅修诊断catch，独有新证据路径复验得到上述明确RED，不改变应用或伪造原日志。非整个产品完成；积分/Skills/MCP/审批/任务/作品/交互全链仍未验，支付最后。
+
 ## R103 测试任务核对与实际终态（2026-10-02，当前唯一摘要）
 
 本次台账治理Root26598终态exit0：`python3 -m pytest -p no:cacheprovider scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py scripts/tests/test_contract_checkpoint.py -q`，309pass/21.92s；日志 `/tmp/kokoro-r103-test-ledger-governance.log`（0600），SHA256 517d91793786a633a360e52ac825b1e4e7808c3cf2a486932c24f18745be110d。70稳定ID/七类状态计数、E47/E48真实日志hash、历史矩阵相对fa4525e4逐字节保护与git diff --check通过；仅治理/证据盘点，本次未重新执行全部业务测试。

@@ -1,17 +1,17 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R103；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R104；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root正式组合fa4525e4、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48严格两轮聊天仍失败，活动快照GET返回429/code-other，资源已回收。当前没有整组测试运行；仅核已有终态，不冒充重新测试全部能力。
+- 截至本次盘点：Root正式组合fa4525e4、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48严格两轮聊天仍失败，活动快照GET返回429/code-other，资源已回收。当前没有整组测试运行；仅核已有终态，不冒充重新测试全部能力。 E49现wheel安装后checker真实失败，T-Q03转失败；原WIN03仅四docs补设计。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
-共 **70** 组：**通过9**；**失败1**；**执行中0**；**待复测16**；**未验41**；**阻塞2**；**后置1**。
+共 **70** 组：**通过9**；**失败2**；**执行中0**；**待复测15**；**未验41**；**阻塞2**；**后置1**。
 
 通过仅限下表具名范围；完整用户两轮真实聊天E48最新复测失败、E40/E28失败历史保留，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
 
@@ -19,17 +19,17 @@
 
 **已通过9组**：T-Q01 Webddd38c5纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有资源回收。各自只覆盖矩阵具名范围，不是九服务或用户全链全部完成。
 
-**失败1组**：T-C06，E48严格真实旅程终态exit1，第二轮活动快照GET返回429（请求过于频繁）/code-other。需定位限流与测试轮询边界，未证明唯一产品根因；不把已越过提交步骤计为整组成功。
+**失败2组**：T-Q03，E49实际安装后checker缺机器契约资源；T-C06，E48严格真实旅程终态exit1，第二轮活动快照GET返回429（请求过于频繁）/code-other。需定位限流与测试轮询边界，未证明唯一产品根因；不把已越过提交步骤计为整组成功。
 
 **执行中0组**：最新W2原99439与Agent HTTP原97725均已结束，不再展示为live。
 
-**待复测16组**：T-Q03、T-Q05–10、T-L01–05、T-F01–02、T-K02–03；历史证据或版本变化都须按当前组合重验。
+**待复测15组**：T-Q05–10、T-L01–05、T-F01–02、T-K02–03；历史证据或版本变化都须按当前组合重验。
 
 **未验41组**：详见矩阵。Todo新增六项实际PG通过（总65）、E47 HTTP文件36通过是T-A01的局部证据；复杂任务策略/BFF/Web仍未验。Home语义纯测通过不关闭T-U01浏览器验收。
 
 **阻塞2组**：T-C05项目移动/归档/删除生命周期、T-B07失败/部分输出/未知成本收费业务规则；T-B08支付后置。
 
-**当前下一步**：先定位E48快照429与轮询/限流边界，再真实失败回归和原ID复测；Agent HTTP typed独立最终审及正式发布/消费者展示后继；Home真实浏览器仍未验。正式积分与其余能力按既有依赖顺序推进，支付最后。
+**当前下一步**：E50已真实复现25ms额外probe触发准入429；Root tests-first改为只观察本Run真实UI/SSE进展后才读活动快照，原硬断言保持，再原ID严格复测；Agent HTTP typed独立最终审及正式发布/消费者展示后继；Home真实浏览器仍未验。正式积分与其余能力按既有依赖顺序推进，支付最后。
 
 ## 范围与记录方式
 
@@ -55,7 +55,7 @@
 |---|---|---|---|---|
 | T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验且fa4525e4已发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E30限定纯门、E32 fresh schema7、E35真实PG65、E47真实HTTP文件36通过；原E46 stale失败经typed-only断言迁移。frozen sync/archive隔离/安装后smoke/retention/正式发布与消费者仍未验，不能宣称完整Agent闭环 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 失败 | E30限定纯门、E32 fresh schema7、E35真实PG65、E47真实HTTP文件36通过；原E46 stale失败经typed-only断言迁移。frozen sync/archive隔离/安装后smoke/retention/正式发布与消费者仍未验，E49现wheel实际安装后checker缺OpenAPI（exit1、零网络、安装临时target已删）；原WIN03仅四docs门设计补齐，不能宣称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
@@ -198,6 +198,10 @@
 
 |E47|Agent17c73541+原冻结源/机器；现HTTPtest2884a4fb7d4ab04e7e4849105fd78a64327b6e7d0366df27333ff8383fd8e0f4；typed-only import/raises，不改production|Root97725终态exit0：36pass/100warnings/11.21s；/tmp/kokoro-r102b-agent-http.log SHA66c0da0e763a4be339cdbe4bcd22100d275b6f06f50f78a5526fd9290d89015a、owned.json。created/deleted=true、DB15首尾空、childterminal/sourceunchanged=true、cleanup=[]。原RED rawlog误覆审计缺口见E46；GREEN字节核验另存且manifest明确collision，wrapper加防覆盖guard。仅本文件真实PG/Redis/HTTP，typed最终只读审 /tmp/kokoro-r103-agent-http-typed-review.md：代码0/0/0、审计P2=1（原RED rawlog覆盖缺口）；不关闭T-Q03/T-A01、不含真实外部模型/BFF/Web展示|
 |E48|正式Rootfa4525e48961bcc6954f453643e3a4c6dfea3b62、Webddd38c5及其余五owner固定版本，见/tmp/kokoro-r102-root-w2-owned.json；同fresh源准备2010 exit0，四harness hash匹配|Root99439终态exit1：REAL_MODEL_FAILURE:second-partial-active-cause-snapshot-http-status-429-code-other-head-active-match-messages-4-partial-pending-empty-finish-absent。/tmp/kokoro-r102-root-real-w2.log SHA3db31d9dedd9346293cfb31a1f62a244b12f84a04342393b9e29286fba4fa9de、owned.json及其中evidence；cleanup=[]、bucket_cleanup_exit0且404。原600s/两POST四Message/活动刷新/全文/作品hash/他人404不变，不含Billing或AgentHTTP5候选。429已观测，不臆断唯一产品根因；T-C06继续失败，原历史保留|
+
+|E49|Agent17c73541+冻结候选，现wheel230b41bc0038927f5ad5abf588c6ffa6f5fd22dbe7c78472fd810749e4692c25；167 Python文件/DDL与现源匹配，机器资源未随包|Root私有r104b实际exit1：安装exit0、已安装checker入口/独有target origin验证/checkout外cwd与Python -I，missing-installed-openapi、network_attempts=0；/tmp/kokoro-r104b-installed-checker-red.log SHA745410339bbac33ba78c00a400ffbb599e79199864fc68607d4fd3dcf775881d及.json，临时target已删。依赖复用现venv/Python3.14.3，非独立完整依赖安装门；只证安装checker真实失败，T-Q03转失败，PG65/HTTP36局部结果保留。首r104缺ValueError分类日志保留，不冒充业务额外通过；source/Git/共享资源未改|
+
+|E50|Rootfa4525e4 fresh/IAMe3c/BFFbb610ea/Webddd38c5正式组合；私有quota wrapper eee87d8289b63f6b3ad6ef745b52f65cdfdd53c0fd5af2555e262e705f6016d8，独立资源门最终0|Root58343实际exit0，正规IAM登录及列表200/snapshot404正控后，25ms GET-only第97个本轮样本429/session_rate_limited/Retry-After存在、4.933s/零mutation；三Node组terminal、BFF/IAM/Web自有资源清理verified。/tmp/kokoro-r104-snapshot-quota-probe.log SHA39b122ff6768d0b06eb92d4c71701968e7a7f85aec0f1f59168a0bbaf4fb4de4、.json SHA6c3bc9f7978619711f8fb206f8aa6795d4cdd79fb5ba2400737d1e323bc517a1。expected_cutoff只准入诊断，不称完整Product Session或Chat通过、不拿404当200快照；原E48仍失败。资源审初错基类P1已正式撤回，最终0；wrapper记录成功创建库字段，不制造实际setup失败|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 
