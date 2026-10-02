@@ -1,3 +1,15 @@
+## R112 测试计划核对（2026-10-02，当前摘要）
+
+测试总台账仍为 docs/test-cases.md，开发派工与测试验收分开。当前 **70组：通过11 / 失败1 / 执行中0 / 待复测14 / 未验41 / 阻塞2 / 后置1**。这是具名测试组状态，不是产品完成率；整体Wave0–7尚未闭环。本次未重新执行全部业务测试。
+
+- E70 / T-Q03：Root13953已独立复跑Docker导入修复的十门，全部exit0；五次选定测试运行合计161通过（1 import、2 Docker纯例、15 archive、3 architecture、140相关回归）。369文件hash保持，守卫resource_attempts0，独立源码审0/0/0。只关闭E69导入副作用切片；8真实Docker、5真实S3、生产archiver关闭、完整安装仍未验。manifest /tmp/kokoro-r112-agent-docker-root.json SHA4be255d71288b46a0cc663f208631627247cdaef404e8af394408ac423d366fe；独立审 /tmp/kokoro-r112-agent-docker-green-review.md SHA186f866011c7a34b8b7c738580bf365cd74986826e7ce3569ed2619ec61b81c7。
+- E71 / T-Q03：Root71108实际collect-only两门exit0：全部2408、默认2107选中/301未选，369文件hash保持、resource_attempts0。只收集用例，未执行测试体/fixture。最初强制importlib的32个support导入错误来自验证包装选择，不冒称产品失败；已恢复pyproject实际默认prepend，无修改源码/marker/PYTHONPATH。Rootmanifest /tmp/kokoro-r112-agent-full-collection-root.json SHA4a01314e6e9870170d7a42a64b0368c798ae87711a976c57da017c0738314685；原错误manifest378c73bb保留。只读分段1937 pure+170 local=2107，不重不漏，全部仍须真实执行；报告 /tmp/kokoro-r112-agent-default-partition.json SHA81914ecd0c9403f43ccda3e538c2aea44ef9ca76a9e4a59566f2976ecd02a3b4，不把分段准备当通过。
+- T-Q05退回待复测：System新增fresh-name tests-only候选已停写；owner报告12失败/2正控通过/13未选，Root尚未独立复现或接受源码修复。原106纯门通过留作历史，不证明新候选。manifest /tmp/kokoro-r112-system-fresh-name-red.json SHA8c8be970c312b07ee101a701b242d00e3d6e067c64f350e713580881021eb323；源脚本366b886b仍冻结。owner初次zsh包装错误后覆盖同日志的证据缺口保留说明，后继Root须新独有日志，不补造历史输出。真实PG/Redis门未运行。
+
+测试管理责任：Root维护同四台账、独立复测及Git；原Agent/System owner负责各自代码，审查员只读。当前无整组业务测试运行，不把owner开发或collect-only计为执行中。项目生命周期T-C05、失败收费T-B07待决策；支付T-B08后置。以下R111及更早章节仅保留当时证据，不覆盖本摘要。
+
+R112测试台账核对终态：Root `.venv/bin/python -m pytest scripts/tests -q` 实际exit0，1710通过/3跳过/121.25s；日志 /tmp/kokoro-r112-test-status-governance.log SHA9e6f5ed8cea24e303681994d468571173de4d3b7bfbca08e938fabe33ba0ca09。三跳过为SourceNativeComponentTests需要Agent .venv，Root精确类补核skip原因（3 skipped）日志 /tmp/kokoro-r112-root-native-skip-reason.log SHA45c1db61973daa38eb9ae4632b4da88dbcc47636e9cb697d027e144125ef40a1；再以Agent .venv在Root工作树精确类、OS禁网实际补跑exit0，3通过/52 subtests/0.46s，日志 /tmp/kokoro-r112-root-native-complement.log SHA5322a4b73276d287b76664c0de6e75020d2323bd841643c4616c155b88703e72。两环境分别记录，不伪造单次1713通过，也不把测试工具门冒充业务E2E。独立台账初审发现两处旧覆盖态P2已窄修，最终审0/0/0（/tmp/kokoro-r112-test-status-final-review.md SHAff4fb855df783ed6dcff1ec2f0daac5bd408d9b4090ca2008a592747c6996f65，绑定追加本终态说明前四docs）。70组状态不变，历史归档suffix不变；Root仅提交四台账，子仓/uv.lock保留，未启动业务或共享服务。
+
 ## R111 当前推进（2026-10-02）
 
 完整Wave0–7保持active。上一goal回合R110为progress（真实回归、codegen、HTTP验证及f775be11提交）；随后的人类测试进度答复仅核对状态、不计新增progress。本回合重新核实原WIN03已completed/idle交付，Root实际复测archive切片并启动后继Docker import tests-first，不以等待或计划充当完成。

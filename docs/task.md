@@ -1,3 +1,34 @@
+## R112 测试计划核对（2026-10-02，当前摘要）
+
+测试总台账仍为 docs/test-cases.md，开发派工与测试验收分开。当前 **70组：通过11 / 失败1 / 执行中0 / 待复测14 / 未验41 / 阻塞2 / 后置1**。这是具名测试组状态，不是产品完成率；整体Wave0–7尚未闭环。本次未重新执行全部业务测试。
+
+- E70 / T-Q03：Root13953已独立复跑Docker导入修复的十门，全部exit0；五次选定测试运行合计161通过（1 import、2 Docker纯例、15 archive、3 architecture、140相关回归）。369文件hash保持，守卫resource_attempts0，独立源码审0/0/0。只关闭E69导入副作用切片；8真实Docker、5真实S3、生产archiver关闭、完整安装仍未验。manifest /tmp/kokoro-r112-agent-docker-root.json SHA4be255d71288b46a0cc663f208631627247cdaef404e8af394408ac423d366fe；独立审 /tmp/kokoro-r112-agent-docker-green-review.md SHA186f866011c7a34b8b7c738580bf365cd74986826e7ce3569ed2619ec61b81c7。
+- E71 / T-Q03：Root71108实际collect-only两门exit0：全部2408、默认2107选中/301未选，369文件hash保持、resource_attempts0。只收集用例，未执行测试体/fixture。最初强制importlib的32个support导入错误来自验证包装选择，不冒称产品失败；已恢复pyproject实际默认prepend，无修改源码/marker/PYTHONPATH。Rootmanifest /tmp/kokoro-r112-agent-full-collection-root.json SHA4a01314e6e9870170d7a42a64b0368c798ae87711a976c57da017c0738314685；原错误manifest378c73bb保留。只读分段1937 pure+170 local=2107，不重不漏，全部仍须真实执行；报告 /tmp/kokoro-r112-agent-default-partition.json SHA81914ecd0c9403f43ccda3e538c2aea44ef9ca76a9e4a59566f2976ecd02a3b4，不把分段准备当通过。
+- T-Q05退回待复测：System新增fresh-name tests-only候选已停写；owner报告12失败/2正控通过/13未选，Root尚未独立复现或接受源码修复。原106纯门通过留作历史，不证明新候选。manifest /tmp/kokoro-r112-system-fresh-name-red.json SHA8c8be970c312b07ee101a701b242d00e3d6e067c64f350e713580881021eb323；源脚本366b886b仍冻结。owner初次zsh包装错误后覆盖同日志的证据缺口保留说明，后继Root须新独有日志，不补造历史输出。真实PG/Redis门未运行。
+
+测试管理责任：Root维护同四台账、独立复测及Git；原Agent/System owner负责各自代码，审查员只读。当前无整组业务测试运行，不把owner开发或collect-only计为执行中。项目生命周期T-C05、失败收费T-B07待决策；支付T-B08后置。以下R111及更早章节仅保留当时证据，不覆盖本摘要。
+
+R112测试台账核对终态：Root `.venv/bin/python -m pytest scripts/tests -q` 实际exit0，1710通过/3跳过/121.25s；日志 /tmp/kokoro-r112-test-status-governance.log SHA9e6f5ed8cea24e303681994d468571173de4d3b7bfbca08e938fabe33ba0ca09。三跳过为SourceNativeComponentTests需要Agent .venv，Root精确类补核skip原因（3 skipped）日志 /tmp/kokoro-r112-root-native-skip-reason.log SHA45c1db61973daa38eb9ae4632b4da88dbcc47636e9cb697d027e144125ef40a1；再以Agent .venv在Root工作树精确类、OS禁网实际补跑exit0，3通过/52 subtests/0.46s，日志 /tmp/kokoro-r112-root-native-complement.log SHA5322a4b73276d287b76664c0de6e75020d2323bd841643c4616c155b88703e72。两环境分别记录，不伪造单次1713通过，也不把测试工具门冒充业务E2E。独立台账初审发现两处旧覆盖态P2已窄修，最终审0/0/0（/tmp/kokoro-r112-test-status-final-review.md SHAff4fb855df783ed6dcff1ec2f0daac5bd408d9b4090ca2008a592747c6996f65，绑定追加本终态说明前四docs）。70组状态不变，历史归档suffix不变；Root仅提交四台账，子仓/uv.lock保留，未启动业务或共享服务。
+
+## R112 原owner任务卡（当前）
+
+上回合R111为progress：Root归档159项实际复测、Docker真实import RED与6f4d12ea四台账提交。完整Wave0–7保持active；原Agent Docker GREEN已停写交付并经Root13953限定复测；System原WIN05 fresh-name tests-only已停写，Root复现/源码授权尚未完成。不重复派工或抢写其他候选。
+
+|任务/测试ID|Owner、角色与基线、写入集|依赖、阶段门、交付|
+|---|---|---|
+|R112-AGENT-DOCKER-ROOT / T-Q03|Root验收；Root6f4d12ea / Agent17c73541+现单文件GREEN，待原owner completed/idle+manifest；只独有/tmp输出|原import及2纯节点、archive15/5、原3架构+140、完整静态/checker；独立源码审与Root实际结果一起放行。8 Docker资源/cleanup债/生产close与安装仍另未验|
+|R112-SYSTEM-FRESH-NAME-RED / T-Q05、T-Q12、T-R02|原WIN05唯一System tests writer；仅test/unit/system-smoke-cleanup.test.ts；Systemaa4e42e5 + script366b886b/teste97a5e00/helper efd2f061。Root唯一Git|真实entry预mock PG/child import，新增显式合法name用于CREATE/DROP；非法名字table（空/前后空白/大写/错误prefix/长度31与33/引号注入/Unicode）在Client/connect/exec前拒绝；现默认UUID行为及14既有cases/错误identity保留。只原helper增输入/恢复env并追加tests，不改原assert。先纯RED+静态，无资源；新0600 /tmp/kokoro-r112-system-fresh-name-red.json后停，Root复现审查后才授权script GREEN|
+
+R112-DOCKER-FINAL-REVIEW：原agent_machine_final_review_r98只读，当前Root6f4d12ea / Agent17c73541与单Docker test a437fa7a、manifestccfc2f13；核原10cases/17assert、lazy probe/secret且fail-loud，原cleanup债未冒称修好。只新0600 /tmp/kokoro-r112-agent-docker-green-review.md，Root另独立复跑；不跑资源/写仓/Git。
+
+R112-AGENT-FULL-COLLECTION / T-Q03：原agent4_execution_owner为验证准备角色（无仓内写权），仅独有/tmp报告/guard。Agent所有owner停写冻结后，沿现通用1604byte guard原OS禁网+repo只读，仅pytest --collect-only全tests及原not integration/not e2e/not acceptance默认筛选；记录各类node数量、任何import副作用/实际退出、全部369源hash与confighash保持。不能运行任何case/fixture/服务/PG/Redis/S3/安装/子进程；collect通过不当全部tests通过。新0600 /tmp/kokoro-r112-agent-full-collection.json，给Root复跑相同冻结命令及下一full suite具体资源列表；不扩大环境重构或移动/排除文件。
+
+R112-AGENT-DEFAULT-PARTITION：原agent4_execution_owner只读预审default2107 node清单，按实际fixture/call图列精确local HTTP/subprocess/特殊repo临时目录case，不排除整文件、不改marker/源码；给Root纯segment及后继完整local segment资源包络，全部2107最终须实跑才关完整source。只新0600 /tmp/kokoro-r112-agent-default-partition.json，资源case未跑不称通过。Root保持全scope，不将分段替代完整门。
+
+R112-SYSTEM-NAME-RED-REVIEW（待派，尚未执行）：原four_owner_fixes_review_r31只读，System aa4e42e5/新tests8416f642/源366b886b/helper efd2f061；核合法CREATE/DROP和非法整串42ASCII/零资源构造、原14cases/85expect及环境恢复、不用setup制造RED。只新0600 /tmp/kokoro-r112-system-name-red-review.md；Root另独立复跑，不操作资源/Git或仓写。原worker早期zsh status包装误用后覆盖同log的证据缺口如实保留，Root新独有日志不伪补旧输出。
+
+System放置裁决：沿原现fresh验证脚本增加显式TEST_SYSTEM_FRESH_DATABASE_NAME测试输入（提供时严格^system_g1_[a-f0-9]{32}$，undefined保持原随机测试名；空值不得当undefined），不是业务API或旧数据兼容层。采用该现入口（使Root事前精确登记/复用现owned进程helper），淘汰pg prototype拦截及新通用资源框架。唯一canonical SQL、公开契约、原23 SQL/assert主体和cleanup对象顺序不变；来源为现TECH/API/DATA及只读preflight00f30efd、existing fixture review6b906242。后继真实PG只用现共享role/自有随机测试库、先确认absence/登记intent、owned进程终态后exact-name补偿；不接Redis/重置共享应用库或扩部署角色。当前只有tests写权，不提前宣称能力/资源成功。
+
 ## R111 冻结候选独立验收（2026-10-02）
 
 上一goal回合R110为progress（真实验证与f775be11提交）；随后仅回答测试进度不计新增progress。本回合已重新读取原 WIN03 实际句柄：turn 01a0fe38-aacb-77a2-8585-7df00bcc351c completed/idle，收到 archive GREEN 交付，继续可执行验收，不新建计划中心或重启服务。完整 Wave0–7 目标保持 active。
@@ -6106,3 +6137,5 @@ R101-BFF-SNAPSHOT-HTTP-READ / T-C06/C09：Root新六发布owner严格W2原31330/
 R102-ROOT-COMPOSITION / T-Q10→T-C06：Root独占精确8路径（Webgitlink、consumer-inventory49已发commit来源、driver/test及四台账），基线84255f24；Webddd38c5 remote main已核、其他owner pins不变。Root73614组合386pass/45.98s/topology PASS/compat13declaredbroken0新violations，Root52486诊断582/Nodecheck0与独立0，49refs/45blob已核。原four_owner_fixes_review_r31只读8路径集成最终审，冻结后Root精确提交普通push，再同owned fresh组六发布owner及原600s严格W2；实际启动/终态以后续原句柄为准，不当计划执行。
 
 R102-AGENT-HTTP-TYPED / 同原测试writer：Root78231已真实36项1fail/35pass/100warnings/11.44s，新Todo及另34通过，唯一旧stale await抛ProgressAuthorityLost；数据库deleted/DB15 empty/child terminal/source unchanged/cleanup0。已另授原WIN03同file仅import typed error+pytest.raises(match original progress lease lost)围住原调用，269原assert/新fixture/Todo/373外围冻结，静态后停写；Root后继R102b新资源wrapper全36复验，保原RED。其他源码/contract/schema/锁/Git不授。
+
+R112-TEST-STATUS-REVIEW：原four_owner_fixes_review_r31只读审同四docs；Root6f4d12ea，冻结更新后hash为基线。核70稳定ID/状态11-1-0-14-41-2-1、E70实际161与十门、E71仅collection、System候选未Root验收、历史suffix不变；仅读证据，不运行业务资源/改仓/Git。只新0600 /tmp/kokoro-r112-test-status-review.md；Root另重跑scripts/tests并精确提交四docs。当前只测试状态整理，不抢占System待派RED审。

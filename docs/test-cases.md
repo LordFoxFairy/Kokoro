@@ -1,15 +1,27 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R111盘点；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R112盘点；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root本轮正式组合cc7bfb78、Webddd38c5已发布并完成同fresh来源核对；E47 Agent限定HTTP真实36通过，候选未发布；E48失败历史保留；E53严格T-C06已终态PASS、正规登录T-L01通过，五项owned残留0/桶回收404；其余按原状态记录，不冒充全部重测。 E49安装失败仍保留；E56 Root定点源码81通过及独立审0，不等于完整安装通过。R109 E62已复现并修复System unknown异常分支，Root十纯门106通过/独立审0，T-Q05恢复限定纯门通过。E63完整contract原失败保留，E64三项修复已Root3/3+140回归通过；E65两codegen、E67六回环已独立真验。E66 archive导入RED已在E68 Root九门/独立审关闭该切片；五真实S3和生产close仍未验，Docker collection已进入tests-first；E49安装失败、完整source/安装与真实资源门未关闭。
+- 当前状态以本页R112摘要、下方测试矩阵与具名证据为准；最新代码变化回待复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49真实安装失败仍未关闭。
 
-## R111 当前推进（2026-10-02）
+## R112 测试计划核对（2026-10-02，当前摘要）
+
+测试总台账仍为 docs/test-cases.md，开发派工与测试验收分开。当前 **70组：通过11 / 失败1 / 执行中0 / 待复测14 / 未验41 / 阻塞2 / 后置1**。这是具名测试组状态，不是产品完成率；整体Wave0–7尚未闭环。本次未重新执行全部业务测试。
+
+- E70 / T-Q03：Root13953已独立复跑Docker导入修复的十门，全部exit0；五次选定测试运行合计161通过（1 import、2 Docker纯例、15 archive、3 architecture、140相关回归）。369文件hash保持，守卫resource_attempts0，独立源码审0/0/0。只关闭E69导入副作用切片；8真实Docker、5真实S3、生产archiver关闭、完整安装仍未验。manifest /tmp/kokoro-r112-agent-docker-root.json SHA4be255d71288b46a0cc663f208631627247cdaef404e8af394408ac423d366fe；独立审 /tmp/kokoro-r112-agent-docker-green-review.md SHA186f866011c7a34b8b7c738580bf365cd74986826e7ce3569ed2619ec61b81c7。
+- E71 / T-Q03：Root71108实际collect-only两门exit0：全部2408、默认2107选中/301未选，369文件hash保持、resource_attempts0。只收集用例，未执行测试体/fixture。最初强制importlib的32个support导入错误来自验证包装选择，不冒称产品失败；已恢复pyproject实际默认prepend，无修改源码/marker/PYTHONPATH。Rootmanifest /tmp/kokoro-r112-agent-full-collection-root.json SHA4a01314e6e9870170d7a42a64b0368c798ae87711a976c57da017c0738314685；原错误manifest378c73bb保留。只读分段1937 pure+170 local=2107，不重不漏，全部仍须真实执行；报告 /tmp/kokoro-r112-agent-default-partition.json SHA81914ecd0c9403f43ccda3e538c2aea44ef9ca76a9e4a59566f2976ecd02a3b4，不把分段准备当通过。
+- T-Q05退回待复测：System新增fresh-name tests-only候选已停写；owner报告12失败/2正控通过/13未选，Root尚未独立复现或接受源码修复。原106纯门通过留作历史，不证明新候选。manifest /tmp/kokoro-r112-system-fresh-name-red.json SHA8c8be970c312b07ee101a701b242d00e3d6e067c64f350e713580881021eb323；源脚本366b886b仍冻结。owner初次zsh包装错误后覆盖同日志的证据缺口保留说明，后继Root须新独有日志，不补造历史输出。真实PG/Redis门未运行。
+
+测试管理责任：Root维护同四台账、独立复测及Git；原Agent/System owner负责各自代码，审查员只读。当前无整组业务测试运行，不把owner开发或collect-only计为执行中。项目生命周期T-C05、失败收费T-B07待决策；支付T-B08后置。以下R111及更早章节仅保留当时证据，不覆盖本摘要。
+
+R112测试台账核对终态：Root `.venv/bin/python -m pytest scripts/tests -q` 实际exit0，1710通过/3跳过/121.25s；日志 /tmp/kokoro-r112-test-status-governance.log SHA9e6f5ed8cea24e303681994d468571173de4d3b7bfbca08e938fabe33ba0ca09。三跳过为SourceNativeComponentTests需要Agent .venv，Root精确类补核skip原因（3 skipped）日志 /tmp/kokoro-r112-root-native-skip-reason.log SHA45c1db61973daa38eb9ae4632b4da88dbcc47636e9cb697d027e144125ef40a1；再以Agent .venv在Root工作树精确类、OS禁网实际补跑exit0，3通过/52 subtests/0.46s，日志 /tmp/kokoro-r112-root-native-complement.log SHA5322a4b73276d287b76664c0de6e75020d2323bd841643c4616c155b88703e72。两环境分别记录，不伪造单次1713通过，也不把测试工具门冒充业务E2E。独立台账初审发现两处旧覆盖态P2已窄修，最终审0/0/0（/tmp/kokoro-r112-test-status-final-review.md SHAff4fb855df783ed6dcff1ec2f0daac5bd408d9b4090ca2008a592747c6996f65，绑定追加本终态说明前四docs）。70组状态不变，历史归档suffix不变；Root仅提交四台账，子仓/uv.lock保留，未启动业务或共享服务。
+
+## R111 推进记录（历史）
 
 完整Wave0–7保持active。上一goal回合R110为progress（真实回归、codegen、HTTP验证及f775be11提交）；随后的人类测试进度答复仅核对状态、不计新增progress。本回合重新核实原WIN03已completed/idle交付，Root实际复测archive切片并启动后继Docker import tests-first，不以等待或计划充当完成。
 
@@ -47,7 +59,7 @@ E51：Root实际9 RED→592 GREEN（37740 exit0/13.34s）、Nodecheck0与独立0
 - E63 / T-Q03：Root46970完整contract实际3行为失败/669通过/6被资源守卫拒绝的loopback setup error/1按原marker未选。三失败为Platform artifact路径归属、metadata cast、acceptance inline ignore；原WIN03新turn已completed/idle并交付精确五文件候选，owner报告原3例/140回归通过，尚未Root复测与审查。六HTTP回环测试须单独真实运行，Platform/Storage两codegen尚未到字节比对；archive导入副作用、完整unit/wheel/sdist/安装仍待验，E49失败保留。
 - 整组测试运行0：原17470/46970已终态；Agent修复进行中不计整组验收正在执行。完整Wave0–7仍未闭环。
 
-## R110 最新切片（当前）
+## R110 最新切片（历史）
 
 E64：Root原3项架构失败修复已3/3复测，四文件140/140及完整Ruff/类型/checker/Failure check通过，369hash保持、独立源审0。E65：固定工具缓存供应后，Root真执行Platform/Storage两个generator --check各exit0，generated/pin不变、私有builder环境残留0；原offline cache缺失失败保留，不是wheel安装。E67：Root原6个loopback真实HTTPtransport6通过/1PG未选，6端口/线程回收确认；非正式IAM/Platform服务。
 
@@ -55,25 +67,18 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
-共 **70** 组：**通过12**；**失败1**；**执行中0**；**待复测13**；**未验41**；**阻塞2**；**后置1**。
-
-通过仅限下表具名范围；完整用户两轮真实聊天E53本轮通过、E48/E40/E28失败历史保留，**整个产品尚未闭环**。本次整理没有重新执行全部测试，读取已有实测输出并核对当前source hash；最近执行时间/版本以证据记录为准。
+共 **70组：通过11、失败1、执行中0、待复测14、未验41、阻塞2、后置1**。通过仅限具名范围/版本；本次没有重跑全部业务测试，整体产品尚未闭环。
 
 ## 本次已完成与未完成（可直接巡检）
 
-**已通过12组**：T-C06本轮完整严格两轮真实模型旅程、T-L01正规IAM表单正向登录，以及T-Q01 Webddd38c5纯门、T-Q02 BFF纯门、T-Q04 IAM纯门、T-Q05 System当前候选纯门、T-Q11诊断纯门、T-C01后端会话列表过滤、T-C11前端共享owner生命周期、T-K01移除假连接成功、T-B01积分定价纯codec、T-R01本次BFF自有资源回收。各自只覆盖矩阵具名范围，不是九服务或用户全链全部完成。
+- **通过11组**：T-Q01/Q02/Q04/Q11、T-L01、T-C01/C06/C11、T-K01、T-B01、T-R01。包括Web/BFF/IAM具名纯门、测试工具诊断、正规登录正向、后端列表过滤、严格两轮真实聊天、Web连接生命周期、删除假连接成功、积分定价纯codec、本次BFF自有资源回收。登录/聊天实际为E53发布组合与本地qwen3:8b，不含用户网关、正式收费或全部Agent/UI能力。
+- **失败1组**：T-Q03 Agent。E49真实安装后checker缺OpenAPI资源仍未复验关闭。后继源码/代码生成/回环HTTP/archive/Docker导入修复有局部实测，不冒充完整source/安装门通过。
+- **执行中0组**：原Root验证句柄已终态，System tests-only候选停写；collect-only和准备分段不等于整组测试执行。
+- **待复测14组**：T-Q05–10、T-L02–05、T-F01–02、T-K02–03。System新测试候选变化，T-Q05由通过退回待复测；其他历史或版本变化均按当前组合重验。
+- **未验41组**：详细见矩阵，包括项目/会话完整交互、独立任务、完整作品生命周期、Skill/MCP实际选择与调用、Todo/工具/审批展示、正式扣款、Home/输入框/布局等。已有局部PG/HTTP/纯测不是整个用户路径完成。
+- **阻塞2组**：T-C05项目移动/归档/删除生命周期；T-B07失败/部分输出/未知成本收费规则。T-B08支付后置。
 
-**失败1组**：T-Q03，E49实际安装后checker缺机器契约资源；E59定点源码已Root139通过/1 generator未执行/独立0，原E57边界失败已修复并复测；E63三行为失败已E64 Root复测3/3关闭，六回环已E67真HTTP6/6通过，两codegen已E65比对通过；archive E66新真实RED正在修复，真实安装未重验，未称安装修好。T-C06旧E48失败在E53修复后严格旅程通过，失败历史不抹除。
-
-**执行中0组**：原17470/46970均已终态；三失败、codegen、loopback验证均已终态；Agent负责人现仅archive fixture修复实际active，未启动整组资源测试。开发进行中不等于测试通过或整组测试正在运行。
-
-**待复测13组**：T-Q06–10、T-L02–05、T-F01–02、T-K02–03；历史证据或版本变化都须按当前组合重验。
-
-**未验41组**：详见矩阵。Todo新增六项实际PG通过（总65）、E47 HTTP文件36通过是T-A01的局部证据；复杂任务策略/BFF/Web仍未验。Home语义纯测通过不关闭T-U01浏览器验收。
-
-**阻塞2组**：T-C05项目移动/归档/删除生命周期、T-B07失败/部分输出/未知成本收费业务规则；T-B08支付后置。
-
-**当前下一步**：archive fixture已E68 Root验收限定切片；Docker collection新缺口tests-first，完整default source/unit/构建/安装；原三失败/两codegen/六回环已各自限定复测通过，不替整链；System当前纯门已验，真实owner资源门独立推进；其他owner独立验收继续按既有任务。登录负例、项目/独立任务、Skills/MCP、Agent过程、正式积分及UI真实矩阵保持待验，支付最后。
+**下一测试批次**：先完成Agent完整默认2107用例与构建/安装门、System新候选Root复现及复测；随后按矩阵依赖进行真实owner组合与浏览器验收。单独保留用户可见的项目/独立会话、Home/输入框、Skills/MCP与Agent过程测试，不以基础门数量替代这些用户路径。支付最后。
 
 ## 范围与记录方式
 
@@ -100,7 +105,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 |T-Q03 / R108-AGENT-PROOF-BOUNDARY-GREEN|checker职责超界导致完整proof边界断言失败|原Root57通过/1失败保留；E59迁移后Root139通过/1 generator未执行、独立0；仅定点源码已验，完整安装仍失败未关|
 |T-Q05、T-R02、T-Q12 / R108-SYSTEM-FRESH-CLEANUP-GREEN|fresh清理短路、原setup原因丢失；后继unknown异常哨兵缺口|原七支5失败/2通过历史保留；E62 unknown两支Root2失败/1正控→修复后Root106纯测通过、独立审0，T-Q05限定关闭；真实资源/T-R02/T-Q12未验|
 |T-Q03 / R109-AGENT-THREE-FAIL-GREEN|完整contract三行为失败、六回环setup被禁网守卫拒绝，两codegen未到比对|E64 Root三项3/3复测与独立源审0，E65两codegen真check0，E67六回环真HTTP6/6通过；原失败历史保留，完整source/安装仍未验|
-|T-Q03 / R110-FULL-SOURCE-PREFLIGHT|Docker integration文件collection先读取MinIO凭据和docker info，marker生效晚；生产S3Archiver无显式close入口|Docker import已E69 Root真实1 behavior RED/成功导入/0资源，原owner仅现test lazy GREEN待验；生产S3Archiver close仍未修；配置env读取本身无输出/连接不升格为新缺陷，不扩大配置重构|
+|T-Q03 / R110-FULL-SOURCE-PREFLIGHT|Docker integration文件collection先读取MinIO凭据和docker info，marker生效晚；生产S3Archiver无显式close入口|Docker import已E69 Root真实1 behavior RED/成功导入/0资源，E70 Root十门/161选定用例与独立审接受现test lazy GREEN；生产S3Archiver close仍未修；配置env读取本身无输出/连接不升格为新缺陷，不扩大配置重构|
 |T-Q03、T-R01|既有archive测试导入时尝试探测ObjectStore，资源归属缺确证|E66真实1行为fail保留；E68 Root九门与独立0接受现file lazy UUID fixture，15默认纯实际通过/5资源未选、原cases保留；真实S3与生产close未验，不以排除整模块或测试tracker冒称生产生命周期修复|
 
 ## 测试任务矩阵
@@ -109,9 +114,9 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 |---|---|---|---|---|
 | T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验且fa4525e4已发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 失败 | E30限定纯门、E32 fresh schema7、E35真实PG65、E47真实HTTP文件36通过；原E46 stale失败经typed-only断言迁移。frozen sync/archive隔离/安装后smoke/retention/正式发布与消费者仍未验，E49现wheel实际安装后checker缺OpenAPI（exit1、零网络、安装临时target已删）；四docs设计门与tests-only独立审查已交付；E54 Root12 RED、E56定点81 GREEN/独立0；E59完整proof与定点合计Root139pass/1 generator未执行、独立0，原E57边界失败已修复；E63完整contract失败历史保留；E64 Root原3失败+140相关回归通过/源审0、E65两个原codegen真check0、E67六原loopback真HTTP6/6通过；E66 archive import在E68 Root1+15+3+140及静态/源审通过后关闭该切片；五S3/生产close未验，Dockercollection tests-first；完整source/unit与真实安装未验，不能宣称完整Agent闭环 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 失败 | E30限定纯门、E32 fresh schema7、E35真实PG65、E47真实HTTP文件36通过；原E46 stale失败经typed-only断言迁移。frozen sync/archive隔离/安装后smoke/retention/正式发布与消费者仍未验，E49现wheel实际安装后checker缺OpenAPI（exit1、零网络、安装临时target已删）；四docs设计门与tests-only独立审查已交付；E54 Root12 RED、E56定点81 GREEN/独立0；E59完整proof与定点合计Root139pass/1 generator未执行、独立0，原E57边界失败已修复；E63完整contract失败历史保留；E64 Root原3失败+140相关回归通过/源审0、E65两个原codegen真check0、E67六原loopback真HTTP6/6通过；E66 archive import在E68 Root1+15+3+140及静态/源审通过后关闭该切片；五S3/生产close未验；完整source/unit与真实安装未验，不能宣称完整Agent闭环。E70 Docker导入修复Root十门/161选定用例通过、独立审0；E71 full2408/default2107仅收集成功，1937+170分段待实际执行，不代表完整source或安装通过 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
-| T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E62：Systemaa4e42e5+冻结source366b886b/teste97a5e00/helperefd2f061，Root17470十纯门exit0、9files106pass/0fail/0skip，197文件hash保持、OS deny network，独立源码审0/0/0。unknown两支先真实RED2fail/1control；仅当前候选纯门，尚未子仓提交或组合发布，真实PG/Redis/freshschema/integration/runtime/provider/image未验 |
+| T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | E62原候选Root十纯门106pass/独立0保留；R112新增fresh-name tests-only（test8416f642/源366b886b/helper efd2f061），owner报告12失败/2正控/13未选，Root复现与后继修复复测未完成。真实PG/Redis/freshschema/integration/runtime/provider/image另未验 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q07 | Platform | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q08 | Storage | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
@@ -184,9 +189,9 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 |---|---|---|---|---|
 |Web|T-Q01正式ddd38c5限定纯门通过（E41/E42）；E20/E22失败历史保留|无业务数据库；E53正向session/adapter真实通过，其他分支待验|T-R02全组未验|T-L01/T-C06具名范围通过；其余L/C/K/A/U按原矩阵|
 |BFF|T-Q02通过限定纯门|T-C01过滤切片通过；全owner资源套件未验|T-R02未验|T-Q10/T-C02 Web消费者未验|
-|Agent|T-Q03失败：E49安装后checker缺资源；E64定点140/3失败回归通过，E65两codegen/E67六回环通过；E66 archive失败，完整source/install未验|E35限定PG65、E47限定PG/Redis/HTTP36通过；其他依赖与故障分支待验|T-R02全组未验|已发布HTTP4参加E53真实模型旅程通过；未发布HTTP5安全过程T-A未验|
+|Agent|T-Q03失败：E49安装后checker缺资源；E64定点140/3失败回归通过，E65两codegen/E67六回环通过；E66 archive导入失败已E68关闭、E69 Docker导入失败已E70关闭；E71仅collection，完整source/install及真实S3/Docker/production close未验|E35限定PG65、E47限定PG/Redis/HTTP36通过；其他依赖与故障分支待验|T-R02全组未验|已发布HTTP4参加E53真实模型旅程通过；未发布HTTP5安全过程T-A未验|
 |IAM|T-Q04本次通过限定纯门|现host51通过；全部真实schema/PG/Redis/OAuth矩阵待复测|T-R02全组未验|E53固定tenant正向浏览器T-L01通过；T-L02–05负例/权限仍待复测|
-|System|T-Q05限定通过；E62当前候选Root106纯测/独立审0；E60缺口历史保留|真实PG/HTTP/身份/路由T-S未验|T-R02未验|BFF/Agent实际绑定T-S02未验|
+|System|T-Q05待复测；E62旧候选Root106纯测/独立审0保留历史，新fresh-name候选待Root复现与后继复测|真实PG/HTTP/身份/路由T-S未验|T-R02未验|BFF/Agent实际绑定T-S02未验|
 |Billing|T-Q06待复测；T-B01纯codec通过|真实钱包/ledger/T-B03–07未验或决策阻塞|T-R02未验|正式收费未验；支付后置|
 |Platform|T-Q07待复测|真实PG/IAM/Storage/Connect授权待验|T-R02未验|Skills/MCP使用T-K未验；身份cutover T-G01未验|
 |Storage|T-Q08待复测|E53限定真实作品/下载hash通过；完整上传/scan/故障/GC T-F待复测或未验|T-R02全组未验|E53发布组合BFF/Agent限定旅程通过；完整T-F与Platform消费未验|
@@ -291,8 +296,8 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 
 ## 下一测试批次（依赖顺序）
 
-1. T-Q03：安装tests-only已交付并独立审查0；Root先独立复现RED，再最小源码修复与安装后的真实checker/CLI/DDL门。源树或局部PG/HTTP通过不覆盖E49安装失败。
-2. T-Q05已依E55当前完整纯门/Root复跑/独立审验收；下一推进System真实integration/freshschema/runtime T-S/T-R的隔离资源门，先核owner自有入口与回收，不重复纯门或把纯门冒充资源成功。可与Agent独立推进。
+1. T-Q03：E70导入切片已验，E71仅收集成功；完整默认2107实际执行（含170 local）、构建/wheel/sdist与真实安装checker/CLI/DDL仍需验证。源树或局部PG/HTTP通过不覆盖E49安装失败。
+2. T-Q05新候选回待复测：Root独立复现fresh-name tests-only失败，再由原owner最小script修复，冻结后Root完整纯门与独立审；其后System真实integration/freshschema/runtime T-S/T-R资源门。可与Agent独立推进。
 3. T-C02–05、T-C07–10、T-L02–05、T-U01–04：项目/独立会话、路由和草稿、竞争/取消/恢复、登录负例、真实Home/输入框/布局。T-C06、T-L01已按E53关闭具名范围；不反复等待结束句柄或重测已关闭路径来替代推进其他分支。
 4. T-P01–05、T-F01–05、T-K02–07、T-A01–06：按owner artifact与依赖顺序验证独立任务、上传/作品、Skill/MCP选择与授权、Todo/工具/审批/子Agent及五时点刷新。E53限定作品证明不覆盖整组T-F03及其他失败恢复分支。
 5. T-S01–02、T-G01、T-Q10/12、T-R02–04：当前契约组合、单应用库owner schema、系统模型路由、Platform身份收敛及全owner最终研发验收。
