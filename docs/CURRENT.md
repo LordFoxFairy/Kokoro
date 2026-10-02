@@ -1,3 +1,14 @@
+## R107 测试任务盘点（2026-10-02，当前唯一摘要）
+
+测试计划唯一入口为docs/test-cases.md；开发派工task.md，运行证据progress.md。Root基线57e4c2f0；当前70组：11具名通过/1失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置。不是研发完成百分比。System新增测试候选变化，T-Q05回待复测；E55已验版本97通过保留，不当当前候选成功。
+
+- E56：Root73736 Agent定点81pass/1generator未执行、Ruff/直接Node类型0、独立源码审0。Rootmanifest /tmp/kokoro-r107-agent-installed-green-root.json SHA9416a41da6a0dcef1fb32a9420cb8319216c261a747e5b3eb520d354a5c2f9a6，log SHAb176226339ea138b86c4f7cd10a400082098821c633dc3feb39d65f307371e1a；不是完整source/安装门，E49/T-Q03失败保留。
+- E57：原WIN03仅inventory一行同步，完整proof实际57pass/1fail（checker214行违反原<200断言）；manifest /tmp/kokoro-r107-agent-proof-inventory-green.json SHAa0d98325fde3554142854f18ed2c4f1442675fc92cdd3f56527601a919288231，虽文件名green，实际exit1。原断言/七source冻结，owner已idle停写；Root新失败复现与后继裁定未完成。
+- E58：原WIN05 tests-only新cleanup纯入口1fail/2pass/5旧例未选；database.end抛错后DROP/admin.end不执行，setup原因丢失。manifest /tmp/kokoro-r107-system-fresh-cleanup-red.json SHA352e1aa815ab0f2a1162996fb812932bd14f3cfbcc334da49ea5381e3e252bd4；197外围不变、生产脚本冻结、owner已idle。Root新失败复现/审查未完成，不当真实PG资源测试或已修好。
+- 两owner原窗口本次实际状态均idle；不存在新整组资源运行。下一先Root复现/审查上述失败→原owner最小修复→完整安装/资源与浏览器验收。项目生命周期T-C05、失败收费T-B07仍待决策；支付后置。E53正式登录和严格两轮真实聊天按具名发布组合保留：实际本地qwen3:8b，不含用户OpenAI网关、Billing或安全过程全部展示。
+
+以下旧章节只保留当时状态，不覆盖本节或当前测试矩阵。保留Agent/System/Billing/uv.lock任务外修改，Root本次仅四台账，不启动/重启共享服务。
+
 ## R106 原owner并行推进：Root安装RED与System纯门（2026-10-02，当前）
 
 当前70测试组：12具名通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置。新增关闭仅T-Q05当前纯门，完整产品和Wave0–7仍未闭环。

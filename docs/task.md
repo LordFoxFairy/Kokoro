@@ -1,3 +1,20 @@
+## R107 测试盘点验收任务
+
+Root唯一四台账writer；只更新当前状态、E56–58和版本变化，70ID及归档正文保护。当前11/1/0/14/41/2/1；System测试候选变化回待复测，历史97通过保留。独立只读审查+Root治理验证；不把owner报告当Root新失败已复现，不操作子仓/锁/Gitlink/服务。
+
+## R107 Agent冻结验收与System最小清理修复（2026-10-02，当前）
+
+上回合为progress：57e4c2f0已提交/普通push0；T-Q05当前完整纯门Root97/0/0且独立审允许验收，70组12/1/0/13/41/2/1。完整Wave0–7不变，Root不抢写原WIN03 Agent源码。
+
+|任务/测试ID|Owner/基线/范围|阶段门与完成条件|
+|---|---|---|
+|R107-AGENT-GREEN-ACCEPTANCE / T-Q03|原WIN03七源码GREEN已冻结并由Root验收定点门；后继proof交接已idle，Root57e4c2f0/Agent17c73541+已授权候选；Root仅在manifest冻结且owner停止后复跑+审|E56 Root73736定点81pass/1generator未执行/静态0、独立源码0；不算真实安装。原E49安装失败保留；后继完整source/proof inventory同步/build/install各单独放行，不放宽完整checker|
+|R107-SYSTEM-FRESH-CLEANUP-RED / T-R02、T-Q12|原WIN05唯一tests writer，Systemaa4e42e5 clean；仅现test/unit/system-smoke-cleanup.test.ts；现scripts/verify-system-fresh-schema.ts与smoke-cleanup.ts/其他源/SQL/contract/锁/docs冻结|先真实入口纯失败回归：fresh脚本真实finally在database.end或DROP抛错仍尝试其他回收；保留原setup错误和所有cleanup失败；CREATE未成功不得DROP。mock PG/child beforeimport，无网络/DB/Redis/监听/进程，原5测试与断言保留，新增case只按name跑。Root实际RED+独立审后才授权现fresh脚本GREEN；其他integration/runtime/Redis默认回退先登记，不能顺手重写|
+|R107-AGENT-PROOF-INVENTORY-SYNC / T-Q03|原WIN03唯一Agent tests writer；仅现tests/contract/test_execution_proof_artifact.py的OWNER_INVENTORY末尾追加已批准helper；其余375冻结清单除该文件不变，source7冻结|Root73736精确81pass/1未执行/静态0、独立源码审0；Root81420原proof inventory正例实际1fail/57deselected/guard0，差异仅新helper。保原10项顺序和所有assert/function bytes，补fixture复制闭包，不改provenance/SQL/source/contract/锁。E57完整58项实际57pass/1fail（checker214行违反原<200断言），静态0，manifest后已停；Root复现新失败/审查裁定后再完整源树/build/install，T-Q03仍失败|
+
+
+放置：仅扩System已有unit cleanup测试，随后现fresh-schema脚本的清理语义；不建新fixture框架/模块或Root第二测试中心。API/SQL/owner与canonical schema不变，已有runCleanup可复用，资源隔离属测试研发正确性，不扩部署运维。当前源码实现授权尚未发出；E58 owner1fail/2pass/5未选已冻结，Root复现待执行，候选测试不提前关闭T-R02/T-Q12。
+
 ## R106 Agent安装源码与System当前纯门（2026-10-02）
 
 上一goal回合为progress：e59f8688测试台账当前态修正已提交/普通push实际0；309治理与独立0，70任务状态保持。完整Wave0–7目标active。
