@@ -1,3 +1,31 @@
+Root当前final组合fresh门95pass0fail47.01s/exit0（/tmp/kokoro-root-r80-final-composition-tests.log），topology PASS，compatibility exit1仅13declaredbroken/violation0/extra0；原三个子仓已发布精确pins与metadata82refs+新reason同步，未清零edge状态。六W2owner现工作树clean，原3310无listener/82316不存在，准备新的独有bucket与original资源句柄；正式Billing本轮不在W2，不将模型旅程代称扣款通过。
+
+## R80 正规登录组件发布及真实旅程待重跑（2026-10-02）
+
+Web maina118ac8a76dc2e41a49511b739c31d5742ff510a 已Root exact4path commit/push/remote exact，源码/finalindex独立0P0/P1/P2，真实Next+Redis+Chromium fixture68pass0fail0skip20.99s、完整check246contract/50architecture/2298unit0fail0skip+lint/types/build0。上游为fixture替身而非真实IAM owner；正式账户/模型/费用全链仍待真实旅程。原RED与finalproxy头覆盖的真实失败保留，未放宽断言/CSRF/同源策略。
+
+Agent main17c73541ae5d9f123d85cf531a79503df5c463bd 四D0已Root exact4提交/push/remote exact，P1/P2修关独立0、Root4全文/旧body+370外围逐项保护+finalindex0；producerartifact尚未写，不称实现。Billing maine04bff9b216849180918fcc0f948686283e92205 纯数学3paths已发布，原五dirty docs保护；不是真实费率/授权赠送/扣款链。Root本组合仅3gitlinks及既有metadata实测证据引用，不修改edge状态13broken/3active。
+
+Root Scheduler fresh精确已安装go1.26.8纯选择47顶层/82事件/9package0fail0skip、exit0（/tmp/kokoro-scheduler-r80-root-pure-fixed-toolchain.jsonl），工具链初次自动选择失败日志保留；与Storage50纯均非资源集成。
+
+后继任务卡：原WIN03只读strict usage producer artifact准确字段/generator/测试切片（不写仓），原WIN06只读M1B不可变rate/policy canonical schema与Repository切片（不写仓/原五docs）；Root持有新实际W2六已发布cleanowner源码freeze与所有资源，期间不授这些六仓写入。下一W2沿已发布细phase且原完整两轮/refresh/file断言，600s窗口不改；不跑第二服务或清共享数据。完整Wave0–7active，原uv.lock保护。
+
+## R80 正规计价基础已发布与真实登录跨层失败续修（2026-10-02）
+
+Billing main e04bff9b216849180918fcc0f948686283e92205 已Root精确3新路径commit/push/remote exact；source/finalindex独立0P0/P1/P2，Root fresh format/lint/两tsc/临时全编译/旧contract17+24/SQL/diff0、完整纯1109pass0fail0skip18.92s。284tracked+44gen+原五D0/dirty全文保持，未改main/quote或真实价格/FX，未声称预占结算/资金链通过。Web/System组合 Root4abd3d68de0224aed11ab999fdce7adc7c52cd9e已发布，Root治理95/两gitlinks精确pin事实保持。
+
+登录corrected真实RED18642仅HTMLexpired303目标失败（3pass1fail64filteredskip）；原WIN01局部route GREEN独立Sol0，但Root全Next+Redis+Chromium资源门27012真实67pass1fail，发现最终proxy覆盖no-referrer。Root完整pnpm check6884同样2297pass1fail/2298，contract246/architecture50/lint/typecheck0但build未到，不虚报通过。源已303空/login，剩精确隐私header由最终proxy承接；Root扩R80-W04-CONSENT-P1现src/proxy.ts这一现文件，仅exact consent POST设置no-referrer，不改globalconfig/其余路径，原安全断言不放宽。原WIN01单writer补窄控制/freeze，再Root真实完整门。
+
+Root Storage选定五文件50pass/0fail、5files、2.66s（/tmp/kokoro-storage-r80-root-private-pure.log），仅私有投影pure，非对象下载/实际PG/IAM。Scheduler首次Root wrapper因GOSUMDB off使工具链自动选择在执行测试前退出，旧log保留；改用已安装精确go1.26.8 binary/GOTOOLCHAIN local，原47测试选择/资源隔离不变，结果待柄94127。未重置共享Redis/PG/桶，所有Nextfixture由原afterAll回收。
+
+## R80 Agent D0 独立门退回与用量发布顺序裁决（2026-10-02）
+
+Agent新四前缀独立Astra0P0/1P1/1P2，旧正文4/4 byte-exact。P1：RunRequest提前强制逐attempt Billing admission，与Billing attempt生成后/provider前创建的生命周期冲突；P2：双方artifact先后顺序倒置。Root采用最小一致方案：launch受信付款/消费授权上下文和逐attempt预占严格分离，禁止虚构Run级预占资源或借某attempt许可覆盖整Run；launch新增授权引用只有IAM/Billing具名正式契约确定后才列breaking写集。每attempt provider前获独立Billing许可及actualbinding/预算，安全门不删除。共同冻结语义→Agent strict evidence producer artifact先发布→Billing admission/接收契约固定消费→Agent消费Billing→必要BFF消费切换；纯artifact不等待运行服务。
+
+原WIN03仅继续修自己四D0新增前缀（原正文/370外围仍保护），提供精确保护manifest及原hash；不改机器/source/SQL或新计划。修后Astra复审与Root实际四文档保护门；未放行前不提交Agent D0。Billing M1A纯数学基础并行，不靠新wire，价格/预占/费用全链仍pending。
+
+Root登录Next+Redis第一次真实RED41756 exit1：68collect=2pass2fail64filteredskip。目标HTMLexpired确为403而expected303；另畸形query测试错误期望404而现真实403，原WIN01仅test-only校准该control到既有validator契约后Root重跑，不改source迎合错误断言、不削弱zero上游/不重定向。其余资源由原fixtureafterAll回收，原共享状态不reset。
+
 R80当前Root组合fresh治理门：95pass/0fail46.99s、exit0（/tmp/kokoro-root-r80-composition-metadata.log）；两gitlink精确暂存后topology PASS，compatibility exit1仅13declared broken/violation0/extra0（/tmp/kokoro-root-r80-composition-compatibility-staged.log）。初次尚未暂存gitlink的预检错配如实保留在旧log，不作为终态；没有修改门禁来清零。组合仅两已发布子仓gitlink、49Web+2System原blob引用、现三台账，state13broken/3active不变。
 
 ## R80 项目任务组件已发布与登录窄切片续派（2026-10-02）
