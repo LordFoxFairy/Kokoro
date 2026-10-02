@@ -1,3 +1,12 @@
+## R100 测试盘点任务（2026-10-02）
+
+|任务|Owner/角色/基线/范围|完成条件、依赖与交付|
+|---|---|---|
+|R100-TEST-LEDGER / 全70测试ID|Root唯一四台账writer；Root main 569b7d6b；仅docs/test-cases.md、task.md、progress.md、CURRENT.md；保留Agent/Billing/uv.lock与两诊断文件修改|核已有Root PG59/schema7/Web完整2320与发布hash、原窗口状态；更新稳定ID/状态/证据/未完成分支，保护旧历史全文；统计/证据与Git diff检查及独立只读审；Root按四路径提交。非新业务测试运行|
+|R100-TEST-LEDGER-READ|four_owner_fixes_review_r31，原只读审查员；同四台账及E31–E34证据|核70行/统计/状态移转/限定通过、不将worker GREEN或PG断言计作整组通过；不写项目/Git、不执行资源。Root唯一集成与最终报告|
+
+后继保持原任务卡：WIN03独占Todo PG测试文件，Root诊断GREEN待独立复验；Web Home语义修复先现tests真实RED再实现，不能用已发布纯门关闭真实Home。完整Wave0–7不缩小，测试ID修复后原ID复测；T-C05/T-B07需用户决策但不阻其他独立工作面。
+
 ## R97 正式机器契约实施与已发布Web组合（2026-10-02）
 
 上一回合是progress：Root d7775567提交完整70组测试台账与E24/E25，未缩小Wave0–7。原WIN01/03真实句柄均idle/last turn completed；不重复启动原终态进程。Root保留Billing/uv.lock与Agent源阶段已验冻结；同仓单writer。

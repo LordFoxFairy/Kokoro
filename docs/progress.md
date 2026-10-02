@@ -1,3 +1,15 @@
+## R100 测试任务状态核对（2026-10-02，最新）
+
+唯一测试台账仍为docs/test-cases.md，完整70组：8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置。本轮只核已有Root终态日志、manifest、Git与当前窗口句柄；未重新执行全部业务测试。开发任务完成、自动化断言通过和完整用户验收是三个不同层级。
+
+- Web正式main b49797b1已发布且工作树clean，Root原21275完整check：249contract/50architecture/2320tests及lint/typecheck/build通过，独立审0（E33）。T-Q01关闭为本仓限定纯门；Root gitlink仍85403f3，新发布源码尚未完成Root组合与真实浏览器验收。Home简报/设计/游戏草稿语义仍错配，T-U01保持未验/已知缺陷。
+- Agent Root真实PG原69992终态exit0：三个integration文件59通过；原2035终态exit0：fresh schema安装/拒重入/catalog drift 7通过。两独有测试库均创建后删除、cleanup=[]、源hash不变（E31/E32）。Todo专属PG append/replay/fencing覆盖仍在原WIN03追加，未交付、不计通过；T-Q03/T-A01/T-Q12整组未关闭。
+- T-Q11：R99新增诊断源码已变化，worker局部GREEN交付但Root尚未复跑/最终审查，故由历史通过移回待复测（E34）。与T-Q01状态互换，总通过数仍8；不把诊断成功当真实聊天成功。
+- T-C06仍为E28严格真实两轮失败second-partial-active；进行中刷新、作品、隐私后继链尚未全部满足。正式积分、Skills/MCP、审批和最终研发验收未闭环。
+- T-C05项目生命周期、T-B07失败/部分输出/未知成本计费规则仍为两项待决策；支付后置。当前没有整组业务测试运行，Agent测试编写进行中不记为“整组测试执行中”。
+
+R100本次实执行：原98214终态exit0，python3 -m pytest -p no:cacheprovider scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py scripts/tests/test_contract_checkpoint.py -q，309pass/22.00s；/tmp/kokoro-r100-test-ledger-governance.log（0600），SHA256 dbedaf4ff9295fea1041a7eb68ef0da2549f21fa070939b840c7a0713a85bb8a。统计/34证据引用、Web已发六源码hash与Git clean、历史矩阵与HEAD逐字节保护实核通过；该纯工具门不新增产品通过组，独立台账审查/tmp/kokoro-r100-test-ledger-review.md（0600）已交付，P0/P1/P2均0。首次进度追加误找不存在R99标题为setup错误，零文件写入，不计业务失败。
+
 ## R98 测试台账核对与Agent限定纯门终态（2026-10-02，最新）
 
 唯一测试台账仍为docs/test-cases.md：70组，8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置。Home生产变更使T-Q01从历史通过回到待复测，不把历史门当当前通过。既有下文各R96/R97/R98章节保留当时状态，当前计数以本节和测试矩阵为准。
