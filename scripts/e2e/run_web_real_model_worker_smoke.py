@@ -231,7 +231,7 @@ def _query(infra, database_url: str, query: str) -> object:
 
 
 def register_owned_worker_runs(infra, database_url: str, ownership) -> None:
-    """Allow cleanup of the one real run even when Chromium reports a failure."""
+    """Validate all isolated journey Runs before granting their cleanup scope."""
     rows = _query(
         infra,
         database_url,
@@ -239,12 +239,26 @@ def register_owned_worker_runs(infra, database_url: str, ownership) -> None:
           'run',run_id,'session',request_json::jsonb->>'session_id')),
           '[]'::json) FROM kokoro_agent.kokoro_agent_run""",
     )
-    if not isinstance(rows, list) or len(rows) > 1:
+    if not isinstance(rows, list) or len(rows) > 2:
         raise SmokeError("real model owned Run inventory drift")
+    runs: set[str] = set()
+    sessions: set[str] = set()
     for row in rows:
-        if not isinstance(row, dict):
-            raise SmokeError("real model owned Run identity drift")
-        ownership.register_run(row.get("session"), row.get("run"))
+        if not isinstance(row, dict) or set(row) != {"session", "run"}:
+            raise SmokeError("real model owned Run inventory drift")
+        session, run = row["session"], row["run"]
+        if not all(
+            isinstance(value, str)
+            and re.fullmatch(r"[A-Za-z0-9_.:-]{1,191}", value) is not None
+            for value in (session, run)
+        ):
+            raise SmokeError("real model owned Run inventory drift")
+        if run in runs or (sessions and session not in sessions):
+            raise SmokeError("real model owned Run inventory drift")
+        runs.add(run)
+        sessions.add(session)
+    for row in rows:
+        ownership.register_run(row["session"], row["run"])
 
 
 def worker_owns_lease(owner: object, process_group: int) -> bool:

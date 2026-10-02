@@ -1,3 +1,17 @@
+## R67 原十窗口已实际全部续接
+
+Root逐一即时快照确认WIN01–10均active/inProgress；原WIN01继续Web public4 tests-only，WIN02已从Root真实9pass/2fail进入BFF事务内稳定拒绝修复，WIN06已从独立五D0审通过进入官方生成实现；其余七窗口分别承担Agent语义、IAM资格、计价合同、MCP消费、文件失败矩阵、Scheduler事务审及双轮纯探针。具体精确边界见同task R67，不建立新任务中心。Root不占owner writer，独占Git/资源/集成验收；没有新应用服务/数据库启动。窗口数量不是完成证据，候选仍需独立审与Root复验。
+
+Billing五D0/README final独立0P0/P1/P2，Root contract:check17v1+24v2通过；现2.0.2仍候选未发布/HTTP未接。BFF第二独立fresh installer资源RED11tests9pass2fail，稳定503≠409；两旧错误不掩盖，owned全部回收。Root双轮cleanup前置当前40/67与full1158/3skip/455subtests通过，source独立0审；本轮仅其两文件+三台账小片发布，排除uv.lock与owner dirty，不称双轮浏览器/赠送/扣费通过。Wave0–7仍active。
+
+## R66 三仓并行进入代码切片，Root 双轮 cleanup 已真实 GREEN
+
+上一轮Root939e659f已推送与postcommit topology PASS。当前原WIN01 Web public4四D0 frozen c44863e2/f4b57406/c1c0887b/4bd12dee独立0P0/P1/P2，4body/748tracked/public4owner hash真实保持，现继续完整tests-only矩阵；不是文档代表消费者接通。原WIN06 Billing三machine GREEN Root771pass/0skip12.42s及format/lint/两tsc、独立0审，fresh README digest失败已原writer精确修复，Root contract:check 17+24通过，四当前D0/README等待独立门；正规HTTP/生成/赠送收费链仍待。原WIN02 BFF现仅receiver四tests追加，Root436frozen、prefix30547及独立0审；首次单文件runner没做owner fresh install0/11缺表，不算业务RED，已完整回收，第二runner显式owner canonical installer后11tests真实9pass2fail0skip（1.988596s），两prepared暂停恢复503≠409，原7例及accepted/privacy controls通过；owned资源已回收且tracked保持/cleanup空/Redis15余0，原11fail不隐藏。
+
+Root双轮owned inventory先真实13=7fail6pass；Sol发现插入不在EOF且少non-list/空白保护，按实际HEAD完整29087bytes+EOF重建（不改旧tests）后17=9fail8pass、P2关闭0审。现函数全量校验0–2Run/exact row/合法有界身份/唯一Run/同Conversation再登记，坏后项零登记。现file40pass1.75s，相关owned lifecycle67pass3.26s；全文Root工具门1158passed/3skipped/455subtests、124.66s，/tmp/kokoro-root-r66-{two-turn-inventory-green,owned-lifecycle-regression,full-governance}.log。source审0P0/P1/P2。最终test只去EOF新多余换行，语义原断言不动；初diff --check问题保留修正。不称浏览器双轮/模型/账务运行已过。
+
+Root当前切片仅source/test+同三台账，排除uv.lock/各owner未交接dirty；完整Wave0–7 active，最近一次standard150/0与13broken保留，当前源码门不冒称全仓研发上线。后续完整driver exact两POST/两receipt/四Message/活动态刷新仍须源码与真实验证，不仅扩大cleanup数量上限。
+
 ## R65 十窗口真实续派与已发布组件推进
 
 Root逐一检查原WIN01–10，派发前全部已结束（WIN05 notLoaded），并非十个持续运行；现已实际10次续派后逐一snapshot全部active/inProgress。当前同task的R65各仓负责人/只读审/精确范围为唯一任务卡，Web仅四D0当前前缀写入，Billing当前38追加tests冻结并停写等待审核；其他独立用户旅程/模型计价/授权/文件/任务审并行。Root独占Git/共享资源，不开重复窗口、应用或数据库。

@@ -769,3 +769,68 @@ def test_system_owner_smoke_passes_system_selector_to_actual_installer_environme
         "schema": ["system"],
     }
     assert "PGOPTIONS" not in env
+
+
+@pytest.mark.parametrize("count", [0, 1, 2])
+def test_r66_failed_journey_registers_every_valid_owned_turn(monkeypatch, count):
+    m = module()
+    registered = []
+    rows = [
+        {"session": "conv_two_turns", "run": f"run_bff_turn_{i}"}
+        for i in range(count)
+    ]
+
+    class Ownership:
+        def register_run(self, session, run):
+            registered.append((session, run))
+
+    monkeypatch.setattr(m, "_query", lambda *_: rows)
+    m.register_owned_worker_runs(None, "owned-db", Ownership())
+    assert registered == [(row["session"], row["run"]) for row in rows]
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [
+        None,
+        {},
+        [{"session": " ", "run": "run_bff_turn_0"}],
+        [{"session": "conv_two_turns", "run": " "}],
+        [
+            {"session": "conv_two_turns", "run": f"run_bff_turn_{i}"}
+            for i in range(3)
+        ],
+        [
+            {"session": "conv_two_turns", "run": "run_bff_turn_0"},
+            {"session": "conv_two_turns", "run": "run_bff_turn_0"},
+        ],
+        [
+            {"session": "conv_two_turns", "run": "run_bff_turn_0"},
+            {"session": "conv_unrelated", "run": "run_bff_turn_1"},
+        ],
+        [{"session": "conv_two_turns", "run": ""}],
+        [{"session": "", "run": "run_bff_turn_0"}],
+        [{"session": "conv_two_turns", "run": 7}],
+        [{"session": None, "run": "run_bff_turn_0"}],
+        [{"session": "conv_two_turns"}],
+        [{"session": "conv_two_turns", "run": "run_bff_turn_0", "extra": True}],
+        [
+            {"session": "conv_two_turns", "run": "run_bff_turn_0"},
+            None,
+        ],
+    ],
+)
+def test_r66_failed_journey_rejects_invalid_inventory_before_registration(
+    monkeypatch, rows
+):
+    m = module()
+    registered = []
+
+    class Ownership:
+        def register_run(self, session, run):
+            registered.append((session, run))
+
+    monkeypatch.setattr(m, "_query", lambda *_: rows)
+    with pytest.raises(m.SmokeError):
+        m.register_owned_worker_runs(None, "owned-db", Ownership())
+    assert registered == []

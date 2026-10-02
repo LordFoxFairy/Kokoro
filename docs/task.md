@@ -1,3 +1,67 @@
+## R67 并行代码续派：复用原十窗口，当前三个仓唯一 writer
+
+Root main939e659f；原十窗口均真实存在；本轮续派前快照Web active，其余阶段交付idle/notLoaded，并非此前十个持续运行。继续原负责人、不新建重复窗口；续派后Root逐一即时快照确认十个均active/inProgress。Web public4 tests-only原授权不变；BFF进入以下实测RED→GREEN；Billing四D0/README独立0P0/P1/P2及Root contract:check 17+24 PASS，进入正式生成精确切片。Root仅本轮五path清理前置发布、Git/index/资源/集成验收。只读窗口按新可执行边界续接，不把重复调查/窗口数量当进度。
+
+### R67 七个只读窗口续接（不占同仓写入权）
+
+|窗口|本轮推进任务|验收/边界|
+|---|---|---|
+|WIN03 Agent协议审|审正式resume拒绝/原pause保留/多项一次batch/重复键与native consumption真正闭合，给缺少的最小可执行纯断言|d131/e977基线，只读；不得重做已通过8codec探针|
+|WIN04 IAM资格|把已交付赠送提案收敛为平台运营资格与租户owner/admin两种政策的最小差异、现事实源复用与撤权负例|只读，不替用户授新角色，不发token/入账；明确唯一待决策项|
+|WIN05 模型计价|按用户1.4可调倍率给Billing持久定价快照/Agent逐模型usage原事实的最小合同草案及先RED切片|只读，无价格猜值/secret/provider网络，不改System或Billing|
+|WIN07 Platform消费|只核正式MCP consumer版本/类型缺口，精确现生成入口与两个合法/非法response断言|只读，Skills安装调查已完不重复；不得触凭据|
+|WIN08 Storage文件|上轮调用链基础上核失败上传/扫描未clean/引用撤权/作品下载的真实现consumer断言，交可独立最小切片|只读，无共享对象库/服务/SQL操作，不再泛化列完整旅程|
+|WIN09 Scheduler审|独立审本轮BFF prepared暂停修复事务设计、租约最后fence/删除race/拒绝重放矩阵|只读变化树标基线，冻结前不称最终审；不改BFF|
+|WIN10 双轮验收|实用现snapshot helper构造两个ordered receipt的合法控制与首轮全文漂移/重复ID/水位反例，确认完整driver缺口|只读源码；探针只/tmp/纯函数无资源，不写Root测试或driver；不得重复单Run inventory修复|
+
+各窗口独立交付具体文件/失败断言与owner，不开后台服务，不重置资源；Root三仓关键路径保持。无需让窗口持续空转，完成即停写/释放。
+
+### WIN02 / BFF prepared receipt 生命周期 GREEN
+
+唯一writer原WIN02，main3c08a422；tests-only manifest5ff57b83/文件4c0e06f4、prefix30547真实保持。第二owned canonical installer后11tests实际9pass2fail0skip1.988596s，prepared暂停恢复两例503≠409；原7例及accepted/privacy对照通过。日志/tmp/kokoro-bff-r66b-full-root-integration.log；资源closed/tracked=true，cleanup空、Redis15余0，无无关库删除。首次42P01缺表失败仍保留。
+
+采用现receipt→task锁序在同事务保存未接纳业务拒绝及原响应，淘汰事务外重读task后settle（TOCTOU）与accept false一律503。既有accept入口升级具名判别结果，区分accepted/terminal business rejection/claim lost；正式202及租约终末fence保持。允许仅src/application/ports/scheduled-agent-dispatch-repository.ts、src/infrastructure/postgres/scheduled-agent-dispatch-repository.ts、src/http/routes/scheduler.ts，及两现integration tests中直接accept调用的机械新类型消费/EOF新负例。现scheduler-dispatch-receipt.integration.mjs、scheduled-agent-dispatch.integration.mjs原assert语义与race/lease覆盖不降低；不新增文件/Schema/API/contract/deps，不触public4/其他owner、不取消已accepted head。缺失/非本人404、paused/inactive409、revision drift稳定拒绝分别明确，租约真正丢失仍503无事实写。freeze后Root资源完整复验和独立source审。commit/index仅Root。
+
+### WIN06 / Billing 正式 generated artifact 切片
+
+基线main1564510；三machine2cd4c37d/2ac97f48/3b367e73及四D0/README frozen。设计位置沿已审TECH：scripts/generate-billing-api.ts只官方TypeScript+schemas(json)两plugin；scripts/billing-api-artifacts.ts只closed registry/provenance/drift；src/generated/billing-api/{index.ts,types.gen.ts,schemas.gen.ts,provenance.json}只生成物。排除handwritten业务schema、SDK/client、SQL、HTTP/runtime及其他owner。新普通文件按这三角色建立，不新增模块/进程。允许package.json/pnpm-lock.yaml仅官方生成工具精确依赖与generate/check命令；本轮不安装尚未使用的Nest adapter/Ajv runtime，不借机升级现依赖。扩现test/contract/openapi-v2-target.test.ts EOF生成正负/双次一致性回归，原206全文保护；先真实RED再实现，源码入口缺失只作早期失败，不冒称深层assert已测。版本安装前查官方registry/primary文档并记录精确版本/许可/engine，随后frozen lock、原43 schema/ref/unit metadata语义完全一致、绑定闭合集合/未知导出或ref拒绝/全bytes drift/hash版本故障；全部生成未经手工修改。三machine当前业务约束与四历史dirty正文/fifthIMPLEMENTATION_PLAN保护；D0仅本次事实小段允许更新，不虚构发布/HTTP/赠送/扣费。冻结所有文件与其他原tracked证明后Root重跑完整pure/static/generation，独立审再提交。
+
+## R66 Root receiver 资源前提修正（不是业务RED）
+
+第一owned runner46011终态：选单receiver文件但未执行canonical owner fresh install，11tests0pass11fail0skip（42P01缺表，不计暂停业务RED）；与full Node默认多文件先安装后共享事实不同。数据库bff_full_r66_45e19ea37d264414已回收、tracked保持/cleanup空/Redis15余0，不改source/tests或掩盖初失败。Root下一唯一runner在新owned同role库显式运行owner pnpm db:apply-schema与KOKORO_BFF_POSTGRES_URL=?schema=kokoro_bff后build/同整个11tests；不手建schema/table、不重置共享PG/Redis、不改assert。临时runner初生成因build字符串定位误用在内存assert停止，零资源与文件写，随后按实际result=run定位重建。
+
+## R66 Web D0 独立通过，完整 public4 tests-only RED
+
+四冻结c44863e2/f4b57406/c1c0887b/4bd12dee，native Astra0P0/P1/P2；四原body bytes、748其他tracked、54候选路径及published3c08a422/public4 digest5561450b实核一致。Root已读完整当前TECH/API/DATA职责与验证，开始同WIN01唯一writer。允许仅TECH R65“精确测试集与RED位置”现文件EOF追加；fixtures/fakes只可末追加完整public4 builder，不改原fixture/test全文。先按wire/head、queued/START/FIFO、reload/cursor、HITL/control、真实UI交互六矩阵追加最小能证明完整用户切片的RED，集合/revision/ref/ACK/privacy/cursor/epoch原保障保持，不为凑case机械铺满26文件；每组真实语义失败而非missing imports/typecheck/collection。现exports可运行unknown wire→parse或现consumer/mock HTTP，不依赖尚不存在的export。不先迁pin/source/generated、机械provenance旧assert待GREEN改，四D0字节保持。
+
+worker只定点pure/static/合法control（不得shared资源/e2e/Git），报每组实际失败位置/哪些因schema先失败尚未到深层；freeze精确路径/原HEAD prefix/其他tracked证明。Root复验＋独立tests审后立即授完整54候选内必要source及正规生成，同片完成而非半套普通chat激活；ordinary UI布局/CSS/依赖/权限/route/SQL仍排除。
+
+## R66 Root 双轮inventory 精确 GREEN
+
+R2 EOF prefix29087bytes真实保持，17case9fail8pass23deselect0.16s、独立Sol0P0/P1/P2关闭原P2。Root仅scripts/e2e/run_web_real_model_worker_smoke.py现register_owned_worker_runs函数：允许失败路径0–2 legit owned Runs，先完整list/row exact/run-session bounded字符串与唯一Run同Conversation校验，再逐个交现AgentRedisOwnership登记，坏后行零登记；保query/来源/Ollama/所有driver/其他test/资源层。此只是全双轮旅程cleanup前置；成功仍须后继完整browser exact两receipts/四Message/活动续流，不把本片称E2E。冻结原17assert与其他原test，定点完整门/Root对应资源生命周期回归及独立source审后小切片提交。
+
+## R66 Root 双轮inventory RED审查返修
+
+独立Sol 0P0/0P1/1P2：首次新增实际为旧末尾test前单点插入（不是EOF），旧字节零删除但原prefix声明不准确；保留初7fail6pass日志。Root已将同块精确移到真实EOF，重新从原HEAD完整bytes+追加重建，原函数全部字节保持；补外层非list None/object和session/run纯空白四负例，再真实RED。source/全部原assert/资源仍锁，冻结新hash交原独立审，关闭P2后仅现Fn GREEN（完整validate再登记），不造新helper层。
+
+## R66 Root 双轮真实模型验收前置：owned Run inventory tests-only
+
+WIN10独立已定位现formal driver仍单轮，源码register_owned_worker_runs因len>1拒两合法Run；现AgentRedisOwnership已支持逐Run登记，无需新资源层。Root唯一writer仅scripts/tests/test_web_real_model_worker_smoke.py EOF追加纯行为矩阵：失败路径本次owned inventory0/1/2合法Run登记、完整两Run同Conversation/不同Run；第三Run、duplicate、错session/类型/空身份、额外字段零登记拒绝。先调用现函数产生真实RED，保全原test前缀/source不改、不新文件、不启动服务。此只为完整双轮cleanup前置，不把允许1Run失败清理当单轮成功兼容；后继成功报告仍需exact两receipts/四Messages/两POST及活动态刷新，保Ollama显式来源与产品权限/交付guard。独立审后Root同现函数精确source GREEN，再给完整driver三现文件真正双轮源码，不只扩大数量上限或假通过。
+
+## R66 Billing machine 已实际 GREEN，README/四D0事实对齐
+
+Root原句柄75668终态exit0：Node24完整unit/contract/architecture29files771passed/0fail/0skip12.42s、format/lint/两noemit tsc exit0，含206不重复累计；/tmp/kokoro-billing-r66-root-machine-green.log。Sol三hash/反向字节审0P0/P1/P2，P1 selection关闭，仅机器事实，不是HTTP运行。Root fresh contract:check真实exit1，17旧v1 parity先过，README目标digest仍旧而expected2cd4c37d，/tmp/kokoro-billing-r66-root-readme-red.log。
+
+原WIN06唯一writer继续仅contract/README.md版本段目标2.0.2/唯一v2 provenance digest2cd4c37d与最顶一段当前source验收说明；v1/其他正文保护。仅四现docs的R59当前前缀收敛为“2.0.2 machine/checker候选已Root771pure，尚未发布/生成/HTTP”；不改旧正文或第五IMPLEMENTATION_PLAN。TECH当前官方生成列表schemas.json纠为schemas.gen.ts，并明确官方index.ts/types.gen.ts/schemas.gen.ts＋provenance.json，无SDK/client；43原component/$ref/unitmetadata逐语义保持，Ajv2020按closed #/components/schemas keys注册原对象，unknown/ref严格拒，no-coerce/default/remove，unitannotation仅合法metadata且owner checker/provenance锁。生成配置/registry/provenance由已批准scripts/generate-billing-api.ts/billing-api-artifacts.ts后继承接，不另造业务schema/改ref；Nest adapter12.0.1/Ajv8.20.0/formats3.0.1/HeyAPI0.99.0是probe核验事实，安装前后继重新核验，不称已安装。
+
+该卡仍不放生成器/source/newfiles/manifest/lockfile/SQL/Git/资源；三machine字节冻保持，四prefix及README精确diff→contract:check实际GREEN→独立D0审后立即续授正规生成。Web四D0/新增BFF receiver tests另仓并行，Root不抢写。
+
+## R66 已发布组合后继续代码闭环：BFF receiver tests-only
+
+上一goal turn为实际progress：Root939e659f已推送，精确两gitlink与217 refs、95治理通过/独立0审；不是窗口状态复述。当前完整Wave0–7 active。原WIN01 Web四D0仍live，原WIN06 Billing三machine已冻2cd4c37d/2ac97f48/3b367e73，Root当前全pure/static原句柄75668验证中；不启动重复任务。
+
+BFF暂停/删除只阻止未accepted occurrence、不取消已接纳head，现三面已确定：TECH/API/DATA的receipt→task→scope→dispatch锁序与durable replay。WIN09只读在published3c08a422定位恢复prepared snapshot后跳状态检查、accept false被统一映503；这是源码推导，尚非真实RED。只续原WIN02作为BFF唯一writer，main3c08a422/clean：仅现test/scheduler-dispatch-receipt.integration.mjs末追加生命周期矩阵，原全文前缀/全部source/contract/schema/docs/生成/deps/Git保护。合法claim→prepareSnapshot→releaseRetryable(0)与真实完整launch，暂停→store重开同key应409 scheduled_task_not_active/零scope/dispatch/Conversation/Message；恢复后同旧key保持拒绝，新occurrence只接纳一次；accepted→pause/restart同key仍原202/固定run、不清head不取消。保租户/subject/不同digest零越权写controls。无sleep/加timeout/missing import伪RED；worker无PG/Redis资源权，freeze后Root实际真实资源RED与独立审再精准source。历史查询/queued取消另需owner三面契约，不在本片猜新API。
+
 ## R65 Billing auth-selection 精确 machine GREEN 放行
 
 Root真实206=169pass/37fail/0skip4.26s；Sol冻结68169ba6独立0P0/P1/P2、42471-byte原168前缀保持，合法control先过后35mutants漏拒绝。原WIN06只读固定Prettier内存候选776→791，现同脚本单一契约事实校验职责，不新增文件/目录。仅续授既有三machine文件：YAML两GET新增同exact selection；checker非目标operation拒任何extension、目标使用现matchesContractValue exact四字段对象（presence三marker/full configuredServiceBearer selection/403/no fallback）；原withApprovedPersonalReads合法helper仅一处新增同对象赋值，原168+新38全部断言/mutations保持。其余文件按worker原其他266 tracked冻结清单保护，四D0/旧body/source/README/generator/deps/资源/Git仍锁。freeze+Root206/fullpure/static及独立审通过后再正规生成，不冒称HTTP运行语义已实现。
