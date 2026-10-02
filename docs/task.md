@@ -1,6 +1,6 @@
-## R117 接续执行卡（2026-10-02，RED进行中，不授权GREEN）
+## R117 接续执行卡（2026-10-02，RED已交付并Root复现，不授权GREEN）
 
-R117派工事实：Root4c46ab37已向原WIN03线程01a0f887-9797-7021-9b00-afae40b8429d（local）仅发送本卡tests-only，模型请求gpt-5.6-sol/medium；一次原cursor191精确poll确认新turn01a0fede-ba75-7363-9cbb-9010e0a360ed实际inProgress，当前cursor `3a08a485-69ce-41c3-a7c6-23cc37d4b100:192`。这是已在执行的子切片，不是通过；后继先查同句柄，不重复派工/启动服务。Root R116全部自有句柄已终态，Root独占Git，writer只三现tests；完成后停写由Root复现RED才可另授GREEN。
+R117最新状态：原WIN03同turn01a0fede-ba75-7363-9cbb-9010e0a360ed已由cursor196确认completed/idle（cursor `3a08a485-69ce-41c3-a7c6-23cc37d4b100:196`），仅现test_factory.py新增一条RED。Root27328独立1失败/1既有正控/0跳过，E87记录progress.md；自然完成后client close=0缺陷成立，生产未修改、无GREEN授权。独立只读agent4_execution_owner确认范围，并指出caller-owned空正控、真实native drain及生产backend构造未覆盖。下一先收敛有效测试覆盖/生命周期设计，再续派同writer，不重复服务/资源；Root独占Git，保留原候选。
 
 R116已实际source-wheel重建/安装、四布局64负例与installed PG单布局通过，原79158/46156/80323均终态，370源冻结结束。下一不是反复重跑关闭的包门：先关闭已明确生产S3Archiver客户端资源缺口，再沿原发布/HTTP消费者与用户旅程推进。完整Wave0–7保持，其他子仓/Root uv.lock修改保留。
 
@@ -9,6 +9,8 @@ R116已实际source-wheel重建/安装、四布局64负例与installed PG单布�
 |R117-ARCHIVER-RED / T-Q03、T-R01、T-R02|原WIN03 Agent唯一writer，gpt-5.6-sol/medium；Root193ca01c/Agent2653bcc+既有53文件候选；先保存Git diff与允许tests当前hash。仅现tests/unit/sandbox/test_workspace_archive.py、tests/unit/agents/test_factory.py、tests/unit/execution/test_supervisor.py追加RED；其他source/SQL/contract/locks/docs/Git禁止写，现原断言不删不弱化|读Root AGENTS/CODEBASE_MAP/手册/Agent三设计及 `/tmp/kokoro-r116-archiver-preflight.md`。先真实生产路径证明自建client/实际backend/handle/supervisor正常终态、waiting、stale、异常/取消退出后close=0的缺口；不得以fixture补偿、missing import、共享资源缺失、源码fake或删模块制造RED。unit可用测试侧记录型client，明确不是S3 integration；另正常plain backend/caller-owned控制。保存独有0600输出和精确节点/生产基线hash，跑完停。Root独占复现、独立审、Git，未验不宣称修复|
 
 已批准全局资源生命周期规则；本片owner/API/SQL不变，不新建服务/模块。后继GREEN最小现四生产文件archive.py/backend.py/agent_factory.py/worker/supervisor_execution.py，需先Root接受RED与明确设计/错误/owning责任后单独授予，不由本卡提前授权。内部创建boto client由archiver拥有、caller-owned控制client不得关闭；关闭必须在真正native drain后，primary/cancel与close错误均保留。plain backend合法无资源不是旧代码兼容fallback。源hash/contract/provenance机械更新后继Root单独授权，禁止worker手填生成物。
+
+R117并行只读卡：原four_owner_fixes_review_r31审查现四生产文件的caller ownership、native drain、primary/cancel与close错误、CAS/partial-build回收，唯一私有报告；原agent_machine_final_review_r98核对本片transport/SQL不变与已有official provenance/source inventory更新入口，唯一私有报告。不运行服务/资源、不改仓/Git，Root保留设计裁决和实际RED复现，原WIN03仍唯一三tests writer。基线Root9cff113a/Agent2653bcc+候选，注入docs/CODEBASE_MAP.md与相关手册；不是将总体架构分包发明。
 
 ## R116 当前推进（2026-10-02）
 

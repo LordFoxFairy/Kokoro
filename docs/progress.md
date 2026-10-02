@@ -1,4 +1,16 @@
-## R117 派工观测（2026-10-02）
+## R117 / E87 测试进度核对与真实RED（2026-10-02）
+
+用户要求的是测试任务台账而非开发task，继续维护同一docs/test-cases.md的70稳定组与原矩阵。Root9cff113a/Agent2653bcc+既有候选；原WIN03同turn01a0fede-ba75-7363-9cbb-9010e0a360ed由cursor196确认completed/idle，仅tests/unit/agents/test_factory.py新增回归，无生产修改。owner报告只作交付，不作为最终通过。
+
+Root27328独立运行精确新node `tests/unit/agents/test_factory.py::test_terminal_supervisor_closes_factory_owned_s3_client_after_drain` 与既有 `test_builds_native_agent_without_external_clients[chat]`，实际pytest exit1：1 failed/1 passed/0 skipped/92第三方warnings/1.33s。正式Factory→Supervisor自然完成事件成立，随后close_calls为0、预期1；不是缺method/import/凭据/fixture补偿失败。Python3.14现owner环境，禁自动pytest插件/禁dotenv与字节码；原pure guard+OS拒绝网络/仓库写入，resource_attempts0、336明确保护文件hash保持、自有进程组已终态，未启动服务或触碰PG/Redis/S3。
+
+唯一新私有manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r117-red-root-t1owvhh8/manifest.json` SHA07df88f72e3c3b48e9fd1e7d7f6da51a75e48ab294a157bd2a8914ad50f42045；日志同目录run.log，完整命令/阶段/源hash在manifest。测试hash7573150796b021aaadb8dbf900b2d00078dc3bd8bc2a1f8be5caa40b7475fe84。parent记录进程成功只代表记录完成，pytest实际exit1保留。
+
+原agent4_execution_owner只读独立核对报告/实际source，接受自然终态close=0 RED；明确三项边界：backend是预建真实对象注入，不覆盖make_backend_for_run构造；caller-owned对象仅创建不接入是空正控；await supervisor task及completed快照不证明活跃native/S3线程排空。后续补有效控制/分支，不把本片称全部资源生命周期通过，尚无GREEN授权。T-Q03从待复测→失败，70组12/1/0/13/41/2/1；152规则报告及两业务决策/支付后置仍保留。此轮未重跑全部业务/浏览器，不冒充当前全组合。
+
+R117台账验证：Root23154现三套治理工具测试305通过/2.55s/exit0，日志 `/tmp/kokoro-r117-ledger-check-CDRLkq/run.log` SHA f1e3833e88b6e1d817d3e6c8fc9edec1f589ed05aeb5bf702a6fb7fd597d483c。逐行解析核70唯一ID及12/1/0/13/41/2/1，历史归档suffix与HEAD逐bytes一致；初次私有核表错误按六列断言已纠正为实际五列，未改业务/测试门或历史结果。此305仅治理工具回归，不计新增用户能力通过。
+
+## R117 初始派工观测（历史）
 
 Root4c46ab37后已授权原Agent owner仅三现tests补archiver正式释放链RED；原句柄一次poll实际inProgress（详task.md），尚无测试结果。初次Root JS编排SyntaxError在工具调用前失败，未发送；纠正后只发送一次且原cursor192确认新turn，不重复任务。此节只记录执行观测，不计修复/验收。
 
