@@ -20,7 +20,13 @@ R93-WEB-FINAL / T-Q01、T-Q10：原WIN01 public6精确17路径已停写冻结，
 
 R93-ROOT-COMPOSITION：Root唯一writer仅更新 apps/kokoro-app、apps/kokoro-bff 两gitlink、verification/contracts/consumer-inventory.json已发布blob provenance与现四台账；不改机器checker、runner或任何owner源。当前旧pin真实topology exit1，/tmp/kokoro-r93-pre-composition-topology.json。Web来源统一取已发布a6c651b、BFF bb610ea/public6与owner canonical75ef，重算实际committed blob SHA，保16edges/13broken/3active与历史证据。IAM Root运行pin仍固定已正式发布e3c035b（SDK/relay/验收同一版本），新70a2b015仅两doc并已发布main；不为文档提交强迫重打不可变SDK或改消费者安全pin，primary按标准git submodule update恢复该固定checkout，main ref及远端70保留，无未提交改动丢弃。Root集成适当纯门、拓扑/compatibility并独立审后提交；最终同fresh执行树同步新RootSHA，严格真实旅程另验。独立Astra agent4_scope_gate_r19只读审同JSON及两gitlink，基线6d68bcc3+当前235来源更新，报告/tmp/kokoro-r93-composition-review.md，不改文件/Git/资源，不清零broken边。
 
-R93 Root组合验收：原70947终态exit0，95pass/0fail/48.88s；topology PASS，compat原99544 exit1仅13原declaredbroken/0violations。独立Astra0P0/P1/P2，304引用/234去重blob核正确；/tmp/kokoro-r93-composition-review.md。Root仅两gitlink/JSON及现四台账精确提交，任务外uv.lock/Billing/Agent source保留，随后原fresh执行树同步这个已发布组合，不称运行旅程已完成。
+R93 Root组合验收：原70947终态exit0，95pass/0fail/48.88s；topology PASS，compat原99544 exit1仅13原declaredbroken/0violations。独立Astra0P0/P1/P2，304引用/234去重blob核正确；/tmp/kokoro-r93-composition-review.md。Root仅两gitlink/JSON及现四台账精确提交/普通push820eb8c472936d5accdd05e8ac92439f38eea3a6，原59696终态0。任务外uv.lock/Billing/Agent source保留。
+
+R93-W2-RUN / T-C06/C09/C10/F03：Root唯一资源owner，原fresh执行树已同步已发布820eb8c4；六HEAD/clean/gitlink实核。原69258首次终态exit1：Storage/System为初次clone中断遗留空index/工作树，先证两个owned目录无任何源文件/未提交内容，再仅本临时树标准force checkout，六门通过；不碰live repo。原23375两worker限并行frozen六依赖全部exit0。原85033 gen产生Storage纯trailing-space drift，使用现已提交normalize-generated后原25328 exit0、六源byte-clean；不手改生成物/Schema/环境文件，IAM仅ignored client。manifest /tmp/kokoro-r92-w2-source-prep.json保存原失败attempts/最终pins与6依赖句柄，source准备不计产品通过。
+
+执行使用/tmp/kokoro-r93-real-w2.py及私密来源/helper SHA记录/tmp/kokoro-r93-w2-launch-preflight.json；只换发布checkout/准确pins与owned日志，未改Root runner。先六source guard与既有qwen3:8b库存preflight，再独有r78前缀随机bucket及原严格W2；600s/两POST四Message/活动与终态刷新/全文/唯一作品hash/其他成员404/cleanup不变。原共享PG/Redis/MinIO/ClamAV/Ollama复用，不拉模型/重启共享设施，不含Billing收费。不启动3310用户preview。日志/tmp/kokoro-r93-root-real-w2.log，owned manifest /tmp/kokoro-r93-root-w2-owned.json，Root独占串行runtime；原WIN03只在live独立Agent仓实现，不影响已发布fresh Agent17c。
+
+R93-W2-RUN实际终态：Root820eb8c4当前六owner发布组合真实W2已终态exit1；第二轮发送观测为req0/res0/fail0、admission-rejected、reconnecting，尚未证明具体根因。原PTY3023/PID47969已终态；cleanup=[]，独有桶删除且404确认，未含Billing收费。完整两轮/刷新/作品/他人拒绝目标仍失败，不用已通过纯门代替。 最新失败代码product-send-click-t2-req0-res0-fail0-net-none-ui-blocked-admission-rejected-conn-reconnecting，同test-cases E17与progress；下一只读定位第二轮准入/重连，不授改断言、延长预算、免费路径或共享资源重置。
 
 ## R92 已发布组合的隔离验收准备（2026-10-02）
 

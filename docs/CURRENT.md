@@ -1,3 +1,7 @@
+## R93 最新真实旅程结果与测试台账（2026-10-02）
+
+Root820eb8c4当前六owner发布组合真实W2已终态exit1；第二轮发送观测为req0/res0/fail0、admission-rejected、reconnecting，尚未证明具体根因。原PTY3023/PID47969已终态；cleanup=[]，独有桶删除且404确认，未含Billing收费。完整两轮/刷新/作品/他人拒绝目标仍失败，不用已通过纯门代替。 测试仍70组：9限定通过、1最近失败、0执行中、16待复测、41未验、2决策阻塞、1支付后置。详见test-cases E17；后续定位第二轮准入/重连边界并原ID复测。
+
 ## R93 当前发布与测试进度（2026-10-02）
 
 完整Wave0–7保持active，Root基线6d68bcc3。IAM缺提交导致fresh clone失败已修：原e3c源及新两doc70a2b015普通发布main；Root938纯门与现host51真实PG/Redis通过、独立最终0；同fresh目录原54930初始化exit0。Root仍以标准submodule固定e3c运行/SDK/relay pin，main70引用保留，不为doc提交改安全版本。Web正规BFF6消费Root249contract/50architecture/2309tests、独立0，17路径已精确发布a6c651b；未变UI/Team15/生命周期三源。Root两gitlink及49Web/186BFF来源当前组合95pure pass/独立Astra0/topology PASS；compat仍16edges/13declaredbroken/3active、0新增误差，不称全链通过。Agent原五unit真实19fail/229pass/4deselected、独立0，原WIN03已授现15source/caller/fakes GREEN；机器/SQL/资源仍锁。测试台账70组现9限定通过/1最近失败/16待复测/41未验/2决策阻塞/1支付后置；T-C06真实聊天仍原product-send-click失败未复跑，不称完整闭环。

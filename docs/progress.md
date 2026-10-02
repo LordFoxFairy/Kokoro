@@ -1,3 +1,11 @@
+## R93 最新测试执行记录 / T-C06（2026-10-02）
+
+Root820eb8c4当前六owner发布组合真实W2已终态exit1；第二轮发送观测为req0/res0/fail0、admission-rejected、reconnecting，尚未证明具体根因。原PTY3023/PID47969已终态；cleanup=[]，独有桶删除且404确认，未含Billing收费。完整两轮/刷新/作品/他人拒绝目标仍失败，不用已通过纯门代替。
+
+- 实际命令与版本：/tmp/kokoro-r93-real-w2.py沿未改严格runner，fresh Root820eb8c4和六owner固定HEAD；现qwen3:8b库存preflight、冻结依赖和owner生成物正规归一后运行。日志/tmp/kokoro-r93-root-real-w2.log，归属/完整pins/evidence入口/tmp/kokoro-r93-root-w2-owned.json。失败分类暂为用户路径发送准入/连接观测；没有证据将根因归为模型、IAM或生命周期。
+- 测试台账更新E17和T-C06最新失败，70组计数9/1/0/16/41/2/1不变；先前E04与E12失败保留历史。不重复盲跑或启动3310。下一Root/原WIN10只读定位第二轮准入与重连观测，然后明确owner测试切片。
+- 原WIN03实际cursor85仍active，报告unit workspace archive模块导入尝试MinIO桶探测未成功、5skip；后续收集排除该模块，无资源成功或完整纯门验收声明。该项需交接原进程与资源状态，不能将skip清零。Agent源/机器阶段仍分开；没有冻结交付则不关闭T-A或T-Q03。
+
 ## R93 发布缺口修复、消费验收与Agent实施（2026-10-02）
 
 上一回合progress：Root四台账已提交6d68bcc3，70组测试按实际失败追踪；本回合沿同goal不缩小Wave0–7。先核原WIN01/03 actual handles：均idle/完成后才续派，不重复启动。任务外uv.lock、Billing原dirty与Agent四D0保护；Root唯一Git/index/资源执行者。

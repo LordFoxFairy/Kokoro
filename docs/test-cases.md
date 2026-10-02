@@ -7,7 +7,7 @@
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root6d68bcc3；BFF bb610ea/public6已发布，Web正式a6c651b消费切片Root重跑完整门通过/独立审0；Root两gitlink与235来源正在组合验收。IAM固定e3c源码已正式推到远端，main70a2b015只新增两doc；Root938纯测及现host51/51通过，原fresh目录六owner初始化复跑exit0，E12原失败仍留历史。Agent17c73541四D0与五unit真实19 RED已审0，原WIN03精确源码GREEN进行中；Billing e04bff9纯codec冻结未发布。活动工作树不作为最终验收源。
+- 截至本次盘点：Root820eb8c4；Web a6c651b、BFF bb610ea/public6、IAM e3c源码已发布，限定纯门与组合来源已验收。新六owner干净发布源码真实W2已执行并失败，详见E17；不是仅沿用旧截图。Agent原WIN03源码GREEN仍进行中，尚未冻结交接；其unit资源模块导入探测及5skip另列进度，不能当完整纯门通过。Billing纯codec尚未发布，正式收费未验。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
@@ -41,7 +41,7 @@
 | T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 未验 | R82已知delete fire-and-forget竞态 |
 | T-C04 | BFF→Web | 显式分享/撤销；私有链接不冒充公开分享；另一用户不可读/控制 | 未验 | R82分享文案与真实权限不一致；正负例都需验 |
 | T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 阻塞 | 产品删除/移动规则与正式API未裁决；不猜级联行为 |
-| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E04：最近W2 product-send-click；当前新组合还未复跑 |
+| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 失败 | E17：当前820eb8c4六owner真实复跑exit1，第二轮零请求、准入拒绝/重连；根因待定位，E04保留历史 |
 | T-C07 | BFF→Agent | 同会话FIFO/同key重放/双tab同时提交；一活动head，无重复执行 | 未验 | 队列正常也须竞争负例；跨会话允许并行 |
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
 | T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 未验 | 完整用户旅程仍未通过 |
@@ -124,6 +124,7 @@
 |E14|IAM实现e3c035b不变；只doc新70a2b01554eee39520a9dc2b27cbb649954cf413普通推送远端main|Root Node24原27902完整verify exit0：102files938pass0fail0skip及format/lint/types/contract/breaking/SDK/build；/tmp/kokoro-r93-root-iam-verify.log。原73738现host真实PG/Redis51pass0fail0skip/71.80s，/tmp/kokoro-r93-root-iam-host.log；独立Sol最终0，/tmp/kokoro-r93-iam-publish-final-review.md。原54930同fresh目录六owner初始化exit0，manifest attempts保原失败；运行资源仍未创建，非浏览器登录|
 |E15|Web正式a6c651b1c22a86cacfe282486193d743fca3ca3a；正规BFF bb610ea/public6 canonical75ef消费|Root Node22原81297完整pnpm check exit0：249contract/50architecture/2309tests（163files）及lint/types/build；/tmp/kokoro-r93-root-web-public6-check.log。独立Sol0及17授权/735外围hash与owner原bytes匹配，/tmp/kokoro-r93-web-public6-review.md；Root仅补CURRENT摘要后精确17路径commit/push。Team15/lifecycle三源不变，无format脚本N/A；不替真实Web→BFF列表或W2|
 |E16|Root6d68bcc3+两gitlink Weba6c651b/BFFbb610ea及235已发布来源迁移；其余owner pin不变|原70947三组合pure测试终态exit0：95pass/0fail/48.88s，/tmp/kokoro-r93-root-composition.log；topology PASS，compat原99544 exit1仅13declaredbroken/16edges/0violations，无新错误。独立Astra0，304引用/234去重blob核正确，/tmp/kokoro-r93-composition-review.md。仅来源组合验收，最终fresh与浏览器/广泛契约边仍待验|
+|E17|Root820eb8c472936d5accdd05e8ac92439f38eea3a6；六发布owner pins见owned manifest；600s严格两轮旅程不变|原3023/PID47969已终态exit1：REAL_MODEL_FAILURE:product-send-click-t2-req0-res0-fail0-net-none-ui-blocked-admission-rejected-conn-reconnecting；/tmp/kokoro-r93-root-real-w2.log、/tmp/kokoro-r93-root-w2-owned.json及其中evidence。cleanup=[]，bucket_cleanup_exit=0且删除后404确认；不含Billing收费，不把第二轮失败之前的步骤计成整组通过，具体根因待定位。|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 
@@ -143,9 +144,9 @@
 
 ## 下一测试批次（依赖顺序）
 
-1. T-C11已在Web a52a623按真实RED→GREEN/Root完整门/独立审验收；E05/E08/E10原失败保留历史。下一原WIN01正规BFF6 D0/tests-only RED→生成消费，不把生命周期验收当真实聊天通过。
-2. T-Q10/T-C02：IAM缺提交发布与Web正规BFF6消费已有限复验；继续Root组合provenance/机器门与同一fresh checkout最终SHA复验→独立与项目浏览器列表。不重复clone或启动服务。
-3. T-C06/T-C09/T-C10/T-F03：原严格两轮真实模型旅程，含活动/终态刷新、全文、receipt下载及另一用户拒绝；不放宽预算与断言。
+1. T-C11已在Web a52a623按真实RED→GREEN/Root完整门/独立审验收；E05/E08/E10原失败保留历史。正规BFF6消费已由E15验收发布；不把生命周期或契约验收当真实聊天通过。
+2. T-Q10/T-C02：IAM缺提交发布与Web正规BFF6消费已有限复验；Root组合来源/同fresh最终SHA复验已完成；完整main-only与独立/项目浏览器列表仍待验。不重复clone或启动服务。
+3. T-C06/T-C09/T-C10/T-F03：E17严格真实旅程第二轮失败；先定位准入/重连边界，补对应owner回归再复测活动/终态刷新、全文、receipt下载与另一用户拒绝，不放宽预算与断言。
 4. T-K04–07/T-A01–06：按owner artifact先后接选择/授权/安全过程，实际Skill/MCP/审批/作品与五时点刷新。
 5. T-B02–07：真实证据→授权赠送/余额→预占→结算或恢复；支付T-B08最后。其余矩阵随对应切片持续复测，不能遗忘到最后。
 
