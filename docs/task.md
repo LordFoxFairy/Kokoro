@@ -1,3 +1,37 @@
+## R117 接续执行卡（2026-10-02，先RED，不授权GREEN）
+
+R116已实际source-wheel重建/安装、四布局64负例与installed PG单布局通过，原79158/46156/80323均终态，370源冻结结束。下一不是反复重跑关闭的包门：先关闭已明确生产S3Archiver客户端资源缺口，再沿原发布/HTTP消费者与用户旅程推进。完整Wave0–7保持，其他子仓/Root uv.lock修改保留。
+
+|任务|Owner / 基线 / 写入范围|依赖 / 验证 / 交付|
+|---|---|---|
+|R117-ARCHIVER-RED / T-Q03、T-R01、T-R02|原WIN03 Agent唯一writer，gpt-5.6-sol/medium；Root193ca01c/Agent2653bcc+既有53文件候选；先保存Git diff与允许tests当前hash。仅现tests/unit/sandbox/test_workspace_archive.py、tests/unit/agents/test_factory.py、tests/unit/execution/test_supervisor.py追加RED；其他source/SQL/contract/locks/docs/Git禁止写，现原断言不删不弱化|读Root AGENTS/CODEBASE_MAP/手册/Agent三设计及 `/tmp/kokoro-r116-archiver-preflight.md`。先真实生产路径证明自建client/实际backend/handle/supervisor正常终态、waiting、stale、异常/取消退出后close=0的缺口；不得以fixture补偿、missing import、共享资源缺失、源码fake或删模块制造RED。unit可用测试侧记录型client，明确不是S3 integration；另正常plain backend/caller-owned控制。保存独有0600输出和精确节点/生产基线hash，跑完停。Root独占复现、独立审、Git，未验不宣称修复|
+
+已批准全局资源生命周期规则；本片owner/API/SQL不变，不新建服务/模块。后继GREEN最小现四生产文件archive.py/backend.py/agent_factory.py/worker/supervisor_execution.py，需先Root接受RED与明确设计/错误/owning责任后单独授予，不由本卡提前授权。内部创建boto client由archiver拥有、caller-owned控制client不得关闭；关闭必须在真正native drain后，primary/cancel与close错误均保留。plain backend合法无资源不是旧代码兼容fallback。源hash/contract/provenance机械更新后继Root单独授权，禁止worker手填生成物。
+
+## R116 当前推进（2026-10-02）
+
+本轮新增实际证据E84–86：当前候选重建包十步安装门全0；source-wheel已安装CLI首次成功/重复拒绝，21表/206列/216constraints/42index definitions与规范一致，六recipe漂移拒绝及rollback、自有fixture库精确回收通过。完整115依赖/370源冻结，原WIN03 idle，没有共享服务重启。详细manifest/hash/实际失败历史与边界仅维护在progress.md的R116，不再在每份文档复制完整运行日志。
+
+70稳定测试组仍 **12通过 / 0失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**。T-Q03仍待复测；E86当前四布局64真实安装负例/219步骤已由Root79158终态通过，installed HTTP/S3/Docker/生产archiver close/HTTP5发布消费者、全部owner同库schema与完整用户能力尚未闭环。当前DDL只覆盖source-wheel venv及所列catalog属性/六漂移，不将其当全部数据库恢复或四布局DDL门。父级admin SQL包络有界性后继待验，E75标准152规则报告仍在。完整Wave0–7保持active，支付最后。
+
+## R116 执行卡（2026-10-02）
+
+上回合progress：Root193ca01c整合Agent配置/fixture与System fresh工具三个子提交，完整Wave0–7继续active。本波只使用现已批准安装门，不新建重复计划中心；Agent唯一源writer原WIN03保持idle，Root独占Git/实际安装与PG资源。
+
+|任务|Owner / 角色 / 基线与范围|依赖 / 验收|
+|---|---|---|
+|R116-BUILD-ROOT / T-Q03|Root193ca01c/Agent2653bcc+冻结HTTP5候选；只私有tmp/current build输出，source/contract/SQL/lock只读|新构建当前source wheel/sdist，完整115 runtime、仓外-I真实installed checker/inspect/origin/RECORD，原venv回收；原build cache已存在不盲删。OS禁网/精确离线工具缓存，不改依赖；产物hash、全source含未tracked helper冻结。成功后四布局与负向向量沿同artifact闭环|
+|R116-INSTALLED-NEGATIVE-PREFLIGHT|原agent_machine_final_review_r98，只读当前distribution_assets/checkers/原tests/安装ADR及四布局证据；唯一私有报告|列完整owner批准负向向量、准确校验入口/错误/变异/还原；不得只模拟metadata替真安装。读docs/CODEBASE_MAP.md/语言手册，给Root能直接执行的最小私有harness建议，不改source或执行资源/Git|
+|R116-INSTALLED-DDL-PREFLIGHT / T-Q12、T-R02|原agent4_execution_owner，只读现application/schema、infrastructure/schema、tests与Root原精确fresh wrapper；唯一私有报告|已安装CLI/真实fresh&拒重入/catalog/drift及缺资源零连接的可执行边界；用已存在同credential PG，Root独占精确临时fixtureDB（非新应用库/role），事前缺失+intent+PGID终态+精确回收，不reset/SCAN/Redis/运维。先核程序/fixture实际asserts，不能拿source tests代安装事实|
+
+R116补充授权：原agent_machine_final_review_r98可仅生成0600私有 `/tmp/kokoro-r116-installed-negative-root.py`，基于现R114d实际安装wrapper扩展四布局与批准负向；不得执行、改源码/Git/台账或资源。Root审查并独占执行；实际文件变异后恢复全安装hash，最后正控，不使用metadata mock。Root只私有harness扩展installed DDL原入口与精确自有fixtureDB，业务源码/SQL/contract零写入。
+
+R116-ARCHIVER-PREFLIGHT / T-Q03、T-R01：原four_owner_fixes_review_r31只读现S3Archiver/实际caller/fixtures/既有生产close缺口与已批准资源生命周期设计，给原Agent owner可直接tests-first窄修的文件集/真实失败断言/资源owning边界；唯一0600私有报告，无源码/Git/资源启动或reset。与安装门独立，不将test fixture回收当生产close。
+
+无新owner/业务模块/API/SQL/目录；本轮已批准distribution资产门和现installer生命周期验证，真实失败先记录后授权原writer窄修。先新产物与真实负向，再installed DDL/HTTP；完整资源/正式消费者与用户能力目标保留，不以包检查替代产品闭环。
+
+R116核心安装负向独立终审已接受（57ba751a / P0P1P2=0）；详细证据见progress.md。原source writer仍待按R117 RED授权接续，不将任务卡当运行完成。
+
 ## R115 当前验收推进（2026-10-02）
 
 上一goal回合为progress：Rootc2eebe91提交测试台账。本波真正实施、复测并提交自洽子仓切片，完整Wave0–7保持active。70稳定组现 **12通过 / 0失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**；T-Q03从失败转待复测，不提升为完整Agent通过。本节覆盖下方历史摘要。

@@ -1,3 +1,11 @@
+## R116 当前推进（2026-10-02）
+
+本轮新增实际证据E84–86：当前候选重建包十步安装门全0；source-wheel已安装CLI首次成功/重复拒绝，21表/206列/216constraints/42index definitions与规范一致，六recipe漂移拒绝及rollback、自有fixture库精确回收通过。完整115依赖/370源冻结，原WIN03 idle，没有共享服务重启。详细manifest/hash/实际失败历史与边界仅维护在progress.md的R116，不再在每份文档复制完整运行日志。
+
+70稳定测试组仍 **12通过 / 0失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**。T-Q03仍待复测；E86当前四布局64真实安装负例/219步骤已由Root79158终态通过，installed HTTP/S3/Docker/生产archiver close/HTTP5发布消费者、全部owner同库schema与完整用户能力尚未闭环。当前DDL只覆盖source-wheel venv及所列catalog属性/六漂移，不将其当全部数据库恢复或四布局DDL门。父级admin SQL包络有界性后继待验，E75标准152规则报告仍在。完整Wave0–7保持active，支付最后。
+
+R116核心安装负向独立终审已接受（57ba751a / P0P1P2=0）；详细证据见progress.md。原source writer仍待按R117 RED授权接续，不将任务卡当运行完成。
+
 ## R115 当前验收推进（2026-10-02）
 
 上一goal回合为progress：Rootc2eebe91提交测试台账。本波真正实施、复测并提交自洽子仓切片，完整Wave0–7保持active。70稳定组现 **12通过 / 0失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**；T-Q03从失败转待复测，不提升为完整Agent通过。本节覆盖下方历史摘要。
