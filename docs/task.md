@@ -1,3 +1,46 @@
+## R63 精确源码/机器返修放行（原 owner 单 writer）
+
+Root实际Billing168=75pass93fail且原72全文保持；native Sol冻结c5d72ac0独立0P0/P1/P2。仅原WIN06可改现contract/openapi/v2/openapi.yaml、scripts/openapi-v2-target.ts为既定experimental2.0.2两个本人GET u1/独立JWT OR五因素；保持24operations及其他operation/共享schema、金额/倍率/权限不变。现test/contract/openapi-v2-target.test.ts仅准原首例版本字面2.0.1→2.0.2，新96区及其他原assert全部保持。生成/source/deps/HTTP/SQL/Git/资源继续锁；全部现machine tests/format/lint/tsc后冻结精确文件SHA与单字面prefix保护，Root复验/审后再官方生成/HTTP。四D0的官方schemas.gen.ts/index.ts/closed registry更正先等WIN05精确行报告，独立阶段不抢写。
+
+BFF native Astra完整436冻结source0P0/P1/P2，4组fixture迁移P2已明确，对应真实10fail；原WIN02仅准三个现test：agui-http.integration.mjs前五fixtures CREATE SCHEMA IF NOT EXISTS kokoro_bff先于DDL；agui-projection.integration.mjs RR例建立真实合法dispatch/START/source/assistant父事实后精确executionHead、保完整双连接RR Artifact/Message/水位前后assert，三个second dispatch_sequence对应持久dispatch真实3而非turn count2，原cursor/public序号/terminal全保；chat-facts.integration.mjs exhausted-head断其确切Run terminal并补唯一failure source/frame/Message failed/无live execution head，保并发stream-lock/FIFO/claim/租约assert。不得删除/skip用例/降低timeout或稳定拒绝、改生产source/SQL/契约/依赖/生成物。R57六区域原bytes保持，R62其他433文件/旧D0保护；Root独占full81真实资源重跑，worker纯门后新freeze交付。普通现测试修复由对应owner，不新模块/协议/兼容层。
+
+## R63 原十窗口并行续派与 Root 实测失败卡
+
+用户要求10个或更多窗口同步推进；复用原WIN01–10（/tmp/kokoro-r30-window-handles.json），不新建重复任务中心/服务。Root main410d4bb9独占Git、台账、真实资源/最终验收。BFF R62全436文件冻结后Root全离线门exit0；真实PG/Redis/HTTP完整81项71pass10fail0skip18.04s，不称闭环。自有 bff_full_r62_2f8d0fe7af184c84 closed、tracked保持、cleanup空、其他库未删、Redis15余0；失败日志/tmp/kokoro-bff-r62-full-root-integration.log。五例fixture无owner schema、三个queued dispatch_sequence预期差、一个RR fixture孤立stream/旧activeRun、一个exhausted-head terminal预期差，需要原owner逐项根因，不先放宽assert。Billing96新机器断言冻结c5d72ac0，Root待真实RED复验，machine/source仍锁。
+
+|窗口/角色|当前精确任务与允许范围|依赖/交付|
+|---|---|---|
+|WIN01 Web负责人只读|published Web06a1c866→冻结BFF public4，确定最小消费切片及真实刷新/整组HITL失败测试入口，不改UI或文件|等BFF发布commit/digest后Root授consumer测试/source|
+|WIN02 BFF负责人只读诊断|R62全81项10失败逐项对照实际源码/fixture/旧HEAD，给最小修复集及保留断言，不改冻结源码/资源/Git|Root根因裁定后同writer精确返修|
+|WIN03 Agent协议只读|续既有跨语言digest审，绑定R62最终control codec SHA与Agent e977923，不另造canonical协议|给实际向量结果、未覆盖合法域与最小回归|
+|WIN04 IAM只读|正式Billing赠送授权与可信BFF本人委派：只查已发布IAM/Billing契约与现权限，不发token/赠送/写DB|给可复用正式入口/权限事实与真正新决策|
+|WIN05 schema只读|将已做官方HeyAPI/Ajv实际probe精确对照Billing四D0，给现文档必要更正行/生成清单与closed registry接线边界|owner不安装/不写文件，后继由Billing唯一writer|
+|WIN06 Billing负责人只读交接|冻结96新增tests分类到实际机器字段和checker，不重复跑已跑矩阵/不修改source，列精确machine GREEN写集|Root复验＋独立审后授机器GREEN|
+|WIN07 Platform只读|已发布da813ed的MCP self/授权身份向BFF/Agent消费链，列固定artifact/digest与现调用缺口、最小真实owner验收入口|不重复实现已发布owner/不改别仓|
+|WIN08 Storage只读|仅R62 RR artifact失败fixture与Storage delivery语义独立审，保护快照barrier/Message/Artifact/水位事务断言|给合法父状态最小fixture修复建议，无资源|
+|WIN09 Scheduler只读|已发布9e88→BFF独立ScheduledTask/Project绑定与dispatch receipt消费，查当前正式调用及用户旅程缺口|列下一现文件行为RED，不进入部署运维|
+|WIN10 E2E只读|现Root正规登录/真实模型/正式积分driver启动条件，与当前发布gitlinks/dirty消费逐项核对|指出真实启动阻塞与最小现测试/入口，不启动服务|
+
+所有窗口读取同CODEBASE_MAP/专项手册及owner当前三面；基线/main/现dirty如实报告。暂不同时开10个重测试进程；只读并行、BFF/Billing依赖写入各唯一owner，Root两个既有资源/离线句柄已结束读取，不重复后台任务。原native Astra独立冻结BFF完整源码审、Sol独立Billing tests审并行，不把子代理报告或窗口数量当完成证据。
+
+## R62 BFF 最终收敛与资源前冻结卡
+
+上一goal turn为progress：Platform da813ed已发布且Root410d4bb9已实际消费、119真资源/1273pure，非等待或仅计划。现原WIN02报告BFF完整source候选628pure/214contract/27arch，未做最终资源；准继续同一writer而不重复窗口。
+
+新增精确ordinary helper src/infrastructure/postgres/agui-interaction-projection.ts：只本片interaction Row解码、source/ledger完整性读取、事务内写入；projection/chat repo→helper，父锁/lease/CAS/事务提交仍留原repo，helper不得回import repo。采用抽新interaction persistence vs 拆旧replay（扩大cursor分页边界故淘汰）；现repo830行抽后必须<800，不压行/放宽门。同步TECH当前职责表（原历史body保持）。旧R52两条真实active internal executionHead只补pendingPauses:[]，实际无pause合法控制，其他GC/来源/权限assert原样；新重复START原子拒绝+exact replay+拒绝后续合法写集回归追加现integration文件末尾，R57冻结区域原bytes保持。
+
+Root已实核三现Scheduled文件与HEAD逐字一致（sha2130136d/8baabf68/2534a0a8），仅准现固定Prettier机械格式化 src/application/{scheduled-agent-dispatcher,scheduled-agent-terminal-consumer}.ts 与 test/scheduled-agent-dispatch.test.ts；格式前后TS转译JS原始字节比较实测因仅表达式换行变化失败，保留初失败；改以TS/JS结构对照（保identifier/literal/operator/节点顺序，仅忽略括号/位置信息）及同一固定Prettier规范化JS byteequal双证明。不是放宽行为/格式门，不声称原始JS byteequal；无业务行为变动/其他Scheduled文件。Root三件独立r2四门全部true（/tmp/kokoro-bff-r62-root-format-proof-r2.json）；初probe因漏package固定格式参数并把SourceFile.text作结构比较exit1，保原错误记录，r2核实际配置/完整AST。最后所有offline/current contract/schema/architecture/format/lint/build＋整片manifest冻结，source/deps/schema/vendored集精确与旧body/prefix保护报告。Root独占完整真实PG/Redis/HTTP及源码审，writer无资源/Git权。
+
+## R61 BFF 跨语言 control receipt 定点只读审
+
+原WIN02发现合法Unicode key与1e-7/1e-5值在Agent Python JSON排序/数字表示下digest不同，限定已批准control receipt adapter修复，outer幂等及full-state presence digest仍锁。原WIN03复用为独立只读协议审：以已发布Agent e977923固定typed control digest代码和当前BFF759bfe0a在途source为基线，纯离线实际向量比较合法Unicode（BMP/非BMP排序、转义）、数字（科学计数阈值/负零/整数float边界）、ordered decisions、仅已批准optional null归一及业务null保留；不设计新canonical协议/改Agent契约/source/数据库。当前未冻结BFF不能宣称最终审通过，给精确证据与最小现测试补强建议，Root最终frozen复验。禁止文件/Git/资源写，共享pure输出仅/tmp。
+
+## R61 Billing 当前机器事实 tests-only RED 卡
+
+四D0返修冻结07ab42e5/4da2a116/18696b3f/84ff7f65经原独立审0P0/P1/P2，旧body/第五全文保持。原WIN06唯一writer，main1564510，首先仅现test/contract/openapi-v2-target.test.ts追加两个本人GET当前事实/strict guard的目标断言，保护原72 tests全文前缀；不先改YAML/checker/生成器/source/依赖/Git/资源。用现YAML parse和正式validator，实际RED固定目标2.0.2、五因素OR分支/本人参数、canonical u1限制/专属profile、不误改其他operation和no-store/request-ID/现七状态；保持24operations、Credit单位/金额语义。新断言失败若只因版本早停应拆独立用例给各真实字段证据，不以missing import/collection造RED。冻结SHA/原prefix/其他tracked保护后Root复验，再授权机器GREEN与正规生成；HTTP/codec/BOM矩阵后继source前RED。
+
+原WIN05复用为本切片独立只读依赖核验，不写任何仓：依据Billing当前manifest和D0已选择的Nest Fastify adapter/TypeScript-only HeyAPI/Ajv2020/formats，仅核官方当前精确版本/peer/Node24/许可/生成确定性与已有栈冲突，给必要最小manifest命令、risks，禁止install/Git/服务/业务schema第二实现。Root后继按证据单授锁文件，不浮动latest。
+
 ## R61 Root 五路径集成提交卡
 
 Root唯一index/commit owner，main4458140d；仅apps/kokoro-capability准确da813ed gitlink、verification/contracts/consumer-inventory.json与三现台账。inventory精确18字段：13个Platform repository_commit、2个当前owner contract_sha256、1个HTTP3.2.0 version、2个edge reason（仅真实owner组件接受证据，state仍broken）；11evidence文件hash在新commit逐字相等。其他edge状态/Schema/version/hash及uv.lock、Agent/BFF/Billing未交接dirty排除。Root定点治理95tests通过49.50s（/tmp/kokoro-root-r61-metadata-tests.log），topology初验在未暂存gitlink时真实exit1“checkout HEAD differs from recorded gitlink”，暂存后及commit后各复验，不隐去初失败。当前standard151fail/0unverified，新增只BFF在途projection repository >800行，原150保留；compatibility机器证据0 violations但declared broken exit1。原WIN02须给现事务/投影具名职责拆分表，再由Root窄授权，不用放宽800门。最终index独立审后提交推送；不是全仓研发/用户整链完成。

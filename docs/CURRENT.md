@@ -1,3 +1,13 @@
+## R63 十窗口已实际续派，完整资源门发现十项失败
+
+Root复用原WIN01–10完成10次派发，两个即时快照确认全部active/inProgress；具体角色/依赖/文件边界见同task最上R63卡。BFF436/436冻结字节、3删除、R57六保护区域、D0旧body独立核对保持；全离线format/check/architecture/schema exit0，pure628pass/0fail/1既有资源skip，contract214pass、architecture27pass，schema8pass/1资源skip（不重复累计）。
+
+Root完整真实PG/Redis/localhost HTTP：81tests，71pass/10fail/0skip、18036.28ms，/tmp/kokoro-bff-r62-full-root-integration.log；不是资源绿色。五HTTP fresh fixture owner schema缺失；RR Artifact孤立stream/旧head断言、三个queued dispatch sequence预期差、exhausted-head terminal预期差，原WIN02只读逐项根因＋native独立完整source审，不默认全为fixture、不先放宽assert。owned bff_full_r62_2f8d0fe7af184c84 closed=true/tracked_unchanged=true/cleanup_errors=[]/unrelated_databases_removed=[]/new_databases_remaining=[]/Redis15remaining0。两个原Root句柄6832/8258已终态，未重复服务或清共享状态。
+
+Billing现tests-only c5d72ac0独立Root Node24实际168tests=75pass/93fail/0skip、3.29s，/tmp/kokoro-billing-r63-root-machine-red.log。原72项全文前缀保持，新字段33真实RED；正式checker合法目标control尚因5旧规则冲突失败，59mutants尚未到达，不能算深层拒绝通过。原WIN06仍停写、独立Sol审，后继机器GREEN待Root窄放行。WIN05已实际证实官方HeyAPI runtime schemas原$ref可由Ajv2020 closed keys/strict注册，2.0.2尚未生成；不是HTTP/账务链通过。
+
+用户要的是实际速度与闭环，不是窗口数量：Root继续资源失败修复放行/发布后Web正式消费，再验IAM→真实模型双轮/刷新→授权赠送/预占/结算或释放。当前整体未闭环，完整Wave0–7 goal保持active，无免费/充值/1.4生效/上线就绪声明。
+
 ## R61 Platform 已发布，整链验收仍在推进
 
 Platform main da813ed499e8c81401f67da2566d102f85962b41 已提交推送并clean，57文件最终index独立0P0/P1/P2。Root冻结全离线1273passed/278既有资源skip/0fail8.10s，format/lint/verify/build exit0；真实PG/HTTP完整五MCP/projection文件119passed/0skip/9.35s，含recovery CAS/atomic/P3a/P3b。前两文件52为119子集，不重复累计。两自有库均回收、前后源码字节保持/cleanup空/其他库未删；IAM admission仍fixture double，另159资源、provider/凭据交付/BFF/Agent/Web用户链未通过。日志 /tmp/kokoro-platform-r61-root-offline.log、/tmp/kokoro-platform-r61m-root-resource-full.log。
