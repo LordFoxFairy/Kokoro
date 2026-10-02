@@ -1,3 +1,18 @@
+## R101 测试任务盘点与终态校正（2026-10-02，当前）
+
+测试任务唯一入口为 docs/test-cases.md，与开发派工 task.md 分开。完整70组：9限定通过、1最近失败、0执行中、16待复测、41未验、2决策阻塞、1支付后置；该计数不是产品完成比例，完整Wave0–7未闭环。以下旧章节为当时记录，不覆盖本节终态。
+
+- T-C06 / E40：已发布Root2472a05d、Webb497与其余五owner的严格真实两轮旅程，原31330/PID75097已终态exit1。第二次提交后曾读到匹配活动head与4条Message，随后同源snapshot GET收到可解析JSON的非200；诊断为second-partial-active-cause-snapshot-http-head-active-match-messages-4-partial-pending-empty-finish-absent。HTTP具体status/code未保存，不据此推断DB、鉴权或Agent根因。cleanup=[]、独有桶回收exit0；不再等待已结束句柄、不盲重跑、不放宽原600s/硬断言。
+- T-Q01 / E41：Web基线b497+冻结Home七文件候选，Root原84433终态exit0，249contract/50architecture/2328tests及lint/typecheck/build通过；独立审P0/P1/P2均0，当前八hash匹配。仅本仓限定纯门通过，候选尚未提交发布/纳入Root gitlink；T-U01真实Home浏览器仍未验。
+- T-A01：E35真实PG65通过包含新增Todo六项，资源已回收；复杂任务策略、真实HTTP与BFF/Web过程展示仍未验，不关闭整组。正式积分预占/结算/流水、Skills/MCP使用、审批、定时任务和文件作品全链仍未闭环。
+- 下一动作：先补现snapshot失败观测的HTTP status/error code闭集与真实wrapper测试，再按首次实际错误分流修复；并行推进Agent HTTP5资源隔离与消费者验证。项目生命周期T-C05、失败/部分输出/未知成本收费T-B07待产品决策，支付最后。
+
+## R101 新发布组合严格旅程启动记录（历史，终态见上）
+
+Root2472a05d已普通发布、remote main同SHA，原fresh源准备87477 exit0/六owner clean+HEAD/gitlink+四harness hash通过。原31330真实W2已启动，child PID以/tmp/kokoro-r101-root-w2-owned.json记录且ps活跃确认；新独有桶创建通过，模型库存preflight通过，无pull。原严格600s/两POST四Message/活动硬刷新/全文/作品hash/他人404/清理断言不变，使用已验closed诊断；尚未终态，不称通过。
+
+T-C06从E28失败转执行中，保留E28历史；70组8通过/0当前失败待测组/1执行中/17待复测/41未验/2阻塞/1支付后置。Web在途Home/Agent HTTP5候选未纳入该六owner运行、不含Billing收费。原31330句柄继续观察，不重启或新开另一W2，不启动3310；Root资源与Git唯一owner。
+
 ## R101 当前实施与实测证据（2026-10-02，最新）
 
 完整Wave0–7 goal保持active，测试70稳定组：8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置；不是整体完成比例。
