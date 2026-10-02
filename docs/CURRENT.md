@@ -1,3 +1,7 @@
+## R117 当前执行（2026-10-02）
+
+Root4c46ab37已提交E84–86测试证据。原Agent owner的R117生产archiver生命周期tests-only RED切片已派并精确poll确认inProgress；原线程/turn/cursor只维护task.md顶部，后继复用同句柄，不重复启动。尚无RED交付、无GREEN授权、无修复结论；70测试组计数不变（整组执行中仍0，子切片运行另记）。完整Wave0–7保持active，不以包/数据库切片冒充产品闭环。
+
 ## R116 当前推进（2026-10-02）
 
 本轮新增实际证据E84–86：当前候选重建包十步安装门全0；source-wheel已安装CLI首次成功/重复拒绝，21表/206列/216constraints/42index definitions与规范一致，六recipe漂移拒绝及rollback、自有fixture库精确回收通过。完整115依赖/370源冻结，原WIN03 idle，没有共享服务重启。详细manifest/hash/实际失败历史与边界仅维护在progress.md的R116，不再在每份文档复制完整运行日志。

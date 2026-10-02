@@ -1,3 +1,7 @@
+## R117 派工观测（2026-10-02）
+
+Root4c46ab37后已授权原Agent owner仅三现tests补archiver正式释放链RED；原句柄一次poll实际inProgress（详task.md），尚无测试结果。初次Root JS编排SyntaxError在工具调用前失败，未发送；纠正后只发送一次且原cursor192确认新turn，不重复任务。此节只记录执行观测，不计修复/验收。
+
 ## R116 实际安装验证（2026-10-02）
 
 上一人类进度答复只是状态核对，不计新增goal progress。本轮保持完整Wave0–7，Root193ca01c / Agent2653bcc+370文件冻结候选，原WIN03已由原cursor191确认completed/idle，无重复服务或共享reset。以下是本轮真正运行的新证据，不将源测试替安装事实。
