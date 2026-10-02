@@ -7,7 +7,7 @@
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 截至本次盘点：Root工作树基线c76195bc，最近真实六owner运行组合820eb8c4，两轮聊天失败（E17）。Web R94候选Root完整门新增1失败（E20），构建尚未执行；Agent R94修复候选已交接，worker结果待Root复验及独立审，不计通过。正式积分链、完整能力与最终发布仍未闭环。
+- 截至本次盘点：Root基线402df94d，最近真实六owner运行组合820eb8c4两轮失败（E17）。Web E20完整门路由失败与E22单worker全Vitest OIDC超时均保留，定点通过不关闭整体；原Web writer仅诊断测试切片。Agent E21源阶段已Root复验与独立0接受，原writer推进机器HTTP5 tests-only，真实PG/发布尚未验。正式积分链、完整能力与最终发布仍未闭环。
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
@@ -27,8 +27,8 @@
 |---|---|---|
 |T-C06 / R94-W01-GREEN|终态旧SSE关闭后仍reconnecting，第二次发送没有POST|真实RED已复现；修复候选待完整门、审查和原严格两轮浏览器复测|
 |T-Q01、T-C02 / R94-GATE-FAILURE-READ|Root完整门中欢迎页重进后项目路由未达预期|最近1失败；先分类产品/测试隔离/环境，不增加timeout或删断言隐藏|
-|T-A01 / R94-W03-GREEN|todo.updated缺持久Row decoder分支|真实纯回归失败已复现；候选待Root复验与真实PG append/replay/幂等|
-|T-A06、T-R02 / R94-W03-GREEN|生产者先失败时内部子任务未全部取消并等待|真实纯回归失败已复现；候选待Root复验与独立P1复审|
+|T-A01 / R94-W03-GREEN|todo.updated缺持久Row decoder分支|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0接受；真实PG append/replay/幂等仍待验|
+|T-A06、T-R02 / R94-W03-GREEN|生产者先失败时内部子任务未全部取消并等待|真实纯回归失败已复现；源阶段已由E21 Root复验/独立0关闭原P1；递归/nonmodel错误分支及运行链仍待验|
 |T-U01 / R94-HOME-READ|提示入口切本地模式、未绑定owner套餐、硬编码模型档位|只读发现3P1，待Web后继修复/真实浏览器；不是已通过|
 |T-Q03、T-R01|既有archive测试导入时尝试探测ObjectStore，资源归属缺确证|已排除整模块避免纯测访问资源；原事件保留，不声称已清理；后继独立隔离修复|
 
@@ -36,9 +36,9 @@
 
 | ID | Owner/层级 | 测什么与通过条件 | 状态 | 最新证据/未完成原因与下一动作 |
 |---|---|---|---|---|
-| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 失败 | E20：Root当前候选完整check exit1，249contract/50architecture与lint/types通过；unit2312通过/1失败（欢迎页重进后的项目路由），build未执行；失败归因待查，不沿用worker或E15历史GREEN |
+| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 失败 | E20完整check路由失败保留；E22 app-frame95复跑通过，但单worker全Vitest2312pass/1 OIDC超时；E23该HTTP单例通过不关闭全门，build仍未验 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E21源阶段Root108定点/1406隔离unit/静态与独立复审通过；机器baseline provenance失败，现HTTP5 contract tests-only阶段、build/真实PG未验 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
@@ -81,7 +81,7 @@
 | T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 未验 | 正式管理mutation与凭据/audience边界待实现发布 |
 | T-K06 | Web→BFF→Agent→Platform | MCP opaque refs选择、每次调用fresh授权、args identity；撤销零调用 | 未验 | 旧free-text mcp_servers需owner-first替换，无fallback |
 | T-K07 | Platform→Agent | 工具schema closed profile/输入输出校验/超时取消/越权/注入 | 未验 | 不能把协议profile文档当执行测试 |
-| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E19：Root源阶段1397纯测仍漏Todo row分支与叶子任务收束；追加回归实际4失败。原writer修复候选已交接，Root复验/独立复审及机器/PG/BFF/Web链待验 |
+| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E19：Root源阶段1397纯测仍漏Todo row分支与叶子任务收束；追加回归实际4失败。修复源阶段经E21 Root复验/独立0接受；机器/PG/BFF/Web链待验 |
 | T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
 | T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
 | T-A04 | Agent→BFF→Web | 完整多项HITL pause→一次决策→resume；stale/重复/unknown/刷新正负例 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
@@ -145,6 +145,9 @@
 |E18|Web a6c651b+R94 tests-only f45cd3f610；生产候选当前0928eaa5，完整hash见progress|Root原12962 exit1：134项1fail/133pass，1.05s；/tmp/kokoro-r94-root-web-second-send-red.log。终态quiet snapshot后连接残留reconnecting、第二submit false且仅1POST；successor/failed/null控制仍有效。候选已交接，不表示真实浏览器复测通过|
 |E19|Agent17c73541+R93冻结源0295ba70及R94两追加测试84f16d8e/e2c35c7e|Root32024源阶段1397pass/1skip/18deselected，51793静态0；独立审0P0/2P1/0P2。追加回归Root71909 exit1：4fail/104pass/4deselected；/tmp/kokoro-r94-root-agent-failure-red.log。worker新候选f0cdcdf1/930c8611报108focused/1406unit通过，原WIN03 idle，manifest /tmp/kokoro-agent-r94-green-h75elxn2/manifest.json；尚未Root复验，不计任务通过，无真实PG|
 |E20|Root c76195bc工作树；Web a6c651b+machine0928eaa5/test f45cd3f610冻结候选|原58933实际exit1：249contract/50architecture、lint/types通过；163files unit2312pass/1fail。失败tests/ui/app-frame.smoke.test.tsx:1215，欢迎页重进后预期/app/project/project_welcome-a，实为/；build因前项失败未执行。/tmp/kokoro-r94-root-web-full-check.log SHA256 8a7c92a0d06030e3b9e4e241fc01ae1a547e1464d231802584f90aaa274c91e4。失败类别待定位，禁止worker GREEN替Root失败或称修复已发布|
+|E21|Agent17c73541+冻结R94源 f0cdcdf1/930c8611；两RED tests84f16d8e/e2c35c7e，374文件门前门后匹配|Root76640实际exit0：focused108pass/4deselected、隔离unit1406pass/1skip/18deselected，Ruff/267format/Pyright0；/tmp/kokoro-r95-root-agent-source-gate.log。独立Astra0P0/P1/P2，/tmp/kokoro-r95-agent-source-final-review.md，两P1闭合。contract-check另实际exit1 provenance stale /tmp/kokoro-r95-root-agent-machine-baseline.log；源阶段接受，不计整仓/PG/发布通过|
+|E22|Web a6c651b+两冻结engine候选0928eaa5/f45cd3f610，Root402df94d|原25421完整app-frame95pass/exit0/7.65s；原55271单worker全Vitestexit1、163files2312pass/1fail/207.09s，仅OIDC pending-refresh tombstone30s超时。/tmp/kokoro-r95-root-web-project-smoke.log与/tmp/kokoro-r95-root-web-unit-single-worker.log；原E20不删、不称完整check/build成功。Sol只读安全diagnostic缺口0P0/1P1/0P2，/tmp/kokoro-r95-web-http-failure-read.md，产品或fixture归因待实际诊断|
+|E23|同Web候选、原OIDC测试未修改；独有temporary Next/端口与精确状态清理|Root23020定点pending-refresh例实际exit0：1pass/38名称过滤skip/5.87s；/tmp/kokoro-r95-root-web-oidc-focused.log。单例通过不关闭完整文件顺序超时；原WIN01仅测试诊断后继。不以过滤skip当其余38通过|
 
 `/tmp`是当前机器运行证据位置，不保证永久保留；本页与progress已提交保存版本、结果与失败分类。后继运行须在同progress追加脱敏摘要，长期验收报告归既有reports目录；不得仅留临时路径或截图口头宣称。
 

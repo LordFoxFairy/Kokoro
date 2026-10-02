@@ -1,3 +1,14 @@
+## R95 源阶段验收、契约推进与Web完整门差异（2026-10-02）
+
+上一goal回合为progress：402df94d已提交70组测试计划/缺陷/实际失败，未缩小Wave0–7。本回合按真实工作树与原窗口续接，Root唯一Git/台账/集成者，既有Billing/uv.lock保留。
+
+- Agent当前R94候选：Root先实核374/374 after-snapshot与HEAD17c73541一致；原76640实际exit0：定点108pass/4deselected/0.68s，隔离unit1406pass/1skip（缺parent examples）/18deselected/615warnings/85.03s，Ruff通过/267格式无改/Pyright0。日志/tmp/kokoro-r95-root-agent-source-gate.log。收集前ignore已知workspace_archive整个模块，不访问/清除其未知桶，也不称该模块测试通过。独立Astra /tmp/kokoro-r95-agent-source-final-review.md 0P0/0P1/0P2，两原P1闭合；374hash再次匹配，publisher f0cdcdf1948889bea337674db44345f0930fc54cdc178d47ac7526886e43b4a1 / mapper930c86115ceb56d4179f5690b9ea49ca0ccaf6da4c2d194379f759ba2e00f240，372外围、两RED test全文/四D0保护。仅源阶段接受；新完整递归/nonmodel错误分支未独立实测、真实PG仍需验证，不扩大纯结果。
+- 当前machine baseline Root contract-check实际exit1：provenance aggregate digest stale，/tmp/kokoro-r95-root-agent-machine-baseline.log，HTTP仍4.0.0。原WIN03在idle交接后续派R95-AGENT-MACHINE-RED，仅两existing contract tests追加HTTP5/safe activity/Todo/decoded schema/预算/未知拒绝回归；源、机器/checker/provenance/generated/SQL/依赖仍锁，先实际RED停写Root核验，后继机器GREEN另授。不以修摘要代替新增行为证明。
+- Web完整smoke原25421实际exit0：95pass/7.65s；/tmp/kokoro-r95-root-web-project-smoke.log。其后原55271单worker全Vitest实际exit1：163files2312pass/1fail、207.09s；仅OIDC pending-refresh tombstone用例30s超时，app-frame95在该run通过。日志/tmp/kokoro-r95-root-web-unit-single-worker.log。不是完整pnpm check（contract/lint/types/build未在此命令重跑），不关闭原E20路由失败或T-Q01。
+- Sol第二只读审 /tmp/kokoro-r95-web-http-failure-read.md 0P0/1P1/0P2：started barrier仅fake token refresh分支触发，refreshing提前HTTP终态时仍无界等待，超时丢失真实层级。静态生产tombstone序列自洽，不足判断product缺陷；后继需安全race诊断。Root原23020定点该例已exit0：1pass/38名称过滤skip/5.87s，/tmp/kokoro-r95-root-web-oidc-focused.log；单例通过不是完整顺序通过。
+- 原23020启动前Root在Web cwd用相对docs/task.md追加任务卡的台账命令FileNotFoundError；未改子仓，测试随后已启动。保setup错误分类并以Root绝对路径补卡，不重复启动。原55271终态后才起focused；现原WIN01在idle后续派唯一一existing test诊断，保持两个engine候选与所有其他源/test/文档/机器/依赖冻结、不加timeout、不删断言；先完整OIDC39实际命令并停写交接。原测试只用独有temporary Next/端口/随机authsecret/精确Redis state+product ID回收，未重启3310或共享PG/Redis。
+- 70组计数仍8限定通过/2最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置；Owner内部切片正在推进，不能将一源阶段或单例通过当整个组/旅程关闭。新增E21–E23到同测试台账。下一Root接两writer真实RED/安全失败、契约owner先发布及消费者串行；Web完整门通过后当前发布fresh组合原严格W2，Billing后继不被遗忘。
+
 ## R94 测试计划最新核对（2026-10-02）
 
 Root基线c76195bcc48ce18bf53ba67bc5adcb03f2600bb1。本次只盘点同测试台账、收取原句柄终态与原Agent交接，不重跑全部测试、不启动服务/修改子仓。

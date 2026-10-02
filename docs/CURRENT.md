@@ -1,3 +1,7 @@
+## R95 当前源码与验收状态（2026-10-02）
+
+Agent R94两P1源阶段经Root108定点/1406隔离unit与静态门、独立Astra0P0/P1/P2及374hash核验接受；机器HTTP仍4、provenance baseline实际失败，原WIN03仅两contract tests追加HTTP5真实RED，机器/SQL/真实PG未放行。Web原完整门E20失败保留；完整app-frame95复跑通过，单worker全Vitest仍2312pass/1 OIDC30s超时；该HTTP单例1pass/38过滤skip不关闭整门。原WIN01仅现OIDC测试严格诊断，race started与提前HTTP终态，不增timeout/删断言；生产与engine两个候选冻结。完整70组仍8通过/2失败/16待复测/41未验/2决策阻塞/1支付后置；真实两轮T-C06仍失败、未发布修复，不称闭环。Root最新基线402df94d，任务与实际句柄见同task/progress/test-cases。
+
 ## R94 当前测试与关键路径（2026-10-02）
 
 当前测试唯一台账docs/test-cases.md，70稳定组：8限定通过/2最近失败/0整组执行中/16待复测/41未验/2决策阻塞/1支付后置。最新真实六owner两轮聊天T-C06仍失败（Root820eb8c4/E17）；已真实回归复现终态后连接状态未归一，Web候选未发布。Root原58933完整门exit1：249contract/50architecture及lint/types通过，unit2312通过/1欢迎页项目路由失败，build未执行（E20）；不得沿用worker GREEN或历史E15关闭T-Q01。Agent原WIN03已idle交接R94两production修复候选，worker1406unit结果待Root复验与独立两P1复审，机器/真实PG/运行链未验。Home三P1后继修复；完整Wave0–7目标不缩小，不称整体闭环。Root唯一台账writer与集成提交者，既有子仓/uv.lock修改保留；任务分工与下一动作见同task/progress。
