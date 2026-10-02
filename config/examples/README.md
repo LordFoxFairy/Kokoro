@@ -5,7 +5,7 @@
 
 | 文件 | 给谁 | 场景 |
 |---|---|---|
-| `agent.example.full.yaml` | agent（`KOKORO_AGENT_CONFIG`） | 全量配置树注释版（照抄裁剪） |
+| [Agent 配置参考](../../apps/kokoro-agent/agent.example.full.yaml) | agent（`KOKORO_AGENT_CONFIG`） | 由 Agent owner 维护的解析示例；配置部署地址并通过 env/secret 注入凭据，不直接作为运行 profile |
 | `workspace.example.local.yaml` | session+agent（`KOKORO_WORKSPACE_CONFIG`） | 单节点/共享卷文件面（=不配时的默认） |
 | `workspace.example.s3.yaml` | 同上 | 对象存储归档档（minio/AWS） |
 | `assets.example.local.yaml` | agent（`KOKORO_ASSETS_CONFIG`） | skills/personas 资产目录档（=不配时的默认，目录走 env） |

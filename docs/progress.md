@@ -1,3 +1,16 @@
+## R115 当前验收推进（2026-10-02）
+
+上一goal回合为progress：Rootc2eebe91提交测试台账。本波真正实施、复测并提交自洽子仓切片，完整Wave0–7保持active。70稳定组现 **12通过 / 0失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**；T-Q03从失败转待复测，不提升为完整Agent通过。本节覆盖下方历史摘要。
+
+- **E80 / T-Q03 配置GREEN：** Root完整file11pass/0fail/0skip/resource0，Ruffformat/check/Pyright各0，8文件hash保持；manifest `/tmp/kokoro-r115-agent-example-root.json` SHA95b4ef5bc8719ee535f6f013e67b030b3992f1c44815859ffae11ca21b1746ab。独立审2a18fb4f为0/0/0；原E78缺文件失败关闭。Agent本地main提交`dbaf4f9`（新owner YAML、README/INDEX、现测试）。Root工作树旧Agent样本已删、README精确改指owner，不保留双轨；Root组合提交/远端发布另记，不将工作树收敛冒称fresh clone验收。
+- **E81 / T-Q05 System切片：** Root重跑原十纯门全0，unit98/contract12/architecture9合计119pass/0skip、197tracked保持/owned终态，manifest `/tmp/kokoro-r115b-system-pure-root.json` SHAcb0dc907c96d41023bfc4e03f381ea814e486ab05903f928ca29cfb6fd0e35ec。最初临时HOME缺Corepack缓存而registry ENOTFOUND退出1保留为验证环境失败（ff5e414b），后续显式复用原pnpm12.3.4缓存并禁网，不改依赖或放宽门禁。同源码E77真实PG23断言22表证据复核，非本轮重跑PG；独立源码审31519cb2为0/0/0。System本地main提交`9a4e98e`，仅fresh脚本/现测试/CURRENT，自身工作树干净；业务HTTP/Redis/runtime与全owner组合未验。
+- **E82 / T-Q03、T-R02 fixture RED→GREEN：** Root先真实2call fail/0skip/blocked0，manifest `/tmp/kokoro-r115-webfetch-red-root.json` SHA968849291e5d904863d579ee0bb7b8ca90cacd0b50a0924d60fe991621de7e60，原RED审603aa94d。原owner只在现base_url加try/finally、shutdown/server_close/join，全部原业务断言与新增回归保持。Root完整file17pass+Ruff/类型四门0，manifest `/tmp/kokoro-r115-webfetch-file-root.json` SHA6513cf7ff1dd8c318c854f19b286c8de77f60458ad5128f6db3af248b2091898；原170+新增2项local Root172pass/0skip/blocked0，336hash保持、28child/170thread终态、87端口回绑、98socket forced_close=0、仓内/私有fixture残留0，manifest `/tmp/kokoro-r115-agent-local-root.json` SHA9420b6486a1f7321f71ad6dc83901f68cbf2e88a6e97c2b72bb34bd47e7768c0。独立终审463f927f为0/0/0，原E79生命周期P1关闭；Agent本地main提交`2653bcc`，仅现fixture测试文件，不混入HTTP5/Todo/contract/锁候选。handler请求异常片段保留，不冒称stderr完全无异常。
+- **E83 / T-Q03 当前pure：** Root原1937节点全部1937pass/0fail/0skip，resource_attempts0、进程组终态、370明确保护文件保持（含新YAML/helper）；manifest `/tmp/kokoro-r115-agent-pure-default-root.json` SHA3f5c1ab15b596c06bb197ce11a2ebd347f0f467b2f8e14a9f7eec74a9cfb6f2b。与E82的172在同冻结候选分别执行，不混同两次输出为单次测试；615原三方warning仍保留。配置skip及fixture回收已修，但完整负向安装/当前重建artifact/installed DDL与HTTP/S3/Docker/生产archiver close/HTTP5发布消费者仍未验，T-Q03保持待复测。
+
+Root原42054/8470/32322/6712/16230/35603均已终态，原WIN03 GREEN turn01a0feb4-8643-7031-9456-7445bbdcd09e已completed/idle；未重复启动服务或重置共享PG/Redis。三个子仓commit均为本地提交，尚未推送；生产候选和Root uv.lock等任务外修改保持。下一沿现测试矩阵推进安装负向/installed DDL与HTTP、正式owner组合及项目/独立会话/Home/Skills/MCP/Todo/HITL/正式积分真实消费，不回头反复运行已关闭的定点门代替能力推进，支付最后。
+
+R115收口验证：Root现三套工程/规范/拓扑工具测试实际305pass/2.57s/exit0，日志 `/tmp/kokoro-r115-root-governance.log` SHAaf2dda928d5ad17ef7acc324eb49160a21dfbb31821051e78ae943c1880d9a7a；70ID/12-0-0-14-41-2-1与历史归档suffix保持。两次Agent运行节点集合互斥、原1937+原170及新增2无重漏，保护清单交集hash同值；只称分别执行的当前2109节点分段，未伪造单次输出。工具测试绿色不改写E75整体标准扫描152规则失败，其他产品/资源门继续未验。
+
 ## R114 测试进度核对（2026-10-02）
 
 当前70稳定测试组：**12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**。不以自动化断言数量推导产品完成率，完整Wave0–7尚未闭环。本节覆盖下方R113及更早摘要；历史结果保留但不冒充当前组合验收。
