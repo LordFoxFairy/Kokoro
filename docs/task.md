@@ -1,3 +1,35 @@
+## R91 后继契约与Agent测试切片（2026-10-02）
+
+|任务|owner/唯一writer与精确文件集|依赖/门/交付|
+|---|---|---|
+|R91-W01 / T-Q10、T-C02|原WIN01/Web，main a52a623（Root生命周期已验/推送，clean）；五文档TECH/API/DATA/CURRENT/contract README；tests/contract下七bff-*-public.test.ts与contract/api-contract.test.ts；scripts/generate-bff-team-client.mjs、generate-bff-agent-failure.mjs；src/generated/bff-public-openapi.yaml、bff-agent-failure.ts；Team15仅真实正规生成变化|先五现D0收敛已发布BFF bb610ea/public6/canonical75ef9f7a3b28018d9c7a3ca5899f75afe561dd40b794e7f71b0e3d078b29c129；tests-only旧snapshot RED，Root确认后正规owner原bytes+生成GREEN。保safe12/ChatMessage fingerprint/Team9/其余operation；不得改UI/runtime/生命周期三hash、SQL、依赖或自动伪造连接。冻结后Root完整门/组合，真实浏览器仍未验|
+|R91-W03 / T-A01–06|原WIN03/Agent main17c73541+R90四D0冻结；仅tests/unit/chat/test_projection.py、test_emitter.py、tests/unit/agents/test_factory.py、tests/unit/execution/test_invoke.py、test_supervisor.py|R90最终Astra0与Root四hash/suffix通过；先Root现五unit baseline，再现入口行为RED，source/contract/生成/SQL/其余tests/fakes仍锁。实际缺Todo/raw输出/缺todos/阶段IO/started资格/持久异常边界失败，不以missing import计RED；冻结后Root复跑授权源码|
+
+Web17精确路径沿R76正规生成位置，七测试名为bff-team-public、bff-agent-failure-public、bff-project-create-public、bff-project-resource-public、bff-library-file-public、bff-library-artifact-public、bff-skills-mcp-public。已有生成位置优于第二editable schema；五D0先与owner机器一致，不重复决策collection语义。现runtime listSessions已经显式scope=direct或exact project_ref，adapter原样relay；本阶段不另造collection参数或API。Root独占Git，worker只交付。
+
+## R90 并行返修与安全过程闭集（2026-10-02）
+
+上一goal回合为progress：真实Root Web门终态与两独立P1改变下一行动，四测试台账已提交030c6b89。原WIN01/WIN03已通过wait_threads确认idle/completed；沿原任务续派，无新服务/重复窗口。
+
+|任务|owner/执行者/基线与范围|依赖、阶段门与交付|
+|---|---|---|
+|R90-W01 / T-C11|Web原WIN01唯一writer；main5e538f69+已冻结三路径dirty；仅page-clients.ts、use-app-frame-engine.ts、app-frame.smoke.test.tsx；Root独占Git|先只追加aborted/delayed commit真实hook RED，生产两文件冻结；Root已原12482实际复跑2fail/91filtered/exit1，RED确认后授GREEN；先补scope/injected生命周期控制；旧重挂/双owner/Strict/injected/scope断言保留。后继完整门/独立审，不宣称W2根因|
+|R90-W10 / T-C06|原WIN10只读Root真实W2准备；Root030c6b89+R90台账，不改仓库源码/Git/资源|查现六owner clean/gitlink guard与隔离源码拷贝入口，提出在保留Agent/Billing dirty下验证已发布组合的既有可行方式；保持全部硬断言，不新runner/兼容/放宽guard。仅/tmp报告，Root决定执行|
+|R90-W03 / T-A01–06|Agent原WIN03唯一writer；main17c73541+冻结四D0；先仅TECH/API/DATA/CURRENT原前缀，旧正文保护|按下方Root闭集收敛三面并给后继精确现tests/production全caller路径；停写冻结Root复核后立即tests-only。HTTP4/source/SQL/生成仍锁，无共享资源|
+
+Web放置裁决：资源创建与retain在committed effect同一同步段；render只选择本hook先前committed effect取得lease、匹配preview/scope的本地实例或null（不得peek全局零owner cache），scope不匹配不得暴露旧实例；现useSessionEngine(null)承接初帧/SSR。扩既有hook与cache生命周期，比render新建再setTimeout释放更可靠，后者可能先dispose延迟commit；不新建provider/模块、wire、依赖或fallback。StrictMode cleanup/setup与多owner沿原token/refcount，injected caller-owned。此为原职责内修复，无新API/数据owner。
+
+Agent Root闭集：
+1. activity tool/subagent display_code分别只tool.execution/subagent.execution；未知内部名字仍固定通用码，零raw回退。不加truncated字段。Skill failed必须error_code=skill_resolve_failed或skill_load_failed，其他phase禁止error_code；MCP失败不制造skill.failed。
+2. Todo完整表0..100项；content为1..1024 Unicode码点纯文本，完整表确定UTF-8 JSON容量<=65536 bytes（序列化规则由owner机器实现明确，须保多语言边界一致）；status仅既有三值。超限整表拒绝、缺todos拒绝、仅显式[]清空；不截断或假称任意自然语言脱敏。
+3. Skill真实每轮preflight：首条durable resolving的Run source_index作anchor，preflight_id由Run身份+anchor的稳定opaque digest派生；该轮其他phase复用。同已提交事件重放原身份/时间/payload；crash后重新授权/包读是真新轮，不复用旧ready。首条未持久成功不做Skill I/O。工具/subagent activity和segment由原Run内真实调用/segment身份派生opaque digest；现Chat identity/seq不改，精确编码与位宽在owner机器明确，不转发raw内部身份。
+4. started幂等在现stage_critical_frame的Run锁内查询queued/published既有run.started；已存在返回原StagedFrame/newly_staged=false，否则分配。build成功后invoke调用，resume不新started；删除index==0资格推断。必须后继两连接/丢ACK/重拾真实PG，unit不冒充恢复证明。
+5. ordinary progress保持同原lease RunEmitter、先持久后live；未持久/失fence不继续外部I/O，不伪造成Skill/assembly失败或新terminal；initial/control/recovery catch同步覆盖。私有诊断/HITL/成功Delivery/proof保持。
+6. Agent5仅在明确fresh测试/正式已批准数据处置的cutover启用；不销毁现用户数据、不双读旧raw。Run purge与Chat retention不足列发布/整链门，不发明保留天数。BFF compact snapshot/同水位及保留由BFF随后owner切片承接，不把未完成GC记为通过。
+7. 生成范围显式包含openapi/provenance、contract_check/chat_contract_check及现generator；generated只真正生成变化。HTTP5不改proof语义，不把usage/Billing展示作为前置。各符号必须在唯一机器源落定，不建立本页第二schema。
+
+Root将审原冻结与测试失败，所有独立资源由Root受管；uv.lock、Billing旧dirty保留。下个测试仍T-C11→BFF6消费者→严格W2，Agent并行不抢Web或Root文件。
+
 ## R89 测试发现的返修门（2026-10-02）
 
 归属：Root只维护现测试台账/任务/进度/当前态；Web与Agent原owner范围不变。本次仅记录实际结果，不授新增源码或资源权限。

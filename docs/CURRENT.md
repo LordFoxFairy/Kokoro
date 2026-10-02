@@ -1,3 +1,11 @@
+## R91 当前验收与下一切片（2026-10-02）
+
+Web生命周期已由Root真实RED→完整check/独立0P0/P1/P2验收并发布main a52a623，T-C11限定组件通过；测试台账7通过/1失败/18待复测/41未验/2阻塞/1支付后置。原WIN01继续五D0/八tests-only接已发布BFF6；Root gitlink/provenance仍待完整消费组合，真实W2未复跑。Agent R90四D0最终审0，下一五unit tests-only，HTTP4/source仍不变。原WIN10只读确认fresh已发布Root执行树可在保留Agent/Billing dirty下按原严格guard复验；尚未clone/启动资源。旧失败留档，不把2306纯测或模型库存当真实聊天/费用闭环。
+
+## R90 当前推进与复测边界（2026-10-02）
+
+原WIN01/Web唯一writer已获真实aborted/delayed commit RED后的三路径GREEN写入授权，Root实际2fail/91filtered/exit1，原失败不清零；候选仍待冻结验收。原WIN03/Agent唯一writer收敛Root已裁定安全闭集的四D0，未授source/机器；原WIN10只读W2已发布源码隔离准备，三独立工作面真实续派。当前3310无listener，七旧tabs不证明现代码运行；现qwen3:8b库存可用但未做新模型请求。测试ID与结果继续同test-cases，不建立新计划中心，不称整体闭环。
+
 ## R89 当前测试与返修状态（2026-10-02）
 
 测试台账仍为docs/test-cases.md：70组，6限定通过/2最近失败/18待复测/41未验/2决策阻塞/1支付后置。Root fresh Web check已exit0（246contract/50architecture/2302tests及lint/types/build），但独立审发现未commit render零owner资源泄漏P1，T-C11不关闭；完整用户旅程T-C06最近失败未复测。Agent安全过程四文档D0审发现协议闭集P1，尚非运行链完成。证据E08/E09及冻结hash见同progress。当前没有因通过纯门而发布候选或宣称产品闭环。

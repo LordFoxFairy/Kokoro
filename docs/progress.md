@@ -1,3 +1,19 @@
+## R90 真实RED与三面并行推进（2026-10-02）
+
+R90生命周期最终验收：原WIN01已停写冻结，Root actual47394终态exit0，Node22 pnpm check contract246/architecture50/2306tests及lint/typecheck/build通过；/tmp/kokoro-r90-root-web-full-check.log。独立Sol0P0/P1/P2，/tmp/kokoro-r90-web-final-review.md；三hash在Root门后匹配：page-clients5d8d6cc82423eae0b3738180e184ebc60d20e8c37f87f10c8d4d5b402af9821b、hook7ee5e094aed93c98751b52f1ae1477a6f2d387df6523a73fe5ae0a0316d29140、testaf3f15e2681796975734d242d021965a835c351ce6ac65dddc7d45aa1253c2cd。Root仅三source/test+CURRENT提交/推送Web main a52a6230e4f8e54f95b1f0322adbf1f187aacaae，clean；无format脚本明确N/A，diff-check0。T-C11关闭为限定组件通过，测试台账现7通过/1最近失败/18待复测/41未验/2阻塞/1支付后置，不扩大为W2或费用完成。
+
+Agent R90四D0最终Astra0P0/P1/P2、原闭集P1关闭，/tmp/kokoro-r90-agent-d0-final-review.md；Root四SHA与HEAD全文suffix实核：TECH5538f6b1、API4f18f0d5、DATAada445bd、CURRENTad71c1cc（完整manifest /tmp/kokoro-agent-r90-w03-d0-y7jhn5xd/manifest.json）。这是设计门，非业务通过。R91原WIN01续派正规BFF6五D0/八tests-only，生命周期三source/testhash保护；原WIN03后继仅五现unit tests-only，源/机器/SQL/生成仍锁。Root五unit现baseline原61451 actualexit0：224pass/4deselected/364既有warnings、20.05s（/tmp/kokoro-r90-root-agent-progress-baseline.log），随后授原五tests-only真正行为RED；baseline不冒充新safe过程通过。
+
+原WIN10只读完成/tmp/kokoro-r90-w2-published-source-readiness.md（0600，c452914fe542f83348fbaa0cfc7531aff78afa638d36a442bc7976783d11d364）；Root核现严格guard要求六owner clean+HEAD/gitlink且Agent/IAM直接在源checkout运行，采用最终已发布Root组合的fresh六owner执行树，不stash/reset当前Agent/Billing dirty、不改guard/runner/两轮硬断言。没有创建新checkout或运行W2，待Web6正式发布/Root组合后实际执行。真实用户两轮T-C06仍最近product-send-click失败。
+
+上一goal回合progress：四测试台账提交030c6b89、原Web完整门终态与独立P1改变下一动作。Root实读现源码确认browserEngine构造已storage subscribe/可能hydrate/SSE，而真实hook在render调用，未commit没有lease与回收；不是仅对象泄漏。Root裁决committed effect同段create+retain，render只能选择本hook已获lease且scope/mode匹配的本地实例或null，不peek全局零owner cache或靠render timer掩盖延迟commit。Sol只读复核确认该边界，无架构阻断。
+
+原WIN01新增tests-only冻结cb138727；production仍8ceb/9428。Root Node22实际原12482终态exit1：2failed/91filtered，/tmp/kokoro-r90-root-web-aborted-render-red.log。aborted render实际factory/storage/snapshot/SSE各1且cache残留，延迟commit前仍已建factory/storage；一次fake消息POST仍正常，故不称W2根因。已授原三路径GREEN，先补真实scope/injected ownership控制，原两RED与旧三生命周期断言保护，后继停写冻结/Root完整门与独立审。
+
+Agent最小安全闭集由Root现task R90一次锁定，Astra只读0P0/P1/P2；原WIN03只收敛四D0与精确全caller写集，尚未授源码/机器/资源；正式HTTP仍4。后继立即tests-only，不再等待总体设计。原WIN10获只读发布源W2准备，不改guard/源码/断言或启动资源；首发送曾错用记忆threadID而工具拒绝，随后从原handles读取01a0f887-afa6-7480-b63a-8d94792302a6，确认idle后实际续派，不另建窗口。
+
+Root只读现Ollama库存：现qwen3:8b恰1、digest500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41，/tmp/kokoro-r90-w2-readiness.json；无pull/生成调用，不计真实模型通过。3310监听探测为空；原生浏览器inventory确实7旧tabs，Chrome request-header policy获取失败未绕过，没做新浏览器旅程。Root确认三原窗口actual active turn并等待原句柄，不重复启动服务/共享设施或改数据。
+
 ## R89 最新测试结果与缺陷记录（2026-10-02）
 
 Root基线5b6bbc3d；继续复用test-cases.md的70组，不把开发任务当测试完成。Root唯一Web check原句柄28836已实际终态exit0，Node22.22.2 pnpm check：contract246、architecture50、163文件2302tests通过，lint/typecheck/build通过，日志/tmp/kokoro-r89-root-web-lifecycle-check.log。本轮未执行format/浏览器/W2；候选未发布，不以纯门关闭T-C11或用户旅程T-C06。
