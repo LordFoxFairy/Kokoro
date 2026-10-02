@@ -1,19 +1,23 @@
 #!/usr/bin/env node
 /** Real model text/tool execution: no synthetic response or manual delivery. */
 import { createHash, X509Certificate } from "node:crypto"
+import { createInterface } from "node:readline"
 import { createRequire } from "node:module"
 import { readFileSync } from "node:fs"
 import path from "node:path"
 import process from "node:process"
 import { pathToFileURL } from "node:url"
-import { ChatSnapshotEvidenceError, terminalChatSnapshot, assertChatSnapshotUnchanged } from "./chat_snapshot_evidence.mjs"
+import { ChatSnapshotEvidenceError, terminalChatSnapshot, assertChatSnapshotUnchanged,
+  assertCompletedMessagePrefixUnchanged, uniqueRunFrames, runTextEvidence, hydratedRunText, renderedChatEvidence, assertRenderedChatUnchanged } from "./chat_snapshot_evidence.mjs"
 
 const assert = (condition, message) => { if (!condition) throw new Error(message) }
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex")
 let browser
+const inputReader = createInterface({input:process.stdin,crlfDelay:Infinity})
+const inputLines = inputReader[Symbol.asyncIterator]()
 let phase = "input"
 try {
-  const input = JSON.parse(readFileSync(0, "utf8"))
+  const input = JSON.parse((await inputLines.next()).value)
   const fields = ["web_origin", "web_root", "screenshot", "web_certificate", "owner_email", "owner_password", "member_email", "member_password", "marker", "content_sha256", "timeout_ms"]
   assert(input && Object.keys(input).sort().join() === [...fields].sort().join() &&
     fields.filter(key => key !== "timeout_ms").every(key => typeof input[key] === "string" && input[key]) &&
@@ -36,26 +40,89 @@ try {
   const context = await browser.newContext({ignoreHTTPSErrors:true,locale:"en-US"})
   const page = await context.newPage()
   page.setDefaultTimeout(Math.min(input.timeout_ms, 60000))
+  // Evidence lives in Node, not in a document that navigation will destroy.
+  let epoch = 0, observedBytes = 0, observerFailure = false
+  const documents = new Map(), posts = [], frames = [], streams = [], snapshots = [], ended = new Set()
+  await page.exposeBinding("__rootEvidence", ({frame}, record) => {
+    try {
+      assert(frame === page.mainFrame() && record && typeof record.document === "string", "observer source")
+      if (!documents.has(record.document)) {
+        assert(documents.size < 20, "document bound")
+        documents.set(record.document, epoch)
+      }
+      const observation = {...record, epoch:documents.get(record.document)}
+      observedBytes += Buffer.byteLength(JSON.stringify(record))
+      assert(observedBytes <= 33554432, "observation bound")
+      if (record.kind === "frame") {
+        assert(frames.length < 10000, "frame bound")
+        frames.push(observation)
+      } else if (record.kind === "stream") {
+        assert(streams.length < 100, "stream bound")
+        streams.push(observation)
+      } else if (record.kind === "snapshot-start" || record.kind === "snapshot") {
+        assert(snapshots.length < 100, "snapshot bound")
+        snapshots.push(observation)
+      } else if (record.kind === "end") ended.add(record.streamId)
+      else if (record.kind === "error" && !(record.aborted && observation.epoch < epoch)) observerFailure = true
+    } catch { observerFailure = true }
+  })
+  page.on("request", request => {
+    const url = new URL(request.url())
+    if (url.origin !== input.web_origin || !/^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) || request.method() !== "POST") return
+    try {
+      const body = request.postDataJSON()
+      assert(posts.length < 2 && typeof body.content === "string" && body.content.length > 0 && Buffer.byteLength(body.content) <= 8388608, "post bound")
+      posts.push({request, path:url.pathname, content:body.content})
+    } catch { observerFailure = true }
+  })
   await page.addInitScript(() => {
     window.localStorage.setItem("kokoro.locale", "en")
-    window.__modelFrames = []
-    window.__modelStreams = []
-    window.__modelStreamErrors = 0
+    const document = crypto.randomUUID(), tags = new WeakMap()
+    let sequence = 0, queue = Promise.resolve()
+    const emit = record => {
+      queue = queue.then(() => window.__rootEvidence({...record, document})).catch(() => undefined)
+    }
+    emit({kind:"document"})
     const original = window.fetch.bind(window)
     window.fetch = async (...args) => {
-      const response = await original(...args)
       const raw = args[0] instanceof Request ? args[0].url : String(args[0])
-      const url = new URL(raw, location.href)
-      if (url.origin === location.origin && /^\/api\/session\/sessions\/[^/]+\/events$/u.test(url.pathname)) {
+      const url = new URL(raw, location.href), requestSequence = ++sequence
+      const tag = tags.get(args[0]) ?? "ui"
+      const response = await original(...args), responseSequence = ++sequence
+      if (url.origin !== location.origin) return response
+      if (/^\/api\/session\/sessions\/[^/]+$/u.test(url.pathname) && tag === "ui") {
+        const record = {path:url.pathname,tag,status:response.status,requestSequence,responseSequence}
+        emit({...record,kind:"snapshot-start"})
+        void response.clone().text().then(text => {
+          if (new TextEncoder().encode(text).length > 8388608) throw new Error("bound")
+          emit({...record,kind:"snapshot",body:JSON.parse(text)})
+        }).catch(() => emit({kind:"error"}))
+      }
+      if (/^\/api\/session\/sessions\/[^/]+\/events$/u.test(url.pathname)) {
         const headers = new Headers(args[1]?.headers ?? (args[0] instanceof Request ? args[0].headers : undefined))
-        const record = {path:url.pathname,status:response.status,lastEventId:headers.get("last-event-id")}
-        window.__modelStreams.push(record)
+        const streamId = `${document}:${requestSequence}`
+        const record = {path:url.pathname,tag,status:response.status,lastEventId:headers.get("last-event-id"),requestSequence,responseSequence,streamId}
+        emit({...record,kind:"stream"})
         if (response.status === 200 && response.body) {
           // Observe a clone only; never synthesize, delay, or replace UI bytes.
           const reader = response.clone().body.getReader()
           void (async () => {
-            const decoder = new TextDecoder()
-            let buffer = "", total = 0
+            const decoder = new TextDecoder("utf-8", {fatal:true})
+            let buffer = "", total = 0, count = 0
+            const drain = () => {
+              for (;;) {
+                const separator = /\r?\n\r?\n/u.exec(buffer)
+                if (!separator) break
+                const frame = buffer.slice(0,separator.index)
+                buffer = buffer.slice(separator.index + separator[0].length)
+                const lines = frame.split(/\r?\n/u)
+                const data = lines.filter(line => line.startsWith("data:")).map(line=>line.slice(5).trimStart()).join("\n")
+                if (!data) continue
+                const event = JSON.parse(data), id = lines.find(line=>line.startsWith("id:"))?.slice(3).trim()
+                if (!id || id.length > 4096 || ++count > 10000) throw new Error("frame bound")
+                emit({...record,kind:"frame",id,event})
+              }
+            }
             try {
               for (;;) {
                 const {done,value} = await reader.read()
@@ -63,31 +130,76 @@ try {
                 total += value.length
                 if (total > 8388608) throw new Error("bound")
                 buffer += decoder.decode(value,{stream:true})
-                for (;;) {
-                  const separator = /\r?\n\r?\n/u.exec(buffer)
-                  if (!separator) break
-                  const frame = buffer.slice(0,separator.index)
-                  buffer = buffer.slice(separator.index + separator[0].length)
-                  const data = frame.split(/\r?\n/u).filter(line => line.startsWith("data:")).map(line=>line.slice(5).trimStart()).join("\n")
-                  if (!data) continue
-                  const event = JSON.parse(data)
-                  const id = frame.split(/\r?\n/u).find(line=>line.startsWith("id:"))?.slice(3).trim()
-                  if (!id || window.__modelFrames.length >= 10000) throw new Error("frame bound")
-                  window.__modelFrames.push({id,event,path:url.pathname,lastEventId:record.lastEventId})
-                }
+                drain()
               }
-            } catch { window.__modelStreamErrors += 1; await reader.cancel().catch(()=>undefined) }
+              buffer += decoder.decode()
+              drain()
+              if (buffer.trim()) throw new Error("truncated frame")
+              emit({...record,kind:"end"})
+            } catch (error) {
+              emit({kind:"error",aborted:error.name === "AbortError"})
+              await reader.cancel().catch(()=>undefined)
+            }
           })()
         }
       }
       return response
     }
+    window.__rootProbeSnapshot = async target => {
+      const request = new Request(new URL(target,location.href),{cache:"no-store",credentials:"same-origin"})
+      tags.set(request,"probe")
+      const response = await fetch(request)
+      return {status:response.status,body:await response.json()}
+    }
+    window.__rootAuditReplay = async ({target,cursor}) => {
+      const request = new Request(new URL(target,location.href),{cache:"no-store",credentials:"same-origin",headers:{"Last-Event-ID":cursor}})
+      tags.set(request,"audit")
+      const response = await fetch(request)
+      if (response.status !== 200 || !response.body) throw new Error("audit HTTP")
+      const reader = response.body.getReader()
+      let total = 0
+      for (;;) {
+        const {done,value} = await reader.read()
+        if (done) break
+        if ((total += value.length) > 8388608) { await reader.cancel(); throw new Error("audit bound") }
+      }
+    }
   })
+  const deadline = Date.now() + input.timeout_ms
+  async function until(check) {
+    for (;;) {
+      assert(!observerFailure, "observer")
+      const result = await check()
+      if (result) return result
+      assert(Date.now() < deadline, "journey deadline")
+      await new Promise(resolve=>setTimeout(resolve,25))
+    }
+  }
   async function login(target, email, password) {
-    const callbacks = []
+    const callbacks = [], consentGets = [], consentPosts = [], appGets = [], navigation = []
     target.on("response", response => {
-      const url = new URL(response.url())
-      if (url.origin === input.web_origin && url.pathname === "/api/auth/callback/kokoro-iam") callbacks.push(response.status())
+      const url = new URL(response.url()), request = response.request()
+      if (url.origin !== input.web_origin || !request.isNavigationRequest()) return
+      if (url.pathname === "/iam/interactions/consent") {
+        if (request.method() === "GET") {
+          consentGets.push(response.status())
+          navigation.push("consent-get")
+        } else if (request.method() === "POST") {
+          // Keep only proof flags and the decision; never retain CSRF/OAuth values.
+          const form = new URLSearchParams(request.postData() ?? "")
+          consentPosts.push({status:response.status(),decision:form.get("decision"),
+            native:request.resourceType()==="document" && request.headers()["content-type"]?.split(";")[0]==="application/x-www-form-urlencoded",
+            csrf:form.getAll("csrf_token").length===1 && Boolean(form.get("csrf_token")),
+            closed:[...form.keys()].sort().join() === "csrf_token,decision" && form.getAll("decision").length===1})
+          navigation.push("consent-post")
+        }
+      } else if (url.pathname === "/api/auth/callback/kokoro-iam") {
+        callbacks.push(response.status())
+        navigation.push("callback")
+      } else if (url.pathname === "/app" && request.method()==="GET") {
+        appGets.push(response.status())
+        navigation.push("app")
+      }
     })
     const entry = await target.goto(`${input.web_origin}/login`, {waitUntil:"domcontentloaded",timeout:input.timeout_ms})
     assert(entry?.status() === 200 && new URL(target.url()).pathname === "/auth/sign-in", "form")
@@ -95,10 +207,16 @@ try {
     await target.locator('input[name="password"][type="password"]').fill(password)
     await target.getByRole("button",{name:"登录",exact:true}).click()
     await target.waitForURL(url => url.pathname === "/iam/interactions/consent" || url.pathname === "/app", {timeout:input.timeout_ms})
-    if (new URL(target.url()).pathname === "/iam/interactions/consent") {
-      await target.getByRole("button",{name:"Agree and continue",exact:true}).click()
-    }
+    // This journey owns fresh fixture identities with zero pre-existing consent.
+    // A direct app redirect is not proof of their required first-login decision.
+    assert(new URL(target.url()).origin===input.web_origin && new URL(target.url()).pathname==="/iam/interactions/consent", "first login consent missing")
+    await target.getByRole("heading",{name:"Review requested access",exact:true}).waitFor({state:"visible",timeout:input.timeout_ms})
+    assert(consentGets.length===1 && consentGets[0]===200 && consentPosts.length===0,"consent page")
+    await target.getByRole("button",{name:"Agree and continue",exact:true}).click()
     await target.waitForURL(url => url.origin === input.web_origin && url.pathname === "/app",{waitUntil:"domcontentloaded",timeout:input.timeout_ms})
+    assert(consentPosts.length===1 && [302,303].includes(consentPosts[0].status) && consentPosts[0].decision==="agree" &&
+      consentPosts[0].native && consentPosts[0].csrf && consentPosts[0].closed && appGets.length===1 && appGets[0]===200 &&
+      navigation.join() === "consent-get,consent-post,callback,app","first login consent sequence")
     const session = await target.evaluate(async()=>{
       const r=await fetch("/api/auth/session",{credentials:"same-origin",cache:"no-store"})
       return {status:r.status,body:await r.json()}
@@ -106,66 +224,173 @@ try {
     const cookies=(await target.context().cookies(input.web_origin)).filter(c=>c.name==="kokoro_product_session")
     assert(session.status===200 && session.body.authenticated===true && typeof session.body.subject==="string" &&
       callbacks.length===1 && callbacks[0]===303 && cookies.length===1 && cookies[0].httpOnly && cookies[0].secure && cookies[0].sameSite==="Lax", "session")
-    return {subject:session.body.subject,form_status:200,callback_status:303,session_status:200,product_cookie:"HttpOnly+Secure+Lax"}
+    return {subject:session.body.subject,form_status:200,callback_status:303,session_status:200,product_cookie:"HttpOnly+Secure+Lax",
+      consent_status:consentGets[0],consent_post_count:consentPosts.length,consent_post_status:consentPosts[0].status,
+      consent_decision:consentPosts[0].decision,native_consent:consentPosts[0].native,app_status:appGets[0]}
   }
   phase = "owner-login"
   const owner = await login(page,input.owner_email,input.owner_password)
-  phase = "product-post"
-  const content = `/no_think\nFirst say exactly ${input.marker}. Then use write_file to create /real-model.txt containing exactly ${input.marker} (no newline, no quotes). Then call deliver with path /real-model.txt and title Real model work. Do not merely describe actions: execute both tools. After successful delivery reply exactly ${input.marker}. Do not ask questions.`
+  async function observationBoundary(stage,index,receipt) {
+    process.stdout.write(JSON.stringify({kind:"observation-window",stage,index,...(receipt ? {receipt} : {})})+"\n")
+    if (stage==="receipt") return
+    let timer
+    try {
+      const line = await Promise.race([inputLines.next(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error("observation ACK deadline")),input.timeout_ms)})])
+      const ack=JSON.parse(line.value)
+      assert(ack && Object.keys(ack).sort().join()==="index,kind,stage" && ack.kind==="observation-ack" && ack.stage===stage && ack.index===index,"observation ACK")
+    } finally { clearTimeout(timer) }
+  }
+  const receipts = []
+  let conversation, eventPath, snapshotPath
   const composer = page.locator('[data-slot="composer-input"]')
-  await composer.waitFor({state:"visible",timeout:input.timeout_ms})
-  const receiptPromise = page.waitForResponse(response => {
-    const url=new URL(response.url())
-    return url.origin===input.web_origin && /^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) && response.request().method()==="POST"
-  },{timeout:input.timeout_ms})
-  await composer.fill(content)
-  await page.locator('[data-composer-action="send"]').click()
-  const response = await receiptPromise
-  assert(response.status()===202,"receipt")
-  const receipt=await response.json()
-  const conversation=decodeURIComponent(new URL(response.url()).pathname.split("/")[4])
-  assert(/^conv_[A-Za-z0-9_-]+$/u.test(conversation) && typeof receipt.run_id==="string" && receipt.run_id,"identity")
-  const run=receipt.run_id
-  const eventPath=`/api/session/sessions/${encodeURIComponent(conversation)}/events`
-  const snapshotPath=`/api/session/sessions/${encodeURIComponent(conversation)}`
-  phase="model-text"
-  await page.waitForFunction(marker=>[...document.querySelectorAll('[data-slot="markdown-message"]')].some(node=>node.textContent.includes(marker)),input.marker,{timeout:input.timeout_ms})
-  phase="model-tools-delivery-terminal"
-  try {
-    await page.waitForFunction(({run,path})=>window.__modelFrames.some(f=>f.path===path && f.event.type==="RUN_FINISHED" && (f.event.runId??f.event.metadata?.kokoro?.run_id)===run),{run,path:eventPath},{timeout:input.timeout_ms})
-  } catch {
-    phase="model-terminal-frame-missing"
-    throw new Error("terminal")
+  async function submit(content) {
+    phase = "product-post"
+    await composer.waitFor({state:"visible",timeout:input.timeout_ms})
+    const receiptPromise = page.waitForResponse(response => {
+      const url=new URL(response.url())
+      return url.origin===input.web_origin && /^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) && response.request().method()==="POST"
+    },{timeout:input.timeout_ms})
+    await composer.fill(content)
+    await observationBoundary("open",receipts.length)
+    await page.locator('[data-composer-action="send"]').click()
+    const response = await receiptPromise, receipt = await response.json()
+    const post = posts.find(item=>item.request === response.request())
+    assert(response.status()===202 && post?.content===content, "receipt request")
+    const keys = ["run_id","user_message_id","assistant_message_id"]
+    assert(receipt && Object.keys(receipt).sort().join() === keys.sort().join() &&
+      keys.every(key=>typeof receipt[key]==="string" && /^[A-Za-z0-9_.:-]{1,191}$/u.test(receipt[key])), "receipt identity")
+    const current = decodeURIComponent(new URL(response.url()).pathname.split("/")[4])
+    assert(/^conv_[A-Za-z0-9_-]{1,186}$/u.test(current) && (!conversation || conversation===current),"conversation")
+    conversation = current
+    eventPath = `/api/session/sessions/${encodeURIComponent(conversation)}/events`
+    snapshotPath = `/api/session/sessions/${encodeURIComponent(conversation)}`
+    receipts.push(receipt)
+    await observationBoundary("receipt",receipts.length-1,receipt)
+    assert(new Set(receipts.map(item=>item.run_id)).size===receipts.length &&
+      new Set(receipts.flatMap(item=>[item.user_message_id,item.assistant_message_id])).size===receipts.length*2,"receipt uniqueness")
+    return receipt
   }
-  const wire = await page.evaluate(({run,path,marker})=>{
-    const all=window.__modelFrames.filter(f=>f.path===path && (f.event.runId??f.event.metadata?.kokoro?.run_id)===run)
-    const unique=[...new Map(all.map(f=>[f.id,f])).values()]
-    return {delivery:unique.filter(f=>f.event.type==="CUSTOM" && f.event.name==="kokoro.delivery.created"),
-      text:unique.filter(f=>f.event.type==="TEXT_MESSAGE_CONTENT").map(f=>f.event.delta).join(""),
-      starts:unique.filter(f=>f.event.type==="RUN_STARTED").length,
-      finishes:unique.filter(f=>f.event.type==="RUN_FINISHED").length,
-      errors:unique.filter(f=>f.event.type==="RUN_ERROR").length+window.__modelStreamErrors,
-      streams:window.__modelStreams.filter(s=>s.path===path && s.status===200),marker}
-  },{run,path:eventPath,marker:input.marker})
-  if (!(wire.starts===1 && wire.finishes===1 && wire.errors===0 && wire.text.includes(input.marker) && wire.delivery.length===1 && wire.streams.length>0)) {
-    phase=`model-wire-s${wire.starts}-f${wire.finishes}-e${wire.errors}-t${Number(wire.text.includes(input.marker))}-d${wire.delivery.length}-h${wire.streams.length}`
-    throw new Error("wire")
-  }
-  const delivered=wire.delivery[0].event.value
-  assert(wire.delivery[0].event.metadata?.kokoro?.session_id===conversation && delivered.content_hash===input.content_sha256 && delivered.size===Buffer.byteLength(input.marker) && typeof delivered.artifact_id==="string" && typeof delivered.asset_id==="string","delivery")
-  phase="terminal-owner-first-snapshot"
-  async function readTerminalSnapshot() {
-    const result=await page.evaluate(async target=>{
-      const response=await fetch(target,{cache:"no-store",credentials:"same-origin"})
-      return {status:response.status,body:await response.json()}
-    },snapshotPath)
+  const uiFrames = () => frames.filter(frame=>frame.tag==="ui" && frame.path===eventPath)
+  const finished = run => uniqueRunFrames(uiFrames(),run).some(frame=>frame.event.type==="RUN_FINISHED")
+  async function readSnapshot() {
+    const result=await page.evaluate(target=>window.__rootProbeSnapshot(target),snapshotPath)
     assert(result.status===200,"snapshot HTTP")
-    return terminalChatSnapshot(result.body,[receipt])
+    return result.body
   }
-  const terminalSnapshot=await readTerminalSnapshot()
+  async function readRenderedMessages(messages) {
+    const allowed = messages.map(message=>message.role==="user" ? [message.message_id] : [...new Set([
+      message.message_id,...uniqueRunFrames(uiFrames(),message.run_id).filter(frame=>["TEXT_MESSAGE_START","TEXT_MESSAGE_CONTENT"].includes(frame.event.type))
+        .map(frame=>frame.event.messageId).filter(id=>typeof id==="string" && /^[A-Za-z0-9_.:-]{1,191}$/u.test(id))
+    ])].map(id=>`assistant:${message.run_id}:message:${id}`))
+    const items = page.locator('[data-conversation-thread-inner="true"] > [data-slot="message-scroller-item"][data-message-id]')
+    const actualIds = await items.evaluateAll(elements=>elements.map(element=>element.dataset.messageId).filter(id=>!["deliveries","resume-retry"].includes(id)))
+    if (actualIds.length!==messages.length || !actualIds.every((id,index)=>allowed[index].includes(id))) return null
+    const rows = []
+    for (const [index,id] of actualIds.entries()) {
+      // Existing MessageScrollerItem anchors identify the actual render, not a
+      // synthetic probe or a second API projection. Read each after scrolling.
+      const target = page.locator(`[data-slot="message-scroller-item"][data-message-id=${JSON.stringify(id)}]`)
+      await target.scrollIntoViewIfNeeded()
+      rows.push(await target.evaluate((element,role)=>{
+        const bodies=[...element.querySelectorAll(role==="user" ? '[data-slot="user-message-body"]' : '[data-state="streaming"] > [data-slot="markdown-message"], [data-state="settled"] > [data-slot="markdown-message"]')]
+        const visible=bodies.length>0 && bodies.every(body=>body.checkVisibility({checkVisibilityCSS:true,checkOpacity:true,contentVisibilityAuto:true}))
+        const plain=role==="user" ? bodies.length===1 : bodies.length>0 && bodies.every(body=>
+          [...body.children].length>0 && [...body.children].every(child=>child.tagName==="P" && child.children.length===0))
+        return {anchor:element.dataset.messageId,role,visible,plain,
+          body:bodies.map(body=>role==="user" ? body.textContent : body.textContent.trim()).join("")}
+      },messages[index].role))
+    }
+    try { return renderedChatEvidence(rows,messages,allowed) }
+    catch (error) { if (error instanceof ChatSnapshotEvidenceError) return null; throw error }
+  }
+
+  const firstMarker = `KOKORO_FIRST_TEXT_${input.marker.slice(-24)}`
+  const firstContent = `/no_think\nReply exactly ${firstMarker}. Do not use tools or ask questions.`
+  const firstReceipt = await submit(firstContent)
+  phase = "first-text-terminal"
+  await until(()=>finished(firstReceipt.run_id))
+  const firstBody = await until(async()=>{
+    const body = await readSnapshot()
+    return body.messages?.length===2 && body.messages.every(message=>message.status==="completed") && !body.execution_head ? body : null
+  })
+  const firstSnapshot = terminalChatSnapshot(firstBody,[firstReceipt])
+  const firstWire = runTextEvidence(uiFrames(),firstReceipt.run_id)
+  assert(firstWire.content===firstSnapshot.messages[1].content && firstWire.content.includes(firstMarker),"first text")
+  phase = "first-full-render"
+  const firstRender = await until(()=>readRenderedMessages(firstSnapshot.messages))
+  await observationBoundary("close",0,firstReceipt)
+  const content = `/no_think\nFirst say exactly ${input.marker}. Then use write_file to create /real-model.txt containing exactly ${input.marker} (no newline, no quotes). Then call deliver with path /real-model.txt and title Real model work. Do not merely describe actions: execute both tools. After successful delivery reply exactly ${input.marker}. Do not ask questions.`
+  const receipt = await submit(content), run = receipt.run_id
+  phase = "second-partial-active"
+  const beforeReload = await until(async()=>{
+    const body = await readSnapshot()
+    const partial = body.messages?.find(message=>message.message_id===receipt.assistant_message_id)
+    assertCompletedMessagePrefixUnchanged(firstSnapshot.messages,body.messages)
+    if (finished(run)) throw new Error("finished before active reload")
+    return body.execution_head?.run_id===run && body.execution_head.state==="active" &&
+      body.messages.length===4 && partial?.run_id===run && partial.role==="assistant" &&
+      partial.status==="streaming" && typeof partial.content==="string" && partial.content.length>0 ? body : null
+  })
+  // No tool call, pause, throttling, or fake stream creates this active window.
+  assert(!finished(run), "finished before reload")
+  phase = "second-active-reload"
+  epoch += 1
+  const reloadEpoch = epoch
+  await page.reload({waitUntil:"domcontentloaded",timeout:input.timeout_ms})
+  const freshStream = await until(()=>streams.find(stream=>stream.epoch===reloadEpoch && stream.path===eventPath && stream.tag==="ui"))
+  assert(freshStream.status===200,"fresh UI stream")
+  // Bind the first new UI SSE request to its preceding actual UI snapshot response.
+  const hydrationStart = snapshots.filter(snapshot=>snapshot.kind==="snapshot-start" && snapshot.epoch===reloadEpoch &&
+    snapshot.document===freshStream.document && snapshot.path===snapshotPath &&
+    snapshot.responseSequence < freshStream.requestSequence).sort((a,b)=>b.responseSequence-a.responseSequence)[0]
+  assert(hydrationStart,"UI hydration missing")
+  const hydrationRecord = await until(()=>snapshots.find(snapshot=>snapshot.kind==="snapshot" && snapshot.document===hydrationStart.document &&
+    snapshot.responseSequence===hydrationStart.responseSequence))
+  const hydration = hydrationRecord.body
+  assertCompletedMessagePrefixUnchanged(firstSnapshot.messages,hydration.messages)
+  assert(hydration.event_watermark===freshStream.lastEventId && hydration.execution_head?.state==="active" &&
+    hydration.execution_head.run_id===run,"actual UI hydration")
+  phase = "second-model-terminal"
+  await until(()=>finished(run))
+  const finalBody = await until(async()=>{
+    const body = await readSnapshot()
+    return body.messages?.length===4 && body.messages.every(message=>message.status==="completed") && !body.execution_head ? body : null
+  })
+  const terminalSnapshot = terminalChatSnapshot(finalBody,receipts)
+  phase = "second-full-render"
+  const terminalRender = await until(()=>readRenderedMessages(terminalSnapshot.messages))
+  assertRenderedChatUnchanged(firstRender,terminalRender.slice(0,2))
+  await observationBoundary("close",1,receipt)
+  assertCompletedMessagePrefixUnchanged(firstSnapshot.messages,terminalSnapshot.messages)
+  const reconstruction = hydratedRunText(hydration,uiFrames().filter(frame=>frame.epoch===reloadEpoch),receipt,freshStream.lastEventId)
+  assert(reconstruction.content===terminalSnapshot.messages[3].content,"snapshot plus real tail")
+  // One real, read-only durable replay verifies the complete second Run, including
+  // bytes projected during navigation. It never contributes UI/live-delivery proof.
+  phase = "second-full-agui-replay"
+  await page.evaluate(value=>window.__rootAuditReplay(value),{target:eventPath,cursor:firstSnapshot.event_watermark})
+  const audit = await until(()=>streams.find(stream=>stream.tag==="audit" && stream.path===eventPath && ended.has(stream.streamId)))
+  const secondWire = runTextEvidence(frames.filter(frame=>frame.streamId===audit.streamId),run)
+  assert(secondWire.content===terminalSnapshot.messages[3].content && secondWire.content.includes(input.marker),"second text")
+  const deliveries = uniqueRunFrames(uiFrames(),run).filter(frame=>frame.event.type==="CUSTOM" && frame.event.name==="kokoro.delivery.created")
+  assert(deliveries.length===1,"live delivery")
+  const delivered = deliveries[0].event.value
+  assert(deliveries[0].event.metadata?.kokoro?.session_id===conversation && delivered.content_hash===input.content_sha256 &&
+    delivered.size===Buffer.byteLength(input.marker) && typeof delivered.artifact_id==="string" && typeof delivered.asset_id==="string","delivery")
   phase="terminal-owner-immutable-snapshot"
-  await new Promise(resolve=>setTimeout(resolve,750))
-  assertChatSnapshotUnchanged(terminalSnapshot,await readTerminalSnapshot())
+  assertChatSnapshotUnchanged(terminalSnapshot,terminalChatSnapshot(await readSnapshot(),receipts))
+  assertRenderedChatUnchanged(terminalRender,await until(()=>readRenderedMessages(terminalSnapshot.messages)))
+  assert(!observerFailure && posts.length===2 && posts.every(post=>post.path===`${snapshotPath}/messages`),"exact two POST")
+  const turns = [firstWire,secondWire].map((wire,index)=>{
+    const submitted = posts[index].content, user = terminalSnapshot.messages[index*2], assistant = terminalSnapshot.messages[index*2+1]
+    assert(submitted===user.content && wire.content===assistant.content,"turn full text")
+    return {receipt:receipts[index],submitted_content_sha256:sha256(submitted),snapshot_user_content_sha256:sha256(user.content),
+      event_assistant_content_sha256:wire.sha256,snapshot_assistant_content_sha256:sha256(assistant.content),
+      start_count:wire.start_count,finish_count:wire.finish_count,error_count:wire.error_count}
+  })
+  const partial = beforeReload.messages.find(message=>message.message_id===receipt.assistant_message_id)
+  const activeReload = {run_id:run,state:beforeReload.execution_head.state,partial_content_length:partial.content.length,
+    finished_before_reload:false,hydration_watermark:hydration.event_watermark,sse_last_event_id:freshStream.lastEventId,
+    snapshot_plus_tail_sha256:reconstruction.sha256}
   phase="chat-card"
   const card=page.getByRole("button",{name:"Open delivery Real model work",exact:true})
   await card.waitFor({state:"visible",timeout:input.timeout_ms})
@@ -182,14 +407,20 @@ try {
   assert(await download.failure()===null && digest===input.content_sha256 && download.suggestedFilename()==="real-model.txt","download")
   await download.delete()
   phase="reload-snapshot"
+  epoch += 1
   await page.reload({waitUntil:"domcontentloaded"})
   await card.waitFor({state:"visible",timeout:input.timeout_ms})
   assert(await card.count()===1,"reload card")
-  const snapshot=await page.evaluate(async target=>{const r=await fetch(target,{cache:"no-store",credentials:"same-origin"});return {status:r.status,body:await r.json()}},snapshotPath)
+  const snapshot = {status:200,body:await readSnapshot()}
   assert(snapshot.status===200 && snapshot.body.deliveries.length===1 && snapshot.body.deliveries[0].artifact_id===delivered.artifact_id &&
     snapshot.body.deliveries[0].conversation_id===conversation && snapshot.body.deliveries[0].run_id===run &&
     snapshot.body.messages.some(m=>m.role==="assistant" && m.status==="completed" && m.content.includes(input.marker)),"snapshot")
-  assertChatSnapshotUnchanged(terminalSnapshot,terminalChatSnapshot(snapshot.body,[receipt]))
+  assertChatSnapshotUnchanged(terminalSnapshot,terminalChatSnapshot(snapshot.body,receipts))
+  phase = "terminal-reload-full-render"
+  const reloadedRender = await until(()=>readRenderedMessages(terminalSnapshot.messages))
+  assertRenderedChatUnchanged(terminalRender,reloadedRender)
+  assertRenderedChatUnchanged(firstRender,reloadedRender.slice(0,2))
+  assert(!observerFailure && posts.length===2,"terminal reload POST drift")
   await page.screenshot({path:input.screenshot,fullPage:true})
   phase="member-private"
   const memberContext=await browser.newContext({ignoreHTTPSErrors:true,locale:"en-US"})
@@ -211,7 +442,9 @@ try {
     message_post_status:202,agui_status:200,conversation_id:conversation,run_id:run,artifact_id:delivered.artifact_id,asset_id:delivered.asset_id,
     text_marker_visible:true,live_delivery:true,reload_card_count:1,download_sha256:digest,member_statuses:memberStatuses,
     owner_snapshot_immutable:true,completed_reload_content_equal:true,
-    assistant_content_sha256:terminalSnapshot.assistant_content_sha256})+"\n")
+    assistant_content_sha256:terminalSnapshot.assistant_content_sha256,
+    message_post_count:posts.length,message_post_statuses:[202,202],completed_message_count:terminalSnapshot.messages.length,
+    first_turn_preserved:true,turns,active_reload:activeReload})+"\n")
 } catch (error) {
   process.stderr.write(`REAL_MODEL_FAILURE:${phase}\n`)
   if (error instanceof ChatSnapshotEvidenceError) {
@@ -220,4 +453,5 @@ try {
   process.exitCode=1
 } finally {
   if(browser) await browser.close()
+  inputReader.close()
 }

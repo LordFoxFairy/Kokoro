@@ -1,3 +1,53 @@
+## R75 Root 当前复验：E2E 源码门通过，真实用户链待验
+
+Root 已接收 WIN10 七文件冻结 `db2b6c38d75eadb2b66d5fe997ba3cbd8cf30938a169b27b39a1c6c7ca463f54`，独立 Sol 源审 0P0/P1/P2、七原 hash 匹配。主仓 fresh 六文件回归 **676pass/0fail/0skip，23.77s**（`/tmp/kokoro-root-r74-e2e-pure-regression.log`）；完整治理测试 **1627pass/3skip，128.66s**（`/tmp/kokoro-root-r74-full-governance.log`）。现有 Ruff check/format、Node22 两 syntax/Python 两 compile exit0、diff check0；首次误用 Root Python 的 `-m ruff` 缺 module exit1，未执行 lint，随后使用已安装 Ruff 正确复验，没有安装依赖。四 source/test 为纯/loopback harness，不是实际浏览器/provider验收。Root 已接管 Git 与台账，WIN10 停写；本片不含 Root gitlink/inventory 更新。
+
+BFF R74 public5 候选 `6a6dc7497c46f7bd0918ff617c775ac24723ed4b373944717d015e2ebfc3fac8`：Root 新 canonical install/build exit0，**完整八文件真实 HTTP/PG/Redis integration149pass/0fail/0skip，23.395s**（`/tmp/kokoro-bff-r75-full-root-integration.log`）；此前 pure32fail/resource39fail 保留。独有 `bff_full_r75_fd83042f628048f0` 已回收、tracked 保持、Redis15余0、无他库删除或新库剩余，manifest `/tmp/kokoro-bff-r75-full-owned-resource.json`。十二冻结文件实核及独立 Sol0；Root 全离线门在运行，尚未提交/发布 public5，Web 尚未消费。149是 owner真实集成，不是 IAM→模型→刷新→积分浏览器整链。
+
+Web 三P1原writer收尾，Billing正规HTTP原writer实施；MCP凭据新owner边界已请求用户对齐，未用none演示替代protected目标。完整Wave0–7保持active；真实用户旅程、积分赠送资格/预占/结算/释放/流水与可配置成本1.4倍仍未完成，支付渠道最后。原未闭环项、skip与失败不清零，现3310未启动，任务外uv.lock和各owner在途修改排除。
+
+## R73/R74 当前切片：Root 双轮工具纠偏冻结、组合待验（2026-10-02）
+
+Root最新R74职责续派：Platform只读方案A已交付，selected connection/full schema/credential链缺口已证实；MCP凭据由Platform MCP模块加密拥有或接外部服务的新边界已向用户询问，未决前不新建secret服务、不授Platform实现，不缩为none demo。原WIN05现继续独立只读模型成本来源、1.4后端计价与usage/账务真实断点；不伪造价格、不把积分micros当margin。其余主链不等待此问题。
+
+沿用本计划与原 R71 任务卡；本前缀覆盖下方历史状态，不删除或改写旧正文。Root 提供基线 `55f79c3083fa6130ac06f352a6f2f17d7e7de942`；WIN10 是本 Root 仓当前唯一 writer，仅原四 source/test 与本三台账，Git/index/commit 与验收由 Root 串行负责。归属仍为现有 E2E harness 与当前事实台账；无新 owner、业务协议、依赖或服务。
+
+| 任务 / owner / 状态 | 范围、实际证据与下一步 |
+|---|---|
+| R71-ROOT-2TURN / WIN10 / 七文件冻结待审 | 旧四 source freeze 已撤销，不再作验收依据；修 mandatory consent 登录、两 Run 逐窗 request/model 因果、实际四条 UI 全文、AG-UI 顺序、durable usage 与完整有界实际 OpenAI SSE。worker fresh 509pass、R3 186pass、六文件相关676pass；Ruff/Node/Python exit0。仅纯回归，Root 后继独立审、主仓复验、组合与真实链验收；清单 `/tmp/kokoro-r71-win10-green/freeze-r73.json`。 |
+| WIN01 / Web / 原 writer R74 修复在途 | Root 全门 exit0：240contract/50architecture/2247unit0skip、lint/typecheck/build；独立 Astra 0P0/3P1/0P2，故未发布。修 fullsnapshot watermark+mapper baseline 交接、多在途 B/C optimistic receipt 精确 ID、HTTP202 failed control receipt 收敛；同 writer 全门与复审后放行。 |
+| WIN02 / BFF / R73 源码 GREEN 已续授 | 冻结 ac563a7d 七路径、429保护，独立 Sol 0P0/P1/P2。Root pure83=51pass32fail0skip；真实 HTTP/PG/Redis53=14pass39fail0skip，均exit1；canonical install/build0、owned完整回收，非39个独立缺陷或资源GREEN。现授权完整源码GREEN及 canonical public5.0.0、唯一/v1上线前breaking；无4/5兼容双轨、immutablebase4保护，BFF发布后Web独立消费。 |
+| WIN03 / Agent 与 WIN07 / Platform / 只读续派 | R74 MCP 分歧纠偏与 owner-first 正式契约方案，无新写权；typed consumer/正式 MCP 闭环仍 open。WIN04赠送资格、人类政策边界与 WIN05 request/usage/SSE 只读交付已收到，不推定赠送授权或重复证据。 |
+| WIN06 / Billing / 原 writer Stage4 在途 | Root HTTP RED22=14pass8fail0skip，6项 verified JWT invalidsubject 与2项 Nest404注册失败；固定依赖+RED独立审0，旧266保护及5dirty doc保留。续授既定两GET NestHTTP/auth/u1codec/personalguard/query/mapper/errorfilter+行为测试；SQL/machine/main/v1 writer cutover尚未放行。 |
+| WIN08 / Storage 与 WIN09 / Scheduler / 组件已验收发布停止 | Storage `74c4b591244589a7e5459fa7c521e5c21414d74a`：Root55pass及checks0；Scheduler `e8dca48988c4a93fa31bce3ee37f978394143c10`：Root46pass及Go1.26.8 checks0。均独立source/index0、push/remoteSHA核实；不代表S3产品链、PG重启或exactly-once。 |
+
+原十窗口复用而非永久十个 active：WIN01/06/10 在途，WIN03/07 本轮只读续派，WIN02冻结后续授GREEN；WIN04/05只读已交付，WIN08/09组件已发布停止。Root gitlink/compatibility inventory 与发布组合仍 pending。基础设施及独有ObjectLock/versioned S3空桶真实preflight通过且空桶已回收，资源可供后继Root smoke；未运行产品上传/下载、模型推理或完整浏览器链。3310此轮无监听，不声称正式聊天可用；Root未启动共享服务。
+
+## R71 发布事实与双轮工具交付：组合待验（2026-10-02）
+
+本前缀依据 Root 事件 `/tmp/kokoro-r71-root-events.json` 与本轮明确授权更新，旧正文及原 R71 任务卡逐字节保留，不建立新计划中心。Root 基线为 `55f79c3083fa6130ac06f352a6f2f17d7e7de942`；当前同仓唯一 writer 为 WIN10，范围现已扩至原四 source/test + 本三台账，提交与最终验收仍由 Root 串行负责。
+
+| 任务 / 状态 | 当前事实与下一 owner |
+|---|---|
+| R71 owner 组件 / 已发布、组合待验 | Agent `444684d32473c96ddbb70247081b1d1cdb8558f1`、BFF `d695fcbc0cd3f0376c34f64f6217d9d8e74c1b3c`、Billing `a49c787660f0306970c9ab0b932d869520307cf9` 已由 Root 发布；组件门见 CURRENT 本轮前缀，不等于浏览器、计费或全 Wave 闭环。Root gitlink/compatibility inventory 尚未更新，本组合 pending。 |
+| R71-ROOT-2TURN / WIN10 冻结待独立审 | 原四现文件已同片完成双轮 driver、strict report、两 Run durable 与原安全/cleanup 门；首次登录要求真实 consent 200、唯一 native Agree POST、callback 303/app，direct-app 纯负例失败。WIN10 纯门：R3 185fail/1pass → 186pass；目标 270pass、相关 437pass，Ruff/Node/Python 检查通过。不是 Root 复验或真实模型运行；Root 后继 native 独立审、源码纯门、metadata/Git 与真实用户链验收。冻结清单 `/tmp/kokoro-r71-win10-green/freeze.json`。 |
+| Web / 原 writer 继续 | 成功 fixture wrapper/hook 与两 deferred ACK 的机械例外已获 Root 明确批准；不得据此宣称消费者或浏览器用户链完成。 |
+| Billing / 原 WIN06 下一 HTTP 阶段 | 824 项 Root 纯门通过与正式生成组件已发布；adapter/Ajv 固定依赖及 tests RED 继续，完整 source stage4 尚未放行。audit 6 high/5 moderate、exit1 保留，js-yaml 为 0；HTTP/runtime/赠送/扣费链待验。 |
+| Storage / P2 修复、Scheduler / import 继续 | Storage 初次 Root 50 GREEN 不关闭独立 P2 Node iterator 自毁归因补强，仍未验收；Scheduler httptest import 例外已获 Root 授权，非持久调度整链成功。Platform typed consumer 与首次 consent 的 Root 独立审仍未闭。 |
+
+原十窗口上一 snapshot 全 active，任务会分别结束，不保持十个 permanent worker，不用窗口数量代替完成证据。Root/UV、各 owner 在途及无关字节保留；本 worker 不运行共享服务、provider、Git 或工具冒充 Root 验收。完整 Wave 和真实登录→模型双轮/活动刷新→计费用户链仍待闭环。
+
+## R71 当前实施切片：双轮真实 driver 与独立任务契约
+
+上一goal turn分类为progress：Root55f79c3083fa6130ac06f352a6f2f17d7e7de942已提交推送三台账，原窗口实际续派，WebUI P1关闭/Root2真实RED后进入完整source GREEN；Billing14file独立0但lint/audit真实open。当前Web/Agent/Billing/E2E原句柄真实active，不观察超时即重启；未起共享资源。现Rootsource/uv及各owner在途全部保留，Root仅串行Git。
+
+| ID/优先级 | Owner与writer/范围 | 基线、依赖、验收与保护 |
+|---|---|---|
+| R71-ROOT-2TURN/P0 | 原WIN10接Root验收工具唯一writer：仅scripts/e2e/web_real_model_worker_chromium.mjs、run_web_real_model_worker_smoke.py、chat_snapshot_evidence.mjs、scripts/tests/test_web_real_model_worker_smoke.py四现文件 | Root55f79c30，现R3 testSHA b22cd9af/186例185RED1control、独立0。先整套RED复现→完整driver/strict report/两Run durable GREEN；不孤立validator骗绿。Root派发前收口task编辑，worker写期间Root停止同仓编辑，只读审与其他仓验收。无新文件/库/服务，原IAM/Ollama/clean source/ownership/secret guards不改；实际2POST/2receipt/4Message/首轮全文/第二active partial reload/实际hydration cursor与新SSE header/去重snapshot+tail/hash/原artifact download/member-private。保R3 EOF全部assert；旧fixture仅合法control/两Run durable形状机械迁移，保原拒绝/安全/cleanup断言。原0–2失败cleanup保；成功exact2durable Runs与System两次实际route观测。纯门/Node检查与driver负例冻结交Root；真实browser/provider整链只Root源码发布组合后执行，不用mock骗成功。 |
+| R71-BFF-TASK-PROJECT/P1 | 原WIN02 BFF唯一writer，先只现test/contract/openapi-contract.test.mjs EOF追加契约回归 | BFF3928043 clean/source SHA5561450b。R70发现独立任务create生产parser接受optional project_id而closed canonical schema没声明。新例：独立无project合法control、关联project生产parsercontrol、closed optional project_id string/minLength/no required/no Conversation关联。旧全文prefix保护，zero machine/source/docs/Git/资源写；Root真实RED与独立审后补唯一owner契约/设计事实小片，不改任务为会话。当前Web仍消费immutable3c08a blob，BFF新contract未发布不得让其猜测新digest。 |
+
+Root总体放置决定：双轮证据属于既有Root组合测试编排，不拥有业务事实或网络协议；保原JS pure snapshot helper负责冻结/全文比较，Python只验证已真实driver观测的closed报告，Node真实UI与网络旁路只观察不伪造/延迟响应。淘汰新增第二浏览器executor/断言-only脚本/Root业务SQL writer。所有SQL是owner范围只读fixture检查；无schema/跨ownerJOIN、真实模型调用与计费owner仍原事实源。WIN10交报告/文件清单不提交；Root独立审、纯回归、资源/浏览器发布验收及小片commit负责。
+
 ## R70 原十窗口续接：优先研发关键路径，不凑十个 writer
 
 最后逐一snapshot：WIN01/03/05/06/09/10六个active/inProgress；WIN02/04/07/08本轮已结束，尚未逐项接收结论，不再空转续派凑数量。十个原窗口已都收到本轮续接任务（WIN01在审后进入source GREEN）；窗口运行数随交付变化，不声称十个一直同时写入。

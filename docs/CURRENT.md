@@ -1,3 +1,47 @@
+## R75 Root 当前复验：E2E 源码门通过，真实用户链待验
+
+Root 已接收 WIN10 七文件冻结 `db2b6c38d75eadb2b66d5fe997ba3cbd8cf30938a169b27b39a1c6c7ca463f54`，独立 Sol 源审 0P0/P1/P2、七原 hash 匹配。主仓 fresh 六文件回归 **676pass/0fail/0skip，23.77s**（`/tmp/kokoro-root-r74-e2e-pure-regression.log`）；完整治理测试 **1627pass/3skip，128.66s**（`/tmp/kokoro-root-r74-full-governance.log`）。现有 Ruff check/format、Node22 两 syntax/Python 两 compile exit0、diff check0；首次误用 Root Python 的 `-m ruff` 缺 module exit1，未执行 lint，随后使用已安装 Ruff 正确复验，没有安装依赖。四 source/test 为纯/loopback harness，不是实际浏览器/provider验收。Root 已接管 Git 与台账，WIN10 停写；本片不含 Root gitlink/inventory 更新。
+
+BFF R74 public5 候选 `6a6dc7497c46f7bd0918ff617c775ac24723ed4b373944717d015e2ebfc3fac8`：Root 新 canonical install/build exit0，**完整八文件真实 HTTP/PG/Redis integration149pass/0fail/0skip，23.395s**（`/tmp/kokoro-bff-r75-full-root-integration.log`）；此前 pure32fail/resource39fail 保留。独有 `bff_full_r75_fd83042f628048f0` 已回收、tracked 保持、Redis15余0、无他库删除或新库剩余，manifest `/tmp/kokoro-bff-r75-full-owned-resource.json`。十二冻结文件实核及独立 Sol0；Root 全离线门在运行，尚未提交/发布 public5，Web 尚未消费。149是 owner真实集成，不是 IAM→模型→刷新→积分浏览器整链。
+
+Web 三P1原writer收尾，Billing正规HTTP原writer实施；MCP凭据新owner边界已请求用户对齐，未用none演示替代protected目标。完整Wave0–7保持active；真实用户旅程、积分赠送资格/预占/结算/释放/流水与可配置成本1.4倍仍未完成，支付渠道最后。原未闭环项、skip与失败不清零，现3310未启动，任务外uv.lock和各owner在途修改排除。
+
+## R73/R74 当前事实：七文件新冻结与真实 RED 边界（2026-10-02）
+
+Root最新R74职责续派：Platform只读方案A已交付，selected connection/full schema/credential链缺口已证实；MCP凭据由Platform MCP模块加密拥有或接外部服务的新边界已向用户询问，未决前不新建secret服务、不授Platform实现，不缩为none demo。原WIN05现继续独立只读模型成本来源、1.4后端计价与usage/账务真实断点；不伪造价格、不把积分micros当margin。其余主链不等待此问题。
+
+本前缀依据 Root 当前消息、`/tmp/kokoro-r71-root-events.json` 与 WIN10 实际日志；下方 R71 四文件冻结、270/437、Storage待验和窗口状态均为历史，不是当前结论。Root 提供基线 `55f79c3083fa6130ac06f352a6f2f17d7e7de942`；组合 metadata/gitlink/inventory 未更新，组件发布不等于组合发布或全 Wave 验收。
+
+**WIN10 已纠偏的现七文件，待 Root 独立审与复验：** 登录字段强制且 fresh native consent200/唯一Agree POST/callback303/app200；actual UI四条有序全文及首轮全文保留；两次pre-POST/receipt/terminal本地stdio观察窗绑定独立Run；System实际 request/response ID = durable request ID，模型最后user摘要=当轮实际输入；完整实际有界SSE要求稳定completion/model、choice0、唯一合法finish、完整tool参数、严格usage与DONE及EOF，原字节透传；dedup后START/FINISH/文本顺序；两Run durable current-generation usage、completed token_usage、counter与receipt/input精确一致。原隐私cookie/member404、下载FINAL/CLEAN及失败owned producer先停后0/1/2 inventory不变。新增stdio握手只在现有子进程pipe，不是业务wire或新网络服务。
+
+worker fresh：目标509pass/0fail（8.29s）、原R3 186pass/323deselected（0.13s）、六文件相关676pass/0fail（25.66s）；Ruff check/format、Node语法2、Python source compile2全部exit0。日志 `/tmp/kokoro-r71-win10-green/*-r73-frozen.log`；清单 `/tmp/kokoro-r71-win10-green/freeze-r73.json`。旧7577bytes R3原始artifact保留，原assertion区域逐字节不变、57旧assert AST与旧单轮builder不变；仅已批准R3合法builder mandatory login与实际user哈希机械迁移，因此不再声称整个当前7577bytes不变。三台账仅prepend，原body及原R71前缀完整保留；6599非授权Root文件保持。未运行真实浏览器/PG/Redis/Ollama/provider，无Git/index/commit。
+
+| 当前 owner 证据 | 未闭环边界 |
+|---|---|
+| Agent `444684d32473c96ddbb70247081b1d1cdb8558f1`、BFF `d695fcbc0cd3f0376c34f64f6217d9d8e74c1b3c`、Billing `a49c787660f0306970c9ab0b932d869520307cf9` 已发布，原Root纯门52/631+217+27+8/824与实际skip见旧前缀 | 仅各自组件；Billing旧audit exit1的6high/5moderate未据历史发布清零。 |
+| Storage `74c4b591244589a7e5459fa7c521e5c21414d74a`：Root完整object-store55pass0fail0skip/217ms，Prettier/ESLint/whole tsc/diff0；Scheduler `e8dca48988c4a93fa31bce3ee37f978394143c10`：Root两包46pass0skip、Go1.26.8/gofmt/diff0。独立source/index0、push/remoteSHA与clean核实 | Storage仅cleanup attribution；Scheduler实际loopback两接收identity/trace replay，非PG重启/exactly-once。初系统Go1.25.4 rejected go.mod exit1在测试前，保留后改现有1.26.8成功。 |
+| Web Root fresh全门0：240contract/50architecture/2247unit0skip，68hash匹配；Astra0P0/3P1/0P2 | 旧Webfreeze未接受，原WIN01修完整snapshot/cursor/baseline、多在途receiptID、202failedreceipt三个P1后全门复审；不以旧GREEN覆盖反例。 |
+| BFF Root pure83=51pass32fail0skip；真实HTTP/PG/Redis53=14pass39fail0skip、exit1；canonical install/build0，owned完全回收/Redis0、tracked未变；七path冻结ac563a7d/429保护、Sol0P0/P1/P2 | `/tmp/kokoro-bff-r74-root-pure-red-explicit.tap`、`/tmp/kokoro-bff-r74-full-root-integration.log`；源码GREEN现续授原WIN02，public5.0.0唯一/v1首次上线前breaking，不做兼容；BFF发布后Web消费。不是资源GREEN或39独立缺陷。 |
+| Billing Root HTTP prerequisite RED22=14pass8fail0skip/0.712s；独立Sol固定依赖+RED0，8hash匹配、266保护及5dirtybody保留 | `/tmp/kokoro-billing-r74-root-http-prerequisite-red.log`；6项JWTsubject业务失败、2项Nest404注册失败；现原WIN06获既定Stage4 HTTP GREEN写权，SQL/machine/main/v1 writer尚锁定，赠送/扣费未闭。 |
+
+Root已只读核实现有PG18.4、Redis10、Ollama qwen3:8b与ClamAV PONG，private配置形状就绪（凭据不入台账）；独有versioned/ObjectLock空桶preflight exit0，删除并核验不存在，0对象写入、共享kokoro桶未动，日志 `/tmp/kokoro-r73-s3-owned-readiness.jsonl`。这仅资源就绪，后继实际smoke仍需新owned桶和精确回收，不是产品upload/download、推理或浏览器证据。3310当前无监听；本轮Root未启动共享服务。原十窗口状态见task现前缀，不称十个全active；MCP owner-first/typed consumer、人类赠送资格政策与完整Wave0–7、计费/用户链仍待闭。
+
+## R71 当前发布与待验边界（2026-10-02）
+
+证据来源为 Root 已落地 `/tmp/kokoro-r71-root-events.json` 与本轮明确授权；下列 Root 结果是主控记录，不是 WIN10 重新执行。Root 基线 `55f79c3083fa6130ac06f352a6f2f17d7e7de942`，现 gitlink/compatibility inventory 尚未更新，已发布 owner 组件与 Root 发布组合分开，本组合 **pending**。
+
+| Owner / 已发布 commit | Root 已执行的组件门 / 未闭环事实 |
+|---|---|
+| Agent `444684d32473c96ddbb70247081b1d1cdb8558f1` | fresh 52pass/0fail、Ruff/Pyright exit0，final index 独立 0P0/P1/P2；日志 `/tmp/kokoro-agent-r71-root-final-gates.log`。仅 SDK native/replay 纯回归，不是资源或浏览器证据。 |
+| BFF `d695fcbc0cd3f0376c34f64f6217d9d8e74c1b3c` | format/lint/typecheck、contract217、architecture27、unit631pass/1skip、schema8pass/1skip、build exit0。首次错命 `db:check-schema` exit1 保留，后续正确 `schema:check` 与余门实际通过；日志 `/tmp/kokoro-bff-r71-root-full-offline.log`、`/tmp/kokoro-bff-r71-root-offline-continuation.log`。仅独立任务 optional project 绑定契约组件，不是 runtime closed validation/资源/浏览器整链。 |
+| Billing `a49c787660f0306970c9ab0b932d869520307cf9` | 29files/824pass/0fail/0skip/17.02s；format/lint、两 noEmit、contract17+24、SQL、generated check、frozen install exit0。audit exit1：6high/5moderate/0critical，js-yaml0；19精确 index 独立0，五旧 dirty doc body 完整保留。日志 `/tmp/kokoro-billing-r71-root-pure.log`、`/tmp/kokoro-billing-r71-root-audit.json`、`/tmp/kokoro-billing-r71-root-synthetic-index.json`。仅正式生成组件，HTTP/runtime/赠送/扣费未完成。 |
+
+WIN10 已冻结原四 source/test：真实双轮 UI 提交路径、Node 跨 reload 观察、active/partial 且未 FINISHED 的刷新门、实际 UI hydration watermark=首条新 SSE Last-Event-ID、snapshot 基底+去重真实 tail 的全文比较、首轮保留及四 Message 终态 reload、两 Run worker lease/published terminal/journal 与 FINAL CLEAN 下载证据。保原 member404、HttpOnly/Secure/Lax cookie、0/1/2 failed-run inventory；失败先停止 owned producers 再取 inventory。新 fixture 首次 consent 门已补源与纯负例，独立审仍待 Root。
+
+**WIN10 worker 纯结果（不是 Root 复验）：** R3 RED185fail/1pass → GREEN186pass；目标文件270pass，六文件相关回归437pass/0fail，Ruff check/format、Node语法2/Python compile2通过。原 R3 7577bytes、57旧 assert 与6602非目标文件核验保持；旧单轮 control builder 未改。源码 freeze/hash 与命令日志见 `/tmp/kokoro-r71-win10-green/freeze.json`，真实浏览器/PG/Redis/Ollama/provider 未运行。三台账此轮仅 prepend，原正文与 task 现 R71 前缀保留。
+
+Web 既定 wrapper/hook 和两 deferred ACK 机械例外已获 Root 批准；Billing 下一 HTTP/adapter、Storage P2 修复、Scheduler import 继续。Storage 初 Root50 GREEN 仍有独立 P2 iterator 自毁归因补强待验；Scheduler httptest import 例外已授权；Platform typed consumer 与首次 consent 审未闭。原十窗口上一 snapshot 全 active，任务会结束，不声称十个 permanent 或此刻全部 active。Root 后继独立审、源码纯门、组合 metadata/Git 与真实用户链验收；三组件不等于浏览器/计费/全 Wave 闭环，UV/owner 无关变更保持。
+
 ## R70 并行续接已实际派发，Root不把启动当完成
 
 最后逐一snapshot：WIN01/03/05/06/09/10六个active/inProgress；WIN02/04/07/08本轮已结束，尚未逐项接收结论，不再空转续派凑数量。十个原窗口已都收到本轮续接任务（WIN01在审后进入source GREEN）；窗口运行数随交付变化，不声称十个一直同时写入。
