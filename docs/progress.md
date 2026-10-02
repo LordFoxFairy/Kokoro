@@ -1,3 +1,19 @@
+## R108 测试验收进度（2026-10-02，当前唯一摘要）
+
+测试任务唯一入口 docs/test-cases.md；开发派工 docs/task.md；运行证据 docs/progress.md。70稳定组：**11通过 / 1失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**。这是验收覆盖状态，不是研发完成百分比，完整Wave0–7尚未闭环。
+
+- 已验收11组：T-Q01/Q02/Q04/Q11、T-L01、T-C01/C06/C11、T-K01、T-B01、T-R01，仅各行具名范围。E53正规IAM与严格两轮聊天实际使用本地qwen3:8b，不含用户网关、正式收费或全部Agent能力展示。
+- E59：Agent原边界RED Root57pass/1fail→三源码修复后Root30506实际139pass/1 generator未执行/10.14s、静态0，独立审0/0/0。安装前源树、完整generator、wheel/sdist/真正安装、DDL/HTTP仍待验；E49/T-Q03安装失败保持，不以定点通过关闭。
+- E60：System cleanup完整RED Root5fail/2pass→修复后Root58556十纯门实际exit0、9files104pass/0fail/0skip，tracked hash保持，OS deny network。独立审发现新P1：undefined兼作无失败哨兵，使throw undefined未被保留；该分支尚未RED复现，T-Q05保持待复测，不把104测试通过当整体可接受。真实PG/Redis/fresh-schema/integration/runtime/image及T-R02/T-Q12未验。
+- E61：Root29970锁依赖供应准备115包/兼容0、独有venv删除，仅缓存准备不是Agent wheel安装。原离线缓存缺失失败保留。
+- 下一：System同文件追加unknown primary+cleanup成功/失败两支RED→修复→Root复测；Agent完整source/generator/构建/安装可独立推进。随后真实owner资源与浏览器；项目生命周期T-C05、失败收费T-B07仍待业务决策，支付最后。任何候选变化回待复测，必需分支未验不称闭环。
+
+证据：E59 /tmp/kokoro-r108-agent-proof-green-root.json（03e568041f1222da8fda87bfee04f0ba65abf385261ca34d2605c1e959d1d1fb），log1b60a61b0c7302318d7026098625877d91777699b2ceb84e71290b1b0c65a26e；独立报告58394f2b0c5b8d04ae71e8f3b7df948710a5f5ed4e1130735d18a6d851559d59。E60 /tmp/kokoro-r108-system-pure-root.json（54b87aba62e1f072e3b6c8443de6c1e99434161f19a112c79c4e9865a104319a），logb0a4b379369bea0ae0c06b796db503d66332628698b52ccb30fc7fe55a486108。E61 /tmp/kokoro-r108-agent-locked-supply.json（e162239dcca9a9651b246a6c55b98fecf260cd4425ace6b25fa9b59218b7f9a6）。System独立审 /tmp/kokoro-r108-system-green-final-review.md SHA78430667ea2d81a1f84c3f011a95629578a7e8176b481f8fa7372b5d05d67648、0/1/0，暂不验收。原句柄已终态；没有新增业务服务、共享设施重启或整组资源运行。
+
+台账验证终态：Root15031实际exit0，治理309pass/22.08s；0600日志 /tmp/kokoro-r108-test-ledger-governance.log SHAaa057dedfe642ec8e355874149bfa210e3e17855263c894f787b2da8593ec6e7。独立台账复核P0/P1/P2=0/0/0，/tmp/kokoro-r108-test-ledger-review.md SHA5bd47cd5cdc81bdb7eff13fc09474234f5fafb4d2ec449952a3454ed797c6e5b，绑定追加本说明前的四docs冻结hash。追加仅记录终态，70ID/计数及归档历史不变；不把台账审查0与System源码审查P1混淆。
+
+以下章节保留历史，不覆盖本节；保留Agent/System/Billing/uv.lock与未交接修改。本轮Root只维护同四台账和独立验证，不提交子仓源。
+
 ## R107 测试任务盘点（2026-10-02，当前唯一摘要）
 
 四台账独立最终审P0/P1/P2=0/0/0；初次治理rawlog定位P2已以如实记录缺口关闭。报告 `/tmp/kokoro-r107-test-ledger-review.md`（0600），SHA27add33b9a14dcb762bd7539234bae657888b01769aa8ff487ff609db440ef94。

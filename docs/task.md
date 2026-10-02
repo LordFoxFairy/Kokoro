@@ -1,3 +1,59 @@
+## R108 测试任务当前状态（Root核对）
+
+70测试组保持11通过/1失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置。E59 Agent30506定点139通过与独立0，完整安装仍失败未关；E60 System58556十纯门104通过，但独立审发现unknown undefined哨兵新P1、待两支RED，不能关闭T-Q05/R02/Q12。E61仅锁依赖缓存准备。详细测试矩阵、预期/实际/版本/缺陷/复测要求统一在docs/test-cases.md，不增加第二计划中心。原source owner均冻结，Root只四台账writer，任务外修改保留。
+
+## R108 当前失败复现与原owner修复（2026-10-02）
+
+上回合为progress：Root da04f2ad真实提交测试台账、309治理与最终独立0；完整Wave0–7不变。原WIN03/WIN05实际均idle停写，Root此阶段只复现精确纯门，不启动安装资源或共享服务。
+
+|任务/测试ID|Owner、角色、基线与精确范围|阶段门与交付|
+|---|---|---|
+|R108-ROOT-RED-REPLAY / T-Q03、T-R02、T-Q12|Root唯一测试执行；da04f2ad；Agent完整58 proof tests原guard；System仅3新cleanup cases、OS deny network与import前PG/child mocks；production/tests/hash冻结|精确实际Root失败与正控数量、原scope哈希不变；新独有0600日志/manifest，无重复服务。两独立只读审分别核原模块边界失败和cleanup回归完整性，后继源码由原owner写|
+|R108-AGENT-PROOF-RED-REVIEW / T-Q03|原agent_machine_final_review_r98只读，现contract_check.py/execution_proof_contract.py与provenance/安装闭包；Root da04f2ad/Agent17c73541+冻结candidate|比较现proof模块承接JWKS验证与新模块/挤压行数，给真实职责方案、循环imports/生成digest影响；不改断言/执行测试/写仓/Git，报告/tmp/kokoro-r108-agent-proof-red-review.md|
+|R108-SYSTEM-CLEANUP-RED-REVIEW / T-R02、T-Q12|原agent4_execution_owner只读，现freshscript/helper/unit cleanup tests；Systemaa4e42e5+冻结单test候选|核CREATE/connected/primary错误与end/DROP/adminend分支覆盖，给最小同file追加或production放行方案；无资源/Git/写仓，报告/tmp/kokoro-r108-system-cleanup-red-review.md|
+
+Root11533实际复现终态：Agent58项57pass/1fail、resource_attempts0；System3新例1fail/2pass/5未选，OS deny network，均原业务/边界失败非setup。七源/test责任路径hash前后一致；manifest/tmp/kokoro-r108-root-red-replay.json SHA518b806dc9cc938c113921f859b57e806b6adda2d9647b9f6cde6b9c5cad9c74。
+
+|任务/测试ID|Owner、基线、精确写集|完成条件与依赖|
+|---|---|---|
+|R108-SYSTEM-CLEANUP-RED-COMPLETION / T-R02、T-Q12|原WIN05唯一System tests writer；仅test/unit/system-smoke-cleanup.test.ts；原五test prefix与生产freshscript/helper/197外围冻结；Root唯一Git|原独立RED审0P0/1P1/0P2（缺DROP/adminend独立分支/原Error identity）；仅新增table-driven单独end/DROP/adminend失败与CREATE失败+adminend失败、组合保原对象。先精确新测试名RED与既有正控，无真实资源；Root复现+独立审关闭P1后才production授权。manifest/tmp/kokoro-r108-system-cleanup-complete-red.json后停写|
+
+此阶段不解锁原未验资源矩阵。
+
+|任务/测试ID|Owner、精确写集与基线|阶段门|
+|---|---|---|
+|R108-SYSTEM-FRESH-CLEANUP-GREEN / T-R02、T-Q12、T-Q05|原WIN05唯一System source writer；仅scripts/verify-system-fresh-schema.ts；12项unit全部assert/test与helper/SQL/contracts/锁/docs/其他源码冻结；Systemaa4e42e5+test2f7dc98e|Root七例实际5fail2pass5未选、manifest019e3f1b；独立完整RED复审268f78aa P0/P1/P2=0。现freshscript复用既有runCleanup，connected/created精确steps独立执行，保primary对象及所有cleanup原对象；cleanup正常原setup对象不变、CREATE失败零DROP。保原try body/DDL断言逐字节。先7分支GREEN，再完整现unit/contract/architecture与check静态（原owned Node子进程fixture仅自有组可运行，无业务设施）。manifest/tmp/kokoro-r108-system-fresh-cleanup-green.json后停；Root独立重跑+审。真实PGfresh/Redis/integration/runtime/image保持未验，不替整链|
+
+放置：只扩已有fresh-schema脚本的失败清理编排，沿现helper，不建新资源框架/业务模块；公开API/SQL/安装断言/owner不变。
+
+
+R108-AGENT-INSTALL-DEPENDENCY-PREFLIGHT：Root唯一安装准备owner；只独有/tmp目录/受管Python3.11.14/Agent frozen runtime lock，不触源/锁/全局包/业务服务。已离线locked export0（132解析包，runtime requirements SHA2a5e3b10df30fa3f5541163caad1d5d9d13923644b96cc8588cb168a88347231，Root/Agent锁及pyproject不变）；随后可独有venv离线/require-hashes准备完整runtime closure。网络禁止/禁止下载解释器；若缓存缺失记录供应准备失败，不假称安装wheel或改锁降级。仅dependency准备，不关闭T-Q03；资源/actual wheel安装在源码冻结验收后另门。 实际离线准备venv0/runtime install1：annotated-types==0.7.0未在对应registry缓存；owned临时venv已删除（/tmp/kokoro-r108-agent-dependency-prep.json），不是源码失败。Root单独供应步骤仅按相同frozen requirements/require-hashes/only-binary、lock声明aliyun registry准备cache；受管3.11.14，新独有venv、4并发下载、120s硬限，零模型/业务设施。后继安装门仍使用离线cache重建，不使用供应venv冒充离线安装成功，不改锁/版本或切unsafe index策略。
+
+
+### R108 Agent现模块职责迁移放置门（Root裁决）
+
+|项|结论|
+|---|---|
+|Owner/当前|原WIN03唯一Agent writer；Root da04f2ad/Agent17c73541+375候选文件；Root已实际58项57pass/1边界fail，源码214行；独立RED审0P0/1P1/0P2|
+|职责/位置|现contract_check.py保持HTTP路由/治理/整链薄编排；将proof专属JWK-set exact schema/component与同Agent直接HTTP provenance validator迁回既有execution_proof_contract.py。比较现proof owner（采用）/压缩行数（淘汰，不解决职责）/新JWKS模块（淘汰，现owner可承接）；不新文件、一级模块或进程|
+|粒度/依赖|仅两现源码+生成provenance；contract_check单向调用proof窄入口，proof不反向import。完整原accept/reject集合、错误文本/原因和首失败顺序保持；不更改run执行/HTTP5/Todo/SQL/安装资产闭包|
+|数据/删除|公开API/SQL/tenant/事务/缓存/11项OWNER_SOURCE_FILES/pyproject data-files/RECORD语义无变化；现generator机械刷新aggregate，generated Failure原bytes保持；删除原checker被迁移schema/函数，不留alias/fallback|
+|验证|完整58proof+原81（generator先未选）纯guard、Ruff/直接Node类型；所有现assert冻结与375清单保护。约800行是职责复核阈值，不可压缩格式凑数；自然规模报告。Root复跑/最终审后完整source/generator/build/install独立门|
+
+|任务/测试ID|Owner、精确写集与排除|阶段门|
+|---|---|---|
+|R108-AGENT-PROOF-BOUNDARY-GREEN / T-Q03|原WIN03；仅src/kokoro_agent/contract_check.py、src/kokoro_agent/execution_proof_contract.py、contract/provenance.json（原generator派生）；所有tests/其他source/SQL/contracts/锁/docs/Root冻结；Root唯一Git|依Root真实RED和独立报告68e6e834裁决按上表迁移。冻结原函数并核不涉及迁移块原字节；迁移维持schema literal/校验条件/错误原因/函数调用顺序。generator写回旧Failure文件须bytes-identical。manifest/tmp/kokoro-r108-agent-proof-boundary-green.json0600后停；Root复跑+源码审，不关安装T-Q03|
+
+保留Billing/uv.lock与其余未交接变更。
+
+### R108 当前测试台账验收续接
+
+- R108-SYSTEM-GREEN-ROOT：Root da04f2ad，唯一 System 验证执行者；只读冻结 source da1fa288/test 2f7dc98e/helper efd2f061；完整10纯门/9文件104断言，Node24与OS deny network，资源环境移除；仅ignored dist可生成，不安装依赖、不启动业务服务或真实数据库。原WIN05已停写，Root记录0600独有日志与全tracked before/after hash。
+- R108-SYSTEM-GREEN-FINAL-REVIEW：原agent4_execution_owner只读，模型沿用原会话；审同冻结现fresh script/test/helper、错误保留和每步回收、原SQL主体保持。只写 /tmp/kokoro-r108-system-green-final-review.md，不执行资源或Git；独立结论和Root实际纯门均通过后才恢复T-Q05，T-R02/T-Q12保持未验。
+- R108-TEST-LEDGER-REVIEW：原four_owner_fixes_review_r31只读，Root da04f2ad及当前冻结四docs；核70ID/状态计数/当前与历史/证据hash/未复现P1分类，报告 /tmp/kokoro-r108-test-ledger-review.md，零仓库/Git/测试资源写入。
+- R108-TEST-LEDGER：Root唯一四台账writer；记录E57/E58后继实际结果和待验边界，保70稳定ID与归档历史；Agent139定点通过不是安装通过，供应缓存准备不是wheel验收。治理与独立台账审后精确四docs提交。
+
+
 ## R107 测试盘点验收任务
 
 Root唯一四台账writer；只更新当前状态、E56–58和版本变化，70ID及归档正文保护。当前11/1/0/14/41/2/1；System测试候选变化回待复测，历史97通过保留。独立只读审查+Root治理验证；不把owner报告当Root新失败已复现，不操作子仓/锁/Gitlink/服务。
