@@ -9,6 +9,12 @@
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
 - 当前状态以本页R117摘要、下方测试矩阵与具名证据为准；最新代码变化回待复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
 
+## R117 接续实际结果（2026-10-02）
+
+新增E88：System真实现Nest HTTP/PG/Redis lifecycle完整19通过/0跳过，14自有fixture库原测试精确清理且独立不存在；包含schema隔离/漂移、HTTP deadline与无late commit、启动失败/握手drain。只本owner切片，不关闭全部T-S01/T-R02/T-Q12；Node24.20实际版本与197源hash绑定，Redis仅连接/PING非业务key恢复。
+
+新增E89：Root独立完整Factory file2失败/54通过/0跳过，锁真实backend构造自然终态与partial swarm close=0、原异常/state正控。三面文档/契约门核后原owner已实际开始七现源GREEN；尚无交付/修复验收。当前70组12/1/0/13/41/2/1不变，失败保留，详细命令/hash/环境失败与回收见progress.md，不以子agent派工或新增断言充完成数。
+
 ## R117 测试进度核对（2026-10-02，最新）
 
 70稳定测试组现 **12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**。这是测试验收状态，不是开发完成率。已通过的版本与范围见各行，其他必需分支继续待验；详细用例尚未展开的组必须先补操作步骤/预期与负例，70行能力目录不等于完整测试已经执行。
@@ -233,10 +239,10 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-U03 | Web | 桌面与窄屏对话/侧栏/项目/作品布局，长文本/代码/表格/错误均可用 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-U04 | Web | 键盘/focus-visible/axe/reduced-motion、全部loading/empty/error/partial状态与视觉/bundle门 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-R01 | Root | 本次BFF隔离测试临时库精确创建/删除、无共享PG/Redis reset | 通过 | E03：removed=true/cleanup=[]；仅该run，不代表全进程治理 |
-| T-R02 | 各owner→Root | 实际进程启动/health/ready/超时/取消/graceful shutdown/worker drain/故障恢复 | 未验 | 原句柄追踪、不重复启动、不把观察超时当进程已停 |
+| T-R02 | 各owner→Root | 实际进程启动/health/ready/超时/取消/graceful shutdown/worker drain/故障恢复 | 未验 | E88现System19真实资源/HTTP切片通过；E89 Agent close仍失败，原owner已在实施，未冒称全owner。 原句柄追踪、不重复启动、不把观察超时当进程已停 |
 | T-R03 | Root/各owner | 权限矩阵/输入边界/敏感日志/依赖secret/source扫描/跨owner禁止访问 | 未验 | 同tenant不同人+跨tenant正负例；报告不含凭据 |
 | T-R04 | Root | 全owner当前门+组合真实E2E+隔离fixture backup/restore（持久事实/幂等/未决outbox恢复）+可追溯release smoke/image SHA清单 | 未验 | Wave7最终研发验收；SLO目标不冒充压测，不扩展部署运维 |
-| T-S01 | System→IAM/BFF | Site/Host/Workspace/Runtime/Policy具名身份与生命周期；disabled/unknown/expired拒绝、secret零泄漏 | 未验 | owner HTTP/PG→消费者，不建任意配置桶 |
+| T-S01 | System→IAM/BFF | Site/Host/Workspace/Runtime/Policy具名身份与生命周期；disabled/unknown/expired拒绝、secret零泄漏 | 未验 | E88现System单仓lifecycle19真实通过，只启动/HTTP deadline/schema资源切片；完整业务/消费者待验。 owner HTTP/PG→消费者，不建任意配置桶 |
 | T-S02 | System→Agent/BFF | 模型目录/选择/路由revision与digest；实际gateway/credential；重试故障不静默换未授权模型 | 未验 | 技术配置不等于实际调用证明；消费固定owner artifact |
 | T-G01 | Platform→BFF/Agent→Root | capability到platform身份/Proto/remote/path/env/DB/Redis一次cutover；旧alias/fallback删除 | 未验 | Wave3正式验收，现物理仍kokoro-capability，不冒称已改名 |
 

@@ -1,3 +1,21 @@
+## R117 继续推进 / E88–89（2026-10-02）
+
+上一goal回合为progress：Root真实E87并提交737e0d6e。此次不缩小Wave0–7；Agent原owner补强/实施，Root独立真实System资源验证与集成，两个工作面没有互抢writer或重复服务。
+
+**E88 / T-S01、T-R02、T-Q12：System真实现lifecycle资源切片通过。** System9a4e98e clean，Root98889按原 `test/integration/system-lifecycle.test.ts` 完整19pass/0fail/0skip，Vitest5.60s/整体5.82s/exit0，Node24.20.0满足>=24<25（不是24.13精确复验）。真实Nest HTTP、PG、Redis连接/PING：owner schema fresh与拒重入、公有/neighbor哨兵不变、列type/null/default/index/function/trigger漂移拒绝、missing namespace拒绝、HTTP锁deadline503无late commit、PG握手与restore截止、部分启动回收。14随机自有fixture库，不是新增应用库/role方案；严格CREATE原生查询前由私有观察层验证缺席并fsync精确intent，真实CREATE/DROP ACK均记录。所有14由原fixture本身drop，Root精确后查不存在、external_cleanup=[]、197tracked hash保持、owned进程组终态。观察层不替业务断言，仅归属与admin5s statement/3s lock限；未重置共享PG/Redis/预览。
+
+manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r117-system-lifecycle-root-0wef8881/manifest.json` SHA db37e2af8828e869e12688e4da97200b3619e0710691bfcf4266a472375c3a0a，脱敏日志同目录run.log。独立終审 `/tmp/kokoro-r117-system-http-final-review.md` SHA2f428265659619e7f1b5f152c06b49941be9af01428f0e7c3a149ed5fdbafaee限定接受，0P0/0P1/1版本措辞P2已明确。Redis确实连接/PING/destroy，但现19例未调用cache get/set/remove，不宣称业务key生命周期或scan认领清理。首次Root解释器缺dotenv在资源前失败；实际首批78477 bareenv丢USER导致beforeAll PG启动user缺失、19未执行/skip，0CREATE/197不变/终态，manifest .../kokoro-r117-system-lifecycle-root-khm87hpv/manifest.json SHAbadde85f81a814b462c42e6914843bed5a3f6c57144aa2c4e6d147bc73db4050保留。第二仅私有包络保留原OS USER，不改产品或放宽断言。现跨仓run_system_owner_smoke.py仍被Agent dirty正式release gate阻断，未绕过；含密码URL入CLI argv的条件风险另保留，不在本次System单仓env运行暴露秘密。
+
+**E89 / T-Q03、T-R02：补强RED已Root验、正式GREEN续派。** 原WIN03 cursor200 completed/idle交付test_factory与现三设计；Root37357同冻结七生产文件/三docs/其余候选339文件，独立完整file2fail/54pass/0skip/652原三方warning/22.58s、资源尝试0、进程组终态。自然终态走真实make_backend_for_run→Factory→Supervisor，正常native context exit witness成立；partial swarm首个client已创建、第二peer原ModelResolutionError保留；actual state执行正控0client。未接入的caller-owned空断言已删，未冒称取消/阻塞线程已验。
+
+manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r117-strengthened-red-root-gw0klm16/manifest.json` SHA8de0d7e1c988e98ba6310f4f868e7b21a91d9e7bee5ed8dbc4a269aadb05bf5d；原agent4_execution_owner独立审接受有限RED与三面基本一致，Root实际contract_check及generate_failure_models --check各exit0/禁网，日志 `/tmp/kokoro-r117-design-gates-FaB9ti/contract.log` SHA79a952b4c067844ba8d4fad812ef2f935f58130e72647d659678e7522967be90（生成check日志空hash为e3b0c442…）。内部runtime descriptor按现codec计算、新wheel RECORD由build生成；机器wire/pins/provenance/generated当前不需改，任何实际生成diff需Root另准。
+
+Root已完成现七文件资源放置/取消/drain裁决（不新服务/配置），三面文档门通过后续派同原WIN03为唯一writer，允许现七src、原三tests、三docs及现worker目录一份test_main.py。实际cursor201确认新turn01a0fefb-b412-7912-97f4-5d5d594de3af inProgress；具体授权/句柄只维护task.md顶部。生产修复尚无交付/Root GREEN结果，禁止以派工当完成；后继先查同句柄，不重复启动。
+
+70组仍12通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置。T-Q03真实失败直到修复Root复测，System19只限定切片不关闭T-S01/T-R02/T-Q12整组；E75标准152报告、当前完整浏览器/正式积分/其他用户能力与支付后置不消失。
+
+R117 E88/E89台账门：Root63894现三套治理工具测试实际305pass/2.78s/exit0，日志 `/tmp/kokoro-r117b-ledger-check-4kagxc/run.log` SHA15d6975715ee3213a85be01d5ceb7953299a4dc61072561064a06321425b04bc；70唯一ID/12-1-0-13-41-2-1与历史archive逐bytes保持。原GREEN cursor202仍确认inProgress，同turn不重派；下一BFF snapshot差距只读审查与原Agent writer独立并行，不扩未发布contract。没有整产品完成结论。
+
 ## R117 / E87 测试进度核对与真实RED（2026-10-02）
 
 用户要求的是测试任务台账而非开发task，继续维护同一docs/test-cases.md的70稳定组与原矩阵。Root9cff113a/Agent2653bcc+既有候选；原WIN03同turn01a0fede-ba75-7363-9cbb-9010e0a360ed由cursor196确认completed/idle，仅tests/unit/agents/test_factory.py新增回归，无生产修改。owner报告只作交付，不作为最终通过。

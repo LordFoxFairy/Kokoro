@@ -1,3 +1,54 @@
+R117-BFF-SNAPSHOT-READ（只读并行）：原agent_machine_final_review_r98核现BFF同事务Message/head/safe process/event_watermark与现T-C09/T-A组测试缺口，先确认BFF bb610ea/current clean及三设计/owner artifact版本；不改文件/Git/设施，不消费未发布Agent5作为正式客户端。注入CODEBASE_MAP；仅为现后继任务提供精确范围/依赖，Root保留裁决，不建立第二计划中心。
+
+R117当前句柄：原WIN03新GREEN turn01a0fefb-b412-7912-97f4-5d5d594de3af，cursor `3a08a485-69ce-41c3-a7c6-23cc37d4b100:202` 精确poll确认inProgress；不是已交付。Root98889/37357已终态，System E88与Agent E89真实结果见progress.md；后继查同句柄不重派。
+
+## R117-ARCHIVER-GREEN（2026-10-02，Root已接受文档门与补强RED）
+
+上一切片：原WIN03 turn01a0feed-0f47-7fd2-bf86-2fe36c105ce4已cursor200 completed/idle。Root37357独立完整test_factory：2真实close RED/54pass/0skip、339文件hash保持/禁网资源0/进程组终态；新自然终态真实backend构造和partial swarm异常保真，实际state正控成立。三面文档已Root读取、独立agent4_execution_owner基本一致接受；Root现contract_check与generate_failure_models --check均exit0。E89详progress（后继登记）；不是生产GREEN完成。
+
+文档门路径：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent/docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md（后两同绝对目录）；基线Agent2653bcc+冻结hash见补强manifest。未决产品/API/SQL项0；仅措辞澄清先由原owner窄修：runtime descriptor摘要在现codec自然计算，新wheel RECORD由build派生；当前wire/pins/provenance/generated/SQL文件预期不变，任何实际机械生成diff需Root另准，不宣称固定旧摘要或手填生成物。
+
+|任务|Owner、范围与责任|完成条件/依赖|
+|---|---|---|
+|R117-ARCHIVER-GREEN / T-Q03、T-R02|原WIN03 Agent唯一writer，gpt-5.6-sol/medium，Root审查/Git；现七source：sandbox/archive.py、sandbox/backend.py、agent_factory.py、worker/supervisor_execution.py、worker/supervisor_context.py、worker/supervisor.py、worker/main.py；现三tests、三docs沿前卡；另允许唯一新test `tests/unit/worker/test_main.py`。其他文件/SQL/contract/generated/locks/服务/Git禁止改，原候选保留|按本页生命周期裁决实现全ownership，不只让2 RED变绿：operation/connector线程真实归属与结束、构造失败/部分peer/CASloser、成功转handle、所有退出关闭；primary/cancel保真，强持有cleanup、错误可观测、单deadline两阶段drain，超时/失败main非零。每新增行为先在真实现入口锁失败再实现，不用缺新方法造RED；停止时补精确新增node/基线/原diff/实际test/static输出并交Root，不提交不并发启动共享资源|
+
+新test放置门：owner是Agent worker启动/退出；`tests/unit/worker/`已存在。比较把main的bootstrap/退出测试塞进test_supervisor.py（职责不同、易与worker依赖fixture混合）与现worker目录新test_main.py，采用后者，普通测试文件不新模块/目录。只纯注入现main边界，禁止真实启动provider/PG/Redis；验证shutdown drain=false走非零而非INFO成功，以及原合法shutdown正控。新production文件0、API/DDL0；涉及blocking资源的unit test fixture自身必须释放线程/任务，Root守卫补偿不算实现通过。
+
+取消排空关键验收：取消归档调用后真实blocking操作可继续，但有强owner；close不得早于其完成。第二次取消不抛弃cleanup；drain同时看到run后续新cleanup，超时false且仍可观察，close异常被获取并令drain失败，不仅取日志后宣称成功。构造尚未返还backend的connector线程必须被观察且成功创建后再按owning回收，不留下脱离Supervisor/shutdown的孤立等待。
+
+## R117 生命周期实施裁决（2026-10-02，文档门/测试补强，尚未授权源码）
+
+采用只读设计报告 `/tmp/kokoro-r117-lifecycle-design-gate-r2.md` SHA8ac2925f62e71f9a4f1b1db7d47fb222d8a19032e7443862f2bd55118b5808fb的资源归属方向。上一单独短timeout/shield方案淘汰：超时不杀线程，丢掉cleanup强引用会伪造drain。当前worker唯一shutdown预算drain_timeout_s默认60s，调用时允许配置，不新增第二close时限。
+
+|放置项|裁决|
+|---|---|
+|Owner/唯一writer|Agent现sandbox、assembly、worker生命周期；原WIN03唯一writer，Root审查/集成/Git；无跨仓业务事实|
+|当前事实|archive自建boto client无close；四async归档与connector裸to_thread可在取消后继续；Factory未转交backend所有权；Supervisor只drain run task，超时main仍成功返回；Root E87已真实自然完成RED，既有dirty候选保持|
+|目标/内部API|内部archiver/backend/AgentHandle显式幂等资源释放；实际本仓blocking操作先完成，再关闭其自建client；无资源plain/state合法no-op，不用getattr关闭任意owner资源|
+|目录比较/粒度|采用现archive/backend/factory/worker七文件各承现责任；淘汰新通用resources模块/服务，缺独立能力/生命周期且新增协议与导入无收益。只改现文件，不新目录|
+|依赖/取消|归档async操作以强持有shield任务拥有实际thread；close禁止新操作→真实operation完成→底层close；构造期成功前由connector/factory拥有，成功转handle→Supervisor。所有成功部分都尝试关闭；cancel维持顶层CancelledError，cleanup失败可观察，不覆盖原primary|
+|Run/shutdown|Supervisor持有资源cleanup任务并观察失败；drain同一deadline循环等待run及新出现cleanup，失败/超时返回false，不cancel线程或声称资源已回收；worker明确ERROR/非零。构造尚未返回的任务同样必须有可观察owner，不能把未settled thread托给孤立shield；后继源码审须验此边界|
+|数据/契约|SQL/tenant/事务/网络协议/版本/pins不变；七文件都在现runtime有限source清单，bytes自然改变descriptor/RECORD，不改机器provenance/inventory/generated；任何实际新diff越界停报|
+|删除项|删除裸to_thread取消后丢失归属与无效caller-owned空正控；不保留旧新资源释放双轨、不删除既有终态/lease/cleanup保护|
+|源写集后继|archive.py/backend.py/agent_factory.py/worker/supervisor_execution.py/worker/supervisor_context.py/worker/supervisor.py/worker/main.py，仅现七文件；需文档门和Root补强RED接受后另授GREEN|
+|验证|真实入口终态/暂停/stale/缺request/构造失败/partial peer/取消与归档线程先后、重复close、cleanup错误/两阶段drain/超时false/worker非零；unit明确非真实S3/Docker。Root独立纯guard复跑→Ruff/Pyright/contract/runtime检查→完整相关门；真实资源与新artifact门随后按原ID|
+
+R117-D0-DOC / 原WIN03：在现Agent docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md顶部各追加窄R117当前裁决，互相一致，引用本卡与Python手册；保留既有候选/历史，不改SQL/契约。技术方案记录七文件内部资源状态与失败恢复；API明确无wire变更；数据明确无持久表变更、durable sandbox cleanup与本地client不是同一生命周期。此授权仅三现docs+现tests补强，不授权生产。交付三绝对路径、基线commit、未决项/实际命令；Root核门后再开始GREEN。
+
+## R117-ARCHIVER-RED 补强续派（2026-10-02，仍tests-only）
+
+上一goal回合为progress：Root真实E87并提交737e0d6e，原WIN03已cursor196 completed/idle。原自然终态泄漏RED接受；未执行路径的caller-owned对象不是有效正控，native drain与生产backend构造尚未覆盖。本次续派同owner，不重建任务中心或重复进程。
+
+|任务|归属/基线/范围|依赖、验证与交付|
+|---|---|---|
+|R117-ARCHIVER-RED补强 / T-Q03、T-R02|原WIN03 Agent唯一writer，gpt-5.6-sol/medium；Root737e0d6e/Agent2653bcc+既有候选。仍仅test_workspace_archive.py、test_factory.py、test_supervisor.py；不改source/docs/SQL/contract/locks/Git，不新增文件|先读CODEBASE_MAP/三设计/Python手册和E87。保持原业务assert，将自然终态测试改为真实make_backend_for_run构造，测试侧只拦boto/model/外部I/O；plain/state控制必须实际运行。补自然完成、native等待/真实取消排空、有资源后构造失败、initial-pause recovery、stale/missing-request、partial swarm/CAS loser中可在既有真实入口实现的关键分支，锁client关闭次数/真实先后与原异常；不存在API不算RED。原无效caller-owned空断言删除或连接到实际路径，准确区分不存在client注入API与合法plain无资源。保存精确节点、源hash、独有输出，跑完停写交Root复现/审查。只完成自洽tests切片，不擅自GREEN|
+
+R117-SYSTEM-LIFECYCLE-RUN / T-S01、T-R02、T-Q12：Root独占资源执行现System test/integration/system-lifecycle.test.ts，System9a4e98e clean/Node24现运行时；不改业务源码/断言、不扩大到跨仓release。Root私有运行包络只观察并事前登记本文件严格随机CREATE DATABASE身份与真实ACK，资源回收后精确datname查询；凭据来自既有私有env，仅进程环境，不进argv/报告。复用现PG/Redis，唯一namespace/端口0，记录当前tracked hash/原进程组终态；超时不等于已停止，精确收束自有进程后才按已登记身份回收，不scan认领共享数据。无论成功失败都记同progress，不能关闭全T-S/T-Q12。
+
+R117-SYSTEM-HTTP-READY（只读并行）：原agent_machine_final_review_r98核对已存在Root `scripts/e2e/run_system_owner_smoke.py` 的当前owner/commit/Node运行时、精确owned DB/cache/端口与清理、日志脱敏和真实HTTP断言；不改文件/Git、不启动服务/资源。基线Root737e0d6e/System9a4e98e；注入CODEBASE_MAP和System三设计/ACCEPTANCE，仅选择一个现可执行资源切片供Root运行，不造第二harness或用旧结果充数。Agent tests唯一writer不变。
+
+Root并行裁决取消与to_thread资源归属：现worker drain_timeout_s=60s只用于shutdown，未传supervisor，不假称现有每run有界cleanup。若需要额外既有生命周期文件，由Root明确扩范围；有界shield超时后线程仍活着不是排空成功。transport/SQL/owner contract均不变；四源已在runtime source有限清单，机器生成变更预计0，不能手填provenance。
+
 ## R117 接续执行卡（2026-10-02，RED已交付并Root复现，不授权GREEN）
 
 R117最新状态：原WIN03同turn01a0fede-ba75-7363-9cbb-9010e0a360ed已由cursor196确认completed/idle（cursor `3a08a485-69ce-41c3-a7c6-23cc37d4b100:196`），仅现test_factory.py新增一条RED。Root27328独立1失败/1既有正控/0跳过，E87记录progress.md；自然完成后client close=0缺陷成立，生产未修改、无GREEN授权。独立只读agent4_execution_owner确认范围，并指出caller-owned空正控、真实native drain及生产backend构造未覆盖。下一先收敛有效测试覆盖/生命周期设计，再续派同writer，不重复服务/资源；Root独占Git，保留原候选。

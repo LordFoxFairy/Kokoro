@@ -1,3 +1,9 @@
+## R117 最新推进（2026-10-02）
+
+Root实际新增System单仓Nest HTTP/PG/Redis lifecycle 19pass，14精确owned fixture库由原测试自身清理并独立证实不存在，197源保持/进程组终态；Redis仅连接/PING非业务key生命周期，不是跨仓/模型/全部owner组合。E88细证见progress.md。
+
+Agent补强真实backend构造的自然终态与partial swarm close RED已Root完整file复现2fail/54pass/0skip，state实际正控及原异常保真；三面文档与当前contract/generated检查已核，Root已续派原owner七现源生命周期GREEN（原句柄201确认live，详task.md），尚无修复交付/Root通过。70组12/1/0/13/41/2/1保持；完整Wave0–7 active、标准152报告和用户能力待验仍在，支付最后。
+
 ## R117 当前测试状态（2026-10-02）
 
 测试计划唯一入口docs/test-cases.md，开发派工docs/task.md，实际证据docs/progress.md。70组现12通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置；统计按验收范围，不是产品完成率。
