@@ -2871,3 +2871,300 @@ assert.equal(evaluated,false);
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout == result.stderr == ""
+
+
+def _run_r99_actual_second_partial_block(scenario):
+    import subprocess
+
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    helpers_start = driver.index("const PRODUCT_COUNT_TOKENS")
+    helpers_end = driver.index("\nlet browser", helpers_start)
+    helpers = driver[helpers_start:helpers_end]
+    globals_start = driver.index("let browser", helpers_end)
+    globals_end = driver.index("\nconst inputReader", globals_start)
+    globals_ = driver[globals_start:globals_end]
+    until_start = driver.index("  async function until(check) {")
+    until_end = driver.index("\n  async function login", until_start)
+    until = driver[until_start:until_end]
+    snapshot_start = driver.index("  async function readSnapshot() {")
+    snapshot_end = driver.index("\n  async function readRenderedMessages", snapshot_start)
+    read_snapshot = driver[snapshot_start:snapshot_end]
+    finished_start = driver.index("  const finished = run => {")
+    finished_end = driver.index("\n  async function readSnapshot", finished_start)
+    finished = driver[finished_start:finished_end]
+    partial_start = driver.index('  phase = "second-partial-active"')
+    partial_end = driver.index('\n  phase = "second-active-reload"', partial_start)
+    partial = driver[partial_start:partial_end]
+    catch = driver[driver.rindex("} catch (error) {") : driver.rindex("} finally {")]
+    # This harness executes the actual driver helpers, globals, polling loop,
+    # snapshot probe, second-partial block, and outer catch. Only Playwright,
+    # frame, and clock boundaries are fixtures.
+    snapshot_helper = Path("scripts/e2e/chat_snapshot_evidence.mjs").resolve().as_uri()
+    source = r"""
+import assert from 'node:assert/strict';
+import {ChatSnapshotEvidenceError,assertCompletedMessagePrefixUnchanged as actualPrefix}
+ from '__R101_SNAPSHOT_HELPER__';
+__R99_HELPERS__
+__R99_GLOBALS__
+const scenario=__R99_SCENARIO__;
+const secret='PRIVATE_URL?token=PRIVATE_TOKEN password=PRIVATE_PASSWORD PRIVATE_BODY <div>PRIVATE_DOM</div> PRIVATE_RUN_ID';
+const receipt={run_id:'run_fixture',assistant_message_id:'assistant_fixture'};
+const run=receipt.run_id;
+const firstSnapshot={messages:[
+ {message_id:'user_first',role:'user',status:'completed',content:'first'},
+ {message_id:'assistant_first',role:'assistant',status:'completed',content:'reply'},
+]};
+const targetPartial=(status='streaming',content='partial',runId=run,role='assistant')=>
+ ({message_id:receipt.assistant_message_id,run_id:runId,role,status,content});
+const bodyForScenario=()=>{
+ const prefix=structuredClone(firstSnapshot.messages);
+ if(scenario==='snapshot-shape') return null;
+ if(scenario==='shape-messages-nonarray') return {execution_head:{run_id:run,state:'active'},messages:{private:secret}};
+ if(scenario==='matrix-count-0') return {execution_head:{run_id:run,state:'active'},messages:[]};
+ if(scenario==='matrix-count-1') return {execution_head:{run_id:run,state:'active'},messages:[prefix[0]]};
+ if(scenario==='matrix-head-missing') return {messages:prefix};
+ if(scenario==='matrix-active-other') return {execution_head:{run_id:'run_other',state:'active'},messages:[...prefix,targetPartial('pending','pending')]};
+ if(scenario==='matrix-nonactive-match') return {execution_head:{run_id:run,state:'completed'},messages:[...prefix,{message_id:'user_second',role:'user',status:'completed',content:'request'},targetPartial('completed','done')]};
+ if(scenario==='matrix-nonactive-other-overflow') return {execution_head:{run_id:'run_other',state:'failed'},messages:[...prefix,
+  {message_id:'user_second',role:'user',status:'completed',content:'request'},targetPartial('failed','failure'),
+  {message_id:'extra',role:'assistant',status:'pending',content:''}]};
+ if(scenario==='matrix-invalid') return {execution_head:{run_id:secret,state:secret},messages:[...prefix,
+  {message_id:'user_second',role:'user',status:'completed',content:'request'},targetPartial(secret,secret,secret,secret)]};
+ const content=scenario==='deadline'?'':'partial';
+ return {execution_head:{run_id:run,state:'active'},messages:[...prefix,
+  {message_id:'user_second',role:'user',status:'completed',content:'request'},targetPartial('streaming',content)]};
+};
+let evaluateCalls=0;
+page={evaluate:async()=>{
+ evaluateCalls+=1;
+ if(scenario==='snapshot-read') throw new Error(secret);
+ if(scenario==='snapshot-http') return {status:503,body:{private:secret}};
+ return {status:200,body:bodyForScenario()};
+}};
+currentProductAttempt=null;
+const snapshotPath='/api/session/sessions/fixture';
+const input={timeout_ms:20000};
+let observerFailure=scenario==='observer';
+let prefixChecks=0;
+const assertCompletedMessagePrefixUnchanged=(expected,messages)=>{
+ prefixChecks+=1;
+ if(scenario==='typed-evidence') throw new ChatSnapshotEvidenceError('PRIVATE_TYPED_CODE',{private:secret});
+ return actualPrefix(expected,messages);
+};
+const controlledFrames=[];
+let finishedCalls=0;
+const finishedRuns=[];
+const uiFrames=()=>controlledFrames;
+const uniqueRunFrames=(frames,value)=>{
+ assert.equal(frames,controlledFrames);
+ assert.equal(value,run);
+ finishedCalls+=1;
+ finishedRuns.push(value);
+ assert.ok(finishedCalls<=2);
+ const terminal=scenario==='terminal-before-partial' ||
+  (scenario==='post-until-terminal' && finishedCalls===2);
+ return terminal ? [{event:{type:'RUN_FINISHED'}}] : [];
+};
+__R101_FINISHED__
+const deadline=scenario==='positive' || scenario==='terminal-before-partial' || scenario==='post-until-terminal'
+ ? Date.now()+20000 : Date.now()-1;
+__R99_UNTIL__
+__R99_READ_SNAPSHOT__
+let phase='fixture';
+try {
+__R99_PARTIAL__
+  phase = "second-active-reload";
+  assert.equal(scenario,'positive');
+  assert.equal(beforeReload.execution_head.run_id,run);
+  assert.equal(beforeReload.messages.length,4);
+  assert.equal(prefixChecks,1);
+  assert.equal(finishedCalls,2);
+  assert.deepEqual(finishedRuns,[run,run]);
+  process.stdout.write('SECOND_PARTIAL_POSITIVE:'+phase+'\n');
+__R99_CATCH__
+}
+"""
+    source = (
+        source.replace("__R99_HELPERS__", helpers)
+        .replace("__R101_SNAPSHOT_HELPER__", snapshot_helper)
+        .replace("__R99_GLOBALS__", globals_)
+        .replace("__R99_SCENARIO__", repr(scenario))
+        .replace("__R99_UNTIL__", until)
+        .replace("__R99_READ_SNAPSHOT__", read_snapshot)
+        .replace("__R101_FINISHED__", finished)
+        .replace("__R99_PARTIAL__", partial)
+        .replace("__R99_CATCH__", catch)
+    )
+    return subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
+    )
+
+
+def test_r99_actual_second_partial_block_accepts_only_active_streaming_nonempty_control():
+    result = _run_r99_actual_second_partial_block("positive")
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == "SECOND_PARTIAL_POSITIVE:second-active-reload\n"
+    assert result.stderr == ""
+
+
+@pytest.mark.parametrize(
+    ("scenario", "expected_phase"),
+    [
+        (
+            "observer",
+            "second-partial-active-cause-observer-head-unknown-messages-unknown-partial-unknown-finish-unknown",
+        ),
+        (
+            "snapshot-read",
+            "second-partial-active-cause-snapshot-read-head-unknown-messages-unknown-partial-unknown-finish-unknown",
+        ),
+        (
+            "snapshot-http",
+            "second-partial-active-cause-snapshot-http-head-unknown-messages-unknown-partial-unknown-finish-unknown",
+        ),
+        (
+            "snapshot-shape",
+            "second-partial-active-cause-snapshot-shape-head-invalid-messages-unknown-partial-unknown-finish-unknown",
+        ),
+        (
+            "terminal-before-partial",
+            "second-partial-active-cause-terminal-before-partial-head-active-match-messages-4-partial-streaming-nonempty-finish-present",
+        ),
+        (
+            "post-until-terminal",
+            "second-partial-active-cause-terminal-before-partial-head-active-match-messages-4-partial-streaming-nonempty-finish-present",
+        ),
+        (
+            "deadline",
+            "second-partial-active-cause-deadline-head-active-match-messages-4-partial-streaming-empty-finish-absent",
+        ),
+        (
+            "matrix-head-missing",
+            "second-partial-active-cause-deadline-head-missing-messages-2-partial-missing-finish-absent",
+        ),
+        (
+            "matrix-active-other",
+            "second-partial-active-cause-deadline-head-active-other-messages-3-partial-pending-nonempty-finish-absent",
+        ),
+        (
+            "matrix-nonactive-match",
+            "second-partial-active-cause-deadline-head-nonactive-match-messages-4-partial-completed-finish-absent",
+        ),
+        (
+            "matrix-nonactive-other-overflow",
+            "second-partial-active-cause-deadline-head-nonactive-other-messages-overflow-partial-failed-finish-absent",
+        ),
+        (
+            "matrix-invalid",
+            "second-partial-active-cause-deadline-head-invalid-messages-4-partial-invalid-finish-absent",
+        ),
+        (
+            "shape-messages-nonarray",
+            "second-partial-active-cause-snapshot-shape-head-active-match-messages-unknown-partial-unknown-finish-unknown",
+        ),
+        (
+            "matrix-count-0",
+            "second-partial-active-cause-unknown-head-active-match-messages-0-partial-missing-finish-unknown",
+        ),
+        (
+            "matrix-count-1",
+            "second-partial-active-cause-unknown-head-active-match-messages-1-partial-missing-finish-unknown",
+        ),
+        (
+            "typed-evidence",
+            "second-partial-active-cause-unknown-head-active-match-messages-4-partial-streaming-nonempty-finish-unknown",
+        ),
+    ],
+)
+def test_r99_actual_second_partial_failures_have_closed_bounded_diagnostics(
+    scenario, expected_phase
+):
+    result = _run_r99_actual_second_partial_block(scenario)
+    expected = f"REAL_MODEL_FAILURE:{expected_phase}\n"
+    assert result.returncode != 0
+    assert result.stdout == ""
+    markers = (
+        "PRIVATE_URL",
+        "PRIVATE_TOKEN",
+        "PRIVATE_PASSWORD",
+        "PRIVATE_BODY",
+        "PRIVATE_DOM",
+        "PRIVATE_RUN_ID",
+        "run_fixture",
+        "assistant_fixture",
+    )
+    lines = result.stderr.splitlines()
+    safe_channel = (
+        len(lines) == 1
+        and lines[0].startswith("REAL_MODEL_FAILURE:")
+        and lines[0].removeprefix("REAL_MODEL_FAILURE:").replace("-", "").isalnum()
+        and not any(marker in result.stderr for marker in markers)
+    )
+    assert safe_channel
+    assert result.stderr == expected
+    assert len(expected_phase) <= 240
+    assert expected_phase.replace("-", "").isalnum()
+
+
+def test_r99_second_partial_diagnostics_preserve_strict_journey_guards():
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    start = driver.index('  phase = "second-partial-active"')
+    reload_phase = driver.index('  phase = "second-active-reload"', start)
+    reload_call = driver.index(
+        '  await page.reload({waitUntil:"domcontentloaded",timeout:input.timeout_ms})',
+        reload_phase,
+    )
+    block = driver[start:reload_phase]
+    assert "input.timeout_ms <= 600000" in driver
+    assert "const deadline = Date.now() + input.timeout_ms" in driver
+    assert "setTimeout(resolve,25)" in driver
+    assert 'assert(!finished(run), "finished before reload")' in block
+    assert reload_phase < reload_call
+    assert 'const receipt = await submit(content), run = receipt.run_id' in driver
+    assert 'body.messages.length===4' in block
+    assert driver.count("await page.locator('[data-composer-action=\"send\"]').click()") == 1
+    assert 'assert(!observerFailure && posts.length===2' in driver
+
+
+def test_r99_runner_reads_one_closed_partial_failure_line_from_nonzero_driver():
+    import subprocess
+
+    m = module()
+    phase = (
+        "second-partial-active-cause-unknown-head-active-match-messages-4-"
+        "partial-streaming-nonempty-finish-unknown"
+    )
+    expected = f"REAL_MODEL_FAILURE:{phase}\n"
+    # Keep the child program data-only so the actual reader path, rather than a
+    # mocked communicate result, owns the nonzero/stdio observation.
+    source = (
+        "process.stdin.once('data',()=>process.stderr.write("
+        + repr(expected)
+        + ",()=>process.exit(1)))"
+    )
+    child = subprocess.Popen(
+        ["node", "-e", source],
+        text=True,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        output, errors, windows = m.read_driver_observations(
+            child, {}, object(), object(), 5
+        )
+        assert child.returncode != 0
+        assert output == ""
+        assert errors == expected
+        assert windows == []
+        assert len(phase) <= 240
+    finally:
+        if child.poll() is None:
+            child.kill()
+            child.wait(timeout=2)
+        for stream in (child.stdin, child.stdout, child.stderr):
+            stream.close()

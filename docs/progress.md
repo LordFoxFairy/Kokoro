@@ -1,3 +1,15 @@
+## R101 当前实施与实测证据（2026-10-02，最新）
+
+完整Wave0–7 goal保持active，测试70稳定组：8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置；不是整体完成比例。
+
+- Root原85723真实PG65pass/55warnings/10.11s（原59+新增Todo6）；真实竞争、完整/空Todo、fresh replay/幂等、身份漂移、lease/expiry/terminal围栏及live失败durable事实通过。独立审0，owned fixture库已删除/cleanup=[]、源hash前后不变（E35）；T-A01/T-Q03完整运行与BFF/Web链仍未验。
+- 原550诊断纯门Root61613 exit0/9.25s与Nodecheck0；独立复审原1P1/1P2已关闭、最终0（E36）。原post-until terminal race、invalid消息集合、0/1计数已真实向量覆盖；T-Q11关闭为诊断纯门，不是产品旅程通过。
+- Home语义Root28466真RED11fail/142pass/153/7.96s（E37），网站/More与零POST正控保护。原WIN01唯一Web writer现四source GREEN实施；T-Q01因在途变更回待复测，T-U01仍有语义/真实浏览器缺口。Web已发b49797b1的限定纯门E33保留，不混入新候选结果。
+- Root拟仅集成两诊断文件、Web已发布b49797b1 gitlink/49真实committed来源和四台账，其他owner/13declaredbroken不变；组合纯门/独立审/实际发布与fresh严格W2结果后继，不声明新W2已启动或通过。T-C06仍E28 second-partial-active失败。
+- 项目生命周期T-C05、失败/部分输出/未知成本计价T-B07保两决策阻塞；正式授权积分/预占/结算流水仍未验、支付后置。未重启3310/共享基础设施，保Agent/Billing/uv.lock任务外修改。
+
+R101组合最终门：原67468终态exit0，四Root纯测试文件386pass/47.22s；/tmp/kokoro-r101-root-composition-final.log，SHA256 cf7b37770df0495ed18d40b235dbd941715f8babeb20b1f9b1292e861c626915。精确stage Web gitlink后topology-final PASS、compatibility-final exit1仅13既有declaredbroken/16edges/0violations，无额外ref漂移。独立/tmp/kokoro-r101-root-composition-review.md 0P0/P1/P2，49commit refs/45blob与8路径范围实核。首84178 1fail/385pass及prestage topology/compat13+50保持日志，不清零；final结果不关产品T-C06。统计输出最初KeyError属于脚本读取PASS JSON无errors键，零repo写入，已正确get并重核。当前只发布正式Webb497和诊断，不含在途Home/Agent/Billing/uv.lock。
+
 ## R100 测试任务状态核对（2026-10-02，最新）
 
 唯一测试台账仍为docs/test-cases.md，完整70组：8限定通过/1最近失败/0整组执行中/17待复测/41未验/2决策阻塞/1支付后置。本轮只核已有Root终态日志、manifest、Git与当前窗口句柄；未重新执行全部业务测试。开发任务完成、自动化断言通过和完整用户验收是三个不同层级。

@@ -1,3 +1,17 @@
+## R101 并行实施与Root验收（2026-10-02）
+
+上一goal回合为progress：Root3f70b7a2已提交70组真实测试台账，309治理门通过、独立0；未缩小Wave0–7。本次实核WIN01/WIN03/WIN10均idle后才续派，Root保留所有任务外dirty，Git/资源/台账由Root独占。
+
+|任务|Owner/角色/基线/允许范围|验收与后继|
+|---|---|---|
+|R101-W01-HOME-SEMANTICS-RED / T-U01|原WIN01唯一Web测试writer；Web main b49797b1且clean；只改tests/ui/kokoro-welcome.test.tsx、tests/ui/app-frame.smoke.test.tsx、tests/i18n/resolve.test.ts。相关R98七路径已冻结发布|简报/设计/游戏真实点击应填各自正确草稿与intent、辅助描述语义一致；网站不变；More文章/数据/脚本合法场景保留；九locale新key解析非缺省占位。Root前置RO/tmp/kokoro-r99-home-prompt-semantics-read.md。先三现test行为RED停写，Root复现后另授四现source GREEN；不改share测试/engine/样式/contract/依赖，不开资源或Git|
+|R101-DIAGNOSTIC-FINAL-READ / T-Q11|原agent_machine_final_review_r98只读；Root3f70b7a2+冻结现driver c65d7e8a/test257c2248；只审该两文件与R99manifest|核原until绝对deadline/25ms/prefix/!finished/硬reload/错误退出/敏感零输出，actual finished wrapper等覆盖是否有真实遗漏；不发明产品根因、不改文件/台账/Git/资源；报告/tmp/kokoro-r101-diagnostic-review.md。Root同时原546纯门/Nodecheck真实复验|
+|R101-TODO-PG-FINAL / T-A01、T-Q03|Root唯一PG资源owner；Agent17c73541+R94源/R97机器及冻结Todo test f1e20936；原agent4_execution_owner仅只读审此追加6项|核真实SQL竞争barrier/DB expiry/零副作用/独立读取/清理，不把FakeBus称Redis。Root运行同三个PG文件（原59+新6）、自有临时fixture库，实际清理/源hash前后；source未授权，任何失败先分类再窄修。报告/tmp/kokoro-r101-todo-pg-review.md；worker交付不是验收|
+
+Home本片归属现欢迎内容/i18n与既有三测试；采用既有FirstSite专用prompt keys与已有placeholder描述，淘汰通用scenario错配、新目录/状态源/UI体系；保留More通用scenario，它仍承担有效职责。无新owner/网络/API/SQL/协议/持久化/生命周期，正式onPrompt只填draft/intent/focus零POST零计费。GREEN后才完整Web门/Root审/发布/组合及实际浏览器；T-U01尚未关闭。
+
+R101组合最终门：原67468终态exit0，四Root纯测试文件386pass/47.22s；/tmp/kokoro-r101-root-composition-final.log，SHA256 cf7b37770df0495ed18d40b235dbd941715f8babeb20b1f9b1292e861c626915。精确stage Web gitlink后topology-final PASS、compatibility-final exit1仅13既有declaredbroken/16edges/0violations，无额外ref漂移。独立/tmp/kokoro-r101-root-composition-review.md 0P0/P1/P2，49commit refs/45blob与8路径范围实核。首84178 1fail/385pass及prestage topology/compat13+50保持日志，不清零；final结果不关产品T-C06。统计输出最初KeyError属于脚本读取PASS JSON无errors键，零repo写入，已正确get并重核。当前只发布正式Webb497和诊断，不含在途Home/Agent/Billing/uv.lock。
+
 ## R100 测试盘点任务（2026-10-02）
 
 |任务|Owner/角色/基线/范围|完成条件、依赖与交付|
@@ -5814,3 +5828,11 @@ R99-ROOT-PARTIAL-DIAGNOSTIC-GREEN：原WIN10已idle交接tests-only目标257c224
 R99-W03-TODO-PG-COVERAGE / T-A01、T-Q03：原WIN03唯一Agent tests writer；基线17c73541+已接受R94源/冻结R97机器，Root原69992实际三文件59pass/7.48s/0fail/0skip，自有库删除/cleanup=[]/source hash不变；另原2035 canonical schema7pass/0.76s/空安装拒重入/catalog drift、同样清理0。报告/tmp/kokoro-r99-agent-pg-plan.md明确Todo专属真PG缺口。仅扩既有tests/integration/database/test_run_outbox_filter.py，复用run/chat/same schema：非空有序Todo与显式[]替换→生产emitter/projection→真实fenced append→fresh repository replay→精确typed字段/原bytes/seq；原draft同identity重放/并发不重增，漂移冲突且零sequence变；旧generation/wrong owner/DBexpiry/terminal新写拒绝且水位不变；live失败不失durable事实。优先4–6自洽用例，不引入新fixture表或模拟PG、不用sleep证明竞争、不把FakeBus当Redis。原59/源/机器/SQL/依赖/四D0/Git/资源冻结；worker只collect与pure语法/格式/type验证，不执行PG/Redis/provider。现实现测试可能直接通过：这是补真实覆盖，不强造失败；发现真实缺陷由Root复现后窄授source。停写报告/tmp/kokoro-r99-agent-todo-pg-tests.json（0600），Root唯一资源owner复跑。
 
 R99-验证证据：Root Web原21275 Node22完整check实际exit0：249contract/50architecture/163files2320tests、lint/types/build；/tmp/kokoro-r99-root-web-home-check.log，752 tracked门前门后hash不变。Sol独立Home7路径0P0/P1/P2，/tmp/kokoro-r99-web-home-final-review.md；只限定R98通道/假套餐假档位切片，完整T-U01仍未验。Root进一步发现directPrompts旧语义mapping：presentation→文章，design→数据分析，game→通用脚本；原WIN01只读后继报告，尚未授translation source。Root启动命令初误用Root cwd导致check不存在已终态，随后正确Web cwd原21275实跑，不当产品RED。R99工具JS语法错误零执行，不重复资源。PGwrapper使用同现角色自有临时库并关闭tracing，非新增应用库/角色/运维服务。
+
+R101-DIAGNOSTIC-COVERAGE：Root原67847实际546pass/8.61s与Nodecheck0，现driver c65d7e8a/test257c2248保持，但独立审/tmp/kokoro-r101-diagnostic-review.md有1P1/1P2：harness替换真实finished wrapper漏post-until race；invalid messages/0/1 count无向量。Root据实际source确认，尚不发布。原WIN10 idle后仅授现scripts/tests/test_web_real_model_worker_smoke.py的既有R99 harness/参数matrix窄补：提取并执行实际finished wrapper、uiFrames/uniqueRunFrames作为fixture边界，false首次/true第二次必须原post-until assert非零且closed terminal cause；补messages非array/0/1、安全敏感向量，原positive/predicate/prefix/deadline/15断言和原531完整保留，不改driver/runner/helper/timeout/任何业务源。旧producer wrapper缺陷是测试覆盖，不强造产品RED。实际修补回归停写冻结/tmp/kokoro-r101-diagnostic-coverage.json（0600）；Root全当前pure/独立复审后集成。worker写入期间Root停止Root项目文件/Git，只推进子仓只读/验证。
+
+R101-TODO实证：Root原85723终态exit0，三个PG文件65pass/55warnings/10.11s（原59+新6）；/tmp/kokoro-r101-agent-todo-pg.json/.log，log SHA e8352ce1c6362577a4353ae884934e65597951c2357bc72cf062e492f16f533a，独有fixture库created/deleted=true、cleanup=[]、源hash不变。首用系统Python缺psycopg为setup错误/零资源，随后Agent现venv正确执行。原6新Todo覆盖已真实执行，尚待独立测试审与BFF/Web消费，T-A01整行不关闭。
+
+R101-W01-HOME-SEMANTICS-GREEN：Root原28466真实三文件11fail/142pass/153total、exit1/7.96s，/tmp/kokoro-r101-root-home-semantics-red.log；四source与share冻结匹配。原WIN01 idle后授唯一Web writer四现source：src/i18n/messages.ts、src/i18n/en.ts、src/i18n/overlays.ts、src/features/app/kokoro-welcome-content.tsx。三个FirstSite prompt keys按批准RO中文/英文精确文本与九locale overlay；三主卡description改已有presentation/design/gamePlaceholder，网站与More scenario.*不变。tests三SHA固定607ba25f/92e0d886/5b437bf5，share及其他749路径冻结；不改owner网络/engine/样式/配置/依赖。聚焦153→正式完整pnpm check，停写交接/tmp/kokoro-r101-home-semantics-green.json（0600）；Root复验/独立审/发布，实际浏览器仍后继。
+
+R101-ROOT-COMPOSITION：Root唯一Root writer，当前3f70b7a2；R99/R101诊断两路径经Root550真实纯门、独立最终0接受；Web正式b49797b1主仓gitlink仍854。仅此两诊断文件、Web gitlink、consumer-inventory.json内49Web已发布commit/blob refs及同四台账，其他owner/pin/16edges/13broken/3active不变。Home在途源码不纳入该发布组合，用git show正式b497原blob生成，不假称当前Home GREEN。Root309组合工具门/topology/compat、独立只读审与精确普通提交/发布；后继同owned fresh执行树同步，再新closed诊断严格W2，不重复clone/旧进程，不放宽600s/两POST四Message/active hard reload/作品/隐私。

@@ -18,6 +18,63 @@ const PRODUCT_ADMISSION_STATES = new Set(["accepted", "rejected", "unknown"])
 const PRODUCT_CONN_STATES = new Set(["connected", "reconnecting", "unavailable", "unknown"])
 const PRODUCT_DIAGNOSTIC_PHASES = new Set(["product-send-click", "product-response-await"])
 const UNKNOWN_PRODUCT_UI = Object.freeze({known:false,ready:false,admission:"unknown",conn:"unknown"})
+const SECOND_PARTIAL_CAUSES = new Set(["observer", "snapshot-read", "snapshot-http", "snapshot-shape", "terminal-before-partial", "deadline", "unknown"])
+const SECOND_PARTIAL_HEADS = new Set(["missing", "active-match", "active-other", "nonactive-match", "nonactive-other", "invalid", "unknown"])
+const SECOND_PARTIAL_COUNTS = new Set(["0", "1", "2", "3", "4", "overflow", "unknown"])
+const SECOND_PARTIAL_MESSAGES = new Set(["missing", "pending-empty", "pending-nonempty", "streaming-empty", "streaming-nonempty", "completed", "failed", "invalid", "unknown"])
+const SECOND_PARTIAL_FINISHES = new Set(["absent", "present", "unknown"])
+const SECOND_PARTIAL_HEAD_STATES = new Set(["queued", "active", "waiting", "resuming", "completed", "failed"])
+
+function newSecondPartialObservation() {
+  return {cause:"unknown",head:"unknown",count:"unknown",partial:"unknown",finish:"unknown"}
+}
+
+function recordSecondPartialCause(cause) {
+  if (currentSecondPartialObservation && SECOND_PARTIAL_CAUSES.has(cause)) currentSecondPartialObservation.cause = cause
+}
+
+function recordSecondPartialSnapshot(body, receipt, run) {
+  if (!currentSecondPartialObservation) return
+  const object = body && typeof body === "object" && !Array.isArray(body)
+  const messages = object && Array.isArray(body.messages) ? body.messages : null
+  const head = object ? body.execution_head : undefined
+  if (!object || !messages) currentSecondPartialObservation.cause = "snapshot-shape"
+  if (!object) currentSecondPartialObservation.head = "invalid"
+  else if (head === undefined || head === null) currentSecondPartialObservation.head = "missing"
+  else if (typeof head !== "object" || Array.isArray(head) || typeof head.run_id !== "string" ||
+    !SECOND_PARTIAL_HEAD_STATES.has(head.state)) currentSecondPartialObservation.head = "invalid"
+  else if (head.state === "active") currentSecondPartialObservation.head = head.run_id === run ? "active-match" : "active-other"
+  else currentSecondPartialObservation.head = head.run_id === run ? "nonactive-match" : "nonactive-other"
+  currentSecondPartialObservation.count = messages ? messages.length <= 4 ? String(messages.length) : "overflow" : "unknown"
+  if (!messages) currentSecondPartialObservation.partial = "unknown"
+  else {
+    const partial = messages.find(message=>message?.message_id===receipt.assistant_message_id)
+    if (!partial) currentSecondPartialObservation.partial = "missing"
+    else if (typeof partial !== "object" || partial.run_id !== run || partial.role !== "assistant" ||
+      typeof partial.content !== "string" || !["pending","streaming","completed","failed"].includes(partial.status)) {
+      currentSecondPartialObservation.partial = "invalid"
+    } else if (partial.status === "pending" || partial.status === "streaming") {
+      currentSecondPartialObservation.partial = `${partial.status}-${partial.content.length > 0 ? "nonempty" : "empty"}`
+    } else currentSecondPartialObservation.partial = partial.status
+  }
+}
+
+function recordSecondPartialFinish(finished) {
+  if (currentSecondPartialObservation) currentSecondPartialObservation.finish = finished ? "present" : "absent"
+}
+
+function secondPartialFailurePhase(originalPhase, observation) {
+  if (originalPhase !== "second-partial-active") throw new Error("second partial diagnostic phase")
+  const value = observation ?? newSecondPartialObservation()
+  const cause = SECOND_PARTIAL_CAUSES.has(value.cause) ? value.cause : "unknown"
+  const head = SECOND_PARTIAL_HEADS.has(value.head) ? value.head : "unknown"
+  const count = SECOND_PARTIAL_COUNTS.has(value.count) ? value.count : "unknown"
+  const partial = SECOND_PARTIAL_MESSAGES.has(value.partial) ? value.partial : "unknown"
+  const finish = SECOND_PARTIAL_FINISHES.has(value.finish) ? value.finish : "unknown"
+  const phase = `${originalPhase}-cause-${cause}-head-${head}-messages-${count}-partial-${partial}-finish-${finish}`
+  return phase.length <= 240 && /^second-partial-active-[a-z0-9-]+$/u.test(phase)
+    ? phase : `${originalPhase}-cause-unknown-head-unknown-messages-unknown-partial-unknown-finish-unknown`
+}
 
 function newProductAttempt(turn) {
   if (turn !== 1 && turn !== 2) throw new Error("product attempt bound")
@@ -138,6 +195,7 @@ function productSubmissionFailurePhase(originalPhase, attempt) {
 
 async function safeProductSubmissionFailurePhase(originalPhase, attempt, page) {
   try {
+    if (originalPhase === "second-partial-active") return secondPartialFailurePhase(originalPhase,currentSecondPartialObservation)
     if (!PRODUCT_DIAGNOSTIC_PHASES.has(originalPhase) || !attempt) return originalPhase
     attempt.finalUi = await boundedProductUi(page,250,true)
     const diagnostic = productSubmissionFailurePhase(originalPhase,attempt)
@@ -146,7 +204,7 @@ async function safeProductSubmissionFailurePhase(originalPhase, attempt, page) {
   } catch { return originalPhase }
 }
 
-let browser, page, currentProductAttempt = null
+let browser, page, currentProductAttempt = null, currentSecondPartialObservation = null
 const inputReader = createInterface({input:process.stdin,crlfDelay:Infinity})
 const inputLines = inputReader[Symbol.asyncIterator]()
 let phase = "input"
@@ -312,10 +370,13 @@ try {
   const deadline = Date.now() + input.timeout_ms
   async function until(check) {
     for (;;) {
+      if (observerFailure) recordSecondPartialCause("observer")
       assert(!observerFailure, "observer")
       const result = await check()
       if (result) return result
-      assert(Date.now() < deadline, "journey deadline")
+      const beforeDeadline = Date.now() < deadline
+      if (!beforeDeadline) recordSecondPartialCause("deadline")
+      assert(beforeDeadline, "journey deadline")
       await new Promise(resolve=>setTimeout(resolve,25))
     }
   }
@@ -432,9 +493,19 @@ try {
     return receipt
   }
   const uiFrames = () => frames.filter(frame=>frame.tag==="ui" && frame.path===eventPath)
-  const finished = run => uniqueRunFrames(uiFrames(),run).some(frame=>frame.event.type==="RUN_FINISHED")
+  const finished = run => {
+    const value = uniqueRunFrames(uiFrames(),run).some(frame=>frame.event.type==="RUN_FINISHED")
+    if (phase === "second-partial-active") {
+      recordSecondPartialFinish(value)
+      if (value) recordSecondPartialCause("terminal-before-partial")
+    }
+    return value
+  }
   async function readSnapshot() {
-    const result=await page.evaluate(target=>window.__rootProbeSnapshot(target),snapshotPath)
+    let result
+    try { result=await page.evaluate(target=>window.__rootProbeSnapshot(target),snapshotPath) }
+    catch (error) { recordSecondPartialCause("snapshot-read"); throw error }
+    if (result?.status !== 200) recordSecondPartialCause("snapshot-http")
     assert(result.status===200,"snapshot HTTP")
     return result.body
   }
@@ -483,17 +554,22 @@ try {
   const content = `/no_think\nFirst say exactly ${input.marker}. Then use write_file to create /real-model.txt containing exactly ${input.marker} (no newline, no quotes). Then call deliver with path /real-model.txt and title Real model work. Do not merely describe actions: execute both tools. After successful delivery reply exactly ${input.marker}. Do not ask questions.`
   const receipt = await submit(content), run = receipt.run_id
   phase = "second-partial-active"
+  currentSecondPartialObservation = newSecondPartialObservation()
   const beforeReload = await until(async()=>{
     const body = await readSnapshot()
+    recordSecondPartialSnapshot(body,receipt,run)
     const partial = body.messages?.find(message=>message.message_id===receipt.assistant_message_id)
     assertCompletedMessagePrefixUnchanged(firstSnapshot.messages,body.messages)
-    if (finished(run)) throw new Error("finished before active reload")
+    const runFinished = finished(run)
+    recordSecondPartialFinish(runFinished)
+    if (runFinished) { recordSecondPartialCause("terminal-before-partial"); throw new Error("finished before active reload") }
     return body.execution_head?.run_id===run && body.execution_head.state==="active" &&
       body.messages.length===4 && partial?.run_id===run && partial.role==="assistant" &&
       partial.status==="streaming" && typeof partial.content==="string" && partial.content.length>0 ? body : null
   })
   // No tool call, pause, throttling, or fake stream creates this active window.
   assert(!finished(run), "finished before reload")
+  currentSecondPartialObservation = null
   phase = "second-active-reload"
   epoch += 1
   const reloadEpoch = epoch
@@ -610,7 +686,7 @@ try {
   const originalPhase = phase
   phase = await safeProductSubmissionFailurePhase(originalPhase,currentProductAttempt,page)
   process.stderr.write(`REAL_MODEL_FAILURE:${phase}\n`)
-  if (error instanceof ChatSnapshotEvidenceError) {
+  if (error instanceof ChatSnapshotEvidenceError && originalPhase !== "second-partial-active") {
     process.stderr.write(JSON.stringify({code:error.code,evidence:error.evidence})+"\n")
   }
   process.exitCode=1
