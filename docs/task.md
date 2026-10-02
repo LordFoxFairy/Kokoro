@@ -1,3 +1,15 @@
+## R61 Root 五路径集成提交卡
+
+Root唯一index/commit owner，main4458140d；仅apps/kokoro-capability准确da813ed gitlink、verification/contracts/consumer-inventory.json与三现台账。inventory精确18字段：13个Platform repository_commit、2个当前owner contract_sha256、1个HTTP3.2.0 version、2个edge reason（仅真实owner组件接受证据，state仍broken）；11evidence文件hash在新commit逐字相等。其他edge状态/Schema/version/hash及uv.lock、Agent/BFF/Billing未交接dirty排除。Root定点治理95tests通过49.50s（/tmp/kokoro-root-r61-metadata-tests.log），topology初验在未暂存gitlink时真实exit1“checkout HEAD differs from recorded gitlink”，暂存后及commit后各复验，不隐去初失败。当前standard151fail/0unverified，新增只BFF在途projection repository >800行，原150保留；compatibility机器证据0 violations但declared broken exit1。原WIN02须给现事务/投影具名职责拆分表，再由Root窄授权，不用放宽800门。最终index独立审后提交推送；不是全仓研发/用户整链完成。
+
+## R61 并行续接与冻结真实验收卡
+
+复用原WIN01–10，不新增重复窗口；Root基线4458140d，同仓single writer/Root资源Git独占。BFF原WIN02仍完整public4/Agent4/schema/source实现；Root已核 test/agui-projection.integration.mjs 的“bounds Chat deliveries independently of Messages and reapplies owner and Project visibility”旧359–363块：只插stream marker不足真实head。仅额外准用现submitAndAdmit＋真实RUN_STARTED补合法父事实、active_run精确断言迁execution_head；其余配送100条/排序/越权/Project/删除断言原样。此为静态语义迁移发现（未称真实RED），Root冻结后全PG回归；其他已授权切片不停。Web原WIN01只读消费准备已交付，BFF准确发布commit/version/digest前不改消费者。
+
+Platform原WIN07已停写，main f884048b；/tmp/kokoro-platform-r60-final-freeze.json 的57路径 Root核57/57 hash相符、index空，原v1–v5历史artifact与HEAD字节相同。R61 Root仅自有临时PG库/现角色、canonical installer及完整两integration文件 mcp-p3b-postgres/bff-projection，无名称筛选，Node24、bounded timeout，owned句柄68446；同时原native agent4_scope_gate_r19仅只读审完整57文件源码/机器/测试。Root独立全离线门后方可发布，不以worker1273pass/278skip替代资源或用户链。无Redis重置/新增实例/3310启动，保留全部任务外dirty。
+
+Billing原WIN06四D0已冻结main1564510；Root采纳仅两个本人GET personal-identity-u1：u1.＋无padding base64url UTF8，ASCII同编码、fatal UTF8保BOM/canonical重编、重复头拒绝，保持191/255 codepoint合法域，无raw双读。仅experimental2.0.2两读，其他operation/owner headers不变；原五因素web-bff委派/独立JWT分支与GET零写保持。原native billing_chat_read_audit_r29只读审四当前前缀及后继范围，机器/source仍锁，审后原WIN06仅收敛裁定文档再授machine/tests RED。正式赠送/admission/settlement和完整C3另门，不声称计价/用户账务闭环。独立D0审1P1为四面尚未同步Root刚裁定，1P2为缺leading U+FEFF合法身份字节往返正向显式测试；仅原WIN06四当前前缀收敛状态与精确BOM矩阵，原body/机器/source全锁，复审后才授RED。
+
 ## R60 Platform 两旧门必要接线批准
 
 原WIN07仍唯一Platform writer；R58写集只增加现scripts/check-contract.ts与test/contract/platform-descriptor-migration.test.ts。Root已真实复验旧checker在当前3.2.0报version drift exit1；旧migration6例4pass2fail，首次合法transition及Storage mutation被新response tag7/8早拒。允许checker固定HTTP3.2.0/新本人路径与准确response refs/字段/query/security/governance/cache，保持旧全部路径/无任意松比较；migration只从已冻结v5-historical输入验证原迁移，所有原assert/mutations/旧规则不变，当前v6加法严格证明仍由v6门承担，不拿旧历史证明冒充latest。不给新SQL/deps/source范围；Root后续复验同两门+完整离线/真实PG。内部常规文件边界由Root裁定，无需用户确认。

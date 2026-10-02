@@ -1,3 +1,9 @@
+## R61 Platform 已发布，整链验收仍在推进
+
+Platform main da813ed499e8c81401f67da2566d102f85962b41 已提交推送并clean，57文件最终index独立0P0/P1/P2。Root冻结全离线1273passed/278既有资源skip/0fail8.10s，format/lint/verify/build exit0；真实PG/HTTP完整五MCP/projection文件119passed/0skip/9.35s，含recovery CAS/atomic/P3a/P3b。前两文件52为119子集，不重复累计。两自有库均回收、前后源码字节保持/cleanup空/其他库未删；IAM admission仍fixture double，另159资源、provider/凭据交付/BFF/Agent/Web用户链未通过。日志 /tmp/kokoro-platform-r61-root-offline.log、/tmp/kokoro-platform-r61m-root-resource-full.log。
+
+Root消费准确gitlink与当前HTTP3.2/Proto实际digest；inventory仅本owner commit/digest/version和两edge真实证据说明同步，state全部原broken，其他owner契约/证据hash不改。BFF原WIN02完整public4仍在实现，Web只读消费准备已交付（等待BFF正式发布）；Billing四D0已裁定仅两GET u1/experimental2.0.2、独立审查要求四当前面同步裁定与补BOM正向矩阵，原WIN06精准收敛，机器/source仍锁。Root当前standard真实exit1为151violations/0unverified（/tmp/kokoro-root-r61-standard.log），比R58新增仅BFF在途 agui-projection-repository.ts >800行；原150未消失，已返原owner明确拆职责后再冻结，未放宽门。compatibility仍exit1/declared broken、机器证据0 violations，topology暂存后PASS、定点治理95pass/49.50s。未重复开窗口/启动基础设施或3310；全Wave0–7 active，正式登录→模型多轮/刷新→正规积分用户旅程仍待。
+
 ## R60 当前浏览器回归与新增真实门失败
 
 Web06a1c866现桌面/移动端Playwright原18矩阵：14pass/4原project skip/0fail、14.1s，Root独立4420预览、单worker；/tmp/kokoro-web-r60-browser.log。仅UI/未配置登录边界，不是正式IAM/model/账务。所有owned服务/Chromium已退出、4420关闭，用户4310 QQ及非owned MCP不动。初runner因Next dev自动将next-env.d.ts的routes import改为dev而exit1；Root核仅该一行、预运行clean HEAD，精确恢复生成文件，Web重新clean，owned manifest保留原tracked_unchanged=false并附恢复记录，不掩盖初cleanup失败。第一次恢复命令cwd误在Platform，读Git立即失败零写；随后绝对路径恢复。
