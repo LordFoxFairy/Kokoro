@@ -1,3 +1,16 @@
+## R56 BFF 全投影门仍有九项失败
+
+Root冻结0fce9906源全矩阵31项实际22pass/9fail/0skip，1889.791ms，/tmp/kokoro-bff-r56-full-root-projection.log；新公平性与四authority例通过，原九项仍未关。owned bff_projection_r56_54cda2b363234b65 closed=true、tracked_unchanged=true、cleanup_errors=[]、unrelated_databases_removed=[]、Redis15remaining0。独立GC源码0P0/P1/P2；仅GC组件GREEN，不称public4闭环。Platform原六tests独立0P0/0P1/2P2，已仅续授原WIN07两现tests的R48新区覆盖补强；五D0冻结、所有source/机器/SQL/其他tests保持锁。
+
+## R56 Root 组件复验与十窗口续接
+
+- Billing Node24：credit-read＋credit-metering实际111pass/0fail/0skip/17.26s，/tmp/kokoro-billing-r55-root-read-write-green.log；fixture inventory为空。format/lint/tsc/noGenerate build exit0，全unit/contract/architecture29files637pass/0fail/0skip/9.91s，/tmp/kokoro-billing-r55-root-full-pure.log；原WIN08冻结14文件独立0P0/P1/P2。未证明HTTP/正式收费链。
+- BFF Node22：build exit0，新GC batch1例1pass/0skip；/tmp/kokoro-bff-r56-root-gc-green.log。owned-resource.json记录bff_gc_r56_2b428b96d4f5488e closed=true、tracked_unchanged=true、cleanup_errors=[]、unrelated_databases_removed=[]、Redis15remaining0。源0fce9906/test6e1f1a78；完整矩阵已复验22pass/9fail、独立GC源码审0P0/P1/P2，九失败/public4仍未关。
+- Web Node22两新test全79项29pass50fail/0skip/1.27s，/tmp/kokoro-web-r56-precision-red.log；Root release/login前置12项1pass11fail/72deselected/0.19s，/tmp/kokoro-root-r56-runtime-red.log。真实RED保持，待独立审后原窗口精准源码GREEN。
+- WIN09 Scheduler9e88只读go test -p1 -count1 -timeout120s -json ./... exit0：167PASS/25显式资源SKIP/0FAIL，88tracked/HEAD/index不变；不是ScheduledTask用户旅程。
+
+本轮仅推进组件，不宣称整体闭环；原窗口复用，具体唯一writer、文件集/依赖在task.md R56。所有Root命令原句柄已终态读取，不重复启动基础设施或预览。
+
 ## R54 Root 行为RED与独立放行
 
 BFF build exit0；node --test --test-concurrency=1 --test-name-pattern='^R52 GC batch one' test/agui-projection.integration.mjs：1fail/0skip275.35975ms，失败2848 B应少一frame却保原值，前置合法父/实际head与A零写控制已通过。/tmp/kokoro-bff-r53-root-gc-red.log；owned bff_gc_r53_c966f4bbc76d4c68 closed=true、Redis15余0、tracked_unchanged=true、unrelated_databases_removed=[]，/tmp/kokoro-bff-r53-owned-resource.json。原Sol独立freeze6e1f1a78/oldprefix55cc7cfd审0P0/P1/P2。

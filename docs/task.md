@@ -1,3 +1,22 @@
+## R56 原十窗口并行续接（Root 87377af9）
+
+用户再次要求10+窗口；复用原 WIN01–10，不另建计划/重复服务。Root维持完整Wave0–7 active；同仓唯一writer，Root资源/Git/验收独占。先RED/冻结独立审后精准GREEN，不扩大旧数据兼容或运维范围。
+
+|窗口/卡|归属、角色与允许范围|完成条件/依赖|
+|---|---|---|
+|WIN01 R54-Web|Web原负责人，当前两tests已停写；下一GREEN候选仅src/billing/format.ts、src/ui/billing/{billing-summary,billing-ledger}.tsx及两已授权tests旧期望机械迁移|Root79项29pass50fail已复验、WIN08独立0P0/P1/P2；现已放行该五文件窄GREEN。10^6/BigInt精度、非法金额未知、缺plan/free额度未知；不改钱包wire/markup/扣费。|
+|WIN02 R48-BFF-D0|BFF唯一writer，仅四现D0当前前缀修改；五内部源/tests全锁|返回WIN05 P2：明确BFF mutation fingerprint、Agent typed-normalized control digest、interaction full-state digest三身份；只owner声明optional null/omitted归一，业务null不递归删。旧body保持，冻结待Root审。|
+|WIN03 R55-Root-test-review|只读独立审两Root tests冻结c1679bcf/48ea2805、旧prefix与真实RED|检查accepted release positive+HEAD变更负例、九dirty owner零effect控制，无文件/Git/资源；报告行号和P0–P2。|
+|WIN04 R56-IAM-journey|只读正规IAM→Web callback→session/consent业务路径、已有测试与源码入口|输出最短可执行浏览器验收步骤及具体前置缺口，不重做IAM设计/不启动服务/不修改。|
+|WIN05 R56-wallet-contract|只读现Billing own本人读与BFF public/adapter/Web consumer差异，沿既有R52账务卡|给出owner发布顺序、确切路径字段/状态差异、最小现文件切片，不写生成物/猜contract/收费政策。|
+|WIN06 R55-Billing-publication|Billing原负责人只读交接/14文件冻结与四D0原dirty body的HEAD diff归属清单|Root111真资源+637纯门已过、WIN08独立0审；列可审查发布集/未授权旧body，不自行Git/写文件，不激活HTTP或赠送policy。|
+|WIN07 R56-Platform-2P2|五D0冻结899c5549/77a0cb93/f89d0556/4ae6e359/d9b59187已收；现仅两个tests补已审2P2|integration/bff-projection.test.ts在R48新追加区加合法server-catalog cursor跨surface拒绝+原scope成功、400/0业务读写；contract/bff-projection.test.ts在R48新区解引用参数锁optional/type/limit50(1–100)/cursor2048/非空及既有ID限额。原prefix、其余4tests、source/机器/SQL/gen/五D0锁；真实PG由Root。|
+|WIN08 R54-Web-test-review|原Billing审已0收尾；现在只读两Webtests冻结dea96ebb/1a766e3e|检查完整旧prefix、合法BigInt/零/现金控制及未知负例，不放宽assertion，无资源/文件/Git。|
+|WIN09 R56-scheduled-consumer|只读BFF ScheduledTask与Conversation/Project独立性、Scheduler9e88已发布契约消费与现端到端driver|给出具体未接通生命周期/幂等/调度回执缺口和最小责任切片；不改代码/共享资源。|
+|WIN10 R55-Root-release|原两tests冻结停写；等WIN03审后Root消息精准授权两现source与旧fixture机械迁移|单次Rootcommit的已提交gitlinks为唯一身份；保dirty/mode/index/path/symlink所有拒绝，login-only在build前Web/IAM/BFF准入，无fallback。|
+
+Root继续关键路径：BFF GC共享query修后真PG新例1pass/0skip，owned bff_gc_r56_2b428b96d4f5488e closed、Redis15余0、tracked未改；完整projection31项22pass/9fail，GC源码独立审0P0/P1/P2；九失败仍待后继修复，不以单例替代public4。Root源码未抢写，当前三台账仅本前缀更新。
+
 ## R55 Root 单一发布身份与正规登录前置 RED 卡
 
 R52-W10只读裁决已交付：System旧EXPECTED_RELEASES与Root已发布gitlinks不一致；login-only缺实际Web/IAM/BFF源码准入。唯一发布身份采用一次冻结Root commit的已提交gitlinks，不从owner HEAD/index/旧常量拼装；现clean/mode/path/index/symlink控制全部保留，显式expected SHA只作该身份断言，不绕dirty。
