@@ -1,3 +1,17 @@
+## R76 当前执行：Web 已发布，BFF public5 已发布，消费者与积分并行
+
+Root R76组合治理复验：286个不可变commit/blob引用由各已发布HEAD的git show重算，13broken/3active不变；topology exit0，compatibility exit1只包含13个显式broken、额外机器证据错误0。初三文件metadata门94pass/1fail因测试仍锁旧Scheduler9e88；仅换已验收发布e8dca的精确SHA，原assert全保，fresh95pass/0fail49.27s（/tmp/kokoro-root-r76-metadata-green.log），Ruff/check0。此组合记录Web28672公开4消费者、BFF479d4公开5，明确Web5在途，不把metadata当产品消费或端到端通过；Billing仅记录已发布a49c787，不带其在途源码。
+
+Web main `28672f330df11cd55f7ff3f89f269acc3fe908cf` 已提交/推送/远程精确核验，三P1独立复审0、Root Node22完整门2271unit/240contract/50architecture及lint/typecheck/build exit0。BFF main `479d4e8b0aeb438d2ec9cb3d4472130fc1a29972` 已提交/推送/远程精确核验，public5.0.0 SHA256 `3ce25a31d326a358d6e1d3c8ee33b5e07dbc34da13ee0933b3b5edf31531918b`；Root 捕获 required 缺失P1后原writer真实RED93=92pass1fail→GREEN，独立source/index0，Rootfresh93pure/230contract/149真实HTTP+PG+Redis全通过、0skip（24.317s）。owned bff_full_r76_3400ae666fb0412f已完整回收，tracked保持/Redis15余0/无他库删除或新库剩余。日志 /tmp/kokoro-bff-r76-{root-pure.tap,root-contract.log,full-root-integration.log}。不拿修复前149冒称新hash通过。
+
+| 当前任务 | Owner / 执行 | 边界与验收 |
+|---|---|---|
+| R76 Web消费public5 | 原WIN01唯一writer；Root审验/Git | 基线28672f3，exact479d4e8/5.0.0/3ce25a31 pin、两现generator正规再生成、safe12/Team9保护、Node22完整门；源码超现输入范围先报，禁兼容双轨。进行中。 |
+| R59 Stage4 Billing正规个人读HTTP | 原WIN06唯一writer；原Sol只读、Root审验/资源/Git | full纯门实际1018中3fail保留；2架构失败已确认，重复identity头200≠400后查为inject大小写对象键覆盖、原输入不是真实重复请求，保持400断言改真实duplicate fixture；Root授精确provenance JSON扫描/仅两Prisma runtime原生Error edge、固定安全header折叠重复拒绝及既有测试。不得泛放宽门或改Schema/main/writer，freeze后真实PG验。进行中。 |
+| R76 双轮用户链执行前置 | 原WIN10只读；Root资源/浏览器 | 复用已发布cbc13eb5完整harness，核实实际clean/gitlink要求与owned资源命令，不修改Root或启动共享服务；不是用户链通过。 |
+
+现十窗口复用、按依赖推进，不称十个一直同时运行；BFF/Storage/Scheduler等完成切片释放writer。Root仍唯一台账、index和组合负责人，保uv.lock及任务外修改。Root组合gitlinks/inventory pending，3310尚无监听；Web5、真实登录/双轮模型/活动刷新/文件交付、积分赠送资格/预占/结算/释放及可配置成本1.4倍仍open，完整Wave0–7 active，支付渠道最后。
+
 ## R75 Root 当前复验：E2E 源码门通过，真实用户链待验
 
 Root 已接收 WIN10 七文件冻结 `db2b6c38d75eadb2b66d5fe997ba3cbd8cf30938a169b27b39a1c6c7ca463f54`，独立 Sol 源审 0P0/P1/P2、七原 hash 匹配。主仓 fresh 六文件回归 **676pass/0fail/0skip，23.77s**（`/tmp/kokoro-root-r74-e2e-pure-regression.log`）；完整治理测试 **1627pass/3skip，128.66s**（`/tmp/kokoro-root-r74-full-governance.log`）。现有 Ruff check/format、Node22 两 syntax/Python 两 compile exit0、diff check0；首次误用 Root Python 的 `-m ruff` 缺 module exit1，未执行 lint，随后使用已安装 Ruff 正确复验，没有安装依赖。四 source/test 为纯/loopback harness，不是实际浏览器/provider验收。Root 已接管 Git 与台账，WIN10 停写；本片不含 Root gitlink/inventory 更新。
