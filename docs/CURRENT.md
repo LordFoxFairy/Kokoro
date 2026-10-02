@@ -1,3 +1,16 @@
+## R109 测试验收进度（2026-10-02，当前唯一摘要）
+
+测试唯一入口docs/test-cases.md，开发派工docs/task.md，运行证据docs/progress.md。70稳定组：**12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**。完整Wave0–7尚未闭环；这是限定验收任务组，不是产品完成百分比。
+
+- E62 / T-Q05：System unknown两支Root RED2fail/1正控→修复后Root17470十纯门实际exit0，9files106pass/0fail/0skip、197文件hash保持且本次核对当前相符、OS deny network，独立源码审0/0/0；恢复当前候选限定纯门通过。尚未子仓提交/组合发布，真实PG/Redis/freshschema/integration/runtime/image及T-R02/T-Q12仍未验。
+- E63 / T-Q03：Root46970完整contract真实669pass/3行为fail/6禁网守卫拒绝的loopback setup error/1按原marker未选；Failure generator精确6调用已执行（1正5负，不是6成功退出）。原WIN03新turn已completed/idle并交付精确五文件候选，owner报告原3例与140回归通过，仅待Root独立复测/审查，不当已验收；两codegen未到比对，archive导入副作用、完整unit/wheel/sdist/真正安装及后继DDL/HTTP仍待验，E49安装失败保留。
+- 已通过12组：T-Q01/Q02/Q04/Q05/Q11、T-L01、T-C01/C06/C11、T-K01、T-B01、T-R01。E53登录正向与严格两轮真实聊天仍仅已发布组合和本地qwen3:8b；不含用户网关、正式积分收费及全部Agent/UI能力。
+- 下一：Agent三失败修复→Root复测；回环HTTP/codegen/archive/安装与System真实资源按现门推进。项目生命周期T-C05和失败收费T-B07仍待决策，支付最后。候选尚未Root复测，不当整组测试运行，历史失败不删，必需分支未验不称闭环。
+
+E62 manifest /tmp/kokoro-r109-system-pure-root.json SHA15e349a995d95feca73b86cd46fcf0f516d5e5b8a62077c9a2899bd4da6b9fb7，log7b62b88ba7330524e7153f5cc29168fbfa12c7be954c88a88d285d67e02baba5；源码审eff656ac1a2cb75a56e4c7df74489af4b10822b58cf366bd50b43b7b3e052dbe写于Root终态前，Root后续独立核实终态。E63 manifest /tmp/kokoro-r109-agent-contract-red-root.json SHAbdc5debc6eda21139ce5527b9c43310cced532f1b66fbe5f8093bd4f7e827af4，log4517efa15b5f7b09816b3a4a2874c4a7e28d47466d3ceb8be86c4641edb31d31。Root仅同步现四台账，保子仓/uv.lock，未启动或重启业务服务。以下仅保留历史，不覆盖当前摘要。
+
+R109台账治理：Root14445实际exit0，309pass/22.35s；日志 /tmp/kokoro-r109-test-ledger-governance.log SHA758d9c3b1faf9dabe2bcea3eee595d8eba38f92d355e7df9cfbc81d57c1de484。本次只是台账治理，不是全部业务复测；独立台账初审措辞P2已窄修，最终P0/P1/P2=0/0/0，报告 /tmp/kokoro-r109-test-ledger-final-review.md SHA90455bdf205491824e31b01141d70df1f65c8ca518915659e29e434ae7ff5a93（绑定追加本终态说明前四docs冻结hash）。Root99498修正后治理再跑实际exit0/309pass22.19s，日志 /tmp/kokoro-r109-test-ledger-final-governance.log SHA0f7888810ea256a1345a2905efd8988d09d0f97874f63712455a9918b501fb78。本终态说明不改70ID/状态/历史，不把台账治理当业务复测。
+
 ## R108 测试验收进度（2026-10-02，当前唯一摘要）
 
 测试任务唯一入口 docs/test-cases.md；开发派工 docs/task.md；运行证据 docs/progress.md。70稳定组：**11通过 / 1失败 / 0整组执行中 / 14待复测 / 41未验 / 2决策阻塞 / 1支付后置**。这是验收覆盖状态，不是研发完成百分比，完整Wave0–7尚未闭环。

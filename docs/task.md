@@ -1,3 +1,38 @@
+## R109 当前验收推进（2026-10-02）
+
+当前测试状态12通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置；T-Q05依Root106+源码审0限定验收，Agent三失败候选已交付/停写，尚未Root复测。
+
+上一goal回合为progress：Root5e25035d已真实提交同四台账；System104纯门实测但审查新P1未关，Agent139定点通过且安装失败保持。完整Wave0–7目标不变，不新建计划中心。
+
+|任务/测试ID|Owner/角色/基线与精确范围|完成条件、依赖与交付|
+|---|---|---|
+|R109-SYSTEM-UNKNOWN-RED / T-Q05、T-R02、T-Q12|原WIN05唯一System tests writer，模型沿用原窗口；Root5e25035d/Systemaa4e42e5+source da1fa288/test2f7dc98e/helper efd2f061；仅test/unit/system-smoke-cleanup.test.ts；Root唯一Git，全部生产/12旧测试assert/SQL/contracts/锁/docs冻结|依独立审78430667的P1，scenario显式reject undefined与harness caught标志，追加cleanup成功/失败两支；保旧12test/assert，实际真实脚本入口RED与原Error正控、OS deny network、PG/child预mock。日志/manifest /tmp/kokoro-r109-system-unknown-red.json0600后停；Root复现+审前无源码权|
+|R109-AGENT-COMPLETE-CONTRACT / T-Q03|原WIN03唯一Agent验证执行（只读），模型沿用原窗口；Root5e25035d/Agent17c73541+375冻结候选；不改仓/Git/sync/build/install，只独有/tmp guard/log/pytest fixture|完整tests/contract，按原默认not integration/e2e/acceptance，不过滤generator。沿原guard仅精确允许受控Python执行当前generate_failure_models.py（SHA2ad53814c8246c259d528cc068787aac1c55e4a840256f157520397793775cc1）--root本轮独有pytest fixture--check；其他subprocess/资源继续拒绝，整个父子OS deny network。Ruff全format/check、直接Node全Pyright、checker与Failure/Platform/Storage生成器check-only、uv lock --check --offline；未运行unit/archive默认收集/actual build/安装/PG/HTTP，逐项明确。manifest/tmp/kokoro-r109-agent-complete-contract.json0600后停，Root需重跑与审|
+
+|R109-AGENT-ARCHIVE-PREFLIGHT / T-Q03、T-R01|原agent_machine_final_review_r98只读；Root5e25035d/Agent17c73541+现候选；只读现tests/unit/sandbox/test_workspace_archive.py、tests/support/dev_minio.py和已存在架构测试/源归档实现；只写/tmp/kokoro-r109-agent-archive-preflight.md|比较保留现混合test文件+显式integration标记/lazy owned fixture（优先）与迁移现资源类到现integration目录（需范围代价）；给实际import-time副作用精确点、最小现测试RED/保原assert/真实资源失败与回收设计。无源码权/测试/网络/Git，后继先tests-only→Root失败→现测试fixture修复，不让全文unit继续排除该模块冒充完整门|
+
+|R109-SYSTEM-UNKNOWN-ROOT-RED / T-Q05、T-R02、T-Q12|Root唯一验证，原WIN05已idle冻结；source da1fa288/test e97a5e00/helper efd2f061；只读|复现原命令两undefined新例+原Error control，期望2行为失败1正控通过/11未选；OS禁网/现mock保护，hash前后一致，记录实际测试exit1与wrapper验RED exit0区别|
+|R109-SYSTEM-UNKNOWN-RED-REVIEW / T-Q05|原agent4_execution_owner只读，Root5e25035d及冻结manifest5b5f1406；只现test/source/helper与旧before snapshot|核harness显式caught、属性存在拒绝、cause own undefined、AggregateError保原undefined分支/cleanup原对象，以及旧12assert不弱化；只写/tmp/kokoro-r109-system-unknown-red-review.md。Root真实RED与审查0后才源码权|
+
+|R109-SYSTEM-UNKNOWN-GREEN / T-Q05、T-R02、T-Q12|原WIN05唯一System源码writer；仅scripts/verify-system-fresh-schema.ts；source da1fa288、test e97a5e00/helper efd2f061及其余197全部冻结；Root唯一Git|Root实际2fail1pass11未选，独立RED审8da8c222 0/0/0；现脚本独立hasFailure标识被捕获/cleanup失败，payload保持unknown且Error身份原样、其他unknown以own cause规范化。保try主SQL体原字节、runCleanup三个steps和全部14test/assert；先精确3 GREEN，再完整10纯门106；OS deny network/现owned Node fixtures限定，无真实资源。manifest/tmp/kokoro-r109-system-unknown-green.json后停，Root复跑+最终审前不接受T-Q05|
+
+|R109-AGENT-CONTRACT-ROOT-RED / T-Q03|Root唯一Agent验证，原WIN03已idle375冻结；仅独有/tmp复制guard-v2/sandbox，将本轮fixture路径绑定Root新owned目录；所有源/测试/契约/锁冻结|重跑完整contract预期669pass/3行为fail/6被禁止loopback setup/1按原marker未选；失败generator精确6calls保持check-only。分别记录业务断言、资源守卫setup、未到生成比对的codegen，不能把所有非零归同一根因|
+|R109-AGENT-CONTRACT-RED-REVIEW / T-Q03|原agent_machine_final_review_r98只读；Root5e25035d/Agent17c73541+原完整contract manifest99f0f306；范围实际3架构失败/6loopback fixture/2 codegen blocked与既有三面|裁决build-only checker字面量归属、metadata cast替换验证收窄、acceptance ignore去除；不放宽原no-cast/no-ignore。比较loopback实HTTP独立验证包络与分类标记，后继保原6语义，不能伪造通过；codegen显式离线tools供应与源不漂移。只写/tmp/kokoro-r109-agent-contract-red-review.md，无代码/测试/资源/Git|
+
+|R109-SYSTEM-UNKNOWN-FINAL / T-Q05|Root独立10完整纯门106与原agent4_execution_owner只读源码最终审并行；原WIN05已idle冻结manifest70e3f4a2；source/test/helper绑定after SHA，所有仓文件冻结|Root只执行已批准pure命令，不访问真实PG/Redis；审只写/tmp/kokoro-r109-system-unknown-final-review.md。两门都通过后T-Q05才恢复限定纯门通过；真实fresh/install/integration/runtime/image仍分别待验|
+
+### R109 Agent三失败源码纠正（Root裁决）
+
+归属仍为现build-time contract检查、发行资产元数据读取和acceptance资源fixture，不建模块/文件/DTO或改API/SQL。采用原Platform artifact owner常量由checker消费，淘汰扩arch literal allowlist（边界无需放宽）；metadata保标准库-only，用object_pairs_hook产生已检查的名义JSON object（或等价明确运行时收窄），保重复key/原错误次序，淘汰cast和新增Pydantic依赖；acceptance收窄Redis dbsize签名/helper，保空库与精确owned-key清理断言，淘汰inline ignore/全文件pragma。
+
+|R109-AGENT-THREE-FAIL-GREEN / T-Q03|原WIN03唯一Agent writer；仅src/kokoro_agent/platform_binding_contract.py、contract_check.py、distribution_assets.py、tests/acceptance/test_http_ingress.py、contract/provenance.json（原generator机械生成）；Root5e25035d/Agent17c73541+原375冻结候选；其余所有tests/source/SQL/锁/docs冻结，Root唯一Git|Root46970实际完整contract3fail/669pass/6守卫loopback setup/1未选/14.25s，Root369个Gittracked+untracked前后保持；worker375清单口径含ignored候选不同需分别记录不混用。独立3类RED审已给路径。原no-cast/no-ignore/literal门和HTTP/Todo/安装负例断言不改，provenance仅combined派生且Failure原bytes。先3原失败/原139/failure-generator check及全静态无资源GREEN；6loopback和2codegen仍在后继明确受限门，完整unit/archive/wheel/install不提前关。manifest/tmp/kokoro-r109-agent-three-fail-green.json后停|
+
+放置：System仅扩现cleanup测试的unknown原错误边界，不创建模块/框架或改契约；Agent现验证工具读取冻结源码，不修改生产事实。完整source安装仍要求archive导入副作用及全部纯unit后继；本次完整contract通过不替整个Agent完成。
+
+### R109 测试台账同步（Root唯一文档writer）
+
+仅维护现docs/test-cases.md、CURRENT.md、progress.md、task.md；Root基线5e25035d，不改子仓、gitlink、uv.lock或资源。依据已终态Root17470的106纯测及独立源码审0恢复T-Q05限定纯门；Root46970的3行为失败、6守卫setup与安装E49保持T-Q03失败；原WIN03已停写交付候选待Root验收，不当整组测试运行或已修好。保70稳定ID与归档历史，Root重跑治理与独立只读台账审后精确提交四docs。
+
 ## R108 测试任务当前状态（Root核对）
 
 70测试组保持11通过/1失败/0整组执行中/14待复测/41未验/2决策阻塞/1支付后置。E59 Agent30506定点139通过与独立0，完整安装仍失败未关；E60 System58556十纯门104通过，但独立审发现unknown undefined哨兵新P1、待两支RED，不能关闭T-Q05/R02/Q12。E61仅锁依赖缓存准备。详细测试矩阵、预期/实际/版本/缺陷/复测要求统一在docs/test-cases.md，不增加第二计划中心。原source owner均冻结，Root只四台账writer，任务外修改保留。
