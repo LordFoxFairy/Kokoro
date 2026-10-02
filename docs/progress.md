@@ -1,3 +1,9 @@
+## R84 新发布组合真实聊天复验（2026-10-02）
+
+上一goal回合为progress：Web同步admission修复52fdd8e已发布，Root3031d022组合95与Web246/50/2298当前通过；原真实W2仍失败而非整体GREEN。本回合Root先收四D0独立Astra0及4hash/原文/原public5字节，BFFexact4docs mainb1ea063d4020b983e11f9243078fb17814e808b7已发布；无production/contract/SQL变更，目标public6仍未实现。现仅正规更新BFFgitlink/既有inventory provenance，不改13broken/3active。Root收回冻结六owner源码/现运行资源，原WIN01/02不得续写；Billing原WIN06三个pure文件可独立继续，不在此资源旅程。
+
+复验严格沿原W2同provider/config：现有Ollama qwen3:8b、不拉模型、不换外部gateway、不改600s、两POST/receipt/4Message/活动refresh/全文/交付下载hash/另一用户404与清理断言。此是真实六owner模型组合，不等于用户外部网关或Billing预占扣款全产品已验；所有运行柄、独有bucket/schema/Redisnamespace与清理按ownedmanifest记录。Root原uv.lock和Billing原五dirty正文保持。后继先依据新闭集观测定位真正提交卡点，再按当前同一Wave0–7任务推进BFF快照/能力/积分，不新计划中心。
+
 ## R83 原发送缺陷 GREEN 切片（2026-10-02）
 
 上一目标回合分类为 progress：三面并行审计定位实际过滤/选择/持久过程断路，Root真实两个UI RED改变下一动作。沿既有R81发送任务，不缩小完整Wave0–7；原WIN01唯一Web writer续授现engine-types/machine/use-app-frame-engine/app-frame与原smoke test，现engine unit须先报准确路径。Root先核三面D0/现guard：只把现实际submit admission投影至UI，不新契约/SQL/状态机/目录，不改变steer/FIFO/Stop/重试。任务卡/tmp/kokoro-r83-w01-send-green-task.json；保原+13 RED及旧断言，先GREEN再完整聚焦门，Root统一集成并真实旅程后才称聊天闭环。Root负责资源与Git，原uv.lock/Billing五旧dirty全文保留。Billing R81五前缀冻结进入原Sol独立复审，未授源码。R81-W10观测双文件独立0P0/P1/P2且Root530pure通过，后继精确提交前重验相邻纯门，绝不代称真实聊天修复。
