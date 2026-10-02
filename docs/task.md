@@ -1,3 +1,41 @@
+## R113 当前验收推进（2026-10-02）
+
+上一goal回合为progress：Root c29acd6b已提交测试计划当前态与真实工具测试证据。本回合完成两个独立owner切片的实现与Root实测，完整Wave0–7不缩小。70组当前 **12通过 / 1失败 / 0整组执行中 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**，仅恢复T-Q05当前候选限定纯门，不是产品完成率。
+
+- E72 / T-Q05、T-Q12、T-R02：Root原14 fresh-name测试真实12fail/2control/13未选（manifestf1d3f36f）；独立审指出合法名未锁第二Client，原owner保旧assert补强后Root再次12fail/2control/13未选，197hash保持、owned进程组终态。补强RED /tmp/kokoro-r113-system-name-assert-red-root.json SHAabb63265a86364cd4d4ed8d065105de3e450b2da4f0569f284992a80e0f1817b；复审2238c848为0。仅现fresh脚本追加严格42 ASCII测试库名称输入，undefined随机、空/Unicode/换行拒绝，Client/CREATE/URL/DROP同身份、错误不回显；原SQL/23行为/cleanup原因不改，不扩数据库角色或运维。
+- E73 / T-Q03：默认pure1937第一实际1930pass/6fail/1skip，5项是验证包络误拒绝原DNS而非业务错误（manifestbe8c3481）；唯一本包资源清单遗漏distribution_assets.py已Root单node真实1fail/0资源（manifestb56d95a9）后由原WIN03仅composition有限列表加一行。Root随后同1937节点实际1936pass/1skip/46.79s，369hash保持、blocked0；原5精确host/port=None原生解析允许且不改参数/返回，其余socket/PG/Redis/child拒绝与OS禁网保持。manifest /tmp/kokoro-r113-agent-pure-default-root.json SHA76c58d3a5cdd78e15c0446b99df4d90ac125b408ab47a20d361bafb44b089dce；完整Ruffformat/lint/Pyright/checker/Failure五静态门Root各0（/tmp/kokoro-r113-agent-runtime-static-root.json SHA43fc887a799ca7f9ea8084f834de103d63ca748db32b234ec14bb7b49872c8aa）。独立source终审ac2b0eae为0/0/0。原170 local、真实安装/E49仍未验，T-Q03失败不关闭。配置example缺本仓fixture造成原1skip，审计8dae2c99禁止直接指回漂移Root旧样本；615 warning为2条LangChain v3 beta与613条三方asyncio弃用，保留风险、不抹日志、不冒称零债务。
+- E74 / T-Q05：原WIN05仅fresh source严格名称校验GREEN，Root99279十纯门全exit0，9files119pass/0fail/0skip（unit98/contract12/architecture9），197文件hash前后保持，各owned进程组终态，OS禁网；Rootmanifest /tmp/kokoro-r113-system-pure-root.json SHA16277868630e382dfefa2b0faad27214b6c194bd51eba0fc04757db37cbba015。独立source终审 /tmp/kokoro-r113-system-name-final-review.md SHA72e176b965682b64eb8b9ba108a6efc7fc551d8bbd7864e3179ac8e8c0cbacde，0/0/0。当前 source da4675b9/test45bd5286/helper efd2f061；只是未发布候选纯门，真实PG/Redis/fresh install/provider/runtime/image仍未验，不关闭T-Q12/T-R02。
+
+- E75 / Root 补充规范检查：当前工作树真实运行 `python3 scripts/verify-ten-repository-standard.py` exit1，152条规则报告、0未核项；按扫描所在仓分布为Agent11、Web14、BFF37、Billing34、Platform当前物理名capability12、IAM30、Scheduler3、Storage11。包含目录/文件粒度、TypeScript严格项、HTTP/OpenAPI、SQL命名与wire边界等；扫描发现不等于152个用户功能bug，也尚未逐条裁决真实实现缺陷或检查器与当前规范的偏差。vendor契约问题须先回事实owner确认，不改生成物或放宽门禁清零。`python3 scripts/verify-repository-topology.py` exit0，仅拓扑检查通过，不证明main-only/fresh clone/完整组合或当前浏览器。manifest /tmp/kokoro-r113-root-structure-checks.json SHA6229c7ff60fdb440f2f143c8026e65c1752372a907deb729970ddc6e5163a56e；standard日志SHAd98e0e8351f03098a0f329384637762daa3a7c6e3316746c4a2253ec207367da，topology日志SHAbe9b368b505978266ed3d8321a971f15466ed3d5cce582136ff241bd94ae3c4d。原76091已终态；此补充检查不重跑或推翻具名限定纯门，T-Q10仍待完整组合复测，70组计数不变；整体标准检查失败明确保留，后继Root逐条裁决后派原owner修复与复测。
+
+Agent/System原writer均实际completed/idle；Root执行60837/67381/99279均终态，没有新增共享服务或业务进程。worker错误路径exit4、pnpm wrapper71、初次format1各保留诊断且不当业务失败。后继按现任务：Agent本仓example去skip、170 local和真正构建/安装；System已准备可事前登记精确名称的真实fresh单门；再按owner顺序推进项目/独立任务/文件/Skills/MCP/Todo/HITL/正式积分及浏览器。两业务决策仍未定、支付最后，不将基础门替代用户能力。Root本轮源切片均按冻结hash验收，子仓依赖切片尚未完整发布，不单独提交会缺依赖的源码；保留其他候选和uv.lock。以下仅保留历史，不覆盖本摘要。
+
+R113-LEDGER-REVIEW：原four_owner_fixes_review_r31只读当前四docs/70稳定ID/12-1-0-13-41-2-1与历史suffix，Rootc29acd6b。核E72真实RED/连接正控补强、E73 Root1936/1skip+五静态门（170local和安装仍未验）、E74 Root119/十门仅System纯门；原615 warnings/worker包装错误与未发布候选/用户UI未验边界。只new0600 /tmp/kokoro-r113-test-ledger-review.md，不运行业务资源/改仓/Git，Root另结构核验/精确四docs提交，不把上轮1710当本轮新业务重测。
+
+## R113 已执行任务卡（阶段条件留存，终态见顶部）
+
+上一goal回合为progress：Root c29acd6b真实提交四台账，Root1710/3skip与Agent环境精确3/52补跑、独立0已记录；完整Wave0–7不缩小。当前继续真实执行，不以状态答复代替能力验收。
+
+|任务|Owner/基线/写入范围|依赖与验收|
+|---|---|---|
+|R113-AGENT-PURE-DEFAULT / T-Q03|原agent4_execution_owner，验证角色；Agent17c73541+冻结369清单，Root c29acd6b；仓内只读，唯一新0700 tmp/0600报告|执行partition81914ecd明确的1937 pure nodes，原pytest marker与assert不改，沿现collect guard增加外部node清单输入/唯一tmp输出即可；OS禁网/仓只读、PG/Redis/子进程拒绝，基线/终态hash保持。记录全节点pass/fail/skip和guard；170 local仍须后继实跑，1937不能代表2107全门。新 /tmp/kokoro-r113-agent-pure-default.json，不改仓/Git/资源/安装|
+|R113-SYSTEM-NAME-ROOT-RED / T-Q05、T-Q12、T-R02|Root验证，Systemaa4e42e5/test8416f642/source366b886b/helper efd2f061；只新tmp/0600日志|原14选定tests，期待12行为失败/2正控，OS禁网，PG/child mock，无实际资源。197文件前后保持。审和Root RED成立后才续派原WIN05只source GREEN|
+|R113-SYSTEM-NAME-RED-REVIEW|原four_owner_fixes_review_r31只读，同冻结System候选及manifest8c8be970；只新 /tmp/kokoro-r113-system-name-red-review.md0600|合法CREATE/DROP、11非法整串42ASCII/零构造、原14cases/85expect/env恢复/有效RED核对；旧日志覆盖缺口不伪补。不开资源/不改仓/Git|
+
+本阶段不启动/重启3310或共享PG/Redis；主控独占Git，Agent/Billing/System/uv.lock未交接修改保持。System source GREEN与完整updated pure gate尚未授权/验收，真实资源另门。
+
+R113-SYSTEM-NAME-RED-ASSERT / T-Q05：独立审58e0b5cf发现唯一P1：合法名正控仅CREATE/DROP未验证第二Client的连接配置。Root原14选定已真实12fail/2pass/13未选（manifestf1d3f36f、197hash保持、owned组终态）；现仅续派原WIN05在现test合法正控增加第二Client connectionString pathname=显式名字、config.schema=system_fresh及options的原UTC/search_path，不要求URL保留已被parseSystemDatabaseUrl移除的schema query。保已有全部case/assert/源码366b886b/helper/SQL/contract/锁不改；不建新文件，不以cast逃逸类型。先same14 RED+两正控/静态、唯一new0600 /tmp/kokoro-r113-system-name-assert-red.json后停止。Root复现/审后才source GREEN。
+
+R113-AGENT-RUNTIME-CLOSURE-REVIEW / T-Q03：完整1937实际1930pass/6fail/1skip，其中1 runtime manifest漏distribution_assets.py是真缺陷，其余5是DNS guard分段遗漏，不伪称业务错误。原agent_machine_final_review_r98只读源码/tests与manifestbe8c3481，核缺失helper现导入边及finite _LOCAL_GROUPS/版本hash语义，建议仅现src/kokoro_agent/execution/runtime_profile_sources.py既有composition列表加精确helper而不动态glob/别名。不改断言/其他source/协议/SQL。只new0600 /tmp/kokoro-r113-agent-runtime-closure-review.md，Root实际node RED先完成，再原WIN03 source单file GREEN。
+
+R113-WEBFETCH-DNS-VERIFY / T-Q03：原agent4_execution_owner仅读仓，仅new tmp guard验证原5 SSRF阴性nodes；原pure静态遗漏getaddrinfo不是业务RED。允许原socket.getaddrinfo只在这5精确active_node/对应host（127.0.0.1、localhost、::1、10.0.0.5、169.254.169.254）、port None调用，保全部其他DNS/socket.bind/connect/PG/Redis/子进程拒绝和OS deny network；不得改实参/返回值、mock解析、注入失败替真实assert、修改tests/marker/source。记录真实解析调用及失败、每node结果/资源边界/369hash；只 /tmp/kokoro-r113-webfetch-dns.json0600。完整170local仍未跑，不称完整default门。
+
+R113-AGENT-RUNTIME-CLOSURE-GREEN / T-Q03：原WIN03唯一Agent writer，采用授权gpt-5.6-luna/medium处理明确一行切片；仅现src/kokoro_agent/execution/runtime_profile_sources.py的composition有限列表追加distribution_assets.py。Root1node真实RED b56d95a9 + 独立review确认helper只stdlib/no import I/O/无后继闭包；其余groups/dynamic_edges/version、assert/tests、SQL/contract/generated/锁/docs全冻结。原whole file测试+Ruff/直接NodePyright+checker/Failure check，OS禁网/私有tmp/零PG/Redis/业务child；新0600 /tmp/kokoro-r113-agent-runtime-closure-green.json后停，Root独立验收。仅该slice，不关闭1937/2107/安装门。
+
+R113-SYSTEM-NAME-GREEN / T-Q05：原WIN05唯一System writer，明确小任务采用授权gpt-5.6-luna/medium；唯一scripts/verify-system-fresh-schema.ts。新增可选TEST_SYSTEM_FRESH_DATABASE_NAME：undefined保持随机，提供时必须length42且完整system_g1_32小写hex，空/尾换行拒绝，不trim；验证在new Client/connect/exec前，错误不回显输入，CREATE/URL/DROP用同名。Root补强RED abb63265（12fail/2control/13未选、197hash不变、owned组终态）和独立复审2238c848 0通过。原SQL/23断言/cleanup顺序及test45bd5286/helper/contract/锁/docs全冻结。原14 filter GREEN、完整unit/contract/architecture+format/lint/typecheck/build/contract静态，真实PG/Redis/runtime不授权；新 /tmp/kokoro-r113-system-name-green.json0600后停，Root复验/最终审再验收限定纯门。
+
+R113-AGENT-EXAMPLE-SKIP-AUDIT / T-Q03：原agent4_execution_owner只读Agent README/INDEX/CURRENT/TECH/config/examples/pyproject与test_config_file.py，基线当前 runtime manifest a61e30ec。Root1937真实1936pass/1skip，唯一skip为TestExamplesStayValid引用不存在parent-repo config/examples。核当前owner配置例/文档与实际path，确定这是被替代的跨仓测试还是本仓缺应有fixture；给保留行为测试/清除skip的最小后继，不创建兼容样本/不删有效断言换绿。只new0600 /tmp/kokoro-r113-agent-example-skip-audit.md，不import应用/运行测试/资源/改仓/Git。170local和安装门保持未验。
+
 ## R112 测试计划核对（2026-10-02，当前摘要）
 
 测试总台账仍为 docs/test-cases.md，开发派工与测试验收分开。当前 **70组：通过11 / 失败1 / 执行中0 / 待复测14 / 未验41 / 阻塞2 / 后置1**。这是具名测试组状态，不是产品完成率；整体Wave0–7尚未闭环。本次未重新执行全部业务测试。
