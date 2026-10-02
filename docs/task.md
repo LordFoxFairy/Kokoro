@@ -19,6 +19,18 @@ Agent本阶段具名写集（相对apps/kokoro-agent）：contract/openapi/v1/op
 
 R97组合实际门：Root原49710终态exit0，95pass/0fail/42.58s；topology PASS、compat exit1仅13declaredbroken/16edges/0violations，无新误差。49Web provenance仅取已发布85403f3的committed blobs；独立Astra0P0/P1/P2、49refs/45发布blob核对匹配（/tmp/kokoro-r97-composition-review.md）；本卡为发布前验收，实际提交/发布以Git和后继runtime manifest为准，尚未跑新W2，T-Q10仍待复测/T-C06仍失败。
 
+R97-W2-FRESH / T-C06/C09/C10/F03：Root88a874174f6daa9d0464fed17f2bf4f2a39c0e62已普通发布main、原65669终态exit0；Web85403f3，其他五owner pin不变。Root独占原owned fresh /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r92-w2-published.nb06wi0e/Kokoro：先检查该树和六子仓clean、无仍在运行原W2，fetch/detach已发布Root/Web，不重新clone、不碰live Agent/Billing/uv.lock、不改shared设施。原依赖lock不变，复核六HEAD/gitlink/clean及原driver/runner/test三hash；manifest /tmp/kokoro-r97-w2-source-prep.json。原R93 W2已终态exit1、cleanup=[]/独有桶删除确认；后续新私密wrapper /tmp/kokoro-r97-real-w2.py只替准确Web SHA和自有R97日志/manifest名，原Root harness与600s/两POST四Message/活动及终态刷新/全文/receipt/hash/另一成员404/有界清理断言不变。provider仍现Ollama qwen3:8b不拉模型/换gateway；独有bucket沿原owner-approved helper、ObjectLock/Versioning、空桶删除404。Root唯一资源owner，日志 /tmp/kokoro-r97-root-real-w2.log、manifest /tmp/kokoro-r97-root-w2-owned.json；不启动3310 preview、无Billing收费。不把新source准备当旅程通过；观察超时不当进程已停。
+
+R97-W2真实运行句柄：Root原3421/child PID4643已实际启动，六发布source guard/原qwen3:8b库存preflight通过，新独有bucket沿原ObjectLock/Versioning创建；此为启动时记录；最终已exit1，REAL_MODEL_FAILURE:second-partial-active，cleanup=[]/bucket清理exit0且404。不再等待终态原句柄、不称两轮通过。manifest /tmp/kokoro-r97-root-w2-owned.json（0600），全部实际六pins与自有资源可追溯。
+
+R97-WEB-HOME-RED / T-U01：原WIN01唯一live Web tests writer，保持窗口实际模型；Web85403f3 clean基线，Root真实W2使用已发布fresh独立树，双方不抢writer。先读Root AGENTS/CODEBASE_MAP/TS与测试手册/Web D0及/tmp/kokoro-r94-home-truth-read.md，沿R82已批准“Home只填草稿、零自动发送/计费、真实owner模型/套餐”目标，不重新设计UI。仅现tests/ui/kokoro-welcome.test.tsx、app-frame.smoke.test.tsx、share-button.test.tsx追加真实RED，不改production/contract/SQL/依赖/锁/文档/Git/其他tests或共享服务。Plugins目录真实性另切片，不混入本卡。
+
+最小RED：正式preview=false四主要Home提示均调用onPrompt精确草稿/intent，不调用onCreationIntentSelect或create/submit/settings/计费；真实AppFrame点击→draft/focus且engine.submit/message POST/project POST各零，不靠stub调用handlePrompt冒充交互。无owner投影时不显示Free plan/升级套餐断言；空Home Header不显示或可切换硬编码Kokoro1.6 Max/Lite/Pro，真实Composer候选链原断言保护，不自建model store。保现分享/credits settings/会话项目toolbar、生命周期/IME/草稿/owner回执原断言和生产source冻结。新增tests只追加保原全文，若原旧测试固化错误正式行为先列迁移项、GREEN后由Root批准改目标断言，不直接删除assert或全局改fixture默认。
+
+归属现Web欢迎/身份组件及其真实交互tests；采用扩现三test，淘汰新目录/第二状态源/新CSS体系；本卡无新owner或wire。保存752 tracked baseline与授权test增量/外围hash，跑现三聚焦pure Vitest（无资源）。Root后台已运行严格W2，worker不另起preview/PG/Redis，不运行额外浏览器/HTTP资源测试。必须先交真实行为RED（setup/timeout不充数）、停写冻结manifest与实际pass/fail，Root重跑后才授生产GREEN；worker不commit，Root独占Git/台账。若实际函数依赖无法在现fixture观测，报告具体阻塞，不编造control。
+
+R98-W2-PARTIAL-READ / T-C06/C09：原WIN10仅只读Root88a87417及现driver second-partial-active/原until/snapshot/frames/runner provider observer；evidence /tmp/kokoro-r97-root-w2-owned.json和其中精确evidence，私密log。新Root3421/PID4643实际终态exit1、cleanup=[]/独有bucket删除后404；原second-send准入阶段已越过，但没有整组通过。核phase不能区分timeout/finished-before-active/读取失败的诊断缺口，提出现driver/test最小closed观测写集/实际RED；不改断言/600s/两POST/硬刷新时点、不换模型/加假延迟/工具暂停/重跑资源、不新增网络协议/测试服务。只报告/tmp/kokoro-r98-w2-partial-read.md（0600），不得写源码/台账/Git/启动进程/查未知数据。Root保持唯一writer、保护live Web/Agent active实现；审查不发明根因。
+
 ## R96 测试任务盘点与后继验收（2026-10-02）
 
 用户本次要求的是完整测试计划和逐项结果，不是再次开发规划。复用docs/test-cases.md 70稳定ID；本节只派工/依赖，progress记录实测，CURRENT记录当前组合，不新建测试中心。

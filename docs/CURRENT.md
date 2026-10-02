@@ -1,3 +1,13 @@
+## R98 最新真实旅程结果（2026-10-02）
+
+Root88a87417/六发布owner（Web85403f3）严格W2原3421/PID4643已实际终态exit1，REAL_MODEL_FAILURE:second-partial-active。流程越过第二次submit/receipt到进行中partial观测，但未满足活动刷新/终态/作品/隐私全部标准，不计两轮通过，不断言具体产品或测试根因。cleanup=[]，独有bucket删除且404；原E17历史保留。70组恢复9通过/1失败/0整组执行中/16待复测/41未验/2阻塞/1支付后置。
+原WIN03 Agent机器GREEN、原WIN01 Home三tests-only分别实际active，独立源码树；Root新失败只读定位后再裁诊断/修复，不盲跑、不改硬门或添加兼容/免费流程。全Wave0–7 active，正式积分仍未验。
+
+## R97 真实两轮复测已启动（2026-10-02）
+
+Root88a874174f6daa9d0464fed17f2bf4f2a39c0e62已普通发布、Web85403f3纳入；同owned fresh六HEAD/clean/gitlink与原三harness hash均通过，Root原3421/child PID4643实际live。T-C06转执行中，保留E17最近失败，未声称新运行通过；70组9通过/0最近失败待测组/1执行中/16待复测/41未验/2阻塞/1支付后置。
+Agent原WIN03独立机器GREEN仍在进行、未发布；Billing/uv.lock不动。新W2仅六owner实际旅程，不含正式积分收费，Root不启动3310预览；同task/progress保句柄与资源。
+
 ## R97 当前组合候选与真实复测边界（2026-10-02）
 
 Root基线d7775567，正式Web85403f3已纳入gitlink和49个发布blob来源；Root95组合pure通过，topology PASS，compat13declaredbroken/0新增误差。独立Astra0P0/P1/P2、49refs/45blob实核。此节记录发布前验收，实际Root发布SHA以Git/后继运行manifest为准；fresh新pin/严格W2尚待，不是新旅程通过；T-C06仍E17失败，70组计数不变。

@@ -1,3 +1,11 @@
+## R98 当前新组合真实W2失败与回收（2026-10-02）
+
+Root88a874174f6daa9d0464fed17f2bf4f2a39c0e62已普通发布，Web85403f3、其余五owner固定同manifest。原3421/PID4643终态exit1，精确REAL_MODEL_FAILURE:second-partial-active；/tmp/kokoro-r97-root-real-w2.log SHA256 610783f465a5475280dac704b08540aa7d8ee30fd65a9152690864b6b41de31c。owned /tmp/kokoro-r97-root-w2-owned.json及evidence /private/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r92-w2-published.nb06wi0e/kokoro-w2-web-project-avgxhy4n.evidence.json。cleanup=[]、bucket_cleanup_exit0、delete-empty确认404；原W2进程不再live，不新起3310/shared设施。
+当前流程已越过second submit到second-partial-active，原第二次点击准入故障不再停在旧阶段；这不证明完整第二轮，snapshot/terminal/artifact/privacy尚无完整成功记录。现catch只给阶段，不能区分超时/过快终态/其他根因，下一原WIN10窄只读现函数与证据提出最小closed观测/回归；不盲复跑，不延长600s/换provider/加人为延迟或工具pause。
+T-C06执行中→失败，70组9/1/0/16/41/2/1；E17/E27启动记录保留、追加E28终态。本运行仅六owner实际旅程不含Billing收费，旧积分/权限/能力未获新通过。原WIN01 Home tests-only、原WIN03机器GREEN真实active，Root不抢写业务源，uv.lock/Billing保留。
+
+R97严格W2启动：Root88a87417和Web85403f3同owned fresh六source门、无lock漂移及原driver/runner/test hash匹配；原97257准备终态exit0，manifest /tmp/kokoro-r97-w2-source-prep.json。Root原3421新严格W2实际live，child PID4643经ps当前确认，log /tmp/kokoro-r97-root-real-w2.log、owned manifest /tmp/kokoro-r97-root-w2-owned.json；qwen3:8b库存preflight通过且未pull，新独有bucket创建/Versioning/ObjectLock通过。未终态/未见两轮整体验收；T-C06执行中、原E17失败保留，70组9/0/1/16/41/2/1。观察原句柄，不重启共享PG/Redis/provider或3310，不含Billing收费。
+
 ## R97 已发布Web组合验证与Agent机器实施（2026-10-02）
 
 上一回合为progress：Root d7775567提交四测试台账和E24/E25。Root独占组合/台账/Git，原WIN03独占Agent机器GREEN，两个独立工作面同时推进；完整Wave0–7不缩小，uv.lock/Billing保留。
