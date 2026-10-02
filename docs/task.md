@@ -1,3 +1,30 @@
+## R87 三条用户路径的实施与验收（2026-10-02）
+
+复用R82交互清单与Wave0–7，不另建计划中心。Root基线3c94bea9；BFF b1ea063/public6候选已停写冻结，Web5e538f69仅生命周期RED，Agent17c73541工作树待原owner复核。Root独占Git、共享资源和最终验收。
+
+用户路径：外部独立会话只列未归属会话，项目入口只列该项目的同一Conversation（不复制）；ScheduledTask独立于会话。Skills安装/启用、本次选择、实际加载是三个事实；MCP目录/连接授权/本次选择/单次调用授权分开。Home只承载统一输入框与真实草稿提示，不用营销卡/本地假成功替代能力。Agent过程沿同一durable AG-UI展示计划、能力准备、工具摘要、审批与作品，硬刷新仍恢复同一事实水位；不展示隐藏推理或原始工具敏感结果。
+
+|任务|owner/负责人/写入范围|依赖与验收|
+|---|---|---|
+|R83-BFF-DIRECT验收|Root验冻结12路径；Astra只读审|Root重跑完整check+自有临时PG/已有Redis生产HTTP分页；owner public6发布后Web正规repin，未发布不冒充已上线|
+|R81-W01生命周期GREEN|原WIN01唯一Web writer；page-clients.ts、components/blocks/app-frame/use-app-frame-engine.ts、原app-frame.smoke.test.tsx|原RED由Root复跑；token/refcount共享lease，不用per-hook generation替代；先追加双owner失败断言，再GREEN。保已冻结两RED/positive及旧断言；完整门/Root审查后才发布|
+|R87-W03用户过程D0|原WIN03唯一Agent writer，仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT|沿R85安全过程方案收敛三面，小前缀不复写旧正文；当前HTTP4不动。Todo/Skill/tool安全投影与刷新目标，Root冻结联审后才准tests/source/contract。与BFF/Web独立，不抢其共享文件|
+
+R86诊断双文件与三台账已Root精确发布3c94bea9；这仅增加send-click失败观测，真实W2仍失败。Billing772纯门只证明codec，正式余额/预占/结算未验。旧uv.lock/Billing五dirty正文继续保留。下一真实聊天验证仍保持两轮、刷新/全文、作品receipt和隐私隔离，不靠降低断言转绿。
+
+### R87 可执行用户验收（沿同一交互清单）
+
+|用户动作|必须成立|当前验收边界|
+|---|---|---|
+|创建独立D、项目P的C、项目Q的E；分页/刷新/前进后退|独立列表只D；P只C；Q只E；同Conversation身份、跨用户不可见|BFF生产HTTP/PG本轮通过；Web固定新artifact与浏览器仍待验|
+|管理Skill后在输入框选择并发送|安装/启用不冒充使用；提交冻结精确revision refs；撤销后新执行不加载|正式UI选择与完整运行链待接|
+|连接MCP、选择、使用、再撤销|owner回执持久；每次invoke受信授权；撤销后零调用，不换连接|目录伪成功已删；正式授权消费链待接|
+|点击Home输入框下提示|只填草稿，可编辑；零自动POST/零计费；不展示虚构套餐/模型/连接状态|现Home提示纯门曾通过；owner投影与浏览器待验|
+|简单聊天/复杂任务分别运行|简单回复不强制Todo；复杂任务按同Run显示计划、能力准备、工具摘要/审批/作品|producer到durable Chat/Todo/安全activity和刷新投影待接|
+|在流式回复/Todo/工具/审批/作品时刷新|同水位恢复、无重复/丢失；审批只完整决策一次提交；敏感raw输出不进DOM|局部组件/审批路径存在；整链未通过|
+
+R87本轮事实：Root纯check exit0（contract231、unit688/0fail/1资源skip；含28architecture），format/schema0（8/0fail/1资源skip）；真实PG/HTTP1pass0fail0skip，owned临时库已删除、cleanup=[]。独立Astra0、436hash/425外围保护后，仅12路径发布BFF main bb610ea7262574772e1d8c309a6e03171d07d0a3，public6 SHA256 75ef9f7a3b28018d9c7a3ca5899f75afe561dd40b794e7f71b0e3d078b29c129。Root/ Web组合未迁移，不冒称浏览器已生效；等原WIN01 lifecycle GREEN冻结验收后，原负责人再精确Web repin，Root迁移组合 provenance并真浏览器复验。Web原80953实际RED1fail/1pass88filtered，原31803完整BFF check0、原65467format/schema0、原50688push0均终态；没有遗留本轮Root测试进程。
+
 ## R86 真实聊天卡点与owner实施并行续接（2026-10-02）
 
 上一goal回合分类progress：Plugins假成功源码已发布Web5e538f69/Root04909add；三面交互目标写入同task/progress，Root真实RED与完整check及95组合改变下一动作，不是整体完成。本回合核实际工作树：Root04909add、原WIN02当前active原GREEN turn01a0fc52-504a-7190-b8e6-85461d0c18be；保Billing五旧dirty和三纯codec、uv.lock。原W2/Root18812/4107/52371/56957均终态，不再复起。

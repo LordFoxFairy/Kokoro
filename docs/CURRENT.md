@@ -1,3 +1,9 @@
+## R87 三面交互继续推进（2026-10-02）
+
+原R82三面清单保持，精确续派见同task.md的R87任务卡。BFF direct候选已停写交接，Root完整门/真实PG HTTP验收与独立审查进行中；Web生命周期实际RED证明共享owner释放缺陷但仍一次POST，不是原W2根因，Root复跑后原WIN01精确三路径GREEN。Agent原WIN03仅四现文档收敛安全用户过程D0，不授源码/contract或资源。R86诊断已发布Root3c94bea9；真实用户聊天、Skills/MCP使用与过程硬刷新尚未闭环，Billing纯772不替代正式费用链。保留uv.lock和Billing原dirty正文。
+
+R87 owner切片实际已发布：BFF main bb610ea7262574772e1d8c309a6e03171d07d0a3/public6 canonical75ef9f7a。Root fresh check contract231、unit688pass0fail1既定skip；schema8pass0fail1既定skip、format/lint/type/build0；独立Astra0与436/425保护；真实生产HTTP/PG分页1pass0fail0skip、独有临时库删除确认、cleanup=[]。详见同task的R87验收表与/tmp/kokoro-r87-root-bff-check.log、bff-direct-pg.tap/owned-resource.json。Root gitlink/provenance及Web pin尚待迁移，当前历史浏览器页面不证明public6生效。原WIN01 shared lease GREEN、原WIN03安全过程D0正在独立推进；实际用户旅程仍未闭环。
+
 ## R86 真实聊天卡点与owner实施并行续接（2026-10-02）
 
 上一goal回合分类progress：Plugins假成功源码已发布Web5e538f69/Root04909add；三面交互目标写入同task/progress，Root真实RED与完整check及95组合改变下一动作，不是整体完成。本回合核实际工作树：Root04909add、原WIN02当前active原GREEN turn01a0fc52-504a-7190-b8e6-85461d0c18be；保Billing五旧dirty和三纯codec、uv.lock。原W2/Root18812/4107/52371/56957均终态，不再复起。

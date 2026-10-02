@@ -1,3 +1,9 @@
+## R87 三面交互继续推进（2026-10-02）
+
+原R82三面清单保持，精确续派见同task.md的R87任务卡。BFF direct候选已停写交接，Root完整门/真实PG HTTP验收与独立审查进行中；Web生命周期实际RED证明共享owner释放缺陷但仍一次POST，不是原W2根因，Root复跑后原WIN01精确三路径GREEN。Agent原WIN03仅四现文档收敛安全用户过程D0，不授源码/contract或资源。R86诊断已发布Root3c94bea9；真实用户聊天、Skills/MCP使用与过程硬刷新尚未闭环，Billing纯772不替代正式费用链。保留uv.lock和Billing原dirty正文。
+
+R87进展：实际验收并发布BFF direct/project分页切片bb610ea/public6（Root完整pure与真实PG HTTP、独立审查及精确回收）；尚未升级Web/Root组合，不记用户界面已修复。已真实复跑Web生命周期RED并续授原owner三路径lease GREEN；Agent安全用户过程四文档D0并行中。下个验收仍是新组合真实发送/刷新，而非以文件数量或多个Agent报告宣布整体完成。
+
 ## R86 真实聊天卡点与owner实施并行续接（2026-10-02）
 
 上一goal回合分类progress：Plugins假成功源码已发布Web5e538f69/Root04909add；三面交互目标写入同task/progress，Root真实RED与完整check及95组合改变下一动作，不是整体完成。本回合核实际工作树：Root04909add、原WIN02当前active原GREEN turn01a0fc52-504a-7190-b8e6-85461d0c18be；保Billing五旧dirty和三纯codec、uv.lock。原W2/Root18812/4107/52371/56957均终态，不再复起。
