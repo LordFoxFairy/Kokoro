@@ -1,8 +1,50 @@
+## R85 用户三面交互对齐与真实失败续接（2026-10-02）
+
+### 面向用户的统一交互目标（当前实现与后继明确分开）
+
+|界面|统一交互|当前断点与责任|
+|---|---|---|
+|侧栏独立会话|只显示未归属项目的本人会话；点击回原会话，不clone；重新命名/删除需owner回执|BFF丢失direct过滤，R83同链RED推进；Web删除ACK竞态后继独立修|
+|项目|项目是指令/资源与会话组织上下文，不是会话本身；项目概览→本项目会话；同会话ID、消息、URL归属一致|project读取已过滤；移动/归档/删除项目尚无正式API，不能用本地拖拽排序假装移动。复制私有链接不宣称公开共享|
+|定时任务与Todo|ScheduledTask独立入口/周期/状态，可关联项目；Agent Todo是某次Run计划进度，不混为定时任务或会话列表|现任务本人全集是正式语义，项目只创建上下文；Todo过程durable链后继Agent→BFF→Web补全|
+|空Home/输入框下方|一个共享Composer；少量提示词只填草稿/聚焦，不自动提交/建项目/收费；能力入口明确用于管理还是用于本次运行|默认Zapier轮播已从源码删除，但伪免费套餐、硬编码创作模型/错配素材仍需Web清理；无新自造样式系统|
+|Skills/连接器|管理页安装/连接→启用或授权→输入处选择→提交冻结精确refs→执行时重验；移除选择不等于卸载|Skills管理部分真实但selection无UI caller；Plugins local Set假成功先修；MCP真实connection消费链未接，不将读到server当已连接|
+|执行过程|正文为主；按Run折叠安全计划/Skill加载/工具摘要；审批显式可操作；作品仅owner成功receipt后呈现|Todo/Skill证据、紧凑过程snapshot缺失；原始工具结果/错误不得直接当用户摘要；已有HITL/作品路径不是本轮全链通过|
+|发送/恢复|submitting、queued、streaming、审批、取消、重连、completed、failed分开；队列靠后端durable序列化，UI不自造并发Run|当前W2发送按钮阶段失败仍未闭环；Stop、草稿保留、同源AG-UI、单cursor/snapshot恢复门不得删除|
+
+用户验收主线：独立D + 项目P/Q各一会话 → 列表/导航/分页/硬刷新准确 → 选真实Skill/连接 → 发一次消息且只得一回执 → 安全计划/工具/审批 → 真实作品下载 → 刷新恢复同状态；另一用户不可列取。串行用户消息与后端排队/重复投递/幂等验证并不矛盾。
+
+依据与项目取舍：ChatGPT官方Projects说明项目组织聊天/文件/指令，并提供Move to project（https://help.openai.com/en/articles/10169521-projects-in-chatgpt）；借鉴上下文关系，不复制其删除/共享政策。AG-UI官方事件定义提供tool/state事件（https://github.com/ag-ui-protocol/ag-ui/blob/main/docs/concepts/events.mdx）；AI SDK UIMessage是Web视图表示（https://ai-sdk.dev/docs/reference/ai-sdk-core/ui-message），两者不自动完成Kokoro owner授权、durable ledger和恢复。来源核验2026-10-02；上述目标不等于当前功能已完成。
+
+复用R82交互审计和既有Wave0–7，不新建计划中心。Root d52da34；Web52fdd8e/BFFb1ea063，工作树Web/BFF clean；保留Billing原五文档与三纯codec文件、Root uv.lock及R84台账变更。使用并行调查与系统排错流程：现有三名原生审查员续接，不重复泛审、不授新源码写入。Root统一梳理Home和用户验收路径。
+
+|任务/角色|范围与依赖|本轮交付/验收|
+|---|---|---|
+|R82项目/会话续审 / agent4_scope_gate_r19 / 只读|现BFF collection D0/public6方案与Web侧栏；当前发布未实现direct过滤|给独立会话/项目会话/独立任务关系与现导航行为；明确下一最小RED/source写集，不重新设计contract、不操作Git/资源|
+|R82能力入口续审 / four_owner_fixes_review_r31 / 只读|现Skills安装→选择→执行、MCP连接→授权→运行；沿R82现报告|核当前真/假状态并给最小可独立Web真实度修复现文件/测试落点；管理状态不冒充运行授权|
+|R82执行展示续审 / billing_chat_read_audit_r29 / 只读|Agent→BFF→Web Todo/Skills/tool/HITL/作品及刷新|将已定位断点收敛成一条过程状态与精确owner依赖/验收，不新造网络协议，不展示隐藏推理|
+|R84实际聊天失败 / Root|原41836已完成exit1，error=REAL_MODEL_FAILURE:product-send-click；新evidence u2fpdtuc|cleanup=[]、独有桶删除确认404；当前证据未采集send-click DOM原因，不能判定具体根因，不重复盲跑。下一核当前composer/engine与严格driver，先最小失败测试/观测|
+
+所有审查只读，报告/tmp；源码未写、真实浏览器未通过，禁止整体GREEN。总体目标保持：正规登录→独立/项目会话→真实选择能力→提交/排队→安全计划/工具/审批→作品→刷新恢复→正规积分；独立定时任务不是会话分组。
+
+
+R85并行实施卡沿原R82及R83：原WIN01唯一Web writer只授Plugins现组件测试先真实RED，不抢当前发送根因；原WIN02唯一BFF writer只授现chat-service.test.ts/chat-facts.integration.mjs行为RED。生产/contract/SQL均待Root看RED再放行；两个仓独立并行，Root独占Git/共享资源/三台账，现原生三审查员保持只读。Plugins去假成功仅真实性切片，Skills/MCP正式链依旧列为未闭环。
+
+R85-W01 Root真实复跑Plugins RED：2fail/8pass，exit1，setup/import正常（/tmp/kokoro-r85-root-plugins-red.log）。冻结test17254881与其余750tracked文件hash；续授原WIN01仅现kokoro-plugins-surface.tsx删除本地added/toggle假成功，保原管理/目录/搜索/分页/轮播，冻结RED断言不弱化；不改变CSS、任何网络/模型/engine或MCP正式契约，后继能力链仍未完成。原生三面报告已收，只有只读设计证据；真实浏览器W2仍失败。
+
+R85最终两条实施证据：Plugins已Root精确4路径发布Web main5e538f69a156512e01b38f0f3e549561303d1dab；原52371完整check exit0：246contract/50architecture/2299test、lint/types/build通过；独立Sol0及Root750外围hash匹配，原WIN01已停写。这只移除本地伪连接，不是MCP正式链已接。BFF仅两tests frozen，Root实际纯RED27项22pass/5fail/0skip（/tmp/kokoro-r85-root-bff-direct-red.tap）、434外围文件字节一致；PG/Redis integration未跑，生产/contract仍public5未改。
+
+Root组合迁移预检真实94pass/1fail：Web已发布但Rootgitlink尚旧，metadata49refs新导致不一致；保留/tmp/kokoro-r85-root-composition.log/topology.json/compatibility.json。Root正规暂存单一Webgitlink后topology PASS、compatibility16edges/violation0仅13declaredbroken恢复；现fresh95组合原4107已终态0：95pass0fail41.01s。不改门禁/断言或清零状态。当前3310无listener，七历史tab不作新源验收；W2仍product-send-click失败，原WIN10窄只读下一观测方案已续派。
+
+R85 Root新组合confirmed：fresh95pass0fail41.01s，原4107终态exit0（/tmp/kokoro-r85-root-composition-confirmed.log）；topology-confirmed PASS，compatibility-confirmed仅13declaredbroken/0violations、无extra错误。Root只提交Webgitlink、49refs已发布blob provenance和同三台账，绝不暂存uv.lock/Billing/BFF RED。保持完整Wave0–7与三面交互目标；下一个已定实施是原WIN02现BFF direct GREEN：五production、canonical/README、现contract/architecture assertions与CURRENT精确十路径，原两个RED测试冻结，资源/发布与Web repin仍由Root串行。原WIN10send-click安全观测短方案已交，只读非业务修复，后继沿原卡tests-first。
+
 ## R84 新发布组合真实聊天复验（2026-10-02）
 
 上一goal回合为progress：Web同步admission修复52fdd8e已发布，Root3031d022组合95与Web246/50/2298当前通过；原真实W2仍失败而非整体GREEN。本回合Root先收四D0独立Astra0及4hash/原文/原public5字节，BFFexact4docs mainb1ea063d4020b983e11f9243078fb17814e808b7已发布；无production/contract/SQL变更，目标public6仍未实现。现仅正规更新BFFgitlink/既有inventory provenance，不改13broken/3active。Root收回冻结六owner源码/现运行资源，原WIN01/02不得续写；Billing原WIN06三个pure文件可独立继续，不在此资源旅程。
 
 复验严格沿原W2同provider/config：现有Ollama qwen3:8b、不拉模型、不换外部gateway、不改600s、两POST/receipt/4Message/活动refresh/全文/交付下载hash/另一用户404与清理断言。此是真实六owner模型组合，不等于用户外部网关或Billing预占扣款全产品已验；所有运行柄、独有bucket/schema/Redisnamespace与清理按ownedmanifest记录。Root原uv.lock和Billing原五dirty正文保持。后继先依据新闭集观测定位真正提交卡点，再按当前同一Wave0–7任务推进BFF快照/能力/积分，不新计划中心。
+
+R84实际W2已终态：Root d52da34fb246ef04049eb101dddf0bd5325e270e + 六clean owner精确pin；原唯一PTY41836 exit1，child PID36817已不存在。精确失败REAL_MODEL_FAILURE:product-send-click，尚无该阶段DOM原因证据，不能断言BFF或Web具体根因。private log/ownedmanifest /tmp/kokoro-r84-root-real-w2.log /tmp/kokoro-r84-root-w2-owned.json（0600）；evidence /Users/nako/WebstormProjects/github/thefoxfairy/kokoro-w2-web-project-u2fpdtuc.evidence.json，cleanup=[]、独有桶删除确认404。未重跑/另起3310；浏览器表面现有七页不代表当前服务，Root探测3310无listener，读取tab13超时停止而非无限重试。Root composition95pass0fail32.32s、topology PASS、compatibility exit1仅13declaredbroken/violation0；不是实际用户聊天/模型/费用通过。六源只按R85窄测试授权解除，原uv.lock与Billing保留。
 
 ## R83 原发送缺陷 GREEN 切片（2026-10-02）
 
