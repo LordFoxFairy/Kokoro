@@ -2532,3 +2532,123 @@ def test_r73_model_call_details_are_actual_bounded_and_sum_to_durable_usage(muta
         call["sequence"] = 1
     with pytest.raises(module().SmokeError):
         module().validate_provider_turns(evidence, windows, agents)
+
+
+@pytest.mark.parametrize(
+    ("failure", "expected_phase"),
+    [
+        ("composer-visible", "product-composer-visible"),
+        ("response-arm", "product-response-arm"),
+        ("composer-fill", "product-composer-fill"),
+        ("composer-fill-pending-rejection", "product-composer-fill"),
+        ("observation-open", "product-observation-open"),
+        ("send-click", "product-send-click"),
+        ("response-await", "product-response-await"),
+        ("http-json", "product-http-status"),
+        ("http-non-json", "product-http-status"),
+        ("receipt-json", "product-receipt-json"),
+        ("receipt-request", "product-receipt-request"),
+        ("receipt-identity", "product-receipt-identity"),
+        ("conversation", "product-conversation"),
+        ("observation-receipt", "product-observation-receipt"),
+        ("receipt-uniqueness", "product-receipt-uniqueness"),
+        ("second-composer-fill", "product-composer-fill"),
+        ("none", None),
+    ],
+)
+def test_r79_actual_submit_failure_has_static_specific_phase_without_sensitive_error(
+    failure, expected_phase
+):
+    import json
+    import subprocess
+
+    driver = Path("scripts/e2e/web_real_model_worker_chromium.mjs").read_text()
+    start = driver.index("  async function submit(content) {")
+    end = driver.index("\n  const uiFrames =", start)
+    submit = driver[start:end]
+    catch = driver[driver.rindex("} catch (error) {") : driver.rindex("} finally {")]
+    # Execute the actual submit and actual outer error formatter, not a parallel
+    # diagnostic implementation. Playwright I/O is replaced only at its boundary.
+    source = r"""
+const assert = (condition, message) => { if (!condition) throw new Error(message) };
+class ChatSnapshotEvidenceError extends Error {}
+const failure = FAILURE;
+const secret = 'https://private.example/iam?code=PRIVATE_OAUTH&token=PRIVATE_TOKEN password=PRIVATE_PASSWORD content=PRIVATE_CONTENT <div>PRIVATE_DOM</div>';
+const fail = () => { throw new Error(secret) };
+const input = {web_origin:'https://web-fixture.example.test',timeout_ms:20000};
+let phase='owner-login',conversation,eventPath,snapshotPath;
+const receipts=[],posts=[],boundaries=[],steps=[];
+let currentResponse;
+const isFailure = name => failure===name || (failure==='second-composer-fill' && name==='composer-fill' && receipts.length===1);
+const composer = {
+ waitFor:async options=>{steps.push('wait');assert(options.timeout===20000,'timeout');if(isFailure('composer-visible'))fail()},
+ fill:async content=>{steps.push('fill');if(isFailure('composer-fill') || failure==='composer-fill-pending-rejection')fail()}
+};
+const page = {
+ waitForResponse:(predicate,options)=>{
+  steps.push('arm');assert(options.timeout===20000,'timeout');if(isFailure('response-arm'))fail();
+  const request={method:()=> 'POST'};
+  const index=receipts.length;
+  const receipt={run_id:'run_'+index,user_message_id:'user_'+index,assistant_message_id:'assistant_'+index};
+  if(isFailure('receipt-identity'))receipt.extra=secret;
+  if(isFailure('receipt-uniqueness') && index===1)receipt.run_id='run_0';
+  const badHttp=isFailure('http-json') || isFailure('http-non-json');
+  currentResponse={
+   url:()=>input.web_origin+'/api/session/sessions/'+(isFailure('conversation')?'private-invalid':'conv_fixture')+'/messages',
+   request:()=>request,status:()=>badHttp?503:202,
+   json:async()=>{if(isFailure('receipt-json') || isFailure('http-non-json'))fail();return receipt}
+  };
+  assert(predicate(currentResponse),'response predicate');
+  posts.push({request,content:isFailure('receipt-request')?secret:'PRIVATE_CONTENT'});
+  if(isFailure('response-await') || failure==='composer-fill-pending-rejection')
+   return new Promise((_,reject)=>setTimeout(()=>reject(new Error(secret)),0));
+  return Promise.resolve(currentResponse);
+ },
+ locator:selector=>{assert(selector==='[data-composer-action="send"]','selector');return {click:async()=>{steps.push('click');if(isFailure('send-click'))fail()}}}
+};
+async function observationBoundary(stage,index,receipt){
+ boundaries.push({stage,index});
+ if(isFailure('observation-'+stage))fail();
+}
+SUBMIT
+try {
+ await submit('PRIVATE_CONTENT');
+ if(failure==='none' || failure==='receipt-uniqueness' || failure==='second-composer-fill')await submit('PRIVATE_CONTENT');
+ assert(receipts.length===2,'two receipts');
+ assert(steps.join(',')==='wait,arm,fill,click,wait,arm,fill,click','original steps');
+ assert(JSON.stringify(boundaries)===JSON.stringify([{stage:'open',index:0},{stage:'receipt',index:0},{stage:'open',index:1},{stage:'receipt',index:1}]),'original boundaries');
+ process.stdout.write('two actual submit controls retained\n');
+CATCH
+}
+"""
+    source = (
+        source.replace("FAILURE", json.dumps(failure))
+        .replace("SUBMIT", submit)
+        .replace("CATCH", catch)
+    )
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", source],
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
+    )
+    if expected_phase is None:
+        assert result.returncode == 0, result.stderr
+        assert result.stdout == "two actual submit controls retained\n"
+        assert result.stderr == ""
+    else:
+        assert result.returncode == 1
+        assert result.stdout == ""
+        assert result.stderr == f"REAL_MODEL_FAILURE:{expected_phase}\n"
+        assert all(
+            secret not in result.stderr
+            for secret in (
+                "private.example",
+                "PRIVATE_OAUTH",
+                "PRIVATE_TOKEN",
+                "PRIVATE_PASSWORD",
+                "PRIVATE_CONTENT",
+                "PRIVATE_DOM",
+            )
+        )

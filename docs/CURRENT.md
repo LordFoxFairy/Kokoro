@@ -1,3 +1,40 @@
+## R80 十窗口续派与主控验收（2026-10-02）
+
+选模：WIN03/06 gpt-6-astra，WIN01/02/05/07/10 gpt-5.6-sol，WIN04/08/09 gpt-5.6-luna；Root模型不变。用户本轮明确要求尽可能并行；Root逐一核对原十句柄，派工前均为idle/notLoaded、上轮completed，不存在仍运行的资源验收。复用原窗口不建重复任务中心。Root main bc0ecf04eb7a19808cc03a73d5cc9d279412ed68；所有仓main，以下仓基线及原修改保护。Root唯一Git/index/资源/台账writer，同仓单writer，独立仓D0或纯验证可并行；已向原十窗口实际发送续派，均返回成功threadId；运行状态以原句柄为准，不把派发成功当完成。
+
+Root架构裁决：System仅技术模型/provider/route事实，Billing Metering拥有不可变采购费率、可配置销售倍率（7/5）及Credit换算/舍入；Agent拥有逐实际call/attempt严格usage。替代固定Feature按次价作为目标计价，不新增System成本表/API/新服务，不并列两套默认路径。尚缺严格契约/实现，不能称费用链完成；失败收费规则已询问用户、未答不视为同意，不阻断成本与证据基础研发。支付渠道最后。
+
+|任务/窗口角色|owner、基线与精确范围|依赖与完成条件|
+|---|---|---|
+|R80-W01 项目任务交互实现准备|Web / WIN01；apps/kokoro-app dc330a9，原R79五D0前缀冻结。独立Astra门审0P0/P1/P2，现已授原10source+5test；先实际RED再实现，无Git/资源|原R79位置/实例隔离方案；原writer已获实现授权，不新造editor/store|
+|R80-W02 聊天提交服务端定位|BFF / WIN02；apps/kokoro-bff 479d4e8 clean，全仓只读，临时验证文件仅/tmp|从真实product-post失败反查Web同源POST/BFF admission/strict202receipt；交精确候选与可验证证据，不自造故障或改契约|
+|R80-W03 逐调用用量D0|Agent / WIN03；apps/kokoro-agent 444684d clean，仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT四文档新前缀|Billing单一定价owner；记录实际调用、attempt/lease/System绑定/usage类别/unknown及状态原子性，给后继精确源码测试范围，不写schema/wire/source|
+|R80-W04 正规登录过期恢复验证|IAM / WIN04；apps/kokoro-iam e3c035b clean，只读与现有纯测试，无浏览器/服务/DB|定点过期OAuth交互、CSRF与同源cookie；现真实单测结果和缺口，不通过删除CSRF/强制成功来修复|
+|R80-W05 实际模型归属边界D0|System / WIN05；apps/kokoro-system 6ca9618 clean，仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT四文档新前缀|覆盖先前System成本owner建议：不增成本API/table；planned resolve≠actualgateway凭据。记录当前binding/缺口，后继由Agent/Billing正式契约先行|
+|R80-W06 正规费用链D0|Billing / WIN06；apps/kokoro-billing 3e27eac，原五dirty全文保留；仅该五docs新前缀|沿Metering/Credit单writer，immutable费率/倍率/换算/quote/预占/严格usage结算/unknown恢复与main清洁切换；不实现旧quantity1最终收费、不编造金额/赠送资格，不写source/schema/contract|
+|R80-W07 MCP契约切片准备|Platform / WIN07；apps/kokoro-capability da813ed clean，全仓只读|沿现方案A，分离完整schema/发现session授权/final重验与尚待凭据owner；给不依赖未决项的准确owner先行机器契约写集，不缩水none demo或造secret服务|
+|R80-W08 作品私有性纯验证|Storage / WIN08；apps/kokoro-storage 74c4b59 clean，只读和现有纯测试，无对象存储/扫描/DB启动|实际artifact下载/tenant-subject/private404/幂等相关纯门，报告存在的行为缺口与准确后继范围；不把pure叫真实集成|
+|R80-W09 独立定时任务恢复纯验证|Scheduler / WIN09；apps/kokoro-scheduler e8dca48 clean，只读和现有不联网纯测试|核任务与项目无强耦合、重复唤醒/lease/取消后迟receipt；报告实测与owner边界；不启动DB/Redis或go全套不加区分资源门|
+|R80-W10 聊天提交浏览器侧定位|Root harness / WIN10；Root bc0ecf04，R79两源码冻结；全仓只读，验证仅/tmp|诊断已冻结且Root fresh647pass/0fail25.82s；检查实际composer locator/send事件/response predicate与Web生产代码，保原断言/timeout。不得改Root文件、运行浏览器或重复启动W2|
+
+Root已接回R79两文件writer；原WIN10停止，独立source审0P0/P1/P2，fresh六测试文件647pass（/tmp/kokoro-root-r79-diagnostics-regression.log），Ruff/format/Node22syntax/diff0；这只是保完整断言的诊断增强，不是product-post修复。原真实W2柄14891已终态exit1、cleanup=[]、独有桶删除404确认；3310当前offline、无Root持久应用服务。新实际旅程必须绑定新的已发布clean六仓tuple，Web当前五D0 dirty不绕过sourceguard。完整Wave0–7和13broken/3active保持，不以局部GREEN虚报整体闭环。
+
+R80 Root fresh诊断门：原六测试文件647pass/0fail26.34s、exit0，/tmp/kokoro-root-r80-diagnostics-regression.log；Ruff/check与format、Node22syntax、diffcheck均0。两R79 source hash精确匹配冻结；三台账仅新增前缀，HEAD正文逐字保留。原十窗口刚按原句柄核对均active/inProgress，无capacity错误；仅这次观测事实，不假称持续全部活跃。上goal turn归类progress：Web D0独立0门已真实放行15source/tests，10原窗口续派及定价owner已记录，仍未证明产品闭环。
+
+各窗口交付：基线/full SHA、绝对文件集、实际命令与结果、允许范围未变证据、未完成/具体依赖；freeze后停止写入。Root统一审查、重跑、按切片提交。原uv.lock与Billing既有五dirty正文不暂存、不覆盖；Web原R79五正文保护。
+
+## R79 真实用户提交失败与代码续派（2026-10-02）
+
+上一goal turn为progress：Billing22组件3e27eac、Root组合bc0ecf04已真实发布，PG9/纯1038/metadata95实验。原W2柄14891本轮已读取终态exit1：browser real System and model worker / REAL_MODEL_FAILURE:product-post；不是模型/双轮/刷新/交付通过。安全证据 /Users/nako/WebstormProjects/github/thefoxfairy/kokoro-w2-web-project-vyo9sfyi.evidence.json，cleanup=[]，独有ObjectLock/versioned空桶已完整删除/404确认，原资源不重启、不清共享状态。Rootvenv缺kokoro_agent首失败仍保留；第二次实际已用现Agent环境跑至Chromium产品提交，下一行动以真实失败为准。
+
+|任务/owner/执行|基线、范围与责任|完成门/依赖|
+|---|---|---|
+|R79-W2-DIAGNOSTICS / Root harness / 原WIN10唯一writer；Root审验/Git|/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro mainbc0ecf04eb7a19808cc03a73d5cc9d279412ed68，原uv.lock及本Root3prefix保护；仅现scripts/e2e/web_real_model_worker_chromium.mjs、scripts/tests/test_web_real_model_worker_smoke.py必要新增诊断测试，若需Python runner协议变更先报告，其他harness/断言/资源锁|先实际RED表明product-post吞掉具体失败阶段，再只拆静态无敏感phase（composer/fill/click/HTTP/receipt），保原完整两轮和原R3断言/观察窗/超时/清理，不输出URL/query/token/密码/body/原异常。纯门+freeze，Root实际再验；worker不启动资源/浏览器，不改文档/Git。|
+|R79-WEB-PROJECT-D0 / Web / 原WIN01唯一writer；原Astra独立审，Root放行|/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app maindc330a9 clean；仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md与INDEX.md批准新前缀，原正文/所有source/gen/pin/依赖锁|采用现独立Scheduled surface的项目创建上下文 /app/scheduled?project_id=<exact>#scheduled-tasks/new，personal缺省；body带exactproject_id，POST上游无query，PATCH禁止项目归属变更；上下文+编辑记录实例key/迟回执隔离/404保草稿。比较复用独立surface vs第二项目live编辑器，采前者。无新持久化owner/SQL/store/兼容双轨。D0审通过后立刻授原15source/tests实现，不新建计划中心。|
+|R79-BILLING-C3-BOUNDARY / Billing / 原WIN06只读，Root裁决|当前3e27eac/5dirtydoc保护；原24operation和状态机盘点已交付，不写main或旧SQL迁移|实际模块2GET200/其他22项404，不是main部署通过；承接有效业务但用户已明确无旧数据兼容，不做旧pending/inbox导入迁移。不采用只剩GET的缩水产品；待System价格事实owner报告后Root先收敛Admission报价/实际计价边界，未决前不授旧quantity1固定收费实现。支付最后。|
+
+完整Wave0–7仍active，13broken/3active与正式积分、MCP credential owner待决保持。Root唯一任务/资源/Git集成负责人；WIN10写Root期间Root只读Root源码、不再改同仓文件，待freeze后更新同台账。W2六owner本次运行已经终态，解除这次源码freeze，后续每次资源验绑定新的实际source tuple。
+
 R78 Root fresh组合门：95pass/0fail38.09s，/tmp/kokoro-root-r78-metadata-tests.log；topology PASS、compatibility exit1只有13个既定declared broken，额外机器错误0。不是用户/费用整链通过。
 
 ### R78 Billing 组件已发布与并行状态

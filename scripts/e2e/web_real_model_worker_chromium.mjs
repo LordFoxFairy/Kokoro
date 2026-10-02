@@ -244,28 +244,43 @@ try {
   let conversation, eventPath, snapshotPath
   const composer = page.locator('[data-slot="composer-input"]')
   async function submit(content) {
-    phase = "product-post"
+    phase = "product-composer-visible"
     await composer.waitFor({state:"visible",timeout:input.timeout_ms})
+    phase = "product-response-arm"
     const receiptPromise = page.waitForResponse(response => {
       const url=new URL(response.url())
       return url.origin===input.web_origin && /^\/api\/session\/sessions\/[^/]+\/messages$/u.test(url.pathname) && response.request().method()==="POST"
     },{timeout:input.timeout_ms})
+    // Observe the armed waiter even if an earlier UI step fails; the awaited
+    // original promise still propagates its failure below without raw diagnostics.
+    receiptPromise.catch(() => {})
+    phase = "product-composer-fill"
     await composer.fill(content)
+    phase = "product-observation-open"
     await observationBoundary("open",receipts.length)
+    phase = "product-send-click"
     await page.locator('[data-composer-action="send"]').click()
-    const response = await receiptPromise, receipt = await response.json()
+    phase = "product-response-await"
+    const response = await receiptPromise
+    phase = response.status()===202 ? "product-receipt-json" : "product-http-status"
+    const receipt = await response.json()
     const post = posts.find(item=>item.request === response.request())
+    phase = response.status()===202 ? "product-receipt-request" : "product-http-status"
     assert(response.status()===202 && post?.content===content, "receipt request")
+    phase = "product-receipt-identity"
     const keys = ["run_id","user_message_id","assistant_message_id"]
     assert(receipt && Object.keys(receipt).sort().join() === keys.sort().join() &&
       keys.every(key=>typeof receipt[key]==="string" && /^[A-Za-z0-9_.:-]{1,191}$/u.test(receipt[key])), "receipt identity")
+    phase = "product-conversation"
     const current = decodeURIComponent(new URL(response.url()).pathname.split("/")[4])
     assert(/^conv_[A-Za-z0-9_-]{1,186}$/u.test(current) && (!conversation || conversation===current),"conversation")
     conversation = current
     eventPath = `/api/session/sessions/${encodeURIComponent(conversation)}/events`
     snapshotPath = `/api/session/sessions/${encodeURIComponent(conversation)}`
     receipts.push(receipt)
+    phase = "product-observation-receipt"
     await observationBoundary("receipt",receipts.length-1,receipt)
+    phase = "product-receipt-uniqueness"
     assert(new Set(receipts.map(item=>item.run_id)).size===receipts.length &&
       new Set(receipts.flatMap(item=>[item.user_message_id,item.assistant_message_id])).size===receipts.length*2,"receipt uniqueness")
     return receipt
