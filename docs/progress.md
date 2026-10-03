@@ -1,3 +1,13 @@
+## R153 原用户首屏故障聚焦与启动器覆盖（2026-10-03）
+
+原conv_ffd7/tab21仍未验收；本轮DOM、错误读取、刷新在focus控制超时，后续CDP事件读取亦超时并reset。未取得原页session/hydration/heartbeat，未宣称刷新成功，不再重复盲控或新增tab/重启原32044组合。
+
+两原负责人只读：Root亲核450个非Markdown业务源码runtime与checkout逐字节同（src总468文件含18份文档，不将文档计为源码）；排除漏同步。当前probe正常失败/坏JSON/10s超时/立即Storage异常均进unavailable，因此永久loader需水合未commit、事件循环不收敛或无界generation扰动等证据；同步全localStorage扫描只为未证假说，不先改产品。
+
+原组合programmatic Turbopack与系统webpack差异已补tests-only闭集启动器。冻结test5fb4e51a；Root Node22相同R147 cold/reload：webpack38725 1pass/52名称过滤21.98s，programmatic43049 1pass/52名称过滤7.07s；programmatic完整21527 53pass/0skip55.45s。96779 targeteslint/types0；Redis15前后0/hashsame、自有fixture目录0，唯一3310/PID46036与launcher45606保持。启动器独立审2b4d764b零发现。A/B排除“本源码在programmatic必然卡首屏”，不证明用户原页恢复。本轮完整2360/check/build未执行；原用户IAB E2E未验收，候选未发布。
+
+原70组仍11通过/6失败/14待复测/38未验/0待决/1支付后置；suffix831a2160与uv.lock f7e1c30d保留，BFF/Billing/Storage候选不触。Wave0–7 active；当前用户P0仍关键路径，需要原页刷新后的实际渲染与会话证据，不以本fixture关闭。
+
 ## 2026-10-03 — R151 真实切片发布进展
 
 Root本轮全仓标准门真实exit1：153项规范违规/0未核实，不能称全仓合规。新发现本切片引入的BFF chat-repository.ts增长671→979行，越800行门，列R152具体架构P1；不将153项一概称历史。Root治理298pass3.06s。拓扑初验因两个已发布owner未更新Root index而2项失败；Root精确stage Web65be18a/BFF0333两gitlink后复验exit0/PASS（9个运行模块），没有改检查器或其他gitlink。剩余标准债务仍按原owner波次收敛，不修改检查器/阈值放绿。

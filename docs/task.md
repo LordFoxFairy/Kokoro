@@ -1,3 +1,21 @@
+#### R153 当前取证终态与下一动作
+
+Root相同cold/reload oracle双引擎均pass；programmatic全53pass0skip55.45s，targetlint/type0；测试5fb4与gate一致，Redis15前后0/owned临时目录0。只排除“当前源码在programmatic必然卡”的假说，原用户页仍P0。原页读取/日志/刷新均focus超时，事件能力超时reset，禁止继续盲重试或假称刷新。Web只补CURRENT/INDEX候选说明；本轮全2360/check/build未跑，暂不发布测试候选。Root四台账更新并保护原70suffix；当前需要用户原页手动刷新后的实际现象，或恢复浏览器控制后同页证据。BFF R152 source仍未授权。
+
+#### R153-TURBO 现系统测试单变量验证准入
+
+Root已核450个非Markdown源码全部一致（468个src文件含18份文档），现53系统门使用webpack而原组合是programmatic Turbopack。准原Web owner仅修改现tests/system/oidc-rp-next-http.integration.test.ts的isolatedNext/startup：封闭测试开关选择现默认webpack或与原组合一致的programmatic Next dev；临时server.cjs及turbopack.root只在fixture目录创建，业务src/契约/登录/数据/超时/assert不变。原R147 cold/reload用户流在同一oracle执行两组，不新增单元Mock，不改用户运行组合。Root独占两个独立fixture验证与cleanup，开关不进入生产env/源码。不将A/B通过当用户原页恢复。
+
+### R153 当前用户工作区永久加载：聚焦调查（2026-10-03）
+
+用户原conv_ffd7/tab21仍停“正在加载工作区”。Root本轮原tab DOM与错误读取均在浏览器focus控制超时，未取得会话请求/水合/主线程证据，不重复开页或重建用户数据。现Web main65be18a3 clean、原组合32044保持。
+
+| 任务 | 角色/范围 | 验收及边界 |
+|---|---|---|
+| R153-W-INIT | agent4_lifecycle_review / 只读：现AppGate、useSessionProbe、providers、runtime-manifest及其系统测试 | 按实际状态流指出可永久checking的必要条件与现有测试缺口；不修改/启动资源/浏览器/Git，Root独占实际用户页 |
+| R153-W-DRIFT | storage_project_lifecycle_owner / 只读：Web checkout及原运行副本src、公开启动资源、现启动器 | 对关键初始化源码做字节比较，解释dev与system差异；不读私有env/凭据/process.log，不启动/停止/重置资源或写仓 |
+| R153-ROOT | Root / 实际原标签、原句柄、集成与同一台账 | 优先取得原页证据或恢复；用户路径未证实前不以fixture/HTTP200宣称通过。BFF R152 source暂未授权，不抢占首屏关键路径 |
+
 ### R151 Root组合放行证据与真实未放行门
 
 治理298pass/3.06s；默认全仓规范153fail/0unverified，已精准确认BFF新979行P1并续派R152三D0（仅文档未授权source），其他违规不武断归历史。初拓扑两gitlink旧index mismatch；仅stage已push main Web65be18a/BFF0333cd7后原拓扑校验再跑exit0/PASS（9 runtime），结果见/tmp/kokoro-r151-root-topology-pinned.log，不stageBilling/Storage/uv.lock或BFF R152未提交docs。

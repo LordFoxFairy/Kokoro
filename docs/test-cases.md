@@ -1,3 +1,15 @@
+## R153 T-U04 原用户页面与实际启动器复验
+
+本增补沿原70组编号，不改变任何总组状态。
+
+| 用例/标题 | 前置与步骤 | 预期 | 优先级/类型 | 当前结果 |
+|---|---|---|---|---|
+| T-U04/R153 原会话首屏 | 原帐号、conv_ffd7、tab21；读DOM/错误并刷新原标签，不清Cookie或改帐号；验证正文、输入与reload | 有界离开loader，正文和输入可操作；明确故障不永久等待 | P0/主链路、异常、状态机 | DOM/错误/刷新均focus超时，事件读取也超时；无用户证据，仍FAIL/根因未定 |
+| T-U04/R153 启动器单变量 | 同正式Product Session HTTP与Next/Chromium fixture；固定同R147 cold/reload oracle，webpack和programmatic两启动器分别跑 | 每导航12s内工作台、session200、输入填入清空；所有旧assert保持 | P0/主链路、边界、恢复 | Root38725与43049分别1pass、各52名称过滤；21.98s/7.07s。非原用户页面 |
+| T-U04/R153 programmatic系统矩阵 | 同当前运行方式的隔离Next；完整53现OIDC/刷新/异常/拒写/正文/删除ACK节点 | 所有断言保持、资源只回收自有 | P0/系统、异常、安全、状态机 | Root21527 53pass/0skip55.45s；Redis15恢复0、自有目录0。旧signout500未复现，根因仍unknown；全产品E2E不由此替代 |
+
+退出标准：原帐号原页面实际正文/输入/reload验证通过，且永久loader故障有可复现原因及修复证据；其他fixture或公共200不满足原页退出门。
+
 ## R151 / 系统验收矩阵与已发布限定切片（2026-10-03）
 
 Root本轮全仓标准门真实exit1：153项规范违规/0未核实，不能称全仓合规。新发现本切片引入的BFF chat-repository.ts增长671→979行，越800行门，列R152具体架构P1；不将153项一概称历史。Root治理298pass3.06s。拓扑初验因两个已发布owner未更新Root index而2项失败；Root精确stage Web65be18a/BFF0333两gitlink后复验exit0/PASS（9个运行模块），没有改检查器或其他gitlink。剩余标准债务仍按原owner波次收敛，不修改检查器/阈值放绿。
