@@ -5373,3 +5373,7 @@ Root235个库存引用精确更新已发布Web9b42/BFF5e119；257leaf仅commit/d
 Move三D0 ee057a4d/5bf79b9d/672e836f补私有固定10秒完整fetch/body/ACK与caller abort/finally；独立5cc991a8零发现只通过设计门，source/pin/UI未实现。用户再报原conv_ffd7持续加载；本轮inventory显示原21/22，绑定21再20秒超时/reset，无原DOM/session/水合。原launcher45606/Web46036仍live，未重启清数据/新tab，原P0不关闭。R139匿名/故障恢复三case此前只证明login请求/路径改变，已准原Web唯一writer在现OIDC真实Next系统文件补实际AppFrame终态与刷新，Root后继按真实结果验；不靠猜router故障改源，也不把新fixture成功冒用户恢复。
 
 原70组11/6/14/38/0/1、test-cases全文8c17与suffix831a、uvf7e1和Billing/Storage候选保持；完整Wave0–7 active。
+
+R161 原冻结 fde2e250 的 Root 三个真实Next/Chromium定点场景已执行：29975 exit0、3pass/50名称过滤、37.06s，日志/tmp/kokoro-r161-web-terminal-real-http.log；Redis15前后0、源hash同、原launcher45606/Web46036live。匿名导航/两故障恢复均最终AppFrame可见且自然reload稳定，因此未复现该fixture中的导航卡死；不归因原用户P0。独审发现外层case30s/45s与内层deadline加启动清理预算冲突，当前仅授权三case外层60s修测试包络，不改内层probe/alert/terminal时限；新冻结还须Root复验。原IAB重复标签关闭请求也20s超时，未宣称关闭成功；已请用户手动关闭两标签后重开原URL反馈，不清数据/重启服务。Root库存＋台账四paths已提交932fc272，后置checkpoint/topology实际exit0；源测试候选尚未提交/发布。
+
+R161 最终定点复验8416已消费自然exit0：3pass/50名称过滤、36.54s（/tmp/kokoro-r161-web-terminal-final-http.log），绑定最终test120f8921；独立c0dbc8de核三个外层包络60s且内层probe10/alert12/terminal18-15-18未变，前P2关闭。Redis15终态0、原两PID仍live、uv/test-cases原hash同。只验证三个fixture用户路径；Web完整check/build、真实IAM/原IAB端到端尚未执行，测试候选仍未提交/发布，产品源零改。原用户首屏P0继续开放，等待同原URL重开后的实际结果，不重复控制盲试。

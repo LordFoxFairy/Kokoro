@@ -10,6 +10,12 @@
 
 归属：Web产品会话认证闸的浏览器导航验收，扩展现有真实Next系统测试，无新文件/模块/契约/数据库；旧R139只证明请求发出，没有证明终态渲染，这是本轮明确的测试证据缺口，不预先宣称产品根因。原用户同页仍需真实操作验收。
 
+
+R161 原冻结 fde2e250 的 Root 三个真实Next/Chromium定点场景已执行：29975 exit0、3pass/50名称过滤、37.06s，日志/tmp/kokoro-r161-web-terminal-real-http.log；Redis15前后0、源hash同、原launcher45606/Web46036live。匿名导航/两故障恢复均最终AppFrame可见且自然reload稳定，因此未复现该fixture中的导航卡死；不归因原用户P0。独审发现外层case30s/45s与内层deadline加启动清理预算冲突，当前仅授权三case外层60s修测试包络，不改内层probe/alert/terminal时限；新冻结还须Root复验。原IAB重复标签关闭请求也20s超时，未宣称关闭成功；已请用户手动关闭两标签后重开原URL反馈，不清数据/重启服务。Root库存＋台账四paths已提交932fc272，后置checkpoint/topology实际exit0；源测试候选尚未提交/发布。
+
+
+R161 最终定点复验8416已消费自然exit0：3pass/50名称过滤、36.54s（/tmp/kokoro-r161-web-terminal-final-http.log），绑定最终test120f8921；独立c0dbc8de核三个外层包络60s且内层probe10/alert12/terminal18-15-18未变，前P2关闭。Redis15终态0、原两PID仍live、uv/test-cases原hash同。只验证三个fixture用户路径；Web完整check/build、真实IAM/原IAB端到端尚未执行，测试候选仍未提交/发布，产品源零改。原用户首屏P0继续开放，等待同原URL重开后的实际结果，不重复控制盲试。
+
 ### R160 继续既有计划：Move消费文档门与契约库存漂移（2026-10-03）
 
 上一goal轮为progress：Root2d36ad8a记录原首屏P0真实取证失败与Root治理1715pass/1fail/3skip，识别当前契约库存证据漂移。原页重开询问尚无答复；不是verified wait，也不重复浏览器超时/只读bootstrap审查。已有安全前置是已发布BFF Move producer及R158三D0。
