@@ -1,3 +1,137 @@
+## R146-B07 正式费用链系统验收（12条，全部未验）
+
+### 证据边界
+
+- Billing基线：`main e04bff`；沿用 `/tmp/kokoro-r146-b07-qa-owner-audit.md`（SHA `9037ab12f6023d6f80e30722d2d9eed25ce6d8af9e72076ef083e47c284592eb`）的owner/source审计。
+- Agent `main 2d2ad9bb4d261bee6c71e35f0d68f419a785bf9c` 已发布 `contract/usage/v1` strict typed离线artifact；以下证据输入必须直接使用该正式schema/vectors，不另造attempt shape。
+- Agent离线42项、2174 pure及wheel正负门不计作runtime/provider→Billing链通过。
+- 用户规则：failed/cancelled仅结算已核实实际消耗；仅释放可确认未使用的预占；unknown持久pending等待核实/对账，绝不映成zero或整笔release。
+- 全部案例执行状态：**未验**。本增补属于既有T-B07测试组，不增加或重排原70组，不是新计划中心。
+
+### 主链路
+
+#### B07-E2E-01 — completed单attempt按冻结价格结算
+
+- **预置：** 账户有足够正式Credit；Billing已发布价格revision R1及倍率/换算；hold H绑定R1、model/provider/pricing account与attempt authorization；Agent runtime实际调用provider并产生符合正式artifact的completed sealed evidence，usage为verified nonzero。
+- **步骤：** 用户发起一次会产生真实provider调用的Run；系统reserve H；provider完成；Agent持久并投递正式evidence；Billing认证、按R1自行计价并结算；用户在前端查看Credit变化与ledger。
+- **权威预期：** Billing不接受caller金额替代证据；仅capture R1计算的actual，release `H-actual`；hold、allocation、settlement、journal、receipt/outbox/audit同一业务结果且exactly once；前端只显示Billing结果，不重算费用。
+- **Priority / Type / Status：** P0 / 主链路·真实provider+Agent+Billing+Web E2E / 未验。
+
+#### B07-E2E-02 — failed attempt仍结算verified actual
+
+- **预置：** hold active；provider已接受调用后返回错误；正式evidence outcome=failed、seal有效且usage/actual attribution为verified nonzero。
+- **步骤：** 用户运行任务；provider失败；Agent记录失败与实际usage并提交；Billing结算；用户查看失败状态和账务。
+- **权威预期：** Run失败不等于免费；Billing只扣已核实actual并释放确认unused部分；不得按reservation全扣，也不得整笔释放。重复失败通知不产生第二笔debit。
+- **Priority / Type / Status：** P0 / 主链路·失败计费E2E / 未验。
+
+#### B07-E2E-03 — mixed attempts逐attempt计价后final settle
+
+- **预置：** 同一业务执行有attempt A失败但verified usage>0，attempt B重试成功且verified usage>0；两者各有正式identity/revision/seal，最终集合seal证明本次执行attempt闭集；reserve足够。
+- **步骤：** 系统执行A后重试B；Agent可按任意网络到达顺序投递A/B revision及最终seal；Billing恢复并结算；用户查看唯一最终费用。
+- **权威预期：** Billing逐attempt使用冻结revision计价并分别执行`attempt-ceil-v1`，再形成唯一settlement；A消耗不遗漏，B不重复；只有闭集已知后释放unused；ledger/audit能关联两个attempt但前端不自行求和。
+- **Priority / Type / Status：** P0 / 主链路·多attempt恢复E2E / 未验。
+
+### 边界
+
+#### B07-BND-04 — cancelled且verified no-call释放全部预占
+
+- **预置：** hold active；Agent正式evidence证明authorization/dispatch状态与outcome一致，provider调用未开始，actual为verified zero而非unknown。
+- **步骤：** 用户在provider dispatch前取消；Agent封存no-call/verified-zero事实；Billing消费并结算。
+- **权威预期：** capture 0，release全部H；保存可审计的verified-zero依据；cancel字符串本身不作为释放证据。
+- **Priority / Type / Status：** P0 / 边界·取消前零调用E2E / 未验。
+
+#### B07-BND-05 — cancelled与provider完成竞态
+
+- **预置：** hold active；cancel与provider response并发；provider调用已经开始并最终有verified usage。
+- **步骤：** 用户发出取消；provider同时完成或失败；Agent按正式revision规则合并观察并seal；Billing消费重复/乱序事件。
+- **权威预期：** 只按最终不可替换的verified actual扣费并release余量；cancel不得覆盖已观察dispatch/usage；无双扣、负release或两个terminal settlement。
+- **Priority / Type / Status：** P0 / 边界·双连接/竞态E2E / 未验。
+
+#### B07-BND-06 — verified zero与unknown严格区分
+
+- **预置：** 两个独立hold：Z有完整known-zero observations与seal；U缺少可核实usage、totals_state/actual保持unknown。
+- **步骤：** 分别投递Z和U正式evidence；触发Billing消费、重启与reconcile；查看两账户状态。
+- **权威预期：** Z可capture 0并release确认unused；U保持pending，资金不capture也不release；两者状态、receipt、audit不可互换，null/缺字段不得降级为0。
+- **Priority / Type / Status：** P0 / 边界·知识状态隔离 / 未验。
+
+#### B07-BND-07 — 价格revision冻结，后续上调不追溯旧hold
+
+- **预置：** hold在R1有效时创建并固定R1完整pricing snapshot/digest；执行期间发布更高价格R2；同一Agent usage可用两revision算出不同结果。
+- **步骤：** reserve后发布R2；完成旧attempt并结算；再创建新hold执行相同usage。
+- **权威预期：** 旧hold严格按R1结算，新hold按R2；不能结算时重新查latest；倍率、采购率、Credit换算、舍入版本均可由持久字段重算和审计；前端只显示Billing ledger。
+- **Priority / Type / Status：** P0 / 边界·价格不可变性 / 未验。
+
+### 异常与恢复
+
+#### B07-ERR-08 — unknown持久pending并在重启后对账
+
+- **预置：** provider调用可能已发生，但Agent只有unknown outcome/usage revision；hold仍保留；reconcile稍后可获得verified evidence或verified no-call。
+- **步骤：** 投递unknown；重启Agent/Billing worker；重复投递相同revision；随后提交合法successor与final seal；执行对账。
+- **权威预期：** unknown阶段不扣、不释放、不标zero；pending身份和hold跨重启保留；合法successor最终exactly-once settle，非法替换/跳revision拒绝；若最终仍unknown则继续待核实而非TTL整笔释放。
+- **Priority / Type / Status：** P0 / 异常·崩溃恢复/对账E2E / 未验。
+
+#### B07-ERR-09 — duplicate、乱序与ACK丢失
+
+- **预置：** 一个attempt有连续revision和final seal；网络会重复、倒序、在Billing commit后丢ACK。
+- **步骤：** 先发后继/terminal，再发前驱；重放相同event；篡改同identity digest；模拟结算commit后客户端超时并重试。
+- **权威预期：** 缺前驱保持可恢复pending或按正式契约拒绝，不latest-wins；同revision同digest no-op；同identity异digest冲突；ACK丢失重放返回原结果；始终只有一个settlement/debit/outbox/audit业务事实。
+- **Priority / Type / Status：** P0 / 异常·幂等/乱序/恢复 / 未验。
+
+#### B07-ERR-10 — actual超过reservation
+
+- **预置：** verified sealed attempts按冻结revision算得actual>H；账户可能有额外available Credit，也可能不足。
+- **步骤：** Billing消费最终证据并尝试结算；分别覆盖余额足够/不足；重试同一证据。
+- **权威预期：** **产品/资金策略待Root设计裁决**；在裁决前必须fail closed/pending，不截断成H、不产生负release、不部分提交journal/hold/settlement，也不得擅自二次reserve或透支。最终规则须先落三设计和机器契约，再将此例具体化。
+- **Priority / Type / Status：** P0 / 异常·待设计资金边界 / 未验。
+
+### 安全与审计
+
+#### B07-SEC-11 — foreign/tampered evidence零资金变化
+
+- **预置：** 合法hold H；准备wrong tenant/subject/run/attempt/authorization binding、错误provider/model/pricing account、坏digest、非连续revision及未认证caller样本；另有合法控制。
+- **步骤：** 通过正式Billing ingress逐项提交；随后提交合法控制。
+- **权威预期：** 所有非法样本在资金写前拒绝，不泄漏foreign hold/evidence存在性；hold/allocation/account/journal/settlement/outbox/audit业务行零变化；合法控制仍可完成，证明不是fixture全拒绝。
+- **Priority / Type / Status：** P0 / 安全·跨租户/篡改/认证 / 未验。
+
+#### B07-SEC-12 — grant allocation与audit可追溯且不造免费Credit
+
+- **预置：** 账户同时含购买grant与既有正式bonus grant，burn priority/expiry明确；reserve跨多个grant；verified actual小于H。
+- **步骤：** 完成结算并重放；查询本人ledger和受权audit；再尝试重复/异义证据。
+- **权威预期：** 只按既定allocation顺序capture/release；不新建bonus、充值或隐式免费额度；journal总额、hold allocation、settlement、audit关联一致，重放不重复；用户前端只读展示，不拥有计价或ledger写权。
+- **Priority / Type / Status：** P1 / 安全·会计审计/权限 / 未验。
+
+### 状态机覆盖索引
+
+- `reserved → verified completed/failed/cancelled → settled`：B07-E2E-01/02/03、B07-BND-04/05。
+- `reserved → unknown → pending → reconciled settled/no-call`：B07-ERR-08。
+- revision/replay/ACK恢复：B07-ERR-09。
+- pricing freeze：B07-BND-07。
+- 未裁决资金状态：B07-ERR-10保持待设计，不以测试先造行为。
+- 权限与会计不变量：B07-SEC-11/12。
+
+实施续接现R80 Billing设计与既有任务卡；不复制Agent schema、不新增计划中心，也不把本文“未验”改成离线artifact测试已过。
+
+
+### T-B07 系统费用验收退出标准
+
+上述12条逐项有当前版本、真实操作、资金前后对比、实际结果与证据；所有P0通过，P1未解决项不得涉及资金/权限完整性。至少覆盖真实provider非零费用、failed/cancelled、verified-zero、unknown跨重启恢复、重复/乱序/ACK丢失及冻结价格。余额、预占、扣减、释放、ledger/allocation与settlement核对一致；无双扣、凭空Credit、未知当零或前端计价。超预占策略先由Billing三设计收敛，再按规则执行B07-ERR-10。离线artifact、unit/mock、单次成功、接口启动或worker报告均不替代此门；支付渠道仍最后验收。当前12条全未验，未达到退出标准。
+
+## R146 资源生命周期系统验收矩阵（核心已复验，完整旅程未验）
+
+完整70组计数不变，以下是T-C05下的资源owner前置；不得只凭Storage通过关闭Project浏览器全旅程。Root明确批准Project Artifact行为变化：不是存在任意Artifact就失败，而是在scope锁内验证完整同域graph，一致关系按用户项目删除规则释放，损坏关系仍全事务回滚；无remediation RPC/新表/兼容入口。Artifact title及CreateArtifact历史receipt内title是用户内容，释放时同事务清空；最小身份审计不成为可读文件或URL。Root已实际39/39窄GREEN，锁前receipt快照原P0已因实际Serializable全事务重试及Root40绿色纠偏撤回，但仍需精确barrier/retry证明与损坏objectKey安全门，以下整组仍未验。
+
+|用例ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|状态|
+|---|---|---|---|---|---|
+|T-C05.C01 会话完整资源释放|C有final/draft作品、普通Asset、pending/completed/aborted Upload及同域Blob|Given真实Storage Connect/PG链，When已授权BFF释放C并重放原命令，Then查用户读/资源和回执|scope released；active Upload aborted而终态保留；Asset不可读、Blob退役，全部staging/canonical cleanup与回执同事务；作品title清空/最小审计保留；重放稳定|P0 / 主链路、状态机|未验|
+|T-C05.C02 授权/身份与异义|BFF/Agent/Platform独立凭据，两tenant/subject/scope|When错误caller、非conversation scope、body自报身份、同command异义、跨域同ID|仅可信BFF+目标scope允许；body不代言身份；异义冲突；别域事实不变，不泄露内容|P0 / 安全、边界|未验|
+|T-C05.C03 ACK后全部入口与旧回执|已释放C，既有Agent upload/create/finalize和BFF读/download历史receipt|When各入口新调用与旧回执重放，包括签名后最终fence|不签新URL、不读旧作品、不创建/完成/Finalize；release自身原命令可恢复；不得旧receipt穿透|P0 / 生命周期、安全|未验|
+|T-C05.C04 跨域同摘要与共享引用|C多个作品/Asset复用Blob；其他conversation/project/personal/skill_package有同摘要|When释放C并重放，Then核其他域实际读与本域cleanup数|仅C受影响，Blob cleanup按identity去重，别域原字节和可见性保留；无跨scope去重删除|P0 / 边界、数据完整性|未验|
+|T-C05.C05 释放与Agent在途竞态|真实两个PG连接；Create/Finalize/Complete/Scan在途|When分别令写入先提交/释放先提交并重试、重启|先写则release纳入其结果；先release则后写失败，不复活Asset/Artifact/Blob；未知结果同命令恢复，非新ID补写|P0 / 竞态、状态机|未验|
+|T-C05.C06 晚PUT/签名未知|已签PUT尚未完成；provider一次missing、晚写入、delete成功后再晚写|When释放→reconcile→晚PUT→再次reconcile|expiry持久、cleanup持续可恢复pending；晚对象不能Complete成Asset；一次missing/delete不假物理终态|P0 / 异常、恢复|未验|
+|T-C05.P01 Project一致Artifact graph|Project内异常历史但完整同scopeArtifact/Asset/Blob图，多个Artifact可复用|When按正式项目删除授权调用ReleaseProjectScope→重放|一致图同锁释放、title清空、最小审计保留；无永久blocked，无额外修复API；计数稳定|P0 / 主链路、恢复|未验|
+|T-C05.P02 Project损坏graph回滚|每次独立fixture：跨scope/孤儿Asset或Blob、错误purpose、摘要/状态矛盾、partial deletion|When调用release，Then核全部业务事实/cleanup/回执|拒绝且业务全回滚，其他scope无变；失败claim可原command再试但不是completed；不得仅删除失败Artifact绕过|P0 / 安全、异常、事务|未验|
+|T-C05.X01 BFF项目总体完成|Project成员集合在删除事务内冻结；Storage新契约已发布/pin|When202后断线、ACK乱序/重复/超时、worker重启；读取项目状态|N个成员conversation+Project稳定命令全部logical ACK才完成；单Project ACK不覆盖成员资源；physical pending独立展示；Web失败不丢未确认事实|P0 / 跨仓主链路、恢复|未验|
+
 ## R145 当前界面窄验与业务矩阵纠偏（2026-10-03）
 
 当前70组11通过/6失败/14待复测/38未验/0业务待决/1支付后置保持，未把单次正常登录/回答换算整组通过。编号计划suffix原bytes保持。

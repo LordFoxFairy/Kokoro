@@ -1,3 +1,53 @@
+## R146 台账落地与验证门（2026-10-03）
+
+Root49904两现治理file再次18pass/exit0/22.34s；日志 /tmp/kokoro-r146-root-ledger-verification.log。四原台账diffcheck0；原70组完整suffix对HEAD字节相同、计数仍11/6/14/38/0/1。Root只准备本次四文档提交，Storage/BFF在途候选gitlink、Billing五docs/三pricing候选与Root uv.lock原SHA均不纳入。两原owner继续独立仓实现/测试，Root管资源/Git，无重复应用服务或共享reset。
+
+## R146 正式Move业务RED与Storage隔离级别纠偏（2026-10-03）
+
+Root87821机器Move门自然exit0：58pass/0fail/0skip、semantic90冻结operation，contract lint0且保4既有warnings；日志 /tmp/kokoro-r146-bff-move-contract-green.log SHA1a65cc8d0f1f3d78a7602ba5b3b2bd5ebd5c4597c3bb088c6fa0e5d549e5d409。不是运行时实现或发布。Root75361正规随机库installer/build0，新正式HTTP/PG Move1fail/0skip：actual503 agent_not_configured vs200；合法canonical ID/本人认证/body/key，错误来自旧通用Agent fallback而非fixture。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-bff-move-v0a24inc/manifest.json，ownDBabsent/sourcehash等同/Redis15集合等同，未清空共享缓存。原writer只读精准C4写集，Root审后才源准入。
+
+Root73258 Storage installer/drift/normalize0，原source235881df未改，新增barrier后40/40真PG/Connect绿色（0skip）；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-focused-green-689_u0tm/manifest.json，日志 /tmp/kokoro-r146-storage-receipt-race-red.log，ownDBabsent/sourcehash等同。这不是RED或源码修复：前次静态P0审误按READ COMMITTED推理，实际PrismaService强制Serializable并有界整事务重试。独立报告b8a6608010e48f07ecffd7539977096e8723ee1d54569108c57328cefc16006d已明确撤回该生产P0；barrier全局pg_locks还需精确own lock/backend证明。不得降低隔离制造RED，不能因40绿关闭全矩阵或损坏key风险。
+
+用户再次确认T-B07核实消耗结算/确认unused释放/unknown持久核实规则。Root将12条系统费用用例落同docs/test-cases增补，全部未验，覆盖真实非零/失败/取消/zero-vs-unknown/revision冻结/mixed attempts/乱序/超预占待设计/权限/audit；不增加或重排原70组，原完整suffix SHA831a216016b3427ff6e9070233f9c98052fbd9402d0db28de709104df50e9105一致。Agent离线artifact已发布不冒runtime/provider/Billing完成。Billing5docs/3Oct2候选、Root uv.lock完整保护；goal active、支付最后。
+
+## R146 并行Billing验收盘点与Root治理门（2026-10-03）
+
+Root95382正式Node22 BFF现contract file56pass/1fail/0skip；Move路径确实缺失，失败line1352不是非法import/fixture。日志 `/tmp/kokoro-r146-bff-move-contract-red.log`；已准同owner canonical OpenAPI7.1 additive/inventory/verifier/tests机器片，source/SQL/consumer未授。三Move D0已补terminal receipt并发输家全回滚再读赢家，同scope/fingerprint/身份规则不双轨。
+
+Root13861当前两纯治理file18pass/exit0/22.51s，日志 `/tmp/kokoro-r146-root-governance.log`；这不是全组合/应用门。受管32044/PID45606唯一存活，未起第二服务/共享reset。Storage已覆盖39真门通过不关闭新receipt锁前快照race；独立source report067a3f4a69a68a8e5b7ce160e94e6ce76c9ae22eb73f4fe1511b3e42023ddb42曾误按READ COMMITTED确认P0，后继b8a66080/Root40绿色已撤回该结论；当前只补精确SSI/barrier证据，不据此改source。
+
+Billing只读owner审校正SHA9037ab12f6023d6f80e30722d2d9eed25ce6d8af9e72076ef083e47c284592eb给12条正式系统QA、均未验，当前有caller actualMicros信任/mixedattempt压缩/未知release缺证据门。Agent2d2严格typed离线artifact已发布但未runtime/provider→Billing，报告已精确澄清这一区分，后继沿既有R80设计不另发明attempt shape。Billing原5dirtydocs+3Oct2候选完全未改，Root uv.lock protectedSHA f7e1c30d59d5743493ac6d14d02ff2ec7111c94587470fe721d50f8c08dee7b4；支付后置，未放行真实费用声明。
+
+## R146 39项真实GREEN与并发剩余门（2026-10-03）
+
+Root14247真实33pass/2fail（receipt/scan）；4个关系损坏fixture已改原生参数化0FK注入、都达到业务RPC并按全rollback验证。三D0修订独立门报告更新SHAF19516cb7509ca223b860a85aa2b736550ebf368507d32472f3e74a2627d7f0d，原2P1精确闭合后准窄source。Source release prevalidate/redact、Artifactservice preFence、CLEAN graph与4malformed receipt已实现；typed公共Store seam另精确追加2fixtures，无业务断言放宽。
+
+Root40120自然exit0：installer/catalog/drift/normalize0，39/39真PG/Connect（Convo23+Project7+Upload9）、0skip，sourcehash一致，自有库absent。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-focused-green-vonrs0lq/manifest.json`，日志 `/tmp/kokoro-r146-storage-receipt-graph-green.log`。非完整owner/用户整组。Root读源又发现receipt集合在scope锁前读可能遗漏并发CreateArtifact newly-completed title，原writer补两连接反例，独立审同核；此风险不因39绿消失。object-key跨scope P1尚待真实测试、全矩阵/全门/发布仍未完成。
+
+BFF Move三D0 TECH95bc6e27/API7e648282/DATAba5f5a38实际改完；独立报告 `/tmp/kokoro-r146-bff-move-d0-review.md` a430146c13fee000572532f24afe5331d2a8b5988523693365bcd9b7acaff6ad：0P0/1P1（同PK terminal receipt输家必须整txrollback再读赢家），不阻contractRED。Root已裁该算法，原owner tests-first，Storage业务同时推进；不提前复制producer工作树或新计划中心。
+
+## R146 真实草稿与隐私擦除回归（2026-10-03）
+
+Root88803正规Agent CreateArtifact草稿释放确实FailedPrecondition，17pass/1fail，ownDBabsent/sourcehash相同；这是合法draft业务RED，不是字段命名猜测。原writer只修release predicate：draft保content SHA且匹配Blob、finalizedAt null；final仍校验SHA/时间。Root后继7786真PG/Connect空scope+Project7+Upload9正控及合法draft/final释放成功，17pass/1fail改为历史CreateArtifact receipt仍留敏感title：对真实completed receipt的擦除断言失败，源未擦除。日志 `/tmp/kokoro-r146-storage-draft-red.log`、`/tmp/kokoro-r146-storage-receipt-red.log`；manifest分别`kokoro-r146-storage-focused-green-x1s8ctr_`与`kokoro-r146-storage-focused-green-d6is2z5v`，均自有库已删/源不变。
+
+Root采用仅同scope已completed CreateArtifact receipt result.title同事务擦除保最小审计、不删除command/receipt、不新增表/RPC；三D0delta已冻独立复审，source尚未授权。源码独立审报告 `/tmp/kokoro-r146-storage-production-review.md` 最新SHAc92ca061837aaa8827421d623337d4cb9a5a17dd89c6f35f6ffc5994ebfd8d90：标题残留已真实RED，损坏Upload key跨scope误删尚为未运行反例，CLEAN scan缺项待矩阵。不能在这些风险开放时发布。原writer tests-only继续全部边界；BFF原owner独立写Move三D0，Root已采用单nullable canonical target/同步200/sorted Project→Conversation/同PoolClient receipt/running不cancel，不等Storageproducer而预pin消费。原T-C05/70组不改绿。
+
+## R146 核心实现复验与发现的草稿完整性缺陷（2026-10-03）
+
+Root原20691自然exit1：installer/catalog/drift/normalize0；Project7与Upload9真PG/Connect通过；Conversation首次释放实际HTTP200，但测试expected少protobuf `$typeName`，1项oracle失败（16pass/1fail），不是产品缺口仍Unimplemented。自有库absent、source前后hash相同。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-focused-green-0cphoj6t/manifest.json`；日志 `/tmp/kokoro-r146-storage-focused-green.log`。原writer只在approved测试补完整业务矩阵/修完整业务field oracle，production source暂冻；当前没有全门/发布/全T-C05通过。
+
+Root与独立源码审发现真实P1：正规CreateArtifact draft已经持久content SHA到finalizedSha256，候选release却要求draft该值null，导致正规未final作品均被拒绝。writer补真实Agent CreateArtifact草稿反例，Root需真正Connect/PG RED后才准原writer修此predicate；不改旧Artifact有效行为/不吞错，正反graph回滚都保持。
+
+BFF三D0最新hash TECH76fd6fd5/API552c31aa/DATA7ed381ed已Root逐diff/hash与独立审；报告 `/tmp/kokoro-r146-bff-d0-independent-review.md` SHAd841a010bf5c4f533f7780d5e78b842f29ac5167243398b6e550dcca06a24a97，新增P0/P1/P2=0，原两producer P1开放，不能因此预pin/源码或放行最终DELETE。另派只读Move独立切片，其他工作不等Storage全完成。唯一32044原句柄仍live，无重复服务/reset。测试原编号suffix逐字节保持，70组状态不改变。
+
+## R146 已证实的业务缺口与实现门（2026-10-03）
+
+本轮沿既有完整goal继续，未缩Wave0–7。Storage三D0v2已Root/独立审0P0/P1：TECH226ec077/API610ce641/DATA2197a0a。Project改为同scope完整Artifact graph合法释放/清用户title/保最小身份，损坏graph仍全rollback，Conversation具名释放复用现owner，9表12enum无结构变化；额外remediation RPC/表及非原子预检淘汰。
+
+Root正式contract RED2pass/1fail（新RPC缺失），Proto/generated后同3/3GREEN。真实PG installer/catalog/drift0后，现Nest/Connect三文件15pass/2fail：ReleaseConversationScope确实Unimplemented/501，合法ProjectArtifact因旧anyArtifact拒绝FailedPrecondition；不是missingimport/fixture错误。亲库absent、源hash前后一致，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-business-red-rzzvjty4/manifest.json` SHAbfe1b83015127ebe9c3956db280ae5a833f2800ea217bc03c03dd6d005c00cb6，日志 `/tmp/kokoro-r146-storage-business-red.log`。仅缺口RED，完整用户T-C05仍未验；原Storagewriter现在获准同切片完整实现/系统矩阵，冻结后才Root GREEN与全门。
+
+BFF原docs writer独立并行对齐N+1成员资源命令和同PoolClient Chat边界；Storage尚未发布新producer，不生成或预pin消费者。关联独立ScheduledTask保留、不级联已确定，删除项目时解关联暂停vs删除前逐项处理已异步问用户，其他开发不等待。原Billing候选与Root uv.lock保留；唯一32044继续，未重置PG/Redis或新建业务服务。
+
 ### R145 Storage producer发布与BFF真实剩余门（2026-10-03）
 
 Root当前组合门实际171pass/20subtests/exit0（72.01s），日志 `/tmp/kokoro-r145-storage-root-composition-gates-v2.log` SHA33bfad416218a14941b5773c462e0f8e9946c0d869c696898dd4d98e9d0ffb1b；topology/checkpoint各exit0，compatibility实际exit1/16edges/13declaredbroken/0额外violations，未激活边或放宽门禁。56published Storage blobs与Root normalized manifest逐一一致；原编号台账从标题起完整suffix对HEAD字节相同。
