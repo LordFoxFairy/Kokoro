@@ -1,3 +1,9 @@
+## R138 当前唯一服务与浏览器状态（2026-10-03）
+
+唯一受管开发入口已恢复：运行句柄98977、3310 Web PID63842，自有run目录kokoro-local-login-6x8g3it9；Root实际/app、/api/auth/session、/login均200，尚未新Cookie登录/真实对话生成或当前UI点击验证。保持原句柄，不重复服务；回收走原runner Ctrl-C，禁止共享reset。实际使用已有qwen3:8b，非用户网关5.6-luna；正式Billing/Skills/Storage未接入，不称全闭环。
+
+7重复浏览器页仍未关闭：控制绑定/close超时，native当前应用访问被工具限制；未创建新tab/杀unowned进程或虚报清理完成。前端probe/list/snapshot有界超时与故障状态仍需真实系统RED后窄修。Web限定切片已发布7889a7b，Root83d49f32承接Web/BFFgitlink；inventory/checkpoint T-Q10原失败仍在。详细证据及私有目录/句柄见progress R138，整体70组13/4/12/38/2/1，完整Wave0–7 active、支付最后。下方为此前阶段。
+
 ## R138 当前用户页面问题优先（2026-10-03）
 
 3310当前实际无listener/connection refused，七旧tab同一会话；六重复tab关闭控制超时尚未证实，保留当前13。Web限定切片已发布main7889a7b（remote同SHA/clean），BFFa68cbe5/IAM/System/Agent clean；Root承接两gitlinks后恢复唯一受管开发入口。不会重复基础设施或绕过严格源preflight；contract inventory/checkpoint整体仍T-Q10失败，启动不等于全部发布/费用/能力完成。

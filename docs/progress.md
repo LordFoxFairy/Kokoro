@@ -1,3 +1,11 @@
+## R138 受管开发入口已恢复，当前浏览器验收仍阻塞（2026-10-03）
+
+Root已提交83d49f32精确Web7889a7b/BFFa68cbe5两gitlinks与用户故障记录，未更改inventory/checkpoint或将T-Q10改通过；原规范报告与组合治理后继仍保留。仅一次既有serve_local_login.py严格源preflight通过后启动真实IAM/BFF/Web/System/Agent＋已安装qwen3:8b，复用既有PG/Redis，使用自有run资源，不重置共享库/缓存。启动并非Billing/Skills/Storage完成，用户提供外部网关本次未验证，不静默冒称所选5.6-luna已测。
+
+唯一当前运行句柄98977（前台受管，不能重复启动），3310 Web PID63842；私有运行目录 /Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-6x8g3it9，凭据文件0600不输出内容。停机须原98977 Ctrl-C让runner按owned顺序清理，不先删库，不杀unowned工具进程。现Root有限HTTP探测原48872自然0：/app200 HTML33088bytes，/api/auth/session200 JSON23bytes，/login200 HTML38337bytes。该探测无Cookie登录/提交/模型生成，不能当当前浏览器端到端通过。
+
+恢复服务后CUA仍能list7相同URL，但绑定/close重复6持续超时、最新仍7页，尚未成功清理。selected在自动焦点尝试后为8；没故意删/导航当前13、没创建新tab。native Codex界面被工具限制访问，未绕过；不继续无限重试控制接口。当前页面DOM/截图与真实点击旅程尚未取得，本阶段只称服务恢复。无穷checking/误归anonymous等源码缺陷保留待真实系统RED，不因HTTP恢复自动关闭。70组当前13/4/12/38/2/1保持，完整goal active。
+
 ## R138 当前用户加载与重复页面问题（2026-10-03）
 
 Root实际lsof3310无listener，3s curl立即connection refused/HTTP000。这是服务不在线事实，不拿旧7tab URL作为正在执行证据。PG5432/Redis6379真实SELECT1/PONG，Redis15 DBSIZE0，现Ollama库存含qwen3:8b；未重启基础设施。CUA真实列7tab均相同conv，selected13；只尝试close6–11，控制接口超时与kernelreset，尚未证明关闭，native当前Codex访问被工具禁用，未绕过/杀用户应用。
