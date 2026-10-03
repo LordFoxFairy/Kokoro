@@ -1,8 +1,12 @@
-## R143 当前收口与后继测试（2026-10-03）
+## R144 当前发布与待验边界（2026-10-03）
 
-IAM正式发布f38be788，Root最新938/0skip全门、独立11path审0，Root组合仅承接该gitlink与3commitrefs/1CURRENT digest。gitlink暂存后topology实际通过；compat16edges/13declared broken/0额外violations，业务边仍未闭。Root完整治理pytest原5645自然0，1715通过/3跳过/126.01s，三个跳过来自现test_agent_skill_source_smoke.py原NativeComponent依赖Agent .venv，本轮Root Python不含该模块，未将其记通过；不是应用全部集成/当前浏览器验收。
+Web会话删除ACK修复已发布main `49721a5985709daa1456eb27f3bbef8e3ee8041b`，远端一致、工作树clean。Root最终86341实际exit0/121.298s：contract256、architecture50、lint、typecheck、164files/2354tests/0skip、build通过，含真实Next/Chromium OIDC47及IAMrelay68；753源无运行中修改。初始合法系统RED缺scope/503丢草稿已复验，删除明确失败不丢会话/草稿、ACK前不提前移除或刷新，BFF独占durable取消。Project exact query与换active晚ACK完整real-UI、当前IAB和真实owner旅程仍待验。两用例通过不等于完整T-C03通过。
 
-Web原2180真实两删除节点2失败/45名称过滤：均未观测到DELETE（不是已经证明scope/ACK生产RED），列表seed不等于engine已打开会话的前置需核；原owner只现systemfile补真实打开A/snapshot前置和脱敏诊断，源仍未授GREEN，Root同2例复跑后裁。原用户加载/重复页面及模型积分仍待真实组合。Agent只读参数推荐已交供Root裁决，三D0保持，无源/contract发布。完整Wave0–7、70组11/5/14/39/0/1与两业务决定不变。
+完整70组保持11通过/6失败/14待复测/38未验/0业务待决/1支付后置。T-C05按用户ChatGPT规则；T-B07按本次再次明确：失败/取消仅结算已核实实际消耗，释放可确认剩余预占，unknown持久待核实不当零；前端不计价，真实非零收费链未验。编号计划suffix c6cb3b64保持，Wave0–7 active、支付最后。
+
+Agent严格usage artifact原55537 usage38/38通过，但contract717通过/1架构失败（函数内import），已窄修正常顶层。Root后继正规再生与lock通过、format6路径失败后修正，v2格式274/lint通过但types7失败，仍是候选未发布，不能冒充runtime/provider/账务链通过。原Agent唯一writer只处理本片codec严格类型，不降低门禁，不放宽门禁。Storage项目logical release三D0 v2独立审0/0/0，物理晚PUT清理无provider禁止未来写入证明则durable pending，不能伪称GC完成；BFF缺Project DELETE/同事务级联及Storage正式producer待后继。独立定时任务不级联删除，具体关联处置等待用户可选答复，其余开发不停。
+
+Root100纯工具/拓扑通过，compat仍16edges/13declaredbroken/0extra；独立库存审0/0/0。Root组合仅对齐已发布Web gitlink、49commitrefs及2既有证据hash；不改13declaredbroken边/contract/历史checkpoint。原98977/3310 PID63842保持且未复制本轮候选，不重复启动、共享reset或用户授权grant。IAB控制返回错误，当前加载/重复页未成功验收或清理。Billing既有五docs与10-02三未跟踪pricing文件、Root uv.lock完整保留不暂存。下方旧轮次为历史。
 
 ## R143 当前发布与实际测试边界（2026-10-03）
 

@@ -1,3 +1,65 @@
+### R144-S-C1-A 机器契约缺口测试卡
+
+Storage唯一writer原storage_project_lifecycle_owner，main74c4b591 + 三D0已审v2；只允许现test/contract/provenance.test.ts补canonical ReleaseProjectScope RPC/请求CommandIdentity field1/响应批准五字段及body无身份文本断言，其他源码/Proto/Prisma/generated/docs/index/资源全锁。入口现CODEBASE_MAP和三D0 API§F3-P。Root Node24已实际复跑1旧pass/1新fail（RPC缺口），只contract RED，不能称Connect/PG业务RED。C1-B fixture+integration与合法seam另授，不预授权全部写集。Root负责提交；无共享PG/Redis操作。
+
+## R144 收尾任务卡（2026-10-03）
+
+|任务|owner / 唯一writer / 基线 / 写集|依赖、验收与交付状态|
+|---|---|---|
+|R144-W-ACK 发布 / T-C03|Web原owner，main7df55c3；22指定路径，Root独占Git|已发布49721a5，Root最终check2354/0skip/build通过，独立源码0P0/0P1/1P2。Project/晚ACK真实UI与当前owner旅程未验，整组不改通过。|
+|R144-A-C2-format / T-B07|Agent原agent4_execution_owner；main79bf98c；仅已批准artifact手写范围+正常生成，RootGit|usage38通过、contract717/1架构失败后import已修，Root再生/lock0，format6失败；窄格式及generator稳定输出修正后冻结，再Root全门/安装checker。不可改schema/预期或宣称真实收费。|
+|R144-S-C1-plan / T-C05|Storage原storage_project_lifecycle_owner；main74c4b591；只读现Connect/PG测试与资源报告|三D0 v2 Root+独立审0/0/0；现在只读最小tests-first文件集，精确隔离资源与cleanup，Root授权后再写测试。physicalGC pending边界诚实保留，无部署/新owner扩面。|
+|R144-ROOT-WEB-integrate|Rootmain9a20c450；四台账、inventory、Web gitlink|仅已发布49commitrefs/2evidence hashes、stage后topology/checkpoint/compat和100纯工具，独立逐blob审；Billing/uv.lock/Agent/Storage候选排除。13declaredbroken未闭环。|
+
+## R144 继续既有两owner切片（2026-10-03）
+
+Web最终工程门Root86341/PID79207已自然0/121.298秒、753源不变，contract256/arch50/lint/types/164files2354tests0skip/build均通过，含OIDC47与relay68；manifest98dc3faf5800297a00deea686d649d34a5cc38374279b571e3a6c8e9418596ea/log0cad62400bb4211269d193f03e80cdc0a3f2f0a495f2bc16e58cdad4848224ca。原Web owner仅三设计R143窄段改当前实现状态与现CURRENT/ACCEPTANCE证据，禁止改已验source/tests；Root复核源hash与doc准确性后精确22path提交，独立P2project/晚ACK完整UI仍待验，不关闭T-C03全组/原IAB。
+
+Storage三D0审43bac4b6为0P0/1P1/1P2，暂不放行机器/源码：PUT重签可延900s、过期前已启动上传可晚完成，一次HEAD missing不能terminal。原owner仅3D0纠正持久最新签发期限及可证明无未来写入条件；缺provider完成上界/撤销证明时work持续pending，不能靠任意grace period结束。DATA枚举pipe排版同时修，不深入provider运维。此为正确性门而非新项目角色。
+
+R144-W源码独立审39236132为0P0/1P1/1P2：rail callback仍允许void且undefined当成功，违反clean-slate strict ACK；Root准仅rail类型/确认判定及既有UI fixtures准确签名迁移修正，成功须result===true、Promise<boolean>无void兼容。P2 project/scope与晚ACK实际UI分支仍待专项，不能凭direct两例关闭T-C03。整47原35964自然0/69.206s，753源保持，manifest77c9b22c/logdcfd1f86是修正前候选证据；修正后完整门重新跑，不外推。
+
+本轮T-C03有效系统行为RED已正式记失败：当前70组11通过/6失败/14待复测/38未验/0业务待决/1支付后置（由1未验转失败，不增ID）；新用例矩阵在同test-cases顶部，原逐组编号suffix c6cb3b64不变。下方旧轮次计数仅历史。
+
+上一goalturn为实际进展：IAM f38be788与Root9a20c450已发布、业务两决策落盘、完整门与实跑改变下一动作；不是状态复述。Root98977/3310 PID63842当前仍在，不因观察超时重启。所有上一测试/push句柄已终态。
+
+|任务|负责人 / 写入范围 / 基线|验收与依赖|
+|---|---|---|
+|R144-W RED前置→ACK GREEN|原Web owner；7df55c3+3D0及现systemfile候选，Root原52496 v2已经终态|v2 fail在snapshot0（实际GET无query而fixture只query）；仅现systemfile接两种合法direct GET并保DELETE exactscope，增加0600脱敏诊断。Root同两例再跑证明真正行为失败后，原owner实施已批准ACK写集；未授权source前不修改|
+|R144-A envelope参数文档门|原Agent owner仅现3设计原R80段；79bf98c+既有D0，Root批准下列技术参数|沿/tmp/kokoro-r143-agent-envelope-closure.md12行有限参数，UTC改固定毫秒 ...ss.SSSZ与SQL手册/Data TIMESTAMPTZ(3)一致，其他身份512bytes/UUID事件、正decimal revision从1/前序、64KiB/depth16/path32×128、reason闭集、单版本1.0.0、domain+manifest机械inventory采用。seal封存单观察revision非禁止unknown后继知识收敛，已知矛盾拒绝非latest-wins；付款观察只事实类型不定义付款权限，不改HTTP5/public7/SQL。3D0冻结后独立审，随即同owner现contract行为/新14路径实施门，Root独占命令与Git|
+
+### R144-A-C2 真实contract RED后14路径GREEN
+
+Root10630/PID74113生成0/74115collect0（17节点）/74151行为1（8pass9fail、0skip），冻结9输入未变；合法control已过，失败是算术/分类/缺T补known/overflow/digest/重复JSON/已知矛盾真正接受了坏事实。manifest98f301692abff774297779c297362aacbc6a03a517fba992c8c5cf6efa59020d，行为logefa36f5cb8fdf8283efd00d063844836e18d94b53cbc9ab2d1ec588479cbab7f；generated e391c0df正规产物非手改。首003a10d3生成名称守卫拒model_ref只算前置，已修exact方法/关键词保留域。
+
+agent4_execution_owner继续原唯一writer14path，补完整严格JSON/byte/depth/UTF8/calendar/跨字段算术与knowledge/revision/domain digest、有限compiler语义审核、正规manifest/总checker/provenance与pyproject安装audit闭包；原17golden bytes/期望不为过实现而改，新增边界vectors可按已裁§2.1必要补充并明确新增清单。完整14范围沿原cut报告；3D0冻结、HTTP5/public7/SQL/旧failureproof机器bytes保护，无runtime/provider/Billing/locks。worker不命令/Git/资源，交Root正规生成入口与准确全部hash/真实installed步骤；Root定向contract→全门→仓外真实安装checker/RECORD/篡改拒绝。离线证据实现不等于T-B07财务用户旅程，状态仍未验。
+
+### R144-S-D0 Project资源生命周期三面设计门
+
+Root已读Storage只读cut71748b32，纠正BFF猜测：Blob canonical带完整scope，同scope可共享、跨personal/project/conversation不共享；删除P不得触碰其他scope。Root接受最小一致性方向：现Storage owner新增精确Project ScopeLifecycle持久released fence、Asset deleted_at、未完成Upload abort与durable晚PUT/staging cleanup；新release RPC沿v2受信metadata/现command identity，仅web-bff+project，body不自报主体/scope。保有效引用与精确对象version/ETag退休；已有短GET仅按TTL自然失效，不谎称即时撤销。缺持久fence就不上delete，普通资料/独立任务/Skill/Conversation artifact不扩面。
+
+storage_project_lifecycle_owner仅3现设计docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md为唯一writer，当前main74c4b591 clean；窄现F3小节收敛当前缺口vs目标、exact RPC/receipt/失败/幂等、Prisma模型/谓词/锁序/全部project entry守卫、上传签发期限与晚到清理、bytes/reference/GC状态机、准确实现文件集和真PG/Connect测试。比较现assets/upload owner内扩展与通用cleanup模块，采用前者。不得简单给历史所有Artifact加跨scope删除；不改source/Proto/Prisma/generated/test/依赖/CURRENT/Git/资源，不宣布已实现。未来语义breaking/vendor消费者更新明确；无法从现对象store模型证明晚PUT安全退休时只列真实技术缺口与最小新增字段，不删安全保障。交3hash/原主体保护/技术未决/tmp/kokoro-r144-storage-project-d0-delivery.md，由Root审后后继producer真实RED，BFF不先猜契约。
+
+### R144-S-PROJECT Storage producer 只读cut
+
+BFF项目调查已交4d732f55：现无Project DELETE，单会话事务不能跨会话循环假原子，Storage缺project-scope删除命令是完整删除依赖。Root继续既有owner方向，Storage main74c4b591244589a7e5459fa7c521e5c21414d74a当前clean；storage_project_lifecycle_owner（gpt-5.6-sol）全仓只读，CODEBASE_MAP/TS/SQL/API与Storage三面/Proto/Prisma必读。核现project vs personal Asset/Blob真实范围和共享引用，不采信BFF报告猜测关系表；提出一个最小受信project scope生命周期producer契约切片，权限/receipt/事务/上传/下载/重试GC与已发布消费者顺序明确，比较扩现owner能力而非新任意删除模块。最多5差距/准确文件集/真实PG+Connect行为RED；交/tmp/kokoro-r144-storage-project-cut.md；不源/Git/资源/实际删除。独立任务关联暂停规则已发可选用户对齐，调查不等待。BFF owner停只读，不擅自写新RPC或跨SQL。
+
+### R144-A-C1 schema-first artifact 行为门
+
+三D0新hash e714038b/353c1407/adbe21b9 经Root现diff与独立review3d2ea559核对0P0/P1/P2；参数未决0，已授原Agent owner14path边界的首阶段：先schema/golden vectors、最小真实生成/validator结构seam与contract行为用例，正常control必须可执行，再由Root跑真实缺失语义RED，后续同owner完成跨字段codec/manifest/安装闭包GREEN。缺import/缺文件/CLI未知参数只算前置，不算业务RED；不得人为宽松stub/测试开关。新generated属于正规schema生成物；不是runtime/provider/Billing已实现。3D0保持冻结、无新SQL/HTTP5/public7/锁依赖/运行资源，14path详细清单沿R143-A-D0与cut报告；阶段实际文件/hash必须报告，由Root独占命令和Git。费用用户规则保持，单纯artifact通过不升级T-B07。
+
+### R144-W-ACK 源码 GREEN 实施卡
+
+Root 原58802/PID57146 v3自然exit1/31.967s，两真实Next/Chromium例均达到snapshot=1、DELETE=1，753源未变：1457精确scope断言实际DELETE无query；1528明确失败后草稿已清空，诊断亦证Dialog消失和提前list GET。前两轮仅fixture前置失败；本轮才是有效业务RED。manifest27f322eb7a58b1381433fbd49a087e7055e6d2ac7e223efcf895700b938dc376，log35ae952f2eb249ae4e1fdb13b398541925163347c5b5f08489df666fc823f341，证据目录kokoro-r144-web-delete-ack-red-v3-thohj__u。
+
+web_conversation_ack_owner沿原唯一writer、Web7df55c3+冻结3D0/现systemfile；允许现src/engine/{client,execution-adapter,engine-types,machine}.ts、src/ui/shell/use-conversation-list.ts、src/components/blocks/workspace-rail/{workspace-rail-types.ts,workspace-rail.tsx,workspace-rail-delete-dialog.tsx}；最小既有i18n键与src/dev/preview-transport.ts只有签名所需可改、准确报告路径。scope/signature/result/单mounted意图、严格200deleted ACK才删除/一次刷新；ACK前不cancel/clear草稿或thread，503/unknown保事实，unknown不自动换key重试，404不当成功。DELETE总预算10秒+可abort，dispose/换scope/意图代际阻晚success/error/finally污染。成功沿既有active fallback，禁止额外cancel调用和项目级联。原2系统case全部标题/断言/预算冻结，不改fixture为过源；现unit/UI工程断言仅必要迁移已有接口，可改原tests/engine/{client.test.ts,engine.test.ts,fakes.ts}及tests/ui对应已存在文件，禁止新单测/mock/放宽旧保障。实际测试路径是tests/，派工需读核后报告文件清单。worker不资源/Git/服务；Root独占定向2例→整47系统→正式全工程门与独立审，再决定发布，T-C03仍待验。
+
+### R144-BFF-PROJECT 独立业务owner只读cut
+
+BFF maina68cbe55cde709f9b21f3d5803bfbd3ca5d14e2b当前clean；新负责人bff_project_lifecycle_owner（gpt-5.6-sol），Root审/运行/Git，现阶段全仓只读。目标T-C05按已批准ChatGPT删除语义核现API/SQL/事务/Run cancellation outbox/分享/Storage refs/独立ScheduledTask，最多5真实差距和一个最小可执行业务切片；读取BFF AGENTS/三设计/current/contract/schema、Root CODEBASE_MAP/SQL/TS/API手册及core-flows/test补充。禁止源/文档/契约/SQL/Git/资源修改，不重写全BFF；报当前事实/目标放置表/准确文件集/原integration真实PG/HTTP失败步骤、哪个消费者需breaking先owner发布/独立不等Agent的动作，交/tmp/kokoro-r144-bff-project-cut.md。不假称用户仅授权单项目删除等于任意破坏性操作；本卡纯调查，不运行删除。
+
+仅Agent三现设计参数更新，绝不在Root建立第二wire/schema；Web/Agent不同仓单writer可并行，现三专项手册与CODEBASE_MAP必读。Root审查/资源、readonly独立审，不新增服务/重置共享设施。
+
 ## R143-W-RED v2 前置修正门（2026-10-03）
 
 Root2180同2真实节点均DELETE=0，未达到ACK/scope预期，禁止直接授GREEN或冒称2生产RED。原Web writer仅现systemfile补真实打开列表A、合法snapshot HTTP响应及删除前已加载/active证据、有限脱敏method/path/截图；同2标题/原断言/预算保持。禁止直接注入engine/cookie/storage或改source，三D0冻结。Root运行同例确定前置与产品行为，其他研发面并行；Root已完成IAM发布及组合静态/完整治理，不串行等待此测试才处理其他owner。

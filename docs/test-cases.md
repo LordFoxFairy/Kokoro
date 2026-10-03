@@ -1,3 +1,14 @@
+## R144 系统交互失败记录与当前看板（2026-10-03）
+
+当前70组 **11通过/6失败/14待复测/38未验/0待业务决策/1支付后置**。T-C03从未验改失败：这次实际达到合法会话snapshot与DELETE，非前两轮fixture前置失败。下方R143及以前的“当前”计数均是当时快照，以本节为准；通过组不能解释为全部用户旅程完成。
+
+| 用例ID / 标题 | 预置条件 | 测试步骤 | 预期结果 | 优先级 / 类型 | 实际与证据 |
+|---|---|---|---|---|---|
+|T-C03.R144-D1 删除确认等待ACK|真实Next/Chromium、正规fixture OIDC、严格BFF HTTP fixture，独立会话A/B，A有已加载正文及草稿；代理扣住DELETE尾段|打开A→输入草稿→删除菜单→确认→观察未释放ACK→释放严格200deleted|单次DELETE带scope=direct；ACK前会话/正文/草稿/确认框不变，pending防重且不刷新；ACK后一次移除和权威刷新|P0 / 系统功能、竞态、状态机|失败：合法GET snapshot1/DELETE1，但DELETE无query（1457断言），诊断确认dialog提前关闭/list提前GET。修复后Root60241同2例及35964完整47系统限定通过；最终Root86341完整2354测试/0skip及build通过，已发布Web49721a5。不是BFF真实PG或当前IAB验收 |
+|T-C03.R144-D2 明确删除失败保全|同正式Web链；A已加载，独立草稿，BFF fixture返回503|确认删除→观察错误/草稿/list/cancel请求→恢复后人工重试|失败保原会话/草稿/正文、显示可恢复错误；无cancel、提前刷新或自动重发|P0 / 系统异常、用户数据完整性|失败：1528草稿变空，snapshot1/DELETE1、dialog提前消失，列表提前GET；修复后同2例与完整47限定通过，最终Root86341完整门通过，发布Web49721a5；未知/当前IAB与完整T-C03仍未验 |
+
+Root实际命令为Node22/pnpm11.25.0下现OIDC system file过滤R143，2失败/45名称过滤，31.967秒，753源前后未变。证据目录 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r144-web-delete-ack-red-v3-thohj__u`，manifest SHA27f322eb7a58b1381433fbd49a087e7055e6d2ac7e223efcf895700b938dc376、log SHA35ae952f2eb249ae4e1fdb13b398541925163347c5b5f08489df666fc823f341。两具体系统用例最终回归通过并已发布Web49721a5；T-C03完整组保留失败待Project/晚ACK及真实owner复测，不以两个系统fixture通过替代真实owner/完整70组/正式费用链。
+
 ## R143 两项业务裁决已确认；未执行不计通过（2026-10-03）
 
 用户已答复 T-C05「参考ChatGPT一样的规则」与 T-B07「仅结算已核实的实际消耗，释放其余预占」。两组由待决策改为**未验**，不是通过；当前70组 **11通过/5失败/14待复测/39未验/0待业务决策/1支付后置**。旧轮次计数与原70ID编号计划是历史，以下补充取代旧计划中这两组的待裁决描述，不删除其历史bytes。
@@ -579,7 +590,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-L05 | IAM→BFF→Web | 成员/邀请/角色权限与审计：读写、分页、重复命令、撤权即时失效；无管理员越权 | 待复测 | W1C-Team历史owner切片，当前完整用户权限矩阵待复测 |
 | T-C01 | BFF | 独立/project/全集列表、tie keyset limit1/2、跨主体/租户/deleted、冲突400 | 通过 | E03：真实PG+生产HTTP，仅后端过滤切片 |
 | T-C02 | Web→BFF | 新建独立/项目会话、URL/back/forward/刷新、草稿和消息不串scope | 未验 | 下一Web正式固定BFF7，再真实浏览器验证；当前消费者尚未更新。 |
-| T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 未验 | R82已知delete fire-and-forget竞态 |
+| T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 失败 | R144 Root真实Next/Chromium两例有效RED：DELETE无exact scope；失败后草稿清空且提前刷新。ACK窄源码处理中，真实BFF/PG及完整分支未验 |
 | T-C04 | BFF→Web | 显式分享/撤销；私有链接不冒充公开分享；另一用户不可读/控制 | 未验 | R82分享文案与真实权限不一致；正负例都需验 |
 | T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 未验 | 用户批准按ChatGPT删除：删除项目及其会话/指令/仅项目文件，保独立保存资源；移动出项目后保留。当前owner契约/关联任务与Run恢复尚待实现验证，见顶部裁决补充 |
 | T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 待复测 | 当前组合已变更，E53仅历史证据，须用当前发布pins重新验证；E53：Rootcc7bfb78六owner fresh/clean/发布hash，原58200实际exit0；两POST202/四completed、真实模型全文SHA、首轮保留、active非空文本硬刷新+同watermark续流、真实作品下载hash/刷新一卡/另一用户三404；五owned残留0/子terminal/桶删除404，独立终态0。实际模型为本地Ollama qwen3:8b，不含Billing/Agent5候选或用户OpenAI网关；E48失败历史保留 |
