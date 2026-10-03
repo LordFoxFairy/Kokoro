@@ -1,3 +1,11 @@
+## R138 当前用户加载与重复页面问题（2026-10-03）
+
+Root实际lsof3310无listener，3s curl立即connection refused/HTTP000。这是服务不在线事实，不拿旧7tab URL作为正在执行证据。PG5432/Redis6379真实SELECT1/PONG，Redis15 DBSIZE0，现Ollama库存含qwen3:8b；未重启基础设施。CUA真实列7tab均相同conv，selected13；只尝试close6–11，控制接口超时与kernelreset，尚未证明关闭，native当前Codex访问被工具禁用，未绕过/杀用户应用。
+
+只读原Web报告 /tmp/kokoro-r138-loading-read.md SHAf13a2c96851a437bac497266d0daf446ad8f9266e48893c634b8230dc4f232f6确认独立前端缺陷：session probe无deadline/abort，pending卡checking，network/503又误归anonymous；list/snapshot/process同源读无browser deadline。只是源码发现待真实系统RED，不当当前页面DOM实测；optional manifest不阻断Workbench，不混为首因。后继原owner按现页面状态与有界transport窄修，真实用户browser关闭/恢复仍待。
+
+已验public7与特定UI切片正式Web main7889a7b3e09f77a39bb1d0c4fb4d2c88825c3b43，精确68path/无任务外变更/clean；ordinarypush main成功且独立ls-remote同SHA，最终审6cd317ccb7229cffe281711916cc2e42fa5d9392acb5106b7d105121e43709d8。Root下一承接两gitlinks恢复受管开发入口；inventory/checkpoint T-Q10原失败仍未清，不称完整发布组合/正式费用/所有能力闭环。完整Wave0–7 active，支付最后。
+
 ## R137 / E117 冻结消费切片完整门与六页面复验通过（2026-10-03）
 
 原writer仅迁移两既有preview HITL断言（SHA1c1743a9），不新增unit/mock或恢复raw，独立审0/0/0：/tmp/kokoro-r137-e117-final-review.md SHA295b90285691849ef2aad26bfd1c4727cff9b2d39f33961b55c493fed9c7c0d3。原2344/2失败历史保留在下节，不用旧E113证据代替当前门。

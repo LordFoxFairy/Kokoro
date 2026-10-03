@@ -1,3 +1,9 @@
+## R138 当前用户页面问题优先（2026-10-03）
+
+3310当前实际无listener/connection refused，七旧tab同一会话；六重复tab关闭控制超时尚未证实，保留当前13。Web限定切片已发布main7889a7b（remote同SHA/clean），BFFa68cbe5/IAM/System/Agent clean；Root承接两gitlinks后恢复唯一受管开发入口。不会重复基础设施或绕过严格源preflight；contract inventory/checkpoint整体仍T-Q10失败，启动不等于全部发布/费用/能力完成。
+
+原Web只读确认probe/list/snapshot browser deadline缺失与network/503误当anonymous，需真实系统RED后窄修；不能把源审当当前页面浏览器通过。自有句柄/清理责任仍Root，Billing/uv.lock任务外保留，完整Wave0–7 active。以下E117为已通过限定消费工程与preview页面历史证据。
+
 ## R137 / E117 当前真实验收结果（2026-10-03）
 
 Root独立完整Web工程门现已通过：contract256/architecture50/lint/types/2346tests/build全通过，753源保持；迁移两现HITL旧断言后未恢复raw兼容或新增unit/mock。随后真实桌面、移动同六页面行为6/6再次通过；Next自动dev生成路径变化由正式typecheck恢复HEAD，未手改生成物。实际终态与hash见progress E117。
