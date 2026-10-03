@@ -1,3 +1,15 @@
+## R150 当前用户首屏未闭环；已复现初始化缺陷已修并服务（2026-10-03）
+
+用户原 conv_ffd7 / tab21 的永久“正在加载工作区”仍未验收。本次原页控制再次在 Emulation.setFocusEmulationEnabled 超时（31.68s），未取得该用户 DOM/session/hydration 时间线；没有重启原32044组合、创建新页或重置数据。已明确请求用户只刷新原页一次并反馈，不把公共200或其他fixture通过当作恢复。
+
+已复现并修复的独立缺陷：Locale/Theme Provider 同步读取偏好存储抛出 SecurityError 会中断客户端初始化；Root32448三个真实Next/Chromium系统用例3fail，最小两源修后Root18955同三用例3pass/23.90s。读失败保原语言协商/系统主题，本次切换保内存override；认证索引仍fail-closed。两源SHA a114ef30/0532b66b已同步原runtime copy，无进程或登录数据重建；实际公开Turbopack chunk b64fb212含两处try/catch（/tmp/kokoro-r150-runtime-provider-served-guards.json）。仅证明代码已服务，不证明原页面触发此原因。
+
+Web早版完整门Root45587为164files/2360pass/0skip，contract256/architecture50/lint/types/build0；增强真实Settings setter后Root41843为2358pass/2新增fixture fail，原因是reload已恢复Settings overlay却再次点击其背后账户按钮。只修两测试交互，最终4517f6cb冻结。Root72301最新完整pnpm check exit1：164files中163pass/1fail、2359pass/1fail/0skip、111.32s；53系统52pass/1历史pending-refresh signout500（Next内部JSON.parse Unexpected end、五manifest前后均有效，来源仍unknown），新增Storage三项含setter全过；contract256/architecture50/lint/types通过，build因测试失败未到。未重复跑凑绿、不发布；诊断方案续派原Web负责人只读。独立增量审3d01f379绑定当前Web三SHA和BFF两SHA，0P0/P1/P2。
+
+BFF真实未知COMMIT连接缺陷：Root64310真实COMMIT后断socket，release实际false而非true，反例失败；最小source219c2268在committing异常时销毁lease。Root43114最终九项真HTTP/PG9pass/0skip/14.051s；ownedDB absent、源hash不变、Redis key集合相同。原完整172 integration是修改前证据，不冒当前全门或消费者闭环；BFF Move当前候选尚未发布；Project DELETE消费闭环仍开放。Storage R150新增仅三设计文档候选（既有在途代码保留），未授权schema/index/source改动，物理S3未验。
+
+原70组仍11通过/6失败/14待复测/38未验/0待业务决策/1支付后置；原suffix831a2160、uv.lock f7e1c30d与任务外Billing候选保持。Wave0–7 goal不缩小；原用户首屏为当前关键路径。
+
 ## R149 当前用户首屏仍未验收；并行系统切片真实取证（2026-10-03）
 
 Root R149治理门：`python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q` 原67150自然exit0、298pass/3.11s，日志`/tmp/kokoro-r149-ledger-governance.log`；仅Root工具/台账门，不关闭当前用户加载、signout根因或业务旅程。

@@ -1,3 +1,92 @@
+### R150 最新资源门终态：不掩历史signout失败
+
+Root72301冻结4517/a114/0532完整门exit1：2359pass/1历史pending-refresh signout500、111.32s；53系统52pass1fail，新增Storage三项含真实setter/reload全过。contract256/architecture50/lint/types0，build未到。五Next manifest前后valid、JSON.parse来源unknown；禁止重复跑凑绿/放宽断言/发布。原Web负责人只读Next/source/signout寻找精确诊断方案，不抢写或启动资源。BFF Move当前候选尚未发布；Project DELETE消费闭环仍开放，不误指已发布Storage ReleaseProjectScope。用户原页面仍待刷新反馈，source修仅绑定受控拒绝缺陷。
+
+Root治理python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q 原50029 exit0/298pass/3.23s；仅治理门，不关闭业务。四台账按实际终态更新，原70组suffix与uv.lock保留。
+
+### R150 最新验收与后续动作（Root唯一台账writer）
+
+Root41843最终setter候选341278为2358pass/2新增fixture失败：reload恢复Settings dialog后，测试重复点击背后rail被overlay拦截。准原Web writer仅删除两case reload后重复打开动作，直接验证恢复的settings-appearance/English；freeze4517f6cb，source a114/0532不变，原12s预算、实际拒写计数、memory覆盖及安全断言保留。Root72301 Node22完整pnpm check在途，独立3d01f379零发现。禁止以早版2360或此静态审称最新完整通过。
+
+Root43114最新BFF source219/testc357真9全通过、14.051s、DBabsent/hashsame/Redis同；不使用修改前完整172称最新全门。当前用户原页再次控制31.68s超时，用户刷新反馈仍待；不新增标签/重复栈/共享数据清理。下一行动：收原72301终态、原用户刷新后的实际表现，按证据更新同四台账；Storage schema、BFF发布与其他新能力不抢占原页关键路径。
+
+### R150 最终冻结复审与待验（Root集成专属）
+
+原Storage审查员只读复审Web最新341278bb（源a114/0532不变）真实setter/预算delta，并BFF219c源+bd7c测试unknownCOMMIT discard delta，分别/tmp/final-review；不写仓/资源/Git。Root41843正式Web fullcheck和37882真实BFF全9在途，不能预报结果。Runtime实际Turbopack public bundle b64fb212含两provider try/getItem/catch已核；旧comment探针false仅SWC删comment，不是代码未生效。当前页面需加载新bundle且实际DOM渲染才验用户P0；CUA再inventory20s超时不冒新UI。
+
+### R150 验证后继精准准入
+
+- Web Root84315最新setter增强门1pass2fail/50名称过滤、51.18s。theme selector错误role=button等30s（违10s交互预算），当前Radix1.1.19实现single为radio；locale reload实际en-US来自现runtime manifest，不是纯en。均按当前真实控件/locale事实修fixture：Dark radio click及所有新增操作显式remaining预算，memory切zh保持exact；reload英文BCP47+实际English选择值共同证回fallback，不放宽UI变化/拒写计数/pageerror/工作区。源固定。准原Webwriter只现两case。
+- BFF unknownCOMMIT初uncaught缺fixtureeventobserver；r2 []因spy只第一次checkout被pg-pool重装覆盖；r3 Root64310现精确[false]对[true]业务leaseRED成立、1fail、ownDBabsent/hashsame/Redis same，manifestftjl1lwb。准原BFFwriter仅现chat-repository.ts Move committing query rejection catch主动lease.release(true)，非committing沿原rollback，finally保持idempotent普通释放。源码处理事实unknown不猜200、不重放COMMIT、不改预算/重试/receipt/ACL/SQL/schema；tests bd7c80f9冻结。Root同精确GREEN＋全owner/独立审后提交。
+
+### R150-W 偏好setter测试P1收口（源冻结）
+
+Root45587完整Node22 pnpm check终态0：contract256/architecture50/164files2360tests全通过/无skip，lint/type/build0，753文件hash完全相同；日志/tmp/kokoro-r150-web-full-check-root.log。仅同hash源码门，不冒原用户页恢复。runtime两个provider已Root精确同步/旧bytes核HEAD/backup/newhash同，原服务不重启；再次CUA inventory20s超时，原DOM仍未取。
+
+准Web原writer仅现OIDC测试两选择性denial case补真实控件：固定context locale/color scheme，工作区可输入后rail账户→Settings→settings-appearance，theme真实Dark Toggle或language真实Select简体中文，断可见class/html lang及setter引发的pageerror为零；reload后回原协商/系统默认且工作区再次12s收敛。闭集count证明确实执行被拒setItem，不用假provider/dispatch直接invoke/contextunit。保持read拒绝/正式cookie/session/旧assert/原45s与每导航12s，不改变3source/hydration/auth；如选项/locale语义有差异据实际源，不放宽业务断言。冻结后Root精确3+完整system及静态门，独立复审归零才提交。
+
+### R150-W 当前预览最小应用准入（不重建用户栈）
+
+Root18955正式三Storage拒绝用例已3pass/50名称过滤，23.90s，三个冻hash同；独立6e9b661f生产0P0/P1，剩test P1仅偏好setter未动态触达，后继补真实控件。Root45587全工程门仍在途，不先称全通过。
+
+Root准仅将冻结src/i18n/context.tsx与src/ui/theme/theme-context.tsx同步到原32044受管runtime copy next对应两个文件，先要求runtime原bytes等于owner HEAD、保public-source备份、记录前后hash；Next dev官方Fast Refresh复用原Web进程。不得改私有credentials/env/cookie/用户会话、重启整栈、创建新tenant或清DB/Redis。GET app200仅看编译可达，原IAB真实DOM仍需取得才关闭用户P0。完整门与setter后继仍是提交放行条件。
+
+### R150-W 冻结修复与独立复审
+
+Web唯一writer停止：Localea114ef30、Theme0532b66b、systemf6bf59be；生产只两provider读写异常，不新helper/不改认证。Root18955同三正式用例在途。storage_project_lifecycle_owner独立只读此三文件，校SSR/hydration/偏好内存override/auth failclosed/测试与旧断言及预算，交/tmp/kokoro-r150-web-provider-fix-independent-review.md。资源/Git/runtime应用Root独占。首次授权只source局部修，用户原页仍待实际验收。
+
+### R150-W-STORAGE-DENIAL 已真实RED，最小源修准入
+
+Root32448 Node22正式三系统用例3fail/50名称过滤、52.23s、9ff0a3f6前后同；theme/locale都12s未出现workbench，完全拒绝也未出现正式可恢复alert。日志/tmp/kokoro-r150-web-storage-denial-red-root.log。这是受控Storage拒绝真实产品行为失败，未证明当前用户profile触发。
+
+授权Web原writer仅src/i18n/context.tsx与src/ui/theme/theme-context.tsx现有偏好读/写加局部异常处理：读取失败用本来语言协商/系统主题默认，本次显式切换保内存override，持久化失败不抛；既有provider职责，不新helper/目录，不改auth/session/admission/索引/网络/超时。系统RED断言冻结，仅failure诊断可将被Vitest隐藏的AggregateError改为Error(message,{cause})以显示闭集分类，不泄secret。Root同三用例GREEN与完整system/工程门后才runtime应用；其余源保护。
+
+### R150-BFF-P1 未知COMMIT连接：独立并行tests-first
+
+Root9956完整8文件真实integration172pass0skip、43.009s、installer/build0，ownedDBabsent/sourcehashsame/Redis集合与secondaryDB集合不变；39962 formatcheck0。独立28281823发现Move普通COMMIT拒绝finally仍release()，不是已证底层坏连接；现真实COMMIT后fixture丢ACK只证durable恢复不证主动discard。暂不发布。
+
+准BFF原writer agent_chat_contract_gate只写现test/chat-facts.integration.mjs，精准真实PG/HTTP unknown-COMMIT→503/同keyreplay→final facts单份，观测实际PoolClient release(true)或backend退出/新连接，不只mock返回DB。保既有8/所有预算与断言；source/schema/机器/docs/Git/共享服务禁止。冻结Root自有库真实RED后才准最小release边界源修。
+
+### R150-BFF 发布前独立审与全真实门（用户首屏修复不被其替代）
+
+- 原BFFwriter五docs冻：TECH c07d5c69/API c6de1a25/DATA d96b574e/CURRENT efbeb7f3/contractREADME0df77e37；源/SQL/机器/测试不改。
+- Root9956仅自有随机bff_r150_full数据库、正式installer与八文件test:integration，Redis15仅现PUBLISH，无共享clear/restart。进程组有界240s及TERM/KILL清理，finally drop自身库、校对全部source/contract/hash、Redis键集合与personal_restart次级临时库前后集合。
+- 独立审查storage_project_lifecycle_owner只读BFF audit28path＋五docs，/tmp报告；核同事务/锁序/幂等/ACL/unknown与预算/历史事实保全/neutral helper路径，不写仓/资源/Git。基线maina68cbe55、repo0329c7ae/route dfb0eab0/testdb4502b8，Root63386 pure741+1既有skip及既有真8不代全门。
+- 生产发布仍需Root所有适当门与独立零P0/P1；不关闭Project DELETE/Web消费者/T-C05；当前用户P0需原页证据与实际恢复。
+
+### R150-W-STORAGE-DENIAL：首屏精准系统RED（唯一Web测试writer）
+
+Root35689 Node22真实Next/Chromium：finite focus case1pass/49名称过滤，21.06s，f8c5fb39前后相同，日志/tmp/kokoro-r150-web-focus-root.log；此受控模式拒绝有限focus饥饿假说，不关闭原页P0。独立a5297db6指出LocaleProvider:28/ThemeProvider:61 unguarded preference read会抛SecurityError；尚未绑定用户profile。
+
+准原writer agent4_lifecycle_review仅现OIDC systemfile追加真实Product cookie/browser初始化Storage拒绝用例：分别只拒kokoro.theme/kokoro.locale偏好读写，保持真实auth marker/session→12s正文/composer；完整localStorage拒绝则必须显式session不可用、不永久loading、不挂私有工作区，保fail-closed。initScript只受控测试环境，不伪造session/fetch/hook。复用原HTTP/Chromium fixture、finally释放，保原50与所有timeout/assert；production/docs/helper/资源/Git暂禁止。冻结后Root真实RED；再按既有provider职责授权最小源修。没有证据不宣称这是当前用户唯一根因。
+
+## 当前用户首屏故障：R150-W-FOCUS 系统诊断准入
+
+用户原conv_ffd7仍“正在加载工作区”。本轮原tab21读取20s超时/控制内核reset，尚无原页DOM/session时间线，不重启共享服务、不新增tab，不以公共200冒用户恢复。
+
+- Owner：Web；唯一writer agent4_lifecycle_review；Root资源、审查、Git。基线main49721a5＋现OIDC测试e6770ec1。
+- 仅写现tests/system/oidc-rp-next-http.integration.test.ts的一条R150有限独立focus真实系统用例，按已读/tmp/kokoro-r150-web-boot-diagnostic-plan.md。真实Next/Chromium/Product cookie/现HTTP pending proxy，闭集有界内存心跳，8独立browser task共享一probe→释放真实200→12sapp/composer→settle后第二probe收敛。
+- 原49断言、生产源、contract/schema/配置、超时与重试保持；不新增unit/mock/文件，不操作用户IAB/共享资源。新case假说可证伪，GREEN只拒绝fixture内generation饥饿，不关闭用户P0。
+- 冻结交Root同case与全system文件验证；资源由Root运行。失败保持真实分类后才授权精准源修。
+
+### R150 补充准入：BFF文档与Storage实验
+
+Root63386 Node22正式`pnpm check`自然exit0，pure741pass/1既有skip、lint/types/全部contract/build均0，日志`/tmp/kokoro-r150-bff-full-check.log`；不是全真实integration或用户页通过。BFF audit db35a3cd确认28路径归属，shared raw-json原字节搬迁支持Move与原Skill消费者、canonical schema不变。准原agent_chat_contract_gate唯一写五现docs：TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、CURRENT、contract/README；只收口current/pending7.1与已实现Move/未发布证据边界，不改历史DELETE段/contract机器/source/schema。冻结后Root全8真实integration及独立源码审，尚不准发布。
+
+Storage candidate对照仅Root亲建新库、正规未改canonical安装/同R149 seed120k/自然planner，先原helper raw+wrapper，再在该测试专属库临时四非唯一index/ANALYZE重复同scale 8plan+原helper raw+wrapper，固定各一轮，不修改仓内Schema，不引入provider/Redis/共享data。观测收窄read/lock footprint并检查wrapped收敛，不以raw SSI必0为门、不把临时trial catalog称正式canonical/drift通过；原证据与失败完整保留、finally删自有库。对照后才裁schema准入。
+
+## R150 并行owner收敛（2026-10-03）
+
+上一轮为progress：Root c2bbdaf3已发布四台账，真实Web49/BFF8与Storage自然plan/SSI形成新证据，未关闭用户首屏。原32044本轮亲poll仍live，不以观察超时重启服务；当前用户原页仍等刷新反馈，不换页冒PASS。
+
+|任务|Owner/Agent/基线/写集|依赖、放置与验收|
+|---|---|---|
+|R150-S-INDEX-D0|Storage/storage_project_lifecycle_owner；main2f855816+原31path候选；唯一writer仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md|承接R149 PG18.4四处wide SIReadLock/8plan与raw拒绝→wrapperA2B1恢复。Root决定候选仅canonical Prisma四表非唯一object_key前导index，命名ix_storage_<upload/blob/object_cleanup/object_retirement>_object_key；保tenant-leading unique，不改事实/数据清理/隔离/重试/API。比较维持现索引（实测wide）、四表前导索引（采用待验）、新global registry（淘汰额外事实/状态机）。先三D0/放置表，独立审核后才授schema与真实系统门；index不保证消除SSI页gap，不冒原P2034唯一因果。|
+|R150-BFF-MOVE-PUBLISH-AUDIT|BFF/agent_chat_contract_gate；maina68cbe55+repo0329c7ae/route dfb0eab0/testdb4502b8；只读repo，/tmp报告|盘点现完整Move7.1候选所有tracked/untracked路径与共享rawJson移动关系、三D0/机器/数据库/日志、纯门/真实8与未验矩阵。明确独立可交付slice vs Project DELETE/消费者待验，不把他人改动混提；核当前正式完整工程命令（精确argv，不给--透传假flag）。不得改src/test/docs/Schema或资源/Git，Root亲跑全owner并裁发布。|
+|R150-W-BOOT-DIAGNOSTIC|Web/agent4_lifecycle_review；main49721a5+测试e6770ec1；只读repo及runtime复制元数据、/tmp精确切片方案|沿现AppGate/useSessionProbe查有限focus storm是否真实可造成generation饥饿、最小真实Next/browser执行时间线的可观测点。只设计可在现systemfile内扩展的界面行为fixture，不新模块/页面、Unit/Mock、loader强行fallback；当前原页仍必须用户证据。Root先裁具体测试再派writer，不改生产、超时或默认preview。|
+
+Root独占四台账/Git/PG/Redis/过程句柄；同仓单writer，其他owner只读；Root uv.lock/Billing候选/原70suffix保护。目标不缩小，支付最后。这里的索引采用为待验设计，不是生产修复或发布准入。
+
 ## R149 收口与下一行动
 
 Root R149治理门：`python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q` 原67150自然exit0、298pass/3.11s，日志`/tmp/kokoro-r149-ledger-governance.log`；仅Root工具/台账门，不关闭当前用户加载、signout根因或业务旅程。
