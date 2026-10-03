@@ -1,3 +1,9 @@
+R148 runner隔离最终实证：原16615已消费终态exit0，sourcehashsame/ownDBabsent、原63＋串行699/0skip/43.69s及全部工程/build通过，manifest ez2olkmb。原并行P2034继续保留未消除，下一EXPLAIN/attempt隔离设计，不用串行绿色发布或称全并发闭环。Websignout500及用户页loading仍关键路径开放。
+
+### R148 Root runner参数真实偏差及隔离复验
+
+原Storage完整日志命令含`vitest run ... -- --no-file-parallelism`。原owner按本地Vitest5/CAC实代码只读报告4c23bb78确认独立--后的选项未解析，实际fileParallelism default true。不是代码重试不足的根因定论；原699失败证据保留但不能称按意图串行隔离。Root只修仓外/tmp runner实argv为pnpm exec vitest run原五filters --no-file-parallelism，源/测试/Schema不变；原自有临时PG/installer/63/full/工程门/cleanup一致，句柄16615、日志/tmp/kokoro-r148-storage-full-owner-serial.log。终态后记录原flag已生效与结果；若串行绿只关runner误隔离，不关闭真实生产全局objectKey宽谓词/无leading index的待验证并发风险。下一需自己的足量seed/EXPLAIN/attempt诊断设计后才能决定Schema，不先加retry/降隔离或索引。
+
 R148 architecture最后真纠正：原writer承认e590交付与口头不一致，现18b071ac绑定完整queryRaw调用并新增dead SELECT+DELETE负例；Root原Node24定点实际4/4、0skip、87ms、hash相同，日志/tmp/kokoro-r148-storage-architecture-final.log。仅静态负门关闭，完整owner残余P2034不清零；残余报告16c958a5已纠正，索引仍推断/未授权。
 
 R148 交接纠偏：Storage残余报告f97d1909称architecture完整queryRaw绑定已完成，但Root实际e590d9仍是片段存在匹配、无dead SELECT+DELETE负例，已要求原writer真实返修/纠正报告，不按口头放行。P2034全局objectKey无leading index是源码/schema与时长推断，未有EXPLAIN/attempt计数，后继先设计/精确诊断后才允许索引，不贸然改canonical Schema。Root四docs待独立审，原70测试组不重编号/转绿。

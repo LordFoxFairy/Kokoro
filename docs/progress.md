@@ -1,3 +1,9 @@
+## R148 补充：验证参数偏差已纠正，串行owner完整通过（2026-10-03）
+
+Root查原完整命令实际含`-- --no-file-parallelism`；原owner本地Vitest5/CAC源码报告4c23bb78确证独立--后的选项未被解析，原699失败实际文件并行，不是意图中的串行隔离。Root仅修仓外runner的真实argv为pnpm exec vitest run原filters --no-file-parallelism，不改任何业务源/断言/隔离级别/重试预算。
+
+Root16615终态exit0：focused63、完整73files/699pass/0skip（43.69s）、installer/schema/contract/format/lint/types/normalize/build均通过；日志/tmp/kokoro-r148-storage-full-owner-serial.log，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-final-ez2olkmb/manifest.json。自有库absent，全部源/test/生成物hash相同，保原parallel698/1证据。此关闭runner参数偏差与串行owner门，不消除原并行P2034或全局key无前导索引的生产并发风险；EXPLAIN/真实attempt诊断仍待验，Schema未授权，producer仍未发布。Web2354/1 signout500、用户旧页面loading仍开放；重置控制后的tab22读取仍focus超时，无新UI证据，不造第三页或应用重启。
+
 R148 architecture最后真纠正：原writer承认e590交付与口头不一致，现18b071ac绑定完整queryRaw调用并新增dead SELECT+DELETE负例；Root原Node24定点实际4/4、0skip、87ms、hash相同，日志/tmp/kokoro-r148-storage-architecture-final.log。仅静态负门关闭，完整owner残余P2034不清零；残余报告16c958a5已纠正，索引仍推断/未授权。
 
 Root本轮治理门6725已真实终态：`python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q` → 298pass/3.09s/exit0（非历史18）。日志/tmp/kokoro-r148-root-ledger-verification.log。四docs diffcheck0、保护suffix831a2160和uv.lockf7e1c30d原字节均核；Storage sourcehash门后的17生成物恢复正规normalizer，仅后继授权tests发生变化，与原manifesthashfalse分别记录。

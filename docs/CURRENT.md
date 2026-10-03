@@ -1,6 +1,12 @@
-## R148 当前真实验收与剩余阻塞（2026-10-03）
+## R148 补充：验证参数偏差已纠正，串行owner完整通过（2026-10-03）
 
-Root基线main70a9fcac，本轮未发布Web/BFF/Storage源码或候选gitlink。Storage晚PUT重复退避已原54真PG转绿；cleanup完整身份与scope→key顺序原63项55pass8fail→63pass0skip，独立0。随后完整699发现12fail→6fail→最新698pass1fail（Root28791，17.29s）；canonical stale winner误判、completed replay、两race fixture与dedup已同门恢复，feature-state正式Complete的P2034仍失败。源helper323f468/uploads6626cb8冻结；四表串行读未完全消除故障，不能认定Promise.all因果。architecture独立发现批准SQL片段与唯一raw调用未绑定；Root核口头交付不实并纠正为18b071ac，现完整调用绑定与负例定点4/4、87ms通过，生产残余P2034仍未关。各自临时库均亲删，失败test后生成物正规normalize，不手改或抹manifest；全owner/build尚未通过，不发布。
+Root查原完整命令实际含`-- --no-file-parallelism`；原owner本地Vitest5/CAC源码报告4c23bb78确证独立--后的选项未被解析，原699失败实际文件并行，不是意图中的串行隔离。Root仅修仓外runner的真实argv为pnpm exec vitest run原filters --no-file-parallelism，不改任何业务源/断言/隔离级别/重试预算。
+
+Root16615终态exit0：focused63、完整73files/699pass/0skip（43.69s）、installer/schema/contract/format/lint/types/normalize/build均通过；日志/tmp/kokoro-r148-storage-full-owner-serial.log，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-final-ez2olkmb/manifest.json。自有库absent，全部源/test/生成物hash相同，保原parallel698/1证据。此关闭runner参数偏差与串行owner门，不消除原并行P2034或全局key无前导索引的生产并发风险；EXPLAIN/真实attempt诊断仍待验，Schema未授权，producer仍未发布。Web2354/1 signout500、用户旧页面loading仍开放；重置控制后的tab22读取仍focus超时，无新UI证据，不造第三页或应用重启。
+
+## R148 前次并行门验收与剩余阻塞（2026-10-03）
+
+Root基线main70a9fcac，本轮未发布Web/BFF/Storage源码或候选gitlink。Storage晚PUT重复退避已原54真PG转绿；cleanup完整身份与scope→key顺序原63项55pass8fail→63pass0skip，独立0。随后完整699发现12fail→6fail→前次并行698pass1fail（Root28791，17.29s）；canonical stale winner误判、completed replay、两race fixture与dedup已同门恢复，feature-state正式Complete的P2034仍失败。源helper323f468/uploads6626cb8冻结；四表串行读未完全消除故障，不能认定Promise.all因果。architecture独立发现批准SQL片段与唯一raw调用未绑定；Root核口头交付不实并纠正为18b071ac，现完整调用绑定与负例定点4/4、87ms通过，生产残余P2034仍未关。各自临时库均亲删，失败test后生成物正规normalize，不手改或抹manifest；当时完整门失败/build未到；后继串行owner与build见顶端，不发布。
 
 Web Root39900前版fc01完整256contract/50architecture/2355tests/lint/types/build通过，但预算返修d9362b5 Root98722又2354pass1fail（99.58s，sourcehashsame）：旧pending-refresh signout仍500 JSON Unexpected end，冷启动/刷新通过不掩全门红。独立R2 13a67484确认绝对预算无新P0/P1/P2；metadata仅纠正Next16 dev .next/dev路径，52211a7 Root94352精确signout1pass/47名称过滤、15.30s，未复现故障，不当整体48通过或根治；无Web生产源码修复。
 
