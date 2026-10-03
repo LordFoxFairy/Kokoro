@@ -1,3 +1,13 @@
+## R161 原用户持续加载仍开放；补真正导航终态验收（2026-10-03）
+
+用户再次报告原 conv_ffd7 首屏持续“正在加载工作区”。Root本轮 inventory 取得 browser3 两原标签21/22，绑定21仍20秒超时/kernel reset；没有原页DOM、session请求或水合证据，不把控制超时认作应用根因。原 launcher45606/Web46036仍live，未重启、清数据、造新tab或声称修好。
+
+发现现R139三浏览器场景验收缺口：匿名/故障恢复只计登录请求或离开app，未确认最终工作区稳定渲染。已续派原Web单writer仅现OIDC真实Next系统测试补终态＋刷新，生产/Move/契约不写；Root后继独立跑真实结果，通过也不冒原用户同页E2E。Move三D0私有10秒fetch+body+ACK预算已独立复审0发现（/tmp/kokoro-r160-web-move-deadline-review.md 5cc991a8），只是设计面，不是实现。
+
+R160 Root治理漂移已修：库存235个提交引用精确绑定已发布Web9b42/BFF5e119，共257leaf变更（235commit、20普通digest、1owner digest、1owner版本7.1）。214引用原blob字节同，21引用对应9个真实改变BFF路径。没有改consumer descriptor/frozen pin、assertion、state、reason、checkpoint或checker，仍3active/13broken/0illegal。独立审37de46e5零发现；checkpoint exit0，compatibility仍exit1仅13声明broken；Root完整1716pass/3既定skip139.05s（/tmp/kokoro-r160-root-governance.log）。这是证据治理收口，不是13条业务边已完成或页面修复。
+
+原70组11通过/6失败/14待复测/38未验/0待决/1支付后置及test-cases、uv.lock与Billing/Storage任务外候选保护，Wave0–7 goal active。
+
 ## R159 原用户首屏仍P0；已完成诊断不冒充修复（2026-10-03）
 
 原conv_ffd7页面仍未通过验收。Root实核IAB browser3/tabs21、22均原URL，但21 Page.getFrameTree与22 DOM读取均在focus控制超时；没有新DOM、原session请求或水合证据。没有刷新成功、新建tab、杀/重启45606/46036组合或清数据。已请用户关闭重复Kokoro标签后重开原会话地址，用于恢复原页观测；这不是修复完成声明。

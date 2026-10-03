@@ -5365,3 +5365,11 @@ Root NACK裁决保留毒化流隔离：同唯一typed finalize的quarantined结�
 
 R122 Root收口台账治理：实际三工具套件305pass/2.93s/exit0，日志 `/tmp/kokoro-r122-root-close-governance.log` SHAda7d3cf4695e9196ed229ab5e6cdf349f3acda1fc30cec43f3cfc318b8b66cad；70唯一ID/13-0-13-41-2-1和历史归档保持，只说明工具/台账，不关闭E75整体标准报告。Agent79bf98c工作树clean、源码371与最终安装manifest同值，BFF文档writer/其他owner/Root uv.lock保留。
 R122 Root精确组合拓扑检查实际exit0/PASS，日志 `/tmp/kokoro-r122-topology.log` SHAc32d78b4e43a20ce3effe85b8474a7e4f19ef7dd2e2c41636af7614d9fcfbc31；只拓扑，不证明fresh clone/全部main-only/完整运行组合。
+
+## 2026-10-03 — R160治理来源修复与R161加载终态验证
+
+Root235个库存引用精确更新已发布Web9b42/BFF5e119；257leaf仅commit/digest及BFF public owner版本7.1，无checker/状态/断言/消费者冻结来源变动。214byte同/21引用对应9changed路径，独立37de46e5零发现。实际checkpoint0；compatibility1仅13declared broken（3active/13broken/0illegal保持）；Root完整1716pass3既定skip139.05s，原79588 exit0已消费，日志/tmp/kokoro-r160-root-governance.log。原1715/1/3真实失败保留历史，不称全业务合同通过。
+
+Move三D0 ee057a4d/5bf79b9d/672e836f补私有固定10秒完整fetch/body/ACK与caller abort/finally；独立5cc991a8零发现只通过设计门，source/pin/UI未实现。用户再报原conv_ffd7持续加载；本轮inventory显示原21/22，绑定21再20秒超时/reset，无原DOM/session/水合。原launcher45606/Web46036仍live，未重启清数据/新tab，原P0不关闭。R139匿名/故障恢复三case此前只证明login请求/路径改变，已准原Web唯一writer在现OIDC真实Next系统文件补实际AppFrame终态与刷新，Root后继按真实结果验；不靠猜router故障改源，也不把新fixture成功冒用户恢复。
+
+原70组11/6/14/38/0/1、test-cases全文8c17与suffix831a、uvf7e1和Billing/Storage候选保持；完整Wave0–7 active。

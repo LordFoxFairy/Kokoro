@@ -1,3 +1,31 @@
+### R161 用户再次报告持续加载：先补导航终态证据（2026-10-03）
+
+原 conv_ffd7 首屏仍未验收。当前控制 inventory 返回 browser3/tabs21、22 同一原会话；绑定21再次20秒超时并 reset，没有原页 DOM/session/hydration，不把控制失败认作应用根因。原 launcher45606/Web46036仍live，未重启、清数据或开新tab。
+
+|任务|owner/角色与基线|范围与完成条件|
+|---|---|---|
+|R161-W-ANON-TERMINAL-RED|agent4_lifecycle_review 原Web唯一writer，main9b42＋三Move D0候选|仅既有 tests/system/oidc-rp-next-http.integration.test.ts 的 R139 anonymous、503重试、pending恢复三场景：沿真实 Next/Chromium/fixture OIDC/cookie完整链补最终 AppFrame可见、runtime-loading消失和稳定刷新；不以 `/login` 请求计数或离开 `/app` 代终态。先只 tests，保原故障/单请求/资源断言与清理，不改产品源、Move D0/pin/generated、Git或服务；Root资源独占执行真实结果。若因 fixture 自身自动登录语义不成立先报告，不虚造界面。|
+|R160-W-DEADLINE-REVIEW|agent_chat_contract_gate 原只读审查员|仅复审三新D0的私有10秒 fetch+body+ACK deadline/abort/finally，报告/tmp；Move实现暂不派。|
+|R161-ROOT-P0|Root|审查 tests-only diff并在Node22/自有fixture执行三个实际导航终态场景；失败按实际阶段归因，通过也不关闭原用户IAB P0。保原页/进程/数据库与70组账。|
+
+归属：Web产品会话认证闸的浏览器导航验收，扩展现有真实Next系统测试，无新文件/模块/契约/数据库；旧R139只证明请求发出，没有证明终态渲染，这是本轮明确的测试证据缺口，不预先宣称产品根因。原用户同页仍需真实操作验收。
+
+### R160 继续既有计划：Move消费文档门与契约库存漂移（2026-10-03）
+
+上一goal轮为progress：Root2d36ad8a记录原首屏P0真实取证失败与Root治理1715pass/1fail/3skip，识别当前契约库存证据漂移。原页重开询问尚无答复；不是verified wait，也不重复浏览器超时/只读bootstrap审查。已有安全前置是已发布BFF Move producer及R158三D0。
+
+|任务|owner/角色/基线|范围、完成条件与交付|
+|---|---|---|
+|R160-W-MOVE-D0-FINAL|agent4_lifecycle_review 原Web唯一writer/main9b42，原3docs冻结候选|仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL的R158段：纠正真Next正向测试入口为现OIDC fixture；明确最小可审API形状与所需现文件，不引optional兼容或preview假ACK，禁止源码/tests/Git/资源。之后独立审通过才tests-only真实HTTP反例；当前未放行。|
+|R160-ROOT-INVENTORY-AUDIT|agent_chat_contract_gate 原只读审查员；Root2d36ad8a|只读consumer-inventory、checkpoint、validator、发布owner committed blobs；生成完整231错误闭集分类，比较旧SHA到当前已发布blob事实/语义，给精确可更新证据及不能提升的active/broken边。禁止改库存/检查器/状态或启动服务；Root资源和写入唯一。|
+|R160-ROOT|Root|原3310 live句柄45606/46036与PG/Redis保护；70账/suffix、uv/Billing/Storage候选不改。只独立确认机器差异与文档门，Root-owned inventory改动需先审查确切来源及兼容语义；不凭换SHA抹掉broken。|
+
+Move目标保持用户将direct会话移入Project、项目间移动、移出direct，ACK前不变归属/不取消运行/不影响Message与stream；首接口切片是前置而非最终验收。后继engine/UI、真实owner HTTP、同页刷新与实际用户旅程仍必须完成。原首屏独立P0持续开放，整个Wave0–7不缩小。
+
+R160 Root库存更新设计准入：只编辑既有verification/contracts/consumer-inventory.json的repository_commit、对应已提交blob digest与BFF public owner当前7.1版本；不新增目录、contract副本或生成器，不改consumer内部descriptor/frozen来源/assertion/状态/checkpoint/checker。采用当前已发布Root gitlinks与git show committed bytes，淘汰working-tree hash或无差别SHA文本替换。原Web49引用全byte同；BFF9个changed path须逐项以已发布当前事实更新，不抬升broken。Root独占writer，更新后完整checkpoint/compatibility/相关测试和独立diff审；active调度双向机器与调用事实仍需验证，不拿静态门代业务E2E。
+
+R160 实际收口：库存235ref/257leaf精确已发布来源更新，独立37de46e5零发现；checkpoint exit0，compatibility exit1仅13declared broken，3active/13broken/0illegal不变。Root完整1716pass/3skip139.05s exit0，79588已消费。Move三D0最终ee057a4d/5bf79b9d/672e836f，私有budget前P1独审5cc991a8关闭，无源码/测试实现；用户P0优先，Move tests-only实现暂不派，转顶部R161实际导航终态门。
+
 ### R159 原用户首屏复查：仍未验收，等待恢复原页观测（2026-10-03）
 
 原 conv_ffd7 持续加载是本轮关键路径；Root没有以R158的Move/Storage进度替代此故障。原Web源码main9b42acbc、Root2f0e5eba；Web仅三份Move D0冻结修改，无生产或测试改动。
