@@ -1,3 +1,9 @@
+## R123 当前实际推进（2026-10-02）
+
+E100 Root独立BFF Node22 build0、四pure files148项120pass/28真实消费行为fail/0skip，436源保持/两child自然终态，独立RED审0/0/0。合法HTTP5 Todo/Skill/tool/subagent尚未正确消费及旧raw/非法Skill未拒已复现；不是浏览器/外部provider验收。T-Q02与T-A01–03/A06转失败，当前70组12通过/5失败/13待复测/37未验/2决策/1后置。
+
+Root已裁D0三P1（锚定有界分页、terminal/queued保最近START过程、不发明phase图），同BFF负责人已交付四D0澄清并停写；生产/SQL/public7尚未实施。下一strict HTTP5 decoder与安全CUSTOM GREEN→Root复验→真实事务快照/分页→正式BFF/Web消费与浏览器旅程。70组编号测试步骤已整合现test-cases；计划展开不当执行完成。完整Wave0–7 active，支付最后。下方R122及更早状态保留历史证据边界。
+
 ## R122 当前实际推进（2026-10-02）
 
 E98：Root currentwheel安装态HTTP文件实际36通过/0失败/0跳过、151已装模块origin/RECORD，六步骤0；精确库回收/Redis空/源371保持/自然终态，独立P0/P1=0/0。E99：停写后只四Agent docs校当前态，最终包十门通过，211全部wheel entries与已测包严格同bytes、最终sdist重建一致；当前候选59非build路径已Root原子提交并普通push Agent main79bf98c5aa63b9bace207afdf42d8c7aefee4fe8，远端refs同SHA，derived build验证后清理、Agent clean；全仓src/tests静态七门亦通过。正式消费者随后推进。供应cache失败及实际HTTPS固定工具下载按实记录，不称零网络。完整Agent/浏览器/用户能力不因此通过。

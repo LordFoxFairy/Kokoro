@@ -1,35 +1,41 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R123测试任务核对；最新运行证据至R122。复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R123测试任务核对；最新运行证据至R123/E100。复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 当前状态以本页当前看板、R123核对、R122运行证据与下方测试矩阵为准；其他R编号为历史阶段，最新代码变化须复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
+- 当前状态以本页当前看板、R123/E100运行证据与下方测试矩阵为准；其他R编号为历史阶段，最新代码变化须复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
 
 ## 当前测试看板（测试任务，不是开发任务）
 
 |状态|测试组数|
 |---|---:|
-|已通过（仅记录版本和范围）|13|
-|最新执行失败|0|
+|已通过（仅记录版本和范围）|12|
+|最新执行失败|5|
 |待复测|13|
-|尚未完整验证|41|
+|尚未完整验证|37|
 |待业务决策|2|
 |支付后置|1|
 |合计|70|
 
-**已通过13组：** T-Q01 Web工程门、T-Q02 BFF工程门、T-Q04 IAM工程门、T-Q05 System工程门、T-Q08 Storage工程门、T-Q11测试工具诊断、T-L01登录正向、T-C01后端会话过滤、T-C06两轮真实模型聊天、T-C11前端流连接生命周期、T-K01连接器不显示假成功、T-B01定价纯规则、T-R01具名测试资源隔离。登录/聊天是E53记录的历史发布组合和本地模型，不代表当前全部能力或用户提供的模型网关通过。
+**已通过12组：** T-Q01 Web工程门、T-Q04 IAM工程门、T-Q05 System工程门、T-Q08 Storage工程门、T-Q11测试工具诊断、T-L01登录正向、T-C01后端会话过滤、T-C06两轮真实模型聊天、T-C11前端流连接生命周期、T-K01连接器不显示假成功、T-B01定价纯规则、T-R01具名测试资源隔离。登录/聊天是E53记录的历史发布组合和本地模型，不代表当前全部能力或用户提供的模型网关通过。
 
-**有问题且尚未关闭：** E75整体标准扫描152条报告待逐条裁决/修复；Todo正式消费、Skill运行phase契约及安全过程硬刷新存在已记录缺口；当前完整浏览器旅程未验。最新执行失败为0只是70组当前状态计数，绝不是“零问题”。T-Q03 Agent纯测/安装切片通过，整组仍待复测。
+**有问题且尚未关闭：** E75整体标准扫描152条报告待逐条裁决/修复；Todo正式消费、Skill运行phase契约及安全过程硬刷新存在已记录缺口；当前完整浏览器旅程未验。E100新增消费RED使T-Q02、T-A01–03/A06转失败；28失败是自动测试节点数，5是关联任务组数，不当28个独立缺陷。T-Q03 Agent纯测/安装切片通过，整组仍待复测。
 
-**计划完整度：** 70组覆盖目录已建立；全部逐用例步骤尚未展开完成。每组须沿原ID展开子用例：前置数据、操作、预期、实际结果、证据/版本、缺陷、修复提交及Root复测。先覆盖正向，再补权限/错误、重复/并发、取消/断线/刷新/恢复；必需分支未验或跳过不得整组通过。现有T-C09详细子用例作为记录方式，不新增第二测试计划中心。
+**计划完整度：** 70组均已在下方“逐组执行用例计划”展开前置、编号步骤、预期、权限/异常/恢复分支和证据要求。具体当次测试账号、fixture ID、命令/节点及版本须执行前绑定；展开计划不是执行结果。每组须沿原ID展开子用例：前置数据、操作、预期、实际结果、证据/版本、缺陷、修复提交及Root复测。先覆盖正向，再补权限/错误、重复/并发、取消/断线/刷新/恢复；必需分支未验或跳过不得整组通过。原T-C09.1–5保持编号与证据；所有组在同页维护，不新增第二测试计划中心。
 
 **待决策：** T-C05项目移动/归档/删除的关联生命周期；T-B07失败/取消/部分输出/未知成本的收费资格。接续优先正式Agent→BFF→Web消费与当前登录/聊天/刷新，再验证项目和独立会话、Home/输入框、Skills/MCP/过程交互、任务/作品，最后正式积分链与支付后置项。
 
-## R123 测试任务核对（2026-10-02）
+## R123 / E100 当前BFF消费真实RED（2026-10-02）
+
+Root独立Node22 build exit0，四现pure files实际148项：120pass、28fail、0skip；28全部是HTTP5消费行为缺口，不是导入、工具或测试自身错误，独立spec/quality审0/0/0。436文件保持、两个child自然终态、forced_stop空，仅测试自有回环HTTP，不访问PG/Redis/provider/浏览器。当前T-Q02、T-A01–03/A06转失败，其余当前组状态不扩充。同owner四D0澄清已交付；下一strict decoder/安全CUSTOM修复→Root复测；SQL/分页/浏览器后继分开验。
+
+测试计划本次补齐70组结构化编号用例；尚待执行的保持原状态。当前组计数12/5/0/13/37/2/1，不与E100前核对混读。
+
+## R123 测试任务核对（E100前的历史状态，2026-10-02）
 
 Root实读当前矩阵，70行/70唯一ID，状态计数与看板一致；只读审查也确认上述范围。发现页头、重复完成度摘要、下一批次及T-Q03行混有旧状态，已校正当前段落；旧失败/运行证据保留，不作为最新失败。此次没有新增产品测试结果。
 
@@ -91,7 +97,7 @@ Web静态审发现Todo正式source、Skill过程契约、普通安全过程硬�
 
 ### 逐用例记录与缺陷闭环
 
-本页70组是**覆盖目录**，不是已经写完或跑完的完整用例集。已有T-C09详细子项；其余未展开组仍需在执行前补齐步骤、预期、正负例和恢复场景，不能将目录齐全称为测试计划全部完成。沿现组ID增加子编号，不另建计划中心；owner自动测试继续留在各自仓。
+本页70组都有编号执行计划，**计划已展开不等于测试已执行**。执行前绑定实际账号、版本、资源ID和命令/测试节点；执行后逐子用例登记实际结果、缺陷和复测证据。T-C09已有逐项结果，其余以本页矩阵及progress具名证据为准，不用整组标签推定所有子例通过。沿现组ID维护，不另建计划中心；owner自动测试继续留在各自仓。
 
 每个具体子用例登记：`测试ID/业务路径 → owner与执行人 → commit或冻结hash及环境 → 前置条件/测试数据 → 操作步骤/预期结果 → 实际结果/pass-fail-skip → 日志或截图证据 → 缺陷与修复提交 → Root复测结果/日期`。未执行明确写未验，skip必须说明；修复完成后仍待复测，原失败保留。涉及真实用户路径还需真实浏览器证据，不用单测或截图外观替代功能验收。
 
@@ -228,15 +234,15 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 
 ## 当前完成度（任务组计数，不是整体百分比）
 
-共 **70组：通过13、失败0、执行中0、待复测13、未验41、阻塞2、后置1**。R123逐行核对70唯一ID与当前看板相符。通过仅限具名范围/版本；本次是台账核对，不是重新执行全部业务测试，整体产品尚未闭环。
+共 **70组：通过12、失败5、执行中0、待复测13、未验37、阻塞2、后置1**。R123 E100后逐行核对70唯一ID与当前看板相符。通过仅限具名范围/版本；本波新增四pure files行为RED，并非重跑全部业务测试，整体产品尚未闭环。
 
 ## 本次已完成与未完成（可直接巡检）
 
-- **通过13组**：T-Q01/Q02/Q04/Q05/Q08/Q11、T-L01、T-C01/C06/C11、T-K01、T-B01、T-R01。工程门不是完整业务通过；登录/聊天E53仍仅既有发布组合及本地qwen3:8b，不含用户网关、正式收费或全部Agent/UI能力。
-- **最新失败0组，但有未关闭问题**：E87资源释放及E93规范失败已在E93/E95限定回归中关闭，Agent整组仍待复测。整体规范E75的152条报告、BFF/Web Todo/Skill/安全过程恢复缺口继续保留；不把计数0理解为没有缺陷。
-- **整组最终验收执行中0组**：R122具名Root测试命令已终态。R123 BFF设计文档交付、只读消费审查不计测试通过或测试执行中，尚待Root裁决与真实RED。
+- **通过12组**：T-Q01/Q04/Q05/Q08/Q11、T-L01、T-C01/C06/C11、T-K01、T-B01、T-R01。工程门不是完整业务通过；登录/聊天E53仍仅既有发布组合及本地qwen3:8b，不含用户网关、正式收费或全部Agent/UI能力。
+- **最新失败5组**：T-Q02、T-A01–03、T-A06由E100当前消费RED复现；尚未修复。E87资源释放及E93规范失败已在E93/E95限定回归中关闭，Agent整组仍待复测。整体规范E75的152条报告、BFF/Web Todo/Skill/安全过程恢复缺口继续保留；历史通过不抵消当前失败。
+- **整组最终验收执行中0组**：R122具名Root测试命令已终态。R123 BFF四设计澄清已交付，E100真实RED已由Root复现；设计交付及缺陷修复实施不计整组测试通过。当前等待正式消费修复及Root复测。
 - **待复测13组**：T-Q03/Q06/Q07/Q09/Q10、T-L02–05、T-F01–02、T-K02–03。其余历史/版本变化均按当前组合重验。
-- **未验41组**：项目与独立会话交互、队列/恢复完整分支、独立任务、完整作品、Skill/MCP实际选择调用、Todo/工具/审批展示、正式积分、Home/输入框/布局、全部owner组合等，逐行见矩阵；局部PG/HTTP/纯测不替整条用户路径。
+- **未验37组**：项目与独立会话交互、队列/恢复完整分支、独立任务、完整作品、Skill/MCP实际选择调用、Todo/工具/审批展示、正式积分、Home/输入框/布局、全部owner组合等，逐行见矩阵；局部PG/HTTP/纯测不替整条用户路径。
 - **阻塞2组**：T-C05项目移动/归档/删除生命周期、T-B07失败/部分输出/未知成本收费规则；T-B08支付后置。
 
 **当前关键路径**：Agent HTTP5已发布79bf98c，E95–99所列纯门、安装正负向及限定installed DDL/HTTP已验。下一BFF正式消费与同事务安全过程快照→Web消费→真实浏览器登录/聊天/刷新，随后逐ID验证项目/独立会话与任务、Home/输入框、Skills/MCP/Todo/HITL、正式积分；真实外部资源/全owner恢复仍单独待验，支付最后。不要重新把已关闭的E87当当前阻塞。
@@ -274,11 +280,10 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 |T-Q03、T-R01|既有archive测试导入时尝试探测ObjectStore，资源归属缺确证|E66真实1行为fail保留；E68 Root九门与独立0接受现file lazy UUID fixture，15默认纯实际通过/5资源未选、原cases保留；真实S3与生产close未验，不以排除整模块或测试tracker冒称生产生命周期修复|
 
 ## 测试任务矩阵
-
-| ID | Owner/层级 | 测什么与通过条件 | 状态 | 最新证据/未完成原因与下一动作 |
+|测试ID|owner|验收范围|当前状态|具名证据/版本与边界|
 |---|---|---|---|---|
 | T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验且fa4525e4已发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
-| T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
+| T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 失败 | E100 / R123 Root Node22真实build0；当前四pure files148项120pass/28行为fail/0skip，436源保持、两个子进程自然终态。已发布HTTP5合法Todo/Skill/tool/subagent消费及旧raw/非法Skill拒绝缺口实际复现，独立审0/0/0；仅所测分支，不冒称已执行全部本组或浏览器。原历史通过/失败证据保留在progress，待GREEN及Root复验。 |
 | T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E95 Root当前1960纯节点全部通过/0skip，七静态门及独立审通过，原E87生命周期与E93规范失败限定回归关闭；E96新包完整115 runtime安装、四布局64负向/219步骤通过；E97 installed CLI/真实PG/catalog/六漂移回滚通过，E98 installed HTTP36pass/0skip及151origin核验通过；E99最终包211entries与资源已测包同bytes、sdist重建一致。Agent已正式发布main79bf98c、远端同SHA。正式BFF/Web消费者、真实S3/Docker/SIGTERM及完整Agent整组仍未验；完整失败历史与各次包身份保留在progress.md，不拿历史包替当前包，不称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E74当前候选source da4675b9/test45bd5286/helper efd2f061，Root99279十纯门exit0，9files119pass/0fail/0skip，197hash保持/owned进程组终态/OS禁网，独立审0/0/0。E72先12fail/2control，连接URL正控缺口已补强并Root复现；只未发布候选纯门，真实PG/Redis/freshschema/runtime/provider/image另未验；E77单owner真实PG fresh 23断言/22表与精确回收已验，Redis/业务HTTP及其他owner组合仍未验 |
@@ -322,12 +327,12 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 未验 | 正式管理mutation与凭据/audience边界待实现发布 |
 | T-K06 | Web→BFF→Agent→Platform | MCP opaque refs选择、每次调用fresh授权、args identity；撤销零调用 | 未验 | 旧free-text mcp_servers需owner-first替换，无fallback |
 | T-K07 | Platform→Agent | 工具schema closed profile/输入输出校验/超时取消/越权/注入 | 未验 | 不能把协议profile文档当执行测试 |
-| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E35 Root真实PG65pass/独立0（原59+新增完整/空Todo、并发lostACK、漂移、围栏/expiry/terminal、live失败耐受6项）；owned库回收0；E47 HTTP完整36通过，新Todo实际PG→HTTP/分页/replay/身份隔离成立；BFF/Web安全过程呈现与复杂任务策略未验，不关闭整行 |
-| T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
-| T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
+| T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 失败 | E100 / R123 Root Node22真实build0；当前四pure files148项120pass/28行为fail/0skip，436源保持、两个子进程自然终态。已发布HTTP5合法Todo/Skill/tool/subagent消费及旧raw/非法Skill拒绝缺口实际复现，独立审0/0/0；仅所测分支，不冒称已执行全部本组或浏览器。原历史通过/失败证据保留在progress，待GREEN及Root复验。 |
+| T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 失败 | E100 / R123 Root Node22真实build0；当前四pure files148项120pass/28行为fail/0skip，436源保持、两个子进程自然终态。已发布HTTP5合法Todo/Skill/tool/subagent消费及旧raw/非法Skill拒绝缺口实际复现，独立审0/0/0；仅所测分支，不冒称已执行全部本组或浏览器。原历史通过/失败证据保留在progress，待GREEN及Root复验。 |
+| T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 失败 | E100 / R123 Root Node22真实build0；当前四pure files148项120pass/28行为fail/0skip，436源保持、两个子进程自然终态。已发布HTTP5合法Todo/Skill/tool/subagent消费及旧raw/非法Skill拒绝缺口实际复现，独立审0/0/0；仅所测分支，不冒称已执行全部本组或浏览器。原历史通过/失败证据保留在progress，待GREEN及Root复验。 |
 | T-A04 | Agent→BFF→Web | 完整多项HITL pause→一次决策→resume；stale/重复/unknown/刷新正负例 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
 | T-A05 | Agent→BFF→Web | Todo/Skill/tool/HITL/delivery五时点刷新：恢复同水位，无重复或丢失 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
-| T-A06 | Agent→BFF→Web | 子Agent身份/状态/失败/取消/汇总；不混入主回复或泄露私有过程 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
+| T-A06 | Agent→BFF→Web | 子Agent身份/状态/失败/取消/汇总；不混入主回复或泄露私有过程 | 失败 | E100 / R123 Root Node22真实build0；当前四pure files148项120pass/28行为fail/0skip，436源保持、两个子进程自然终态。已发布HTTP5合法Todo/Skill/tool/subagent消费及旧raw/非法Skill拒绝缺口实际复现，独立审0/0/0；仅所测分支，不冒称已执行全部本组或浏览器。原历史通过/失败证据保留在progress，待GREEN及Root复验。 |
 | T-B01 | Billing | 定价revision纯codec：strict格式/不可变摘要/整数/rational/边界/恶意结构 | 通过 | E07：772 unit/静态通过，仅冻结3文件；未验真实收费 |
 | T-B02 | System→Agent | 实际provider/model/route revision绑定；逐call/attempt证据，不补零/猜用量 | 未验 | ADR-033；System仅技术路由，Agent仅事实证据 |
 | T-B03 | Billing→BFF→Web | 授权赠送/余额/流水/撤权；前端只读owner结果，无假充值/免费补偿 | 未验 | 真实Billing命令+持久ledger；不直接改数据库充当授权 |
@@ -347,6 +352,86 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-S01 | System→IAM/BFF | Site/Host/Workspace/Runtime/Policy具名身份与生命周期；disabled/unknown/expired拒绝、secret零泄漏 | 未验 | E88现System单仓lifecycle19真实通过，只启动/HTTP deadline/schema资源切片；完整业务/消费者待验。 owner HTTP/PG→消费者，不建任意配置桶 |
 | T-S02 | System→Agent/BFF | 模型目录/选择/路由revision与digest；实际gateway/credential；重试故障不静默换未授权模型 | 未验 | 技术配置不等于实际调用证明；消费固定owner artifact |
 | T-G01 | Platform→BFF/Agent→Root | capability到platform身份/Proto/remote/path/env/DB/Redis一次cutover；旧alias/fallback删除 | 未验 | Wave3正式验收，现物理仍kokoro-capability，不冒称已改名 |
+
+## 逐组执行用例计划（70原ID，不另计任务数）
+
+本表为Root审查后的执行计划，非已执行结果；来源是R123只读草案，Root核70ID集合/顺序与当前矩阵一致，并校正版本冲突、定价codec和锚定分页语义。每格.n对应本组子用例；具体正式endpoint/错误码/预算取执行版本owner机器契约，账号与自有资源ID、命令/自动节点须在执行记录中固定。T-C05/T-B07仍待业务裁决，T-B08后置；原T-C09.1–5不重编号。
+
+通用前置：A本人、B同tenant另一主体、C另一tenant皆为具名隔离fixture；绑定commit/dirty hash及owner artifact。资源由Root登记并只清自身。每子例回填操作/预期/实际/证据/缺陷/修复版本/Root复测，真实资源不能以stub替代。完成全部必需分支才关闭整组。
+
+|ID（原owner）|前置：账户/身份/fixture|正向操作与可观测预期（子用例）|权限/异常及重复、取消、断线恢复（子用例）|验证层级与脱敏证据|未决项/既有证据边界|
+|---|---|---|---|---|---|
+|T-Q01（Web）|冻结Web及BFF pin；Node/pnpm按owner ACCEPTANCE|.1 执行现pnpm check及其lint/types/unit/contract/architecture/build，逐命令exit0、生成drift0；不存在format脚本记N/A而非伪运行|.2 锁定错误响应/断流/权限反例仍入套件；.3 记录skip与浏览器门分拆，构建失败不得发布|owner工程门；命令/log SHA、测试逐项统计、bundle清单；UI真实证据归U/C|沿Web ACCEPTANCE；历史E41不代替新pin复测|
+|T-Q02（BFF）|冻结BFF源码、public/Agent contract pin及工具链|.1 按ACCEPTANCE执行format/lint/types/unit/contract/architecture/build，验证生成client与固定artifact无drift|.2 畸形payload/跨身份/重复receipt控制仍有效；.3 默认PG跳过明确另排真实integration，不称0skip资源通过|owner工程门；命令/JSON结果/生成前后hash|HTTP5消费变更后必须新门；E01仅历史限定范围|
+|T-Q03（Agent）|正式Agent79bf98c及对应wheel/lock；原source、pure/local、installed入口分区清单|.1 按ACCEPTANCE跑锁/frozen依赖/Ruff/Pyright/全默认与contract、构建并核wheel/sdist；.2 仓外完整依赖四布局安装、origin/RECORD、CLI/DDL/HTTP行为与包身份同源|.3 missing/tamper拒绝零资源；真实S3/Docker关闭/构造失败及SIGTERM drain另实跑，失败或skip不充整组；异常保原原因/无悬挂资源|纯/本机真实I/O/真实PGRedisHTTP/provider分层；node清单、artifact SHA、原失败与复测、回收记录|E95–99已测切片引用不重计；剩余backend/进程/消费者正式门未验|
+|T-Q04（IAM）|IAM固定commit、具名账户fixture与工具链|.1 按IAM ACCEPTANCE执行verify及静态/contract/build，生成与规范无漂移|.2 会话签名/权限/重复命令反例保留；.3 integration URL缺失记未验，真实授权/退出归L组|owner工程门；各子命令exit/skip、schema及artifact摘要|E14限定工程门；新组合按变化范围复测|
+|T-Q05（System）|System固定源与现ACCEPTANCE；owned Node进程fixture|.1 跑format/lint/types/build/contract与纯测试，源hash保持；.2 fresh与资源lifecycle用现单独真实入口|.3 setup失败/unknown抛出/end与DROP独立失败保原对象并完成其他清理；不得以纯mock充PG通过|工程/真实PGHTTP分列；日志SHA、node状态与资源账|E74/E77/E88引用具名切片；完整System业务归S/R/Q12|
+|T-Q06（Billing）|Billing冻结候选及现ACCEPTANCE；不触其他writer|.1 执行pnpm verify（含format/lint/types/test/build/sql:check/contract:check），所有门有结果|.2 缺CHECK/partial predicate漂移的db:verify-schema拒绝且无写；.3 integration缺URL的skip另列，重复扣费负例不得排除|工程+自有真实PGRedis；SQL目录差异/测试结果/脱敏ledger ID|历史B01纯规则不等于Billing整门或收费通过|
+|T-Q07（Platform）|Platform现物理kokoro-capability冻结pin及ACCEPTANCE|.1 跑format/contract/prisma validate/生成drift/schema/type/test/lint/build；.2 真PGRedis REQUIRE_REAL_INTEGRATION=1与production smoke单列|.3 生成差异停交owner；缺凭据/权限/retry反例入套件，provider stub不充外部授权|工程+真实资源；生成前后SHA、HTTP状态/清理|物理更名归G01；消费Storage等当前pin需闭环|
+|T-Q08（Storage）|Storage74c4b59或后继冻结版本；严格匹配已安装pnpm配置|.1 沿ACCEPTANCE跑format/lint/types/unit/contract/architecture/default/build/contract与Prisma正规生成归一，源和生成物drift0|.2 默认156PG skip另执行integration/compiled，真实S3scanner另F组；.3 错配置/guard工具失败与业务失败分开保留|工程/owned loopback/真实资源分层；log、生成diff与回收|E94已限定通过；新版本重验，不抹原skip|
+|T-Q09（Scheduler）|Scheduler固定Go/锁/ACCEPTANCE；自有资源|.1 检查gofmt -l输出空、go mod verify/vet/test/race/build及architecture/schema；.2 integration/redis/smoke按现入口|.3 旧lease/重复wake/ACK未知反例仍入真实PGRedis；不运行gofmt -w掩盖检查前状态|工程+race+资源；命令exit、逐包结果与run ID|历史门不替当前组合；调度业务P组另验|
+|T-Q10（Root）|当前九owner正式main refs、Root gitlink与artifact manifest|.1 新隔离clone按固定refs初始化；核gitlink/remote提交存在、机器version/digest/client一致；.2 运行Root topology/标准检查与现契约兼容门|.3 注入隔离坏digest/不存在ref须拒绝且不fallback；恢复后复测；不得把declaredbroken当兼容通过|静态/生成/新clone；SHA清单、drift报告、逐条裁决|E75 152报告保持待裁；不猜部署流程|
+|T-Q11（Root）|冻结现真实旅程driver及纯测试；脱敏失败样本|.1 正常两轮归属、terminal/observer/deadline通过；.2 401/429/timeout/malformed诊断输出稳定code且exit非零|.3 重连/缺消息/未terminal不得靠增加轮询绕过；assert两POST/全文/作品等原硬门未删；secret canary不出日志|测试工具纯门；注入向量结果、原assert与hash|已有E51限定通过；不把工具通过算C06实际旅程|
+|T-Q12（各数据owner）|同实例同credential自有隔离库，所有数据owner独立schema及canonical安装入口|.1 逐owner fresh安装并比较tables/columns/constraints/index definitions；重复安装按各contract拒绝/幂等，既有数据不变|.2 缺表/约束/索引定义漂移拒绝；.3 安装中失败回滚、另一owner schema不变、SQL访问审计零越界|真实PG/实际installed或owner CLI；catalog差异、事务结果、精确回收|部分owner仍整库空白约束需先改为schema边界；单ownerE97不关整组|
+|T-L01（IAM→Web→BFF）|真实IAM owner/member两测试账户，授权Web回调与BFF同源组合|.1 浏览器表单登录→授权→callback→/app，授权提交和callback各一次；session200且Cookie HttpOnly/Secure/SameSite正确|.2 双击提交/刷新callback不增session或循环中转；.3 同源会话成功后一次受权BFF查询，跨身份仍按L04拒绝|真实浏览器+IAM/BFFHTTP；脱敏跳转序列/状态/Cookie属性（无值）|E53正向历史已验，当前组合变化复测|
+|T-L02（IAM→Web→BFF）|L01账户；独立浏览器上下文与一次性授权code|.1 合法state/nonce/PKCE/redirect建立session作正控；.2 错密码、缺CSRF及分别改四字段得到contract错误且无session|.3 重放code/重复callback/中途取消不登录他人或无限重试；恢复新合法流程才成功|浏览器+真实IAMHTTP；错误code、session计数和脱敏HAR|错误具体status按当前owner机器契约固定，不预写猜测|
+|T-L03（IAM→Web→BFF）|已登录测试账户、可控会话到期fixture|.1 刷新仍同主体；主动退出后session失效，后退受保护页重检；重新登录正常|.2 token/session实际到期拒绝旧请求；.3 并发tab退出/刷新、过期签名URL不无限重试、不复活旧session|真实浏览器/HTTP；请求次数、受保护内容隐藏、session状态|期限用owner测试时钟/真expiry入口，不sleep当过期证明|
+|T-L04（IAM→Web→BFF）|同tenant A/B与不同tenant C，已创建各自会话/项目|.1 A访问自有资源；.2 B/C替换资源ID/tenant参数读写控制均拒绝且无副作用|.3 撤销成员/禁用账户后旧session再次访问即时按契约失败，续流/重连不保留权限；恢复授权另测|真实IAM+BFFHTTP+浏览器；权限矩阵、拒绝码、写入计数|禁用/撤销确认点按现contract，不造运维角色|
+|T-L05（IAM→BFF→Web）|IAM owner/有权成员/无权成员三身份及邀请对象|.1 正式邀请接受→成员列表分页与读写权限正确；.2 同key重放同结果/冲突payload拒绝|.3 无权邀请/提权/改他人role拒绝；撤权后旧token及分页游标不越权，审计一条业务命令不重复|真实IAMHTTP/PG+Web；主体化审计、分页集合、权限变化|沿现role业务规则；不赋新部署管理角色|
+|T-C01（BFF）|A/B/C账户；独立、项目P/Q、同timestamp及deleted会话fixture|.1 真实列表分别独立/P/全集，limit1/2遍历无漏重且tie keyset稳定|.2 冲突filter400、另主体/租户/deleted不返回；.3 翻页期间插入按既有cursor语义无重复|真实BFFHTTP/PG；完整ID集合与cursor、错误码|E03仅后端已验，UI scope见C02|
+|T-C02（Web→BFF）|登录A，有P/Q项目和独立入口|.1 三入口各新建会话发送不同marker，URL和归属正确；.2 back/forward/刷新恢复各自消息与草稿|.3 快速切scope、双tab、提交未ACK换页不把草稿/响应写到新会话；无权项目不能新建|真实浏览器+BFF；路由轨迹、请求scope和页面marker|BFF/Web固定正式兼容pin后执行|
+|T-C03（Web→BFF）|A的独立/P会话；可控真实HTTP延迟/503切面|.1 重命名/删除等待正式ACK后列表和详情一致；刷新不复活|.2 延迟或503保原事实且可重试；.3 请求中切scope/重复删除/旧响应晚到不污染新页，B无权删除0写|浏览器+真实BFFHTTPPG；前后列表/ACK时点、请求计数|已知fire-and-forget竞态先真实RED后修复|
+|T-C04（BFF→Web）|A私有会话、B与未登录浏览器；可分享fixture|.1 正式创建share得到明确共享链接，按contract另身份可读取许可范围；撤销后同链接拒绝|.2 私有详情URL不变公开链接；无权创建/控制拒绝；.3 重复撤销/并发访问不泄漏撤销后新内容|真实浏览器/HTTP；share ID/状态与资源边界，不记录secret token|公开分享范围按现契约，缺正式mutation则先实现而非文案假成功|
+|T-C05（BFF→Web）|项目含会话/active Run/任务/作品；A/B身份|.1 待业务明确移动/归档/删除各对象及活动Run结果，再冻结前后关联集合和API预期|.2 待裁后加入无权/关联冲突/重复命令/并发Run与失败回滚向量；.3 复原或永久删除策略按裁决验|计划阻塞；仅记录待决对象/接口，不执行破坏性动作|必须裁关联生命周期，禁止猜cascade/停止/保留规则|
+|T-C06（Root六owner）|正式发布兼容六owner、真实模型可用、A/B账户与owned文件空间|.1 正规登录后第一POST完成，第二POST同会话完成；严格两POST/四Message、首轮不变、全文摘要可核|.2 活动非空文本硬刷新从同watermark续接；真实作品下载hash和刷新一卡；.3 B访问相关三资源拒绝，失败保原非零与日志|真实模型+全链浏览器；请求计数/全文SHA/作品SHA/截图/清理|E53只本地qwen3:8b历史范围；其他网关/新HTTP5组合另跑，不加免费替身|
+|T-C07（BFF→Agent）|同会话两tab、另会话；真实可暂停执行fixture|.1 同时提交两合法请求按正式FIFO串行、一active head；另会话可并行|.2 同key同payload重放同receipt、不增Run；异payload冲突；.3 ACK丢失重发/worker重启后顺序不乱、无重复模型执行|真实BFF/Agent PGRedisHTTP；admission序号、Run/head、执行计数|完整scope/fence设计与实现须先闭合，不用UI排队代替|
+|T-C08（Web→BFF→Agent）|active及queued Run，Web可Stop/steer；A/B身份|.1 发送steer归同Run；Stop ACK后等待真实terminal，输入/队列仅按事实收口|.2 双击/重放control不重复terminal；无权/旧Run控制拒绝；.3 取消与自然完成竞争唯一winner，断线后查询恢复正确终态|真实浏览器+BFFAgent；control receipt/terminal identity/副作用计数|采用现owner控制契约；ACK不得当终态|
+|T-C09（BFF→Web）|沿原C09.1–5的同一授权会话、真实双PG连接barrier与浏览器|.1–.3 原编号不变：同次四事实snapshot→真实writer提交后旧RR集合→fresh新集合与旧cursor精确replay|.4 原编号回收/变异有效性不改；.5 原编号浏览器五状态刷新、断线重挂、scope隔离；无权快照拒绝且不暴露水位|原C09.1–5逐项引用现表；PG并发+HTTP+浏览器，完整对象/metadata/截图|E91只后端组合；C09.4隔离变异及.5全用户路径待验，不改名或合并充数|
+|T-C10（BFF→Web）|已发多delta和terminal的会话，明确retention游标fixture|.1 SSE中断后用原cursor重连，仅补缺失frames，拼接全文与未断线一致|.2 重复frame不双气泡，gap触发明确恢复而非跳号；.3 cursor过期/GC/进程重启按contract重取快照，另一身份cursor拒绝|真实HTTP断连/PGRedis+浏览器；seq/ID/digest集合、全文SHA|localStorage非事实源；过期策略按正式contract|
+|T-C11（Web）|同scope两个真实挂载owner、StrictMode及外部injected连接|.1 第一个卸载仍保连接，最后owner卸载才close一次；重新挂载正常续流|.2 injected连接不被框架释放；.3 scope切换/重复effect清理不多开SSE、不传旧消息|Web真实组件生命周期+浏览器连接计数；close调用与network记录|E11限定已验；不代C10真实网络恢复|
+|T-P01（BFF→Scheduler→Agent）|A/B、项目P、正式Scheduler可达、一次任务fixture|.1 正式创建独立ScheduledTask，列表不进入Conversation，P仅关联；修改/暂停/删除由owner回执持久|.2 B不能操作；同key重放不多建；.3 mutation失败/刷新/重复点击不本地假成功|真实BFFSchedulerHTTPPGRedis+Web；Task/Occurrence身份与列表|正式pin与用户入口前置；不把聊天消息当任务|
+|T-P02（BFF→Scheduler→Agent）|可控业务时间的Scheduler fixture、UTC与DST IANA时区|.1 一次/周期计算next occurrence，对比春跳/秋回/跨日边界的已批准expected instants|.2 无效zone/ambiguous本地输入按contract拒绝或显式消歧；.3 停机跨misfire窗口按策略补/跳且无重复|纯时间边界+真实Scheduler恢复；UTC时刻序列/zone与occurrence IDs|DST/misfire具体策略若contract缺失先裁，不能凭宿主时区推断|
+|T-P03（BFF→Scheduler→Agent）|正式Task、可断ACK的Scheduler→BFF/Agent传输|.1 同一occurrence重复wake/重复投递仅一个业务执行receipt|.2 同身份漂移payload冲突零副作用；.3 durable outbox提交后进程中断/ACK未知，重启读取重放同结果不新建Run|真实PGRedisHTTP；outbox/receipt/Run关联与计数|只用可控传输故障，不mock持久事实|
+|T-P04（BFF→Scheduler→Agent）|两worker连接同owned schedule与可验证DB lease时间|.1 worker1认领后终止，lease到期worker2恢复同occurrence|.2 worker1旧generation晚提交被拒；.3 两worker竞争和重启无双执行/双receipt；DB时间而非sleep猜过期|真实进程+PG/Redis；claim/fence/执行日志、清理|Root独占进程资源；不杀共享worker|
+|T-P05（BFF→Scheduler→Agent）|含已接纳及未接纳occurrence的Task|.1 暂停/删除停止未来调度；已接纳Run按其真实终态完成，串行dispatch只terminal后释放|.2 暂停与admission竞争保唯一结果；.3 重复暂停/删除/terminal投递不造取消或多放行|真实三ownerHTTPPG；task state/receipt/head关联|删除已接纳任务语义按现contract；缺失先裁不伪终态|
+|T-F01（Storage→BFF→Web/Agent）|A个人/P项目权限；真实ObjectStore与scanner、owned上传对象|.1 上传已知字节/MIME/大小并scan clean，readback hash一致、正式可用|.2 超限/错MIME/无权项目拒绝；感染fixture隔离不下载；.3 上传取消/断线重试不留下伪ready或重复blob|真实StorageHTTP对象存储scanner+浏览器；对象hash、scan状态/回收|scanner double单列，不算真实感染验收|
+|T-F02（Storage→BFF→Web/Agent）|F01已ready附件、另一用户B和项目Q|.1 列表limit1遍历无漏重；服务重启后原附件可下载同hash|.2 B/Q越权引用和过期URL拒绝；.3 重复刷新/断线下载恢复按contract，不扩大授权或串项目|真实Storage/BFFHTTP+浏览器；附件ID集合/授权码/下载SHA|URL签名不落报告，仅脱敏属性与expiry|
+|T-F03（Storage→BFF→Web/Agent）|真实Agent任务产生已知内容作品，Storage正式receipt|.1 执行生成→发布receipt→BFF/Web卡片→预览/下载，artifact/asset/hash同一事实|.2 重复delivery不多卡，另一用户拒绝；.3 完成及活动时刷新后同作品，真实对象存储重连仍可读|真实模型或明确执行fixture+Storage/scanner+浏览器；receipt/bytes SHA/卡片数|fixture静态预置作品不充Agent生成；E53仅旧限定切片|
+|T-F04（Storage→BFF→Web/Agent）|可控制发布超时/scan失败/过期签名URL的owned作品|.1 正常发布作控制；超时显示待处理/失败而非完成卡|.2 无权重签/错误receipt拒绝；.3 ACK未知重试返回同artifact、过期URL正规重新授权，有界且不泄漏底层URL/token|真实StorageHTTPObjectStore；发布次数/receipt身份/安全错误截图|不增加永久重试或凭空成功receipt|
+|T-F05（Storage→BFF→Web/Agent）|带活引用/无引用/到retention边界的owned asset/artifact|.1 正式删除与GC按既有保留策略处理，仅可删eligible对象，活引用仍读一致|.2 非owner删除拒绝、跨项目引用保护；.3 GC与新引用竞争/失败重试不误删，物理对象与metadata最终一致|真实PGObjectStore；DB时间、引用集合、精确对象existence|retention若未裁先阻该分支，不forever skip或共享清桶|
+|T-K01（Web）|无正式Platform回执的插件卡片、延迟与失败响应|.1 点击Add/Connect仅pending；成功必须真实receipt才标状态|.2 503/拒绝/无endpoint不得显示Connected；.3 重复点击/取消/刷新不靠local状态假成功|Web组件+浏览器；请求/回执与标签时序|E06限定已验，真实MCP接通另K05|
+|T-K02（Platform→Storage→BFF）|有权发布Skill的A、整包fixture和真实Storage/Platform|.1 草稿→整包上传→校验→发布→读回版本/digest/文件hash一致|.2 zip穿越/绝对路径/符号链接或炸弹/错hash拒绝且无发布；B无权；.3 ACK未知重试同版本不重复发布|真实HTTPPGObjectStore+contract；manifest摘要与拒绝码|沿当前ZIP profile，不恢复旧裸URL或body自报tenant|
+|T-K03（Platform→BFF→Web）|A/B账户、已发布Skill两版本|.1 安装/启用/禁用/移除/重装后fresh GET与Web显示同owner结果|.2 B改A安装拒绝、未知版本拒绝；.3 同key重放同身份，重复/并发改变按owner正式幂等/冲突规则（未定义先裁），刷新不复活已移除项|真实PlatformBFFHTTP+浏览器；installation ID/version/状态|历史personal切片不替当前消费者pin|
+|T-K04（Web→BFF→Agent）|已安装启用Skill refs，有真实可加载包及撤权入口|.1 Composer按序选择refs并提交，Run冻结集合与真实加载阶段一致|.2 禁用/撤权/另主体ref拒绝零工具加载；.3 发送后改选择不修改已接纳Run，重放receipt同refs，[]不伪造Skill进度|真实Web→BFF→Agent→Platform；admission/phase/加载证据|HTTP5正式消费者前置；选中UI不当ready|
+|T-K05（Platform→BFF→Web）|A可授权MCP连接、provider测试账户/服务及B|.1 connect→scope consent→owner receipt，目录、已连、需重连三态有据|.2 拒绝scope/错audience/他人connection拒绝；.3 撤销后刷新失效、重连新receipt，ACK未知不双建|真实Platform/providerHTTP+Web；opaque connection ID/安全状态|正式mutation/凭据边界未实现先实现；不保存token到证据|
+|T-K06（Web→BFF→Agent→Platform）|K05合法opaque MCP ref、Agent执行与可撤销授权|.1 选择ref后每次实际tool call取得fresh授权，args绑定真实身份|.2 撤销后下一调用0 provider请求；错ref/注入tenant/复用过期proof拒绝；.3 重试/取消不复用失效授权|真实PlatformAgent/provider；逐call authorization与provider计数|旧free-text mcp_servers单轨替换后执行，无fallback|
+|T-K07（Platform→Agent）|正式tool closed schema/profile、权限与可慢响应工具fixture|.1 合法输入执行并校验输出；.2 额外字段/类型错/越权/恶意提示不突破工具权限|.3 超时取消有限，晚结果不再次投递；schema漂移与错误输出fail closed并给安全code|contract+真实工具transport/授权；输入摘要/调用数/安全错误|受控工具fixture不等于外部provider可用性，分别列层级|
+|T-A01（Agent→BFF→Web）|同会话简单提问与需计划复杂任务，含子Agent|.1 简单任务仅回复；复杂任务主Todo完整替换、有序状态推进，[]清空|.2 101项/超限/非法status拒绝不推进水位；.3 子AgentTodo不覆盖主表，重复/并发/replay/刷新保同Run事实|Agent真实PGHTTP→BFF持久投影→Web；列表/seq/截图|E35/E98只owner切片；正式消费者与策略待验|
+|T-A02（Agent→BFF→Web）|有Skill refs的实际Run及可控制resolve/load失败|.1 resolving→loading→ready来自真实阶段，展示同activity/preflight身份|.2 failed有closed error_code，非failed带error/null拒绝；无选择不伪ready；.3 重试新preflight不串旧phase，刷新一致|真实ownerHTTP→BFFPG→浏览器；阶段源seq/identity|HTTP5 source_refs活动min1、顺序/唯一性/容量按机器门|
+|T-A03（Agent→BFF→Web）|真实工具成功/失败/慢调用；安全canary原始payload|.1 显示running/completed/failed与固定display_code，activity/segment不混assistant身份|.2 raw args/result/stack/token/隐藏推理不进入public ledger或页面，越界字段整帧拒绝；.3 cancel/重连不伪completed或双行|真实调用+PG投影+浏览器；closed对象、源seq/网络脱敏/截图|不要用空TOOL_CALL_ARGS/RESULT冒充详情；HTTP5消费者前置|
+|T-A04（Agent→BFF→Web）|同Run多个group/item的waiting完整pause，A/B身份|.1 同次提交全部required decisions→accepted→native consumed→继续执行，完整revision恢复|.2 stale pause/缺项/非法decision/校验错明确拒绝，B0写；.3 同key重放、ACK未知、刷新重试不重复工具副作用|真实Agent checkpoint/PG与BFFWeb；pause/revision/receipt/执行计数|resume回执不当native已消费；unknown需查询恢复|
+|T-A05（Agent→BFF→Web）|各有Todo更新、Skill loading、tool running、HITL waiting、delivery ready的五暂停点|.1 五点分别硬刷新，先耗尽同snapshot anchor的有界process页，再严格从同watermark续流还原完整集合；terminal及后继queued仍保最近START过程|.2 另一scope不可见；.3 断线重挂/重复frames/后台完成不丢Todo清空或旧phase，不多作品卡|真实浏览器+生产HTTPPG；每时点前后完整状态、cursor/截图|复用C09一致快照机制，但五点必须逐一实际运行|
+|T-A06（Agent→BFF→Web）|主Agent委派两个子Agent，一成功一可失败/阻塞|.1 安全opaque身份/segment区分并发子任务，主回复只包含正式汇总|.2 私有prompt/tool raw不公开；.3 子任务失败/用户取消时所有owned任务有界退出，重连不把子文本拼到主回复|真实执行/线程进程+HTTPPG+Web；状态/汇总/终态计数|纯native cleanup已验不等真实provider取消；每种backend另记|
+|T-B01（Billing）|冻结price revision codec、整数/rational边界向量|.1 合法revision canonical digest相同，7/5有理数精确编码（实际成本计算归B05）；.2 小数格式/溢出/负值/额外字段/恶意结构拒绝|.3 同revision不同内容冲突，序列化重读不改变数值/摘要|纯规则/contract；输入分类、expected整数与hash|E07限定通过，真实收费另B04–07|
+|T-B02（System→Agent）|System正式route/model/provider revision、实际模型可用|.1 每call/attempt记录实际route digest/model/provider与usage来源，重试独立attempt|.2 未授权route拒绝零provider调用；.3 失败/晚usage/缺用量保持unknown，不补0或猜tokens|真实SystemAgent/provider；attempt ID与脱敏usage/proof|技术route不是调用证明；凭据值不落证据|
+|T-B03（Billing→BFF→Web）|Billing授权赠送权限A、普通B、明确账户余额|.1 正式赠送命令→持久ledger→余额/流水Web一致；重复同key一条入账|.2 B赠送/越权账户拒绝；.3 撤权后旧会话0入账、ACK未知按receipt恢复，刷新不假充值|真实BillingHTTPPG+BFFWeb；ledger ID/金额/余额等式|禁止直改DB充账、免费补偿绕余额|
+|T-B04（Billing→Agent）|实际attempt前余额充足/不足两账户，可控并发调用|.1 每attempt调用前有reserve，余额不足0provider请求|.2 并发reserve总额不超预算、跨账户拒绝；.3 同key重放/ACK未知查receipt后再调用，不一张许可跑整Run|真实BillingAgentPG/provider；许可→调用时序/余额与预占等式|各attempt规则按正式授权接口，不猜全Run预算|
+|T-B05（Billing）|冻结采购价/币种换算/revision与不同舍入边界|.1 采购成本×7/5再按批准换算/舍入结算，前端只展示owner值|.2 非法币种/负值/越界ratio拒绝；.3 中途改价不改已冻结attempt，重放同结果|Billing规则+真实PG命令；整数分项/版本与总额|7/5是加价40%；具体舍入/汇率顺序以ADR/contract，无规则先裁|
+|T-B06（Agent→Billing）|已有reserve与真实usage evidence、可控晚结果及失fence|.1 正式结算/增额/释放保持余额+预占+流水守恒；重复证据不重扣|.2 跨attempt/漂移usage拒绝；.3 结算ACK未知、旧worker、晚usage、进程重启由reconcile闭环而非terminal强结|真实AgentBillingPGHTTP；证据/ledger幂等键、对账差异|unknown成本保持待对账，收费资格依B07裁决|
+|T-B07（Billing）|失败/取消/部分输出/unknown成本四类真实事实样本|.1 先冻结每类收费资格、保留/释放/结算与通知业务规则，再给精确余额预期|.2 待裁后覆盖无权/重复证据、并发取消与晚usage；.3 重启对账不改变已裁资格|决策阻塞；当前只整理事实样本与待决问题，不执行收费结论|禁止预设全免费、全release或全收费|
+|T-B08（Billing）|用户要求的最终支付阶段；渠道sandbox与有权账户|.1 后置执行订阅/checkout成功及refund，owner账与sandbox对账相同|.2 webhook坏签名/错账户拒绝；.3 重复/乱序/ACK未知通知不重复入账，取消checkout不假充值|真实渠道sandbox+BillingHTTPPG+浏览器；脱敏事件ID/金额与对账|支付最后；未到阶段不以mock算支付通过|
+|T-U01（Web）|已登录A、正式套餐/模型目录与Home提示入口|.1 点提示只写草稿，POST/Run/计费计数均0；明确发送后才admit|.2 不可用模型/能力不作营销假承诺；.3 More/返回/切项目/刷新保正确草稿且不自动发送|真实浏览器+网络计数+owner查询；截图/0mutation证据|E41纯门不替浏览器；正式模型/套餐owner前置|
+|T-U02（Web）|中文IME、桌面/窄屏，文本与合法/非法附件fixture|.1 多行输入Shift+Enter换行、Enter按配置发送，IME composition Enter不误发；外观无多余内嵌方框|.2 空/超限/上传中禁发且提示明确；.3 pending双击不双POST、Stop不丢草稿，取消上传恢复输入|真实浏览器/键盘IME+axe/截图；POST数和focus|视觉确认按用户ChatGPT偏好，不凭组件库名算验收|
+|T-U03（Web）|桌面/窄屏、多项目/会话、长文本代码表格与失败消息|.1 对话/rail/作品布局可读可滚动，长内容不遮composer，失败footer靠近所属正文|.2 窄屏操作无不可达按钮/横向溢出；.3 切会话/开作品/返回保滚动与scope，错误不生成假retry|浏览器不同viewport/截图+可点击区域检查|公开terminal retry未有API不放假按钮；设计确认与功能证据分开|
+|T-U04（Web）|已实现loading/empty/error/disabled/reconnecting/partial/success状态fixture|.1 全键盘完成登录后导航/输入/控制，focus-visible顺序合理，axe无违例|.2 屏幕阅读标签/错误关联/reduced-motion不漏状态；.3 离线重连/取消弹层恢复焦点，视觉与bundle满足既定预算|真实浏览器axe/键盘/视觉+build预算；报告与截图|预算阈值取Web现ACCEPTANCE，缺阈值先定不临时放宽|
+|T-R01（Root）|Root登记的自有UUID库/key前缀/进程组，共享资源只读基线|.1 正常执行结束仅自己资源删除，库absent/自有keys0/PGID终态|.2 setup半失败/cleanup一项失败仍尝试其他独立回收并报错；.3 ACK未知按fsync intent精确查，不扫描删除unknown|真实资源包络验证；owned ledger、cleanup与共享基线|E03仅该次隔离已验，每新执行仍独立记录，不新运维体系|
+|T-R02（各owner→Root）|各owner正式可执行产物/现ACCEPTANCE及owned进程资源|.1 启动health/ready条件正确；实际请求超时/取消后无late commit；SIGTERM有界drain|.2 启动半失败/依赖断连不ready，旧lease拒写；.3 active/queued/native/backend构造中退出后恢复事实、无悬挂资源|真实进程HTTPPGRedis及所需backend；PID/时间线/terminal与回收|现System/Agent片段不充全owner、真S3Docker/模型分支|
+|T-R03（Root/各owner）|A/B同tenant与C跨tenant、恶意输入、secret canary与固定依赖|.1 每公开/内部受信入口权限矩阵正控；.2 ID置换/注入/oversize/错proof拒绝0副作用|.3 重放/过期/撤权/日志异常无token/raw泄漏；源码/依赖/secret扫描保全部结果，跨ownerSQL门0越界|contract+真实HTTP+扫描；安全code/脱敏canary命中数/报告SHA|扫描工具缺失记未验，不拿lint代scan或创建部署角色|
+|T-R04（Root）|全部owner当前验收完成、兼容pin冻结；只自有备份恢复fixture|.1 正式组合真实用户旅程与release smoke绑定同构建image/artifact SHA；.2 备份/恢复自有持久事实后比对identity/幂等receipt/未决outbox并恢复执行|.3 恢复中断/重复恢复/依赖失败不重扣不重复执行，资源完整回收；失败不得以历史绿色替代|真实组合/浏览器/PG恢复/镜像smoke；SHA清单、前后事实摘要|Wave7最终门；SLO目标非压测实测，不扩部署工作|
+|T-S01（System→IAM/BFF）|System具名Site/Host/Workspace/Runtime/Policy及A/B授权|.1 正式HTTP创建/读/变更/禁用按version与生命周期持久，消费者看相同revision|.2 unknown/disabled/expired/越权拒绝，secret字段不返回；.3 重复命令、并发版本冲突、撤销后重读不复活|真实SystemPGHTTP→IAM/BFF；实体ID/revision/错误与0写|E88只lifecycle切片；不新建万能configs|
+|T-S02（System→Agent/BFF）|正式模型目录、两授权路由及可控故障gateway|.1 用户选择实际模型，Agent按固定revision/digest调用对应gateway，结果来源可核|.2 不可用/越权模型拒绝；.3 重试/故障切换仅获授权范围，超时取消不静默换模型，重放冻结revision不漂移|真实SystemAgent/BFF/provider；route/attempt摘要与调用目的地|模型配置存在不等真实调用成功，用户网关单独验|
+|T-G01（Platform→BFF/Agent→Root）|当前Platform及所有BFF/Agent消费pin、remote/path/env/schema/Redis映射清单|.1 在批准cutover切片一次替换正式身份，所有消费者构建/调用/读持久事实成功|.2 旧capability alias/path/proto/env不再可达或被明确拒绝；.3 中断回收后仅一个正式写入身份，无旧新双写|静态引用/contract生成+真实ownerHTTPPGRedis；身份清单与0旧路径|物理当前kokoro-capability事实保留至真迁移；不冒称改名完成|
+
 
 ## 九owner验收层级覆盖（同一任务矩阵的覆盖检查，不另算完成数）
 

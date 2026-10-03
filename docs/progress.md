@@ -1,3 +1,17 @@
+## R123 测试任务计划复核（用户进度请求，2026-10-02）
+
+Root本次实核现矩阵70唯一ID与逐组编号计划70ID完全同序：12通过、5失败、13待复测、37未验、2决策、1后置；0整组最终验收执行中。70组前置/步骤/预期/负例/恢复/证据计划已展开，执行前仍须绑定实际账号、资源、版本及命令，执行后逐子例回填结果；计划展开不计通过。更新当前陈旧的“尚待RED”和“仅覆盖目录”描述，不改失败历史。
+
+Root实际命令 `python3 -m pytest scripts/tests/test_engineering_handbooks.py scripts/tests/test_ten_repository_standard.py scripts/tests/test_repository_topology.py -q`：exit0、305 passed in 3.01s；原句柄69542已自然终态。`git diff --check` exit0。只测试治理工具/核台账，不是本次新增业务E2E，也不关闭E75标准扫描报告或E100消费失败。子仓/Billing/uv.lock任务外修改保留；开发task、测试test-cases、证据progress职责分开。 独立只读four_owner_fixes_review_r31复核70ID/同序/状态/历史边界，P0/P1/P2=0/0/0；没有运行产品或修改文件。
+
+## R123 / E100 BFF正式HTTP5消费行为RED与测试计划展开（2026-10-02）
+
+上一goal回合为progress：Root54ed2508已校测试台账旧态；本回合推进实际消费者失败门，不只是状态重述。BFF同owner tests-only四现文件追加42用例，原106前缀保持；Root在停写冻结后独立Node22.22.2实际build0，四file148项120pass/28fail/0skip/674.846ms，纯测exit1为真实预期RED。28分支涵盖合法Todo/Skill/tool/subagent消费遗漏与旧raw/非法Skill未拒；独立spec/quality审0/0/0，不含导入/工具/测试自身伪RED。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r123-bff-red-root-w7be366i/manifest.json` SHA256 9f3bae90196cee783b66fe399b2cbdcc988a7b6b153af0389b50d462bed9310f；保护436文件前后hash一致，build/test两child自然终态，forced_stop=[]。仅测试自有localhost HTTP fixture，无PG/Redis/provider/浏览器测试；不声称真实Agent服务联调。
+
+独立RED审 `/tmp/kokoro-r123-bff-red1-review.md` SHA256 5149c6ba1cc2f97e6f69e89bf05a283ed51d1c592f6074f1594a9b182ad10331。D0独立审三个P1被Root裁正：有界固定snapshot-anchor过程分页而非owner执行上限；最近durableSTART与FIFO head解耦，terminal/后继queued不丢过程；不自创phase单向状态机。Root另核registration当前清START代码缺口，后继保START与GC保护一并RED。审初哈希把diff标识当完整SHA已更正，实际四docs仍交付hash；纠正后的D0报告f470b91d25d4faf619a7c13c8459964e88f3d37324d71375b43b12460782db2e。已续派同writer仅四D0纠偏，尚未授权生产GREEN/SQL/public7；原Git由Root独占。
+
+测试台账T-Q02及T-A01–03/A06共5组置失败，旧有限通过不抵消真实新RED；70组现12通过/5失败/0整组最终验收执行中/13待复测/37未验/2决策/1后置。42新自动用例不等42完成任务，28失败不等28独立缺陷。与此同时agent4只读草案70原ID逐组前置/编号操作与预期/权限异常恢复/证据层级已Root逐行检查整合现test-cases，集合顺序一致、历史归档suffix保持；纠正K03不发明版本冲突、B01只codec不冒充收费、A05耗尽锚定页与terminal恢复。计划展开不加通过数；具体运行endpoint/账号/资源ID/节点仍须执行前绑定。完整Wave0–7保持active，正式积分及支付后置不丢目标；Billing/uv.lock任务外变更保留。
+
 ## R123 测试任务台账核对（2026-10-02）
 
 用户要求区分测试task与开发派工。Root按main97b5f4a5当前矩阵实际核70行/70唯一ID：13通过、0最新失败、0整组最终验收执行中、13待复测、41未验、2业务决策、1支付后置。通过均保留具名版本/范围；未重跑产品旅程，不称当前组合闭环。只读four_owner_fixes_review_r31复核相同统计，指出页头/T-Q03/下一步骤旧态。Root只修现test-cases当前摘要/该行/后继顺序与CURRENT一处下一步；历史归档suffix逐字保持，失败历史不删除。完整逐用例步骤尚未展开，70组目录不等于完整测试执行。
