@@ -1,10 +1,20 @@
+## R147 首屏系统验收边界（2026-10-03）
+
+Root37618在Node22真实Next/Chromium执行现OIDC完整系统文件：48pass/0fail/0skip、73.27s、自然exit0，测试a675761c门后hash相同。新增ProductSession已认证cold/reload各12s及各阶段session200、正文shell/composer可见、填入/清空；原pending/503/登录/删除ACK等47节点保留。独立最终4715447a静态0P0/P1/P2。严格IAM/BFF fixture不是实际全owner链，也未复现用户旧tab21的根因。原tab21读取/关闭仍超时；新tab22同一conv_ffd7正文与输入已真实IAB验证，保留截图。仅测试变化，无Web生产修复、无应用重启；T-U04仍开放，70组仍11/6/14/38/0/1。
+
+Storage C2真PG初版27pass27fail+2errors：Prisma7不接收advisory lock的void结果；原writer仅转boolean列，Root46506同54再跑53pass1fail，latePUT restart删除回归仍RED（line398）。ownDB已删除/sourcehash相同；独立8e7a85a8另两P1锁序/已有cleanup身份未核继续阻发布。不能凭纯门或53绿发布，下一按原owner补精确行为门，不干扰当前UI诊断。
+
+## R147 当前用户首屏故障优先（2026-10-03）
+
+用户截图原tab21持续“正在加载工作区”；此前新账号窄旅程通过不证明当前页面健康。Root原tab21读取/关闭均CDP focus命令超时，未取得该页DOM/API证据、未关闭成功；直接GET app200/30ms及6个JS chunk200只证服务可达与部分资源。新建唯一临时tab22同会话：实际导航恢复到/app、对话145原正文可见；reload后再次达到rail+thread+composer，输入框填入/清空可交互，console error/warn=[]。新tab已markDeliverable，截图 /tmp/kokoro-r147-workspace-interactive.png；App显示请求为queued，不冒原窗口已切换。未改Web源码/未重启服务/未重置数据，旧页为何卡住仍待定位，不能称根治。Root优先本用户路径，原70组不转绿。
+
 ## R146 当前推进与真实未闭环项（2026-10-03）
 
 Storage R146 Conversation具名释放、Project合法Artifact graph、全scope fence及最小审计候选已实现，但仍未发布。Root最新真实PG/Connect41项通过（3文件/0skip）；包含空scope重放、合法draft/final共享图释放、14类损坏图/业务全rollback、错误policy、4类坏receipt拒绝和Project7/Upload9。正规draft误判、receipt标题残留、非CLEAN图误释放均先真实RED再修；4个Prisma模拟关系fixture失败单独记录并纠正原生0FK注入，未冒产品RED。
 
 前次审查将锁前receipt快照列P0，但Root新增真实barrier在原source下40/40 GREEN，未复现：PrismaService实际Serializable＋有界全事务重试，先前默认READ COMMITTED假设错误，独立b8a66080已撤回该P0，精确DB/key/PID/blocker与非事务xid证明SSI全事务重进现已Root41项复验，独立复审d16a3063已确认这项精确证明；其余矩阵仍开放。不得为了RED降低隔离或称源码已修；损坏Upload key跨scope防护已由Root54510真PG反例确认（41pass/1fail、release错误成功），owner先三D0最小归属守卫；物理S3删除仍未验；全入口/重放/晚回/竞态矩阵未齐，不能发布或称T-C05通过。Provider/S3物理GC未验，逻辑释放不是物理终态。
 
-BFF单一Move机器7.1候选Root契约58/58、semantic90冻结operation、lint0/4既有warnings；原owner已写真HTTP/PG测试，与Storage并行。Root正式Move实际503 agent_not_configured而非期望200，证实本地业务Move误落通用Agent fallback；installer/build0、ownDB已删、源hash不变/Redis key集合不变，C4已实现并冻结：Root65960相同正式HTTP/PG主fixture转1pass/0skip，含move/replay/异义/no-op/撤权/运行事实保全与请求并发；后继C5已真实确认成功schema UUID缺段及锁阻塞超5.2秒两缺陷，纯门741pass/1skip不消除；C6准原owner窄修，仍非确定性全部竞态、全owner门或Web验收，未发布。Move采用nullable canonical target、同步200、运行中保Run/stream/Message、sorted Project→Conversation及同PoolClient final receipt；并发同key输家全事务回滚后重读赢家响应，不造pending表。Project DELETE/N+1后继仍等正式producer/pin，Task关联选择只挡最终DELETE，不停其他切片。
+BFF单一Move机器7.1候选Root契约58/58、semantic90冻结operation、lint0/4既有warnings；原owner已写真HTTP/PG测试，与Storage并行。Root正式Move实际503 agent_not_configured而非期望200，证实本地业务Move误落通用Agent fallback；installer/build0、ownDB已删、源hash不变/Redis key集合不变，C4已实现并冻结：Root65960相同正式HTTP/PG主fixture转1pass/0skip，含move/replay/异义/no-op/撤权/运行事实保全与请求并发；后继C5已真实确认成功schema UUID缺段及锁阻塞超5.2秒两缺陷，纯门741pass/1skip不消除；C6已Root契约2/2和真实HTTP/PG2/2复验转绿（锁失败4524ms内typed503），完整纯门741pass/1既有skip；独立源码0P0/P1，但pool迟到/断连/COMMIT恢复及完整交错仍开放，C7真4项通过（pool迟到回收/abort精确backend退出），COMMIT恢复及完整交错仍开放，非全owner或Web验收，未发布。Move采用nullable canonical target、同步200、运行中保Run/stream/Message、sorted Project→Conversation及同PoolClient final receipt；并发同key输家全事务回滚后重读赢家响应，不造pending表。Project DELETE/N+1后继仍等正式producer/pin，Task关联选择只挡最终DELETE，不停其他切片。
 
 T-B07依用户决定：只结算核实的实际消耗、释放确认未用预占，unknown持久待核实/对账；Billing唯一计价/账本，前端只展示。真实非零收费链仍未验，支付最后。70组仍11通过/6失败/14待复测/38未验/0业务待决/1支付后置，原测试编号内容不改。唯一受管32044保留；原Billing候选和uv.lock均保护，未提交在途子仓gitlink。
 

@@ -1,3 +1,25 @@
+## R147 用户首屏真实系统结果（2026-10-03）
+
+Root35425原两治理文件18pass/21.28s/exit0，log SHA3cf839d3dd0ee357fe37d01796c1635bf3fffec1070ef67878d431d21c18e49e；四台账diffcheck0、原70组suffix SHA831a2160保持，uv.lock原f7e1c30d不变。只提交四台账，不暂存Web测试/BFF/Storage在途gitlink或Billing候选。
+
+Root78336初测试5pass/43名称过滤skip，不能冒完整48；独立13a828e5发现累计session计数及未显式cookie两P1，原writer同file窄修a675761cd74cc43338ede3471079db4310f738fc4fddaf496e69cf2f4f834152，Node22类型/target lint通过；最终独立4715447ac938f6eeaa789672a0530cdff8689fab3736dacee79634f1a8fded16为0P0/P1/P2。Root37618完整48/48、0skip、73.27s/exit0，log /tmp/kokoro-r147-web-workspace-root-full-system.log SHA5e18345f6d87e017a12dd9c4aab9c3687329bc276bff49da84acbf101ec975b7；门后测试hash相同、fixture child/browser/origin-owned Redis cleanup自然完成，无共享reset、唯一32044保留。只限定系统行为，不是原tab21恢复/实际全owner/provider/Billing验证。
+
+Root82101 Storage新helper queryRaw void导致27pass27fail/2unhandled，manifestcalcif0j自有库absent/源等同；driver窄修9f7f6e82后Root46506同54项53pass1fail/0skip，latePUT restartline398真实回归不放宽。log7d61d1f4、manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-focused-green-k8a5kx6r/manifest.json SHA99b002039677d129d0bc9631a8dc56c4c09858f0934a7b6148a8ced0b3a7af7f；源等同/自有库absent。独立8e7a85a8两P1锁序及历史cleanup归属继续开放，candidate不发布/S3未验。完整目标active（工具本轮实读），70组保持，不新计划。
+
+## R147 当前工作区故障与窄恢复证据（2026-10-03）
+
+原tab21用户截图永久loading；Root三次读取CDP均focus命令超时，close也失败，未猜成session503或源codebug。Native Codex UI工具受限制未操作；不绕过保护。仅新tab22复用当前登录：cold后rail/thread/composer/145正文实际渲染，reload后再次可见，编辑器填/清可用，error/warn无记录。/tmp/kokoro-r147-workspace-interactive.png为本次截图；原tab仍未关闭、App显示请求queued、根因未定。无Web源码修复或服务重启，不冒整体E2E完成。只读报告01c47094指出SSR本来loading，优先hydration/assets/renderer与probe实际请求分类，10s探针已有有限故障态不能盲改spinner。用户问题升当前关键路径。
+
+Root30792 BFF C7真实4pass/0skip，pool超时回收及精确backend abort通过；manifest3864fcb6，自有库absent/hash与Redis相同，独立两tests dca3fd6e认可，COMMIT/rollback与完整交错仍未验。Root62535 Storage oracle精确target修后真54项50pass/4fail，crossscope/tenant release错成功、target pending HEAD及ready delete确实调用；manifest28b4daba，ownDBabsent/源不变。首次50/4包含全run HEAD统计oracle污染已单列，不靠减少业务门凑RED。准S-KEY-C2原owner按三D0v3最小source，当前用户页面由Root独占诊断。
+
+Root20460两治理文件18pass/23.26s/exit0，日志 /tmp/kokoro-r146-heartbeat-final-ledger-verification.log SHA5245dc84791f84af8c5142e9116ccc79abf43306bd95c7ef3620ef2f11f407e4。原70组仍11/6/14/38/0/1；test-cases suffix、Billing原候选、uv.lock保持。唯一32044进程保留，无新应用服务/共享reset。
+
+## R146 C6 两缺陷真复验转绿（2026-10-03）
+
+Root canonical response契约2pass/0fail，log d3b25c5e；Root5433真实HTTP/PG原C5两case2pass/0skip，Project lock失败4524ms内typed503、无partial move/receipt，正常move/replay保持；installer/build0，manifest7260a532f8ddc65d04a60a22c5c7670240d5de09c1245c701d1ffe86ed21d163，ownDBabsent/sourcehash相同/Redis集合相同。Root95438 format与完整pnpm check exit0、741pass/1既有资源skip，log /tmp/kokoro-r146-bff-move-c6-root-pure.log SHA3d53c887bd49107b9861357f2b440db28c1594f3b7b977187ddf40d9ce94c481。C6独立报告3ec0fc9生产0P0/P1、1P2；真实pool迟到/abort/COMMIT ACKloss/rollback分类及Move-message/DELETE仍未验，C7前两tests-only继续，未发布producer或冒全T-C05关闭。
+
+Storage key D0 v3已Root读核及独立07dc89a0三hash复审0P0/P1/P2：增现reconcile preHEAD/readydelete授权CAS、短tx后网络、全Storage exact key及正规writer durable cleanup gate；新object-key-ownership.store职责放置已批准，无新表/API/worker。原source冻，C1 tests-only补跨tenant与损坏pending/ready零provider反例，不能凭D0正确当源已修或物理S3通过。费用12条仍未验；原70组保持。
+
 ## R146 新增真实失败与后继准入（2026-10-03）
 
 Root C5 contract实际1pass/1fail，成功响应Project UUID pattern缺一段；Root74851同正式HTTP/PG主链1pass＋真实Project锁阻塞1fail，精确blocker PID下5.2秒仍未返回，非fixture/Pool人为超时。log /tmp/kokoro-r146-bff-move-c5-root-contract-red.log、/tmp/kokoro-r146-bff-move-c5-root-lock-red.log；manifest120932e26b0ea53d51538d1e7b9b1e516dcaec4f5c98af239eebeb8dbeedf62d，ownDBabsent/hash相同/Redis集合相同。Root93196纯门741pass/1既有资源skip不消除这两真实缺陷，C6准原owner窄修，尚未发布/consumer pin/完整恢复矩阵。

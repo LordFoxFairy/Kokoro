@@ -1,3 +1,23 @@
+## R147-W-LOAD-SYS 当前用户首屏系统诊断（2026-10-03）
+
+状态：限定48系统节点已Root验收，测试候选未发布；旧tab21根因/关闭仍失败，T-U04不转绿。测试a675761c，独立4715447a 0/0/0；Root37618 Node22完整48pass/0skip/73.27s。Storage C2实际53/54、latePUT回归及独立两P1继续开放，源码停止写入，不放行发布。
+
+| 项目 | 本切片 |
+|---|---|
+| 目标/P0 | 已认证用户冷打开与刷新必须收敛为工作区，永远loading不能通过；真实Chromium诊断hydration/script/CSP/session边界 |
+| Owner/writer | Web / agent4_lifecycle_review，Root审查、资源运行及Git；Storage已冻源独立只读审查 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main49721a5985709daa1456eb27f3bbef8e3ee8041b，clean；以实际git复核纠正SHA |
+| 写集 | 仅现tests/system/oidc-rp-next-http.integration.test.ts；生产源码、contract、schema、依赖、runtime与Root台账不改 |
+| 放置/依赖 | 现OIDC系统文件已拥有Next/Chromium/session fixture与安全诊断；复用而不建第二runner。读取Web三设计/本地Next指南/CODEBASE_MAP |
+| 验收 | 真实Product cookie，cold+reload，12s工作区可见且composer输入可操作；失败保零敏感诊断，既有pending/503恢复用例不删不放宽；非Mock/单测 |
+| 边界/交付 | 不保证预先RED、不假改源码；冻结测试hash和类型/lint结果，Root运行真实系统门并继续IAB验收。旧tab21未关闭/根因未定，tab22恢复不冒根治 |
+
+### R147 用户当前工作区无限加载（2026-10-03，优先眼前用户路径）
+
+|任务|归属 / Agent / 基线 / 文件集|依赖与退出门|
+|---|---|---|
+|R147-W-LOAD-READ|agent4_lifecycle_review只读Web；main49721a5985709daa1456eb27f3bbef8e3ee8041b clean；现AppGate/sessionprobe/runtime/appframe与对应system tests/三D0|用户实际同tab21会话conv_ffd7截图无限loading；Root无cookieGET app200/30ms、CUA同tabEmulation command两次超时，尚未定位请求/JS。只读定位前端checking/订阅/Effect/race/hydration/CSP可能点与最小真实系统RED，不改源/数据/Git/服务。Root独占当前浏览器/运行进程诊断与验收；原BFF C7已真4pass、Storage已真releaseRED待后继，不拿它们冒用户界面已好。|
+
 ### R146 当前推进：Conversation资源生命周期（2026-10-03）
 
 上一goal turn归类为progress：Root6f83f264与Storage2f855816正式发布，171/20subtests及owner659实证改变了后继依赖；完整goal保持。当前唯一32044仍live，未重复服务。
@@ -26,7 +46,10 @@
 |R146-AGENT-USAGE-RUNTIME-CUT|agent4_lifecycle_review只读；Agentmain2d2ad9严格usage artifact；现runtime/provider/attempt journal与三D0|独立调查已发布artifact到真实provider调用/持久revision/seal/可靠投递缺口，给最小原owner写集与依赖。只读报告3993d247已交，当前汇总callback不等逐attempt持久runtime；只/tmp报告，不写仓/Git/服务/数据，不复制Billing事实，不重新发明schema，不冒真实收费已通过。Root评审三设计门后再派owner实现，当前无Agent writer。|
 |R146-BFF-MOVE-C5-RED|原BFF唯一writer；冻C4候选；仅test/contract/openapi-contract.test.mjs、现chat-facts.integration.mjs与三D0最小预算澄清|独立d9b00ca7发现P0成功schema UUID少一段、P1生产SQL锁无超时、恢复矩阵不齐；Root完整pure虽741pass/1skip仍不放行。先真实canonical响应pattern/缺段负控RED、own PID blocker下正式HTTP有界退出RED；Root复跑后才准canonical pattern与Move私有deadline窄修。保持源冻结，不调测试pool冒生产预算；main/public/pin/SQL/其他owner不改。|
 |R146-BFF-MOVE-C6-GREEN|原BFF agent_chat_contract_gate唯一writer；maina68cbe55＋C4/C5冻结；仅现OpenAPI response project_ref pattern、semantic checker与contract test，现chat-repository Move私有路径/route必要取消传递、现integration及三D0预算段；新文件须再报放置门|Root契约1pass/1fail canonical响应不匹配；Root74851真PG主链1pass/锁等待1fail超5.2秒，manifest120932e2，ownDBabsent/源与Redis不变。准最小修正canonical regex并强化正负schema语义；Move总5s含pool acquire/重放/SQL/重试，每轮锁≤1s、statement≤remaining、≤4轮，晚resolve归还Client，未知COMMIT仍503；不全局改Pool、SQL/schema/其他owner/DELETE/pin/依赖。冻结后Root重跑同RED→GREEN、全门和独立审，恢复交错矩阵另留门，T-C05不转绿。|
+|R146-BFF-MOVE-C7-RESOURCE|原BFF唯一writer；C6源repo0329c7ae/route dfb0eab0冻结；仅现test/chat-facts.integration.mjs|Root5433正式HTTP/PG2pass/0skip，锁等待4524ms内typed503/零partial；Root95438纯741pass/1原资源skip。独立3ec0fc9源码0P0/P1，但pool late acquire、客户端断连/late query、finalCOMMIT未知与rollback分类仍未验。先只补前两真实资源行为，用own pool饱和及精确backend blocker/客户端abort，确认有限503/客户端断连、late client释放、PGbackend退出、无partial与pool后继可用。源码/机器/其他测试/Schema/Git/共享资源锁；冻后Root同runner，不能mock PG或把服务timeout放大当通过，ACKloss与message/DELETE交错继续开放。|
 |R146-S-KEY-D0|原Storage storage_project_lifecycle_owner唯一docs/test writer；main2f855816＋key test64168214；仅三D0现scope-release段与本次key case错误lifecycle oracle|Root54510真PG/Connect41pass/1fail：foreign-key损坏正式release实际成功而非FailedPrecondition，manifestb87a0ee9，ownDBabsent/sourcehash相同。先裁owner内跨Upload/Blob cleanup key归属守卫及失败回滚；比较canonical key证明和跨表归属检查，覆盖tenant/scope/bucket、并发cleanup与历史损坏task防线；不凭正常seed简化吞错。修本例CreateUpload已创建active lifecycle的oracle为前后相等，不动拒绝/外scope保全/零cleanup断言。源码/Schema/API/Git/数据服务锁；三D0冻结/独立审后才准最小source。|
+|R146-S-KEY-C1|原Storage唯一writer；D0 v3TECH956fe02a/APIc2919e60/DATA45435dfc；仅现conversation-scope-release及object-retirement integration|Root与独立07dc89a0三D0 0P0/P1/P2，批准global exact-key跨四表/shared key-lock、全部正规writer先核durable cleanup fence、provider短tx外、preHEAD及delete授权CAS、无schema。先真PG tests-only增跨tenant damaged alias与pending/ready损坏cleanup零HEAD/delete保durable work、正常controls；现release已41pass/1fail真实RED保留，Root复跑新增worker RED后才准新ownership store＋5现source白名单。CAS fence/crash/notBefore/两连接writer交错后继仍须验，provider double不当S3。|
+|R146-S-KEY-C2|原Storage唯一writer；冻D0v3与Convo9ae39ed3/Object0b05d5f9；仅新assets/object-key-ownership.store.ts与现assets.module/scope-release.store/uploads.store/object-retirements.store/reconcile-objects.service、现三approved integration及精确architecture|Root62535真54项50pass/4fail：cross-scope/cross-tenant release错误成功，pending targetHEAD/ready targetdelete实际发生，manifest28b4daba，ownDBabsent/sourcehash相同；首全run spy混其他key oracle另保留不冒RED。准按D0最小source，共同key lock＋all四表owner/facts guard＋持久CAS/现row防复用＋commit后网络；未知/损坏failclosed保work，不新增schema/enum/API/provider调用。冻后Root同真实门GREEN/全部工程门/独立审，CAS恢复/两连接与S3边界不凭窄GREEN关闭。|
 |R146-S-KEY-RED|原Storage唯一writer；source235881df与SSI v3冻结；仅现conversation-scope-release integration|用正式Agent BeginUpload产生P，再将本次自有P Upload.objectKey指向自有Q Blob key（不同表唯一不能代替跨图完整性）；正式release期望拒绝/全部业务回滚/Q保全，原source可能错误queued。先真PG失败，禁止source/Schema/contract/其他tests/Git/服务写；对象double不冒真实S3物理证据。Root先跑后裁最小ownership守卫，无新owner/表/API。|
 |R146-ROOT-GATE|Root独占台账/Git/资源/跨仓决定；main6f83f264；原四台账|读审三设计一致性、准入/身份/失败恢复/生成与SQL差异，之后才授权一个writer的行为contract RED→真实PG/Connect→源码→冻结独立审→Root全门。BFF Project DELETE仍未实现，T-C05未验；Billing受保护候选不抢写。|
 
