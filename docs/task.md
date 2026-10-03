@@ -1,3 +1,11 @@
+## R125 当前真实RED与覆盖补强（2026-10-02）
+
+上一goal回合progress：Root d47fba33提交测试台账。Root当前独立纯RED manifest1aca8744：build0、108项102pass/5新增行为fail/1既定PGschema skip，440路径保持/两child自然终态。当前资源首次450f6894因私有runner scrub USER漏失导致installer用户缺失；无产品测试执行，库absent/marker删除/Redis空/源保持。新唯一R124b仅恢复本机USER后资源manifest e33547f6：现canonical安装0，9selected实际0pass/9fail/0skip，三个文件串行；438实际源保持、无forcedstop、所有PGID终态、独立库absent/marker删除/Redis空。
+
+资源失败尚不代表九深层分支有效覆盖：旧cache与GC缺表显式断言、HTTP503对200/400前置可记录；三个undefined process TypeError须改为required字段显式断言，fault/delete缺表为前置未达rollback/delete规则。现RR节点缺真实并发barrier，GC缺locked-requery/eligible oldRun，historical还是currentRun，101页间变更未触到page2，故Root不授权以现节点绿色冒称完整深层验收。
+
+R125-RED-B-STRENGTH / T-C09、T-A05、T-Q02/Q12：原BFF owner bff_http5_consumer_owner唯一writer，gpt-5.6-sol；BFF main02276b6+冻结GREEN-A和RED-B七tests。只续写现test/agui-projection.integration.mjs、test/agui-http.integration.mjs、test/chat-facts.integration.mjs三个文件，其他所有源/纯tests/canonical/SQL/generated/四D0/锁/Git/Rootdocs冻结。先加process required/object/null和目标表presence断言再读字段/装fault，使当前首RED可解释。按已批准20e87b6f补真实RR旧/新完整集合（沿R118既有query barrier而非mock）；GC锁后重查与可回收oldRun正控（沿R52/R46），terminalA/queuedB保护与B START切换；101页间更新page2末项+新增102不污染旧anchor，fresh anchor含新值，合法phase/新preflight替换；historical须先真实后继START再请求旧Run锚定第一页，limit/重复/unknown/foreign权限正负向；fault fingerprint含两compact表且撤fault重试仅一套事实；provenance恢复后200。相关fixture与cleanup扩在现文件内，owned pending finally release/await与清理失败保真，不吞清理异常。SQL missing tables只是前置，不猜未来helper/import制造TypeError。禁止访问资源/服务或Git，Node22语法/format可跑，交hash后停写；Root沿R124b重新冻结和真实资源RED，然后立即同owner GREEN-C（既定三D0不重新讨论）。如个别深层必须生产先实现才到达，保留完整断言并明确标未到达，不要求伪造当前成功。
+
 ## R123 BFF正式HTTP5消费与安全过程恢复接续（2026-10-02）
 
 前置现已成立：Agent main79bf98c5aa63b9bace207afdf42d8c7aefee4fe8已Root原子59路径提交、非force推送，远端refs/heads/main实核同SHA；OpenAPI HTTP5 SHA bca8e4f4fd613e4325f594266893d5b089168cf14f2ad7a7df03f3f116af85f2。Root E97/E98当前installed资源限定通过，最终包211entries严格同已测runtime；完整用户/真实外部资源仍未闭环。

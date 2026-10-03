@@ -1,3 +1,9 @@
+## R125 当前实际推进（2026-10-02）
+
+E102：Root真正四pure108项102pass/5新增public7-snapshot-schema行为fail/1既定PGschema skip；独立现三资源file9selected0pass/9fail/0skip，源冻结/自然终态/自有库absent与Redis精确回收。三undefined process与缺表fault/delete仅前置，不当RR/GC/分页深层已验。首次私有runner漏USER工具失败保留，最小补环境后canonical真实安装0，不改角色/共享数据。
+
+Root已续派同BFF writer R125三个资源tests补required断言、真实RRbarrier/GC锁后重查/页间锚定/historical/retry恢复控制；生产/SQL/public继续冻结，后继Root有效RED→既定GREEN-C完整public7/SQL/START/GC/cache删→正式BFF/Web→浏览器。70组12通过/1最新失败/13待复测/41未验/2决策/1后置。完整Wave0–7保持active，积分正规、支付最后。下方R124为此前阶段。
+
 ## R124 当前实际推进（2026-10-02）
 
 E101：HTTP5消费代码已实现并经Root独立复验，四pure149pass/0skip、完整default731pass/0fail/1真实PG schema skip；生成18files双次同bytes及format/lint/types/build/合同lintsemantic0、440路径保持/child终态、独立0/0/0。原default旧vendor测试路径失败已窄修，历史不删。当前70组12通过/0最新失败/14待复测/41未验/2决策/1支付后置；不是产品零问题或浏览器闭环。

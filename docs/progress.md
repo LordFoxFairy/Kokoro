@@ -1,3 +1,17 @@
+## R125 / E102 Root真实过程恢复RED与测试质量缺口（2026-10-02）
+
+上一goal回合progress：Root d47fba33已提交四测试/任务/进度文档。本次Root独立运行当前七tests停写后的四pure完整文件：build0，108total/102pass/5新行为fail/1原PGschema skip，440路径保持、两child自然终态、forced空；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-pure-red-root-997i7abc/manifest.json` SHA1aca8744d0d206714926e47c54848866227c2030859aa7214dc84fb8a50038fe。五fail均为新public7/schema/snapshot目标缺口，非工具或导入；T-Q02从待复测转失败。原E101具体HTTP5消费缺陷关闭不反开。
+
+Root第一次资源runner实际运行450f6894084095fd52d5875b5c536ffb50ba1e89f005c26c70adc90a720faebe（.../kokoro-r124-bff-resource-aztg2h6k/manifest.json）：node/build0，创建自有库后canonical installer报PostgreSQL startup无user；因私有runner scrub环境漏USER，不当产品RED。新唯一R124b只加getpass及USER同本机默认role，Root审精确两行diff、原日志不删；没有改产品/凭据/数据库角色或配置。该次库absent/marker删除/Redis空/源保持/child自然终态全部真实。
+
+Root新R124b资源runner SHAde359c11b43eb604449f2bfe9de4a4ac6da4ef69073ea50732ed1d90b6c33a5b以完整438实际文件freeze ff56845c1852395e61b5a068cf2ea6ad87e4ced59180a852beffedbcde797a5f执行现三个integration文件^R124：现canonical installer0，projection5fail/http3fail/chat1fail，合9selected0pass/9fail/0skip/0cancel；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-ew2ibhci/manifest.json` SHAe33547f683d215406c3e5750d429d27b67af830091e9ca7a14a85d9534e25ee7。438源同冻结、全部PGID自然终态/forced空、cleanup_errors空；自有高熵库另连接absent、marker精确删/Redis空。原wrapper审3f407ed0为0/0/0，Root实际暴露USER工具缺口后保真修复；不以审查替运行。
+
+Root逐首failure实读：旧cache deepEqual与GC tablepresence为显式RED；两HTTP503与预期200/400不同为现缺route前置；三个undefined process TypeError不当有效行为RED；fault/deleteSQL缺表尚未达到事务/删除规则。现节点RR无并发barrier、GC无锁后重查/eligibleoldRun、historical仍current、101更新page1再查page2无法证明页间隔离；原owner停写后已沿R125卡只续派三个资源test补这些真实控制及显式字段断言，production/SQL/public冻结，Root复跑后立即GREEN-C。未把9失败叫完整深层已验，也未把worker14命名当覆盖完成。
+
+当前70组12通过/1最新失败/13待复测/41未验/2决策/1支付后置；完整Wave0–7 active。Billing/uv.lock等任务外保留，当前没有服务重复启动/共享reset/部署扩展；正式消费、浏览器、积分用户路径与E75标准报告仍未闭环。
+
+E102覆盖独立只读审报告 `/tmp/kokoro-r124-red-b-coverage-review.md` SHA993a204330c03a6f9dea391068e1832b0748ff175da1dc532cb2475cebcef825：0P0/5P1/1P2；七tests外零hash漂移，生产未变。现fingerprint其实已覆盖两compact表，Root前消息误读已更正，不重复造helper；缺的是fault卸载后同源重试与exact replay。原owner正补五覆盖项，未当完成。Root再核70ID/计数，三套治理工具305pass/2.65s/exit0与diffcheck0；仅工具回归，完整产品未通过。
+
 ## R124 / E101 HTTP5消费修复由Root复验（2026-10-02）
 
 上一goal回合progress：Root0ce28d40已提交完整70组测试计划及E100失败台账；本回合原BFF owner实际实现正式Agent5 single pin、generated18、strict process decoder、安全Todo/activity CUSTOM、删除raw网络映射/type及fatal UTF8（该新增节点writer先真实1RED）。没有进入部署/新owner/第二schema或兼容。
