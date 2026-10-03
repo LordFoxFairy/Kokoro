@@ -1,3 +1,37 @@
+## R143 两项业务裁决已确认；未执行不计通过（2026-10-03）
+
+用户已答复 T-C05「参考ChatGPT一样的规则」与 T-B07「仅结算已核实的实际消耗，释放其余预占」。两组由待决策改为**未验**，不是通过；当前70组 **11通过/5失败/14待复测/39未验/0待业务决策/1支付后置**。旧轮次计数与原70ID编号计划是历史，以下补充取代旧计划中这两组的待裁决描述，不删除其历史bytes。
+
+项目参考已于2026-10-03核对 [OpenAI官方Projects说明](https://help.openai.com/en/articles/10169521-projects-in-chatgpt) 的 Delete a project / Move an existing chat：删除项目移除其会话、指令及仅存于项目的文件，不可撤销；独立保存在Library的文件不受删除影响；会话可先移出项目。Kokoro采用相同用户语义，不凭外部产品说明宣称本仓已实现，也不照搬未批准的项目分享/记忆/数据保留期限。独立ScheduledTask不因此被级联删除；关联处理、活动Run取消与作品生命周期由BFF/Agent/Scheduler/Storage现owner契约门落实，不跨ownerSQL或物理删共享blob。
+
+Billing规则：completed/failed/cancelled都只按可核实的实际attempt用量及冻结费率、倍率/换算版本结算，不能按输出是否展示判断免费；未发provider调用不扣。已确认未用预占释放；存在unknown attempt时，只有证据能确认的未用部分可以释放，未知部分持久待核实/对账，不当0、不直接整笔release、不换key补扣。相同证据重复/乱序/晚到与取消竞态只能产生一次有效账务结果。前端只展示Billing权威结果。
+
+### T-C05 / T-B07补充系统验收矩阵（均未执行）
+
+|用例ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|状态|
+|---|---|---|---|---|---|
+|T-C05.D01 删除项目主链路|本人项目P含会话A/B、指令、独占文件F，另有外部会话C|Given上述资源，When从项目菜单删除、阅读影响范围并确认，Then刷新侧栏与各原详情/分享入口|P/A/B及指令/F不再可访问，不把A/B自动搬到外部；C不变；不可撤销提示准确|P0 / 功能、状态机|未验|
+|T-C05.D02 先移出再删除|P含A/B|Given A可移动，When移出A→核普通会话列表→删除P→刷新，Then重新打开A/B|A身份/消息保留且不复制，B随P删除；列表与路由一致|P1 / 功能、边界|未验|
+|T-C05.D03 取消/空项目/重复确认|空P或含A的P|Given确认框，When取消→重复点击确认→重复命令，Then核资源和操作记录|取消零删除；空项目可删除；重复动作幂等，UI pending防重，不产生多次cleanup|P1 / 边界、状态机|未验|
+|T-C05.D04 无权与失败回滚|另一身份B；owner可观察删除事务失败|Given P属A，When B直接请求或A遇删除失败，Then重开列表/会话|无权不泄露或删除；明确失败不提前移除本地事实；错误可恢复；unknown不谎报成功|P0 / 安全、异常|未验|
+|T-C05.D05 运行/任务/迟到事件|P有active Run、关联独立ScheduledTask及在途输出|Given上述状态，When确认删除、重启相关owner并重投事件，Then核任务/Run/作品|已删会话不被晚事件复活、分享失效；Run取消按ownerdurable流程收敛，不提前伪造终态；独立任务不级联删除，不再调度到已删上下文。关联策略先契约冻结|P0 / 生命周期、恢复|未验|
+|T-C05.D06 独立保存/共享文件|F只属于P；G同时独立保存或被其他有效资源引用|Given两类资源，When删除P→访问独立资源与下载，Then核授权/清理记录|F移除项目可见性，Storage按有效引用清理；G及其他引用保留，不物理删共享blob|P0 / 安全、数据完整性|未验|
+|T-B07.D01 失败/取消有已知用量|正式授权余额/预占及非零可核实attempt，费率版本固定|Given已产生用量，When分别供应商失败/用户取消/部分输出，Then查余额、预占、结算、流水并刷新|只结算已核实实际消耗、释放可确认剩余；同证据同金额，无前端算价/失败免费特判|P0 / 功能、财务|未验|
+|T-B07.D02 未发生调用/核实零|provider观测为零调用；另有明确reported-zero证据|Given两类场景，When取消或失败，Then查正式账本|不扣积分、释放可确认预占；零有证据，缺字段不伪装零|P0 / 边界、财务|未验|
+|T-B07.D03 未知/晚到用量|一个known attempt及一个unknown attempt，重启后可补严格证据|Given混合用量，When失败→重启→晚证据抵达→对账，Then多次查流水|仅核实部分可结算；未知部分不提前结清/免费/全释放；证据到齐后按同冻结版本幂等收敛|P0 / 异常、状态机|未验|
+|T-B07.D04 重投/取消结算竞态|同attempt证据、取消与结算并发可控|Given原授权，When乱序/重复投递与并发cancel/capture，Then重启并核账本|单一有效结算/释放，无重复扣费、超额释放或未授权透支，余额/流水一致|P0 / 并发、恢复|未验|
+|T-B07.D05 越权/坏证据/事务失败|其他付款主体、坏revision/digest、owner事务失败条件|Given合法预占，When提交越权/坏证据或注入真实事务失败，Then核provider与账本|拒无效证据/自报金额，零非法变动；失败原子回滚且可恢复，不调用未授权provider|P0 / 安全、异常|未验|
+
+关闭标准：以上必需分支及原组有效分支在固定发布组合、真实owner与正式UI路径通过，证据绑定版本/实际结果/回收；只记录业务答复不满足退出条件。支付渠道仍最后。
+
+## R143 当前组合QA纠偏与五条并行旅程（2026-10-03）
+
+当前看板明确 **11通过/5失败/14待复测/37未验/2待决策/1支付后置=70**。修正旧看板4失败/38未验与矩阵5失败不一致；将历史E53登录T-L01/聊天T-C06移回待复测，历史证据保留。通过中的工程/规则/限定后端门不是11条完整用户路径。测试任务统计不得当开发完成百分比。
+
+R143-QA只读审定位五条可执行旅程：①IAM发布后普通登录/退出/权限（T-L01–05，不等Agent）；②独立与项目会话/ACK/分享/刷新（T-C02–04/U04，不等Agent）；③定时任务控制面CRUD/权限与执行恢复分别验（T-P01–05，阶段A不等Agent）；④Skill/MCP管理的真实安装/连接/撤销（T-K02/03/05，不等Agent）；⑤正式Agent队列/过程/HITL/作品/费用（T-C07–10/A01–06/F03/B02–06，固定契约后实际串链）。每条完整前置/步骤/预期/异常权限/状态机/证据沿原逐组计划；不新测试ID、单测或第二计划中心。
+
+独立产品审指出误写T-M01–05与项目分享主语歧义，已改为现T-K01–07与Conversation显式分享，未新增Project分享/级联规则。项目删除与失败费用两待决已分别询问用户，其余研发不等待。当前用户整页加载、六重复页清理和完整费用链仍未关闭。
+
 ## R141 两个列表子例限定GREEN（2026-10-03）
 
 Root有效RED后同2节点通过，完整45 OIDC系统节点通过；最终96991完整工程门自然0：256contract/50architecture/lint/typecheck/2352tests0skip/build通过。Web已发布7df55c3且原3310仅两runtime源精确更新，不重启。系统证据使用真实Next/Chromium与严格BFF HTTP fixture，不是所有真实数据库owner组合；当前用户IAB/原会话未验收，signout500间歇根因仍未知。独立七路径审0，实际manifest与失败历史见progress R141。
@@ -91,15 +125,15 @@ E117早期失败历史：当时完整工程门2344通过/2旧preview raw断言�
 
 |状态|测试组数|
 |---|---:|
-|已通过（仅记录版本和范围）|13|
-|最新执行失败|4|
-|待复测|12|
-|尚未完整验证|38|
+|已通过（仅记录版本和范围）|11|
+|最新执行失败|5|
+|待复测|14|
+|尚未完整验证|37|
 |待业务决策|2|
 |支付后置|1|
 |合计|70|
 
-**已通过13组：** T-Q01当前冻结Web工程门（E117，不替正式用户链）、 T-Q02 BFF工程门（E108，当前a68cbe5限定工程范围）、T-Q04 IAM工程门、T-Q05 System工程门、T-Q08 Storage工程门、T-Q11测试工具诊断、T-L01登录正向、T-C01后端会话过滤、T-C06两轮真实模型聊天、T-C11前端流连接生命周期、T-K01连接器不显示假成功、T-B01定价纯规则、T-R01具名测试资源隔离。登录/聊天是E53记录的历史发布组合和本地模型，不代表当前全部能力或用户提供的模型网关通过。T-Q01 E109失败历史保留，E117按同目标当前全门复验通过；不由工程门推断深层恢复/所有页面通过。
+**已通过11组（限定证据范围）：** T-Q01当前Web工程门（R141）、T-Q02 BFF工程门、T-Q04已发布IAM工程门（当前候选另待Root完整门）、T-Q05 System工程门、T-Q08 Storage工程门、T-Q11测试工具诊断、T-C01后端会话过滤、T-C11前端流连接生命周期、T-K01连接器不显示假成功、T-B01定价纯规则、T-R01具名测试资源隔离。T-L01正常登录与T-C06真实两轮聊天的E53属于历史发布组合，本轮按相关pins已变更移回待复测，不能当当前用户入口/模型/积分通过；其他工程门也不等于完整用户能力。
 
 **有问题且尚未关闭：** E112 Root七完整file371/371通过，E109十五及E111四具体失败在限定纯复测关闭，原失败历史保留。T-C09/C10/A05完整用户组仍待复验，当前浏览器/五过程恢复矩阵未验，不把纯测当整组通过。T-Q10当前组合仍失败；E110工具误分类修复并82回归通过不等于组合发布/checkpoint通过。E75标准报告、BFF契约lint4warning及正式收费待验保留。
 
@@ -538,7 +572,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-Q10 | Root | 精确gitlink、main-only、发布contract/version/digest/client drift、fresh clone | 失败 | E105 Root本轮完整scripts/tests实际1709pass/1fail/3skip、455 subtests pass；test_w1e_iam07_bff_pin_marks_iam_composition_pending在verify_checkpoint报告217项不匹配，首项历史evidence gitlink17c7354与当前Agent79bf98c不符。当前checkpoint/消费者证据一致性失败，须区分过期证据与真实兼容缺口，不放宽校验器或伪改已通过。E75原标准152报告及完整fresh clone/main检查继续未验。 |
 | T-Q11 | Root | 发送失败诊断有界/脱敏、两轮归属、失败仍非零退出、原硬断言不变 | 通过 | E51：Root93085实际9fail/583pass，37740修复后592pass/13.34s及Nodecheck0、独立0；本Run合法UI文本前零snapshot，terminal/observer/deadline封闭；原所有硬断言与控制保留，session_rate_limited闭集补齐。仅当前冻结driver b83525de/test fee45056测试工具门，不是T-C06真实用户旅程通过 |
 | T-Q12 | 各数据owner | 同应用库独立schema fresh install/drift/拒重入/零跨owner SQL/失败回滚 | 未验 | E32仅Agent fresh7通过；E77 System单owner真实fresh23断言/22表/catalog/拒重入及精确临时库回收通过。E85新增Agent source-wheel installed CLI/目录/六漂移单owner门；全部数据owner同一应用库schema组合与零跨owner访问仍待验，不关闭整行 |
-| T-L01 | IAM→Web→BFF | 真实IAM表单→授权→callback→HttpOnly session→/app；无中转/整页重试 | 通过 | E53：本轮fresh owner/member两账号真实IAM表单200/nativeconsent200+一次303提交/callback303/HttpOnly+Secure+Lax cookie/session200与app200；浏览器精确导航与单次计数验证无可见中转，独立终态0。仅正向入口；其他登录/权限负例另T-L02–05待复测 |
+| T-L01 | IAM→Web→BFF | 真实IAM表单→授权→callback→HttpOnly session→/app；无中转/整页重试 | 待复测 | 当前组合已变更，E53仅历史证据，须用当前发布pins重新验证；E53：本轮fresh owner/member两账号真实IAM表单200/nativeconsent200+一次303提交/callback303/HttpOnly+Secure+Lax cookie/session200与app200；浏览器精确导航与单次计数验证无可见中转，独立终态0。仅正向入口；其他登录/权限负例另T-L02–05待复测 |
 | T-L02 | IAM→Web→BFF | 错误密码/CSRF/state/nonce/PKCE/redirect篡改拒绝且无session | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
 | T-L03 | IAM→Web→BFF | 刷新/到期/退出/退出后重登与后退；禁止过期签名URL无限重试 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
 | T-L04 | IAM→Web→BFF | 固定tenant准入、撤销/禁用、同tenant另一用户及跨tenant隔离 | 待复测 | W1C/W1D历史隔离浏览器证据；新组合正式旅程未验 |
@@ -547,8 +581,8 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-C02 | Web→BFF | 新建独立/项目会话、URL/back/forward/刷新、草稿和消息不串scope | 未验 | 下一Web正式固定BFF7，再真实浏览器验证；当前消费者尚未更新。 |
 | T-C03 | Web→BFF | 重命名/删除等待ACK；延迟/503/切换scope不复活、不污染新页 | 未验 | R82已知delete fire-and-forget竞态 |
 | T-C04 | BFF→Web | 显式分享/撤销；私有链接不冒充公开分享；另一用户不可读/控制 | 未验 | R82分享文案与真实权限不一致；正负例都需验 |
-| T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 阻塞 | 产品删除/移动规则与正式API未裁决；不猜级联行为 |
-| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 通过 | E53：Rootcc7bfb78六owner fresh/clean/发布hash，原58200实际exit0；两POST202/四completed、真实模型全文SHA、首轮保留、active非空文本硬刷新+同watermark续流、真实作品下载hash/刷新一卡/另一用户三404；五owned残留0/子terminal/桶删除404，独立终态0。实际模型为本地Ollama qwen3:8b，不含Billing/Agent5候选或用户OpenAI网关；E48失败历史保留 |
+| T-C05 | BFF→Web | 移动/归档/删除项目时会话、活动Run、任务及作品的生命周期 | 未验 | 用户批准按ChatGPT删除：删除项目及其会话/指令/仅项目文件，保独立保存资源；移动出项目后保留。当前owner契约/关联任务与Run恢复尚待实现验证，见顶部裁决补充 |
+| T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 待复测 | 当前组合已变更，E53仅历史证据，须用当前发布pins重新验证；E53：Rootcc7bfb78六owner fresh/clean/发布hash，原58200实际exit0；两POST202/四completed、真实模型全文SHA、首轮保留、active非空文本硬刷新+同watermark续流、真实作品下载hash/刷新一卡/另一用户三404；五owned残留0/子terminal/桶删除404，独立终态0。实际模型为本地Ollama qwen3:8b，不含Billing/Agent5候选或用户OpenAI网关；E48失败历史保留 |
 | T-C07 | BFF→Agent | 同会话FIFO/同key重放/双tab同时提交；一活动head，无重复执行 | 未验 | E108真实chat-facts13/13及完整三资源74/74，原snapshot42703首阻断限定关闭；双tab/同key重放及浏览器完整用户组仍未验。 |
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
 | T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 失败 | E109 Web恢复无executionProcess、分页未请求、signal未传递，属D-R135-02–04；源码修复/Root复测及浏览器未执行。E108后端projection46/46、T-C09.1–5历史范围保留，不由后端绿关闭Web失败。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
@@ -583,7 +617,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-B04 | Billing→Agent | provider调用前预占、余额不足、并发预算、同key重放、ACK unknown恢复 | 未验 | 实际attempt授权，禁止一次许可放行整Run |
 | T-B05 | Billing | 采购成本×冻结可配置7/5倍率、币种积分换算/舍入/版本；前端零独立计价 | 未验 | ADR-033；7/5是加价40%，不是净利润率 |
 | T-B06 | Agent→Billing | 真实usage→幂等结算/增额/释放/对账；超时、失fence、晚结果不重扣 | 未验 | 未知成本保留reconcile，不把Run terminal当费用结案 |
-| T-B07 | Billing | 失败/取消/部分输出/未知成本的收费资格与账务分支 | 阻塞 | 收费业务策略待确认；不预设一律免费、一律release或一律收费 |
+| T-B07 | Billing | 失败/取消/部分输出/未知成本的收费资格与账务分支 | 未验 | 用户批准仅结算已核实实际消耗、释放其余可确认未使用预占；unknown待证据/对账，不按零释放。正式owner账务链/并发恢复未验，见顶部裁决补充 |
 | T-B08 | Billing | 支付/订阅/checkout/refund/webhook验签去重及sandbox对账 | 后置 | 用户已明确支付最后；渠道配置属运维，不阻当前聊天研发 |
 | T-U01 | Web | Home提示只填草稿、零自动POST/计费；真实模型/套餐/能力，无错误营销卡 | 未验 | E33局部发布/E37语义11真实RED/E41完整纯门接受/E42已发布ddd38c5，网站/More/零POST正控保护；Root新组合fa4525e4已发布；完整Home真实浏览器未验 |
 | T-U02 | Web | Composer多行/中文输入法/Enter与Shift+Enter/附件/发送禁用与Stop；无内嵌方框 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |

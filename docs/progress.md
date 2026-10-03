@@ -1,3 +1,41 @@
+## R143 最新真实终态与未达分支（2026-10-03）
+
+Root5645治理真实python3 -m pytest scripts/tests自然exit0，1715pass/3skip/126.01s；日志/tmp/kokoro-r143-root-governance.log SHA4b5873a8ae5eb697bd6eaf14d424f7ccb7fbf987ed19cbe178ca6975edc9db55。原NativeComponent3例skipUnless Agent模块，Root Python缺该组件，不伪报其通过/完整应用集成。gitlink暂存后topology0；compat1只13已声明broken/16edges/0额外violations。独立发布pin审 /tmp/kokoro-r143-published-pin-review.md SHA35361b105412c612e4564c35e8678aba068ca3b898e0bb7bb9a7efb85816e29f，0P0/P1/P2；两业务裁决审 /tmp/kokoro-r143-decisions-qa-review.md SHA9a883cfd980b561c85a79416364ff51f013632bf4c9584e300627f858fc18d8d，0P0/P1/P2。
+
+Web tests-only候选704cf9fe经只读审0（/tmp/kokoro-r143-web-delete-ack-red-review.md SHA f69aa29efc7e9ae03c51c76d9f73e5393ec8bbd299c0b4d74748044f7188a3d7），Root原2180/PID49343自然exit1/43.516s，2fail/45名称过滤、753file unchanged。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r143-web-delete-ack-red-6y2horl3/manifest.json SHA4dd9e7275f25c089798d69205c30f553208e78241243c2c5447ae6dcc0b2694c，log6b5a4bc6f82926856215dde27ba837a56c529afef376bfa247cd2dfa2fa13fb7。两例1381/1438都观测DELETE0，尚未达到exact scope/ACK断言，Root不将其当已证明生产RED：步骤只有列表seed，未真实点击打开A保证store含A，machine的!store直接return可能使前置不足。已同原writer仅现systemfile补真实UI打开/合法HTTPsnapshot前置及有限脱敏诊断；source未授GREEN，Root随后同例复跑。新问题不放宽门禁或冒称修复。
+
+Agent参数只读报告 /tmp/kokoro-r143-agent-envelope-closure.md SHA0a76886b4108e2982778c11155a31bf18dec92e9cfc16dc65d805ec6df2487c0已交，明确推荐非已批准wire，Root技术审后再三面/contract行为RED；三D0保持，没有源码/已安装artifact或实际非零模型账务证据。原98977/3310 PID63842保持，所有本轮Root测试/push句柄已终态；Web writer只是源码外测试编写，无新运行资源/共享reset，Billing/uv.lock保持。
+
+## R143 IAM切片已正式发布与Root组合门在途（2026-10-03）
+
+Root原64658/PID37806自然exit0/29.394s，Node24完整pnpm verify102files938tests0skip，format/lint/types/contract/breaking/SDK/test/build通过，435文件前后未变化；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r143-final-clearance-engineering-ca_74oxh/manifest.json SHA5d77b1743728c4db1eb84bafcfbd3d6e37c9e4b1ffbbf0a71be6718952c7a46c，logc1708950b76cf85bfe17263a25a63cb7e0be82cbfbf8a4b0d1900cfacbe3a42a。独立11path最终审 /tmp/kokoro-r142-final-clearance.md SHAd6465b35ab25834e75a0d3dbc000af2937b27521efea7155fcf1a8186feabc51，0P0/P1/P2。Root核11hash和空index后精确commitIAM mainf38be7880a2af6c65501a73309ab5b37cd33a813，原90687普通push自然0、ls-remote同SHA，本仓clean。只验本片，不外推当前3310/IAB/全登录。
+
+Root consumer-inventory只更新IAM三已发布commit引用与CURRENT单一证据digest，canonical contracts/states/checkpoints不动。初次topology先于gitlink暂存失败（读index仍70a2b015），不是业务回归；现精确暂存IAM gitlink后重跑组合门，纯工具原5645在途，结果未出不称通过。Web仍7df源码+三D0/两system测试编写阶段，Agent仅D0+技术参数只读报告。两用户决策与矩阵11/5/14/39/0/1保持。
+
+## R143 IAM最终冻结独立复跑已启动（2026-10-03）
+
+Root复跑同官方完整pnpm verify，原句柄64658/PID37806，owned目录kokoro-r143-final-clearance-engineering-ca_74oxh，Node24/本机Go完整PATH、435file before/after guard、isolatedowner fixture；结果未出前不称最终通过。IAM所有writer已停写，仅DATA文案P1修正；Web同三设计Root已读一致，已授原owner现systemfile两真实行为RED编写，不启动资源；Root待64658自然终态后串行执行Web资源。上述为执行中，不计任何测试组通过。
+
+## R143 用户裁决与QA状态变更（2026-10-03）
+
+实际收到两个明确回答：T-C05「参考chatgpt一样的规则」；T-B07「仅结算已核实的实际消耗，释放其余预占」。Root核官方 https://help.openai.com/en/articles/10169521-projects-in-chatgpt（本日读取Delete a project与Move an existing chat）：删除项目永久移除其会话/指令和仅项目文件，独立Library文件不删，移出会话保留；该参考不说明Kokoro已实现，也未批准新增Project分享/部署retention。同现core-flows/ADR033/test/task/CURRENT落盘，未删除真实项目、发新收费或填造余额/价格。
+
+T-C05/T-B07由阻塞改未验，实际解析70矩阵行：11通过/5失败/14待复测/39未验/0业务待决/1后置。原逐组编号计划suffix在本次编辑前后相同（分隔标题后bytes SHA e573536550d70f399eabea977bcee6ddd7caefa0033627bbdf12aca93a21f517）；顶部同ID增加6项目/5收费系统验收分支，完整前置/步骤/预期/优先级/类型，均明确未执行，不以决策计通过。Unknown attempt待证据/对账，只有确认未使用部分释放，不将缺usage当零或取消后整笔release。
+
+IAM实际45834 lifecycle5/5与11514全verify938/0skip是Root已执行证据；六source/test终审报告 /tmp/kokoro-r142-final-source-test-review.md SHA3c671e74d96f9cbcd95758532ebc232e989fc1e4eccbf2e7ee0e4509faf16722，0P0/P1/P2。11path总审 /tmp/kokoro-r142-eleven-final-review.md SHA241bc59ad1d64709fdd8d4e95a75bdfc5e25fe90afe2cd7bc58b19005b6aa593，唯一1P1 DATA_MODEL虚记第三方/prompt/disabled/member全覆盖，原writer仅此句纠正，当前hash9152259503b93eeb2d3a8245167d130125e5d60839b58bb5cf9f80c5cd01dff9。候选待复核精确Git，不把工程门外推当前IAB或所有登录分支。
+
+Web独立只读ACK报告 /tmp/kokoro-r143-web-delete-ack-cut.md SHA61556767d5b62d46c88faf8f11881623a4a6de77a2c847e22ca73e3549237eef确认5源差距；同owner仅三设计D0已冻交 /tmp/kokoro-r143-web-delete-ack-d0-delivery.md SHA5809a399164da01a496ce6294dc9c2dc1b5caf42d945a6206fb1e03777fcecbb，待Root三面审/现系统RED。Agent三设计D0仍纯artifact阶段，Source/installed/profile精确参数未授实施。独立业务面无需等整个Agent完成。当前用户加载和7重复页未验收，原98977保持，无新服务/共享reset。下方旧轮次是历史证据。
+
+## R142 policy 两真实节点通过，完整回归仍待（2026-10-03）
+
+Root8055/PID16006自然0/3.279s，2通过/3名称过滤、435源不变，真实managed policy→fixed tenant→code+Basic+PKCE且无consent新增与错误ID控制通过。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r142-managed-green-pjk2klaq/manifest.json` SHA a18f7ce234f728140ed033e1c453b9520ff792fed3c180058e9904ec01c8e733，log c36733feab4ebe242f3b36e493880352ecca2f7864a23b09e1cc680fe354fbed。四源独立审 f0734fedf5ae08be7e8056984588dcda70e993e1884184b0831941bac39010c1：生产语义符合，0P0/1P1（既有fixture迁移）/1P2（命令语义文档后继），未放发布。
+
+Root77498/PID16490完整lifecycle自然1/4.349s，4通过/1失败/0skip，旧scope节点330误期待普通first-party consent，实际正确直callback。manifest4d51a915d98046edf875c454e367235c7cb9afed85ffd2830a7bbfe0336d7ff9，log35f26ae45b0f3f82ee29a8bb16b1641fc328825bb3a18a6d6e413d9428e4b23c，目录 `kokoro-r142-full-lifecycle-2o7s4oxw`。仅追加显式prompt=consent保原授权与refresh断言，独立review认可，不弱化正常第一方路径。
+
+Root77975/PID17785官方verify自然1/1.603s，现integration文件格式失败，后续门未到；manifest a2afaaccca22c6cb8ff686407fc545925b0df4573d29d359ede875545cc058ba，log5968f2c88c237ae03e11f009c4b61370ef2292eb2ef3205b6e181cf541cb371a，目录 `kokoro-r142-first-engineering-02i7npyq`。Root56438/PID18284现unit整file自然1/15.763s，35通过/16失败/0skip，缺skip readback字段及原update模拟不提交skip；manifest c749cd63b47d58a7a81f30ea394a8e64351eb4f7d0c4b9ace781aec3b97931c1，log1e46b6909b4540a686cb8df67658ba1378ee2754d1f28a3ef9de0542623c5f03，目录 `kokoro-r142-existing-unit-red-e059dq35`。均435源保持。原writer仅两现测试文件迁移/格式，四源冻结，无新unit/mock/case、无资源/Git。
+
+Root限定组合已commit/push main7e05e9da30a507232e865077d374853af5bddac5，原83759自然push0、实际ls-remote一致；精确7路径，Billing/uv.lock及IAM候选未带入。该Rootcommit不表示IAMcandidate已提交或当前IAB闭环；完整70组与Wave0–7保持。
+
 ## R141 限定工程发布与R142真实provisioning RED（2026-10-03）
 
 当前收口：Root34505纯工具三文件自然0，100通过/50.09s，`/tmp/kokoro-r141-root-governance.log` SHA f1cbc37e9d17b3b2852bed56799fe5ade27c35be75d661ac50c7d2084777af5f；topology通过，compat只剩13declared broken/16edges/0violations。独立pin审 `/tmp/kokoro-r141-published-pin-review.md` SHA e6f713a65fbe52c42ac7fa844d546b07ddb59eebd4bd38c98c5439d6296dc2ef：52引用逐blob一致、精确53叶变化（49Web+3IAMcommit、1已发布IAM CURRENT证据digest），0P0/P1/P2，机器contract/state/checkpoint保持。原98977/3310 PID63842精确两live source原子更新到Web7df55c3，`/tmp/kokoro-r141-live-update-manifest.json` SHA8e18f1482eceac410e312128eeacdf4a1c60397c8f55232d4d4b0e22c4207d；未重启，browser_verified=false/tabs_closed=false。

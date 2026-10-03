@@ -1,3 +1,63 @@
+## R143-W-RED v2 前置修正门（2026-10-03）
+
+Root2180同2真实节点均DELETE=0，未达到ACK/scope预期，禁止直接授GREEN或冒称2生产RED。原Web writer仅现systemfile补真实打开列表A、合法snapshot HTTP响应及删除前已加载/active证据、有限脱敏method/path/截图；同2标题/原断言/预算保持。禁止直接注入engine/cookie/storage或改source，三D0冻结。Root运行同例确定前置与产品行为，其他研发面并行；Root已完成IAM发布及组合静态/完整治理，不串行等待此测试才处理其他owner。
+
+## R143-W-RED 已批准三面后的系统行为基线（2026-10-03）
+
+Root已逐三文档审ACK/scope/lifecycle一致，基线Web7df55c3+三设计c7541382/65e882b9/566ea133；BFFpublic7不变。web_conversation_ack_owner同唯一writer只允许现tests/system/oidc-rp-next-http.integration.test.ts追加最多2个真实Next/Chromium HTTP节点：延迟DELETE ACK前保留A/active/draft且single-flight/exactscope；明确503保全与可见恢复无cancel。复用现正规登录、真实DOM和owned HTTP barrier，不route.fulfill/cookie/storage注入、不新增unit/mock、文件/目录或改source/现断言/预算。若现fixture仅GET不能承载DELETE，在同file现HTTPfixture handler加严格DELETE记录/受控response是测试协议fixture，不称BFF真PG；修改现file之外先报告，不继续猜。worker不资源/Git，Root原IAM64658终态后独占运行。两case只记系统fixture边界，真BFF/PG/当前IAB整链后继；无有效RED不授GREEN。
+
+## R143-D 决策落盘与后继实施卡（2026-10-03）
+
+|任务 / owner|负责人、基线与允许范围|交付 / 验收 / 依赖|
+|---|---|---|
+|R143-D 产品与QA裁决 / Root|Root唯一writer；main7e05e9da+现Root docs未提交；仅现docs/product六基线、ADR033、test-cases/task/progress/CURRENT。无源/API/SQL/金融动作|用户项目按ChatGPT、失败取消仅核实消耗两答复落盘；两阻塞转未验；原70ID/编号suffix保护。真实公式/费率仍Billing，Root不填造。独立只读审后精确提交；不把决定当通过|
+|R142 IAM 11path最终审与发布 / IAM|iam_first_party_owner已停写；DATA_MODEL唯一路径P1修正91522595，其他10path保持；four_owner_fixes_review_r31只读复核，Root唯一Git|Root实际5/5 lifecycle及938全门绑定冻结源保持；终审文档虚记修正后才提交11path/普通push→Root固定组合。正式3310/browser另验，不等Agent/Web|
+|R143-W-D0 / Web|web_conversation_ack_owner 同唯一writer，main7df55c3；三现设计冻结待审，不写源/资源/Git|三面ACK/exact scope/unknown/代际/active Run一致后，Root授现system tests-only真实HTTP RED；保T-C03待验不先虚绿，不实现项目级联|
+|R143-A-D0 / Agent|agent4_execution_owner 三设计冻结；main79bf98c，14路径候选尚未创建；Root收口envelope技术参数；原owner仅只读一页约束来源/最小推荐值交/tmp/kokoro-r143-agent-envelope-closure.md，不动三D0/源|不等待Billing业务答复；未知用量不是零、failed/cancelled已核实可收费裁决已明确，纯evidence不代计价。Root审后原owner contract行为RED，不先扩runtime/provider/SQL|
+
+同仓单writer、Root独占运行/Git，原有服务句柄不重复；旧卡仅历史，严格source先失败行为再实现/Root复验。当前原生4并发上限（含Root），不虚构10窗口。
+
+## R143 独立工作面并行，不串行等待 Agent（2026-10-03）
+
+用户再次明确业务后端、Agent、测试与PRD可独立推进；覆盖旧“一次一个子仓”的默认路由，仅真正owner契约/数据依赖等待。当前原生并发上限4（含Root），不虚构10窗口；保每仓单writer与Root独占共享资源/Git。Root按完成即续派，不要求整个Agent功能完成才让其他工作启动。
+
+|任务/目标|负责人/边界/基线|交付与验收|依赖|
+|---|---|---|---|
+|R142 IAM 正规第一方登录切片/P1|iam_first_party_owner 原唯一writer，仅上卡两个既有测试文件；IAM main70a2b015+四源冻结|两个真实节点→全lifecycle→官方工程门；Root独立审/发布，当前IAB另验|不等Agent/PRD/QA；本仓正在迁移旧断言/fixture，不新单测|
+|R143-A Agent链/严格usage生产者下一实施切片/P1|agent4_execution_owner 只读；Agent main79bf98c clean、BFF maina68cbe5 clean，原R80-W03/ADR033与HTTP5/public7现事实|核现调用链、已批准producer先发布顺序，选一个不等待Billing运行服务的可执行切片，精确文件/设计门/业务RED/契约依赖/风险；最多5真实差距，私有交接/tmp/kokoro-r143-agent-cut.md|不等IAM；不写源/contract/SQL，不运行资源/Git，不重新发明协议。Root接收后立即授对应owner切片|
+|R143-QA 全70组系统验收与漏测审/P1|four_owner_fixes_review_r31 只读Root现test-cases/progress/owner证据|现通过/失败/待验逐类核验与下5个系统旅程，缺口绑定原ID/前置/步骤/预期/权限状态机/实际证据；交/tmp/kokoro-r143-qa-gap.md|不等Agent源码完成；既有suffix不变，不新增单测/mock/新计划中心；不把组件工程门当业务过线|
+|R143-P 产品PRD与业务后端闭环排序/P1|Root唯一docs writer；现docs/product与BFF/Web published source只读|用户已确认会话/项目/独立任务/Home/Skills MCP/Agent Todo/登录/后端积分→需求-状态机-owner-测试原ID对应。仅修现docs/product/{README.md,03-product-form/core-flows.md,04-architecture/navigation.md,04-architecture/ia.md,06-screens/home.md,06-screens/chat.md}当前入口，历史草稿显式降级；不新文件/目录/API/SQL/规范中心。列真实偏差与独立可派后端切片；更新原task/progress/test/CURRENT|不等Agent/IAM；不新PRD中心、角色或ops范围，涉及breaking则先owner contract门|
+
+所有worker输出交接供Root审查；只读结论不是实现/测试通过。独立后端与Agent写片可跨仓并行，contract producer完成后消费者才切换，Root有界串行资源不等于研发串行。原完整Wave0–7、支付最后及受保护Billing/uv.lock保持。
+
+## R143-W 会话删除ACK 独立Web工作面（2026-10-03）
+
+Root现Web7df55c3 clean源码实际确认T-C03缺口：engine/machine.ts1077删除先abandonActiveRun、本地移除、deleteSession fire-and-forget；ui/shell/use-conversation-list.ts95立即刷新，失败仅console且服务端项可复活。现独立BFF删除契约已经发布，本片无需等Agent或IAM整体完成；Root资源串行跑不妨碍worker业务实施。
+
+web_conversation_ack_owner 为新接续Web唯一owner（原web7本轮未存活，明确交接已发布7df55c3与无未提交源码）；先仅只读src/engine/{machine,engine-types,execution-adapter,client}.ts与ui/shell/use-conversation-list.ts、对应UI以及现BFFpublic7删除契约/实现和Web三设计。交实际删除/activeRun/receipt/identity晚回执漏洞与最小既有system E2E前置、精确三设计D0范围。报告/tmp/kokoro-r143-web-delete-ack-cut.md；此阶段不写源码/tests/docs/contract/Git、不运行资源，不新增unit/mock或新模块。Root依既有T-C03等待正式ACK与scope隔离验收标准裁定三设计窄D0→同owner系统RED→最小GREEN，不重开整个Web设计。
+
+Root负责PRD当前基线与共享台账；Agent独立D0 writer、QA只读与Web只读可同时进行。冻结源Git由Root串行接收，禁止跨仓作者抢写。
+
+## R143-A-D0 Agent producer 独立实施门（2026-10-03）
+
+已接收Agent链只读cut报告ddd924a8ff50daffdd982418765c23cc58c31127eb975041ec4cd31b6e5d5e16。当前正式HTTP5/public7安全过程不改；下一片只严格attempt-evidence artifact v1，可被Billing固定消费，不等待Billing运行/价格/失败收费决策，也不假称runtime journal/provider已具备。已有R80-W03/ADR033/R81有限profile与schema-first方案继续，安装闭包必须同时覆盖，不重开总体设计。
+
+agent4_execution_owner转Agent唯一文档writer（不同于IAM writer，可并行）：仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md原R80当前小节窄对齐已裁finite profile与HTTP5/public7、14路径安装闭包、严格artifact/revision/raw-decimal/presence/unknown的不变量、后继行为RED与实际installed checker。CODEBASE_MAP、Python/SQL/API手册与报告必读；原文件主体保护，不批量前缀叠写/改CURRENT/Root文档/源/schema/contract/锁/测试/Git/资源。
+
+先比较现model纯codec+专用有限compiler与HTTP/failure混合，采用前者无新一级模块；新路径放置表14项沿cut报告提交供Root设计门核查，未授权创建。新envelope精确容量/identity/revision/UTC及reason闭集若旧R81未裁明，不自造经济规则或默补字段：标明技术待Root裁决，其他不变量与实现可先闭。交/tmp/kokoro-r143-agent-d0-delivery.md+3doc hash与原主体保护证据，Root独立审后立即同owner contract行为RED，不等整Agent或其他owner完成。
+
+## R142 最终候选文档收口门（2026-10-03）
+
+Root45834真实完整lifecycle5/5，0skip；11514完整官方verify自然0/29.165s，102files938tests0skip及format/lint/typecheck/contract/breaking/SDK/test/build全部通过、435源保持。前序格式/旧fixture type/Root缺Go PATH三个门失败保留，未跳过或改checker；观察到现Go1.25.4后仅Root runner PATH补/opt/homebrew/bin，正式门不变。
+
+原IAM writer仅现三设计R142“当前缺口”段更新为已实现候选并列普通client/固定ID/operator双读/重放/显式prompt与固定tenant/PKCE五节点实际证据；另现docs/CURRENT.md、docs/ACCEPTANCE.md只加入本片范围/Root实际命令/manifest/当前未验/CLI职责。11既有交付路径（4源+2tests+5docs）Root精确审后提交发布；其他files冻结，无新文件/目录。P2旧mode名称仍沿existing CLI实际一并收敛scope+consent，应文档明确，非新endpoint/alias，不借此复刻第二命令。第三方/撤权/单边drift全矩阵、3310 fixture/当前IAB仍未验，不写登录整体通过。writer不Git/资源，原四source与两testsHash保持；冻结后只读独立总审与Root主树工程/source绑定。
+
+## R142 既有测试迁移与格式门（2026-10-03）
+
+Root8055同2真实integration自然0/3.279s、2通过/3名称过滤；尚不全登录。全lifecycle77498实际4通过/1失败/0skip：exact Product已skiptrue，新authorize直/skill-callback而旧scope例330仍期待consent。独立review确认仅为该次newAuthorization追加显式prompt=consent及pre-consent无code断言，保全部consent/token/refresh/范围不自动提升/并发恢复断言；R142普通直code两节点保持冻结。不删断言迁就新行为，也不把第三方默认改成prompt。
+
+Root77975官方verify自然1/1.603s，停现integration格式，未达后续门；Root56438现unit整file实际35通过/16失败（0skip），缺新增persisted字段与模拟update未提交skip，既有并发门由parse失败未达而15s超时。仅授原IAM writer现test/integration/oauth-client-lifecycle.test.ts上述一请求/两断言与本file格式；现test/unit/oauth-client.service.test.ts原fixture补official/persisted skip、原update与unknown/concurrent提交路径状态，不新增unit/mock/case/timeout/skip，不删任何旧检查、不扩其他文件。四source保持冻结；该unit迁移只维护原工程门，不作业务验收证据。formatter仅这两现文件允许、禁资源/Git。Root复跑同现两文件与官方verify，单边漂移/第三方等正式安全矩阵后继保持，独立审后才发布。
+
 ## R142-MANAGED-GREEN 窄生产实施门（2026-10-03）
 
 任务R142 / IAM oauth/clients / P1：v2真实RED 1失败1通过，原两P1独立复审关闭，P2完整安全矩阵后继保留。iam_first_party_owner（gpt-5.6-sol）沿用唯一writer，Root运行/Git/四台账，four_owner_fixes_review_r31只读审；基线IAM main70a2b015、三设计及test冻结hash见progress。仅允许现src/modules/auth/oauth/clients/{oauth-client.schema.ts,oauth-client.repository.ts,client-readback.policy.ts,oauth-client.service.ts}，不新文件/目录/Schema/公开contract/依赖，不碰Better Auth全局配置或其他测试。

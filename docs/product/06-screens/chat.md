@@ -5,6 +5,21 @@ updated: 2026-05-20
 
 # 对话视图（Chat）
 
+## 当前研发验收基线（2026-10-03）
+
+当前交互以用户偏好的ChatGPT式清晰消息流为基线，复用现shadcn/Vercel组件，不从下方历史ASCII另造一套UI。
+
+- 用户与assistant正文稳定，输入框常驻，宽度/滚动/移动端遵循现design token；用户上滚不被新token强制拖回底部，并有回到最新入口。
+- 会话与Run分离：同会话FIFO一个活动head；queued/streaming/awaiting approval/resuming/cancelling/reconnecting/completed/failed由正式事实驱动。ACK不冒充完成，停止按钮不凭点击伪造terminal。
+- 简单回复不强行显示Todo/Canvas；复杂任务展示真实完整Todo表、Skill加载状态、工具/子Agent友好摘要。选择Skill不等于ready，不展示raw参数/结果、stack、token或隐藏推理；历史“展开参数/结果”设计不再适用。
+- 审批保持完整未决项与同thread身份；刷新从BFF同水位snapshot+durable AG-UI恢复，过程分页全部完成后再续流，不把局部工程绿门当用户恢复成功。
+- 切换会话/项目或卸载时隔离旧请求/结果；保当前草稿，失败可重试但不重复提交/执行/扣款。费用只显示Billing权威结果。
+
+T-C06–10/T-A01–06/T-U01–04负责主链、异步竞态、双标签、取消、异常与刷新验收；当前未验项继续保留在同一测试台账。
+
+> 下方为2026-05历史产品草案，不作为当前实现完成证据；与本节或 Root/owner 当前契约冲突时不作为研发依据。尚未批准的增长、样式与路线问题保持草稿，不另起架构。
+
+
 > 用户与 Kokoro 持续来回的地方。Canvas 未开时占主区域全部宽度，Canvas 开后缩到左半。
 
 ---

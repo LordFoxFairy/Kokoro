@@ -5,6 +5,17 @@ updated: 2026-05-20
 
 # 信息架构（IA）
 
+## 当前研发验收基线（2026-10-03）
+
+当前信息架构以 [核心流程](../03-product-form/core-flows.md) 与 [导航](navigation.md) 的已确认实体关系为准：Conversation独立存在、可归属Project；ScheduledTask独立且可关联Project；Run是一次执行，绝不替代会话或定时任务；Artifact是Storage作品事实。
+
+Browser→Web同源adapter→BFF→各owner方向不变。Web不直连内部owner；项目/会话/任务管理不要求Agent整体先完成。真实执行依赖固定owner contract，列表/CRUD/权限/失败状态和PRD/QA可并行推进。当前普通用户/管理员是产品入口，不改变资源所有权、显式分享或服务端逐请求授权。
+
+下方布局草案只作历史参考；本节不决定新路由、宽度或组件框架，不新建角色/协议/配置中心。
+
+> 下方为2026-05历史产品草案，不作为当前实现完成证据；与本节或 Root/owner 当前契约冲突时不作为研发依据。尚未批准的增长、样式与路线问题保持草稿，不另起架构。
+
+
 > 基础布局参考 [Gemini anatomy](../../research/gemini/anatomy.md) + [CoWork](../../research/cowork/notes.md)。
 
 ## 顶层结构

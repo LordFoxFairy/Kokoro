@@ -1,9 +1,16 @@
 # Kokoro 产品手册
 
-> 项目状态：🟡 早期需求 / 设计阶段
+> 项目状态：研发与系统验收推进中；未验功能不标完成
 > 起草时间：2026-05-20
 > 维护方式：每个主题一个子目录、多个聚焦的小 md，方便后续逐节复查与修订
 > 本文件 = 总索引
+
+
+## 当前入口（2026-10-03）
+
+研发以用户已确认的 [核心流程](03-product-form/core-flows.md#当前研发验收基线2026-10-03)、[会话/项目/任务导航](04-architecture/navigation.md)、[Home](06-screens/home.md) 与 [聊天](06-screens/chat.md) 当前基线为准。Root [task](../task.md)/[progress](../progress.md)/[测试台账](../test-cases.md) 分别维护派工、实际证据和完整70组验收；本手册不建立第二计划中心。
+
+2026-05的增长、视觉与模式正文仍为历史草稿/当时决策，不得覆盖后续用户确认、当前owner三设计或机器契约。ChatGPT/Manus交互是本轮对齐参照，成熟组件优先，不以历史竞品评价或ASCII布局替代现浏览器验证。并行按真实依赖拆分，而不是让PRD/系统QA/业务CRUD等待整个Agent完工。
 
 ---
 
@@ -55,7 +62,7 @@
 - [CoWork notes](../research/cowork/notes.md) — agent 形态参考
 - [Claude Code 深度学习 ×4](../research/claude-code/learnings/) — 扩展机制 / agent 原语 / 安全模型
 - [Manus notes](../research/manus/notes.md) — 视觉产物 + 营销策略参考
-- [ChatGPT notes](../research/chatgpt/notes.md) — 反面教材为主
+- [ChatGPT notes](../research/chatgpt/notes.md) — 历史调研；当前按用户偏好对齐清晰会话交互
 - [截图索引 16 张](../research/SCREENSHOTS.md)
 
 ---

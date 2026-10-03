@@ -1,3 +1,21 @@
+## R143 当前收口与后继测试（2026-10-03）
+
+IAM正式发布f38be788，Root最新938/0skip全门、独立11path审0，Root组合仅承接该gitlink与3commitrefs/1CURRENT digest。gitlink暂存后topology实际通过；compat16edges/13declared broken/0额外violations，业务边仍未闭。Root完整治理pytest原5645自然0，1715通过/3跳过/126.01s，三个跳过来自现test_agent_skill_source_smoke.py原NativeComponent依赖Agent .venv，本轮Root Python不含该模块，未将其记通过；不是应用全部集成/当前浏览器验收。
+
+Web原2180真实两删除节点2失败/45名称过滤：均未观测到DELETE（不是已经证明scope/ACK生产RED），列表seed不等于engine已打开会话的前置需核；原owner只现systemfile补真实打开A/snapshot前置和脱敏诊断，源仍未授GREEN，Root同2例复跑后裁。原用户加载/重复页面及模型积分仍待真实组合。Agent只读参数推荐已交供Root裁决，三D0保持，无源/contract发布。完整Wave0–7、70组11/5/14/39/0/1与两业务决定不变。
+
+## R143 当前发布与实际测试边界（2026-10-03）
+
+IAM正规第一方受控provisioning窄切片已发布mainf38be7880a2af6c65501a73309ab5b37cd33a813（远端一致、clean），Root最新完整门938/0skip通过，独立11path审0；双回读/精确fixed client/固定tenant/PKCE等本片证据，不是当前用户3310/IAB登录与所有权限旅程通过。现用户项目删除按ChatGPT、失败取消只核实消耗收费两决策已入core-flows/ADR033及原四台账，T-C05/B07转未验。70组当前11通过/5失败/14待复测/39未验/0业务待决/1支付后置。
+
+Web会话ACK删除三设计已经Root读审，原owner仅现systemfile写真实HTTP RED，无源码GREEN；Agent纯evidence三设计仍参数收口，原owner只读推荐参数供Root审，不等待IAM或Billing服务。Root组合元数据仅承接IAM发布gitlink/三commitrefs/已发布CURRENT digest，静态与纯工具在途；Billing/uv.lock及两子仓D0未提交变更不夹带。原98977/3310保持，当前无限加载与重复页清理、完整模型/积分/各owner旅程仍未验收，支付最后。
+
+## R143 两项用户决策解除业务等待（2026-10-03）
+
+T-C05按用户要求参考ChatGPT：永久移除项目内会话/指令/仅项目文件，独立保存资源保留，会话要保留先移出；官方Projects于本日核验。T-B07按用户明确答复：只结算已核实实际消耗、释放其余可确认未使用预占，unknown待核实/对账不当0。两组改未验不改通过；当前70组11通过/5失败/14待复测/39未验/0待业务决策/1支付后置。原编号计划/历史执行保留，补充系统用例在同test-cases；独立任务/Run/共享blob边界仍按现owner契约门落实。
+
+IAM R142 Root当前完整lifecycle5/5、官方工程938/0skip通过；四source/two tests终审0，11path总审发现DATA_MODEL虚记完整第三方/prompt/撤权覆盖1P1，原writer已仅纠正该句，待最终复核/精确发布。不是当前用户IAB已通过。Web已发布列表片7df55c3不动；ACK删除新片仅三设计D0已冻交，源未实现。Agent三设计D0已冻交，严格attempt artifact精确技术参数尚待Root收口，不等待上述业务决策。原98977/3310保持，当前用户无限加载/重复页清理、正式非零账务链仍未验收。Billing五旧docs/Root uv.lock保持，完整Wave0–7及支付最后不变。
+
 ## R141/R142 当前实际边界（2026-10-03）
 
 设计仍沿完整 Wave0–7：产品可见普通用户/管理员，正规第一方登录→工作区；会话独立且可归属项目，定时任务独立；AG-UI/Vercel 消费、正式 owner 积分与能力按既定依赖推进。没有新角色中心、全局跳过安全检查、旧路径兼容或部署运维扩面。下方旧轮次仅历史，当前事实以本节与 progress 最新证据为准。
@@ -6,7 +24,7 @@ Web R141 已发布 main `7df55c3baaa01dc6641a43ed5e022badb595ef8c`（远端一�
 
 Root 发布组合仅承接 Web 已发布 gitlink 与 IAM 既有 main70a2b015（仅两已发布文档，源码同父e3）；库存52commit引用及IAM CURRENT单一证据digest对齐，canonical contract/state/checkpoint不改。独立逐blob审0；纯工具100通过，topology通过，compat仍13declared broken/0violations，不称全组合闭环。Billing五原docs及Root uv.lock保持；IAM四未提交R142设计/测试候选不被gitlink带入。
 
-IAM R142 文档/测试仍冻结：Root88056真实隔离PG+production handler的v2两个节点1失败/1通过/3名称过滤，现provisioning缺 consent policy 更新；没有直接预造最终skip位。三设计和测试复审0P0/0P1/1P2（后继安全覆盖），已授同owner四现source最小GREEN；不新增schema/公开信任输入。第三方consent、prompt=consent、逐请求权限继续保留。上轮10scope批准请求已撤回，不执行。70组当前13通过/5失败/12待复测/37未验/2待决策/1支付后置，T-U04当前用户加载仍失败。
+IAM R142 四源候选：Root88056真实v2 RED后，同2节点8055真实GREEN 2通过/3名称过滤，包含policy/fixed tenant/code+PKCE；全lifecycle77498仍4通过/1旧first-party consent断言失败，官方verify77975格式失败，既有unit56438需fixture迁移（35通过/16失败）。没有直接预造最终skip位。三设计和测试复审0P0/0P1/1P2（后继安全覆盖），原四source已冻结，现仅同writer两既有测试文件迁移/格式，未发布；不新增schema/公开信任输入。第三方consent、prompt=consent、逐请求权限继续保留。上轮10scope批准请求已撤回，不执行。70组当前13通过/5失败/12待复测/37未验/2待决策/1支付后置，T-U04当前用户加载仍失败。
 
 ## R142 当前用户方向裁决（2026-10-03）
 
