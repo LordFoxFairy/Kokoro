@@ -1,4 +1,26 @@
-## R139 当前质量事实（2026-10-03）
+## R139 当前发布与预览更新（2026-10-03）
+
+Web限定修复已提交并普通推送main `6267c1e80e31808b3212beda1fa51a1785ec9de9`，远端同SHA且本仓clean。Root最终完整门256contract/50architecture/lint/types/2350tests（0skip，含真实Next/Chromium的OIDC43与IAMrelay68）/build全部通过，753源保持；前序三工程失败保留，未放宽门禁。Root承接该gitlink及49个Web库存commit引用，不改13broken业务边/历史checkpoint。
+
+原98977/3310 PID63842不重启：先核对八runtime源与原发布7889a7b相同，再精确原子更新到6267c1e；源hash与新commit一致，更新后无Cookie `/app`、`/api/auth/session`均200。不是当前用户Cookie/点击/模型/积分证明。IAB仍7重复页，关闭控制超时，用户当前页面加载与窗口清理尚未完成验收；未新增用户页或基础设施。
+
+测试计划70组13/4/12/38/2/1保持，当前四具体缺陷限定系统复验通过，不冒充整组或所有owner闭环。后继同Web owner推进当前页验证、list/snapshot有界读取及跨actor草稿/marker身份并发矩阵；完整Wave0–7/正规积分/支付最后保持。实际manifest、发布与资源证据见progress。
+
+## R139 当前验证结果（2026-10-03，前序阶段）
+
+Root 已复跑真实 Next/Chromium 系统文件全部43节点，43通过/0失败/0跳过，753源文件保持。超时恢复、503不误跳登录、真实匿名登录正控与同账号第二页保留第一页面索引/草稿均通过。随后完整工程门 contract256/architecture50通过，lint一条effect ref cleanup警告失败；types/test/build未执行。唯一Web writer窄修该警告后重跑，不降低门禁。
+
+当前仍是未发布候选，原98977/3310运行副本尚未更新；右侧7重复页关闭接口超时，未确认清理。不得将测试浏览器当用户当前页或全部正式登录/聊天/积分通过。身份并发切换、未分actor的draft暂态、列表/快照读取超时仍是后继，不称完整actor隔离。70组13/4/12/38/2/1保持，完整Wave0–7继续。实际证据见progress R139 43节点。
+
+## R139 当前有效 RED 与实施边界（2026-10-03，前序阶段）
+
+原98977/3310 PID63842保持，七重复页关闭仍超时、未确认清理成功。Web 候选尚未发布或应用到该运行副本，当前用户页面修复与浏览器端到端不能记通过。
+
+已定位并窄修候选 CSS Modules 全局 selector 编译错误，真实 Next 页面由500恢复200。随后直连 Chromium 会发 session、HTTP 测试代理不会；限定自有端口 CONNECT 转发后匿名正控通过，确认该阶段是测试代理问题，不是产品失败。Root 三业务节点现真实 2失败/1通过：pending 超过12s仍加载；503导致23次session、46次login，匿名200正控通过。Web 唯一writer已获现auth/i18n/page-clients最小有界加载/人工重试/身份隔离实施门，Root待冻结复验；无共享reset/新常驻服务。
+
+70组13/4/12/38/2/1保持；T-U04整组、正式登录/聊天/积分与所有子仓用户能力均未凭此改绿。元数据已提交a0ed839，13业务依赖边仍broken。完整Wave0–7继续，实际句柄/hash见progress R139有效RED；下方为前序阶段。
+
+## R139 当前质量事实（2026-10-03，前序阶段）
 
 原98977唯一3310服务保持，重复7页尚未成功关闭，浏览器控制超时后停止重复尝试。加载修复仍tests-first：首系统尝试未进入产品bootstrap，不算业务RED；仅修测试代理回收/请求barrier/安全诊断，Root17900自然终态进一步确认/app500/session0，属于夹具失败，不算业务RED；原writer只追具体Next exception，生产源码尚未改。
 

@@ -1,4 +1,45 @@
-## R139 当前加载系统复现与组合库存修正（2026-10-03）
+## R139 最终工程门、发布与原服务精确更新（2026-10-03）
+
+Root原84601/PID39697自然exit0/116.853s，Node22 `pnpm check`：contract256/architecture50/lint/types、164files2350tests/0skip、build全部通过。默认测试内真实OIDC43、IAMrelay68均执行通过，无需重复启动同Next套件；753源前后保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-final-check-y2h_y7rq/manifest.json` SHA5cb35e18feb23049cc137e6a6d80f90380446c50020c8f39f8c7cb5dfd46225e，log6f8a9fa683f0d768f5539c8d1bfc1c1beed9f9912caec1e2dae0be5cb414da09。随后四设计/验收文档仅补实际限定证据，所有runtime/test源与该冻结保持；原18UI节点数量不变，无新增unit/mock/skip。独立两文件终审 `/tmp/kokoro-r139-ui-assertion-final-review.md` SHA516f170ec65d2667296906d760e967022ad85102e788608596e37e8c8e1d16d5，0P0/0P1/0P2。
+
+Root精确17现路径提交Web main6267c1e80e31808b3212beda1fa51a1785ec9de9，原98284自然push0、远端main同SHA、Webclean。Root candidate gitlink承接；库存仅49Web repository_commit同步，无digest/version/state/reason/jsonchecks/checkpoint变化，独立pin审 `/tmp/kokoro-r139-published-pin-review.md` SHAea92d696feda9c59549c47313eadc72b35872f0682cf04044e6e95d64f05d1b7，逐49新commit blob原bytes/digest核对，限定0/0/0。实际topology PASS、compat仍仅13declared broken，整体T-Q10不改绿。
+
+原受管98977/3310 PID63842保持：Root先验八live runtime源与原7889a7b完全一致（无他人改动），仅八源逐文件原子replace到已发布6267c1e并核hash；没有新服务/共享reset/credentials读写。更新后无CookieHTTP `/app`200/33088bytes/0.123s、session200/23bytes/0.006s。manifest `/tmp/kokoro-r139-live-update-manifest.json` SHAb785e6425d4f650926171e44aabd10401d2e86450295f92c24f50f43b84dec08，明确browser_verified=false/tabs_closed=false。原run继续使用qwen3:8b、正式Billing/Skills/Storage未接入，外部5.6-luna/真实用户全链未在本片验证。
+
+IAB最新仍7相同旧conversation页；关闭动作持续超时、未成功关闭、不另开用户页或绕过控制工具。源码加载缺陷已限定修复发布，但用户当前页面/六重复页仍需实际观察与清理确认。后继list/snapshot deadline、跨actor draft及marker并发身份矩阵仍未闭，完整70组13/4/12/38/2/1及Wave0–7 active保持；Billing五docs、Rootuv.lock受保护。
+
+Root发布组合纯门原18957自然exit0：三现工具file100通过/0失败/49.15s，`/tmp/kokoro-r139-published-governance.log` SHA81bf9bd124cff2e44ed5084c97dd55b161f658d9fdb804dda66dce4b4e7ed954。有效checkpoint仍w1e-iam07-bff-pin（3active/13broken）；曾误选历史w1e-platform-code-release（4/12）得到不匹配失败，未改历史expected，不能当当前checkpoint本身失效。main-only当前仍FAIL：Root/Billing任务外工作树、IAM detached e3c035b且本地/远端main70a2b015不同，后者不为e3祖先，未强改IAM分支/owner源冒充main-only完成。此是额外真实治理未闭项，不受Web切片验收覆盖。
+
+## R139 43节点系统回归与工程门（2026-10-03，前序阶段）
+
+后续工程门仍实事记录：原42944/PID35797自然exit2/24.350s，contract256/arch50/lint通过，系统CONNECT回收集合把Duplex误定Socket造成typecheck两错误，未达test/build；manifest dfeac617894d5586d90b9f2626e2acc7d0aeec2e60c7d1527696e049cac02c58，log0655e8c5，753源保持。仅改公共Duplex类型，无cast或行为改变。原hook cleanup ref读写已改为live闭包+新check单调generation，最新hash13992c36，独立补审报告1241c4fd、限定0P0/0P1/0P2，不声称未验身份分支通过。
+
+原20740/PID36673第三完整门自然exit1/96.708s，contract256/arch50/lint/types通过，默认2340通过/10失败（两既有UI文件），build未达；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-final-check-jxlwh527/manifest.json` SHA5e602e71a6225530d44cc6cb9b1d9083e758b714b59a1f2ee4f5edee84b9a20b，logb53c485f403e0fb73fd22323e1ee6cc2052fea079f088fc01184dacce64baaef，753源保持。失败为旧boolean成功/无AbortSignal/null主体/401匿名及跨case模块identity fixture假切换；Root已仅授原writer迁移两现文件断言/fixture生命周期，无新增case/mock/skip或削弱身份准入。实际四业务系统案例仍是主证据，不退回单测代替用户验收。须完整门及43系统再验证才放行。
+
+Root 首次GREEN原57141自然exit0，3通过/39名称过滤，753源保持，manifest e779cb1f；并未据此发布。随后实际跨标签回归原27238/PID28862自然exit1，1失败/42名称过滤，首页面草稿在同subject第二页admission后变空。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-same-subject-valid-red-z8up61y0/manifest.json` SHA9ba335755adfabb78b031d2a4e3ebeda2e800253b0f061261aa2c3ee996cf773，log2c97c998。此前一次过滤写错零执行、一次Locator matcher错误均非产品失败，未作通过依据。
+
+唯一writer改为可信session后subject marker准入：同subject不重复清索引，变化才失效；探测开始marker与采纳时不同主体冲突则拒绝。marker仅UI缓存，不是认证。13已有路径冻结后Root原15326/PID31749完整Node22 `pnpm exec vitest run tests/system/oidc-rp-next-http.integration.test.ts` 自然exit0，54.224s，43通过/0失败/0跳过，753源保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-full-system-green-p259jbx8/manifest.json` SHA8201c00bdfe79c35d82b830e6d6e2c19bf016bed75f8309363224dc8e0668f2d，log5db89b57b3e0ec09cc34f7111f2b9a008d679d30ffa3e035462bf8d43854fcd1。真实Next/Chromium与Redis测试边界；BFF严格fixture不等于完整真实owner旅程。
+
+Root原18447/PID34397完整Node22 `pnpm check` 自然exit1/17.689s，contract256/architecture50通过；use-session-state.ts:165 cleanup ref warning导致lint失败（0error/1warning），types/test/build未达。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-final-check-s1ct33w5/manifest.json` SHA94f584e51c56bd38749a168b8d28e91be4577e936d66539dc7714518c9cdd2c8，logcc2f0e30f57b67220ef90f68036e249ca2d247fc4fce08a6802baf99a87e55a8；753源保持。原writer仅捕获effect ref对象且维持单调代际，不关闭lint；后继完整门与43节点重新验证。
+
+候选未Git发布/未更新原98977/3310 PID63842副本。IAB7重复页控制仍超时、未新开用户页。未分actor的draft暂态、跨文档身份切换非原子性及list/snapshot deadline明确未闭，不以狭窄通过覆盖完整70组。70组13/4/12/38/2/1不变，Root保资源/Git，Billing五docs与uv.lock保留，完整Wave0–7 active。
+
+## R139 有效系统 RED：无限加载与503登录循环（2026-10-03，前序阶段）
+
+Root94718/65894真实Webpack document500定位CSS Modules pure selector；仅现AppFrame status CSS加local threadFrame并挂现main section后，Root97419/15283及630/60130实际document200，但session0，不能把它算业务探针RED。候选两个源hash4ce70907/4d81d2e0保持，不改布局值或安全保护。
+
+Root5303/81451脚本资源均200、无pageerror，仅HMR失败；Root9530/22257直连诊断因Vitest仅展示AggregateError内因而未落可见结果，未据此裁决。Root10494/81509修正诊断落盘后，真实direct-control session1、代理session0：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-direct-observable-azvokv6d/screenshots/direct-control.json`，0600；manifest0c106da7、日志3d2b5f1e、自然exit1/26.735s/753源不变。Next dev初始Flight需要其开发调试通道，测试代理没有转发Chromium CONNECT；修复仅限定自有localhost:NextPort真实TCP隧道，HTTP故障分支保持，全部socket/upstream逐一回收。
+
+| Root实跑 | 命令/实际终态 | 证据与结论 |
+| --- | --- | --- |
+| 12157 / 99741 | Node22 pnpm exec vitest run tests/system/oidc-rp-next-http.integration.test.ts -t 'R139 preserves'；exit0，16.170s，1通过/41名称过滤，753源保持 | `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-connect-positive-vi5he2wt/manifest.json` SHA2ac79d3b796bf02c5ee580582f49825809318d6d3be73ffa52edc11879f72142；log41768ab9。匿名正控通过，代理阻塞关闭。 |
+| 12555 / 79366 | 同文件 -t R139；exit1，41.998s，2失败/1通过/39名称过滤，753源保持 | `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-effective-red-gpqhjmuz/manifest.json` SHA8de98212f81354b98346c8add28c82c7ccb9f6794d6c68501dfb1d3d990219ca；log92988ac18c3699c3409ea8f54d37dccbc42f82534be6504a75e5be09701db547。真实pending session1/login0超过12s仍loader；503 session23/login46误跳循环；匿名200通过。 |
+
+两个测试PGID Root实际核空，唯一98977/63842仍live。4ecd9a8b系统测试冻结，独立只读确认CONNECT限定自有端口、普通上游与隧道双端均登记清理、无raw token/query诊断。无共享PG/Redis重置，无新增用户页；IAB最新仍7重复页，既有控制句柄关闭再次超时，不宣称完成清理。
+
+有效RED后才授原Web writer窄GREEN：10s包括fetch/JSON、故障与匿名分离、人工Retry/共享请求/迟到隔离；保已认证Chat挂载与Project撤权。独立审发现只key remount会复用延迟释放engine，已裁决自有会话索引首次admission失效、主体变化失效再硬reload，而非旧身份缓存继续使用。当前仅在途，尚未Root GREEN/完整门/发布/用户浏览器验证。T-U04及完整70组13/4/12/38/2/1不改绿；完整Wave0–7active，Billing五文档与uv.lock原hash保留。
+
+## R139 当前加载系统复现与组合库存修正（2026-10-03，前序阶段）
 
 服务原98977仍live，3310 PID63842，Root新有限HTTP /app200（0.041s）/api/auth/session200（0.009s）；这些无CookieHTTP探测不是当前浏览器登录/聊天验证。CUA列仍7重复页，已有重复tab句柄close仍超时；未新建页面、没有成功清理声明，保当前页与用户手工关闭/刷新对齐请求。停止重复控制重试。
 

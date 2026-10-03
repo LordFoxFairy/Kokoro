@@ -1,3 +1,30 @@
+## R139 当前交付与后继（2026-10-03）
+
+R139-SESSION-GREEN 源码切片已Root验收并发布Web6267c1e：完整工程256/50/2350/0skip/build通过，含真实系统OIDC43/IAMrelay68；原17路径独立审/精确Git，无并发index。原唯一3310八runtime源已核baseline后更新，不重启服务；这只表示源码更新，不表示用户当前页/全owner闭环。
+
+原Web负责人后继仍同owner：T-U04当前用户加载实观→list/snapshot有界读取真实系统RED→窄修→原例/全门；跨actor draft与多文档身份并发单独矩阵，不扩大本片完成声明。Root资源/Git/四台账；原reviewer只读。IAB7重复页关闭控制超时，当前用户页保留、已有手动关闭/刷新对齐请求，未新开页面。70组计划不另建，所有业务目标/积分/支付最后保持；Billing/uv.lock任务外保留。
+
+## R139-SESSION-GREEN 实施门（2026-10-03，历史裁决）
+
+Root 已取得有效系统 RED：CONNECT 代理修正后，同 Next/Chromium 匿名正控通过；三节点实际 2 失败/1 通过，pending 保持 checking，503 引发重复登录。原夹具失败不冒充业务 RED；详见 progress 后续 R139 证据。
+
+| 项 | 当前裁决 |
+| --- | --- |
+| Owner/Writer | Web 既有 web7_consumer_owner；Root 独占资源、集成与 Git；agent4_execution_owner 只读审查。 |
+| 基线 | Web main 7889a7b + 已冻结 CSS 两路径与系统测试；Root a0ed839，任务外 Billing/uv.lock 保留。 |
+| 文件集 | 仅现 src/ui/auth/{use-session-state.ts,app-gate.tsx,runtime-loading.tsx,INDEX.md}、src/i18n/{messages.ts,en.ts}、src/ui/shell/page-clients.ts 及其现 INDEX 必要更新。原系统测试/CSS冻结，不建目录/文件。 |
+| 放置/粒度 | Session probe 拥有浏览器身份观察；AppGate/RuntimeLoading 拥有启动故障与重试；现 page-clients 仅增加自有会话索引失效边界。采用这些已有职责，淘汰新 Auth service/store 或全 surface operation framework。 |
+| 状态/恢复 | 10s 包括 fetch 与 JSON body；只有明确 200 anonymous 跳登录；网络/503/坏 body 保 unavailable、人工 Retry；StrictMode/focus 共享请求、迟结果隔离。初始故障挡工作台，已认证重查故障保 Chat 挂载、live mode、立即撤销 Project reads 并显示非模态错误条。 |
+| 身份边界 | 不用 React key 冒充 engine 身份隔离。可信session之后才按独立UI subject marker准入；同主体新文档/重查不清索引，不丢首页面草稿。首次或主体变化才失效自有索引、变化后硬重载；探测期间marker被其他文档改为不同主体则拒采纳。marker非认证且非跨进程原子锁；draft actor隔离与身份切换系统矩阵后继。不清主题/其他域/owner数据；storage失败fail-closed，BFF逐请求授权。 |
+| 数据/删除 | 不改 owner/API/SQL/contract/generated/依赖；删除错误当匿名及无界请求的原分支，不加 preview/fallback/旧兼容。 |
+| 验证/交付 | 原三系统场景及同subject跨tab回归 → 完整43节点系统文件 → Web工程门与独立审。Root原15326系统43/43通过，原18447全门contract256/arch50通过、lint1warning失败未达后续；同writer仅修ref cleanup警告后重冻/两门复跑，不降低标准。Root自有端口/前缀、无共享reset；禁止新unit/mock/fulfill/持久状态注入。候选未发布，当前用户IAB/正式全链仍待。 |
+
+## R139-CSS-BLOCKER 窄修授权（2026-10-03，前序阶段）
+
+Root94718/65894真实NextWebpack+Chromium anonymous document500已定位app-frame-status.module.css:189纯全局selector违反CSS Modules pure要求。manifest a810aaae、日志02aa9ca6，源753保持。此是真实生产stylesheet兼容缺陷，不靠更换测试编译器/弱化500断言掩盖；当前3310另一构建模式200不等于此模式通过。
+
+同Web唯一writer追加仅现app-frame-status.module.css与app-frame-main-surface.tsx；既有AppFrame owns布局，比较迁到main CSS（需重新标识timelineStage/搬keyframes）与现status CSS加local threadFrame作用域并挂现main section，采用后者精确两文件，不改变CSS值/动画/960与reduced-motion行为/DOM结构/业务。所有media列表每条selector带localclass；不关闭pure校验、不用全局CSS/important。测试现file冻结；Root先单anonymous正控→三个session真正RED，再授probeGREEN。新owner/API/SQL/依赖/目录均无，CSS本地Next指南已读。
+
 ## R139 无限加载系统级复现（2026-10-03）
 
 | 项 | 当前任务卡 |
