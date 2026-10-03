@@ -1,3 +1,15 @@
+## R157 用户原页面持续加载：P0仍开放，收口R156真实结果（2026-10-03）
+
+当前目标不变，优先级重新聚焦原用户 conv_ffd7 首屏。Root当前源码基线3e50b231；本轮未改产品源码、契约、数据库或原组合。原3310仍唯一PID46036/launcher45606，公开原URL43ms200、SSR含runtime-loading不含app-frame-loading，45个引用脚本均200非HTML，450业务文件与runtime副本逐字节同。证据 `/tmp/kokoro-r157-original-runtime-public.json`；它仅排查资源与复制漂移，不证明原用户水合或会话健康。
+
+浏览器原URL仍有tabs21/22；控制inventory20s、绑定21 20s、脱敏console15s和刷新请求15s均超时，刷新未返回成功、没有新DOM或截图。原宿主native访问被工具拒绝后未绕行。未新建tab、重启组合或清用户数据。两个原生只读审查聚焦bootstrap；首份报告9afe9af1指出checking/anonymous共用spinner，10s请求限制不覆盖effect/水合、同步auth-index扫描、React commit与router.replace。没有原用户请求/水合证据，根因仍未确认，不能把控制超时或存储候选当应用因果。后继先恢复原页可观测性并取同页session状态与初始化时线，保持P0失败/待复测，不继续全门循环冒修复。
+
+R156已验收Web测试-only切片正式发布：源码b09ec815、文档9b42acbc，main/origin实核相同/clean；Root精确stage该gitlink、拓扑exit0。完整2360/contract256/architecture50/lint/types/build0绑定上一Root81876同冻结三tests，当前28485仅额外定向lint0，未重跑2360。资源清理与启动器覆盖不关闭原用户P0、signout未知来源或Move consumer。
+
+Storage目前未发布：installer exact38→42已Root69514真fresh/catalog9pass0skip14.90s；同120k natural8plans命中四非唯一前导index，wide relation SIReadLock收窄page但raw仍出现classifier接受冲突，wrapper有界恢复。Root10402正式默认并行完整700为699pass/1fail17.11s，合法同project四上传Complete在completeClaim报P2034；build未到，own/nestedDB回收/hashsame。仅installer/index小门成功，不掩完整门红。Root15913带原callback PID/XID观察的原单case1pass/17名称过滤1.19s、资源回收/源hashsame；观察有开销，不算无观察完整门或故障根因。Storage下一资源诊断暂停，优先原用户首屏。
+
+原70组11通过/6失败/14待复测/38未验/0待决/1支付后置、test-cases全文8c17/suffix831a、uvf7e1及Billing/Storage任务外候选均保持。Wave0–7 goal active，不以此两owner切片宣称产品闭环。
+
 ## R155 已发布BFF职责切片；Web资源泄漏真实RED→GREEN（2026-10-03）
 
 BFF已发布源码main6c5cee0ca5b64dd7e1a855eae1022290eb16cd9a、文档5e119cd6fc007f4ad8ffae048a8fcef687d9a8dc，实核origin/main相同/clean；Root独立Node22 check742pass/1既有资源skip、format/变更5file格式0、真PG/Redis全173pass0skip37.730s与Move9pass0skip14.0297s，ownedDB及测试嵌套DB收回/全部源码hash同/Redis集合同。源码审89c280f0与最终doc审9cae795a均零；标准153→152仍exit1。只内部职责拆分，public7.1/canonicalSQL/behavior不变；WebMove/ProjectDELETE/Storage消费/原用户P0均未关闭。Root已精确stage该gitlink，当前拓扑复验exit0；其他在途gitlink不暂存。

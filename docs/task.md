@@ -1,3 +1,35 @@
+### R157 原用户首屏 P0 聚焦（2026-10-03）
+
+用户再次报告原 conv_ffd7 一直加载，明确不以其他owner工程门替代首屏恢复。Root独占原浏览器/受管进程/安全日志取证；不重复启动组合、不清用户数据。此次控制inventory20s超时，按原URL绑定返回两个原tabs21/22，绑定21再次20s超时；只证明控制读取失败，不是应用根因。图片为居中spinner，可对应AppGate RuntimeLoading，checking和anonymous共用界面，仍须实际水合/session证据。此次原native宿主被拒后未绕行；脱敏console及原reload也15s超时，未返回刷新成功。
+
+|任务|Owner/角色|范围与验收|
+|---|---|---|
+|R157-W-BOOT-READ|agent4_lifecycle_review 原Web owner，仅只读|main9b42，src/ui/auth/app-gate.tsx、use-session-state.ts、RuntimeLoading、root providers、page-clients索引及相关现system测试；查首屏checking永久不收敛的可证路径、最小安全诊断，禁止源码/测试/Git/服务操作，不重做full gate。Root CODEBASE_MAP及Web三D0为上下文。|
+|R157-ROOT-P0|Root|原tab21/22控制、原3310公开响应与chunk/runtimecopy、受管日志仅闭集无敏感摘要；源与身份不变，实际请求/水合未得不称修复。|
+
+R156诊断15913终态exit0：原Storage定点1pass/17名称过滤、1.19s，own/nestedDB回收/hashsame；只是加PID/XID观察的定点，不关闭默认699pass/1fail或准新source。Storage完整默认门后续暂停，Root先聚焦用户首屏。
+
+### R156 继续原 Wave0–7：正式安装修复与已验切片收口（2026-10-03）
+
+上一 goal turn 为 progress：Root3e50b231集成已发布BFF gitlink与四台账，最终81876 Web工程门及原保护hash亲核，治理298pass3.13s、提交后拓扑exit0。原用户conv_ffd7仍P0；已有刷新询问未收到反馈，不盲重试控制/重启组合，不将此阻塞缩小为全goal blocked。
+
+|任务|Owner/角色/基线|写集及依赖|验收/提交|
+|---|---|---|---|
+|R156-S-INSTALL-D0|storage_project_lifecycle_owner 原负责人/沿用当前模型，Storage main2f855816＋受保护在途候选|仅TECHNICAL_DESIGN、DATA_MODEL R150 index段补installer/scripts/apply-schema.ts placement及relations38→42；API零变；Root审查前source冻结|现2135真fresh2fail7pass是正确RED，ab3a/20376只读定位；不增加单元或新文件，不放宽exact index/官方drift/0FK；Root资源与Git|
+|R156-S-INSTALL-GREEN|同Storage唯一writer，待上述D0审查|仅scripts/apply-schema.ts现assertCatalog38→42；其他catalog维度、空owner、lock、timeout、official diff、两REDtests、schema/generated/旧业务候选/lockfile不变|Root最新9架构/freshcatalog、同120k自然plan/PID/SSI、原完整业务门后审查；不得称绝消SSI/S3或ProjectDELETE消费通过|
+|R156-W-RELEASE-REVIEW|agent_chat_contract_gate 原只读审查员；Web main65be18a＋五冻结候选|只读三tests67a4/3edb/5fb4、CURRENT a394/INDEX c520，闭合上一台账两文案P2；不抢writer/资源/Git|冻结源码对应Root81876，只测试fixture/启动器；Root核精确五路径提交/发布，用户原页与signout未知根因均保留|
+|R156-ROOT|主控/Root3e50b231|独占依赖顺序、资源、scope、集成与本台账；Web收口前不让新源码writer进入|已有原45606/46036 live，原PG/Redis不重建；70suffix831a2160/uvf7e1、Billing/Storage任务外修改保护|
+
+R156 Storage D0已独立97a1c166零发现，Root核TECH0e36/DATAf03e/API6ba3及installer3172/保护schema84e/generateda69e/两RED57d5+ee0e。准原Storage唯一writer仅scripts/apply-schema.ts断言38→42；294files冻结基线/tmp/kokoro-r156-storage-before-installer-manifest.json，余者不动。Root重跑真实门前不宣称GREEN。
+
+Web R156精确五paths已提交并push main b09ec81（原14958自然exit0）；Root定向Node22 lint28485 exit0、三test源码hash等于81876冻结值，当前工作树clean/origin实际同SHA。已有81876完整门绑定同源，不冒称本轮重跑2360。准原Web owner仅CURRENT发布态收口，源码继续冻结；发布测试slice不关闭用户原页。
+
+Root69514当前真fresh/catalog/drift9pass0skip14.90s，owned外层及嵌套DB已回收/源码hash同/official normalize0；只installer门通过。Root13845同120k合法fixture natural8plans均用四新IndexScan，Upload170/167→3/2 shared-hit blocks，其余3/2或4/3；raw仍一次classifier接受adapter冲突（code=null），wrapper A1/B2不同XID均成功、relation SIReadLock收窄page；不宣称绝消SSI。current protected源码与R148串行699接受manifest ez2olkmb相比只有canonical、generated、两index tests与installer五paths变。Root10402本轮完整门使用正式pnpm test默认并行（不强制串行避旧P2034）；当前在途，不先称过。
+
+Root10402完整正式默认并行门终态1fail/699pass/700、17.11s：scoped-file-lifecycle合法同project四上传完成在completeClaim P2034；installer/contract/format/lint/types0、build未到；own+nestedDB回收/源hashsame。失败不重跑凑绿/不改成串行避门。原owner fb02与独审2f1b确认最终语句不是根因证据；case自身同scope同SHA合法并发，跨file直接key/tenant冲突未见；command lease实际600000ms，不误写10s。Root后继只诊断观察：在/tmp临时Vitest config/setup仅对该integration文件包装原PrismaService.transaction（保持原callback/isolation/retry/timeout/断言），记录closed attempt/XID/PID/classifier/elapsed；所有原源码294冻，无repo instrumentation/新文件/SQL改动。先同case隔离观察，再与default并行对照；诊断带一条系统PID/XID SELECT和日志开销，不能冒原无观察全门验收。无真实故障根因前不授新source。
+
+局部installer归属：Storage canonical schema的正式空owner安装器，只同步已批准四物理index的catalog预期，不新增业务事实/目录/契约；真实fresh installer+精确catalog+官方drift证明，不增加重复静态单测。
+
 #### R155 收口状态（工程门已验；发布与原页仍待验）
 
 BFF source6c5cee0/doc5e119cd已push/clean，Root准10paths之外无写，gitlink精确stage后拓扑0；源码173+9与纯742/1skip、审89c/9ca已实核。Web真资源RED→76GREEN，首full81026 2360/build0；独立2P2已返修67a4/3edb，新最终81876已实际exit0（256/50/2360pass0skip106.39s，lint/types/build0，Redis15=0、五hash同），测试候选继续冻，产品源码未变、原用户P0不关闭。Storage两真实RED已证1/4与1/3；随后2135真实fresh GREEN2fail/7pass，installer catalog38漏四index（应42），已只读定位，待扩大准确D0/installer范围后再写；plan/PID/完整业务待验。用户原页截图及控制inventory15s超时，没有实际水合/session证据，停止重复盲控，等原页刷新反馈，不假恢复。其他owner/uv/70组保留。
