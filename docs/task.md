@@ -1,3 +1,17 @@
+## R126 GREEN-C 正式实现准入（2026-10-02）
+
+上一goal回合progress：Root23f83b87提交实际纯/资源RED与覆盖缺口。原owner R125三resource补强已冻结002b2bd8，Root核相对438freeze只三resource+新增contract node四路径变化，无source越界；contract ACK93e6ec92已把错snapshot5字段校为已批准4字段。Root真实新资源manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-1nv27w55/manifest.json` SHA dddcab3913c58d1f1f92278b099bc07129fcf8f55c1e1aedf36812a0dcb3bfd2：9selected0pass/9明确assert fail/0skip/0cancel，缺process/table/route首RED，无undefined TypeError，438实际源保持、child自然终态/forced空、精确库absent/Redismarker删/空。并发/GC/页间/重试深层因前置未达，不假称执行。既定D0不再重开。
+
+R126-GREEN-C / T-Q02/Q12、T-C09、T-A05（原BFF唯一writer bff_http5_consumer_owner/gpt-5.6-sol；Root审查/资源/Git）：基线BFF main02276b6+GREEN-A+RED-B/R125冻结，Root23f83b87。按现三D0目标完整实现：single public7、RunProcessProjection两canonical表、同source/frame/HWM事务写、授权RRsnapshot4-field nullable process、Run process endpoint5-field/page与immutable anchor、terminal→queued保selected START直到新START、GC锁后重查/provenance保留、删除所有private tool缓存。不建兼容/双轨/migration/cursor表/新角色/服务/依赖。
+
+允许source写集：contract/openapi/v1/openapi.yaml、contract/tests/v1-operations.json、contract/README.md；src/contracts/chat.ts（必要显式exports只限src/contracts/index.ts）、src/application/ports/chat-repository.ts、src/application/chat-service.ts、src/http/routes/chat.ts、新src/http/chat-process-page-input.ts；database/schema.sql；src/infrastructure/postgres/{agui-projection-repository,agui-consumer-registration,agui-consumer-repository,chat-repository}.ts、新agui-process-projection.ts与agui-process-page.ts；src/application/agui/{project-chat-event,project-session-events}.ts与ports/agui-projection-repository.ts、新application/agui/process-state.ts仅已批准纯replace规则需要时。new文件沿三D0§8现业务职责，不建目录；helpers只收父PoolClient，禁止自建pool/事务/反向repository依赖。可更新现scripts/verify-openapi.ts仅新schema/operation治理保旧安全门。bootstrap公共入口尚未授权，需要先报告。
+
+允许test写集：现RED-B七tests及GREEN-A四tests仅实现行为回归、移除退役toolCalls fixture/断言（保全部有效控制）；生产行为新增所需unit只在上述现tests追加，禁止新测试目录、删测试或修改门禁放宽。四D0/current前缀仅记录已实现/未验状态，原历史suffix不改。Agentvendor/generated/lock/package/Rootdocs/其他owner只读，Git由Root独占。页面5required不回塞snapshot4required；todos null≠[]，next_cursor耗尽才完整；每process页100/≤1MiB不将Message计入。requiredW/optionalcursor、closed exact query/限额/每页fresh scope与授权、400/410/503显式处理，不重新从0、静默null/空成功或取mutablelatest冒as-of；无raw args/result/hiddenreasoning。
+
+Root评审裁决：R125复审把合法kind变化称P1与现TECHNICAL_DESIGN第38行已批准规则冲突，Root不采纳这个新增不变量；Agent机器无跨事件kindimmutability即合法contiguoussource整个安全value替换，不发明phase/status/kind/segment单向约束。保当前页间测试kind变化+新preflight覆盖。GC P2精确provenance正控采纳，在现resource测试补A compact归零、B START/source cursor/digest及新activity来源仍唯一；非新架构。RR/faultfinally错误保真且有界，不吞未知cleanup。
+
+验证：writer只准Node22 format/lint/typecheck/生成check/contract/schema/architecture/完整default/build，实际日志与首failure保留；禁止PG/Redis/provider/服务/Git。资源RED/GREEN及真实RR/GC/恢复均由Root冻结后串行运行；报精确修改文件与hash/实际pass-fail-skip/阶段残余并停写。不得把缺字段转green而跳过后续深层断言；正式public7不可变发布要Root完整resource和独立审通过，随后才能Web consumer与浏览器。
+
 ## R125 当前真实RED与覆盖补强（2026-10-02）
 
 上一goal回合progress：Root d47fba33提交测试台账。Root当前独立纯RED manifest1aca8744：build0、108项102pass/5新增行为fail/1既定PGschema skip，440路径保持/两child自然终态。当前资源首次450f6894因私有runner scrub USER漏失导致installer用户缺失；无产品测试执行，库absent/marker删除/Redis空/源保持。新唯一R124b仅恢复本机USER后资源manifest e33547f6：现canonical安装0，9selected实际0pass/9fail/0skip，三个文件串行；438实际源保持、无forcedstop、所有PGID终态、独立库absent/marker删除/Redis空。
@@ -5,6 +19,8 @@
 资源失败尚不代表九深层分支有效覆盖：旧cache与GC缺表显式断言、HTTP503对200/400前置可记录；三个undefined process TypeError须改为required字段显式断言，fault/delete缺表为前置未达rollback/delete规则。现RR节点缺真实并发barrier，GC缺locked-requery/eligible oldRun，historical还是currentRun，101页间变更未触到page2，故Root不授权以现节点绿色冒称完整深层验收。
 
 R125-RED-B-STRENGTH / T-C09、T-A05、T-Q02/Q12：原BFF owner bff_http5_consumer_owner唯一writer，gpt-5.6-sol；BFF main02276b6+冻结GREEN-A和RED-B七tests。只续写现test/agui-projection.integration.mjs、test/agui-http.integration.mjs、test/chat-facts.integration.mjs三个文件，其他所有源/纯tests/canonical/SQL/generated/四D0/锁/Git/Rootdocs冻结。先加process required/object/null和目标表presence断言再读字段/装fault，使当前首RED可解释。按已批准20e87b6f补真实RR旧/新完整集合（沿R118既有query barrier而非mock）；GC锁后重查与可回收oldRun正控（沿R52/R46），terminalA/queuedB保护与B START切换；101页间更新page2末项+新增102不污染旧anchor，fresh anchor含新值，合法phase/新preflight替换；historical须先真实后继START再请求旧Run锚定第一页，limit/重复/unknown/foreign权限正负向；fault fingerprint含两compact表且撤fault重试仅一套事实；provenance恢复后200。相关fixture与cleanup扩在现文件内，owned pending finally release/await与清理失败保真，不吞清理异常。SQL missing tables只是前置，不猜未来helper/import制造TypeError。禁止访问资源/服务或Git，Node22语法/format可跑，交hash后停写；Root沿R124b重新冻结和真实资源RED，然后立即同owner GREEN-C（既定三D0不重新讨论）。如个别深层必须生产先实现才到达，保留完整断言并明确标未到达，不要求伪造当前成功。
+
+R125-RED-B-CONTRACT-ACK（Root已核D0，窄追加同writer）：现test/contract/openapi-contract.test.mjs新R124 node把snapshot process ref错写为RunProcessPage5字段，与API_CONTRACT当前21–35行四required裁决矛盾。只允许纠正该新node为独立closed RunExecutionProcess（run_id,todos,activities,next_cursor四required），并保endpoint RunProcessPage（加event_watermark五required）；不改旧测试/真实machine/SQL/四D0。不是新架构决定，不因错测试改变D0。与R125三resource补强一起交四hash、停写，Root重跑后GREEN-C。
 
 ## R123 BFF正式HTTP5消费与安全过程恢复接续（2026-10-02）
 

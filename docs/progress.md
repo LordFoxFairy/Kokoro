@@ -1,3 +1,13 @@
+## R126 / E103 明确资源RED后进入完整GREEN-C（2026-10-02）
+
+上一goal回合progress：Root23f83b87提交E102真实失败与覆盖缺口。本回合同owner已完成R125三resource补强002b2bd8并停写，真实RR授权query barrier、GC discovery barrier/eligibleoldRun、101页间变更/102项/新preflight、真实historical successor、fault retry/replay、provenance HTTP503→恢复200断言均已加入；不是这些深层分支已通过。Root核完整438actual freeze，较E102仅三resource和新增contract node四路径变化，生产/四D0/其他tests无越界。另Root查到newcontract node错把snapshot4字段ref到page5字段，与D0不符，窄授权校正93e6ec92；snapshot RunExecutionProcess4required、endpoint RunProcessPage5required保持既定方向，不为测试扭改设计。
+
+Root亲自再次现三个integrationfile^R124运行，canonical installer0，9selected0pass/9显式assertfail/0skip/0cancel；原三undefined TypeError及两隐式missing-table已改为明确presence前置。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-1nv27w55/manifest.json` SHA dddcab3913c58d1f1f92278b099bc07129fcf8f55c1e1aedf36812a0dcb3bfd2，freeze a320ab4f59859de3b2a29f7955ad9a2a19e1fba4a149cfa611fc5073b4b4d9dc。438源前后同、全child自然终态/forced空/cleanup_errors空、自有随机库独立absent、Redisownmarker精确删除并空。深层RR/GC/页间/历史/恢复尚未到达，原失败不删。
+
+独立补强审4de95e37原记1P1/1P2：Root不采纳其kind不可变P1，因现TECHNICAL_DESIGN第38行已批准每合法source完整替换且明确不得拒kind/segment变化，机器owner无此新限制；不因review发明额外状态图或删合法测试。GC P2精确START/source provenance正控采纳为GREEN-C测试小补。原报告保留；独立reviewer已核现D0并撤P1，勘误 `/tmp/kokoro-r125-bff-red-b-strength-review-erratum.md` SHA36be115bcac56d2ae5dbca7bc36ab13015d0ff4cf91c75f1c55e10078362aeed，当前0P0/0P1/1P2。其他原5覆盖缺口已补计划，运行证明仍待GREEN。
+
+Root已正式派原同writer R126-GREEN-C，完整public7+两canonical表+同事务投影/RRsnapshot/immutable锚定页/START保存/GC保provenance/删除所有旧toolCalls缓存；任务卡给精确source/现tests与D0前缀写集，禁止资源/共享服务/Git/依赖或兼容。真实资源验证、审查、提交/正式发布仍Root独占，之后Web正规消费/浏览器；本回合不继续重复D0或把当前缺字段测试修绿当整体完成。当前70组12通过/1失败/13待复测/41未验/2决策/1支付后置不变，完整Wave0–7active，任务外Billing/uv.lock保持。
+
 ## R125 / E102 Root真实过程恢复RED与测试质量缺口（2026-10-02）
 
 上一goal回合progress：Root d47fba33已提交四测试/任务/进度文档。本次Root独立运行当前七tests停写后的四pure完整文件：build0，108total/102pass/5新行为fail/1原PGschema skip，440路径保持、两child自然终态、forced空；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-pure-red-root-997i7abc/manifest.json` SHA1aca8744d0d206714926e47c54848866227c2030859aa7214dc84fb8a50038fe。五fail均为新public7/schema/snapshot目标缺口，非工具或导入；T-Q02从待复测转失败。原E101具体HTTP5消费缺陷关闭不反开。

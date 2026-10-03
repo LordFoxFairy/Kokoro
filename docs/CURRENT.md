@@ -1,3 +1,9 @@
+## R126 当前实施推进（2026-10-02）
+
+E103：R125资源测试补强与snapshot四字段契约错断言已校；Root真正9selected明确RED/0skip/0TypeError，canonical安装0、438源保持/自然终态/精确库absent/Redismarker清与空，深层恢复仍待GREEN到达。独立review误加kind不可变限制已由Root按现D0第38行裁定不采纳；保合法kind/phase/preflight变化，GC provenance正控纳实现切片。
+
+同BFF原owner现正式实现R126-GREEN-C：public7/SQL过程事实/同事务RRsnapshot/锚定分页/START/GC/删私有旧缓存。仅当前BFF writer写入，Root独占真实资源/审查/Git，未再重复设计/重启共享服务。正式发布后Web消费与浏览器，70组12通过/1失败/13待复测/41未验/2决策/1后置，完整Wave0–7active；下方R125及更早为历史阶段。
+
 ## R125 当前实际推进（2026-10-02）
 
 E102：Root真正四pure108项102pass/5新增public7-snapshot-schema行为fail/1既定PGschema skip；独立现三资源file9selected0pass/9fail/0skip，源冻结/自然终态/自有库absent与Redis精确回收。三undefined process与缺表fault/delete仅前置，不当RR/GC/分页深层已验。首次私有runner漏USER工具失败保留，最小补环境后canonical真实安装0，不改角色/共享数据。
