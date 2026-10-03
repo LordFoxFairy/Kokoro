@@ -1,10 +1,10 @@
 ## R146 当前推进与真实未闭环项（2026-10-03）
 
-Storage R146 Conversation具名释放、Project合法Artifact graph、全scope fence及最小审计候选已实现，但仍未发布。Root真实PG/Connect39项通过（3文件/0skip）；包含空scope重放、合法draft/final共享图释放、14类损坏图/业务全rollback、错误policy、4类坏receipt拒绝和Project7/Upload9。正规draft误判、receipt标题残留、非CLEAN图误释放均先真实RED再修；4个Prisma模拟关系fixture失败单独记录并纠正原生0FK注入，未冒产品RED。
+Storage R146 Conversation具名释放、Project合法Artifact graph、全scope fence及最小审计候选已实现，但仍未发布。Root最新真实PG/Connect41项通过（3文件/0skip）；包含空scope重放、合法draft/final共享图释放、14类损坏图/业务全rollback、错误policy、4类坏receipt拒绝和Project7/Upload9。正规draft误判、receipt标题残留、非CLEAN图误释放均先真实RED再修；4个Prisma模拟关系fixture失败单独记录并纠正原生0FK注入，未冒产品RED。
 
-前次审查将锁前receipt快照列P0，但Root新增真实barrier在原source下40/40 GREEN，未复现：PrismaService实际Serializable＋有界全事务重试，先前默认READ COMMITTED假设错误，独立b8a66080已撤回该P0，继续补精确barrier/retry证据。不得为了RED降低隔离或称源码已修；损坏Upload key跨scope物理误删风险尚待真实反例与owner收口；全入口/重放/晚回/竞态矩阵未齐，不能发布或称T-C05通过。Provider/S3物理GC未验，逻辑释放不是物理终态。
+前次审查将锁前receipt快照列P0，但Root新增真实barrier在原source下40/40 GREEN，未复现：PrismaService实际Serializable＋有界全事务重试，先前默认READ COMMITTED假设错误，独立b8a66080已撤回该P0，精确DB/key/PID/blocker与非事务xid证明SSI全事务重进现已Root41项复验，独立复审d16a3063已确认这项精确证明；其余矩阵仍开放。不得为了RED降低隔离或称源码已修；损坏Upload key跨scope防护已由Root54510真PG反例确认（41pass/1fail、release错误成功），owner先三D0最小归属守卫；物理S3删除仍未验；全入口/重放/晚回/竞态矩阵未齐，不能发布或称T-C05通过。Provider/S3物理GC未验，逻辑释放不是物理终态。
 
-BFF单一Move机器7.1候选Root契约58/58、semantic90冻结operation、lint0/4既有warnings；原owner已写真HTTP/PG测试，与Storage并行。Root正式Move实际503 agent_not_configured而非期望200，证实本地业务Move误落通用Agent fallback；installer/build0、ownDB已删、源hash不变/Redis key集合不变，source尚未实现。Move采用nullable canonical target、同步200、运行中保Run/stream/Message、sorted Project→Conversation及同PoolClient final receipt；并发同key输家全事务回滚后重读赢家响应，不造pending表。Project DELETE/N+1后继仍等正式producer/pin，Task关联选择只挡最终DELETE，不停其他切片。
+BFF单一Move机器7.1候选Root契约58/58、semantic90冻结operation、lint0/4既有warnings；原owner已写真HTTP/PG测试，与Storage并行。Root正式Move实际503 agent_not_configured而非期望200，证实本地业务Move误落通用Agent fallback；installer/build0、ownDB已删、源hash不变/Redis key集合不变，C4已实现并冻结：Root65960相同正式HTTP/PG主fixture转1pass/0skip，含move/replay/异义/no-op/撤权/运行事实保全与请求并发；后继C5已真实确认成功schema UUID缺段及锁阻塞超5.2秒两缺陷，纯门741pass/1skip不消除；C6准原owner窄修，仍非确定性全部竞态、全owner门或Web验收，未发布。Move采用nullable canonical target、同步200、运行中保Run/stream/Message、sorted Project→Conversation及同PoolClient final receipt；并发同key输家全事务回滚后重读赢家响应，不造pending表。Project DELETE/N+1后继仍等正式producer/pin，Task关联选择只挡最终DELETE，不停其他切片。
 
 T-B07依用户决定：只结算核实的实际消耗、释放确认未用预占，unknown持久待核实/对账；Billing唯一计价/账本，前端只展示。真实非零收费链仍未验，支付最后。70组仍11通过/6失败/14待复测/38未验/0业务待决/1支付后置，原测试编号内容不改。唯一受管32044保留；原Billing候选和uv.lock均保护，未提交在途子仓gitlink。
 

@@ -1,3 +1,25 @@
+## R146 新增真实失败与后继准入（2026-10-03）
+
+Root C5 contract实际1pass/1fail，成功响应Project UUID pattern缺一段；Root74851同正式HTTP/PG主链1pass＋真实Project锁阻塞1fail，精确blocker PID下5.2秒仍未返回，非fixture/Pool人为超时。log /tmp/kokoro-r146-bff-move-c5-root-contract-red.log、/tmp/kokoro-r146-bff-move-c5-root-lock-red.log；manifest120932e26b0ea53d51538d1e7b9b1e516dcaec4f5c98af239eebeb8dbeedf62d，ownDBabsent/hash相同/Redis集合相同。Root93196纯门741pass/1既有资源skip不消除这两真实缺陷，C6准原owner窄修，尚未发布/consumer pin/完整恢复矩阵。
+
+Root54510 Storage终态exit1：3文件41pass/1fail/0skip，正式Agent CreateUpload后自有损坏Upload key指向另一scope Blob，ReleaseConversationScope实际成功，拒绝断言真实失败。log /tmp/kokoro-r146-storage-key-red.log，manifestb87a0ee95d8ed19ad8b524bc3132911fa9d8953f4fc50b0403127adb9db2548a；ownDBabsent/sourcehash相同。此是损坏metadata防护缺口，不是已验正常跨scope路径或真实S3删除。原owner先三D0最小归属守卫，production仍冻；新case后段lifecycle null oracle须纠正CreateUpload已建active原事实，不以改oracle消除最前产品RED。
+
+原70组计数与测试编号保持，完整费用/能力旅程未验；Billing与uv.lock保留，唯一32044不重复启动。 本次Root22781两现治理文件18pass/18.79s/exit0，日志 /tmp/kokoro-r146-heartbeat-ledger-verification.log SHAe7032686d29c6b3b2a59a0a4aea5ad5b36316f2467ca5435e0d94b4eac074db7；原test-cases suffix对HEAD逐字节相同、SHA831a2160，uv.lock原f7e1c30d不改。当前IAB仅原tab21，无新增窗口；控制命令超时未获得新界面证据，不外推新E2E通过。
+
+## R146 Move主链路真实GREEN（2026-10-03）
+
+原writerC4冻结source；Root65960真实HTTP/PG相同合法路径从503 agent_not_configured转200，1个完整fixture通过/0skip，覆盖移出/移入/重放/异义/撤权/no-op/current事实收敛/隐藏目标/Run Message Share AGUI Artifact cancel不变与请求并发。正规installer/build0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-bff-move-_wyxb2y8/manifest.json，ownDBabsent/全部sourcehash等同/Redis15集合等同；日志 /tmp/kokoro-r146-bff-move-business-green.log。不是确定性samekey赢家rollback、DELETE/message交错或全部并发证明；原owner已停写，独立30path审与Root完整纯门在途，无源码发布/consumer repin/Web能力关闭。
+
+Storage SSI v3独立报告d16a3063确认own PID/key/xid真实重试证据及双title清/坏receipt全rollback；原生产P0假设撤回不是修复，其他key/fullmatrix/S3开放。Billing12系统用例仍全未验。Root70组原计数/编号保持。
+
+## R146 SSI精确复验与台账发布（2026-10-03）
+
+Root四原台账已精确提交/push main466cc97be50790310096a7d4f03ac8788b4170d3，远端一致；18治理/四docs diffcheck通过，未提交BFF/Storage候选gitlink、Billing/uv.lock。新增Agent runtime只读cut3993d247报告明确：当前callback按model汇总/缺字段补零尚不是正式逐attempt证据；官方SDK复用、持久call/revision/seal/可靠投递待设计与真实验证，Billing和planned/actual owner边界不猜补。
+
+Root16390 SSI proof v2实际40pass/1oraclefail，公开内部错误已正规脱敏为storage request failed，与测试误期待内部decode细节不同；未改生产或暴露内部细节。v3专用pg.Client与精确DB/key/PID/blocker，guard内非事务序列与xid证明新tx callback，clean/malformed双场景。Root73558实际41/41（3files/0skip）、installer/drift/normalize0，原source235881df未改；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r146-storage-focused-green-ajmf0fik/manifest.json，日志 /tmp/kokoro-r146-storage-ssi-proof-v3.log，ownDBabsent/sourcehash相同。前序P0撤回不是源修；反向case仅已提交fence，不冒持锁交错。损坏key/其余全部入口/晚回/fullowner/S3仍待验，未发布producer。
+
+BFF Move source在原owner独立写，Root真实503RED保留，定点纯门由owner报告尚非Root真GREEN；严格parser中立机械迁移、旧架构version断言同步已准。Root尚未验收source，70组计数不变、完整goal active。
+
 ## R146 台账落地与验证门（2026-10-03）
 
 Root49904两现治理file再次18pass/exit0/22.34s；日志 /tmp/kokoro-r146-root-ledger-verification.log。四原台账diffcheck0；原70组完整suffix对HEAD字节相同、计数仍11/6/14/38/0/1。Root只准备本次四文档提交，Storage/BFF在途候选gitlink、Billing五docs/三pricing候选与Root uv.lock原SHA均不纳入。两原owner继续独立仓实现/测试，Root管资源/Git，无重复应用服务或共享reset。
