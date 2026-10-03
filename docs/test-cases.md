@@ -1,3 +1,19 @@
+## R151 / 系统验收矩阵与已发布限定切片（2026-10-03）
+
+Root本轮全仓标准门真实exit1：153项规范违规/0未核实，不能称全仓合规。新发现本切片引入的BFF chat-repository.ts增长671→979行，越800行门，列R152具体架构P1；不将153项一概称历史。Root治理298pass3.06s。拓扑初验因两个已发布owner未更新Root index而2项失败；Root精确stage Web65be18a/BFF0333两gitlink后复验exit0/PASS（9个运行模块），没有改检查器或其他gitlink。剩余标准债务仍按原owner波次收敛，不修改检查器/阈值放绿。
+
+沿用原70组及编号；原组状态仍11通过/6失败/14待复测/38未验/0业务待决/1支付后置，不凭限定切片转整组通过。
+
+| 用例ID/标题 | 预置条件及行为步骤 | 预期结果 | 优先级/类型 | 当前实际结果 |
+|---|---|---|---|---|
+| T-U04 原用户初始化 | 原3310/conv_ffd7/tab21；刷新原页、检查在线session和正文/输入、再次刷新 | 有界进入可操作工作区，失败显式可恢复，不永久占位 | P0 / 主链路、状态机 | 仍缺同页DOM/API证据；控制focus超时，用户刷新反馈未得。保持失败，不由下面fixture代替 |
+| T-U04 偏好存储读写被拒 | 真实Next/Chromium已认证fixture；分别拒theme/locale、通过Settings切换，再reload | 正文和输入可操作，显式切换保内存；reload保原系统/协商默认，不抛页面异常 | P0 / 边界、异常、状态机 | Root3真实RED→3GREEN；最终完整53system0skip80.69s、2360工程0skip105.83s；source65be18a发布。仅此缺陷通过，不绑定原页因果 |
+| T-U04 全localStorage被拒 | 同fixture全部Storage访问抛错，真实在线session返回认证结果 | 认证索引failclosed，有明确可恢复alert，无私有工作区/无限loading | P0 / 安全、异常 | 最终53中的正式节点通过；未放宽认证守卫 |
+| T-U04 pending刷新期间退出 | 正规Productcookie、真实Next+Redis及严格IAM/BFF边界；保持刷新在途后单次signout | tombstone阻止晚凭据恢复，不用stale凭据revoke，HTTP200 | P0 / 竞态、生命周期 | 本轮53与2360中均过，但R150真实500/Next JSON.parse来源未知仍开放；新有限脱敏诊断仅取证，不冒根治 |
+| T-C05 Move完整producer | 真HTTP/PG/Redis新自有库；本人Project↔外部归属、samekey重放/异义、撤权、交错Message、COMMIT断socket | 同事务归属+唯一receipt；当前IAM重验；历史Run/Message/Share/AGUI不变；未知COMMIT丢坏连接并同key恢复 | P0 / 主链路、安全、异常、竞态 | 正式九焦点9pass14.051s＋八文件173pass0skip37.305s，源码284b/docs0333发布；Web消费者/DELETE仍未验 |
+
+退出标准仍要求原用户实际登录→工作区→输入发送→流终态→刷新稳定及正式积分/权限/项目等完整旅程；当前未达到整体退出门。RootCURRENT记最终commit、命令与其他owner开放项。
+
 ## R150 / 系统验收结果与仍失败的原用户页面（2026-10-03）
 
 用户原 conv_ffd7 / tab21 的永久“正在加载工作区”仍未验收。本次原页控制再次在 Emulation.setFocusEmulationEnabled 超时（31.68s），未取得该用户 DOM/session/hydration 时间线；没有重启原32044组合、创建新页或重置数据。已明确请求用户只刷新原页一次并反馈，不把公共200或其他fixture通过当作恢复。

@@ -1,3 +1,13 @@
+## 2026-10-03 — R151 真实切片发布进展
+
+Root本轮全仓标准门真实exit1：153项规范违规/0未核实，不能称全仓合规。新发现本切片引入的BFF chat-repository.ts增长671→979行，越800行门，列R152具体架构P1；不将153项一概称历史。Root治理298pass3.06s。拓扑初验因两个已发布owner未更新Root index而2项失败；Root精确stage Web65be18a/BFF0333两gitlink后复验exit0/PASS（9个运行模块），没有改检查器或其他gitlink。剩余标准债务仍按原owner波次收敛，不修改检查器/阈值放绿。
+
+上一goal turn为进展，不是只报状态：Root四台账fd9b4947；本轮BFF真173完整owner门与纯741+既有skip/format全部通过，正式7.1 Move源码284b与发布态docs0333已推main。Web新有界JSON诊断53system与2360完整门通过，六文件限定偏好拒绝初始化修复65be18a已推main。独立审分别807d061e/322b3594/63ccb09f归零；Root最终Gitlink与证据见CURRENT R151。
+
+不越界结案：未复现signout500不证明根治，原用户tab21仍缺同页DOM/API/输入/刷新证据，T-U04仍失败。BFFproducer发布不代表Web Move消费/ProjectDELETE/T-C05通过。Storage schema未动、S3/Billing/完整Agent旅程未验；70组11/6/14/38/0/1不变，支付最后。只保原32044运行组，临时资源均自然终态并亲删自有库，保任务外Billing/uv.lock。
+
+下一依赖：原用户刷新反馈→同页E2E与实际卡点；BFF7.1正式owner已可供Web后继按固定commit/digest消费，不再被“producer未发布”阻塞；ProjectDELETE依Storage后继完整ReleaseConversation/S3与已批准数据规则，不混入Move源码。
+
 ## 2026-10-03 — R150 原页故障优先与实际切片证据
 
 用户原 conv_ffd7 / tab21 的永久“正在加载工作区”仍未验收。本次原页控制再次在 Emulation.setFocusEmulationEnabled 超时（31.68s），未取得该用户 DOM/session/hydration 时间线；没有重启原32044组合、创建新页或重置数据。已明确请求用户只刷新原页一次并反馈，不把公共200或其他fixture通过当作恢复。

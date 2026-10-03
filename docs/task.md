@@ -1,3 +1,66 @@
+### R151 Root组合放行证据与真实未放行门
+
+治理298pass/3.06s；默认全仓规范153fail/0unverified，已精准确认BFF新979行P1并续派R152三D0（仅文档未授权source），其他违规不武断归历史。初拓扑两gitlink旧index mismatch；仅stage已push main Web65be18a/BFF0333cd7后原拓扑校验再跑exit0/PASS（9 runtime），结果见/tmp/kokoro-r151-root-topology-pinned.log，不stageBilling/Storage/uv.lock或BFF R152未提交docs。
+
+### R152-BFF-MOVE-SPLIT 新引入架构P1：先三D0，禁止直接写源码
+
+Root默认标准门真实153fail/0unverified，发现Move使chat-repository.ts由a68基线671增至当前979，超过800硬门；这是本片新引入且审查遗漏，不冒整体规范通过。行为173与741门通过仍有效，但后继消费者冻结等待此问题收口；不减阈值/排除文件/回滚已验证行为。
+
+| 设计门项 | Root放置裁决 |
+|---|---|
+| Owner/唯一writer | BFF Conversation Move事实；原agent_chat_contract_gate先只写三D0，Root边界/审查/Git |
+| 当前事实 | 已发布0333（source284b/public7.1），现ChatRepo979行；全部语义、SQL、receipt/lease与173真PG保持；无未提交BFF源码 |
+| 方案A采用 | 现postgres目录新增conversation-move.ts负责单一Move事务/重放；conversation-move-lease.ts负责有界PoolClient生命周期；已有chat-repository-mappers.ts承接receipt Row解码；ChatRepository方法仅调用具名Move函数，不新增port/service或一级模块 |
+| 方案B淘汰 | 仅把lease移成技术helper仍将所有Move事务混进ChatRepo；或按行数拆chat-part-N，留下机械边界与重组依赖，未消除独立变化原因 |
+| 粒度/依赖 | 两个小文件不新增目录；各一职责。只依现Port command/result、PostgresBffDatabase/pg与既有mappers；上层service不见pg。无BaseRepository/shared模块/新运行进程 |
+| 数据/API/删除 | 无DDL/contract/version/generated/pin语义改动。移走原Move实现与lease，不保双路径或alias。预算、排序锁、currentIAM、samekey、未知COMMITdestroy及所有sql/error字面值保持 |
+| 验证/提交 | Root已真架构RED979，原173行为基线Green。后继原所有173集成/741pure/schema/contract/format/build及Root相关800行门必须重验；同仓一个writer，Root精确commit与consumer依赖更新 |
+
+先仅更新既有docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md当前方案段，把上述边界与当前/目标明确；表述无API/SQL语义变更并引用现owner机器/Schema。freeze/Root审查通过后单独授权准确source文件集；现在禁止新建/修改任何代码、tests、schema、contract/package/Git/资源。项目删除、Storage/Billing不混入此切片。任务模型沿原原生负责人设置（未重选，工具未暴露模型身份），审查原独立负责人；避免假称模型已切换。
+
+### R151 本轮交付终态与下波依赖（Root唯一计划中心）
+
+BFF owner源码284b5e04/public7.1 Move及docs0333cd7已精确提交推送，173真integration/741pure+既有skip/format与独立0具当前证据。Web六path65be18a限定偏好拒绝初始化修复已提交推送，53真system及2360完整工程门0，独立63ccb09f。两owner main保持，Root只更新这两个已发布gitlink和同四台账；CODEBASE_MAP仅补BFF Move入口/契约owner，避免消费者误以为已实现，不另造契约中心。
+
+原用户P0未验收，不标T-U04/T-C05全组通过；70组与suffix/uv.lock/Billing候选保留。Web后继Move消费已解producer前置，但需先本仓三D0、固定发布commit/digest和系统RED，不能先改UI/本地归属假成功。旧signout500没有精确失败caller，本轮未复现；后续实际失败由已加bounded诊断定位，不再重复跑凑绿。Storage schema/索引实验与完整S3仍后继，支付最后。
+
+### R151 Web限定初始化缺陷工程门通过；文档交接准入
+
+Root99026最新2d9d9a0f/a114/0532 pnpm check自然exit0：contract256/architecture50/lint/typecheck、164files/2360tests/0skip105.83s、Next build0（3.0s编译），三冻结hash门后相同；Root12865单独真实53system全通过80.69s。独立增量审2445a875为0P0/P1/P2。两次本轮未复现旧signout500，不据此根治原间歇缺陷；原用户UI仍未得同页证据，不关闭T-U04。
+
+准原Webwriter仅既有docs/CURRENT.md、INDEX.md、src/i18n/INDEX.md文档收口：写两偏好Provider读取/持久化拒绝下保既有协商/系统默认、内存切换有效、认证索引仍failclosed；主题单文件目录无INDEX，引用已有根INDEX，不新建目录/文件。记录Root真实RED3→GREEN3/最终53与2360及独立审和实际runtime两source已应用，明确原用户页未恢复证明、signout未知仍开放、BFF7.1未消费。source/test/schema/contract/lock/Git/资源禁止。Root最终六文件精确审/提交，只为本限定缺陷交付，不冒Web所有业务闭环。
+
+### R151 BFF Move源码已正式提交推送；发布态文档收口
+
+Root逐一核独立807d061e全部30path/hash/删除blob与空Git index，精确暂存提交main284b5e04c4c09759787ef239b1a19fcdcd5ed8fa（Git中立rename折为29文件）；原83984 push exit0、远端main随后实核。发布范围仅BFF7.1 Move producer，不是Web消费/ProjectDELETE/原用户UI完成。
+
+准原BFFwriter仅五docs最上本切片current段将“未提交/未发布”更新为正式source284b5e04基线/Root最终门，明确原a68cbe55为历史7.0、当前源码7.1已发布，Webpin/浏览器消费/ProjectDELETE/Storage/T-C05仍未验；历史段不改、源/机器/tests/schema不动。避免未知未来文档commit自引用，源码身份引用284b5e04，最终组合身份Root以Gitlink发布。独立审只读五doc delta及源392hash不变后Root只文档提交推送。
+
+Web Root12865新2d9d9a0f完整53真实system全pass/0skip80.69s；此一次未复现历史signout500，不能称原因消除或用户页已恢复。为最新冻结候选正式工程放行，Root99026完整pnpm check在途，若再次500用新闭集JSON诊断决定具体下一步，不盲重跑凑绿。
+
+### R151 文档审P1与Web诊断边界更正
+
+BFF最终静态30path审c2d235c6代码/机器0，P1只五docs当前证据仍待验；Root45948已自然exit0，full173已真实完成。准原BFFwriter将既有TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/contract README当前preface与CURRENT一致更新为最终173/741/9、4既有warning及仍未Git发布/消费未验，勿改技术/契约/SQL设计或历史段。原审查员再绑五docs SHA放行。
+
+Root拒Web86d preload先Buffer.from完整输入、other String二次coercion；仅同file修为string≤64Ki codeunits前截（≤192KiB编码），Buffer subarray≤256KiB/O1大小，other不coerce/null闭集；byte_count对截断string未知明记null、truncated=true，不误冒完整hash。新2d9d9a0f冻结，source两hash不改，Root一次完整53真实system在/tmp/kokoro-r151-web-json-system-root.log；不改原请求数/断言/预算/应用流程，不重试掩盖。原用户UI仍未得反馈与同页证据。
+
+### R151-BFF 完整门已Root复验，文档证据更新准入
+
+Root71186最新版source219/testc357真八文件integration173pass/0skip37.305s、installer/build0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r150-bff-full-fn4_9w4m/manifest.json；ownedDBabsent、全部sourcehashsame、Redis及secondaryDB集合不变。Root45948 Node22 pnpm check && pnpm format:check exit0：741pass/1既有资源skip、lint/typecheck/contract/build0、format0；不把skip当integration通过。两门后完整source/contract/test hash与manifest再核相同。
+
+准原BFF负责人 agent_chat_contract_gate只更新既有docs/CURRENT.md最上R150候选段，绑定以上最终173/741及9/unknownCOMMIT真实RED→GREEN、保基线a68/public7.0和候选7.1/未提交未发布；明确Move独立producer切片，不关闭ProjectDELETE、Web消费、T-C05。不改其他docs/source/contract/schema/package/test/Git；冻结后原独立审查员复核最终30path和文档。Root独占按精确path提交与发布；原用户UI不被BFF门替代。
+
+### R151 并行续推：精确退出登录诊断与正式Move生产方门
+
+上一goal turn为进展：两provider真实RED→GREEN并已服务，Root四台账fd9b4947已提交；原用户页面仍未验收，浏览器控制超时不视作服务停止。
+
+| 任务 | owner/角色/writer | 基线及文件范围 | 依赖/完成条件 | 资源与提交 |
+|---|---|---|---|---|
+| R151-W-JSON | Web/agent4_lifecycle_review/唯一测试writer；Root审核 | main49721a5＋source a114/0532及test4517；仅现tests/system/oidc-rp-next-http.integration.test.ts | 复用既有真实Next/Chromium fixture；临时隔离子进程JSON.parse失败诊断闭集caller/input-type/byte-count/hash且原样抛；补固定缺漏manifest metadata；不记录原文/stack/path/cookie/query，不改signout语义/断言/原预算。不启资源。冻结后Root一次真实完整system，失败的精确caller决定后继，不循环凑绿 | Root独占资源/Git/runtime；不新建仓内helper/模块，不改生产源。单次失败诊断有界16条/8KiB行/256KiB输入扫描，超过上限只记closed truncation |
+| R151-BFF-FINAL | BFF/Root隔离验证；原agent_chat_contract_gate保原owner，暂冻结 | maina68cbe55＋source219/testc357与当前全部候选 | Root43114真9已通过；重跑最新版owner完整check及真PG八文件integration，独立审绑定SHA。正式Move候选的放行不宣称Project DELETE或Web消费闭环 | 独立随机ownedDB，复用现PG/Redis15无清共享；原runner finally亲删ownedDB、核source/hash/Redis/secondaryDB不变；Root独占Git，非该owner未提交修改保留 |
+
+当前原32044应用栈只poll原句柄，不创建新页/重建登录或清共享数据。Storage新schema/index仍未准，Billing候选/uv.lock/test70 suffix保护。四原台账继续以真实终态记账；所有wave目标仍active。
+
 ### R150 最新资源门终态：不掩历史signout失败
 
 Root72301冻结4517/a114/0532完整门exit1：2359pass/1历史pending-refresh signout500、111.32s；53系统52pass1fail，新增Storage三项含真实setter/reload全过。contract256/architecture50/lint/types0，build未到。五Next manifest前后valid、JSON.parse来源unknown；禁止重复跑凑绿/放宽断言/发布。原Web负责人只读Next/source/signout寻找精确诊断方案，不抢写或启动资源。BFF Move当前候选尚未发布；Project DELETE消费闭环仍开放，不误指已发布Storage ReleaseProjectScope。用户原页面仍待刷新反馈，source修仅绑定受控拒绝缺陷。

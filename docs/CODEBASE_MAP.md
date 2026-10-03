@@ -28,6 +28,13 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 - `scripts/e2e/product_skill_installation_smoke.py`：仅校验BFF public本人安装五操作、原ACK/当前读、false筛选/两页、remove/reinstall及撤权证据，无进程/数据owner。
 - `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py --product-installation`：复用已有IAM/BFF/Platform/Storage、两已发布不同series、owned单库schemas/桶与统一回收；与`--agent-source`互斥，默认模式不变，不启动Run。
 
+## BFF 会话归属 Move producer（2026-10-03）
+
+- `apps/kokoro-bff/contract/openapi/v1/openapi.yaml`：唯一 public7.1 `POST /v1/sessions/{id}/move` owner机器契约；Root不维护可编辑副本。
+- `apps/kokoro-bff/src/http/routes/move-session.ts` / `src/http/move-session-input.ts`：受信请求与闭集输入，Application Chat service调用同事务repository。
+- `apps/kokoro-bff/src/infrastructure/postgres/chat-repository.ts`：排序Project→Conversation锁、归属与final receipt同事务、未知COMMIT lease销毁与same-key恢复；无schema变更。
+- 源码提交284b/发布态0333；Web尚未固定消费新contract，ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
+
 ## 子仓路径与 owner
 
 | 仓库 | Root 路径 | owner |

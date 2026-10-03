@@ -1,3 +1,12 @@
+## R151 两个限定切片已发布；原用户首屏仍开放（2026-10-03）
+
+Root本轮全仓标准门真实exit1：153项规范违规/0未核实，不能称全仓合规。新发现本切片引入的BFF chat-repository.ts增长671→979行，越800行门，列R152具体架构P1；不将153项一概称历史。Root治理298pass3.06s。拓扑初验因两个已发布owner未更新Root index而2项失败；Root精确stage Web65be18a/BFF0333两gitlink后复验exit0/PASS（9个运行模块），没有改检查器或其他gitlink。剩余标准债务仍按原owner波次收敛，不修改检查器/阈值放绿。
+
+- BFF public7.1 Move producer：源码main284b5e04c4c09759787ef239b1a19fcdcd5ed8fa，文档收口0333cd7c515846e977b1b05d8349e8c04d2a49dd，均已push且origin/main实核一致。正式八文件真PG/Redis integration173pass/0skip37.305s；Node22 check741pass/1既有resource skip，lint/types/contract/build/format0、4既有contractwarnings。自有DB已删除/Redis与secondaryDB集合相同；源机器SQL391个非文档hash保持，README仅批准发布态更新。完整30路径审807d061e、发布文档审322b3594均0。只发布会话归属Move能力，不关闭Web消费/ProjectDELETE/Storage消费/T-C05。
+- Web受控偏好拒绝初始化缺陷：main65be18a3c7cdaa8930d4b63f8c699b61b5addb53已push；两provider读取失败继续原默认协商/系统主题，写失败保本次内存选择，认证索引仍failclosed。Root12865完整53真实Next/Chromium系统pass/0skip80.69s；Root99026最新完整check自然exit0：contract256/architecture50/lint/types、164files2360tests/0skip105.83s、build0。六路径审63ccb09f零发现；旧signout500本次未复现，但来源仍未知，不称根治。
+- 原用户conv_ffd7/tab21持续加载仍是P0未验收。两provider已同步原运行副本，公开chunk已确认catch守卫，但仍没有原用户DOM/session/hydration/heartbeat证据，浏览器focus控制超时。当前仅等待用户原页刷新反馈，不重复新增tab/重建应用/清共享数据；正式前端行为并未通过此人的实际E2E。
+- Storage既有候选未发布，R150前导索引三D0仅设计候选、schema/index未授权；S3/正式非零Billing/完整Agent技能旅程仍待验。原70组保持11通过/6失败/14待复测/38未验/0业务待决/1支付后置；原suffix831a2160、uv.lock f7e1c30d与Billing候选保留。Wave0–7 active。
+
 ## R150 当前用户首屏未闭环；已复现初始化缺陷已修并服务（2026-10-03）
 
 用户原 conv_ffd7 / tab21 的永久“正在加载工作区”仍未验收。本次原页控制再次在 Emulation.setFocusEmulationEnabled 超时（31.68s），未取得该用户 DOM/session/hydration 时间线；没有重启原32044组合、创建新页或重置数据。已明确请求用户只刷新原页一次并反馈，不把公共200或其他fixture通过当作恢复。
