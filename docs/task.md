@@ -1,3 +1,23 @@
+R119最新实际句柄：原WIN03 GREEN turn01a0ff23-771c-7731-b06b-19e3fbdae8d8，cursor3a08a485-69ce-41c3-a7c6-23cc37d4b100:215已确认inProgress；Root49461已自然终态。Web只读审已交504a7726（0P0/3P1/1P2），不是浏览器通过；原6RED/1control与九源授权沿下卡，后继只查同句柄不重派。
+
+## R119-AGENT-LIFECYCLE-GREEN（Root已复现RED并接受文档门，2026-10-02）
+
+原WIN03 turn01a0ff13-fbf4-76b0-9c7a-aa4c79821579已cursor213 completed/idle交付tests-only；Root49461独立精确节点pytest实际6fail/1pass/0skip，0资源尝试、542保护文件不变、owned组自然终态。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r119-agent-red-root-hwdkvgr8/manifest.json SHA58baba198947da497ca9c66e9159fbd90c45a17d3f273af498766cd86fe4a045。独立RED/三设计复审48144cd2为0/0/0；构造fake builder只锁Supervisor lifecycle，原真实connector与require_worker_drain控制不拼成真实SIGTERM通过。当前9源+6test/docs hash与交付049da662匹配，原七源handoff9bbc4f77报告只交付待验。
+
+|任务|Owner/唯一写入范围/基线|完成条件与交付|
+|---|---|---|
+|R119-AGENT-LIFECYCLE-GREEN / T-Q03、T-R02|原WIN03唯一writer，gpt-5.6-sol/medium，Agent main2653bcc+现冻结候选；Root审查/Git。仅现九src：sandbox/archive.py、sandbox/backend.py、agent_factory.py、worker/supervisor_execution.py、worker/supervisor_control.py、worker/supervisor_recovery.py、worker/supervisor_context.py、worker/supervisor.py、worker/main.py；现四tests：unit/agents/test_factory.py、unit/execution/test_supervisor.py、unit/sandbox/test_workspace_archive.py、unit/worker/test_main.py；三现设计docs只更新本片当前态/历史标识。其他production/tests/contract/schema/generated/provenance/locks/配置/Git/资源禁止改，不新建文件|保持现6RED/1control及全部既有assert，三个build caller唯一_build_owned+强assembly registry；取消及时返回、底层operation真实持有；late success未转交则自动cleanup、late error可观察；原子单一转交且cancel/return race不丢失/双关；同一absolute deadline动态等run/assembly/cleanup，超时保留owner/false/worker非零。control所有未转交return/error/cancel finally close，recovery probe始终close且primary保真。Docker后半failure关闭本次client、只回收本次新container、不毁prior，原异常保持。新增行为先现真实入口tests-first，不用缺方法造RED；R117/R118四file完整纯回归、runtime/architecture、Ruff/Pyright/contract/failure checks，原节点和skip边界保持；不启动共享资源或改总timeout。交实际命令/log/hash与剩余资源门，冻结停写，Root独立验收才提交|
+
+放置与文档门沿R118已批准九现源方案与三设计顶部，不重建资源模块/新配置/新进程。runtime有限源码清单已包含九文件，摘要由既有codec派生；wire/SQL/机器contract/pins/generated/locks预计零diff。真实S3/Docker/SIGTERM/installed HTTP与消费者发布为后继待验，不能用本片pure GREEN关闭T-Q03整组。
+
+## R119 接续 / 运行与只读并行记录（2026-10-02）
+
+上一goal回合为progress：Root460cd7f2提交R118快照验收、测试台账与BFF02276b6组合指针。本轮实际poll原WIN03 thread01a0f887-9797-7021-9b00-afae40b8429d/local，cursor3a08a485-69ce-41c3-a7c6-23cc37d4b100:212，新turn01a0ff13-fbf4-76b0-9c7a-aa4c79821579确认inProgress；继续原R118 tests-only授权，不重新派工/抢写生产。
+
+|任务|归属、基线与范围|验收/交付|
+|---|---|---|
+|R119-WEB-CONSUMER-READ / T-C09、T-A01–06|原agent_machine_final_review_r98，只读审查；Root460cd7f2，Web main ddd38c5bdc1eab01f802e1fc993f7b597d707a64 clean，BFF02276b6 clean。只读Web现snapshot/AgUiChatTransport/映射/过程渲染/测试与BFF已提交机器契约；不编辑仓内文件、Git、资源或服务，不消费未发布Agent候选|沿CURRENT/CODEBASE_MAP/目标三设计核Message/head/safe process/watermark如何恢复及Todo/Skill/tool/HITL/delivery渲染缺口，逐项给实际路径/测试覆盖/后继最小写集与owner契约依赖。结论绑定HEAD/hash，区分静态缺口与实测失败；私有/tmp报告给Root裁决，不把报告当浏览器通过|
+
 R118已验收交付：原WIN02最终cursor150 idle；Root E91真实新node1/1/fullprojection39/39且0skip、独立r3审0，BFF本地main02276b6，仅现test EOF与Root接收后CURRENT两路径，工作树干净。Root资源23227/static65158已终态，E90首次测试预期失败保留；远端发布/全仓fresh clone尚未验收。T-C09浏览器未验，源/contract/SQL/pin不变，详细进度见E91。
 
 ## R118-AGENT-LIFECYCLE-GAP-RED（2026-10-02）

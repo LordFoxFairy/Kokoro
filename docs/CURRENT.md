@@ -1,16 +1,22 @@
+## R119 当前推进（2026-10-02）
+
+Agent扩展生命周期已Root真实6fail/1pass/0skip，542文件保持/零资源/owned自然终态；独立RED/三设计门接受后原WIN03九现源GREEN正式启动，最新215确认live，尚未交付/Root GREEN。具体源范围/句柄在task.md，E92实际证据在progress.md；T-Q03失败继续保留。
+
+Web静态消费审锁三个既有断点：Todo正式source缺口、Skill运行phase契约缺口、普通安全过程hard reload丢失；Agent正式发布→BFF durable projection/snapshot→Web消费顺序不变。右侧旧7标签不当运行证据；本轮CDP两次timeout、3310无listener且HTTP拒连，当前浏览器未验，未重复服务或在变化源码上伪称组合通过。70组12/1/0/13/41/2/1、标准152报告和完整Wave0–7继续，支付最后。
+
 ## R118 当前组合验收（2026-10-02）
 
 BFF限定四事实RR组合切片已验：Root新node1/1、完整AG-UI投影集成file39/39且零skip，另lint/typecheck/build/语法通过；自有fixture库/marker精确清理，436源保持/owned进程组自然终态。首次测试envelope预期缺陷只补全精确字段后重跑，原失败保留。BFF本地main02276b6两路径提交/工作树干净，尚未远端发布或fresh clone；生产/SQL/机器契约不变。T-C09.1–3后端证据通过、浏览器/完整用户范围未验，70组12/1/0/13/41/2/1不变。细证E90/E91见progress，测试步骤沿原test-cases台账，不新建计划中心。
 
 Agent原七源GREEN已交而未Root验收；独立九源审发现resume/recovery释放与construction关闭预算两P1，另Docker半构造资源窗口。原负责人已接续三现tests+三docs有效RED，生产冻结、Root另审后授实现。T-Q03真实失败保留，不将自报201/91当完整闭环。标准152报告、完整Wave0–7、全部其他owner/用户能力及两业务决策仍在，支付最后；未重复服务/重置共享数据。
 
-## R117 最新推进（2026-10-02）
+## R117 推进记录（2026-10-02，历史阶段）
 
 Root实际新增System单仓Nest HTTP/PG/Redis lifecycle 19pass，14精确owned fixture库由原测试自身清理并独立证实不存在，197源保持/进程组终态；Redis仅连接/PING非业务key生命周期，不是跨仓/模型/全部owner组合。E88细证见progress.md。
 
 Agent补强真实backend构造的自然终态与partial swarm close RED已Root完整file复现2fail/54pass/0skip，state实际正控及原异常保真；三面文档与当前contract/generated检查已核，Root已续派原owner七现源生命周期GREEN（原句柄201确认live，详task.md），尚无修复交付/Root通过。70组12/1/0/13/41/2/1保持；完整Wave0–7 active、标准152报告和用户能力待验仍在，支付最后。
 
-## R117 当前测试状态（2026-10-02）
+## R117 测试状态（2026-10-02，历史阶段）
 
 测试计划唯一入口docs/test-cases.md，开发派工docs/task.md，实际证据docs/progress.md。70组现12通过/1失败/0整组执行中/13待复测/41未验/2决策阻塞/1支付后置；统计按验收范围，不是产品完成率。
 

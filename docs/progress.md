@@ -1,3 +1,19 @@
+## R119 / E92 Agent扩展生命周期RED已Root复现，GREEN续派（2026-10-02）
+
+上一goal回合为progress：Root460cd7f2提交R118快照证据与测试盘点。本轮原WIN03 R118 tests-only turn01a0ff13-fbf4-76b0-9c7a-aa4c79821579由212 live→213 completed/idle交付，worker报告049da662的6fail/1pass与202pass只是待验；Root49461在同冻结候选独立执行六精确函数（Docker参数化两例）：pytest真实6fail/1pass/0skip、0.53s/exit1。正式resume replay与reader primary均close=0，recovery两handle均0；真实dispatch调用的构造仍blocked时drain错误返回true；Docker正式make_backend_for_run后半wrapper故障漏内部client与新container，prior控制不毁现container。成功resume真实转交正控close=1通过。所有失败都call阶段行为断言，不是资源/导入错误。
+
+manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r119-agent-red-root-hwdkvgr8/manifest.json SHA58baba198947da497ca9c66e9159fbd90c45a17d3f273af498766cd86fe4a045；实际命令含Agent现venv Python、原pure guard与OS禁网/禁止仓内写、plugin autoload关闭、私有basetemp。542 tracked+nonignored现文件hash前后相同（含build候选，不夸大为542业务源），9生产与6授权tests/docs吻合原冻结；resource_attempts0、owned进程组自然终态/无补偿kill。未调用PG/Redis/S3/Docker/provider或启动共享服务。
+
+独立RED/三设计门报告 /tmp/kokoro-r119-agent-red-review.md SHA48144cd296830c51649d9152bcd9ab39ff437df73521e3b928a20e1632ba0c40，P0/P1/P2=0。构造用fake builder测试仅锁Supervisor归属；与原真实blocked connector、require_worker_drain控制分别覆盖职责，不拼成真实SIGTERM过程通过。Root已读三设计顶部/九源caller与main，接受无SQL/wire变更的现九文件单registry/one-deadline目标后续派原负责人GREEN，实际214/215确认新turn01a0ff23-771c-7731-b06b-19e3fbdae8d8 inProgress。同原writer、RootGit/资源，源修改后Root复测，不提前关闭T-Q03或发布候选；具体授权仅task.md顶部。
+
+## R119 Web消费审查与浏览器当前阻碍（2026-10-02）
+
+只读报告 /tmp/kokoro-r119-web-consumer-read.md SHA504a7726b7595400a1f8d5994d7c5151b3b77059279c63fdccb1269b1fe54f23，Root460cd7f2/Webddd38c5 clean/BFF02276b6 clean，Web/BFF canonical public6同75ef9f7a。静态0P0/3P1/1P2：Todo虽Web可渲染但当前固定Agent HTTP4正式source链无Todo；Skill运行phase在BFF/Web AGUI全缺；hard reload snapshot不含Todo/tool/subagent，head watermark前事件不会恢复，原同页内存保留不是硬刷新证明。tool delta no-op为范围P2。已有Message/head/full HITL/delivery/watermark hydration与续流路径，不宣称当前浏览器通过。与R85/R90既有目标一致，不另发明架构：Agent正式artifact发布→BFF固定/安全过程durable snapshot→Web消费，禁止缓存/从0replay或未发布候选补洞。
+
+Root尝试读取既有右侧iab13，不新增标签或服务：inventory仍列7个旧3310 app页，但两次同tab CDP Emulation.setFocusEmulationEnabled timeout，未获DOM/截图、未操作账号/发消息。随后只读lsof3310无listener/exit1，curl本机app实际exit7/status000 connection refused；前一次check_output因lsof1中止，HTTP未执行，不隐去。当前没有3310运行证据，旧标签/截图不当现服务活跃或登录成功。未因工具timeout重复启动进程，也未在Agent变化中工作树搭正式组合；当前浏览器用户验收保留未验，Agent冻结验收后沿现受管源码入口恢复组合与真实用户旅程。此阻碍不阻止Agent源码修复与其他owner推进，不标整个goal blocked。
+
+70组继续12通过/1失败/0整组验收中/13待复测/41未验/2决策阻塞/1支付后置，标准152报告保持。新证据改变后继放行/消费顺序，不重跑已关包门替代能力推进。
+
 ## R118 测试任务盘点补充（2026-10-02）
 
 用户再次确认所问task为测试计划而非开发派工。Root将同一test-cases.md顶部更新为R118速览、12通过组清单、逐用例记录字段与剩余展开缺口，不新建测试计划中心；旧R117摘要标历史阶段。实核70唯一组ID与12通过/1失败/0整组执行中/13待复测/41未验/2阻塞/1后置，历史验证矩阵归档suffix与HEAD逐bytes相同，E91 manifest SHA6a2fc482匹配。Root实际执行python3 -m pytest scripts/tests/test_engineering_handbooks.py scripts/tests/test_ten_repository_standard.py scripts/tests/test_repository_topology.py -q：305pass/2.97s/exit0；git diff --check exit0。仅台账与治理工具验证，不新增业务或浏览器通过，也不关闭E75规范152规则报告。修复提交后必须Root复测，未展开的组仍须补具体步骤/负例/恢复场景。
