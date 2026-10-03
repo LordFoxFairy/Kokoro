@@ -274,8 +274,10 @@ def _verify_npm_assertion(
     if evidence_path and PurePosixPath(evidence_path).name != "package.json":
         errors.append(f"{label}: evidence basename must be package.json")
     checks = assertion.get("json_checks")
-    if blob is None or not isinstance(checks, list) or not checks:
+    if not isinstance(checks, list) or not checks:
         errors.append(f"{label}: json_checks must be a non-empty list")
+        return
+    if blob is None:
         return
     try:
         document = json.loads(blob)

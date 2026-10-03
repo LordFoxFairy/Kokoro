@@ -1,4 +1,22 @@
-## R135 / E109 Web真实RED与测试任务核对（2026-10-03）
+## R136 / E110 正式Web实现启动与Root诊断修复（2026-10-03）
+
+上一goal回合为progress，Root7405e34a提交70组测试台账及E109十五真实失败节点。Root当前main7405e34a，Webddd38c5/BFFa68cbe5/Agent79bf98c；完整Wave0–7 active，目标未缩小。原Web writer/gpt-5.6-sol已按task R136获GREEN，原生句柄实核running，当前37 tracked候选变更与私有hydrate-process helper已观察；源变化中，未交付冻结/完整工程门，Root没有在变化树上声称复测成功。三位原生Agent分别实施、raw引用审查、Root组合审查，无第二Web writer/重复服务。
+
+raw引用只读报告 `/tmp/kokoro-r136-raw-consumer-read.md` SHA256 `f80fe4a85358201dd7b07d754e5edbeb147da0c69b3ab5538fbd57161faf627d`绑定发布ddd38c5；Root接受精确现消费链迁移，safe seg_不作MessageID、首token过程成Run turn、删raw Tool Canvas保file/delivery/node与HITL/作品。当前方案已授权实现，不冒称删除已完成。正式BFF canonical副本再次与git show a68cbe5原bytes一致，314612bytes/SHA76d524d731b10d1cd4b16db4dae957701bf5c5d82a3cd915a42bc57617746ebe，来源未换为工作树。
+
+### Root npm诊断的真实RED→GREEN
+
+- 独立组合审 `/tmp/kokoro-r136-root-composition-read.md` SHA256 `ff5b8b94c160b71defc0fda6f376dca6de9b48412d3b180a1a55c7e488b845f7`，0P0/1P1/0P2：合法非空json_checks在证据blob不可读时被误报为空。E105的205同bytes/10Agent实变/2误分类只属历史，当前BFF发布后还有真实差异；未按217机械改记录。
+- Root tests-only RED：Python3.13.5 `python3 -m pytest -q scripts/tests/test_contract_compatibility.py -k 'unavailable_npm_blob or invalid_npm_json_checks'`，自然exit1，1fail/4pass/77deselected，1.66s；`/tmp/kokoro-r136-npm-diagnostic-red.log` SHAb241952983abe7e7c037db5a9238c5bf41ee28a6ecc91a5a3e51f46e65cf5f68，session28839已消费终态。whole verify_inventory真实Git fixture保missing-commit-blob错误，并明确发现多余checks错误；[]/{}×可读/不可读4控制全部通过。
+- Root仅现 `_verify_npm_assertion` 将checks结构与blobNone分开；blob缺失的既有 `_verify_blob_reference` 失败仍保持，不推断未读到的package version。源码SHAf34dbac81d567e9f04961f155ce6c13d0985722c47bc5b3286c2ef5cb3094869；测试SHAfc01f85c24bb88b4307c8a53858051ec1d56077a63cdf882d80e3f190f49d818。
+- Root完整原工具file：`python3 -m pytest -q scripts/tests/test_contract_compatibility.py` 自然exit0，82pass/0fail/0skip，25.23s；`/tmp/kokoro-r136-npm-diagnostic-green.log` SHA1d6f3d0c4fae5c412482a22b853e18c40668048feddc428b4c79a72b5fb735d0，session6741已消费终态。Ruff0.15.15用现Agentvenv可执行，对两Root文件check与format --check均exit0（2 already formatted），git diff --check通过；没有uv sync/锁修改/业务PGRedis或provider调用。
+- 独立精确两路径复审 `/tmp/kokoro-r136-npm-diagnostic-review.md` SHA256 `516b460b6499b22822d4b14d69738c3ab17ffa71f8a3c22f7510b5eb05e90e92`，0P0/0P1/0P2，绑定上述source/test SHA；审查不运行测试或资源。
+
+仅Root诊断缺陷关闭，T-Q10实际组合失败保留；未改inventory/gitlink/checkpoint历史/状态集合或放宽校验。Web15失败、浏览器/全部用户旅程/正规积分仍待实跑，70状态12-5-12-38-2-1不变。Root全scripts/tests及当前全组合本片未跑，不把82工具用例当产品验收；Billing五docs与uv.lock SHA f7e1c30d保持任务外。
+
+Root收口实际核70唯一ID/原逐组计划suffix完全一致、状态12-5-12-38-2-1，两源码hash仍与已审GREEN相同、RED/GREEN日志计数匹配、uv.lock保护保持、index原为空，diff --check通过；六路径最终只读审0/0/0，`/tmp/kokoro-r136-root-slice-final-review.md` SHA256 `f3c9e8ec2449c1c398f20a912110bed28dbc62980b607e9b1bfe50853dc807ea`。只提交两工具文件与四台账，不纳正在实施Web/BFF/Billing gitlinks或锁文件。
+
+## R135 / E109 Web真实RED与测试任务核对（2026-10-03，历史阶段）
 
 用户要求的是完整测试task计划与实际结果，不是开发派工清单。70组/70编号计划继续只维护docs/test-cases.md；当前12通过/5失败/12待复测/38未验/2决策/1后置。T-Q01、T-C09/C10/A05新增失败与原T-Q10失败共5组；同一次15失败映射多个业务组不重复计数。当前commit为Root99021d77/Webddd38c5/BFFa68cbe5，Web四D0及八测试候选未提交，生产/pin尚未变更。
 

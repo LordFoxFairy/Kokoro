@@ -1,4 +1,12 @@
-## R135 当前测试任务进度（2026-10-03）
+## R136 当前实施与测试进度（2026-10-03）
+
+上一goal回合为progress：Root7405e34a提交70测试组/E109十五失败节点。当前按同一Wave0–7接续，不新建计划中心。已正式授权原Web负责人public7 GREEN：正式快照/安全事件、过程分页与完整恢复、真实abort、UI安全过程消费，删除raw详情链并保留正文/审批/作品；新私有hydrate-process helper已批准，跨owner方向不变。原生agent句柄已确认running、工作树已有37个tracked候选变更及helper；尚未交付冻结/Root复测或发布，不称15失败已关闭。未重复服务或操作共享数据。
+
+E110 Root并行修复治理npm证据误分类：先1fail/4control→完整compatibility工具文件82pass/0fail/0skip，Ruffcheck/format通过，独立两路径审0/0/0。只分开blob不可读与真正empty/non-list checks，原missing-blob拒绝保持；未repin候选或修改checkpoint历史/13broken状态，不关闭T-Q10整体失败。测试看板仍12通过/5失败/12待复测/38未验/2决策/1支付后置，证据见progress E110。
+
+下一Web停写交付→Root当前原例/完整门独立复验→发布组合→正规浏览器登录/两轮聊天/活动及终态恢复，再沿原项目/任务/文件/Skills/MCP/积分组验收，支付最后。完整goal active，Billing/uv.lock任务外保留。下方R135及更早均历史阶段。
+
+## R135 当前测试任务进度（2026-10-03，历史阶段）
 
 测试计划唯一入口docs/test-cases.md，70组及70编号计划完整保留；task.md是开发派工，progress.md E109是实际证据。当前12通过/5失败/12待复测/38未验/2业务决策/1支付后置；通过均有版本与范围，不是产品完成率。下方R134及更早为历史。
 

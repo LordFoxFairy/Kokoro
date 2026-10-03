@@ -834,6 +834,33 @@ def test_version_value_must_match_frozen_package_json(fixture) -> None:
     assert any("'7.16.0' != '9.0.0'" in error for error in fixture.verify())
 
 
+def test_unavailable_npm_blob_does_not_misclassify_valid_json_checks(fixture) -> None:
+    assertion = fixture.data["edges"][0]["version_assertions"][1]
+    assertion["path"] = "missing/package.json"
+
+    errors = fixture.verify()
+
+    assert any("missing commit blob" in error for error in errors)
+    assert not any("json_checks must be a non-empty list" in error for error in errors)
+    assert not any("version evidence must be UTF-8 JSON" in error for error in errors)
+
+
+@pytest.mark.parametrize("checks", [[], {}])
+@pytest.mark.parametrize("missing_blob", [False, True])
+def test_invalid_npm_json_checks_are_rejected_even_with_unavailable_blob(
+    fixture, checks: object, missing_blob: bool
+) -> None:
+    assertion = fixture.data["edges"][0]["version_assertions"][1]
+    assertion["json_checks"] = checks
+    if missing_blob:
+        assertion["path"] = "missing/package.json"
+
+    errors = fixture.verify()
+
+    assert any("json_checks must be a non-empty list" in error for error in errors)
+    assert any("missing commit blob" in error for error in errors) is missing_blob
+
+
 def test_unrelated_json_pointer_cannot_prove_package_version(fixture) -> None:
     assertion = fixture.data["edges"][0]["version_assertions"][1]
     assertion["json_checks"] = [{"pointer": "/metadata/undici", "expected": "7.16.0"}]
