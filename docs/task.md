@@ -1,3 +1,81 @@
+## R142-MANAGED-GREEN 窄生产实施门（2026-10-03）
+
+任务R142 / IAM oauth/clients / P1：v2真实RED 1失败1通过，原两P1独立复审关闭，P2完整安全矩阵后继保留。iam_first_party_owner（gpt-5.6-sol）沿用唯一writer，Root运行/Git/四台账，four_owner_fixes_review_r31只读审；基线IAM main70a2b015、三设计及test冻结hash见progress。仅允许现src/modules/auth/oauth/clients/{oauth-client.schema.ts,oauth-client.repository.ts,client-readback.policy.ts,oauth-client.service.ts}，不新文件/目录/Schema/公开contract/依赖，不碰Better Auth全局配置或其他测试。
+
+归属和粒度沿三份已批准设计：现managed provisioning精确服务端fixed client推导policy，official/persisted双读；比较现oauth/clients窄扩展与通用全局信任，采用前者、淘汰后者。普通managed client维持nontrue，exact Product Web在已有operator/ownership/user_delegated/resource/disabled与固定tenant/member检查上收敛true；scope current不能跳过policy，首次变更updated，完全双回读重放already_current。现skipConsent列，无新role/trust输入；单边漂移拒绝，不删旧有效安全保障。依赖方向与公开协议不变。
+
+交付四源hash+精确diff和风险；worker不运行资源/Git，docs/test冻结。Root同两节点先GREEN→现完整lifecycle五节点→官方工程门，新增失败先归因、不放宽断言/预算；独立source审及真实浏览器后才逐项放行。prompt、thirdparty consent复用/扩大/拒绝、disabled/member revoke等后继安全业务组保留；2节点不算整体登录，3310不先改fixture/全局信任。前轮status RED及原pin发布记录继续有效。
+
+## R142-MANAGED-RED 两项用例门修正（2026-10-03）
+
+Root真实official skip缺口保留；独立测试审2P1：首次false/null→true为策略更新，应updated，第二次双读完全满足后才already_current；provisioning与实际auth.handler必须使用同一fixture runtime fixed client/tenant配置，不能只有service config。原IAM writer仅该现integration文件两节点修正这些门并加错active tenant无code控制；现三设计R142段同步内部status语义（不变枚举/wire/endpoint），source/schema/contract仍冻结。prompt/third-party完整复用/扩大/撤权/单边漂移后继，不称完整登录。v2已冻结，Root88056自然1/3.422s：1失败/1通过/3名称过滤、435源不变，首失败为首次status非updated；同一reviewer复审中，未放行source GREEN。
+
+## R141 发布组合与R142执行记录（2026-10-03）
+
+Web7df55c3精确七路径已提交/普通push main，源与96991完整工程GREEN一致，最终独立七路径审0。Root同writer仅刷新Web49库存repository_commit及已核runtime相同的IAM e3→既有main70三引用，逐52引用核blob；唯一额外digest变化是已发布IAM CURRENT证据文档，canonical contract/digest/state/checkpoint不改。精确两gitlinks、库存与四原台账，Billing/uv.lock及IAM未提交三docs/test保留。独立pin审0P0/P1/P2与Root纯工具100通过、topology通过；compat仍13declared broken/0violations。Root据此发布限定组合，不称main-only全clean或用户闭环。原98977保持、仅两live runtime源精确更新；当前IAB未验。
+
+IAM原40743过滤R142零执行/5skip，不是业务RED；仅Root命令改成两个真实标题正则，原test/源冻结后重跑。锁定Node24.13/pnpm12.3.4缓存探测通过，无新依赖/基础设施。
+
+## R142-MANAGED-RED 正式第一方provisioning系统切片（2026-10-03）
+
+三设计v2独立复审0P0/P1/P2，原语义两P1关闭；基线IAM main70a2b015+三已冻docs，Root持Git/资源，iam_first_party_owner唯一writer。仅追加现test/integration/oauth-client-lifecycle.test.ts最多2个R142节点：真实自有PG/Redis、正式service/Better Auth APIs建立普通client后由服务端fixed配置选择，现受控Product Web provisioning必须official skip_consent与persisted skipConsent均true；真实authorize Code+PKCE换码、scope精确且OauthConsent不新增/扩大。错fixed ID拒绝且另一普通client skip不被提升为正控。比较direct预造最终数据库位与现provisioning集成，采用后者，淘汰预注入通过结果；不新helper/mock/unit/文件/目录，不碰source/schema/contract/generated/其他测试。若此现file无法承载真实HTTP行为先报告，不自行扩面。
+
+此是第一系统切片，第三方既有consent复用/扩大范围、prompt=consent、tenant/member/disabled及完整浏览器组合仍后继；不把2节点充完整登录。worker只写、不运行测试/资源/Git；Root在Web门原句柄终态后才串行跑隔离IAM真RED。无有效RED不授source GREEN。方案/数据/API/owner都沿刚批准三设计，不新公开trusted字段或角色中心。
+
+## R141-SIGNOUT-OBS 工程门新失败先观察（2026-10-03）
+
+92828完整门2351通过/1失败：原pending-refresh signout系统节点真实HTTP500，next_runtime_error，build未到；与列表deadline无已知因果，不删除检查/增加预算/盲重试。原Web writer仅tests/system/oidc-rp-next-http.integration.test.ts现responseDiagnostic追加已有safeNextErrorExcerpt及fixture secret redactions，无新case/故障行为/断言弱化。Root重跑原完整45，捕获精确脱敏错误后裁决，不扩大生产修复；源冻结，资源/Git仍Root。
+
+R142-doc独立审2P1：受信skip会生成受约束code而不读/建OauthConsent；第三方完整既有consent可合法复用。原IAM三docs纠正这些上游语义，不新架构；修完独立复审才授tests RED。
+
+## R141-DOC 当前事实收口（2026-10-03）
+
+原Web唯一writer仅追加既有docs/CURRENT.md、docs/ACCEPTANCE.md、src/engine/INDEX.md：两个source职责、有效RED/同2GREEN/完整45通过及完整工程1失败+现断言迁移待复验。采用现运行/验收/代码索引职责，不新文档、重复计划或contract；root资源/Git，源与system冻结。文档完成后Root完整门捕获全冻结，不把strict fixture记为正式全部owner或当前IAB通过。
+
+## R141-GATE-ASSERT 既有断言迁移窄授权（2026-10-03）
+
+Root15328完整门自然exit1/116.894s，contract256/architecture50/lint/types通过，2351通过/1失败（旧page-clients精确fetch参数未包含新signal），build未达；45系统与68relay仍通过。仅授原Web writer tests/ui/page-clients.test.ts现同一live-mode用例断言显式signal为AbortSignal且未aborted，保URL/cache/显式live不被preview劫持；不新增单测/mock/case/skip，不改source或冻结system测试。原两源已业务GREEN，不删deadline迁就旧断言。Root随后完整门复跑，之前失败保留。
+
+## R142-IAM-DOC 第一方登录策略文档门（2026-10-03）
+
+| 项 | 本片边界 |
+| --- | --- |
+| Owner/writer | IAM oauth/clients；iam_first_party_owner 唯一文档writer；Root独占Git/运行/台账，four_owner_fixes_review_r31独立只读审 |
+| 基线 | IAM main70a2b015；Root核clean后切回既有main，其父正是e3c035b，仅CURRENT/ACCEPTANCE两文档差异，无运行源码/contract/schema变化，不旋转client |
+| 范围/粒度 | 仅既有docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md；先三面一致，无生产/测试/锁/schema/生成修改、不新文件 |
+| 放置/目标 | 落实现Browser OIDC第6步；比较现oauth/clients managed provisioning与全局跳过，采用前者，淘汰全局信任/浏览器自报信任，不新增角色中心 |
+| 数据/API | 服务端固定IAM_PRODUCT_WEB_CLIENT_ID精确匹配的既有user_delegated client才可skip_consent；已有OauthClient.skipConsent，不加表/列/角色/公开输入；official与persisted双回读、漂移拒绝，tenant/membership/撤权检查保留 |
+| 保留/删除 | 第三方仍真实consent，显式prompt=consent保留；不代grant上轮10scope，不把owner/admin/member持久事实删成两种UI标签，不恢复兼容 |
+| 验收/交付 | 明确当前缺口、目标、后继现文件集及四个真实HTTP/PKCE系统场景；Root审后才授tests RED，有效失败后才授窄source GREEN。worker不运行资源/改Git，不称登录或整体完成 |
+
+## R141-LIST-GREEN 已取得有效系统RED（2026-10-03）
+
+Root47705/PID75422自然exit1/48.340s，严格direct-list作用域的2节点均失败，753源保持。pending在真实HTTP200尾字节held1、展开sidebar后15s仍list-loading1/error0；503 error/Retry确已render，但其nav display:none，无法用户恢复。前序collapsed/全页model-Retry误匹配两种测试路径错误已反证，不作为产品根因。
+
+现Web owner追加仅src/engine/client.ts的listSessions与components/blocks/workspace-rail/workspace-rail-session-list.tsx现class判定：列表GET fetch+成功JSON+错误JSON全生命周期10s预算，超时进入既有network failure、finally清timer；不改POST未知提交/长SSE/其他HTTP契约、不加全局fetch。空列表隐藏类仅在已加载成功且无error时应用，保真实loading/error/Retry可见，不改CSS值/新布局。采用现HTTP读owner和现rail展示owner，淘汰新network framework/store/新文件；无SQL/owner/contract/generated/依赖/角色修改。原R141 tests冻结，Root先同2例、完整45节点与工程门/只读审，用户IAB加载与全owner不外推；snapshot/分页GET预算仍后继。
+
+## R142 用户登录与角色边界对齐（2026-10-03）
+
+用户明确要求不跑偏：产品可见角色先只有普通用户、管理员；自家账号登录不是第三方授权，内部scope不应直接呈现普通用户；成员/邀请/管理操作由IAM受信角色逐请求授权。此不授权删除现安全检查、任意client全局skipConsent、改数据库角色/新角色中心或更改owner拓扑。
+
+R142-IAM-READ：原four_owner_fixes_review_r31只读IAM正式client策略和当前3310 integration fixture，区别正常第一方策略与刻意强制首次consent的验收client；读取IAM三设计、CODEBASE_MAP、TS/API/SQL规则，不写源/schema/contract/Git，不启动资源、不动detached IAM refs。Root保四台账/资源，待具体受信client边界结论再放实现；上一条请求批准10scope不执行，不以用户批评视作授权新访问。
+
+Web R141独立列表片继续已有2节点tests-only范围；不得因登录讨论扩大其源码写入。快照/分页、正常当前用户路径与所有后续Wave目标保持，没有另建计划中心。对产品用户路径先验收，工程绿门只辅助。
+
+## R141-LIST-RED 系统用例实施门（2026-10-03）
+
+| 项 | 本切片裁决 |
+| --- | --- |
+| 任务/目标 | R141-LIST-RED / T-U04 / P1；首先真实浏览器证明会话列表成功body不结束时loading有界、503显式失败、仅人工Retry恢复；当前用户IAB加载仍独立未闭 |
+| Owner/writer | Web既有web7_consumer_owner（gpt-5.6-sol）唯一tests writer；Root独占现四台账、资源、运行/Git；agent4_execution_owner只读API/state审 |
+| 基线 | Root main114e329f / Web main6267c1e，Webclean；Billing五docs与Rootuv.lock保留；原98977/3310不动 |
+| 放置/粒度 | 仅扩展现tests/system/oidc-rp-next-http.integration.test.ts；与product-bff系统file比较，采用前者已有OIDC/真实Next/Chromium和HTTP代理，淘汰仅HTTP与专属cookie注入路径。不新文件/目录 |
+| 边界/数据 | 现owned BFF fixture按正式envelope提供最小只读list；正常OIDC建立真实Product Session，不注入cookie/storage/engine。故障在已有browser loopback pass-through proxy延迟真实Next的list响应完成、或转发现owned BFF的合法503；不伪造浏览器正向成功响应 |
+| 关键裁决 | BFF下游的body挂起会被现adapter的bounded upstream截断，不能用其证明browser deadline。因此成功body未结束须在Next到浏览器真实HTTP传输边界控制；现CONNECT/Host/OIDC转发和全部socket回收保持 |
+| 本轮文件集/删除 | 只tests/system/oidc-rp-next-http.integration.test.ts，现fixture/helper、最多2个R141列表业务节点；生产源码/其他test/contract/generated/lockfile/新服务禁止。snapshot/分页scope后继，不把列表片当完整GET体系 |
+| 验收/资源 | 正规登录后先实际UI展开sidebar、hold-tail barrier后15s内出现rail故障/Retry，AppFrame保留且不登录循环；pass+真实点击Retry后列表成功、错误消失、仅新请求。Root自有Next/Chromium随机端口与原Redis独立prefix，finally有界关闭，不shared reset、不动用户3310/IAB |
+| 阶段/交付 | tests-only授权，writer不运行服务/Git；交付文件hash+命令+场景，Root先实际RED并记录全部失败。未取得RED不授生产GREEN，不新增unit/mock/page.route.fulfill/browser持久注入，不改旧R139断言 |
+
 ## R140 当前页面加载诊断任务（2026-10-03）
 
 | 项 | 当前任务卡 |

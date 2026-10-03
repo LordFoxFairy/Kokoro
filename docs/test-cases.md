@@ -1,3 +1,23 @@
+## R141 两个列表子例限定GREEN（2026-10-03）
+
+Root有效RED后同2节点通过，完整45 OIDC系统节点通过；最终96991完整工程门自然0：256contract/50architecture/lint/typecheck/2352tests0skip/build通过。Web已发布7df55c3且原3310仅两runtime源精确更新，不重启。系统证据使用真实Next/Chromium与严格BFF HTTP fixture，不是所有真实数据库owner组合；当前用户IAB/原会话未验收，signout500间歇根因仍未知。独立七路径审0，实际manifest与失败历史见progress R141。
+
+当前完整70组为13通过/5失败/12待复测/37未验/2待决策/1支付后置：T-U04从未验校正为失败，依据用户当前整页无限加载已实际报告且未关闭；两个列表子例通过不把整组转绿。历史各轮统计原样保留，逐组用例计划不变。IAM内部scope consent正常入口偏差仍待修，不执行旧批准请求。
+
+## R141 有效RED定位更新（2026-10-03）
+
+严格列表作用域/展开侧栏后的Root47705实际2失败：200成功body尾段held1超过15s仍loading；503真实error/Retry已渲染却被空列表隐藏类遮住。原collapsed/全页Retry误定位不作为产品根因。两个子例现由原Web writer窄修，Root同例复验中，不改整组或当前用户IAB完成状态。IAM首次consent不代grant；按既有第一方受信client政策收敛，第三方与逐请求权限继续验证。
+
+## R141 列表异常与恢复的系统用例执行（2026-10-03）
+
+| 用例ID / 标题 | 预置条件 | 测试步骤 | 预期结果 | 优先级 / 类型 | 当前实际 |
+| --- | --- | --- | --- | --- | --- |
+| T-U04 / R141-U01 会话列表body未结束 | 真实Next/Chromium正规fixture OIDC，现browser→Next HTTP边界扣住真实成功响应最后字节 | 打开/app→确认list实际tail hold→观察15s→错误与Retry→恢复网络并点击Retry | rail加载有界，显式错误可重试；列表恢复，无自动风暴/登录误跳 | P1 / 系统 / 边界 / 状态机 | 展开路径修正后有效RED；10s全body预算窄修后Root同例及完整45、完整2352节点通过，限定列表片验收，不关闭当前IAB整组 |
+| T-U04 / R141-U02 列表503可恢复 | 同正式Web链，owned BFF HTTP fixture给合法503 envelope | 打开/app→503→观察rail错误与Retry→恢复200→手动Retry | 保工作台，不把失败当空成功；Retry后权威列表可见 | P1 / 系统 / 异常 / 状态机 | 展开路径有效RED定位emptyDirectList隐藏error/Retry；class窄修后Root同例及完整45、完整2352节点通过，真实手动Retry恢复 |
+| T-L01 / R141-L01 当前IAM第一方入口偏差 | 复用现3310实际IAM，独立系统browser正常表单，无session注入 | /login→现fixture账号正常输入/提交→观察权限确认 | 自家可信client正常认证后直接工作台；第三方/显式consent才走授权，保逐请求权限；不代grant | P1 / 安全 / 生命周期 | 当前账号密码成功，但fixture十scope consent不符正常第一方入口；旧批准请求撤回不执行。R142受控provisioning真实RED、未GREEN，工作区/原用户页全链未验 |
+
+Root原31535自然exit1，2失败/43名称过滤，非完整45节点回归；详细hash/资源见progress。此只补原70组子例，不扩大通过组数。当前用户旧会话持续加载与重复7页尚未闭合。
+
 ## R140 最新用户截图：加载缺陷仍未关闭（2026-10-03）
 
 | 用例ID / 标题 | 预置条件 | 测试步骤 | 预期结果 | 优先级 / 类型 | 当前实际与状态 |
@@ -48,14 +68,14 @@ T-Q10：库存错位组件已更新已发布源268refs/37字段，Root100工具�
 
 E117早期失败历史：当时完整工程门2344通过/2旧preview raw断言失败（contract256/architecture50/lint/types已通过，build未到达）。桌面与移动六页面行为E116通过只限UI演练；T-Q01及正式用户组不据此整体转通过。沿原writer迁移既有断言，后续Root同门复验；不新增底层测试或替代70组系统验收计划。
 
-状态：当前测试计划，2026-10-03 / R137实施与测试核对；最新运行证据至E117。复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-03 / R142；最新限定工程与列表系统证据至R141，IAM R142 v2真实RED待GREEN。复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 当前状态以本页当前看板、E117/E116及E112/E111/E110/E109/E108/E105运行证据与下方测试矩阵为准；其他R编号为历史阶段，最新代码变化须复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
+- 当前状态以本页最新看板、progress最新R141/R142实际证据与下方测试矩阵为准；E117等与旧R编号仅历史，最新代码变化须复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
 
 ## R138 当前用户“持续加载”与多标签页缺陷记录
 
@@ -506,7 +526,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 ## 测试任务矩阵
 |测试ID|owner|验收范围|当前状态|具名证据/版本与边界|
 |---|---|---|---|---|
-| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E117：Root冻结候选独立完整pnpm check自然0：256contract/50architecture/lint0/types0/164file2346pass/0fail/0skip/build0，753源保持；原两个旧raw断言迁移经独立审0/0/0，不恢复兼容。随后六桌面移动页面行为6/6只限preview；正式owner/provider/Billing及深层恢复另ID待验。E109/E111/E117早期失败历史保留，格式脚本N/A，源码发布尚待Root精确Git。 |
+| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | R141：Root96991冻结源码完整pnpm check自然0：256contract/50architecture/lint/typecheck/164file2352pass/0fail/0skip/build通过，753源保持；含45真实Next/Chromium OIDC与68IAM relay节点。独立七路径审0、已发布main7df55c3。此前15328旧断言失败与92828真实signout500保留；后者间歇根因未知，当前IAB/全部owner/Billing与深层恢复另ID未闭，纯工程门不替代业务验收。 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E108：正式main a68cbe5，Root默认736pass/1既定PG schema skip、四pure149pass、完整contract233pass/0skip；format含37变更TS/MJS、lint/types/build/全部固定owner生成check通过，两独立限定审0/0/0。真实三资源74/74另有具名证据，但完整BFF其他资源/镜像及Web组合未验；资源skip属T-Q12，4条lint warning保留。 |
 | T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E95 Root当前1960纯节点全部通过/0skip，七静态门及独立审通过，原E87生命周期与E93规范失败限定回归关闭；E96新包完整115 runtime安装、四布局64负向/219步骤通过；E97 installed CLI/真实PG/catalog/六漂移回滚通过，E98 installed HTTP36pass/0skip及151origin核验通过；E99最终包211entries与资源已测包同bytes、sdist重建一致。Agent已正式发布main79bf98c、远端同SHA。正式BFF/Web消费者、真实S3/Docker/SIGTERM及完整Agent整组仍未验；完整失败历史与各次包身份保留在progress.md，不拿历史包替当前包，不称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
@@ -568,7 +588,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-U01 | Web | Home提示只填草稿、零自动POST/计费；真实模型/套餐/能力，无错误营销卡 | 未验 | E33局部发布/E37语义11真实RED/E41完整纯门接受/E42已发布ddd38c5，网站/More/零POST正控保护；Root新组合fa4525e4已发布；完整Home真实浏览器未验 |
 | T-U02 | Web | Composer多行/中文输入法/Enter与Shift+Enter/附件/发送禁用与Stop；无内嵌方框 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-U03 | Web | 桌面与窄屏对话/侧栏/项目/作品布局，长文本/代码/表格/错误均可用 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
-| T-U04 | Web | 键盘/focus-visible/axe/reduced-motion、全部loading/empty/error/partial状态与视觉/bundle门 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
+| T-U04 | Web | 键盘/focus-visible/axe/reduced-motion、全部loading/empty/error/partial状态与视觉/bundle门 | 失败 | 用户当前整页无限加载未闭；R141两个列表子例限定通过不替代整组；真实浏览器+截图/axe/视觉待完成 |
 | T-R01 | Root | 本次BFF隔离测试临时库精确创建/删除、无共享PG/Redis reset | 通过 | E03：removed=true/cleanup=[]；仅该run，不代表全进程治理 |
 | T-R02 | 各owner→Root | 实际进程启动/health/ready/超时/取消/graceful shutdown/worker drain/故障恢复 | 未验 | E88现System19真实资源/HTTP切片通过；Agent旧close失败已在E93/E95限定纯生命周期回归关闭，当前installed HTTP/真实S3/Docker/SIGTERM与全owner恢复仍未验，不把纯测修复当资源门通过。 原句柄追踪、不重复启动、不把观察超时当进程已停 |
 | T-R03 | Root/各owner | 权限矩阵/输入边界/敏感日志/依赖secret/source扫描/跨owner禁止访问 | 未验 | 同tenant不同人+跨tenant正负例；报告不含凭据 |

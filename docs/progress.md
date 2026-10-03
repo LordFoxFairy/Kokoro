@@ -1,3 +1,51 @@
+## R141 限定工程发布与R142真实provisioning RED（2026-10-03）
+
+当前收口：Root34505纯工具三文件自然0，100通过/50.09s，`/tmp/kokoro-r141-root-governance.log` SHA f1cbc37e9d17b3b2852bed56799fe5ade27c35be75d661ac50c7d2084777af5f；topology通过，compat只剩13declared broken/16edges/0violations。独立pin审 `/tmp/kokoro-r141-published-pin-review.md` SHA e6f713a65fbe52c42ac7fa844d546b07ddb59eebd4bd38c98c5439d6296dc2ef：52引用逐blob一致、精确53叶变化（49Web+3IAMcommit、1已发布IAM CURRENT证据digest），0P0/P1/P2，机器contract/state/checkpoint保持。原98977/3310 PID63842精确两live source原子更新到Web7df55c3，`/tmp/kokoro-r141-live-update-manifest.json` SHA8e18f1482eceac410e312128eeacdf4a1c60397c8f55232d4d4b0e22c4207d；未重启，browser_verified=false/tabs_closed=false。
+
+R142两测试门P1修正后，v2 test8a8330fb/TECHc3258ff0/API7ab445f9/DATAcb59003c冻结；Root88056/PID9753自然exit1/3.422s，实际1fail/1pass/3名称过滤、435源不变，首失败560行首次策略更新status仍非updated。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r142-managed-v2-red-m0twq7l7/manifest.json` SHA58a4d57d3fe736911f643b07960fe54c54fbfc1831a297eab26b0e656de1a931，log76c387832c36eb34928d7bbe5ff213754b56143f8141292051df17818bfc9c52。测试已纠正first updated/replay already_current、实际handler同fixed client/tenant、错tenant无code控制；后续PKCE尚未执行。独立v2复审 `/tmp/kokoro-r142-v2-red-review.md` SHA f40db0c0774451f66b80797a875257659e77bcab500058651d1e4ab6de345e3f：0P0/0P1/1P2后继覆盖，两P1关闭；已授同IAM owner四现source窄GREEN，Root待冻结复验。旧零执行与初始RED及review2P1全部保留，不把用例修正当生产修复或完整登录通过。
+
+Root96991/PID90916自然exit0/127.231s，256contract/50architecture/lint/typecheck/164files2352tests0skip/build通过，含OIDC45/IAMrelay68，753源不变；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-observable-full-check-f6xuco46/manifest.json` SHA448bdb142b2a24e7b9bb57652ac0509149d8368aa2c7f5222a7ec1c4b8718711，log61f7bec6e517538d6a705a2ae6eac6e4059e8d0bcd65c3d2cd1eb54efed47dde。此前48586完整45亦自然0/68.988s，manifest7e6150955b03043f4be2fa52f31e8dd565e89368c3ff7ac8626e3a2bcb3fb51c，log4f81eee01b79c795299b1ebe98082c059f5e85e3a0ec6906eac687c1fea0f60e；signout500间歇根因仍未证明，保留稳定性后继。最终独立七路径审 `/tmp/kokoro-r141-final-candidate-review.md` SHA6fd3c3f9615baaae6c0ce885cca69175daec82c266ae5733c935589872115364，0P0/P1/P2。Root精确七路径commit Web7df55c3baaa01dc6641a43ed5e022badb595ef8c，原19639普通push0，远端main一致、本仓clean；仅限定列表片验收，IAB/全owner不外推。
+
+R142三设计v2独立复审0，报告3db06e661ce75450eb72553b5abab60001a18ec8ec9dc1c15fe6ad5fb133e3d7。Root40743过滤名写错，零执行/5skip，不是RED；改实际两个标题后45251/PID98284自然exit1/3.557s，1fail/1pass/3名称过滤、435源保持。官方skip_consent在现受控provisioning后不为true（565行），错fixedID正控通过；后续PKCE尚未到，不冒充整链失败定位。证据 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r142-managed-scoped-red-ro6e6n9t/manifest.json` SHA6a055e44a1b073550d4f5034be3a72ce0520a7639011f7e96ca40d3372d30079，log2d07a42855dbbc5a9f977a48cccce55127068adf9c0c9b700c8c876018b0ad88。实际Node24.13/pnpm12.3.4缓存可用、真实隔离PG/production handler，Redis配置存在但该isolated helper关闭rate-limit，不称完整Redis运行验收。原IAM writer source未获授、测试待只读有效性审；三docs/test未提交保留。
+
+Root metadata先 identity-only guard拒绝IAM docs/CURRENT已发布证据bytes变化，未写库存；当时53refs未同步导致compat额外错误，不算新业务回归。现仅Web49/IAM3commitrefs加已发布IAM CURRENT单一sha256，canonical contract/digest/state/checkpoint均不改，独立pin审/纯门已如本节最新收口完成。Root提交前index仅两已核gitlinks，任务外Billing/uv.lock保留，完整70组13/5/12/37/2/1与Wave0–7保持。
+
+## R141 新真实signout失败与R142文档审查（2026-10-03）
+
+Root92828/PID86087自然exit1/113.389s，256contract/50architecture/lint/types通过，2351pass/1fail/0skip；旧fetch断言已通过，新失败为既有pending-refresh signout真实HTTP500而非200，Next runtime error，build未达。不能把此归因列表或宣称工程完成；原完整45与上轮相同节点曾通过，波动需精确观察。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-final-assert-check-d87b2utq/manifest.json` SHA7e4c4141086d59f2ec7109511f3aa76e641b3bf43a5f5af568a9306741d663b1，log53dee6a78267435c0860f2d329169bdae0f0c07c64c4a99fb017411d8c0b90a2，753源保持。仅复用既有safe诊断补当前错误可观测性，不调预算/删除case/生产猜修。
+
+R142三设计独立审 `/tmp/kokoro-r142-iam-doc-review.md` SHAfc06873695d816d3207bf080f4839d6bad8c7955b63c562f34c76004f8e296e4，0P0/2P1/0P2：skip会生成授权码但不读/建持久consent；第三方既有完全覆盖consent可合法复用。Root采纳精确vendor语义，原IAM writer仅纠正原三docs后复审；无生产信任输入/新role/schema/全局跳过。两线不因失败扩大整体设计，源未发布、用户IAB未闭。
+
+## R141 工程门实际1失败（2026-10-03）
+
+Root15328/PID82871自然exit1/116.894s，contract256/architecture50/lint/typecheck通过，164files中2351通过/1失败/0skip，build未到。45系统与68relay均通过。唯一失败是tests/ui/page-clients.test.ts旧精确fetch options不允许新AbortSignal；仅迁移该现断言、保实际live URL/cache/非preview行为，不新单测/skip/mock，不删除有界读取。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-final-check-vjeybeeb/manifest.json` SHA7318f0ca351d384732b1a3c66db86d4b6b6e3de61f1251c0b20747cd1b9d0460，logf7ac1c13902f0a4c2ea41b7f5baf9853760dfb3cd333fa44b242dc857bb8e761；753源保持。候选未发布，完整门须重跑。
+
+## R141 完整45节点Root系统回归通过（2026-10-03）
+
+原14725/PID81847自然exit0/68.075s，真实Next/Chromium OIDC系统整file45通过/0失败/0跳过，753源保持；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-full-list-system-wn0pfj2h/manifest.json` SHA5d01351fb53cc892bfdcf4e13edc5eb70613f8be217f32c8783d1e74da08df72，log46460d246b35d2fe67ca2dda7a3cacf0b8a2af13cbd459eb93f28476030bb62f。既有身份/refresh/logout/故障行为未以过滤通过冒充整file。原15328/PID82871完整pnpm check继续运行，自有Redis9随机namespace、原3310不动；不同时在被写源上宣称最终验收。正式owner与IAB当前整页加载仍未关闭。
+
+## R141 两列表子例Root GREEN（2026-10-03）
+
+原94936/PID80174自然exit0/32.325s，2通过/43名称过滤，753源保持；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-list-green-da_ls23c/manifest.json` SHA66241e1dc33e3624d14a7703658c6b3ed690e71e92633d2505979af078599fb3，log730c20a461683b5ee00565c9308c8467dba441abdcab95d4603fa7705b3c8002。client79859621/railaa4823af两源与testsbe88d保持；独立审 `/tmp/kokoro-r141-list-green-review.md` SHAd0874f6167c854cfa19ebca0f1a8b55dfe15b0ed8f4602f816c13a452c992f7b，规范与质量通过、0P0/P1/P2。Root原14725/PID81847完整45节点运行，不重复同句柄；完整工程/正式用户旅程/发布待验。T-U04完整组校正失败，70组13/5/12/37/2/1；用户无限加载不靠小片GREEN清零。
+
+## R141 有效列表系统RED与R142第一方边界（2026-10-03）
+
+Root47705/PID75422自然exit1/48.340s，严格direct-list作用域2失败/43名称过滤，753源保持；测试冻结be88d4831fbde5ef26e7da4da779f678dbde351c727ee9f008c07159e898f88d。证据目录 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-scoped-list-red-k3_rg4fm`，manifest SHA5a3d652edc1f97910153a2b46729e3a8f09bbdc5013a5d2c15e6cde96479470c，log SHA1c4f8d6c9a16a93571f2107ec13204fd2a43190d442dfb7d364f56e9bb00bf54。pending真实HTTP200 held-tail1超过15s仍loading1/error0；503已有error1/Retry1但展开rail nav display:none。两例main可见/login baseline2，无身份/返回成功注入；完整BFF数据库owner仍未验。前序2782/45.108s亦2fail，但全页Retry误匹配模型重试，不作为列表恢复失败证据。原writer两source最小GREEN已冻交，Root94936原2例复验中，无全GET/SSE/POST改造。
+
+R142只读核验：正式TECH Browser OIDC第6步已批准第一方受控skip_consent；当前3310fixture刻意创建普通首次consent client，managed provisioning/readback仍缺锁定。仅服务端固定client ID推导信任，无公开输入/新schema；第三方及显式prompt=consent保留。Root核clean、main^=e3c035b、仅两docs差异后切回IAM既有main70a2b015，runtime/contract/schema/test不变，不旋转client/伪造grant。原98977poll仍live。IAM文档与Web列表两工作面并行，Root掌资源/Git，不扩大整体设计，用户IAB/正式全链仍未闭。
+
+## R141 正规当前IAM与列表系统首次执行（2026-10-03）
+
+前轮R140属于progress：新增现运行匿名浏览器证据、反证错误upgrade假设，并以Root114e329f提交四原台账；不是只重复状态。原98977再次poll confirmed live，不因CUA observation timeout重启或替换原句柄。
+
+Root单次实际当前3310正规登录系统浏览器：原89813自然exit1（未到workspace），账号密码form可见/提交成功，IAM进入/iam/interactions/consent，apiFailures空、尚未发Product Session读取。未注入cookie/storage，也未批准新scope；私有fixture credentials只由该测试进程内存用于同源正常表单、不打印/保存其内容。自有浏览器finally关闭。证据 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-live-login-EmGLmD/evidence.json SHA945bd32339dcbc57a27c235b53801d7239523a3f556efb5d8737653d2066e8fb；后续独立可见权限截图consent.png保存，图中10项与现OIDC_SCOPE匹配，permissionsGranted=false；已向用户展示并请求action-time确认。既有固定权限也不从历史笼统授权推定当前新client已grant。此是正式当前IAM局部登录证据，未外推工作区/原用户IAB/聊天/积分或全部owner。
+
+R141 tests-only冻结020d2689bf6c542ec7d11b27e3673212710b1f763d6b4aaef6e791780b036ccf，Root原31535/PID67780，Node22 pnpm exec vitest run tests/system/oidc-rp-next-http.integration.test.ts -t R141，自然exit1/46.788s，2失败/43名称过滤/753源不变。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-list-red-14h4obe7/manifest.json SHAda1350e8b0228a75fee83cec613f2f367db0e4e1e0f2da9e4d2ab8b56b8a9b09，loge40a34cddc044c553bd7e69654e0388657c7e95b31848f19c5a22872281fc6f9。真实Next/Chromium、严格BFF fixture/OIDC、独立Redis origin prefixes；不是实际全部BFF数据库owner组合。
+
+补诊断冻结5426b730，Root原77197/PID70280自然exit1/48.104s，2失败/43名称过滤、753源保持；manifest43372843b45ec5c62350dc5a2a3f1bfece77dbe0001fd79e2d5e7c53a303511d、log150d971c2f4b39204c1a890197a73597a4704fb2bdbf5038dae298f3e1f7de34，目录 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r141-list-observable-red-kwtsea4s。两诊断均main可见/list请求1；pending实际held-tail1及HTTP200，503实际HTTP503；但direct-list display flex、error/loading DOM计数0，截图是正常icon-only collapsed rail。因此source“expanded CSS隐藏”尚非实测根因，测试欠先通过UI展开sidebar；且正常login_requests2，写死1是假定错误。仅授权原tests writer补用户展开动作和稳定登录计数基线，不改需求/visible断言、不改生产或据此称2个业务RED。等待原例再跑。
+
+两例都在rail alert可见等待失败：pending15s、50310s。原独立review绑定冻结，0P0/0P1/1P2（request-seen不足证明tail hold）；Root另发现现emptyDirectList在wide expanded被display:none，可能连loading/error一起隐藏。未把两结果全归因deadline或未观察的当前IAB。已只授原writer补held-tail barrier及失败截图/安全固定字段，不放宽断言/新增unit/mock、source仍冻结。Root待原例重跑裁决具体业务RED后才放最小GREEN。独立GET状态审 /tmp/kokoro-r141-get-state-review.md SHA857879c7c5cd002eeafcae298fa3d0e4272fa669562e4a9489123d8ee49b13c2，只是源码风险，不替实际用户验收。70组13/4/12/38/2/1保持，当前用户加载未闭，完整Wave0–7 active。
+
 ## R140 当前截图失败与运行入口正控（2026-10-03）
 
 Root baseline ad1b40f / Web6267c1e；用户图片codex-clipboard-9be60665再次显示旧conversation整页加载，当前页面尚未闭合。原98977原句柄poll仍live、PID63842保持，未改运行源码/启动服务/重置共享资源。

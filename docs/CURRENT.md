@@ -1,3 +1,23 @@
+## R141/R142 当前实际边界（2026-10-03）
+
+设计仍沿完整 Wave0–7：产品可见普通用户/管理员，正规第一方登录→工作区；会话独立且可归属项目，定时任务独立；AG-UI/Vercel 消费、正式 owner 积分与能力按既定依赖推进。没有新角色中心、全局跳过安全检查、旧路径兼容或部署运维扩面。下方旧轮次仅历史，当前事实以本节与 progress 最新证据为准。
+
+Web R141 已发布 main `7df55c3baaa01dc6641a43ed5e022badb595ef8c`（远端一致）：列表读取含 body 的总预算10s，错误/loading 不再被空列表隐藏。Root 原96991完整门自然0，256contract/50architecture/lint/typecheck/164files2352tests0skip/build通过，含真实Next/Chromium的45 OIDC节点；独立七路径审0。此前 signout500 间歇根因未知仍保留，不能凭一次完整绿门关闭。原98977/3310 PID63842仅精确更新两runtime源，未重启；当前用户IAB/旧会话及重复页清理仍未验收。
+
+Root 发布组合仅承接 Web 已发布 gitlink 与 IAM 既有 main70a2b015（仅两已发布文档，源码同父e3）；库存52commit引用及IAM CURRENT单一证据digest对齐，canonical contract/state/checkpoint不改。独立逐blob审0；纯工具100通过，topology通过，compat仍13declared broken/0violations，不称全组合闭环。Billing五原docs及Root uv.lock保持；IAM四未提交R142设计/测试候选不被gitlink带入。
+
+IAM R142 文档/测试仍冻结：Root88056真实隔离PG+production handler的v2两个节点1失败/1通过/3名称过滤，现provisioning缺 consent policy 更新；没有直接预造最终skip位。三设计和测试复审0P0/0P1/1P2（后继安全覆盖），已授同owner四现source最小GREEN；不新增schema/公开信任输入。第三方consent、prompt=consent、逐请求权限继续保留。上轮10scope批准请求已撤回，不执行。70组当前13通过/5失败/12待复测/37未验/2待决策/1支付后置，T-U04当前用户加载仍失败。
+
+## R142 当前用户方向裁决（2026-10-03）
+
+产品可见角色先普通用户/管理员；正常Kokoro账号登录不展示内部OAuth scope清单，不把自家登录当第三方连接器授权。Root上一条批准10scope请求不执行，未grant、未全局关闭consent或修改安全校验。原IAM reviewer只读核对正式可信client策略与现3310刻意首次consent的integration fixture，IAM owner/source/分支不动，结论未出不先改权限。当前用户IAB加载仍未关闭，R141两列表业务系统节点继续独立tests-only与Root真实运行；不新增架构/角色中心/运维范围，完整Wave0–7保持。
+
+## R141 当前推进事实（2026-10-03）
+
+Root114e329f / Web6267c1e，原98977/3310保持。本轮实际现IAM账号密码验证成功，停首次consent，未代grant；已给截图并请求用户确认现固定scope。独立system browser已关闭，此不等于右侧IAB/工作区/原会话通过。前一用户加载缺陷仍未关闭。
+
+原Web唯一writer已在现OIDC systemfile增加两个列表业务系统节点。Root31535/PID67780自然exit1/46.788s：2失败/43名称过滤，753源保持。首轮等待rail alert可见超时；补held-body与截图后原77197再2失败，实际为icon-only collapsed rail，error/loading根本未渲染，测试缺打开侧栏的用户步骤。正常登录计数为2而非写死1；正修测试路径/计数基线，未将夹具路径问题冒充产品RED，无生产改动。Root资源/运行/Git、原reviewer只读，完整Wave0–7及70组保持。证据见progress R141。
+
 ## R140 当前用户加载缺陷仍未关闭（2026-10-03）
 
 用户新截图再次显示旧会话整页“正在加载工作区”，当前用户路径按失败处理；R139工程/限定系统通过不覆盖此页面。Root ad1b40f / Web6267c1e保持，原98977/3310 PID63842仍运行，无重启/新服务/共享reset。
