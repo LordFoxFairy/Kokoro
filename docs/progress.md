@@ -1,3 +1,53 @@
+## R137 / E117 冻结消费切片完整门与六页面复验通过（2026-10-03）
+
+原writer仅迁移两既有preview HITL断言（SHA1c1743a9），不新增unit/mock或恢复raw，独立审0/0/0：/tmp/kokoro-r137-e117-final-review.md SHA295b90285691849ef2aad26bfd1c4727cff9b2d39f33961b55c493fed9c7c0d3。原2344/2失败历史保留在下节，不用旧E113证据代替当前门。
+
+Root实际Node22.22.2/pnpm11.25完整pnpm check：session47729/PID55491自然exit0/78.359s，contract20file256pass、architecture4file50pass、lint零warning/typecheck0、164file2346pass/0fail/0skip、Next build0，753源全部保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-final-check-ah0clun_/manifest.json` SHA431c51b480c843646d1a2e42358ed0e4bc8e3100b718135ff7db710e05998943；check.log SHA cf7bc57a6aa1d1587d26b63844ff92a25f201c0473f46a1f90a82080b8f3ea24。
+
+顺序随后Root真实桌面+移动六页面同例6pass/0fail/0skip；session8191子进程56896自然exit0/11.544s、自有52334port关闭。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-ui-e2e-e117-current-green-wujnzul2/manifest.json` SHA f491c5c548db9320ed822e08cca95b297284e420ca9b549f8b34b2d1b0e4df3d，log SHA00efe55202d76d1f1a62a69ee8d145a3e13d607a3e1c7100c67ca407820ea6b3。外层freeze wrapper exit1仅Next官方将next-env.d.ts改dev路径；其余752源保持，不当产品行为失败或隐去wrapper。随后Root正式pnpm typecheck自然exit0/2.454s恢复HEAD原bytes，session54139/PID57334，restore manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-e117-typegen-restore-ks5tayl5/manifest.json` SHA8004b89775cde0b50d6fa2a46b107a703dcd552c91ce9c5bcef47ed2e7831fa9；无手改生成物。原句柄终态，无共享数据reset或新业务服务。
+
+T-Q01仅当前冻结候选工程门转通过，最新70组13通过/4失败/12待复测/38未验/2决策/1支付后置。六真实页面只限development preview，不含正式IAM/BFF/provider/Billing或所有UI组；T-U04/T-A04及深层恢复/项目/任务/文件/Skills/MCP/正规积分保持原状态。Web当前候选仍待精确Git，D0旧raw core清理是下个已批准切片，完整Wave0–7 active，支付最后。四Web当前文档由原writer只校证据；Root审查/提交与组合准入不绕过。
+
+## R137 / E117 当前完整门实测与既有断言迁移（2026-10-03）
+
+Root原12347/PID50492已自然exit1，63.722s。contract20file256pass、architecture4file50pass、lint/typecheck0；默认164file2344pass/2fail/0skip，build未到达。两失败均现tests/dev/preview-transport.test.ts旧HITL approve/reject要求tool.returned与raw result；已通过桌面/移动六真实页面行为证明正式safe activity收敛，不为旧断言恢复旧协议。沿原writer仅授权两现断言迁移并保正文/终态/身份/唯一事件控制，未新建unit/mock或新增测试中心。
+
+manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-final-check-fy8gjes9/manifest.json` SHA256 b68ece466d93eeff7c7370cf09603370e004b7600643b1d0cbfb5d9f871ee242；check.log SHA256 f5b7f1fa06dc7941fbfff764545a86b64998c12cb6272ebc159198a858fd187e。Next typegen正式恢复next-env.d.ts至HEAD原bytes（非手工回滚），其余752源保持；所有后继验证绑定冻结交付，旧E113全门不替当前门。70组12/5/12/38/2/1不变；原完整Wave0–7 active，raw core清理/发布组合/正式用户与Billing链仍未验，支付最后。
+
+## R137 / E116 首token空窗真实RED与最终UI六例GREEN（2026-10-03）
+
+Root85448校正正文作用域后的真实两project六节点4pass/2fail/0skip、11.767s、naturalexit1；1正文streaming/0额外forming原问题已通过，精确新失败为TEXT_START至首内容emptyFormingGap=true（应false）。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-ui-e2e-start-red-1713lijd/manifest.json` SHAe30cb6d1dd599648f5f1ef1970d3bc58f27907a0e64e7546ac0c22e7414a036c，log SHA466c3d7bbe65a1c979ded420352583e8f6809e77aeb79529ad7a40f5cbdd7905；753源保持/原port64334关闭。只读Observer范围限制article，preview普通序列忠实发正式对应TEXT_START空delta，不加特殊branch/网络mock。
+
+同writer仅forming以真实tailHasText判定后，Root10893同六节点实际6pass/0fail/0skip、11.187s、naturalexit0；桌面与Pixel7移动均检查正文唯一streaming、无第二forming、无首token空窗，以及Approve/Reject后展开同Tool call可见Completed/Failed而非Running。六成功截图保本次artifacts，不以DOM隐藏属性代替可见验收。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-ui-e2e-final-green-xkxm52bn/manifest.json` SHAb3729d375a45eaf5df60da2a6e51c2202b19c1a713f673e5ec823a6e77f577ec，log SHAc031983de04a0f534e729cd51faa19cf4f5dbfd5578195e073e9b50328c6c645；753源保持，自有PGID48640无进程/port64657关闭，无PG/Redis/provider/用户IAB改动。三个具体前端缺陷限定闭合，正式owner多项HITL/当前登录/模型/费用链仍未验。
+
+独立窄最终审/tmp/kokoro-r137-ui-final-review.md SHA586618b29b066734f62f62cbc9bceff0eaafd1cf52e9a9d64e1353b12b6748ea，0/0/0，绑定assistant-turn504aeff4、preview811f01cc、spec7eb31d58，raw遗留后继未关闭。Root后继全门23382真实contract256/architecture50过、lint唯一未用旧const警告fail，未到types/test/build；manifest d97419f6883e3680ab610484002028f6325377b422d30ed611a62d1e580659f6，日志2921b2e54ba4f7481819b1e31f2db801de34b52f24e9933a7f04f8f1d51c31f3。同writer仅删无用const（preview新3b3abdcd），未放宽零warning；Root12347新完整门原句柄运行中，不重复服务。全Wave0–7及raw内存清理/组合发布/正式浏览器/所有积分目标保持。
+
+## R137 / E115 第一轮桌面/移动复测与判定校正（2026-10-03）
+
+Root96468真实两project六节点：4pass/2fail/0skip，naturalexit1，30.540s；批准/拒绝在桌面/移动均已同safe活动正确completed/failed，原2审批状态故障限定关闭。两正文节点实际forming0、streaming2。Root源码查MessageScroller本来有data-state=streaming，原spec全局selector误把合法滚动容器+正文一起计数；不是生产生成两回答，也不靠把expected从1放宽到2过关。授权现spec将正文流式计数限定实际AssistantTurn article，并保原1/0断言，补用户展开过程后的可见状态与成功截图。
+
+manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-ui-e2e-green-dygr4q4z/manifest.json` SHAc103edd1d27cfdb5ea13e40fb79be2701f27d7d975a042d3d01637a79c4dec74，log SHA1d06db23d20585d7de98d9d6c180077a6949b10e6db795386cd6f52eda0ed002；753源前后无变化，自有PID45019终态/端口63467关闭，无共享数据操作。
+
+独立窄GREEN审/tmp/kokoro-r137-ui-green-review.md SHAc753ed1d46bc2d47d1ce317618464e3479c74a7101f4eac6bf101676974ff0c5，0P0/0P1/1P2新边界：正式TEXT_MESSAGE_START经mapper delta=''建空Message，answerTail存在但无内容，forming不能只看锚存在。新空窗未实跑，不虚报第二生产故障已复现。现preview普通队列将忠实增加同正式文本start对应delta=''事件（无新分支/mock），现E2E只读Observer捕捉在途safe Skill已显示但正文未到的forming空窗，Root新RED后再授同文件内容判定修复。无新增底层unit/网络替身。
+
+只读raw遗留链审/tmp/kokoro-r137-ui-consumer-raw-followup.md SHA1225e3278a416710dd8a2e3e9ed8235e8fb6859b4ed6b3822707afe2fdbeff08确认Web core旧raw内存事件/类型现无合法生产writer，D0已承诺删；标准AGUI TOOL_CALL→Vercel chunks独立有效不可误删。后继沿同owner清原core/projection与无效cancel收尾，不恢复兼容、不称技术债归零。主路径先真实当前UI原例与空窗→完整门/收敛→发布组合/正规用户旅程；当前70组未整体验收保持。
+
+## R137 / E114 Root真实浏览器UI失败（2026-10-03）
+
+Root会话18782实际Node22 `node node_modules/@playwright/test/cli.js test tests/e2e/web-governance.spec.ts --project=desktop-chromium --grep R137 --retries=0 --workers=1 --reporter=line --output=<本次自有目录>/artifacts`；现Playwright自有随机port62600预览服务，完整页面实际输入/提交/审批，无新unit/mock函数/网络替身/计时注入。3failed/0pass/0skip，naturalexit1，37.172s。正文有streaming1却额外forming1；批准/拒绝均同ToolActivity running非completed/failed，均已到业务断言，不是编译/模块失败。三个失败有截图/video/trace/context，Root实际看拒绝截图，正文已拒绝而活动仍running。
+
+manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-ui-e2e-red-84b_90pk/manifest.json` SHA357db8843f22040da6c4fb39e8e6bacf4997964c4da362a4565f9a8008abe162，playwright.log SHA6d67820316448f85f1149fb5abedb525a872ca03d58c369d361dfbed2f89a91d。753保护文件中仅Next官方生成next-env.d.ts由.next/types/routes改.next/dev/types/routes；Root核diff非业务源码漂移，其他752保持，未手改生成物，后继官方build应恢复正式路径并核。PID42055/PGID无进程、端口独立探测关闭，不重复启动/杀其他进程，不碰PG/Redis/provider。不是当前用户IAB或正式所有owner系统链验收。
+
+同唯一Web writer已授仅assistant-turn.tsx与preview-transport.ts窄GREEN，正文真实尾锚/过程独立live、preview resume同safe activity闭环；不改contract/依赖/旧兼容。原三E2E断言不放宽，仅去三节点mobile skip，Root后继桌面/移动6节点与完整工程门。开发预览与正式链明确分开，完整Wave0–7与70组未验保持。
+
+## R137 / E113 Web完整工程门与交互审查（2026-10-03）
+
+Root真实Node22.22.2/pnpm11.25 `pnpm check`：contract20files256pass、architecture4files50pass、164files2346pass/0fail/0skip、lint零warning/typecheck/Nextbuild自然exit0。76.996s，session81523/PID37567终态且原PGID无进程，753源前后相同。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r137-web-check-root-5vgoybcg/manifest.json` SHA06997957465b4a9d6246df24b15016226a5e0f0addd4cb651f9581d7c49b437a，check.log SHAd240d3aa7eddc9a0d80d5e327ed72fc262b8505ff91f3f83fef6e161198d17f1；纯门范围内包含真实Next/Chromium与上游fixture边界测试，不代表真正所有owner登录/用户模型旅程。首次方法对齐三turn无执行推进已重新聚焦，完整goal保持active。
+
+独立UI consumer审发现2P2，Root实际读源码确认：safe过程被当正文tail导致正文settled/第二forming、preview resume旧tool.returned未更新同safe活动。报告/tmp/kokoro-r137-ui-consumer-review.md SHA1e149ac83b23544f440cc336fe02788a8768fb0ab76cb1ec890b03d3ef3b7017；完整工程绿不能关闭这些交互缺陷。Web owner已仅交3个现Playwright全页交互验收，源码先冻结，Root18782自有预览浏览器RED运行；没有新增unit/mock函数/网络响应替身，观察器仅记录实际DOM短暂状态，不控制计时或修改业务数据。preview只是前端UI演练，不当正规IAM/provider/费用证明。
+
+正规浏览器入口只读审/tmp/kokoro-r137-browser-entry-review.md SHAa9b552b84a81d420ae442a3b29345c9e6bd6a6a0fb4a1aa6fb21f8e4614c2ed2确认：Web未发布/Root未repin时正常preflight拒绝，不绕过；现launcher未含正式Billing/Skills/Storage，不能借启动称全能力/收费闭环。3310无listener；CUA实际inventory列旧7tab，旧13tab CDP初始化超时，未导航/提交/修改已有页。Root下一先真实UI RED→窄修→浏览器同例/完整门→发布组合→正式用户路径，保留深层矩阵与70组未验；不重复服务/共享reset。
+
 ## R136 / E112 用户请求的完整测试任务进度核对（2026-10-03）
 
 冻结核心独立审P0/P1/P2=0/0/0，报告/tmp/kokoro-r136-web-final-core-review.md SHA256 e2c4b304f55b038313b00849e6cb4fbfffa16327e43f71c2610921738c4a91ad。该审查保留跨页错身份/循环cursor/连续410/scope迟到响应等未覆盖验证边界，不替Root实跑或整体验收。

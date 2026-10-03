@@ -1,3 +1,13 @@
+R137-E117-FROZEN-ACCEPTANCE：同writer两既有断言迁移已冻交SHA1c1743a9，独立review295b9028为0/0/0；Root47729完整门0/2346pass、8191两端六页面6/6、54139官方typegen恢复0，实际见progress E117。仅T-Q01限定工程门可验收，正式用户链/其他能力不转通过。原writer仅四Web当前文档证据收口，Root保留index/精确Git；独立review重新核四台账与70计划suffix。下一兑现原D0五source raw core删除及必要既有控制迁移，再发布组合/正式浏览器；不要重新制造计划中心或兼容轨。
+
+R137-E117-ASSERTION-MIGRATION：Root原12347已自然exit1，256contract/50architecture/lint/typecheck通过，2344pass/2fail/0skip；只tests/dev/preview-transport.test.ts两旧HITL断言要求tool.returned/raw result，build未到达。沿原Web唯一writer/gpt-5.6-sol，仅迁移该两既有断言为同opaque activity的running→completed/failed全值更新，保message.completed、run终态、event_id唯一性及审批身份；禁止新增unit/mock、重引raw兼容或删有效控制。源与R137六系统浏览器例冻结，Root负责全门复验/资源/Git，reviewer只读。工作目录apps/kokoro-app绝对路径，main ddd38c5+既有67候选；其他owner/锁不授。对应D0已定safe活动职责，不改变owner/契约/目录。完整用户组仍待验。
+
+R137-UI-E116：Root真实UI失败→同writer两source窄GREEN→两端4pass/2误作用域fail→精确正文作用域/忠实TEXT_START空窗RED4/2→空窗窄GREEN→Root桌面/移动6/6通过且可见截图；独立最终0/0/0。完整门首次仅未用旧const warning失败，现删该const后Root12347原句柄全门运行，源码冻结。不新增unit/网络mock，不发布前绕过正规preflight。raw遗留D0承诺与正式用户/费用链未关闭，后继同writer接续清理，Root独占集成和资源。
+
+R137-UI-P2-E2E-RED：独立UI审实际发现2P2，Root读源码确认。Web同writer只授tests/e2e/web-governance.spec.ts新增两类浏览器行为验收（源码先冻结）：真实预览交互中安全过程与正文并存时，正文保streaming状态且无多余forming；!hitl approve/reject后同activity状态收敛且不留running。比较组件unit假对象与现Playwright完整页面交互，采用后者，禁止新增unit/mock/route.fulfill/持久状态注入或改源码造测试。preview为明确开发UI演练、不冒称正式owner用户闭环。若既有交互缺少可稳定观察的在途窗口，先报告，Root裁决不靠sleep/放宽断言。Node22只写spec不运行共享服务，Root唯一E2E资源runner；冻交后Root浏览器RED→同writer最小assistant-turn/preview-transport修复→Root原例与完整门→发布。原正文/HITL/Canvas/取消/读屏保持，无新contract/owner/模块。
+
+R137-RELEASE-AND-USER-QA（2026-10-03）：Root main bf53a721，Web main ddd38c5+冻结65交付72c840f8，BFF已发布a68cbe5，其他任务外变更保留。上一真正goal切片为progress（台账提交/371限定复验），最近三次方法对齐无代码或验收推进。Root独占完整工程门、Git/index与真实浏览器/资源；Web owner停写。agent4_execution_owner只读最终UI/取消/加载/正文/Canvas消费审；four_owner_fixes_review_r31只读既有正规本地启动/真浏览器测试入口及资源回收路径，不启动服务/改文件/Git。均沿CODEBASE_MAP与现70测试计划，不新建计划中心。Root完整check只是发布前工程门，系统业务验收需真实登录→会话/项目→执行/恢复→正式积分，各按原ID记录。候选未发布前不修改组合pin或checkpoint；没有扩大owner/兼容旧数据。
+
 R136-E112-TEST-STATUS（2026-10-03）：Root负责现有四台账，Web唯一writer已停写交付65file报告72c840f8；Root七完整file371/371限定复验，E109十五/E111四具体失败关闭，整组仍待完整工程/用户路径验收。原agent4_execution_owner续派只读终审核心/自然标签，不Git/资源/写文件；Root保留完整check、集成发布与浏览器验收责任。70组计划不改、不新建中心，完整Wave0–7目标不缩小。
 
 ## R135 Web public7 正式消费接续（2026-10-03）

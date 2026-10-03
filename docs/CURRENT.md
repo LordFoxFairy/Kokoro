@@ -1,3 +1,21 @@
+## R137 / E117 当前真实验收结果（2026-10-03）
+
+Root独立完整Web工程门现已通过：contract256/architecture50/lint/types/2346tests/build全通过，753源保持；迁移两现HITL旧断言后未恢复raw兼容或新增unit/mock。随后真实桌面、移动同六页面行为6/6再次通过；Next自动dev生成路径变化由正式typecheck恢复HEAD，未手改生成物。实际终态与hash见progress E117。
+
+70组当前13通过/4失败/12待复测/38未验/2决策/1支付后置；新增通过仅T-Q01当前冻结工程范围，不代表Web全部能力。特定页面行为是preview真实浏览器，不是正式IAM/真实模型/积分证据。原writer四当前文档收口，Root随后精确Git；已批准的raw core清理、发布组合及正式用户旅程继续，支付最后，完整Wave0–7 active。下方E116及更早均历史阶段。
+
+## R137 / E116 当前UI实跑（2026-10-03）
+
+桌面与移动真实完整页面六行为节点Root6/6通过，三个具体UI问题（重复forming、首token空窗、批准/拒绝工具旧running）限定闭合，原失败历史与六截图在progress E114–116。这是开发预览的真实浏览器交互，非正式IAM/BFF/provider/Billing或全部能力证明。没有新增unit/mock/网络返回替身。
+
+Root完整门原12347已自然exit1：contract256/architecture50/lint/types通过，2344pass/2fail；两旧HITL断言仍要求tool.returned/raw result，build未到达。已同writer只授迁移两既有断言，不新增unit/mock或恢复raw兼容；Root随后重跑。首次无用const warning已精确删除。Web未Git发布、Root未repin，D0已承诺的旧raw core内存事实清理仍后继；正式用户旅程与积分继续原owner顺序，支付最后。70组当前状态不凭六UI节点上调，完整goal active。下方E114及更早均历史阶段。
+
+## R137 / E114 当前真实交互推进（2026-10-03）
+
+Root E113完整Web工程门256contract/50architecture/2346tests与lint/types/build通过，但独立UI审发现2P2；Root实际真实Chromium现完整预览页面3行为节点0pass/3fail/0skip，已复现额外forming回答框、批准/拒绝后safe工具仍running。只读UI审与浏览器证据一致，源暂不发布，原Web owner只修正文锚与preview resume，并保原例断言；下一Root桌面/移动同例6节点+完整工程→发布组合→正式用户旅程。预览不是IAM/真实provider/Billing证明。
+
+完整70组仍12/5/12/38/2/1，系统界面3案例已写原test-cases，不新增测试中心或底层unit。自有浏览器测试自然终态、随机端口关闭，无共享reset/新基础设施；Next自动next-env.d.ts路径变化已登记，后继正式build核还原。正规3310入口仍须clean published/pin，当前launcher未接正式Billing/Skills/Storage，后继owner闭环不得隐去。完整Wave0–7 active，支付最后；以下E112及更早为历史。
+
 ## R136 / E112 最新测试核对（2026-10-03）
 
 Root独立复跑冻结Web候选七文件371项，371通过/0失败/0跳过，自然exit0；交付65文件hash前后保持。E109原15失败和E111新增4边界失败在本次限定纯测通过，包含真实裸page接收、拒二次包裹、初始重复identity阻止续流。尚未Root完整工程门/独立终审/正式发布或当前浏览器验证，不称完整用户闭环。
