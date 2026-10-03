@@ -32,8 +32,8 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 
 - `apps/kokoro-bff/contract/openapi/v1/openapi.yaml`：唯一 public7.1 `POST /v1/sessions/{id}/move` owner机器契约；Root不维护可编辑副本。
 - `apps/kokoro-bff/src/http/routes/move-session.ts` / `src/http/move-session-input.ts`：受信请求与闭集输入，Application Chat service调用同事务repository。
-- `apps/kokoro-bff/src/infrastructure/postgres/chat-repository.ts`：排序Project→Conversation锁、归属与final receipt同事务、未知COMMIT lease销毁与same-key恢复；无schema变更。
-- 源码提交284b/发布态0333；Web尚未固定消费新contract，ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
+- `apps/kokoro-bff/src/infrastructure/postgres/chat-repository.ts`：Chat事实与具名Move委派；Move事务唯一位于现`conversation-move.ts`，排序Project→Conversation锁、归属与final receipt同事务、same-key赢家恢复；`conversation-move-lease.ts`负责有界PoolClient/unknownCOMMIT lease销毁，现mappers纯receipt decode，无schema/contract变更。
+- Move producer原源码284b/发布态0333；职责拆分源码6c5cee0/发布文档5e119cd。Web尚未固定消费新contract，ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
 
 ## 子仓路径与 owner
 

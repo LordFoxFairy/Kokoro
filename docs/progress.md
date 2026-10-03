@@ -1,3 +1,31 @@
+## R155 最终门终态及当前用户首屏阻塞补证（2026-10-03）
+
+Root81876最终Web候选check已消费exit0：contract256、architecture50、164files2360pass0skip106.39s，lint/types/build0；五冻结hash同、Redis15 DBSIZE0。P2复审b26be7零发现，原owner仅两docs收口CURRENT a394（精确修正终态2s文案）/INDEX c520。仅测试启动器及资源生命周期，不是原用户页面恢复，未发布候选。
+
+Storage2135真实fresh GREEN为2fail7pass：四index正确生成后installer旧relations38拒绝，正确target42；只读20376e具名定位后继installer/D0范围。未跳过安装、放宽drift、发布Storage或称全GREEN；自有DB回收/源码同。
+
+当前原conv_ffd7截图与整个浏览器控制inventory均15秒超时；原页session/hydration/DOM仍缺证，控制故障不认作产品根因。保持P0，停止重复盲控/新增tab/重启用户组合，等待已请求手动刷新反馈。Root聚焦原页，不拿2360通过替代用户实际E2E。70组、uv.lock和任务外候选均保留。Root本轮限定台账治理实际298pass3.13s/exit0，日志/tmp/kokoro-r155-final-ledger-governance.log；只治理，不是用户首屏通过。独立990ff审0P0/P1，两文案P2按证据限定收口。
+
+## R155 已发布BFF职责切片；Web资源泄漏真实RED→GREEN（2026-10-03）
+
+BFF已发布源码main6c5cee0ca5b64dd7e1a855eae1022290eb16cd9a、文档5e119cd6fc007f4ad8ffae048a8fcef687d9a8dc，实核origin/main相同/clean；Root独立Node22 check742pass/1既有资源skip、format/变更5file格式0、真PG/Redis全173pass0skip37.730s与Move9pass0skip14.0297s，ownedDB及测试嵌套DB收回/全部源码hash同/Redis集合同。源码审89c280f0与最终doc审9cae795a均零；标准153→152仍exit1。只内部职责拆分，public7.1/canonicalSQL/behavior不变；WebMove/ProjectDELETE/Storage消费/原用户P0均未关闭。Root已精确stage该gitlink，当前拓扑复验exit0；其他在途gitlink不暂存。
+
+Web测试资源实际缺陷已明确：Root78361 Product8行为pass但AAD跨origin故障产生tombstone后fixture只del(record)，新增资源1正确RED；新增IAM import收集error单列，不冒业务RED。修fixture import后Root32500 76行为pass但IAM清理fail；补闭集诊断Root79572真实68行为pass且终态oidc_state count3正确RED。精确own-scope清理后Root37391 76pass19.59s，三类baseline sentinel仍在且终态只精确回收自有sentinel，未知baseline不删；Product旧baseline2保留后Root单独精确回收这两已证明R154/RED自有tombstone，其他key同、无value读取/全库清理。旧RED OIDC自然TTL到期明确区别于代码已修。
+
+Root81026首冻结完整Web check实际exit0，contract256/architecture50/2360pass0skip105.92s/lint/types/build0；Redis15终态0/5hash同。独立2854审2P2（旧Product清理无总界、sentinel TTL300s慢机提前过期），未放过：原writer已改2s总界且失败继续delta、sentinel3600s总预算。最新IAM67a4/Product3edb冻结，Root81876最终完整门在途，旧81026不冒最新候选通过；未发布Web候选、无产品源码变更，更不等于用户原页恢复。
+
+Storage三D0独立ab3a92f7零发现；Root新增两现test正确architecture1fail4pass、fresh PG/catalog1fail3pass14.53s（缺retirement目标前导index），owned外层/嵌套DBabsent、官方generation normalize后源码hash同。已准原owner仅canonical四非唯一object_key index与实际官方generated路径GREEN；三D0/两RED/既有source候选保护。natural plan/PID/SSI/完整原业务门仍待验，不发布或称绝消冲突/S3完成。
+
+原用户conv_ffd7/tab21仍P0；等待原页实际刷新结果，没有本轮新浏览器渲染证据/重启原组合/新建tab。唯一原3310组合45606/46036保持live；原70组11/6/14/38/0/1、suffix831a2160与uv.lock f7e1c30d及Billing候选不变。整个Wave0–7继续active，不拿这些owner子门关闭产品闭环。
+
+## R154 用户原页仍未验收；冻结切片独立验证（2026-10-03）
+
+用户原conv_ffd7仍P0开放。当前工具inventory重新核到IAB browser3/tab21（browser2为MCP Apps，空）；唯一一次原tab21 DOM读取仍focus命令超时，没有session/hydration证据，没有刷新成功、重启应用或新建tab。已请求用户原页手动刷新一次，依据实际结果推进，不把控制超时认作应用根因。
+
+原Web71937完整check终态exit0：contract256/architecture50、164files2360pass0skip107.96s、lint/types/build0；三候选hash仍5fb4/8301/e449。但门后Redis15观察3个动态origin OIDC state与1个product-session新增key；OIDC已自然TTL到期，未手动删除任何key。只读资源审查定位IAM relay fixture仅回收CSRF、漏同origin OIDC；product单键owner未确定。该清理P1须tests-only RED→精确own-scope cleanup，未宣称资源干净或发布Web候选，更不是原页恢复。
+
+BFF R154五源码/测试＋三D0冻结ba1bf4e3，Repo979→678；独立89c280f0审零发现。Root73539最新完整真PG/Redis173pass0skip37.730s、installer/build0，自有DB absent、源码hash相同、Redis键集合与secondaryDB相同（保留已有Web键）；当前未独立再跑纯门/九Move定点，不宣称切片全部验收。默认Root标准35970实际exit1：153→152违规/0未核，仅关闭本切片800行债务，未放宽checker。任务外Billing/Storage/uv保持，70组11/6/14/38/0/1不变，完整goal active。
+
 ## R153 原用户首屏故障聚焦与启动器覆盖（2026-10-03）
 
 原conv_ffd7/tab21仍未验收；本轮DOM、错误读取、刷新在focus控制超时，后续CDP事件读取亦超时并reset。未取得原页session/hydration/heartbeat，未宣称刷新成功，不再重复盲控或新增tab/重启原32044组合。

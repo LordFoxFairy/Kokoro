@@ -1,3 +1,82 @@
+#### R155 收口状态（工程门已验；发布与原页仍待验）
+
+BFF source6c5cee0/doc5e119cd已push/clean，Root准10paths之外无写，gitlink精确stage后拓扑0；源码173+9与纯742/1skip、审89c/9ca已实核。Web真资源RED→76GREEN，首full81026 2360/build0；独立2P2已返修67a4/3edb，新最终81876已实际exit0（256/50/2360pass0skip106.39s，lint/types/build0，Redis15=0、五hash同），测试候选继续冻，产品源码未变、原用户P0不关闭。Storage两真实RED已证1/4与1/3；随后2135真实fresh GREEN2fail/7pass，installer catalog38漏四index（应42），已只读定位，待扩大准确D0/installer范围后再写；plan/PID/完整业务待验。用户原页截图及控制inventory15s超时，没有实际水合/session证据，停止重复盲控，等原页刷新反馈，不假恢复。其他owner/uv/70组保留。
+
+#### R155 Storage真实RED已证，canonical精准GREEN
+
+Root新architecture1fail/4pass，缺四目标前导index；Root49416真实fresh install/catalog 1fail/3pass、14.53s，retirement缺目标index为正确RED，其他三原bootstrap业务场景通过；自有外层/嵌套DB均已回收，全部源hash相同，官方generate后normalize0。不以静态缺字当资源通过。
+
+准原Storage writer仅prisma/schema.prisma的四已批准model添加objectKey非唯一index，以及官方Node24 Prisma generate真实改变的src/generated/prisma路径；不手改generated。保所有unique/schema/enum/关系/查询/状态机/重试，三D0、两RED与旧39paths冻结，不改业务源/contract/provenance/lockfile。生成离线并官方normalize，具体变更manifest交Root。Root亲建隔离PG重跑fresh/catalog/drift/原真实业务全门与同scale plan/PID/SSI，索引不宣称绝消冲突或S3验收。
+
+Web81026现完整check在途，Web候选继续冻结；独立测试审2854e642无P0/P1但2P2（Product旧cleanup无2s总界、IAM sentinel TTL300可能先过期），待原句柄终态后精确两file返修，不在变化树宣称最终门。
+
+#### R155 Web资源实际RED通过与精确GREEN
+
+Root78361 Product八业务pass，但other origin afterAll新增tombstone1为正确资源RED；IAM新增server-only import收集错误不算业务RED，已只修测试prefix公式。Root32500真Next IAM68行为pass但终态清理fail，Product八与资源已GREEN。为不隐藏类别，闭集diagnostic投影后Root79572再真实68行为pass，终态明确oidc_state count=3；不是断言放宽。
+
+准原Web writer仅现IAM relay file GREEN：停止owned children后，删除exact dynamic-origin三prefix的post-baseline delta；baseline undefined不猜删，不删baseline。保2s bounds及live child不dispose。资源断言仍真zero-delta，补真实Redis三类baseline sentinel保存/回收证明（在spawn前建立、精确id的独立finally回收），错误仅kind/count，无敏感输出。Product943fe源冻结；不改生产认证或接口。
+
+#### R155 Storage D0通过，tests-only精准准入
+
+独立ab3a92f7零发现，Root现四非唯一index方案与canonical未变核准。原storage_project_lifecycle_owner现在唯一Storage writer，只准现test/architecture/postgres-migration.test.ts与test/integration/schema-bootstrap.test.ts，添加四index名字/非唯一/object_key首列的架构与真实fresh catalog断言，保原unique/9表12enum/0FK/邻居schema/drift/reuse规则。先tests-only RED，schema/generated/业务源码/三D0及旧候选冻结。无需新文件。Root独占PG/完整验证/Git；writer只纯检查，不访问资源。Root正确RED后才canonical GREEN。
+
+#### R155 后继 Storage 三设计面只读门
+
+现Storage候选未发布、R150 global object_key四前导非唯一index只在TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL目标内，canonical未授权。原storage_project_lifecycle_owner只读核三D0、当前prisma schema/索引测试与真实R149测量，确认四index名称/语义/放置/零unique与contract改动、fresh install与plan/锁/SSI边界、精确tests-only RED路径；不改仓、不运行资源/Git。Root批准前不生成或改schema。该依赖可与Web测试fixture修复并行，为Project DELETE Storage producer后继，不把索引视为绝消SSI或全owner闭环。
+
+#### R155 Product残留精确归因及第二tests-only RED准入
+
+Root只读origin digest核dd7af0e5恰为http://other-product-session.fixture；当前Redis15只有该origin 1个tombstone，无其他key，未读value/删key。现product-session-store.test.ts的AAD跨origin用例finally只del(otherKey)，正式reserveRefresh解密失败会invalidate写otherKey:tombstone；确定test生命周期漏回收，不是业务安全语义错误，也不绑定用户加载根因。
+
+原Web writer范围补现tests/server/product-session-store.test.ts，仅为现真实Redis case加两origin prefix baseline/after zero-delta终态资源断言；先保旧cleanup让Root真RED。继续保encrypted origin/session/generation与tombstone安全断言。Root证RED后仅finally删自身alias record+tombstone（精确id），不清未知baseline、不改生产source/TTL。两现test文件可同writer顺序交冻结，根因无需新文件/模块/contract。
+
+### R155 续推：已验证切片收口与Web测试资源生命周期（2026-10-03）
+
+上轮为progress：Root真实173 owner集成通过、默认标准153→152，已确认IAM relay OIDC fixture清理遗漏；未拿fixture通过关闭原用户P0。原页等待实际刷新反馈，不盲重复控制或另起应用。
+
+|任务|owner/角色|基线/授权范围|验证与交付|
+|---|---|---|---|
+|R155-BFF-ROOT-FINAL|Root集成|main0333+冻结ba1bf4e3，原三D0+五代码；Root Node22完整check+format句柄27938|173真owner已Root73539通过；定点九项、固定hash/SQL/contract、审查后现CURRENT收口，Root提交/发布|
+|R155-WEB-RESOURCE-RED|原agent4_lifecycle_review唯一Web writer|main65be18a，现3候选冻结；只准现tests/system/iam-relay-next-http.integration.test.ts|先tests-only exact-origin三prefix baseline/delta终态断言，无清理改动，Root真实Next/Redis复现。不得读value/打印key-id、改业务源/其他测试/断言/预算；Root通过RED后才放GREEN|
+|R155-WEB-PRODUCT-OWNER|Root只读|现测试中配置origin SHA关联到残留dd7af0e5，不读Redisvalue、不删未知key|精确定位创建者和回收路径，禁止凭固定fixture名猜测或清全库|
+
+资源断言归现IAM relay fixture生命周期，与原业务用户页不是同一故障；无需新模块/目录/进程。复用现file中bounded2s Redis读取，新增三闭集prefix且保baseline；RED只加终态增量零断言，清理暂保原。保活child不得dispose守卫。Root独占共享资源/Git，BFF与Web源不抢写，Billing/Storage/uv/test70不触。
+
+#### R154 最新终态与后继门
+
+Root73539完整BFF真owner173pass0skip37.730s、ownedDB absent/hash相同/Redis集合与secondaryDB同；冻结ba1bf4e3、独立89c280f0零发现。Root800标准153→152仍exit1，不修改阈值。BFF切片独立pure与定点九项仍待Root，不提交。
+Web71937完整check2360pass0skip/build0；资源审查已发现IAM relay只清CSRF漏OIDC，同动态origin3key自然TTL到期而非代码已修；另product单键owner未知，禁止清任意key或发布清理成功。原Web owner只读完成，未授权source；下一精确tests-only资源RED并证exact-prefix baseline/after，Root独占资源。
+用户原页browser3/tab21读取超时，await手动刷新实际结果，仍P0不转绿。当前无新增appgroup、无共享数据reset。
+
+### R154 当前用户页与资源清理核对（续接）
+
+原用户页面仍P0，当前CUA清单重新核验：browser2是MCP Apps（空），实际IAB为browser3、tab21/22同conv_ffd7。Root仅一次tab21 DOM读取仍focus命令超时；没有得到hydration/session证据，不以该控制失败判定应用根因，不增加新tab。
+
+|任务|负责人/权限|精确范围与验收|
+|---|---|---|
+|R154-WEB-RESOURCE-AUDIT|原agent4_lifecycle_review，只读|Root71937完整check终态exit0、2360pass/0skip，后Redis15新3个oidc-state与1个product-session key，禁止宣称清理干净；只读现IAM relay和product-session-store测试的创建/回收，定位own origin与遗漏id，不读key值、不删key、不跑资源测试/Git。报告到/tmp。|
+|R154-BFF-FROZEN-REVIEW|原storage_project_lifecycle_owner，只读|绑定ba1bf4e3冻结8path，审5source/test职责、同事务、预算和原SQL等价；不写、不跑资源。Root后重跑173+9。|
+
+Web真实原页仍开放；Root独占浏览器与资源，worker不得碰原32044、共享PG/Redis或其他候选。发现清理缺陷先给精确tests-only门，不趁机改产品或清数据。
+
+#### R154-BFF 精确源码放行（D0通过）
+
+Root逐项核三D0 b633/26eb/bff1＋canonical SQL387581/OpenAPI784f；独立2d38b4f0零发现，文档门通过。Root fresh默认标准before exit1仍含ChatRepo979越800，不改checker。准原agent_chat_contract_gate仅5代码路径：src/infrastructure/postgres/chat-repository.ts、chat-repository-mappers.ts、新conversation-move.ts、新conversation-move-lease.ts，以及现test/architecture.test.ts。先现架构测试新增按职责委派/单一Move SQL/lease无业务/mapper无IO/显式src inventory门，缺新文件或职责未拆是预期RED；保全部旧行为断言及173 integration文件原字节。随后机械提取Green，不改operation/port/SQL/参数/error/预算/锁/receipt/unknownCOMMIT/otherChat。
+
+数据库事实唯一BFF、仍同一个PoolClient事务，不建新进程/目录/port/fallback/duplicate。只两新增文件，业务SQL与winner放Move，deadline/PoolClient生命周期放lease，receipt纯解码进现mappers，ChatRepo只委派。§8.4合理共置现实现私有常量/helper，禁止顺便抽其他业务或改权限。
+
+Writer可跑Node22纯门/format/type/build，无共享资源测试/Git操作。freeze5paths+三D0 manifest后Root独立review、完整pure/173真owner+9Move、schema及Root800门，成功才放收口文档/提交。Root独占index/资源，Web71937仍在途；运行fixture与用户原组合不重启，Billing/Storage/uv/test70保留。
+
+### R154 继续既有goal：上一轮进展与本轮并行门（2026-10-03）
+
+上一轮是progress：补了与当前组合一致programmatic真实Next启动器；Root53系统与双引擎cold/reload实过、台账a922c7f8提交，非仅状态重复。原用户P0仍待实际刷新/控制恢复，不反复重发盲控请求；有独立安全研发动作，不标完整goal blocked。
+
+| 任务 | Owner/角色/范围 | 当前基线/门 | 提交及资源 |
+|---|---|---|---|
+| R154-BFF-D0-REVIEW | storage_project_lifecycle_owner只读审R152三D0与既定Root放置表 | main0333，三docs b633/26eb/bff1；SQL387581与OpenAPI784f原字节；确认owner、依赖、事务/错误/预算完全等价，给具体source门 | 无资源/仓写/Git；Root通过前不放source |
+| R154-WEB-CHECK | Root独立完整工程门，原agent4_lifecycle_review保持Web候选冻结 | main65be18a＋test5fb4、CURRENT8301/INDEXe449；现53programmatic已证，本轮Node22默认webpack完整pnpm check | 只复用既有Redis15独占origin；不得清共享数据/新增用户组合；终态及hash核后才提交候选 |
+| R154-BFF-IMPL | 原agent_chat_contract_gate后继唯一BFF writer；尚待D0放行 | 精确source集由Root读现代码/测试后授权；不改SQL、contract、port、锁、期限或行为测试 | Root独占集成/Git与资源；不抢Web未提交候选或Billing/Storage/uv.lock |
+
 #### R153 当前取证终态与下一动作
 
 Root相同cold/reload oracle双引擎均pass；programmatic全53pass0skip55.45s，targetlint/type0；测试5fb4与gate一致，Redis15前后0/owned临时目录0。只排除“当前源码在programmatic必然卡”的假说，原用户页仍P0。原页读取/日志/刷新均focus超时，事件能力超时reset，禁止继续盲重试或假称刷新。Web只补CURRENT/INDEX候选说明；本轮全2360/check/build未跑，暂不发布测试候选。Root四台账更新并保护原70suffix；当前需要用户原页手动刷新后的实际现象，或恢复浏览器控制后同页证据。BFF R152 source仍未授权。
