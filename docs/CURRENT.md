@@ -1,3 +1,15 @@
+## R148 当前真实验收与剩余阻塞（2026-10-03）
+
+Root基线main70a9fcac，本轮未发布Web/BFF/Storage源码或候选gitlink。Storage晚PUT重复退避已原54真PG转绿；cleanup完整身份与scope→key顺序原63项55pass8fail→63pass0skip，独立0。随后完整699发现12fail→6fail→最新698pass1fail（Root28791，17.29s）；canonical stale winner误判、completed replay、两race fixture与dedup已同门恢复，feature-state正式Complete的P2034仍失败。源helper323f468/uploads6626cb8冻结；四表串行读未完全消除故障，不能认定Promise.all因果。architecture独立发现批准SQL片段与唯一raw调用未绑定；Root核口头交付不实并纠正为18b071ac，现完整调用绑定与负例定点4/4、87ms通过，生产残余P2034仍未关。各自临时库均亲删，失败test后生成物正规normalize，不手改或抹manifest；全owner/build尚未通过，不发布。
+
+Web Root39900前版fc01完整256contract/50architecture/2355tests/lint/types/build通过，但预算返修d9362b5 Root98722又2354pass1fail（99.58s，sourcehashsame）：旧pending-refresh signout仍500 JSON Unexpected end，冷启动/刷新通过不掩全门红。独立R2 13a67484确认绝对预算无新P0/P1/P2；metadata仅纠正Next16 dev .next/dev路径，52211a7 Root94352精确signout1pass/47名称过滤、15.30s，未复现故障，不当整体48通过或根治；无Web生产源码修复。
+
+BFF Move Root99373真实HTTP/PG6pass/0skip，含COMMIT真实落库后fixture丢ACK同key恢复与SQL fault全回滚；独立c25e4444 0。不是socket fault测试，Move↔Message/DELETE/Run完整交错及消费者仍待验。
+
+用户旧tab21持续loading未关闭；本轮连此前恢复的tab22 DOM也focus超时、截图30s超时（控制内核reset），没有新DOM/API/截图证据，不以历史图冒当前健康。已向用户询问手动刷新后的现象，不推断是应用还是浏览器控制根因。唯一原32044/launcher45606/Web46036仍活跃，无重复应用服务或共享PG/Redis重置。
+
+原70测试组仍11通过/6失败/14待复测/38未验/0业务待决/1支付后置；Wave0–7 goal active。正式收费、Storage物理S3、全Skills/MCP/Agent用户旅程未验；Billing候选和Root uv.lock保留。下一动作明确：Storage残余P2034精确分类（架构负门已定点通过）；Web获取当前用户页证据并定位intermittent signout，不盲重试凑绿。
+
 ## R147 首屏系统验收边界（2026-10-03）
 
 Root37618在Node22真实Next/Chromium执行现OIDC完整系统文件：48pass/0fail/0skip、73.27s、自然exit0，测试a675761c门后hash相同。新增ProductSession已认证cold/reload各12s及各阶段session200、正文shell/composer可见、填入/清空；原pending/503/登录/删除ACK等47节点保留。独立最终4715447a静态0P0/P1/P2。严格IAM/BFF fixture不是实际全owner链，也未复现用户旧tab21的根因。原tab21读取/关闭仍超时；新tab22同一conv_ffd7正文与输入已真实IAB验证，保留截图。仅测试变化，无Web生产修复、无应用重启；T-U04仍开放，70组仍11/6/14/38/0/1。

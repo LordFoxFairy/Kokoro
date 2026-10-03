@@ -1,3 +1,18 @@
+## R148 系统级测试执行矩阵增补（2026-10-03）
+
+同原70组不新增/重排编号；以下是既有组的执行证据，不用pure数量替代用户闭环。
+
+| 用例ID/标题 | 预置条件与自然语言步骤 | 预期结果 | 优先级/类型 | 当前实际状态 |
+|---|---|---|---|---|
+| T-U04 / 原用户页面无限loading | 原3310、原conv_ffd7及tab21；加载→读取页面状态；复查恢复tab22 | 有界完成正文与输入框渲染，失败不永久加载，当前用户页有真实证据 | P0 / 功能、异常、生命周期 | 未解决；用户截图RED；本轮tab22 DOM与截图控制超时，无新UI证明，待用户刷新结果 |
+| T-U04 / 正规cold与reload | 真Next/Chromium、Product cookie、strict HTTP owner fixture；匿名SSR仅编译准备→新context cold→reload，各12s内分别session200/正文/composer→填写/清空 | 每阶段独立成功，旧session计数不替代当前阶段，异常有界 | P0 / 主链路、状态机 | Root98722当前full中此case过，但完整2355仍一signout失败；非真实全owner用户路径通过 |
+| T-Q03 / signout与pending refresh | 正规登录cookie→阻塞refresh→发signout→解除refresh→查tombstone及revoke | 退出200、不将stale credential revoke，迟到refresh不复活会话 | P0 / 异常、权限、竞态 | Root98722真实Next500 JSON失败；52211a7 collector修正后Root94352单case1过/47名称过滤，间歇根因未关 |
+| T-C05 / Move未知COMMIT与事务回滚 | 自有PG正式HTTP Move；COMMIT已落库后fixture丢ACK；原key重放；独立SQL trigger fault再移除恢复 | 未知503可恢复，事实/receipt唯一；SQL失败零partial写入 | P0 / 异常、状态机、幂等 | Root99373现6通过0skip；非socket故障，Move-message/DELETE/Run交错待验 |
+| T-F03 / cleanup身份与锁顺序 | 自有PG/Connect，既有cleanup key/version/etag/notBefore损坏；Create/Complete与Release自有PID/key barrier竞争 | 损坏metadata全业务rollback；scope先于key，无跨scope/tenant物理误删除 | P0 / 安全、边界、异常 | Root44750 55pass8fail→46216相同63全过；实际S3物理删除/全部崩溃矩阵未验 |
+| T-F03 / 完成上传重放和canonical竞争 | 同owner正规completed replay；旧canonical A观察后winner B提交；健康/不可用winner再观察、不同MIME共享同ownerBlob | 正规replay不被新key拒；stale走已有重观察而非foreign；跨owner禁止 | P0 / 主链路、状态机、竞态 | Root28791相同完整699中这些case当前通过；完整仍698pass1fail，feature-state另一路Complete P2034待定位，不冒全仓通过 |
+
+退出门：当前用户原页可用＋正规登录/刷新/退出完整旅程当前commit通过；Storage完整owner零失败且canonical/key/fence恢复矩阵证实；BFF producer发布与消费者正式pin、Move/delete完整交错验证后才关闭对应组。当前均尚有未满足项，正式Billing和其他能力另按原任务继续。
+
 ## R147 / T-U04 首屏加载执行记录（2026-10-03）
 
 原70组/编号不变，T-U04不因新页或fixture通过而转绿。

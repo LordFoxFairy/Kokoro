@@ -1,3 +1,60 @@
+R148 architecture最后真纠正：原writer承认e590交付与口头不一致，现18b071ac绑定完整queryRaw调用并新增dead SELECT+DELETE负例；Root原Node24定点实际4/4、0skip、87ms、hash相同，日志/tmp/kokoro-r148-storage-architecture-final.log。仅静态负门关闭，完整owner残余P2034不清零；残余报告16c958a5已纠正，索引仍推断/未授权。
+
+R148 交接纠偏：Storage残余报告f97d1909称architecture完整queryRaw绑定已完成，但Root实际e590d9仍是片段存在匹配、无dead SELECT+DELETE负例，已要求原writer真实返修/纠正报告，不按口头放行。P2034全局objectKey无leading index是源码/schema与时长推断，未有EXPLAIN/attempt计数，后继先设计/精确诊断后才允许索引，不贸然改canonical Schema。Root四docs待独立审，原70测试组不重编号/转绿。
+
+### R148 收口前剩余失败保留
+
+Root28791完整真PG为698pass/1fail/0skip（699/73file/17.29s），原artifact两timeout、canonical两winner及dedup已同门消失，但feature-state正式Complete在helper首query仍P2034；不能认定Promise.all为根因，也不重跑到绿。准原Storage writer先只读残余P2034的实际retry predicate/Prisma class身份/fixture分类及纯门是否会改变生成runtime；只/tmp报告不加retry/降隔离。独立a2f35116又发现architecture只匹配SELECT存在而未绑定唯一queryRaw调用，该architecture授权后已18b071ac完整调用绑定及保片段但替换DELETE负例，Root4/4定点通过，所有业务源/699断言仍冻。Web原98722 signout500保留，metadata52211a7仅dev路径纠正后Root94352精确真实单case随后终态1pass/47名称过滤，原48其余名称过滤不作完整通过。
+
+### R148 Web再次全门RED与精确诊断边界
+
+Root98722 d9362b5完整check2354pass/1fail/0skip、exit1、99.58s，冷启/reload已过；旧pending refresh signout仍500 Unexpected end JSON，SOURCE_HASH_COMPARE0，build未到。诊断五manifest均ENOENT不能当真实缺失：Root本地Next16 config.js1090–1094明确dev distDir追加/dev，当前collector错读.next。准原Web writer仅现systemfile collector固定.next/dev/五manifest元数据路径，仍750ms/不读出内容/不加fallback；只读定位实际JSON来源与最小后继，源/断言/超时不授变更。Root后继精确signout单case真实Next复现、若未失败只记无法复现不当根治。当前IAB22的DOM及screenshot也focus/30s控制超时，不用旧截图冒新界面通过，不新增tab/重启应用。
+
+### R148 Storage四业务RED窄源码准入
+
+Root已读canonical-write.ts完整当前CAS、PrismaService Serializable有界callback重试及真RED日志。canonical先guard陈旧A使合法winner B/retirement A误判foreign已定位；准原writer仅uploads.store.ts同tx先核current canonical与expected全identity/size/key/version/etag，不一致保现CanonicalChangedError重新观察；candidate key仍全局guard，不能放行retirement/foreign。helper四Promise.all虽共同出现在P2034，尚是假设而非已证根因；准仅object-key-ownership.store.ts相同四query确定顺序串行，不吞error/改retry/isolation；若真实4case仍红先追加attempt诊断而非盲扩修。复用现对象不新模块/Schema/API；其余源和test断言冻结，Root同真PG全门判定。
+
+### R148 Storage第二轮全门实证与返修边界
+
+Root74267真实final自然exit1：原63仍GREEN，完整699为693pass/6fail/0skip（17.00s），ownDB已删；失败再次prisma generate使17生成物hash漂移，Root正规normalize0后单独核，不抹原manifest。两artifact race updateMany暂停之前upsert已持scope锁，仍互等5000ms；准原writer只将此barrier移到upsert之前、不改旧timeout/assert。独立另P1 architecture白名单会让同文件额外executeRaw/unsafe/pg import漏检；准原writer仅现architecture函数逐类拒绝，再放唯一精确queryRaw，并扩同文件负例。真实canonical两例ownership conflict、blob dedup/feature两例P2034是新业务失败，先只读分析uploads/helper/Prisma retries/provider canonical再Root窄准源，不得称fixture问题或删key守卫。日志/tmp/kokoro-r148-storage-full-owner-recovery.log及7xcecxmg manifest，源码五file第一修不发布。
+
+### R148 Web有界诊断 P2 返修准入
+
+Root39900新完整check实际exit0：256contract/50architecture/164files2355tests、lint/type/build通过，fc01d69前后hash相同；旧tab未因此根治。独立949c2630发现beforeAll新增50s不受原60s总预算约束且socket idle timeout非wall-clock。准原Web唯一writer agent4_lifecycle_review仅现OIDC systemfile：beforeAll起点固定绝对deadline，编译准备使用剩余预算且保cleanup余量；新增可选HTTP预算有覆盖response body的绝对timer及清理，不改旧无参数语义。保匿名SSR准备、fresh browser cold/reload各12s和全部2355原assert、不加skip/重试/timeout。源/配置/Git/共享服务不授；freeze后Root同完整check及独立复审。
+
+### R148 Storage既有行为回归修复准入
+
+Root79657完整699门12fail已独立分类报告1c81374b：生产Completed replay被key guard先拦；两真实PG并发旧barrier在已持scope/key锁内暂停又等竞争者形成fixture互等；既有unit缺新active scope seam，architecture未精准认可唯一参数化key-lock SQL。准原Storage writer仅uploads.store.ts先claim/scope/readUpload/completed正规replay，pending才sorted key guard+write；现artifact-identity-race与canonical-lifecycle test只搬barrier到源真正能发生竞争的pre-lock seam、保赢家/冲突等业务断言不放宽；final-artifacts-store既有fixture加新typed active scope只读能力、不增unit；prisma-write-boundary仅审定该文件固定参数化advisory锁SELECT，unsafe/mutation负门仍拒绝。其它源/Schema/API/contract与63门冻，资源/GitRoot独占；freeze后Root原63及完整699复验。不得把真业务回归混为fixture、更不得删scope/key锁或延长timeout。
+
+### R148 Storage完整门失败分类（先只读）
+
+Root79657正式final：63focused通过，contract/format/lint/types0，但699项687pass12fail/0skip；architecture rawSQL白名单、mock Artifact缺新scope seam与真实blob owner dedup/canonical repair不同，不混成fixture失败。原writer仅调查五file及相关source，/tmp报告分类：真实业务回归、fixture契约缺失、门禁需按已批准rawSQL唯一锁守卫更新。未准改业务assert/资源/Git/源码；generated17hash漂移只因完整test再次prisma generate且失败未走normalizer，Root正规normalize后记实证，不手改生成物/重写原manifest。必须保真实同owner dedup/并发canonical修复的既有行为。
+
+### R148 Web诊断精化准入
+
+原writer agent4_lifecycle_review只改现OIDC systemfile：Root full真实冷编译deadline/旧signout JSON500两RED保留。依据只读732c5fe5已核fixture唯一.next不共享、仅csrf readiness而app首次dev compile：批准在既有beforeAll总60s内增加独立有界app编译准备（匿名SSR HTTP仅编译，不注入session/hook/浏览器缓存）；测试仍fresh browser cold/reload各12s从navigation起，不能延长deadline/skip/永久串行。保留兼容fixture事实并给独立业务和编译计时、JSON错误安全来源与manifest存在/大小/hash/parse状态（不输出内容/nonce/secret）；诊断不应再无限等待或覆盖原错误。冻结→Root原完整check，真实signout根因仍未定不得提前改生产。
+
+### R148 Storage两P1源准入
+
+Root44750正规真PG/Connect63项55pass8fail：6坏cleanup身份请求错误成功及2scope-first精准等待证据不成立；自有库absent/源hash相同，见o95hzfcn manifest。不新增owner/表/API/文件，已裁三D0既定claim→scope→resource与same-source same-key承诺。准原writer仅uploads.store.ts claim/scope后stable sorted去重key守卫、scope-release.store.ts现row完整身份/版本/etag/notBefore状态一致性拒绝；原tests/hash与helper/reconcile/retirements冻结，坏row不得静默repair/双轨。完整freeze后Root同63真实GREEN、独立审，再评全owner门；资源/Git仍Root独占。
+
+### R148 Web完整门真实失败后继
+
+|任务|归属/范围|实际证据与完成条件|
+|---|---|---|
+|R148-W-READ|agent4_lifecycle_review只读Web；main49721a5+a675761c测试；现OIDC isolatedNext/diagnostic及本地Next16.2文档，只/tmp报告|Root68291完整check自然exit1、2353pass2fail/0skip，contract256/architecture50/lint/type0、build未到；冷/app12sdocument超时及signout500 Unexpected end JSON input，源hashsame。file独立48通过不盖全门红。定位fixture与实际服务边界，不扩大timeout/skip/重试或盲修生产。Root按诊断再准测/实现，当前不发布Webtest候选。|
+
+## R148 恢复与资源一致性并行切片（2026-10-03）
+
+上一goal turn归类progress：Root70a9fcac台账已发布、真实Web48/48系统证据、Storage27失败已定位driver并复验为53/54，结果改变下一行动；不是整体闭环。原tab21诊断/关闭超时仍开放，复用32044，不盲重启。
+
+|任务|Owner / writer / 基线 / 写集|准入与验收|
+|---|---|---|
+|R148-S-RECOVER|Storage / storage_project_lifecycle_owner / main2f855816及冻9f7 helper、scope c5b9da4a、retirements d2e46266；先现object-retirements.store.ts continueStagingCleanup窄修＋三D0必要一句；其余源冻结，tests-only现conversation-scope-release/upload-reference-gate/object-retirement|Root真54项latePUT/restart line398 RED，禁止放宽断言/延迟时间。核观察和删除各CAS使attempt两次增加、continuation重算notBefore是否重复退避；保授权提交后网络与durable fence，先最小修与冻结Root同54GREEN。独立两P1随后tests-first：坏既有cleanup key/version/etag/notBefore整业务回滚；正规Create/Complete→scope→key与Release锁序精准自有PG双连接barrier，非mock。冻结测试→Root真实RED后再授权源修；不改Schema/API/generated/provider/共享服务/Git。|
+|R148-BFF-MOVE-C8|BFF / agent_chat_contract_gate / maina68cbe55及C6/C7冻repo0329c7ae/route dfb0eab0，仅test/chat-facts.integration.mjs|纯741与真4项不足终态恢复：补正式HTTP/真实PG COMMIT确已落库但ACK丢失→503未知→同key权威replay200/事实单份；同tx SQL fault rollback→无move/receipt→原key恢复；自身fixture可确定性注入一次transport/DB异常，不mock事务事实或PG结果。Root准tests-only，source/contract/SQL/其它owner/Git/共享资源禁止；冻结交Root真资源、独立审与后继决定。|
+
+共享写集与Root四台账/Git/资源仍Root独占。独立能力并行、不复制contract或降低安全门；原70组与完整Wave0–7/支付最后不变。
+
 ## R147-W-LOAD-SYS 当前用户首屏系统诊断（2026-10-03）
 
 状态：限定48系统节点已Root验收，测试候选未发布；旧tab21根因/关闭仍失败，T-U04不转绿。测试a675761c，独立4715447a 0/0/0；Root37618 Node22完整48pass/0skip/73.27s。Storage C2实际53/54、latePUT回归及独立两P1继续开放，源码停止写入，不放行发布。
