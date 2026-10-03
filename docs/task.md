@@ -1,3 +1,26 @@
+## R135 Web public7 正式消费接续（2026-10-03）
+
+R135-TEST-STATUS：Root唯一四台账writer，基线99021d77，仅docs/{test-cases,task,progress,CURRENT}.md；本次人类问的是测试task，独立于开发派工。E109 Root真实七文件352pass/15fail/0skip，源752保持/自然exit1，独立有效性0P0/0P1/1P2；T-Q01/C09/C10/A05转失败，连原Q10共5组，最新70组12-5-12-38-2-1。70原ID/编号计划及失败历史保护，manifest与四缺陷/未达深层见progress/test-cases。不因旧工程通过、worker完成或后端发布提升Web通过。原Web owner已停写，GREEN尚未授；下一既定正式消费实现→Root复测→组合/browser，其他owner/积分/支付后置和完整goal不丢。
+
+上一goal回合为progress：Root99021d77提交70测试组最新实际状态；BFF main a68cbe55cde709f9b21f3d5803bfbd3ca5d14e2b已普通推送并remote同SHA，真实74资源/233契约及工程门通过。Web仍main ddd38c5bdc1eab01f802e1fc993f7b597d707a64 clean/public6；完整Wave0–7 active，不能把后端发布当浏览器闭环。Root main99021d77，Billing五docs及uv.lock任务外冻结。
+
+Root总体既定裁决沿R123只读报告 `/tmp/kokoro-r123-web-consumer-read.md` SHA bb7dc0c3676911a2f1d980d2ec1beb73058439e49a416207b5ebdef7f15bf006：仅Web同源→BFF public7，不直连Agent；executionProcess Run独立于FIFO head；nullable Todo保null/[]、safe activity以run+activity身份整体替换/首次顺序，不发明kind/phase单向图；全部anchor页验证耗尽后才用同W严格续流。401/404/400/503不空成功，process410丢旧anchor后有界新snapshot；scope/dispose真实abort与代际双护。不保旧raw/别名/非text内存补偿当事实，保正文/HITL/Delivery/连接refcount/optimistic合法语义；无UI重设计/依赖升级/新数据库或运维。
+
+|任务|Owner/角色/基线/文件集|阶段完成条件/依赖|
+|---|---|---|
+|R135-WEB7-D0|apps/kokoro-app唯一writer web7_consumer_owner，gpt-5.6-sol；main ddd38c5 clean。仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md顶部；Root审查/Git，其他文件只读|读Root/Web AGENTS、CODEBASE_MAP、手册与已发布BFF7 machine SHA76d524d731b10d1cd4b16db4dae957701bf5c5d82a3cd915a42bc57617746ebe；沿既有报告落实三面D0/§8位置表，精确后继文件集、测试先RED、生成来源与byte检查/分页和abort错误策略；不重开总体架构。仅四docs、suffix原bytes保护，不改source/tests/pin/generated/锁，不跑资源/服务/Git。交hash停写；Root放行后续RED与实现|
+|R135-WEB7-WIRE-READ|agent4_execution_owner，只读 published BFF7及Web consumer；绑定BFF a68cbe5/Web ddd38c5，非writer|核真实snapshot/page/CUSTOM完整安全闭集、nullable/error码、anchor/cursor/bounds与generator固定版本所需变更，给精确测试向量/错误推断；不改文件/Git/资源，报告私有/tmp。不是重新设计owner协议|
+|Root验收准备|Root独占Root四台账/后继资源/Git，先核现Web scripts/vitest/Node22入口及已有服务句柄|D0放行→真实行为RED（非missing export/ImportError）→唯一Web writer消费→冻结Root静态/纯门/ownerHTTP/浏览器。状态按测试ID回待复测，不因文档或worker exit0提升通过数。BFF源码不动，Rootgitlink待组合依赖发布|
+
+
+R135-D0-ROOT放行：Root核4doc最终hash31595555/6ba0a931/f90c615a/eca75705与全部原suffix精确一致，machine/owner/digest正确、三面一致、未决0；接受现职责方案，不重复总体设计。Web source/pin未改。Root现9files基线397pass/0fail/0skip，747非D0 tracked保持，原PGID已absent；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r135-web-baseline-45jmf5gu/manifest.json SHAdb2c7c15ea564e64b924c51c66949540013992ca7f198cc0f47f83f3d8acff4d。正式wire只读1c4a0525已Root读，不作为行为验收。
+
+R135-WEB7-RED（同web7_consumer_owner唯一writer/gpt-5.6-sol，Root复现/Git）：仅允许现tests/contract/{chat,agui-events,http-paths}.test.ts、tests/engine/{client,agui-event-mapper,engine}.test.ts、tests/core/{reducer,hydration}.test.ts；tests/engine/fakes.ts仅新增未来分页调用记录/deferred/signal钩子，保现默认与原行为。source/四D0/pin/generated/共享core fixtures/其他tests/锁/Git全部冻结。以R135标记新增真实行为节点：required process/nullable/closed safe union、Unicode/Todo边界与条件Skill/refs、live全替换/独立head过程、snapshot恢复、101两页+SSE gate、W/run/重复identity/cursor/410、scope/dispose abort与迟结果、消息/HITL/Delivery原控制。缺新method/export时不得导入不存在schema或调用undefined方法制造TypeError；首RED先断明确wire acceptance/state/call顺序/signal事实，未达深层如实标记。可语法/定向Vitest自测但无服务/资源/Git；新增用例prefix R135并列明确目标node清单/pass-fail-skip，不改旧assert或删测试。冻交文件/hash/实际首失败后停写，Root同目标+原完整文件复跑再GREEN授权。初次source既有错误不能靠fake成功填平。
+
+R135-D0-ERROR-ACK（同Web唯一writer窄补）：独立D0审0/0/1指出当前TECH/API顶部“400 cursor/integrity”混淆。仅两D0顶部该短句改400 invalid query/cursor/scope、503 process_projection_unavailable（provenance/compact/frame/页预算），client畸形响应按本地parse失败不得编造HTTP400；其余所有D0/历史suffix不变。不新协议或生产变更，随tests-only RED交两新hash并停写；Root冻结前复核，P2复核关闭后沿既定D0执行。
+
+R135-RED-ROOT有效性ACK（同Web writer，仅现3tests/fakes）：Root读交付发现新engine页耗尽/410两例未置活动head却要求开SSE，与既有terminal/idle不重连矛盾；这两例须加入正式active head同Run，另保无head terminal process全部恢复但零SSE正控。页耗尽例须真实deferred page：pending时0stream/部分不成功，resolve后101全集+同W开流，不能只结束后计一次call。safe reducer whole-replace例先真实run.created/START事实，再update；不凭activity隐式选择Run。mapper新case只要求无text/reasoning/raw-tool chunks，允许既有合法data-kokoro视图chunk，不发明必须[]协议。新tests/contract/chat.test.ts原HEAD不存在，此前“现文件”描述错误；现明确普通新文件放置：与巨大跨域contract/api-contract比较，采用现tests/contract下具名snapshot过程校验文件，单schema消费变化原因/无新目录/API，已在D0和task精确写入集，Root接受该新plain file；其余职责不变。无需重做D0。原tests保护、源/pin继续冻结，Root真RED后再GREEN。
+
 ## R134 测试task核对与正式切片交接（2026-10-03）
 
 测试计划唯一docs/test-cases.md（70组、70编号计划）；本页只管开发派工/依赖，实际结果progress E108、组合CURRENT。Root沿既有R129→R133门验收并发布BFF，不建立新计划中心。当前13通过/1失败/12待复测/41未验/2决策/1后置；T-Q02限定工程门验收、T-A05/C10具体故障关闭但整组未验、T-Q10失败保留。

@@ -1,4 +1,29 @@
-## R134 / E108 当前测试验收、修复与正式BFF发布（2026-10-03）
+## R135 / E109 Web真实RED与测试任务核对（2026-10-03）
+
+用户要求的是完整测试task计划与实际结果，不是开发派工清单。70组/70编号计划继续只维护docs/test-cases.md；当前12通过/5失败/12待复测/38未验/2决策/1后置。T-Q01、T-C09/C10/A05新增失败与原T-Q10失败共5组；同一次15失败映射多个业务组不重复计数。当前commit为Root99021d77/Webddd38c5/BFFa68cbe5，Web四D0及八测试候选未提交，生产/pin尚未变更。
+
+### Root实际运行与范围
+
+- 基线：Node22.22.2九文件397pass/0fail/0skip，自然exit0；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r135-web-baseline-45jmf5gu/manifest.json` SHA256 `db2c7c15ea564e64b924c51c66949540013992ca7f198cc0f47f83f3d8acff4d`，747非D0 tracked前后保持。只表示新增目标测试前行为，不是public7通过。
+- 新目标RED：在 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app` 实际执行 `/Users/nako/.nvm/versions/node/v22.22.2/bin/node node_modules/vitest/vitest.mjs run tests/contract/chat.test.ts tests/contract/agui-events.test.ts tests/engine/client.test.ts tests/engine/agui-event-mapper.test.ts tests/core/reducer.test.ts tests/core/hydration.test.ts tests/engine/engine.test.ts`。七文件367项352pass/15fail/0skip；自然exit1，Vitest时长1.32s、wrapper1.582s。与基线/worker范围重叠，不合计通过数。
+- manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r135-web-red-root-dud32qum/manifest.json` SHA256 `e110b32363e9b56292eacceed9c15db11767f4c75f1d45a8fef54f7c58839631`；同目录 `vitest.log` SHA256 `3bdd942ce0c931cfc343a7c42e2580c325f055fbab2f3d6776bb261659e3e92c`。
+- 冻结 `/tmp/kokoro-r135-web-red-root-freeze.json` SHA256 `5a1bc5a4616bb1de80c53d9786c4ababbc93c4b749753f5d53b971f6cb5f9522`，752文件前后相同。Root63445已自然终态，另查PID98130不存在；无数据库/Redis/provider/browser调用或新服务。当前3310无listener是本次探测，不据旧标签认定服务在运行，也未因此重复启动。
+
+### 有效失败、纠正与未到达分支
+
+四缺陷聚合D-R135-01–04见test-cases当前表：合法public7对象/安全CUSTOM未接受、旧raw未拒；过程水合/全值替换未实现；无分页/410 fresh snapshot；snapshot signal未传递/真实abort缺失。缺失行为通过现parser/mapper/reducer/client/engine正式入口实测，不以missing import/export或TypeError充数。
+
+首次测试前置曾错要求无head终态开启SSE、activity隐式选Run及mapper固定零chunk；Root按既有正式语义窄纠正为active head/deferred页正控、真实START先行、只禁止text/reasoning/raw-tool泄漏，保terminal零SSE。旧断言/生产安全不放宽。新chat.test.ts原HEAD不存在，Root在同任务记录明确批准现contract目录普通单职责文件，无新目录/API。
+
+独立有效性审 `/tmp/kokoro-r135-web-red-effective-review.md` SHA256 `9c047f63c6f72750f8e433ce5664118341121d4cdfb4b620bdca36d505b58952`，0P0/0P1/1P2；752冻结核实、未另跑测试或资源。P2是A→B→A′首次位置控制待补；页身份/循环cursor/重复410/换scope迟成功迟失败及全部snapshot采纳路径尚未完整执行。首个未调用分页断言失败使深层结果未到达，不能声称整条状态机已测完。
+
+### 交接与用户闭环边界
+
+web7_consumer_owner为唯一Web writer/gpt-5.6-sol，四D0和tests-only RED已交停写，尚未授权源码GREEN；Root维护四台账/Git并独占最终复测。BFF正式发布与后端通过保留，不关闭Web新失败。当前组合浏览器登录/真实两轮/活动刷新、项目与独立会话/任务、Home/输入框/样式、Skills/MCP/Todo/审批/作品和正规赠送→余额→预占→结算/释放→流水均待原编号实跑；支付后置，整体goal active。Billing五docs、uv.lock与其他仓候选不纳本片。
+
+台账校验：Root实际核70唯一ID/状态计数、70逐组计划suffix与HEAD完全一致（SHA256 c6cb3b643a8f5b4700d3957b332961bf2fd063456c3d2278c7c93046dd58ace7），E109-F01–15逐项匹配真实日志15个FAIL节点，752冻结与manifest/log摘要一致、PID已不存在，git diff --check通过。独立四台账及15节点终审0P0/0P1/0P2，`/tmp/kokoro-r135-test-status-review.md` SHA256 `85a1a5f39934999cd1bec96045db4ae8ed0cbbf42aaef993c255189432a994c8`。本次只是测试结果记录/核对，没有新增产品复测或源码修复，Root完整scripts/tests未重跑，不以台账检查代替业务验收。
+
+## R134 / E108 当前测试验收、修复与正式BFF发布（2026-10-03，历史阶段）
 
 人类当前请求为完整测试task进度；沿docs/test-cases.md唯一70组和70编号计划续记，不新建计划中心。最新状态13通过/1失败/12待复测/41未验/2决策/1支付后置：T-Q02限定工程门通过；T-A05/C10具体故障已复验关闭但全组回未验；T-Q10失败保持。用户全Wave0–7仍active，历史登录/模型旅程不当当前组合通过。
 
