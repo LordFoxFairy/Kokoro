@@ -1,3 +1,32 @@
+## R127 / E104 测试计划与最新实际结果核对（2026-10-02）
+
+本轮人类请求为测试task的进度/完成/未完/问题；Root核现70组与编号执行计划，复用test-cases.md，不另建测试中心，不将开发交付当测试通过。只读four_owner_fixes_review_r31核台账，Root唯一编辑现四文档；本轮未启动业务服务/产品资源测试或修改产品，以下实跑为本轮核对的最近Root运行结果。
+
+BFF main `02276b623f8390288fbf86d6efaa0f5152256afa` + 当前27路径实现，Root freeze `/tmp/kokoro-r127-green-root-freeze.json` SHA `bbe0b6f24242d7248076e879eda2f6c37e8eb08732fc6b7e408d69ee2986d9f4`，441实际存在文件/443保护路径（含两删除）。候选未提交/发布；worker报告只待验，不用其233contract自报替Root运行。
+
+Root纯运行：Node22 `tsc -p tsconfig.json`、`scripts/generate-agent-http-client.mjs --check`、`scripts/lint-source.mjs`、`tsc -p tsconfig.json --noEmit`均exit0；`node --test --test-concurrency=1 --test-reporter=tap`四现消费pure files149pass/0fail/0skip、完整package默认737项736pass/0fail/1 PG schema skip。原manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r127-bff-green-root-67tmaevq/manifest.json` SHA `11ccf856622a32230d2cfd18cb8fe9d0456418fb0c1645c0bf3f3158e5512929`；源保持/forced空/六步自然终态。Root完整format门尚未复跑，不提升Q02整组。
+
+Root真实资源：原owner当前canonical schema实际安装exit0；私有runner `/tmp/kokoro-r124b-bff-resource-runner.py --freeze /tmp/kokoro-r127-green-root-freeze.json --freeze-sha256 bbe0b6f24242d7248076e879eda2f6c37e8eb08732fc6b7e408d69ee2986d9f4 --file test/agui-projection.integration.mjs --file test/agui-http.integration.mjs --file test/chat-facts.integration.mjs --test-name-pattern '^R12[46] ' --expect green --full-regression` 实际exit1。
+
+|运行分组|pass|fail|skip|结果|
+|---|---:|---:|---:|---|
+|焦点projection|3|4|0|第二START/精确重放、Todo约束/空表、SQL fault回滚通过；过程读取42703|
+|焦点HTTP|0|3|0|snapshot返回503非200，后续页间/历史/过期未完整到达|
+|焦点chat-facts|1|0|0|删除本owner过程行通过|
+|完整projection|26|20|0|42703及少量PROCESS_PROJECTION_UNAVAILABLE/AGUI_PROCESS_SUBJECT_MISSING待定位|
+|完整HTTP|5|7|0|snapshot503阻断|
+|完整chat-facts|12|1|0|admitted head路径读snapshot42703|
+
+焦点11项4pass/7fail，完整71项43pass/28fail，二者重叠不得相加。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-59lvj5my/manifest.json` SHA `36e5b8adc54f55d61aa172ea64d3d27c5716ecd387dd1635b4c8901d5c42096a`。泛化result为failed-run-or-cleanup，但本次cleanup无错误：所有owned child自然终态、forced_stop=[]、cleanup_errors=[]、source_unchanged=true、独立新连接database_absent=true、自有marker_removed/redis_end_empty=true；没有共享reset。首源码错误定位为 `agui-process-page.ts` CTE缺latest_sequence输出，不能将全部28失败未经逐项核对归成同一原因。
+
+独立冻结SQL审 `/tmp/kokoro-r127-green-c-sql-final-review.md` SHA `d890d5def3b2b6207f55f16335695ab85851aa9db9cc87a332862a86435d4ca4`，API审 `/tmp/kokoro-r127-green-c-api-final-review.md` SHA `f1971e77f5984a1acfdac441a2f1a51ee76c8d92513d0f06ec7286e0278f795c`；源码审不是运行证据。SQL缺列与实跑吻合；GC分批过期、双向provenance与cursor边界为待裁决/验证缺陷，不贸然增加已跑失败数。
+
+独立只读台账复核确认原70matrix与70逐组计划同序，认可上述五行状态调整及新计数；历史通过限具名版本，43通过节点不外推整组完成。
+
+台账更新：T-Q02旧五pure失败已限定关闭→待复测；T-C07/C09/C10/A05各实际路径失败（明确前置阻断，不推断深层逻辑错误）。70组=12通过/5失败/0整组执行中/13待复测/37未验/2决策/1支付后置。当前用户浏览器完整登录聊天/刷新、项目/独立任务/Home/输入框/Skills/MCP/审批/作品/正式积分与用户模型网关仍未闭环。下一沿原BFF owner修当前实跑错误→Root同例复测→发布→Web→浏览器，完整Wave0–7不缩小。
+
+E105本轮Root实际完整 `python3 -m pytest scripts/tests -q`：1709pass/1fail/3skip，另455 subtests pass，118.12s/exit1，session84989自然终态。失败节点test_w1e_iam07_bff_pin_marks_iam_composition_pending，verify_checkpoint当前217项不匹配，首历史gitlink17c73541ae5d9f123d85cf531a79503df5c463bd与现Agent79bf98c5aa63b9bace207afdf42d8c7aefee4fe8不符。T-Q10待复测→失败；不假定217项全部只是过期证据。最新70组12/5/13/37/2/1；diff-check与70ID/编号计划一致性核通过，独立此前12/4/14审核是E105运行前状态。工具回归失败未修/未复测，本轮业务零写入/全部运行终态。
+
 ## R126 / E103 明确资源RED后进入完整GREEN-C（2026-10-02）
 
 上一goal回合progress：Root23f83b87提交E102真实失败与覆盖缺口。本回合同owner已完成R125三resource补强002b2bd8并停写，真实RR授权query barrier、GC discovery barrier/eligibleoldRun、101页间变更/102项/新preflight、真实historical successor、fault retry/replay、provenance HTTP503→恢复200断言均已加入；不是这些深层分支已通过。Root核完整438actual freeze，较E102仅三resource和新增contract node四路径变化，生产/四D0/其他tests无越界。另Root查到newcontract node错把snapshot4字段ref到page5字段，与D0不符，窄授权校正93e6ec92；snapshot RunExecutionProcess4required、endpoint RunProcessPage5required保持既定方向，不为测试扭改设计。

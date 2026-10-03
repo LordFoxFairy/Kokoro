@@ -1,3 +1,13 @@
+## R127 当前测试进度核对（2026-10-02）
+
+测试验收唯一入口docs/test-cases.md，与开发派工task.md分开；70组及编号用例计划已展开。当前12通过/5失败/13待复测/37未验/2决策/1支付后置。历史通过只限具名版本，不代表当前完整产品。
+
+E104：Root现BFF冻结候选四pure149通过、默认736通过/1 PG schema跳过，build/生成/lint/types0；真实PG/HTTP焦点11项4通过7失败、完整71项43通过28失败，均0skip。SQL42703/HTTP503阻断T-C07/C09/C10/A05，深层未达不称通过；T-Q02原五pure失败限定关闭→待复测。候选未正式发布，Web新消费/浏览器/正式积分仍未验。所有Root进程终态、源保持、精确库与自有Redis资源回收，无共享reset。
+
+本轮是测试结果核对与台账更新，不宣称代码修复或整体闭环；下一修当前BFF失败并同例真实复测，再正式发布→Web→浏览器。详细证据见progress E104，以下R126及更早为历史。
+
+E105：本轮Root完整工具回归1709通过/1失败/3跳过，另455 subtests通过；契约checkpoint与当前gitlink不匹配，T-Q10转失败。工具进程自然结束，尚未修复，不放宽校验。最新测试台账12/5/13/37/2/1，详test-cases及progress E105。
+
 ## R126 当前实施推进（2026-10-02）
 
 E103：R125资源测试补强与snapshot四字段契约错断言已校；Root真正9selected明确RED/0skip/0TypeError，canonical安装0、438源保持/自然终态/精确库absent/Redismarker清与空，深层恢复仍待GREEN到达。独立review误加kind不可变限制已由Root按现D0第38行裁定不采纳；保合法kind/phase/preflight变化，GC provenance正控纳实现切片。

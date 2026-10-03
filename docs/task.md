@@ -1,3 +1,13 @@
+## R127 测试进度核对与失败接续（2026-10-02）
+
+本轮请求是测试验收task，而非追加开发方案：测试计划与结果唯一入口docs/test-cases.md，实际证据progress.md E104，开发派工仍本页。Root编辑四现文档；four_owner_fixes_review_r31只读核70组/计划/范围，无资源或Git。业务writer均停写，当前资源运行全部终态。
+
+最近Root实跑：四pure149pass、默认736pass/1资源skip；真实焦点11项4pass/7fail、完整资源71项43pass/28fail/0skip，freeze bbe0b6f2/manifest36e5b8ad，SQL42703和HTTP503阻断。当前70组12通过/5失败/13待复测/37未验/2决策/1后置；只更新真实状态，不称代码已修。
+
+后继原BFF唯一writer负责D-R127-01 SQL缺列修复；GC过期/provenance/cursor审查项须Root裁决及行为验证，不直接批量改新契约。当前尚未续派新实现或允许越界；后继修复沿R126允许范围，Root审查/真实资源/Git。修复交付≠验收；Root重跑原失败与完整回归后再发布BFF7、更新Web并操控浏览器验收。其他owner、全Wave0–7和正式积分/支付最后保持。
+
+E105：本轮Root完整工具回归1709通过/1失败/3跳过，另455 subtests通过；契约checkpoint与当前gitlink不匹配，T-Q10转失败。工具进程自然结束，尚未修复，不放宽校验。最新测试台账12/5/13/37/2/1，详test-cases及progress E105。
+
 ## R126 GREEN-C 正式实现准入（2026-10-02）
 
 上一goal回合progress：Root23f83b87提交实际纯/资源RED与覆盖缺口。原owner R125三resource补强已冻结002b2bd8，Root核相对438freeze只三resource+新增contract node四路径变化，无source越界；contract ACK93e6ec92已把错snapshot5字段校为已批准4字段。Root真实新资源manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-1nv27w55/manifest.json` SHA dddcab3913c58d1f1f92278b099bc07129fcf8f55c1e1aedf36812a0dcb3bfd2：9selected0pass/9明确assert fail/0skip/0cancel，缺process/table/route首RED，无undefined TypeError，438实际源保持、child自然终态/forced空、精确库absent/Redismarker删/空。并发/GC/页间/重试深层因前置未达，不假称执行。既定D0不再重开。
@@ -11,6 +21,10 @@ R126-GREEN-C / T-Q02/Q12、T-C09、T-A05（原BFF唯一writer bff_http5_consumer
 Root评审裁决：R125复审把合法kind变化称P1与现TECHNICAL_DESIGN第38行已批准规则冲突，Root不采纳这个新增不变量；Agent机器无跨事件kindimmutability即合法contiguoussource整个安全value替换，不发明phase/status/kind/segment单向约束。保当前页间测试kind变化+新preflight覆盖。GC P2精确provenance正控采纳，在现resource测试补A compact归零、B START/source cursor/digest及新activity来源仍唯一；非新架构。RR/faultfinally错误保真且有界，不吞未知cleanup。
 
 验证：writer只准Node22 format/lint/typecheck/生成check/contract/schema/architecture/完整default/build，实际日志与首failure保留；禁止PG/Redis/provider/服务/Git。资源RED/GREEN及真实RR/GC/恢复均由Root冻结后串行运行；报精确修改文件与hash/实际pass-fail-skip/阶段残余并停写。不得把缺字段转green而跳过后续深层断言；正式public7不可变发布要Root完整resource和独立审通过，随后才能Web consumer与浏览器。
+
+R126-GREEN-C-INFLIGHT-REVIEW（非最终放行）：Root已实核相对R126 RED冻结已有canonical SQL/投影helper/注册及旧cache删除等十路径变化，唯一source writer仍bff_http5_consumer_owner。原agent4_execution_owner只读SQL/事务/GC风险，原four_owner_fixes_review_r31只读public契约/typed输入/授权/快照映射风险；二者只查看各自当前已有实现，绑定所读文件hash并注明changing-tree，不跑资源/测试/Git或写repo。不再复议已批准D0，不补空架构；代码尚未出现的面标实施中而非P1。发现实际既有新代码缺陷可给Root/原writer提前修，不把中途审当最终通过。Root保留集成/真实资源关键路径；最终冻结后另审。
+
+R126-GREEN-C-ARCH-ACK（Root已核单条断点）：worker完整default实际737total/735pass/1fail/1既定PGschema skip，唯一现test/architecture.test.ts新公开版本仍断言6.0.0。窄追加允许该文件只把这个当前版本断言改7.0.0，保其余Conversation scope/resource授权/架构控制；不修改门禁或保旧alias。Root当前看原日志未把worker结果当独立通过，最终source冻结后自跑full与资源。
 
 ## R125 当前真实RED与覆盖补强（2026-10-02）
 
