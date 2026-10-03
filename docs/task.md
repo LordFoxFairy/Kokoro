@@ -1,3 +1,29 @@
+## R149 收口与下一行动
+
+Root R149治理门：`python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q` 原67150自然exit0、298pass/3.11s，日志`/tmp/kokoro-r149-ledger-governance.log`；仅Root工具/台账门，不关闭当前用户加载、signout根因或业务旅程。
+
+- 用户首屏：Root持有T-U04关键路径，状态仍失败/待定位。禁止把public HTTP/CSP、fixture49或历史新页截图当用户页PASS；等待原页一次刷新反馈，下一取同页session/hydration证据，无证据不猜改生产闸。
+- Web agent4_lifecycle_review测试诊断e6770ec1已freeze、Root49/0skip与独立0；仅测试fixture，未发布。原signout间歇500保持开放；UI报告只读候选不可把未测heartbeat/timer当事实。
+- BFF agent_chat_contract_gate C9 db4502b8已freeze、Root8真实HTTP/PG与独立0；原soft-blocker观测失败及漏选filter保留。Project DELETE/Run完整交错/消费者尚待验。
+- Storage storage_project_lifecycle_owner只读诊断Root36594完成；外部seed a4ab8ce4/harness93084f64，ownedDB已删/源hash相同。宽谓词与原helper两key冲突真实测出，wrapper重试成功；不自动加索引、增加retry或降隔离，先依据八plan与SIReadLock收敛D0，再Root放行下一仓内切片。
+- Root独占Git/四台账/资源；本轮业务候选及gitlink不暂存，Billing/uv.lock任务外保护。完整Wave0–7/70组/支付最后不变。
+
+### R149 Web官方request-error诊断准入（测试fixture，不改生产）
+
+Root已读e9578d36方案及本地Next16.2正式Instrumentation类型/加载入口，采纳现OIDC systemfile内isolatedNext临时src/instrumentation.ts onRequestError，淘汰补丁Next依赖/生产JSON fallback/抹500。唯一repo writer仍agent4_lifecycle_review，写集仅该现test。hook同步有限/全部catch，不改变响应，输出固定prefix+闭集class/code/route/method/context及最多8frame类别+数字line，不输出原stack/message/path/query/cookie/body/secret。现before/after五manifest元数据各750ms且变化枚举；先不新读Redis/改stage/生产状态。保现精确signout单次、60s/12s/原assert。可新增同fixture仅一条系统诊断自测，以临时route有意抛syntheticJSON错误证明hook观测和secret marker不出闭集，非单元/mock；不得新仓内文件/模块。C2首次compile交错先仅/tmp设计，Root定具体指令后授权，不先改原HappyPath。静态freeze后Root精确signout/diagnostic与完整门实际取证；诊断不作根治或用户页通过。
+
+## R149 并行系统验收切片（2026-10-03）
+
+上一goal turn为progress：Root37008ee1已发布台账，真实Storage原RED多项修复及串行699/工程门通过，另查证runner flag未生效；保并行P2034与Websignout500/用户页未闭环。原32044本轮原句柄亲poll仍live，不重启共享服务。
+
+|任务|Owner/Agent/基线/写集|目标、依赖与验收|
+|---|---|---|
+|R149-S-PREDICATE|Storage原storage_project_lifecycle_owner；main2f855816+冻结候选helper323f468/uploads6626cb8/arch18b071；只读源码/Schema/三D0，先仅/tmp方案和自有seed SQL交付，无项目写权|精确四table global objectKey索引/业务字段，足量hit/miss plan与Serializable两个不同key事务冲突/attempt/xid的系统级诊断设计，区分真实wide predicate风险与测试runner并行，不猜indexes唯一根因。不得改Schema/retry/isolation/断言或运行PG。Root亲执行fresh owned库正式installer/ANALYZE/EXPLAIN与barrier；测出真实RED后另裁D0/index准入。|
+|R149-W-SIGNOUT|Web原agent4_lifecycle_review；main49721a5+冻结52211a7测试；仅/tmp诊断方案，现OIDC systemfile后继须Root准入|复用pending refresh signout的实际500与有效Next dev路径；定位安全stack source-category/manifest前后metadata的最小缝隙和高负载可重复组合，不注入retry/skip、改60s/12s或猜生产修复。先只读isolatedNext、Next JSON/cache机制和已失败log；Root按实际证据再准test诊断。|
+|R149-BFF-MOVE-C9|BFF原agent_chat_contract_gate；maina68cbe55+冻repo0329c7ae/route dfb0eab0/测试2916bb7a；唯一写仅test/chat-facts.integration.mjs|沿已审Move D0补正式Message admission↔Move真PG/HTTP双顺序、可确定同key双请求winner重读与Run/stream不变。当前Project DELETE未实现，不伪造接口/tombstone证明；不得改契约/source/Schema。测试先静态冻结，Root自己真实资源执行，独立审。所有原6assert保留，未补全矩阵不发布或转T-C05。|
+
+Root独占四台账/Git/真实资源；各仓同一writer，原uv.lock/Billing任务外内容保护。完整Wave0–7/70组/支付最后不缩小，用户原页仍优先取证，不凭fixture转绿。
+
 R148 runner隔离最终实证：原16615已消费终态exit0，sourcehashsame/ownDBabsent、原63＋串行699/0skip/43.69s及全部工程/build通过，manifest ez2olkmb。原并行P2034继续保留未消除，下一EXPLAIN/attempt隔离设计，不用串行绿色发布或称全并发闭环。Websignout500及用户页loading仍关键路径开放。
 
 ### R148 Root runner参数真实偏差及隔离复验

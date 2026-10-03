@@ -1,3 +1,18 @@
+## R149 / 系统测试执行与未关闭的用户首屏（2026-10-03）
+
+Root R149治理门：`python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q` 原67150自然exit0、298pass/3.11s，日志`/tmp/kokoro-r149-ledger-governance.log`；仅Root工具/台账门，不关闭当前用户加载、signout根因或业务旅程。
+
+本增补属于原70组，不新建计划中心、不改变编号/汇总。状态仍11通过/6失败/14待复测/38未验/0业务待决/1支付后置。
+
+| 用例ID/标题 | 预置条件与测试步骤 | 预期结果 | 优先级/测试类型 | 实际执行结果 |
+|---|---|---|---|---|
+| T-U04/R149 原用户工作区加载 | 现3310及用户原conv_ffd7/tab21；读取原页、核同源脚本/CSP及runtime source，用户原页刷新后取session/hydration时间线 | 有界进入正文与可操作输入框；明确失败可恢复，不永久空壳；以同用户同页证据判定 | P0 / 主链路、异常、状态机、系统交互 | 读取20s超时，未得用户DOM/session/heartbeat。public45JS200、CSP56nonce匹配、7copy源相同只排局部。仍失败/根因未定，用户刷新反馈未得 |
+| T-U04/R149 认证cold/reload及安全诊断 | 真实Next/Chromium/Redis独占origin fixture、严格IAM/BFF HTTP doubles；执行49系统行为，包括登录、cold/reload12s、pending refresh退出与synthetic onRequestError | 正式断言保持；超时/故障诊断有限且不泄露；不将fixture当真实所有owner | P0 / 主链路、边界、异常、状态机 | 初49=48pass/1新fixture隐私失败；修fixture不弱断言，精确2pass/47filtered；最终Root57758 49pass/0skip74.89s，e6770ec1 hash相同、独立0。生产未修，历史signout500/用户页不关闭 |
+| T-C05/R149 Message↔Move和同key并发 | 真BFF HTTP+fresh owner PG；精确source Project与Conversation锁链控制双顺序；两同key请求通过真实传递阻塞链重放 | 下一admission新Project；两200同body、唯一receipt；历史Message/Run/AG-UI/Share不改；IAM逐请求 | P0 / 主链路、竞态、状态机 | 漏选filter只6；完整初8=7pass1fixture等待图失败；修观测后Root34202 8pass/0skip13.903s。manifest eq4wf02v DBabsent/hashsame/Rediskeys同，独立0；Delete/消费者及整体组仍未验 |
+| T-C05/R149 Storage跨key读谓词 | PG18.4 fresh正式安装，120k合法owner facts+ANALYZE；8 hit/miss自然plan；两个不同key执行原helper raw Serializable→生产wrapper→精确cleanup | 区分索引访问、SSI锁、冲突分类、实际callback重进；成功只说明本诊断，不降低隔离/加retry掩盖 | P0 / 边界、并发、异常恢复 | 两seed fixture错保留非产品RED。Root36594最终exit0/源same/DBabsent；Upload IndexScan170/167blocks，另三Seq；四处relation SIReadLock，raw1 classified冲突（PrismaCode null），wrapperA2/B1新xid两commit。原全门漏P2034唯一因果/索引根治仍未证 |
+
+退出门：T-U04必须原用户同页实际登录/工作区正文/输入/刷新均可操作且loading有界；诊断自测、fixture49及public资源200都不满足该门。BFF/Storage维持原owner发布、消费者pin和完整用户旅程门，Billing正式费用与S3物理终态另待验。
+
 ### R148 T-F03 补充执行证据（不变更原组状态）
 
 原全门意图串行但argv双--未生效，真实并行698/1证据保留。修仓外验证argv后Root16615在新自有PG执行原filters、原全部assert：63focused＋73file699pass/0skip/43.69s、installer/drift/contract/format/lint/type/build0，hash相同/自有库absent。只关闭串行owner工程门；此前并行P2034、全球objectKey谓词访问路径/真实attempt及物理S3仍未验，T-F03不据此转整体通过。Web/User原页故障不受影响。

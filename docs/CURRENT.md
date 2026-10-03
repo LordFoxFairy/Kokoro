@@ -1,3 +1,17 @@
+## R149 当前用户首屏仍未验收；并行系统切片真实取证（2026-10-03）
+
+Root R149治理门：`python3 -m pytest scripts/tests/test_repository_topology.py scripts/tests/test_ten_repository_standard.py -q` 原67150自然exit0、298pass/3.11s，日志`/tmp/kokoro-r149-ledger-governance.log`；仅Root工具/台账门，不关闭当前用户加载、signout根因或业务旅程。
+
+用户原tab21/conv_ffd7永久“正在加载工作区”仍是P0未闭环。本轮读取该页20s超时并触发控制内核reset，未取得DOM、该用户session请求、hydration或heartbeat证据；原截图不能被其他fixture/新页通过替代。native宿主观察被工具拒绝，未换控制机制/造第三页/重启服务。3310 app200、45JS200、CSP56script nonce全部匹配与七个关键runtime复制源和checkout逐字节相同，只排查公共资源/CSP/复制漂移，不证明用户渲染健康。已请求用户在原页刷新一次反馈；未得到新反馈时，不宣称恢复。唯一原32044/launcher45606/Web46036保留。
+
+Web仅现OIDC system测试诊断候选e6770ec1：Root首49为48pass/1新synthetic fixture失败（74.79s，Next源码excerpt包含literal marker），环境注入修fixture且隐私断言不削弱；Root56072精确2pass/47名称过滤（15.73s），Root57758最终49pass/0skip（74.89s）与冻结hash相同，独立6c89fec8 0P0/P1/P2。官方onRequestError、ENOENT变化语义、有界闭集诊断已验证；生产源未修改，历史signout500未复现/根因未定，当前用户页未验收。完整2356/build与发布未执行，不以49取代全部门。
+
+BFF C9 Root首filter只选旧6，纠正filter后真实8为7pass/1同key soft-blocker fixture失败；观测真实传递等待链后Root34202八项8pass/0skip（13.903s），manifest eq4wf02v ownedDB absent/sourcehashsame/Rediskeys同。Message先/Move先、下一admission新Project、同key两200/一receipt/历史Run+AG-UI+Share不改有证；独立ef201e00 0。测试db4502b8，production repo0329c7ae/route dfb0eab0不改。Project DELETE与消费者完整旅程仍未验，producer未发布。
+
+Storage只诊断不改schema：两个seed错误（漏应用生成NOTNULL id、UNION enum解为text）均为fixture失败、全事务回滚/ownedDB亲删，不冒business RED。第三Root36594正式安装/120k合法facts/ANALYZE/八自然EXPLAIN/两连接SSI/cleanup全exit0，manifest cipkswx4 ownedDB absent/sourcehashsame。PG18.4：Upload tenant-leading IndexScan仍170/167blocks；Blob/Retirement/Cleanup hit/miss均SeqScan（20k/20k/40k）。不同key原helper raw一拒绝，closed production conflict classifier=true但PrismaCode=null，不冒P2034；wrapper A2/B1新xid两者commit。实测四处relation级SIReadLock；证明本规模真实宽谓词压力与一次有界恢复，不能证明原完整门漏P2034唯一因果或索引必然消除页gap冲突。Schema/D0改动尚未准入，S3/发布仍未验。
+
+原70组仍11通过/6失败/14待复测/38未验/0待业务决策/1支付后置；原编号suffix831a2160与uv.lock f7e1c30d保留。Wave0–7 active，优先取得原用户页会话/渲染时间线；独立owner切片不代替产品闭环。
+
 ## R148 补充：验证参数偏差已纠正，串行owner完整通过（2026-10-03）
 
 Root查原完整命令实际含`-- --no-file-parallelism`；原owner本地Vitest5/CAC源码报告4c23bb78确证独立--后的选项未被解析，原699失败实际文件并行，不是意图中的串行隔离。Root仅修仓外runner的真实argv为pnpm exec vitest run原filters --no-file-parallelism，不改任何业务源/断言/隔离级别/重试预算。
