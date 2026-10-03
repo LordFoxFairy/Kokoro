@@ -1,3 +1,14 @@
+## R145 当前界面窄验与业务矩阵纠偏（2026-10-03）
+
+当前70组11通过/6失败/14待复测/38未验/0业务待决/1支付后置保持，未把单次正常登录/回答换算整组通过。编号计划suffix原bytes保持。
+
+|关联组/子路径|实际操作与结果|证据/限制|
+|---|---|---|
+|T-L01 当前正常首方登录|正式/login，账号密码提交，自动callback→/app，工作区退出加载；未显示内部scope consent或整页连接/重试设计|Root受管32044及当前IAB tab21；未验第三方/prompt/退出/旧账号恢复，不关闭整组|
+|T-C06 新会话真实回答/终态刷新|实际发送一个数学问题，queued→非空KOKORO_R145_E2E回答、Stop0；刷新前后记录完整相等|截图/tmp/kokoro-r145-login-chat-refresh.png SHA c8781b03...；qwen3:8b，不是5.6-luna/流式中途恢复/正式账本/全能力|
+|T-C05 Storage owner矩阵|Root31616/93381分别暴露非法limit与错误receipt零行期待，纠正测试协议不改业务源码；两正式测试最终freeze，72179项目6/6、Upload9/9、全门659/0skip通过，发布Storage2f855816；BFF项目删除和成员Conversation资源释放未实现|不是产品RED或ProjectDELETE闭环；含成功删除其他scope文件保全、异常业务回滚/幂等/8入口封锁；关联文件为project-scope-release和upload-reference-gate，sign/complete请求交错不冒称持锁等待|
+|T-B07 失败/取消费用|用户再次确认仅结算核实消耗、释放剩余预占；unknown待核实，Billing权威|仅规则对齐与Agent已发布offline artifact前置；实际非零扣款/释放/流水仍未验|
+
 ## R145 新实证不冒充完整组通过（2026-10-03）
 
 完整70组仍11通过/6失败/14待复测/38未验/0待业务决策/1支付后置。T-B07业务规则已确认，Agent离线usage42与安装正负门通过只作为其前置；真实provider→Billing预占/按核实消耗结算/剩余释放/unknown待核实/流水仍未验。IAM owner实际12个节点通过与工程938通过不替代T-L01当前浏览器callback/app。Storage真实PG+Connect及installer完整194通过，新增晚PUT durable遗失P0真实RED保留，T-C05未验、物理GC不称完成。原编号计划全部bytes保留。

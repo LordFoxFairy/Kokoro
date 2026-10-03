@@ -1,3 +1,15 @@
+### R145 当前有效任务与后继边界（2026-10-03）
+
+|任务|Owner / Agent / 模式 / 基线 / 文件范围|依赖、验收与当前状态|
+|---|---|---|
+|R145-ROOT-INTEGRATE|Root唯一writer/Git；mainabb4493c；四既有台账、consumer-inventory.json、已发布Storage gitlink|Storage2f855816远端一致/clean；仅7commit引用+6已发布blob digest，不动consumer pin、13broken边/checkpoint。Root171pass/20subtests及topology/checkpoint0；compat1仅13declaredbroken；独立范围审通过，精确提交。首inventory计数期待12实际13是Root断言错误、写入前失败，未当产品RED。|
+|R145-ROOT-IAB|Root；唯一32044/PID45606/Web46036；当前tab21|正规登录/callback/app、真实qwen3:8b回答和终态刷新已窄验；完整登录异常/旧会话/中途恢复/正式Billing能力待验。旧tab20关闭策略拒绝不冒清理。|
+|R145-S-MATRIX / T-C05前置|Storage原owner冻交；main2f855816；精确56文件已发布|Root72179全门659/0skip、真实项目6/6、Upload9/9、schema/contract/build通过；親库absent；generator/normalize逐字节复验。只producer，不称T-C05/真实S3 GC。|
+|R145-BFF-D0-RECHECK|agent4_lifecycle_review只读；BFFmaina68cbe55+三设计dirty，TECHb732cc3f/APId3b4a493/DATA8d873c07|只读重审已交：新增P0/P1=0、原2P1继续有效，三设计准确保留；只可pending交接，不授权源码。BFF writer停，下一Storage owner。|
+|R145-STORAGE-CONVERSATION-CUT|原storage_project_lifecycle_owner只读；Storagemain2f855816 clean；Root地图/手册/Storage三设计/BFF三设计|只读放置表/切片已交：Conversation可复用现lifecycle/cleanup；ProjectArtifact remediation额外RPC/表只是候选未批准，先比较最小安全恢复。无文件/Git/数据修改，Root审后才授权设计writer。|
+
+Root独占台账/集成；两独立只读工作面并行，同仓单writer。T-B07核实消耗收费/unknown待核实已冻结，正式非零账本未验。完整70组和Wave0–7不缩、支付最后，无重复计划中心。
+
 ### R145 发布与真实RED后继
 
 IAM已精确8path发布main0537b2d033d273f0ef7f5017502ba20e8571aba8，remote一致/clean；独立8path审6d9959ff为0，Root938工程/12真实owner节点通过。Root接线源guard75/103subtests通过；主组合只更换published IAM/Agent gitlink和37库存leaf（31+2 Agent，3+1 IAM），不变13broken/contract/checkpoints。原唯一98977下一由Root有序stop/cleanup再启动正式新组，未提前声称页面用户成功。

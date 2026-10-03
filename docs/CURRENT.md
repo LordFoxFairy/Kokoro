@@ -1,3 +1,13 @@
+## R145 最新收口事实（2026-10-03）
+
+Storage项目资源逻辑释放已发布main `2f855816347b56b3b8dd594366b001548441e0dc`，远端一致/clean。Root冻结后全门72files/659tests/0skip；真实PG/Connect项目6/6、Upload9/9，installer/schema/drift、format/lint/typecheck/HTTP contract/build均通过。独立56路径审0P0/P1；成功删除保留其他项目/个人/会话scope同摘要文件，重复请求稳定，异常Artifact完整业务事务回滚，8入口释放后禁止写入。正式generator→normalize回放与最终56文件逐字节一致，无手改generated。
+
+这是Storage producer切片，不是BFF Project DELETE、成员会话全部资源、真实S3物理GC或T-C05整组通过。BFF三设计面仍有2P1：成员Conversation scope资源释放缺正式owner闭环；异常ProjectArtifact失败的可恢复路径未收敛。文档保留阻塞，未授权schema/contract/source；下一步先补Storage owner契约与恢复设计，不把202当跨owner删除已完成。
+
+当前IAB正规账号密码→callback/app→一次真实qwen3:8b回答→终态刷新正文不变，无内部scope consent或可见登录中转页。仅新测试账号/会话窄证据；Skills空、Storage未接运行组合、正式Billing与外部5.6-luna未验，不换算完整组通过。唯一32044保留，不重复启动。旧tab20关闭策略拒绝未冒称清理，tab21保留结果。
+
+T-B07再次确认：failed/cancelled只结算核实实际用量，释放确认未用预占；unknown持久待核实/对账，不按零或整笔释放。Billing唯一计价与账本owner，前端只展示。70组仍11通过/6失败/14待复测/38未验/0业务待决/1支付后置，Wave0–7 active。Billing原候选、Root uv.lock、BFF未交接设计排除提交。
+
 ## R145 离线用量证据发布与真实owner修复（2026-10-03）
 
 Agent main2d2ad9bb4d261bee6c71e35f0d68f419a785bf9c已Root精确19文件提交并push，工作树clean；42usage、2174pure/301资源未选/0skip、全部工程门及仓外wheel checker正负门通过；独立19path审0。此为严格知识/来源/revision离线artifact，不是runtime/provider/Billing/真实非零费用链。T-B07保持未验，失败/取消仅结算已核实消耗、释放其余可确认未用预占，unknown持久待核实，前端不计价。

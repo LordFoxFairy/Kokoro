@@ -1,3 +1,31 @@
+### R145 Storage producer发布与BFF真实剩余门（2026-10-03）
+
+Root当前组合门实际171pass/20subtests/exit0（72.01s），日志 `/tmp/kokoro-r145-storage-root-composition-gates-v2.log` SHA33bfad416218a14941b5773c462e0f8e9946c0d869c696898dd4d98e9d0ffb1b；topology/checkpoint各exit0，compatibility实际exit1/16edges/13declaredbroken/0额外violations，未激活边或放宽门禁。56published Storage blobs与Root normalized manifest逐一一致；原编号台账从标题起完整suffix对HEAD字节相同。
+
+Root后继复核：BFF最新只读重审新增P0/P1=0，原2P1继续有效；报告 `/tmp/kokoro-r145-bff-project-d0-review.md` 更新SHA1d1f771b976054a27c3aaf2fb24284c1c2f073c211177ff607a4e34ce8d3a0d3（原审SHA为历史版本）。Storage原owner只读确认conversation Artifact为正式可达事实、现project-only fence无覆盖；推荐具名Conversation释放复用现lifecycle/cleanup owner，BFF本地事务封存成员集合后投N+1命令、全logical ACK才完成。ProjectArtifact remediation新增RPC/表仅候选未批准，Root要求先比较最小安全恢复，防技术扩面；未新文件、Schema、源码或共享数据。首Root pytest错用不存在test_contract_inventory.py exit4/0tests，保原log；纠正现test_contract_compatibility.py后同门重跑。首checkpoint漏--expected usage exit2，不当成功；补既有w1e-iam07-bff-pin后重新验证。
+
+
+- Storage精确56path commit/push `2f855816347b56b3b8dd594366b001548441e0dc`，原36262自然exit0，远端main一致/clean。Root72179完整72files/659tests/0skip及工程门0；项目真实PG/Connect6/6、Upload9/9；owned数据库absent。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r145-storage-matrix-final-g0vcu2_5/manifest.json` SHAe183038f4b7781ca48a5c22b736573aee084f0cb64db39059339790afaf131da；日志 `/tmp/kokoro-r145-storage-release-root-final.log`。
+- 成功释放其他scope同digest保全与两Asset/单Blob幂等真实补验；异常Artifact业务全回滚且同command可重试，claimed receipt非零。sign/complete双连接请求交错，不冒称持SQL锁等待已测。31616/93381两fixture/oracle失败留存，不冒产品RED。
+- 独立56路径审 `/tmp/kokoro-r145-storage-logical-release-review.md` SHA6df125cda36972820cb98add696f538f4417401955403203fb3c3fb9661486d3；矩阵审 `/tmp/kokoro-r145-storage-matrix-review.md` SHA70feba33dcf5f72785ed66796db0fbe86a8d57d80a7757f89994af03b550c47c，0P0/P1。Root21865正规generator/normalize回放56bytes一致；根清单 `/tmp/kokoro-r145-storage-root-normalized-final.json` SHAcc6c9b80dfc4f78e189e4a97d946988b4d46866198ab01c7ff54dfba542485d2。55019 wrapper有manifest assert失败不当发布门。
+- BFF三目标设计未提交/未授源码，独立审 `/tmp/kokoro-r145-bff-project-d0-review.md` SHA7c7339c3c2217e69fe14c9f5d3b359b79ff957e86f4c3e8b00adcfdad7d46ecf，0P0/2P1：成员Conversation资源释放、异常ProjectArtifact可恢复owner路径。三文档明确阻塞不当关闭；并行只读重审/Storage后继切片调查，T-C05未验。
+- IAB正规登录/callback/app、真实qwen3:8b回答和刷新正文一致窄验；截图 `/tmp/kokoro-r145-login-chat-refresh.png` SHAc8781b0399f74119279a581a006e85457281747f19fba2c54b9aeabf3c8566ec。非完整登录/能力/费用通过；Root90540纯门89pass/20subtests/exit0不外推全仓。
+- T-B07核实消耗结算、确认未用释放、unknown待核实，前端不计价，正式非零账本未验。70组11/6/14/38/0/1、编号suffix c6cb3b64不变；唯一32044，不重启PG/Redis；原Billing/uv.lock保留。Root inventory首断言期待12实际13在write前失败，是工具计数错误非产品RED，修正后范围7refs/6hash，其余字节不变。
+
+## R145 当前真实界面已走到回答与刷新（2026-10-03）
+
+Root唯一新32044仍live，PID45606/Web46036，原98977已exit0 owned cleanup。CUA旧tab20为重启前签名URL的连接错误页，goto/close均因data URL策略拒绝；未绕过浏览器保护，按同browser3 stale recovery只新建tab21。一次初创建var未声明导致绑定报错，但tab已实际创建，随后按21绑定，无重复新页。私有测试凭据仅局部读入并填本地既定登录、未打印，提交后清变量。正式/login→IAM账号密码→callback/app→工作区非loading，未scope consent、未额外grant。当前UI发“1+1…KOKORO_R145_E2E”，从queued到非空“1+1等于2KOKORO_R145_E2E”、停止按钮消失；刷新前后对话记录字符串相同、Stop0。截图/tmp/kokoro-r145-login-chat-refresh.png SHA c8781b0399f74119279a581a006e85457281747f19fba2c54b9aeabf3c8566ec，tab21 markDeliverable。只qwen3:8b/空Skills/Storage未配置/Billing未接，不冒external5.6或费用通过，旧用户会话仍待验。
+
+Storage新增matrix Root31616亲建随机库正规installer0：Project5项4pass/1fail（ListAssets{}默认limit0导致InvalidArgument，非scope产品RED）、upload8pass；93381窄Project5项4pass/1fail（期待整个claim receipt消失，与现acquire/release协议矛盾，非产品RED）。两manifest分别位于kokoro-r145-storage-business-e4_14i1l和kokoro-r145-storage-project-v2-o5ra_7ms，均前后hash不变、亲删库absence true。Root读Claims.acquire/execute/CommandsStore确认失败receipt保claimed且lease到期，不伪completed；仅修测试exact identity1、SQL NULL、expired和same-command再次业务失败，其他业务回滚全保。两测试最终冻30287ef1/6934a077，真PG/Connect及工程全门22190在途；review agent4_lifecycle_review。A仅双连接请求barrier，不把已提交store暂停冒充持锁暂停；实际证据待自然终态。
+
+BFF原只读agent_chat_contract_gate交c62fdc2f cut：无ProjectDELETE/Move、现genericreceipt非原子、缺producer/outbox/任务旧contextfence。Root授权仅现三D0目标方案，明确canonicalID/tombstone、本地202ACK、owner outbox与逻辑/物理区别；用户ChatGPT删除与核实费用规则不改。Task关联推荐仍可调整、不阻塞其他能力；源码/契约生成/SQL/测试未放行，Storage在途不pin。四台账与70组11/6/14/38/0/1沿原，完整goal active。
+
+## R145 发布后门与Storage实际全门（2026-10-03）
+
+Root mainabb4493cdae0dd23bce521877d6b19475a1b609b已push，Agent2d2ad9b/IAM0537b2d正式gitlink与37库存leaf闭合；post topology/checkpoint实际0，175pure/103subtests通过，compat实际1但只有13declaredbroken/0extra。原98977自有组已通过受管stop自然exit0、owned资源回收，不重置共享PG/Redis。Root按新正式接线启动唯一新运行组，ready/浏览器尚待验，不把启动说成登录已通。
+
+Storage terminal-upload第二P0 Root真Connect RED1fail2pass（queued0非2），窄修后project3+object9全部12pass；source静态复审两个P0关闭，完整release↔sign/complete/Artifactrollback/跨scope/8入口矩阵仍待。Root73506正规owned installer/schema catalog/drift、contract/HTTP零漂移、format/lint/types/schema validate/build全部0，真PG配置下72files/654tests0skip通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r145-storage-final-9vkxr487/manifest.json` SHAb3c579fdc2e4af51fcea8328f7540619c1df8c987834ebbdd166053397399302，親建库最终absent。仅当前覆盖通过，候选未发布、BFF不提前消费，不宣称T-C05/全产品/真实S3通过。
+
 ### R145 Root组合门实际结果
 
 Root纯工具首次35775在gitlink暂存前启动，1fail/174pass/103subtests（49.75s）：旧Agent gitlink与新published evidence不一致，非业务回归，不降低门禁。Root精确stage已发布Agent/IAM gitlink后，同175suite35734自然exit0：175pass/103subtests（53.33s），日志`/tmp/kokoro-r145-root-formal-tools-staged.log` SHAc06d27976f90bd3e527af6ec6bda86dd77b26007e63155224991b755f2629ddc；checkpoint/topology实际exit0，原13declaredbroken不改。Billing/Storage候选/uv.lock未暂存。
