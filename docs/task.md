@@ -1,3 +1,31 @@
+## R123 BFF正式HTTP5消费与安全过程恢复接续（2026-10-02）
+
+前置现已成立：Agent main79bf98c5aa63b9bace207afdf42d8c7aefee4fe8已Root原子59路径提交、非force推送，远端refs/heads/main实核同SHA；OpenAPI HTTP5 SHA bca8e4f4fd613e4325f594266893d5b089168cf14f2ad7a7df03f3f116af85f2。Root E97/E98当前installed资源限定通过，最终包211entries严格同已测runtime；完整用户/真实外部资源仍未闭环。
+
+Root总边界沿R90已批准闭集：Agent事实通过正式owner artifact进入BFF窄client；BFF唯一durable AG-UI ledger/compact安全过程projection owner。完整Todo替换、真实Skill phase、安全tool/subagent、HITL/delivery按Run身份入现同source/frame/HWM事务；授权snapshot必须同RR client返回Message/head/完整安全过程/同opaque watermark。禁止Redis/浏览器缓存替事实、从0无限replay、raw args/results/hidden reasoning、跨owner SQL、旧新协议双读/alias。Web只消费之后正式BFF contract，不直读Agent。
+
+|任务|角色/基线/允许范围|完成与阶段门|
+|---|---|---|
+|R123-BFF-HTTP5-D0 / T-C09、T-A01–06|原WIN02现阶段未找到可复用活跃app句柄（list_threads50未列出），续接负责人由Root命名原生bff_http5_consumer_owner，gpt-5.6-sol。BFF main02276b623f8390288fbf86d6efaa0f5152256afa起点clean；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md现顶部。Root审查/资源/Git，其他production/test/机器contract/schema/generated/lock/Root文档只读|读AGENTS/map/TS/SQL手册及owner发布5机器artifact，按Root上述边界把三设计当前态/目标态对齐并列§8放置表、具体后继文件集/contract/SQL/事务/失败恢复/生成准入/命令。比较现run-scoped projection扩展与单独安全过程projection，推荐具名最小方案供Root裁决；仅D0不得实施/改schema/生成/跑资源。不把文档叫闭环。冻结交四路径hash，随后Root裁决→真实tests-only RED→实施→当前纯/资源→正式BFF发布→Web|
+
+本片延续现R90/R119批准能力，不新owner/模块/进程/依赖，不新计划中心。独立只读审与Root包/发布审可并行；同BFF仅一writer，Root不抢写。支付仍最后，全Wave0–7不缩小。
+
+## R122 当前安装态资源与正式候选接续（2026-10-02）
+
+上一goal回合为progress：当前1960纯门与新包四布局64负向/219步骤实证已整理提交Root b728d44d；全Wave0–7继续。Root保留关键路径资源执行/审查/Git，不重跑已关闭纯门代替业务推进。
+
+|任务|角色/基线/允许范围|依赖与完成条件|
+|---|---|---|
+|R122-INSTALLED-DDL / T-Q03、T-Q12|Root独占资源运行。Agent main2653bcc+现371冻结，新wheel4d0e7c8/sdistba2c3876；复用原R116已批准现installer/catalog入口，仅私有/tmp runner/证据。业务源/锁/Git保持|新包仓外-I实际CLI fresh/拒重入/catalog与六漂移rollback；自有精确UUID临时库事前不存在+fsync intent+deadline，child自然终态后精准回收并独立absent；不创建角色/共享reset，不称同应用库全owner组合|
+|R122-INSTALLED-HTTP-PREP / T-Q03、T-A01|agent4_execution_owner：只写唯一/tmp/kokoro-r122-installed-http-runner.py及私有准备说明；Root执行。读AGENTS/map/现Agent三设计/原acceptance，业务仓零writer|沿已核准R121准入，原tests字节私有复制、同锁测试工具、当前wheel installed -I same-process origins/RECORD；Root现credential/精确owned库、重新确空无foreign Redis逻辑DB、串行、现fixture只删登记keys、生命周期终态。仅准备不访问资源/不执行测试。输出Root可审可执行runner、范围及剩余边界|
+|R122-AGENT-FULL-CANDIDATE-READ / T-Q03|four_owner_fixes_review_r31只读现完整候选/提交边界，RootGit。基线main2653bcc+现dirty（含旧HTTP5/Todo/packaging与生命周期），禁止写仓/资源/Git|从现git diff及三设计确认完整自洽发布候选所需文件集、生成与contract身份/跨仓pin依赖；保留任务外路径，不能只stage16混合路径冒充生命周期。给最小自洽提交分组与具体未验阻碍，不重新发明契约或用历史Green替本轮资源|
+
+R122-INSTALLED-DDL交付：Root20455已终态，当前wheel八步安装/真实PG/catalog/六漂移回滚通过，精确owned DB回收与独立absent，源371保持；原cache工具失败日志保留。证据E97，整T-Q03/T-Q12不提升。HTTP准备/候选只读仍沿原任务，不重复资源入口。
+
+R122-INSTALLED-HTTP交付：Root67293已终态，installed HTTP36pass/0skip/151origin与精确DB/Redis/venv清理通过，独立e7d3c34c限定接受；原工具cache失败保留。R122候选只读裁59非build整体，所有资源终态后Root只写四现设计文档R122当前前缀；46325最终重建十门0、211wheel entries全等资源已测包，最终sdist重建也全等，证据E98/E99。现全源码format/lint等七静态门25159终态全部0，独立终审3dd208ba接受，Root原子59路径commit并普通push main79bf98c（远端同SHA），Agent derived build验证清理后clean；已进入R123 BFF四D0任务，正式发布→BFF→Web消费者不跳步。
+
+归属与放置：不创建产品目录/新协议/SQL；Root现已批准安装验证入口的当前包资源复验。private runner是一次性验证包络，不进入Root业务源码/contract中心；真实installed HTTP只关闭所测模块HTTP/PG/Redis分支，console启动、SIGTERM、S3/Docker及用户浏览器另待验。
+
 ## R121 Agent当前冻结纯门与重建安装接续（2026-10-02）
 
 上一goal回合为progress：Root真实E93/E94并提交089c180e，Storage限定工程门验收；完整Wave0–7不缩小。原WIN03 R120 boundary修复turn01a0ff40-d361-7e22-805f-220ca4f48d6e已cursor226 completed/idle，交3a87e6a891b6c9696d2339eb1d56cde489847e8b976150efd1bfcea20c58bbe0。只worker/main内部helper rename与原两test修正；owner另自称“Root独立”报告仅作为worker运行证据，Root此轮必须自有工具/进程重新执行，未执行前不关闭失败。其baseline manifest hash字段转录有误：原Root RED文件实核仍5c48e2976dead4eab0ae2a362c9bd5b8553d460387be00ca7374dce3b07f22f2、日志同值、文件未变，不按错误字段覆盖证据。

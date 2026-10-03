@@ -1,3 +1,11 @@
+## R122 当前实际推进（2026-10-02）
+
+E98：Root currentwheel安装态HTTP文件实际36通过/0失败/0跳过、151已装模块origin/RECORD，六步骤0；精确库回收/Redis空/源371保持/自然终态，独立P0/P1=0/0。E99：停写后只四Agent docs校当前态，最终包十门通过，211全部wheel entries与已测包严格同bytes、最终sdist重建一致；当前候选59非build路径已Root原子提交并普通push Agent main79bf98c5aa63b9bace207afdf42d8c7aefee4fe8，远端refs同SHA，derived build验证后清理、Agent clean；全仓src/tests静态七门亦通过。正式消费者随后推进。供应cache失败及实际HTTPS固定工具下载按实记录，不称零网络。完整Agent/浏览器/用户能力不因此通过。
+
+E97：Root用E96同一当前新wheel真实installed CLI fresh/重复拒绝与canonical catalog/六漂移回滚通过；8实际步骤，21表/206列/216constraints/42indexes，371源保持、child自然终态、私有venv删除、自有临时库精确回收且另连接确认absent。初次私有HOME/cache工具失败保留，未访问PG；新唯一runner显式现cache后通过，不改产品/锁/共享数据。具体manifest/hash和有限资源边界在progress.md，不能当全owner同库组合或HTTP通过。
+
+原agent4_execution_owner与four_owner_fixes_review_r31两终审均限定接受；Root完成Git发布，BFF后继负责人bff_http5_consumer_owner只写四现D0文档，Root保留审查/资源/Git。70组状态仍13通过/0最新失败/13待复测/41未验/2决策/1后置；当前浏览器全能力未验。完整Wave0–7继续active，下一installed HTTP→正式发布/消费者→真实用户旅程，支付最后。
+
 ## R121 当前实际推进（2026-10-02）
 
 Agent新boundary修复原owner已停写，Root自有完整1960纯节点1960pass/0fail/0skip、七静态门0，独立三路径审0/0/0，原inline-ignore失败已复验关闭；T-Q03转待复测，不称完整Agent闭环。新源码实际wheel/sdist重建与完整115 runtime依赖仓外安装十步全0，371源保持/私有venv删除；后继同新artifact四布局/64负向矩阵37215已自然终态：219步骤全0、sdist重建包entry bytes相同、371源保持、私有安装目录删除；installed HTTP/真实backend/SIGTERM/发布消费者仍未验。

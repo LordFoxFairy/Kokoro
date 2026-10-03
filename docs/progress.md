@@ -1,3 +1,41 @@
+## R122 / E98 当前 installed HTTP 真PG/Redis验收（2026-10-02）
+
+原agent4_execution_owner仅准备私有runner，Root补forced-stop必须失败、实际Root/Agent SHA及final source hash，保原测试字节与断言。第一次Root56111止于offline pytest9.0.3缓存缺失（manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122b-installed-http-sd_q4zh1/manifest.json`）；只有venv0/runtime0/tools1，无PG/Redis访问，venv删除/371保持/自然终态。原失败保留，不当HTTP产品失败。
+
+Root按当前Agent uv.lock七测试工具精确HTTPS URL/hash供应至唯一私有wheelhouse，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122-locked-test-tools-oow7q37z/manifest.json` SHAafd8318030c8373dc3219853c2a4ff4c9025c8f5996180483cbb635206657104，7真实下载均hash匹配，未升级/改锁/借源venv。供应是实际HTTPS，不称整轮零网络；后续安装offline/no-index/find-links/require-hashes，资源child OS只准localhost。
+
+Root67293当前唯一runner `/tmp/kokoro-r122c-installed-http-runner.py` SHA4a341fe9d56cc6ed1f096e0a5be7bf02bc45a456e54fa73f1ec22d7c1b4da61c实际自然终态：六步骤全部exit0，installed acceptance **36pass/0fail/0skip/3warnings/15.28s**，36唯一节点setup/call/teardown全部passed。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122c-installed-http-kysozufv/manifest.json` SHAeaaa1b7238a8ac601896cef729696d14d692c2db124ed705a9a8601b58613688；node/origin报告SHA1af79be9febd1310ab9130cb1157175efd12fe870c041cfe10a625397fcd6970。原acceptance/conftest/support逐字私有复制，仓外Python-I同pytest进程collection/finish各151模块来自本次site-packages/RECORD、模块bytes匹配currentwheel4d0e7c8；无源码src回退。
+
+Redis本轮重新实核DB15空/无foreign client后Root保持唯一资源执行；这不是跨进程锁。原fixture只删事前登记keys，unknown不认领；终态空。临时UUID库事前absent/fsync意图/有限admin deadline，child自然终态/forced_stop=[]后精确DROP，自有venv删除、371源保持、cleanup_errors=[]。Root另连接精确库确认absent且Redis15 dbsize0，未共享reset/创建角色。六实际日志逐hash复核；独立终审 `/tmp/kokoro-r122-installed-http-final-review.md` SHAe7d3c34c561dff9cc3283e87e4b0dc33d7aa38420f9b7425a492930ce7a5ed2c，P0/P1=0/0，接受限定安装模块HTTP/PG/Redis；finally异常可能阻断manifest的runner P2边界保留，本次finally完整无缺口。
+
+现36项含PG-only/FakeBus与真实production create_http_server、Todo持久→HTTP分页/replay/身份，不能说36个外部E2E；console配置/JWKS/provider/S3/Docker/SIGTERM、全部safe activity/full interaction混合矩阵、完整retention、正式BFF/Web用户过程仍未验。T-Q03仍待复测、T-A01及其他用户组不提升，70组计数不变。
+
+## R122 / E99 正式候选当前文档与最终包一致性（2026-10-02）
+
+完整候选只读ad5b2a32裁59非build自洽路径，不拆16混合生命周期hunks。所有资源运行终态后，Root唯一writer只现四Agent设计文档加R122当前前缀、旧文本原字节保留，明确当前已实现/已验边界、剩余资源与正式消费者待验；记录 `/tmp/kokoro-r122-agent-current-prefix-root.json`。不改源/机器contract/SQL/依赖/lock。此修正解决CURRENT停在R104提案的P1，不因历史提案直接删安全/一致性设计。
+
+Root46325最终集合真实重建wheel/sdist+完整runtime隔离安装十步全0，manifest `/tmp/kokoro-r122-final-agent-installed-root.json` SHAc5325b12e62a60fbd9f3b2a2601584c0565953f8c6c2f7196ac1c2d04eb9f3af；final wheel840cd57272c455b81f556b322c7622072ee64b0590fbc7694204f35df93b1585、sdistc37042484f417fc4a3af3f97d4fa1a31583bc729ec2ae88b63983812140172db。与已资源测试wheel4d0e7c8全部211 ZIP entry路径/bytes/RECORD严格全等，源码371中变化只有四doc；证据 `/tmp/kokoro-r122-final-wheel-equivalence-root.json` SHAfcdb21394f68b227f0101f1b53ed42cc4a92b4146be242f96c81c64e8b6021b6。包容器SHA不同，不能伪称E97/E98实际运行过840cd572；实际包内容全等证据单独记录，不重跑矩阵冒填结果。
+
+Root又从最终sdist安全私有解包、offline重建wheel，211所有entry与finalwheel字节全等，371源保持/child自然终态；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122-final-sdist-root-i4ui37ii/manifest.json` SHAeea7a91a9885308975f2d1a0e259610b74fea91e979f08d12cdbb9361b8c2f66。只该sdist重建，不冒称把219安装负向重跑一次。候选原子提交/远端发布及消费者仍后继，完整Wave0–7 active。
+
+R122正式owner交付：Root25159最终全仓src/tests format264文件/check/全Pyright/contract/failure生成check/offline lock/diff七门各0，542（含derived build）验证前后bytes保持、owned自然终态，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122-final-agent-static-root-b1tcqk1h/manifest.json` SHAea467fd672d9572e3f1bdb2cb8ffe7256d5f04e4bafb65783e57bb9ca0b310e1；此542保护只指该静态运行时集合，不称542业务source。完整候选独立终审 `/tmp/kokoro-r122-agent-candidate-close-review.md` SHA3dd208ba6bc8a3ab42055dee113f5dc71e2b6a2134255d1d57d884556a01e76f，0/0/0，两P1当前态/installed资源证据关闭。
+
+Root精确59路径allowlist SHA7658f5eb121d81f3bb973bab5362369cafa320e9061733f084f1f3b131f4a4a1，暂存集合严格相等后原子commit **79bf98c5aa63b9bace207afdf42d8c7aefee4fe8**。Root65531 fetch/ancestor check通过后普通push main，无force/新branch，实际远端`refs/heads/main`同SHA；正式Agent HTTP5 owner artifact现可供消费者固定，不是59路径仅生命周期或完整Agent验收。末尾derived build171文件逐个与canonical src bytes全等、无unknown，在所有运行终态后仅清理该untracked builder输出；记录 `/tmp/kokoro-r122-agent-build-cleanup-root.json`，Agent工作树clean，其他owner与Root uv.lock未动。
+
+后续R123-BFF-HTTP5-D0由已命名原生bff_http5_consumer_owner/gpt-5.6-sol负责，仅四现设计文档，已真实spawn；Root只做统一边界与下一门，不抢BFF写入。原WIN02未在现50app线程清单找到可复用句柄，记录负责人更替而不假称续派已不存在live窗口。正式消费者pin/安全过程snapshot/public contract、Web呈现与浏览器用户路径仍开放，70组13/0/13/41/2/1不变，完整Wave0–7 active。
+
+## R122 / E97 当前新包 installed DDL 真资源复验（2026-10-02）
+
+上一goal回合为progress：Root b728d44d收口E95/E96当前实证与统一测试看板；本回合推进未验资源门而非重复纯门。现current wheel4d0e7c8d1455fa395faaebc5e0de123f7131a31d02c413f04266ec67bad78fc3逐一核168包内.py与371冻结源码字节一致，沿现已批准installer/catalog入口复验。
+
+首次私有HOME未显式UV cache，offline runtime install实际annotated-types缺cache而exit1；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122-installed-ddl-2ti1i8z8/manifest.json`及原日志保留。止于安装工具层，无PG创建/Redis访问，owned组终态、venv删除、371源保持；不当产品失败，不覆盖原输出。实际`uv cache dir`核为`/Users/nako/.cache/uv`后，只在新私有runner加明确UV_CACHE_DIR，offline/hash/binary/私有HOME保持，不借源码venv安装、不联网或改锁。
+
+Root20455新唯一路径实际8步骤成功：venv/完整115 runtime安装/wheel/pip check/origin/installed CLI fresh/重复CLI预期exit1拒绝/installed catalog漂移。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122b-installed-ddl-h37o2vz8/manifest.json` SHAd36b7868caaca7805634aff477f9be8e97232daab83898f3aa3dc84600e8abab，verifier=/root、绑定b728d44d及当前wheel。catalog21表/206列/216constraints/42indexes与同canonical参考namespace全等，六recipe漂移全部拒绝、每次transaction rollback后catalog原值、零FK。原重复退出1是预期拒重入，不伪写八exit0。
+
+唯一随机fixtureDB事前精确absent、fsync create intent、所有admin connect/statement/lock有限；child自然PGID终态后仅本库精确DROP，原runner确认absent，Root另连接同现credential再次精确SELECT证实不存在。371源前后同、私有venv删除，资源只现PG/本fixture，没有新应用role/应用库/共享reset，没有Redis/HTTP/provider。仅当前source-wheel venv安装DDL与所列catalog/六漂移范围；不是四安装布局全部DDL、全部数据owner同应用库schema组合或真实HTTP。
+
+R122-INSTALLED-HTTP-PREP与完整候选提交审同时由原agent4_execution_owner/four_owner_fixes_review_r31进行；前者只写私有runner未接触资源，后者只读未改仓，Root独占执行/Git。T-Q03保持待复测、T-Q12保持未验，70组13通过/0最新失败/13待复测/41未验/2决策/1后置不变；完整Wave0–7 active。
+
 ## R121 / E95 Agent边界修复由Root独立复验（2026-10-02）
 
 上一goal回合progress：Root089c180e实际E93/E94并接受Storage工程门。原WIN03 boundary turn01a0ff40-d361-7e22-805f-220ca4f48d6e已cursor226 completed/idle，交/tmp/kokoro-r120-agent-boundary-green-final.json SHA3a87e6a891b6c9696d2339eb1d56cde489847e8b976150efd1bfcea20c58bbe0。其另/tmp/kokoro-r120-agent-pure-root-final.json虽名为Root且自称独立，实际由worker执行，此处只归worker报告；Root本回合另开自有句柄/唯一证据复验。交付baseline sha字段转录错误，原E93 REDmanifest实际SHA5c48e2976dead4eab0ae2a362c9bd5b8553d460387be00ca7374dce3b07f22f2与log bytes未改变，不按错字段覆盖历史。
@@ -4571,3 +4609,6 @@ Agent当前只可称进展：3unit RED（terminal usage失败/晚写usage/错误
 实际三位具名Agent续派：agent4_execution_owner收敛NACK裁决与terminal原子事务RED；web_failure_wire_review为Web唯一writer修空会话虚构queued字段；agent4_lifecycle_review完成BFF FIFO方案后独立审Agent事务。Root负责资源/审查/集成验证；未启动外部worker或更多预览进程。Web代码证据修正：queued目前为未消费字段，不能声称页面已渲染badge；删除死类型与推断，不留兼容optional。BFF方案确认HTTP投递succeeded已放行后继、enqueue覆盖expected、Scheduled绕过FIFO，尚未修复。
 
 Root NACK裁决保留毒化流隔离：同唯一typed finalize的quarantined结果，核持久rejected receipt/fence，私有superseded审计+terminal/cleanup，不追加公开Chat/Redis；正常terminal仍同txn Chat。实际index/DBtimestamp/usage后锁内pure projection。全4发布/数据生命周期/九owner组合门仍未通过，后续按RED→源码→Root重跑，不以并行报告当完成。
+
+R122 Root收口台账治理：实际三工具套件305pass/2.93s/exit0，日志 `/tmp/kokoro-r122-root-close-governance.log` SHAda7d3cf4695e9196ed229ab5e6cdf349f3acda1fc30cec43f3cfc318b8b66cad；70唯一ID/13-0-13-41-2-1和历史归档保持，只说明工具/台账，不关闭E75整体标准报告。Agent79bf98c工作树clean、源码371与最终安装manifest同值，BFF文档writer/其他owner/Root uv.lock保留。
+R122 Root精确组合拓扑检查实际exit0/PASS，日志 `/tmp/kokoro-r122-topology.log` SHAc32d78b4e43a20ce3effe85b8474a7e4f19ef7dd2e2c41636af7614d9fcfbc31；只拓扑，不证明fresh clone/全部main-only/完整运行组合。

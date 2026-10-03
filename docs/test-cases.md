@@ -29,6 +29,10 @@
 
 **待决策：** T-C05项目移动/归档/删除的关联生命周期；T-B07失败/取消/部分输出/未知成本的收费资格。接续优先正式Agent→BFF→Web消费与当前登录/聊天/刷新，再验证项目和独立会话、Home/输入框、Skills/MCP/过程交互、任务/作品，最后正式积分链与支付后置项。
 
+## R122 当前资源测试增量（2026-10-02）
+
+E97：当前新wheel的installed CLI fresh/重复拒绝/catalog及六漂移真实PG回滚通过，Root8实际步骤、21表/206列/216constraints/42indexes，owned库精确回收并另连接确认不存在；源371保持/venv删除/进程终态。初次cache工具失败保留后新runner复验，不当产品缺陷。T-Q03仍待复测，T-Q12全部owner同应用库schema仍未验；不由单包DDL推导整体闭环。E98随后同currentwheel installed HTTP真实36pass/0skip，已装origin与精确清理通过；不是外部provider/E2E或console进程，Agent当前59路径已正式提交/推送79bf98c并远端核验；正式BFF/Web消费者仍未验。
+
 ## R121 当前测试增量（2026-10-02）
 
 E95：Root独立当前1960纯nodes **1960通过/0失败/0跳过**、七静态门0，独立三路径审0/0/0；原E93 inline-ignore失败关闭，T-Q03转待复测，资源/安装HTTP/发布消费者分支仍未验。worker报告命名Root不当Root独立结果，使用本次Root自有manifest/进程证据。
@@ -267,7 +271,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 |---|---|---|---|---|
 | T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验且fa4525e4已发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E95当前Root自有1960纯node1960pass/0fail/0skip、七静态0/独立三路径0，E93 inline-ignore失败关闭；E96新源码wheel/sdist/full115 runtime安装十步0、origin/CLI/371源保持/回收通过，新artifact四布局64负向/219步骤已终态通过；仅此生命周期分支，不扩大至构造/排空/取消或真实S3。 E80配置11项/四门通过、dbaf4f9本地提交，E82 fixture Root真实2 RED→17file/172local GREEN、forced_close0/独立0、2653bcc本地提交；E83当前pure1937pass/0skip/615warning保留。E49具体缺OpenAPI已E76四安装正向布局关闭。E84当前重建source-wheel实际十步安装门通过；E85 installed DDL单venv首次/拒重入/所列目录与六漂移/精确回收通过。E86四布局64负例/219步骤、actual origin/恢复/零远端网络已Root通过；installed HTTP、其他DDL布局/漂移、真实S3/Docker/production close、HTTP5候选发布及消费者未验；其他源/contract/锁候选未混提交，不称完整Agent闭环 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E95当前Root自有1960纯node1960pass/0fail/0skip、七静态0/独立三路径0，E93 inline-ignore失败关闭；E96新源码wheel/sdist/full115 runtime安装十步0、origin/CLI/371源保持/回收通过，新artifact四布局64负向/219步骤已终态通过；E97同当前wheel installed DDL八步骤、fresh/拒重入/catalog/六漂移回滚及精确回收通过；E98当前installed HTTP36pass/0skip/151origin及精确回收通过；E99四doc-only最终重建包211entries与资源已测包严格同bytes、sdist重建一致；仅此生命周期分支，不扩大至构造/排空/取消或真实S3。 E80配置11项/四门通过、dbaf4f9本地提交，E82 fixture Root真实2 RED→17file/172local GREEN、forced_close0/独立0、2653bcc本地提交；E83当前pure1937pass/0skip/615warning保留。E49具体缺OpenAPI已E76四安装正向布局关闭。E84当前重建source-wheel实际十步安装门通过；E85 installed DDL单venv首次/拒重入/所列目录与六漂移/精确回收通过。E86四布局64负例/219步骤、actual origin/恢复/零远端网络已Root通过；installed HTTP、其他DDL布局/漂移、真实S3/Docker/production close、HTTP5候选发布及消费者未验；其他源/contract/锁候选未混提交，不称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E74当前候选source da4675b9/test45bd5286/helper efd2f061，Root99279十纯门exit0，9files119pass/0fail/0skip，197hash保持/owned进程组终态/OS禁网，独立审0/0/0。E72先12fail/2control，连接URL正控缺口已补强并Root复现；只未发布候选纯门，真实PG/Redis/freshschema/runtime/provider/image另未验；E77单owner真实PG fresh 23断言/22表与精确回收已验，Redis/业务HTTP及其他owner组合仍未验 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
