@@ -1,3 +1,39 @@
+## R129 / E107 测试台账核对与三个有效RED接续（2026-10-03）
+
+本轮人类请求为测试task：完整计划、完成/未完/问题记录。Root核最近亲自执行的R128c结果（2026-10-02执行），不把本次状态核对伪称新产品实跑。测试唯一入口docs/test-cases.md；70原组与70编号计划同序、计划段suffix保持。当前12通过/3失败/13待复测/39未验/2决策/1后置；历史12限定具名版本，不当当前浏览器全能力通过。
+
+E107实际证据：Root session93176已自然终态exit1，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-l8vgd_7e/manifest.json` SHA `8d1e3baa253d1d13b8fe4330863d31d1b4e925a9f968eaaddf50298cfdc91fab`；freeze `/tmp/kokoro-r128c-red-root-freeze.json` SHA `9a8e19db6beb1826420a2400cb014556f1adc5ed82376523d31aba96b9583cff`，BFF main02276b6+冻结候选/Root运行基线b56fb80c。原runner `apps/kokoro-agent/.venv/bin/python /tmp/kokoro-r124b-bff-resource-runner.py --freeze /tmp/kokoro-r128c-red-root-freeze.json --freeze-sha256 9a8e19db6beb1826420a2400cb014556f1adc5ed82376523d31aba96b9583cff --file test/agui-projection.integration.mjs --file test/agui-http.integration.mjs --file test/chat-facts.integration.mjs --test-name-pattern '^R12[468] ' --expect red --full-regression`。
+
+|实际运行|pass|fail|skip|
+|---|---:|---:|---:|
+|焦点projection/HTTP/chat，共14|11|3|0|
+|完整projection|46|0|0|
+|完整HTTP|12|3|0|
+|完整chat-facts|13|0|0|
+|完整三文件，共74|71|3|0|
+
+焦点与完整回归重叠，不相加。原71项当前全部通过，新增3明确行为RED：Todo真实来源帧删除返回200非503（line2303）；activity最新引用>oldAnchor但帧删除返回200非503（line2418，first缺帧503控制已达）；实际batch1 GC旧START回收/terminal anchor仍存返回404非410（line2531）。恢复finally已执行但后续正控、身份漂移矩阵、unknownRun/当前B/全回收尚未完整到达，不宣称通过。T-A05/T-C10转失败；E105 T-Q10失败保持，3节点不算3个新组。
+
+Node/build/current canonical installer均0；manifest result=expected-red-observed，full_regression_pass=false，并非整体GREEN。全部owned进程自然终态、source_unchanged/all_groups_terminal/independent_database_absent/marker_removed/redis_end_empty均true；cleanup_errors=[]/forced_stop=[]。不重启服务、清共享数据或泄露凭据。
+
+独立冻结有效性审P0=0/P1=0/P2=1：新节点有效，恢复finally失败可能覆盖原始错误，后继保primary+restore。Root现已沿task.md R129卡续派原bff_http5_consumer_owner唯一BFF writer修完整性与分批GC，另four_owner_fixes_review_r31只读核测试台账，Root只写四现docs/保审查资源Git；尚无R129修复交付或RootGREEN。正式BFF7未发布，Web消费/当前浏览器/真实provider/正式积分未闭环。保Billing及uv.lock任务外变更、完整Wave0–7与支付最后。
+
+R129台账放行：Root实际核70唯一矩阵ID=70同序编号计划、12/3/13/39/2/1，编号计划及其历史suffix与Root HEAD逐字相同（SHA c6cb3b643a8f5b4700d3957b332961bf2fd063456c3d2278c7c93046dd58ace7）；manifest原bytes/hash、74/71/3/0及源/资源终态守卫重新读取一致，git diff --check通过。独立four_owner_fixes_review_r31最终四docs一致性审P0/P1/P2=0/0/0，仅本次测试记录，不是产品源码或浏览器验收。Root将只提交四docs，任务外变更不暂存。
+
+## R128 / E106 SQL阻断已修、深层资源重新执行（2026-10-02）
+
+上一goal回合progress：b56fb80c实际提交测试台账/E105工具失败。Root本回合亲自核原writer的单列修复，比较/tmp/kokoro-r128-agui-process-page.before.ts只增加positioned SELECT latest.latest_sequence，441实际源只有page变化；当前page SHA25a52f9e、新freeze `/tmp/kokoro-r128-green-root-freeze.json` SHA95ebdedd45e61af5d93b12dd4df5fd405ec9c8f1f465f5c9753609b4ca8442c9。worker实际format/lint/types/build0仅作为交付，Root资源runner另实际build/canonical install0；未提交发布。
+
+Root沿原私有runner同11焦点+三完整资源file执行session65132已自然终态：focus projection7pass/0fail、HTTP1pass/2fail、chat1pass/0fail=11项9pass/2fail/0skip；完整projection42pass/4fail、HTTP10pass/2fail、chat13pass/0fail=71项65pass/6fail/0skip。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-kohg0j5q/manifest.json` SHA6378724877aa5adbe2e43d6672d949ad905aa8d38fdb7e43306c15ca6414ac4f。真实42703已消失，RR旧/新过程、START保留/切换、fault全rollback、锁后GC和删除原焦点可到达且通过；不将同文件全部分支视为通过。临时库精确absent/Redis自有marker删且空/源保持/cleanup_errors与forced_stop空/所有childterminal，不重复共享服务。
+
+剩六失败已逐类读取：test3手写RR writer fixture插START source/frame却漏process row；test7/test16裸ingest fixture未注册subject；test18不同source第二START仍期待成功；HTTP两新R124跨请求deepEqual误要求自动生成request_id相等，业务data实际相同。独立只读 `/tmp/kokoro-r128-remaining-failure-read.md` SHA80a9d57a3ff444d209d30f28856707148cff8108c57dabe23c99834e0f723f31 先前准确分类full20=17alias+3fixture，现潜在test18也已实跑到。Root已窄授权同BFF原writer仅两个integration tests纠正这些fixture/控制；生产完整性不放宽，不删除原权限/事务/FIFO/内容断言。候选仍待同例Root复测，正式BFF/Web/浏览器未验。
+
+Root已核cursor只读裁决 `/tmp/kokoro-r128-cursor-decision-read.md` SHAcae09402932f85b2cd781d12ea28d37cd063cce57c00506f8dbe91c61e3900ac，撤回无设计依据的issued-page链P1；现D0授权scope/run/anchor/latest opaque keyset，limit可变，禁止新cursor表/secret。GC分批过期和双向provenance/identity仍保留，原agent4只读准备精确RED，待当前两tests冻结和Root基线重跑后续同owner执行。完整Wave0–7/70ID不变，E105工具failure保留；本节不提升用户整组通过。
+
+E106续轮Root3768同11+71资源终态：focus10pass/1fail，完整projection46pass/0fail、HTTP11pass/1fail、chat13pass/0fail，总70pass/1fail/0skip；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-4ag7brc8/manifest.json` SHAcc49c5cd7056b5721eac1c21e2e488d8c75a34915691b56dd5a9c9a7bdfaf676、freeze39ef2117581a585d918147c140e758e4e4206fba809dfb6c5ff41edfc0a8bf02，所有资源/源/进程守卫成功。不同source第二START与三fixture、request_id控制现可正确通过；独立冻结功能审接受（无修前bytes故不冒称小diff）。唯一fail实际cross-tenant403非测试404，生产固定tenant准入明确product_tenant_forbidden；同tenant other subject与foreignRun404已通过。Root只授该负例精确403/code，不放宽生产权限。
+
+原BFF writer已接R128-PROVENANCE-GC-RED，两现tests-only补3个实际缺失来源/跨anchor完整性/真实GC单批partial过期的有效行为节点；原SQL/GC/API剩审查点不靠文档自报关闭。只读准备 `/tmp/kokoro-r128-provenance-gc-red-prep.md` SHAfcd2ea4e9f512819abf7b8f2ae523a56d66d7ee9c82cd1b3adabe1ca27a68f98 已Root阅读，Root将新freeze后资源真RED→同ownerGREEN。修前两tests将由writer保存用于后继差异审；目前正式发布/浏览器尚未进入。
+
 ## R127 / E104 测试计划与最新实际结果核对（2026-10-02）
 
 本轮人类请求为测试task的进度/完成/未完/问题；Root核现70组与编号执行计划，复用test-cases.md，不另建测试中心，不将开发交付当测试通过。只读four_owner_fixes_review_r31核台账，Root唯一编辑现四文档；本轮未启动业务服务/产品资源测试或修改产品，以下实跑为本轮核对的最近Root运行结果。

@@ -1,3 +1,37 @@
+## R129 当前任务接续（2026-10-03）
+
+Root已核E107原71资源项全通过、新3真实RED；测试task唯一台账为docs/test-cases.md，70组12/3/13/39/2/1。现已实际续派原bff_http5_consumer_owner唯一writer执行下方既有R129-PROVENANCE-GC-GREEN卡，仍同BFF main02276b6候选；不新建重复计划。four_owner_fixes_review_r31只读测试记录/计数核对，Root唯一编辑四Root docs并管真实资源/Git。尚未R129交付或RootGREEN，其他source/contract/schema/lock及Billing/uv.lock任务外不动。
+
+## R128 SQL阻断修复与剩余失败定位（2026-10-02）
+
+上一goal回合为progress：Root b56fb80c提交70组最新实证与E105工具真实失败；完整Wave0–7active，未缩小目标。当前Root main b56fb80c，BFF main02276b6+27路径冻结441实际源，资源36e5b8ad已自然终态，原BFF/两review均idle。Billing与Root uv.lock任务外不动。
+
+|任务|角色与范围|前置/验收|
+|---|---|---|
+|R128-SQL-COLUMN-GREEN / D-R127-01 / T-C07/C09/C10/A05|原bff_http5_consumer_owner唯一BFF writer；仅现src/infrastructure/postgres/agui-process-page.ts positioned CTE贯穿latest_sequence，其他source/tests/docs/contract/SQL锁均保持；Root审查/资源/Git|Root真实42703 RED已复现，SQL独立d890d5de同根因。最小修复现查询，不新helper/目录/API或fallback；现build/types/lint/format可跑，禁止资源/服务/Git；交单path hash/diff并停写，Root新freeze后同资源11+完整71重新执行，未Green不发布|
+|R128-REMAINING-FAILURE-READ|agent4_execution_owner只读三个资源full日志及对应生产/fixture；Root文件hash绑定 changing-tree，本轮page只已授一列变化|定位PROCESS_PROJECTION_UNAVAILABLE、AGUI_PROCESS_SUBJECT_MISSING及原clearSTART控制是否fixture落后或真实缺陷，给原用例/代码/明确最小修复边界；不改文件/测试/资源/Git，不删除控制，不将28全归alias|
+|R128-CURSOR-DECISION-READ|four_owner_fixes_review_r31只读现D0/contract/page/test；Root裁决|核“上一页next_cursor”是否协议必须证明issued-page还是合法opaque keyset位置即可；现D0数据方案固定ledgercursor+optional1..100limit，无新cursor表/secret。比较具体允许请求与实际风险，避免凭描述发明新session/pagechain或拒合法limit变化；给接受/撤回P1与现D0依据，禁止写/资源/Git|
+
+归属与验证：本轮是现BFF过程查询局部bug修复，owner与事务/契约/目录职责不变；选择修现CTE输出，淘汰新增查询层/容错空值。Root控制真实原installer/临时库与原Redismarker同包络，既有live句柄确认terminal后才启动新唯一运行；不重启共享基础设施。第一修复只解SQL首阻断，完整provenance/GC与其他真实失败仍逐例后继，不假称全部闭环。
+
+R128-SQL实跑交付：Root精确核唯一一列diff/非目标保持，441新freeze95ebdedd；原资源同命令session65132已自然终态，manifest63787248：焦点11项9pass/2fail、完整71项65pass/6fail/0skip，SQL42703已消失，RR/锁后GC/回滚/合法START与删除现焦点7+1全过。剩四projection fixture/control缺新facts、两HTTP错比较每请求request_id，不能归作过程内容变更；源保持/库absent/自有Redis清/无forced/cleanup空。
+
+R128-FIXTURE-ACK（原BFF唯一writer，仅两现tests）：根因经Root63787248与独立80a9d57a吻合，允许test/agui-projection.integration.mjs现test3在原writer事务复用projectRunProcessFrame插完整START provenance；test7/16只补真实registerConsumer正确owner，不伪subject；test18不同source第二START改assert精确冲突及全事实不变、保精确replay控制、有效terminal/late old顺序与FIFO/head断言。允许test/agui-http.integration.mjs两R124 nodes只将跨请求完整body深比较改为完整业务data/status深比较，并逐次保envelope/meta/request_id闭集与非空string校验；每请求request_id不得要求相同。不删任何现正负例，不放宽生产checker，不新helper/目录/contract。其他production/docs/schema/generated/lock冻结，禁止资源/服务/Git；交两hash/具体diff/语法format后停写。Root再同11+71真实资源验证，不用tests-only绿色替业务完善。
+
+R128-FIXTURE复测：Root3768同原资源已终态，manifestcc49c5cd：焦点11项10pass/1fail、完整71项70pass/1fail/0skip，projection46/46及chat13/13，两个request_id错断言已清。唯一剩历史页cross-tenant负例预期404，现固定tenant user-admission.ts:42明确403 product_tenant_forbidden（同tenant other主体已404），不是授权绕过。窄追加允许该唯一负例断言403及精确code/零资源数据，保same-tenant subject/foreignRun404。
+
+R128-PROVENANCE-GC-RED（原BFF唯一writer；Root资源/Git；两现integration tests）：接上述单负例修正后，仅新增已读fcd2ea4e三个节点，名以R128开始：observed Todo ledger frame缺失时503+精确还原正控；activity first/latest缺帧/合法opaque run或activity身份漂移，尤其current latest>oldAnchor仍503并各分支精确恢复200；实际GC batchSize1删除旧A START而A terminal watermark仍存返回410，unknownRun404/B snapshot不变。每例走production HTTP/ingest/GC，现fixture/helper只允许collectGarbage默认参数100扩为可传1，标准默认不变；timeout/精确scoped保存恢复/清理错误保真。无newtable/cursorsecret/手动删模拟GC/fallback、不删旧控制。先tests-only，production/schema/D0全部冻结；语法与正式no-semi160 format可跑，禁止资源/服务/Git。交两hash/正负case与停写；Root真资源旧71与新3分别统计并分类有效RED，随后同owner最小provenance/GC实现，不先写源。
+
+R128新RED资源实证：Root93176自然终态，new freeze9a8e19db/manifest8d1e3baa，14focus11pass/3fail，完整74项71pass/3fail/0skip（旧71全部通过）；新Todo缺帧实际200非503、新activity latest>oldAnchor缺帧实际200非503、新真实GC partial旧Run实际404非410。现3具体首失败有效，后续identity矩阵/恢复分支未到达不称已验；全部源/owned进程/精确库/Redis守卫成功，无共享reset。独立freeze审0P0/0P1/1P2，P2恢复finally会覆盖primary原因，随GREEN测试补保真。
+
+R129-PROVENANCE-GC-GREEN（原bff_http5_consumer_owner/gpt-5.6-sol唯一writer；Root审查/资源/Git）：前置现三D0、Root三个有效RED与71当前正控。允许仅src/infrastructure/postgres/agui-process-page.ts、src/infrastructure/postgres/agui-consumer-repository.ts；test/agui-http.integration.mjs仅新增三个R128节点恢复错误保真与精确损坏/恢复正控，不删除/放宽原case；docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md/CURRENT.md仅本片短顶部当前态/语义澄清，历史suffix保护。其余所有source/schema/generated/contracts/锁/Rootdocs/Git冻结。无新表/模块/worker/连接池/协议/issuedcursor/secret/兼容。
+
+既定实现：processAt/Todo/as-of activity页同一RR/PoolClient必须无条件核当前compact全部引用与source/frame完整性及run/activity对应，compact↔ledger双向集合核验不能缺帧隐成null/空200，latest>anchor只允许payload不同，不允许current provenance坏；查询返回值仍从anchor的不可变ledger取，不能把mutablecurrent塞历史。GC在现锁后重查/retention规则下，旧process Row在其Run尚有任何ledger frame时保留，使START被回收而旧terminal anchor尚在可由该Row持久START cursor+tombstone/权威floor证明410；当前START完整性坏但无回收证据仍503、未知Run仍404，禁止process=null猜全部410。旧Run frame全回收后删除compact，selected当前START/现FIFO/HITL/Delivery保护及可回收正控保持，不永久pin/新retention策略。
+
+恢复测试保真：保存primary失败后恢复精确Row；恢复也失败时AggregateError保两者，禁止finally覆盖首因/吞错误。每支损坏前后证明真实字段改变/原事实精确复原，后续矩阵跑到才计通过。使用正式no-semi160格式；可lint/types/build/默认纯门/语法，不资源/服务/Git。交允许文件集/hashes、当前实际门/剩余未验并停写；Root重跑同新14+完整74到深层及静态门，最终独立SQL/API终审后才提交发布BFF7、后继Web/浏览器。一个helper已有职责内局部增强，不创建新目录；不要重开总体方案。
+
+R128裁决：已读cursor复审cae09402，撤回人为发行页链P1；现D0只需同授权scope/run/anchor的合法latest opaque keyset位置，limit可变化，不新cursor状态/secret。原provenance与identity完整性问题保留，另由有效行为测试驱动；不再重开总体分页设计。
+
 ## R127 测试进度核对与失败接续（2026-10-02）
 
 本轮请求是测试验收task，而非追加开发方案：测试计划与结果唯一入口docs/test-cases.md，实际证据progress.md E104，开发派工仍本页。Root编辑四现文档；four_owner_fixes_review_r31只读核70组/计划/范围，无资源或Git。业务writer均停写，当前资源运行全部终态。

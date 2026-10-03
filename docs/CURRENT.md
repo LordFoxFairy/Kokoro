@@ -1,3 +1,19 @@
+## R129 当前测试进度（2026-10-03）
+
+测试验收唯一入口docs/test-cases.md，70组及70编号计划已记录；开发派工task.md、真实证据progress.md E107。当前12通过/3失败/13待复测/39未验/2决策/1支付后置，不是产品完成率，历史登录/聊天只代表具名旧组合。
+
+最近Root实际资源完整74项71通过/3新增失败/0跳过，原71项全部通过；新Todo与跨anchor activity损坏仍返回200非503、实际分批GC历史过程404非410。分别归T-A05/T-C10，E105 T-Q10契约checkpoint失败仍在；深层恢复/身份矩阵未完整到达。全部测试进程与自有资源终态、源保持，无共享reset；本次核对没有新增浏览器实跑。
+
+原BFF owner现已接R129唯一writer任务修完整性/GC，独立review只读核台账；Root管审查、真实复测与Git，不用修复交付当闭环。候选BFF7未正式发布，Web消费及当前完整用户旅程仍未验。下一同例+完整回归→发布→Web→浏览器，完整Wave0–7/正规积分/支付最后保持。Billing/uv.lock任务外保留；下方R128及更早仅历史阶段。
+
+## R128 当前代码与真实测试推进（2026-10-02）
+
+上一goal回合progress：Root b56fb80c提交完整测试台账/E105工具失败。本轮原BFF writer修单CTE缺列，Root同资源真实65/6；同owner校六fixture/control后Root再跑71项70pass/1fail/0skip，projection46/46与chat13/13、HTTP11/12。42703/首503及错误fixture已限定关闭；唯一cross-tenant测试预期404与生产固定tenant403不符，已授仅测试精确403/code修正，不改变准入。
+
+现原owner仅补Todo/activity provenance缺失与跨anchor完整性、真实GC batch1 partial过期的3个RED节点；生产冻结，Root真RED后再同owner实现。已撤无设计依据的cursor发行链P1，保正式opaque keyset/可变limit，无新cursor表/secret。BFF7候选未发布，Web正式消费和浏览器尚未进入。70组12通过/1失败/13待复测/41未验/2决策/1后置；原四组具体阻断关闭只回未验，不冒称完整用户组通过，T-Q10工具失败仍在。
+
+Root本轮两资源进程全部终态、源保持/精确库absent与Redis自有清理/无forced，无重复服务或共享reset；Billing/uv.lock任务外保持。下一真实RED→完整性/GC修复→原用例和回归→正式发布→Web→浏览器。完整Wave0–7active、正规积分与支付最后保持；以下为历史。
+
 ## R127 当前测试进度核对（2026-10-02）
 
 测试验收唯一入口docs/test-cases.md，与开发派工task.md分开；70组及编号用例计划已展开。当前12通过/5失败/13待复测/37未验/2决策/1支付后置。历史通过只限具名版本，不代表当前完整产品。
