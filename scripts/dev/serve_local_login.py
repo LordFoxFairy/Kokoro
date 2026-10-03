@@ -426,6 +426,7 @@ def main(argv: list[str] | None = None) -> int:
                         "IAM_TEST_REDIS_URL": args.redis_url,
                         "IAM_TEST_WEB_ORIGIN": origin,
                         "IAM_TEST_ALLOW_HTTP_LOOPBACK": "1",
+                        "IAM_TEST_PRODUCT_WEB_TRUSTED_POLICY": "1",
                         "IAM_TEST_RESOURCE_ID": iam_resource_id,
                         "IAM_TEST_RESOURCE_OWNER_TOKEN": iam_owner_token,
                         "NODE_ENV": "test",

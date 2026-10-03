@@ -39,6 +39,23 @@ class LocalLoginGuards(unittest.TestCase):
             time.sleep(0.05)
         return False
 
+    def test_launcher_requests_fixed_product_web_trusted_policy(self):
+        """Source guard only; actual IAM and browser acceptance are separate."""
+        import ast
+
+        tree = ast.parse(SCRIPT.read_text())
+        values = [
+            value
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Dict)
+            for key, value in zip(node.keys, node.values)
+            if isinstance(key, ast.Constant)
+            and key.value == "IAM_TEST_PRODUCT_WEB_TRUSTED_POLICY"
+        ]
+        self.assertEqual(len(values), 1)
+        self.assertIsInstance(values[0], ast.Constant)
+        self.assertEqual(values[0].value, "1")
+
     def test_node_parent_guard_does_not_keep_normal_process_alive(self):
         with tempfile.TemporaryDirectory(prefix="node guard with spaces ") as directory:
             environment = os.environ.copy()

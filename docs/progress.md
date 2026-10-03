@@ -1,3 +1,23 @@
+### R145 Root组合门实际结果
+
+Root纯工具首次35775在gitlink暂存前启动，1fail/174pass/103subtests（49.75s）：旧Agent gitlink与新published evidence不一致，非业务回归，不降低门禁。Root精确stage已发布Agent/IAM gitlink后，同175suite35734自然exit0：175pass/103subtests（53.33s），日志`/tmp/kokoro-r145-root-formal-tools-staged.log` SHAc06d27976f90bd3e527af6ec6bda86dd77b26007e63155224991b755f2629ddc；checkpoint/topology实际exit0，原13declaredbroken不改。Billing/Storage候选/uv.lock未暂存。
+
+## R145 离线用量证据发布与真实owner修复（2026-10-03）
+
+Agent main2d2ad9bb4d261bee6c71e35f0d68f419a785bf9c已Root精确19文件提交并push，工作树clean；42usage、2174pure/301资源未选/0skip、全部工程门及仓外wheel checker正负门通过；独立19path审0。此为严格知识/来源/revision离线artifact，不是runtime/provider/Billing/真实非零费用链。T-B07保持未验，失败/取消仅结算已核实消耗、释放其余可确认未用预占，unknown持久待核实，前端不计价。
+
+IAM正规受管接线实际新factory先5pass/1fail（resourceServer strict schema漏skipConsent）；窄修后真实lifecycle6+fixedclient6全部12/12。schema修复前完整verify17984为938通过，但真实factory10806仍5通过/1失败；修ResourceServer schema后verify42064为936通过/2旧fixture失败；补strict fixtures后verify84833最终938通过/0skip及format/lint/types/contract/SDK/build0；独立六path审0。该片已Root精确8path提交并push main0537b2d033d273f0ef7f5017502ba20e8571aba8，工作树clean；Root接线待集成重启，旧98977/3310 PID63842尚未采用。完整用户登录callback/app及第三方/prompt矩阵仍待验，不声称现用户已通。
+
+Storage当前logical release候选：Root亲建随机库正规installer0、完整integration24files/194pass/0skip（manifest b45b08a81fc4a42716d7bd409ac3950b69c34125bb2e49a37e17274abd19a639，已亲删库）。首replay500 richinput→compound where已投影修复。独立又发现晚PUT首次删除后丢durable cleanup P0，Root新增真实PG＋object double实际RED1fail/1controlpass/7filtered；已授权同owner窄修，待GREEN/完整门/审查。Object double不是实际S3，没有future-write禁止证明时持续pending，不冒称物理GC完成。
+
+70组保持11通过/6失败/14待复测/38未验/0业务待决/1支付后置，编号suffix c6cb3b64不变，完整Wave0–7 active。CUA现已恢复只见Root新测试tab20（先前列表为空，不宣称关闭7用户tab），正常账号密码页已看到，未提交或授权。Billing旧五docs/三pricing候选与Root uv.lock原bytes保留，源码候选不带入gitlink；支付最后。
+
+## R145 Agent完整门实证（2026-10-03）
+
+原90774自然exit1，正常usage与aggregate生成/lock/format274/lint/pyright0，pytest2169pass/1fail/301资源deselected（108.56s）。唯一失败test_execution_proof_checker_detail_has_a_focused_module_boundary：现checker202行，门要求<200。未跑build，未说完整通过。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r145-agent-final-gates-36omcrvg/manifest.json SHAeb776c53212c0381af6c59a85c91cb40fc13ad46f3daa7cb75f0a92f2f96639c。Root仅授原writer新usage module namespace import窄修，原门和所有旧函数/行为保留；没有删断言或提高阈值。资源0访问；301deselect不冒充真实集成。
+
+Storage完整implementation cut1c6b4763绑定现task；没有重复三D0或重开业务设计，进入完整logical lifecycle实现与正式系统测试同slice，物理GC/provider终止证明仍独立待验。Billing五旧docs/3未跟踪pricing及Root uv.lock继续保护，支付最后。
+
 ## R144-S-C1-A Root实际contract RED
 
 Node24.20.0/pnpm11.25.0正式vitest原test/contract/provenance.test.ts：exit1，既有provenance1pass/新增canonical RPC1fail（expected length1实际0，line36）；日志 /tmp/kokoro-r144-storage-root-contract-red.log SHA a69fe971a8c8b76536e08958bf137a7bca38b43cc33b4a6ba697d5f7849610a1。test SHA2facda51b1b6bcf6d06ab6000bbea0fb04d00c874f369a76986d65e2304ddba6与worker报告4981cc0ada7234abd6d1eb7c7b11c5a33b760ee4e766c4feb2209f1e39b95e61一致。无PG/Redis/provider/服务访问；这是正式contract缺口RED，非Connect/PG业务失败，也非T-C05通过。Storage三D0+此test候选未提交，不被Rootgitlink带入。

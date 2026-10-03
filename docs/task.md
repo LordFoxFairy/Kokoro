@@ -1,3 +1,34 @@
+### R145 发布与真实RED后继
+
+IAM已精确8path发布main0537b2d033d273f0ef7f5017502ba20e8571aba8，remote一致/clean；独立8path审6d9959ff为0，Root938工程/12真实owner节点通过。Root接线源guard75/103subtests通过；主组合只更换published IAM/Agent gitlink和37库存leaf（31+2 Agent，3+1 IAM），不变13broken/contract/checkpoints。原唯一98977下一由Root有序stop/cleanup再启动正式新组，未提前声称页面用户成功。
+
+Storage新P0真PG RED1fail1controlpass7filtered，GREEN后完整object-retirement9/9通过；仍等待完整freeze门与独立复审/完整业务矩阵，不发布在途producer。原只读审报告352f87bd指出真实缺陷，即使194现测试全绿仍不放行。所有计量/Project/BFF/Web后继沿原任务，不缩goal。
+
+### R145 当前交付与后继门（2026-10-03）
+
+Agent已Root精确19文件提交并push main2d2ad9bb4d261bee6c71e35f0d68f419a785bf9c，工作树clean；42usage/2174pure/301resource未选、installed正控与缺失/两篡改负控通过，独立19path审0。只离线artifact发布，runtime/provider/Billing/T-B07继续未验。原3D0补证据、CURRENT/ACCEPTANCE纳入19path范围，不改批准参数。
+
+IAM实际factory暴露production resourceServer strictreadback缺skipConsent，Root初真RED5pass/1fail后批准oauth-client.schema.ts非true严格字段及现platform-provisioning.policy.test.ts四值控制；v2真lifecycle+fixedclient12/12过。fullverify v2因现oauth-client.service.test.ts共享resourceServerfixture缺字段2fail/936pass，已批准只补false，原断言/managedpolicy保持。独立复审与Rootfullverify进行中，非当前3310用户已通过。
+
+Storage追加test/unit/scoped-auth.test.ts仅active lifecycle delegate/post-sign2查询控制。Root首资源包络误把upload-reference给未装schema的管理库：7setup失败/2unhandled保留，不能当业务RED；新Connect genuine replay500由Prisma rich input进入compound where造成，已授权原helper/Store仅3字段投影。Root随后亲建随机库、正式installer0后完整integration在途。独立又抓到晚PUT首次delete后cleanup被删的P0，原writer只读修复方案等待句柄终态；不冒称物理GC或Project闭环，不消费未发布producer。
+
+### R145 追加范围与正规运行接线
+
+Storage Root复核批准仅src/artifacts/artifacts.store.ts原1import/2scope lock/有效Asset+Blob过滤，修复本仓关系读写一致性，不扩Artifact public业务/policy；src/assets/asset-record.ts非必要暴露字段撤回writer自己的两行，保原record。允许test/fixtures/rpc-service.ts补正式DI新增参数的typed stub，仅既有wire测试（非真业务证据），旧断言不变。其他越界须先报。
+
+R145-IAM-FORMAL-RUNTIME：新IAM fixture负责人（gpt-5.6-sol）仅test/fixtures/web-oidc-flow-host.ts、internal-http-application.ts及现test/integration/oauth-client-lifecycle.test.ts必要相邻fixed-web-oauth-client.test.ts；基线mainf38be788，空dirty。现三设计/正式extendProductWebSkillScope已发布，复用可信first-party、双readback、固定tenant/PKCE策略；只让local运行ready前正式owner provisioning，默认first-login/第三方/显式prompt=consent保留。Root独占scripts/dev/serve_local_login.py与scripts/tests/test_serve_local_login.py，先pure RED再固定formal mode接线；cross-owner mode先IAM发布再Root启用/唯一受管重启。worker无production代码/schema/公开契约/Git/资源/CUA权限，Root跑真实IAM与浏览器。绑定32bb43de4fad97447e6d7e19f4dc8fa472c170ae6665222543917dbf473bdf7a只读cut。正常首方登录不显示内部scope，但不全局skip/伪造oauthConsent或直接SQL。
+
+## R145 完整owner切片推进（2026-10-03）
+
+上一goal回合为progress：Web49721a5/Root5c302296真实发布，100治理与47页面系统证据改变下一动作；不是等候或仅状态复述。Wave0–7完整scope保持。
+
+|任务|Owner / writer / 文件集与基线|验收与当前边界|
+|---|---|---|
+|R145-A-ARTIFACT-CHECK|Agent原负责人，main79bf98c；原14artifact/3D0范围，Root独占Git|Root90774严格完整门lock/format274/lint/types0，2169pass/1focused-checker长度失败/301资源deselect。仅checker新usage导入namespace修正，不放宽200行门；冻结后Root重跑全门、wheel仓外安装审计、独立code review。offline证据不代收费。|
+|R145-S-PROJECT-LIFECYCLE|Storage原负责人，main74c4b591；精确写集引用/tmp/kokoro-r145-storage-implementation-cut.md SHA1c6b47637dd113184c557ab25b0438e0d9655c4f1a9ab66755994feb2c77fbb4|三D0 v2已审；正式contract RED已Root复现。授权现assets生命周期完整切片：既有uploads/assets/transport/auth/reconcile/store、唯一Prisma/Proto与正规生成、所列系统integration/contract/architecture及现fixture；不建新一级module/Project副本/数据库role/新服务。先tests-first后实现，Root真PG/Connect与owner全门，不发consumer在途pin，不将物理pending当完成。|
+
+Storage放置门沿已审三D0：采用src/assets/project-scope-release.{types,receipt.schema,service,store}.ts及scope-lifecycle-lock.ts，淘汰新Project模块/通用cleanup垃圾桶；单writer，scope事务helper仅Store，network在事务外；一事实一owner。Prisma唯一schema新增lifecycle/cleanup及approved字段，所有project可达8入口一致fence；Artifact项目现policy不可达但历史row冲突回滚。删除旧读写无fence路径，不留fallback/alias。Root运行所有资源（随机测试库/schema；正式fixture关闭且亲建DROP），worker不碰PG/Redis/provider/用户3310。HTTP contract字段不变、生成物须零漂移。允许文件集逐项见绑定报告；越界须报告。Root负责commit，小片不可宣称整个Project/T-C05完成。
+
 ### R144-S-C1-A 机器契约缺口测试卡
 
 Storage唯一writer原storage_project_lifecycle_owner，main74c4b591 + 三D0已审v2；只允许现test/contract/provenance.test.ts补canonical ReleaseProjectScope RPC/请求CommandIdentity field1/响应批准五字段及body无身份文本断言，其他源码/Proto/Prisma/generated/docs/index/资源全锁。入口现CODEBASE_MAP和三D0 API§F3-P。Root Node24已实际复跑1旧pass/1新fail（RPC缺口），只contract RED，不能称Connect/PG业务RED。C1-B fixture+integration与合法seam另授，不预授权全部写集。Root负责提交；无共享PG/Redis操作。
