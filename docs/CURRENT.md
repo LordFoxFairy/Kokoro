@@ -1,3 +1,9 @@
+## R124 当前实际推进（2026-10-02）
+
+E101：HTTP5消费代码已实现并经Root独立复验，四pure149pass/0skip、完整default731pass/0fail/1真实PG schema skip；生成18files双次同bytes及format/lint/types/build/合同lintsemantic0、440路径保持/child终态、独立0/0/0。原default旧vendor测试路径失败已窄修，历史不删。当前70组12通过/0最新失败/14待复测/41未验/2决策/1支付后置；不是产品零问题或浏览器闭环。
+
+当前BFF main02276b6+新候选、public6/SQL未改，未正式发布；同owner已续派R124-RED-B七tests，后继真实RR/锚定分页/START/GC和public7→正式Web消费→当前浏览器。toolCalls私有旧缓存需最终SQL切片同步删除；Root独占审查/资源/Git，无重复服务/共享reset。完整Wave0–7保持active，积分正规链与支付最后不丢目标。下面R123及更早仅历史阶段。
+
 ## R123 当前实际推进（2026-10-02）
 
 E100 Root独立BFF Node22 build0、四pure files148项120pass/28真实消费行为fail/0skip，436源保持/两child自然终态，独立RED审0/0/0。合法HTTP5 Todo/Skill/tool/subagent尚未正确消费及旧raw/非法Skill未拒已复现；不是浏览器/外部provider验收。T-Q02与T-A01–03/A06转失败，当前70组12通过/5失败/13待复测/37未验/2决策/1后置。

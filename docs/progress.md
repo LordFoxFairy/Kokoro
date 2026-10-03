@@ -1,3 +1,17 @@
+## R124 / E101 HTTP5消费修复由Root复验（2026-10-02）
+
+上一goal回合progress：Root0ce28d40已提交完整70组测试计划及E100失败台账；本回合原BFF owner实际实现正式Agent5 single pin、generated18、strict process decoder、安全Todo/activity CUSTOM、删除raw网络映射/type及fatal UTF8（该新增节点writer先真实1RED）。没有进入部署/新owner/第二schema或兼容。
+
+Root30520初次六步真实：四pure149pass/0skip、静态0，但完整default732项730pass/1fail/1PG schema skip；唯一失败contract/openapi-contract.test.mjs仍读已删除e977 artifact。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r123-bff-green-root-qvl_vte8/manifest.json` SHA08af2db072194a42a3d998576865a30b384c8505e6d0a6abf321c60283df217c保持，不当消费产品失败或删控制。仅追加该现test正规owner路径与四D0当前事实前缀，public6/HITL/ResumeDecision全部assert保留。
+
+Root64537冻结后新六步全部exit0：Node22.22.2 build、Agent生成check（18files，两次byte-identical）、lint、typecheck、四pure149pass/0fail/0skip/681.730ms、完整package默认731pass/0fail/1既定真实PG schema skip/15.903s。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r123-bff-green-root-z7yj2dib/manifest.json` SHA3775a5209ce04554ce411723d7039401b97710c8a107f2decc56ba60b88f1823；440路径（含2已删除tracked身份）前后保持，forced_stop空、六child自然终态。Root独立18005 format、新两file format、public contract lint与semantic88operations全部0，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r123-bff-static-root-cfgn5gsc/manifest.json` SHA990b9b43e6a7ea47125dff938c1d367282a3a973261bee70279a66b25de326ed；lint2既有warning保留。以上无integration选集/生产服务/provider/浏览器；PG schema skip仍T-Q12未验。
+
+Root另核E100原436路径外写集零越界、四docs原HEAD历史suffix保持、合同机械pin原assert完整。独立冻结终审 `/tmp/kokoro-r123-bff-green-a-final-review.md` SHA37e770e54f3987d5caab1dd6f4ae764ade7b0fe91431e913504b8aa6f71d5361 当前0/0/0（私有报告阶段转录P2已校正，历史保留）；worker交付报告bc207e12分清worker与Root证据。BFF仍main02276b6+候选，未正式发布混合public6/新wire/旧private cache；public7/SQL过程/START/GC后继必须自洽删除toolCalls/tool_call_ids再发布。
+
+本次仅关闭E100具体消费缺陷：T-Q02移待复测，T-A01–03/A06移未验，70组12通过/0最新失败/14待复测/41未验/2决策/1支付后置，0整组最终验收执行中。默认绿不当完整用户组通过；E75标准152报告、真实资源/当前浏览器/积分仍在。已续派同BFF owner R124-RED-B七现tests实际编写；agent4只读14节点方案20e87b6f与Web消费断点bb7dc0c3已Root读，后继准备不算执行。Root资源runner准备与独立审并行，同仓唯一writer，支付最后，完整Wave0–7active；Billing/uv.lock任务外修改保留。
+
+R124测试台账收口：Root再次逐行核对70唯一ID，12通过/14待复测/41未验/2阻塞/1后置，与当前看板一致；独立只读审P0/P1/P2=0/0/0。Root当前三套治理工具测试实际305pass/3.03s/exit0，`git diff --check` exit0。仅台账及工具回归，不新增产品E2E通过、不关闭E75标准152报告；BFF七文件测试writer仍运行，未将编写或runner准备计为资源测试执行。
+
 ## R123 测试任务计划复核（用户进度请求，2026-10-02）
 
 Root本次实核现矩阵70唯一ID与逐组编号计划70ID完全同序：12通过、5失败、13待复测、37未验、2决策、1后置；0整组最终验收执行中。70组前置/步骤/预期/负例/恢复/证据计划已展开，执行前仍须绑定实际账号、资源、版本及命令，执行后逐子例回填结果；计划展开不计通过。更新当前陈旧的“尚待RED”和“仅覆盖目录”描述，不改失败历史。
