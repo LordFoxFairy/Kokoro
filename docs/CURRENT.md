@@ -1,3 +1,9 @@
+## R118 当前组合验收（2026-10-02）
+
+BFF限定四事实RR组合切片已验：Root新node1/1、完整AG-UI投影集成file39/39且零skip，另lint/typecheck/build/语法通过；自有fixture库/marker精确清理，436源保持/owned进程组自然终态。首次测试envelope预期缺陷只补全精确字段后重跑，原失败保留。BFF本地main02276b6两路径提交/工作树干净，尚未远端发布或fresh clone；生产/SQL/机器契约不变。T-C09.1–3后端证据通过、浏览器/完整用户范围未验，70组12/1/0/13/41/2/1不变。细证E90/E91见progress，测试步骤沿原test-cases台账，不新建计划中心。
+
+Agent原七源GREEN已交而未Root验收；独立九源审发现resume/recovery释放与construction关闭预算两P1，另Docker半构造资源窗口。原负责人已接续三现tests+三docs有效RED，生产冻结、Root另审后授实现。T-Q03真实失败保留，不将自报201/91当完整闭环。标准152报告、完整Wave0–7、全部其他owner/用户能力及两业务决策仍在，支付最后；未重复服务/重置共享数据。
+
 ## R117 最新推进（2026-10-02）
 
 Root实际新增System单仓Nest HTTP/PG/Redis lifecycle 19pass，14精确owned fixture库由原测试自身清理并独立证实不存在，197源保持/进程组终态；Redis仅连接/PING非业务key生命周期，不是跨仓/模型/全部owner组合。E88细证见progress.md。

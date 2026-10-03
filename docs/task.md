@@ -1,3 +1,29 @@
+R118已验收交付：原WIN02最终cursor150 idle；Root E91真实新node1/1/fullprojection39/39且0skip、独立r3审0，BFF本地main02276b6，仅现test EOF与Root接收后CURRENT两路径，工作树干净。Root资源23227/static65158已终态，E90首次测试预期失败保留；远端发布/全仓fresh clone尚未验收。T-C09浏览器未验，源/contract/SQL/pin不变，详细进度见E91。
+
+## R118-AGENT-LIFECYCLE-GAP-RED（2026-10-02）
+
+原WIN03 cursor211确认七源GREEN turn已completed/idle，owner报告201pass/5资源未选、runtime91及静态门通过但未Root复测，不记修复验收。Root直接读现_resume_owned与_reconcile_interactions确认build成功后replay/observed return、probe continue/完成缺本地handle释放；仅此前七source不足以覆盖全部资源owner。另委原生命周期审查员绑定九现source hash核构造在途取消/真实thread与shutdown总deadline，防止孤立shield让main在开始drain前无限等待。
+
+|任务|Owner/基线/写集|依赖、验收与交付|
+|---|---|---|
+|R118-AGENT-LIFECYCLE-GAP-RED / T-Q03、T-R02|原WIN03 Agent唯一writer，gpt-5.6-sol/medium；main2653bcc+已交七源候选，Root审查/Git。仅现tests/unit/execution/test_supervisor.py、tests/unit/sandbox/test_workspace_archive.py、tests/unit/worker/test_main.py与三现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md窄补充；全部production保持冻结，不新文件/目录/SQL/contract/generated/locks/资源/Git|先交原七源交付日志/manifest绝对路径与source freeze，不把自报pass当Root通过。在真实现resume与probe入口有效Regression锁已build资源的replayed/observed/异常或continue退出close=0、原primary/cancel保真，合法spawn仍唯一转交。三设计加同owner现control/recovery放置与内部生命周期目标，无wire/SQL变更。先真实RED与有效正控，不用不存在方法造RED；交新增精确nodes/hash/日志，停写Root复现与scope审后另授production，不抢九源独立审|
+
+放置门：比较扩现supervisor_control.py/supervisor_recovery.py与抽新通用模块；采用现入口，resume/control与恢复probe各自负责构造成功到transfer间资源归属，复用现_close_handle/强cleanup登记；原9文件均在runtime_profile_sources有限清单，机器wire/DDL预期0diff。构造尚未返回的registry/截止问题待只读审裁决，未预授生产或新配置/第二timeout。原七源不回滚、不提前发布，原BFF仅另仓测试修订并行。
+
+独立范围审4276a015 / P0=0/P1=2/P2=1已Root读实际九源接受：control/recovery build后退出遗漏close；in-flight assembly直接await令main在drain预算开始前无限等待；Docker connector后半异常可漏已创建新container/client。Root裁决仍只现九source，不新模块或第二timeout：Supervisor强assembly registry+shield _build_owned，三caller统一入口、未转交结果done后进入现cleanup登记，drain同一deadline动态等run/assembly/cleanup。cancel迅速交回worker/drain，底层thread继续但强归属；close/constructor异常可观察，成功transfer与cancel race只有一个owner。现_connect_docker内部在archiver/wrapper后半失败时close内部client及严格回收新建container，重连prior不destroy。本轮先三现tests真实失败与三docs一致，原生产九hash保持；scope审不是GREEN，Root复现后才授权实现。
+
+## R118-BFF-SNAPSHOT-COVERAGE（2026-10-02，测试切片）
+
+上一goal回合分类verified wait：原Agent GREEN turn01a0fefb-b412-7912-97f4-5d5d594de3af由cursor204实际确认inProgress；人类测试进度答复本身不计代码推进。本轮先核Root62b6069c与BFFbb610ea clean，保Agent/Billing/uv.lock候选。现BFF只读审ddade487已完成：生产RR同client实现未见断裂，但原R43与R57两个并发例分别缺safe process或Message，不把两次结果拼成四事实同快照证明。
+
+|任务|归属、基线、唯一写集|依赖、验收与交付|
+|---|---|---|
+|R118-BFF-SNAPSHOT-COVERAGE / T-C09|原WIN02 BFF唯一writer，gpt-5.6-sol/medium；Root负责资源/审查/Git。绝对目录/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-bff，main/bb610ea7262574772e1d8c309a6e03171d07d0a3，起点clean。只准现test/agui-projection.integration.mjs追加组合并发例，全部既有测试全文保护；不改source/docs/contract/schema/generated/lock/Git|复用现r57ProjectionContext、r57Bounded、真实ingest与RR授权barrier；同一写事务同时推进assistant Message及full interaction revision，旧/新snapshot分别断言Message/head/完整安全过程/watermark四事实集合与从旧cursor精确replay。记录可使测试失败的真实生产变异，不制造不存在API/假RED；只覆盖既有正确实现可GREEN，不授生产修复。Node22语法/纯build可执行，PG/Redis/HTTP/provider与installer只Root运行。交唯一0600报告、基线/全文件hash/新增测试名、实际非资源命令，冻结停写。Root独立真实资源复跑与清理后才验收/提交|
+
+放置与文档门：该测试归BFF现AG-UI projection integration，比较扩现文件与新跨仓harness，采用前者，职责与已有R43/R57一致；新目录/模块/协议/表为0。已核本仓TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL与canonical public6：RR只保证同一次授权read的Message/head/interaction/watermark，非跨HTTP/跨owner原子性。未发布Agent候选不得成为新正式消费pin；测试使用现BFF机器/内部输入，保持原tenant/subject与生产ingest。新增例不自动关闭完整T-C09、T-A01–06、浏览器/推理/积分或Wave0–7。
+
+原WIN02已实际续派：thread01a0f887-9487-7233-90d1-d401b3244086/local，新turn01a0ff06-33d6-7082-a5c8-a8de8ac8bd6b，cursor c50c565d-b1ad-4ad5-b3c2-e9f65a492f86:137确认inProgress；此前136前turn completed/notLoaded。原Agentcursor205仍inProgress，独立仓并行不抢writer；不重复启动共享服务。
+
 R117-BFF-SNAPSHOT-READ（只读并行）：原agent_machine_final_review_r98核现BFF同事务Message/head/safe process/event_watermark与现T-C09/T-A组测试缺口，先确认BFF bb610ea/current clean及三设计/owner artifact版本；不改文件/Git/设施，不消费未发布Agent5作为正式客户端。注入CODEBASE_MAP；仅为现后继任务提供精确范围/依赖，Root保留裁决，不建立第二计划中心。
 
 R117当前句柄：原WIN03新GREEN turn01a0fefb-b412-7912-97f4-5d5d594de3af，cursor `3a08a485-69ce-41c3-a7c6-23cc37d4b100:202` 精确poll确认inProgress；不是已交付。Root98889/37357已终态，System E88与Agent E89真实结果见progress.md；后继查同句柄不重派。

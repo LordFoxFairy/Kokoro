@@ -1,3 +1,31 @@
+## R118 测试任务盘点补充（2026-10-02）
+
+用户再次确认所问task为测试计划而非开发派工。Root将同一test-cases.md顶部更新为R118速览、12通过组清单、逐用例记录字段与剩余展开缺口，不新建测试计划中心；旧R117摘要标历史阶段。实核70唯一组ID与12通过/1失败/0整组执行中/13待复测/41未验/2阻塞/1后置，历史验证矩阵归档suffix与HEAD逐bytes相同，E91 manifest SHA6a2fc482匹配。Root实际执行python3 -m pytest scripts/tests/test_engineering_handbooks.py scripts/tests/test_ten_repository_standard.py scripts/tests/test_repository_topology.py -q：305pass/2.97s/exit0；git diff --check exit0。仅台账与治理工具验证，不新增业务或浏览器通过，也不关闭E75规范152规则报告。修复提交后必须Root复测，未展开的组仍须补具体步骤/负例/恢复场景。
+
+## R118 / E91 BFF 四事实 RR 组合与完整投影文件已验收（2026-10-02）
+
+Root接收原WIN02 r3最终cursor150 completed/idle，BFF main bb610ea、test SHA01ae22f3d786858fbc5ffa5f26ba71fa143a1ebf4289526323975b9f864c18dd；原166102bytes前缀保持/435外围不变。r3仅在新增例补齐合法type/timestamp/metadata.kokoro的精确seq4/5来源身份，不删对照、不改生产。独立r3只读审 /tmp/kokoro-r118-bff-snapshot-review-r3.md SHA586edff42fa2d996a21e330ed6e3edf925fabf8e721c44c3d4486b49dbc563f7为0/0/0；原静态审41463aab漏核envelope，结论纠正并保留，不以其0问题放行。
+
+Root23227终态exit0：Node22.22.2直接现tsc build/owner installer各0；真实PG/Redis新R118 node1pass/0fail/0skip（273ms进程），完整test/agui-projection.integration.mjs39pass/0fail/0skip（2.276s进程）。同一已授权RR reader在真实连接暂停后，另一生产ingest事务提交Message delta与完整resuming revision：旧读四事实全集保旧、新读四事实全集为新，从旧opaque watermark精确replay TEXT_MESSAGE_CONTENT+full CUSTOM到fresh水位且cursor唯一。不是两旧例拼结果、假snapshot或纯record-client集成。
+
+manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r118-bff-root-1j4ynzrc/manifest.json SHA6a2fc482e0a4f21aa373432fadb5a9cb15a6dcc44b43fe39d594a3a5267d8b51；full log SHA c3d94983f4f19c285dc189ed5b8fd07c32211a3c59ad1252f3094436d8acb99f。自有单一随机库CREATE前精确absent/fsync intent、CREATE/DROP ACK，独立精确查询不存在；exact marker compare-delete、Redis业务集合0→0、cleanup_errors=[]、436源前后相同、各owned Node PGID自然终态/无补偿kill。复用现资源，无新应用库/role、共享reset或预览重启。RedislogicalDB15非PubSub隔离，Root只在无同fixture并发窗口运行；真实loopback proxy/故意端口1故障为原file行为，无外部provider/browser/其他owner调用。
+
+Root65158另实际lint/typecheck/Node语法/diff-check四门各0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r118-bff-static-root-guvzcpyl/manifest.json SHA7d7bc6bb9582669e3e7169b71de2da2a7a9d6385260b267f75276c9c9ed9aa85。此前80482在已设置BFF cwd时重复git -C apps/kokoro-bff导致三fatal，后续tsc仍0，原命令组合不冒称全部成功；纠正纯路径后逐命令记录。E90失败/资源清理证据不删除。Root接收停写worker后只收口本仓CURRENT，复核index空、main、精确2路径与prefix/test hash，提交本地main02276b623f8390288fbf86d6efaa0f5152256afa，BFF工作树干净。尚未远端发布/fresh clone验收；未换public6或消费者pin，生产/SQL/contract/generated/locks为0diff。
+
+T-C09.1–3限定后端实例已验，T-C09.4回收正向已验但变异未执行，T-C09.5浏览器及用户全范围仍未验；70组验收计数保持12/1/0/13/41/2/1，不能将39自动断言换成39功能完成。新测试/RootCURRENT为自洽切片，不混Agent/Billing/uv.lock修改。
+
+Agent独立scope审 /tmp/kokoro-r118-agent-lifecycle-scope-review.md SHA4276a015d638ad695065576157793de7b842b0014d7340a26c89d08b8c2dc943明确P1=2：正式resume/recovery漏handle释放、构造未纳入drain导致60s预算可能永不开始；另Docker半构造新container/client P2。原七源GREENturn已cursor211终态，owner201/91报告未被Root冒充最终通过。已同原负责人续tests-only三现tests+三docs补有效RED，九生产冻结、现registry/总deadline裁决见task；未预授source、未回滚候选或建新timeout/协议。T-Q03失败保留，标准152报告、两产品决策、完整Wave0–7与支付后置继续。
+
+## R118 / E90 BFF 四事实组合测试首次实际失败（2026-10-02）
+
+上一goal回合classified verified wait：原Agent GREEN具体turn/cursor204仍live；人类状态答复不是代码验收。本轮沿原WIN02新增唯一EOF组合例，Root核435非目标tracked/原166102bytes前缀不变，原ownercursor147 completed/idle后才运行资源；BFF main bb610ea / test SHA021fc90d228df2818db7087c191a909a57e56e49e675431efcfbc26519b07a61。Root27044终态exit1：Node22.22.2 build/现owner installer各0，新精确R118 node实际0pass/1fail/0skip、154.4825ms，完整projection file因focus失败未执行。
+
+实际四事实old/freshMessage/head/完整interaction/watermark比较已走过；失败发生replay全payload预期缺合法AGUI type/timestamp/metadata.kokoro（源码base已有），属于新增测试预期缺陷，不是已证实生产RR断裂。原WIN02仅获EOF精确补全schema/来源身份对照，不删字段比较或修改生产；后继冻结/Root复测才验收，旧失败保留。
+
+manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r118-bff-root-jn633gdv/manifest.json SHA f6b243756bc7f471a80e95f5eebe0c2936f096c1bbdbbfd43a21288aa052b1b3，snapshot-focused.log SHA1ae3e31750fab0276ae725af9b81466cf2c9c35ccd04479ba1a7f8989eab9a5e。Root私有runner先精确absent/fsync intent再创建bff_r118_44cc7eeadcf748c0b26bf928ab0410da；原CREATE/DROP ACK、原admin与独立admin两次absent，exact marker compare-delete，Redis前后业务key集合一致0→0，436源hash保持、所有owned Node PGID自然终态/无强制补偿/cleanup_errors=[]。凭据只env，日志内存脱敏0600，不新角色/应用库、不重置共享服务。真实Redis PING/PUBLISH与本机proxy资源允许，未调用外部模型/Agent/IAM/Storage/browser；DB15不隔离PubSub，Root无并发同fixture测试窗口。
+
+只读资源预审4fabec33与脚本审0c72266c接受该窄包络，P0/P1=0，P2是PubSub/本机socket边界及字段名说明，均未伪称产品已验。独立新测试审查仍进行中。70组计数不变，T-C09完整用户范围未验，T-Q03生产资源释放仍失败且原owner实施中；未发布Agent候选/标准152规则/两业务决策/支付后置均保留。
+
 ## R117 继续推进 / E88–89（2026-10-02）
 
 上一goal回合为progress：Root真实E87并提交737e0d6e。此次不缩小Wave0–7；Agent原owner补强/实施，Root独立真实System资源验证与集成，两个工作面没有互抢writer或重复服务。
