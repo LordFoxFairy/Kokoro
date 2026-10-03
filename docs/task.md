@@ -1,3 +1,15 @@
+## R140 当前页面加载诊断任务（2026-10-03）
+
+| 项 | 当前任务卡 |
+| --- | --- |
+| 任务/验收 | R140 / T-U04-R138-U01 / P1；用户旧会话无限加载缺陷不关闭，必须当前页刷新→正规登录→工作区→原会话真实通过才验收 |
+| Owner/范围 | Root为现四Root台账、资源与集成唯一writer；原web7_consumer_owner（gpt-5.6-sol）仅只读runtime/Next启动调查，无源码/测试/Git/服务授权 |
+| 基线/保护 | Root main ad1b40f、Web main6267c1e；原98977/3310副本与8runtime路径已R139对齐。Billing五文档/Rootuv.lock任务外保留，无API/SQL/contract/pin变更 |
+| 当前证据 | 新用户截图仍失败；同3310匿名系统浏览器session1、正式sign-in表单可见、无永久loader；此不是当前用户IAB或已登录旅程证明 |
+| 假设裁决 | 缺显式upgrade已被Next自动注册源与101/同document终止frame反证；nonce匹配。未猜测切换编译器/加重复handler；下一区分旧document/身份后读取/具体hydration错误 |
+| 控制/下一行动 | IAB读、CDP焦点准备及重复close超时，实际仍7；已请用户保留当前页刷新反馈，不新增用户tab。收到反馈后同Web owner沿当前缺陷做实际失败复现与最小修复；资源沿原句柄 |
+| 状态 | 进行中，当前用户路径失败未关闭；匿名启动正控限定通过。70组与完整Wave0–7保持，不另建计划中心 |
+
 ## R139 当前交付与后继（2026-10-03）
 
 R139-SESSION-GREEN 源码切片已Root验收并发布Web6267c1e：完整工程256/50/2350/0skip/build通过，含真实系统OIDC43/IAMrelay68；原17路径独立审/精确Git，无并发index。原唯一3310八runtime源已核baseline后更新，不重启服务；这只表示源码更新，不表示用户当前页/全owner闭环。

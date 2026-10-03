@@ -1,3 +1,13 @@
+## R140 当前截图失败与运行入口正控（2026-10-03）
+
+Root baseline ad1b40f / Web6267c1e；用户图片codex-clipboard-9be60665再次显示旧conversation整页加载，当前页面尚未闭合。原98977原句柄poll仍live、PID63842保持，未改运行源码/启动服务/重置共享资源。
+
+实际同3310 /app HTTP200，56script nonce与CSP匹配，inline Flight9；此前8外部脚本200且JS MIME正确。Node22原生WebSocket同本次document：收到匹配ID debug chunk29189bytes及0bytes终止，明确不输出requestID/nonce/credentials。Next next.js313–331 getRequestHandler自动从req.socket.server安装upgrade，原只读owner“缺显式upgrade”假设撤回；未以错误假设加重复handler。
+
+Root单次独立匿名系统Chromium访问现3310（不是控制用户IAB）：自然exit0，sessionRequests1/scriptFailures0/pageErrors0，document200→/auth/sign-in passwordForm可见、loadingText=false、Flight/Turbopack存在。截图与证据目录 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r140-live-startup-wvOnmZ；evidence.json SHA77c88204f76922743ceb115cdd2df5708b38d62eed54248a0fe9553792d2a30a；自有Chromium在finally关闭，无持久状态注入/网络返回替身/凭据读取。两console错误类别other/hydration，仅类别不足以命名根因，待精确归因。此只通过匿名当前运行启动正控，不外推已认证工作区、旧会话、模型、积分或正式全部owner。
+
+IAB CDP调用在Emulation.setFocusEmulationEnabled准备超时；duplicate6 close亦超时且kernel reset；最后实际list仍6/7/8/9/10/11/13七页原URL，当前13保留，清理未成功。不再重复控制循环/开页；已异步请用户关闭重复页并刷新当前页反馈。原Web owner继续只读三个假设与反证，Root保台账/资源，未授写源。70组13/4/12/38/2/1、逐组计划suffix c6cb3b64及uv.lock f7e1c30d保持；当前用户缺陷仍未关闭。
+
 ## R139 最终工程门、发布与原服务精确更新（2026-10-03）
 
 Root原84601/PID39697自然exit0/116.853s，Node22 `pnpm check`：contract256/architecture50/lint/types、164files2350tests/0skip、build全部通过。默认测试内真实OIDC43、IAMrelay68均执行通过，无需重复启动同Next套件；753源前后保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-final-check-y2h_y7rq/manifest.json` SHA5cb35e18feb23049cc137e6a6d80f90380446c50020c8f39f8c7cb5dfd46225e，log6f8a9fa683f0d768f5539c8d1bfc1c1beed9f9912caec1e2dae0be5cb414da09。随后四设计/验收文档仅补实际限定证据，所有runtime/test源与该冻结保持；原18UI节点数量不变，无新增unit/mock/skip。独立两文件终审 `/tmp/kokoro-r139-ui-assertion-final-review.md` SHA516f170ec65d2667296906d760e967022ad85102e788608596e37e8c8e1d16d5，0P0/0P1/0P2。

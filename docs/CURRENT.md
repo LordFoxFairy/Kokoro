@@ -1,3 +1,11 @@
+## R140 当前用户加载缺陷仍未关闭（2026-10-03）
+
+用户新截图再次显示旧会话整页“正在加载工作区”，当前用户路径按失败处理；R139工程/限定系统通过不覆盖此页面。Root ad1b40f / Web6267c1e保持，原98977/3310 PID63842仍运行，无重启/新服务/共享reset。
+
+当前同入口实际HTTP200、脚本nonce全匹配，React debug websocket收到同document非空及终止frame；“缺显式upgrade handler”被Next源码与实测反证，已撤回，未据此修改。独立匿名Chromium真实访问现3310：session请求1、脚本加载失败0、pageerror0、退出加载并进入/auth/sign-in表单。仅匿名当前运行启动正控通过，不代表已登录用户/原会话/模型/积分或右侧IAB通过；有一类hydration console待精确归因。
+
+IAB仍7同URL页，DOM/日志/CDP读取及duplicate close超时，关闭未成功。已请求用户只留当前页刷新并反馈，以区分旧文档未执行现脚本与登录后读取故障。Root四台账/资源，原Web owner只读调查，未授权新源码修改；完整Wave0–7和70组13/4/12/38/2/1保持。证据见progress R140。
+
 ## R139 当前发布与预览更新（2026-10-03）
 
 Web限定修复已提交并普通推送main `6267c1e80e31808b3212beda1fa51a1785ec9de9`，远端同SHA且本仓clean。Root最终完整门256contract/50architecture/lint/types/2350tests（0skip，含真实Next/Chromium的OIDC43与IAMrelay68）/build全部通过，753源保持；前序三工程失败保留，未放宽门禁。Root承接该gitlink及49个Web库存commit引用，不改13broken业务边/历史checkpoint。
