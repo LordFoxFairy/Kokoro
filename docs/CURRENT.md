@@ -1,3 +1,15 @@
+## R159 原用户首屏仍P0；已完成诊断不冒充修复（2026-10-03）
+
+原conv_ffd7页面仍未通过验收。Root实核IAB browser3/tabs21、22均原URL，但21 Page.getFrameTree与22 DOM读取均在focus控制超时；没有新DOM、原session请求或水合证据。没有刷新成功、新建tab、杀/重启45606/46036组合或清数据。已请用户关闭重复Kokoro标签后重开原会话地址，用于恢复原页观测；这不是修复完成声明。
+
+Root本轮完整治理40535 actual exit1：1715pass/1fail/3既定skip129.98s（/tmp/kokoro-r159-root-governance.log）；consumer-inventory.json仍引用旧a68c、已发布BFF为5e119；校验返回231条错误，首条为该BFF来源漂移，需Root后继真实来源/语义刷新，不弱化门禁。这是治理失败，不定为原页因果。当前拓扑exit0（/tmp/kokoro-r159-root-topology.log）。
+
+两原生只读复核（/tmp/kokoro-r158-web-loader-read.md 3713a44e；/tmp/kokoro-r158-web-original-tab-bootstrap-gap-review.md a3d26273）没有找到effect内部循环。AppGate在checking与anonymous共用RuntimeLoading，后者仅依赖router.replace；同步auth-index和Provider/CSP是待证分支。Root新公开响应38ms200，CSP含dev eval、56script nonce全匹配；只排查此响应配置，不证明原tab脚本执行。进程快照不证明任何特定tab事件循环。下一证据仍是原页client/effect/session/redirect阶段，下一验收是原会话真实渲染且刷新稳定；不再用其他fixture通过替代。
+
+R158收口：Move只读预审d0b175ea确认旧机器结构不变及现Web通用meta gate拒绝合法Move200/typed errors的P1；三D0 d8f504db/db4d1cbe/f97010c7仅方案，source/tests/pin未放行；后继真HTTP测试路径需纠正为现OIDC fixture。Storage Root46071带观察默认并行700pass0skip17.82s、资源回收/源hash同；原无观察699pass1fail仍开放，观察开销不可冒释放门。只读a744819d确认目标观察P2034 classifier=true，后续CanonicalChangedError由现service重观察恢复，未证R156耗尽根因；无新Storage源码或发布。
+
+Root基线2f0e5eba/Web9b42acbc；原70组11/6/14/38/0/1、test-cases全文8c17/原suffix831a、uvf7e1、Billing/Storage任务外候选保留。全Wave0–7 goal active；此轮没有原用户E2E成功或产品修复。
+
 ## R157 用户原页面持续加载：P0仍开放，收口R156真实结果（2026-10-03）
 
 当前目标不变，优先级重新聚焦原用户 conv_ffd7 首屏。Root当前源码基线3e50b231；本轮未改产品源码、契约、数据库或原组合。原3310仍唯一PID46036/launcher45606，公开原URL43ms200、SSR含runtime-loading不含app-frame-loading，45个引用脚本均200非HTML，450业务文件与runtime副本逐字节同。证据 `/tmp/kokoro-r157-original-runtime-public.json`；它仅排查资源与复制漂移，不证明原用户水合或会话健康。

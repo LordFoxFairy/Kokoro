@@ -1,3 +1,35 @@
+### R159 原用户首屏复查：仍未验收，等待恢复原页观测（2026-10-03）
+
+原 conv_ffd7 持续加载是本轮关键路径；Root没有以R158的Move/Storage进度替代此故障。原Web源码main9b42acbc、Root2f0e5eba；Web仅三份Move D0冻结修改，无生产或测试改动。
+
+|任务|owner/角色/范围|实际结果与下一动作|
+|---|---|---|
+|R159-ROOT-ORIGINAL-TAB|Root独占原IAB与受管资源|browser3实核tabs21/22均原会话URL。21只读Page.getFrameTree在隐含focus控制超时；22 DOM读取同类超时。未取得原DOM、session请求或水合时线；未重复刷新、开新页、杀服务或清数据。向用户请求关闭重复Kokoro标签后重开原URL，以恢复观测，而非宣称修复。|
+|R159-W-LOADER-READ|agent4_lifecycle_review 原Web owner，只读|报告/tmp/kokoro-r158-web-loader-read.md（3713a44e）。无effect自循环；静态auth-index集合有限，不把同步扫描定为永久loop。anonymous仅router.replace且共用spinner缺导航失败恢复；待真实分流证据，未授权产品改动。|
+|R159-W-BOOT-INDEPENDENT|agent_chat_contract_gate 原独立审查员，只读|报告/tmp/kokoro-r158-web-original-tab-bootstrap-gap-review.md（a3d26273）。原页CSP/Provider/effect/session/redirect均需同页证据。Root新公开文档38ms200，CSP含dev eval、56script nonce全匹配；仅当前公开响应，不证明原tab执行。|
+
+下一验收必须原会话实际显示工作台、加载消失、消息可见且刷新稳定；页面控制超时不是应用根因。等待用户操作的返回结果时，不重复询问刷新、不跑全门冒修复。R158 Move预审和Storage诊断已交，下面补收口；Move三D0仍待测试路径勘误与独立审核，source/tests未放行。全Wave0–7保持active。
+
+#### R158 已交付证据收口（2026-10-03）
+
+- Web Move预审d0b175ea：owner7.1只有version+Move新增，旧Team/ChatMessage/failure结构相同；现generic Session adapter确会将合法无meta Move200降502并丢typed error。原writer仅三D0冻结TECH d8f504db / API db4d1cbe / DATA f97010c7，尚未实施。后继须exact POST canonical Move分支，不能全局放宽envelope；现session-route-http为mock-auth direct调用，不称真Next，正向应复用OIDC真Next/Redis/Product cookie fixture。当前保冻结，未经Root新门不写source/tests。
+- Storage Root46071有观察默认并行完整700pass/0skip17.82s，官方normalize0，own/nestedDB回收、冻结源码hash相同。manifest为/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r158-storage-observed-default-final-ur4985hi/manifest.json。临时config/内存观察有开销，不替代原无观察699pass/1fail，也不称修复或发布。
+- Storage原owner只读报告a744819d：目标case观察P2034均classifier=true/known=true；retry后CanonicalChangedError由现UploadsService闭集重观察收敛。未复现构造器不匹配；不能倒推R156六attempt耗尽，不改重试/隔离/并行度或继续盲重复全门。
+- 原70组11通过/6失败/14待复测/38未验/0待决/1支付后置；test-cases全文8c17da9d及原suffix831a2160、uv.lock f7e1c30d与Billing/Storage候选保持。
+
+R159 Root全治理真实40535终态exit1：1715pass/1fail/3既定skip、129.98s，日志/tmp/kokoro-r159-root-governance.log。失败为test_w1e_iam07_bff_pin_marks_iam_composition_pending，verify_checkpoint返回231条校验错误（首项BFF gitlink5e119 != consumer-inventory.json旧a68c的来源漂移）；这不是用户loader根因，不放宽断言或冒全绿。后继Root契约证据刷新须绑定已发布owner、语义复核及既有3active/13broken分类，禁止只换SHA伪造通过。当前拓扑/tmp/kokoro-r159-root-topology.log实际exit0；不等于组合E2E。
+
+### R158 原Wave0–7继续：Web Move消费准入与Storage并发诊断（2026-10-03）
+
+上一goal轮为progress：Root2f0e5eba接入已验Web tests-only发布gitlink，原用户P0的两独立审查缩小取证缺口，治理298pass2.88s/提交后拓扑0；原用户未反馈刷新，仍P0开放。只等待反馈不是verified wait；本轮选择现计划可安全执行依赖，不重复盲控原tab/询问。Root原3310组合与70组/uv/Billing/Storage候选保护。
+
+|任务|owner/角色/基线|范围、依赖与交付|
+|---|---|---|
+|R158-W-MOVE-D0|agent4_lifecycle_review 原Web唯一writer/main9b42 clean|仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL最上Move消费方案＋CURRENT事实；producer已发布BFF5e119（source6c5cee0），唯一OpenAPI7.1/784f77e2。先固定机器来源、严格请求/ACK与client/同源现proxy消费；本片不改engine/UI或把客户端可调用冒浏览器移动完成。输出精确后继文件集/现system HTTP测试路径/生成pin连带路径；Root审后才tests RED/源码。|
+|R158-S-OBSERVED-FULL|Root独占资源，Storage原owner与agent_chat_contract_gate分别只读证据审查|上一原单case1pass/17过滤，51观察事件含domain失败但case仍成功，不从该日志推断P2034耗尽。一次新own临时PG/临时config，保持原默认并行700/原callback/6attempt/10s/Serializable/assertion，只现integration file内存观察；补闭集StorageError code，ID/PID/XID无payload。无repo instrumentation/source/test改动。原无观察699/1保持。|
+
+Root整体放置：Web是consumer/唯一本仓writer；BFF机器源只读固钉，不复制可编辑contract。优先扩现contract/chat.ts+paths.ts、engine/client.ts与现api/session/[...path]/route.ts（代理已有支持则不改），generated/bff-public-openapi.yaml只能复制固定发布blob，Team/failure官方生成脚本同步精确SHA但旧fragment语义必须不变；淘汰新Move API proxy、BFF相对路径import与UI本地project_ref假成功。当前无Move consumer；数据仍仅BFF Conversation/receipt owner，无WebDB/schema/持久化归属双写。输入canonical conv/project或null，明确commandId作为同一用户意图的幂等身份，严格200及目标/会话关联验证，202/坏shape/ACK不匹配拒绝，不自动重发；故障与unknown不改本地归属。下一片再加engine/UI ACK后投影及真实用户journey，需逐片继续完整闭环，不缩小最终目标。
+
 ### R157 原用户首屏 P0 聚焦（2026-10-03）
 
 用户再次报告原 conv_ffd7 一直加载，明确不以其他owner工程门替代首屏恢复。Root独占原浏览器/受管进程/安全日志取证；不重复启动组合、不清用户数据。此次控制inventory20s超时，按原URL绑定返回两个原tabs21/22，绑定21再次20s超时；只证明控制读取失败，不是应用根因。图片为居中spinner，可对应AppGate RuntimeLoading，checking和anonymous共用界面，仍须实际水合/session证据。此次原native宿主被拒后未绕行；脱敏console及原reload也15s超时，未返回刷新成功。

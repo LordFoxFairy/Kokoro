@@ -1,3 +1,17 @@
+## 2026-10-03 — R159 首屏P0未关闭；R158真实证据收口
+
+本轮围绕原conv_ffd7：IAB browser3实核两原同URL tabs21/22，原21只读frame与22 DOM都在focus控制超时，没有原页session/hydration证据。没有新页、刷新成功、服务重启或清数据。向用户请求关重复Kokoro标签再重开原URL，以恢复观测；不把工具超时判为应用根因，不称已修复。
+
+Root本轮完整治理40535 actual exit1：1715pass/1fail/3既定skip129.98s（/tmp/kokoro-r159-root-governance.log）；consumer-inventory.json仍引用旧a68c、已发布BFF为5e119；校验返回231条错误，首条为该BFF来源漂移，需Root后继真实来源/语义刷新，不弱化门禁。这是治理失败，不定为原页因果。当前拓扑exit0（/tmp/kokoro-r159-root-topology.log）。
+
+原Web owner只读3713a44e与独立a3d26273：无内部effect反馈环；auth-index静态集合有限，尚未证明同步长任务；anonymous仅router.replace且与checking共用spinner，是待真实定位的导航恢复缺口。公开新响应38ms200/CSP dev eval/56script nonce全匹配只能描述当前传输，不是原用户脚本执行。未改Web产品/测试源码；下一必须原页分层证据与原会话渲染/刷新稳定。
+
+此前R158证据在本轮如实落账：Move独立预审d0b175ea证实7.1增量不改旧Team/failure、现generic meta gate对合法Move200变502/丢error code，三D0候选d8f/db4d/f970冻结待审，source/pin/tests未放行。测试路径勘误保留：session-route-http为mock auth直调，正向真Next应复用OIDC现fixture。
+
+Storage Root46071有观察默认并行700pass0skip17.82s，临时config而非修改仓库；官方normalize0、own/nestedDB回收/hashsame。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r158-storage-observed-default-final-ur4985hi/manifest.json；报告a744819d观察P2034 classifier=true，retry后CanonicalChangedError由service重观察恢复。原无观察699/1故障仍未归因/未关闭；不调高retry、不降并行度、不称已发布。
+
+原70组11通过/6失败/14待复测/38未验/0待决/1支付后置及其全文/后缀hash、uv.lock、Billing/Storage候选保持；Root2f0e5eba/Web9b42。完整Wave0–7 active，当前仅诊断与方案进展，不是用户首屏或全部能力闭环。
+
 ## R157 用户原页面持续加载：P0仍开放，收口R156真实结果（2026-10-03）
 
 当前目标不变，优先级重新聚焦原用户 conv_ffd7 首屏。Root当前源码基线3e50b231；本轮未改产品源码、契约、数据库或原组合。原3310仍唯一PID46036/launcher45606，公开原URL43ms200、SSR含runtime-loading不含app-frame-loading，45个引用脚本均200非HTML，450业务文件与runtime副本逐字节同。证据 `/tmp/kokoro-r157-original-runtime-public.json`；它仅排查资源与复制漂移，不证明原用户水合或会话健康。
