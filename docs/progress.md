@@ -1,3 +1,11 @@
+## R123 测试任务台账核对（2026-10-02）
+
+用户要求区分测试task与开发派工。Root按main97b5f4a5当前矩阵实际核70行/70唯一ID：13通过、0最新失败、0整组最终验收执行中、13待复测、41未验、2业务决策、1支付后置。通过均保留具名版本/范围；未重跑产品旅程，不称当前组合闭环。只读four_owner_fixes_review_r31复核相同统计，指出页头/T-Q03/下一步骤旧态。Root只修现test-cases当前摘要/该行/后继顺序与CURRENT一处下一步；历史归档suffix逐字保持，失败历史不删除。完整逐用例步骤尚未展开，70组目录不等于完整测试执行。
+
+当前Agent79bf98c已发布，installed DDL/HTTP限定门已有E97–99证据；BFF四设计文档与消费清单交付待审不计新测试通过。当前关键路径BFF正式HTTP5消费/安全过程快照→Web→真实登录/聊天/刷新，其他任务依原稳定ID。两决策T-C05/T-B07及E75规范152报告未关闭。
+
+Root本次实际运行 `python3 -m pytest scripts/tests/test_engineering_handbooks.py scripts/tests/test_ten_repository_standard.py scripts/tests/test_repository_topology.py -q` → 305pass/2.70s/exit0；日志 `/tmp/kokoro-r123-test-ledger-governance.log` SHA256 744e2b73c49cbd6521ba5cfaa99a2fcd550729728264fb3b4e32c8eedae1d102。只证明治理工具回归，不代表E75整体标准扫描已修复或新增业务E2E。Root另外实际断言70ID/状态计数及历史归档保持。未启动服务或重置PG/Redis；BFF writer交付及Billing/uv.lock任务外修改保留。
+
 ## R122 / E98 当前 installed HTTP 真PG/Redis验收（2026-10-02）
 
 原agent4_execution_owner仅准备私有runner，Root补forced-stop必须失败、实际Root/Agent SHA及final source hash，保原测试字节与断言。第一次Root56111止于offline pytest9.0.3缓存缺失（manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r122b-installed-http-sd_q4zh1/manifest.json`）；只有venv0/runtime0/tools1，无PG/Redis访问，venv删除/371保持/自然终态。原失败保留，不当HTTP产品失败。

@@ -4,7 +4,7 @@ E98：Root currentwheel安装态HTTP文件实际36通过/0失败/0跳过、151�
 
 E97：Root用E96同一当前新wheel真实installed CLI fresh/重复拒绝与canonical catalog/六漂移回滚通过；8实际步骤，21表/206列/216constraints/42indexes，371源保持、child自然终态、私有venv删除、自有临时库精确回收且另连接确认absent。初次私有HOME/cache工具失败保留，未访问PG；新唯一runner显式现cache后通过，不改产品/锁/共享数据。具体manifest/hash和有限资源边界在progress.md，不能当全owner同库组合或HTTP通过。
 
-原agent4_execution_owner与four_owner_fixes_review_r31两终审均限定接受；Root完成Git发布，BFF后继负责人bff_http5_consumer_owner只写四现D0文档，Root保留审查/资源/Git。70组状态仍13通过/0最新失败/13待复测/41未验/2决策/1后置；当前浏览器全能力未验。完整Wave0–7继续active，下一installed HTTP→正式发布/消费者→真实用户旅程，支付最后。
+原agent4_execution_owner与four_owner_fixes_review_r31两终审均限定接受；Root完成Git发布，BFF后继负责人bff_http5_consumer_owner只写四现D0文档，Root保留审查/资源/Git。70组状态仍13通过/0最新失败/13待复测/41未验/2决策/1后置；当前浏览器全能力未验。完整Wave0–7继续active，下一正式BFF/Web消费者→当前真实登录/聊天/刷新旅程，支付最后。
 
 ## R121 当前实际推进（2026-10-02）
 
