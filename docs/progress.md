@@ -1,3 +1,21 @@
+## R121 / E95 Agent边界修复由Root独立复验（2026-10-02）
+
+上一goal回合progress：Root089c180e实际E93/E94并接受Storage工程门。原WIN03 boundary turn01a0ff40-d361-7e22-805f-220ca4f48d6e已cursor226 completed/idle，交/tmp/kokoro-r120-agent-boundary-green-final.json SHA3a87e6a891b6c9696d2339eb1d56cde489847e8b976150efd1bfcea20c58bbe0。其另/tmp/kokoro-r120-agent-pure-root-final.json虽名为Root且自称独立，实际由worker执行，此处只归worker报告；Root本回合另开自有句柄/唯一证据复验。交付baseline sha字段转录错误，原E93 REDmanifest实际SHA5c48e2976dead4eab0ae2a362c9bd5b8553d460387be00ca7374dce3b07f22f2与log bytes未改变，不按错字段覆盖历史。
+
+当前修复仅3已授权路径：worker/main.py内_ShutdownBudget→ShutdownBudget与现引用，workspace_archive测试用标准monkeypatch替换现registry、worker test删inline ignore，无alias/新豁免。Root实际539非授权hash与E93原冻结相同；独立只读 /tmp/kokoro-r121-agent-boundary-final-review.md SHAd234967898933516e8e6d6eaf1c09f1ab3e3ab67cb380806babe95b3373e2979，P0/P1/P2=0/0/0，旧symbol完全删除、未进wire/__all__、所有原blocked thread/cancel/close/单预算断言保持。
+
+Root22335自有完整1960当前纯nodes实际1960pass/0fail/0skip/795原三方warnings/50.49s/exit0；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r121-agent-pure-root-i3p40k87/manifest.json SHA488051395632cebc2ad6b866ce7d9fe2e141575d232f6dba1e0b7772a9a7f051，明确verifier=/root，542源hash保持/资源attempts0/OS禁网/owned PGID自然终态/无forced kill。未拿worker1960或旧R1151937替代。Root53358七静态门各0（13路径Ruff format/check、全Pyright、contract、failure-model check、offline/no-cache uv lock、diff-check），manifest .../kokoro-r121-agent-static-root-2w3yidz6/manifest.json SHAb40393bdd457c8c76a9801483f8536db73a5baf86017945eaafce7332fc71210；同542冻结保持、各owned终态。原E93新inline ignore真实失败已关闭，T-Q03从失败转待复测，不提升整Agent通过；当前70组13通过/0失败/0整组最终验收执行中/13待复测/41未验/2决策阻塞/1支付后置。
+
+## R121 / E96 当前新源码artifact安装实跑（2026-10-02，当前安装矩阵终态）
+
+Root53044按原R116B十步重建当前源码，实际lock/export/build wheel+sdist/新venv/full frozen runtime install/wheel install/pip check/仓外-I origin/actual console contractcheck/inspect全部exit0、各owned PGID自然终态，source保护371保持、私有venv精确删除。manifest /tmp/kokoro-r121-agent-installed-root.json SHA54f06d0c7d4cb1940b4a2e97d74f98a9f6ecbdf71fd991e828e4421be28f7c9d，verifier=/root；current wheel SHA4d0e7c8d1455fa395faaebc5e0de123f7131a31d02c413f04266ec67bad78fc3、sdist SHAba2c3876f6eee8b05d2950ab0db59c146bf57c27aca43e0d84d7a4ef6b16b270，位于.../kokoro-r121-installed-root-haa00kgr/dist。安装metadata实际116个distribution，含项目1+115 runtime依赖；不把3.14源树纯测试解释器与本次3.11安装解释器混同。当前包2.0.0/HTTP5/proof1身份仍区分。
+
+十步不包含sdist重建/HTTP；不冒称旧E84包是新artifact。Root另按现四布局负向矩阵精确派生新唯一私有runner37215，绑定本次wheel/export371冻结，含sdist重建entry bytes、source/rebuilt venv/target与64篡改向量/恢复/CLI原origin、独立包数据门，句柄37215现已自然终态，219步骤各exit0、64负向全部通过，source/rebuilt两wheel在venv/target四布局校验和篡改恢复完成，sdist重建全部entry路径/bytes相同。Root重新读取全部219日志逐hash核对、371源前后相同，owned installations已删除；manifest `/tmp/kokoro-r121-agent-installed-negative-root.json` SHA25cfbc5a6233ac16ea483979f43a90276e877e0504fa4796764d706fd38f4f79。该文件task字段沿原R116模板命名，运行身份由本次Root089c180e、当前build manifest及R121独有输出绑定，不解释为旧包结果。无PG/Redis/HTTP/provider/发布验证。源码builder会写已有build/egg metadata派生物，该370/371保护清单明确不以它们当业务source；与542冻结纯门串行，未在构建修改中运行纯测试冒称固定字节。
+
+原agent4_execution_owner只读准入 /tmp/kokoro-r121-agent-installed-preflight.md SHAd37b4283574586ff04e2e046ab5bcfa94d7e43b097abd8e4a44b6ef47e38c368：现acceptance可原字节私有复制并installed -I pytest，原repo pytest pythonpath=[src]不算安装门；工具闭包按同锁供应，不混.venv。真正installed HTTP须Root重新确认独占RedisDB与新owned临时库，console真实启动/SIGTERM/S3/Docker/provider、全五类过程HTTP矩阵/发布消费者另待验。整个goal继续active、BFF/Web正式消费顺序及旧混合候选commit-scope P1保持，不整16不自洽暂存。
+
+R121测试看板收口：Root逐行核对70唯一组，13通过/0最新失败/13待复测/41未验/2决策阻塞/1后置，历史归档后缀与HEAD逐bytes保持。当前治理工具三套实际305pass/2.72s/exit0，日志 `/tmp/kokoro-r121-test-ledger-governance.log` SHAe900821cb5980d5f8beb33d6dc4f6d900f3712e14be7247e009a154870117937；仅台账工具回归，不算新增业务E2E或关闭E75标准报告。测试目录70组已建、逐用例步骤尚未全部展开，缺陷与复测继续同一test-cases/progress记录。 独立只读four_owner_fixes_review_r31复核当前70行/通过名称/两决策项及E96终态一致，P0/P1/P2=0/0/0；未当业务验收。
+
 ## R120 / E93 Agent生命周期GREEN与扩大纯门新失败（2026-10-02）
 
 上一人类goal回合只整理测试计划，不算新业务推进。本回合Root基线a6b22d1b，实际接受原WIN03 terminal222冻结16路径；源码终审461255e1为0/0/0。Root88981完整四测试文件pytest exit0：213pass/0fail/0skip、5真实资源分支deselected、652原三方warning/24.86s。原E92六失败及转交正控共7个node逐一确认本次call=passed；不使用owner报告替代。

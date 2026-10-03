@@ -1,3 +1,9 @@
+## R121 当前实际推进（2026-10-02）
+
+Agent新boundary修复原owner已停写，Root自有完整1960纯节点1960pass/0fail/0skip、七静态门0，独立三路径审0/0/0，原inline-ignore失败已复验关闭；T-Q03转待复测，不称完整Agent闭环。新源码实际wheel/sdist重建与完整115 runtime依赖仓外安装十步全0，371源保持/私有venv删除；后继同新artifact四布局/64负向矩阵37215已自然终态：219步骤全0、sdist重建包entry bytes相同、371源保持、私有安装目录删除；installed HTTP/真实backend/SIGTERM/发布消费者仍未验。
+
+当前70组13通过/0失败/13待复测/41未验/2决策阻塞/1支付后置。Root亲自运行的证据E95/E96在progress.md，不把worker命名Root的报告当独立验收。539任务外保护不动、混合候选未不自洽提交，完整Wave0–7 active，支付最后。下方R120为前一阶段。
+
 ## R120 实际验收推进（2026-10-02，覆盖下方状态核对）
 
 Agent Root四file213pass(5资源未选)、runtime104pass及七静态门0，原生命周期六RED/转交正控全部GREEN；扩大完整1960纯门又实际1959pass/1fail，检出新测试两inline type-ignore违反现规范。T-Q03保持失败，已沿原WIN03限定两test/必要main命名修复，cursor223确认运行中，不放宽门禁。16路径夹早期HTTP5候选不得整包作为仅生命周期提交；正式候选集成发布/消费顺序保留。

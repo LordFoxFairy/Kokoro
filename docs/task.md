@@ -1,3 +1,16 @@
+## R121 Agent当前冻结纯门与重建安装接续（2026-10-02）
+
+上一goal回合为progress：Root真实E93/E94并提交089c180e，Storage限定工程门验收；完整Wave0–7不缩小。原WIN03 R120 boundary修复turn01a0ff40-d361-7e22-805f-220ca4f48d6e已cursor226 completed/idle，交3a87e6a891b6c9696d2339eb1d56cde489847e8b976150efd1bfcea20c58bbe0。只worker/main内部helper rename与原两test修正；owner另自称“Root独立”报告仅作为worker运行证据，Root此轮必须自有工具/进程重新执行，未执行前不关闭失败。其baseline manifest hash字段转录有误：原Root RED文件实核仍5c48e2976dead4eab0ae2a362c9bd5b8553d460387be00ca7374dce3b07f22f2、日志同值、文件未变，不按错误字段覆盖证据。
+
+|任务|归属、基线与允许范围|依赖与验收|
+|---|---|---|
+|R121-AGENT-BOUNDARY-ROOT / T-Q03|Root独占运行/审查/Git，原four_owner_fixes_review_r31只读终审；Agent main2653bcc+现16冻结，三授权当前hash见3a87e6a8；539其他路径对原E93冻结保护。无写生产/测试/contract/lock/新文件，私有/tmp输出|Root自有完整1960精确纯节点、七静态门；保留原RED与资源分支未验，不以worker执行Root命名脚本冒称Root独立。读修复/型别probe是否规范，checksum/范围/旧symbol删除及声明无alias；真实命令/退出/skip/回收后才能失败转待复测，完整Agent尚不通过|
+|R121-AGENT-REBUILD-INSTALLED / T-Q03|Root，源writer冻结后按现R116B installer脚本派生私有唯一输出，原agent4_execution_owner只读包络核；不改应用源码或shared service|确认运行预算/原115完整frozen deps与当前lockexport、source-wheel+sdist构建与重建、仓外完整venv安装/pip check/origin/RECORD/实际CLI/inspect、原目录精确回收；新源码必须重建新artifact，不拿E84旧包代替。暂不启动PG/Redis/S3/HTTP/provider，后续现installed HTTP/正式候选发布→BFF→Web消费沿原序推进|
+
+R121实跑接收：Root22335当前1960pass/0skip、53358七门0、独立d2349678三路径0/0/0；原boundary失败已关闭但T-Q03待复测。Root53044当前新artifact十步实际通过且私有venv已删除；另37215沿已批准R116D原矩阵验证新source/rebuilt四布局64负向/entry bytes及恢复，实际219步骤全0且自然终态，371源保持/私有安装目录删除；仅安装矩阵，不是installed HTTP或完整Agent验收。原“sdist构建与重建”由两批分别完成，不将十步当已重建/HTTP。实证E95/E96，所有旧失败保留。
+
+放置/文档门：本轮均现已批准Agent生命周期与包发布验证，不新增模块/协议/Schema或Root可编辑contract；只现实现复验/私有运行输出。提交范围89a0d414已明确混合候选，不整16不自洽提交；旧HTTP5配套正式切片与资源门仍完整保留。
+
 ## R120-AGENT-BOUNDARY-GREEN（Root真实完整纯门发现新RED，2026-10-02）
 
 上一人类goal回合只有状态整理，不计新业务推进；本回合Root独立四file213pass/5资源deselected、runtime/architecture104pass、七静态门0，原7RED/control节点全部通过，542源保持/0资源/自然终态。但扩大现1960纯节点后真实1959pass/1fail/0skip：test_boundary_pragmas.py::test_no_inline_type_or_pyright_ignores 检出workspace_archive.py:398与worker/test_main.py:24新inline private ignores，T-Q03失败保留，不放宽检查器。

@@ -1,13 +1,41 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-02 / R120实际复验；复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-02 / R121实际复验；复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 当前状态以本页R120核对、R119/R118摘要、下方测试矩阵与具名证据为准；最新代码变化回待复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
+- 当前状态以本页R121/R120实跑、R119/R118摘要、下方测试矩阵与具名证据为准；最新代码变化回待复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
+
+## 当前测试看板（测试任务，不是开发任务）
+
+|状态|测试组数|
+|---|---:|
+|已通过（仅记录版本和范围）|13|
+|最新执行失败|0|
+|待复测|13|
+|尚未完整验证|41|
+|待业务决策|2|
+|支付后置|1|
+|合计|70|
+
+**已通过13组：** T-Q01 Web工程门、T-Q02 BFF工程门、T-Q04 IAM工程门、T-Q05 System工程门、T-Q08 Storage工程门、T-Q11测试工具诊断、T-L01登录正向、T-C01后端会话过滤、T-C06两轮真实模型聊天、T-C11前端流连接生命周期、T-K01连接器不显示假成功、T-B01定价纯规则、T-R01具名测试资源隔离。登录/聊天是E53记录的历史发布组合和本地模型，不代表当前全部能力或用户提供的模型网关通过。
+
+**有问题且尚未关闭：** E75整体标准扫描152条报告待逐条裁决/修复；Todo正式消费、Skill运行phase契约及安全过程硬刷新存在已记录缺口；当前完整浏览器旅程未验。最新执行失败为0只是70组当前状态计数，绝不是“零问题”。T-Q03 Agent纯测/安装切片通过，整组仍待复测。
+
+**计划完整度：** 70组覆盖目录已建立；全部逐用例步骤尚未展开完成。每组须沿原ID展开子用例：前置数据、操作、预期、实际结果、证据/版本、缺陷、修复提交及Root复测。先覆盖正向，再补权限/错误、重复/并发、取消/断线/刷新/恢复；必需分支未验或跳过不得整组通过。现有T-C09详细子用例作为记录方式，不新增第二测试计划中心。
+
+**待决策：** T-C05项目移动/归档/删除的关联生命周期；T-B07失败/取消/部分输出/未知成本的收费资格。接续优先正式Agent→BFF→Web消费与当前登录/聊天/刷新，再验证项目和独立会话、Home/输入框、Skills/MCP/过程交互、任务/作品，最后正式积分链与支付后置项。
+
+## R121 当前测试增量（2026-10-02）
+
+E95：Root独立当前1960纯nodes **1960通过/0失败/0跳过**、七静态门0，独立三路径审0/0/0；原E93 inline-ignore失败关闭，T-Q03转待复测，资源/安装HTTP/发布消费者分支仍未验。worker报告命名Root不当Root独立结果，使用本次Root自有manifest/进程证据。
+
+E96：当前源码新wheel/sdist与115完整runtime依赖安装十步全0，仓外origin/RECORD/实际CLI、371源保持/私有venv删除；同新artifact的sdist重建/四布局64负向矩阵已由Root终态完成：219步骤全0、重建entry bytes一致、篡改拒绝/恢复通过、371源保持、私有安装目录删除；记录E96当前manifest。仍不包含installed HTTP/真实backend/发布消费者。历史包结果不替当前包，也不称整个Agent/用户链通过。
+
+70组当前 **13通过 / 0失败 / 13待复测 / 41未验 / 2决策阻塞 / 1支付后置**；0整组最终验收执行中，当前安装矩阵已结束。失败历史、修复与Root重跑证据全部保留在progress.md E95/E96，详细既有ID不变。
 
 ## R120 实跑增量（覆盖下方人类状态核对）
 
@@ -239,7 +267,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 |---|---|---|---|---|
 | T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E41：Webddd38c5正式发布，Root84433 exit0，249contract/50architecture/2328tests及lint/typecheck/build通过，独立0、八hash匹配。format脚本N/A；Root新组合386已验且fa4525e4已发布，真实浏览器另未验，T-U01浏览器另行未验。E37真实RED历史保留 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E01：仅BFF离线纯门 |
-| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 失败 | E93 Root四file213pass(5资源未选)/runtime104pass/七静态0，原生命周期7RED/control全部GREEN；完整1960纯节点实际1959pass/1fail/0skip，两新test inline ignore违反工程门，原owner正在限定修复，尚未Root复验；仅此生命周期分支，不扩大至构造/排空/取消或真实S3。 E80配置11项/四门通过、dbaf4f9本地提交，E82 fixture Root真实2 RED→17file/172local GREEN、forced_close0/独立0、2653bcc本地提交；E83当前pure1937pass/0skip/615warning保留。E49具体缺OpenAPI已E76四安装正向布局关闭。E84当前重建source-wheel实际十步安装门通过；E85 installed DDL单venv首次/拒重入/所列目录与六漂移/精确回收通过。E86四布局64负例/219步骤、actual origin/恢复/零远端网络已Root通过；installed HTTP、其他DDL布局/漂移、真实S3/Docker/production close、HTTP5候选发布及消费者未验；其他源/contract/锁候选未混提交，不称完整Agent闭环 |
+| T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E95当前Root自有1960纯node1960pass/0fail/0skip、七静态0/独立三路径0，E93 inline-ignore失败关闭；E96新源码wheel/sdist/full115 runtime安装十步0、origin/CLI/371源保持/回收通过，新artifact四布局64负向/219步骤已终态通过；仅此生命周期分支，不扩大至构造/排空/取消或真实S3。 E80配置11项/四门通过、dbaf4f9本地提交，E82 fixture Root真实2 RED→17file/172local GREEN、forced_close0/独立0、2653bcc本地提交；E83当前pure1937pass/0skip/615warning保留。E49具体缺OpenAPI已E76四安装正向布局关闭。E84当前重建source-wheel实际十步安装门通过；E85 installed DDL单venv首次/拒重入/所列目录与六漂移/精确回收通过。E86四布局64负例/219步骤、actual origin/恢复/零远端网络已Root通过；installed HTTP、其他DDL布局/漂移、真实S3/Docker/production close、HTTP5候选发布及消费者未验；其他源/contract/锁候选未混提交，不称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
 | T-Q05 | System | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E74当前候选source da4675b9/test45bd5286/helper efd2f061，Root99279十纯门exit0，9files119pass/0fail/0skip，197hash保持/owned进程组终态/OS禁网，独立审0/0/0。E72先12fail/2control，连接URL正控缺口已补强并Root复现；只未发布候选纯门，真实PG/Redis/freshschema/runtime/provider/image另未验；E77单owner真实PG fresh 23断言/22表与精确回收已验，Redis/业务HTTP及其他owner组合仍未验 |
 | T-Q06 | Billing | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 待复测 | 历史门不能证明新组合；按owner ACCEPTANCE重跑 |
@@ -301,7 +329,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-U03 | Web | 桌面与窄屏对话/侧栏/项目/作品布局，长文本/代码/表格/错误均可用 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-U04 | Web | 键盘/focus-visible/axe/reduced-motion、全部loading/empty/error/partial状态与视觉/bundle门 | 未验 | 真实浏览器+截图/axe/视觉；UI纯测或借用shadcn不替代验收 |
 | T-R01 | Root | 本次BFF隔离测试临时库精确创建/删除、无共享PG/Redis reset | 通过 | E03：removed=true/cleanup=[]；仅该run，不代表全进程治理 |
-| T-R02 | 各owner→Root | 实际进程启动/health/ready/超时/取消/graceful shutdown/worker drain/故障恢复 | 未验 | E88现System19真实资源/HTTP切片通过；E89 Agent close仍失败，原owner已在实施，未冒称全owner。 原句柄追踪、不重复启动、不把观察超时当进程已停 |
+| T-R02 | 各owner→Root | 实际进程启动/health/ready/超时/取消/graceful shutdown/worker drain/故障恢复 | 未验 | E88现System19真实资源/HTTP切片通过；Agent旧close失败已在E93/E95限定纯生命周期回归关闭，当前installed HTTP/真实S3/Docker/SIGTERM与全owner恢复仍未验，不把纯测修复当资源门通过。 原句柄追踪、不重复启动、不把观察超时当进程已停 |
 | T-R03 | Root/各owner | 权限矩阵/输入边界/敏感日志/依赖secret/source扫描/跨owner禁止访问 | 未验 | 同tenant不同人+跨tenant正负例；报告不含凭据 |
 | T-R04 | Root | 全owner当前门+组合真实E2E+隔离fixture backup/restore（持久事实/幂等/未决outbox恢复）+可追溯release smoke/image SHA清单 | 未验 | Wave7最终研发验收；SLO目标不冒充压测，不扩展部署运维 |
 | T-S01 | System→IAM/BFF | Site/Host/Workspace/Runtime/Policy具名身份与生命周期；disabled/unknown/expired拒绝、secret零泄漏 | 未验 | E88现System单仓lifecycle19真实通过，只启动/HTTP deadline/schema资源切片；完整业务/消费者待验。 owner HTTP/PG→消费者，不建任意配置桶 |
