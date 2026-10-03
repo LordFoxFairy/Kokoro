@@ -1,3 +1,11 @@
+## R163 原工作区仍持续加载：未确认根因、未修复（2026-10-03）
+
+本轮重新聚焦用户原 conv_ffd7，不把 Move 或历史 fixture 通过当作页面恢复。当前 CUA inventory 20s 超时；原 browser3/tab21 的错误事件读取15s超时，未取得原DOM、hydration或带该用户状态的session请求。停止重复控制；未关闭成功、未新建tab、未清数据或重启原组合。launcher45606/Web46036仍live。
+
+当前原服务无cookie只读 GET /api/auth/session 24ms/200/authenticated=false，GET /login 79ms/200；只说明匿名公共路径响应，不证明用户会话或浏览器初始化。现 AppGate checking与anonymous共用RuntimeLoading，后者依赖router.replace；前者普通请求已有10秒预算。原页究竟停在水合、探针还是导航仍待同页证据，不能把候选分支写成根因。原首屏P0保持未验收。
+
+并行只读审及既有候选收口：Root8111以Node22实际R162系统场景1pass/53名称过滤/19.43s，测试321125c8、三source冻结hash相同，Redis15终态0。仅证明fixture Move合法回包不再被generic meta门降502，非真实BFF/用户旅程。独审681789ea发现空查询符规范化P1与JSON media-type校验过宽P2，尚未补反例/修复，故该候选不发布、不验收；required client/pin/UI仍未实施。70组11/6/14/38/0/1及uv.lock/test-cases原hash保持，完整Wave0–7 active。
+
 ## R161 原用户持续加载仍开放；补真正导航终态验收（2026-10-03）
 
 用户再次报告原 conv_ffd7 首屏持续“正在加载工作区”。Root本轮 inventory 取得 browser3 两原标签21/22，绑定21仍20秒超时/kernel reset；没有原页DOM、session请求或水合证据，不把控制超时认作应用根因。原 launcher45606/Web46036仍live，未重启、清数据、造新tab或声称修好。

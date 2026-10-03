@@ -1,3 +1,9 @@
+## 2026-10-03 — R163 原用户持续加载未修复，证据边界明确
+
+原conv_ffd7仍P0未验收。当前浏览器inventory20s、原tab21错误事件15s超时，未取得同页登录请求/渲染证据；没有关闭成功、新tab、重启或清数据。原launcher45606/Web46036保持live。无cookie公共session24ms200匿名、login79ms200仅服务探测；AppGate checking/anonymous相同spinner不能区分实际卡点，未据此推断根因或盲写产品修复。
+
+Root8111已消费R162真实Next/Redis/Productcookie候选场景：1pass/53名称过滤19.43s、Node22、test321125c8及三sourcehash不变、Redis15=0。此通过只覆盖fixture Move投影；独立审681789ea仍有P1空尾query、P2错误JSON media-type，需后继真实负例及精确修复，候选未发布/未验收、client/pin/UI未实施。原70组11通过/6失败/14待复测/38未验/0待决/1支付后置、test-cases8c17与uvf7e1保持，完整目标继续active。
+
 ## 2026-10-03 — R159 首屏P0未关闭；R158真实证据收口
 
 本轮围绕原conv_ffd7：IAB browser3实核两原同URL tabs21/22，原21只读frame与22 DOM都在focus控制超时，没有原页session/hydration证据。没有新页、刷新成功、服务重启或清数据。向用户请求关重复Kokoro标签再重开原URL，以恢复观测；不把工具超时判为应用根因，不称已修复。

@@ -1,3 +1,27 @@
+### R163 原用户首屏继续为当前P0；不冒用其它通过（2026-10-03）
+
+Root87ceb3c6，原页conv_ffd7/browser3/tab21；当前原控制inventory20s与closed错误事件15s再次超时，未取到同页session/hydration/DOM。现无cookie公开session200/24ms匿名、login200/79ms只排查公共服务响应，非用户验收；checking/anonymous共用spinner是展示风险，实际卡点未确认。原45606/46036仍live，无清数据/新tab/重启，先等此前原页重开反馈或恢复同页观测，不重复盲控、不盲改timeout/认证闸。
+
+R162候选收口：Root8111 Node22真实Next系统1pass/53名称过滤/19.43s，冻结test321125c8及source b1b95a45/967ebd12/56580373匹配，Redis15=0。独审agent_chat_contract_gate报告 /tmp/kokoro-r162-move-adapter-final-review.md（681789ea44720917dc4b5c0bc13aa655afa03a1a6d2baf9c069a99d754629074）有P1空尾query被规范化、P2JSON类型includes过宽，未验收/未发布。原Web writer已冻结停写；后继按同writer仅tests-first证明负例，再精确adapter改动，旧generic门不宽。required client、pin generation、engine/UI与真owner/用户E2E仍开放，不关闭T-C05或原加载P0。Root仅三台账writer/Git，uv/Billing/Storage与原70组账保护。
+
+### R162 会话归属消费：真实HTTP反例→严格adapter→required client（2026-10-03）
+
+上一goal轮为progress：Root932fc272纠正已发布库存来源、87ceb3c6提交真实终态证据；Web120f8921三个Next/Chromium终态+reload实际3pass/50名称过滤36.54s，补验收缺口但不关闭原用户P0。原页重开询问暂无回复；原launcher45606/Web46036亲核live，无当前运行测试句柄，不因工具超时重启。下一安全前置是已发布BFF5e119 public7.1及三D0最终ee057a4d/5bf79b9d/672e836f，独立5cc991a8已通过。
+
+|任务|owner/角色/基线/范围|完成条件、依赖与验证|
+|---|---|---|
+|R162-W-MOVE-HTTP-RED|agent4_lifecycle_review 原Web单writer/main9b42；保三D0＋120f8921既有候选；只现 tests/system/oidc-rp-next-http.integration.test.ts|复用真实Next、Redis、正式Productcookie，fixture BFF按已发布7.1返回无meta成功/typed错误；验证exact POST canonical Move、原body/key、status/request-id/Retry-After、安全拒绝非法回包、非Move旧envelope门不放宽。先tests-only冻结，Root资源独占执行RED，无生产/pin/generated/Git。|
+|R162-W-CONTRACT-REVIEW|agent_chat_contract_gate 原只读审查员|核当前published7.1 Move完整status-code-headers图与R158已审D0一致，给严格adapter最小识别/投影审查清单；不编辑仓/跑资源。|
+|R162-ROOT|Root87ceb3c6|先审RED与当前owner committed机器事实，实际NextHTTP正确失败后才窄放strict Move adapter/GREEN；随后同owner逐阶段pin official generation与required client的有界生命周期。完整client/engine/UI、真BFF owner集成与原浏览器journey仍必须完成，不能停在可调用接口就关闭T-C05。|
+
+放置及契约门沿已审R158三D0，不新建计划中心、不重复架构裁决。每阶段严格写集，旧generic meta/error门不宽化，不改BFF/SQL/权限/积分；无consumer别仓SQL，无preview假ACK/随机替换key/兼容fallback。现用户loading P0、Storage原完整并行红、13broken与70组账保持开放；Root唯一资源/Git/三台账writer，保护uv/Billing/Storage候选。
+
+R162 owner只读ec8e22d8：published7.1 Move八HTTP状态/code图及headers已固定；retryable仅boolean、requestId机器1..128不套key正则。发现异常配置支路BFF缺fixedTenant发503 product_tenant_not_configured，超出机器503枚举，记后继BFF owner合同/runtime闭合；Web必须按现机器拒为adapter502，禁止扩大503合法图或冒原loading根因。consumer合法路径可继续，BFF完整异常路径未闭环。
+
+R162 最终tests-only RED：Root92924 exit1、1fail/53名称过滤15.82s，首合法Move200实际被generic meta gate降502，无collection/setup错；最初18895同真实RED保留。原独审P1同key不同target伪合法fixture已改为独立稳定意图key，321125c8最终hash，独审deb17671零新发现。Root manifest /tmp/kokoro-r162-web-before-adapter-manifest.json保护全tracked当前bytes；Redis15只复用自有prefix，无共享清理。
+
+R162-W-MOVE-ADAPTER-GREEN精确准入：原Web单writer只新增src/contract/conversation-move.ts（已批D0的closed wire schema/canonical predicates/status-code graph）、修改src/lib/server/bff-response.ts（具名operation响应投影）与src/app/api/session/[...path]/route.ts（exact POST/三段/canonical/noquery在generic与非JSON前进入）；如有现contract INDEX只加实际入口。不写client/preview/fakes/pin/generated/httpbarrel/paths/engine/UI、tests与三D0，此阶段不冒完整Move实现。仅200 ownerdata→flatACK；必需request-id/no-store、严格error status-code图/boolean/message、429optional合法Retry-After，不传非法ownerbody/不以fallback request-id冒owner；任何坏Move回包502。保generic schemas和其它路径逐字原语义，不添加fallback/放宽。ACK请求identity/target关联仍由后继required client负责，不解析requestbody造第二owner。Root资源重跑真实系统门与旧proxy/server/contract门、独审冻结源码后再推进pin/client，不发布未验半片。
+
 ### R161 用户再次报告持续加载：先补导航终态证据（2026-10-03）
 
 原 conv_ffd7 首屏仍未验收。当前控制 inventory 返回 browser3/tabs21、22 同一原会话；绑定21再次20秒超时并 reset，没有原页 DOM/session/hydration，不把控制失败认作应用根因。原 launcher45606/Web46036仍live，未重启、清数据或开新tab。
