@@ -1,3 +1,13 @@
+## R134 当前测试进度（2026-10-03）
+
+测试计划唯一入口docs/test-cases.md；70组及70编号用例完整记录，开发派工task.md、实际结果progress.md E108分别维护。最新13通过/1失败/12待复测/41未验/2业务决策/1支付后置；不是产品完成率，历史正向登录/两轮聊天只绑定旧组合。
+
+本片Root实际真实PG/HTTP74/74、契约233/233、默认纯门736pass/1既定PG schema跳过，四pure149pass；format含37变更TS/MJS、生成/lint/types/build通过。E107三具体完整性/partial-GC故障已关闭，但T-A05/C10完整用户组未验；T-Q02限定工程门通过，T-Q10 checkpoint一致性仍失败，4条契约lint warning和E75规范报告保留。
+
+BFF7/Agent HTTP5消费切片已Root提交并普通推送main a68cbe55cde709f9b21f3d5803bfbd3ca5d14e2b，独立远端同SHA且本仓clean。Web仍ddd38c5/BFF6；Root组合gitlink待后继，尚未验证当前浏览器或用户模型网关、全部owner/正规积分，勿称全闭环。原worker已停写、所有Root运行终态、精确自有资源清理且源保持；Billing/uv.lock任务外保留。
+
+下一Web7正式消费→浏览器登录/聊天/刷新/安全过程，然后项目与独立任务、文件、Skills/MCP及积分；支付最后，不深入部署运维。完整Wave0–7 goal保持active。下方R129及更早仅历史。
+
 ## R129 当前测试进度（2026-10-03）
 
 测试验收唯一入口docs/test-cases.md，70组及70编号计划已记录；开发派工task.md、真实证据progress.md E107。当前12通过/3失败/13待复测/39未验/2决策/1支付后置，不是产品完成率，历史登录/聊天只代表具名旧组合。

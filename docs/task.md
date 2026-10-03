@@ -1,6 +1,32 @@
+## R134 测试task核对与正式切片交接（2026-10-03）
+
+测试计划唯一docs/test-cases.md（70组、70编号计划）；本页只管开发派工/依赖，实际结果progress E108、组合CURRENT。Root沿既有R129→R133门验收并发布BFF，不建立新计划中心。当前13通过/1失败/12待复测/41未验/2决策/1后置；T-Q02限定工程门验收、T-A05/C10具体故障关闭但整组未验、T-Q10失败保留。
+
+|任务|owner/角色/范围/基线|验证与交付/下一动作|
+|---|---|---|
+|R133-BFF-PUBLISH|BFF；原bff_http5_consumer_owner已停写，Root独占index/提交。main02276b6及已授权50路径冻结441 hash；无其他owner/锁修改|Root真实74资源、233契约、736默认/1资源skip、149四pure及完整静态/格式通过，两限定审0/0/0。50路径对应rename折叠48条；Root按no-renames/冻结bytes/secret-like/cached check复核后提交a68cbe55cde709f9b21f3d5803bfbd3ca5d14e2b，普通push并独立remote同SHA，BFF clean。限定切片已验收，不当全部产品|
+|R134-TEST-STATUS-READ|four_owner_fixes_review_r31，只读；Root390fab04/BFF新发布/三finalmanifest、docs/CODEBASE_MAP.md及现70计划；无写/资源/Git|独立确认13/1/12/41/2/1与三状态转换，70原ID与编号计划完整；Root同步现四台账、保历史和编号suffix，Git只四docs|
+|后继Web7消费与用户验收|Web apps/kokoro-app，main ddd38c5 clean；BFF formal7 a68cbe5/digest76d524d7先于消费者。既有R123 Web只读方案bb7dc0c3不重做总体设计；Root掌边界/最终资源浏览器|正式pin及三D0/测试RED→consumer实现→Root工程门→正式组合→浏览器登录/两轮聊天/五暂停点刷新。当前未派写、未验证，不能称正在通过。Root gitlink暂保旧pin，其他owner/积分Wave目标保持|
+
+Root本轮台账局部编辑归属与验证：现测试总台账只更新当前看板、三矩阵状态及相关当前证据、追加真实证据及发布事实；不改变70编号计划/验收条件/历史结果。文件职责不变，不新目录或第二中心。Billing五docs和uv.lock任务外保持；所有运行终态、无共享服务启动或清库。项目生命周期和失败收费规则尚待决策，支付最后。
+
+以下原任务卡与历史结果保持。
+
 ## R129 当前任务接续（2026-10-03）
 
 Root已核E107原71资源项全通过、新3真实RED；测试task唯一台账为docs/test-cases.md，70组12/3/13/39/2/1。现已实际续派原bff_http5_consumer_owner唯一writer执行下方既有R129-PROVENANCE-GC-GREEN卡，仍同BFF main02276b6候选；不新建重复计划。four_owner_fixes_review_r31只读测试记录/计数核对，Root唯一编辑四Root docs并管真实资源/Git。尚未R129交付或RootGREEN，其他source/contract/schema/lock及Billing/uv.lock任务外不动。
+
+R130-CHECKPOINT-FAILURE-READ / T-Q10（agent4_execution_owner只读，Root裁决/后续实现）：基线Root main390fab04，保Billing/uv.lock任务外；与当前BFF R129实现可并行，无共享写入。仅盘点scripts/tests中E105失败节点、当前checkpoint验证器/manifest/contract dependency/gitlinks与现docs；允许读Git/log/diff及不接触基础设施的静态诊断命令，不运行整个重回归、不访问网络/PG/Redis/浏览器、不改仓库或Git。交/tmp/kokoro-r130-checkpoint-failure-read.md：分类217条究竟历史证据过期/消费者尚未cutover/真实契约drift/工具缺陷；列可验证根因和精确最小后续owner/前置。不得把全部 mismatch 一律归旧证据、批量刷新checksum或降低门禁。BFF7尚未正式发布、Web仍BFF6时，不伪做整组合通过。先定位，后按owner发布顺序修，Root继续关键路径真实资源验收。
+
+R131-GREEN-ROOT（Root资源/集成，原writer停写）：R129交付7授权路径hash精确匹配，其他源保持E107 RED冻结；四D0/current只加顶部，原suffix bytes保持。Root现冻结/tmp/kokoro-r131-green-root-freeze.json，复用唯一原资源runner同14焦点+完整74，expect green；禁止同时改BFF/重启基础设施。并行agent4_execution_owner只读现2源SQL/GC终审、four_owner_fixes_review_r31只读API/测试保真终审，均绑定本freeze/当前HEAD02276b6；交/tmp/kokoro-r131-green-sql-review.md与/tmp/kokoro-r131-green-api-review.md hash/具体P0P1P2，不资源/服务/Git/写仓。原R127总体review已覆盖其余候选，终审聚焦R129新7路径及既有三个问题，不新发明状态机/issuedcursor。Root继续实际资源及后继静态纯门，不用审查自报替复验；尚未通过不发布BFF7或进入Web消费。
+
+R131-TIMESTAMP-FIXTURE-ACK（原BFF唯一writer，Root资源/Git）：Root现14焦点全部通过、完整74项73pass/1fail/0skip，manifest f6c6765c；唯一失败test/chat-facts.integration.mjs:1728在既有barrier case sourceOccurredAt与event.timestamp各new Date导致可能跨毫秒，生产assertSource严格相等正确，前置失败不是R129过程回归。只允许该现case两terminal fixture各捕获一次真实ISO时间并共享两字段；不改其他case/source/docs/schema/contract/锁或fake clock/取消barrier/延长timeout。修前bytes0600 /tmp/kokoro-r131-chat-facts-fixture.before.mjs已Root保存；正式no-semi160 format/语法可跑，禁止资源/服务/Git，交单hash/diff停写。原SQL/API R131审继续固定7源hash，待此小test ACK后新freeze，Root选15（原14+该barrier）与完整74，同真实资源重跑；不靠忽略失败或重试碰运气放行。
+
+R131-PERMISSION-FIXTURE-ACK（原BFF唯一writer；Root资源/Git）：Root新15焦点与74资源全pass，纯149/default736+1 skip及format全0，但正式full contract:check实际233项232pass/1fail；原credential负例writeFile mode0644被Root严格umask077实际变600，未构造声称的宽权限，生产拒绝规则正确。只允许test/platform-projection-credential.test.mjs首个permissions case在创建后显式chmod0644并stat断言实际mode；原正控chmod0600亦断言实际mode，保完整rejection/tenant/generation与其余全部case。可现fs/promises import加stat，不改production/其他tests/docs/schema/contract/锁、umask或权限校验。修前0600 /tmp/kokoro-r131-permission-fixture.before.mjs保存；语法/正式format可跑，禁止资源/服务/Git；交hash/精确diff停写，Root同umask077完整contract:check与format/pure复测。原失败保留，不把wrapper环境差异假称产品权限失守。
+
+R132-BFF-DOC-FINAL（原bff_http5_consumer_owner唯一BFF writer，Root提交）：Root当前15焦点/完整74资源全pass；pure149/default736+1 PG schema skip、完整format与全contract pipeline（233pass/0skip）已亲跑通过；两独立R131源码审0/0/0。原73/1 timestamp与232/1 permission fixture失败保留，已精确窄ACK后Root复测关闭。只允许现四D0/current新增短顶部当前事实，保护全部原suffix：HTTP5消费+public7/两canonical表/immutable过程分页/RR/START/GC已实现并本片Root有限资源验收，绑定资源19016f31、pure3b926e2d、完整contract4811c5e；原GC/provenance问题与两test fixture有限关闭，完整BFF业务/其他资源/镜像/用户Web/真实provider/积分仍未验，BFF7当前Git发布待Root。正确记录contract lint5warnings与默认1资源skip，不伪零warning或完整integration；不扩大实现范围。禁止source/tests/contract/schema/generated/lock/Rootdocs/Git/资源/服务；交4hash并停写。Root仅4docs变更后同完整候选复验纯门并按原R123/R126/R129/两ACK授权显式路径提交自洽HTTP5/public7/SQL切片，发布前检查index/远端，Web随后再消费。不将发布当全owner闭环。
+
+R132-SNAPSHOT-EXAMPLE-RED/GREEN（原BFF唯一writer，Root验证/Git）：Root复核完整contract日志发现5 warnings中Snapshot示例缺新增required execution_process，不能全称“既有”；实际字段/profile无错但发布示例债需随片关闭。先仅test/contract/openapi-contract.test.mjs现R124 public7 node追加example完整四字段与run/head一致、nullable Todo/空activities/耗尽cursor及非空W断言，其他case/源码/契约冻结。交停写后Root单节点明确RED；再授仅contract/openapi/v1/openapi.yaml该Snapshot example补与active head同Run的完整process，不改变Schema/API/version/operation；四D0/current仅新顶部澄清实证与warning分类，原suffix保护。不要改lint规则、关闭warning或给缺字段默认值。Root原节点+完整contract/pure门复验后才发布，不把前5warnings全说历史、也不追无关deployment。该机器example职责仍原owner/contract路径，无新文件。
 
 ## R128 SQL阻断修复与剩余失败定位（2026-10-02）
 

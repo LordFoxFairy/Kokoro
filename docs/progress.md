@@ -1,3 +1,33 @@
+## R134 / E108 当前测试验收、修复与正式BFF发布（2026-10-03）
+
+人类当前请求为完整测试task进度；沿docs/test-cases.md唯一70组和70编号计划续记，不新建计划中心。最新状态13通过/1失败/12待复测/41未验/2决策/1支付后置：T-Q02限定工程门通过；T-A05/C10具体故障已复验关闭但全组回未验；T-Q10失败保持。用户全Wave0–7仍active，历史登录/模型旅程不当当前组合通过。
+
+### Root真实命令与结果（Node22.22.2；本仓固定pnpm11.25.0）
+
+- 真实资源：Agent `.venv/bin/python /tmp/kokoro-r124b-bff-resource-runner.py --freeze /tmp/kokoro-r131b-green-root-freeze.json --freeze-sha256 61983723ca4ca2e96756fa7061c07e98af7eea02512154d2b4f79a8b4c5d3264 --file test/agui-projection.integration.mjs --file test/agui-http.integration.mjs --file test/chat-facts.integration.mjs --test-name-pattern '^R12[468] |^serializes terminal, deletion, failure, and exhausted-head races without reversing stream and dispatch locks$' --expect green --full-regression`；调用本仓canonical `scripts/apply-schema.mjs` 安装自有库，三生产integration文件完整46+15+13=74pass/0fail/0skip；焦点7+6+2=15pass与完整重叠不相加。自然exit0、源保持、所有owned PGID终态、临时库独立absent、Redis marker清除/结束空，forced_stop与cleanup_errors空；不是全BFF八资源file、浏览器或外部provider。
+- 纯门：Root现 `/tmp/kokoro-r127-bff-green-root.py` 实际build、`scripts/generate-agent-http-client.mjs --check`（18生成物双次一致）、lint、typecheck各exit0；四pure149pass/0skip，默认737 total/736pass/0fail/1既定PGschema skip；source保护443路径、无forced_stop。日志保存各实际argv和sha；不是资源通过。
+- 正式格式/契约：本仓`pnpm format:check`对应官方参数；全部37候选TS/MJS另按no-semi/160检查；`pnpm contract:check`完整固定owner生成/公开lint/semantic/契约测试exit0，233pass/0fail/0skip。严格umask077仍通过；当前4warning为3 conditional schema局部required-properties提示和1既有特殊操作无2xx，不冒称零warning。
+
+- resource：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r124-bff-resource-_lejjoup/manifest.json`，SHA256 `19016f315fa7dd88a406222c28fb10769bd9e84de38f1e4df5cc34958e8697e4`。
+- pure：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r127-bff-green-root-39merhwu/manifest.json`，SHA256 `7c8284b1714e7a706c730e2fd1029314ce8721dc294a17e2aeb2f87cee21a55e`。
+- contract：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r133-contract-root-s250_zpo/manifest.json`，SHA256 `f7e3519c4d026d6ab017e5ccc7a21d69e211a6e88fba9a8c8a27c221fcd1a83e`。
+
+### 失败保留与闭环边界
+
+- E107的两个provenance（应503却200）与真实partial-GC（应410却404）经R129源修、Root上述74全部复测关闭；current compact与ledger/source/frame完整性无条件核验、旧anchor不读mutablelatest、partial-GC保留可判过期事实；未知Run/selectedSTART/全回收及恢复控制实际到达。两独立限定SQL/API源码审0/0/0，报告`/tmp/kokoro-r131-green-sql-review.md` SHA26e558fc7051ab5e31391f8bec695d73ab5732b78919a8f9eed68642669e4a87、`/tmp/kokoro-r131-green-api-review.md` SHA14ee7dae49225106f798c35a8b70d3f9bb19d28ebe85d4e3488bb32e14b7076e。
+- 过程失败保留：首次GREEN资源73pass/1旧chat fixture fail（manifest f6c6765c），两次独立new Date跨毫秒使合法source严格身份前置失败；仅两terminal fixture capture once复用时间，Root资源74/74。首次正式contract232pass/1fail（c8f71c5a）为umask077下mode0644实际600，fixture现显式chmod并stat两权限；Root同严格环境233/233。public7 Snapshot example missing execution_process通过tests-only真实1fail后只补正式四字段示例，最终233/233与warning5→4；机器schema与安全准入未放宽。
+- Root R130只读checkpoint诊断：217=205过期SHA但同引用blob、10实际Agent变化引用（7独立路径）、2 `_verify_npm_assertion` blob不可读误分类为checks缺失。报告`/tmp/kokoro-r130-checkpoint-failure-read.md` SHAd710ebc6737d5488aa3507ad1a3efd152965b75ebb81406506b3ab425e6044dd；尚未修复/全门复验，不关闭T-Q10，不批量改历史hash或弱化门禁。
+
+### 当前Git身份与交付
+
+BFF基线main02276b623f8390288fbf86d6efaa0f5152256afa；Root审50明确路径（Git rename折叠为48变更条目），staged bytes逐项与final441 freeze `/tmp/kokoro-r133-publication-freeze.json` SHA427349f81adb12f67f31fc680398273a7cfabe1eb8ac0b1c12c5ef74cfd27e98相同；较final pure/contract冻结只四docs当前验收前缀变更，source/schema/contract/test/generated均是已测bytes。首次stage后把rename折叠计数误当50导致Root断言退出，未丢修改；按`--no-renames`独立核50和cached check0后提交，不绕门禁。
+
+Root唯一Git提交`a68cbe55cde709f9b21f3d5803bfbd3ca5d14e2b feat(chat): consume Agent HTTP5 and persist anchored run processes`，普通push origin main已自然exit0，随后独立ls-remote main同SHA，BFF工作树clean。Agent正式79bf98c HTTP5；BFF public7 OpenAPI SHA76d524d731b10d1cd4b16db4dae957701bf5c5d82a3cd915a42bc57617746ebe；Web仍ddd38c5/BFF6正式pin，Root gitlink暂未推进以待消费者与组合验收，不称当前完整组合发布。
+
+Root仅提交四台账，Billing五docs与uv.lock任务外保留。不启动共享服务、不新增浏览器实跑、不调用用户模型网关。Root测试记录只读终审确认70同序及13/1/12/41/2/1。下一关键路径为正式Web7消费与snapshot页耗尽/同watermark续流，然后浏览器正规登录→真实聊天→刷新/过程交互，后继其余owner/正规赠送预占结算释放流水；支付最后。项目生命周期T-C05、失败收费资格T-B07仍待业务裁决。
+
+以下R129/E107及更早均为历史。
+
 ## R129 / E107 测试台账核对与三个有效RED接续（2026-10-03）
 
 本轮人类请求为测试task：完整计划、完成/未完/问题记录。Root核最近亲自执行的R128c结果（2026-10-02执行），不把本次状态核对伪称新产品实跑。测试唯一入口docs/test-cases.md；70原组与70编号计划同序、计划段suffix保持。当前12通过/3失败/13待复测/39未验/2决策/1后置；历史12限定具名版本，不当当前浏览器全能力通过。
