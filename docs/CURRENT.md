@@ -1,3 +1,15 @@
+## R120 实际验收推进（2026-10-02，覆盖下方状态核对）
+
+Agent Root四file213pass(5资源未选)、runtime104pass及七静态门0，原生命周期六RED/转交正控全部GREEN；扩大完整1960纯门又实际1959pass/1fail，检出新测试两inline type-ignore违反现规范。T-Q03保持失败，已沿原WIN03限定两test/必要main命名修复，cursor223确认运行中，不放宽门禁。16路径夹早期HTTP5候选不得整包作为仅生命周期提交；正式候选集成发布/消费顺序保留。
+
+Storage默认工程门实际491pass/156PG skip/0fail及format/lint/types/build通过，契约/Prisma生成验证亦实际通过；raw generate临时15文件空白差异经现正规normalize回原280源/17generated，工作树clean。工具环境/owned port负例包络失败全部保留，未改产品/锁/基础设施。独立终审7d8eaee1为0P0/0P1，T-Q08限定工程门已验收；156PG及全部外部资源/用户旅程尚未验。70组当前13通过/1失败/12待复测/41未验/2阻塞/1后置。实证E93/E94在progress、原测试组ID保持，完整Wave0–7 active。
+
+## R120 人类测试计划核对（历史阶段，2026-10-02）
+
+测试验收唯一入口为docs/test-cases.md，不是开发task。Root实际核70唯一组：12通过/1失败/13待复测/41未验/2决策阻塞/1支付后置；0整组最终验收执行中。完整逐用例步骤尚未全部展开，当前浏览器/全部用户能力尚未闭环，历史通过保留版本边界。
+
+Agent原owner已停写交付九源GREEN；Root本次核16路径hash一致、独立源码终审0/0/0，尚未Root独立GREEN重跑，T-Q03保留失败。Storage准入止于pnpm工具层，不记产品失败/通过。下一沿原R120任务卡复验Agent，正式发布/消费者更新后再验证当前用户旅程；不以状态核对当业务推进。以下R119执行中摘要为历史阶段。
+
 ## R119 当前推进（2026-10-02）
 
 Agent扩展生命周期已Root真实6fail/1pass/0skip，542文件保持/零资源/owned自然终态；独立RED/三设计门接受后原WIN03九现源GREEN正式启动，最新215确认live，尚未交付/Root GREEN。具体源范围/句柄在task.md，E92实际证据在progress.md；T-Q03失败继续保留。

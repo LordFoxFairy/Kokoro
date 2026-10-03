@@ -1,3 +1,35 @@
+## R120-AGENT-BOUNDARY-GREEN（Root真实完整纯门发现新RED，2026-10-02）
+
+上一人类goal回合只有状态整理，不计新业务推进；本回合Root独立四file213pass/5资源deselected、runtime/architecture104pass、七静态门0，原7RED/control节点全部通过，542源保持/0资源/自然终态。但扩大现1960纯节点后真实1959pass/1fail/0skip：test_boundary_pragmas.py::test_no_inline_type_or_pyright_ignores 检出workspace_archive.py:398与worker/test_main.py:24新inline private ignores，T-Q03失败保留，不放宽检查器。
+
+|任务|归属与基线、允许范围|验收/交付|
+|---|---|---|
+|R120-AGENT-BOUNDARY-GREEN / T-Q03|原WIN03唯一writer；Root审查/资源/Git。Agent main2653bcc + manifest c4b015cb冻结候选。本轮仅 tests/unit/sandbox/test_workspace_archive.py、tests/unit/worker/test_main.py；必要时只允许src/kokoro_agent/worker/main.py内_ShutdownBudget→ShutdownBudget清晰内部命名收敛与既有引用，不建alias/新公开网络API。其他9源/测试/设计/contract/lock及所有已有业务断言保护|删两inline ignores，不用file-wide pragma、新allowlist、Any/getattr/cast绕过或放宽pytest/Pyright规则；connector测试可用标准monkeypatch替换现注册表但保留blocked真实线程与close次数。预算使用正规typed内部helper；若需现main最小rename先明确，删旧符号不留兼容。先原完整boundary file真实RED→修复→该file、四file完整纯回归、Ruff/Pyright/runtime/contract/failure门。不得启动基础设施/Git或扩大候选；交3路径hash/非目标保持、实际log/manifest并停写，由Root独立重跑1960节点才验收|
+
+原WIN03新turn01a0ff40-d361-7e22-805f-220ca4f48d6e已cursor225确认inProgress，任务仍由同writer推进；Root业务/纯运行均终态，没有重派或重启共享服务。
+
+文档/放置门：既有Agent worker shutdown预算与sandbox测试职责不变，选修现两test与必要main内部名字；淘汰新增测试支持模块/豁免清单。无SQL、wire、schema、数据生命周期、依赖或owner变化；沿现三设计和Python/测试手册。本轮集成范围审89a0d414明确16路径混合早期HTTP5/Todo候选，禁止整16作为仅生命周期提交；后继验收完整既定候选及发布消费者，避免不自洽hunk提交。
+
+Storage Root独立现format/lint/type/build各0，默认tests第二包络491pass/156资源pending/0fail；第一包络误拒本fixture已占用端口的EADDRINUSE负例导致timeout保留，严格只允许本进程live-owned port重试后绿。contract:check止于pnpm nested CLI不在PATH，不判产品失败；下一私有缓存shim补PATH并独立contract/Prisma门，不install、不改依赖或共享状态。E94实证已progress登记，独立终审7d8eaee1为0P0/0P1；最终contract/Prisma+normalize/format/types实际通过、280源/17generated恢复原bytes/clean，T-Q08限定工程门验收，156PG及完整T-F仍未验。
+
+## R120 Agent GREEN接收与Root复验（2026-10-02）
+
+原WIN03九源GREEN turn01a0ff23-771c-7731-b06b-19e3fbdae8d8已cursor222 completed/idle，交付/tmp/kokoro-r119-agent-lifecycle-green-final.json SHAc4b015cbde7b969ece201a4572396e0c200f409896258c8de7102aeedd9ca6e6。owner自报12精确/213四file+5资源未选/91runtime及静态门，只交付待验。Root接收九源/四test/三docs hash后独占复验；原actor停写，未提交或发布。原Storage工具准入只遇pnpm依赖自动检查层ENOENT/严格诊断选项错，未运行业务测试/生成，原日志保持，不记Storage产品失败。
+
+|任务|归属与范围|验收/交付|
+|---|---|---|
+|R120-AGENT-GREEN-ROOT / T-Q03、T-R02|Root运行/审查/Git；原four_owner_fixes_review_r31只读终审，Agent main2653bcc+交付16路径冻结，其他526路径保留。仅Root私有输出与原纯测试/静态命令，不再编辑生产/测试|Root独立原四file完整回归+runtime/architecture、原精确生命周期/new取消/预算控制、Ruff/Pyright/contract/failure门，实际failure/skip与资源边界单列。终审核strong assembly直到spawn/close、cancel/primary优先/唯一转交、single first-SIGTERM deadline、Docker prior/new补偿与所有既有assert。已验才准限定切片提交，不将真实SIGTERM/S3/Docker/E2B/custom/installedHTTP/消费者发布冒充通过|
+
+R120人类测试计划核对：Root已实核交付16路径hash；原four_owner_fixes_review_r31终审报告461255e1为0/0/0，冻结源码审查完成，Root独立GREEN运行仍待执行，T-Q03原失败保留。Storage只读工具诊断d74db4e2已完成，确认严格环境键pnpm_config_verify_deps_before_run=error，未安装或运行业务测试。测试70组及逐用例记录只维护test-cases.md，实证在progress.md；本次状态答复不计业务推进。
+
+## R120 Storage独立纯门准入（2026-10-02）
+
+上一goal回合为progress：Roota6b22d1b真实登记E92/续原Agent九源GREEN。本轮原GREEN turn01a0ff23-771c-7731-b06b-19e3fbdae8d8由cursor220确认inProgress，原command失败不等于任务终态；不重启/重派或抢写。Root可与之独立执行其他owner冻结验证，不改变已批准依赖顺序。
+
+|任务|Owner、基线与范围|验收/交付|
+|---|---|---|
+|R120-STORAGE-PURE-PREFLIGHT / T-Q08|原agent4_execution_owner只读审查，Root主控验证；Storage main74c4b591244589a7e5459fa7c521e5c21414d74a clean，根a6b22d1b。只读package/锁/三设计/ACCEPTANCE/test入口/Buf-Prisma生成器，不改仓内文件/Git/服务/共享资源|核Node24.20/pnpm11.25，现format/lint/type/unit-contract-architecture/default-smoke/build与contract check具体调用、PG/Redis/provider默认行为和skip集合、生成写入位置；给无资源纯门精确命令与安全限制。不靠清除环境掩盖必须资源分支，不修改检查器/依赖，生成物变更需Root停止交owner。私有/tmp报告绑定HEAD/hash；Root随后独占运行，不将纯门当S3/scanner/PG/完整文件旅程|
+
 R119最新实际句柄：原WIN03 GREEN turn01a0ff23-771c-7731-b06b-19e3fbdae8d8，cursor3a08a485-69ce-41c3-a7c6-23cc37d4b100:215已确认inProgress；Root49461已自然终态。Web只读审已交504a7726（0P0/3P1/1P2），不是浏览器通过；原6RED/1control与九源授权沿下卡，后继只查同句柄不重派。
 
 ## R119-AGENT-LIFECYCLE-GREEN（Root已复现RED并接受文档门，2026-10-02）

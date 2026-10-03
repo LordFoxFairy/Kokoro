@@ -1,3 +1,33 @@
+## R120 / E93 Agent生命周期GREEN与扩大纯门新失败（2026-10-02）
+
+上一人类goal回合只整理测试计划，不算新业务推进。本回合Root基线a6b22d1b，实际接受原WIN03 terminal222冻结16路径；源码终审461255e1为0/0/0。Root88981完整四测试文件pytest exit0：213pass/0fail/0skip、5真实资源分支deselected、652原三方warning/24.86s。原E92六失败及转交正控共7个node逐一确认本次call=passed；不使用owner报告替代。
+
+manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r120-agent-green-root-fu16f0wm/manifest.json SHA73097837b7a6f29cbc9818759a7cabd37754f495de8e8f362e452bf524a4d9fa；5未选均workspace_archive真S3分支，完整node在phase-results.json，未称真实S3通过。Root15810当前runtime/profile-plan/source+architecture四文件104pass/0skip/6.49s，manifest .../kokoro-r120-agent-runtime-root-jnthgvtw/manifest.json SHAdc08d8473a586a8f5f8020635994013a41c30e06a25d9bf3a78b7805b3c7f3ce；不将owner91与本次104混同。Root91145七静态门实际Ruff format/check13路径、全Pyright、contract、failure-models、offline/no-cache uv lock-check、diff-check各0，manifest .../kokoro-r120-agent-static-root-9ckv2ezm/manifest.json SHAa51a2f3681a67f998606e07388d51c49a4b2f8050666e2172e8bdb8945ce3e55。上述542源hash同冻结，0资源attempts/OS禁网/owned PGID自然终态/无forced termination。
+
+Root95565进一步运行原1937纯node与当前四文件/runtime新增call的精确去重全集1960：实际pytest exit1，1959pass/1fail/0skip/795warning/50.32s，542hash保持/资源0/自然终态。manifest .../kokoro-r120-agent-pure-root-83kvoq9g/manifest.json SHA5c48e2976dead4eab0ae2a362c9bd5b8553d460387be00ca7374dce3b07f22f2。失败不是业务资源仍泄漏，而是test_boundary_pragmas.py::test_no_inline_type_or_pyright_ignores检出本轮workspace_archive398/test_main24两inline private ignore。原生命周期RED关闭范围已证实，但Agent整组仍失败；不删规范测试/放宽Pyright或加ignore豁免。
+
+Root完成仅两现test+必要worker/main内部helper命名裁决，沿原WIN03续R120-AGENT-BOUNDARY-GREEN；真实cursor223确认新turn01a0ff40-d361-7e22-805f-220ca4f48d6e inProgress，command failure不当停止。Source修复/GREEN尚未交付，下一查同句柄/停写后Root1960复验。集成范围只读89a0d414指出16路径有10个叠早期HTTP5/Todo/contract，禁止整16冒充纯生命周期commit；全既定候选发布顺序未绕过，保留其他dirty paths/Root uv.lock/Billing。
+
+## R120 / E94 Storage默认工程门与生成链（2026-10-02，限定工程门已验收）
+
+Storage main74c4b591 clean，Root两个独立owner工作面只读/运行，无并行写服务。首次pnpm自动verify install因bare PATH pnpm ENOENT与后未知flag均只工具层；严格本机支持环境键后Root实际ERR_PNPM_VERIFY_DEPS_BEFORE_RUN enableGlobalVirtualStore改变。只读0fd9ba36锁原因：stored undefined，人工CI=true使默认false。仅私有运行env改CI=false匹配现安装，verify=error仍保留，未install/改锁/清state/关校验。严格失败manifest .../kokoro-r120-storage-root-jwa65mom/manifest.json SHA4c7d3ca685319f2b40c9ef82c4254f79ec5222e02db1a506bf460c7f7710752c；修正format实际0manifest .../kokoro-r120-storage-root-l503pl6w/manifest.json SHAe3bc80d5a2b107e73eb96ed93bab31da380b4a9e0e804bf322a6eff5a085147d。
+
+Root87585默认Vitest首次实际490pass/1timeout/156skip：私有guard误拒startup-cleanup已有本进程owned port上的故意EADDRINUSE负例，阻止原错误事件，退出观测1live-owned server。没有外部占用或产品失败证据；manifest .../kokoro-r120-storage-root-bx2dnd2o/manifest.json SHA9641673959ad01732f85103626b27b3357ef07f6a2b458e0077013137141dbf0。仅私有guard增加same-process live-owned port重试，仍不允许外部/共享端口，原超时/断言完全不变。Root76754格式/lint/types、完整默认Vitest及build各0，Node24.20/pnpm11.25，491pass/0fail/156skip；manifest .../kokoro-r120-storage-root-9ij1etcy/manifest.json SHAffb0b25db7f424e87c611e6950dc73369dff63268f5462474961e29e5683d7cb。真实owned19TCP listen/20close(含未listen失败server)/23connect，0blocked、全部exit 0live、自然PGID终态；不是零socket测试。12PG integration文件156skip由缺KOKORO_TEST_POSTGRES_URL明确产生，完整names在Vitest JSON；未跑PG/Redis/S3/scanner/shared provider。
+
+该批contract:check遇nested pnpm不在PATH，止于脚本入口，未记产品失败。后仅私有bin/pnpm exec同固定cached11.25/Node24 CLI、不变verify/env/guards。Root12670实际contractcheck、Prisma validate(generate dummy config URL端口1非真实连接)、Prisma generate各0；manifest .../kokoro-r120-storage-root-i40fi31_/manifest.json SHA8b338b89414caf7df50674e6397f30b982ce34329c39dcdb8a6aee59ff7e8efe。raw Prisma7.10.0生成15tracked文件trailing whitespace diff，源保持false真实保留，不手改或git restore生成物。Root2565调用现正规contract:generate的normalize-generated，再contractcheck/format/types均0，manifest .../kokoro-r120-storage-root-g6qok8lf/manifest.json SHA4b306907c909fb415099dd753ed73cd2780c4414b53b93201b45ccc4cf562676；全280源/17generated恢复原bytes、clean、24Node exit0live、owned自然终态。生成确有临时写入，不伪称从未修改；最终原bytes证明确定性完整生成+normalize顺序。
+
+上述路径省略号前缀均 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T。原agent4_execution_owner最终证据/包络审已交 /tmp/kokoro-r120-storage-pure-final-review.md SHA7d8eaee13743b8c8511e4ba38b693b256b8e7617f17933b8d853e13a7948dece，0P0/0P1，Root实际读取核hash后限定关闭T-Q08工程门；70组更新13通过/1失败/12待复测/41未验/2阻塞/1后置。156PG及完整Storage用户路径、真正外部S3/scanner/运行镜像明确另按T-Q12/T-F01–05等待验，不能用默认491代替。没有启动/重置共享基础设施，当前用户浏览器/模型/正式积分旅程未跑，Wave0–7 active。
+
+R120台账收口：Root现三套治理工具测试实际305pass/2.90s/exit0，日志 /tmp/kokoro-r120-root-ledger-S9rVvc SHA43196d096f9ee0ccbdc21555eb83628a6dc7f6e05c80e899faf3e0fa1383c996。最终实核70唯一ID与13-1-0-12-41-2-1、历史归档逐bytes保持，Storage clean；git diff --check 0。仅治理工具回归，E75整体标准152报告未关闭。原WIN03新boundary GREEN turn01a0ff40-d361-7e22-805f-220ca4f48d6e由cursor225确认inProgress，未交付/Root复测，不重派/重启或把观察当停止。Root所有实际运行88981/15810/91145/95565/43040/87585/76754/12670/2565/6541均终态；失败日志保留。Root只提交自有四docs，Agent/Billing/uv.lock及原候选不暂存。
+
+## R120 人类测试计划进度核对（2026-10-02，无新增业务实跑）
+
+Root基线a6b22d1b，保留Agent/Billing/uv.lock及原task工作树修改。实际解析docs/test-cases.md：70唯一测试组，12通过/1失败/0整组最终验收执行中/13待复测/41未验/2阻塞/1后置。更新同一测试计划、组合摘要与任务卡接收状态，不新建测试/开发计划中心；逐用例步骤尚未全部展开，未将覆盖目录冒称完整已执行用例集。
+
+Root实际读取交付manifest /tmp/kokoro-r119-agent-lifecycle-green-final.json，SHA c4b015cbde7b969ece201a4572396e0c200f409896258c8de7102aeedd9ca6e6，逐一核9源/4test/3docs当前bytes hash全部一致。独立终审 /tmp/kokoro-r120-agent-lifecycle-final-review.md SHA461255e10bfddec8f3c202c69bee07daa516e71d4bcbb096b3b3c03d48a43625，0P0/0P1/0P2，仅冻结生命周期切片。此轮未运行Agent GREEN/资源/浏览器，不把owner213/91报告当Root证据，E92失败与T-Q03状态保留。
+
+Storage只读本机pnpm源码诊断报告 /tmp/kokoro-r120-storage-deps-read.md SHAd74db4e2f2144b1d2e2d623e2154ee8c7c952c00fe39ea36827fb53fa6e90ce9，确认严格环境键pnpm_config_verify_deps_before_run=error；未执行诊断/安装/业务测试，不判bareenv根因或Storage产品失败。后续依赖与验收沿原R120任务卡，完整Wave0–7保持active。
+
 ## R119 / E92 Agent扩展生命周期RED已Root复现，GREEN续派（2026-10-02）
 
 上一goal回合为progress：Root460cd7f2提交R118快照证据与测试盘点。本轮原WIN03 R118 tests-only turn01a0ff13-fbf4-76b0-9c7a-aa4c79821579由212 live→213 completed/idle交付，worker报告049da662的6fail/1pass与202pass只是待验；Root49461在同冻结候选独立执行六精确函数（Docker参数化两例）：pytest真实6fail/1pass/0skip、0.53s/exit1。正式resume replay与reader primary均close=0，recovery两handle均0；真实dispatch调用的构造仍blocked时drain错误返回true；Docker正式make_backend_for_run后半wrapper故障漏内部client与新container，prior控制不毁现container。成功resume真实转交正控close=1通过。所有失败都call阶段行为断言，不是资源/导入错误。
