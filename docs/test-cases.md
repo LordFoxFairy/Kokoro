@@ -1,5 +1,12 @@
 # Kokoro 测试任务总台账
 
+## R139 当前系统验证记录（不变更70组状态）
+
+T-U04/R138-U01：pending/503/真实匿名三系统节点首版Root3fail，但/app未bootstrap/session请求未到达，属于测试夹具失败，不能冒充产品RED或完成；仅测试细化后Root17900终态仍3个/app500/session0夹具失败，生产修复待有效RED。
+T-R02/R138-S02：仍7重复页；已有句柄close超时，未成功关闭，不记通过。
+T-Q10：库存错位组件已更新已发布源268refs/37字段，Root100工具通过、topology/checkpoint通过；compat仅13declared broken，整体依赖用户旅程未闭合，保失败。完整字段计划及原失败历史不改，详细hash/句柄见progress R139。
+
+
 ## R137 / E117 当前工程检查与系统验收边界
 
 最新冻结复验：Root完整工程门256contract/50architecture/lint/types/2346tests/build通过；随后桌面+移动六页面同例6/6再次通过，官方typecheck恢复Next生成文件。T-Q01仅本次工程门转通过，70组13通过/4失败/12待复测/38未验/2决策/1支付后置。六页面是明确development preview，非正式服务/真实模型/积分链；完整用户组仍保持待验。实际命令、manifest、原失败与资源终态见progress E117。

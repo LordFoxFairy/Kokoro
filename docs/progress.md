@@ -1,3 +1,15 @@
+## R139 当前加载系统复现与组合库存修正（2026-10-03）
+
+服务原98977仍live，3310 PID63842，Root新有限HTTP /app200（0.041s）/api/auth/session200（0.009s）；这些无CookieHTTP探测不是当前浏览器登录/聊天验证。CUA列仍7重复页，已有重复tab句柄close仍超时；未新建页面、没有成功清理声明，保当前页与用户手工关闭/刷新对齐请求。停止重复控制重试。
+
+原Web唯一writer只写现OIDC真实Next系统测试，owned Chromium/HTTP故障代理，不改生产源码/新unit/mock。Root首版1688自然exit1，51.233s，3fail/39名称过滤skip、753源保持；因/app bootstrap未进入产品状态、未见session请求，不能当业务RED或授GREEN。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r139-session-red-nkxvveng/manifest.json` SHA7910ba7f3a39185ffd6b9c06cfa49b2bf42b7579517739583169bd512c399f4f；log SHAb055dcd973893a4365a77c4cb5b1fc789a5a010e209bdef08df2d9b09ffa9a27。原PGID75438实际无进程，用户3310保持；独立审0f37d3ff发现代理资源P1/无请求barrier与迟到观察P2，已仅测试修正并freeze e3019e11。Root17900/PID89345已自然exit1/20.227s：3fail/39名称过滤skip、753源保持，三/app document500且session0，属于夹具整页bootstrap失败而非业务RED。manifest SHA25c31ffb346a33fc071fc069907cd4d0a9df38877e16491b05543d91be4f031d，log SHA0e9192049555f71712dbe869a9f1a8a5dd70b7d5e40716d264c63d431e118173，三个自有截图在同v2目录。原PGID89345实际无进程，未遗留测试窗口；原writer仅进一步记录具体Next exception定位夹具，生产冻结，不靠盲调timeout。
+
+并行Root库存元数据真实验证：原compat277错误，更新已发布3仓266refs及37个path/digest/version值后15错误；发现原System两ownerref stale，实际当前9a4e98 canonical f9ea76原bytes相同，仅更新这2refs。最终268refs/37noncommit值，3active/13broken、全部reason/json_checks/历史checkpoint原bytes保持；inventory SHA1bcfa5426e699020492492f60133d303d4add6cec987680d48141dc81c581ec3。独立审af829ef66e772ebe6da70e1708fe8e0a421a58255508961464c6cc293c5c259e本体P0/P1=0，sidecar P2已重生最终manifest `/tmp/kokoro-r139-metadata-final-manifest.json` SHAe14e3635f8c8e2ab8d4ec5b6f3800950fa4648b7505fdd7789b746fd8a27c4e9（旧266 sidecar仅中间阶段）。
+
+Root实际verify-repository-topology PASS；原99pass/1fail是System refs仍stale真实失败，保留不改工具expected。修正后原41735自然exit0，三完整工具file100pass/0fail/50.27s，`/tmp/kokoro-r139-metadata-tests-final.log`；verify-contract-checkpoint PASS，compat仍exit1只13 declared broken、零额外blob/gitlink/version错误（`/tmp/kokoro-r139-inventory-final.json`）。这关闭库存错位组件，不关闭T-Q10整体或真实用户能力边。
+
+完整70组13通过/4失败/12待复测/38未验/2决策/1支付后置保持；Wave0–7 active，raw core/list/snapshot/正式用户旅程和Billing按原owner推进，支付最后。Billing五文档与uv.lock任务外原hashf7e1c30d保护，Root保Git/index/集成，Web单writer。
+
 ## R138 受管开发入口已恢复，当前浏览器验收仍阻塞（2026-10-03）
 
 Root已提交83d49f32精确Web7889a7b/BFFa68cbe5两gitlinks与用户故障记录，未更改inventory/checkpoint或将T-Q10改通过；原规范报告与组合治理后继仍保留。仅一次既有serve_local_login.py严格源preflight通过后启动真实IAM/BFF/Web/System/Agent＋已安装qwen3:8b，复用既有PG/Redis，使用自有run资源，不重置共享库/缓存。启动并非Billing/Skills/Storage完成，用户提供外部网关本次未验证，不静默冒称所选5.6-luna已测。

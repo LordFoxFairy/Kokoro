@@ -1,3 +1,9 @@
+## R139 当前质量事实（2026-10-03）
+
+原98977唯一3310服务保持，重复7页尚未成功关闭，浏览器控制超时后停止重复尝试。加载修复仍tests-first：首系统尝试未进入产品bootstrap，不算业务RED；仅修测试代理回收/请求barrier/安全诊断，Root17900自然终态进一步确认/app500/session0，属于夹具失败，不算业务RED；原writer只追具体Next exception，生产源码尚未改。
+
+组合库存已对齐当前已发布Web7889a7b/BFFa68cbe5/Agent79bf98c及原System9a4e98：268refs/37字段、状态/历史checkpoint保持，Root工具100/100、topology与checkpoint通过。compat只剩13既有declared broken，T-Q10整组继续失败，不以元数据通过冒充业务闭环。70组13/4/12/38/2/1保持，完整Wave0–7 active；实际证据见progress R139。
+
 ## R138 当前唯一服务与浏览器状态（2026-10-03）
 
 唯一受管开发入口已恢复：运行句柄98977、3310 Web PID63842，自有run目录kokoro-local-login-6x8g3it9；Root实际/app、/api/auth/session、/login均200，尚未新Cookie登录/真实对话生成或当前UI点击验证。保持原句柄，不重复服务；回收走原runner Ctrl-C，禁止共享reset。实际使用已有qwen3:8b，非用户网关5.6-luna；正式Billing/Skills/Storage未接入，不称全闭环。

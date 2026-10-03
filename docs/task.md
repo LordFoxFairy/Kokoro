@@ -1,3 +1,20 @@
+## R139 无限加载系统级复现（2026-10-03）
+
+| 项 | 当前任务卡 |
+| --- | --- |
+| 任务/优先级 | R139-SESSION-RED / T-U04-R138-U01 / P1；先用真实Next、Chromium与HTTP边界故障复现pending/503，不新增底层unit/mock |
+| Owner/执行 | Web唯一writer web7_consumer_owner（既有gpt-5.6-sol）；Root独占资源、运行验证、Git；agent4_execution_owner只读审查测试有效性及共享probe竞态 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；main7889a7b3e09f77a39bb1d0c4fb4d2c88825c3b43，开始clean；Root377cfda9，Billing五文档/uv.lock任务外保护 |
+| 放置/范围 | 扩展既有tests/system/oidc-rp-next-http.integration.test.ts真实Next HTTP夹具和浏览器行为；采用已有系统测试边界，不另建测试中心/单测/hooks替身；若现文件不适用先报具体原因和替代现文件，不能自行扩写。第一阶段只写测试，生产源码冻结 |
+| 验收 | pending在有界预算进入可恢复故障而非永久checking；503不误当匿名、不跳登录；用户Retry发新请求并恢复；真正200匿名仍登录；迟到响应不覆盖新状态，StrictMode/focus共享请求不产生风暴 |
+| 依赖/排除 | 已审R138源链。无owner/SQL/contract变更；禁止共享PG/Redis reset、用户3310/IAB操作、新基础设施、生产preview/fail-open、page.route.fulfill、浏览器持久状态注入、unit/mock/fakeTimers；worker不运行服务/测试/Git |
+| 资源 | 既有98977/3310保持；Root测试自有随机端口/临时源码副本/原Redis实例唯一prefix，原句柄自然终态或owned回收 |
+| 交付 | tests-only文件hash+命令/场景/截图路径建议，Root真实RED后才授最小GREEN；只读审查与冻结完整门共同放行。probe优先，list/snapshot后继同卡子切片，完整Wave0–7保持 |
+
+R139-METADATA-ROOT-ACK：Root现verify先277错误→266 refs刷新后15错误；余2是已pinSystem9a4e98与库存aa4e42 ownerref不同，实际canonical f9ea76原bytes相同。追加仅该两owner.repository_commit，无API/digest/version/state/checkpoint变更；Root同库存writer，独立只读终审+纯门，T-Q10整组仍不凭此改绿。
+
+R139-ROOT-METADATA-READ：four_owner_fixes_review_r31只读既有Root契约库存，基线377cfda9和已发布Web7889a7b/BFFa68cbe5/Agent79bf98c；给缺失/失效refs精确替换依据及纯验证入口，不写库存/checkpoint/状态、不运行资源；Root必要独立修正。历史checkpoint与13broken/3active业务状态不能凭源码发布改绿。
+
 R138-CURRENT-HANDLE：唯一serve_local_login.py原98977已启动并保持运行；3310 PID63842，run目录/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-6x8g3it9，实际三HTTP200，复用现PG/Redis、已安装qwen3:8b。后继先检查原句柄，不重复launcher/基础设施；停止只原Ctrl-C触发owned回收，不先删库。七重复浏览器tab关闭仍控制超时未成功，未新开tab/杀unowned工具进程；当前页面交互证据未得，不提升用户组。原Web writer已只读诊断并停，后继R138优先真实系统会话探针/列表/快照pending与503→有界错误/用户重试/no-login误跳/迟响应隔离，Root单writer表与资源、Web单writer源；不新增unit/mock/计划中心。完整Web raw core清理及inventory/checkpoint/T-Q10继续既有任务，不隐去。
 
 R138-USER-LOADING-RECOVERY：用户现报3310页面一直loading及清无用窗。Root2026-10-03实查3310无listener/curlconnectrefused；PG5432/Redis6379/既有Ollama11434可用，Redis15空，无第二基础设施。原Web已Root精确68路径提交并push main7889a7b（remote同SHA），BFF正式a68cbe5/IAM/System/Agent clean。Root当前唯一组合writer先精确两gitlinks承接已验证源，用既有严格preflight恢复唯一开发入口，不把当前contract inventory/checkpoint失败改为通过；该治理证据刷新仍原T-Q10任务，启动不称生产发布/全能力验收。Billing/uv.lock任务外保护不动。原Web writer只读报告f13a2c96定位probe/list/snapshot缺deadline，后继先真实系统RED→窄GREEN，非先恢复旧兼容或新增unit。六重复tab close控制超时/kernel reset，尚未证实关闭，保留当前13，不批杀unowned应用/进程。Root持运行句柄/回收责任。
