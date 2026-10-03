@@ -1,4 +1,30 @@
-## R136 / E110 正式Web实现启动与Root诊断修复（2026-10-03）
+## R136 / E112 用户请求的完整测试任务进度核对（2026-10-03）
+
+冻结核心独立审P0/P1/P2=0/0/0，报告/tmp/kokoro-r136-web-final-core-review.md SHA256 e2c4b304f55b038313b00849e6cb4fbfffa16327e43f71c2610921738c4a91ad。该审查保留跨页错身份/循环cursor/连续410/scope迟到响应等未覆盖验证边界，不替Root实跑或整体验收。
+
+不新建测试中心：docs/test-cases.md维护70组和逐组编号计划，task.md开发派工、progress.md实测证据。原Web writer已交付停写，/tmp/kokoro-r136-web7-green.json SHA256 72c840f8a74d8f08691069dd77cfb9910686d2a89d6d524b042406377a2f0e4d；worker报告完整check、164file/2346单测通过不当Root证据。
+
+Root实际Node22.22.2 `node node_modules/vitest/vitest.mjs run tests/core/hydration.test.ts tests/core/reducer.test.ts tests/contract/agui-events.test.ts tests/contract/chat.test.ts tests/engine/agui-event-mapper.test.ts tests/engine/client.test.ts tests/engine/engine.test.ts`，Web cwd，七file371pass/0fail/0skip，natural exit0、1.469s；Root会话87553终态、PID32734退出，65交付文件hash前后相同。E109原15节点与E111新增4节点在完整七file限定复测通过；无服务/browser/provider/共享数据操作，非用户端到端。
+
+manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r136-e112-root-gcr1rp0t/manifest.json` SHA256 cb22d81c949046ffee4c1f0738863bf12264d79138a962cf7e1bcd26568d2af8；同目录vitest.log SHA256 ac38ad69d66a3226d265eb3f80b06ceca1c9c304788c85cbeab29ac0f7365cb7。源码未发布，完整工程门与独立终审、deep恢复矩阵和浏览器仍待验。70组状态保持12/5/12/38/2/1，具体缺陷关闭不直接当整组通过；完整Wave0–7 goal保持active，Billing/uv.lock任务外保留。
+
+E111四台账独立终审P0/P1/P2=0/0/0，报告/tmp/kokoro-r136-e111-ledger-review.md SHA256 82c9c9ed0ff58d1289c73a7b76fcf8c140bdf1209dd95a1c09d14011c2fb42cb；表格物理行P2已精确恢复，未改计划内容。该报告仅覆盖E111阶段，不冒充本E112新段审查。
+
+## R136 / E111 Web同源分页边界与初始身份真实RED（2026-10-03）
+
+Rootmain ad3ca0ed已提交E110两治理工具与四台账；Webddd38c5+GREEN候选尚未冻结发布。原writer报告contract256、原七RED367/367及完整2342pass和静态/build，各为worker自测，不当Root验收。独立在途core审 `/tmp/kokoro-r136-web-core-review.md` SHAb5cd1ab6198ddcec4641e5c45b15fc057b08526321b72d889be0532ea701e3a2，0P0/1P1/1P2：client错误期待envelope，初始页重复activity未拒。Root实际读client line272与同源route131–137确认协议冲突，授原writer只加两现file RED并停写，client/helper源原bytes保持。
+
+### Root真实运行
+
+Node22.22.2在Web执行 `node node_modules/vitest/vitest.mjs run tests/engine/client.test.ts tests/engine/engine.test.ts`，Root原19089自然exit1，158项154pass/4fail/0skip，Vitest1.13s/wrapper1.349s。完整文件含既有控制；原E109-F10–15六节点在此冻结candidate通过，剩余9及整个新Web工程门尚未Root复跑。fake engine不替真实client层：新增client用生产createSessionClient+fetch正式裸200，两个engine用真实hydrate/adopt/SSE入口，不以TypeError或missing export当RED。
+
+- manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r136-boundary-red-root-n64ylv79/manifest.json` SHA256 `8751c6217a2e31a2fc4ab5f5a70265f830de5176acee5ff9704801c977f2f20e`。
+- 同目录freeze.json SHA256 `22ab5209ec0e47834b6cbd472e4c0e199786c5f74fdabb39cf589218bd0a5b20`，753文件前后相同；vitest.log SHA256 `dfde6847146d87dda19d64e9f9c8449c61e868627e7dfed2a6c4f44c3e99e065`。PID25669另观不存在；无浏览器/PG/Redis/provider/服务或共享reset。
+- 新RED测试client SHA330029cce6c4f13b62f49352995ccd461456ed2931d9080fa64c5e34d3054f32、engine SHA39a1f2503866c395c980c00681e51ae0f3cfea176b6ab959ee6f85a5bf07fc27；client源7c18ac1d/helper源77d30497在Root执行前与独立报告相同。
+
+四实际失败分别为D-R136-W01真实裸page解析拒绝、D-R136-W02再包裹被接收（后继503/code分支尚未到达）、D-R136-W03/W04初始重复identity在next=null与有next两状态错误开1条SSE（应0），后继error/no-partial-adopt尚未到达。正式授权同唯一writer窄GREEN，严格消费裸page且所有初始页校身份；不改adapter/双读/expected。旧Tool/Subagent机器码直出需转已有自然label、Skill真实phase有自然状态/ARIA，i18n清理与必要8key沿现locale机制，不重做样式/新增owner。完整冻结Root复验与当前浏览器仍后继，70组12-5-12-38-2-1不变，整体goal active。
+
+## R136 / E110 正式Web实现启动与Root诊断修复（2026-10-03，历史阶段）
 
 上一goal回合为progress，Root7405e34a提交70组测试台账及E109十五真实失败节点。Root当前main7405e34a，Webddd38c5/BFFa68cbe5/Agent79bf98c；完整Wave0–7 active，目标未缩小。原Web writer/gpt-5.6-sol已按task R136获GREEN，原生句柄实核running，当前37 tracked候选变更与私有hydrate-process helper已观察；源变化中，未交付冻结/完整工程门，Root没有在变化树上声称复测成功。三位原生Agent分别实施、raw引用审查、Root组合审查，无第二Web writer/重复服务。
 

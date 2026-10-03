@@ -1,13 +1,13 @@
 # Kokoro 测试任务总台账
 
-状态：当前测试计划，2026-10-03 / R136实施与测试核对；最新运行证据至E110，Web最新失败证据E109。复用既有文件，不建立第二开发计划中心。
+状态：当前测试计划，2026-10-03 / R136实施与测试核对；最新运行证据至E112。复用既有文件，不建立第二开发计划中心。
 
 - 本页唯一维护**测试任务、验收标准和最新结果**；[task.md](task.md)维护派工/依赖，[progress.md](progress.md)保存实际运行证据，[CURRENT.md](CURRENT.md)说明当前组合。
 - 范围：批准Wave0–7全部研发能力与九owner；其他前端、历史Session/Mongo、部署多角色/网络策略不在本轮。支付渠道后置，不删除目标。
 - 本表每行是测试任务组，不是一个自动化断言；各owner用例留本仓。未验不等于没有代码，历史通过不等于当前组合通过。
 - 状态：通过 / 失败（最近执行） / 执行中 / 待复测（有历史证据或版本变更） / 未验 / 阻塞（明确决策缺失） / 后置。
 - 完成条件：绑定commit或冻结hash、实命令/环境、pass/fail/skip、证据和清理；本行必需分支被跳过则本行不得通过；明确拆至其他测试ID的资源分支仍记未验，不影响限定纯门，但绝不计为资源通过。相关source/contract/pin变更后移回待复测。修复提交不直接关测试，Root复测成功才关闭。
-- 当前状态以本页当前看板、E110/E109/E108/E105运行证据与下方测试矩阵为准；其他R编号为历史阶段，最新代码变化须复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
+- 当前状态以本页当前看板、E112/E111/E110/E109/E108/E105运行证据与下方测试矩阵为准；其他R编号为历史阶段，最新代码变化须复测。历史发布组合cc7bfb78/Webddd38c5的E53正规登录与严格两轮聊天保留，不代表当前七标签页或所有用户能力已验证；E49具体安装缺陷已E76复验关闭，T-Q03整体门仍未验收。
 
 ## 当前测试看板（测试任务，不是开发任务）
 
@@ -23,13 +23,39 @@
 
 **已通过12组：** T-Q02 BFF工程门（E108，当前a68cbe5限定工程范围）、T-Q04 IAM工程门、T-Q05 System工程门、T-Q08 Storage工程门、T-Q11测试工具诊断、T-L01登录正向、T-C01后端会话过滤、T-C06两轮真实模型聊天、T-C11前端流连接生命周期、T-K01连接器不显示假成功、T-B01定价纯规则、T-R01具名测试资源隔离。登录/聊天是E53记录的历史发布组合和本地模型，不代表当前全部能力或用户提供的模型网关通过。T-Q01旧Web工程通过保留历史，E109新目标失败后不再计当前通过。
 
-**有问题且尚未关闭：** E109 Web新目标七文件367项352通过/15失败/0跳过；归T-Q01、T-C09、T-C10、T-A05四组失败，同一缺陷不累加为四份自动测试。T-Q10 Root checkpoint/gitlink一致性仍失败（E105，217项；只读诊断区分205条旧SHA同字节、10条Agent实际变化和2条工具误分类，尚未修复复验）。E107的3个后端provenance/partial-GC具体失败已由E108真实74/74关闭，但不关闭本轮Web新失败。E75标准152报告、BFF契约lint4条warning保留；当前浏览器全旅程、正式收费及其他能力未闭环。
+**有问题且尚未关闭：** E112 Root七完整file371/371通过，E109十五及E111四具体失败在限定纯复测关闭，原失败历史保留。T-Q01/C09/C10/A05完整工程或用户组仍待复验，当前浏览器/五过程恢复矩阵未验，不把纯测当整组通过。T-Q10当前组合仍失败；E110工具误分类修复并82回归通过不等于组合发布/checkpoint通过。E75标准报告、BFF契约lint4warning及正式收费待验保留。
 
 **计划完整度：** 70组均已在下方“逐组执行用例计划”展开前置、编号步骤、预期、权限/异常/恢复分支和证据要求。具体当次测试账号、fixture ID、命令/节点及版本须执行前绑定；展开计划不是执行结果。每组须沿原ID展开子用例：前置数据、操作、预期、实际结果、证据/版本、缺陷、修复提交及Root复测。先覆盖正向，再补权限/错误、重复/并发、取消/断线/刷新/恢复；必需分支未验或跳过不得整组通过。原T-C09.1–5保持编号与证据；所有组在同页维护，不新增第二测试计划中心。
 
 **待决策：** T-C05项目移动/归档/删除的关联生命周期；T-B07失败/取消/部分输出/未知成本的收费资格。接续优先正式Agent→BFF→Web消费与当前登录/聊天/刷新，再验证项目和独立会话、Home/输入框、Skills/MCP/过程交互、任务/作品，最后正式积分链与支付后置项。
 
-## R136 / E110 接续状态（2026-10-03）
+## R136 / E112 最新限定复测（2026-10-03）
+
+Root冻结交付候选七完整file实际371通过/0失败/0跳过；E109-F01–15及E111-F01–04具体断言均在该范围通过，原19个失败记录保留历史。交付65文件hash前后保持、进程自然结束，证据见progress E112；不是浏览器/真实服务或正式发布验收。
+
+|测试切片|最新实测状态|尚需验收|
+|---|---|---|
+|public7快照/安全事件与mapper|原失败限定复测通过|完整工程门、正式组合、用户展示|
+|过程恢复、全值替换、分页/410/abort|原失败及四新增边界限定复测通过|深层恢复/换scope矩阵、真实浏览器刷新|
+|Web全部工程门|worker自测2346通过，Root尚未重跑|Root完整check及独立终审|
+|登录/真实聊天、项目/独立会话、Home/输入框、Skills/MCP/Todo/作品/积分|按原70组保持历史版本或待验状态|当前正式用户路径逐组执行|
+
+整体70组仍12/5/12/38/2/1；保留整组最近失败状态直到完整验收，不能用371条重叠自动断言作为371个新测试任务。下方E111/E109是失败发生时的事实，最新限定复测以本节为准。
+
+## R136 / E111 最新子用例进展（2026-10-03）
+
+Root在停写候选独立两个完整file154pass/4fail/0skip，753源保持，当前70组状态仍12-5-12-38-2-1。E109-F10–15原六client/engine节点本次限定纯复测通过，其他9尚未Root复验；原失败历史保留，不关闭整个用户组或认定当前浏览器通过。源无正式修复commit，变更后须再验。
+
+|本轮子用例|预期/实际|状态与后继|
+|---|---|---|
+|E111-F01 / D-R136-W01 / client真实裸page200|同源已解包，严格接受合法page；实际因缺data/meta解析拒绝|失败；同writer窄fix，Root复测待执行|
+|E111-F02 / D-R136-W02 / 再包裹200与503 code|拒绝二次envelope、503保owner code；实际接受envelope，后继503未到达|失败；无双读/fallback，Root复测待执行|
+|E111-F03 / D-R136-W03 / 初始重复身份next=null|不采用重复集合/0SSE/error；实际开1SSE，后继未达|失败；所有初始页identity gate待修复复测|
+|E111-F04 / D-R136-W04 / 初始重复身份next非null|同上，不能用Set静默去重；实际开1SSE，后继未达|失败；同切片，原断言保留|
+
+上述4测试在现client.test/engine.test，Root真实入口与manifest/版本见progress E111。正规工程门/consumer组合、真实浏览器、剩余五过程恢复及全部其他能力仍按原编号待验。R136窄GREEN已授与UI自然状态/旧keys清理继续；worker此前367/2342等自测非Root证据。
+
+## R136 / E110 接续状态（2026-10-03，历史阶段）
 
 已沿E109十五失败授权原Web writer正式实现public7，当前原生句柄running、源码变化中；Root复测/发布/浏览器尚未执行，状态仍12通过/5失败/12待复测/38未验/2决策/1后置。不能把“开始修复”记为通过或整组最终验收执行中。
 
@@ -404,7 +430,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 ## 测试任务矩阵
 |测试ID|owner|验收范围|当前状态|具名证据/版本与边界|
 |---|---|---|---|---|
-| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 失败 | E109：ddd38c5+新目标测试，Root七文件367项352pass/15fail/0skip，public7合法快照/安全事件未正确消费、旧raw未拒等；完整新工程门尚未执行。E41旧版本工程通过保留历史，不代表新目标通过；format脚本N/A，浏览器另验。 |
+| T-Q01 | Web | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 失败 | E109：ddd38c5+新目标测试，Root七文件367项352pass/15fail/0skip，public7合法快照/安全事件未正确消费、旧raw未拒等；完整新工程门尚未执行。E41旧版本工程通过保留历史，不代表新目标通过；format脚本N/A，浏览器另验。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
 | T-Q02 | BFF | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E108：正式main a68cbe5，Root默认736pass/1既定PG schema skip、四pure149pass、完整contract233pass/0skip；format含37变更TS/MJS、lint/types/build/全部固定owner生成check通过，两独立限定审0/0/0。真实三资源74/74另有具名证据，但完整BFF其他资源/镜像及Web组合未验；资源skip属T-Q12，4条lint warning保留。 |
 | T-Q03 | Agent | uv锁与frozen依赖/Ruff/Pyright/pytest/wheel；HTTP contract与架构；skip说明 | 待复测 | E95 Root当前1960纯节点全部通过/0skip，七静态门及独立审通过，原E87生命周期与E93规范失败限定回归关闭；E96新包完整115 runtime安装、四布局64负向/219步骤通过；E97 installed CLI/真实PG/catalog/六漂移回滚通过，E98 installed HTTP36pass/0skip及151origin核验通过；E99最终包211entries与资源已测包同bytes、sdist重建一致。Agent已正式发布main79bf98c、远端同SHA。正式BFF/Web消费者、真实S3/Docker/SIGTERM及完整Agent整组仍未验；完整失败历史与各次包身份保留在progress.md，不拿历史包替当前包，不称完整Agent闭环 |
 | T-Q04 | IAM | 本仓format/lint/types/unit/contract/architecture/build；跳过逐项说明 | 通过 | E14：Root本次verify938通过；仅该纯门，host51另记有限资源证据，非全部IAM integration/登录 |
@@ -429,8 +455,8 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-C06 | Root六owner | 正式登录后两轮真实模型聊天：两POST/四Message/全文/刷新/作品hash/他人404 | 通过 | E53：Rootcc7bfb78六owner fresh/clean/发布hash，原58200实际exit0；两POST202/四completed、真实模型全文SHA、首轮保留、active非空文本硬刷新+同watermark续流、真实作品下载hash/刷新一卡/另一用户三404；五owned残留0/子terminal/桶删除404，独立终态0。实际模型为本地Ollama qwen3:8b，不含Billing/Agent5候选或用户OpenAI网关；E48失败历史保留 |
 | T-C07 | BFF→Agent | 同会话FIFO/同key重放/双tab同时提交；一活动head，无重复执行 | 未验 | E108真实chat-facts13/13及完整三资源74/74，原snapshot42703首阻断限定关闭；双tab/同key重放及浏览器完整用户组仍未验。 |
 | T-C08 | Web→BFF→Agent | Stop/steer/取消/重复控制；ACK不冒充terminal，输入和队列正确收口 | 未验 | 按现owner契约；资源验收不能用UI按钮存在替代 |
-| T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 失败 | E109 Web恢复无executionProcess、分页未请求、signal未传递，属D-R135-02–04；源码修复/Root复测及浏览器未执行。E108后端projection46/46、T-C09.1–5历史范围保留，不由后端绿关闭Web失败。 |
-| T-C10 | BFF→Web | SSE断线/cursor replay/重复/间隙/过期与GC；不丢字、不双气泡 | 失败 | E109 Web过程410未fresh snapshot且分页未请求（D-R135-03），深层重复过期/错误cursor/浏览器未到达。E108后端74/74已关闭E107 partial-GC缺陷，保留该限定证据；不同层新失败尚未修复复测。 |
+| T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 失败 | E109 Web恢复无executionProcess、分页未请求、signal未传递，属D-R135-02–04；源码修复/Root复测及浏览器未执行。E108后端projection46/46、T-C09.1–5历史范围保留，不由后端绿关闭Web失败。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
+| T-C10 | BFF→Web | SSE断线/cursor replay/重复/间隙/过期与GC；不丢字、不双气泡 | 失败 | E109 Web过程410未fresh snapshot且分页未请求（D-R135-03），深层重复过期/错误cursor/浏览器未到达。E108后端74/74已关闭E107 partial-GC缺陷，保留该限定证据；不同层新失败尚未修复复测。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
 | T-C11 | Web | 同scope真实重挂/双owner/StrictMode；最后卸载才close SSE；injected不被释放 | 通过 | E11：Root真实RED→完整门及独立审，已提交/推送a52a623；仅生命周期组件切片，不证明W2 |
 | T-P01 | BFF→Scheduler→Agent | 独立任务不进入会话列表；project_id仅关联；创建/修改/暂停/删除/权限 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P02 | BFF→Scheduler→Agent | IANA timezone/DST、周期/一次、边界时间与misfire | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
@@ -453,7 +479,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-A02 | Agent→BFF→Web | 真实Skill resolving/loading/ready/failed；不从选中状态伪造已加载 | 未验 | E101严格HTTP5 reader/decoder/safe CUSTOM149 pure通过；E108进一步真实验证BFF过程持久化、public7、锚定分页、provenance/GC（完整三资源74/74）并发布a68cbe5。仅后端切片；当前正式Web及浏览器完整能力未验，不提升整组；历史失败保留。 |
 | T-A03 | Agent→BFF→Web | 友好tool running/completed/failed摘要；无raw args/result/stack/token/隐藏推理 | 未验 | E101严格HTTP5 reader/decoder/safe CUSTOM149 pure通过；E108进一步真实验证BFF过程持久化、public7、锚定分页、provenance/GC（完整三资源74/74）并发布a68cbe5。仅后端切片；当前正式Web及浏览器完整能力未验，不提升整组；历史失败保留。 |
 | T-A04 | Agent→BFF→Web | 完整多项HITL pause→一次决策→resume；stale/重复/unknown/刷新正负例 | 未验 | E09：Root R90已裁定枚举/字段/容量/轮次身份；原owner四D0收敛待核，机器/运行链尚无本切片业务测试 |
-| T-A05 | Agent→BFF→Web | Todo/Skill/tool/HITL/delivery五时点刷新：恢复同水位，无重复或丢失 | 失败 | E109 Web过程水合/全值替换/分页及abort明确失败（D-R135-02–04）；与T-C09/C10共用同次15fail，不重复计自动测试数。E108后端74/74关闭两provenance失败的证据保留。五暂停点浏览器/完整恢复链仍未验，源码修复后须Root复测。 |
+| T-A05 | Agent→BFF→Web | Todo/Skill/tool/HITL/delivery五时点刷新：恢复同水位，无重复或丢失 | 失败 | E109 Web过程水合/全值替换/分页及abort明确失败（D-R135-02–04）；与T-C09/C10共用同次15fail，不重复计自动测试数。E108后端74/74关闭两provenance失败的证据保留。五暂停点浏览器/完整恢复链仍未验，源码修复后须Root复测。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
 | T-A06 | Agent→BFF→Web | 子Agent身份/状态/失败/取消/汇总；不混入主回复或泄露私有过程 | 未验 | E101严格HTTP5 reader/decoder/safe CUSTOM149 pure通过；E108进一步真实验证BFF过程持久化、public7、锚定分页、provenance/GC（完整三资源74/74）并发布a68cbe5。仅后端切片；当前正式Web及浏览器完整能力未验，不提升整组；历史失败保留。 |
 | T-B01 | Billing | 定价revision纯codec：strict格式/不可变摘要/整数/rational/边界/恶意结构 | 通过 | E07：772 unit/静态通过，仅冻结3文件；未验真实收费 |
 | T-B02 | System→Agent | 实际provider/model/route revision绑定；逐call/attempt证据，不补零/猜用量 | 未验 | ADR-033；System仅技术路由，Agent仅事实证据 |
