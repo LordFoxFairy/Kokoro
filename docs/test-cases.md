@@ -1636,3 +1636,8 @@ R198-A01最终绑定Agent59034f4：Root50248全真PG304pass/0skip（含该main�
 Root文档门第一轮真实发现handbook README两历史子仓链接失效（AssertionError），不是用户业务故障；改为现BFF API/Billing README后，最终205本地链接0失效、diffcheck0，证据/tmp/kokoro-r200-prd-root-verification.json。系统源码/原3310浏览器/真实账务本轮未执行，不冒修复。
 
 T-C05项目删除按用户“参考ChatGPT”批准语义收敛：项目会话/指令/仅项目文件删除，单独Library文件保留，删除需明确确认不可恢复；2026-10-04核验官方https://help.openai.com/en/articles/10169521-projects-in-chatgpt。独立ScheduledTask关联政策仍待裁决，C05/P05不关闭。T-B07 actual-only/unknown保持ADR033，不以旧失败全释放收口。
+
+
+### R201 IAM授权前置证据（不提升系统用例状态）
+
+IAM0537真实billing authorization HTTP16pass/0fail，Root49764，manifest `T/kokoro-r201-iam-billing-alsk5tbv/manifest.json`；own DB/Redis清理、source不变。Billing production adapter/Admission/预占/Agent dispatch/evidence/实际结算尚未组合，T-B03–B07保持原状态；cancel late prepare仍RED。70组11/6/14/38/1不变，局部owner16不是16组用户旅程通过。

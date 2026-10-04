@@ -8685,3 +8685,14 @@ PRD独审1fc11804：8冻结文档0P0/P1/P2，现70/70映射/统计核对。Root�
 原45606/46036实查live，无重启/清共享数据/新永久服务。Rootuv及任务外mixed保持；当前70统计不提升，目标active。交付区分M1基础真实聊天/正式资金路径、M2全部能力、M3支付最后及研发正式验收，没有可靠工作量基线前不填猜测完成日期。
 
 R200独审后继终态：README增量af9848两合法路径复核0问题；Agent取消设计报告e7afa6c9发现两P1（node/checkpoint整体finite budget缺失、done回调移除可能漏异常取回）。四D0只是候选，Root未放生产、不用作者完成报告代审批；下一只收敛该两点。当前取消RED和所有用户资金链仍开放，PRD提交不夹Agent候选。
+
+
+## R201：正式IAM授权前置与两个独立后继（2026-10-04）
+
+Root实读goal为blocked而非旧台账active；当前heartbeat要求继续，沿同Wave0–7执行可用切片，不重复目标。Root49764正式IAM billing-authorization-http：Node24.20/vitest，16pass17.39s（fixture tests15.88s），envelope17.741s自然exit0；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-iam-billing-alsk5tbv/manifest.json` source_hashes_equal/databases_equal/redis6_keys_equal均true，残留库[]/新key0。真实IAM租户machine与Code+PKCE token，不伪Billingallow；只证明owner前置，未提升全资金组。
+
+BillingD0独审41dc30eb两P1（closed error未固定、唯一SDKimport edge未固定）由Root定exact错误类/代码与实际graph mutation写集，授原writer先同步prefix再实现正式adapter与HTTP行为门，禁止SQL/旧payer/runtime/contract/3codec扩大。IAM test-support单独writer准备真实签发/撤权/stop/EOF/SIGTERM生命周期；与Agent依赖无关继续并行。
+
+Agent报告最初由7月issue推定10月1.2.12未修，Root纠正：候选未实测不能下结论。报告修b0647729，公开API最小/tmpprobe待Root执行；独立temp venv只安装LangGraph1.2.12，不触原.venv/锁/provider/PG。安装Root83666已自然exit0；解释器现Agent14.3与Root项目requires<3.14的警告仅此独立探针环境，不冒Root/Agent正式全门。
+
+CUA getState20s timeout/kernelreset，无有效页面操作，不证明正在加载的产品因果或恢复。原launcher45606/Web46036实查live26h39m，未重启/关闭用户窗口。所有共享基础设施、Rootuv f7e1、旧dirtybody/codec保护；新任务卡仍同docs/task.md，无另造计划中心。

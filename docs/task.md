@@ -8396,3 +8396,31 @@ R200-A4-D0 续派：Root已读c695fddd定位，先授权原agent_mainline_qa_own
 R200-PRD 冻结文档已由Root验证：PRD520440d2、README最终af9848d0（初205链接含2旧pathbroken已修）、70/70覆盖无增减、205链接0失效、diffcheck0、Roottopology脚本测试7pass0.03s。独审1fc11804仅文档一致性通过，README两链接增量续审。现13Root文档精确提交待Root，不stage子仓/gitlink/uv；全70状态不变。Agent四D0仅首节12行候选，独审待回，生产仍冻结；Billing next报告为设计输入不冒运行实现。
 
 R200 独审终态：README两旧链接修正已独审通过。Agent D0独审e7afa6c9为0P0/2P1/0P2，**不放生产**：现prepare预算不能覆盖SDK node/checkpoint退出；done callback移除与异常取回可能漏已完成exception。原Agent owner后继只在现四D0收敛具名全node预算/到期处置和settled异常单次消费，禁止无限gather/后台遗留/删oracle；无法由公开SDK保证时如实报上游缺口，不伪称两source可完整解决。Root负责后续裁决和资源门。
+
+
+## R201 关键开发链后继（2026-10-04）
+
+Root基线main409560a7，完整goal/70组不缩小，PRD已经收敛，不重开产品设计。原3310/共享基础设施保持；Root资源/Git独占。
+
+|任务|owner/权限|依赖/范围/验收|
+|---|---|---|
+|R201-A4-sdk / P0|agent_mainline_qa_owner，只读|当前59034与41fe取消RED；冻结四D0候选。核锁定SDK及官方公开源码/发行记录，有无修复取消关闭Pregel/model/checkpointer路径的可用公开API/稳定版本；禁止私有补丁/另进程/协议重写，给精确candidate/最小实验和升级影响。只/tmp报告，不把关闭设计文字当GREEN|
+|R201-Bill-authorizer-D0 / P0|agent_prepare_final_review，唯一Billing docs writer|先现三D0 prefix-only，不覆盖原五dirtybody/三codec。把现26aeec artifact→具名IAM authorizer seam的现存config/Nest DI/export/调用与系统门收敛，先对现目标config/模块实际组织输出§8表及准确写集；不接旧payer writer、不SQL/金额/付费provider/source/Git/资源|
+|R201-quality / P1|web_page_qa_owner，只读|并行复核Agent官方candidate闭包与Billingauthorizer三面，Root通知冻结后再审，不独立改契约/预算，不启服务|
+|R201-root / P0|Root|核公开SDK关键路径与原owner正式IAM sandbox运行入口，按冻结candidate重跑系统门；保护原数据，不把SDK负例或authorizer局部通过冒正式聊天/资金链|
+
+Agent最新四D0 candidate fe312aec/1b643f2b/14452d66/38404bdb：异常单次消费算法已明确，整node有限收束仍真实阻断，生产不放；不伪称两P1已整体关闭。Billing无Registry/Agent完成前置，独立authorizer工作继续。
+
+R201-A 授权边界（Root 当前后继）：Billing authorizer错误固定为 `IamBillingAuthorizationError`，本仓闭集 AUTHORIZATION_INVALID / DENIED / UNAVAILABLE / BINDING_MISMATCH / EXPIRED / ABORTED / SHUTTING_DOWN；只固定安全文本，不保留owner details/cause/secret。SDK request/API400为INVALID，契约有效401/403/409为DENIED，429/5xx及network/timeout/response为UNAVAILABLE，成功后本地tenant/user绑定或expiry分别明确拒绝；未知异常UNAVAILABLE，caller abort与shutdown优先各自分类。无自动重试；上层重新提交须重新授权，retry标志不产生退款/免费/确定零消耗。options/schema、error、client、DI职责分开。唯一production SDK edge是client文件→package root，只允许IamClient/IamClientError；精确实际graph+mutation门。原writer先同步原三D0前缀后实施下列唯一写集，先可执行实际HTTP失败oracle再实现，不把导入失败/404当业务RED。
+
+|任务|权限/基线|精确写集与验收|
+|---|---|---|
+|R201-Bill-A / P0|agent_prepare_final_review，唯一Billing writer；26aeec，原dirty保护|现三D0 prefix；新modules/metering/iam-billing-authorization.{client,options,error}.ts、现metering.module.ts；新test/unit/iam-billing-authorization.client.test.ts、test/unit/metering-module.test.ts、新test/integration/iam-billing-authorization-http.test.ts；现test/architecture/billing-dependency-policy.ts、typescript-dependency-graph.test.ts。禁止其它源码/SQL/contract/generated/package/lock/3codec/Git/资源；Root重跑真实owner系统门与完整工程，交付待审查|
+|R201-A4-probe / P0|agent_mainline_qa_owner，Agent只读|官方7月issue并不能证明10月stable1.2.12仍失败。修报告为未确认；准备/tmp可执行公开API探针，分别旧锁1.2.2和独立1.2.12：blocked async model-node精确Event→取消消费者→释放阻塞→late-write计数，并比较公开abort及shielded独立cleanup语义。不得改.venv/site-packages/锁/production/41fe、不得启动资源；Root负责隔离候选安装与运行。报告区分纯asyncio/AnyIO，不以旧issue替代实验|
+|R201-system-support / P1|web_page_qa_owner，IAM/Root只读|为正式IAM fixture→仓外Billing production consumer确定最小test-only现入口扩展与§8三面引用；只/tmp方案或driver候选，不修改仓/启动资源。优先复用现consumer harness，不造第二接口/伪token。Root随后明授test支持与运行|
+
+Root 当前fresh IAM16 HTTP用例通过仅证明IAM owner授权前置；BillingA、Admission及实际结算仍OPEN。goal工具实读状态是blocked（非此前台账active），heartbeat已要求继续推进可执行切片；工具不能自行resume，未另造goal或虚报active。
+
+R201-IAM-support 放置门：复用已通过的IAM正式Nest/BetterAuth billing:true fixture，唯一新test/fixtures/billing-authorization-host.ts负责私有NDJSON生命周期与撤权控制；现Web OIDC host不改（其协议严格闭集且默认无billing），淘汰Billing sibling fixture import/伪JWT。无生产contract/schema/runtime变更，引用IAM现三面billing授权章节即可；前三D0首节补一句当前test支持位置/不等于用户资金闭环。Root system driver沿现scripts/e2e，单一IAM owner test控制，不造新运行服务。启动期间SIGTERM须等实际fixture创建后close，不得立刻process.exit泄漏尚未知ownedDB；同一closing promise，默认不输出任何日志或credential。正常stop、EOF、SIGTERM真实资源门均由Root执行。
+
+|R201-IAM-support / P1|web_page_qa_owner，唯一IAM test/docs writer；0537 clean|仅新test/fixtures/billing-authorization-host.ts与现TECH/API/DATA前三面首节当前支持注释；按上述生命周期修/tmpcandidate后落文件；不生产/contract/SQL/package/lock/Git/资源。Root重跑格式/type/architecture/真实host三生命周期与Billing consumer系统链|

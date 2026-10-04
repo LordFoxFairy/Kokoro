@@ -1,16 +1,16 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R200。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R201。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具当前实际为blocked，沿heartbeat继续可执行切片，不冒称active。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
-## R200 产品基线收敛（文档验收，不是运行闭环）
+## 当前产品基线（PRD已收敛，运行未闭环）
 
 [当前 PRD](kokoro-handbook/product/09-v2-prd.md) 已替代七月旧草稿，明确完整 Wave0–7、会话/project_ref/独立任务、权限、真实费用、各用户路径与三交付里程碑。00长期范围与01/05/06/07已同步；不新建计划中心，不承诺未接通Studio或额外前端。Root逐条展开覆盖现70组，无遗漏/新增，205本地链接最终0失效；初门发现README两个旧路径，修后重跑。独审1fc11804为8文档一致性0P0/P1/P2，不算用户测试通过。Root拓扑脚本测试7pass0.03s/diffcheck0；实际topology历史两gitlink mismatch及全治理失败不据此关闭。
 
-关键开发链仍开放：Agent取消后完整prepare写入的真实RED仍未修；原owner仅更新四D0首节12行，生产59034与test41fe保持。Billing26aeec仅IAM制品门，目标Admission本地事务/运行装配尚缺，不能把旧caller payer链当目标链。两个独立后继继续原owner，Root统一审查/验证；Agent D0独审另发现两个P1：整体node退出预算与done异常取回未闭合，生产不放行。具体日期尚无可靠估计基础。当前3310原45606/46036实查live，未重启/清数据。70组仍11通过/6失败/14复测/38未验/1支付最后，goal active。
+关键开发链仍开放：Agent取消后完整prepare写入的真实RED仍未修；原owner仅更新四D0首节12行，生产59034与test41fe保持。Billing26aeec仅IAM制品门，目标Admission本地事务/运行装配尚缺，不能把旧caller payer链当目标链。两个独立后继继续原owner，Root统一审查/验证；Agent D0独审另发现两个P1：整体node退出预算与done异常取回未闭合，生产不放行。具体日期尚无可靠估计基础。当前3310原45606/46036实查live，未重启/清数据。70组仍11通过/6失败/14复测/38未验/1支付最后；当前后继与goal状态以R201段为准。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R199，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R201，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -177,3 +177,10 @@ R198收尾：Agent59034f4工作树clean，Root只提交限定17path（四D0＋9�
 - **资源/证据**：Billing manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r199-billing-consumer-p6vemmfa/final-manifest.json`；Agent失败manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r199-agent-final-7kl_mhj5/manifest.json`。具名Root句柄已终态消费，自有PG全部回收；Billing owned node_modules/dist/ignored Prisma回收，源码/日志保留；原launcher45606/Web46036仍live，无重复服务或共享数据重置。IAB仅盘点1tab，getTab观察超时无操作，不作为产品恢复证据。
 
 完整Wave0–7 active；70组仍11通过/6失败/14待复测/38未验/1支付后置，不由artifact或局部系统case上调。下一并行：Agent先取消生命周期真实RED修复；Billing沿正式IAM准入/actual-only数据链推进；Web运行组合与真实绑定旅程仍需单独证据。
+
+
+## R201：IAM授权真实前置已验，Billing/Agent并行研发中
+
+Root当前main409560a7。IAM干净0537源码的正式Code+PKCE消费授权HTTP门，Root49764自然exit0：**16pass/0fail17.39s**（测试15.88s）；独占fixture PG库与Redis6 prefix均已回收，source hash不变。这仅关闭IAM owner前置验证，不等于Billing authorizer/Admission/预占/实际扣款或用户聊天完成。Billing原writer在精确写集实施authorizer，Agent原owner只做公开SDK取消探针，IAM test支持独立单writer；原3310/共享数据保持。70组11/6/14/38/1不提升。
+
+Agent取消仍真实RED（取消后完整prepared attempt迟提交），旧7月Open issue不足以证明最新1.2.12行为；Root隔离probe候选不改应用依赖，先实际复现再决定最小公开API修复。goal工具本次实际状态blocked，不能以旧台账active冒当前状态；heartbeat要求继续现有可执行目标，未新建目标/重复计划。
