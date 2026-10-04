@@ -15,7 +15,7 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `ce40cecc4071a6dd775730f6e32619d2cfc130b4`：W2仅17路径已验窄提交；原19mixed保留，未push、原3310未启用Move|Root17297独立clean候选：contract258/architecture50/lint/types/build0、165files2459pass/0fail/0skip125.05s；tree a46941cf与已验candidate17文件逐SHA一致。四个真实Next浏览器旅程通过属于fixture；当前3310旧public7.0/noMove，原用户真实绑定链仍待验。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3`；19路径未交接mixed保留|Root57207 clean正式提交：173真实PG/Redis通过/0skip38.4399s，743pure+1既定资源skip，schema/build/check/format0；public7.1 Move已挂载。此前mixed候选184不是正式8e33证据；Project DELETE/Storage/独立任务政策与当前3310消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `814e92905991c2aa6d68b000cd8f81c2d550a93f` clean：A3b8c08ea4＋SDK retry六路径窄片|R196 Root94390锁定SDK真实loopback HTTP14pass；23752工程2178pass/415资源deselected113.23s、lock/frozen/Ruff/Pyright/contract/build0，50267文档后contract/build0。303真实PG/安装wheel属于A3b历史已验，不是retry片重跑。原生Middleware/授权/真实provider/费用链仍OPEN。|
+|Agent `apps/kokoro-agent`|main `814e92905991c2aa6d68b000cd8f81c2d550a93f`＋一未提交系统RED测试：A3b8c08ea4＋SDK retry六路径窄片|R196 Root94390锁定SDK真实loopback HTTP14pass；23752工程2178pass/415资源deselected113.23s、lock/frozen/Ruff/Pyright/contract/build0，50267文档后contract/build0。303真实PG/安装wheel属于A3b历史已验，不是retry片重跑。原生Middleware/授权/真实provider/费用链仍OPEN。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
@@ -144,3 +144,7 @@ R196最终当前：Web正式W2源码ce40cecc已Root精确17路径提交（tree a
 原launcher45606/Web46036仍实际live。只读审查 `/tmp/kokoro-r197-release-review.md`（15cbc32298920089ae92c4425826ddfca3382c5d1ac00b36afe24d4e00500256）确认现入口是一次性fixture：正常重启会删除旧run自有应用/IAM库并重新生成身份，不能保持旧对话。已询问用户是否保留这些测试数据；答复前保持旧run，先独立clean checkout/依赖/构建/preflight，不停服务不删数据。原浏览器CUA getState读取到唯一tab1 `/app`，随后getTab因Emulation.setFocusEmulationEnabled超时；未操作页面/关闭用户tab，未取得用户链证据。
 
 原Agent owner只读下一切片报告 `/tmp/kokoro-r197-agent-next-cut.md`（438266db95dfda82b3229f749d2057df0e6e9b532f12c9237baa8dd8f110d227）：production尚未调用ModelCallRepository，稳定logical call身份及无Billing恢复语义须精确D0裁决；没有授假grant或称收费闭环。70组11/6/14/38/1与完整goal active不变。
+
+R197后继实际状态：本地候选Root release `f7505c5725a689569430e4cb41816dbd20f09c01` 已pin ce40/814e；独立六owner clean release `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-r197-clean-release-6pzen10k/Kokoro` 五Node构建0＋Agent frozen安装/正式worker与HTTP import原址0，严格启动前identity门0。manifest8a76f2c9；9677/44327/29832已终态，其中44327 offline缓存失败保留，后29832正常frozen网络门通过。实际topology唯一Billing旧pin mismatch仍FAIL，不以准备完成冒用户闭环。旧3310未切换，不新增服务/数据库；测试数据保留问题等待用户答复。R197-A4-FC-RED只授一个测试baseline文件，不授生产GREEN。
+
+R197-A4-FC-RED实际Root37791终态exit1：冻结test6760e326，仅一case、真实PG Run/Lease/recipe→原生DeepAgents/锁定SDK loopback正常完成后 `provider_requests=1` 不符无授权零外发预期，1fail/45既有warnings1.71s。不是collection或连接失败。System/provider仅响应sandbox，不是正式Billing或真实外部推理；首assert失败后dispatch/evidence两assert未执行，不宣称两项零通过。自有库absent/sourcehashsame，无Redis/外部调用；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r197-agent-native-red-lqsrdbef/manifest.json`。生产未改，唯一RED文件未提交，后继须D0稳定identity/缺席恢复与更精确oracle后再授GREEN。

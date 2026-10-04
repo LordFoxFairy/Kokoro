@@ -8257,3 +8257,18 @@ R196-W2限定已验收：new f0fd64e7/17paths Root17297 clean完整2459pass0fail
 |R197-W2-release / P1|Root独占组合Git/资源/浏览器|Web ce40cecc、BFF8e33、IAM0537；只精确已验gitlink与同五台账，clean release副本；原mixed不复制/重置|先核launcher实际资源/清理/保留业务数据边界，再预构建干净组合；更新唯一3310不丢用户有效数据，实际原浏览器正规登录与同ID绑定/消息/刷新。缺证不关闭|
 |R197-release-review / 只读|原agent_prepare_final_review|Root脚本/已验commits/实际运行身份只读；报告/tmp，不启资源不写仓|核最小clean发布方案及旧run数据库生命周期，指出真实阻断，不重新架构|
 |R197-A4-next / 只读设计|原agent_mainline_qa_owner|Agent814e clean、原四D0、CODEBASE_MAP及Python手册；仅/tmp交付|收敛下个不依赖Billing未发布字段的原生Middleware切片及系统行为RED路径；缺真实授权不得假grant，需新契约则明确owner|
+
+
+### R197-A4-FC-RED 精确基线任务（只验证当前旁路，不授GREEN）
+
+|放置项|裁决|
+|---|---|
+|Owner/当前事实|Agent执行model runtime；原agent_mainline_qa_owner唯一writer，814e929 clean；现factory是native DeepAgents实际入口，A1–A3数据库接口尚无生产caller，Billing consumer缺席|
+|目标/目录比较|只新增 `apps/kokoro-agent/tests/integration/database/test_model_call_runtime_chain.py` 一个系统行为基线文件。采用database目录：验证真实Run/Lease/recipe与native执行；不塞现SDK retry文件（变化原因不同），不创建新目录/production模块|
+|范围/依赖|先读本仓三D0与Python/SQL规范；现技术/API/DATA已批准无owner许可不外发及native seam，call identity/缺席恢复两个GREEN设计项仍OPEN。本片仅RED验证，不实施新身份/状态机/contract|
+|数据与删除|自有fresh PG沿原runner、loopback HTTP监听127.0.0.1:0、正式factory/SDK，不mock调用函数或制造grant；无schema/generated/锁/D0/production写入，无删除项|
+|验证/交付|只首个主链case：Billing consumer缺席时要求provider物理请求0、无dispatch/evidence；证明当前实际发送则业务RED，collection错误不算。Root独占PG/运行资源/提交，writer不运行共享测试/服务；先交文件/hash/命令与资源需要，再Root真实失败验证|
+
+此片不阻塞Rootclean release预构建；declared subagent/取消路径留后继，不为凑case跳过main授权或fake grant。尚未授任何生产GREEN；任务交付即待审查，不称Agent用户或费用闭环。
+
+R197交接终态：local candidate release f7505c57已精确pin、clean六owner源码与五Node构建/Agent frozen安装和正式import原址/严格preflight均通过；旧3310不动，数据保留决策待答。R197-A4-FC-RED唯一test6760已Root37791真实业务RED（1物理请求!=0，1fail1.71s），未提交；owner已冻结、不授GREEN。下轮继续原任务：按数据决策切换或保留；Agent收敛两个窄D0项及错误/资源系统oracle后原owner实施，Billing正式artifact/消费沿既有Wave顺序，支付后置。

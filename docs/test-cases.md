@@ -1588,3 +1588,17 @@ R196 Root42824最后真实Next三case全部3pass24.49s（19路径冻结hash）�
 R196完整回归15820：新增三旅程通过，但既有R188‘未知Move切到B后重试A仍保B’失败，整体Web未放行；需retry遵守当前显式selection，仅无canonical selection/当前命令会话才随绑定导航，不抢B。2475pass/1fail、build未执行，原案例不弱化，下一四trueNext＋完整门。
 
 R196最终正式切片：Webce40cecc基于clean候选17paths完整2459pass0skip125.05s，contract/architecture/lint/types/build0；独审0P0/P1/P2，包含旧R188显式B选择保护和三R195system业务旅程。此是formalcommit+真实Next/strict owner fixture，不是原3310 live BFF/真实费用；TC-W01/02/03到候选层已验，70组11/6/14/38/1仍不改变，live复验另明确任务卡。
+
+
+### R197 绑定能力发布验收准备（不提升70组业务通过数）
+
+- 既有T-C05.R187会话Move用户链仍待复测：正式ce40源码、Rootf750双pin、clean release build/source预检已通过，旧3310仍public7.0无Move。须在实际运行版本正规登录并建立/保留真实Conversation/Message基线后测Direct→Project→Direct、source/target列表、刷新、同key未知恢复及不抢其它选择；预构建不算通过。
+- 新发现发布状态生命周期：旧launcher退出清理run自有IAM/应用库，再启用新subject/secret；用户是否保留当前测试数据待确认，禁止擅自shutdown。当前不要求用旧cookie验证新run保持登录；不同run不假称同Conversation保留。
+- Root新release构建5owner0、Agent初offline缓存miss后正规frozen网络安装/真实模块src origin0；receipt8a76f2c9。仅装配通过，不证明登录/模型/Billing。
+- Agent native无Billing许可零provider请求系统baseline已Root真实失败（见下表），未授GREEN，不列通过。
+
+|用例 ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果|
+|---|---|---|---|---|---|---|
+|TC-R197-A01 / native调用在费用授权缺席时不外发|Agent814e＋唯一未提交test6760；Root自有fresh PG，现正式factory/SDK，Billing consumer未装配；System/模型协议loopback sandbox|正规enqueue/claim Run Lease→factory封存recipe→原生DeepAgents stream→计完整provider请求→查询attempt/evidence→清理fixture|无owner许可零模型外发，不能生成成功/免费授权；有界安全失败与资源回收；dispatch/evidence不得凭猜测补零|P1|安全、主链路、异常、生命周期|FAIL：Root37791真实1物理请求!=0、1fail/45warnings1.71s；其后两SQL断言未执行，恢复错误终态未验。自有库absent/sourcehashsame；manifest原址见CURRENT。不是正式Billing/外部模型/用户费用验收，未授生产GREEN|
+
+70组11通过/6失败/14待复测/38未验/1支付后置保持：上表是原模型/费用组的明确失败子例，不重计新增组。TC-R195-W01–03/TC-R196-W01–03原RED行保留为历史；最终ce40限定fixture四旅程/clean2459门已通过，但对应3310 live组仍待验，不能混写全绿。

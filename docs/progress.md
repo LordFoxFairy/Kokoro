@@ -8633,3 +8633,11 @@ Root17297 newclean正式候选自然exit0：contract258/architecture50/lint0warn
 原release审查员只读报告15cbc322确认两真实阻断：gitlink/source clean组合尚未构造；现launcher正常退出会DROP自有应用/IAM库、再启动生成新身份/secret。Root已就测试对话保留请求用户决策，保持原run不停止/不清理，允许独立prebuild。原CUAgetState22s得到tab1 `/app`，getTab31s `Emulation.setFocusEmulationEnabled` timeout，未动页面，不把工具超时当产品恢复或理由重启服务。
 
 原Agent owner只读438266db明确A4 native seam下一failclosed系统行为门及两个D0缺口，没有新source或资源写入。CURRENT顶部三owner旧表证据已纠正为当前正式commit，历史mixed184/早期2454/2463仍保留为历史而不冒当前通过。实际资源/构建结果续记本段，不建新计划中心。
+
+R197组合身份已精确提交 `f7505c5725a689569430e4cb41816dbd20f09c01`（仅Web/Agent两个gitlinks＋四Root文档）；Root实际topology仍FAIL，唯一剩Billing checkout9eeabf3与recordede04bff9不一致，不放宽门。Root治理topology测试两次7pass（0.03s/0.05s）；diff check0。
+
+Root9677 clean release准备自然exit0：`/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-r197-clean-release-6pzen10k/Kokoro`，local clone只取正式commits，无mixed，main分支，六owner逐lockdigest相等，Node依赖APFS COW为现locked快照非fresh网络install。strict login＋Storage source preflight及Chat System/Agent/BFF source pin通过。Root44327构建先自然exit1：五Node build均0（BFF4.05s/IAM5.63s/System2.87s/Storage3.01s/Web16.78s），Agent offline cache miss connectrpc0.12.1，非源码失败且未借oldvenv隐藏。Root29832改用原frozen正常网络安装自然exit0，worker/HTTP真实module origin均在本clean release src；六owner postbuild clean、严格preflight0。最终manifest `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-r197-clean-release-6pzen10k/manifest.json` SHA256 `8a76f2c91812d21408a42a8f42578cecaa729fb1439476ffb2868bdf9f2140d0`。全部三个句柄终态，无新服务/库；旧3310仍live/未启用已验Move，等待用户测试数据保留决策。
+
+R197-A4-FC-RED按task末尾精确第8节表仅授原Agent owner一个新database系统行为baseline文件，production/SQL/contract/锁全部冻结；Root未授GREEN或假grant。它只验证当前无Billing许可仍外发旁路，不宣称模型收费主链完成；仍待作者冻结与Root实际PG/SDK HTTP失败证据。
+
+R197-A4-FC-RED作者仅test文件6760e326交接；作者另做无资源collection/格式/类型检查（非Root业务验收）。Root37791亲跑真实fixture：1fail/45warnings1.71s，实际正规enqueue/claim/frozen recipe/native SDK stream正常完成，provider peer count1而预期0；assert失败后的dispatch/evidence checks未执行，不能称二者已通过。自有PG `agent_r197_9c27b8bcd8d54e068e3ff67a4bb50b04` 已移除、sourcehashsame，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r197-agent-native-red-lqsrdbef/manifest.json`；session已终态，无重启/新永久服务。Root已告原writer冻结，未授生产GREEN，后继需要exact POST counter/错误生命周期oracle，stable call identity和无Billing恢复语义D0；不把无费用keeper旁路当闭环。
