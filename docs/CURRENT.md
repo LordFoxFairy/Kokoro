@@ -1,6 +1,32 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R206。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R209。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R209 真实响应头修复与总期限后继（2026-10-04）
+
+上一轮归类进展：消费20681真实失败并更新逐仓/页面台账。Root核正式错误contract请求标识在meta而不是error；目标API05要求x-request-id header。原writer仅更正oracle后Root39229真实1fail1.250s，证明header确实缺失；Root定位既有http/response.ts reply虽持受信context却未setHeader。只该函数入口补header，不改变JSON/契约/幂等。原测试冻结cc56cb1、response f02c0753。
+
+Root45503同owned锁HTTP/PG系统例实际1pass1.266s，503/header/no-store、4.9s业务容差、响应前后全facts零差、释放后同pool202/恰2Message和1dispatch全执行；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r207-bff-blocker-red-jtyr2af9/manifest.json` installer/build0、ownDB absent/source/Redis/secondary库同。没有更新当前3310或提交BFF候选。独审 `/tmp/kokoro-r207-bff-absolute-deadline-review.md` 0P0/1P1：普通SQL/BEGIN只有逐语句timeout，未全部消费绝对4500ms；notify已有50ms独立界，并非无限，但未共享总界。Root46499对91e95新真实两trigger用例取得RED：case6.101s，两个PgSleep同PID成立、HTTP期限assert false/true，且出现生产Connection terminated unhandledRejection。manifest T/kokoro-r209-bff-absolute-red-ebyrdmgy/manifest.json 自库absent/source/Redis同。原writer只在具名事务文件修lazy总期限，并补强owned backend消失与pool baseline；总期限/rollback/unknownCOMMIT等完整矩阵未关闭。
+
+Agent原owner完成下一caller只读交接：缺受认证planned/sealed evidence reader、execution-bound及Billing Admission运行链；Root明确System只拥有路由/能力/运行限额，Billing独占定价账户/profile/费率，不能按报告建议跨owner放价格。报告不当实现或契约发布证据。Goal继续完整Wave0–7 active；70组仍11/6/14/38/1。Root治理局部pytest7pass不等于真实topology通过（三gitlink差仍FAIL）；共享服务/数据与uv f7e1保持。
+
+## R208 逐仓与页面进度核对（2026-10-04）
+
+本轮为只读状态核对：两个原生审查员分别核11个物理子仓及页面/Settings，不新增计划中心、不改变Wave0–7目标。Root现场确认全部checkout本地仅main；Agent92b802e工作树clean，Web19/BFF22/Billing8个未提交路径保留。Root topology真实FAIL：Agent/IAM/Billing checkout与gitlink三项不同。当前3310仍既有运行副本，未启Move、Storage profile或最新Agent；本轮没有重新浏览器验收，历史404/503不当本轮复现。
+
+Root消费原20681句柄自然exit1：有界BFF候选的owned Project锁用例1fail/1.248s，已到503/code/时限/no-store后的request_id断言（actual null/expected true）；完整事实零差及后续同pool202未执行。缺失字段是否测试契约定位错误或产品缺陷尚未判定，不先归因。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r207-bff-blocker-red-70m7u84a/manifest.json` 自有DB absent、source/Redis/secondary库同，installer/build0。单锁快速503不构成全事务GREEN；pool、rollback、unknownCOMMIT、统一绝对预算及通知仍待完整验证。原writer源码保持冻结。
+
+70组保持11通过/6失败/14待复测/38未验/1支付后置；这是既有验收组状态，不是页面完整度百分比。各owner局部工程/持久化证据、消费者集成与当前浏览器用户链分开记账。项目完整CRUD、独立任务、Agent工具/审批/恢复、Skills/MCP、Library、Settings持久保存、正式积分流水仍未整体闭环。Goal active，支付最后。
+
+## R207 当前推进：Agent取消切片已提交，BFF有界事务业务RED已证实（2026-10-04）
+
+上一回合分类为进展：Root2bb81cf0四台账提交、真PG取消与fatal两系统例取得终态。本轮完整goal实读active，同Wave0–7不缩小，70组仍11/6/14/38/1，不用工程通过替代完整用户组。
+
+Agent已由Root精确22路径本地提交 **92b802e223547288c4a8dcaba56dfd2f0c327f93**，工作树clean、字节保持、未push且原3310未升级。显式owned/shield native driver、固定5秒settle、投影重复cancel保护、typed fatal跳所有正常cleanup/stop-intake/真实exit70、非法callback return兜底、原production SIGTERM单预算共用入口均已实现；默认5秒收敛为单一常量。最终Root43772在冻结source上自然exit0：306真PG/133warnings45.03s，fatal/非法callback/SIGTERM真实子进程3pass4.60s，默认2192pass/421资源deselected/795warnings117.20s，canonical10/lock/frozen/Ruff286/Pyright/contract/wheel/sdist均0。自有DB absent、full source hash同，独审最终0P0/P1/P2。门后仅四D0当前前缀更新真实结果，Root逐byte确认执行source/test/config/lock/schema均同门；收据 `/tmp/kokoro-r207-agent-commit-receipt.json`。此片不关闭完整Agent、真实provider/Billing、GP/catalog/Swarm caller/recovery或当前浏览器Stop。
+
+BFF新owned-blocker系统用例81f35482已由Root48540实际失败：owned Project锁图成立后旧无界实现等待fixture安全释放，HTTP实际202、预期503，case5.297s。完整表事实/双窗口零差oracle保持；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r207-bff-blocker-red-f9itfge_/manifest.json` ownedDB absent/source_same/Redis_same。首75553只有Aggregate隐藏primary的失败不作202证据。两D0审查矛盾已纠正为0P0/P1/P2；原BFF owner仅在既有clean副本实施已批准chat-turn-commit有界事务/最小repo委派，原shared mixed/SQL/API/package/lock均冻结。后续仍须真实pool/rollback/unknownCOMMIT/共享四轮预算矩阵与完整owner门，不以首例GREEN结束R189。主动HTTP取消贯通列为完整目标后继OPEN，不冒本片已支持。
+
+所有本轮Root测试句柄52139/43772/75553/48540已取得终态；无重启或共享清理，原45606/46036与45926/45942仍既有运行源，未改。自有R206 clone venv已回收，源/manifest保留，原venv不动。Root uv f7e1与Web/BFF/Billing mixed保留；Root组合gitlinks未更新伪装发布。
 
 ## R206 逐仓/页面核对与当前并行工作（2026-10-04）
 
@@ -49,8 +75,8 @@ BFF另面已从8e33隔离出R189 Message snapshot/replay九路径patch，排除P
 |Owner|当前基线/候选|当前可证明范围|
 |---|---|---|
 |Web `apps/kokoro-app`|main `ce40cecc4071a6dd775730f6e32619d2cfc130b4`：W2仅17路径已验窄提交；原19mixed保留，未push、原3310未启用Move|Root17297独立clean候选：contract258/architecture50/lint/types/build0、165files2459pass/0fail/0skip125.05s；tree a46941cf与已验candidate17文件逐SHA一致。四个真实Next浏览器旅程通过属于fixture；当前3310旧public7.0/noMove，原用户真实绑定链仍待验。|
-|BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3`；19路径未交接mixed保留|Root57207 clean正式提交：173真实PG/Redis通过/0skip38.4399s，743pure+1既定资源skip，schema/build/check/format0；public7.1 Move已挂载。此前mixed候选184不是正式8e33证据；Project DELETE/Storage/独立任务政策与当前3310消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `59034f48333f9efeae25fa7f18f6e422f066949e`：17路径原生guard已验；R201 stable test01d3与四D0未提交，生产未修|R198 Root50248：304真实PG、2182默认pass/416资源deselected，lock/frozen/Ruff/Pyright/contract/build0；仅main缺Billing负例provider0。最新Root57435真实PG定点2pass/1fail3.68s，确认取消后内部prepare继续落库；自有库回收/源码hash同。此前全PG305pass/1fail保留；正式授权/成功provider/其它caller/费用链OPEN。|
+|BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3`；22路径未交接mixed保留|Root57207 clean正式提交：173真实PG/Redis通过/0skip38.4399s，743pure+1既定资源skip，schema/build/check/format0；public7.1 Move已挂载。此前mixed候选184不是正式8e33证据；Project DELETE/Storage/独立任务政策与当前3310消费仍OPEN。|
+|Agent `apps/kokoro-agent`|main `92b802e223547288c4a8dcaba56dfd2f0c327f93`：22路径取消/有限settle/退出切片已本地提交，工作树clean，未push且原3310未消费|R207 Root43772：306真实PG、3生命周期系统、2192默认pass/421资源deselected及全静态/contract/build0，资源回收/源码保持；独审0P0/P1/P2。旧取消RED见progress历史；正式Billing/provider成功、其它caller/recovery与用户费用链仍OPEN。|
 |其它运行owner|IAMc9a9872、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing87cbe82（experimental.3身份契约及此前正式IAM authorizer本地commit，未发布/运行消费）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。

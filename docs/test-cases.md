@@ -1,3 +1,21 @@
+## R209 TC-BFF-R207-003 限定GREEN与后继（2026-10-04）
+
+原error.request_id oracle不符合正式contract，改为x-request-id后Root39229真实FAIL证明响应头也missing。仅reply入口补受信header后Root45503同HTTP/PG1pass1.266s，完整锁图/503/业务期限/全facts双窗口零写/同pool健康202全部执行；源码、测试冻结，ownedDB和Redis保持。manifest T/kokoro-r207-bff-blocker-red-jtyr2af9/manifest.json。这只关闭该限定子例，原R207完整有界资源组仍OPEN；新增R209累积SQL真实trigger反例在途，不用单例GREEN上调70组。
+
+## R208 执行状态补记（2026-10-04）
+
+TC-BFF-R207-003 当前候选由Root20681真实HTTP/PG复验：1fail/1.248s，503/code/时限/no-store断言已通过，随后request_id断言actual null/expected true；错误字段定位须先核正式契约，不能先猜产品根因。完整事实双窗口零差及同pool后续202尚未执行。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r207-bff-blocker-red-70m7u84a/manifest.json` 自有DB已回收/source和Redis保持。此例仍FAIL，既有70组统计不变；本轮没有浏览器页面重测。
+
+## R207 取消与进程生命周期限定验收（2026-10-04）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
+|---|---|---|---|---|---|---|
+|TC-AGENT-R207-001 / 不合作driver超时fail-stop|冻结68a64a2b系统测试及真实Supervisor/invoke/pump；自有子进程、受控bus/repository/runnable|serve消费Run→公开RunCancel→不响应cancel的iterator→固定settle deadline；cleanup若触发即挂起负控；观察退出marker|stop-intake、cleanup零调用、实际exit70；非法fatal callback返回仍exit70；不生成假的终态/费用结论|P0|异常、生命周期、进程系统|Root43772实际两fatal case通过；作者旧cleanup反例先FAIL保留。受控依赖非真实PG/provider/资金用户链；整组不因此关闭。|
+|TC-AGENT-R207-002 / production SIGTERM共用入口正常退出|同自有子进程，production私有shutdown入口、真实Supervisor及合作invoke|parent等真实readiness后发SIGTERM→同budget取消serve→合作task/context退出→drain→检查进程状态|正常exit0、drain true、零fatal；同一production signal代码无测试复制|P0|状态机、生命周期、恢复|Root43772与上述两case共3pass4.60s；真实PG306同时通过，scope执行源码提交92b802e。不是完整main外部资源装配或浏览器Stop证明。|
+|TC-BFF-R207-003 / Message Project锁等待有界零写|clean8e33+R189；真实HTTP/ownedPG双连接，测试81f35482|锁本人Project→body project_ref发送→观察owned blocker PID→响应前/后完整事实对比；fixture5.2s安全释放→同pool后续正常Message|内部4.5s有限失败/HTTP503而非迟到成功；完整事实零差、pool可复用|P0|异常、事务、资源、业务系统|Root48540真RED：实际202预期503/case5.297s；ownedDB absent/source_same/Redis_same，原owner实现GREEN在途。未通过，不关闭锁预算组；后续pool/unknownCOMMIT/rollback/四轮预算另须实测。|
+
+306真实PG/2192默认工程门不是306/2192条产品验收。原70组11通过/6失败/14复测/38未验/1支付最后保持，费用与当前3310实际旅程仍OPEN。
+
 ## R205 原生取消限定系统验收（2026-10-04）
 
 |用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
@@ -1661,3 +1679,7 @@ IAM0537真实billing authorization HTTP16pass/0fail，Root49764，manifest `T/ko
 |TC-BILL-R201-002|授权异常有界收口|同上；Root owned网络故障代理|503、stall至期限、caller取消、module shutdown|无自动重试；闭集UNAVAILABLE/ABORTED/SHUTTING_DOWN，无挂起，资源恢复|P0|异常、取消、状态机|Root94978相应4例通过；总11/11、每例physical_requests=1，host_exit0/resources_restoredtrue；仅adapter|
 |TC-IAM-R201-003|测试host退出与资源生命周期|真实IAM owned fixture；共享PG/Redis仅观察|ready stop/EOF/SIGTERM、startup stop/SIGTERM|不提前exit泄漏自有库；cleanup后自然结束；共享inventory不变|P1|系统异常、资源生命周期|首次ready-stop真失败保留；Root74712修后五例PASS，test-only不冒正式登录通过|
 |TC-AGENT-R201-004|实际native取消版本对照|正式PG/DeepAgents native链、原41fe oracle、独立固定候选SDKenv|等待prepare真实锁→取消invoke并等返回→释放锁→完整快照核对|取消后的model operation有限停止，无晚prepare写|P0|系统取消、数据一致性|1.2.12仍真实FAIL（2pass/1fail）；原锁tracer三例PASS但prepare仍pending，仅诊断调度变化。生产未改，本用例不关闭|
+
+### R209累计SQL真实系统RED
+
+TC-BFF-R209-004（P0，事务/异常/资源生命周期）：Root46499真实HTTP+PG，owned tenant两BEFORE INSERT trigger各3s，outbox和user-message两个PgSleep同backend成立；期望503且HTTP<4900ms、双窗口全facts零差、backend销毁、同pool后续健康请求。91e95测试实际FAIL/case6.101s：HTTP期限assert false/true且生产未消费Connection terminated拒绝。manifest T/kokoro-r209-bff-absolute-red-ebyrdmgy/manifest.json ownDBabsent/source/Redis同。该真实失败后授GREEN，新test将加强PID彻底消失及pool计数回baseline，未执行不得冒GREEN；完整组状态不变。

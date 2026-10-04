@@ -42,6 +42,14 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 - `apps/kokoro-bff/src/infrastructure/postgres/chat-repository.ts`：Chat事实与具名Move委派；Move事务唯一位于现`conversation-move.ts`，排序Project→Conversation锁、归属与final receipt同事务、same-key赢家恢复；`conversation-move-lease.ts`负责有界PoolClient/unknownCOMMIT lease销毁，现mappers纯receipt decode，无schema/contract变更。
 - Move producer原源码284b/发布态0333；职责拆分源码6c5cee0/发布文档5e119cd。Web本地main21ad177已固定消费public7.1及该owner commit，包含严格client/同源adapter；当前3310运行副本仍未启用Move。ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
 
+## Agent invocation-local取消边界（R207，2026-10-04）
+
+- `apps/kokoro-agent/src/kokoro_agent/model/call_scope.py`：单invoke exact driver/model task所有权、唯一5秒默认、固定deadline与typed settlement fatal；无全局Run registry/私有SDK/SQL或费用事实。
+- `apps/kokoro-agent/src/kokoro_agent/execution/run_agent.py`：显式native driver同步登记/shield，三路seal/terminal前settle；`publish_agent_events.py`避免投影重复cancel且仍join。
+- `apps/kokoro-agent/src/kokoro_agent/worker/main.py`：production私有SIGTERM/budget/drain入口；Supervisor超时先stop-intake再真实exit70，不走正常cleanup/lease release。
+- `apps/kokoro-agent/tests/integration/test_model_call_fatal_exit.py`：真实child fail-stop及parent SIGTERM系统门；`tests/integration/database/test_model_call_runtime_chain.py`：原生PG/checkpointer取消完整快照门。
+- 本地源码commit92b802e；Root306真PG/3生命周期/完整2192默认门已验，资源deselected不冒通过；未push/原3310未消费，完整模型/费用/用户链仍按CURRENT推进。
+
 ## Agent model-call 内部持久边界（R193，2026-10-04）
 
 - `apps/kokoro-agent/src/kokoro_agent/model/call_models.py`：不可变prepare/authorization/dispatch/evidence command、receipt与最小Protocol。

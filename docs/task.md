@@ -8571,3 +8571,50 @@ R205-BFF clean门63471终态175真实集成/743pure+1资源skip/236contract及�
 协调纠正：对已结束原agent仅send_message不触发新turn，本轮实际followup_task续派；不得把已发消息当运行worker。已有64906终态已消费，不重复启动进程。
 
 R206后继终态：原Agent writer新增cleanup阻塞反例先1fail5.76s（作者证据），精确b46f1632让typed timeout跳sandbox cleanup；Root90629在当前冻结source重跑完整serve/RunCancel子进程两例2pass2.91s，包含实际exit70及非法callback返回兜底。93b43ddf系统SHA；采用受控bus/repository/runnable且真实invoke/pump，不冒真实PG/provider/Billing或正常SIGTERM全链。独审及完整owner门仍待验。BFF四D0 prefix已冻结a4f23f/21fec0/c3f69c/e4384d，clean拼装bd4fe5；caller取消尚未贯通SQL，未虚称支持，独审在途。
+
+### R207 正常退出与有界Message真实RED续推进（2026-10-04）
+
+上一回合分类进展：Root64906真PG三例与90629完整serve/fatal两例取得终态，Root2bb81cf0四台账提交；不是状态复述。goal active，沿原Wave0–7不另建计划。
+
+|任务|归属/唯一writer/基线|授权精确范围与完成门|
+|---|---|---|
+|R207-Agent正常SIGTERM|Agent main59034+20候选；agent_mainline_qa_owner；Root Git/资源|仅现worker/main.py抽包内_serve_until_shutdown，现serve原资源context调用；现fatal系统test使用同production signal/budget/drain seam真实child SIGTERM，合作任务drain/close/exit0、零fatal。仅TECH/CURRENT现scope前缀同步，API/DATA零差，不复制signal/大mock装配/新增support。完整freeze后Root fresh PG全部、fatal/SIGTERM系统、默认/static/contract/build门与独审，保留失败，不提交未验候选。|
+|R207-BFF锁等待tests-first|BFF8e33+Root已验R189独立clean副本；agent_prepare_final_review为该repo唯一writer，Root资源/Git|独审纠正placement82e22aea/REDplan4fc0c4fd与四D0 clean manifestbd4fe5，0P0/P1/P2仅规格通过。只准在/tmp指向的既有clean source/test/chat-facts.integration.mjs新增具名R207 Project锁等待系统case；production/SQL/contract/包锁/共享mixed原test冻结。真实HTTP body project_ref、owned blocker pg_blocking_pids、5.2s fixture safety release、业务<4.9s/503/零事实/同pool下一请求。作者不运行PG/Redis/服务，交test SHA+patch+原所有source/manifest；Root实际业务RED后才授GREEN实现。主动HTTP取消贯通另后继OPEN，不丢原需求、不宣称当前支持。|
+|R207-独审|web_page_qa_owner只读|BFF两/tmp增量0P0/P1/P2，Agent sandbox精确跳过0问题；新SIGTERM/source冻结后复审，不改repo/Git/资源。|
+
+R207-BFF Root48540已对新版81f35482真实HTTP/PG锁等待取到业务RED：实际202、预期503，case5.297s；自有blocker安全释放后旧无界事务提交，非fixture404/prepare错误。manifest T/kokoro-r207-bff-blocker-red-f9itfge_/manifest.json，ownedDB absent/source_same/Redis_same。首75553的Aggregate隐藏primary结果只留失败，不单独当202证据。Root三面/§8门与独审已通过，授原BFF writer以下GREEN闭集：既有clean副本新chat-turn-commit.ts（单一commit事务/私有deadline）、现outbox repository仅委派并移除被搬出的专用helper/import，其它claim/admit/settle及CLAIMED HEAD原字节；现domain/chat/agent-dispatch.ts及http/chat-authorization.ts只已验R189 semantic hunks，禁止新格式。测试仅现chat-facts/agent-dispatch-outbox/architecture与必要已审定现纯邻测；冻结当前owned-blocker oracle、补真PG/HTTP pool late/中段故障/rollback destroy/unknownCOMMIT/四轮共享预算矩阵后才整体验收。四D0 clean由manifest批准prefix＋HEAD正文拼装，不复制原mixed。shared原仓/SQL/contract/package/lock/Project DELETE/其它owner禁止。无Git/共享infra运行，Root独占资源；提交前clean源需完整Owner门、独审及逐hunk边界验收，单case GREEN不等于整个R189完成。
+
+R207-Agent卡已验收限定源码切片：Root43772完整306PG/3生命周期/2192默认421资源deselected与全门0、独审0P0/P1/P2，执行字节同门；Agent22path精确提交92b802e223547288c4a8dcaba56dfd2f0c327f93，tree clean/未push/3310未升级。四D0门后事实纠正不改执行代码，收据/tmp/kokoro-r207-agent-commit-receipt.json。原完整Run→正式model/Billing→AGUI恢复→实际积分用户旅程仍OPEN。BFF GREEN实施在clean副本原owner续接，尚未获得新实现终态，不宣称完毕。
+
+
+## R208 逐仓与页面进度核对（2026-10-04）
+
+本轮为只读状态核对：两个原生审查员分别核11个物理子仓及页面/Settings，不新增计划中心、不改变Wave0–7目标。Root现场确认全部checkout本地仅main；Agent92b802e工作树clean，Web19/BFF22/Billing8个未提交路径保留。Root topology真实FAIL：Agent/IAM/Billing checkout与gitlink三项不同。当前3310仍既有运行副本，未启Move、Storage profile或最新Agent；本轮没有重新浏览器验收，历史404/503不当本轮复现。
+
+Root消费原20681句柄自然exit1：有界BFF候选的owned Project锁用例1fail/1.248s，已到503/code/时限/no-store后的request_id断言（actual null/expected true）；完整事实零差及后续同pool202未执行。缺失字段是否测试契约定位错误或产品缺陷尚未判定，不先归因。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r207-bff-blocker-red-70m7u84a/manifest.json` 自有DB absent、source/Redis/secondary库同，installer/build0。单锁快速503不构成全事务GREEN；pool、rollback、unknownCOMMIT、统一绝对预算及通知仍待完整验证。原writer源码保持冻结。
+
+70组保持11通过/6失败/14待复测/38未验/1支付后置；这是既有验收组状态，不是页面完整度百分比。各owner局部工程/持久化证据、消费者集成与当前浏览器用户链分开记账。项目完整CRUD、独立任务、Agent工具/审批/恢复、Skills/MCP、Library、Settings持久保存、正式积分流水仍未整体闭环。Goal active，支付最后。
+
+### R209 BFF当前失败定位与有界资源验收续接（2026-10-04）
+
+上一轮归类为进展：原20681终态失败改变后续动作，70组/运行版本与逐仓状态写入现台账。Root读取API专项§2：request ID仅x-request-id header，不入JSON；TC-BFF-R207-003的body.error.request_id与正式规范不符，先纠正oracle而非改生产envelope。
+
+|续接任务|归属/角色/基线与范围|验收/交付|
+|---|---|---|
+|R207-BFF-HEADER-ORACLE续接|原agent_prepare_final_review，唯一BFF writer；既有隔离clean副本 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r205-bff-clean-b_aya8_x/source，基线formal8e33+已冻结R189/R207候选；仅现test/chat-facts.integration.mjs的R207 case request-id断言|按本仓contract及现错误handler证实header语义，只把JSON错误字段断言改为非空响应header及必要JSON无request_id断言；不改期限/锁图/全facts/pool/cleanup/source/SQL/contract。作者纯语法校验，交SHA及差异后停写，Root复用原资源runner执行真正PG/HTTP GREEN，随后再授权必要矩阵。|
+|R207-BFF-ABSOLUTE-REVIEW续接|web_page_qa_owner只读，基线新事务6bc3988b/repoa0d37f18、批准placement82e22aea；同clean副本|逐语句核pool/BEGIN/所有SQL/rollback/COMMIT/notify是否共享4500ms；观察迟到查询/释放/未知COMMIT，给可执行真实资源反例方案与P0/P1，不改文件/Git/资源。Root审定后原writer实施，不以单锁GREEN关闭全片。|
+|R209-Root|Root独占资源、现Root五文档/Git；保uv f7e1及所有mixed/gitlinks|真实终态、source freeze、资源回收、正式契约定位、最小hunk审查；继续原Wave0–7完整目标，不新建中心/服务或清共享数据。|
+
+|R209-Agent实际caller下一片只读交接|原agent_mainline_qa_owner，Agent92b802e clean；只读，不修改任何仓|沿A4既有模型主链定位Billing正式许可/dispatch/provider/evidence/finalizer的当前缺口，核System/Billing已发布contract依赖与最小可推进次序；尤其GP/catalog/Swarm真实caller/recovery不可丢。不新建计划或协议，不以fake grant/known-zero通路替代目标。报告Root已有任务卡ID/精确入口/前置owner/业务RED设计，源码权限另放。|
+
+R209-HEADER Root39229修正oracle后真实1fail1.250s，x-request-id确实缺失，manifest T/kokoro-r207-bff-blocker-red-p_d12me3/manifest.json DBabsent/source/Redis同。Root源码核现http/response.ts reply已有受信RequestContext但从未设置header，send只四个通用头；其他team等入口独立设置header。局部修复归属BFF既有HTTP response唯一writer，新增准入仅clean副本现src/http/response.ts：reply入口用context.requestId设置x-request-id，覆盖正常及catch回复，不修改send签名/JSON/OpenAPI/meta/idempotency或其它路径；原R207真实HTTP反例原封不变并可加健康成功响应header断言。这是落实API05§2，不新建文件/模块。Root复验后仍继续总deadline P1；既有meta.request_id与目标规范差异另契约切片保留OPEN，不在此无版本变更删JSON字段。
+
+R209 Root45503正式header窄修后原TC-BFF-R207-003真实HTTP/PG1pass1.266s：owned锁图、503/header/no-store、响应前后完整facts零差、同pool正常202及2Message/1dispatch全部通过；manifest T/kokoro-r207-bff-blocker-red-jtyr2af9/manifest.json DBabsent/hashsame/Redis同。局部GREEN不放行整片。独审0P0/1P1确认BEGIN/普通多SQL总4500ms未全覆盖，notify独立50ms不是无界但未共享总期限。
+
+R207-BFF-ABSOLUTE-RED续卡：原writer仅同clean副本现test/chat-facts.integration.mjs新增具名R209 Message cumulative SQL absolute deadline系统case；production/header/SQL/contract冻结。Root批准owned临时库两tenant限定BEFORE INSERT trigger：outbox一次pg_sleep(3)，message只user一次pg_sleep(3)，每条均低于4.5s但累计6s，真实BFF HTTP不能超过既有4.9s容差；503/header/完整facts零差，观察matching真实backend的pg_sleep，在响应后等待该owned backend结束并再核无晚写，去trigger后同pool正常202。不能调timeout放宽产品预算、不能mock query/Handler；使用既有facts/helper与finally精确清理/聚合primary。作者静态校验交SHA冻结，Root真实RED后才授chat-turn-commit期限GREEN。该片属于原R207必要矩阵，不创建新中心。
+
+R209 Root46499累计SQL真实RED：case6.101s，两个owned PgSleep同PID成立后HTTP预算assert actual=false/expected=true，且Node记录生产未消费Connection terminated unhandledRejection；manifest T/kokoro-r209-bff-absolute-red-ebyrdmgy/manifest.json 自有库absent/source/Redis同。源码COMMIT实参先client.query再remainingMilliseconds，期限耗尽会派发query后同步抛且未附拒绝观察者；这是额外真实故障，不以Aggregate或准备错误替代。
+
+R207-BFF-ABSOLUTE-GREEN续授权：唯一writer仅clean现chat-turn-commit.ts实现批准单4500ms总预算；每阶段/SQL先检查剩余时间再lazy发起，包含BEGIN/首次配置/所有scope查询/普通query/完整projectQueuedHead phase/ROLLBACK/COMMIT；inflight deadline超时标destroy并且不向该client追加ROLLBACK，late reject被消费。COMMIT已dispatch失败仍unknown503并destroy，未dispatch过期不发送COMMIT。notify仅明确commit后best-effort，可用已有50ms常量和剩余期限race/无剩余skip，不改client/globalPool。必要时repo仅callback类型最小变化、claim/admit/settle保持。原91e95累计/cc56锁case业务oracle冻结，不改SQL/contract/header/schema/package/lock/其它仓；作者静态纯门交freeze，Root重跑两真实case及其后完整必要资源矩阵，单GREEN不宣称整个R189通过。
+
+R209累计RED独审0P0/两个oracle缺口：仅marker消失不能证明backend销毁、健康请求不能证明pool计数恢复。原writer同测试case补强：budget timeout后要求已观测owned backend PID在pg_stat_activity彻底消失（不能只失marker）；记录同fixture store.database.pool在请求前/健康请求后的totalCount/idleCount/waitingCount准确回baseline。保持3s+3s同PID/产品4900ms/全facts不变；marker高负载观察与实际deadline分开记录，若未观察不先归因生产。source权限仍上条，独占writer补强后一起冻结。
