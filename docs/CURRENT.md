@@ -10,6 +10,12 @@ Root45503同owned锁HTTP/PG系统例实际1pass1.266s，503/header/no-store、4.
 
 Agent原owner完成下一caller只读交接：缺受认证planned/sealed evidence reader、execution-bound及Billing Admission运行链；Root明确System只拥有路由/能力/运行限额，Billing独占定价账户/profile/费率，不能按报告建议跨owner放价格。报告不当实现或契约发布证据。Goal继续完整Wave0–7 active；70组仍11/6/14/38/1。Root治理局部pytest7pass不等于真实topology通过（三gitlink差仍FAIL）；共享服务/数据与uv f7e1保持。
 
+
+R209新候选后继Root10139已自然exit1：最终事务3e2209c7/测试f7ebafdf，两真实HTTP/PG case为1pass1fail，累计case11.114s，generic waitFor Error被Aggregate包裹；不能猜失败在backend销毁或poolbaseline。manifest T/kokoro-r209-bff-absolute-green-yjzg1y8_/manifest.json 自库absent/source/Redis同。本次未记录旧unhandledRejection，但不能据此宣布全缺口关闭。原writer仅补安全phase/HTTP elapsed/pool数字观测，源码冻结不重复盲修；新独审0P0/1P1/1P2，未派发COMMIT的过期被内部误标unknown及双marker负载敏感性待继续。Root暂无活动测试句柄，不重启原3310、不更新混合gitlinks。
+
+
+R209 Root37507 phase复验自然exit1：1pass/1fail，累计HTTP4504.97ms，两个owned PgSleep同backend成立；503/header/no-store、响应及backend消失后的完整facts零差、健康202/恰两Message一dispatch均已执行。最终失败明确在pool-baseline：起始total8/idle1/waiting0，终态total9/idle9/waiting0；起始仍有7个占用，须追实际启动调用链，不能凭这些数字宣布泄漏或盲改源码。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r209-bff-absolute-green-pr0a58gp/manifest.json` 自有DB absent/source/Redis/secondary库集合保持。Source3e2209/testa457冻结，原BFF负责人只读查baseline；页面审查员独立更新逐页库存，不接管写入。无新运行资源或当前3310升级，70组仍11通过/6失败/14待复测/38未验/1支付后置。
+
 ## R208 逐仓与页面进度核对（2026-10-04）
 
 本轮为只读状态核对：两个原生审查员分别核11个物理子仓及页面/Settings，不新增计划中心、不改变Wave0–7目标。Root现场确认全部checkout本地仅main；Agent92b802e工作树clean，Web19/BFF22/Billing8个未提交路径保留。Root topology真实FAIL：Agent/IAM/Billing checkout与gitlink三项不同。当前3310仍既有运行副本，未启Move、Storage profile或最新Agent；本轮没有重新浏览器验收，历史404/503不当本轮复现。
