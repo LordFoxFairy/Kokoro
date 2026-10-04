@@ -8468,3 +8468,28 @@ Root已读当前四D0和production入口，核Agent59034、四SHA5c8cd60b/e5c854
 |R201-A4-SCOPE / P0|Agent，agent_mainline_qa_owner唯一writer；main59034，现四D0+stable01d3保留；Root独占Git/资源|TECH首节批准11 production/config及9 tests闭集；四D0仅当前前缀更新实际结果。ContextVar exact node生命周期、固定finite join、单次exception消费、三路seal前settle、late拒绝、typed timeout/stopaccept/main emergencyexit70。无SQL/wire/provider/SDK/锁/其它仓改动；原stable DB/checkpoint/provider oracle不得删除或放宽。先交最小freeze供Root真实PG与fatal subprocess复验，再全owner门/独审/精确提交，不以pure或D0通过标业务闭环。|
 
 Billing Admission字段收敛研究已到，Root裁决目标删除body producer与无持久owner的execution_id，invocation_id统一复用现request_ref，不新造执行/绑定实体；仅D0后继，不是已修改或发布contract。finite bound须来自每实际model attempt意图，真正限制完整模型input/output及分类计价上界，不能用Run总budget/字符数/推测token替代。无具体可靠input-bound方法时明确failclosed或限定受支持provider，不凭设计文字放行收费。
+
+### R201-Bill-contract correction / GREEN 放行（Root，2026-10-04）
+
+Root31989在已有隔离clean Billing候选复跑冻结test47ec：243例中241pass/2fail，分别experimental.2版本及旧producer/execution/invocation字段；正确业务RED。初次Root在superproject误跑无vitest的准备错误单列，不作RED。Root及独审均识别D0把validator当generator的P1；作者已纠正三D0及交接报告，YAML唯一可编辑wire，TS仅validator，四SDK产物由正规generate生成。
+
+|任务|owner/Agent/权限|写集/验收|
+|---|---|---|
+|R201-Bill-contract / P0|Billing76da5a8，agent_prepare_final_review唯一writer；Root Git/资源|现YAML、openapi-v2-target validator、target与command两个contract tests、contract README、三D0当前prefix、正规四generated Billing API artifacts；版本exp3，删除body producer/无owner execution_id，request_ref取代invocation alias，server-derived representation producer保留。usage/v1固定不动，无SQL/旧Fastify/runtime/codec/package/lock变化。先GREEN定点再fullverify/generated；独审Root重跑与逐hash精确提交才验收契约，不冒Admission或资金通过。|
+
+Agent最小scope候选已冻结并通过作者pure/static，Root发现正常join期间首次取消可能被吞掉、仍继续seal的竞态，已续原owner tests-first修正；预算固定、原取消传播、零seal/finalizer要求不变。该候选尚未获得Root真实PG或fatal验收，不更新主gitlink。
+
+
+### R202 当前续推进（Root，2026-10-04）
+
+|任务|owner/角色/基线|写集与完成门|
+|---|---|---|
+|R202-Agent-checkpoint诊断|Agent59034；agent_mainline_qa_owner唯一writer；生产scope候选冻结|仅现test_model_call_runtime_chain.py新增透明三时点观测（等待锁、invoke取消返回、释放锁后）与精确差量类型/字段/摘要；原数据库/checkpoint/provider断言、5s预算、资源finally全部保留。不得先把差量认作合法审计、删断言或改生产；Root真实PG区分原生取消审计与返回后写。|
+|R202-Billing文档实态纠正|Billing76da5；agent_prepare_final_review唯一writer|只三D0 Admission当前前缀：exp3 YAML已修改冻结而非仍exp2；运行/SQL未切换仍明确未实现。contract/source/generated保持冻结，更新handoff SHA。|
+|R202-Billing最终独审|web_page_qa_owner只读|冻结exp3 YAML/validator/SDK/tests与三D0；代码地图与两现报告入口；核body身份删除、受信producer、request_ref及24operation/usage-v1不变；只/tmp报告，无资源/Git/仓写。|
+|R202-Root clean验证|Root独占资源/Git|此前19646准备prefix解析失败，但shell继续执行旧/部分候选1150pass/411skip；该exit0不是exp3完整验收。修正clean prep并逐SHA复核后重新完整verify/generated，保护mixed原文及codec/uv，不重复共享服务。|
+
+R202实际收口：Billing Root18275 clean76+exp3完整verify/generated自然exit0，1150pass/411资源skip26.23s，最终三D0仅当前态措辞更新、8源码/contract/生成/test字节保持；增量独审0P0/P1/P2。Root精确11路径提交87cbe82f2f028fb0ba37a03e2a8d27848677299b，工作树全部字节保留，旧正文/codec/其它mixed无夹带，未push/runtime消费。19646准备失败后旧候选1150pass不作为验收；R202第二次prep误解析保护文件CURRENT失败未启动测试，纠正为显式12path白名单后才执行18275。
+Agent Root65492真实PG诊断2pass/1fail3.71s，wait→cancel返回checkpoint摘要同/0差量，cancel返回→释放锁新增pending_writes首项9叶字段差量，DB全快照同/provider0/prepare取消；自库absent/source同。证实取消返回后确有checkpoint后写，不能把SDK审计直接当合法零后写或以deepcopy假差量忽略。原严格断言保持。
+
+R202-Agent后继仅现system test透明捕获invoke内部向外的原CancelledError（wrapper再raise），输出args元素类型/Task状态，不输出值；现checkpoint差量只追加已知channel匹配布尔与leaf类型元数据。需先实测SDK cleanup Task是否真的在本次primary异常中交接，不能仅源码注释认作Root根因。生产/SQL/四D0继续freeze；Root资源与Git独占。

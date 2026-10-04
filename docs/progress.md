@@ -8721,3 +8721,23 @@ Agent SDK独立对照Root53049：1.2.12/core1.4.7/sdk0.4.5，其余固定，实�
 - 用户功能仍沿原70组：11通过、6失败、14待复测、38未验、1支付最后。其中通过组包含工程门和限定后端切片，不是产品完成率。当前登录正向/会话及项目刷新/普通会话改名有限定实际证据；全部CRUD、异常恢复、私有分享、任务、过程/审批、Skills/MCP、Library/作品及正式费用尚未取得完整用户验收。
 
 当前进度差距分为三个面：owner基础能力局部可验证；消费者及本地运行装配未齐；逐页系统验收覆盖不足。下一完成标准仍是原失败路径修复→正式owner装配→浏览器主链/边界/异常/权限/状态机与费用对账，不靠历史测试数量或文档状态结案。源码commit/资源manifest见同轮CURRENT与task；没有可靠依据报完整上线日期。
+
+
+### R201 实施与Root失败门：取消DB部分改善，checkpoint仍失败（2026-10-04）
+
+Root沿已冻结三面授原Agent writer 11production/config+9tests闭集；独审scope规格0P0/P1后实施，未以设计结案。Root在变化中检查发现正常join首次取消被吞、可能继续seal的实际竞态，原writer在闭集tests-first修正26fcc1/2258b5；作者pure224pass/5deselected与Ruff/Pyright/contract仅辅助，不是用户链。
+
+Root4533沿原fresh PG/native稳定oracle01d3实际2pass/1fail3.60s：provider0、prepare outcome cancelled、Agent数据库全快照相等；checkpoint原严格快照仍不同。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-hl0eqi3f/manifest.json` result1/database_absent/source_hashes_equal=true。不放宽原断言、不提交候选、不声称整个取消已修；两个原审查/实现owner仅只读定位合法取消审计或graph/checkpointer后写的精确差量，Root裁决后续。Root2780子进程1pass1.31s只证明直接调用main emergency callback实际exit70，不覆盖不合作task→timeout→Supervisor stopaccept→无后写；该完整生命周期证据仍待补。两句柄终态均已消费，无共享重置或新永久服务。
+
+Billing另一路真正目标contract RED已由Root31989在隔离clean候选重复：243例241pass/2fail8.82s，experimental.2版本与旧producer/execution/invocation字段与收敛目标不同。首Root命令误在superproject执行vitest不存在，属准备错误，纠正至已有clean clone后才有上述业务RED；不计准备错误为测试。三D0误把validator当wire真源被Root和独审发现并纠正：YAML唯一可编辑、TS只validate/assert、四SDK文件由正规generator产生。已授原Billing writer exp3目标字段GREEN闭集，SQL/旧runtime/金额/codec/package/lock未授权；合同纠正不等于预占或收费完成。
+
+浏览器inventory本次取得现IAB唯一tab1 `/app`，Chrome inventory返回header-policy故障；随后原IAB getTab20s超时/reset。无页面操作/恢复成功或新tab声明。当前70组11/6/14/38/1保持，完整goal active；主仓`ddaffca1`仅精确三台账提交，子仓gitlink与Rootuv保护。
+
+
+### R202 正式契约切片提交与取消后写精确时序（2026-10-04）
+
+上一轮主要为用户状态核对，未增加产品闭环完成数；19646具名旧候选句柄已消费exit0，但clean准备失败、执行的是部分旧输入，结果不冒新候选通过。Root本轮重新复用自有clone并重置已验76da5，按显式12路径白名单校验冻结SHA，三D0只用Admission前缀+clean HEAD正文，不复制原mixed。一次泛解析保护CURRENT造成prep ValueError且set-e阻止测试启动，纠正后18275完整verify/generated自然exit0：1150pass/411资源skip26.23s，所有format/lint/types/build/sql/contract通过，v1 17routes/v2 24operations。作者1381混合测试数不采用。最终措辞只去掉提交即过时的“未提交”，所有生产/contract/test/SDK SHA保持。独审/tmp/kokoro-r202-billing-contract-final-review.md最终0P0/P1/P2。Root精确11路径已提交Billing **87cbe82f2f028fb0ba37a03e2a8d27848677299b**，364+/146-；receipt /tmp/kokoro-r202-billing-contract-commit-receipt.json，worktree_bytes_preserved=true。无SQL/价格/runtime改动，未push/消费，完整资金链仍OPEN。
+
+Agent透明三点诊断由原writer freeze ed357d47，Root65492 fresh PG实际2pass/1fail80warnings3.71s，canonical10CHECK0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-3h6od4uw/manifest.json：database_absent/source_hashes_equal true。wait-to-cancelled结构digest相同、changed_count0；cancelled-to-released变9叶路径，均pending_writes首三元组字段。原DB全快照零差、provider0、prepare cancelled已成立，但原checkpoint断言仍FAIL，说明返回后真正后写。deepcopy(CancelledError)探针两对象不等却结构摘要同，并不能解释本次新增结构差量。SDK源码提示CancelledError.args显式cleanup task交接，尚需此次真实异常type/task观察证明；只批准test透明增量，不访问SDK私有字段/扫全局task/放宽oracle。无新共享服务/重启/共享数据清理。
+
+同一70组11/6/14/38/1保持；goal active。Root不更新gitlink伪装当前3310已启用。
