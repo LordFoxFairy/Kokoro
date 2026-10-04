@@ -1,10 +1,10 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R191。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R192。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R190–R191，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R190–R192，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -15,7 +15,7 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `3310351ff4e4c571ca4c3364aecffd0a2586273d`（Files、rename2072d0a、双操作CSSa854a81与孤立入口删除3310351本地提交，未push）加混合候选；系统测试文件/Move尚未整片提交|R188冻结工作树工程门2454通过、build0；三个真实Next/Chromium用例通过。当前runtime尚未包含Move候选；新增只同步rename2source+正式双操作CSS，当前真实BFF改名/刷新和桌面/640px命中已限定通过。R189 AppFrame view fence与反馈代际隔离完整源码门2457通过、独审0；Files导航片已实际浏览器验收并窄同步运行副本；Library数据503仍OPEN。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `81bc2ae9f872e234a4309d43e95cf6e77f1ba143` prepare窄片本地已提交、未push；Root gitlink未更新|A1 schema/catalog两表与Run completeness已验，仅持久化边界；prepare最终真PG56通过；此前9df全database267通过。去cast后完整工程2175通过/365资源deselected、lock/纯门/build0，限定持久事务已验。runtime producer、finalizer、Billing接线未完成。|
+|Agent `apps/kokoro-agent`|main `d5cac24d798d210ac0eb50dd7c9b0f8e19e127e5`，实现基线865afb2；A2九路径与A3a四D0目标设计分别本地已提交、未push；工作树干净，Root gitlink未更新|R192真实PG全部281pass/0skip；完整工程2178pass/379资源deselected，lock/frozen-sync/ruff/types/contract/build0；纯artifact规则与675行事务adapter已分离，canonical腐坏RED→GREEN。仅持久授权与许可边界，不等于provider真正外发、usage/finalizer或Billing费用链。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
@@ -44,7 +44,7 @@ Root78556完整治理门自然exit1：1720pass/1fail/3skip126.34s，唯一历史
 
 ## 4. 当前开放缺口与推进顺序
 
-1. **Web当前页面与会话**：原IAB同页恢复未取得直接证据。R187仅独立真实登录Chromium验证原会话正文/输入/10s网络挂起可恢复/硬刷新草稿；不是原IAB恢复。R189 AppFrame confirmed/rejected视图隔离102 UI与完整工程门通过，未同步当前runtime。账户Files→/docs404经正规登录真实点击复测已修为/app/library；两tab数据读取503仍OPEN。
+1. **Web当前页面与会话**：R191原IAB同会话/项目刷新正控已取得；历史无限加载全部异常与恢复路径仍未关闭。R187仅独立真实登录Chromium验证原会话正文/输入/10s网络挂起可恢复/硬刷新草稿；不是原IAB恢复。R189 AppFrame confirmed/rejected视图隔离102 UI与完整工程门通过，未同步当前runtime。账户Files→/docs404经正规登录真实点击复测已修为/app/library；两tab数据读取503仍OPEN。
 2. **Project/Conversation业务**：公开完整项目CRUD、Project DELETE后Storage durable释放、关联独立任务政策未闭合；项目与独立会话须清晰分离。Message canonical上下文正控通过，Direct explicit invalid和创建错误码边界已本地同门验收；新锁路径scope双锁序及同identity竞争已本地验收；四次耗尽、发布与用户链仍未验收；保持Move/删除锁序与exact幂等重放。
 3. **Agent执行与能力展示**：真实prepare/ordinal/fence/evidence/finalizer→正式provider→Todo/Tools/Skills/MCP/审批→durable AG-UI恢复→取消/完成→Billing实际费用链未整体通过。先接A1事务，再依已批准owner顺序推进，不改协议为兼容fallback。
 4. **Settings**：真实通知与快捷键切tab重置；Personalization无正式owner且404静默；Billing summary/ledger/by-model读失败/缺公开契约；agents404、项目resources503仍开放。Library503已定位当前launcher缺Storage runtime/config，Root正式Storage组合模块已实现并完成自有真实RPC/PG/S3/ClamAV正控；原3310未切换、用户Library仍503，不伪装空库。不得隐藏按钮或伪造本地保存后称完成。
@@ -85,3 +85,14 @@ R191 Web孤立入口切片已由Root精确提交main3310351（3路径19+/51-）�
 Agent A2源码87f06+model0898候选仍未提交；Root多轮真实PG校验暴露非法fixture、UUID/SQL参数错误与owned锁图的direct/传递边oracle问题，逐一保失败收据、不放宽schema或预算。grant错ref换绑/advanced begin两P1已源码返修并只读复审0P1，但完整矩阵/最终资源门未收口，lostACK/runtime/provider/Billing仍OPEN。
 
 R191 Agent最终Root门终态（候选未提交/未运行接线）：2138 scoped真PG66pass6.17s；86156全database277pass0skip31.21s，manifest T/kokoro-r191-agent-full-2h40hz61/manifest.json自库absent/sourcehashsame；48540完整工程自然exit0，lock/frozen-sync/ruff全仓/pyright/contract0，2175pass/375资源deselected109.20s，wheel/sdist build0。源model0898c86/repository87f06f6/test0b469f0冻结；只读最终审0P0/0P1/2P2，canonical同步篡改防御和新三transition完整authority/digest/回滚矩阵仍待补。没有runtime/provider/lostACK/Billing费用用户旅程完成声明。所有Root具名测试句柄已消费终态、没有遗留自有测试进程；原45606/46036保持。Source/必要D0同步及最终切片提交待后继，不夹带未完成P2冒零债务。
+
+
+### R192 当前分层事实（覆盖前述历史候选状态，不扩大验收范围）
+
+- **Agent**：Root已精确九路径提交 `865afb266915f002470e20f0341055271f7c870e`，独立职责/API审查完成；真PG `281pass/0skip/32.90s`，默认工程 `2178pass/379资源deselected/112.54s`，完整lock/frozen-sync/ruff278files/types/contract与wheel/sdist均exit0。四D0最终同步后再build0。真正provider、usage evidence append/finalizer、Billing Admission/结算释放、lost-COMMIT-ACK与用户费用旅程仍OPEN；授权许可不是外部调用或费用证据。
+- **Web绑定**：确认只有一个Conversation和nullable project_ref；Root真正Next/Chromium业务RED（返回/刷新Direct owner GET已无A，但本地仍合成A）后修来源缓存失效，正常旅程五case GREEN；storage异常的两业务RED已窄修，owner confirmed不再因本地cache异常误变unknown，dispose继续清理。最终冻结machine97aacfe/testf2c029/UI0c5/system8db6，Root88427当前完整 `pnpm check`自然exit0：contract258、architecture50、lint/types0、164files/2474pass/0fail/0skip/157.66s、Next build0；包含真实Next/Chromium系统用例。不是另外`pnpm test:e2e`或真实BFF/provider/原IAB全部业务验收。作者旧Project-idem一次timeout保留历史，不猜flaky。
+- **Web剩余与运行边界**：独审0P0/0P1/1P2仅对本片；导航不dispose、storage阻断后的刷新、跨scope unknown身份与迟到ACK后对账仍OPEN。实际63路径（61 tracked＋2 untracked）混合候选未整片提交；原3310未同步Move，本轮不宣称用户当前页面已启用修复。原负责人只读清点最小可提交/可启用依赖，禁止打包未交接修改。
+- **Root治理与资源**：本轮standard实际153violations/0unverified、topology三gitlink差异均exit1；完整Root scripts/tests是此前1720/1/3历史收据，不冒本轮通过。原45606/46036仍live，88427已消费终态，无重复常驻服务/共享PG Redis重置，Root uv.lock f7e1与任务外修改保护。
+- **后继**：原Web负责人Move集成只读盘点与原Agent负责人A3 evidence/finalizer设计门并行；同仓仍一writer，Root独占资源/Git与台账。原70组11通过/6失败/14待复测/38未验/1支付最后不变，完整Wave0–7 goal active。
+
+R192后继设计门收据：Agent四D0已Root逐读放置、包内immutable append command/receipt、strict完整JCS/受信时间/DB-safe int64/active successor与terminal只读边界，精确docs-only提交d5cac24；没有A3a实现或新PG通过声明，A2实际源码仍865afb2。Web原writer仅既有R158/R170三D0段收敛，去掉这两段后的内容hash前后相同；保护其它任务段。下一步Agent仅真实PG失败行为tests-first，Web正式Move闭集hunk抽取/当前3310 actual BFF7.1探测，未获证据不散同步。

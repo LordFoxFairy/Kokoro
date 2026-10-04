@@ -1486,3 +1486,25 @@ R191精确Web切片收据：3310351只提交导航孤立入口删除、死CSS选
 R191 Agent PG失败履历：63612 56pass3fail是能力缺失；94183 64pass2fail是非法evidence state/terminal fixture；14528 64pass2fail是UUID类型与LIKE参数oracle；51716 65pass1fail是owned锁图direct edge误当传递链。各次源hashsame/自库absent，后继明确修oracle/源P1不改schema/预算，最终门待收口，不删除失败记录。
 
 R191 Agent最终Root门终态（候选未提交/未运行接线）：2138 scoped真PG66pass6.17s；86156全database277pass0skip31.21s，manifest T/kokoro-r191-agent-full-2h40hz61/manifest.json自库absent/sourcehashsame；48540完整工程自然exit0，lock/frozen-sync/ruff全仓/pyright/contract0，2175pass/375资源deselected109.20s，wheel/sdist build0。源model0898c86/repository87f06f6/test0b469f0冻结；只读最终审0P0/0P1/2P2，canonical同步篡改防御和新三transition完整authority/digest/回滚矩阵仍待补。没有runtime/provider/lostACK/Billing费用用户旅程完成声明。所有Root具名测试句柄已消费终态、没有遗留自有测试进程；原45606/46036保持。Source/必要D0同步及最终切片提交待后继，不夹带未完成P2冒零债务。
+
+
+## R192 系统验收增量：同一会话的项目绑定与 Agent 授权边界
+
+原70组统计不因本增量自动更新。owner PG验证、受管Next/Chromium＋owner HTTP fixture、原运行组合浏览器分别记录，不互相替代。
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|当前证据与状态|
+|---|---|---|---|---|---|
+|TC-R192-C01：移动仅改变绑定，返回来源不复活|本人Direct会话A已有消息，项目P可访问；正规登录|普通菜单将A移入P；在P核同ID/历史；返回Direct；硬刷新；回P|一次绑定写，Direct列表/主区无A，P有同一A；消息ID/正文不变，无新会话/模型调用|P0 / 主链路、状态机|Root80229真实Next/Chromium正确RED；34321正常五case GREEN，最终97aacfe完整88427含此case且2474通过。限定owner HTTP fixture；原3310未同步Move，导航/storage故障仍OPEN|
+|TC-R192-C02：跨scope响应丢失保原操作身份|A→P请求可在owner提交后丢ACK|发起移动→切项目Q→回Direct→owner commit后断响应→显式恢复|不抢当前会话；仅原key/body恢复最终receipt或可证提交后的owner对账，无第二意图；绑定列表一致|P1 / 异常、竞态|当前同scope4项Root21887通过不覆盖此跨scope旅程；OPEN|
+|TC-R192-C03：迟到ACK只失效列表，不抢导航|Direct A/B、项目P；移动A请求hold|发起A→P→切B→在owner提交前完成来源GET→释放确认|保持B及草稿，同时提交后权威列表对账最终Direct无A、P有A|P1 / 边界、状态机|现oracle仅不抢导航；完整后提交对账未验，OPEN|
+|TC-R192-A01：授权观察非canonical腐坏拒绝|owned真实PG、合法Granted；stored bytes被改为空白格式并同步digest|从同一request_ref重放begin；读回attempt/Run|typed identity conflict；原字节/状态/时间/计数不变，不产生外发许可|P1 / 安全、异常|Root9303正确RED69/1→8134真PG70通过；最终71547全database281/0skip，865afb2已提交。不是provider/费用验证|
+|TC-R192-A02：过期身份与超时零写、唯一外发许可|owned真实PG准备/待授权/已授权attempt，持有Run锁|错误lease/planned/ref负控；锁竞争与真实deadline；两连接dispatch后读Run|负控事务零写；恰一newly_started=true，另一false；同原timestamp；Run计数1/1/0/0且unknown，不猜零费用|P1 / 权限、异常、并发|最终真实PG281、当前默认2178/379资源deselected，865afb2已提交；矩阵仍selected非穷举，provider/E2E收费OPEN|
+
+本切片退出条件：新增真实失败复现后修复、冻结source Root重跑资源与工程门、独审无未解决阻断、来源/目标与URL一致用户路径通过。跨scope两风险及原用户真实组合未验时，不把C01或局部绿色扩成全部Conversation CRUD、全部Agent或整项目通过。
+
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|当前证据与状态|
+|---|---|---|---|---|---|
+|TC-R192-C04：本地缓存失败不改变已知owner结果或阻断清理|A→P收到matching owner确认；来源本地存储/同步observer写失败|非active A确认后观察状态；active A确认后路由卸载，观察关闭流/取消/unsubscribe；禁止重发owner操作|两者owner结果仍confirmed；保B/草稿，不授权重复Move；dispose无抛出且完成清理。磁盘写阻断不得伪称持久成功|P1 / 异常、状态机|Root两负控真实RED2fail→最终97aacfe完整88427 GREEN。磁盘旧值hard reload及无dispose导航P2仍OPEN；此项内部故障注入，不冒真实原IAB storage异常通过|
+
+R192终态：Root完整Web门2474通过/0skip，Agent完整真PG281通过/0skip；工程数量不换算成70组完成数。当前3310 Move尚未启用；跨scope/迟到对账/blocked disk刷新与收费路径未验项保留。

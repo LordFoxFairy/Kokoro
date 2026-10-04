@@ -36,6 +36,14 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 - `apps/kokoro-bff/src/infrastructure/postgres/chat-repository.ts`：Chat事实与具名Move委派；Move事务唯一位于现`conversation-move.ts`，排序Project→Conversation锁、归属与final receipt同事务、same-key赢家恢复；`conversation-move-lease.ts`负责有界PoolClient/unknownCOMMIT lease销毁，现mappers纯receipt decode，无schema/contract变更。
 - Move producer原源码284b/发布态0333；职责拆分源码6c5cee0/发布文档5e119cd。Web尚未固定消费新contract，ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
 
+## Agent model-call 内部持久边界（R192，2026-10-04）
+
+- `apps/kokoro-agent/src/kokoro_agent/model/call_models.py`：不可变prepare/authorization/dispatch command、receipt与最小Protocol。
+- `apps/kokoro-agent/src/kokoro_agent/model/call_artifacts.py`：具名planned/authorization/attempt canonical编码及冻结recipe peer-path验证；无SQL、env、网络或infrastructure import。
+- `apps/kokoro-agent/src/kokoro_agent/infrastructure/postgres_model_call_repository.py`：Run→Attempt锁序、lease/fence/DB时间、一次dispatch CAS、原receipt重放及同事务Run completeness。
+- Agent实现865afb2，当前本地main `d5cac24d798d210ac0eb50dd7c9b0f8e19e127e5`（仅续加A3a目标D0）；Root实际281真PG与完整2178默认门通过。Root组合gitlink仍须独立集成，不把本地提交冒远端发布。
+- 后继evidence append/finalizer、runtime caller、provider/Billing与真实用户费用未接，本图不新增第二contract/schema或归属实体。
+
 ## 子仓路径与 owner
 
 | 仓库 | Root 路径 | owner |
