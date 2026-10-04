@@ -8177,3 +8177,29 @@ R194正式Web B+C Root clean集成：独立archive21ad+Bf1b5+Cf439、local clone
 Agent two-P1 Root35202 test76d1真正11pass6.62s，Root18182全PG303pass50.77s；工程8578 Pyright30errors在QA快照object typing，原writer纠正其0仅production定点范围，test-only typed narrowing改68ced不weakassert。Root3648最终全PG303pass0skip39.33s，自库absent/hashsame；独审36cc6560静态0P0/0P1/1P2。工程47454 lock/frozen-sync/Ruff/全Pyright/contract0，但default2177pass/1fail、401资源deselected/795既有warnings112.45s：新Run terminal import要求显式resource闭包包含postgres_model_call_evidence，现manifest漏登记；build未执行。现R194-A3b-resource-fix仅授权原writer在runtime_profile_sources.py既有explicit列表登记helper一行，其它source/test/contract/DDL/provider/Git冻结，Root再核门；当前仍不验收提交Agent实现。
 
 R194 resource闭包后继：Root复用既有AST规则只读固定点核全部缺项，授权现runtime_profile_sources.py精确5个既有resource（helper、call_evidence、call_models、usage_evidence、model_usage_generated）；source3ea5c4a，不改generated/metadata/version/动态边/实际caller/provider。Root61583全Ruff/全Pyright/contract0，但误写不存在tests/architecture路径导致no tests/exit4，是Root命令错误；纠正真实tests/contract入口后Root62052实际44pass3.07s及wheel/sdist build0。新manifest后的完整默认工程与完整PG尚未重跑，Agent仍待集成主验/未提交，不拿定点44替代完整门。Webclean B+C已a75345f scoped提交，当前runtime未启用。原永久45606/46036保持live、所有本轮Root句柄终态、自有PG库absent；Web临时node_modules/.next已回收，只保代码/log/patch。Rootuv f7e1和未交接BFF/Billing保持，Root不stagegitlink。下一依现任务卡：Agent冻结5source＋test68ced完整工程/PG→文档与窄提交；Web W2跨scope测试-first与真实用户绑定路径，原70组/完整goal active不变。
+
+## R195：先冻结主验，再补跨页面用户旅程（2026-10-04）
+
+上一goal turn判为progress：Web scoped main a75345f已改权威源码；Agent五resource闭包44/build0与真实PG303证据改变后继动作，完整目标不缩小。当前Root c7e43cbd、Web a75345f＋保留mixed19路径、Agent c3bf769＋五路径候选；uv f7e1和未交接BFF/Billing保护。原永久45606/46036实际live，既有Root句柄均终态，不重启/重复启动。
+
+|任务|负责人/范围|基线/依赖|验收/提交责任|
+|---|---|---|---|
+|R195-A3b-QG / P1|Root资源与文档/Git；Agent四现production＋一integration冻结，不授新实施|c3bf769＋0eb66/b7bc/f7f/3ea5/test68ced；当前doc D0合法、contract/SQL不改|Root完整default工程＋全真实PG（只自有数据库）；最终review无阻断后更新本仓CURRENT、精确窄提交，不冒provider/收费链|
+|R195-W2-RED / P1|原web_page_qa_owner仅现system integration test唯一writer；生产/auth/contract/CSS/锁/Git/资源禁止写|a75345f＋保留mixed；依现W2 identity只读裁决，独立于Agent主验|真实Next Direct→Project切scope后迟ACK不抢导航、source/target freshGET；503未知仅人工samekey重试无自动重发。Root跑真实RED后才审D0/最小实现，保既有用例|
+|R195-A3b-final / 只读|原agent_prepare_final_review，五source/test/三D0/manifest只读|冻结0eb66/b7bc/f7f/3ea5/68ced＋上一36cc报告|复核显式resource固定点闭包/原事务/零写replay，报告绑定hash，不读未终态结果冒完成|
+|R195-A4-map / 只读|原agent_mainline_qa_owner只读runtime/provider现执行调用地图及D0建议，输出tmp，不改仓库|复用CODEBASE_MAP/本仓技术/API/DATA与现A1–A3事实；等待A3b放行才实施|识别现唯一provider入口及prepare→authorize→dispatch→strict evidence→terminal缺口，不新造第二模型协议；提最小三D0和真实用户/model验证路径，Root裁决|
+
+### R195 执行交接
+
+A3b-QG已由Root真实完整303PG/2178工程、安装wheel smoke及独立审查限定验收，精确9路径提交8c08ea4；不扩大runtime/provider/费用范围。W2-RED corrected三业务RED成立；三D0已交，独立review待完成、GREEN未授。失败/资源完整收据仅见progress；业务用例见test-cases，70组不升。
+
+|任务|负责人/写入范围|基线/依赖|验收/提交责任|
+|---|---|---|---|
+|R195-A4-D0a / P1|原agent_mainline_qa_owner，Agent四现D0唯一writer，source/test/schema/contract/锁/资源冻结|main8c08ea4 clean；复用已批准ADR033与用户actual取消/失败规则|三面已Root审、66496 contract/build0，docs-only提交c7c6885；source/费用链未实现|
+|R195-W2-D0-review / P1|原agent_prepare_final_review，只读现源码/三D0/RED，不写资源|Web a75345f＋mixed保护，test260bf2a，D0 d6b644/4ffa21/ef9228|首审0P0/2P1退回，仅三D0补source合成缓存和auth epoch边界；生产未授权|
+
+R195-W2最终Root裁决：实际storedConversationStore仅activeId/metadata索引、不含draft/message/run。删除可能连续Move覆写的per-session待办方案，matchingACK立即精确source索引evict＋source/target bounded scope版本取新GET；无新绑定实体/等待队列/park engine。三D0最终7f2eb/615381/c8a734、独立v3 b00f041已Root逐读，原独审85c481的最后P1方案已落实。
+
+|任务|负责人/允许集|基线/冻结|退出门与提交责任|
+|---|---|---|---|
+|R195-W2-GREEN / P1|原web_page_qa_owner唯一writer：一个普通coordinator文件、现page-clients/auth事实接线/AppFrame/rail list/conversation-list/machine及必要types；execution-adapter只删旧engine Move forwarding；相邻验证辅助|a75345f＋mixed19保护，写前tmp hash/字节；系统三RED260bf2a断言/预算冻结；client/wire/contracts/CSS/i18n/SQL/runtime其它owner禁止写|单槽替代engine双轨，verified epoch，unknown人工原key/bodyretry、source精确cache失效；Root冻后重跑trueNext三case＋完整门＋独审/用户路径；Root单独Git提交，不打包任务外auth/draft|

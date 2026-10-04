@@ -93,3 +93,8 @@ python3 -m pytest scripts/tests
 - Web `src/engine/machine.ts`：same-scope matching ACK与view generation分离；503/409 in_progress保exact未知command，不写绑定副本。`app-frame.tsx`的owner GET刷新先于导航/焦点view fence。正式Web B+C a75345f（clean machinea3321/AppFramedda20f/systemafbbf）已本地窄集成；mixed字节保留，未同步3310。
 - 唯一测试入口仍`docs/test-cases.md`与Web既有`tests/system/oidc-rp-next-http.integration.test.ts`，Root62663四真实Next/Chromiumsame-scope通过；crossscope/actor恢复后继，不用同engine邻测冒充。
 - Agent A3b四D0已提交，终态源`postgres_run_leases.py::finalize_terminal`的三现文件候选已接同cursor封存，原sealed投影/denied两P1经5真实RED→11GREEN已静态关闭，最新303全PG通过；full工程仍显式资源闭包漏helper一项失败，现manifest精确5resource登记3ea5已Root44定点＋build0，完整新manifest门待重跑，未正式验收提交实现。后继仍复用现call_evidence纯规则和postgres_model_call_evidence cursor，不建第二模型契约/费用owner。
+
+## R195 当前实现入口
+
+- Agent8c08ea4：现model/call_evidence纯规则＋postgres_model_call_evidence cursor primitive＋postgres_run_leases原终态事务；runtime_profile_sources显式5resource闭包，不是新provider caller。真实303PG/2178工程/wheel门见CURRENT/progress。
+- Web W2三D0描述page内单槽冻结command替代engine Move intent；matchingACK即时source索引精确evict与source/target版本刷新，verified auth生命周期清理；生产GREEN仅授权/待验。测试仍既有oidc-rp-next-http.integration入口，53415三真实RED见test-cases。Agent A4只文档设计，与Web独立并行。

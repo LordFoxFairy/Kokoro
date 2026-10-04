@@ -1558,3 +1558,14 @@ R194完整Web收尾6435：contract258/architecture50/lint/types/build全部通�
 R194-A04/A05/A06同strict业务断言真正RED→GREEN：Root35202共11truePG pass6.62s；仅test类型narrowing后Root3648全database303pass39.33s/sourcehashsame。局部用例通过，整体A3b仍被explicit resource闭包工程失败阻断，provider/收费/用户路径未验。Conversation same-scope 5旅程已随clean B+C2463完整门通过并窄提交a75345f，当前3310未启用与W2跨scopeP1保持，不增加原70组完成数。
 
 工程门补充：Run terminal import所需strict证据代码必须在既有runtime resource闭包里且生成descriptor可读；Root62052纠正测试路径后44pass3.07s/build0。首完整默认工程2177/1原缺闭包失败保留，当前5resource新manifest后的完整门待复验，不能以44局部通过关闭Agent用户链。
+
+## R195 跨页面绑定与内部终态验收
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|实际结果 / 状态|
+|---|---|---|---|---|---|
+|TC-R195-W01：跨项目切页后的移动确认|真实Next/Chromium，Direct会话A，Project A/B，owner持有Move响应|移动A→Project A；响应前进入Project B并输入草稿；释放matching ACK；返回Direct、打开Project A|B路由/草稿不抢；Direct无A、Project A有同ID及原消息；source/target重新读取唯一绑定|P1 / 主链路、状态机、竞态|53415真实RED：Direct仍有1条A；当前失败|
+|TC-R195-W02：跨页后提交成功但丢ACK|相同环境，owner提交后关闭连接|发Move后进入B；返回Direct的A；显式重试原command|切页/挂载/聚焦不自动POST；保原key完整body；人工retry恰一次，最终同ID绑定一致|P1 / 异常、幂等、状态机|53415真实RED：原行无Retry菜单10s；当前失败|
+|TC-R195-W03：跨页后typed503未知结果|相同环境，明确typed unavailable响应|发Move→B；返回A并人工retry；核POST次数和body|未知不当拒绝、无自动重发；保原key/body；用户可以恢复，不复制Conversation|P1 / 异常、容错、生命周期|53415真实RED：原行无Retry菜单10s；当前失败|
+|TC-R195-A01：终态与全部调用证据原子封存|真实PostgreSQL独立自有schema及既有Run authority|四open状态/已sealed/denied各终态及exact replay；合法SQL投影/授权bytes腐坏负控；锁等待取消/过期；读取全事务快照|开放调用保守seal；unknown不猜零；canonical/SQL不一致全回滚；合法denied通过；精确重放零写|P1 / 主链路、异常、安全、状态机|54838全PG303/0skip39.35s及此前11case GREEN；限定内部owner已验，8c08ea4；真实provider/Billing/user费用链未验|
+
+W01首轮65252在B GET尚未完成前立即断言是测试oracle问题，与真正业务RED分开。原writer只收紧B实际GET等待，不提高10s预算/睡眠/放宽绑定断言；53415随后实际失败在Direct残留。原R192/R194系统用例字节保护。工程2178/303计数不提升70组业务完成数。

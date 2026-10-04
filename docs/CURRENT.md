@@ -1,10 +1,10 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R194。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R195。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R194，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R195，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -15,7 +15,7 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `a75345fc7eb12f8bea8d9ab02b8d65697d1b42b6`：正式A之后B+C仅26路径窄提交，mixed剩余字节保留；未push、原3310未启用Move|Root22469 clean21ad+B+C：contract258/architecture50/lint/types/build0、164files2463pass119.94s；commit tree04bd2f与已验候选完全一致。仅同scope绑定反馈与unknown原key恢复，W2跨scope/actor/storage仍P1，当前用户运行页不冒通过。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `c3bf769`；A3b三生产与integration候选已授权并冻结，尚未提交实现，Root gitlink未更新|原2P1负控5fail→11truePG pass；最新test68ced全database Root3648实际303pass0skip39.33s、自库absent/sourcehashsame。完整工程首30types已修；重跑47454为2177pass/1fail：explicit runtime resource漏helper，build未执行。原writer仅登记现manifest一行；未验收/provider/Billing未接。|
+|Agent `apps/kokoro-agent`|main `c7c6885dde4456babc3bdff59340c2c1c4cabdea`：源码A3b `8c08ea4`九路径提交＋后继四D0设计提交（无新实现）；Root gitlink未更新|Root54838全真实PG303pass/0skip39.35s、自库absent/sourcehashsame；94228工程2178pass/401资源deselected112.57s，lock/frozen-sync/Ruff/Pyright/contract/build0；77055文档后contract/build0；12191已安装wheel六模块真实origin/contract0。只到内部事实，provider/Billing/用户费用链仍OPEN。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
@@ -119,3 +119,10 @@ R194-A3b two-P1新增真实RED：Root88885自然exit1，10执行6pass/4fail，12
 R194-A3b auth一致性负控Root72070真实RED：test76d1冻结，11执行6pass/5fail，126选择外6.54s；追加SQL CHECK合法但typed denied bytes不符的state被错误接受。manifest `T/kokoro-r194-agent-schema-ev_8g_gd/manifest.json` 自库absent/sourcehashsame。后继R194-A3b-P1-GREEN派原Agent唯一writer，仅现model/call_evidence.py与infrastructure/postgres_model_call_evidence.py；test76d1/run_leases f7f冻结；补strict frozen authorization与全sealed投影，精确denied状态映射。Root资源/Git/独审，未批准DDL/provider/Billing/新文件；交付前不称修复，所有Root资源句柄终态。
 
 R194 resource闭包后继：Root复用既有AST规则只读固定点核全部缺项，授权现runtime_profile_sources.py精确5个既有resource（helper、call_evidence、call_models、usage_evidence、model_usage_generated）；source3ea5c4a，不改generated/metadata/version/动态边/实际caller/provider。Root61583全Ruff/全Pyright/contract0，但误写不存在tests/architecture路径导致no tests/exit4，是Root命令错误；纠正真实tests/contract入口后Root62052实际44pass3.07s及wheel/sdist build0。新manifest后的完整默认工程与完整PG尚未重跑，Agent仍待集成主验/未提交，不拿定点44替代完整门。Webclean B+C已a75345f scoped提交，当前runtime未启用。原永久45606/46036保持live、所有本轮Root句柄终态、自有PG库absent；Web临时node_modules/.next已回收，只保代码/log/patch。Rootuv f7e1和未交接BFF/Billing保持，Root不stagegitlink。下一依现任务卡：Agent冻结5source＋test68ced完整工程/PG→文档与窄提交；Web W2跨scope测试-first与真实用户绑定路径，原70组/完整goal active不变。
+
+## R195 当前开放项与下一步
+
+- Agent内部终态封存已窄提交8c08ea4，门与范围见上表；完整收据见progress的R195。实际provider/Billing Admission/证据ACK/费用用户链仍OPEN。
+- Web corrected真实Next/Chromium三RED仍失败：跨scope matching ACK返回Direct残留A，lostACK/typed503返回无Retry。三D0窄补后Root采用更小“ACK立即source索引驱逐＋scope版本”方案，已授原writer GREEN；候选实施中，原3310未启用Move，不宣称用户修复。
+- 依赖不机械串行：Agent原owner并行仅四D0收敛A4 per-invocation seam；费用政策采用用户已定“仅核实actual，释放其余”，旧Billing文档待决是文档/实现缺口而非再问用户。未发布experimental不得生成consumer或假grant。
+- 原70组11/6/14/38/1、完整Wave0–7 goal active。永久45606/46036保持，自有测试全部终态/自有installed env已回收；共享数据及uv f7e1保护。资源/失败/安装隔离详情仅在progress，不另造第二事实中心。
