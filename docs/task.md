@@ -8535,3 +8535,25 @@ R203-BFF D0返修Root裁决：现真实IAM只提供session admission；project.d
 |R204-Root|Root独占台账/Git/资源|本轮只读Git全checkout/main与实际topology，原45606/46036进程；不fetch、不更新gitlink、不重启/重置共享数据。汇总状态，不用历史局部GREEN关闭70组。|
 
 Agent Root3987自然exit1：真实PG2pass/1fail3.54s，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-2pn87cnl/manifest.json，自库absent/source同；新增审计值实测字符串CancelledError()，取消返回→释放锁全结构零差。原wait快照断言失败收据保留；仅授权系统case按R203精确单审计与全快照窗口落实，新断言及旧guard RED/新guard GREEN、fatal全链尚待Root执行，不能称当前取消验收通过。
+
+
+### R205 取消系统RED→GREEN与两个独立后继（2026-10-04）
+
+上一goal回合为进展：CURRENT/task/progress实际提交3167629b，三gitlink失败与逐页缺口现场核实。当前四原生角色沿同卡续接，不扩目标。
+
+|任务|owner/角色/基线|范围/门|
+|---|---|---|
+|R205-Agent cooperative取消|Agent59034候选；原agent_mainline_qa_owner唯一writer，Root资源|独审发现新oracle误设audit尾插，Root授权只helper与DATA前缀纠正。312bb9d/0ae1cd增量独审0P0/P1/P2；exact single audit移除后原tuple/序列全等，返回后全快照等值不放宽。Root隔离旧四guard→当前四guard真实PG RED/GREEN，不改共享source。|
+|R205-BFF前置事务审查|agent_prepare_final_review只读，BFF8e33+mixed|报告/tmp/kokoro-r205-bff-project-transaction-review.md：0P0/2P1，canonical DELETE新路径仍含slug兼容与R189 Message-scope mixed提交边界需独立收口。public DELETE暂未放代码，不能把service fixture冒HTTP。|
+|R205-独立增量审查|web_page_qa_owner只读|Agent位置无关oracle最终0问题；BFF四D0先前IAM/早期路由两P1关闭，mixed数字P2不准确，不冒事务/HTTP通过。|
+|R205-Agent finite后继设计|原Agent writer只读，Root统一裁决|现driver未显式owned/shield导致pump先挂起、Supervisor默认fatal no-op两P1。报告/tmp/kokoro-r205-agent-final-p1-design.md；先四D0当前前缀收敛显式driver注册/固定预算/实际fail-stop，再Root批准精确source+完整serve系统测试，不新增模块/SQL/协议。|
+
+Root23099最终旧guard隔离RED 2pass/1fail5.50s，wait→cancel无audit、取消返回→释放锁9叶后写；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-o7e04j0m/manifest.json。Root7813最终当前guard GREEN 3pass/80warnings5.31s，取消返回后完整CheckpointTuple与Agent四表全快照相同/provider0/prepare cancelled；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-1483kn0s/manifest.json。两次ownDB absent、原与clone源hash保持。旧首次96394隔离使用原editable元数据而canonical binding失败；5917/80759因监测把新生成egg-info当source变化而manifest保护失败，准备问题不冒最终证据，原日志保留。没有真实provider/Billing成功、全default/database/fatal或当前3310取消验收；全70组不升。
+
+
+R205-FINITE 生产实施放行：Root已读四D0/current入口与ba75d8方案，独审规格0P0/0P1/1措辞P2；原writer已将TECH改为cdeca72f限定Root23099/7813已发生。Agent main59034+已冻候选，agent_mainline_qa_owner唯一writer，Root独占资源/Git；只改现call_scope.py、execution/run_agent.py、worker/supervisor_context.py、worker/supervisor.py（必要时已授权supervisor_execution.py/main.py仅同生命周期类型/不可返回路径）及现scope/invoke/supervisor/main/fatal系统测试与四D0当前前缀。其余config/SQL/wire/lock/Billing/source/system312bb9d保持。先不合作driver/默认或违规return fatal真实子进程RED，再最小GREEN；public serve/cancel/invoke/pump全路径、原5s预算、第二请求不认领、无seal/terminal/lease-release/正常cleanup与实际exit70、正常SIGTERM原graceful须被证明。Root完整PG取消及全owner门/独审通过后方可提交整个scope候选，不以该生命周期证明用户费用链。
+
+
+R205-BFF-R189隔离前置：Root选择先独立冻结/验证Message canonical snapshot/replay，再叠Project DELETE。原BFF负责人只读从8e33交9path patch cd3e4c8d与base/target manifest327bb21d；不覆盖共享mixed。Root将clean应用逐SHA核验并执行Node22 pure/build/schema/完整自有PG/Redis门，web_page_qa_owner只读独审同patch。三production/两tests/四D0仅Message scope，不包含deleted_at/Project删除或新契约；未验/未提交。作者接口建议test命令若不适用由Root核真实package脚本，不以准备失败为业务RED。
+
+R205-BFF clean门63471终态175真实集成/743pure+1资源skip/236contract及全静态0，资源保持；独审两个P1未关闭，不准精确提交。原BFF负责人下一只读D0，Message admission完整单deadline及pool/SQL/rollback/unknownCOMMIT资源边界，剔除无关格式，比较具名commit/lease业务文件与既有大repository位置；新文件须先§8门。新contract/schema/Project删除/其它outbox方法暂禁。Root等待精确设计与真实新锁失败oracle，所有已有用户功能缺口照原计划继续。

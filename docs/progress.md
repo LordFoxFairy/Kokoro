@@ -8752,3 +8752,18 @@ Root沿同一goal和台账，原两只读owner并行核对仓库/页面，原Age
 Root3987取消值观察自然exit1，2pass/1fail3.54s，自库absent/source同；精确新增pending __error__值为CancelledError()，cancel返回→释放后全结构零差。候选修复改善时序，但原断言仍FAIL，新验收窗口/旧guard RED→新guard GREEN和非合作fatal全链仍待验证。该事实已交原writer，同任务卡续接。BFF四D0返修只冻结，未授source/contract或宣布入口完成。Billing87cbe82及真实IAM授权11/11是此前已验前置，不构成资金闭环。
 
 70组保持11/6/14/38/1，不把页面可达、源码或fixture通过换算完成率。逐仓摘要和逐页用户路径/异常/权限/状态缺口已同步CURRENT；本次未重复全仓门，也没有新增完整用户验收声明。任务外uv与子仓mixed保留，goal active。
+
+
+### R205 限定取消真实RED→GREEN（2026-10-04）
+
+Root基线3167629b，上一回合分类进展（现场核Git/70组及真实三gitlinkFAIL、台账提交），本轮继续两个独立代码依赖。新oracle独审先发现尾插P1，作者只改helper/DATA，312bb9d/0ae1cd位置无关完整等值复审0P0/P1/P2。Root受管隔离clone保留锁版依赖、正式native SDK/PG/checkpointer/store和原测试：23099旧四guard2pass/1fail5.50s，wait→cancel0差、cancel→release9叶；7813当前四guard3pass/0fail80warnings5.31s，返回前恰唯一精确审计、返回后全tuple与Agent四表等值/provider0/prepare cancelled。manifest分别/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-o7e04j0m/manifest.json和...-1483kn0s/manifest.json，ownDB absent/source_hashes_equal/original_source_unchanged均true，两case相同system SHA312bb9d。旧guard生产SHAf0cdcdf、当前37851d4，仅四取消护栏相异。
+
+准备错误不隐去：96394沿原editable元数据导入clone源码造成canonical origin binding拒绝；修为自有offline frozen安装。5917/80759监测把owned新egg-info产物当source漂移，保护exit非GREEN收据；修为显式copied原文件闭集后重跑23099/7813，未放宽业务assert。原source/uv/共享基础设施未改，五自有clone的venv已去除（首次symlink只unlink不触原.venv），源/日志/manifest保留，/tmp/kokoro-r205-owned-clone-cleanup.json。
+
+Agent后继两finite P1由原writer先四D0，Root与只读审查0P0/P1（当前过时措辞P2修为TECHcdeca72f），已放精确driver/scope/Supervisor existing source和完整serve取消→deadline→stopaccept→exit70 tests-first；未以直接callback或pure替代系统链，源未提交/原3310未同步/全门与真实费用未验。
+
+BFF只读审查报告abb0f2e指出新增Project DELETE slug兼容及Message scope混合边界两P1。Root选择先隔离R189，作者交九路径patch cd3e4c8d/base-target327bb21d，Rootclean8e33正规archive逐SHA前后匹配并启动63471安装/完整owner门；没有覆写共享mixed、没有将直接service PG冒公开DELETE HTTP、没有自行决定关联ScheduledTask政策。当前该句柄仍待终态，后续继续同handle而不重复服务。
+
+70组未提升，TC-AGENT-R205-001新增限定子例与原统计分列；完整goal active、支付最后、不拓展部署运维。
+
+R205-BFF Root63471已终态exit0：clean8e33+9path patch cd3e4c8d，installer/build/pure check/format/full真实integration均0；236contract、743pure+1既定资源skip、175真PG/Redis0skip40.4696s（runner integration全步骤43.535s）。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r205-bff-full-p9xynlzm/manifest.json，database_absent/source_hashes_equal/redis_keys_equal/secondary_dbs_unchanged均true。独审0P0/2P1/1P2仍否决：新增Project/Conversation锁及pool等待无全命令期限，四次retry不等于有界SQL；任务外整格式和claim常量描述不实。没有提交candidate或将full GREEN替代失败门；Root原BFF负责人继续只读收敛Message准入总4.5s/单锁1s/四轮共享budget、unknown COMMIT、晚client回收、真实双连接零写门及具名commit职责文件最小设计，未放shared source。Agent原writer已交显式driver/default真实fatal部分source冻结及unit RED/GREEN，但完整serve公开cancel→deadline系统门仍在原任务继续，不把69pure当系统通过。

@@ -1,6 +1,14 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R204。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R205。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R205 最新取消系统结果与后继（2026-10-04）
+
+Root已完成隔离旧四投影guard→当前四guard的真实原生/PG RED→GREEN：23099旧版2pass/1fail5.50s，取消返回后checkpoint新增9叶；7813当前候选3pass/0fail80warnings5.31s，未commit prepare回滚、provider0、prepare cancelled、Agent四表与取消返回后的完整CheckpointTuple全等。仅在返回之前允许唯一精确CancelledError()审计，移除该项后原pending值/顺序及其它完整tuple全等。新版helper312bb9d增量独审0P0/P1/P2；最初尾插假设已纠正，没有把after-return写放宽为合法审计。两最终manifest自有数据库已删除、clone和原source SHA保持；owned测试venv已移除，源码/日志保留。
+
+Agent正式HEAD仍59034，scope/投影等候选未提交、未同步当前3310；不合作driver在pump先挂起、fatal默认no-op两P1继续实施。已通过四D0规格门：显式owned/shield driver覆盖astream获取与context/pump/interrupt，同固定5s deadline；默认及错误callback返回均实际exit70、先stop-intake，无正常cleanup/terminal/费用伪造。原Agent负责人tests-first，Root完整系统/owner门后才提交。此限定取消通过不关闭全Agent或用户Stop。
+
+BFF另面已从8e33隔离出R189 Message snapshot/replay九路径patch，排除Project删除schema与mixed依赖；Root63471已自然exit0：175真实PG/Redis通过/0skip40.47s、743pure通过/1既定资源skip及236contract，build/check/schema/format0，自有DB回收、source/Redis/secondary库集合相同；独审仍因总锁预算缺失和任务外格式两P1拒绝集成，绿色测试不覆盖该故障，不称R189已验收。Project DELETE仍canonical-only slug与前置集成两个P1、公有入口/Storage/独立任务政策未闭合。原70组11/6/14/38/1及完整goal active保持。
 
 ## R204 最新进度核对（优先于下方历史局部结果）
 
