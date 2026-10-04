@@ -1,3 +1,35 @@
+R176补充：T-U04因果对照在原生pending导航下观察通道超时但纯HTML heartbeat继续，原R165仍红/原IAB恢复未证；Storage producer发布14f2/BFF consumer8e33已固定门验证，只解除contract前置，不代表T-C05本地删除/worker或T-F03外部资源/全链已通过。完整70组状态保持。
+
+R175 T-U04补充（非整体验收）：serverAdmitted→focus anonymous真实RED1fail已得到，AppGate匿名无整页loader修复后Root86705 Node22六相关真实Next/Chromium病例通过（R175+R147/R150），auth15/lint/types/build0；已窄同步原3310。原25实际DOM读取仍14s超时，用户原页恢复未证；原R165保留，完整60矩阵31815实际59pass/1fail/98.16s，唯一R165恢复门失败，不改70组整体状态。
+
+R174最终系统复验：Root27115 58pass/1fail/59、96.51s，test ca327877，日志 /tmp/kokoro-r174-root-auth-state-matrix-final.log。R150偏好、pending与503正式恢复通过；唯一R165 native登录跳转在途恢复失败，12s closedDOM unavailable，无alert真实证明。原24原因未定，T-U04整体失败/开放，不能凭新25或58个fixture节点关闭。Redis15回收0。
+
+## R174 / T-U04 原会话当前用户验证（2026-10-03）
+
+同组增补，不改变原70组总体状态。原旧标签未取得恢复证据，整组保持开放。
+
+|用例ID/标题|预置条件|步骤|预期|优先级/类型|实际结果|
+|---|---|---|---|---|---|
+|T-U04-R174-COLD / 同一真实用户原会话冷开|原3310、browser3原登录状态、conv_ffd7；无清cookie/数据库、无重启|旧24读DOM/截图超时后，同browser仅新建一临时25打开原会话|真实历史与编辑区可用，不永久整页loading|P0 / 用户·主链路·状态机|25真实旧两条历史可见、输入启用；浏览器error/warn记录为空；首次booting仅禁用实际Composer，下一读取Runtime已接管|
+|T-U04-R174-INPUT / 原会话输入|同25，正常ready|填写“输入交互检查，不提交”→查发送启用→清空|编辑可用、发送按内容启用；不创建新消息或扣款|P0 / 用户·交互|通过，发送isEnabled=true；无提交|
+|T-U04-R174-RELOAD / 原会话刷新|同25原真实登录|reload→booting→读取Runtime/原两条历史/启用输入|刷新有界完成、历史不丢、编辑可用|P0 / 用户·生命周期|通过；截图 /tmp/kokoro-r174-original-conversation-restored.jpg，SHA938fe6f035543adcccf3aaab267f6a3cf1d7bc822173351b8dcc91627276ff3d|
+|T-U04-R174-STALE / 旧标签恢复及清理|原24以及重复21–23|24 DOM读取、截图、close各有限尝试|有现场恢复/成功关闭证据，故障根因可解释|P0 / 异常·恢复|DOM焦点准备14s超时、截图15s超时、close15s超时；未声称已关闭/原旧页已修，保持开放|
+
+R173五source与受管runtime本轮逐字SHA相同，原45606/46036运行不变。新25标记deliverable以保留可用入口；新文档成功不证明旧文档失响应原因或所有故障已根治。Root完整59节点Next系统故障矩阵本轮已启动，最终结果另记录。
+
+## R173 / T-U04 首屏状态机当前证据（2026-10-03）
+
+不增加原70验收组，不将独立fixture冒充原用户页面；T-U04整体仍未验收。
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|本轮结果|
+|---|---|---|---|---|---|
+|T-U04-R173-SSR / 脚本未启动时真实首屏|真实Next/Redis，正规签名Product cookie；IAM/BFF严格HTTP fixture|GET /app核HTML；同cookie Chromium关闭JavaScript打开/app|200；实际main/Composer可见且禁用；两种整页loader均不存在；不授予客户端身份|P0 / 系统·边界·安全|Root81387通过；属于独立fixture，不是3310原用户页|
+|T-U04-R173-PENDING / 首probe未回时零业务挂载|同fixture与受控HTTP proxy|hold首次session probe；观察实际main/禁用Composer；8次focus；release可信200|pending期间会话/model/agent等 /api/session/* 与live manifest请求0；heartbeat继续、仅一个probe；release后booting消失、Runtime/编辑区接管|P0 / 系统·竞态·状态机|Root81387通过；原12s预算、focus与响应断言保留|
+|T-U04-R173-READY / 冷启与刷新可编辑|同fixture正规认证|cold /app→真probe完成→输入文字并清空→reload再次执行|每stage12s内booting卸载、编辑区启用；本阶段至少一个session请求、所有响应200且等数；输入可编辑|P0 / 系统·主链路·生命周期|Root81387通过；不以SSR可见替代真实ready|
+|T-U04-R173-USER / 原右侧会话|原3310、conv_ffd7、原tab24；服务45606/46036不变|限定同步经审查5source→尝试刷新原页→读取真实正文/输入与再刷新|原用户同页历史与编辑器可用；有界失败恢复|P0 / 用户端到端|原页reload/读取20s超时，未取得新DOM，保持失败/开放；无新增tab/清数据|
+
+来源：`/tmp/kokoro-r173-root-final-convergence.log`，2pass/57名称过滤/23.09s；过滤不是测试通过。13个auth邻门、定向lint/typecheck/build当前通过；完整59 HTTP故障矩阵/全Web门/原IAM+BFF+真实模型+积分旅程未在本轮执行，不声明整体闭环。前序fixture错误与ready语义纠正记录于同progress。独审当前0P0/0P1，仅此五文件。
+
 ## R153 T-U04 原用户页面与实际启动器复验
 
 本增补沿原70组编号，不改变任何总组状态。
