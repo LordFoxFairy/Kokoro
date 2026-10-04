@@ -2,6 +2,14 @@
 
 核对日期：2026-10-04，R218。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
+## R219 Agent实际接线候选与固定来源实核（2026-10-04）
+
+上一用户进度回合是只读状态核对，goal审计归no-progress；本轮原生owner句柄确认running，沿原九source/七tests/四D0实施，不另起目标。Root读实际diff，九production/machine路径已进入候选（含新ordinary validator），Agent main仍92b802e2、当前20 dirty，不把未冻结工作树冒实现验收。writer仍补真实SDK wire/override/client ownership测试与静态类型；未运行新的pytest/PG/installed/当前用户页面验收。
+
+Root固定来源门实际exit0：System955bd587 Git objects的3.0 artifact94ed9165/provenance5fda620c和全部19source，与当前Agent唯一receipt逐项一致；canonical aaf1428a，Agent整个provenance当时SHA8388cc3da950ccdb23129680f354ef7ed17f7a758fe77c8e323f41563e23355b、前后bytes同。脚本/tmp/kokoro-r219-agent-system-source-gate.py，日志/tmp/kokoro-r219-agent-system-source-gate.log。仅关闭该候选pin快照的固定来源核验，不等于decoder/真实SDK/安装制品/模型费用链通过；候选仍可变，冻结后必须重跑。
+
+复用agent_prepare_final_review并行只读Billing正式quote/reserve/核实结算/释放前置断点，不抢Agent写集、金额动作或共享资源。Root准备冻结后的真实复验，原3310进程45606/46036/45926/45942仍live、无重启/升级。70产品组仍11通过/6失败/14复测/38未验/1支付后置，Wave0–7完整active。以下R218原“实际consumer2.0/源码未实施”为当时RED基线，不覆盖本候选阶段；完整消费者验收仍OPEN。
+
 ## R218 Agent真实缺口RED与System固定发布源（2026-10-04）
 
 上一goal turn为progress：BFF15paths实际main7289b3a4与Root台账a2e47d4a。本轮沿R216消费者/既有Wave0–7，不新建目标；70产品组仍11通过/6失败/14复测/38未验/1支付后置，当前3310未升级，无新增浏览器验收。

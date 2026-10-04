@@ -8940,3 +8940,12 @@ Root65281 BFF定点实际HTTP/PG RED自然exit1：cf031请求waiting后HTTP5225.
 System bd09253本地源码执行界已交，202/13/fresh23-22为R215真实门；BFF178仅冻结隔离候选，新四故障矩阵23f2仅交未跑。Agent四D0新交付，尚非strict消费者/SDK源码或真实模型收费成功。明确单仓工程、集成启用、完整用户验收三层；先候选集成与正式System→Agent→Billing接线，随后固定组合实际登录/聊天/刷新/积分，再逐页CRUD与状态矩阵。所有任务外修改保留，无服务重启/reset、provider调用或新重复计划中心。
 
 R216 Root广域治理复跑已主动收束，仅本轮owned pytest进程退出2，无常驻残留：347通过/1失败/3跳过，218子断言，58.20s，非完整门。失败test_w1e_iam07_bff_pin_marks_iam_composition_pending：旧checkpoint与实际gitlink/evidence不符（269条差异）；日志/tmp/kokoro-r216-progress-governance.log。该真实失败保留，后继Root核历史checkpoint有效性，不改assert或旧快照冒绿；不覆盖既有70产品组或R215 owner证据。
+
+
+## 2026-10-04 — R219 从状态核对回到真实模型接线
+
+上一用户进度turn仅只读汇报，no-progress；本轮list_agents核原agent_execution_bound_owner真实running并亲查diff20dirty，既定九production/machine已实际写入但未冻结。原writer补真实wire/override/ownership与静态类型；没有Root在变化树上跑最终测试。
+
+Root独立更新历史source gate参数至固定System955bd587、新canonical aaf1428a；实际命令 `python3 /tmp/kokoro-r219-agent-system-source-gate.py` exit0，精确owner Git object artifact/provenance/19sources全一致、Agent receipt bytes前后保持，整个provenance SHA8388cc3da950ccdb23129680f354ef7ed17f7a758fe77c8e323f41563e23355b。日志/tmp/kokoro-r219-agent-system-source-gate.log，当前候选pin来源快照成立；旧R218 consumer2.0失败历史保留，不以这项工程门冒decoder/SDK/installed/nativePG或真实用户费用已过。
+
+已在同task追加R219三个有owner任务；复用agent_prepare_final_review只读Billing main87cbe82f+八protected dirty的正式授权/计价/预占/核实结算/释放/流水接线前置与最小后继文件集。只/tmp报告，无服务/数据/Git/源码操作。Root独占资源与集成，Agent唯一writer保持。原用户3310四PID实际仍live32h34m，未升级/重启/清数据/新页面验收；70组11/6/14/38/1保持、goal完整active。

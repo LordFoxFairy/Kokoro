@@ -8768,3 +8768,14 @@ R218 Agent Root91992在最终frozen三test/四docs上实跑28client+13publicchec
 R218/R219-GREEN正式放行：Root已完成§8及三D0/fixed来源/真正RED与独审，原agent_execution_bound_owner唯一Agent writer；仅D0九production/machine路径：clients/system.py、model/factory.py、agent_factory.py、contract_check.py、execution_proof_contract.py（仅OWNER inventory）、execution/runtime_profile_sources.py（仅实际closure）、contract/provenance.json、pyproject.toml（仅audit data-files）、新普通system_consumer_contract.py；另同七test与四现D0必要当前记录。按锁定ModelHttpClients(settings, same immutable route)/公开HTTPX sync+async final-request hook/正式LiteLLM缺clients必拒/非正式有效其他provider保留、AgentHandle tuple/partial Swarm ownership实施，不改policy.ModelConfig/call_runtime/Billing/Run/usage/schema/公开HTTP/events/lock/SDK版本。只从System955bd58固定Git objects/94ed/5fda/19source/aaf1428收据原子替旧2.0，不fallback。正常原generate_failure_models刷新aggregate，失败模型生成物若变化必须先报Root，不手改或扩范围。source checker<200，不能把第三方校验塞809行proof，新增validator唯一现ordinaryfile无新目录。
 
 已有两真HTTP/SDK RED与18边界/receipt RED为本feature前置；新seam后补全部真实SDKstream/sync/bind/native model_settings/extra_body正反控、unsupported endpoint/model、missing/invalid/type/relation、exact-once客户端关闭与partial build/Swarm，old14 assert保持但helper允许准确迁移显式route+owned clients（无magic default128）。现test_model_selection/ factory/inventory fixture按新required bound严格迁移，不放松旧identity/tenant/cancel/originalcheck。原正式native缺Billing0provider/unknown事实/prepare封存保持，不fake授权、赠送/free/known-zero、不改费用gate。作者仅生成/静态，Root actual loopback/installed/PG/完整工程门与独审/Git；越9source/7tests/4docs及generated预期不变则停报。source交付只待审，不是当前UI/用户模型/收费已闭环。
+
+
+## R219 并行前置审查与模型接线验证（2026-10-04）
+
+上一用户进度回合仅状态核对，按goal审计归no-progress；本轮复核原agent_execution_bound_owner原生句柄为running，继续既有九source/七tests/四D0唯一writer，不重复派实现。Root保持唯一资源、集成与Git执行者。
+
+|任务|负责人/范围/基线|验收与交付|
+|---|---|---|
+|R219-AGENT-GREEN|原agent_execution_bound_owner；Agent main92b802e2+既定R218/R219候选，仅已准入九source/七tests/四D0|实际代码已进入工作树但未冻结；按原任务卡交源码/测试SHA、静态结果与资源ownership/wire矩阵，Root冻结后真实peer、source gate、installed与nativePG复验，不计完整provider/Billing通过|
+|R219-BILLING-READINESS-READ|复用agent_prepare_final_review，只读审计Billing main87cbe82f及其八protected dirty路径；Agent只读当前call_runtime/正式usage机器事实；Root docs/CODEBASE_MAP.md、ADR-033、Billing三D0为入口|定位当前到正式quote/reserve/核实结算/释放所缺真实接口/producer消费与依赖；给最小下一业务切片、准确文件清单及系统用例，不编写源码/文档/生成物，不运行pytest/资源/服务/Git，不重开已批准政策。只写/tmp报告，区分当前代码与目标文档；Root裁决，不直接授跨仓写入|
+|R219-ROOT-SOURCE-GATE|Root唯一/tmp验证器与台账writer；固定System955bd58 Git objects为权威、当前Agent receipt只读|更新此前历史bd09253 source-gate参数为新955/94ed/5fda/aaf1428并核19源；输入前后hash一致才记录当前pin快照，非冻结实现/full gate/installed/模型用户链通过|
