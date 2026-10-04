@@ -4,6 +4,8 @@
 |---|---|---|---|---|---|---|
 |TC-AGENT-R205-001 / prepare等待时取消与返回后零后写|冻结312bb9d测试；原生SDK/AgentFactory；真实自有PG Run/checkpointer/store schema；无正式Billing许可|独立PG连接持Run锁→实际观察prepare锁等待→取消invoke并await→取完整DB/checkpoint快照→释放锁并等prepare结束→比全快照；隔离旧四guard负控与新guard重复同流程|原CancelledError；provider0、prepare cancelled；Agent四表完整零差；返回前仅一个精确__error__/CancelledError()审计，移除后原pending值顺序/完整tuple全等；返回后全快照无差|P0|异常、生命周期、事务、原生集成|Root23099旧guard2pass/1fail5.50s、cancel→release9叶后写；Root7813新guard3pass/0fail5.31s，canonical10CHECK0，两个ownedDB absent/clone及原源码同。此case通过仅cooperative取消；不合作driver/fatal全链、真实provider/Billing及当前3310用户Stop仍待验。manifest见progress R205。|
 
+R206补验：Root64906对显式owned/shield driver候选重跑同312bb9d真PG三例，3pass/80warnings5.14s，ownedDB absent/clone与明确原source闭集SHA保持。完整fatal链独审仍有sandbox cleanup先于fatal的P1，当前用户Stop未验，不关闭整组。
+
 沿原70组统计11/6/14/38/1不升；整组要继续覆盖不合作退出、恢复和完整用户费用路径，不以此限定系统门结案。
 
 ## R191 原浏览器逐页业务验收（2026-10-04）

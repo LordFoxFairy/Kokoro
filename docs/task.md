@@ -8557,3 +8557,17 @@ R205-FINITE 生产实施放行：Root已读四D0/current入口与ba75d8方案，
 R205-BFF-R189隔离前置：Root选择先独立冻结/验证Message canonical snapshot/replay，再叠Project DELETE。原BFF负责人只读从8e33交9path patch cd3e4c8d与base/target manifest327bb21d；不覆盖共享mixed。Root将clean应用逐SHA核验并执行Node22 pure/build/schema/完整自有PG/Redis门，web_page_qa_owner只读独审同patch。三production/两tests/四D0仅Message scope，不包含deleted_at/Project删除或新契约；未验/未提交。作者接口建议test命令若不适用由Root核真实package脚本，不以准备失败为业务RED。
 
 R205-BFF clean门63471终态175真实集成/743pure+1资源skip/236contract及全静态0，资源保持；独审两个P1未关闭，不准精确提交。原BFF负责人下一只读D0，Message admission完整单deadline及pool/SQL/rollback/unknownCOMMIT资源边界，剔除无关格式，比较具名commit/lease业务文件与既有大repository位置；新文件须先§8门。新contract/schema/Project删除/其它outbox方法暂禁。Root等待精确设计与真实新锁失败oracle，所有已有用户功能缺口照原计划继续。
+
+
+### R206 同一目标续派与本次进度核对（2026-10-04）
+
+|任务|owner/角色/基线|当前授权范围与验收|
+|---|---|---|
+|R206-Agent finite P1|Agent59034＋候选；agent_mainline_qa_owner唯一writer；Root资源/Git|Root64906当前driver真PG三例通过，仅有限合作取消。独审supervisor_execution invoke-finally sandbox cleanup可阻塞fatal；仅该现source局部让typed timeout跳cleanup原样上抛，现fatal系统test先RED后GREEN，其余312bb9d/publish保持；正常异常/cancel/SIGTERM不变。完整serve/public cancel、不合作deadline/cleanup零调用/stop-intake/exit70、违规callback return及正常SIGTERM须Root复验/全门后提交。|
+|R206-BFF有界Message D0|BFF8e33＋mixed；agent_prepare_final_review唯一文档writer|报告/tmp/kokoro-r206-bff-message-admission-placement.md 066ecb3已读；只授四现D0 R206前缀，现chat.ts fallback不改。新具名chat-turn-commit私有4.5s/1s/4预算，pool晚归还/rollback有界/unknown503且destroy；零DDL/API。production/test暂禁，先交四prefix clean拼装manifest与owned blocker RED计划，Root三面门/独审后授tests-first。|
+|R206独审|web_page_qa_owner只读，Agent当前driver生产SHA|报告/tmp/kokoro-r206-agent-driver-independent-review.md 0P0/1P1，fatal test变化未纳入最终验收；后继绑定新的冻结SHA复审，不改仓/资源/Git。|
+|R206状态核对|Root4610244e，唯一台账writer|实查Git/goal/三个gitlink FAIL/原45606+46036 live29h05m；未重跑全页/全仓，原70组不升。Git库存/tmp/kokoro-r206-progress-git-inventory.json；没有猜百分比或上线日期。|
+
+协调纠正：对已结束原agent仅send_message不触发新turn，本轮实际followup_task续派；不得把已发消息当运行worker。已有64906终态已消费，不重复启动进程。
+
+R206后继终态：原Agent writer新增cleanup阻塞反例先1fail5.76s（作者证据），精确b46f1632让typed timeout跳sandbox cleanup；Root90629在当前冻结source重跑完整serve/RunCancel子进程两例2pass2.91s，包含实际exit70及非法callback返回兜底。93b43ddf系统SHA；采用受控bus/repository/runnable且真实invoke/pump，不冒真实PG/provider/Billing或正常SIGTERM全链。独审及完整owner门仍待验。BFF四D0 prefix已冻结a4f23f/21fec0/c3f69c/e4384d，clean拼装bd4fe5；caller取消尚未贯通SQL，未虚称支持，独审在途。

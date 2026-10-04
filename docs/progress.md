@@ -8767,3 +8767,14 @@ BFF只读审查报告abb0f2e指出新增Project DELETE slug兼容及Message scop
 70组未提升，TC-AGENT-R205-001新增限定子例与原统计分列；完整goal active、支付最后、不拓展部署运维。
 
 R205-BFF Root63471已终态exit0：clean8e33+9path patch cd3e4c8d，installer/build/pure check/format/full真实integration均0；236contract、743pure+1既定资源skip、175真PG/Redis0skip40.4696s（runner integration全步骤43.535s）。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r205-bff-full-p9xynlzm/manifest.json，database_absent/source_hashes_equal/redis_keys_equal/secondary_dbs_unchanged均true。独审0P0/2P1/1P2仍否决：新增Project/Conversation锁及pool等待无全命令期限，四次retry不等于有界SQL；任务外整格式和claim常量描述不实。没有提交candidate或将full GREEN替代失败门；Root原BFF负责人继续只读收敛Message准入总4.5s/单锁1s/四轮共享budget、unknown COMMIT、晚client回收、真实双连接零写门及具名commit职责文件最小设计，未放shared source。Agent原writer已交显式driver/default真实fatal部分source冻结及unit RED/GREEN，但完整serve公开cancel→deadline系统门仍在原任务继续，不把69pure当系统通过。
+
+
+### R206 用户逐仓与页面进度核对（2026-10-04）
+
+Root4610244e实读goal active，现场12checkout均main-only；Root/Web/BFF/Agent/Billing保留mixed未提交，topology真实exit1三gitlink差（Agent/IAM/Billing）。原45606/46036仍live约29h05m，3310运行副本未自动更新，不重启/清共享状态。本次不重复全仓或浏览器门，逐页结果来自同test-cases已有证据；70组11/6/14/38/1不升。
+
+Root64906新owned/shield driver真native/PG三例自然exit0：3pass80warnings5.14s，canonical10CHECK0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-9_jl3_4u/manifest.json，database_absent/source_hashes_equal/original_source_unchanged true；原源监测明确排除并行变化的其它fatal test/docs，不能称整个原tree冻结。312bb9d业务oracle保持，prepare取消/provider0/完整DB与返回后checkpoint无后写。作者fatal1pass不是Root证据；独审0P0/1P1实际发现timeout前无条件sandbox cleanup，原writer续派测试先行修复；完整fatal/全owner门/当前用户Stop仍OPEN。
+
+BFF独立D0报告066ecb3放置单chat-turn-commit及有界Message预算，Root只批准四D0前缀；不更改SQL/publiccontract/全局Pool/Project DELETE/当前503错误域。下一须独审三面再真实owned blocker RED→GREEN，旧175集成green不关闭P1。已结束worker通过followup_task实际重启工作，而非send_message虚报running。主控继续同目标，支付后置。
+
+R206后继终态：原Agent writer新增cleanup阻塞反例先1fail5.76s（作者证据），精确b46f1632让typed timeout跳sandbox cleanup；Root90629在当前冻结source重跑完整serve/RunCancel子进程两例2pass2.91s，包含实际exit70及非法callback返回兜底。93b43ddf系统SHA；采用受控bus/repository/runnable且真实invoke/pump，不冒真实PG/provider/Billing或正常SIGTERM全链。独审及完整owner门仍待验。BFF四D0 prefix已冻结a4f23f/21fec0/c3f69c/e4384d，clean拼装bd4fe5；caller取消尚未贯通SQL，未虚称支持，独审在途。

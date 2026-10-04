@@ -1,6 +1,17 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R205。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R206。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R206 逐仓/页面核对与当前并行工作（2026-10-04）
+
+本次实读goal active。所有12个checkout（Root＋11子仓）本地分支均只有main；Root/Web/BFF/Agent/Billing仍有未提交变化，不能称全部干净。真实topology仍FAIL：Agent/IAM/Billing三个checkout与Root记录gitlink不同。原3310 launcher45606/Web46036仍live约29h05m，未重启或自动消费全新源码。本次没有重新跑全部页面或全部仓门；页面结果沿已记录证据，历史503不冒本轮复现。
+
+Root64906对显式owned/shield driver的新候选重跑原312bb9d真实native/PG取消三例：3pass/80warnings5.14s，canonical10CHECK0，自有DB已删除、clone源SHA一致；原源码显式监测src/database/contract/锁及该PG测试保持，不含并行编辑的其它fatal测试/文档。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-9_jl3_4u/manifest.json`。不是全source冻结或完整Agent验收。独审新发现supervisor_execution的invoke finally仍先await sandbox cleanup，可能阻塞timeout→stop-intake→exit70；0P0/1P1，原Agent writer已续接该精确修复和实际反例，未放行提交。
+
+BFF原owner另面已交有界Message准入放置报告066ecb3：单具名chat-turn-commit承接现事务，repo只委派；总4.5s/锁1s/四轮共享期限，unknown COMMIT销毁client并保现503 business_store_unavailable，不猜202；零DDL/API。当前只授四D0当前前缀，不授source/tests；R189旧175真PG通过仍不关闭有界资源P1。两独立owner并行、Root审查/资源/Git；70组11通过/6失败/14复测/38未验/1支付最后保持，产品完整用户链尚未闭合。
+
+
+R206后继终态：原Agent writer新增cleanup阻塞反例先1fail5.76s（作者证据），精确b46f1632让typed timeout跳sandbox cleanup；Root90629在当前冻结source重跑完整serve/RunCancel子进程两例2pass2.91s，包含实际exit70及非法callback返回兜底。93b43ddf系统SHA；采用受控bus/repository/runnable且真实invoke/pump，不冒真实PG/provider/Billing或正常SIGTERM全链。独审及完整owner门仍待验。BFF四D0 prefix已冻结a4f23f/21fec0/c3f69c/e4384d，clean拼装bd4fe5；caller取消尚未贯通SQL，未虚称支持，独审在途。
 
 ## R205 最新取消系统结果与后继（2026-10-04）
 
