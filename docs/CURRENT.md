@@ -13,7 +13,7 @@
 
 |Owner|当前基线/候选|当前可证明范围|
 |---|---|---|
-|Web `apps/kokoro-app`|main `a854a81a4991359d7254fce873e4099098719350`（Files、rename协调2072d0a与双操作CSS窄片本地提交，未push）加混合候选；系统测试文件/Move尚未整片提交|R188冻结工作树工程门2454通过、build0；三个真实Next/Chromium用例通过。当前runtime尚未包含Move候选；新增只同步rename2source+正式双操作CSS，当前真实BFF改名/刷新和桌面/640px命中已限定通过。R189 AppFrame view fence与反馈代际隔离完整源码门2457通过、独审0；Files导航片已实际浏览器验收并窄同步运行副本；Library数据503仍OPEN。|
+|Web `apps/kokoro-app`|main `3310351ff4e4c571ca4c3364aecffd0a2586273d`（Files、rename2072d0a、双操作CSSa854a81与孤立入口删除3310351本地提交，未push）加混合候选；系统测试文件/Move尚未整片提交|R188冻结工作树工程门2454通过、build0；三个真实Next/Chromium用例通过。当前runtime尚未包含Move候选；新增只同步rename2source+正式双操作CSS，当前真实BFF改名/刷新和桌面/640px命中已限定通过。R189 AppFrame view fence与反馈代际隔离完整源码门2457通过、独审0；Files导航片已实际浏览器验收并窄同步运行副本；Library数据503仍OPEN。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
 |Agent `apps/kokoro-agent`|main `81bc2ae9f872e234a4309d43e95cf6e77f1ba143` prepare窄片本地已提交、未push；Root gitlink未更新|A1 schema/catalog两表与Run completeness已验，仅持久化边界；prepare最终真PG56通过；此前9df全database267通过。去cast后完整工程2175通过/365资源deselected、lock/纯门/build0，限定持久事务已验。runtime producer、finalizer、Billing接线未完成。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
@@ -80,3 +80,8 @@ R189已交接负责人：Web agent4_lifecycle_review已冻结view fence/Files导
 项目仍有实际交互缺陷：孤立“专案会话”按钮点击进入新conv草稿路由、与现新对话入口语义重复；网站选择器实际显示launch.example.test示例地址，已取消；刷新瞬态把加载写成“专案不可用”。原生Web/Settings只读负责人分别核owner/handler/持久化与下个修复片，Agent负责人继续A2 tests-first，不宣称运行费链完成。三独立面已续派，Git/资源/台账仍Root独占。
 
 按用户清理要求关闭两空草稿重复页及一旧rp_transaction_rejected回调页，真实库存仅tab1项目页。原服务45606/46036保留live、无新服务/模型调用/共享重置。证据/tmp/kokoro-r191-iab-project-after-reload.png及test-cases R191。原70组完成数不变。
+
+R191 Web孤立入口切片已由Root精确提交main3310351（3路径19+/51-），混合Move CSS和其它test差异继续保留。Root8271 Node22完整check自然exit0：contract258/architecture50/lint/types、2469pass0skip164files151.16s、Next build0；是冻结混合工作树门，不冒clean HEAD组合全绿。当前3310仅同hash备份同步navigation68c1d及独立HEAD CSS4a5eec，不复制Move，无重启；原IAB真Project orphan count0/明确新建入口1，该入口仍能生成Project草稿，返回概览成功。截图/tmp/kokoro-r191-iab-orphan-removed-green.png；网站假保存/Skills/Project CRUD/Settings仍开放。原70组不变。
+Agent A2源码87f06+model0898候选仍未提交；Root多轮真实PG校验暴露非法fixture、UUID/SQL参数错误与owned锁图的direct/传递边oracle问题，逐一保失败收据、不放宽schema或预算。grant错ref换绑/advanced begin两P1已源码返修并只读复审0P1，但完整矩阵/最终资源门未收口，lostACK/runtime/provider/Billing仍OPEN。
+
+R191 Agent最终Root门终态（候选未提交/未运行接线）：2138 scoped真PG66pass6.17s；86156全database277pass0skip31.21s，manifest T/kokoro-r191-agent-full-2h40hz61/manifest.json自库absent/sourcehashsame；48540完整工程自然exit0，lock/frozen-sync/ruff全仓/pyright/contract0，2175pass/375资源deselected109.20s，wheel/sdist build0。源model0898c86/repository87f06f6/test0b469f0冻结；只读最终审0P0/0P1/2P2，canonical同步篡改防御和新三transition完整authority/digest/回滚矩阵仍待补。没有runtime/provider/lostACK/Billing费用用户旅程完成声明。所有Root具名测试句柄已消费终态、没有遗留自有测试进程；原45606/46036保持。Source/必要D0同步及最终切片提交待后继，不夹带未完成P2冒零债务。

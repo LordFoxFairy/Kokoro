@@ -5,7 +5,7 @@
 |用例ID / 标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与未验边界|
 |---|---|---|---|---|---|---|
 |TC-UI-R191-001 / 原IAB会话与项目刷新|原有tab1合法Product session；用户本人QA会话与项目|读取原会话→展开侧栏→点项目→硬刷新→限时等待真实项目标题|消息/可编辑输入及项目正确显示；加载有终态，不错误覆盖数据|P0|主链、状态机、刷新|原tab1实际会话消息及输入已渲染；项目实际进入并刷新后标题可见。仅当前正向路径通过，不证明历史所有无限加载根因已修/过期session/503/跨窗口异常通过。刷新瞬态先显示“专案不可用/正在加载专案”，属于加载与错误状态混用待修。截图/tmp/kokoro-r191-iab-project-after-reload.png|
-|TC-UI-R191-002 / 项目会话入口语义与空态|001同项目暂无会话|点击Project列表下孤立“专案会话”气泡→观察URL/内容/焦点→返回项目概览|会话列表与新建动作明确区分；空态无幽灵会话，不把创建动作标列表导航|P1|交互、状态机、空态|实际进入带新conv ID的草稿路由，主区仍空会话/新对话；没有发送消息。孤立图标和重复新建入口与用户截图一致，语义缺陷OPEN；持久零写尚需owner/网络核验，不因未发送猜无写|
+|TC-UI-R191-002 / 项目会话入口语义与空态|001同项目暂无会话|点击Project列表下孤立“专案会话”气泡→观察URL/内容/焦点→返回项目概览|会话列表与新建动作明确区分；空态无幽灵会话，不把创建动作标列表导航|P1|交互、状态机、空态|实际进入带新conv ID的草稿路由，主区仍空会话/新对话；没有发送消息。初次实际FAIL保留；Root精准删除孤立shortcut，原IAB再验count0/明确新建入口1，新建仍到正确project草稿且可回概览。main3310351、完整冻结工程2469pass/build0；未发送模型。仅语义子例关闭，持久零写/首次消息创建/全部CRUD仍需owner/网络核验|
 |TC-UI-R191-003 / 项目网站选择器真实来源|001同项目、正式用户入口|点网站新增→读取资源选项→取消，不保存|仅真实授权资源可选；不暴露开发示例，不用内存保存冒持久关联|P1|功能、数据真实性、异常|原IAB实际选项含产品发布页launch.example.test；已Cancel。数据来源/owner/save持久化由Web只读负责人核查；弹窗可打开不算网站功能通过|
 |TC-UI-R191-004 / 清理无用浏览器标签|原4个IAB标签：同会话两重复、旧callback、当前原tab1|读取重复textarea为空→核旧callback错误→关闭3个无用tab→重新列库存|保留当前用户页与草稿，无多余测试窗口，不误删数据|P2|资源、交互|实际关闭两个空草稿重复页和rp_transaction_rejected旧callback页；库存仅tab1项目页，未新开tab/模型调用/永久服务。该callback失败只记观察，不猜原因|
 
@@ -1480,3 +1480,9 @@ Root80167对冻结a1d0dcfa/e7253 installer/build0，全部chat-facts27pass0skip2
 - 验收：**原用户页面**会话正文、输入可用且刷新稳定，才能关闭T-U04。独立当前栈旅程只证明同帐号/同会话在独立Chromium可用；完整70组与Wave0–7不冒整体完成。
 
 R184实际收尾：Root43518自然exit0，冻结79447abe/e7253 canonical installer/build0，全chat-facts29pass0skip23.375s，新增Move×DELETE两序真实图通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r184-project-full-n8ayzyis/manifest.json` 自库absent、sourcehashsame、Rediskeys same。日志 `/tmp/kokoro-r184-bff-chat-full-root.log`。独审 `/tmp/kokoro-r184-bff-move-delete-review.md` 0P0/P1/1P2（完整deletion身份与B lifecycle/Share/Run精度待补），只接收当前局部证据，不冒全计划断言、public/Storage远端或全owner完成。原用户加载仍P0开放；uv.lock原f7e1与任务外Billing不暂存。
+
+
+R191精确Web切片收据：3310351只提交导航孤立入口删除、死CSS选择器、5精准test迁移，保留原混合Move/CSS/test任务外差异；最终Root8271 Node22完整2469pass0skip/contract258/architecture50/lint/types/build0，真实原IABProject orphan0/明确新建1/Project scoped草稿/返回概览通过。不要把源码/单入口的GREEN升级T-C05完整Project CRUD或网站/Skills通过。
+R191 Agent PG失败履历：63612 56pass3fail是能力缺失；94183 64pass2fail是非法evidence state/terminal fixture；14528 64pass2fail是UUID类型与LIKE参数oracle；51716 65pass1fail是owned锁图direct edge误当传递链。各次源hashsame/自库absent，后继明确修oracle/源P1不改schema/预算，最终门待收口，不删除失败记录。
+
+R191 Agent最终Root门终态（候选未提交/未运行接线）：2138 scoped真PG66pass6.17s；86156全database277pass0skip31.21s，manifest T/kokoro-r191-agent-full-2h40hz61/manifest.json自库absent/sourcehashsame；48540完整工程自然exit0，lock/frozen-sync/ruff全仓/pyright/contract0，2175pass/375资源deselected109.20s，wheel/sdist build0。源model0898c86/repository87f06f6/test0b469f0冻结；只读最终审0P0/0P1/2P2，canonical同步篡改防御和新三transition完整authority/digest/回滚矩阵仍待补。没有runtime/provider/lostACK/Billing费用用户旅程完成声明。所有Root具名测试句柄已消费终态、没有遗留自有测试进程；原45606/46036保持。Source/必要D0同步及最终切片提交待后继，不夹带未完成P2冒零债务。
