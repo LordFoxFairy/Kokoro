@@ -1,3 +1,22 @@
+## R190 系统级业务执行收据（2026-10-04）
+
+复用原70组与下方逐页库存，以下是细化子例，不增加整组完成数。当前源码候选、真实owner、Next系统fixture、用户3310运行组合分别记录；完整用户路径未通过的组保持开放。
+
+|用例ID / 标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果/未验边界|
+|---|---|---|---|---|---|---|
+|TC-BFF-R190-001 / 消息与Move的双方锁序|本人P/Q项目、真实HTTP/PG双连接、canonical会话|Move先占父锁后发送省refMessage；反向先Message再Move；观察精确blocking图，解自有barrier|每次whole-attempt权威scope冻结，原P不改、新Q准确，无倒序锁/重复消息|P0|并发、状态机、数据一致性|Root35227两case及60244完整184真实集成PASS；未发布/未串Agent/browser；四次scope耗尽待验|
+|TC-BFF-R190-002 / client-created同identity竞争|同受信用户、同key/body，真实两HTTP/backend|首创建停自有INSERT barrier→第二同identity提交→观察实际unique等待→放行→回读|两202同receipt；一outbox/两Message，无权限串写；清理故障完整报告|P0|幂等、并发、异常|同真实R190case PASS；不是低层mock。最终test38a0cecb；全owner184pass/0skip；原混合D18未冒公开CRUD完成|
+|TC-STORAGE-R190-003 / 真实个人文件生命周期|正式Storage14f2，owned单应用库独立schema，既有S3/ClamAV，合法BFF credential|空列表→创建upload→签PUT→Complete真实scan→非空列表→download并比bytes/digest|合法对象CLEAN可见可下载，原字节准确；自有资源可回收|P0|主链、生命周期、数据一致性|Root83744九业务检查+同库schema前置共10项PASS、cleanup[]/hashsame/Redis6同；仅owner RPC组合。原3310Library仍503，未经Web上传/刷新，不关闭T-F组|
+|TC-STORAGE-R190-004 / 文件主体与服务身份隔离|003实际CLEAN asset；另subject及坏credential|另subject列表和download；坏workload credential List|另subject无数据、download404；坏credential401；不泄露正文|P0|权限、安全|真实owner RPC通过，未替代跨tenant/分享/Project资源全权限门|
+|TC-UI-R190-005 / 连续改名成功后失败|A/B queued rename；真实列表owner可控响应|A200、B失败→等待owner权威GET→刷新|最终保留已确认A或owner最终值，不永久preA缓存、不伪称B成功|P1|异步竞态、异常、状态机|初候选工程2462PASS但独审P1真实逻辑缺口，原writer返修；当前不放行。真正Next/browser后继待验|
+|TC-UI-R190-006 / 对账后旧overlay不得复活|rename ACK后GET返回canonical C|随后GET失败→恢复GET D→切scope/client|错误态不复活旧rename值，恢复展示D，旧回执不污染新scope；跨hook不能复用preACK请求|P1|状态同步、异常恢复、生命周期|独审P1/P2开放，返修中；原工程绿色不当系统通过|
+|TC-SETTINGS-R190-007 / 所有tab读与加载收口|当前3310正规IAM session；13可用tab|逐tab导航、观察实际UI/HTTP；对异常页随后重试/刷新/切回；disabled Help不click|读失败可见且有界、可恢复，不假空页/假保存；disabled语义准确|P0|逐页功能、异常、状态机|13导航/内容READ_OBSERVED，仅初步库存，不是完整读写通过。Billing4类503、agents404、MCP/Skills503仍FAIL；部分Loading瞬时未等terminal，不据此关闭加载门。Get help误点击Timeout已注明oracle错误。证据/tmp/kokoro-r190-settings-runtime-reads.json|
+|TC-BILL-R190-008 / 正式逐attempt计费契约|既有ADR033/R80-W06、Agent已发布usage1.0.0|校验attempt/admission/evidence immutable身份、version/digest、unknown/verified；再由正式消费者对接|仅核实实际消耗结算，释放确认余量；202入箱不冒settled；owner计算费率|P0|契约、状态机、账务一致性|机器合同首次101fail/143pass真实RED，候选实施中；没有runtime/充值/结算/流水用户链通过声明|
+
+退出要求沿原矩阵：每页CRUD/刷新对账、边界/异常/权限/生命周期均有真实证据；P0/P1清零且发布组合一致后关闭整组。原70组统计保持11通过/6失败/14待复测/38未验/1支付后置。
+
+---
+
 ## R189 当前逐页深度验收（2026-10-04）
 
 完整 Wave 0–7 不缩小；以下细化原70组，不增加虚假完成数。每页按主链/边界/异常/权限/状态机执行，另覆盖刷新、后退、键盘、窄屏、晚响应和加载收口。工程门、组件交互、真实owner与真实浏览器四层分别记账；只在完整用户路径及所有必要子例通过后关闭整组。

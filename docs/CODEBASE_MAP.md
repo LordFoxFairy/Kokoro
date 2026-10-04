@@ -16,7 +16,8 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 
 ## Root 本地受管开发入口
 
-- `scripts/dev/serve_local_login.py`：唯一3310前台组合，IAM/BFF/Web正规登录与可选真实Chat。
+- `scripts/dev/serve_local_login.py`：唯一3310前台组合，IAM/BFF/Web正规登录、可选真实Chat及显式Storage profile；原运行组合未自动升级。
+- `scripts/dev/local_storage_runtime.py`：同一组合的正式Storage源码/owner schema/真实S3与ClamAV装配及owned桶、进程反序清理；显式`--storage-node-bin`，不拥有文件业务事实或第二contract。
 - `scripts/dev/local_chat_runtime.py`：同一组合的System＋标准Agent HTTP/worker与反序清理；不拥有业务事实。
 - `scripts/dev/model_provider.py`：显式外部OpenAI兼容profile的私有文件校验与HTTPS模型库存观测；无导入时网络/secret副作用。
 - 原 `scripts/e2e/run_web_real_model_worker_smoke.py` 的Ollama-only guard保持，不作任意远端放行。

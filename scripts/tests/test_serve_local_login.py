@@ -15,6 +15,8 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/dev/serve_local_login.py"
 sys.path.insert(0, str(ROOT / "scripts/e2e"))
@@ -994,9 +996,6 @@ def test_r55_login_clean_published_sources_reach_bounded_build(monkeypatch, tmp_
             effect.assert_not_called()
 
 
-import pytest
-
-
 @pytest.mark.parametrize("owner", ["kokoro-app", "kokoro-iam", "kokoro-bff"])
 @pytest.mark.parametrize(
     "dirty_status",
@@ -1097,3 +1096,115 @@ def _r57_login_git_inputs(patches, directory):
     ):
         patches.enter_context(patch.object(launcher.web_smoke, label, apps / owner))
     patches.enter_context(patch.object(launcher.runtime, "command_output", side_effect=git))
+
+
+class StorageProfileGuards(unittest.TestCase):
+    def environment(self):
+        return {
+            "KOKORO_LOCAL_POSTGRES_URL": "postgresql://127.0.0.1/postgres",
+            "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/9",
+            "KOKORO_OBJECT_STORE_ENDPOINT": "http://127.0.0.1:39190",
+            "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": "http://127.0.0.1:39190",
+            "KOKORO_OBJECT_STORE_REGION": "us-east-1",
+            "KOKORO_OBJECT_STORE_ACCESS_KEY_ID": "fixture-access",
+            "KOKORO_OBJECT_STORE_SECRET_ACCESS_KEY": "fixture-private-object-secret",
+            "KOKORO_SCANNER_HOST": "127.0.0.1",
+            "KOKORO_SCANNER_PORT": "43310",
+            "KOKORO_OBJECT_STORE_PROFILE": "custom",
+            "KOKORO_OBJECT_STORE_FORCE_PATH_STYLE": "true",
+        }
+
+    def arguments(self):
+        return [
+            "--iam-node-bin", sys.executable,
+            "--bff-node-bin", sys.executable,
+            "--web-node-bin", sys.executable,
+            "--storage-node-bin", sys.executable,
+        ]
+
+    def test_explicit_storage_profile_keeps_its_existing_owner_inputs(self):
+        # Launcher configuration guard, not Storage or user-business acceptance.
+        with patch.dict(os.environ, self.environment(), clear=True):
+            args = launcher.parse_args(self.arguments())
+        self.assertEqual(args.storage_node_bin, Path(sys.executable).resolve())
+        self.assertEqual(args.storage_environment["KOKORO_SCANNER_PORT"], "43310")
+        self.assertEqual(args.storage_environment["KOKORO_OBJECT_STORE_PROFILE"], "custom")
+        self.assertNotIn("KOKORO_LOCAL_POSTGRES_URL", args.storage_environment)
+
+    def test_unselected_storage_profile_does_not_admit_inherited_configuration(self):
+        args_list = self.arguments()[:-2]
+        with patch.dict(os.environ, self.environment(), clear=True):
+            args = launcher.parse_args(args_list)
+        self.assertIsNone(args.storage_node_bin)
+        self.assertIsNone(args.storage_environment)
+
+
+    def test_storage_profile_rejects_missing_remote_and_emulated_inputs(self):
+        for changes in (
+            {"KOKORO_OBJECT_STORE_ENDPOINT": ""},
+            {"KOKORO_OBJECT_STORE_ENDPOINT": "https://other.example:9000"},
+            {"KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": "http://user:pass@127.0.0.1:39190"},
+            {"KOKORO_SCANNER_HOST": "other.example"},
+            {"KOKORO_SCANNER_PORT": "3310"},
+            {"KOKORO_SCANNER_PORT": "65536"},
+            {"KOKORO_OBJECT_STORE_PROFILE": "local"},
+            {"KOKORO_OBJECT_STORE_FORCE_PATH_STYLE": "false"},
+        ):
+            environment = {**self.environment(), **changes}
+            with self.subTest(changes=changes), patch.dict(os.environ, environment, clear=True):
+                with self.assertRaises(SystemExit) as rejected:
+                    launcher.parse_args(self.arguments())
+                self.assertEqual(rejected.exception.code, 2)
+
+    def test_storage_unknown_bucket_creation_is_not_claimed_clean(self):
+        environment = self.environment()
+        owned = launcher.storage_runtime.LocalStorageRuntime(
+            node=Path(sys.executable), environment=environment,
+            node_environment={}, directory=Path(tempfile.gettempdir()),
+            credentials=None, log=None,
+        )
+        owned.bucket_attempted = True
+        self.assertEqual(owned.close(), ["Storage bucket creation outcome requires reconciliation"])
+        self.assertFalse(owned.bucket_created)
+
+
+    def test_storage_release_preflight_checks_the_fourth_owner_on_the_frozen_root(self):
+        from contextlib import ExitStack
+        for violation in (None, "dirty", "head", "index"):
+            with self.subTest(violation=violation), tempfile.TemporaryDirectory() as directory, ExitStack() as patches:
+                root = Path(directory)
+                apps = root / "apps"
+                pins = {"kokoro-app": "1" * 40, "kokoro-iam": "2" * 40,
+                        "kokoro-bff": "3" * 40, "kokoro-storage": "4" * 40}
+                for name in pins:
+                    (apps / name).mkdir(parents=True)
+                observed = []
+                def git(command, **_kwargs):
+                    observed.append(command)
+                    repo, arguments = Path(command[2]), command[3:]
+                    if repo == root:
+                        if arguments == ["rev-parse", "HEAD"]:
+                            return "a" * 40
+                        name = arguments[-1].removeprefix("apps/")
+                        if arguments[:2] == ["ls-tree", "a" * 40]:
+                            return f"160000 commit {pins[name]}\tapps/{name}"
+                        if arguments[:3] == ["ls-files", "--stage", "--"]:
+                            sha = "b" * 40 if name == "kokoro-storage" and violation == "index" else pins[name]
+                            return f"160000 {sha} 0\tapps/{name}"
+                    if repo.parent == apps:
+                        if arguments == ["rev-parse", "HEAD"]:
+                            return "b" * 40 if repo.name == "kokoro-storage" and violation == "head" else pins[repo.name]
+                        if arguments == ["status", "--porcelain", "--untracked-files=all"]:
+                            return " M src/main.ts" if repo.name == "kokoro-storage" and violation == "dirty" else ""
+                    raise AssertionError(command)
+                patches.enter_context(patch.object(launcher.web_smoke, "ROOT", root))
+                for label, name in (("WEB", "kokoro-app"), ("IAM", "kokoro-iam"), ("BFF", "kokoro-bff")):
+                    patches.enter_context(patch.object(launcher.web_smoke, label, apps / name))
+                patches.enter_context(patch.object(launcher.runtime, "command_output", side_effect=git))
+                if violation is None:
+                    launcher.verify_login_release_inputs(storage=True)
+                else:
+                    with self.assertRaises(launcher.LaunchError):
+                        launcher.verify_login_release_inputs(storage=True)
+                self.assertEqual(sum(command[3:] == ["rev-parse", "HEAD"] and Path(command[2]) == root for command in observed), 1)
+                self.assertTrue(any(Path(command[2]) == apps / "kokoro-storage" for command in observed))

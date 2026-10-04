@@ -7995,3 +7995,33 @@ R189 BFFRoot34000第三轮完整owner自然exit0，真实183pass0fail0skip46.21s
 最终Agent81bc typed boundary独审91f7dbb9：绑定a9c源码0P0/0P1/0新增P2，合法canonical bytes、fence/replay/事务语义无改变；旧知识正反控/竞争输家零副作用/timeout全面恢复/lostACK及runtime接线P2照旧OPEN。全部Root测试句柄67609/49270/74251/96648/37768/95255/43790/43282/27104/65931/84818/45825/11824/62952/59256/47026/18098/24104/52756/34000均已消费实际终态；自有两个Chromium均close，原45606/46036保留live。
 
 R189 Root拓扑当前verify返回FAIL：Web/Agent本地新commit未发布、Rootgitlink仍旧，不能假冒组合发布；独立治理测试7pass仅验证checker本身，不覆盖该FAIL。旧w1e189差项与完整标准门缺口保留。后继依序独立并行：BFF当前新resolver真正竞争/cleanup与准确切片交付；Agent授权/dispatch/evidence/finalizer接正式Billing；Root Storage正式runtime装配与非空Library用户链；Web左栏/项目全部CRUD与13 Settings逐页业务读写/刷新/权限。支付后置、无新计划中心、运维不扩入开发。
+
+## R190：逐页业务验收续进（2026-10-04）
+
+完整Wave0–7仍active，复用既有70组测试矩阵，不新建计划中心。Root基线main03734b57；保留未交接Web/BFF/Billing与Root uv.lock修改。
+
+|任务/角色|Owner与唯一writer、范围/基线|依赖、验收和交付|
+|---|---|---|
+|R190-B-SCOPE / BFF真实竞争验证|原storage_release_r175_gate_review；main8e33+冻结73ad repo/1bf auth/3577 integration；仅现test/chat-facts.integration.mjs补真实两连接scope_changed双方顺序、同client-created身份竞争、4次耗尽（若需生产hook先报告）；修R189 finally吞cleanup错误，不改source/oracle/契约。|读CODEBASE_MAP/TS/SQL/D0；测试收集/纯门自行，共享PG/Redis由Root运行。交准确新增case名/hash/清理语义；Root复验前不称通过；Git仅Root。|
+|R190-A-NEXT / Agent调用事务下一片设计|原agent_mainline_qa_owner；main81bc clean，先只读现prepare→运行producer→授权/dispatch/evidence/finalizer及Billing发布契约；只/tmp报告，不扩写源码或schema。|沿现TECH A1给最小可交付下一片、精确文件集/状态/幂等/取消/unknown与真实PG系统验收；未消费Billing contract先owner发布，不自己发明。Root批准后继续该owner实现，不操作资源/Git/provider。|
+|R190-W-CRUD / Web左栏逐项验收库存|新原生web_page_qa_owner，Webmainc5e925+混合候选，先只读现rail/project/list/actions/controller/API，只/tmp报告。|按现T-C组列项目和独立会话完整CRUD/归属/空标题/选中/刷新/删除/迟到响应实际代码路径、真正未实现项和下一最小修复；禁止修改BFF/混合源码/Git/资源/运行副本。Root批准精确写入集后做真实失败→修复。|
+|R190-ROOT-LIBRARY / 正式运行组合|Root唯一scripts/dev/serve_local_login.py及现关联Root治理测试writer；先检查现Storage正式装配与已验证sandbox模式。|Library两tab真实503保留RED；比较扩现launcher与新launcher，优先现入口职责，不加兼容假空页。批准放置/生命周期/secret/schema边界后最小补装配；先纯门，再真实空库RPC与用户上传扫描/刷新/下载；作品producer另验，现运行资源保持直到明确安全切换。|
+
+R190-ROOT-LIBRARY放置/设计准入：Root owns组合生命周期，无新增业务owner/API/schema。当前serve_local_login只装IAM/BFF/Web及可选Chat，Storage发布14f2bc9与Rootgitlink一致且clean；真实MinIO/ClamAV已运行，复用，不启动Docker/PG/Redis。方案比较：把Storage启动/对象资源清理塞现650行launcher，会混合登录与Storage生命周期；另建第二launcher会重复3310/登录事实，淘汰。采用现scripts/dev下local_storage_runtime.py（单一Storage组合生命周期，与现local_chat_runtime平级），serve_local_login显式--storage-node-bin启用，未选profile不偷偷配置。Root治理断言补现scripts/tests/test_serve_local_login.py；用户链沿现测试矩阵，不新测试中心。
+
+模块只消费正式Storage installer/runtime与现Root受管S3桶helper，不访问owner业务表/另造合同。Storage使用同一application_db_url的kokoro_storage schema、同凭据；Redis当前仅PING、不写key，不增角色/库。显式loopback S3/ClamAV参数，凭据只内存/私有log扫描；新随机owned桶ObjectLock+Versioning，successful create收据才允许清理，失败不清他人资源。启动Storage真实源码→ready→注入BFF三项现配置；所有owned进程反序停止后才清桶和应用库，存活/未知则保留数据。固定Rootcommit同时准入第四Storagegitlink；不放宽原三owner dirty/pin gate。profile新能力缺失导入不冒业务RED，当前两503是真用户RED；先治理profile wiring断言RED，随后profile行为与真实Storage资源门。当前3310继续保留，待消费者候选正式冻结/发布一致后才切换，不趁混合工作树启动伪发布组合。下一片仅此模块/launcher/既有测试及Root四台账+CODEBASE_MAP，source/test零业务合同和lock变更。
+
+R190-W-RENAME精准准入：Root读use-conversation-list现成功永久override、旧失败无条件删除，批准现Web负责人先测试RED再仅use-conversation-list.ts及use-session-list.ts和既有tests/ui/use-session-list.test.ts/适当既有controller测试，若确无controller测试先报告新文件位置。目标同session改名有限串行/latest-intent（不能仅UI代际而让晚A后端覆盖B）、live committed client/scope身份保护、成功后的权威刷新结果取代override（须能证明GET在最新ACK之后发起，不靠title相等或timeout），scope/客户端切换旧回执不刷新/写新视图。不改公开合同/BFF/engine/Move/目录/运行副本/Git；既有列表迟首页/迟分页成功失败防污染保持。Root真实Next/Chromium与源码门复跑，源mock/UI RED仅定位不关系统项。
+
+R190-BILL-READ：agent_mainline_qa_owner后继只读Billing前置核对，main e04bff9+任务外dirty保持，沿既有Wave0–7正式费链任务，不新建计划中心。读Billing三D0/当前有效ADR/机器合同与任务卡，核Agent26b46报告所需逐attempt身份/evidence是否已有已批准目标（禁止重复发明）；列唯一现任务ID、owner、下一精确合同slice与前置。报告/tmp，无任何源码/合同/Git/资源写入。未知费用不结算/释放的等待策略与用户已批准“仅核实实际消耗/释放余量”严格对齐。Root裁决contractowner后才能授权实施，不拿generic service_receipt当正式接线。
+
+R190真实结果/后继准入：Root35227 HTTP+真PG旧R189和新R190两case PASS，自库回收/源码hash同/Redis同；Root60244完整BFF184pass/0fail/0skip45.45s，installer/build/check/format0、743pure+1既有skip。新四次scope耗尽仍OPEN。Root39526 WebNode22完整2462pass/build0仅候选门；独审5d7043发现2P1，拒绝放行：A成功queuedB失败没有ownerrefresh；已对账overlay后续GET失败复活。原Webwriter仅同3文件先真RED再修，再覆盖共享client跨hook相同signal的preACK inflight重用P2；Root重跑独审/full/Next。不得将当前全check通过冒成用户CRUD闭环。
+
+RootStorage5615真实进程已ready、签PUT、真实ClamAV CLEAN；非空List测试误用assets字段而ownerproto为items，首次FAIL是Root oracle错，不宣称Storage缺陷。40764纠正为items后9步真实RPC/bytes/其他subject404/invalidcredential401均通过、自有进程/桶/库清理、源hash同；全Redis9 key inventory变化，原因未证，不当成Storage写入或忽略，整体driver退出2。下一使用同Redis实例显式资源观察隔离/前后差项归属核验，不清共享key，不扩部署。原3310仍缺Storage，真实源组合门不替代用户浏览器链。
+
+R80-W06后继R190-MACHINE准入：Root采纳d27ac85只读核定，既有ADR-033/三D0目标不重开。原Billing dirty仅5D0+3codec文件，全部保留不碰；原生树无活跃Billingwriter，Root此片明确由agent_mainline_qa_owner接任Billing机器合同唯一writer（Agent源码同时冻结）。采用contract artifact版本3.0.0-experimental.1标识breaking clean-slate，保现/v2 internal-owner 24 operations传输路径，不冒已部署/稳定发布，不增加quote endpoint；契约SemVer与传输路径版本分别记录，原2.0.2 generic形状被本owner事实源替换不保兼容。精确12路径为d27ac报告/API D0列现YAML/contractREADME、2checker+2contracttest、2generator+4机械输出；禁止编辑5D0/3codec既有dirty、数据库/HTTP/runtime/lock/其他仓。按Agent已发布strict usage1.0.0引用/唯一attempt身份与exact digest（不复制owner schema），证据入箱202不冒settled，实际失败取消仅核实consumed/释放可确认余额，unknown保pending不猜零。先冻结字段/错误/response身份表并保24路由、生成边界，再测试RED→机器源+正规生成→contract/schema/types/full纯门；该片只产可发布合同候选，Root审查/验收/commit/push/pin后Agent消费者才能接线，模型/费用闭环不提前标完成。
+
+R190 Root组合收口：Storage最终独审 /tmp/kokoro-r190-storage-runtime-final-review.md 0P0/0P1/1P2，绑定module dc8db6bd/launcher e2cd93fa/test c1688132；限定准组合切片提交，P2异常启动/readiness/stopfailure故障注入保留，不冒全部恢复闭环。Root83744自然exit0，manifest含同库schema前置+九业务项共10PASS、cleanup[]/hashsame/Redis6同；前共享Redis9未知变化原exit2历史保持。Root完整78556自然exit1：1720pass/1fail/3skip126.34s，唯一历史w1e checkpoint189漂移，未改断言/库存。原3310未切换仍Library503。Billing12机器路径已冻结，真实contractRED101fail/143pass→writer244pass，Root完整纯门与独审另验。
+
+R190-W-NEXT新增既有system文件切片：原Web负责人仅tests/system/oidc-rp-next-http.integration.test.ts，已读返修报告2f1bba3f；生产3路径冻结。真实rail连续A held→Bqueued→A200/B503→postACKcanonical A/reload，再canonical C后GET503/Retry D不得旧overlay复活；fixture默认不影响现case，finally解held响应，Root资源验收。不得绕UI调用controller/force-click/睡眠掩bug。Root80939在writer中途误跑lint的exit1不当冻结源结论，完整门待最终冻后重跑。独立readonly Agent owner复审source3c99f42c/08dc2fb2/772ca7c5，不与writer抢写。
+R190-BILL配对回归：Root77175完整verify前六阶段0、1279pass/2fail/474skip，personal HTTP bootstrap registry仍43而新42，正式RED与P1阻断；244contract不能放行。下一Billingowner先报告精确runtime闭集最小片，审批后tests-first；原5D0/3codec保持，不增资源或兼容generic。

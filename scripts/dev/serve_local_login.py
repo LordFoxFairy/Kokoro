@@ -37,6 +37,7 @@ import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import local_chat_runtime as chat_runtime  # noqa: E402
 import model_provider  # noqa: E402
+import local_storage_runtime as storage_runtime  # noqa: E402
 
 WEB_PORT = 3310
 NODE_PARENT_GUARD = """\
@@ -69,6 +70,7 @@ def failure_category(error: Exception) -> str:
     for types, category in (
         ((LaunchError,), "launcher"),
         ((chat_runtime.ChatError,), "chat"),
+        ((storage_runtime.StorageRuntimeError,), "storage"),
         ((model_provider.ProviderError,), "provider"),
         ((OSError,), "io"),
         ((subprocess.SubprocessError,), "subprocess"),
@@ -207,6 +209,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--bff-node-bin", type=Path, required=True)
     parser.add_argument("--web-node-bin", type=Path, required=True)
     parser.add_argument(
+        "--storage-node-bin",
+        type=Path,
+        help="Enable owned real Storage using explicit existing local S3/ClamAV inputs",
+    )
+    parser.add_argument(
         "--chat",
         action="store_true",
         help="Enable real System/provider/Agent Chat; never falls back to login-only",
@@ -217,6 +224,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--model")
     parser.add_argument("--external-model-credential-file", type=Path)
     args = parser.parse_args(argv)
+    args.storage_environment = None
+    if args.storage_node_bin is not None:
+        node = args.storage_node_bin.expanduser().resolve()
+        if not node.is_file() or not os.access(node, os.X_OK):
+            parser.error("storage_node_bin must be executable")
+        args.storage_node_bin = node
+        try:
+            args.storage_environment = storage_runtime.validate_environment(
+                dict(os.environ)
+            )
+        except storage_runtime.StorageRuntimeError:
+            parser.error("Storage requires explicit existing local S3/ClamAV configuration")
     args.postgres_admin_url = os.environ.get("KOKORO_LOCAL_POSTGRES_URL", "")
     args.redis_url = os.environ.get("KOKORO_LOCAL_REDIS_URL", "")
     args.external_model = None
@@ -271,8 +290,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
-def verify_login_release_inputs() -> None:
-    """Admit the three login owners from one committed Root release."""
+def verify_login_release_inputs(*, storage: bool = False) -> None:
+    """Admit the selected owners from one committed Root release."""
     root = web_smoke.ROOT
     apps = root / "apps"
     if not apps.is_dir() or apps.is_symlink():
@@ -282,11 +301,14 @@ def verify_login_release_inputs() -> None:
     ).strip()
     if re.fullmatch(r"[a-f0-9]{40}", root_commit) is None:
         raise LaunchError("Root release commit identity mismatch")
-    for repo, owner in (
+    owners = (
         (web_smoke.WEB, "kokoro-app"),
         (web_smoke.IAM, "kokoro-iam"),
         (web_smoke.BFF, "kokoro-bff"),
-    ):
+    )
+    if storage:
+        owners += ((apps / "kokoro-storage", "kokoro-storage"),)
+    for repo, owner in owners:
         path = f"apps/{owner}"
         if repo != apps / owner or not repo.is_dir() or repo.is_symlink():
             raise LaunchError(f"{owner} release source or Root gitlink mismatch")
@@ -317,7 +339,10 @@ def verify_login_release_inputs() -> None:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        verify_login_release_inputs()
+        if getattr(args, "storage_node_bin", None) is not None:
+            verify_login_release_inputs(storage=True)
+        else:
+            verify_login_release_inputs()
     except runtime.SmokeError:
         raise LaunchError("release source preflight failed") from None
     require_free_web_port()
@@ -352,11 +377,19 @@ def main(argv: list[str] | None = None) -> int:
     failures: list[str] = []
     chat = None
     chat_config = None
+    storage = None
+    storage_env = None
+    if getattr(args, "storage_node_bin", None) is not None:
+        storage_env = session.node_environment(
+            args.storage_node_bin, "v24.20.0", args.storage_node_bin.parent
+        )
     with tempfile.TemporaryDirectory(
         prefix="kokoro-local-login-", dir=web_smoke.ROOT.parent, delete=False
     ) as temp:
         directory = Path(temp)
         install_node_parent_guard(directory, iam_env, bff_env, web_env)
+        if storage_env is not None:
+            install_node_parent_guard(directory, storage_env)
         log_path = directory / "process.log"
         log_path.touch(mode=0o600)
         with log_path.open("w+b") as log:
@@ -464,6 +497,17 @@ def main(argv: list[str] | None = None) -> int:
                 stage = "BFF startup"
                 secret = secrets.token_urlsafe(32)
                 credentials.add(secret)
+                if storage_env is not None:
+                    stage = "Storage startup"
+                    storage = storage_runtime.LocalStorageRuntime(
+                        node=args.storage_node_bin,
+                        environment=args.storage_environment,
+                        node_environment=storage_env,
+                        directory=directory,
+                        credentials=credentials,
+                        log=log,
+                    )
+                    bff_env.update(storage.start(application_db_url, args.redis_url))
                 bff_port = runtime.free_port()
                 bff_env.update(
                     {
@@ -549,10 +593,11 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 print(f"Local login: {origin}/login", flush=True)
                 print(f"Private login credentials: {credential_path}", flush=True)
+                mode = "real Chat (empty Skills)" if args.chat else "login only"
                 print(
-                    "Mode: real Chat (empty Skills; Storage not configured)"
-                    if args.chat
-                    else "Mode: login only",
+                    "Mode: " + mode + (
+                        "; real Storage" if storage is not None else "; Storage not configured"
+                    ),
                     flush=True,
                 )
                 print(
@@ -561,6 +606,8 @@ def main(argv: list[str] | None = None) -> int:
                 while True:
                     stage = "serving stack guard"
                     require_owned_stack_alive(processes)
+                    if storage is not None:
+                        storage.require_alive()
                     if chat is not None:
                         stage = "serving chat tick"
                         chat.tick()
@@ -601,6 +648,16 @@ def main(argv: list[str] | None = None) -> int:
                 failures.extend(chat_failures)
                 if chat is not None and not chat.quiescent:
                     owned_processes_stopped = False
+                storage_failures = []
+                if storage is not None:
+                    if owned_processes_stopped:
+                        storage_failures = storage.close()
+                        failures.extend(storage_failures)
+                        if not storage.quiescent:
+                            owned_processes_stopped = False
+                    else:
+                        storage_failures = ["Storage dependencies are still active"]
+                        failures.append("Storage resources preserved for active dependents")
                 if owned_processes_stopped and processes:
                     try:
                         runtime.stop_owned_process(processes[0])
@@ -639,7 +696,11 @@ def main(argv: list[str] | None = None) -> int:
                 elif before_web is not None:
                     failures.append("Web Redis cleanup deferred; owned services active")
                 try:
-                    if owned_processes_stopped and not chat_failures:
+                    if (
+                        owned_processes_stopped
+                        and not chat_failures
+                        and not storage_failures
+                    ):
                         resources.cleanup()
                         resources.verify_clean()
                     else:
