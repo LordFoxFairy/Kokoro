@@ -1,10 +1,10 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R195。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R196。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R195，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R196，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -15,7 +15,7 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `a75345fc7eb12f8bea8d9ab02b8d65697d1b42b6`：正式A之后B+C仅26路径窄提交，mixed剩余字节保留；未push、原3310未启用Move|Root22469 clean21ad+B+C：contract258/architecture50/lint/types/build0、164files2463pass119.94s；commit tree04bd2f与已验候选完全一致。仅同scope绑定反馈与unknown原key恢复，W2跨scope/actor/storage仍P1，当前用户运行页不冒通过。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `c7c6885dde4456babc3bdff59340c2c1c4cabdea`：源码A3b `8c08ea4`九路径提交＋后继四D0设计提交（无新实现）；Root gitlink未更新|Root54838全真实PG303pass/0skip39.35s、自库absent/sourcehashsame；94228工程2178pass/401资源deselected112.57s，lock/frozen-sync/Ruff/Pyright/contract/build0；77055文档后contract/build0；12191已安装wheel六模块真实origin/contract0。只到内部事实，provider/Billing/用户费用链仍OPEN。|
+|Agent `apps/kokoro-agent`|main `814e92905991c2aa6d68b000cd8f81c2d550a93f`：A3b8c08ea4＋SDK retry窄片六路径；Root gitlink未更新|Root54838全真实PG303pass/0skip39.35s、自库absent/sourcehashsame；94228工程2178pass/401资源deselected112.57s，lock/frozen-sync/Ruff/Pyright/contract/build0；77055文档后contract/build0；12191已安装wheel六模块真实origin/contract0。只到内部事实，provider/Billing/用户费用链仍OPEN。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
@@ -126,3 +126,11 @@ R194 resource闭包后继：Root复用既有AST规则只读固定点核全部缺
 - Web corrected真实Next/Chromium三RED仍失败：跨scope matching ACK返回Direct残留A，lostACK/typed503返回无Retry。三D0窄补后Root采用更小“ACK立即source索引驱逐＋scope版本”方案，已授原writer GREEN；候选实施中，原3310未启用Move，不宣称用户修复。
 - 依赖不机械串行：Agent原owner并行仅四D0收敛A4 per-invocation seam；费用政策采用用户已定“仅核实actual，释放其余”，旧Billing文档待决是文档/实现缺口而非再问用户。未发布experimental不得生成consumer或假grant。
 - 原70组11/6/14/38/1、完整Wave0–7 goal active。永久45606/46036保持，自有测试全部终态/自有installed env已回收；共享数据及uv f7e1保护。资源/失败/安装隔离详情仅在progress，不另造第二事实中心。
+
+### R196 进行中边界
+
+Web W2原writer实施中，尚未冻结/主验；Agent并行仅native SDK隐藏retry的真实HTTP tests-first，formal收费链仍OPEN。Root以BFF8e33干净archive重跑owner门，57207运行中，不把当前混合D18或历史184通过冒当前正式组合。资源/终态见progress，原3310仍未启用Move。
+
+R196新主验：BFF正式clean8e33完整173真PG/Redis0skip、743pure＋1既定skip及schema/build/check/format0，自有DB已回收/sourcehashsame/Redis键同；不是历史dirty候选184或3310启用。Web同冻结三R195仍3fail（35.97s），原writer窄修中；Agent五构造禁SDK隐式retry后14真实loopbackHTTP行为pass（1.15s），完整工程/独审/提交待验，不冒外部provider或积分闭环。完整70组统计与goal不变。
+
+R196后继提交：Agent retry片已Root限定验收并精确六路径提交814e929（五构造retry0、新真实SDK协议integration、四现D0）；14 HTTP sandbox+完整2178默认/Ruff/types/contract/build0，415资源未执行、5/795既有warnings不隐去，PG本轮未重跑。Web93393二次冻真实Next1pass/2fail45.92s：typed503 exact retry→目标会话原消息通过；另matchingACK返回B重复GET3!=2、lostACK URL正确但原Message未渲染，原writer继续窄修，systemf7b277冻结。三新增导航/pagehide/version P1静态已关（独审e9e20），不代两真实用户旅程通过。

@@ -8203,3 +8203,31 @@ R195-W2最终Root裁决：实际storedConversationStore仅activeId/metadata索�
 |任务|负责人/允许集|基线/冻结|退出门与提交责任|
 |---|---|---|---|
 |R195-W2-GREEN / P1|原web_page_qa_owner唯一writer：一个普通coordinator文件、现page-clients/auth事实接线/AppFrame/rail list/conversation-list/machine及必要types；execution-adapter只删旧engine Move forwarding；相邻验证辅助|a75345f＋mixed19保护，写前tmp hash/字节；系统三RED260bf2a断言/预算冻结；client/wire/contracts/CSS/i18n/SQL/runtime其它owner禁止写|单槽替代engine双轨，verified epoch，unknown人工原key/bodyretry、source精确cache失效；Root冻后重跑trueNext三case＋完整门＋独审/用户路径；Root单独Git提交，不打包任务外auth/draft|
+
+## R196：冻结验收与独立运行 seam 查证（2026-10-04）
+
+上轮progress：Agent源码8c08ea4、四D0c7c6885、Root台账2ea97f71已改变权威状态；Web260bf2a真实3RED明确后继动作。R196实际Root2ea97f71/Agentc7c6885 clean/Weba75345f＋保留mixed，原45606/46036 live，不重启。完整70组/全Wave0–7不缩小。
+
+|任务|归属/负责人/权限|基线与写入集|验收/提交责任|
+|---|---|---|---|
+|R196-W2 / P1|原web_page_qa_owner，沿R195唯一Web writer|仅R195-W2-GREEN现source集；真实3case260bf2a冻结，mixed既有变更保护|作者freeze后Root真实Next同oracle复验/独审/完整门，完整用户绑定旅程另真实owner/browser；Root独占资源/Git|
+|R196-A4-native / P1|原agent_mainline_qa_owner，只读现Agent源码与已安装锁定SDK，输出tmp|Agentc7c6885/四D0；只查真实BaseChatModel ainvoke/astream/tool-binding/cancel/retry/callback与factory peer/Run身份上下文，不改仓或启provider|给具体可拦每物理调用的最小seam及系统行为测试步骤，区分已有保证/真实缺口，不拿mock/纸面建议冒Agent闭环|
+|R196-root / P1|Root集成/QA资源与台账|同五Root文档与已交付窄片，不抢Web写入、不发布不匹配gitlinks|原句柄验证/限时复验/回收自有资源，失败保留、用户页面无证据不冒通过|
+
+R196依锁定SDK真实源码校正A4：采用原生awrap_model_call，淘汰BaseChatModel代理具体方案；每spec subagent trusted path须显式装配。Root核五构造没设SDK retry而两SDK默认2，授权原Agent owner仅四D0＋一个新HTTP integration测试文件RED，生产model/factory.py继续冻结直到Root真实请求计数失败；不以本地provider协议sandbox冒真实收费。
+
+|任务|归属/负责人/权限|范围/依赖|退出门|
+|---|---|---|---|
+|R196-A4-Retry-RED / P1|原agent_mainline_qa_owner唯一Agent writer|四D0冻结82abe/071caa/3997a/6d3db；仅tests/integration/test_model_provider_retries.py，真实锁定SDK→自有HTTP counter，无mock执行函数/共享资源/外部provider|Root真实500/429/失响应RED和stream/200正控后才授factory五处retry0，不提高预算或改协议|
+|R196-BFF-clean / P1|Root资源/只读固定提交验证，不写BFF工作树|BFF8e33bc0 archived clean bytes、独立cloned锁定deps、唯一自有PG库和Redis15现隔离键观察；D18等19mixed路径保护|当前正式7.1 mount/contract/owner真HTTP全门；临时库/构建环境回收及source hashes equal，不冒3310已发布|
+
+R196主验续记：BFF clean formal8e33 Root57207自然exit0（173真实PG/Redis、743pure＋1既定资源skip，schema/build/check/format0），manifest自库absent/sourcehashsame/Rediskeys同，独立clone的node_modules/dist已由Root回收，原19mixed不变。Web作者初冻后Root75557真实Next三R195仍3fail/73名称过滤/35.97s，source缓存旧复活已越过但4034返回B GET次序与4145/4146显式retry导航仍失败，退回原writer，system260bf2a仍冻结。
+
+|任务|负责人/权限|冻结/范围|下一门|
+|---|---|---|---|
+|R196-A4-Retry-GREEN / P1|原Agent owner仅factory五处SDK构造retry0；Root资源/提交|测试c692404，factory915e57；Root87413真实RED5fail/9正控pass，每故障实际3请求；Root94390同冻结14pass1.15s|完整工程、独立源码审查、精确提交；只关闭隐式物理重试，不冒Billing/provider用户闭环|
+|R196-W2-repair / P1|原Web writer，原批准source集|Root75557三真实失败；测试260bf2a不变，reviewer并行只读|分清4034异步oracle与4145/4146 source导航；窄修后再Root真实三case，禁止加sleep/弱断言/扩大实体|
+
+R196-A4-Retry Root限定已验收：完整23752及最终50267 contract/wheel/sdist0；独审e66c10为0P0/0P1/1P2。Root亲读四D0并把TECH标题明确Retry已验/Middleware仍设计，精确六路径提交814e92905991c2aa6d68b000cd8f81c2d550a93f，Agent工作树clean；未更新Root gitlink冒组合发布。
+
+R196-W2 Root93393二次冻真实Next1pass/2fail45.92s：typed503人工samekey重试到目标原Message已过；4034oracle用原10s poll保数字后发现3!=2重复GET，4152lostACK准确URL但Message不显示，源修退回原writer。systemf7b277冻结；独审e9e20确认三新增静态P1已修，不代表这两旅程闭环。继续R196-W2-repair原同writer/原窄source集，不增加新计划中心或绑定实体。

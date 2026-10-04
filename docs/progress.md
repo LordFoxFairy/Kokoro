@@ -8598,3 +8598,19 @@ R194 resource闭包后继：Root复用既有AST规则只读固定点核全部缺
 R195后继：Agent A4四D0 Root逐读并仅docs精确提交 `c7c6885dde4456babc3bdff59340c2c1c4cabdea`（56新增），66496 contract/wheel/sdist0；source与8c08ea4相同、不是新runtime GREEN。旧Billing“失败取消待决”已勘误为用户已批准actual-only/释放余预占，1.4倍配置方向不再问。Root自有installed-env/venv及66496产生untracked build目录已回收，artifact/log保留。Root88171 topology语义7pass0.04s，但actual topology自然exit1：Web/Agent/Billing三个未发布gitlink差异，未放宽或更新gitlink冒组合发布。Web三D0首独审d62fa5e8结论0P0/2P1：仅list revision不足清source persisted/active合成；普通probe/StrictMode teardown不等于revoke且late promise需epoch防复活。原writer仅三D0返修，GREEN未授；不把文档数量当用户闭环。
 
 R195-W2最终裁决以真实persistence schema纠正“source索引evict会丢draft”的假设：索引只存metadata，不存draft/Message/Run。v2每scope一个per-session token可被下一次Move覆写，独审85c481与Root核对后删除；v3采用matchingACK即时source缓存精确evict＋source/target bounded scope version，不阻后续Move、不journal/第二绑定。Root逐读三D07f2eb/615381/c8a734与v3diffb00f041，准许原writer最小GREEN；只是设计门放行，不是53415三失败已修复。当前独立Agent四D0已c7c6885提交，Web实施与Root质量资源并行；原永久服务保持，全部Root具名资源终态。
+
+## R196 实际续接（2026-10-04）
+
+上轮判progress：8c08ea4/c7c6885/2ea97f71权威提交与53415三真实RED改变下一行动。Root实查原45606/46036 live约22h48m、旧自有句柄已终态。原Webwriter仍running，按R195集合删engine Move双轨/新coordinator，未冻结，不对变化树宣称GREEN；原Agent负责人只读锁定SDK后校正A4 D0：LangChain1.3.2 awrap_model_call实际在bind/ainvoke前，既有TokenBudget/TerminalGuard已用此seam；淘汰容易旁路的BaseChatModel wrapper。Root亲读installed源码验证SDK default retry2与factory五处未覆盖，是新的真实执行风险；已授仅原生HTTP sandbox tests-first，无付费provider/PG/Redis或假Billing许可。
+
+Root91612 main-only audit已自然exit1：实际12仓local/remote均main，失败仅Root/Web/BFF/Billing有受保护dirty；这是在开发中的观察，不宣称所有仓“干净”。Root错误glob/no-match和在Agent cwd读BFF generator路径不存在是只读命令错误，不计产品失败。Root74136 formal BFF8e33 archive＋独立clone依赖准备exit0；57207正在同已检安全driver执行schema/build/check/format/全真实PG Redis门，仅自有bff_r196_full_*库，保19路径mixed及Redis15所有既有键，不重复启动实例。正式3310仍7.0/noMove，原独审9f7848 runtime-release静态证据指出必须经已验clean release重建，不散复制mixed/伪装用户验收。Root完整70组11/6/14/38/1与全goal active不变。
+
+R196 Root57207已消费自然exit0：BFF8e33 clean archive完整173pass/0fail/0skip38.4399s；installer/build/pure check/format/integration均0，pure743＋1既定skip。manifest `T/kokoro-r196-bff-full-zgwol9uy/manifest.json` result0、自有数据库absent/sourcehashsame/Redis15键same/secondary DB unchanged；清理仅自有clone source/node_modules与dist，未写原19mixed。Root第一次用Root cwd校验Web相对hash导致12 missing，是命令cwd错误；纠正Web cwd后12/12 hashes OK。
+
+WebRoot75557同冻结260bf2a真实Next35.97s仍3fail/73名称过滤：4034 ProjectB第二GET裸计数1!=2；4146lostACK retry target路径已到但conversation query null；4145typed503 retry仍/app。未知command此前丢失的阶段已越过，但这些仍真实待修，禁止称W2闭环；退回原writer，独审并行。AgentRoot87413真实锁定SDK HTTP sandbox RED5fail/9pass8.01s，5分支故障均3物理请求vs1；原owner只改factory五构造max_retries=0，Root94390同testc692404＋source915e57实际14pass1.15s/5既有模型弃用warnings。sandbox仅loopback协议，无外部model/Billing扣费/PG/Redis；实际收费闭环未通过。Root23752完整工程当时进行中；后继核实scripts/check_contract.py是合法installed checker wrapper，不是错误命令。
+
+Root23752完整Agent工程自然exit0：lock/frozen-sync0、Ruff281files/检查0、全Pyright0、default2178pass/415资源deselected/795既有warnings113.23s、合法source-checkout contract wrapper0、wheel/sdist0。并未重跑303 PostgreSQL，当前变更无SQL路径，303仅历史R195证据。独审e66c10fc7结论0P0/0P1/1P2，P2仅stream失败协议矩阵未穷尽，当前限定retry片可放行。原owner四D0补事实后Root窄提交，provider/Middleware/Billing仍OPEN。Root topology语义7pass0.04s；actual mainonly dirty/三gitlink差异历史未冲销。
+
+Root50267最终四D0后contract/wheel/sdist自然0，文档三面逐读一致，TECH顶标题仅澄清Retry已验/Middleware仍设计。Root精确stage六路径后main提交814e92905991c2aa6d68b000cd8f81c2d550a93f（428+/28-），index空/Agentclean；source915e57/testc692404与完整23752、HTTP94390均同字节。没有stage任何其它子仓、Rootuv或远端push/gitlink冒release。
+
+Web93393二次frozen真实Next实际1pass/2fail/73名称过滤45.92s：typed503 exactretry→URL＋原Message成功；matchingACK返回B GET等10s观察3不是2，故当前不再把失败全称oracle（裸expect早于GET确有问题，修正后显示生产重复）；lostACK重试已target与query正确但Message10s不现，仍真实业务失败。原writer继续同集窄修，冻结systemf7b277（4034只poll现10s＋原numeric＋canonical tuple）。独审e9e20结论静态0P0/0P1/1P2（tmp报告首段旧hash已注明），NewChat/pagehide/version三P1源修成立但不冒用户W2完成。所有Root75557/87413/94390/23752/50267/93393具名句柄已终态，永久45606/46036保持约23h12m，无重复服务/PG/Redis reset。

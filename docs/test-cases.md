@@ -1569,3 +1569,16 @@ R194-A04/A05/A06同strict业务断言真正RED→GREEN：Root35202共11truePG pa
 |TC-R195-A01：终态与全部调用证据原子封存|真实PostgreSQL独立自有schema及既有Run authority|四open状态/已sealed/denied各终态及exact replay；合法SQL投影/授权bytes腐坏负控；锁等待取消/过期；读取全事务快照|开放调用保守seal；unknown不猜零；canonical/SQL不一致全回滚；合法denied通过；精确重放零写|P1 / 主链路、异常、安全、状态机|54838全PG303/0skip39.35s及此前11case GREEN；限定内部owner已验，8c08ea4；真实provider/Billing/user费用链未验|
 
 W01首轮65252在B GET尚未完成前立即断言是测试oracle问题，与真正业务RED分开。原writer只收紧B实际GET等待，不提高10s预算/睡眠/放宽绑定断言；53415随后实际失败在Direct残留。原R192/R194系统用例字节保护。工程2178/303计数不提升70组业务完成数。
+
+## R196 当前复验（不改变70组整体统计）
+
+|用例 ID / 标题|预置条件|业务步骤|预期结果|优先级 / 类型|实际结果与下一门|
+|---|---|---|---|---|---|
+|TC-R196-W01 跨scope matching ACK|Web候选真实Next/Chromium、Direct A、项目A/B、持有owner响应|A移动到项目A→去B输入草稿→释放ACK→回Direct→项目A→B|B草稿/路由不抢；source无A/target同ID消息；返回B完成canonical读|P1 / 主链路、状态机|Root75557 source/target与草稿阶段已过；最终B GET裸断言1!=2，独审认为等待次序缺口，保exact计数并用原10s poll，尚未关闭|
+|TC-R196-W02 丢ACK跨页人工retry|同环境，owner commit后连接丢失|A移动→B→到已归属A项目行→点击原command Retry|不自动POST，同key/body单次retry；显式打开该会话，URL包含原conversation|P1 / 异常、幂等|Root75557 retry已显示且同key重发，路径到A但query null；源缺口原writer修复中|
+|TC-R196-W03 typed503跨页人工retry|同环境，owner typed unavailable|A移动→B→Direct原会话行→人工retry|matching ACK后定位目标项目与原会话，旧pending ACK不抢其他draft|P1 / 异常、生命周期|Root75557仍/app，源缺口原writer修复中|
+|TC-R196-A01 模型失败不隐式重复调用|当前Agent锁定SDK+自有loopback HTTP peer，无真实模型或积分|五构造分别500/429/断连，实际计完整请求；200/流式正控；取消及调用者timeout清理|每次执行最多1物理请求；错误传播、成功stream不损，资源结束|P1 / 异常、生命周期|Root87413真实RED五故障每例3请求；factory仅五处retry0后Root94390 14pass1.15s，限定SDK协议sandbox；整体provider/费用用户路径未验|
+
+独审c641a1补充三P1尚未关闭：pending Move后同scope New Chat迟ACK抢导航；BFCache第二pagehide不revoke；scopeVersions无界/主体切换未reset。需各行为RED→最小源fix→Root复验，不以已有14/84/103数量冲销缺口。
+
+R196最新复验93393：TC-R196-W03已在本候选真实Next/strict BFF fixture完整通过，尚非3310 live owner验收；W01加原10s网络poll后暴露返回B三GETvs预期二，源失败继续OPEN；W02准确URL/query后原Message未显示，继续OPEN。独审新增三导航/生命周期P1静态已修，真实浏览器专项未新增关闭。TC-R196-A01由814e929六路径提交，完整工程2178通过及独审0P0/P1，未关闭真实模型/收费测试组，70统计不升。

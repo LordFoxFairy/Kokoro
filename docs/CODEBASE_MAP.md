@@ -98,3 +98,9 @@ python3 -m pytest scripts/tests
 
 - Agent8c08ea4：现model/call_evidence纯规则＋postgres_model_call_evidence cursor primitive＋postgres_run_leases原终态事务；runtime_profile_sources显式5resource闭包，不是新provider caller。真实303PG/2178工程/wheel门见CURRENT/progress。
 - Web W2三D0描述page内单槽冻结command替代engine Move intent；matchingACK即时source索引精确evict与source/target版本刷新，verified auth生命周期清理；生产GREEN仅授权/待验。测试仍既有oidc-rp-next-http.integration入口，53415三真实RED见test-cases。Agent A4只文档设计，与Web独立并行。
+
+## R196 候选接线与验证范围（2026-10-04）
+
+- Web `apps/kokoro-app/src/ui/shell/conversation-move-coordinator.ts`：候选唯一document-memory Move命令，session/project归属仍BFF唯一事实；`page-clients.ts`只失效浏览器metadata索引。未正式提交/启用3310；独审三P1与Root真实Next导航失败待修。旧engine Move路径在本候选删除，不增加Message/Project实体。
+- Agent `apps/kokoro-agent/src/kokoro_agent/model/factory.py`：五实际SDK构造main814e929显式retry0，`tests/integration/test_model_provider_retries.py`以锁定SDK→自有HTTP peer验证物理请求数、stream与取消；Root14行为通过，仅sandbox，不冒真实费用。后续A4仅原生AgentMiddleware.awrap_model_call，非BaseChatModel代理；Billing正式准入/证据读ACK/结算未接。
+- 当前formalBFF8e33 clean archive Root完整173真实PG/Redis门；候选工作树184历史结果不等于formalcommit覆盖。原3310仍public7.0/noMove，clean组合发布必须另验证，不散复制混合树。
