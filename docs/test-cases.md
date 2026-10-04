@@ -1267,3 +1267,20 @@ docker run -d --name kokoro-minio -p 9100:9000 \
 - Web原writer七现locale共14真译文修复新增Move漏译：六locale从1503/1584低95%恢复1505/1584，ja也补新key；源/阈值/fallback/tests未改。worker27pass/lint/types0，只待Root27092全check；完整门尚运行不冒通过。独审32de9ff6区分既有缺译与本轮新增未译。
 - 独立Web Move源码审/tmp/kokoro-r183-web-move-review.md：0P0/1P1/1P2。明确owner拒绝被AppFrame丢弃无可见反馈，global busy未禁非目标行的无效Move入口，故本轮Move用户旅程不可放行；unknown Retry实际已绑定目标行，不虚报扩散。原Web writer只读给真正Next/Chromium业务操作RED设计，Root门期间整Web冻结。
 - Root当前拓扑verify-repository-topology exit0、doc diff-check0；不据此宣称业务全闭环。原IAB首屏P0未验，完整Wave0–7 goal active。
+
+
+R183最终已有门实证：Root27092 Node22完整Web pnpm check自然exit0，contract258/architecture50/lint/types、默认164files2445pass0skip120.51s、Next build0；本轮七locale真译文修复95%失败，不是放宽门。独审Move仍0P0/1P1/2P2，第二P2明确普通Move Button错复用itemRename，<=960 translateY上移及collapsed可见性错配，真实overlap待布局证据。Web单writer现仅两个真Next用户菜单系统RED测试编写，生产冻结，不称用户Move已闭环或同步原运行。
+Root80167对冻结a1d0dcfa/e7253 installer/build0，全部chat-facts27pass0skip22.758s；包含Project-specific真实双backendsamekey赢家与实际COMMIT成功后断socket/readWinner/release(true)/旧PID淘汰/新PID可query/同key恒定/newkey冲突。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r183-project-full-5vyhh8og/manifest.json，自库absent/sourcehashsame/Redis同，日志/tmp/kokoro-r183-bff-chat-full-root.log。后继Move×DELETE/Message×DELETE两序、全owner资源门/public/Storage执行/linkedtask仍开放。Root已保存前轮四台账commit c469fb73（仅Rootdocs，不含子仓/uv/Billing，未push）；本轮后续实际事实待合并台账。完整Wave0–7 active，原用户首屏P0未验收。
+
+
+## R184 原工作区持续加载：真实浏览器旅程与原标签证据边界
+
+- 基线：Root c469fb73；Web main9b42acbc的现运行副本、BFF main8e33bc0；原launcher45606/Web46036继续live，没有重启/清数据。Web源码与候选未写。原负责人只读报告 `/tmp/kokoro-r183-runtime-init-investigation.md`（d23d51ea）：未见Provider/effect/external-store确定性自激；persisted-store首次读取未catch、解析无大小上界是待验证风险，不能作为原页根因或借机盲改。
+- Root使用一个独立Chromium和**当前3310真实IAM/BFF/System组合**，本地既有验收帐号正规表单CSRF submit303→固定tenant continuation→callback303→Product Session。非HTTP-only、非fixture认证、无新权限/模型调用/聊天发送；随后导航原conv_ffd7，2条历史可见、输入启用且实际接受草稿（随后清除未发送），真实reload后2条全文逐字一致，runtime-loader/booting-shell/frame-loader均false。证据 `/tmp/kokoro-r184-real-workspace.json`（2c3c1cbf）、截图 `/tmp/kokoro-r184-real-workspace.png`（d46418ca）。自有验收context/browser已关闭，不留后台窗口。
+- 原IAB定向清单仍4个同URL标签，实际selected为tab2（不能沿用前轮tab1）。闭集DOM读取4s在command dispatch前超时；仅显示已有浏览器pane后再读取仍同结果。没有原DOM、刷新/关闭成功、原用户恢复证据；不以控制超时归因React，不用独立浏览器成功关闭T-U04。停止该轮控制重试，没有新增IAB标签。
+- 实际当前组合还出现 `/api/session/billing/summary`503与`/api/session/agents`404；workspace仍渲染，故它们是独立业务失败而非已证loader因果。应沿现Billing/BFF任务排查，不虚称整体能力通过。
+- 前轮Web系统Root71243 actual exit1：2fail/61名称过滤/81.93s，失败在fixture把Move按钮误定位为data-conversation-id选择按钮的后代，尚未发Move。另Case2漏先选A，不足验证active导航。不是业务RED；8353候选冻结，生产未授权，后继只修真实row scope与active前置，不放宽assertion/budget。用户加载优先。
+- BFF原writerCase2仅现chat-facts追加真实Move-first/Delete-first advisory barrier＋blocking graph两个case，冻结79447abe（含COMMIT精确scope加强），syntax/lint/types/diff0，仅候选。独审与Root现真实PG全file串行运行，Message×DELETE/全owner/publicDELETE/远端Storage/linked-task仍开放。
+- 验收：**原用户页面**会话正文、输入可用且刷新稳定，才能关闭T-U04。独立当前栈旅程只证明同帐号/同会话在独立Chromium可用；完整70组与Wave0–7不冒整体完成。
+
+R184实际收尾：Root43518自然exit0，冻结79447abe/e7253 canonical installer/build0，全chat-facts29pass0skip23.375s，新增Move×DELETE两序真实图通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r184-project-full-n8ayzyis/manifest.json` 自库absent、sourcehashsame、Rediskeys same。日志 `/tmp/kokoro-r184-bff-chat-full-root.log`。独审 `/tmp/kokoro-r184-bff-move-delete-review.md` 0P0/P1/1P2（完整deletion身份与B lifecycle/Share/Run精度待补），只接收当前局部证据，不冒全计划断言、public/Storage远端或全owner完成。原用户加载仍P0开放；uv.lock原f7e1与任务外Billing不暂存。

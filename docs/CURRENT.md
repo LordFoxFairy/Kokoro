@@ -1,4 +1,4 @@
-R182当前：原conv_ffd7工作区仍P0未验收。Root首次对当前3310组合用现有帐号沿正式IAM表单/CSRF/回调完成HTTP登录，authenticated=true；同原会话GET200/36ms，新SSR server-admitted=true且无runtime/app-frame loader；47个该HTML脚本/样式均200。此为真实帐号HTTP与owner读取证据，不是原IAB同页渲染恢复。原选中tab1控制连focus准备仍超时；停止循环刷新、新标签与timer补丁。完整Wave0–7 active。
+R184当前：用户原conv_ffd7首屏仍T-U04 P0开放。Root已走现3310真实IAM→Product Session→原会话Chromium旅程：2条历史、可输入、真实reload历史逐字一致且无loader；不是fixture，也不是原IAB标签恢复。原IAB当前选中tab2的闭集DOM读取在command dispatch前4s超时，显示既有pane后仍同结果，停止重复控制。新增发现现组合Billing summary503/agents404，尚未定为加载原因。完整Wave0–7 active；BFF79447abe真实PG全chat-facts29pass0skip/installer/build0、自库回收/hash/Redis保持；独审仍1P2未收完整facts。
 
 R180当前：用户原conv_ffd7仍持续加载，未验收。原IAB当前选中tab1（不是后台tab4）DOM焦点读取4s超时，原tab1实际reload15s超时；没有刷新成功或新DOM证据，不再循环新tab/控制请求。运行源码与编译标记无已核漂移；服务端Session有2s期限。无cookie真实HTTP最终为IAM登录表单，不把follow-redirect最终200冒工作区响应。R179认证三文件已精确备份同步3310、独立build0；完整Web2435pass/10Move待实现失败。完整Wave0–7 active，T-U04保持P0开放。
 

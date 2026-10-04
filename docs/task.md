@@ -7842,3 +7842,22 @@ R183-WEB-I18N-GREEN准入：只读32de9ff6证中文1584、新增Move两key仅en�
 
 R183-BFF-WINNER Root49260已真实定点验1pass0skip/135.484ms，installer/build0，manifest project-winner-1xde1eh8自库absent/sourcehashsame/Redis同。仅证明same-key真实双backend赢家；接续同owner仅现chat-facts.integration.mjs case4（R183 Project真实COMMIT后断socket）测试准入，绑定本caseINSERTdeletion/tenant/project/key后实际PG COMMIT成功，再断该socket；release(true)/broken PID淘汰/新PID可查询/首次readWinner恢复/samekey全facts恒定/newkeyconflict，finally全部精确清理并错误不吞。生产、其它cases、schema/contract/generated不写，Root独占PG。三个现D0只准短句当前候选边界，不宣称公开/外部/发布完成。
 R183-WEB-I18N Root已读七文件14行diff无其它路径，前述翻译冻结；Root完整pnpm check句柄27092正在执行，期间整Web源码/tests冻结，原writer只能只读给P1/P2真Next用户行为复现设计，不能抢写。最初任务卡补记因cwd在Web而相对docs/task不存在FileNotFoundError，未写任何子仓文档；随后Root绝对路径纠正，不重启27092。
+
+R183 Web Root27092完整pnpm check自然exit0：contract258/architecture50、lint/typecheck、默认164files2445pass0skip120.51s、Next build全部通过。只绑定现冻结候选（含七译文），不关闭Move独审P1/P2或原页P0；不放行整repo发布/原runtime大范围同步。准原Web writer tests-only：只tests/system/oidc-rp-next-http.integration.test.ts按152dcf52方案新增两个真实Next/Chromium/HttpOnly session/menu/真实同源ownerfixture行为case，owner409安全可见反馈/保草稿零导航，A POST真实hold→全行pending禁入→实际断连unknown→本行人工Retry同path/key/body。合法Project列表与A/B快照只为自有case闭集fixture，不手塞engine/state，finally精确释放自有response并保故障判定。当前源码保持冻结直到Root真实RED。第三CSS P2先只读给bounding-box/三viewport验收方案，后继生产复用SidebarMenuAction，不在tests-only改样式。BFF Root开始冻结27全chat-facts真PG，其间Web writer不得启动资源。
+
+R183-BFF完整Root80167 installer/build0、chat-facts27pass0skip22.758s，manifest project-full-5vyhh8og自库absent/sourcehashsame/Redis同；两个Project专属winner/实际COMMIT恢复已真实证明。准原BFF test writer后继case2：仅现chat-facts.integration.mjs新增Move×ProjectDELETE两个真实锁顺序，沿现计划tenant/row条件advisory trigger + pg_blocking_pids准确backend/query图，Move-first冻结排除已移出A、Delete-first Move不得成功且N+1冻结A/B，完整facts/receipt/Run事实不串；不固定sleep猜锁。finally全部精确回收并聚合error，Root独占PG。允许三现D0最上当前段仅记录本地candidate/已验27与未public/Storage执行/未发布/未决linkedtask，机器/SQL/生产/Git不动。Message×DELETE后继，不能以既有Message×Move门冒替。
+
+R183独审BFF新两个case报告0P0/P1/1P2，COMMIT case只有数量+稳定快照但不足exactscope/终态；Root已要求同test writer在当前case2片同时补本conv exactmember、project/conv两scope共同deletion_id、Conversation deleted/assistant恰1 failed，真实COMMIT/PID/release/稳定重放原断言均保持。下一冻结才Root运行，不把当前中间态冒验收。
+
+
+## R184 原工作区持续加载：真实浏览器旅程与原标签证据边界
+
+- 基线：Root c469fb73；Web main9b42acbc的现运行副本、BFF main8e33bc0；原launcher45606/Web46036继续live，没有重启/清数据。Web源码与候选未写。原负责人只读报告 `/tmp/kokoro-r183-runtime-init-investigation.md`（d23d51ea）：未见Provider/effect/external-store确定性自激；persisted-store首次读取未catch、解析无大小上界是待验证风险，不能作为原页根因或借机盲改。
+- Root使用一个独立Chromium和**当前3310真实IAM/BFF/System组合**，本地既有验收帐号正规表单CSRF submit303→固定tenant continuation→callback303→Product Session。非HTTP-only、非fixture认证、无新权限/模型调用/聊天发送；随后导航原conv_ffd7，2条历史可见、输入启用且实际接受草稿（随后清除未发送），真实reload后2条全文逐字一致，runtime-loader/booting-shell/frame-loader均false。证据 `/tmp/kokoro-r184-real-workspace.json`（2c3c1cbf）、截图 `/tmp/kokoro-r184-real-workspace.png`（d46418ca）。自有验收context/browser已关闭，不留后台窗口。
+- 原IAB定向清单仍4个同URL标签，实际selected为tab2（不能沿用前轮tab1）。闭集DOM读取4s在command dispatch前超时；仅显示已有浏览器pane后再读取仍同结果。没有原DOM、刷新/关闭成功、原用户恢复证据；不以控制超时归因React，不用独立浏览器成功关闭T-U04。停止该轮控制重试，没有新增IAB标签。
+- 实际当前组合还出现 `/api/session/billing/summary`503与`/api/session/agents`404；workspace仍渲染，故它们是独立业务失败而非已证loader因果。应沿现Billing/BFF任务排查，不虚称整体能力通过。
+- 前轮Web系统Root71243 actual exit1：2fail/61名称过滤/81.93s，失败在fixture把Move按钮误定位为data-conversation-id选择按钮的后代，尚未发Move。另Case2漏先选A，不足验证active导航。不是业务RED；8353候选冻结，生产未授权，后继只修真实row scope与active前置，不放宽assertion/budget。用户加载优先。
+- BFF原writerCase2仅现chat-facts追加真实Move-first/Delete-first advisory barrier＋blocking graph两个case，冻结79447abe（含COMMIT精确scope加强），syntax/lint/types/diff0，仅候选。独审与Root现真实PG全file串行运行，Message×DELETE/全owner/publicDELETE/远端Storage/linked-task仍开放。
+- 验收：**原用户页面**会话正文、输入可用且刷新稳定，才能关闭T-U04。独立当前栈旅程只证明同帐号/同会话在独立Chromium可用；完整70组与Wave0–7不冒整体完成。
+
+R184实际收尾：Root43518自然exit0，冻结79447abe/e7253 canonical installer/build0，全chat-facts29pass0skip23.375s，新增Move×DELETE两序真实图通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r184-project-full-n8ayzyis/manifest.json` 自库absent、sourcehashsame、Rediskeys same。日志 `/tmp/kokoro-r184-bff-chat-full-root.log`。独审 `/tmp/kokoro-r184-bff-move-delete-review.md` 0P0/P1/1P2（完整deletion身份与B lifecycle/Share/Run精度待补），只接收当前局部证据，不冒全计划断言、public/Storage远端或全owner完成。原用户加载仍P0开放；uv.lock原f7e1与任务外Billing不暂存。
