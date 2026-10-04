@@ -1508,3 +1508,21 @@ R191 Agent最终Root门终态（候选未提交/未运行接线）：2138 scoped
 |TC-R192-C04：本地缓存失败不改变已知owner结果或阻断清理|A→P收到matching owner确认；来源本地存储/同步observer写失败|非active A确认后观察状态；active A确认后路由卸载，观察关闭流/取消/unsubscribe；禁止重发owner操作|两者owner结果仍confirmed；保B/草稿，不授权重复Move；dispose无抛出且完成清理。磁盘写阻断不得伪称持久成功|P1 / 异常、状态机|Root两负控真实RED2fail→最终97aacfe完整88427 GREEN。磁盘旧值hard reload及无dispose导航P2仍OPEN；此项内部故障注入，不冒真实原IAB storage异常通过|
 
 R192终态：Root完整Web门2474通过/0skip，Agent完整真PG281通过/0skip；工程数量不换算成70组完成数。当前3310 Move尚未启用；跨scope/迟到对账/blocked disk刷新与收费路径未验项保留。
+
+
+## R193 系统级验收增量：会话绑定与执行用量持久事实
+
+会话产品规则：同一Conversation最多绑定一个Project（也可无项目），移动不复制Conversation/Message、不启动模型；来源列表与项目列表按同一owner事实读取。技术保护不新增用户授权页面或操作步骤。旧70组不因工程门数量增加自动改为通过。
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|实际结果与边界|
+|---|---|---|---|---|---|
+|TC-R193-C01：正式会话绑定接口接受移入/移出|正规Product Session、拥有会话/项目访问权；clean Web public7.1|经真实Next同源接口提交项目ID，再提交空归属；核请求与回执|只转发精确method/path/key/body；匹配会话及归属的回执返回；cookie不外泄|P0 / 主链路、权限|正式A提交21ad177；Node22完整2434pass包含3真实Next adapter用例；owner为HTTP fixture，不是真BFF用户移动，也非3310启用|
+|TC-R193-C02：非法输入与坏回执不改变绑定|同上；可控owner坏响应|提交非空query/错误媒体类型，随后注入错ID/错归属/额外字段/不合法状态回执|非法本地输入零owner请求；坏回执fail-closed，不合成成功；非Move envelope规则不放宽|P1 / 边界、异常、安全|正式A真实Next R162/R164已随2434全门通过；跨scope unknown/late ACK的UI对账仍OPEN|
+|TC-R193-A01：首次用量证据与投影原子写入|真实PG owned schema，合法Run lease/已dispatch Attempt|持久化完整sealed canonical证据；同事务后读Evidence、Attempt、Run|恰一Evidence，head/status/seal及Run五项一致；receipt不是外发许可|P1 / 主链路、状态机|Root31333最终scoped81pass8.19s；仅owner持久事实，不冒provider调用/扣费|
+|TC-R193-A02：双真实连接重放与冲突|同上；第三连接持有owned Run锁|两独立repository同时提交同revision，观察两个PG PID阻塞图，释放；再提交同identity漂移字节|实际两连接串行；一新增/一原receipt重放，只有一行；漂移冲突零写|P1 / 并发、边界、异常|Root31333真实81pass；精确owned递归阻塞图，不以gather/时间推断竞争|
+|TC-R193-A03：权限/期限失败零写|真实PG；错误lease/冻结digest/terminal或锁阻塞|逐项错误身份/已终态新写/总deadline负控；前后读Evidence/head/Run|稳定authority/conflict错误；事务回滚、零副作用，不猜费用为零|P1 / 权限、异常|先90325能力RED70/10；75279 terminal错误码79/1；ee9cbc窄修后97101 80pass，31333强化81pass；保留失败履历|
+|TC-R193-A04：未知用量后继与terminal只读恢复|真实PG已有unknown rev1与其原时间、full bytes/digests|写合法normalized rev2核历史；另Run终态后重读已提交rev1，再提交新revision/漂移|合法连续后继保历史；终态exact返回原receipt且所有行/时间零写；新revision拒绝；不准再次外发|P1 / 状态机、生命周期|31333全快照正控及负控通过；后终态新用量reconciler、finalizer/Billing用户链仍OPEN|
+
+退出标准：本片当前代码与冻结hash资源门通过、独立审查无未解P0/P1，才接收owner局部切片。前端B已抽取但跨scope结果丢失/迟到ACK来源对账仍P1，尚未提交或同步3310；因此会话CRUD/所有页面/完整费用旅程不称闭环。原用户浏览器本轮清单显示1个会话页，getTab控制超时未操作成功，不把工具超时归因产品或称原tab恢复。
+
+R193 owner最终验收：Agent nine-path main2a9491e，81scoped/292full真实PG与2178默认/390资源deselected门均实跑，独审0P0P1/1P2；WebA21ad177 clean2434/3trueNext/build0。上述通过不关闭UI B的crossscope/lateACK P1、原3310Move及完整聊天费用业务；70组不自动涨数。

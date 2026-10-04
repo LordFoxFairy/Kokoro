@@ -34,15 +34,17 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 - `apps/kokoro-bff/contract/openapi/v1/openapi.yaml`：唯一 public7.1 `POST /v1/sessions/{id}/move` owner机器契约；Root不维护可编辑副本。
 - `apps/kokoro-bff/src/http/routes/move-session.ts` / `src/http/move-session-input.ts`：受信请求与闭集输入，Application Chat service调用同事务repository。
 - `apps/kokoro-bff/src/infrastructure/postgres/chat-repository.ts`：Chat事实与具名Move委派；Move事务唯一位于现`conversation-move.ts`，排序Project→Conversation锁、归属与final receipt同事务、same-key赢家恢复；`conversation-move-lease.ts`负责有界PoolClient/unknownCOMMIT lease销毁，现mappers纯receipt decode，无schema/contract变更。
-- Move producer原源码284b/发布态0333；职责拆分源码6c5cee0/发布文档5e119cd。Web尚未固定消费新contract，ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
+- Move producer原源码284b/发布态0333；职责拆分源码6c5cee0/发布文档5e119cd。Web本地main21ad177已固定消费public7.1及该owner commit，包含严格client/同源adapter；当前3310运行副本仍未启用Move。ProjectDELETE/Storage释放不是本接口职责。最终Root组合身份以gitlink与CURRENT为准。
 
-## Agent model-call 内部持久边界（R192，2026-10-04）
+## Agent model-call 内部持久边界（R193，2026-10-04）
 
-- `apps/kokoro-agent/src/kokoro_agent/model/call_models.py`：不可变prepare/authorization/dispatch command、receipt与最小Protocol。
+- `apps/kokoro-agent/src/kokoro_agent/model/call_models.py`：不可变prepare/authorization/dispatch/evidence command、receipt与最小Protocol。
 - `apps/kokoro-agent/src/kokoro_agent/model/call_artifacts.py`：具名planned/authorization/attempt canonical编码及冻结recipe peer-path验证；无SQL、env、网络或infrastructure import。
-- `apps/kokoro-agent/src/kokoro_agent/infrastructure/postgres_model_call_repository.py`：Run→Attempt锁序、lease/fence/DB时间、一次dispatch CAS、原receipt重放及同事务Run completeness。
-- Agent实现865afb2，当前本地main `d5cac24d798d210ac0eb50dd7c9b0f8e19e127e5`（仅续加A3a目标D0）；Root实际281真PG与完整2178默认门通过。Root组合gitlink仍须独立集成，不把本地提交冒远端发布。
-- 后继evidence append/finalizer、runtime caller、provider/Billing与真实用户费用未接，本图不新增第二contract/schema或归属实体。
+- `apps/kokoro-agent/src/kokoro_agent/infrastructure/postgres_model_call_repository.py`：Run→Attempt锁序、lease/fence/DB时间、一次dispatch CAS、原receipt重放及内部strict append委派。
+- `apps/kokoro-agent/src/kokoro_agent/model/call_evidence.py`：完整usage/v1 RFC8785原bytes及冻结identity/planned/authorization/time/seal/revision纯校验。
+- `apps/kokoro-agent/src/kokoro_agent/infrastructure/postgres_model_call_evidence.py`：Attempt head保护下的immutable Evidence读取、contiguous revision insert/head CAS、唯一Run completeness同事务投影；不拥有第二wire contract或provider许可。
+- Agent当前本地main `2a9491e36fe5bb94a166f0cd4053e00876bd34a7`，A3a内部append已实现；Root实际292真PG与完整2178默认门通过（390资源deselected非业务通过）。Root组合gitlink仍须独立集成，不把本地提交冒远端发布。
+- 后继finalizer、runtime caller、provider/Billing与真实用户费用未接，本图不新增第二contract/schema或归属实体。
 
 ## 子仓路径与 owner
 

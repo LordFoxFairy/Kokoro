@@ -8514,3 +8514,25 @@ Root66665全standard自然exit1：153violations/0unverified；96172 topology自�
 R192 Root88427已消费自然exit0：最终冻结97aacfe/f2c029/0c5/8db6完整Web `pnpm check`，contract258/architecture50/lint/types0、164files/2474pass/0fail/0skip157.66s、Next build0。此前作者Project-idem一次timeout保留，不能由单次全绿推定flaky或穷尽竞态。正常binding实际RED→GREEN和storage语义RED→GREEN限定接收；原3310 Move未同步，跨scope unknown、迟到ACK后对账及导航/storage故障P2仍OPEN。不整stage混合61path/Rootgitlinks/uv.lock。原负责人两个后继只读面已具名续派，台账与原70组不新建/不虚增；完整goal active。
 
 R192后继D0已Root验：Agent仅4文档50新增行，完整§8放置表/包内append command receipt/strict raw JCS/seal+int64+DB时间/active successor/terminal只读设计一致；Root精确docs-only main提交d5cac24d798d210ac0eb50dd7c9b0f8e19e127e5，source与SQL/机器artifact仍865afb2未变。A3a尚未实现、A3b未授；原实现281/2178证据不冒新功能通过。Web仅三D0 R158/R170段当前态收敛，报告/tmp/kokoro-r192-move-d0-coherence.md逐文件protected hashes同；其它混合任务段未改。实际63path与3310 public7.0/缺模块阻断已记录，不散同步。Root文档拓扑语义检查7pass0fail/0.04s，不替代实际153规则/三gitlink FAIL。
+
+
+## R193 续接（2026-10-04）：正式Move集成与Agent证据推进
+
+上一回合分类 **progress**：Root88427当前完整Web门2474通过、Agent A2九路径提交865afb2/A3a D0提交d5cac24、Root台账提交adb0460；未宣称整体完成。本回合重核工作树，保护Rootuv f7e1、Web63路径混合候选及BFF/Billing任务外修改；原45606/46036确认live，无已有测试运行句柄。
+
+|任务|owner/角色/基线|允许写入与排除|依赖与验收/提交|
+|---|---|---|---|
+|R193-A3a-RED，P1 strict证据append行为门|Agent / 原agent_mainline_qa_owner；main d5cac24 / 无未提交源变更|仅既有tests/integration/database/test_model_call_evidence_repository.py；禁止生产代码/SQL/机器契约/lock/generated/资源/Git|A3a四D0已Root通过；覆盖首观察原子性、replay/conflict、受信fence/timeout、单调successor，终态拒新写。收集不报import/setup错；Root复用实例、自有临时库实际RED后才授源码。|
+|R193-WI-A，P0 Move正式依赖闭集抽取|Web / 原web_page_qa_owner；main3310351 + 冻结候选|只在/tmp生成候选patch/manifest，不改主仓文件/index/runtime，禁止整打63路径|只提R192-WI清单A contract/client/adapter＋必需required client实现/生成provenance/对应Move测试；逐hunk排除auth/booting/Rename。标真实必要依赖，不保7.0兼容，Root审查临时index并验证后串行commit。|
+
+同仓单writer，Root保留集成和资源关键路径。原70组统计与完整Wave0–7 goal active。
+
+R193实际进展：Agent90325原70/10正确RED→75279候选79/1（terminal新revision错抛IdentityConflict）→唯一错误码窄修ee9cbc后Root97101真实PG80pass9.50s；各次自库absent/sourcehashsame。只读独审原1P1同根因已关闭，terminal exact replay/真实双连接锁图P2保持，现授原owner仅现integration test加强，source冻结。
+Web正式A片Root临时index tree d3acc0a，仅27路径＋229行trueNext adapter supplement；Node22完整82965已自然exit1：contract258/architecture50/lint/types0，164files2434pass/0skip（含3trueNext Move adapter）；build因Root临时node_modules越root symlink拒绝而失败，属于验收装配，不拿2434冒build0。Root改自有临时依赖为本地clone并恢复原依赖workspace links，不改产品配置/源码，单build复验。实际index空、63mixed源保护，原45606/46036保持live，原3310尚未启用Move。
+
+后继任务卡：R193-A3a-QA / Agent原agent_mainline_qa_owner / 只写同integration文件、排除生产SQL契约，Root资源与commit；节点为owned Run blocker+两个真实PG PID队列图、terminal exact readback全快照零写，沿现预算不加sleep。R193-WI-B / Web原web_page_qa_owner / 仅tmp抽取依赖A后的engine/UI绑定闭集、排除auth/booting/Rename/Settings，不改原工作树，Root验收提交；crossscope unknown/迟到ACK缺口如仍在必须列OPEN，不冒用户Move完成。两独立工作面并行、同仓单writer。
+
+R193正式A已Root精确提交Web main21ad177（28paths2063+/43-，包含owner public7.1机器artifact）；实际2434工程/3真实Next adapter GREEN与build86951 exit0绑定clean tree d3acc0a，不用旧mixed2474替代。最初Root shared node_modules symlink使Turbopack out-root失败且pnpm重链workspace依赖；已恢复原@kokoro本地links，自有clone后build成功，无产品config改。B25paths patch49b7待审，已明确排除混合snapshot/booting/auth/Rename，crossscope unknown/迟到ACK仍P1，不接原3310。AgentQA新0c15004e Root31333 81pass8.19s，自有schema回收/source不变，owner完整69606尚待；终态exact readback/两真实PID阻塞图实际正控已有，provider/收费仍OPEN。原IAB库存1tab、getTab15s kernel reset未操作，不反复控制/新增标签；原45606/46036保持live。
+
+R193最终收据：AgentRoot44134完整工程自然exit0，lock/frozen-sync/Ruff280files/Pyright/contract0、2178pass/390资源deselected/795既有warning111.98s、wheel/sdist build0；四D0当前态与真实FOR UPDATE锁序同步后Root6645再build0。源码4＋integration1＋D0四共9paths精确main提交2a9491e36fe5bb94a166f0cd4053e00876bd34a7，未push，Root不暂存gitlink/uv.lock；自有build输出已收回，Agent工作树干净。最终独审0P0/0P1/1P2（非穷举矩阵），truePG81scoped/292full、自库absent/sourcehashsame，非runtime/provider/Billing/finalizer用户闭环。
+WebA main21ad177已正式提交，UI B49b7因crossscope unknown/迟到ACK对账P1保持待修，不复制到3310。Root拓扑语义测试最初误写测试路径导致no tests ran（Root命令错误，不当产品失败），纠正后实际7pass0.04s；actual topology仍三未发布gitlink差异FAIL，未修改门禁或凑绿。原永久45606/46036保持live，全部本轮Root具名测试句柄已消费终态，无新常驻服务/共享重置；Rootuv f7e1不变。原70组统计11/6/14/38/1及完整Wave0–7 active不变。
