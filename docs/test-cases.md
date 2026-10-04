@@ -1554,3 +1554,7 @@ R194完整Web收尾6435：contract258/architecture50/lint/types/build全部通�
 |TC-R194-A05：合法拒绝授权的sealed终态与重放|真实PG、canonical denied授权、not_dispatched sealed head|首次finalize后精确重放；核原event/bytes/完整快照|合法状态通过；原Evidence仅一份，重放不写新证据或变化预算|P1 / 主链路、状态机|Root88885实际误拒失败；原six case仍6pass，源保持冻结待窄修|
 
 |TC-R194-A06：授权SQL state与canonical bytes一致|真实PG、合法denied sealed head|只把SQL state/status改为CHECK允许的requested_unknown/not_dispatched，保denied bytes/digest，提交终态|typed冲突及model/public全事务回滚，不把拒绝授权误报为未请求|P1 / 权限、安全、异常|Root72070真实DID NOT RAISE，5fail/6pass；test76d1冻结，窄GREEN待Root复验|
+
+R194-A04/A05/A06同strict业务断言真正RED→GREEN：Root35202共11truePG pass6.62s；仅test类型narrowing后Root3648全database303pass39.33s/sourcehashsame。局部用例通过，整体A3b仍被explicit resource闭包工程失败阻断，provider/收费/用户路径未验。Conversation same-scope 5旅程已随clean B+C2463完整门通过并窄提交a75345f，当前3310未启用与W2跨scopeP1保持，不增加原70组完成数。
+
+工程门补充：Run terminal import所需strict证据代码必须在既有runtime resource闭包里且生成descriptor可读；Root62052纠正测试路径后44pass3.07s/build0。首完整默认工程2177/1原缺闭包失败保留，当前5resource新manifest后的完整门待复验，不能以44局部通过关闭Agent用户链。

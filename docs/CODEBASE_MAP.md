@@ -90,6 +90,6 @@ python3 -m pytest scripts/tests
 
 ## R194 Conversation Move 交互切片
 
-- Web `src/engine/machine.ts`：same-scope matching ACK与view generation分离；503/409 in_progress保exact未知command，不写绑定副本。`app-frame.tsx`的owner GET刷新先于导航/焦点view fence。当前冻结候选a3321/3b8c，未正式UI集成或同步3310。
+- Web `src/engine/machine.ts`：same-scope matching ACK与view generation分离；503/409 in_progress保exact未知command，不写绑定副本。`app-frame.tsx`的owner GET刷新先于导航/焦点view fence。正式Web B+C a75345f（clean machinea3321/AppFramedda20f/systemafbbf）已本地窄集成；mixed字节保留，未同步3310。
 - 唯一测试入口仍`docs/test-cases.md`与Web既有`tests/system/oidc-rp-next-http.integration.test.ts`，Root62663四真实Next/Chromiumsame-scope通过；crossscope/actor恢复后继，不用同engine邻测冒充。
-- Agent A3b四D0已提交，终态源`postgres_run_leases.py::finalize_terminal`的三现文件候选已接同cursor封存，原六PG通过但sealed投影/denied状态两个P1仍待新矩阵修复；未正式验收提交实现。后继仍复用现call_evidence纯规则和postgres_model_call_evidence cursor，不建第二模型契约/费用owner。
+- Agent A3b四D0已提交，终态源`postgres_run_leases.py::finalize_terminal`的三现文件候选已接同cursor封存，原sealed投影/denied两P1经5真实RED→11GREEN已静态关闭，最新303全PG通过；full工程仍显式资源闭包漏helper一项失败，现manifest精确5resource登记3ea5已Root44定点＋build0，完整新manifest门待重跑，未正式验收提交实现。后继仍复用现call_evidence纯规则和postgres_model_call_evidence cursor，不建第二模型契约/费用owner。
