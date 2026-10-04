@@ -8128,3 +8128,46 @@ R193-WI-A已验收正式本地提交21ad177b7af61a3b4ee1c10f6c7262f3c3d20439（2
 
 R193最终收据：AgentRoot44134完整工程自然exit0，lock/frozen-sync/Ruff280files/Pyright/contract0、2178pass/390资源deselected/795既有warning111.98s、wheel/sdist build0；四D0当前态与真实FOR UPDATE锁序同步后Root6645再build0。源码4＋integration1＋D0四共9paths精确main提交2a9491e36fe5bb94a166f0cd4053e00876bd34a7，未push，Root不暂存gitlink/uv.lock；自有build输出已收回，Agent工作树干净。最终独审0P0/0P1/1P2（非穷举矩阵），truePG81scoped/292full、自库absent/sourcehashsame，非runtime/provider/Billing/finalizer用户闭环。
 WebA main21ad177已正式提交，UI B49b7因crossscope unknown/迟到ACK对账P1保持待修，不复制到3310。Root拓扑语义测试最初误写测试路径导致no tests ran（Root命令错误，不当产品失败），纠正后实际7pass0.04s；actual topology仍三未发布gitlink差异FAIL，未修改门禁或凑绿。原永久45606/46036保持live，全部本轮Root具名测试句柄已消费终态，无新常驻服务/共享重置；Rootuv f7e1不变。原70组统计11/6/14/38/1及完整Wave0–7 active不变。
+
+
+## R194（2026-10-04）：绑定页面真实旅程与终态封存并行
+
+上一轮分类progress：Web正式A main21ad177、Agent strict evidence main2a9491e、Root台账main6dcf6743；2434 clean Web及292真实PG/2178工程门均有终态。当前重核工作树与owner，Rootuv/未交接BFF Billing保留；没有续用已终态测试句柄或重复服务。
+
+|任务|owner / 基线 / writer|文件范围与排除|验收及依赖|
+|---|---|---|---|
+|R194-W-QA：跨页面Move真实RED，P1|Web main21ad177+保留mixed；原web_page_qa_owner，唯一test writer|只现tests/system/oidc-rp-next-http.integration.test.ts，先对当前候选测试；生产/合同/Schema/lock/依赖/Git/运行副本禁止写|真实Next/Chromium后提交GET、切B迟到ACK不抢导航且来源消失；跨Project导航丢ACK保原command恢复、503/in_progress不得变确定拒绝；先Root真实RED，再批准最小现文件修复。机器资源Root独占，源码未授。|
+|R194-W-D：状态与生命周期最小修复裁决，P1|Web / 原agent_prepare_final_review，只读审查|读machine/AppFrame/page-clients/list与B49b7，不改文件或资源|核generation与owner结果混合、disposed清unknown、all-owner=reject错误；比较仅缓存对账与既有engine生命周期保意图，禁止第二业务绑定/全局万能journal。给必要范围/权限/期限/清理保证，Root裁决。|
+|R194-A3b-D：终态封存D0，P1|Agent main2a9491e干净 / 原agent_mainline_qa_owner，仅只读|读既有A1/A3方案、三D0、finalize_terminal/evidence helper/schema/真实终态测试，不改源/doc/Git/资源|提出复用同cursor对全部attempt seal再Run终态的最小四D0 patch与5项系统PG RED路径；缺冻事实全回滚、unknown不造零、exact retry原UUID/time。先Root通过三面门再授实现，无Billing/provider/机器契约/SQL扩展。|
+
+root只管跨仓边界、资源验证与提交，不和唯一writer抢写；旧70组及全Wave0–7保持，不拿局部工程门升整体通过。
+
+R194 Root97553真实Next/Chromium RED（testSHA771964）：4执行/1pass/3fail/69选择外未运行，57.21s；迟到matching ACK后无新Direct GET，typed503与409 in_progress无原key重试入口。commit-close同scope恢复pass不冒跨scope恢复通过。生产未变，失败日志/tmp/kokoro-r194-web-red-root.log。
+
+后继窄卡：R194-W1-D / Web原web_page_qa_owner唯一writer / main21ad177+保护mixed / 只三D0的Move段：明确durable结果独立view代次、503与in_progress保unknown，W1只解决当前scope的实际三RED；跨scope operation生命周期W2仍OPEN，不为W1新增registry/actor协议/持久journal。Root审三面门后再授权现machine、AppFrame、engine-types、list必要段，contract/client/auth/booting/Rename/lock/runtime冻结。R194-W2-I / 原agent_prepare_final_review只读 / 查现verified auth主体入口与跨scope最小恢复载体，给具体已有路径及替代方案，不改文件/资源。R194-A3b-D0 / Agent原agent_mainline_qa_owner唯一writer / main2a9491e干净 / 只四D0，按947112设计与b0ec补丁收敛；明确终态authority与历史attempt原fence不同，不能把历史attempt fence要求等于当前Run fence。Root复验文档提交后才授真实PG tests-first，source/SQL/contract/provider/Billing冻结。Root独占资源、index、提交。
+
+R194三面门Root已审：Web W1仅R170三D0（42ff685b/a5e18687/af024a58），protected段hash同；实际三RED明确在same-scope，准许原writer GREEN现machine.ts、app-frame.tsx及既有machine/appframe邻测，system771964冻结，其它contract/client/adapter/auth/booting/Rename/CSS/i18n/资源/Git禁止写。Agent四D00def1/7d2b/a0fa/e876符合现strict机器artifact与现SQL；Rootcontract-check0、diff-check0，source/test/database/contract/lock同HEAD，精确docs-only提交后授两个既有PG test文件。W2只读查证现verified subject沿session probe→projectReadBoundary，采用后继page内单槽command而非park整个engine方向，当前不实施；无持久journal或第二绑定。IAB库存仅1 tab/app，但getTab20s超时kernel reset，未操作页面/新增tab，工具失败不冒产品证据。
+
+R194-W1 Root62663真实Next/Chromium自然exit0：冻结same-scope四R194 4pass/0fail、69选择外未运行，27.29s；从97553三个实际RED到GREEN。合法迟ACK后新Direct GET、B URL/draft不抢；typed503/inprogress人工exact key/body恢复；commit-close owner已提交丢响应保持同Conversation/message。machine a3321eb4/AppFrame8605365d/system771964冻结，作者邻160pass不冒Root重跑。独审待验；Web UI B仍未提交/未同步3310，W2跨scope/新engine/actor/unload仍OPEN。AgentD0 mainc3bf769已精确提交，onlytests 19cec57新增4PG节点冻结，Root隔离PG RED运行中。
+
+R194修正AgentRED事实：最终测试f6e44a（仅case命名从19cec变更）Root25837 canonical10校验0后4fail/126选择外1.21s，全在fixture recipe None，非业务RED；manifest T/kokoro-r194-agent-schema-oj7_7yac，自库absent/hashsame。source继续未授，原owner仅窄fixture修复。WebW1独审193b7175限定0P0/0P1，全局W2保持P1不降级；Root完整门93813仍原句柄，未重复服务。
+
+R19493813 Web完整首门exit1：contract258/arch50通过，lint AppFrame callback unused conversationsCtl dependency 1warning使maxwarnings0失败，后续type/test/build未执行。原writer仅该依赖删为[]后AppFrame3b8c6381、strict单file lint0，source其余冻结；Root完整门重跑，不改门禁。Agent80363又6fail/126选择外3.51s全部PlannedBinding fixture必填/多余字段错误，非业务RED；自库absent/hashsame，source不授。要求原owner完整核generated与existing fixtures、不逐字段猜测；独立只读fixture审查并行。
+
+R194-A3b正确RED已Root21678确认：testdc70d13冻结，6执行4业务fail/2正控pass/126选择外4.19s，catalog10校验0；4fail分别开放attempt未封存、已sealed外其它未闭、terminal缺evidence4、坏digest未阻断终态。2owned PG lock expiry/cancel全快照零写正控通过；manifest T/kokoro-r194-agent-schema-oxrilda_自库absent/hashsame。之前recipe/typed字段/expiry故障注入oracle失败单独保留，未靠source修fixture。准许R194-A3b-GREEN原Agent唯一writer仅现model/call_evidence.py、infrastructure/postgres_model_call_evidence.py、postgres_run_leases.py；testdc70冻结。复用同cursor封存/validate all heads→唯一recompute→现terminal atomic writes，不放宽authority、DDL、artifact、outcome usage、不接provider/Billing、不新文件/兼容；Root独占PG/Git/提交。
+
+R194 Root8560完整Web自然exit1：contract258/arch50/lint/types0，164files2479pass/1fail175.43s；唯一R192 Move→Direct return/reload→Project再打开新snapshot GET要求3==3失败，build未执行。4R194在full中仍通过，不拿局部通过冒全门；原test冻结，不猜flaky/加timeout/放宽assert。原只读reviewer查route/enginecache/fixture实际根因，Root同冻结R192定点复验。B新版tmp patchf1b5 25paths991+/10-交付，C trueNext hunk仅tmp派原writer，未提交/启用3310。Agent21678 correctRED4fail2控pass后原ownerthree-source GREEN已授运行，无实际provider/Billing。
+
+R194-W-Oracle Root63137同冻结R192定点也fail3==3（32.49s），独审0a9c72＋Root亲读3630..3645/engine1373证实baseline取在Project mount自动canonical GET之后、点击已active A是合法no-op。不是业务缺GET；不放大timeout或删tuple断言。准许原Web唯一writer暂停tmpC抽取，只改现system test该R192case：baseline移到Project link点击前，route后核new canonical snapshot tuple，同active click核URL/原message/Project归属/Move1次，可核不重GET；生产a3321/3b8c及其它cases全冻结。Root再真实R192+4R194以及完整门。corrected C补片须使用新testhash，不假绿色或清localStorage。
+
+R194-W-Oracle修复Root57706自然exit0：同生产a3321/3b8c、system222a6b，既有R192与四R194共5pass/0fail，68选择外28.99s；Project mount的新snapshot GET及exacttuple仍严格，未改timeout/业务源/清localStorage。原3==3失败是baseline错误而非业务复用，独审0a9c72与Root读代码吻合。新完整Web门继续原同工程入口；B/C仍未提交/启用，W2P1保留。
+
+R194-A3b候选冻结three-source52add58/61c1da/f7fbe14，testdc70不变；作者Ruff/Pyright/contract0、layer35通过非Root门；Root开始6真PG GREEN，独审原reviewer只读model/helper/finalizer边界，Root独占资源Git。WebC tmpf439c35 onlysystem632+/11-，基于21ad+Bf1b5 applycheck0，clean candidate systemafbbf53；currentfull6435仍原句柄，未把tmp applycheck冒运行通过。W2P1及完整Wave0–7保持。
+
+R194-A3b Root86131六真PG GREEN 6pass/126选择外4.02s、自库absent/hashsame，但Root亲读＋独审e15a56发现2P1，禁止放行/提交：sealed strictartifact未完整比revision/call/predecessor/SQL outcome usage totals classification seal投影（recompute会消费），且合法authorization_denied+denied+not_dispatched head被wrong status映射拒绝。这是新增矩阵缺口，不能拿6pass覆盖；原Agentwriter仅扩同existing integration test的projection corruption全terminal rollback与denied sealed commit/replay正控，source冻结；Root先真实RED，再准仅helper必要映射/全投影校验窄修。现three-source与dc70测试证据保留，fullAgent未执行，noBilling/provider。
+
+R194 Web最终Root6435自然exit0：contract258/architecture50/lint0warning/types0，164files2480pass/0fail/0skip161.43s，Next build0。冻结source machinea3321/AppFrame3b8c/system222a6b；5trueNext行为57706亦28.99s通过。当前证据是受保护mixed源码，不冒clean B+C或3310通过；tmp Bf1b5/Cf439c35 apply-check仅交接待Rootclean主验，W2P1保持。Agent86131 six-PG6pass4.02s仅原矩阵，2P1新增正反控仍原writer测试中；source冻结、未提交实现、未接Billing/provider。全部本轮Root具名资源句柄已消费终态、自库回收，无新增常驻/重复服务；45606/46036保持live。Root拓扑语义7pass0.04s；首误写test_verify_repository_topology.py no-tests是Root命令错误，纠正后真实7pass，不替代actual153静态/3gitlink差异历史FAIL。Root uv f7e1与未交接BFF/Billing保持。原70组11/6/14/38/1及完整goal active，下一关键顺序为Agent twoP1真实RED→窄fix→fullowner、WebcleanB+C验证及W2实际跨scope恢复。
+
+R194-A3b two-P1新增真实RED：Root88885自然exit1，10执行6pass/4fail，126选择外5.96s；三个schema合法投影漂移未拒绝、合法denied错误拒绝均实复现。test8ca77/source52add/61c/f7f冻结；manifest `T/kokoro-r194-agent-schema-hhshlagx/manifest.json` 自库absent/hashsame，catalog10校验0。原六正控继续通过不是新缺口通过；原writer仅补authorization SQL state与canonical bytes错配负控，source继续冻结、Root先验证再授GREEN。无永久进程/共享重置，完整目标及70组不变。
+
+R194-A3b auth一致性负控Root72070真实RED：test76d1冻结，11执行6pass/5fail，126选择外6.54s；追加SQL CHECK合法但typed denied bytes不符的state被错误接受。manifest `T/kokoro-r194-agent-schema-ev_8g_gd/manifest.json` 自库absent/sourcehashsame。后继R194-A3b-P1-GREEN派原Agent唯一writer，仅现model/call_evidence.py与infrastructure/postgres_model_call_evidence.py；test76d1/run_leases f7f冻结；补strict frozen authorization与全sealed投影，精确denied状态映射。Root资源/Git/独审，未批准DDL/provider/Billing/新文件；交付前不称修复，所有Root资源句柄终态。

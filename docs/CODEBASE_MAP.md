@@ -43,7 +43,7 @@ Root 不保存业务数据库 schema、跨仓可编辑 contract、子仓 lockfil
 - `apps/kokoro-agent/src/kokoro_agent/infrastructure/postgres_model_call_repository.py`：Run→Attempt锁序、lease/fence/DB时间、一次dispatch CAS、原receipt重放及内部strict append委派。
 - `apps/kokoro-agent/src/kokoro_agent/model/call_evidence.py`：完整usage/v1 RFC8785原bytes及冻结identity/planned/authorization/time/seal/revision纯校验。
 - `apps/kokoro-agent/src/kokoro_agent/infrastructure/postgres_model_call_evidence.py`：Attempt head保护下的immutable Evidence读取、contiguous revision insert/head CAS、唯一Run completeness同事务投影；不拥有第二wire contract或provider许可。
-- Agent当前本地main `2a9491e36fe5bb94a166f0cd4053e00876bd34a7`，A3a内部append已实现；Root实际292真PG与完整2178默认门通过（390资源deselected非业务通过）。Root组合gitlink仍须独立集成，不把本地提交冒远端发布。
+- Agent当前本地main `c3bf769`（四D0终态封存设计），A3a实现仍绑定`2a9491e36fe5bb94a166f0cd4053e00876bd34a7`；Root实际292真PG与完整2178默认门通过（390资源deselected非业务通过）。Root组合gitlink仍须独立集成，不把本地提交冒远端发布。
 - 后继finalizer、runtime caller、provider/Billing与真实用户费用未接，本图不新增第二contract/schema或归属实体。
 
 ## 子仓路径与 owner
@@ -87,3 +87,9 @@ python3 -m pytest scripts/tests
 - `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py`：沿既有IAM/BFF/Platform/Storage发布组合，显式 `--agent-source` 接独立Source测试切片；默认模式不启动Agent。
 - `scripts/e2e/agent_skill_source_smoke.py`：跨owner测试driver，使用生产Agent HTTP/JWKS/installer/repository/proof/typed reader；不是业务服务、SDK或另一套模型执行器。仅显式模式、Agent安装环境和精确gitlink通过后启动；自有schema/Redis占有资源在IAM库回收前关闭。
 - `scripts/tests/test_agent_skill_source_smoke.py`：Root driver协议/资源边界与纯原生组件，子仓业务测试仍各自维护。代码/单测成功不构成真实owner组合或浏览器通过，当前结果见CURRENT/task/progress。
+
+## R194 Conversation Move 交互切片
+
+- Web `src/engine/machine.ts`：same-scope matching ACK与view generation分离；503/409 in_progress保exact未知command，不写绑定副本。`app-frame.tsx`的owner GET刷新先于导航/焦点view fence。当前冻结候选a3321/3b8c，未正式UI集成或同步3310。
+- 唯一测试入口仍`docs/test-cases.md`与Web既有`tests/system/oidc-rp-next-http.integration.test.ts`，Root62663四真实Next/Chromiumsame-scope通过；crossscope/actor恢复后继，不用同engine邻测冒充。
+- Agent A3b四D0已提交，终态源`postgres_run_leases.py::finalize_terminal`的三现文件候选已接同cursor封存，原六PG通过但sealed投影/denied状态两个P1仍待新矩阵修复；未正式验收提交实现。后继仍复用现call_evidence纯规则和postgres_model_call_evidence cursor，不建第二模型契约/费用owner。

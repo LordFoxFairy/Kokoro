@@ -1,10 +1,10 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R193。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R194。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R193，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R194，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -15,7 +15,7 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `21ad177b7af61a3b4ee1c10f6c7262f3c3d20439`（正式Move A contract/client/adapter 28路径本地已提交、未push）加保留的混合候选；B UI仍未提交，原3310未启用Move|R188冻结工作树工程门2454通过、build0；三个真实Next/Chromium用例通过。当前runtime尚未包含Move候选；新增只同步rename2source+正式双操作CSS，当前真实BFF改名/刷新和桌面/640px命中已限定通过。R189 AppFrame view fence与反馈代际隔离完整源码门2457通过、独审0；Files导航片已实际浏览器验收并窄同步运行副本；Library数据503仍OPEN。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `2a9491e36fe5bb94a166f0cd4053e00876bd34a7`，A2与A3a strict evidence append/replay九路径本地已提交、未push；工作树干净，Root gitlink未更新|R192真实PG全部281pass/0skip；完整工程2178pass/379资源deselected，lock/frozen-sync/ruff/types/contract/build0；纯artifact规则与675行事务adapter已分离，canonical腐坏RED→GREEN。仅持久授权与许可边界，不等于provider真正外发、usage/finalizer或Billing费用链。|
+|Agent `apps/kokoro-agent`|main `c3bf769`（A3a实现2a9491e后四D0终态设计提交），本地未push；A3b只有测试候选，源码冻结未授，Root gitlink未更新|R192真实PG全部281pass/0skip；完整工程2178pass/379资源deselected，lock/frozen-sync/ruff/types/contract/build0；纯artifact规则与675行事务adapter已分离，canonical腐坏RED→GREEN。仅持久授权与许可边界，不等于provider真正外发、usage/finalizer或Billing费用链。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
@@ -104,3 +104,16 @@ R192后继设计门收据：Agent四D0已Root逐读放置、包内immutable appe
 - Web正式A已本地提交21ad177，固定owner public7.1/5e119cd。Root clean HEAD+A+3真实Next adapter补片（tree d3acc0a）Node22 contract258/architecture50/lint/types0、2434pass0skip；完整check先因Root临时node_modules越root symlink导致build失败，独立clone依赖后Root86951单build自然exit0，产品配置/源码未改。mixed原63路径字节保持。B25path候选patch49b7仅抽取，crossscope未知结果及迟到确认对账P1未闭合，因此当前不提交/同步3310。
 - Agent A3a首真实RED70pass/10fail→候选79/1 terminal错误分类→ee9cbc窄修80pass；QA强化0c15004后Root31333实际81pass8.19s，完整database69606实际292pass0skip34.32s，两临时库absent/sourcehashsame。两真实PG PID阻塞图与terminal exact replay全快照零写正控已有；完整工程44134已自然exit0：2178pass/390资源deselected、lock/frozen-sync/ruff280files/pyright/contract/build0；最后四D0同步后6645再build0，正式Agent九路径提交2a9491e。未接provider/运行caller/Billing/finalizer，不冒费用与用户聊天闭环。
 - Root真实浏览器库存本轮仅原会话tab1；getTab控制15s timeout/kernel reset没有实际操作，未证明原tab新问题已恢复。原永久45606/46036保持live，不因观察超时重启。Root uv.lock f7e1与未交接owner变更保留。原70组11/6/14/38/1不变，完整goal active。
+
+## R194 当前限定修复与真实失败
+
+- 会话与项目仍只有BFF唯一绑定；Move不复制Conversation/Message/File，不新增“项目会话”实体。Root已亲验Web真实Next/Chromium同scope四旅程：97553为1pass/3fail（迟ACK不GET、503/in_progress无同key恢复），same oracle771964与a3321eb4/8605365d修复后62663为4pass/0fail、69选择外未运行，27.29s；独审W1 0P0/0P1。完整Web首93813 lint失败，窄修后8560仍2479pass/1fail：R192 oracle晚取baseline，build未执行；前移到Project navigation前后Root57706同生产5pass/0fail28.99s；最终Root6435完整2480pass/0fail/0skip161.43s、contract258/arch50/lint/types/build0；UI B未提交且原3310未启用，不把fixture GREEN称用户整链闭环。
+- W2跨scope真实engine dispose丢冻结command/迟ACK仍全局P1；最小后继是页面内单槽非持久command恢复，不park完整engine，不创造绑定真源。verified主体复用现session probe→projectReadBoundary；actor/anonymous/logout/pagehide清理、双scope owner GET与storage失效尚待真实测试。
+- Agent四D0正式main c3bf769：已批准现终态同cursor封存/严格head验证方向，无DDL/wire/provider/Billing变化；源码候选实施中、未验收。Root25837/80363为recipe/typed字段fixture错误，99556另expiry oracle错误，均保留；修正后21678真实4业务fail/2finalizer owned lock expiry/cancel控pass，4.19s，source已限三现文件授GREEN，86131原六case6pass4.02s，但Root＋独审发现sealed SQL投影未全对artifact、合法authorization_denied误拒两个P1；原writer补同integration测试，source冻结待真实负控，尚不放行。自有数据库已回收/source hash相同，原错误收据保留。
+- IAB库存仅原tab1/app；getTab20秒超时kernel reset，未新增/操作标签。工具控制失败不是产品成功或失败证据。原45606/46036保持live，Root uv f7e1和未交接BFF/Billing修改保留。原70组11/6/14/38/1不变，完整goal active。
+
+R194收尾：Webtmp Bf1b5/Cf439c35只有clean apply-check，源码完整门是mixed冻结树，不跨证据冒认；Root五QA文档保持同一台账，未新建计划中心/目标。所有本轮Root测试进程已终态，Agent新增two-P1 test writer仍具名执行，source冻结；Root不stage子仓gitlinks/uv.lock或未交接owner文件。
+
+R194-A3b two-P1新增真实RED：Root88885自然exit1，10执行6pass/4fail，126选择外5.96s；三个schema合法投影漂移未拒绝、合法denied错误拒绝均实复现。test8ca77/source52add/61c/f7f冻结；manifest `T/kokoro-r194-agent-schema-hhshlagx/manifest.json` 自库absent/hashsame，catalog10校验0。原六正控继续通过不是新缺口通过；原writer仅补authorization SQL state与canonical bytes错配负控，source继续冻结、Root先验证再授GREEN。无永久进程/共享重置，完整目标及70组不变。
+
+R194-A3b auth一致性负控Root72070真实RED：test76d1冻结，11执行6pass/5fail，126选择外6.54s；追加SQL CHECK合法但typed denied bytes不符的state被错误接受。manifest `T/kokoro-r194-agent-schema-ev_8g_gd/manifest.json` 自库absent/sourcehashsame。后继R194-A3b-P1-GREEN派原Agent唯一writer，仅现model/call_evidence.py与infrastructure/postgres_model_call_evidence.py；test76d1/run_leases f7f冻结；补strict frozen authorization与全sealed投影，精确denied状态映射。Root资源/Git/独审，未批准DDL/provider/Billing/新文件；交付前不称修复，所有Root资源句柄终态。

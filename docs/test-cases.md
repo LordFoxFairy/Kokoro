@@ -1526,3 +1526,31 @@ R192终态：Root完整Web门2474通过/0skip，Agent完整真PG281通过/0skip�
 退出标准：本片当前代码与冻结hash资源门通过、独立审查无未解P0/P1，才接收owner局部切片。前端B已抽取但跨scope结果丢失/迟到ACK来源对账仍P1，尚未提交或同步3310；因此会话CRUD/所有页面/完整费用旅程不称闭环。原用户浏览器本轮清单显示1个会话页，getTab控制超时未操作成功，不把工具超时归因产品或称原tab恢复。
 
 R193 owner最终验收：Agent nine-path main2a9491e，81scoped/292full真实PG与2178默认/390资源deselected门均实跑，独审0P0P1/1P2；WebA21ad177 clean2434/3trueNext/build0。上述通过不关闭UI B的crossscope/lateACK P1、原3310Move及完整聊天费用业务；70组不自动涨数。
+
+## R194 T-C04/T-C05 同scope Move 系统验收
+
+复用原70组，不新增完成组；真实Next/Chromium＋严格HTTP owner fixture只证明Web交互，非原3310/真实BFF数据库链。冻结system771964、source a3321/860536。Root97553 1pass/3fail→62663 4pass/0fail（69选择外未运行），27.29s。R188-002历史“迟ACK不刷新”oracle由本轮纠正：不导航抢B但必须后提交GET，原失败与历史结果不删除。
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|执行状态/证据|
+|---|---|---|---|---|---|---|
+|TC-UI-R194-001 / 迟matching ACK与新active保全|正规Product session、Direct A/B、真实Next/Chromium、held Move响应|A移动P→切B输入草稿→记GET数→owner commit/release ACK→观察新GET/列表/URL/draft|ACK后新Direct GET仅B；A来源消失；B URL/草稿/焦点不被旧projection抢回，单POST|P1|主链、异步竞态、状态机|真实RED→GREEN；Root62663，非跨scope|
+|TC-UI-R194-002 / 已提交但socket关闭|同一scope，fixture先commit A→P再close响应|发Move→socket close→仅A显式Retry→比较第一次/第二次path/key/body→读取目标message|保原command，仅显式一次恢复，同Conversation ID/message history，不重建/复制，不发Run/model|P0|异常恢复、幂等、生命周期|Root97553与62663均PASS；same-scope，不冒新engine恢复|
+|TC-UI-R194-003 / typed503未知结果|正式typed business_store_unavailable503，原A可访问|A Move→503→菜单Retry→恢复matching ACK→比较wire|503不证明未commit；unknown可见，原key/body恢复，无mount/focus自动重发|P0|异常、状态机、边界|真实RED→GREEN，Root62663|
+|TC-UI-R194-004 / 幂等处理中|正式409 idempotency_in_progress|A Move→409→显式Retry→matching ACK|处理中不是终局拒绝；原key/body保留，single-flight且不抢其它active|P0|异常、幂等、状态机|真实RED→GREEN，Root62663|
+|TC-UI-R194-005 / 跨scope与身份清理|同subject两个Project；真实page engine生命周期；owner迟ACK/unknown可控|发Move→导航另scope→释放迟ACK/503→显式恢复→anonymous/subject变化/logout/pagehide；再次检查请求和所有列表|旧engine资源释放；原command跨scope仅人工恢复；双scope新GET、不抢页面；换身份零旧command重发，无持久绑定副本|P1|权限、安全、生命周期、异步竞态|OPEN/NOT_RUN；same-engine注入邻测不能替代；Web owner后继W2|
+
+Agent A3b新增四真PG case先执行25837：fixture assembly_recipe_bytes为None使4fail/126选择外未运行，1.21s；canonical catalog10检查通过，自库absent/sourcehashsame。此结果不是finalizer缺能力的业务RED，writer修fixture后须Root重跑，终态封存/真实收费仍未验收。
+
+R194完整门8560补记：system73例72pass/1fail；整体164files2479pass/1fail，175.43s；失败为既有R192用户链（Move→Direct返回/刷新→再打开Project）在新snapshot GET断言3==3，不是本轮四例被skip。build未跑。该交互仍FAIL/待根因，不按一次历史GREEN认定全Move通过；Root同冻结重复及独立只读根因调查继续。
+Agent fixture修正后21678实际6例4业务fail/2owned finalizer expiry/cancel正控pass，126选择外4.19s；数据回收/hashsame。A3b源码限现三文件实施中，provider/Billing链未验。
+
+R194错误oracle修正（不是删/弱化用例）：Project engine mount已经新GET，旧测试到route后才取baseline，点击已active A合法no-op，Root63137重复同错。前移baseline到Project navigation前且严格核原tuple，system222a6b；Root57706 R192＋四R194共5pass/0fail、68选择外28.99s，业务source不变。全门继续重跑，W2与真实3310未通过仍保持OPEN。
+
+R194完整Web收尾6435：contract258/architecture50/lint/types/build全部通过；164files2480pass/0fail/0skip161.43s。现mixed源码证据，不等于clean B+C或原3310；W2P1与原70业务统计未升级。Agent原sixcase86131 6pass4.02s后独审新发现sealed metadata投影不一致与authorization_denied误拒两个P1，必须追加真实PG正反控，不以sixcase全绿宣称穷尽或收费闭环。
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|当前证据与状态|
+|---|---|---|---|---|---|
+|TC-R194-A04：终态严格证据与数据库投影一致|真实PG owned schema、已sealed合法unknown证据|分别改SQL revision/head、call_id、合法usage/outcome投影而保canonical bytes；提交终态，读回model/public全快照|每项typed冲突；全事务回滚，无新Evidence/终态消息/费用推断|P1 / 安全、异常、状态机|Root88885三负控实际失败，缺完整projection校验，未验收|
+|TC-R194-A05：合法拒绝授权的sealed终态与重放|真实PG、canonical denied授权、not_dispatched sealed head|首次finalize后精确重放；核原event/bytes/完整快照|合法状态通过；原Evidence仅一份，重放不写新证据或变化预算|P1 / 主链路、状态机|Root88885实际误拒失败；原six case仍6pass，源保持冻结待窄修|
+
+|TC-R194-A06：授权SQL state与canonical bytes一致|真实PG、合法denied sealed head|只把SQL state/status改为CHECK允许的requested_unknown/not_dispatched，保denied bytes/digest，提交终态|typed冲突及model/public全事务回滚，不把拒绝授权误报为未请求|P1 / 权限、安全、异常|Root72070真实DID NOT RAISE，5fail/6pass；test76d1冻结，窄GREEN待Root复验|
