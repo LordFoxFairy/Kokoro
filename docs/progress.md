@@ -8696,3 +8696,16 @@ BillingD0独审41dc30eb两P1（closed error未固定、唯一SDKimport edge未�
 Agent报告最初由7月issue推定10月1.2.12未修，Root纠正：候选未实测不能下结论。报告修b0647729，公开API最小/tmpprobe待Root执行；独立temp venv只安装LangGraph1.2.12，不触原.venv/锁/provider/PG。安装Root83666已自然exit0；解释器现Agent14.3与Root项目requires<3.14的警告仅此独立探针环境，不冒Root/Agent正式全门。
 
 CUA getState20s timeout/kernelreset，无有效页面操作，不证明正在加载的产品因果或恢复。原launcher45606/Web46036实查live26h39m，未重启/关闭用户窗口。所有共享基础设施、Rootuv f7e1、旧dirtybody/codec保护；新任务卡仍同docs/task.md，无另造计划中心。
+
+
+### R201 本次Root结果收口与用户进度核对（2026-10-04）
+
+goal重新实读active，同完整目标；Root起始7dffe351，未更新owner gitlinks/发布或重启3310。当前候选、正式commit与运行页三层分列，不报猜测完成率或上线日期。
+
+Billing Root92427独立clean完整verify/generated0，1148pass/411资源skip26.35s，源hash前后同；两P1新反例真实RED2fail/1pass后修复3pass。actual系统Root94978自然exit0，11/11含real IAM Code+PKCE/tenant machine授权与compiled Billing production adapter、真实membership撤销、两绑定拒绝、各有限终止/无自动重试；代理503/stall只是网络故障注入，不冒IAM主动503。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-billing-actual-567amca2/manifest.json`，每例physical_requests=1、resources_restored=true、host_exit=0。没有Billing账务事务/充值/预占/结算/释放，adapter候选尚未提交，不关资金组。
+
+IAM host初次ready-stop资源恢复但等待自然退出30s失败；writer仅close readline/pause stdin后Root74712五真实生命周期全部通过（ready stop/EOF/SIGTERM/startup stop/startup SIGTERM）。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-iam-host-life-68yrt277/manifest.json`，原失败kar3odl6留存。正式生产/contract/schema不改。
+
+Agent SDK独立对照Root53049：1.2.12/core1.4.7/sdk0.4.5，其余固定，实际native原41fe取消测试仍2pass/1fail3.54s；own DB absent/source同，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-native-latest-result-eds5ltax/manifest.json`。原应用.venv/lock/生产未升级。Root18206原锁版本test11ad透明tracer3pass80warnings3.28s，但prepare任务在consumer取消后仍pending、cancelling=0；这是调度敏感诊断，不是取消生产修复。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-trace-uw16hm6t/manifest.json`，database_absent/source_hashes_equal true。
+
+两个最后运行句柄已消费，所有本轮测试有限退出，无新增永久服务；原45606/46036实查live约27h。全70仍11通过/6失败/14复测/38未验/1支付最后；用户页面/module完整验收缺口不因局部通过缩减。

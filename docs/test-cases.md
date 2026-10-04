@@ -1641,3 +1641,13 @@ T-C05项目删除按用户“参考ChatGPT”批准语义收敛：项目会话/�
 ### R201 IAM授权前置证据（不提升系统用例状态）
 
 IAM0537真实billing authorization HTTP16pass/0fail，Root49764，manifest `T/kokoro-r201-iam-billing-alsk5tbv/manifest.json`；own DB/Redis清理、source不变。Billing production adapter/Admission/预占/Agent dispatch/evidence/实际结算尚未组合，T-B03–B07保持原状态；cancel late prepare仍RED。70组11/6/14/38/1不变，局部owner16不是16组用户旅程通过。
+
+
+### R201 系统授权前置增量（不提升完整70组）
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
+|---|---|---|---|---|---|---|---|
+|TC-BILL-R201-001|正规IAM授权与归因绑定|真实IAM billing fixture、Code+PKCE消费token、tenant machine、compiled Billing adapter|分别user/project/organization/service授权；换tenant/user；撤销本人membership后重用token|合法归因均绑定真实payer；错绑定与撤权拒绝，单次物理验证，无secret输出|P0|系统主链、权限、生命周期|Root94978相应7例通过；非实际积分/账本，通过不关闭T-B04/B06/B07|
+|TC-BILL-R201-002|授权异常有界收口|同上；Root owned网络故障代理|503、stall至期限、caller取消、module shutdown|无自动重试；闭集UNAVAILABLE/ABORTED/SHUTTING_DOWN，无挂起，资源恢复|P0|异常、取消、状态机|Root94978相应4例通过；总11/11、每例physical_requests=1，host_exit0/resources_restoredtrue；仅adapter|
+|TC-IAM-R201-003|测试host退出与资源生命周期|真实IAM owned fixture；共享PG/Redis仅观察|ready stop/EOF/SIGTERM、startup stop/SIGTERM|不提前exit泄漏自有库；cleanup后自然结束；共享inventory不变|P1|系统异常、资源生命周期|首次ready-stop真失败保留；Root74712修后五例PASS，test-only不冒正式登录通过|
+|TC-AGENT-R201-004|实际native取消版本对照|正式PG/DeepAgents native链、原41fe oracle、独立固定候选SDKenv|等待prepare真实锁→取消invoke并等返回→释放锁→完整快照核对|取消后的model operation有限停止，无晚prepare写|P0|系统取消、数据一致性|1.2.12仍真实FAIL（2pass/1fail）；原锁tracer三例PASS但prepare仍pending，仅诊断调度变化。生产未改，本用例不关闭|

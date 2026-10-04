@@ -8424,3 +8424,16 @@ Root 当前fresh IAM16 HTTP用例通过仅证明IAM owner授权前置；BillingA
 R201-IAM-support 放置门：复用已通过的IAM正式Nest/BetterAuth billing:true fixture，唯一新test/fixtures/billing-authorization-host.ts负责私有NDJSON生命周期与撤权控制；现Web OIDC host不改（其协议严格闭集且默认无billing），淘汰Billing sibling fixture import/伪JWT。无生产contract/schema/runtime变更，引用IAM现三面billing授权章节即可；前三D0首节补一句当前test支持位置/不等于用户资金闭环。Root system driver沿现scripts/e2e，单一IAM owner test控制，不造新运行服务。启动期间SIGTERM须等实际fixture创建后close，不得立刻process.exit泄漏尚未知ownedDB；同一closing promise，默认不输出任何日志或credential。正常stop、EOF、SIGTERM真实资源门均由Root执行。
 
 |R201-IAM-support / P1|web_page_qa_owner，唯一IAM test/docs writer；0537 clean|仅新test/fixtures/billing-authorization-host.ts与现TECH/API/DATA前三面首节当前支持注释；按上述生命周期修/tmpcandidate后落文件；不生产/contract/SQL/package/lock/Git/资源。Root重跑格式/type/architecture/真实host三生命周期与Billing consumer系统链|
+
+
+### R201 当前任务核对补记（2026-10-04）
+
+本次goal实际active，覆盖R201此前blocked当前态表述，历史不删。三个原负责人已完成当前候选交接/冻结，无后台writer；Root独占资源、审查和提交。Billing writer交接12路径、IAM writer交接host及三D0前缀，Agent writer仅现runtime-chain测试透明tracer（11ad62f）及既有四D0；所有任务外变更保留。
+
+|既有卡|本次实际终态|剩余完成条件|
+|---|---|---|
+|R201-Bill-A|Root独立clean完整工程1148pass/411资源skip，实际IAM→compiled consumer 11/11；独审两P1已闭合|精确12路径提交仍待Root；仅adapter可验收，Admission/hold/settle/release和账本用户链另续原owner|
+|R201-IAM-support|第一次ready-stop真失败；窄修后五生命周期实际通过，cleanup正常；真实Billing消费11例自然终态|最终格式/类型与精确提交待Root，不把test支持当产品完成|
+|R201-A4-probe|旧/新公开API探针与实际native对照已执行；最新版native仍2pass/1fail|升级非修复；保持原失败，收敛最小有界model-node取消/drain，生产未授权|
+|R201-A4诊断续片|原writer仅现test11ad透明prepare tracer，Root18206三例通过但内部prepare仍未终止|诊断非GREEN修复；不得用调度变化关闭原取消失败或提升资金组|
+|R201-root|94978/18206均已消费自然exit0；owned测试资源恢复；3310原两PID live|后继源冻结后重跑失败oracle、owner系统、实际浏览器与金额对账；不伪造上线/整体完成|
