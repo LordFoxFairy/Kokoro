@@ -8709,3 +8709,15 @@ IAM host初次ready-stop资源恢复但等待自然退出30s失败；writer仅cl
 Agent SDK独立对照Root53049：1.2.12/core1.4.7/sdk0.4.5，其余固定，实际native原41fe取消测试仍2pass/1fail3.54s；own DB absent/source同，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-native-latest-result-eds5ltax/manifest.json`。原应用.venv/lock/生产未升级。Root18206原锁版本test11ad透明tracer3pass80warnings3.28s，但prepare任务在consumer取消后仍pending、cancelling=0；这是调度敏感诊断，不是取消生产修复。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-trace-uw16hm6t/manifest.json`，database_absent/source_hashes_equal true。
 
 两个最后运行句柄已消费，所有本轮测试有限退出，无新增永久服务；原45606/46036实查live约27h。全70仍11通过/6失败/14复测/38未验/1支付最后；用户页面/module完整验收缺口不因局部通过缩减。
+
+
+### R201 用户整体进度核对补记（2026-10-04，Root现场核对）
+
+本次只核对当前目标、Git、具名收据及逐页矩阵，不重复全仓工程门，不新增页面恢复或资金成功声明。当前goal实读active。全部checkout本地/已抓取远端引用仅main；main-only脚本整体exit1的原因是Root/Web/BFF/Agent/Billing有未提交修改，不是多余分支。实际topology FAIL：Agent、IAM、Billing三处HEAD与Root gitlink不一致；不更新gitlink伪装组合已发布。原3310 launcher45606/Web46036实查live，运行副本未自动升级全部新切片。
+
+- Billing正规IAM authorizer已精确提交76da5a895d7dbbc26a305b268bfeacfb0ebf737b；12路径提交收据worktree_bytes_preserved=true，原D0正文/codec等任务外变化保留。此前Rootclean完整工程1148pass/411资源skip与实际IAM→compiled adapter11/11仅证明授权前置；没有赠送/预占/结算/释放财务事实。
+- IAM测试宿主已精确提交c9a9872c74484c6e96116292120d21f97e30fa7f；四路径，工作树字节保留。Root4276格式/类型通过，architecture53/53；此前五实际生命周期与11实际消费例通过。不是所有登录、安全、团队页面完成。
+- Agent生产59034未修取消缺陷；Root57435在stable test01d3释放锁后等待真实prepare结束，实际2pass/1fail3.68s。原外层取消、内部后写被稳定观察，自有DB absent/source_hashes_equal=true。四D0有限收束设计已冻结，不能把设计冻结当实现完成。
+- 用户功能仍沿原70组：11通过、6失败、14待复测、38未验、1支付最后。其中通过组包含工程门和限定后端切片，不是产品完成率。当前登录正向/会话及项目刷新/普通会话改名有限定实际证据；全部CRUD、异常恢复、私有分享、任务、过程/审批、Skills/MCP、Library/作品及正式费用尚未取得完整用户验收。
+
+当前进度差距分为三个面：owner基础能力局部可验证；消费者及本地运行装配未齐；逐页系统验收覆盖不足。下一完成标准仍是原失败路径修复→正式owner装配→浏览器主链/边界/异常/权限/状态机与费用对账，不靠历史测试数量或文档状态结案。源码commit/资源manifest见同轮CURRENT与task；没有可靠依据报完整上线日期。

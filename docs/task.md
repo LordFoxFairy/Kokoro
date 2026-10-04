@@ -8437,3 +8437,34 @@ R201-IAM-support 放置门：复用已通过的IAM正式Nest/BetterAuth billing:
 |R201-A4-probe|旧/新公开API探针与实际native对照已执行；最新版native仍2pass/1fail|升级非修复；保持原失败，收敛最小有界model-node取消/drain，生产未授权|
 |R201-A4诊断续片|原writer仅现test11ad透明prepare tracer，Root18206三例通过但内部prepare仍未终止|诊断非GREEN修复；不得用调度变化关闭原取消失败或提升资金组|
 |R201-root|94978/18206均已消费自然exit0；owned测试资源恢复；3310原两PID live|后继源冻结后重跑失败oracle、owner系统、实际浏览器与金额对账；不伪造上线/整体完成|
+
+
+### R201 冻结收口与下一切片（Root062e7242，2026-10-04）
+
+|任务|归属/Agent/基线|范围与完成条件|
+|---|---|---|
+|R201-A4诊断收敛|Agent59034+test11ad；agent_mainline_qa_owner只读|核Root18206 prepare pending与原41fe/最新SDK失败；仅/tmp最小修复设计与真实PG稳定oracle方案。不得改生产/test/D0/锁/启动资源/Git；先证明原失败未因tracer漏等待隐去，给finite cancel/drain与异常单次消费明确边界|
+|R201-Bill-A提交→Admission D0|Billing26aeec+冻结12paths；agent_prepare_final_review只读|先修/tmp handoff剩P2夸大措辞（不改仓）；原TECH/API/DATA与canonical、published contract、Nest装配核正式Admission事务下一最小§8方案/系统测试矩阵。Root提交adapter前不得改仓；不旧Fastify兼容、不财务SQL扩权/资源/Git|
+|R201-IAM-support独审|IAM0537+host048b；web_page_qa_owner只读|冻结host及三D0与Root五生命周期/11系统实际manifest；确认唯一cleanup、startup/EOF/signal、strict controls/secret-safe，无生产变更。只/tmp审查，不跑资源/Git/改仓|
+|R201-Root收口|Root唯一writer/Git/资源|IAM最终format/types/architecture；Billing clean candidateSHA/Root全门与真实IAM门已通过，精确12paths及IAM4paths提交，不夹原mixed/codec/D0旧正文。当前3310保留。完整70统计不升|
+
+
+R201-A4-STABLE-RED 放行：Root核prepare与invoke为不同task，当前tracer在真实writer未settled前读快照，会错误通过。仅原agent_mainline_qa_owner写现 `tests/integration/database/test_model_call_runtime_chain.py`：透明tracer加finally finished Event，显式保留同5s repository operation budget，不改变原lock/oracle/provider/checkpoint断言；blocker释放后按该有限bound等真实prepare结束，再读原快照，同时校验取消结局。finally精确消费真实prepare/invoke残留，不扫全局task。生产/D0/SQL/lock禁止；Root重跑真PG业务RED，后续scope生产片未放。
+
+
+R201-Bill-Admission-D0 后继：Root已精确提交authorizer `76da5a8`（12paths）与IAM test支持`c9a9872`（4paths），工作树原字节均保留。Billing原agent_prepare_final_review唯一writer，仅在现TECH/API/DATA新建Admission当前设计前缀，旧五D0正文/三codec保留；contract/SQL/source/generated暂禁。依据/tmp/kokoro-r201-billing-admission-next.md核目标create与capture/release四状态及pricing snapshot字段一张一致表、真实rate/policy配置/validity/pricing读取路径、固定usage-profile/execution-bound验证，不以伪fixture quote或旧quantity=1冒正式。三面冻结后Root审批schema/contract/core exact切片，设计阻断报告明确。
+
+R201-A4有限收束审查：原web_page_qa_owner只读核Agent现Supervisor取消/worker drain，按已批准原则专用model_call_settle_timeout_s、首次固定绝对deadline、late注册拒绝、恰一次异常消费、timeout触发stop-accept+fatal fail-stop而不伪task结束；实际API/调用点/最小闭集与状态机到/tmp。无源码/测试/D0/资源/Git写入，不把进程级生命周期变运维扩展。
+
+
+R201-A4-SCOPE-D0 Root统一裁决（不是任意部署前置）：采用invocation-local ContextVar，独立`model/call_scope.py`只登记middleware真实current_task并保留到node done；不是Factory/Dependencies/Supervisor全局registry。正常/异常/取消均在seal/terminal前finite join；专用默认5s正有限预算（单一常量，普通embedding API允许合法默认，生产main/Supervisor显式传config；默认不是旧兼容fallback）。首次固定deadline，重复cancel不延长；晚登记cancel+CancelledError、零SQL。timeout typed fatal跳过run_failed、sandbox/handle cleanup和虚假lease释放，Supervisor先停止接活再由main注入应急os._exit(70)有限中断当前worker所有权；只在不合作owned task超过预算触发，正常SIGTERM仍原graceful。不得无限等外部ops、发免费/known-zero或声称task已停。Root原writer仅四D0当前prefix同步此设计，旧body保留；核心scope/config/supervisor/tests写集待Root三面门通过再放。规范附属常量/error/state都只服务同一scope生命周期，不新万能目录/别protocol。
+
+### R201-A4-SCOPE 生产实施放行（Root，2026-10-04）
+
+Root已读当前四D0和production入口，核Agent59034、四SHA5c8cd60b/e5c854a3/8eb1b06a/3388fcf2及stable01d3一致；独审`/tmp/kokoro-r201-agent-scope-d0-independent-review.md`为0P0/0P1，仅规格通过。既有真实PG oracle2pass/1fail保持，源片由原owner测试先行，不再重复设计。
+
+|任务|归属/Agent/基线/提交|精确范围及验收|
+|---|---|---|
+|R201-A4-SCOPE / P0|Agent，agent_mainline_qa_owner唯一writer；main59034，现四D0+stable01d3保留；Root独占Git/资源|TECH首节批准11 production/config及9 tests闭集；四D0仅当前前缀更新实际结果。ContextVar exact node生命周期、固定finite join、单次exception消费、三路seal前settle、late拒绝、typed timeout/stopaccept/main emergencyexit70。无SQL/wire/provider/SDK/锁/其它仓改动；原stable DB/checkpoint/provider oracle不得删除或放宽。先交最小freeze供Root真实PG与fatal subprocess复验，再全owner门/独审/精确提交，不以pure或D0通过标业务闭环。|
+
+Billing Admission字段收敛研究已到，Root裁决目标删除body producer与无持久owner的execution_id，invocation_id统一复用现request_ref，不新造执行/绑定实体；仅D0后继，不是已修改或发布contract。finite bound须来自每实际model attempt意图，真正限制完整模型input/output及分类计价上界，不能用Run总budget/字符数/推测token替代。无具体可靠input-bound方法时明确failclosed或限定受支持provider，不凭设计文字放行收费。

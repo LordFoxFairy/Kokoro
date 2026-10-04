@@ -6,7 +6,7 @@
 
 [当前 PRD](kokoro-handbook/product/09-v2-prd.md) 已替代七月旧草稿，明确完整 Wave0–7、会话/project_ref/独立任务、权限、真实费用、各用户路径与三交付里程碑。00长期范围与01/05/06/07已同步；不新建计划中心，不承诺未接通Studio或额外前端。Root逐条展开覆盖现70组，无遗漏/新增，205本地链接最终0失效；初门发现README两个旧路径，修后重跑。独审1fc11804为8文档一致性0P0/P1/P2，不算用户测试通过。Root拓扑脚本测试7pass0.03s/diffcheck0；实际topology历史两gitlink mismatch及全治理失败不据此关闭。
 
-关键开发链仍开放：Agent取消后完整prepare写入的真实RED仍未修；生产59034保持；原41fe取消失败保留，现11ad诊断测试不代表生产修复。Billing26aeec仅IAM制品门，目标Admission本地事务/运行装配尚缺，不能把旧caller payer链当目标链。两个独立后继继续原owner，Root统一审查/验证；Agent D0独审另发现两个P1：整体node退出预算与done异常取回未闭合，生产不放行。具体日期尚无可靠估计基础。当前3310原45606/46036实查live，未重启/清数据。70组仍11通过/6失败/14复测/38未验/1支付最后；当前后继与goal状态以R201段为准。
+关键开发链仍开放：Agent取消后内部prepare继续写入的真实失败仍未修；生产59034保持，最新01d3测试等待真实写入结束后Root57435为2pass/1fail，旧11ad诊断通过不代表修复。Billing正式IAM authorizer窄片已提交76da5a8，实际IAM→编译后的Billing适配器11/11；IAM测试宿主切片已提交c9a9872。目标Admission本地事务、正式预占/结算/释放及运行装配仍缺，不能把授权通过或旧caller payer链当资金闭环。Agent四D0有限收束方案已冻结，生产实现尚未验收；两个独立后继继续原owner，Root统一审查/验证。具体日期尚无可靠估计基础。当前3310原45606/46036实查live，未重启/清数据，未自动启用全部新切片。70组仍11通过/6失败/14复测/38未验/1支付最后；当前后继与goal状态以R201段为准。
 
 ## 1. 唯一计划与质量入口
 
@@ -21,8 +21,8 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `ce40cecc4071a6dd775730f6e32619d2cfc130b4`：W2仅17路径已验窄提交；原19mixed保留，未push、原3310未启用Move|Root17297独立clean候选：contract258/architecture50/lint/types/build0、165files2459pass/0fail/0skip125.05s；tree a46941cf与已验candidate17文件逐SHA一致。四个真实Next浏览器旅程通过属于fixture；当前3310旧public7.0/noMove，原用户真实绑定链仍待验。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3`；19路径未交接mixed保留|Root57207 clean正式提交：173真实PG/Redis通过/0skip38.4399s，743pure+1既定资源skip，schema/build/check/format0；public7.1 Move已挂载。此前mixed候选184不是正式8e33证据；Project DELETE/Storage/独立任务政策与当前3310消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `59034f48333f9efeae25fa7f18f6e422f066949e`：17路径原生guard已验；R199原test41fe真实取消RED保留；R201 test11ad仅诊断未提交|R198 Root50248：304真实PG、2182默认pass/416资源deselected，lock/frozen/Ruff/Pyright/contract/build0；仅main缺Billing负例provider0。R199 Root98757全PG305pass/1fail44.89s：取消后完整prepare后写，当前不放行，未继续默认工程/build；正式授权/成功provider/其它caller/费用链OPEN。|
-|其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing26aeec6（experimental.2契约及IAM owner artifact窄片本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
+|Agent `apps/kokoro-agent`|main `59034f48333f9efeae25fa7f18f6e422f066949e`：17路径原生guard已验；R201 stable test01d3与四D0未提交，生产未修|R198 Root50248：304真实PG、2182默认pass/416资源deselected，lock/frozen/Ruff/Pyright/contract/build0；仅main缺Billing负例provider0。最新Root57435真实PG定点2pass/1fail3.68s，确认取消后内部prepare继续落库；自有库回收/源码hash同。此前全PG305pass/1fail保留；正式授权/成功provider/其它caller/费用链OPEN。|
+|其它运行owner|IAMc9a9872、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing76da5a8（experimental.2及正式IAM authorizer窄片本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
 
