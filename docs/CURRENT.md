@@ -13,7 +13,7 @@
 
 |Owner|当前基线/候选|当前可证明范围|
 |---|---|---|
-|Web `apps/kokoro-app`|main `a75345fc7eb12f8bea8d9ab02b8d65697d1b42b6`：正式A之后B+C仅26路径窄提交，mixed剩余字节保留；未push、原3310未启用Move|Root22469 clean21ad+B+C：contract258/architecture50/lint/types/build0、164files2463pass119.94s；commit tree04bd2f与已验候选完全一致。仅同scope绑定反馈与unknown原key恢复，W2跨scope/actor/storage仍P1，当前用户运行页不冒通过。|
+|Web `apps/kokoro-app`|main `ce40cecc4071a6dd775730f6e32619d2cfc130b4`：A/B+C之后W2仅17路径已验窄提交；原19mixed保留，未push、原3310未启用Move|Root22469 clean21ad+B+C：contract258/architecture50/lint/types/build0、164files2463pass119.94s；commit tree04bd2f与已验候选完全一致。仅同scope绑定反馈与unknown原key恢复，W2跨scope/actor/storage仍P1，当前用户运行页不冒通过。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
 |Agent `apps/kokoro-agent`|main `814e92905991c2aa6d68b000cd8f81c2d550a93f`：A3b8c08ea4＋SDK retry窄片六路径；Root gitlink未更新|Root54838全真实PG303pass/0skip39.35s、自库absent/sourcehashsame；94228工程2178pass/401资源deselected112.57s，lock/frozen-sync/Ruff/Pyright/contract/build0；77055文档后contract/build0；12191已安装wheel六模块真实origin/contract0。只到内部事实，provider/Billing/用户费用链仍OPEN。|
 |其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
@@ -134,3 +134,5 @@ Web W2原writer实施中，尚未冻结/主验；Agent并行仅native SDK隐藏r
 R196新主验：BFF正式clean8e33完整173真PG/Redis0skip、743pure＋1既定skip及schema/build/check/format0，自有DB已回收/sourcehashsame/Redis键同；不是历史dirty候选184或3310启用。Web同冻结三R195仍3fail（35.97s），原writer窄修中；Agent五构造禁SDK隐式retry后14真实loopbackHTTP行为pass（1.15s），完整工程/独审/提交待验，不冒外部provider或积分闭环。完整70组统计与goal不变。
 
 R196后继提交：Agent retry片已Root限定验收并精确六路径提交814e929（五构造retry0、新真实SDK协议integration、四现D0）；14 HTTP sandbox+完整2178默认/Ruff/types/contract/build0，415资源未执行、5/795既有warnings不隐去，PG本轮未重跑。Web93393二次冻真实Next1pass/2fail45.92s：typed503 exact retry→目标会话原消息通过；另matchingACK返回B重复GET3!=2、lostACK URL正确但原Message未渲染，原writer继续窄修，systemf7b277冻结。三新增导航/pagehide/version P1静态已关（独审e9e20），不代两真实用户旅程通过。
+
+R196最终当前：Web正式W2源码ce40cecc已Root精确17路径提交（tree a46941cf），clean a753+f0fd64e7候选Root17297完整通过：contract258/architecture50/lint/types/build0，165files2459pass0fail0skip125.05s；独审cc92ad无P0/P1/P2，原28changed files bytes全同、共享index空，剩余原19mixed未夹带。对应mixed四真实旅程Root1993已4pass26.52s，clean完整门含其业务执行。临时clone node_modules/.next已回收。旧full15820回归及90629抽取错误保留，不称此前通过。下一是Root干净组合发布/原用户浏览器实际绑定、登录、刷新及收费链验收；当前永久3310仍旧public7.0/noMove，用户页面未冒更新，完整70组与goal不升。

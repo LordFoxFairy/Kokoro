@@ -101,6 +101,6 @@ python3 -m pytest scripts/tests
 
 ## R196 候选接线与验证范围（2026-10-04）
 
-- Web `apps/kokoro-app/src/ui/shell/conversation-move-coordinator.ts`：候选唯一document-memory Move命令，session/project归属仍BFF唯一事实；`page-clients.ts`只失效浏览器metadata索引。未正式提交/启用3310；独审三P1与Root真实Next导航失败待修。旧engine Move路径在本候选删除，不增加Message/Project实体。
+- Web `apps/kokoro-app/src/ui/shell/conversation-move-coordinator.ts`：候选唯一document-memory Move命令，session/project归属仍BFF唯一事实；`page-clients.ts`只失效浏览器metadata索引。正式17路径ce40cecc已验提交；三P1/导航与full回归经Root闭到candidate，原3310尚未启用。旧engine Move路径在本候选删除，不增加Message/Project实体。
 - Agent `apps/kokoro-agent/src/kokoro_agent/model/factory.py`：五实际SDK构造main814e929显式retry0，`tests/integration/test_model_provider_retries.py`以锁定SDK→自有HTTP peer验证物理请求数、stream与取消；Root14行为通过，仅sandbox，不冒真实费用。后续A4仅原生AgentMiddleware.awrap_model_call，非BaseChatModel代理；Billing正式准入/证据读ACK/结算未接。
 - 当前formalBFF8e33 clean archive Root完整173真实PG/Redis门；候选工作树184历史结果不等于formalcommit覆盖。原3310仍public7.0/noMove，clean组合发布必须另验证，不散复制混合树。

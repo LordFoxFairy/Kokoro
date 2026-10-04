@@ -1582,3 +1582,9 @@ W01首轮65252在B GET尚未完成前立即断言是测试oracle问题，与真�
 独审c641a1补充三P1尚未关闭：pending Move后同scope New Chat迟ACK抢导航；BFCache第二pagehide不revoke；scopeVersions无界/主体切换未reset。需各行为RED→最小源fix→Root复验，不以已有14/84/103数量冲销缺口。
 
 R196最新复验93393：TC-R196-W03已在本候选真实Next/strict BFF fixture完整通过，尚非3310 live owner验收；W01加原10s网络poll后暴露返回B三GETvs预期二，源失败继续OPEN；W02准确URL/query后原Message未显示，继续OPEN。独审新增三导航/生命周期P1静态已修，真实浏览器专项未新增关闭。TC-R196-A01由814e929六路径提交，完整工程2178通过及独审0P0/P1，未关闭真实模型/收费测试组，70统计不升。
+
+R196 Root42824最后真实Next三case全部3pass24.49s（19路径冻结hash）；TC-W01/W02/W03在strict BFF fixture级当前候选均通过，including source/targetcanonical tuple、返回B只一次GET、exactretry后的原Message和URL。完整门15820待验，formalclean release/live owner未启用，因此不升级70整体组或原3310状态。
+
+R196完整回归15820：新增三旅程通过，但既有R188‘未知Move切到B后重试A仍保B’失败，整体Web未放行；需retry遵守当前显式selection，仅无canonical selection/当前命令会话才随绑定导航，不抢B。2475pass/1fail、build未执行，原案例不弱化，下一四trueNext＋完整门。
+
+R196最终正式切片：Webce40cecc基于clean候选17paths完整2459pass0skip125.05s，contract/architecture/lint/types/build0；独审0P0/P1/P2，包含旧R188显式B选择保护和三R195system业务旅程。此是formalcommit+真实Next/strict owner fixture，不是原3310 live BFF/真实费用；TC-W01/02/03到候选层已验，70组11/6/14/38/1仍不改变，live复验另明确任务卡。

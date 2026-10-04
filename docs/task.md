@@ -8231,3 +8231,18 @@ R196主验续记：BFF clean formal8e33 Root57207自然exit0（173真实PG/Redis
 R196-A4-Retry Root限定已验收：完整23752及最终50267 contract/wheel/sdist0；独审e66c10为0P0/0P1/1P2。Root亲读四D0并把TECH标题明确Retry已验/Middleware仍设计，精确六路径提交814e92905991c2aa6d68b000cd8f81c2d550a93f，Agent工作树clean；未更新Root gitlink冒组合发布。
 
 R196-W2 Root93393二次冻真实Next1pass/2fail45.92s：typed503人工samekey重试到目标原Message已过；4034oracle用原10s poll保数字后发现3!=2重复GET，4152lostACK准确URL但Message不显示，源修退回原writer。systemf7b277冻结；独审e9e20确认三新增静态P1已修，不代表这两旅程闭环。继续R196-W2-repair原同writer/原窄source集，不增加新计划中心或绑定实体。
+
+R196-W2-final Root42824真实Next三旅程3pass24.49s，静态复审0cd739无新P0/P1；Root15820完整Web门进行中。scope refresh仅最近pair ref，当前target scope显式hydrate精确session，系统f7b277不变。原writer只/tmp抽取W2-only clean a753增量，保护原mixed19，Root后续clean候选完整验收才提交/更新release；原3310及整体70组未宣布完成。
+
+R196-W2-full Root15820暴露旧R188真正回归（2475/1，build未执行），退回原writer仅AppFrame retry-current-selection guard；原R188/R195冻结，tmpclean导出暂停。新三case不取代旧旅程。Root不放弃完整门、不以扩大unknown业务或改断言清零。
+
+R196-W2-selection Root1993真正四case4pass26.52s（AppFrame08a661/systemf7b277），包括旧R188显式B选择不被抢与三跨scope完整恢复；独审5a4379静态无新P0/P1。原writer交W2-only69f50c16paths，Root37112独立APFS锁定deps clone准备0；Root逐16 baseline/final hashes与applycheck/apply0，Root90629正在clean a753+窄patch完整门。无需再跑重复mixed全门，final candidate必须自己通过，不借用原mixed证据。
+
+R196-W2-clean-extract Root90629 types真失败（两缺admitBrowserContext），69f50c暂不集成；原writer仅/tmp补必要正规RP cookie helper、engineINDEX旧名及D0 listener精确措辞，新patch/hash后Rootfreshcandidate完整门。不得删case/skiptypecheck/夹mixed authbackchannel，无生产源改动。
+
+R196-W2限定已验收：new f0fd64e7/17paths Root17297 clean完整2459pass0fail0skip125.05s＋contract258/arch50/lint/types/build0，独审cc92ad无阻断；tree a46941cf与已验候选逐17SHA相同，Root精确提交ce40cecc4071a6dd775730f6e32619d2cfc130b4，保28原changed bytes、剩19mixed及index空。旧69patch缺helper/full15820回归保留，非法旧patch不可集成。Root自有clone node_modules/.next已回收，manifest/source/log保留。
+
+|后继任务|Owner/权限|依赖与边界|完成条件|
+|---|---|---|---|
+|R196-W2-live / P1|Root独占组合Git/资源/浏览器，worker不写服务|ce40 Web、8e33 BFF、0537 IAM已验源码；原根gitlinks与共享dirty不一致，须干净精确release，不重置/夹19mixed；Agent814e与Billing正式费用链保持独立|正式Root发布身份/消费者PIN校验后重建唯一3310，再原浏览器正规登录→Direct/Project Move同ID/原消息→unknown人工retry→刷新，记录真实live evidence；不得拿fixture或static通过关闭|
+|R196-A4-runtime / P1|原Agent owner依原四D0与后续tests-first卡；Root跨owner裁决|SDK隐藏retry已814e关闭；原生middleware仍未装配，Billing正式artifact/read/ACK未完成；不同owner依现Wave顺序并行可推进|逐physical attempt授权/evidence及actual-only结算、release/ledger真实链，支付渠道最后，不创建假grant/免费路径|
