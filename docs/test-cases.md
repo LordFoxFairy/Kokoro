@@ -1,3 +1,14 @@
+## R180 / T-U04 原会话持续加载：当前系统验收记录
+
+原70组统计不变。原用户首屏仍失败/开放，不以同步、构建或其它fixture关闭。
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级/类型|实际结果|
+|---|---|---|---|---|---|
+|T-U04-R180-CURRENT / 当前可见原标签|原3310、原帐号与conv_ffd7，不清cookie/聊天|读取selected标签→DOM→原标签reload→正文/编辑区|不是永久loading；正文与输入可用|P0 / 主链路、状态机|selected=tab1；DOM4s超时，reload15s超时；未证明刷新或恢复，FAIL/OPEN|
+|T-U04-R180-ANON / 真实匿名登录链|同一运行服务，无cookie独立请求|GET session→GET原app，核follow redirect最终HTML|匿名进入正式IAM表单，不假授权工作区|P0 / 权限、主链路|session22ms200 anonymous；app132ms最终正式IAM表单；仅HTTP匿名链，不证明原用户UI|
+|T-U04-R179-CANDIDATE / 已审认证开发候选|冻结3source、原运行副本精确旧hash|备份→同步→新旧hash验证；独立build；完整check|准确记录范围及真实失败，不混入其它dirty|P1 / 回归、配置|三hash一致、build0；完整check2435pass10fail，均R170 Move待实施。未发布/不关闭原用户FAIL|
+|T-U04-R177-HANDOFF / 无可见重试中转|真实Next/Chromium、正规认证fixture与受控HTTP故障|hold匿名native→零业务safe shell→release原请求→真实302/302/303→新app/reload/输入|零owner泄露、一次login、正式回链、输入启用；不复活整页Retry|P0 / 异常、安全、状态机|Root50681严格1pass34.19s；旧R165不合新PRD oracle已正式退役，历史失败保留。不是原3310用户页面|
+
 R176补充：T-U04因果对照在原生pending导航下观察通道超时但纯HTML heartbeat继续，原R165仍红/原IAB恢复未证；Storage producer发布14f2/BFF consumer8e33已固定门验证，只解除contract前置，不代表T-C05本地删除/worker或T-F03外部资源/全链已通过。完整70组状态保持。
 
 R175 T-U04补充（非整体验收）：serverAdmitted→focus anonymous真实RED1fail已得到，AppGate匿名无整页loader修复后Root86705 Node22六相关真实Next/Chromium病例通过（R175+R147/R150），auth15/lint/types/build0；已窄同步原3310。原25实际DOM读取仍14s超时，用户原页恢复未证；原R165保留，完整60矩阵31815实际59pass/1fail/98.16s，唯一R165恢复门失败，不改70组整体状态。
@@ -1237,3 +1248,22 @@ docker run -d --name kokoro-minio -p 9100:9000 \
 - custom backend（ADR-010 BYO）：`pkg.module:factory` 引用自带实现，契约/加载/生命周期绑定已单测钉死；BYO 实现本身的正确性归其作者。
 - state 盘档（backend=state）：诚实降级无文件面，snapshot.files=[]。
 - trace-verify 依赖自托管 langfuse，默认 SKIP 不算失败。
+
+
+## R182 原用户加载故障：真实帐号 HTTP 边界，未冒浏览器恢复
+
+- 原用户会话 conv_ffd7 保持 T-U04 P0 FAIL/OPEN。Root IAB确认 selected tab1；Page.stopLoading 在焦点准备超时，冗余tab关闭调用也超时，均未取得成功状态。未新增页面、重启共享组合、清浏览器/PG/Redis数据；原45606/46036 live。原页缺同document DOM/网络证据，不能归因为React、网络或IAM。
+- 原Web负责人只读 /tmp/kokoro-r182-loader-callchain.md（2b1a183b）：同文案包括认证前整页loader、首次Runtime mount和会话hydrate壳内loader；effect/commit不前进与snapshot pending必须以互斥DOM及同document请求区分。加载关键9文件source/runtime相同；未同步Move差异不冒该故障原因。
+- Root本次不是匿名探针：私有凭据只在内存使用，正式 /login302 → authorize302 → IAM form200/CSRF submit303 → fixed tenant continuation303 → callback303 → /app200，无权限扩展、无模型调用、无业务写入。随后 /api/auth/session200 authenticated=true；原会话SSR200/35ms、server-admitted=true、两loader标记false；原会话snapshot200/36ms、合法顶层字段且无error；该HTML列出的47个同源脚本/样式均200。证据 /tmp/kokoro-r182-authenticated-read.json，读取脚本 /tmp/kokoro-r182-authenticated-read.py 不保存cookie/credential/body。
+- 初次资产检查因现HTTPhelper禁止percent-path而退出SmokeError，尚未请求资产；后继使用仅HTML列出的/_next/同源、有限大小资产请求完成47/47。没有弱化生产路径校验。API成功不等于原IAB标签可用，T-U04不转绿；下一行动需要恢复原页控制并取得互斥DOM/同document请求，禁止继续blind timer/重试设计。
+- 补记 R181冻结门：Root Web31556完整check最终 exit1，contract258/architecture50/lint/types0、默认2444pass/1fail/164files/121.98s；唯一ko覆盖率1503/1584=94.886%低于既定95%，此前10个Move失败已消失但不称全Web绿，build未到。生产Move仅候选未同步原runtime，UI真实用户Move旅程仍待。
+- 补记 R181 BFF：Root29955 Project deadline/replay正确RED23pass2fail，Root73154相同25真实PG门GREEN25pass0skip/23.008s；e7253单调期限+c812cb receipt身份/自有清理，独审0P0/P1/P2。manifest ya2ypnrz亲建DBabsent/sourcehashsame/Redis同；Project专属锁竞争/UNKNOWN COMMIT、publicDELETE/Storage dispatcher/linked-task规则仍未闭环。不得将同文件既有Move COMMIT门冒Project删除证明。
+- 完整70组状态不因上述局部门改绿；完整Wave0–7目标不变，任务外Billing/uv保持。
+
+
+## R183 后端删除赢家与前端验收收口
+- Root49260对新test1d143f64真实canonical installer/build后运行 Project same-key 双backend竞争：1pass0skip，135.484ms（process437.676ms），日志/tmp/kokoro-r183-bff-project-winner-root.log；manifest project-winner-1xde1eh8亲建库absent/sourcehashsame/Rediskey同。完整facts第三重放不变与N+1成立；仅该case，不冒Project专属UNKNOWN COMMIT、Move/Delete/Message/Delete两序或public/Storage远端链已验。
+- 原BFF单writer正在现chat-facts新增Project-specific真实COMMIT后断socketcase4，生产e7253不变；Root资源串行。新增case1 cleanup最初吞错已被Root拦截，1d143f64收全部清理错误及原业务error，并断assistant恰2，非放宽oracle。
+- Web原writer七现locale共14真译文修复新增Move漏译：六locale从1503/1584低95%恢复1505/1584，ja也补新key；源/阈值/fallback/tests未改。worker27pass/lint/types0，只待Root27092全check；完整门尚运行不冒通过。独审32de9ff6区分既有缺译与本轮新增未译。
+- 独立Web Move源码审/tmp/kokoro-r183-web-move-review.md：0P0/1P1/1P2。明确owner拒绝被AppFrame丢弃无可见反馈，global busy未禁非目标行的无效Move入口，故本轮Move用户旅程不可放行；unknown Retry实际已绑定目标行，不虚报扩散。原Web writer只读给真正Next/Chromium业务操作RED设计，Root门期间整Web冻结。
+- Root当前拓扑verify-repository-topology exit0、doc diff-check0；不据此宣称业务全闭环。原IAB首屏P0未验，完整Wave0–7 goal active。

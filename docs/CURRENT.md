@@ -1,3 +1,13 @@
+R182当前：原conv_ffd7工作区仍P0未验收。Root首次对当前3310组合用现有帐号沿正式IAM表单/CSRF/回调完成HTTP登录，authenticated=true；同原会话GET200/36ms，新SSR server-admitted=true且无runtime/app-frame loader；47个该HTML脚本/样式均200。此为真实帐号HTTP与owner读取证据，不是原IAB同页渲染恢复。原选中tab1控制连focus准备仍超时；停止循环刷新、新标签与timer补丁。完整Wave0–7 active。
+
+R180当前：用户原conv_ffd7仍持续加载，未验收。原IAB当前选中tab1（不是后台tab4）DOM焦点读取4s超时，原tab1实际reload15s超时；没有刷新成功或新DOM证据，不再循环新tab/控制请求。运行源码与编译标记无已核漂移；服务端Session有2s期限。无cookie真实HTTP最终为IAM登录表单，不把follow-redirect最终200冒工作区响应。R179认证三文件已精确备份同步3310、独立build0；完整Web2435pass/10Move待实现失败。完整Wave0–7 active，T-U04保持P0开放。
+
+R178最新：Root50681严格R177真实Next/Chromium1pass34.19s（safe shell零owner+真实302/302/303+新document/reload/input），仅定点门。旧四watchdog正向oracle与批准目标冲突待正式迁移，完整门/原runtime同步未过；原用户当前页根因与恢复仍P0未知，不称修好。
+
+R178实际：R177候选无中转beacon已过，但Root真系统仍RED owner8!=6，回链尚未到；暂不同步原运行服务。原用户首屏仍P0未知，IAB刷新无返回，等待用户刷新结果与原writer闭集请求时序诊断。
+
+R178当前：用户原conv_ffd7首屏仍P0未验；IAB实际reload15s超时、没有页面恢复证据。R177真实Chromium正确RED证明10秒watchdog重现已否决Retry中转，原Web writer只AppGate收口+正式登录链oracle，独立只读现场调查；不重启/清数据/新tab。公共响应正常不冒用户认证。完整Wave0–7 active。
+
 R176当前：Storage producer正式发布e8b9928，发布receipt14f2bc9已push且独立远端核同SHA，源码cc9aa01固定真PG700+compiled6/纯门0；BFF固定e8b9928+c22b consumer已正式发布8e33bc0（固定门6pass，全纯743pass/既有1skip）；旧RED5/1已记录，DELETE尚无生产放行。Web真Chromium因果实验已完成：held导航下CDP不可观测但空HTML heartbeat继续，非React timer停止的证据；原R165/旧用户标签仍未验收，不再叠timer。完整Wave0–7 active，任务外Billing/uv保持。
 
 R175当前（2026-10-03）：用户再次报原工作区加载。已证anonymous撤权后错误退整页loader，Root真实RED1fail→Node22 Next/Chromium六邻接系统case6pass，auth15pass/lint/types/build0；独审0P0/P1/P2。唯一AppGate候选6fce87已逐hash备份同步原3310，不重启/清数据；原25同步前后DOM控制仍focus准备14s超时，旧页直接因果/当前恢复未验，未新增tab。完整60矩阵Root31815已自然exit1：59pass/1fail/98.16s，唯一原R165恢复门保留开放。Storage本地producer cc9aa01 commit-bound默认PG700+compiled6及纯门0，未发布/未BFF pin；独审限定producer放行不等于产品闭环。完整Wave0–7 active。

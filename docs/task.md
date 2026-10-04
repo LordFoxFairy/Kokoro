@@ -7763,3 +7763,82 @@ R177-BFF-DELETE-RED：原bff_delete_consumer_r176_plan续任唯一BFF writer，�
 R176收尾发布/验证：Storage源cc9aa01→正式e8b9928→receipt14f2均已push独立远端核对，BFF正式8e33bc0只固定Storage契约，Root743pass/1既有skip全纯及固定commit6wire/contract/build0，独审0P0/P1，R172三D0/chat-facts仍保护未实现。两个版本前置已真实解除，不称runtime删除链闭环。
 原用户页仍未验收；新的因果实验证明纯HTML held-native的JS heartbeat继续而CDP Runtime/Page失效，Next同观测形态，不归因React loop/停止timer。用户批准取消整页Retry与旧watchdog目标冲突，原Web writer已进入R177三D0/严格页面内闭集安全生命周期与真实登录链RED；原R165历史红不删不软green。BFF原writer并行补R177原子删除业务oracle，均不授生产/共享资源。完整70组保持，Wave0–7 active。
 Root组合只更新已正式发布Storage14f2与BFF8e33 gitlinks，Root拓扑先失败旧指针后更新通过，其他Web/Billing/uv修改不暂存；当前测试用例台账新增实证不以contractpin把T-C05/F03整体转绿。
+
+
+## R178 原页面持续加载：现场未验收（2026-10-03）
+用户最新原 conv_ffd7 再报工作区 loader，T-U04保持P0开放。Root本轮IAB全inventory15秒超时；定向browser3 tabs元数据成功，原25绑定10秒后对象可用，但实际reload15秒超时/reset，没有DOM、刷新成功或登录结论，没有新增tab/清数据/服务重启。已向用户询问手动刷新后的三种结果以恢复同页观测。原45606/46036 live；无cookiepublic session21ms200 authenticated=false、app116ms200且response无“正在加载工作区”，只排查公共响应，不冒用户状态/页面已好；首检查脚本bytes中文SyntaxError未联网，修正后才取得上述结果。
+Root38784对冻结R177真实Next/Chromium系统门正确RED：1fail/61名称过滤30.41秒（日志/tmp/kokoro-r177-no-interstitial-root-red.log），anonymous commit安全壳正确，10.5秒后旧watchdog恢复alert/retry、移除main/booting。这明确验证用户已否决中转仍复活，但不证原用户页直接因果。原Web负责人续派唯一writer，仅现AppGate移除该timer/失败分支，保真实身份与native固定login；同system加强正式IAM/callback/newdocument/reload门，旧R165暂不改，其他代码/运行副本/Git禁止。原storage_release_r175_gate_review并行只读现场调用图/源码hash/闭集日志调查，只/tmp报告，禁止敏感输出与browser/进程操作。
+Rootmain-only64055自然exit1，仅root/Web/BFF/Billing dirty，不代表多分支；保任务外修改、不清dirty凑green。BFF R177四授权test/D0冻结fa469308，纯门0/真实PG未运行；原项目删除业务未实现，不称闭环。完整Wave0–7目标不缩，支付后置。
+
+R178补记：R177候选AppGate c0fc6828删除旧watchdog/Retry，Root92692真实Next/Chromium依然exit1（1fail/61名称过滤30.57s）：两个闭集安全壳beacon通过，但owner请求8!=baseline6，尚未到正式登录回链。日志/tmp/kokoro-r177-no-interstitial-root-green.log；不是GREEN、不授runtime同步。原writer现在仅同system闭集pathname/count/匿名commit相对时序调查，检查旧helper把SSR main当Runtime-ready的问题，不放宽时限、不删除zero-owner断言、不擅改更多生产。当前源码候选未发布；用户当前页面仍P0未验，现场只读报告/tmp/kokoro-r178-original-loader-review.md未定因果。
+
+R178最终定点系统：Root50681冻结AppGate c0fc6828/system43405c70自然exit0，真实Next+Chromium R177一条通过/61名称过滤/34.19秒（日志/tmp/kokoro-r178-no-interstitial-root-final.log）。闭集owner before/commit/watchdog均14/collection2/manifest2，未新增；同helddocument释放后真正/login302→IAM302→callback303→新app+reload+启用输入，全部严格通过。此前55230的8d1候选明确fail32.91秒：零owner已过且正式302链到达，但立即isEnabled错误采样SSRdisabled；现仅两处在原剩余预算poll并最终检查booting解除，未延长18/12秒/删除断言。
+独立审/tmp/kokoro-r178-no-interstitial-review.md对生产c0fc无P0/P1，明确现四个active旧watchdog/Retry测试与已批准R177目标冲突P1；故完整候选门尚未通过、尚未同步runtime/提交发布。下一原writer仅现旧UI三例、新system原R165及两死词条规范生命周期迁移；历史原RED日志/12秒时限失败事实保留，不能静默skip或绿历史；新严格R177及其他安全邻门不得删除。Root再跑完整系统/相邻纯门后才精确同步，原用户同页仍P0未验，手动refresh结果尚未取得。完整Wave0–7 active。
+
+R179续进（前回合为progress，严格R177真实新路径及更强ready oracle改变下一行动）：Root继续完整Wave0–7。原Web writer收四obsolete Retry oracle与两死key，冻结后Root全系统/纯门，原页面未知因果保持。Root独占真实资源，BFF已冻fa469308 test/D0先真PG定点RED：沿既有R155隔离runner只改精确R170filter/唯一随机ownedDB与证据名，canonical installer/build后业务action；保护源码hash与Redis key集合，未共享reset、新role/进程，未实现SQL/service。其余任务不冒完成。
+
+## R179-BFF-LOCAL-GREEN 任务卡 / 真实RED后实施
+Owner：BFF Project/Conversation单writer bff_delete_consumer_r176_plan；Root审查、Git与资源。基线main8e33bc0，现三D0/R170 test未提交，其他dirty保护。Root82928首42601为fixture setup错误，acd935拆独立参数query后Root正确action RED（installer/build0、R1701fail ProjectService.deleteProject undefined）/manifest fif3gxh6 ownDBabsent/sourcehashsame/Rediskeys同。
+Placement沿现R172三D0与/tmp/kokoro-r176-bff-delete-consumer-plan.md SliceD：采用Postgres Project repository委派具名project-deletion.ts原子事务；淘汰Service内SQL或调用公开deleteConversation造成嵌套事务；same-client conversation-delete-lifecycle.ts从现Chat抽取，不复制两套SQL。无新目录/module/进程/API/contractowner。
+允许现database/schema.sql；application/project-service.ts和ports/project-repository.ts；postgres/project-repository.ts、chat-repository.ts、conversation-move.ts、conversation-artifact-library.ts、agent-dispatch-outbox-repository.ts、scheduled-task-repository.ts、repositories.ts；scripts/apply-schema.mjs、test/schema-governance.test.mjs与现test/chat-facts.integration.mjs的新增独立生命周期case；新postgres/project-deletion.ts、conversation-delete-lifecycle.ts（mapper/identity文件必要性先报）。三D0仅当前implementation状态；其他路径先报。禁止public contract/generated/vendor/locks/root/Web/Billing/Storage/启动器/Redis/数据库操作/Git。
+目标：Project墓碑及deletion/member准确N+1本地durablecommands，同PoolClient Project→sorted canonicalConversation锁及原完整Chat删除生命周期，whole rollback/samekey重放/新key墓碑冲突；普通Project、Conversation、Share、admission、Move/resource reads active fence。同键语义重验，unknownCOMMIT销毁连接并稳定key恢复；内部用例需有限Pool/锁/SQL期限。不授remoteStorage dispatcher/publicDELETE。linked ScheduledTask策略未决，内部用例遇关联不得变更或假成功（显式未开放），no-linked fixture可验证，不把failclosed实现写成最终产品裁决。支付/实际消耗不归BFF写。
+完成：先交精确设计/完整active-fence查询map，再实施冻结/纯门；Root重跑定点真PG GREEN/双连接race/现Chat/完整owner integration，独审，后继Storage dispatcher与public策略分门推进；不以此切片称全产品完成。
+
+R179真实门状态：Web Root12461 Node22完整pnpm check自然exit1：contract258pass、architecture50pass、lint/typecheck0；默认164files中162pass/2fail、2435pass/10fail/2445/0skip/120.43s。失败精确为R170尚未实现Move engine7与rail3（非登录回归），不删除/弱化，不称全Web绿；build因testfail未到，Root另94024独立build运行。R177/R178认证系统无该失败集合，独审冻结c623/c0fc/static0P0/P1；原用户同页仍未知。
+BFF Root82928首PG setup42601失败如实保留，原writer只拆三独立参数INSERT为acd93562；Root继跑真实installer/build0、R170业务1fail明确ProjectService.deleteProject undefined（93.798ms），manifest fif3gxh6 selfDBabsent/hashsame/Redissame，正确action RED已到。原BFF writer按任务卡已交8项active-fence map并获SliceD本地SQL/事务实施授权；不授Storage出网/worker/publicDELETE/未决ScheduledTask行为。两独立面并行，Root资源/Git统一。
+
+
+## R180 原用户持续加载：原标签验证与下一取证边界
+
+- Owner：Web 首屏／Conversation hydration；Root 现场验证，原负责人 agent4_lifecycle_review 只读运行链分析；没有授予新认证 timer 或业务源码补丁。
+- 原 IAB inventory 为同 URL 四标签；tab4 DOM14s超时、CDP闭集只读事件10s超时。重新绑定后使用 documented selected() 确认用户正在看的是 tab1，实际 DOM4s焦点准备超时，原 tab1 reload15s超时；没有成功刷新/关闭/恢复证据，不新增第五页、不清登录/数据库、不重启共享组合。控制超时不证明 React 或应用直接因果。
+- 当前运行 launcher45606/Web46036 live；Root无cookie读 /api/auth/session 22ms/200/anonymous。urllib follow redirect 后 /app最终HTML为正式IAM登录表单（title登录·Kokoro），132ms；这不是已认证原用户的工作区200或渲染证据，纠正历史公共200表述边界。
+- 原Web负责人只读 /tmp/kokoro-r179-web-runtime-read.md：关键source/runtime SHA相同，dev产物含新标记，Product Session查询2s上界。已认证AppFrame仍有 mounted/Conversation hydration loader；仅截图文案不能区分初始化、匿名native转场或会话hydration。最小下一证据为原document的SSR/DOM阶段与会话请求结果，不加新的等待计时器，不以fixture替代原页。
+- R179受审认证三文件 AppGate/messages/en 已有限同步原3310，无重启/数据修改；逐hash备份 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r179-runtime-backup-vaoeikoc/manifest.json。Root94024独立 pnpm build exit0；Root12461完整 pnpm check exit1，2435pass/10fail（R170 Move engine7/rail3待实现），contract258/architecture50/lint/types已通过。未称全Web通过、未将同步当原用户修好。
+- 原首屏 T-U04 保持失败/开放。验收：同原帐号原会话正文与输入真实可用，再刷新保持历史与可编辑；当前尚无本轮该证据。已有用户手动刷新询问未答，不重复发同一异步问题；不能据此停止其它可执行切片或缩小完整goal。
+- BFF R179补充写入边界：仅允许 test/chat-service.test.ts 中原 Conversation deletion bound-parameter 单case fake按真实 Project→Conversation锁序更新，原 tenant/conversation/COMMIT绑定断言保留。原writer交18文件冻结和纯743pass/1资源skip；尚未Root真实PG GREEN／锁竞争／UNKNOWN COMMIT门，不称删除已闭环。
+
+
+## R181 完整goal续进：冻结BFF系统验证与Web Move并行
+
+前一goal回合归类progress：核实当前选中原tab1而非后台tab4，实际reload仍超时；已纠正HTTP follow-redirect最终200的证据范围。原首屏仍P0未验，不再重复IAB控制等待或新增页；已发用户刷新问题未答。其它可执行能力继续，不缩小Wave0–7。
+
+|任务|归属/基线/角色|范围与验收|当前状态|
+|---|---|---|---|
+|R181-BFF-SYSTEM|Root唯一资源与Git；BFF main8e33，R179 18文件冻结|原R179隔离runner真实installer/build及R170 Project删除原子/回滚/同key重放/N+1命令/active fence；自有random临时库回收，源码hash与Redis集合保持；无共享reset。先定点真实GREEN再补完整锁/COMMIT故障门，不以纯743代替|原句柄80387运行中|
+|R181-BFF-REVIEW|storage_release_r175_gate_review 原独审，只读、继承当前模型；Root裁决|只读BFF冻结18文件/三D0/schema、任务卡和CODEBASE_MAP；核现Project与Conversation完整生命周期、关联Task未决边界、绝对期限/未知COMMIT连接、SQL锁序/幂等/tenant、active reads/fences；报告/tmp。禁止写仓/Git/资源/启动服务|待派工|
+|R181-WEB-MOVE-SCOPE|agent4_lifecycle_review 原Web负责人；main9b42，Root审查/Git，当前只读|沿R170三D0与真实10 RED（engine7/rail3）核最小production文件集、ACK-only归属/导航、稳定unknown retry、generation/dispose/singleflight及Project列表合法目标。只读交scope/放置表，不写认证或弱化测试，不碰runtime/资源/Git；Root确认后再窄授生产|待派工|
+
+未验原页面、Billing任务外修改与uv.lock f7e1c30d保持；公开Project DELETE、Storage dispatcher和用户最终任务删除规则尚未由本切片放行。
+
+R181本地删除定点：Root80387 exit1，installer/build0，85.5ms最后post-delete submit误要求throw；既定 Application合同Receipt|null、HTTP null→404，故只迁移这个测试oracle并新增完整facts两组零变化。Root50844冻结c9a0eb43复跑真实PG自然exit0：1pass/0skip，212.789ms业务／446.926ms测试进程；manifest z56eh8_z ownedDBabsent/sourcehashsame/Redis集合相同。只本地原子切片定点GREEN，未跑全邻门／未知COMMIT／时钟与并发，不称DELETE链闭环。
+
+R181-WEB-MOVE-IMPLEMENT 授权：原Web唯一writer沿/tmp/kokoro-r181-web-move-scope.md及R170三D0，精确11现文件：src/engine/{engine-types.ts,execution-adapter.ts,machine.ts,INDEX.md}；src/components/blocks/app-frame/app-frame.tsx；src/components/blocks/workspace-rail/{workspace-rail-types.ts,workspace-rail-shell.tsx,workspace-rail-session-list.tsx,workspace-rail-session-item.tsx}；src/i18n/{messages.ts,en.ts}。先现10RED对应所缺能力实现冻结，保持测试oracle；额外AppFrame/Next系统行为门先报测试文件集再写。不改auth/正式wire/client/SQL/contract/generated/锁文件/D0(除非先报)/runtime/资源/Git，不新增框架/store/alias。Root审当前source、真实同源/owner/用户E2E后才称用户Move通过；unknown可人工同key，不自动换key；单调generation fencing切走再切回，旧scope release不得cancelRun。
+
+R181-BFF-HARDENING-RED：独审b273/7f55/schemaa4a0为0P0/1P1/1P2（/tmp/kokoro-r181-bff-project-delete-review.md）：wall-clock回拨延长预算；replay未核response project==expected。原BFF唯一writer当前只授现test/chat-facts.integration.mjs真PG时钟回拨期限+损坏receipt关联两反例（无新unit/mock、不资源/源码/Git）；先交场景与冻结，Root正确RED后局部授现project-deletion.ts修单调时间与strict replay，不擅改正确SQL/业务策略。
+
+R181 Root29955 完整chat-facts真PG RED自然exit1：25病例23pass/2fail/0skip、22.707s。两个独审风险均被真实系统反例证实：墙钟回拨下delete6.035s成功提交违反5s预算；损坏receipt samekey重放未拒异项目身份。其余23邻门（包含原R170、既有Conversation删除、Move/Message并发与未知COMMIT邻门）通过；不借23关闭两红。manifest a8i1rejj ownedDBabsent/sourcehashsame/Redis同。
+R181-BFF-HARDENING-GREEN 授原单writer：仅现src/infrastructure/postgres/project-deletion.ts将私有elapsed/deadline统一performance.now单调基准（PG事实UTC不变），replay严格body.project_id==expected canonical Project贯穿普通重放/winner；不改SQL生命周期/5s业务预算/关联Task策略或公开contract。现test/chat-facts.integration.mjs仅两新case finally清理自有trigger/function及receipt故障注入；原RED oracle/5.8s测试抖动上界/零facts断言保持。冻结纯门后Root同25真实GREEN与独审，再补Project自身并发/COMMIT故障范围，不冒BFF whole owner或产品闭环。
+
+R181 Web现测试fixture纠正授权：原writer报告engine7已行为6绿，唯一“无unknown intent retry零调用”最后toHaveBeenCalled拿普通createFakeClient方法而非spy。Root已核machine.test.ts该case以及fakes.ts118普通函数。仅授该case在engine创建前`client.moveSession=vi.fn(client.moveSession)`透传spy；原resolves.null和not.called断言保留，禁止改共享fake或删除/弱化测试。不作为新增Unit测试或用户E2E成果，只修原验收执行错误。
+
+
+## R182 当前原页阻塞任务卡
+|任务|Owner/Agent/范围|完成条件|当前实际|
+|---|---|---|---|
+|R182-WEB-LOADER-READ|Web agent4_lifecycle_review只读；main9b42混合dirty/已冻结Move保护；只/tmp，不源码/资源/Git/浏览器写|区分原loader调用链与实际runtime、给同document最小判别证据|报告2b1a183b已交，无原页直接因果|
+|R182-ROOT-ORIGINAL-EVIDENCE|Root现场/受管3310正式HTTP，台账唯一writer；不重启/清数据/新增tab/改业务|同原帐号原会话正文输入可用+reload稳定，非HTTP替代|真实帐号IAM/SSR/snapshot及47资产成功；原tab1控制focus timeout，原页仍P0未验收|
+|R181-FROZEN-GATES-RECEIPT|Root复核已有句柄，Web/BFF生产冻结不抢写|完整门据实记录|Web31556 2444pass1ko覆盖fail；BFF73154真PG25pass，Project并发/未知提交仍后继|
+
+
+## R183 并行收口卡（前回合progress：当前帐号真实HTTP/原会话/47资产证据改变下一行动）
+|任务|Owner/Agent/权限/基线|允许文件与依赖|完成条件|
+|---|---|---|---|
+|R183-BFF-DELETE-WINNER|BFF bff_delete_consumer_r176_plan/gpt-5.6-sol/唯一test writer；main8e33，e7253/c812cb已冻；Root审查/Git/PG资源|只现test/chat-facts.integration.mjs新增Project same-key双backend系统case，复用/tmp/kokoro-r181-bff-project-delete-system-plan.md case1；三现D0仅纠正本地候选已实现与尚未公开/发布的当前事实，禁止其他源码/schema/contract/生成/启动/Git|真实pg_blocking_pids证明两backend排队，唯一winner/deletion/N+1/request lineage/第三重放全facts不变；fixture finally精确回收；冻结Root真PG，再授权case4|
+|R183-WEB-I18N-AUDIT|Web原agent4_lifecycle_review/只读；main9b42混合候选保护|只读i18n覆盖失败根因与Move新key/上线locale缺项，交精确需修改现文件集；暂不写业务/译文/测试/资源/Git|区分实际用户缺译与计数边界，不降95%/复制中文凑覆盖；给真实翻译切片方案|
+|R183-WEB-MOVE-INDEPENDENT|storage_release_r175_gate_review/gpt-5.6-sol/只读；main9b42冻结R18111生产+1fixture|只读冻结Move engine/adaptor/AppFrame/rail及现三D0/test，原始source hash绑定；只/tmp|审异步generation/unknown重试/失败反馈/active与非active路由和草稿/stream，不把108 tests冒业务E2E；报精确P0/P1/P2|
+
+R183-WEB-I18N-GREEN准入：只读32de9ff6证中文1584、新增Move两key仅en翻译，七正式locale缺译，六locale1503/1584低95%，ja虽过总门仍缺新key。归属Web现i18n overlay的展示翻译，扩现文件无新职责/目录/API/数据；原agent4_lifecycle_review改唯一writer，仅src/i18n/{de,es,fr,ja,ko,pt,ru}.ts各补rail.moveChat/rail.retryMoveChat真译文并保{title}。messages/en/overlays/tests/阈值/业务/锁文件/资源/Git均不写。Root31556真实RED已取得，不为既有79缺项假批量补；Root后继完整check和独审，非原页P0修复证据。
+
+R183-BFF-WINNER Root49260已真实定点验1pass0skip/135.484ms，installer/build0，manifest project-winner-1xde1eh8自库absent/sourcehashsame/Redis同。仅证明same-key真实双backend赢家；接续同owner仅现chat-facts.integration.mjs case4（R183 Project真实COMMIT后断socket）测试准入，绑定本caseINSERTdeletion/tenant/project/key后实际PG COMMIT成功，再断该socket；release(true)/broken PID淘汰/新PID可查询/首次readWinner恢复/samekey全facts恒定/newkeyconflict，finally全部精确清理并错误不吞。生产、其它cases、schema/contract/generated不写，Root独占PG。三个现D0只准短句当前候选边界，不宣称公开/外部/发布完成。
+R183-WEB-I18N Root已读七文件14行diff无其它路径，前述翻译冻结；Root完整pnpm check句柄27092正在执行，期间整Web源码/tests冻结，原writer只能只读给P1/P2真Next用户行为复现设计，不能抢写。最初任务卡补记因cwd在Web而相对docs/task不存在FileNotFoundError，未写任何子仓文档；随后Root绝对路径纠正，不重启27092。
