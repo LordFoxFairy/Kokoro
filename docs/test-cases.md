@@ -1616,3 +1616,14 @@ R196最终正式切片：Webce40cecc基于clean候选17paths完整2459pass0skip1
 完整门退出要求不变：当前版本真实用户路径、各owner实际依赖与异常/权限/生命周期通过，P0/P1清零；局部负例或schemaGREEN不等于全研发闭环。
 
 R198-A01最终绑定Agent59034f4：Root50248全真PG304pass/0skip（含该main负例）、默认2182pass/416资源deselected及所有工程/build门0；候选源SHA不变，后四D0contract/build0。A02实际子调用/恢复和C01原3310绑定仍待执行，B01只是contract；总70组统计不改变。
+
+
+## R199 实际系统/构建准入回归（2026-10-04）
+
+|用例ID/标题|预置条件|步骤|预期结果|优先级/类型|实际结果与范围|
+|---|---|---|---|---|---|
+|TC-R199-A01 / prepare真实锁等待取消|正式Agent59034＋唯一41fe系统case；自有fresh PG/正式Run lease/recipe/SDK/checkpointer，Billing缺席|正式started→显式transaction锁Run→initial=False；observer确认prepareSQL/PID锁图→本地task.cancel→await→释放blocker→全Run/Attempt/Evidence/outbox/checkpoint比较|CancelledError原样，无finalizer/物理provider/新attempt/取消后的checkpoint；本地cancel不是持久用户终态|P1 / 异常、竞态、状态机|**FAIL**：Root98757锁/取消观察成立但完整prepared/not_requested attempt后写；305其他database通过不能关闭本case。此前17166是autocommit fixtureTimeout，94202仅中间freeze，均留痕。不接受sleep/放宽oracle/删除审计|
+|TC-R199-A02 / terminal公开Supervisor重复恢复|同正式main failclosed已terminal，先publicserve发布旧outbox后取权威bytes基线|publicSupervisor.serve重复同RunRequest/bus；核ACK及DB/checkpoint、System/provider计数|sameidentity、provider0、DB/checkpoint字节零差量；不build或读native；可ACK旧消息但不新增durable seq|P1 / 主链、幂等、生命周期|Root98757当前case PASS；系统bus是测试传输，PG/checkpointer真实。仅terminalSupervisor replay，不是Redis、SDKmodelnode retry、GP/catalog/Swarm、lostACK或费用链|
+|TC-R199-B01 / portableIAM owner artifact准入|Billing26aeec6 cleanconsumer，IAM0537正规0.7.0pack、Node24/Corepack11|frozenoffline install→根IamClientimport→正常完整verify/generated；真实修改archive/provenance/nested未知/primary缺失或错pin/四组alias/第二tgz后逐执行architecture门再恢复|合法1通过；全部10错误自然拒绝，完整bytes恢复，禁止sibling/tmp/workspace/双包；owner身份/contract/digest/许可完整|P1 / 架构、供应链、边界、异常|Root36987正式1122pass/411资源skip、generated0、十负控全部拒绝，源hashsame；两先前P1漏报和semver治理FAIL已真实复验修，不冒业务线上IAM/余额/Admission/扣费。manifest CURRENT同路径|
+
+70业务组整体统计保持11/6/14/38/1；这些细分case证据附入原owner任务，不新增完成百分比。真实取消缺陷保持P1开放；会话绑定候选与原3310运行旅程分开，只有当前浏览器完整路径可关闭live项。

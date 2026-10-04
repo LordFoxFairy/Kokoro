@@ -120,3 +120,10 @@ BFF唯一Conversation归属是nullable `project_ref`；正式Webce40cecc消费pu
 - IAM `scripts/pack-sdk.ts` 与 `test/consumer/iam-client.consumer.test.ts` 已有正式clean owner artifact/仓外消费者路径；SDK root facade `IamClient.verifyBillingAuthorization` 为后继Billing准入唯一消费入口。开发验证不等公网Registry，长期portable lock仍需不可变可解析制品；不复制SDK源/第二JWT实现。
 
 R198最终Agent源入口59034f4：Root实际304真PG/2182默认门及post-doc构建绑定本切片；其main缺准入负例已验，GP/catalog/Swarm实际caller/recovery继续用既有系统矩阵验收，不创建第二runtime。
+
+
+### R199 当前正式与未验入口（2026-10-04）
+
+- Billing正式26aeec6：`vendor/iam/kokoro-iam-client-0.7.0.tgz`/`provenance.json`只读owner构建制品，package根唯一消费；ADR0004及现architecture/toolchain gate核version/commit/contract/archive/lock。Rootclean完整门已验，但`src/modules/metering/iam-billing-authorization.client.ts`仍是后继方案，尚无运行接线或资金保证，勿从文件名推断已实现。
+- Agent生产59034不改；现`tests/integration/database/test_model_call_runtime_chain.py`唯一未提交41fe扩公开Supervisor终态恢复及prepare锁取消，后者Root全PG真实FAIL。锁定SDKv3 stream的model-operation取消边界待最小现model/execution设计门；不复制SDK、追加第二RPC或归属模型，不冒整个graph/checkpoint drain。
+- Conversation唯一nullable project_ref保持。当前3310仍旧运行副本，不因Root源码gitlink/已验候选或artifact更新自动启用Move；Root独占运行资源，原fixture数据保留待答。

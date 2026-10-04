@@ -8317,3 +8317,53 @@ Root本轮topology实际两项HEAD/pin漂移FAIL；不暂存两未发布gitlink�
 R198-A4最终限定已验收：原writer13 production/test＋4D0已交接，Root50248真实fresh PG完整database **304pass/0skip41.39s**、default **2182pass/416资源deselected114.63s**、lock/offline-frozen-sync/Ruff283/全Pyright/contract/wheel/sdist全0，自库absent/源码hash同；独审b010ef5最终0P0/P1。Root亲读四D0并将TECH对catalog path措辞收紧为静态源码审查（实际新增注册断言仅main/Swarm/GP），post-doc43932及17539 contract/build0。第一次doc diff命令错误重复相对cwd只属Root命令错误，已正确读diff，无产品修复归因。精确17path提交 **59034f48333f9efeae25fa7f18f6e422f066949e**，Agentclean/index空；9保护hash保持、无push/gitlink冒release。
 
 R198-A4-unit-isolation已限定验收：仅8显式opt-in调用点对应16旧非费用case、test-scope teardown/defaultfalse，原assert不弱化；透明fixture不证明准入/收费。下一任务原负责人续接真实native main恢复/GP/catalog/Swarm caller矩阵与取消/身份异常（tests-first另授范围），正式Billingconsumer/dispatch/provider成功/actual费用仍OPEN。不得把本最低failclosed切片标作整个Agent完成。
+
+
+## R199：真实原生caller与正式IAM消费准入并行推进（2026-10-04）
+
+上一goal turn为progress：Agent59034f4/ Billing364f4ba与Root3db030d6权威提交，Root304真PG/2182工程及Billing1117契约门改变下一行动；不是完整Wave0–7完成。此轮实核原launcher45606/Web46036 live约25h04m，无缺失QA句柄，不重启/清数据；Agent工作树clean，Billing保护5D0+3codec和Rootuv9hash同。
+
+|任务|Owner/Agent/权限|基线与范围|依赖、完成条件与资源|
+|---|---|---|---|
+|R199-A4-callers-design / P1|原agent_mainline_qa_owner，先只读/tmp|Agent59034f4、CODEBASE_MAP/四D0/现native系统case/锁定SDK公共seam；不写仓/Git/共享资源|设计同主运行装配下GP/catalog/Swarm真实node、checkpoint恢复、取消/身份非法与lostACK业务oracle；不能mock生产gate/假grant/私有SDK字段或私自授权provider。先给精确原生入口与最小现文件RED，Root裁决后才写测试|
+|R199-Bill-IAM-D0 / P1|原agent_prepare_final_review转唯一Billing writer，先仅三D0|Billing364f4ba；原TECH/API/DATA dirty基线保护并按准确增量接收，CURRENT/PLAN/3codec继续原hash冻结；其他runtime/SQL/lock/contract冻结|按ADR033已批准actual-only/release与IAM0.7 facade更新当前三面，删除本片错误待用户/Registry硬前置，不删原任务外历史。给adapter置于现Metering目录的一句责任与§8表，Root通过设计门后才实施。不可变SDK制品通道先Root决定，不提交/tmp/sibling dependency|
+|R199-root-artifact / P1|Root独占资源/Git/跨owner裁决|IAM0537clean已有sdk:pack，仅自有/tmp输出；允许ignored SDK build，不改源/锁/版本。主仓仅当前五台账|验证owner正常pack实际archive/provenance/entry白名单/digest；比较portable owner artifact消费方案，不把公网registry当研发阻塞、不复制源码手写client。长期位置须Root设计裁决/ADR，真实adapter测试不靠Mock/IAM自报headers|
+
+本轮不新增计划中心，不缩小70组/完整goal。Billing三D0原内容不覆盖回滚；hash保护变更仅已授权准确增量，Root审查与最终提交。其他owner/原3310数据与mixed不动，同仓single writer。执行与收费happy path、用户浏览器、其它owner完整能力继续按原Wave推进。
+
+
+### R199 IAM SDK制品消费设计门与实施卡
+
+Root实查IAM0537 clean，Node24.20.0/pnpm12.3.4与owner manifest一致；正常`sdk:pack`两次各64012 bytes且SHA相同 **c988e5bd3b234aae0085fced5fcd629bcb3feb3d0fe5ebb5d1a384e44e77c014**，内provenance commit/contract/lock/generator均核对，自源hash同/clean。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r199-iam-artifact-mzn83mak/manifest.json`。原24147已终态0消费，无PG/服务。Billing实际packageManager为11.25.0；Root通过Node24+corepack精确11.25.0验证，不借全局12.3.4升级Billing。
+
+|放置项|Root裁决|
+|---|---|
+|Owner/当前|Billing消费构建边界；原agent_prepare_final_review唯一writer。现无vendor/SDK依赖，现generated只产出本仓BillingAPI，现src/modules/metering存在。当前3D0前缀已提交待审查，原dirty全文保留|
+|采用/淘汰|采用 `vendor/iam/` 两件只读owner制品（tgz、外provenance），沿Platform已有同模式；淘汰 `src/generated/billing-api/` 混入外部输入，禁止contract里可编辑IAM副本和sibling源依赖。独立registry/release非本轮研发必需|
+|粒度/依据|新增顶层vendor仅存固定依赖制品，须先现ADR目录 `0004-iam-sdk-artifact-consumption.md` 记录2方案/固定identity/升级与删除；不是新业务模块/进程/owner、通用artifact服务或第二SDK。64KB单包有实际consumer，禁止旧新包并存|
+|依赖/数据|package公开root import；相对 `file:vendor/iam/kokoro-iam-client-0.7.0.tgz`+lock integrity、package version、ownercommit/directcontract/archive SHA与内外provenance同一门。无SQL/wire/Admisssion金额/runtime变化，不提交/tmp绝对file，不解包手改SDK|
+|验证/删除|先artifact architecture合法/错包/错provenance/错pin/旧双包门，Root无sibling cleanclone frozen install/fullverify+normalgenerated drift；owner两次重包SHA同。没有旧SDK可删除，本片不夹清理旧Fastify/pricing兼容代码；adapter/auth/实际账务单独正式后继|
+
+**R199-Bill-artifact / P1 写集**：仅现3D0当前前缀、`package.json`、`pnpm-lock.yaml`；新ADR0004、`vendor/iam/{kokoro-iam-client-0.7.0.tgz,provenance.json}`、现architecture目录普通 `iam-client-artifact.test.ts`。任何额外源文件需报告。Root已通过三面prefix设计；新vendor/ADR先落说明再拷正常ownerpack产物（不得重包/手改）。worker可用Node24/corepack pnpm11做正常lock生成与无资源纯检查，不启动PG/Redis/service/付费provider/Git。CURRENT/IMPLEMENTATION_PLAN/3codec与Rootuv继续保护；三D0只新增R199前缀，不覆盖原dirtybody。交精确source/doc-prefix-only候选patch/hash/原body保持证明；Root独立clean gate与Git（不能stage原5D0/3codec混入）。全goal/70组不缩小，artifact门不冒真实授权/积分通过。
+
+### R199-A4-recovery / P1：现系统文件两条恢复与取消行为门
+
+Root裁决采用原owner只读 `6c41d4b1` 精确设计，唯一writer `agent_mainline_qa_owner`，基线Agent main `59034f48333f9efeae25fa7f18f6e422f066949e` clean。只扩现 `apps/kokoro-agent/tests/integration/database/test_model_call_runtime_chain.py`；不新目录、不改production/D0/SQL/contract/lock，不复制装配，不mock授权或调用函数。与Billing artifact各自独立写集并行，Root独占PG/资源/提交。
+
+- `prepare_lock_cancellation`：先正式durable started，再Run blocker→initial=False；第三autocommit observer必须精确model prepare SQL/PID与blocking传递闭包，不拿任意lock当证据。取消精确传播CancelledError、无finalize/provider/Attempt/Evidence、Run/outbox逐tuple无半写；checkpoint以实际wait时公开tuple快照对比，无额外commit。这不是用户持久cancel终态。
+- `terminal_supervisor_recovery`：正式main failclosed后经公开Supervisor.serve/bus重复通知与恢复；Run/Attempt/Evidence/outbox/checkpoint权威字段/bytes无差量、provider0；ACK可重复，不冒SDK model node retry/lost-COMMIT-ACK/GP caller。若原fixture不能正式复用先交阻断，不自建第二runtime。
+- 先冻结test/hash/资源需求，再Root沿原fresh PG runner执行真实行为基线；发现RED再按owner修，不修改失败断言。无失败则记增强回归GREEN，不编造先前Bug。随后当前文件/全database/完整门、独审、Root窄提交；Billingallow与实际收费/用户全矩阵仍OPEN。
+
+R199-Bill-artifact 写集追加已批准现 `test/architecture/toolchain.test.ts` 一路径（总10），不新增运行源码。Root96762 clean全verify实际1120pass/1fail/411资源skip25.51s：既有generic semver-only治理拒绝ADR0004已批准的唯一content-pinned IAM file制品（manifest-exact:@kokoro/iam-client）。修正只为dependencies下精确该包/该locator建立具名闭集分支并核lock同specifier/version；其它第三方、其它file/workspace/alias仍原严格拒绝，旧87case不放宽。须同文件合法fixture与错locator/group/alias/lock版本负控，artifact十组实际负控、完整cleanverify/generated重新跑；本次失败留痕，不冒局部4case通过为全绿。
+
+
+### R199 交接终态与下一行动
+
+|任务|实际状态/当前owner|证据与边界/下一行动|
+|---|---|---|
+|R199-Bill-artifact / P1|已验收，Root精确提交26aeec6；原agent_prepare_final_review冻结|10paths、Root36987 clean1122pass/411resourceskip/fullverify/generated0、合法1+十mutation reject、独审913895fe0；同三D0dirtybody/6保护保持。仅解除SDK构建输入阻塞，IAM/Admission/真实资金仍待正式切片；继续同owner，无Registry/部署硬阻塞|
+|R199-A4-recovery / P1|未放行，原agent_mainline_qa_owner；唯一test41fe未提交|Root98757全database305pass/1fail44.89s。公开Supervisor terminal case本轮通过但取消后完整prepare落库仍真实RED；不提交未通过片，不以中间94202三caseGREEN覆盖。生产59034冻结；真实source hash/DBabsent manifest在CURRENT|
+|R199-A4-cancel-design / P1|只读待Root裁决，d6311345报告|先收敛model/call_runtime与execution/run_agent的公开SDK取消/drain及包内scope边界；保证prepare等待取消不外泄、已真实commit保审计、CancelledError原样、control/fence独立。先更新原三D0/必要现有第四文档并独审后才授最小源片，保持41fe业务oracle；不修改SDK/private、metadata/协议/SQL、不把model-I/O归零冒全graph drain|
+|R197-W2-release / P1|原运行数据保留待答，Root资源|继续用原单一clean发布方案；Conversation归属仅project_ref，不新实体。当前3310仍旧consumer，未把ce40候选门冒live绑定通过；重启清测试库需已问数据决策，不丢现会话或擅自复制mixed|
+
+完整Wave0–7与70组不重建/缩小。当前无Root未消费运行句柄；同仓单writer、已有服务复用、共享PG/Redis不reset、支付最后。

@@ -8659,3 +8659,16 @@ R198 Root台账后治理限定门 `python3 -m pytest -q scripts/tests/test_repos
 
 
 R198-A4最终Root50248自然exit0已消费：canonical10 CHECK；全database **304pass/81warnings41.39s**，default **2182pass/416资源deselected/795warnings114.63s**，lock/offline frozen-sync/Ruff283/全Pyright/contract/wheel/sdist均0。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r198-agent-final-mz7dpzuq/manifest.json` result0/database_absent/source_hashes_equal；全执行约171s，不伪称416资源通过。旧16失败仅原unit显式隔离后全默认门通过，新gate与系统仍默认生产规则；最终独审b010ef5为0P0/P1。四D0窄事实后Root43932/17539 contract/build再次0；Root校13source/test逐SHA与50248同，exact17paths精确提交59034f48333f9efeae25fa7f18f6e422f066949e，Agent工作树clean。TECH catalog覆盖措辞仅静态审查，不冒真实caller。Root一次错cwd docdiff和猜Prisma路径不存在的只读命令失误保留，不作产品错误；最终正确读diff与仅owned ignored PrismaClient清理完成。其它caller/recovery、实际provider/Billing费用/原3310与70组仍不升。
+
+
+## 2026-10-04 — R199 IAM构建输入已验提交；取消真实竞态保持失败
+
+Root基线3db030d6，完整goal/owner顺序不缩小。原Agent59034f4生产不改，Web/BFF mixed、Billing五D0/三codec及Rootuv保护；每仓一writer，Root资源/Git，原owner续派，独立readonly复审。
+
+IAM0537正常sdk:pack两次（Root24147）相同64012bytes/c988e5bd，provenance含contract directc8d7/owner/sourceclean/generator/lock；无PG/Registry依赖。Root选择ADR0004/vendor immutable artifact，Billing原writer只新三D0prefix与package/lock/ADR/vendor/architecture。首次stalepatch SHA门阻止应用，随后误续baseline install/prisma不算candidate证据；final正确filepin frozenoffline install0/root IamClient import0。Root38941真实workspace alias仍4casepass揭示P1；Corepack exec自动更新owned candidate lock，已恢复exact授权源并改直接.bin mutation隔离，不碰shared/source。原writer修结构门后Root65552独立删main依赖仍pass再发现P1，补primary/group/lockbinding显式存在。Root78744合法1+真实文件破坏10负控全部oracle成立，未把mutant reject计正常业务pass。
+
+Root96762 clean完整门首轮自然exit1：1120pass/1fail/411skip25.51s，唯一既有toolchain semver-only不认识已批准IAM file locator；未skip门、未泛放file。Root明确追加第10现toolchain测试路径，唯一IAM dependency/path/lock闭集和合法+4negative断言，旧87case保留。最终Root36987正常Prisma0/fullverify0 **1122pass/411资源skip25.42s**/generated0；44.647s是verify全步骤耗时，不冒测试耗时。源码before/after SHA同，独审报告913895fe0P0/P1/P2；final10pathpatch5b16286b。Root正常Git精确七非dirty路径＋三D0 cleancandidate blob部分暂存，提交 **26aeec6c596a5454874aa5a41bbc12c46240d02f**（551+/2-）；当前全部worktree文件逐SHA未被提交操作改动，三D0原dirty正文不夹，CURRENT/IMPLEMENTATION_PLAN/3codec/uv保护。未push/pin；所有owned node_modules/dist/Prisma outputs回收，manifest/log/source保留。
+
+Agent原owner仅现system test扩两case，d503首次Root17166 **2pass/1fail8.50s** observerTimeout：blocker autocommit单语句未持锁，非产品取消RED；漏cleanup独审P1随后严格transaction/锁内cancel-await/handle finally修，不增timeout或改业务oracle。中间1bc3 Root94202 **3pass3.37s**，不冒final；独审再补done task异常消费/primary保留，最终41fe独审0P0/P1/P2。Root98757最终fresh PG全database **305pass/1fail133warnings44.89s**，canonical10CHECK0、sourcehashsame/selfDBabsent。真实失败在取消后数据库全快照：prepare等待已经精确观察，CancelledError向外返回，释放blocker后完整prepared/not_requested attempt出现（非半行），provider仍0；这是未收束的native model-operation生命周期，不放宽断言、不删审计事实、不称用户cancel/费用通过。full default/build未执行，test唯一未提交冻结，原59034生产保持。只读分析d6311345指向锁定v3 stream不drain独立node futures，建议包内每invoke model-I/O取消scope；尚未授生产、整个SDK/checkpoint drain不能冒其已解决。
+
+原45606/46036本轮仍live；无重启/用户测试库清理/新增永久服务。IAB inventory实际仅1tab，getTab10s timeout/kernelreset，无页面操作与恢复证据。两个Gitlink mismatch实际topology仍FAIL；不把局部artifact/恢复case改变全70统计或最终goal。所有Root本轮具名句柄终态已消费，下一沿同task/cards推进真取消RED及IAM准入，不陷部署运维。
