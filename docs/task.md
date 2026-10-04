@@ -8493,3 +8493,5 @@ R202实际收口：Billing Root18275 clean76+exp3完整verify/generated自然exi
 Agent Root65492真实PG诊断2pass/1fail3.71s，wait→cancel返回checkpoint摘要同/0差量，cancel返回→释放锁新增pending_writes首项9叶字段差量，DB全快照同/provider0/prepare取消；自库absent/source同。证实取消返回后确有checkpoint后写，不能把SDK审计直接当合法零后写或以deepcopy假差量忽略。原严格断言保持。
 
 R202-Agent后继仅现system test透明捕获invoke内部向外的原CancelledError（wrapper再raise），输出args元素类型/Task状态，不输出值；现checkpoint差量只追加已知channel匹配布尔与leaf类型元数据。需先实测SDK cleanup Task是否真的在本次primary异常中交接，不能仅源码注释认作Root根因。生产/SQL/四D0继续freeze；Root资源与Git独占。
+
+R202 Root42451实际后继：2pass/1fail3.51s，自有DB回收/source同。原invoke内部捕获CancelledError.args=[]，无SDK cleanup Task交到invoke边界；因此不批准直接在run_agent遍历args的生产修复。新增项确为__error__ channel，但存储恢复value实际builtins.str，不能把对象Cancellation类型凭源码推定成运行值。下一同一system test只透明包装真实publish_agent_events叶投影消费者（不mock、全量转调原函数）观察异常args在gather前是否携带Task，固定有限预算/原断言保持；生产继续冻结。
