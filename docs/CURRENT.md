@@ -1,3 +1,9 @@
+R188提交：Agent A1 schema九路径已本地提交500c2c26、工作树clean，未push/未更新Root gitlink；仅持久边界，非执行和收费闭环。
+
+R188补充：Agent完整工程门2175pass、352资源deselected，lint/types/lock/frozen-sync/contract/build均0；只有持久化schema切片获验，执行与Billing仍开放。Web Move候选未同步原3310，不称用户当前页面已修。
+
+R188当前（2026-10-04）：原三负责人沿task并行；Root22564真实Next/Chromium三case3pass，关闭已证Move generation失效后旧busy不解除，unknown保原幂等身份可显式重试，Direct拒绝rename/reload/nonactiveDelete/草稿路径通过。Root81224完整Web check0：2454pass0fail0skip+build，非全业务验收。Agent Root80705 raw/deparse误报43/15已实际复现，严格规范化修复后Root86926真PG58pass4.85s，自库回收/sourcehashsame；只持久边界，runtime producer/Billing仍OPEN。Root16750串行终态均0：Agent全database254pass29.64s，BFF最终完整182pass0skip45.28s、build/pure743pass1既有skip/format0，自DB收回/hash保持/Redis保持；仅owner切片通过。Root限定治理17pass1fail，历史w1e IAM旧gitlink checkpoint漂移189项仍OPEN，不称Root全门成功；BFF初两锁序fixture漏projectRef与未及时捕获reject已定位，后继非head queue错误oracle已加强，不冒生产死锁/完成。Settings真实缺口、原IAB、Project全CRUD/public删除等未闭合；完整Wave0–7 active。原45606/46036不重启、无新永久服务、无模型费用；Billing/uv任务外保留。
+
 R187最新（2026-10-04）：Root32229 Node22完整Web check自然exit0：258contract/50architecture、lint/types、164files2450pass/0fail/0skip143.09s、Next build0。已准确备份同步原3310仅snapshot函数/期限、分页helper与pagehide草稿，不带Move或其他候选。Root随后真实IAM/BFF/System独立Chromium：原conv_ffd7挂起10.236s→可见error无永久loader→Retry正文/草稿恢复→释放旧请求→硬刷新全文/草稿一致；不是原IAB同页恢复。浏览器/context已关闭，原45606/46036不重启。Settings 13可交互模块+1禁用Help已打开核查，并真实复现通知/快捷键切tab重置、个性化404无提示且重开丢值；Billing summary/by-model/ledger503、项目resources503、agents404仍开放。项目93b2011d settled显示真实名称5251c78c/0会话行/可编辑，旧截图icon-only原因仍未证。QA矩阵已落现test-cases；70组不冒整体通过。
 
 Agent A1四D0经4P1/2P2退回修订后独审0，Root95067真实PG schema first slice2fail1pass0.40s，自有DBabsent/sourcehashsame；确认attempt/evidence两表与Run completeness缺失，只是schema RED，不是runtimeE2E。费用producer/正式Billing逐attempt消费、项目rename/delete等继续OPEN，完整Wave0–7 active。保护任务外Billing与uv.lock f7e1。

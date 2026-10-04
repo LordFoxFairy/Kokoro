@@ -1,3 +1,25 @@
+R188绑定：Agent schema验收源提交 `500c2c26e303065e8811989336aa20701330f4f3`（本地未发布）；Web/BFF本轮测试绑定冻结工作树，未冒提交态或当前运行态。
+
+R188工程门补记：Agent默认2175通过/352资源deselected，不能替代系统级用例；真实database254通过只证明owner持久化门。Web三个真实浏览器用例已通过，但Move候选未同步当前3310。逐页业务矩阵状态和70组完成统计不因此上调。
+
+## R188 当前深度验收结果（2026-10-04）
+
+沿原70组展开，不新建计划中心、不改变统计为虚假完成。系统fixture证明真实Next/Chromium交互，但不等于现3310真实owner/原IAB同页；纯门不替代用户链。每页/模块仍须主链、边界、异常、权限、状态机及刷新对账全部执行。
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果/证据|
+|---|---|---|---|---|---|---|---|
+|TC-UI-R188-001 / T-C02|Direct侧栏交互与拒绝恢复|正规Product session、真实Next/Chromium、fixture owner A/B|A/B打开→各输入草稿→切回→B改名503→刷新→A active时删B→新建空composer|草稿逐会话保留、拒绝改名回滚canonical、删B不抢A焦点/URL、不生成幽灵历史|P0|主链、异常、状态机|Root22827稳定editing定位后PASS；Root22564同case再次PASS。不覆盖rename200、首次模型发消息或Project scope。旧定位失败保留，不当业务RED|
+|TC-UI-R188-002 / T-C04|旧Move合法回包结束busy|A→P真实POST held；可切B|发A Move→切B→释放合法ACK→检查动作/URL/列表|旧busy结束，B active/URL保持，不旧导航或列表刷新，单POST|P1|异步竞态、状态机|Root48623正确RED：全Move仍disabled10s。窄machine修复后Root22564 PASS，system580b/source d2357c20。不关闭post-confirm/pre-continuation既有AppFrame窄竞态|
+|TC-UI-R188-003 / T-C04|旧Move未知结果保幂等身份|同A/B；owner socket-close故障可恢复|A Move→切B→断owner响应→原A菜单显式Retry→合法ACK|busy结束、unknown保原path/key/body，只有A可重试；B不抢焦点、无自动请求|P0|异常恢复、幂等、状态机|Root22827正确RED→Root22564 PASS；相同path/key/body与单一Retry已断言。不是丢未知命令后造新请求|
+|TC-DB-R188-004 / T-B07|Agent attempt/evidence持久边界|Root独占临时PG、正式fresh installer、批准A1 R2|装canonical→验八态/知识/bytes/digest/时间/计数边界→改CHECK(TRUE)/删PK/index/列→verify拒绝|fresh严格通过，非法组合与catalog漂移被拒；自有资源收回|P0|数据契约、边界、异常|Root80705 43pass15fail：rawDDL/deparse误拒fresh。规范化定义修复后Root86926全部58pass4.85s，ownDBabsent/sourcehashsame。只schema/SQL边界；repository/Run producer/Billing/provider链仍未实现|
+|TC-BFF-R188-005 / T-C05|Project DELETE与消息准入双锁序|同P的A/B canonical会话；具名自有PG advisory barrier|分别Message先、DELETE先；采精确PID锁边→释放→检查成员、正文、dispatch、取消、不可变事件、同键零改写|合法父锁串行、删除原子、非head不得伪造新queued head；无未处理拒绝|P0|并发、事务、生命周期|Root93713 180pass2fail：fixture漏projectRef/PID观测错误与迟绑rejection。修正后Root90911 181pass1fail；Root65921 spec明确非head错误oracle（0!=1）。加强两个seed head绑定+完整before/after events相等后，Root16750完整BFF真PG/Redis182pass0fail0skip45.28s；限定本地owner PASS。public DELETE/Storage dispatcher/关联task政策仍OPEN|
+
+R188 Web完整工程Root81224 exit0：258contract、50architecture、lint/typecheck、164files2454pass/0fail/0skip149.25s与Next build。日志`/tmp/kokoro-r188-web-full-check-root.log` SHAe1a91e4d。工程通过不是所有页面/Settings/真实模型完成；当前运行副本未带Move，本轮零重启/零新永久服务，自有独立登录浏览器已关闭，0模型请求。
+
+Root16750 Agent全部database邻门254pass/0fail29.64s（55条第三方弃用/Beta warnings保留），自DBabsent/sourcehashsame；独审schema/catalog0P0/P1/P2。Root本轮限定治理18项17pass1fail，历史w1e IAM checkpoint绑定旧owner gitlink，与现inventory不一致（189差项），保留OPEN，不弱化断言；先前一次误写不存在测试文件路径exit4/no tests不计执行通过。
+
+Settings已实证的通知/快捷键切tab重置、Personalization404静默、Billing读503仍FAIL；所有未发布owner能力留待实现，不因隐藏/disabled算完成。BFF default optional project_ref的父锁及Run/project上下文一致性新缺口待D0/真实行为切片，不称同owner问题为已证越权。
+
 ## R187 当前页面与模块系统验收清单（2026-10-04）
 
 此清单细化原70组，不另建测试计划或增加完成组数。**源码盘点不算执行、组件/Mock绿色不算业务通过、fixture BFF不算真实owner全链通过。** 原70组统计保持11通过/6失败/14待复测/38未验/0业务待决/1支付后置；以下子例逐项单独记录证据，整组必须全部必要子例满足才更新。

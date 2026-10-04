@@ -5725,3 +5725,19 @@ Root随后独立Chromium实际3310正规IAM登录/固定tenant/callback，打开
 AgentR2独审0后唯一新增真实database test1c6c6683，Root95067自有PG执行自然exit1：两A1表/Run completeness缺失schema反例2fail、既有Run authority预算正控1pass0.40s；manifest `/tmp/kokoro-r187-agent-pg-red-manifest.json` 自库absent/sourcehashsame，未用Redis/provider。不是runtime/Billing/E2E；DDL与生产写仍未授。完整goal active、70组不变，uv.lock f7e1/Billing任务外保持。
 
 R187 Root台账提交前真实治理：topology exit0（九运行模块）、定点治理298pass3.00s、Root/Web/Agent diff-check0；Redis15=0、原45606/46036仍live、自有browser已关闭、Agent自库absent。完整标准违规审计与完整Root1715等全门本轮未跑，不用定点治理关闭它们。只提交Root四台账，不暂存子仓/uv/Billing；全部候选源码仍待按owner切片正式审查与提交。
+
+## R188 深度页面/模块验收推进（2026-10-04）
+
+- 三独立负责人沿现task实派：Web系统交互、Agent A1持久边界、BFF竞争定位；只读审查串接，Root独占资源/Git，非10个空窗口。
+- Root48623两个系统失败里Direct为editing locator错误，真实input替换按钮后原:has失配，不据此乱改源码；Move matchingACK则正确业务RED。Root22827 Direct1pass、unknown Move忙碌1真RED，原稳定key不因切active被丢弃。
+- Web窄machine d2357c20：同command+promise的失效operation已知ACK/reject结束busy，unknown保原identity。Root22564同三真实Next/Chromium3pass25.93s，独审0；Root81224完整Web check0（258contract/50architecture/164files2454pass0fail0skip149.25s/lint/types/build）。运行副本未带Move，不冒原IAB恢复/所有业务完成。
+- Agent SQL0909/schema先0548 fresh验证错误，Root80705真PG43pass15fail5.33s，独审保P1；从自有canonical PG捕获10项完整规范化CHECK，改schema64e8严格比较后Root86926全部58pass4.85s，mutation门真通过，自DBabsent/sourcehashsame。A1只是schema与知识边界，实际attempt repository/Run finalizer/provider/Billing接线继续OPEN。
+- BFF Root93713完整180pass2fail52.51s；Root亲核fixture漏projectRef，实际不存在预期Project锁链，不接受初只读“双方总先Project”的错误推断。唯一tests修scope/PID短观测/立即outcome后Root90911 181pass1fail45.69s；Root65921 spec两case1fail1pass，明确queued新Message是non-head，旧oracle要求新head错误。加强seedhead身份和完整immutable events对账，不改production每queued都发head。
+- Root16750串行全Agent database及BFF最终完整资源进行中，owner frozen；无共享reset/flush/重启，已有终态句柄全部消费。原launcher45606/Web46036仍live，uv.lock f7e1保留，自有独立登录/home读回浏览器已关、无模型POST/扣费。
+- 测试台账同test-cases现增逐用例8字段结果；70组11pass/6fail/14retest/38未验/0待决/1支付后置不冒上调。Settings通知/快捷键假保存、Personalization缺owner404、Billing503、Project public CRUD、default project_ref Run上下文和原IAB仍明确OPEN。删除项目关联定时任务政策已询用户，不阻塞其它切片；完整Wave0–7 goal active。
+
+R188资源终态补记：Root16750 AGENT_DATABASE_EXIT=0/BFF_FULL_EXIT=0。Agent全database254pass29.64s，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r188-agent-schema-l1q_ndx5/manifest.json；BFF真182pass0skip45.28s，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r185-bff-full-m48kffdh/manifest.json；自库回收/sourcehashsame/Redis同。两日志SHA8d600922/27585793。Agent最终schema独审0。Root限定拓扑PASS但两治理文件17pass1fail14.35s（w1e IAM历史checkpoint与现owner gitlink189漂移项），未放宽/删断言；历史整体门绿色不当此次结果，Root治理OPEN。前一次误写不存在test文件exit4/no tests单列。完整goal仍active。
+
+R188 Agent工程终态与收口：Root49017实际完整工程链退出0：ruff format 275文件、ruff check 0、pyright 0errors/0warnings、默认pytest 2175pass/352资源类deselected/795依赖warning（111.96s）、uv build wheel+sdist成功；默认纯门的deselection不是352个业务通过。随后Root实际uv lock --check、uv sync --frozen、contract-check均0，锁文件未改。schema独审及Root真实database254通过支持仅九路径A1持久化边界提交；runtime repository、模型调用、Billing接线、原IAB与逐页全业务均未关闭。Web Move运行副本无executeConversationMove，本轮修复只在源码/测试候选，不冒用户当前预览已包含它。Root治理17pass1fail仍开放。
+
+R188提交收据：Root在原Agent main逐路径提交九文件持久化切片，SHA `500c2c26e303065e8811989336aa20701330f4f3`，Agent工作树clean；提交前在最终文档集重新执行ruff格式/检查、contract与wheel/sdist构建均0。提交未push、Root submodule gitlink未暂存；不冒正式发布/消费者pin/当前运行服务已包含。根仓仅提交四份任务/测试台账，其余Web/BFF/Billing/uv变更保持。后继优先：Web Move confirmed视图副作用隔离；BFF缺省project_ref权威上下文及项目CRUD；Agent真实attempt repository及finalizer；Settings正式持久操作。跨仓消费按owner发布后依赖顺序推进，资源门仍由Root串行。
