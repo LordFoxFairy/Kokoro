@@ -1,3 +1,13 @@
+## R218 System元数据与Agent真实消费者反例（2026-10-04）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际与边界|
+|---|---|---|---|---|---|---|
+|TC-AGENT-R218-A / 正规3.0 response接收绑定|现公开SystemModelClient、owned真实HTTP peer、合法同response identity+两bound|正式resolve请求→peer核exact路径/body/1request→返回3.0→核完整内部identity与bound|接收required严格界，同一revision绑定，不丢字段|P0|主链、契约、集成|Root87510正确RED MODEL_RESPONSE_INVALID；当前源码仍2.0，NOT_FIXED。|
+|TC-AGENT-R218-B / 锁定SDK真实输出界|现LiteLLM constructor、真实owned completion peer，无生产Billing许可|实际ainvoke→peer先核ok/path/model/1request→读取JSON cap/冲突别名|正式动态owner bound落实为max_completion_tokens，不能由测试向裸SDK注入128自证|P0|边界、集成、安全|Root87510正确RED None≠128；这是现无界wire缺口，NOT_FIXED；此独立probe不是完整System→factory→SDK或Billing正控。旧14case通过。|
+|TC-SYSTEM-R218-META / 已实施owner与pending消费者元数据|真实生成OpenAPI/provenance/README，版本3.0|分别核description、唯一Agent pending+历史2.0 baseline、两actual文件digest；正规重生后复验|机器文字与实际阶段一致，19source/operation/schema不漂移；未消费不冒已验|P1|契约、数据真实性、状态|Root3failed/11passed RED→check/16contract/205全测试/fresh23断言22表GREEN；本地commit955bd58。仅metadata，不冒Agent或UI闭环。|
+
+两Agent反例SHA87797089，Rootowned peer/source391全保持；System6path独审a246527a归零、完整资源终态保持，TTL自然过期而非清共享缓存。完整70组11/6/14/38/1不升；Root91992辅助28边界+13收据声明/篡改门实际18failed/23passed/124deselected12.79s，source_same true；缺required/missingboth漏拒/11tamper未拒/inventory缺失为正确RED，23负例旧extra拒绝不当完整GREEN。源码原子Green已授原owner，完整decoder/SDK override/ownership/installed/nativePG/真实provider与积分链仍须实际验收。
+
 ## R217 四故障系统矩阵（2026-10-04；不改变70产品组）
 
 预置共同边界：正式受信Message HTTP、真实owned PostgreSQL/现Redis、冻结BFF候选；Root资源独占，最后commit7289b3a4运行树395项与已验候选完全一致。原3310未升级，本轮没有浏览器全链验收。

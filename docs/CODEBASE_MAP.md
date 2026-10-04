@@ -8,6 +8,12 @@
 - 同product的00为长期愿景，01/05/06/07为补充；`docs/INDEX.md`与handbook README提供导航。
 - PRD要求不当实现证据；任务仍task、运行事实CURRENT、系统结果test-cases、证据progress，无新计划中心。
 
+## R218 当前System消费来源与Agent真实RED
+
+- System最终固定本地commit955bd587f46a771e43a4330d202d90a7d2d67262，3.0 artifact94ed9165/provenance5fda620c、19source；原bd09253/74c338/a2c1为历史冻结。两个生成器修metadata，uniqueAgent仍pending，Root205/16contract/fresh23/22已验，未push/3310消费。
+- Agent实际consumer仍2.0；现真实`tests/integration/test_model_provider_retries.py`新增两HTTP/SDK RED，Root14旧pass/2新fail；现三测试/四D0已刷新并Root18fail/23pass边界收据RED；九source/七tests/四D0已Root准入原子Green写入，源码/installed/真实native付费链没有因此通过。
+- 精确新receipt在Agent自身唯一provenance后续落地；Root临时报表不成为可编辑contract。后继必须从固定Git objects验证原件，不引入跨仓运行时import/SQL/ORM。
+
 ## BFF有限Message准入与exact-client生命周期（R217）
 
 - 本地main交付7289b3a4ae8f2df5c249350d59b9405c33fb4083；现 `src/infrastructure/postgres/chat-turn-commit.ts`唯一拥有Message事务、Project→Conversation锁、canonical dispatch replay、4.5秒总界和checked-out client具名error listener→release→remove生命周期。`src/http/routes/chat-authorization.ts`仅Message取消无界owner预读，可信IAM与其他路由授权保持；无新SQL/契约。

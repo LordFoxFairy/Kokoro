@@ -1,6 +1,20 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R217。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R218。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R218 Agent真实缺口RED与System固定发布源（2026-10-04）
+
+上一goal turn为progress：BFF15paths实际main7289b3a4与Root台账a2e47d4a。本轮沿R216消费者/既有Wave0–7，不新建目标；70产品组仍11通过/6失败/14复测/38未验/1支付后置，当前3310未升级，无新增浏览器验收。
+
+**Agent：真实失败已定位，不是未运行的计划。** Root87510在冻结tests87797089上走真实owned HTTP/锁定SDK，14旧case通过、2新case失败（1.31s；5既有warning）：合法System3.0 response被当前decoder拒绝为MODEL_RESPONSE_INVALID；正式LiteLLM constructor产生真实POST、model/path/count正确，但max_completion_tokens实际None≠128。source391项前后同，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r218-agent-peer-red-j1c49kxn/manifest.json`；无共享DB/Redis/provider/3310操作。独审64ee625e 0P0/P1/P2。Root固定来源机器门另实际exit1，现provenance仍2.0/f570，不以local doc收敛冒consumer已实现。两RED不替完整decoder边界、真实SDKstream/override/client ownership、installed篡改与native PG/Billing用户链。
+
+**System：两P2元数据已真实关闭并本地提交。** generator旧not-implemented描述、Agent旧2.0已消费disposition与README少provenance hash，先实际3failed/11passed（600ms）正确RED。严格6path正规生成，仅info.description/Agent pending状态及对应source/artifact digest变化，无schema/operation/SQL/runtime/package/lock修改。Root7090完整check/contract16、16files205测试通过（23.29s）、fresh23断言22表通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r218-system-full-e2nbmr1x/manifest.json`。source/自库集合保持；Redis immediate为false原样保留，25.374s自有TTL自然过期后回基线，没有共享DEL/FLUSH。独审a246527a归零。
+
+Root72015精确6paths提交 **System955bd587f46a771e43a4330d202d90a7d2d67262**，main clean/全tracked bytes等完整门；未push/Root gitlink/3310启用。新3.0 artifact SHA94ed91655741cbba66ce80a4c41717b9179cc509cb6858534e0b78aa3e6dc059，provenance5fda620ca1526f57d8759b2c6282ed6d674455a78e8ff9ee7fc0522e8f5a3832；19-source仍恰19且只有generator项变化。Root逐固定Git object核19/19，交Agent唯一临时receipt `/tmp/kokoro-r218-agent-system-fixed-receipt.json` canonical aaf1428aa898592fb370021790d5e55cb3dd43b44080696dd2ec99f91904408b，不成为Root第二contract。receipt `/tmp/kokoro-r218-system-commit-receipt.json`。
+
+当前Agent仍92b802e2、源码/机器pin未实施；原owner已完成既定可观察3tests与4现D0的新固定来源同步；Root41case又实际18failed/23passed/124deselected12.79s（manifest T/kokoro-r218-agent-matrix-red-h7b8svjf/manifest.json、source_same true），11tamper/current checker漏验与missing required等实际RED成立，独审195afdc7归零。实际盘点已有4tests+4docs dirty，进行中的候选不冒最终验收；Root已正式准入D0九production/machine路径与七tests/四D0，原owner进入R218/R219原子Green写入，源码正在修改、未冻结/未验收，不删native缺Billing0-provider、不造免费/赠送/known-zero。System上游两P2已关，R217旧artifact哈希和债说明只作历史；新消费必须955bd58+新两个digest，不用旧hash引用新文字。其余逐仓/逐页状态沿R217表，System更新为955bd58/clean/205与16contract；整体版本指针仍5差、混合工作树保留，uv f7e1不动。Root87510/7090/72015全已终态；无新常驻服务/共享reset/完整产品闭环声明。
+
+以下R217及更早为历史证据，当前以本R218为准。
 
 ## R217 源码交付与产品验收分开记录（2026-10-04）
 
