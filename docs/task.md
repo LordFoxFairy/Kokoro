@@ -8272,3 +8272,43 @@ R196-W2限定已验收：new f0fd64e7/17paths Root17297 clean完整2459pass0fail
 此片不阻塞Rootclean release预构建；declared subagent/取消路径留后继，不为凑case跳过main授权或fake grant。尚未授任何生产GREEN；任务交付即待审查，不称Agent用户或费用闭环。
 
 R197交接终态：local candidate release f7505c57已精确pin、clean六owner源码与五Node构建/Agent frozen安装和正式import原址/严格preflight均通过；旧3310不动，数据保留决策待答。R197-A4-FC-RED唯一test6760已Root37791真实业务RED（1物理请求!=0，1fail1.71s），未提交；owner已冻结、不授GREEN。下轮继续原任务：按数据决策切换或保留；Agent收敛两个窄D0项及错误/资源系统oracle后原owner实施，Billing正式artifact/消费沿既有Wave顺序，支付后置。
+
+
+## R198：Agent原生运行与费用owner前置并行收敛（2026-10-04）
+
+上一goal turn判为progress：Root f750双pin/clean六owner预构建与832d9f91台账已提交；37791真实PG/native SDK业务RED明确无许可provider1!=0。原launcher45606/Web46036此轮再确认live，数据保留问题未答且不重启；完整Wave0–7及70组不缩小。Root832d9f91，Agent814e＋唯一未提交test6760，Web/BFF/Billing/uv保护同原集。
+
+|任务|归属/Agent权限|允许范围/依赖|验收/交付|
+|---|---|---|---|
+|R198-A4-identity / P1|原agent_mainline_qa_owner只读|Agent三D0/Run事实/锁定LangGraph及LangChain SDK实际执行身份；只写/tmp报告，不改仓/资源/Git|确认native task/checkpoint身份在首次、tool-loop、retry、resume下真正稳定性与可取位置，提出唯一最小logical-call/input摘要及无Billing缺席恢复方案，不能随机ID/猜metadata；Root裁决后才授D0与实施|
+|R198-Bill-owner-gate / P1|原agent_prepare_final_review只读|Billing9eeabf3机器contract及3D0/现实现/唯一计划，保护5D0+3codec，不写/启资源；输出/tmp|对Admission、ExecutionEvent、billing_subject/ConsumptionToken/policy字段、实际路由/SQL实现逐项证据核对，给最小后继owner写集/真实RED，不把experimental artifact当runtime|
+|R198-root / P1|Root跨owner审查与资源/Git|复用原全Wave/task，审Agent/Billing闭包及现真实失败；维护原五台账|按已批准actual-only/cancel政策收敛可立即实现owner前置，保留原3310数据等待决策；只按证据记状态，不新建计划中心|
+
+### R198 已批准后继写入范围（同仓一名 writer）
+
+- 上一回答仅核对会话绑定与运行版本，没有改变源码或关闭业务测试，判为 no progress；本轮转入可执行的 Agent/Billing 两个独立 owner 切片，不等待会话运行切换。
+- **R198-A4-D0 / Agent / 原 agent_mainline_qa_owner**：唯一可写四份已有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT}.md`；814e929 基线与唯一 test6760保留，生产/SQL/contract/锁冻结。Root批准公共 Runtime.execution_info locator（version/tenant_ref/run_id/peer_path/checkpoint_id/checkpoint_ns/task_id）经 RFC8785 + UUIDv5 派生 call_id；固定 namespace `a06d00e2-defa-5fe3-8f2c-10ecb19c1161`；ordinal1 attempt namespace `64675e75-8af6-50b4-ade3-d413e5144dc9`，name=`{call_id}:1`。两 namespace 是标准 NAMESPACE_URL 对项目 v1 identity URL 的确定派生，一次发布后不随运行变换。node_attempt/time/trace 不入身份；checkpoint_ns 允许合法根空字符串，禁止以 truthiness 误拒根 namespace；缺失 ExecutionInfo/身份字段 fail closed。input_digest 保持 locked Run input 义，实际 model invocation digest 的正式字段仍是全链后继要求，不以当前摘要替代。无 Billing consumer 时 prepare/not_requested→稳定执行失败→既有 terminal seal(not_dispatched/unresolved missing_usage)，不造 denied/known_zero/grant；先查实际 execution/run_agent.py、execution/failures.py 的错误生命周期再改 D0。报告四面一致和精确后继源码写集，Root通过设计门前不写生产。
+- **R198-Bill-subject-RED / Billing / 原 agent_prepare_final_review 转唯一 writer**：9eeabf3基线；先只修改已有 `test/contract/openapi-v2-target.test.ts`，添加完整合法 Admission control 与缺少 billing_subject 的系统边界语义断言，同时保留 caller payer_ref 禁止约束。先读本仓三个设计面和 Root TS/SQL 手册；不制造 route404/import失败当RED、不弱化现断言。Root执行冻结测试后才授权唯一机器 producer/正常生成修复。五D0+三codec原字节必须保留，不暂存、格式化或清除；Billing政策勘误以另一个显式交接切片执行。contract correction不冒用户预占/结算通过，IAM authorizer→pricing→Admission→evidence消费依既有计划继续。
+- **Root / 集成与资源**：原3310进程45606/46036已实查live，不停止、不清旧对话。所有 Git/index/提交与真实 PG/运行测试由 Root 串行；两个 writer 交付文件清单/hash，不提交。审查使用冻结字节或明确基线，实际失败保留历史。完整 Wave0–7/70组状态不缩小。
+
+R198 Root已逐读Agent四D057行与真实invoke_once失败路径；批准设计门，无DDL/wire变化。后继原Agent writer只先修改已有 `tests/integration/database/test_model_call_runtime_chain.py` 的正式invoke_once/terminal oracle与exact POST/finally清理，生产冻结；Root验证真正未授权外发/错误终态RED后再放生产集。typed unavailable使用既有dependency_unavailable/retryable=false，缺身份existing contract_incompatible。
+
+R198 Billing Root真实Node24/Ajv门RED：唯一新case 1fail/240名称过滤，合法含billing_subject请求被现closed schema拒绝；错误发生279合法control处，后续missing/payer断言未执行。批准同writer修改现 `scripts/openapi-v2-target.ts`、`contract/openapi/v2/openapi.yaml` 和两个现contract tests/contract README，并用正规 `contract:generate` 更新生成链产生的文件；版本3.0.0-experimental.2，严格closed billing_subject(kind=user/project/organization/service,ref1..255) required。不得改runtime/SQL/lock/旧v1或保护5D0+3codec，摘要只由生成链计算；若生成链影响额外文件必须报告准确清单，Root不手改generated或固定计数掩盖差异。测试补kind/ref/未知字段边界，冻结后Root重跑语义门和完整generated/contract门，尚不证明消费授权或实际扣费。
+
+R198 Agent Root81548生命周期真实RED已取得：10 canonical CHECK正控0，native case 1fail/69warnings1.77s，provider1/completed/attempt0/completenessnone；自有PGabsent/sourcehashsame。独立审查1b14b741指出GP漏frozen recipe、Swarm静态path未定义两个P1；已接受原writer1c996eba纠正并逐读四D0（TECH1c158391/API f61747cf/DATA cb5cfc21/CURRENT2122e7a8）。冻结前排序BFS shortest+同长lex、合法cycle/多入边不删；GP为内生built-in child，显式profile由subagents同一helper产出且middleware独立child path，不能复用parent identity。现recipe proof可验证，不授更改call_artifacts/schema/wire。原writer获准在既有§8最大集加runtime_profile_plan.py及两个现test_runtime_profile_plan.py/test_factory.py实施最小GREEN，先已有系统RED对应闭包；只允许无资源纯检查，Root独占后继真实PG与最终完整门。源码caller覆盖/恢复/全费用仍待验，不以文档或单main门关闭。
+
+R198 Billing clean9ee+8path patch78a43c7d门：首次Root漏离线Prisma生成导致typed lint1243失败，真实保留；同ownedclone正规生成后完整verify0、1117pass/411资源skip、generated drift0且源码同/9保护路径同。独审1eb99d45为0P0/0P1/1P2（缺kind/ref单负控与其余三kind正控），授原writer只补已有Ajv case，不改source/version/digest；Root最终冻结再复跑后才提交。clean门不含原未交接codec tests，1117不同于旧mixed1347，不靠数量声称业务通过。
+
+
+### R198 当前交付与后继范围
+
+|任务|Owner/权限与精确范围|当前证据与后继|
+|---|---|---|
+|R198-A4-D0|Agent原writer四现D0，Root独占commit|精确8a3169bd；BFS shortest/lex静态peer path与GP built-in child冻结profile已收敛；文档不是运行完成|
+|R198-A4-FC-GREEN|原agent_mainline_qa_owner：9 production＋4 tests候选；Root资源/审查/提交|Root81548真RED→54105真PG主调用缺许可负例1pass，provider0/ND封口；独审13SHA 0P0/P1。原13路径candidate未提交，其它caller/恢复/实际费用与完整门OPEN|
+|R198-A4-unit-isolation / P1|只授原writer已有 `apps/kokoro-agent/tests/unit/agents/test_factory.py`；其余12生产/测试冻结|保留16fail/56pass历史；仅准确16个旧工具/Skills/HITL/lifecycle非费用case显式长名opt-in test-only passthrough，默认false、test-scope teardown，不在生产/PG/gate/path使用、不造grant/弱断言。构造与lazy build边界须实查。交最终13SHA及Ruff/Pyright/纯门，Root完整复跑与真PG同冻结验证后再提交|
+|R198-Bill-subject|Billing原writer已冻结8path，Root精确提交|364f4ba/experimental.2，Rootclean final1117pass/411资源skip、全verify/generated0、独审0P0/P1/P2；保护5D0+3codec与Rootuv9hash全同。只验契约非预占/扣款|
+|R198-Bill-IAM-next / 设计待授写|原Billing负责人先只读完成77487acf纠正；5D0+3codec继续保护|公网Registry非前置；IAM clean0537/SDK0.7 owner pack可正式开发验收，不提交/tmp或sibling dependency。下一片Root先批准现TECH/API/DATA精确勘误及adapter测试范围，再真实IAM HTTP authorizer→pricing→Admission→Evidence消费；支付最后|
+|R198-W2-live / 原卡续接|Root独占release/唯一3310/browser|原fixture退出会清自有测试对话，已问保留政策待答；无shutdown/旧cookie跨新run伪验证。cleanrelease预构建不冒页面恢复/CRUD完成|
+
+Root本轮topology实际两项HEAD/pin漂移FAIL；不暂存两未发布gitlink或其它owner mixed。全70组与Wave0–7不缩小。Billing自有candidate依赖/构建已清理，仅留源码与证据；54105终态0已消费、自PG回收，原45606/46036继续live。

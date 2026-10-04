@@ -1,10 +1,10 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R197。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R198。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R197，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R198，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -15,8 +15,8 @@
 |---|---|---|
 |Web `apps/kokoro-app`|main `ce40cecc4071a6dd775730f6e32619d2cfc130b4`：W2仅17路径已验窄提交；原19mixed保留，未push、原3310未启用Move|Root17297独立clean候选：contract258/architecture50/lint/types/build0、165files2459pass/0fail/0skip125.05s；tree a46941cf与已验candidate17文件逐SHA一致。四个真实Next浏览器旅程通过属于fixture；当前3310旧public7.0/noMove，原用户真实绑定链仍待验。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3`；19路径未交接mixed保留|Root57207 clean正式提交：173真实PG/Redis通过/0skip38.4399s，743pure+1既定资源skip，schema/build/check/format0；public7.1 Move已挂载。此前mixed候选184不是正式8e33证据；Project DELETE/Storage/独立任务政策与当前3310消费仍OPEN。|
-|Agent `apps/kokoro-agent`|main `814e92905991c2aa6d68b000cd8f81c2d550a93f`＋一未提交系统RED测试：A3b8c08ea4＋SDK retry六路径窄片|R196 Root94390锁定SDK真实loopback HTTP14pass；23752工程2178pass/415资源deselected113.23s、lock/frozen/Ruff/Pyright/contract/build0，50267文档后contract/build0。303真实PG/安装wheel属于A3b历史已验，不是retry片重跑。原生Middleware/授权/真实provider/费用链仍OPEN。|
-|其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
+|Agent `apps/kokoro-agent`|main `8a3169bdab053a64a5539c0482960f34ccb34242`：四D0已提交；13路径原生guard候选未提交，旧16个非费用unit隔离待验|R196 Root94390锁定SDK真实loopback HTTP14pass；23752工程2178pass/415资源deselected113.23s、lock/frozen/Ruff/Pyright/contract/build0，50267文档后contract/build0。303真实PG/安装wheel属于A3b历史已验，不是retry片重跑。原生Middleware/授权/真实provider/费用链仍OPEN。|
+|其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing364f4ba（experimental.2契约窄片本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
 Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
 
@@ -148,3 +148,14 @@ R196最终当前：Web正式W2源码ce40cecc已Root精确17路径提交（tree a
 R197后继实际状态：本地候选Root release `f7505c5725a689569430e4cb41816dbd20f09c01` 已pin ce40/814e；独立六owner clean release `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-r197-clean-release-6pzen10k/Kokoro` 五Node构建0＋Agent frozen安装/正式worker与HTTP import原址0，严格启动前identity门0。manifest8a76f2c9；9677/44327/29832已终态，其中44327 offline缓存失败保留，后29832正常frozen网络门通过。实际topology唯一Billing旧pin mismatch仍FAIL，不以准备完成冒用户闭环。旧3310未切换，不新增服务/数据库；测试数据保留问题等待用户答复。R197-A4-FC-RED只授一个测试baseline文件，不授生产GREEN。
 
 R197-A4-FC-RED实际Root37791终态exit1：冻结test6760e326，仅一case、真实PG Run/Lease/recipe→原生DeepAgents/锁定SDK loopback正常完成后 `provider_requests=1` 不符无授权零外发预期，1fail/45既有warnings1.71s。不是collection或连接失败。System/provider仅响应sandbox，不是正式Billing或真实外部推理；首assert失败后dispatch/evidence两assert未执行，不宣称两项零通过。自有库absent/sourcehashsame，无Redis/外部调用；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r197-agent-native-red-lqsrdbef/manifest.json`。生产未改，唯一RED文件未提交，后继须D0稳定identity/缺席恢复与更精确oracle后再授GREEN。
+
+
+### R198 最新切片事实（不替代原用户验收）
+
+- 会话归属仍是 BFF 唯一 nullable `project_ref`；移动保持同 Conversation ID 和原 Message，无第二会话/绑定事实。正式 Web ce40/BFF8e33 已验候选与旧3310的运行版本必须分开，当前用户 Move/全CRUD仍待原页验收。
+- Agent 四D0精确提交 **8a3169bd**；两独审P1（Swarm canonical peer path、GP冻结recipe缺席）已在设计收敛。13生产/测试路径候选经Root **54105** 真实fresh PG→native SDK→loopback owner/provider→正式 invoke_once/terminal，**1pass/28warnings1.58s**，provider0、prepare1/not_requested、run.failed dependency_unavailable/nonretryable、ND evidence sealed。canonical10 CHECK正控0、自库回收/源码hash相同；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r198-agent-full-3dcupei4/manifest.json`。这是主调用缺许可不外发的局部负例，不是实际模型/积分成功链。原81548 **1fail**（provider1/completed/attempt0）保留。
+- Root核既有 completeness SQL：已封口 `not_dispatched` 不计unknown，Run unknown0/complete；Evidence仍 unresolved/missing_usage 与 actual unknown/not_observed，**不是已核实费用为零**。独审13冻结SHA 0P0/P1。旧非费用factory门 **16fail/56pass** 仍待处理；仅原writer获准同测试文件显式opt-in隔离，生产gate/default和真PGcase不得放宽。生产、真实caller/recovery、完整工程门与最终提交仍待验。
+- Billing **364f4ba182922f8e370b874fa64ad100c6f10106**，仅8路径正式契约切片：3.0.0-experimental.2 required closed billing_subject，owner生成链摘要 `7d63133656a99a536bdae22c02b3a6796f80f12f42e44bdcdbdd338024010494`。Root最终35621 clean完整verify/generated0，**1117pass/411资源skip**；独审0P0/P1/P2。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r198-billing-clean-e9j5oiqq/final-manifest.json`。初次漏Prisma离线生成造成1243 typed lint错误保留；正常生成后再验通过，未放宽门。未push/consumer pin，Admission/IAM/pricing/实际预占结算仍OPEN。
+- IAM正式SDK0.7已有 clean commit `sdk:pack` 与仓外真实consumer路径，**公网Registry不是研发硬前置**。可用owner tgz+commit/contract/archive digest开展隔离开发；portable长期lock不得提交/tmp绝对路径或sibling link。报告 `/tmp/kokoro-r198-billing-consumption-seam-correction.md`（77487acf）。下一片先精确勘误Billing D0，不把旧Fastify与目标Nest双接线。
+- Root实际topology仍FAIL：仅Agent/Billing HEAD与gitlink不同，不把未发布候选pin进组合冒充完成。保护9路径hash全同；clean Billing自有node_modules/dist已回收，source/log/manifest保留。原45606/46036 live约24h44m，无重启/清对话/重复服务。IAB读取超时未发生有效操作，不宣称原页恢复。
+- **完整70组仍11通过/6失败/14待复测/38未验/1支付后置；Wave0–7 goal active。** 当前preview更新仍等既有数据保留问题的答案，不重复索取；其它owner开发可独立继续。

@@ -8641,3 +8641,18 @@ Root9677 clean release准备自然exit0：`/Users/nako/WebstormProjects/github/t
 R197-A4-FC-RED按task末尾精确第8节表仅授原Agent owner一个新database系统行为baseline文件，production/SQL/contract/锁全部冻结；Root未授GREEN或假grant。它只验证当前无Billing许可仍外发旁路，不宣称模型收费主链完成；仍待作者冻结与Root实际PG/SDK HTTP失败证据。
 
 R197-A4-FC-RED作者仅test文件6760e326交接；作者另做无资源collection/格式/类型检查（非Root业务验收）。Root37791亲跑真实fixture：1fail/45warnings1.71s，实际正规enqueue/claim/frozen recipe/native SDK stream正常完成，provider peer count1而预期0；assert失败后的dispatch/evidence checks未执行，不能称二者已通过。自有PG `agent_r197_9c27b8bcd8d54e068e3ff67a4bb50b04` 已移除、sourcehashsame，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r197-agent-native-red-lqsrdbef/manifest.json`；session已终态，无重启/新永久服务。Root已告原writer冻结，未授生产GREEN，后继需要exact POST counter/错误生命周期oracle，stable call identity和无Billing恢复语义D0；不把无费用keeper旁路当闭环。
+
+
+## 2026-10-04 — R198 原生准入负例转GREEN、Billing closed attribution窄片落库
+
+本轮改变源码/任务下一行动，判progress；但不是完整用户闭环。Root当前基线832d9f91，Agent四D0精确8a3169bd、Billing8path精确364f4ba，未push/未更新未发布gitlink；Web/BFF mixed与9受保护hash保持。
+
+Agent正式invoke_once/PG terminal强化oracle Root81548实际RED：provider1、run.completed、attempt0、completenessnone，1fail/69warnings1.77s。原writer最小native middleware先prepare→缺Billing failclosed，固定ExecutionInfo RFC8785 UUIDv5身份，main/GP/catalog/Swarm按冻结recipe独立path，13候选未提交。Root54105同正式链实际GREEN **1pass/28warnings1.58s**：provider0、prepared1/not_requested、run.failed dependency_unavailable false、唯一head ND evidence sealed，10 canonical CHECK正控0；自PG absent/sourcehashsame。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r198-agent-full-3dcupei4/manifest.json`，日志 `/tmp/kokoro-r198-agent-native-green-root.log`。既有SQL排除ND未知收费统计，Run unknown0/complete不等于Evidence已知零；Evidence仍unresolved/unknown。独审冻结13SHA0P0/P1，主调用负例通过不冒其它caller/恢复/费用/浏览器。旧factory16fail/56pass如实保留，仅原测试文件16非费用case隔离获准，生产与系统测试不放宽，完整门待Root重跑。
+
+Billing新合法subject control Root RED1fail，修正required closed subject后最终8path patch e6900a1d，实验版本3.0.0-experimental.2，YAML directSHA7d631336；其余三kind正控与缺kind/ref等负控补齐，独审0P0/P1/P2。Root独立clean9ee候选最终35621完整 **1117pass/411资源skip24.69s**、format/lint/types/build/schema/contract/generated0，源码hash同/9保护hash同；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r198-billing-clean-e9j5oiqq/final-manifest.json`。初33276漏Prisma生成导致1243lint错误保留，正规offline生成后70832与35621真实通过，非放宽门禁。Root精确364f4ba，仅契约切片；未交接codec测试排除，1117与旧mixed1347不可比为业务覆盖。owned node_modules/dist回收，source/log/acceptance/manifest保留。
+
+IAM SDK只读原报告把公网Registry当硬前置的偏差已由77487acf纠正：实际clean sdk:pack＋仓外consumer已有正规tgz/commit/contract/archive digest闭包，可直接隔离开发验证；长期portable lock不得/tmp/sibling path。后继先现Billing D0勘误/正式IAM authorizer，不深入部署。真实费用与积分组仍OPEN，支付最后。
+
+Roottopology实际FAIL仅Agent/Billing HEAD不同gitlink，未隐去；永久45606/46036 live约24h44m、不重启/清数据。IAB inventory31s及原tabfocus31s超时，无有效操作不证明产品因果或恢复。所有本轮已列验收句柄终态已消费；70组仍11/6/14/38/1，完整goal active。
+
+R198 Root台账后治理限定门 `python3 -m pytest -q scripts/tests/test_repository_topology.py` 实际7pass0.04s，五文档diff-check0、9保护hash再核同；此语义门不抵消actual topology两项FAIL，也未重跑Root全治理/标准153项历史缺口。

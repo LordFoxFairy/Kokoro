@@ -109,3 +109,12 @@ python3 -m pytest scripts/tests
 ### R197 运行输入身份与会话绑定
 
 BFF唯一Conversation归属是nullable `project_ref`；正式Webce40cecc消费public7.1 Move，无第二归属实体。Root此片仅pin已验Webce40cecc/Agent814e929，其他owner pins保持；旧3310临时副本仍public7.0/noMove。`scripts/dev/serve_local_login.py`是清理自有应用/IAM库的一次性fixture，不是持久应用更新入口；切换前先确认旧测试对话保留政策并用独立clean release构建，不复制mixed/重置共享数据。研发业务闭环、Billing owner与完整Wave0–7边界不因此组合候选而完成。
+
+
+### R198 原生 model-call guard 与 Billing 契约前置
+
+- BFF Conversation仍唯一nullable `project_ref`，Web只消费归属与同ID Move，不建立第二会话事实。
+- Agent `model/call_runtime.py` 候选：锁定SDK `ModelRequest.runtime.execution_info` locator确定UUIDv5，durable prepare后Billingconsumer缺席failclosed；不是provider wrapper或正式Billing client。`agent_factory.py` 在main/Swarm/GP/catalog各实际native middleware链装配；`execution/runtime_profile_plan.py` 在冻结前确定BFS shortest/lex peer path并纳入GP built-in profile；`worker/main.py`注入正式PostgresModelCallRepository。四D0已8a3169bd，生产13path候选仍未提交。
+- `tests/integration/database/test_model_call_runtime_chain.py` 是正式invoke_once/PG terminal业务oracle，Root54105 main负例已验；FakeBus仅测试事件传输，owner/provider为loopback，不冒Redis/真实Billing/model成功链。完整caller/recovery仍待测。
+- Billing `scripts/openapi-v2-target.ts` 是experimental producer，正常contract:generate输出 required closed subject；8path364f4ba与directSHA7d631336已独立clean门验，仅contract不等于Admission runtime。
+- IAM `scripts/pack-sdk.ts` 与 `test/consumer/iam-client.consumer.test.ts` 已有正式clean owner artifact/仓外消费者路径；SDK root facade `IamClient.verifyBillingAuthorization` 为后继Billing准入唯一消费入口。开发验证不等公网Registry，长期portable lock仍需不可变可解析制品；不复制SDK源/第二JWT实现。
