@@ -8312,3 +8312,8 @@ R198 Billing clean9ee+8path patch78a43c7d门：首次Root漏离线Prisma生成�
 |R198-W2-live / 原卡续接|Root独占release/唯一3310/browser|原fixture退出会清自有测试对话，已问保留政策待答；无shutdown/旧cookie跨新run伪验证。cleanrelease预构建不冒页面恢复/CRUD完成|
 
 Root本轮topology实际两项HEAD/pin漂移FAIL；不暂存两未发布gitlink或其它owner mixed。全70组与Wave0–7不缩小。Billing自有candidate依赖/构建已清理，仅留源码与证据；54105终态0已消费、自PG回收，原45606/46036继续live。
+
+
+R198-A4最终限定已验收：原writer13 production/test＋4D0已交接，Root50248真实fresh PG完整database **304pass/0skip41.39s**、default **2182pass/416资源deselected114.63s**、lock/offline-frozen-sync/Ruff283/全Pyright/contract/wheel/sdist全0，自库absent/源码hash同；独审b010ef5最终0P0/P1。Root亲读四D0并将TECH对catalog path措辞收紧为静态源码审查（实际新增注册断言仅main/Swarm/GP），post-doc43932及17539 contract/build0。第一次doc diff命令错误重复相对cwd只属Root命令错误，已正确读diff，无产品修复归因。精确17path提交 **59034f48333f9efeae25fa7f18f6e422f066949e**，Agentclean/index空；9保护hash保持、无push/gitlink冒release。
+
+R198-A4-unit-isolation已限定验收：仅8显式opt-in调用点对应16旧非费用case、test-scope teardown/defaultfalse，原assert不弱化；透明fixture不证明准入/收费。下一任务原负责人续接真实native main恢复/GP/catalog/Swarm caller矩阵与取消/身份异常（tests-first另授范围），正式Billingconsumer/dispatch/provider成功/actual费用仍OPEN。不得把本最低failclosed切片标作整个Agent完成。

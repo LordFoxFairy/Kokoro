@@ -1608,9 +1608,11 @@ R196最终正式切片：Webce40cecc基于clean候选17paths完整2459pass0skip1
 
 |用例 ID/标题|预置条件|测试步骤|预期结果|优先级|类型/分类|实际结果与未验|
 |---|---|---|---|---|---|---|
-|TC-R198-A01 / 主调用缺费用准入时安全终止|Agent8a3169bd＋13冻结候选；自fresh PG与正式native SDK；Billingconsumer缺席；System/provider仅loopback协议，非付费模型|enqueue/claim→冻结recipe→factory native stream→正式invoke_once/terminal事务→记录物理provider请求并读取Run/Attempt/Evidence/outbox→关闭handle与自库|provider0；attempt1 prepared/not_requested后ND sealed；run.failed dependency_unavailable nonretryable；Evidence unresolved/missing_usage/actual unknown不造零费用；无残留自有资源|P1|安全/异常/状态机|Root81548 RED1fail→54105 GREEN1pass1.58s，canonical10 CHECK0、自库absent/sourcehashsame；仅main负例。其它caller/recovery、实际Billing/provider与原浏览器未验|
+|TC-R198-A01 / 主调用缺费用准入时安全终止|Agent59034f4（已验17path；前置8a3169bd）；自fresh PG与正式native SDK；Billingconsumer缺席；System/provider仅loopback协议，非付费模型|enqueue/claim→冻结recipe→factory native stream→正式invoke_once/terminal事务→记录物理provider请求并读取Run/Attempt/Evidence/outbox→关闭handle与自库|provider0；attempt1 prepared/not_requested后ND sealed；run.failed dependency_unavailable nonretryable；Evidence unresolved/missing_usage/actual unknown不造零费用；无残留自有资源|P1|安全/异常/状态机|Root81548 RED1fail→54105 GREEN1pass1.58s，canonical10 CHECK0、自库absent/sourcehashsame；仅main负例。其它caller/recovery、实际Billing/provider与原浏览器未验|
 |TC-R198-B01 / Admission归属闭集边界|Billing364f4ba，experimental.2机器schema与owner generated产物；非运行HTTP入口|合法user/project/organization/service＋255ref；依次缺subject/kind/ref、未知kind、空/256ref、嵌套未知payer与body payer字段|四kind合法；required/closed/长度边界拒绝；billing_subject仅归属，不授权caller自报payer/金额|P1|边界/安全/契约|真实Ajv RED合法请求拒绝→final clean verify1117pass/411资源skip及generated0；限定contract片独审0。IAMtoken验证、真实AdmissionHTTP/余额/事务不因此通过|
 |TC-R198-A02 / 实际子调用与恢复不绕过准入|同正式native工厂；GP/catalog/Swarm合法cycle、多入边与checkpoint恢复；无Billing许可|实际启动各子节点；重复恢复相同checkpoint；检查独立peer-path/稳定call与attempt、物理请求数、terminal/evidence、取消与资源回收|每个调用先owner prepare；无许可均provider0；同节点恢复无重复identity/外发，合法图不误拒；取消有权威终态|P1|主链/异常/状态机|待执行：当前仅recipe/path静态装配与main负例；不拿mock/unit/独审替代native系统路径|
 |TC-R198-C01 / 会话只有项目绑定关系|实际已启用Webce40/BFF8e33的同一用户运行组合；存在Direct会话与原消息及项目|Direct→项目→Direct；两列表切换、刷新、返回；lostACK同key重试时选择其它会话|同Conversation ID/原Message不复制；project_ref唯一权威，列表无幽灵/重复；不抢用户其它选择、不永久loading|P1|主链/交互/异常/状态机|候选四真实Next旅程已验；旧3310仍旧consumer，无本轮原页执行。runtime切换的数据保留待答，当前不能关闭live组|
 
 完整门退出要求不变：当前版本真实用户路径、各owner实际依赖与异常/权限/生命周期通过，P0/P1清零；局部负例或schemaGREEN不等于全研发闭环。
+
+R198-A01最终绑定Agent59034f4：Root50248全真PG304pass/0skip（含该main负例）、默认2182pass/416资源deselected及所有工程/build门0；候选源SHA不变，后四D0contract/build0。A02实际子调用/恢复和C01原3310绑定仍待执行，B01只是contract；总70组统计不改变。

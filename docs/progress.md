@@ -8656,3 +8656,6 @@ IAM SDK只读原报告把公网Registry当硬前置的偏差已由77487acf纠正
 Roottopology实际FAIL仅Agent/Billing HEAD不同gitlink，未隐去；永久45606/46036 live约24h44m、不重启/清数据。IAB inventory31s及原tabfocus31s超时，无有效操作不证明产品因果或恢复。所有本轮已列验收句柄终态已消费；70组仍11/6/14/38/1，完整goal active。
 
 R198 Root台账后治理限定门 `python3 -m pytest -q scripts/tests/test_repository_topology.py` 实际7pass0.04s，五文档diff-check0、9保护hash再核同；此语义门不抵消actual topology两项FAIL，也未重跑Root全治理/标准153项历史缺口。
+
+
+R198-A4最终Root50248自然exit0已消费：canonical10 CHECK；全database **304pass/81warnings41.39s**，default **2182pass/416资源deselected/795warnings114.63s**，lock/offline frozen-sync/Ruff283/全Pyright/contract/wheel/sdist均0。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r198-agent-final-mz7dpzuq/manifest.json` result0/database_absent/source_hashes_equal；全执行约171s，不伪称416资源通过。旧16失败仅原unit显式隔离后全默认门通过，新gate与系统仍默认生产规则；最终独审b010ef5为0P0/P1。四D0窄事实后Root43932/17539 contract/build再次0；Root校13source/test逐SHA与50248同，exact17paths精确提交59034f48333f9efeae25fa7f18f6e422f066949e，Agent工作树clean。TECH catalog覆盖措辞仅静态审查，不冒真实caller。Root一次错cwd docdiff和猜Prisma路径不存在的只读命令失误保留，不作产品错误；最终正确读diff与仅owned ignored PrismaClient清理完成。其它caller/recovery、实际provider/Billing费用/原3310与70组仍不升。
