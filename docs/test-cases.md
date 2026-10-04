@@ -1,3 +1,92 @@
+## R187 当前页面与模块系统验收清单（2026-10-04）
+
+此清单细化原70组，不另建测试计划或增加完成组数。**源码盘点不算执行、组件/Mock绿色不算业务通过、fixture BFF不算真实owner全链通过。** 原70组统计保持11通过/6失败/14待复测/38未验/0业务待决/1支付后置；以下子例逐项单独记录证据，整组必须全部必要子例满足才更新。
+
+### 策略与范围
+
+重点风险：①身份/项目/会话切换与迟到响应串数据；②loading、未知ACK、断线及取消错误收口；③按钮或内存值假装owner已保存、执行或收费。以普通用户与管理员、同团队不同人及跨tenant为权限维度，使用正式登录与同源adapter。默认个人私有；队列串行属于同会话约束，不阻止验证双窗口提交、其他会话并行及重复请求幂等。研发验收不扩展生产运维。
+
+共同前置：冻结Web/BFF及目标owner commit、contract version/digest；正式测试账号与获授权资源；明确自有fixture数据与清理；不得清空共享PG/Redis。测试边界取当前owner契约的min/max，逐项测min−1/min/max/max+1及空/Unicode，不凭QA计划发明限制。每个页面都执行直接URL、导航进入、刷新、前进后退、键盘、窄屏、200%缩放、loading/empty/error/disabled/retry与迟到响应；缺入口、缺契约或未实现仍记缺口，不因隐藏标通过。
+
+### 主链路与逐模块能力（以下“待验”不是成功）
+
+|用例ID / 标题 / 归属原组|预置条件|测试步骤|预期结果|优先级 / 类型|当前状态及缺口|
+|---|---|---|---|---|---|
+|T-L01.R187 登录与工作区|正式IAM、固定tenant、无Product session|表单登录→callback→工作区→输入→刷新→退出→重登|一次正式认证回链；无可见连接/整页重试中转；正确主体、可编辑；退出不复活私有内容|P0 / 主链路、状态机|待当前完整组合复验；原用户loader仍OPEN|
+|T-U01.R187 Home提示|已登录、无active会话|逐个点输入框下提示/More→编辑→清空；打开能力外链|仅填草稿，不自动发送或扣款；无模板变量、虚假营销或未配置连接成功|P1 / 功能、交互|待验；用户原展示问题未以静态修改关闭|
+|T-U02.R187 Composer|独立与项目会话；可用模型|多行中文/IME→Enter与Shift+Enter→发送/Stop；附件取消；空文本操作|组合输入不误发；合法一次提交；清空/disabled/Stop按真实Run；没有内嵌方框/遮挡|P0 / 功能、边界、交互|待真实浏览器/截图与Run验证|
+|T-C01.R187 会话列表|独立、项目P/Q、同时间分页数据|独立/P/Q逐个读→两页→刷新→切scope|归属与标题准确，无icon-only未命名幽灵行；不漏重、不把任务当会话|P0 / 功能、分页|后端历史限定证据；截图项目/空行当前待核|
+|T-C02.R187 会话创建与打开|P/Q与独立入口、不同草稿|三个入口创建→首发→切换→后退/前进→硬刷新|canonical会话归属、URL、正文与草稿一致；切换不取消其他Run|P0 / 主链路、状态机|待两scope完整浏览器旅程|
+|T-C03.R187 会话重命名/删除|本人active与nonactive会话、独立/P两scope|重命名确认/取消→刷新；删除确认/取消→ACK前后列表与正文检查|ACK前保原事实，失败可重试；ACK后仅目标改变，删除当前项安全导航，刷新不复活|P0 / CRUD、异常|待当前全部分支；不得凭本地删行通过|
+|T-C05.R187 会话Move|本人P/Q与独立、active/非active|P→Q→独立；保持草稿与消息；验证菜单与刷新|confirmed才导航/更新；历史Run/正文不变；pending全局禁竞；unknown原行原key恢复|P0 / CRUD、状态机|Root39260 pending/unknown子例通过；拒绝提示文案匹配仍待核；非真实BFF终验|
+|T-C05.R187 项目CRUD|本人项目、项目会话/文件、已批准删除政策|列表→创建→打开→改名→取消删除→确认删除→刷新|项目是独立资源；改名/删除owner ACK与GET一致；项目及所属会话/仅项目文件删除，已移出会话及独立资源保留|P0 / CRUD、生命周期|Project rename/delete正式UI消费缺失；linked task/active Run分支需owner闭环|
+|T-P01.R187 独立任务|正式ScheduledTask/Scheduler；独立与P关联|列表→创建→改名/编辑→暂停/恢复→删除→刷新；查发生记录|任务独立于会话，关联P不改变资源身份；重复触发一次执行，状态来自owner|P0 / CRUD、主链路|待真实Scheduler/Agent组合|
+|T-A01.R187 Agent过程/Todo|真实简单聊天与复杂工具Run|发送→queued/streaming→Todo更新→tool完成→终态→刷新|简单聊天不伪造计划；复杂Todo全值准确；友好摘要，无raw参数/隐藏推理；刷新同水位|P0 / 主链路、状态机|运行UI存在但当前全链待验|
+|T-A02.R187 Skill实际加载|已安装授权Skill；真实Run|选能力→发送→resolving/loading/ready或failed→刷新|安装/选中不冒加载；执行记录绑定实际版本，失败可解释且不假ready|P0 / 主链路、异常|待Platform→Agent→BFF→Web整链|
+|T-A04.R187 审批与继续|多项未决HITL、合法与其他用户|完整决策→一次resume→重复/旧决策→刷新与重连|同thread全部未决项处理；合法继续一次；旧/越权拒绝；ACK不冒Run完成|P0 / 权限、状态机|待真实HITL用户旅程|
+|T-F01/F02.R187 文件与Library|真实Storage/scanner；本人、P与其他人文件|上传→扫描→列表/分页→预览/下载hash→刷新→取消/删除|真实字节/hash/状态一致；过期或恶意文件拒绝；跨人/项目隔离|P0 / CRUD、安全、主链路|外部存储/扫描整链待验|
+|T-F03.R187 作品|真实Agent生成并经Storage提交作品|运行→交付卡→预览→下载→刷新；重复事件|一份权威作品、一张卡；hash一致，失败不生成假作品|P0 / 主链路、幂等|待真实资源链，不用fixture卡通过|
+|T-C04.R187 分享|本人私有会话、获授权显式分享、另一用户|创建分享→另context读→撤销→旧URL再读|默认私有；公开链接范围明确；撤销后无继续读取/控制|P0 / 功能、安全|待当前真实owner全旅程|
+|T-U04.R187 Settings壳|正式登录、13 tabs与深链|账户打开→逐tab→More/搜索→nested dialog→Esc→重开/刷新|tab/URL一致，焦点返回、无遮挡、晚响应不写新tab；未知tab安全归一|P1 / 导航、无障碍、状态机|库存完成，实际浏览器待验|
+|T-U04.R187 外观与通知|Appearance正式入口、localStorage可用/拒写|语言/主题三态→关闭→重开→刷新；四通知开关同流程|语言/主题按Web真实偏好恢复；通知若承诺保存必须持久化，不假保存|P1 / 功能、边界|语言/主题有实现；四通知仅内存，缺持久化|
+|T-L03.R187 Account|普通用户正式Product session|查看身份→升级链接→退出→后退/刷新；退出失败重试|身份由可信owner投影；未实现写动作诚实禁用；退出后私有数据零残留|P0 / 权限、状态机|身份字段占位，资料写未闭环；退出当前复验待执行|
+|T-U04.R187 快捷键|Settings shortcuts与工作区|五项录制/冲突/Esc/reset→关闭→重开→工作区触发→刷新|不截获IME/系统保留键；承诺保存则持久并真实执行|P1 / 功能、交互|目前仅组件内存、无全局注册；未完成|
+|T-S02.R187 聊天默认模型/Agent|有效、失效候选；新旧会话|选择→关闭→新建→核首条wire→刷新→Follow profile；旧会话对照|新会话消费真实选择，旧会话不改写；失效/503可见错误，不假保存|P1 / 功能、状态机|候选读失败降空无Retry，需修；真正发送待验|
+|T-U04.R187 个性化|正式Personalization、已发布owner写/读契约|编辑blur→owner ACK→重开/刷新；知识添加/编辑/删除与导入|只有成功响应才宣称保存；GET恢复；失败保输入且可重试|P1 / CRUD、异常|缺canonical操作与GET，PATCH未检查response.ok；未完成|
+|T-S01.R187 Computer/部署|正式Computer/Deployment；无真钱动作|方案/slider→确认取消；Website/App目标；Domains升级取消|无契约不冒创建成功；取消零资源/扣费；无callback明确不可用|P1 / 功能、边界|Cloud创建契约/错误反馈缺失；Deployment入口未等于生命周期闭环|
+|T-A02.R187 Skills页/设置|本人ACTIVE安装、正式Platform/Storage|列表/详情/分页→合法ZIP发布→ACK→刷新；坏ZIP/scan失败|本人权威安装、固定版本；unknown同key恢复；无preview假写控件|P0 / 主链路、异常、安全|静态正式read存在；当前真实ZIP/发布闭环待验|
+|T-A03.R187 MCP/连接器|正式Platform MCP投影；连接供应商许可|MCP列表/分页/详情/错误Retry；连接→正式callback→重开→断开|MCP正式只读不泄secret/URL；connected必须owner读取确认，连接/断开有真实事实|P0 / 安全、主链路|MCP正式read待验；Slack/Telegram/LINE无正式操作/读回，缺URL可假connected|
+|T-L05.R187 Team|普通成员与管理员；邀请/成员测试对象|普通人读/拒写；管理员邀请/取消/重发、改角色/移除、最后管理员、leave；刷新|无提权，成功后权威refetch；409需刷新；自退出清私有scope；命令幂等|P0 / 权限、CRUD、状态机|正式client存在，当前真实双身份旅程待验|
+|T-B03/B05.R187 积分与流水|Billing授权赠送及真实账本；冻结7/5定价revision|授权赠送→余额/流水→两页过滤→刷新→一次模型执行前后比对|前端只显示owner金额；赠送可追溯；一次费用唯一流水，倍率/舍入由Billing决定|P0 / 主链路、财务|当前summary503仍OPEN；不得改DB假充值/免费|
+|T-B04/B06/B07.R187 正式费用|正式逐attempt admission/evidence/receipt、真实provider|预占→执行→已核用量结算；失败/取消→仅核实消耗结算→其余确认释放；unknown核对|调用前许可；重复不重扣；unknown不补0、不按Run终态结案|P0 / 状态机、异常、幂等|Agent runtime接线与Billing已发布逐attempt操作缺失，P0未闭环|
+|T-B08.R187 Subscription/支付|真实plan目录；未配置渠道正控|目录/错误Retry→双击checkout→401/未配置；返回/刷新|未配置诚实禁用；HTTPS合法跳转；不伪造订单或支付成功|P1 / 功能、异常|目录/错误可验；真实渠道最后，未执行真钱|
+|T-U04.R187 Help/Agents入口|正式路由与能力声明|导航/直接URL→正常/404/503→重试/返回|无可用能力需诚实说明；模型与Agent清单来自owner，无credential泄露|P1 / 功能、异常|Help未实现；当前agents404，待owner定位|
+
+### 边界值、异常、安全与状态机专项（应用到上表每个可操作模块）
+
+|用例ID / 标题 / 归属原组|预置条件|测试步骤|预期结果|优先级 / 类型|当前状态|
+|---|---|---|---|---|---|
+|T-R03.R187-B 名称/输入/分页边界|每owner当前schema限制、合法正控|空/空白/Unicode/超长；limit min/max越界；金额0/大值；不合法cursor|稳定错误、输入保留；不截断假成功、不溢出/漏重，不把合法空态当错误|P1 / 边界|各页面逐项待验，不以通用表算覆盖完成|
+|T-U04.R187-E 网络/解析故障|可控浏览器HTTP边界与owner正控|依次headers/body pending、断网、坏JSON、401/403/404/409/429/503→显式恢复|既有期限内收口；私有数据failclosed；保草稿/已读部分，零假成功；Retry有界|P0 / 异常|Root39260 snapshot故障子例通过；其他模块未验|
+|T-L04.R187-S 私有与管理员隔离|同tenant A/B、跨tenant C；各自项目/会话/文件|改ID/深链/直接mutation/旧cursor/撤权后续流；普通人触发管理员操作|统一拒绝、零非法写；默认个人私有，显式分享之外不可读；无secret/raw tool data|P0 / 权限、安全|每资源与操作待完整组合验证|
+|T-C07/R03.R187-S 重复与未知ACK|真实owner幂等契约、两窗口|双击/同key同body重放/异body冲突；响应丢失同key查询恢复|一命令一事实；未知不换key重复执行；同会话FIFO单head，其他会话独立|P0 / 幂等、竞态|后端局部证据；浏览器全用户旅程待验|
+|T-C02/C09/A05.R187-T 切换与恢复|A/B会话、P/Q与active Run、合法水位|输入立刻硬刷新；快速切换；旧请求晚到；各Todo/Skill/tool/审批/作品时点刷新|草稿exact key保留；旧generation零写；不重复正文/卡片；权威水位续接、状态有界|P0 / 状态机、竞态|Root39260草稿/snapshot子例通过；五时点真实Run待验|
+|T-U03/U04.R187-A 视觉与可访问性|桌面/窄屏、200%缩放、reduced motion|逐页面截图、键盘与读屏、菜单/弹窗焦点、长代码/表格/部分错误|无指针覆盖/截断/方框；focus-visible、正常滚动，loading/error状态可读|P1 / UX、无障碍|逐页截图/axe/视觉回归待验|
+
+### 执行与退出标准
+
+执行记录绑定上述ID，包含commit/pin、角色、步骤、真实预期与实际、PASS/FAIL/BLOCKED/NOT_RUN、脱敏日志/截图及自有资源清理。先正确失败证据，再最小修复，再相同路径与邻接回归；准备错误不算业务RED，观察超时不算进程终止。正式owner组合与真实provider路径必须另验，不把fixture或纯门挪作证据。
+
+研发可交付：当前范围P0/P1为0开放缺陷；全部必要主链路与权限/失败恢复PASS；各页面CRUD/API与权威刷新一致；正式用量、余额、预占、结算/释放和流水闭合；已批准删除与取消政策被真实验证；当前commit工程门、完整系统矩阵、无障碍/视觉/bundle门有实际结果且无未解释skip。后置支付明确排除真实渠道验收，不声称商业支付可上线。未实现能力及缺owner契约必须逐项保留阻塞/后续owner，不能靠隐藏或宣称“已完成”达退出门。
+
+R187最终工程复验：旧英文filter纠正后Root48115同三system3pass/61名称过滤37.05s；撤回无证据layout-effect修改，所有业务断言/期限不变。Root32229 Node22完整check自然exit0：258contract、50architecture、lint/types、164files2450pass0fail0skip143.09s、Next build0。日志`/tmp/kokoro-r187-web-full-check.log` SHA16b8da1b。仅工程门和该故障子链通过；既有confirmed Move视图副作用风险尚需晚响应测试，不标全部Move通过。
+
+### R187 当前真实运行组合的实际页面验收
+
+基线原3310当前IAM/BFF/System、Web main9b42的运行副本；Root先逐字核三运行文件等于HEAD，精确备份后仅同步snapshot函数及10s常量、helper与草稿pagehide。运行adapter SHA98358d65（没有混入Move），helper f1ce8201、draft4d2e75c7；备份manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r187-runtime-backup-828qjs5z/manifest.json`。未重启/清数据/改model；自有独立Chromium+context最终已关闭，未新建IAB页。
+
+|用例ID / 标题|前置条件|实际步骤|预期|优先级 / 类型|结果/证据|
+|---|---|---|---|---|---|
+|T-L01.R187-REAL / 正式登录|当前真实owner、本地授权验收帐号|表单CSRF submit→固定tenant→callback→app|正确正式回链、工作区可编辑|P0 / 主链路|PASS限定正向；真实303/302/303/callback303；首帧disabled仅booting，后续实际enabled，不把瞬时pending当永久失败|
+|T-C05.R187-REAL-P / 用户截图项目空间|相同帐号与project93b2011d，不写业务数据|真实URL→等待owner list→核标题/行数/输入/截图|canonical名称/项目scope、无幽灵空会话行|P0 / 功能|settled名称“新建专案 5251c78c”、0canonical会话行、输入enabled，截图`/tmp/kokoro-r187-current-project.png` SHA992bc7c4；resources503独立FAIL。初读“Project unavailable”为尚未settled，不计错误根因；不是原IAB旧截图原因证明|
+|T-U04.R187-REAL-TABS / 全设置库存|正式cookie，Settings实际modal|通过账户菜单进入→逐个tab→核控件与disabled|全部模块可达或诚实禁用，非preview|P1 / 导航|13可交互+1disabled Help实际核查；只证明入口/控件库存，不证明每模块读取/CRUD成功|
+|T-U04.R187-REAL-N / 通知不保存|General Browser notifications=false|click变true→Shortcuts→General|若设置已生效，切tab保留|P1 / 状态机|FAIL：false→true→false，真实重置；未触发浏览器权限或owner写|
+|T-U04.R187-REAL-K / 快捷键不保存|New task初值⌘⇧O|Clear→General→Shortcuts|显式清除应保存，不复活旧键|P1 / 状态机|FAIL：初值→Not set→原⌘⇧O；非真实全局注册验证|
+|T-U04.R187-REAL-PREF / 个性化假保存|正式Nickname为空、真实adapter|填QA marker→blur→观察响应→切tab重开|错误可见/输入保留；成功需GET恢复|P1 / 异常、CRUD|FAIL：PATCH404、0可见alert、留内存marker、重开为空。marker未写owner；明确不是保存成功|
+|T-B03.R187-REAL-READ / 积分读失败|正式cookie、Billing未闭合|Credits→等待真实summary/by-model/ledger响应与UI|权威账本可读；失败有恢复入口|P0 / 主链路、异常|业务FAIL：三503；UI实际2alert与Reload，不误称无Retry（旧英文locator“Retry”不匹配实际“Reload”，属测试oracle问题）|
+|T-U04.R187-REAL-SNAPSHOT / 真实owner挂起恢复|重新正式登录且session authenticated=true；原conv_ffd7两真实message-scroller items|输入后立即hardreload，hold exact首snapshot→10s error→显式Retry→释放旧route→reload→全文/草稿对比→清测试草稿|不永久loader；真实正文/草稿不丢，不采纳旧请求覆盖|P0 / 异常、状态机|PASS限定链：10.236s error，Retry正文逐字同原，hardreload两消息逐字同原/草稿保存，0模型发送；截图`/tmp/kokoro-r187-real-owner-recovery.png` SHA9c008052。独立context，不关闭原IAB T-U04|
+
+实测证据 `/tmp/kokoro-r187-real-page-qa.json` SHA8275438c。首次driver将仅助手`data-slot=message`误当全部消息，1而非2（实际scroller items=2）；属于定位前置错误。另第一次故障旅程Retry前session已authenticated=false、请求401，未计恢复成功，重新正规登录后同完整路径才通过；不据此猜TTL或刷新根因。页面HTTP/库存已据实更新，所有其它未执行分支保留待验。Agent Root95067另仅真实schema合同2fail1pass0.40s，自库回收与源hash保持，不计T-B运行费用通过。
+
+## R186 / T-U04 首次历史读取永久 pending：当前系统验收（2026-10-04）
+
+|用例 ID / 标题|预置条件|测试步骤|预期结果|优先级 / 类型|实际结果 / 状态|
+|---|---|---|---|---|---|
+|T-U04-R186-SNAPSHOT / 历史网络挂起有界收敛|真实Next/Redis Product Session/Chromium、fixture BFF会话A，正常权威正文及真实草稿已成功|只hold浏览器exact snapshot→reload A→确认请求started/BFF计数不增→等待error→显式Retry第二GET→权威正文/草稿→释放旧请求→再reload|一次10s总读取预算涵盖全部分页；不永久loading、不采纳partial；手动Retry恢复，草稿保存，旧请求无写权|P0 / 异常、状态机、主链路|Root1934，test b15ee2e2：1fail/63名称过滤33.10s，失败明确为12s未出现error。正确业务RED→Root52521 GREEN 1pass/63过滤32.36s，重试/正文/草稿/reload/旧响应隔离全过；完整门与原runtime/用户同页待验。不是原IAB因果证明|
+|T-U04-R186-ORIGINAL / 用户当前标签|原3310/conv_ffd7，保cookie/正文，不新开标签|读取原标签闭集DOM与错误/网络阶段|当前原会话正文和编辑区可见，非永久loader|P0 / 用户验收|DOM命令dispatch前4s失败，事件读取8s未返回；原页面恢复未证明，FAIL/OPEN|
+
+首测试25591 composer前置错误（loading阶段查不存在的composer，30s失败）已保留日志但不计为业务RED。公共匿名HTTP仅证明正式IAM路径响应；R184新Chromium真实当前组合正常旅程不冒原标签恢复。全70组状态不变，完整Wave0–7目标不变。
+
 ## R180 / T-U04 原会话持续加载：当前系统验收记录
 
 原70组统计不变。原用户首屏仍失败/开放，不以同步、构建或其它fixture关闭。

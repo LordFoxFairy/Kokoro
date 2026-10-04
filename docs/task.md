@@ -7861,3 +7861,58 @@ R183独审BFF新两个case报告0P0/P1/1P2，COMMIT case只有数量+稳定快�
 - 验收：**原用户页面**会话正文、输入可用且刷新稳定，才能关闭T-U04。独立当前栈旅程只证明同帐号/同会话在独立Chromium可用；完整70组与Wave0–7不冒整体完成。
 
 R184实际收尾：Root43518自然exit0，冻结79447abe/e7253 canonical installer/build0，全chat-facts29pass0skip23.375s，新增Move×DELETE两序真实图通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r184-project-full-n8ayzyis/manifest.json` 自库absent、sourcehashsame、Rediskeys same。日志 `/tmp/kokoro-r184-bff-chat-full-root.log`。独审 `/tmp/kokoro-r184-bff-move-delete-review.md` 0P0/P1/1P2（完整deletion身份与B lifecycle/Share/Run精度待补），只接收当前局部证据，不冒全计划断言、public/Storage远端或全owner完成。原用户加载仍P0开放；uv.lock原f7e1与任务外Billing不暂存。
+
+
+## R185续进卡（前回合为progress：真实当前栈Chromium旅程与BFF29真PG门改变下一行动）
+原T-U04需同原IAB证据，现控制dispatch前失败且用户重开结果未答，不重复控制/询问；不以此停住其它已批准切片或缩完整Wave0–7。
+|任务|Owner/角色/基线/权限|精确范围/依赖|验收|
+|---|---|---|---|
+|R185-WEB-MOVE-RED|Web原agent4_lifecycle_review/唯一tests writer；main9b42，system8353；Root审查资源/Git|只现tests/system/oidc-rp-next-http.integration.test.ts：修两个R183case真实SidebarMenuItem scope及先选active A。保持零autoRetry/草稿/URL/owner409/global禁入/unknown同keybody oracle与预算；生产/D0/其他tests/Git/运行副本/资源不写|冻结lint/type0，Root现Node22真Next/Chromium真正业务RED，不能把前轮locator错误当业务失败|
+|R185-BFF-DELETE-COVERAGE|BFF原bff_delete_consumer_r176_plan/唯一tests writer；main8e33，test79447abe/productione7253；Root审查PG/Git|只现test/chat-facts.integration.mjs：收独审Case2 exactdeletion身份/生命周期/Share-Run preserved；追加现已批准plan Case3 Message×DELETE两真实锁序，闭集自有fixtures/trigger/function及AggregateError清理。三D0只短段当前本地候选事实纠正，不发publicDELETE/外部dispatcher。禁止生产/schema/contract/生成/locks/其它test/资源/Git|冻结真实SQL阻塞链oracle、纯checks，Root真PG全chat/fullowner；独审闭环后精确source切片提交，不冒public/远端/linkedtask已验|
+|R185-READONLY-NEXT-OWNER|storage_release_r175_gate_review/只读Root当前架构审查|仅读BFF三D0、现ProjectDELETE契约缺口与Storage发布16RPC及dispatcher缺口；只/tmp，生产/资源/Git不写|给现独立切片范围和owner依赖，确认不必等Agent才推进，无新跨仓contract owner/兼容层；最终新public接口仍owner先发布消费者后更新|
+
+R185-WEB-HITBOX-GREEN准入：Root60120冻结3937真实Next/Chromium自然exit1，2fail/61名称过滤/81.30s；正确SidebarMenuItem定位下normal click被真实Delete svg/button intercept pointer，Move首次POST尚未到。此为真实UI hitbox RED，不是此前locator错误，升级原样式P2为该路径P1。只授原Web writer现workspace-rail-session-item.tsx与workspace-rail-items.module.css局部修复：复用SidebarMenuAction的collapsed/focus/hover规则，独立Moveclass与三现动作不重叠定位/标题预留（含<=960 hitarea），不新组件/目录/CSS架构；保持正常click门不force、不keyboard绕过/no timeout增大。其余生产/engine/adapter/语言/运行副本不写。现同system允许加expanded/collapsed/mobile实际bounding box与正常点击oracle。反馈/busy仍先Root真RED再单独准入。
+
+R185 BFF全owner179/3真实失败后的only-test准入：修Case2全Conversation快照的已批准Move两字段差异，Case3读canonical source ledger字段且本地queued只按生产publicledger验证；标准AggregateError保全部errors并增加cause。收独审Case3全assistant/dispatch终态、Case2DELETE-firstShare/process/activity清理、精确deletion身份，scope仍现chat-facts唯一writer，生产/D0/其它tests/资源/Git不动。下次Root全owner重新验，不把setup错误当生产RED。
+
+R185-WEB-MOVE-BUSINESS-GREEN准入：Root39688实际exit1，2fail/61名称过滤/41.59s；hitbox正常click及首POST已通过，两个正确业务RED为409后无rolealert与A held时B enabled。准原Web writer只现AppFrame、rail-types/shell/session-list/session-item与messages/en/七locale，沿152dc方案安全通用Move失败notice（复用listNotice rolealert），current mounted/engine generation内投影，切scope/active/unmount不得迟到显示；global pending禁所有新Move入口，unknown Retry只原session且samekey/body。文案不宣称无外部变更、不泄owner原文。machine/adapter/auth/contract/CSS/运行副本冻结；同system仅增加三viewport实际几何/正常点击测试，既有两R183内业务oracle/预算不改；拒绝force click/假auth/mockengine。Root定点GREEN、独审再全门/真正owner旅程，未授权发布。
+
+## R186-UI-HYDRATE 当前用户P0优先任务卡
+
+|任务|Owner/负责人/基线/范围|行为验收与边界|
+|---|---|---|
+|R186-W-SNAPSHOT-RED|Web原agent4_lifecycle_review，唯一writer，main9b42工作树；Root审查/Git/共享资源。只现tests/system/oidc-rp-next-http.integration.test.ts补真实Next/Chromium故障case；现TECH/API/DATA三D0仅必要说明首次snapshot及其全部process分页共用单一fixed10s monotonic总预算（headers/body/parse均计入、不逐页重置）；scope/generation/dispose abort，timeout用现错误面/显式retry，不作为Run终态，AG-UI流不适用。已有Move及其他源冻结。|复用正式Productcookie/实际AppFrame/既有fixture owner；精确snapshot请求注入网络永久pending，其他网络/真实session不拦。10s总期限内收敛现会话错误面，不永久app-frame-loading；显式retry释放故障后真实owner历史恢复/reload一致，晚返回不污染新会话。禁止Mock engine、fakeauth、增加production fallback、新目录、自动无限retry或放宽预算。先冻结tests Root正确RED才准生产。|
+|R186-ROOT|Root独占实际资源、原IAB、现CURRENT/task/progress/test-cases、Git|正确RED后明确client具名snapshot读取边界的精确source集；再Root相同真浏览器GREEN及相邻生命周期、完整门、独审。原标签恢复需当前页面证据，fresh测试不冒同页恢复。|
+
+归属既有Web SessionClient读取与现AppFrame失败面，不新增业务owner/契约/schema。当前位置扩展与新网络helper相比，本片先复用现client中的局部具名函数，禁止把普通GET与AG-UI流统一为短timeout；设计/实现权分阶段授权。资源测试由Root执行，worker只静态/纯检查，保留Billing/uv及任务外文件。
+
+R186 Root正确业务RED1934自然exit1：1fail/63名称过滤33.10s，日志/tmp/kokoro-r186-snapshot-root-correct-red.log，test b15ee2e2。正常A正文/草稿已真实成功，reload后的exact浏览器snapshot被持有且BFF计数未增；失败精确为12s内未出现会话hydration error。不是认证/locator/setup失败。证明可构造永久pending路径，不证明原IAB唯一原因。
+
+R186-W-SNAPSHOT-GREEN精准准入：归属Web现snapshot execution adapter与process聚合，无新文件/层/owner；与扩4文件context比较，采用现两文件窄修复，理由是现client已有同AbortSignal覆盖fetch/body，adapter外包完整Promise可覆盖整链，分页只需沿同deadlineAt检查。原agent4_lifecycle_review只写src/engine/execution-adapter.ts、src/engine/hydrate-process.ts：固定10s absolute monotonic期限、单timer/controller、abort promise race、最终期限检查、finally移listener/timer/controller（旧finally不清新operation）；分页每await前后/重读沿同原期限，无partial采纳。现machine既有initial FAIL与expired恢复connection语义及generation守卫不动；client/wire/stream/Message/Delete/Move不动，禁止扩大API/通用transport/新的timer owner。system b15ee2e2预算/业务oracle冻结；仅允许在成功error/recovered阶段保存自有/tmp截图，不改变断言。Root真Next相同RED→GREEN、两文件独审和相邻生命周期验证后再决定原runtime精确同步；未准整个工作树发布或大面积copy。
+
+R186 Root52521正确真实Next/Chromium GREEN自然exit0：1pass/63名称过滤32.36s；同b15ee2e2业务oracle，两source冻结2c075a16/f1ce8201。首次snapshot永久挂起→10s内错误清算→显式Retry真实同源/fixture owner正文→旧route释放无覆盖→自然reload正文/草稿保持全过。仅证明受控网络故障用户路径，不是原IAB恢复。Root52931 Node22完整pnpm check已启动，期间整Web冻写；独立两source审查并行。共享Redis15门后0，原服务/数据未动。
+
+## R187 全页面/全模块研发验收并行任务（用户2026-10-04再次明确）
+
+不缩小Wave0–7、不另建计划中心，复用此task与test-cases页面/能力记录。Root亲核52931完整Node22 Web check自然exit1：contract/architecture/lint/typecheck通过，164files2445pass3fail148.37s；默认test失败故build未执行。失败三项：engine固定3microtask尚未完成驱逐；Move owner拒绝notice没有显示；R186重试恢复后草稿为空（单独系统门曾绿，完整矩阵真红优先）。不得同步原runtime或称全部修复。
+
+|任务/角色|Owner、负责人、基线与范围|验收/交付|
+|---|---|---|
+|R187-WEB-RAIL / 左侧全部功能与CRUD|Web原agent4_lifecycle_review唯一writer；main9b42混合候选。先只读梳理截图项目93b2011d与名称5251c78c疑点、项目与独立会话列表/空标题/选中/新增/重命名/移动/删除/分页/刷新。原R186两源冻结；现在只读定位52931两真system红及engine等待问题，给精确下一允许source集。|复用现T-C测试项逐能力分类Happy/Boundary/Exception/Security/State；每项真实路径/预期/状态/证据，未运行标待验。先正确RED才最小修复，Root资源重跑与最终放行。无页面重设计、兼容fallback、scope扩权。|
+|R187-AGENT-CHAIN / 聊天执行及测试|新原生Agent负责人，Agent仓唯一候选writer（阶段先只读审计/纯门）；main与起始SHA需自查；不改BFF/Root/Web/Billing/schema/pin。读Agent AGENTS、Python手册、三D0、CODEBASE_MAP、现真实模型组合入口。|用户链发送→queue/lease→模型→tools/todo/skill/approval→AG-UI durable→停止/取消/恢复→用量正式Billing，分独立模块逐能力证据。输出明确current缺口/现真实命令/前置owner；不启动共享runtime/模型请求/清数据、不拿unit充E2E，Root批准精确片后再写。|
+|R187-SETTINGS-QA / 全设置与其他页面库存|storage_release_r175_gate_review只读QA；Web main9b42混合工作树基线。路由/导航/设置sections→真实API调用与owner→读取/保存/刷新/权限/错误/禁用生命周期，对照现PRD和test-cases；仅/tmp报告。|列完整页面与可交互控件库存、缺失/假保存/仅本地/能力flag隐藏项，逐项可执行用户验收。无源码/Git/服务/共享资源/浏览器抢占；给Root下一批实际浏览器journey，不将静态覆盖记通过。|
+|R187-ROOT / 主控与整体验收|Root唯一Root文档/Git/共享资源/原IAB负责人，原45606/46036保留|冻结切片后Root逐真实失败→修复→同场景GREEN→邻门→整体检查与用户可见页面。业务数据/owner隔离/模型积分正式链；实际未闭环项保留FAIL/OPEN。|
+
+页面覆盖必须同时列项目空间、独立会话首页与历史、任务、Skills、MCP/连接器、文件/作品/资源、审批与Agent过程、Settings（所有sections）、登录/账号/权限、积分/流水。支付渠道继续后置。普通页面/管理员不同权限都覆盖；某能力未实现不得悄悄隐藏后标通过。每页覆盖读取/空态/主操作CRUD/loading/错误/恢复/disabled/刷新/前进后退/跨页scope/晚响应/键盘/窄屏。资源任务串行，源码/只读审查独立并行，当前不新开10个空浏览器窗口。
+
+R187三负责人已实际启动且报告可追溯：Web /tmp/kokoro-r187-web-rail-read.md（df968e31），Settings /tmp/kokoro-r187-settings-page-qa.md，Agent /tmp/kokoro-r187-agent-mainline-qa.md。不是新增空窗口。Settings库存13 tabs已逐API/owner分类；Personalization假保存/无canonical读、Integration缺URL可仅本地connected、Cloud未发布endpoint、Notifications/Shortcuts内存等未通过。Agent main2d2ad9 clean/ruff-pyright-contract0/定点44pass，但runtime Billing逐attempt admission/evidence/outbox/ACK未接，真实费用闭环P0开放；不得用纯门或offline usage artifact冒其已完成。
+
+R187-WEB-RECOVERY精准修复准入：Root已读实际调用：use-draft.ts 200ms pendingRef由输入事件同步发布，但仅React cleanup flush，硬reload不保证cleanup；必须document pagehide exact pending flush/remove listener，不能sleep测试。app-frame当前Move projection在passive effect发布，快速已commit active操作可捕获旧身份；改为同步已commit身份边界（优先layout effect）而不是render过程中mutate ref，防并发render speculative污染；新scope/active/engine/unmount仍失效。原Web solewriter仅这两个生产现文件与现use-draft/rail tests相邻断言；tests/engine/engine.test.ts唯一旧三Promise.resolve可改既有settle helper而所有业务断言不变；system b15ee2e2各预算/oracle不变。Root实际完整3红为失败基线，最小修复后同场景/完整门和独审；所有其它生产/契约/生成/原runtime/Git仍冻结。此为既有草稿与Move反馈职责修复，无新目录/业务owner/网络/SQL。
+
+R187-RECOVERY证据纠正/后继授权：Root39260 Node22同三真Next system实际2pass1fail/48.98s，R186草稿恢复及R183pending通过，409仍locator失败。Root与Web owner核当前默认en正式译文“The conversation could not be moved. Refresh and try again.”，旧filter`Move failed`必不匹配，先前projection生产竞态归因撤回而非冒新根因。仅准原Web writer撤销本轮app-frame useLayoutEffect/import单hunk（所有此前Move候选保留），并仅现system R183 alert文案filter改当前正式中/英文；10s预算与privacy/draft/route/active/list/request断言原样，R186其余bytes保留。Root同三case与full门重跑。独审发现confirmed晚响应仍可能refresh/navigate失效projection，P1单列：后继须tests-only真实scope失效RED后再修，不夹入本次oracle纠正。
+
+R187-AGENT-A1-D0：原Agent owner仅获准四现设计文档（TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT）；A1目标为Agent自身attempt+immutable strict evidence+Run completeness，不接Billing client/sender/外部ACK/outbox/金额。精确列/CHECK/CAS/fence/事务设计已候选冻结，Root及独审通过后另授tests-only真实PG RED，尚未准DDL/source。Billing当前v2 experimental未部署契约不是正式可消费逐attempt授权；需owner发布后消费者pin，不拿旧Run reserve/capture替代。
+
+R187-AGENT-A1-TEST准入：R2四D0经Root实际diff与独审0P0/P1/P2，4P1/2P2原失败已收敛；原Agent owner只准新`tests/integration/database/test_model_call_evidence_repository.py`（采用现database integration业务位置，不新目录；独立document gate已通过）。先复用正式fresh installer/Run lease fixture做真实PG基础契约反例，后续状态/CAS/fence/ordinal/evidence/terminal矩阵按R2精确语义准备；不存在生产类不得使collection import错误冒业务RED，schema缺失只称schema反例，不冒runtime故障。第一交付区分实际能跑的present owner路径和尚缺repo能力；不unit/mock、不修改DDL/source/四D0/contract/lock/Git，不自行连接共享资源。Root独占自有PG双连接与回收；baseline Agent main2d2ad9+已冻结四D0，当前PG/运行未验，全部费用接线仍OPEN。
+
+R187阶段交接：Root32229完整Web工程0（2450pass/0fail/0skip+build），Root真实现3310原会话挂起/Retry/全文/草稿/reload通过，精确三文件runtime同步有备份、不夹Move、不重启；原IAB未验。13设置入口实际遍历，已证通知/快捷键重置、Personalization404静默与空读回、账本503，详同test-cases当前清单；不据此标全部Settings通过。自有浏览器已关。Agent Root95067真实PG2缺失schema RED/1现Run正控通过0.40s，DBabsent/源码hashsame；下一owner实施可从approved A1 canonical/schema drift开始，再真实repository状态/两连接矩阵，须精准写集另授，不把三schema门变完整producer。Web后继先Conversation两scope CRUD与confirmed晚响应测试；Project rename/delete需BFF先发布，不能用instruction PATCH/local state假代替。

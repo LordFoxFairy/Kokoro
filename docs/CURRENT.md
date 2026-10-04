@@ -1,3 +1,15 @@
+R187最新（2026-10-04）：Root32229 Node22完整Web check自然exit0：258contract/50architecture、lint/types、164files2450pass/0fail/0skip143.09s、Next build0。已准确备份同步原3310仅snapshot函数/期限、分页helper与pagehide草稿，不带Move或其他候选。Root随后真实IAM/BFF/System独立Chromium：原conv_ffd7挂起10.236s→可见error无永久loader→Retry正文/草稿恢复→释放旧请求→硬刷新全文/草稿一致；不是原IAB同页恢复。浏览器/context已关闭，原45606/46036不重启。Settings 13可交互模块+1禁用Help已打开核查，并真实复现通知/快捷键切tab重置、个性化404无提示且重开丢值；Billing summary/by-model/ledger503、项目resources503、agents404仍开放。项目93b2011d settled显示真实名称5251c78c/0会话行/可编辑，旧截图icon-only原因仍未证。QA矩阵已落现test-cases；70组不冒整体通过。
+
+Agent A1四D0经4P1/2P2退回修订后独审0，Root95067真实PG schema first slice2fail1pass0.40s，自有DBabsent/sourcehashsame；确认attempt/evidence两表与Run completeness缺失，只是schema RED，不是runtimeE2E。费用producer/正式Billing逐attempt消费、项目rename/delete等继续OPEN，完整Wave0–7 active。保护任务外Billing与uv.lock f7e1。
+
+R186实测更新：Root52521首次snapshot永久pending系统反例GREEN，1pass32.36s；真实重试/权威正文/草稿/reload与迟到隔离通过。完整Web52931与两文件独审进行中，原runtime尚未同步，原IAB用户T-U04仍OPEN。
+
+## R186 当前优先：原工作区永久加载（2026-10-04）
+
+用户再次报告原 conv_ffd7 永久加载。Root本轮原browser3 metadata四个同URL标签；tab2闭集DOM读取4s在command dispatch前失败，错误/Network事件8s未返回。尚无原标签DOM/会话请求证据，不能将控制失败归因React。没有新标签/重启/清数据。原launcher45606/Web46036仍live。公共匿名session200/21ms，原URLfollow最终IAM表单200/93ms，仅证明匿名链；不冒用户工作区成功。
+
+Root亲核现 `src/engine/client.ts` fetchSnapshot没有本地overall deadline，machine.hydrate等待settlement才清hydrating：永久pending网络存在可证代码缺口，但尚非原IAB唯一根因。立即暂停Move后继与项目删除资源门，先原Web owner tests-only补真实Next/Chromium snapshot故障系统反例，再有界读取实现与人工retry/晚返回隔离；不再叠AppGate timer。R184当前组合Chromium正常登录/历史/输入/reload证据保留，但不关闭原T-U04。完整Wave0–7目标与70组统计不变。
+
 R184当前：用户原conv_ffd7首屏仍T-U04 P0开放。Root已走现3310真实IAM→Product Session→原会话Chromium旅程：2条历史、可输入、真实reload历史逐字一致且无loader；不是fixture，也不是原IAB标签恢复。原IAB当前选中tab2的闭集DOM读取在command dispatch前4s超时，显示既有pane后仍同结果，停止重复控制。新增发现现组合Billing summary503/agents404，尚未定为加载原因。完整Wave0–7 active；BFF79447abe真实PG全chat-facts29pass0skip/installer/build0、自库回收/hash/Redis保持；独审仍1P2未收完整facts。
 
 R180当前：用户原conv_ffd7仍持续加载，未验收。原IAB当前选中tab1（不是后台tab4）DOM焦点读取4s超时，原tab1实际reload15s超时；没有刷新成功或新DOM证据，不再循环新tab/控制请求。运行源码与编译标记无已核漂移；服务端Session有2s期限。无cookie真实HTTP最终为IAM登录表单，不把follow-redirect最终200冒工作区响应。R179认证三文件已精确备份同步3310、独立build0；完整Web2435pass/10Move待实现失败。完整Wave0–7 active，T-U04保持P0开放。

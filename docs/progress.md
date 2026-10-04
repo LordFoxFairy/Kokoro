@@ -5670,3 +5670,58 @@ Root80167对冻结a1d0dcfa/e7253 installer/build0，全部chat-facts27pass0skip2
 - 验收：**原用户页面**会话正文、输入可用且刷新稳定，才能关闭T-U04。独立当前栈旅程只证明同帐号/同会话在独立Chromium可用；完整70组与Wave0–7不冒整体完成。
 
 R184实际收尾：Root43518自然exit0，冻结79447abe/e7253 canonical installer/build0，全chat-facts29pass0skip23.375s，新增Move×DELETE两序真实图通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r184-project-full-n8ayzyis/manifest.json` 自库absent、sourcehashsame、Rediskeys same。日志 `/tmp/kokoro-r184-bff-chat-full-root.log`。独审 `/tmp/kokoro-r184-bff-move-delete-review.md` 0P0/P1/1P2（完整deletion身份与B lifecycle/Share/Run精度待补），只接收当前局部证据，不冒全计划断言、public/Storage远端或全owner完成。原用户加载仍P0开放；uv.lock原f7e1与任务外Billing不暂存。
+
+
+## R185 当前真实失败与修复边界
+Root60120 Node22真实Next/Chromium2fail/61名称过滤/81.30s，3937正确行scope正常click被Delete按钮指针覆盖，已授同职责2文件hitbox修复（387faf/29967），未以force绕过；Root39688正在同一两case真资源门，准备区分owner409反馈/globalbusy，不提前绿色。
+Root80490 BFF0150185c完整纯check/build/format0（743pass/1既定schema资源skip）；8file真实PG179pass3fail/182/46.679s。manifest9dqnw3_i自库absent/hash/Redis同。失败精确Case2Move-first与Case3两序，不冒owner全过。Root静态已确定fixture缺陷：Move-before全Conversation快照错要求合法project_ref/updated_at不变；Case3读取canonical source ledger不存在event_type，且错误预期local queued会增长sourceledger。只授权同test修schema与明确两字段批准变化、绑定真实queued事件、保全cleanup cause；独审0P0/1P1/1P2另指出全执行终态与DELETE-firstShare/Run清理oracle缺口，同片收口，生产不动。
+原IAB用户P0仍未验；已有真实当前运行栈独立Chromium通过不冒旧标签恢复。全Wave0–7保持，资源串行、owner测试实施并行、Billing/uv保护。
+
+## R186 当前优先：原工作区永久加载（2026-10-04）
+
+用户再次报告原 conv_ffd7 永久加载。Root本轮原browser3 metadata四个同URL标签；tab2闭集DOM读取4s在command dispatch前失败，错误/Network事件8s未返回。尚无原标签DOM/会话请求证据，不能将控制失败归因React。没有新标签/重启/清数据。原launcher45606/Web46036仍live。公共匿名session200/21ms，原URLfollow最终IAM表单200/93ms，仅证明匿名链；不冒用户工作区成功。
+
+Root亲核现 `src/engine/client.ts` fetchSnapshot没有本地overall deadline，machine.hydrate等待settlement才清hydrating：永久pending网络存在可证代码缺口，但尚非原IAB唯一根因。立即暂停Move后继与项目删除资源门，先原Web owner tests-only补真实Next/Chromium snapshot故障系统反例，再有界读取实现与人工retry/晚返回隔离；不再叠AppGate timer。R184当前组合Chromium正常登录/历史/输入/reload证据保留，但不关闭原T-U04。完整Wave0–7目标与70组统计不变。
+
+R186第一次Root真Next/Chromium定点25591自然exit1：1fail/63名称过滤、49.75s，日志/tmp/kokoro-r186-snapshot-root-red.log。真实snapshot已从浏览器侧持有，但测试错误地在loading阶段等待不存在的composer，fill30s先失败；这是前置错误，不是业务deadline RED，未放行生产。已续派原writer仅修系统case：先正常A正文/真实输入草稿，再拦snapshot与reload，按真实计数baseline验证12s内error、显式Retry权威恢复/草稿和再reload一致。所有生产仍冻结，资源终态由Root核，无加预算或假store。
+
+R186 Root正确业务RED1934自然exit1：1fail/63名称过滤33.10s，日志/tmp/kokoro-r186-snapshot-root-correct-red.log，test b15ee2e2。正常A正文/草稿已真实成功，reload后的exact浏览器snapshot被持有且BFF计数未增；失败精确为12s内未出现会话hydration error。不是认证/locator/setup失败。证明可构造永久pending路径，不证明原IAB唯一原因。
+
+R186-W-SNAPSHOT-GREEN精准准入：归属Web现snapshot execution adapter与process聚合，无新文件/层/owner；与扩4文件context比较，采用现两文件窄修复，理由是现client已有同AbortSignal覆盖fetch/body，adapter外包完整Promise可覆盖整链，分页只需沿同deadlineAt检查。原agent4_lifecycle_review只写src/engine/execution-adapter.ts、src/engine/hydrate-process.ts：固定10s absolute monotonic期限、单timer/controller、abort promise race、最终期限检查、finally移listener/timer/controller（旧finally不清新operation）；分页每await前后/重读沿同原期限，无partial采纳。现machine既有initial FAIL与expired恢复connection语义及generation守卫不动；client/wire/stream/Message/Delete/Move不动，禁止扩大API/通用transport/新的timer owner。system b15ee2e2预算/业务oracle冻结；仅允许在成功error/recovered阶段保存自有/tmp截图，不改变断言。Root真Next相同RED→GREEN、两文件独审和相邻生命周期验证后再决定原runtime精确同步；未准整个工作树发布或大面积copy。
+
+R186 Root52521正确真实Next/Chromium GREEN自然exit0：1pass/63名称过滤32.36s；同b15ee2e2业务oracle，两source冻结2c075a16/f1ce8201。首次snapshot永久挂起→10s内错误清算→显式Retry真实同源/fixture owner正文→旧route释放无覆盖→自然reload正文/草稿保持全过。仅证明受控网络故障用户路径，不是原IAB恢复。Root52931 Node22完整pnpm check已启动，期间整Web冻写；独立两source审查并行。共享Redis15门后0，原服务/数据未动。
+
+## R187 全页面/全模块研发验收并行任务（用户2026-10-04再次明确）
+
+不缩小Wave0–7、不另建计划中心，复用此task与test-cases页面/能力记录。Root亲核52931完整Node22 Web check自然exit1：contract/architecture/lint/typecheck通过，164files2445pass3fail148.37s；默认test失败故build未执行。失败三项：engine固定3microtask尚未完成驱逐；Move owner拒绝notice没有显示；R186重试恢复后草稿为空（单独系统门曾绿，完整矩阵真红优先）。不得同步原runtime或称全部修复。
+
+|任务/角色|Owner、负责人、基线与范围|验收/交付|
+|---|---|---|
+|R187-WEB-RAIL / 左侧全部功能与CRUD|Web原agent4_lifecycle_review唯一writer；main9b42混合候选。先只读梳理截图项目93b2011d与名称5251c78c疑点、项目与独立会话列表/空标题/选中/新增/重命名/移动/删除/分页/刷新。原R186两源冻结；现在只读定位52931两真system红及engine等待问题，给精确下一允许source集。|复用现T-C测试项逐能力分类Happy/Boundary/Exception/Security/State；每项真实路径/预期/状态/证据，未运行标待验。先正确RED才最小修复，Root资源重跑与最终放行。无页面重设计、兼容fallback、scope扩权。|
+|R187-AGENT-CHAIN / 聊天执行及测试|新原生Agent负责人，Agent仓唯一候选writer（阶段先只读审计/纯门）；main与起始SHA需自查；不改BFF/Root/Web/Billing/schema/pin。读Agent AGENTS、Python手册、三D0、CODEBASE_MAP、现真实模型组合入口。|用户链发送→queue/lease→模型→tools/todo/skill/approval→AG-UI durable→停止/取消/恢复→用量正式Billing，分独立模块逐能力证据。输出明确current缺口/现真实命令/前置owner；不启动共享runtime/模型请求/清数据、不拿unit充E2E，Root批准精确片后再写。|
+|R187-SETTINGS-QA / 全设置与其他页面库存|storage_release_r175_gate_review只读QA；Web main9b42混合工作树基线。路由/导航/设置sections→真实API调用与owner→读取/保存/刷新/权限/错误/禁用生命周期，对照现PRD和test-cases；仅/tmp报告。|列完整页面与可交互控件库存、缺失/假保存/仅本地/能力flag隐藏项，逐项可执行用户验收。无源码/Git/服务/共享资源/浏览器抢占；给Root下一批实际浏览器journey，不将静态覆盖记通过。|
+|R187-ROOT / 主控与整体验收|Root唯一Root文档/Git/共享资源/原IAB负责人，原45606/46036保留|冻结切片后Root逐真实失败→修复→同场景GREEN→邻门→整体检查与用户可见页面。业务数据/owner隔离/模型积分正式链；实际未闭环项保留FAIL/OPEN。|
+
+页面覆盖必须同时列项目空间、独立会话首页与历史、任务、Skills、MCP/连接器、文件/作品/资源、审批与Agent过程、Settings（所有sections）、登录/账号/权限、积分/流水。支付渠道继续后置。普通页面/管理员不同权限都覆盖；某能力未实现不得悄悄隐藏后标通过。每页覆盖读取/空态/主操作CRUD/loading/错误/恢复/disabled/刷新/前进后退/跨页scope/晚响应/键盘/窄屏。资源任务串行，源码/只读审查独立并行，当前不新开10个空浏览器窗口。
+
+R187三负责人已实际启动且报告可追溯：Web /tmp/kokoro-r187-web-rail-read.md（df968e31），Settings /tmp/kokoro-r187-settings-page-qa.md，Agent /tmp/kokoro-r187-agent-mainline-qa.md。不是新增空窗口。Settings库存13 tabs已逐API/owner分类；Personalization假保存/无canonical读、Integration缺URL可仅本地connected、Cloud未发布endpoint、Notifications/Shortcuts内存等未通过。Agent main2d2ad9 clean/ruff-pyright-contract0/定点44pass，但runtime Billing逐attempt admission/evidence/outbox/ACK未接，真实费用闭环P0开放；不得用纯门或offline usage artifact冒其已完成。
+
+R187-WEB-RECOVERY精准修复准入：Root已读实际调用：use-draft.ts 200ms pendingRef由输入事件同步发布，但仅React cleanup flush，硬reload不保证cleanup；必须document pagehide exact pending flush/remove listener，不能sleep测试。app-frame当前Move projection在passive effect发布，快速已commit active操作可捕获旧身份；改为同步已commit身份边界（优先layout effect）而不是render过程中mutate ref，防并发render speculative污染；新scope/active/engine/unmount仍失效。原Web solewriter仅这两个生产现文件与现use-draft/rail tests相邻断言；tests/engine/engine.test.ts唯一旧三Promise.resolve可改既有settle helper而所有业务断言不变；system b15ee2e2各预算/oracle不变。Root实际完整3红为失败基线，最小修复后同场景/完整门和独审；所有其它生产/契约/生成/原runtime/Git仍冻结。此为既有草稿与Move反馈职责修复，无新目录/业务owner/网络/SQL。
+## R187 页面/模块深验执行更新（2026-10-04）
+
+用户明确逐页逐模块深入验证。Root将全路由与Settings 13模块的主链路、CRUD、边界/异常/权限/状态机、视觉可访问性及退出标准纳入现`docs/test-cases.md` R187清单，字段含ID、前置、步骤、预期、优先级/类型和实际状态；不新建中心、不增加70完成组数。Settings静态读不算执行：个性化缺正式操作且不校响应、通知/快捷键仅内存、连接器缺真实callback/readback、Computer缺owner契约、agents404/Billing summary503均保留未闭合。
+
+Root39260 Node22冻结源码真Next/Chromium三system病例自然exit1：2pass1fail/61名称过滤48.98s。R186读取总期限/Retry/旧响应隔离/硬刷新草稿已通过；R183 pending/原行unknown也通过；拒绝notice仍匹配失败。Root亲核默认英文正式文案已是“The conversation could not be moved. Refresh and try again.”，旧`Move failed`filter错误；Web owner撤回先前passive-effect竞态归因。仅撤本轮layout-effect hunk并绑定当前正式中英文，所有privacy/active/draft/URL/请求/10s预算不变。Root48115同三case自然exit0：3pass61名称过滤37.05s。证明此失败来自旧文案oracle，不证明所有Move与原用户页面通过。
+
+冻结system d3ffc2c6、draft4d2e75c7、snapshot2c075a16/f1ce8201、AppFrame95360db4。useDraft独审限定可接收；独审发现既有confirmed Move视图副作用没有完整projection fence，1P1待真实晚响应验证，未夹入源修。Node22完整`pnpm check`本轮重新启动，终态另记录；原runtime没有同步候选/重启/清数据，45606/46036仍原句柄。uv.lock f7e1与任务外Billing保护。
+
+Agent原owner four-D0 A1候选仅持久attempt/evidence/Run completeness；Root/独审4P1退回（prepared非法dispatch、denied seal/索引不一致、completeness不穷尽、finalizer证据稳定身份未定），只准原设计文件纠正，不放DDL/source。Billing实验目标契约不是正式发布admission，不以旧Run费用调用或纯contract44pass冒费用闭环。Web资源门期间Agent只写独立设计，审查只读，不抢共享PG/Redis。
+R187最终本轮：Root32229完整Node22 Web check已自然exit0：258contract/50architecture/lint/typecheck、164files2450pass0fail0skip143.09s、Next build0；原52931 3fail历史保留，原预算/业务断言不变。Root逐字核原runtime三文件=Web HEAD后备份并窄同步snapshot函数+期限/helper/draftpagehide，manifest`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r187-runtime-backup-828qjs5z/manifest.json`，运行adapter98358d65无Move候选，helper/draft准确源hash。
+
+Root随后独立Chromium实际3310正规IAM登录/固定tenant/callback，打开用户project93b2011d，settled名称5251c78c、0会话行、可编辑；resources503独立开放，未证旧截图ghost。Settings实际13交互+disabled Help逐tab打开；真正Browser通知false→true→切tabfalse、快捷键Clear→切tab原键、Personalization blur PATCH404/0alert/重开空三项FAIL；Billing summary/by-model/ledger503但实际alert+Reload正常错误态，英文Retry定位误差不当product failure。
+
+原conv_ffd7真实消息两scroller items；新有效Product session下输入立即reload、只hold首snapshot，10.236s收error无永久loader，manualRetry恢复权威正文/草稿，释放旧route后hardreload两消息全文逐字/草稿一致，测试草稿已清，0模型发送。证据`/tmp/kokoro-r187-real-page-qa.json` SHA8275438c与截图9c008052；初消息slot定位错误与第一轮会话became anonymous/401前置失效均保留不冒成功。自有browser/context已关，原IAB同页仍未证明恢复，不关闭整T-U04；原服务句柄45606/46036保留。
+
+AgentR2独审0后唯一新增真实database test1c6c6683，Root95067自有PG执行自然exit1：两A1表/Run completeness缺失schema反例2fail、既有Run authority预算正控1pass0.40s；manifest `/tmp/kokoro-r187-agent-pg-red-manifest.json` 自库absent/sourcehashsame，未用Redis/provider。不是runtime/Billing/E2E；DDL与生产写仍未授。完整goal active、70组不变，uv.lock f7e1/Billing任务外保持。
+
+R187 Root台账提交前真实治理：topology exit0（九运行模块）、定点治理298pass3.00s、Root/Web/Agent diff-check0；Redis15=0、原45606/46036仍live、自有browser已关闭、Agent自库absent。完整标准违规审计与完整Root1715等全门本轮未跑，不用定点治理关闭它们。只提交Root四台账，不暂存子仓/uv/Billing；全部候选源码仍待按owner切片正式审查与提交。
