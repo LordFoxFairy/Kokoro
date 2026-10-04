@@ -8246,3 +8246,14 @@ R196-W2限定已验收：new f0fd64e7/17paths Root17297 clean完整2459pass0fail
 |---|---|---|---|
 |R196-W2-live / P1|Root独占组合Git/资源/浏览器，worker不写服务|ce40 Web、8e33 BFF、0537 IAM已验源码；原根gitlinks与共享dirty不一致，须干净精确release，不重置/夹19mixed；Agent814e与Billing正式费用链保持独立|正式Root发布身份/消费者PIN校验后重建唯一3310，再原浏览器正规登录→Direct/Project Move同ID/原消息→unknown人工retry→刷新，记录真实live evidence；不得拿fixture或static通过关闭|
 |R196-A4-runtime / P1|原Agent owner依原四D0与后续tests-first卡；Root跨owner裁决|SDK隐藏retry已814e关闭；原生middleware仍未装配，Billing正式artifact/read/ACK未完成；不同owner依现Wave顺序并行可推进|逐physical attempt授权/evidence及actual-only结算、release/ledger真实链，支付渠道最后，不创建假grant/免费路径|
+
+
+## R197：已验绑定能力进入运行验证（2026-10-04）
+
+上轮 progress：Web ce40cecc 与 Agent 814e929 精确已验提交、Root 6af30f62 台账，改变权威源码与后继动作；完整 Wave 0–7 goal active，70组统计不变。原3310 launcher45606/Web46036仍live，当前运行页仍旧consumer，Root uv.lock及Web/BFF/Billing未交接变更保护。
+
+|任务|负责人/权限|基线/文件集/依赖|验收与交付|
+|---|---|---|---|
+|R197-W2-release / P1|Root独占组合Git/资源/浏览器|Web ce40cecc、BFF8e33、IAM0537；只精确已验gitlink与同五台账，clean release副本；原mixed不复制/重置|先核launcher实际资源/清理/保留业务数据边界，再预构建干净组合；更新唯一3310不丢用户有效数据，实际原浏览器正规登录与同ID绑定/消息/刷新。缺证不关闭|
+|R197-release-review / 只读|原agent_prepare_final_review|Root脚本/已验commits/实际运行身份只读；报告/tmp，不启资源不写仓|核最小clean发布方案及旧run数据库生命周期，指出真实阻断，不重新架构|
+|R197-A4-next / 只读设计|原agent_mainline_qa_owner|Agent814e clean、原四D0、CODEBASE_MAP及Python手册；仅/tmp交付|收敛下个不依赖Billing未发布字段的原生Middleware切片及系统行为RED路径；缺真实授权不得假grant，需新契约则明确owner|

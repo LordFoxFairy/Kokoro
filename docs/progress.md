@@ -8624,3 +8624,12 @@ Root1993最终retry-current-selection guard08a661＋f7b277真Next R188与三R195
 Root90629 clean候选真实门自然exit2：contract258/architecture50/lint0，typecheck system3805/3927 Cannot find name admitBrowserContext，test/build未执行。抽取新三R195时漏mixed里的小admit helper，故69f50c现不放行；是集成抽取缺失，不能以mixed四trueNext成功或独审86f59静态‘依赖闭合’代正式candidate编译。原writer仅/tmp export补真实RP cookie入fixture helper或复用formal已有步骤，主frozen树不改；同时精确纠两文档P2（engineINDEX旧API、listener清理措辞），新patch/hash后Rootfreshclean门。全部Root具名QA句柄当前已终态，永久服务继续，不重复启动。
 
 Root17297 newclean正式候选自然exit0：contract258/architecture50/lint0warnings/types0，165files2459pass/0fail/0skip125.05s，Next build0。计数低于B+C2463因移除旧engine Move ownership测试并迁至page coordinator/AppFrame/pagehide和三系统旅程，实际数量如实记，不宣称矩阵穷尽；所有当前门无skip。最终独审cc92ad无P0/P1/P2。Root临时独占index基于a753+f0fd64e7，逐17path blobSHA一致，treea46941cf；精确commit-tree/refCAS提交ce40cecc4071a6dd775730f6e32619d2cfc130b4（817+/557-），actual index只sync新HEAD，所有28原changed文件逐byte/hash不变，只有原clean engineINDEX应用批准文档清理，剩原19mixed保留。没有gitlink/push/运行副本替换；临时clone node_modules/.next已回收，source/manifest/log保留，所有Root句柄自然终态。下一必须Root干净组合发布与live用户路径，不冒原3310用户绑定/全70/费用闭环。
+
+
+## R197：会话绑定修复的运行版本收敛（2026-10-04）
+
+上轮progress基线Root6af30f62/Webce40cecc/Agent814e929。Root复核原launcher45606/Web46036实际live及原17/6path验收收据；原Web19mixed、BFF19mixed、Billing5D0+3codec、Rootuv f7e1保留。此片仅将已验Webce40/Agent814e精确pin为本地候选组合，BFF8e33/IAM0537/System9a4e/其它gitlinks不改，不push、不冒正式费用或用户完成。
+
+原release审查员只读报告15cbc322确认两真实阻断：gitlink/source clean组合尚未构造；现launcher正常退出会DROP自有应用/IAM库、再启动生成新身份/secret。Root已就测试对话保留请求用户决策，保持原run不停止/不清理，允许独立prebuild。原CUAgetState22s得到tab1 `/app`，getTab31s `Emulation.setFocusEmulationEnabled` timeout，未动页面，不把工具超时当产品恢复或理由重启服务。
+
+原Agent owner只读438266db明确A4 native seam下一failclosed系统行为门及两个D0缺口，没有新source或资源写入。CURRENT顶部三owner旧表证据已纠正为当前正式commit，历史mixed184/早期2454/2463仍保留为历史而不冒当前通过。实际资源/构建结果续记本段，不建新计划中心。

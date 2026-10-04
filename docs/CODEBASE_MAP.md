@@ -104,3 +104,8 @@ python3 -m pytest scripts/tests
 - Web `apps/kokoro-app/src/ui/shell/conversation-move-coordinator.ts`：候选唯一document-memory Move命令，session/project归属仍BFF唯一事实；`page-clients.ts`只失效浏览器metadata索引。正式17路径ce40cecc已验提交；三P1/导航与full回归经Root闭到candidate，原3310尚未启用。旧engine Move路径在本候选删除，不增加Message/Project实体。
 - Agent `apps/kokoro-agent/src/kokoro_agent/model/factory.py`：五实际SDK构造main814e929显式retry0，`tests/integration/test_model_provider_retries.py`以锁定SDK→自有HTTP peer验证物理请求数、stream与取消；Root14行为通过，仅sandbox，不冒真实费用。后续A4仅原生AgentMiddleware.awrap_model_call，非BaseChatModel代理；Billing正式准入/证据读ACK/结算未接。
 - 当前formalBFF8e33 clean archive Root完整173真实PG/Redis门；候选工作树184历史结果不等于formalcommit覆盖。原3310仍public7.0/noMove，clean组合发布必须另验证，不散复制混合树。
+
+
+### R197 运行输入身份与会话绑定
+
+BFF唯一Conversation归属是nullable `project_ref`；正式Webce40cecc消费public7.1 Move，无第二归属实体。Root此片仅pin已验Webce40cecc/Agent814e929，其他owner pins保持；旧3310临时副本仍public7.0/noMove。`scripts/dev/serve_local_login.py`是清理自有应用/IAM库的一次性fixture，不是持久应用更新入口；切换前先确认旧测试对话保留政策并用独立clean release构建，不复制mixed/重置共享数据。研发业务闭环、Billing owner与完整Wave0–7边界不因此组合候选而完成。
