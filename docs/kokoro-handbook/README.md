@@ -12,12 +12,18 @@
 
 - [ADR-029：System Models 与 Platform 边界收敛](decisions/ADR-029-system-model-and-platform-boundaries.md)
 
+## 当前产品要求入口
+
+先读 [当前 PRD](product/09-v2-prd.md)：用户对象关系、完整范围、功能要求、异常体验和验收里程碑。
+01/05/06/07 为补充章节；其它专业 Studio/白标专题说明长期愿景，不据此增加当前任务。
+PRD 不是完成报告；当前实现、任务和测试结果分别见 [CURRENT](../CURRENT.md)、[task](../task.md)、[test-cases](../test-cases.md)。
+
 ## 实现状态
 
 诚实区分本地原型与首发架构，避免把未上线的写成已上线：
 
 ```text
-当前阶段 1 运行闭环：
+当前阶段 1 运行组合（不代表完整用户链闭环）：
   kokoro（Web）/ kokoro-bff（Chat 与业务 BFF）/ kokoro-agent（Run worker、HITL、恢复）。
   持久化基线为 PostgreSQL + Redis。
 
@@ -203,7 +209,7 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 - [kokoro-credit](modules/kokoro-credit.md)、[kokoro-payment](modules/kokoro-payment.md)、[kokoro-litellm](modules/kokoro-litellm.md)
 - [kokoro-session](modules/kokoro-session.md)、[kokoro-web](modules/kokoro-web.md)
 
-当前 Chat 不从 `kokoro-session` 记录进入，而从 `kokoro-bff 的 Chat 内部业务边界` 与 [`business-bff-contract-v1.md`](../../kokoro/docs/integration/business-bff-contract-v1.md) 进入；Credit 不从 `kokoro-credit` 进入，而从 Billing 设计与 API 契约进入。
+当前 Chat 不从 `kokoro-session` 记录进入，而从 `kokoro-bff 的 Chat 内部业务边界` 与 [BFF 当前 API 契约](../../apps/kokoro-bff/docs/API_CONTRACT.md) 进入；Credit 不从 `kokoro-credit` 进入，而从 Billing 设计与 API 契约进入。
 
 ### 业务链路 business-flows/
 
@@ -277,7 +283,7 @@ Redis 只用于实时传输、短期队列、lease、cache 和幂等快速路径
 
 主仓另有 `docs/product`、`docs/protocol`、`docs/requirements`、`docs/research` 保留历史设计与协议材料；全局总设计统一从本目录进入。
 ## Billing 设计基线
-- [kokoro-billing 子仓库入口](../../kokoro-billing/README.md)
+- [kokoro-billing 子仓库入口](../../apps/kokoro-billing/README.md)
 - [Billing 子仓库总体架构](technical/31-billing-subrepository-architecture.md)
 - [成熟方案调研与复用裁决](technical/32-billing-mature-systems-research.md)
 - [Billing 需求闭环与验收标准](technical/48-billing-requirements-and-acceptance.md)

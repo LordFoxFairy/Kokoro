@@ -16,6 +16,7 @@
 
 | 任务 | 入口 |
 | --- | --- |
+| 产品范围/交互关系/正式验收要求 | [当前 PRD](kokoro-handbook/product/09-v2-prd.md)，再读专题章节与现测试台账；不以旧已上线叙述为完成证据 |
 | 了解活动仓边界 | [`CODEBASE_MAP.md`](CODEBASE_MAP.md)、[`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) |
 | 初始化/验证 Submodule 组合 | [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md)、[ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)、[`../scripts/verify-repository-topology.py`](../scripts/verify-repository-topology.py) |
 | 修改架构或跨仓规则 | [`ARCHITECTURE_STANDARD.md`](ARCHITECTURE_STANDARD.md)、[`kokoro-handbook/technical/`](kokoro-handbook/technical/) |

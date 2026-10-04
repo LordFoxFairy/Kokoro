@@ -1,5 +1,7 @@
 # 产品形态
 
+> 2026-10-04：本章说明长期产品愿景，不是本轮新增任务或当前上线事实。当前唯一业务范围与验收入口为 [当前 PRD](09-v2-prd.md)，全 Wave 0–7 及唯一 kokoro-app 前端范围保持。下方旧 Feature/Studio 轮廓仅作背景，不覆盖现 owner 三面与 ADR-033。
+
 状态：当前 Feature-first 产品轮廓，2026-08-22。产品入口、Feature、GA Workflow 与 Studio 的 owner 以
 [37 App、Feature 与 Studio 架构](../technical/37-product-experience-agent-studio-architecture.md) 为准；用户可见交付与质量/成本回归
 以 [41 Feature 结果契约](../technical/41-feature-outcome-contracts-and-quality-gates.md) 为准。

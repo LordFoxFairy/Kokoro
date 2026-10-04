@@ -2,6 +2,12 @@
 
 状态：2026-09-19。以 [REPOSITORY_STATUS.md](REPOSITORY_STATUS.md) 与 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md) 为 Root 组合路径与 Git 标识的权威来源。
 
+## 当前产品业务入口（R200）
+
+- `docs/kokoro-handbook/product/09-v2-prd.md`：唯一当前PRD；用户对象关系、完整范围/交互、现70组验收索引及里程碑。
+- 同product的00为长期愿景，01/05/06/07为补充；`docs/INDEX.md`与handbook README提供导航。
+- PRD要求不当实现证据；任务仍task、运行事实CURRENT、系统结果test-cases、证据progress，无新计划中心。
+
 ## Root 职责
 
 `Kokoro/` 是 Git superproject，不是业务源码 monorepo。它只拥有：

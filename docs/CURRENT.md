@@ -1,6 +1,12 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R199。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R200。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R200 产品基线收敛（文档验收，不是运行闭环）
+
+[当前 PRD](kokoro-handbook/product/09-v2-prd.md) 已替代七月旧草稿，明确完整 Wave0–7、会话/project_ref/独立任务、权限、真实费用、各用户路径与三交付里程碑。00长期范围与01/05/06/07已同步；不新建计划中心，不承诺未接通Studio或额外前端。Root逐条展开覆盖现70组，无遗漏/新增，205本地链接最终0失效；初门发现README两个旧路径，修后重跑。独审1fc11804为8文档一致性0P0/P1/P2，不算用户测试通过。Root拓扑脚本测试7pass0.03s/diffcheck0；实际topology历史两gitlink mismatch及全治理失败不据此关闭。
+
+关键开发链仍开放：Agent取消后完整prepare写入的真实RED仍未修；原owner仅更新四D0首节12行，生产59034与test41fe保持。Billing26aeec仅IAM制品门，目标Admission本地事务/运行装配尚缺，不能把旧caller payer链当目标链。两个独立后继继续原owner，Root统一审查/验证；Agent D0独审另发现两个P1：整体node退出预算与done异常取回未闭合，生产不放行。具体日期尚无可靠估计基础。当前3310原45606/46036实查live，未重启/清数据。70组仍11通过/6失败/14复测/38未验/1支付最后，goal active。
 
 ## 1. 唯一计划与质量入口
 

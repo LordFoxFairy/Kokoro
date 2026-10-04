@@ -1627,3 +1627,12 @@ R198-A01最终绑定Agent59034f4：Root50248全真PG304pass/0skip（含该main�
 |TC-R199-B01 / portableIAM owner artifact准入|Billing26aeec6 cleanconsumer，IAM0537正规0.7.0pack、Node24/Corepack11|frozenoffline install→根IamClientimport→正常完整verify/generated；真实修改archive/provenance/nested未知/primary缺失或错pin/四组alias/第二tgz后逐执行architecture门再恢复|合法1通过；全部10错误自然拒绝，完整bytes恢复，禁止sibling/tmp/workspace/双包；owner身份/contract/digest/许可完整|P1 / 架构、供应链、边界、异常|Root36987正式1122pass/411资源skip、generated0、十负控全部拒绝，源hashsame；两先前P1漏报和semver治理FAIL已真实复验修，不冒业务线上IAM/余额/Admission/扣费。manifest CURRENT同路径|
 
 70业务组整体统计保持11/6/14/38/1；这些细分case证据附入原owner任务，不新增完成百分比。真实取消缺陷保持P1开放；会话绑定候选与原3310运行旅程分开，只有当前浏览器完整路径可关闭live项。
+
+
+## R200 需求覆盖核对（非业务测试完成）
+
+现PRD的FR-01–19映射原全部70唯一组，Root展开检查70/70、missing[]/extra[]；完整主链/边界/异常/权限/状态机的执行结果仍在本台账，不能将PRD覆盖或审查换算为产品通过。当前11通过/6失败/14复测/38未验/1支付后置保持。
+
+Root文档门第一轮真实发现handbook README两历史子仓链接失效（AssertionError），不是用户业务故障；改为现BFF API/Billing README后，最终205本地链接0失效、diffcheck0，证据/tmp/kokoro-r200-prd-root-verification.json。系统源码/原3310浏览器/真实账务本轮未执行，不冒修复。
+
+T-C05项目删除按用户“参考ChatGPT”批准语义收敛：项目会话/指令/仅项目文件删除，单独Library文件保留，删除需明确确认不可恢复；2026-10-04核验官方https://help.openai.com/en/articles/10169521-projects-in-chatgpt。独立ScheduledTask关联政策仍待裁决，C05/P05不关闭。T-B07 actual-only/unknown保持ADR033，不以旧失败全释放收口。

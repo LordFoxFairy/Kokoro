@@ -1,15 +1,9 @@
 # Skill Hub 与 MCP Hub 产品手册
 
-> **状态：历史 V1 Capability Hub 产品视图。**本文的统一 registry、Skill 版本、grant 与 MCP 启用态模型不定义
-> 当前 GA runtime。目标以 [33 GA-first SkillRuntime](../technical/33-ga-first-skill-runtime-architecture.md)、
-> [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) 与
-> [ADR-022 动态 Capability 重验](../decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md)
-> 为准：GA 默认 Skill 自己闭环，CA 仅拥有用户/session Skill logical path、visibility 与 CRUD，动态 Skill 只经
-> `find_skills/load_skill` 进入 GA workbench；不引入 Session Skill binding、全量 grant 或 Skill 版本产品平台。
-
-> 2026-07-07 修订：产品上可以继续呈现 Skill Hub / MCP Hub 两个分区，但服务边界不拆
-> 两套 registry。能力控制面采用一个 capability hub，内部按 kind 区分 skill / mcp /
-> subagent，共享 namespace 归属、启用态、版本、审核、配额和 grant 骨架。
+> 状态：2026-10-04。当前规则以 [当前 PRD](09-v2-prd.md) FR-10/11 和现 Platform/BFF/Agent 的三面与机器契约为准。
+> 以下 Hub/Launcher 描述保留发现入口和长期市场视图，不定义共享 registry、新服务或本轮市场化范围。
+> 当前 Platform 目标首批为 Skills/MCP 两个域；物理 cutover 未验前仍如实记录 kokoro-capability。
+> 目录可见、个人安装/启用、连接授权、选中 refs、运行时加载分别显示；不把浏览器选中冒已安装/已连接/已执行。
 
 ## 定位
 
@@ -89,30 +83,9 @@ workspace     团队内的连接和授权按 workspace 隔离。
 
 ## 计费
 
-skill 和 MCP 的使用按 featureKey 扣费，走 credit 闭环。
+执行费用遵循 [07 正式积分规则](07-pricing-credit-plans.md) 与 ADR-033；不由 Hub/Web 自行定价，不用历史 featureKey 固定价冒当前实际用量结算。
 
-```text
-skill.<name>.run
-mcp.<server>.call
-```
+## 验收与长期方向
 
-定价由 credit 决定，model 只给成本参考。详见 [07-pricing-credit-plans](07-pricing-credit-plans.md) 和 [../business-flows/credit-reserve-commit-refund.md](../business-flows/credit-reserve-commit-refund.md)。
-
-## 设计红线
-
-```text
-不把每个 skill / MCP 都塞成一行侧栏导航。
-不让 skill / MCP 跨站默认可见。
-不让 Agent 绕过 credit 直接调用计费能力。
-不把 MCP 连接凭据按全局而非 siteId/workspace 存储。
-```
-
-## 后续任务
-
-```text
-P0  功能 Launcher 注册表结构。
-    skill / MCP 模块条目和详情页。
-    skill.* / mcp.* featureKey 定义。
-P1  自定义 MCP 接入向导和授权管理。
-    skill 市场和启用状态按 site 隔离。
-```
+T-K02–K07/T-A02 覆盖发布、个人安装、选择、真实加载、MCP 连接和撤权；完整步骤及现状态在 [唯一测试台账](../../test-cases.md)。
+Launcher 网格/市场上架/审核与专业 Studio 的旧设想不是新增本轮任务；目录存在不证明连接或运行链完成。

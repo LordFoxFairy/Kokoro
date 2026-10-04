@@ -1,9 +1,8 @@
 # General Chat 产品手册
 
-状态：当前 Feature-first General Chat 定义，2026-08-22。`FEATURE_KEY_GENERAL_ASSIST` 是用户进入的产品 Feature；GA 内部
-Workflow 决定 single/lead/swarm/flow，Session 不存 Agent、member、Skill/MCP、图或模型配方。详见
-[General Chat 链路](../business-flows/general-chat.md)；产品结果、质量/成本 baseline 与上线门见
-[41 Feature 结果契约](../technical/41-feature-outcome-contracts-and-quality-gates.md)。
+状态：2026-10-04。当前可验收要求以 [当前 PRD](09-v2-prd.md) 为主，本文保留 General Chat 的产品体验与长期能力解释。
+Session 不存 Agent 图或执行配方；过程与可见能力须来自正式 owner，不从旧目标说明推断当前已可用。
+音乐/图像/视频/代码 Studio 例子是长期产品愿景，不承诺当前全部能力已接通，也不扩大本轮前端范围。
 
 ## 定位
 
@@ -62,7 +61,7 @@ work_profile 仍只属于 GA。统一入口、App/Feature 与组合关系见 [37
 ```text
 调用专业 Agent、skill、MCP、模型。
 通过 Studio public `CreateJob/QueryJob` 创建 job、查询进度和 artifact。
-消费报价、hold、终态和退款结果；不拥有或直调 Credit。
+通过正式 Billing 消费报价、预占、结算或释放结果；不拥有余额和定价。
 ```
 
 通用 Agent 不可以：
@@ -97,7 +96,8 @@ General Chat 可以把一个对话结果升级为 Studio project：
 
 ## 计费
 
-General Chat 走 `general.*` featureKey，与 Studio 的 `studio.*` 分开计价。扣费走 credit 闭环，见 [../business-flows/credit-reserve-commit-refund.md](../business-flows/credit-reserve-commit-refund.md) 和 [07-pricing-credit-plans](07-pricing-credit-plans.md)。
+General Chat 使用 Billing 唯一实际用量定价与积分规则，见 [07 正式积分规则](07-pricing-credit-plans.md) 和 ADR-033。
+历史 `general.*`/`studio.*` 是能力分类词汇，不据此保留另一套默认固定按次模型收费。
 
 ## 成功指标
 
@@ -108,7 +108,7 @@ General Chat 走 `general.*` featureKey，与 Studio 的 `studio.*` 分开计价
 agent 活动可解释但不喧宾夺主。
 ```
 
-## 后续任务
+## 长期专题方向（非本轮新增任务）
 
 ```text
 P0  定义 General Chat 的 featureKey。

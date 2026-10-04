@@ -8367,3 +8367,32 @@ R199-Bill-artifact 写集追加已批准现 `test/architecture/toolchain.test.ts
 |R197-W2-release / P1|原运行数据保留待答，Root资源|继续用原单一clean发布方案；Conversation归属仅project_ref，不新实体。当前3310仍旧consumer，未把ce40候选门冒live绑定通过；重启清测试库需已问数据决策，不丢现会话或擅自复制mixed|
 
 完整Wave0–7与70组不重建/缩小。当前无Root未消费运行句柄；同仓单writer、已有服务复用、共享PG/Redis不reset、支付最后。
+
+
+## R200 当前 PRD 收敛与独立关键链审查（2026-10-04）
+
+目标不改变：完整 Wave 0–7；本片整理用户已批准的产品要求，不新增能力、不重建计划中心、不以文档完成冒代码或业务通过。
+
+|放置项|当前裁决|
+|---|---|
+|Owner / writer|Root唯一写入产品总手册、导航和原五台账；子代理本轮均只读仓库|
+|当前事实|Root main 8ec8104；旧09-v2-prd是七月待裁决/旧上线声明，05缺会话绑定规则，07仍写失败全释放；Agent59034取消RED，Billing26aeec仅制品门；原未提交修改保留|
+|采用 / 淘汰|收敛既有product/09-v2-prd.md为当前产品主入口，相关01/05/06/07由此裁决；淘汰新建另一PRD或计划中心方案，历史由Git保留|
+|粒度 / 依赖|只修改既有Markdown职责，PRD解释业务，子仓三面解释实现，test-cases维护唯一执行记录；不复制SQL/机器契约、不改owner或服务|
+|数据 / 删除|无DDL/wire/source变化；移除过时完成声明和失败费用一律释放规则，不删除安全、审计或有效功能|
+|验证|需求映射现70组ID、相关章节无冲突、本地链接及diff检查；独立只读审查；工程/浏览器不因本片上调|
+
+|任务 / 优先级|Agent / 权限 / 基线|范围、完成条件与交付|
+|---|---|---|
+|R200-PRD / P1|Root写入；main8ec8104|既有09及相关产品章节、README/docs INDEX、原CURRENT/task/progress/test-cases/MAP；明确用户路径、范围、验收、未决与版本边界，Root精确提交|
+|R200-A4-cancel-review / P0|agent_mainline_qa_owner，只读；Agent59034及冻结test41fe|比对公开SDK生命周期与包内取消方案，提出最小三面更新及确切写集/系统验收，不改源码、断言、资源或Git；报告/tmp|
+|R200-Bill-next / P0|agent_prepare_final_review，只读；Billing26aeec|核IAM SDK到实际Admission装配/真实系统失败门和依赖顺序；保护五D0三codec，不扩方案、不改资源/Git；报告/tmp|
+|R200-PRD-review / P1|web_page_qa_owner，只读；Root8ec8104→冻结文档|核现需求与70组覆盖、范围/普通用户权限/会话项目/独立任务/实际消耗规则；初审列偏差，Root冻结后独审，不将审查当运行通过；报告/tmp|
+
+交付时间按可验收里程碑记录；目前没有经过工作量基线支持的完整上线日期，不填猜测日期或虚假完成率。
+
+R200-A4-D0 续派：Root已读c695fddd定位，先授权原agent_mainline_qa_owner唯一写入Agent现四D0（TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT）首节，保持原全部正文与测试41fe。采用登记实际middleware model-node task、无prepare子task方向；晚登记立即取消，等待退出后原样传播CancelledError；已commit不回删。生产仍冻结，需有限drain及cleanup异常处理的具体设计，不能把任意task done推定全graph/checkpointer已drain，最终由真实快照断言放行。无新文件/SDK/SQL/wire/lock/资源/Git变化。交四文件hash与差异后Root独审再授源片。
+
+R200-PRD 冻结文档已由Root验证：PRD520440d2、README最终af9848d0（初205链接含2旧pathbroken已修）、70/70覆盖无增减、205链接0失效、diffcheck0、Roottopology脚本测试7pass0.03s。独审1fc11804仅文档一致性通过，README两链接增量续审。现13Root文档精确提交待Root，不stage子仓/gitlink/uv；全70状态不变。Agent四D0仅首节12行候选，独审待回，生产仍冻结；Billing next报告为设计输入不冒运行实现。
+
+R200 独审终态：README两旧链接修正已独审通过。Agent D0独审e7afa6c9为0P0/2P1/0P2，**不放生产**：现prepare预算不能覆盖SDK node/checkpoint退出；done callback移除与异常取回可能漏已完成exception。原Agent owner后继只在现四D0收敛具名全node预算/到期处置和settled异常单次消费，禁止无限gather/后台遗留/删oracle；无法由公开SDK保证时如实报上游缺口，不伪称两source可完整解决。Root负责后续裁决和资源门。

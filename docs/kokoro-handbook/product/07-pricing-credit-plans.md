@@ -1,90 +1,37 @@
-# 套餐、积分和商业模型
+# 正式积分、套餐和计费产品规则
 
-## 定位
+状态：2026-10-04。当前要求以 [当前 PRD](09-v2-prd.md) FR-15/16/18 与 [ADR-033](../decisions/ADR-033-actual-usage-and-pricing-ownership.md) 为准，不代表账务运行链完成。
 
-Kokoro 的商业模型由 plan、offer、credit、entitlement 共同构成。payment 负责卖什么，credit 负责到账什么、怎么消耗。
+## 唯一资金权威
 
-## 核心概念
+Billing 同仓拥有套餐/订阅/支付、Metering 定价与 Credit/余额/预占/流水等清晰模块；不存在另一个独立 Credit 服务。
+System 管技术模型目录及路由，Agent 记录实际调用与严格用量证据，BFF/Web 编排和展示，不自行决定最终金额或写余额。
+Payment 与 Credit 模块职责分开，Payment 不直接写另一套流水；团队/project 标记不自动授权从别人的钱包扣费。
 
-```text
-Plan            套餐模板或站点套餐。
-Offer           某站点实际售卖的商品组合。
-Subscription    周期订阅。
-Top-up Package  增量积分包。
-Credit Account  用户或团队的积分账户。
-Entitlement     权益，如可用功能、额度、折扣、并发数。
-Usage Record    一次能力使用记录。
-```
+## 用户费用闭环
 
-credit 侧的对象和账本权威见 [../modules/kokoro-credit.md](../modules/kokoro-credit.md)。
+1. 通过正式授权赠送或后续已验支付获得积分，查看余额和流水；不直接修改数据库冒充值。
+2. 用户明确发送后，Billing 根据受信付款身份、冻结费率/倍率/换算/舍入规则报价并预占。
+3. 调用前取得有效预算/授权；余额不足、撤权或缺许可时 provider 零调用。
+4. Agent 产生逐实际 call/attempt 可核实的用量证据；Billing 独立计算并幂等结算。
+5. 成功、失败、取消或部分输出，均仅结算已核实实际消耗，释放其余可确认未使用的预占。
+6. 未发生调用不扣；unknown 不是零，保留待核实/对账，不按任务终态自动全额释放。
+7. 用户看到余额、预占、结算/释放及可追溯流水；刷新、重复回执、晚结果、取消竞争不重扣。
 
-## 套餐类型
+## 定价与显示
 
-```text
-Free                  低额度试用，主要用于激活。
-General Pro           通用聊天和轻量能力。
-Music Pro             Music Studio 专属。
-Video Pro             Video Studio 专属。
-Creator Bundle        多 Studio 组合。
-Enterprise / White-label  独立站点、团队、账单和管理。
-```
+当前可配置倍率为 7/5，即采购成本加价40%，不是净利润率，更不是9.4倍盈利。
+Billing 拥有不可变费率/倍率 revision、币种积分换算及舍入；当前 PRD 不填造采购价格、现金汇率或未知用量。
+Web 只消费正式结果；不维护独立倍率，不用“Kokoro承担费用/不消耗点数”等假补偿绕过账务。
+Skill/MCP 等执行使用已批准正式计费规则；旧 featureKey 固定按次价不能与实际用量价形成两套默认模型计费。
 
-## 计费原则
+## 套餐与支付的边界
 
-```text
-模型不决定最终价格。
-Agent 不直接扣费。
-Payment 不直接写 credit ledger。
-Credit 是唯一余额和账本权威。
-不同站点默认独立套餐和积分。
-跨站通用积分必须显式作为产品能力设计。
-```
+Plan/Offer/Subscription/Top-up/Entitlement 是既有商业概念，不据旧 Free/Pro/Studio 名称新增未经批准的套餐或权益承诺。
+支付最后完成；在此之前可用正式授权赠送验证非零消费闭环。支付仍需渠道 sandbox、webhook 验签/幂等/乱序/未知结果和退款对账。
+后台调价、赠送、读取流水都需正式授权和审计，不依赖前端开关。
 
-## 扣费闭环
+## 验收
 
-```text
-1. 用户发起任务。
-2. agent/session 向 credit 请求 quote。
-3. credit 创建 hold。
-4. agent/provider 执行。
-5. 成功 commit hold，写 ledger 和 usage。
-6. 失败 release hold。
-7. 实际成本偏差通过补差或退款修正。
-```
-
-完整链路见 [../business-flows/credit-reserve-commit-refund.md](../business-flows/credit-reserve-commit-refund.md)。
-
-## 价格组合
-
-一个 capability 的价格可以由多层决定：
-
-```text
-siteId
-featureKey
-surface general/studio/api
-model label / model binding
-plan tier
-discount policy
-provider cost
-campaign
-```
-
-## 后续后台
-
-后台需要支持：
-
-```text
-套餐管理、站点 offer、积分包、pricing rule、
-entitlement、手动调整、usage 审计、provider 成本和毛利。
-```
-
-## 风险
-
-最容易乱的是把价格、模型、套餐、扣费写在同一个地方。正确分工：
-
-```text
-model     能用哪些模型，给成本参考，不定价。
-payment   卖什么商品，不写 ledger。
-credit    到账什么权益，使用时扣多少。
-agent     执行任务，不改余额。
-```
+T-B01–B07 与 T-B02/T-S02 的正式真实调用证据链；T-B08 支付后置。完整失败、并发、unknown与恢复步骤在 [唯一测试台账](../../test-cases.md)。
+规则收敛、制品构建或计算单测通过不等于用户资金链已验收。
