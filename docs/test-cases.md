@@ -1,3 +1,42 @@
+## R191 原浏览器逐页业务验收（2026-10-04）
+
+沿既有70组，不增加虚假完成数。每个可见操作分别覆盖：主链、边界、异常、权限、状态机、刷新/跨页/跨窗口；必须取得UI终态与事实owner证据，页可打开不算CRUD通过。实际运行态为现3310窄同步组合，源码态与该组合分开记录。
+
+|用例ID / 标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与未验边界|
+|---|---|---|---|---|---|---|
+|TC-UI-R191-001 / 原IAB会话与项目刷新|原有tab1合法Product session；用户本人QA会话与项目|读取原会话→展开侧栏→点项目→硬刷新→限时等待真实项目标题|消息/可编辑输入及项目正确显示；加载有终态，不错误覆盖数据|P0|主链、状态机、刷新|原tab1实际会话消息及输入已渲染；项目实际进入并刷新后标题可见。仅当前正向路径通过，不证明历史所有无限加载根因已修/过期session/503/跨窗口异常通过。刷新瞬态先显示“专案不可用/正在加载专案”，属于加载与错误状态混用待修。截图/tmp/kokoro-r191-iab-project-after-reload.png|
+|TC-UI-R191-002 / 项目会话入口语义与空态|001同项目暂无会话|点击Project列表下孤立“专案会话”气泡→观察URL/内容/焦点→返回项目概览|会话列表与新建动作明确区分；空态无幽灵会话，不把创建动作标列表导航|P1|交互、状态机、空态|实际进入带新conv ID的草稿路由，主区仍空会话/新对话；没有发送消息。孤立图标和重复新建入口与用户截图一致，语义缺陷OPEN；持久零写尚需owner/网络核验，不因未发送猜无写|
+|TC-UI-R191-003 / 项目网站选择器真实来源|001同项目、正式用户入口|点网站新增→读取资源选项→取消，不保存|仅真实授权资源可选；不暴露开发示例，不用内存保存冒持久关联|P1|功能、数据真实性、异常|原IAB实际选项含产品发布页launch.example.test；已Cancel。数据来源/owner/save持久化由Web只读负责人核查；弹窗可打开不算网站功能通过|
+|TC-UI-R191-004 / 清理无用浏览器标签|原4个IAB标签：同会话两重复、旧callback、当前原tab1|读取重复textarea为空→核旧callback错误→关闭3个无用tab→重新列库存|保留当前用户页与草稿，无多余测试窗口，不误删数据|P2|资源、交互|实际关闭两个空草稿重复页和rp_transaction_rejected旧callback页；库存仅tab1项目页，未新开tab/模型调用/永久服务。该callback失败只记观察，不猜原因|
+
+### R191 独立深审发现与系统待执行矩阵
+
+只读审查不冒运行测试。Web审计 c3f37cd、Settings审计262afdda绑定maina854及受保护工作树；下面明确区分原IAB实际观察、源码确定缺口、待执行用户流。System/BFF/Platform/Billing/IAM各自拥有事实，Web不另造本地事实补假成功。
+
+|用例ID / 标题|预置条件|测试步骤|预期结果|优先级|类型|状态/Owner|
+|---|---|---|---|---|---|---|
+|TC-PROJECT-R191-005 / 网站关联真实保存|正式项目，System网站目录与BFF关联契约发布；本人可用网站|新增→选择→保存→owner ACK/GET→硬刷新→解除→刷新|仅授权真实网站，关联持久且隔离，无静态示例或纯内存成功|P1|主链、权限、生命周期|FAIL源码确认：正式preview=false仍读previewWebsites；Save只setLinkedWebsiteId。原IAB样本观察真实，保存/刷新尚未运行；contract前置BLOCKED，Web/BFF/System。不得隐藏后标PASS|
+|TC-SKILL-R191-006 / 项目技能两入口一致|真实Project安装技能版本、Platform/BFF写契约可用|Switch与More启停分别操作→GET→刷新；403/503后再回读|同一owner mutation，ACK后权威状态；失败回滚且可见，缺handler不假成功|P0|主链、异常、权限、状态机|FAIL源码：Switch optional handler缺失可假成功；More纯setState，静态Skill Builder单卡。真实用户写链未验；Web/BFF/Platform/Agent|
+|TC-SETTINGS-R191-007 / 个性化保存和读回|正式session，账号级偏好owner GET/PATCH已发布|唯一值输入/blur→状态码→关重开→硬刷新；404/503/跨subject|失败明确保草稿/可重试，不假保存；成功同subject权威GET可读|P1|主链、异常、权限|源码FAIL：同源route不存在、PATCH不查response.ok，无GET；完整真实写路径NOT_RUN，owner未裁决/发布，Web消费方不得造localStorage账号事实|
+|TC-SETTINGS-R191-008 / 通知偏好实际生效|Web设备偏好、已授权Notification，真实awaiting审批事件|关闭→切tab/刷新→产生事件；明确点击开启→权限拒绝/允许→再事件|关时零通知且持久；权限仅用户手势，拒绝不假授权；声音须实际producer|P1|功能、权限、生命周期|源码FAIL：4toggle内存；producer不读开关并业务路径requestPermission。设备browser/sound归Web；账号通信订阅owner待定，实机通知NOT_RUN|
+|TC-SETTINGS-R191-009 / 快捷键编辑影响实际动作|可编辑实际New chat/Search/Sidebar动作|重绑/清空/reset→新旧键→关重开/刷新/第二tab；IME/repeat/editable/冲突|仅新键一次动作，清空无动作，持久一致，录制与全局监听无重复|P1|交互、边界、竞态|源码FAIL：UI内存与硬coded dispatcher双事实，Sidebar显示与实际键不同；不支持Plan/Voice不算实现。Web负责人后继最小片已设计，真实全矩阵NOT_RUN|
+|TC-SETTINGS-R191-010 / 默认模型Agent跨主体安全|A/B合法session、不同可用目录；同浏览器|A保存selector→登出→B登录新会话；目录404/503/撤权|B只可用自身已核验selector或默认，加载失败显式错误，不吞空注入旧值|P1|权限、异常、生命周期|源码FAIL：全局chat-prefs key且agents404吞空；跨主体实际用户流NOT_RUN。Web/System/Agent/BFF；不是认证已可用就通过|
+|TC-SETTINGS-R191-011 / Computer和Integrations正式错误收口|相应owner contract与同源adapter已发布；无实际付款|打开计划/连接→提交至owner sandbox→404/503/unknown→重试/刷新|金额取Billing/正式quote，未知不重复/不假成功，错误就近可见，终态有界|P1|异常、幂等、主链|源码FAIL：两个POST route不存在、void async无catch/UI；Computer金额前端常量。付款后置/不触发真实支付，System/集成owner/Billing/Web依赖未闭|
+|TC-SETTINGS-R191-012 / 所有远端tab有限加载与晚回包|Credits/Plans/Skills/MCP/Teams/Chat真实读，controlled header/body延迟|逐页hold超预算→切tab→重挂载→释放旧包→Retry|预算后error/retry，卸载取消，迟到回包不污染当前tab/主体|P1|异常、加载态、竞态|源码缺统一可证明总timeout；当前503/404已观察，header/body hold专项NOT_RUN。Web各consumer独立门，不拿一次终态代全部|
+|TC-AGENT-R191-013 / 首次dispatch和重放唯一许可|正式Agent fresh schema/真实PG两连接、合法prepare/grant|begin/grant/dispatch→精确及advanced replay；两连接竞争；wrongtenant/fence/terminal/ref/digest/timeout|恰一次newly_started=true，持久timestamp/计数不重复，unknown不可重外发；拒绝零写、超时回滚|P0|状态机、并发、权限、事务|Root63612真实RED56pass/3fail5.54s：具体repository三操作缺失，自库absent/hashsame。GREEN实现中；只有owner内部事务，Billing真实性/provider/runtime系统主链仍OPEN|
+
+Settings13页逐项库存：General（通知FAIL/主题语言待实测）、Account（正式仅logout，其余禁用不计CRUD）、Credits（503）、Shortcuts（FAIL）、Chat（404与跨subject风险）、Personalization（route/读写缺失）、Subscription（503/支付后置）、MCP（503/写版未发布）、Skills（503/写版未发布）、Computer（route缺失/无可见reject）、Deployment（仅composer导流/升级不计资源CRUD）、Integrations（route缺失）、Teams（读取200、邀请/角色/移除/退出/刷新与权限NOT_RUN）。见现T-U04/R187和TC-SETTINGS-R190-007，不另建任务中心。
+
+### 全页/全模块深度退出门
+
+1. 每页每个按钮/菜单/快捷键有现TC映射、owner、执行结果和当前版本；没有handler/契约的能力明确FAIL或BLOCKED，不用隐藏把它清零。
+2. 每个CRUD执行创建→读回→修改→刷新→删除/恢复（永久删除须确认），验证空/长/重复输入、迟到响应、失败回滚和越权；缺一不得关闭该业务组。
+3. Agent旅程必须真实首发→排队/唯一执行→过程展示→完成或审批/取消→刷新续流；Billing核实实际消耗、余额和流水需独立真实闭环，不以工程门代替。
+4. Settings逐项保存→切tab→刷新→退出重登→跨窗口对账，核对实际动作变化；本地偏好与账号事实明确分开，保存失败不可假成功。
+5. 当前发布组合一致，P0/P1清零、所有必要用例通过且清理证据完整，才关闭整组。原70组仍11通过/6失败/14复测/38未验/1支付最后。
+
+---
+
 ## R190 系统级业务执行收据（2026-10-04）
 
 复用原70组与下方逐页库存，以下是细化子例，不增加整组完成数。当前源码候选、真实owner、Next系统fixture、用户3310运行组合分别记录；完整用户路径未通过的组保持开放。
@@ -8,10 +47,14 @@
 |TC-BFF-R190-002 / client-created同identity竞争|同受信用户、同key/body，真实两HTTP/backend|首创建停自有INSERT barrier→第二同identity提交→观察实际unique等待→放行→回读|两202同receipt；一outbox/两Message，无权限串写；清理故障完整报告|P0|幂等、并发、异常|同真实R190case PASS；不是低层mock。最终test38a0cecb；全owner184pass/0skip；原混合D18未冒公开CRUD完成|
 |TC-STORAGE-R190-003 / 真实个人文件生命周期|正式Storage14f2，owned单应用库独立schema，既有S3/ClamAV，合法BFF credential|空列表→创建upload→签PUT→Complete真实scan→非空列表→download并比bytes/digest|合法对象CLEAN可见可下载，原字节准确；自有资源可回收|P0|主链、生命周期、数据一致性|Root83744九业务检查+同库schema前置共10项PASS、cleanup[]/hashsame/Redis6同；仅owner RPC组合。原3310Library仍503，未经Web上传/刷新，不关闭T-F组|
 |TC-STORAGE-R190-004 / 文件主体与服务身份隔离|003实际CLEAN asset；另subject及坏credential|另subject列表和download；坏workload credential List|另subject无数据、download404；坏credential401；不泄露正文|P0|权限、安全|真实owner RPC通过，未替代跨tenant/分享/Project资源全权限门|
-|TC-UI-R190-005 / 连续改名成功后失败|A/B queued rename；真实列表owner可控响应|A200、B失败→等待owner权威GET→刷新|最终保留已确认A或owner最终值，不永久preA缓存、不伪称B成功|P1|异步竞态、异常、状态机|初候选工程2462PASS但独审P1真实逻辑缺口，原writer返修；当前不放行。真正Next/browser后继待验|
-|TC-UI-R190-006 / 对账后旧overlay不得复活|rename ACK后GET返回canonical C|随后GET失败→恢复GET D→切scope/client|错误态不复活旧rename值，恢复展示D，旧回执不污染新scope；跨hook不能复用preACK请求|P1|状态同步、异常恢复、生命周期|独审P1/P2开放，返修中；原工程绿色不当系统通过|
+|TC-UI-R190-005 / 连续改名成功后失败|A/B queued rename；真实列表owner可控响应|A200、B失败→等待owner权威GET→刷新|最终保留已确认A或owner最终值，不永久preA缓存、不伪称B成功|P1|异步竞态、异常、状态机|真实Next/Chromium已执行：A held→Bqueued→A200/B503→owner GET/reload A；Root83186 scoped两例PASS25.21s及完整2469pass/0skip、build0。只有fixture控制流，不是现3310真实BFF闭环|
+|TC-UI-R190-006 / 对账后旧overlay不得复活|rename ACK后GET返回canonical C|随后GET失败→恢复GET D→切scope/client|错误态不复活旧rename值，恢复展示D，旧回执不污染新scope；跨hook不能复用preACK请求|P1|状态同步、异常恢复、生命周期|最终源码独审0P0/0P1/2P2；真实Next C对账→D GET503→Retry D通过。Root90201完整2468pass/1fail为C GET抢先消费D故障的fixture时序；仅等待C真实200再注入，Root83186原期限完整2469pass/0skip。signal0重挂、parse/未知HTTP精确负控仍OPEN|
 |TC-SETTINGS-R190-007 / 所有tab读与加载收口|当前3310正规IAM session；13可用tab|逐tab导航、观察实际UI/HTTP；对异常页随后重试/刷新/切回；disabled Help不click|读失败可见且有界、可恢复，不假空页/假保存；disabled语义准确|P0|逐页功能、异常、状态机|13导航/内容READ_OBSERVED，仅初步库存，不是完整读写通过。Billing4类503、agents404、MCP/Skills503仍FAIL；部分Loading瞬时未等terminal，不据此关闭加载门。Get help误点击Timeout已注明oracle错误。证据/tmp/kokoro-r190-settings-runtime-reads.json|
-|TC-BILL-R190-008 / 正式逐attempt计费契约|既有ADR033/R80-W06、Agent已发布usage1.0.0|校验attempt/admission/evidence immutable身份、version/digest、unknown/verified；再由正式消费者对接|仅核实实际消耗结算，释放确认余量；202入箱不冒settled；owner计算费率|P0|契约、状态机、账务一致性|机器合同首次101fail/143pass真实RED，候选实施中；没有runtime/充值/结算/流水用户链通过声明|
+|TC-BILL-R190-008 / 正式逐attempt计费契约|既有ADR033/R80-W06、Agent已发布usage1.0.0|校验attempt/admission/evidence immutable身份、version/digest、unknown/verified；再由正式消费者对接|仅核实实际消耗结算，释放确认余量；202入箱不冒settled；owner计算费率|P0|契约、状态机、账务一致性|Root59378 Node24完整verify+生成drift均0：1347pass/411资源skip；最终独审0P0/P1/P2。started必须authorized，三非法组合真实Ajv RED→GREEN。experimental artifact未发布/消费，runtime/充值/结算/流水用户链OPEN|
+|TC-UI-R190-009 / 改名已提交但回执丢失|真实Next/Chromium、正式UI/same-origin、fixture可提交后断socket|UI改名→owner先保存→销毁响应连接→观察一次权威GET→硬刷新|只有一次PATCH，不猜失败回滚、不自动重发；标题最终为owner持久值|P0|异常、幂等、状态恢复|Root33810真实业务RED：commit后GET仍1；修复后Root85523两例PASS，再Root83186同例及完整69系统case通过。不是当前真实BFF/原IAB闭环|
+|TC-STORAGE-R190-010 / 恶意文件隔离|003同正式owner及真实ClamAV，owned隔离桶/数据库|签PUT标准扫描测试文件→Complete→等真实INFECTED→List/Download|扫描感染对象不进入可用列表，download404；正常文件仍可用，零主体泄露|P0|安全、异常、生命周期|Root43009自然exit0共14项检查；真实INFECTED、list仅CLEAN、download404；manifest T/kokoro-r190-storage-runtime-11u1jnpb/manifest.json，cleanup[]/源码同/Redis6同；浏览器恶意上传仍未验|
+|TC-STORAGE-R190-011 / scanner故障不可伪ready|同库正式BFF/Storage schema；真实未监听的自有loopback scanner port|启动正式Storage→观察ready失败→组合finally停止已登记进程/回收自有桶与库|owner期限内拒绝ready，不冒健康；真实进程身份不丢，自有资源可回收、共享资源不动|P1|异常、资源生命周期|Root5631自然exit0三项检查；manifest T/kokoro-r190-storage-runtime-z2ihtlh4/manifest.json，cleanup[]/源码同/Redis6同；build/stop失败与桶ACK未知分支仍OPEN|
+|TC-UI-R190-012 / 当前正式双操作命中与读回|当前3310正规IAM/BFF；本人既有QA会话；正式HEAD双action CSS|桌面普通click改名/Esc、删除/Cancel；键盘改名；UI改名→owner GET→硬刷新→UI恢复原题；640px重复命中|改名/删除不互相截获；取消零写；确认改名持久且可读回；窄屏44px命中区不重叠；零模型调用|P1|真实主链、交互、生命周期、响应式|真实RED两个32px按钮rect完全同位，Delete拦截Rename；正式双操作CSS窄修后Root6172自然exit0十项检查PASS，桌面交集0/窄屏两44px交集0，owner持久/硬刷新/原题恢复；恰2PATCH、0DELETE/0model。Web source2072d0a+CSSa854a81本地提交/运行窄同步；完整Project/Move/unknown ACK/更多触摸与200%缩放仍OPEN。证据/tmp/kokoro-r190-live-rail-verification-result.json，ownedBrowserClosed=true|
 
 退出要求沿原矩阵：每页CRUD/刷新对账、边界/异常/权限/生命周期均有真实证据；P0/P1清零且发布组合一致后关闭整组。原70组统计保持11通过/6失败/14待复测/38未验/1支付后置。
 

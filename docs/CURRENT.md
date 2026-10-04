@@ -1,10 +1,10 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R190。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R191。完整 **Wave 0–7 goal active，整体尚未闭环**。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## 1. 唯一计划与质量入口
 
-- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R190，不另建计划中心。
+- [task.md](task.md)：既有Wave 0–7、owner依赖与唯一任务卡；当前执行卡在末尾R190–R191，不另建计划中心。
 - [test-cases.md](test-cases.md)：逐页/模块系统级业务测试矩阵，记录预置、步骤、预期、优先级、类型、实际结果/证据及未验项。
 - [CODEBASE_MAP.md](CODEBASE_MAP.md)、[AGENTS.md](../AGENTS.md)：目录、owner、工程规范与调用方向。
 - 子仓的 tests 不迁入 Root。`scripts/tests/` 只覆盖 Root 治理脚本；跨仓集成/浏览器验收属于 `verification/` 与现有具名Root driver。组件、mock、工程门通过不冒用户业务闭环。
@@ -13,12 +13,12 @@
 
 |Owner|当前基线/候选|当前可证明范围|
 |---|---|---|
-|Web `apps/kokoro-app`|main `c5e925678cf80bfdc3abe76669e1febe1d5347d8`（Files窄片本地提交，未push）加混合候选；尚未整片提交|R188冻结工作树工程门2454通过、build0；三个真实Next/Chromium用例通过。当前runtime尚未包含Move候选。R189 AppFrame view fence与反馈代际隔离完整源码门2457通过、独审0；Files导航片已实际浏览器验收并窄同步运行副本；Library数据503仍OPEN。|
+|Web `apps/kokoro-app`|main `a854a81a4991359d7254fce873e4099098719350`（Files、rename协调2072d0a与双操作CSS窄片本地提交，未push）加混合候选；系统测试文件/Move尚未整片提交|R188冻结工作树工程门2454通过、build0；三个真实Next/Chromium用例通过。当前runtime尚未包含Move候选；新增只同步rename2source+正式双操作CSS，当前真实BFF改名/刷新和桌面/640px命中已限定通过。R189 AppFrame view fence与反馈代际隔离完整源码门2457通过、独审0；Files导航片已实际浏览器验收并窄同步运行副本；Library数据503仍OPEN。|
 |BFF `apps/kokoro-bff`|main `8e33bc0a64d2f92ab2fcd113b1951f490487a8d3` 加D18 Project DELETE本地事务候选|真实PG/Redis完整182通过；本地事务不等于public DELETE/Storage释放/关联定时任务业务闭环。canonical Run上下文及Direct/创建错误边界已同完整183真PG/Redis门恢复；R190真实两连接Message/Move双顺序与client-created同identity竞争已执行；完整184真PG/Redis通过。四次scope耗尽、发布/live消费仍OPEN。|
 |Agent `apps/kokoro-agent`|main `81bc2ae9f872e234a4309d43e95cf6e77f1ba143` prepare窄片本地已提交、未push；Root gitlink未更新|A1 schema/catalog两表与Run completeness已验，仅持久化边界；prepare最终真PG56通过；此前9df全database267通过。去cast后完整工程2175通过/365资源deselected、lock/纯门/build0，限定持久事务已验。runtime producer、finalizer、Billing接线未完成。|
-|其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing e04bff9、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
+|其它运行owner|IAM0537b2d、System9a4e98e、Storage14f2bc9、Platform物理kokoro-capability da813ed、Billing9eeabf3（experimental候选本地commit）、Scheduler e8dca48|这些是本轮实际checkout短SHA，不证明远端发布/全门/用户链。Billing已有任务外变更必须保留。物理Platform cutover及所有owner组合验收仍按既有目标推进。|
 
-Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
+Root正式Storage组合切片已本地提交 `8f8f12d80b455f42f91cb149bf89cb50361a42ca`（未推送、不等于原3310已启用）。Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历史台账提交由Git历史绑定；Root不暂存未发布子仓gitlink以伪装组合完成。远端/消费者发布必须另取得证据。
 
 ## 3. 最近实际验收
 
@@ -28,19 +28,19 @@ Root本片起始基线为main `03734b57fcdb1ab383e0f6a175a481a7a9c971f4`，历�
 |Agent|Root86926真实schema58pass；Root16750全database254pass/0fail29.64s；Root49017默认2175pass、352资源deselected、ruff/types/build0；lock/frozen-sync/contract0|352 deselection非业务通过。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r188-agent-schema-l1q_ndx5/manifest.json`；自库回收/源码不变。schema提交500c2c26不证明模型或费用链。|
 |BFF|Root16750真实PG/Redis182pass/0fail/0skip45.28s；schema/build/check/format0，默认743pass+1既定资源skip|manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r185-bff-full-m48kffdh/manifest.json`；自库回收/源码不变/Redis保持。仅本地owner门。|
 |R189当前门|Web Root65931 Node22完整2457pass/0skip，contract258/architecture50/lint/types/build0；Agent Root27104全部database267pass73.23s；BFF Root34000完整真PG/Redis183pass0skip46.21s（前两轮181/2、182/1错误不隐去）|Web view source45039523独审0；BFF Direct invalid与创建错误回归已同门关闭、专门scope竞争门/发布仍OPEN；Agent2174pass1fail原cast门保留历史，最终18098已2175pass/365资源deselected且build0；当前BFF本地owner完整门已通过，不等于用户链/发布。|
-|Root治理|CURRENT收口后拓扑测试7pass；实际topology FAIL（两未发布gitlink）；此前两治理测试文件17pass/1fail|历史w1e IAM checkpoint与当前owner gitlinks189项漂移仍OPEN。完整Root与全标准门本轮未重跑，不宣布全绿。|
+|Root治理|CURRENT收口后拓扑测试7pass；实际topology FAIL（两未发布gitlink）；此前两治理测试文件17pass/1fail|历史w1e IAM checkpoint与当前owner gitlinks189项漂移仍OPEN。Root完整78556已实际1720pass/1fail/3skip；标准60633实际153violations/0unverified，topology原两gitlink差异FAIL，子仓新窄片提交后实际三gitlink差异FAIL，不宣布全绿。|
 
 测试70组原统计仍11通过/6失败/14待复测/38未验/0旧待决/1支付后置，不因局部门上调。新增“删除项目时独立定时任务的保留/暂停/解绑规则”等待用户决定，单独记录，不阻塞其它切片。
 
 ### R190 最新分层结果（当前候选，不等于已发布组合）
 
 - **BFF**：Root35227真实HTTP/PG两case通过；Root60244完整184pass/0fail/0skip45.45s，schema/build/check/format0、743pure+1既定资源skip。Move先/Message先锁图与client-created同key竞争均真实观察；新case清理异常完整重抛。源码未提交/消费，四次scope重解耗尽待验。
-- **Storage组合**：新增Root `scripts/dev/local_storage_runtime.py`，复用正式Storage14f2bc9、单应用库独立schema、既有MinIO/ClamAV。Root4389治理40pass/32subtests；Root83744真实owner九项业务检查及同库BFF schema前置共10项通过，签PUT→真实CLEAN→非空列表→下载bytes/digest→其他subject404/非法credential401，自有桶/进程/库收回、源码hash同、Redis6隔离观察同。原3310未启用该profile，Library用户路径仍OPEN。startup/readiness/stopfailure等故障注入尚未穷尽。
-- **Web**：Root39526初候选Node22完整2462pass/0skip、contract258/architecture50/lint/types/build0；独审发现2P1（A成功/B失败不刷新、已对账overlay后GET失败复活），返修3个正确RED→worker23pass已冻结，最终Root门/系统浏览器与复审待验，仍未放行。Project公开rename/delete缺能力，不把本地候选当完整CRUD。
-- **当前3310 Settings**：正规IAM表单→callback→Home实际渲染；13个可用tab导航/读取观察，不是持久保存或CRUD通过。Billing summary/by-model/ledger/plans503、agents404、MCP与Skills503仍实际失败；Teams读200不是邀请/角色写操作通过。Get help源码明确disabled，误点击产生的测试Timeout保留并纠正为错误测试操作，不当产品缺陷。`/tmp/kokoro-r190-settings-runtime-reads.json`。原用户IAB同标签加载仍未取得恢复证据。
-- **Billing前置**：原Agent负责人转Billing机器合同唯一writer，沿既有R80-W06/ADR033；12路径clean-slate breaking artifact候选3.0.0-experimental.1、现/v2 24operations，原5D0+3codec修改保留。先真实合同RED101fail/143pass→worker244pass；Root77175完整verify1279pass/2fail/474skip，personal HTTP bootstrap旧registry43拒绝新42，故候选阻断。尚未发布/接费链runtime，不称计费或Agent主链完成。
+- **Storage组合**：新增Root `scripts/dev/local_storage_runtime.py`，复用正式Storage14f2bc9、单应用库独立schema、既有MinIO/ClamAV。Root4389治理40pass/32subtests；Root83744真实owner九项业务检查及同库BFF schema前置共10项通过，签PUT→真实CLEAN→非空列表→下载bytes/digest→其他subject404/非法credential401，自有桶/进程/库收回、源码hash同、Redis6隔离观察同。原3310未启用该profile，Library用户路径仍OPEN。Root43009补真实INFECTED隔离，14项检查通过；Root5631真实scanner unavailable/readiness拒绝与自有清理三项通过，两次exit0/cleanup[]/源码同/Redis6同。build/stopfailure/桶ACK未知等仍未穷尽。
+- **Web**：改名三生产/相邻测试路径冻结，最终独审0P0/0P1/2P2；真正Next/Chromium发现commit丢ACK不GET的业务RED后修复，Root83186最终scoped两例PASS25.21s（67名称过滤非执行）、完整`pnpm check` exit0：258contract/50architecture/lint/types、2469pass/0skip（包含69真正Next系统case）、build0。前90201完整2468/1是C post-ACK GET抢先消费D测试故障，仅收紧真实网络次序后通过，未加timeout/sleep/force。2072d0a两生产source已同hash窄同步原3310；实际正规IAM/当前BFF普通改名/权威读回/硬刷新/恢复原题通过。另发现正式双action重叠并按HEAD独立CSS修复a854a81，当前桌面/640px真实点击通过。原IAB历史加载异常的全面恢复/全部CRUD、signal0重挂与parse未知HTTP专项仍OPEN。
+- **当前3310 Settings**：正规IAM表单→callback→Home实际渲染；13个可用tab导航/读取观察，不是持久保存或CRUD通过。Billing summary/by-model/ledger/plans503、agents404、MCP与Skills503仍实际失败；Teams读200不是邀请/角色写操作通过。Get help源码明确disabled，误点击产生的测试Timeout保留并纠正为错误测试操作，不当产品缺陷。`/tmp/kokoro-r190-settings-runtime-reads.json`。截至R190原用户IAB同标签未取得恢复证据；R191已取得当前原tab1会话/项目刷新成功正控，历史全部异常仍未关闭。
+- **Billing前置**：沿R80-W06/ADR033已冻结14路径experimental artifact3.0.0-experimental.1及personal HTTP闭集registry配对。Root77175初门1279pass/2fail证明旧43/new42启动回归；返修后Root59378最终Node24完整verify/generated drift均0，1347pass/411资源skip，独审0P0/P1/P2。started必须有首次authorized决策，unknown不猜零。契约README过期并列事实已收敛；Root17061最终再完整verify/generated均0（1347pass/411skip22.55s），12实际changed路径已精确本地提交9eeabf3，原5D0+3codec不夹带/源hash保持。未push/tag或消费者pin/Admission与Evidence运行链/实际预占结算释放仍OPEN，机器门不冒正规费用业务闭环。
 
-Root78556完整治理门自然exit1：1720pass/1fail/3skip126.34s，唯一历史w1e IAM checkpoint与现owner gitlinks189差项；未弱化门禁或修改历史checkpoint，不称Root全绿。原launcher45606/Web46036保留；自有验收浏览器已close，无新永久服务。现完整70组统计不因本段局部结果上调。
+Root78556完整治理门自然exit1：1720pass/1fail/3skip126.34s，唯一历史w1e IAM checkpoint与现owner gitlinks189差项；未弱化门禁或修改历史checkpoint，不称Root全绿。原launcher45606/Web46036保留；自有验收浏览器已close，无新永久服务。R191另关闭3个无用IAB页，仅保留原项目页。现完整70组统计不因本段局部结果上调。
 
 ## 4. 当前开放缺口与推进顺序
 
@@ -55,7 +55,7 @@ R189已交接负责人：Web agent4_lifecycle_review已冻结view fence/Files导
 ## 5. 资源与业务约束
 
 - 原组合launcher PID45606、Web PID46036本轮已实际确认live；3310运行目录 `/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-cda7wvjx/next`。无重复服务、无重启、无共享数据重置。本轮自有浏览器已关闭，测试资源已回收；BFF/Storage/Web已列句柄均终态；Root78556已消费实际exit1，唯一历史checkpoint189差项保留。
-- 运行副本仅已批准窄同步：正规auth首屏、R187 snapshot总期限/分页helper/pagehide草稿、R189已验Files导航单文件；Move候选没有同步。源码通过与用户运行态分开记账。
+- 运行副本仅已批准窄同步：正规auth首屏、R187 snapshot总期限/分页helper/pagehide草稿、R189已验Files导航单文件、R190已验rename协调2source及正式双操作CSS（HEAD独立patch，不复制混合Move）；Move候选没有同步。源码通过与用户运行态分开记账。
 - 一个PG实例/一个应用数据库、同一凭据、owner独立schema；一个Redis实例/独立namespace；禁止跨owner SQL或清空共享状态。
 - 默认个人私有、显式分享；普通用户/管理员业务权限由IAM执行，不向普通登录堆原始内部scope展示。
 - 正式积分：授权赠送→余额→预占→仅核实实际消耗结算→释放其余→流水；unknown不猜零、不提前结算，不造免费完成声明。费率由Billing owner计算，Web只展示正式结果。
@@ -64,3 +64,19 @@ R189已交接负责人：Web agent4_lifecycle_review已冻结view fence/Files导
 ## 6. 闭环退出标准
 
 所有明确页面/模块主链、边界、异常、权限、生命周期、刷新/重放、真实owner和浏览器完整用户路径通过，未解决P0/P1清零，当前commit与发布组合相符，必要完整门有真实终态，才宣布完整Wave0–7完成。Root goal保持active。
+
+### R190 当前逐页验收推进边界
+
+沿现70组和R187–R190矩阵完成实际路由/可见操作映射，报告 `/tmp/kokoro-r190-page-coverage-map.md`（8f03645b），涵盖登录/Home/Composer、Direct/Project列表与CRUD/Move、独立Schedules、Library、Agent过程/审批、Skills/MCP及Settings13tab。映射不是执行通过：每项必须有主链、边界、异常、权限、生命周期、刷新与跨窗口证据。Settings设备偏好最小片已只读设计（`/tmp/kokoro-r190-settings-next-cut.md`），没有实施或以禁用/隐藏虚假能力清零。Agent授权观察/唯一dispatch CAS下一片已设计，现表的请求事实范围与replay不得重复外发仍待Root精确收敛，未授运行接线。
+
+本轮原IAB控制工具再次12s超时/kernel reset，未操作标签或证明原页恢复；独立测试浏览器不能冒同标签证据。原45606/46036保留，测试句柄59378/83186均自然exit0已消费；uv.lock f7e1保留。
+
+当前3310真实鼠标验收发现双操作32px矩形完全重合，随后Root仅HEAD→独立双操作CSS patch（6新增/2删除）修正，未复制Move布局/其它未交接source；当前混合CSS29967d字节保留。Root6172真实十项检查PASS，正规IAM→Home可编辑→鼠标/键盘改名、删除取消→实际BFF rename→硬刷新→UI恢复原题→640px两44px命中区无交集，恰2PATCH/0DELETE/0模型调用，browser finally关闭。证据 `/tmp/kokoro-r190-live-rail-verification-result.json` 与窄屏截图；仅限定子例通过，不升70组。一次错误textbox英文名、刷新后折叠行与错误dialog而实际alertdialog的等待失败均明确是Root oracle错误，不混作产品缺陷。
+
+### R191 原用户浏览器当前事实
+
+原IAB工具本轮重新可用，URL精确匹配旧ambient未命中后按真实库存绑定原tab1；没有新开浏览器标签。原QA会话消息与输入已实际渲染，侧栏→用户project_93b2011d项目成功，硬刷新限时等真实标题后亦渲染。此前“未取得同标签恢复证据”是历史边界，现仅该正向路径已有原标签证据；不据此证明历史无限加载所有根因已消除。
+
+项目仍有实际交互缺陷：孤立“专案会话”按钮点击进入新conv草稿路由、与现新对话入口语义重复；网站选择器实际显示launch.example.test示例地址，已取消；刷新瞬态把加载写成“专案不可用”。原生Web/Settings只读负责人分别核owner/handler/持久化与下个修复片，Agent负责人继续A2 tests-first，不宣称运行费链完成。三独立面已续派，Git/资源/台账仍Root独占。
+
+按用户清理要求关闭两空草稿重复页及一旧rp_transaction_rejected回调页，真实库存仅tab1项目页。原服务45606/46036保留live、无新服务/模型调用/共享重置。证据/tmp/kokoro-r191-iab-project-after-reload.png及test-cases R191。原70组完成数不变。

@@ -8468,3 +8468,25 @@ Root基线03734b57，完整Wave0–7 active，不新建计划中心。三独立�
 原70组11pass/6fail/14retest/38unverified/1paymentlast不变。Root78556治理全量门已消费自然exit1：1720pass/1fail/3skip126.34s，唯一既有w1e IAM checkpoint189差项；原历史绑定未改，不拿局部40pass冒全Root绿色。无共享重置/新增常驻服务，原45606/46036保留。
 
 R190最终准入补记：Root84181对最终launcher75d89afe/test3dd96c51实际40pass6.79s，ruff三路径全0、py_compile/diff0。仅新片format整理及把本来位于997行的pytest导入移到顶端，去现文件E402；module dc8db6bd未变，真实owner83744绑定此前仅格式差launcher e2cd。独审0P1/1P2准限定Root组合提交。Root80939误在Web系统writer中途启动全仓lint，命中新fixture半成品prefer-const/unused，退出1，非冻结源最终回归证据；已停止、不放宽门，下次待writer冻结才跑。Root77175 Billing完整verify真实exit1：format/lint/types/build/sql/contract0，test1279pass/2fail/474skip22.75s；personal Credit HTTP bootstrap硬coded43与新generated42冲突，候选不能放行。原owner下一精确runtime registry配对片待准入，不恢复unused schema或冒244contract全仓GREEN。
+
+## R190 最终复验与每页覆盖核对（2026-10-04）
+
+- Root Storage源码/治理+四台账+code map已提交main `8f8f12d80b455f42f91cb149bf89cb50361a42ca`，未push。追加43009真实恶意扫描：14check自然exit0，真实ClamAV INFECTED→可用列表仍仅clean→download404。5631真实scanner不可用：3check自然exit0，正式owner ready拒绝有界并finally清理已登记的自有进程/桶/数据库。两个manifest分别T/kokoro-r190-storage-runtime-11u1jnpb、z2ihtlh4，cleanup[]、源码hash同、Redis6同、owned DB/bucket无遗留。stop/build/未知桶ACK矩阵未穷尽，原3310Library依旧未升级。
+- Web Root33810保留正确RED：owner先commit后socket销毁，前端没有postACK GET。production限定修复后85523两真实Nextcase通过。90201完整2468pass/1fail为fixture C GET抢消耗D503：writer只在C权威200/title回读后才注入D故障，未调预算/睡眠/force。最终Root83186 source三hash d40c40ab/ece8fb62/e6ded786、system4ac95aed frozen，scoped两例PASS25.21s/67名称过滤；完整check exit0（258contract/50architecture/lint/types、2469pass0skip164files含69Next系统case149.76s、build0）。日志 `/tmp/kokoro-r190-web-final-stable-root.log`。最终独审5cfedf0P0/0P1/2P2，signal0 remount及parse/未知HTTP精确专项OPEN，不冒全CRUD/当前IAB。
+- Billing Root59378 Node24最终完整verify+generated drift exit0：1347pass/411资源skip、37filespass43skip25.41s，format/lint/types/build/sql/24operation contract0。最终报告39e5d316和状态审0P0/P1/P2；三非authorized+started非法组合先真实Ajv RED后GREEN，首次决策与wallclock分离。此前77175 1279/2失败启动regression及15006 1344/411历史保留。日志 `/tmp/kokoro-r190-billing-state-final-root.log`。仍未发布/接Runtime/Agent pin/实际收费；原5D0+3codec dirty untouched。README历史当前段尚须发布前收敛，不拿实验机器候选冒完整三面工程闭环。
+- Root60633全标准实际153violations/0unverified exit1（不是历史137），topology实际两未发布gitlink差异exit1；Root78556 1720pass1fail3skip原w1e checkpoint189漂移保留，不改门/历史凑绿。
+- 三原生owner只读续接：全页面覆盖图8f03645b映射登录/Home/Composer、Direct/Project完整CRUD/Move、Library、Schedules、Skills/MCP、Agent/Todo/审批及Settings13tab；不是执行。Settings设备偏好最小片、Agent授权/dispatch最小片500b8e73均只读设计，Root审准前不扩写、无重复计划/endpoint。原70组11通过/6失败/14复测/38未验/1支付最后保持。
+- 原45606/46036实际仍live；Root59378/83186已消费自然exit0；测试浏览器fixtures finally关闭；无重复永久服务/PG Redis reset。IAB控制12s timeout kernel reset，没有控制/关闭标签或证明原用户加载恢复。任务外uv.lock f7e1 hash同、子仓未交接混合更改/Gitlinks不暂存。
+
+R190正式运行侧栏限定闭环：Web源码2072d0a（3路径）与CSSa854a81（1路径6+/2-）已本地main提交/未push。Root同hash备份窄同步2source后在当前正规IAM/BFF实际click发现Rename/Delete完全重叠，真实RED截图及网络0保留。双操作patch严格从HEAD c6bb生成d7f4，修base右位置/局部伪命中/mobile间距/标题padding，无Move/sharedprimitive更改；当前混合CSS29967d字节不变，Rootcached仅精确hunk不整stage混合文件。Root6172 driver自然exit0，十项真实检查PASS：Home可编辑、桌面32px两rect交集0、普通Rename进入editor/Escape、Delete确认/Cancel零DELETE、键盘Enter、actual BFF rename GET持久、硬刷新可见、原题同UI恢复、640px双44px交集0及普通click。恰2PATCH/0DELETE/0model，ownedBrowserClosed=true。证据 `/tmp/kokoro-r190-live-rail-verification-result.json`；运行备份manifest T/kokoro-r190-live-rename-g3e0z44u、live-rail-css-1b4jcn4k。错误textbox名称/折叠行/dialog-vs-alertdialog等待是Root oracle失败；一次NodeRepl8s超时reset后ps未见Chromium残留，随后受管driverfinally保证close。原IAB没有恢复证据、touch/200%缩放/unknown ACK/全CRUD仍未验。
+Billing最终当前README065aab删除重复历史current、无generator/Ajv等失实并列口吻；Root17061再次完整verify+generated自然exit0，1347pass/411资源skip22.55s，实际protected8hash未变。Root仅12changed路径提交 `9eeabf3cfacb091d866caf6557a3346f5007757f`，未夹五D0/三codec或Rootgitlink，不等于发布/运行v2/实际费用闭环。
+既有70组仍11/6/14/38/1，新增12细例不升总组。全部实际具名测试句柄已消费；原45606/46036保留；源码提交后topology重新实际3gitlink差异FAIL（原2差异历史不覆盖），标准门当前结果另记录。Rootgoal active。
+
+
+## R191 原IAB真实页面与并行逐页核验（2026-10-04）
+
+三原生负责人已分别续派Agent A2 tests-first、Web页面action验收映射、Settings只读QA审查；沿同任务台账、同仓单writer。Root独占浏览器/资源/集成，不重复实现委派片。
+原IAB rewriteDocumentation成功，按ambient项目URLgetTab报not found，不猜标签；实际listTabs四页后绑定原tab1。原会话已有消息与可编辑输入，真实侧栏Project可达。点击孤立“专案会话”气泡进入conv_a915f7f9草稿路由，再返回项目；未提交消息但尚无owner零写观察，不能猜持久零写。网站新增弹窗可见产品发布页launch.example.test，Cancel未保存。项目顶栏更多仅账户/升级不是Project管理菜单。再次硬刷新先加载瞬态“专案不可用”，随后10s内真实项目标题可见；仅当前正控，不关闭所有历史loading异常。截图/tmp/kokoro-r191-iab-project-after-reload.png。
+用户授权清理无用标签：两重复会话textarea均空，旧callback显示rp_transaction_rejected（不重复输出OAuth参数、不猜原因），关闭3页后真实listTabs仅原tab1项目。没有新增tab/模型/服务，原45606/46036实际live；未重启PG/Redis。Rootuv f7e1保持，原70组11/6/14/38/1不变。
+
+R191只读交接已Root读取：Web页面操作c3f37cd确认Project孤立快捷键、public rename/delete缺口、网站正式硬编码+内存save、技能Switch optional与More纯state双轨、连接器仅Settings导航；Settings262afdda0P0/7P1/4P2，不放行业务保存。全部落现test-cases新R191矩阵并关联旧TC，不用/tmp报告替代持久台账。网站save/技能状态仍源码确定缺口而非已执行mutation。Root63612真实Agent PG RED56pass/3fail5.54s，具体3repository方法缺失，自库absent/hashsame；已续原Agentwriter仅3路径GREEN，真实竞争/authority/timeout矩阵强制。Web原writer仅孤立入口现3路径小片修复；README/合同/Move/资源与其它UI不抢写。

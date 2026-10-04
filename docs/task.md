@@ -8025,3 +8025,40 @@ R190 Root组合收口：Storage最终独审 /tmp/kokoro-r190-storage-runtime-fin
 
 R190-W-NEXT新增既有system文件切片：原Web负责人仅tests/system/oidc-rp-next-http.integration.test.ts，已读返修报告2f1bba3f；生产3路径冻结。真实rail连续A held→Bqueued→A200/B503→postACKcanonical A/reload，再canonical C后GET503/Retry D不得旧overlay复活；fixture默认不影响现case，finally解held响应，Root资源验收。不得绕UI调用controller/force-click/睡眠掩bug。Root80939在writer中途误跑lint的exit1不当冻结源结论，完整门待最终冻后重跑。独立readonly Agent owner复审source3c99f42c/08dc2fb2/772ca7c5，不与writer抢写。
 R190-BILL配对回归：Root77175完整verify前六阶段0、1279pass/2fail/474skip，personal HTTP bootstrap registry仍43而新42，正式RED与P1阻断；244contract不能放行。下一Billingowner先报告精确runtime闭集最小片，审批后tests-first；原5D0/3codec保持，不增资源或兼容generic。
+
+R190逐页验收继续（用户要求每页每模块）：既有TC/R187–R190映射报告8f03645b覆盖全部可见操作，每组仍11/6/14/38/1，不建第二计划。Root83186冻结source d40c/ece8/e6de、system4ac9 targeted两例PASS25.21s与完整check2469pass/0skip/69真实Nextcase/build0；独审5cfedf0P1/2P2，仅rename候选可限定收口，原3310未升级。90201原失败为C GET抢消耗D故障的fixture竞争，原writer仅等C权威200收紧注入，不放宽门。
+R190 Billing Root59378最终verify+generated check0：1347pass/411资源skip，39e5报告/最终状态审0P0/P1/P2；14路径候选仅experimental机器+personal HTTP schema配对，原D0/codec dirty保留、未发布/Agent pin/费用runtime。Root实际发现contractREADME历史“当前未生成/无script/2.0.2”段与新前缀矛盾；发布前须owner文档收敛，不能以机器门清零文档债。
+Root8f8f12d正式Storage组合提交已完成；43009真实CLEAN/INFECTED/下载/主体隔离共14check，5631真实scanner不可用/ready拒绝/registered资源finally回收共3check，各exit0。当前3310Library未启用该组合仍OPEN。153全标准violations、两拓扑gitlink、Root1720/1/3真实失败保持。
+现并行原生负责人沿卡接续：Web只读全页面遗漏映射已交；Agent下一授权/唯一dispatch设计只读已交（500b8e73），Root在实施准入前要求准确现authorization observation vs不存在的canonical request columns、dispatch replay newly_started=false且不能授权第二次call；不扩DDL或捏造跨owner evidence endpoint。Root仍唯一Git/资源/任务表writer，Settings待正式写卡，未知身份/费用不猜零。
+
+R190-W-LIVE-RENAME限定准入：Web源码3路径已由Root精确提交main2072d0a3de6924e645abe4258d28ae7365c6fccd（未push），完整83186冻结门exit0、独审0P1/2P2。现system文件有既有大量未交接变更，未整文件暂存；系统证据绑定4ac9hash而非全提交态。Root只准原3310运行副本的use-conversation-list.ts/use-session-list.ts两现source checksum备份后窄同步，前置原副本必须分别为c475ca/d490ef，不改其它文件/配置或重启进程。随后独立正规IAM→本人已有QA会话改名→权威读/硬刷新→恢复原题，零模型调用/积分变更，不删除用户会话；原IAB工具超时不冒原标签恢复。失败保实际证据，必要仅回滚本两运行副本至备份，不动主仓候选。
+
+R190-W-LIVE-ACTIONS真实业务RED：Root正规IAM→当前3310可编辑Home→展开真实Direct会话行，普通鼠标点Rename超时，Delete chat subtree持续截获pointer；无force/无PATCH/无模型调用/原题未变。证据/tmp/kokoro-r190-live-rename-business-result.json与截图/tmp/kokoro-r190-live-rail-action-overlap.png。此前错误composer名称和刷新后折叠导致的locator超时均是测试oracle错，已纠正；本Rename点击有真实DOM重叠证据，正式P1不是网络推断。自有browser/context已close。Web单writer下一只能定位现row/action CSS与源码前后差异，Root另授精确源片，不整copy混合Move/UI。
+
+R190-BILL-DOC-COHERENCE：Billing main e04bff9+最终14路径已验候选，Root发现contract/README.md仍把历史2.0.2/43项/未生成/未安装写为current，违反事实源收敛。agent_prepare_final_review接本仓唯一文档writer，仅contract/README.md，采用现README取代过期重复历史current段，不新文档/owner/目录；原5D0+3codec dirty保持不碰。保留17运行v1与24目标experimental/v2不同边界、3.0.0-experimental.1 sourceSHA abcd509c、strict Agent1.0.0 digest、正式现generator/只读4产物/42schema bootstrap、未发布/运行费用OPEN。不得删安全/idempotency/金额/权限规则或虚报运行切换。Root审diff+合同/生成drift/最终hash后精确提交，Git仅Root。
+
+R190-W-LIVE-ACTIONS-PATCH准入：owner仍Web，原writer仅从正式2072d0a HEAD的workspace-rail-items.module.css生成/tmp内独立双action完整候选及unified patch；不得改现混合workingtree（已有Move三按钮CSS必须保原字节），不得Git/index/运行副本。局部采用base Rename right2.25rem/Delete .25rem，双action after inset0，mobile Rename right3rem以44px边界无实体/命中交叠；不改sharedSidebar primitive及其它source。Root先复核HEAD→patch只该7行、应用到原runtime同hash备份进行真正鼠标/keyboard/mobile与owner读回/恢复原题，PASS后才按精确patch串行暂存该片，现Move差异仍dirty不夹带。这是发布现HEAD正式双操作的独立修复，不建立兼容API或双业务实现。
+
+R190限定提交/用户运行复验：Root对Web先精确3路径提交2072d0a，再仅HEAD双actionCSS patch串行cached提交a854a81（6新增/2删），未夹带混合Move或大量system测试既有差异，当前CSS29967d前后字节同。运行source2与CSS独立备份manifest均留；Root6172真正正规IAM/当前BFF十项检查PASS：普通mouse两动作分离、Esc/Cancel零写、键盘改名、owner持久/硬刷新/原题UI恢复、640px44px命中无交集，恰2PATCH/0DELETE/0model、finally浏览器已close。不是全部CRUD/原IAB恢复/用户消息费用链。
+Billing文档准入已完成，Root17061 Node24再次完整verify/generated0（1347pass/411资源skip22.55s）；源码13hash同，README065aab当前单一叙事，12实际changed路径精确本地commit9eeabf3，原5D0+3codec保持不暂存。未push/tag或消费者pin；三面原D0后继未整体发布/运行费用仍OPEN。
+Agent A2补充13c0f61设计已Root收敛：现authorization仅strict artifact observation，不造完整Billing request字段；dispatch replay newly_started=false永不第二外发，lostCOMMIT ACK按started unknown待核实，不猜zero。后继implementation要新精确tests/source准入，当前未实施。
+
+R190-A2-RED后继准入（沿A1/ADR033，不新goal）：Agent唯一writer继续agent_mainline_qa_owner，main81bc clean、模型gpt-5.6-sol；只先扩现model/call_models.py internal begin/grant/dispatch不可变值及Protocol、现tests/integration/database/test_model_call_evidence_repository.py新增真实PG行为断言，生产repository/SQL/runtime/finalizer/Billing/生成/锁文件冻结。采用13c0补充：只现strict AuthorizationObservation、无Billing DTO/完整request bytes假事实；begin精确ref、grant同ref/admission、dispatch newly_started仅首次true，advanced replay false及原timestamp；暂不实现deny避免半seal。测试收集可由worker，无shared资源/Git写；Root先复现功能不存在的真实PG RED（区分collection错误与能力缺口，不冒现有逻辑bug），随后再授repository GREEN。源/测试冻结交接前不得抢跑RootPG；此前56准备行为全保，新增真正双连接/tenant/fence/terminal/unknown与回滚 oracle；P0主链未因此称通过。Root接管资源/审查/全门/提交。
+
+R190最后治理核对：源码提交后三ownergitlink差异实际FAIL、153标准violations实际FAIL；Root1932限定组合工具40pass/32subtests6.83s，拓扑工具7pass0.03s，不冒实际拓扑或全RootGREEN。原完整1720/1/3历史绑定保留；所有自建浏览器关闭、原45606/46036live，Rootuv f7e1保持。
+
+### R191 全页面/模块深入业务验收续派（2026-10-04）
+
+用户要求逐页逐模块深验；沿既有70组及R190细例，不另建计划中心。Root负责浏览器关键路径、资源、台账、复审和提交；三独立面并行，同仓单writer。
+
+|任务|Owner/角色/基线与范围|实际验收与交接|
+|---|---|---|
+|R191-A2-RED|Agent负责人agent_mainline_qa_owner续R190-A2-RED；main81bc；仅call_models.py和现真实PG integration测试可写，其余冻结。|先收集冻结/Root实际PG RED，再授repository GREEN；无provider/shared资源/Git操作。依13c0澄清，不建Billing DTO或新DDL，不提前称费链完成。|
+|R191-W-PAGE-ACCEPTANCE|Web原负责人web_page_qa_owner只读；maina854加保护混合候选；读现page map/测试台账，/tmp交付。|把每页可见操作映射现TC ID、实际能力/owner、系统验收前置与未覆盖边界，尤其Project/Direct CRUD、独立任务、Home真实能力；不修改仓/运行副本/资源。|
+|R191-Q-SETTINGS|agent_prepare_final_review只读QA审查；Web同冻结工作树，Settings13tab与Platform/Billing消费者。|核验实际可保存路径/隐藏假成功/未知loading退出/权限，提供最小可复现系统步骤和owner，不冒tab读取通过；/tmp报告，不改文件/Git/资源。|
+
+原3310已限定同步rename及独立双actionCSS，不恢复大批混合候选；原IAB无限加载仍未获同标签恢复证据。原70组数字不因新增覆盖图或组件门改变。
+
+R191-W-ORPHAN精准修复准入：Root已原IAB复现、只读c3f37cd定位孤立“专案会话”是重复本地draft入口。Web现writer仅workspace-rail-navigation.tsx删除第二Shortcut SidebarMenu及不用MessageSquare import；项目选中链接/侧栏会话列表/明确“新对话”入口全部保持。仅现workspace-rail-items.module.css删该孤立shortcut死选择器和对应过期注释、不动其混合Move三action；现tests/ui/workspace-rail.test.tsx原两个相关case精准断言调整/补明确入口单触发，其余混合候选保持。source navigation01d046 clean；test d452ac9已有保护修改；CSS29967d已有保护Move，禁止整格式化。先沿用户流证明孤立入口RED（Root已实际点击），改源后交准确patch与hash。Root当前冻结门重跑+原IAB窄同步实际确认无孤立图标、project/direct/明确New chat仍可用；Git只Root精确hunk，不整stage混合文件。无新文件/contract/owner/后端副作用、不隐藏未完成ProjectCRUD冒闭环。
+
+R191-A2真PG RED收据及GREEN准入：Root63612隔离临时库正式schema后自然exit1，原56 PASS/新3 FAIL 5.54s，三项均具体repository缺begin_authorization，不是收集失败；自库absent/sourcehashsame，manifest T/kokoro-r191-agent-schema-4y6wvg27/manifest.json。允许原Agentwriter扩同postgres_model_call_repository.py（现590行、唯一持久attempt事务职责）实现begin/grant/dispatch，连同现两路径继续，无DDL/新模块。Run→Attempt锁序、DB lease/tenant/terminal校验、不可变typedcanonical授权字节及digest、exact/advanced replay只读、唯一dispatch true且持久timestamp保持，所有unknown禁止重外发。必须在现integration补真正两连接dispatch竞争（恰1true/1false、一个count/timestamp）、pending未grant不能dispatch、错tenant/stale lease/terminal/错ref与digest零写、timeout事务回滚；不以mock/串行gather冒真实竞态。worker不操作共享资源/Git/provider，冻结后Root同隔离runner/full门及独审；lost网络ACK/runtime/finalizer费用仍OPEN。若需超过这3文件，先报告，禁止越界。
