@@ -1,4 +1,36 @@
+## R226 限定系统用例GREEN与产品边界
+
+Agent单completion用例已Root实跑GREEN：现单文件147case包含57个R225参数case，以下两行旧RED保留作历史；默认/显式n1、五override n2、sync/async×stream/nonstream、invalid scalar和raw缺n全部按正式hook验证，非法零POST、合法exact n1。六邻门451、默认2253不重复加总为用户功能。Agent已localmain f3050fcc；完整输入/reader/Billing/provider/3310用户路径仍OPEN。
+
+Billing下方四schema子例现d7d29精确oracle与fba45f68 canonical均Root实跑4pass；先缺表RED和oracle修复历史保留。正规Prisma旧derived stale RED→fresh生成/check GREEN，数量32→34旧断言实际2fail/66pass后精确修复，最终完整68pass/0fail/0skip，source/generated/邻库集合同。不得以此关闭发布授权/replay/rollback、报价/资金或页面收费组。完整70任务矩阵状态仍11/6/14/38/1。
+
+## R225 Agent单completion执行界真实系统RED（2026-10-04）
+
+同一70组不增加产品PASS。共同预置：Agent d50bde5f+仅现peer test a43c5f10；锁定SDK、真实自有loopback HTTP、固定System response与owned clients，无正式Billing许可，不是当前用户付费Run。Root原13839实际2pass/5fail/90名称过滤0.83秒、source hash同；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r225-agent-n-red-nz9jjq64/manifest.json`。
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
+|---|---|---|---|---|---|---|
+|TC-AGENT-R225-N1 / 默认与显式单completion|共同预置；两个参数case|正式resolve→锁定SDK默认/显式n=1 ainvoke→真实peer→核model/O/path/request数与client close|一物理请求、结果ok、output cap来自route；GREEN后默认也须wire显式整数n=1|P0|主链、契约、生命周期|2pass；RED默认允许省略n，不冒默认gateway语义验证；GREEN收紧现候选尚未实跑。|
+|TC-AGENT-R225-N2 / 五公开override外发前拒绝|共同预置；invoke/bind/bind_tools/extra_body/native五case|以各公开seam设置n=2且O合法→记录peer原bytes/实际count→检查本方guard和close|固定单completion，不扩大bound或静默改请求；0POST、固定safe ValueError、owned两client closed|P0|异常、边界、安全、系统集成|5fail；每例实际POST1、原wire n=2/cap128合法，在expected0/actual1失败。正确业务RED，不是setup或SDK自拒；原owner现factory+test GREEN在写。|
+
+输入C的完整billable覆盖、technical bound/reader、真实Billing Admission/provider/用户Stop与流水仍OPEN，单completion修复不替这些门。
+
+## R224 Rate canonical系统测试（2026-10-04；不增加70任务组通过数）
+
+共同预置：Billing main87cbe82f的完整现canonical schema；Root自有真实PostgreSQL fixture、逐case回收；冻结测试98483b9e，不seed生产价格/更改余额或调用模型。原句柄16996实际4失败/4，setup健康，失败是两rate表缺失；日志manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r224-billing-rate-red-dgr6b1np/manifest.json`，源与数据库集合保持。
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果|
+|---|---|---|---|---|---|---|---|
+|TC-BILLING-R224-01|正式费率持久结构|共同预置|完整fresh安装→读取columns、CHECK、全部索引→核两表ordinary字段及窄索引|类型/精度/nullability、约束语义与effectivity DESC严格符合D0，无最长Unicode绑定宽索引|P0|集成、契约、数据|FAIL：columns=[]。独审P1指出当前oracle只核CHECK名及索引列，未完全核正文/DESC；正在补强，不能准SQL GREEN。|
+|TC-BILLING-R224-02|最大合法Unicode与数值边界|共同预置；production codec合法synthetic QA draft|五独立255个4byte Unicode绑定（5100byte）先通过codec→真实insert/readback MAX BIGINT与78位约分有理数|完整保存、不截断、不发生宽btree错误、无数值精度损失|P0|边界、集成|FAIL：revision表缺失。价格仅synthetic fixture，不是采购价配置。|
+|TC-BILLING-R224-03|非法形状与数值拒绝|共同预置；合法all/range正控|提交错误nullable形状、空range、ordinal64、分母0、revision0/溢出及NUMERIC溢出→核PG拒绝|稳定CHECK/数值拒绝，无非法持久事实|P0|异常、边界、集成|FAIL：revision表缺失。独审P2要求补count/digest/text/key/currency/negative等代表性负控，整组仍OPEN。|
+|TC-BILLING-R224-04|租户与revision唯一性|共同预置；A/B租户与两revision|同租户重复revision、ordinal、digest；换tenant正控insert/readback|本scope重复拒绝，不同tenant可独立存在；ordinary事实不被摘要代替|P0|隔离、幂等、集成|FAIL：revision表缺失；publisher auth/replay/rollback仍需另外正式旅程。|
+
+上述是schema边界系统子例，不能代替授权发布、quote、预占、结算/释放、流水或浏览器收费闭环。待原writer补强测试oracle、Root自然RED复验及独审后才授SQL-only。
+
 ## R220 系统验收状态更新（2026-10-04）
+
+R221提交绑定补记：上述冻结源码已按21路径提交Agent d50bde5f5b19dc89f6a56640c9e464174dc52ab4；17source/machine/tests和已验bytes一致，四D0只更新前缀，Git object21/21一致。Root再验固定来源/contract/源format/lint及clean artifact build通过。首次build/lib format和首次scratch路径错误保留在progress；没有新增当前用户浏览器/模型费用PASS，也不虚增70产品组。
 
 R218两真实反例已在冻结R219候选复验关闭：System3.0严格消费与SDK实际输出界、覆盖参数/流式/客户端释放取得394定点通过，其中90真实本地HTTP/锁定SDK场景。306真实PG、3生命周期与2253默认工程门通过；默认497资源deselected不算通过。安装制品18步骤的正常检查、RECORD篡改拒绝、修复RECORD后的固定来源语义篡改拒绝与恢复检查均实际通过。独立源码审查0P0/P1/P2；所有结果仅绑定冻结候选，不把工程测试计为产品组。
 

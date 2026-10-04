@@ -1,10 +1,80 @@
-# 当前任务入口（R220，2026-10-04）
+# 当前任务入口（R226，2026-10-04）
 
-完整Wave0–7目标保持。当前派工与准入以本文末尾 [R219任务卡](#r219-并行前置审查与模型接线验证2026-10-04) 为准；以下R165及其它旧记录仅是保留的执行历史，不是当前阶段指令。
+## R226 当前任务状态（覆盖下方授权历史）
 
-- Agent唯一writer：agent_execution_bound_owner；21路径候选已冻结，当前停止写入；源码仍待Root集成提交，不是用户旅程完成。
+|切片|状态|当前证据/后续|
+|---|---|---|
+|Agent单completion|已验收并本地提交|f3050fccc458dae1491cc5b9b98af79d9ff838ce；147真peer/451邻门/2253默认及静态/隔离构建，独审归零；不代表完整输入/reader/Billing/UI|
+|Billing rate canonical|Root集成验证通过，候选待提交|SQL fba45f68、精确d7d29四例；正规派生RED→GREEN，完整68真PG系统通过，11derived闭包；保protected五D0/三codec，publisher另切片|
+|正式publication/Admission/模型费用旅程|待实施及系统验收|沿现R223设计和owner，不捏造采购价/Credit换算、免费/授权/用量|
+|用户页面/CRUD/Settings/能力|保持原开放任务|70组11通过/6失败/14复测/38未验/1支付后置；3310未启用新组合|
+
+
+## R224 Rate持久化与正式publisher（沿同Metering任务）
+
+R223五D0最终独审55fc34d3归零，Root SHA/suffix/三codec实核保持。R224首test f353b6c4的fixture分数、Unicode与索引库存修正后冻结98483b9e；Root原16996真实4 failed / 4，canonical setup成功但两rate表缺失，source_same/邻库集合保持，自有库全部回收。独审1201866e发现1P1（CHECK只核名称、effectivity索引未核DESC）/1P2（代表性负控缺口），测试GREEN准入仍OPEN。当前只续授原writer同一test补强oracle/负控，SQL/source/generated仍不授；资源/Git仍Root独占。
+
+文档门基线：Billing87cbe82f + 五R223前缀，独审55fc34d3为0P0/P1/P2，Root完整fresh SQL实际健康setup成功后业务两rate表absent（/tmp/kokoro-r223-billing-rate-red.json，exit1，ownDB回收/邻库同）。这是真实schema事实RED，不是完整publication验收。
+
+|项|放置、边界与验收|
+|---|---|
+|Owner/唯一writer|Billing modules/metering；agent_prepare_final_review；Root审查/资源/Git，web_page_qa_owner独审。|
+|当前事实|main87cbe82f、八protected路径；两rate表尚无、module无publisher；现Transaction/Receipt/Audit复用，三purecodec不改。|
+|目标/API|先ordinary rate持久事实，再module-private publishRate；不接HTTP、policy、Admission、资金、Agent。|
+|位置比较|新增普通test/integration/metering-rate-publication.test.ts复用现Prisma fixture，胜过塞旧usage-pricing-admin（旧global层与entitlement语义）；SQL只扩唯一database/schema.sql，不新schema/migration。source沿已审三普通Metering角色，不建新module/UoW。|
+|粒度/依赖|integration文件只测本业务schema和后继实际provider；SQL-only后Root正规prisma:refresh，再授typed source/真实事务旅程。禁止跨owner SQL/相对import、改共享进程/数据。|
+|数据|两rate ordinary表、digest窄unique/ordinal unique、≤64 bounded canonical read、无FK、tenant锁MAX+1、DB publishedAt；同事务receipt/audit后继。|
+|删除项|不新增宽索引；此片不让publisher读legacy quote，Admission切换后紧接删旧事实，不长期双轨。|
+|R224-RATE-RED准入|唯一允许新增test/integration/metering-rate-publication.test.ts：fresh catalog+ordinary类型/CHECK/索引、合法5100byte UTF8业务键成功、nullable/rational/tenant/ordinal/digest/整数界真实PG；复用既有fixture，无未来source import或missing setup冒RED。作者只写test/静态，不运行PG/Git。Root冻结后实际RED。|
+|R224-RATE-ORACLE-FIX准入|原agent_prepare_final_review仅修改上述现test；按独审1201866e读取并验证pg_get_constraintdef实际语义、effectivity索引DESC/全部索引无宽键；补rate_count、digest/text/business key/currency/rational/range负控。保持四原case与production codec最大合法正控，不改SQL/source/contract/docs/锁/生成；只静态验证，Root冻结后实跑缺表RED再独审。|
+|R225-ORACLE-NARROW准入|原Billing writer仅同一test，基线864ce0d7；Root真实PG probe证明BETWEEN展开为>=/<=、默认DESC indoption=3。修正双比较项、保regex literal大小写、加大写business-key合法正控与精确NULL shape分支；effectivity [0,3,3]，不改SQL添加NULLS LAST来迁就错oracle。不授源/SQL/generated/资源/Git，冻结后Root真实RED再独审。|
+|R225-ORACLE-EXACT-HANDOFF准入|原Billing writer已交a484并终态停写；仅本轮test文件临时交新billing_oracle_exact_fix（gpt-5.6-sol）修语法/literal统一：actual与expected同normalizer、SQL非quoted literal小写、quoted regex不变、补invalid kind负控。原Billing owner其它写权冻结，SQL-only后续再续原owner；Root独占PG/生成/Git，全部non-test/五D0/三codec保持。现d7d29测试冻结，原10177已实际4failed/4缺表、source与库集合同；SQL仍未准入。|
+|R226-RATE-SQL-GREEN准入|独审4cdc935b为0P0/P1/P2，d7d29精确oracle与Root10177四缺表真实RED成立。原Billing writer已终态停写、本轮将仅SQL切片交billing_oracle_exact_fix（gpt-5.6-sol），唯一允许database/schema.sql追加R223两rate表/CHECK/四窄索引及现test/integration/schema-installation.test.ts精确32→34/title；保原SQL逐bytes前缀、五D0/三codec/d7d29测试。作者仅静态，禁PG/生成/服务/Git/资金/provider；Root独占真实四例GREEN、fresh schema、正规prisma:refresh派生exact diff。publisher/source/HTTP/policy/Admission另续授，不冒整体费用闭环。Root29493四真PG GREEN且source/库同；57453正规generated stale RED→refresh/check/static GREEN后，68系统2fail/66pass为prisma-generation和schema-drift各旧32硬断言。仅续授同writer两个现test数值32→34与drift标题，其余assert和generated全保持，冻结后Root重跑完整68。|
+
+## R226 Agent验收证据回填准入
+
+Root已实际147真实SDK/HTTPpeer、451邻门、2253默认/554未选及lock/sync/Ruff287/Pyright/contract通过；clean archive wheel/sdist通过。源码审877c9a05为0P0/P1/P2。原Agent owner仅追加现docs/CURRENT.md、TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md四D0当前证据前缀；保每份旧正文完整suffix及除四docs外所有397路径SHA。固定n1/final strict1、无schema/HTTPwire变化；全部输入bound/reader/Billing实际provider/UI仍OPEN。Root尚未提交、未启用3310，作者不能称整体Agent完成。回填冻结后Root核源码保持、source/contract/构建及四docs独审再按6路径提交。
+
+## R225 Agent单物理请求输出界后继（独立于Billing费率）
+
+局部归属Agent现model/factory.py最终HTTPX wire guard，已有System输出界的同一职责；不新增目录、模型合同、SQL或计价事实。Root批准正式gateway单physical request只允许一份completion（n=1），禁止按n扩大上界或静默改用户override。输入C/profile可信覆盖仍未解决，此片不冒input bound或收费闭环。
+
+|任务|owner/基线/写集|验证、依赖与交付|
+|---|---|---|
+|R225-AGENT-N-RED|原agent_execution_bound_owner唯一Agent writer；main d50bde5f clean；仅现tests/integration/test_model_provider_retries.py|报告364c5f8a已核现final hook未读n、SDK公开n语义。先新增2个默认/显式1真peer正控与5个公开seam n=2应0POST负控，保所有现断言；实际记录旧wire n=2/cap合法/一请求后失败才认业务RED。作者只test/static，不运行HTTP/DB/服务/Git；Root资源独占后冻结实跑。|
+|R225-AGENT-N-GREEN准入|原agent_execution_bound_owner；仅现model/factory.py和现tests/integration/test_model_provider_retries.py|Root13839真peer实跑2正控通过/5负控失败/90名称过滤；五公开seam均真实POST1、n=2且cap128，源SHA保持。Root亲审确认正确业务RED，授constructor n=1与final strict整数1；默认正控收紧wire n必存在1，扩sync/async/stream/invalid scalar/漏n明确系统边界。保旧assert和ownedclose；无Run/Billing/SQL/usage/contract/lock/tokenizer变化，作者仅静态、Root真实复验与独审。现两文件冻结78aba032/93baf29f，Root真实GREEN仍待验，原owner停写。|
+
+## R223 当前执行：publication审查缺口关闭与系统RED
+
+上一用户进度回合只读核对与状态汇报，归no-progress；本轮继续完整Wave0–7，执行可推进的真实owner前置，不改70组统计。
+
+|任务|owner / 基线 / 允许写集|冻结决定与验收|
+|---|---|---|
+|R223-BILLING-D0-FIX|原agent_prepare_final_review，Billing main87cbe82f+八protected路径；仅五现D0的R222前缀；Root Git/资源|关闭独审18acfc8c的2P1/1P2：revision=tenant+kind锁内max+1且BIGINT溢出拒绝；DB clock只分配publishedAt，draft effectiveFrom不改，允许同instant且后继最高revision决胜。publication接收现BillingAdminContext，需billing.admin且tenant/operator与command完全一致，失败在runRoot/receipt/锁/SQL前。现admin认证边界是唯一可信来源，首片module-private provider，无HTTP/公共export，不以自报context称正式上线。冻结普通SQL列/CHECK/索引及closed error/result；只做rate片，policy正控artifact仍OPEN。保五old body与三codec；不授源/DDL/generated/资源。|
+|R223-AGENT-READER-REVIEW|原agent_execution_bound_owner只读，main d50bde5；只/tmp报告|Root批准technical exposure与post-grant permit分层、锁内freeze lease expiry不续期；不得把category unavailable reader当正向收费能力。明确最小已有IAM/auth seam，不新增服务/进程/部署框架；positive有限输入/类别profile真实缺口与native request实际接线一并列明。报告必须给可实施顺序，避免只发布负事实长期停滞。|
+|R223-ROOT|Root唯一台账/Git/真实资源；当前e0ad53f5|核五文档suffix/三codec/原uv保护；D0独审通过后授原Billing owner真实PG tests-only RED，必须业务断言失败而非missing-import/setup。再准rate source/SQL/正规生成，整组保持未验；不启动第二服务、不改用户3310/共享数据。|
+
+## R221 当前实施卡：Agent提交与Billing独立前置
+
+R221执行结果：Agent精确21路径已由Root本地提交d50bde5f5b19dc89f6a56640c9e464174dc52ab4，工作树clean。最终独审3cbdf1a8零发现，四历史suffix及17non-doc bytes保持；source/contract再次通过。首次format命中本轮installed构建留下的build/lib生成副本，Root按原build日志确认自有创建，将182个文件逐hash保留到自有/tmp后恢复287源文件format/lint通过，clean archive应用最终21patch全hash一致并wheel/sdist通过，不修改产品源或忽略门。首次clean scratch的no-index新文件路径拼接错误被hash门拒绝，修正相对路径重建后才消费。两个失败均保留，不把初次失败runner冒绿。Root gitlink/3310/push未动，Billing/provider/UI仍OPEN。
+
+后继R222-AGENT-READER-D0：同agent_execution_bound_owner只读新提交d50bde5与现Run→Attempt/usage/execution-proof/HTTP认证边界，先给/tmp最小§8及三D0补充方案，不授源码/SQL/wire/资源/Git；可信planned/bound/current sealed evidence由Agent owner提供，不用proof-only reader或健康TTL冒逐call授权。Root保跨仓契约裁决后才授现文档，固定owner发布后Billing消费串行；与Billing发布D0独立并行。
+
+后继R222-BILLING-PUBLICATION-D0：agent_prepare_final_review负责Billing五现D0的新增当前前缀，原全部历史正文逐字保持；main87cbe82f+八protected路径为基线。采用R221修正设计2ebab525的现Metering普通文件/transaction/receipt框架，明确rate及policy publication服务不是Admission。先只三D0/IMPLEMENTATION_PLAN/CURRENT收敛精确结果shape、revision锁分配、Agent reader依赖和actual-only规则；failure policy机器artifact正控及精确SQL/generated文件集须Root后继另行准入，不能偷偷加trigger/价格/公开HTTP。三原codec/source/schema/contract/lock/金额/资源/Git不改；Root独审后tests-first真实PG并实现，不以D0通过称业务完成。
+
+上一goal turn归progress：Root取得原installed句柄54985终态、复核18步及日志hash并提交权威台账e0ad53f5，不是只复述状态。本轮完整Wave0–7继续，不改70产品组。
+
+|任务|owner/角色/基线与写集|依赖、验证与交付|
+|---|---|---|
+|R221-AGENT-DOC-FINAL|原agent_execution_bound_owner，仅Agent四现D0当前前缀：CURRENT/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL；main92b802e2，21路径freeze3299c145|准确记Root394/306PG/3进程/2253默认/497deselected/installed18步及未完成业务；保持四文档历史后缀、九production/八tests/机器生成物/lock逐字冻结。无资源/Git/构建，仅交doc SHA和保留证据；Root复核提交责任。|
+|R221-BILLING-PUBLICATION-DESIGN|原agent_prepare_final_review，只读Billing87cbe82f与八protected路径、Agent候选，三专项手册/ADR-033/既有D0；只写/tmp方案|沿readiness已定方向比较现Metering扩展位置，收敛immutable rate/policy publication及Agent reader契约依赖；先提供精确§8/三D0差异和系统失败用例，不授源码/SQL/generated/金额/资源/Git，不重开倍率/失败取消政策。Root批准后原owner独占写入。|
+|R221-ROOT-INTEGRATION|Root独占Git/资源；e0ad53f5+Agent92b802e2冻结候选|核actual reviewed21路径/旧源码hash/最终docs范围，重跑固定来源/contract/必要静态build，按明确路径集成21文件，排除build和任务外路径；不push/更新gitlink/自动重启3310。新增任何业务失败先真实证据再续派原writer。|
+
+完整Wave0–7目标保持。当前派工与准入以顶部R224/R223任务卡为准；R219模型消费已集成，以下R165及其它旧记录仅是执行历史，不是当前阶段指令。
+
+- Agent：21路径已Root提交d50bde5/main clean；同agent_execution_bound_owner现只读后继reader方案，不是用户旅程完成。
 - Root：资源与Git独占；394定点、306真实PG、3生命周期、最终2253默认测试通过；497资源用例在默认门中未执行。七旧fixture失败已由窄修复和真实复验关闭，installed 18步正反篡改门通过。正式Billing/provider/页面仍未闭环。
-- Billing：readiness独审三个P1，纯draft codec231辅助通过但非正式Admission/收费；原protected候选保持。
+- Billing：readiness独审三个P1，纯draft codec231辅助通过但非正式Admission/收费；原agent_prepare_final_review现唯一writer；五D0修正已独审，当前只写R224真实PG系统测试，原protected正文/三codec保持。
 - 页面：本轮IAB当前/app读取因控制CDP focus命令超时，未取得用户DOM/渲染证据；不作为应用根因或页面通过。
 - 产品统计不变；[当前事实](CURRENT.md)、[系统测试](test-cases.md)、[实际证据](progress.md)仍各司其职。
 

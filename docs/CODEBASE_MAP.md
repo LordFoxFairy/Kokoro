@@ -1,5 +1,20 @@
 # Kokoro codebase map
 
+## R226 当前交付与事实入口
+
+Agent localmain f3050fccc458dae1491cc5b9b98af79d9ff838ce/clean，model/factory.py显式constructor n1和最终HTTPX strict integer1已Root真实SDK wire验证；旧d50候选描述仅历史。Billing唯一database/schema.sql现新增两rate表，database/generated/schema.prisma/provenance.json及ignored src/generated/prisma由Root正规生成、68系统门通过；无新可编辑schema/contract或publisher实现。Rootgitlink/3310未更新，输入bound/read/费用/用户页仍OPEN；完整证据与任务见同CURRENT/task/progress/test-cases。
+
+
+## R225 当前候选边界
+
+最新进度核对：Agent两文件候选78aba032/93baf29f已冻结停写、待Root真实GREEN；Billing d7d29oracle由Root10177实际4缺表RED，SQL/source仍未准入。下方“正在写”仅此前时间点；70验收组11通过/6失败/14复测/38未验/1后置，无新增用户页面闭环。
+
+Agent现`model/factory.py`已有最终wire guard，同一职责后继固定单completion n=1；原Root13839的五公开seam n=2真实POST反例已成立，现仅factory/peer test候选写入，未冻结/未验收，d50bde5f baseline不等候选。此前R221 clean与已提交是历史提交事实。Billing两rate表仍缺：现`test/integration/metering-rate-publication.test.ts`是真实canonical schema边界测试，Root2499四缺表RED成立，oracle窄修进行中，SQL/generated/publisher未授。不建第二合同/SQL或把schema门当收费闭环；当前卡和结果分别见task/test-cases/progress。
+
+## R221 Agent本地正式交付与下一前置
+
+当前Agent源码已提交d50bde5f5b19dc89f6a56640c9e464174dc52ab4/main clean；下面R220“候选尚未提交”为历史。职责与17non-doc源码不变，四D0仅证据回填，Root已核21个Git objects精确绑定工程/资源/installed冻结产物。Rootgitlink/3310未更新，正式模型/费用/页面未闭环。可信planned/bound/sealed evidence reader是Agent后继，不混入System client或Root共享contract；预授权bound与Billing grant依赖循环需Root统一裁决，不从既有proof reader/TTL自造许可。
+
 ## R220 当前Agent接线入口（2026-10-04）
 
 Agent R219冻结候选已实际消费固定System955bd587的3.0：`clients/system.py`负责严格同revision执行界；`model/factory.py`的ModelHttpClients拥有sync/async客户端与最终wire界；`agent_factory.py`负责构造失败和handle关闭时资源转移/释放；`system_consumer_contract.py`负责唯一固定receipt验证。Root工程与installed已复验，仍未提交/3310启用，不等于正式Billing或用户聊天闭环。下面R218 consumer2.0/未实施描述是历史RED，不覆盖此候选。当前状态以CURRENT R220与progress收据为准。

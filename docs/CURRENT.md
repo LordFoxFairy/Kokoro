@@ -1,5 +1,46 @@
 # Kokoro 当前执行事实
 
+## R226 当前验收与正式源码交付（2026-10-04；覆盖下方候选阶段）
+
+完整Wave0–7 active，70产品组仍11通过/6失败/14待复测/38未验/1支付后置，无新增用户3310端到端验收。Agent本地main **f3050fccc458dae1491cc5b9b98af79d9ff838ce** 已按6明确路径提交，工作树clean；下方d50/两文件候选是历史。Root真SDK/HTTP完整147 passed、六邻门451 passed、默认2253 passed/554资源deselected/795 warnings，以及lock/frozen sync/Ruff287/Pyright/contract通过。四D0仅当前前缀、旧全文suffix保留；两独审0P0/P1/P2；回填后clean archive wheel/sdist再build通过，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r226-agent-doc-build-07fk5fxe/manifest.json`。提交Git objects逐hash绑定已验freeze；未push/更新gitlink/升级3310。单completion限制不是可信输入界、reader/Billing许可或真实收费Run闭环。
+
+Billing canonical两rate表已经落地候选，不再缺表。Root29493四真PG用例GREEN；正规Prisma旧派生check先真实staleRED→refresh→check GREEN，仅11必要derived路径（src Client沿现规则ignored），format/lint/types/build/sql通过。首68系统门2fail/66pass是两旧32数量oracle；按批准两新表精确改34后Root13344最终5file **68 passed /0 failed/0 skipped**，再次prisma:check0，源码/派生/邻库集合保持，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r226-billing-final-schema-p4rvp7pm/manifest.json`。原失败记录保留；publisher/auth/replay/事务rollback、policy、Admission、quote/预占/结算/释放/流水UI继续OPEN。Billing候选未提交，五protected D0旧正文未混提、未改变任何应用价格/余额或外部provider。
+
+当前Root/11物理子仓均仅本地main，Web19/BFF20/Billing15个dirty状态路径，Agent clean，其余7clean；5gitlink差异保持，uv f7e1保持，整体不clean。原3310运行组合未启用上述源码。下一依赖仍正式费率publication→可信execution bound/read与Billing Admission→固定组合用户旅程；独立CRUD/Settings/能力验收可按现任务卡并行，不另建计划中心。
+
+
+## R225 当前执行与正式计价前置（2026-10-04；优先于下方历史）
+
+本次用户进度核对：现场Root e0ad53f5，11个物理子仓均仅本地main；Web19/BFF20/Agent2/Billing9个dirty路径，其余7个子仓clean，5处gitlink差异未更新。70组逐行重算11通过/6失败/14待复测/38未验/1后置，历史限定工程通过不代表整个子仓或页面通过。3310仍PID46036，原四进程持续约34小时15分，未升级组合，本轮未新增浏览器业务验收。
+
+Agent两文件候选已经冻结停写（factory78aba032、peer93baf29f），静态结果是作者交付，Root真实GREEN与独审未执行。Billing精确oracle d7d29cf由Root承接10177终态：4failed/4、exit1、1.042秒，全部为两rate表缺失；source_same/数据库集合same，日志f150b019。SQL/source仍未准入。上述状态覆盖下方“正在写”时间点，不将候选计作修复验收。
+
+R225正在实施，优先于本节下方R224冻结快照。Agent main仍d50bde5f，但现peer test与factory单completion候选正在写，当前非clean；Root13839真实2pass/5fail/90filter已证五公开override把n=2送出，原cap128不能独自界住整个物理请求输出。原owner仅获现factory/test GREEN写权，尚未Root复验，不冒输入上界/费用或用户页面通过。Billing SQL/source仍未授：a484测试有presentation oracle误差，Root真实PG已证BETWEEN展开和默认DESC indoption3；原writer终态后临时handoff billing_oracle_exact_fix(gpt-5.6-sol)仅修同test，non-test/fiveD0/threecodec保持。所有资源与Git仍Root独占。
+
+完整Wave0–7保持active。70产品组仍11通过/6失败/14待复测/38未验/1支付后置；没有新增用户3310端到端验收。Agent d50bde5f/main clean、System955bd587/main clean、BFF7289b3a4有20protected修改，原组合未升级。
+
+当前统计包含工程门和限定owner切片，不能解释为11个完整用户功能。Root本轮逐行重算70组，结果仍11通过/6失败/14待复测/38未验/1支付后置；Root和11物理子仓现场均仅本地main，不据此宣称远端或整体clean。Web19、BFF20、Billing9个dirty路径保留，5处gitlink差异未更新。
+
+Billing五D0经过2P1/1P2修复与Root新发现宽btree P1后，最终独审55fc34d39d90e76fb9c6446a2fcc91874a2a4577b70ed92f0cd33f43d9053a2a归零。Root逐SHA和旧全文suffix复核保持。首片rate-only：现BillingAdminContext精确tenant/operator/role比对、零SQL前拒绝；tenant锁MAX+1正BIGINT；DB publishedAt与draft effective分离；digest窄唯一、至多64行strict canonical reread。无policy表/HTTP/资金/新scope。文档收敛不是源码或收费完成。
+
+Root真实PG已复现合法5100byte UTF8业务键被宽btree拒绝54000；改设计用普通business_key_digest，不缩短合法codec输入。另完整现canonical fresh安装setup健康后，两rate表actual[]，真实业务schema RED exit1；owned reference absent、其它库集合前后同。报告/tmp/kokoro-r223-billing-index-probe.json与/tmp/kokoro-r223-billing-rate-red.json，未seed生产价格/改金额/调用provider。R224系统schema测试98483b9e已由Root原16996实际执行4 failed / 4（1.023秒），失败为两canonical表缺失；日志/源SHA和临时库回收亲核，source_same与数据库集合保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r224-billing-rate-red-dgr6b1np/manifest.json`。独审1201866e仍1P1/1P2，仅续授原Billing owner现test补CHECK正文、DESC与负控；源码/SQL/正规generated尚未准入。这不是publisher或收费链通过。
+
+Agent reader前置只读报告999a0e8a修正不必要阻断：仅匹配tariff必要category须known，cache_write无对应tariff时unreported不自动阻断inclusive input/output；不能填0或重复收费。选定provider正向profile、可信finite输入上界和正式reader仍缺，顺序为profile实证→bound/read→Admission→handler→sealed evidence，不先大量实现仅unavailable reader。现trusted-hop可复用但不能声称Billing独占principal。
+
+真实采购费率/币种与Credit货币换算仍未给定；已向用户询问值或现配置位置，倍率7/5与失败取消actual-only不重问。基础实现继续，不捏造配置作非零结算。IAB当前inventory获得browser2/tab1/app，但定向CDP focus超时未取DOM；控制故障不当应用根因，未新开/刷新/关闭或重启。其余页面/Settings/CRUD按下方R220完整表保持开放。
+
+## R221 源码正式集成（2026-10-04；优先于R220候选状态）
+
+Agent已由Root按明确21路径提交 **d50bde5f5b19dc89f6a56640c9e464174dc52ab4**（本地main、工作树clean）。已审九production/machine和八tests共17路径逐hash保持，四D0只更新当前证据，历史suffix逐bytes保持；完整21路径Git object与冻结候选逐字相等。提交收据 `/tmp/r221-agent-commit-receipt.json`。System3.0严格消费、SDK最终wire输出界、owned客户端生命周期切片不再只是未提交候选；收费/实际provider/UI仍未闭环。
+
+Root最终source/contract再次通过；format首次失败来自本轮installed构建留下的build/lib生成副本，而非产品源。已按原build日志确认自有创建并逐hash保留182文件到自有/tmp，现287源文件format/lint通过；完整patch在clean baseline archive应用后21/21hash相等，隔离wheel/sdist构建通过。首scratch新文件路径拼接错误被精确hash门拒绝，纠正后重建通过，不消费错包。证据 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r221-agent-integration-qhttpyty/manifest.json`；不靠formatter忽略或重写generated掩盖失败。当前保留此前394/306PG/3进程/2253默认/installed18门绑定的完全相同源码，未冒充本轮重跑全部测试。
+
+Billing publication设计独立推进。Root发现并修正/tmp方案的倍率误读：**7/5为成本×1.4（40%加价），不是7%/5%分成**；未进入源码/账务。未经D0批准的trigger门与永久双轨描述亦已纠正，报告最终SHA2ebab525。Rate/policy publication仍无源码/DDL实现；现五D0当前前缀续派同owner，三原codec与全部旧正文保持，不改资金。
+
+新实质跨仓前置：Billing create需先读execution_bound，而Agent旧方案又说bound联合Billing grant形成，存在依赖循环。Root要求同Agent owner只读收敛预授权技术暴露上界与授权后dispatch许可的顺序、真实持久事实及expiry来源，再统一两仓D0；不让两owner分别发明契约。此不阻止独立pricing publication，不用缓存TTL/prepared_at/字符数冒许可或token。
+
+Root未更新gitlink、push或重启3310，用户原四进程保留。70产品组仍11通过/6失败/14复测/38未验/1支付后置；完整Wave0–7 active。当前唯一Agent owner为原负责人只读reader方案，Billing原负责人仅写五D0当前前缀，Root仍独占集成资源/Git。
+
 ## R220 当前进度快照（2026-10-04；优先于下方历史）
 
 整体仍未闭环。70产品验收组仍为 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**；这些是验收组，不是代码完成率。本轮核对当前Git和既有Root实跑日志，未重新验收浏览器用户路径。
