@@ -8743,3 +8743,12 @@ Agent透明三点诊断由原writer freeze ed357d47，Root65492 fresh PG实际2p
 同一70组11/6/14/38/1保持；goal active。Root不更新gitlink伪装当前3310已启用。
 
 R202取消后继Root42451再次真实PG2pass/1fail80warnings3.51s，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-grp79jch/manifest.json，ownDB absent/source同。invoke内部原CancelledError args=[]；未观察SDK交接Task，故原只读“直接join invoke异常args”方案不放生产。晚pending write的channel matches __error__=true且value类型实测builtins.str，仍是after-return真写；原失败保留。Root读现publish_agent_events：投影/producer层gather及return_exceptions清理可能丢子异常args；下一仅透明真实叶consumer诊断，非mock，证明handoff在哪一层后才修复。句柄全部终态已消费，当前原45606/46036仍live，零重启/共享重置。
+
+
+### R204 用户要求逐仓/逐页进度核对（2026-10-04）
+
+Root沿同一goal和台账，原两只读owner并行核对仓库/页面，原Agent writer继续已授权取消系统case，不启动更多服务或抢写。实际12个checkout（Root+11子仓）本地分支均只有main；Root/Web/BFF/Agent/Billing有混合未提交变化。真实verify-repository-topology退出1，仅Agent/IAM/Billing三gitlink与checkout不符，未掩盖；原45606/46036仍live约28h36m，3310运行副本不等于新源码，未重启/清数据/打开测试浏览器。
+
+Root3987取消值观察自然exit1，2pass/1fail3.54s，自库absent/source同；精确新增pending __error__值为CancelledError()，cancel返回→释放后全结构零差。候选修复改善时序，但原断言仍FAIL，新验收窗口/旧guard RED→新guard GREEN和非合作fatal全链仍待验证。该事实已交原writer，同任务卡续接。BFF四D0返修只冻结，未授source/contract或宣布入口完成。Billing87cbe82及真实IAM授权11/11是此前已验前置，不构成资金闭环。
+
+70组保持11/6/14/38/1，不把页面可达、源码或fixture通过换算完成率。逐仓摘要和逐页用户路径/异常/权限/状态缺口已同步CURRENT；本次未重复全仓门，也没有新增完整用户验收声明。任务外uv与子仓mixed保留，goal active。

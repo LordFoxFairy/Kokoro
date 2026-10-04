@@ -8495,3 +8495,43 @@ Agent Root65492真实PG诊断2pass/1fail3.71s，wait→cancel返回checkpoint摘
 R202-Agent后继仅现system test透明捕获invoke内部向外的原CancelledError（wrapper再raise），输出args元素类型/Task状态，不输出值；现checkpoint差量只追加已知channel匹配布尔与leaf类型元数据。需先实测SDK cleanup Task是否真的在本次primary异常中交接，不能仅源码注释认作Root根因。生产/SQL/四D0继续freeze；Root资源与Git独占。
 
 R202 Root42451实际后继：2pass/1fail3.51s，自有DB回收/source同。原invoke内部捕获CancelledError.args=[]，无SDK cleanup Task交到invoke边界；因此不批准直接在run_agent遍历args的生产修复。新增项确为__error__ channel，但存储恢复value实际builtins.str，不能把对象Cancellation类型凭源码推定成运行值。下一同一system test只透明包装真实publish_agent_events叶投影消费者（不mock、全量转调原函数）观察异常args在gather前是否携带Task，固定有限预算/原断言保持；生产继续冻结。
+
+
+### R203 继续两独立业务面（Root，2026-10-04）
+
+上一轮分类为进展：Billing87cbe82精确提交及Root完整验证、两次Agent真PG证据改变下一行动；不是状态复述。现原Agent writer仍running，仅透明叶consumer诊断。
+
+|任务|owner/Agent|范围/验收|
+|---|---|---|
+|R203-BFF-Project审查|BFF8e33+原21mixed；web_page_qa_owner只读|现project-deletion与repository/service/route/contract/Storage release及关联ScheduledTask现状，逐SHA绑定，不改仓/资源/Git。明确DELETE public缺口、ChatGPT项目删除规则的保留/删除对象与durable副作用、最小下一写集和真实HTTP+PG系统RED。不可把未提交repository函数当入口已完成。|
+|R203-项目删除任务政策|Root已请求用户决定，异步不阻断其它|独立任务是否保留+暂停或连带删除；既有项目会话删除规则保持。未答复前不得自行永久删除独立任务或假定恢复运行。|
+
+R203 Root79876真实leaf trace：2pass/1fail3.49s，own DB absent/source同。只有_consume_messages原CancelledError携带Task，该Task已done且cancelled；父_consume与invoke args空。推定gather/finally重复cancel可能把SDK exit task本身取消；下一仅同诊断输出当前leaf task.cancelling数量与handed task.cancelling，先证实重复取消再修，不把cancelled cleanup Task当已经drained。
+
+R203-BFF-D0放行：Root已读三D0与ProjectService/repository/事务/公开入口和只读报告。原公开DELETE缺、预find会破坏replay、Storage执行状态缺共3P1；原事务/schema须按mixed基线保留。agent_prepare_final_review转任BFF唯一writer，仅TECH/API/DATA/CURRENT首节收敛公开DELETE202首片（不重写旧正文）：权限/session→锁内owner/receipt→永久ACK；no-store/request ID、400/404/409/503闭集；任务政策未决明确阻断，首次成功用无关联任务项目；202仅pending不假Storage已释放。列唯一generator、精确tests-first真实HTTP/PG门与写集，contract/source/SQL/包锁暂禁，四D0冻结后Root批准下一代码切片。
+
+### R203 Agent 投影重复取消最小修复放行
+
+Root68283真PG2pass/1fail3.54s，消息consumer当前Task取消计数3、交接exit Task计数2且已取消；父invoke无交接Task，晚checkpoint仍9叶差量。修复归属Agent既有execution/publish_agent_events.py投影子任务清理，只有四处existing finally cancel护栏，无新API/模块/SQL/协议；取消已请求的子task不重复cancel，仍必须join每个owned task，不把已cancelled当whole drain。
+
+原agent_mainline_qa_owner唯一writer，新增现publish_agent_events.py及现tests/unit/execution/test_invoke.py到已批准闭集；tests-first用真实async coroutine明确观测取消计数，旧guard必RED，GREEN仅四处not done且cancelling==0护栏。原实际PG严格DB/checkpoint/provider/tracer/5s断言及诊断保持，不在此片改oracle/预算或SDK/private/globaltask。static/pure后freeze，由Root重复实际PG判断是否消除after-return写；pending合法取消审计与fatal完整验证仍另裁决，不以pure成功冒整体取消闭环。
+
+
+### R203 Root取消checkpoint验收窗口裁决（实际证据，不放宽后写）
+
+Root93836 native/PG实际2pass/1fail3.48s；原严格wait全等断言仍FAIL，但now wait→取消返回只新增一条__error__审计，取消返回→释放锁/prepare完成 full shape零差；SDK交接args不再出现cancelled Task。四cancel guard使原后写消失。旧“取消之前checkpoint不许有任何审计变化”不符合SDK真实取消审计语义，不作为产品要求，原失败收据保留。业务验收仍是不产生模型费用/Message/Attempt写入、取消返回后没有任何owned后写。
+
+原Agent writer仅现system test＋四D0当前scope前缀同步：等待快照与cancel返回快照之间只允许**一个**同latest checkpoint的pending_writes新项，channel精确__error__、value精确已验证CancelError串，既有项逐值/顺序保持；重构该单项后其余完整CheckpointTuple/列表与原等待快照全等。cancel返回到blocker释放后必须完整CheckpointTuple全等，DB四表全快照同/provider0/prepare.cancelled/原CancelledError/无seal/finalize/5s保持。错误channel/普通message/error值/重复审计/新增checkpoint/metadata/channel_versions变更一律拒绝。先用同业务用例对旧publish护栏证明after-return断言真实RED，再新guard实际GREEN；不用摘要相等替代完整数据，不泛容许任意audit。完整fatal链/finite noncooperative drain仍开放，另卡。
+
+R203-BFF D0返修Root裁决：现真实IAM只提供session admission；project.delete是公开operation治理标签，资源owner授权由BFF锁内tenant/user/Project事实执行，不发明逐operation IAM RPC/scope/额外普通用户授权页。具名DELETE路由应在bootstrap/server.ts通用receipt/active pre-find之前分流，单一receipt为Project事务；优先新src/http/routes/project-delete.ts，淘汰把更多解析/错误/receipt职责混进live-bff.ts。只有existingHTTPhelper确需复用才扩；source未放行，原BFF writer只修四D0当前prefix。
+
+
+### R204 逐仓与逐页进度核对（2026-10-04，沿同一计划）
+
+|任务|owner/角色/基线|范围与交付门|
+|---|---|---|
+|R204-PAGES|web_page_qa_owner，只读，Web ce40cecc；模型沿用当前原生代理|核CURRENT/test-cases/CODEBASE_MAP与已有逐页库存：登录、Home/Composer、独立和项目会话CRUD、任务、过程/审批、Skills/MCP、Library、Settings13tab；历史运行/fixture/源码三层分列。不开浏览器、不改仓、不重启服务。已交付Root，所有页面完整用户闭环仍未齐。|
+|R204-OWNERS|agent_prepare_final_review，只读，现11子仓实际HEAD；模型沿用当前原生代理|核各CURRENT、Git及既有收据，按owner列已验切片/未接消费/用户验收缺口，不用测试数量换算完成率。R203 BFF四D0返修冻结不等于代码实施放行。|
+|R204-Root|Root独占台账/Git/资源|本轮只读Git全checkout/main与实际topology，原45606/46036进程；不fetch、不更新gitlink、不重启/重置共享数据。汇总状态，不用历史局部GREEN关闭70组。|
+
+Agent Root3987自然exit1：真实PG2pass/1fail3.54s，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r201-agent-stable-red-2pn87cnl/manifest.json，自库absent/source同；新增审计值实测字符串CancelledError()，取消返回→释放锁全结构零差。原wait快照断言失败收据保留；仅授权系统case按R203精确单审计与全快照窗口落实，新断言及旧guard RED/新guard GREEN、fatal全链尚待Root执行，不能称当前取消验收通过。

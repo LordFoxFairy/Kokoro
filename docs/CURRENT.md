@@ -1,6 +1,16 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R201。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R204。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R204 最新进度核对（优先于下方历史局部结果）
+
+整体尚未闭环；完整Wave0–7 goal本次实读active。70组仍11通过、6失败、14待复测、38未验、1支付后置，包含限定工程/owner验收组，**不是产品完成率**。本轮核查是进度盘点，不重跑所有子仓/页面系统测试；已有正控不覆盖其它权限、异常、状态流与刷新。
+
+本次实际Git：Root2ee59150、Webce40cecc、BFF8e33bc0、Agent59034f4、IAMc9a9872、System9a4e98e、Billing87cbe82、物理Capabilityda813ed、Storage14f2bc9、Schedulere8dca48、Morica76c2e、shared0c4e87a；全部本地分支只有main，不代表工作树干净或远端已同步。Root真实topology仍FAIL三项：Agent/IAM/Billing checkout与记录gitlink不同；不更新指针伪装已发布组合。原3310 launcher45606/Web46036本次仍live约28h36m，未升级全部source；本轮没有浏览器操作或新页面恢复证据。
+
+最新Agent候选四处重复取消护栏已交付，Root3987真PG2pass/1fail3.54s：取消返回后到释放锁checkpoint全结构无差；返回之前新增精确CancelledError()审计。旧严格wait等值断言仍失败，调整验收窗口按R203卡进行，未完成新版系统RED→GREEN或fatal完整链，不标取消组通过。BFF公开Project DELETE四D0两P1返修已冻结，实际公开入口、前置事务切片审查、Storage后续执行仍未完成；独立任务随项目删除政策待答。Billing87cbe82仅身份契约及正式IAM授权前置，资金预占/核实结算/释放/流水运行装配仍OPEN。
+
+逐页现状：登录、Home提示、普通会话改名/项目刷新有有限用户正控；Move有浏览器fixture和owner后端切片，但原3310未消费。完整会话/项目CRUD、独立定时任务、Agent过程/审批/恢复、Skills/MCP、文件作品与Settings持久操作没有完整业务验收。此前真实读取Library/Skills/MCP/Billing503、agents404及偏好保存丢失仍未关闭；这些是已有观察，不冒本轮重新复现。详见同一test-cases/task/progress，不另建计划中心。
 
 ## 当前产品基线（PRD已收敛，运行未闭环）
 
