@@ -1688,3 +1688,19 @@ R209新候选后继Root10139已自然exit1：最终事务3e2209c7/测试f7ebafdf
 
 
 R209 Root37507 phase复验自然exit1：1pass/1fail，累计HTTP4504.97ms，两个owned PgSleep同backend成立；503/header/no-store、响应及backend消失后的完整facts零差、健康202/恰两Message一dispatch均已执行。最终失败明确在pool-baseline：起始total8/idle1/waiting0，终态total9/idle9/waiting0；起始仍有7个占用，须追实际启动调用链，不能凭这些数字宣布泄漏或盲改源码。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r209-bff-absolute-green-pr0a58gp/manifest.json` 自有DB absent/source/Redis/secondary库集合保持。Source3e2209/testa457冻结，原BFF负责人只读查baseline；页面审查员独立更新逐页库存，不接管写入。无新运行资源或当前3310升级，70组仍11通过/6失败/14待复测/38未验/1支付后置。
+
+
+R210真实系统复验：Root1383 exit0，source3e2209/test301fe387两HTTP/PG用例2pass/0fail/0skip7.678s；累计SQL用例完整503/HTTP<4900ms/全facts两窗口零差/ownedPID消失/后续202与静止pool精确相等。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r209-bff-absolute-green-g3cse5ra/manifest.json` 自有DB absent、source/Redis/secondary库保持；独审测试补丁0P0/P1/P2。原基线是遗漏两个任务外4并发worker的瞬时checkout，修正显式idle与真实只读HTTP暖机，不放宽任何产品oracle。COMMIT未dispatch仍误标unknown的生产P1、pool late/中段故障/COMMIT ACK/四scope矩阵及完整owner门继续OPEN；不关闭70组或当前3310。
+
+
+## R210 当前已取得证据与后继（2026-10-04）
+
+上一goal轮归类为进展：Root37507定位pool-baseline并提交112d3a7e。本轮修正fixture任务外worker隔离/真实HTTP暖机，不放宽oracle；Root1383两实际HTTP/PG case2pass/0fail/0skip。具名事务COMMIT派发身份P1已窄修，独审最终0P0/P1/P2；首完整27496仍7个旧测试fixture/放置失败，全部如实保留。原writer只维护三现邻门，未改生产为容忍double。
+
+最终Root1737对冻结BFF候选8f04afa9/resource301fe387和三邻门执行完整门：**177真实PG/Redis通过、0fail/0skip、47.018s；743默认通过/1既定资源skip；236contract通过；lint/typecheck/check/format/schema/build0**。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r210-bff-full-tgpff8ke/manifest.json` 自有DB absent、source/Redis/secondary库保持。候选仅在既有clean archive，原BFF main8e33及22mixed未改变/集成；必要pool迟到、中段rollback/断链、真实COMMIT ACK、四scope/notify临界矩阵仍OPEN，不以既有177代替未覆盖行为。当前3310未升级/未重新浏览器验收。
+
+System已由Root精确四D0提交 **032ff52419fe651c76b115e9fe20aafbba2ef051**，最终独审0P0/P1/P2。Root86018 Node24.20.0现2.0契约12pass/83business+2probe/19source provenance且所有非docs tracked bytes保持；目标3.0执行界仍未实现。当前可信resolve执行上限字段仍0。批准现model-catalog revision/resolve发布technical context与output硬界，不含Billing价格/账户/费率，canonical published非NULL检查、immutable/digest/generation同事务与正规生成/pin已设计。仅设计门通过，不是model收费链。
+
+两个独立后继原生owner继续并行：**R211-BFF-POOL-RED** 只新增真实HTTP池饱和/late acquire用例，必须经过现Message前置findConversation，不绕过授权；**R211-SYSTEM-EXECUTION-RED** 只在现integration/contract新增publish缺界与目标3.0断言，先正确实际业务RED再源码。Root独占资源/审查/Git；未启动新常驻服务或重置共享PG/Redis。原45606/46036/45926/45942仍live；uv SHA f7e1保持。当前topology真实FAIL四项Agent/IAM/System/Billing gitlink差，未更新指针假装组合发布。
+
+完整Wave0–7与既有70组保持：**11通过/6失败/14待复测/38未验/1支付后置**。正式模型dispatch、Agent owner reads/execution-bound、Billing授权赠送/余额/预占/核实结算/释放/流水、项目CRUD/独立任务/工具审批/Skills/MCP/Library/Settings以及真实用户旅程继续未闭环。

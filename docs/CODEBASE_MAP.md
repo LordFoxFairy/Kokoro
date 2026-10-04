@@ -141,3 +141,10 @@ R198最终Agent源入口59034f4：Root实际304真PG/2182默认门及post-doc构
 - Billing正式26aeec6：`vendor/iam/kokoro-iam-client-0.7.0.tgz`/`provenance.json`只读owner构建制品，package根唯一消费；ADR0004及现architecture/toolchain gate核version/commit/contract/archive/lock。Rootclean完整门已验，但`src/modules/metering/iam-billing-authorization.client.ts`仍是后继方案，尚无运行接线或资金保证，勿从文件名推断已实现。
 - Agent生产59034不改；现`tests/integration/database/test_model_call_runtime_chain.py`唯一未提交41fe扩公开Supervisor终态恢复及prepare锁取消，后者Root全PG真实FAIL。锁定SDKv3 stream的model-operation取消边界待最小现model/execution设计门；不复制SDK、追加第二RPC或归属模型，不冒整个graph/checkpoint drain。
 - Conversation唯一nullable project_ref保持。当前3310仍旧运行副本，不因Root源码gitlink/已验候选或artifact更新自动启用Move；Root独占运行资源，原fixture数据保留待答。
+
+
+## R210 当前执行边界
+
+- BFF有界Message候选只在 `/tmp/kokoro-r205-bff-clean.path` 指向的隔离archive：具名 `src/infrastructure/postgres/chat-turn-commit.ts`（8f04afa9），outbox repo只委派，HTTP reply补受信x-request-id。Root1737完整177真实PG/Redis与全门通过，但剩余资源矩阵/原mixed集成/3310仍OPEN。不能从本地图推断原BFF源码已发布新具名文件。
+- System032ff524只提交四D0设计；现runtime/API仍2.0且执行界0。目标沿现model-catalog/revision/resolve，禁止新config/pricing owner；Root独审后R211先在既有System两个test入口真实RED，不提前Agent consumer。
+- R211两个唯一writer、scope与证据仍在同 `docs/task.md`，不另建计划。

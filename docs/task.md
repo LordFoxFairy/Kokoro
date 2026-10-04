@@ -8623,3 +8623,47 @@ R209新候选后继Root10139已自然exit1：最终事务3e2209c7/测试f7ebafdf
 
 
 R209 Root37507 phase复验自然exit1：1pass/1fail，累计HTTP4504.97ms，两个owned PgSleep同backend成立；503/header/no-store、响应及backend消失后的完整facts零差、健康202/恰两Message一dispatch均已执行。最终失败明确在pool-baseline：起始total8/idle1/waiting0，终态total9/idle9/waiting0；起始仍有7个占用，须追实际启动调用链，不能凭这些数字宣布泄漏或盲改源码。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r209-bff-absolute-green-pr0a58gp/manifest.json` 自有DB absent/source/Redis/secondary库集合保持。Source3e2209/testa457冻结，原BFF负责人只读查baseline；页面审查员独立更新逐页库存，不接管写入。无新运行资源或当前3310升级，70组仍11通过/6失败/14待复测/38未验/1支付后置。
+
+### R210 连接池系统用例隔离与总期限收口（2026-10-04）
+
+上一goal轮为进展：Root37507实证失败阶段并精确台账提交112d3a7e。Root复核runtime.ts/server.ts/scheduled两个worker源码：只注入四idleWorker的R209 case漏两个concurrency4 worker，listen立即runOnce；8/1是非静止baseline。Root资源独占；当前所有原测试句柄已终态，不重复服务/清共享数据。沿完整Wave0–7和同70组，不另开计划。
+
+|任务|归属/角色/基线/精确范围|完成条件|
+|---|---|---|
+|R210-BFF-BASELINE|agent_prepare_final_review 原BFF唯一writer；仅既有clean archive，source3e2209/testa457；只现chat-facts.integration.mjs R209 case|显式隔离遗漏的scheduledAgentDispatcher/TerminalConsumer；真实authenticated只读HTTP200暖机；请求前静止waiting0且idle=total后保存精确计数，健康202后同静止精确deepEqual。保3+3秒真实trigger/两个同PID/4900ms/503/header/no-store/全facts两窗口零差/backend彻底消失/唯一消息dispatch与原清理。生产/SQL/API/包锁/其它case/原mixed冻结。作者仅syntax/静态；Root重跑原两真实HTTP/PG case和资源收据，不以暖机通过冒业务。|
+|R210-BFF-REVIEW|web_page_qa_owner只读|独审基线调整是否真实隔离任务外工作而非放宽oracle、HTTP暖机及静止条件、fixture清理；同时给剩余pool late/rollback/unknownACK/四scope必要系统矩阵的最小可执行场景。无资源、Git、源码写入。|
+|R210-ROOT|Root唯一台账/资源/Git|先冻结重跑两case；生产未派发COMMIT过期误标unknown P1仍OPEN，下一切片只准现具名事务内dispatch身份纠正，须另授权和独审。无3310升级/组合通过声明；用户页面验收与全BFF门继续未闭合。|
+
+R210 Root1383已自然exit0：冻结source3e2209/test301fe387，两真实HTTP/PG case2pass/0fail/0skip7.678s（R2071.292s、R2096.073s；后者包含等待PG终止/事实回读，并非HTTP耗时）。累计产品HTTP<4900ms、503/header/no-store/全facts双窗口零差/ownedPID完全消失/healthy202和精确静止pool全部断言执行。manifest T/kokoro-r209-bff-absolute-green-g3cse5ra/manifest.json 自库absent/source/Redis/secondary库集合保持，installer/build0；独审final-review301/298bf为0P0/P1/P2。bf63编辑中落错case已在freeze前恢复，未拿错误版跑资源。
+
+R210-BFF-COMMIT-ID续授权：原唯一writer，仅clean现chat-turn-commit.ts的commit具名函数。新增函数局部commitDispatched flag，remaining检查保持lazy先于client.query；startWithin使用BUDGET_EXHAUSTED，factory实际发起COMMIT时才设flag，catch只有flag=true才转CHAT_TURN_COMMIT_UNKNOWN并保primary cause，未派发原budget错误不改成unknown。保所有4500ms/锁1s/四attempt同期限/destroy/不追加rollback/late拒绝消费/正常commit及notify行为。原test301/其它source/SQL/API/contract/package/lock、shared mixed冻结；作者仅现source静态门交patch/hash停止，Root独立审查后重跑两系统case及完整owner门。错误HTTP仍503 business_store_unavailable，不增加外部code/兼容层或mock验收。
+
+R210 Root27496最终完整门exit1：installer/build/lint/typecheck/contract前置均到达，default736pass/7fail/1既定资源skip；format和真integration未执行。manifest T/kokoro-r210-bff-full-cri1sa59/manifest.json 自库absent/source/Redis/secondary集合保持。七失败精确为：architecture仍在旧outbox repo查已按D0搬到chat-turn-commit的INSERT；chat-service四scope与project-resource两现fixture缺原生ServerResponse.setHeader。不可删断言、skip、生产duck typing/fallback或为旧double移除正式x-request-id。
+
+R210-BFF-ADJACENT续准入：原唯一writer仅clean现test/architecture.test.ts、test/chat-service.test.ts、test/project-resource-upload.test.mjs。architecture保全部业务/claim等断言，新增读取具名chat-turn-commit并把准入BEGIN/Message/outbox/registration在正确owner职责检查，显式repo→commitChatTurn委派且无第二Message INSERT；不从source regex冒真实事务证据。两fixture文件仅现响应double支持原生setHeader并真实capture/断当前context x-request-id，原scope/权限/隔离/scan/idempotency所有assert不变，不创建新mock/测试层或改生产为容忍double。Source8f04/test301及SQL/API/package/lock/原mixed冻结。作者定点旧七门+static，交patch/hash停写；Root再完整pure/format/真PG全integration，并独审增量。默认门维护不代产品E2E验收。
+
+|后继独立任务|owner/角色/基线/写入闭集|设计门与验证|
+|---|---|---|
+|R210-SYSTEM-EXECUTION-D0|System main9a4e98eb工作树clean；agent_mainline_qa_owner转为本切片System文档唯一writer，Root提交/审查；仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md当前前缀|已读三面与§8，只读83774c放置报告批准owner/目录方向：现model-catalog immutable revision+resolve，淘汰runtime-manifest副本。D0收敛positive int32 context_window/provider metadata与revision max_output_tokens受信request硬界、draft nullable/publish必须合法/immutable/同事务generation；现strict resolve发布两字段且消费者先正式pin后改；不要求本地tokenizer或以health TTL作bound expiry，Agent冻结lease-derived bound。SQL/机器生成/source/tests/包锁全冻结，明确当前字段0而非已实现。四D0把planned route与实际SDK output硬界、Billing价格/账户/费率owner排除、loopback正控与缺Billing provider0两种证据区分；不得为观察SDK伪造grant。精确源集/contract generator/SQL checks/fresh schema/真实HTTP与generation故障矩阵列清；Root读门与独审通过后另授contract/SQL tests-first，不提前源码。无资源/Git/运维/新计划中心。|
+
+R210 System D0首独审0P0/P1/1P2（breaking metadata版本未定）；Root追加两个精确收敛点后才放行源码：目标artifact正式3.0.0，现2.0.0直到owner实现验收发布，不并行兼容；generator generate-system-openapi.ts及update-system-openapi-provenance.ts同一版本再生成。canonical SQL必须有published_at IS NULL OR (context_window IS NOT NULL AND max_output_tokens IS NOT NULL)的发布完整性CHECK，配已有正值/关系CHECK与service同事务guard，退休仍带published_at故同界；不能仅service检查却宣称拒非法直接SQL。SDK loopback cap门是隔离真实SDK适配器到自有HTTP peer，不是production native caller伪造Billing grant；正式invoke缺Billing仍0，完整authorized runtime SDK请求留正式Admission后。原System writer仅四D0补三点，source/SQL/机器/依赖/tests保持，Root独审文档门后另授tests-first。
+
+R210 Root1737最终完整BFF候选门exit0：冻结事务8f04afa9、资源test301fe387及三邻门新SHA；177真实PG/Redis0fail0skip47.018s、743默认pass/1既定资源skip、236contract，lint/typecheck/check/format/schema/build0。manifest T/kokoro-r210-bff-full-tgpff8ke/manifest.json 自库absent/source/Redis/secondary集合保持；独审commit身份与adjacent各0P0/P1/P2。首27496的7失败完整保留，不skip/生产fallback。完整门不是pool late/rollback/unknownACK/四scope尚未覆盖场景的证明，也未集成当前mixed或升级3310。
+
+System D0最终已由Root精确四路径本地提交032ff52419fe651c76b115e9fe20aafbba2ef051（main clean、未push）。四D0最终独审0P0/P1/P2；Root86018 Node24.20.0对当前2.0.0 contract:check exit0、83business+2probe/19sources provenance/12contract pass，全部非docs tracked bytes保持，receipt /tmp/kokoro-r210-system-d0-root-receipt.json。只验设计门与旧机器基线不漂移，目标3.0 schema/source/SQL未实施。Root组合gitlink未改；真实topology因System文档commit变为Agent/IAM/System/Billing四项差，FAIL保持。
+
+### R211 必要pool迟到系统RED（续原BFF owner，不另建计划）
+
+|任务|精确闭集与责任|业务验收|
+|---|---|---|
+|R211-BFF-POOL-RED|agent_prepare_final_review，BFF既有clean副本唯一writer；只现chat-facts.integration.mjs新增一个具名R211 HTTP/real pool系统case；原8f04源码、301两case和邻门、SQL/API/包锁/mixed冻结；Root资源/Git|全部六worker显式idle，同identity真实GET暖机；真实checkout满max10再归还以建立10/10/0静止参照，再全部持有。发正式Message POST，观测waitingCount>=1，fixture5.2s只释放一个owned held client安全解锁。产品期望<4.9s/503/header/零facts，响应后释放一个使late connect真正到达并归还，waiting0/idle1仍持9，再释放其余；全facts在响应与晚到后的两窗口零差，静止pool精确10/10/0、同key同body健康202/唯一2Message1dispatch。不能把原baseline1与人为扩到10比较，不能mock connect/query/降deadline/仅direct repo调。当前Message前置authorizeChatRequest仍读findConversation，可能先在pool队列无界阻塞；必须用真实HTTP业务RED确定，不能绕过auth fixture让case只到private acquire。作者只syntax/static交test SHA，Root真实RED后再裁决最小实现/设计门；不先删授权、不改源。|
+
+|R211-SYSTEM-EXECUTION-RED|System main032ff524 clean；agent_mainline_qa_owner继续本切片唯一writer；仅现test/integration/system-target-model.test.ts和test/contract/system-target-contract.test.ts|四D0门已Root+独审通过。先补真实HTTP publish缺执行界的业务负例：用旧仍合法CRUD创建draft（缺context和/或当前不存在output），现publish URI应按目标既有typed状态错误拒绝且完整revision/generation/receipt零差；当前实现若200实际发布才是正确RED，不在setup提交未知新字段/查询不存在列造成假红。contract目标只在现真实artifact检查3.0及resolve两required字段、无新operation；旧断言全部保。源码/DDL/机器/generated/包锁/其它测试冻结，不先默认填测试cap/改旧断言，不mock服务证明目标。作者只static/收集或纯contract目标RED，无PG/Redis/服务/Git；交SHA后Root在ownfixture真实PG/HTTP运行RED，再另授正规canonical SQL/Zod/repo/service/generation/正式单向生成实现。Agent/System消费者不得提前GREEN。|
+
+### R212 进度核对（复用现计划，未新增目标）
+
+|任务|归属/角色与范围|基线/依赖/验收/交付|
+|---|---|---|
+|R212-REPOSITORY-STATUS|agent_mainline_qa_owner，现模型继承，只读11子仓Git/当前docs；Root审查|Root112d3a7e及现mixed；不得写Git/资源/实现。已返回逐仓局部证据与缺口，Root现场核Git/topology四FAIL；不增加完成组。|
+|R212-PAGE-STATUS|web_page_qa_owner，现模型继承，只读现页面入口、test-cases与Settings13tab；Root审查|Webce40cecc现mixed/旧3310；已返回页面局部证据与整链缺口，无浏览器新验收。|
+|R211-BFF-POOL-RED续接|原agent_prepare_final_review唯一writer、原clean副本既有测试；Root提供精确301冻结scratch|整文件误格式化候选未接受；原301恢复后只新case，移除case必须逐byte301，生产8f04/原shared冻结。已交04825e9d/2abd85a8且Root实核去case恰301与protected保持；待Root真实资源反例，未称GREEN。|
