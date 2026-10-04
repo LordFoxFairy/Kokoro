@@ -1,3 +1,12 @@
+## R215 限定系统验收（2026-10-04）
+
+|用例ID/标题|预置条件|步骤|预期结果|优先级|类型|实际与未验边界|
+|---|---|---|---|---|---|---|
+|TC-BFF-R211-POOL / 池饱和及幂等恢复|正式authenticated Message HTTP、真实max10池、自有DB；三source793c/546e/71ec与测试3b3f冻结|持满10→发送→等待有限503→归还一个观察late Client→第二全facts快照→全部归还→同key健康202→同key重放|<4900ms/503/header/no-store；两个窗口零事实、pool精确10/10/0；正式dispatch与Run/Message IDs一致；generic receipts不变；重放全facts不增|P0|异常、幂等、资源、状态机|Root20543完整178/0/0真实门通过；修上轮generic receipt错误oracle。原shared/current3310未集成，新四组transaction faults未跑，不关闭整产品组。|
+|TC-SYSTEM-R215-CACHE / 合法checksum非法执行界|真实Nest/自有PG/Redis namespace；健康route、合法key/generation/TTL；output101/context100|首次HTTP200→按生产checksum写真实毒cache→同HTTP→清ownedkey→恢复请求→核完整revision/fences|503 SYSTEM_UNAVAILABLE；清key后200；DB/generation零差，无静默回源接受|P0|异常、安全、边界、恢复|61854仅setup409不计RED；36499实际200错误为正确RED。唯一schema31b6后Root41905完整202/0/0门通过，System bd09253本地提交；不代表SDK/Agent/Billing/current UI链。|
+
+System canonical draft/publish/partial-merge/int32/immutable/digest边界在同真实owner门执行，fresh23/22完整catalog通过。工程数量不当产品用例组；70组保持11/6/14/38/1，新增四组BFF故障矩阵和真实用户页面后继仍开放。
+
 ## R214 验收状态核对（2026-10-04）
 
 本轮没有重新浏览器验收，不增加产品通过组；原70组仍11通过/6失败/14待复测/38未验/1支付后置。最新BFF隔离全门177/1：pool候选已达503与4503.5ms及双零事实/静止pool/健康202，但最后generic receipt错误oracle未修复复验，不能整例标通过。System199/1及fresh失败；补fixture与真实缓存关系负例仅作者交付，Root复验待执行。逐页覆盖与缺口参CURRENT R214，所有CRUD必须UI操作→正式owner ACK→权威GET→刷新一致，并覆盖主链/边界/异常/权限/生命周期；组件/fixture数量不充当产品验收数。

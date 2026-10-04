@@ -8873,3 +8873,26 @@ Root65281 BFF定点实际HTTP/PG RED自然exit1：cf031请求waiting后HTTP5225.
 页面状态：登录、Home提示草稿、普通会话改名/删除/Move、项目标题/空态有局部或历史证据；工作区加载异常、完整会话与项目CRUD、独立定时任务、Agent Todo/工具/审批/续流、Skills/MCP安装授权、Library上传下载/作品、Settings13tab持久写与权限、积分整链尚未全部验收。历史Skills/MCP/Library/积分503与Agent404保留为待复测，非本轮重现。
 
 原3310仍从kokoro-local-login-cda7wvjx副本运行，45606/46036/45926/45942仍live约31h07m，未更新组合。本轮topology实际仍FAIL四项Agent/IAM/System/Billing checkout与gitlink差异；只main与已submodule化不等于源码干净或发布组合一致。下一优先：关闭BFF/System当前精确失败→审查集成并启用固定组合→实际登录/聊天/刷新/项目CRUD与积分用户链，再逐页能力验收；其他owner与QA可独立并行。
+
+## R215 两个业务缺口复验及System源码交付（2026-10-04）
+
+上一turn286cd2fe更新权威进度与失败定位，本轮取得实际研发进展；完整Wave0–7 goal保持active，70组仍11通过/6失败/14待复测/38未验/1支付后置，不以局部owner门上调产品验收。
+
+**BFF：** Root20543对3b3f测试与三source793c/546e/71ec冻结候选完整回归，178真实PG/Redis通过/0fail/0skip52.204s，743默认/1既定资源skip、236contract、schema/format/lint/type/build全0。R211保持真实503/4900ms、双窗口零事实/late Client归还/精确pool恢复，generic receipts与before保持；新增正式dispatch/Run/Message identity及same-key/body HTTP replay全facts不变。上轮177/1错误generic receipt oracle已关闭，不为测试虚增生产记录。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r215-bff-full-45er45py/manifest.json` ownedDB absent/source/Redis/secondary集合保持。原shared BFF22mixed未改、未集成/提交、3310未消费；现原writer已获单文件四组真实fault矩阵后继授权，当前新增测试待交付，旧178不当新矩阵通过。
+
+**System：** 首61854在fixture重复policy创建409失败，仅setup错误，不算cache业务RED。原writer删冗余PUT、fe493冻结后Root36499真实HTTP/cache取得正确RED：合法checksum/key/generation/TTL但100/101路由实际200≠503，正常首读/清key恢复200均成立。唯一resolveSchema31b6跨字段refine后，Root41905完整check/13contract、16files202通过/0fail/0skip22.98s、fresh23assertions/22tables完整canonical全0。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r215-system-full-o8q0fiaa/manifest.json` source/DB集合保持；immediate15ownedTTL键存在false保留，26.374s自然过期后Redis基线相同，无共享删除/FLUSH。
+
+独审final `/tmp/kokoro-r215-system-final-independent-review.md` SHA408228af为0P0/P1/P2。门后仅四D0当前前缀记录验收态，Root逐tracked字节核所有non-doc源/SQL/test/artifact/provenance同门；精确20路径已本地提交System **bd09253793a22dbe7503a05f8bf4e5b2af542e4c**，main clean、未push、runtime未更新。receipt `/tmp/kokoro-r215-system-commit-receipt.json` bytes_preserved/clean true。3.0 artifact SHA74c338f2、provenancea2c1；System两required finite limits已完成本地源码交付，不等于远端发布/Agent消费/真实模型/费用闭环。
+
+并行后继沿现任务表：agent_prepare_final_review继续BFF唯一测试writer（M1 SQL/断链回滚、M2真正COMMIT后ACKlost、M3四scope共享总界、M4notify故障）；新原生agent_execution_bound_owner（gpt-6-astra）只收敛Agent四D0的固定System3.0消费者/真实SDK限额方案，不提前源码/授权provider；Root独占资源/Git/集成。两个owner独立，正式Billing grant、known-zero/free旁路均不创建；支付渠道最后。
+
+本轮所有Root句柄61854/20543/36499/41905均已取得终态，无新增常驻服务、共享reset、当前浏览器验证或3310升级。Root uv f7e1与Web/BFF/Billing任务外mixed保持，组合gitlink仍未更新伪装发布；原四版本差异继续记录。
+
+
+## R216 逐仓与逐页进度回答（2026-10-04）
+
+用户要求当前完整度；沿原R212/R214任务卡续派agent_prepare_final_review逐仓、web_page_qa_owner逐页只读复核，Root现场Git/原进程与R215两资源manifest日志SHA核对。11子仓状态与缺口已列CURRENT R216；Root与11子仓本地仅main，Web19/BFF22/Billing8/Agent4docs dirty，四gitlink不齐，原3310旧副本约31h35m未升级。70组11/6/14/38/1不变，不是完成率。本轮未执行资源或浏览器门，不把历史失败冒当前重现。
+
+System bd09253本地源码执行界已交，202/13/fresh23-22为R215真实门；BFF178仅冻结隔离候选，新四故障矩阵23f2仅交未跑。Agent四D0新交付，尚非strict消费者/SDK源码或真实模型收费成功。明确单仓工程、集成启用、完整用户验收三层；先候选集成与正式System→Agent→Billing接线，随后固定组合实际登录/聊天/刷新/积分，再逐页CRUD与状态矩阵。所有任务外修改保留，无服务重启/reset、provider调用或新重复计划中心。
+
+R216 Root广域治理复跑已主动收束，仅本轮owned pytest进程退出2，无常驻残留：347通过/1失败/3跳过，218子断言，58.20s，非完整门。失败test_w1e_iam07_bff_pin_marks_iam_composition_pending：旧checkpoint与实际gitlink/evidence不符（269条差异）；日志/tmp/kokoro-r216-progress-governance.log。该真实失败保留，后继Root核历史checkpoint有效性，不改assert或旧快照冒绿；不覆盖既有70产品组或R215 owner证据。

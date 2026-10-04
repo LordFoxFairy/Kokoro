@@ -1,6 +1,47 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R213。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R216。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R216 用户要求的逐仓、逐页当前进度
+
+本轮是只读盘点，不是重新执行全仓或页面验收。Root现场Git/进程与两份R215资源收据及日志SHA核对，原两只读负责人分别核仓库和页面；70组仍 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**，不换算代码或产品完成率。
+
+|物理子仓|现场HEAD / dirty路径|已有证据的边界|剩余用户链|
+|---|---|---|---|
+|kokoro-app|ce40cecc / 19|登录、Move、输入与局部页面证据|当前工作区加载、全CRUD、流式交互及逐页实际验收|
+|kokoro-bff|8e33bc0a / 22|隔离候选178真PG/Redis、236contract；不是当前main新验收|新增四故障矩阵实跑、候选集成、项目删除/Storage消费者、UI调用链|
+|kokoro-agent|92b802e2 / 4 docs|306真PG、3生命周期子进程的取消切片；四D0新交付|System3.0实际接线、真实模型、Billing许可、工具审批恢复|
+|kokoro-iam|c9a9872c / 0|登录/OIDC与权限owner局部证据|当前组合退出、撤权、多窗口与消费者完整授权链|
+|kokoro-system|bd092537 / 0|执行界3.0本地提交，202测试/13contract/fresh23断言22表|发布组合与Agent消费者；不代替模型/收费链|
+|kokoro-billing|87cbe82f / 8|IAM身份/authorizer及机器契约局部证据|正式赠送、余额、预占、核实结算/释放、流水、UI读回；支付后置|
+|kokoro-capability（目标platform）|da813ed4 / 0|Skills/MCP owner局部证据|命名cutover、安装授权/实际Run/撤权链|
+|kokoro-storage|14f2bc9c / 0|文件生命周期、scope release producer与真实owner资源局部证据|浏览器上传/扫描/下载与BFF/Agent正式消费者|
+|kokoro-scheduler|e8dca489 / 0|持久调度、重启与replay owner局部证据|独立任务CRUD→真实触发→Agent结果→刷新|
+|kokoro-mori|ca76c2e1 / 0|UI/Studio预览基础|实际模型、持久化与文件收费链；不计核心Web闭环|
+|kokoro-web-shared|0c4e87ac / 0|共享前端基础库|消费升级和真实页面验收由各消费者负责|
+
+页面分层：登录/Home/普通会话/项目空态均只有局部或历史正向证据；完整会话与项目CRUD、独立任务、Agent Todo/工具/HITL/刷新续流、Skills/MCP、Library与Settings13tab尚未全部验收。历史404/503和保存缺口不冒本轮重现；全部CRUD必须UI操作→owner ACK→权威GET→刷新一致，页面能打开不算完整。
+
+主控实核Root及11子仓本地仅main；Web19/BFF22/Billing8及Agent4docs未提交，整体不clean。Agent/IAM/System/Billing四gitlink仍不齐。原45606/46036/45926/45942仍live约31h35m，3310仍旧运行副本，未自动消费已验证候选。当前瓶颈是单仓切片到正式组合及真实用户路径的交接，不是所有能力已完成只剩外观。
+
+R215 BFF四故障测试已交SHA23f2ee34，仅syntax通过，资源测试NOT_RUN；旧178绑定3b3f基线而非新四组。R216 Agent四D0已交，尚未独审放行或实现，当前System consumer pin机器校验缺口仍在。下一依赖顺序：BFF故障矩阵与集成、Agent新契约和Billing许可实际接线→固定组合启用→登录/聊天/刷新/积分，再逐页闭环；独立QA与owner工作可并行。
+
+
+R216 Root广域治理复跑已主动收束，仅本轮owned pytest进程退出2，无常驻残留：347通过/1失败/3跳过，218子断言，58.20s，非完整门。失败test_w1e_iam07_bff_pin_marks_iam_composition_pending：旧checkpoint与实际gitlink/evidence不符（269条差异）；日志/tmp/kokoro-r216-progress-governance.log。该真实失败保留，后继Root核历史checkpoint有效性，不改assert或旧快照冒绿；不覆盖既有70产品组或R215 owner证据。
+
+## R215 两个业务缺口复验及System源码交付（2026-10-04）
+
+上一turn286cd2fe更新权威进度与失败定位，本轮取得实际研发进展；完整Wave0–7 goal保持active，70组仍11通过/6失败/14待复测/38未验/1支付后置，不以局部owner门上调产品验收。
+
+**BFF：** Root20543对3b3f测试与三source793c/546e/71ec冻结候选完整回归，178真实PG/Redis通过/0fail/0skip52.204s，743默认/1既定资源skip、236contract、schema/format/lint/type/build全0。R211保持真实503/4900ms、双窗口零事实/late Client归还/精确pool恢复，generic receipts与before保持；新增正式dispatch/Run/Message identity及same-key/body HTTP replay全facts不变。上轮177/1错误generic receipt oracle已关闭，不为测试虚增生产记录。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r215-bff-full-45er45py/manifest.json` ownedDB absent/source/Redis/secondary集合保持。原shared BFF22mixed未改、未集成/提交、3310未消费；现原writer已获单文件四组真实fault矩阵后继授权，新增测试已交待真实资源验证，旧178不当新矩阵通过。
+
+**System：** 首61854在fixture重复policy创建409失败，仅setup错误，不算cache业务RED。原writer删冗余PUT、fe493冻结后Root36499真实HTTP/cache取得正确RED：合法checksum/key/generation/TTL但100/101路由实际200≠503，正常首读/清key恢复200均成立。唯一resolveSchema31b6跨字段refine后，Root41905完整check/13contract、16files202通过/0fail/0skip22.98s、fresh23assertions/22tables完整canonical全0。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r215-system-full-o8q0fiaa/manifest.json` source/DB集合保持；immediate15ownedTTL键存在false保留，26.374s自然过期后Redis基线相同，无共享删除/FLUSH。
+
+独审final `/tmp/kokoro-r215-system-final-independent-review.md` SHA408228af为0P0/P1/P2。门后仅四D0当前前缀记录验收态，Root逐tracked字节核所有non-doc源/SQL/test/artifact/provenance同门；精确20路径已本地提交System **bd09253793a22dbe7503a05f8bf4e5b2af542e4c**，main clean、未push、runtime未更新。receipt `/tmp/kokoro-r215-system-commit-receipt.json` bytes_preserved/clean true。3.0 artifact SHA74c338f2、provenancea2c1；System两required finite limits已完成本地源码交付，不等于远端发布/Agent消费/真实模型/费用闭环。
+
+并行后继沿现任务表：agent_prepare_final_review继续BFF唯一测试writer（M1 SQL/断链回滚、M2真正COMMIT后ACKlost、M3四scope共享总界、M4notify故障）；新原生agent_execution_bound_owner（gpt-6-astra）只收敛Agent四D0的固定System3.0消费者/真实SDK限额方案，不提前源码/授权provider；Root独占资源/Git/集成。两个owner独立，正式Billing grant、known-zero/free旁路均不创建；支付渠道最后。
+
+本轮所有Root句柄61854/20543/36499/41905均已取得终态，无新增常驻服务、共享reset、当前浏览器验证或3310升级。Root uv f7e1与Web/BFF/Billing任务外mixed保持，组合gitlink仍未更新伪装发布；原四版本差异继续记录。
 
 ## R214 逐仓与页面进度复核（2026-10-04）
 

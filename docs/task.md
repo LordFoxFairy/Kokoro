@@ -8685,3 +8685,36 @@ System D0最终已由Root精确四路径本地提交032ff52419fe651c76b115e9fe20
 ### R214 进度盘点续接（复用R212任务卡）
 
 R212-REPOSITORY-STATUS / R212-PAGE-STATUS 已由原两只读负责人再次交付；Root核原进程/Git/R213真实门。无新目标、无产品源写入、无浏览器或全仓重跑。最新BFF177/1最后generic receipt错误oracle与旧pool RED分开；System199/1及fresh fixture失败保持、作者补测试尚待Root资源。完整Wave0–7/70组11/6/14/38/1不升，当前组合未升级，四gitlink差仍FAIL。完整逐仓/逐页状态在CURRENT R214；后继保持原R213 owner和冻结集，不以本次盘点称研发完成。
+
+
+### R215 续接真实失败修复与发布前验收
+
+上一turn286cd2fe更新权威台账；本轮继续完整Wave0–7，不重复盘点替代研发。无活跃Root旧测试句柄（R213两全门已终态）；Root独占所有资源/Git。
+
+|任务|owner/范围/基线|验收与依赖|
+|---|---|---|
+|R215-BFF-RECEIPT-ORACLE|原agent_prepare_final_review唯一writer，既有clean副本；仅chat-facts.integration.mjs R211 case；三source793c/546e/71ec、其他test/D0/mixed冻结|Root67998真实177/1失败在generic receipt=1；Message正式幂等以dispatch outbox为准。保持原deadline/header/no-store/双全facts零差/late-client/精确pool断言；generic receipts与before保持，绑定dispatch key/请求/Run/Message IDs；同key同body正式HTTP replay、全facts不变。禁止生产虚增receipt、改旧邻例、全文件format。作者仅static，Root完整真实门、只读审查后决定集成。|
+|R215-SYSTEM-CACHE-RED|Root资源；System032ff+候选20path；schema242f/testc98d冻结|原HTTP→真实自有Redis合法checksum、key、TTL、generation且output101>context100负例，目标503 SYSTEM_UNAVAILABLE/正常恢复200/DB零差；实际失败后才授唯一resolveSchema relation refine及正规生成，不改Shared Redis/PG。|
+|R215-INDEPENDENT-REVIEW|web_page_qa_owner只读两切片增量|先审BFF R211正确幂等owner/assert范围，再审System relation、矩阵/fixtures/生成一致性；不写仓/Git/资源。Root回归后再审提交与当前组合，70组不虚升。|
+
+R215 Root20543 BFF完整门已终态0：178真实PG/Redis、743默认/1既定skip、236contract、schema/format/lint/type/build均0；manifest T/kokoro-r215-bff-full-45er45py/manifest.json source/ownedDB/Redis/secondary保持。完整故障矩阵与当前UI仍未关。
+
+R215 System首次61854在setup重复policy创建409失败，不算业务RED；原writer只删冗余PUT后fe493冻结。Root36499真实HTTP/cache关系RED实际200≠503，正常首次/恢复200成立；manifest T/kokoro-r215-system-cache-red-6c6ae4q8/manifest.json source/自库/Redis同。另授原System owner仅唯一schemas/resolve.schema.ts跨字段refine（path max_output_tokens），正常contract:generate/provenance生成与四D0当前事实前缀；cache/service不复制规则、fixtures/test/SQL余源码冻结。静态后Root定点及完整owner/fresh真实门、独立审，正式发布后才Agent pin。
+
+|R215-BFF-FAULT-MATRIX|原agent_prepare_final_review，BFF clean唯一测试writer；仅现chat-facts.integration.mjs新增M1 SQL fault/真实backend断裂，M2真实COMMIT后ACK-lost，M3四scope+共享deadline，M4真实notify throw/late；3b3f旧tests与三source/D0/SQL/contracts冻结|已有放置/真实178门与只读矩阵3a2d。Root裁M3：0.8×4不足以区分共享预算，必须总物理延迟>4.5（例如每轮真实coordinator SQL约1.2s），四次真实pre-read与scope-change在最后延迟前观测；最后迟到query/fixture收束后零产品后写，合法fixture scope改动明确比对并恢复。不得伪造rows/直接repository调用/放宽4900ms。各例完整facts/ownedPID/精确坏client销毁/恢复和cleanup。作者仅static/tests交SHA，Root真实整矩阵及全门；单组不拆重复计划。|
+
+
+|R216-AGENT-EXECUTION-D0|新原生agent_execution_bound_owner，角色Agent固定System消费者与SDK限额方案；gpt-6-astra；Agent main92b802e clean；只允许四现docs当前前缀，不改任何source/contract/test/schema/lock|System已Root真实门并本地20path提交bd09253793a22dbe7503a05f8bf4e5b2af542e4c，artifact3.0 SHA74c338f2/provenancea2c1；未push不冒remote发布。收敛三D0及§8放置：唯一strict consumer两required positive int32+关系、固定ownercommit/artifact/provenance来源、实际SDKoutput cap、独立peer正控与native缺Billing0-provider，lease-derived execution-bound后继。比较现client+现model caller与runtime-manifest/新模块，保持前者，不复制费率/假grant/旧2.0兼容。先资料盘点与docs，Root/独审批准后再tests-first；合同正式发布/接线为前置，不先源实现。RootGit/资源，Agent其它路径与System/BFF冻结。|
+
+R215 Root41905最终202/0/0与fresh23/22、check/13contract全0；独审408228af归零，门后仅四D0变化、非doc bytes同。System20paths本地commit bd09253793a22dbe7503a05f8bf4e5b2af542e4c，main clean/未push/未升级3310；/tmp/kokoro-r215-system-commit-receipt.json。R215 System slice已Root验收；R215 BFF178仅冻结旧覆盖已验、四组新增矩阵进行中；R216 Agent D0原生gpt-6-astra已实际spawn，docs-only进行中，发布/strict pin/SDK/native零provider待后继。所有Root资源句柄已终态，完整Wave0–7仍active。
+
+Root58388治理工具测试298通过/3.18s；实际topology仍exit1四gitlink差（Agent/IAM/System/Billing），不以治理test绿冒组合发布。原四3310进程仍live31h31m，未升级；uv SHA f7e1保持。R216原生owner现场发现Agent现provenance虽声明System2.0 pin，但contract_check尚未校验consumer_dependencies且无consumer generator；D0必须明确后继真实固定来源机器gate，不虚构生成命令。
+
+
+### R216 进度核对与交付状态续记
+
+沿既有R212/R214两只读卡续派：agent_prepare_final_review核11子仓、web_page_qa_owner核页面与Settings13tab；均已返回，仅只读、未资源/浏览器/Git。Root现场状态见CURRENT R216，70组11/6/14/38/1不升。
+
+R215-BFF-FAULT-MATRIX现状态为已交付待真实资源验证，test SHA23f2ee349538510766d0547a50cf74173f82432df6d36ab67eda03239efe786e；patch04955a03，移去新增段仍3b3f，三source冻结。node --check仅syntax，不代整矩阵GREEN。R216-AGENT-EXECUTION-D0已交四docs/118新增行，待独审/Root放行，Agent仍92b802e2、4docs dirty；没有消费者或SDK接线实现。完整报告绑定四doc SHA与历史后缀保持，不放行新增source。
+
+R216 Root广域治理复跑已主动收束，仅本轮owned pytest进程退出2，无常驻残留：347通过/1失败/3跳过，218子断言，58.20s，非完整门。失败test_w1e_iam07_bff_pin_marks_iam_composition_pending：旧checkpoint与实际gitlink/evidence不符（269条差异）；日志/tmp/kokoro-r216-progress-governance.log。该真实失败保留，后继Root核历史checkpoint有效性，不改assert或旧快照冒绿；不覆盖既有70产品组或R215 owner证据。
