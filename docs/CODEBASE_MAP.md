@@ -8,11 +8,17 @@
 - 同product的00为长期愿景，01/05/06/07为补充；`docs/INDEX.md`与handbook README提供导航。
 - PRD要求不当实现证据；任务仍task、运行事实CURRENT、系统结果test-cases、证据progress，无新计划中心。
 
+## BFF有限Message准入与exact-client生命周期（R217）
+
+- 本地main交付7289b3a4ae8f2df5c249350d59b9405c33fb4083；现 `src/infrastructure/postgres/chat-turn-commit.ts`唯一拥有Message事务、Project→Conversation锁、canonical dispatch replay、4.5秒总界和checked-out client具名error listener→release→remove生命周期。`src/http/routes/chat-authorization.ts`仅Message取消无界owner预读，可信IAM与其他路由授权保持；无新SQL/契约。
+- Root四真实故障矩阵及完整182PG/Redis通过；源码树395文件精确绑定门。原22protected bytes/modes全保持，现20mixed；当前3310未启用该commit，不从mixed工作树冒正式发布。
+- 组合gitlink/发布/页面/Agent与Billing整链状态以RootCURRENT/progress为准，不用本仓切片冒产品闭环。
+
 ## System执行界本地交付与Agent后继（R215）
 
 - System `model-catalog` revision/resolve是技术执行界唯一owner：现`database/schema.sql`、`revision-content.ts`/repository/service、`schemas/resolve.schema.ts`与`resolve.repository.ts`；draft可null，published两positive int32且output<=context，digest/immutable/generation同事务，首读/cache共用唯一关系校验。
 - 本地源码commit `bd09253793a22dbe7503a05f8bf4e5b2af542e4c`；机器artifact `3.0.0` SHA74c338f2/provenancea2c1；Root完整202/13contract/fresh23/22已验。未push、原3310未升级、Agent依旧strict2.0消费者，不能冒模型/收费闭环。
-- Agent下一当前任务为R216四D0：现`src/kokoro_agent/clients/system.py`及现model caller严格固定消费与真实SDKoutput cap；缺Billing仍0 provider。Root不维护第二contract/SQL，不放宽旧consumer或伪造Admission。
+- Agent当前R216四D0已独审通过、实际consumer仍未实现：现`src/kokoro_agent/clients/system.py`及现model caller严格固定消费与真实SDKoutput cap；缺Billing仍0 provider。Root不维护第二contract/SQL，不放宽旧consumer或伪造Admission。
 
 ## Root 职责
 

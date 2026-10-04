@@ -8718,3 +8718,26 @@ Root58388治理工具测试298通过/3.18s；实际topology仍exit1四gitlink差
 R215-BFF-FAULT-MATRIX现状态为已交付待真实资源验证，test SHA23f2ee349538510766d0547a50cf74173f82432df6d36ab67eda03239efe786e；patch04955a03，移去新增段仍3b3f，三source冻结。node --check仅syntax，不代整矩阵GREEN。R216-AGENT-EXECUTION-D0已交四docs/118新增行，待独审/Root放行，Agent仍92b802e2、4docs dirty；没有消费者或SDK接线实现。完整报告绑定四doc SHA与历史后缀保持，不放行新增source。
 
 R216 Root广域治理复跑已主动收束，仅本轮owned pytest进程退出2，无常驻残留：347通过/1失败/3跳过，218子断言，58.20s，非完整门。失败test_w1e_iam07_bff_pin_marks_iam_composition_pending：旧checkpoint与实际gitlink/evidence不符（269条差异）；日志/tmp/kokoro-r216-progress-governance.log。该真实失败保留，后继Root核历史checkpoint有效性，不改assert或旧快照冒绿；不覆盖既有70产品组或R215 owner证据。
+
+
+### R217 按既有切片执行资源验收与设计独审
+
+上一goal turn归类进展：权威逐仓/逐页台账提交e0d40110并取得治理checkpoint版本差异失败证据；不再用状态复述代研发。本轮沿R215-BFF-FAULT-MATRIX与R216-AGENT-EXECUTION-D0续接，不新建目标。
+
+|任务|角色/范围/基线|验收和交付|
+|---|---|---|
+|R215-BFF-FAULT-MATRIX / Root资源|Root独占；现clean archive test23f2与三production793c/546e/71ec冻结；只复用/tmp受管runner，owned临时DB、现PG/Redis15|执行四正式Message HTTP故障组；源hash、全facts、资源回收必须成立。无共享reset/原3310重启。实际RED区分fixture与生产再续派原writer，不放宽预算或assert。|
+|R215-INDEPENDENT-REVIEW / 四矩阵增量|web_page_qa_owner只读；patch04955a03与handoff，完整基线3b3f|复核同一单文件四组oracle/隔离/实际COMMIT/4.5s总界，不写仓/资源/Git；报告/tmp/kokoro-r217-bff-matrix-review.md。|
+|R216-AGENT-EXECUTION-D0 / 独立设计审查|新agent_execution_d0_review，gpt-5.6-sol；Agent92b802e+现四docs与System bd09253固定产物；只读|核§8及三D0一致性、真实调用路径/固定pin机器门/SDK实际wire验证/缺Billing零provider边界；不变更代码/资源/Git。报告/tmp/kokoro-r217-agent-d0-review.md；通过后Root才授原writer tests-first。|
+
+R217 Root51194四真实HTTP/PG故障组终态exit1：3通过/1失败/0skip5.455s。M2真实COMMIT后ACKlost、M3四次scope共一界、M4通知异常均通过；M1 SQL故障/后续断链组合在backend terminate出现uncaughtException Connection terminated unexpectedly（rollback→pg client.query）。manifest T/kokoro-r217-bff-fault-matrix-my7261q9/manifest.json installer/build0、自DB absent/fullsource/Redis15/secondary库同。原writer只读诊断活跃checkout error事件与query拒绝/rollback/精确销毁，不预授改assert或吞异常。Root暂无活动资源句柄，不以旧178覆盖新实际失败。
+
+R217 M1实施放行（独审b1e260b2、原writer诊断5593832c）：真实Root51194 RED后仅现chat-turn-commit.ts具名commit函数接管其exact checked-out client error事件，回调仅标记不可回池，原query rejection/typed失败保持；finally先release(destroy)恢复Pool既有所有权，再finally卸载具名operation listener，确保release异常也卸载。不建global/no-op error handler、新module/SQL/contract或第二预算。原writer同范围唯一写入；现M1只可加强event listener清理/精确坏client释放oracle，不削23f2旧断言。其余三组及全部旧用例字节保持；静态后Root原四组真实HTTP/PG重跑与完整owner门，独审增量后才提交/启用。纯测试doubles若因新增真实PoolClient能力需要迁移，先报告具体现路径，不在生产duck-typing或fallback容忍旧double。
+
+R217 Agent D0独审91a87461为0P0/1P1/2P2：固定pin receipt精确shape/checker/installed tamper与Root固定Git-object机器来源门未闭；OpenAPI单字段与runtime-Zod跨字段事实措辞、SDK invocation override硬界接线需明确。原agent_execution_bound_owner续唯一四D0前缀窄修，仍无source/test/资源/Git权；归零后再tests-first。System provenance历史consumer disposition与旧artifact描述登记上游P2，不作3.0已消费证据；如果上游修正产物hash必须重新pin。
+
+R217 Root24434真四矩阵4pass/0fail/0skip5.462s，源码5864/test656f；Root82959完整owner门182真PG/Redis/0fail/0skip58.539s，installer/build/check/format全0，自库absent/source/Redis/secondary同，manifest T/kokoro-r217-bff-full-ygz0gcao/manifest.json。独审3d23cc72原P1归零；当前仍clean archive未集成main/3310。原BFF writer下一仅四现D0顶部更新当前candidate证据/资源listener/HTTP与schema不变，source/tests全部冻结；Root审冻结source与doc一致后集成。准确候选相对main8e33为15路径，Root只读inventory /tmp/kokoro-r217-bff-integration-inventory.json；与原protected22有重叠，不直接覆盖或git add全部。
+
+R217 BFF集成执行放行：独审b4eea3f2为0P0/P1/P2；最终15path manifest789b4c24，四docs提交态与全部non-doc冻结。Root独占main8e33与Git，按/tmp/kokoro-r217-bff-main-integration-design.md的私有index计划：先证明真实index无staged、22protected raw/mode与全tracked基线，完整395运行字节等价已验full门；仅15candidate blobs正常commit；真实index read-tree HEAD不带-u；仅原clean任务路径/原不存在helper填candidate，22protected全部保持。任何不匹配停止、不得reset/stash/清工作树，commit不等于旧3310启用或全产品闭环。最终四D0独审进行中，通过才执行commit；Rootgitlink与uv均不授写。
+
+R217最终交付：四D0独审5f92e6f1/集成独审b4eea3f2均归零；Root45484终态0，以私有index精确15路径正常提交BFF7289b3a4ae8f2df5c249350d59b9405c33fb4083，395运行字节同完整门，22protected raw/mode保留、实际index空、dirty现20（两原protected内容与新HEAD相同）；未push/gitlink/runtime。receipt /tmp/kokoro-r217-bff-main-integration-receipt.json。Message有限切片状态已验收，其余Project DELETE/Storage/Agent/UI依赖继续；四matrix与182不替70产品组。AgentD0最终独审f717eedc为0P0/P1/in-scopeP2，当前四docs待提交、源码仍2.0消费，后继原owner tests-first需另授精确范围；上游P2元数据与Root广域checkpoint失败继续列明。Root本輪topology真实FAIL五项，原四进程live约32h，无新增常驻/共享reset。

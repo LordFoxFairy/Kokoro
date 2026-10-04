@@ -1,6 +1,36 @@
 # Kokoro 当前执行事实
 
-核对日期：2026-10-04，R216。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+核对日期：2026-10-04，R217。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
+
+## R217 源码交付与产品验收分开记录（2026-10-04）
+
+完整Wave0–7保持active；70个产品验收组仍 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**。下列源码/工程通过不增加产品组。当前3310原组合仍live约32h、未升级；本轮没有新的浏览器用户旅程验收。
+
+**本轮实际完成：** BFF四真实HTTP/PG故障矩阵先3通过/1失败，backend断链触发uncaught；精确checked-out client具名listener/release生命周期修复后4通过/0失败。Root完整门182真实PG/Redis、743默认（1既定资源skip）、236contract，schema/format/lint/type/build均通过；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r217-bff-full-ygz0gcao/manifest.json`，所有owned资源回收且源hash不变。最终源码/提交态四D0/集成方案独审均0P0/P1/P2。
+
+Root将精确15路径提交为BFF **7289b3a4ae8f2df5c249350d59b9405c33fb4083**（本地main，未push）。私有index树绑定全部395已验运行文件，原22protected文件raw/mode全部保留；因其中两路径恰与新基线一致，现dirty为20而非丢失修改。真实index无staged，工作区并非clean；未改SQL/owner契约/lock、Root gitlink或3310。收据 `/tmp/kokoro-r217-bff-main-integration-receipt.json`。这只关闭有限Message准入/事务租约切片，不等于Agent投递、项目删除、UI或完整聊天闭环。
+
+Agent四D0独审归零（原1P1/2P2关闭），固定System3.0收据/19source/安装篡改门与SDK最终wire限额、资源ownership方向已确定。当前仅四docs dirty、未实现consumer或provider成功；Source仍92b802e2、System pin仍2.0。System上游历史consumer disposition/旧artifact描述为明确P2元数据后继；更改后必须重新生成/固定hash，不能沿旧hash冒成功。
+
+|物理子仓|当前本地HEAD / dirty路径|已验证交付边界|仍未完成的用户业务|
+|---|---|---|---|
+|kokoro-app|ce40cecc / 19|登录/Move/输入与局部页面工程证据，非本轮全页验收|工作区加载异常复验、会话/项目全CRUD、Home、Settings、正式流式展示|
+|kokoro-bff|7289b3a4 / 20|本轮有限Message准入/四故障/182真实集成已本地提交|组合启用、Agent投递及刷新续流、项目删除/Storage release、全部UI调用链|
+|kokoro-agent|92b802e2 / 4 docs|取消切片既有306真PG/3生命周期；本轮D0独审通过|实际System3.0消费、真实模型、Billing许可/费用证据、工具与审批恢复|
+|kokoro-iam|c9a9872c / 0|OIDC/身份权限owner局部证据|当前组合登录/退出/撤权/跨窗口与消费者整链|
+|kokoro-system|bd092537 / 0|执行界3.0本地交付，既有202/13contract/fresh23断言22表|Agent固定消费/实际模型路由链及上述元数据后继|
+|kokoro-billing|87cbe82f / 8|身份authorizer/机器契约局部证据|授权赠送→余额→预占→核实实际结算/释放→流水→UI读回；支付渠道最后|
+|kokoro-capability（目标platform）|da813ed4 / 0|Skills/MCP owner局部证据|正式命名cutover、安装/授权/实际Agent调用/撤权|
+|kokoro-storage|14f2bc9c / 0|文件生命周期与scope release producer局部证据|BFF/Agent消费者、真实上传/扫描/下载/作品用户链|
+|kokoro-scheduler|e8dca489 / 0|持久调度、重启/replay局部证据|独立任务全CRUD→触发→Agent运行→结果刷新|
+|kokoro-mori|ca76c2e1 / 0|预览/UI基础，不计核心Web闭环|真实模型、持久化、文件与费用链|
+|kokoro-web-shared|0c4e87ac / 0|共享前端基础|由各消费者完成版本消费及真实页面验收|
+
+页面完整度：登录、Home、普通会话、项目各只有局部/历史正向证据；**完整会话/项目CRUD、独立任务、Agent Todo/工具/HITL/刷新恢复、Skills/MCP、文件作品、Settings13tab和积分整链均未全部验收**。历史404/503/加载缺口不当本轮重现，也不凭页面可打开判通过。每项必须UI操作→owner ACK→权威GET→刷新一致，并覆盖主链、边界、异常、权限、状态机。
+
+Root及11子仓现场均仅本地main；整体不clean。Root topology本轮实际FAIL **5项**（BFF/Agent/IAM/System/Billing checkout与gitlink不同），未用更新指针掩盖组合未验。R216广域治理347通过/1失败/3skip/218子断言、exit2为历史本轮前证据；未完整复跑/未弱化旧checkpoint。下一关键路径：Agent已审方案tests-first/正式Billing消费，与页面QA和独立owner并行；固定源码组合启用后真实登录→聊天→Stop/刷新→积分流水，再逐页完整CRUD。支付和部署运维不抢占研发主线。
+
+以下R216及更早段为历史证据，当前以上方R217为准。
 
 ## R216 用户要求的逐仓、逐页当前进度
 

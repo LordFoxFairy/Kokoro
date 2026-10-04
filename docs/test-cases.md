@@ -1,3 +1,16 @@
+## R217 四故障系统矩阵（2026-10-04；不改变70产品组）
+
+预置共同边界：正式受信Message HTTP、真实owned PostgreSQL/现Redis、冻结BFF候选；Root资源独占，最后commit7289b3a4运行树395项与已验候选完全一致。原3310未升级，本轮没有浏览器全链验收。
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果|
+|---|---|---|---|---|---|---|
+|TC-BFF-R217-M1 / SQL错误与真实断链回滚|自有DB/实际backend PID/完整事实基线|正式提交触发SQL错误；下一断链子路径terminate准确backend；取全facts，观察exact client listener/release与替换backend|有限503、零部分事实；坏client release(true)，operation listener卸载、原PID消失、健康后续成功；无进程uncaught|P0|异常、事务、生命周期|Root51194真实uncaught RED；5864修复后Root24434此例通过，独审归零。|
+|TC-BFF-R217-M2 / COMMIT成功但ACK丢失|真实COMMIT可被fixture传输故障打断响应|真正提交后丢ACK→503→同key同body重放→核canonical dispatch/Run/Message/全事实|一次提交、原身份恢复、零重复写；unknown client精确销毁，不伪造generic receipt|P0|异常、幂等、恢复|Root24434四矩阵及82959完整182门通过。|
+|TC-BFF-R217-M3 / 四scope变化共享总界|真实双连接/coordinator SQL延迟、owned scope fixture|观测四次真实预读/scope变化、累计物理延迟>4.5秒→等待终态/迟到query收束→核产品零后写及fixture还原|一个4.5秒预算、HTTP<4900ms/503；无按重试重置期限、无迟到提交|P0|边界、并发、状态机|Root24434及完整182门通过，未放宽时限。|
+|TC-BFF-R217-M4 / 提交后通知throw/迟到|真实通知已触发，随后可控throw/late|正规Message提交→通知故障→核成功事实、有限响应、replay与恢复|持久提交保持、通知故障不反转业务提交/重复写，无第二deadline|P0|异常、容错、恢复|Root24434及完整182门通过。|
+
+真实RED3/1→GREEN4/0/0（5.462s）；完整182/0/0（58.539s）。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r217-bff-full-ygz0gcao/manifest.json`；自库absent/源码/Redis/secondary同。743默认+1既定skip、236contract不算产品验收组。70组仍11通过/6失败/14复测/38未验/1支付后置；主动HTTP取消、当前页面加载、Project DELETE、Agent/Billing完整旅程继续开放。下方R215等为历史，不覆盖R217。
+
 ## R215 限定系统验收（2026-10-04）
 
 |用例ID/标题|预置条件|步骤|预期结果|优先级|类型|实际与未验边界|
