@@ -1,5 +1,9 @@
 # Kokoro codebase map
 
+## R220 当前Agent接线入口（2026-10-04）
+
+Agent R219冻结候选已实际消费固定System955bd587的3.0：`clients/system.py`负责严格同revision执行界；`model/factory.py`的ModelHttpClients拥有sync/async客户端与最终wire界；`agent_factory.py`负责构造失败和handle关闭时资源转移/释放；`system_consumer_contract.py`负责唯一固定receipt验证。Root工程与installed已复验，仍未提交/3310启用，不等于正式Billing或用户聊天闭环。下面R218 consumer2.0/未实施描述是历史RED，不覆盖此候选。当前状态以CURRENT R220与progress收据为准。
+
 状态：2026-09-19。以 [REPOSITORY_STATUS.md](REPOSITORY_STATUS.md) 与 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md) 为 Root 组合路径与 Git 标识的权威来源。
 
 ## 当前产品业务入口（R200）

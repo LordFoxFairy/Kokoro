@@ -1,3 +1,15 @@
+# 当前任务入口（R220，2026-10-04）
+
+完整Wave0–7目标保持。当前派工与准入以本文末尾 [R219任务卡](#r219-并行前置审查与模型接线验证2026-10-04) 为准；以下R165及其它旧记录仅是保留的执行历史，不是当前阶段指令。
+
+- Agent唯一writer：agent_execution_bound_owner；21路径候选已冻结，当前停止写入；源码仍待Root集成提交，不是用户旅程完成。
+- Root：资源与Git独占；394定点、306真实PG、3生命周期、最终2253默认测试通过；497资源用例在默认门中未执行。七旧fixture失败已由窄修复和真实复验关闭，installed 18步正反篡改门通过。正式Billing/provider/页面仍未闭环。
+- Billing：readiness独审三个P1，纯draft codec231辅助通过但非正式Admission/收费；原protected候选保持。
+- 页面：本轮IAB当前/app读取因控制CDP focus命令超时，未取得用户DOM/渲染证据；不作为应用根因或页面通过。
+- 产品统计不变；[当前事实](CURRENT.md)、[系统测试](test-cases.md)、[实际证据](progress.md)仍各司其职。
+
+R220沿既有逐仓/逐页审查卡复用原生负责人，不建立重复计划：agent_prepare_final_review只读核11子仓Git与工程/业务边界；web_page_qa_owner只读核页面与Settings13tab验收缺口。Root52751495为起始基线，原混合工作树保持；两审查员只写/tmp报告，不运行服务、资源测试或Git写操作。Root独占台账、原R219句柄收尾和用户进度汇报；完成条件是当前证据与未验范围明确，不虚增70产品组。
+
 R165 首源码GREEN尝试 Root30912真实4case为1fail/3pass/53过滤55.56s（/tmp/kokoro-r165-anonymous-navigation-green.log）：10s恢复UI通过，Retry第二真200false通过，但新login请求仍1，8s后失败；晚503释放未到，不冒完整恢复绿。Root60400邻UI22pass4.13s、eslint/types0；Redis15=0/sourcehash同。这一真实红优先于静态独审179dcdd0零发现。
 
 Root亲核本地Next16.2.6 app-router.js:208–236：MPA导航设置pendingMpaPath，同URL不重新document navigation且throw unresolvedThenable维持悬挂；/login为RouteHandler非React页面，当前失败机理与单login/第二anonymous结果一致。后继不再用AppRouter启动认证，不清Next缓存、不加nonce/新query/兼容双轨。采用现product-auth-client（已拥有endProductSession document导航）扩具名openProductSignIn，仅固定原生window.location.replace('/login')；AppGate首次及实探后重试统一此入口，保10s/恢复/权限，弃router.replace一条旧路径。依赖沿原server/login→IAM OIDC，无API/SQL/credential/fact变动，无新文件/组件可注入假认证参数。现auth INDEX记录正规入口。
@@ -8779,3 +8791,11 @@ R218/R219-GREEN正式放行：Root已完成§8及三D0/fixed来源/真正RED与�
 |R219-AGENT-GREEN|原agent_execution_bound_owner；Agent main92b802e2+既定R218/R219候选，仅已准入九source/七tests/四D0|实际代码已进入工作树但未冻结；按原任务卡交源码/测试SHA、静态结果与资源ownership/wire矩阵，Root冻结后真实peer、source gate、installed与nativePG复验，不计完整provider/Billing通过|
 |R219-BILLING-READINESS-READ|复用agent_prepare_final_review，只读审计Billing main87cbe82f及其八protected dirty路径；Agent只读当前call_runtime/正式usage机器事实；Root docs/CODEBASE_MAP.md、ADR-033、Billing三D0为入口|定位当前到正式quote/reserve/核实结算/释放所缺真实接口/producer消费与依赖；给最小下一业务切片、准确文件清单及系统用例，不编写源码/文档/生成物，不运行pytest/资源/服务/Git，不重开已批准政策。只写/tmp报告，区分当前代码与目标文档；Root裁决，不直接授跨仓写入|
 |R219-ROOT-SOURCE-GATE|Root唯一/tmp验证器与台账writer；固定System955bd58 Git objects为权威、当前Agent receipt只读|更新此前历史bd09253 source-gate参数为新955/94ed/5fda/aaf1428并核19源；输入前后hash一致才记录当前pin快照，非冻结实现/full gate/installed/模型用户链通过|
+
+R219-BILLING-CODEC-REVIEW：原web_page_qa_owner复用为只读Billing codec边界审查员，Billing main87cbe82f+原八protected路径。仅审核现src/modules/metering/metering-pricing-revision-codec.ts、metering-pricing-revision.types.ts、test/unit/metering-pricing-revision-codec.test.ts与现五D0/ADR-033一致性；不修改protected候选或任何仓文件、Git、资源/服务，不跑测试。给现纯草稿codec是否可以独立交付及P0/P1/P2、缺失系统后继，/tmp报告。Root独立只跑这一纯codec邻门并核全部protected源码前后hash，结果明确非HTTP/PG/正式发布/真实收费；后续同仓写入仍需Root准入，不自行授全部Billing能力。
+
+R219-AGENT-GREEN-REVIEW：原agent_execution_bound_owner已冻结九production/machine+七tests+四D0共20paths，SHA manifest /tmp/kokoro-r219-agent-green-sha.json dd5ca2fe，diff5bada7e7；该writer停写。复用web_page_qa_owner只读源码最终审查，绑定该manifest与main92b802e2，重点同immutable route两界、SDK最终wire所有公开override、sync/async/stream/unsupported endpoint、客户端partial build/Swarm/exact-once关闭、checker<200/receipt与audit闭包；不编辑/跑资源/Git，仅/tmp报告。Root先真实peer+decoder/contract/selection/factory邻门，再独立源码审和nativePG/installed/full门。发现范围外config/test_litellm_gateway.py旧fixture需ownedclients时保真实失败并另授，不提前宽化门。
+
+R219-AGENT-GATEWAY-FIXTURE：Root17570真实完整门306PG/3生命周期/lock/sync/Ruff/Pyright通过，default2246pass/7fail/497资源deselected；七fail唯一现tests/unit/config/test_litellm_gateway.py旧无ownedclients调用及旧文案oracle。源码guard正确拒缺clients，不能恢复None fallback。准原agent_execution_bound_owner仅该现文件追加为第八test路径，迁移四有效constructor/invoke/stream至合法同route ownedclients并完整关闭；三个配置负例在真实ModelHttpClients边界验证缺base/key/disabled拒绝及零网络，同时保make_chat_model缺clients拒绝门。原reply/key/model/stream/effort断言保持，追加wire cap与client closure，不改生产九path/七原test/四D0/lock/生成物。fixture不是新增业务，局部归属Agent现配置/真实SDK gateway验收。Root实失败后授同一writer，只静态/交精确hash；冻结后Root七case与full/installed复验。旧20原SHA/失败收据不覆盖，扩21paths新清单。
+
+R219 Billing readiness结果：只读报告/tmp/kokoro-r219-billing-readiness-review.md SHAbe16965a，Root已核实际call_runtime del handler/failclosed、旧quantity1与caller actualMicros，3P1/2P2成立；Billing实际SQL/runtime不等experimental3，必须由owner发布可信planned/bound/evidence reader、immutable rate/policy、再Admission reserve/capture/release，不把底层Credit effect冒现Admission。并行纯draft codec Root43975 Node24.20实际231pass/141ms、protected源码前后same（manifest T/kokoro-r219-billing-codec-0jl6rmry/manifest.json）；独审15182846 0P0/0P1/1P2（字段digest sensitivity测试覆盖不足，非正式收费通过）。三个codec及五D0仍原protected，未提交/改写/定价发布，P2明确保留。

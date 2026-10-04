@@ -1,5 +1,29 @@
 # Kokoro 当前执行事实
 
+## R220 当前进度快照（2026-10-04；优先于下方历史）
+
+整体仍未闭环。70产品验收组仍为 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**；这些是验收组，不是代码完成率。本轮核对当前Git和既有Root实跑日志，未重新验收浏览器用户路径。
+
+R219 Agent冻结21路径候选已取得Root工程证据：394定点（含90真实本地HTTP/锁定SDK场景）、306真实PG、3生命周期进程、2253默认测试通过；默认497资源deselected不计通过。lock/sync/Ruff/Pyright/contract/wheel+sdist通过。先前36 factory fixture与7 gateway fixture失败已精确修复并复验，未放宽生产guard。installed v2实际18步全部符合预期：隔离安装正常，RECORD篡改与修复RECORD后的语义篡改均被拒绝，恢复后检查通过；116个依赖按固定hash安装，源码保持、自有venv回收。第一次installed因离线cffi缓存缺失失败保留为环境前置，不冒产品失败。证据 `/tmp/kokoro-r219-agent-installed-root-v2.json` 和 `T/kokoro-r219-agent-engineering-u9masb_b/manifest.json`，完整绝对路径见progress。
+
+Agent仍main92b802e2，21源码/文档候选未提交；另有build/构建目录，当前Git显示22 dirty，不将构建产物计业务修改。工程通过只关闭System3.0消费/SDK输出界/客户端生命周期切片：正式Agent可信reader、Billing Admission、实际用量费用与当前用户页面仍未闭环。Billing独审3P1/2P2，纯pricing codec231辅助通过不等于正式计价/扣款。
+
+当前子仓HEAD：Web ce40cecc（19 dirty）、BFF7289b3a4（20）、Agent92b802e2（22含build）、IAMc9a9872c（clean）、System955bd587（clean）、Billing87cbe82f（8）、Capability da813ed4（clean）、Storage14f2bc9c（clean）、Scheduler e8dca489（clean）、Mori ca76c2e1（clean）、shared0c4e87ac（clean）。Root及11子仓本地仅main；Root gitlink有5处不齐，整体不clean。
+
+|页面模块|目前完整度（业务验收，不是代码量）|
+|---|---|
+|登录/工作区|历史正向与受控恢复有证据；当前用户加载、退出/撤权/多窗口完整旅程待复测|
+|Home/输入框|欢迎页/提示填草稿与部分交互已验；所有入口、IME/附件/发送Stop竞态和正式执行未全验|
+|会话/项目|Move及部分CRUD切片已验；当前完整创建/修改/移动/删除/刷新、项目删除与文件释放未闭环|
+|独立定时任务|owner局部门；页面CRUD→实际触发→Agent结果刷新未验|
+|Agent过程/Todo/工具/审批|owner局部持久化/取消门；可见过程、审批恢复、刷新续流未全验|
+|Skills/MCP|owner/BFF局部证据；页面安装/授权→真实加载/执行→撤权未闭环|
+|文件/作品|Storage局部门；浏览器上传/扫描/下载/作品回源未闭环|
+|积分/订阅|局部契约/账务基础；赠送/余额/预占/核实消耗结算释放/流水UI整链未闭，支付最后|
+|Settings 13tab|均未取得完整逐项读写与刷新验收；Personalization/通知/快捷键有明确历史失败，Chat/Teams/资源连接等仍须实际验证|
+
+原3310仍由45606/46036/45926/45942运行旧组合副本，现场已持续约33小时，未自动消费新切片。最新IAB读取控制命令超时没有取得DOM；不推断为应用根因，也不称用户页面通过。当前真实瓶颈是正式Agent→Billing业务接线、固定版本组合启用和逐页用户验收，不是只剩样式。沿原任务表并行审查、依赖顺序实施；支付渠道与部署运维不抢研发主线。
+
 核对日期：2026-10-04，R218。完整 **Wave 0–7 目标不缩小，整体尚未闭环**；goal工具本次实读为active；先前blocked为历史状态，继续同一目标，不另建计划。本文件只保留当前事实；历史轮次、失败与资源收据在 [progress.md](progress.md)（含R189逐字归档原CURRENT），不以历史GREEN覆盖当前失败。
 
 ## R219 Agent实际接线候选与固定来源实核（2026-10-04）

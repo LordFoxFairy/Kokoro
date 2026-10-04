@@ -1,3 +1,15 @@
+## R220 逐仓、逐页进度与R219终态证据（2026-10-04）
+
+Root起始52751495；沿原R212/R216卡复用agent_prepare_final_review逐仓与web_page_qa_owner逐页只读并行审查，未创建新计划中心/服务/测试数据。报告分别 `/tmp/kokoro-r220-repository-progress-review.md` SHA03f745dda90633584e09542bd7741de242b0d321f29ae6f79317d57d7bc313fc、`/tmp/kokoro-r220-page-progress-review.md` SHAacd180e49374ac600f767fcb24ef1eb7d11ecd716664247510fdd6c2e492b988。Root现场核11仓HEAD/dirty/main、五gitlink差、原45606/46036/45926/45942约33小时旧组合。
+
+承接R219原句柄54985取得terminal0，不重新启动：installed v2收据 `/tmp/kokoro-r219-agent-installed-root-v2.json` status pass/18步终态，正常安装来源是隔离venv的site-packages、116个运行依赖按固定hash安装；RECORD篡改实际exit1报stale RECORD，修复RECORD后语义篡改实际exit1报System dependency receipt differs from fixed release，恢复检查exit0。source保持、ownedvenv_deleted true。第一次离线cffi缓存缺失失败仍保留；v2仅安装阶段允许精确锁定binary下载，不改lock/版本。
+
+Root核各log SHA与实际summary，不依赖worker口述：最终工程 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r219-agent-engineering-u9masb_b/manifest.json` result0/source_same、2253pass/497deselected/795warning；lock/sync/format/lint/Pyright/contract/build0。定点 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r219-agent-peer-refrozen-ms_msvzc/manifest.json` 394pass（含90真实ownedHTTP/SDK）；资源 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r219-agent-final-qa3zvmco/manifest.json` 306真实PG与3生命周期通过，随后旧gateway七fixture失败保留，窄tests-only修复后最终2253全默认通过。当前engineering全部hash与工作树一致，不把default未执行资源算通过。默认log有未附详细trace的loopback线程诊断，保留为fixture诊断，不捏造生产根因或隐藏warning。
+
+21-path候选尚未提交；Agent当前92b802e2/22dirty包含build构建目录，不将产物计业务交付，不贸然删除任务外文件。Billing只读3P1/2P2及纯codec231/独审1P2保持；未新增正式reader/Admission/费用验收。Rootuv f7e1不动，五指针不齐，不更新gitlink假装组合发布。
+
+CURRENT/task/test-cases/CODEBASE_MAP同一入口已更新为候选工程通过、正式产品未闭；逐仓与页面表对应真实范围，70产品组仍11通过/6失败/14复测/38未验/1支付后置，完整Wave0–7 active。本轮没有浏览器新验收或3310升级；优先接正式模型/积分业务链、固定组合与真实登录聊天刷新流水，再逐页CRUD/Settings/能力恢复。支付渠道与运维最后/另属边界。
+
 ## R218 Agent真实缺口RED与System固定发布源（2026-10-04）
 
 上一goal turn为progress：BFF15paths实际main7289b3a4与Root台账a2e47d4a。本轮沿R216消费者/既有Wave0–7，不新建目标；70产品组仍11通过/6失败/14复测/38未验/1支付后置，当前3310未升级，无新增浏览器验收。
