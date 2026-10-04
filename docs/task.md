@@ -7946,3 +7946,52 @@ R188最终资源：Root16750自然exit0，Agent全database254pass0fail29.64s（�
 R188 Agent工程终态与收口：Root49017实际完整工程链退出0：ruff format 275文件、ruff check 0、pyright 0errors/0warnings、默认pytest 2175pass/352资源类deselected/795依赖warning（111.96s）、uv build wheel+sdist成功；默认纯门的deselection不是352个业务通过。随后Root实际uv lock --check、uv sync --frozen、contract-check均0，锁文件未改。schema独审及Root真实database254通过支持仅九路径A1持久化边界提交；runtime repository、模型调用、Billing接线、原IAB与逐页全业务均未关闭。Web Move运行副本无executeConversationMove，本轮修复只在源码/测试候选，不冒用户当前预览已包含它。Root治理17pass1fail仍开放。
 
 R188提交收据：Root在原Agent main逐路径提交九文件持久化切片，SHA `500c2c26e303065e8811989336aa20701330f4f3`，Agent工作树clean；提交前在最终文档集重新执行ruff格式/检查、contract与wheel/sdist构建均0。提交未push、Root submodule gitlink未暂存；不冒正式发布/消费者pin/当前运行服务已包含。根仓仅提交四份任务/测试台账，其余Web/BFF/Billing/uv变更保持。后继优先：Web Move confirmed视图副作用隔离；BFF缺省project_ref权威上下文及项目CRUD；Agent真实attempt repository及finalizer；Settings正式持久操作。跨仓消费按owner发布后依赖顺序推进，资源门仍由Root串行。
+
+## R189 继续既有闭环：独立实现与项目归属审查（2026-10-04）
+
+前轮属于实际进展：Agent持久边界500c2c26及Root台账28a2a439已提交，真实浏览器/owner门有终态；不是全目标完成。现共享45606/46036仍live，不启动重复服务。Root仍唯一Git/资源/集成人。
+
+|任务|Owner、负责人、基线与允许文件|依赖与验收|
+|---|---|---|
+|R189-W-MOVE-VIEW|Web原agent4_lifecycle_review，原main9b42混合候选；先只允许现tests/ui/app-frame.smoke.test.tsx补confirmed形成后scope/active/unmount失效的可控用户交互反例；source先只读现src/components/blocks/app-frame/app-frame.tsx。原machine d235/test580b等冻结。|复用已批准Move语义，不增加网络/契约；正确反例后Root准最小view fence，所有副作用受committed view约束，无projection零副作用。Root重跑真实Next邻接场景与完整Web门。禁止自行PG/Redis/浏览器共享服务/Git/运行副本。|
+|R189-A-PREPARE|Agent原agent_mainline_qa_owner，main500c2c26 clean；先只读+明确下一prepare/ordinal事务的参数/结果/byte codec/API/fence/真实PG场景，最多更新现docs/TECHNICAL_DESIGN.md及docs/API_CONTRACT.md中的A1实施门。两已批准新路径model/call_models.py、infrastructure/postgres_model_call_repository.py此阶段不创建。|Root先核具体事务设计和现codec绑定；后继仅prepare而非整producer，真实PG两个连接/当前旧过期lease/tenant/幂等冲突/terminal零写，资源由Root，不能把missing import当业务RED。不写Billing/provider/HTTP/schema/依赖/Root，不操作Git。|
+|R189-B-PROJECT-SCOPE|BFF只读审查storage_release_r175_gate_review，main8e33混合D18候选；现public MessageCreateRequest可省project_ref。只读HTTP→service→repo→dispatch/digest以及Move后的canonical Project关联；报告/tmp。|明确省略ref按canonical当前会话归属还是错误处理，与已批准D0一致，指出原缺失project_ref正控和锁序真实场景；不得改API/SQL或实现第二contract。Project删除关联独立定时任务政策仍待用户，其他分支不阻塞。|
+|R189-ROOT|Root唯一台账/资源/Git/原运行副本负责人，main28a2a439。|审查实际变化与冻结哈希、逐真实失败→最小修改→完整门，不以多个owner报告或测试数代替逐页用户链。保留Billing/uv任务外变更。|
+
+R189-W-VIEW精准生产准入：Root67609已亲跑同UI反例exit1（1fail/99名称过滤，2.00s），path确从replacement0202被旧ACK导航回target0201，非setup失败。原Web writer仅准现app-frame.tsx统一live+identity fence后才反馈/刷新/导航，无projection先不触发Move/retry。生命周期使用committed layout effect而非render写ref，避免已commit新视图到passive cleanup窗口；旧machine/request/unknown/draft/Run冻结。现UI测试补active切换/unmount邻例，不放宽断言。Root完整工程含真实Next邻门再审；本片不直接改runtime。
+
+R189-A-PREPARE实现准入：Root读已修prepare报告946ac258及现RunRequest/static recipe/strict generated facts，批准沿现TECH §A1两新路径model/call_models.py（内部不可变输入/结果/Protocol与generated约束）和infrastructure/postgres_model_call_repository.py（具名prepare事务SQL）；只准prepare，不授权dispatch/evidence/finalizer/provider/Billing。既有tests/integration/database/test_model_call_evidence_repository.py扩真实PG行为；现TECH/API/DATA/CURRENT更新本片当前态与精确trusted binding。Run锁后strict读request_json与recipe，tenant/actor/subject/assertion/session/input/feature绑定；caller不自报身份，peer路径须对锁内exact canonical recipe核声明关系，不引入任意list权限。Run→attempt锁序、lock后DB clock、同attempt精确replay合法推进不回滚、MAX ordinal+1/溢出零写、同事务完整completeness、finite连接/SQL界与异常回滚。创建新入口的首次不可用/导入失败只标缺实现，不冒业务RED；正式source可调用后Root实跑行为，独审与完整门再放行。lost-COMMIT真实网络验收仍OPEN，不以patch/mock冒通过。禁改schema/HTTP/generated/依赖/其他仓/Git/共享服务，Root独占PG资源。
+
+R189实际资源与返修准入：Root49270 Agent真PG46项45pass1fail3.30s，exact replay UUID驱动对象与内部string比较冲突；自DBabsent/hashsame。独审4P1/2P2：另有持久毫秒receipt不一致、not_dispatched误计unknown、跨Run attempt锁/唯一冲突映射，以及真实recipe/有限等待门缺失。原Agent owner仅现7路径修这些，追加真两连接/零写/耗尽/recipe/拒绝与replay行为；数据库仍Root，不改schema/协议或扩runtime。Root95255 Web正确feedback RED1fail/101名称过滤2.99s（前37768错筛选全skip不算测试通过），只准原AppFrame layout新projection提交时清暂态反馈，保全部confirmed fence。Root74251 BFF正确HTTP+PG RED1fail59ms：P省ref首次Run payload trace.project_ref为undefined；schema/build0、自DBabsent/hash/Redis保持。原BFF writer下一只准现domain/chat/agent-dispatch.ts纯canonical payload binder、infrastructure/postgres/agent-dispatch-outbox-repository.ts parent-first事务/有界scope重解与首次冻结、http/routes/chat.ts及chat-authorization.ts消息item授权和显式precondition时序。保现request_digest/稳定ID、公开合同/schema不变，receipt重放先验原caller fingerprint；不放宽其它chat权限/接口，不持Conversation再锁Project。先原HTTP/PG反例GREEN及双连接相邻门，再Root完整owner。独立Schedule删除政策不在此片。
+
+R189 Agent第三轮Root43282实际56真PG通过5.37s，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r189-agent-schema-b261bnth/manifest.json` 自DBabsent/hashsame。第二轮55pass1fail为并发receipt顺序oracle错误，改为identity+ordinal集合并回读DB确认，未串行或放宽事务行为。新只读审查任务R189-A-FINAL：原生agent_prepare_final_review，gpt-5.6-sol，基线main500c加7路径候选，repo9df84847/testb3cb9f75；读CODEBASE_MAP、AGENTS/手册、D0与先前4P1/2P2报告，对最终修复、真实并发/lease/回放/知识计数及缺失门复审，仅/tmp报告，不改文件/Git/资源/服务。Root保全库邻门与最终提交权；lost-ACK及provider/Billing接线仍OPEN。
+
+R189后继精确返修准入：Root65931 Node22 Web完整check自然exit0，所有阶段包括build执行；source45039523/test6eb88b7d独审0。Root84818 Agent完整工程exit1：2174pass/1fail/365资源deselected，唯一失败现repository进口typing.cast违反既有零遮掩architecture gate；lock/frozen-sync/ruff/pyright/contract0，pytest失败故build未执行。原Agent writer下一只准两新source中的正式递归JsonValue验证，不cast/Any逃逸、不修改门禁；现4D0/测试头更新真实prepare与267PG证据，P2并发同identity/输家零副作用、超时完整投影恢复与知识正反控仍明确待验，不扩本片runtime。Root重跑实际失败与门。
+
+Root45825 BFF正控真实HTTP+PG 1pass0skip153.6ms、自DBabsent/hashsame/Redis同；未覆盖Direct raw显式无效ref。原BFF writer现在只准现R189 chat-facts case补Direct不存在/非owner explicit ref均404且零Message/outbox写；保exact oldP replay，source先冻结，Root相同资源门先RED再授权1行precondition最小修复。另39pure binder等现test/agent-dispatch-outbox.test.ts新增与binder同职责，列入准确交付范围，不替代系统路径。
+
+R189-W-FILES：原Web唯一writer基线main9b42+冻结候选，当前runtime真实菜单Files→/docs404已证，Root独立/app/library真实渲染/读取503单独OPEN。仅允许现workspace-rail-account.tsx与现rail.smoke测试先写Files canonical /app/library导航断言并跑RED，然后改Files为既有Next Link/同mounted interception；不改Help、翻译、schema/contract/Engine/owner或运行副本。小现文件修复归属账户导航，无新目录/数据事实。Root真实浏览器复测与单文件运行副本同步须另审，不能把路由修好称Library/Storage已闭环。
+
+R189-B-DIRECT source精准准入：Root62952真正HTTP+PG负控1fail，202!=404；ownDBabsent/sourcehashsame/Redis同，日志/tmp/kokoro-r189-bff-direct-root-red.log。原BFF writer只准无winner新receipt precondition增加callerProjectId===null拒绝，必须在existing exact fingerprint replay之后；不动HTTP其他授权/锁序/digest/schema，不改现357709ef测试断言。新scope竞争/锁序门继续待验。
+
+R189-W-FILES Root11824精确161 UI（59 rail+102 frame）全部通过8.21s，Node22 eslint/typecheck0；Root亲核account source仅5增1删替换Files href，runtime旧hash5ec71056与源HEAD精确相同，可仅该已验文件同步已运行3310（先自有backup、checksum compare，绝不整树覆盖/改Move/重启），Root再正规IAM账户菜单真实click验证/app/library。Library data503依旧独立OPEN。
+R189-LIBRARY-READ只读调查：agent_prepare_final_review续派，gpt-5.6-sol，Root当前main28a2/3310实际两tabGET503，BFF main8e33候选。读CODEBASE_MAP/D0，只追same-origin adapter→BFF→Storage读链/契约与当前runtime差异，报告精确根因证据vs假设/下一最小owner片。只/tmp，不改库/资源/配置/服务/Git或输出凭据，不拿fixture证明真实配置完成。
+
+R189-W-FILES已限定验收提交：Root11824真实重跑161UI/lint/typecheck0；正规3310 IAM→account Files实际href/app/library、点击后Library可见，报告/tmp/kokoro-r189-account-files-runtime-green.json/截图png，数据读取503仍失败。Root仅单文件checksum核对backup后同步运行副本（无重启），源commit `c5e925678cf80bfdc3abe76669e1febe1d5347d8` main，本地未push，Root gitlink未暂存。提交仅account source与R189新12行导航测试hunk，workspace-rail其余混合候选未暂存/覆盖，保留其他所有dirty；并非整Web候选发布。
+
+R189 BFF完整门回归阻断：Root59256自然exit1，schema/build/check/format0，743pure+1既定资源skip；真实183项181pass2fail47.67s，ownDBabsent/hashsame/Redis同。两失败为first client-created tombstone/foreign冲突404变503与R170删除后commitChatTurn不再returnnull而抛scope_changed。Root精准准原BFF writer仅现repo client-created INSERT冲突后重读受信active本人Conversation，存在才retry否则not_found；保四次真实scope重解、权限及现两行为oracle不变，不修test为503。R189正控/Direct负控虽GREEN不冒完整ownerGREEN，完整记录保留。
+
+R189 BFF第二轮完整门182pass1fail44.93s，唯一first-message创建错误码project_not_found被误变session_not_found；tombstone/foreign 503回归已消失。原BFF writer准仅chat-authorization.ts保留不存在client-created资源时显式Project原错误码：existing本人active Conversation仍不提前过滤raw Project，exact旧P replay不变。现测试与公开错误code不改；Root第三轮完整183门重验。
+
+Agent Root18098完整工程第二轮自然exit0：lock/frozen-sync/ruff/types/contract0、2175pass/365资源deselected112.85s、wheel/sdist build0；casting问题已实际同门关闭。最终a9c57172源码Root24104定点真PG56pass5.49s，自DBabsent/hashsame；此前全database267来源9df候选，不冒最终全部267重跑。七路径worker交接已冻，Root接管仅四D0当前收据收口后精确提交，不修改source/tests。真实lostACK/runtime费用与P2业务证据不关。
+
+R189 Agent七路径持久prepare已由Root精确提交main `81bc2ae9f872e234a4309d43e95cf6e77f1ba143`，工作树clean、本地未push，Root gitlink未暂存。两新source/现integration/四D0齐交，非运行接线或正式费用链。最终18098完整工程2175pass/365资源deselected、全部纯门/lock/build0，最终24104真PG56pass5.49s；此前267属于9df候选。Root当前事实收口后在正确Agent工作目录再contract0；一次误从Root调用找不到entrypoint的exit2不算业务失败/成功，uv锁f7e1仍保持。agent_prepare_final_review续只读复查9df→a9c typed canonical/row边界差异并绑定81bc commit，旧P2场景不关。
+
+R189 WebRoot47026四真正Next/Chromium相邻case全部PASS23.57s（63名称过滤不是执行通过）：owner拒绝保草稿/路由、全pending竞争禁用与原unknown Retry、scope切换unknown幂等身份、initial snapshot有界恢复。源45039523+Files3859窄片，不冒3310所有Move候选已同步、真实BFF/Agent或原IAB恢复。自有fixture/browser进程由tests finally回收。
+R189 Library真实503已由只读调查a8442969定位：现Root owned launcher未装配Storage process与BFF三项Storage配置；Web到BFF路由可达、owner handler在缺配置时明确503。下一Root runtime composition切片需复用正式Storage/对象存储/scanner、自有资源，验证空库真实RPC及上传scan/download非空链，不改UI为假空页、不用fixture代替producer作品。当前不盲改或重启已运行原组合。
+
+R189 BFFRoot34000第三轮完整owner自然exit0，真实183pass0fail0skip46.21s、schema/build/check/format0，pure743pass+1既定资源skip。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r189-bff-full-mfhiohe3/manifest.json` 自库absent/sourcehashsame/Redis同。当前repo73adf2/authorization1bf387/test357709，原ERROR码与Direct显式ref负控均实际同门恢复；候选尚未提交/同步live BFF，不能冒当前用户Run已消费canonical Project。新scope_changed两连接/4次重解与client-created同identity竞争专门门仍OPEN；新R189 testcase finally吞清理错误待后继准确整改，不以Root最终drop自己DB冒test自身cleanup全证。本片不提交夹带未交接D18或全1000行混合integration。
+
+最终Agent81bc typed boundary独审91f7dbb9：绑定a9c源码0P0/0P1/0新增P2，合法canonical bytes、fence/replay/事务语义无改变；旧知识正反控/竞争输家零副作用/timeout全面恢复/lostACK及runtime接线P2照旧OPEN。全部Root测试句柄67609/49270/74251/96648/37768/95255/43790/43282/27104/65931/84818/45825/11824/62952/59256/47026/18098/24104/52756/34000均已消费实际终态；自有两个Chromium均close，原45606/46036保留live。
+
+R189 Root拓扑当前verify返回FAIL：Web/Agent本地新commit未发布、Rootgitlink仍旧，不能假冒组合发布；独立治理测试7pass仅验证checker本身，不覆盖该FAIL。旧w1e189差项与完整标准门缺口保留。后继依序独立并行：BFF当前新resolver真正竞争/cleanup与准确切片交付；Agent授权/dispatch/evidence/finalizer接正式Billing；Root Storage正式runtime装配与非空Library用户链；Web左栏/项目全部CRUD与13 Settings逐页业务读写/刷新/权限。支付后置、无新计划中心、运维不扩入开发。

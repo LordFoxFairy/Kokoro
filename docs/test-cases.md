@@ -1,3 +1,26 @@
+## R189 当前逐页深度验收（2026-10-04）
+
+完整 Wave 0–7 不缩小；以下细化原70组，不增加虚假完成数。每页按主链/边界/异常/权限/状态机执行，另覆盖刷新、后退、键盘、窄屏、晚响应和加载收口。工程门、组件交互、真实owner与真实浏览器四层分别记账；只在完整用户路径及所有必要子例通过后关闭整组。
+
+|用例ID / 标题|预置条件|测试步骤|预期结果|优先级|类型|当前实际结果与证据|
+|---|---|---|---|---|---|---|
+|TC-UI-R189-001 / 移动完成后新视图隔离|A正在Move；真实Engine与owner合法ACK；已committed新Project scope|形成matching回执→替换scope/active或卸载→继续旧UI回调|旧回调不刷新列表、不导航、不在新scope提示；无projection不发Move/retry|P0|状态机、异步竞态|Root67609真实交互RED：旧ACK把新scope0202导航回0201；修后Root96648 UI101通过。最终Root65931 Node22完整2457通过/contract258/architecture50/lint/types/build0；未同步3310，不冒真实运行页已通过|
+|TC-UI-R189-002 / 拒绝提示不得复活|当前A会话；正式ConversationMoveError拒绝|A Move拒绝出现alert→切B→切回A|旧拒绝提示不复活；当前新操作可重新显示正确反馈|P1|异常、生命周期|Root95255正确RED 1fail/101名称过滤；新source45039523+test6eb88b7d候选，独审7425470e无P0/P1/P2；Root完整门2457通过，Root47026四真实Next/Chromium邻例通过23.57s（63名称过滤非通过）。前37768错筛选全skip不计通过|
+|TC-BFF-R189-003 / 每次发送冻结项目上下文|本人P/Q项目及独立会话；正式HTTP+PG|P省略project_ref发送→Move Q→新key省略发送；再测Direct无ref|首次outbox冻结P，下一Run冻结Q，旧payload P不改，Direct字段缺省|P0|主链、数据一致性|Root74251真实RED：P trace.project_ref缺失。修复候选9f3e86fc，Root34000最终完整183真PG/Redis全部通过46.21s；不是浏览器/Agent全链完成|
+|TC-BFF-R189-004 / Move后精确消息重放|显式P首发已提交，再Move Q|原key/body重放→同key改正文→新key旧P|原回执和原payload不改；漂移409；新key过期P404且零写，tenant/owner权限不放宽|P0|幂等、权限、异常|与003同一真实HTTP用例；Direct invalid/null负控Root62952真RED202!=404后恢复，Root34000完整183GREEN；完整Message×Move/Delete邻门未以这一个case替代|
+|TC-AGENT-R189-005 / prepare事务与lease|正式fresh schema、受信Run/recipe、真实双PG连接|首次/精确重放→同call并发attempt→跨Run同attempt→旧/过期/终态fence→ordinal耗尽/锁超时|不可变receipt、ordinal集合恰1/2且身份不串，授权失败零写、typed冲突、有限等待完整回滚|P0|主链、边界、并发、权限|Root首轮45pass1fail UUID重放；返修后第二轮55pass1fail是错误gather顺序oracle，修成身份/DB回读而不串行。第三轮56pass5.37s；全database Root27104 267pass73.23s，自库收回/hashsame。只prepare持久边界；lost-ACK真实网络未验|
+|TC-AGENT-R189-006 / 实际消耗知识分类|合法sealed not_dispatched及真实runtime_profile_plan recipe|重算计数；合法subagent/handoff与非法feature/peer正反控；后态replay|未调用不算unknown，损坏latest不能假complete，receipt不回滚后续状态，peer基于冻结recipe|P0|状态机、知识完整性、权限|最终81bc源码56真PG通过5.49s；267属于此前9df候选。最终typed boundary独审0新增问题，完整工程2175pass/365资源deselected及build0。全ND知识complete正反控与race输家/全面超时恢复专门门仍OPEN。provider/admission/evidence finalizer/Billing接线尚未通过，不称正式费用闭环|
+|TC-NAV-R189-007 / 账户Files正式入口|当前3310正规IAM登录，不发模型消息|账户菜单→Files；随后直接/app/library→Personal files/Agent artifacts|Files进入正式Library而非404；文件/作品读取有真实owner结果或可见重试|P1|导航、异常、主链|真实Chromium先确认Files→/docs404；修复后正规IAM→账户Files进入/app/library且Library可见，窄片c5e92567已本地提交（未push）。两tab/api/hub/library503仍OPEN，不能关闭文件主链；截图/tmp/kokoro-r189-library-runtime.png，报告/tmp/kokoro-r189-runtime-page-qa.json（197449b8）|
+|TC-HOME-R189-008 / Home提示与创建模式|当前3310正规账号，无active会话|四提示逐个点击→校验草稿/焦点→Dismiss creation mode；More六项|只填草稿、不自动提交或扣费；创建模式可退出；焦点回composer|P1|功能、交互、状态机|当前真实Chromium逐个可填与聚焦；Game即时读取误判经稳定焦点断言纠正。不关闭首发/所有Home能力；0模型发送，测试context/browser已关闭|
+
+### 当前页面覆盖与退出门
+
+唯一逐页库存复用下方R187主链表及Settings13-tab记录：登录/退出；Home/Composer；独立及项目会话与列表CRUD/Move/Share；项目CRUD；独立定时任务；Agent/Todo/Tools/Skills/MCP/审批；个人文件/作品/项目资源；所有Settings页；普通用户/管理员；积分/流水/正式结算。每一项须记录预置、实际行为、owner结果、UI终态、刷新对账、权限/异常以及执行SHA；未实现/缺契约/接口503不能以隐藏、占位或内存值标PASS。支付后置，运维不扩入研发验收。
+
+当前真实运行组合额外仍见Billing summary503、agents404；并未证明它们导致原IAB加载。原IAB控制超时，未取得同标签恢复证据，T-U04继续OPEN。原70组统计暂保持11通过/6失败/14待复测/38未验/0旧业务待决/1支付后置；独立定时任务随项目删除政策另有待决项，不隐去。
+
+---
+
 R188绑定：Agent schema验收源提交 `500c2c26e303065e8811989336aa20701330f4f3`（本地未发布）；Web/BFF本轮测试绑定冻结工作树，未冒提交态或当前运行态。
 
 R188工程门补记：Agent默认2175通过/352资源deselected，不能替代系统级用例；真实database254通过只证明owner持久化门。Web三个真实浏览器用例已通过，但Move候选未同步当前3310。逐页业务矩阵状态和70组完成统计不因此上调。
