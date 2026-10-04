@@ -8667,3 +8667,21 @@ System D0最终已由Root精确四路径本地提交032ff52419fe651c76b115e9fe20
 |R212-REPOSITORY-STATUS|agent_mainline_qa_owner，现模型继承，只读11子仓Git/当前docs；Root审查|Root112d3a7e及现mixed；不得写Git/资源/实现。已返回逐仓局部证据与缺口，Root现场核Git/topology四FAIL；不增加完成组。|
 |R212-PAGE-STATUS|web_page_qa_owner，现模型继承，只读现页面入口、test-cases与Settings13tab；Root审查|Webce40cecc现mixed/旧3310；已返回页面局部证据与整链缺口，无浏览器新验收。|
 |R211-BFF-POOL-RED续接|原agent_prepare_final_review唯一writer、原clean副本既有测试；Root提供精确301冻结scratch|整文件误格式化候选未接受；原301恢复后只新case，移除case必须逐byte301，生产8f04/原shared冻结。已交04825e9d/2abd85a8且Root实核去case恰301与protected保持；待Root真实资源反例，未称GREEN。|
+
+### R213 真实反例与执行界实现
+
+|任务|owner/唯一writer/基线/文件集|依赖、验收与提交责任|
+|---|---|---|
+|R213-ROOT-RED|Root独占资源，System032ff+R211两tests；BFF clean8f04+cf031测试；原shared/main保留|System46621终态：真实Nest/PG publish实际200≠409、目标artifact2≠3，两正确RED，source/自库/Redis集合相同；BFF65281已终态真RED：5225.8ms/202；自DBabsent/source/Redis/secondary同，不重复启动。临时随机自有库复用同PG/Redis。|
+|R213-SYSTEM-EXECUTION-GREEN|agent_mainline_qa_owner继承模型，System sole writer；仅R210 D0现文件：canonical SQL，revision schema/content/repository/service，resolve schema/repository/service/cache，两contract生成器及只读生成物/provenance/README；现model integration/contract/schema catalog/fresh测试；四D0真实当前前缀|032ff设计门已通过；46621实际RED准入。实现published/retired必须非NULL两positive int32且output<=context，draft null管理；partial patch合并后validate；digest/immutability/generation同事务；resolve/cache strict required。无新operation/module/表/依赖或Billing字段、compat。现测试合法publish fixture补真实有限值，不削旧行为断言；新rawSQL负控/边界/首次cache与generation断言。作者仅静态/生成/纯门，不共享资源/Git；越范围先报告。Root真实PG/完整门/独审后精确提交，无提前consumer/runtime。|
+
+|R213-BFF-AUTH-DEADLINE-D0|原agent_prepare_final_review，仅BFF clean副本四D0当前前缀，先只读设计交接；源码/SQL/contract/test冻结|Root65281真实pool RED：HTTP5225.8ms/202，前置authorizeChatRequest.findConversation在commit期限外阻塞。比较(1)Message resource准入统一下放现locked commit，route只parse与受信IAM；(2)从前置read贯通同绝对deadline的具名有界授权路径。不得简单Promise.race裸SQL让迟到请求继续写，也不得再给第二4500ms。既有first-message missing Project typed404、跨tenant/owner/deleted404、Move精确重放、agent配置门等行为逐项对照。先交最小设计/写集/安全与测试证据；Root/独审裁决后另授源码，其他路由授权不动。|
+
+|R213-BFF-AUTH-DEADLINE-GREEN|原agent_prepare_final_review，BFF隔离clean sole writer；三source chat-authorization.ts/chat.ts/chat-turn-commit.ts；现R211及first-message/Message-Move HTTP系统必要加强|四D04ead/58e0/c93b/5ef4已Root核锁序/无Project墓碑现态，原独审P1修正后方向通过；移除仅Message前置DB owner读，保IAM/wire/key/Agent静态门，锁内唯一owner判定/first-createdProject typed404/回滚；nonMessage路径不变，SQL/API/ports/server冻结。Root跑cf031原RED与security/replay邻例及全owner门，独审源码后提交；无资源/Git/全文件format。|
+
+|R213-SYSTEM-FIXTURE-AND-CACHE-RED|原System sole writer；现model integration矩阵/契约测试、四D0；另精确fresh脚本与maintenance测试合法published fixture|Root71535完整门真199pass/1maintenance失败、fresh失败均新published-bound CHECK拒旧缺界fixture；补仅合法有限值，不削旧断言/CHECK。独审cache relational缺口：先仅现model integration增加真实HTTP→实际Redis合法checksum但output>context的反例，源码resolveSchema冻结242f，Root真实RED后另授唯一schema关系refine并正规provenance生成。补missing单边/0/负/max+1/max正控与零事实矩阵；不新底层mock单测。作者静态不资源/Git，Root串行资源，当前artifact候选不发布。|
+
+
+### R214 进度盘点续接（复用R212任务卡）
+
+R212-REPOSITORY-STATUS / R212-PAGE-STATUS 已由原两只读负责人再次交付；Root核原进程/Git/R213真实门。无新目标、无产品源写入、无浏览器或全仓重跑。最新BFF177/1最后generic receipt错误oracle与旧pool RED分开；System199/1及fresh fixture失败保持、作者补测试尚待Root资源。完整Wave0–7/70组11/6/14/38/1不升，当前组合未升级，四gitlink差仍FAIL。完整逐仓/逐页状态在CURRENT R214；后继保持原R213 owner和冻结集，不以本次盘点称研发完成。

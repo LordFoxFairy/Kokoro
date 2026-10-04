@@ -1,3 +1,7 @@
+## R214 验收状态核对（2026-10-04）
+
+本轮没有重新浏览器验收，不增加产品通过组；原70组仍11通过/6失败/14待复测/38未验/1支付后置。最新BFF隔离全门177/1：pool候选已达503与4503.5ms及双零事实/静止pool/健康202，但最后generic receipt错误oracle未修复复验，不能整例标通过。System199/1及fresh失败；补fixture与真实缓存关系负例仅作者交付，Root复验待执行。逐页覆盖与缺口参CURRENT R214，所有CRUD必须UI操作→正式owner ACK→权威GET→刷新一致，并覆盖主链/边界/异常/权限/生命周期；组件/fixture数量不充当产品验收数。
+
 ## R209 TC-BFF-R207-003 限定GREEN与后继（2026-10-04）
 
 原error.request_id oracle不符合正式contract，改为x-request-id后Root39229真实FAIL证明响应头也missing。仅reply入口补受信header后Root45503同HTTP/PG1pass1.266s，完整锁图/503/业务期限/全facts双窗口零写/同pool健康202全部执行；源码、测试冻结，ownedDB和Redis保持。manifest T/kokoro-r207-bff-blocker-red-jtyr2af9/manifest.json。这只关闭该限定子例，原R207完整有界资源组仍OPEN；新增R209累积SQL真实trigger反例在途，不用单例GREEN上调70组。

@@ -8838,3 +8838,38 @@ System已由Root精确四D0提交 **032ff52419fe651c76b115e9fe20aafbba2ef051**�
 BFF原writer误全文件格式化只影响未交R211测试，暂不接收。Root独立scratch从8e33原blob顺序应用R205/R207/R209/R210已审test补丁，严格fuzz0成功，精确SHA301fe3871893d479cf74a02f6a113d9cab54cf2992e0507809eeed6162f49122。路径/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r212-frozen-test-restore-21d92o1p/test/chat-facts.integration.mjs交原writer恢复/仅插case；原shared checkout和生产不改。第一scratch误重复已累积observability导致oracle patch拒绝，未消费该副本，正确链重建后SHA实证相同。该恢复不是新增业务通过。
 
 R212恢复后交付：原writer新test04825e9d/patch2abd85a8。Root独立核实际文件含case一次、去case恰301以及生产8f04/三邻门SHA相同，未消费误格式候选。仅系统用例交付，真实PG/HTTP RED未执行，70组不升。
+
+## R213 两个真实业务RED（2026-10-04）
+
+上一turn有进展：Root d32fc26d记录现态且恢复BFF冻结测试301，不缩goal。本轮先修R211 late-client第二facts窗口（独审P1），原writer仅case补强cf031/patch6d3a，去case仍301；独审最终0P0/P1/P2。Root46621 System实际Nest/PG两定点RED：draft201后publish200≠目标409（1fail/11名称过滤，103ms），正式artifact2.0≠3.0（1fail/10名称过滤）；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r213-system-red-2rgn8krl/manifest.json source_same/database_set_same/redis_keys_same均true。Runner聚合退出0仅代表两预期失败与资源保护符合，不是业务GREEN。System原owner按既有D0实施execution界、canonical SQL/正规生成3.0及真实边界测试；未提前消费者。
+
+Root65281 BFF定点实际HTTP/PG RED自然exit1：cf031请求waiting后HTTP5225.8ms/status202，应<4900/503，case5.348s。Manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r213-bff-pool-red-cnuujmge/manifest.json ownedDB absent/full source同/Redis keys同/secondary DB同。根因现场source：Message在authorizeChatRequest裸findConversation，尚未进入commit4.5s，不能把已有private acquire门冒全入口有界。原BFF owner比较统一locked准入与跨层deadline；Root倾向single locked事实判断，内部Project错误保持既有typed404，nonMessage授权不变，方案独审/四D0后才source。
+
+本轮原IAB读取同标签仍控制超时：URL绑定getTab及既有browser2/tab1绑定均Emulation.setFocusEmulationEnabled超时；listTabs成功核只有现/app一个标签。没有新tab/刷新/关用户标签/重启；此控制故障不作为应用根因或本轮已修复证据。两个Root资源句柄已终态消费，当前不重复启动；原运行组合未升级，70组11/6/14/38/1保持。
+
+
+## R214 逐仓与页面进度复核（2026-10-04）
+
+本轮为状态核对，不是重新执行全仓/页面验收。沿既有R212两只读任务卡续派原负责人：逐仓Git/docs与逐页业务证据并行；Root亲核Git、原运行进程、两份R213完整门manifest/log和topology。完整Wave0–7继续active，70组仍**11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**；不是代码、页面或上线完成率。
+
+最新BFF隔离候选完整真实PG/Redis门为177通过/1失败，静态、build、236contract和743默认通过（1既定资源skip）。区别两个版本：旧65281前置读取确实5.2258s/202越界；最新67998三source候选已执行4503.5ms/503、双窗口零事实、静止pool及健康202，最后失败是测试错期待generic idempotency receipt=1。正式Message以dispatch outbox为幂等事实，generic receipt空路径不写；须修正并补正式replay后Root重跑，不为测试虚增生产记录。完整故障矩阵、主线集成及当前UI仍OPEN。
+
+最新System完整门199通过/1失败，fresh失败：两个合法published/retired fixture缺新执行界触发SQL CHECK。作者已补fixture与完整边界矩阵，但尚未Root复验；真实Redis关系损坏反例已交，生产resolveSchema关系校验仍待真实RED后窄修。13contract通过不等于3.0已发布/Agent消费。原完整门结束时16个自有TTL cache键尚存在，manifest保留false；后续自然过期回基线，不改旧收据。
+
+|子仓|当前HEAD / 未提交路径数|可信进度与剩余范围|
+|---|---|---|
+|kokoro-app|ce40cecc / 19|登录、同源adapter、Move等局部证据；当前组合全部页面用户旅程未验收|
+|kokoro-bff|8e33bc0a / 22|隔离候选177/1，尚未集成；Conversation/Project/Share/AG-UI完整用户链未闭环|
+|kokoro-agent|92b802e / 0|有限取消、306真实PG与3生命周期子进程已有Root证据；正式模型/Billing/工具审批恢复链未闭环|
+|kokoro-iam|c9a9872c / 0|登录授权/OIDC局部真实证据；完整当前组合登录、退出/撤权/多窗口仍待验|
+|kokoro-system|032ff524 / 20|执行界3.0候选、199/1与fresh失败；缓存关系、正式发布、Agent消费待验|
+|kokoro-billing|87cbe82f / 8|受信IAM授权身份局部证据；赠送/余额/预占/核实结算/释放/流水整链未闭环，支付后置|
+|kokoro-capability（目标platform）|da813ed4 / 0|Skills/MCP owner局部证据；命名cutover及安装授权→Agent执行→撤权用户链未闭环|
+|kokoro-storage|14f2bc9 / 0|文件/作品及scope release producer局部证据；BFF删除消费者、真实对象存储/扫描/浏览器链待验|
+|kokoro-scheduler|e8dca489 / 0|持久调度与重启replay局部证据；独立任务CRUD→真实触发→运行结果用户链待验|
+|kokoro-mori|ca76c2e1 / 0|预览/UI实现；真实owner API、模型、持久化及费用链待验，不计核心聊天闭环|
+|kokoro-web-shared|0c4e87ac / 0|共享基础；无本轮独立全门，不代表任何页面业务验收|
+
+页面状态：登录、Home提示草稿、普通会话改名/删除/Move、项目标题/空态有局部或历史证据；工作区加载异常、完整会话与项目CRUD、独立定时任务、Agent Todo/工具/审批/续流、Skills/MCP安装授权、Library上传下载/作品、Settings13tab持久写与权限、积分整链尚未全部验收。历史Skills/MCP/Library/积分503与Agent404保留为待复测，非本轮重现。
+
+原3310仍从kokoro-local-login-cda7wvjx副本运行，45606/46036/45926/45942仍live约31h07m，未更新组合。本轮topology实际仍FAIL四项Agent/IAM/System/Billing checkout与gitlink差异；只main与已submodule化不等于源码干净或发布组合一致。下一优先：关闭BFF/System当前精确失败→审查集成并启用固定组合→实际登录/聊天/刷新/项目CRUD与积分用户链，再逐页能力验收；其他owner与QA可独立并行。
