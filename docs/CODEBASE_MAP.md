@@ -1,3 +1,11 @@
+## R255 当前个人Credit消费入口（已提交源码，尚未正常组合）
+
+BFF97a99d35：runtime.ts加载具名Billing service token；routes/owner.ts准入public summary/ledger并处理query/caller取消/envelope；现clients/owner/billing-personal-read.ts唯一两读、严格u1五因素、fixedgenerated response与总预算/sizecap；account.ts替换旧float为public decimal DTO（发布生命周期与owner generated不同）。package默认test已纳入personal-read安全反例。纯config test baseline格式c6f69490另提。无SQL/余额计算/compat。Root最终工程777/0/1skip、target70/70/最终独审零问题只为源码；现BFF79304未重新装载/owner Billing未运行，真实Web与计费仍OPEN。
+
+## R255 stage2接线验证入口（23:01续推）
+
+BFF已批准消费者位置仍runtime.ts→routes/owner.ts→clients/owner/billing-personal-read.ts→固定generated/billing-http；account.ts删除旧float投影。Root已实跑三现测试60/41/19；独审要求强化唯一personal-read.test.mjs，下游cancel/owner-auth503/词法分页/空身份，同task暂缓4sourceGREEN。正常Web Library file/artifact/project/scheduled四读重登后200仅HTTP，不冒页面通过；header/过期状态仅原Web角色只读复核。所有写集、freeze、资源证据仍同task/progress，无第二计划中心。
+
 ## R255 最新正常BFF与Chat唯一写路径
 
 正常BFF session79304/root38614/listener38630/53714，原9463已exit130回收；固定源码Node22 pnpm dev、同.env.local/单库owner schema，其他6服务不变。PostgresAgentDispatchOutboxRepository.commitChatTurn仅委派./chat-turn-commit.ts（4500ms/取消/unknown预算）；旧mixed内联私有归档后删除，不留双轨。Project rename原三HEAD职责已补回、其他删除候选保持。BFF main aaf683e；fixture仅提交前缀，当前default747/0/1skip不代表真实PG/浏览器。

@@ -1,3 +1,48 @@
+### R255 stage2交付终态与后继（同卡）
+
+BFF source97a99d35精确8path，纯format c6f69490另提；最终独审928f5b29零P0/P1/P2，Root92115默认777/0/1schema skip、target70/70、格式0；24563 types/build/lint0、50995 fixed生成0，全部source/hash保持且Git index空。34保护+8freeze/mode/uv exact，原mixed不暂存。仅消费者源码已验收，不冒运行/正式资金或浏览器通过，收据var/dev/r255-preserve/bff-personal-read-commit-receipt.json。
+
+后继沿原owner：Billing唯一正常main/正式operator赠送transport与预占结算释放尚未闭，C3阶段决策已有一次待答；不得新开两GET测试host。Web串行消费当前固定BFF发布合同并删除无owner余额/quota/free展示，先既有三D0当前方案与有效行为基线，不并行发明资金事实。Root固定3310正常账号浏览器交接后逐页CRUD/刷新，Agent真实模型与费用链独立推进。不为本工程绿更新70整组PASS；完整Wave0–7保持。
+
+### R255 stage2最终独审窄补（未放行）
+
+Root24563当前750pass/0fail/1schema skip、target66/66、types/build/lint/targetformat0；正确现命令contract:check:billing50995exit0。Root首次误猜generation命令exit1保日志，不冒产品缺陷或清历史。final独审fc831d74：0P0/2P1/0P2，默认test未枚举personal-read新安全用例，以及总header/body cap和redirect二receiver零调用未有行为证明；四source本身未见绕过。public DTO不同发布生命周期，保现public type；不扩全局credential规则。
+
+原BFF writer后继仅授权test/billing-personal-read.test.mjs补现bounded response cap/迟到body/redirect receiver零调用与凭据不转发断言，package.json只现test命令插入该一文件（无依赖/版本/其他scripts/lock变化）。四source继续冻结6552f2ea、另两test frozen；不为新测试修改源码，若实际失败先报Root授权。所有自有HTTP peers finally关闭；Root复跑默认纳入数量/目标门/独审再提交。不新建框架、目录、合同、owner或临时服务。
+
+### R255 两只读审终态与当前实施
+
+RED v2独审3305c102零P0/P1/P2，Root实际66/41/25/build0后原writer只四sourceGREEN在途。Web只读报告052b7f61已停：响应request-id现合同缺口不致四list parser失败；401 settled退出；Library/Scheduled浏览器总期限静态风险需真实旅程，不当本次挂起根因。具体源锚点/tmp/r255-web-page-read-boundary-review.md。后续整页用例仍待正常IAM浏览器交接，Root不重问/造会话，不新启服务。全目标与70组保持。
+
+### R255 stage2强化RED v2 / 同D0四source继续门
+
+Root32763实际终态：Node22 build0、66tests41pass/25fail/0cancel/skip、593.68ms。新冻结f27a2f66；下游请求取消在250ms内真实未关闭（owner deadline1000ms），不是caller自身abort假绿。401/403/500、重复cursor/词法limit/opaque一次转发/空subject零I/O补齐；空tenant由现固定tenant admission403拒绝，非虚造身份绕过。四source仍原字节，newclientabsent。日志/tmp/r255-root-personal-read-red-v2.log，v2独审在途。
+
+原writer在独审无新增阻断后恢复本页同D1四production path授权，三test最新v2保持冻结；无公共合同/数据/Web/资源范围扩大。冻结后Root复跑、独审与精确集成，真实Billing正常装配/正式赠送/用户页面仍独立待验。
+
+### R255 正常页面读取与Web边界只读复核
+
+Root真实normal cookie自然过期四读401已保留；正规IAM表单/OAuth重登后Library file/artifact、projects、scheduled四读200/no-store，无写入。收据var/dev/r255-preserve/normal-fixed-page-owner-read-sweep{,-expired}.json。四成功响应均无x-request-id，需核Web adapter当前合同，不直接推断owner丢header或整页通过。
+
+原web_r247_skill_header_owner只读：绑定Web当前HEAD+原mixed，核已观察四route响应header透传与过期session加载状态的职责/现有测试，不读取secret、无UI/源码/Git/共享服务；输出/tmp/r255-web-page-read-boundary-review.md。若既有正常header合同确实不要求此header，说明范围差异，不凭猜测新增合同。用户整页CRUD/刷新仍待验，70组保持。
+
+### R255 stage2独审纠偏（同卡，不缩目标）
+
+独审5731a6a1确认有效19RED，但发现2P1/2P2：caller fetch abort未观察owner请求取消、缺401/403→503服务故障隔离、分页词法/duplicate cursor/opaque原样与empty身份负控。Root已暂停四source实施（已动候选先冻结报告），只授权原writer强化test/billing-personal-read.test.mjs；另两test原hash保持。强化冻结由Root重新执行有效RED后才恢复四source授权，不靠弱断言清零。
+
+### R255 个人积分读取 stage2：Root RED复跑与窄源码授权
+
+基线BFF main aaf683e70e215b7903e574c41762a223fa47cf1d；原D0/固定producer244b2810/public09e0574不变。Root实际Node22 build0；60测试41pass/19fail/0cancel/0skip，431.89ms；日志/tmp/r255-root-personal-read-red.log。19反例命中现generic路径、可信身份五因素/u1、独立credential配置、query和owner错误映射；不是缺文件RED。三测试冻结3a367ada，原工程747/0/1仅是该新增RED前历史。真实Billing owner和用户积分页面未通过。
+
+|项|同D1 stage2 GREEN实施边界|
+|---|---|
+|owner/writer|原bff_skills_v2_owner_r251唯一BFF writer；Root集成/Git/运行；capability_composition_owner_r247独立只读审RED和后续冻结|
+|批准写集|仅src/config/runtime.ts、src/infrastructure/clients/owner/billing-personal-read.ts、src/http/routes/owner.ts、src/contracts/account.ts。三test保持冻结；需变更先报告。采用三D0已批准现owner clients单文件位置，不新增目录或框架|
+|职责/依赖|Billing唯一资金事实；固定generated两读/u1五因素、可信IAM admission、严格identity/query、有限timeout/caller cancel、闭合schema、no-store/稳定错误；删除旧float type与generic个人读路径，不造钱包/换算/零余额/fallback|
+|保护/停止线|public8/generated/vendor/SQL/lock/env/bootstrap/Web及全部原mixed保持；不改费用、不读ownerDB、不启动共享服务/测试host。越界先报告。冻结四source哈希、附门日志后停写；Root重跑并独审，只有整条用户链真通过才更新70组PASS|
+
+完整Wave0–7及70组11/6/14/38/1保持。C3唯一main阶段决策/正式operator赠送及真实模型链前置另行闭环，不因本消费者切片偷换或取消。
+
 ### R255 聊天恢复终态与正常运行复验
 
 Root BFF aaf683e70e215b7903e574c41762a223fa47cf1d只提交fixture前缀6/+6，保原删除测试suffix；outbox恢复原HEAD，无伪新生产commit，旧73adf2完整私有备份。最终独审10d239d7零P0/P1/P2；Root主树pnpm test 747pass/0fail/1skip，types/lint/build/目标format全0，schema资源skip未执行。其余18mixed/public8/uv保持。Root仅BFF原9463实际exit130、listener释放后同env重启79304/root38614/listener38630，7现正常探针均200；未重装DB或新启常驻服务。旧HTTP cookie到期401如实保留，正规IAM表单/OAuth重新登录后本人direct/projects均200、private no-store。

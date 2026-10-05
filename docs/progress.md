@@ -1,3 +1,31 @@
+## R255 当前：个人积分读取消费者已交付，完整用户验收仍OPEN
+
+BFF main97a99d35c8c78e7ca6e1370fd16ba5d670766095精确8path：正规固定generated本人余额/流水、可信IAM→严格u1五因素、独立service token、闭合query与response、no-store/404/502/503、总header/body budget/cap、取消与禁止redirect泄密；无钱包创建/费率计算/fake100/fallback/SQL。config test纯格式c6f69490单独提交（normalized TS tree等价，功能差分仅29行）。其他34保护摘要+8freeze/mode与Root uv保持、index空，原mixed未暂存。
+
+Root最终92115：默认777pass/0fail/1schema资源skip，目标70/70/0cancel/skip，format0；前轮24563同四source types/build/lint0，正确固定生成50995exit0。两轮有效RED41/19→41/25、两轮独审P1后窄补，最终928f5b29零P0/P1/P2；四新增cap/deadline/redirect安全反例对已冻结source直接GREEN，未伪称新RED。收据var/dev/r255-preserve/bff-personal-read-commit-receipt.json；工程门不是正式owner/IAM/浏览器PASS。
+
+正常BFF79304尚未重新装载本消费者；Billing唯一main v2装配/授权赠送/正式预占结算释放、Agent worker和Platform仍开放，Web后继需固定本消费者合同发布再同步余额展示。原浏览器登录交接与C3阶段决策未答，不重复问或改安全/资金规则。7正常句柄保留，无新增服务/DB reset；HTTP四页重登读取200仅有限观察。完整Wave0–7、70组11通过/6失败/14待复测/38未验/1支付后置、0新增整条浏览器PASS保持；下文是本轮过程和历史，不以旧在途状态覆盖本节。
+
+## R255 个人积分读取源码冻结待最终安全补验
+
+四source冻结6552f2ea、三test f27a2f66；Root24563实际target66/66、默认750pass/0fail/1schema skip，types/build/lint/目标format0，正确固定生成检查50995exit0；并非正式Billing或浏览器PASS。独审fc831d74发现两安全网缺口：默认命令漏新test、总响应cap/redirect零泄漏缺行为断言，已仅窄授权1test+package现test字段，生产不改。public type因发布生命周期不同未判重复，不扩配置/架构。原生成命令误猜exit1保留，无状态变化。
+
+正常运行BFF79304仍为前次有界Chat恢复装载，当前新消费者源码没有正常重新装载/真实Billing owner组合。正式赠送、余额/预占/结算/释放、模型worker/Platform、逐页CRUD/异常完整浏览器仍OPEN；不以受控peer绿增加70组完成数。
+
+## R255 stage2强化反例与Web观察边界补记
+
+Root Node22第二次实际66tests41pass/25fail/0cancel/skip、build0，593.68ms；原3test冻结f27a2f66，独审3305c102零P0/P1/P2，已关闭四测试缺口。原writer仅已批准四source继续GREEN，尚未冻结/验收；最新25RED不能写成当前全绿或产品失败计数。两次保护检查三test/public8/20当前mixed逐hash保持，uv原SHA不变；Root检查收据字段首两次脚本KeyError/预期absent路径错误在写Git前即停，无状态变化，第三次精确集合核验通过。
+
+Web只读052b7f61定位无request-id来自Hub/Scheduled受控响应白名单，违反现文档通用ID规则，但四list parser并不因此拒合法200；已返回401各loader会catch/finally退出，认证probe另有10s预算。Library/Scheduled客户端无独立浏览器总期限是静态潜在风险，不冒本次无限loading已复现/根因已证。后继先真实登录页面与网络步骤复现再窄修，不能为该观察新增框架或误改owner。
+
+## R255 23:01续推：积分消费者反例加严，正常页读取分栏
+
+Root独立复跑stage2 build0、60测试41pass/19fail/0cancel/skip，431.89ms，实际暴露旧generic路径/五因素u1/专用credential/query/error差异。19反例是源码接线缺陷定位，不是整页E2E结果；之前747/0/1是新增本批反例前历史。独审5731a6a1发现2P1/2P2（下游取消假绿、缺owner401/403→503、分页词法与空身份边界），已暂停4source放行，仅原writer强化1test；Root将重新执行再恢复同D0生产许可，其他writer只读分工不变。
+
+正常账号cookie自然过期四读401保留；正规IAM表单/OAuth重登后Library file/artifact、projects、scheduled四读200/private no-store。四响应无x-request-id正在Web独立只读核当前合同，不凭猜测扩大设计。这只是当前正常持久源代码的HTTP读证据，不代表上传/作品/排程执行或浏览器CRUD通过。收据var/dev/r255-preserve/normal-fixed-page-owner-read-sweep{,-expired}.json；未新启/重装/清理任何服务或数据。
+
+完整Wave0–7、70组11/6/14/38/1不变，0新增整条浏览器PASS；正常BFF79304/7原句柄复用，Agent worker/Billing/Platform仍未运行。Billing唯一正常main阶段边界已有一次问题未答、不擅改C3；原浏览器登录交接未答，不重复询问或新开标签。
+
 ## R255 同轮聊天职责恢复与正常BFF发布终态
 
 原5失败已按根因窄修：旧无界inline source完整before73adf2备份后恢复HEAD a0d37f18唯一4500ms helper；测试补HTTP setHeader捕获/四scope request-id，原calls/projectReads与architecture硬断言保持。独审10d239d7零问题，Root主树4132实际test/types/lint/build/target format全0，747pass/0fail/1schema skip；不是PG/浏览器验收。fixture前缀选择性提交aaf683e（6/+6），原delete测试suffix与其余18mixed/Public8/uv保持；源职责已HEAD，无空提交。一次私有marker字符串assert失败发生于任何index写前，已按实际test title修正；实际暂存/commit只该前缀。

@@ -1,3 +1,13 @@
+## R255 T-B03消费者源码交付，不关闭整组用户用例
+
+BFF97a99d35真实当前工程默认777/0/1schema skip、controlled HTTP target70/70，独审928f5b29零问题；旧有效反例41/19→强化41/25及中途安全网P1保留。caller取消实际关闭owner请求、总header/body cap、持续body总deadline、redirect二receiver零调用/凭据零转发已锁；本机peer不是正式Billing/IAM组合或真实浏览器。正式余额/流水、授权赠送、预占/结算/释放、实际模型消费和UI展示一致仍按原T-B03/B07退出门待验；不为源码绿更新70组通过数。正常BFF79304未载新源码，完整Wave0–7/70组11/6/14/38/1保持。
+
+## R255 T-B03消费者工程反例与正常页读取（不增70组）
+
+Root stage2 HTTP受控peer60例41pass/19fail用于接线定位，不是正式Billing/真实用户PASS。独审额外锁：owner401/403服务credential故障映射503而非登出本人、caller cancel必须观察owner请求结束、cursor原样/单值与严格limit、空身份零ownerI/O。原writer只强化现test，源码待Root新RED确认。用例退出仍T-B03.R255-I01正常登录→实际余额/流水→分页/硬刷新→授权赠送及资金链对账；没有真实owner启动/浏览器/收费证据仍OPEN。
+
+正常Library个人文件/作品、项目列表、独立排程四GET自然过期401后，正规IAM表单/OAuth重登200/private no-store，收据var/dev/r255-preserve/normal-fixed-page-owner-read-sweep{,-expired}.json。只关闭读取反例观察，不关闭整页CRUD/下载/排程执行/加载状态子例；缺request-id另核Web实际合同。0新增完整浏览器PASS，70组11通过/6失败/14待复测/38未验/1支付后置保持。
+
 ## R255 Chat有限提交回归子例（归入既有T-C01，不新增组）
 
 |用例|标题/预置|真实用户步骤|预期结果|优先级/类型|当前证据与状态|
