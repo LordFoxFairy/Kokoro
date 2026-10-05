@@ -1,3 +1,11 @@
+## R255 当前源码接续与运行材料（2026-10-05）
+
+现正式入口不新增：IAM scripts/provision-oauth.ts以真实operator Session创建resource_server；normal main由src/main.ts/config/app.config.ts装配。Agent infrastructure/schema.py::verify_agent_schema为只读runtime gate，apply_agent_schema仅空owner；execution_proof_keys与HTTP execution_proof_jwks分别消费私钥/公钥。Root稳定材料仍私有ignored var/dev/iam与var/dev/agent-proof，不是新业务模块、配置中心或鉴权fallback。
+
+当前catalog差异实证：旧Agent少2model表与Run5journal字段；旧BFF少3项目删除/release表及deleted_at；旧System少model_revision.max_output_tokens。BFF scripts/apply-schema.mjs、System scripts/apply-schema.ts为fresh installer，不是现库migration；Root仅自有reference运行，Agent/BFF data-only恢复44表269原行exact，System published-bound CHECK阻断仍在。System不得凭现旧model目录填虚构cap；正式owner发布配置及后续真实model链另验。
+
+收据manifest var/dev/r255-preserve/normal-materials-and-current-schema-final-receipt.json；真实HTTP表单/OAuth与introspection credential验证不是浏览器E2E，所有源码正常组合仍未接原3310。历史归档/密文转换helper只Root一次开发数据交接，不加入生产运行或兼容路径。原78库保持、reference回收、无新常驻进程。
+
 ## R255 数据保留交接入口（2026-10-05）
 
 正式源码入口仍Web/IAM/BFF各package dev与src/main；不新建retain launcher/迁移框架。Root ignored var/dev/r255-preserve保存完整归档、原环境私有保管与online恢复验证收据，仅开发数据交接证据，不是新业务配置/任务中心。实际旧IAM namespace kokoro_iam，原APP为kokoro_agent/kokoro_bff/kokoro_scheduler/kokoro_storage/system；source实际catalog与当前canonical分别核，不猜System改名。原3310仍旧受管副本，最终正常源码切换未执行。

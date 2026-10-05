@@ -1,3 +1,17 @@
+## R255 正常身份材料、当前 schema 与实恢复（20:47 UTC heartbeat；非页面闭环）
+
+- 原Web/IAM真实HTTP表单/OAuth三步均200，BFF get-session为真实原用户；直接公开raw sign-in探针405是路径错误，未记产品登录失败。不是右侧浏览器E2E，当前3310仍旧副本。
+- 原账号真实Session＋现IAM operator provisioning CLI成功创建独立introspection profile/client，后继HTTP正确Basic200/inactive、错误Basic401。仅正规owner写新Session/client/audit；无直接SQL身份/角色/资金写，旧client未disable。私有raw输出不入Git、不把hash当secret。最终备份须包含新合法事实。
+- Root稳定Agent proof材料实际loader/sign-verify通过，但未发行授权grant或正常运行HTTP/worker；IAM强单secret对旧JWK原密文实际解密失败，owner crypto同私钥离线重包后解密/possession成功，normal owner config解析0。未写target、未启动main；独审80092c2c要求final JWK完整集合/时间/原密文、目标事务CAS、无意外BETTER_AUTH_SECRETS、实际factory正常签发与权限恢复验证，保持OPEN。
+- Root当前source只读核验：IAM Prisma migrate diff0（仅支持的结构范围）；Agent verify_agent_schema真实失败missing model_call_attempt/model_usage_evidence。现fresh canonical reference识别另五Run字段；3历史Run、0nonterminal/lease。独审6a5da5e8确认0/none只是无strict journal，历史实际费用未知，禁止合成attempt/evidence或重算计费。
+- Root两个现正常fresh installers自有reference0：BFF当前catalog比source多38列（三新表与deleted_at），System多nullable max_output_tokens与三约束。原现列无删/类型漂移仅本次column范围；不以此推全部DDL一致。首次Node22路径FileNotFound是Root runner错误，改已存在v22.22.2路径后重新全跑，原收据保留。
+- 三owner fresh＋data-only第一次真实失败System初始化generation seed重复；仅自有空target断言两个fresh seed scope/generation1/各1行并由archive原generation替代后，第二次真实失败ck_model_revision_published_bound。独审273fceaf确认旧published/retired缺输出能力应拒绝，禁止假cap/draft降级/digest修改/漏恢复冒PASS。原事实和archive保持，System正常模型配置重新发布仍后继。
+- Agent/BFF独立接续最终真实exit0：44原表269行投影exact，五新表全0、3历史terminal Run/default none和项目deleted_at NULL符合无新增事实。最初oracle误选jsonb-text operator未减新key而失败；Root用实际SQL正负控证实，唯一text[]显式cast后重跑通过，旧失败保留，不改业务数据/测试门。
+- 私有reference finally瞬时连接assert曾盖原错误；Root仅等原连接自然关闭并回收自有库，未terminate其他连接。cleanup初次把inventory dict当tuple的false保留，按oid/datname最终独立审计78/78 exact、无Root reference残留、原六进程存活。一个无秘密失败收据0600归一；secret文件权限检查通过。
+- 最终13收据manifest：var/dev/r255-preserve/normal-materials-and-current-schema-final-receipt.json；Storage/Scheduler原句柄ready各200，无新常驻进程/共享清理/模型或积分调用。Root保护uv.lock f7e1c30d与7gitlinks/各mixed。
+
+仍是准备/真实owner HTTP与数据恢复证据，不是最终同站点源码切换或用户E2E。System发布事实阻断、final停写/快照、IAM实际签发、正常运行与所有页面验收继续同Wave0–7；70组11通过/6失败/14待复测/38未验/1支付后置，0新增浏览器PASS。两原reader均停写，Root保留关键路径与资源/Git。
+
 ## R255 保留现有用户数据：真实备份/还原准备推进（2026-10-05 20:33 UTC heartbeat）
 
 - Root按原任务卡读取源码/实际进程catalog，确认原IAM17表与APP79表跨六schema，不只备份Conversation。最初只读识别约束因IAM同时持有admin/runtime socket、Agent经uv子进程而失败；改为精确fixtureDB过滤及原supervisor祖先检查，不改任何产品代码/数据库事实。

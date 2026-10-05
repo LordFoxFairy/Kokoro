@@ -1,3 +1,34 @@
+## R255 本波交付状态：材料已验、两 owner 接续已验，日常切换仍OPEN
+
+|原卡 / 负责人|本波真实完成范围|仍需完成（不冒整业务验收）|
+|---|---|---|
+|R255-NORMAL-IAM-MATERIALS / Root资源、原Web只读审|原HTTP表单/OAuth+真实Session、现operator client provisioning、Basic正负控；normal config解析及同JWK离线强key重包；读审80092c2c|final快照包含新Session/client；target完整JWK集合/时间与密文CAS、actual SecretConfig/正常签发、正式登录浏览器链；旧issuer cookie需重新登录，不造兼容fallback|
+|R255-NORMAL-AGENT-PROOF / Root资源、原BFF只读审|稳定密钥与worker/HTTP实际loaders；current canonical fresh＋旧事实data-only Agent/BFF44表269行exact、五新表空；读审6a5da5e8|normal worker/HTTP准入、真实执行/费用/续流；历史strict journal无证据不重算、不推known-zero|
+|R255-PRESERVE-PREP / Root|IAM当前supported schema diff0；Agent/BFF/System当前差异实核、自有reference全回收、78原库OID/名称exact、原服务存活|System旧published缺max_output_tokens真实阻断导入，正常owner配置/发布先解决；不猜cap/改digest/放宽约束。全最终快照/切换仍OPEN|
+
+13收据绑定manifest在var/dev/r255-preserve/normal-materials-and-current-schema-final-receipt.json；原合法身份事实已由owner新增，旧online archive不是最终备份。普通/项目列表新源码仍未发布，TC-R254-C01..09待浏览器实验，70组与完整goal不变。以下在途准入记录保留为本波历史，不另建计划中心。下一行动先当前System正式开发模型发布，再final保数据切正常源码与同3310用户验收；原Storage/Scheduler常驻不重复启动。
+
+### R255 正常源码配置后继（20:47 UTC heartbeat）
+
+Root配置裁决补充：旧resource_server原文不在受管配置，数据库只存hash，禁止以hash填secret。允许使用已验证的原账号真实IAM Session及现IAM operator provisioning CLI创建独立新resource_server client（既有scope/绑定/readback/audit），原client不禁用/不轮换；原sender secret只用于该既有受管维护过程，不成为正常运行的假配置。输出凭据仅0600私有文件，真实introspection验证后才接normal main。普通账号权限与账务不修改；禁止直接SQL写身份事实。
+
+沿现安全准备卡，不新建计划：Root持久配置唯一writer，基线d9424f77/原3310保护。只私有var/dev配置候选与受管0600文件；先核当前schema能被正式源码读、真实原client/身份及完整normal config，不用随机无效introspection secret骗ready，不安装覆盖原schema。资源/Git/原进程退出仍Root独占，最终停写点未达前不退出parent。
+
+|任务|角色/范围|实际验收|
+|---|---|---|
+|R255-NORMAL-IAM-MATERIALS|原web_r247_skill_header_owner只读当前IAM provisioning/secret storage/operator/normal入口；不私有env/DB/改仓资源|给现持久introspection profile的安全取得/正规轮换入口、原生成secret与正常config差别；不发明绕鉴权/直接SQL写事实|
+|R255-NORMAL-AGENT-PROOF|原bff_skills_v2_owner_r251只读Agent/IAM现proof文件/profile/启动要求和已有owner provision|给正规proof keyring/issuer/JWKS最小owner入口及依赖顺序，不改契约/虚构权限/把missing配置称生产bug|
+
+Root当前真实兼容核验：IAM Prisma read-only migrate diff exit0；Agent现verify_agent_schema在source READ ONLY事务实失败，缺kokoro_agent_model_call_attempt与kokoro_agent_model_usage_evidence。78库集合与原受管进程保持。不能把online旧DDL恢复当当前源码兼容。Root后继仅自有隔离reference使用现Agent owner fresh installer，精确核source/canonical差异；原bff_skills_v2_owner_r251只读审差异与历史事实接续，不写源库、不发明历史用量、0免费/known-zero。System/BFF现无完整零写canonical compare，仍OPEN。IAM rewrap独审还要求final完整JWK集合/时间字段、target单事务CAS、actualSecretConfig无旧keyring和正常发行验证，未执行target写入或切换。
+
+Root将同一隔离reference准入扩至当前BFF/System正式fresh installer（仅Root自有空验证库、源码原入口与canonical，绝不source apply/install），然后以source READ ONLY catalog比较普通表列/索引/约束；自有库验证后回收、原库OID集合保持。此动作只验证当前源码接续，不代替用户页面/E2E，也不创建应用新库或迁移框架。
+
+Root已实际进一步发现BFF/source相对current canonical少3个project-deletion/release表及project.deleted_at，System少model_revision.max_output_tokens；原字段无删除/类型漂移（本次普通column catalog范围），BFF一list index替换、System3新约束待验。批准只在Root自有空验证库使用现owner fresh installer→原全量archive的3 owner data-only恢复→精确原字段投影oracle、新增表为空、新增值NULL/0/none与fail-closed准入；不是source迁移/运行兼容/历史计费。原reader继续只读复核BFF/System恢复语义，Root做实演练，最终切换还须final停写快照。
+
+当前canonical data-only演练实际RED：三个owner fresh installer0，但System installer已插入两generation单例，archive COPY撞model_cache_generation_pkey；原收据保留。准入仅Root自有空target内逐项断言两seed都是新安装生成(scope/generation1/仅1行、归档原单例各1行)，移除该两target初始化seed再导原权威generation；禁止清source/共享状态、泛TRUNCATE或重置原generation。失败target整体回收，不启动半态。
+
+当前data-only第二次真实失败为System ck_model_revision_published_bound：旧published revision缺正式输出上限，新canonical拒绝；保留失败，不以context_window/default填假值，不改immutable digest/改draft或漏恢复。Root把Agent/BFF保留演练独立完成、System仍阻塞正式单库切换。reference退出回收瞬时连接检查曾覆盖原错误，后续仅等待原连接自然结束、不terminate，原78库OID/名称exact实核；原失败和parser错误收据保留。
+
 ## R255 保数据源码交接：安全准备阶段（2026-10-05 20:33 UTC heartbeat）
 
 沿R255-PRESERVE-CUTOVER-PLAN，不另建计划。原3310继续保留；本阶段不退出原parent、不安装覆盖旧schema、不重置资源、不调用模型/资金。

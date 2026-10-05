@@ -1,3 +1,11 @@
+## R255 当前：正规身份材料与两 owner 数据接续已实测，System 阻断仍在（2026-10-05 20:47 UTC heartbeat）
+
+Root沿同卡实际完成原3310 HTTP表单/OAuth登录→callback→/app及BFF get-session（均200），不是浏览器交互验收。真实原账号Session经现IAM operator CLI创建独立resource_server client；正确Basic+invalid token为200/inactive，错误Basic401，原client未禁用。稳定Agent Ed25519私有材料由Root生成并经现worker/HTTP loader验过；IAM强secret/JWK同私钥离线重包及normal config解析通过，未写target/启动正常main。source新增合法Session/client事实，早前归档不再等于最终快照。
+
+当前source结构并非现源码：IAM Prisma只读diff0；Agent runtime verifier真实失败，少两model表与Run五列；BFF少三project-deletion/release表及deleted_at；System少max_output_tokens。Root自有空库用现owner fresh installers并对旧archive data-only恢复，Agent/BFF最终44表269行原字段投影exact，五新表为空、3历史Run terminal且0/none仅无strict journal，不证明零费用/可追溯结算。System仍真实拒绝旧published revision：ck_model_revision_published_bound；不填假能力/改immutable digest/放宽门。两个初始化generation seed冲突和私有oracle/cleanup错误均保留并定位，不冒产品失败或全绿。
+
+最终收据var/dev/r255-preserve/normal-materials-and-current-schema-final-receipt.json；原78库OID/名称exact、自有reference全回收，原45606/3310六进程存活，Storage67827/Scheduler86248未重复启动且ready200。uv.lock和7gitlinks/mixed保留。**正常源码切换/页面/模型/积分仍未闭环，0新增浏览器PASS；70组11/6/14/38/1不变。** 后继Root先由System正常owner重建已验证能力的开发模型发布，不猜上限；final一致快照、IAM目标完整JWK/CAS/实际发行与正常同3310重启后，才做登录→普通/项目CRUD→刷新续流→正式计费用户验收。
+
 ## R255 保数据交接已有实证，尚未退出原运行组合（2026-10-05）
 
 Root完成原IAM/APP两个完整数据库的online custom archive，并共享各自exported snapshot做全表内容oracle；实际IAM仅kokoro_iam17表808行，APP为kokoro_agent/kokoro_bff/kokoro_scheduler/kokoro_storage/system共79表3654行。两个archive实际全量恢复到Root自有同一空验证库；96表内容、列/索引/枚举/序列精确相等，补核relation/column/constraint属性/function/view/trigger/policy/type metadata精确相等。原17对CHECK反解析文本不等先保留失败，独审与Root逐对确认仅6组AND结合、11组固定varchar数组cast表示差异；最终复验仅接受已冻结的精确17对，不泛正则放宽。public relation/额外extension/数据库设置/大对象均无冲突；未声称所有owner当前canonical drift通过。

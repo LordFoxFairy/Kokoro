@@ -1,3 +1,14 @@
+## R255 当前 canonical 接续与正规身份：辅助实证不关闭用户用例
+
+仍沿T-C.R255-P01/P02、T-Q与T-B03，不新加第71组。原3310真实HTTP表单/OAuth+get-session200；正式operator client正负Basic验证通过。Agent/BFF当前fresh schema＋旧数据44表269行投影exact，System旧published缺输出界实际拒绝，正常源码切换仍OPEN。**本波新增浏览器PASS为0，70组11/6/14/38/1保持。**
+
+|分类 / 子例|预置条件|真实用户步骤|预期 / 退出条件|优先级 / 类型|当前证据与状态|
+|---|---|---|---|---|---|
+|主链 / T-C.R255-P01|固定源码同3310、原身份历史恢复、正常IAM client与当前schema|真实浏览器登录→普通列表→展开各项目→CRUD/Move→刷新原会话|历史归属保持，普通区常驻，每folder独立；当前auth/proof/AG-UI正常，无整页永久loading|P0 / 端到端功能|待验；原HTTP登录不是此例PASS，正常组合未切换|
+|边界 / T-Q.R255-P03 当前模型能力缺失|开发模型revision缺当前正式输出上限、原模型路由/原数据已备份|经正常控制面配置已验证能力并发布→重开聊天→真实执行与积分核对；同时缺界/旧digest负控|缺界不得发布/dispatch；不能拿context_window/default伪充cap、不改immutable历史；合法新发布才准入|P0 / 边界、安全、业务状态|owner数据恢复真实失败ck_model_revision_published_bound，用户链未验；System blocker保留|
+|异常/状态机 / T-Q.R255-P02|原归档、target尚无用户新写、失败切换可诊断|模拟受控正常交接失败→完整恢复→正规重新登录和历史深链|无source reset、半态服务、账号丢失或伪会话；新写后禁止盲还原旧archive|P0 / 恢复、生命周期|Agent/BFF独立恢复演练通过仅辅助；System失败已留、原78库exact、target回收；整体用户例待验|
+|权限 / T-B03.R255-I02|正常发行issuer、本人/他人账号和current profile|真实owner用户token积分读取/错tenant拒绝→重新登录恢复|当前用户余额/流水正确，错误凭据拒绝；不存在免费/known-zero或机器冒用户fallback|P0 / 安全、端到端|新introspection正确Basic200/inactive与错Basic401仅凭据控制，不是active用户token/积分/browser PASS|
+
 ## R255 保数据交接：准备证据与用户退出门分开（2026-10-05）
 
 沿原T-Q/T-C/T-B03生命周期子例，不增加第71组。Root已实际备份/恢复96表（IAM808行、APP3654行），snapshot内容摘要及列/索引/枚举/序列相等；17对CHECK文本差异先失败记录后逐对语义审查，最终metadata严格复核0。收据var/dev/r255-preserve/final-online-rehearsal.json只证明online归档可恢复，不是最终切换/浏览器PASS。
