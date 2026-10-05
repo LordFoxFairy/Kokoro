@@ -1,3 +1,11 @@
+## R255 当前：Billing认证源码已接收，用户运行链仍待验（2026-10-05）
+
+Billing本地main `244b2810c0cc043d29fffb2b3301eebf2d390b3d`：3source/3test/4同源说明及CURRENT批准前缀，共11path。两个入口共享唯一EdDSA/namespaced完整IAM profile verifier，三时间字段明确safe integer（对齐Zod4/Zod3运行差异）；既有plain/u1 header、机器五因素和错误语义保持，无RSA/plain fallback、资金/SQL/费率变更。README/env改为固定源码单库owner schema、明确首次安装与重复启动、正规IAM认证及支付后置。
+
+Root10843最终真实PG HTTP24/24、辅助1395/39、正规v2生成/check、types/lint/build/contract/sql/format全部0；10freeze commit后精确保持，78库OID/名称集合保持，5原mixed正文及generated/SQL/lock保留。独立最终审0P0/P1/P2。D0 `8d1713d`；Root source收据`var/dev/r255-billing-auth-source-commit.json`，门收据`var/dev/r255-billing-auth-final-v2-pg.json`。最初profile错拒401、unsafe iat错放200、私有runner错误均保留progress历史。
+
+**不等于用户闭环**：正式IAM实际签发→正常Billing进程、BFF→Credits UI及费用链仍未验，Billing未启动；原3310仍旧副本，保数据迁移方案未执行。Storage/Scheduler原句柄67827/86248仍running、两ready200；未重复开服务。右侧现tab7控制超时，桌面Codex控制受工具限制，均不冒产品PASS/FAIL。完整70组11/6/14/38/1保持、0新增用户页面通过；同goal Wave0–7不缩小。
+
 ## 当前收口：两仓源码已提交，真实页面未验收（2026-10-05）
 
 本节替代下方在途摘要；失败历史保留。**源码交付不等于页面闭环，原3310尚未更新。**

@@ -1,3 +1,9 @@
+## R255 Billing IAM consumer 当前源码（2026-10-05）
+
+Billing main `244b2810c0cc043d29fffb2b3301eebf2d390b3d`：现`src/infrastructure/auth/billing-access-token-claims.schema.ts`负责固定profile与safe integer；同目录`billing-access-token.verifier.ts`负责唯一remote JWKS/EdDSA/完整claims验证，仅返回tenant/subject；现`billing-auth.ts`两个入口复用，legacy plain与personal u1 header各保原wire。不新建owner/module/API/SQL或收费规则。三现test锁profile，README/.env固定日常运行，v1仅两security description与digest收敛；正常v2生成无tracked差异。
+
+Root10843与最终独审仅接收source切片，正式IAM发行/Billing normal启动/BFF/浏览器仍待验；user3310尚未切换。收据var/dev/r255-billing-auth-source-commit.json。既有70组不变，不将源码路径当已运行能力。
+
 ## 当前已交付入口：R254 Web / R255 Billing（2026-10-05）
 
 Web main e8ff7599a62b045b0e7a3d20e8fd50894b31a099：现app-frame.tsx负责真实可见会话叶Move及晚ACK route fence、非当前folder新草稿一次准入意图；ui/rail/use-session-list.ts负责实例/subject/admission读生命周期。workspace-rail-navigation.tsx提供独立folder disclosure/overview Link；workspace-rail-session-list.tsx组合ConversationGroup/ScopedConversationGroup（不另建engine），workspace-rail-shell.tsx只做shell组合，workspace-rail.tsx承接撤准入delete意图清理。九现i18n仅expand/collapse两键。19source/4UI，没有新目录、关系实体/wire或缓存事实；全工程证据在同CURRENT/progress，原3310尚未更新，用户E2E待验。

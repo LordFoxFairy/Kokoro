@@ -1,3 +1,13 @@
+## R255 IAM→Billing 认证反例已真实确认（2026-10-05）
+
+- Root只前缀提交三D0：Billing `8d1713dcb4694d69ead665e1725a6fd3e09f7e9f`；5原mixed正文SHA保持，未改source/SQL/机器契约。
+- Root4297真实PostgreSQL/Nest用户HTTP：完整IAM精确EdDSA profile返回401而期望200，**1失败/9通过**。拒绝前已检查35表全部事实零写；本次数据库集合78→78、OID/名称完全保持。`var/dev/r255-billing-auth-real-red.json`及`.log`。本地JWKS签名仅验证Billing consumer，不是IAM owner真实签发或浏览器旅程。
+- 原Billing writer交付已由Root限定接收main `244b2810c0cc043d29fffb2b3301eebf2d390b3d`：3source/3test/4说明及CURRENT前缀，共11path。Root10843真实PG HTTP24/24、pure1395/39、正常v2生成/check/types/lint/build/contract/sql/format全0；独审最终0P0/P1/P2。10freeze commit后exact，5原mixed正文保护；v1仅两security description和digest说明更正，generated/SQL/lock未改。正式发行token、Billing normal runtime、BFF/browser仍OPEN。
+- 第二有效RED：Root41061真实PG矩阵1fail/23pass，unsafe iat正确签名错放200而应401；Root实测Zod3 int接受unsafe整数而IAM Zod4拒，独审撤原“字面相同即等价”，只三time加safe()后最终24pass，完整profile缺口矩阵真实补齐。Root83962私有runner在PG结束后NameError，旧log单独保留，修runner后11619完整复跑0；该错误不冒产品失败。
+- 原Storage67827/Scheduler86248句柄仍running，本次两ready均200，无重复启动。右侧现IAB tab7仍访问超时，未操作/开新窗口、不把浏览器控制错误计产品PASS/FAIL。
+- 保数据切换只读方案已交：标准owner备份并验证恢复→用户事实静止与最终快照→旧fixture正常清理→固定单库schema及同源源码启动。schema过滤不等于remap；Redis绝对expiry/会话密钥必须保留，目标非空或source drift停下。不以方案称已迁移；原3310保护。
+- 完整70组仍11通过/6失败/14待复测/38未验/1支付后置；本轮新增用户页面通过数0。后端门不代系统验收，沿同Wave0–7目标。
+
 ## R254/R255 本波最终源码交付与未闭环边界（2026-10-05）
 
 - Web实际失败链保留：初始3fail/133pass→冷UUID1fail/136pass→旧placement2fail/1527pass→独审四漏洞→Root9fail/249pass。修后Root96038 contract273/architecture50及定向1794/98、lint/types/build0；随后全辅助94149真实1fail/2618pass（Shell535>=500），不改预算、不删断言，搬两个原group到现session-list。首次搬移漏fallback import/export造成作者lint1与59fail/2560pass，诚实保留；补仅必要导入/导出。Root6080全2619/153+lint/types/build0后diff检查又报末尾空行，原writer只删一newline。**最终Root30884完整重跑contract273/20、architecture50/4、辅助2619/153排system、lint/typecheck/build/diff全0。** 独审最终23+4 exact、0P0/P1/P2，EOF收尾Root附字节核对。Web正式main e8ff7599a62b045b0e7a3d20e8fd50894b31a099，精确27path，三D0 onlyprefix与4mixed保护；收据var/dev/r254-web-folder-commit.json，最终日志var/dev/r254-root-final-{contract,architecture,aux,lint,types,build}.log。

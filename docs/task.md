@@ -1,3 +1,31 @@
+## R255 正常身份前置：IAM 与 Billing profile 真正不匹配（2026-10-05）
+
+Root在正常启动前独立读回：原3310/iam/jwks真实HTTP200，key alg只有EdDSA、kty OKP；正式IAM c9a9872 billing verifier/claims唯一规定namespaced tenant/user_delegated/billing资源及scope。Billing22df两个用户JWT入口仍RS256与plain tenant_id。现RSA本地fixture和ready都不能证明IAM兼容；目前尚未取得真实IAM签发Bearer的Billing正控，不冒业务HTTP已经FAIL/PASS。
+
+|任务|Owner/角色/基线|范围与设计裁决|阶段门/后继|
+|---|---|---|---|
+|R255-BILLING-IAM-PROFILE-D0|原capability_composition_owner_r247唯一Billing文档writer；Root设计/资源/Git；22df9788+5原mixed|只现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL加最短前缀，原全文suffix保持；排除源码、SQL、contract/generated、锁及另CURRENT/IMPLEMENTATION_PLAN。Root采用现infrastructure/auth内聚焦claims schema与共享verifier两现目录普通文件，淘汰向现billing-auth.ts混入第二套parser或新鉴权框架；两个现入口共享唯一IAM profile，header/machine分支保持，EdDSA+namespaced only无旧RSA/plain fallback。候选source边界与具体文件先在D0列清，不是当前源码授权|三D0冻结→Root复核/只前缀提交→现realPG HTTP用户Bearer正确profile先真实RED→批准窄consumer实现→Root冻结复验/独审→真实IAM签发本人Credit read。不把本地EdDSA fixture当IAM owner签发，不操作模型/资金|
+|R255-BILLING-IAM-PROFILE-QA|原bff_skills_v2_owner_r251只读；IAMc9a9872/Billing22df|已交严格profile正负矩阵；不改IAM规范/复制owner ORM或可编辑contract。normalJWT与可信BFF机器调用分开验证，不以机器路径遮用户JWT|Root回核确定P1 consumer漂移。JWKS不可用仍failclosed，本片不擅改HTTP错误envelope/增加新状态；真实组合证明仍待|
+|R255-PRESERVE-CUTOVER-PLAN|原web_r247_skill_header_owner只读；Root执行/唯一资源owner；Roote2653ad及现loaded launcher|只读scripts/dev/serve_local_login.py与已存在本地交接实现、CODEBASE_MAP/README；不读私有env/进程环境或连接DB，不改任何文件/资源/Git|查明能否用标准owner备份/恢复将原IAM/BFF数据及Redis/session安全迁到固定单库schema并改正常源码入口；列最小原文件改动、失效风险、停写一致性与可验证恢复。不再次只报告“没有retain”，不实施parking/injection/rename逃cleanup，不能则列精确缺失和Root决策|
+
+放置裁决：完整claims schema与签名验证分别单一变化原因，沿TS08 §8.4；两文件在已有auth目录，不新增一级模块或跨仓共享schema。IAM固定协议由Billing本地consumer校验，不把IAM源码相对import。无SQL/余额/幂等/事务变化。机器OpenAPI现v1 security描述确有RS256/plain tenant残留，后继只能同源说明收敛；description变更会影响owner artifact digest，Root正常生成/verify，不能空口声称所有generated必不变或手改provenance。
+
+当前接收：R255-BILLING-IAM-PROFILE-CODE最终main `244b2810c0cc043d29fffb2b3301eebf2d390b3d`，原writer停写，Root10843 PG24/24、pure1395/39与工程/正常生成全0、78库集合保持、独审0P0/P1/P2。Root11path按明确路径提交，CURRENT只新批准前缀，5原mixed正文及SQL/generated/lock不变。只关闭该consumer源码卡，不关T-B03/整个Billing；真实issuer/固定源码进程/BFF/browser及计费继续同后继OPEN。其余本节记录为已完成阶段与失败历史，不再在途。
+
+本波Billing尚未启动，避免以PG ready冒认证可用；原3310保数据交接仍受loaded launcher退出清理阻断，默认保留原数据。独立两reader均终态，无资源/私有凭据读取或应用启动。完整70组11/6/14/38/1不变，沿原Wave0–7。
+
+R255身份D0已由Root逐字核验并只前缀提交 `8d1713dcb4694d69ead665e1725a6fd3e09f7e9f`（3文件29行）；5原mixed全文suffix保持，source/SQL/contract未改。后继R255-BILLING-IAM-PROFILE-RED仅授权原Billing writer修改现`test/integration/credit-read-http.test.ts`：真实PG、已注册Nest用户route、可达HTTP JWKS完整EdDSA profile期望200；原machine正控/错误/no-store/零写断言保留。该fixture已改owner schema，其事实观察仍旧public，允许仅在本测试改为精确kokoro_billing作为有效控制；不扩source/其他test/Git/资源。Root唯一运行者，先冻结再真实RED，不用缺环境或fixture错误冒产品反例。
+
+R255身份真实RED：Root4297终态，现Credit用户HTTP完整EdDSA profile期望200却401；其余9原machine/业务控制通过，35表拒绝前后零差量。真实PG集合本次78→78/OID名称完全相同（不是沿用历史76）；收据var/dev/r255-billing-auth-real-red.json。用户E2E仍0新增。后继R255-BILLING-IAM-PROFILE-CODE只授权3source：现billing-auth.ts及现auth目录两普通新claims.schema/verifier；3现tests：unit/billing-auth、http/credit-read、integration/credit-read-http。精确IAM profile两入口共享，已有header/machine/error界线保持，固定resource校验无RSA/plain fallback；现integration追加错误profile/越tenant真实PG负控，每次先facts零写。排除runtime config/SQL/contract/generated/locks/5mixed/Git/资源，额外file先报告。Root复验后才单独machine契约描述生成链收敛；不以此称真实签发或用户计费闭环。
+
+R255身份候选Root11619终态：realPG用户HTTP16/16、纯安全网1369/39、types/lint/build/contract/sql/format0，78库集合保持；候选未提交。Root83962最初私有runner在PG结束后NameError，旧log单独保留，修runner后完整重跑，未冒产品失败。独审source0P0/P1/P2，但完整profile回归覆盖缺口仍作为放行前门；不靠严重度调整清零。后继仅现3test补openid双aud合法正控、machine/operator/cnf、旧plain-only、requiredclaims、duplicate/unknown scope/aud、future nbf/RSA反例；3source保持冻，Root复跑前不声称完整认证。
+
+R255身份同源说明后继（原writer，不与Root生成并发）：只额外现README.md/.env.example及contract/openapi/v1/openapi.yaml的两security description和contract/README.md对应v1 digest；纠正启动apps绝对路径、.env.local固定开发、单库exact schema/owner空判定、jwks EdDSA固定issuer/aud与支付默认后置。非schema/wire字段/SemVer变更，无runtime config/真实secret/其他mixed文档修改。contract/generated仅Root按现正常生成check收派生变化（description不承诺所有generated无变）。最终6 source/tests+4说明freeze，Root全门/独审后再源码commit。
+
+R255 Root独立发现P1依赖major语义差异：实加载IAM Zod4 int拒MAX_SAFE_INTEGER+1/1e30，Billing Zod3 int接受；三time字段字面相同不能证明同profile。独审撤原完全等价，writer只测试新增unsafe iat真实HTTP401/零写反例，source仍冻结；Root RED后仅准三time加Zod3 safe边界，不新增future-iat策略。Root11619绿色只现不足矩阵安全网，不因绿/独审旧结论提交。
+
+R255 unsafe时间有效RED：Root41061 realPG完整矩阵1failed/23passed，唯一unsafe iat错误接受200而应401，拒绝/GET事实观察零写，78库集合exact。var/dev/r255-billing-auth-unsafe-time-red.json/.log；授权原writer仅现claims.schema.ts三个exp/iat/nbf数值链加safe()对齐IAM Zod4 integer实际边界，不改其他source/clock/futureiat；现3test保持并可补代表time断言。4同源说明及测试一起冻结后Root正规generator/全门/独审再接收。
+
 ## 当前任务状态：源码已集成，业务验收仍OPEN（2026-10-05）
 
 此表替代下方R254/R255阶段性“进行中/ORM失败”的当前状态；失败证据不删除，不把工程交付冒整任务已验收。
