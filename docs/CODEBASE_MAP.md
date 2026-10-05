@@ -1,3 +1,7 @@
+## R249 当前认证消费缺口（2026-10-05）
+
+现Web `src/ui/auth/use-session-state.ts` 只有GET探针；`product-auth-client.ts`消费CSRF但尚无session POST消费者。后端现`api/auth/[...nextauth]/route.ts`已具refresh CAS/同subject/固定tenant；Library自然300s后本地401与自动SSO回首页已真实复现。唯一Web writer仅现两auth源+两现tests补消费，不新建模块/协议/层、不改变server admission或自动重发业务请求。实际进度/证据见同CURRENT/task/test-cases，源码仍待冻结与Root验收。
+
 ## R248 冻结源码交付（2026-10-05）
 
 现Web security helper/Proxy及两现安全tests交付b8c3360b；Root现launcher及guard交付1d51949a：仅显式development+可信loopback Web/Host/可选Origin匹配，将validated公共对象存储单origin加入连接策略。真实浏览器已走PUT/Complete/CLEAN，Validate412仍OPEN；没有新模块/协议/Schema或生产放宽，下一沿现Platform package与现Web认证/Library界面处理，不再钻身份隔离基础设施。

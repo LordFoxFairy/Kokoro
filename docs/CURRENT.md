@@ -1,3 +1,9 @@
+## R249 真实自然到期认证缺口（2026-10-05）
+
+Root同33b9dfb2五owner/独立Chrome：正规登录→54B上传200/扫描→硬刷新session body=true→53B二次上传200；因此“硬刷新必然401”不成立。自然300秒到期后12:47:32提交新文件实际401，正文error=unauthenticated、通用错误/按钮禁用；现Hub该码在owner调用前拒绝，同时间Storage安全日志无请求。之后页面自动SSO回/app，Library上下文丢失。未改clock/token/cookie/Redis；安全只读生命周期显示先前两个active generation0创建间隔309秒，总体期限仍有效，无refresh消费者。证据/tmp/r249-library-natural-expiry-red.json及.jpg。旧R248那次401不冒已取得稳定码。
+
+原Web唯一writer仅两现auth源+两现tests接既有CSRF POST续期，设计独审暂无确定P0/P1；尚在实现，未称页面已修，不改GET/server/layout/四mixed/权限/总体期限或自动重发mutation。Skills新包格式仍待产品确认，readonly预审/tmp/r249-skills-preflight.md不冒实施。35175已exit0清理、3311无监听/凭据移除/DB13=0，唯一QA页关闭，原3310两PID保持。完整Wave/70组11/6/14/38/1不变。
+
 ## R248 上传阻塞修复真实收口（2026-10-05）
 
 Web本地main `b8c3360bb0f4d63cfac2d34b132d2f92b9922e20`、Root `1d51949a95ba5469558da76761c85b3ce6bb5bd5` 已精确交付；原四Web mixed、Root gitlinks/uv保持。两分仓writer与独审435fb559已停写。Root在候选33b9dfb2真实普通表单复验：同一预制ZIP→Draft201→Begin201→对象存储OPTIONS204/PUT200→Complete200、scan_state=clean、hash与原包相等。CSP上传阻塞已修且通过真实子链，不靠unit或mock声明。

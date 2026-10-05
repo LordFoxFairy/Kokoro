@@ -1,3 +1,26 @@
+## R249 心跳续推：资料库认证失败取证（2026-10-05）
+
+沿原完整 Wave 0–7 与同一测试台账；70组状态不变。Root main 3c4e1563、Web main b8c3360b；原六gitlinks、uv.lock、Web四mixed和其他owner未交接变更均保护。先区分真实401的边界，不以源码猜测代替因果。
+
+|任务|角色/范围/依赖|完成条件|
+|---|---|---|
+|R249-LIBRARY-AUTH|Root唯一浏览器/资源/Git；复用原五owner候选33b9dfb2、独立Chrome与现基础设施；不改3310/用户数据|正规登录→资料库上传/刷新/再上传；安全记录session实际authenticated分类、401稳定code/时间与已有服务证据；真实失败再决定局部修复，不盲重放mutation|
+|R249-WEB-RECOVERY-READ|web_r247_skill_header_owner只读当前auth probe/refresh及Library客户端、现D0/测试；不写仓、资源或Git；沿原模型|给现CSRF refresh的消费者缺口及最小修改文件集/失败行为；区分已证源码事实与未证401根因，不建认证框架、不扩大权限|
+|R249-QA-AUTH-BOUNDARY|qa_r243_web_frozen_review只读当前服务器session边界/已有真实系统用例；不写仓、启动服务或浏览器|对照access过期、总体会话过期、generation竞争、账号切换、撤权、401/403提出最小真实E2E验收条件，避免全部401自动重试|
+|R249-SKILLS-PREFLIGHT|capability_composition_owner_r247只读现Platform manifest/profile与三D0/正式contract；不写仓/资源/Git|复核R248最简包裁决的精确owner改动/删除项/验收路径，待已发产品确认，不重复问用户或提前实施格式变更|
+
+Root提交责任独占；本轮仅任务卡更新可写，源码授权须确认实际因果及现文档门后另列精确文件集。原89449已结束且3311已清理，先核句柄/监听再启动一次自有组合；结束核自有资源回收。报告写/tmp而不另建计划中心。
+
+### R249-AUTH-REFRESH-CONSUMER：真实自然到期反例后的局部准入
+
+Root真实正常登录、文件上传/硬刷新/再上传均成功；IAM原TTL300秒，未改clock/cookie/token/Redis。随后页面从Library自动返回/app，文件选择因document换页中断；自有Redis只读生命周期证明12:36:40.220与12:41:49.543两个active generation0会话（相隔309秒），不是现generation+1 refresh。这是正常短凭证生命周期造成页面上下文丢失的真实反例；R248旧401细因仍未知。证据/tmp/r249-auth-session-lifecycle-safe.json及/tmp/r249-auth-expiry-reset.jpg。
+
+归属一句：Web现auth client/probe负责消费已存在的CSRF POST refresh，server仍独占IAM refresh/CAS/同subject/固定tenant，GET保持只读，现owner/API/schema/目录不变。现三D0已明确该POST流程，当前缺口是浏览器未消费，不另创协议或改四mixed文档。
+
+唯一writer web_r247_skill_header_owner：允许现src/ui/auth/product-auth-client.ts、src/ui/auth/use-session-state.ts及现tests/ui/product-auth-client.test.ts、tests/ui/use-session-state.test.ts；四mixed与全部server/layout/Library/schema/contract/i18n排除。先在/tmp交最终最小消费者决定给Root审，未放行前不写：沿现10秒总预算的共享CSRF→POST→严格body/subject；周期/返回可见时续期保持原Runtime，失效/撤权与403不得放行、绝不自动重发业务mutation；不能把GET200false或refresh401一律当可重试。409/pending401只允许一次只读核验并沿既有unavailable恢复，不第二次refresh；unknown不重放POST。总体expires_at不延长，账号变化沿原fence，不旧intent跨账号提交。先失败行为保护→局部实现→冻结独审→Root实跑和自然TTL浏览器复验。
+
+Root独占提交与服务，当前35175是唯一自有5owner句柄，原3310保持；实现不直接改运行副本。源码/组件测试只是安全网，未复验真实自然TTL不记页面已修。
+
 ## R248 页面闭环优先：不新增业务抽象（2026-10-05）
 
 用户要求：不做过度设计，完成真实页面功能。沿既有Wave/70组推进；不增加配置中心、兼容层、重复PRD/计划或通用业务框架。

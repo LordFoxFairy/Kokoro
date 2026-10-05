@@ -1,3 +1,13 @@
+## R249 T-F01认证边界实际复现（2026-10-05）
+
+|既有用例/子例|预置条件|步骤|预期|实际/证据|优先级/类型|
+|---|---|---|---|---|---|
+|T-F01 有效凭证正控|33b9dfb2/Web b8c3360b五owner、独立Chrome正常IAM登录|上传54B→扫描→列表→硬刷新→读取session body→上传53B|同主体可连续提交，持久列表存在|PASS此短子链；两upload200，刷新authenticated:true。/tmp/r249-library-auth-pre-expiry.jpg；不关闭Library整组|P0/主链路|
+|T-F01 自然access到期|同正常登录、IAM现300s、总体会话仍active/gen0；未改时钟或身份记录|正常等待原access到期→选择新File→上传→观察下一probe导航|正常续期保持页面/意图；真实过期/撤权明确恢复，不盲重发|FAIL：12:47:32 POST401正文unauthenticated、通用错误/提交disabled，owner无该业务请求；随后自动SSO回/app丢Library。/tmp/r249-library-natural-expiry-red.json及.jpg；旧R248未知401不冒已定|P0/异常、状态机|
+|TC-QA-R247-002本轮资源|仅Root35175/自有3311/独立QA页|原句柄Ctrl-C→观察退出→核监听/私有凭据/DB13/原PID|只回收自有资源，保原用户环境|PASS本轮exit0、监听无、凭据已移除、DB13=0、QA页已关闭、原45606/46036存活|P1/生命周期|
+
+实现/组件门不算系统验收。消费者修复冻结后必须Root同自然300s停留Library/原选File→有真实generation推进→提交/刷新，及后台返回、失败/撤权/账号切换负控；当前均未验。70整组统计不变。
+
 ## R248-CSP 实际修复复验（2026-10-05，既有T-K02发布子链）
 
 预置：候选33b9dfb2/Web b8c3360b/Root1d51949a，真实五owner与独立Chrome。动作：正规登录→技能→选择预制原ZIP→填写名称→上传并发布。结果：**上传子链PASS**（OPTIONS204、PUT200、Complete200、CLEAN、hash一致）；**发布仍FAIL**（Validate412/skill_precondition_failed/request_id8c93624a-1f5d-4fd9-a2b2-37d047a0f321，无Publish成功）。优先级P1，功能/异常/状态机。未用后台生成含新ID的包规避普通用户路径。精确开发origin修复没有扩大生产策略；真实412不冒内部具体package错误码。证据/tmp/r248-upload-fixed-browser-receipt.json、/tmp/r248-skills-upload-fixed-validate-red.jpg。70整组统计不变。
