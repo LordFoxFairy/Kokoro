@@ -1,3 +1,13 @@
+## R247 当前用户页面与修复事实（2026-10-05）
+
+- Root实际同一用户tab7：Skills读取401；Library个人文件读取503；Project资源读取503。已核当前受管组合没有Platform/Storage/Scheduler。401正文/稳定code尚未取到，不能把缺Platform认作401直接根因；Plugins静态目录不等于已连接，Scheduled欢迎页不等于任务执行闭环。
+- 项目合法空清单200但侧栏无空态：已真实失败→修复→回归。Web本地main **5c73af719d873ce8dc7b0e505ac8d6f1f01b70c4** 精确3path；四mixed保持。Root98060全77真实Next/Chromium/Redis系统回归成功，101.439秒，源码/Redis保持；受控IAM/BFF仅辅助诊断，不代替完整持久owner。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r247-web-project-empty-green-full-2t9j5kfb/manifest.json，log bbce5266c54aa5205dac380462002741bc166df5089e0036418a78cdaa6244a2；Root58900仓内ESLint/Next typegen/TypeScript成功。最初pnpm包装器版本不符在执行前退出，未弱化门。
+- Root只在现3310预览原文件应用相同空态分支，不覆盖Move/source目录、不重启/清数据。实际点击项目d93d8972后合法加载退出，侧栏和中心均显示“还没有专案会话。新建一个会话以开始。”；截图 /tmp/r247-project-empty-verified.jpg。仅这个真实子例PASS，不宣称项目CRUD/其他模块完成；预览仍非完整正式组合。旧Root临时tab6绑定焦点超时，尚未成功关闭，不假报清理；用户tab7保留。
+- Agent初次Root30269本片动态26失败/563通过；实际修复闭scope的非取消迟到SDK child typed拒绝及新fixture/SQL漏列/stream oracle。Root16438同全589现在通过，53.033秒，源/全库清单保持/自有DB回收。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-agent-producer-repaired-gates-fceuftrp/manifest.json，log0040dbd9431b2fcadd43e07acd26f7a78f97510219f9aed4ff8a9c5adf86bfdd。独审4da65780新4path无确定阻塞，21冻结hash一致。尚未全工程/package/主树交付，更不是Billing/provider/用户收费闭环。
+- 完整Wave0–7及70组 **11通过/6失败/14待复测/38未验/1支付后置不变**；不把源码/后台数量变为产品完成率。原刷新间歇串会话、Settings昵称持久化、Credits与所有未验功能仍保留。
+
+下一关键路径：独立补真实Platform+Storage能力组合的源码接线（正规IAM→BFF→owner→Web），不等待Agent费用链；随后Scheduler、真实MCP连接授权及用户CRUD。现3310/数据保持，未核S3输入不造就绪；Root已实测现MinIO/ClamAV容器健康，但九个显式Storage输入在本次shell及Root.env均未配置，不输出任何secret。
+
 ## R246 心跳续推：完整系统回归与真实页面待验（2026-10-05）
 
 Root15037 对冻结Web候选同系统文件完整执行，76通过/0失败/0跳过，101.277秒/exit0。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-web-system-full-05nftq07/manifest.json`；log SHA `910925851d7ff2546ef5d1dd1d48d2ca7e45a45c876fd50d61324a27cfce72a9` 已回读，case文件 `cdae27b4…`、ordinary源码/Redis keyset保持，owned group25160无残留。覆盖原74及两新增刷新诊断；是真Next/Chromium/Redis、受控IAM/BFF，未冒当前3310或正式持久owner全链通过；原间歇刷新FAIL仍OPEN，候选新增测试尚未Git交付。

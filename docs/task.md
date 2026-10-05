@@ -1,3 +1,41 @@
+## R247 当前用户页面与修复事实（2026-10-05）
+
+- Root实际同一用户tab7：Skills读取401；Library个人文件读取503；Project资源读取503。已核当前受管组合没有Platform/Storage/Scheduler。401正文/稳定code尚未取到，不能把缺Platform认作401直接根因；Plugins静态目录不等于已连接，Scheduled欢迎页不等于任务执行闭环。
+- 项目合法空清单200但侧栏无空态：已真实失败→修复→回归。Web本地main **5c73af719d873ce8dc7b0e505ac8d6f1f01b70c4** 精确3path；四mixed保持。Root98060全77真实Next/Chromium/Redis系统回归成功，101.439秒，源码/Redis保持；受控IAM/BFF仅辅助诊断，不代替完整持久owner。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r247-web-project-empty-green-full-2t9j5kfb/manifest.json，log bbce5266c54aa5205dac380462002741bc166df5089e0036418a78cdaa6244a2；Root58900仓内ESLint/Next typegen/TypeScript成功。最初pnpm包装器版本不符在执行前退出，未弱化门。
+- Root只在现3310预览原文件应用相同空态分支，不覆盖Move/source目录、不重启/清数据。实际点击项目d93d8972后合法加载退出，侧栏和中心均显示“还没有专案会话。新建一个会话以开始。”；截图 /tmp/r247-project-empty-verified.jpg。仅这个真实子例PASS，不宣称项目CRUD/其他模块完成；预览仍非完整正式组合。旧Root临时tab6绑定焦点超时，尚未成功关闭，不假报清理；用户tab7保留。
+- Agent初次Root30269本片动态26失败/563通过；实际修复闭scope的非取消迟到SDK child typed拒绝及新fixture/SQL漏列/stream oracle。Root16438同全589现在通过，53.033秒，源/全库清单保持/自有DB回收。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-agent-producer-repaired-gates-fceuftrp/manifest.json，log0040dbd9431b2fcadd43e07acd26f7a78f97510219f9aed4ff8a9c5adf86bfdd。独审4da65780新4path无确定阻塞，21冻结hash一致。尚未全工程/package/主树交付，更不是Billing/provider/用户收费闭环。
+- 完整Wave0–7及70组 **11通过/6失败/14待复测/38未验/1支付后置不变**；不把源码/后台数量变为产品完成率。原刷新间歇串会话、Settings昵称持久化、Credits与所有未验功能仍保留。
+
+下一关键路径：独立补真实Platform+Storage能力组合的源码接线（正规IAM→BFF→owner→Web），不等待Agent费用链；随后Scheduler、真实MCP连接授权及用户CRUD。现3310/数据保持，未核S3输入不造就绪；Root已实测现MinIO/ClamAV容器健康，但九个显式Storage输入在本次shell及Root.env均未配置，不输出任何secret。
+
+### R247-CAPABILITY-COMPOSITION / 下一真实能力组合代码切片
+
+| 项 | 决定 |
+|---|---|
+|Owner/唯一writer|Root仓现dev composition，qa_r243_web_frozen_review续接实现；Root此卡冻结后停止Root文档写入，独占Git/资源/浏览器与放行。不是新业务owner。|
+|基线/事实|Root2d23550d及本轮五台账pending；正式Web5c73af71、现Platform/Storage工作树clean；旧3310 PID45606/46036保持。/tmp/r247-capability-composition-cut.md是现函数/契约定位，不是产品PASS。|
+|目标职责/位置比较|仅本地源码组合两个现正式owner，使用已存在正式IAM workload凭据。新普通scripts/dev/local_platform_runtime.py承接启动/存活/精确回收；优于继续把该职责堆入740行serve_local_login.py，不新建目录/公共抽象/配置中心。现local_storage_runtime.py继续Storage生命周期，不把业务配置挪给System。|
+|允许写集|scripts/dev/serve_local_login.py、scripts/dev/local_platform_runtime.py（新普通文件）、scripts/dev/local_storage_runtime.py、scripts/tests/test_serve_local_login.py；新辅助测试文件须先报普通文件职责再准。所有docs/子仓/Schema/contracts/lock/用户preview excluded，worker不操作Git。|
+|依赖/边界|复用run_bff_skill_draft_sandbox_smoke现strict ready/credential_files/owner_database_url；同IAM host原trusted Product policy+已有sandbox service handle，IAM→Storage/Platform→BFF→新Web原同源接口。具体env沿owner已发布契约，禁止旧CAPABILITY变量/假IAM/token/假Storage/BFF或alias/fallback。同库独立schema，不跨owner SQL。|
+|范围/输入|新增显式空闲入口port（默认3310现语义保持，不能占已有端口），Platform opt-in与现Storage组合；所选owner committed source/pin/clean门保持，缺输入先sanitized报错不建资源。不带chat/旧Systemcopy/Agent DB10；Scheduler本片不启动，不假称三owner皆完。|
+|数据/身份/恢复|仅本次自有DB/schema、Redis域、bucket、identity/credential snapshots与process句柄，复用现基础设施；凭据0600且不打印。退出逆序等待只回收ACK owned；保持旧3310/DB/用户数据，不迁移旧身份。新增port origin/callback/host一致，不申请额外用户权限/角色。|
+|删除/不采用|不建立第二网络协议、旧Web/Systemcopy复用、通用installer/部署层或任意kv配置；原3owner默认能力不破坏，不留双轨schema/protocol。|
+|验证/交付|先读本卡+CODEBASE_MAP+Python09/SQL03+三owner D0；实现前报最小顺序与精准helper接口。可仅纯静态/现guard回归，不自行资源/browser/provider/资金。冻结代码hash/diff后Root在独立干净selected-owner release source做真实IAM登录→本人Skill读→个人文件upload/clean/list/download/refresh与越权负控；实际资源输入/pins未核齐时记阻塞，不编空列表fake成功。当前页面401原因单独保留。Root审核且当前完整用户路径真实通过才算该切片验收。|
+
+R247-PREVIEW-EMPTY-APPLY：正式Web本地main5c73af71已交付同窄片及测试Git对象，原四mixed保持。Root现独占用户3310预览应用相同empty分支：仅既有livecopy workspace-rail-session-list.tsx（aa4823af基线）六行语义差异，不覆盖目录/Move props或任何其他源、不重启/清数据。此为当前开发预览应用正规源码修复，不作为完整正式组合发布，三owner装配和用户完整组仍OPEN；后继Root用户tab实际空态核验。
+
+R247-WEB-PROJECT-EMPTY-FIX：Root32276修正status查询语义后仍真实业务RED1fail/76过滤，18.082秒，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r247-web-project-empty-valid-red-u4bfij67/manifest.json，logfcab0396。合法空project GET已到、rail loading已消失/无alert，唯一失败明确缺空态；源/Redis保持。准原Web唯一writer在原候选现workspace-rail-session-list.tsx仅替换projectActive?null为现itemStyles.empty+role=status+现firstSite.noProjectConversations（query有值用现emptyResult），不改变scope/cache/路由/API/CSS/其他状态。测试原76保护及新完整text oracle不削弱。冻结Root重跑E2E；源码变更只声明候选修复，不冒现3310已更新。
+
+R246-PRODUCER-REPAIR：Root30269冻结完整本片动态589项实跑26失败/563通过，52.682秒，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-agent-producer-gates-2r106yhn/manifest.json（log84363d5a）；source/全库清单保持、自有DB清理。原作者只读明确：新lifecycle peer_path写assistant但真实entry general；19直接SQL insert漏新增NN列；2原stream正控不应强制Raw-Response=true。另closed未被cancel的late-child合成CancelledError被锁SDK gather当返回结果是生产语义缺口。原Agent唯一writer下一最小修复限现call_runtime.py（closed guard实际归属，factory不改）及三tests/runtime_chain、evidence_repository、provider_retries；正常late拒绝改现typed unavailable，真实cancel保留。不得放宽profile/SQL约束、削旧oracle/native constructor/任意新兼容、私改SDK或加许可。冻结后Root原完整589同门重跑，独审再核差异。不把此前native1pass/独审0冒已验收。
+
+R247-WEB-PROJECT-EMPTY-RED：Root 已在用户 tab7 点击项目 d93d8972，项目会话 GET 200，中心明确无会话；侧栏等待加载结束后只剩标题/操作，无空态。原 Web owner 唯一 tests writer 在原候选目录（/tmp/kokoro-r242-web-rename-clean.path 指向）现 tests/system/oidc-rp-next-http.integration.test.ts 末尾追加真实 Next/Chromium case，原76 exact prefix 不改。测试项目合法空响应后 rail role=status 必须显示现 noProjectConversations 文案，不把loading/error当empty。仅测试写入，先冻结 Root 跑有效 RED，再裁最窄现 workspace-rail-session-list.tsx 修复；不写 live3310/正式四mixed、CSS/范围/路由/API/i18n/锁/Git/资源。Root 集成和浏览器验收独占。
+
+R247 现场补证：Library从实际侧栏打开，等待终态后显示个人文件加载失败；GET /api/hub/library?kind=file&limit=50 实际503。Skills此前401、项目resources503是不同边界；CDP response body读取失败，不虚构error.code。QA已确认现launcher缺Platform/Storage/Scheduler，但不把缺Platform冒Skills401根因。native Agent R246 Root86659已终态1pass（无Billing零send顺序），owned数据库清理/源hash保持；这不是provider、费用或产品用户通过。
+
+### R247 用户截图优先：侧栏与能力页面并行（2026-10-05）
+
+用户新增实际截图：项目内/外会话点击和展示、Skills加载失败、Plugins布局/目录、Scheduled入口、Library加载失败。Root不等待Agent R246；原agent_r243_live_journey继续唯一Agent writer。Web原负责人续接只读+现系统测试提案，范围现rail/列表/导航/响应式，先绑定实际3310与formal/候选差异、Root浏览器失败；尚未授生产写入，formal四mixed排除。独立QA原负责人核 Skills/MCP/Storage/Scheduler 当前页面到实际 owner 的装配及正式契约，仅报告、不启动服务/改库/Git；Root独占用户浏览器/后续资源裁决。现PRD09 FR05/10–13/19与既有T-C/K/F/P/U各组承接，不建重复计划。基线Root2d23550d/Webc8b863264/BFF886a25a1，实际旧3310组合不冒formal验收。完成标准为当前正式组合逐页真实操作/持久读回/刷新与失败状态；截图空列表/任务欢迎页本身不直接判CRUD失败。
+
 R246 心跳续接（2026-10-05）：Agent 原唯一 writer 已完成第一轮 producer 接线、正在补边界/native/SDK/PG用例，尚未冻结，Root不对编辑中源码作最终验收。Web 原 owner 沿 R245 刷新卡仅只读比较实际运行副本六生命周期差异（/tmp/r246-web-refresh-runtime-difference-read.md），不授权生产修复。Root15037 对冻结76系统候选完整真实Next/Chromium回归已终态0：76通过/0失败/0跳过，101.277秒，日志91092585，源码/Redis保持、owned group25160无残留；controlled IAM/BFF，仅诊断/前置，不称正式用户通过。独立 QA 同 R246 只读核新纯profile/唯一envelope与D0接纳界，报告 /tmp/r246-agent-profile-preflight-review.md，变化中SHA/限制显式记录，不作最终审查。原tab5已不在inventory；唯一tab6再次控制超时，已按官方方式重绑仍失败，不重复创建窗口或将控制失败算业务加载错误。3310原PID46036/45606保持。
 
 R245运行副本补核：Root只读新增9生命周期源hash对照 /tmp/r245-web-refresh-lifecycle-source-equality.json。engine hook/执行adapter/use-hydrated相同；app-frame、page-clients、会话list、machine、client、persisted-store不同。已读persisted-store差异仅getItem异常降级，machine差异为Move cache reconcile/newConversation代际；这些不是本次刷新根因证明。此前只说navigation/helpers相同，未证明整副本与formal一致，不以旧copy笼统关闭真实故障；后继正式owner用户验收必须绑定全源/pin。未覆盖副本或重启用户3310。

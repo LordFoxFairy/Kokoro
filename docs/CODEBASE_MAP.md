@@ -1,3 +1,13 @@
+## R247 当前用户页面与修复事实（2026-10-05）
+
+- Root实际同一用户tab7：Skills读取401；Library个人文件读取503；Project资源读取503。已核当前受管组合没有Platform/Storage/Scheduler。401正文/稳定code尚未取到，不能把缺Platform认作401直接根因；Plugins静态目录不等于已连接，Scheduled欢迎页不等于任务执行闭环。
+- 项目合法空清单200但侧栏无空态：已真实失败→修复→回归。Web本地main **5c73af719d873ce8dc7b0e505ac8d6f1f01b70c4** 精确3path；四mixed保持。Root98060全77真实Next/Chromium/Redis系统回归成功，101.439秒，源码/Redis保持；受控IAM/BFF仅辅助诊断，不代替完整持久owner。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r247-web-project-empty-green-full-2t9j5kfb/manifest.json，log bbce5266c54aa5205dac380462002741bc166df5089e0036418a78cdaa6244a2；Root58900仓内ESLint/Next typegen/TypeScript成功。最初pnpm包装器版本不符在执行前退出，未弱化门。
+- Root只在现3310预览原文件应用相同空态分支，不覆盖Move/source目录、不重启/清数据。实际点击项目d93d8972后合法加载退出，侧栏和中心均显示“还没有专案会话。新建一个会话以开始。”；截图 /tmp/r247-project-empty-verified.jpg。仅这个真实子例PASS，不宣称项目CRUD/其他模块完成；预览仍非完整正式组合。旧Root临时tab6绑定焦点超时，尚未成功关闭，不假报清理；用户tab7保留。
+- Agent初次Root30269本片动态26失败/563通过；实际修复闭scope的非取消迟到SDK child typed拒绝及新fixture/SQL漏列/stream oracle。Root16438同全589现在通过，53.033秒，源/全库清单保持/自有DB回收。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-agent-producer-repaired-gates-fceuftrp/manifest.json，log0040dbd9431b2fcadd43e07acd26f7a78f97510219f9aed4ff8a9c5adf86bfdd。独审4da65780新4path无确定阻塞，21冻结hash一致。尚未全工程/package/主树交付，更不是Billing/provider/用户收费闭环。
+- 完整Wave0–7及70组 **11通过/6失败/14待复测/38未验/1支付后置不变**；不把源码/后台数量变为产品完成率。原刷新间歇串会话、Settings昵称持久化、Credits与所有未验功能仍保留。
+
+下一关键路径：独立补真实Platform+Storage能力组合的源码接线（正规IAM→BFF→owner→Web），不等待Agent费用链；随后Scheduler、真实MCP连接授权及用户CRUD。现3310/数据保持，未核S3输入不造就绪；Root已实测现MinIO/ClamAV容器健康，但九个显式Storage输入在本次shell及Root.env均未配置，不输出任何secret。
+
 ## R246 当前资源与入口
 
 Web候选76系统全回归Root15037终态0（101.277秒/log91092585/source+Redis保持），仍受控owner诊断，不替代3310首次间歇刷新FAIL。原Agent writer正在formal29a7a18后final-wire/schema/replay完整切片，未冻结；独立QA纯profile预审与Web实际副本六差异只读并行。Root不抢写、不跑变化中最终门；浏览器唯一tab6控制超时，原3310进程保持。任务/实际证据沿同task/progress/test-cases。

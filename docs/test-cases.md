@@ -1,3 +1,15 @@
+## R247 页面级QA复测记录（2026-10-05）
+
+|用例ID/标题|预置条件|自然测试步骤|预期|实际/下一步|优先级/类型|
+|---|---|---|---|---|---|
+|TC-UI-R247-001 项目侧栏settled-empty|真实3310本人登录、d93d8972项目没有会话|侧栏点击项目→等待项目清单200/加载结束→观察侧栏与中心|有明确空态，不空白、不借其他项目数据|原FAIL已修；现tab7实际PASS子例/截图/tmp/r247-project-empty-verified.jpg。Web5c73af71；不关闭项目CRUD整组|P1/主链路、状态机|
+|TC-SKILL-R247-001 本人技能读取|同真实本人session|从侧栏进入技能→等待加载结束|当前本人列表或合法空态；认证失败有正规恢复，不能无限重试|FAIL：GET self/skills实际401；body/code未得，原因待分层。无假空列表|P0/异常、权限|
+|TC-FILE-R247-001 个人文件读取|同真实本人session|侧栏资料库→个人文件→等待终态|当前本人文件列表；合法空态与依赖失败区分|FAIL：GET library?kind=file实际503；缺Storage组合已核，但此次typed code未得。上传/clean/下载/删除/刷新未验|P0/主链路、异常|
+|TC-MCP-R247-001 目录不冒连接|本人已登录|外挂目录→管理连接器→真实授权→owner读回→撤销|catalog与本人已连接分离，无装饰卡片假成功|截图/源码证明目录静态；本人授权/connection读回/撤销未验，Platform组合缺口|P1/主链路、权限、生命周期|
+|TC-TASK-R247-001 排程完整旅程|本人已登录、独立ScheduledTask与Scheduler可用|创建→刷新读回→暂停/恢复→到期→执行结果→删除规则验证|outbox注册/持久状态与UI一致；创建ACK不冒运行|本次欢迎页不判FAIL/PASS；真实CRUD/调度未验，当前无受管Scheduler|P1/主链路、状态机|
+
+辅助系统反例修复完整77集成功只作上述UI窄片安全网；Agent589工程辅助不计用户旅程。边界/异常/他人权限/取消/多窗口/恢复按既有70组继续，状态11/6/14/38/1不变。用户页/资源状态与正式main交付区分，当前不称全面闭环。
+
 ## R246 系统测试执行记录（2026-10-05）
 
 TC-CHAT-R245-002及原74/新增直接刷新case所在完整76集合：Root15037实际76通过/0失败/0跳过，101.277秒，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-web-system-full-05nftq07/manifest.json，日志91092585、源码/Redis保持、own group已退出。这只是受控IAM/BFF的真实Next/Chromium诊断回归；TC-CHAT-R245-001实际3310间歇跳会话仍OPEN，当前浏览器控制超时导致本轮未复验，不记业务PASS或新FAIL。Agent实施中未冻结，TC-AGENT-R245-001暂保既有有效RED而不预报GREEN。70组状态11/6/14/38/1不变。
