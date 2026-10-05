@@ -1,3 +1,13 @@
+## R243 本轮当前事实（2026-10-05）
+
+Root89903最终localized冻结原完整check终态0：contract263、architecture50、lint/types、默认2488（现74系统在集内）、build均实际通过，source/Redis保持，日志SHA回读吻合。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-localized-185ixsi4/manifest.json`，loga574725e035dfbb1fe3e3444758a4b9a80bc369e727a8ca57721fedf3d13e7a1。43path冻结 `/tmp/r243-web-final-integrated-freeze.json`，源码独审232093fc确定P0/P1/P2=0。原两轮contract/缺译FAIL历史保留，未弱化测试或95%门。
+
+实际用户3310双轮回复/刷新、本人会话改名刷新及双行未发送草稿硬刷新逐字保留/输入恢复已验，测试草稿已清空；QA项目创建/受控刷新成立。昵称编辑关闭重开丢失仍实际FAIL；本人私有AI偏好/IAM姓名业务问题待答。原加载根因、完整项目CRUD/Settings及正式外部模型/积分用户链未总验收。
+
+Web当前只是冻结候选，formal main仍5e096364/原四mixed保持，未提交候选或启3310。跨scope焦点交错/真实多语言UI尚待验；受控owner/browser或工程数量不替代正式owner持久化与完整用户链。Billingccd4cb0f私有policy/joint前置已主树验证，quote/attempt许可/预占结算释放/流水仍OPEN。Agent请求绑定设计feed3bbcc已读，Root不准临时gate-observed两列半链，最终transform与可信bound冻结点后继收敛；Run input_digest/缺许可0provider保护保持。
+
+所有作者停写、owned runner全部terminal，唯一tab5复用、3310 PID46036保持、不清数据。Root仅五既有台账续录，六gitlink/uv锁不动；完整Wave0–7及70组11通过/6失败/14待复测/38未验/1支付后置不变。下一Root精确源码集成与正式owner/当前预览用户验收；不另建计划中心，不把设计或局部绿当完工。
+
 ## R243 当前收口与待验（2026-10-05）
 
 Billing正式mainccd4cb0f由Root50436在主工作树完整11门再验终态0，131真实PG/1365辅助；11日志digest回读全部吻合，ordinary/derived/邻库保持，实际manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-billing-joint-main-full-6fk53293/manifest.json`。本地私有policy发布/joint事实选择切片已验收；正式报价、逐attempt许可、预占结算释放和流水用户链仍OPEN。源对象/原五mixed/index证据见/tmp/r243-billing-joint-commit-receipt.json，不发布Rootgitlinks或动3310。

@@ -1,3 +1,31 @@
+### R243 当前切片收口 / 待精确源码集成与正式owner用户验收
+
+Root89903最终localized冻结原完整check终态0：contract263、architecture50、lint/types、默认2488（现74系统在集内）、build均实际通过，source/Redis保持，日志SHA回读吻合。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-localized-185ixsi4/manifest.json`，loga574725e035dfbb1fe3e3444758a4b9a80bc369e727a8ca57721fedf3d13e7a1。43path冻结 `/tmp/r243-web-final-integrated-freeze.json`，源码独审232093fc确定P0/P1/P2=0。原两轮contract/缺译FAIL历史保留，未弱化测试或95%门。
+
+原唯一writer与QA已停写。formal Web main仍5e096364、原四mixed保留；后继Root按scope集成，保护任务外修改再验证正式owner/当前预览，不把controlled peer冒用户闭环。跨scope焦点交错/多语言实际UI/完整CRUD仍待验。后端请求绑定设计feed3bbcc不准临时gate两列半链，下一真正冻结位置与技术bound准入后继续。Settings业务问题待用户答。所有owned句柄terminal，tab5保留续验，原3310不重启；70组11/6/14/38/1与完整goal保持（存储状态blocked如实）。
+
+### R243-WEB-RENAME-LOCALES / 完整门发现上线语言缺译
+
+Root28998 repin后contract263/0、architecture50/0、lint/typecheck0，完整test实际2487pass/1fail：ko覆盖1506/1598=94.24%低于原95%门；build未跑。manifest locator /tmp/kokoro-r243-web-rename-engineering-repin.path，源码/Redis保持；全门仍未过。现rename新增13中文key只译en，使其它locale回退且ko门跌破。唯一Web writer仅现src/i18n/{ko,ja,de,fr,es,pt,ru}.ts为同13项目改名key增加对应实际译文；原全文所有项不改、不降低95%、不改test/source/zh/en/resolver/配置/锁/机器契约。文件各有持续locale词典职责，不新目录。交/tmp/r243-web-rename-locales-handoff.md与hash/diff/原内容逆转保护停写；Root当前原全部门再跑及独审复核。不以自动翻译品牌/覆盖数替代真实UI语言验收。
+
+Agent request-binding报告feed3bbcc已实读；Root暂不准gate-observed两列半链实现，后继需与最终transform/technical bound一起确定真正冻结位置，避免一个临时摘要后续又改事实语义。旧Run input_digest保持；无provider/grant放行。原owner完成停写，完整费用用户链仍OPEN。真实3310新增Shift+Enter双行不发送→硬刷新草稿全文保留/两回复不变/输入恢复；测试草稿已清为空，属输入恢复子证据不关闭整页。
+
+### R243-WEB-OWNER-PIN-ORACLE / 完整回归发现的漏更新
+
+Root3894完整check实际contract首门1fail/262pass，後续architecture/lint/types/test/build未运行；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-final-c5gkxs55/manifest.json`，log6a8913c6416cae66576aba114dcec15d8cb58d251d20803834797d04c67a9129，source/Redis保持。正式BFF886a25a1发布public7.2/bf64且正常two generators已校验，但contract/api-contract.test.ts现R76 exact artifact assertion仍旧7.1/784f。这是已准producer repin遗漏，不是弱化断言或改API。原唯一Web writer续授仅现该文件两字面（exact hash/current version），原全部90cases/业务assert/名称/deadline保持，其它路径冻结；交/tmp/r243-web-owner-pin-oracle-handoff.md、before/after SHA、逆转exact proof停写。Root重跑完整门，独审复核精确diff；本轮最终token原浏览器旅程Root41237已0，邻接Root12045三文件95/0，两者source/Redis保持，跨scope仍待实际验，不按源码0P发现称全PASS。
+
+### R243-AGENT-REQUEST-BINDING-DESIGN / 后端最小生产者切片
+
+原owner agent_r243_live_journey续派只读后端设计，基线 Agent main cb645370、Billing main ccd4cb0f、现三D0和R201批准依赖；执行gpt-6-astra，Root审查。仅 /tmp/r243-agent-request-binding-design.md，仓源码/契约/SQL/测试/Git/资源/provider/资金零写。业务目标：同run/call/attempt的许可绑定必须覆盖本次实际ModelRequest消息与工具，而非仅RunRequest.input。复用现prepare receipt/CAS及技术配置，不一次重写quote/全支付体系。先给已存在请求projection与canonical digest可复用点、当前prepare真实可达反例、最小现文件集、三D0对应窄修改提案、后继可信bound与expiry依赖；quoteTTL/计价/新tokenizer未决明确隔离，不编造政策或盲开放provider。读AGENTS、Python09、CODEBASE_MAP及Agent三D0，报告绑定现SHA。Root原Web冻结全门3894在途，QA同片只读并行，作者停写后才资源复验；本任务设计交接不作用户PASS。
+
+### R243-WEB-FOCUS-SCOPE / 原失败GREEN后的最后围栏窄补
+
+Root30636取消→焦点→键盘重开→单PATCH→canonicalB/list→成功归焦→reload原bounded旅程terminal0，source/Redis保持；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-focus-after-9q4n1n9m/manifest.json`，logc4e6effeaf02cb452bcbb7b68426ca442495142d7fb2676f98df4d4696e5af6e。仅正常关闭子链GREEN，独审仍P2 sameURL subject/route回返代际风险未实测，当前不关闭整slice或用户组。
+
+Root准原唯一writer仅三既有文件 hook use-app-frame-project.ts、workspace-header.types.ts、workspace-header-project-menu.tsx：现renameContext（已有subject/generation/routeEpoch）作为opaque内存focusScopeToken透传，不新增身份/网络字段/存储/UUID/状态机；类型只object。menu捕获打开时token，layout effect/卸载invalidate，只有当前committed token相同且原source仍连通、同route才归焦，防旧关闭抢新页面。保留现正常关闭代码业务/modal/pending/所有assert；不改tests/原73/contract/其它src/docs/SQL/generated/Git/资源。该围栏属于尚未交付focus修复同片，沿原真实RED与现GREEN继续收紧，不编造分支曾实际失败。static+diff/SHA交/tmp/r243-web-focus-scope-handoff.md停写；Root重跑原行为、相邻恢复与跨scope实际测试后判，不按代码token存在称分支PASS。
+
+Root57221bc9仅五Root台账已checkpoint，六gitlink/uv保持；后端下一quote只读报告d3d3bf68指出应先Agent可信当前ModelRequest bound与planned/read artifact，现actual normalization不可直接当inclusive上界quote；未授新后端写，需原三D0下一门，不用免费许可绕开。产品偏好边界问题等待用户回答，其它工作并行。
+
 ### R243-WEB-FOCUS-RESTORE / 稳定真实RED后窄源码修复
 
 Root62162 bounded poll满10秒仍false，真实取消Dialog已detached、原更多trigger存在但未归焦，1fail/73名称过滤；source/Redis保持。排除Radix下一tick恢复观察盲点后确认键盘交互缺口，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-keyboard-settled-hmaxi8p9/manifest.json`，log53cd4ba0ccd8f051effdbfff992f4c2f20028f17e9022a17a7f129badf8bf018。

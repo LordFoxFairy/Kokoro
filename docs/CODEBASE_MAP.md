@@ -1,3 +1,7 @@
+## R243 当前后继边界
+
+Web localized冻结43path，Root89903原完整check0，原browser rename/key/reload及邻接恢复0，独审源码0；两真实FAIL历史保留。formal main仍5e096364/原四mixed保持，Root后继精确集成及正式owner/当前预览验收。Billingccd4cb0f私有前置已主树0但资金链OPEN；Agent请求绑定设计feed3bbcc不准临时gate两列半链，真正transform/bound冻结点再准下一门。Settings资料问题待答，现场昵称丢失FAIL。owned runners全部terminal，tab5复用，用户3310保持；同task/progress/test-cases唯一证据中心。
+
 ## R243 最新运行终态
 
 Billingccd4cb0f正式主树11门已实际全0；quote/attempt/资金后继只读由原Agent owner调查。Web菜单焦点窄源码修正在唯一writer，需Root原bounded反例；设置私有AI偏好/identity边界待业务对齐，尚无新BFFresource授权。前述在途均为历史时点，用户3310不更新、不清数据。

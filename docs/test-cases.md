@@ -1,3 +1,26 @@
+## R243 最终完整回归与用户验收边界
+
+Root89903最终localized冻结原完整check终态0：contract263、architecture50、lint/types、默认2488（现74系统在集内）、build均实际通过，source/Redis保持，日志SHA回读吻合。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-localized-185ixsi4/manifest.json`，loga574725e035dfbb1fe3e3444758a4b9a80bc369e727a8ca57721fedf3d13e7a1。43path冻结 `/tmp/r243-web-final-integrated-freeze.json`，源码独审232093fc确定P0/P1/P2=0。原两轮contract/缺译FAIL历史保留，未弱化测试或95%门。
+
+这是工程安全网/受控owner系统行为，不算2488用户旅程或当前3310发布。真实3310双行草稿刷新全文保留且测试草稿已清空；现场昵称关闭重开丢失仍FAIL。原加载根因、完整项目/Settings、正式费用/外部模型、跨scope focus交错/真实多语言UI仍待验；70组11/6/14/38/1不变。
+
+## R243 多行草稿真实操作与完整回归续验
+
+实际3310 conv_586d8b9f：原输入空→“R243 草稿保留第一行”→真实Shift+Enter→“第二行不发送”，只读DOM value确认精确\n/2行；未提交，原两轮消息不增。intentional硬刷新经历短暂booting后同会话正文/可用输入恢复，value逐字相同/2行。已显示实际截图并将QA草稿清为空，未发送新模型请求、改权限/积分/账号；此为输入/刷新子证据，不关闭T-U04原用户旧页或全输入模块。
+
+Root28998完整repin版门仍FAIL：contract263/0、architecture50/0、lint/typecheck0，test2487/1（ko1506/1598覆盖94.24%低于现95%），build未跑。原新rename中文13条仅en译的遗漏交给原唯一writer补七现locale词典，不降低阈值/删测试。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-repin-khsutjy4/manifest.json`，log204d51845a7a0c1bcb0d4e689cf37044021c9fadec910117e6197ae165765ebe，source/Redis保持。2487辅助通过不算2487用户旅程或整体完成；70组11/6/14/38/1保持。
+
+## R243 当前 token 版子旅程与完整门实际失败
+
+- 当前三file token freeze：Root41237真实Next/Chromium/Redis原旅程1通过/73名称过滤；取消零PATCH、键盘归焦重开、唯一改名PATCH、ACK后canonical B/list、成功归焦、刷新全部原条件成立。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-focus-scope-final-a_xh2c44/manifest.json`，logde2f3a3e7a81e6e35d6abc65aa951c8a30a58a1baedcca8f844696c64a0d2ab0，source/Redis保持。受控owner不冒3310真实持久链；跨scope交错仍待验。
+- 四fixture正规header修正后Root12045三现相邻文件95/0；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-adjacent-final-6_njw7se/manifest.json`，log5f063a7cea894d2a6b92c883cdb6c432b08245805818f8c5d5cc5514ace2b599，source/Redis保持，原93/2历史不删。该辅助安全网不是95用户路径PASS。
+- Root3894完整工程实际contract首门1fail/262pass：R76 exact artifact仍断言旧7.1/784f，实际formal886a25a1 artifact是7.2/bf64且two generator check正确。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-final-c5gkxs55/manifest.json`，log6a8913c6416cae66576aba114dcec15d8cb58d251d20803834797d04c67a9129。后续architecture/lint/types/test/build未跑，零新增产品组PASS；只准现该文件两字面repin，业务assert/90cases保持后Root全门重验。
+- 70组11通过/6失败/14待复测/38未验/1支付后置不变；既有Settings资料真实失败、正式费用/外部模型与原加载根因OPEN。
+
+## R243 原keyboard反例修复后终态
+
+Root30636真实Next/Chromium/Redis同原bounded旅程PASS：取消Dialog后归焦、Enter重开、改名ACK后canonicalB/list、成功后归焦及reload，单write/route/draft/thread保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-focus-after-9q4n1n9m/manifest.json`，logc4e6effeaf02cb452bcbb7b68426ca442495142d7fb2676f98df4d4696e5af6e。controlled owner只证明该交互子链，sameURL跨主体/routeEpoch风险仍OPEN，三file围栏未静态/动态放行；此前10秒false实际RED保留。UI四fixture已改但原相邻95case尚未重跑，后继先冻结再复验；70组不变。
+
 ## R243 keyboard生命周期新反例（独立于已通过的改名主链）
 
 预置为冻结新Project改名UI、真实Next/Chromium/Redis及受控owner；步骤：更多→改名Dialog→取消→Dialog卸载→既有10秒内观察原更多trigger焦点，随后预期键盘重开并改名成功后仍归焦。首次立即断言false不作为稳定RED；改为同预算expect.poll后Root62162仍满10秒false，实际FAIL，源/Redis保持。现menu来源ref恢复已派，原modal/pending/ACK/GET/deadline不放宽。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-keyboard-settled-hmaxi8p9/manifest.json`。此用户键盘反例不把73名称过滤算通过，也不取消前述主链局部PASS；完整项目组仍未PASS。
