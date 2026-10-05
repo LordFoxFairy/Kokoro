@@ -1,3 +1,49 @@
+# Kokoro 系统级测试与业务验收台账
+
+## R228 Root默认治理门真实失败及CURRENT回归修正
+
+原8264已终态：ten-repository-standard153规则违反exit1；topology5个gitlink/checkout HEAD差异exit1；scripts/tests 1719pass/2fail/3skip，126.96秒。两失败为contract checkpoint evidence gitlink与冻结清单不一致，以及本轮CURRENT压缩漏保活跃测试归属说明。Root未放宽test或更新组合指针凑绿；补回“子仓的 tests 不迁入 Root；scripts/tests仅治理、verification跨仓”的当前职责后，同topology测试文件实际7pass/0fail，/tmp/r228-root-topology-tests-green.log。完整scripts未重新全跑，checkpoint差异仍开放。真实诊断 /tmp/r228-root-checkpoint-diagnostic.json，源码/旧receipt的组合发布需独立验证，不把历史checkpoint当当前通过。标准153、拓扑5与checkpoint失败明确保留；三日志/tmp/r228-root-standard.log、/tmp/r228-root-topology.log、/tmp/r228-root-script-tests.log。
+
+## R228 真实Web协议/恢复执行记录（不增加70产品组PASS）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与范围|
+|---|---|---|---|---|---|---|
+|TC-WEB-R228-AUTH-RECOVERY / 正规登录协议与工作区故障恢复邻门|Web冻结935b1ea7、隔离真实Next/Chromium、现Redis15自有身份、受控IAM/BFFpeer；非用户3310|完整执行现OIDC系统77case：登录回调/状态与CSRF、refresh/退出/撤权负例、session body挂起→deadline→人工Retry→旧尾段隔离、正常刷新恢复；核owner调用及资源回收|业务正确拒绝/恢复、不泄露数据/凭据、不无限探针、迟到结果不污染当前状态；源码与Redis集合保持|P0|主链、边界、异常、权限、状态机、系统|77pass/0fail/0skip，116.259秒；manifest见本页R228事实。真实owner组合/用户3310根因/实际收费未验|
+
+## R228 已提交费率切片与完整 Web 协议系统门（2026-10-04；当前事实）
+
+上一回合归progress：Root承接真实Web1项终态并核Billing107/1361日志、沿同台账续派五D0。不缩小完整Wave0–7。
+
+Billing Root按20明确路径本地main提交 **8f091d40bd3695144861e88159e88d9d767112c1**：两rate canonical表/正规派生、pure codec、module-private publication、永久receipt/replay/audit与真实系统测试已交付。15 non-doc Git objects精确等Root冻结（仅旧pure测试标题every→representative，原全部断言保持，Root231pass）；5docs仅接RootR228+已审R227/R223+原HEAD，受保护旧mixed全文保持工作树，不夹带入提交。最终publication/source与五doc审0P0/P1/P2，107真实PG/1361辅助门绑定同生产源码，index空，现仅五D0 dirty。收据`/tmp/r228-billing-commit-receipt.json`。未push/Root gitlink/3310启用，没有实际价格、充值、余额或provider动作。policy、选择/quote、正式Admission、原始实际usage、结算/释放/流水与用户收费整链仍开放。
+
+Web Root原74057终态：同现oidc-rp-next-http.integration.test.ts完整 **77 passed / 0 failed / 0 skipped**，116.259秒；是真实隔离Next/Chromium/现Redis15与受控IAM/BFF peers，不是用户3310或实际模型收费。冻结935b1ea7、source_same=true、Redis key集合same，所有新资源句柄终态。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r228-web-full-zcb2hf4x/manifest.json`，日志SHA98313ad6bdca4124fc85ba156ce3937b988f4f253b92167c3bd7a98f93e55269。完整协议/首屏故障恢复邻门不证明原用户加载根因已修；现IAB tab1定向focus仍超时未取DOM，未绕过/新开/刷新/重启。
+
+原Agent owner独立推进原始usage观察四D0设计门，只准现文档当前前缀，source/schema/contract/lock冻结；missing不能从SDK归一0当实际zero、单物理response/invocation-local、有限解析/EOF/取消/隐私/digest材料待Root审，不提前放开正式native Run或收费。70产品矩阵仍11通过/6失败/14待复测/38未验/1支付后置，未将77协议或107PG当新增整页面PASS。
+
+本轮format首次从Root以pnpm --dir调用遭Corepack选择12.3.4而非固定11.25.0拒绝；未放宽engine/package。转正确Billing cwd后Node24.20.0/pnpm11.25.0及format真实exit0。错误命令不当产品逻辑RED，历史记录保留。
+
+## R227 最新已执行结果与用户进度口径（2026-10-04；覆盖本轮下方早期候选描述）
+
+整体研发/浏览器用户旅程仍未闭环；70产品验收组现场重算保持 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**，不把工程用例数换算成页面或仓库完成率。Root与11物理子仓仅本地main；Web19/BFF20/Billing20 dirty，8仓clean，Root五gitlink与受保护uv.lock保持；未新核远端。原3310 PID46036仍运行旧组合，未把新候选自动启用到用户页面。
+
+Billing Root原6274现已终态：10工程/生成/契约步骤全部exit0；9文件真实PG **107 passed**（含publication14），39文件纯/契约/架构/http **1361 passed**。本轮真实发现并修复audit UUID关联、NUMERIC78 Decimal科学计数读回两项P1；最终独审0P0/P1/P2。source/正规派生保持、自有库回收/邻库集合保持。manifest：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r227-billing-final-lrk72u3z/manifest.json`。rate-only module-private切片仍为待提交候选；完整PUB矩阵、HTTP/真实COMMIT网络ACK、policy、Admission、原始usage、正式预占/结算/释放/流水及用户UI仍开放，不改实际价格余额。
+
+Web Root承接原46388，真实隔离Next/Chromium与现Redis系统测试 **1 passed / 76名称过滤skipped**，20.108秒。200 headers已到但JSON body持续不结束时，现10秒deadline实际中断；人工Retry同document恢复，关闭的旧transport尾段不污染新状态。source与Redis key集合保持；独审0P0/P1/P2。manifest：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r227-web-body-6hkrs2xf/manifest.json`。IAM/BFF为受控peer，不是原3310用户浏览器或真实模型/费用验证；76未跑不计通过，原用户无限加载根因/修复仍未证实。本片只新增系统测试，无生产UI修改。
+
+Root已续派原Billing owner仅五D0当前证据前缀回填，旧全文保护；两资源句柄均终态，无重复服务、共享reset或provider费用。当前主瓶颈是固定组合用户加载复现、Agent可信执行与Billing授权/用量接线、逐页面CRUD及Settings验收，沿原任务表推进。
+
+共同预置：当前Billing canonical34表及冻结pure codec，Root自有真实PostgreSQL/Prisma fixture、真实编译Nest module-private provider；受信BillingAdminContext只在包内入口使用，不冒真实IAM管理员HTTP。无生产价格、资金、provider操作。原4schema子例完整保留。
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|当前状态|
+|---|---|---|---|---|---|---|
+|TC-BILLING-R227-PUB-01 / 正规发布与永久结果|共同预置、合法1..64个QA合成tariff|private provider publish→查header/rates/receipt/key/audit→同key重放→换key同identity重放|一次发布/audit、闭集7字段原bytes/revision不变、各ordinary字段/digest与canonical一致；仅换key可新增绑定|P0|主链、幂等、系统集成|有限通过：首发/原key及新key重放/7字段/64行已由Root真实执行；不等于正式报价或费用链|
+|TC-BILLING-R227-PUB-02 / 数量精度和时间边界|合法最大Unicode/NUM78/range及过去/未来/同instant draft|发布最大合法draft→精确读回→发布同effective及两tenant→revision极值/溢出|合法不截断、不浮点算钱；DB publishedAt一次UTCms，draft effective保持，tenant独立递增；溢出整组rollback|P0|边界、数据、生命周期|部分通过：Unicode/range/NUMERIC78/64行与溢出已验；全effective时间组合和跨tenant独立生成序列仍待补|
+|TC-BILLING-R227-PUB-03 / 失败恢复和并发|两个独立真实连接、完整事实快照|同identity不同key竞争；不同identity同tenant竞争；深层真实SQL失败；已commit调用者丢返回后重放|正确锁序，无第二效果；SQL失败rate/receipt/key/audit零新增；丢返回模型不冒COMMIT网络故障，重放原结果|P0|异常、并发、恢复|部分通过：同identity并发、audit故障全回滚已验；不同identity序列/真实COMMIT网络ACK/重启恢复未验|
+|TC-BILLING-R227-PUB-04 / 授权在所有副作用之前|null/wrongrole/tenant/drafttenant/operator受控负例、合法DB|提交越权与payload组合→实际数据库查询计数及全事实快照；合法主体再提交|固定FORBIDDEN；codec/transaction/SQL之前拒绝，零查零写；无新scope/header/HTTP绕过|P0|授权、安全、系统集成|部分通过：所列不可信binding拒绝及DB关闭时FORBIDDEN、独立facts零写已验；完整逐SQL调用观测待补|
+|TC-BILLING-R227-PUB-05 / durable事实和replay生命周期|一次成功发布，fixture独占SQL篡改或删除|分别改header/rate/digest/count/顺序/结果字段、同key/换key重放、读取全facts|CORRUPT/CONFLICT固定安全文本，无返回篡改数据、无第二rate/audit或新key残留；prepared/succeeded永久receipt在同事务闭合|P0|状态机、异常、安全|部分通过：ordinary drift、两类receipt腐化原/新key回滚已验；完整header/count/order等篡改矩阵待补|
+
+这是正式publication片验收，不关闭policy/Admission/积分/用户页面任务。
+
 ## R226 限定系统用例GREEN与产品边界
 
 Agent单completion用例已Root实跑GREEN：现单文件147case包含57个R225参数case，以下两行旧RED保留作历史；默认/显式n1、五override n2、sync/async×stream/nonstream、invalid scalar和raw缺n全部按正式hook验证，非法零POST、合法exact n1。六邻门451、默认2253不重复加总为用户功能。Agent已localmain f3050fcc；完整输入/reader/Billing/provider/3310用户路径仍OPEN。

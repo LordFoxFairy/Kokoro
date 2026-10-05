@@ -1,5 +1,13 @@
 # Kokoro codebase map
 
+## R228 本地交付入口
+
+Billing main8f091d40已交付rate-only canonical/pure codec/module-private publication与系统测试，Root107PG/1361辅助及标题231门。仅五旧mixed文档继续dirty，源码非候选；Rootgitlink/3310未更新，policy/Admission/费用链仍OPEN。Web现同OIDC系统文件完整77pass仅隔离协议fixture，不是原用户页面根因。当前事实与句柄收据仍沿CURRENT/task/progress/test-cases。
+
+## R227 当前增量入口
+
+Billing `src/modules/metering/metering-pricing-publication.service.ts`、`metering-pricing-revision.repository.ts`、`metering-pricing-publication-result-codec.ts`为rate-only module-private候选，Root107真实PG/1361辅助门已执行，尚未提交或接Admission/费用/UI；原R226“无publisher实现”仅历史。Web现`tests/system/oidc-rp-next-http.integration.test.ts`新增body hang系统case，Root隔离1pass/76未跑，不当用户3310根因/恢复证据。完整事实见同CURRENT/task/progress/test-cases。
+
 ## R226 当前交付与事实入口
 
 Agent localmain f3050fccc458dae1491cc5b9b98af79d9ff838ce/clean，model/factory.py显式constructor n1和最终HTTPX strict integer1已Root真实SDK wire验证；旧d50候选描述仅历史。Billing唯一database/schema.sql现新增两rate表，database/generated/schema.prisma/provenance.json及ignored src/generated/prisma由Root正规生成、68系统门通过；无新可编辑schema/contract或publisher实现。Rootgitlink/3310未更新，输入bound/read/费用/用户页仍OPEN；完整证据与任务见同CURRENT/task/progress/test-cases。

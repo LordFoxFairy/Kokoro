@@ -1,4 +1,58 @@
-# 当前任务入口（R226，2026-10-04）
+# 当前任务入口（R227，2026-10-04）
+
+## R228 Root默认治理门真实失败及CURRENT回归修正
+
+原8264已终态：ten-repository-standard153规则违反exit1；topology5个gitlink/checkout HEAD差异exit1；scripts/tests 1719pass/2fail/3skip，126.96秒。两失败为contract checkpoint evidence gitlink与冻结清单不一致，以及本轮CURRENT压缩漏保活跃测试归属说明。Root未放宽test或更新组合指针凑绿；补回“子仓的 tests 不迁入 Root；scripts/tests仅治理、verification跨仓”的当前职责后，同topology测试文件实际7pass/0fail，/tmp/r228-root-topology-tests-green.log。完整scripts未重新全跑，checkpoint差异仍开放。真实诊断 /tmp/r228-root-checkpoint-diagnostic.json，源码/旧receipt的组合发布需独立验证，不把历史checkpoint当当前通过。标准153、拓扑5与checkpoint失败明确保留；三日志/tmp/r228-root-standard.log、/tmp/r228-root-topology.log、/tmp/r228-root-script-tests.log。
+
+## R228-AGENT-ZSTD-PROBE 只读设计前置
+
+Agent四D0最新a150bd90已冻结待独审，生产与peer测试尚未准入；Python>=3.11与本机3.14标准库zstd的公开有界接口需先确认。原billing_oracle_exact_fix临时只读API研究员，在Agent现锁定venv用合成内存数据、公开zstandard0.25.0 API验证有界解压/截断/EOF/坏frame；只写/tmp报告，不改仓/锁/依赖/资源/Git，不安装Python或调用provider。不以CPU API probe冒系统业务测试或3.11实测。Root汇总与原Agent owner后续实做，先参数/真实peer失败再源码。
+
+## R228-AGENT-USAGE-D0 当前任务卡
+
+|项|当前执行边界|
+|---|---|
+|任务/优先级|R228-AGENT-USAGE-D0，P0，单物理响应原始用量保真设计；不把SDKmissing→0当收费证据|
+|owner/Agent|kokoro-agent/model；agent_execution_bound_owner 原owner续派，继承现会话模型；Root裁决/审查/资源/Git|
+|基线|/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent，main f3050fcc；原工作树clean，现仅四doc前缀候选|
+|准写/排除|现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT四D0当前前缀；全部旧全文suffix、364 non-doc、source/tests/schema/contract/generated/lock/其它仓冻结|
+|依赖/并行|独立于Billing真实价格/Admission；Billing发布已8f091d40，Web77门终态；正式native无Billing仍0provider，不先铺unavailable reader|
+|裁决|JSON文档4MiB/SSE事件64KiB、累计编码与解码各4MiB、4096事件、深度16、投影4KiB；有界scratch仅短时内存。必须identity/gzip/deflate/zstd公开有界解码，不identity-only、不改Accept-Encoding/新依赖；未知编码/耗尽观察未知，SDK原流透明|
+|交付/验收|旧bytes在/tmp/r228-agent-usage-doc-before；handoff/tmp/r228-agent-usage-d0-handoff.md，Root独审并确认D0后另授现真实SDK/HTTPpeer测试；当前没有source/test或资源通过声明|
+
+## R228 已提交费率切片与完整 Web 协议系统门（2026-10-04；当前事实）
+
+上一回合归progress：Root承接真实Web1项终态并核Billing107/1361日志、沿同台账续派五D0。不缩小完整Wave0–7。
+
+Billing Root按20明确路径本地main提交 **8f091d40bd3695144861e88159e88d9d767112c1**：两rate canonical表/正规派生、pure codec、module-private publication、永久receipt/replay/audit与真实系统测试已交付。15 non-doc Git objects精确等Root冻结（仅旧pure测试标题every→representative，原全部断言保持，Root231pass）；5docs仅接RootR228+已审R227/R223+原HEAD，受保护旧mixed全文保持工作树，不夹带入提交。最终publication/source与五doc审0P0/P1/P2，107真实PG/1361辅助门绑定同生产源码，index空，现仅五D0 dirty。收据`/tmp/r228-billing-commit-receipt.json`。未push/Root gitlink/3310启用，没有实际价格、充值、余额或provider动作。policy、选择/quote、正式Admission、原始实际usage、结算/释放/流水与用户收费整链仍开放。
+
+Web Root原74057终态：同现oidc-rp-next-http.integration.test.ts完整 **77 passed / 0 failed / 0 skipped**，116.259秒；是真实隔离Next/Chromium/现Redis15与受控IAM/BFF peers，不是用户3310或实际模型收费。冻结935b1ea7、source_same=true、Redis key集合same，所有新资源句柄终态。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r228-web-full-zcb2hf4x/manifest.json`，日志SHA98313ad6bdca4124fc85ba156ce3937b988f4f253b92167c3bd7a98f93e55269。完整协议/首屏故障恢复邻门不证明原用户加载根因已修；现IAB tab1定向focus仍超时未取DOM，未绕过/新开/刷新/重启。
+
+原Agent owner独立推进原始usage观察四D0设计门，只准现文档当前前缀，source/schema/contract/lock冻结；missing不能从SDK归一0当实际zero、单物理response/invocation-local、有限解析/EOF/取消/隐私/digest材料待Root审，不提前放开正式native Run或收费。70产品矩阵仍11通过/6失败/14待复测/38未验/1支付后置，未将77协议或107PG当新增整页面PASS。
+
+本轮format首次从Root以pnpm --dir调用遭Corepack选择12.3.4而非固定11.25.0拒绝；未放宽engine/package。转正确Billing cwd后Node24.20.0/pnpm11.25.0及format真实exit0。错误命令不当产品逻辑RED，历史记录保留。
+
+## R228 当前集成动作
+
+上一回合归progress：Root承接Web46388真实1pass终态、验证Billing6274日志并更新同一台账，不是仅口头状态。Billing原五D0 writer已交接停写；独审r226_agent_n_review当前0P0/P1/P2。Root接收15个rate-only代码/SQL/派生/测试路径及五D0仅R227/R223+原HEAD，不提交五正文既有混合修改；Root添加有限本地交付前缀，完整既有工作树文档逐字suffix保持。Root局部再清理既有purecodec测试标题P2：现test/unit/metering-pricing-revision-codec.test.ts只把every content field改为representative，原全部用例/断言/production不变，Root重跑该231辅门；不新写单测或代替系统验证。Index/Git/提交Root独占；固定87cbe82f基线、源码绑定最终107PG/1361pure，ignored Prisma Client不force-add，scope不扩大为正式积分。
+
+Web同system文件冻结935b1ea7保持，Root续跑完整77-case真实Next/Chromium/Redis与受控IAM/BFF邻门；非用户3310/真实provider。复用现Redis15只清理fixture自身身份，source和Redis集合前后核验，不重复启动用户服务。独审0不替实际终态。现IAB tab1再次focus命令超时未取得DOM，不作应用根因或页面恢复证据。
+
+## R227 最新已执行结果与用户进度口径（2026-10-04；覆盖本轮下方早期候选描述）
+
+整体研发/浏览器用户旅程仍未闭环；70产品验收组现场重算保持 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**，不把工程用例数换算成页面或仓库完成率。Root与11物理子仓仅本地main；Web19/BFF20/Billing20 dirty，8仓clean，Root五gitlink与受保护uv.lock保持；未新核远端。原3310 PID46036仍运行旧组合，未把新候选自动启用到用户页面。
+
+Billing Root原6274现已终态：10工程/生成/契约步骤全部exit0；9文件真实PG **107 passed**（含publication14），39文件纯/契约/架构/http **1361 passed**。本轮真实发现并修复audit UUID关联、NUMERIC78 Decimal科学计数读回两项P1；最终独审0P0/P1/P2。source/正规派生保持、自有库回收/邻库集合保持。manifest：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r227-billing-final-lrk72u3z/manifest.json`。rate-only module-private切片仍为待提交候选；完整PUB矩阵、HTTP/真实COMMIT网络ACK、policy、Admission、原始usage、正式预占/结算/释放/流水及用户UI仍开放，不改实际价格余额。
+
+Web Root承接原46388，真实隔离Next/Chromium与现Redis系统测试 **1 passed / 76名称过滤skipped**，20.108秒。200 headers已到但JSON body持续不结束时，现10秒deadline实际中断；人工Retry同document恢复，关闭的旧transport尾段不污染新状态。source与Redis key集合保持；独审0P0/P1/P2。manifest：`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r227-web-body-6hkrs2xf/manifest.json`。IAM/BFF为受控peer，不是原3310用户浏览器或真实模型/费用验证；76未跑不计通过，原用户无限加载根因/修复仍未证实。本片只新增系统测试，无生产UI修改。
+
+Root已续派原Billing owner仅五D0当前证据前缀回填，旧全文保护；两资源句柄均终态，无重复服务、共享reset或provider费用。当前主瓶颈是固定组合用户加载复现、Agent可信执行与Billing授权/用量接线、逐页面CRUD及Settings验收，沿原任务表推进。
+
+R227 Root6274已终态：所有format/lint/types/build/sql/contract/generated-contract/prisma检查exit0；9file真实PG含publication14与事务/receipt/audit/Schema邻门共107pass，39file纯/contract/architecture/http共1361pass；source/正规派生保持、owned库回收/邻库集合保持。final代码独审0P0/P1/P2，两Root真实P1历史保留。publication有限切片通过，HTTP/COMMIT网络ACK/policy/Admission/资金/用户旅程仍未验。准原Billing writer仅五现D0 TECH/API/DATA/IMPLEMENTATION_PLAN/CURRENT追加一致R227证据前缀，原五全文逐bytes保护（Root/tmp/r227-billing-doc-before-manifest.json）；首节准确写rate-only已实现/验收候选待Root提交与这些未闭范围，不改source/tests/schema/generated/旧正文/资源/Git。Root回填后按保护与独审确定提交，不混提五D0原任务外正文。
+
+并行独立任务R227-WEB-BODY：agent_execution_bound_owner本轮Agent只读任务已交接停写，现明确改派Web系统测试负责人；只准apps/kokoro-app/tests/system/oidc-rp-next-http.integration.test.ts扩现sessionProbeProxy的headers已到/JSON body未结束故障与一个真实Next/Chromium业务节点，原19mixed和所有原断言保持。基线Web maince40cecc，本轮Root先保存该文件原全文SHA；不改生产源、登录语义、依赖、文档或其它test，不启动PG/Redis/用户3310、运行资源/Git。该普通现文件归Web首屏会话恢复验证，不创建目录/contract；验收是原10秒探针中断body→明确错误、人工Retry恢复、旧body不污染新generation，不能称原用户页面根因已查明。作者静态后冻结，Root独占隔离Next/Chromium及源码/资源保护验证；Billing独立写集可以并行。现IAB仍只有一用户tab，getTab focus超时，不盲控或复制窗口。
+
+当前用户要求整体进度核对，本轮仅只读盘点与更新Root台账，不将历史工程门冒当前浏览器验收。R227 publication六文件候选已由原Billing writer交接并停写，Root已实核四个关键source/test SHA；作者静态门通过仍是交付证据，真实Nest/PG业务矩阵、独审和集成尚待执行。Billing dirty现20路径，不再是原15。Agent只读接线报告已交：可信输入界、正式Admission和逐调用原始usage仍缺，SDK缺usage填0不可作为财务事实。完整70组统计保持11通过/6失败/14待复测/38未验/1支付后置。
 
 ## R226 当前任务状态（覆盖下方授权历史）
 
@@ -9,6 +63,28 @@
 |正式publication/Admission/模型费用旅程|待实施及系统验收|沿现R223设计和owner，不捏造采购价/Credit换算、免费/授权/用量|
 |用户页面/CRUD/Settings/能力|保持原开放任务|70组11通过/6失败/14复测/38未验/1支付后置；3310未启用新组合|
 
+
+## R227 Rate publication 编排准入（沿R223同一能力切片）
+
+R227 Root首轮真实PG原79028已终态：10项5失败/5通过，五正向均在audit写入失败；同source哈希、邻库集合保持。Root独立实际事务诊断证Prisma P2007/SQL22P02：现billing_audit_event.resource_id为UUID，service错误写入revision字符串1。原6file候选未验收，初只读审漏此P1已要求补证。续授原Billing唯一writer在同6file内修正audit关联真实rate header UUID（不改SQL/闭集7字段永久result）、加强同现integration：真实Nest DatabaseModule+MeteringModule compile/init/get private provider、audit与header UUID关联、现真实PG transaction失败全回滚及损坏receipt新key重放回滚。零SQL前授权需实际query观察，不仅最终counts；不接HTTP、资源、金额、generated、五D0或Git。Root停所有原资源执行后交writer，冻结后重新跑同业务矩阵；缺其它边界不得用10通过覆盖整个PUB矩阵。
+
+Root62679新freeze14221696真实Nest/PG全13通过、prisma:check0、source/generated与邻库集合保持，audit UUID与receipt/rollback新增覆盖已到达。该13仍不覆盖publication最大合法NUMERIC78/Unicode/range语义（原schema正控是raw INSERT，不能替代publisher）；下一唯一writer仅现integration补完整合法极值经publication+replay的行为测试，现source保持，Root先实跑再准任何source修正。疑点为Decimal.toString科学记数法与纯codec规范整数字符串不一致，先测试不假报根因。
+
+Root51408在2556518e测试冻结实际14项13pass/1fail，新增合法NUMERIC78 publication被拒Unavailable；source/derived/库集合同。独立真实transaction诊断又复现，锁定Prisma.Decimal.toString实际为9.99…e+77，toFixed(0)为精确78位整数，canonical纯codec因此拒绝。仅续授原Billing writer现metering-pricing-revision.repository.ts两个NUMERIC78读回字段采用精确普通整数字符串，不改生成/schema/codec/输入界或test；其它5source与14系统test保护，作者静态冻结后Root完整14/邻门验证。保持NUMERIC(78,0)字段语义，不四舍五入中间有理数、不转Number。
+
+上一goal turn为progress：Agent f3050fcc与Root08197664已提交、Billing真实68系统GREEN及正规派生闭包已验；本轮不是重复盘点。Billing唯一writer续用billing_oracle_exact_fix，main87cbe82f、已冻结SQL/derived/15mixed路径全部保留；Root资源/Git与独审r226_agent_n_review。
+
+|项|结论|
+|---|---|
+|owner/目标|Billing modules/metering，module-private publishRate，仅正式rate发布/永久重放，不接policy/quote/资金/Agent/HTTP|
+|当前/D0|R223 TECH/API/DATA首节、55fc34d3 D0审与be2d8371 SQL、831e1ae0派生审；现完整canonical34表、68系统门，通过范围有限；缺publisher是真实能力缺失，不用404/import当业务RED|
+|放置/粒度|采用已批3普通文件metering-pricing-publication.service.ts、metering-pricing-revision.repository.ts、metering-pricing-publication-result-codec.ts及现module/error；淘汰legacy usage-pricing或新module/UoW位置。现integration/metering-rate-publication.test.ts扩同publication用户流，原4case完整保留，不建第二schema/contract|
+|准写文件|上述3新source、现metering.module.ts/metering.error.ts及现integration/metering-rate-publication.test.ts；既有三purecodec/SQL/generated/fiveD0/其它test/package/lock/public facade冻结，越界先报告|
+|依赖/授权|复用现TransactionService/CommandReceiptRepository/AuditAppender及pure codecs；BillingAdminContext null/role/tenant/drafttenant/operator在codec/SQL前拒绝。仅当前真实受信principal，不新造IAM scope/header/可信字段，provider不public export|
+|数据/事务|一root事务；tenant-rate advisory lock MAX+1正BIGINT；DB publishedAt一次CURRENT_TIMESTAMP3、draft effective保持；最多64ordinary行 strict canonical reread+digest重算；result精确7字段。永久receipt/key/audit同事务；同identity换key重放原值，任何漂移拒绝，不写价/余额/hold|
+|测试/基线|沿同R224先缺两表正确RED、现68GREEN继续完成发布能力；新增业务入口尚不存在，仅记缺能力不声称import失败为业务RED。先补真实PG业务测试，再实现已批source；Root冻结后实际编译Nest private provider+PG证实success/auth/精度/time/replay/concurrency/corrupt/rollback等，不用unit mock充当系统闭环。可用真实SQL故障或受控调用者丢ACK模型，必须精确标注故障层，不冒真实HTTP或COMMIT网络丢ACK|
+|错误/删除|复用MeteringError新增5稳定publication codes，固定安全文本；不读取legacy quote/不增fallback，旧caller旧表待Admission cutover立即删，不在此片误删仍有效职责|
+|验收/交付|作者仅静态、不跑PG/服务/生成/Git；Root独占现Node24.20源码build、真实owner数据fixture+编译Nest、schema/contract/架构邻门与独审。先冻结candidate和test逐SHA；Root决定修复/提交，不能自称资金/UI或完整用户闭环|
 
 ## R224 Rate持久化与正式publisher（沿同Metering任务）
 
