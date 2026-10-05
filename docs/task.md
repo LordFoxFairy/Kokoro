@@ -1,3 +1,35 @@
+R245运行副本补核：Root只读新增9生命周期源hash对照 /tmp/r245-web-refresh-lifecycle-source-equality.json。engine hook/执行adapter/use-hydrated相同；app-frame、page-clients、会话list、machine、client、persisted-store不同。已读persisted-store差异仅getItem异常降级，machine差异为Move cache reconcile/newConversation代际；这些不是本次刷新根因证明。此前只说navigation/helpers相同，未证明整副本与formal一致，不以旧copy笼统关闭真实故障；后继正式owner用户验收必须绑定全源/pin。未覆盖副本或重启用户3310。
+
+R246实现准入补充：原作者已给最小顺序，Root准仅两现父目录普通测试文件 tests/unit/model/test_request_profile.py（纯profile辅助，不替代用户验收）、tests/support/model_http_mechanism.py（真实SDK/owned peer机制，复用同生产纯profile/cap/observer、不复制算法或假授权）。envelope/hash仍归call_artifacts，request_profile只纯解析/资源规则；formal native constructor与缺scope/唯一hook/合法child/取消覆盖保持。writer正在实现，不冒冻结/通过；Root不抢写其文件。原native测试独审9f02916b已独立核实际manifest与唯一行为RED成立、原51027bytes保护。
+
+### R246-AGENT-FINAL-WIRE-PRODUCER / 已审D0与真实native RED后的唯一实现
+
+Root52891已真实owned PG/native/SDK取得有效业务RED：原完整R198 zero-provider/ND/终态事实全到达，最后sequence实际[prepare_enter,prepare_committed]缺final_hook_enter；1fail/1.77秒、source/DB全清单保持、ownedDB不存在。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r245-agent-native-red-s2rny5nx/manifest.json，原测试冻结b6052f5b。不是setup/import失败，不代表provider或费用成功。Root后继仍独占实际资源/Git。
+
+原agent_r243_live_journey唯一Agent writer，formal main29a7a18+已冻结本片native tests-only（唯一existing dirty）。依照已提交三D0、84f3唯一profile与独审89e1de7a，在同完整producer切片实施最终HTTPX request profile/version1 envelope、attempt-local生命周期owner/合法child唯一claim、hook内唯一prepare→缺Billing typed unavailable零send，两NN普通immutable列与fresh canonical/verifier/replay/closure同片。禁止临时gate摘要半链/提前prepare/身份漂移/假token bound/任何send成功或资金操作、兼容双轨。middleware只能closed/reset/cancel，outer-only settle保持。
+
+允许精确范围：新src/kokoro_agent/model/request_profile.py；现model/{factory,call_runtime,call_models,call_artifacts,call_evidence}.py，infrastructure/{postgres_model_call_repository,schema}.py、database/schema.sql、execution/runtime_profile_sources.py；postgres_model_call_evidence.py仅共享frozen validator接线确有需要时最小修改并说明；现三D0/CURRENT仅实施事实窄前缀由交接后Root写，worker不改。测试仅三D0列明provider_retries/config_litellm/factory/runtime_profile_sources/canonical/repository/schema_installation/runtime_chain/evidence_repo/run_interaction与对应现test支持（测试侧SDK mechanism helper另报准确路径，Root先准；不复制生产算法/MockTransport/伪授权/生产bypass）。新增profile测试位置先报精确普通文件职责，避免新目录。其余仓与Root台账/锁/生成物排除。
+
+worker先给最小差异/实现顺序，沿freeze schema→model/repository→runtime/factory同业务闭合，不开放半成品。可运行纯format/lint/types/collection，不自行共享PG/Redis/服务/provider/真实integration；Root在freeze后重跑native GREEN/取消/claim/解析边界/真实PG replay/closure与全工程/installed，独审同hash。修改过程中不得称系统通过，发现D0遗漏或需越界先报告、不自扩。提交由Root，交/tmp/r246-agent-final-wire-producer-handoff.md（每路径SHA/diff/未验风险）后停写。Web间歇刷新与用户路径同时由Root继续，完整Wave0–7不缩小。
+
+R245两tab Root36180实际终态0：1pass/75名称过滤，8.876秒，源/Redis保持，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r245-web-two-tab-reload-b08uplnc/manifest.json，loge52e22b0。自然shared active A/entriesA+B及reload前B URL/body守卫均到达，新cold B刷新仍B；是该受控排程GREEN，不关闭首次用户间歇FAIL、也未授权导航源码。独审e1212f94核原75 byte保护/确定缺陷0；实际hold是request尚未到owner后continue，不冒已取得200 response的延迟。新增76系统候选还未全回归/Git交付，full用户组不升级。Agent native新反例唯一tests writer正在原现文件，Root尚未运行它，不预报RED。
+
+### R245-AGENT-NATIVE-RED-TEST / 已审三D0后的真实入口反例
+
+原agent_r243_live_journey唯一Agent tests writer，正式main29a7a18当前clean。仅既有tests/integration/database/test_model_call_runtime_chain.py末尾追加一case，原全文exact prefix；scope报告6b96cf29已Root实读。沿原真实AgentFactory/invoke_once/SDK+Postgres事实与本地owner peer：test-only只读trace wrap当前ModelHttpClients._validate_async并恰一次委托原方法，保production唯一hook/constructor/handler/许可；真TracingRepository记prepare顺序。先原完整R198零外发/ND/终态/事实正控，再断应final_hook_enter→prepare_enter→prepare_committed；不查未实现列、不引新import error、不手构Request/调用guard冒SDK。只静态/收集，不执行SDK/PG/Redis/provider/Git；交/tmp/r245-agent-native-red-test-handoff.md/SHA/diff/prefix，Root资源独占实跑，未得有效行为RED前不准producer代码。Web两tab资源36180在途，沿原句柄取终态，不重启用户服务/共享基础设施。
+
+### R245-AGENT-NATIVE-RED-SCOPE / 已审设计之后的最小行为门
+
+原agent_r243_live_journey只读，基线Agent main29a7a18（3D0已精确提交），读现native数据库system test/真实OwnerAndProviderPeer与TracingRepository。仅/tmp/r245-agent-native-red-scope.md，零仓/SQL/Git/SDK/资源/provider；给一个可收集真实final HTTPX请求与prepare顺序、当前early拒绝导致hook0的行为断言，不替换正式constructor/handler/授权、不用MockTransport或新import报错冒RED。列真实fixture隔离及Root运行入口、准确tests-only文件集；Root再裁卡准tests/实跑，D0文字与原contract17pass不替代真实链。Web两tab tests与Root用户页独立推进，各仓单writer，费用支付后继不扩。
+
+### R245-WEB-TWO-TAB-RELOAD / 前置补齐，未准生产修复
+
+Root74165当前新case actual1pass/74名称过滤，9.186秒，source/Redis保持；不是RED。实际3310原B第二次直达与hard reload恢复B，零源码/服务变化；首次跳A故障保留为间歇FAIL。原writer诊断d2dd4df4说明当前case B打开已同步持久化B，未保持remembered A≠URL B；pagehide/release无conversation index写回，合法旧A snapshot/AG-UI晚完成才会自然写回A。
+
+原web_r243_cache_boundary_owner唯一tests writer，只在同冻结system文件另追加一case，保原75与source/预算：同合法subject/context两真实pages A/B，A已有合法snapshot读在途→B直达正常正文→release未篡改A200 response→只读观察shared persisted active A（不写storage/event）→硬reload B→URL和正文必须B。复用现R186合法route.fetch/hold/release机制，仅新case内；无fake错误/provider/资金/全局fixture改动。先静态freeze及/tmp/r245-web-two-tab-reload-handoff.md，Root独占真实运行。GREEN仍不准将静态P1冒用户根因或修源码；若真实失败再最窄修复/负控，用户完整组仍OPEN。
+
+Agent三D0已独审89e1de7a确定设计缺陷0，Root核3suffix/hash和canonical/repository原合同17pass/0fail（0.23秒，只文档安全网）。Root精确三doc本地main提交29a7a18；源码/schema/许可/用户费用未改。下一native RED测试切片仍须明确独立范围及真实资源交由Root。
+
 ### R245-WEB-REFRESH-ROUTE-RED / 真实刷新串会话优先
 
 实际3310新tab6：/app?conversation=conv_ffd7…初始正文为R145标记→硬刷新→原正文15秒内未出现→URL改为conv_586…并显示R243两回复；两个详情GET均200，截图实际显示错误会话。不是将初始booting/home暂态算FAIL。旧tab5 CDP focus无响应，新tab6同浏览器可控；先保留tab6，旧agent tab稍后关闭。formal c8b863264 与runtime两navigation/helpers源hash相同（3060b793/adee3d2d），不靠‘旧预览’忽略此故障。

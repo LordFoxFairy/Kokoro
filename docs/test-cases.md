@@ -1,3 +1,18 @@
+## R245 最终实际运行记录
+
+|用例|预置/操作|预期|实际/边界|优先级/类型|
+|---|---|---|---|---|
+|TC-CHAT-R245-002 两tab remembered A 与URL B冲突|合法同subject两page；A在途snapshot请求暂停，B正文/URL稳定，A request continue；只读shared A且含A/B、B仍正文URLB后hard reload|B URL/正文保持，不出现A|Root36180 PASS该受控排程；1/75过滤，源码Redis保持。不是已取得200的response hold，不关闭TC-CHAT-R245-001真实间歇FAIL|P1/系统、状态机、多窗口|
+|TC-AGENT-R245-001 最终真实wire必须先于调用prepare|原production Factory/native SDK、真PG、合法local owner peer，缺Billing；透明观察现唯一HTTPX hook与真实PGprepare顺序|原ND/零provider/unknown完整事实保持，hook→prepare→committed|Root52891有效FAIL：原安全事实通过，sequence缺hook；1fail/1.77秒，源/全DB保持/自库已回收。仅开发控制链反例，不是用户推理/费用PASS|P0/系统、生命周期、SQL一致性|
+
+Agent已审3D0仅本地main29a7a18；producer实现/所有解析界/claim取消/PG replay/closure和完整用户链仍待。Web两个新case共76候选尚未全回归/Git交付；原70组11/6/14/38/1不变。
+
+## R245 刷新用例复测边界
+
+TC-CHAT-R245-001：第二次真实3310同B hard reload恢复原B及R145正文，未改服务/代码，不覆盖首次跳A FAIL。受控新增单文档系统case1pass，但其persisted active在reload前已是B，未形成所需A/B冲突前置；不能据它关闭用户组或准修导航。原源码审查565dfa8d的P1为判据不足，具体用户因果仍待真实乱序反例。下一两tab case需合法200、自然写回A、shared entries含A/B且reload前B URL/body未变，不注入storage/延长10秒。
+
+Agent3D0独审0与原合同17pass仅设计安全网，不算native、PG或费用用户PASS。完整矩阵70组保持11/6/14/38/1。
+
 ## R245 新发现的真实刷新反例（不升级整组PASS）
 
 |用例ID/标题|预置条件|测试步骤|预期结果|实际结果|优先级/类型|

@@ -1,3 +1,11 @@
+## R245 本轮最终真实入口
+
+Agent29a7a18只是三D0；现runtime_chain追加b6052f5b的新真实native/PG反例已Root52891证明final hook0而prepare已commit，ND/零provider保持。R246唯一producer沿同model/factory/call_runtime/新纯request_profile/canonical schema+verifier+repository/frozen validator完整写集，不建许可fallback/新协议；scope见task。Web两个受控浏览器分支均GREEN，真实3310首次刷新串会话仍间歇OPEN，不能按导航静态P1就改；candidate76只tests尚未正式交付。Root实际证据与后继仍同五台账。
+
+## R245 后继准入补核
+
+Web首次真实刷新跳A后第二次恢复B，当前视为间歇故障。新单文档系统case1pass不构成RED；前置B已写盘，下一合法两tab A迟到200写回→B reload在同tests文件追加。导航静态P1不能冒动态根因/已修复。Agent正式main29a7a18仅三D0 final-wire/request profile设计前缀，原schema/source未动；下一native RED沿既有真实数据库system入口，不建立新计划/协议/许可。
+
 ## R245 当前首要交互入口
 
 真实3310发现本人会话B hard reload 被 remembered A覆盖，URL和正文均改变。优先检查 Web `src/components/blocks/app-frame/use-app-frame-navigation.ts` 的deep-link恢复/URL清理与现engine hydrate代际；formal c8b863264/runtime该navigation与helpers字节一致，不能按旧copy排除故障。现冻结candidate系统测试由原Web owner唯一追加RED，QA独立只读，Root独占运行；Agent原owner仅现三D0窄前缀。具体证据与任务沿同CURRENT/task/progress/test-cases，不另建中心，未宣称用户链已闭环。

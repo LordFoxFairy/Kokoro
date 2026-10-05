@@ -1,3 +1,17 @@
+## R245 收尾：真实 native 行为 RED 与浏览器分支区分（2026-10-05）
+
+Root52891实际新native+SDK+自有PostgreSQL系统反例终态1：原完整R198零provider/ND/unknown用量/终态安全事实通过，唯一失败为最终请求hook未进入；sequence只有prepare_enter→prepare_committed。1failed/1.77秒（runner3.975秒），manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r245-agent-native-red-s2rny5nx/manifest.json`，log `5a356a96802312fa5ef4c4c1a2da0ef7efb412e0849643c31ee8f7c567a8a7ae`；源码/全DB清单保持、owned数据库已不存在。不是setup/import失败，不是实际模型/费用成功。测试b6052f5b仅现runtime_chain追加222行，原51027bytes exactprefix；唯一hook透明委托观测不替代constructor/handler/许可。三D0已doc-only提交Agent29a7a18与独审89e1de7a，后继R246真实producer实现范围沿task，费用授权/完整用户链仍OPEN。
+
+Root36180第二个真实Next/Chromium同context两page测试1pass/75过滤，8.876秒、自然shared active A/entriesA+B和reload前B不变均到达，reload仍B；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r245-web-two-tab-reload-b08uplnc/manifest.json`，loge52e22b0/源码Redis保持。独审e1212f94只核此冻结case；是较窄request hold/continue场景，不冒已经读取owner200后的response乱序，也不关闭首次3310间歇刷新跳A。新两case候选共76，尚未全系统回归或Git交付，导航源码未改。当前原B在tab6正文可见且保留，旧tab5关闭控制超时；服务未重启、共享数据未重置、没有新模型/权限/资金操作。
+
+完整70组保持11通过/6失败/14待复测/38未验/1支付后置；不能用上述单例/设计/后端门计算页面完成率。Root回填同task/progress/test-cases/CODEBASE_MAP，不新建计划；六gitlink/uv与各任务外mixed保持。stored goal仍blocked，不伪报已恢复或已闭环。
+
+## R245 当前复验与后继准入（2026-10-05）
+
+首次真实3310 B→hard reload跳A的FAIL保留；同tab6第二次直达B与hard reload实际恢复B/原R145正文，之间未改源码/服务。结论为间歇故障OPEN，不将第二次PASS覆盖首次失败。Root74165新受控Next/Chromium单文档case实际1pass/74名称过滤（9.186秒），manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r245-web-refresh-red-l8vske0n/manifest.json`，log e8d13529/source/Redis保持；它不是RED或正式用户PASS，不能据静态P1直接修源码。原writer只读d2dd4df4确认该case B打开已持久化B，欠 remembered A≠URL B 前置。下一仍同系统文件追加合法两tab/迟到A200自然写回的反例，禁注入storage/错误response/加长预算；独审dab57783要求reload前共享A且含A/B、页面B正文URL仍B，避免测错删除分支。
+
+Agent真正final-wire三D0已冻结3suffix/hash、独审89e1de7a确定设计缺陷0，Root原canonical/repository17pass/0fail（0.23秒，非用户测试）后精确3文档本地main提交 `29a7a18a64a84bc3432682473d5e0a89b3c08132`。零源码/schema/provider/资金变化，不能称模型/费用链已通；原owner仅下一真实native RED范围只读提案。Root与前端/后端/独立QA按现卡并行，当前70组11/6/14/38/1不变；原3310/共享基础设施和uv保持，无重复服务。当前新tab6在原B且markHandoff，旧5关闭控制超时仍存在如实保留。
+
 ## R245 真实会话刷新故障优先（2026-10-05）
 
 Root在当前3310实际新tab6直达原本人会话 `conv_ffd7d37b-ef39-4055-8c83-8b5856e10f35`，加载退出且正文含 `KOKORO_R145_E2E`、输入可用；随后硬刷新，等待原正文15秒仍无匹配，实际URL及正文改成 remembered `conv_586d8b9f-00ea-415e-a437-da3b09a22849` 的R243两回复。两个详情请求分别200，不是将初始booting/home暂态判失败。正式Web c8b863264与runtime现navigation/helpers字节一致，证据 `/tmp/r245-web-refresh-source-equality.json`；不能以旧预览或后台门0忽略此用户故障。当前记P1/FAIL子例，原加载、完整项目与Settings/积分链仍OPEN，70组11/6/14/38/1不变。
