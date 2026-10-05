@@ -1,3 +1,9 @@
+## R254 / R255 当前源码门与测试入口（2026-10-05）
+
+R254沿既有10现source、4现UI测试（追加现app-frame.smoke.test.tsx两placement）修folder+direct，未新建模块/实体/engine。当前冻结源与独审/tmp/r254-folder-final-review.md指向四待修seam：app-frame.tsx Move可见route fence；ui/rail/use-session-list.ts首页实例/admission key；workspace-rail shell/边界撤准入意图；navigation重名展开可辨性。writer先现UI业务反例，未更新日常3310。
+
+R255 Billing D0正式7ce0ecf，现scripts/canonical-schema.ts、canonical-reference.ts、schema-verification.ts与src/config/runtime-config.ts、database/prisma.service.ts/transaction.service.ts、infrastructure/postgres/connection.ts是后继namespace候选，源码未动。现test/integration/schema-installation.test.ts先新增单库owner-schema正反例；canonical仍35表，无账务/wire变化、新角色或installer框架。原mixed不属于该片提交。
+
 ## R254 文件夹实现写入面（当前heartbeat，2026-10-05）
 
 三D0 Root新增target前缀、原全文suffix3/3 exact，manifest固定var/dev/r254-d0-prefix.json。Root82604现3UI行为文件实3failed/133passed，独审无确定P1/P2，原Web owner续接同task十现source文件与三现test；当前实施在途，engine/auth/contract/generated/SQL/lock/system混合全部排除。完整10path与职责见同task R254-FOLDER-SOURCE及既有469ce1d1 seam报告；无新文件/目录/状态中心。原3310未更新，用户TC-R254-C01..09仍待真实验，不把辅助反例冒整页PASS。

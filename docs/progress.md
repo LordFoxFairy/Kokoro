@@ -1,3 +1,21 @@
+## R254 审查阻断与R255独立推进（2026-10-05 heartbeat）
+
+Root40069：contract273/20、architecture50/4、lint/types全0，但UI/engine/core2failed/1527passed（旧smoke单scope断言），build未执行；作者仅两smoke fixture/placement对齐后249/4辅助绿，Root最终复跑仍待。独审17hash绑定发现2P1/2P2：隐藏会话Move/Retry ACK抢overview/Library导航、折叠重开或撤准入复用旧首页promise、旧删除/展开意图复活、重名展开按钮不可辨。Root回读接受，源码不放行/不提交，原writer先四现UI业务反例→RootRED→最窄现source修复。不用“249通过”冒闭环。
+
+并行Billing三D0统一已精确提交ecbfa8c3，仅35新增行；Root核canonical35表后7ce0ecf修单文档计数，原5mixed suffix逐字保留。新增prefix3份格式正常；完整mixed文档3既有格式警告保留，不格式化他人正文。无namespace源码/SQL/安装/账务/积分操作，仍不能启动称成功。下一沿既有R255取单库真实安装反例，不增应用库或角色。
+
+原3310未更新；用户真实E2E仍待执行，70组11/6/14/38/1不变。67827/86248两源码服务继续存活，原parent45606受保护；没有多开站点或清共享数据。
+
+## R254 本轮：源码进行中与真实验收边界（2026-10-05 heartbeat）
+
+10现source接线尚未冻结；作者scope首跑7fail/129pass，原3反例绿，6旧placement替换待保原能力，第7auth由修源后76pass/2files验证，strict types0。Root尚未重跑最终门或浏览器，不宣称正式页面已修。Root已拦非当前folder冷UUID query：现openConversation对未知ID会取snapshot，必须先证明目的scope local-new且无Run/消息/费用，独立原reader并行只读，writer不越10source/3test范围。原RED3fail/133pass及作者首轮7fail保留。
+
+Root34442已实际复跑新plus反例：exit1/1failed/136passed，唯一失败是非当前项目新建冷ID触发snapshot；两test冻结82cb2f48/6eeca9d5，现app-frame.tsx内单次意图最窄修复已放行，仍待作者冻结/RootGREEN/真实页面。六placement按已批准folder语义替换且有效能力保留，原失败日志不删除。
+
+并行R255 Billing只读确认并由Root回读三入口：installer整库空/public锁、Prisma/Transaction public固定、legacy连接任意schema并public fallback互相矛盾。采用现边界统一kokoro_billing与owner-schema空检查（单库单凭据），原负责人仅三现D0前缀统一、保5mixed正文，未授源码/安装/账务操作；不是开发环境已打通。
+
+运行仅核原句柄67827/86248及原parent45606/Web46036：两normal-source owner ready200、旧3310保留；0新服务、0共享清理、0积分/模型操作。用户数据保留问题未答，不重复提问。完整70组11/6/14/38/1不变，原Wave0–7 goal仍blocked，TC-R254九系统子例未验收。
+
 ## R254 当前修复进入真实行为反例阶段（2026-10-05 heartbeat）
 
 沿原卡原Web负责人，仅两现UI文件增加业务交互反例；Root82604实跑同3file得3failed/133passed/exit1，证实项目内普通区消失、文件夹无展开控制，不以mock/API计数冒用户链完成。原断言、system mixed和三D0原正文保持。Root已补最窄三D0目标前缀，无新wire/schema/持久实体；独立D0/用例审并行，待放行10现source窄修，writer冻结后Root重跑安全网及同日常站点真实用户CRUD/刷新。原70组不变，TC-R254九子例用户验收仍待执行。

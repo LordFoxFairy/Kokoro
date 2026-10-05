@@ -6,8 +6,13 @@
 |---|---|---|---|
 |R255-DEV-SOURCE-READ|原bff_skills_v2_owner_r251只读，Root审；当前manifest/README|九owner package/入口/本地env读取事实，现dev fixture用途；不读.env/secret/DB/日志、不改仓/Git/资源|直接在消息列正常启动命令/工具链与env加载要求、一次初始化和重复启动边界，拒把fixture复用模式改作正式IAM；不另写临时运行脚本|
 |R255-PERSISTENT-STORAGE-SCHEDULER|Root唯一资源/config writer，Storage14f2bc9 / Schedulere8dca489|现两owner未跟踪600 .env.local；Root固定var/dev安全进程清单；停止本轮10214只停owned进程，按正常pnpm dev/go run重启相同端口/数据库schema/bucket|零新bucket/database/role、零schema重建/reset；两次启动消费同一持久配置，真实ready通过；记录常驻句柄/停止方式，不复制仓/不执行fixture脚本|
+|R255-BILLING-OWNER-SCHEMA-READ|原capability_composition_owner_r247仅只读，Root审；Billing ccd4cb0f+原5doc mixed保留|仅读Billing三D0/canonical schema/config/installer/consumer入口及Root SQL03和map；不读私有env/访问DB/改文件/启动资源/Git|给既有public-only+整库空检查收敛owner schema的最小切片与D0差异、真实单库正反验收步骤；仍一数据库一凭据，禁止新增role/运维框架或跨owner SQL；先Root设计裁决不先实施|
+|R255-BILLING-OWNER-SCHEMA-D0|同原capability_composition_owner_r247仅Billing三D0 writer，Root设计/审/提交；ccd4cb0f+5原mixed|只在现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md前置一致当前/目标；保原全文suffix，另CURRENT/IMPLEMENTATION_PLAN/README及源码/Git/资源全部排除；原SHA在var/dev/r255-billing-d0-baseline.json|Root已核采用边界固定kokoro_billing、schema-local empty、三runtime同path且无public fallback；API无wire变化。放置表列7候选源及正常生成/真实单库正反例，先冻三D0由Root审；未放行任何源码|
+|R255-BILLING-OWNER-SCHEMA-RED|同原capability_composition_owner_r247唯一Billing test writer，Root资源/审/提交；7ce0ecf+5mixed protected|只现test/integration/schema-installation.test.ts新增owner-schema安装/邻对象保留/非空拒绝及URL负控；原断言先保留，source/generated/三D0/他仓/Git/env资源不动|沿正常已有isolated PG fixture，writer不启动/访问共享DB；冻结有效测试后Root自行提供私有连接执行真实RED，未授权源码。无临时日常站点/新应用库或role；测试隔离库仅fixture用途|
 
 Root文档入口复用README/RUNBOOK及同CURRENT/progress；如增加本地运行记录，var/dev忽略入库，私有配置仅各仓现.env.local（现gitignore涵盖），不引第二配置事实源。原45606/3310的fixture cleanup风险未解前不直接停止；该原预览仍不冒已改成正式持久开发。并行只读与Root安全迁移两个新owner，不拿临时复制站点展示新源码假装正式上线。
+
+R255 Billing三D0已由Root回读并精确前缀提交：ecbfa8c3（三doc35行），Root核canonical实际35表后仅现技术文档一字句修正7ce0ecf。原5mixed全文suffix保持；全mixed文档Prettier报3既有格式警告，新增prefix三份各正常格式逐字相等，未格式化他人正文；首次format路径在Root cwd错配exit2已重跑且不冒有效门。只文档决定，不表示namespace源码或安装通过；7source候选及生成/真实单库行为仍待后继测试RED。
 
 R255 两卡本轮结果：READ已交消息且Root已核manifest/README；STORAGE-SCHEDULER窄交接已验（旧10214正常exit0，新67827/86248，78602/78631，8085/8087，四health/ready200，两个持久配置摘要相同、600/ignored，零installer/reset/newDB/schema/bucket）。Root固定收据var/dev/restart-proof.json及processes.json，两常驻保留。Root只提交.gitignore、README、同CURRENT/progress/task/map，不提交私有配置或gitlinks/uv.lock。**整套日常环境仍进行中**：原3310/45606不得直接退出触发数据删除，下一先保数据交接其真实owner配置/schema，再切正式源码与BFF依赖；不复制临时站点，不用此启动结果关闭用户业务测试。
 
@@ -16,6 +21,23 @@ R255 Root复核：`git diff --check` exit0；`python3 scripts/verify-repository-
 R255独审收尾：原reader指出README目标单库不能冒九仓当前态、Billing installer例外和Agent工具链下界。Root已就地限定仅Storage/Scheduler交接、其余保留受管配置；禁止Billing旧installer作用共享应用库；Python>=3.11按manifest。三处文档问题已修，未触碰owner源码/资源。
 
 ## R254 侧栏专案文件夹与常驻普通会话（2026-10-05）
+
+R254 本轮进行中复核：原Web负责人仍唯一writer，10现source接线已实施但尚未冻结。作者原scope门7failed/129passed，Root原3行为反例现绿；6旧单独项目分区的placement断言允许在现workspace-rail.test.tsx换成合法owner项目/所属folder输入，但保留项目plus一次、任务导航不新建、无孤立bubble、常驻普通区及auth全部能力断言。作者撤准入修源后76passed/2files、types0只属作者安全网，Root未作最终复验/页面验收。
+
+|任务|Owner / 角色 / 基线|范围与限制|验证及交付|
+|---|---|---|---|
+|R254-FOLDER-NEWCHAT-READ|原bff_skills_v2_owner_r251独立只读，Root裁；Web1ed160b+变化中工作树|现app-frame/nav/actions/engine/surface及PRD09 §3仅读；不改文件/Git/资源/浏览器，不读secret|确认非当前folder新会话与已存在会话选择的区别，最窄现文件承接建议与用户级RED；变化中结论不冒冻结验收|
+
+Root暂缓非当前folder随机conv_UUID URL方案：现engine.openConversation对未知ID取snapshot，而engine.newConversation明确local-only、不取snapshot。作者先补业务反例，保目的scope/verified subject/一次新草稿、无消息/Run/费用调用及晚切换保护；不得把冷UUID冒已知本地草稿，不为凑绿削掉项目新会话能力。授权仍10source+3现UI测试，新增文件/engine/auth写未放行。完整70组与TC-R254九用户子例不变，原3310未更新。
+
+R254非当前plus有效RED：Root34442同三UI门终态exit1，1failed/136passed，唯一断言真实目标engine snapshotCalls出现冷UUID（而非编译/fixture错误）；日志var/dev/r254-root-folder-newchat-red.log。两test SHA 82cb2f48/6eeca9d5、session原a97bcb05。Root已核六替代保项目plus恰1/普通常驻/任务不new/无孤立bubble。独审同样证open未知hydrate，不冒用户页面结果。
+
+Root仅放行原10source中的app-frame.tsx消除冷UUID：非当前plus局部单次mounted意图→canonical无query root，目标当前subject/scope/URL和真实engine准入后消费现new/focus动作。hydrating最多短有界等待，不将busy/unknown/disconnected排到旧run结束；偏离URL/历史切换/主体变更/撤准入/卸载/超时撤销，先消费后new防重入。无第二engine、新URL协议、实体或auth框架；允许原rail test补忙碌/离开/撤权负控。writer冻结后Root重跑、独立审查，用户同日常站点CRUD/刷新仍未验。
+
+R254最终候选已冻 /tmp/r254-folder-final-handoff.json（2d3daf58），writer停止。Root40069正式contract273/20、architecture50/4、lint/typecheck均exit0，但全部UI/engine/core真实2failed/1527passed/78files/exit1；两失败均app-frame.smoke旧“专案会话”单scope导航断言，build因前门失败未运行，原日志var/dev/r254-root-frozen-gates.log保留。Root已逐读两body，只授现第四test tests/ui/app-frame.smoke.test.tsx这两用例对齐批准folder placement：补合法owner project/list输入及canonical route，改为所属folder+常驻direct断言；Composer/project资源/品牌/route原断言全部保留、不改10source/其他102例。重新冻结后Root复验及独审，用户页面仍OPEN。
+
+R254独审未放行：/tmp/r254-folder-final-review.md 对17hash一致候选得0P0/2P1/2P2；Root回读确认Move按隐藏active与overview/library ACK抢导航、首页同字符串key跨卸载/撤准入复用退役promise、同identity恢复旧展开/删除dialog、重名toggle可辨性缺口。第四smoke作者249/4green只修两placement，不抵消四source问题。原writer仅获现四UI测试后继反例权限，源10保持冻；Root实RED后才窄修，未提交Web源码/未更原3310。
+
 
 用户已明确裁决：每个专案像文件夹，所属持久会话缩进在其下，可展开/折叠；外部普通会话列表在所有页面始终展示，不被当前project scope替换。仍只用BFF Conversation可空project_ref，不新建关系实体/目录层级/后端API/缓存事实。未发送local草稿不伪装持久会话；未知列表不画已确认空，展开与active选择分别建模。
 

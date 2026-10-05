@@ -1,8 +1,10 @@
-## R254 当前修复进入真实行为反例阶段（2026-10-05 heartbeat）
+## R254 当前未放行：独审发现四个交互漏洞（2026-10-05 heartbeat）
 
-沿原卡原Web负责人，仅两现UI文件增加业务交互反例；Root82604实跑同3file得3failed/133passed/exit1，证实项目内普通区消失、文件夹无展开控制，不以mock/API计数冒用户链完成。原断言、system mixed和三D0原正文保持。Root已补最窄三D0目标前缀，无新wire/schema/持久实体；独立D0/用例审并行，待放行10现source窄修，writer冻结后Root重跑安全网及同日常站点真实用户CRUD/刷新。原70组不变，TC-R254九子例用户验收仍待执行。
+文件夹/普通常驻源已冻结，Rootcontract/architecture/lint/types实际通过；全UI/engine/core先2fail/1527pass，作者仅两旧smoke placement按PRD替换后249/4辅助绿，build及最终Root复验未完成。独立审查绑定17hash确认2P1/2P2：Move/Retry把隐藏记忆会话当当前，ACK可抢项目概览/Library导航；折叠重开与撤准入复用退役首页请求；重新准入复活删除dialog/展开；重名folder展开按钮不可辨。Root已逐seam复核，writer先四现UI业务反例，后续须Root真实RED才窄修；不提交/放行Web源码，原3310仍未更新。
 
-日常环境保持：已owned67827/86248真实存活，8085/8087ready200；原3310/46036仍未更新、原parent45606受保护。浏览器仅检查现有tab7，CDP focus command再次超时，没有开新标签/用户PASS。正常Next dev本来支持现同源IAM/BFF/session，但向磁盘加handoff不会改变已经加载的旧Python loop；不据新源码强停原服务。默认保留当前测试数据，已向用户对齐一次切换是否需保留现账号/会话/专案；未答不删除，不深入运维。后续仍固定源码开发，不再临时复制站点。
+并行R255 Billing三D0 namespace边界已Root精确提交ecbfa8c3+7ce0ecf，仅批准前缀，5原mixed正文保留。统一kokoro_billing、owner-schema空检查、三runtime无public fallback，不改变API/资金；实现与真实单库安装仍未开始。新增prefix格式3/3正常，完整mixed格式旧警告未被掩盖。
+
+同日常站点真实CRUD/刷新/登录/聊天仍是最终验收，原70组11通过/6失败/14待复测/38未验/1支付后置不变。原67827/86248/8085/8087就绪；原3310/46036/45606保留，无新增服务、数据删除、模型或积分操作。用户数据保留的已有一次问题未答，默认保留不重复提问；后续固定源码正常开发。
 
 ## R255 日常开发改为持久源码运行（2026-10-05）
 
