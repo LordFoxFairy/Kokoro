@@ -1,3 +1,10 @@
+## R255 21:20 heartbeat 实测与偏差纠正
+
+- 原System无秘密metadata只读实核：唯一模型为qwen3:8b/Smoke model。正常owner API审确认context_window是核实provider能力，max_output_tokens是管理员单调用硬界，不等同provider最大输出；不虚填或改旧immutable published。审f6223348；配置接线审90228487证明项目/列表CRUD可先于worker、BFF没有个人Credits consumer。
+- Root current System fresh installer＋归档明确白名单data-only在自有空库exit0：14个控制面表15行/hash exact；旧7model记录和3363receipt只留archive，新model目录6空表＋cache singleton1。未回写source、未让旧receipt假重放、未放宽约束；原完整System restore失败保留。自有库自然回收，78库OID/name exact，原6服务alive。收据system-controlplane-current-restore.json。
+- Root private候选四配置0600：System/BFF parser0、AgentHTTP actual composition＋public proof loader通过。Web裸tsx先缺本仓tsx，借现工具loader后缺server-only：工具运行方式错误，不是用户页面测试；两原日志/receipt保留，不改依赖/源代码。normal Next验证、最终账号/history快照、强key完整JWK/CAS与正常同3310切换仍待做。
+- 原BFF owner续派R255-BILLING-CONSUMER-D0，只三现D0前缀且原mixed suffix保留，资源/Git由Root；当前设计交付未验收，余额/流水、赠送/预占/结算/释放和真实模型链不冒完成。目标库未建、候选未激活，无新常驻服务/浏览器窗口，Storage/Scheduler原句柄保留。0新增用户PASS、70组11/6/14/38/1不变。后继页面交接与计费消费者分开，不继续死磕旧Smoke目录。
+
 ## R255 正常身份材料、当前 schema 与实恢复（20:47 UTC heartbeat；非页面闭环）
 
 - 原Web/IAM真实HTTP表单/OAuth三步均200，BFF get-session为真实原用户；直接公开raw sign-in探针405是路径错误，未记产品登录失败。不是右侧浏览器E2E，当前3310仍旧副本。

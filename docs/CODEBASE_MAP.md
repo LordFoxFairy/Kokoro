@@ -1,3 +1,9 @@
+## R255 本轮现入口与正常配置接续
+
+System正式现scripts/apply-schema.ts在Root自有空库装现canonical；仅旧非模型14控制面表按原archive白名单接续，model-catalog与command receipts旧测试事实归档，不复制旧published/digest。现modules/model-catalog正常API未来发布真实providermetadata/管理员硬界；不得将其误作普通项目/会话CRUD前置。
+
+Root ignored var/dev/page-runtime仅持久私有配置候选与parser证据，非新业务module、launcher或生产兼容脚本，尚未激活。System system-config、BFF config/runtime和AgentHTTP build_http_composition/publicproof实际通过；Web必须现Next源码运行，不以裸工具绕server-only。BFF个人余额/流水消费者现缺失，原owner三D0前缀独立收敛；机器合同/generated/schema未改。实际System14表15行接续收据var/dev/r255-preserve/system-controlplane-current-restore.json；原3310仍旧副本，0新增页面验收。
+
 ## R255 当前源码接续与运行材料（2026-10-05）
 
 现正式入口不新增：IAM scripts/provision-oauth.ts以真实operator Session创建resource_server；normal main由src/main.ts/config/app.config.ts装配。Agent infrastructure/schema.py::verify_agent_schema为只读runtime gate，apply_agent_schema仅空owner；execution_proof_keys与HTTP execution_proof_jwks分别消费私钥/公钥。Root稳定材料仍私有ignored var/dev/iam与var/dev/agent-proof，不是新业务模块、配置中心或鉴权fallback。

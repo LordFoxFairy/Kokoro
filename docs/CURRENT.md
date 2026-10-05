@@ -1,3 +1,11 @@
+## R255 本次推进：解除旧测试模型对页面交接的错误依赖（21:20 UTC heartbeat）
+
+原运行目录实际只有 qwen3:8b / Smoke model，不是用户授权Hix目标。Root不再兼容旧published配置：完整archive保留，current System fresh+明确控制面数据白名单实测14表15行原值/hash exact，旧7model记录和3363command receipt仅归档，新模型目录为空、cache seed1；不是完整System恢复成功，不改CHECK/digest/假能力。自有库已回收，78库OID集合exact、原六进程存活。
+
+System/BFF/AgentHTTP固定源码私有配置候选已生成并通过实际owner parser/publicproof loader，模型worker关闭；Web候选保原client/tenant/secret与3310，裸工具解析缺tsx、继而server-only，明确是Next框架运行方式不匹配，不安装依赖/不冒产品失败或通过。目标kokoro_dev尚未创建，候选未激活，原3310仍旧副本。原BFF负责人独立续接个人余额/流水消费者D0（不是只填Billing地址），Root继续final保数据切正常源码与项目/会话CRUD，模型调用和正式积分链并行后续，不再等待过时Smoke配置。0新增浏览器PASS，70组11/6/14/38/1不变。
+
+收据：ignored var/dev/r255-preserve/system-controlplane-current-restore.json 与 var/dev/page-runtime/parse-receipt.json（Web工具失败仍保留）。两个只读审计冻结f6223348/90228487。以下旧“先完成模型发布再切页面”顺序被本节替代，完整Wave0–7未缩小。
+
 ## R255 当前：正规身份材料与两 owner 数据接续已实测，System 阻断仍在（2026-10-05 20:47 UTC heartbeat）
 
 Root沿同卡实际完成原3310 HTTP表单/OAuth登录→callback→/app及BFF get-session（均200），不是浏览器交互验收。真实原账号Session经现IAM operator CLI创建独立resource_server client；正确Basic+invalid token为200/inactive，错误Basic401，原client未禁用。稳定Agent Ed25519私有材料由Root生成并经现worker/HTTP loader验过；IAM强secret/JWK同私钥离线重包及normal config解析通过，未写target/启动正常main。source新增合法Session/client事实，早前归档不再等于最终快照。

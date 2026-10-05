@@ -1,3 +1,38 @@
+### R255 21:20 本轮事实与下一行动
+
+System owner发布审f6223348、正常配置审90228487已交付（只读）；Root current control-plane restore14表15行exact/78库不变/原进程alive已实测。四private normal候选：System/BFF/AgentHTTP actual parser/proof通过；Web裸工具缺tsx/server-only保失败，不补包/不冒UI验证。目标库未建、候选未激活。原BFF负责人当前个人余额/流水D0进行中，不声称消费源码完成。
+
+下一行动由Root final停写快照与完整JWK CAS/实际发行→固定源码同3310正常运行→登录/历史/专案folder+普通列表常驻/CRUD真实浏览器验收；模型目录新baseline不作为页面前置，provider与计费链另行验收。完整70组11/6/14/38/1，0新增用户PASS；以下旧“先模型发布再页面”排序由本节替代，其他任务目标保持。
+
+### R255-PRESERVE-PREP 当前收敛：过时模型目录归档，不阻塞页面
+
+Root独占一次开发数据交接。旧唯一Qwen/Smoke模型不是用户授权目标；完整旧archive继续私有保留。正常System新baseline不导入旧七model_*表记录及旧system_command_receipt，避免旧配置/receipt重放假成功；现canonical fresh后保留空模型目录、model_cache_generation=1。其余14个system_*控制面表仅按已归档原字段精确恢复，catalog初始化singleton只替换Root自有空验证库那一行。当前仅自有隔离验证，不改原库、不启动服务、不完成正常切换；同一账号/项目/聊天数据保留政策不变。未验证provider metadata与真实admin caller前禁止发布/伪造健康、模型worker停用，不宣称真实聊天或费用闭环。
+
+归属Root开发交接证据，临时ignored var/dev/r255-preserve现目录，复用既有private脚本结构；不放生产scripts、不新模块/兼容runner。验证：owner current fresh installer→exact data whitelist restore→14表row/hash相等→七模型表仅fresh空目录/seed→database OID集合与原进程保持→回收唯一自有库。原System完整导入失败证据保留，不更改CHECK或旧published/digest。
+
+### R255-BILLING-CONSUMER-D0 / 独立消费者接续
+
+沿同Wave0–7；Root正常源码页面交接与BFF个人积分读取D0可并行，不等待模型worker。原BFF负责人为唯一writer，仅本仓三D0文件新增当前前缀，原混合正文逐字保留；不得改代码/contract/generated/schema/lock/env/Git或启动资源。
+
+|项目|本片|
+|---|---|
+|负责人/基线|bff_skills_v2_owner_r251；BFF main f3c64d90；Root审查并提交，混合工作树20path保留|
+|文件集|apps/kokoro-bff/docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md：仅新前缀；交付suffix哈希、放置表与未决项|
+|目标|正式Billing v2个人余额/流水→BFF→Web当前Credits消费，先最小读取能力；授权赠送/预占/结算/释放留原完整任务，支付后置|
+|依赖/验收|读Billing244b2810固定合同、实际IAM信任运输及Web当前读取；辨明public summary旧字段与实际UI字段差异，选择唯一当前合同，不造余额/旧兼容；明确真实用户业务E2E正负控及HTTP owner验收，不以unit/mock替代|
+|排除|账号/权限/资金SQL写入、owner合同发明、价格前端计算、支付、临时SDK/新配置中心、资源和Git；资料缺口先报告Root|
+
+### R255 21:20 后继：System 正常发布与固定源码配置，沿原卡
+
+基线Root9e611d74，原3310/parent受保护，Root独占资源、私有配置和Git；无新goal/任务中心。
+
+|任务|原Agent/范围|本轮验收|
+|---|---|---|
+|R255-PRESERVE-PREP / System配置接续审|原bff_skills_v2_owner_r251只读System955bd587 current docs、contracts和owner CRUD/API；不DB/env/Git/改仓资源|明确max_output_tokens究竟管理员硬界还是provider模型最大能力，给正式draft/publish/label/policy/health的最小既有入口及授权；原published缺界拒绝保留，给clean-slate模型配置重建边界，不临时造SDK/CLI/兼容层|
+|R255-NORMAL-IAM-MATERIALS / 配置接续审|原web_r247_skill_header_owner只读现IAM/BFF/System/Agent dev入口；不私有材料/DB/服务/Git|正常源码配置拓扑最小完整必要字段、issuer/introspection/proof消费顺序；优先复用原owner入口，不再复制fixture或研究部署|
+
+Root并行核现模型目录的无秘密metadata与持久env接线；是否需产品不可逆裁决明确反馈，不猜provider能力，不把后端门或文档当页面PASS。
+
 ## R255 本波交付状态：材料已验、两 owner 接续已验，日常切换仍OPEN
 
 |原卡 / 负责人|本波真实完成范围|仍需完成（不冒整业务验收）|
