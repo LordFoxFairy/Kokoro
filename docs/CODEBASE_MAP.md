@@ -1,5 +1,29 @@
 # Kokoro codebase map
 
+## R234 最终交付入口
+
+Agent main cb645370精确8路径交付并clean；Web main680c8db8仅config worker预算交付，20mixed保持。Root46156完整原工程2481/0+contract/architecture/lint/types/build全0，绑定冻结混合工作树而非用户3310。当前70组11/6/14/38/1，Root6个组合gitlink差异仍待正式集成；BFF字段PATCH改名仅完成设计审计，三D0/active前置未准源码。
+
+## R234 工程终态前入口（历史）
+
+Agent本地main cb645370精确8路径交付usage observation及SDK owner completion、runtime assembly inventory与真实peer矩阵；完整源/安装门绑定、工作树clean，但native/Billing/费用未接。Web现vitest.config.ts显式4-worker预算候选，Root46156原完整工程在途；不把CLI2481通过或缓存修复81系统通过冒用户3310恢复。BFF项目改名入口仍缺，原owner仅只读审三D0与唯一public contract，未新建API或表。
+
+## R233 当前验收失败入口
+
+Web `tests/app/iam-invitation-page.visual.test.ts` 在Root原10121完整工程中桌面、移动端、注册三项5000ms超时；2478项通过不覆盖3项失败，build未执行。`src/lib/persisted-store.ts`缓存拒绝最小修复另有81隔离系统用例通过，不能等同用户3310恢复。Agent捕获候选工程/安装通过仍待Git交付及正式native/Billing消费者；当前业务70组10通过/7失败/14待复测/38未验/1支付后置。
+
+## R232 当前正式切片与系统反例
+
+Billing本地main e5d83db0已交付私有rate selection六source/test及四已审设计前缀，Root115真实PG/1361辅助、十门0绑定精确Git objects；旧mixed五docs保持、Root组合未更新，不是正式费用链。Web现OIDC系统fixture修正后两项目会话DELETE2pass，完整80为79/1，旧R195 canonical URL等待竞态在仅test窄修；生产未改。Agent现observer/peer marker由真实early-close/no-marker两RED驱动实施，四D0终审0，尚无新实现验收。BFF项目自身CRUD缺口另见/tmp/r232-bff-project-crud-owner-audit.md，现create/list/get/instruction不等完整rename/delete。现全范围仍沿CURRENT/task/progress/test-cases。
+
+## R231 当前交付与系统验收入口
+
+Billing现private selection.types/service复用revision repository/module/error及现publication integration；候选Root最终115真实PG/1361辅助、十门0、独审0P0/P1/P2，六路径未提交，不是正式扣费入口。Agent新model/usage_observation.py与现factory/runtime_profile_sources/peer系统测试由原owner实施，SDK完成标记设计正在收口，新实现未最终验收。Web现oidc-rp-next-http.integration.test.ts新增项目删除两case在DELETE前正文预置失败，只读诊断及Root回读已确认fixture snapshot路由误附project_ref，后继仅测试前置修正再实跑，不冒生产删除缺陷或原3310恢复。当前状态沿CURRENT/task/progress/test-cases，历史章节仅各时点证据。
+
+## R230 当前实现与验收入口
+
+Agent现`tests/integration/test_model_provider_retries.py`新增32组原始usage/SDK对照，Root完整179pass，冻结1c39a1ac；生产usage捕获未实现。Billing现`src/modules/metering/metering-pricing-selection.types.ts`与`metering-pricing-selection.service.ts`为已交接私有rate选择候选，复用现revision repository/module/error及publication integration文件；D0已审，实现独审/Root真实PG待验，不是正式扣费入口。原用户3310加载与逐页业务未闭环，当前事实沿CURRENT/task/progress/test-cases。
+
 ## R229 系统验收与下一依赖入口
 
 Web现 `tests/system/oidc-rp-next-http.integration.test.ts` 冻结504ca8cf，Root真实Next/Chromium/Redis与受控IAM/BFF peer完整78pass，新增冷深链接503→Retry→同会话reload；生产代码不变，原3310持续加载未定位。Agent四D0原始usage观察最终独审0P0/P1/P2、仅设计准入；Billing四D0事务rate选择复审仍两事务P1，均未授新source/tests；不把设计当费用链实现。原任务/70组状态与资源终态沿CURRENT/task/progress/test-cases，不新建计划中心。
@@ -197,3 +221,11 @@ R198最终Agent源入口59034f4：Root实际304真PG/2182默认门及post-doc构
 - BFF有界Message候选只在 `/tmp/kokoro-r205-bff-clean.path` 指向的隔离archive：具名 `src/infrastructure/postgres/chat-turn-commit.ts`（8f04afa9），outbox repo只委派，HTTP reply补受信x-request-id。Root1737完整177真实PG/Redis与全门通过，但剩余资源矩阵/原mixed集成/3310仍OPEN。不能从本地图推断原BFF源码已发布新具名文件。
 - System032ff524只提交四D0设计；现runtime/API仍2.0且执行界0。目标沿现model-catalog/revision/resolve，禁止新config/pricing owner；Root独审后R211先在既有System两个test入口真实RED，不提前Agent consumer。
 - R211两个唯一writer、scope与证据仍在同 `docs/task.md`，不另建计划。
+
+## R232 冻结验证位置补记
+
+Agent usage_observation/factory/runtime_profile_sources/SDK peer四路径：Root完整310真实SDK/HTTP peer通过，独立source审查0P0/P1/P2，工程/installed后继待验。Web现oidc-rp-next-http.integration.test.ts固定569540dc：Root完整80系统通过，均为隔离fixture，不是用户3310/真实后端/费用闭环；当前证据入口沿CURRENT/progress/task/test-cases，不新建计划中心。
+
+## R233 新源码验收定位
+
+Web src/lib/persisted-store.ts仅read捕获浏览器缓存拒绝，Root真实RED→GREEN及完整81系统，原3310未知，完整工程/发布待收口。Agent usage_observation.py JSON对象以duplicate-checking hook实际构建typed对象，替代三cast；架构29/peer310/default2253/contract/build/installed已验，四D0回填/Git交付在途；正式native/计费不因此完成。

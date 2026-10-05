@@ -1,3 +1,37 @@
+## R232 本地代码交付、浏览器真实回归与Agent自然RED（2026-10-04）
+
+上一goal turn归progress：真实终态/独审回读与前置fixture定位改变了后继，而状态汇报本身不计代码完成。本轮沿原完整Wave0–7，不新建goal/中心；用户删除项目关联任务政策已通过原异步问题请求，其它任务独立推进。
+
+Billing本地main **e5d83db0b3af894cf1ae413849cc6153f789bcdb**：Root按六source/test+四批准设计前缀10路径提交，六Git objects精确等最终115真实PG/1361辅助十门0冻结，四doc只取R229后已审prefix+原HEAD，五旧mixed全文保持工作树、index空。source独审0P0/P1/P2，四D0终审短核无新增问题。Root真实收据/tmp/r232-billing-commit-receipt.json；不push、更新组合、启动3310、外部provider或资金写。quote/policy/Admission/正式积分仍OPEN。
+
+Web Root51653终态2pass/78名称过滤，10.191秒，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-web-project-delete-zzpoqpi9/manifest.json`、log SHA bf99cee4875f2dd936599458dc7c3354e9a969bf2da4aeccc6a2a8b348d2816c。完整86496终态 **79pass/1fail**，119.156秒，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-web-full-769uoaml/manifest.json`、log SHA da0ebc1cb796801c69535588e08390a4fc22d0e13bdb7bf60754a6178313206b；唯一旧R195 committed lostACK Move最终conversation query为null，不能用两新DELETE通过替全门。Root21529同freeze原case定点1pass/79过滤，8.678秒，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-web-move-url-gjq61fe6/manifest.json`、log SHA a47260eab398802cd0eedc52a809c47b4bfb5c572ee7b399709b06a0e37b7188。三次source/Redis集合same，摘要已回读核验。
+
+独审/tmp/r232-web-move-url-failure-review.md及Root代码实读：target project overview pathname重试前已为true，peer request count发生在ACK前，旧两步等待过早读query；生产导航一次push完整URL，没有先pathname后query两段写。只授原writer同test一个canonical pathname+search精确poll、同10秒，不sleep/放宽/改production；待新freeze系统回归。两Project会话DELETE仅受控BFFpeer characterization，原3310/项目自身CRUD未闭环。
+
+Agent Root76691终态2failed/294名称过滤，pytest0.82秒：正常invoke无marker及stream首chunk后aclose，均合法单POST/n1/输出界/rawbytes到达，实际status complete/None而非unresolved/sdk_consumption_incomplete。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-agent-completion-red-94mt1ilb/manifest.json`，tracked和新observer source_hashes_equal=true；该反例未调用未存在marker，是真行为RED。四D0最终独审0，Root已准原writer只observer+peer实现strict marker owner、observer-only unknown透明及完成合取，其它source/docs/nativecaller/合同/SQL/费用禁止扩大。
+
+BFF只读盘点/tmp/r232-bff-project-crud-owner-audit.md，SHA1a733502b156560a84ad722164076bce4f849b03927cfe28f33f6767740aa01c：create/list/get/instruction正式存在，rename全缺，Project DELETE事务只在20protected候选，机器契约/HTTP入口缺；Move是独立已交付能力。活动Run durable cancellation与Storage释放后继未验，关联独立ScheduledTask最终政策仍待用户，当前候选409整回滚只是安全fence不是产品规则。下一contract-first已有R203设计，不复制第二合同或把会话Delete当项目Delete。70组状态11/6/14/38/1不增加，完整goal active。
+
+## R231 最新实际结果与逐仓逐页口径（2026-10-04）
+
+Root现场main0cc49bfe，Root/11物理子仓本地仅main、remote未核。Web19/BFF20/Agent8/Billing11 dirty，其余7子仓clean；Root混合变更保留，未提交或更新组合。70产品验收组按正确状态列闭集重算11通过/6失败/14待复测/38未验/1后置；最初读取跨到后续行为表得到140行无效统计，已纠正，未写作完成率。
+
+承接已运行Billing22693终态exit0，不新启动：最终十步骤format/lint/types/build/SQL/contract/generated/Prisma/PG/辅助均0；9文件真实PG115pass、39辅助1361pass。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r231-billing-final-qz_5w_d3/manifest.json`；本轮回读全部十日志SHA一致，PG日志1bac24a211988bd89aa7c4de6d6eb0e4da12afde171cddf25983cd17a746bfff，辅助6248770b7aebe5bf01d2d71bcbdc9d48bb387d045cf57adae36a39254b4f4cca。source/derived/数据库集合保持、新数据库为空。历史19356真RED1fail/21pass为2/2 canonical漂移漏分类；最小repo窄catch只处理pure encode，不吞query/事务首因。最终独审/tmp/r231-billing-selection-final-review.md为0P0/P1/P2。六source/test候选未提交/3310未启用，仅module-private费率选择，不能替报价/许可/预占/结算/释放/流水。
+
+Web85376终态exit1：新增项目删除两case **2failed/78名称过滤未跑**，29.971秒；均在DELETE前等待canonical会话正文失败，尚不是有效删除行为RED。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r231-web-project-delete-xea8ba4s/manifest.json`；实际日志SHA2881418662fe6849787c8e510f930f9f1c965ea88d8124cf830c2450646aee4b已核，source与Redis key集合保持。只读前置报告/tmp/r231-web-project-delete-precondition-review.md的SHA0554e02516515f6a7e9f264d6eef602cc0242aec269c4b2f4c22b5843e42d287；Root回读现client和fixture确认snapshot路由误要求project_ref，实际合法请求无query。下一只修测试条件，不弱化正文断言、延长timeout或改生产；修后未重跑。原用户3310持续加载仍未定位修复。
+
+Agent生产capture进行中，原179peer属于SDK归一对照。完成标记设计独审已回、四D0窄修交接已冻结；正常invoke返回/stream真正耗尽与early-close区分、并发继承scope及观察unknown透明性尚须Root统一收口，未称新实现通过。当前页面/13Settings/能力整链无新增产品组PASS；完整Wave0–7 goal维持active，支付后置，无共享reset/外部provider/资金变更。
+
+## R230 逐仓、逐页状态与真实SDK对照终态（2026-10-04）
+
+Root现场HEAD 0cc49bfeb4d719625d6c7673809081c544f34f96；Root与11物理子仓本地仍仅main，远端未新核。Web19/BFF20/Agent5/Billing11未提交路径，其余7子仓clean；Root五组合gitlink、受保护uv.lock与task修改仍在，整体非clean。70产品组实际重算仍11通过/6失败/14待复测/38未验/1支付后置；限定工程通过不证明当前全仓或页面可上线。
+
+承接既有Root终态，不重复启动：`/tmp/kokoro-r230-agent-usage-full.path`指向`/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r230-agent-usage-full-02_28gok/manifest.json`。真实锁定SDK与test-owned HTTP peer完整179passed/0failed、5既有warning，pytest3.46秒、runner6.062秒、exit0；owned PID27972，source_hashes_equal=true，日志SHA `5adfaad5468332a450291b3948cfacda6042131d405a5a16e06d223c0a304a15`。新增32组证明原始missing/null/count缺失与SDK零值/合成total不同，原147矩阵保留。独审唯一P2记录在drain后竞态已由Root将记录移到首await前，测试冻结SHA `1c39a1ac8c4fb0076a7a79bd4c4127ae10e2dc6623c0a9e380d2bdc5f66505e5`；完整门绑定此版本。无生产usage/Admission改写、共享PG/Redis、外部凭据或3310动作，非用户收费通过。
+
+Billing原writer完成rate选择D0两事务P1修正（最终独审0P0/P1/P2）及六路径源码/PG oracle交接：`/tmp/r230-billing-selection-implementation-handoff.md` SHA `501a89527b38c6236b6cba3e1b78e163ca598914e6d0f6c00b73301347e707b9`。作者格式/类型/定点lint exit0，Root未独审实现或实跑新PG，状态待审查；该私有选择器不是quote/hold/扣费链。三个原生子任务当前均completed/stopped，不宣称仍后台并行运行。
+
+原用户加载故障仍未定位/验收；只读追踪`/tmp/r230-web-loading-trace.md`确认现/旧session与snapshot已有10秒边界，manifest pending不gate核心Chat。原tab工具超时未取DOM，不把代码推断或R229隔离78项替代原用户恢复。正规登录、会话/项目CRUD、Agent过程、独立任务、Skills/MCP、文件作品、积分与Settings13分栏仍无本次完整组验收。下一沿原卡：Billing独审/真实PG、Agent原始usage生产捕获、固定组合用户旅程及逐页CRUD；不另建计划中心或深入支付/运维。
+
 ## R225 Agent多completion真实wire RED（2026-10-04）
 
 ## R228 Root默认治理门真实失败及CURRENT回归修正
@@ -9590,3 +9624,53 @@ Billing四selection D0 prefix候选冻结66f63eca，四旧bytes逐字suffix、�
 Web新增冷503系统测试独审0P0/P1/P2，完整78pass终态已回读log SHA验证；原页面根因/生产修复仍未证。Agent四D0最终独审0P0/P1/P2，设计门可进入后继真实locked SDK/owned HTTP peer tests-first，尚无usage观察新源码。Billing原四P1语义已关闭，但复审发现两项真实事务接口P1：现guard需精确write/readOnlySnapshot，而selector只写active；guard先登记raw rollback首因导致selector内部safe wrapper被外层覆盖。报告分别/tmp/r229-agent-usage-d0-final-review.md与/tmp/r229-billing-selection-d0-final-review.md。Root下一裁决为固定write mode、保既有rollback首因并由root transaction退出后的application边界安全映射，不扩公共事务框架；需原owner四D0精确收敛后才授真实PG测试/实现。此为后继方案，不是已实施或准入。所有worker已交接停写，无隐藏资源任务。
 
 Root现场main-only：Root及11物理子仓均仅本地main；remote未核。Web19/BFF20/Agent4/Billing5 dirty，七其他物理仓clean；Root五gitlink和protected uv保持。四Agent与四Billing文档原全文suffix Root回读均true；uv SHA f7e1c30d...保持。Root当前测试归属说明回归7pass/0fail、0.04秒，仅治理局部，不覆盖旧153标准违反、五gitlink差异和checkpoint失败。70产品组11/6/14/38/1保持，完整研发与用户旅程未闭环。
+
+## R232 本轮最新验收补记（2026-10-04）
+
+- Root26514 Web完整80pass/0fail/0skip，118.785秒；固定test569540dc，source_same、Redis keyset保持。前一完整79/1失败留存，仅修R195原10秒的完整canonical URL等待；生产不变。系统fixture为真实Next/Chromium/Redis、IAM/BFF controlled peers，不是用户3310或真实后端能力闭环。
+- Web manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-web-final-pg9ku5_g/manifest.json`，log SHA256 `437fa8ca1461737699d728a86dc918c9816349b17e014c777b9448fa4bbb6b59`。两项目会话DELETE覆盖ACK前保留、成功后权威GET/刷新、503与显式重试，不等于项目DELETE合同已发布。
+- Root69377 Agent完整310pass/0fail，5.39秒、8SDK弃用/畸形值警告，source_hashes_equal=true；固定observer77f5df7f/factory4cd6e1b1/inventorye2fd087b/peere13f0853。此前无完成marker两真实RED Green。锁定SDK与自有HTTP，原179+新增131；未访问共享DB/Redis/provider/资金，也没更新用户3310。
+- Agent manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-agent-full-b_prfjxk/manifest.json`；源码独审 agent_usage_r232_review 完成0P0/P1/P2，报告 /tmp/r232-agent-usage-source-review.md（SHA256 f5c701b1ca46bf293cde0ce5ea27b23d61d08beb00ddc1385e3de69b09286adc），工程/installed后继待验；不提前提交或宣称正式收费证据完成。
+- 系统70组保持11通过/6失败/14待复测/38未验/1支付后置；当前HEAD/工作树与用户旧运行组合分开，历史Settings异常不冒本轮重新复现。
+
+### R233 真实工程失败与最小源码续派
+
+Root13090工程终态exit1，lock/sync/format/lint/type均0；默认2252pass/1fail/717 deselected、795 warnings，138.95秒。唯一FAIL现架构test_no_type_escape_hatches拒绝新增model/usage_observation.py中typing.cast三处，不放宽门或改测试；contract/build/installed尚未执行。源码前后同。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r233-agent-engineering-yf24axbo/manifest.json。
+
+准原agent_execution_bound_owner仅现usage_observation.py删除cast、采用object_pairs_hook实际返回的typed JSON object并明确运行时检查，不造wrapper泛层，不改输出/理由/预算/SDK/marker。peer e13f0853、factory4cd6e1b1、inventorye2fd087b、四D0完全冻结，架构test零修改。作者仅静态format/lint/type，不运行测试/resources/Git；交唯一新SHA/diff后Root重跑架构+完整310与完整工程/build/installed，待独审。
+
+原IAB tab1仍存在/app，Root定向DOM命令在dispatch前5秒期限失败，随后captured logs及全inventory各超时并kernel reset；没有DOM/网络/渲染证据，不认定应用根因、不刷新/另开tab/重启/旁路浏览器。源码只读审在途，其他研发继续。
+
+## R233 Web真实业务RED（2026-10-04）
+
+/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r233-web-storage-red-4beeqwlx/system.log，SHA256 a1f99b676d9edce1b780f85b655268e791ac6612cc0e275f093fc395d510184c。Root50904只执行新系统case，1fail/80filtered，authenticated=true、精确拒绝2、SecurityError、owner snapshot0/正文0/composer0、loading0；source/Redis keyset保持。非权威缓存读取初始化崩溃已证，不冒原3310加载根因。现续授单文件production最小修复，原case/旧80/12秒预算冻结。
+
+R233 Agent工程Root12295架构29pass、真实SDK/HTTP310pass、默认2253pass/717deselected/795SDK warnings，lock/sync/format/lint/type/contract全0，source_same；archive+精确8候选build36640为wheel/sdist0。首installed89052前17步满足安装/RECORD/semantic负控，新增source probe错误猜不存在类PhysicalUsageCapture而AttributeError；这是Root验证器命名错误，不是Agent缺陷，不动生产。改只验证实际_UsageCapture marker存在，保原hash/origin/RECORD/assembly要求后新owned流程复跑，旧报告/tmp/kokoro-r233-agent-installed-root-v2.json保留；首venv清理/源码保持。
+
+## R233 最新源码/系统实际结果（2026-10-04）
+
+Web新缓存拒绝系统反例Root50904真实1fail/80filtered：认证成功、拒绝2、SecurityError，正文/输入0；read最小捕获后Root37212原case1pass/80filtered（7.863秒），再Root45144完整81pass/0fail/0skip（120.255秒），原12秒预算/旧80/认证全storage拒绝负控保持。冻结source16136175/teste2f5afe9，source与Redis keyset保持，独审0P0/P1/P2。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r233-web-full-eeam4wb3/manifest.json，log05862492346d8832926bcf4d1a59628521667269419f6d644473adc853e9ad56。源码是非权威local cache初始化修复；原3310原因仍未知，不冒用户恢复。主仓Web20mixed包含旧19，未整体提交；Root10121完整工程已终态exit1：258contract/50architecture/lint/typecheck通过，默认2478pass/3fail（IAM邀请页桌面/移动端/注册三项5000ms超时），build未执行；T-Q01从历史通过改为当前失败，根因待诊断，不放宽期限。
+
+Agent架构cast真实FAIL经单文件_JSONObject runtime hook窄修，Root12295九工程步骤0（29architecture/310真实SDKHTTP/默认2253pass717filtered795warnings），source保持；build36640 wheel/sdist0；installed33857 v3 pass（18step含两应拒绝负控、安装origin/RECORD/新observer/factory/assembly精确hash），自有venv删除。源码b8bc3c81等四路径独审0；四D0证据回填在途，Root随后精确八路径提交，不夹带其他内容。正式native/Billing/sealedEvidence与用户3310未闭环。
+
+70组业务状态仍11通过/6失败/14待复测/38未验/1支付后置。资源测试数量不当产品完成数。
+
+## R233 当前进度复核补记
+
+本轮消费原10121，不重复启动。Web完整工程真实失败，T-Q01已更新；70组当前为10通过/7失败/14待复测/38未验/1支付后置，下面或前文11/6仅此前时点。隔离系统81项与Agent工程/安装是限定证据，用户3310旧运行组合仍未验收；三原生子代理均完成交接，不冒称正在后台运行。
+
+## R234 当前真实交付与并行诊断（2026-10-04）
+
+Agent Root精确8路径本地main提交cb64537048d34ce6db5bea5f2e12e182ba88092c，parent f3050fcc，Git objects逐项等冻结，工作树clean；四当前D0独审0。Root本轮29architecture/310真实SDK HTTP/contract全0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-agent-engineering-db5xcdvu/manifest.json；重新archive构建wheel/sdist0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-agent-build-c6_5i21z/manifest.json。新wheel逐zip entry bytes与R233 installed18step已验wheel全同，包含RECORD，不能用zip打包时间导致的文件hash不同冒新源码；原完整2253/717marker过滤/795warnings证据绑定四核心SHA不变。receipt /tmp/r234-agent-commit-receipt.json。未push、更新Root组合指针或用户3310；native/Billing仍OPEN。
+
+Web原三浏览器超时单文件原5000ms实跑4pass（1.936s），同源完整只设CLI maxWorkers4为2481pass/0fail（126.463s），后者manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-web-four-workers-3t2tm2gg/manifest.json，source/Redis保持。原默认2478/3真实FAIL留存；没有证实卡在Chromium哪一阶段或原3310根因。按最小资源预算裁决原writer只把现config固化maxWorkers4（2586c52d），维持文件并行和原全部断言/deadline；Root46156原pnpm check完整门仍在途，未先改T-Q01通过。Web当前21mixed，旧20保护。独立配置审查和BFF项目改名三D0/契约方案只读并行。
+
+IAB原/app只读getTab在15秒工具deadline超时并kernel reset，没有取得用户DOM；未刷新、新tab或重启服务，不把工具失败当应用根因。当前70组10通过/7失败/14待复测/38未验/1支付后置保持。
+
+## R234 最终工程终态与本地交付
+
+Root46156已终态exit0：完整原pnpm check的258contract/50architecture/lint/types/165file2481pass/0fail/Next build全通过，161.421秒。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-web-engineering-q7b13zmn/manifest.json，日志SHA1af68e9c606893f477b2d95b690f5e00790585297c9546327676543068bfb9b0，source/config/Redis keyset保持；新4-worker预算独审0，并未延长原5000ms、重试或过滤测试。Root只提交clean config路径为main680c8db8c7c118d083bc64ba7362dff6f62fcecf，其他20mixed bytes/mode/status全保持；收据/tmp/r234-web-worker-budget-commit-receipt.json。工程绿只绑定当前冻结混合树，不能冒Git-only组合发布或原3310修复。R233默认2478/3历史留存。
+
+T-Q01有限工程组复测通过，70组当前11通过/6失败/14待复测/38未验/1支付后置；之前10/7是本轮复测前时点。Root组合实际变为6个gitlink差异，未更新指针/uv或push/重启3310。Agent cb645370本地已交付并clean。Root治理归属小门7pass，仅该范围，旧全仓标准/组合checkpoint问题保留。所有本轮测试句柄均终态，无未登记验证任务。
+
+BFF改名设计只读报告/tmp/r234-bff-project-rename-d0-review.md已回读：选择字段PATCH /v1/projects/{projectId}/name，保instruction路径/ID/slug，name与现receipt同事务、旧key不覆盖新名、LWW不新增version/表；三D0及active前置交付必须先审，尚未写合同/源码或验证业务。正式登录/原页面持续加载、CRUD/设置、native与Billing用户费用链仍OPEN。

@@ -1,4 +1,78 @@
-# 当前任务入口（R229，2026-10-04）
+# 当前任务入口（R234，2026-10-04）
+
+## R232 冻结 Agent 源码独立审查 / Root 系统复验补卡
+
+- 任务：R232-Agent-usage-review；owner apps/kokoro-agent；原实现 writer 已冻结停写；独立只读审查员 agent_usage_r232_review（gpt-5.6-sol）；Root 负责资源、最终审查与 Git。
+- 基线：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-agent，main@f3050fcc；保留八个现有修改路径；四源/test 精确 SHA 见 /tmp/r231-agent-usage-implementation-sha.json。
+- 范围：只读 usage_observation.py、factory.py、runtime_profile_sources.py、真实 SDK peer 测试及四份已审 D0；不改任何源、契约、Schema、lock、旧文档或 Git。
+- 验证：Root 完整 peer310 候选真实锁定 SDK/自有 HTTP 复验；审查重点透明消费、SDK 完成与 raw DONE 区分、预算/异常、ContextVar、压缩完整性、资源生命周期。审查员禁止测试/浏览器/共享服务与资源操作。
+- 交付：只读报告 /tmp/r232-agent-usage-source-review.md，P0/P1/P2、精确路径/行与冻结基线；无 provider、资金或用户3310权限。报价/Admission/native接线不属于本卡。
+
+## R232 原切片真实验收与完成语义收口（2026-10-04）
+
+上一回合为progress：Root实核既有Billing115/1361终态并记录独立发现的Web测试前置路由错误，改变后继为单条件修正后重跑；进度汇报本身不计代码交付。原Web writer仅fixture一条件窄修已冻结ad6c336e，原78与两新case断言保持；Root现51653复用已有Redis15在隔离Next/Chromium跑两例，句柄未终态不得重复运行/编辑冻结文件。
+
+|任务|owner/角色/写集|准入与验收|
+|---|---|---|
+|R232-WEB-DELETE|原web_crud_r231_review已冻结停写；Root资源/审查/Git|唯一existing系统文件，单snapshot条件修正，production未变；先定点两例自然结果，再适当完整系统门，不把fixture修复称用户页面修复|
+|R232-AGENT-COMPLETION-REVIEW|r226_agent_n_review只读，原Agent writer暂停marker|四现D0、model capture与锁定SDK源码；Root发现ainvoke→agenerate实际asyncio.gather创建child task，禁止要求每request task等于scope-enter task导致合法SDK调用永远unknown。完成marker严格原scope/thread/task；physical request允许继承scope唯一首次claim，第二claim永久ambiguous。观察预算/解析未知不因正常mark抛新异常，也不变complete；无资源/仓写，仅/tmp审查|
+|R232-BILLING-DELIVERY-DOCS|billing_selection_delivery_docs，gpt-5.6-luna，唯一Billing文档writer；Root提交|基线8f091d40+11mixed，仅四D0当前前缀回填115真实PG/1361辅助十门0及独审，旧全文suffix/六source/test/fifth IMPLEMENTATION全部冻结。交精确hash/patch/旧suffix比较，不跑资源或Git；Root随后选择批准前缀与六source切片提交，不夹带旧mixed|
+|T-C05 / R232-PROJECT-CRUD-OWNER-AUDIT|web_crud_r231_review仅只读BFF/消费者边界|BFF7289b3a4+20protected；现PRD/三D0/唯一public contract与Project实现，明确改名/删除缺口、审批规则、会话/Run/文件/独立任务生命周期，输出最小owner契约先行切片与系统业务oracle；仅/tmp报告，零仓写/资源/Git，Root统一裁设计后派owner实现|
+
+Root亲审既有caller语义后作窄裁：marker同owner重复幂等，错owner/context/活动scope外安全误用拒绝且活动观察永久unknown，已关闭结果不变；scope异常优先未知。唯一已绑定response即使已有观察失败仍接受正确owner标记，保原unknown。raw tap只绑定唯一物理request，不窥SDK私有buffer/Task拓扑、不发额外请求；SDK内部child task或to_thread可交付同scope唯一响应，caller正常await返回后由原ownermark。该标记不是财务证据/授权。独审四D0一致后才另授marker source/tests。
+
+R232四Agent D0最终独审/tmp/r232-agent-completion-doc-final-review.md为0P0/P1/P2，Root已回读冻结/suffix；Billing四证据段也无新增问题。续授Agent原writer仅现peer系统文件先追加真正early-close/no-marker反例（用当前capture API，不调用未存在method制造AttributeError RED），当前usage_observation.py等生产冻结；Root在owned HTTP peer实际观察失败后再授仅该observer+同peer marker源码/矩阵。不能以未实现接口或fixture/import错误当业务失败。child合法ainvoke、wrong-owner、observer预算unknown、压缩/取消/原179须保持，native caller/Schema/合同/资金仍禁写。
+
+R232 Root76691自然RED终态：两个反例2failed/294名称过滤，0.82秒；正常invoke无marker与stream仅首上层chunk后aclose，均真实单POST、n1/route输出界合法且原bytes含usage，实际观察错误complete/None；不是setup/import或SDK拒绝。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-agent-completion-red-94mt1ilb/manifest.json`，tracked及新observer哈希前后同。现在准原Agent writer仅现usage_observation.py与同peer test实现已审marker/状态机及正负系统矩阵；factory/inventory/四D0保持冻结，源外scope不扩。原179与115既有oracle只在批准正常完成分支加marker，不删除/放宽usage/关闭/取消断言；两RED反例不加marker。
+
+Web51653两删除case2pass/78过滤；完整86496真实79pass/1fail，旧R195 committed-lostACK重试到target项目后立即读conversation为null。Root21529原同冻结独立定点1pass，独审/tmp/r232-web-move-url-failure-review.md及Root代码回读说明该分支重试前已在target overview，pathname条件预先成立且peer计数早于ACK，无法证明URL丢失。续授原Web writer仅该case最终两步等待改为同10秒单一完整canonical pathname+query poll，保正文、exact retry key/payload、请求次数和其它硬门，不sleep/延时/改source。再冻结Root真实定点/完整80；历史79/1保留，不拿定点替全门。
+
+## R231 逐仓/逐页状态复核与后继（2026-10-04）
+
+Root当前main0cc49bfe；11物理子仓本地均仅main，remote未新核。Web19/BFF20/Agent8/Billing11 dirty，其余7物理子仓clean；不把clean当完整业务验收。70组状态重算11通过/6失败/14待复测/38未验/1后置。首轮只读统计误包含后续行为分解表，已按状态闭集过滤复算70，不采用140行结果。
+
+Billing原22693最终十门0、115真实PG/1361辅助，日志摘要逐一实核，与独审0P0/P1/P2共同满足私有rate选择切片验证；六路径尚待提交，正式费用链保持OPEN。Web原85376两新增系统case失败在DELETE前正文预置，不冒有效删除RED；原web_crud_r231_review仅只读诊断fixture/响应/消费，禁止改source、延长timeout或弱化断言，交/tmp/r231-web-project-delete-precondition-review.md，Root回读现client与fixture确认snapshot路径不匹配，后继仅测试路由窄修再冻结/实跑。Agent原writer实施capture，完成标记四D0已冻结交接；设计独审已回但透明unknown/owner争用规则仍须Root核准，不提前放行marker源码。Root负责集成/验收与同台账更新，无新计划中心或共享资源操作。
+
+## R231 并行实施与真实资源验收（2026-10-04）
+
+R231 Billing初轮Root十门全0（112真实PG、1361辅助、source/derived/自有库集合保持）不放行：独审真实P1发现ordinary codec-invalid持久漂移裸TypeError，原五测试未覆盖；Root另核尾换行输入假说，实际Node公开regex探针为拒绝，未发现该缺陷，不据此扩service。准原Billing writer先仅同integration文件追加真实Nest/PG RED：2/2漂移必须RATE_CORRUPT、publication replay保持PUBLICATION_CORRUPT；补finite upper、all request、五binding字段负控、真实query错误firstCause/有效先写后回滚与恢复。原19case全部保护，source六文件先冻结；Root实跑后另授repository纯codec错误分类窄修，不包query/TransactionService，不放宽断言。
+
+R231 Root19356真RED终态：新增codec-invalid漂移1fail/21pass，失败为实际TypeError非RATE_CORRUPT；真实firstCause对象/回滚恢复、finite upper/all及五binding负控已通过。fixture自库回收/source/derived同。准原billing_oracle_exact_fix仅现revision.repository.ts的#readRateRevision纯encode调用catch→当前传入corrupt；Prisma/SQL/transaction与service/types/module/error全部冻结，22test原断言不动。作者静态freeze，Root原22重跑+完整十门及独审后再交付。
+
+上一回合承接原Root179真实SDK终态并更新同一台账，改变后继为生产capture准入，属于证据进展；逐仓状态复述本身不计代码完成。Root main0cc49bfe，原3310及五gitlink/uv保护；基线tracked SHA `/tmp/r231-owner-before.json`。不新增goal/计划中心。
+
+|任务|owner/角色/权限|基线与写集|验收与依赖|
+|---|---|---|---|
+|R228-AGENT-USAGE / R231实现|agent_execution_bound_owner唯一Agent writer，Root审查/资源/Git|mainf3050fcc+原四D0；准新model/usage_observation.py、现model/factory.py、execution/runtime_profile_sources.py、现真实peer测试；现runtime_profile_sources测试仅实际闭包断言必要时。排除其他source/docs/SQL/机器contract/锁/Billing/native caller|R229最终设计独审通过+32对照/完整179已验。实现已审内部capture/单响应/透明raw tap/四编码scope-end有界解析及明确completion/presence/projection_digest，真实SDK系统矩阵不以不存在import假RED。作者只静态，freeze后Root真实peer/native零provider/安装闭包；不绕Admission，生产收费仍未闭环。|
+|R230-BILLING-SELECTION / R231独审|r226_agent_n_review只读；Billing writer停写|main8f091d40与六frozen路径，交接501a8952；仅/tmp报告|核D0/唯一ordinary validation/tenant精确write与DB时间/latest/profile/NUM78/immutable/错误回滚/测试oracle及原publication保持；无仓写/Git/资源。Root独占全工程和真实PG，按实际失败续原writer。|
+|R231-WEB-CRUD-READ / P0|新web_crud_r231_review只读|Webce40cecc+19mixed；只读PRD/C03/C05及sidebar/navigation/mutation/现系统用例，/tmp报告|明确哪些现失败已有修复证据但完整分支缺失；优先会话改名/删除及项目绑定/CRUD，给一个最短可落实真实浏览器oracle和精确旧文件写集；不猜原加载根因、不改混合工作树/服务/contract。Root审后另准唯一Web writer。|
+
+R231-WEB-PROJECT-DELETE-ORACLE：只读092fbf43报告确认Direct既有修复不冒整组，当前项目scope会话DELETE真实Next分支缺口可独立补。准web_crud_r231_review转唯一Web tests writer，仅现tests/system/oidc-rp-next-http.integration.test.ts，基线504ca8cf/原78用例及19mixed保护。扩真实controlled BFF peer种P/A/B与Direct C，精确project_ref的单DELETE、ACK前DOM/草稿/路由/零提前GET保全、503人工Retry、ACK后权威GET/同项目空态/另一会话保留、reload无幽灵/零cancel。无source/contract/锁/文档/资源/Git改权；作者静态freeze，Root真实浏览器判RED或characterization再授实际命中source。项目自身rename/delete缺owner机器操作，另需BFF先发，不拿Web本地删行或instruction PATCH冒CRUD。
+
+R231 Agent可观测性裁决：同一raw chunk可能含全文/final/DONE，SDK仅yield首content而caller提前close；raw tap+normal scope无法证明SDK已耗尽，不能弱化early-close unknown。Root裁唯一内部`capture.mark_sdk_consumption_complete()`，可信caller仅invoke正常返回/stream正常耗尽后标记；scope正常退出仍必须标记，break/close无标记unresolved；任何异常退出即便已标仍unresolved。标记仅当前scope与原execution context owner可用、不被并发继承争用伪完成；不是许可、财务evidence或可结算标志。原writer先只更新现四D0当前prefix一致语义，旧suffix保护/其余source暂停此seam，Root独审后授窄source。不新增SDK wrapper/网络/数据库/contract/锁或设计中心，既定其他矩阵可继续。
+
+同仓单writer、Root串行共享资源/Git；本轮调用原句柄前核终态。Billing实际PG fixture创建独占临时库，仅回收自己资源，源/schema/derived保持；不重启用户服务或共享PG/Redis。各切片冻结后复验才记已验收，不以author静态或源码存在标业务PASS。
+
+
+R230状态核对：Agent32真实usage对照及完整peer179项Root通过，生产capture尚未准入；Billing六路径selection交接待Root独审/真实PG。原用户加载、全部页面业务与正式费用链未闭环，70验收组状态不升；结果和终态收据见同CURRENT/progress。原三个子任务已停写，后续沿原卡续派，不把旧窗口数量当正在执行人数。
+
+## R230-BILLING-SELECTION 实现切片准入
+
+四D0最终独审0P0/P1/P2，Root回读write/firstCause实际接口后通过设计门。新增私有能力当前没有可调用selector，缺future import/provider不能算业务RED；先在现真实PG fixture写完整业务验收oracle，再实现同一切片，冻结后Root跑真实查询/故障，不以setup失败当行为失败。沿现§8放置表，无新增目录/owner/机器合同/SQL。
+
+唯一writer billing_oracle_exact_fix；基线8f091d40、五旧mixed文档保护。准写：现 `test/integration/metering-rate-publication.test.ts`、`src/modules/metering/metering-pricing-revision.repository.ts`、`metering.module.ts`、`metering.error.ts`；新同目录普通 `metering-pricing-selection.types.ts` 与 `metering-pricing-selection.service.ts`。排除其它路径/通用TransactionService/SQL/contract/generated/锁/public export/资金/provider/文档。Test先写再source；author只静态format/lint/types，Root资源/Git。重构现reread必须保publication全部原断言与corruption码，共用唯一ordinary canonical重建，不复制两份validation或Number数值读取。业务验收：active effectivity/tie/tenant/write mode、profile内外分类/full binding/range/all、缺配置/重复输入、NUMERIC78、64rates/腐化/回滚、deep immutable、零业务新写。交/tmp/r230-billing-selection-implementation-handoff.md及精确SHA/diff与测试标题，停写待独审和Root真PG；不提前说quote/Admission/扣费已通。
+
+## R230 已审设计进入真实SDK系统基线与Billing事务收口（2026-10-04）
+
+上一回合属于progress：实际Web78系统终态、两owner独审及Root0cc49bfe台账提交改变了后继动作；原用户页面仍未闭环，不把状态报告计代码完成。现Root main0cc49bfe，Agent f3050fcc/Billing8f091d40/Webce40cecc；受保护变更与原3310保持。Root已保存所有tracked file SHA `/tmp/r230-owner-before.json` 与原Agent peer `/tmp/r230-agent-peer-before.py`。
+
+|任务/优先级|owner与角色|唯一写集/排除|依赖与验收/交付|
+|---|---|---|---|
+|R230-AGENT-USAGE-BASELINE / P0|Agent/model；agent_execution_bound_owner原writer；Root资源/Git/审查|仅现tests/integration/test_model_provider_retries.py，production/docs/schema/contract/lock及原147case不动|R229四D0已独审0；先正式factory/locked SDK→自有HTTP peer验证missing/null/explicit0/positive原响应与SDK投影关系，证明是否归一丢失，sync/async/stream按现测试支持；不import未实现capture或伪造RED。作者仅静态freeze，Root真实执行。输出/tmp/r230-agent-usage-baseline-handoff.md|
+|R230-BILLING-SELECTION-D0 / P0|Billing原writer billing_oracle_exact_fix；Root裁决与审查|只现四R229 D0前缀，旧suffix及source/tests/SQL/contract/lock/fifth IMPLEMENTATION不动|固定现write事务mode，复用既有tenant guard；selector不声称吞raw rollback首因，root事务退出后的未来application边界safe-map，取消/typed事务安全传播、不扩TransactionService。原两P1精确关闭再独审，随后真实PG测试/实现。输出/tmp/r230-billing-selection-d0-handoff.md|
+|R230-WEB-LOADING-TRACE / P0|Web只读r226_agent_n_review|只读current/old副本AppGate与runtime manifest和engine；仅/tmp报告，无仓写/资源/Git/浏览器|R229冷503原实现通过、旧session有10秒是反证；定位其它loading保持条件、运行配置/构建差异，仅列实际证据和最小真实可复现测试，不把静态候选当已证根因。输出/tmp/r230-web-loading-trace.md|
+
+以上不需要生产采购价/角色拆分/运维改造；费用许可/原始usage与余额流水后续依赖保持，不旁路正式Billing。Root复用既有资源且原句柄终态，不重复启动用户服务或清共享数据。
 
 
 ## R229 最终复审、后继owner与验收门
@@ -8984,3 +9058,103 @@ R219-AGENT-GREEN-REVIEW：原agent_execution_bound_owner已冻结九production/m
 R219-AGENT-GATEWAY-FIXTURE：Root17570真实完整门306PG/3生命周期/lock/sync/Ruff/Pyright通过，default2246pass/7fail/497资源deselected；七fail唯一现tests/unit/config/test_litellm_gateway.py旧无ownedclients调用及旧文案oracle。源码guard正确拒缺clients，不能恢复None fallback。准原agent_execution_bound_owner仅该现文件追加为第八test路径，迁移四有效constructor/invoke/stream至合法同route ownedclients并完整关闭；三个配置负例在真实ModelHttpClients边界验证缺base/key/disabled拒绝及零网络，同时保make_chat_model缺clients拒绝门。原reply/key/model/stream/effort断言保持，追加wire cap与client closure，不改生产九path/七原test/四D0/lock/生成物。fixture不是新增业务，局部归属Agent现配置/真实SDK gateway验收。Root实失败后授同一writer，只静态/交精确hash；冻结后Root七case与full/installed复验。旧20原SHA/失败收据不覆盖，扩21paths新清单。
 
 R219 Billing readiness结果：只读报告/tmp/kokoro-r219-billing-readiness-review.md SHAbe16965a，Root已核实际call_runtime del handler/failclosed、旧quantity1与caller actualMicros，3P1/2P2成立；Billing实际SQL/runtime不等experimental3，必须由owner发布可信planned/bound/evidence reader、immutable rate/policy、再Admission reserve/capture/release，不把底层Credit effect冒现Admission。并行纯draft codec Root43975 Node24.20实际231pass/141ms、protected源码前后same（manifest T/kokoro-r219-billing-codec-0jl6rmry/manifest.json）；独审15182846 0P0/0P1/1P2（字段digest sensitivity测试覆盖不足，非正式收费通过）。三个codec及五D0仍原protected，未提交/改写/定价发布，P2明确保留。
+
+## R232 本轮最新验收补记（2026-10-04）
+
+- Root26514 Web完整80pass/0fail/0skip，118.785秒；固定test569540dc，source_same、Redis keyset保持。前一完整79/1失败留存，仅修R195原10秒的完整canonical URL等待；生产不变。系统fixture为真实Next/Chromium/Redis、IAM/BFF controlled peers，不是用户3310或真实后端能力闭环。
+- Web manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-web-final-pg9ku5_g/manifest.json`，log SHA256 `437fa8ca1461737699d728a86dc918c9816349b17e014c777b9448fa4bbb6b59`。两项目会话DELETE覆盖ACK前保留、成功后权威GET/刷新、503与显式重试，不等于项目DELETE合同已发布。
+- Root69377 Agent完整310pass/0fail，5.39秒、8SDK弃用/畸形值警告，source_hashes_equal=true；固定observer77f5df7f/factory4cd6e1b1/inventorye2fd087b/peere13f0853。此前无完成marker两真实RED Green。锁定SDK与自有HTTP，原179+新增131；未访问共享DB/Redis/provider/资金，也没更新用户3310。
+- Agent manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r232-agent-full-b_prfjxk/manifest.json`；源码独审 agent_usage_r232_review 完成0P0/P1/P2，报告 /tmp/r232-agent-usage-source-review.md（SHA256 f5c701b1ca46bf293cde0ce5ea27b23d61d08beb00ddc1385e3de69b09286adc），工程/installed后继待验；不提前提交或宣称正式收费证据完成。
+- 系统70组保持11通过/6失败/14待复测/38未验/1支付后置；当前HEAD/工作树与用户旧运行组合分开，历史Settings异常不冒本轮重新复现。
+
+## R233 工程/安装交付与当前加载诊断补卡
+
+前回合为progress：Root得到80Web系统、310Agent真实SDK/HTTP终态和独审0，已更新现台账；下一动作由候选实施切换至工程/installed验收。完整Wave0–7目标不缩小。
+
+|任务|owner/角色/基线与写集|验收/边界|
+|---|---|---|
+|R233-AGENT-DELIVERY|Agent main f3050fcc，八路径冻结；Root独占资源/Git，原writer停写；冻结/tmp/kokoro-r233-agent-frozen-sha.json|完整lock/sync/format/lint/type/default/contract，archive+精确候选build，隔离安装origin/RECORD/source closure；不接provider/共享PGRedis/nativeBilling，不把安装等于用户完成|
+|R233-WEB-LOADING-AUDIT|原web_crud_r231_review只读Web及受管旧copy；main ce40cecc+19mixed保持；Root独占IAB交互|沿会话/工作区现user-visible P0，检查session/snapshot/hydration及旧copy差异，Root现重新探测原tab；只写/tmp/r233-web-loading-read-audit.md，不改仓库/运行copy/资源/Git；故障定位后再授权唯一writer tests-first修复|
+
+
+### R233 真实工程失败与最小源码续派
+
+Root13090工程终态exit1，lock/sync/format/lint/type均0；默认2252pass/1fail/717 deselected、795 warnings，138.95秒。唯一FAIL现架构test_no_type_escape_hatches拒绝新增model/usage_observation.py中typing.cast三处，不放宽门或改测试；contract/build/installed尚未执行。源码前后同。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r233-agent-engineering-yf24axbo/manifest.json。
+
+准原agent_execution_bound_owner仅现usage_observation.py删除cast、采用object_pairs_hook实际返回的typed JSON object并明确运行时检查，不造wrapper泛层，不改输出/理由/预算/SDK/marker。peer e13f0853、factory4cd6e1b1、inventorye2fd087b、四D0完全冻结，架构test零修改。作者仅静态format/lint/type，不运行测试/resources/Git；交唯一新SHA/diff后Root重跑架构+完整310与完整工程/build/installed，待独审。
+
+原IAB tab1仍存在/app，Root定向DOM命令在dispatch前5秒期限失败，随后captured logs及全inventory各超时并kernel reset；没有DOM/网络/渲染证据，不认定应用根因、不刷新/另开tab/重启/旁路浏览器。源码只读审在途，其他研发继续。
+
+### R233 Web 工作区选择性缓存拒绝：tests-first准入
+
+Owner：Web浏览器非权威缓存边界；只修改既有文件，不变owner/API/职责，沿现工程与真实Next/Chromium验证。Root读只读审报告确认persisted-store的getItem可在engine committed effect逸出；原用户根因仍未知。生产当前6639b1d4与旧copy同，认证fail-closed必须保持。
+
+- 原web_crud_r231_review为唯一Web writer，先只准现tests/system/oidc-rp-next-http.integration.test.ts新增一个选择性Conversation key读取拒绝的真实系统case；原80case断言保持（固定569540dc）。禁止改src/timeout/锁/contract/fixture全局成功路径。
+- 正规Productcookie、认证index仍可读，只getItem的kokoro.web.conversations.direct抛SecurityError；明确确认拒绝实际命中与authenticated=true，再在原12秒预算断言owner deep-link正文/composer、无pageerror、loading终止、reload恢复、URL不变、零创建POST。
+- Root独占HTTP/Chromium/Redis资源；作者仅静态ESLint/typecheck后交SHA/diff停写；Root运行真实RED后才能授权persisted-store.ts最小读降级。不是原3310根因证据，不把fallback当认证绕过。
+
+R233 no-cast原writer冻结b8bc3c81，其余七路径/架构门未变；Root现复跑架构、310peer与完整工程后build。原agent_usage_r232_review只读续审单文件runtime typed object窄diff，0source/resources/Git，报告/tmp/r233-agent-no-cast-review.md，Root保留先前2252/1历史。
+
+R233 Root50904有效Web RED：1fail/80名称过滤，19.308秒。authenticated=true、精确Conversation读取拒绝2次，pageerror SecurityError，snapshot0/body0/composer0；两loading0（React异常不是仅spinner无限，不能混说）。source与Redis keyset保持。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r233-web-storage-red-4beeqwlx/manifest.json，log a1f99b67。现授权原Web writer仅src/lib/persisted-store.ts的read捕获浏览器getItem/getter拒绝→既有非权威内存快照/null，不改认证、schema、write/storage event、scope/TTL/network；唯一systemcasee2f5afe9及所有80旧case冻结。静态Node22 ESLint/typecheck后交sourceSHA/diff停写，由Root原12秒oracle及完整81系统、适当Web工程复验。全localStorage拒绝仍须fail-closed认证错误，不能把用户3310宣称已修。
+
+R233 Web原writer已冻结16136175/e2f5afe9，只read6行级catch；Root先原case再完整81。agent_usage_r232_review续任Web独立只读source/test两路径审，基线ce40cecc及20mixed，报告/tmp/r233-web-storage-review.md；禁仓写/资源/Git，不将非权威store降级扩至auth。
+
+R233 Agent最终资源已核：工程12295九步骤全部0（architecture29、peer310、default2253/717filtered/795warnings），source_same；build36640 archive+八候选wheel/sdist0；installed33857 v3 statuspass、18step含两应拒绝负控均符合、来源/RECORD/assembly新observer哈希准确、source保持/自有venv已删除。原v2 probe命名失误保留，不改源码。独审no-cast 0。现原Agent owner仅四D0各当前前缀更新限定交付证据与native/费用OPEN，原全文suffix与4source/test冻结；交docSHA，Root核旧suffix=HEAD、派审前缀，按明确八路径提交。工程/installed绑定核心源码未变，文档回填另做contract/diff核，不偷宣称整个产品完工。
+
+## R233 最新源码/系统实际结果（2026-10-04）
+
+Web新缓存拒绝系统反例Root50904真实1fail/80filtered：认证成功、拒绝2、SecurityError，正文/输入0；read最小捕获后Root37212原case1pass/80filtered（7.863秒），再Root45144完整81pass/0fail/0skip（120.255秒），原12秒预算/旧80/认证全storage拒绝负控保持。冻结source16136175/teste2f5afe9，source与Redis keyset保持，独审0P0/P1/P2。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r233-web-full-eeam4wb3/manifest.json，log05862492346d8832926bcf4d1a59628521667269419f6d644473adc853e9ad56。源码是非权威local cache初始化修复；原3310原因仍未知，不冒用户恢复。主仓Web20mixed包含旧19，未整体提交；Root10121完整工程已终态exit1：258contract/50architecture/lint/typecheck通过，默认2478pass/3fail（IAM邀请页桌面/移动端/注册三项5000ms超时），build未执行；T-Q01从历史通过改为当前失败，根因待诊断，不放宽期限。
+
+Agent架构cast真实FAIL经单文件_JSONObject runtime hook窄修，Root12295九工程步骤0（29architecture/310真实SDKHTTP/默认2253pass717filtered795warnings），source保持；build36640 wheel/sdist0；installed33857 v3 pass（18step含两应拒绝负控、安装origin/RECORD/新observer/factory/assembly精确hash），自有venv删除。源码b8bc3c81等四路径独审0；四D0证据回填在途，Root随后精确八路径提交，不夹带其他内容。正式native/Billing/sealedEvidence与用户3310未闭环。
+
+70组业务状态仍11通过/6失败/14待复测/38未验/1支付后置。资源测试数量不当产品完成数。
+
+## R233 当前进度复核补记
+
+本轮消费原10121，不重复启动。Web完整工程真实失败，T-Q01已更新；70组当前为10通过/7失败/14待复测/38未验/1支付后置，下面或前文11/6仅此前时点。隔离系统81项与Agent工程/安装是限定证据，用户3310旧运行组合仍未验收；三原生子代理均完成交接，不冒称正在后台运行。
+
+## R234 继续交付与真实失败诊断
+
+上一回合分类为progress：消费10121真实终态、发现3个Web失败并将T-Q01更新为失败（70组10/7/14/38/1）；不是仅状态重述。完整Wave0–7保持，既有候选与混合修改保护。
+
+|任务|Owner/Agent/基线|范围、依赖、验收及Git责任|
+|---|---|---|
+|R234-AGENT-DOC-PRECISION|Agent原agent_execution_bound_owner，main f3050fcc，8路径候选|仅docs/CURRENT.md新R233前缀修建包manifest为完整绝对路径、717改为marker过滤而非泛称资源；4源码测试/旧全文冻结。静态SHA交接停写。Root独审后contract/diff及绑定核验，精确8路径提交，不碰Root gitlink/3310。|
+|R234-AGENT-FINAL-REVIEW|agent_usage_r232_review只读，等待前一doc冻结|核四D0当前前缀与真实工程/build/installed、原suffix及4核心SHA；零仓写/资源/Git。报告/tmp/r234-agent-doc-final-review.md；Root不依worker口头完成，独占提交。|
+|R234-WEB-INVITATION-DIAGNOSIS|原web_crud_r231_review只读，main ce40cecc+20混合修改|读三视觉5000ms失败、现邀请page/test/并行fixture；输出/tmp/r234-web-invitation-timeout-review.md。零仓写/资源/Git；Root按原预算单文件真实Chromium复现，先辨launch/setContent/assert/cleanup再准最小修复，禁扩大timeout或弱化业务断言。|
+
+### R234 Agent精确交付与后继项目能力
+
+Root本地main已提交Agent cb64537048d34ce6db5bea5f2e12e182ba88092c（parent f3050fcc），精确8路径Git objects同冻结；Agent工作树clean。四D0独审0，Root本轮architecture29/peer310/contract全0，重新archive构建0；新wheel所有zip entry bytes与R233已安装验wheel相同，installed18step收据可精确承接。收据/tmp/r234-agent-commit-receipt.json。未push/Root gitlink/3310/nativeBilling费用接线。
+
+|R234-BFF-PROJECT-RENAME-D0|BFF7289b3a4+20protected，bff_project_crud_owner只读，Root统一边界|先核现PRD/三D0/R203裁决/public contract/SQL/实现/测试，给Project名称更新唯一owner契约最小一致方案及真实HTTP/PG业务oracle；不连带DELETE/任务政策/新表/兼容alias，若已确定可直接引用，不造第二中心。报告/tmp/r234-bff-project-rename-d0-review.md。禁仓写/资源/Git，Root确认三D0一致后才授权契约和失败系统测试。并行Web同源码四worker完整测试只改变运行并发变量，原5000ms/断言不变，不默认升通过。|
+
+### R234 Web并发预算最小切片准入
+
+归属：Web本仓既有Vitest测试编排，唯一writer web_crud_r231_review；只改现vitest.config.ts，不变业务owner/API/数据/目录，Root按完整工程复验。当前config98ef6921为clean路径，其他20mixed完整保护。Root原默认完整2478/3失败与同源--maxWorkers=4完整2481/0（126.463s）形成并发变量对照，单文件4/0反证持续HTML错误；仍不声称精确卡launch或原3310原因。Vitest4.1.10真实CLI已验，官方 https://vitest.dev/config/maxworkers 核验2026-10-04允许number；默认run占全部availableParallelism，本机12。
+
+比较：A扩既有config的maxWorkers4，维持文件并行/原5000ms/原所有测试；B分projects将process-heavy与jsdom拆开，需共享配置/命令/跨组资源串行定义且当前尚无独立调度收益。采用A作为现混合套件明确资源上界，不全仓串行，不新增项目配置/第二计划/worker wrapper；后续实测不足再基于证据拆组。预算不能替代每个fixture自身close/取消保障。
+
+只准test.maxWorkers=4及一句解释拥有Chromium/Next子进程因此有界并发的注释；禁改testTimeout/重试/skip/include/exclude/fileParallelism/断言/package/source/历史docs。作者仅静态格式与ESLint freeze，Root原pnpm check完整跑再审；正式页面/发布组合仍OPEN。交/tmp/r234-web-worker-budget-handoff.md。
+
+R234 Web预算writer已冻结config2586c52d（仅注释+maxWorkers4），Root46156完整原pnpm check在途，沿原句柄等待。agent_usage_r232_review独立只读配置窄diff与现worker语义/原测试集合、原deadline保持，禁仓写/资源/Git，报告/tmp/r234-web-worker-budget-review.md；旧20mixed不因此获整体交付。
+
+## R234 当前真实交付与并行诊断（2026-10-04）
+
+Agent Root精确8路径本地main提交cb64537048d34ce6db5bea5f2e12e182ba88092c，parent f3050fcc，Git objects逐项等冻结，工作树clean；四当前D0独审0。Root本轮29architecture/310真实SDK HTTP/contract全0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-agent-engineering-db5xcdvu/manifest.json；重新archive构建wheel/sdist0，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-agent-build-c6_5i21z/manifest.json。新wheel逐zip entry bytes与R233 installed18step已验wheel全同，包含RECORD，不能用zip打包时间导致的文件hash不同冒新源码；原完整2253/717marker过滤/795warnings证据绑定四核心SHA不变。receipt /tmp/r234-agent-commit-receipt.json。未push、更新Root组合指针或用户3310；native/Billing仍OPEN。
+
+Web原三浏览器超时单文件原5000ms实跑4pass（1.936s），同源完整只设CLI maxWorkers4为2481pass/0fail（126.463s），后者manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-web-four-workers-3t2tm2gg/manifest.json，source/Redis保持。原默认2478/3真实FAIL留存；没有证实卡在Chromium哪一阶段或原3310根因。按最小资源预算裁决原writer只把现config固化maxWorkers4（2586c52d），维持文件并行和原全部断言/deadline；Root46156原pnpm check完整门仍在途，未先改T-Q01通过。Web当前21mixed，旧20保护。独立配置审查和BFF项目改名三D0/契约方案只读并行。
+
+IAB原/app只读getTab在15秒工具deadline超时并kernel reset，没有取得用户DOM；未刷新、新tab或重启服务，不把工具失败当应用根因。当前70组10通过/7失败/14待复测/38未验/1支付后置保持。
+
+## R234 最终工程终态与本地交付
+
+Root46156已终态exit0：完整原pnpm check的258contract/50architecture/lint/types/165file2481pass/0fail/Next build全通过，161.421秒。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r234-web-engineering-q7b13zmn/manifest.json，日志SHA1af68e9c606893f477b2d95b690f5e00790585297c9546327676543068bfb9b0，source/config/Redis keyset保持；新4-worker预算独审0，并未延长原5000ms、重试或过滤测试。Root只提交clean config路径为main680c8db8c7c118d083bc64ba7362dff6f62fcecf，其他20mixed bytes/mode/status全保持；收据/tmp/r234-web-worker-budget-commit-receipt.json。工程绿只绑定当前冻结混合树，不能冒Git-only组合发布或原3310修复。R233默认2478/3历史留存。
+
+T-Q01有限工程组复测通过，70组当前11通过/6失败/14待复测/38未验/1支付后置；之前10/7是本轮复测前时点。Root组合实际变为6个gitlink差异，未更新指针/uv或push/重启3310。Agent cb645370本地已交付并clean。Root治理归属小门7pass，仅该范围，旧全仓标准/组合checkpoint问题保留。所有本轮测试句柄均终态，无未登记验证任务。
+
+BFF改名设计只读报告/tmp/r234-bff-project-rename-d0-review.md已回读：选择字段PATCH /v1/projects/{projectId}/name，保instruction路径/ID/slug，name与现receipt同事务、旧key不覆盖新名、LWW不新增version/表；三D0及active前置交付必须先审，尚未写合同/源码或验证业务。正式登录/原页面持续加载、CRUD/设置、native与Billing用户费用链仍OPEN。
+
+R234-BFF-PROJECT-RENAME-D0 Root裁决：采用唯一PATCH /v1/projects/{projectId}/name，沿现Session title字段PATCH；闭集最小ACK/data+header request ID，1..160UTF16复用name规则、保ID/slug/instruction；LWW/no-op不增version/DDL，raw key及fingerprint、原子name+现receipt、active授权先于重放和unknown恢复沿只读报告。只授bff_project_crud_owner四D0最顶短当前前缀，旧20protected全文/源码/schema/contract/tests保持；不可把未交付active候选当已发布，必须给出先审/先提交active前置依赖和完整验收后继。字节/SHA交接后停写，Root独审后三面门与实际HTTP/PG RED才授合同/源码，零资源/Git权限。
+
+R234-ROOT-DOC-DELIVERY：Root为五现有台账唯一writer，当前CURRENT已收敛只留当前事实，R233/R234旧阶段仍在progress；agent_usage_r232_review只读审docs/CURRENT.md/task.md/progress.md/test-cases.md/CODEBASE_MAP.md的本轮diff与当前计数、两个child commit/所有manifest边界，报告/tmp/r234-root-ledger-review.md。不能改子仓/uv/gitlink/历史事实或资源，Root独占精确5路径提交。
