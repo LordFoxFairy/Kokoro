@@ -1,3 +1,11 @@
+## R252 真实登录回跳失败与技能消费者交付（2026-10-05）
+
+- **真实用户路径 FAIL，根因已定位到登录返回目标丢失**：原3310项目深链经正常IAM SSO，Document链为项目307→/login302→/iam/oauth2/authorize302→/api/auth/callback/kokoro-iam303→/app200；最终普通会话、无Project区域。受管CDP同cursor完整分页，hasMore=false/truncated=false；未改clock/cookie/token，未伪造登录。安全receipt `/tmp/r252-original-deeplink-login-return-red.json`、截图 `/tmp/r252-original-deeplink-login-return-red.jpg`。有效session对照：项目硬刷新200且项目/两行草稿均保留，已精确清掉本次QA草稿；对照receipt `/tmp/r252-original-project-refresh-control.json`。这替代R251“尚无跳转链证明”的当前结论，但不宣称所有间歇根因已穷尽。T-C05/T-U04仍未验收。
+- Web唯一ZIP V2 consumer已精确本地main **475f24fe74edf68b45754e13c657361fb2857e70**：20冻结现文件+三D0仅批准prefix，共23path；原四mixed保持。Root先实际RED2failed/10passed，再冻结重跑97182实际1869passed/107files及生成/lint/types/build全部exit0；独审7a7605b无新增确定P0/P1/P2。BFF正式f3c64d90/public8/SHA278fc0a6固定，Team15输出逐字不变、生产仅现schema V1→V2，不加旧值域兼容。收据 `/tmp/r252-web-v2-commit-receipt.json`、Root门 `/tmp/r252-root-web-v2-gates.log`。**这是源码交付，不是Publish/Install/整页通过**，T-K02仍OPEN，原3310未更新。
+- 下一动作并行且同仓单writer：原Web owner接最小标准同源返回目标修复（现state/PKCE/nonce/一次消费、安全身份fence保持，不增中转cookie/认证框架）；Root接固定五owner真实普通登录→原生ZIP→上传扫描→Validate→Publish→Install/启停/移除→刷新。组合只读a8a8c2bc已核依赖/工具链/原PID保护，必须独立cookie jar，不能仅换端口伪称隔离。
+
+完整Wave0–7和70组 **11通过/6失败/14待复测/38未验/1支付后置** 保持，goal仍原blocked；未push、未暂存Root gitlinks/uv/任务外mixed，不把工程测试数量冒最终用户验收。本条记录时自有Web门97182已完成，release构造21804在途，尚未启动新服务或做模型/积分操作；原3310句柄保留。
+
 ## R251 验收状态续录（2026-10-05）
 
 BFF消费者正式source交付f3c64d90不计产品用例通过：public8.0/zip-v2完整工程检查只辅助，资源skip2不是实测。T-K02待Web正式消费后真实用户二字段ZIP→扫描→Validate→发布→安装/启停/移除→刷新；当前原3310Skills/Library读取FAIL及项目刷新FAIL保持。登录目标能力缺口只读已证，实际跳转根因未证，不清零。70组11通过/6失败/14待复测/38未验/1支付后置不变。

@@ -1,3 +1,17 @@
+| R252-AUTH-RETURN-READ | T-C05/T-U04真实项目重新登录丢返回路径；P0 | Web边界；bff_skills_v2_owner_r251只读；Root决定、原Web owner唯一后继writer | Web475f24f；原3310未同步；真实Document全链FAIL | 只读现Proxy/layout/login/Auth RP/state/client，报告/tmp/r252-auth-return-decision-review.md；生产/文档/Git不写 | 与Root真实Skills组合并行；根因证据已取得，非猜测 | 有效session200对照与重新登录303/app负控；严格同源有限target/一次consume/身份fence；保issuer redirect_uri | Root三D0后原Web owner tests-first；不增框架/cookie/opaque阶段 |
+
+## R252 真实登录回跳失败与技能消费者交付（2026-10-05）
+
+- **真实用户路径 FAIL，根因已定位到登录返回目标丢失**：原3310项目深链经正常IAM SSO，Document链为项目307→/login302→/iam/oauth2/authorize302→/api/auth/callback/kokoro-iam303→/app200；最终普通会话、无Project区域。受管CDP同cursor完整分页，hasMore=false/truncated=false；未改clock/cookie/token，未伪造登录。安全receipt `/tmp/r252-original-deeplink-login-return-red.json`、截图 `/tmp/r252-original-deeplink-login-return-red.jpg`。有效session对照：项目硬刷新200且项目/两行草稿均保留，已精确清掉本次QA草稿；对照receipt `/tmp/r252-original-project-refresh-control.json`。这替代R251“尚无跳转链证明”的当前结论，但不宣称所有间歇根因已穷尽。T-C05/T-U04仍未验收。
+- Web唯一ZIP V2 consumer已精确本地main **475f24fe74edf68b45754e13c657361fb2857e70**：20冻结现文件+三D0仅批准prefix，共23path；原四mixed保持。Root先实际RED2failed/10passed，再冻结重跑97182实际1869passed/107files及生成/lint/types/build全部exit0；独审7a7605b无新增确定P0/P1/P2。BFF正式f3c64d90/public8/SHA278fc0a6固定，Team15输出逐字不变、生产仅现schema V1→V2，不加旧值域兼容。收据 `/tmp/r252-web-v2-commit-receipt.json`、Root门 `/tmp/r252-root-web-v2-gates.log`。**这是源码交付，不是Publish/Install/整页通过**，T-K02仍OPEN，原3310未更新。
+- 下一动作并行且同仓单writer：原Web owner接最小标准同源返回目标修复（现state/PKCE/nonce/一次消费、安全身份fence保持，不增中转cookie/认证框架）；Root接固定五owner真实普通登录→原生ZIP→上传扫描→Validate→Publish→Install/启停/移除→刷新。组合只读a8a8c2bc已核依赖/工具链/原PID保护，必须独立cookie jar，不能仅换端口伪称隔离。
+
+完整Wave0–7和70组 **11通过/6失败/14待复测/38未验/1支付后置** 保持，goal仍原blocked；未push、未暂存Root gitlinks/uv/任务外mixed，不把工程测试数量冒最终用户验收。本条记录时自有Web门97182已完成，release构造21804在途，尚未启动新服务或做模型/积分操作；原3310句柄保留。
+
+| R252-COMPOSITION-READ | T-K02真实验收组合准备；P0 | Root launcher；bff_skills_v2_owner_r251只读；Root审验/资源唯一owner | Root main302ef0da；BFF f3c64d90；Platform494b118；Web候选正在写不可取final | 只读现scripts/dev/serve_local_login.py、local_platform_runtime.py、local_storage_runtime.py与既有R247/248组合manifest；只/tmp/r252-composition-preflight.md | 与Web现consumer实现并行；正式Web冻交后Root才组装/启动 | 精确源码/commit/工具链/端口/已批准activation与凭据文件需求；保原3310；不输出秘密，不新建资源，不覆盖旧候选 | Root独占后继受管单次进程/回收；本卡无Git/启动/下载/依赖/数据写 |
+
+R251-WEB-V2-CODE放行（15:17心跳）：Root有效RED实际2failed/10passed/exit1，日志/tmp/r251-root-web-v2-red.log，冻结test707e8812。合法V2被现parser拒parse200，旧V1实际resolve；不是pin/setup失败。沿现Web唯一writer授a7526df提案18现路径及现contract/README、docs/CURRENT必要短prefix；三D0由Root批准prefix不抢写，原mixed后缀/system仍保护。固定f3c64d90/8.0/278fc0a6正常生成，手写生产只schema正则。保所有原权限/媒体/header/扫描/unknown/key断言，不加V1兼容。冻结交Root，真实用户页面验收后继，不开服务。
+
 R251-WEB-V2-D0/RED准入：Root已回读a7526df提案与三D0，现三D0只批准窄prefix，原mixed全文suffix保留，收据/tmp/r251-web-v2-d0-prefix-receipt.json。沿同Web owner先仅现tests/hub/skill-publish-client.test.ts增严格V2接受/V1拒绝的真实Response行为，禁止先改schema/pin/生成；Root有效RED后再准18path现实现/正常生成。正式BFF身份f3c64d90/public8.0/SHA278fc0a6；无auth/SQL/新UI层。
 
 ## R251 BFF消费者正式交付与页面后继（2026-10-05）
