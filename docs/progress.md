@@ -1,3 +1,13 @@
+## R244 精确源码交付与正式主树工程复验（2026-10-05）
+
+Web 已提交本地 main `c8b8632642ceb8d72d3c0e52a50bfa73c01908eb`，父 `5e0963648db0cb0e1a60de42ea025670b32aba85`；44 个 Git payload（冻结43路径+owner CURRENT证据前缀）逐对象与批准来源一致。私有 index 精确提交，原四 mixed bytes/modes、Root index、六 gitlink 与 uv 锁保留，real index 空。交付收据 `/tmp/r244-web-git-delivery-receipt.json`，独审 `/tmp/r244-web-git-delivery-review.md` SHA `b309d31d118627f31f2c431f427a793be205fe14196e5e6efa656880ad7b0c31`。只本地交付，未 push 或替换3310。
+
+Root91331 在上述正式 mixed 工作树实际重跑完整 `pnpm check`，174.8秒/exit0：contract263、architecture50、lint/typecheck、165files/2495默认测试、production build全过。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r244-web-formal-main-full-slb0rn0n/manifest.json`；日志 SHA `cb3ca6ea297db73b5b704ac784931195c8e15d4476cac976a59c2b18ffc5c6c5` 已回读。ordinary source与Redis keyset保持，原四mixed再次核 bytes/modes相同，owned group55385无残留。此2495包含受保护的正式工作树测试，不冒充冻结Git tree的2488或2495用户旅程。原受控owner改名/取消/归焦/回读/刷新已见R243证据；正式持久BFF/当前3310、跨scope焦点、真实多语言UI与独立`test:e2e`仍待验。
+
+后端原owner只读找到SDK全部变换后的公开HTTPX final hook；独立审查实际发现设计P1：锁定SDK `asyncio.gather` 使用合法child task，不能以middleware owner同task强拒所有child。原owner已交修订报告d52e6474，区分lifecycle owner与唯一physical request claimant及取消/关闭窗口；独审继续复核，尚无native/PG动态证明，未准源码/Schema重写、provider外发或虚构input token bound。原Run input_digest/UUID/无许可零send不变量保持。Billing quote/attempt许可/积分预占结算释放与流水仍OPEN。
+
+用户旧加载根因、完整项目CRUD/Settings与费用用户链未总验收，昵称保存实际FAIL仍保留。当前3310 PID46036和原launcher保持，不重启清会话/共享PG/Redis。完整Wave0–7、70组11通过/6失败/14待复测/38未验/1支付后置不变；stored goal仍blocked，未新建或冒称完成。下一优先为正式owner/用户页面验证与后端final-wire文档门，不用工程绿替代完整交互链。
+
 ## R243 本轮当前事实（2026-10-05）
 
 Root89903最终localized冻结原完整check终态0：contract263、architecture50、lint/types、默认2488（现74系统在集内）、build均实际通过，source/Redis保持，日志SHA回读吻合。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-localized-185ixsi4/manifest.json`，loga574725e035dfbb1fe3e3444758a4b9a80bc369e727a8ca57721fedf3d13e7a1。43path冻结 `/tmp/r243-web-final-integrated-freeze.json`，源码独审232093fc确定P0/P1/P2=0。原两轮contract/缺译FAIL历史保留，未弱化测试或95%门。

@@ -1,3 +1,13 @@
+## R244 工程交付复验与用户链状态隔离
+
+|验收对象|预置与步骤|实际结果|状态边界|
+|---|---|---|---|
+|Web精确交付保护|父5e096364、冻结43path+CURRENT；逐Git对象核44集合→核原四mixed bytes/modes/index→主树完整check→再核保护|c8b863264对象一致；Root91331完整门0（263/50/2495/build），源/Redis保持、owned55385无残留|工程交付PASS，不关闭用户功能组|
+|正式用户Project改名链|正规IAM→持久BFF本人Project→更多改名→canonical GET/列表→刷新同对象/会话/草稿|本轮未执行；原R243controlled-owner子链证据保留，当前3310未换源码|待验，不按后台测试数算用户PASS|
+|Agent真正final request冻结|真实native SDK→合法child final hook→prepare同wire摘要→缺许可零transport|独审发现same-task提案错误，原owner只修只读设计；本轮未运行该native反例|设计P1已静态修订待复审/动态证明；无provider/资金变化|
+
+原加载/Settings昵称丢失、完整CRUD/权限/多语言/焦点交错与正式费用链未关闭。完整70组仍11通过/6失败/14待复测/38未验/1支付后置。
+
 ## R243 最终完整回归与用户验收边界
 
 Root89903最终localized冻结原完整check终态0：contract263、architecture50、lint/types、默认2488（现74系统在集内）、build均实际通过，source/Redis保持，日志SHA回读吻合。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-engineering-localized-185ixsi4/manifest.json`，loga574725e035dfbb1fe3e3444758a4b9a80bc369e727a8ca57721fedf3d13e7a1。43path冻结 `/tmp/r243-web-final-integrated-freeze.json`，源码独审232093fc确定P0/P1/P2=0。原两轮contract/缺译FAIL历史保留，未弱化测试或95%门。

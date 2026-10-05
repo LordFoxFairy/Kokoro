@@ -1,3 +1,9 @@
+## R244 当前交付定位（2026-10-05）
+
+Web `apps/kokoro-app` local main已从5e096364推进至 `c8b8632642ceb8d72d3c0e52a50bfa73c01908eb`：原owner BFF7.2/bf64 pin、现更多菜单Project改名/immutable intent、owner/browser缓存边界、canonical回读、focus scope与九词典13key。44 Git对象见/tmp/r244-web-git-delivery-receipt.json，原四mixed仍保留；Root91331正式mixed主树完整门0（2495默认）不替代当前3310/正式持久owner用户验收。Rootgitlink未更新，不把本地子仓交付冒Root release pin。
+
+Agent仍cb645370、Billing仍ccd4cb0f；后端final HTTPX hook只读设计复审在途，合法SDK child与same-task提案冲突已确定，原owner修订d52e6474已交待复审；无源码/Schema/provider/资金改动。继续既有任务中心及完整Wave0–7，不另建计划。
+
 ## R243 当前后继边界
 
 Web localized冻结43path，Root89903原完整check0，原browser rename/key/reload及邻接恢复0，独审源码0；两真实FAIL历史保留。formal main仍5e096364/原四mixed保持，Root后继精确集成及正式owner/当前预览验收。Billingccd4cb0f私有前置已主树0但资金链OPEN；Agent请求绑定设计feed3bbcc不准临时gate两列半链，真正transform/bound冻结点再准下一门。Settings资料问题待答，现场昵称丢失FAIL。owned runners全部terminal，tab5复用，用户3310保持；同task/progress/test-cases唯一证据中心。
