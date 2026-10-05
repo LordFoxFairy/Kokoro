@@ -1,3 +1,15 @@
+## R255 保数据源码交接：安全准备阶段（2026-10-05 20:33 UTC heartbeat）
+
+沿R255-PRESERVE-CUTOVER-PLAN，不另建计划。原3310继续保留；本阶段不退出原parent、不安装覆盖旧schema、不重置资源、不调用模型/资金。
+
+|任务|归属/基线/范围|验收与后继|
+|---|---|---|
+|R255-PRESERVE-PREP|Root唯一资源与私有配置writer；Root43db441、原45606/46036；只ignored var/dev私有备份/收据及现任务台账|安全准备已执行：两完整online archive+96表内容摘要/metadata验证，17对CHECK精确语义审查后Root最终复验0；78原库exact、自有库回收、原服务存活。var/dev/r255-preserve/final-online-rehearsal.json。online不是最终停写点；本阶段不退役原服务，下一最终drain/正常配置/同3310切源码|
+|R255-NORMAL-ENTRY-AUDIT|原web_r247_skill_header_owner，只读Web/IAM/BFF当前入口与D0，报告交Root；不读私有凭据/DB或改仓/资源|已完成停写：/tmp/r255-normal-entry-audit.md；BFF须显式加载env、IAM完整main不得继承generation-only override；原origin/secret/Redis身份条件明确。Root后继实际接配置，不重复总方案|
+|R255-RESTORE-ORACLE-REVIEW|原bff_skills_v2_owner_r251，只读现owner DATA_MODEL/canonical/恢复计划；不读私有凭据/DB或改仓/资源|已完成停写：/tmp/r255-restore-oracle-review.md与constraint-semantic-review.md；17对CHECK仅限定语义等价，无泛regex豁免。Root已复核数据/metadata/78库集合；最终停写、canonical drift与用户E2E仍未验|
+
+Root保留当前uv.lock/7gitlinks及各mixed，不重复源码纯门；两reader不共享writer。70组状态保持，只有实际浏览器完整旅程才增加业务通过。
+
 ## R255 正常身份前置：IAM 与 Billing profile 真正不匹配（2026-10-05）
 
 Root在正常启动前独立读回：原3310/iam/jwks真实HTTP200，key alg只有EdDSA、kty OKP；正式IAM c9a9872 billing verifier/claims唯一规定namespaced tenant/user_delegated/billing资源及scope。Billing22df两个用户JWT入口仍RS256与plain tenant_id。现RSA本地fixture和ready都不能证明IAM兼容；目前尚未取得真实IAM签发Bearer的Billing正控，不冒业务HTTP已经FAIL/PASS。

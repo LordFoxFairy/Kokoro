@@ -1,3 +1,11 @@
+## R255 保数据交接已有实证，尚未退出原运行组合（2026-10-05）
+
+Root完成原IAM/APP两个完整数据库的online custom archive，并共享各自exported snapshot做全表内容oracle；实际IAM仅kokoro_iam17表808行，APP为kokoro_agent/kokoro_bff/kokoro_scheduler/kokoro_storage/system共79表3654行。两个archive实际全量恢复到Root自有同一空验证库；96表内容、列/索引/枚举/序列精确相等，补核relation/column/constraint属性/function/view/trigger/policy/type metadata精确相等。原17对CHECK反解析文本不等先保留失败，独审与Root逐对确认仅6组AND结合、11组固定varchar数组cast表示差异；最终复验仅接受已冻结的精确17对，不泛正则放宽。public relation/额外extension/数据库设置/大对象均无冲突；未声称所有owner当前canonical drift通过。
+
+收据var/dev/r255-preserve/final-online-rehearsal.json；最初失败restore-rehearsal.json与replay-diagnosis.json保留。原78库OID/名称集合exact，自有恢复验证库已回收、原服务存活。Web随机authSecret与原配置已Root私下0600保管，无凭据输出。online Redis只读归档带绝对expiry，不延TTL/restore：该时点Web product-session key0、IAM prefix key1，不能伪造保登录；已有账号/历史与重新登录分别处理。
+
+**这只完成安全准备，不是正式切换或用户E2E**：两库/Redis不是共同停写点；原3310/parent45606未退出，普通/项目列表新源码仍未发布。正常main配置须替换fixture generation-only材料，BFF显式加载.env.local；IAM完整入口的Product/Tenant/introspection/proof前置尚待接线。后继Root做最终drain/快照与固定源码正常配置核验，再同3310真正登录/历史/CRUD/刷新。Storage67827/Scheduler86248本次原句柄仍running，无新常驻进程。70组11/6/14/38/1保持，0新增页面通过。
+
 ## R255 当前：Billing认证源码已接收，用户运行链仍待验（2026-10-05）
 
 Billing本地main `244b2810c0cc043d29fffb2b3301eebf2d390b3d`：3source/3test/4同源说明及CURRENT批准前缀，共11path。两个入口共享唯一EdDSA/namespaced完整IAM profile verifier，三时间字段明确safe integer（对齐Zod4/Zod3运行差异）；既有plain/u1 header、机器五因素和错误语义保持，无RSA/plain fallback、资金/SQL/费率变更。README/env改为固定源码单库owner schema、明确首次安装与重复启动、正规IAM认证及支付后置。

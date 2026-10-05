@@ -1,3 +1,7 @@
+## R255 数据保留交接入口（2026-10-05）
+
+正式源码入口仍Web/IAM/BFF各package dev与src/main；不新建retain launcher/迁移框架。Root ignored var/dev/r255-preserve保存完整归档、原环境私有保管与online恢复验证收据，仅开发数据交接证据，不是新业务配置/任务中心。实际旧IAM namespace kokoro_iam，原APP为kokoro_agent/kokoro_bff/kokoro_scheduler/kokoro_storage/system；source实际catalog与当前canonical分别核，不猜System改名。原3310仍旧受管副本，最终正常源码切换未执行。
+
 ## R255 Billing IAM consumer 当前源码（2026-10-05）
 
 Billing main `244b2810c0cc043d29fffb2b3301eebf2d390b3d`：现`src/infrastructure/auth/billing-access-token-claims.schema.ts`负责固定profile与safe integer；同目录`billing-access-token.verifier.ts`负责唯一remote JWKS/EdDSA/完整claims验证，仅返回tenant/subject；现`billing-auth.ts`两个入口复用，legacy plain与personal u1 header各保原wire。不新建owner/module/API/SQL或收费规则。三现test锁profile，README/.env固定日常运行，v1仅两security description与digest收敛；正常v2生成无tracked差异。

@@ -1,3 +1,13 @@
+## R255 保留现有用户数据：真实备份/还原准备推进（2026-10-05 20:33 UTC heartbeat）
+
+- Root按原任务卡读取源码/实际进程catalog，确认原IAM17表与APP79表跨六schema，不只备份Conversation。最初只读识别约束因IAM同时持有admin/runtime socket、Agent经uv子进程而失败；改为精确fixtureDB过滤及原supervisor祖先检查，不改任何产品代码/数据库事实。
+- Root实际pg_dump两完整online archive，分别与全表oracle共用exported snapshot；进程12499自然终态exit1不是pass：IAM全等，APP只有constraints digest不等。没有忽略失败/删约束，原收据保留。
+- Root重用同两archive恢复验证、逐项定位17对CHECK差异；96表所有行强摘要相等。独审/tmp/r255-restore-constraint-semantic-review.md（d699aeae...）逐对证明6组AND结合、11组固定非NULL varchar数组cast分配等价；Root核冻结输入c83c2aab...与所有17名称/类型后补metadata严格比较，最终private final-rehearsal-check.py实际exit0：17表808行/79表3654行、完整已列metadata精确，只有这17对限定语义等价。没有降低工程/业务门或新增通用normalize框架。
+- var/dev/r255-preserve/final-online-rehearsal.json实际78→78 OID/名称相同，验证库精确回收，原六应用进程存活；fullarchive包括全部schemas且public relation0、extension仅原plpgsql、database setting0/LO0。所有备份/日志/配置文件0600、目录0700，凭据没有输出。
+- Root正常读取原Web authSecret并私下保管，避免退出后丢随机密钥；不是新账号/伪session。Redis只读DUMP与PEXPIRETIME同key原子采集，Web当前prefix0key、IAM1key；0restore/0延TTL。此时没有可恢复的Web product session不等于用户/历史丢失，后继正规重新登录。
+- 两原reader已交接停写：恢复oracle及normal-entry具体配置审计；正常pnpm dev入口已存在，无需复制fixture框架。BFF不自动加载.env.local，IAM正常main不能继承generation-only override，完整必要配置仍后继Root接线。
+- 原Storage67827/Scheduler86248句柄各确认running，无重复启动。当前不退出原45606/3310、不写源业务事实、不调用模型/账务；没有新的浏览器控制或用户E2E证据。online各库snapshot不是跨库/Redis最终停写点，current canonical匹配仍待核。完整70组11/6/14/38/1与Wave0–7保持，后继最终drain/配置/同站点源码交接与真实用户路径。
+
 ## R255 IAM→Billing 认证反例已真实确认（2026-10-05）
 
 - Root只前缀提交三D0：Billing `8d1713dcb4694d69ead665e1725a6fd3e09f7e9f`；5原mixed正文SHA保持，未改source/SQL/机器契约。
