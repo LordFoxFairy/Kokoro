@@ -1,3 +1,7 @@
+### R255-BILLING-CONSUMER-D1 阶段2：固定owner生成切片授权
+
+Root已复跑同正式owner两正控、public四语义RED（2pass/4fail/exit1），test SHA72515514，收据var/dev/r255-preserve/bff-billing-contract-root-red-receipt.json。原BFF writer仅续同D0第1段vendor/dependency manifest/config/generator/package既有命令/generated和现新test；生成必须实际运行、可重复、2 operation固定。现test读取owner参考改固定vendor，不保跨仓动态读取。public summary/ledger与fake double四RED属于后继public/runtime切片，本阶段保持真实失败并明确报告，不弱化/skip使全绿；源码route/config/public wire/SQL/lock/env仍排除。冻结后Root审查并复跑再授权后继；与正常3310浏览器验收独立并行。
+
 ## R255 本轮当前：正常源码运行已交接，真实页面验收继续
 
 Root沿原Wave0–7，同3310已从旧fixture副本切为固定apps源码；最终双库锁内归档、88保留表1110行原字段hash及完整JWK同key CAS验过，旧supervisor正常drain，原两fixture库由其清理。固定应用库kokoro_development，各owner schema、同一PG/role；旧kokoro_dev54表未动。7正常进程Root句柄登记var/dev/processes.json，ready 7/7；Agent worker/Billing/Platform未运行，不冒整个能力可用。
