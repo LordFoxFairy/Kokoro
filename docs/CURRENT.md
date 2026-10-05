@@ -1,3 +1,11 @@
+## 本轮当前：两名 owner 并行窄修，未放行（2026-10-05）
+
+Root已复跑R254真实反例：9failed/249passed/4现UI，句柄67239终态exit1。四类交互缺陷已证，不用旧249辅助绿遮盖：Move抢非聊天页面/迟到导航、退役首页请求复用、撤准入旧dialog/展开复活、重名展开动作不可辨。原Web writer现仅10现source/4现UI修复；唯一旧跨hook共享断言替为StrictMode同实例防重复正控，不新增缓存事实。待冻结、独审和Root复验；原3310尚未更新，真实页面仍未验。
+
+Billing独立实施继续：现catalog泛扫其他owner导致单库schema验证错误，Root回读后同卡窄扩现schema-catalog，总8source，精确namespace参数；现canonical-schema-errors只修合法owner URL测试入口，保错误identity/cleanup断言。无新增文件/框架、资金规则/35表canonical SQL不变，资源和生成仍Root独占。原5mixed保留。
+
+原Wave0–7、70组11/6/14/38/1不变；无数据清理/新服务/模型或积分操作，不把本轮辅助失败或局部修复报整页闭环。
+
 ## R254 当前未放行：独审发现四个交互漏洞（2026-10-05 heartbeat）
 
 文件夹/普通常驻源已冻结，Rootcontract/architecture/lint/types实际通过；全UI/engine/core先2fail/1527pass，作者仅两旧smoke placement按PRD替换后249/4辅助绿，build及最终Root复验未完成。独立审查绑定17hash确认2P1/2P2：Move/Retry把隐藏记忆会话当当前，ACK可抢项目概览/Library导航；折叠重开与撤准入复用退役首页请求；重新准入复活删除dialog/展开；重名folder展开按钮不可辨。Root已逐seam复核，writer先四现UI业务反例，后续须Root真实RED才窄修；不提交/放行Web源码，原3310仍未更新。

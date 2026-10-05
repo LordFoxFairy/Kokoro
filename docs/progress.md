@@ -1,3 +1,9 @@
+## R254 后继反例 Root 实跑与 R255 窄扩（2026-10-05）
+
+- 作者review tests-only冻四UI（实际新增三现file），Root回读diff并复跑67239：9failed/249passed，exit1，12.24s；全部业务断言，非类型/预置错误，日志var/dev/r254-root-review-behavior-red.log。9项为Move4、退役读取2、撤准入意图2、重名动作1。Root授权原10source窄修，不新增框架；跨两个独立hook的旧共享断言可替为StrictMode同实例正控，生命周期反例保持。原作者一次Retry角色误查询已纠正，未作有效RED证据。
+- Billing writer边界报告经Root逐实际调用核实：schema-catalog九类泛扫描与D0单owner矛盾，同任务增加现文件精确参数化，8现source。6错误清理用例因无schema URL提前被guard拦住，仅其URL改合法owner，不删/降断言；resources/env/Git/generated仍排除。
+- 本轮用户E2E为0，尚未放行源码/固定3310；完整70组11/6/14/38/1不变。原Storage/Scheduler句柄与日常3310数据保持，goal仍blocked，未新建计划中心。
+
 ## R254 审查阻断与R255独立推进（2026-10-05 heartbeat）
 
 Root40069：contract273/20、architecture50/4、lint/types全0，但UI/engine/core2failed/1527passed（旧smoke单scope断言），build未执行；作者仅两smoke fixture/placement对齐后249/4辅助绿，Root最终复跑仍待。独审17hash绑定发现2P1/2P2：隐藏会话Move/Retry ACK抢overview/Library导航、折叠重开或撤准入复用旧首页promise、旧删除/展开意图复活、重名展开按钮不可辨。Root回读接受，源码不放行/不提交，原writer先四现UI业务反例→RootRED→最窄现source修复。不用“249通过”冒闭环。

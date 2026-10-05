@@ -1,3 +1,9 @@
+## 当前窄修 seam（2026-10-05）
+
+R254源码owner为原Web writer，仍10现source/4现UI：Move真正可见route与late ACK fence在app-frame；首屏请求实例/准入生命周期在use-session-list；撤准入展开/delete intent在现workspace-rail shell/root；disclosure动作在navigation。Root9有效业务RED后进入修复，未放行/用户E2E，原3310不是当前工作树。
+
+R255 Billing仅现8source统一owner namespace：原7运行/installer/reference入口加scripts/schema-catalog.ts精确参数化catalog扫描，避免邻owner进入actual。现unit/canonical-schema-errors只调合法URL fixture，不是改资金逻辑；35表canonical SQL不动，D0 7ce0ecf、原5mixed保留。资源/生成/Git仅Root，其他owner事实不读写。
+
 ## R254 / R255 当前源码门与测试入口（2026-10-05）
 
 R254沿既有10现source、4现UI测试（追加现app-frame.smoke.test.tsx两placement）修folder+direct，未新建模块/实体/engine。当前冻结源与独审/tmp/r254-folder-final-review.md指向四待修seam：app-frame.tsx Move可见route fence；ui/rail/use-session-list.ts首页实例/admission key；workspace-rail shell/边界撤准入意图；navigation重名展开可辨性。writer先现UI业务反例，未更新日常3310。
