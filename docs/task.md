@@ -1,3 +1,5 @@
+R251-WEB-V2-D0/RED准入：Root已回读a7526df提案与三D0，现三D0只批准窄prefix，原mixed全文suffix保留，收据/tmp/r251-web-v2-d0-prefix-receipt.json。沿同Web owner先仅现tests/hub/skill-publish-client.test.ts增严格V2接受/V1拒绝的真实Response行为，禁止先改schema/pin/生成；Root有效RED后再准18path现实现/正常生成。正式BFF身份f3c64d90/public8.0/SHA278fc0a6；无auth/SQL/新UI层。
+
 ## R251 BFF消费者正式交付与页面后继（2026-10-05）
 
 Root已精确交付BFF本地main **f3c64d90f4a6fd7083252ff3d1646c5ad1dee292**：唯一public8.0.0仍/v1，严格zip-v2，固定494producer及V7→V6→V5证明，旧6519 active vendor删除；正式commit全tree等于已审已验candidate24b1423。独审07cc4fc无新增确定阻塞，Root42752实际check745pass/0fail/2资源skip及format0，仅辅助。formal主树生成首次因手工集成留下空旧vendor目录失败1，精确删除仅空目录后Root42790正式生成/check0，原失败保留。
