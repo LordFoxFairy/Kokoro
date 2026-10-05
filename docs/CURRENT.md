@@ -1,3 +1,15 @@
+## R255 22:07续推：真实项目改名503已窄修，整页验收仍OPEN
+
+Root正常IAM表单登录后，当前3310真实项目GET200，同原名称PATCH/name复现503 business_store_unavailable。根因确认为原未交接删除mixed误删HEAD已有rename的Service/port/adapter职责，现route仍调用；不是关系模型需再设计。原BFF writer停写交接后，Root只补回三现文件的原HEAD方法/types/import，保deleteProject与其余mixed。独审5c3c6fd0零P0/P1/P2；正常Node22 typecheck/build原四错误消失、实际0。
+
+仅停止原BFF23298（真实exit130，不称exit0），原端口释放后同源码/.env.local重启为9463、root22586/listener22616、ready200；其余六服务/基础设施/数据库不重启、不重装。正常用户Web→BFF→PG同原name和原RED key200、同key重放200、同key不同name409，随后项目读回原名称不变。这是运行链路修复证据，不是浏览器点击/完整CRUD PASS。三文件仍含原mixed且不整体提交；恢复的rename职责本已在HEAD，任务外删除候选继续保留。收据var/dev/r255-preserve/normal-fixed-project-rename-red.json、normal-fixed-project-rename-green.json、page-runtime/bff-rename-restart-receipt.json。
+
+BFF固定Billing两读生成已精确提交058ad4d78527804eff0c2ab7df2283b97db6bef9（22path）；Root正式Node22重复生成/check、目标types/format及lint均0，合同正控3pass/四public语义RED保持，独审6ad287c6零问题。初次Root错误PATH落Node24与错误Agent探针路径均保日志，已以正确工具链/owner JWKS复验，不冒产品失败。Public合同阶段3原writer恢复进行中，未完整冻结/发布/接入Web。
+
+新真实源码缺口：Billing正常main仍旧Fastify/v1，v2两GET仅组件未注册；canonical billing_*与旧entitlement_*查询不一致。已有C3明确全24operation/有效职责承接后一次Nest cutover；不为了ready开启第二两GET服务、加alias或补旧表。正式operator赠送入口也尚未发布，禁止SQL注资或造余额。当前policy publication代码已存在，不重复开发；下一需原owner收口现真实PG政策发布/联合选版检查点，详0988e45b只读报告。System→Agent正常路径已核，真实model alias/容量/stream用量与网关凭据scope待证，不伪造能力/healthy。
+
+7正常owner探针当前200（Agent为真实/v1/execution-proof/jwks，非worker执行）。右侧唯一新tab8仍等待原账号登录，已有提问不重复，0新增完整浏览器PASS；70组11通过/6失败/14待复测/38未验/1支付后置保持，完整Wave0–7不缩小。资源/Git仅Root，BFF单writer；原uv.lock及其他mixed保持。以下为历史事实，正常BFF原23298已由本节9463替代。
+
 ## R255 当前事实：已切正常源码，完整用户验收仍OPEN（2026-10-05 21:41 heartbeat续推）
 
 Root已完成最终双源表锁内快照与完整archive：当前schema接续保留88表1110行原字段hash exact，完整IAM JWK同key单事务CAS验证通过。正常目标为固定kokoro_development、同一PG/role的6个owner schema；既有kokoro_dev54表未改。旧parent45606正常drain、两原fixture库由其清理；实际库存78→77，仅新增固定应用库、移除该两自有源库，其他OID/名称保持。两次private inventory oracle形状/类型错误已保失败并纠正，未用错误比较宣称一致。

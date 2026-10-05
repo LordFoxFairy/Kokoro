@@ -1,3 +1,11 @@
+## R255 22:07 heartbeat / 当前交付与真实失败修复
+
+- **已交付源码依赖，不是积分页面完成**：BFF本地main058ad4d（22精确path），固定Billing244b2810/v2 SHA ecaceefd，正规两GET generated/check可重复。Root正确Node22：check/types/targetformat/lint0；合同3pass/4fail，四public/float/fake100真实RED保留。独审6ad287c6零P0/P1/P2；原保护字节精确。首次误用Node24工具chain日志保留。Public阶段3仅1YAML未完整时因用户故障优先停写，Root窄修后原writer恢复，不发布不完整artifact。
+- **当前服务真实故障已窄修**：正常IAMHTTP表单/OAuth登入后，同名项目改名503（GET200）已复现。误删三个HEAD rename seam由Root补回，原delete与其他mixed保持；独审5c3c6fd0零阻塞，正常Node22 types/build0（原4错误消失）。仅已拥有BFF23298停止exit130→9463同持久配置，root22586/listener22616 ready200。正常Web→BFF→PG同原name/key200、重放200、漂移409，读回name保持；不以这些HTTP控制冒充浏览器点击/全CRUD。没有整体提交任务外三mixed；恢复职责原本属于HEAD。
+- **完整上线能力仍未闭环**：Billingmain未注册v2且legacy表名不匹配canonical、admin grant正式operator缺失；既有C3全24operations一次cutover不放宽。已有policy publication不能再当未实现，下一收口现真实PG联合选版检查点。Agent模型worker/Billing/Platform未正常启动；真实provider能力/凭据scope未证，积分/真实模型旅程仍OPEN。
+- **资源与证据**：7现owner探针200（正确Agent公开JWKS）；误用/.well-known/jwks.json先失败保收据，非产品宕机。新BFF句柄在var/dev/processes.json，其他服务不重启、不重装DB、不清Redis。normal-fixed-project-rename-red/green.json、bff-rename-restart-receipt.json、bff-billing-generated-commit-receipt.json；uv.lock f7e1c30d保持。旧Cookie首次401仅过期准入，正常表单重新登录后才做有效rename反例，不混淆为rename业务错误。
+- **用户验收台账不虚增**：右侧tab8原账号待登录，已有提问不重复；0新增完整浏览器用例PASS，70组11/6/14/38/1保持。同Wave0–7原goal不新建，Root独占集成/Git和关键路径，原BFF owner恢复合同片，独立只读报告均冻结回收。
+
 ## R255 当前事实：已切正常源码，完整用户验收仍OPEN（2026-10-05 21:41 heartbeat续推）
 
 Root已完成最终双源表锁内快照与完整archive：当前schema接续保留88表1110行原字段hash exact，完整IAM JWK同key单事务CAS验证通过。正常目标为固定kokoro_development、同一PG/role的6个owner schema；既有kokoro_dev54表未改。旧parent45606正常drain、两原fixture库由其清理；实际库存78→77，仅新增固定应用库、移除该两自有源库，其他OID/名称保持。两次private inventory oracle形状/类型错误已保失败并纠正，未用错误比较宣称一致。

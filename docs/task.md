@@ -1,3 +1,23 @@
+### R255 真实项目改名503优先窄修（22:19 UTC）
+
+Root真实正常IAM表单登录后，3310 GET本人项目200；以当前项目原名称和新幂等key PATCH/name返回503 business_store_unavailable、private/no-store与request-id正常、名称未变。源与Node22真实4type/build错误一致：原未交接删除mixed删了已提交rename方法/类型/adapter，而现route仍调用。收据var/dev/r255-preserve/normal-fixed-project-rename-red.json；HTTP是业务运行反例，不冒浏览器PASS。
+
+原BFF writer已停写并冻结public仅1个未完整YAML（9a77c2616，交接25e0eea7），不可集成，不回滚。Root暂为BFF唯一writer，仅三现文件application/project-service、ports/project-repository、postgres/project-repository按HEAD原字节补回丢失rename职责，保delete与全部其余mixed，不改API/SQL/关系模型；当前三文件before完整私有快照。局部修复归属Project owner，现rename取消/事务/幂等安全语义不改；独审核三断点，Root Node22 types/build+正常同名称/同key重放/漂移冲突真实链，必要时仅重启已拥有BFF源码句柄且不重装数据。修复后交还原writer继续public阶段3，不允许同时写仓。
+
+### R255 本轮集成与后继（22:07 heartbeat）
+
+BFF D1固定生成22path冻结a1d8c135；Root当前已复核全部write/protected hash，独审6ad287c6为0P0/P1/P2。Root重跑生成/check、目标types/format；初次错误PATH落Node24已保日志，现正确Node22再验，不把工具链错误当产品证据。仅交付生成依赖，不改变收费规则或宣称用户验收。
+
+|任务/角色|当前范围与完成条件|依赖与停止线|
+|---|---|---|
+|R255-BILLING-CONSUMER-D1阶段3 / 原BFF唯一writer|Root提交22path后才开始；只D0第3段public YAML、verify-openapi、两现contract tests、正规生成operations inventory、两个现test double；移除float/fake100并新增owner decimal ledger。基线为本轮正式生成commit，先保持Root有效4RED，再实施；不扩现runtime/config/client/SQL/lock/Web/混合文件。Root复验/审查/提交|public8.0仍未发布，沿已批准clean-slate规则；生成不得手改。成功仅合同交付，正式owner启动、两个真实读取和页面仍OPEN|
+|R255-NORMAL Billing后继 / 原只读owner|先/tmp沿现批准C3计划比对当前已实现/缺失操作及下一独立可实施业务切片；不得另改整体架构或创建计划中心，暂不写仓|已核正常main没有v2且旧查询与canonical表名不一致；既有D0要求完整24operation/有效职责承接后单次替换main，不启动两GET测试host/第二服务、不补旧表。授权赠送operator亦未发布，不私下SQL充值|
+|Root用户验收/资源|复用7现正常句柄，当前唯一新tab8仍空IAM表单，已有手动登录提问不重复；后继真实folder/direct CRUD和刷新。Root独占全部Git/配置/集成|Agent worker/Billing/Platform尚未正常运行；HTTP探针不是浏览器用例PASS。70组11/6/14/38/1保持、0新增完整用户PASS|
+
+### R255 22:07 后继：正规页面关键路径不等待积分生成
+
+Root基线3ef48f18、7正常句柄复用不重复启动。原BFF writer D1固定生成在途，Root不抢写。原web_r247_skill_header_owner只读续同NORMAL配置卡，盘点Billing244b2810当前.env.example/config/start/installer与正式IAM verifier、真实两读最小启动参数，输出/tmp/r255-normal-billing-config-map.md；不读secret/env.local/DB、改仓、启动或Git。原capability_composition_owner_r247只读续同System模型配置卡，核System955bd587当前draft→publish→policy/health正常API及Agent307db318 worker的OpenAI-compatible/LiteLLM传输，给使用用户已指定gpt-5.6-luna的真实可测最小接线与未决，不虚造provider能力/上下文上限，不访问密钥/provider/资源。两审只盘点已批准owner，不新计划/框架；Root独占持久配置与真实用户浏览器验收，正式积分按Billing授权赠送/预占/结算/释放/流水，支付最后。
+
 ### R255-BILLING-CONSUMER-D1 阶段2：固定owner生成切片授权
 
 Root已复跑同正式owner两正控、public四语义RED（2pass/4fail/exit1），test SHA72515514，收据var/dev/r255-preserve/bff-billing-contract-root-red-receipt.json。原BFF writer仅续同D0第1段vendor/dependency manifest/config/generator/package既有命令/generated和现新test；生成必须实际运行、可重复、2 operation固定。现test读取owner参考改固定vendor，不保跨仓动态读取。public summary/ledger与fake double四RED属于后继public/runtime切片，本阶段保持真实失败并明确报告，不弱化/skip使全绿；源码route/config/public wire/SQL/lock/env仍排除。冻结后Root审查并复跑再授权后继；与正常3310浏览器验收独立并行。

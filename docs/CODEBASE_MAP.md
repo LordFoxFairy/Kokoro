@@ -1,3 +1,11 @@
+## R255 当前运行与Project rename窄修入口（22:07 heartbeat）
+
+正常BFF当前源：src/http/routes/project-rename.ts→src/application/project-service.ts::rename→ports/project-repository.ts三Rename类型/renameProject→src/infrastructure/postgres/project-repository.ts::renameProject→现project-rename.ts原事务/receipt/取消helper。原删除mixed误删中间三seam，Root只补回HEAD原职责，保delete与其他mixed；不新增模块/关系/API/SQL。正常句柄现9463、root22586/listener22616/53714（替代23298），其余六normal句柄不变。真实Web→BFF→PG 503→同name200/重放200/漂移409，不冒浏览器全CRUD。
+
+BFF058ad4d固定Billing两GET vendor/dependency/generator/src/generated/billing-http；runtime未接，public合同下一阶段未冻结。Billing244b2810 normal main→旧bootstrap/Fastify仍无BillingHttpModule.register/DatabaseModule组合，canonical与旧表名不一致；按现已批准完整C3一次入口cutover，禁止为两GET另造host/alias/兼容表。typed grant不是已发布operator入口，当前禁止私下注资。policy publication现代码已存在，不能重造；现真实PG R241联合选版namespace检查点由后继owner收口。
+
+Root ignored var/dev仅私有配置/当前运行句柄/证据；normal-fixed-project-rename-red/green.json与bff-billing-generated-commit-receipt.json。真实用户浏览器PASS新增0，台账同CURRENT/progress/test-cases，后继固定BFF public发布后Web再串行repin，不动正在编辑的合同消费者。
+
 ## R255 当前正常源码入口已生效（2026-10-05）
 
 同3310实际由apps/kokoro-app现pnpm dev运行，不再原复制fixture；7源码进程、端口/原工具句柄、listener PID与停止方式唯一记录ignored var/dev/processes.json，私有配置留各仓.env.local（Agent HTTP为.env.http.local）。一个固定应用库kokoro_development，6当前owner schema；旧kokoro_dev与无关库保留。Root开发数据一次交接的archive/私有helper只为证据，不加入生产/新启动框架/兼容运行。
