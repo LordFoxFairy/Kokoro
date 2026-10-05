@@ -1,17 +1,19 @@
-## R252 最新：真实登录恢复已复验，完整页面闭环仍开放（2026-10-05）
+## R252 当前收口：草稿scope真实交互与两次源码反例（2026-10-05）
 
-本节替代下方先前“认证源码暂停/仍待冻结/先写Billing admission”的当前态，原失败证据保留。
+- Web已正式提交 `1ed160b081527be94e9bd344773c6d31e3b7ff5f`，精确5path；源码冻manifest a65a0099、独审eb029、收据 `/tmp/r252-project-draft-scope-commit-receipt.json`。Root54405实际2598pass/153file、生成两check/lint/typegen/tsc/build0，只辅助安全网，system排除。
+- 真实失败完整保留：Root94233原槽/隐藏提交2fail/30pass；首冻19579 direct guard两回归与项目fixture不一致共3fail/587pass，96486工程0未放行；独审另查thinking重置P2；第二Root16714实际8fail/183pass（thinking、三种pending/run历史RESET、两Send资格及原direct两回归）。最后仅既有三source窄修project，smoke只一行canonical预置，未删除失败断言、扩预算或改engine/auth。
+- **当前用户证据**：固定候选72d83c5e，五真实owner与native Chrome无痕。正常IAM→创建自有项目f3637140→概览两行刷新→显式新local B初始空/写入刷新→Home另稿→侧栏root/刷新恢复概览原文→B重开→Back root/Forward B→Home原文，共八有限观察通过。receipt SHA `19ae7142c6021141d8accad28a3d7b6ac691eb3c49b1ad35c8257d6c68b511d1`，独立三图/收据审SHA `6e5ab748ec6b52efb7fb6fc235a72810f4c19363dfe5d9373be33eb98499d184`。截图与逐步AX操作共同证明所跑终态；没有逐段HTTP/零mutation计数，不冒发模型、durable会话CRUD、跨主体、BFCache或整组。
+- 资源17336正常收尾exit0，3311无监听/私有credentials删除/自有Incognito关闭；原45606/46036alive。启动前第一Python路径不存在、第二BFF误用Node24被要求Node22拒绝；第三正确Python/Node22与IAM/Platform/Storage Node24后才创建owned资源，未重启原3310或reset共享库/cache。receipt `/tmp/r252-project-draft-release-preparation.json`。
+- Agent文档目标仅commit307db318：三现D069行prefix，原suffix3/3 exact、source/schema/artifact/原build未动；独审bfabecb1。原读报告对System3.0cap的推断已更正：没有确切gateway/model billable输入与inclusive cache/reasoning保证，不输出bound/许可/调用。不是运行实现或正式收费通过。
 
-- **真实用户子链已通过**：固定五owner候选9d6bc5c4/Web16945fe，Chrome无痕实际首页输入→IAM邮箱密码→/app原输入预填且未发送；正常创建项目→两行草稿→硬刷新；Product退出→IAM确认退出→原项目深链→再次实际邮箱密码→同原项目、侧栏/中心合法空态及两行草稿完整。证据 `/tmp/r252-auth-return-real-user-journey.json`，截图 `/tmp/r252-project-login-return-real.jpg` 与 `/tmp/r252-home-login-draft-real.jpg`。没有逐跳HTTP状态码捕获，不冒原3310已更新、所有会话/跨主体/BFCache/300秒到期已验。
-- **Web源码正式交付**：本地main16945fe5ff8d954051157e77cdf44d93a20fe211，11生产/10测试+三D0仅批准prefix，共24path；四mixed全文保留、未push。Root79566真实7fail/23pass旧writer复活反例后窄修，最终独审9494da1e关闭原P1；Root84866当前2580pass/153file（system明确排除）及生成两check/lint/typegen/tsc/build全0，21+保护SHA保持。这些门仅安全网，页面结论只来自上一实际用户路径。收据 `/tmp/r252-web-auth-return-commit-receipt.json`。
-- **新交互观察单独保留**：新建项目内未发送会话的query/draft刷新可保留，普通与专案草稿互不覆盖控制成立；但从该新会话回Home再点项目无query概览，显示最新local会话草稿而不是早前两行overview草稿。只读94bd5023已证route显示概览但useDraft读取remembered activeId，是确定槽选择错误，尚不认定底层数据覆盖；原Web负责人沿卡R252-WEB-PROJECT-DRAFT-SCOPE-FIX先tests-only有效RED，截图 `/tmp/r252-project-overview-draft-scope-observation.jpg`。项目CRUD/列表整组不因此关闭。
-- **Agent冻结源码已交付，不冒真实聊天**：本地mainfc379da2b09e08ca0349f249902f587d72efbc8f，21冻源码/测试+四现doc事实前缀，共25path；Root默认2312pass/749默认资源deselect、contract0、lock/Ruff/显式解释器完整Pyright0与隔离currentwheel入口/Schema/profile检查0，原589同SHA真实PG/SDK为历史证据。独审814c3c2f无新确定源码阻塞，`/tmp/r252-agent-release-commit-receipt.json`。没有真实provider/费用/完整BFF浏览器聊天通过。
-- **计费后继顺序更正**：只读6a3b5aa4核当前final request digest只证明exact wire identity，不是可信input/category exposure或authenticated immutable read。下一沿原R243/R216卡补Agent最窄三D0与技术bound producer/read，正式发布后Billing才pin/read→quote/hold/grant，之后Agent消费许可和实际用量结算释放。不直接把selector/digest/experimental YAML冒成收费授权，不猜采购价/免费/充值；倍率可调及失败仅核实实际消耗规则保持。报告 `/tmp/r252-billing-admission-next-read.md`。
-- **资源收尾已核实**：本轮21499正常Ctrl-C终态0、owned资源回收、3311无监听、私有凭据删除、无痕窗口实际关闭；原3310/PID45606、46036仍alive、未动。`/tmp/r252-auth-return-release-preparation.json`。
+同task和70组仍11/6/14/38/1，goal实际blocked，支付最后。后继原Web负责人只读持久会话列表/绑定用户路径，Root负责实际用户集成；源码辅助绿不升级整页。早前认证/Skills/Library的有限用户证据保持版本边界。
 
-完整Wave0–7和唯一70组 **11通过/6失败/14待复测/38未验/1支付后置** 不变；存储goal实读仍blocked，不新建/假完成。当前有限登录返回子例修复通过，不等于原用户3310/每页/所有子仓已闭环。Root独占Git/集成验收，原Web writer后继先tests-only，QA实际证据独审8822ef60仅接受有限子链；其余旧未验项保持原owner卡。
+### R252 历史阶段记录（非当前状态）
 
 R252认证源码放行暂停：Root87335冻结复跑真实2075passed/116files与生成/lint/typegen/tsc/build全0，但独审702a9a75仍发现P1：verified B清旧map后，A旧useDraft pending200ms可在reload/pagehide/unmount写回A草稿；辅助门不能放行此业务漏洞。原匿名首页输入P1已修，但11源10test整片仍待后继。原Web writer仅现use-draft/相关现测试先补retire反例→Root实际RED后窄代码许可，不扩身份框架/资源。原3310不变、新认证真实页面未验，70组不变。
+
+下一段只读已交 `/tmp/r252-project-sidebar-next-user-read.md`（91c355c1）：PRD明确未发送草稿不入durable列表、Conversation只用可空project_ref绑定。Root回读现machine1088、list controller与Move projection，核三个优先待真实复现项：冷local store的项目root删除未打开已持久会话被直接false；Move pending期间浏览器历史选择可能未撤旧导航投影；改名unknown/GET失败缺可见反馈。这是静态风险，不新增产品FAIL/PASS，不重建实体；下一先复用本人已有持久会话做列表/改名/移动/删除/刷新，首发另等正式Agent/Billing准入。
+
 
 ## R252 本轮真实页面验收与资源收尾（2026-10-05）
 

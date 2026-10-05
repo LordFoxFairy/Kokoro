@@ -4,7 +4,11 @@
 |---|---|---|---|---|---|
 |TC-R252-AUTH-01 首页输入登录恢复|固定9d6bc5c4五owner、未登录Chrome无痕、Web16945fe|首页填自有QA提示→开始→正规IAM邮箱密码→/app|本次显式提示完整预填，不自动发起会话/模型|有限PASS，实际Home与提示可见，未观察自动发送；没有网络零mutation计数，不能扩成计费证明。/tmp/r252-home-login-draft-real.jpg|P0/系统、交互、状态机|
 |TC-R252-AUTH-02 项目退出后重新登录恢复|同正常用户已正常创建项目82511c9d、两行未发送草稿|项目硬刷新→产品退出→IAM确认→访问原项目URL→再次邮箱密码登录|仍原项目/合法空态/两行草稿，可编辑，不跳普通聊天|有限PASS；/tmp/r252-project-login-return-real.jpg。原3310未更新，真实普通持久会话query/跨主体/BFCache/自然TTL均未验|P0/系统、恢复、状态机|
-|TC-R252-DRAFT-03 普通/项目与概览边界|同用户，项目内新local未发会话，独立Home草稿|新会话写入/刷新→Home写普通草稿→侧栏项目无query概览→Home|各既定scope按PRD和URL一致恢复|普通与专案不同草稿有限控制PASS；无queryoverview显示新local会话草稿已只读定位route/activeId槽选择错误，待窄修，不冒底层覆写/CRUD已通过。/tmp/r252-project-overview-draft-scope-observation.jpg，原owner后继tests-only卡在task|P1/交互、竞态、状态机|
+|TC-R252-DRAFT-03 普通/项目与概览边界|历史Web169/当前Web1ed160b组合72d83c5e，正常用户新local未发会话、root与Home独立草稿|新会话写入/刷新→Home写普通草稿→侧栏项目无query概览→Home|各既定scope按PRD和URL一致恢复|历史FAIL：overview曾显示B而非root，原图保留。当前Web1ed160b/组合72d83c5e native正常IAM→项目root两行→新localB另稿→Home另稿→侧栏root/刷新正确恢复；有限PASS，不冒durable CRUD/原3310。/tmp/r252-project-draft-scope-real-user-journey.json 与 /tmp/r252-project-overview-draft-fixed-real.jpg|P1/交互、竞态、状态机|
+|TC-R252-DRAFT-04 显式会话刷新及重开|Web1ed160b/组合72d83c5e，正常用户创建项目和本地未发送B|新建会话→确认初始空→填B草稿→刷新→Home/root→访问原B URL|显式B只恢复B草稿，不复制root或Home；不更换query|有限PASS；/tmp/r252-project-explicit-conversation-draft-real.jpg。未发送，不证明durable会话列表|P1/系统、主链路、状态机|
+|TC-R252-DRAFT-05 浏览器历史与Home隔离|同候选，已分别写root/B/Home草稿|B URL→浏览器后退root→前进B→Kokoro Home|URL与输入scope一致；root/B/Home逐字独立，不观察额外query|有限PASS；真实AX步骤及receipt、/tmp/r252-home-independent-draft-fixed-real.jpg；不推定已触发BFCache或跨tab|P1/交互、状态机|
+
+当前草稿子链receipt SHA19ae7142，独立实图审6e5ab748，17336已正常收尾。未发模型/未测试费用/持久CRUD；完整T-C05/T-U04与70组11/6/14/38/1保持。Agent307db318仅设计，不新增收费测试PASS。
 
 总收据 `/tmp/r252-auth-return-real-user-journey.json`；真实IAM/BFF/Platform/Storage，不是mock或unit。独立证据复审 `/tmp/r252-auth-user-proof-qa-review.md`（8822ef60）已核五截图与有限结论，完整T-C05/T-U04及其它页面仍保持原状态。21499已正常收尾，原3310不动。源码与辅助测试只作为回归安全网，不为完整用户验收替代品。
 

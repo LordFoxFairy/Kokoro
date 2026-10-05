@@ -1,22 +1,34 @@
-## R252 最新：真实登录恢复已复验，完整页面闭环仍开放（2026-10-05）
+## R252 当前任务：真实草稿边界已验，持久会话与正式计费仍开放（2026-10-05）
 
-本节替代下方先前“认证源码暂停/仍待冻结/先写Billing admission”的当前态，原失败证据保留。
+Web1ed160b五路径已交付、Root54405辅助2598/153与工程0、独审eb029；native五owner72d83c5e正常IAM→项目root/B/Home草稿刷新及Back/Forward有限通过，QA6e5ab748；17336已正常收尾且原3310不动。Agent307db318只三D069行目标，可信billable保证未满足，0bound/0send。详证见同progress/test-cases，历史失败不删除。70组仍11/6/14/38/1、存储goal blocked、完整Wave0–7与支付最后不变。
 
-- **真实用户子链已通过**：固定五owner候选9d6bc5c4/Web16945fe，Chrome无痕实际首页输入→IAM邮箱密码→/app原输入预填且未发送；正常创建项目→两行草稿→硬刷新；Product退出→IAM确认退出→原项目深链→再次实际邮箱密码→同原项目、侧栏/中心合法空态及两行草稿完整。证据 `/tmp/r252-auth-return-real-user-journey.json`，截图 `/tmp/r252-project-login-return-real.jpg` 与 `/tmp/r252-home-login-draft-real.jpg`。没有逐跳HTTP状态码捕获，不冒原3310已更新、所有会话/跨主体/BFCache/300秒到期已验。
-- **Web源码正式交付**：本地main16945fe5ff8d954051157e77cdf44d93a20fe211，11生产/10测试+三D0仅批准prefix，共24path；四mixed全文保留、未push。Root79566真实7fail/23pass旧writer复活反例后窄修，最终独审9494da1e关闭原P1；Root84866当前2580pass/153file（system明确排除）及生成两check/lint/typegen/tsc/build全0，21+保护SHA保持。这些门仅安全网，页面结论只来自上一实际用户路径。收据 `/tmp/r252-web-auth-return-commit-receipt.json`。
-- **新交互观察单独保留**：新建项目内未发送会话的query/draft刷新可保留，普通与专案草稿互不覆盖控制成立；但从该新会话回Home再点项目无query概览，显示最新local会话草稿而不是早前两行overview草稿。只读94bd5023已证route显示概览但useDraft读取remembered activeId，是确定槽选择错误，尚不认定底层数据覆盖；原Web负责人沿卡R252-WEB-PROJECT-DRAFT-SCOPE-FIX先tests-only有效RED，截图 `/tmp/r252-project-overview-draft-scope-observation.jpg`。项目CRUD/列表整组不因此关闭。
-- **Agent冻结源码已交付，不冒真实聊天**：本地mainfc379da2b09e08ca0349f249902f587d72efbc8f，21冻源码/测试+四现doc事实前缀，共25path；Root默认2312pass/749默认资源deselect、contract0、lock/Ruff/显式解释器完整Pyright0与隔离currentwheel入口/Schema/profile检查0，原589同SHA真实PG/SDK为历史证据。独审814c3c2f无新确定源码阻塞，`/tmp/r252-agent-release-commit-receipt.json`。没有真实provider/费用/完整BFF浏览器聊天通过。
-- **计费后继顺序更正**：只读6a3b5aa4核当前final request digest只证明exact wire identity，不是可信input/category exposure或authenticated immutable read。下一沿原R243/R216卡补Agent最窄三D0与技术bound producer/read，正式发布后Billing才pin/read→quote/hold/grant，之后Agent消费许可和实际用量结算释放。不直接把selector/digest/experimental YAML冒成收费授权，不猜采购价/免费/充值；倍率可调及失败仅核实实际消耗规则保持。报告 `/tmp/r252-billing-admission-next-read.md`。
-- **资源收尾已核实**：本轮21499正常Ctrl-C终态0、owned资源回收、3311无监听、私有凭据删除、无痕窗口实际关闭；原3310/PID45606、46036仍alive、未动。`/tmp/r252-auth-return-release-preparation.json`。
 
-完整Wave0–7和唯一70组 **11通过/6失败/14待复测/38未验/1支付后置** 不变；存储goal实读仍blocked，不新建/假完成。当前有限登录返回子例修复通过，不等于原用户3310/每页/所有子仓已闭环。Root独占Git/集成验收，原Web writer后继先tests-only，QA实际证据独审8822ef60仅接受有限子链；其余旧未验项保持原owner卡。
+下一段只读已交 `/tmp/r252-project-sidebar-next-user-read.md`（91c355c1）：PRD明确未发送草稿不入durable列表、Conversation只用可空project_ref绑定。Root回读现machine1088、list controller与Move projection，核三个优先待真实复现项：冷local store的项目root删除未打开已持久会话被直接false；Move pending期间浏览器历史选择可能未撤旧导航投影；改名unknown/GET失败缺可见反馈。这是静态风险，不新增产品FAIL/PASS，不重建实体；下一先复用本人已有持久会话做列表/改名/移动/删除/刷新，首发另等正式Agent/Billing准入。
 
 |任务|业务目标|Owner与基线|写入范围|验证与放行|
 |---|---|---|---|---|
 |R252-WEB-PROJECT-DRAFT-SCOPE-READ|T-C05原专案概览/会话草稿路由边界；P1|web_r247_skill_header_owner只读，Root审；正式Web16945fe，真实candidate9d6bc5c4|仅读现route/engine/draft/Project composer，/tmp/r252-project-draft-scope-read.md；不改仓/资源/Git/browser|Root实际：项目概览两行草稿→正规退出/登录仍两行→点击全局新对话形成project+conv8f query且空→写新conv草稿/刷新保持→Home写普通草稿→侧栏项目noquery概览却显示新conv草稿；是否违反既定PRD需定位真实activeId/route/draft seam，不能猜源码已坏或重建关系实体。普通草稿控制独立保持；原T-C05不关闭|
 |R252-WEB-PROJECT-DRAFT-SCOPE-FIX|T-C05概览/会话草稿与明确提交目标一致；P1|原web_r247_skill_header_owner唯一writer，Root审/提交；Web main16945fe，原四mixed排除|阶段一只写既有 tests/ui/app-frame-rail.test.tsx、必要 tests/ui/use-draft.test.tsx；Root有效RED后才授权 app-frame.tsx/use-app-frame-actions.ts 两现source，不建文件/迁移/别仓|只读94bd5023已证no-query概览却按remembered activeId读槽；先验证root/显式conv/Home独立、迟到hydrate/切query不串槽、概览明确发送不提交隐藏旧id。不启动资源/provider，不操作Git，冻结后Root独审/辅助门/实际浏览器回归；无完整聊天/CRUD完成声明|
+|R252-PROJECT-DRAFT-REAL-USER|T-C05原观察真实用户复验；P1|Root独占浏览器/资源，Web1ed160b，五owner候选72d83c5e|复用现owned cold candidate/私有环境，原3310/PID保护；新唯一句柄17336已正常终态0，仅QA文件/项目数据|普通IAM→正常创建项目→root草稿→显式新会话另一草稿→Home草稿→返回project root/query/刷新/前后history逐个对照，不发送模型/不写积分；freeze2598/153+生成/lint/types/build0与独审eb029仅安全网。两启动前参数校验失败（Python路径、BFF Node22）原样保留，无旧服务复启；owned服务已正常收尾；八有限native观察PASS与QA6e5ab748，不关闭整组|
+
+R252-WEB-PROJECT-DRAFT-SCOPE-CODE许可：Root94233真实2failed/30passed/exit1，test SHA b83d4fea（原概览读B/提交隐藏B），/tmp/r252-root-project-draft-red.log；原两src app-frame.tsx 与 use-app-frame-actions.ts获唯一writer窄写，既有rail/use-draft tests可补边界。Owner为现Web route/composer/actions，职责与wire不变，复用现项目key与engine命令、禁止unknown intent/active run被RESET、禁止自动重发/兼容迁移；同步接纳后原文由现thread和pending原key恢复，不新增ACK中转。原四mixed/auth/engine冻结，最终Root独审、冻结门和真实草稿页面。
+
+R252首冻暂缓放行：Root19579真实3fail/587pass（direct编辑/提交被过宽route guard阻断两项，另项目smoke actualURL与props矛盾一项），96486 lint/types/build0不抵消业务失败；独审b08db048另P2 thinking被fresh reset改fast。原writer tests-only补rail thinking与query→project root popstate不RESET hidden intent反例；获准现smoke仅首次发送fixture补canonical URL、不放宽断言。Root复跑有效RED后才最窄actions恢复mode/将新增guard限project，必要nav仅project无query不得newConversation（新增第三现source不改direct规则）。不归零历史失败、未开资源/发布source。
+
+R252第二有效RED/窄CODE：Root16714冻结真实8failed/183passed/exit1，rail e6a9626e、smoke ee1eeaf5，日志/tmp/r252-root-project-draft-second-red.log；六新行为+两direct旧回归均有效assertion，canonical fixture原正文断言仍保持。原writer准三现source app-frame/actions/navigation仅project route/draft/submit/隐式概览不RESET、模式保持及canSend一致性修复；原direct正常行为保留，无engine/auth/新schema/目录写。冻结后Root独审/正式门/真实浏览器再放行。
+
+|任务|业务目标|Owner与基线|写入范围|验证与放行|
+|---|---|---|---|---|
 |R252-PROJECT-DRAFT-READ-QA|独立概览/提交目标审查；P1|qa_r243_web_frozen_review只读，Web16945fe|仅/tmp/r252-project-draft-scope-qa.md；变化中测试须标hash，禁止仓写/资源|审scope/迟到hydrate/明确submit及unknown保留，Root实际RED/复验，非页面通过|
 |R252-AGENT-BOUND-CONTRACT-NEXT-READ|R243/R216可信bound与read前置；P0|bff_skills_v2_owner_r251只读，Agentfc379da2，Root审核|现Agent/System/Billing三D0/contract仅读，仅/tmp/r252-agent-bound-contract-next-read.md|核已有可信计数profile/价格归属/技术期限，不捏造参数；明确最窄owner切片与依赖，不直接写Billing|
+|R252-AGENT-BOUND-D0|沿R243/R216收敛技术bound/owner read当前三D0；P0|bff_skills_v2_owner_r251，Agentfc379da2；Root设计审，Git由Root|只准现Agent docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md；无源码/schema/contract写，不建目录|7c467f11初稿已被独审更正：System3.0目录cap不能冒可信billable保证；DB lease期限/独立preauth ref/认证immutable read。三份当前态/目标态一致，列最小放置表/未决项；Root审前不得源码实施；实际报价仍等Billing配置与quote/grant|
+
+R252-AGENT-BOUND-D0交付：Root精确三doc commit307db31831be5efda2056919b7b05eff3d951bd7；69行目标前缀、原suffix3/3 exact，独审bfabecb1闭合文档P1/P2。当前System3.0仅目录cap/provenance，无billable input+inclusive-category可信保证，目标profile不能直接产生bound/收费授权（0bound/0send）。UTCms唯一floor/lease期限与专用HTTP-only readercredential目标一致，但source/schema/artifact仍未实施；不是运行源码准入或真实付费通过。收据/tmp/r252-agent-bound-d0-commit-receipt.json；未push/build原未跟踪保持。
+
+|任务|业务目标|Owner与基线|写入范围|验证与放行|
+|---|---|---|---|---|
+|R252-PROJECT-DRAFT-REAL-QA|有限native证据独审；P1|qa_r243_web_frozen_review只读，Root审；Web1ed160b/组合72d83c5e|仅/tmp/r252-project-draft-real-user-qa-review.md；实际查看三截图/receipt，不改仓/资源/浏览器|已交6e5ab748，有限草稿恢复支持，完整持久CRUD/模型/费用/跨主体/BFCache/原3310仍未验|
+|R252-PROJECT-SIDEBAR-NEXT-READ|下一正常持久会话列表/绑定用户路径；P1|原web_r247_skill_header_owner只读，Web1ed160b，Root审核|现PRD09-v2/T-C05/T-C03与正式route/owner contract仅读，只/tmp/r252-project-sidebar-next-user-read.md；不改仓/Git/资源/provider|辨明未发送local draft不入durable列表是否预期，列normal首发→项目/外部列表→移动/改名/删除/刷新最小验收与确定缺口，不创建新实体/计划；静态审计不算PASS|
 
 ## R252 本轮并行后继（2026-10-05）
 
