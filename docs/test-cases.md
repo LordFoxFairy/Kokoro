@@ -1,3 +1,7 @@
+## R248-CSP 实际修复复验（2026-10-05，既有T-K02发布子链）
+
+预置：候选33b9dfb2/Web b8c3360b/Root1d51949a，真实五owner与独立Chrome。动作：正规登录→技能→选择预制原ZIP→填写名称→上传并发布。结果：**上传子链PASS**（OPTIONS204、PUT200、Complete200、CLEAN、hash一致）；**发布仍FAIL**（Validate412/skill_precondition_failed/request_id8c93624a-1f5d-4fd9-a2b2-37d047a0f321，无Publish成功）。优先级P1，功能/异常/状态机。未用后台生成含新ID的包规避普通用户路径。精确开发origin修复没有扩大生产策略；真实412不冒内部具体package错误码。证据/tmp/r248-upload-fixed-browser-receipt.json、/tmp/r248-skills-upload-fixed-validate-red.jpg。70整组统计不变。
+
 ## R248 最新真实用户复测（2026-10-05，覆盖下方历史状态）
 
 共用前置：独立Chrome（与原IAB不同身份）+真实IAM/BFF/Platform/Storage/Web，候选 `4c974d53abfe42335eb9eb445097e53a83c2e60d`。不含Agent/System/Scheduler/Billing，不冒这些能力已验。

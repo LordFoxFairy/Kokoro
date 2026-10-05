@@ -9727,4 +9727,4 @@ R240原IAB tab1 inventory成功/getTab仍Emulation.setFocusEmulationEnabled 31.6
 
 R240 Root治理最新实际仍失败：standard153违反，topology6个gitlink/HEAD不一致；只限定topology脚本7/0通过，不冒全门。Web dev源闭包静态508文件472同/36异，live generated public7.0 vs正式Web7.1，原源码9/12样本相同不能当全组合一致；未执行热覆盖/清用户数据/重启。
 
-R248本次真实验收receipt：`/tmp/r248-browser-real-receipt.json`；49143已停止回收、原3310保持。两片冻结/独审435fb559通过；Root9284实际47/35通过、Web142及lint/typecheck/build通过，仅辅助。Root负责精确提交与新文档真实PUT复验。
+R248本次真实验收receipt：`/tmp/r248-browser-real-receipt.json`；49143已停止回收、原3310保持。两片冻结/独审435fb559通过；Root9284实际47/35通过、Web142及lint/typecheck/build通过，仅辅助。Root已精确提交Web b8c3360b/Root1d51949a并真实复验PUT200→Complete200/CLEAN/hash一致；Validate412仍失败，无Publish通过。89449已回收；最简用户包已问产品确认，下一并行Library认证恢复只读，不增架构。

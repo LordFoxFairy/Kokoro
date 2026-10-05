@@ -1,3 +1,11 @@
+## R248 上传阻塞修复真实收口（2026-10-05）
+
+Web本地main `b8c3360bb0f4d63cfac2d34b132d2f92b9922e20`、Root `1d51949a95ba5469558da76761c85b3ce6bb5bd5` 已精确交付；原四Web mixed、Root gitlinks/uv保持。两分仓writer与独审435fb559已停写。Root在候选33b9dfb2真实普通表单复验：同一预制ZIP→Draft201→Begin201→对象存储OPTIONS204/PUT200→Complete200、scan_state=clean、hash与原包相等。CSP上传阻塞已修且通过真实子链，不靠unit或mock声明。
+
+随后Validate实际412/skill_precondition_failed（request_id 8c93624a-1f5d-4fd9-a2b2-37d047a0f321），尚未Publish；包内随机Draft身份为现源码独立阻断，后端未向页面暴露内部细因，不把稳定412冒具体内部码。最简用户包格式待已发出的产品确认，不要求用户手改ID或后台造包清绿。Library二次上传401及其他整页仍未闭环。实际凭据/签名没有写进Git。证据/tmp/r248-upload-fixed-browser-receipt.json及截图/tmp/r248-skills-upload-fixed-validate-red.jpg。
+
+89449退出0、3311无监听/凭据移除、DB13回到0、QA临时页关闭、原3310两PID保持。Root当前commit辅助47/35、Web142及lint/typecheck/build通过只作安全网；原用户3310尚未完整更新。全Wave与70组统计不变，下一优先可操作发布包与Library认证恢复，继续逐页CRUD，不增架构。
+
 ## R248 当前页面事实与最小修复（2026-10-05）
 
 以当前用户操作验收，不扩业务层/配置中心/角色/新计划。Root独立Chrome与候选 `4c974d53abfe42335eb9eb445097e53a83c2e60d`、当前固定五owner，正常IAM登录；本人Skills安装读取合法空态，旧503在此新组合已消失，未冒安装写入通过。技能发布真实Begin201后失败，浏览器security日志确认exact本地ObjectStore39190被文档CSP拦截；尚未到Validate。包内随机Draft ID另有确定源码矛盾，最简上传包设计已问用户，未擅改格式。

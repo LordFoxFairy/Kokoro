@@ -1,3 +1,7 @@
+## R248 冻结源码交付（2026-10-05）
+
+现Web security helper/Proxy及两现安全tests交付b8c3360b；Root现launcher及guard交付1d51949a：仅显式development+可信loopback Web/Host/可选Origin匹配，将validated公共对象存储单origin加入连接策略。真实浏览器已走PUT/Complete/CLEAN，Validate412仍OPEN；没有新模块/协议/Schema或生产放宽，下一沿现Platform package与现Web认证/Library界面处理，不再钻身份隔离基础设施。
+
 ## R248 定位增量（2026-10-05）
 
 真实Skills签名PUT被Web现 `src/lib/server/security-headers.ts` 的connect-src拦截；现Proxy消费可信非秘密origin，Root现 `scripts/dev/serve_local_login.py` 负责只从validated owned Storage public endpoint投影开发上传origin，两仓窄修、无新模块。Next dev规范内部URL为localhost，匹配须核可信配置的scheme/Host及可选Origin，不用内部nextUrl.origin机械等于127。包manifest身份矛盾仍在Platform现package模块，独立裁决未实施。Library刷新后二次上传401归因未定，入口现hub route/admittedProductSession与library-upload-state；不因GET session200猜已认证。最新页面事实以CURRENT/test-cases为准。
