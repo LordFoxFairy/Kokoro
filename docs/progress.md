@@ -1,3 +1,23 @@
+## R255 同轮聊天职责恢复与正常BFF发布终态
+
+原5失败已按根因窄修：旧无界inline source完整before73adf2备份后恢复HEAD a0d37f18唯一4500ms helper；测试补HTTP setHeader捕获/四scope request-id，原calls/projectReads与architecture硬断言保持。独审10d239d7零问题，Root主树4132实际test/types/lint/build/target format全0，747pass/0fail/1schema skip；不是PG/浏览器验收。fixture前缀选择性提交aaf683e（6/+6），原delete测试suffix与其余18mixed/Public8/uv保持；源职责已HEAD，无空提交。一次私有marker字符串assert失败发生于任何index写前，已按实际test title修正；实际暂存/commit只该前缀。
+
+BFF原9463仅Ctrl-C实际130，端口释放后同固定源码/私有env启79304/root38614/listener38630，ready200；其余6句柄exact，最终7探针200，未动PG/Redis数据/installer。首旧HTTPcookie auth false＋列表401真实保留，非恢复成功；使用原正规IAM表单+CSRF/OAuth回调刷新后auth true、direct/projects200，私有数据/凭据未输出。收据var/dev/page-runtime/bff-chat-boundary-restart-receipt.json。无真实用户浏览器/模型/资金新PASS，70组不变；Root同五台账继续，先后继BFF正规两读接线与权限赠送前置，支付最后。
+
+### R255 公共合同精确提交与差分控制终态
+
+最终freeze b4a98793 / 独审af372e83。Root分两commit：5a55be8三HEAD纯格式（AST operator/name/literal/order等价，仅Prettier冗余Paren wrapper归一）；09e0574八path业务443/+50，double真正仅Billing删除。20原mixed/uv/hash/mode保持、index空。实际目标八门全0、82/0/0。新增HEAD＋冻结归档默认747/0/2skip（owner schema install coexist/rollback与fresh tombstone catalog两个资源测试没有运行，不称集成），主树742/5/1原失败完整保留。差分与只读2b4a449a确定Billing片未引入5失败，但原outbox旧无界提交真实旁路必须恢复，不能waive。原BFF单writer已优先2path修复，其余18保护（原20减2），资源/Git仍Root。无新增完整浏览器通过/正常Billing激活/实际费用流水。
+
+### R255 新增默认工程反例（不改变用户验收统计）
+
+Root实际全默认门/tmp/r255-root-bff-stage3-default-test.log退出1：742pass/5fail/1skip。5为chat admission静态assertion undefined!==1与四collection scope fixture response.setHeader缺方法；已交原只读owner追踪HEAD/原mixed/本片因果，不删断言、不把缺环境或skip作成功。阶段3最终freeze b4a98793的八目标门0、82/0/0与最终独审af372e83零问题保持，但尚需差分排除原mixed影响。纯格式AST首次工具exact形状拒Prettier冗余括号，已定位且仅去wrapper后3/3底层语义exact；不冒产品缺陷。
+
+## R255 同轮合同格式门真实失败与收敛
+
+阶段3首freeze Root实际format1（六代码文件semi/80）、其余门0；原语义独审未覆盖项目profile，不作为最终通过。原writer修正8允许路径内profile后停写，freeze a245d871 / manifest 2e493a63。Root第二次Node22实跑semantic92、82pass/0fail/0skip、Billing固定generated check、contract lint、types、source lint、build、no-semi/160 format均0，日志/tmp/r255-root-billing-public-style-*.log；四既有合同lint warnings保持，不伪称无warning。HEAD三个文件原format drift独立纯格式提交，功能片只审语义。尚未运行owner真实Billing两读或页面，无新增完整E2E PASS。
+
+已有C3与“支付最后”造成正常入口切换依赖，Root已一次请求用户阶段边界裁决，未答前不私自变更、不开第二host。正常IAM tab8仍空表单/已有登录问题不重复；HTTP正规登录与项目rename运行修复不是浏览器点击完成。完整Wave0–7、70组统计不变。
+
 ## R255 22:07 heartbeat / 当前交付与真实失败修复
 
 - **已交付源码依赖，不是积分页面完成**：BFF本地main058ad4d（22精确path），固定Billing244b2810/v2 SHA ecaceefd，正规两GET generated/check可重复。Root正确Node22：check/types/targetformat/lint0；合同3pass/4fail，四public/float/fake100真实RED保留。独审6ad287c6零P0/P1/P2；原保护字节精确。首次误用Node24工具chain日志保留。Public阶段3仅1YAML未完整时因用户故障优先停写，Root窄修后原writer恢复，不发布不完整artifact。

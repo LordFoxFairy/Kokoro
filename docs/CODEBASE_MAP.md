@@ -1,3 +1,15 @@
+## R255 最新正常BFF与Chat唯一写路径
+
+正常BFF session79304/root38614/listener38630/53714，原9463已exit130回收；固定源码Node22 pnpm dev、同.env.local/单库owner schema，其他6服务不变。PostgresAgentDispatchOutboxRepository.commitChatTurn仅委派./chat-turn-commit.ts（4500ms/取消/unknown预算）；旧mixed内联私有归档后删除，不留双轨。Project rename原三HEAD职责已补回、其他删除候选保持。BFF main aaf683e；fixture仅提交前缀，当前default747/0/1skip不代表真实PG/浏览器。
+
+本人HTTPauth/direct/project正规登录后均200，cookie过期反例保留；浏览器仍待原登录交接、模型worker/Billing/Platform未运行。正常owner探针与账务/UI能力分开，不能以ready图宣称全页面闭环。
+
+## R255 当前Billing读契约与Chat提交修复路径
+
+BFF main09e0574：contract/openapi/v1/openapi.yaml两读summary/ledger为固定Billing owner decimal事实投影，92operation；src/generated/billing-http仅固定244b2810两owner GET。src/infrastructure/clients/owner/billing-personal-read.ts仍是已批准后继位置，不冒已实现。运行consumer/config/public runtime接线、正常Billing启动与Web repin待后继；没有直接读Billing SQL或伪赠送。
+
+当前Chat唯一正式提交是src/infrastructure/postgres/chat-turn-commit.ts（4500ms总预算、Project active资格与事务恢复）；原mixed outbox曾恢复旧内联，真实architecture门失败。原BFF owner正在仅恢复outbox HEAD委派并补test/chat-service现response fixture，其他18mixed保持，原候选私有备份；不新增第二事务模块。Root精确提交和正常BFF9463发布另录，没有因source恢复即称浏览器闭环。合同收据var/dev/r255-preserve/bff-billing-public-commit-receipt.json，五失败定位/tmp/r255-bff-default-five-failure-diagnosis.md。
+
 ## R255 当前运行与Project rename窄修入口（22:07 heartbeat）
 
 正常BFF当前源：src/http/routes/project-rename.ts→src/application/project-service.ts::rename→ports/project-repository.ts三Rename类型/renameProject→src/infrastructure/postgres/project-repository.ts::renameProject→现project-rename.ts原事务/receipt/取消helper。原删除mixed误删中间三seam，Root只补回HEAD原职责，保delete与其他mixed；不新增模块/关系/API/SQL。正常句柄现9463、root22586/listener22616/53714（替代23298），其余六normal句柄不变。真实Web→BFF→PG 503→同name200/重放200/漂移409，不冒浏览器全CRUD。

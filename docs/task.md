@@ -1,3 +1,33 @@
+### R255 聊天恢复终态与正常运行复验
+
+Root BFF aaf683e70e215b7903e574c41762a223fa47cf1d只提交fixture前缀6/+6，保原删除测试suffix；outbox恢复原HEAD，无伪新生产commit，旧73adf2完整私有备份。最终独审10d239d7零P0/P1/P2；Root主树pnpm test 747pass/0fail/1skip，types/lint/build/目标format全0，schema资源skip未执行。其余18mixed/public8/uv保持。Root仅BFF原9463实际exit130、listener释放后同env重启79304/root38614/listener38630，7现正常探针均200；未重装DB或新启常驻服务。旧HTTP cookie到期401如实保留，正规IAM表单/OAuth重新登录后本人direct/projects均200、private no-store。
+
+下一个同D1阶段2消费者RED只可独立续派原BFF owner，不以该工程绿/HTTP读冒完整聊天或浏览器通过。Billing阶段边界与浏览器原登录交接已有一次提问未答，分别不阻塞独立源码工作且不越过其验收前置。
+
+### R255 聊天有限提交职责恢复（默认门反例后的优先切片）
+
+只读诊断已定位：原protected outbox文件227/+2 mixed只重引旧内联提交，绕过HEAD唯一chat-turn-commit及4500ms预算；不是要放宽architecture门。Root已发布阶段3 BFF09e0574（纯格式另5a55be8），保护20mixed逐bytes/mode保持，HEAD+8freeze默认747/0/2skip（两个schema资源用例未跑），主树742/5/1仍真实失败。
+
+|项|当前同卡窄修|
+|---|---|
+|owner/writer|BFF原bff_skills_v2_owner_r251唯一writer，main09e0574+20mixed；Root审查/资源/Git，不同时写仓|
+|范围|仅src/infrastructure/postgres/agent-dispatch-outbox-repository.ts恢复HEAD正式委派与删除该文件旧内联重复职责；先私有完整before备份。只test/chat-service.test.ts现responseDouble补真实HTTP reply使用的header捕获方法并断言合法回复request-id，不改变四collection scope预期或生产reply|
+|依赖/删除|既有chat-turn-commit.ts已拥有Project active资格、4500ms、取消/unknown恢复；零新增模块/API/schema/contract/费率，不在outbox复制第二事务路径。其他18mixed逐字保留（20原集排除授权2path），包括rename补回与删除候选；原该文件old候选私有归档，明确是bug修复而非清空工作树|
+|验证/停止|先原5实际RED保持、实现后架构/四collection case+全默认/类型/构建/目标format。Root独立重跑并审；没有真实PG/Redis集成或浏览器，仍不冒聊天闭环。任何越界先报告、不得放宽期望/skip。freeze后停写，Root提交fixture窄片；恢复原HEADsource没有新源码diff时不造空提交|
+
+### R255 默认门五失败只读诊断（阶段3冻结后）
+
+Root当前主工作树Node22 pnpm test真实exit1：742pass/5fail/1skip；不把针对82通过冒完整工程全绿。原web_r247_skill_header_owner只读诊断（沿现模型），BFF058ad4d+保护20mixed+最终Billing8freeze b4a98793；仅/tmp/r255-bff-default-five-failure-diagnosis.md，零仓/资源/Git。范围为architecture.test.ts:458 source assertion与chat-service.test.ts:86四scope case，核现保护mixed对照HEAD与新8paths；明确生产错误或fixture观察点，原期望/预算不放宽。Root以HEAD+精确8freeze独立归档默认门作差分控制，不重装/清理PG Redis；原正常进程保持。后继源码写仍须Root批准单writer，未验收不冒通过。
+
+### R255 阶段3实际门禁纠正与消费者后继（22:07 同轮续推）
+
+Root拒收默认semi/80全文件格式冻结：真实项目profile格式门exit1、六文件失败，其他门全0。原BFF writer仅同8路径按no-semi/160纠正并停写；新冻结a245d871，Root最新semantic92、聚焦82/0/0、固定生成、合同lint、typecheck、源码lint、build及目标format均exit0。HEAD三个文件原本不是该profile，Root按§9.3把这三baseline纯格式变化和8路径业务语义分开提交；不将无关格式包进功能commit、不改运行或mixed。独审补核formatted HEAD→新冻结语义，资源/Git仍Root。
+
+|任务|Owner/范围/基线|完成条件与停止线|
+|---|---|---|
+|R255-BILLING-CONSUMER-D1阶段2 RED|沿原BFF唯一writer；阶段3精确提交后才授权：只新增已D0批准test/billing-personal-read.test.mjs与现test/config.test.ts/test/bff.test.ts必要行为用例；阶段1先RED，不写生产源码|沿已批准TECH/API/DATA R255：可信IAM身份→五因素u1→固定generated本人两读；失败分类/no-store、query/cancel/timeout、零伪余额。真实HTTP行为反例必须命中现route/transport，不用缺文件/ENOENT或未配环境作为RED。Root复跑后再授4生产path；不假称Billing正常启动或浏览器资金闭环|
+|R255阶段切换决策|Root已一次异步询问用户：唯一正常Billing进程先正式积分链、支付最后 vs 等完整24operation再cutover；未答，既有C3不擅改|无第二测试host、无v1兼容/假赠送；用户决策后先更新同D0，再由owner实施。正规赠送权限与transport前置不跳过|
+
 ### R255 真实项目改名503优先窄修（22:19 UTC）
 
 Root真实正常IAM表单登录后，3310 GET本人项目200；以当前项目原名称和新幂等key PATCH/name返回503 business_store_unavailable、private/no-store与request-id正常、名称未变。源与Node22真实4type/build错误一致：原未交接删除mixed删了已提交rename方法/类型/adapter，而现route仍调用。收据var/dev/r255-preserve/normal-fixed-project-rename-red.json；HTTP是业务运行反例，不冒浏览器PASS。

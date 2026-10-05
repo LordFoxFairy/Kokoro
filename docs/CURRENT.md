@@ -1,3 +1,13 @@
+## R255 当前：项目改名与Chat提交运行职责已恢复，完整用户验收仍OPEN
+
+Root本轮正常Web→BFF→PG已复现项目PATCH/name 503并恢复丢失HEAD Service/port/adapter，原名称/原key200、同key重放200、不同name409；并发现原mixed把4500ms正式Chat提交helper换回无界内联，已完整私有备份后恢复唯一HEAD委派。两修复不扩关系模型、API、SQL或权限。原mixed任务外保留。
+
+BFF当前main aaf683e70e215b7903e574c41762a223fa47cf1d。此前固定Billing generated058ad4d；纯格式5a55be8与8path个人余额/流水公共合同09e0574分开，固定owner decimal/no-store/稳定错误/分页，删除假100；未接runtime/Web或写入资金。最终public独审af372e83、Chat独审10d239d7均零问题。Root当前主树默认747pass/0fail/1skip、types/lint/build/目标format全0；一个schema资源skip未跑、不冒真实PG/Redis integration。此前主树742/5/1与clean差分747/0/2完整保日志，失败不是靠改期望清除。fixture只选择性提交6/+6，删除test suffix保留；source职责本在HEAD，不造空提交。
+
+仅已拥有BFF9463实际exit130后同源码/.env.local重启79304、root38614/listener38630；其他6句柄不变，7正常探针200，无新服务/DB重装。旧HTTPcookie过期401保留，正规IAM表单/OAuth刷新后auth true、本人direct/project读取200、private no-store。这些是运行HTTP证据，不是浏览器点击/模型对话闭环。
+
+模型worker/Billing/Platform仍未正常运行；Billing唯一main v2装配、授权赠送与正式预占/结算/释放未闭。既有C3切换依赖支付后置已一次向用户请求阶段边界决定，未答不擅改。浏览器原登录交接未答、不重复问，0新增完整浏览器PASS；70组11通过/6失败/14待复测/38未验/1支付后置保持，完整Wave0–7不缩小。收据var/dev/r255-preserve/bff-chat-bounded-restore-receipt.json、bff-billing-public-commit-receipt.json与page-runtime/bff-chat-boundary-restart-receipt.json；下面为历史事实，BFF9463由本节79304替代。
+
 ## R255 22:07续推：真实项目改名503已窄修，整页验收仍OPEN
 
 Root正常IAM表单登录后，当前3310真实项目GET200，同原名称PATCH/name复现503 business_store_unavailable。根因确认为原未交接删除mixed误删HEAD已有rename的Service/port/adapter职责，现route仍调用；不是关系模型需再设计。原BFF writer停写交接后，Root只补回三现文件的原HEAD方法/types/import，保deleteProject与其余mixed。独审5c3c6fd0零P0/P1/P2；正常Node22 typecheck/build原四错误消失、实际0。
