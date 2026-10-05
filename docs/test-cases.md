@@ -1,3 +1,13 @@
+## R252 真实用户验收增量（2026-10-05；不变更70组统计）
+
+|用例|预置条件|真实步骤|预期结果|实际与证据|优先级/类型|
+|---|---|---|---|---|---|
+|TC-R252-AUTH-01 首页输入登录恢复|固定9d6bc5c4五owner、未登录Chrome无痕、Web16945fe|首页填自有QA提示→开始→正规IAM邮箱密码→/app|本次显式提示完整预填，不自动发起会话/模型|有限PASS，实际Home与提示可见，未观察自动发送；没有网络零mutation计数，不能扩成计费证明。/tmp/r252-home-login-draft-real.jpg|P0/系统、交互、状态机|
+|TC-R252-AUTH-02 项目退出后重新登录恢复|同正常用户已正常创建项目82511c9d、两行未发送草稿|项目硬刷新→产品退出→IAM确认→访问原项目URL→再次邮箱密码登录|仍原项目/合法空态/两行草稿，可编辑，不跳普通聊天|有限PASS；/tmp/r252-project-login-return-real.jpg。原3310未更新，真实普通持久会话query/跨主体/BFCache/自然TTL均未验|P0/系统、恢复、状态机|
+|TC-R252-DRAFT-03 普通/项目与概览边界|同用户，项目内新local未发会话，独立Home草稿|新会话写入/刷新→Home写普通草稿→侧栏项目无query概览→Home|各既定scope按PRD和URL一致恢复|普通与专案不同草稿有限控制PASS；无queryoverview显示新local会话草稿已只读定位route/activeId槽选择错误，待窄修，不冒底层覆写/CRUD已通过。/tmp/r252-project-overview-draft-scope-observation.jpg，原owner后继tests-only卡在task|P1/交互、竞态、状态机|
+
+总收据 `/tmp/r252-auth-return-real-user-journey.json`；真实IAM/BFF/Platform/Storage，不是mock或unit。独立证据复审 `/tmp/r252-auth-user-proof-qa-review.md`（8822ef60）已核五截图与有限结论，完整T-C05/T-U04及其它页面仍保持原状态。21499已正常收尾，原3310不动。源码与辅助测试只作为回归安全网，不为完整用户验收替代品。
+
 ## R252 本轮真实页面验收与资源收尾（2026-10-05）
 
 - **Skills有限主链通过**：独立五owner固定组合Root9e36000/Web475f24fe/BFFf3c64d90/Platform494b118/IAMc9a9872/Storage14f2bc9；实际Chrome无痕正规IAM登录→普通474B二字段V2 ZIP选包→上传并发布→已发布列表→安装/停用→硬刷新仍停用→启用→移除→刷新确认安装为空、发布源仍存在。服务端sourceRef/revision由正常产品流程生成，未向包塞后台ID；证据 `/tmp/r252-skills-real-user-journey.json` 与 `/tmp/r252-skills-native-published.jpg`。没有逐段网络状态码捕获，恶意包、越权、ACK未知、详情/撤回、Agent真正加载执行仍未验，**不关闭整组T-K02，不冒原3310通过**。

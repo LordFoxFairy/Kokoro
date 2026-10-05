@@ -1,3 +1,44 @@
+## R252 最新：真实登录恢复已复验，完整页面闭环仍开放（2026-10-05）
+
+本节替代下方先前“认证源码暂停/仍待冻结/先写Billing admission”的当前态，原失败证据保留。
+
+- **真实用户子链已通过**：固定五owner候选9d6bc5c4/Web16945fe，Chrome无痕实际首页输入→IAM邮箱密码→/app原输入预填且未发送；正常创建项目→两行草稿→硬刷新；Product退出→IAM确认退出→原项目深链→再次实际邮箱密码→同原项目、侧栏/中心合法空态及两行草稿完整。证据 `/tmp/r252-auth-return-real-user-journey.json`，截图 `/tmp/r252-project-login-return-real.jpg` 与 `/tmp/r252-home-login-draft-real.jpg`。没有逐跳HTTP状态码捕获，不冒原3310已更新、所有会话/跨主体/BFCache/300秒到期已验。
+- **Web源码正式交付**：本地main16945fe5ff8d954051157e77cdf44d93a20fe211，11生产/10测试+三D0仅批准prefix，共24path；四mixed全文保留、未push。Root79566真实7fail/23pass旧writer复活反例后窄修，最终独审9494da1e关闭原P1；Root84866当前2580pass/153file（system明确排除）及生成两check/lint/typegen/tsc/build全0，21+保护SHA保持。这些门仅安全网，页面结论只来自上一实际用户路径。收据 `/tmp/r252-web-auth-return-commit-receipt.json`。
+- **新交互观察单独保留**：新建项目内未发送会话的query/draft刷新可保留，普通与专案草稿互不覆盖控制成立；但从该新会话回Home再点项目无query概览，显示最新local会话草稿而不是早前两行overview草稿。只读94bd5023已证route显示概览但useDraft读取remembered activeId，是确定槽选择错误，尚不认定底层数据覆盖；原Web负责人沿卡R252-WEB-PROJECT-DRAFT-SCOPE-FIX先tests-only有效RED，截图 `/tmp/r252-project-overview-draft-scope-observation.jpg`。项目CRUD/列表整组不因此关闭。
+- **Agent冻结源码已交付，不冒真实聊天**：本地mainfc379da2b09e08ca0349f249902f587d72efbc8f，21冻源码/测试+四现doc事实前缀，共25path；Root默认2312pass/749默认资源deselect、contract0、lock/Ruff/显式解释器完整Pyright0与隔离currentwheel入口/Schema/profile检查0，原589同SHA真实PG/SDK为历史证据。独审814c3c2f无新确定源码阻塞，`/tmp/r252-agent-release-commit-receipt.json`。没有真实provider/费用/完整BFF浏览器聊天通过。
+- **计费后继顺序更正**：只读6a3b5aa4核当前final request digest只证明exact wire identity，不是可信input/category exposure或authenticated immutable read。下一沿原R243/R216卡补Agent最窄三D0与技术bound producer/read，正式发布后Billing才pin/read→quote/hold/grant，之后Agent消费许可和实际用量结算释放。不直接把selector/digest/experimental YAML冒成收费授权，不猜采购价/免费/充值；倍率可调及失败仅核实实际消耗规则保持。报告 `/tmp/r252-billing-admission-next-read.md`。
+- **资源收尾已核实**：本轮21499正常Ctrl-C终态0、owned资源回收、3311无监听、私有凭据删除、无痕窗口实际关闭；原3310/PID45606、46036仍alive、未动。`/tmp/r252-auth-return-release-preparation.json`。
+
+完整Wave0–7和唯一70组 **11通过/6失败/14待复测/38未验/1支付后置** 不变；存储goal实读仍blocked，不新建/假完成。当前有限登录返回子例修复通过，不等于原用户3310/每页/所有子仓已闭环。Root独占Git/集成验收，原Web writer后继先tests-only，QA实际证据独审8822ef60仅接受有限子链；其余旧未验项保持原owner卡。
+
+|任务|业务目标|Owner与基线|写入范围|验证与放行|
+|---|---|---|---|---|
+|R252-WEB-PROJECT-DRAFT-SCOPE-READ|T-C05原专案概览/会话草稿路由边界；P1|web_r247_skill_header_owner只读，Root审；正式Web16945fe，真实candidate9d6bc5c4|仅读现route/engine/draft/Project composer，/tmp/r252-project-draft-scope-read.md；不改仓/资源/Git/browser|Root实际：项目概览两行草稿→正规退出/登录仍两行→点击全局新对话形成project+conv8f query且空→写新conv草稿/刷新保持→Home写普通草稿→侧栏项目noquery概览却显示新conv草稿；是否违反既定PRD需定位真实activeId/route/draft seam，不能猜源码已坏或重建关系实体。普通草稿控制独立保持；原T-C05不关闭|
+|R252-WEB-PROJECT-DRAFT-SCOPE-FIX|T-C05概览/会话草稿与明确提交目标一致；P1|原web_r247_skill_header_owner唯一writer，Root审/提交；Web main16945fe，原四mixed排除|阶段一只写既有 tests/ui/app-frame-rail.test.tsx、必要 tests/ui/use-draft.test.tsx；Root有效RED后才授权 app-frame.tsx/use-app-frame-actions.ts 两现source，不建文件/迁移/别仓|只读94bd5023已证no-query概览却按remembered activeId读槽；先验证root/显式conv/Home独立、迟到hydrate/切query不串槽、概览明确发送不提交隐藏旧id。不启动资源/provider，不操作Git，冻结后Root独审/辅助门/实际浏览器回归；无完整聊天/CRUD完成声明|
+|R252-PROJECT-DRAFT-READ-QA|独立概览/提交目标审查；P1|qa_r243_web_frozen_review只读，Web16945fe|仅/tmp/r252-project-draft-scope-qa.md；变化中测试须标hash，禁止仓写/资源|审scope/迟到hydrate/明确submit及unknown保留，Root实际RED/复验，非页面通过|
+|R252-AGENT-BOUND-CONTRACT-NEXT-READ|R243/R216可信bound与read前置；P0|bff_skills_v2_owner_r251只读，Agentfc379da2，Root审核|现Agent/System/Billing三D0/contract仅读，仅/tmp/r252-agent-bound-contract-next-read.md|核已有可信计数profile/价格归属/技术期限，不捏造参数；明确最窄owner切片与依赖，不直接写Billing|
+
+## R252 本轮并行后继（2026-10-05）
+
+|任务|目标与优先级|角色/基线|允许范围与依赖|完成条件|
+|---|---|---|---|---|
+|R252-BILLING-ADMISSION-PRECHECK|正式实际消耗计价后继，不绕过预占；P0|bff_skills_v2_owner_r251只读，Root审；Billing ccd4cb0f/Agent29a7a18a+冻结21|读取既有R243 quote后继、R246 finalwire及现三D0/owner契约，仅读取仓，仅/tmp/r252-billing-admission-next-read.md；无provider/资源/Git|辨清已落地final request digest与仍缺可信input/exposure/immutable read，给下一单切片真实入口及原卡，不创建重复计划/泛化框架；依赖owner先发布|
+|R252-AGENT-RELEASE-ROOT|冻结源码发布安全网；P1|Root独占，Agent frozen21，29a7a18a|已有91916默认/contract、58182隔离wheel均终态0；补显式解释器工程门与独立绑定后精确提交，不写build/|当前21hash与锁保持，实际工程命令0；仅source交付，不关闭聊天收费整链|
+
+R252-WEB-DRAFT-RETIRE-CODE放行：Root79566 exact use-draft测试真实7failed/23passed/exit1，/tmp/r252-root-draft-retire-red.log；包括四flush反例、late clear、旧A内存/读B，premounted正规准入正控通过。仅现use-draft.ts与同test窄修既有auth-index-subject退役fence，原其余20file全文保持、无新subject DTO/身份框架；Root最终冻结独审/重跑与正常浏览器。
+
+R252-AGENT-INSTALLED-WHEEL：Root91916默认2312pass/749默认资源deselect/795warning与contract ok均终态0、21源hash保持；下一纯打包验仅自有临时dist/APFS克隆venv（复用既有锁定依赖、不改原venv），安装当前wheel后空cwd验证模块确从ownedsite加载、入口help与wheel内Schema/请求profile原字节。无provider/infra，build/排除提交；这是发布物安全网，不冒真聊天。
+
+R252-AGENT-FROZEN-ROOT-VERIFY：只读盘点11d7a4eb已核原R246 frozen21/21，原Agentwriter不在live树且无报告活动句柄；Root并行补此exact freeze默认pytest/contract（pyproject默认明确deselect integration/e2e/acceptance），不调用provider/服务/数据、不改源码/SQL/lock、不以工程门关闭聊天。基线29a7a18a、manifest/tmp/r246-agent-producer-repaired-files.json；build/排除。完整installed-wheel与精确提交待后继，首个功能前置仍Billing正式admission/grant。
+
+R252认证源码放行暂停：Root87335冻结复跑真实2075passed/116files与生成/lint/typegen/tsc/build全0，但独审702a9a75仍发现P1：verified B清旧map后，A旧useDraft pending200ms可在reload/pagehide/unmount写回A草稿；辅助门不能放行此业务漏洞。原匿名首页输入P1已修，但11源10test整片仍待后继。原Web writer仅现use-draft/相关现测试先补retire反例→Root实际RED后窄代码许可，不扩身份框架/资源。原3310不变、新认证真实页面未验，70组不变。
+
+| R252-AGENT-HANDOFF-READ | 真聊天主链既有切片后继定位；P0 | bff_skills_v2_owner_r251沿原模型只读；Root审核；不抢Agent原writer | Agent main29a7a18a/现dirty均保护；Root61b795b4 | 只读Python09、CODEBASE_MAP、Agent三D0/CURRENT/原task与/tmp既有交接，仅/tmp/r252-agent-next-action-read.md | 与Web匿名输入修复、QA认证核心审查独立并行；无provider/资源/Git/browser权限 | 定位原owner、冻结/未验事实、首个可执行后继和真实聊天/费用依赖，不重建计划 | Root沿原任务卡续接，无整组完成声明 |
+
+R252-WEB-ANON-DRAFT-CODE放行：Root77479对冻结三现测试真实重跑4failed/25passed/exit1，/tmp/r252-root-anonymous-draft-red.log，无import/setup失败。现use-draft/landing/page-clients三源及对应三现test授权实施批准handoff；其余8 auth源/另7 test阶段冻结，不扩大公开契约/资源/框架。最终11源10tests加Root三D0精确审验；真实首页输入和原项目登录回跳仍Root负责。
+
+R252-WEB-ANON-DRAFT-REGRESSION：现已批准auth返回切片独审发现首页输入首次verified准入丢失P1；Root补充最窄D0，原Web writer仅增加现use-draft/landing两源和两现测试，已准入page-clients；先测试RED，Root重跑后授权代码。不新增认证框架/目录/cookie，不保未知旧map，不自动发送。详见/tmp/r252-web-anonymous-draft-d0-prefix-receipt.json；正式build/纯门只是安全网，真实首页输入登录预填仍需Root验。
+
 ## R252 本轮真实页面验收与资源收尾（2026-10-05）
 
 - **Skills有限主链通过**：独立五owner固定组合Root9e36000/Web475f24fe/BFFf3c64d90/Platform494b118/IAMc9a9872/Storage14f2bc9；实际Chrome无痕正规IAM登录→普通474B二字段V2 ZIP选包→上传并发布→已发布列表→安装/停用→硬刷新仍停用→启用→移除→刷新确认安装为空、发布源仍存在。服务端sourceRef/revision由正常产品流程生成，未向包塞后台ID；证据 `/tmp/r252-skills-real-user-journey.json` 与 `/tmp/r252-skills-native-published.jpg`。没有逐段网络状态码捕获，恶意包、越权、ACK未知、详情/撤回、Agent真正加载执行仍未验，**不关闭整组T-K02，不冒原3310通过**。
