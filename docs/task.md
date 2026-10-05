@@ -1,4 +1,43 @@
-# 当前任务入口（R227，2026-10-04）
+# 当前任务入口（R229，2026-10-04）
+
+
+## R229 最终复审、后继owner与验收门
+
+Web新增冷503系统测试独审0P0/P1/P2，完整78pass终态已回读log SHA验证；原页面根因/生产修复仍未证。Agent四D0最终独审0P0/P1/P2，设计门可进入后继真实locked SDK/owned HTTP peer tests-first，尚无usage观察新源码。Billing原四P1语义已关闭，但复审发现两项真实事务接口P1：现guard需精确write/readOnlySnapshot，而selector只写active；guard先登记raw rollback首因导致selector内部safe wrapper被外层覆盖。报告分别/tmp/r229-agent-usage-d0-final-review.md与/tmp/r229-billing-selection-d0-final-review.md。Root下一裁决为固定write mode、保既有rollback首因并由root transaction退出后的application边界安全映射，不扩公共事务框架；需原owner四D0精确收敛后才授真实PG测试/实现。此为后继方案，不是已实施或准入。所有worker已交接停写，无隐藏资源任务。
+
+Root现场main-only：Root及11物理子仓均仅本地main；remote未核。Web19/BFF20/Agent4/Billing5 dirty，七其他物理仓clean；Root五gitlink和protected uv保持。四Agent与四Billing文档原全文suffix Root回读均true；uv SHA f7e1c30d...保持。Root当前测试归属说明回归7pass/0fail、0.04秒，仅治理局部，不覆盖旧153标准违反、五gitlink差异和checkpoint失败。70产品组11/6/14/38/1保持，完整研发与用户旅程未闭环。
+
+## R229 四D0缺陷回填与原系统句柄终态
+
+Root67616已消费终态exit0：同Web source504ca8cf完整78pass/0fail/0skip，116.022秒，source/Redis集合same；manifest `T/kokoro-r229-web-full-8zwiqgvn/manifest.json`。原冷503实际原实现可恢复，不凭static候选改生产，也不冒原用户3310恢复。
+
+Agent独审最终采用**scope-end自有immutable buffer reader bounded first pass＋same buffer私有bounded-complete凭证后二次frame EOF核**，不是包SDK stream，无SDKread-ahead/在线writer/stdlibfallback；实际锁定zstandard0.25 C backend max_window_size传4194304，与官方docs KiB不符须实测标注，预算估计payload非RSS。原owner现仅准四R228前缀同步该唯一路线，原old suffix/364 non-doc保持；再冻结/独审，仍无source/tests。
+
+Billing独审4P1必须原writer仅四R229前缀纠正：single-binding currency非整revision；unconditional all可覆盖range observation、range需显式值且codec禁止samegroup all+range；合法caller profile mismatch为RATE_UNAVAILABLE非CORRUPT；未知DB/tx failure固定safe METERING_SELECTION_UNAVAILABLE，保取消/typed事务传播边界。五旧mixed正文/SQL/source/test/contract/lock保持。Root重审后才tests/source，不以D0措辞批准实现。审批报告/tmp/r229-billing-selection-d0-review.md。
+
+## R229-BILLING-SELECTION-D0 现rate消费依赖
+
+原Billing owner只读报告2db0a148确认：Admission依赖可执行policy、joint quote、Agent binding/bound reader尚缺，不用旧quantity=1/伪grant。Root裁下一可实施片为module-private事务内rate active selection；只是报价前置，零资金/HTTP/Schema/机器契约。baseline8f091d40，原五mixed全部保留；Root已存四doc/tmp/r229-billing-doc-before，全部旧bytes作suffix。
+
+billing_oracle_exact_fix唯一writer仅TECH/API/DATA/CURRENT四现doc增加一致R229设计前缀；IMPLEMENTATION_PLAN及source/test/SQL/generated/package/lock冻结。Root要求比较扩现MeteringPricingRevisionRepository与另新selection repository，采用前者复用同一ordinary strict canonical reread避免两套validation；只新普通selection.types/service并现module DI/error，不加public export/新目录。明确内部签名、active tx/tenant/一次DB time、latest effective/revision、profile/full binding与range/币种/digest、安全错误闭集、缺配置不回退、真实PG矩阵，不能先new import冒业务RED。Root按AGENTS§8审D0后另授测试/源码。政策倍率当前7/5，不在此rate片硬编码或擅改用户“可调”要求；policy字段不一致后继单独收敛。本片无部署真实采购价/换算值，无quote/hold宣称。
+
+## R229-WEB-COLD-SNAPSHOT tests-first 准入
+
+归属Web现会话恢复系统测试，局部既有文件扩展不改职责/contract。agent_execution_bound_owner从只读Web调查续派为唯一tests writer；Root审查/资源/Git。基线Web ce40cecc，19mixed保护；现oidc系统935b1ea7已Root77pass，仅隔离协议peer，不证明原页。Root已保存/tmp/r229-web-system-before.ts与681路径/tmp/r229-web-before.json。
+
+唯一准写 `apps/kokoro-app/tests/system/oidc-rp-next-http.integration.test.ts`：在现受控BFF peer注入冷deep-link初次snapshot503→人工Retry恢复，验证实际production engine/UI而非mock state。保原77case/断言，zeroPOST/同ID/错误surface与不无限loading/刷新恢复。无production/source/docs/contract/lock改权，无Git/测试资源/浏览器启动；作者静态交冻结后Root复用既有Redis15跑真实Next/Chromium。若原实现通过，记录真实characterization，不造RED或直接重排分支称修复。已定位static错误/loading可能同true仅候选，旧session已有10秒机制反证保留。
+
+## R229 当前用户链与费用依赖并行（2026-10-04）
+
+上一目标回合只读进度盘点，没有新增业务修复，按no-progress处理。本轮沿原Wave0–7、原任务ID继续，不新建计划中心。Root4ded951f；Webce40/BFF7289/Agentf305/Billing8f091。原3310 PID46036仍live旧组合，禁止观察超时重启、清旧对话/共享数据或混提protected改动。
+
+|工作面|负责人/权利|范围与验收|
+|---|---|---|
+|当前页面加载|agent_execution_bound_owner 临时只读Web调查，Root运行诊断|对照现AppGate/session与旧next产物，不读凭据/cookie、不写仓/服务/Git；准确区分已证根因、版本缺口与未复现，交/tmp/r229-web-live-loading-review.md|
+|Agent用量观察|r226_agent_n_review 独立只读审查|R228 D0唯一P1 Python>=3.11公开有界zstd方案；核实际CPU probe的writer+buffer+frame验证是否有未flush/window/二次无界解压漏洞，/tmp/r229-agent-zstd-decision-review.md；仍无source/tests准入|
+|正式积分下一切片|billing_oracle_exact_fix 原owner只读依赖盘点|基线8f091 rate-only已提交；policy/selection/quote与Admission依赖、现D0/契约/准确源文件及真实业务测试矩阵，/tmp/r229-billing-next-cut.md；不造价格/换算/资金、不写五mixed文档|
+
+Root独占总体裁决、运行资源、台账与Git。四原Agent D0旧bytes、uv锁、所有owner源码/测试仍保护；不把报告/API probe当E2E，70组11/6/14/38/1保持。
 
 ## R228 Root默认治理门真实失败及CURRENT回归修正
 

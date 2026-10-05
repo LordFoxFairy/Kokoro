@@ -1,5 +1,13 @@
 # Kokoro 系统级测试与业务验收台账
 
+## R229 冷会话深链接真实故障恢复（不增加70产品组通过数）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
+|---|---|---|---|---|---|---|
+|TC-WEB-R229-COLD-DEEP-LINK / 冷深链接503后手动恢复|Web ce40cecc+冻结系统测试504ca8cf；真实隔离Next/Chromium/Redis、受控IAM/BFF HTTP peer；全新无storage context完成正规fixture准入|首业务document直接访问会话A→snapshot peer真实503→观察error/loading→切peer200点击Retry→刷新；核HTTP序列、URL、正文及POST|503后error可见且loading结束；Retry及reload保留同A且正文恰1，响应[503,200,200]；零session创建POST，资源与源码保持|P0|主链、异常、状态机、系统|Root定点1pass/77过滤；完整78pass/0fail/0skip，116.022秒；独审0P0/P1/P2。原实现此路径已能恢复，不是用户3310持续加载根因或生产修复。|
+
+完整manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r229-web-full-8zwiqgvn/manifest.json`，log SHA `71e155a9f571f0d6819ae4ea159a9e481954b8bb28a15a150c29741d5ddb248e`，source_same/redis_keyset_same均true。原77 case及原断言保留，仅现系统测试91行插入；没有真实provider/费用或原用户DOM结果。70组仍11通过/6失败/14待复测/38未验/1支付后置。
+
 ## R228 Root默认治理门真实失败及CURRENT回归修正
 
 原8264已终态：ten-repository-standard153规则违反exit1；topology5个gitlink/checkout HEAD差异exit1；scripts/tests 1719pass/2fail/3skip，126.96秒。两失败为contract checkpoint evidence gitlink与冻结清单不一致，以及本轮CURRENT压缩漏保活跃测试归属说明。Root未放宽test或更新组合指针凑绿；补回“子仓的 tests 不迁入 Root；scripts/tests仅治理、verification跨仓”的当前职责后，同topology测试文件实际7pass/0fail，/tmp/r228-root-topology-tests-green.log。完整scripts未重新全跑，checkpoint差异仍开放。真实诊断 /tmp/r228-root-checkpoint-diagnostic.json，源码/旧receipt的组合发布需独立验证，不把历史checkpoint当当前通过。标准153、拓扑5与checkpoint失败明确保留；三日志/tmp/r228-root-standard.log、/tmp/r228-root-topology.log、/tmp/r228-root-script-tests.log。

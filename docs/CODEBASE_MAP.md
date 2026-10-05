@@ -1,5 +1,9 @@
 # Kokoro codebase map
 
+## R229 系统验收与下一依赖入口
+
+Web现 `tests/system/oidc-rp-next-http.integration.test.ts` 冻结504ca8cf，Root真实Next/Chromium/Redis与受控IAM/BFF peer完整78pass，新增冷深链接503→Retry→同会话reload；生产代码不变，原3310持续加载未定位。Agent四D0原始usage观察最终独审0P0/P1/P2、仅设计准入；Billing四D0事务rate选择复审仍两事务P1，均未授新source/tests；不把设计当费用链实现。原任务/70组状态与资源终态沿CURRENT/task/progress/test-cases，不新建计划中心。
+
 ## R228 本地交付入口
 
 Billing main8f091d40已交付rate-only canonical/pure codec/module-private publication与系统测试，Root107PG/1361辅助及标题231门。仅五旧mixed文档继续dirty，源码非候选；Rootgitlink/3310未更新，policy/Admission/费用链仍OPEN。Web现同OIDC系统文件完整77pass仅隔离协议fixture，不是原用户页面根因。当前事实与句柄收据仍沿CURRENT/task/progress/test-cases。

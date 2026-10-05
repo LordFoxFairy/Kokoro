@@ -9573,3 +9573,20 @@ Agent取消仍真实RED（取消后完整prepared attempt迟提交），旧7月O
 完整70组仍 **11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**。既有失败集中在全组合、完整会话CRUD、快照与刷新续流、Agent过程刷新及UI异常/无障碍；页能打开、owner工程门或上述窄片通过均不提升整组。最新用户可见边界仍按R187–R191逐页矩阵，未将历史截图当本轮浏览器结果。
 
 下一行动保持两个独立研发面：Agent有界取消/drain最小修复与原失败oracle；Billing正式Admission事务装配后实际预占/结算/释放。Web已验绑定版本进入安全组合并逐页CRUD/Settings实测，与前两面按契约依赖并行，不进入运维扩展。
+
+
+## R229 当前页面真实诊断与冷启动恢复系统基线（2026-10-04）
+
+Root上一进度盘点按no-progress，现续既有Wave0–7。原3310 Web PID46036 live，未重启/删除旧数据。Root有界无cookie HTTP实际/app307 54ms、session200 authenticated=false 13ms、login302 14ms；/tmp/r229-live-http-diagnostic.json。只证匿名入口，非用户已登录页面。旧process.log末128KiB仅安全分类timeout14/ECONNREFUSED0/module_missing0/compile_error0，无cookie/payload/token输出。
+
+原owner只读报告/tmp/r229-web-live-loading-review.md SHA973d41ae明确反证：旧session源码与编译chunk已有10秒、fetch+json Abort；AppGate/layout/login/auth启动与现源码同，版本滞后不能冒持续加载根因。静态route mismatch+error的loading遮error候选另待实际可达验证。IAB listTabs仅原tab1/app；公开tabs.get仍focus超时14.6秒未取DOM，不新tab/导航/刷新/原生app绕过。已异步请用户仅关闭重开浏览器tab，服务不重启，开发继续。
+
+Root已接唯一现system新增三处insert、91行；旧77case/所有原断言保留，源504ca8cf，681路径只test改变。Root95636终态exit0：真实Next/Chromium/现Redis15与受控IAM/BFF peer，新storage-free context直接A deep-link→真实snapshot503→可见error/人工Retry→同A全文/URL→reload同A、零session POST，1pass/77名称过滤未跑，8.846秒。manifest `T/kokoro-r229-web-cold-1j96bpzb/manifest.json`，logSHA9f40730da8d343233f783302fc295424677d16137fcb7a5da6b446f1764dcbde；source_same/Redis集合same。因此该具体冷503路径原实现可恢复，不能从静态双true推定原页根因或制造生产RED；未改production。Root后继67616已消费终态exit0：完整同file78pass/0fail/0skip，116.022秒，source/Redis集合same；manifest T/kokoro-r229-web-full-8zwiqgvn/manifest.json，logSHA71e155a9f571f0d6819ae4ea159a9e481954b8bb28a15a150c29741d5ddb248e。未重复服务。
+
+Billing四selection D0 prefix候选冻结66f63eca，四旧bytes逐字suffix、第五IMPLEMENTATION_PLAN未写，未准source/tests/SQL。依赖盘点确认Admission前缺executable policy/joint quote/Agent reader，先rate事务选择，非quote/金额动作；复用现revision reader不复制repository。Agent zstd CPU probe提供公开可实施路径，但Root再裁scope-end自有有限buffer路线减少在线状态；原P1正式待四D0回填/独审，source/tests/lock仍冻结。70组仍11/6/14/38/1，不把这个1pass或设计报告升整组；goal active。
+
+## R229 最终复审与进度边界
+
+Web新增冷503系统测试独审0P0/P1/P2，完整78pass终态已回读log SHA验证；原页面根因/生产修复仍未证。Agent四D0最终独审0P0/P1/P2，设计门可进入后继真实locked SDK/owned HTTP peer tests-first，尚无usage观察新源码。Billing原四P1语义已关闭，但复审发现两项真实事务接口P1：现guard需精确write/readOnlySnapshot，而selector只写active；guard先登记raw rollback首因导致selector内部safe wrapper被外层覆盖。报告分别/tmp/r229-agent-usage-d0-final-review.md与/tmp/r229-billing-selection-d0-final-review.md。Root下一裁决为固定write mode、保既有rollback首因并由root transaction退出后的application边界安全映射，不扩公共事务框架；需原owner四D0精确收敛后才授真实PG测试/实现。此为后继方案，不是已实施或准入。所有worker已交接停写，无隐藏资源任务。
+
+Root现场main-only：Root及11物理子仓均仅本地main；remote未核。Web19/BFF20/Agent4/Billing5 dirty，七其他物理仓clean；Root五gitlink和protected uv保持。四Agent与四Billing文档原全文suffix Root回读均true；uv SHA f7e1c30d...保持。Root当前测试归属说明回归7pass/0fail、0.04秒，仅治理局部，不覆盖旧153标准违反、五gitlink差异和checkpoint失败。70产品组11/6/14/38/1保持，完整研发与用户旅程未闭环。
