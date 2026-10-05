@@ -1,3 +1,13 @@
+## R251 BFF消费者正式交付与页面后继（2026-10-05）
+
+Root已精确交付BFF本地main **f3c64d90f4a6fd7083252ff3d1646c5ad1dee292**：唯一public8.0.0仍/v1，严格zip-v2，固定494producer及V7→V6→V5证明，旧6519 active vendor删除；正式commit全tree等于已审已验candidate24b1423。独审07cc4fc无新增确定阻塞，Root42752实际check745pass/0fail/2资源skip及format0，仅辅助。formal主树生成首次因手工集成留下空旧vendor目录失败1，精确删除仅空目录后Root42790正式生成/check0，原失败保留。
+
+仅63明确path进入commit；正式BFF原20mixed未暂存，四mixed docs仅前置批准prefix、原全文suffix逐字保留，其他保护不变。未push、原3310未更新、PG/Redis和真实Publish/Install旅程未执行，故**不关闭T-K02或任何整页验收组**。收据/tmp/r251-bff-formal-commit-receipt.json；public SHA278fc0a60516617d41c754b7957fadbcc77f9b6132fa9f1a8af9409464319d0f。
+
+Web同负责人并行只读后继消费者：现hub V1 schema会拒V2；须按正式BFF身份正常生成并最窄替换手写schema，原发布/安装UI不重写。登录回跳只读311b62d已证当前callback固定/app而无目标恢复，但仍**没有本次项目刷新重定向链证明**；不把可能原因当已修，不添加opaque阶段/cookie/新框架。原项目刷新、Skills/Library页面实际失败保持，完整70组11/6/14/38/1不变。
+
+本轮两个Root检查句柄均完成，原45606/46036存活、3311无监听；没有新服务/共享数据清理/模型或积分操作。后继仍现卡：Web消费→正规登录真实选包/发布/安装/刷新；项目回跳独立收敛。
+
 ## R251 进度：页面证据优先（2026-10-05）
 
 Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。

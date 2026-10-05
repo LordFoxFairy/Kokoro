@@ -1,3 +1,7 @@
+## R251 正式消费者入口增量（2026-10-05）
+
+BFF本地main f3c64d90已交付唯一zip-v2/public8.0及现generate-platform-connect-client固定494/V7继承链；原20mixed保持，exact source tree见/tmp/r251-bff-formal-commit-receipt.json。Web现src/hub/schemas.ts Validate正则仍V1，是后继最窄consumer入口；正常public pin/生成沿现scripts，不建立新SDK/层。原3310仍未更新，当前失败及真实验收以CURRENT/task/progress/test-cases为准。
+
 ## R251 当前入口与运行差异（2026-10-05）
 
 Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。

@@ -1,3 +1,13 @@
+## R251 BFF消费者正式交付与页面后继（2026-10-05）
+
+Root已精确交付BFF本地main **f3c64d90f4a6fd7083252ff3d1646c5ad1dee292**：唯一public8.0.0仍/v1，严格zip-v2，固定494producer及V7→V6→V5证明，旧6519 active vendor删除；正式commit全tree等于已审已验candidate24b1423。独审07cc4fc无新增确定阻塞，Root42752实际check745pass/0fail/2资源skip及format0，仅辅助。formal主树生成首次因手工集成留下空旧vendor目录失败1，精确删除仅空目录后Root42790正式生成/check0，原失败保留。
+
+仅63明确path进入commit；正式BFF原20mixed未暂存，四mixed docs仅前置批准prefix、原全文suffix逐字保留，其他保护不变。未push、原3310未更新、PG/Redis和真实Publish/Install旅程未执行，故**不关闭T-K02或任何整页验收组**。收据/tmp/r251-bff-formal-commit-receipt.json；public SHA278fc0a60516617d41c754b7957fadbcc77f9b6132fa9f1a8af9409464319d0f。
+
+Web同负责人并行只读后继消费者：现hub V1 schema会拒V2；须按正式BFF身份正常生成并最窄替换手写schema，原发布/安装UI不重写。登录回跳只读311b62d已证当前callback固定/app而无目标恢复，但仍**没有本次项目刷新重定向链证明**；不把可能原因当已修，不添加opaque阶段/cookie/新框架。原项目刷新、Skills/Library页面实际失败保持，完整70组11/6/14/38/1不变。
+
+本轮两个Root检查句柄均完成，原45606/46036存活、3311无监听；没有新服务/共享数据清理/模型或积分操作。后继仍现卡：Web消费→正规登录真实选包/发布/安装/刷新；项目回跳独立收敛。
+
 ## R251 延续：Skills 消费链与项目创建恢复（2026-10-05）
 
 Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。
@@ -23,6 +33,12 @@ R251-BFF-SKILLS-D0：Root首冻范围拦截→freeze2仅前缀→Root补四分�
 R251-WEB-CREATE-RED：作者两test停写，Root16299独立有效8failed/35passed/exit1，headers/成功和错误body无总期限、同subject暂停仍pending、缺实际signal；不是类型/setup错误。Root实核最终两个RED SHA11fcde1b/7e3ba0fd，原两source与四mixed/auth保持。现授权原唯一Web writer四现文件完整切片（两source+两test），单10秒总预算及caller signal、同subject unknown恢复/显式原keyRetry，退役abort不挂route token；先补完整边界，冻结交Root审/重跑。不得修改其他source/三D0 mixed/contract/pins/lock/资源/Git。
 
 R251-BFF-SKILLS-CONSUMER：原文档owner最后报告模型capacity错误已停写；复杂后继按AGENTS选 gpt-5.6-sol 的具名 bff_skills_v2_owner_r251 接同owner候选5042830，Root独占Git，先仅现 test/skill-validate-http.test.mjs 写唯一V2合法ACK/旧V1拒绝的真实HTTP行为RED，不以不存在的新vendor ENOENT作失败证据。Root复跑后才准现route、现OpenAPI/check/tests、现generator/dep/buf/current版本vendor正常生成切片；原D0放置与producer494/V7链不改，正式20mixed保护。单一consumer proof无通用框架/服务/SQL/权限变更；public8.0.0/version/pattern同时更新，旧owner vendor active根删除，必要immutable V5/V6只作新494固定证明父集，不成为双runtime。Web consumer须后继正式BFF身份后接。
+
+R251-BFF-FREEZE：唯一writer已停写，59paths冻结19e8e2e8清单Root实际exact，25保护exact；现QA只读复审，Root42752只复跑check/format，未开启资源。准备精确主树集成：五docs仅candidate相对886的纯prefix，formal原mixed全文保留，Git index只prefix+HEAD，不暂存原mixed；其余源/contract/vendor严格清单。暂无formal交付或页面GREEN。
+
+| R251-WEB-V2-READ | T-K02后继Web消费者只读预检；P0 | kokoro-app；web_r247_skill_header_owner只读；Root审查/提交 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app；main b3f588e4；四mixed保护 | 仅读现hub schemas、BFF public pin/generator、现Skills Validate发布/安装UI与相关tests/三D0；只/tmp/r251-web-v2-consumer-preflight.md | BFF正式f3c64d90/public8.0与SHA278fc0a6已交付；只读最小提案，Root三D0/RED准入后改pin/生成 | 最小现文件放置/替换V1/正式生成/真实Publish→Install→刷新QA条件；零仓/资源/Git写 | 只读提案，非页面或实现完成；Root正式BFF交付后另准写入 |
+
+R251后继授权（14:59心跳）：作者完整纯test实际744pass/1fail/2skip，唯一现test/architecture.test.ts旧public7.2.0断言与已批准8.0.0不符。Root回读assert line583，允许同唯一BFF writer仅该版本字面值更新，不放宽其它architecture/91ops/权限断言；随后冻结相关纯门。正式20mixed保持，非页面通过。
 
 R251-BFF-CONSUMER-CODE：Root独立HTTP反例 /tmp/r251-root-bff-skills-red.log，当前test SHA12c62439，实际8pass/6fail/exit1，V2被旧route拒502且旧V1被接受200。放行同隔离候选唯一writer bff_skills_v2_owner_r251：现validate route、唯一public OpenAPI和verify/tests、现Platform generator/dep/buf、正常生成的两TS、单494vendor完整V7/V6/V5固定证明输入、四package/publish/installation既有HTTP fixture路径与现pin合同test；仅必要CURRENT短前缀。删除旧6519 active vendor根，不手改生成物、不升级依赖/SQL/角色/服务。public8.0.0保/v1为已批准发布前唯一替换，无双格式。Root精确集成/提交，正式20mixed不动，Web消费者仍串行依赖BFF交付。
 
