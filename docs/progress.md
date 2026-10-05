@@ -1,3 +1,15 @@
+## R254 当前：侧栏文件夹规则已对齐，源码替换尚未实施（2026-10-05）
+
+用户明确：每个专案行下缩进该项目会话，可独立展开；外部普通持久会话列表在所有app模块常驻。当前PRD §3和product05已更新，不新增项目子目录实体/会话绑定表/API；现nullable project_ref不变。未发送草稿仍不入持久清单。
+
+源码根因已由Root与两名只读Agent核明：AppFrame只创建当前sessionScope的一份useConversationList并把它传rail；shell仅一份SessionList，projectActive二选一标题/内容；项目map只平面Link没有展开children。不是BFF关系数据需要重建。当前原3310仍旧副本，本轮尝试读现IAB时CDP Emulation.setFocusEmulationEnabled超时，未据此推断业务根因/宣称页面通过，未再盲目开标签。
+
+- Web owner只读469ce1d1与独立QA c83567fa已冻结，各自停止。最窄候选复用现rail组件/useConversationList/useSessionList，direct常驻、只有展开项目才挂载固定scope组，无all-project预载、额外engine/SSE或缓存事实。正文engine保当前scope；展开与选择分开。
+- 跨scope点击必须导航原会话的正确URL；Move来源按行所在组而不是当前正文scope，确认后刷新原+目标组；非当前组删除/改名不能借当前engine误操作。保scope/subject代际、局部loading/empty/error/分页、unknown原key与晚ACK不抢导航的保障。不得为外观替换把已有CRUD/权限删掉。
+- 九个系统级子例已加入同test-cases，全部待执行，未新增第71组/第二测试中心。后继由原Web唯一writer先现行为反例，再最窄实现，Root审查、冻结复验及真实IAM/BFF浏览器路径。当前0源码修改/0测试执行/0用户E2E，通过数不变，不声称修好或已经发布。
+
+现R253调试服务与数据保护继续保持；本片不重新启动/关闭用户预览、不改登录/Agent/费用/后端。完整Wave0–7和70组11/6/14/38/1仍不缩小。
+
 ## R253 真实源码服务补齐与未接通边界（2026-10-05）
 
 - 两名原负责人独立只读交付：missing-owner报告9ea80347、原组合8dbe6cac；IAM续查d6aadadd确定 health/readiness config 与实际auth Prisma pool分叉。不是新增身份库或数据库故障免责：原ready503仍实际保留，最窄fixture修复与运行交接未执行。

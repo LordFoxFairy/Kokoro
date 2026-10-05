@@ -1,3 +1,18 @@
+## R254 侧栏专案文件夹与常驻普通会话（2026-10-05）
+
+用户已明确裁决：每个专案像文件夹，所属持久会话缩进在其下，可展开/折叠；外部普通会话列表在所有页面始终展示，不被当前project scope替换。仍只用BFF Conversation可空project_ref，不新建关系实体/目录层级/后端API/缓存事实。未发送local草稿不伪装持久会话；未知列表不画已确认空，展开与active选择分别建模。
+
+|任务|Owner / 基线 /角色|范围|依赖及验收|
+|---|---|---|---|
+|R254-WEB-FOLDER-READ|原web_r247_skill_header_owner只读，Web1ed160b及4mixed保护，Root裁决|现WorkspaceRail、AppFrame、list scope、路由、Move投影、现PRD05；仅/tmp/r254-project-folder-seam-read.md，不改仓/资源/Git|提出最窄既有组件/hook复用和必要文件集，direct常驻+每project独立列表、点击跨scope导航、CRUD/Move ACK刷新/分页/撤权/竞态，不引新实体或多层tree；Root先审再授权tests-only|
+|R254-FOLDER-USER-QA-READ|qa_r243_web_frozen_review只读，Root审，现Web1ed160b|现PRD05/T-C01–05及现rail与list边界；仅/tmp/r254-project-folder-user-qa.md，不动浏览器/仓/资源/Git|用户级矩阵：两个项目+普通会话，展开/关闭/切路由/刷新/分页/移动及加载失败/撤权隔离；指出旧单scope断言应替代哪些，辅助测试非真实用户PASS|
+
+Root独占设计、产品文档/task、共享doc与Git、资源和真实浏览器。parallel只读审查与作者盘点，不重复开服务；现10214保留。新规则覆盖历史“只有一个专案会话分区”的渲染，不扩大聊天/登录/费用/后端重写。
+
+R254只读交付已收：原Web owner报告469ce1d1，QA矩阵c83567fa；Root已逐seam复核current engine/scope与rail数据源二选一原因，现PRD09 §3/product05对齐用户新规则，同test-cases九子例全为待执行。作者候选10现source+3现test复用局部ScopedConversationGroup，不必新文件/目录；后继须明确跨scope选择/Move/CRUD及身份/页码生命周期，不能只换标题或嵌套DOM。
+
+当前仅Root产品/task/QA台账更新，0源码/测试/真实页面改动，不承诺原3310已修。现浏览器首次CDP访问超时，未盲目循环/开新标签。原4Webmixed fullSHA与Root uv.lock保持，所有reader停写，源码仍由原owner后继；实现前先收敛现三D0并明确tests-only授权和实际RED，Root统一Git/资源/最终用户验收。
+
 ## R253 调试环境补齐（2026-10-05）
 
 用户明确要求启动必要子仓库与基础设施，方便完整调试。Root统一进程/端口/资源与集成，不重复启动数据库/Redis，不删旧数据，不伪造费用许可。当前原3310与其父45606保留，先核已有完整进程树；同task续接，不建立新计划中心。

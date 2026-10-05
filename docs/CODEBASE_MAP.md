@@ -1,3 +1,9 @@
+## R254 侧栏定位与后继范围（2026-10-05）
+
+当前单scope二选一 seam：Web `src/components/blocks/app-frame/app-frame.tsx` → `src/components/blocks/workspace-rail/workspace-rail-shell.tsx` / `workspace-rail-session-list.tsx`；项目平面行在 `workspace-rail-navigation.tsx`。用户批准folder嵌套+direct常驻，Root已更新当前PRD §3/product05，九个待执行子例在同test-cases，不新建业务实体/目录层级/API。
+
+候选复用现局部group组件和 `src/ui/shell/use-conversation-list.ts` / `src/ui/rail/use-session-list.ts`，展开项目才读；其跨scope路由/Move/CRUD和身份/分页边界由报告 `/tmp/r254-project-folder-seam-read.md`（469ce1d1）列10现source+3现test。文件集仅后继候选，不是已改代码/授权所有文件。正文engine、auth、contract/generated、SQL、owner服务和4mixed均排除；独立QA矩阵 `/tmp/r254-project-folder-user-qa.md`（c83567fa），尚未执行。
+
 ## R253 运行定位入口（2026-10-05）
 
 现九owner物理路径沿下文不变，不新建服务/一级模块。Root临时调试管理 `/tmp/kokoro-r253-runtime/start_missing.py` 调用现 Storage `scripts/apply-schema.ts` / `src/main.ts` 与 Scheduler `cmd/db-apply-schema` / `cmd/scheduler`；仅复用现应用库的owner schema和现基础设施，无新应用库/role。常驻句柄10214 / supervisor51454，实际监听Storage8085/51524、Scheduler8087/51608。停止仅向supervisor发INT，保留已有和本轮owner数据。
