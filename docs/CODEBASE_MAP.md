@@ -1,5 +1,23 @@
 # Kokoro codebase map
 
+## R240 正式交付与后继入口
+
+Web main `5e0963648db0cb0e1a60de42ea025670b32aba85` 精确19路径交付server-first admission/datafree booting、native anonymous handoff、snapshot/process单10秒预算和exact draft flush；Root原完整工程/73真实系统通过、最终独审0、Git bytes等冻结。原19protected保持，现在仅4mixed（3D0+system），receipt `/tmp/r240-web-commit-receipt.json`。原3310受管dev副本9/12源样本相同、两源码缺Move协调而不是认证整体旧版；未重启/发布或取得浏览器恢复证明。
+
+BFF fresh cdad0ad6 rename合同artifact由原owner独占writer，locator `/tmp/kokoro-r240-bff-rename-clean.path`，只当前三面/唯一机器contract阶段，schema/production未授；Agent/Billingattempt许可接线原审查员只读并行。沿同task/progress，完整Wave0–7与70组状态不缩小。
+
+## R239 前一交付入口
+
+BFF main cdad0ad6精确14路径active资格与HTTP request-ID已交付，schema12与完整217真实PG/Redis全0，工程/format0、三面独审0；原20mixed保持。代码仍位于六现repository、bootstrap/server.ts及唯一schema/两test，不新建删除业务模块，后继Project name PATCH只读设计收口。
+
+Web冻结12source/4test+当前D0的完整73系统Root31212全0，原73集合与deadline/零private IO保持；原6fail及两次测试oracle遗漏按阶段保留，不当production修复或删除失败。Root46637完整工程先失败于R195只等待pathname的测试观察点；同10秒预算窄修后system e82340fc，Root63257最终原完整工程0：258contract/50architecture/lint/types/2473test（含全部73真实系统）/build通过。最终窄hunk及三D0独审0P0/P1/P2，候选未Git交付/未启3310。Settings13分栏只读盘点已完成，通知/快捷键内存空壳、个性化假保存、Integration缺owner读回、Computer/Deployment生命周期缺口明确，不是用户验收。Root依原task/progress记录完整Wave0–7，70组11/6/14/38/1不变。
+
+## R238 前一待交付切片（历史，由R239替代）
+
+BFF HEAD7289b3a4隔离候选：既有database/schema.sql增加Project nullable deleted_at和原owner_list active partial；六现postgres职责文件增加25 active资格谓词，bootstrap/server.ts非IAM cached requestId后统一header。两个现test的fresh catalog/HTTP/inner查询/行锁反例由Root真实RED→schema完整12/0→同八组35父子统计GREEN驱动，源码独审0；business纯格式修正后Root54939完整check与format均0（743pass/2资源skip），最新格式版本完整真实集成仍待验，未更新Root组合或原20mixed。
+
+Web HEAD1e8ce99c隔离候选：layout/product-session首文档准入、AppGate/AppFrame无私有数据booting、execution-adapter/hydrate-process单10秒总预算、use-draft pagehide exactflush；12既有source+4tests，三D0明确R177替代旧timer/Retry。真实RED及fixture错误分开记；五目标Root78077真实5pass，完整73原35695终态exit1（67pass/6fail/0skip）。六失败在R147/R150/R139的认证及恢复观察点，根因待核，不把旧oracle失配或真实缺陷混称。原19mixed/用户3310与70整组状态保持，尚未声称原页面恢复。详细scope/SHA/命令/资源终态见同task/progress/test-cases。
+
 ## R236 当前两路径交付入口
 
 Web本地main1e8ce99c精确交付src/lib/persisted-store.ts read拒绝捕获与既有system文件中的单缓存反例/闭集诊断，原20mixed字节保持/现19mixed。Root真实RED→两恢复/身份负控→完整68系统0fail→完整工程258contract/50architecture/lint/types/2460test/build全0、源码独审0；controlled IAM/BFF不冒正式owner或用户3310恢复，Rootgitlink未更新。BFF四R236三面设计前缀独审0仅active资格前置，仍20mixed，rename与公开删除/后继释放生命周期未交付。70产品组11/6/14/38/1不变；原Wave0–7范围继续。

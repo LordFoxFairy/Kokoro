@@ -9695,3 +9695,87 @@ R236最终Web工程Root22777终态0，121.788秒：258contract、50architecture�
 BFF四R236短前缀独审 /tmp/r236-bff-active-d0-review.md 为0P0/P1/P2，仅docs-only准入，源码/schema/contract/tests未授。完整Wave0–7目标继续，后继仍需用户运行组合恢复、CRUD/Settings与正式Agent/Billing链，非缩小到本两路径。
 
 R236收尾资源核验：六组owned PGID均无残留，receipt /tmp/r236-resource-terminal-receipt.json；用户3310 PID46036仍alive未重启。verify-main-only.py实际报告status FAIL（脚本exit0不能冒通过）：12仓local main及现cached remote refs main，Root/Web/BFF/Billing四工作树dirty导致4项失败；未fetch/远端当前不证明。原uv SHA保持、6gitlink未提交，70组重算11/6/14/38/1。
+
+## R238 项目资格真实 schema RED 与 Web 恢复切片准入（2026-10-05）
+
+前一目标回合 progress：当前70组及11子仓Git/用户服务cwd核对、原13553 build真实终态0/source_same改变后续动作；没有新完整页面通过。Root未push/更新6gitlink/重启3310，原uv与混合修改保留。
+
+Root实际Node22 schema测试exit1、1fail/0skip，0.310秒：fresh正规installer安装后限定kokoro_bff.bff_project的catalog查询deleted_at返回[]，与nullable timestamp(3) with time zone/no default期待不符。这是字段缺口schema RED，不是HTTP资格RED或项目删除闭环。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-schema-red-iv6x15oz/manifest.json`，log SHA fbbfa10abd002c345b61dc77a9950746548a84534f5f73bd5efee034d727a7fa；schema-test810a6587/schema387581f4/installerb72e6d2a冻结保持，全数据库清单前后一致、无新增残留。runner `/tmp/kokoro-r238-bff-schema-red-runner.py`，仅schema治理文件，另business测试作者继续收口未称已验。现只授schema两个hunk，尚未授6TS25谓词。
+
+Web已创建HEAD1e8ce99c clean archive `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-clean-ubk72ur9/repo`；Git-only加三D0五现行段，不含19mixed，原源码保护清单archive-receipt.json。依赖物理克隆/三个workspace链接各指向本artifact packages。第一次本地路径assert比较/var和resolve /private/var错误，进程12362实际exit1；复核真实路径完全同后通过，非业务失败，不重复制或改原依赖。receipt dependency-isolation-receipt.json。
+
+独审 `/tmp/r238-web-auth-d0-review.md` P0/P1=0、P2=1（R175 watchdog旧表述与R177替代关系未明确）；Root三D0加短R238当前优先级说明，R177删旧timer/Retry、R186单10秒snapshot预算仍独立。澄清receipt d0-clarification-receipt.json，原选定段保留。原owner仅4既有tests写入，HEAD68全部case/缓存及身份负控保留，不带Move/CRUD/Settings；production12路径未授。独审复核与BFF真实schema修补并行；尚未宣称实际Web测试/用户页通过。
+
+70产品组11通过/6失败/14待复测/38未验/1支付后置不变；当前用户持续加载、完整CRUD、费用链和Wave0–7仍OPEN。
+
+R238 schema GREEN与HTTP实际业务RED：Root限定catalog1pass/0skip，0.25s，完整字段/三索引/default-null断言到达；schema a40aaed0只两个hunk，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-schema-green-e7v73kml/manifest.json，DB清单保持。两tests独审及Web D0澄清联合报告/tmp/r238-schema-red-and-web-d0-review.md P0/P1/P2=0。
+
+business冻结3c632afd（原888行exactprefix+430、8顶层组），Root65689自有freshDB正式installer0→真实HTTP/PG RED终态1，8顶层失败、TAP35包含父组/子组，不冒35独立缺陷。墓碑仍list可见、Message202/Move200、内层PG与6行锁竞态accepted构成有效业务反例；部分跨owner/tenant负控停在request ID header=null，另交作者/独审核正式error contract与真实前置，不笼统归25predicate。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-http-red-42g6sykm/manifest.json：数据库已不存在、全源码/全DB清单/Redis键集合保持。6TS仍未授，所有资源原句柄终态。
+
+Web作者遇system shared proxy夹带R176/CRUD，Root裁决同既有system文件独立auth-only测试helper，不新增production/文件/协议；四tests冻结，system b06a804a纯追加712/0，原HEAD68所有字节/case保持、新5预计73。Root真实Next/Chromium/Redis与controlled IAM/BFF五例RED句柄22046已启动，runner /tmp/kokoro-r238-web-auth-red-runner.py；未先称失败/通过，按原句柄取终态，production12未授。原19mixed/3310保持。
+
+R238 full schema Root12pass/0fail/0skip，0.354秒，包含真实owner共存/失败回滚与新增fresh Project catalog；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-schema-full-ri3qzozw/manifest.json，源码与全DB清单保持。冻结两tests/schema独审/tmp/r238-bff-active-business-review.md P0/P1/P2=0；另现存HTTP post-admission response缺x-request-id记P1，禁止弱化负控断言。已准BFF原owner六现TS25active谓词，保原R217/锁/幂等及原20mixed；HTTP transport独立最小方案待交，不造每route补丁或第二envelope。
+
+Web Root22046五例RED自然终态1/22.607秒、5fail/68名称过滤；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-red-vxvnhhcc/manifest.json，source/Redis保持。四例为缺expectServerFirstAnonymousRedirect/requireStableAuthenticatedWorkspace定义的ReferenceError，明确INVALID fixture失败，不计认证业务RED；R186确实到held snapshot且12秒未出现error，为有效读取恢复反例。作者仅修system两个必要helper闭包，其他3tests/production/预算保持，后继重新实跑。系统/源码独审并行，原用户3310故障未据此关闭。
+
+R238 BFF六TS25predicate冻结后Root64438 build0、同HTTP/PG矩阵24pass/11fail（父子合计）：顶层3–8、inner12及6锁竞态通过，1–2仍失败在强制x-request-id缺失。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-http-active-green-zndfio3z/manifest.json，源码/Redis/全数据库集合保持；不冒全绿。现只准第7source bootstrap/server.ts cached requestId取得后统一一行header，保IAM专属分流、现envelope/已有设置不变；独审/完整回归由Root后继，不能放宽冻结deny断言。
+
+Webv2 Root48815终态1、43.939秒，5fail/68名称过滤；两个R167首HTML仍有runtime-loading而未server redirect、R175/R177撤权后无datafree safe-beacon、R186held snapshot12秒无error，helper缺失已清。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-red-v2-h5m8fy3j/manifest.json，source/Redis保持。tests独审P0/P1=0、P2=1仅R177 tag误写R178，Root待终态后准一处tag修正；同时准既有12production认证/恢复hunk从HEAD重建，禁带入Move/CRUD和19mixed。等待源码冻结再真实GREEN、73完整及工程，未宣称原3310恢复。
+
+R238 BFF最终第7header窄修后Root37944 build0、同8顶层组真实HTTP/PG35父子统计pass/0fail/0skip；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-http-final-green-uhk82639/manifest.json，源码/Redis/全DB清单保持。七source独审/tmp/r238-bff-active-source-review.md P0/P1/P2=0。Root98123原完整owner check0（743pass/2资源skip，lint/types/contract/build0），format:check1唯一business test新片格式不符，完整integration链式未执行，不能冒全仓通过；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-full-nf4i4000/manifest.json，自有库已回收/各集合保持。只授同测试纯格式修正，原888行/断言/预算/source/schema冻结，后继重跑完整门。
+
+Web首次GREEN Root78171为旧beforeAll readiness只认匿名200的setup失败，正确SSR307/login被拒、73未运行，INVALID非业务失败；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-green-atayhr2f/manifest.json。Root窄授fixture正规readiness，独审指出4e1d版本200分支绕编译error的P1，未运行该版；最终c61db46b要求(200或严格307/login)均零compile错误，source12保持。Root78077实际目标GREEN已启动，沿原句柄消费，不预报结果、不更用户3310。
+
+R238 Web目标GREEN Root78077自然终态0：5pass/68名称过滤（全73），32.659秒；SSR两例、R175撤权同步卸Runtime、R177 native无中转并forward正式回链、R186 snapshot有界错误/Retry/reload全部通过。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-green-v2-i7o7mt6w/manifest.json，source/Redis保持；仍controlled IAM/BFF，不冒当前用户3310恢复。最终system c61db46b及12源码独审/tmp/r238-web-auth-source-review.md P0/P1/P2=0。Root35695完整73系统启动，原句柄取终态，工程待后续。
+
+BFF business仅纯格式改3c632afd→9f37fcf0，原888行exactprefix/8组名称、AST/SQL literal保持，其他9变更路径冻结。Root54939最终完整engineering check+format在途，resource URL unset/资源skip不计通过；旧98123格式失败保持。待Web35695资源终态再BFF完整真实集成，避免全局资源inventory互相污染。候选尚未Git交付；原uv/6gitlink/mixed/用户组合保留。
+
+
+## R238 进度问答前终态核对（2026-10-05）
+
+本次只核对状态并纠正过期“在途”记录，没有新功能提交或验收。Root35695完整Web系统已终态exit1：73例中67pass/6fail/0skip，81.827秒；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-full-wv094_yg/manifest.json`，日志SHA585fc015097fc3891f445671630200156d8fd3576d6cdfcf72af60f41a1e4987，source_same/redis_keyset_same均true。六失败为R147冷启动/刷新、R150 focus认证更新与theme/locale读取拒绝两例、R139 pending及503探针恢复。观察点失配与产品缺陷尚需分别定位，不删除/skip用例、不延长预算、不提前称修复；原五目标GREEN仍仅限定切片，不能替代全套。
+
+Root54939 BFF最新完整check与format均exit0，check31.275秒、format1.723秒；check中743pass/2资源skip及236contract pass，source_same true；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-pure-final-zvbgljcd/manifest.json`。正式全资源integration在最新格式SHA仍未执行，不能将两skip计为真实集成通过。两句柄均终态，不再记在途。
+
+70业务验收组仍11通过/6失败/14待复测/38未验/1支付后置；这不是功能完成百分比。当前11物理子仓HEAD与dirty数量已现场核对：Web19、BFF20、Billing5，其余八子仓clean；Root仍六gitlink差异与受保护uv及五台账修改。3310用户旧组合PID46036/parent45606仍在运行，本次未重启/发布候选或得到其最新页面验证，产品持续加载问题仍开放。后续先定位Web六回归、BFF完整资源门及用户组合验收；其余CRUD、Settings和正式积分按原owner任务续接，不缩小Wave0–7。
+
+
+## R239 真实回归推进（2026-10-05）
+
+上一目标回合为no progress（状态问答/过期在途纠正）。本轮原Web owner与独立审查员均定位六失败为旧SSR/pre-probe观察点失配：R139的login1是无cookie首次307→login预置，不是503触发登录；R147/preference在datafree壳出现即过早读probe0，focus/pending仍找已替代spinner。报告/tmp/r239-web-regression-diagnosis.md与/tmp/r239-web-regression-review.md；不授production改动。
+
+Root99052最终BFF完整门自然终态0：installer/build/check/format/全部真实integration均0，默认743pass/2资源skip与236contract；真实PG/Redis217pass/0fail/0skip、65.592秒，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-full-4wxzajt6/manifest.json，integration日志SHA27b5d3cd272db459d43332aef41e52f06c41a333dbb52dbd4ee5e8580f4e82ad。schema12/0及同8业务组35GREEN原scope保持；自有库已不存在/source/Redis/secondary清单保持。四D0只在clean候选加当前已实施事实，清单/tmp/r239-bff-docs-handoff.json，独审及14路径精确commit待后继；原20mixed保留。
+
+Web tests-only五hunk版本8bb1af54，Root10270同六真实聚焦6pass/67名称过滤、23.893秒，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r239-web-auth-six-jsmu6ee2/manifest.json、source/Redis保持。独审发现交接称pending安全断言但实际缺disabled/draft/timeline/owner零IO，并缺两helper reload后零login，记P1，故不作为最终放行。Root待10270终态后只授两个既有R139安全oracle补齐，最终system005bec63；逐行交接/tmp/r239-web-regression-safety-handoff.md。Root82494两实际R139复测在途，原句柄取终态；生产12/73集合/全部预算冻结。
+
+原IAB tab1 inventory成功，但getTab/native tabs.get均在Emulation.setFocusEmulationEnabled超时，未取得DOM/网络；文档指导后未重选/新tab/刷新。native Codex app读取被工具安全界拒绝，未绕过；这些是浏览器工具故障，不推定当前3310加载根因。用户3310 PID/原资源未重启/重置，费用与产品70组状态不变。
+
+R239 Web第二安全oracle005bec Root82494真实1pass/1fail，18.561秒：timeout alert后仍expect booting shell visible，实际AppGate unavailable已正确卸载壳；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r239-web-auth-safety-z1ojg8b8/manifest.json。Root回读源码状态机后仅纠正after-alert壳/composer count0，保before-timeout disabled/empty与前后零timeline/ownerIO/login、两helper返回后零login。最终88717800独审0，旧静态005bec漏判保留。Root31212完整73真实系统终态exit0、95.495秒，source/Redis保持；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r239-web-auth-full-x45i8zs5/manifest.json，log SHAa18d0a8f5370f036e3671f0996868cc6b6326ae6ae65016003271074a3317c5a。完整工程46637在途，沿原句柄，不重起Next/共享资源。
+
+BFF Root精确14路径提交main cdad0ad6580dcbca18b75fdfbdbac4aa61f750d2（parent7289b3a4），10code/schema/test逐字节绑定最新217资源收据，四D0仅当前前缀且HEAD suffix保持、独审新SHA全0。原20protected bytes/mode保持，三个原clean路径只应用已验candidate，Git14objects等冻结；/tmp/r239-bff-commit-receipt.json。没有push/Root指针发布/3310重启/生产删除writer，完整CRUD、用户加载及费用仍OPEN。原owner并行做name PATCH只读准入；另一审查员Settings13tab业务盘点，不造新计划。
+
+
+## R239 本轮进度问答终态与页面缺口核对（2026-10-05）
+
+Root63257已自然终态exit0，136.164秒；最终system e82340fc。合同258、架构50、lint/typecheck、默认165文件2473pass/0fail与build通过；默认套件包含全部73真实Next/Chromium/Redis、controlled IAM/BFF系统用例，不能称默认门没有资源，也不能充当正式owner/用户3310或费用整链。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r239-web-auth-engineering-final-m0crhmf8/manifest.json`，log SHA ea18a3fb69294bb7927a250b4f4e032a5ab957a2c7ba7d3085c53342ea114c4e；source_same/redis_keyset_same=true，新增/删除key均[]。此前46637为2472pass/1fail/build未运行：R195只等已成立的pathname即读query，Root授权同10秒等待完整canonical URL，ACK/原key/body/两请求断言不变。最终候选19路径仍未提交或启用用户3310；12production未因这次测试修正改变。
+
+现场Root与11物理子仓均仅本地main；八子仓clean，Web19/BFF20/Billing5路径保留，Root六gitlink/五台账/uv共12差异，整体并非clean。原Web46036/parent45606仍alive并运行旧受管副本，本轮未重启/发布候选。70唯一业务组实际解析：11通过/6失败/14待复测/38未验/1支付后置；六失败为T-Q10/T-C03/T-C09/T-C10/T-A05/T-U04，不把2473工程数量当页面完成率。
+
+Settings13分栏静态审计 `/tmp/r239-settings-qa-inventory.md` 已完成但没有新增动态PASS。确认个性化无GET且PATCH吞非2xx/网络错、通知/快捷键仅组件内存、Integration无owner读回且可假connected、Chat模型候选错误被折叠为空且偏好未按subject隔离、Computer缺可见错误和权威回读、Deployment仅导航壳；Team有真实client/refetch，但双身份CRUD仍待验。Account除logout外未闭资料写；Credits三503与Subscription目录503是历史真实失败，非本轮重新请求。Skills/MCP/Storage/Scheduler/审批/真实积分各自正式owner用户链仍未验收。
+
+BFF后继rename只读D0已交付 `/tmp/r239-bff-rename-d0.md` SHA10ce323a9eb17544acd4a029c60e54de53377beb246f8d8698da74a8ea4c2dfe；尚未修改机器契约/实现rename。最终Web窄hunk与三D0由原agent_usage_r232_review只读复审（/tmp/r239-web-final-freeze-review.md），Root负责后继集成/Git与正式组合验收。完整Wave0–7 goal保持active，不将状态问答或源码库存计作新功能闭环。
+
+R239问答收尾：最终Web system e82340fc及三D0已由原独审完成，报告/tmp/r239-web-final-freeze-review.md为0P0/P1/P2；Root核实际hash与handoff相同，10秒/两请求/原key/body硬断言保留。候选仍未提交或启3310，资源句柄全部终态，用户完整旅程仍OPEN。
+
+
+## R240 Web正式切片提交（2026-10-05）
+
+Root本地main Web `5e0963648db0cb0e1a60de42ea025670b32aba85`（parent1e8ce99c）精确19路径+1329/-64；12source/4tests/3D0 Git objects逐字节等Root63257已验clean候选。合同258/架构50/lint/types/default2473（含73真实Next/Chromium/Redis controlled-peer系统）/build全0、独审0P0/P1/P2。原19protected bytes/modes全保持、index空，当前只4mixed，收据/tmp/r240-web-commit-receipt.json；未夹带其余mixed流程/未push或Root组合发布。uv f7e1c30d保留、BFF20/Billing5未动。
+
+R240原IAB tab1 inventory成功/getTab仍Emulation.setFocusEmulationEnabled 31.617秒超时；没有DOM/截图/刷新动作/新tab，工具故障不能充原应用根因。原PID46036/parent45606存活；单kill Web会使launcher整体cleanup，并更换新run/session/临时数据，未执行该动作。Root只读12正式source逐hash与livecopy：9相同、2源码缺Move协调、1INDEX不同，receipt/tmp/r240-live-web-source-comparison.json。先前“完全旧认证源码”表述据此纠正，不用源码样本相同冒浏览器恢复或全owner新组合。
+
+原owner三并行任务沿task R240：BFF rename机器contract/四D0（无实现）；Web dev源闭包只读审计（无覆盖/资源）；Agent/Billingattempt接线只读审计（无账务/provider调用）。Settings已知假保存/内存值/缺读回与13页真实行为仍后继，70组11/6/14/38/1不变。
+
+R240 Root治理实际复验：拓扑exit1，六项checkout HEAD与Root记录gitlink不一致；标准门exit1，仍153规则违反/0工具未验。只限定拓扑治理脚本测试7pass/0fail（0.04秒），不充全门。日志/tmp/r240-root-topology.log与/tmp/r240-root-standard.log，Root84099终态0是shell最后pytest状态，不能覆盖前两命令失败。
+
+Web dev源闭包独审只读结论：508文件472同/36异（next.config一项为预期root变换）；35项应用源码差异含3个缺失Move文件，live BFF generated public7.0 vs正式Web7.1。报告/tmp/r240-web-hot-source-audit.md与hashJSON 17a0027a0462ad29548f1f7ee537fb8320895debae7cfba15b1d35c5cf820f09。dev watcher本身支持保session源码同步，但不能只挑两auth文件破坏Move闭包，也不能把未重核BFF wire组合称正式；Root本轮未热覆盖或删数据，继续owner兼容组合与原页面取证。

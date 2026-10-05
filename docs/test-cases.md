@@ -1,5 +1,21 @@
 # Kokoro 系统级测试与业务验收台账
 
+
+## R240 已交付切片（不关闭完整用户组）
+
+Web认证/恢复已由Root精确19路径提交main `5e0963648db0cb0e1a60de42ea025670b32aba85`：正式Git对象与73真实系统/2473完整工程冻结字节一致、最终独审0；原19mixed内容保持，当前4mixed。BFF active资格cdad0ad6/217真实集成保持。用户3310原标签尚未取得DOM验收，70唯一业务组11通过/6失败/14待复测/38未验/1支付后置不变。进程副本含主要当前认证源码，不能仅凭旧启动时间归因；正式组合与dev源闭包需分别验证。实际收据和工具失败见progress R240。
+
+## R239 最新测试执行状态（2026-10-05；不改变整组计数）
+
+70唯一业务组现场重算：**11通过 / 6失败 / 14待复测 / 38未验 / 1支付后置**。六失败为T-Q10、T-C03、T-C09、T-C10、T-A05、T-U04；不是整体开发完成率。
+
+- Web候选system e82340fc：Root63257原完整工程通过，258合同/50架构/lint/types/2473默认测试/build0；默认包含73真实Next/Chromium/Redis系统例。独立全73结果亦通过，IAM/BFF为受控peer，候选未提交/启用用户3310，不关闭当前用户持续加载、CRUD/Settings/模型费用整链。原46637工程1失败及测试oracle窄修保留在progress。
+- BFF本地main cdad0ad6：217真实PG/Redis集成、完整工程和schema门通过；active资格前置已交付，不冒项目改名/删除全闭环。
+- Settings13栏盘点已完成但只读源码不是测试通过：通知/快捷键持久化、个性化ACK/GET、Integration正式读回、Computer/Deployment生命周期仍缺；Team/Skills/MCP双身份与实际owner旅程待执行。
+
+完整命令、SHA、失败历史与资源终态见同一progress/task/CURRENT，不另建测试计划。
+
+
 ## R236 Git-only缓存拒绝切片（不变70整组状态）
 
 |用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
@@ -1892,3 +1908,27 @@ Root46156已终态exit0：完整原pnpm check的258contract/50architecture/lint/
 T-Q01有限工程组复测通过，70组当前11通过/6失败/14待复测/38未验/1支付后置；之前10/7是本轮复测前时点。Root组合实际变为6个gitlink差异，未更新指针/uv或push/重启3310。Agent cb645370本地已交付并clean。Root治理归属小门7pass，仅该范围，旧全仓标准/组合checkpoint问题保留。所有本轮测试句柄均终态，无未登记验证任务。
 
 BFF改名设计只读报告/tmp/r234-bff-project-rename-d0-review.md已回读：选择字段PATCH /v1/projects/{projectId}/name，保instruction路径/ID/slug，name与现receipt同事务、旧key不覆盖新名、LWW不新增version/表；三D0及active前置交付必须先审，尚未写合同/源码或验证业务。正式登录/原页面持续加载、CRUD/设置、native与Billing用户费用链仍OPEN。
+
+## R238 项目资格 fresh catalog 反例（不改变70整组统计）
+
+|用例ID/标题|预置条件|步骤|预期结果|优先级|类型|实际结果与范围|
+|---|---|---|---|---|---|---|
+|TC-BFF-R238-ACTIVE-SCHEMA / Project删除资格数据前置|HEAD7289b3a4 clean artifact，正规canonical installer、owned真实PG临时库；冻结新增schema test810a|安装空owner schema→限定Project catalog读字段及全部索引→检查合法创建默认null→finally回收自有库|deleted_at nullable timestamptz(3)/无default；原owner_list exact partial IS NULL，既有PK/slug索引不变|P0|系统、数据、边界|Root真实1fail/0skip：字段查询[]，尚未执行后续索引/default断言。完整数据库集合保持；已准schema两hunk但未GREEN，不冒HTTP资格/项目删除/当前页面闭环。manifest见progress R238。|
+
+Web认证/恢复三D0已审并明确R177替代旧watchdog；仅tests-first准入，当前没有本片系统实跑通过。原T-U04/原用户加载保持失败；70组11/6/14/38/1不变。
+
+R238复测补记：TC-BFF-R238-ACTIVE-SCHEMA RootGREEN1/0及完整schema12/0/0skip已通过（限定前置）；HTTP/PG八顶层业务组仍失败，TAP35为含父/子统计，非35独立缺陷。墓碑可见/Message与Move非法接纳/inner与锁竞态有效RED，六部分负控先停header缺失，为另HTTP transport P1。Web五例中四ReferenceError不计业务RED，R186 held snapshot12秒无error为有效反例；helper修复待重跑。70整组11/6/14/38/1不变。
+
+
+## R238 完整回归终态补记（不改变70业务组状态）
+
+- Web原73例完整系统回归：67通过、6失败、0跳过。失败覆盖冷启动/刷新、focus认证更新、主题/语言偏好拒绝、挂起与503认证探针恢复；根因尚未分别确认，保持失败，不以五个目标用例通过代替完整门。真实Next/Chromium/Redis、IAM/BFF controlled peers，不是用户3310或正式模型费用链。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-web-auth-full-wv094_yg/manifest.json`。
+- BFF格式修正后完整工程check与format均通过，743通过/2资源跳过；最新格式版本完整真实集成尚待执行。已有schema12与8业务组35父子统计通过仍按原范围记录，不冒完整项目删除/CRUD验收。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r238-bff-pure-final-zvbgljcd/manifest.json`。
+- 70整组仍11通过/6失败/14待复测/38未验/1支付后置；当前用户加载、逐页CRUD、Settings与正式积分链仍OPEN。
+
+
+## R239 认证状态机与BFF资格切片复验（业务70组不变）
+
+- Web最新完整原73系统例全部通过/0fail/0skip，含旧六回归及最终强化的checking→unavailable卸载→显式Retry→authenticated状态、零私有IO/零误登录、主题/语言降级、冷启动刷新、有界snapshot。真实Next/Chromium/Redis、controlled IAM/BFF，非用户3310/正式费用整链；原67/6及安全oracle1/1失败按阶段保留，不删。最终manifest见progress R239；候选工程仍待终态，T-U04仍失败。
+- BFF最新完整217真实PG/Redis通过/0skip，schema12通过，工程0；精确14路径已本地提交main cdad0ad6，保护20mixed。只关闭active资格前置切片，不关闭项目改名/完整删除、T-C05或当前用户页面/费用组。
+- 70组保持11通过/6失败/14待复测/38未验/1支付后置，组件测试数量不换算功能完整度。
