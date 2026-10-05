@@ -1,3 +1,11 @@
+## R248 当前页面事实与最小修复（2026-10-05）
+
+以当前用户操作验收，不扩业务层/配置中心/角色/新计划。Root独立Chrome与候选 `4c974d53abfe42335eb9eb445097e53a83c2e60d`、当前固定五owner，正常IAM登录；本人Skills安装读取合法空态，旧503在此新组合已消失，未冒安装写入通过。技能发布真实Begin201后失败，浏览器security日志确认exact本地ObjectStore39190被文档CSP拦截；尚未到Validate。包内随机Draft ID另有确定源码矛盾，最简上传包设计已问用户，未擅改格式。
+
+Library首次58B上传→扫描→列表→硬刷新→点击下载实际落盘，Root已核源/落盘大小与SHA `b8653670d43bd37c986c61ecd8c572510182c906aa97d1b6cea509382156487a` 一致。下载事件观察超时不等于未交付；随后新文件名第二次上传实际401，UI终态禁提交，来源未定，不能称Library整页完成。证据 `/tmp/r248-browser-real-receipt.json`。
+
+当前并行仅两窄片：Web精确development/loopback上传CSP，Root现组合仅透传验证后的非秘密public origin；生产默认/授权/扫描保持。两片已冻结且独审无新增阻塞，Root现辅助47/35及Web142、lint/typecheck/build通过；仍待真实页面复验，未最终验收；不把后台guard算产品PASS。49143已exit0、3311无监听、私有凭据移除、自有Redis13回到0；临时Chrome页已关闭，原3310两PID/用户会话保留。全Wave与70组统计不变。
+
 ## R247 本轮收口：页面实测与尚未交付（2026-10-05）
 
 正式 Web 本地 main 已交付 `bac66954e44aee08db95d05deb079b3b482d6d20`：精确两 Hub client + 两现测试；四 mixed、Root gitlinks、uv锁保留。真实根因是 Web Proxy 已生成 `private, no-store, max-age=0`，浏览器客户端却 exact 比较 `no-store`。仅改浏览器指令识别；owner严格响应契约、request ID/JSON/schema/授权不放宽。独审82544471；Root75297邻门216通过、80120 lint/typecheck/build成功，仅辅助安全网。

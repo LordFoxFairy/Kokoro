@@ -1,3 +1,7 @@
+## R248 定位增量（2026-10-05）
+
+真实Skills签名PUT被Web现 `src/lib/server/security-headers.ts` 的connect-src拦截；现Proxy消费可信非秘密origin，Root现 `scripts/dev/serve_local_login.py` 负责只从validated owned Storage public endpoint投影开发上传origin，两仓窄修、无新模块。Next dev规范内部URL为localhost，匹配须核可信配置的scheme/Host及可选Origin，不用内部nextUrl.origin机械等于127。包manifest身份矛盾仍在Platform现package模块，独立裁决未实施。Library刷新后二次上传401归因未定，入口现hub route/admittedProductSession与library-upload-state；不因GET session200猜已认证。最新页面事实以CURRENT/test-cases为准。
+
 ## R247 当前入口与资源收口（2026-10-05）
 
 Hub浏览器边界正式Web bac66954：src/hub/client.ts与skill-publish-client.ts共用指令判定，owner精确契约未变。Root serve_local_login + local_platform_runtime + local_storage_runtime组成新QA五owner，显式Product installation activation候选和现ProductSession origin-aware scanner；不是新部署层/计划中心。94387已退出、3311无监听，本origin Redis残留精确回收0，原3310保持。下一独立身份隔离与真正浏览器旅程，见CURRENT/task/test-cases。

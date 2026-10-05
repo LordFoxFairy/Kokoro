@@ -1,3 +1,28 @@
+## R248 页面闭环优先：不新增业务抽象（2026-10-05）
+
+用户要求：不做过度设计，完成真实页面功能。沿既有Wave/70组推进；不增加配置中心、兼容层、重复PRD/计划或通用业务框架。
+
+|任务|owner/唯一writer/范围|基线/依赖|完成条件|
+|---|---|---|---|
+|R248-QA-ORIGIN|Root dev现serve_local_login.py +现test_serve_local_login.py；capability_composition_owner_r247写，Root审/提交|Root main0249129a/Root其他未提交仅六gitlinks+uv，保留；Python09/SQL03/CODEBASE_MAP与既有helper。新验收组合不同port仍同cookie宿主的风险已证源码|仅显式loopback web host选择（默认127.0.0.1保持，隔离QA localhost），origin/host/callback/内部Host一致；不改Web认证cookie和权限，不造任意domain/配置框架；先现guard失败再窄修。Root真实正常登录/Skills本人安装/Library验证，不以guard宣称页面通过|
+|R248-SKILLS-JOURNEY|Web现Skills读取/个人发布/安装；qa_r243_web_frozen_review只读，Root browser唯一操作|Web mainbac66954/四mixed保护，Platform da813ed4、BFF886a25a1；现PRD、D0、contract|只列现页面真实创建上传校验发布安装启停移除的最短点击路径、合规QA包内容和实际owner前置；不新造schema/mock/API，不写仓/资源/Git。结合独立身份QA组合后Root逐操作验收|
+|Root集成与当前页面|Root唯一Git/资源/浏览器owner，不抢以上写集|旧3310/本人会话/PG/Redis保留，复用现基础设施；自有94387已退出清理|来源固定当前提交，角色不重复开服务；真实操作、刷新、异常恢复与截图记录同test-cases/progress。暂不动支付、模型计价设计或部署|
+
+### R248 最小后继裁决（当前源码事实，不冒页面通过）
+
+- R248-QA-ORIGIN：只读调查结束；IAM 当前测试 fixture 明确拒绝 HTTP localhost，Root 两文件补丁没有实施。此项是验收身份隔离，不是产品功能；不继续扩改 IAM 登录契约，已使用独立 Chrome 与原 IAB 分离。报告 `/tmp/r248-qa-origin-preflight.md`。
+- R248-SKILLS-JOURNEY：只读报告 `/tmp/r248-skills-user-journey.md` 确认源码 P1：预选原 ZIP→CreateDraft 生成随机 ID→Validate 要求包内 ID 匹配，普通用户没有可完成的路径。真实页面 RED 尚待取得；不得后台造包冒充页面通过。
+- R248-SKILLS-MINIMAL：Web/Platform 跨边界只读设计审查，capability_composition_owner_r247，沿原 Agent 会话模型（本轮未覆盖选模）；范围现个人发布表单/flow、owner manifest/profile及三份 D0。比较简单用户上传方案与现两阶段方案，保留授权/上传绑定/扫描/摘要/幂等，不新造配置或协议；仅交 `/tmp/r248-skills-minimal-decision.md`，不写仓/contract/资源/Git。Root 决定最小修复边界后才派唯一 writer。
+- R248-PAGES-ACCEPTANCE：qa_r243_web_frozen_review 只读现 PRD/test-cases/页面入口，沿已有用例列出页面真实完成动作及尚未验的点，不新建计划中心，不以技术门填绿；交 `/tmp/r248-pages-acceptance.md`。Root 负责实际页面验证与台账。
+
+### R248-CSP-LOCAL-UPLOAD / 已取实际失败的窄修切片
+
+- 真实基线：Root候选 `4c974d53abfe42335eb9eb445097e53a83c2e60d`、五owner固定当前提交、session49143；独立Chrome验收正常IAM→Skills已发布/本人安装合法空态。用户原3310/原IAB/profile保持。普通ZIP发布在Begin201后失败；浏览器security日志实际证实39190签名PUT被文档 `connect-src 'self' https: wss:` 拦截，未到Validate，不能把此失败归因manifest。
+- Web唯一writer：web_r247_skill_header_owner，main bac66954，允许现 `src/lib/server/security-headers.ts`、`src/proxy.ts`、现 `tests/server/security-headers.test.ts` / `proxy-sign-in.test.ts`；四mixed/D0/contract/lock/其他UI全部排除。仅在明确development且trusted配置Web origin是loopback HTTP、当前请求scheme/Host与配置匹配且可选Origin精确一致时，将显式 `KOKORO_WEB_LOCAL_UPLOAD_ORIGIN` 的一个规范loopback HTTP origin加入connect-src。无值/非法值/非loopback页面/生产策略字节不变；拒userinfo/path/query/fragment/任意域、http:通配及生产降级。不读Storage凭据，不改签名PUT字节/认证/权限/包规则，使用现helper入口，不造目录/框架。
+- Root组合唯一writer：capability_composition_owner_r247，main0249129a，允许现 `scripts/dev/serve_local_login.py`、现 `scripts/tests/test_serve_local_login.py`。仅显式owned Storage opt-in时，把已验证owner public endpoint的origin安全透传上述Web字段；不开任意域、不从用户header信任endpoint、不把access key/secret传Web、不重启3310/PG/Redis。不改localhost/IAM协议。先现guard RED→GREEN，冻结后Root实际重跑。
+- QA：qa_r243_web_frozen_review只读两冻结切片，Root最终浏览器验收。源码辅助通过不关闭Skills；Root须实际PUT→Complete→扫描→Validate/Publish与安装读回/刷新。新包规则建议是独立产品裁决，已异步问用户，不在此片偷偷改变。
+- Owner/位置：现Web security helper独占浏览器策略，Proxy读取部署提供的可信非秘密origin；Root现composition负责本次验收环境注入。比较全局http:放行（淘汰）与exact开发origin（采用）；无新owner/API/DB/schema/生成物。删除项无双轨/兼容新增。
+
 ## R247 后继执行门（2026-10-05）
 
 capability_composition_owner_r247已停写，最终4path冻结/tmp/r247-composition-final-freeze.json；Root86963 46/32通过。安装activation和ProductSession cleanup source已修，下一真实生命周期尚未跑。新组合必须先独立hostname/profile，不再拿port当cookie隔离；原3310数据/权限/进程保持。Root先新组合正规登录→安装读回/刷新与文件下载落盘，再Scheduler CRUD/control；真实occurrence仍依赖Agent正式组合。不同owner调查/审查继续并行，同仓单writer。
@@ -9701,3 +9726,5 @@ R240原IAB tab1 inventory成功/getTab仍Emulation.setFocusEmulationEnabled 31.6
 原owner三并行任务沿task R240：BFF rename机器contract/四D0（无实现）；Web dev源闭包只读审计（无覆盖/资源）；Agent/Billingattempt接线只读审计（无账务/provider调用）。Settings已知假保存/内存值/缺读回与13页真实行为仍后继，70组11/6/14/38/1不变。
 
 R240 Root治理最新实际仍失败：standard153违反，topology6个gitlink/HEAD不一致；只限定topology脚本7/0通过，不冒全门。Web dev源闭包静态508文件472同/36异，live generated public7.0 vs正式Web7.1，原源码9/12样本相同不能当全组合一致；未执行热覆盖/清用户数据/重启。
+
+R248本次真实验收receipt：`/tmp/r248-browser-real-receipt.json`；49143已停止回收、原3310保持。两片冻结/独审435fb559通过；Root9284实际47/35通过、Web142及lint/typecheck/build通过，仅辅助。Root负责精确提交与新文档真实PUT复验。

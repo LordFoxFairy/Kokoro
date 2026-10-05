@@ -53,6 +53,28 @@ class LocalLoginGuards(unittest.TestCase):
         self.assertEqual(
             launcher.web_origin("ignored", 43110), "http://127.0.0.1:43110"
         )
+
+    def test_storage_profile_projects_only_public_origin_to_web(self):
+        self.assertEqual(
+            launcher.web_local_upload_origin(
+                {
+                    "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": (
+                        "http://127.0.0.1:39190/object-prefix"
+                    ),
+                    "KOKORO_OBJECT_STORE_ACCESS_KEY_ID": "must-not-project",
+                }
+            ),
+            "http://127.0.0.1:39190",
+        )
+        for value in (
+            "https://user:secret@127.0.0.1:39190/path",
+            "http://object.example.test:39190/path",
+            "http://127.0.0.1:39190/path?secret=value",
+        ):
+            with self.subTest(value=value), self.assertRaises(launcher.LaunchError):
+                launcher.web_local_upload_origin(
+                    {"KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": value}
+                )
         source = "const app = next({ port: 443 })"
         self.assertEqual(
             launcher.local_next_server(source, 43110),

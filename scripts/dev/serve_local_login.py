@@ -63,6 +63,28 @@ def web_origin(_run_id: str, port: int = WEB_PORT) -> str:
     return f"http://127.0.0.1:{port}"
 
 
+def web_local_upload_origin(storage_environment: dict[str, str]) -> str:
+    """Project only the validated public object-store origin into Web."""
+    parsed = urlsplit(
+        storage_environment.get("KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT", "")
+    )
+    try:
+        port = parsed.port
+    except ValueError:
+        port = None
+    if (
+        parsed.scheme != "http"
+        or parsed.hostname not in storage_runtime.sandbox.LOCAL_HOSTS
+        or port is None
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise LaunchError("Storage public upload origin invalid")
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
 class LaunchError(RuntimeError):
     """A sanitized launcher failure, without credential-bearing data."""
 
@@ -664,6 +686,10 @@ def main(argv: list[str] | None = None) -> int:
                         "NEXTAUTH_URL": origin + "/api/auth",
                     }
                 )
+                if storage_env is not None:
+                    web_env["KOKORO_WEB_LOCAL_UPLOAD_ORIGIN"] = (
+                        web_local_upload_origin(args.storage_environment)
+                    )
                 credentials.add(web_env["KOKORO_WEB_AUTH_SECRET"])
                 next_process = subprocess.Popen(
                     [

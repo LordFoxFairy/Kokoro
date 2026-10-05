@@ -1,3 +1,18 @@
+## R248 最新真实用户复测（2026-10-05，覆盖下方历史状态）
+
+共用前置：独立Chrome（与原IAB不同身份）+真实IAM/BFF/Platform/Storage/Web，候选 `4c974d53abfe42335eb9eb445097e53a83c2e60d`。不含Agent/System/Scheduler/Billing，不冒这些能力已验。
+
+|既有用例/子例|实际用户动作与预期|当前结果|优先级/类型|
+|---|---|---|---|
+|TC-AUTH-R247-001|正常/login→邮箱密码提交→callback→app|PASS此组合登录子路径，原用户环境不据此全绿|P0/主链路|
+|TC-SKILL-R247-003|侧栏Skills→本人安装；合法结果须无503|PASS合法空列表读取子例；未安装/启停/移除，不关闭整组|P1/功能|
+|T-K02 发布|选择普通ZIP→填写名称→发布→同次重试；应真实上传扫描校验发布|FAIL：Begin201后实际CSP阻止PUT，截图/tmp/r248-skills-publish-red.jpg；未到Validate，随机manifest身份为独立源码P1|P1/主链路/异常|
+|TC-FILE-R247-002/003|个人文件58B上传→scan→列表→硬刷新→卡片下载；与原文件字节相等|PASS本次正常文件交付子链：实际Downloads落盘58B、SHA b8653670d43bd37c986c61ecd8c572510182c906aa97d1b6cea509382156487a与源一致。Cua事件超时单列观察缺口，不认下载未交付|P1/主链路|
+|T-F01 刷新后二次上传|刷新后再次选择新文件名→提交；应保持合法认证或可明确恢复|FAIL：POST library/files实际401、通用错误/终态禁提交；GET session200不证明authenticated，401来源未取稳定码，不猜过期/本地或upstream归因|P0/恢复/状态机|
+|TC-QA-R247-002|停止49143→核监听/凭据/ownedRedis及原进程|PASS本次回收子例：exit0、3311无监听、凭据移除、DB13=0；原两进程存活、QA Chrome已关闭|P1/生命周期|
+
+实际证据 `/tmp/r248-browser-real-receipt.json`。仅子例状态变化，70业务组统计不变；CSP源码修复尚待Root当前commit+真实浏览器复验，不以guard成功关闭发布。
+
 ## R247 真实页面复验终态（2026-10-05）
 
 |用例|真实步骤与验收|实际终态/未验边界|
