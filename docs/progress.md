@@ -1,3 +1,9 @@
+## R250 实际交付（2026-10-05）
+
+同task并行源片已精确交付：Web0786df4五path修远程未打开行删除和迟到创建抢导航，Root2实际辅助失败→164/230、lint/typecheck/build0、独审4fe62614；Platform494b118二字段V2/server绑定/V7 proof，Root七反例最终拒、Node24完整纯门0/1266passed+278资源skip及另30真实PG、独审cdf2306a/fa65d9b6，87历史不改。初机器三发现报告/RED保留，未放松门。均是本地main局部交付，不是远程发布或产品绿灯。
+
+BFF/Web正式Skills消费者仍未切，c61c28a6已明确继承链与实际Web手写schema；原owner已完成只读D0草案（/tmp/r250-skills-bff-d0-proposal.md，SHA256 1acb3c66），Root已核干净隔离BFF候选可接后继；无20mixed/Git/资源写，未实施消费者。页面最终GREEN仍被Chrome扩展UI阻挡；原3310副本五源与正式基线不同未强覆盖，原两PID/用户数据/四mixed/uv保持。项目DELETE与创建网络预算待后继，T-F01与T-K02原真实失败仍OPEN。完整Wave/70组11/6/14/38/1及原goal blocked不变。
+
 ## R249 交付与真实复验阻塞（2026-10-05）
 
 - Web local main `710b3f2f6ebb0a0ff626b0f478d2594dfe8f3238` 精确两auth源/两tests已提交；`c1810d82464bf540f80b0417bfe9d686caa10a2b` 仅现Project rail auth fixture。既有CSRF POST续期已消费，cold同10秒预算/同主体准入、周期及可见返回、unknown不重放、CAS只读确认保持；server/layout/Library/四mixed不改。独审5f73c647，Root135+15辅助、lint/typecheck/build0，只作安全网。

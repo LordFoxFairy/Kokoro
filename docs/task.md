@@ -1,3 +1,43 @@
+## R250 收口与后继（2026-10-05）
+
+Root独占Git精确交付Web local main0786df458dd1cb3ae050b721b7f7f705f9f66faa（五path，独审4fe62614，Root56032 164/230+lint/typecheck/build0）及Platform local main494b118ae7c29f1fc1005122d72c6c2bbf2640b6（25path，独审cdf2306a/fa65d9b6，Root93133七probe/Node24全纯门0、1266pass/278资源skip、另67772真实PG30）。初RED与机器1P1/2P2均保留，不冒skip或真实Storage/browser通过；四Web mixed/四auth、87历史/Rootuv和其他gitlinks保持，未push。
+
+本轮两writer已停止相应源码写；capability_composition_owner_r247已完成下卡只读BFF D0草案（1acb3c66），BFF20mixed不得夹带，Producer→BFF→Web正式消费依赖不并行发明。当前Chrome扩展UI未解除、原3310副本五源不同未强覆盖，T-F01/T-K02与所有整体组保持。项目DELETE公开契约、create fetch/body总timeout明确后继；真实页面未闭环。完整Wave/70组11/6/14/38/1、原goal blocked不变。
+
+### R250-SKILLS-BFF-D0-PROPOSAL：已提交producer后的正式消费者准备
+
+Producer Platform local main494b118ae7c29f1fc1005122d72c6c2bbf2640b6，V7 7.0.0 aggregate3384a88f...，RootNode24全纯门0/1266pass+278资源skip/30真实PG及两独审仅owner局部交付，未冒用户发布安装。后继BFF main886a25a1现20mixed全部保护；Web消费者还未切。
+
+capability_composition_owner_r247 仅只读BFF AGENTS/README/CURRENT/三D0/contract与c61c28a6消费者报告和已提交producer，准备现三D0+contract README准确前缀草案与精确修改放置表，交 /tmp/r250-skills-bff-d0-proposal.md。只读交付已完成：/tmp/r250-skills-bff-d0-proposal.md，SHA256 1acb3c66bb955feda7333fe009500777f83e947e156ec34591fbd9fbfa7ac772。Root已核现有自有隔离BFF候选为886a25a1/干净，后继三D0与实现仍待精确writer授权及审查，不把草案冒正式D0通过。零仓/Git/资源/browser写，不能先改消费者/contract或拼unknown commit。拟/v1保路径、public语义8.0.0，明确未上线clean-slate同步替换例外；V7→V6→V5 immutable证明链与39/20/24、descriptor/operation当前事实不猜，D0相互一致且公开生成方向唯一，无数据库变化。比较现generator最小扩展与另造框架（淘汰），只允许后继当前具名Skills值域消费，不迁拓扑/权限/项目DELETE。列20mixed是否冲突及隔离/部分前缀提交需求，由Root裁接线/保护/实施，worker不能私下夹带。与Web冻审/Root纯门独立并行；Root继续最终页面标准。
+
+### R250-PROJECT-INTERACTION：现绑定交互两窄缺口
+
+只读报告 /tmp/r250-project-journey-read.md 已核两处确定控制流：现engine删除以本地visited membership为前提拦截BFF合法远程行；现project creation ACK没有当前route/subject/lifecycle导航fence。不是同轮原页面RED，不关闭T-C03/T-C05/T-U04。Root回读现源码确认，不新建绑定实体/配置中心/权限/接口；项目整容器DELETE仍先BFF公开owner契约，不在Web编造。
+
+沿现最小职责，唯一Web writer web_r247_skill_header_owner，main c1810d8，四mixed/现auth/CSP/server/pins/lock排除。先只改 tests/engine/engine.test.ts、tests/ui/app-frame-rail.test.tsx，用现用户操作边界证明“未先打开远程行→确认删除”“创建ACK迟到→已切Q/B草稿不被抢回”的有效行为RED，不以setup/fixture失败算RED；Root确认后才放行现 src/engine/machine.ts、src/components/blocks/app-frame/use-app-frame-project.ts 最小源码。保disposed/store readiness/单意图/严格ACK/账号隔离/unknown同key恢复；删除不先open/hydrate目标，迟到成功能刷新owner集合但不清当前草稿/抢导航。不扩app-frame caller或新文件，确有缺失必要信息先报告。子Agent仅纯门与冻结SHA，不操作Git/服务/共享PG/Redis/browser；Root实际页面最后验，Chrome阻挡未解除不绕过，工程行为RED/GREEN不冒页面验收。独立于Platform同仓机器补门，无文件冲突。
+
+Root84485独立复跑两现文件实际2failed/155passed/exit1（/tmp/r250-root-project-red.log），两失败原因与作者一致，非setup。已放行上述两source；回读现 app-frame.tsx:314–320确认刷新集合与导航在handleProjectOpen耦合，为保合法ACK权威GET又不抢新scope，必要第三source仅该现caller creation回调/options接线准入，其他Move/路由/模块不动。作者须先回报局部接线及账号/route epoch/卸载/unknown原key/导航retry边界，然后冻结供独审与Root实跑。依旧不冒真实页面RED/GREEN。
+
+### R250-SKILLS-V7-GATE：第一冻机器反例后的窄补
+
+Root Node24.20.0 对第一冻25path使用自有临时V7拷贝，按同owner规则重算provenance后实测：原始正控通过，但 counts.rpc=40、manifest schema status=active、Publish event identity=zip-v1、compressed limit扩大到64MiB并同改schema四负控均错误通过（/tmp/r250-v7-semantic-red.json，exit1）；没有修改仓/历史/资源，不将此视页面FAIL。
+
+续派原 Platform writer capability_composition_owner_r247，仅现 scripts/platform-execution-operations/v7-artifact.ts、v7-profile.ts、test/contract/skill-package-zip-profile.test.ts 及必要现V7 schema/publish payload补exact manifest/schema、runtime一致profile/Pub绑定语义、负向mutation。未变的5 runtime源/其它现tests/D0/历史v1–v6冻结保持，禁止新框架/依赖/目录/进程、Git与共享资源。现V7 schema如语义本已正确无需改bytes/provenance；如实需修改须新freeze标明确SHA及aggregate。可比较冻结V4 publish事实，除profileVersion和zip-v2身份外不得改审批/状态/费用等业务；确保 event schema1保持。先把真实4反例落实为现契约测试，再最小修门；独审后Root重跑同probe和Node24/真实PG。本段只补批准任务卡既有门，不扩大业务。
+
+第一补冻Root50401 Node24四反例转拒绝、format/lint/verify/build0；实际1258passed/278既有资源skip不冒整体通过。25hash保持、87历史全同；另Root对原任务vector负控实际 /tmp/r250-v7-vector-red.json发现corpus.vectors=[]+重算provenance错误accept，故暂不放行。准同三path最后窄补固定现9具名raw inventory/profileVersion2/direct zipSha256，空/删除或重复/digest漂移及不重算provenance漂移负控；V7正确payload/aggregate和其他源不改，不扩框架，独审继续待最终冻。
+
+同独审指出schema.type/额外约束及profile漏锁filename，Root用自有copy取得 /tmp/r250-v7-qa-extra-red.json 两真实错误accept：manifest schema type=array、profile+schema filenameMax=512。此不是当前runtime/正确payload漏洞，属于原批准完整机器门不足。最后同三path改为完整历史V4 ZIP profile投影，仅五个已批准V2 manifest变更（profileVersion、manifestKeys、manifestSchemaVersion、manifestIdentity、manifestJson）；closed const-schema锁type/object、具名$id、根与properties/const exact键，拒额外约束。不新通用框架、不改正确payload/provenance/当前业务，统一一次最终freeze审查及Root七反例复跑后决定交付。
+
+## R250 本轮并行续接（2026-10-05）
+
+沿 R249 同任务续推，不新建计划中心，不重启原 3310，不把工程门作为页面验收。Root 基线 41e51195，Web c1810d8（四 mixed 保留），BFF 886a25a1（20 protected 保留），Platform f290256 正由原唯一 writer 执行 R249-SKILLS-V2。Chrome 扩展 UI 阻挡仍待用户解除，当前无 3311 测试服务；原 45606/46036 存活。
+
+|任务|执行/范围|依赖与交付/验收|
+|---|---|---|
+|R250-SKILLS-CONSUMER-READ|qa_r243_web_frozen_review 只读 BFF/Web 已有 Skills package 值域与正式生成入口；仅读既有文档/源/contract，零仓写/Git/资源|Platform V7 尚未交付，不先改消费者；列出必要串行修改路径、现 pin、生成与页面断言，报告 /tmp/r250-skills-consumer-read.md，Root 审查后才另放 writer|
+|R250-PROJECT-JOURNEY-READ|web_r247_skill_header_owner 只读当前 PRD/测试台账与项目/普通聊天现 UI 路由、CRUD 状态；零仓写/Git/资源|沿 T-C05/T-U04，核全局聊天与项目绑定规则、切换/移动/删除/刷新及竞态用例；报告 /tmp/r250-project-journey-read.md，区分代码发现与实际页面失败，不凭静态检查填绿|
+|R250-ROOT|Root 独占同台账/Git/资源、Platform 冻结后真实 owner 集成|保完整 Wave0–7/70组，先审 owner 交付与真实 RED；等 UI 解除后真实登录/300s续期/上传。只读调查不抢 Platform 写入，不启动重复测试进程|
+
 ## R249 交付与真实复验阻塞（2026-10-05）
 
 - Web local main `710b3f2f6ebb0a0ff626b0f478d2594dfe8f3238` 精确两auth源/两tests已提交；`c1810d82464bf540f80b0417bfe9d686caa10a2b` 仅现Project rail auth fixture。既有CSRF POST续期已消费，cold同10秒预算/同主体准入、周期及可见返回、unknown不重放、CAS只读确认保持；server/layout/Library/四mixed不改。独审5f73c647，Root135+15辅助、lint/typecheck/build0，只作安全网。

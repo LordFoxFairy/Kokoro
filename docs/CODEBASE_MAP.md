@@ -1,3 +1,9 @@
+## R250 最小交互与消费者当前入口（2026-10-05）
+
+Web local main0786df4：现src/engine/machine.ts删除不以visited membership充owner授权，strict ACK/intent/scope保持；现use-app-frame-project.ts复用现command scope/subject/intent保护迟到完成，现app-frame.tsx分离创建collection refresh与导航。精确五path，四mixed/auth保持，Root辅助164/230+lint/typecheck/build和独审，仅局部交付；原3310副本尚未同步，项目DELETE/创建timeout及真实旅程未闭环。
+
+Platform local main494b118：五runtime唯一V2二字段/server事实绑定；现V7完整proof gate、23负正定义/正确payloadaggregate3384与87历史保持。RootNode24完整1266/278skip及真实PG30仅owner工程证据。BFF现generator仍V5平铺消费，下一沿现入口固定V7→V6→V5证明链，Web现src/hub/schemas.ts是V1值域手写消费者；当前BFF/Web pins未切，原owner已完成只读D0草案1acb3c66，隔离BFF候选886a25a1干净；未实施消费者，不另建contract/计划中心。
+
 ## R249 当前已交付入口与未验边界（2026-10-05）
 
 Web main710b3f2/c1810d8：现src/ui/auth/product-auth-client.ts消费既有CSRF→POSTsession，现use-session-state.ts拥有共享10s/周期/可见返回/同主体与生命周期fence。没有新模块/协议/GET副作用、Library自动重放或server admission放宽。四mixed保持；Root135/15及build等仅辅助，完整check130/后继全门未完成。真实Chrome当前扩展UI阻挡登录动作；47785已回收，无页面GREEN。

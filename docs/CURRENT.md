@@ -1,3 +1,12 @@
+## R250 当前并行交付与验收边界（2026-10-05）
+
+- Web local main0786df458dd1cb3ae050b721b7f7f705f9f66faa精确3source/2tests已交付：未访问owner会话行可提交严格DELETE；项目创建ACK独立权威集合刷新与导航fence，旧route/subject/dispose/catch/finally不抢新选择或清新intent。Root84485先2failed/155passed，再56032当前164/230辅助、lint/typecheck/build0；独审4fe62614无新确定问题。四mixed/四auth保持，不造新绑定实体。项目DELETE公开契约与创建POST无总网络预算仍OPEN，不冒全项目或原3310已修。
+- Platform local main494b118ae7c29f1fc1005122d72c6c2bbf2640b6精确25path已交付：二字段V2、server identity/revision/scan/receipt/CAS保持，V7 aggregate3384a88f.../inactive不变。初冻机器1P1/2P2已在同三path补闭，原RED和最终独审fa65d9b6保留。Root93133实际Node24七反例均拒/正控通过，format/lint/verify/build0（1266passed/278既有资源skip），25hash/87历史保持；Root67772另真实PG30/30/78原库清单保持，Storage仍替身。这只是owner局部交付，不冒用户发布安装。
+- 消费者只读c61c28a6明确不仅repin：BFF现V5 verifier须消费固定V7→V6→V5证明链、runtime/public pattern；Web现hub schema锁V1也必改。Root按未上线clean-slate授权裁本次保持/v1路径、public下一major8.0.0，后继BFF三D0/README须明确同步替换例外，不冒用户新回答或已发布。原Platform owner已完成只读R250-SKILLS-BFF-D0-PROPOSAL，报告/tmp/r250-skills-bff-d0-proposal.md（SHA256 1acb3c66bb955feda7333fe009500777f83e947e156ec34591fbd9fbfa7ac772）；Root已回读放置与发布前例外，BFF20mixed保护，尚未消费者实施。现有隔离BFF候选在886a25a1且工作树干净，可沿同任务接三D0后实施；producer→BFF→Web串行。
+- Chrome扩展UI阻挡没有新回复，正常登录/自然300s/Library原File保留GREEN仍未执行。未启动新3311组合、重启原3310或绕过browser控制。原45606/46036保持；实际只读发现原3310预览副本3交互源和2auth源与正式基线均不同，未强覆盖未知修改或声称当前页面已采用修复。
+
+完整Wave0–7及70组11通过/6失败/14待复测/38未验/1支付后置不变；源码/组件/真实PG都不替代整用户路径。Root正式gitlinks及uv锁/其他mixed未暂存，两个子仓本地main提交未push。下一接BFF D0/消费者，并在恢复受管浏览器与对齐预览后逐页验收。
+
 ## R249 交付与真实复验阻塞（2026-10-05）
 
 - Web local main `710b3f2f6ebb0a0ff626b0f478d2594dfe8f3238` 精确两auth源/两tests已提交；`c1810d82464bf540f80b0417bfe9d686caa10a2b` 仅现Project rail auth fixture。既有CSRF POST续期已消费，cold同10秒预算/同主体准入、周期及可见返回、unknown不重放、CAS只读确认保持；server/layout/Library/四mixed不改。独审5f73c647，Root135+15辅助、lint/typecheck/build0，只作安全网。

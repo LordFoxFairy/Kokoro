@@ -1,3 +1,14 @@
+## R250 已有用例的局部交付与产品待验（2026-10-05）
+
+|既有用例|预置/用户路径及验收|本轮实际证据与状态|优先级/类型|
+|---|---|---|---|
+|T-C03 删除|本人列表有未打开B、当前A有草稿；B行确认删除应单DELETE/严格ACK后消失，A不切换|Root84485辅助行为RED实际0DELETE；Web0786df4窄修交付/Root56032局部GREEN。替身安全网，真实页面仍未验|P1/功能、状态机|
+|T-C05/T-U04 创建与切换|本人A发起创建P，在ACK前切Q输入新草稿；合法ACK后列表权威GET更新但仍Q，不抢导航|Root84485辅助RED实际Q抢为P；Web0786df4修并保A→Q→A/actor/dispose/unknown原key/catch/finally。Root164/230辅助、独审无新阻塞，真实产品仍OPEN；创建总timeout/项目DELETE仍缺|P1/竞态、状态机|
+|T-K02 发布与安装|预先选二字段V2 ZIP→Draft→真实上传/扫描→Validate→Publish→显式安装/启停/移除/刷新|Platform494b118五runtime/V7 proof局部交付，初机器1P1/2P2已修/七真实工程反例最终拒；Root全纯门1266+278skip和另真实PG30不代产品。BFF/Web未切，原页面412仍OPEN|P1/主链路、异常、安全|
+|T-F01 自然续期|正常IAM登录停留Library>300s，选File不丢、同session generation推进、单次上传/刷新|Chrome扩展UI阻挡未解除，后继GREEN未执行；原真实401/上下文丢失FAIL保持|P0/主链路、状态机|
+
+原70组11通过/6失败/14待复测/38未验/1支付后置不变。67772/84485/50401/93133/56032均终态；未启动3311组合，原3310保持，真实PG原库清单保持，无用户文件/会话或共享Redis清理。局部源码已提交≠当前浏览器交互通过。
+
 ## R249 修复交付后的验收状态（2026-10-05）
 
 既有T-F01自然到期FAIL保持。新候选8985e928/Web710b3f2真实五owner启动；正常/login已显示IAM表单，但Chrome扩展UI阻挡后续全部控制，未输入账号或点击提交；自然300s/同session generation+1/Library原File保留及上传刷新均 **BLOCKED / 未执行**，不是PASS或新产品FAIL。已请求用户关闭弹窗。资源47785exit0/3311无监听/凭据移除/Redis13=0/原PID保持；自有Chrome1715212225关闭调用同被阻挡，未记关闭通过。
