@@ -1,3 +1,25 @@
+### R245-WEB-REFRESH-ROUTE-RED / 真实刷新串会话优先
+
+实际3310新tab6：/app?conversation=conv_ffd7…初始正文为R145标记→硬刷新→原正文15秒内未出现→URL改为conv_586…并显示R243两回复；两个详情GET均200，截图实际显示错误会话。不是将初始booting/home暂态算FAIL。旧tab5 CDP focus无响应，新tab6同浏览器可控；先保留tab6，旧agent tab稍后关闭。formal c8b863264 与runtime两navigation/helpers源hash相同（3060b793/adee3d2d），不靠‘旧预览’忽略此故障。
+
+web_r243_cache_boundary_owner唯一Web tests writer，仅原冻结Gitlesscandidate现tests/system/oidc-rp-next-http.integration.test.ts追加一条真实Next/Chromium刷新路由反例（原f670…/原74与所有源码/contract配置/期限不改）。路径从/tmp/kokoro-r242-web-rename-clean.path读；formal四mixed不写。先读现辅助server/合法IAM+BFF fixture，复现本人本地active A + 直接URL B → B正文 → hard reload仍应URL B/正文B，不显示A；受控owner仅用于因果诊断，不当正式持久owner用户PASS。交/tmp/r245-web-refresh-route-red-handoff.md、前后hash/diff、原全文prefix保护；只静态、停写，Root独占运行真实RED，之后才准最窄源码修复。
+
+### R245-AGENT-FINAL-D0 / 最终wire三设计面窄回填
+
+agent_r243_live_journey唯一Agent文档writer，formal cb645370 clean。仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md增加当前/目标窄前缀（原全文suffix exact），不写源码/schema/tests/锁/Git/资源。Root选报告84f3f78d唯一version1/domain-separated RFC8785 envelope及B档hook后工程界：body8MiB/D64/N131072/K16384/string4MiB/key4096/number128；仅工程接纳界，不保证所有既有上游合法输入都接纳、token界或SDK预materialization峰值。Root亲读锁定SDK又发现profile名单漏X-Stainless-Raw-Response，正常ainvoke/astream走with_raw_response；只读核legacy wrapper true及受支持parse helper exact值后纳固定名单，不修改SDK/任意x-*放行。合法child唯一claim、middleware closed/reset/cancel、outer-only settle与两个final普通列长期immutable事实固定；Runinput/UUID/usage1保持，无provider许可或假bound。
+
+新增文件方案仅D0比选：现factory network lifecycle与纯请求profile拆为同model普通request_profile.py优于堆入factory；本阶段不创建它。完整后继写集需含schema.py、call_evidence、postgres_model_call_evidence及所有现Prepare fixture；SDK-only真实正控迁机制helper不复制逻辑/不生产bypass，并保正式mandatory constructor/native覆盖。交/tmp/r245-agent-final-d0-handoff.md与3hash/prefix保护停写；Root/独审三D0一致后才准native RED或实现。Root同时处理真实用户刷新，不等待Agent全链。
+
+### R245 续推 / 真实用户页与后端准入并行
+
+Root保留关键路径：复用IAB tab5和原3310进程，实际检查旧加载/会话刷新与项目交互；观察句柄先于任何新runner。当前第一次AX控制CDP focus超时，已读官方browser-troubleshooting、确认tab5仍在并重新绑定，不将控制工具超时冒Web加载根因。零新浏览器窗/服务/数据reset；若控制仍失败，记录具体证据不切换私有控制方式。
+
+qa_r243_web_frozen_review续派只读R245-WEB-REAL-OWNER-ENTRY：基线Root9db7e485/Webc8b863264/BFF886a25a1/IAMc9a9872c及已存在scripts/e2e；仅/tmp/r245-web-real-owner-entry.md。找真实持久BFF/IAM+新版Web+浏览器项目改名的最小现runner/函数，核run-owned数据库/Redis namespace与不碰3310及现DB10的隔离，禁止Mock owner或授权fallback。不给泛化部署方案，不写仓/启动资源/Git/browser/provider/资金，报告精确入口/前置/阻塞。
+
+agent_r243_live_journey续派只读R245-AGENT-REQUEST-PROFILE：基线Agentcb645370/报告17d443dd及独审9a0fd123；仅/tmp/r245-agent-request-profile.md。明确最终body绑定唯一version/envelope与具名hook后有限bytes/解析复杂度profile候选，查现实际Run/Skills/MCP输入边界及SDK-only正控维护清单，不把header/body界冒input token bound或SDK预materialization峰值保证。沿既有final-wire同片，三D0下一准入由Root裁定；零仓/SQL/API/资源/provider/Git写，不扩quote/支付设计。
+
+同仓零并行writer，Root独占Git/资源与用户验收，原Wave0–7/70组范围不变。
+
 ### R244-WEB-GIT-DELIVERY / 已精确交付，用户验收仍OPEN
 
 Web local main c8b863264 已精确44payload提交；收据 /tmp/r244-web-git-delivery-receipt.json，原四mixed/Rootindex/gitlink/uv保护及real index空后验成立。Root91331正式mixed主树完整pnpm check174.8s exit0（263/50/lint/types/2495/build），manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r244-web-formal-main-full-slb0rn0n/manifest.json，log cb3ca6ea297db73b5b704ac784931195c8e15d4476cac976a59c2b18ffc5c6c5；源/Redis保持、owned55385无残留。该切片工程交付验收，不关闭正式owner/3310/完整CRUD、跨scope或test:e2e。70组不变。

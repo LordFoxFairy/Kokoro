@@ -1,3 +1,7 @@
+## R245 当前首要交互入口
+
+真实3310发现本人会话B hard reload 被 remembered A覆盖，URL和正文均改变。优先检查 Web `src/components/blocks/app-frame/use-app-frame-navigation.ts` 的deep-link恢复/URL清理与现engine hydrate代际；formal c8b863264/runtime该navigation与helpers字节一致，不能按旧copy排除故障。现冻结candidate系统测试由原Web owner唯一追加RED，QA独立只读，Root独占运行；Agent原owner仅现三D0窄前缀。具体证据与任务沿同CURRENT/task/progress/test-cases，不另建中心，未宣称用户链已闭环。
+
 ## R244 当前交付定位（2026-10-05）
 
 Web `apps/kokoro-app` local main已从5e096364推进至 `c8b8632642ceb8d72d3c0e52a50bfa73c01908eb`：原owner BFF7.2/bf64 pin、现更多菜单Project改名/immutable intent、owner/browser缓存边界、canonical回读、focus scope与九词典13key。44 Git对象见/tmp/r244-web-git-delivery-receipt.json，原四mixed仍保留；Root91331正式mixed主树完整门0（2495默认）不替代当前3310/正式持久owner用户验收。Rootgitlink未更新，不把本地子仓交付冒Root release pin。

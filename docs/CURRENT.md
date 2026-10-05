@@ -1,3 +1,11 @@
+## R245 真实会话刷新故障优先（2026-10-05）
+
+Root在当前3310实际新tab6直达原本人会话 `conv_ffd7d37b-ef39-4055-8c83-8b5856e10f35`，加载退出且正文含 `KOKORO_R145_E2E`、输入可用；随后硬刷新，等待原正文15秒仍无匹配，实际URL及正文改成 remembered `conv_586d8b9f-00ea-415e-a437-da3b09a22849` 的R243两回复。两个详情请求分别200，不是将初始booting/home暂态判失败。正式Web c8b863264与runtime现navigation/helpers字节一致，证据 `/tmp/r245-web-refresh-source-equality.json`；不能以旧预览或后台门0忽略此用户故障。当前记P1/FAIL子例，原加载、完整项目与Settings/积分链仍OPEN，70组11/6/14/38/1不变。
+
+原Web owner只在冻结候选现系统文件追加刷新反例，Root真实RED后才准窄源码修复；独立QA只读核导航时序；Agent原owner同时仅回填final-wire三D0，不等待全部Agent链。Root独占Git/资源/浏览器验收，同仓一writer，无新服务/模型调用/资金动作/共享数据重置。两个只读报告已冻结：request profile `/tmp/r245-agent-request-profile.md` SHA84f3f78d、真实owner入口 `/tmp/r245-web-real-owner-entry.md` SHA650e9ffc；报告不是用户PASS。
+
+旧测试tab5焦点控制及close均超时，新tab6可操作且markHandoff；旧5仍列在inventory，未假报已关闭、不反复盲试。用户3310原PID46036/parent45606存活未重启；stored goal仍blocked且目标不变，未新建重复goal。
+
 ## R244 精确源码交付与正式主树工程复验（2026-10-05）
 
 Web 已提交本地 main `c8b8632642ceb8d72d3c0e52a50bfa73c01908eb`，父 `5e0963648db0cb0e1a60de42ea025670b32aba85`；44 个 Git payload（冻结43路径+owner CURRENT证据前缀）逐对象与批准来源一致。私有 index 精确提交，原四 mixed bytes/modes、Root index、六 gitlink 与 uv 锁保留，real index 空。交付收据 `/tmp/r244-web-git-delivery-receipt.json`，独审 `/tmp/r244-web-git-delivery-review.md` SHA `b309d31d118627f31f2c431f427a793be205fe14196e5e6efa656880ad7b0c31`。只本地交付，未 push 或替换3310。
