@@ -2,7 +2,7 @@
 
 Web `apps/kokoro-app` local main已从5e096364推进至 `c8b8632642ceb8d72d3c0e52a50bfa73c01908eb`：原owner BFF7.2/bf64 pin、现更多菜单Project改名/immutable intent、owner/browser缓存边界、canonical回读、focus scope与九词典13key。44 Git对象见/tmp/r244-web-git-delivery-receipt.json，原四mixed仍保留；Root91331正式mixed主树完整门0（2495默认）不替代当前3310/正式持久owner用户验收。Rootgitlink未更新，不把本地子仓交付冒Root release pin。
 
-Agent仍cb645370、Billing仍ccd4cb0f；后端final HTTPX hook只读设计复审在途，合法SDK child与same-task提案冲突已确定，原owner修订d52e6474已交待复审；无源码/Schema/provider/资金改动。继续既有任务中心及完整Wave0–7，不另建计划。
+Agent仍cb645370、Billing仍ccd4cb0f；后端final HTTPX hook最终只读设计17d443dd已独审9a0fd123复核，合法SDK child与outer-only settle两设计纠正；具名request profile/最终绑定域及三D0仍待下一门，native动态未验；无源码/Schema/provider/资金改动。继续既有任务中心及完整Wave0–7，不另建计划。
 
 ## R243 当前后继边界
 

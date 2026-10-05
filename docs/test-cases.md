@@ -4,7 +4,7 @@
 |---|---|---|---|
 |Web精确交付保护|父5e096364、冻结43path+CURRENT；逐Git对象核44集合→核原四mixed bytes/modes/index→主树完整check→再核保护|c8b863264对象一致；Root91331完整门0（263/50/2495/build），源/Redis保持、owned55385无残留|工程交付PASS，不关闭用户功能组|
 |正式用户Project改名链|正规IAM→持久BFF本人Project→更多改名→canonical GET/列表→刷新同对象/会话/草稿|本轮未执行；原R243controlled-owner子链证据保留，当前3310未换源码|待验，不按后台测试数算用户PASS|
-|Agent真正final request冻结|真实native SDK→合法child final hook→prepare同wire摘要→缺许可零transport|独审发现same-task提案错误，原owner只修只读设计；本轮未运行该native反例|设计P1已静态修订待复审/动态证明；无provider/资金变化|
+|Agent真正final request冻结|真实native SDK→合法child final hook→prepare同wire摘要→缺许可零transport|独审发现same-task与scope self-wait两提案错误；最终17d443dd经9a0fd123文字复核纠正，本轮未运行native反例|两P1设计已静态复审纠正；资源profile/三D0/native动态未准，无provider/资金变化|
 
 原加载/Settings昵称丢失、完整CRUD/权限/多语言/焦点交错与正式费用链未关闭。完整70组仍11通过/6失败/14待复测/38未验/1支付后置。
 

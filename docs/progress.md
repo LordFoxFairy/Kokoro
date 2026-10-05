@@ -4,7 +4,7 @@ Web 已提交本地 main `c8b8632642ceb8d72d3c0e52a50bfa73c01908eb`，父 `5e096
 
 Root91331 在上述正式 mixed 工作树实际重跑完整 `pnpm check`，174.8秒/exit0：contract263、architecture50、lint/typecheck、165files/2495默认测试、production build全过。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r244-web-formal-main-full-slb0rn0n/manifest.json`；日志 SHA `cb3ca6ea297db73b5b704ac784931195c8e15d4476cac976a59c2b18ffc5c6c5` 已回读。ordinary source与Redis keyset保持，原四mixed再次核 bytes/modes相同，owned group55385无残留。此2495包含受保护的正式工作树测试，不冒充冻结Git tree的2488或2495用户旅程。原受控owner改名/取消/归焦/回读/刷新已见R243证据；正式持久BFF/当前3310、跨scope焦点、真实多语言UI与独立`test:e2e`仍待验。
 
-后端原owner只读找到SDK全部变换后的公开HTTPX final hook；独立审查实际发现设计P1：锁定SDK `asyncio.gather` 使用合法child task，不能以middleware owner同task强拒所有child。原owner已交修订报告d52e6474，区分lifecycle owner与唯一physical request claimant及取消/关闭窗口；独审继续复核，尚无native/PG动态证明，未准源码/Schema重写、provider外发或虚构input token bound。原Run input_digest/UUID/无许可零send不变量保持。Billing quote/attempt许可/积分预占结算释放与流水仍OPEN。
+后端原owner只读找到SDK全部变换后的公开HTTPX final hook；独立审查实际发现设计P1：锁定SDK `asyncio.gather` 使用合法child task，不能以middleware owner同task强拒所有child。原owner最终修订17d443dd已独审9a0fd123复核：lifecycle owner与唯一physical request claimant分离，middleware不重入全scope.settle，只在现run_agent外层收束；两项设计P1历史保留，当前确定设计缺陷0。资源profile/最终绑定域及原三D0仍需下一准入，尚无native/PG动态证明，未准源码/Schema重写、provider外发或虚构input token bound。原Run input_digest/UUID/无许可零send不变量保持。Billing quote/attempt许可/积分预占结算释放与流水仍OPEN。
 
 用户旧加载根因、完整项目CRUD/Settings与费用用户链未总验收，昵称保存实际FAIL仍保留。当前3310 PID46036和原launcher保持，不重启清会话/共享PG/Redis。完整Wave0–7、70组11通过/6失败/14待复测/38未验/1支付后置不变；stored goal仍blocked，未新建或冒称完成。下一优先为正式owner/用户页面验证与后端final-wire文档门，不用工程绿替代完整交互链。
 
