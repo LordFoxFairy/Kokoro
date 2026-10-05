@@ -1,3 +1,9 @@
+## R254 当前修复进入真实行为反例阶段（2026-10-05 heartbeat）
+
+沿原卡原Web负责人，仅两现UI文件增加业务交互反例；Root82604实跑同3file得3failed/133passed/exit1，证实项目内普通区消失、文件夹无展开控制，不以mock/API计数冒用户链完成。原断言、system mixed和三D0原正文保持。Root已补最窄三D0目标前缀，无新wire/schema/持久实体；独立D0/用例审并行，待放行10现source窄修，writer冻结后Root重跑安全网及同日常站点真实用户CRUD/刷新。原70组不变，TC-R254九子例用户验收仍待执行。
+
+日常环境保持：已owned67827/86248真实存活，8085/8087ready200；原3310/46036仍未更新、原parent45606受保护。浏览器仅检查现有tab7，CDP focus command再次超时，没有开新标签/用户PASS。正常Next dev本来支持现同源IAM/BFF/session，但向磁盘加handoff不会改变已经加载的旧Python loop；不据新源码强停原服务。默认保留当前测试数据，已向用户对齐一次切换是否需保留现账号/会话/专案；未答不删除，不深入运维。后续仍固定源码开发，不再临时复制站点。
+
 ## R255 正常开发入口持久化：两 owner 已实际交接（2026-10-05）
 
 - 起始 Root `15f27b62a9e1d0d9b3ed853dc5285b65861d5860`；原子仓混合修改、gitlinks、Root uv.lock受保护。只读原BFF reader核九仓当前启动命令/env加载，无资源/凭据/Git操作；Root独占配置与运行交接。

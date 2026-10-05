@@ -1,3 +1,7 @@
+## R254 文件夹实现写入面（当前heartbeat，2026-10-05）
+
+三D0 Root新增target前缀、原全文suffix3/3 exact，manifest固定var/dev/r254-d0-prefix.json。Root82604现3UI行为文件实3failed/133passed，独审无确定P1/P2，原Web owner续接同task十现source文件与三现test；当前实施在途，engine/auth/contract/generated/SQL/lock/system混合全部排除。完整10path与职责见同task R254-FOLDER-SOURCE及既有469ce1d1 seam报告；无新文件/目录/状态中心。原3310未更新，用户TC-R254-C01..09仍待真实验，不把辅助反例冒整页PASS。
+
 ## R255 日常开发运行入口（2026-10-05）
 
 标准命令/env加载事实见 Root README“本地日常开发”，实际源码均 `apps/<remote repository name>`；`.env.local` 由本仓私有保存，不入Git。Storage `src/main.ts` 由本仓 `pnpm dev` 消费、Scheduler `cmd/scheduler` 由本仓 `go run ./cmd/scheduler` 消费，已完成保数据交接，不调用 `/tmp/kokoro-r253-runtime/start_missing.py`。

@@ -30,6 +30,24 @@ R254只读交付已收：原Web owner报告469ce1d1，QA矩阵c83567fa；Root已
 
 当前仅Root产品/task/QA台账更新，0源码/测试/真实页面改动，不承诺原3310已修。现浏览器首次CDP访问超时，未盲目循环/开新标签。原4Webmixed fullSHA与Root uv.lock保持，所有reader停写，源码仍由原owner后继；实现前先收敛现三D0并明确tests-only授权和实际RED，Root统一Git/资源/最终用户验收。
 
+R254-D0/行为后继（本次heartbeat，Root81420e4c）：Root仅在Web现三D0顶部加批准目标前缀，原mixed全文suffix3/3 exact，private manifest var/dev/r254-d0-prefix.json；明确无新wire/schema/owner/持久数据，展开与selection分离，来源scope/subject/分页fence、ACK严格，局部group复用。当前source未改。
+
+|任务|Owner/角色/基线|明确文件集与排除|依赖/完成条件|
+|---|---|---|---|
+|R254-FOLDER-BEHAVIOR-RED|原web_r247_skill_header_owner唯一Web tests writer，Root审/提交，Web1ed160b|只现 tests/ui/app-frame-rail.test.tsx、workspace-rail.test.tsx、use-session-list.test.ts；三D0 Root前缀与旧mixed/system fixture、src/generated/lock其他文件全排除|沿PRD09 §3及TC-R254-C01..09，先直接组件用户行为反例：project内普通列表常驻、两项目独立展开/折叠不导航、跨scope选行canonical URL与不误开engine，现合法输入非compile RED；纯UI仅源码安全网不当真实E2E。最小有效集先冻结停写，Root重跑；source须后续单独授权，禁止资源/provider/Git操作|
+|R255-WEB-PERSISTENT-HANDOFF-READ|原bff_skills_v2_owner_r251只读，Root资源主控，Root81420e4c|现serve_local_login/Next dev配置及Web README/env声明；不读.env/secret/DB/日志、不变资源/仓|辨明原parent guard与cleanup完整约束及固定源码3310正常dev env能力，给最小安全替换需要的输入和先后，禁止绕开鉴权、再开临时复制站点、暗杀parent/迁移共享事实或造配置；直接消息交付，不另计划/新报告|
+|R254-FOLDER-D0-READ-REVIEW|bff_skills_v2_owner_r251独立只读，Root审，Web1ed160b+本轮D0 prefix|现三D0的R254 prefix、现rail/list/Move/auth-boundary seam；不读私密config/不写仓/Git/资源|核目标是否复用现唯一事实和来源scope/subject/晚ACK边界，不要求新实体/缓存；直接消息P1/P2。变化中tests未冻结不冒最终review|
+
+R254 Root有效RED：句柄82604终态exit1，三现UI交互文件真实3failed/133passed，2failed file/1passed，5.63s；日志固定var/dev/r254-root-behavior-red.log。Root回读完整diff，新增两文件113+15行、原断言保持；失败是普通区缺失和展开button不存在，非compile/admission错误。跨scope、折叠Run等后续assertion尚未执行，不冒全部已证。原system mixed hash保持，三D0 prefix原suffix3/3保持。
+
+|任务|Owner/角色/基线|明确文件集|完成条件|
+|---|---|---|---|
+|R254-FOLDER-SOURCE|原Web owner唯一writer，Root审/资源/提交，Web1ed160b+冻结两test|只10现source：app-frame/app-frame.tsx；ui/shell/use-conversation-list.ts、page-clients.ts；ui/rail/use-session-list.ts；workspace-rail/workspace-rail-types.ts、workspace-rail.tsx、workspace-rail-shell.tsx、workspace-rail-navigation.tsx、workspace-rail-session-list.tsx、workspace-rail-items.module.css；可补同3现test，不改旧assertion标准|D0独审无确定阻断及Root3有效RED后实施；direct常驻+展开project列表固定scope、canonical选择，改名/删除/Move按行source不误正文，subject/admission/page晚ACK隔离，全部有用旧保障保留；不新engine/SSE/store/目录/协议/auth/SQL，旧单scope渲染替代而非双轨。冻结停写交SHA，Root独审/适当工程门/固定站点真实用户验收；用户整组仍OPEN|
+
+R255交接只读已交：正常Next dev能消费现同源IAM relay及session/BFF闭包，阻断是旧parent45606无handoff seam且已加载Python；磁盘补handoff不会热接入原loop，不实施无效“信号/文件”接管。原3310不动，Storage/Scheduler当前67827/86248及8085/8087ready200保留。Root异步对齐一次切换是否保留现测试账号/会话/专案，默认保留，未答不清理；并行Web修复不中断。
+
+R254源码已明确放行：独审原reader无确定P1/P2，新增3例只C01–C03辅助反例，C04–C09/CRUD/身份分页用户验收仍未验。原Web writer已续派10现source及同3test，Root82604终态已关闭，无测试/重复服务后台；source在途，不执行冻结工程门、不提交未交接源码。固定开发数据是否保留的用户回答尚待，默认保留不reset。
+
 ## R253 调试环境补齐（2026-10-05）
 
 用户明确要求启动必要子仓库与基础设施，方便完整调试。Root统一进程/端口/资源与集成，不重复启动数据库/Redis，不删旧数据，不伪造费用许可。当前原3310与其父45606保留，先核已有完整进程树；同task续接，不建立新计划中心。
