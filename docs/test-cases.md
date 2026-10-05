@@ -1,5 +1,12 @@
 # Kokoro 系统级测试与业务验收台账
 
+## R236 Git-only缓存拒绝切片（不变70整组状态）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果与边界|
+|---|---|---|---|---|---|---|
+|TC-WEB-R236-CACHE / 非权威缓存拒绝恢复|HEAD680c8db8 archive、真实Next/Chromium/Redis、controlled IAM/BFF；唯一Conversation getItem拒绝，身份存储可用|认证成功→目标读取拒绝实际命中→权威snapshot/正文/可编辑输入→reload同路径→核零POST|原12秒预算内恢复；无SecurityError与假创建；全storage拒绝仍身份fail-closed|P0|系统、异常、状态机、安全|Root52643有效RED1fail/67过滤（认证true、拒绝2、SecurityError、snapshot/body/input0）；read窄修后Root19270原case+原R150负控2pass/66过滤。完整68系统10171终态68pass/0fail/0skip；工程22777全0（2460默认测试）；本地main1e8ce99c两路径已交付/用户3310未验证，T-U04仍失败。两先前fixture setup失败不计产品RED；准确manifest见progress R236。|
+
+
 ## R232 最新系统实测（整组状态不虚增）
 
 - Billing私有费率选择已按main e5d83db0本地提交，六source/test与115真实PG/1361辅助十门0冻结完全同；只是T-B01/后续报价前置，不把T-B03–B07置通过。

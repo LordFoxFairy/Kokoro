@@ -1,5 +1,10 @@
 # Kokoro codebase map
 
+## R236 当前两路径交付入口
+
+Web本地main1e8ce99c精确交付src/lib/persisted-store.ts read拒绝捕获与既有system文件中的单缓存反例/闭集诊断，原20mixed字节保持/现19mixed。Root真实RED→两恢复/身份负控→完整68系统0fail→完整工程258contract/50architecture/lint/types/2460test/build全0、源码独审0；controlled IAM/BFF不冒正式owner或用户3310恢复，Rootgitlink未更新。BFF四R236三面设计前缀独审0仅active资格前置，仍20mixed，rename与公开删除/后继释放生命周期未交付。70产品组11/6/14/38/1不变；原Wave0–7范围继续。
+
+
 ## R234 最终交付入口
 
 Agent main cb645370精确8路径交付并clean；Web main680c8db8仅config worker预算交付，20mixed保持。Root46156完整原工程2481/0+contract/architecture/lint/types/build全0，绑定冻结混合工作树而非用户3310。当前70组11/6/14/38/1，Root6个组合gitlink差异仍待正式集成；BFF字段PATCH改名仅完成设计审计，三D0/active前置未准源码。

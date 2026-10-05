@@ -9674,3 +9674,24 @@ Root46156已终态exit0：完整原pnpm check的258contract/50architecture/lint/
 T-Q01有限工程组复测通过，70组当前11通过/6失败/14待复测/38未验/1支付后置；之前10/7是本轮复测前时点。Root组合实际变为6个gitlink差异，未更新指针/uv或push/重启3310。Agent cb645370本地已交付并clean。Root治理归属小门7pass，仅该范围，旧全仓标准/组合checkpoint问题保留。所有本轮测试句柄均终态，无未登记验证任务。
 
 BFF改名设计只读报告/tmp/r234-bff-project-rename-d0-review.md已回读：选择字段PATCH /v1/projects/{projectId}/name，保instruction路径/ID/slug，name与现receipt同事务、旧key不覆盖新名、LWW不新增version/表；三D0及active前置交付必须先审，尚未写合同/源码或验证业务。正式登录/原页面持续加载、CRUD/设置、native与Billing用户费用链仍OPEN。
+
+
+## R236 Web缓存修复的Git-only隔离交付验证（2026-10-04）
+
+原HEAD680c8db8归档只加既有system测试117行（c295b162），保全部51顶层定义，实际展开68case；原20mixed字节未触碰。前两次资源setup失败均未到产品oracle：74659为node_modules越Turbopack根、1411为workspace symlink跨根。两次exit1、68未执行，源码/Redis保持；manifest分别为 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r235-web-cache-isolated-red-ys7nv8xy/manifest.json 与 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r236-web-cache-isolated-red-04e7gbf3/manifest.json。不能把它们算产品失败/缓存RED。
+
+Root查明archive原借共享deps，作者唯一pnpm exec prettier --check触发workspace resolution，改写original三个@kokoro链接。Root已物理克隆deps并恢复original→original packages与archive→archive packages，六链接精确receipt /tmp/r236-web-isolation-dependency-repair.json；未改源码/锁/用户服务，后继隔离artifact不再共享写入deps。
+
+有效RED Root52643：1failed/67名称过滤，18.347秒；认证200/authenticated true、目标拒绝2、pageerror SecurityError、snapshot/body/composer0、原URL、两个loading marker0。明确是React缓存异常退出，不把marker0解释成无限spinner。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r236-web-cache-isolated-red-v3-br7etfe4/manifest.json，log ce6a4fbe5516b725f31b63c5c3dff828093a329ec178a9951ea306102ae0c7aa。源码与Redis键集全同。
+
+原Web owner同archive仅getItem+6/-1捕获，source6639b1d4→16136175、test c295b162保持；Root19270同case+R150整站storage拒绝负控真实2pass/66名称过滤，7.747秒，冷启动与reload原12秒共享预算、权威正文/输入/零POST及认证fail-closed保持。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r236-web-cache-green-9tjhjvv_/manifest.json，log46b330e5023b4e21bbb923f32429989a54e42f483a66d60b11a630d4d0220b1f，source/Redis同。独立tests-only审0P0/P1/P2（/tmp/r236-web-cache-red-review.md），production独审在途。
+
+Root10171已启动同冻结candidate完整68系统原集合（process PID40255），沿原句柄消费，不重复Next或Redis；工程runner已准备未启动，候选尚未正式集成/提交或更新3310，不关闭T-U04或任何完整产品组。70组11/6/14/38/1保持。BFF原owner仅四D0短前缀收敛必要active查询前置，源码/contract未授；完整rename/delete仍后继，20protected不整包提交。
+
+R236完整clean系统Root10171终态exit0：68pass/0fail/0skip，71.315秒，原51顶层定义全部展开执行，source与Redis键集保持；manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r236-web-cache-full-_dtclrlx/manifest.json，log 6f58a99d5b43564add768cf53c6cb407c05e0851435cbc74e71d4966930ea4e7。production独审 /tmp/r236-web-cache-green-review.md 为0P0/P1/P2。工程Root22777已启动同artifact原pnpm check，沿原句柄，不重复服务；未先提交或将T-U04改通过。BFF四D0新短前缀已冻结（TECH20/API12/DATA12/CURRENT12行），旧全文suffix/其他16protected保持，交接/tmp/r236-bff-active-d0-handoff.md，仅设计待独审。
+
+R236最终Web工程Root22777终态0，121.788秒：258contract、50architecture、lint/types、165files2460pass/0fail、build通过。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r236-web-cache-engineering-7j4uepv4/manifest.json，log 7602125bec81d4aa813b2f2a5d2a493fff623facbb35923af6af4309295e9bbf；source与Redis集合保持，无URL资源默认门不冒系统E2E。Root将精确两冻结路径提交本地main1e8ce99c46d0e0bf87824af321cd45f6d5fa5081（parent680c8db8），原20protected bytes/mode全保持、现19mixed，Git objects等于已验archive；receipt /tmp/r236-web-cache-commit-receipt.json。Git统计source+6/-1、system+119/0（静态diff报告+117/0之外仅实际Git差异为准），没有整包4438行mixed测试。未更新Root指针/push/3310，70产品组状态不变。
+
+BFF四R236短前缀独审 /tmp/r236-bff-active-d0-review.md 为0P0/P1/P2，仅docs-only准入，源码/schema/contract/tests未授。完整Wave0–7目标继续，后继仍需用户运行组合恢复、CRUD/Settings与正式Agent/Billing链，非缩小到本两路径。
+
+R236收尾资源核验：六组owned PGID均无残留，receipt /tmp/r236-resource-terminal-receipt.json；用户3310 PID46036仍alive未重启。verify-main-only.py实际报告status FAIL（脚本exit0不能冒通过）：12仓local main及现cached remote refs main，Root/Web/BFF/Billing四工作树dirty导致4项失败；未fetch/远端当前不证明。原uv SHA保持、6gitlink未提交，70组重算11/6/14/38/1。

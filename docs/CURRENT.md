@@ -1,6 +1,12 @@
 # Kokoro 当前执行事实
 
-核对：2026-10-04，R234。完整 Wave 0–7 goal 保持 active；研发与完整用户旅程尚未闭环。本文件只保留当前事实，旧 CURRENT 的 510 行全文逐字归档于 [progress.md](progress.md) 的“R228 CURRENT 原文归档”，不与本页当前结论并列。
+核对：2026-10-04，R236。完整 Wave 0–7 goal 保持 active；研发与完整用户旅程尚未闭环。本文件只保留当前事实，旧 CURRENT 的 510 行全文逐字归档于 [progress.md](progress.md) 的“R228 CURRENT 原文归档”，不与本页当前结论并列。
+
+## R236 当前切片交付
+
+Web本地main `1e8ce99c46d0e0bf87824af321cd45f6d5fa5081` 精确两路径交付缓存读拒绝修复与系统反例；全部已提交字节等于冻结候选，原20路径字节/模式保持，现19mixed。Root有效RED→原恢复与认证负控2pass→完整68真实Next/Chromium/Redis系统0fail/0skip→原工程258contract/50architecture/lint/types/2460test/build全0，独审0。IAM/BFF为controlled peers，不是用户3310/正式费用整链。所有本轮资源句柄终态；准确manifest与六依赖链接隔离修正保留在progress R236。Root组合未更新/未push/未重启3310，T-U04仍失败。
+
+BFF四当前D0短前缀已独审0，仅必要active资格设计准入；20mixed保留，未授新SQL/代码、rename和完整删除仍后继。
 
 ## 1. 产品验收总览
 
@@ -14,11 +20,11 @@
 
 子仓的 tests 不迁入 Root；`scripts/tests/` 只覆盖 Root 治理脚本，`verification/` 承接跨仓行为验收，不创建应用测试总目录。
 
-Root和11物理子仓现场均只有本地main，远端本轮未核验。Root仍有6个gitlink差异及受保护uv.lock，Web/BFF与部分owner文档含未提交修改；整体工作树非clean。不得覆盖或混提这些修改。
+Root和11物理子仓现场均只有本地main，远端本轮未核验。Root仍有6个gitlink差异及受保护uv.lock，Web19/BFF20与部分owner文档含未提交修改；整体工作树非clean。不得覆盖或混提这些修改。
 
 |物理仓库|当前本地HEAD|已确认的有限交付 / 尚未闭环|
 |---|---|---|
-|apps/kokoro-app|680c8db8|有20个mixed路径；修正fixture与完整URL等待后，Root最终隔离系统81pass/0fail，修复Conversation缓存读拒绝初始化SecurityError（未证原3310原因）；含两项目会话删除case，非真实BFF项目本身删除；用户页面/CRUD/Settings与正式模型费用链未全验|
+|apps/kokoro-app|1e8ce99c|有19个mixed路径；Git-only缓存修复两路径已交付、完整68系统与2460工程通过；修正fixture与完整URL等待后，Root最终隔离系统81pass/0fail，修复Conversation缓存读拒绝初始化SecurityError（未证原3310原因）；含两项目会话删除case，非真实BFF项目本身删除；用户页面/CRUD/Settings与正式模型费用链未全验|
 |apps/kokoro-bff|7289b3a4|有限Message准入、事务/故障与182真实PG/Redis已有证据；20个protected路径保留，组合用户链未全验|
 |apps/kokoro-agent|cb645370|System3.0消费、单completion/输出界和客户端生命周期已提交；原始usage基线完整peer179项已有证据；新生产捕获及SDK完成标记已冻结，Root完整真实SDK/自有HTTP peer310pass/0fail、默认2253pass、工程/build/installed通过、源码独审0P0/P1/P2，现精确8路径本地提交、工作树clean；可信输入界/Admission/收费Run仍OPEN|
 |apps/kokoro-iam|c9a9872c|登录/managed first-party provisioning局部已验；当前组合登录回调、退出/撤权/多窗口整旅程待验|
@@ -59,7 +65,7 @@ R233/R234各次失败、复测、SHA及资源终态集中保留在 [progress.md]
 
 ## 5. 当前下一行动与执行边界
 
-1. Web保护20mixed，接收现有认证/恢复/交互切片的可审查交接，再冻结正式组合、真实浏览器验收持续加载与逐项CRUD/Settings；当前工程绿不是页面全可用。
+1. Web保护19mixed，接收现有认证/恢复/交互切片的可审查交接，再冻结正式组合、真实浏览器验收持续加载与逐项CRUD/Settings；当前工程绿不是页面全可用。
 2. BFF项目改名采用 `PATCH /v1/projects/{projectId}/name` 候选设计，同模式保留instruction路径/ID/slug；name与现receipt同事务、旧key不覆盖新名、LWW不新增version/表。三D0和未交付active前置先审，不预报合同/实现通过。
 3. Agent已交付观察切片；继续与Billing按owner接真实授权、预占、核实用量、结算/释放和流水，不使用fake grant/known-zero/免费文案。
 
