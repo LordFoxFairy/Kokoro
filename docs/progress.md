@@ -1,3 +1,10 @@
+## R255 Root 真实数据库复验：安装通过，ORM 仍阻断（2026-10-05）
+
+- 首冻17hash实核后48650：installer/drift真实PG 15failed/39passed；14项稳定non-empty拒绝诊断漂移，1项影子函数fixture marker未限定public。原76数据库逐OID/name集合保持。作者获仅2path修复诊断/fixture，不改空判和断言。
+- 第二冻17hash实核后57909：同54项真实PG全通过；正常pnpm prisma:refresh exit0，tracked database/generated无diff；随后 typedCRUD真实1failed/4名称过滤未跑，错误public.billing_credit_account不存在。Pool search_path不传递到Prisma generated queries namespace，installed adapter-pg schema选项与独审一致。Root仅授原PrismaService/fixture显式owner adapter schema，并现credit-metering3处fixture namespace；8source/10现tests，不改资金。
+- 第二轮原76数据库集合保持、5mixed原正文suffix5/5exact，canonical SQL未变；资源收据var/dev/r255-root-billing-second-receipt.json。仍未源码放行/启动Billing/计费用户页验收，正常生成成功不代替ORM写入。
+- 原Storage67827/8085及Scheduler86248/8087存活，readyz200；原45606/46036/3310保留。现IAB tab7再次CDP焦点控制超时，未新增窗口/重试循环，不将工具控制失败计为产品失败或E2E通过。
+
 ## R254 后继反例 Root 实跑与 R255 窄扩（2026-10-05）
 
 - 作者review tests-only冻四UI（实际新增三现file），Root回读diff并复跑67239：9failed/249passed，exit1，12.24s；全部业务断言，非类型/预置错误，日志var/dev/r254-root-review-behavior-red.log。9项为Move4、退役读取2、撤准入意图2、重名动作1。Root授权原10source窄修，不新增框架；跨两个独立hook的旧共享断言可替为StrictMode同实例正控，生命周期反例保持。原作者一次Retry角色误查询已纠正，未作有效RED证据。

@@ -1,3 +1,9 @@
+## 最新实测：Billing 安装过关但真实 ORM 仍失败（2026-10-05）
+
+Root57909在原PostgreSQL上复验：owner安装/drift54项通过、正规Prisma生成0且tracked生成物无diff；真实typedCRUD却访问public.billing_credit_account而失败。原因不是连接池search_path，而是Prisma adapter还未显式设置owner schema。仅授权现PrismaService/fixture与credit-metering fixture namespace修复；资金/API/35表canonical不变，尚未启动Billing或报计费完成。原76库集合与5mixed原正文保持。
+
+Web四review缺陷继续由唯一writer处理，Root有效9RED之后仍待冻结/独审/最终复验。原3310未更新；IAB控制超时不当页面证据。两个源码owner8085/8087真实ready200。完整70组11/6/14/38/1仍不变。
+
 ## 本轮当前：两名 owner 并行窄修，未放行（2026-10-05）
 
 Root已复跑R254真实反例：9failed/249passed/4现UI，句柄67239终态exit1。四类交互缺陷已证，不用旧249辅助绿遮盖：Move抢非聊天页面/迟到导航、退役首页请求复用、撤准入旧dialog/展开复活、重名展开动作不可辨。原Web writer现仅10现source/4现UI修复；唯一旧跨hook共享断言替为StrictMode同实例防重复正控，不新增缓存事实。待冻结、独审和Root复验；原3310尚未更新，真实页面仍未验。
