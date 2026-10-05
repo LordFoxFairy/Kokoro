@@ -61,3 +61,6 @@ kokoro_workspace/
 # service topology and are not vendored into Root.
 /kokoro-mori/
 /kokoro-web-shared/
+
+# Persistent local development runtime: private logs and process metadata
+/var/dev/

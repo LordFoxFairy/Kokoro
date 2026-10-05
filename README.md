@@ -43,22 +43,57 @@ cd ../kokoro-agent && uv run pytest
 cd ../kokoro-scheduler && go test ./...
 ```
 
-## 本地正规登录与真实模型
+## 本地日常开发：固定源码、固定配置、持久数据
 
-`scripts/dev/serve_local_login.py` 是唯一前台受管入口，复用已存在的 PostgreSQL/Redis，不自动下载模型。
-IAM/System 用本机 Node 24，BFF/Web 用 Node 22；精确启动命令和当前验收边界见 `docs/CURRENT.md`。
-`--chat --model-origin http://127.0.0.1:11434 --model qwen3:8b` 显式使用已有本地 Ollama。
-外部 OpenAI 兼容接口使用 `--chat --external-model-credential-file /absolute/private/provider.json`，
-与 `--model-origin`、`--model` 互斥，不能静默回退。该文件必须当前用户所有、regular、0600、不经 symlink，内容仅：
+直接在 `apps/` 的实际子仓运行，不复制临时源码、不随启动创建数据库/账号/模型路由。
+每仓自己的 `.env.local` 保存本地持久配置，权限 `0600`、不进 Git；启动时复用同一份配置。
+一个 PostgreSQL 应用数据库、每 owner 独立 schema，以及一套共享 Redis；已有基础设施先复用。
+这是目标拓扑，当前仅 Storage/Scheduler 完成保数据交接；其余 owner 先保留现有受管配置，
+按 [当前状态](docs/CURRENT.md) 逐仓交接，不直接把旧数据库 URL 改为共享库。
+停止只停止自己启动的应用进程，不删除数据库、schema、文件桶、账号或积分流水。
 
-```json
-{"base_url":"https://HOST/v1","model":"MODEL_ID","api_key":"TOKEN"}
+| 实际子仓 | 正常开发命令 | 工具链 | `.env.local` 读取 |
+| --- | --- | --- | --- |
+| `apps/kokoro-app` | `pnpm dev` | Node 22 / pnpm 11.25.0 | Next 原生加载 |
+| `apps/kokoro-bff` | `pnpm dev` | Node 22 / pnpm 11.25.0 | 启动 shell / IDE 显式导入 |
+| `apps/kokoro-agent` | `uv run kokoro-agent-http`、`uv run kokoro-agent-worker` | Python >=3.11，其余以 uv.lock 为准 | 两个进程分别显式导入同一份配置 |
+| `apps/kokoro-iam` | `pnpm dev` | Node 24 / pnpm 12.3.4 | 仅 dev 命令原生加载 |
+| `apps/kokoro-system` | `pnpm dev` | Node 24 / pnpm 12.3.4 | 启动 shell / IDE 显式导入 |
+| `apps/kokoro-billing` | `pnpm dev` | Node 24.20.0 / pnpm 11.25.0 | 启动 shell / IDE 显式导入 |
+| `apps/kokoro-capability` | `pnpm dev` | Node 24 / pnpm 11.25.0 | 启动 shell / IDE 显式导入 |
+| `apps/kokoro-storage` | `pnpm dev` | Node 24.20.0 / pnpm 11.25.0 | 启动 shell / IDE 显式导入 |
+| `apps/kokoro-scheduler` | `go run ./cmd/scheduler` | Go 1.26.8 | 启动 shell / IDE 显式导入 |
+
+以各仓 manifest/lockfile 为版本事实源。对不自动读配置的仓，在目标仓目录执行以下流程
+（配置保持 shell-compatible `KEY=VALUE`，IDE 也可使用等价的环境文件配置）：
+
+```bash
+set -a
+source .env.local
+set +a
+pnpm dev
 ```
 
-凭据不放命令行、不入 Git、不进入 System 模型目录；只进入本次受管 Agent 环境并注册日志脱敏。
-Root 经正式 System HTTP 创建模型路由，标准 Agent 每 Run 再 resolve；GET 模型库存仅是健康观测，
-模型可见不等于推理或全产品闭环。中断入口先 drain 自己的 worker，再关闭其 HTTP/System/IAM/BFF/Web及自有资源；
-停止失败保留句柄和依赖，不能以观察超时当进程已退出。
+Agent 和 Scheduler 最后一行分别替换为表中的标准命令；Agent 的 HTTP 与 worker 都要启动。
+Billing 支付事件 worker `pnpm worker:payment-events` 仅在对应任务需要时启动；
+`pnpm worker:execution-events` 是按需单次消费命令，不作为无工作时的常驻循环。
+
+依赖安装只在首次 checkout 或 lockfile 改变后执行。Schema 安装只在明确的新 owner 空 schema
+首次初始化时执行，不放进日常启动/重启流程；账号、客户端授权、模型目录、报价和积分通过对应 owner 的
+正常业务流程维护，不在启动时反复 seed/bootstrap。模型可见、服务 ready 都不代表真实用户聊天已通过。
+Billing 当前 installer 仍限定 public schema 和整库空白；owner-schema 切换完成前，
+不要对共享应用数据库执行该 installer。
+
+Root 的本地进程收据和私有日志只放已忽略的 `var/dev/`，不作为第二份配置事实源。
+当前实际常驻进程、端口、句柄及未迁移项见 [当前状态](docs/CURRENT.md)。
+
+### 隔离测试不是日常站点
+
+`scripts/dev/serve_local_login.py` 保留为隔离登录/模型 E2E fixture，不再作为日常开发入口。
+它可能复制源码、建立自有数据并在结束时清理；只能用于明确隔离测试，不拿它更新日常站点。
+现存旧预览先完成保数据交接再退出，不直接停止会清理身份/会话数据的旧 supervisor。
+真实模型凭据继续只保存在 owner 私有配置/凭据文件，不放命令行、Git 或公开模型目录；
+隔离测试的外部 provider credential-file 参数及互斥规则以该脚本帮助和测试任务为准，不静默回退。
 
 ## 调用与数据边界
 

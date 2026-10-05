@@ -1,3 +1,11 @@
+## R255 日常开发改为持久源码运行（2026-10-05）
+
+用户要求生效：固定子仓源码、各仓 `.env.local`、持久账号/会话/文件、稳定端口；日常停止只停进程，不重建或清理数据。Root README 已移除“测试启动器是唯一开发入口”的错误说明；九 owner 的正常命令与显式 env 加载按当前 manifest 核对，未新增运行框架。
+
+**已实际交接两 owner**：旧 owned session10214正常Ctrl-C、exit0，两端口释放。Storage `14f2bc9c5cca04dd34aa6438b2e343c5402076ad` 从实际 `apps/kokoro-storage` 执行 `pnpm dev`，句柄67827/监听78602/8085；Scheduler `e8dca48988c4a93fa31bce3ee37f978394143c10` 从实际 `apps/kokoro-scheduler` 执行 `go run ./cmd/scheduler`，句柄86248/监听78631/8087。Node24.20.0、Go1.26.8，配置各仓 `.env.local`（600、ignored），日志/进程清单固定在 Root `var/dev/`（700、ignored）。两 owner 各 healthz/readyz 均真实200；交接前后数据配置身份摘要一致（同 DB/schema/Redis/bucket）。0 installer、0新数据库/schema/bucket/role、0reset、0模型或积分操作。收据 `var/dev/restart-proof.json`，进程清单 `var/dev/processes.json`；停止使用各句柄Ctrl-C，不触碰共享基础设施或数据。
+
+**尚未迁移，不能冒称整体已切换**：原3310/parent45606/Web46036仍保留。其退出清理风险涉及当前IAM/会话数据；不能直接kill或重新生成测试账号替代。IAM/System/Agent/BFF/Web持久配置与单库 owner-schema交接、Platform真实凭据与Billing单schema installer仍开放，原BFF也尚未消费两新 owner。接下来先保留原数据与配置，完成正常源码组合交接，再在同一日常站点逐页面真实验收；不再新开临时前端展示修复。完整70组11通过/6失败/14待复测/38未验/1支付后置保持；本次4探针不是业务E2E通过。
+
 ## R254 当前：侧栏文件夹规则已对齐，源码替换尚未实施（2026-10-05）
 
 用户明确：每个专案行下缩进该项目会话，可独立展开；外部普通持久会话列表在所有app模块常驻。当前PRD §3和product05已更新，不新增项目子目录实体/会话绑定表/API；现nullable project_ref不变。未发送草稿仍不入持久清单。

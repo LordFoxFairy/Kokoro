@@ -1,3 +1,20 @@
+## R255 本地开发持久化，不再使用测试临时组合（2026-10-05）
+
+用户明确：日常开发直接使用固定子仓源码、持久配置/数据和稳定端口；停服务不删数据，不每次复制新前端/重建账户。临时database/隔离源码仅属测试，不作为日常3310站点。Root负责当前数据与进程交接，不引部署运维平台/新业务owner/兼容层。
+
+|任务|Owner / 角色 / 基线|范围|完成条件|
+|---|---|---|---|
+|R255-DEV-SOURCE-READ|原bff_skills_v2_owner_r251只读，Root审；当前manifest/README|九owner package/入口/本地env读取事实，现dev fixture用途；不读.env/secret/DB/日志、不改仓/Git/资源|直接在消息列正常启动命令/工具链与env加载要求、一次初始化和重复启动边界，拒把fixture复用模式改作正式IAM；不另写临时运行脚本|
+|R255-PERSISTENT-STORAGE-SCHEDULER|Root唯一资源/config writer，Storage14f2bc9 / Schedulere8dca489|现两owner未跟踪600 .env.local；Root固定var/dev安全进程清单；停止本轮10214只停owned进程，按正常pnpm dev/go run重启相同端口/数据库schema/bucket|零新bucket/database/role、零schema重建/reset；两次启动消费同一持久配置，真实ready通过；记录常驻句柄/停止方式，不复制仓/不执行fixture脚本|
+
+Root文档入口复用README/RUNBOOK及同CURRENT/progress；如增加本地运行记录，var/dev忽略入库，私有配置仅各仓现.env.local（现gitignore涵盖），不引第二配置事实源。原45606/3310的fixture cleanup风险未解前不直接停止；该原预览仍不冒已改成正式持久开发。并行只读与Root安全迁移两个新owner，不拿临时复制站点展示新源码假装正式上线。
+
+R255 两卡本轮结果：READ已交消息且Root已核manifest/README；STORAGE-SCHEDULER窄交接已验（旧10214正常exit0，新67827/86248，78602/78631，8085/8087，四health/ready200，两个持久配置摘要相同、600/ignored，零installer/reset/newDB/schema/bucket）。Root固定收据var/dev/restart-proof.json及processes.json，两常驻保留。Root只提交.gitignore、README、同CURRENT/progress/task/map，不提交私有配置或gitlinks/uv.lock。**整套日常环境仍进行中**：原3310/45606不得直接退出触发数据删除，下一先保数据交接其真实owner配置/schema，再切正式源码与BFF依赖；不复制临时站点，不用此启动结果关闭用户业务测试。
+
+R255 Root复核：`git diff --check` exit0；`python3 scripts/verify-repository-topology.py` 实际exit1，7个已知checkout HEAD与受保护gitlink不一致，0缺失仓，未以更新任务外gitlink消除失败。原uv.lock及四Web mixed SHA 5/5 exact，Storage/Scheduler tracked clean。检查不是用户页面验收，未调用全仓资源测试/共享清理。拓扑原失败保留，后继仍Root组合发布任务。
+
+R255独审收尾：原reader指出README目标单库不能冒九仓当前态、Billing installer例外和Agent工具链下界。Root已就地限定仅Storage/Scheduler交接、其余保留受管配置；禁止Billing旧installer作用共享应用库；Python>=3.11按manifest。三处文档问题已修，未触碰owner源码/资源。
+
 ## R254 侧栏专案文件夹与常驻普通会话（2026-10-05）
 
 用户已明确裁决：每个专案像文件夹，所属持久会话缩进在其下，可展开/折叠；外部普通会话列表在所有页面始终展示，不被当前project scope替换。仍只用BFF Conversation可空project_ref，不新建关系实体/目录层级/后端API/缓存事实。未发送local草稿不伪装持久会话；未知列表不画已确认空，展开与active选择分别建模。

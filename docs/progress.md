@@ -1,3 +1,13 @@
+## R255 正常开发入口持久化：两 owner 已实际交接（2026-10-05）
+
+- 起始 Root `15f27b62a9e1d0d9b3ed853dc5285b65861d5860`；原子仓混合修改、gitlinks、Root uv.lock受保护。只读原BFF reader核九仓当前启动命令/env加载，无资源/凭据/Git操作；Root独占配置与运行交接。
+- 私有配置从本轮已运行 Storage/Scheduler 的相同值保存到各仓 `.env.local`，600/ignored；固定Root `var/dev/`700、log/registry600且ignored，不新建第二配置中心。旧自有session10214实际Ctrl-C exit0，8085/8087释放；原45606/46036仍alive。没有执行原fixture退出或数据cleanup。
+- 正常 Storage `pnpm dev` 句柄67827，Node24.20.0，实际listener78602/8085；Scheduler `go run ./cmd/scheduler` 句柄86248，Go1.26.8，实际listener78631/8087。两进程 cwd 均实际子仓，不引用临时源码/运行脚本。Root真实GET `/healthz`、`/readyz` 四次200；两个持久配置的数据身份SHA与交接前一致，permission均600。运行证据固定 `var/dev/restart-proof.json` / `processes.json`。
+- 本次0依赖安装/installer/新数据库/schema/bucket/role/共享reset/模型调用/积分变动，不把启动当功能验收。用户需要调试的两个正常源码服务保留，原10214已回收，没有另起基础设施。README错误的“唯一开发入口=fixture”已替换；旧fixture仅保留隔离测试职责。
+- **未完成**：原3310仍临时组合，不称已发布正式源码。其数据清理风险、其余owner持久配置/schema交接、Platform真凭据、Billing installer及真实整链仍开放；下一动作保数据交接固定原3310源码，禁止又生成临时账号/源码副本。完整Wave0–7和70组11/6/14/38/1不变，goal仍blocked。
+
+R255 Root复核：`git diff --check` exit0；`python3 scripts/verify-repository-topology.py` 实际exit1，7个已知checkout HEAD与受保护gitlink不一致，0缺失仓，未以更新任务外gitlink消除失败。原uv.lock及四Web mixed SHA 5/5 exact，Storage/Scheduler tracked clean。检查不是用户页面验收，未调用全仓资源测试/共享清理。拓扑原失败保留，后继仍Root组合发布任务。
+
 ## R254 当前：侧栏文件夹规则已对齐，源码替换尚未实施（2026-10-05）
 
 用户明确：每个专案行下缩进该项目会话，可独立展开；外部普通持久会话列表在所有app模块常驻。当前PRD §3和product05已更新，不新增项目子目录实体/会话绑定表/API；现nullable project_ref不变。未发送草稿仍不入持久清单。

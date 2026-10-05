@@ -1,3 +1,9 @@
+## R255 日常开发运行入口（2026-10-05）
+
+标准命令/env加载事实见 Root README“本地日常开发”，实际源码均 `apps/<remote repository name>`；`.env.local` 由本仓私有保存，不入Git。Storage `src/main.ts` 由本仓 `pnpm dev` 消费、Scheduler `cmd/scheduler` 由本仓 `go run ./cmd/scheduler` 消费，已完成保数据交接，不调用 `/tmp/kokoro-r253-runtime/start_missing.py`。
+
+Root忽略目录 `var/dev/` 仅日志与生命周期收据：processes.json记录当前句柄67827/86248、8085/8087和停止方法；restart-proof.json记录四探针200、数据身份一致、零初始化。它不是业务配置/第二个启动框架。原R253临时registry仅历史证据，10214已正常结束。原3310仍旧组合，退出清理风险保护，待原owner正常配置/schema交接，不宣称九owner已正常常驻。
+
 ## R254 侧栏定位与后继范围（2026-10-05）
 
 当前单scope二选一 seam：Web `src/components/blocks/app-frame/app-frame.tsx` → `src/components/blocks/workspace-rail/workspace-rail-shell.tsx` / `workspace-rail-session-list.tsx`；项目平面行在 `workspace-rail-navigation.tsx`。用户批准folder嵌套+direct常驻，Root已更新当前PRD §3/product05，九个待执行子例在同test-cases，不新建业务实体/目录层级/API。
