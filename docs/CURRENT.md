@@ -2,7 +2,7 @@
 
 文件夹/普通常驻源已冻结，Rootcontract/architecture/lint/types实际通过；全UI/engine/core先2fail/1527pass，作者仅两旧smoke placement按PRD替换后249/4辅助绿，build及最终Root复验未完成。独立审查绑定17hash确认2P1/2P2：Move/Retry把隐藏记忆会话当当前，ACK可抢项目概览/Library导航；折叠重开与撤准入复用退役首页请求；重新准入复活删除dialog/展开；重名folder展开按钮不可辨。Root已逐seam复核，writer先四现UI业务反例，后续须Root真实RED才窄修；不提交/放行Web源码，原3310仍未更新。
 
-并行R255 Billing三D0 namespace边界已Root精确提交ecbfa8c3+7ce0ecf，仅批准前缀，5原mixed正文保留。统一kokoro_billing、owner-schema空检查、三runtime无public fallback，不改变API/资金；实现与真实单库安装仍未开始。新增prefix格式3/3正常，完整mixed格式旧警告未被掩盖。
+并行R255 Billing三D0 namespace边界已Root精确提交ecbfa8c3+7ce0ecf，仅批准前缀，5原mixed正文保留。统一kokoro_billing、owner-schema空检查、三runtime无public fallback，不改变API/资金；Root已真实PG复现installer拒kokoro_billing（1failed/21过滤未跑），test自有库回收、原76库集合逐OID不变。现唯一Billing owner已获7source及现schema/runtime测试窄授权，实施候选进行中，尚未冻结/安装/启动。新增prefix格式3/3正常，完整mixed格式旧警告未被掩盖。
 
 同日常站点真实CRUD/刷新/登录/聊天仍是最终验收，原70组11通过/6失败/14待复测/38未验/1支付后置不变。原67827/86248/8085/8087就绪；原3310/46036/45606保留，无新增服务、数据删除、模型或积分操作。用户数据保留的已有一次问题未答，默认保留不重复提问；后续固定源码正常开发。
 

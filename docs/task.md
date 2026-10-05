@@ -14,6 +14,12 @@ Root文档入口复用README/RUNBOOK及同CURRENT/progress；如增加本地运�
 
 R255 Billing三D0已由Root回读并精确前缀提交：ecbfa8c3（三doc35行），Root核canonical实际35表后仅现技术文档一字句修正7ce0ecf。原5mixed全文suffix保持；全mixed文档Prettier报3既有格式警告，新增prefix三份各正常格式逐字相等，未格式化他人正文；首次format路径在Root cwd错配exit2已重跑且不冒有效门。只文档决定，不表示namespace源码或安装通过；7source候选及生成/真实单库行为仍待后继测试RED。
 
+R255真实RED已由Root执行：现PG/同凭据，测试自己随机fixture DB先建邻owner marker，再exact schema=kokoro_billing调用真实installer，终态1failed/21按name过滤未跑，exit1，报public-only拒绝而非缺环境；原数据库集合76→76/OID相同，0新role/应用库/共享reset。private收据var/dev/r255-root-billing-schema-red.json与.log，test3e52a91d。
+
+|任务|Owner / 基线|精确允许范围|验证与后继|
+|---|---|---|---|
+|R255-BILLING-OWNER-SCHEMA-CODE|原Billing负责人capability_composition_owner_r247唯一writer，Root审/资源/Git；7ce0ecf+冻结RED|7现source：scripts/canonical-schema.ts、canonical-reference.ts、schema-verification.ts；src/config/runtime-config.ts、database/prisma.service.ts、database/transaction.service.ts、infrastructure/postgres/connection.ts。现测试仅integration的schema-installation、schema-drift、prisma-generation、prisma-persistence、transaction、target-schema、postgres-connection、postgres-pool-context、postgres-schema及prisma-database.fixture/postgres-connection.fixture；unit/runtime-config、unit/transaction、unit/prisma-generation及architecture/prisma-generation。排除5mixed docs/账务canonical SQL/wire/其他source/Git/资源/私有env；generated只能Root正常生成确认真实差异后纳入|统一exact owner-schema边界、owner-local fresh判定/rollback/邻owner不改/无public fallback、三runtime一致；候选freeze后Root正常生成及真实PG+receipt/幂等回归/独审，不以纯门冒正式计费页面。需要额外手写路径先报告，不扩框架/角色|
+
 R255 两卡本轮结果：READ已交消息且Root已核manifest/README；STORAGE-SCHEDULER窄交接已验（旧10214正常exit0，新67827/86248，78602/78631，8085/8087，四health/ready200，两个持久配置摘要相同、600/ignored，零installer/reset/newDB/schema/bucket）。Root固定收据var/dev/restart-proof.json及processes.json，两常驻保留。Root只提交.gitignore、README、同CURRENT/progress/task/map，不提交私有配置或gitlinks/uv.lock。**整套日常环境仍进行中**：原3310/45606不得直接退出触发数据删除，下一先保数据交接其真实owner配置/schema，再切正式源码与BFF依赖；不复制临时站点，不用此启动结果关闭用户业务测试。
 
 R255 Root复核：`git diff --check` exit0；`python3 scripts/verify-repository-topology.py` 实际exit1，7个已知checkout HEAD与受保护gitlink不一致，0缺失仓，未以更新任务外gitlink消除失败。原uv.lock及四Web mixed SHA 5/5 exact，Storage/Scheduler tracked clean。检查不是用户页面验收，未调用全仓资源测试/共享清理。拓扑原失败保留，后继仍Root组合发布任务。

@@ -2,7 +2,7 @@
 
 Root40069：contract273/20、architecture50/4、lint/types全0，但UI/engine/core2failed/1527passed（旧smoke单scope断言），build未执行；作者仅两smoke fixture/placement对齐后249/4辅助绿，Root最终复跑仍待。独审17hash绑定发现2P1/2P2：隐藏会话Move/Retry ACK抢overview/Library导航、折叠重开或撤准入复用旧首页promise、旧删除/展开意图复活、重名展开按钮不可辨。Root回读接受，源码不放行/不提交，原writer先四现UI业务反例→RootRED→最窄现source修复。不用“249通过”冒闭环。
 
-并行Billing三D0统一已精确提交ecbfa8c3，仅35新增行；Root核canonical35表后7ce0ecf修单文档计数，原5mixed suffix逐字保留。新增prefix3份格式正常；完整mixed文档3既有格式警告保留，不格式化他人正文。无namespace源码/SQL/安装/账务/积分操作，仍不能启动称成功。下一沿既有R255取单库真实安装反例，不增应用库或角色。
+并行Billing三D0统一已精确提交ecbfa8c3，仅35新增行；Root核canonical35表后7ce0ecf修单文档计数，原5mixed suffix逐字保留。新增prefix3份格式正常；完整mixed文档3既有格式警告保留，不格式化他人正文。Root后继真实PG新增反例1failed/21过滤未跑，public-only拒schema；邻owner预置有效，原数据库集合76→76/OID exact，fixture安全回收。现7source候选与明确现测试已派唯一Billing writer，未冻结/安装/启动；无账务/积分操作、0新应用库/role/共享reset。
 
 原3310未更新；用户真实E2E仍待执行，70组11/6/14/38/1不变。67827/86248两源码服务继续存活，原parent45606受保护；没有多开站点或清共享数据。
 
