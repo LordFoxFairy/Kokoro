@@ -1,3 +1,10 @@
+## R254/R255 本波最终源码交付与未闭环边界（2026-10-05）
+
+- Web实际失败链保留：初始3fail/133pass→冷UUID1fail/136pass→旧placement2fail/1527pass→独审四漏洞→Root9fail/249pass。修后Root96038 contract273/architecture50及定向1794/98、lint/types/build0；随后全辅助94149真实1fail/2618pass（Shell535>=500），不改预算、不删断言，搬两个原group到现session-list。首次搬移漏fallback import/export造成作者lint1与59fail/2560pass，诚实保留；补仅必要导入/导出。Root6080全2619/153+lint/types/build0后diff检查又报末尾空行，原writer只删一newline。**最终Root30884完整重跑contract273/20、architecture50/4、辅助2619/153排system、lint/typecheck/build/diff全0。** 独审最终23+4 exact、0P0/P1/P2，EOF收尾Root附字节核对。Web正式main e8ff7599a62b045b0e7a3d20e8fd50894b31a099，精确27path，三D0 onlyprefix与4mixed保护；收据var/dev/r254-web-folder-commit.json，最终日志var/dev/r254-root-final-{contract,architecture,aux,lint,types,build}.log。
+- Billing实际失败链保留：public-only installer RED→54schema/drift15fail/39pass→54pass但ORM明确public-table失败→collation非空拒绝RED→owner integration116pass/2public fixturefail→215pass/2generation-count fixturefail。最后统一owner emptycheck/Prisma adapter与准确35表fixture，**Root10500 PG217/8、pure1018/33、types/lint/build/contract/sql全0，67542format0。** 正规Prisma生成0、tracked schema/provenance无diff；真实PG各阶段原76库集合/OID不变。main22df97886055169150e3639deea256ca7e4a203c仅19path，原5mixed正文保留；Root提交后18frozenhash/canonical SQL/CURRENT原正文再次exact，源码切片已验收而非整Billing。收据var/dev/r255-root-billing-final-v2-receipt.json与r255-billing-source-commit.json；独审0阻塞。
+- 原运行未冒发布：Storage67827/Scheduler86248仍原source句柄，ready200各；原3310/parent45606/Web46036继续保护，旧BFF依赖仍缺，Billing未启动。0模型调用/0积分赠送结算/0新应用DB-role/0共享reset。原IAB仅现tab7控制再次focus超时，无页面动作或E2E，不算业务失败。保护uv.lock原SHA；Root topology-final真实exit1/同7gitlink漂移/0缺仓，未通过随意更新gitlinks遮盖。
+- **最终用户70组11通过/6失败/14待复测/38未验/1支付后置不变**，TC-R254九例仍待实际IAM/BFF用户路径；pnpm test:e2e与受保护system未跑。下一Root先保数据完成日常源码组合交接，后同站点普通/项目列表、CRUD、Move/刷新续流及正规积分，其他owner沿原卡续接。原Wave0–7/goal不改，工程安全网不抵用户闭环。
+
 ## R255 Root 真实数据库复验：安装通过，ORM 仍阻断（2026-10-05）
 
 - 首冻17hash实核后48650：installer/drift真实PG 15failed/39passed；14项稳定non-empty拒绝诊断漂移，1项影子函数fixture marker未限定public。原76数据库逐OID/name集合保持。作者获仅2path修复诊断/fixture，不改空判和断言。

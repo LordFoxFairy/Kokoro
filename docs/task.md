@@ -1,3 +1,18 @@
+## 当前任务状态：源码已集成，业务验收仍OPEN（2026-10-05）
+
+此表替代下方R254/R255阶段性“进行中/ORM失败”的当前状态；失败证据不删除，不把工程交付冒整任务已验收。
+
+|任务|Owner / 角色 / 当前基线|精确交付与实际证据|状态 / 下一责任|
+|---|---|---|---|
+|R254-FOLDER-SOURCE / R254-FOLDER-REVIEW-CODE|原Web唯一writer web_r247_skill_header_owner；独审bff_skills_v2_owner_r251；Root资源/Git/集成；main e8ff7599a62b045b0e7a3d20e8fd50894b31a099|19现source+4现UI，Root三D0只前缀+CURRENT共27path；原4mixed保留。Root30884 contract273/20、architecture50/4、辅助2619/153排system、lint/types/build/diff0，独审0P0/P1/P2；var/dev/r254-web-folder-commit.json|源码已集成验收；原3310未发布、TC-R254-C01..09全待用户E2E。writer停写无在途门，Root完成保数据源码交接后真实CRUD/Move/刷新/身份/键盘窄屏验收，不重开临时副本|
+|R255-BILLING-OWNER-SCHEMA-CODE / SCOPE-EXTENSION|原Billing唯一writer capability_composition_owner_r247，Root审/资源/Git；main22df97886055169150e3639deea256ca7e4a203c|8现source+10现test及CURRENT前缀共19path；PG217/8、pure1018/33，format/lint/types/build/contract/sql/正规Prisma生成0，canonical35表无改，5原mixed正文保留，原76库集合不变；var/dev/r255-billing-source-commit.json|owner-schema源码切片已验收；Billing正式启动/原BFF消费/计费用户链待验，不报整个Billing完成。原writer停写，Root接持久配置/owner初始化与准入；已核实实际耗费才结算，释放其他预占，支付后置|
+|R255-PERSISTENT-STORAGE-SCHEDULER|Root唯一资源/config writer；Storage14f2bc9、Schedulere8dca489|67827/86248原句柄仍running，8085/8087 ready200，配置身份保持；var/dev/processes.json|两owner正常源码交接已验；不重复开进程，不reset数据。原3310/45606/46036保护，其余整体源码组合仍未交接|
+|R255-WEB-PERSISTENT-HANDOFF-READ / 日常组合后继|Root主控；原只读交接报告与当前README入口|已确定父进程失败/退出清数据风险；用户保留/重置问题未答时默认保留，不反复问同问题；不parking/injection绕过原cleanup|阻塞保留，先正规保数据交接再切源码；同源固定IAM/BFF与其他owner依赖真实接通，不把新增端口/副本站点冒原3310成果|
+
+独立reader/源码writer本波均停写；Root最终30884已exit0，Billing10500/67542均已终态，只有有用途Storage/Scheduler常驻句柄。当前IAB tab7控制超时未得到页面证据，不能把它写成产品FAIL/PASS。Root topology仍7已知gitlink差异exit1，uv.lock SHA f7e1c30d...保留，未push/暂存gitlinks。
+
+完整Wave0–7、唯一PRD与70组11/6/14/38/1保持；后端门只辅助源码验收，最终仍为系统级完整交互与权威owner事实。BFF同事务snapshot/续流、Agent真实执行、正规登录与计费、项目/独立定时任务/文件作品/审批/Skills-MCP按原owner卡推进，不缩小成仅这两片。
+
 R255 后继 Root57909：实际54schema/drift全PASS、正规Prisma生成0，随后typed CRUD访问public.billing_credit_account真实失败；原76库及5mixed suffix保护。原8source中的PrismaService及现prisma-database.fixture须显式PrismaPg schema，另现credit-metering三fixture namespace窄改，总8source/10现tests。待冻结RoottypedCRUD/receipt/credits真实回归与独审，不以生成成功/SELECT1就绪报完成。原48650 15fail/39pass仍保留历史证据。
 
 ## R254/R255 本轮真实反例后续（2026-10-05）

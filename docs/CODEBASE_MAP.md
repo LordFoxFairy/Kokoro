@@ -1,3 +1,11 @@
+## 当前已交付入口：R254 Web / R255 Billing（2026-10-05）
+
+Web main e8ff7599a62b045b0e7a3d20e8fd50894b31a099：现app-frame.tsx负责真实可见会话叶Move及晚ACK route fence、非当前folder新草稿一次准入意图；ui/rail/use-session-list.ts负责实例/subject/admission读生命周期。workspace-rail-navigation.tsx提供独立folder disclosure/overview Link；workspace-rail-session-list.tsx组合ConversationGroup/ScopedConversationGroup（不另建engine），workspace-rail-shell.tsx只做shell组合，workspace-rail.tsx承接撤准入delete意图清理。九现i18n仅expand/collapse两键。19source/4UI，没有新目录、关系实体/wire或缓存事实；全工程证据在同CURRENT/progress，原3310尚未更新，用户E2E待验。
+
+Billing main22df97886055169150e3639deea256ca7e4a203c：现canonical-schema/reference/schema-verification/schema-catalog负责kokoro_billing owner-local安装、非空/rollback及精确namespace catalog；runtime-config/prisma.service/transaction.service/infrastructure-postgres connection固定同owner，无public fallback。四现PrismaPg构造显式schema，canonical35表不变；8现source/10现tests，原5mixed保留。正常生成/PG217及工程门通过只证明源码，Billing仍未正常启动/接原BFF/完成计费旅程。
+
+Root var/dev下冻结、提交、运行收据是ignored安全记录，不是业务配置/新计划中心；保数据日常源码交接仍Root关键路径。旧源码定位/在途方案下文保留历史，以下“尚未改源码”不作为当前状态。
+
 ## 当前窄修 seam（2026-10-05）
 
 R254源码owner为原Web writer，仍10现source/4现UI：Move真正可见route与late ACK fence在app-frame；首屏请求实例/准入生命周期在use-session-list；撤准入展开/delete intent在现workspace-rail shell/root；disclosure动作在navigation。Root9有效业务RED后进入修复，未放行/用户E2E，原3310不是当前工作树。

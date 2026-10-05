@@ -1,3 +1,14 @@
+## 当前收口：两仓源码已提交，真实页面未验收（2026-10-05）
+
+本节替代下方在途摘要；失败历史保留。**源码交付不等于页面闭环，原3310尚未更新。**
+
+- Web 本地main `e8ff7599a62b045b0e7a3d20e8fd50894b31a099`：19现source+4现UI，三D0只批准前缀及一CURRENT，共27path。每专案独立展开子会话，普通会话常驻；修复非聊天页面/迟到Move抢导航、退役首页请求复用、撤准入旧展开/删除意图复活及重名disclosure可辨性。冷UUID新会话改为目标scope准入后消费现engine本地草稿。列表组放现session-list、Shell保组合，未新增关系表、engine或框架。Root最终30884：contract273/20、architecture50/4、辅助2619/153（排system）、lint/typecheck/build/diff全0；独审0P0/P1/P2，Root补EOF字节核对并最终全复跑。四mixed全字节未变。收据 `var/dev/r254-web-folder-commit.json`。
+- Billing 本地main `22df97886055169150e3639deea256ca7e4a203c`：8现source/10现test+CURRENT批准前缀，共19path；固定kokoro_billing，owner-local空检查、catalog精确namespace、四PrismaPg构造显式schema，runtime无public fallback。canonical35表/资金规则/API不变；5原mixed正文保留。Root10500实际PG217/8、纯门1018/33及types/lint/build/contract/sql全0，67542 format0、正规Prisma生成0且tracked生成无diff；独审0阻塞。原76库OID/名称集合不变，commit后18hash/canonical/CURRENT原正文再次exact。收据 `var/dev/r255-billing-source-commit.json`。**Billing尚未启动、未接原BFF，真实预占/结算/释放/流水用户链未验。**
+- 运行仍只Storage67827/8085与Scheduler86248/8087按固定源码常驻，原句柄确认running、ready各200。原parent45606/Web46036/3310保留，退出会清理原fixture数据，故未盲停或复制新临时前端。原BFF缺四owner消费、IAMreadiness/proof前置与保数据正常源码交接仍OPEN；无模型或积分操作。
+- 浏览器再次选原IAB同tab7时CDP focus控制超时，无页面点击/新标签/真实E2E证据；它是控制阻塞，未记产品失败或通过。Root topology再次exit1：同7个checkout/gitlink漂移、0缺仓，未更新任务外gitlinks/uv.lock清零。
+
+**完整Wave0–7与70组11通过/6失败/14待复测/38未验/1支付后置保持。** TC-R254-C01–C09全待真实执行；pnpm test:e2e/受保护system fixture未执行，不以辅助数量折算完成率。下一关键动作由Root保留账号/会话/项目完成原日常组合交接，再同站点正规登录→普通/项目CRUD与刷新续流→正式计费；各owner沿原卡推进，支付渠道最后。原goal仍blocked，不另建目标或重复测试中心。
+
 ## 最新实测：Billing 安装过关但真实 ORM 仍失败（2026-10-05）
 
 Root57909在原PostgreSQL上复验：owner安装/drift54项通过、正规Prisma生成0且tracked生成物无diff；真实typedCRUD却访问public.billing_credit_account而失败。原因不是连接池search_path，而是Prisma adapter还未显式设置owner schema。仅授权现PrismaService/fixture与credit-metering fixture namespace修复；资金/API/35表canonical不变，尚未启动Billing或报计费完成。原76库集合与5mixed原正文保持。
