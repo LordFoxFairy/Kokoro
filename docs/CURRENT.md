@@ -1,3 +1,26 @@
+## R247 本轮收口：页面实测与尚未交付（2026-10-05）
+
+正式 Web 本地 main 已交付 `bac66954e44aee08db95d05deb079b3b482d6d20`：精确两 Hub client + 两现测试；四 mixed、Root gitlinks、uv锁保留。真实根因是 Web Proxy 已生成 `private, no-store, max-age=0`，浏览器客户端却 exact 比较 `no-store`。仅改浏览器指令识别；owner严格响应契约、request ID/JSON/schema/授权不放宽。独审82544471；Root75297邻门216通过、80120 lint/typecheck/build成功，仅辅助安全网。
+
+Root同真实五owner QA组合3311实际：正规IAM登录→技能已发布读取HTTP200→合法空态→硬刷新正常（/tmp/r247-skills-real-fixed.jpg）；个人文件58B非敏感QA文本→上传→扫描→列表→硬刷新保留（/tmp/r247-library-upload-refreshed.jpg）。这两个子路径真实通过，但不是原3310整页或整系统交付。本人安装实际503，下载HTTP200但15秒下载事件未完成/未核落盘；真实连接授权、排程执行、作品生成仍未验。
+
+安装503已查明BFF既有candidate关闭使client=null，Platform缺Product installation surface；同Root组合显式opt-in已窄修为现三surface+既有candidate true，独审707a11c0。它同时激活Draft/Package/Validate/Publish，全部业务仍待新组合真实验收，不冒生产放行。下一运行先解决独立hostname/browser profile：同hostname不同port不隔离cookie。本轮回原3310时需登录，因果未完全确认；已正常登录恢复原conv586及原两轮正文，未改数据/权限/模型费用。旧Root临时tab6关闭绑定仍控制超时、已停止重复尝试，未假报已关闭。
+
+Root94387正常exit0，3311监听消失/自有credentials移除，原3310 PID45606/46036存活。清理后发现4个本origin Product Session残留：旧scanner0而正确scanner4的真实RED已留/tmp/r247-product-session-cleanup-real-red.json；Root仅精确UNLINK这4个已确认本origin keys，复核0，收据/tmp/r247-product-session-cleanup-receipt.json。不flush共享Redis。已复用现Product Session scanner修launcher三处before/after，Root86963冻结最终guard46/32通过（6.85秒）；下一真实正常退出+其他origin不变仍待验，不把提示removed当唯一证据。
+
+完整Wave0–7、70组11通过/6失败/14待复测/38未验/1支付后置不变，goal未新建/缩小/冒完成。当前用户3310仍未装配全部owner，Plugins目录和Scheduled欢迎页不等于已交付。下一优先独立浏览器身份隔离→新冻结组合安装读回/发布/file下载真正落盘→Scheduler CRUD及实际执行依赖，不等待Agent工程门来开始这些独立旅程。
+
+## R247 真实能力页面复验续录（2026-10-05）
+
+Root新QA组合3311已真实启动IAM/BFF/Platform/Storage/Web（session94387），原3310/PID45606、46036及用户数据保持；新租户是自有验收数据，不冒原用户环境已修。根候选911e9ae43a52d92ee5ef84936e05df916cd3108d，五owner固定Git对象见 /tmp/r247-capability-release-preparation.json。Storage九显式输入现已从现有健康loopback服务安全配置在0600私有文件，未输出凭据、未增数据库role/基础设施。首轮冷启动IAM缺ignored generated client、第二轮Platform nested pnpm缺显式工具链均失败如实保留；仅独立候选补owner批准生成步骤及已有Node24工具链，未改全局安装。
+
+- 正规IAM实际邮箱密码登录→callback→/app通过。Skills本人读取实际200，但浏览器仍“技能池加载失败”：proxy给`private, no-store, max-age=0`，hub browser client exact `no-store`误拒合法复合头。这是实际前端边界缺陷，不是把成功响应假装技能已通。唯一Web writer web_r247_skill_header_owner限src/hub/client.ts、skill-publish-client.ts及两现对应tests；四mixed保护；独审qa_r243_web_frozen_review。根因修复待Root浏览器复验，不新建计划中心。
+- 同3311资料库实际侧栏进入→合法空列表→选择58B无敏感QA文本→提交→真实扫描通过→文件清单出现→硬刷新仍出现，截图/tmp/r247-library-upload-refreshed.jpg。仅上传/扫描/列表/刷新子路径PASS；非原3310全页修复。Agent作品标签切换与空态显示成立，没有生成作品的验收证据。
+- 页面下载按钮请求content实际200，UI恢复idle无alert，但IAB等待download事件15秒超时，尚无落盘字节/文件摘要证明，下载仍待复测，不以200称成功。
+- Root34712冻结composition guard重新执行45 passed、32 subtests passed/6.80秒，仅辅助；两个独审P1和一个P2已修freeze2，无新确定阻塞但不代用户验收。Plugins真实授权/receipt/撤销，ScheduledTask CRUD/实际dispatch均未通过，本轮不把静态卡片/欢迎页当完成。
+
+完整Wave0–7及70组11通过/6失败/14待复测/38未验/1支付后置保持；stored goal仍blocked。下一先在真组合复验Skills修复，再下载字节验证与Scheduler入口；不扩大权限、不调用模型/资金、不reset共享PG/Redis。当前94387仍由Root持原句柄管理，不重复启动；收尾须逆序核owned资源回收。
+
 ## R247 当前用户页面与修复事实（2026-10-05）
 
 - Root实际同一用户tab7：Skills读取401；Library个人文件读取503；Project资源读取503。已核当前受管组合没有Platform/Storage/Scheduler。401正文/稳定code尚未取到，不能把缺Platform认作401直接根因；Plugins静态目录不等于已连接，Scheduled欢迎页不等于任务执行闭环。

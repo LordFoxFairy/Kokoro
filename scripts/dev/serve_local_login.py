@@ -33,9 +33,11 @@ import run_bff_iam_oidc_smoke as previous  # noqa: E402
 import run_bff_iam_session_smoke as session  # noqa: E402
 import run_web_bff_iam_oidc_smoke as web_smoke  # noqa: E402
 import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
+import run_web_bff_iam_product_session_smoke as product_session  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import local_chat_runtime as chat_runtime  # noqa: E402
+import local_platform_runtime as platform_runtime  # noqa: E402
 import model_provider  # noqa: E402
 import local_storage_runtime as storage_runtime  # noqa: E402
 
@@ -57,8 +59,8 @@ watcher.unref()
 """
 
 
-def web_origin(_run_id: str) -> str:
-    return f"http://127.0.0.1:{WEB_PORT}"
+def web_origin(_run_id: str, port: int = WEB_PORT) -> str:
+    return f"http://127.0.0.1:{port}"
 
 
 class LaunchError(RuntimeError):
@@ -71,6 +73,7 @@ def failure_category(error: Exception) -> str:
         ((LaunchError,), "launcher"),
         ((chat_runtime.ChatError,), "chat"),
         ((storage_runtime.StorageRuntimeError,), "storage"),
+        ((platform_runtime.PlatformRuntimeError,), "platform"),
         ((model_provider.ProviderError,), "provider"),
         ((OSError,), "io"),
         ((subprocess.SubprocessError,), "subprocess"),
@@ -90,20 +93,20 @@ def failure_category(error: Exception) -> str:
     return "unexpected"
 
 
-def require_free_web_port() -> None:
+def require_free_web_port(port: int = WEB_PORT) -> None:
     """Fail before creating resources when another process owns the entrance."""
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.bind(("127.0.0.1", WEB_PORT))
+            probe.bind(("127.0.0.1", port))
     except OSError:
-        raise LaunchError("local login port 3310 is occupied") from None
+        raise LaunchError("selected local login port is occupied") from None
 
 
-def local_next_server(source: str) -> str:
+def local_next_server(source: str, port: int = WEB_PORT) -> str:
     marker = "port: 443"
     if source.count(marker) != 1:
         raise LaunchError("isolated Next server template changed")
-    return source.replace(marker, f"port: {WEB_PORT}")
+    return source.replace(marker, f"port: {port}")
 
 
 def install_node_parent_guard(directory: Path, *environments: dict[str, str]) -> Path:
@@ -165,17 +168,19 @@ def http_browser(
 def fixture_origin_matches(observed: object, origin: str) -> bool:
     """Next normalizes request.nextUrl to localhost; Host remains browser authority."""
     return observed == {
-        "origin": f"http://localhost:{WEB_PORT}",
+        "origin": f"http://localhost:{urlsplit(origin).port}",
         "host": urlsplit(origin).netloc,
         "proto": "http",
     }
 
 
-def wait_for_web(process: subprocess.Popen[bytes], origin: str) -> None:
+def wait_for_web(
+    process: subprocess.Popen[bytes], origin: str, port: int = WEB_PORT
+) -> None:
     deadline = time.monotonic() + 45
     while time.monotonic() < deadline and process.poll() is None:
         try:
-            response = http_browser(WEB_PORT, "/api/fixture-origin", origin)
+            response = http_browser(port, "/api/fixture-origin", origin)
             if response.status == 200:
                 try:
                     observed = json.loads(response.body)
@@ -208,6 +213,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--iam-node-bin", type=Path, required=True)
     parser.add_argument("--bff-node-bin", type=Path, required=True)
     parser.add_argument("--web-node-bin", type=Path, required=True)
+    parser.add_argument("--web-port", type=int, default=WEB_PORT)
+    parser.add_argument(
+        "--platform-node-bin",
+        type=Path,
+        help="Enable owned real Platform Skills with owned real Storage",
+    )
     parser.add_argument(
         "--storage-node-bin",
         type=Path,
@@ -225,6 +236,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--external-model-credential-file", type=Path)
     args = parser.parse_args(argv)
     args.storage_environment = None
+    if not 1 <= args.web_port <= 65535:
+        parser.error("web_port must be between 1 and 65535")
+    if args.platform_node_bin is not None and args.storage_node_bin is None:
+        parser.error("Platform requires explicit owned Storage")
     if args.storage_node_bin is not None:
         node = args.storage_node_bin.expanduser().resolve()
         if not node.is_file() or not os.access(node, os.X_OK):
@@ -235,7 +250,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                 dict(os.environ)
             )
         except storage_runtime.StorageRuntimeError:
-            parser.error("Storage requires explicit existing local S3/ClamAV configuration")
+            parser.error(
+                "Storage requires explicit existing local S3/ClamAV configuration"
+            )
+    if args.platform_node_bin is not None:
+        node = args.platform_node_bin.expanduser().resolve()
+        if not node.is_file() or not os.access(node, os.X_OK):
+            parser.error("platform_node_bin must be executable")
+        args.platform_node_bin = node
     args.postgres_admin_url = os.environ.get("KOKORO_LOCAL_POSTGRES_URL", "")
     args.redis_url = os.environ.get("KOKORO_LOCAL_REDIS_URL", "")
     args.external_model = None
@@ -290,7 +312,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
-def verify_login_release_inputs(*, storage: bool = False) -> None:
+def verify_login_release_inputs(
+    *, storage: bool = False, platform: bool = False
+) -> None:
     """Admit the selected owners from one committed Root release."""
     root = web_smoke.ROOT
     apps = root / "apps"
@@ -308,6 +332,8 @@ def verify_login_release_inputs(*, storage: bool = False) -> None:
     )
     if storage:
         owners += ((apps / "kokoro-storage", "kokoro-storage"),)
+    if platform:
+        owners += ((apps / "kokoro-capability", "kokoro-capability"),)
     for repo, owner in owners:
         path = f"apps/{owner}"
         if repo != apps / owner or not repo.is_dir() or repo.is_symlink():
@@ -338,16 +364,19 @@ def verify_login_release_inputs(*, storage: bool = False) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    web_port = getattr(args, "web_port", WEB_PORT)
     try:
-        if getattr(args, "storage_node_bin", None) is not None:
+        if getattr(args, "platform_node_bin", None) is not None:
+            verify_login_release_inputs(storage=True, platform=True)
+        elif getattr(args, "storage_node_bin", None) is not None:
             verify_login_release_inputs(storage=True)
         else:
             verify_login_release_inputs()
     except runtime.SmokeError:
         raise LaunchError("release source preflight failed") from None
-    require_free_web_port()
+    require_free_web_port(web_port)
     run_id = secrets.token_hex(12)
-    origin = web_origin(run_id)
+    origin = web_origin(run_id, web_port)
     host_name = "127.0.0.1"
     iam_resource_id = str(uuid4())
     iam_identity = web_smoke.named_iam_identity(iam_resource_id)
@@ -378,10 +407,16 @@ def main(argv: list[str] | None = None) -> int:
     chat = None
     chat_config = None
     storage = None
+    platform = None
     storage_env = None
+    platform_env = None
     if getattr(args, "storage_node_bin", None) is not None:
         storage_env = session.node_environment(
             args.storage_node_bin, "v24.20.0", args.storage_node_bin.parent
+        )
+    if getattr(args, "platform_node_bin", None) is not None:
+        platform_env = session.node_environment(
+            args.platform_node_bin, "v24.20.0", args.platform_node_bin.parent
         )
     with tempfile.TemporaryDirectory(
         prefix="kokoro-local-login-", dir=web_smoke.ROOT.parent, delete=False
@@ -390,6 +425,8 @@ def main(argv: list[str] | None = None) -> int:
         install_node_parent_guard(directory, iam_env, bff_env, web_env)
         if storage_env is not None:
             install_node_parent_guard(directory, storage_env)
+        if platform_env is not None:
+            install_node_parent_guard(directory, platform_env)
         log_path = directory / "process.log"
         log_path.touch(mode=0o600)
         with log_path.open("w+b") as log:
@@ -434,7 +471,9 @@ def main(argv: list[str] | None = None) -> int:
                     != "PONG"
                 ):
                     raise LaunchError("Redis unavailable")
-                before_web = web_smoke.web_redis_keys(args.redis_url, origin, resources)
+                before_web = product_session.web_redis_keys(
+                    args.redis_url, origin, resources
+                )
                 stage = "BFF database"
                 application_db_url = resources.create_database("bff")
                 db_url = bff_owner_database_url(application_db_url)
@@ -465,6 +504,8 @@ def main(argv: list[str] | None = None) -> int:
                         "NODE_ENV": "test",
                     }
                 )
+                if platform_env is not None:
+                    iam_env["IAM_TEST_SKILL_SANDBOX_MODE"] = "1"
                 iam_attempted = True
                 iam = subprocess.Popen(
                     [str(args.iam_node_bin), "--import", "tsx", str(web_smoke.HOST)],
@@ -480,7 +521,24 @@ def main(argv: list[str] | None = None) -> int:
                 if iam.stdout is None:
                     raise LaunchError("IAM host protocol absent")
                 reader = session.ProtocolReader(iam.stdout.fileno())
-                ready = web_smoke.validate_ready(reader.record(), origin)
+                ready_record = reader.record()
+                login_ready_record = ready_record
+                if (
+                    platform_env is not None
+                    and isinstance(ready_record, dict)
+                    and "skill_sandbox" in ready_record
+                ):
+                    login_ready_record = {
+                        key: value
+                        for key, value in ready_record.items()
+                        if key != "skill_sandbox"
+                    }
+                ready = web_smoke.validate_ready(login_ready_record, origin)
+                sandbox_ready = None
+                if platform_env is not None:
+                    sandbox_ready = platform_runtime.sandbox.require_sandbox_ready(
+                        ready_record
+                    )
                 if (ready.database_name, ready.redis_prefix) != (
                     iam_identity.database_name,
                     iam_identity.redis_prefix,
@@ -494,11 +552,21 @@ def main(argv: list[str] | None = None) -> int:
                 ):
                     raise LaunchError("IAM owned database absent after host ready")
                 credentials.add(ready.client_secret, ready.password)
+                if sandbox_ready is not None:
+                    credentials.add(*sandbox_ready.secrets)
                 stage = "BFF startup"
                 secret = secrets.token_urlsafe(32)
                 credentials.add(secret)
                 if storage_env is not None:
                     stage = "Storage startup"
+                    if platform_env is not None:
+                        platform = platform_runtime.LocalPlatformRuntime(
+                            node=args.platform_node_bin,
+                            node_environment=platform_env,
+                            directory=directory,
+                            credentials=credentials,
+                            log=log,
+                        )
                     storage = storage_runtime.LocalStorageRuntime(
                         node=args.storage_node_bin,
                         environment=args.storage_environment,
@@ -507,7 +575,35 @@ def main(argv: list[str] | None = None) -> int:
                         credentials=credentials,
                         log=log,
                     )
-                    bff_env.update(storage.start(application_db_url, args.redis_url))
+                    owner_application_url = application_db_url
+                    if sandbox_ready is not None:
+                        owner_application_url = (
+                            platform_runtime.sandbox.owner_database_url(
+                                args.postgres_admin_url,
+                                sandbox_ready.database_name,
+                                "kokoro_storage",
+                            )
+                        )
+                    storage_result = storage.start(
+                        owner_application_url,
+                        args.redis_url,
+                        platform_service_credential=(
+                            None
+                            if platform is None
+                            else platform.storage_service_credential
+                        ),
+                    )
+                    bff_env.update(storage_result)
+                    if platform is not None and sandbox_ready is not None:
+                        stage = "Platform startup"
+                        bff_env.update(
+                            platform.start(
+                                owner_application_url,
+                                args.redis_url,
+                                sandbox_ready,
+                                storage_result["KOKORO_STORAGE_RPC_BASE_URL"],
+                            )
+                        )
                 bff_port = runtime.free_port()
                 bff_env.update(
                     {
@@ -551,7 +647,9 @@ def main(argv: list[str] | None = None) -> int:
                 stage = "Web startup"
                 next_root = web_smoke.isolated_next(directory)
                 server_path = next_root / "server.cjs"
-                server_path.write_text(local_next_server(server_path.read_text()))
+                server_path.write_text(
+                    local_next_server(server_path.read_text(), web_port)
+                )
                 web_env.update(
                     {
                         "KOKORO_WEB_ORIGIN": origin,
@@ -571,7 +669,7 @@ def main(argv: list[str] | None = None) -> int:
                     [
                         str(args.web_node_bin),
                         str(server_path),
-                        str(WEB_PORT),
+                        str(web_port),
                         host_name,
                     ],
                     cwd=next_root,
@@ -582,10 +680,10 @@ def main(argv: list[str] | None = None) -> int:
                     start_new_session=True,
                 )
                 processes.append(next_process)
-                wait_for_web(next_process, origin)
+                wait_for_web(next_process, origin, web_port)
                 stage = "formal login navigation"
                 first_login.probe_formal_login_entry(
-                    WEB_PORT, origin, credentials, browser_request=http_browser
+                    web_port, origin, credentials, browser_request=http_browser
                 )
                 stage = "private credential setup"
                 credential_path = write_private_credentials(
@@ -595,8 +693,12 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Private login credentials: {credential_path}", flush=True)
                 mode = "real Chat (empty Skills)" if args.chat else "login only"
                 print(
-                    "Mode: " + mode + (
-                        "; real Storage" if storage is not None else "; Storage not configured"
+                    "Mode: "
+                    + mode
+                    + (
+                        "; real Storage"
+                        if storage is not None
+                        else "; Storage not configured"
                     ),
                     flush=True,
                 )
@@ -608,6 +710,8 @@ def main(argv: list[str] | None = None) -> int:
                     require_owned_stack_alive(processes)
                     if storage is not None:
                         storage.require_alive()
+                    if platform is not None:
+                        platform.require_alive()
                     if chat is not None:
                         stage = "serving chat tick"
                         chat.tick()
@@ -648,6 +752,18 @@ def main(argv: list[str] | None = None) -> int:
                 failures.extend(chat_failures)
                 if chat is not None and not chat.quiescent:
                     owned_processes_stopped = False
+                platform_failures = []
+                if platform is not None:
+                    if owned_processes_stopped:
+                        platform_failures = platform.close()
+                        failures.extend(platform_failures)
+                        if not platform.quiescent:
+                            owned_processes_stopped = False
+                    else:
+                        platform_failures = ["Platform dependencies are still active"]
+                        failures.append(
+                            "Platform resources preserved for active dependents"
+                        )
                 storage_failures = []
                 if storage is not None:
                     if owned_processes_stopped:
@@ -657,7 +773,9 @@ def main(argv: list[str] | None = None) -> int:
                             owned_processes_stopped = False
                     else:
                         storage_failures = ["Storage dependencies are still active"]
-                        failures.append("Storage resources preserved for active dependents")
+                        failures.append(
+                            "Storage resources preserved for active dependents"
+                        )
                 if owned_processes_stopped and processes:
                     try:
                         runtime.stop_owned_process(processes[0])
@@ -672,7 +790,9 @@ def main(argv: list[str] | None = None) -> int:
                 if before_web is not None and owned_processes_stopped:
                     try:
                         extras = (
-                            web_smoke.web_redis_keys(args.redis_url, origin, resources)
+                            product_session.web_redis_keys(
+                                args.redis_url, origin, resources
+                            )
                             - before_web
                         )
                         if extras:
@@ -687,7 +807,9 @@ def main(argv: list[str] | None = None) -> int:
                                 ]
                             )
                         if (
-                            web_smoke.web_redis_keys(args.redis_url, origin, resources)
+                            product_session.web_redis_keys(
+                                args.redis_url, origin, resources
+                            )
                             != before_web
                         ):
                             failures.append("Web Redis cleanup")
@@ -699,6 +821,7 @@ def main(argv: list[str] | None = None) -> int:
                     if (
                         owned_processes_stopped
                         and not chat_failures
+                        and not platform_failures
                         and not storage_failures
                     ):
                         resources.cleanup()

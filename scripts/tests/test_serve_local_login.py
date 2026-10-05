@@ -27,6 +27,121 @@ spec.loader.exec_module(launcher)
 
 
 class LocalLoginGuards(unittest.TestCase):
+    def test_platform_is_explicit_and_requires_storage(self):
+        argv = [
+            "--iam-node-bin",
+            "/bin/echo",
+            "--bff-node-bin",
+            "/bin/echo",
+            "--web-node-bin",
+            "/bin/echo",
+            "--platform-node-bin",
+            "/bin/echo",
+        ]
+        with patch.dict(
+            "os.environ",
+            {
+                "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+                "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+            },
+            clear=True,
+        ):
+            with self.assertRaises(SystemExit):
+                launcher.parse_args(argv)
+
+    def test_explicit_web_port_controls_origin_and_isolated_server(self):
+        self.assertEqual(
+            launcher.web_origin("ignored", 43110), "http://127.0.0.1:43110"
+        )
+        source = "const app = next({ port: 443 })"
+        self.assertEqual(
+            launcher.local_next_server(source, 43110),
+            "const app = next({ port: 43110 })",
+        )
+
+    def test_platform_composition_uses_current_platform_names_only(self):
+        source = SCRIPT.read_text()
+        platform_source = (ROOT / "scripts/dev/local_platform_runtime.py").read_text()
+        self.assertIn('"IAM_TEST_SKILL_SANDBOX_MODE"', source)
+        self.assertIn('"KOKORO_PLATFORM_BASE_URL"', platform_source)
+        self.assertIn(
+            '"KOKORO_PLATFORM_SURFACES": "skill-catalog,skill-source,skill-installation-product"',
+            platform_source,
+        )
+        self.assertIn(
+            '"KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "true"', platform_source
+        )
+        self.assertNotIn("KOKORO_CAPABILITY", source + platform_source)
+
+    def test_default_ready_path_does_not_strip_unrequested_sandbox_fields(self):
+        import ast
+
+        tree = ast.parse(SCRIPT.read_text())
+        guards = [
+            node.test
+            for node in ast.walk(tree)
+            if isinstance(node, ast.If)
+            and any(
+                isinstance(child, ast.Constant)
+                and child.value == "skill_sandbox"
+                for child in ast.walk(node.test)
+            )
+        ]
+        self.assertEqual(len(guards), 1)
+        names = {
+            child.id for child in ast.walk(guards[0]) if isinstance(child, ast.Name)
+        }
+        self.assertIn("platform_env", names)
+
+    def test_platform_cleanup_preserves_credentials_after_stop_failure(self):
+        from unittest.mock import Mock
+
+        registry = Mock()
+        owned = launcher.platform_runtime.LocalPlatformRuntime(
+            node=Path(sys.executable),
+            node_environment={},
+            directory=Path(tempfile.gettempdir()),
+            credentials=registry,
+            log=None,
+        )
+        owned.process = SimpleNamespace(poll=lambda: 1)
+        owned.quiescent = False
+        owned._files = Mock()
+        with patch.object(
+            launcher.platform_runtime.runtime,
+            "stop_owned_process",
+            side_effect=RuntimeError("stop failed"),
+        ):
+            self.assertEqual(
+                owned.close(),
+                [
+                    "Platform process cleanup",
+                    "Platform credentials preserved for active process",
+                ],
+            )
+        owned._files.close.assert_not_called()
+        self.assertFalse(owned.quiescent)
+
+    def test_cleanup_uses_product_session_aware_redis_inventory(self):
+        import ast
+
+        tree = ast.parse(SCRIPT.read_text())
+        calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "web_redis_keys"
+        ]
+        self.assertEqual(len(calls), 3)
+        self.assertTrue(
+            all(
+                isinstance(call.func.value, ast.Name)
+                and call.func.value.id == "product_session"
+                for call in calls
+            )
+        )
+
     def wait_for_process_exit(self, pid: int, timeout: float = 5.0) -> bool:
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
@@ -535,7 +650,7 @@ class FailedShutdownRedisTests(unittest.TestCase):
             )
             patches.enter_context(
                 patch.object(
-                    launcher.web_smoke,
+                    launcher.product_session,
                     "web_redis_keys",
                     side_effect=[set(), {"owned-session"}, set()],
                 )
@@ -807,7 +922,11 @@ class SafeLaunchDiagnosticTests(unittest.TestCase):
                             "iam_owned_inventory",
                             {"side_effect": [(set(), set()), ({"owned-iam"}, set())]},
                         ),
-                        (launcher.web_smoke, "web_redis_keys", {"return_value": set()}),
+                        (
+                            launcher.product_session,
+                            "web_redis_keys",
+                            {"return_value": set()},
+                        ),
                         (launcher.web_smoke, "isolated_next", {"return_value": root}),
                         (launcher.web_smoke, "reconcile_iam_identity", {}),
                         (launcher.previous, "assert_log_clean", {}),

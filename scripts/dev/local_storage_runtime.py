@@ -83,7 +83,13 @@ class LocalStorageRuntime:
         self.s3 = None
         self.quiescent = True
 
-    def start(self, application_database_url: str, redis_url: str) -> dict[str, str]:
+    def start(
+        self,
+        application_database_url: str,
+        redis_url: str,
+        *,
+        platform_service_credential: str | None = None,
+    ) -> dict[str, str]:
         if self.process is not None or self.s3 is not None:
             raise StorageRuntimeError("Storage runtime was already started")
         if importlib.util.find_spec("boto3") is None:
@@ -128,6 +134,13 @@ class LocalStorageRuntime:
         environment = storage_helper._storage_env(
             inputs, database, agent_secret, bff_secret, port
         )
+        if platform_service_credential is not None:
+            if not platform_service_credential:
+                raise StorageRuntimeError("Platform service credential invalid")
+            self.credentials.add(platform_service_credential)
+            environment["KOKORO_STORAGE_SERVICE_CREDENTIALS"] += (
+                f",kokoro-platform={platform_service_credential}"
+            )
         environment.update(
             {
                 key: value

@@ -1,3 +1,29 @@
+## R247 后继执行门（2026-10-05）
+
+capability_composition_owner_r247已停写，最终4path冻结/tmp/r247-composition-final-freeze.json；Root86963 46/32通过。安装activation和ProductSession cleanup source已修，下一真实生命周期尚未跑。新组合必须先独立hostname/profile，不再拿port当cookie隔离；原3310数据/权限/进程保持。Root先新组合正规登录→安装读回/刷新与文件下载落盘，再Scheduler CRUD/control；真实occurrence仍依赖Agent正式组合。不同owner调查/审查继续并行，同仓单writer。
+
+### R247-SKILL-HEADER / R247-INSTALLATION-COMPOSITION 续卡
+
+|项|当前执行决定|
+|---|---|
+|Web owner|web_r247_skill_header_owner，main@5c73af71，精确两hub client+两现tests；已停写、独审82544471；Root216邻门及lint/typecheck/build当前实跑通过，本地提交bac66954e44aee08db95d05deb079b3b482d6d20，四mixed保留。|
+|真实验收|Root同3311Skills合法读取200→空态→硬刷新正常，截图/tmp/r247-skills-real-fixed.jpg；本人安装仍503，不能关闭Skills整组。旧3310未更新完整owner组合。|
+|Root composition owner|capability_composition_owner_r247继续唯一写local_platform_runtime.py及test_serve_local_login.py现相应断言，Root不抢写；其余两composition文件冻结。|
+|实际RED/依赖|本人安装503/requestid9e473181-31ab-4318-a3fd-00db73dd063e；现flag=false令BFF client=null，Platform缺skill-installation-product。已有catalog/projection scope-separated credential handles齐全。|
+|准许修复|仅Platform显式opt-in组合按现契约增加skill-installation-product并同改candidate flag=true，不创flag/alias、不假空列表/弱认证。现flag同时激活Draft/Package/Publish，明确只是验收组合功能开放，不冒真实发布流程已验或生产放行。|
+|Root验收/资源|作者纯guard冻结→独审→Root重跑→回收旧自有3311并以新冻结对象启动→正规登录/本人读取/安装态/Library复验；旧3310及用户数据保持。Root独占Git、句柄、凭据与browser。|
+
+## R247 真实能力页面复验续录（2026-10-05）
+
+Root新QA组合3311已真实启动IAM/BFF/Platform/Storage/Web（session94387），原3310/PID45606、46036及用户数据保持；新租户是自有验收数据，不冒原用户环境已修。根候选911e9ae43a52d92ee5ef84936e05df916cd3108d，五owner固定Git对象见 /tmp/r247-capability-release-preparation.json。Storage九显式输入现已从现有健康loopback服务安全配置在0600私有文件，未输出凭据、未增数据库role/基础设施。首轮冷启动IAM缺ignored generated client、第二轮Platform nested pnpm缺显式工具链均失败如实保留；仅独立候选补owner批准生成步骤及已有Node24工具链，未改全局安装。
+
+- 正规IAM实际邮箱密码登录→callback→/app通过。Skills本人读取实际200，但浏览器仍“技能池加载失败”：proxy给`private, no-store, max-age=0`，hub browser client exact `no-store`误拒合法复合头。这是实际前端边界缺陷，不是把成功响应假装技能已通。唯一Web writer web_r247_skill_header_owner限src/hub/client.ts、skill-publish-client.ts及两现对应tests；四mixed保护；独审qa_r243_web_frozen_review。根因修复待Root浏览器复验，不新建计划中心。
+- 同3311资料库实际侧栏进入→合法空列表→选择58B无敏感QA文本→提交→真实扫描通过→文件清单出现→硬刷新仍出现，截图/tmp/r247-library-upload-refreshed.jpg。仅上传/扫描/列表/刷新子路径PASS；非原3310全页修复。Agent作品标签切换与空态显示成立，没有生成作品的验收证据。
+- 页面下载按钮请求content实际200，UI恢复idle无alert，但IAB等待download事件15秒超时，尚无落盘字节/文件摘要证明，下载仍待复测，不以200称成功。
+- Root34712冻结composition guard重新执行45 passed、32 subtests passed/6.80秒，仅辅助；两个独审P1和一个P2已修freeze2，无新确定阻塞但不代用户验收。Plugins真实授权/receipt/撤销，ScheduledTask CRUD/实际dispatch均未通过，本轮不把静态卡片/欢迎页当完成。
+
+完整Wave0–7及70组11通过/6失败/14待复测/38未验/1支付后置保持；stored goal仍blocked。下一先在真组合复验Skills修复，再下载字节验证与Scheduler入口；不扩大权限、不调用模型/资金、不reset共享PG/Redis。当前94387仍由Root持原句柄管理，不重复启动；收尾须逆序核owned资源回收。
+
 ## R247 当前用户页面与修复事实（2026-10-05）
 
 - Root实际同一用户tab7：Skills读取401；Library个人文件读取503；Project资源读取503。已核当前受管组合没有Platform/Storage/Scheduler。401正文/稳定code尚未取到，不能把缺Platform认作401直接根因；Plugins静态目录不等于已连接，Scheduled欢迎页不等于任务执行闭环。
@@ -12,7 +38,7 @@
 
 | 项 | 决定 |
 |---|---|
-|Owner/唯一writer|Root仓现dev composition，qa_r243_web_frozen_review续接实现；Root此卡冻结后停止Root文档写入，独占Git/资源/浏览器与放行。不是新业务owner。|
+|Owner/唯一writer|Root仓现dev composition，capability_composition_owner_r247实现、qa_r243_web_frozen_review独审；Root此卡冻结后停止Root文档写入，独占Git/资源/浏览器与放行。不是新业务owner。|
 |基线/事实|Root2d23550d及本轮五台账pending；正式Web5c73af71、现Platform/Storage工作树clean；旧3310 PID45606/46036保持。/tmp/r247-capability-composition-cut.md是现函数/契约定位，不是产品PASS。|
 |目标职责/位置比较|仅本地源码组合两个现正式owner，使用已存在正式IAM workload凭据。新普通scripts/dev/local_platform_runtime.py承接启动/存活/精确回收；优于继续把该职责堆入740行serve_local_login.py，不新建目录/公共抽象/配置中心。现local_storage_runtime.py继续Storage生命周期，不把业务配置挪给System。|
 |允许写集|scripts/dev/serve_local_login.py、scripts/dev/local_platform_runtime.py（新普通文件）、scripts/dev/local_storage_runtime.py、scripts/tests/test_serve_local_login.py；新辅助测试文件须先报普通文件职责再准。所有docs/子仓/Schema/contracts/lock/用户preview excluded，worker不操作Git。|
