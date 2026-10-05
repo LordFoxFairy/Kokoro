@@ -1,3 +1,16 @@
+## R255 正常运行组合已切换：用户用例不由HTTP门代替
+
+同既有T-C.R255-P01/P02、T-Q/T-B03与TC-R254-C01..09，不新增第71组。7源码owner ready200、正常HTTP登录与同源列表200；真实右侧新tab8的/login已直接显示IAM账号密码表单，无中转重试。等待原密码浏览器登录后继续操作，0新增完整用户用例PASS，完整70组11/6/14/38/1保持。
+
+|分类 / 用例|预置条件|用户步骤|预期|优先级/类型|本次状态|
+|---|---|---|---|---|---|
+|主链 / T-C.R255-P01|固定源码3310、原账号/项目/聊天保留|IAM表单提交→工作区→普通列表→逐folder展开→CRUD/Move→硬刷新|身份/归属不变，普通会话常驻，folder独立，无永久loading|P0/系统端到端|仅登录入口显示实观；HTTP登录/2普通/2项目/空project list200为辅助；整例待验|
+|异常/状态 / T-C.R255-P02|同正常组合；真实断连/恢复在Root资源边界内|打开既有正文→刷新/断连→恢复→重新打开|同会话正文、单调cursor、loading退出、无重复/跨scope迟到覆盖|P0/端到端状态机|待验；模型worker关闭不当续流通过|
+|异常 / 原排程用例|Scheduler已正常ready；现BFF callback为loopback|正式创建排程→到点执行→查看结果/取消|owner政策与真实callback一致、持久状态/实际调用可核对|P0/系统功能异常|真实启动曾拒IP allowlist，保原空策略ready；callback链尚未验收，不关闭SSRF|
+|主链 / 原T-B03|Billing/BFF/Web个人读取正式接线后|真实用户打开Credits→余额/流水分页→刷新|owner micros精确一致，无假零/旧比例计算|P0/系统业务|仅BFF D0已提交/独审；Billing未运行、D1实施未验，不称积分通过|
+
+资源/HTTP/数据接续收据在同CURRENT；退出标准仍为完整真实交互旅程与异常路径实测、原缺陷复测，不以工程测试数量增加完成率。
+
 ## R255 当前 canonical 接续与正规身份：辅助实证不关闭用户用例
 
 仍沿T-C.R255-P01/P02、T-Q与T-B03，不新加第71组。原3310真实HTTP表单/OAuth+get-session200；正式operator client正负Basic验证通过。Agent/BFF当前fresh schema＋旧数据44表269行投影exact，System旧published缺输出界实际拒绝，正常源码切换仍OPEN。**本波新增浏览器PASS为0，70组11/6/14/38/1保持。**

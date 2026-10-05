@@ -1,3 +1,9 @@
+## R255 当前正常源码入口已生效（2026-10-05）
+
+同3310实际由apps/kokoro-app现pnpm dev运行，不再原复制fixture；7源码进程、端口/原工具句柄、listener PID与停止方式唯一记录ignored var/dev/processes.json，私有配置留各仓.env.local（Agent HTTP为.env.http.local）。一个固定应用库kokoro_development，6当前owner schema；旧kokoro_dev与无关库保留。Root开发数据一次交接的archive/私有helper只为证据，不加入生产/新启动框架/兼容运行。
+
+当前Web e8ff7599已在3310运行：各folder独立会话组、direct常驻源码已启用，但浏览器用户路径未验收。正常HTTP登录/同源列表200只作辅助。Billing消费者D0三前缀5dd9fc5已正式提交，D1仅有效合同RED；机器/public wire及runtime暂未切。Agent模型worker、Billing、Platform未运行，排程callback有loopback/SSRF政策待对齐，不能把ready图当全部页面功能可用。详证在同CURRENT/task/progress，不增第二计划中心；以下旧入口运行状态为历史。
+
 ## R255 本轮现入口与正常配置接续
 
 System正式现scripts/apply-schema.ts在Root自有空库装现canonical；仅旧非模型14控制面表按原archive白名单接续，model-catalog与command receipts旧测试事实归档，不复制旧published/digest。现modules/model-catalog正常API未来发布真实providermetadata/管理员硬界；不得将其误作普通项目/会话CRUD前置。

@@ -1,3 +1,27 @@
+## R255 本轮当前：正常源码运行已交接，真实页面验收继续
+
+Root沿原Wave0–7，同3310已从旧fixture副本切为固定apps源码；最终双库锁内归档、88保留表1110行原字段hash及完整JWK同key CAS验过，旧supervisor正常drain，原两fixture库由其清理。固定应用库kokoro_development，各owner schema、同一PG/role；旧kokoro_dev54表未动。7正常进程Root句柄登记var/dev/processes.json，ready 7/7；Agent worker/Billing/Platform未运行，不冒整个能力可用。
+
+正规HTTP表单→OAuth→callback→/app与真实BFF get-session已200；同用户Web adapter auth/direct列表/projects均200。右侧旧tab7控制超时，沿文档改用同浏览器唯一新tab8，真实/login自动到IAM表单、无连接中/整页重试；等待用户用原密码登录后继续folder/direct/CRUD验证。仅入口显示已观察，0新增完整浏览器用例PASS，70组11/6/14/38/1保持。Scheduler真实启动拒IP literal allowlist；保持原空allowlist后ready200，不关SSRF，callback排程链仍待修验。
+
+BFF三D0前缀已Root选择性提交5dd9fc5，V2独审0P0/P1/P2，原mixed正文exact；不计积分功能完成。以下D1同一卡接续，Root保留关键路径与全部资源/Git。
+
+|项|R255-BILLING-CONSUMER-D1 第一切片|
+|---|---|
+|owner/负责人|BFF；原bff_skills_v2_owner_r251唯一writer；Root集成与提交；main5dd9fc5，原20mixed保留|
+|范围|仅D0第1段固定vendor/dependency manifest、openapi-ts.billing.config.ts、scripts/generate-billing-http-client.mjs、src/generated/billing-http生成物、package.json既有生成命令和test/billing-http-contract.test.mjs。阶段1先当前有效RED证据与Root核验；未批准前不实施生成切换|
+|依赖/验收|Billing244b2810固定v2 YAML SHA ecaceefd3fd09d5106b364593dd513506622ca011bb0436b74f0928ffd8dcf00；沿现Agent consumer生成模式，只2读。合同语义正负断言须真实对现合同/生成输出，不用ENOENT/缺环境当RED；完整原后继真实用户验收保持|
+|排除|public8现wire、runtime/client/route、Web、SQL、env/凭据、lock、资源、任何Git操作；不修改既有mixed。D0后续源码/两读/正式资金链未授权本阶段|
+|交付|/tmp hash绑定RED报告、确切文件集、Root可复跑命令；完成停写待审，不冒runtime/用户PASS|
+
+### R255 固定目标名纠正（真实失败后，不覆盖旧数据）
+
+Root安装guard实际拒绝已存在kokoro_dev，零创建/修改；只读catalog显示旧kokoro namespace54表，未授权清理，不假称该名字尚不存在。沿同一卡固定新源码应用目标改为kokoro_development（非随机fixture），仍同一个PG/同一role/各owner schema；保原旧数据库与运行。私有candidate只改对应URL，不轮换已准备材料。所有“kokoro_dev尚未创建”仅历史Root未创建的错误假设，由本节替代；最终目标存在性仍先fail-closed，禁止覆盖/重置。
+
+### R255 21:41 后继：正常源码页面交接＋Billing D0独审
+
+Root基线16c3e5c9；原BFF writer三D0已冻结。capability_composition_owner_r247只读审/tmp/r255-bff-billing-consumer-d0-prefix.diff与三现D0，核Billing244b2810 v2 owner、Web消费、权限分层和精确文件集；不仓写/资源/Git。Root独占数据/配置/Git与同3310固定源码交接；先当前owner fresh＋最终archive恢复和完整JWK同key CAS验证，保账号/项目/聊天，旧模型及System receipt归档。目标一应用数据库kokoro_dev，仅本轮创建且不得覆盖existing同名；源表锁有限时间，备份/恢复验证失败就释放锁并保原运行；未确认备份/数据接续前不退出原parent。先页面基础CRUD，不把关闭worker当聊天通过。Storage/Scheduler已有句柄先读，不重复启动/重置PG Redis。
+
 ### R255 21:20 本轮事实与下一行动
 
 System owner发布审f6223348、正常配置审90228487已交付（只读）；Root current control-plane restore14表15行exact/78库不变/原进程alive已实测。四private normal候选：System/BFF/AgentHTTP actual parser/proof通过；Web裸工具缺tsx/server-only保失败，不补包/不冒UI验证。目标库未建、候选未激活。原BFF负责人当前个人余额/流水D0进行中，不声称消费源码完成。

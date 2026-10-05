@@ -1,3 +1,18 @@
+## R255 当前事实：已切正常源码，完整用户验收仍OPEN（2026-10-05 21:41 heartbeat续推）
+
+Root已完成最终双源表锁内快照与完整archive：当前schema接续保留88表1110行原字段hash exact，完整IAM JWK同key单事务CAS验证通过。正常目标为固定kokoro_development、同一PG/role的6个owner schema；既有kokoro_dev54表未改。旧parent45606正常drain、两原fixture库由其清理；实际库存78→77，仅新增固定应用库、移除该两自有源库，其他OID/名称保持。两次private inventory oracle形状/类型错误已保失败并纠正，未用错误比较宣称一致。
+
+当前7个固定源码正常进程均已ready200：Web3310、IAM53711、BFF53714、System53719、Agent HTTP53763、Storage8085、Scheduler8087。句柄与listener PID在ignored var/dev/processes.json，.env.local均私有0600；不用fixture复制/清理启动器，日常停止只停句柄并保数据。Agent模型worker、Billing、Platform未运行；System模型目录空，旧非授权Smoke模型仅归档，不冒真实模型聊天可用。
+
+正式HTTP表单→OAuth→callback→/app、真实BFF IAM session已200；同真实用户Web adapter auth/direct会话/projects均200（2普通会话、2项目，项目当前合法空态均200）。**这些是运行链路证据，不是浏览器完整E2E。** 旧tab7焦点控制超时，按文档同浏览器新tab8实际到正规IAM表单、无中转重试；等待原账号手动登录后继续folder/direct/CRUD用户验收。新增完整浏览器PASS仍0，70组11通过/6失败/14待复测/38未验/1支付后置保持；原失败不因切换清零。
+
+Scheduler真实allowlist parser拒IP literal，原失败保留；保原空allowlist且ready200，没有关闭SSRF。BFF loopback callback与Scheduler政策不匹配，排程创建/dispatch仍待修验。BFF三Billing D0仅批准前缀提交5dd9fc572800352fae428a525f1576ce3749fc15，最终独审0P0/P1/P2、原mixed suffix exact；消费者D1先有效合同RED，不修改运行/public合同，不计正式余额/流水或资金闭环。
+
+证据：var/dev/r255-preserve/final-cutover-20261005/final-handoff-receipt.json、var/dev/page-runtime/normal-runtime-ready-receipt.json、post-cutover-database-inventory.json、var/dev/r255-preserve/normal-fixed-form-flow.json、normal-fixed-http-page-probes.json、normal-fixed-http-project-scopes.json与bff-billing-d0-commit-receipt.json。Root独占资源/Git；uv.lock与任务外mixed保留，完整Wave0–7不缩小、不新增计划中心。下文旧“原3310仍副本/尚未切换”是历史，由本节替代。
+
+Root本轮topology真实exit1：同7个checkout/Root gitlink漂移、0缺仓；未用暂存任务外gitlinks清零。原uv.lock SHA f7e1c30d59d5743493ac6d14d02ff2ec7111c94587470fe721d50f8c08dee7b4保持。正常运行交接不代表全仓门全绿。
+
+
 ## R255 21:20 heartbeat 实测与偏差纠正
 
 - 原System无秘密metadata只读实核：唯一模型为qwen3:8b/Smoke model。正常owner API审确认context_window是核实provider能力，max_output_tokens是管理员单调用硬界，不等同provider最大输出；不虚填或改旧immutable published。审f6223348；配置接线审90228487证明项目/列表CRUD可先于worker、BFF没有个人Credits consumer。
