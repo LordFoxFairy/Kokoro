@@ -1,3 +1,13 @@
+## R251 当前入口与运行差异（2026-10-05）
+
+Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。
+
+Root新增真实项目刷新FAIL：原普通conv586→项目d93d8972→两行未发送草稿→硬刷新，项目region未恢复、URL/正文被remembered普通会话抢回；返回项目草稿仍逐字保留。本次QA草稿已精确恢复原空值、自有1715212235已关闭；截图/tmp/r251-original-project-reload-redirect-red.jpg。仅只读定位现导航/restore owner，未按猜测改源码，不关闭既有T-C05/T-U04。
+
+正式Web0786df4在现project-create helper/creation hook窄补单budget与取消恢复；第一冻422辅助非最终验，独审锁body P2同helper/test补，hook/rail冻结保持。BFF正式886a25a1混合20path保护，隔离候选50428301仅四D0；现validate route/public8/Platform generator沿单494vendor固定V7→V6→V5链推进，不提前改Webpin。Platform494b118不变。
+
+原用户运行副本/Users/nako/WebstormProjects/github/thefoxfairy/kokoro-local-login-cda7wvjx/next是不同源，不具正式auth/Move依赖闭包；server.cjs、fixture origin、symlink和Turbopack root需保留，精确清单/tmp/r251-original-preview-reconcile-read.md，未整体覆盖/重启。RootChrome实际正常IAM到Home/已有会话打开刷新/项目空态成立；Library与Skills读取仍失败。单一验收台账与路径见CURRENT/task/progress/test-cases。
+
 ## R250 最小交互与消费者当前入口（2026-10-05）
 
 Web local main0786df4：现src/engine/machine.ts删除不以visited membership充owner授权，strict ACK/intent/scope保持；现use-app-frame-project.ts复用现command scope/subject/intent保护迟到完成，现app-frame.tsx分离创建collection refresh与导航。精确五path，四mixed/auth保持，Root辅助164/230+lint/typecheck/build和独审，仅局部交付；原3310副本尚未同步，项目DELETE/创建timeout及真实旅程未闭环。

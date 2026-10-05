@@ -1,3 +1,15 @@
+## R251 进度：页面证据优先（2026-10-05）
+
+Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。
+
+Root新增真实项目刷新FAIL：原普通conv586→项目d93d8972→两行未发送草稿→硬刷新，项目region未恢复、URL/正文被remembered普通会话抢回；返回项目草稿仍逐字保留。本次QA草稿已精确恢复原空值、自有1715212235已关闭；截图/tmp/r251-original-project-reload-redirect-red.jpg。仅只读定位现导航/restore owner，未按猜测改源码，不关闭既有T-C05/T-U04。
+
+原3310正常IAM登录→Home、已有两轮会话打开→硬刷新恢复、已有项目合法空态真实子例通过；Library/Skills读取仍实际FAIL。证据/tmp/r251-original-browser-journey-receipt.json与截图，未发模型/费用/上传/删除或更新用户源码。独立preview审90e6b5b0确认旧auth/缺Move闭包，后继一次正式组合更新，非四入口机械复制。
+
+并行BFF：隔离D0精确50428301/独审4c587bf4，Root原HTTP新V2/旧V1反例8pass6fail后推进现consumer/pin/public8正常生成，未冻、正式20mixed未动。Web：Root19407原第一冻422+lint/types/build0，独审P2真实body清理3fail48pass已Root40834确认、同2path窄修，最终冻结待Root验收。历史scope拒收/RED不抹去，不用辅助数量填绿。
+
+70组11/6/14/38/1及完整Wave0–7保持；原goalblocked。原3310/共享PG Redis未重启清理，无3311新服务；25保护路径保持。后继BFF冻结/Root验→Web消费者→完整owner浏览器上传发布安装、300s自然续期、项目CRUD；不是等待后端工程绿才做页面检查。
+
 ## R250 实际交付（2026-10-05）
 
 同task并行源片已精确交付：Web0786df4五path修远程未打开行删除和迟到创建抢导航，Root2实际辅助失败→164/230、lint/typecheck/build0、独审4fe62614；Platform494b118二字段V2/server绑定/V7 proof，Root七反例最终拒、Node24完整纯门0/1266passed+278资源skip及另30真实PG、独审cdf2306a/fa65d9b6，87历史不改。初机器三发现报告/RED保留，未放松门。均是本地main局部交付，不是远程发布或产品绿灯。

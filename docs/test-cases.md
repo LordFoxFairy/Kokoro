@@ -1,3 +1,18 @@
+## R251 真实用户路径复测与修复边界（2026-10-05）
+
+|既有用例/子例|预置条件|用户步骤|预期结果|实际状态与证据|优先级/类型|
+|---|---|---|---|---|---|
+|正规登录→工作区|原3310现有本地IAM账号/普通表单，受管Chrome已恢复|正常输入既有凭据→点击登录→Home|callback正常，Home及输入可见，无整页重试中转|PASS有限子链；/tmp/r251-original-login-workspace.jpg。未验退出/撤权/自然期限，不关闭整体登录组|P0/主链路|
+|既有会话打开/刷新|本人已有R243两轮聊天，未发送新消息|侧栏展开→点该会话→硬刷新→等待正文|同会话两轮正文和输入恢复，加载退出|PASS此例；未关闭原另会话间歇跳转FAIL，未验真实推理/扣款|P0/状态机|
+|T-C05 项目合法空态|已有本人项目d93d8972，清单合法空|点项目→等侧栏/中心清单|明确无会话，无永恒loading|PASS此子例；/tmp/r251-original-project-empty.jpg。创建/删除/移动与其它项目能力仍待验|P1/边界、状态机|
+|T-F01 当前个人文件读取|原3310正常登录后，同侧栏|点资料库→等读取结束|本人文件或合法空态|FAIL：个人文件加载失败；/tmp/r251-original-library-read-failed.jpg。未上传、未猜具体HTTP原因；自然300s新修复待正式组合复验|P0/主链路、异常|
+|T-K02 当前技能读取|同正常登录|点技能→等读取结束|本人发布清单/合法空态|FAIL：技能池加载失败；/tmp/r251-original-skills-read-failed.jpg；正式owner/consumer新组合未上线预览|P1/主链路、异常|
+|T-C05/T-U04 项目硬刷新不被普通会话覆盖|原3310先打开普通conv586，再侧栏进项目d93d8972，原草稿空|输入两行QA草稿但不发→项目hard reload→看URL/正文→侧栏返回|保项目URL/视图/草稿，不跳remembered普通聊天|FAIL：项目region未恢复，跳conv586及其原正文；返回项目原草稿仍保留。本次QA草稿已恢复空值；/tmp/r251-original-project-reload-redirect-red.jpg。导航/restore只读定位中|P1/真实系统、竞态、状态机|
+|T-C05 创建请求总期限/恢复|当前正式Web小切片，真实owner页面待装配|创建P→headers/body停滞10s→解除pending→显式原key重试；切主体/route/卸载分别检查|单总预算，unknown不重复新建，晚结果不抢新意图/草稿，资源释放|Root16299有效8fail35pass→第一冻19407422辅助；独审锁bodyP2已Root408343fail48pass，原2path补。最终Root32292同422辅助/lint/types/build0、独审2f1ea9e6 P2闭；正式Web仅4path交付b3f588e4，真实页面未验，不冒PASS|P1/竞态、异常、状态机|
+|T-K02 consumer唯一V2|Platform494生产者已交付；BFF5042830隔离D0|正常HTTP Validate消费合法V2；旧V1及坏digest拒绝|V2合法ACK→200，旧格式→502，原tenant/idempotency/attempt保护|Root原HTTP8pass6fail证实consumer不匹配；现唯一writer改现route/public8正常生成与固定proof，非浏览器publish/install通过|P1/契约安全网，非产品验收|
+
+原70组11通过/6失败/14待复测/38未验/1支付后置保持。真实复测收据/tmp/r251-original-browser-journey-receipt.json无凭据；原预览未更新、无模型/积分/上传/删除，本轮实际浏览器恢复与历史阻挡分开记录。
+
 ## R250 已有用例的局部交付与产品待验（2026-10-05）
 
 |既有用例|预置/用户路径及验收|本轮实际证据与状态|优先级/类型|

@@ -1,3 +1,16 @@
+## R251 当前页面实测与并行修复（2026-10-05）
+
+Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。
+
+Root新增真实项目刷新FAIL：原普通conv586→项目d93d8972→两行未发送草稿→硬刷新，项目region未恢复、URL/正文被remembered普通会话抢回；返回项目草稿仍逐字保留。本次QA草稿已精确恢复原空值、自有1715212235已关闭；截图/tmp/r251-original-project-reload-redirect-red.jpg。仅只读定位现导航/restore owner，未按猜测改源码，不关闭既有T-C05/T-U04。
+
+- Root已恢复受管Chrome，原3310使用现有本地IAM普通表单登录→Home真实通过；现R243既有两轮正文打开→硬刷新短加载后同正文/输入恢复，只是有限子例，不关闭原间歇串会话故障。现项目d93d8972侧栏和中心均真实显示合法空态，非项目CRUD。
+- **原3310资料库、技能页仍实际加载失败。** 只记录页面结果，不在未取得响应正文时猜HTTP码。原预览仍缺完整owner和已交付auth/Move闭包；不能只拷四入口，独审90e6b5b0已给具体依赖与保留启动配置，不整体覆盖未知变更。原用户页面未更新；记录/tmp/r251-original-browser-journey-receipt.json及Library/Skills/项目截图。
+- BFF三D0/README在自有隔离候选精确doc commit50428301，正式20mixed未动。Root实际HTTP反例8pass/6fail：合法V2被旧consumer拒502、旧V1仍被接受200；现唯一writer已按既定V7→V6→V5/public8.0.0发布前/v1裁决推进源码、机器pin、正常生成，未冻结/集成，不称消费者闭环。
+- Web创建单10秒/actor/dispose/原key恢复第一冻Root19407实际422辅助+lint/types/build0；独审发现非合作已锁body资源清理P2，Root40834真实3fail/48pass确认后只原helper/test补自持reader，hook/rail/九保护保持。最终交付与真实创建旅程待验，不把辅助门冒页面成功。
+
+完整Wave0–7/70组11通过、6失败、14待复测、38未验、1支付后置保持；stored goal仍blocked不新建/缩小。无新后台服务，原45606/46036保持/3311无监听，25原保护路径exact；浏览器恢复事实替代历史extension blocker，不再把该旧阻挡当本轮理由。
+
 ## R250 当前并行交付与验收边界（2026-10-05）
 
 - Web local main0786df458dd1cb3ae050b721b7f7f705f9f66faa精确3source/2tests已交付：未访问owner会话行可提交严格DELETE；项目创建ACK独立权威集合刷新与导航fence，旧route/subject/dispose/catch/finally不抢新选择或清新intent。Root84485先2failed/155passed，再56032当前164/230辅助、lint/typecheck/build0；独审4fe62614无新确定问题。四mixed/四auth保持，不造新绑定实体。项目DELETE公开契约与创建POST无总网络预算仍OPEN，不冒全项目或原3310已修。

@@ -1,3 +1,34 @@
+## R251 延续：Skills 消费链与项目创建恢复（2026-10-05）
+
+Web创建窄片已由Root精确交付本地main **b3f588e4842d7190e474c056d2b5c5c082ea5dd5**（仅4path）：Root32292冻结复验422辅助/13files、lint/types/build全0，独审2f1ea9e6关闭唯一reader P2；单10秒/原key/退役abort/迟到资源清理保持，25保护exact、未push/更新原3310。提交收据/tmp/r251-web-create-commit-receipt.json；真实创建旅程及BFCache仍未验。
+
+Root新增真实项目刷新FAIL：原普通conv586→项目d93d8972→两行未发送草稿→硬刷新，项目region未恢复、URL/正文被remembered普通会话抢回；返回项目草稿仍逐字保留。本次QA草稿已精确恢复原空值、自有1715212235已关闭；截图/tmp/r251-original-project-reload-redirect-red.jpg。仅只读定位现导航/restore owner，未按猜测改源码，不关闭既有T-C05/T-U04。
+
+复用 R250 放置方案和既有 T-K02/T-C05，不新建计划。Root 基线 main 4d6f6a32，Platform producer 494b118a，Web 0786df45；原 3310 保持两 PID，无新服务。正式 BFF 886a25a1 的 18 tracked/2 untracked 与 Web 四 mixed、Root uv 以 /tmp/r251-protected-baseline.json 留 SHA；不抢写、不整体格式化、不暂存。
+
+|任务|负责人、基线与写集|依赖、验收与交付|
+|---|---|---|
+|R251-BFF-SKILLS-D0|原 capability_composition_owner_r247，唯一 BFF writer；现自有干净隔离候选 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r247-capability-release-r_r905yj/repo/apps/kokoro-bff，detached 886a25a1；仅三 D0 与 contract/README.md|按 /tmp/r250-skills-bff-d0-proposal.md 1acb3c66 和 Root 既定裁决写四现文档：唯一 V2/public 8.0.0、/v1 发布前例外、固定 V7→V6→V5 proof；不改代码/contract/Schema。冻结四 SHA/diff；独审与 Root 重验一致后 Root 精确提交再授代码切片。不得 Git/服务/基础设施/正式混合树写|
+|R251-WEB-CREATE-READ|原 web_r247_skill_header_owner 只读 Web 0786df45 的现 project creation hook/caller/状态机/测试及 D0；只写 /tmp 报告|沿已记录 create fetch/body 无总预算缺口，给最小边界、真实业务反例和现文件写集；核未知 ACK 同 key、subject/navigation epoch/dispose 与超时后可恢复，不能截断已提交事实或自动新 key 重放。不编新 API/绑定实体，不启动资源、不写仓/Git；与 BFF 文档独立|
+|R251-BFF-D0-QA|原 qa_r243_web_frozen_review，只读候选四文档/owner 机器源；main886a25a1+freeze2四SHA绑定|首冻历史重排不接收；审三D0相互一致、producer494当前Proto/descriptor与V7继承、public8一次例外，不把文档审查冒实现。报告 /tmp/r251-bff-skills-d0-frozen-review.md；零仓/Git/资源/browser写|
+|R251-ROOT|Root 独占 Git、账本、资源与浏览器；不抢以上写集|优先现 D0/consumer 串行依赖与真实验收准备；本轮 Chrome 控制已恢复，原3310显示正规IAM表单，未输入凭据/提交登录。自有验收页1715212230已关闭，未重复启动候选或绕过。产品 70 组 11/6/14/38/1 不变，原 goal 不缩小；后端和替身计数非产品完成|
+
+R251-BFF-SKILLS-D0 首冻 d2e961a2 被 Root 拦下：四路径获准但整篇 Prettier 重排历史，超出短前缀授权。四文档语义仍可审，原 writer 必须恢复原 886a25a1 后缀字节，仅保 R251 前缀；freeze2 后缀 SHA 与原 blob 精确相等才接收。已有 baseline 格式失败如实保留，不靠任务外格式化清绿；未提交首冻。
+
+Root 已回读现 project-create.ts 三个无界 await 与 runCreateProject 的 current() admissionfalse 分支。R251-WEB-CREATE-READ 后继准原唯一 Web writer 先仅写 tests/contract/project-create.test.ts、tests/ui/app-frame-rail.test.tsx，两 source 未放行；现 D0 的 browser 内预算/同主体 intent 原则沿用，不改契约/owner。四现文件预定最小切片，不新层：helper 单一 headers+body 总预算/required caller signal；hook 每 attempt controller、actor/dispose retire，route epoch 只撤导航、不取消合法 owner 结果；同subject temporary unavailable 应解除 UI pending、保原 unknown key/body，恢复不自动 POST。有效行为 RED（非 setup 或 fixture 错误）冻结后 Root 独立复跑再放两 source；测试替身不作为产品页面通过。
+
+R251-BFF-SKILLS-D0：Root首冻范围拦截→freeze2仅前缀→Root补四分隔空行freeze3，四原后缀4/4精确保持。独审最终4c587bf4无新增确定阻塞；Rootprefix格式0，整doc1仅原三D0 baseline warnings，README新增warning已消失，源码格式门不改。Root仅在自有隔离候选精确四doc commit 50428301b260d39a5be329b6c3e0f4d2a327d858；实际checkout为detached快照（此前卡片main标签已纠正），没有新分支、没有正式20mixed集成/发布/页面通过。Root29016既有build0/25辅助pass仅基线。
+
+R251-WEB-CREATE-RED：作者两test停写，Root16299独立有效8failed/35passed/exit1，headers/成功和错误body无总期限、同subject暂停仍pending、缺实际signal；不是类型/setup错误。Root实核最终两个RED SHA11fcde1b/7e3ba0fd，原两source与四mixed/auth保持。现授权原唯一Web writer四现文件完整切片（两source+两test），单10秒总预算及caller signal、同subject unknown恢复/显式原keyRetry，退役abort不挂route token；先补完整边界，冻结交Root审/重跑。不得修改其他source/三D0 mixed/contract/pins/lock/资源/Git。
+
+R251-BFF-SKILLS-CONSUMER：原文档owner最后报告模型capacity错误已停写；复杂后继按AGENTS选 gpt-5.6-sol 的具名 bff_skills_v2_owner_r251 接同owner候选5042830，Root独占Git，先仅现 test/skill-validate-http.test.mjs 写唯一V2合法ACK/旧V1拒绝的真实HTTP行为RED，不以不存在的新vendor ENOENT作失败证据。Root复跑后才准现route、现OpenAPI/check/tests、现generator/dep/buf/current版本vendor正常生成切片；原D0放置与producer494/V7链不改，正式20mixed保护。单一consumer proof无通用框架/服务/SQL/权限变更；public8.0.0/version/pattern同时更新，旧owner vendor active根删除，必要immutable V5/V6只作新494固定证明父集，不成为双runtime。Web consumer须后继正式BFF身份后接。
+
+R251-BFF-CONSUMER-CODE：Root独立HTTP反例 /tmp/r251-root-bff-skills-red.log，当前test SHA12c62439，实际8pass/6fail/exit1，V2被旧route拒502且旧V1被接受200。放行同隔离候选唯一writer bff_skills_v2_owner_r251：现validate route、唯一public OpenAPI和verify/tests、现Platform generator/dep/buf、正常生成的两TS、单494vendor完整V7/V6/V5固定证明输入、四package/publish/installation既有HTTP fixture路径与现pin合同test；仅必要CURRENT短前缀。删除旧6519 active vendor根，不手改生成物、不升级依赖/SQL/角色/服务。public8.0.0保/v1为已批准发布前唯一替换，无双格式。Root精确集成/提交，正式20mixed不动，Web消费者仍串行依赖BFF交付。
+
+R251-WEB-FREEZE1：Root19407冻结四SHA独立422辅助/lint/types/build全0；独审6a02bd5d发现1P2，非合作且已锁response body超时无cancel路径。不冒native泄漏或页面根因；后继只原helper+contracttest取得实际cancel负控→最窄显式reader清理，hook/rail及九保护不改，不添BFCache/新框架。待最终freeze2才精确交付。
+
+R251-ROOT-BROWSER：受管Chrome恢复，使用原现有private fixture凭据正常IAM→Home、原R243会话打开硬刷新两轮恢复、既有项目合法空态有限子例通过；Library/Skills真实加载失败仍OPEN。收据/tmp/r251-original-browser-journey-receipt.json无敏感输入；未更新原预览/新模型/费用/上传/删除。原预览只读90e6b5b0确认旧auth与Move闭包，不能机械拷入口；下一冻结后一次正式composition/浏览器复验，启动专属配置/用户数据保留。
+
 ## R250 收口与后继（2026-10-05）
 
 Root独占Git精确交付Web local main0786df458dd1cb3ae050b721b7f7f705f9f66faa（五path，独审4fe62614，Root56032 164/230+lint/typecheck/build0）及Platform local main494b118ae7c29f1fc1005122d72c6c2bbf2640b6（25path，独审cdf2306a/fa65d9b6，Root93133七probe/Node24全纯门0、1266pass/278资源skip、另67772真实PG30）。初RED与机器1P1/2P2均保留，不冒skip或真实Storage/browser通过；四Web mixed/四auth、87历史/Rootuv和其他gitlinks保持，未push。
