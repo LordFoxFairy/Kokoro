@@ -1,4 +1,221 @@
+### R243-WEB-FOCUS-RESTORE / 稳定真实RED后窄源码修复
+
+Root62162 bounded poll满10秒仍false，真实取消Dialog已detached、原更多trigger存在但未归焦，1fail/73名称过滤；source/Redis保持。排除Radix下一tick恢复观察盲点后确认键盘交互缺口，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-keyboard-settled-hmaxi8p9/manifest.json`，log53cd4ba0ccd8f051effdbfff992f4c2f20028f17e9022a17a7f129badf8bf018。
+
+归属一句：现WorkspaceHeaderProjectMenu负责更多trigger与其rename Dialog的focus生命周期，局部修复不改职责或contract。原唯一Web writer续授仅现src/components/blocks/workspace-header/workspace-header-project-menu.tsx：复用现Button ref与Radix onCloseAutoFocus，捕获打开时来源，取消/Escape/成功正常关闭归还同一存活trigger；route/subject离开或来源已卸载不抢新界面焦点。保持modal/aria-hidden、pending关闭保护、所有业务hook/ACK/headers/10秒/草稿/路由不变。不碰tests/docs/其他源/Git/资源，静态与SHA/diff交/tmp/r243-web-focus-restore-handoff.md停写；Root原bounded反例再跑后判断，不以源码ref推定成功。
+
+个性化owner只读报告a4667285已交：现Web盲PATCH/无GET、BFF无正式四字段resource；不能映IAM identity name冒AI偏好。已向用户发出唯一业务边界对齐问题，等待不阻塞前端或后端quote研究；未授新schema/API实现。Billing正式ccd4cb0f Root50436全11门0及日志hash核完，原五mixed保护。
+
+### R243-BILLING-NEXT-QUOTE-OWNER-READ / 后端不等待前端
+
+ccd4cb0f policy/joint私有前置已精确交付，Root50436正式main11门terminal0、131真实PG/1365辅助/源派生邻库保持（实际manifest locator /tmp/kokoro-r243-billing-joint-main-full.path）；当前用户积分完整链仍OPEN。agent_r243_live_journey续派只读后端owner设计：仅基于正式ccd4cb0f和已准R241三D0核下一quote/技术输入bound的最小切片，确保Agent逐attempt许可依赖不凭空绕过。读现Agent usage/binding公开fact，列现已批准与未决项、真实可达RED入口、准确文件集、后续consumer发布顺序。仅/tmp/r243-billing-next-quote-owner-read.md；不写仓/调用provider/资金/资源/browser/Git、不新建计划中心、不在此任务一次设计全支付账务。Root继续前端原旅程与完整用户页验收，后端读可并行。
+
+### R243 keyboard反例观察门收紧（不提前改生产）
+
+Root57595实际新取消焦点检查失败false（1fail/73名称过滤），source/Redis保持；但新增断言是dialog detached后立即读activeElement。Root读锁定Radix FocusScope发现unmount auto-focus由setTimeout调度，故此第一FAIL尚不足以排除正常异步恢复。准原唯一tests writer仅将新case两处新focus assert改为既有10秒内expect.poll等待同activeElement条件；零write/原deadline/业务断言不变、原73/source冻结。不加sleep、不加global timeout，不把早读失败冒最终源码RED。交接后Root同旅程重跑，若bounded仍false才准现menu ref/onCloseAutoFocus恢复。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-keyboard-red-ju1z8zax/manifest.json`，loga97d1e0cbdf65e729064778072b05da9a0eb262aa721ff2b3d029d29cd34ff9d保留。
+
+### R243-WEB-FIXTURE-KEYBOARD-RED / 唯一tests窄续派
+
+Root86903原真实改名旅程terminal0，单PATCH→200→canonical GET B/list→刷新→route/draft/thread保持，1通过/73名称过滤，source/Redis保持。当前只controlled owner的用户操作，不冒3310启用/完整CRUD。Root50160相邻三文件实际93pass/2fail：两新增UI hook fixture仍用owner no-store导致新browser gate拒绝，read-error/permission实际落unknown。原assert不放宽，fixture只是测试boundary错配，不将其计生产回归；manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-adjacent-0eemkuxz/manifest.json`，loge018c4a039f83da4fbf00d14280f5182231011dcab90279f564a8d7f18fd977e。
+
+web_r243_cache_boundary_owner续授tests-only：仅现tests/ui/kokoro-project-workspace.test.tsx末尾两个新增rename case四处browser fixture header改canonical private,no-store,max-age=0；原前缀/所有断言/期限保持。另现system唯一新R242 case首次Dialog开后、原Save前加入pre-send cancel→dialog detached→更多trigger activeElement+零PATCH正控→键盘重开，再沿原旅程；fresh-list成功Dialog detached后reload前补同trigger focus断言。更多trigger现绑定按实际DOM定位，原73/新原ACK/10秒/route/draft/thread/write次数保持，不能新造不存在入口作RED。生产/文档/generated/Git/资源/浏览器冻结，仅static+SHA交/tmp/r243-web-keyboard-red-handoff.md停写。focus P2目前只源码风险，Root真实失败成立后才准现menu ref恢复窄修；通过则排除风险不改源。
+
+Billing Root34026完整11门terminal0（131真实PG/1365辅助），独审0；Root候选CURRENT加结果短前缀原全文suffix exact，作为同source切片第14路径，原formal五mixed保持，等待精确本地交付。真实3310本人测试conv586改名为R243 用户交互验收，刷新同ID/新标题/两回复/输入恢复；只重命名子路径，不是删除/Move全闭环。个性化用户反例已派只读owner定位。
+
+### R243-PRODUCT-SETTINGS-OWNER-READ / 根因与最小边界定位
+
+实际3310个性化昵称原空→QA值→blur→关设置→重开为空，无反馈；Root已真实复现，不用源码盘点当PASS。web_rename_r242_system_sol61完成Billing独审后续派只读产品+业务owner审查：基线正式Web5e096364、BFF886a25a1、IAMc9a9872c及PRD09；核现个人资料唯一事实owner、合法保存/权威读回入口和consumer实现，给精确最小后继写集、已有三D0是否批准、当前/目标契约和待决规则。仅/tmp/r243-personalization-owner-read.md，禁止写仓/跑资源/浏览器/服务/Git，不新建配置平台/需求中心，不把昵称丢失扩成整账户重构。Root当前资源runner70536已终态0；Web writer与独立UI reviewer实际已启动，范围按下卡不扩。
+
+Root实读get_goal：存储状态实际blocked，不再把当前状态描述为active；本次用户heartbeat要求续推既有Wave0–7，范围保持、不创建重复goal，状态恢复由客户端/用户控制。本轮继续有明确可执行研发/验收，不自行标完成。
+
+### R243 用户链暴露的真实header接线缺口 / 立即续修
+
+Root57315terminal1：modal观察点窄修后前置全部前进，已收到真实200/owner request-ID；5139失败为浏览器实际Cache-Control=`private, no-store, max-age=0`而oracle和browser parser仍要求owner literal `no-store`。Root亲读proxy.ts现统一私有响应策略与server adapter→browser共用validator：这是两个网络boundary混用，browser会拒合法ACK，不能仅改测试凑绿。source/Redis保持，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-after-modal-0r_x2x4c/manifest.json` log984530e2313d94a63f25a6398208be93c50878e5b24b09c1916d9e2cfb459f50。
+
+Root裁定不削弱现proxy隐私策略/不加路径例外：owner侧仍严格no-store；browser-private侧按现统一私有缓存header精确验证。同schema helper显式区分boundary而非宽松includes；request-ID/JSON/ACK/error/digest/10秒/幂等保证保持。web_r243_cache_boundary_owner（gpt-5.6-luna high）唯一Web窄writer只candidate三已准普通文件contract/project-rename.ts、features/app/project-rename.ts、lib/server/project-rename.ts及原system新case5139与现新增rename邻接tests必要header fixture/断言；API/TECH现已准前缀顶部可加短更正段说明owner/browser区别，原全文suffix exact，DATA不变；排除proxy/公共helpers/其余source/原73/SQL/锁/generated/Git/资源/浏览器。交/tmp/r243-web-cache-boundary-handoff.md，Root真实原旅程重跑再放行，不以模板header单测为最终标准。
+
+rename_r241_quality_review源码审查turn因实际model capacity errored，不能称仍运行/审查0。独立替代qa_r243_web_frozen_review（gpt-6-astra high）只读冻结32path与获准后继cache窄片，绑定新SHA后审；仅/tmp报告，不写仓/跑资源。原sol61已停Web写、转独立Billing13path审查；backend writer已冻结，Root负责实际资源验证与产品验收。四席位无同仓写冲突，不开启无用服务/浏览器窗口。
+
+### R243 后端原业务反例GREEN与全文件待验
+
+Root实际核Billing13冻结path无SHA差异，原缺policy业务反例已重跑terminal0：同真实Nest+freshPG1pass/37名称过滤，0.855s，严格METERING_POLICY_UNAVAILABLE成立，source/邻库保持。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-billing-joint-after-zvz6xefa/manifest.json`，log0abb4134ab5bf8ea28c2dca9def67d688d23acb7274a6737da1253ee4c50105a。只有这条反例关闭，不称新13PG/4contract已通过、quote/admission/积分或真实模型闭环。下一完整本文件+邻接contract/owner回归及独立冻结审查，旧RED原记录保持。
+
+### R243 冻结后的双线独立审查与复验
+
+Web modal oracle d477a11b已交接，Root31其它路径SHA全核不变，57315同原真实行为重跑在途；不按静态关闭项目组。Billing已冻结13文件policy artifact/publication/joint候选（交接/tmp/r243-billing-policy-joint-implementation-handoff.md），旧selector已删除、13新PG/4契约例尚未运行，未接资金/HTTP。web_rename_r242_system_sol61原Web writer已停写，角色转独立Billing source/tests/三D0一致性只读审查，绑定Billing freeze manifest与actual RED734b...，仅/tmp/r243-billing-policy-joint-final-review.md，禁止写仓/跑资源/Git。rename_r241_quality_review继续Web UI/UX/source冻结审查；Root独占分别自有Next/Redis与PG fixtures以及用户浏览器，资源不冲突，作者退出/静态不计完整PASS。
+
+当前用户侧另建QA项目1f1481bf，列表/概览恢复且可输入；首次刷新曾意外回conv586仍待归因，第二次侧栏重开+刷新用CDP确认同Project主frame/HistoryAPI，终态同名称/空会话/可用输入。短暂加载标题误写专案不可用为实际UX缺口，不冒永久找不到对象。只一活跃tab5保后续验收，不删用户或QA对象。
+
+### R243 Web原交互复验终态与modal观察点修正
+
+Root73508terminal1（1fail/73过滤、9.569s），本次已到menu/Dialog/唯一合法PATCH/pending禁重复与owner原名，失败在system5126 pending时背景sidebar role link isVisible=false。现默认shadcn/Radix modal用hideOthers(content)，背景aria-hidden会被getByRole默认排除；Root及独立QA读实际依赖源码确认观察盲点，不以此证明生产改掉oldName。source/Redis保持，log6ece60e546f185d31f4ed574d677160699e9081bb2f30043107c5f35aaceb25a，原记录保留。
+
+准原Web writer tests-only仅新R242 case两个modal背景观察点：5126 oldName exact Project row link与5146 ACKA不存在检查加入includeHidden:true；原isVisible true/ACK count0继续保留，并oldName增加exact count1避免 vacuous结果。其它assert/期限/原73/source/derived全部冻结，不改modal=false/aria-hidden或关闭Dialog迎合测试。只静态后交/tmp/r243-web-rename-modal-oracle-handoff.md；Root同业务重新运行才定通过，QA片source审查绑定source不变与新system精确hunk。
+
+### R243-WEB-RENAME-FROZEN-REVIEW / 独立QA与交互源码审查
+
+唯一Web writer已交接停写，32路径冻结hash Root核全匹配、原system766c836d与三D0/锁保护。rename_r241_quality_review接独立只读审查，绑定 `/tmp/r243-web-rename-files-sha.json` 与交接efeffc07；审核目标strict PATCH/ACK后canonical GET与旧读generation/route主体fence/草稿/取消/显式重试/现shadcnDialog键盘状态、原14邻接oracle和正常owner repin，不跑资源/Git，不写仓；报告/tmp/r243-web-rename-final-source-review.md。Root73508原真实Next/Chromium行为旅程仍独占runner；结论/终态前不称前端交付或用户3310已修。
+
+### R243 前端交接后Root重跑原交互失败
+
+Web writer报告已停写，Root实际核32changed/new路径与交接SHA全部一致，三D0/package/锁保护。原真实菜单RED对应同新case，system仅批准三终点零额外写断言，最新766c836d。Root73508在隔离Next/Chromium/既有Redis15重跑原R242 renames行为旅程；candidate源码冻结，原用户3310不改不重启，当前未终态不称通过/不另起第二runner。QA独立源码审查后再完整工程与正式owner实际页面；14邻接新增case作者尚未运行，不按静态数报完成。
+
+### R243 QA/UI产品清单已交接，执行并不等于清单完成
+
+独立QA已交 `/tmp/r243-next-ui-acceptance-checklist.md`（SHA b4f57aa266721986e0171203aa7735287b36942434e0a075a57a2d126a6f2906），12项全部绑定原用例/owner/实际入口/预置/自然步骤/期望/异常与权限：项目创建与概览、Move、项目改名/删除、会话CRUD、指令、网站/Skill、Settings外观通知/个性化/快捷键/模型默认、Credits。这是执行准备，不是12项PASS。Root接下执行优先创建/关联，再改名；入口缺项立即落原ID，继续无依赖Settings，不等待writer无限卡住。QA原报告中Billing tests-only状态是读取时点，现已由Root97969真实RED后升级实施；源准入以本卡为准。根因未定的意外回页不先派改路由。
+
+### R243 运行终态补录
+
+42390正式Billing main复验terminal0，11日志digest实核，ordinary源/邻库保持；旧“在途”条目是历史。真实3310双轮+终态刷新已见，旧qwen/noBilling不能冒正式收费。项目header仅账户/升级、积分余额/历史两块实际加载失败已回填test-cases；用户完整链仍OPEN。Root当前只有一临时活跃验收tab5，不额外开页/服务；前端与后端writer实施、QA/产品/UX清单并行，同仓单writer。
+
+### R243-BILLING-POLICY-JOINT-IMPLEMENTATION / 真实可达RED后准入
+
+Root97969终态exit1，真实Nest/freshPG仅新增joint absence1fail/24名称过滤、1.136s：合法synthetic rate publication与PG active1/policy0正控先通过，现selectActiveRates实际返回pricing facts，未按批准目标拒绝无policy。断言失败是promise resolved instead of rejecting，不是import/setup/404。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-billing-joint-red-06_n0tny/manifest.json`，log SHA734b044d293183c58244a473a04941b8a10f4b5698127c8c1af20ca3ce243338；源/邻库保持。该失败只证明目标joint capability缺失，不说现私有rate API曾已承诺完整资金许可。
+
+Root引用formal3f05e6c5三D0的R241 §8放置表，完整policy artifact/publication/joint设计已经批准，schema前置已交付；不另造owner或方案。唯一Billing writer agent_r243_live_journey续授同candidate：新contract/metering-policy/v1的policy.json/schema.json/vectors.json/manifest.json（唯policy.json规则源）；新同现module普通metering-policy-artifact.ts；扩现publication service/result codec/revision repository/selection types与service/error/module；现revision codec/types只如批准strict正有理数与引用实际需要的窄hunk。仅现metering-rate-publication系统/相邻既有contract测试补真实行为矩阵及clean-slate旧selection调用迁移，普通rate七字段结果bytes/所有原业务断言保持。旧selectActiveRates删除而非alias；新的joint selection沿三D0，不新store/engine/repository/public导出/HTTP/资金功能。源以R241正式三面为准，failure policy四值为capture_verified_actual_only、capture_verified_actual_only、release_confirmed_unused、pending_reconciliation；精确profile1.0.0/Agent aggregate ecd30d...，failureDigest为policy.json UTF8 bytes SHA不是aggregate。零免费/default/真实价格seed。
+
+作者不跑资源/浏览器/provider，不碰formal旧mixed/SQL/锁/generated/其他docs/Git，只static与必要本artifact正规manifest生成。先现可达反例冻结已完成，随后实现与真实PG新增publication/receipt/replay/腐化/rollback/tenant/concurrency/joint一次DB时钟/effectivity/边界负控；不能只加缺policy拒绝一行冒全片完成。冻源码后交/tmp/r243-billing-policy-joint-implementation-handoff.md，Root独立审查与真实owner验证、资金链/真实用户旅程仍另必验。
+
+### R243 分工续接：实际验收与后端计价接线（2026-10-05）
+
+Root已在同真实3310临时tab5看到同conv_586d8b9f-00ea-415e-a437-da3b09a22849两轮新标记回复，终态刷新后两article仍在、输入可用。仅实际UI基础子路径，活动刷新/取消/权限/项目与费用尚未完整验收。只读现场审计确认launcher当前配置本机qwen3:8b、未装配Billing；不能用这两轮回复冒用户指定外部模型/正式费用整链。旧受管实例与原tab1保持，不批准迁移平台、兼容层、自动清数据或重新拉起一套3310。
+
+Root承接42390正式Billing main复验终态0，11日志hash实核全部吻合，117真实PG/1361辅助、普通源和邻库保持。只关闭已交付policy持久化前置；完整用户链仍OPEN。
+
+|任务|具名角色/基线/范围|交付与验收|
+|---|---|---|
+|R243-WEB-RENAME-IMPLEMENTATION|web_rename_r242_system_sol61继续唯一前端writer，原批准candidate/文件集不扩|菜单/现shadcn表单/严格PATCH/权威读回；冻结后Root回跑实际用户操作与原失败，不按作者静态放行。|
+|R243-BILLING-JOINT-RED|agent_r243_live_journey从已完成只读调查转唯一Billing tests writer；formal3f05e6c5对应已交付候选 `/tmp/kokoro-r241-billing-policy-clean.path`；只现test/integration/metering-rate-publication.test.ts末尾追加|使用当前真实Nest provider与现selectActiveRates可达接口，在已发布合法rate、无生效policy条件下要求拒绝METERING_POLICY_UNAVAILABLE，现行为若仍成功才是真实业务RED；明确synthetic QA。原117集成/原文件prefix保护，不调用未来方法、不造missing import、不改源/SQL/三D0/contract/锁/生成物/正式mixed、不跑资源/Git。静态freeze交/tmp/r243-billing-joint-red-handoff.md；Root实跑后再准现已批准R241 joint/publication代码，不为旧selectActiveRates另建兼容层。|
+|R243-QA-UI-PRODUCT-NEXT|rename_r241_quality_review独立QA与UI/UX/产品只读；复用现PRD09、70组test-cases、最新实际双轮/刷新、当前旧模型无Billing事实|给Root接下来的项目关联与Settings自然操作清单，引用现ID、前置/步骤/预期/权限与错误分支，逐项定位对应owner/现入口。只/tmp/r243-next-ui-acceptance-checklist.md；不另建PRD/测试中心，不写仓/跑后台门/访问浏览器/资源/Git。|
+|Root|产品裁决、技术集成、资源/Git、真实3310浏览器|同一时刻最多四席位；前端与后端测试写入独立，QA只读。不因运行端版本差异陷入运维/旧数据兼容；明确业务缺口、推进研发后再决定正式组合启用，任何有损用户数据动作另对齐。|
+
+### R243 用户验收优先与角色分工（2026-10-05）
+
+用户再次裁定：最终标准为真实完整交互链路，不是后端测试或受控peer通过。Root承担产品目标/技术集成与真实浏览器验收；web_rename_r242_system_sol61承担前端写入；agent_r243_live_journey承担后端实际执行链调查；rename_r241_quality_review承担独立QA/产品与UX只读验收对齐。四席位并行，当前owner/source改写继续单仓单writer；没有另建PRD或测试中心。后台门只作开发安全，不升级整组PASS。
+
+Root在当前IAB原tab1取证focus超时，沿同浏览器3仅新建一临时tab5访问真实3310，原tab保留。tab5先看到disabled加载壳，下一实际DOM已正常工作区，不能说原tab已恢复；真实点展开侧栏→新对话→输入独特无工具测试消息→发送，已创建conv_586d8b9f-00ea-415e-a437-da3b09a22849，页面目前“正在整理回答”/Stop、尚未得到新回复，不用旧R145历史回答当本次模型PASS。Root唯一浏览器owner，worker不得操作用户tabs或重启任何服务。
+
+|任务|角色/基线/范围|交付/排除|
+|---|---|---|
+|R243-LIVE-CHAT-BACKEND|agent_r243_live_journey，gpt-6-astra high，只读正式Agent/BFF/System/Billing与实际3310服务组合/原资源manifest；Root并行真实浏览器|按新conversation trace当前调用到哪个实际runtime/model、是否正式pins/费用许可、pending/失败具体位置；不得从formal拦截代码断言live原因。仅/tmp报告/必要精确下一owner写集，禁止源/SQL/资源/provider/资金/凭据输出/服务重启/Git。|
+|R243-PRODUCT-QA-UX|rename_r241_quality_review，独立只读；现PRD09/test-cases与Root真实UI事实|对齐登录→真实两轮→刷新→项目绑定/CRUD→费用旅程验收及UI状态；区分开发门与用户PASS，指出当前最短阻断与精确owner，不新建PRD/矩阵中心、不写仓/跑后台测试/控制浏览器。报告/tmp/r243-user-journey-acceptance-review.md。|
+
+### R243-BILLING-POLICY-DELIVERY / 已本地提交，主工作树复验
+
+Root73915已终态0，精确11路径提交main `3f05e6c5ca0dfaf569db3a448e2398d1e298ea6c`，所有candidate tracked bytes=Git tree、原五protected bytes/modes保持、real index空。独审0P0/P1/P2。现在Root在正式主工作树按相同11门再跑，正常Prisma派生允许仅ignored client更新；5旧docs冻结且source前后比对，owner writer停写，资源不共享reset/3310不重启。formal复验未终态前不称该新门通过。
+
+Root补准owner CURRENT证据短前缀（候选现文件，无新文档中心）：只本次19列/35表/117+1361/11门与仍缺新费用链、原五mixed保留的事实，原HEAD CURRENT全文suffix exact；其他source不动，作为同SQL切片第11路径交付。
+
+Root24083完整11门已终态0：9文件真实PG117pass/0fail、39辅助1361pass/0fail；正常refresh/format/lint/types/build/SQL/contract/generated-contract/prisma-check均0。manifest locator `/tmp/kokoro-r243-billing-policy-full.path`，Root回读11日志hash一致、ordinary/generated/邻库保持。前次113/4与原catalog失败历史保留。当前只canonical19列policy表前置，不冒publication/joint selection/quote/Admission/资金闭环。
+
+billing_r243_catalog_owner续授唯一Billing文档writer：只candidate三D0顶部加当前SQL交付证据短段，原三准设计全文suffix exact保留，原formal五dirty全文不写；表明35表/正规派生、本轮117/1361/11门与仍缺publication/消费链，不能说全面完成。源/SQL/fourtests/generated/artifact/lock/Git/资源冻结；交/tmp/r243-billing-policy-delivery-docs.md。rename_r241_quality_review转独立只读review19列schema+四test精确hunks+两正常derived tracked产物及三准D0，绑定当前SHA/真实manifest，无资源/仓写/Git；0P0/P1/P2与Root实际门共同准精确slice提交，原五mixed保护。
+
+### R243-WEB-RENAME-IMPLEMENTATION / P0 准入
+
+独审P2补准：只在R242新case最终overview heading/route断言之后，重复browserWrites exact单PATCH、browserPatches单次及renameRequests单次终点断言，确保reload/overview无额外Conversation/其它写。原73与新case此前assert/期限保持，不改fixture/source作掩盖。除此system冻结；新SHA随实现交接Root实核。
+
+Root50306真实Next/Chromium/Redis终态exit1，1fail/73名称过滤，唯一failure在system5107缺“重命名项目”菜单；现正规身份、canonical detail、sidebar、thread、route、draft前置均已实际到达。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-rename-red-fb4ehoil/manifest.json`日志SHA359007a9612c1527b429aed61a44565cbb6cfcd7245e03db4bd1aaa56a0cd4fa，source/Redis keyset保持。Root亲读三D0/现菜单/hook/adapter及冻结用例；独立oracle reviewer并行，不把后半ACK/read oracle当已执行。
+
+唯一Web writer续用web_rename_r242_system_sol61（gpt-6.1-sol high）；candidate locator `/tmp/kokoro-r242-web-rename-clean.path`，formal5e096364+三准D0+systemd4f0fef1。按已准§8放置表实现现Project菜单→现Dialog/Input/Button→严格同源PATCH→receipt只确认→fresh canonical GET再list；新三普通职责文件contract/project-rename、features/app/project-rename、lib/server/project-rename；只扩现hub route、AppFrameProject/useProjectList与header/menu/types/传参、i18n messages及INDEX。允许正常repinBFF886a25a1固定public7.2/bf64原bytes，现两generator版本/commit/digest及正常generated产物、现contract README/assertion与相邻限定parser/adapter/UI/read-fence测试。零package/lock/新目录/认证改造/owner数据库/第二Project store；复用现shadcn，无新CSS风格。systemd4f及三设计前缀冻结，作者发现需更改必须先报告，不放宽原73或新oracle。
+
+状态/安全必须闭环：trim1..160UTF16/NUL/lone surrogate拒绝、single stable key/body、pending禁重复/关闭、pre-send cancel0PATCH、10秒monotonic请求body/parse总预算及cleanup、owner closed status/code/headers保留、ACKA不能投影覆盖GETB、旧读abort+generation、route/subject fence、503显式同key重试、read失败仅GET重试、认证清敏感intent；不改route/slug/会话绑定/草稿。资源/真E2E/完整门/独立最终审查/Git由Root执行，作者仅静态与现正常generator，不启动共享服务/PG/Redis/浏览器/provider或改正式仓。小自洽切片冻结后交/tmp/r243-web-rename-implementation-handoff.md（SHA/diff/写集/未完成），Root原RED重跑后判GREEN，不提前称项目全CRUD完成。
+
+### R243 续推 / Root验收与独立测试修正
+
+上一turn是状态核对与日志复读/台账纠正，没有新功能或新测试运行，按no-progress处理；已有完整Wave0–7目标不变。本轮先重验证冻结候选，真实资源任务由Root执行，不重启3310、不清共享PG/Redis。
+
+|任务|角色/模型/基线/写集|依赖与完成标准|
+|---|---|---|
+|R243-BILLING-ORACLE-FIX|billing_r243_catalog_owner，gpt-5.6-luna high，唯一Billing tests writer；candidate e5d83db0+92678760 SQL+356f test+Root正常Prisma派生；只现metering-rate-publication、prisma-generation、schema-drift、schema-installation四integration文件|原Root完整113/4 terminal；只新增tail中PG18 contype n分类与三现34→35批准新增表/model数量/标题。原rate58911字节prefix、19NN/15CHECK/index、安全assert保持。禁止source/SQL/generated/lock/docs/正式仓/Git/资源。静态freeze交/tmp/r243-billing-oracle-fix-handoff.md；Root完整门后判定。|
+|R243-WEB-RENAME-RED|Root资源owner，candidate5e096364+三准D0+d4f0fef1 system|先真实Next/Chromium/Redis独立fixture跑R242新case；实际前置成立而菜单缺失才准source，setup失败单独定位。原3310/user tabs不触碰。|
+|R243-WEB-ORACLE-REVIEW|rename_r241_quality_review续派只读，Root统一决策|只核d4f0fef1三插入、原73case保护、当前接口/closed response/路由/草稿/计数和cleanup；仅/tmp报告，无资源/仓写/Git；与Root实际RED共同放行。|
+
+### R242-BILLING-POLICY-REGRESSION / 待窄修与复验
+
+SQL候选已交接、Root完整runner终态exit1（真实PG113pass/4fail），不是在途或整体通过。四失败已定位为PG18 NOT NULL catalog分类与三个34→35批准表/model计数预期；下一切片仅测试精确修正，十九列NOT NULL、15业务CHECK、原rate22例及SQL冻结，Root再次完整验收。当前未授额外source/资金/契约写权。Web新增system用例静态冻结d4f0fef1待真实浏览器RED，菜单/source仍缺；不能把静态检查当产品修复。
+
 # 当前任务入口（R234，2026-10-04）
+
+### R242-WEB-RENAME-SYSTEM-RED / P0
+
+Root已审三D0并亲核正式suffix/hash；真实错误状态401/403修正、精确key/surrogate、normal generated repin路线一致。原gpt-5.6-sol容量失败、零写，替代唯一Web tests writer web_rename_r242_system_sol61（gpt-6.1-sol high），candidate5e096364+三批准prefix。仅现 `tests/system/oidc-rp-next-http.integration.test.ts`新增R242业务journey/必要本fixture peer seed/response，原73用例与断言/deadline保持；不授权source/pin/generator/docs/lock/Git/资源。先真实Next/Chromium看本人Project菜单“重命名项目”不存在而失败，前置登录/Project/read必须成立，不import未来函数造RED；后继Oracle完整Save→samekey→strictACK→freshGET/list→refresh持久，无改URL/归属/草稿。Root独占运行/Redis15前后集合与timeout/cleanup。收到冻结test后实跑，真实RED才另准源；当前user3310不修改、不重启、不新开重复标签。
+
+
+### R242-BILLING-POLICY-SQL / P0（有条件准入）
+
+Root原69214为oracle字段映射失败，不冒业务RED；37331与最终356f原runner实证独立rate正控通过、policy表缺失，2fail/22名称过滤，source/generated/邻库same，ownedDB回收。全部结果 `/tmp/r242-billing-catalog-root-runs.json`。独审当前三D0两原P1已关闭；最终oracle review绑定356f后准SQL。唯一writer billing_policy_d0_precision_owner；只candidate现 `database/schema.sql`末尾新增已准19列ordinary `billing_metering_policy_revision`，15独立正值/格式/非空CHECK、单PK id、tenant/revision unique、tenant/effective/revision DESC btree；无默认/FK/trigger/RLS/routine/新JSON。test356f、原schema全文、三D0/source/artifact/lock/generated冻结，不碰formal五mixed。作者只SQL文本交接/tmp/r242-billing-policy-sql-handoff.md，Root独占fresh installer、同RED重跑、Prisma正规派生、schema drift及owner回归；这是policy持久化前置，不冒发布/报价/扣费已通。
+
+
+## R242 继续执行：项目改名前端消费与Billing真实catalog反例
+
+上一goal turn为状态核对，无新增功能交付，分类no-progress；本轮重新核正式BFF886a25a1/public7.2固定producer依赖已满足，因此不继续等待。完整Wave0–7范围不变，Root唯一资源/Git/台账writer。
+
+|任务|角色/基线/唯一写集|完成门与排除|
+|---|---|---|
+|R242-WEB-RENAME-D0 / P0|r242_page_status_read续派Web唯一文档writer，gpt-5.6-luna high；formal5e096364，Root gitarchive clean artifact locator `/tmp/kokoro-r242-web-rename-clean.path`；只三现D0当前prefix|用已发布BFF886a25a1/public7.2与SHA bf64f0c66bea31a62285d64366686f3097bba21259b6c652977d28185097ed73。承接现只读放置表，冻结client/adapter/UI状态+ACK后canonical GET、旧keyACK不覆盖最新名、route/subject epoch fence、单key显式重试、禁自动改name投影。原正式三D0全文suffix exact，原四mixed不接触；source/test/generated/pin/锁/Git/资源禁写。设计一致Root审后另授tests/source，交/tmp/r242-web-rename-d0-handoff.md。|
+|R242-BILLING-POLICY-CATALOG-RED / P0|Root真实资源执行；Billing候选三D0 frozen，原test前58911bytes保护，new0678d8d4|先实跑原freshPG catalog测试，只有现rate正控有效且policy表真实缺失才称业务RED；raw PG snake/camel oracle若失败先窄修tests，不授SQL。源/schema/锁冻结，无模型/资金/共享reset。后继SQL只有有效RED与三面门后另准。|
+
+
+## R242 当前交付与后继任务边界（2026-10-05）
+
+本次仅更新进度事实与证据，不虚增功能PASS。Root重新核本地HEAD/branch/status及70组闭集，11通过/6失败/14待复测/38未验/1后置保持。Root0d3cc976，BFF正式HEAD886a25a1，其余当前HEAD与CURRENT仓库表一致；12个checkout均仅本地main，remote未核。Web4/BFF20/Billing5混合修改和Root六gitlink/uv.lock保持。
+
+R241 Root82423已终态0（替代旧“在途”）：installer/build/check/format均0，745pass/2资源skip，完整真实PG/Redis244pass/0fail/0skip。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r241-bff-full-27__lc_g/manifest.json`；Root本轮回读所有step均exit0、source/Redis/邻库保持、自库absent，19个提交Git对象SHA与冻结文件逐一相同。Root7719原27项GREEN及78534实际L6取消RED历史均保留，不将25pass/2fail改写为从未失败。四D0最后独审0P0/P1/P2，随后精确19路径本地main提交886a25a1c0158dbf71eb4b3b72522508b1c9a8f5；收据 `/tmp/r241-bff-rename-commit-receipt.json` 记protected20 bytes/modes same/index empty/tree matches gate。未push/发布Root gitlink/启用3310；Web改名消费仍缺。
+
+Billing三D0纠正INTEGER类型与永久policy result字段后，catalog测试候选只追加现文件、原58911bytes前缀保持，whole0678d8d4；报告`/tmp/r241-billing-policy-catalog-red-handoff.md`。作者静态检查不冒真实RED，尚未执行PG或实现SQL。Root原26344句柄已终态0，固定Node24/candidate pnpm11.25生成ignored Prisma7.10 client；先前Root cwd误选pnpm12.3.4拒绝为工具前置失败，不是业务失败。无新资金/provider、共享reset或重复服务。
+
+原用户页面没有本轮真实DOM/E2E验收结论；3310监听PID46036本轮只读仍在。Root质量报告区分已提交切片/历史系统证据/当前用户旅程缺口，不提供伪百分比；全部页面与Settings保持逐项验收任务，完整Wave0–7仍active。
+
+
+## R241 项目改名真实业务RED与费用接线收敛（2026-10-05）
+
+本次goal承接：前回合为状态查询/台账复核，不计功能进展。Root现独占资源句柄78534，在原fresh DB runner执行冻结b480f9d2的基础rename与新lifecycle矩阵，8source/10contract/原70511bytes前缀实核保持；尚未终态不编辑/重复启动。rename_r241_quality_review续派只读生命周期审查，绑定同SHA，报告/tmp/r241-rename-lifecycle-review.md；agent_usage_r232_review续派只读Billing三D0一致性复核及下一真实catalog RED设计，报告/tmp/r241-billing-policy-d0-consistency-review.md。两者零写入/资源/Git，Root保集成与最终验收；原BFF writer已停写。
+
+78534现终态exit1：27父子TAP统计25pass/2fail，唯一叶失败L6 receipt在真实INSERT sleep后HTTP取消，exact release(true)/listener已卸载但PG PID未在1500ms消失。manifest mc4lvrsr source/Redis/邻库same、ownedDB回收。Root两个freshPG对照证默认check0时4737ms消失、仅transaction-local check100ms时312ms消失；无全局配置/role/共享reset。续授R241-RENAME-CANCEL-GREEN原BFF writer仅现project-rename.ts BEGIN后同timeout SQL加local100ms及三D0当前前缀一句平台/语义，test b480f9d2所有断言冻结、其余源/机器合同/schema/lock保护。独审旧源失败及新freeze分别记录。
+
+取消源aa4da6fc/测试b480不变已冻结；Root7719原矩阵27pass/0fail/0skip、12.012s，L6两阶段及facts/pool/recovery到达；manifest t7yto45m source/Redis/邻库same、自库absent。Root82423为唯一完整owner回归句柄仍在途，禁止候选编辑/重复运行。原Billing文档writer续派capacity终态失败，已显式停写；替代billing_policy_d0_precision_owner（gpt-5.6-luna high，范围仅原三D0两处精确裁决）实际接管，无其它源码许可。
+
+82423现终态0，最终aa4da6fc/b480候选check745pass/2资源skip、format/build/installer0、真实PGRedis244pass/0fail/0skip，source/Redis/邻库same、自库回收。BFF原owner仅四D0当前证据短prefix续写，source/test/contract完全冻结，独审最后P2时态纠正后Root精确Git交付；producer正式交付前Web不repin。
+
+R241-BILLING-POLICY-CATALOG-RED / P0：Root已亲核三D0两P1精确裁决及原HEAD suffix保持；writer handoff沿旧prefix_bytes切分的统计边界失准，但文件原全文未破坏，正确当前prefix6123/2852/2846与原suffix hash由/tmp/r241-billing-policy-d0-root-proof.json实核，后续不得用错误边界剥文档。准billing_policy_d0_precision_owner从文档转唯一Billing tests writer，仅原clean artifact现test/integration/metering-rate-publication.test.ts末尾追加真实freshPG policy catalog组，旧全文/35或现有case全部bytes保留；不改三D0/SQL/source/contract/generated/package/lock。依批准INTEGER/19closed列、PK/unique/effective index及owner schema/rate保护写oracle，无未来import/method/404/mocks。当前schema确缺policy表，首真实断言应table missing；Root实跑RED后另授SQL，不自动实现。Root负责Node24固定runtime、ignored依赖生成/自有tempDB及Git；测试writer只静态freeze，资源禁止。
+
+R241-BILLING-D0-P1-DOCS：只读三面复核发现两个实现前P1；Root读正式rate schema/resultcodec裁定policy schema_version为INTEGER且CHECK=1、永久result恰现七字段kind=policy且rate旧bytes不变/command exactkind。原agent_usage_r232_review续为唯一三D0前缀writer，零source/SQL/tests/资源/Git；freeze后Root再次核suffix与语义，未自动放行实现。
+
+R241续派已实际启动：原BFF负责人仅Host/tenant测试补门已冻结bde7d28f，Root83477五真实HTTP/PG组5pass/0fail/0skip；独审原worker派发遇model capacity并终态失败，替代只读审查员rename_r241_quality_review采用可用gpt-6.1-sol（原计划不假称执行），只审窄hunk和生命周期测试设计。agent_usage_r232_review完成Billing只读复核，无Billing写入许可。
+
+Root15200完整候选回归已终态exit1：check0（745pass/2资源skip，lint/types/contract/build0），format仅business-store.integration.mjs失败，真实integration尚未执行。准原BFF writer仅本轮追加R241区段format，不改原1445行前缀、任何case/断言/生产/合同。新SHA与精确diff冻结后Root重跑完整门，不降低格式门；原五组GREEN及失败收据保留。
+
+格式已只一诊断catch hunk冻结f6fc6e81，原1445行70511字节及195assert AST全同，8source/10contract保持。Root60631现为唯一完整门资源句柄，仍运行时不编辑候选/重复启动。Root依现命令回读原句柄，不把静态作者check当最终门。
+
+
+上一goal turn为progress：承接原45073终态，Root合同238/0、format0、architecture30/0及build0，独审0；CURRENT/progress按新事实更新。状态汇报本身不是功能完成。当前沿R240三面与同Wave0–7，不建立新计划中心。
+
+|任务|owner/执行/基线/范围|依赖、验证与交付|
+|---|---|---|
+|R241-BFF-RENAME-HTTP-RED / P0|BFF原负责人 bff_project_crud_owner，唯一writer；Root集成；main cdad0ad6的既有fresh artifact `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r240-bff-rename-clean-189dyfkj/repo`。仅既有 `test/business-store.integration.mjs` 追加真实HTTP/PG rename业务组，不改旧case或合同十冻结路径/源/Schema/lock/generated/原20mixed。|R240合同三门与独审已通过。先合法create→name PATCH→200最小ACK→GET/list/旧slug/重建服务；no-op、旧key/replay/conflict、输入/权限/原子及锁race矩阵按已批准D0。writer不运行PG/Redis/服务/Git；交freeze SHA、diff与运行建议。Root独占真实失败→实现准入与完整回归；暂无生产授权。|
+|R241-BILLING-ATTEMPT-D0-READ / P0|只读 agent_usage_r232_review；正式Agent cb645370/Billing e5d83db0、Root ADR-033及当前三面；只写 `/tmp/r241-billing-attempt-d0.md`，不写仓/Git/资源。|沿R240 seam审计补政策publication→quote→许可的精确最小依赖，分清已批准profile与仍缺字段/引用，不自造金融默认、amount或新的contract owner。输出§8放置/三D0差异与真实业务RED入口，Root裁定后再交Billing owner；与BFF测试独立并行。|
+
+|R241-LIVE-LOADING-READ / P0|只读 web_crud_r231_review，原用户3310受管dev副本/PID46036；只写 `/tmp/r241-live-loading-diagnostic.md`。不操作浏览器、服务、数据库、session或源码。|沿R240逐源差异核对，仅从已知受管server/bootstrap/layout/admission/hydration入口及脱敏错误计数寻找当前持续loading可证因果；不读取/输出secret env、完整认证URL或用户正文，不据副本日期推断根因。输出当前证据/缺失观测与最小下一验证，不做热同步或重启。|
+
+R241 Root原36348终态exit1：真实HTTP create四例均先200，合法rename/name四组均在200 ACK断言失败，实际503 `upstream_not_configured`旧meta envelope（不是预想404；无route回退upstream）。build/install均0、源/Redis/邻库集合相同、自有fresh DB回收。manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r241-bff-http-red-31m0jnq0/manifest.json。此为有效缺能力业务RED，允许进入已批准D0的窄生产实现。
+
+|R241-BFF-RENAME-GREEN / P0|BFF原 bff_project_crud_owner，唯一writer，同fresh artifact。新普通文件 `src/http/project-rename-input.ts`、`src/http/routes/project-rename.ts`、`src/infrastructure/postgres/project-rename.ts`；既有 `src/bootstrap/server.ts`、`src/application/project-service.ts`、`src/application/ports/project-repository.ts`、`src/infrastructure/postgres/project-repository.ts`、`package.json`仅聚合入口。|沿 /tmp/r239-bff-rename-d0.md §3/§4C放置，复用projectName/raw JSON、现receipt与active Project行锁，同事务定列UPDATE/receipt；当前授权先qualification先replay，原ACK不覆盖后来name，same-name保updated_at，严格error、单4.5秒预算/1秒锁与exact-client生命周期。生产不import Move命名helper，不新表/目录/alias/兼容/通用framework。四R241业务测试及十合同路径冻结，作者仅静态门；真实PG/Redis/HTTP、源码独审与全旧门归Root，未通过不提交或消费repin。越界编译需求先报。|
+
+R241 GREEN范围补充：rename route可采用Node22.22.2原生 iterator({destroyOnReturn:false})的本路由有界读取以保证65537字节仍返回已发布400；不改通用readBody/其它routes。四测试最初RED发生在首合法ACK，不受后继fixture影响；原输入组第二同owner中文create产生与首Project同slug导致409，是fixture前置错误。仅准原writer将第二create名称改ASCII唯一slug，并将重名rename输入改为other.name（expected other.name不变）；保重复显示名及全部边界/零差断言。须新SHA/精确两hunk，原baef及四503收据保留。
+
+|R241-BFF-RENAME-FROZEN-REVIEW / P0|只读 web_crud_r231_review；cdad0ad6+R240十合同路径+R241八source/package及四业务tests冻结，候选同artifact；Root集成|审 /tmp/r241-bff-rename-green-manifest.json 与6fcb测试，路径职责、service/port/PG零类型泄漏、输入/闭集、资格先receipt、no-op/旧key、同事务、精确client/error listener、单deadline/unknown COMMIT/取消。只写/tmp审查报告，禁止源/Git/资源。Root独占四真实GREEN及完整owner回归；无真实IAM/浏览器/资金claim。|
+
+R241 Root26138首次真实GREEN3pass/1fail/0skip，主链/no-op/权限通过；raw输入组在helper JSON.parse收到空body SyntaxError，尚未定位具体向量，不猜overflow。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r241-bff-http-green-gbldtcql/manifest.json`；source/Redis/邻库保持、自有DB回收。仅续原writer改既有test raw-helper catch一个诊断hunk：错误附HTTP status、请求字节数、rawExtra测试header信息、响应字节数，不输出base auth/Bearer，不改任何断言/顺序/timeout或生产；原6fcb保持备份，新SHA冻结后Root精确输入组再实跑。
+
+R241 Root93041定点raw诊断终态exit1：65536合法JSON与128key第一raw正控收到HTTP400/空body，并未到overflow。Root自有Node22.22.2 HTTP对照证明raw headers array没有Host时handlerCalls=0/status400/responseBytes0，补Host同65536字节则handlerCalls1/status200。这是测试HTTP/1.1前置错误，不是rename parser失败；仅准原writer raw helper添加当前URL的Host单header，不改正控/反控/断言/期限/生产。源码独审0P0/1P1/0P2：补新rename `product_tenant_not_configured`专属closed错误端点测试（current config为空、IAM0调用与owner全facts零差）；可仅fixture start/restart接configTenant用于此测试，不扩其它source或改变原cases。原26138/93041失败收据保留，更新test冻结后Root再跑。
+
+R241-BILLING-POLICY-D0裁决（只准设计草稿、无源码/SQL许可）：Root确认 profileRef 指 Agent usage normalization owner artifact 的 version+manifest.aggregate_sha256，不混用schema文件SHA或manifest原文件SHA；当前Agent cb645370 usage/v1 artifact1.0.0 aggregate ecd30d1908f410eed29181c9f52669f824312bf3a2e3874153d990b95fe58b91，运行消费者必须固定owner发布来源而非跨仓import。Billing failure-policy取本仓闭集单一 `contract/metering-policy/v1/policy.json` 机器原件，四个既定结果为completed/failed_or_cancelled=verified_actual_only、not_dispatched=release_confirmed_unused、unknown_or_incomplete=pending_reconciliation；另schema/vectors/manifest仅验证该原件，不成为第二规则源。failurePolicyRef.artifactDigest固定policy.json精确UTF-8 bytes SHA256（版本与原件同时核，不混aggregate）。可执行multiplier/conversion均严格正；纯draft仍能表达nonexecutability，不能免费fallback。发布拒不支持ref；持久已发布row不受支持/漂移归POLICY_CORRUPT，缺可选policy归UNAVAILABLE。收敛现rate selector为一次DB clock下joint selection，无兼容alias/独立policy selector/通用engine/资金写。真实换算数据只阻断生产激活；合成机制用显式QA数据，不seed实际价格。
+
+R241-BILLING-D0-DOCS / 原 agent_usage_r232_review 角色明确改为Billing三D0文档唯一writer，仅/tmp/kokoro-r241-billing-policy-clean.path所指e5d83db0 Git-only artifact的TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL顶部前缀。Root已审/tmp/r241-billing-policy-three-d0-draft.md，§8放置、单policy表、digest种类、正倍率、joint DBtime与零HTTP/资金边界一致；只批准落文档，不准源码/SQL/contract/生成物/测试。三原HEAD正文逐字保护、formal五dirty全文保持；Root负责最终三面审查与后继独立RED准入。后台BFF仍唯一测试writer，与文档工作独立；Git/资源归Root。
+
+R241-RENAME-LIFECYCLE / P0：Root60631已终态0，check745pass/2资源skip、format0、完整真实PG/Redis222pass/0fail/0skip，source/Redis/邻库保持、owned DB回收，manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r241-bff-full-e72w5lym/manifest.json`。最终窄补门独审0P0/P1/P2，原P1关闭。现在准原 bff_project_crud_owner 仅同artifact现business-store.integration.mjs的R241 fixture及追加真实系统矩阵：C1-C3并发，Q1-Q4锁内资格，F1真实receipt SQL rollback、F2真实backend terminate、F4已真实COMMIT后ACK丢失+旧key不覆盖，L1真实pool saturation/late正常归还、L2父锁期限、L3累计真实SQL期限、L6 HTTP abort。复用现chat-facts的真实转发/精确client观测方式，不假BEGIN/COMMIT/Rows，不改source/contract/schema/install/原1445前缀或既有case/断言/预算。完整共同oracle及seams沿 /tmp/r241-rename-lifecycle-test-plan.md；Root独占资源、实际失败定位和Git，writer只静态语法/format。未执行向量留OPEN，不以原Message通过替代rename。
+
+完整用户旅程、正式模型收费与70验收组保持OPEN；当前用户3310不重启，不删除现临时会话或重置共享资源。
 
 ## R232 冻结 Agent 源码独立审查 / Root 系统复验补卡
 

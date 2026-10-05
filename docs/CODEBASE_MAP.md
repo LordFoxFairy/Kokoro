@@ -1,4 +1,31 @@
+## R243 最新运行终态
+
+Billingccd4cb0f正式主树11门已实际全0；quote/attempt/资金后继只读由原Agent owner调查。Web菜单焦点窄源码修正在唯一writer，需Root原bounded反例；设置私有AI偏好/identity边界待业务对齐，尚无新BFFresource授权。前述在途均为历史时点，用户3310不更新、不清数据。
+
+## R243 当前提交与验收入口
+
+Billing正式mainccd4cb0f已交付私有policy publication/joint selection14路径，Root主树复验在途；quote/attempt/资金用户链仍缺。Web候选cache窄修后原真浏览器改名旅程通过，尚待fixture修复/键盘风险实证和完整门/正式owner浏览器发布，不将controlled peer当3310。Settings个性化现无已发布四字段owner接口，产品/owner审查只读正在收口，不直接造本地存储假保存。
+
+## R243 最新后继入口
+
+Web改名候选现真实200被browser/owner cache validator混用拒绝，窄writer与独审已实际启动；限定三现普通文件与现新旅程header观察，不改proxy策略。Billing13path policy publication/joint selection已冻结、独审0及Root完整两文件矩阵0；尚未提交/完整工程/资金链。用户个性化昵称编辑→失焦→关闭重开实际丢失，进入产品/owner只读定位，未建新配置中心。唯一任务与证据见task/progress/test-cases最新R243。
+
+## R243 当前实际运行与接线入口
+
+真实3310旧组合仍本机qwen3:8b、未装配Billing；Root新conv586实际双轮与终态刷新只作UI子证据。当前项目菜单缺操作、Credits两块加载失败已实际观察；原tab恢复与正式费用整链仍OPEN。不要把源码HEAD/候选门冒实际运行pins。Web rename候选继续唯一writer；Billing formal3f05e6c5持久化主树11门已终态0，下一policy artifact/publication/joint selection由agent_r243_live_journey在原clean candidate独占实施，真实缺policy行为RED已取得。当前角色/范围与证据沿task/progress/test-cases；不建设迁移/部署平台，不清用户数据。
+
+## R243当前入口补充（2026-10-05）
+
+Billing main3f05e6c5已交付canonical policy十九列与正规Prisma派生/四集成oracle/设计快照，非资金链；正式主工作树Root42390复验在途。Web5e096364的项目改名consumer候选由web_rename_r242_system_sol61独占，正常owner public7.2 repin实施中，真实菜单RED已确认，源未交付。入口沿现task，不从临时candidate或此地图推定用户3310已恢复。
+
 # Kokoro codebase map
+
+## R242 当前交付入口
+
+BFF main886a25a1已正式交付项目name PATCH/public7.2.0/91ops。入口现 `src/http/project-rename-input.ts`、`src/http/routes/project-rename.ts`、`src/infrastructure/postgres/project-rename.ts` 及现project service/repository；canonical schema未变化。Root最新真实244集成与27改名生命周期记录、原取消RED和精确提交收据见CURRENT/progress。先前R240仅合同候选是历史状态，不再用作当前准入。
+
+Web main5e096364仍待消费上述固定owner产物/项目改名菜单/ACK后canonical GET；只读审计 `/tmp/r241-web-project-rename-consumer-audit.md`，原3310未核完整组合。Billing候选tests-only新增policy catalog oracle尚待Root真实PG执行，不能把静态交接称RED/SQL实现。70产品组11/6/14/38/1不变，原混合修改保持。
+
 
 ## R240 正式交付与后继入口
 

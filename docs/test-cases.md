@@ -1,5 +1,60 @@
+## R243 keyboard生命周期新反例（独立于已通过的改名主链）
+
+预置为冻结新Project改名UI、真实Next/Chromium/Redis及受控owner；步骤：更多→改名Dialog→取消→Dialog卸载→既有10秒内观察原更多trigger焦点，随后预期键盘重开并改名成功后仍归焦。首次立即断言false不作为稳定RED；改为同预算expect.poll后Root62162仍满10秒false，实际FAIL，源/Redis保持。现menu来源ref恢复已派，原modal/pending/ACK/GET/deadline不放宽。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r243-web-keyboard-settled-hmaxi8p9/manifest.json`。此用户键盘反例不把73名称过滤算通过，也不取消前述主链局部PASS；完整项目组仍未PASS。
+
+## R243 本人会话改名刷新子例（仍不关闭T-C03整组）
+
+预置：真实3310已登录，新测试conv_586d8b9f-00ea-415e-a437-da3b09a22849有两回复；步骤：展开侧栏→该行重命名→输入“R243 用户交互验收”→Enter→硬刷新→重新展开。期望：同ID、新标题和原两回复保持、输入可用。实际PASS；没有删除对象或调用新模型。此前因侧栏在操作间关闭的no-match只属未操作，不算rename产品失败；恢复实际入口后该完整子路径执行成立。
+
+候选Project改名原系统journeyRoot86903亦通过（controlled owner，不是上述直接会话，也非当前3310）；当前仍有待复验UI fixture与待实证keyboard风险，不能按它关闭完整项目CRUD。Billing源码ccd4cb0f新前置精确交付，正式费用整链没有用户PASS。
+
+## R243 新增真实Settings失败及改名网络失败（不改变70组）
+
+|用例引用|预置与步骤|验收标准|本次实际|优先级/类型|
+|---|---|---|---|---|
+|TC-SETTINGS-R191-007–010相关个性化子例|已登录真实3310、原昵称空；账户→个性化→输入QA昵称→职业失焦→关闭→重开|合法编辑有明确保存语义/结果，重开从权威源保留；失败可见而非静默丢失|FAIL：昵称重开为空，无保存/结果反馈；只是局部输入可见。未读取owner请求，根因待定位|P1/用户系统、状态机|
+|T-C05/T-U03项目改名子例|冻结候选、真实Next/Chromium/Redis及受控ownerpeer；合法menu→Dialog→单PATCH→200|owner no-store与browser-private规范各自正确验证，200后canonical读回，不误判unknown|Root57315 FAIL于实际private,no-store,max-age=0；共用parser拒合法ACK，source窄修已派。当前用户3310尚未启该候选|P1/用户系统、异常、协议边界|
+
+Billing Root70536两文件285通过与独审0只作开发前置证据；正式Credit赠送/预占/逐attempt调用/核实消耗结算释放/流水以及当前用户页仍未PASS。没有关闭任何完整业务组。
+
+### R243下一段执行队列（引用现用例，非新增测试中心）
+
+独立QA/UI清单 `/tmp/r243-next-ui-acceptance-checklist.md` 已交（12自然操作，完整预置/步骤/成功与异常权限oracle）。依次沿 T-C05/T-C02 项目创建概览→TC-R192-C01–03 Move→T-C05/T-U03改名→T-C03会话CRUD→T-C05指令/资源关联→TC-SETTINGS-R191-007–010 Settings→T-B03–07正式Credits；每项只按实际执行回填，不将清单、源码或后台门算通过。涉及项目物理删除的最终确认与新权限扩张遵守当前操作确认，不因QA角色绕过。当前两轮UI与项目菜单/积分错误只覆盖已描述子路径。
+
+## R243 实际用户子路径证据补录（2026-10-05；不改变70组状态）
+
+- T-C06/T-U02子路径：真实3310同新conv586两次自然发送，新assistant标记均到达；终态硬刷新两回复保留、同conversation URL、输入可用。只UI基础子路径；当前launcher本机qwen3:8b/零Billing装配，不称指定外部模型/正式费用闭环，活动续流/取消/权限/作品仍未验。
+- T-C05/T-U03子路径：进入既有项目后loading退出/空会话；header更多菜单实际只有账户/升级，缺项目CRUD操作，仍失败。Web候选源码在实现中，不等于实际页面已修。
+- T-B03/T-B04相关用户页：账户积分入口打开用量与计费，余额与积分历史各从loading退出为加载失败/重新加载；没有假零余额、免费或赠送声明。当前无Billing组合是已知装配缺口，具体HTTP错误尚未关联；不把后台持久化门改计用户PASS。
+- Root42390 formal Billing3f05e6c5 policy持久化11门终态0/日志hash全核；Root97969新增真实Nest+PG缺policy业务RED1fail/24过滤。两项属于开发前置/回归证据，不替代以上用户交互结果。
+- Root只用一实际临时tab5；原tab1本轮未取证，现在inventory只有tab5，Root没有删除用户原tab。无Root导航的dialog关闭/回到聊天仅待复现观察，不以tool超时或猜测判根因。
+
+## R243测试证据补充（2026-10-05；不改变整组状态）
+
+项目改名新真实Next/Chromium journey在正常登录/Project/detail/thread/draft前置后，唯一菜单缺失失败（1fail/73名称过滤）；完整后半ACK/fresh-read/reload尚未执行，不冒当前3310或完整CRUD验收。Billing policy SQL候选Root全11门117真实PG/1361辅助通过并精确11路径交付3f05e6c5，正式主工作树复验在途；仅持久化/Schema保护，不替代T-B04/05/06/07正式计价与收费业务组。原失败保留，唯一70组11/6/14/38/1不变；实际收据详Root progress R243。
+
 # Kokoro 系统级测试与业务验收台账
 
+
+## R241 项目改名实际子例状态（不改变70整组计数）
+
+共同预置：BFF886a25a1已提交的R241冻结生产切片、真实HTTP/PostgreSQL/Redis，IAM受控准入边界；非用户3310。
+
+新增生命周期冻结b480f9d2的Root78534执行：基础五组仍通过；10新组/17叶向量按父子TAP统计总27项25pass/2fail/0skip。唯一叶L6 receipt失败，所属父组随失败，不冒两个独立缺陷。原4.5秒预算等保护不变，生产窄修后必须重跑，不由旧222通过代替。
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果|
+|---|---|---|---|---|---|---|---|
+|TC-BFF-R241-L6|真实SQL中用户取消|共同预置；精准Project锁/receipt PgSleep、exact checked-out client与已UPDATE可观测|发rename→观测真实等待PID→HTTP Abort→核client归还/监听/PID/全facts→同key恢复|无成功响应、exact client毁弃一次且监听卸载，backend及时消失，事务零partial facts且pool可恢复|P0|异常、状态机、系统|78534原receipt叶FAIL保留；aa4da6fc窄修后Root7719同b480测试lock/receipt皆PASS，约317ms且facts/pool/recovery到达；Root82423最终完整真实244/0/0skip记录及886a25a1提交绑定；用户页面未验|
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|类型|实际结果|
+|---|---|---|---|---|---|---|---|
+|TC-BFF-R241-01|改名、权威读与重启|共同预置；本人active项目|创建→改名→GET/列表/旧slug读→重启→读回|ACK与权威名称一致，仅name/必要updated_at变；ID/归属/其他事实保持|P0|主链路、生命周期|基础组PASS|
+|TC-BFF-R241-02|no-op与旧key重放|共同预置；合法terminal receipt|same-name→trim等价重放→异body冲突→A/B→旧A重放|no-op updated_at不变；冲突零写；旧A返回原ACK但不覆盖B|P0|幂等、状态机、异常|基础组PASS|
+|TC-BFF-R241-03|名称与raw请求边界|共同预置；合法raw Host正控|合法上界→超界/Unicode/NUL/重复JSON/header/query逐向量→全facts比对|合法65536字节与128key可达；非法稳定闭集400且全owner事实零差|P0|边界、异常|基础组PASS；原缺Host失败保留为fixture前置问题|
+|TC-BFF-R241-04|当前权限先于receipt|共同预置；本人/另一主体/另一tenant/active或墓碑项目|成功提交→切身份/资格/IAM拒绝→旧key和新请求|当前准入与资格先重放；401/403/404/429/503闭集且零非法写|P0|安全、权限、状态机|基础组PASS|
+|TC-BFF-R241-05|缺配置tenant在IAM前拒绝|共同预置；先有合法receipt，再重启空配置|旧key/新key提交→核error/header/IAM调用数与全facts|503 product_tenant_not_configured；retryable/no-store/request-ID；IAM不增加、零事实变化|P0|异常、安全|基础组PASS；原独审P1关闭|
+
+Root83477五组5pass/0fail/0skip；格式单hunk后Root60631完整owner真实PG/Redis222pass/0fail/0skip及check745pass/2资源skip、format/build/contract/lint/types0，manifest见progress R241；源与资源保持。此段222是前版历史记录；最终Root82423新冻结完整真实244/0/0skip，Root7719改名/生命周期27/0/0skip，已提交886a25a1。新增same-key并发、LWW、资格锁竞争、receipt回滚、实际COMMIT后应用侧ACK丢弃与有界取消的限定子例有记录；并非全部故障向量/真实网络ACK丢失已验，正式Web消费与完整CRUD仍待验。不升级70整组。
 
 ## R240 已交付切片（不关闭完整用户组）
 
