@@ -1,3 +1,7 @@
+## R246 系统测试执行记录（2026-10-05）
+
+TC-CHAT-R245-002及原74/新增直接刷新case所在完整76集合：Root15037实际76通过/0失败/0跳过，101.277秒，manifest /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r246-web-system-full-05nftq07/manifest.json，日志91092585、源码/Redis保持、own group已退出。这只是受控IAM/BFF的真实Next/Chromium诊断回归；TC-CHAT-R245-001实际3310间歇跳会话仍OPEN，当前浏览器控制超时导致本轮未复验，不记业务PASS或新FAIL。Agent实施中未冻结，TC-AGENT-R245-001暂保既有有效RED而不预报GREEN。70组状态11/6/14/38/1不变。
+
 ## R245 最终实际运行记录
 
 |用例|预置/操作|预期|实际/边界|优先级/类型|

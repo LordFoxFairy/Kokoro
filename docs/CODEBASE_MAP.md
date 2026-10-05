@@ -1,3 +1,7 @@
+## R246 当前资源与入口
+
+Web候选76系统全回归Root15037终态0（101.277秒/log91092585/source+Redis保持），仍受控owner诊断，不替代3310首次间歇刷新FAIL。原Agent writer正在formal29a7a18后final-wire/schema/replay完整切片，未冻结；独立QA纯profile预审与Web实际副本六差异只读并行。Root不抢写、不跑变化中最终门；浏览器唯一tab6控制超时，原3310进程保持。任务/实际证据沿同task/progress/test-cases。
+
 ## R245 本轮最终真实入口
 
 Agent29a7a18只是三D0；现runtime_chain追加b6052f5b的新真实native/PG反例已Root52891证明final hook0而prepare已commit，ND/零provider保持。R246唯一producer沿同model/factory/call_runtime/新纯request_profile/canonical schema+verifier+repository/frozen validator完整写集，不建许可fallback/新协议；scope见task。Web两个受控浏览器分支均GREEN，真实3310首次刷新串会话仍间歇OPEN，不能按导航静态P1就改；candidate76只tests尚未正式交付。Root实际证据与后继仍同五台账。
