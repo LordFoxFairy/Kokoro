@@ -1,3 +1,19 @@
+## R253 调试环境补齐（2026-10-05）
+
+用户明确要求启动必要子仓库与基础设施，方便完整调试。Root统一进程/端口/资源与集成，不重复启动数据库/Redis，不删旧数据，不伪造费用许可。当前原3310与其父45606保留，先核已有完整进程树；同task续接，不建立新计划中心。
+
+|任务|角色与基线|范围|完成条件|
+|---|---|---|---|
+|R253-RUNTIME-INVENTORY|Root，53821846及当前mixed保护|现进程/监听/只读health、现Root launcher配置，私有凭据不打印；Root启动管理|逐owner列source/PID/端口/健康/依赖/停止方式，补齐可用开发进程，启动不冒能力闭环|
+|R253-MISSING-OWNER-READ|bff_skills_v2_owner_r251只读；System/Billing/Scheduler当前HEAD|读取AGENTS/CODEBASE_MAP/本仓README/CURRENT/RUNBOOK/TECH与config入口，报告/tmp/r253-missing-owner-startup-read.md；不改仓/SQL/资源/Git/provider|确定启动命令、必要连接/密钥、health、单schema约束、BFF对接事实和不可猜配置；不扩运维设计|
+|R253-LIVE-COMBO-READ|web_r247_skill_header_owner只读；原3310进程树|现serve_local_login/local_chat_runtime及原运行目录元数据、只读PID/cwd/health；仅/tmp/r253-live-stack-read.md；禁止重启/kill/dumpenv/provider|明确正在跑哪些正式owner、遗漏哪些以及原3310接线是否可补，不把监听成功当端到端完成|
+|R253-IAM-READINESS-READ|原web_r247_skill_header_owner只读，Root审；原45779/53711|IAM health/config 与现launcher/sandbox源码，仅读；仅/tmp/r253-iam-readiness-read.md，不读取凭据值/重启/建库/写仓|定位readyz所报iam_generation_only缺库与真正身份库的配置seam，给保留原身份数据的最窄修复，不假设认证失败或绕过安全|
+|R253-AGENT-READINESS-READ|agent_r253_readiness_reader只读，gpt-5.6-luna，Root审；原45927/53763|现Agent readiness/JWKS/source config 与原launcher接线仅读；仅/tmp/r253-agent-readiness-read.md，不读私有文件/输出日志/改仓/资源/provider|Root真实 bearer readiness503 agent_unavailable，明确现签名公开ring缺失与DB/Redis故障的判别路径；不禁用凭据或令health代替ready|
+
+R253实际进展：Root管理句柄10214/supervisor51454，Storage8085/51524与Scheduler8087/51608两源码进程已常驻、owner installer0、health/ready200；原基础设施复用，0新应用库/role/共享reset/模型调用/费用操作。Storage生成差异经现normalizer回到clean；Schedulerclean。运行收据51c434a1、registry在/tmp/kokoro-r253-runtime；停止仅INT supervisor，不drop schema/bucket。原3310/45606及未知81924保留。
+
+R253两审计报告已交9ea80347/8dbe6cac，IAM续查d6aadadd已冻结，Root实ready503仍未修；Agent受管ready503/publicJWKS503，独立只读31a75d93已交，Root另确认原进程三个public ring配置键均缺失。Platform缺原组合真正IAM材料、Billing public-only整库空判定、原BFF未配置四owner/原Web旧snapshot都开放。启动不关闭70组或整页；后继先解前置与保数据交接→Root统一接线→真实用户页面，不新建目标/兼容框架/运维工程。
+
 ## R252 当前任务：真实草稿边界已验，持久会话与正式计费仍开放（2026-10-05）
 
 Web1ed160b五路径已交付、Root54405辅助2598/153与工程0、独审eb029；native五owner72d83c5e正常IAM→项目root/B/Home草稿刷新及Back/Forward有限通过，QA6e5ab748；17336已正常收尾且原3310不动。Agent307db318只三D069行目标，可信billable保证未满足，0bound/0send。详证见同progress/test-cases，历史失败不删除。70组仍11/6/14/38/1、存储goal blocked、完整Wave0–7与支付最后不变。

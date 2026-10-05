@@ -1,3 +1,14 @@
+## R253 真实源码服务补齐与未接通边界（2026-10-05）
+
+- 两名原负责人独立只读交付：missing-owner报告9ea80347、原组合8dbe6cac；IAM续查d6aadadd确定 health/readiness config 与实际auth Prisma pool分叉。不是新增身份库或数据库故障免责：原ready503仍实际保留，最窄fixture修复与运行交接未执行。
+- Root实际复用原PG/Redis/MinIO/ClamAV；现BFF数据库里目标Storage/Scheduler owner namespace此前无对象。Storage Node24执行现 `tsx scripts/apply-schema.ts` exit0，再 `tsx src/main.ts` 常驻8085；Scheduler固定Go1.26.8执行现 `go run ./cmd/db-apply-schema` exit0，再 `go run ./cmd/scheduler` 常驻8087。两者health/ready均200；Storage ready真实检查Prisma/Redis/S3/scanner，Scheduler ready不是完整catalog/控制回调验收。
+- Storage installer正常Prisma generate造成17tracked generated格式差异，Root执行现 `scripts/normalize-generated.ts` 后工作树clean，未手改生成物、未提交依赖变化。Scheduler工作树clean。installer日志分别SHA12e009cd、149b4367，私有600不输出正文。未运行整仓测试/浏览器旅程，服务启动不提升70组完成状态。
+- Root独立探针确认System/BFF ready200，IAMready503；Agent匿名ready401是鉴权边界，现受管bearer ready503及公开 `/v1/execution-proof/jwks` 503/执行proof unavailable是真实前置阻断。Agent独立只读31a75d93已交，Root回核现source及原进程三个public ring配置键均缺失（只记录布尔值）。缺ring会在PG/Redis工厂前ready503；ring200后才继续检查依赖。修复须真实worker signer绑定的公开材料，不能随意生成假proof或按审稿建议直接重启原子进程触发parent cleanup。
+- 新进程受Root句柄10214/supervisor51454管理；真实监听Storage51524、Scheduler51608。保留用于用户明确要求的后续调试，不是无主后台。停止仅 `kill -INT 51454`，对子进程组graceful后有限TERM/KILL，绝不删除schema/bucket/用户应用库或清共享Redis。现ownedbucket为本轮专用，无schedule/模型/付费操作。
+- 原3310/45606保持，81924未知归属孤立BFF未盲杀。原BFF环境缺四owner消费边，旧Web public7/zip-v1不变，**新owner独立就绪≠旧页面接通**。Platform需真正IAM credentials；Billing现public-only整库空检查须owner代码修复，拒新增应用数据库/role旁路。本轮没有伪造grant/充值/免费链。
+
+运行收据 `/tmp/kokoro-r253-runtime/startup-proof.json` SHA 51c434a157ce1ce877e4d35e8444c166661d7cdd07062860b6c047cd6e3f5265；registry `/tmp/kokoro-r253-runtime/registry.json`，原资源保护与实际启动pin逐项列CURRENT。同task后继先解readiness与proof输入/保数据交接，再统一BFF接线与正式Web交付→完整正常用户验收；不重建目标/PRD/测试中心、不冒所有已启动或整页闭环。
+
 ## R252 当前收口：草稿scope真实交互与两次源码反例（2026-10-05）
 
 - Web已正式提交 `1ed160b081527be94e9bd344773c6d31e3b7ff5f`，精确5path；源码冻manifest a65a0099、独审eb029、收据 `/tmp/r252-project-draft-scope-commit-receipt.json`。Root54405实际2598pass/153file、生成两check/lint/typegen/tsc/build0，只辅助安全网，system排除。

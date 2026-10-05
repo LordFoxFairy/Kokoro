@@ -1,3 +1,9 @@
+## R253 运行定位入口（2026-10-05）
+
+现九owner物理路径沿下文不变，不新建服务/一级模块。Root临时调试管理 `/tmp/kokoro-r253-runtime/start_missing.py` 调用现 Storage `scripts/apply-schema.ts` / `src/main.ts` 与 Scheduler `cmd/db-apply-schema` / `cmd/scheduler`；仅复用现应用库的owner schema和现基础设施，无新应用库/role。常驻句柄10214 / supervisor51454，实际监听Storage8085/51524、Scheduler8087/51608。停止仅向supervisor发INT，保留已有和本轮owner数据。
+
+安全运行元数据 `/tmp/kokoro-r253-runtime/registry.json`；Root实际只读探针及pin `/tmp/kokoro-r253-runtime/startup-proof.json`。700目录内 private-json/log600，不进Git/不读取输出secret。原3310及其parent45606资源protected，新owner尚未被旧BFF配置消费。IAM探针读generation占位库而auth走真实pool；Agent公开JWKS不可用；Platform凭据和Billing single-owner-schema阻断都在CURRENT/task，不以启动图冒功能完成。
+
 ## R252 当前入口：概览、会话与Home草稿一致（2026-10-05）
 
 Web本地main `1ed160b081527be94e9bd344773c6d31e3b7ff5f`。本次只改现三source：

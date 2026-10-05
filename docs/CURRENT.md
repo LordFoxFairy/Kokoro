@@ -1,3 +1,25 @@
+## R253 当前调试服务盘点与补启动（2026-10-05）
+
+用户要求必要服务和基础设施保持运行，方便完整调试。本轮实际补齐了 Storage、Scheduler 源码进程，不把进程就绪当业务闭环。
+
+| 服务 | 当前端口 / 监听 PID | 本轮实际检查 | 当前边界 |
+|---|---|---|---|
+| Web | 3310 / 46036 | 原监听保留 | 原副本 public7/zip-v1，尚未接入本轮新 owner；不是当前正式 Web commit |
+| IAM | 53711 / 45779 | health200，ready503 | fixture 将 readiness 配置留在 iam_generation_only；认证实际使用另一真实 Prisma pool，不能据此称身份数据丢失 |
+| System | 53719 / 45903 | health/ready200 | 原隔离副本；不冒当前 checkout 内存 pin |
+| Agent HTTP / worker | 53763 / 45927；worker45944 | health200；匿名ready401、受管bearer ready503；公开JWKS503 | execution_proof_jwks_unavailable，现进程三个公开ring配置键均缺失；执行前置仍未就绪，不以进程存活冒真实模型/付费成功 |
+| BFF | 53714 / 46024 | health/ready200 | 原配置没有 Storage/Platform/Billing/Scheduler，不能热补，不冒页面接通 |
+| Storage | 8085 / 51524 | owner schema installer0；health/ready200 | 源码14f2bc9c，真实 PG/Redis/S3/ClamAV readiness；原BFF尚未消费 |
+| Scheduler | 8087 / 51608 | owner schema installer0；health/ready200 | 源码e8dca489，Go1.26.8；无新schedule，出站默认关闭，BFF控制/回调还未接线 |
+| Platform | 未启动 | 当前配置材料盘点 | 当前原组合缺IAM颁发的resource-server/tenant/catalog/projection材料；不伪造凭据或禁用鉴权 |
+| Billing | 未启动 | installer 源码边界确认 | public-only＋整库无用户对象，尚不支持本轮单应用库 owner schema；需要Billing代码切片，不增第二应用库/role绕过 |
+
+基础设施均复用：PostgreSQL5432、Redis6379、MinIO39190/39191、ClamAV43310，后两现Docker容器均healthy。本轮没有另起基础设施、增加应用数据库/role或reset共享状态。仅在现 BFF 应用库用owner入口首次安装原为空的 kokoro_storage/kokoro_scheduler，新增本轮owned S3 bucket；保留用户数据。
+
+Root受管句柄10214、supervisor51454；运行收据 `/tmp/kokoro-r253-runtime/startup-proof.json`（51c434a157ce1ce877e4d35e8444c166661d7cdd07062860b6c047cd6e3f5265）、注册 `/tmp/kokoro-r253-runtime/registry.json`。停止 `kill -INT 51454` 仅停止本轮子进程组，保留schema/bucket，不drop应用库/清Redis。私有配置和日志位于700目录内，600文件，不写Git/不打印凭据。原parent45606保持；另BFF81924/59464为PPID1且归属未证，未盲杀。
+
+后继：先修现fixture readiness配置与真实proof ring前置；Root保护既有身份/聊天数据，完成受管运行交接后统一BFF配置及正式Web完整依赖闭包，再真实用户逐页面验收。原launcher对子进程失败会清理自有DB，现入口也无retain/attach，禁止直接kill旧子进程触发数据删除。本轮0模型调用/0积分赠送或扣费/0业务E2E；70组11/6/14/38/1与既有Wave0–7不变，所有未闭环项保留。
+
 ## R252 当前：专案草稿串位已真实复验，完整业务仍开放（2026-10-05）
 
 本节是当前摘要；下文阶段性失败保留为历史，不再作为在途任务。
