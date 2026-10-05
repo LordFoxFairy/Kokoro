@@ -1,3 +1,14 @@
+## R252 本轮真实页面验收与资源收尾（2026-10-05）
+
+- **Skills有限主链通过**：独立五owner固定组合Root9e36000/Web475f24fe/BFFf3c64d90/Platform494b118/IAMc9a9872/Storage14f2bc9；实际Chrome无痕正规IAM登录→普通474B二字段V2 ZIP选包→上传并发布→已发布列表→安装/停用→硬刷新仍停用→启用→移除→刷新确认安装为空、发布源仍存在。服务端sourceRef/revision由正常产品流程生成，未向包塞后台ID；证据 `/tmp/r252-skills-real-user-journey.json` 与 `/tmp/r252-skills-native-published.jpg`。没有逐段网络状态码捕获，恶意包、越权、ACK未知、详情/撤回、Agent真正加载执行仍未验，**不关闭整组T-K02，不冒原3310通过**。
+- **Library有限主链通过**：同正常用户在资料库选择本次57B普通文本→上传显示扫描通过与权威文件行→硬刷新文件仍在→点击下载、原生保存完成，下载SHA与原文件相同（d1cd348a…）。证据 `/tmp/r252-library-real-user-journey.json` 与 `/tmp/r252-library-refresh-download.jpg`。本轮未精确测量自然300秒边界、感染/超限/取消、项目/他人文件或Agent作品，T-F01原异常及整组仍待复测。
+- **登录回原项目修复进行中**：Root实际8failed/12passed行为RED已取得；唯一Web writer获既定9源/8test窄授权，复用state/固定callback/PKCE/nonce/一次消费与verified-subject草稿隔离，不建新认证框架。代码尚未冻结/审查/集成，真实原深链FAIL保持，T-C05/T-U04未验收。只读QA与安全预审并行，Root不抢写。
+- **资源已收尾，不留闲置后台**：正常Ctrl-C23266实际exit0，launcher报告owned resources removed；Root复查3311无监听、私有凭据已移除、原3310的45606/46036仍alive。本轮无痕测试窗口已执行关闭，未动原用户预览/模型/积分/共享资源。收据 `/tmp/r252-capability-release-preparation.json`。首次缺IAM生成物/第二次错误Python工具链的失败保留，未以重试成功抹掉历史。
+
+有限用户证据已独立只读复审 `/tmp/r252-user-proof-qa-review.md`（715480d4）：Skills发布归T-K02、安装管理归T-K03，远端包digest/filehash尚未独立读回。
+
+完整Wave0–7与唯一70组 **11通过/6失败/14待复测/38未验/1支付后置** 保持；有限用户子例不是整页验收。原goal保持blocked、不新建重复目标。下一动作：原Web负责人冻结最窄登录返回修复→独审/Root复验→固定候选真实重新登录回原项目/会话；其他页面按原卡并行推进，不深入运维。
+
 ## R252 真实登录回跳失败与技能消费者交付（2026-10-05）
 
 - **真实用户路径 FAIL，根因已定位到登录返回目标丢失**：原3310项目深链经正常IAM SSO，Document链为项目307→/login302→/iam/oauth2/authorize302→/api/auth/callback/kokoro-iam303→/app200；最终普通会话、无Project区域。受管CDP同cursor完整分页，hasMore=false/truncated=false；未改clock/cookie/token，未伪造登录。安全receipt `/tmp/r252-original-deeplink-login-return-red.json`、截图 `/tmp/r252-original-deeplink-login-return-red.jpg`。有效session对照：项目硬刷新200且项目/两行草稿均保留，已精确清掉本次QA草稿；对照receipt `/tmp/r252-original-project-refresh-control.json`。这替代R251“尚无跳转链证明”的当前结论，但不宣称所有间歇根因已穷尽。T-C05/T-U04仍未验收。
@@ -1497,14 +1508,14 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-P03 | BFF→Scheduler→Agent | 重复唤醒/投递、幂等receipt、ACK unknown与Outbox恢复 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P04 | BFF→Scheduler→Agent | 进程崩溃/lease到期/重启、旧worker失fence；不重复Occurrence执行 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P05 | BFF→Scheduler→Agent | 暂停/删除不伪造已接纳任务终态；串行dispatch/Agent terminal释放 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
-| T-F01 | Storage→BFF→Web/Agent | 个人与项目上传：真实字节/MIME/大小/clean scan/感染与取消 | 待复测 | W2个人上传下载有历史切片证据；完整新组合待验 |
+| T-F01 | Storage→BFF→Web/Agent | 个人与项目上传：真实字节/MIME/大小/clean scan/感染与取消 | 待复测 | R252当前五owner真实无痕用户普通57B上传扫描→刷新→下载原字节SHA一致，/tmp/r252-library-real-user-journey.json；自然300秒边界/项目/感染/取消/越权未复验，原3310未同步，整组保持 |
 | T-F02 | Storage→BFF→Web/Agent | 附件列表/分页/重启读取/下载hash；他人及跨project拒绝 | 待复测 | W2个人上传下载有历史切片证据；完整新组合待验 |
 | T-F03 | Storage→BFF→Web/Agent | Agent生成作品→Storage receipt→卡片/预览/下载→刷新仍同作品 | 未验 | 真实ObjectStore/scanner/receipt；不以fixture作品冒充 |
 | T-F04 | Storage→BFF→Web/Agent | 失败发布/超时/URL过期/重试：不生成伪作品、不泄密、不重复完成 | 未验 | 真实ObjectStore/scanner/receipt；不以fixture作品冒充 |
 | T-F05 | Storage→BFF→Web/Agent | 删除/retention/引用保护/GC，有限回收只删本owner资源 | 未验 | 真实ObjectStore/scanner/receipt；不以fixture作品冒充 |
 | T-K01 | Web | Plugins无owner回执时不出现本地Add/Remove/Connected假成功 | 通过 | E06：已发布5e538f69，两组件/test字节仍匹配；不等于MCP接通 |
-| T-K02 | Platform→Storage→BFF | Skill草稿/整包上传/校验/发布/读回；恶意ZIP与非法路径拒绝 | 待复测 | W3历史owner组合证据；按当前pin复跑 |
-| T-K03 | Platform→BFF→Web | 个人安装/启用/禁用/移除/重装持久；版本/重复/另一用户拒绝 | 待复测 | 已有personal installation切片；新组合待验 |
+| T-K02 | Platform→Storage→BFF | Skill草稿/整包上传/校验/发布/读回；恶意ZIP与非法路径拒绝 | 待复测 | R252当前五owner真实无痕IAM→普通二字段ZIP发布/读回/安装启停移除刷新有限主链PASS，/tmp/r252-skills-real-user-journey.json；恶意包/越权/未知ACK/执行仍未验，原3310未同步，整组不关闭 |
+| T-K03 | Platform→BFF→Web | 个人安装/启用/禁用/移除/重装持久；版本/重复/另一用户拒绝 | 待复测 | R252真实无痕五owner安装→停用→刷新同版本仍停用→启用→移除→刷新安装筛选为空且发布源保留；重装/多版本/跨账号/并发/未知ACK未验，/tmp/r252-skills-real-user-journey.json与独审715480d4；整组不关闭 |
 | T-K04 | Web→BFF→Agent | Composer选择精确Skill refs→提交冻结→真实加载；禁用/撤权拒绝 | 未验 | formal selector与执行展示未贯通 |
 | T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 未验 | 正式管理mutation与凭据/audience边界待实现发布 |
 | T-K06 | Web→BFF→Agent→Platform | MCP opaque refs选择、每次调用fresh授权、args identity；撤销零调用 | 未验 | 旧free-text mcp_servers需owner-first替换，无fallback |

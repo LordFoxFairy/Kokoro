@@ -1,3 +1,14 @@
+## R252 本轮真实页面验收与资源收尾（2026-10-05）
+
+- **Skills有限主链通过**：独立五owner固定组合Root9e36000/Web475f24fe/BFFf3c64d90/Platform494b118/IAMc9a9872/Storage14f2bc9；实际Chrome无痕正规IAM登录→普通474B二字段V2 ZIP选包→上传并发布→已发布列表→安装/停用→硬刷新仍停用→启用→移除→刷新确认安装为空、发布源仍存在。服务端sourceRef/revision由正常产品流程生成，未向包塞后台ID；证据 `/tmp/r252-skills-real-user-journey.json` 与 `/tmp/r252-skills-native-published.jpg`。没有逐段网络状态码捕获，恶意包、越权、ACK未知、详情/撤回、Agent真正加载执行仍未验，**不关闭整组T-K02，不冒原3310通过**。
+- **Library有限主链通过**：同正常用户在资料库选择本次57B普通文本→上传显示扫描通过与权威文件行→硬刷新文件仍在→点击下载、原生保存完成，下载SHA与原文件相同（d1cd348a…）。证据 `/tmp/r252-library-real-user-journey.json` 与 `/tmp/r252-library-refresh-download.jpg`。本轮未精确测量自然300秒边界、感染/超限/取消、项目/他人文件或Agent作品，T-F01原异常及整组仍待复测。
+- **登录回原项目修复进行中**：Root实际8failed/12passed行为RED已取得；唯一Web writer获既定9源/8test窄授权，复用state/固定callback/PKCE/nonce/一次消费与verified-subject草稿隔离，不建新认证框架。代码尚未冻结/审查/集成，真实原深链FAIL保持，T-C05/T-U04未验收。只读QA与安全预审并行，Root不抢写。
+- **资源已收尾，不留闲置后台**：正常Ctrl-C23266实际exit0，launcher报告owned resources removed；Root复查3311无监听、私有凭据已移除、原3310的45606/46036仍alive。本轮无痕测试窗口已执行关闭，未动原用户预览/模型/积分/共享资源。收据 `/tmp/r252-capability-release-preparation.json`。首次缺IAM生成物/第二次错误Python工具链的失败保留，未以重试成功抹掉历史。
+
+有限用户证据已独立只读复审 `/tmp/r252-user-proof-qa-review.md`（715480d4）：Skills发布归T-K02、安装管理归T-K03，远端包digest/filehash尚未独立读回。
+
+完整Wave0–7与唯一70组 **11通过/6失败/14待复测/38未验/1支付后置** 保持；有限用户子例不是整页验收。原goal保持blocked、不新建重复目标。下一动作：原Web负责人冻结最窄登录返回修复→独审/Root复验→固定候选真实重新登录回原项目/会话；其他页面按原卡并行推进，不深入运维。
+
 ## R252 真实登录回跳失败与技能消费者交付（2026-10-05）
 
 - **真实用户路径 FAIL，根因已定位到登录返回目标丢失**：原3310项目深链经正常IAM SSO，Document链为项目307→/login302→/iam/oauth2/authorize302→/api/auth/callback/kokoro-iam303→/app200；最终普通会话、无Project区域。受管CDP同cursor完整分页，hasMore=false/truncated=false；未改clock/cookie/token，未伪造登录。安全receipt `/tmp/r252-original-deeplink-login-return-red.json`、截图 `/tmp/r252-original-deeplink-login-return-red.jpg`。有效session对照：项目硬刷新200且项目/两行草稿均保留，已精确清掉本次QA草稿；对照receipt `/tmp/r252-original-project-refresh-control.json`。这替代R251“尚无跳转链证明”的当前结论，但不宣称所有间歇根因已穷尽。T-C05/T-U04仍未验收。
