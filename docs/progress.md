@@ -1,3 +1,12 @@
+## R249 交付与真实复验阻塞（2026-10-05）
+
+- Web local main `710b3f2f6ebb0a0ff626b0f478d2594dfe8f3238` 精确两auth源/两tests已提交；`c1810d82464bf540f80b0417bfe9d686caa10a2b` 仅现Project rail auth fixture。既有CSRF POST续期已消费，cold同10秒预算/同主体准入、周期及可见返回、unknown不重放、CAS只读确认保持；server/layout/Library/四mixed不改。独审5f73c647，Root135+15辅助、lint/typecheck/build0，只作安全网。
+- Root完整check79937实际旧rail fixture1failed/14passed；主动取消后exit130、子Next/Chromium已退出，不宣称全门成功。该fixture已按真实number+CSRF/POST修正并Root15复验通过，但其余完整门仍待重跑；不放松原项目/CRUD断言。
+- committed候选8985e928/Web710b3f2在47785真实五owner已正常启动，Chrome仅到正规登录表单；实际控制被“另一扩展UI打开”阻挡，凭据未填、未点击登录，更未自然300s复验。已请求用户关闭弹窗；不把控制阻塞当产品FAIL或GREEN。关闭自有测试页也被同阻挡，未假报关闭。47785已exit0回收，3311无监听/私有凭据移除/DB13=0，原45606/46036保持，无闲置后台测试服务。
+- Platform三D0 main `f29025620f87da7ce84a3f10283371ee1ee4e567` 已精确提交：最简预选ZIP二字段V2、身份仍server绑定、历史artifact immutable、V7下一发布、BFF response/publicpattern breaking更新→Web串行消费。Root基于既有用户授权裁推荐内部格式，不冒未返回的可选问答。独审freeze2 66f0e3e5与三docformat/diff0；不是源码或页面成功。原唯一Platform owner已沿R249-SKILLS-V2精确五源+现tests/现生成边界继续实现，其他仓不抢写。
+
+自然TTL上传失败T-F01和Skills发布412仍OPEN；完整Wave0–7/70组11通过、6失败、14待复测、38未验、1支付后置不变，goal仍原blocked。下一优先用户解除Chrome阻挡→Root正规登录/同session generation推进/300s Library和选File保留/单次上传与刷新；并行Skills owner源码冻结→Root真实PG/Storage/正式消费者→普通用户发布安装CRUD。原3310未替换全部owner，不声称整体页面已好。
+
 ## R249 当前推进事实（2026-10-05）
 
 三个原Agent并行只读后收敛真实缺口：有效token时文件两次上传/扫描/硬刷新成功；自然300秒到期后实际401/unauthenticated、按钮禁用，并自动登录回首页丢上下文。Root没有人为失效凭据或跳过授权。Web唯一writer正接已存在CSRF续期消费者，QA审/Root自然TTL终验，尚未交付；Skills包格式待已发产品确认，不扩架构。原35175与唯一QA页已回收、原3310保持；完整70组状态不变，不把本轮发现/安全网算页面完成。

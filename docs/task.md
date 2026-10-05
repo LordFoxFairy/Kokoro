@@ -1,3 +1,12 @@
+## R249 交付与真实复验阻塞（2026-10-05）
+
+- Web local main `710b3f2f6ebb0a0ff626b0f478d2594dfe8f3238` 精确两auth源/两tests已提交；`c1810d82464bf540f80b0417bfe9d686caa10a2b` 仅现Project rail auth fixture。既有CSRF POST续期已消费，cold同10秒预算/同主体准入、周期及可见返回、unknown不重放、CAS只读确认保持；server/layout/Library/四mixed不改。独审5f73c647，Root135+15辅助、lint/typecheck/build0，只作安全网。
+- Root完整check79937实际旧rail fixture1failed/14passed；主动取消后exit130、子Next/Chromium已退出，不宣称全门成功。该fixture已按真实number+CSRF/POST修正并Root15复验通过，但其余完整门仍待重跑；不放松原项目/CRUD断言。
+- committed候选8985e928/Web710b3f2在47785真实五owner已正常启动，Chrome仅到正规登录表单；实际控制被“另一扩展UI打开”阻挡，凭据未填、未点击登录，更未自然300s复验。已请求用户关闭弹窗；不把控制阻塞当产品FAIL或GREEN。关闭自有测试页也被同阻挡，未假报关闭。47785已exit0回收，3311无监听/私有凭据移除/DB13=0，原45606/46036保持，无闲置后台测试服务。
+- Platform三D0 main `f29025620f87da7ce84a3f10283371ee1ee4e567` 已精确提交：最简预选ZIP二字段V2、身份仍server绑定、历史artifact immutable、V7下一发布、BFF response/publicpattern breaking更新→Web串行消费。Root基于既有用户授权裁推荐内部格式，不冒未返回的可选问答。独审freeze2 66f0e3e5与三docformat/diff0；不是源码或页面成功。原唯一Platform owner已沿R249-SKILLS-V2精确五源+现tests/现生成边界继续实现，其他仓不抢写。
+
+自然TTL上传失败T-F01和Skills发布412仍OPEN；完整Wave0–7/70组11通过、6失败、14待复测、38未验、1支付后置不变，goal仍原blocked。下一优先用户解除Chrome阻挡→Root正规登录/同session generation推进/300s Library和选File保留/单次上传与刷新；并行Skills owner源码冻结→Root真实PG/Storage/正式消费者→普通用户发布安装CRUD。原3310未替换全部owner，不声称整体页面已好。
+
 ## R249 心跳续推：资料库认证失败取证（2026-10-05）
 
 沿原完整 Wave 0–7 与同一测试台账；70组状态不变。Root main 3c4e1563、Web main b8c3360b；原六gitlinks、uv.lock、Web四mixed和其他owner未交接变更均保护。先区分真实401的边界，不以源码猜测代替因果。
@@ -8,6 +17,7 @@
 |R249-WEB-RECOVERY-READ|web_r247_skill_header_owner只读当前auth probe/refresh及Library客户端、现D0/测试；不写仓、资源或Git；沿原模型|给现CSRF refresh的消费者缺口及最小修改文件集/失败行为；区分已证源码事实与未证401根因，不建认证框架、不扩大权限|
 |R249-QA-AUTH-BOUNDARY|qa_r243_web_frozen_review只读当前服务器session边界/已有真实系统用例；不写仓、启动服务或浏览器|对照access过期、总体会话过期、generation竞争、账号切换、撤权、401/403提出最小真实E2E验收条件，避免全部401自动重试|
 |R249-SKILLS-PREFLIGHT|capability_composition_owner_r247只读现Platform manifest/profile与三D0/正式contract；不写仓/资源/Git|复核R248最简包裁决的精确owner改动/删除项/验收路径，待已发产品确认，不重复问用户或提前实施格式变更|
+|R249-SKILLS-D0-PROPOSAL|原capability_composition_owner_r247只读main da813ed4/现三D0及实际artifact生成器；仅/tmp草案，Root审查/提交，零资源/Git/仓写入|复用二字段包建议给三D0精确增量与下版artifact事实，不增新层；格式选项仍未收到回复，不能冒实施或发布；与Web认证切片独立并行|
 
 Root提交责任独占；本轮仅任务卡更新可写，源码授权须确认实际因果及现文档门后另列精确文件集。原89449已结束且3311已清理，先核句柄/监听再启动一次自有组合；结束核自有资源回收。报告写/tmp而不另建计划中心。
 
@@ -17,9 +27,33 @@ Root真实正常登录、文件上传/硬刷新/再上传均成功；IAM原TTL30
 
 归属一句：Web现auth client/probe负责消费已存在的CSRF POST refresh，server仍独占IAM refresh/CAS/同subject/固定tenant，GET保持只读，现owner/API/schema/目录不变。现三D0已明确该POST流程，当前缺口是浏览器未消费，不另创协议或改四mixed文档。
 
-唯一writer web_r247_skill_header_owner：允许现src/ui/auth/product-auth-client.ts、src/ui/auth/use-session-state.ts及现tests/ui/product-auth-client.test.ts、tests/ui/use-session-state.test.ts；四mixed与全部server/layout/Library/schema/contract/i18n排除。先在/tmp交最终最小消费者决定给Root审，未放行前不写：沿现10秒总预算的共享CSRF→POST→严格body/subject；周期/返回可见时续期保持原Runtime，失效/撤权与403不得放行、绝不自动重发业务mutation；不能把GET200false或refresh401一律当可重试。409/pending401只允许一次只读核验并沿既有unavailable恢复，不第二次refresh；unknown不重放POST。总体expires_at不延长，账号变化沿原fence，不旧intent跨账号提交。先失败行为保护→局部实现→冻结独审→Root实跑和自然TTL浏览器复验。
+唯一writer web_r247_skill_header_owner：允许现src/ui/auth/product-auth-client.ts、src/ui/auth/use-session-state.ts及现tests/ui/product-auth-client.test.ts、tests/ui/use-session-state.test.tsx；四mixed与全部server/layout/Library/schema/contract/i18n排除。先在/tmp交最终最小消费者决定给Root审，未放行前不写：沿现10秒总预算的共享CSRF→POST→严格body/subject；周期/返回可见时续期保持原Runtime，失效/撤权与403不得放行、绝不自动重发业务mutation；不能把GET200false或refresh401一律当可重试。409/pending401只允许一次只读核验并沿既有unavailable恢复，不第二次refresh；unknown不重放POST。总体expires_at不延长，账号变化沿原fence，不旧intent跨账号提交。先失败行为保护→局部实现→冻结独审→Root实跑和自然TTL浏览器复验。
 
 Root独占提交与服务，当前35175是唯一自有5owner句柄，原3310保持；实现不直接改运行副本。源码/组件测试只是安全网，未复验真实自然TTL不记页面已修。
+
+Root后继裁决：35175已exit0回收。客户端初次GET true可能只剩10秒access，因此批准同四文件中冷挂载先严格GET真主体，再同一共享10秒预算CSRF→POST续期，最终同主体投影及原AuthIndex fence才准入Runtime；anonymous不POST，不添加API字段或延长总体期限。周期仍120s限频；unknown/conflict最多只读确认，同主体恢复后重新设未来窗口。真实server expires_at为number epoch ms，禁止按ISO string fixture定义客户端；该错配已要求先正确wire RED再修。冷文档已过期仍走现server正常登录，路径保留行为另验，不把本片称全部认证闭环。
+
+### R249-AUTH-FIXTURE-ALIGN：Root当前工程门实际失败
+
+Root 79937 正式 pnpm check 中 contract263/architecture50/lint/typecheck通过，default tests app-frame-rail 实际失败1（15例中）；日志 /tmp/r249-root-web-check.log。该fixture只有GET投影/ISO时间，缺现CSRF POST真实响应。为避免在旧模拟服务反复等待，Root明确SIGINT取消该自有全门，终态130不是PASS；子Next/Chromium句柄已消失，原3310保持。原四frozen独审5f73c647无确定新增P0/P1/P2，仅辅助。
+
+续派同唯一Web writer只改现 tests/ui/app-frame-rail.test.tsx 的auth fixture及必要GET/POST请求分类断言，保持项目/CRUD/竞态原业务断言，不弱化测试或改四冻源。此第五path初始hash/差异记录，先局部真实RED→更新到server三字段number+CSRF+POST→冻结交Root；原四mixed尤其tests/system/oidc-rp-next-http.integration.test.ts全bytes保护，受控peer其他未对齐项只报告。Root另跑冻结42/93与build，真实5owner浏览器才是页面最终判据；整仓check仍FAILED/INCOMPLETE，不用局部门覆盖。
+
+### R249-SKILLS-D0：最简包内部格式裁决
+
+Root 按用户既有 clean-slate、不要过度设计和页面闭环授权，选择此前推荐的两字段 V2 manifest（schema_version=2、entry=SKILL.md）；不把未收到的可选选项回复冒成用户回答。用户流程仍选择现有 ZIP→发布，不新增随机ID填入、下载Draft模板或前端重打包。身份/current revision/tenant/attempt/hash/scan/CAS仍后端事实，旧V1运行解析删除、历史immutable artifact不篡改；具体下版由现生成器核定。
+
+唯一Platform文档writer capability_composition_owner_r247，基线main da813ed4 clean，仅读三D0草案后可写本仓既有 docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md 三文件；当前态与目标态明确，未改源码/Schema/contract、未宣称新格式发布。Root独审与Git，原QA暂只审Web；D0一致且正式提交之后再给精确代码切片授权。CODEBASE_MAP/TS/SQL手册与现contract为前置，同Web单一writer独立并行；不扩一级模块/目录、权限或部署。交付三SHA、diff与未决项。
+
+### R249-SKILLS-V2：已提交三D0后的 owner 窄实现
+
+Platform main f29025620f87da7ce84a3f10283371ee1ee4e567，三D0独审freeze2 66f0e3e5/Root三docformat与diff check通过，仅文档提交，尚无新格式运行。唯一writer capability_composition_owner_r247，Root独占Git/资源/集成，独审qa_r243_web_frozen_review；同已有CODEBASE_MAP/TS/SQL/机器事实为前置。Root当前Chrome扩展弹窗阻挡真实认证复验已请求用户关闭，自有47785已exit0回收，不能把工程门冒页面成功。此源片独立继续。
+
+允许修改现runtime五源：src/modules/skills/package/{skill-package-manifest.ts,skill-package-zip.ts,skill-package-validate.service.ts,skill-package-validate.state.ts}及src/modules/skills/catalog/skill-publish.state.ts；仅V2二字段/无expected参数/zip-v2 identity，在原boundaries删除V1双读，其他状态、授权、下载/扫描/摘要/receipt/CAS保持。允许现test/fixtures/skill-package-zip.ts，test/unit/{skill-package-zip,skill-package-validate-rpc,skill-publish}.test.ts，test/contract/skill-package-zip-profile.test.ts，test/integration/{skill-package-validate-postgres,skill-publish-postgres}.integration.test.ts及scripts/smoke-storage-package.mjs匹配新identity/安全反例，不删除原不变量断言。
+
+沿现versioned机器artifact目录新增scripts/platform-execution-operations/{v7-profile.ts,v7-artifact.ts}与contract/execution-operations/v7/{manifest.json,zip-profile-v2.json,schemas/manifest.schema.json,schemas/zip-profile-v2.schema.json,vectors/zip-v2.json,provenance.json}；确有原publish绑定需要时允许具名publish-v2.json及schema，先报告实需，不复制无变化payload。允许现scripts/check-platform-execution-operations.ts接V7，package.json仅format inventory加V7不改依赖，现test/contract/skill-package-zip-profile.test.ts覆盖profile/schema/vector/provenance与negative mutations；现docs/CURRENT.md仅实际阶段证据。禁止改历史v1–v6所有payload/aggregate（包括旧scripts/profile.ts V4常量）、Proto/generated、Schema/installer/lock/IAM/BFF/Web/Root、activation/routable/新依赖/进程/目录层。
+
+先同unit有效V2包在旧runtime真实行为RED（不得ENOENT/setup冒RED），再当前唯一V2实现+现有raw ZIP安全负控，V7继承freeze V6 aggregate且精确inventory/schema/vector/provenance，保存历史payload SHA before/after。作者仅纯lint/typecheck/format/contract/unit/build可自跑，不启动服务/HTTP/PG/Redis/provider；真实PG/Storage和普通用户预制ZIP→上传扫描→Validate/Publish→安装/启停/移除/刷新由Root后续独跑。不因128或32MiB边界保留别的老格式/后台注入ID。源码freeze交清单/SHA/真实命令/风险。Formal owner提交后BFF pin+响应regex+public OpenAPI breaking约束/生成，再Web产物消费串行，消费者不提前发明contract。
 
 ## R248 页面闭环优先：不新增业务抽象（2026-10-05）
 

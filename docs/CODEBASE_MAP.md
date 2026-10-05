@@ -1,6 +1,8 @@
-## R249 当前认证消费缺口（2026-10-05）
+## R249 当前已交付入口与未验边界（2026-10-05）
 
-现Web `src/ui/auth/use-session-state.ts` 只有GET探针；`product-auth-client.ts`消费CSRF但尚无session POST消费者。后端现`api/auth/[...nextauth]/route.ts`已具refresh CAS/同subject/固定tenant；Library自然300s后本地401与自动SSO回首页已真实复现。唯一Web writer仅现两auth源+两现tests补消费，不新建模块/协议/层、不改变server admission或自动重发业务请求。实际进度/证据见同CURRENT/task/test-cases，源码仍待冻结与Root验收。
+Web main710b3f2/c1810d8：现src/ui/auth/product-auth-client.ts消费既有CSRF→POSTsession，现use-session-state.ts拥有共享10s/周期/可见返回/同主体与生命周期fence。没有新模块/协议/GET副作用、Library自动重放或server admission放宽。四mixed保持；Root135/15及build等仅辅助，完整check130/后继全门未完成。真实Chrome当前扩展UI阻挡登录动作；47785已回收，无页面GREEN。
+
+Platform mainf290256仅现三D0正式收敛；唯一owner正在R249-SKILLS-V2五现runtime源（包含catalog/skill-publish.state.ts guard）与V7机器增量实现，尚未发布。身份server绑定/raw manifest hash与ZIP安全原边界保持；后继BFF现validate-skill-draft.ts正则/public OpenAPI pattern与pin/生成→Web串行，不“仅repin”。全部活动/证据沿同task/progress/test-cases，不另建中心。
 
 ## R248 冻结源码交付（2026-10-05）
 

@@ -1,3 +1,9 @@
+## R249 修复交付后的验收状态（2026-10-05）
+
+既有T-F01自然到期FAIL保持。新候选8985e928/Web710b3f2真实五owner启动；正常/login已显示IAM表单，但Chrome扩展UI阻挡后续全部控制，未输入账号或点击提交；自然300s/同session generation+1/Library原File保留及上传刷新均 **BLOCKED / 未执行**，不是PASS或新产品FAIL。已请求用户关闭弹窗。资源47785exit0/3311无监听/凭据移除/Redis13=0/原PID保持；自有Chrome1715212225关闭调用同被阻挡，未记关闭通过。
+
+Web代码独审与Root135辅助、15 fixture、lint/typecheck/build通过不代产品验收；全check实际1fixture失败后取消130，该fixture后继正确wire复验15通过但完整全门仍未完成。Platformf290256仅三D0/格式通过，源码V2及正式BFF/Web consumer、T-K02发布/安装CRUD尚未验。70整组统计保持。
+
 ## R249 T-F01认证边界实际复现（2026-10-05）
 
 |既有用例/子例|预置条件|步骤|预期|实际/证据|优先级/类型|
