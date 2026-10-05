@@ -1,3 +1,10 @@
+## R255 23:19 heartbeat / 两独立工作面续推
+
+1. **真实owner PG收口已提交**：Billing54a64427只1test 19/+19，publication/联合选版现schema断言不再误查public。Root RED35/3/0skip、GREEN38/0/0、提交后38/0/0，77库集合exact；7工程/契约门0、独审零问题、其他tracked与5mixed exact。未修改价格/SQL/余额，未运行正常Billing或用户计费。首次默认Python缺psycopg、worker错误Root formatter观察保留，改用既有Agent Python与正确owner profile，不安装/放宽。
+2. **正常消费者已实际重装载**：BFF原79304 exit130→32914，同固定源码/配置；正规HTTP登录200，session200，真实两读503 billing_unavailable有限错误，不假0。其他6进程不动/7 ready200；不是浏览器点击验收。初次进程根识别误把.pnpm路径匹配为pnpm、两次猜错同源路由，纠正祖先argv及读现paths.ts；诊断错误不计业务失败。
+3. **Web后继明确根因与边界**：旧strict balance/quota/free和entries/epoch形状不符合当前fixed public；旧by-model不属于正式public。原负责人只读报告7bf39d5c，三D0前缀已精确发布Webd51a0c3、独审d0dd9360零问题、原mixed后缀及33保护path exact，生产未动。D1两现测试新增6行为，原68断言/fixtures保持；Root33822实际68pass/6fail/0cancel、types/targetlint0，合法published data经native Response/真实client/组件定位旧消费者，不冒整条E2E。独审9d3c5a40确认6有效；取消/预算/分页/身份/adapter完整先行覆盖缺口1P1待补，10source完整实现未放行，冻结停写。复用现session/shadcn，删除无owner假值，不改正确10^6 BigInt显示尺度或后端计价规则。
+4. **用户验收不虚增**：70组11/6/14/38/1不变，0整条浏览器新PASS；Billing唯一main/授权赠送/模型worker/Platform仍OPEN，C3与原登录交接未答不重复，完整目标不缩小。下一沿三面批准先真实consumer/UI行为RED再现文件接线，最终必须正常IAM→Credits→余额/流水刷新分页与正式费用旅程。
+
 ## R255 当前：个人积分读取消费者已交付，完整用户验收仍OPEN
 
 BFF main97a99d35c8c78e7ca6e1370fd16ba5d670766095精确8path：正规固定generated本人余额/流水、可信IAM→严格u1五因素、独立service token、闭合query与response、no-store/404/502/503、总header/body budget/cap、取消与禁止redirect泄密；无钱包创建/费率计算/fake100/fallback/SQL。config test纯格式c6f69490单独提交（normalized TS tree等价，功能差分仅29行）。其他34保护摘要+8freeze/mode与Root uv保持、index空，原mixed未暂存。

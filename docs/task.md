@@ -1,3 +1,14 @@
+## R255 23:19 heartbeat：独立推进，完整用户验收不缩小
+
+|任务|目标/优先级|owner与角色|基线/范围|依赖/验收/交付|
+|---|---|---|---|---|
+|T-B03.R255-POLICY-SCHEMA|现政策发布/联合选版真实PG校验收口，P1|Billing；原BFF角色续派为此独立窄片writer；Root集成；原审查员只读|main244b2810；仅test/integration/metering-rate-publication.test.ts现public目录断言迁至现kokoro_billing owner；原5mixed文档及全部source/SQL/contract/generated/lock不改|已有R80政策/选版与owner-schema实现，不建新算法；Root先现PG基线再授权唯一test差分，同PG自有fixture，不写应用库/重置数据；独审、Root真实PG复验与旁库OID集合保持；已验收本1test切片：Billing54a64427，RootPG35/3→38/0→提交后38/0均0skip，77库exact，独审a067a5f0零问题、工程/合同7门0；Root精确提交。不是积分页面或正常main切换PASS|
+|T-B03.R255-WEB-CREDIT-D0|Web正式个人余额/流水消费者设计收口，P1|Web原负责人三现文档前缀writer（生产只读），Root三面裁决/独审|maine8ff7599；只读当前Credits/adapter/contract/generated/三文档；报告只写/tmp|固定BFF97a99d35 public合同为前置，禁止直连Billing、前端倍率/虚构quota/free/fallback；按现文件最小写集提出三面D0与真实用户验收步骤，不先改生产/生成；原审查员后继评审；D0已发布Webd51a0c3（3批准前缀，原mixed全文byte-exact、33保护path保持，独审d0dd9360）；现2test已冻结bfaadc86/76b9d98f，Root33822行为RED68pass/6fail/0cancel、types/targetlint0；独审9d3c5a40确认6有效/1完整状态机覆盖P1，下一补同D0已批准4现tests取消/预算/分页/身份/adapter门；生产/生成尚禁写|
+
+D1当前权限：Web原负责人唯一test writer，基线d51a0c3；只允许现tests/ui/billing-panel.test.tsx与tests/ui/settings-modal.test.tsx添加正式data/用户视图行为反例，现生产/preview/contract/generated/资源/Git全部禁写。先原聚焦基线，再合法actual Response/现组件有效RED；Root独立复验与审查后才授权实现，不用future import或编译错误代替业务失败。
+
+Root保留正常进程与真实浏览器关键路径，资源/Git/台账独占。C3阶段与原浏览器交接未答不重复询问；两独立项不等其裁决。同70组11/6/14/38/1，0新增完整浏览器PASS；实现与工程门不能代替用户旅程。
+
 ### R255 stage2交付终态与后继（同卡）
 
 BFF source97a99d35精确8path，纯format c6f69490另提；最终独审928f5b29零P0/P1/P2，Root92115默认777/0/1schema skip、target70/70、格式0；24563 types/build/lint0、50995 fixed生成0，全部source/hash保持且Git index空。34保护+8freeze/mode/uv exact，原mixed不暂存。仅消费者源码已验收，不冒运行/正式资金或浏览器通过，收据var/dev/r255-preserve/bff-personal-read-commit-receipt.json。

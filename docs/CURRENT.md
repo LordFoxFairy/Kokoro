@@ -1,3 +1,10 @@
+## R255 23:19续推当前：正常BFF已装载新消费者，积分页面仍未闭环
+
+- 正常BFF由原79304实际exit130后同源码/持久配置重启32914（pnpm64399/listener64417/53714），已装载97a99d35。其他6句柄不变，7现探针200；没有新应用库/服务副本/数据重装。Root首次PID识别误把.pnpm loader当pnpm已核祖先纠正，不冒错误句柄。正规IAM HTTP表单/OAuth仍200；实际Web /api/auth/session200 authenticated，/api/session/billing/summary与ledger503 billing_unavailable、private/no-store/request-id。Billing仍未正常运行，不假0/免费；Root两次错误地址诊断只记录工具错误，非产品业务失败。
+- Billing54a64427精确1现PG测试文件19处catalog public→kokoro_billing；现政策发布/联合选版代码本已存在，不再当缺实现重造。Root实际38例35pass/3fail→38/38/0skip→提交后38/38/0skip，77库OID/name集合保持；types/lint/build/format/sql/contract/generated全0。独审a067a5f0零P0/P1/P2，5原mixed文档和其余source/schema/contract/generated/lock逐hash保持。是owner-schema回归收口，不是正规赠送/预占/实际费用/整页PASS。
+- Web原负责人独立确认现个人余额/流水strict schema仍旧shape，旧Free/quota/daily/by-model无当前owner合同依据；fixed public8.0.0/97a99d35全文33971eaa。10^6 BigInt是显示单位，不是销售倍率。最小承接现billing客户端/视图和现session adapter，不新建钱包/认证/路由。三面D0已以Webd51a0c3精确发布3前缀，独审d0dd9360零问题/原mixed后缀与33path exact；Root33822已重跑新增6行为RED：68pass/6fail/0cancel、types/targetlint0（合法账户/流水拒绝、可用/预占/UTC精确展示缺口、第三by-model请求、live无事实Free/daily），反例独审9d3c5a40确认6有效但完整10source仍缺取消/预算/分页/身份/adapter先行门（1覆盖P1），未放行完整实现；生产尚未改；只读报告7bf39d5c，不冒真实合法200页面失败已复现。
+- 完整Wave0–7和70组11通过/6失败/14待复测/38未验/1支付后置保持，0新增完整浏览器PASS。正常模型worker/Billing/Platform、授权赠送/正式费用、逐页CRUD/异常用户旅程仍OPEN。原C3阶段与浏览器交接问题未答不重复；Root独占集成/资源/Git，独立子任务并行不等待其他owner完成。证据在ignored var/dev/r255-preserve/billing-policy-owner-schema-{red,green,final}.json及commit-receipt、normal-fixed-personal-credit-consumer-reads-actual.json，当前进程唯一var/dev/processes.json。下文旧“BFF79304尚未装载”已由本节替代。
+
 ## R255 当前：个人积分读取消费者已交付，完整用户验收仍OPEN
 
 BFF main97a99d35c8c78e7ca6e1370fd16ba5d670766095精确8path：正规固定generated本人余额/流水、可信IAM→严格u1五因素、独立service token、闭合query与response、no-store/404/502/503、总header/body budget/cap、取消与禁止redirect泄密；无钱包创建/费率计算/fake100/fallback/SQL。config test纯格式c6f69490单独提交（normalized TS tree等价，功能差分仅29行）。其他34保护摘要+8freeze/mode与Root uv保持、index空，原mixed未暂存。

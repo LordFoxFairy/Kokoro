@@ -1,3 +1,16 @@
+## R255 T-B03 本轮有限证据 / 用户验收仍OPEN
+
+以下是T-B03组内子例，不新增统计组；全部完整用户路径仍待验，组件/合同反例只辅助定位。
+
+|用例ID/类别|标题/优先级/类型|预置条件|用户行为步骤|预期结果/当前状态|
+|---|---|---|---|---|
+|T-B03.R255-CREDIT-01 主链路|本人余额与流水一致，P0/业务E2E|正常IAM用户、唯一正常Billing进程、正式账户和授权owner流水|设置→积分→查看可用/预占→加载下一页→关闭重开→硬刷新|显示owner精确值与原序，只有两GET，无Free/quota/daily/by-model伪值；待真实owner/浏览器|
+|T-B03.R255-CREDIT-02 边界|大数与最小单位，P1/边界E2E|合法one-micro、>2^53值/负delta、UTC时刻账本|查看余额和每项/日期→分页→刷新|BigInt显示准确，micros换显示单位不是费用倍率，UTC按locale无符号精度丢失；待验|
+|T-B03.R255-CREDIT-03 异常|缺账户/过期/停机不假零，P0/异常E2E|正常准入、合法零账户与缺账户分别准备；可由Root控制owner停止|分别读取→过期→正规重登→owner不可用→恢复→用户重试|合法空、404、401与503区分，有限退出加载，旧余额不当实时成功，不伪造充值/免费；正常HTTP503/过期401只是辅助观察|
+|T-B03.R255-CREDIT-04 状态机/权限|刷新分页与主体隔离，P0/交互安全E2E|两正常账号，分页游标和可控迟到读取|A加载更多途中刷新/关闭→正规切B→旧A迟到→B再打开→终页|旧结果退役，下一页单flight/原opaque cursor/null终页，失败明确可重试不循环、不串主体；待验|
+
+Billing54a64427当前真实owner PG publication/联合选版38/38/0skip，原public catalog误查3fail已仅固定kokoro_billing；此测试切片不是Credits正常用户旅程，不改变70组统计。正常BFF32914已装载97a99d，正式IAM HTTP session200，两实际同源GET503 billing_unavailable/private-no-store/request-id；无Billing normal host，不能把合法无账户/空态或赠送/扣款当通过。WebD0 d51a0c3已发布，当前Root新增6有效consumer/组件RED（68pass/6fail/0cancel、types/lint0）已定位旧strict shape/free/quota/by-model，独审6有效但尚缺取消/预算/分页/身份/adapter覆盖1P1，尚待先行门补齐/实现/真实browser。原上下文无限loading、folder/direct与费用用户验收保持原状态；不以38后台测试把T-B03关闭。
+
 ## R255 T-B03消费者源码交付，不关闭整组用户用例
 
 BFF97a99d35真实当前工程默认777/0/1schema skip、controlled HTTP target70/70，独审928f5b29零问题；旧有效反例41/19→强化41/25及中途安全网P1保留。caller取消实际关闭owner请求、总header/body cap、持续body总deadline、redirect二receiver零调用/凭据零转发已锁；本机peer不是正式Billing/IAM组合或真实浏览器。正式余额/流水、授权赠送、预占/结算/释放、实际模型消费和UI展示一致仍按原T-B03/B07退出门待验；不为源码绿更新70组通过数。正常BFF79304未载新源码，完整Wave0–7/70组11/6/14/38/1保持。

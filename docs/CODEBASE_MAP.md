@@ -1,3 +1,7 @@
+## R255 当前正常BFF与个人Credits后继
+
+正常BFF唯一session32914/root64399/listener64417/53714，原79304已exit130；装载97a99d35 personal-credit consumer，同数据库与持久配置。Web现真实两读路径src/contract/paths.ts `/billing/summary|ledger`加SESSION_PROXY_BASE `/api/session`；旧balance/quota/free/entries DTO、by-model和module固定cache待现文件收敛，不新route或钱包owner。Billing现54a64427只PG catalog test 19处owner namespace修复；module policy/selection源码本已存在，正常main/费用另待，38真实PG绿不代表用户闭环。当前句柄在var/dev/processes.json，工程/源码与70组真实浏览器台账分栏。
+
 ## R255 当前个人Credit消费入口（已提交源码，尚未正常组合）
 
 BFF97a99d35：runtime.ts加载具名Billing service token；routes/owner.ts准入public summary/ledger并处理query/caller取消/envelope；现clients/owner/billing-personal-read.ts唯一两读、严格u1五因素、fixedgenerated response与总预算/sizecap；account.ts替换旧float为public decimal DTO（发布生命周期与owner generated不同）。package默认test已纳入personal-read安全反例。纯config test baseline格式c6f69490另提。无SQL/余额计算/compat。Root最终工程777/0/1skip、target70/70/最终独审零问题只为源码；现BFF79304未重新装载/owner Billing未运行，真实Web与计费仍OPEN。
