@@ -1,3 +1,30 @@
+#### R257 已确认 RED 与新增实施准入
+
+Root IAM原11473：真实issuer handler+PG+Redis普通有效Session200缺platform_admin:false，1FAIL/27过滤，77库catalog前后exact。IAM05feabb三D0已提交/独审7cfb379d无确定P0–P2；iam_grant_source_scope_0244唯一writer接A/B实施：现User资格/版本、input阻断、现SessionAuth当前投影、独立authority具名CLI CAS/Audit/read，以及现设计列出的源码/tests。新四普通文件/现目录放置已在TECH第8表批准；额外仅scripts/generate-contracts.ts与sdk/package.json版本0.7→0.8，产物正规生成，不改历史baseline；现cookiehelper原样复用。正常IAM非watch不重载，normal既有库演进/用户帐号正式grant/新artifact消费仍后继停止线，不能新response先上线打断旧strict BFF。
+
+三活跃writer按仓独立：BFF self read、Web consumer D0、IAM admin；Root独占Git/正常资源/浏览器。Root窄BFF正控RED已批准stage2 source/机器/测试；测试替身只作补充，不替代正常产品旅程。完整70组不增PASS，本轮两个真实缺口/两个后端有效RED仍分别记录。
+
+### R257 当前实施准入增量
+
+- BFF d776194三D0仅新prefix提交，原19mixed exact；Root build0/首HTTP正控实际1FAIL，合法请求错走/v1/skills/而非/v1/mcp/connections。现system_guarantee_read_0315唯一writer已准D0现机器/生成/两个source与测试；另因credential迟到发token因果准现projection-token.ts仅get前/await后throwIfAborted，保singleflight。Root独占正常resources/Git。
+- IAM05feabb三D0仅docs提交，独审7cfb379d六suffix exact/P0–P2=0；现session HTTP一required false断言冻结，Root原句柄11473跑真实隔离PG/issuer/Redis业务RED，未实施schema/管理授权/正常grant。有数据演进与固定artifact/consumer后继保持。
+- 正常Platform原47954停止exit0，持久现env补mcp-connection；首次启动exit1缺已文档化HTTP declaration driver，补具名http driver后唯一63389源码ready200，原connection404→401（无凭据，仅挂载）；registry唯一更新，其余服务/PGRedis/数据不重启reset。真正本人读取尚未验。
+- 当前普通用户浏览器checkTab11真实MCP wrong-resource：两servers200/终态empty，而非self Connections；原user7CDP超时保留。Settings个性化昵称QA-R257 blur实际PATCH404/界面无error，刷新昵称空，是新业务FAIL，不冒持久化成功；证据r257-personalization-red。测试新页收口关闭，不留多窗口。
+- R257-MCP-WEB-D0：capability_composition_owner_r247唯一Web文档writer，只现三D0新prefix、原四mixed全bytes保护，baseline30aa83d与r257-web-d0-baseline.json。准备现Hub client/严格schema/admission/paging/state/UI读取self Connections；不能pin未提交BFFartifact，不写source/contract/tests/Git/资源。完成冻结STOP，Root审后待BFF固定发布才消费者实施。对比沿既有client/面与另建framework，采用前者，不保Server→Connection fallback。
+- 补充Root默认门真实standard153违规/exit1；topology7gitlink未集成/exit1；1727PASS/1FAIL/3skip/exit1历史checkpoint verifier失配。保真实失败，不打包任务外gitlink/放宽门，工程数量不是完整业务验收。
+
+### R257 正式本人连接读取消费与后台准入D0并行（2026-10-06）
+
+上一goal turn属progress：Web30aa83d单CSS真实原浏览器RED→GREEN/补门实际exit0，Rootf2072078台账。目标完整Wave0–7不缩减/不完成。当前Root复核Platform clean、HEAD9ab3b65发布HTTP3.2.0字节与工作树同4b42dd161c972b3447cfea3a6f80a949bbdb573c46213dbf8ef4c3ecb58e72da；BFF仍pin3.1.0/6a09913a。无需重新写Platform本人投影或等待Agent整链。正常九服务复用，先核原句柄；权限/account询问不阻纯设计与本人读取推进。
+
+|任务|owner/执行/范围|基线/依赖/交付与门|
+|---|---|---|
+|R257-MCP-BFF-D0|BFF；system_guarantee_read_0315唯一文档writer；只现docs TECH/API/DATA当前前缀，旧全部bytes为suffix|HEADef2d306、19原mixed（含untracked删除候选）不碰；Root r257-d0-baseline.json与4doc before保护。明GET/v1/mcp/connections本人六字段/可信actor/严格分页错误/no持久化，3.2.0固定commit9ab3b65+digest，不把Server身份重解释。交prefix+精确后继现source/test/机器集后STOP；RootD0审后才tests/contract/source。|
+|R257-ADMIN-IAM-D0|IAM；iam_grant_source_scope_0244唯一文档writer；同现三D0当前前缀，不写schema/source/机器/凭据/Git/资源|HEAD8738bd7/clean；同User普通用户+平台管理员两业务身份，组织admin/OAuthoperator/financial不自动转平台管理员。比较已有原生角色/插件与最小受控当前资格关系，选明确authority/grant-revoke/audit/Session当前check；/admin由现Web持UI，BFF只投影，不新增管理服务/通用权限引擎。Root裁新增contract/persist后才实施；帐号待用户，不发grant。|
+|R257-OWNER-HTTP-REVIEW|Platform/BFF边界只读；capability_composition_owner_r247|查3.2已提交artifact、调用边界/subject/现鉴权及BFF有效后继文件/反例；只/tmp/r257-mcp-owner-artifact-review.md，不写repo/运行资源/Git/browser；不可把现仅active投影当完整connect/invoke。|
+
+Worker中文、Root独占Git/资源/浏览器/最终纯门与真实组合验收。TS/SQL/API手册、CODEBASE_MAP和目标三D0先读。跨仓各独立文档writer互不抢；保护原mixed/uv/gitlinks。D0归属比对：扩现owner设计而非Root新contract中心；消费现HTTP projection而非新表/new client栈。完整70组11/8/14/36/1保持；后台普通无入口/直链拒绝/管理员本人操作/撤权及各页CRUD完整验收仍OPEN。
+
 ### R256 后继主控方向与交付
 
 Root冻结后明确Node22.22.2复跑lint/typecheck/3现UI文件167断言/build，原句柄37970实际exit0；首次wrapper漏打印句柄未作为exit证据，确认原build结束后独立重跑本次终态。未跑全量system/test:e2e/axe/视觉预算，不替代以上原页面用户证据。

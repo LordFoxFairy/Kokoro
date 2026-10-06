@@ -1,3 +1,10 @@
+## R257 当前增量与真实失败（2026-10-06）
+
+- 正常源码开发复用九服务；Platform仅原47954停止0后持久配置启用已发布mcp-connection/http driver，唯一63389 ready200、本人route无凭据401（原404）。首次缺driver启动1已记录；没有重启PG/Redis或改业务数据。正常Agent execution worker仍未激活，正式Billing/调用/可信费用链仍OPEN，九listener健康不是模型或全产品通过。
+- 当前真实插件页“已新增”两请求servers200，错误资源不是本人Connection。BFFd776194与IAM05feabb三D0各已独审/精确提交；Root BFF HTTP合法Connection错走/skills为1FAIL/build0，IAM真实issuer+PG+Redis普通Session200缺管理员required字段为1FAIL/27过滤/catalog77→77。三writer分别推进BFF读取消费、Web消费者设计、IAM管理员资格/受控管理，实现与正常用户验收尚未收口。
+- Settings个性化真实保存FAIL：QA-R257 blur PATCH404、无失败反馈，刷新昵称空；原页面无保存回读。已更新现测试用例，不假“资料已保存”。原用户tab7CDP连接超时，新自有验收tab11正常登录用于复现，不称已控制原标签；收口关闭新页。管理员帐号待回复，不按邮箱/组织role硬编码或授正常权限。
+- Root补门真实：standard153违规/exit1，topology7待集成gitlink/exit1，pytest1727PASS/1FAIL/3skip/exit1（历史checkpoint/contract证据漂移）；保失败不改历史/放宽门、不夹任务外gitlink。完整70组11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST保持，本轮尚无完整组新增PASS；工程/设计不是完整页面管理与CRUD验收。
+
 ## R256 页面与后台同步：本轮真实增量（2026-10-06）
 
 Root冻结后明确Node22.22.2复跑lint/typecheck/3现UI文件167断言/build，原句柄37970实际exit0；首次wrapper漏打印句柄未作为exit证据，确认原build结束后独立重跑本次终态。未跑全量system/test:e2e/axe/视觉预算，不替代以上原页面用户证据。
