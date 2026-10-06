@@ -1,3 +1,16 @@
+### R260 文件生命周期与管理页当前 QA 状态
+
+以下是既有T-F01/F02、后台任务的子用例；不新增完整组PASS，不把辅助工程门当用户完成率。
+
+|用例ID / 类别 / 标题|预置条件|E2E / 系统行为步骤|预期结果|本次实际 / 状态|优先级 / 类型|
+|---|---|---|---|---|---|
+|T-F01.R260-DELETE / 主链与生命周期 / 单文件删除|隔离真实Storage PG、可信personal/project身份、既有Asset|删单Asset→同command重放→列表/新下载拒绝→共享Blob最后引用退役→同bytes新上传|稳定receipt、无跨scope影响、仅最后引用排精确清理、新代不受旧清理影响|系统RED：两真实PG文件18例11通过7失败；生产仍在写、浏览器未验，整链FAIL/待修|P0 / 真实owner系统；用户E2E待验|
+|T-F02.R260-CLEANUP / 异常与并发 / 精确对象清理|真实MinIO/扫描/隔离PG、旧新generation及可控故障|删除→旧对象cleanup失败恢复→新代同bytes→并发Artifact引用/双delete/事务中断|仅确权对象回收、引用冲突全rollback、无新代误删、有限恢复|UNVERIFIED；现PG tests provider/Redis为double，不能称对象存储或并发全部已验|P0 / 待真实系统E2E|
+|T-ADMIN.R260-ORDINARY / 权限 / 普通用户后台隔离|正常3310账号不具平台管理员资格|打开Settings→找管理入口→直访/admin|入口隐藏、服务器拒绝，不需客户端遮盖冒权限|PASS负向子路径：实际无入口与404，r260-admin-ordinary-browser.json；四管理API拒绝矩阵仍未验|P0 / 真实用户E2E|
+|T-ADMIN.R260-SAVE / 主链、边界、状态机 / 管理路由保存|已有合法管理员、当前自有政策行、正常四op|Settings后台→三列表→改visible→显式Save单PUT/CAS→有限分页权威读回→刷新→旧版本冲突/丢ACK|读回真实字段/version、409不覆盖、unknown仅GET、撤准入清旧私有投影|UNVERIFIED；三D0已审提交，原Web tests先行；管理员输入待用户，不能用普通404或BFF HTTP绿冒该路径完成|P0 / 待真实用户E2E|
+
+正常Storage仅只读5Asset/5Blob无DDL/用户删除。本表原历史报告归因错误由CURRENT R260纠正；保留失败，Root真实复验后再更新相同用例状态。
+
 ### R259 T-K03 安装元信息与个人管理正常 E2E 补证
 
 当前源Platformc94909f/BFF7269e97/Web8b355ba，正常账号/持久开发配置/原PG与Redis。只以下子路径PASS；完整70组计数不变，T-K03整组RETEST，不把工程测试量当业务完成率。证据r259-skills-metadata-normal-browser.json（800baada…）、installed-final/settings-metadata-final截图；12真实200响应，最终五段缓冲未截断。此前截断/旧body不可回读不冒有效记录。

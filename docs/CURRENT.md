@@ -1,3 +1,12 @@
+### R260 CRUD 并行推进与真实失败基线（2026-10-06 19:12 UTC）
+
+完整 Wave0–7 active，页面CRUD优先、Agent推理后置；70完整用户组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，无新增完整组PASS。个人技能管理采用已批准的“已安装 / 我发布的”，R259安装/启停/移除/重装/刷新/Settings真实子路径证据继续有效，完整发布及安全异常矩阵仍待验。
+
+- **Storage 删除尚未实现完/未上线**：Root88422真实隔离PG两文件18例11PASS/7FAIL，六DeleteAsset handler缺失、一canonical清理授权拒绝；退出1、PG目录77→77exact，无他库清理或残留。provider/Redis为double，明确不冒MinIO集成。正常仅只读5Asset/5Blob、retired0、active重复0/无invalid live Asset；没有DDL/删用户文件。原owner已准D2 source/partial unique及正规派生生成，两fixture接缝追加准入；当前写入中，未冻结/审查/提交/重载服务，不拿工作树工程绿当功能可用。实际MinIO/并发回滚/正常备份与index原子演进仍待Root门。
+- **Web 管理页设计已审，源码未准写**：独审8b4ce827与Root三hash/suffix/two mixed exact，三D0精确提交 **ab5c431103f5d176fb11856610b5ff5bace3ba31**（104行）；BFF四正式8.3管理op已固定，无新pin/API/后台框架。原Web writer仅四具名测试先行，必须有效assembled页面/合法adapter失败，不拿缺模块import当业务RED。首片三只读区+既有row visible显式CAS Save，不冒完整后台能力。
+- Root真实普通账号直/admin 404、Settings无入口，tab24已关；只是普通用户负向权限PASS，不是管理员正向验收。已询问已有管理员账号标识、密码由用户自行输入；不自行授资格、不因该输入停止文件/其它CRUD。正常所有服务/PG/Redis/MinIO配置沿原registry保持，本轮未重启/reset/新增临时运行组合。
+- 纠正历史r259-storage-delete-d2-read.md“原facade已有required DeleteAsset导致2types”的归因：原types无该member；原确证是RPC缺required handler。Root37994在新tests写入中types还含测试自身undefined错误，后来已修；最终typedclient/policy新增失败另有来源，不混为原生产基线。旧报告保留，本节作为当前纠正。
+
 ### R259 个人技能安装管理已真实接通（2026-10-06 18:55 UTC）
 
 用户已批准先清晰个人管理，不扩全发现目录；本节更新下方历史“安装名称仍占位/消费者未接/正常Platform旧进程”的当前状态，旧失败证据保留。完整Wave0–7仍active，页面CRUD优先、Agent推理后置；70完整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。

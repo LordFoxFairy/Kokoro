@@ -1,3 +1,15 @@
+### R260 当前证据与任务交接（2026-10-06 19:12 UTC）
+
+本轮 progress，非整体完成。Root基线ba5898b8；Storage5b15fe3、Web8b355ba，原八mixed gitlinks/uv保持。Root只有同四台账writer，原两独立实现与一只读评审并行，无新计划中心。
+
+1. Storage原26 dirty快照3992d284/机器独审078d912a，原17派生输出生成前exact。Root初纯contract **28PASS/3FAIL**，log r260-storage-contract-baseline-red.log，exit1；不是旧32/3。Root types37994 terminal code2发生在tests在写时，测试自身undefined不算业务RED。冻结tests3fdafae5后Root真实PG88422 **11PASS/7FAIL/0SKIP**，测试exit1，wrapper终态0只负责收据；r260-storage-owned-pg-red.log与receipt记录catalog77→77exact、new_remaining/removed_other为空。六rpc.deleteAsset缺method、一canonical authorization null。正常catalog只读r260-storage-normal-schema-read.json：PG18.4、5Asset/5Blob、旧全量unique、active duplicate0/invalid0。未DDL/正常用户删除；实际ObjectStore仍待验。
+2. D2 source授权写集同task现卡；原writer申请并获两fixture路径补齐，不cast required member。旧canonical必须先由官方生成重现17原dirty，再正规目标派生；不能吞原未知修改。源mutable未提交，完整工程/真实并发、故障、MinIO及正常数据演进还未做，旧服务未重载。
+3. Web D0 Root3 hash/suffix与two mixed实核；独审8b4ce827，699清单文件exact。Root精准3docs commit ab5c431103f5d176fb11856610b5ff5bace3ba31，无two mixed/其它文件暂存，diffcheck0。仅设计审查，不运行工程门冒实现。原writer现D1四tests有效失败先行，source未授权；Root后续重跑再准源码。
+4. 正常browser tab24普通账号 /admin实际404、Settings实际无入口；r260-admin-ordinary-browser.json及denied/settings截图。零grant/CAS/model/payment，自有tabclose，用户页保留。合法管理员正向待输入；不是整个目标blocked。完整70组仍11/8/14/36/1、当前完整组新增0。
+5. 执行偏差保留：Root第一次在Storage cwd相对Root docs/task写入FileNotFound，文件未改，shell随后确实执行纯RED；已改绝对Root路径且分开命令。此前types来源过宽报告已在CURRENT/task明确纠正，不删旧失败记录。
+
+所有报告位于现 ignored var/dev/r255-preserve；next由原Storage writer完成冻结→独审→Root真实门，原Web writer有效tests→Root复验→准source，合法管理员输入仅正向浏览器依赖。当前没有全部页面、全部仓库或上线完成声明。
+
 ### R259 个人技能安装管理已真实接通（2026-10-06 18:55 UTC）
 
 用户已批准先清晰个人管理，不扩全发现目录；本节更新下方历史“安装名称仍占位/消费者未接/正常Platform旧进程”的当前状态，旧失败证据保留。完整Wave0–7仍active，页面CRUD优先、Agent推理后置；70完整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。

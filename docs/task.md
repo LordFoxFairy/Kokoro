@@ -1,3 +1,43 @@
+### R260 Web Admin D1 tests 准入（D0 已审）
+
+Root逐三whole/suffix与two mixed exact；独审8b4ce827未发现确定P0/P1/P2阻断，精确三D0提交 ab5c431103f5d176fb11856610b5ff5bace3ba31（104行），源与两mixed不夹带。原Web writer独占测试先行：现tests/ui/admin-access.test.tsx与tests/app/hub-proxy.test.ts；新增只tests/contract/bff-admin-model-routing-public.test.ts、tests/hub/admin-model-routing-client.test.ts（现目录，分别机器四op/typed consumer职责，不新目录）。实际 assembled AdminAccessView+当前admin probe+正式合法BFF响应要有效列表/Save RED；adapter需合法session/fresh资格证明CAS头丢失或没有strict分流的真正RED，schema/client尚无文件的import失败不冒功能RED。保全部旧权限断言、预算、Origin、CAS、alias及未知结果反例。source/schema/generated/依赖与文档仍零新准写，worker不碰normal.next/浏览器/资源/Git。Root复跑冻结有效失败后另准最窄 source，不因缺管理员输入阻开发，也不冒合法管理页面已验。
+
+Root正常普通账号真实直/admin 404、Settings无管理员入口已证，自有tab24已close；合法已有平台管理员账号待用户提供标识并自行输入密码，不自行grant。此输入仅后台正向浏览器验收依赖，其余页面CRUD不停止。完整后台与全Wave0–7目标不缩小，首片visible Save不是完整后台完成。
+
+### R260 Storage D2 fixture 范围补齐
+
+原Storage writer报告正式 AssetsStore.deleteAsset 扩展导致既有 Public<AssetsStore> 两fixture TS2322。Root核当前真实聚合与double职责，批准仅 test/fixtures/storage-data.ts 增现method绑定、test/doubles/storage-repository.ts 承接删除receipt/引用与退役的原内存语义；不cast/弱化公开type/改变旧oracle，不把double当真实PG或provider验收。test/fixtures/storage-services.ts 当前未需修改，仍不准。没有新文件/目录/模块/资源授权；其余D2冻结与Root最终真实门保持。
+
+### R260 Storage D2 source/Schema 准入（真实失败后）
+
+Root88422真实隔离PG两文件18例 **11PASS/7FAIL**：六删除RPC缺handler，personal/active-project canonical cleanup准入实际返回null一例；catalog77→77exact、无残留库/删他库，provider/Redis为明确double，不冒MinIO测试。正常Storage仅只读5Asset/5Blob、retired0、active重复0/invalid live Asset0；PG18.4、旧digest全量唯一已证。机器独审078d912a绑定26snapshot3992d284，原17逐SHA仍exact；没有把machine-only当可用删除。
+
+原Storage唯一writer继续D2实施，沿原三D0架构与事务裁决。批准现source具体集：assets.types/assets-store.types/assets.service/assets.store、canonical.types/canonical-write/canonical-create-conflict、object-retirements.store、uploads.service/uploads.store、transport/storage-rpc.service、common/auth/service-authorization、integrations/clients/storage-client.types/storage-client；client-validation/storage-mapper仅必要时先报。新增仅现assets/delete-asset-receipt.schema.ts（删除稳定receipt独立schema语义，比较混进reference-receipt淘汰、具名schema采用，不新目录/provider）。保旧功能/权限/timeout/receipt/assertClaim/有限Serializable重试，无stub或cast退出strict。
+
+批准唯一canonical prisma/schema.prisma 只partialIndexes+现同名四列 retiredAt:null partial unique，无新增列/表/enum/FK/依赖；现scripts/apply-schema.ts只catalog/predicate oracle，不让installer接受非空正常库；现architecture/postgres-migration、prisma-write-boundary、integration/schema-bootstrap测试只受影响oracle。正规Prisma生成允许17当前protected输出发生**本次Schema必需派生变化**，不是还声称17生成后byte不变：先核Root26 snapshot/逐SHA完整，再用隔离copy官方生成旧canonical证明基线17是现generator产物、保存old→new生成SHA和差异，生成物不手写/不恢复HEAD/不掺其它代码；若原17不能由旧canonical重现则停止并报Root，不能吞掉来源不明的原dirty。机器6非测试输入本片保持冻结；沿已准7tests新增源码行为不删除负控，需要额外并发/rollback测试路径先报。
+
+三现D0只追加R260自有prefix说明阶段/来源与数据演进STOP，保旧suffixexact；无新migration runner/ledger/兼容schema。worker不连任何DB/Redis/S3、不启动服务或reconcile、不执行正常库DDL，不Git/browser/Root计划。Root独占真实隔离PG/fresh catalog/compiled/MinIO/备份/正常原子index切换，后继BFF/Web只消费源正式commit后串行接。先有效RED再实现，types/lint/纯测试正规生成→freeze明确source/test/generated文件、旧suffix和17基线证据→独审→Root真实门；此授权不是正常删除用户数据。
+
+证据纠偏：r259旧报告声称现StorageClient已有required DeleteAsset不成立；Root37994在tests在写时types得到production TS2741+新typed test TS2339+测试自身undefined bug，最后一项writer已修，不能当业务失败。冻结最终还包含typed authorization TS2345，后续应完整实现union/method而非放宽类型。
+
+### R260 Storage tests 新文件放置准入
+
+Root采用原Storage owner现文件证据：scoped-file-lifecycle约800行已专注上传/列表/签发；比较继续塞入该文件（淘汰：混合独立删除生命周期）与现test/integration新增一个asset-delete.integration.test.ts（采用：删除receipt、引用、退役、新代和清理隔离有单独持续职责）。只新增该文件，不新目录/模块/provider。最终tests写集缩为现contract client/rpc-service/rpc-trust-boundary、unit scoped-auth、integration object-retirement、smoke compiled-runtime与具名asset-delete integration。compiled只真实Connect行为断言，不空骨架/test.skip假覆盖；并发/回滚未实现fixture能力时明确待验并报告。source/schema/生成/正常资源仍未准写；任何暂时类型cast不替代required member。26基线manifest3992d284包含9machine/17Prisma，machine测试仅准新增断言不弱化旧安全oracle，其它原dirty保。Root运行隔离PG与provider门后才判业务正确。
+
+首Root准入记录误在Storage cwd写相对Root task路径报FileNotFound，未修改文件；随后改绝对路径，baseline纯contract确已执行exit1，失败日志保留。后续Root台账写入强制绝对路径、与子仓命令分开，避免重复这一执行偏差。
+
+### R260 页面 CRUD 并行续派（完整 Wave0–7 不变）
+
+上一轮为progress：真实个人安装五操作/Settings已产生可核证据与三owner固定源提交；当前没有真实全目标阻塞，不标blocked。本波复用已批准R258单Asset删除三D0设计和R256-ADMIN-03任务，不新计划中心。Root保留总体事务/权限/Schema裁决、Git、资源及浏览器；每仓唯一writer，独立调查并行。
+
+|任务/优先级|Owner、原Agent、基线与写集|依赖/验收/交付责任|
+|---|---|---|
+|R258-FILE-DELETE-D2-TEST / P0|Storage原bff_admin_routing_d0_r257，沿原会话模型；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-storage，HEAD5b15fe3。先读三D0与r259-storage-delete-d2-read.md；仅现contract client/rpc-service/rpc-trust-boundary/full-lifecycle、unit scoped-auth/receipt-envelope和integration scoped-file-lifecycle/canonical-lifecycle/canonical-snapshot/blob-owner-deduplication/object-retirement、smoke compiled-runtime 中具体删除断言。若需具名asset-delete.integration.test.ts，先报告位置/粒度与Root批准。source/schema/generated/docs不写，9 machine/17 Prisma原dirty逐SHA保护。|先报告真正关联失败与最窄测试集，运行无资源辅助RED；PG/Redis/MinIO只Root隔离门。不得cast掉required handler/改旧行为oracle/虚构stub绿。freeze文件+有效RED+source方案给Root；Root审查后续准schema/source。Git由Root。|
+|R256-ADMIN-03.WEB-D0-R260 / P0|Web原agent_planned_guarantee_system_r257，沿原会话模型；/Users/nako/.codex/worktrees/kokoro-r257-admin-web，HEAD8b355ba，two mixed保。先只读现管理入口/3具名owner读写/消费8.3 schema/client/设置role gate，允许仅三D0新增自有R260 prefix，原suffix byte exact；无source/generated/服务/DB/浏览器写。|BFF7269e97正式管理HTTP已正常重载，但Web仍占位。给最短现文件清单/visible single-row CAS Save与普通用户hidden+server deny E2E；复用正式BFF artifact，不另造dashboard/mock。Root收设计门/实际页面RED后准实现；Git由Root。|
+|R258-FILE-DELETE-D1-REVIEW-R260 / P0|独立只读iam_grant_source_scope_0244，沿原会话模型；Root冻结Storage9候选+17protected；仅独有ignored审查报告可写。|核当前三D0/Proto机器provenance/gen/client/错误/权限输入与现3handler失败，并指出是否可供后续consumer发布；不改源码/Git/资源，不把machine-only当已运行功能。Root最终放行。|
+
+Schema沿唯一Prisma canonical，typed partial unique只是已批准目标，正常非空owner库演进/备份由Root另收敛与验证，当前零DDL/资源写授权。移除普通Asset在Webaction time须人类永久删除确认；本波source设计/测试不是删除现用户数据。后台资格只IAM owner，Web隐藏不替代服务端拒绝，不在正常库自行授管理员。
+
 ### R259 元信息切片集成验收与交接
 
 BFF原owner交付→独审→Root79路径提交7269e97；Web原owner交付→独审→Root30路径提交8b355ba。三名原生代理均已STOP，Root不抢写；正常兼容配对重载后真实五操作和设置同reader子链已验，详细源commit、正常句柄、实际响应与未验边界见CURRENT本轮18:55记录。Root最终79/30冻结无漂移、two mixed/uv exact，Git只按具名路径；完整技能组仍RETEST、不升全组PASS。Root错误NODE_OPTIONS启动参数/副本oracle/初相对task路径与较早CDP截断均保留，最终证据已修正来源与覆盖。
