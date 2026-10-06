@@ -1,3 +1,14 @@
+### R257 正常页面最新实测与精确排程清理（2026-10-06 14:21 UTC）
+
+本节取代下方旧“normal未切换/设置候选”作为当前事实；历史失败与证据保留。完整Wave0–7继续，70整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
+
+- 正常固定源码：Web f1c5e68e7fabe01172b0065dafb45e52b1dda42c、BFF ae3d6d089ee94b0dd6361d84954925e308372493、IAM ac62c3850306a58c7aa14725e28e7cf1b212dd6e。fresh drained43表1852行私有配对备份后仅批准IAM两列/BFF偏好一表；原事实投影exact、全员管理员false/version0、无正常授资格。正常IAM54042/Web31693/BFF68959及另六原listener均在；BFF实际16308 executable为Node22.22.2，不是只看pnpm父进程。共享PG/Redis不重复启/不重置。
+- 正常本人Settings显式PUT200→GET200→硬刷新保持→正式恢复原昵称并重开核空；blur零写。普通用户后台入口隐藏、直链/admin实际404。folder自身leaf/独立空态、外部Direct常驻及两原历史导航真实通过。证据r257-normal-settings-browser-journey.json、r257-normal-paired-sidebar-current.jpg。仅这些子路径通过；并非设置全页/全CRUD/权限撤销或后台管理完整通过。Next dev覆盖private/no-store及VaryCookie的P2仍OPEN。
+- 用户明确只清旧测试排程 scheduled_18ce2a4c0b2745e247fce557562be15b及三条failed command。Root停写下fresh private BFF dump、独立恢复事实exact、自有库0连接回收、事务精确删1+3，仅加required recurrence_anchor_at与next_run_at nullable。其余BFF事实、业务约束/index、旧3历史receipt保留，Scheduler owner只读无旧target引用。receipt：var/dev/r255-preserve/r257-schedule-cutover/receipt.json；备份SHA22f2336b13b09d92df1b38604c6803acf35e0a19273ec17ddbbdb574e161dc48。无其它账号/会话/项目/文件/资金删除，无伪补anchor或兼容轨。
+- 真实IAB旧503→读空态→创建→编辑标题与23:58→暂停→硬刷新保持，留下新QA task scheduled_9f7fecb4c3113e6e531fbf6325171f47/paused/rev3，未删/发模型。新三条command仍failed invalid_schedule、next=null；BFF目标private literal与Scheduler空allowlist真实拒绝，且terminal失败未投影task导致active曾显示运行中，**排程未闭环**。88337重启误让tsx child用Node24；已停后按PATH显式Node22重启68959，IAB16重读标题/23:58/paused通过且已关闭。截图browser-node22-paused-current.jpg；owner-current.json。带conversation的排程刷新跳/app另待定位。首time fill没进受控值非产品已证bug，修工具输入后保存实证。Root最初owner-read用了缺psycopg的root Python未执行查询，改现Agent依赖runtime后读取成功，失败不抹。
+- 后台管理真实缺路由RED：Root62795/exit1，正式CLI资格CAS/Audit→真实CodePKCE→current /me管理员true及System正式发布route读200→BFF管理GET404≠200。自有资源cleanup passed，数据库77→77、IAM keys0→0，日志凭据零匹配后700/600保存；正常账号未授管理员/无推理计费。runner a6e1491d、IAMhost efb45d24、独审fd0888fd；var/dev/r255-preserve/r257-admin-real-red-root-result.json。这不是浏览器后台CRUD成功。
+- 当前并行：原BFF owner两现真实PG/HTTP排程tests-only准备失败投影RED；Root负责实际owner组合/真实浏览器/Git，Admin正式RED已跑；独审已交后STOP。Agent evidence6a21f7d已发布仅可信只读证据，正常Agent setup404、模型执行/正式赠送预占实际结算释放流水仍OPEN；九listener存活不冒全能力。旧全Root standard/topology/pytest失败保留，未本轮复跑。
+
 ### R257 当前恢复演练、正规源码与设置候选（2026-10-06）
 
 - Root38284用正常IAM/BFF同一真实快照隔离恢复并运行各owner check/apply/check/replay：43表1850行原事实投影保持，管理员默认false/0、preferences零行；自有库0连接后删除、库集合保持。首轮preflight类型错误及65621事实投影cast oracle错误均保留，未对normal执行DDL/重启/授账号。最终receipt：`var/dev/r255-preserve/r257-owner-evolution-restore-final-ul8l1eya/receipt.json`。这不是正常浏览器保存或切换后的验证。

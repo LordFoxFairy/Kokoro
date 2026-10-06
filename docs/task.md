@@ -1,3 +1,66 @@
+### R257 当前运行与验收补记（14:21 UTC）
+
+BFF现68959/listener16308实际Node22.22.2；88337的Node24子进程误用已停止，独立IAB16重读暂停/23:58成功并关闭。新QA排程保留paused/rev3，三command均invalid_schedule，旧清理范围不扩大。详见CURRENT/progress/test-cases最新同轮前缀。70完整组计数不变。Root62795已退出1，合法后台缺GET route RED、cleanup passed，不重复启动测试进程。
+
+### R257 后台真实 RED 与排程 tests-only 放行（当前）
+
+Root62795冻结 runner a6e1491d、IAMhost efb45d24，经独审fd0888fd零已证P0–P2后实际运行：正式管理员CLI CAS/Audit、真实Code/PKCE及current /me=true、System正式发布routing读200均成功，目标BFF GET /v1/admin/model-routing真实404≠200，形成有效业务RED。资源cleanup通过，库集合77→77、IAM专属Redis keys0→0；凭据无命中诊断存唯一700/600 ignored目录。没有normal管理员授予、外部推理/计费；后台页面CRUD仍未实现。
+
+R257-SCHEDULE-FAIL-PREP报告e0290e4e已Root接收，准原BFF唯一writer tests-only追加正式worktree两现文件：test/scheduled-outbox.integration.mjs、test/business-store.integration.mjs。Root独占真实PG/HTTP资源和Git；worker不运行资源、不改production/schema/contracts/配置。第一文件证明真实repository有效lease+当前revision terminal失败应failed及旧rev/暂停/delete/错fence/回滚保护；第二现BFF真实HTTP+dispatcher在closed400 owner double拒绝后GET应failed（double只证明本方失败投影，不冒真实Scheduler接纳）。先Root RED，再批准最窄单repository源码；DNS接线继续独立OPEN。
+
+### R257 排程真实失败投影后继（不扩大清理授权）
+
+Root裁决：仅复用ScheduledTask既有failed状态；唯一BFF writer先找现真实PG/HTTP排程集成入口，准备当前leased register/replace终止失败后权威任务仍active的业务RED，以及旧revision/paused/delete/重试保护。不得先改生产。收口设计：同事务锁定有效lease，只当前revision且enabled/active的register/replace终止失败才置failed并清next；无新状态/schema/模块/接口。源修前Root真实运行失败证据；正常已暂停新QA任务保留，旧清理授权不扩大。当前Scheduler目标DNS接线另只读诊断，不关闭SSRF或写全局hosts。
+
+|任务|owner/唯一writer/基线/范围|验收|
+|---|---|---|
+|R257-SCHEDULE-FAIL-PREP|bff_admin_routing_d0_r257；正式BFF ae3d6d0，先只读现repository/真实PG集成test，允许ignored精确测试计划报告|给已有测试精确文件与最窄测试append、锁顺序/失败恢复/负控；零生产/test/Git/资源修改，Root先接收文件范围再准tests-only。|
+
+### R256-ADMIN-03.RED-PREP 接收资源保护门
+
+Root已实读两测试文件，IAM typecheck23818在途，尚未执行资源。runner原自有cleanup helper含FORCE；作者只准runner调用前对本run登记DB逐一确认0连接，非0即失败不强杀。诊断在检查所有已知凭据无命中后才保存现ignored唯一runid0600日志，不因TemporaryDirectory销毁丢首因。原helper/准入/条件/机器/source不改。web_preferences_review_r257只读审两最终tests文件：Root文档唯一writer，worker没有PG/Redis/服务/Git权限；按正式CLI、CodePKCE、current资格前置以及本run资源/凭据/0连接回收，冻结后Root实际执行。此独审不代替用户管理页面验收。
+
+### R257 排程正常库切换后真实创建结果
+
+Root维护停止BFF59397/exit130，Scheduler独立owner只读证明旧target无任何引用。fresh BFF私有dump实际隔离恢复事实exact/自有库回收/库集合保持；单事务严格清旧task1+failed commands3，仅ADD required anchor及next nullable；旧receipt3、其余BFF27表事实与既有业务约束/index保持。两backup尝试因PGDATABASE URI被当literal失败且零写，明确修正独立PG连接环境后才完成。receipt `var/dev/r255-preserve/r257-schedule-cutover/receipt.json`；BFF新88337源码ae3d6d0同持久env/唯一53714，其他八服务未重启。
+
+真实IAB15：旧503→空态读取→新QA任务POST200/GET200→编辑标题与23:58→暂停→硬刷新保持。新task `scheduled_9f7fecb4c3113e6e531fbf6325171f47` 已暂停；没有模型/外部动作。新register/replace仍真实failed invalid_schedule，next_run_at=null，页面原active显示运行中与实际未接纳不符；不把保存200当调度完成。time首次fill未进入React状态，native setValue并核value/attribute23:58后实际保存成功，未凭第一次工具输入断言产品时间bug。带conversation的scheduled硬刷新曾跳回/app，无conversation tab=list刷新保持；保为独立待定位。
+
+|任务|角色/owner/范围|验收与停止线|
+|---|---|---|
+|R257-SCHEDULE-TARGET-DIAG|bff_admin_routing_d0_r257 / Scheduler-BFF只读，当前正式source与既有正常env仅非secret URL/allowlist元数据|实际BFFtarget127.0.0.1:53714/internal/bff/scheduled-tasks/dispatch，Scheduler SCHEDULER_INTERNAL_TARGET_ALLOWLIST=[]；现domain拒private IP，正式allowlist只精确DNS+CIDR。核是正常开发接线错误/已有正式方案还是owner设计缺口，最窄修复应保SSRF、不加公网DNShack/关闭安全/临时代理/全局hosts写；同步列BFF outbox failed但task active展示根源。只ignored报告，零源码/配置/服务/Git。Root再裁受控开发接线/源码。|
+
+### R256-ADMIN-03 合法真实 RED 前置窄授权
+
+IAM原负责人 iam_grant_source_scope_0244 为唯一tests writer：只准新增 IAM `test/fixtures/model-routing-admin-host.ts` 与 Root `scripts/e2e/run_admin_model_routing_smoke.py` 两个普通文件。采用具名测试fixture/既有e2e组合runner而非修改通用stub smoke/生产session入口；先正式CLI CAS/Audit+真实Code/PKCE发行Product Session，/me=true及自有System真实routing读取200都成立再对未实现BFF管理GET期待200。凭据只600私有管道，owner资源由Root启动/清自有，不用normal授资格/跨库SQL/伪token。原runner/contract/source/schema/lock/服务/所有mixed排除；freeze后Root审查并实际跑，缺符号/前置失败不算业务RED。Root独占Git。此tests-only切片不与BFF排程只读审查冲突。
+
+### R257 排程旧测试清理已获明确授权（当前续接）
+
+用户已明确同意仅清理 `scheduled_18ce2a4c0b2745e247fce557562be15b`（R255 排程 CRUD 验收 · 编辑已保存，暂停 rev3）及其三条失败调度命令；不是共享数据库/schema reset或删除其他业务事实的授权。Root独占正常资源与Git。先核正式canonical与全部关联事实，维护停写下私有备份，单事务只清目标并使空的ScheduledTask表与当前canonical两列一致；不猜anchor/留alias，漂移/行数/未知引用即停止。随后真实IAB CRUD与Scheduler owner确认日期，不以空列表200冒全闭环。
+
+|任务|角色/基线/允许范围|验收与停止线|
+|---|---|---|
+|R257-SCHEDULE-CUTOVER|bff_admin_routing_d0_r257，BFF只读计划；正式ae3d6d0，schema/repositories/dispatch、当前正常诊断与原R255设计|核唯一canonical、具名目标清理关系、两列DDL/约束/index，给最窄事务前后不变量及真实浏览器步骤；仅ignored报告，不改源码/文档/Git/服务/数据。Root执行，未知引用立即报告，不扩大删除。|
+|R256-ADMIN-03.RED-PREP|iam_grant_source_scope_0244，只读BFF ae3d6d0及System955bd58/IAMac62c38|按已审三D0定位现owner真实组合测试入口和固定System3.0发布artifact；给必要精确tests-only写集/真实current-admin前置，无normal授权/资源/代码/Git。不重新发明权限/设计。|
+
+### R257 逐页复测新失败与后台D0正式提交
+
+- 用户现有IAM会话真实正常IAB：技能本人发布项/安装空态200、本人MCP Connections200空态单标题、个人文件真实123B列表/Agent作品空态200；均仅读路径，不把静态连接器目录当授权/调用成功。每folder自己的leaf与独立空态、外部R243常驻、leaf→Direct两历史再次通过；自有tab14已关闭，用户标签未动，普通设置测试昵称已正式保存恢复并重开核空。
+- 排程真实页面 `/api/scheduled-tasks`503/business_store_unavailable；Root直接用同正式repository只读现owner得到PG42703：`recurrence_anchor_at`列不存在。normal仅一条暂停weekly测试“R255 排程 CRUD 验收 · 编辑已保存”rev3，next_run_at仍NOT NULL，3条failed原调度命令。这是当前结构未激活，不是Redis/加载文案；不凭空填anchor/next、不删除/重置。已向用户请求只清理这一个旧测试排程及其3失败命令的不可逆确认，其余事实保留；未获得回答前不操作，完整T-P02仍FAIL。Agent开始体验仍实际setup404/unavailable，渠道与模型执行均未闭环。
+- CACHE只读根因c1faa016：Web proxy已设目标头；Next16.2.6 base-server dev无条件覆盖Cache-Control，AppPage模板dev/prod覆盖Vary；notFound不是根因。当前无敏感泄露实证；不得为P2直接热改node_modules/造第二server，production实际头与标准修复仍待验。
+- BFF后台三D0 `ae3d6d089ee94b0dd6361d84954925e308372493`已Root精确提交。Root审查修正原错误header-only/no-meta envelope为现BFF data/error+meta.request_id一致，取消把首轮visible-only验收误加为backend契约限制；零源码/DDL/配置。后继四具名operations复用System已发布ownerAPI，正常管理员身份与Web管理CRUD仍待验，不按这92行设计称能力完成。
+
+### R257 正常配对已切换与后台后继（本轮当前事实）
+
+- Root 已精确接收 Web Preferences31 `cee38b5`、原R141六路径index-only重放 `ac1190f`、Admin22 `f1c5e68`；两个原测试buffer仍未整体接收。Agent readonly evidence17 `6a21f7d` 已发布，非推理/计费全链。正常 Web/BFF/IAM 原三句柄依次退出，fresh drained43表1852行私有快照后，仅具名owner增量平台资格两列及personalization一表；原事实43表投影exact、DB集合不变、默认全false/0、prefs零行；其余六listener保持。原检查相对Python路径误用未执行，纠正绝对路径后比对通过，历史不抹。
+- 正常源码服务现 IAM54042、BFF59397、Web31693，同持久env/身份/端口/DB，不复制临时源码/配置。真实IAB自有tab14现有IAM session：完整工作区/两原历史渲染→设置→昵称失焦零写→显式PUT200→GET200“已保存并读回”→硬刷新保持→正式PUT/GET恢复原空昵称；普通用户设置无后台入口、直链/admin真实404。请求/截图记录 `var/dev/r255-preserve/r257-normal-settings-browser-journey.json`。未发送模型/资金/授资格，后台CRUD和全部页面仍OPEN。
+- 新真实P2：normal Next dev /admin404实际Cache-Control=no-cache,must-revalidate/Vary缺Cookie，与已批private/no-store/VaryCookie不符；拒绝行为通过但缓存契约不宣称通过，单独诊断，不靠隐藏入口掩盖。
+
+|任务|角色/owner/基线/范围|验收与停止线|
+|---|---|---|
+|R256-ADMIN-01.CACHE|Web/独立诊断，正式源码worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` f1c5e68+两个保护测试buffer；只读proxy/security-headers/Next实际HTTP响应实现|定位Next dev覆盖no-store的具体边界，给最窄正式方案及真实HTTP反例；禁止源码/Git/资源/浏览器/正常身份变化，ignored报告后STOP。Root保实际404header证据，不阻塞其它页面验证。|
+|R256-ADMIN-03.D0|BFF唯一文档writer，`/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` 975a2d8/clean；仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL顶部前缀|复用报告a3767437当前tenant四具名模型路由管理；Root批准current platform_admin=true仅固定产品tenant的具名read/write，System既有web-bff授权仍最终校验；不授global或改组织权限。仅三D0一致设计/精确文件放置，零源码/机器/DDL/资源/Git/资格写；Root审后才准真实业务RED/实施，Web消费者等正式owner发布。|
+
 ### R257 当前恢复演练、正规源码与设置候选（2026-10-06）
 
 - Root38284用正常IAM/BFF同一真实快照隔离恢复并运行各owner check/apply/check/replay：43表1850行原事实投影保持，管理员默认false/0、preferences零行；自有库0连接后删除、库集合保持。首轮preflight类型错误及65621事实投影cast oracle错误均保留，未对normal执行DDL/重启/授账号。最终receipt：`var/dev/r255-preserve/r257-owner-evolution-restore-final-ul8l1eya/receipt.json`。这不是正常浏览器保存或切换后的验证。
@@ -5,6 +68,11 @@
 - Web原负责人交preferences31路径、59实际dirty冻结d91e4eb0，28保护exact。Root15611 Node22 lint/types/contract276/Settings组件60/build0，正确Hub/adapter二文件补跑147PASS；两错误文件筛选未执行，数量按实际而非作者349转记。独立源审d167c6e已证保存/核实期间仍可编辑且迟到旧闭包覆盖新草稿的P1，以及operation错误矩阵P2；当前不放行，原owner续最窄修。正式owner组合/浏览器显式保存、双标签冲突、权限撤销仍待验；作者Node24提示不作为正规工具链证据。
 - Agent Root96350真实HTTP/PG1FAIL：既有receipt字段被candidate误改，合法append在Pydantic拒，未到GET。独审fa1a70b另证head/绑定漏核与host header/request-id缺口，原writer仅先恢复receipt及准备真实负控，不发布半版本。source/自有库集合/Redis15保持；正式推理/可信计费仍OPEN。
 - 九既有服务readiness200（12:48:36Z）仅可用性。normal配对切换等Web源审与认证500收口；后台资格入口不是后台CRUD。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，Wave0–7 active、整组新增0。本goal turn已有真实恢复/正规源码验证与新缺陷定位，判定progress，不冒整体闭环。
+
+### R257 本次冻结后续验收（2026-10-06）
+- Agent Root28689真实HTTP1PASS、完整PG90PASS，America/New_York下UTC正控通过；13源码exact、自有库0连接后回收/库集合保持/Redis15后0。仅正式sealed证据读，不冒真实模型/扣费闭环。Root21905全pyright FAIL：既有test_factory.py测试依赖未实现新增read_final_evidence协议，后续纯门未执行。原owner仅追加该现测试文件（14th path）的显式未使用拒绝方法；不得返回伪证据或更改生产13。冻结后Root完整pyright/当前纯门补验，独审0244同时只读最终13生产与负控。
+- Web原owner复审修7files已STOP，59文件freeze4654c3dc，另52exact；Root接手Node22三文件/契约/工程及完整真实Next77复验，独审preferences reviewer复核P1/P2。正常IAM/BFF/Web配对切换与实际后台CRUD仍待验，不提前清零T-U04。
+- Agent独审新增Latin-1错误Bearer进入compare_digest(str,str)抛TypeError合同401未收口；原owner只增现真实HTTP断言供Root RED，不准先改production helper，原四问题及UTC已源审收口。
 
 ### R257 并行后继写入边界（当前）
 
@@ -20,6 +88,11 @@
 Root独占Git/正常资源/浏览器/最终集成；独立owner实施、Web消费设计和Agent执行诊断并行，每仓单writer。原70组完整状态保持；接口/工程通过不替代正常用户完整页面链。所有worker不启动资源、不清共享PG/Redis、不授任意账号；新范围仅沿已审D0，不扩大其他owner。
 
 ### R257 当前并行窄切片续派（2026-10-06）
+
+- R257-PREFS-REVIEW-FIX：Root54994五例有效RED+补漏client一例RED=六实际业务FAIL。原Web唯一writer仅现settings-sections saving/unknown四字段disabled、Hub schemas/client/adapter按GET/PUT错误闭集与429可选整数header校验透传；三现测试断言保持、其余freeze exact，不改合同/pin/auth/admin/rail/system。冻结后Root正确Node22、三实际文件及真实77系统再验；正常用户保存仍未闭环。
+- T-A01.R257-A1 Root52633完整真实PG90例89PASS/1FAIL，HTTP合法500/两个禁止403。新增UTC格式helper未转PG会话America/New_York导致合法artifact UTC Z比对失败，响应observed_at也须UTC。原writer仅修现repository aware→UTC与原acceptance时间正控，不修改DB timezone掩盖；source/资源保全，旧失败保留。
+
+- R257 Web preferences 后继：Root1767 同冻结59路径真实Next/Chromium/Redis全77PASS/0，本次source exact/Redis15后0；前75287认证500历史保留，不把本次通过当根因已修。独审d167c6e仍有1P1草稿竞态/1P2operation错误闭集，原writer只现Settings源/UI test与Hub schema/client/adapter及现tests：先补busy/unknown字段冻结、GET409/413与429 header RED，Root复跑失败后最窄修；不混system认证fixture/预算与admin/rail/其它保护。正常尚未配对apply/reload。
 
 - T-A01.R257-A1 Root57444 有效真实RED：receipt恢复后合法HTTP读200，而service override/body均误200（期望403）；六真实PG head/foreign artifact逐项未拒为6FAIL/1正控PASS。原reader/server保持、资源/源冻结exact。现在仅准原writer现repository单SELECT完整head+immutable binding校验和现server reader transport/request-id最窄修，现测试不放宽；正规artifact算法/写入producer/schema/normal均不变，冻结后Root完整PG+HTTP重跑并独审再发布。
 

@@ -1,3 +1,22 @@
+## R257 最新正常页面验收（2026-10-06 14:21 UTC，仅子路径不关闭70整组）
+
+下表是实际执行账；下方旧轮次状态保留历史，不能用旧候选/旧失败覆盖本节最新证据。每个完整页仍须完整主链、边界、异常、安全、状态流与对应后台管理才能关闭。
+
+|用例ID/标题|预置条件|测试步骤|预期结果|实际结果/证据|优先级|类型/类别|
+|---|---|---|---|---|---|---|
+|T-U04-R257-NORMAL 正式偏好保存|正常IAM本人、批准结构已切换、正式Web/BFF|打开设置→改昵称→失焦→显式保存→回读→硬刷新→恢复原值重开|失焦不写；保存与权威回读一致；刷新保持|PASS子路径：PUT/GET200、刷新保持、正式恢复原空值；normal-settings-browser-journey。双标签冲突/失败/撤权未验|P1|用户E2E/主链|
+|T-C04-R257-CURRENT 专案各自挂会话且外部常驻|本人两专案及既有Direct/项目历史|展开各folder→点自有leaf→点外部R243|child只在所属folder，Direct一直可达，同ID历史正确|PASS读导航子路径：项目R145、Direct R243两历史；paired-sidebar-current截图。提交CRUD/全部滚动仍待验|P0|用户E2E/主链|
+|R257-SCHED-RESTORE 精确删除授权边界|唯一旧暂停测试target及3失败command、Root维护停写|私有备份→恢复比事实→仅清目标→两列DDL→独立回读|删task1/command3；其余数据/原receipt不变|PASS限定维护：receipt flags全部真、原3receipt保留、独立恢复exact，未删新QA|P0|恢复/边界|
+|R257-SCHED-CRUD 提交编辑暂停刷新|正常本人当前空排程表、既有正式页面|页面创建→编辑标题与23:58→暂停→硬刷新|HTTP保存后权威读一致且刷新保持|PASS子路径：新task paused/rev3/23:58；Node24首次后纠正Node22重读通过；browser-node22-paused-current。resume/delete/执行未验|P0|用户E2E/状态机|
+|R257-SCHED-REJECT 调度拒绝不能称运行中|正常Scheduler实际开启且目标当前配置|创建有效任务→等待owner拒绝→读页面与owner|终止失败真实显示failed，无虚假运行中|FAIL：3command invalid_schedule、next=null；原active曾显示运行中；真实private literal+空allowlist拒绝。唯一owner准备窄修，未关闭SSRF|P0|异常/状态机|
+|R257-SCHED-ROUTE 带会话的模块刷新|本人scheduled URL携conversation参数|真实排程页硬刷新|留在排程模块不偷跳/app|FAIL观察待复现定位：带conversation曾跳/app；独立tab=list保持，不把两个场景混为成功|P1|边界/竞态|
+|R256-ADMIN-NORMAL 普通用户隔离|正常IAM platform_admin=false|设置查入口→直接/admin|入口隐藏且服务端拒绝|PASS普通用户子路径：入口0、HTTP404；Cache-Control/Vary的Next dev P2仍FAIL，管理员正向/撤权浏览器未验|P0|权限/安全|
+|R256-ADMIN-03-REAL 正式管理员管理列表|Root自有IAM CLI CAS/Audit+真实CodePKCE、System owner真实发布route，非normal授资格|current /me=true→System读200→BFF管理GET→System未变→清自有资源|合法请求200且只当前tenant管理投影，资源零泄漏|有效RED/FAIL：62795管理GET404，前置全真、cleanup passed、77→77/0→0；real-red-root-result。非后台页面成功|P0|系统集成/主链|
+|R257-PAGES-READ 能力页实际读取|正常本人、真实Platform/Storage|导航技能发布/安装→本人连接→文件/作品|权威读成功、空态非假数据、不持续loading|PASS仅列表读：技能发布既有1项/安装空、本人连接空、文件123B/作品空；无授权invoke或新作品成功声明|P1|用户E2E/主链|
+|T-A01-R257-FINAL-CURRENT 封口证据只读|自有真实Agent PG、有正式sealed evidence、专用Billing caller|正式receipt封口→真实HTTP读取→鉴权/bytes/绑定负控|可信证据仅正确专用caller读取|PASS限定owner读切片6a21f7d：Root HTTP1/PG90/纯186及工程已过；正常模型/余额预占结算释放/完整用户聊天仍OPEN|P0|系统集成/安全|
+
+**退出标准：** 当前每页完整用户链与异常/权限实测、当前源码独审与Root门、真实owner及数据回读全部通过，未决P0/P1清零；财务只已核实实际消耗结算/余预占释放。后台入口/HTTP200/空态/工程数量不能单独判整页或整组完成。付款仍最后。
+
 ## R257 当前验证状态（正常用户验收不冒通过）
 
 |用例ID/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级|类型|
