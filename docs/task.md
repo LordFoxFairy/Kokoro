@@ -1,3 +1,36 @@
+## R255 03:15 Root 放行与后继（原任务卡接续）
+
+|原任务|owner/角色/基线与写入集|当前交付/验收|后继与停止线|
+|---|---|---|---|
+|T-B07.R255-IAM-GRANT-RED|IAM iam_grant_source_scope_0244/gpt-6-astra唯一writer；main aab41820→4bfef00d；原卡14现源码/测试接线+CURRENT共15，Root独占Git|**注册源码已验收**。Root真实PG先3FAIL/1PASS→最终三文件18/0、目录77→77 exact；Node24 verify/prisma均0；独审system_guarantee_read_0315/gpt-6-astra，f3c76480/15freeze exact零阻塞问题。两Agent停写/结束|完整financial发行仍关闭；名单CAS/audit、当前actor→target verifier、machine/contract/SDK、CLI及Billing正式赠送继续沿原卡，不用普通role/operator自动授财务资格，不以注册完成冒资金闭环|
+|T-B07.R255-SYSTEM-GUARANTEE-READ|System只读main955bd587；system_guarantee_read_0315/gpt-6-astra，仓外报告bd4cf46d，无仓写入|现resolve tuple/revision及Agent已pin事实核对完，未发现可证明所有网关billable费用上界的绑定/usage/内部retry证据|费用风险一次待答strict保持；后继System具体技术声明→Agent reader→Billing M2→Agent授权consumer，禁止造能力声明/重复旧M0/M1|
+|T-P02/T-C01 正常用户链|Root资源/浏览器唯一执行人；原八句柄，normal BFF旧loaded、Billing/modelworker OFF|八探针200，仅可用性；browser观察超时/自有tab关闭未确认，用户完整路径本轮未执行|normal局部schema权限与费用风险原问题待答，不重问/不先激活。页面E2E通过后才关组，支付最后|
+
+冻结源码14路径与实际commit blob相同；仅CURRENT已核后缀增加Root验收事实。六仓原非批准文件、uv/Gitlinks保留；0正常资金/模型/schema/reset/服务重启。70组11/8/14/36/1不变，原Wave0–7不缩小；0315-iam-root-*和commit-receipt是辅助证据，不是新增业务PASS。完整研发退出仍须正常UI→真实owner→持久事实→恢复→资金流水闭环。
+
+### R255 03:15 注册片负控与标准发行接缝纠正
+
+Root旧冻结aef03339真实PG/API负控：3FAIL/1PASS/6filter未执行，PG77→77 exact；managed合法financial输入缺功能，nativeadmin升级普通client及错误financial注册facts实际成功。原非operator/未知User仍被旧schema拒，不冒新安全通过。原byte与其他仓保护，正常资源0写。
+
+独审并由Root核本地Better Auth1.7.3：customAccessTokenClaims只JWT，不足注册片零发行。现原生customTokenResponseFields（types1716–1732、runtime1818–1824）取得已认证current client metadata和最终scope，在JWT/opaque创建及refresh创建前执行；此片用其具名拒financial metadata/scope、普通返回空扩展，保普通claims一份，不解析Basic/code、不新issuer。合法financial注册无refresh/offline并禁止update升级；refresh replay提前支路仍须核无合法financialrefresh。仅准config既有hook范围，不发完整财务claims/许可；Root最终真实Code+PKCE两token形态负控后才放行注册片。
+
+### R255 03:15 IAM 注册片生产准入（Root 实际 RED 后）
+
+Root Node24.20.0 在冻结92706ad5上运行真实managed service/Better Auth/隔离PG：1 FAIL、6 filter未执行；合法financial输入被scope allowlist和strict keys拒绝，非环境/fixture故障；PG目录77→77 exact，原源码未改。证据0315-iam-root-red.json/log。此RED不等于HTTP资金/用户E2E。
+
+同 iam_grant_source_scope_0244 唯一writer准入报告列10现生产路径（oauth.constants、clients下profile/schema/readback/repository/service/management-context/management-policy、better-auth config/types），加现scripts/auth-generation.ts与test/fixtures/auth-database.ts两真实构造接线、旧unit/oauth-management.policy.test.ts仅必要构造适配、现oauth-client-lifecycle真实业务反例与docs/CURRENT顶部当前事实。全部在IAM；无新文件/目录/表/Schema/机器contract/generated/SDK/环境/服务/Git。完整CLI/名单CAS/machine financial/claims/verify另卡，本片仅financial human受管注册；普通profile/发行/登录不变。
+
+注册依实际operator Session、active Tenant、所有名单User存在、exact单scope/metadata/ownership/PKCE/Basic/false consent与唯一binding双回读；不准ALS/secret标记/optional repository逃逸。native before约束真实创建与当前client update防reserved升级/名单改写。共享profile接financial后必须在现发行入口明确拒financial scope，完整资格发行未做前零financial token，不落普通Member分支。新增边界反例继续现真实PG lifecycle/API：非operator、未知User、普通/admin update升级/名单改写、错误注册facts及financial零发行；Root先旧source负控后再改，已安全拒绝的不冒RED。额外构造/生成漂移先报准确路径，不扩大test目录授权。冻结交Root重跑纯门/真PG、独审、精确提交；正常activation/资金/用户页面PASS仍OPEN。
+
+## R255 03:15 接续任务卡（同 Wave 0–7，无新增计划中心）
+
+|任务|owner/角色/基线|允许范围与停止线|验收与交付|
+|---|---|---|---|
+|T-B07.R255-IAM-GRANT-RED|IAM；iam_grant_source_scope_0244，gpt-6-astra，唯一测试 writer；main aab41820，0315-baseline clean|仅现 test/integration/oauth-client-lifecycle.test.ts 增真实 Better Auth/PG managed financial create 业务反例；沿已批准三 D0，实际 operator Session、准确 financial metadata/scope/PKCE/consent/绑定；不写生产、Schema、contract/generated、资源/Git/其他文件。需要 fixture 改动先报告|冻结文件交 Root 运行隔离 PG/Redis；现缺 financial profile 应真实失败，不以404/环境/skip冒权限证明。旧普通 managed 行为保留；RED后另行准入最窄 source 切片。没有赠送或资金调用|
+|T-B07.R255-SYSTEM-GUARANTEE-READ|System model-catalog；system_guarantee_read_0315，只读，gpt-6-astra；main955bd587 clean|沿现三 D0/resolve/route revision/Agent bound D0，只读一目标绑定可审计 guarantee 证据与最小发布缺口；仅仓外 /tmp/r255-system-guarantee-read-0315.md。不改源码/合同/数据，不读 secret，不访问 provider或服务|区分当前工程容量与收费上界/重试/类别证据；明确现有证据可证明什么，缺什么。不得伪 guarantee 或重复 Billing M0/M1；Root 收敛已有方案后再派 source|
+
+Root 独占 Git、资源及最终 E2E；0315-baseline 保留所有原 mixed/未跟踪与 uv.lock。正常八进程复用，两个原人类决策待答不重问；收费 strict guard 和 normal schema 都不改。Agent bound 实现仍依精确技术保证，不先造正控。70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT_LAST不变。
+
 ## R255 02:44 本波交接与后继（原任务不新增组）
 
 |任务|owner/角色/基线与文件|交付与Root放行状态|

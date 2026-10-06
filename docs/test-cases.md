@@ -1,3 +1,17 @@
+## R255 03:15 T-B07 注册安全辅助证据与正式业务待验（沿原70组）
+
+**统计仍70组：11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST；新增用户PASS=0。** IAM源码main 4bfef00d。下列PG是真隔离PostgreSQL+实际BetterAuth/API，但不是正常用户资金E2E，不能改T-B07整组状态。
+
+|用例ID/类别|标题|预置条件|步骤|预期结果|本轮实际|优先级/类型|
+|---|---|---|---|---|---|---|
+|T-B07.R255-REG 主链/状态|显式财务human受管注册|真实operator Session、active tenant、准确User集合、IAM resource；Root自有PG fixture|managed创建→官方/持久双读→核ownership、单scope、Code/PKCE/Basic/false consent及唯一绑定|只注册精确metadata，不向普通client授scope，不默认operator有赠送权|旧source合法请求拒的RED；最终三file18/0含本例，目录77→77 exact。仅源码辅助|P0/业务接口集成|
+|T-B07.R255-RESERVED 权限/异常|普通/admin升级与财务名单变更拒绝|真实普通client与financialclient，具名operator Session|native普通client升级financial、错误financial注册facts、合法financial通用名单修改；回读原事实|稳定拒绝、原数据不变；不能靠metadata变更取得财务权|旧源码两负控真实成功（有效FAIL）；修后通过。非operator/未知User旧schema已拒，不冒新权限RED。清空metadata/rotation/inactive/empty/多ID/101独立实跑仍待补|P0/安全集成辅助|
+|T-B07.R255-ZERO-ISSUE 状态/异常|注册期间明确禁止financial新发行|合法注册，真实Code+PKCE+consent与current metadata|真实authorize→Code→token，显式/省略token resource；读access/refresh记录|精确403/access_denied、Financial grant issuance is not enabled、零token新增；普通登录不改变|实际两兑换明确拒且零新增。省略resource继承Code资源，不等实跑opaque；全新建接缝静态已核，defaultscope/旧refresh replay未冒通过|P0/安全生命周期辅助|
+|T-B07.R255-ORDINARY 回归|普通受管OAuth/固定Web与Session生命周期保持|原合法ordinary/Skill profile、真实fixtureSession/PG|完整运行client lifecycle、fixed Web、session lifecycle三原文件|Code/refresh、固定所有权、Skill升级与撤销仍按原语义，普通scope不加financial|Root三文件18 pass/0 fail，13.22秒；本例与上述同一结果重叠，不求和。全IAMintegration未跑|P0/真实owner回归辅助|
+|T-B07.R255-NORMAL-GRANT 主链/边界/权限/状态|正规管理员授权赠送及个人余额完整链|正常IAM current资格/名单CAS及machine verifier、Billing v2正式入口、真实两个用户；当前尚缺|正规登录→具名赠送actor授权→选当前tenant target及显式reason/amount→同幂等提交→UI余额/流水→刷新→重放→取消资格后重试→跨tenant反例|一次入账/可核audit，重放不重复；资格撤销即时拒，target隔离；UI与权威余额/流水一致|**本轮未执行**：issuer故意关闭、CLI/SDK/Billingcaller未接，未赠送/充值/资金调用。注册绿不关闭本例|P0/完整系统E2E待验|
+
+主窗口Node24 pnpm verify（102纯文件938项）/prisma:validate均0只补研发门；独审f3c76480/15冻结exact零阻塞问题但不当运行证据。创建/link/readback非整体原子，残留不返凭证且仍拒签，后续正式管理恢复应单独验。八健康200不代表页面通过，browser控制/关闭自有tab超时未观察DOM与像素，不新增产品失败或成功；Playwright/axe/移动/视觉/bundle、真实模型和收费结算本轮未跑。完整退出仍正常UI→owner权威事实→刷新/错误恢复→权限/资金一致；证据同0315-iam-root-{red,boundary-red,integration,gates}、commit-receipt和browser-observation-block，不另建QA中心。
+
 ## R255 02:44 排程消费者验证记录（T-P02 子例，非新测试中心）
 
 系统验收统计仍70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST；本波用户PASS+0。工程辅助不替代下表正常系统路径。

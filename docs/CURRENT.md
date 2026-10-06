@@ -1,3 +1,11 @@
+## R255 03:15 收尾：IAM 注册安全切片已提交，完整用户链仍 OPEN
+
+- **IAM main `4bfef00d77028cffdb060cc16c5fc75ff7d27b99`**：15个批准现路径，零新文件/Schema/contract/SDK。真实 operator Session 管理独立 financial human metadata、active tenant 与 canonical User 集合；普通用户/管理员角色和普通 Web scopes 不扩大。native ordinary/admin 更新阻止财务升级/名单替换与 rotation；创建前后官方/持久事实、ownership 与唯一 resource binding 双回读。注册不等发行，锁定 Better Auth1.7.3 的 customTokenResponseFields 在 JWT/opaque 新建前按当前 metadata/最终 scope 明确拒签；没有新 issuer、ALS、权限标记或兼容通道。fresh resource Skill 窄修仅保留原已存在 financial ceiling，不授普通 Web。
+- **Root 当前证据**：旧源码真实 PG/API 为3 FAIL/1 PASS/6 filter未执行（合法注册缺功能、两 native 安全边界）；冻结修后真实三文件18 PASS/0 FAIL，13.22秒，PG目录77→77 exact。Node24.20.0 pnpm verify exit0（102纯文件938项、format/lint/types/contract/breaking/sdk/build均0）及 prisma:validate exit0；独审 f3c76480 绑定73d992a6清单15/15 exact，零阻塞P0/P1/P2。14源码/测试冻结与提交blob exact；CURRENT仅验收前缀修订，原正文保护。计数相互重叠，全部为注册源码辅助，不是18或938个用户通过。
+- **未闭环与停止线**：完整 financial issuer/current actor资格、名单CAS/audit、machine verifier/contract/SDK、正式CLI、Billing actor→target和正常资金入口尚缺；注册签发故意关闭。显式/省略token resource均继承Code资源，不冒实际opaque分支覆盖；default scope、清空metadata/rotation、名单/tenant边界独立实跑待补。create/link/readback非整体原子，失败可留client但不返凭证、不伪回滚。System只读bd4cf46d证明当前resolve/route revision并不证明网关全部收费上界；Agent合同已pin，缺具体部署/用量/内部retry类别证据，不重复M0/M1或造planned字段。
+- **运行/保护**：八原listener/句柄提交后再次alive200，0启动/重启/reset/主动模型/赠送/结算；normal Billing/modelworker OFF、BFF旧loaded/flagfalse保持。浏览器既有tab DOM观察超时；关闭自有tab8也超时并kernel reset，关闭未确认，未动用户tab7、无新增tab/页面PASS。六仓非批准路径byte-exact、uv原SHA/Gitlinks不暂存。两个原人类决策继续一次待答，strict费用守卫与normal排程schema不擅改。
+- **完整范围**：原Wave0–7/goal状态不变；70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，用户PASS新增0。沿原T-B07补具名当前资格/名单与正式caller，T-C01按System→Agent reader→Billing M2→Agent consumer；T-P02待安全激活及真实页面复测。证据同ignored var/dev/r255-preserve/0315-{iam-commit-receipt,iam-root-integration,iam-root-gates,postcommit-owner-health,browser-observation-block}.json；同五台账，无新计划中心。
+
 ## R255 02:44 收尾：Web 排程消费者已提交，正常系统验收仍 OPEN
 
 - **Web main022e820ccdd8b1405ca5ac5b0f7171bf82e8572e**：24现路径、零新层；固定BFF45e67f0/public8/0802a31f本地artifact。十required、必有nullable next、optional anchor；live保null，不由浏览器推算日期；Team15 byte-equal、failure仅两provenance。Root先旧实现148/139/9有效RED，再独立Node22八门exit0（contract274/0、architecture50/0、非system153文件2657/0、lint/types/build/两generated），提交后四目标148/0。独审99cc868e绑定freeze63e5ba58零P0/P1/P2；这些只验源码，不关闭用户组。

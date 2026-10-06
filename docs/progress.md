@@ -1,3 +1,13 @@
+## R255 03:15 进度：注册安全已落代码，资金/聊天与页面尚未闭环
+
+|现任务|本轮已交付|实际剩余|
+|---|---|---|
+|T-B07 IAM financial注册|main 4bfef00d，15现路径；有效PG RED3/1→修后3文件18/0；Node24 verify938/0与全部子门、prisma均exit0；冻结独审f3c76480零阻塞问题|**注册源码通过，不是正式赠送通过**。发行关闭；当前资格/名单CAS/audit、machine verifier/SDK/CLI/Billing actor→target与正常入口未完成|
+|T-C01 收费聊天|System只读证明resolve/revision不是全部billable成本上界；Agent已有pin不重复改|原strict、风险决定一次待答；normal Billing/modelworker OFF、BFFflagfalse/Agent consumer仍缺；按原依赖推进，支付最后|
+|T-P02 正常排程与页面|前波Web022e820/BFFef2d306源码交接保持，八原服务本轮仍alive200|normal旧schema/loaded未激活，持续next同步和真实UI复测尚缺；激活请求一次待答|
+
+本轮新增完整用户PASS=0，70组**11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST**保持。浏览器DOM/关闭自有tab均观察超时，不能当产品FAIL或关闭成功；没有登录/页面/模型/赠送/结算操作。六仓原混合变更保留，IAM其余421路径/Agent580/System197/Billing313/Web763/BFF492在提交前byte-exact；Root只提交批准15路径且源码14freeze exact。八原句柄不重复启动，PG目录77→77/共享Redis不reset。未跑全IAM integration/正常浏览器/axe/视觉移动/bundle/provider；纯门938为辅助，不替代系统退出线。证据同0315-iam-commit-receipt、iam-root-integration、iam-root-gates、postcommit-owner-health；同原task/test-cases，不重建中心。
+
 ## R255 02:44 进度：消费者代码收口，不冒完整用户通过
 
 |原任务|本波实际结果|剩余验收|

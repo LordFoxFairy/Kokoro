@@ -1,3 +1,11 @@
+## R255 03:15 IAM 注册当前入口（main 4bfef00d，正常dev未重载）
+
+- 现 oauth.constants FINANCIAL_GRANT_SCOPE/PURPOSE → clients/client-profile.schema 与 oauth-client.schema：独立human metadata/tenant/canonical名单、exclusive scope、Code+PKCE+Basic+explicit consent；普通Web不获新scope。OauthClientRepository用现Prisma短事务查activeTenant/User及当前client权威；无Schema/新表/跨owner SQL。
+- 现 OauthClientService.createManagedClient 首尾operator/official+persisted资源与client/ownership/binding双回读；createInternalResource仅fresh资源新增ceiling。extendProductWebSkillScope仅保已存在financial，旧资源普通流程不主动升级。native BetterAuth before → authoritative Session → OauthManagementPolicy.admitClientMutation(actual path/body/current client)，关闭普通/admin reserved升级、名单替换/rotation；真实required repository接线在config/types、generation、fixture现文件。
+- native customTokenResponseFields读取已认证current metadata与finalscope，在JWT/opaque新建前拒financial；普通customAccessTokenClaims不变。financial无refresh/offline；上游旧refresh replay早返不冒全覆盖。注册不是发行，完整current roster/CAS/audit、financial machine/verifier、CLI/SDK/Billing后继未实现。create/link/readback不整体原子，不用伪rollback掩盖残留。
+- Root Node24纯门938与真实PG18/0仅辅助注册源码；冻结审f3c76480，14source blob exact+CURRENT验收前缀，正常八句柄/加载状态无重启。System955bd587只读：已有技术tuple/Agentpin不证明网关全部billable上界；缺精确target/deployment/usage/category/internalretry证据。代码地图不生成不存在的bound正控或计费字段。
+- 正常浏览器观察仍timeout，自有tab8关闭未确认；normal Billing/modelworker OFF/BFFflagfalse、排程旧schema/loaded不变。70组统计与所有完整用户路径验收沿同task/test-cases保持OPEN；ignored0315-*证据不是新运行仓或计划中心。
+
 ## R255 02:44 当前消费者入口（正常 BFF/schema 仍旧加载）
 
 Web main022e820：唯一src/generated/bff-public-openapi.yaml固定BFF45e67f0/public8/0802全文；现两generator派生Team（15文件不变）与failure（仅provenance）。src/contract/scheduled.ts拥有strict十required、next:string|null、optional recurrence_anchor_at；features/scheduled-tasks/api/scheduled-task-client.ts严格parse后始终投影nextRun；model/scheduled-task.ts保preview optional/live nullable，model/calendar.ts null无日期。现editor/list/routes不改，preview next计算不进入live。三D0/current/contractREADME只当前前缀，无新目录/层/网络协议。
