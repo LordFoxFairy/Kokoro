@@ -673,7 +673,7 @@ Root30636真实Next/Chromium/Redis同原bounded旅程PASS：取消Dialog后归�
 
 |用例引用|预置与步骤|验收标准|本次实际|优先级/类型|
 |---|---|---|---|---|
-|TC-SETTINGS-R191-007–010相关个性化子例|已登录真实3310、原昵称空；账户→个性化→输入QA昵称→职业失焦→关闭→重开|合法编辑有明确保存语义/结果，重开从权威源保留；失败可见而非静默丢失|FAIL：昵称重开为空，无保存/结果反馈；只是局部输入可见。R257实际同源PATCH404、无GET/吞失败已定位：BFF正式preferences operation缺失（catch-all可达），现四字段持久化D0待审，尚未修复|P1/用户系统、状态机|
+|TC-SETTINGS-R191-007–010相关个性化子例|已登录真实3310、原昵称空；账户→个性化→输入QA昵称→职业失焦→关闭→重开|合法编辑有明确保存语义/结果，重开从权威源保留；失败可见而非静默丢失|FAIL：昵称重开为空，无保存/结果反馈；只是局部输入可见。R257实际同源PATCH404、无GET/吞失败已定位：BFF正式preferences operation缺失（catch-all可达），四字段GET/显式PUT CAS设计已审，源码进行中；Root46862真实HTTP/PG普通/me200后GET404，1FAIL/0skip，不替代正常浏览器验收，尚未修复|P1/用户系统、状态机|
 |T-C05/T-U03项目改名子例|冻结候选、真实Next/Chromium/Redis及受控ownerpeer；合法menu→Dialog→单PATCH→200|owner no-store与browser-private规范各自正确验证，200后canonical读回，不误判unknown|Root57315 FAIL于实际private,no-store,max-age=0；共用parser拒合法ACK，source窄修已派。当前用户3310尚未启该候选|P1/用户系统、异常、协议边界|
 
 Billing Root70536两文件285通过与独审0只作开发前置证据；正式Credit赠送/预占/逐attempt调用/核实消耗结算释放/流水以及当前用户页仍未PASS。没有关闭任何完整业务组。
@@ -929,7 +929,7 @@ R206补验：Root64906对显式owned/shield driver候选重跑同312bb9d真PG三
 |---|---|---|---|---|---|---|
 |TC-PROJECT-R191-005 / 网站关联真实保存|正式项目，System网站目录与BFF关联契约发布；本人可用网站|新增→选择→保存→owner ACK/GET→硬刷新→解除→刷新|仅授权真实网站，关联持久且隔离，无静态示例或纯内存成功|P1|主链、权限、生命周期|FAIL源码确认：正式preview=false仍读previewWebsites；Save只setLinkedWebsiteId。原IAB样本观察真实，保存/刷新尚未运行；contract前置BLOCKED，Web/BFF/System。不得隐藏后标PASS|
 |TC-SKILL-R191-006 / 项目技能两入口一致|真实Project安装技能版本、Platform/BFF写契约可用|Switch与More启停分别操作→GET→刷新；403/503后再回读|同一owner mutation，ACK后权威状态；失败回滚且可见，缺handler不假成功|P0|主链、异常、权限、状态机|FAIL源码：Switch optional handler缺失可假成功；More纯setState，静态Skill Builder单卡。真实用户写链未验；Web/BFF/Platform/Agent|
-|TC-SETTINGS-R191-007 / 个性化保存和读回|正式session，账号级偏好owner GET/PATCH已发布|唯一值输入/blur→状态码→关重开→硬刷新；404/503/跨subject|失败明确保草稿/可重试，不假保存；成功同subject权威GET可读|P1|主链、异常、权限|真实FAIL：正常昵称blur PATCH404、无错误提示、硬刷新空（r257-personalization-red）；正式 BFF owner operation 缺失（同源 catch-all 可达）、PATCH不查response.ok且无GET。新正式保存闭环尚未实施/验收；不造localStorage账号事实|
+|TC-SETTINGS-R191-007 / 个性化保存和读回|正式session；目标账号级偏好owner GET/显式PUT已发布后执行（当前未发布）|唯一值输入→显式保存→状态码/ACK回读→关重开→硬刷新；404/503/跨subject/陈旧revision冲突|失败明确保草稿/可重试，不假保存；成功同subject权威GET可读|P1|主链、异常、权限|真实FAIL：正常昵称blur PATCH404、无错误提示、硬刷新空（r257-personalization-red）；正式 BFF owner operation 缺失（同源 catch-all 可达）、PATCH不查response.ok且无GET。Root46862隔离真实PG/Redis+受控IAM边界，普通me200后GET404，1FAIL/0skip；GET/PUT CAS源码进行中，正常Web显式保存/失败反馈与硬刷新仍未验；不造localStorage账号事实|
 |TC-SETTINGS-R191-008 / 通知偏好实际生效|Web设备偏好、已授权Notification，真实awaiting审批事件|关闭→切tab/刷新→产生事件；明确点击开启→权限拒绝/允许→再事件|关时零通知且持久；权限仅用户手势，拒绝不假授权；声音须实际producer|P1|功能、权限、生命周期|源码FAIL：4toggle内存；producer不读开关并业务路径requestPermission。设备browser/sound归Web；账号通信订阅owner待定，实机通知NOT_RUN|
 |TC-SETTINGS-R191-009 / 快捷键编辑影响实际动作|可编辑实际New chat/Search/Sidebar动作|重绑/清空/reset→新旧键→关重开/刷新/第二tab；IME/repeat/editable/冲突|仅新键一次动作，清空无动作，持久一致，录制与全局监听无重复|P1|交互、边界、竞态|源码FAIL：UI内存与硬coded dispatcher双事实，Sidebar显示与实际键不同；不支持Plan/Voice不算实现。Web负责人后继最小片已设计，真实全矩阵NOT_RUN|
 |TC-SETTINGS-R191-010 / 默认模型Agent跨主体安全|A/B合法session、不同可用目录；同浏览器|A保存selector→登出→B登录新会话；目录404/503/撤权|B只可用自身已核验selector或默认，加载失败显式错误，不吞空注入旧值|P1|权限、异常、生命周期|源码FAIL：全局chat-prefs key且agents404吞空；跨主体实际用户流NOT_RUN。Web/System/Agent/BFF；不是认证已可用就通过|
