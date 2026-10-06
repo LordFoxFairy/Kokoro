@@ -1,3 +1,14 @@
+## R255 05:44 进度：入口恢复已验，未把页面可读当模块全成
+
+|既有任务|本轮真实推进|仍未闭环/后继|
+|---|---|---|
+|T-U01 五导航入口|System两locale正规presentation CAS/幂等回读；正常3310逐点五页/硬刷新、Direct区常在、loadingfalse；未改Feature/exposure/flags/release|各模块完整CRUD、安全/故障/跨tab继续逐项验，不增加整组PASS|
+|T-A02/A03/T-P01/T-F01 页面读取|现本人Skill版本1、MCP真实空态、本人暂停排程卡、123B个人文件、作品真实空态均实际浏览器与200|安装/实际Skill加载、MCP连接断开、排程执行、文件新上传/下载hash与Agent作品整链本轮未验|
+|T-U04 Agent开始体验|真实setup404精确证BFF公开契约与Agent生产路由断裂；原具名代理核无平台绑定CRUD|现BFF owner/D0收敛，普通Chat/Run继续独立，不让Telegram卡主链；目录404另记|
+|T-B07 正常积分启动前置|日志有效RED→安全onResponse+同Fastify module精确align；Root最终30/0/77目录exact、format与窄lint0/新增types0、独审eec970b8|整tsc原6旧栈FAIL、15 caller保有效断言承接/旧server退役、fullbuild/source-dist与normal owner启动；正规赠送/余额/收费用户链未闭环|
+
+70组仍11/8/14/36/1，新增完整组0。Billing未提交候选/正常Billing与modelworker OFF，辅助30不冒全用户PASS。三原代理已STOP，Root自有页与测试句柄关闭；八原服务200只是可用性。两正式presentation业务写之外，正常资金/模型/schema/reset/重启0，六仓任务外修改/uv/registry保持。同CURRENT/task/test-cases记录证据与后继，不另建计划中心。
+
 05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
 
 ## R255 05:22 进度（用户操作证据优先）

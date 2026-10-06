@@ -1,3 +1,11 @@
+## R255 05:44 当前入口与真实缺口（保原owner，不新模块）
+
+- System现 Products navigationItemSchema允许普通管理页面feature_key:null；Feature自身为immutable执行result contract。Root同app既有en-US presentation增加五页、缺zh-CN presentation正规创建，chat仍feature_key=chat；现GET runtime-manifest正常返回六导航，Web过滤重复chat而显示五入口。各locale有效theme/namespaces/flags/现release/binding/config保持，不新Feature/exposure或前端常开旗。正规CAS/replay与浏览器五页刷新证据0544-normal-presentation-cas/normal-browser-journey。
+- Web aaf577d现目录：/app/agents、/app/skills、/app/plugins（UI标签连接器）、/app/scheduled?tab=calendar、/app/library；本人清单/文件/暂停排程卡与MCP、artifact空态实际可读，外部会话保持。普通Chat/Run不依赖渠道setup；旧GET agents目录404另有消费者退役卡，不伪造目录。
+- setup真实404现调用：Web agents/client→app/api/agents/[...path]→BFF public getAgentConnectionSetup→bootstrap/server generic agents upstream→Agent server route_not_found。BFF contract已声明但无生产专属handler/底层bindingCRUD；Agent三D0及9route没有此owner，Platform McpConnection仅MCP policy selector。后继精确文档候选现BFF TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/docs/api/v1/agents.md，正式底层owner/真实provider接线待裁决，不造假QR/fixture，不由运维配置冒实现。
+- Billing261a20f未提交候选：main→现bootstrap factory/Nest graph→已有安全http onResponse；factory公开LogController(logger info/redact)，direct fastify精确对齐Nest已实际锁定5.12.4，以原FastifyAdapter(options)保持生命周期/原version constraint。现runtime integration raw32KiB stdout/stderr闭流后扫描booleans与request_id单条safe6字段，JSON unknown guard→typedfromEntries；无second logger/弃用选项/类型shim。Root最后18freeze真实PG30/0、format/lint0、整tsc仍旧6；旧15caller/server、完整source/dist及正常启动尚OPEN，19 operation/worker/支付仍后继。
+- ignored0544证据非新运行仓/重复计划；唯一processes.json八原句柄不变，normal Billing/modelworker OFF。导航正控不证明MCP/Telegram连接、Agent执行/Skill加载、排程执行或新作品生成；页面矩阵仍由同test-cases业务路径验收。
+
 05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
 
 ## R255 05:22 现入口增量与依赖接续

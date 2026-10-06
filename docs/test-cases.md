@@ -1,3 +1,20 @@
+## R255 05:44 系统质量与真实用户验收增量
+
+核心风险：正式presentation误把管理页面当执行Feature导致入口隐藏；BFF公开setup存在但实际生产无接线；正常Billing未启与旧栈工程门未清。完整70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，新增整组0。以下只更新原组子例，不以可靠性30项充业务数量，历史0522导航FAIL由本轮子例正控续接而非删除失败历史。
+
+|用例ID/类别|标题|预置条件|测试步骤|预期结果与实际状态|优先级/测试类型|
+|---|---|---|---|---|---|
+|T-U01.R255-NAVIGATION 主链/状态|正规五页入口恢复|正常3310/IAM session200，原中文空导航，原chat feature关联|正规System两locale presentation CAS→同key回放/回读→正常侧栏逐点五页→各硬刷新→回原R243历史|五入口可见可达、刷新保Direct列表/loadingfalse；实际本子例PASS；chat/主题/namespace/release/flags未改，非全模块CRUD通过|P0/跨owner配置与真实浏览器|
+|T-U01.R255-NAV-POLICY 权限/异常|普通页面导航不授执行权限|上例普通page feature_key:null、chat受控，site允许en-US/zh-CN|读两locale manifest并与before差分→zh/en别名负控→核feature/exposure|两正式locale200、别名403；feature/exposure不变，页内仍owner授权；实际PASS本子例；跨tenant每operation未在本轮重测|P0/安全、真实系统|
+|T-A02.R255-NORMAL-SKILL 主链/状态|本人Skill列表刷新|既有本人R255清单version1|点击技能→等待本人card→硬刷新→读实际同源self/skills|现真实card与固定version1恢复、200、loading解除；READ子例PASS；本轮未发布/安装/执行加载|P1/真实浏览器、读取恢复|
+|T-A03.R255-NORMAL-MCP 主链/边界|连接器管理真实空态|本人当前无MCP连接|点击连接器→管理连接器→Settings MCP→等待现server读→关闭并硬刷新页面|200本人真实空列表、非加载失败；READ子例PASS；营销catalog不算连接成功，connect/callback/disconnect仍待完整真实验证|P1/真实浏览器、空态|
+|T-P01.R255-NORMAL-SCHEDULE 主链/状态|本人暂停排程可读|已有本人已暂停QA排程，正常schema仍原待激活项|点击已排程→等本人card→硬刷新calendar|实际已暂停卡可见/200/loadingfalse；READ子例PASS；暂停卡仍落calendar的产品状态与next投影未关闭，未调用恢复/执行/删除|P1/真实浏览器、状态展示|
+|T-F01/F03.R255-NORMAL-LIBRARY 主链/边界|文件与作品独立读取|本人已有text/plain123B文件，无作品|点击资料库→文件card→硬刷新→Agent作品tab→读kind=file/artifact|file200真card/123B、artifact200真空态，loading解除；READ子例PASS；未新上传/下载hash/生成作品，不以空态冒交付能力|P1/真实浏览器、空态恢复|
+|T-U04.R255-AGENT-SETUP 异常/状态|开始体验真实setup失败|上例Agent可达，平台telegram|点开始体验→等待实际GET setup→记录code/request-id与UI→关闭|应有权威有效setup；实际404 route_not_found/92ad9434-002e-4b1d-83de-09d5349fe0e0，实时配置暂不可用；**FAIL/OPEN**，BFFcontract与生产upstream断裂；独立目录404不合并、不假二维码|P1/真实用户缺陷|
+|T-B07.R255-LOG 异常/安全/状态|实际请求完成日志与原始无泄漏|原main源码、自有真实PG/JWKS，合法BFF五因素+fixture秘密|strict坏query真实400/no-store/request-id→自然关闭code0后读raw32KiB→关联唯一safe6字段→扫描原始秘密boolean→资源回收|原日志无输出RED5/1；最终30/0/9.13s、18freeze/77库集合exact；本可靠性子例通过，非正常资金用户E2E。窄format/lint0，整tsc旧6exit2仍FAIL，不跳过有效断言|P1/真实owner故障、安全辅助|
+
+E2E证据：0544-normal-browser-journey.json与视检导航截图，正常3310复用合法session，无cookie注入/seed/新推理/资金。五入口与全部硬刷新后仍有外部聊天、最终原会话同ID/旧两轮历史；Root自有浏览器关闭，用户IAB未动。账务实际退出线仍正式授权赠送→余额/流水→真实执行前预占→已核用量唯一结算/释放→刷新一致；页面完整CRUD、跨人/tenant拒绝、unknown ACK/重连/移动/axe等原退出标准不因本片降低。
+
 05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
 
 ## R255 05:22 系统质量、真实用户子例与剩余风险

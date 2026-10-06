@@ -1,3 +1,35 @@
+### 05:44 本波交接与明确后继（沿完整Wave0–7）
+
+三原具名代理已STOP，Root源与资源/Git审核完成。T-U01两笔正常System presentation写/CAS replay200及五模块真实逐点/硬刷新验收，Direct列表/原历史保持；管理页面null feature分类正式收敛，不新Feature/exposure/flags/release。T-U04新setup404精确BFF public contract→Agent未知route、无bindingCRUD；三D0/agents.md先owner/provider语义收口，但普通Chat/Run不依赖它，主链并行继续。MCP真实空态/本人Skills/暂停排程/123B文件/作品真空态仅read子例，本轮无新CRUD/模型/资金，完整组不增。
+
+T-B07日志最终factorye636c82a/test695ee3b4，Root49972同6+24实际30/0、9.13s、18freeze/PG77exact；89366四pathformat0/窄两pathlint0/整tsc原6旧栈exit2新增0。公开LogController与正常adapter options经direct/Nest5.12.4同module、package/lock闭集/frozen安装；两中间泛型失败和style失败保留。最终独审eec970b8无新增已证P0/P1/P2，仅本片。**后继原Billing唯一writer优先承接盘点15caller有效断言、退役旧server与旧runtime字段/完整门/source-dist→正常持久配置启动两本人读→浏览器积分页，不再等19项/支付才启动已实现两读；19业务/worker/正规赠送/执行费用仍完整后继**。候选未提交，未放宽门/删有效语义/恢复alias清门。
+
+Root只本五台账提交；六仓0544全保护复核只Billing四准路径变，原mixed/index/uv/registryexact。八原PID同probe200仅availability、0正常重启/reset/schema/模型/资金，两presentation业务写真实记。Root全部测试/安装句柄结束、自有页关闭；70组11/8/14/36/1不变，新增完整组0，原费用/schema决定不重复询问。ignored0544-final-protection/owner-health-close及最终报告为证据，无重复任务中心。
+
+05:44 LOG精确align实际结果与最后格式门：Root owner cwd正规lock update0/frozen install0，direct/Nest同5.12.4，lock仅批准importer+移除无引用5.12.1，供应链446通过；初Root错误cwd/离线metadata失败日志保留。23393同6runtime+24本人读30/0、9.25s、18freeze/PG77exact；85965窄lint0、整tsc仅原6旧栈exit2/新增0。4path窄format只有test style warn1；只准原billing writer现runtime test运行本仓prettier，净差必须纯排版、原case/预算/断言/raw保护，其他17路径冻结。最终新18freezeRoot同30/format/lint/types，独审前语义+最终格式delta；不进入正常启动或提交未清旧栈候选。
+
+05:44 LOG第二工程门失败后的唯一收敛准入：Root8536同6+24实际30/0、9.52s，54593 lint仍1、14610直接tsc新增3条+原6；保留全部失败。两Fastify递归声明身份不兼容，停止泛型猜测。原Billing writer已STOP；Root独占现package.json/pnpm-lock.yaml，把direct5.12.1精确对齐到Nest12.0.3已经锁定/实际运行的5.12.4（两snapshot全部15依赖相同/MIT，非新框架/浮动升级），离线正规lock更新和frozen安装、其他包不变；沿ADR0003记录无需新ADR。随后原writer仅现factory恢复原FastifyAdapter(options)+同module LogController，去外建Fastify/显式泛型；现runtime test仅guard后Object.fromEntries<unknown>(Object.entries(parsed))，不强转/any/预算或断言变化。18路径freeze、Root重跑同30/窄lint/整tsc与独审；正常Billing仍OFF/旧六条与完整cutover保持OPEN。
+
+05:44 T-U04后继只读卡：system_guarantee_read_0315按BFF ef2d306/Agent95a115/Webaaf577d与0544保护基线，仅读现PRD/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL及contract/入口，核已发布connection setup能力最小业务owner及现连接CRUD是否已有；不得新造Telegram服务/假QR/空200/改仓/运行资源/网络/browser/Git。报告现/tmp/r255-agent-connection-setup-read-0544.md追加，给Root明确依赖/精准文件集与未决真实provider条件；不缩减完整目标。Root仍正常配置/资源/Git唯一writer；同步原Billing收敛，不依赖Agent完成才推进页面。
+
+05:44 LOG首GREEN门仍失败，不能放行：Root5015实际6runtime+24负控30/0、8.87s/16freeze/PG77exact；6765窄lint exit1 test874冗余as；76553直接tsc exit2除原6旧栈外新增factory25 TS2345（默认Nest raw originalUrl intersection与direct IncomingMessage decorate invariant）。只准原writer factory显式官方FastifyAdapter<RawServerDefault,IncomingMessage>泛型/两个type imports，test仅移除该冗余as；无any/强转/依赖变更/断言或预算变化。保初GREEN真实结果/失败log，后继新phase冻结再重跑同30和窄门/独审，不靠运行测试通过掩新增编译FAIL。
+
+05:44 LOG源码准入：Root33067原main真实PG6例5PASS/1FAIL，新增request completion=0唯一失败；实际400/no-store/request-id/退出/raw无泄漏控制先通过，16freeze/77数据库集合保持。唯一factory后继采用官方FastifyAdapter(instance)重载：direct locked fastify5.12.1 +同模块LogController({disableRequestLogging:true})与info/redact普通options，交同Nest adapter；不传跨module class、不新写已弃用顶层参数、不升级依赖/私import/强转。现adapter曾默认解析5.12.4，类型源码逐字相同仅静态，实际同6+24/tsc/生命周期门重跑。try/init/ready/drain/idlehook/Prisma budgets全保，现v2不使用Nest versioning；实例Native close仍归同adapter。测试6cba3c冻结不动，Root资源/Git；writer只现factory，最终独审绑定SHA。
+
+05:44 T-U01 Root正式展示分类准入：只读源码已核Feature是immutable执行结果契约，五现注册route是Agent连接/Skills/MCP/排程/资料库管理页面，尚无五份Feature结果定义。原0522“导航必须绑定Feature”假设过宽，按现navigationItemSchema允许feature_key:null的普通页面分类纠正，不给已有chat解关联，不伪造永久Feature/exposure/执行权限。Root只现app en-US/user-web presentation追加五页面、zh-CN/user-web缺项新建，保存原theme/locale namespace/chat feature关联、site-policy/release/binding/flags全部不改；正规CAS/实际登录subject actor/幂等/回读和真实浏览器五入口/硬刷新验证。页面visibility不替代页内owner授权，业务执行失败照记。当前源/contract/schema无变更，两个现presentation是唯一配置写集，无新服务/SQL/兼容层。
+
+### 05:44 既有 R255 并行续卡（不新建目标/计划）
+
+基线Root b2eaab41/Web aaf577dc/System955bd587/Billing261a20f，main；0544-baseline.json保护全tracked/非ignored与uv/registry，原mixed/index保留。资源与Git仍Root独占，八正常句柄复用。
+
+|原卡切片|负责人/写集|依赖与验收|
+|---|---|---|
+|T-B07 日志实证|billing_read_activation_0340，原Billing唯一writer，仅现test/integration/billing-runtime.test.ts；生产准入后仅src/bootstrap/create-billing-runtime.ts|先原source main/真实隔离PG请求结构日志与raw凭据泄露反例冻结，由Root执行RED；复用现HTTP模块safe onResponse，不新日志层/依赖/服务。最窄启logger+禁默认request日志后Root同矩阵、独审，完整cutover仍后继。|
+|T-U01 正式五入口恢复|system_guarantee_read_0315只读System Products/PRD/schema，Root唯一正规配置writer|核feature result_contract真实语义和five-key映射，不伪grant/执行能力；当前仅chat暴露、en-US一项、zh-CN缺presentation。最窄现app exposure/presentation保theme/namespace/chat/release与权限，先报告精确管理请求准入，Root正规API写后真实浏览器五入口/刷新；无私SQL/新binding/release。|
+|T-B07 独立准入审查|iam_grant_source_scope_0244只读Billing日志现factory/module/test|实际raw输出边界/脱敏/主断言及已验证lifecycle保护审查；不改仓/Git/资源/秘密。Root收到冻结后续同负责人审最终SHA。|
+
+原费用/schema待答不重复问，70组保持11/8/14/36/1。本轮入口恢复不等模块CRUD/Agent/积分完成，测试辅助不冒用户PASS。
+
 05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
 
 ### 05:22 本波收尾（既有完整目标未缩小）
