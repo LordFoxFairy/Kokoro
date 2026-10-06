@@ -1,3 +1,9 @@
+## R255 04:19 当前入口增量
+
+- Web main521841d：现 `src/components/blocks/app-frame/use-app-frame-navigation.ts` 独占URL归属/水合派生状态，error且错位或空正文的终态与loading互斥；AppFrame既有错误面/原URL重试、engine和权限保持。现app-frame.smoke新增实际组件/engine组合反例，属于UI fixture辅助而非normal owner/browser E2E。
+- Billing原main仍是正常读失败基线（原source/TCP账户404）；后继9path canonical AppModule/现bootstrap/probes/PG readiness正规实施候选尚未收口，19operation/worker/支付与旧transport删除保持原C3完整目标。ReadyResponse仅已装PostgreSQL，owner正规生成后再审消费pin，不凭修改文档冒已发布。
+- ignored0419-runtime-red与web-freeze/review/commit-receipt记录当前证据；原进程唯一var/dev/processes.json继续复用，所有Root测试句柄已终态。70组状态与唯一台账不变。
+
 ### R255 03:40 Billing D0已收口（261a20f0，尚未实现启动）
 
 Root精确接收四D0前缀104行：唯一main/source/dist增量canonical Nest、现两本人GET+真实probes先正常启动，19项/worker/支付仍完整后继，不保v1代理/第二runner/假成功。仅前缀+旧HEAD入index，四原mixed suffix及CURRENT/source全部保护；修正新runtime测试放现test/integration，不建单文件smoke目录。D0源码/contract/Schema/资源变化0，不能称Billing已启动。后继原负责人只写合法原main/真实PG/TCP composition RED；Root实跑后才准source。

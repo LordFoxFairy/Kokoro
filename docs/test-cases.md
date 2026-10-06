@@ -1,3 +1,14 @@
+## R255 04:19 子例记录（不增加70组分母或整组PASS）
+
+|用例ID/分类|标题与优先级/类型|预置条件|测试步骤|预期结果|实际结果/后续|
+|---|---|---|---|---|---|
+|T-C01.R255-LOAD-ERR 异常|深链拒绝后备用读取失败，P0/交互|已有B历史会话；原URL A；A拒绝/B网络失败|打开A→A被拒回退B→B读取失败→点原会话重试→A恢复|水合结束不再spinner、不显B正文、原A URL保留、重试A且不新建执行|真实AppFrame+SessionEngine UI fixture先1FAIL→Web521841d定向PASS；normal browser/owner尚未执行，**整组未闭环**|
+|T-C01.R255-LOAD-PENDING 状态机|待水合与同会话已有正文保护，P0/交互|A读取未返回；另有同route正文失败状态|观察请求中→终态→相同/不相同route切换|pending仍loading；终态error不被错route遮蔽；同route已有正文仍局部错误|现shell/engine宽回归461PASS/1其他项目FAIL，未把数字当本行全用户通过；非空错route仅静态核对|
+|T-C04.R255-PROJECT-RETRY 异常|创建未知后重进保原意图，P0/交互|现正式欢迎页，提交A草稿503未知，后改B草稿|首次创建失败→B草稿→菜单重进→核canonical项目导航及A/B草稿|同key/body只重试原意图，无假导航，回原页保B草稿|宽回归1590行路径/失败；定向同freeze通过，尚未证原因，**保持待核而非覆盖失败**|
+|T-B07.R255-RUNTIME 主链路|本人余额/流水正式入口，P0/owner组合|真实隔离owner PG、合法账户及五因素认证、原source main|启动原main→health→两本人GET→关闭所有owned资源|账户/流水200及no-store，关闭回收，不改正常资金|真实source/TCP先1FAIL（账户404）、health200、PG77→77 exact；canonical候选实施中，**正常用户未通过**|
+
+Root实际辅助：两路径lint/直接tsc0、contract274/0、architecture50/0；宽16files461/1、定向2/0/103filter未执行，各有重叠不累加。未跑全量test/build/Playwright/axe/移动视觉；浏览器控制超时，不能当应用根因或通过。八原进程未重启；证据同0419原台账/ignored收据，正常资金/模型/schema写0，支付仍最后。
+
 ### R255 03:40 正常读取入口准入状态更新
 
 Billing四D0已提交261a20f0：总24operation退出不变，但不再把赠送/全部支付能力作为现两GET开发启动前置。正常runtime仍未实现/启动，T-B07.R255-NORMAL-READ仍未执行；下一先实际原src/main.ts+隔离PG/TCP的composition RED，不拿404当完整用户业务结果。70组状态不变。

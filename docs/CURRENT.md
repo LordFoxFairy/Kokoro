@@ -1,3 +1,10 @@
+## R255 04:19 当前事实：工作区终态窄修已提交，完整页面仍待验
+
+- Web main `521841d37ec6d0a52936e5ae7968723f6683259b`，4路径：既有导航派生条件使A被拒/B回退水合失败进入error后不再无限loading，原URL与Retry保留；真实AppFrame/SessionEngine UI反例先1FAIL→定向2PASS，独审f73e6a4f零已证P0/P1/P2。非空错路由仅静态核对，未冒行为PASS。
+- 宽回归16file461PASS/1FAIL（项目创建未知结果重进）；同freeze定向该例通过，原因未证，单独只读核查中。两路径lint与直接tsc、contract274、architecture50均0。全量test/build/Playwright/axe/移动视觉未跑；UI夹具不代替normal页面验收，浏览器观察仍阻塞。原四mixed及其余源保护。
+- Billing唯一原source main+真实owner PG/TCP有效RED：健康200、本人账户GET404而应200，1FAIL/2.15秒，PG77→77 exact、ownedchild/JWKS/库已回收；原负责人进入canonical9source+runtime test与ReadyResponse正规生成候选。19业务/worker/支付未承接，旧server删除/有效断言迁移仍未收尾，不接收长期旧栈/test debt或宣称cutover成功；正常Billing未启动。
+- 八原进程句柄与探针200保持，零正常赠送/模型/schema/reset/服务重启。所有测试句柄65524/9677/40765/63973/93182及PG24351已结束，不留重复后台测试。完整Wave0–7与70组11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST保持，新增用户PASS=0。证据ignored0419-web-commit-receipt、runtime-red、running-handles、postcommit-owner-health；沿同task/progress/test-cases，不新计划中心。
+
 ### R255 03:40 Billing D0已收口（261a20f0，尚未实现启动）
 
 Root精确接收四D0前缀104行：唯一main/source/dist增量canonical Nest、现两本人GET+真实probes先正常启动，19项/worker/支付仍完整后继，不保v1代理/第二runner/假成功。仅前缀+旧HEAD入index，四原mixed suffix及CURRENT/source全部保护；修正新runtime测试放现test/integration，不建单文件smoke目录。D0源码/contract/Schema/资源变化0，不能称Billing已启动。后继原负责人只写合法原main/真实PG/TCP composition RED；Root实跑后才准source。

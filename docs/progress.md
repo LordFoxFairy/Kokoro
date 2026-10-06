@@ -1,3 +1,13 @@
+## R255 04:19 推进：用户无限加载反例已修，剩余问题不隐藏
+
+|原任务|本轮实际推进|未闭环/下一动作|
+|---|---|---|
+|T-C01 工作区/会话恢复|Web `521841d`：A403→已有B回退读取失败的真实组件状态反例先失败、窄修后定向通过，原URL可重试、不显B正文；独审无已证问题|当前normal用户实际根因与浏览器操作待验，非空错路由仅静态；不能关整组|
+|T-C04 项目创建重试|扩大shell/engine回归461通过/1项目重进失败，定向重跑该例通过|保留真实失败，不冒全部回归绿；原Web负责人只读核跨例/异步时序|
+|T-B07 个人积分读取|原正常source+PG/TCP确认账户GET404，健康200；77数据库原集合保持，子资源回收|canonical入口源码候选原负责人实施中；Ready契约消除虚构Redis依赖；19业务/worker/旧transport删除与最终资金用户链仍OPEN|
+
+辅助lint/types/contract/architecture通过，不累加为用户任务完成数量。70组仍11/8/14/36/1，新增正常E2E PASS=0；八原进程复用、0正常资金/模型/schema写，源码交付不等于页面闭环。原费用风险/局部排程schema决定及浏览器面板问题待答不重复询问。
+
 ### R255 03:40 Billing D0已收口（261a20f0，尚未实现启动）
 
 Root精确接收四D0前缀104行：唯一main/source/dist增量canonical Nest、现两本人GET+真实probes先正常启动，19项/worker/支付仍完整后继，不保v1代理/第二runner/假成功。仅前缀+旧HEAD入index，四原mixed suffix及CURRENT/source全部保护；修正新runtime测试放现test/integration，不建单文件smoke目录。D0源码/contract/Schema/资源变化0，不能称Billing已启动。后继原负责人只写合法原main/真实PG/TCP composition RED；Root实跑后才准source。

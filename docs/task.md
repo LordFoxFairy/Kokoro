@@ -1,3 +1,34 @@
+### R255 04:19 Root交付与后继
+
+Web4路径已精确提交521841d，source/test commit blobs与两freeze完全相同，独审f73e6a4f。反例RED1→定向GREEN2；宽回归461/1项目重进失败保留，原Web负责人只读核查不放宽门。Billing原负责人已准9source+runtime/Ready正规派生未提交候选，旧server删除/有效断言承接待Root后继精确准入，不接收test debt为最终cutover。Root24351/65524/9677/40765/63973/93182均结束；八原服务200，无重复/重启/正常写。全目标与70组保持，正常UI E2E仍未验。
+
+### R255 04:19 独立项目回归核查
+
+T-C04.R255-PROJECT-RETRY-READ：原Web负责人 system_guarantee_read_0315 只读，导航候选已freeze且独审结束；核16文件宽回归中的项目未知结果重进1失败（1590行路径/），同freeze两case定向2通过。只读现log/test/hook，交仓外范围与可复现下一步；不改源码/测试/资源/Git，不放宽deadline或吞掉失败。Root保留失败，未把focused绿当完整回归成功。
+
+### R255 04:19 Billing canonical 实施准入（仍在切换过程，不接收永久旧栈）
+
+Root 接收 source-scope 0b09b1be 的现9 production路径与原source/TCP RED；原负责人唯一writer先实现9路径加现billing-runtime.test.ts，先冻结候选。ReadyResponse只有已装配PostgreSQL：准 owner v2 YAML 中该schema移除虚构Redis字段，正规generate更新仅工具实际派生物/provenance及现contract README v2 digest；24 operation与本人读认证/业务wire不变，禁止手改generated。该窄契约变化由Billing独占，BFF consumer后续核digest，不复制契约。
+
+不接受限期旧server test debt为最终cutover方案：本阶段只是未提交实施候选；旧server及旧v1 transport有效断言的迁移/删除仍须同次收尾，不能宣称已完成cutover。bootstrap不准旧分支/代理/第二runner；未实现19operation、worker/支付保持明确OPEN。源码先证两读GREEN，不让全部支付实现重新阻塞个人读取；Root再审精确断言迁移/删除集并集成，原五mixed文档和机器v1/current未授权路径仍保护。作者不跑资源/Git/测试、不操作正常数据；Root独占执行/接收。禁止以不合规probe或虚构Redis响应绕契约。
+
+### R255 04:19 工作区 UI 有效 RED → 窄修准入
+
+Root Node22.22.2 实跑真实 AppFrame/SessionEngine UI fixture：1 FAIL、104 filter 未执行，前置 A forbidden→已有 B hydration network失败→error/hydratingfalse 与原URL A 均已通过；失败精确在错误终态仍渲染 app-frame-loading（974行），不是构造/类型错误。test freeze4a9e9ab7保留。仅准原Web负责人修改现 use-app-frame-navigation.ts 派生条件：终态error且路由错位或无正文→既有错误面；loading/error互斥，仍水合继续loading，同路由已有正文不整页升级。原URL/Retry/engine/权限/协议/主surface保持，不新框架/文件。Root重跑同反例与完整shell回归、审查后Git；正常用户浏览器复测仍未完成，不增加整组PASS。
+
+### R255 04:19 并行后继：有效入口 RED 与 Web 状态 RED
+
+- Billing 原 source main + 真实 owner PG/TCP 已取得有效 RED：health 200，个人账户 GET 404 而应为 200，1 FAIL；77 个数据库目录前后完全一致，24351 已结束。沿 T-B07 原负责人只读收敛 production、legacy test 与 contract 的精确替换范围，未准源码写入；支付/收费不是本人读启动前置。
+- T-C01.R255-WEB-LOADING-RED：原 system_guarantee_read_0315 续任 Web 唯一测试 writer，main022e820c + 原四 mixed；仅现 tests/ui/app-frame.smoke.test.tsx，复用实际 SessionEngine + AppFrame，复现 URL A forbidden 后已有 fallback B snapshot 失败时 loading 未退出，验证重试仍用 A、无错误 B 正文。先测试冻结交 Root 实跑 RED，生产文件未准写。此 UI fixture 只作交互复现辅助，不是正常浏览器 E2E；当前实际用户根因待观测。
+- Root 负责真实资源、独立复跑、审查与 Git；现八服务/所有原 mixed 保留，零正常资金/模型/schema/reset；完整 Wave 0–7 与 70 组不缩小。
+
+### R255 04:19 原卡接续：RED原句柄与独立工作区加载核查
+
+- T-B07.R255-BILLING-RUNTIME-RED：原 billing_read_activation_0340/gpt-5.6-sol 仍运行，main261a20f+五mixed，唯一现test/integration/billing-runtime.test.ts writer；先查原Agent句柄，不重复worker/服务，Root保关键路径资源/失败复现/阶段放行。0419-baseline记录六仓当前字节。
+- T-C01.R255-WEB-LOADING-READ：独立只读Web核查；复用 system_guarantee_read_0315/gpt-6-astra，main022e820+原四mixed。仅核“正在加载工作区”当前启动/Session/列表/owner-fetch异步状态与abort/timeout/finally职责，实际源码与70组/PRD对齐；不改仓/测试/Git/环境/服务/库/browser，不代替Root真实UI验收。只写/tmp/r255-web-loading-read-0419.md，找精确条件与已有防护/是否当前路径可永久卡住，不把源码可能性冒实测根因，不新权限/框架/重构。
+
+Root一次browser getState20秒再次timeout/内核reset，0DOM/像素/动作/新tab；停止重复观察、原用户刷新面板问题不重问。八原句柄复用，无正常财务/模型/schema/reset/重启；完整Wave0–7与70组不变。
+
 ### R255 03:40 Billing 正常入口行为RED卡
 
 T-B07.R255-BILLING-RUNTIME-RED：billing_read_activation_0340/gpt-5.6-sol唯一test writer；main261a20f+原五mixed，Root审/Git/资源。只准现test/integration内新billing-runtime.test.ts（§8已采用现目录，不新模块），以及仓外freeze/交接报告；其他文件禁止。按已收四D0，复用现真实owner PG fixture/Canonical CreditService建合法测试账户、五因素BFFmachine auth及原main source子进程/随机TCP；先health控制可达，v2本人两读200预期对旧入口404实际RED。只证明composition缺失，deep现credit-read-http矩阵后续同跑，不冒正常用户PASS。env明确allowlist、子进程deadline/有限输出/敏感信息不日志、finally终止并等待后关闭fixture；作者不运行PG/Redis/provider/正常env/服务/Git，不调用正常赠送；Root冻结后实跑隔离资源。source patch未准入，禁止提前改main/module/config/旧测试/contract。
