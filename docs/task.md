@@ -1,3 +1,48 @@
+### R255 03:40 Root纠偏：正式读入口不能继续等待全部支付能力
+
+Root不采纳只新增未被main使用的C3-F factory作为读页面修复：它仍让个人余额/流水等待19个后继operation和支付/worker，违背用户正常开发、支付最后及用户旅程优先。完整24operation目标/有效业务语义保留，不删能力，也不冒全部上线。下一D0明确**增量研发入口**：唯一src/main.ts/source/dist用当前canonical Nest模块图，最先装现两个人GET+真实probes，未承接operation仍明确未实现、不代理旧v1/不seed/不做成功占位。已替代旧runtime实现同片删除，禁止第二mode/端口/runner；旧有效业务语义按原任务承接并删除残余路径，不以保留旧运行栈作兼容。最终全24/worker/支付真实验收仍总退出线，但不作已有只读页面的开发启动前置。
+
+T-B07.R255-BILLING-COMPOSITION-D0：billing_read_activation_0340/gpt-5.6-sol唯一文档writer，仅docs/TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、IMPLEMENTATION_PLAN四原文件添加当前前缀；原五mixed字节保护，CURRENT/源码/Schema/contract/generated/resources/Git禁止。先给Root冻结四prefix，收敛Owner/≥2放置比较、生命周期、无DDL读取、现旧main替换/删除边界、真实原main PG/TCP RED/source-dist与完整退出线。Root审后精确接收，不准在D0前写代码。
+
+## R255 03:40 已交接切片与原卡后继
+
+|任务|owner/角色与基线|Root实际放行/下一步|
+|---|---|---|
+|T-B07.R255-IAM-ROSTER|iam_grant_source_scope_0244/gpt-6-astra writer；system_guarantee_read_0315/gpt-6-astra独审；main4bfef00→c2014a3d；8现路径|源码已验收：CLI有效RED→GREEN1/0，真实PG三file20/0/目录77→77 exact；verify938/0与Prisma0，独审96946524零已证P0/P1/P2。两代理停写，Root精确8路径Git；issuer关闭/资金用户链OPEN，ACK故障未验|
+|T-C01.R255-BFF-SNAPSHOT-READ|bff_snapshot_read_0340/gpt-5.6-sol只读；ef2d306+原mixed；报告4c9379f4 §6|核现同tx/replay已存在；撤回错route需404/新权限误判。旧URL/cross-tab归属只是待验；不准无证source/contract扩张，normal真实UI恢复后核|
+|T-B07.R255-BILLING-READ-ACTIVATION|billing_read_activation_0340/gpt-5.6-sol只读；abd809a1+五mixed|完成静态调查，Root核生产入口仍旧v1，v2 canonical两读未正式装配；读侧无需等收费/支付。续原C3 COMPOSITION-SCOPE先精确范围/D0一致与真正source进程PG/HTTP RED，未准生产写|
+
+Root八原资源句柄保留，浏览器getState观察超时即停、未开新tab；一次请用户刷新/重开面板。normal资金/模型/schema写0，两个原决定待答不重复；六仓保护与uv保留，完整70组11/8/14/36/1不变，goal原状态不造新目标。
+
+### R255 03:40 后继 Billing 正常组合范围核查（不等待收费/支付链）
+
+T-B07.R255-BILLING-COMPOSITION-SCOPE：沿原C3而非新计划，billing_read_activation_0340/gpt-5.6-sol续任只读范围负责人；mainabd809a1+原五mixed不接管。Root已核main→旧createBillingRuntime→旧server与现BillingHttpModule仅两GET，读侧不依赖赠送/成本保证。须核当前D0“全24后切main”与可独立读上线研发切片如何收敛：唯一正常Nest入口，不临时runner/第二mode/旧v1代理，不冒全24完成；现main/runtime/模块/健康/生命周期职责和有效旧能力删除/承接边界。先交仓外精确范围与正常source进程真实PG/HTTP RED方案，未知源码不授权批改；Root先D0对齐再放行为RED，保护五mixed及全部原资源。
+
+### R255 03:40 P2 冻结独审与Root GREEN
+
+候选8路径 /tmp/r255-iam-roster-freeze-0340.json已停写；Root先实际CLI绿色再整lifecycle/旧登录回归及纯门。system_guarantee_read_0315/gpt-6-astra复用为只读冻结审查员：严格绑定manifest/SHA，只查P2 ownership/当前Session、行锁/CAS/no-op、同txAudit/metadata-only、commit后读回未知、CLI bounded stdin/credential/result日志边界；仓外 /tmp/r255-iam-roster-review-0340.md，禁止仓/Git/资源/测试/服务。Root唯一Git/资源，writer只可经精确返工重冻；收费/资金仍0，不把接口绿冒用户通过。
+
+### R255 03:40 独立正常Billing只读准入核查
+
+T-B07.R255-BILLING-READ-ACTIVATION：billing_read_activation_0340/gpt-5.6-sol，只读，mainabd809a1+原五mixed。仅查现normal HTTP余额/流水启动是否确实依赖financial赠送/成本上界，或可复用已批准持久开发配置单独启动只读owner；无env secret值/数据/Git/服务/provider读取或写入，报告 /tmp/r255-billing-read-activation-0340.md。Root据现代码/合同裁定最小前置，不因为收费主链未完而机械阻塞独立页面，也不造ready/免费/授予。现0340基线及CODEBASE_MAP/三手册为事实源；不新增运行模式/框架/手册，任何真实配置/资源仍Root独占。
+
+### R255 03:40 P2 生产切片准入（Root真实CLI RED后）
+
+Root冻结dda504d4真实PG/合法managed准备→actual CLI：1FAIL/10filter未执行，精确mode_missing/exit1；名单/Audit未变，PG77→77 exact，3.88秒。不是TypeError/编译或环境失败；只证入口缺功能，不冒CAS安全RED。准原owner修改报告1f95deaa第2节8个现路径，现具名replace/read方法和两个CLI命令；无新文件/Schema/issuer/普通roles/management通用writer/SDK/contract/依赖。按P2固定operator Session/ownership、真实PG行锁、expected名单CAS先于no-op、仅metadata名单+同txAudit、commit后官方/持久双回读、未知不重试/不补回；read授权返回canonical IDs，Audit/日志仅摘要。Root重跑真实CLI/CAS/审计回滚及旧登录回归，独审freeze后再Git放行。无法确定注入的COMMIT ACK/官方回读故障明确待验，不加mock/伪证；传输stdout ACK案例不冒等价。收费、normalschema/资金/服务均不变。
+
+### R255 03:40 P2 行为 RED 准入
+
+Root接收只读范围1f95deaa：现clients schema/readback/repository/service、src/provisioning/provisioning.config.ts、scripts/provision-oauth.ts、现lifecycle及CURRENT共8路径，零新文件；先仅准现 test/integration/oauth-client-lifecycle.test.ts 一条真实CLI正向反例。managed正常创建合法financialclient/User/Session后，实际CLI replace-financial-grant-authorized-users应更新且Audit一致；旧mode缺失应观测真实失败，不能以缺方法TypeError或编译失败当RED。新只读命令固定授权operator可见canonical IDs+digest/count，Audit/日志/证据仅摘要；无开关/digest-CAS双轨。write预期名单CAS→仅名单→同tx审计→commit后双回读，失败不补回。Root先实跑后才放生产；financial发行保持关闭，初始financial CLI/create、machine/SDK/verifier/资金不在本片。
+
+## R255 03:40 接续卡：赠送名单事务边界与工作区主链核对
+
+|任务|owner/角色/基线|范围/验收/停止线|
+|---|---|---|
+|T-B07.R255-IAM-ROSTER|IAM原负责人iam_grant_source_scope_0244/gpt-6-astra；main4bfef00，0340基线clean；Root审/Git|先沿现三D0 P2只读核具名名单CAS/同事务Audit、现managed service及CLI接缝，交精确现路径和真实PG行为负控方案；只写仓外报告，未经Root阶段放行不改源/测试。不得开启financial发行、改Schema/contract/SDK/普通roles/环境/资源。后继单writer现文件小切片，真实RED→实施→Root验证；完整赠送仍OPEN|
+|T-C01.R255-BFF-SNAPSHOT-READ|bff_snapshot_read_0340只读/gpt-5.6-sol；mainef2d306+17tracked/2untracked原mixed，0340baseline；Root审|核实际同事务snapshot/cursor/刷新续流/subject与project路由链现事实及最小当前用户旅程；只写/tmp/r255-bff-snapshot-read-0340.md，不改仓/Git/服务/库/provider/浏览器。区分源码缺口与normal已加载/观察阻塞，不冒静态P1为用户根因|
+
+Root保留关键路径：八原资源句柄与浏览器可观察性核查、基线/阶段门/真实资源/Git；正常Billing/modelworker OFF、费用和局部排程schema原一次待答保持，不重问/不擅改。沿原Wave0–7及70组，0340-baseline逐路径保留mixed/uv/gitlinks；无新计划中心，独立研究并行、IAM唯一后续writer。
+
 ## R255 03:15 Root 放行与后继（原任务卡接续）
 
 |原任务|owner/角色/基线与写入集|当前交付/验收|后继与停止线|

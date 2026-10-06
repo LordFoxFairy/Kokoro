@@ -1,3 +1,10 @@
+## R255 03:40 现入口定位增量（不新增owner/运行模式）
+
+- IAM main `c2014a3d`：现oauth/clients schema/readback/repository/service→具名replace/read；exact client PG行锁后CAS先no-op，仅名单metadata+现AuditWriter同tx；commit后官方/持久双读再ACK。现src/provisioning/provisioning.config.ts及scripts/provision-oauth.ts两个命令64KiB/5秒stdin与原0600Session Cookie；授权read返回名单，日志/Audit只摘要。7source/test freeze exact、CURRENT仅验收前缀；issuer/native四安全源未改，资金完整consumer不在此片。
+- Billing实际main→bootstrap/create-billing-runtime→interfaces/http/server旧栈；现http/billing-http.module.ts装CreditModule/CreditReadController只在测试composition被使用，现DatabaseModule持canonicalPrisma/transaction。两v2个人读可独立于grant/model/payment执行，但无正式main装配；沿原C3先审最窄单一正常Nest composition，不另加临时服务/read-only模式。
+- BFFreadSnapshotState同RepeatableReadReadOnly拥有messages/delivery/AGUI watermark/process/head，replay drain到head再终态。direct/project仅collection筛选，resource仍owner+ID；Web同页Move根据精确owner回执更新scope/URL。旧URL/cross-tab归属待验而非新增owner权限缺陷，Root否决无证收紧读取。
+- ignored0340-baseline、freeze、RED/GREEN/regression、gates/review/commit-receipt为本波证据；docs/task与test-cases仍唯一推进/用户验收账。normal八句柄/未加载新源、Billing/modelworker OFF与浏览器观察阻塞均保持，工程门不冒页面PASS。
+
 ## R255 03:15 IAM 注册当前入口（main 4bfef00d，正常dev未重载）
 
 - 现 oauth.constants FINANCIAL_GRANT_SCOPE/PURPOSE → clients/client-profile.schema 与 oauth-client.schema：独立human metadata/tenant/canonical名单、exclusive scope、Code+PKCE+Basic+explicit consent；普通Web不获新scope。OauthClientRepository用现Prisma短事务查activeTenant/User及当前client权威；无Schema/新表/跨owner SQL。

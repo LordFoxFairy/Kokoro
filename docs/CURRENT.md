@@ -1,3 +1,16 @@
+### R255 03:40 主控纠偏裁决
+
+只新增未被main使用的Billing factory、不切正常入口并继续等19个operation/支付，不作为当前读页面修复。Root已沿原C3放行四D0前缀对齐：唯一main/source/dist增量装配现canonical两读+probes，无第二mode/临时runner/旧v1代理/假成功；全24/worker/支付仍最终退出线，但不再卡已有读功能的正常开发启动。旧有效业务语义逐项承接、已替代运行实现删除；四D0由原负责人写入中，源码仍未放行，不能称正常Billing已启动。
+
+## R255 03:40 当前事实：名单源码落地，积分正常入口发现独立缺口
+
+- IAM `main c2014a3ddba9ee90261cfda4ca2f4a68a38d7aed`：批准8现路径，Root真实CLI有效RED后修复；正式replace/read、行锁名单CAS（先于no-op）、metadata-only与同事务Audit、提交后双读已交付。实际CLI1通过，三真实PG integration文件20通过0失败，PG目录77→77 exact；Node24 `pnpm verify`（938纯项/102文件及全部子门）和`prisma:validate`均0。独审96946524绑定8eef8eea冻结8/8，未发现已证P0/P1/P2。只有源码片验收；financial新发行仍关闭，正式赠送/资格verifier/SDK/Billing调用及正常资金链仍OPEN。stdout/COMMIT ACK及官方postcommit故障本轮未注入。
+- Billing独立只读审查已由Root核源码：余额/流水不依赖financial赠送、费用保证或支付。实际`src/main.ts→bootstrap/create-billing-runtime.ts→interfaces/http/server.ts`仍旧v1/Fastify/pg；现`BillingHttpModule`与canonical `CreditReadController`两v2 GET未装配正式main，BFF已消费v2。**不能把所有读侧任务排在收费主链之后**。沿原C3先核唯一Nest正常入口切片与D0“全24后切main”的承接/删除边界；不临时runner、双轨/alias、假账户或假余额。已续派原只读负责人查精确范围，尚未放行生产重写。
+- BFF快照读审的路由权限误判已撤回：resource按受信owner+Conversation ID读取；direct/project是collection归属，不新加权限或要求旧URL404。现同事务快照/cursor/replay已有；同页Move回执驱动导航已有有限实测。旧书签/跨tabMove归属更正仅待真实UI复测，不为此重写owner授权。
+- 八原source服务本轮探针200，仅可用性；未重启或新增进程、schema/余额/模型调用无正常写。normal Billing/modelworker仍OFF，BFF旧loaded/flagfalse、排程局部激活原待答不变。浏览器控制连读取标签都20秒超时/内核reset，未观察DOM/像素、未确认旧自有tab关闭；已一次请用户刷新并重新打开面板，不循环无效观察。
+
+70组仍**11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST**，本轮新增完整用户PASS=0。完整Wave0–7与既有goal不变；原六仓非批准路径、uv/混合gitlinks/index保护，Root唯一Git。证据在ignored `var/dev/r255-preserve/0340-*`与原task/test-cases；真实PG/纯门仅研发辅助，不替代普通登录→UI→真实owner→恢复→资金闭环。
+
 ## R255 03:15 收尾：IAM 注册安全切片已提交，完整用户链仍 OPEN
 
 - **IAM main `4bfef00d77028cffdb060cc16c5fc75ff7d27b99`**：15个批准现路径，零新文件/Schema/contract/SDK。真实 operator Session 管理独立 financial human metadata、active tenant 与 canonical User 集合；普通用户/管理员角色和普通 Web scopes 不扩大。native ordinary/admin 更新阻止财务升级/名单替换与 rotation；创建前后官方/持久事实、ownership 与唯一 resource binding 双回读。注册不等发行，锁定 Better Auth1.7.3 的 customTokenResponseFields 在 JWT/opaque 新建前按当前 metadata/最终 scope 明确拒签；没有新 issuer、ALS、权限标记或兼容通道。fresh resource Skill 窄修仅保留原已存在 financial ceiling，不授普通 Web。

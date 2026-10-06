@@ -1,3 +1,16 @@
+## R255 03:40 T-B07 名单切片辅助记录（不增加70个完整用户组）
+
+**统计保持11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST；本轮完整用户PASS新增0。** IAM mainc2014a3d。
+
+|子例ID/类别|标题|预置条件|测试步骤|预期结果|实际结果|优先级/类型|
+|---|---|---|---|---|---|---|
+|T-B07.R255-ROSTER 主链/边界|正式CLI名单替换与读回|真实operator Session、合法managed financialclient、activeTenant/真实User、Root自有PG|原CLI替换→官方/持久读回→实际read CLI→核名单摘要与Audit/注册不变量；canonical/no-op/空集合|只名单变更且同txAudit，授权read可返回canonical IDs，原注册不变|旧mode_missing有效RED→单例1/0；随后三file20/0含此例；不是正常赠送|P0/真实owner接口集成辅助|
+|T-B07.R255-ROSTER-CAS 状态/异常/权限|双writer与真实Audit冲突回滚|同合法fixture，测试连接持exact行锁，两个生产事务|观察PG两writer等待→释放→核一个成功一个CONFLICT；stale expected但desired=current、未知User/非operator反例；复用实际Audit identity制造冲突→回读|CAS先no-op、只有一名单成功；Audit冲突整事务回滚，拒绝无越权效果|冻结实际三file20 pass/0fail，17.14秒，PG77→77 exact；不求和重复计数|P0/真实PG异常/状态辅助|
+|T-B07.R255-ROSTER-UNKNOWN 异常/状态|提交/输出确认丢失|冻结代码，但无故障注入|stdout ACK、DB COMMIT ACK、postcommit官方read失败→持久事实与调用结果对照|不自动重写/还旧名单；未知不冒失败已回滚|**未执行**，仅静态核fail-closed；不得计PASS|P0/故障系统待验|
+|T-B07.R255-NORMAL-READ 主链/权限/恢复|正常个人积分余额与流水页面|正式Nest main/owner schema/正常WebIAM会话/合法既有账户；目前组合缺口|UI积分页→Web/BFF→Billing两v2GET→刷新/分页/异常恢复→核无写入；无账户404不seed|金额精度/cursor/auth/no-store及持久事实一致，读取零账务效果|**未执行**：已证main仍旧v1与两v2GET未组合，独立于财务grant/费用/支付，不应串行等待后者|P0/完整用户E2E待验|
+
+Root verify938纯项/Prisma0与独审96946524只辅助源码。正常browser观察getState超时/内核reset，没有DOM/像素结果，不算产品PASS或FAIL；原八探针200只可用性。剩余authority/drift/超量输入、全integration、真实用户赠送/余额/收费、axe/移动视觉仍按原组待验。BFF快照读审已撤回将route-scope当新owner权限的误判，跨tab旧URL归属先真实复测，不预设404。
+
 ## R255 03:15 T-B07 注册安全辅助证据与正式业务待验（沿原70组）
 
 **统计仍70组：11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST；新增用户PASS=0。** IAM源码main 4bfef00d。下列PG是真隔离PostgreSQL+实际BetterAuth/API，但不是正常用户资金E2E，不能改T-B07整组状态。
