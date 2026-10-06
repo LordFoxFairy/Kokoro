@@ -1,3 +1,9 @@
+### R255 用户原标签后补实证（2026-10-06）
+
+原tab7现已恢复同步：不注入cookie/preview，实际管理页原h1+h2=2且error可见，同时两个servers响应200（4de46d06/23f3d070）；CDP response body不可取，无法据此确定是旧schema/缓存/HMR哪个原因。保留error截图/metadata。正常reload当前源码并自动恢复既有settings hash后，原同tab1标题/正常空态/error0，两个真实servers200（2a7d008c/d1d78292）。这证明当前原页面读取呈现恢复，不代表Server→本人Connection/创建授权调用缺口已修。
+
+所有Root临时页9/10均已close，原user7/8保留，viewport/touch override已清；原tab最终截图connectors-user-original-final.png/JSON。先前“原tab超时/故障未同次复现”是前置观察记录，由本后补证续接，不能删旧错误或断言后台所有能力通过。辅助与完整70组计数保持。当前T-P02按既有Platform3.2.0本人projection→BFF固定artifact消费接续，不新造目录模型。
+
 ## R255 最新左栏与连接器验收（2026-10-06）
 
 - Web已接收8727585（folder非数据意图分离+空branch压缩）、8399310（MCP嵌入单标题）；原三D0/OIDC mixed未提交。Root实际正常IAM/BFF IAB：两folder修前重核200后收起，修后重核200/恢复侧栏后true/true、Direct常驻/同ID历史；具体timer/focus未分别归因。空branch43.52→26.80px；最新P有真实会话/Q空、1200×460 scroll0→204→0，Direct底346.55<footer356.80，无横溢。撤准入后的scroll位置恢复没有实现，物理触屏/长分页/全CRUD未验。
