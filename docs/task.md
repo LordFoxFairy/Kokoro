@@ -1,3 +1,68 @@
+### R257 并行后继写入边界
+
+- Web原capability_composition_owner_r247：仅正式隔离worktree /Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current / ed95ae6；Node22/pnpm11冻结离线安装exit0（43967），无env/服务。先固定ac3cd1d合法required me与现Session/Settings入口、server路由当前gate；准新src/app/admin/page.tsx及必要现lib/server普通gate helper按已审D0位置，不造CRUD成功/不可用模块卡片，不开放任意owner代理。正常main与四mixed禁止写入；最后交精确manifest/root审查，不自行Git。
+- BFF原system_guarantee_read_0315：D0已Root审/精确prefix6675fc3。仅现test/business-store.integration.mjs新增独立R257 personalization合法普通Session GET/PUT/回读case，原字节与fixture行为保留；当前route404应失败，不缺store/auth或未来方法导入冒RED。新case复用已有租户清理/SQL前置，禁止全局DROP/TRUNCATE/Redis reset、禁止自行资源/运行。Root只在自有隔离PG/Redis前缀与精确filter跑；冻结测试后才准源片。
+- IAM原iam_grant_source_scope_0244：D0已Root审/精确prefixfa50fc3；下一仅批准新docs/ADR/ADR-007-platform-admin-schema-evolution.md与现docs/ADR/README.md添加索引，落实具名两列例外/复用依赖/失败恢复，不引入迁移平台；旧正文/其余文件保持。不写source/schema/script/test/Git/正常资源。ADR Root审后才准真实旧shape有数据演练与源片。
+
+Root仍独占正常基础设施、Git、审查/集成/用户E2E；并行依赖明确，不等全部后端才验证页面，也不为赶进度激活half-version或叫假闭环。
+
+### R256-ADMIN-01 隔离正式分支准备（不激活正常Web半版本）
+
+Root65873 显式Node22合法owner true/false两例均真实FAIL（Product identity mismatch）、3原例过滤，exit1；非TS/import或缺fixture错误。正常Next会即时加载生产源，故该后继不能写live main造成half-version故障。Root已建正式Web git worktree /Users/nako/.codex/worktrees/kokoro-r257-admin-web，分支codex/r257-admin-web-current，基线ed95ae6；不是新应用进程/临时开发配置，不复制正常env、不启动额外服务。仅新反例复制进去；normal test精确恢复writer原2353-byte基线90173629（原HEAD2352字节，多一换行已解释并保留，不借HEAD覆盖原字节）。首次准备断言保护使操作停止、Root错误cwd选择pnpm12安装拒绝已记录；随后在正式worktree cwd用锁定pnpm11.25/Node22安装，失败不得改manifest/跳版本。
+
+Web原负责人本次唯一writer只该分支，允许D0列出的现身份/helper、auth/session/UI/AppFrame/Settings消费文件、固定BFF ac3cd1d snapshot+现两generator与派生物/contract pin对应断言/i18n；新普通server-gated /admin page及一个现lib/server gate helper按D0职责，Root先审放置后准。真实server拒、false普通成功、true入口、撤权/pending/换主体退役、callback/refresh与现预算保持；不得添加缓存admincookie/JWT、假模块/管理数据、直连owner、兼容旧shape、新权限引擎或改正常source。源码/测试冻结STOP，Root先隔离审查，只有IAM演进/三仓配对窗口才集成到main并再验；候选门不称main/浏览器上线完成。BFF偏好D06675fc3与IAM演进D0fa50fc3已审/提交，后继分别现真实HTTP/PG反例与具名ADR，互不等待。
+
+### R256-ADMIN-01 下一最窄合法响应行为基线
+
+Web三D0已Root审并精确提交ed95ae6（44行prefix，三原mixed/OIDC保持），固定ac3cd1d/cec91c36与现准入生命周期，无新auth/store。原capability_composition_owner_r247仅准现 tests/server/product-bff.test.ts 追加独立真实本地HTTP /v1/me合法owner三字段 true/false → verifyProductIdentity 成功两例；不改原mock/admission测试、不改生产helper、不创建文件/资源/Git。合法完整body/headers/meta/可信subject+tenant，短request仅自有测试内部fixture服务器由Root实际命令运行；不用不存在页面/方法缺失冒RED。冻结原字节、新测试hash/行区间给Root，只准备反例不自行运行。Root先跑显式Node22该窄文件，真实合法shape拒绝后再授权固定artifact与strict身份消费者源码阶段。此门为开发行为证据，非真实IAM/浏览器/admin CRUD通过。
+
+### R257 当前页面验收与两路正常后台接续
+
+Web source 8f73e943b9beb01f5d2fb5b402d658f72e1d7622、D0-prefix 510ff0b 已Root精确提交；29002 Node22.22.2最终lint/types/build0、7focused459PASS/0，前23032未变化contract275/0、architecture50/0；游标final独审1663f3d9、53freeze exact，原四mixed保留。正常tab11硬刷新真实Connection两200/中性empty/单标题、非servers，已close，不称全CRUD。BFF admin ac3cd1d已发布但normal6d46ec8旧shape组合保持。
+
+| 任务 | owner / 负责人 | 基线及写入边界 | 验收/停止线 |
+| --- | --- | --- | --- |
+| R256-ADMIN-01 Web当前资格与入口D0 | Web / capability_composition_owner_r247，原负责人；仅三D0文档writer；Root审查/提交 | Web510ff0b，三原mixed/OIDC不得改；允许仅TECH/API/DATA顶部当前前缀，原全文精确suffix | 固定BFF ac3cd1d / public8.0 / cec91c36；strict /me、普通false/拒缺值、当前资格读取、Settings唯一后台入口/正式路由与server/API拒绝；小范围无新认证/全局store；先设计后真实反例，不改源码/生成/Git/资源 |
+| R256-ADMIN-02 IAM正常有数据演进D0 | IAM / iam_grant_source_scope_0244，原负责人；仅三D0文档writer；Root审查/提交 | IAMd24aa2b；允许仅TECH/API/DATA顶部当前前缀，全部当前文字精确suffix | 只platform_admin/version两列、owner正规具名演进非通用引擎，不reset/dbpush/Root临时DDL；旧shape/target拒异常、事务有限锁/幂等/失败回滚与未知ACK读回，隔离已有User+Session演练；不写schema/script/ADR源码、不触正常库/资格/资源 |
+
+两路可与BFF四字段preferences三D0独立并行，每仓单writer；不得为了后台入口重改sidebar/MCP切片。真正管理员帐号仍待用户回复，不按邮箱/组织admin或已有financial名单默认授予。具体正常切换只在三仓消费者与owner演进真实门均通过后由Root统一。完整70组及Wave0–7保持，页面CRUD/E2E为最终验收，辅助门不是完整产品PASS。
+
+### R257 已接收后台资格投影与后继页面保存D0
+
+BFF ac3cd1da4f13e9e22320efbd4dbf4009aa0a2e29 精确22文件已提交，Root22285 Node22完整check802PASS/0/1skip、contract259/0且lint/types/build0；独审69ef3abb无已证P0–P2，protected本阶段exact。normal仍6d46ec8，不激活半边；新Web/current-me严格消费与正规IAM有数据演进未做，后台入口/CRUD尚未验。Web本人读取最终复审在同/历史重复cursor发现可致永久Loading，Root77585实际19PASS/2FAIL已准最窄guard，不将此前457纯门冒最后版本。
+
+接续R256-PAGES-01 / T-U04：BFF原owner system_guarantee_read_0315 本仓唯一三D0文档writer，当前HEAD ac3cd1d/原19mixed保持。只现TECH/API/DATA新当前前缀定义已证缺失的本人四字段preferences保存/读取，比较扩BFF Product事实与借IAM profile/System配置，采用BFF；不写SQL/schema/source/机器/pin/Git/资源，SQL/TS/API手册与CODEBASE_MAP先读。字段用户scope tenant+subject、加载/显式保存/ACK读回/失败草稿、有限长度与条件保存/冲突、Audit敏感内容不落日志、owner正规的已有数据演进门；只四字段，知识/导入/Agent应用另保持OPEN。交具体实现/测试候选和设计放置表，Root先审再准，不新重复计划中心。Web仍原MCP writer收口，不与其抢现Hub/Settings文件。
+
+### R257 后台正常切换的真实前置
+
+只读报告 /tmp/r257-admin-normal-cutover-review.md（b37a24a2）证实现IAM db:apply-schema只准empty，旧正常库没有正规有数据升级入口；两新列不能用fresh installer/reset/Root临时ALTER。Web不直读IAM0.8，但其product-identity严格解析BFF /me两字段，新platform_admin会拒并影响callback/refresh，因此后继先IAM owner具名演进门+Web固定新BFF投影/当前管理gate，再Root受控整组切换。当前未改正常库/帐号资格，后台普通隐藏/直链拒绝/管理员本人操作未验；不由部署配置掩盖研发入口缺失。该报告是准备，不是实施证据，当前优先先收本人列表安全窄修与BFF已准消费片。
+
+### R257 当前并行接续与审查缺口
+
+Root8589显式Node22.22.2 build0后合法IAM0.8 true/false HTTP两例真实2FAIL（旧strict reader503）；已续派原BFF owner按12f299a D0消费IAMd24aa2b，五现source及正规机器pin/generated/对应测试，不重载normal BFF、不改19原mixed或正常schema/资格。Web36文件a8836f冻结、独审iam_grant_source_scope_0244；Root34825 lint/types0，完整contract2FAIL/273PASS（两旧digest/inventory断言），原Web writer仅精确修两pin断言与新增三缺陷反例，生产source暂冻。独审确认P1 Session重核时Settings仍挂旧Connection页（无trusted readBoundary），P2 connection_id误限128而契约191，P2 headers早拒未取消response body；先Root反例再窄修，沿现AppFrame verified subject/generation/admitted，不造第二认证状态或削弱撤准入。正常UI本人GET已200、body connections=[]，仅空读不冒授权/CRUD/invoke。个性化只读报告28f2b942确认BFF owner operation缺失、Web无GET且吞404，待两仓现D0/owner持久化切片，既有T-U04/R256-PAGES-01继续；不拿IAM name/新配置中心替代。
+
+#### R257 管理员可信投影设计已审
+
+BFF三D0新prefix已Root审读/精确提交12f299a，绑定IAM d24aa2b/0.8.0 exact；GET /v1/me required platform_admin、普通false200，现AdmittedUserRequestContext仅成功用户准入必填、基础service context不机械扩展；每次fresh当前资格，不借header/组织角色/旧页面true。system_guarantee_read_0315下一仅现iam-admission-client.test.ts合法owner0.8 true/false先冻结，Root业务RED后才准精确source/pin阶段。normal IAM库演进与0.7/0.8严格消费者同步停止线保持，无admin CRUD/正常浏览器完成声明。Web本人Connection读取及个性化404只读调查各独立继续。
+
+#### R257 独立页面失败后继
+
+iam_grant_source_scope_0244在IAM d24aa2b切片已提交后转R256-PAGES-01只读preferences闭环调查：正常用户PATCH404/吞失败/刷新丢失为已证RED；只读Web/BFF现owner与契约/schema，给最窄持久读写/ACK回读/actor退役/异常恢复与E2E文件集，报告/tmp/r257-personalization-closure-review.md，不写repo/Git/resources/browser。另两writer Web MCP与BFF admin D0继续，不让未实现Agent费用全链阻塞独立页面修复。没有新任务中心，所有完整页面验收保持原测试账。
+
+#### R257 发布与后继并行（当前事实）
+
+- BFF本人Connection只读已提交6d46ec8bdd2d2ffaa06513fd0561272eae907919，public8.0.0原字节8d5b452ba554f7b9ce723481a0a619abf12d9fb3174b9f15f52a395ad1372783；Root原81428完整pnpm check exit0/795PASS/1skip，独审0c31098a 33hash无P0–P2。19原mixed排除暂存且stage前后exact；原R257启动未保存全部source hash，不冒19原始bytes全审。
+- 原正常BFF48037停止130后复用持久env唯一51474/53714 ready200，无DB/Redis重启reset；Web消费者尚未切换，不把ready当用户本人连接通过。capability_composition_owner_r247续原Web任务，先现组件wrong-resource测试冻结→Root RED→现D0精确source/pin生成接线；四原mixed不碰。
+- IAM管理员资格34真实integration最终含非法UTF8拒绝/正常CLI正控通过（8732、23.65s、47exact、PG77→77）；UTF8原负控32415真实1FAIL，exit0授予/Audit被最窄fataldecoder修复，独审afce757e无P0–P2。最终35264完整verify运行中，不预报/不重载normal IAM。
+- system_guarantee_read_0315接R257-ADMIN-BFF仅现三D0前缀，原19mixed保护；固定IAM0.8 artifact待Root提交后消费，current资格可信投影/撤权隔离/正常schema与消费者同步停止线，交精确file/test/pin清单STOP。不source/Git/resources，不造admin CRUD完成；当前两独立writer为Web读取实现与BFF管理员消费设计，Root集成/真正用户验收。
+
+#### R257 当前批准的窄接缝（主控集成，未验收）
+
+- Web D0 freeze2 精确新前缀提交85024ca；原三mixed后缀/OIDC保持。BFF immutable发布后才Web source消费，无提前虚构pin。
+- BFF增加现bootstrap/server.ts仅GET本人connections strict admission分类；有效缺Session负控不放宽。Root提出Unicode计数疑点后已被锁定zod4.5.4源码与两实际边界case纠正：原Zod正确计codepoints，不改生成器、不制造伪RED；全astral2048cursor因HTTP头预算431另记，预算内混合2048/2049正负控通过。
+- IAM正规0.8契约联动仅两个原version断言与原smoke成功值/响应补false；锁定BetterAuth1.7.3 configured OpenAPI snapshot接受正规生成readOnly增量并纠正D0，不伪保旧快照。原worker源码与真integration冻结后Root跑PG/Redis；normal IAM旧运行保持，绝不新required response先部署破坏旧strict消费者。
+- capability_composition_owner_r247转只读IAM当前资格/manager Session/CAS/Audit/CLI审查；iam_grant_source_scope_0244唯一IAM writer，system_guarantee_read_0315唯一BFF writer。Root独占Git/正常资源/浏览器；普通/管理员入口及整个后台仍未验收。
+
 #### R257 已确认 RED 与新增实施准入
 
 Root IAM原11473：真实issuer handler+PG+Redis普通有效Session200缺platform_admin:false，1FAIL/27过滤，77库catalog前后exact。IAM05feabb三D0已提交/独审7cfb379d无确定P0–P2；iam_grant_source_scope_0244唯一writer接A/B实施：现User资格/版本、input阻断、现SessionAuth当前投影、独立authority具名CLI CAS/Audit/read，以及现设计列出的源码/tests。新四普通文件/现目录放置已在TECH第8表批准；额外仅scripts/generate-contracts.ts与sdk/package.json版本0.7→0.8，产物正规生成，不改历史baseline；现cookiehelper原样复用。正常IAM非watch不重载，normal既有库演进/用户帐号正式grant/新artifact消费仍后继停止线，不能新response先上线打断旧strict BFF。

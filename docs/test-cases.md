@@ -5,9 +5,9 @@
 |T-C04-R256-01 标题不误触改名|真实IAM本人/原P下有会话，717窄窗|普通点击项目会话标题两次|进入同ID历史，不打开改名|实际RED两次rename→单CSSGREEN同conv_ffd7历史/rename0；red与green receipt|P0|用户E2E/交互|
 |T-C04-R256-02 工具独立|同本人P与Direct，各工具可见|改名→Escape；移动→Escape；删除→取消；转Direct|每次仅对应动作，取消无持久改动；两列表均保留|本轮真实通过取消/切换子路径；不冒实际CRUD提交通过|P0|异常/状态机|
 |T-C01-R256-03 响应式命中/滚动|正常页，390×640与1200×460|测title/三action中心命中→Tab→上下滑→刷新|命中自身，手机44px，滚动可达，历史恢复|四命中全true；桌面32/窄屏44；Tab rename；113.5→204→0；viewport reset；物理触摸未验|P1|边界/交互|
-|R256-ADMIN-01 管理员入口与直链|正式IAM资格与BFF投影已发布；真实管理员/普通用户|各自Settings→后台；普通用户直接打开/admin|仅管理员见入口；普通用户直链/API拒绝；业务owner逐次授权|NOT_STARTED：现无资格契约/路由；帐号待用户给出，不猜email角色|P0|权限/系统E2E|
-|R256-ADMIN-02 撤权立即失效|合法管理员当前session，正式撤权命令/审计|访问后台→正式撤权→旧页/API/新标签/刷新|旧资格不复活、拒绝访问且审计可查|NOT_STARTED，不按短token自然到期冒撤权验收|P0|安全/状态机|
-|R256-PAGES-01 个性化保存失败|正式非preview Settings；原preferences handler缺口|修改普通测试偏好→保存/blur→观察请求/反馈→重开|ACK/回读才显示保存，失败可解释且草稿不丢|FAIL：R257正常IAM浏览器，昵称QA-R257→blur实际PATCH404（22555.164）/界面无error；硬刷新昵称空。原静态无GET/吞失败原因保持；未修复/未通过|P1|异常/完整交互|
+|R256-ADMIN-01 管理员入口与直链|正式IAM资格与BFF投影已发布；真实管理员/普通用户|各自Settings→后台；普通用户直接打开/admin|仅管理员见入口；普通用户直链/API拒绝；业务owner逐次授权|UNVERIFIED：IAM d24aa2b已发布当前资格/管理contract0.8，真实owner34/0；BFF ac3cd1d当前资格投影已发布并经Root owner门，normal仍旧组合；Web后台路由与同期切换未接，帐号待用户，不猜email角色|P0|权限/系统E2E|
+|R256-ADMIN-02 撤权立即失效|合法管理员当前session，正式撤权命令/审计|访问后台→正式撤权→旧页/API/新标签/刷新|旧资格不复活、拒绝访问且审计可查|UNVERIFIED：隔离issuer同旧token正式撤权HTTP已拒资格；正常浏览器后台/旧页/API/新标签尚未验，不按token自然到期冒验收|P0|安全/状态机|
+|R256-PAGES-01 个性化保存失败|正式非preview Settings；BFF正式preferences operation缺口|修改普通测试偏好→保存/blur→观察请求/反馈→重开|ACK/回读才显示保存，失败可解释且草稿不丢|FAIL：R257正常IAM浏览器，昵称QA-R257→blur实际PATCH404（22555.164）/界面无error；硬刷新昵称空。原静态无GET/吞失败原因保持；未修复/未通过|P1|异常/完整交互|
 
 退出标准：每页读写→真实owner回读→刷新→异常恢复与角色权限通过；后台管理同步完成对应owner操作/审计。后端纯门/只读盘点、健康200/菜单可见不替代。当前完整70组不增PASS。
 
@@ -26,7 +26,7 @@
 |T-C01-R255-03 / 短窗口上下滑|正常本人，1200×460，P/Q展开|项目行起wheel到末尾→反向回顶|唯一content滚动，Direct最后行可达，头尾固定|0→204→0；346.55<356.80；宽276/scroll276；final-scroll.json/png；撤准入后位置恢复未修|P0|交互/边界|
 |T-P01-R255-04 / 正常连接器读取|正常IAM与九owner实际运行|Plugins→管理连接器→等待settled|真实响应通过严格验证；真实空而非失败兜底|servers200、真实空态；原截图失败同次根因未验；目录不是本人Connection|P0|功能/异常|
 |T-P01-R255-05 / 嵌入单标题|正常管理连接器页|加载投影观察标题与空态|一个已新增标题，读/空/异常不受影响|原2→现1，真实截图connectors-heading-final.png；现69辅助回归；创建启用调用未闭环|P1|视觉/状态|
-|T-P02-R255-06 / 完整本人连接链|正规owner artifact、正常本人授权、真实MCP endpoint|创建→授权→handshake→启用→Agent调用→撤销再调用|本人资源隔离；结果有真实证据；撤销后拒绝|UNVERIFIED/研发缺口：本人connections未消费、旧非GET503/registerRPC未实现，不冒成功|P0|系统E2E/权限/生命周期|
+|T-P02-R255-06 / 完整本人连接链|正规owner artifact、正常本人授权、真实MCP endpoint|创建→授权→handshake→启用→Agent调用→撤销再调用|本人资源隔离；结果有真实证据；撤销后拒绝|UNVERIFIED/研发缺口：BFF6d46ec8已发布本人connections GET；正常UI本人同源GET200、connections=[]仅空读（r257-mcp-live-read），不计本组通过；Web8f73e94消费者已提交，三缺陷与cursor循环真实RED后修；Root最终459/0、真实正常刷新connections200/空态/单标题仅读取子路径（r257-mcp-cursor-final-live）。旧非GET503/registerRPC未实现，不冒完整成功|P0|系统E2E/权限/生命周期|
 
 所有子例须以本轮当前源码与真实页面判定；真实触屏、跨主体浏览器、故障分页/全CRUD仍待验。9探针成功只证明进程入口，不代替本表完整链。70组汇总11/8/14/36/1保持。
 
@@ -673,7 +673,7 @@ Root30636真实Next/Chromium/Redis同原bounded旅程PASS：取消Dialog后归�
 
 |用例引用|预置与步骤|验收标准|本次实际|优先级/类型|
 |---|---|---|---|---|
-|TC-SETTINGS-R191-007–010相关个性化子例|已登录真实3310、原昵称空；账户→个性化→输入QA昵称→职业失焦→关闭→重开|合法编辑有明确保存语义/结果，重开从权威源保留；失败可见而非静默丢失|FAIL：昵称重开为空，无保存/结果反馈；只是局部输入可见。未读取owner请求，根因待定位|P1/用户系统、状态机|
+|TC-SETTINGS-R191-007–010相关个性化子例|已登录真实3310、原昵称空；账户→个性化→输入QA昵称→职业失焦→关闭→重开|合法编辑有明确保存语义/结果，重开从权威源保留；失败可见而非静默丢失|FAIL：昵称重开为空，无保存/结果反馈；只是局部输入可见。R257实际同源PATCH404、无GET/吞失败已定位：BFF正式preferences operation缺失（catch-all可达），现四字段持久化D0待审，尚未修复|P1/用户系统、状态机|
 |T-C05/T-U03项目改名子例|冻结候选、真实Next/Chromium/Redis及受控ownerpeer；合法menu→Dialog→单PATCH→200|owner no-store与browser-private规范各自正确验证，200后canonical读回，不误判unknown|Root57315 FAIL于实际private,no-store,max-age=0；共用parser拒合法ACK，source窄修已派。当前用户3310尚未启该候选|P1/用户系统、异常、协议边界|
 
 Billing Root70536两文件285通过与独审0只作开发前置证据；正式Credit赠送/预占/逐attempt调用/核实消耗结算释放/流水以及当前用户页仍未PASS。没有关闭任何完整业务组。
@@ -929,7 +929,7 @@ R206补验：Root64906对显式owned/shield driver候选重跑同312bb9d真PG三
 |---|---|---|---|---|---|---|
 |TC-PROJECT-R191-005 / 网站关联真实保存|正式项目，System网站目录与BFF关联契约发布；本人可用网站|新增→选择→保存→owner ACK/GET→硬刷新→解除→刷新|仅授权真实网站，关联持久且隔离，无静态示例或纯内存成功|P1|主链、权限、生命周期|FAIL源码确认：正式preview=false仍读previewWebsites；Save只setLinkedWebsiteId。原IAB样本观察真实，保存/刷新尚未运行；contract前置BLOCKED，Web/BFF/System。不得隐藏后标PASS|
 |TC-SKILL-R191-006 / 项目技能两入口一致|真实Project安装技能版本、Platform/BFF写契约可用|Switch与More启停分别操作→GET→刷新；403/503后再回读|同一owner mutation，ACK后权威状态；失败回滚且可见，缺handler不假成功|P0|主链、异常、权限、状态机|FAIL源码：Switch optional handler缺失可假成功；More纯setState，静态Skill Builder单卡。真实用户写链未验；Web/BFF/Platform/Agent|
-|TC-SETTINGS-R191-007 / 个性化保存和读回|正式session，账号级偏好owner GET/PATCH已发布|唯一值输入/blur→状态码→关重开→硬刷新；404/503/跨subject|失败明确保草稿/可重试，不假保存；成功同subject权威GET可读|P1|主链、异常、权限|源码FAIL：同源route不存在、PATCH不查response.ok，无GET；完整真实写路径NOT_RUN，owner未裁决/发布，Web消费方不得造localStorage账号事实|
+|TC-SETTINGS-R191-007 / 个性化保存和读回|正式session，账号级偏好owner GET/PATCH已发布|唯一值输入/blur→状态码→关重开→硬刷新；404/503/跨subject|失败明确保草稿/可重试，不假保存；成功同subject权威GET可读|P1|主链、异常、权限|真实FAIL：正常昵称blur PATCH404、无错误提示、硬刷新空（r257-personalization-red）；正式 BFF owner operation 缺失（同源 catch-all 可达）、PATCH不查response.ok且无GET。新正式保存闭环尚未实施/验收；不造localStorage账号事实|
 |TC-SETTINGS-R191-008 / 通知偏好实际生效|Web设备偏好、已授权Notification，真实awaiting审批事件|关闭→切tab/刷新→产生事件；明确点击开启→权限拒绝/允许→再事件|关时零通知且持久；权限仅用户手势，拒绝不假授权；声音须实际producer|P1|功能、权限、生命周期|源码FAIL：4toggle内存；producer不读开关并业务路径requestPermission。设备browser/sound归Web；账号通信订阅owner待定，实机通知NOT_RUN|
 |TC-SETTINGS-R191-009 / 快捷键编辑影响实际动作|可编辑实际New chat/Search/Sidebar动作|重绑/清空/reset→新旧键→关重开/刷新/第二tab；IME/repeat/editable/冲突|仅新键一次动作，清空无动作，持久一致，录制与全局监听无重复|P1|交互、边界、竞态|源码FAIL：UI内存与硬coded dispatcher双事实，Sidebar显示与实际键不同；不支持Plan/Voice不算实现。Web负责人后继最小片已设计，真实全矩阵NOT_RUN|
 |TC-SETTINGS-R191-010 / 默认模型Agent跨主体安全|A/B合法session、不同可用目录；同浏览器|A保存selector→登出→B登录新会话；目录404/503/撤权|B只可用自身已核验selector或默认，加载失败显式错误，不吞空注入旧值|P1|权限、异常、生命周期|源码FAIL：全局chat-prefs key且agents404吞空；跨主体实际用户流NOT_RUN。Web/System/Agent/BFF；不是认证已可用就通过|
