@@ -1,3 +1,21 @@
+### FG1 已验收 / 同任务后继与左栏实际复验
+
+原 iam_grant_source_scope_0244 交付STOP，Root同398freeze重跑44/0及938/0、独审c3b53298后精确10路径提交IAM bb4663a。原system_guarantee_read_0315只读审查STOP，原billing_read_activation_0340报告已收。FG1阶段已验收不等T-B07赠送/资金用户闭环；FG2的当前授权/verified exp/machine/SDK/target仍待派工。原Root台账5ebf07c9接续，无新任务中心。
+
+本轮用户左栏继续独立真实浏览器验：短高wheel0→262→0、touch模拟0→194、项目与外部会话导航/硬刷新/loading0，原Web9e1c8c3生效；全CRUD/物理触屏/用户IAB未验不关。完整70组不变。Root仅现台账writer，源/normal资源无抢写或重启；当前只读/实现agent已STOP，后继沿原卡另准单仓唯一写集。
+
+## R255 当前左栏复验与 FG1 原生发行切片（2026-10-06 08:26 UTC）
+
+- **本轮判定 progress，非整体闭环。** Web仍bf04df7（侧栏实现9e1c8c3），Root正常IAM既有session真实页面再次两folder展开、1200×460 wheel0→262→0，content宽276无横溢、Direct底346.8<footer356.8、branch43.52px/loading0。390×640触屏模拟从project行起滑0→194，pan-y、body0、content宽260无横溢；硬刷新/项目P→原外部会话，Direct始终在、同ID两历史marker保持。仅UI偏好操作，无新模型/资金/会话数据。自有页已close；用户IAB getTab20s超时，不称已控制其标签/物理设备。新截图sidebar-current-full-height.png，console本人Billing未开户404不冒侧栏错误；首次两click工具字段错未执行，纠正target后重跑。
+- **IAM bb4663ac24a13b6f171936d4c7879eaa6388c22f**：原owner四生产路径+现lifecycle与五事实文档精确10路径；三D0仅原自有prefix、原suffix exact。合法列名非operator/Member0/activeOrg=null原select-tenant有效RED→正式authorize/consent/Basic+PKCE/JWKS正向GREEN1/35filtered、2.16s；真实lifecycle/fixed-Web/session44/0、40.63s，398source/test冻结exact与PG77→77 exact。23独立负控真handler/新code、三时点正式CAS撤名、漂移/凭据错/无refresh，不将宽4xx冒逐稳定原因码通过。原12安全正文除批准临时总拒块外字节exact、管理CAS/Audit writer不改。
+- Root38903最终Node24 pnpm verify+Prisma exit0，102纯文件938/0及format/lint/types/contract/breaking/SDK/build/schema通过；独审c3b53298五hash exact无新增确定P0/P1/P2，原两worker均STOP。本证据是自有真实PG+provider handler，**非正常浏览器/TCP/资金E2E**；另一UI tenant正控/显式refresh/全部注册漂移/DB故障/并发撤权窗口未验。
+- FG2旧JWT在线当前名单、verified exp、专用machine/grant-target/artifact、初始financial创建CLI、Billing正规赠送与可信消耗完整资金链仍OPEN；付款最后，不把支付/System价格/Agent用量误设为独立赠送前置。九原开发root/listener仍alive，registry/uv保持，不重启正常服务/PG/Redis/reset，无正常资格或资金写。原Web四mixed、其他owner候选/gitlinks保持，IAM交付clean；Root不提交gitlinks或uv。
+- 完整Wave0–7 active；70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，新增完整组0；handler工程绿仅关闭本FG1切片，所有页面CRUD及完整能力不冒完成。证据沿现ignored var/dev/r255-preserve/fg1-provider-{red,green,regression}.json/log、fg1-final-verify.log、r255-fg1-source-final-review.md、sidebar-current-reverification.json；下一沿原T-B07做FG2授权，左栏CRUD/页面独立验证不串行等待。
+
+### FG1 源码早期独审
+
+system_guarantee_read_0315续原只读角色，仅上述4候选source及锁1.7.3 public hooks/原schema/现lifecycle，报告/tmp/r255-fg1-source-pre-review.md。工作树变化中只报具体读时hash与确定风险，不冒冻结最终验收；不改仓/资源/Git/浏览器/秘密。Root最终freeze后重核审查版本与真实门，原writer独占源，Root不抢写。
+
 ### IAM-FG1 有效业务 RED / source 准入（2026-10-06）
 
 Root98176现正式fixture/provider handler+真实PG：新合法名单HUMAN（非operator/Member0/activeOrg=null）authorize实际/auth/select-tenant，而应/auth/consent；1FAIL/12非匹配未执行、exit1/2.13秒，398 source/test/contract等freeze exact，PG77→77 exact。有效业务RED，不是类型/fixture失败。原2117行prefix exact。此真实handler集成不冒浏览器/TCP/资金E2E。

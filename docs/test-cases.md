@@ -1,3 +1,22 @@
+## R255 当前切片行为证据（2026-10-06；完整70组不变）
+
+| 原卡/测试点 | 前置与操作 | 实际期望/结果 | 优先级/状态与边界 |
+|---|---|---|---|
+|T-C01/C04 folder滚动|正常IAM既有用户；两folder展开；1200×460真实上下wheel|0→262→0，Direct底低于footer顶，无横溢/loading|P0 本子例PASS；全CRUD未验|
+|T-C01/C04 touch|同正常页390×640；模拟从project链接纵向滑动|pan-y、scroll0→194、body0、Direct在|P0 模拟子例PASS；物理触屏/用户原IAB待验|
+|T-C04 route/历史|硬刷新→项目P→既有外部QA会话|外部Direct常在，同ID/两历史marker/loading0|P0 本子例PASS；无新推理/费用|
+|T-B07 FG1 HUMAN|真实PG/provider；列名非operator/无Member/UI选null→authorize/显式consent/Basic+PKCE/JWKS|原误送select-tenant RED；现准确scope/audience/sub/sid/fixedtenant/300s、无refresh/idtoken|P0 owner切片PASS；非浏览器赠送E2E|
+|T-B07 FG1撤名/漂移|23独立fixture；新code；三时点正规CAS撤名及身份/资源/凭据单变|实际拒绝无token、0opaque/refresh行；完整三文件44/0|P0 子例PASS；宽4xx不冒每原因码实证，全部漂移/DB故障待验|
+|T-B07 FG2在线grant target|尚缺专用machine/operation/verified exp/SDK与Billing接入|必须重核旧JWT/current roster与target，再正规gift/余额/流水|P0 UNVERIFIED；不凭FG1或纯门关闭|
+
+## R255 当前左栏复验与 FG1 原生发行切片（2026-10-06 08:26 UTC）
+
+- **本轮判定 progress，非整体闭环。** Web仍bf04df7（侧栏实现9e1c8c3），Root正常IAM既有session真实页面再次两folder展开、1200×460 wheel0→262→0，content宽276无横溢、Direct底346.8<footer356.8、branch43.52px/loading0。390×640触屏模拟从project行起滑0→194，pan-y、body0、content宽260无横溢；硬刷新/项目P→原外部会话，Direct始终在、同ID两历史marker保持。仅UI偏好操作，无新模型/资金/会话数据。自有页已close；用户IAB getTab20s超时，不称已控制其标签/物理设备。新截图sidebar-current-full-height.png，console本人Billing未开户404不冒侧栏错误；首次两click工具字段错未执行，纠正target后重跑。
+- **IAM bb4663ac24a13b6f171936d4c7879eaa6388c22f**：原owner四生产路径+现lifecycle与五事实文档精确10路径；三D0仅原自有prefix、原suffix exact。合法列名非operator/Member0/activeOrg=null原select-tenant有效RED→正式authorize/consent/Basic+PKCE/JWKS正向GREEN1/35filtered、2.16s；真实lifecycle/fixed-Web/session44/0、40.63s，398source/test冻结exact与PG77→77 exact。23独立负控真handler/新code、三时点正式CAS撤名、漂移/凭据错/无refresh，不将宽4xx冒逐稳定原因码通过。原12安全正文除批准临时总拒块外字节exact、管理CAS/Audit writer不改。
+- Root38903最终Node24 pnpm verify+Prisma exit0，102纯文件938/0及format/lint/types/contract/breaking/SDK/build/schema通过；独审c3b53298五hash exact无新增确定P0/P1/P2，原两worker均STOP。本证据是自有真实PG+provider handler，**非正常浏览器/TCP/资金E2E**；另一UI tenant正控/显式refresh/全部注册漂移/DB故障/并发撤权窗口未验。
+- FG2旧JWT在线当前名单、verified exp、专用machine/grant-target/artifact、初始financial创建CLI、Billing正规赠送与可信消耗完整资金链仍OPEN；付款最后，不把支付/System价格/Agent用量误设为独立赠送前置。九原开发root/listener仍alive，registry/uv保持，不重启正常服务/PG/Redis/reset，无正常资格或资金写。原Web四mixed、其他owner候选/gitlinks保持，IAM交付clean；Root不提交gitlinks或uv。
+- 完整Wave0–7 active；70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，新增完整组0；handler工程绿仅关闭本FG1切片，所有页面CRUD及完整能力不冒完成。证据沿现ignored var/dev/r255-preserve/fg1-provider-{red,green,regression}.json/log、fg1-final-verify.log、r255-fg1-source-final-review.md、sidebar-current-reverification.json；下一沿原T-B07做FG2授权，左栏CRUD/页面独立验证不串行等待。
+
 ## T-B07.R255-FG1 真实发行流程回归（2026-10-06）
 
 |用例ID/类别|标题|预置条件|测试步骤|预期结果/当前实际|优先级|测试类型|
