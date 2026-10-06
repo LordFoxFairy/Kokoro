@@ -1,3 +1,29 @@
+### R259 T-K03 首片真实验收与尚未接通边界
+
+- 子例 ADMISSION：现Skills读取绑定真正probe boundary；辅助 held GET/POST/fresh恢复已绿，真实撤权/多主体页仍未验，不从副本绿当越权消除。
+- 子例 POLL：Root实际失败详情被120秒probe关闭→df2c08a后真实同tab详情跨auth/session200保留，原我发布的视图未重置。首片PASS，证据与exact轮询时间见CURRENT；并未取消授权重核。
+- 子例 PERSONAL-VIEW：正常硬刷新默认已安装、准确安装空态；发布列表真实名称/简介，技术ID不在卡片；设置技能独立reader无重复标题/无重复“我的技能”。正向子路径PASS，未冒全CRUD/窄屏/fault全组合。
+- 子例 INSTALLED-METADATA：Platform c94909f正式producer+真实PG33/0已过，BFF/Web待消费、normal owner未重载；整页保持RETEST/未验收，不能用“暂无名称”占位文案结案。
+- 完整70组计数不变，无新增完整组PASS，旧失败证据保留。Root当前335辅助绿不当用户验收数量。
+
+### R259-SKILLS-POLL：真实浏览器新增P1，首片暂缓放行
+
+Root在最终cd31b1dc freeze正常tab21：我发布的→详情GET200(.370,t1225316)→例行auth/session200(.371,t1225359)后dialog消失并回已安装，installedGET200(.375)。相邻probe恰120s，零用户关闭/退出与源码改动；证据r259-skills-poll-reset.json。独审/286组件绿没有覆盖这个真正用户持续操作，首片不算已验收。
+
+最窄裁决：现probe请求序号只作迟到fence，与用户可信scope代际分离。仅已明确pass、同trusted subject/index、非unavailable/recovery/suspended的例行pending保留最后确认boundary，成功同subject不换代；任何确定unknown/负向/索引失可信/离页立即撤准入及换代，恢复fresh GET，不续旧写。每次业务请求server当前session仍授权，platformAdmin在途不沿用true。不新增auth store/协议，不改refreshUnconfirmed/false分类，不放宽首次/恢复或取消预算。
+
+原Web writer唯一写集在原22集外增现src/ui/auth/use-session-state.ts、tests/ui/use-session-state.test.tsx、tests/ui/app-gate.test.tsx；现Skills assembled test加routine timer+true稳定view/detail/draft与真实unknown撤退对照，原安全断言保留。先更新三D0自有R259 prefix，再有效RED后窄实现；Root独审/Node22门/正常120s真实轮询验收，零API/owner/凭据/服务改动。不能仅靠hidden CSS保旧私有projection或无限加载避重核。
+
+### R259 Skills 对标与实际失败子例
+
+|子例|实际步骤/结果|验收与状态|
+|---|---|---|
+|T-K03.R259-DISPLAY|正常技能页只有个人发布源，默认published；重复我的技能→Settings reader层级，卡片露source_ref，单页disabled分页；before截图已保存|展示审查已完成；推荐两明确视图/真实名称简介/详情技术信息，待用户选定方向，未实现，不升PASS|
+|T-K03.R259-ADMISSION|从有卡片页点我的技能→登录状态不可确认、侧栏不可用；单次重试auth/session200 authenticated:false，旧发布卡仍可见、Settings未打开|真实失败保留；需现可信boundary/context传入reader并退役旧读/投影，不能false简单改anonymous或以CSS隐藏冒权限修复；正式回读/过期恢复/撤准入/跨人回归待验|
+|R259-REFERENCE|Manus既有登录态实际技能浏览、个人已添加空态与技能详情；无新授权/安装/任务/资金|仅竞品观察，不是Kokoro功能验收；不复制未接搜索/官方目录/虚假使用量|
+
+证据同Root现var/dev/r255-preserve/r259-*；完整组不提升，模型/CRUD当前优先级不变。
+
 ### R258 当前页面用户子路径补证（不增加完整组PASS）
 
 |现用例/子路径|本次真实结果|未闭环项|

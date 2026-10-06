@@ -1,3 +1,52 @@
+### R259 本波交付接收与后继
+
+Web df2c08afdf3657e24b9cca472c9fac95a692674d首片Root335/0/Node22lint/types/build0与真实120秒poll详情保持、设置两视图接收；原Web writer STOP。Platform c94909f1c593f2b7ffd5f325786739da744ff31f Root最终纯1272/0/284skip+真实隔离PG33/0/资源无残留、独审6ee0adba接收。正常Platform/BFF旧进程暂不重载、安装元信息消费者未接，不称全页面完成；BFF原writer只D0最短消费分析，Root独占后继机器放行/正常重载/浏览器与提交。详细证据在CURRENT/现测试台账，原失败/后继范围不删除。
+
+### R259-SKILLS-METADATA-BFF-D0：已发布 owner 后的正式消费
+
+Platform D1已Root精确24路径提交c94909f1c593f2b7ffd5f325786739da744ff31f，combinedSha2564fe862adba0d460fa23713c124ba747d457f23f777043926739d16e35d350e07。Root183/0纯接缝、全1272/0/284资源skip与真实隔离PG33/0/catalog77→77/Redis0→0；独审6ee0adba。正常Platform尚旧进程，禁止未同步消费者直接重载。
+
+原bff_admin_routing_d0_r257后继本轮先只读BFF正常worktree bac0cbf（clean），明确最窄Platform immutable repin→public安装三safe required字段→Webstrict schema消费链、版本/生成入口/删除旧vendor与所有受影响断言范围；仅现三D0自有prefix及ignored交接允许写，无源码/机器/服务/DB/Git。当前V7执行history不变，不能新建V8/改executiondigest；实际新增仅安装read/ACK三字段，禁止Web published join/N+1/placeholder假name。Root三面通过后才准RED+实现，后继Web独立推进不与IAM/Agent绑前置。
+
+### R259-SKILLS-POLL：真实浏览器新增P1，首片暂缓放行
+
+Root在最终cd31b1dc freeze正常tab21：我发布的→详情GET200(.370,t1225316)→例行auth/session200(.371,t1225359)后dialog消失并回已安装，installedGET200(.375)。相邻probe恰120s，零用户关闭/退出与源码改动；证据r259-skills-poll-reset.json。独审/286组件绿没有覆盖这个真正用户持续操作，首片不算已验收。
+
+最窄裁决：现probe请求序号只作迟到fence，与用户可信scope代际分离。仅已明确pass、同trusted subject/index、非unavailable/recovery/suspended的例行pending保留最后确认boundary，成功同subject不换代；任何确定unknown/负向/索引失可信/离页立即撤准入及换代，恢复fresh GET，不续旧写。每次业务请求server当前session仍授权，platformAdmin在途不沿用true。不新增auth store/协议，不改refreshUnconfirmed/false分类，不放宽首次/恢复或取消预算。
+
+原Web writer唯一写集在原22集外增现src/ui/auth/use-session-state.ts、tests/ui/use-session-state.test.tsx、tests/ui/app-gate.test.tsx；现Skills assembled test加routine timer+true稳定view/detail/draft与真实unknown撤退对照，原安全断言保留。先更新三D0自有R259 prefix，再有效RED后窄实现；Root独审/Node22门/正常120s真实轮询验收，零API/owner/凭据/服务改动。不能仅靠hidden CSS保旧私有projection或无限加载避重核。
+
+### R259-SKILLS-METADATA-D1：owner 契约与安全读投影
+
+四D0 Root提交0bbed08f7eef9a45b72c04d25309f1c5273aa703，codex/r259-skills-metadata；独审f38d1928，Root原suffix exact。原Platform writer bff_admin_routing_d0_r257续派。先现descriptor/mapper有效缺字段RED，再D0具名Proto/正式生成/provenance/checker/历史v6输入与对应现tests；历史快照只验证发行不可变，不作runtime fallback。所有原v1-v7 aggregate/原1–9 tags保持，latest新增字段严格门不得跳过。机器通过后现installation model/repository/service/product mapper/product RPC最窄source与现mapper/RPC/integration/nest-ingress tests；统一出口仅补fresh固定revision三展示字段，receipt其余原状态/event/change/replayed不覆盖、不重写存储receipt，不解除install/enable原active gate。无DDL/DB/services/第三方/资金/Git，正常资源Root独占。新文件仅D0批准现scripts/platform-execution-operations/v6-historical-inputs.ts与具名发行时snapshot输入，具体清单先报；其余新路径必须先请求Root。freeze后Root重跑合同/辅助/隔离owner门，发布正式commit后消费者接，不能冒页面闭环。
+
+### R259-SKILLS-METADATA-D0：唯一安装元信息设计切片
+
+只读报告d7f752dc确认精确SkillInstallation→Skill revision同owner已有displayName/summary/status，无DDL需要。Root裁决扩现ProductSkillInstallation安全投影display_name/summary/source_status（active/disabled/withdrawn/quarantined），所有读/命令ACK一致，receipt业务身份不修改；不接受draft/缺关联/tenant或revision不一致，不猜最新名称。旧1–9 tags保持，新增10–12目标，正式版本/provenance由现发布规则固定；owner发布后consumer串行接，不引用未发布工作树。
+
+原bff_admin_routing_d0_r257本轮为Platform单文档writer：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability HEAD9ab3b653，初clean；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md新增R259前缀，保suffix exact。先收敛安装元信息/当前态目标态/固定revision/源withdrawn和移除记录/同query分页/ACK事务语义/现发布profile，给具名契约/source/tests写集与真实RED入口，不改Proto/schema/source/generated或资源/Git。比较新增read-view RPC/DB快照（淘汰无需求）与现owner projection（采用），不增层/模块。Root审核后才准机器实施；当前WebUI首片与此D0可独立并行，consumer等待正式artifact。
+
+### R259 用户已批准个人技能管理页；并行执行卡
+
+用户确认“先修清晰的个人技能管理页”。既有Wave0–7/CRUD优先保持；复用现三D0与本任务表，不新建PRD中心。设计边界：一个技能管理页，默认已安装/我发布的两个视图；删除重复我的技能跳转，真实名称/简介/状态优先、技术ID在详情；准确首空/筛选空/错态/有效分页。不搬preview目录/模拟统计。Web无持久化owner，不变API/Schema；installed元信息未发布前不伪造名称，依赖正式Platform→BFF→Web切片。
+
+|任务|归属、基线与允许范围|验收、依赖与提交|
+|---|---|---|
+|R259-SKILLS-WEB|原agent_planned_guarantee_system_r257，Web唯一writer；/Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，bf2bee9b5ccd7804e2bad6ab4cc3eca00856e1a5；原两mixed排除|先三现D0仅新增R259 prefix/保原suffix，再六boundary源码+同reader发布组件现样式/i18n与现UI测试；精确新增路径先报。有效RED→修→freeze→独审→Root门及正常浏览器；Git/服务/资源只Root。Installed metadata不假接、不改auth/session分类。|
+|R259-SKILLS-METADATA-READ|原bff_admin_routing_d0_r257，只读Platform安装列表→源修订→RPC→BFF投影→Webschema；Platform /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability，HEAD9ab3b653360d04fb498a238659edeec01e72f62d；BFF正式worktreebac0cbf|只ignored独有报告；确定固定installed revision的name/description来源与权限/retired行为/最窄正式投影，无source/docs/DB/Git/服务修改。Root裁定owner先发布，consumer后接。|
+
+局部现文件位置沿已批准Skills职责，比较另造route/商店（淘汰：重复事实、假能力）与复用现唯一PersonalSkillsRead（采用）；无新模块/依赖。六boundary路径是app-frame.types/app-frame、kokoro-skills-surface、personal-skills-read、skills-panel、settings-modal。验收重点：当前撤准入/主体代际取消旧读、私有卡/动作/dialog同步退役；重新准入只fresh GET不自动POST；默认已安装与发布分离；真实CRUD刷新读回。不把辅助组件测试绿当整个页面闭环。
+
+### R259 Skills 登录失效后的页面投影实际失败
+
+Root正常自有标签19从/app/skills点“我的技能”时，真实auth/session200 body只有authenticated:false，出现“暂时无法确认登录状态”，侧栏已不可用但旧发布skill卡仍可见，Settings未打开；仅单次显式重试仍同false。不据此声称越权已泄漏或IAM故障，需核signed-out/uncertain分类和reader撤准入投影。无凭据/会话注入/重新登录、模型或资金动作。证据r259-skills-auth-uncertain.png及脱敏metadata。
+
+R259-SKILLS-AUTH-READ：原Web agent_planned_guarantee_system_r257只读，基线bf2bee9，两mixed保。仅核现auth/session consumer→AppFrame session状态→Skills reader可信admission/context退役，找具体根源与最窄现文件和RED；未准写source，独有ignored r259-skills-auth-source-review.md。当前用户任务仍设计对标，Root已真实进入Manus现有登录态浏览Skills/我的技能，不把静态官网或旧preview冒真实产品。
+
+### R259 Skills 真实页面对标审查（只读先行）
+
+用户明确当前 /app/skills 展示不友好，要求参考 Manus 真实产品，不盲造交互。Root负责实际Kokoro/Manus浏览器观察；原Web owner agent_planned_guarantee_system_r257只读核现Skills页面信息层级、重复入口、发布/安装投影、空错态及CSS约束，基线Webbf2bee9，两mixed保护。现CODEBASE_MAP/专项手册/本仓设计入口先读。不给新业务/contract/API/安装授权；无源码/Git/资源/服务/浏览器写，只交独有ignored r259-skills-ui-source-review.md。Root将实际截图+现业务能力整理最简展示方案，再确认用户方向，不另建PRD/计划中心。既有CRUD优先/Agent后置不变。
+
 ### R258 当前交付与下一控制面动作
 
 Web13路径Root提交bf2bee9，最终独审+Root辅助216/0及提交后166/0、正常真实上传/scan/read/硬刷新和指令回读已接收；两P1源码闭合不等owner撤权/完整组验收。Storage仅工具两路径提交5b15fe3，D1机器9路径不完整未发布、17原dirty exact，完整失败证据保持。

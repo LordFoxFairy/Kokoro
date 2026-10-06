@@ -1,3 +1,29 @@
+### R259 个人技能首片已接收，安装元信息 owner 已发布（2026-10-06）
+
+用户批准先清晰个人管理，不扩全发现目录。Web Root精确24路径提交 **df2c08afdf3657e24b9cca472c9fac95a692674d**：默认“已安装”/“我发布的”，移除“我的技能”设置回环，空态/分页/错误明确，技术ID移至详情；真实登录边界退役reader，取消迟到读写。Root真实测试发现120秒probe会清空详情，随后有效timer两RED+重叠focus两RED→请求序号与UI scope分离，健康同subject重核不换scope，unknown/索引失信/离页/换subject在reload前撤准入；并未取消服务器每请求授权或延长失败预算。
+
+Root最终Node22六文件335/0、lint0；699源副本字节exact，显式Node22 types/build0，正常.next不碰。独审061b2934绑定b303e15e24/24exact、两mixed与三doc原suffix保留。正常tab21硬刷新默认安装空态→真实发布列表GET200→详情GET200→实际auth/session200 **66983.537/t1226204.749144** 后dialog/我发布的仍在；前正常probe t1226084.791456，相差119.957688s；设置→技能只有一个嵌入标题/两视图。证据r259-skills-poll-final-browser.json、r259-skills-poll-detail-survived.png、r259-skills-personal-final.png及settings截图。此为首片真实交互子链，不冒安装名称/全发布CRUD/真实撤权/移动全矩阵通过。
+
+Platform Root精确24路径发布 **c94909f1c593f2b7ffd5f325786739da744ff31f**，current combinedSha2564fe862adba0d460fa23713c124ba747d457f23f777043926739d16e35d350e07；安装tag10/11/12为display_name/summary/source_status，原1–9与93个V1–V7历史文件exact。五历史snapshot来自真实da813ed并由checker逐项核，非runtime兼容或关strict。Repo同owner关系核tenant/id/series/revision、拒draft；统一五op安全metadata投影，receipt重放保原状态/change/events/replayed/持久receipt只回读元信息。
+
+RootNode24纯183/0，verify/lint/format/build0；最后全1272/0/284资源skip与types/format0。真实独立PG+原Redis **33/0**（六新增关系/元信息/receipt矩阵）；catalog77→77exact/keys0→0、仅自有库已清。最初tsx eval CJS无法承接top-level await，未创建资源，改正式ESM入口后实跑成功，失败日志保留。独审6ee0adba最终24起终exact；ACK/IAM/package替身不冒真实TCP/用户授权或全异常组合。
+
+**未完成**：正常Platform仍旧进程，BFF/Web尚未正式消费新三字段；已安装卡的真实名称不能用占位文案算完成。原owner正按R259-SKILLS-METADATA-BFF-D0核最短repin/public投影，批准机器→Web后再兼容重载/真实安装CRUD。全70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，新增完整组0；CRUD优先/完整Wave0–7 active。九原应用/PG/Redis/MinIO/ClamAV不重置、不重复启动、未改正常模型/资金/永久数据。任务外gitlinks/Root uv与Web两mixed未暂存。
+
+### R259 用户已确认方向并启动两条独立工作面
+
+用户确认先清晰的个人技能管理页：默认已安装/我发布的、删除重复入口、真实名称简介状态与技术详情分层。原Web owner唯一writer续派已有六boundary接缝/个人reader样式文案，Root独占集成/浏览器；原Storage owner本轮只读核Platform固定安装revision元信息→BFF→Web最短正式投影，独立reviewer审方案/冻结。任务已写同task，不新建计划中心。
+
+Root新自有tab21真实已准入，并显示原QA发布卡及3项目/Direct；旧tab的auth false不冒全服务故障，新tab准入也不关闭旧reader撤准入缺口。现Source尚待RED/修/冻结，无新增完整组PASS。已保存current-before.png；原用户tabs保留。
+
+### R259 Skills 真正对标 Manus 与当前失败（2026-10-06）
+
+Root已通过官方功能页进入Manus既有登录态，实际操作更多→技能→我的技能→技能详情；没有输入凭据/安装技能/运行任务/消费资金。真实浏览页有搜索/分类/卡片，个人已添加管理独立空态，详情名称/简介/来源与添加动作分层。证据r259-manus-{skills-browse,my-skills,skill-detail}.png及r259-skills-ui-browser-review.json；不把官网、历史preview或Manus当前能力当Kokoro实现。
+
+Kokoro正常/app/skills实测默认“本人已发布”，发布/我的技能及下方两列表语义混合，技术source_ref直出、单页双disabled分页；独审0d4f83df还核安装schema没有name/summary，正式未接搜索。建议先现页面默认已安装/我发布的、去重复设置回环、真实名称与详情分层/准确空态/分页；完整发现目录为另一业务范围，已请求用户方向确认，未改源码或新增PRD中心。
+
+正常页面点我的技能实际进入session-unavailable，单次显式重试GET/auth/session200 body{authenticated:false}，侧栏退役但旧发布卡仍在，Settings未开。记录失败子例 **T-K03.R259-ADMISSION**，不新增完整组PASS；false在现producer亦可能refresh未确认，不强转匿名、不指责IAMdown或推断跨主体泄漏。初只读定位Skills reader未收到AppFrame可信boundary/context，进一步报告待交；该准入退役与设计修正分开，先有效用户失败再准窄实现。两mixed/uv/其他owner保持，两个Root自有对标标签已关闭、原用户标签保留。
+
 ### R258 项目CRUD源码已集成，真实正向回读与工具越界修复（2026-10-06）
 
 按用户要求所有页面CRUD优先、Agent执行后置，完整Wave0–7 active。完整70组仍11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST，本轮新增完整组0；以下子链不冒整页完成。
