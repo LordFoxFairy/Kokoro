@@ -1,3 +1,15 @@
+### R263 个人技能方向保持与正规登录恢复出口（2026-10-06 21:14 UTC）
+
+完整 Wave0–7 active，页面CRUD优先，用户已裁定先清晰个人技能管理，不扩发现目录。70完整用户组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
+
+- **正常个人管理子路径实证**：自有IAB25正常3310/app/skills，两视图“已安装 / 我发布的”；默认已安装，真实“R255 正常开发清单”、简介、来源可用、已安装·已启用，技术详情折叠，无重复“我的技能”跳转。实际切发布视图→列表HTTP200→回已安装→卡片渲染，短loading结束；本轮零安装/发布/删除/模型/权限/资金写。r263-skills-published.json、r263-skills-personal-browser-receipt.json 与 r263-skills-personal-final.png。此前R259安装启停/移除/重装子链继续保留，完整发布/安全异常/窄屏并未升级PASS。
+- **现登录恢复缺口最窄源码已提交**：Web正常持久worktree HEAD **b7a88ab7d3a47aad20aa7426bad835c703f4905e**，parent f90；Root仅精确两源、两tests、相邻INDEX共5路径。unknown冷/compact新增用户明确登录按钮，复用既有login/return-target；只读Retry、安全latch、CSRF/subject/private fences不变。同步ref禁重复，导航throw解除；原document10秒不离开仅解锁本地pending、不自动重放，卸载清timer。Admin25/protected28/hook/client/two mixed exact、未夹带提交。
+- **失败→工程辅助**：旧源Root66734三文件73例71PASS/2FAIL，真正缺Sign in按钮；候选89539三文件78/0，新增9case包含冷/compact、显式动作/pending、导航失败/有限timer。Root11900完整171文件3279/0，其中真实Next/Chromium/Redis controlled-peer77/0；Root14457合同295/架构51/lint/types/build全0。5候选+前Move8/copy+Admin53 exact、Redis33→33 exact，normal.next未用。独审source报告d24c4134、RED报告1fdedefc均STOP，无确定P0/P1/P2；工程及controlled-peer不是正常完整用户认证验收。
+- **正规登录原路返回真实已观察**：正常同tab实际/login?return_to=/app/skills→IAM authorize302→RP callback303→原/app/skills200→真实卡片和侧栏恢复。r263-normal-login-tight.json无截断/分页；只存路径/状态，不存code/state/token/cookie。第一次取证buffer截断保留r263-normal-login-return.json，未冒首链完整；修紧邻读取后再实际重走。期间正常一次CSRF GET200/session POST200 authenticated:true已观察，非证明历史unknown初因。
+- **未关闭原缺陷边界**：本轮正常页未自然复现unknown面，所以新按钮在真实unknown→IAM→fresh scope完整行为仍RETEST，未伪造session/注入假用户状态来冒正常PASS；首次续期未知的根因、旧欢迎页503原意图重进偶发FAIL仍OPEN。pnpm test:e2e默认会启动preview3310，本轮不以此替换已运行normal账号；使用CUA正常操作及既有真Next门，未运行该默认preview命令。
+- **Storage独立研究交接**：r263-storage-p2-read.md SHA b00e6492已接收，可信final PUT receipt、staging独占key多版本/迟到写入终止边界、exact-version未知DELETE权威absence/namespace仍须Root裁定；仅报告，未准source/配置/DDL，固定MinIO原IfMatch204失败与normal未启versioning停止线保留。Admin正常已有管理员正向输入、MCP自订producer、文件删除消费者仍OPEN。
+- 原9应用/PG/Redis/MinIO/ClamAV无重启/reset，新自有tabs0，用户tabs保留，25标记个人管理结果保留。Root uv/gitlinks/任务外修改均不暂存，原source writer与两只读owner STOP；后续沿现task续派CRUD实际页路径，不另开计划中心。
+
 ### R262 登录恢复只读交接已核（本轮不冒已修）
 
 原 Web owner 报告 r262-skills-late-admission-read.md（852e901a99e066f70b7a6ad6de1642ded04e38f1cd1e2f38da3c8775c778a744）已交并STOP，Root读源码核因果：unknown续期latch后只读GET、持续false保持unavailable，现UI只有同一种Retry所以无正式再认证出口。首次unknown/expired原因未获网络时序，layout serverAdmitted不执行refresh；hard reload可能已有SSO/callback或他tab cookie更新，不宣称无协议登录。后继最窄候选复用openProductSignIn和现return-target allowlist显式恢复，保只读Retry/私有scope退役/不重放未知POST；尚未准实施，当前技能页长期会话恢复FAIL仍OPEN。当前两视图截图仅刷新后展示，不等完整技能管理验收。

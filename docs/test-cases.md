@@ -1,3 +1,17 @@
+## R263 个人技能与登录恢复用户验收记录（2026-10-06）
+
+以下为现同一测试台账追加，不新建测试计划中心；全70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST不升。
+
+|用例/类别|预置/真实步骤|预期/实际|优先级/状态与证据|
+|---|---|---|---|
+|R263-SKILLS-PERSONAL/HAPPY|正常已有账号/真实已发布已安装技能；已安装→我发布的→回已安装|两视图，真实名称简介/来源/状态，ID折叠，无重复入口，列表实际200且loading结束；本轮符合|P1/子链PASS；published.json、personal-browser-receipt.json、personal-final.png；不等发布全CRUD|
+|R263-AUTH-RETURN/HAPPY|同正常账号既有IAM SSO；正式/login带合法Skills return_to→authorize→callback→原页面|302/303/原页200，fresh卡与侧栏可见；紧邻捕获truncated=false/hasMore=false|P0/此正常子路径PASS；normal-login-tight.json；首截断记录保留不冒完整|
+|R263-AUTH-UNKNOWN/EXCEPTION|现真实长会话unknown后只读GET false；Retry→显式登录→fresh scope返回|不重放unknown POST、不保旧私有卡，用户可正规恢复；本轮unknown未自然复现|P0/RETEST；原R262真实FAIL保留，新按钮正常全链未验，首次unknown原因OPEN|
+|R263-AUTH-PENDING/STATE|冷/compact未知；探针pending、重复点击登录、throw或留原页10秒、卸载|两动作禁用、单navigation、throw可再操作、10秒仅解锁不自动调用、timer卸载清理；现组件全部符合|P0/工程辅助78/0；不冒真实浏览器故障与IAM验收|
+|R263-AUTH-PRIVACY/SECURITY|认证未确认→操作恢复|旧scope不因点击/throw/timer获准入，CSRF/hook/return allowlist不变|P0/静态独审与安全邻门符合；真实unknown跨主体完整路径仍待验|
+
+Root11900完整171/3279及真Next controlled-peer77、合同295/架构51/lint/types/build仅源码放行证据，不把这些数当系统用户验收。Web b7a88ab精确5路径，正常最终截图只已安装视图，不证明所有技能发布或所有页面。浏览器未注入假认证/业务状态、零业务写；正常资源无重启/reset。pnpm test:e2e默认preview3310未运行，不冒正常账号E2E。
+
 ### R262 最后观察追加：技能页登录恢复异常（2026-10-06 20:57 UTC）
 
 |用例ID/类别/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级/类型|

@@ -1,3 +1,7 @@
+## R263 当前正式认证恢复接缝（Web b7a88ab，2026-10-06）
+
+正常Web持久worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEAD b7a88ab7d3a47aad20aa7426bad835c703f4905e：现 `src/ui/auth/app-gate.tsx` 仅持用户显式正式login动作、同步flight与有限原document导航guard；`runtime-loading.tsx` 只现Alert/Button换行及两动作pending呈现，相邻INDEX记录归属。原 `use-session-state.ts` / `product-auth-client.ts` / return-target及producer exact，无新auth框架/endpoint。个人Skills现两视图/实际元信息仍既有owner读取；真实unknown新按钮链待验。Admin25未提交、Storage55候选/三D0与MCP缺口维持，事实/完整组以CURRENT最新前缀为准。
+
 ## R262 已提交路径与登录恢复接缝（2026-10-06 20:57 UTC）
 
 正常 Web worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` 当前 HEAD **f90c45d4b73e695a9fc88a6be3d965461b0b2e0c**：现 machine 的active eviction、navigation实际scope guard、surface唯一Next usePathname已提交。下方ab5c431候选记录为历史；未提交Admin25/protected28仍保持。正常Move往返/刷新同历史可见，不冒整个用户体系通过。

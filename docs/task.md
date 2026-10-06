@@ -1,3 +1,31 @@
+### R263 最窄恢复源码交付及用户验收边界
+
+本轮goal turn判定 **progress**，完整Wave0–7/70组不变；不是整体完成或blocked。用户“先清晰个人技能管理”已遵循，正常真实页面两个视图/真实卡片与正规登录返回已观察，截图r263-skills-personal-final.png。
+
+- R263-AUTH-RECOVERY-SOURCE：原Web writer交5现路径freeze2bc0fe45 STOP；Root实跑89539安全邻门78/0、11900全3279/0真Next77/0、14457工程全0，独审d24c4134。Root精确5路径commit b7a88ab7d3a47aad20aa7426bad835c703f4905e；两mixed/Admin25/protected28/hook/client exact，不新auth owner/locale/endpoint/状态中心。交付源码已验工程，真实unknown故障按钮全用户路径待验，不把commit或count等验收。
+- R263-AUTH-NORMAL-RETEST：Root独占正常3310，显式正式login→既有IAM SSO→callback→Skills原URL与fresh owner卡片实证；紧邻CDP无截断/无秘密。未知故障本轮未自然复现，新显式恢复按钮用户路径仍RETEST；首次unknown根因仍OPEN。后继保只读Retry、不重复未知refresh/业务POST、旧scope撤准入，正常页失败时收紧邻请求后真实点击再验，不伪造认证假数据。
+- R263-STORAGE-P2-READ：原Storage owner报告b00e6492 STOP；final PUT response VersionId/ETag可作可信回执，staging exclusive key实际成立但预签名重放/迟到在途请求使“expiry+空inventory”非完成证明。exact DELETE unknown可用完整认证version inventory确认absence，但须固定expected namespace与授权attempt。未准source/schema/config、原失败不改；Root下一三设计面裁定后沿原owner推进。
+- Root各真实运行句柄89539/11900/14457均终态exit0已消费，不重开重复运行；旧RED66734 exit1保留。普通Skills截图不关闭发布/撤回/包全CRUD与安全矩阵，Admin合法正向/MCP producer/Storage消费者独立继续；默认preview test:e2e未执行，正常CUA不被preview替代。
+
+### R263 AUTH 有效 RED 与最窄源准入
+
+Root66734终态1，原3files73例 **71 PASS/2 FAIL**；cold/compact两case实际缺Sign in按钮215line，不是import/type失败，原helper和session unknown/401/409等安全均过。r263-auth-red.log/receipt保留，四source/Admin25/protected28 exact、normal.next不用。独审原iam reviewer确认现新oracle未删安全断言、尾pending仅同步窗口并非永久锁；有限导航失败恢复需源验收补点。
+
+R263-AUTH-RECOVERY-SOURCE / P0：原Web writer正常HEADf90；仅现 `src/ui/auth/app-gate.tsx`、`runtime-loading.tsx` 与相邻 `src/ui/auth/INDEX.md`，两现tests允许只新增同步导航throw/已发导航但原页未离开有界pending恢复行为，原冻结四新case及旧断言/预算不改。AppGate持用户明确动作/一次navigation flight，复用openProductSignIn和既有marketing.navLogin；RuntimeUnavailable只现Button/Alert布局，unknown冷/compact保只读Retry，并可点登录恢复，probe pending禁两动作。导航同步throw解除本地pending；若仍在原document，10秒有限导航guard退役，仅重新允许用户显式操作，不自动再次登录/refresh，不把void当导航完成。卸载清timer，private scope退役保持。无新文件/目录/模块/locale/endpoint/owner/schema；session hook/client/producer/return allowlist/两mixed/Admin25/其他28保护不写。保不是整页retry中转，不强制自动重登录，不显示旧私有卡。
+
+writer冻结两source/两tests/INDEX并STOP→独审绑定hash→Root安全邻门/完整真实Next/正常IAM用户操作与scope恢复，后Root精准Git。未知导航或依赖失败不靠永久disable掩盖；工程绿不冒用户恢复闭环。
+
+### R263 恢复入口与 Storage 未决并行准入
+
+上一goal turn分类：**progress**，Web精确8路径f90提交、正常Move用户往返实证、真实登录恢复FAIL改变下一行动；Root台账db0c7426提交。完整Wave0–7/70组范围保持，页面CRUD优先，不把局部展示改成完成标准。
+
+|任务/角色|基线/写入范围|行为验收/依赖|
+|---|---|---|
+|R263-AUTH-RECOVERY-RED / P0 / 原Web writer agent_planned_guarantee_system_r257|正常Web worktree HEADf90，Admin25/protected28/two mixed保持；先仅现tests/ui/app-gate.test.tsx与tests/ui/product-auth-client.test.ts，其余零写，ignored handoff|沿已批准正式login/return-target，在unknown冷/compact界面验证用户主动登录恢复出口，先真实装配FAIL；保只读Retry/不自动signin/不重复未知refresh POST/私有投影退休。测试Stub仅辅助，Root真实Next和正常用户再认证才验用户恢复。测试冻结→Root RED→独审→另准现app-gate/runtime-loading source，无新状态/endpoint/locale/Schema。|
+|R263-STORAGE-P2-READ / P0 / 原Storage owner bff_admin_routing_d0_r257只读|StorageHEAD5b15/冻结55+三D0，r262独审346dd8bd；仅独有ignored报告|核真正可用可信version来源与post-delete exact absence；对presigned caller PUT不把current HEAD冒原写回执，不用只让pending永驻当完整最终目标。列最窄正式source/contract演进与无旧数据兼容要求，Root裁决后设计门续派；不改source/test/docs/Schema/provider配置/资源/数据/Git。|
+
+局部归属：Web现AppGate持有正式登录动作，RuntimeSessionUnavailable只呈现现语义Button/Alert，复用openProductSignIn与allowlisted return target；不是新登录中转页，不改session分类或未知变更重放规则。简单局部2source修复不改owner/contract/目录，不重建三D0或重复计划中心。Root独占所有真实运行/browser/正常服务/Git/五台账；独审原iam reviewer只读冻结候选后续派。
+
 ### R262 登录恢复只读交接已核（本轮不冒已修）
 
 原 Web owner 报告 r262-skills-late-admission-read.md（852e901a99e066f70b7a6ad6de1642ded04e38f1cd1e2f38da3c8775c778a744）已交并STOP，Root读源码核因果：unknown续期latch后只读GET、持续false保持unavailable，现UI只有同一种Retry所以无正式再认证出口。首次unknown/expired原因未获网络时序，layout serverAdmitted不执行refresh；hard reload可能已有SSO/callback或他tab cookie更新，不宣称无协议登录。后继最窄候选复用openProductSignIn和现return-target allowlist显式恢复，保只读Retry/私有scope退役/不重放未知POST；尚未准实施，当前技能页长期会话恢复FAIL仍OPEN。当前两视图截图仅刷新后展示，不等完整技能管理验收。
