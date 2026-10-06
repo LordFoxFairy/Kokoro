@@ -1,3 +1,13 @@
+## R265 本人管理读取正式源码接缝（2026-10-06 22:50 UTC）
+
+Platform物理 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability HEAD **3d4ba6c3462e3896481f902adf47e0713c4187e4**：现 Skills/source controller/query/mapper/service + model/repository 与现http投影、guard、telemetry、Prisma错误分类承接两本人管理GET。HTTP OpenAPI3.3/八path raw b6e5/combined9ad2；现check-contract严格限定新self只GET/继承security，v6读既有历史3.2 snapshot，Proto/Schema/generated与V1–V7不变。Root22path正式发行，不增模块/cache/表。
+正常8086尚未重载；正常BFF worktree HEAD42ac39ee仍HTTP9ab3/3.2（Connect/Proto独立c949）；Web正常HEADee4056c只显示/原active读取与focus局部修复，未接allstates/version/withdraw。下一接缝是正式HTTP消费D0、既有self同源mapping与精确生命周期，不把旧发现路由兼容代理为新管理。实际证据和完整用户组状态见CURRENT，历史候选前缀保留考古。
+
+## R265 当前个人技能详情焦点与正式机器接缝
+
+正常Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web HEAD ee4056c：现 src/ui/skills/personal-skills-read.tsx局部content/opener/许可refs及onCloseAutoFocus承接原卡归还；view/unmount/重开清许可，Retry保原opener，不改全局Dialog、请求/身份/布局。相邻INDEX同片。Root实际X/Escape/短屏/提交后子路径见CURRENT/test-cases；完整版本/撤回未接。
+Platform apps/kokoro-capability HEADa3655ab仍仅D0正式，source190候选冻结保；现HTTPmachine3.3/八path与check-contract新self profile候选4bc0589e未经发行，v6只使用已有historical输入，不新V8/改Proto。Root实证strict副本额外method/security override误接受+types unused，原writer按当前task限定收口；正常8086旧源、BFF HTTP9ab3/3.2与Connectc949独立pin不变。错误继承既有envelope满足D0，不为审查建议增新schema框架。候选与正常事实、真实CRUD与工程证据分层。
+
 ### R264 消费 pin 事实纠偏（22:19 UTC）
 
 发行只读盘点确认此前把c94909称为所有Platform消费pin不精确：BFF现 **HTTP projection 3.2.0固定9ab3b653 / digest4b42dd16…**，而 **c94909f1是Connect/Proto独立消费pin**。后继self list/detail仅推进HTTP owner机器与现HTTP generator/config/generated；不机械改Proto、V1–V7历史artifact或放宽历史pins。当前均未发行/生成，BFF/Web未改；详细最小清单由同RELEASE-READ交接后记录。此纠偏不改变70完整组/原真实FAIL/页面CRUD缺口。

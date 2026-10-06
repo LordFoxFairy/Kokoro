@@ -1,3 +1,25 @@
+### R265 本人技能管理源码正式发行，页面 CRUD 仍待消费者闭环（2026-10-06 22:50 UTC）
+
+用户确认先清晰个人管理页，不扩技能市场。正常 Web `ee4056c5979ab076f467a048ab94139cdddc6a67` 的两视图、真实名称/简介/状态、技术信息默认折叠维持；Root 正常浏览器 X/Escape 返回精确原卡、390×200 正文独立滚动与固定关闭、提交后键盘关闭再验均通过。证据 `r265-focus-{x-normal,escape-390x640,short-x,postcommit-normal}.json`、截图 `r265-skills-personal-handoff.png`。安装启停/移除/重装与正常发布/上传/扫描/验证/读回历史子链保持，不把这些标成全生命周期通过。
+
+Platform（物理 `apps/kokoro-capability`）Root 已精确提交 **3d4ba6c3462e3896481f902adf47e0713c4187e4**，parent `a3655ab88521cc63f7c1c23ffa8684b3ead93525`，授权 22 路径，owner clean。新增 internal-owner 本人 list/detail，五状态、安全八字段、closed 请求/no-store/绝对10秒；原六路深相等、ACTIVE 发现/安装/执行边界不变。HTTP 3.3 raw `b6e5d0e0118207ee37933e5c22e94c86d95d74307b22a44e26e8974fede82acf`，combined `9ad2c4286f8b2e933450c7a81dda10f7580d1421bf64516dec1231d42d237d19`；Proto/Schema/generated/历史 V1–V7 字节不变，无新V8。最终 proof8e7 与独审62750绑定，两个发行文档只增加已核事实前缀、原 suffix 精确。
+
+Root 最终十工程门全 exit0，默认1288 PASS/289原资源SKIP；另真实自有PG/Redis/Nest HTTP两文件50 PASS/0 FAIL/0 SKIP，IAM受控，catalog77/Redis0 exact且自有库回收。这是 owner 验证，不是正常真实用户全页或 IAM 验收。文档发行后再次正式 contract:check/生成与两文档 Prettier exit0，冻结保护精确；旧RED7、types2、format1、strict变异误接受、负控信号误判证据不删除。收据 `r265-platform-management-release-commit-receipt.json`。
+
+**当前接缝尚未完成**：normal8086未重载新源码；BFF仍 HTTP9ab3/3.2，Connect/Proto c949为独立pin。正常Web未接本人五状态、新版本或撤回，所以完整技能CRUD仍OPEN。下一片从正式commit/digest消费本人管理读，后续精确revision新版本与withdraw原key replay；Web `/api/hub/self/skills` 不得错误strip self。Public版本先协调现Storage目标8.4，不各自占号，不引入兼容双轨。
+
+完整Wave0–7保持active，70完整用户组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮完整组新增0；Admin正向、MCP自订、Storage固定provider物理删除、welcome unknown原FAIL均保留。原9正常应用/基础设施复用，零restart/reset/正常DDL/资金/模型/权限写；原三个Agent交接后STOP，Root统一Git/资源/浏览器。Root uv.lock/八gitlinks/任务外修改不暂存。下方旧“候选/未发行”段落为历史，不覆盖本段。
+
+### R265 个人管理焦点已验收，后端机器发行仍在收口（2026-10-06 22:38 UTC）
+
+用户选定先清晰个人技能管理、默认「已安装 / 我发布的」，不扩技能市场。正常Web **ee4056c5979ab076f467a048ab94139cdddc6a67** 精准提交现reader与INDEX两路径，原Admin25/protected28/two mixed保留。正常真实同R264本人卡：X关闭回精确原button；390×640键盘打开→技术展开→Escape回原button且focus-visible；390×200正文scroll120/外壳0，Close top29/bottom61可见→X回原button。提交后同正常页再次键盘Escape返原卡/刷新后实际DOM默认已安装；新截图r265-skills-personal-handoff.png。原BODY失败由这些精确子路径收口，不冒所有竞态、255长名真实边界或完整CRUD。
+
+独审be5613b8无确定P0/P1/P2，仅局部opener许可/DOM归还，原源其余逻辑逆去精确还原、53保护exact；Radix自有卸载setTimeout0已核，不能宣整个关闭同步。Root90211原完整171/3282 PASS与受控Next77辅助门0，24682独立idle contract295/architecture51/lint/types/build均0/Redis33exact。首8720工程观察Redis false因同Rootfull fixture仍在途，原失败观察保留，终full精确清理后idle再验，不串改收据；两次commit preflight收据key名错误零暂存/资源，纠正实际字段后提交。浏览器刷新wait误用AX checkbox而实际DOM button导致工具timeout，fresh DOM显示正常ready，不报产品失败或掩盖旧unknown问题。
+
+Platform机器候选4bc0589e：Root64446旧源103例96 PASS/7 FAIL→22183候选103/0，原RED保留。正式strict/artifact/cutover/schema先0且Proto/generated/历史完全exact，但38886types2为v6 unused import，目标format1三个新文件；随后Rootisolatedchecker正控0/两个self的security=[]与额外post四恶意重hash仍0误接受，确定strict门缺口未发行。原唯一writer已准局部现checker/test/v6-import+纯格式修，不放宽旧门；原source190/Schema/历史仍保。新管理真实owner候选先前已过HTTP/PG，不代表normal8086载入或消费者已接。BFF生命周期只读60b7已明确self路径同源映射、版本revision精确表示、withdraw原key replay不能ACTIVE预GET拦，仍无正式消费者写。
+
+完整Wave0–7 active、70完整用户组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，本轮完整新增0；版本发布/撤回、真实管理五状态、Admin正向、MCP自订、Storage fixedprovider物理删除、原welcome unknown仍OPEN。九正常应用/PG/Redis/MinIO/ClamAV复用，无restart/reset/正常DDL/资金/模型或权变。后继strict门/完整owner验证→固定HTTP发行→BFF本人管理与版本撤回→Web正常完整CRUD，不以工程数字代替用户路径。
+
 ### R264 并行交接已完成（22:19 UTC）
 
 发行只读报告ab4aa5ff已收：HTTP3.3唯一机器/严格检查/现历史snapshot分离的最窄写集明确；HTTP与Proto pin纠偏，不新V8/改旧历史。此为后继准备，零正式生成或消费者变更。原Platform、Web与独审现均STOP，Root最终候选HTTP/ownedPG/types/lint/目标格式实证与正常页缺口已落同台账；未将完整goal标完成。当前普通个人管理显示截图r264-skills-personal-handoff.png可复查，编辑新版本/撤回与focus仍待闭环。

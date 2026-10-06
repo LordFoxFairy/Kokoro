@@ -1,3 +1,85 @@
+### R265 RELEASE 已提交与下一消费者停止线（2026-10-06 22:50 UTC）
+
+Root 已验收 Platform 本人管理读取的**源码发行**，不是全页CRUD：3d4ba6c3462e3896481f902adf47e0713c4187e4，parent a3655ab，精确22路径，owner clean；proof8e7/source190/历史/generated/Schema冻结保护与两doc原suffix exact。十工程门0/真实owned PG+HTTP50/0/0skip/IAM受控/自有清理，发行文档之后正式contract生成与目标格式再次0。独审62750无确定阻断，原失败证据保留。HTTP raw b6e5/combined9ad2正式固定；正常8086与BFF仍旧，不冒已部署/消费者完成。
+
+| 任务 | owner/角色 | 基线与文件集 | 验收及状态 |
+| --- | --- | --- | --- |
+| R265-SKILLS-MANAGEMENT-RELEASE | Platform / Root 集成与提交，原writer STOP | 物理 apps/kokoro-capability，codex/r259-skills-metadata；原卡22path，不含依赖/Schema/Proto/历史/generated | 源码发行已验收；commit 3d4ba6c3462e3896481f902adf47e0713c4187e4，receipt r265-platform-management-release-commit-receipt.json；不是页面CRUD |
+| R265-SKILLS-CONSUMER-NEXT | BFF / 原负责人待续派；Root设计/审查/提交 | 正常 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，HEAD42ac39ee；尚未授写入集 | 后继先正式HTTP pin与本人read D0/契约再生成/实现；与Storage public8.4占号协调。不能用原active discovery冒管理，不能将withdraw回执replay拦在ACTIVE预GET。未派工/未实现 |
+| R265-SKILLS-WEB-LIFECYCLE-NEXT | Web / 原负责人待续派 | 正常 /Users/nako/.codex/worktrees/kokoro-r257-admin-web HEADee4056c；未准改源 | 消费正式BFF后再修self同源映射、精确version/revision/withdraw未知结果与正常浏览器全CRUD；未实现 |
+
+现正常两视图和focus具名E2E子链PASS、版本/撤回/五状态真实用户管理仍OPEN；70组不升级，Wave0–7active。未另建任务中心；原9应用共享资源不重启/reset，Root uv/gitlinks/任务外保留。
+
+### R265 owner源码正式发行接管
+
+proof8e7/helper独审62750fde无确定block；Root25004十门全部0/full1288 PASS289原skip/生成全exact，实源ownedPG两file50/0/0skip/catalog77Redis0 exact。原writer/独审已STOP，Root现接管Platform仅CURRENT与contract README增加已核发行前缀（source/machine/test不改），bound含该前缀commit与rawHTTP b6e5/combined9ad2，不假称normal8086加载或BFF接线。两doc目标格式/diffcheck后Root22授权paths精确提交并验clean；完整页面版本撤回和正常allstates仍下一消费者片，不缩goal。
+
+### R265 proof-final独审与正式发行前最后事实门
+
+原唯一writer已冻8e7fb6a4 tests-only proof helper→STOP，current type/formats/source仍原final34fc，Root25004正在重新十完整门。原独审只读该8e7测试差异，核child有界/无错误信号/确切1与预期诊断、所有旧断言不降和source/机器保护；只ignored r265-skills-management-machine-proof-final-review.md，零命令/资源/Git。Root已真实50 owner HTTP/PG0skip并精确回收，不将该受控IAM矩阵标正常用户CRUD；无其它生产源码变化。只有final proof+独审放行，Root接管owner两文档发布事实与22path精确commit。
+
+### R265 final负控收据严谨性限定收口
+
+Root96739十工程门均0，fullverify1288 PASS/289原skip、artifact104/0，Proto/generated/source保护exact；Root30945两个实际HTTP+ownedPG文件50 PASS/0 FAIL/0 SKIP，catalog77/Redis0 exact/owned回收。仍候选，不算浏览器管理/CRUD。独审代码明确新spawnSync无timeout且status!=0可把null/signaled当“拒绝”；Root独立核现95–102/548，属新增辅助门可靠性缺口，不宣已复现业务/生产失败。
+
+准原writer仅现 test/contract/bff-projection.test.ts新增helperchild timeout 5000ms、有限maxBuffer 1MiB；正负control都必须error undefined/signal null，positive0，四negative明确status1且stderr包含各具名Self Skill method inventory/profile drifted，不能拿启动失败/timeout/信号/无关异常充拒绝。旧test预算/断言、机器/source/schema及其它所有files不改；可只该test纯Prettier。独有 r265-skills-management-machine-proof-final-freeze.json/handoff.md 后STOP，Root重跑受影响工程/全verify并复审；已实PG source不变可留精确证据绑定，不拿旧测试文件计最终冻结完全相同。
+
+### R265 MACHINE FINAL 冻结复审
+
+原writer收口final34fc2c41后STOP；strict四负控进入现contract真实副本执行，import/目标格式修，raw OpenAPI格式后combined9ad2c428。原独审只读final冻结/相对旧4bc限定差异，核新只GET/security继承、负控真实checker及finally清理/timeout、旧六深相等/历史pins/源码保护；只ignored r265-skills-management-machine-final-review.md，无命令/资源/Git。Root原96739顺序完整门在途，不预报全绿；后继另owned PG复跑。
+
+### R265 FOCUS已验收与机器当前停止线
+
+Web Root精确ee4056c两path/独审be5613b8/实际正常X、390×640Escape focus-visible、390×200正文120固定Close29..61返原卡及提交后正常再验收口；Admin/其它mixed保。完整页CRUD未完成，当前正式机器strict/types/format真实失败按下卡原writer收口，BFF/Web消费者未准写。首Redis overlap false及误checkbox selector、preflight key名错误均原留且不是伪产品PASS。全70组/goal不升，下一按owner机器发行→consumer→正常CRUD。
+
+### R265 MACHINE strict拒绝与工程收口准入
+
+Root22183实际103/0，38886 strict/artifact/cutover/schema0且生成全保护exact，但types2为v6 readFileSync未使用；targetformat1三个checker/OpenAPI/bff contract test。失败原log保留。Root独立隔离五case实跑：正控0；新list/detail operation security=[]与path额外post各重算provenance后0误接受，四真正strict负控FAIL，ownerfreeze4bc/source190完整保持、零资源，不改正常契约制造RED。独审同意此P2；原ErrorEnvelope继承符合D0，逐status新schema不是本片必需，不扩大设计。
+
+准原Platform唯一writer仅 scripts/check-contract.ts 两精确self path只get且无operation security override，旧六/security基线保持；v6-artifact删现unused readFileSync import不改snapshot；现test/contract/bff-projection.test.ts追加上述真实checker正控/四恶意重hash副本回归（隔离副本/finally清理，不修改owner文件），不得仅断言source字符串或放宽旧门。OpenAPI只Prettier等价格式；checker/此test也纯格式可跑，v6格式可跑，除此命令零。不增helper文件/目录/依赖，若需要先报。原两contract其余断言/预算不变，schema/Proto/generated/历史V1–V7/source190及其它files不写。新freeze r265-skills-management-machine-final-freeze.json/handoff.md后STOP；Root重新所有门、实PG与独审才固定发行。
+
+### R265 MACHINE SOURCE独审与Root复跑
+
+原Platform已冻4bc0589e六machine/doc加两contract tests（两纠偏已准），STOP。原iam_grant_source_scope_0244只读该冻结，核旧六OpenAPI深相等、本人五状态safe字段/headers/errors/预算、v6已有snapshot与V1–V7历史pins、combined四rawbytes与checker失败拒绝语义，原source190/Schema/generated保护。只ignored r265-skills-management-machine-source-review.md，无正式写/Git/命令/资源/browser。Root同时唯一命令运行最小103门→strictcontract/artifact/cutover/schema/types/lint/build/full verify及当前真实ownedPG；失败保存而非放宽，生成后保护需byteexact才发行。Web详情focus两path正式ee4056c，当前真实三用户路径已验，完整CRUD仍OPEN。
+
+### R265 MACHINE 专属错误oracle补齐
+
+Root核tests170通用500期望仍除旧detail外统一Error，而新self D0明确成功/错误no-store；复用原Error会改旧六或违新管理缓存约束。准原writer仅现此断言增加newself两精确path→SelfSkillError，旧六PublishedPersonalSkillError/Error分支byte语义保留，不扩通配旧paths。新增两safe管理错误各status/header本身断言保留，新hash冻结；原RED不删除、正式source仍候选，Root再实跑严格machine。
+
+### R265 MACHINE header oracle纠偏准入
+
+Root核现OpenAPI TenantId名与guard130均x-kokoro-tenant-id；新tests379/387两列表/详情期望误写x-kokoro-tenant。准原Platform writer仅此两literal改为正式x-kokoro-tenant-id，保持其余断言/预算和六source准入；新test hash另freeze，原RED7不抹去且纠偏不得引入第二tenant header。Root重新核两行精确diff与新machine门，实际旧source路径缺失RED仍成立。
+
+### R265-SKILLS-MANAGEMENT-MACHINE-SOURCE：Root实际契约RED后准唯一机器实现
+
+Root64446真实103项96 PASS/7 FAIL，3.2≠3.3与self两path缺失、runtime/OpenAPI path不等，历史3.2 pin正控先通过；原冻结991069db起终exact，零资源。此是当前正式machine不承接已验source的有效RED，不是导入/类型失败，7失败原log保存。
+
+现准原Platform唯一writer仅contract/openapi/platform-http.openapi.json、contract/provenance.json、scripts/check-contract.ts、scripts/platform-execution-operations/v6-artifact.ts、contract/README.md与docs/CURRENT.md六现文件；如需增新management checker拆分/错误schema先报告，不自新文件。复用已批准D0/read ab4aa5ff，HTTP3.3.0/八path具名SelfSkillList/SelfSkillGet safe八字段/五状态/closed query/header/error/request body关闭/no-store/同绝对10秒；保原六operation/参数/components语义相等，独立management schema/status不得扩大旧ACTIVE发现/执行。provenance按现四文件raw bytes顺序正确combined，v6 assertHttp仅切既有readV6HistoricalInput原immutable snapshot（历史3.2 oracle/V1–V7/pins/Proto/generated/schema仍exact），不用新V8或新historical副本。
+
+原两contract tests336573/744f58与source190/两integration当前freeze863d5ebb、原scripts其余34/contract其它112保护不变。新机器负漂移断言若尚缺独立case先报告后准tests，禁止为过门放宽旧检查。owner CURRENT只记录候选当前未发行，不预填未来commit/PASS；相邻README加唯一发行事实/机器生成实际方向。worker零命令/测试/生成/资源/Git/browser；六现文件与全部保护freeze ignored r265-skills-management-machine-source-freeze.json/handoff.md，交后STOP。Root独审、严格checker/contract/artifact/历史漂移/类型/lint/build/真实ownedPG全门后才正式提交发布与BFF消费。
+
+### R265-SKILLS-BFF-LIFECYCLE-READ：与owner机器及Web焦点独立的消费者准备
+
+原审查iam_grant_source_scope_0244只读BFF持久worktree /Users/nako/.codex/worktrees/kokoro-r257-bff-normal HEAD42ac39ee/public8.3/99与现Platform Proto c94909，HTTP3.2/9ab3。基于已批准个人管理D0与现r264-skills-lifecycle-bff-read.md，盘点本人管理read/新版本/精确撤回的公开BFF API、当前Web publish消费接缝与错误/replay/当前资格机制。只读明确producer固定发行前可做的D0最小边界和现目录放置/正式命令、生成依赖；不得假设新public minor为8.4（已有Storage占此目标），不复制contract或改权/旧资格，unknown原key语义不被ACTIVE预GET误拦。只写ignored r265-skills-bff-lifecycle-read.md，零正式文件/命令/测试/资源/Git/browser，交后STOP。Root最终架构/后继授权，不让独立worker发明契约。
+
+### R265-SKILLS-MANAGEMENT-MACHINE-RED：按已批准个人管理设计发行 HTTP 唯一事实源
+
+上一goal turn归类PROGRESS：正常技能发布/显示实证、Webaf3e578提交及Root21a99事实提交；候选owner安全RED→GREEN与实际类型失败修复改变下一行动，不是状态重述。完整Wave0–7 active，页面CRUD优先、不增计划中心/新目标，70组不升。
+
+沿原D0与release-read ab4aa5ff放置：Platform现owner apps/kokoro-capability/codex/r259-skills-metadata/HEADa3655ab；14未提交候选保持freeze863d5ebb，唯一writer bff_admin_routing_d0_r257，Root审查/提交。当前HTTP3.2/六路与新增self两源码不一致，正式发行片在既有OpenAPI（采用：唯一schema-first事实源）而非新V8/Proto（淘汰：无新RPC能力与重复历史artifact）；不新模块/目录/schema/cache/权限，原六语义与历史V1–V7完整bytes保留。
+
+先tests-only：仅现test/contract/bff-projection.test.ts和platform-execution-operations.test.ts增加new-management完整profile/closed query/status八安全字段/两path与历史snapshot独立不变量的有效RED；原assertions/预算/skip完整保留，只对latest期望3.3/8，不误改MCP六字段或历史3.2。不得以缺import/类型失败作为RED；先冻结测试和所有其余source/contract/Schema/scripts hashes，ignored r265-skills-management-machine-red-freeze.json/handoff.md，交后STOP。Root先实跑旧源RED，然后才授权uniqueOpenAPI/provenance/strictchecker与v6 historical assertHttp现helper接缝，历史pins和Proto/generated byte exact。worker当前零source/machine/docs/Git/命令/测试运行/资源/browser写；Root有正常ownerHTTP/PG绿只是后继前置，不等machine或消费者完成。
+
+后继完整owner门与固定commit/digest发布后BFF再串行正式HTTP生成与本人管理API，Web版本/撤回另片，不预填未来SHA。必读AGENTS、CODEBASE_MAP、TS/SQL/API手册、Platform三D0及release-read；本卡复用已批准设计而非新需求/PRD，正常8应用/基础设施不由worker启动重置。
+
+### R265-SKILLS-DETAIL-FOCUS-SOURCE：真实用户关闭失败后的局部修复
+
+Web唯一writer agent_planned_guarantee_system_r257，持久worktree /Users/nako/.codex/worktrees/kokoro-r257-admin-web/codex/r257-admin-web-current/HEADaf3e578；Root审查/提交。现reader普通card Button无triggerRef且controlledDialog无onCloseAutoFocus，真实390×640 Escape→dialog0/BODY失败已Root证，不用新unit替代该E2E RED。仅现personal-skills-read.tsx与相邻INDEX允许写，tests原a02dbff exact（本片不新增底层单测）；Admin25/protected28/two mixed原冻结保。
+
+本地捕获event.currentTarget为详情归还目标，Retry不覆盖；用户关闭X/Escape/overlay保abort/request fence，并局部onCloseAutoFocus仅归还本次原connected/可见/未disabled且仍在当前content的opener。与现Dialog默认直接focus同一生命周期优先，不无理由另加rAF/timer；如必要异步则清理/代际再核。现content卸载/身份退役清ref/许可，导航换view或重开其它详情不能触发旧归还，不用全局同名选择器/fallback/body聚焦或更改全局Dialog、授权/业务/布局/API。采用现组件局部DOMref；淘汰全列表多Trigger重构和第二focus store。只前述两个现文件的局部职责修复，无新对象/目录/包。
+
+先读focus-read f0f4467b、现same-repo模式与installedRadix，冻结source2及tests/Admin/全局Dialog原hash，ignored r265-skills-detail-focus-source-freeze.json/handoff.md；不运行命令/格式/测试/资源/Git/browser，交后STOP。Root在既有owned副本复跑原安全邻门/工程，再正常同QA卡Escape/X/短屏与刷新观察精确activeElement原button；真实撤权/极窄重开竞态未经合法fixture仍标未验，不在正常账号造权限变化。
+
 ### R264-SKILLS-MANAGEMENT-RELEASE-READ 交接收口
 
 原独审报告ab4aa5ff已交STOP，Root读取并核当前HTTP唯一machine仍3.2.0/六路径且原digest4b42dd16。后继最小写集：现OpenAPI/provenance/strict checker、现v6 assertHttp改读已有不可变历史snapshot（保3.2历史oracle与V1–V7原bytes）、两个现contract测试、contract README/owner CURRENT。不新V8、不重发Proto或改变历史pins；BFF正式HTTP生成现16输出后另接public路由，非直接Web调用。Root尚未授权生成/正式机器写入，完整门及发布仍待验；实际HTTP/PG候选通过与正常CRUD失败两层证据保持。全原角色已STOP，下一沿本卡续派，不隐藏并发writer。

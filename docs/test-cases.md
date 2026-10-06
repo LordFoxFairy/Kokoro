@@ -1,3 +1,28 @@
+### R265 最新证据归类（2026-10-06 22:50 UTC）
+
+| 验收项 | 执行路径 | 当前结果 | 证据与范围 |
+| --- | --- | --- | --- |
+| 本人技能默认展示与切换 | 正常3310已安装/我发布的→真实名称简介状态→刷新 | 具名子链PASS | 正常Webee4056c、r265-skills-personal-handoff.png；不等全页CRUD |
+| 详情关闭与键盘焦点 | 正常本人卡→X/Escape→精确原button，短窗正文独立scroll | PASS | r265-focus-x-normal/escape-390x640/short-x/postcommit-normal.json；未冒所有pending/快速重开竞态 |
+| 本人五状态管理producer | 实际HTTP+自有PG/Redis，受控IAM；strict契约负控 | owner辅助通过，非用户E2E | 正式Platform 3d4ba6c3462e3896481f902adf47e0713c4187e4；50/0/0skip与原工程1288/289原skip分别记录；normal8086未载入/BFF未接 |
+| 版本发布与撤回 | 正常页面精确revision命令→权威读回→刷新/旧安装状态 | OPEN，尚未完整实现/执行 | 后继正式BFF consumer、Web入口与真实用户全链；禁止以producer/test counts填PASS |
+
+完整T-K03保持原未闭环状态；全70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，本轮完整组新增0。支付最后、其它原FAIL/RETEST均不被本读片覆盖。原负控/类型/格式失败日志保存，修复后证据追加，不改历史结果。
+
+## R265 个人详情交互真实验收（Web ee4056c，2026-10-06）
+
+以下只收口独立焦点缺陷，T-K03完整组保持原状态；页面版本/撤回未接，退出标准未满足。所有操作沿正常3310和既有自有R264清单，无状态注入/新数据。
+
+|用例ID|标题/类别|预置条件|测试步骤|预期结果|实际结果/证据|优先级|类型|
+|---|---|---|---|---|---|---|---|
+|T-K03.R265-FOCUS-X|详情关闭 / 主链|本人发布列表、真实R264清单|点原卡→实际详情ready→X关闭|dialog消失、activeElement精确原button，非BODY/同名其它卡|PASS；r265-focus-x-normal.json，dialogs0/focusReturned true|P2|正常浏览器E2E|
+|T-K03.R265-FOCUS-ESCAPE|键盘与窄屏 / 状态|正常页390×640，既有同卡|Enter打开→Close Tab至技术summary→Enter展开→Escape|dialog0、焦点返原卡且focus-visible|PASS；r265-focus-escape-390x640.json；原R264 BODY FAIL保持历史，当前窄片修复|P2|正常浏览器键盘E2E|
+|T-K03.R265-SHORT-X|固定关闭与滚动 / 边界|真实同详情390×200|展开技术→正文滚到底→检查Close几何→X关闭|正文唯一滚动、Close在屏内、回原卡|PASS；body120/outer0/Close29..61、r265-focus-short-geometry.json/short-x.json/png。255长名未实测不冒全边界|P2|正常浏览器视觉/行为E2E|
+|T-K03.R265-POSTCOMMIT|正式版本刷新 / 主链|Web ee4056c，原安装不改|刷新→真实DOM默认已安装→切我发布的→Enter详情→Escape→回已安装|默认正确、真列表/详情、回精确原卡|PASS；r265-focus-postcommit-normal.json及handoff截图。误用AX checkbox等待工具timeout仅定位器问题，fresh DOM actual button/ready证明，不冒产品性能时长|P1|正常浏览器E2E|
+|T-K03.R265-LIFECYCLE|新版本/撤回 / 生命周期|当前正常个人管理入口|查找正式新版本和撤回操作并要求刷新读回|真实owner→BFF→Web ACK与五状态读回、原key未知恢复|仍OPEN/未实现完整链；HTTP机器候选仍待严格门收口，既有工程103绿不计此例PASS|P0|完整用户链待验|
+
+新增strictchecker四恶意重hash负控仅工程辅助：当前额外method/security override四例误接受，未发行、原记录r265-machine-reject-first-receipt保留；不能拿修此门替代正常管理员、个人CRUD或真实IAM安全验收。完整70组不变。
+
 ## R264 本人管理候选安全负控复验（22:17 UTC）
 
 以下PASS只绑定候选863d5ebb的具名owner行为，不更新70完整用户组，不关闭原正常页EDIT/WITHDRAW/FOCUS失败。
