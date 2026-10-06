@@ -1,3 +1,18 @@
+## R255 最新左栏与未开户验收（2026-10-06，Web 9e1c8c3/bf04df7）
+
+核心风险：draggable行吞纵向touch pan；展开folder重复标题/工具行导致低信息密度；未开户错误被当网络失败。真实正常3310/IAM/BFF用户，非preview/mock；touch是Chromium模拟，不冒物理终端。完整70组11/8/14/36/1保持，仅以下子例验收。
+
+|用例ID/类别|标题|预置条件|测试步骤|预期结果/实际证据|优先级|测试类型|
+|---|---|---|---|---|---|---|
+|T-C01.R255-TOUCH 异常/状态|项目/会话行可起手滚动|正常IAM本人两Direct，390×640 touch/coarse Sheet，原内容高660/窗488|从项目行向上滑→从会话文字向下滑→打开原历史|原RED项目0→0而library0→171.5；pan-y后同项目0→171.5、会话171.5→101.5；最终CSS硬刷新项目0→234.5，body0/URL不误导航、原历史保持，本模拟子例PASS|P1|真实浏览器手势模拟E2E|
+|T-C04.R255-DENSITY 主链/边界|folder内不重复名称与工具行|正常P/Q owner列表200空、1200px桌面|展开两folder→核自身反馈/工具→打开sort→Escape→Space单独收起P|项目名只在folder行一次，children77.92→43.52px，原新建/排序点击区域真实命中；sort实际菜单可达；P false/Q true/Direct2保留，本子例PASS，不冒已有有数据/CRUD全闭|P1|真实页面/键盘/几何|
+|T-C01.R255-SCROLL-FINAL 边界/状态|短高单滚动与底部会话可达|最终CSS/真实用户，1200×460，头账户固定|鼠标置左栏wheel至底→核Direct→wheel回顶|top0→262→0，宽276/scrollWidth276、Direct底346.8<footer356.8，body不滚；PASS本短高子例|P1|真实浏览器滚动|
+|T-C04.R255-TOOL-HIT 边界/状态|移动folder工具不挡名称|最终CSS、390×640 Sheet两folder展开|核原+与sort的矩形/命中→点Q sort→Escape→点Direct可见文字|四工具44×44/center hittrue、名称留空间、sort正常显示“最近更新/按名称”，选原Direct关闭Sheet保原history；PASS本模拟子例。默认整行center位于既有rename按钮区的观察timeout单列，不强制点击掩盖|P1|真实触屏布局/正常按钮|
+|T-B07.R255-MISSING 主链/异常|未开户是业务状态不是加载失败|normal Billing真实暂无本人credit account；正式owner/两读开启|正常用量与计费→等待两读→硬刷新→关闭再打开|actual正规404经strict body/meta/header才“尚未开通积分账户”status×2，Retry0/假0为0，loading解除；PASS展示子例；不冒赠送/收费链|P1|正常跨owner用户页面|
+|T-B07.R255-MISSING-NEG 权限/异常/状态|缺账户不遮真实失败/旧actor|冻结production真实client+native响应补充门|401/403/503同code、generic404、缺meta/错requestid/非JSON/未知键/慢断流/卸载/换actor|保error或cancel/timeout、独立两面、旧响应不覆盖；现原44+新增26=70/0，辅助测试通过，不是全owner安全E2E|P0|辅助边界验证/待真实故障注入|
+
+E2E主判据仍正常登录→真实列表→具体操作→owner事实→刷新/重入一致→异常恢复；所有持久CRUD、真实有数据folder、长分页/故障/物理终端/原IAB更新仍待完整验收。全systemfixture/全页Playwright/axe/视觉/bundle本轮未跑。仅CSS/显示状态写，未造资金余额、推理或数据库回填。实际证据在var/dev/r255-preserve/sidebar-billing-browser-final.json及最终两commit，相邻事实同步，不新QA中心。
+
 ## R255 当前正常浏览器复核与正规积分读取（2026-10-06 07:25 UTC）
 
 |原用例/类别|预置条件|实际步骤|预期/实际结果|优先级/状态|

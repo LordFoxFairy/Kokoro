@@ -1,3 +1,7 @@
+## R255 当前左栏/未开户入口（2026-10-06，Web bf04df7）
+
+Web现components/blocks/workspace-rail/workspace-rail-items.module.css拥有触屏pan-y与所属folder工具定位；原nav/list/engine/owner scope未搬移，Direct常驻/反馈不隐藏。现contract/billing.ts严格未开户错误体→billing/client.ts typed missing_account→ui/billing各独立state/Empty，复用唯一预算/取消读取链；原四mixed和其它候选保持。Root正常IAM浏览器、desktopwheel/touch模拟及截图证据同task/test-cases，未冒真实物理设备/原用户IAB或全部CRUD/收费能力完成。
+
 ## R255 当前正常调试入口更新（2026-10-06 07:25 UTC）
 
 正常九owner源码进程已运行：Billing现main→canonical Nest/Credit两GET+health/ready/metrics，持久.env.local/4245/session6148；BFF仅正规两读配置重载53714/session48037。唯一registry var/dev/processes.json记录，其余七进程/PG/Redis保持。正常kokoro_billing schema由本仓db:apply-schema安装、db:verify-schema无漂移，未seed账户/资金；浏览器两本人读404 billing_account_not_found，Web现billing panel通用error而不是未开户语义，不能假账户/零余额。

@@ -1,3 +1,11 @@
+## R255 当前用户左栏反馈与未开户交互已提交（2026-10-06 07:54 UTC）
+
+- Web分支codex/r255-sidebar-credit-20261006。左栏9e1c8c3a50e8afef00bb56c86e24aac2cbaf065b，仅现items CSS+三相邻事实文档：触屏draggable none→pan-y；展开folder重复视觉标题退役，原创建/排序回所属folder行、保状态反馈/导航标签/数据owner。最终CSS93009a20；独审2227f645精确diff。真实正常IAM页面390×640 touch模拟原项目起滑0→0/资料库0→171.5，修后项目0→171.5/会话反滑→101.5；最终硬刷新项目0→234.5、四按钮44px/hittrue/真实sort菜单可达。Desktop1200×460两folder独立、children77.92→43.52px、唯一wheel0→262→0/Direct底346.8<footer356.8，宽276无横溢；Space/Escape与原两历史marker保持，工作区loading0。物理设备/用户原IAB未冒验收，IAB tab7同步超时另记。
+- Web未开户bf04df7aa9db60a2f1688087907720d8b72c5cff，15生产+1现UI测试+三事实文档：只完整strict404 billing_account_not_found/meta=header映射missing，原10秒/16MiB/UTF8/actor/paging保持，summary/ledger独立。正常IAM用户实际页面两未开户status/Retry0/假0为0；不冒开户/赠送/预占/结算/释放或收费链。独审eadda7dd，原44+新增26=70辅助UI/0。
+- Root最终冻结98文件1782辅助断言/0失败/exit0（28.57s）；全lint/typecheck0、contract275/0、architecture50/0、最终CSS正常build0。未跑全system资源fixture、全页Playwright、axe/视觉/bundle；开发门不冒整体用户路径。normal9 root/listener仍alive且按登记路径probe200，PG/Redis/原registry未重启/变更。原四Web mixed、Root uv、其它子仓/候选保持，Git index不混入gitlinks或秘密。
+- 观察失败保留：旧dynamic disclosure label按Space后失效、build/HMR后folder locator失效、mobile按钮中心命中已有rename overlay、首次probe误用/ready（真实路径/readyz）；重新按最新DOM/点击可见文字/登记探针纠正，不用这些误观测虚计产品FAIL。截图sidebar-final-desktop.png与完整browser receipt、final-frozen-regression/build日志在原ignored证据目录。重复group名rotor歧义/旧browser :has兼容与完整CRUD等后继保持。
+- 完整Wave0–7 goal active，70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST未增加整组PASS。下一费用关键依赖仍IAM当前roster HUMAN发行→grant target verifier/artifact→Billing正规赠送/余额→Agent可信消耗预占结算链；System技术保证/Agent主链可独立并行，不再让支付/19项全部完成阻塞本人两读/正规赠送。用户失败/取消费用决定已确认“仅核实实际消耗、释放其余预占”，不是新待答。只读财务报告d5816b2e揭示原M3 Member与当前User/Session/roster规则漂移；owner D0/源码尚未完成，不能将报告当实现。
+
 ## R255 正常 Billing 启动与左栏当前反馈实证（2026-10-06 07:16–07:25 UTC）
 
 - **实际正常开发增量**：正式安装入口在正常kokoro_development唯一空kokoro_billing schema安装成功，邻owner464个catalog对象逐项exact；db:verify-schema exit0/differences=[]。没有业务seed/余额/赠送。现持久ignored .env.local权限0600；Billing唯一源码pnpm dev session6148/root59116/listener59122/4245，health/ready200。仅BFF原1963经句柄Ctrl-C exit130后按原持久环境补正规两读URL/独立role token并重载为48037/59614/59620/53714；其余七服务/PG/Redis保持，唯一processes registry更新，当前九root PID活且各probe200。probe不冒完整业务。

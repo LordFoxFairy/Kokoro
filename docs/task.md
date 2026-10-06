@@ -1,3 +1,49 @@
+## R255 当前用户左栏反馈与未开户交互已提交（2026-10-06 07:54 UTC）
+
+- Web分支codex/r255-sidebar-credit-20261006。左栏9e1c8c3a50e8afef00bb56c86e24aac2cbaf065b，仅现items CSS+三相邻事实文档：触屏draggable none→pan-y；展开folder重复视觉标题退役，原创建/排序回所属folder行、保状态反馈/导航标签/数据owner。最终CSS93009a20；独审2227f645精确diff。真实正常IAM页面390×640 touch模拟原项目起滑0→0/资料库0→171.5，修后项目0→171.5/会话反滑→101.5；最终硬刷新项目0→234.5、四按钮44px/hittrue/真实sort菜单可达。Desktop1200×460两folder独立、children77.92→43.52px、唯一wheel0→262→0/Direct底346.8<footer356.8，宽276无横溢；Space/Escape与原两历史marker保持，工作区loading0。物理设备/用户原IAB未冒验收，IAB tab7同步超时另记。
+- Web未开户bf04df7aa9db60a2f1688087907720d8b72c5cff，15生产+1现UI测试+三事实文档：只完整strict404 billing_account_not_found/meta=header映射missing，原10秒/16MiB/UTF8/actor/paging保持，summary/ledger独立。正常IAM用户实际页面两未开户status/Retry0/假0为0；不冒开户/赠送/预占/结算/释放或收费链。独审eadda7dd，原44+新增26=70辅助UI/0。
+- Root最终冻结98文件1782辅助断言/0失败/exit0（28.57s）；全lint/typecheck0、contract275/0、architecture50/0、最终CSS正常build0。未跑全system资源fixture、全页Playwright、axe/视觉/bundle；开发门不冒整体用户路径。normal9 root/listener仍alive且按登记路径probe200，PG/Redis/原registry未重启/变更。原四Web mixed、Root uv、其它子仓/候选保持，Git index不混入gitlinks或秘密。
+- 观察失败保留：旧dynamic disclosure label按Space后失效、build/HMR后folder locator失效、mobile按钮中心命中已有rename overlay、首次probe误用/ready（真实路径/readyz）；重新按最新DOM/点击可见文字/登记探针纠正，不用这些误观测虚计产品FAIL。截图sidebar-final-desktop.png与完整browser receipt、final-frozen-regression/build日志在原ignored证据目录。重复group名rotor歧义/旧browser :has兼容与完整CRUD等后继保持。
+- 完整Wave0–7 goal active，70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST未增加整组PASS。下一费用关键依赖仍IAM当前roster HUMAN发行→grant target verifier/artifact→Billing正规赠送/余额→Agent可信消耗预占结算链；System技术保证/Agent主链可独立并行，不再让支付/19项全部完成阻塞本人两读/正规赠送。用户失败/取消费用决定已确认“仅核实实际消耗、释放其余预占”，不是新待答。只读财务报告d5816b2e揭示原M3 Member与当前User/Session/roster规则漂移；owner D0/源码尚未完成，不能将报告当实现。
+
+### T-C04 文件夹重复标题与占高窄修准入
+
+Root正常页面已证每个展开的空folder另渲染一次同名标题/新建排序行，children77.9px（截图sidebar-latest-expanded.png），与已批准“像文件夹、会话挂本folder”的信息结构不符。采用原items CSS将nested sectionRow现新建/排序放回父folder行右侧，隐藏仅重复的视觉section标题（nav aria-label保留），父Link预留动作空间；子列表/空态/error/retry/分页全部保留。比较迁移state/拆新toolbar组件（本片无必要）与现同一相对定位folder内CSS重排，采用后者；无API/owner/数据/新文件/新层。
+
+原Web writer只同items.module.css，Root先验DOM重复/高度基线，候选冻结后真实两folder/短高/mobile/keyboard/按钮互不覆盖回归，独审。不要改标题数据、丢空态、删创建/排序功能或重写folder读取。触屏pan-y现候选保持；未开户16冻结不动。
+
+### T-C01/C04 触屏滑动真实 RED 与单文件准入
+
+Root正常3310既有IAM用户在390×640/coarse/touch浏览器模拟Sheet上，真实Input touch手势从项目行起：scrollTop0→0；同样从资料库行起0→171.5。项目computed touch-action=none，滚动content client488/scrollHeight660，URL保持；静态同selector也落所有draggable会话行。桌面短高上下wheel可到max331/0，不能据此替代触屏验收。用户原IAB debugger连接超时，此模拟不冒原标签/物理设备。
+
+准原Web唯一writer iam_grant_source_scope_0244 仅现src/components/blocks/workspace-rail/workspace-rail-items.module.css的draggable touch-action修为允许垂直pan；保HTML5/键盘重排、desktop manipulation、scope/接口、尺寸/分支、未开户16冻结与原四mixed。不加框架/新的拖拽或持久化层。Root在现正常页重跑同touch+桌面wheel/点击/键盘；冻结后billing_read_activation_0340独审，Root精准提交。其余左栏CRUD/列表空白/原窗口未验保持OPEN。
+
+## R255 最新左栏反馈续查（2026-10-06，T-C01/T-C04）
+
+用户再次报告项目文件夹区大块留白及左栏滚动异常，以当前页面为验收而不是历史CSS门。Web基线66e6f76+冻结未开户16路径与四原mixed，Root主仓17bd2160+既有task未提交；不抢写冻结候选。
+
+- Root：读取当前页面、展开两folder、正常/短高/窄栏实际滚动与硬刷新，定位当前加载源码与几何；只操作自己的验证页，不重启共享服务、不重置数据。
+- billing_read_activation_0340：T-C01/C04只读布局/滚动复核，现workspace-rail、sidebar primitives与对应测试；报告/tmp/r255-sidebar-latest-layout-read.md；不写仓、Git、资源、网络或浏览器。
+- system_guarantee_read_0315：完成已冻结未开户16路径独审，独立于左栏；不将此验收冒左栏闭环。
+- 原Web writer已STOP，任何新左栏实现须Root真实复现和精确范围准入；最终Root浏览器逐交互重跑。完整CRUD/70组未完成状态保持。
+
+07:31 T-B07 Web source准入：Root56001新增6例实际3FAIL/3PASS/44非匹配、exit1/4.05秒；三missing正控失败为有效RED。首61242六FAIL因三负控exact文案定位错误保留，仅新增两定位修正再证；原563行字节exact。真实正常页两正规404+matching meta/header/JSON/private-no-store仍两loadError、Retry2/loading0，截图missing-account-real-red.png。
+
+Root审现方案00055422后批准原Web writer现contract/billing.ts+client.ts+model/panel/summary/ledger+9语言共16生产路径与原billing-panel测试；不新文件/依赖/generated/三D0/其他目录/金融写。仅strict404账户missing分类、同一10秒/16MiB读取链，复用既有Empty/status样式无新皮肤，原独立summary/ledger及actor-generation/分页保护。再于现新增describe补精确非法status/header/envelope/late actor等边界，不放宽旧原断言。冻结后Root工程/真实浏览器+独审才提交；开户/赠送/预占结算释放/其余19目标不关闭。
+
+## R255 未开户展示与正式赠送前置并行接续（2026-10-06，T-B07）
+
+上一goal turn分类progress：正常Billing canonical安装/唯一源码启动、BFF正式重载、真实本人两读404/account_not_found及左栏操作证据已改变下一行动，Root17bd2160。完整Wave0–7/70组不缩。正常九进程先核既有句柄再复用，不重复启动/重置共享资源。
+
+|角色/负责人|范围/基线|验收与阶段门|
+|---|---|---|
+|Web未开户交互，iam_grant_source_scope_0244唯一writer|Web66e6f76，原三D0/OIDC mixed保留；先只读方案报告及现tests/ui/billing-panel.test.tsx新增系统组件失败断言，不改原断言；Root有效RED后准现src/billing/client.ts、src/ui/billing/{billing-model,billing-panel,billing-summary,billing-ledger}.ts(x)及9个现i18n文件，source更细范围按报告核准|严格status404+正规envelope code billing_account_not_found才missing_account；不把任意404/401/403/503/畸形响应当空，不伪余额/账户/GET开户。保10秒含body deadline、16MiB上限、取消/actor-generation/分页/失败重试；missing终态不显示错误重试，正常error继续Retry。旧响应可留局部独立状态，不用summary单项结果遮ledger其他失败。Root源码门、冻结独审、正常IAM页面及刷新最终验收；不跑共享资源/secret/browser/Git。|
+|正式grant前置审查，billing_read_activation_0340只读|现IAM financial注册/名单CAS与拒签、Billing M3三D0/现grant内部事实、System价格/Agent正式binding文件；不改仓或跑资源|纠正旧admin target gate与已裁financial HUMAN profile前后状态；给现caller/issuer/verifier/contract缺口及下一具体owner文件集、未决和并行依赖，不重复旧全盘模板。不构造grant API/凭据/充值；/tmp/r255-financial-grant-next-read.md，交付STOP。|
+|冻结独立审查，system_guarantee_read_0315只读|Web现本人读getJson/model/panel与本片候选及基线|检查仅精确account code终态、畸形/401/503不误判、10秒含body与取消/actor保护；不运行资源/仓写/Git，Root冻结后报告。|
+|Root设计/资源/真实QA/Git|当前台账、既有正常3310/IAM/9owner、持久ignored证据|现明确真实404错误展示RED先保存；方案引用现业务设计，consumer不得复制owner规范/误判plain404；Root适当辅助门与真实无账户浏览器GREEN、故障负控只隔离/不停止共享服务。正式开户/授权赠送/预占/核实费用结算释放/流水与余19完整目标OPEN。|
+
+局部归属：Web当前Billing本人读客户端错误分类和view state，不变公开契约/SQL/金融owner；比较更新现读取器与新增独立missing adapter，采用前者保持唯一有界读取链，不新文件/目录/依赖/兼容协议。价格显示比例另沿owner待pin，本片不改。
+
 ## R255 本轮交付与后继（2026-10-06 07:25 UTC）
 
 本轮实际progress：正常Billing schema安装/漂移通过、正常唯一main启动、BFF原句柄正式重载、真实IAM计费页从503转正规缺账户404；当前左栏轮滚与folder子例正控复核、项目隐式local draft恢复ID来源已实证。非全用户闭环。原代理均STOP；Root自有页关闭，九normal进程运行供继续调试。
