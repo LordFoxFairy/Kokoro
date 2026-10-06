@@ -1,3 +1,35 @@
+### R264 并行交接已完成（22:19 UTC）
+
+发行只读报告ab4aa5ff已收：HTTP3.3唯一机器/严格检查/现历史snapshot分离的最窄写集明确；HTTP与Proto pin纠偏，不新V8/改旧历史。此为后继准备，零正式生成或消费者变更。原Platform、Web与独审现均STOP，Root最终候选HTTP/ownedPG/types/lint/目标格式实证与正常页缺口已落同台账；未将完整goal标完成。当前普通个人管理显示截图r264-skills-personal-handoff.png可复查，编辑新版本/撤回与focus仍待闭环。
+
+### R264 消费 pin 事实纠偏（22:19 UTC）
+
+发行只读盘点确认此前把c94909称为所有Platform消费pin不精确：BFF现 **HTTP projection 3.2.0固定9ab3b653 / digest4b42dd16…**，而 **c94909f1是Connect/Proto独立消费pin**。后继self list/detail仅推进HTTP owner机器与现HTTP generator/config/generated；不机械改Proto、V1–V7历史artifact或放宽历史pins。当前均未发行/生成，BFF/Web未改；详细最小清单由同RELEASE-READ交接后记录。此纠偏不改变70完整组/原真实FAIL/页面CRUD缺口。
+
+### R264 个人管理本轮收尾与当前停止线（2026-10-06 22:17 UTC）
+
+用户确认先清晰个人技能管理，默认「已安装 / 我发布的」，不扩市场。Web **af3e578c71ec0d9023137100cd53f3b7bd6fa371** 三路径显示片已正式提交；正常账号发布→MinIO上传/校验→列表/详情→刷新子链通过，技术编号默认折叠、人类来源状态、详情唯一有界滚动/固定关闭可见。Root再次正常IAB25读DOM：默认已安装、真实R255清单/简介/来源可用/启用与操作可见，无重复我的技能入口；新handoff截图r264-skills-personal-handoff.png。详情Escape后焦点BODY仍真实FAIL，原Web只读报告f0f4467b已定位未记录opener/无DialogTrigger，不冒已修；255长名称真实边界未验。
+
+Platform原source安全复审5116973d与Root76611 HTTP20/0/21原skip、5053真实ownedPG9/0已过，但Root9015真实types2/targetformat1先失败。原owner按限定四路径修exactOptional非undefined cast与纯格式，最终freeze **863d5ebb938865746702aebde7cf1a4a3928e55515d6b3d4dbfbde8e56ae6ad7**。Root97773 HTTP20 PASS/0 FAIL/21原资源skip（实际请求raw body/key400、全admission10秒返回，测试finally等11.5秒晚reject不等响应超限），Root33833真实PG9 PASS/0 FAIL（锁503/retryable、坏metadata500/nonretryable）；自有库精确清理，catalog77→77/Redis0→0/source冻结exact。Root40261 types/lint/八目标格式全部exit0。收据r264-platform-safety-http-final/owned-pg-safety-final/final-engineering；旧RED与首类型失败原日志全部保留。
+
+上述仅候选具名工程/owner行为放行辅助：IAM是受控准入，未验证其它driver故障形状、factory前极窄早取消或真实用户全管理；machine仍HTTP3.2，Platform HEADa3655ab仅D0，14候选路径未提交/未加载到normal8086，BFF仍旧pin。全owner build/contract/architecture/schema smoke与正式3.3发行尚未运行，不拿types0替代。编辑/新版本/撤回浏览器入口仍FAIL，技能完整CRUD退出标准未满足。
+
+完整Wave0–7保持active，70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，完整组新增0。原欢迎页unknown重进偶发FAIL不因当前Web辅助全绿关闭；Storage固定provider物理删除资格、Admin合法正常管理员正向、MCP自订producer仍OPEN。原9应用及基础设施复用，无restart/reset/正常DDL/资金/模型写；Root独占资源/Git/浏览器，uv/gitlinks/任务外修改保持。原Platform writer已STOP，原独审并行只读下一正式机器发行文件集，沿同task，不另建中心。后继顺序：机器严格发行→固定BFF本人管理和版本/撤回→Web真实CRUD，焦点按独立局部缺陷卡收口。
+
+### R264 当前个人技能 CRUD 与并行验收事实（2026-10-06 22:09 UTC）
+
+完整 Wave0–7 active；按用户确认先清晰个人技能管理及全部页面CRUD，不扩发现目录、不等待Agent推理。70完整用户组仍 **11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST**，新增完整组0。下列发布/读回/显示是具名子链通过，不冒整页/全仓完成。
+
+- **真实发布、读回**：正常3310本人新清单ZIP V2，draft201→Begin201→MinIO PUT200→Complete/Validate/Publish200→列表/详情200→刷新持久可见。新source skill:0365e853-d912-4cd1-a647-c4cbc8993a1a/revision1 active，未安装/执行，原R255已安装启用未动；资金/模型/权限零写。首refresh截断记录保留，后紧邻list/detail无截断。证据r264-skills-publish-{first,next,ack}.json及refresh-list/detail；正常最终默认已安装截图r264-skills-personal-current.png。
+- **Web显示片已提交 af3e578c71ec0d9023137100cd53f3b7bd6fa371**（parent b7a88ab，精确reader/INDEX/test三路径，Git对象hash等于实测输入）。真实名称/完整简介、来源可用、技术详情默认折叠；详情固定Close外壳、title+body唯一有界滚动，删除先前auto标题行/outer滚动机制；没有全局Dialog/新状态/接口。Admin25/protected28/two mixed exact未夹带。独审7550f478无新增确定P0/P1/P2，仅机制审查不冒全真实边界。
+- **正常窗口验收分层**：390×200展开技术信息、实际wheel到底body.scroll120/outer.scroll0/Close29..61、点击X关闭；390×640 Tab到summary/Enter展开/Escape关闭；reset viewport→真实hard reload→短工作区loading结束→默认已安装原R255卡可见。browser-receipt与one-scroll-short.json/png保存。**新实证FAIL：Escape关闭后焦点落BODY而非原触发按钮**，P2只读根因交原Web owner；255合法长名称真实provider/浏览器仍UNVERIFIED，不能把DOM长文fixture称真实全边界。
+- **工程仅辅助，不替代以上用户验收**：Root6095最终当前freeze cc3c9f8b，171文件3282 PASS/0 FAIL，真Next controlled-peer77/0；合同295/架构51/lint/types/build exit0；copy/source/Admin exact，RedisDB9 33→33 exact，normal.next未用。原29013前候选3281/1欢迎页未知结果重进FAIL保留OPEN，后full绿不证明该偶发已修。pnpm test:e2e默认启动占用3310的preview未运行；正常CUA实际路径分别记录。
+- **Platform三设计面已正式提交 a3655ab88521cc63f7c1c23ffa8684b3ead93525**（parent c94909，只有三D0，原suffix保持/diffcheck/Prettier0）。当前新本人五状态管理读10source候选未发行：主功能Root78200实PG7/0，但独审95d60820有1P1/3P2，不能用happy counts放行。后Root81354独立HTTP真实raw body/key两route200≠400及heldadmission11.502秒越10.75界，15PASS/5FAIL/21原资源skip；Root98634真实PG lock500≠503，8PASS/1FAIL，独立坏metadata500正控PASS；catalog77→77/Redis0→0/owned精确回收。Root69197只读错误分类实测P2039/driver postgres/55P03，owned清理/正常库零写。原owner现五现源有限修复，之后冻结→独审→Root真实再验；**当前machine仍3.2/六路径、BFF pin c94909未更新，不称编辑或撤回完成**。
+- **独立Storage研究已交，仍非发行**：固定MinIO wrongIfMatch204原真实FAIL保持；expiry+30秒/两次empty inventory不是未来写入终止证据。multipart producer session候选Q1–Q8资格计划7792e711已交，尚未实资格/改源/Schema/正常bucket，文件物理删除及消费者仍OPEN。Admin正常合法管理员正向、MCP真正自订producer、其他剩余页面CRUD依同task续进，不被此局部P1阻塞整个目标。
+- 原9应用监听与PG/Redis/MinIO/ClamAV复用，正常服务无重启/reset，无新临时应用组合；仅Root自有隔离测试库创建后回收。一个现自有IAB25留作个人管理handoff，原用户tabs不关，viewport已reset。Root uv/gitlinks/任务外修改未暂存；Root保Git/资源/浏览器，原Platform writer与Web只读独立并行。
+
+下一：Platform安全候选冻结后Root真实HTTP/PG及工程审查，再独立3.3机器严格发行→BFF本人管理与版本/撤回正式接口→Web真CRUD；同时原Web只读焦点、Storage固定provider资格沿已有卡推进。不增计划中心，不升级完整组、不承诺未验证上线时间。
+
 ### R263 个人技能方向保持与正规登录恢复出口（2026-10-06 21:14 UTC）
 
 完整 Wave0–7 active，页面CRUD优先，用户已裁定先清晰个人技能管理，不扩发现目录。70完整用户组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。

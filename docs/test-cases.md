@@ -1,3 +1,49 @@
+## R264 本人管理候选安全负控复验（22:17 UTC）
+
+以下PASS只绑定候选863d5ebb的具名owner行为，不更新70完整用户组，不关闭原正常页EDIT/WITHDRAW/FOCUS失败。
+
+|用例ID|标题/类别|预置条件|测试步骤|预期结果|实际结果/证据|优先级|类型|
+|---|---|---|---|---|---|---|---|
+|T-K03.R264-MANAGEMENT-WIRE-FINAL|closed本人GET / 异常|隔离Nest真实HTTP、可信身份受控夹具；新list/detail候选|分别无body且Content-Type正控→分别带mutation key→分别原生Node GET JSON body/framing|无body200；key/body400，不调用管理查询|子路径PASS；97773 HTTP20/0/21原资源skip，r264-platform-safety-http-final.log/receipt；之前81354四200≠400保留|P0|真实HTTP异常，不等正常IAM/E2E|
+|T-K03.R264-MANAGEMENT-DEADLINE-FINAL|总准入截止与迟拒绝 / 状态|真实HTTP；受控IAM admission故意11.5秒晚拒绝|发本人read→测response界<10.75秒→确认无controller read→finally等晚reject|10秒同绝对预算503，无迟到成功/未处理reject|子路径PASS；97773整测试11.506秒包含finally等待，不是响应时长；初RED11.502越响应界保留。极窄早abort仍未实测|P0|真实HTTP+受控故障|
+|T-K03.R264-MANAGEMENT-PG-FINAL|依赖锁与坏事实分类 / 异常|Root自有真实canonical PG；正常应用库未使用|独立ACCESS EXCLUSIVE锁/10ms锁超时GET→独立坏summaryGET|真实锁503可重试；坏事实500不可重试|子路径PASS；33833实PG9/0，catalog77/Redis0 exact/owned回收；原500≠503 RED保留；其它driver shape未验|P0|真实PostgreSQL owner integration|
+|T-K03.R264-HANDOFF|清晰个人页默认展示 / 主链|正常3310既有本人R255已安装启用|当前正常DOM及截图读回默认视图|两视图、名称简介/来源/状态，ID折叠、无重复跳转|显示子路径PASS；r264-skills-personal-handoff.png；编辑新版本撤回及focus/长名真实边界不因此通过|P1|正常浏览器观察|
+
+发布→刷新此前真实子链继续保留。完整页面退出标准仍不满足：版本/撤回未接，焦点真实FAIL；工程types/lint/目标格式0只是源码辅助，正式发行与正常消费者之后必须重走真实全部用户步骤。
+
+## R264 最终个人技能显示与安全负控补录（2026-10-06 22:09 UTC）
+
+仍沿T-K03/70完整组，不升整组。主链、边界、异常、权限和状态机分开；当前退出标准未满足：编辑/撤回正式入口缺失，真实焦点返还失败，长期unknown认证及完整安全用户路径仍待验。后台工程只作辅助。
+
+|用例ID|标题/类别|预置条件|测试步骤|预期结果|实际结果/证据|优先级|类型|
+|---|---|---|---|---|---|---|---|
+|T-K03.R264-DISPLAY|详情清晰展示 / 主链|正常本人已发布自有R264清单，Web af3e578|默认已安装→我发布的→真实卡→详情→技术展开/折叠→X关闭|真实全名称简介tags，人类状态，ID仅按需显示，两个个人视图独立|子链PASS；正常卡/详情可见，原raw active/默认ID漏洞修；current-browser-receipt/截图，未替代编辑撤回|P1|正常浏览器E2E|
+|T-K03.R264-SHORT-SCROLL|窄窗口滚动 / 边界|同真实短名清单，390×200|技术展开→真实wheel到底/回顶→观察Close原位置→点击X|唯一内容滚动、Close始终在viewport，完整字段可读、不工具自动滚回冒通过|子链PASS；final body scroll120/outer0，X29..61/viewport200，one-scroll-short.json/png；不等255名称实测|P1|正常浏览器视觉E2E|
+|T-K03.R264-LONG-NAME|255合法名称及长文 / 边界|正式owner合法255name/长summary/tags实际记录|390×200/640/桌面→全文→展开→滚底→关闭→刷新|全文/aria名称不截断、X可达、不双滚动|UNVERIFIED真实provider路径；现DOM辅助255/4096/128正控及独审只证明结构，不能升实际E2E|P2|真实视觉/无障碍待验|
+|T-K03.R264-FOCUS|键盘关闭返回原卡 / 状态机|同真实本人卡，390×640|详情→Close Tab到summary→Enter展开→Escape关闭→核焦点|dialog消失且焦点回原触发按钮，用户可继续Tab|FAIL；dialog0/activeElement BODY，current-browser-receipt，原Web只读定位；不因Escape关闭成功抹焦点失败|P2|正常键盘E2E|
+|T-K03.R264-FINAL-REFRESH|正常尺寸刷新 / 状态机|已发布新QA源未安装，原R255安装启用|viewport reset→hard reload→实际loading结束|默认已安装/原R255名称状态可见，新发布不自动安装|子链PASS；current.txt/png，短loading存在但终止，不冒历史无限loading根因已消失|P0|正常浏览器E2E|
+|T-K03.R264-MANAGEMENT-WIRE|本人GET闭合body/key / 异常|新Platform候选/受控IAM、真实NestHTTP|list/detail各无bodycontent-type正控→各rawGETbody/key|正控200，body和mutation key400，旧路径不变|现RED5FAIL包含四个实际200≠400；81354 receipt/log，修复候选随后复验；非浏览器完结|P1|受控准入真实HTTP集成|
+|T-K03.R264-MANAGEMENT-DEADLINE|总请求有限等待 / 异常|受控IAM整个admission held，真实NestHTTP|进入admission→保持pending跨10秒→late reject|总10秒有界503，late rejection消费，零controller采纳|FAIL实际11.502秒才503超过10.75界，原owner修；早abort极窄窗口未直接实触，不冒覆盖|P0|故障注入系统HTTP|
+|T-K03.R264-MANAGEMENT-PG|真实PG依赖与坏事实分开 / 异常|Root自有隔离canonical PG，正常库不用于测试|独立事务持Skill表锁→管理GET；另独立坏summary detail|已知锁/连接/timeout503 retryable；坏row500 nonretryable|依赖FAIL500≠503、坏summary正控PASS；98634 8/1/cat77exact/keys0exact/owned清理，55P03形状实测；不是完整真实IAM/浏览器|P0|真实PostgreSQL系统集成|
+
+Root当前提交af3e578三path辅助full171/3282、contract295/architecture51/lint/types/build0与正常浏览器分层。原29013欢迎页未知结果重进FAIL仍OPEN，后全绿不清零；编辑/撤回原FAIL和跨subject/unknown原待验继续保留。无正常资源reset、假充值/免费/模型执行；新源未安装。
+
+## R264 正常个人技能用户旅程与缺口（2026-10-06）
+
+复用同一测试台账、既有T-K03，不新增完整组。当前70完整组仍 **11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST**。下列PASS仅各具名子路径，不表示技能全CRUD或全产品完成。
+
+|用例ID|标题/类别|预置条件|真实测试步骤|预期结果|实际结果/证据|优先级|测试类型|
+|---|---|---|---|---|---|---|---|
+|T-K03.R264-PUBLISH|个人ZIP正常发布 / 主链|正常3310真实IAM本人；九owner listeners存活；Root自有ZIP V2，仅整理文字无外部工具；Platform c94909/BFF42ac/Webb7a88|我发布的→发布→输入名称简介tags→选择自有ZIP→提交→等待上传/扫描/Validate/Publish→列表→打开详情|真实owner ACTIVE/revision1，准确名称简介tags、列表/详情读回；发布不自动安装|此子链PASS：draft201、package GET200/Begin201、MinIO PUT200、Complete/Validate/Publish200、列表200；ACK exact skill0365e853… active1，未碰R255源/资金/推理。r264-skills-publish-first/next/ack.json 无截断；详情截图missing-management同时揭示后续缺口|P0|正常浏览器E2E+真实MinIO/owner|
+|T-K03.R264-REFRESH|发布持久化与默认视图 / 状态流转|上一新源发布成功、未安装，原R255已安装启用|关闭详情→hard reload→短workspace loading结束→默认已安装→切我发布的→打开新卡→关闭→回已安装|刷新读真实持久记录；已安装与发布独立，新源不自动安装，最终默认列表原R255仍在|PASS此子链：published GET200/detail GET200，两新紧邻记录无截断；刷新最初chunk捕获截断原记录保留，不冒完整首document网络。r264-skills-refresh-list{-tail}.json/detail.json/detail-dom.txt及personal-final.txt/png|P0|正常浏览器E2E|
+|T-K03.R264-EDIT|个人源编辑和新版本 / 生命周期|本人正常新ACTIVE清单源，旧安装固定revision|打开新卡详情→寻找编辑/发布新版本→修改简介/包→校验发布→刷新核新revision与旧安装|正规版本管理，旧revision与安装不被静默覆盖；名称现immutable规则明确，不能假改新系列|FAIL缺实现：当前详情只有名称/摘要/source/revision/raw active/tags与Close，编辑/版本入口不存在；对应BFF facade及本人管理allstates producer缺失。r264-skills-missing-management.json/png；后续动作未执行|P0|正常浏览器E2E失败基线|
+|T-K03.R264-WITHDRAW|精确版本撤回与刷新历史 / 生命周期|本人新ACTIVE源；只处理自有QA记录，不删用户旧源|详情→明确撤回确认→ACK→本人管理读回→hardreload→若已有安装核source_status与执行禁用|精确revision withdrawn；原key恢复可信ACK，无404假成功、不自动移除安装/升级；刷新仍看本人历史|FAIL缺正式入口，后续未执行；owner RPC current-owner和samekey/currentwithdrawn校验存在不等浏览器接线。r264-skills-lifecycle-bff-read.md仅静态交接，Platform管理读先发行，BFF/Web后消费|P0|正常浏览器E2E失败基线|
+|T-K03.R264-READ-AUTH|本人状态管理读取隔离 / 权限安全|两真实不同主体/tenant，个人新管理API候选尚未发行|同tenant他人ID、异tenantID、绑定cursor跨主体/status、失效session、未知status|服务端本人谓词先分页、闭集摘要，无包/owner/秘密泄露；执行仍active+installed+enabled|UNVERIFIED，新owner设计门先行；不以已有内部workload或安装reader冒全部本人管理资格|P0|待真实owner+用户E2E|
+|T-K03.R264-UNKNOWN|撤回丢ACK / 异常|同一已明确intent/key/body；真实当前本人资格|发撤回→在真实转发后丢ACK→用户显式原key恢复→权威读回→刷新|不自动换key/重发；owner receipt current withdrawn匹配才认成功；active-only404不冒withdrawn|UNVERIFIED，现RPC语义只静态核；新public/Web consumer未接，不能假数据通过|P0|待真实故障恢复E2E|
+|T-K03.R264-LAYOUT|清晰个人列表和详情 / 边界与交互|真实名称/简介/status；长摘要、tags/技术ID与窄屏|双视图切换→卡片→详情→展开技术详情→键盘关闭→窄屏/长内容|主内容人类可读状态；技术ID折叠、不横向撑破；有限loading/error/empty，focus正确|双视图/名称及默认已安装已观察；raw active+ID默认展开实际缺口已记录，窄屏及后继显示修复待验。不拿普通短文截图冒所有边界PASS|P1|UI/无障碍/正常浏览器E2E|
+
+**本模块退出标准**：约定P0/P1完整真实本人页面路径全部通过；跨主体/失败/状态流转有证据，刷新与owner事实一致，无已知缺入口、无限loading、错误权限或未知结果误判；工程门仅源码放行辅助，不替代用户旅程。现两个真实功能缺口仍FAIL，未达到退出标准。正常发布只新增一个Root自有QA技能、未安装/执行；原用户标签与原R255源、资金、9服务/PG/Redis/MinIO保留。
+
 ## R263 个人技能与登录恢复用户验收记录（2026-10-06）
 
 以下为现同一测试台账追加，不新建测试计划中心；全70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST不升。

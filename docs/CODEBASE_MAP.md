@@ -1,3 +1,18 @@
+### R264 消费 pin 事实纠偏（22:19 UTC）
+
+发行只读盘点确认此前把c94909称为所有Platform消费pin不精确：BFF现 **HTTP projection 3.2.0固定9ab3b653 / digest4b42dd16…**，而 **c94909f1是Connect/Proto独立消费pin**。后继self list/detail仅推进HTTP owner机器与现HTTP generator/config/generated；不机械改Proto、V1–V7历史artifact或放宽历史pins。当前均未发行/生成，BFF/Web未改；详细最小清单由同RELEASE-READ交接后记录。此纠偏不改变70完整组/原真实FAIL/页面CRUD缺口。
+
+## R264 当前读取候选最终冻结（22:17 UTC，尚未发行）
+
+Platform现http/projection-request.ts持惰性factory/绝对deadline与closed管理GET；guard仅新self两路同完整admission截止；database/prisma-errors.ts精确已知依赖分类；现Skills/source service持safe八字段本人read，query用NonNullable闭集status。最终source190/test2/contract114/schema冻结863d5ebb，Root真实HTTP/ownedPG和types/lint/目标格式通过仅候选。machine3.2与BFF旧pin不变，不代表正常8086已加载；3.3机器发行另片，未准生成或消费者。Webaf3e578局部详情滚动已正式提交，focus opener缺口仅只读f0f4467b；当前正常截图r264-skills-personal-handoff.png，完整状态见CURRENT。
+
+## R264 当前个人技能管理与 producer 接缝（2026-10-06）
+
+- 正常Web `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEAD **af3e578c71ec0d9023137100cd53f3b7bd6fa371**：现 `src/ui/skills/personal-skills-read.tsx` 只个人两视图/现读/安装/发布与详情呈现；新局部Dialog固定Close带、标题和正文同一scroll、技术标识native details默认折叠，原身份/flight不改。相邻INDEX和skills-panel三新增语义回归同3路径提交；Admin25/protected28/two mixed未提交。正常发布及显示子链通过，编辑撤回/focus回原按钮/长名真实边界尚未闭环。
+- Platform（物理 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`）HEAD **a3655ab88521cc63f7c1c23ffa8684b3ead93525** 只有三D0正式提交；目标新 `/v1/self/skills` list/detail仍未发布机器3.3。现 `modules/skills/source/{skill-projection.controller,query,mapper,skill-source.service}.ts` 与现repository/model承接本人五状态，只trusted主体。`http/projection-request.ts` 为新两read绝对deadline factory/closed请求的候选共用位置，`database/prisma-errors.ts` 只精确provider分类；不另建management模块/状态中心/cache/schema，guard不得反向import controller。当前安全源候选在原writer，根因/实际负控见同task。
+- BFF正常worktree HEAD42ac39ee/public8.3/99仍pin Platform c94909f1，active-only个人发现不等allstates管理；正式owner固定commit/digest发行后串行消费，Web不直连内部owner。当前现CreateSkillVersion/Withdraw RPC不等浏览器接线。
+- Storage55候选/三D0与fixed MinIO qualification FAIL、Admin正向和MCP自订缺口仍按CURRENT，根任务台账未替换。证据均ignored `var/dev/r255-preserve/r264-*`；完整Wave0–7 active、70组不升；工程绿或监听存活不冒全产品完成。
+
 ## R263 当前正式认证恢复接缝（Web b7a88ab，2026-10-06）
 
 正常Web持久worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEAD b7a88ab7d3a47aad20aa7426bad835c703f4905e：现 `src/ui/auth/app-gate.tsx` 仅持用户显式正式login动作、同步flight与有限原document导航guard；`runtime-loading.tsx` 只现Alert/Button换行及两动作pending呈现，相邻INDEX记录归属。原 `use-session-state.ts` / `product-auth-client.ts` / return-target及producer exact，无新auth框架/endpoint。个人Skills现两视图/实际元信息仍既有owner读取；真实unknown新按钮链待验。Admin25未提交、Storage55候选/三D0与MCP缺口维持，事实/完整组以CURRENT最新前缀为准。

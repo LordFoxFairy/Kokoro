@@ -1,3 +1,141 @@
+### R264-SKILLS-MANAGEMENT-RELEASE-READ 交接收口
+
+原独审报告ab4aa5ff已交STOP，Root读取并核当前HTTP唯一machine仍3.2.0/六路径且原digest4b42dd16。后继最小写集：现OpenAPI/provenance/strict checker、现v6 assertHttp改读已有不可变历史snapshot（保3.2历史oracle与V1–V7原bytes）、两个现contract测试、contract README/owner CURRENT。不新V8、不重发Proto或改变历史pins；BFF正式HTTP生成现16输出后另接public路由，非直接Web调用。Root尚未授权生成/正式机器写入，完整门及发布仍待验；实际HTTP/PG候选通过与正常CRUD失败两层证据保持。全原角色已STOP，下一沿本卡续派，不隐藏并发writer。
+
+### R264-SKILLS-MANAGEMENT-TYPE-FORMAT 当前交接（22:17 UTC）
+
+原Platform owner交四路径freeze863d5ebb/handoff1698dab6并STOP；Root核query已闭集且非undefined optional，纯格式未放宽断言/预算/skip。Root97773 HTTP20/0/21原skip、33833真实ownedPG9/0/owned精确回收/catalog77与Redis0 exact；40261 types/lint/八目标格式0，所有冻结起终exact。旧首工程types2/format1及原独立RED均保留。source候选未提交、machine3.3/消费者与全owner门未发行；其他driver/factory早abort系统窗口未验。原独审并行RELEASE-READ，Web焦点只读已交STOP；Root当前仅五同台账事实文档提交，uv/gitlinks/其它文件不暂存，完整goal不升完成。
+
+### R264-SKILLS-MANAGEMENT-RELEASE-READ：与类型收尾独立的契约发行准备
+
+原独审iam_grant_source_scope_0244只读Platform a3655ab当前contract/README、HTTP3.2机器唯一事实源/生成检查、历史pins/消费者BFF c94909。找出本人管理read3.3正式机器发行最小文件集、现硬门受影响断言及正确固定artifact/digest顺序；不放宽旧历史pin/不可变artifact、不复制契约、不生成/运行/改正式文件。只写独有ignored r264-skills-management-release-read.md，交后STOP。Root下一切片按现D0与放置门授权machine writer，未正式发行不准BFF/Web消费者。
+
+### R264-SKILLS-MANAGEMENT-TYPE-FORMAT：Root真实复跑后的限定修复
+
+安全源freeze fd543931后Root76611 HTTP20 PASS/21原资源SKIP，Root5053真实ownedPG9 PASS，catalog77/Redis0 exact与owned回收；独审5116973d无新增确定阻断，仅实测55P03/其它driver与早取消窄窗未验。Root9015工程types exit2：现skill-projection.query.ts optional status cast含undefined违反exactOptionalPropertyTypes；lint0，targetformat1仅controller/两integration测试格式。失败日志保存，不放宽编译/断言/门禁。
+
+现准原Platform唯一writer仅skill-projection.query.ts将已闭集校验status缩为非undefined现类型，不改wire/业务/错误；controller.ts与两已冻结integration tests只Prettier等价格式（原断言/预算/skip/实际行为保持），允许使用该四现文件纯格式工具，不运行测试/资源/Git。其余source/contract/schema/generated/config/依赖与freeze fd543931 exact。独有ignored新r264-skills-management-type-format-freeze.json/handoff.md，冻结全部当前source190/tests2/contract114/schema后STOP；Root重新跑HTTP/PG/types/lint/格式，不把候选冒3.3发行或页面CRUD。
+
+### R264-SKILLS-DETAIL-FOCUS-READ：正常键盘操作新增实证，暂不抢写
+
+Root正常IAB25真实390×640：本人卡→详情加载结束→Close Tab到原生技术summary→Enter展开→Escape关闭，dialogCount0但document.activeElement.tagName=BODY，未回原触发卡。归T-K03.R264-FOCUS / P2 / 真实浏览器FAIL（无状态注入）；short窗口滚动/X可达的PASS不关闭此独立键盘缺陷。r264-skills-personal-current-browser-receipt.json保存；没有把BODY内script文本存证或宣称focus已过。
+
+原Web负责人agent_planned_guarantee_system_r257只读现personal-skills-read与现Dialog/Trigger及同仓已有focus返还模式，基线新提交af3e578；只给触发元素生命周期、scope retire/lateACK保护、最窄local方案和E2E oracle。只独有ignored r264-skills-detail-focus-read.md，不改source/tests/docs/全局Dialog/状态/权限/Git/命令/测试/resources/browser。后继另准RED/实施，当前不继续反复布局，不扩大本轮UI片。Root复用正常一个handoff tab、viewport已reset，原用户tabs不关。
+
+### R264-SKILLS-MANAGEMENT-SAFETY-SOURCE：独立HTTP/PG有效RED后有限修复准入
+
+Root81354实际HTTP41例15 PASS/5 FAIL/21原skip，list/detail mutation key和raw body各200≠400、heldadmission11.502秒超10.75界；所有新独立路径真正到boundary。Root98634真实ownedPG9例8 PASS/1 FAIL：lock依赖500≠503，另坏summary500正控独立PASS，catalog77exact/Redis0exact/owned清理。Root69197同canonical新owned库直接实测依赖error形状PrismaClientKnownRequestError/P2039、DriverAdapterError/cause postgres/originalCode=code=55P03；只脱敏分类字段，catalog77exact/Redisexact/owned清理，正常库零写。原失败收据均保留。
+
+现准原Platform唯一writer按上卡放置修改src/http/projection-request.ts、bff-projection.guard.ts；src/modules/skills/source/skill-projection.controller.ts、skill-source.service.ts；src/database/prisma-errors.ts五现文件，不新文件/目录/接口/schema/配置/机器/生成/依赖。将controller旧私有wrapper删掉（不是双保），共用factory先check后start/立即处理reject/abort cleanup、同绝对deadline包新两guard整个admission；仅新两闭合GET body/framing/idempotencykey，合法Content-Type无body保持200。source新两个repository等待转精确已知依赖typed503；其他Error和坏summary500不变，metadata校safe现ID/series/status（不硬绑UUID）。数据库分类helper可处理已知Prisma连接/timeout及driver PostgreSQL55P03/57014/连接类SQLSTATE，未知不推断message，旧方法/transaction分类不改。五源最终freeze与独立测试839072/548e78冻结exact、其余源/contract/schema原值，handoff后STOP。P1早abort合法系统窄窗仍未覆盖，必须如实保留独审factory审查，不制造source hook/新unit作产品验收。Root真实负控/工程/机器门另走，当前HTTP3.3和页面编辑撤回不发行。
+
+### R264-SKILLS-MANAGEMENT-SAFETY-SOURCE 预定放置裁决（先等独立RED）
+
+归属仍Platform HTTP请求生命周期和现Skills本人read，原负责人唯一writer。比较controller私有wrapper被guard反向import（淘汰：循环/职责反向）与现src/http/projection-request.ts共用HTTP边界（采用）。在现文件扩deadline factory和仅新管理GET closed body/key检查；guard/controller调用同绝对起点，不新增timeout阶段/框架/目录。厂函数先核signal/deadline后再启动，已启动任务统一处理success/reject且取消时cleanup；新两guard admission也受同截止，旧六入口不调用。仅请求返回有界/晚结果不采纳，不声称物理取消PG/credential file。
+
+PG错误分类比较把所有unknown异常映503（淘汰：坏事实被吞）与现database/prisma-errors.ts新增精确provider classifier（采用，主变化原因仍数据库错误分类）。新Skills本人read只repository IO await处catch，调用返回boolean的分类helper并转现DependencyUnavailableError，业务层不接Prisma类型，metadata mapper和未知Error保持500；旧source路径不改。分类仅已知连接/查询超时/取消/55P03依赖，不靠任意message猜retryability；Root实PG lock作行为门。允许后继源范围在原已修改10内最窄guard/controller/source，再扩现projection-request.ts与database/prisma-errors.ts两现文件，其他原源/contract/schema/generated冻结。坏identity/status判定仅新summary，支持现合法opaque ID格式而非盲目强制UUID；若另需schema漂移负控只先报告，正常canonical零改。
+
+这只是后继有限放置决定，不即刻准源；原tests独立负控freeze且Root实际失败后另发实施消息。P1早abort窄窗无当前合法HTTP触发点，记录真实未覆盖，静态factory安全审查不冒系统级用户E2E。
+
+### R264-SKILLS-DETAIL-ONE-SCROLL-SOURCE：有效局部RED后架构收敛
+
+Root17504当前74例73 PASS/1 FAIL，真实outer仍overflow-y-auto、没有固定Close带；无import/类型失败。r264-skills-detail-one-scroll-red.log/receipt保留，Admin保护exact。现准原Web唯一writer只改personal-skills-read.tsx本人详情现Dialog及相邻INDEX：outer maxheight/min-width保留，唯一minmax行/overflow-y-hidden/pt-14，去双行auto/outer-auto；现Title移入body首项，body min-w-0/min-h-0/overflow-y-auto，Close继续现全局控件body外。Title完整wrap，现身份/flight/close/error/read/publish逻辑不动。冻结test a02dbff不改，零新文件/locale/模块/API/全局Dialog/资源/Git；one-scroll-source freeze/handoff后STOP。Root独审、当前输入工程、真实短名窄窗口/默认，合法255长名真实provider路径仍另列待验，结构辅助不冒真实E2E。
+
+### R264-SKILLS-MANAGEMENT-SAFETY-RED-ISOLATE：真实失败保留，拆负控避免首assert遮蔽
+
+Root56381受控Nest真实HTTP终态1：36总例13 PASS/2 FAIL/21原资源skip，mutationkey200≠400，held总admission11.506秒超过10.75界；freeze exact。Root20106真实ownedPG终态1：8例7 PASS/1 FAIL，真实lock依赖500≠503；catalog77→77/Redis0→0/owned回收/input exact。此三FAIL是真行为，不是fixture错误，但各合并case首失败遮蔽后续body/detail/坏metadata，未执行断言明确不计覆盖。
+
+续原Platform唯一tests writer只准同两个既有integration把本轮新增合并场景拆独立it：list/detail分别content-type正控、mutationkey负控、rawGETbody负控；PG依赖503和坏summary500分独立case。保所有原语义/固定总10秒+10.75oracle/15秒testbudget/原7及旧case/skip，不扩大fixture/源范围。late reject监听可用finally无论前面失败均清理/消费，但不删原zero-unhandled断言。freeze新isolate-handoff后STOP→Root再跑真实负控再另准source。机器D0/所有source保持。source后继最窄候选位置已读：现projection-request可容纳request-boundary deadline factory，供新guard与controller共用避免guard→controller循环；只新两route调用，旧六不变。源授权另卡，不从此句自行实施。
+
+### R264-SKILLS-DETAIL-ONE-SCROLL：复核滚动归属后收敛，不继续双滚动补丁
+
+独审架构报告3cf9d279明确当前auto标题行在合法长名称/短viewport可能把body压0，外壳overflow仍可带走Close。Root采用既有局部Dialog唯一内容滚动：外壳单minmax行、不纵滚、固定顶部Close留白；标题和完整正文同body，Close仍现控件body外。不加状态/新组件/全局Dialog/新接口。原短名390×200已真展开/回顶/X关闭、390×640展开/Escape、正常刷新默认已安装均有证；这不冒长名已验。
+
+R264-SKILLS-DETAIL-ONE-SCROLL / P2 / 原Web唯一writer agent_planned_guarantee_system_r257 / Root资源Git / baseline冻结9d6abd1c；先只准现tests/ui/skills-panel.test.tsx R264第三例的上一方案结构oracle明确替换：outer maxheight保留但overflow-y-hidden、grid-rows-[minmax(0,1fr)]和pt-14固定Close带；body min-h-0/min-w-0/overflow-y-auto包含DialogTitle、Description与全部字段，Close仍不在body。原完整文本/状态/技术详情/请求次数/close/71例/预算均保留；helper可选name255并第三例用完整255不间断名，验证完整aria title/text不截断。布局oracle变更原因公开为单scroll职责，非删除失败/语义。tests freeze/handoff后STOP，Root跑有效RED再单独准现reader/INDEX实施架构。零writer命令/测试/Git/browser/资源，Admin25/protected28/two mixed保持。
+
+### R264-SKILLS-MANAGEMENT-SAFETY-RED：独审实际风险先负控，不发布候选
+
+Root真实隔离PG/Nest78200终态0，现七例7 PASS，catalog77→77、Redis0→0、输入/保护exact、owned库回收；这只是两个本人读主功能，不是发行/页面CRUD完成。独审95d608201发现P1已启动Promise早取消遗失reject处理、P2全admission不受总截止约束、closed GET仍接受body/mutation key、PG依赖误500；坏事实身份/status闭合还待负控。源10路径继续冻结，机器3.2/六路径不变。Web最终工程63157终态0；完整29013为3281 PASS/1 FAIL，原欢迎页未知结果重进仍OPEN，不重跑冲掉失败。
+
+R264-SKILLS-MANAGEMENT-SAFETY-RED / P0 / Platform唯一tests writer原bff_admin_routing_d0_r257 / Root审查与资源 / HEADa3655ab；范围仅现test/integration/skill-projection-postgres.integration.test.ts与现test/integration/bff-projection.test.ts。先阅读独审与原fixture；优先实际Nest HTTP边界测试：合法旧读200前置，新两GET显式业务body及Idempotency-Key应400，无body仅content-type应200；受控完整admission held超过现绝对10秒应有界503、迟到reject不得未处理/不得后续controller采纳（标注受控HTTP故障注入而非真实IAM）；真实PG依赖短故障应503，与自有坏metadata500分开。现有fixture可复用，不新增source hook/private cast；若确需fixture或难以合法制造早abort/PG故障，先报告最窄范围，不伪造业务RED。保全部旧7及所有旧case断言、预算/skip，不放宽门。源/contract/schema/package/generated/D0均零写；测试交接独有r264-skills-management-safety-red-handoff/freeze后STOP。worker不运行命令、PG/Redis/Git/browser/服务；Root先跑失败并核资源，随后另准最窄source。当前剩余180源/114contract/schema与WebAdmin保护保持。不以负控或主功能计数关闭整页。
+
+R264-SKILLS-DETAIL-ARCHITECTURE-READ / P2 / 原iam_grant_source_scope_0244只读 / Webb7a88ab、最终冻结9d6abd1c：检查当前局部Dialog标题固定auto行、body独立滚动与超长255名称+极小窗口条件，比较局部单滚动区包含标题 vs 固定header两方案；只给精确现有组件方案/可达几何条件和保留oracle，不改source/tests/全局Dialog，不操作浏览器/资源。报告独有r264-skills-detail-scroll-architecture-read.md后STOP。Root实际当前短名390×200展开body滚动与X几何通过，仅证明此路径；条件长名P2不冒全边界通过。保持本卡个人管理，不另建计划中心。
+
+### R264-SKILLS-DETAIL-SCROLL-BODY：真浏览器仍暴露关闭入口随内容滚走
+
+Root39626工程五门全0仅绑定height第一源码；正常390×200 Dialog已界于y16/h168，但技术展开自动scrollTop48使Close top=-19，End至88时Close top=-59。工具click自动滚回后可关闭不代表普通用户当前画面有可见Close；此真实P2未清。初height源码不提交；保原red/first-green报告。最窄目标仅详情内容滚，标题/全局已有X留固定容器，不改全局Dialog或身份/请求。
+
+原Web writer先现第三case追加局部body容器断言：Dialog两row auto/minmax(0,1fr)，现简介/状态/tags/details在data-testid personal-skill-detail-body之内，body min-h-0 overflow-y-auto，原Dialog close不属于body；标题min-w-0 break-words pr-10避免长名撞X。保原所有断言/预算。Root有效RED后另准同reader现Dialog只包一层局部div、outer加grid-rows-[auto_minmax(0,1fr)]、title换行留X位置，INDEX记录；保原max-height/overflow class，body取唯一主要滚动。现关闭/focus/dialog控件不改。无新组件文件/locale/API/模块，不扩设计。独有scroll-body-red/source冻结交接，worker零Git/测试/资源/browser；Root真正390×200展开、滚到底和顶部Close几何均在viewport，640及正常尺寸再验。原Admin保护及其它切片不动。
+
+### R264-SKILLS-MANAGEMENT-READ-SOURCE：真实PG/Nest有效RED后最窄producer
+
+Root12828终态exit1：现7例4 PASS /3 FAIL，三个旧ACTIVE前置200均过，新self list/detail/paging各404≠200；非fixture/import/type失败。r264-platform-owned-pg-red.log/receipt保留；owned库精确清理catalog77→77、Redis本logical DB0→0、304保护source/contract/schema exact、正常库零写。首次Root runner相对路径放在owner cwd失败、模块未找到，仅setup失败未触资源；已改Root绝对路径后真实RED，不能计为业务缺陷。
+
+R264-SKILLS-MANAGEMENT-READ-SOURCE / P0 / Platform唯一writer原bff_admin_routing_d0_r257 / Root审查资源 / HEADa3655ab、冻结testbb9aca449。按已提交三D0只实现本人五状态两个内部GET与安全八字段/owner先过滤keyset/10秒单截止/取消，不做Version/Withdraw命令或BFF/Web消费。本片准现文件：src/modules/skills/source/skill-projection.controller.ts、skill-projection.query.ts、skill-projection.mapper.ts、skill-source.service.ts；src/modules/skills/skill.model.ts、skill.repository.ts；src/http/projection.constants.ts、bff-projection.guard.ts、projection-context.ts、request-telemetry.middleware.ts、projection.error.ts。精确11文件，无新模块/文件/框架/配置/Schema/cache/依赖；必要之外不改。现REQUEST_ABORT_SIGNAL/performance单调起点与现错误复用，新预算仅新两路由，旧六路由/RPC不变。单页最多101、先完整本人tenant/user/subject/status谓词；cursor绑定subject/tenant/status/surface；不接任意ownerScopes，不输出metadata/package/秘密。超时/取消返回现依赖失败零晚200，signal/总截止贯穿IAM/Redis runtime/PG/投影，待真实held门再验，不能自称物理SQL已取消。
+
+现test唯一候选允许补真正边界用例但保原7所有断言/timeout/skip；如需其他既有test/fixture先报Root，不越界。contract/OpenAPI/provenance/artifact/generated当前零写，HTTP3.3发行另片，由Root验证当前producer后准正式机器/历史双严格门。worker零命令运行/PG/Redis/Git/browser，只冻结源11实际修改集+test/保护manifest+handoff并STOP。Root并行验Web显示，不抢写Platform；Root真实隔离HTTP/PG/旧六、安全预算与严格机器门后才正式发布，不冒当前页面编辑撤回已完成。
+
+### R264-SKILLS-DETAIL-HEIGHT：独审P2经真实窄窗口复现
+
+Root第一候选全门23072终态0：171文件3282/0、实际Next受控peer77/0，RedisDB9 33→33 exact，源码及Admin保护exact；该门只对应first冻结，不能覆盖后续修改。独审ba4017bc指出高度约束缺口；Root正常真实已发布QA详情展开技术信息后390×200观察dialog y=-28/h256，Close top=-15，overflowY=visible，已保存r264-skills-detail-overflow-red.json/png，非注入DOM/假长文。长摘要65535实际provider边界未验，不拿极小窗口几何冒全边界。
+
+原Web writer先tests-only：仅现tests/ui/skills-panel.test.tsx第三长文本case追加Dialog有限viewport maxheight/overflow-y断言，保原全部正文/断言/预算，冻结交接STOP→Root现owned副本实跑74例新增height RED后，才另准现personal-skills-read.tsx该DialogContent class增加max-h-[calc(100dvh-2rem)] overflow-y-auto、相邻INDEX记录。无全局Dialog改动/新文件/状态/API/locale。Root再独审冻结、工程/正常窗口390×200及390×640技术展开/滚动/Close、默认尺寸回归；复用正式读，不创建更多QA源或篡改数据。
+
+### R264-SKILLS-MANAGEMENT-HTTP-RED：D0正式提交后本人生命周期读失败先行
+
+Platform三设计面由Root精准提交 a3655ab88521cc63f7c1c23ffa8684b3ead93525（parent c94909f1）；diffcheck/三文档Prettier当前均0，原suffix exact，独审7599c2c无确定P0/P1/P2。仅D0正式，不代表HTTP3.3发布、任何管理API或CRUD完成。
+
+R264-SKILLS-MANAGEMENT-HTTP-RED / P0 / Platform / 原bff_admin_routing_d0_r257转任本卡唯一tests writer（原Storage只读资格计划已STOP）/ Root审查和资源 / 基线apps/kokoro-capability HEADa3655ab、clean。只准现test/integration/skill-projection-postgres.integration.test.ts追加业务HTTP期望：真实owner PG本人五状态GET /v1/self/skills与精确detail、safe八字段、列表先本人过滤再分页、跨主体/tenant/detail/cursor拒绝、既有原ACTIVE六路径保留。可局部扩本文件putSkill fixture的可选status/owner/tenant以建自有行，不改旧断言/全局timeout/skip。新URL用合法现projection fixture前置，先旧路径200证明准入与真正PG，再新路径期望200但当前404构成有效RED；不引用不存在的源method，不制造编译失败。不写unit/contract/source/fixture文件/Schema/generated/package/lock/docs/服务。明确现IAM fixture是受控准入，非真实IAM或浏览器全链完成。
+
+必读AGENTS/三D0/SQL与TS手册/CODEBASE_MAP、现nest fixture与实际cleanup范围；worker不运行测试/SQL/Redis/Git/browser/共享资源。冻结唯一test、原source/contract/schema哈希与既有断言保留，独有ignored r264-skills-management-http-red-handoff/freeze，交后STOP。Root复用真实PG/Redis，另建owned隔离数据库、受控schema/唯一tenant，不传正常owner连接；安全资源前后盘点后运行原owner入口。失败通过后另准source/正式机器发行，不同时让BFF/Web发明新契约。
+
+### R264-SKILLS-DETAIL-SOURCE：真实显示RED后最窄修复准入
+
+Root61234 已终态exit1，现skillspanel74例 **71 PASS /3 FAIL**，新三case实际分别缺“Source active”人类状态、provenance.closest(details)=null、Dialog min-w-0/wrap保护缺失；不是import/类型失败，旧71全过。r264-skills-detail-red.log/receipt保留，Admin25/protected28、原source exact，normal.next不用。Root正常详情raw active/ID默认可见已另有真浏览器RED。
+
+原Web唯一writer准现src/ui/skills/personal-skills-read.tsx的局部显示修复及相邻src/ui/skills/INDEX.md（不新文件/locale/API/owner/contract/状态框架）：详情status复用t(skills.personal.source.active)，source/revision移入现details/summary默认折叠；Dialog/摘要/tags明确min-w-0与break-words，摘要whitespace-pre-wrap，published卡片描述换行保护。不截断真实字段、不隐藏名称简介tags，不新增未发行编辑/撤回按钮、不把安装移除冒撤回；原read controller/generation/身份退休/publish及installation逻辑完全不动。冻结三路径（source、tests、INDEX）后STOP→独审→Rootcopy安全邻门/工程与正常已发布QA详情+展开/关闭/刷新实际浏览器验收。三RED新增/原71oracle正文、预算保持；只准删测试追加前多余空行等不影响断言的格式。Admin25/protected28/two mixed/Platform三D0 exact，零worker资源/browser/Git。
+
+### R264-SKILLS-DETAIL-RED：已观察的个人页显示漏洞，独立于新管理接口
+
+局部归属：Web现personal-skills-read只承接已正式active详情的呈现；复用现skills.personal.source.active与skills.personal.details文案和现details/Dialog，不改owner/type/网络/API/身份或新生命周期按钮。Root正常截图实证raw active、source_ref默认展开；当前长summary/tags未break，先RED再最窄修，非等待agent推理或Platform新producer。
+
+R264-SKILLS-DETAIL-RED / P1 / 原Web writer agent_planned_guarantee_system_r257（Platform三D0已freeze并STOP后转回Web）；正常worktree HEADb7a88ab，Admin25/protected28全部保。当前仅准现tests/ui/skills-panel.test.tsx新增正常preview=false、真实装配路径的局部回归：已安装默认→我发布的→本人详情显示人类状态，不显示raw active；技术ID在原details默认collapsed、summary可打开；真实name/summary/tags仍可读、Close/lateACK/client retirement原断言保持；长不间断summary/tag DOM容器具break-words/min-width保护。先冻结ignored r264-skills-detail-red-handoff/freeze，Root在既有owned copy实跑RED；随后单独准现source及相邻INDEX。不删原断言/加budget/skip、不改locale/Admin/contract/route/其它source/test，两mixedexact；worker零Git/测试运行/资源/浏览器。
+
+### R264-SKILLS-LIFECYCLE-D0：先补本人管理 producer，再接页面
+
+Root已正常发布自有清单源 skill:0365e853-d912-4cd1-a647-c4cbc8993a1a/revision1；真实 MinIO PUT、Complete、Validate、Publish 与列表读回通过，详情缺编辑/撤回已取证，不宣称个人 CRUD 完成。原 active-only discovery/get 不能代替本人全部生命周期管理。
+
+|项目|本切片放置与验收|
+|---|---|
+|Owner/唯一 writer|Platform（物理 apps/kokoro-capability，HEAD c94909f1），原 agent_planned_guarantee_system_r257 转任本切片；Root集成，原 iam reviewer 独审；Web/BFF源码暂零写。|
+|当前事实|Platform工作树 clean；既有 Skill/series/revision/metadata/status、CreateSkillVersion/Withdraw RPC 与 current-owner admission/同key receipt；现本人published读取仅 active，HTTP无本人allstates管理读。Web/Admin25/protected28保持。|
+|目标职责/API|本 owner 新本人 list/detail 内部HTTP读，/v1/self/skills 与 /v1/self/skills/{skill_id}，只trusted subject=user owner + tenant；状态 draft/active/disabled/withdrawn/quarantined闭集，回最少 id/source/series/revision/name/summary/tags/status，不暴露owner、Storage、scan、secret；query只有limit/cursor/status（可选闭集），cursor绑定tenant/subject/status与稳定keyset。既有发现/安装 API不扩权限、不改执行 gate。|
+|目录/粒度|比较既有 Skills/source（采用：已有projection/read/owner query）与新management一级模块（淘汰：重复owner/准入/读取）；扩现controller/service/mapper/query/model/repository，无新一级目录/进程。机器HTTP由既有OpenAPI唯一事实源生成。|
+|业务变更|已发布包/revision不可原地替换；编辑内容/简介/tags复用CreateSkillVersion建立同series新draft，display_name依现规则不可变，UI须清楚标“发布新版本”而非假改名；继续现上传扫描校验发布链。Withdraw只撤回精确revision，确认后旧安装source_status读回、不得自动删除/换最新/执行。名称编辑、包下载和完整draft恢复仍显式未交付，不拿该切片冒全部CRUD。|
+|数据/失败|现Prisma事实足够，不改Schema/index/Redis。本人查询必须过滤owner/status后再limit+1，不后过滤丢页；跨主体/cursor和unknown status关闭；取消/绝对预算遵现HTTP。Withdraw资格由现RPC当次current-owner验证，同key/body replay不被BFF active-only预GET阻断；新命令非法状态须稳定FailedPrecondition，不泄露内部Error。unknown结果不换新key/自动重发。|
+|删除/发布|不复制旧discovery/安装模型，不加alias/fallback/假withdrawn；原历史artifact immutable，发布HTTP新minor固定commit/digest后消费者串行repin，机器门不得因动态历史pins放松。|
+|当前写集|仅现Platform docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md最窄新prefix；原suffix exact，独有ignored交接/freeze。尚不准source/tests/contract/generated/Schema/config/Git/资源。|
+|后继验证|先Root正常缺入口失败（已证），owner真HTTP/PG本人各状态、跨user/tenant、cursor/replay/异常状态；正规生成/contract/artifact/arch/types/build；固定发布后BFF闭集实际资格/HTTP，再Web真实发布→新版本→列表/detail刷新→明确撤回→安装状态读回。不以单测计数关闭用户路径。|
+
+worker按Root决定收敛三设计面，给后继精确文件集和未决项；独审后Root才准有界RED/source。任务外旧候选、正常数据/九服务、PG/Redis/MinIO和原IfMatch失败保持。此卡续既有T-P01，不建计划中心。
+
+### R264 真发布已通过、编辑与撤回 producer 调查准入
+
+Root正常账号新自有纯清单ZIP已真实走 drafts201→package-upload201→MinIO OPTIONS204/PUT200→complete200→validate200→publish200 active revision1→个人列表200；source_ref skill:0365e853-d912-4cd1-a647-c4cbc8993a1a，零工具/模型/资金/权限，原R255源不动。r264-skills-publish-{first,next,ack}.json无截断/秘密。当前正常UI没有编辑/撤回入口；原Web owner静态已确认但Root详情仍读取中，保实际QA失败再裁D0，不冒源码绿等全CRUD。
+
+R264-SKILLS-LIFECYCLE-BFF-READ / P0 / 原独审 iam_grant_source_scope_0244 /只读：BFF正常worktree HEAD42ac39ee与Webb7a88ab、Platformc94909f1，核正式CreateSkillVersion/WithdrawSkill机器契约/作者资格/幂等/状态与BFF目前缺失writer资源。目标个人管理只“发布新版本（修改名称/简介/包）”与“撤回当前发布”，不改已安装固定revision、不就地篡改ACTIVE。报告Root最窄正式public接口及现三D0受影响段、独立ownerproducer路径、具体测试真正失败点。先核当前权威facts，不从旧preview/revision列表推断可用；仅ignored r264-skills-lifecycle-bff-read.md，无source/test/docs/contract/schema/Git/测试资源/browser/服务。Root保最终API/schema决定，源码另准。
+
+### R264 正常个人技能全 CRUD 与文件清理卡点并行
+
+上一goal turn为 **progress**：Web5路径b7a88ab、Root台账b4fa3aa6、真实正式登录返回与个人视图证据改变当前状态；完整Wave0–7/70组不变，不重新跑已终态89539/11900/14457。
+
+|任务/角色|基线/授权范围|验收与依赖|
+|---|---|---|
+|R264-SKILLS-PERSONAL-READ / P1 / 原Web owner agent_planned_guarantee_system_r257 /只读|正常Web worktree HEAD b7a88ab；仅独有ignored报告，Admin25/protected28保持|查真实个人发布/编辑/撤回/包与安装视图接线、现测试漏点；Root实际browser探索，给精确实际UI路径、允许/禁止状态迁移与缺失producer，不创建第二PRD/方案/假目录；零source/Git/资源/browser。|
+|R264-STORAGE-WRITE-FENCE-READ / P0 / 原Storage owner bff_admin_routing_d0_r257 /只读|apps/kokoro-storage HEAD5b15/55冻结47a6e44f，r263-P2 b00e6492|只解staging预签PUT到期仍在途的可验证终止边界，核固定MinIO源码/配置真实server requestdeadline与版本枚举；比较延续现预签与owner bounded transfer，不假设expiry+空目录充分或永驻pending等完成。精确引用当前代码/primary证据、最窄producer必要变化。零正式文档/source/tests/schema/config/资源/数据/Git。|
+|R264-SKILLS-NORMAL-CRUD / P0 / Root|正常3310自有tab25/原owner与基础设施，先核actual当前UI|由正常页面真实创建可识别无外部调用清单技能→编辑→读回→撤回→列表与既有安装状态；永久删除若出现必须先确认，不动用户已有源/外部连接/权限/资金。发现bug先保存失败状态再准原writer源片；成功只升级相应完整用例覆盖，不冒全部Skills执行。|
+
+Root独占真实资源/浏览器/三方界面、正式Git及5台账；第三原reviewer留待冻结后审查，不为人数派任务。正常所有服务先探测复用，不重置。后继目标保全部页面CRUD、全部子仓及Wave0–7，推理worker仍CRUD优先后置。
+
 ### R263 最窄恢复源码交付及用户验收边界
 
 本轮goal turn判定 **progress**，完整Wave0–7/70组不变；不是整体完成或blocked。用户“先清晰个人技能管理”已遵循，正常真实页面两个视图/真实卡片与正规登录返回已观察，截图r263-skills-personal-final.png。
