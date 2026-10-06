@@ -1,6 +1,10 @@
-## R255 当前正常BFF与个人Credits后继
+## R255 23:41续推终态：个人积分消费者已提交，完整用户能力仍未闭环
 
-正常BFF唯一session32914/root64399/listener64417/53714，原79304已exit130；装载97a99d35 personal-credit consumer，同数据库与持久配置。Web现真实两读路径src/contract/paths.ts `/billing/summary|ledger`加SESSION_PROXY_BASE `/api/session`；旧balance/quota/free/entries DTO、by-model和module固定cache待现文件收敛，不新route或钱包owner。Billing现54a64427只PG catalog test 19处owner namespace修复；module policy/selection源码本已存在，正常main/费用另待，38真实PG绿不代表用户闭环。当前句柄在var/dev/processes.json，工程/源码与70组真实浏览器台账分栏。
+- Web main73444e65a1c6d22d94101acc5cfeb9c5b123d457精确34path提交：固定BFF97a99d35/public8.0.0/33971eaa两读，删除旧wallet/quota/daily/by-model与无owner免费推导。本人可用/预占与journal保精确decimal/BigInt；wireUTC Z、本地日历/locale展示；总headers/body/parse10秒及真abort/release；mounted refresh/分页/actor退役，不建认证/钱包/通用框架。
+- Root独立冻结复验：153非system文件2654pass/0fail，30目标+contract/architecture564pass/0fail；生成check、全lint、typegen/types、build均0。独审final d5bc1ed6零P0/P1/P2；两P1与readmit补充真实RED修复，原安全负控保持。3原mixed文档仅Git对象追加批准前缀/工作树后缀exact，原system文件/formatter/deps和uv保持，index空；Next自动生成类型入口经build重写，不暂存/冒原字节保持。未跑system资源fixture/standalone Playwright、axe/视觉/移动与bundle，不当辅助门为业务完成。
+- Root实际既有IAB3/tab8正常IAM表单登入，普通会话移入项目文件夹→打开原正文→硬刷新→移回直接列表；改名→刷新名称保持→UI恢复原名称；冻结源再刷新工作区/输入框正常。菜单/账户已不显示无owner免费/每日赠送；积分实际正常owner未启用，错误→真实重新加载→错误→关闭设置回工作区有界。账户身份/资料仍未接完整，Library正常空读/Skills实际失败仅观察，不冒各模块CRUD。没有cookie注入/改密码/新会话/永久删除/模型调用，原归属与名称恢复。
+- 7原正常PID/工具句柄再探针200、无新副本/库重置；Billing/Platform/模型worker未运行。模型链实际硬缺Billing授权client/composition、可信消费凭据、bound/read与evidence结算，System resolve/worker启动不等于可收费聊天；支付不是consumer研发前置，但正常Admission激活仍受原C3裁决。沿同任务卡继续owner依赖，不缩小Wave0–7。
+- 70组11通过/6失败/14待复测/38未验/1支付后置保持，不以本子例增加整组PASS。C3一次待答不重复，原浏览器登录交接已解除。Root收据ignored var/dev/r255-preserve/web-credit-code-commit-receipt.json、browser-normal-user-journey-receipt.json；任务/测试台账同一份。以下为历史，不覆盖本节。
 
 ## R255 当前个人Credit消费入口（已提交源码，尚未正常组合）
 

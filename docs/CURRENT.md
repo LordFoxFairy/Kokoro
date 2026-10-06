@@ -1,9 +1,10 @@
-## R255 23:19续推当前：正常BFF已装载新消费者，积分页面仍未闭环
+## R255 23:41续推终态：个人积分消费者已提交，完整用户能力仍未闭环
 
-- 正常BFF由原79304实际exit130后同源码/持久配置重启32914（pnpm64399/listener64417/53714），已装载97a99d35。其他6句柄不变，7现探针200；没有新应用库/服务副本/数据重装。Root首次PID识别误把.pnpm loader当pnpm已核祖先纠正，不冒错误句柄。正规IAM HTTP表单/OAuth仍200；实际Web /api/auth/session200 authenticated，/api/session/billing/summary与ledger503 billing_unavailable、private/no-store/request-id。Billing仍未正常运行，不假0/免费；Root两次错误地址诊断只记录工具错误，非产品业务失败。
-- Billing54a64427精确1现PG测试文件19处catalog public→kokoro_billing；现政策发布/联合选版代码本已存在，不再当缺实现重造。Root实际38例35pass/3fail→38/38/0skip→提交后38/38/0skip，77库OID/name集合保持；types/lint/build/format/sql/contract/generated全0。独审a067a5f0零P0/P1/P2，5原mixed文档和其余source/schema/contract/generated/lock逐hash保持。是owner-schema回归收口，不是正规赠送/预占/实际费用/整页PASS。
-- Web原负责人独立确认现个人余额/流水strict schema仍旧shape，旧Free/quota/daily/by-model无当前owner合同依据；fixed public8.0.0/97a99d35全文33971eaa。10^6 BigInt是显示单位，不是销售倍率。最小承接现billing客户端/视图和现session adapter，不新建钱包/认证/路由。三面D0已以Webd51a0c3精确发布3前缀，独审d0dd9360零问题/原mixed后缀与33path exact；Root33822已重跑新增6行为RED：68pass/6fail/0cancel、types/targetlint0（合法账户/流水拒绝、可用/预占/UTC精确展示缺口、第三by-model请求、live无事实Free/daily），反例独审9d3c5a40确认6有效但完整10source仍缺取消/预算/分页/身份/adapter先行门（1覆盖P1），未放行完整实现；生产尚未改；只读报告7bf39d5c，不冒真实合法200页面失败已复现。
-- 完整Wave0–7和70组11通过/6失败/14待复测/38未验/1支付后置保持，0新增完整浏览器PASS。正常模型worker/Billing/Platform、授权赠送/正式费用、逐页CRUD/异常用户旅程仍OPEN。原C3阶段与浏览器交接问题未答不重复；Root独占集成/资源/Git，独立子任务并行不等待其他owner完成。证据在ignored var/dev/r255-preserve/billing-policy-owner-schema-{red,green,final}.json及commit-receipt、normal-fixed-personal-credit-consumer-reads-actual.json，当前进程唯一var/dev/processes.json。下文旧“BFF79304尚未装载”已由本节替代。
+- Web main73444e65a1c6d22d94101acc5cfeb9c5b123d457精确34path提交：固定BFF97a99d35/public8.0.0/33971eaa两读，删除旧wallet/quota/daily/by-model与无owner免费推导。本人可用/预占与journal保精确decimal/BigInt；wireUTC Z、本地日历/locale展示；总headers/body/parse10秒及真abort/release；mounted refresh/分页/actor退役，不建认证/钱包/通用框架。
+- Root独立冻结复验：153非system文件2654pass/0fail，30目标+contract/architecture564pass/0fail；生成check、全lint、typegen/types、build均0。独审final d5bc1ed6零P0/P1/P2；两P1与readmit补充真实RED修复，原安全负控保持。3原mixed文档仅Git对象追加批准前缀/工作树后缀exact，原system文件/formatter/deps和uv保持，index空；Next自动生成类型入口经build重写，不暂存/冒原字节保持。未跑system资源fixture/standalone Playwright、axe/视觉/移动与bundle，不当辅助门为业务完成。
+- Root实际既有IAB3/tab8正常IAM表单登入，普通会话移入项目文件夹→打开原正文→硬刷新→移回直接列表；改名→刷新名称保持→UI恢复原名称；冻结源再刷新工作区/输入框正常。菜单/账户已不显示无owner免费/每日赠送；积分实际正常owner未启用，错误→真实重新加载→错误→关闭设置回工作区有界。账户身份/资料仍未接完整，Library正常空读/Skills实际失败仅观察，不冒各模块CRUD。没有cookie注入/改密码/新会话/永久删除/模型调用，原归属与名称恢复。
+- 7原正常PID/工具句柄再探针200、无新副本/库重置；Billing/Platform/模型worker未运行。模型链实际硬缺Billing授权client/composition、可信消费凭据、bound/read与evidence结算，System resolve/worker启动不等于可收费聊天；支付不是consumer研发前置，但正常Admission激活仍受原C3裁决。沿同任务卡继续owner依赖，不缩小Wave0–7。
+- 70组11通过/6失败/14待复测/38未验/1支付后置保持，不以本子例增加整组PASS。C3一次待答不重复，原浏览器登录交接已解除。Root收据ignored var/dev/r255-preserve/web-credit-code-commit-receipt.json、browser-normal-user-journey-receipt.json；任务/测试台账同一份。以下为历史，不覆盖本节。
 
 ## R255 当前：个人积分读取消费者已交付，完整用户验收仍OPEN
 

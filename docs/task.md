@@ -1,3 +1,17 @@
+## R255 23:41 CODE 补充：侧栏账户唯一 consumer
+
+Root 发现并实际浏览器复现侧栏账户无 owner 事实仍显示“免费”，且新 schema 使 workspace-rail-account.tsx:97 balance_micros 触发 TS2339。同一 Web writer 追加授权两个既有文件：src/components/blocks/workspace-rail/workspace-rail-account.tsx、tests/ui/workspace-rail.test.tsx；先新增账户未知不冒免费与新 available_micros 显示行为反例，再窄改消费字段和移除无事实套餐标签，保留订阅入口/账户身份/布局职责。只读审查和 Root 集成复跑后验收，不新文件/合同/依赖/服务/认证框架，不扩大资金职责；原混合变更保持。模型授权 consumer 仍硬阻塞真实聊天，70组统计不变。
+
+
+### R255 CODE 独审窄补（仍原 writer）
+
+变化中只读预审发现2P1，Root核 DATA_MODEL D0第28行确认展示按locale/本地日历，wire保持UTC；并核rail仅preview effect无actor fence。仅在已授权 rail/model/ledger + 原tests补有效反例与最小修复：rail当前主体变更立即撤旧投影、caller abort/attempt迟到抑制（现marker只退役，不赋权限），wire UTC→本地日历格式/分组；不新auth store/时区配置/框架/owner。不迁安全负控、不改原mixed后缀，六当前文档短前缀修正UTC展示措辞；Root将重跑冻结后门再审，不当预审/作者绿为验收。
+
+
+### R255 CODE Root 最终接收
+
+Web main73444e65精确34path已由Root提交。独审final d5bc1ed6零问题；Root97287实际2654/0（153非system files）、生成check/lint/typegen/types0；49252 build0/目标含合同架构564/0。六doc短prefix与3mixed后缀、9protected/system/uv保持；Next自动类型文件build重写未暂存。真实browser已验no-fiction与错误/重新加载/关闭/工作区刷新子路径，正常owner200/资金完整旅程未验；角色已停写。下一仍原Billing C3/正式授权赠送、Agent可信bound/消费凭据/Admission与durable evidence，Platform正常组合、逐模块CRUD，支付最后；70组不虚增。
+
 ## R255 23:19 heartbeat：独立推进，完整用户验收不缩小
 
 |任务|目标/优先级|owner与角色|基线/范围|依赖/验收/交付|
@@ -5,9 +19,9 @@
 |T-B03.R255-POLICY-SCHEMA|现政策发布/联合选版真实PG校验收口，P1|Billing；原BFF角色续派为此独立窄片writer；Root集成；原审查员只读|main244b2810；仅test/integration/metering-rate-publication.test.ts现public目录断言迁至现kokoro_billing owner；原5mixed文档及全部source/SQL/contract/generated/lock不改|已有R80政策/选版与owner-schema实现，不建新算法；Root先现PG基线再授权唯一test差分，同PG自有fixture，不写应用库/重置数据；独审、Root真实PG复验与旁库OID集合保持；已验收本1test切片：Billing54a64427，RootPG35/3→38/0→提交后38/0均0skip，77库exact，独审a067a5f0零问题、工程/合同7门0；Root精确提交。不是积分页面或正常main切换PASS|
 |T-B03.R255-WEB-CREDIT-D0|Web正式个人余额/流水消费者设计收口，P1|Web原负责人三现文档前缀writer（生产只读），Root三面裁决/独审|maine8ff7599；只读当前Credits/adapter/contract/generated/三文档；报告只写/tmp|固定BFF97a99d35 public合同为前置，禁止直连Billing、前端倍率/虚构quota/free/fallback；按现文件最小写集提出三面D0与真实用户验收步骤，不先改生产/生成；原审查员后继评审；D0已发布Webd51a0c3（3批准前缀，原mixed全文byte-exact、33保护path保持，独审d0dd9360）；现2test已冻结bfaadc86/76b9d98f，Root33822行为RED68pass/6fail/0cancel、types/targetlint0；独审9d3c5a40确认6有效/1完整状态机覆盖P1，下一补同D0已批准4现tests取消/预算/分页/身份/adapter门；生产/生成尚禁写|
 
-D1当前权限：Web原负责人唯一test writer，基线d51a0c3；只允许现tests/ui/billing-panel.test.tsx与tests/ui/settings-modal.test.tsx添加正式data/用户视图行为反例，现生产/preview/contract/generated/资源/Git全部禁写。先原聚焦基线，再合法actual Response/现组件有效RED；Root独立复验与审查后才授权实现，不用future import或编译错误代替业务失败。
+D1当前权限（23:56 CODE）：Root11345已真实复跑v3 114例92pass/22fail/0cancel、types0，四freeze/35保护exact；独审v3零P0/P1/P2，最后两小table关闭覆盖P1，不再扩矩阵。Web原负责人唯一writer获现D0十生产文件与12固定发布/pin现路径许可（见Web三面D0明确表）；沿固定BFF97a99d35/public8.0.0/33971eaa blob正规生成，不手改generated，Safe12/ChatMessage/Team9不变，Team15派生预期byte-equal。四现tests旧fixture批准迁移唯一新shape；quota/lowthreshold/free/daily/byModel六类无owner旧断言改为拒旧shape/no-fiction，真正精度/页序/filter/loading/error/几何/生命周期门保持，两个legacy负控literal固定不迁。允许相邻六现文档只追加短当前段，原mixed正文exact；禁止auth/session adapter/query通用框架/SQL/依赖/lock/服务/Git。未知扩散先停报Root。冻结交付文件hash+门，Root独审/重跑/精确提交；正常资金owner/真实费用仍待验。Root实际browser已登入，普通→专案→正文→hardrefresh→移回原scope通过子链；不宣称全部CRUD/70组闭环。原BFF角色只读模型preflight已交付，确认System目录可独立推进但Agent pre-send授权consumer明确fail-closed，正式收费不可跳过。
 
-Root保留正常进程与真实浏览器关键路径，资源/Git/台账独占。C3阶段与原浏览器交接未答不重复询问；两独立项不等其裁决。同70组11/6/14/38/1，0新增完整浏览器PASS；实现与工程门不能代替用户旅程。
+Root保留正常进程与真实浏览器关键路径，资源/Git/台账独占。C3阶段未答不重复询问；原浏览器交接已由正常表单登录解除，两独立项继续推进。同70组11/6/14/38/1，0新增完整浏览器PASS；实现与工程门不能代替用户旅程。
 
 ### R255 stage2交付终态与后继（同卡）
 
