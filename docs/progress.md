@@ -1,3 +1,17 @@
+### R261 个人管理复验与独立 CRUD 实门（2026-10-06 19:54 UTC）
+
+完整 Wave0–7 active；按用户裁决先清晰个人技能管理及全部页面CRUD，不扩技能发现目录、不把Agent执行当其它页面前置。完整70组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
+
+- **个人技能页正常浏览器再次可见**：Root自有IAB25正常3310/app/skills，默认已安装→我发布的真实名称简介→已安装真实“来源可用/已安装·已启用”；技术ID折叠详情，只有两视图。初workspace/每次列表loading随后真实渲染，不记录成无限加载或忽略中间态。保存r261-skills-personal-browser.json及r261-skills-personal-final.png，标记此一结果标签保留；原用户标签未关、没有新安装/删源/模型/资金动作。R259真实启停/移除/重装子链证据保留，发布/安全异常整页仍未全验。
+- **Storage候选源码已实修、尚未发布/切换**：冻结55 manifest7081df439c；Root最终50443现完整27文件 **261 PASS/0 FAIL/0 SKIP**，真实隔离PG/原Redis、catalog78→78exact、keys0→0、55exact；对象/扫描为double或受控HTTP/TCP，非MinIO。Root88006最终verify/lint/format/build/Prisma validate全0，501 PASS/219资源SKIP明确不算实集成。独审fixture072096f3与三行dedup7c0749b9均绑定最终SHA；同仓唯一writer已停、Root保Git/资源。
+- 修复有真实失败链：dry-run曾写库删对象→零cleanup写/删除IO；retired Blob误参与健康核→仅active；两事务canonical重读缺retired过滤→同bytes删除后真实Begin/Complete新代恢复。Root三文件最终fixture49/0；原完整261曾260/1，旧并发Proxy仍拦findUnique未触发已改findFirst，独审后仅三行selector/type/call更新，原5秒/双client/SQL null屏障/唯一Blob/MIME全文保，最终261/0。早先30例29/1为新dry-run自身cleanup残留，finally仅回收本例ID且零写断言在前；旧count3/预算未放宽。
+- **真实MinIO失败阻断物理清理发行**：现RELEASE.2025-09-07T16-13-09Z/commit07c3a429/image14cea493，真实smoke:s3首wrongIfMatch+current VersionId应412却成功。Root四格SDK发送已签If-Match/current或noncurrent×正确或错误均204，仅确切版本消失；r261-storage-provider-matrix.json。正常bucket仍原not-enabled，无用户对象访问/改配置/重启/盲升级/Head+无条件key删除fallback。AWS只对current版本评估condition，旧历史版本不能推断版本CAS；Root后继须裁决可用原子primitive并实际资格验证，不放宽oracle冒完成。
+- 失败证据原日志/receipt/journal保持；完成精确重观察、四格后Root仅回收自己确认空的qualification bucket与9表全0的storage_objects_38334e5ba27e475b9f73e39eb7f0bd68，无force/他库清理；r261-storage-provider-owned-recovery.json catalog78→77仅该ID删除、bucket204、正常数据零修改。此前retained/failed记录不改为通过。私有backup完整恢复9表hash及partial index事务失败ROLLBACK/成功替换演练已验，但**正常schema零DDL、仍旧index/5Asset/5Blob**，实际切换仍需fresh preflight/backup。
+- **BFF删除设计已精确3文档提交42ac39ee**（parent7269e97，原suffix保）；两public DELETE目标8.4/101、唯一Storage receipt、本人Project有界读取/现Pool仅连接1000ms预算均只是目标。Storage未正式SHA，未repin/改机器/实现/数据/服务，不声称页面已有删除。
+- **管理页25源码候选**：三读+现row visible显式单PUT/CAS+fresh分页确认；unknown只GET、每请求freshadmin/同源/closedwire及共10秒，pending/换主体/generation/client退役旧投影。有效RED48及新增3已修，独审48a202c6无确定P0/P1/P2；Root95102合同295、架构50、8具名辅助219、lint/noEmit全0，25+28保护exact。Root70953副本770输入exact/typegen0但外指node_modules symlink触发Turbopack失败；保日志、不改源，通过固定lock离线副本安装修runner，63061 typecheck/build全0，normal.next未用/无版本升级。完整默认Root15032已终态1：3259 PASS/6 FAIL，171文件；其中77真实Next/Chromium/Redis controlled-peer用例75/2。失败是个人翻译计数1、rail读取/撤准入3、Move canonical URL2；catalog77exact/Redis keysetexact/25+28冻结exact。原范围保持并行只读归因，不skip/延预算/提交25。合法已有管理员输入仍待人类，普通隐藏/404不冒正向保存E2E。
+
+下一：先并行归因15032六真实回归，再决定最窄修复与管理页精确集成/正常权限复验；MCP CRUD原owner只读预备独立推进，Root裁决后续slice。Storage物理清理是局部发行阻断，非全goal blocked。原9应用/PG/Redis/MinIO/ClamAV保持，Root uv/two Web mixed/gitlinks均未暂存。工程/受控peer门永不替代完整真实用户链。
+
 ### R260 当前证据与任务交接（2026-10-06 19:12 UTC）
 
 本轮 progress，非整体完成。Root基线ba5898b8；Storage5b15fe3、Web8b355ba，原八mixed gitlinks/uv保持。Root只有同四台账writer，原两独立实现与一只读评审并行，无新计划中心。

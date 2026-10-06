@@ -1,3 +1,90 @@
+### R261 Web 完整默认门真实 6 FAIL：冻结保留、并行只读归因
+
+Root15032终态1：171文件3259PASS/6FAIL（77真实Next/Chromium/Redis controlled IAM/BFF中75PASS/2FAIL），172.81s；catalog77exact/Redis keysetexact/25+28sourceexact。失败：skills.personal翻译key计数19vs29一例、rail健康focus→401/bad-shape错误投影两例、同subject重核读取计数一例、R192正常Move与R194丢ACK恢复后canonical project URL两例。日志r261-admin-root-default.log/readable.log及receipt保留；不skip/加预算/把三ERROR视为已修。管理候选尚不提交，不能从其focused/build/独审绿冒全门。
+
+原Webwriter readonly分析rail三例，原独立reviewer readonly分析真实Move两例（protected test不得写），原Storagewriter readonly分析翻译计数与已提交R259旧key值/新key的具体来源。只各ignored报告，Root保持全部25候选与源/test/mixed不变，依事实分别裁决生产缺陷/观察点；不跨writer/服务/数据库/资源/Git。下一写入准入须Root记录窄范围与原硬业务断言，不以测试格式掩盖坏用户路径。
+
+### R261 个人管理复验与独立 CRUD 实门（2026-10-06 19:54 UTC）
+
+完整 Wave0–7 active；按用户裁决先清晰个人技能管理及全部页面CRUD，不扩技能发现目录、不把Agent执行当其它页面前置。完整70组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
+
+- **个人技能页正常浏览器再次可见**：Root自有IAB25正常3310/app/skills，默认已安装→我发布的真实名称简介→已安装真实“来源可用/已安装·已启用”；技术ID折叠详情，只有两视图。初workspace/每次列表loading随后真实渲染，不记录成无限加载或忽略中间态。保存r261-skills-personal-browser.json及r261-skills-personal-final.png，标记此一结果标签保留；原用户标签未关、没有新安装/删源/模型/资金动作。R259真实启停/移除/重装子链证据保留，发布/安全异常整页仍未全验。
+- **Storage候选源码已实修、尚未发布/切换**：冻结55 manifest7081df439c；Root最终50443现完整27文件 **261 PASS/0 FAIL/0 SKIP**，真实隔离PG/原Redis、catalog78→78exact、keys0→0、55exact；对象/扫描为double或受控HTTP/TCP，非MinIO。Root88006最终verify/lint/format/build/Prisma validate全0，501 PASS/219资源SKIP明确不算实集成。独审fixture072096f3与三行dedup7c0749b9均绑定最终SHA；同仓唯一writer已停、Root保Git/资源。
+- 修复有真实失败链：dry-run曾写库删对象→零cleanup写/删除IO；retired Blob误参与健康核→仅active；两事务canonical重读缺retired过滤→同bytes删除后真实Begin/Complete新代恢复。Root三文件最终fixture49/0；原完整261曾260/1，旧并发Proxy仍拦findUnique未触发已改findFirst，独审后仅三行selector/type/call更新，原5秒/双client/SQL null屏障/唯一Blob/MIME全文保，最终261/0。早先30例29/1为新dry-run自身cleanup残留，finally仅回收本例ID且零写断言在前；旧count3/预算未放宽。
+- **真实MinIO失败阻断物理清理发行**：现RELEASE.2025-09-07T16-13-09Z/commit07c3a429/image14cea493，真实smoke:s3首wrongIfMatch+current VersionId应412却成功。Root四格SDK发送已签If-Match/current或noncurrent×正确或错误均204，仅确切版本消失；r261-storage-provider-matrix.json。正常bucket仍原not-enabled，无用户对象访问/改配置/重启/盲升级/Head+无条件key删除fallback。AWS只对current版本评估condition，旧历史版本不能推断版本CAS；Root后继须裁决可用原子primitive并实际资格验证，不放宽oracle冒完成。
+- 失败证据原日志/receipt/journal保持；完成精确重观察、四格后Root仅回收自己确认空的qualification bucket与9表全0的storage_objects_38334e5ba27e475b9f73e39eb7f0bd68，无force/他库清理；r261-storage-provider-owned-recovery.json catalog78→77仅该ID删除、bucket204、正常数据零修改。此前retained/failed记录不改为通过。私有backup完整恢复9表hash及partial index事务失败ROLLBACK/成功替换演练已验，但**正常schema零DDL、仍旧index/5Asset/5Blob**，实际切换仍需fresh preflight/backup。
+- **BFF删除设计已精确3文档提交42ac39ee**（parent7269e97，原suffix保）；两public DELETE目标8.4/101、唯一Storage receipt、本人Project有界读取/现Pool仅连接1000ms预算均只是目标。Storage未正式SHA，未repin/改机器/实现/数据/服务，不声称页面已有删除。
+- **管理页25源码候选**：三读+现row visible显式单PUT/CAS+fresh分页确认；unknown只GET、每请求freshadmin/同源/closedwire及共10秒，pending/换主体/generation/client退役旧投影。有效RED48及新增3已修，独审48a202c6无确定P0/P1/P2；Root95102合同295、架构50、8具名辅助219、lint/noEmit全0，25+28保护exact。Root70953副本770输入exact/typegen0但外指node_modules symlink触发Turbopack失败；保日志、不改源，通过固定lock离线副本安装修runner，63061 typecheck/build全0，normal.next未用/无版本升级。完整默认Root15032仍运行，沿原句柄消费、不重复启动；尚未Git提交25。合法已有管理员输入仍待人类，普通隐藏/404不冒正向保存E2E。
+
+下一：收15032完整终态再决定管理页精确集成/正常权限复验；MCP CRUD原owner只读预备独立推进，Root裁决后续slice。Storage物理清理是局部发行阻断，非全goal blocked。原9应用/PG/Redis/MinIO/ClamAV保持，Root uv/two Web mixed/gitlinks均未暂存。工程/受控peer门永不替代完整真实用户链。
+
+### R261 后继连接器 CRUD 缺口只读预备
+
+任务 R261-MCP-CRUD-READ：原 bff_admin_routing_d0_r257，仅只读正常正式 Platform/BFF/Web 三owner的当前TECH/API/DATA、固定contract及现本人Connection创建/查看/启停/删除路径；从原T-P02实际创建404追踪producer vs BFF接线 vs Web selector，不从旧历史/原apps mixed冒当前态。入口docs/CODEBASE_MAP.md、CURRENT/task及现worktreeREADME。只交r261-mcp-crud-next-read.md给一个最小后继owner切片与真实页面RED路径；禁止新PRD中心/Schema/权限设计/仓源码docs/Git/服务/PG/Redis/对象存储/浏览器写。Root先收当前Admin全默认句柄15032终态，不重复启动；MCP调查可独立并行，不等Agent执行。
+
+### R261 全 owner 实门发现旧 selector 屏障观察点
+
+Root46413完整27文件261例260PASS/1FAIL，catalog78→78exact、Redis0→0、54冻结exact；compiled runtime真实PG/Redis但S3/扫描为受控HTTP/TCP，不冒MinIO。仅blob-owner-deduplication并发例未到barrier：现生产已合法切active findFirst，原Proxy仍拦findUnique；原reviewer只读明确三行观察点失配，不据日志宣称生产并发错误或已通过。
+
+任务 R261-STORAGE-DEDUP-ORACLE：原Storage唯一writer bff_admin_routing_d0_r257，仅现test/integration/blob-owner-deduplication.test.ts三行 selector/type/call 改findFirst/StorageBlobFindFirstArgs；原真实SQL后null屏障、双client、5000ms、finally恢复、唯一Blob/两Asset MIME/候选identity全部不改。禁止production/docs/机器/generated/Git/资源；交55冻结和三行diff后STOP，Root全owner同门实际复跑，原reviewer绑定新SHA独审。此为经证据裁决的观察点更新，不降低并发断言。Root独占集成与资源。
+
+### R261 最终实PG暴露新增fixture残留（不得放宽原门）
+
+冻结54 Root86845三真实PG30例29PASS/1FAIL：dry-run零写、retired health及正式两代Begin/Complete已通过；原fixed cutoff count3实4。新增dry-run理应保留cleanup但suite后继apply吸入新fixture，优先回收仅自己cleanupId，不改count3/生产预算或整个tenant；原writer只现object-retirement新两例补finally exact owned cleanup delete，生命周期Upload/Blob/Scope可保至隔离库整体退出，不清共享数据。Root81163完整纯verify/lint/format/build/Prisma validate均0，501PASS/219明确资源skip（不是219通过）；54exact。fixture改动后重新freeze/独审/最终实PG与必要pure门，前收据留存，不把这次纯绿冒全门。
+
+### R261 BFF 预算裁决补齐（仍仅 D0 文档）
+
+Root已核现project-repository与Pool原源，bounded读取独立变因采用现infrastructure/postgres/project-resource-access.ts普通helper（不新目录），现application/ports/project-repository.ts→project-service.ts→PostgresProjectRepository新增具名canonical-ID读取，required signal+同HTTP绝对deadline贯穿。exact checkout/迟到释放/SQL中止destroyClient(true)，本次只读事务SET LOCAL statement_timeout/lock_timeout/client_connection_check_interval，保本人predicate。
+
+队列事实不靠late release冒有界：Root进一步批准D0目标现infrastructure/postgres/client.ts唯一Pool显式connectionTimeoutMillis=1000，只统一有限连接/队列取得，不改全局query/statement预算或max/newPool/credentials。普通既有方法沿原query行为但连接等待不再无限；须现完整回归+真实PG pool-saturation/connecting/heldSQL/abort/latelease验证兼容，失败不放宽gate。预算共10s不自动叠加多个1s/10s，消耗授权余量再传Storage。原D0“三面尚未裁决/可能改Pool”前缀需精确更正此已定方案与未实施事实；root决定非worker擅扩。无源/机器准写，Storage仍待正式SHA。
+
+### R261 Root 数据演进隔离验证（不是正常 DDL）
+
+Root r261-storage-index-restore-evolution.json：只恢复已私有备份到自有随机PG，先强制drop后失败→ROLLBACK确认旧index exact，再同一事务加有界lock/statement预算替换scope digest全量unique为retired_at IS NULL partial。9表全部rowhash/count exact，其他index exact，owner库已删、catalog exact；正常schema/数据零变化。正常read r261-storage-normal-index-read.json明确旧digest是普通unique index不是constraint，不使用ALTER DROP CONSTRAINT。新正常切换仍需当时fresh backup/preflight/源放行；测试恢复不冒已经上线。
+
+Root真实MinIO仅HeadBucket/version/lock只读：持久正常bucket可用但versioning not-enabled/ObjectLock404。既有smoke:s3要求专用versioned+ObjectLock fixture，不对正常bucket开启版本/锁、改配置或拿mock冒provider门；后续采用同既有MinIO自有qualification bucket/记录精确对象版本及清理证据，正常应用bucket/数据保留。
+
+### R261 Storage 真实增量 RED 后源码放行
+
+Root87099正式新11例9PASS/2FAIL、26281 dry-run/health15例12PASS/3FAIL，两个catalog77→77exact/自有库清；provider double不冒MinIO。已定位第二代真正源错：AssetsStore.findCanonical已过滤active，UploadsStore.completeUpload和writeCanonical事务内findUnique仍可能命中retired。先前r261 partial-selector仅“old+active同时存在返回active”样本，不证明selector自动过滤retired；本轮正式Begin/Complete缺active的失败为当前精确证据，纠正推断，不改官方Schema/生成。
+
+原Storage唯一writer现在获准两原source修复，加现src/assets/canonical-write.ts与src/uploads/uploads.store.ts仅两个事务内canonical查询显式identity+retiredAt:null，typed findFirst；保partial unique冲突重观测/Serializable/CAS/expected/new generation/object identity，不改其它业务。test/integration/asset-delete.integration.test.ts仅同command异semantic误期望由FailedPrecondition改正式AlreadyExists并核ErrorDetail COMMAND_DIGEST_MISMATCH，不改producer错误。dry-run test两条head断言需精确到cleanup.objectKey：同库其他active canonical健康检查只读head是合法，不要求全suite零read，保零delete/全row零mutation/不报deleted原断言。source cleanup apply=false早于任何授权写，health排除retired而live missing继续诊断。三D0本轮prefix同步当前发现与待验，旧suffix保（已准机械table例外）。无新增schema/contract/依赖/生成/服务/资源权限；最终冻结→独审→Root全门与provider→消费者→真实页面，无全组PASS。
+
+### R261 BFF 单文件删除 D0 并行（仅文档，不消费未发布源）
+
+原 reviewer iam_grant_source_scope_0244 作为本片 BFF 唯一文档 writer；/Users/nako/.codex/worktrees/kokoro-r257-bff-normal HEAD7269e97，原untracked var保护。只准现 docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md 新当前prefix，原suffix byte exact；ignored handoff另写。Root采纳6186602d调查的两 DELETE 名称、closed data receipt/no-store/request-id、唯一Storage receipt/no本地票据或表、header-only无body/query、不发明CAS、fresh IAM+本人activeProject（canonical ID）权限与同key异asset409。public下一版本目标8.4.0/101未发布；Storage源commit待定，禁止先改pin/机器/生成/源。
+
+Root确定command ID域分隔+tenant/subject/scope/public key，不含asset；semantic digest含asset，replay不先GetAsset。key raw唯一ASCII无空白/逗号1..191，规范输入只此两路径，现其余99op不动。采用调查现目录四普通文件，淘汰塞多阶段upload/万能proxy/新owner平台；精准错误tuple沿报告由generated ErrorDetail+transport一致性判定，不按message。总预算10秒request早取消与await fence必须真实接线，现projects.find无signal：先核已有PG查询预算能否覆盖，文档列具体必要窄接缝/未决项，不虚称取消支持，不扩contract/source写权。正常删需用户action-time确认，不执行删除、seed、资源/Git/服务/browser。Root审三面与真实deadline事实再准机器阶段；若D0未收口明确未决，不拿文档当功能。
+
+### R261 已复现缺陷窄修与独立页面并行准入
+
+完整 Wave0–7 不变，CRUD页优先、Agent推理后置。个人技能方向已实际交付安装管理正向子链，发布/异常不冒完整通过；本波推进文件与后台现缺口，Root独占资源、浏览器、Git与最终验收。
+
+|任务 / 状态|Owner / writer / 基线 / 文件集|明确完成条件与停止线|
+|---|---|---|
+|R261-STORAGE-DRYRUN-FIX / P0 / 待续派|原Storage writer bff_admin_routing_d0_r257；apps/kokoro-storage HEAD5b15fe3；仅现 src/assets/reconcile-objects.service.ts、object-retirements.store.ts、test/integration/object-retirement.test.ts；必要三D0只本轮新增prefix。|Root真实隔离PG dry-run RED：deleteExact1、cleanup消失、metadata改变；退役Blob被health误扫描1。先补ready/pending dry-run零DB/删除IO与active/retired health测试，Root运行失败后源码实现：apply=false在任何cleanup授权写之前止步，listCanonical仅active。保apply删除安全、live missing诊断、历史facts；无Schema/contract/生成/依赖/Git/资源写。freeze后独审+Root实门；原51除具名路径保持。|
+|R256-ADMIN-03.WEB-D1-SOURCE-R261 / P0 / 待续派|原Web writer agent_planned_guarantee_system_r257；/Users/nako/.codex/worktrees/kokoro-r257-admin-web HEADab5c431；已审D0四new普通files、现AdminAccessView/catchall+九locale、四具名tests（含待建client test）、三D0本轮prefix，现INDEX/docsINDEX/contractREADME最小入口。|Root最终142实际48FAIL/94PASS，8.05s；三freeze/two mixed exact。批准既有三真实分页区+visible单行Save，四字段PUT/CAS、同意图key、ACK→GET确认、10秒总预算、撤准入退役、unknown只读核实；不扩后台模块/CRUD。沿正式8.3/7269e97，不repin/generated/新依赖。只废止旧access-only占位oracle，全部原权限断言保；客户端新增测试真实到达尾分支。Root独审/工程/正常管理员用户链后才验收；不得worker授资格/访问资源/浏览器/污染normal.next。|
+
+协议精度由Root裁决沿真实正式BFF：无任何有效CAS前置为428（包括单独弱ETag或0）；存在有效前置却组合/冲突400，不改BFF producer。Idempotency-Key按正式owner ASCII非空、禁空白/逗号、max128，版本为正十进制string任意精度；不偷偷放宽测试。准写三D0只新增当前prefix准确化，不改原设计suffix。
+
+本轮Root首次相对freeze路径在Web cwd读取FileNotFound，未改文件或资源；实际测试仍执行。随即绝对路径逐SHA在运行中与终态复核均exact，最终有效RED日志r261-admin-root-red-final.log；不以wrapper最后状态冒测试PASS。
+
+### R261 Storage 源独立审查并行
+
+原只读reviewer iam_grant_source_scope_0244 已完成BFF消费者盘点6186602d并STOP，现续审Storage冻结source e92a0245/HEAD5b15fe3：当前writer仅补一integration test与TECH table格式，审查49其他路径应起终SHAexact，不能声称51全树冻结/最终test验收。只读源事务/receipt/权限/partial selector/对象清理/新代与旧语义回归，绑定原handoff和Root22真实PG子门/active selector新证据；唯一ignored r261-storage-delete-source-review.md。不改任何文件、Git/资源/browser；动态两路径只引用设计意图而不当稳定已验源。Root保最终新freeze重核/真实provider/full gates/Git，不凭审查无问题当用户闭环。
+
+### R261 Storage D2 冻结后的真实门与测试缺口
+
+原writer51路径冻结e92a0245、纯59/0，Root54004原真实PG三文件22/0/0skip、17.08s、catalog77→77exact与51SHAexact；这是PG系统门而非最终用户页面/MinIO。Root另真实隔离PG确认partial unique官方findUnique选择active新代，r261-storage-partial-selector.json；不能凭手工insert正向替代完整Begin/Complete/旧cleanup链。Root正常Storage只读snapshot+pg_dump18.4→独立restore副本9表全rowhashexact，5Asset/5Blob、catalogexact，owner备份和对象manifest私有0700/0600；正常数据/schema/object零改，后续切换仍需当时fresh检查。
+
+原Storage writer补现 test/integration/asset-delete.integration.test.ts：真实PG双删除共享最后引用/同Asset不同命令、正式Begin/Complete删后同bytes新代与旧清理隔离、删后Get/List/新download拒绝、同command改semantic拒绝，保持原assertion。测试先行本片不动source，仅必要官方fixture组合，不cast/替换production事务或跨owner数据。资源仍Root独占；先纯type/lint/freeze并标未执行真实测试，不claimgreen。若新实际行为失败由Root再准源窄修。
+
+format失败不豁免：授权同writer仅 docs/TECHNICAL_DESIGN.md 原旧table的机械列对齐Prettier修正，业务文字逐字符保持，不整体改写历史规范/新prefix；保存旧suffix与精确whitespace差异，本授权是明确旧suffix byte-exact例外，不再声称整suffix字节不变。API/DATA旧suffix及其他source51freeze保持。新tests/docs freeze后交r261-storage-delete-regression-handoff.md，Root独审/真实完整门/Git，source服务仍未重载。
+
+### R261 Storage 删除消费者只读预备（不消费未发布源）
+
+上轮 progress：Root真实PG失败基线、Web三D0提交及同四台账63dc68b3均有权威证据；现两原writer句柄running，沿原任务续进，不重启。新增原只读 reviewer iam_grant_source_scope_0244 的独立调查：BFF正常worktree /Users/nako/.codex/worktrees/kokoro-r257-bff-normal HEAD7269e97，只读当前Library/Project resource删除相关owner资格、HTTP routes、Proto client/contract、receipt/幂等/分页、三D0；允许唯一ignored r261-bff-file-delete-consumer-read.md。给单Asset DELETE合法public path、输入/权限/新client pin来源/ACK→GET/错误闭集与最窄后继文件集，引用Storage已审17RPC machine目标与D0而不猜发布SHA；Storage源正式提交前零repin/generated/contract/source写。不新业务实体、owner API副本、schema或兼容alias；普通个人文件与项目资源沿唯一owner，Artifact不在单Asset删除范围。禁止修改任何BFF/Storage/Rootdocs/Git/DB/服务/浏览器；只读交接不冒消费者可用。Root总体事务/权限决定不下放，调查可并行等上游而实现依赖串行。
+
 ### R260 Web Admin D1 tests 准入（D0 已审）
 
 Root逐三whole/suffix与two mixed exact；独审8b4ce827未发现确定P0/P1/P2阻断，精确三D0提交 ab5c431103f5d176fb11856610b5ff5bace3ba31（104行），源与两mixed不夹带。原Web writer独占测试先行：现tests/ui/admin-access.test.tsx与tests/app/hub-proxy.test.ts；新增只tests/contract/bff-admin-model-routing-public.test.ts、tests/hub/admin-model-routing-client.test.ts（现目录，分别机器四op/typed consumer职责，不新目录）。实际 assembled AdminAccessView+当前admin probe+正式合法BFF响应要有效列表/Save RED；adapter需合法session/fresh资格证明CAS头丢失或没有strict分流的真正RED，schema/client尚无文件的import失败不冒功能RED。保全部旧权限断言、预算、Origin、CAS、alias及未知结果反例。source/schema/generated/依赖与文档仍零新准写，worker不碰normal.next/浏览器/资源/Git。Root复跑冻结有效失败后另准最窄 source，不因缺管理员输入阻开发，也不冒合法管理页面已验。

@@ -1,3 +1,10 @@
+## R261 当前个人技能、文件删除候选与后台接线位置
+
+- 正常Web持久worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEADab5c431；个人技能已采用R259已发布8b355ba，正常浏览器双视图/真实名称来源与安装状态再次可见。Admin候选25尚未提交：`src/contract/admin-model-routing.ts`闭集runtime/schema，`src/hub/admin-model-routing-client.ts`4具名操作/共预算/分页确认，`src/lib/server/admin-model-routing.ts`freshadmin/Origin/closed adapter，`src/app/admin/model-routing-panel.tsx`三读/单visible保存/退役，现access-view与catchall接入，无新后台框架/权限事实。Root15032完整默认3259/6，六实际失败并行归因，普通404不等管理员正向闭环。
+- Storage `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-storage` HEAD5b15fe3；55候选DeleteAsset17机器/事务/receipt/active partial unique未正式发布。`assets/reconcile-objects.service.ts` dry-run零cleanup写/删，`object-retirements.store.ts` onlyactive健康，`canonical-write.ts`与`uploads/uploads.store.ts` active transaction重读；Root真实PG/Redis全261/0，但现MinIO wrongIfMatch当前版本204为物理清理资格阻断，不能repin消费者/冒用户删除完成。正常schema/进程不变。
+- BFF正常worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEAD42ac39ee，仅3文件删除D0文档提交，正式source仍parent7269e97/public8.3/99；单文件DELETE目标8.4/101尚无机器/源码，等待Storage正式发行。Project资源授权具名required signal/deadline读取及现Pool仅1000ms连接预算为已裁决目标，非当前能力。MCP下一缺口沿既有T-P02只读预备，不另起PRD/计划中心。
+- 真实输入/输出/失败证据统一既有Root `var/dev/r255-preserve/r261-*`；自有qualification失败资源精确空态恢复后catalog77，正常用户桶/9owner/基础设施未重置。当前事实以CURRENT最新前缀覆盖下方历史，不拿候选或工程门当全页面完成。
+
 ## R258 当前 CRUD 页面源码与未接 owner
 
 正常Web `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` bf2bee9：app-frame-helpers只普通已准入Project展示三现CRUD区；use-app-frame-project复用指令context并持资源flight abort/fence；project-resource-upload同signal贯穿Fetch/body，kokoro-project-workspace当代私有投影隔离。资源下载/单项删除仍未接，不新增fallback/第二权限源。

@@ -1,3 +1,19 @@
+### R261 当前系统行为矩阵与真实页面边界
+
+沿既有T-F01/F02、T-K03、ADMIN03子例更新，不新增完整组PASS。Root当前正常个人技能真实复验可见，不把工程数量当业务完成率。
+
+|用例ID / 类别 / 标题|预置条件|步骤|预期结果|实际结果 / 状态|优先级 / 类型|
+|---|---|---|---|---|---|
+|T-K03.R261-VIEWS / 主链 / 两个人视图|正常3310已登录，本人R255真实清单安装启用|打开skills→我发布的→已安装|默认安装；真实名称简介/来源与启停分层；ID折叠，无重复设置入口|PASS此展示子路径，真实DOM/截图r261-skills-personal-browser.json/png；本轮未再执行数据CRUD，R25912真实响应继续有效|P1 / 正常浏览器交互|
+|T-F02.R261-DRYRUN / 异常、状态 / 演练零清理写|自有真实PG ready/pending cleanup+active/retired对象double|dry-run→核完整row/metadata→apply另例→健康查询|dry-run无cleanup观察/写/删除；仅active健康；apply原有界删除不变|RED实际delete1/row消失→源窄修；Root最终PG通过，正常provider页面链仍未验|P0 / 真实PG系统；非用户E2E|
+|T-F01.R261-GENERATION / 生命周期 / 删除后同内容新上传|自有PG+owner服务、同bytes普通Asset|Begin/Complete→逻辑delete→Begin/Complete→核新Blob及旧cleanup|仅live唯一canonical，旧generation独立；新Asset可见，不误删新代|此前真实失败canonical repeated→两active重读修复→最终PG通过；浏览器DELETE未接|P0 / 真实PG系统|
+|T-F02.R261-DEDUP / 边界 / 真双事务同digest竞争|两个真实PG client，明确SQL null屏障|阻塞B读→A提交→放B→查Blob/两Asset/MIME|一个live Blob，两个Asset各自MIME正确，原5秒/屏障保留|旧selector未触发RED不冒生产冲突；三行观测修后Root全owner261/0，独审7c0749b9|P0 / 真实并发系统|
+|T-F02.R261-S3-CONDITION / 安全、异常 / 条件删除|现固定MinIO、自有versioned+ObjectLock qualification bucket|4格current/noncurrent×match/wrong，捕已签IfMatch、前后versions|wrong current412/版本保留；历史版本语义需qualified primitive，不推断便携CAS|FAIL真实wrong current204且删除；request确实带IfMatch。日志/矩阵保留；仅已确认空自有资源清理，不改正常bucket|P0 / 真实对象存储资格|
+|T-ADMIN.R261-ADAPTER / 权限、异常、状态 / 管理单意图|fixed BFF8.3，受控管理员gate/owner response，当前政策|三读→显式visible PUT/CAS→分页GET确认→丢ACK只GET→pending/generation/subject/client变化|freshadmin、全四字段一致/版本正确、共10s、零自动写、旧投影退役|有效48+3 RED已修，Root合同/辅助/独审通过；完整默认15032终态3259/6，77真实Next受控owner中75/2，六项归因保持OPEN。不是合法管理员正常浏览器PASS|P0 / 受控系统+工程|
+|T-ADMIN.R261-NORMAL / 主链、权限 / 正常后台保存|人类提供已有合法管理员，不selfgrant；正常9owner|Settings后台→三列表→自有政策visible Save→权威列表→硬刷新→冲突/撤权|真实owner变化、普通隐藏且拒绝、未知不冒提交|UNVERIFIED；已有管理员输入待人类，源码待完整门/精确提交；ordinary负向证据不替代|P0 / 待正常用户E2E|
+
+退出标准仍是本模块全部约定P0/P1真实用户路径通过、无已知阻断；skip/受控peer/历史局部通过不替代。完整70组11/8/14/36/1保持。
+
 ### R260 文件生命周期与管理页当前 QA 状态
 
 以下是既有T-F01/F02、后台任务的子用例；不新增完整组PASS，不把辅助工程门当用户完成率。
