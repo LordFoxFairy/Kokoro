@@ -1,3 +1,25 @@
+### R256 后继主控方向与交付
+
+Root冻结后明确Node22.22.2复跑lint/typecheck/3现UI文件167断言/build，原句柄37970实际exit0；首次wrapper漏打印句柄未作为exit证据，确认原build结束后独立重跑本次终态。未跑全量system/test:e2e/axe/视觉预算，不替代以上原页面用户证据。
+
+三原Agent均已STOP；侧栏单CSS e8c2dc85已由Root原tab真实回归，独审f18ab3bf保反向原CSS exact。后台目标采用现Web /admin、不增服务/恢复旧后台；现IAM无人类平台管理资格，下一IAM三D0需明确当前User绑定资格/受控grant-revoke与审计/当前Session准入契约，再固定BFF投影→Web入口+server gate。这是产品当前缺口，不是假设运维能配置现链接。验收帐号已询问用户，未授任何资格。admin报告a4e658a5/pages139cf11a保原ignored证据，最窄本人MCP读取消费与后台设计可独立，依赖consumer仍owner-first。Root提交本CSS及自有事实文档后继续原70组，不把只读报告或取消操作当完整管理/CRUD。
+
+### R256-RAIL-HIT 源码窄修准入
+
+Root原用户tab7/717px两次真实标题click误进rename，conversation URL未变；title rect x28/w260/h44 中心被rename x152–196覆盖。Escape取消无数据写；证据r256-rail-hit-red.png/r256-rail-rename-red.png。归属Web现conversation行CSS命中布局；比较TSX新增菜单与现sibling按钮参与flex，采用后者，不新组件/契约/状态/文件。原capability_composition_owner_r247现转唯一Webwriter仅 workspace-rail-items.module.css：[data-drag-kind=conversation]下title占剩余宽/去预留action padding，三action static/inset auto/transform none，32/44命中及hover/keyboard/compact隐藏保持。手机覆盖放现media规则后，其他folder/drag/scroll保持。基线c7f740e/CSS d6a7dea7；保护四mixed哈希r256-web-before.json。先实际RED已满足；交单文件diff/hash后STOP，Root同原tab项目/Direct title center、rename/Escape、move菜单/Escape、delete确认取消、键盘/刷新/scroll真实回归，再窄工程门与审查，Root唯一Git。不改owner数据/正常服务/权限或mock。
+
+### R256 页面闭环与后台入口同步（2026-10-06）
+
+用户新裁决：侧栏不反复重写，逐个补真实缺陷；各功能页面与后台管理同步维护；Settings仅已验证管理员显示后台入口，普通用户不显示且后端拒绝直接越权。复用当前Wave0–7/测试账，不建新计划中心。Root基线25aa2af27f60f0a782472a1ed08d7e20fc565b0e，Webc7f740ea821df1908ccc07f5b90512c6c8e3dc90，Web原三D0/OIDC mixed以及其他owner候选保持。当前先只读定位，不先造管理员角色/链接或恢复归档管理服务。
+
+|任务/角色|归属/执行/范围|依赖与交付/验收|
+|---|---|---|
+|R256-ADMIN 后台与权限接线审查|system_guarantee_read_0315只读；现Web Settings、BFF会话/权限、IAM管理准入、现后台仓/归档事实；Root审查|读Root AGENTS/CODEBASE_MAP、TS手册和目标三D0；交/tmp/r256-admin-entry-review.md，列真实后台路径/启动、可信管理员判定、现缺口、最窄文件集与管理员/普通用户/直链E2E；不得写仓/Git/资源/凭据，权限设计新歧义报告。|
+|R256-PAGES 页面链路盘点|iam_grant_source_scope_0244只读；Web Skills/MCP/Scheduled/Library/Settings及BFF契约消费现状态|交/tmp/r256-pages-closure-review.md；按已有70组列真实来源/静态目录/缺失命令和下一可独立修复片；不给接口测试计数冒E2E，不动各owner/正常数据。|
+|R256-RAIL 侧栏回归|Root真实原浏览器、现正常九服务；capability_composition_owner_r247只读侧栏状态/路由/滚动风险|只读交/tmp/r256-rail-regression-review.md；基线当前Web、仅确定残余缺陷与E2E路径，不重写已修目录树/全列表。Root唯一浏览器与Git，真实移动/删除影响需明确，禁止mock/重启/reset/资金/外部调用。|
+
+以上只读并行；生产实施须Root按源因准入现owner唯一writer，固定契约后消费者串行更新。每片Root原页面回归并记录正常/异常/刷新/权限，当前完整70组11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST不变。
+
 ### T-P02 本人连接消费只读交接完成（2026-10-06）
 
 system_guarantee_read_0315 已停写；报告保存在 var/dev/r255-preserve/r255-mcp-self-connection-consumer-plan.md，SHA256 673d256f7b4b4a9fff80c49cf21902372807f4cff7f024fa7731d888a914b56a。Platform 当前 HTTP3.2.0 文件 digest 4b42dd16，BFF 实际仍固定 HTTP3.1.0/owner6a09913a；发布 commit/provenance 尚待核，不能把文件 digest 冒作发布验收。下一独立切片先本人 Connection 正式读取：owner固定发布→BFF public/generated/可信actor→Web私有准入、分页与有界读取；不等待完整Agent、不把读取算CRUD。创建授权/撤销与执行证明边界仍需 owner 正式命令，BFF非GET503/register Unimplemented 保留真实失败，禁止预览/直写库/假proof；未实施消费者、未增加70组PASS。Root唯一集成/Git/资源，三D0原mixed/OIDC与其他仓修改保持。

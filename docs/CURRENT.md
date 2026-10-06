@@ -1,3 +1,13 @@
+## R256 页面与后台同步：本轮真实增量（2026-10-06）
+
+Root冻结后明确Node22.22.2复跑lint/typecheck/3现UI文件167断言/build，原句柄37970实际exit0；首次wrapper漏打印句柄未作为exit证据，确认原build结束后独立重跑本次终态。未跑全量system/test:e2e/axe/视觉预算，不替代以上原页面用户证据。
+
+- 三条线实际并行：capability_composition_owner_r247 侧栏命中修复；iam_grant_source_scope_0244 页面盘点及CSS独审；system_guarantee_read_0315 后台/权限审查，现均STOP；Root独占浏览器/Git/集成。不是开启重复后台服务或多writer同仓。
+- 原用户tab7真实RED：717px项目会话title中心被rename遮挡，两次click进改名而未导航。单CSS修正为真实sibling流，relative绑定自身伪元素；原同tab GREEN进入conv_ffd7…历史，Direct R243两原marker常驻；390四命中各自正确/44px，1200四命中/32px、Tab到rename、scroll113.5→204→0，rename/move取消与delete确认取消均无数据写，hardreload历史恢复。截图r256-rail-final.png，当前视口已reset，未开新标签。物理触屏/全CRUD仍未验。
+- 后台确定研发缺口：现九仓没有 active Admin Web/admin路由，历史kokoro-web不恢复；普通Product Session没有管理员能力。目标沿现Web同源/admin，IAM唯一当前资格/审计→BFF受信投影→Settings可见/后台直链保护；不能借OAuth provisioning operator、组织owner/admin、email或machine token当平台管理员。同步新增管理功能是每owner功能的验收条件，不留到最后；管理员真实帐号已向用户对齐，未更改任何权限。
+- 页面盘点：Skills正规发布/安装、Library上传/下载与ScheduledCRUD已有部分链，不重造；MCP先消费本人Connection而非Server目录。Settings个性化PATCH吞失败且无正规preferences handler是新静态缺口，需真实保存RED/owner接线，不造成功。报告保存在原ignored证据目录，admin a4e658a5/pages139cf11a/CSS独审f18ab3bf；未把盘点当页面完成。
+- 完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，Wave0–7保持；本轮无模型/资金/owner数据写或服务/PG/Redis重启reset，原Web四mixed/Rootuv/其它owner候选保持。工程补门结果在本轮收口后补，不冒完整浏览器能力验收。
+
 ### R255 用户原标签后补实证（2026-10-06）
 
 原tab7现已恢复同步：不注入cookie/preview，实际管理页原h1+h2=2且error可见，同时两个servers响应200（4de46d06/23f3d070）；CDP response body不可取，无法据此确定是旧schema/缓存/HMR哪个原因。保留error截图/metadata。正常reload当前源码并自动恢复既有settings hash后，原同tab1标题/正常空态/error0，两个真实servers200（2a7d008c/d1d78292）。这证明当前原页面读取呈现恢复，不代表Server→本人Connection/创建授权调用缺口已修。
