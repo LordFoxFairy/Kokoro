@@ -1,3 +1,22 @@
+## R255 01:41 原任务卡交接与后继（无业务PASS扩张）
+
+|任务|owner/执行与审查|交付/Root实际验证|状态与下一行动|
+|---|---|---|---|
+|T-B07.R255-GRANT-REASON|Billing agent_bound_owner_r255写；billing_grant_reason_review_0141只读独审；Root集成|abd809a1，五source/test+CURRENT前缀；真实PG154/0与诊断9/0，legacy12skip；六工程门0；独审b44b3aab零问题|内部effect修复已验收，writer/审查已停；正常管理员actor→target/IAM/HTTP资金路径未完成，T-B07整组仍OPEN|
+|T-P02.R255-NEXT-CONTRACT|BFF bff_skills_v2_owner_r251写；system_capacity_owner_r255只读独审；Root集成|1d9c5e61，三机器/gate/test+CURRENT前缀；Node22.22.2八门0，focused77/0/fullcontract242/0；独审f1ee0cb0零问题|机器候选已接收，不发布；source/SQL/receipt未实施，真实时间反例FAIL|
+|T-P02.R255-NEXT-SOURCE-SCOPE|原BFF负责人只读，基线main1d9c5e61+原19mixed；Root独占共享文件/Git/资源|仅允许仓外 /tmp/r255-bff-scheduled-next-source-scope.md；读现三D0、map/TS08/SQL03/API05；精确枚举源码/SQL/现PG场景/installer边界|只读交接完成59369f7e；Root指出并修正漏列原parser contract断言，最小26现文件。后继实际写集仍待Root阶段放行；不抢写mixed、不启动PG/服务，禁止新cron/兼容/通用框架、Scheduler.version=BFFrevision和replace充当read|
+
+完整Wave0–7保持，当前风险选项待用户答复但不挡上述独立slice；正常用户全链E2E仍唯一最终关闭标准。正常installer仅支持empty-owner；正常数据保留激活需独立批准，不以共享reset或复制旧next冒充两份新事实。现BFF `tsx src/main.ts` 非watch，原运行态未装载机器候选；后继源码/SQL实施与正常发布、真实浏览器验收分别记录。原0141基线/RED/派工记录如下，历史事实不删除。
+
+## R255 01:41 本波原任务卡（保留派工基线）
+
+|任务|owner/执行角色/基线|文件集/依赖与放置|验收/交付|
+|---|---|---|---|
+|T-P02.R255-NEXT-CONTRACT|BFF 原负责人 bff_skills_v2_owner_r251；唯一writer；main98017488；原19mixed按0141-baseline.json保护|沿现三D0当前前缀与唯一OpenAPI发布链，只允许contract/openapi/v1/openapi.yaml、scripts/verify-openapi.ts、contract/tests/v1-operations.json及既有直接scheduled contract tests（先枚举报Root）。替换输入next_run_at为recurrence_anchor_at，输出必有nullable next；采用现owner机器文件，淘汰复制DTO/alias/new API。不动SQL/生产源码/资源/其他文档/pins|先用现机器语义门记录真实旧合同冲突，再修改并重跑；不建底层单测/mock或称用户修复。源实现待Root对machine/D0一致验收后同卡放行。交精确文件hash/diff，Root独占Git|
+|T-B07.R255-GRANT-REASON|Billing；原Agent负责人 agent_bound_owner_r255转边界明确实现；main67499073；五mixed全保护|现已批准ADMIN-GRANT-DOC当前§663，扩credit.types.ts/credit.service.ts的required reason→effect→版本化digest/schema version→audit，不建admin服务/新模块。只允许这两source及现直接callers/集成测试（先只读枚举报Root），原TECH/API/DATA/IMPLEMENTATION_PLAN/CURRENT禁止写。reason不得默认sourceKind或兼容v1；HTTP/IAM target/normal composition/资金操作不在范围|最小业务失败证据与现调用链核验先行；Root控制真实隔离PG、普通集成验收，不占normal DB；当前真实RED已证audit写sourceKind、reason漂移无冲突/缺空超长仍入账，9断言7fail/2pass，临时库生命周期前后77catalog exact；worker只纯format/type/build门且不新写unit/mock。交冻结hash/路径/实际命令，Root审查与Git；不因该片声称正式赠送或聊天闭环|
+
+Root独占正常进程与浏览器，未收到风险选项不放宽strict cost guards。两个独立仓writer可并行，未派其他仓写；0141-baseline保护tracked/mixed，超范围先报告，观察超时不重启。
+
 ## R255 01:26 终态：MCP真实列表加载恢复，排程时间与收费聊天仍未闭环
 
 - **实际页面修复范围**：正常3310外挂→管理连接器→连接器设置→重试，真实GET `/api/hub/self/mcp/servers` 原502 `skill_response_invalid`。只读源码定位为Platform正常composition未启用已实现的mcp-server HTTP surface（owner404被BFF转502），非MCP响应误套Skills schema。Root仅在原ignored0600 `.env.local`保留三Skills并追加mcp-server及具名provider catalog=[]；保持原projection.read凭据、认证与RPC执行准入，不造Connected或SQL数据。原66685受控退出0、确认旧PID/端口释放后启动唯一47954/8086，源码9ab3b653 clean。正式入口再打开、硬刷新后再打开均真实200 `{"data":{"servers":[]}}`，UI合法空态、无加载错误，关闭设置恢复原页。

@@ -1,3 +1,9 @@
+## R255 01:41 当前两处变化定位（未改变拓扑/owner）
+
+- Billing mainabd809a1：现 src/modules/credit/{credit.types,credit.service}.ts 负责required reason→effect→v2幂等摘要→audit。现 test/integration/credit-{metering,read,read-http}.test.ts 显式callers/真实PG反例；未创建新模块/HTTP/SQL。普通operator目标准入与normal composition仍未接通，不能把effect当正式管理员赠送。
+- BFF main1d9c5e61：唯一 contract/openapi/v1/openapi.yaml、scripts/verify-openapi.ts、test/contract/openapi-contract.test.mjs 分开anchor/nullable next并加机器语义拒绝；inventory原92且byte-exact。现 application/scheduled、domain/scheduled-task、ports、scheduler client/dispatcher、postgres scheduled repository及canonical SQL仍待同卡实际实现。机器候选不等于运行态，消费者pin不提前更新。
+- Root var/dev/r255-preserve/0141-* 是ignored证据；docs/task.md/test-cases.md 是原任务/QA台账，不建立第二中心。两writer已冻结停写；原BFF负责人已交source-scope59369f7e停写，Root发现原parser contract断言漏列并收敛26现文件；normal empty-owner installer不当升级器。Root保mixed/Gitindex/资源；本轮工程门不增加70组业务PASS。
+
 ## R255 01:26 当前运行与排程D0增量
 
 - Platform物理仍apps/kokoro-capability，源码9ab3b653 clean；现持久正常配置追加mcp-server与空provider目录，原三个Skills surface保留。HTTP `/v1/mcp/servers` 现注册，现BFF平台projection.read读到Web `/api/hub/self/mcp/servers`；正常浏览器空态200已证。不是本人connection owner写入、provider配置或Agent MCP执行接通；现注册RPC仍Unimplemented，UI语义后继需对齐。

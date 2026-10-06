@@ -1,3 +1,11 @@
+## R255 01:41 集成交付：赠送原因真实PG修复；排程仅机器合同完成
+
+- **Billing `abd809a1a2f1a1d5a8b0f67ee36a4245d171025f`**：现Credit grant强制显式原文reason，纳入credit.grant/v2 digest/receipt schema version=2并写audit；同键只改reason冲突，完全重放不重复入账。拒绝缺失/空白/超长/NUL/非法Unicode；effect入口在事务内校验，捕获无效输入仍触发外层回滚。无默认sourceKind/旧v1兼容、SQL/HTTP/IAM/normal主入口变化。Root真实隔离PG先9断言7失败2通过，修后9通过；现4 integration文件154通过0失败、另legacy文件12因DATABASE_URL未设置而跳过，明确不是已验。自有临时库清理前后77库目录exact，不触正常余额/赠送；format/lint/types/build/schema/contract均exit0，独审b44b3aab零P0/P1/P2。
+- **BFF `1d9c5e612e68c4dbf28f39813da9eae9e7f9e94b`**：public8.0.0发布前机器候选仅分开输入recurrence_anchor_at与必有nullable输出next_run_at，关闭PATCH未知字段/旧next输入。92操作inventory、权限/envelope/原weekly语义保持。Root按本仓Node22.22.2重跑format/types/lint/build/semantic/inventory，focused77通过与完整contract242通过均0失败；worker误用Node24的既有pin失败日志保留，不改pin放宽门。冻结独审f1ee0cb0零P0/P1/P2。生产parser/SQL/receipt投影与消费者pins未实施，因此真实每周08:00创建/刷新错误仍FAIL，不发布候选或称页面已修好。
+- **实际交付边界**：两个独立仓writer、两个冻结只读审查员均已交接停写；Root独占Git，精确提交Billing六文件/BFF四文件，只追加CURRENT批准前缀、保原mixed后缀。BFF485非批准tracked exact；Billing308非批准tracked在追加前exact。原两项BFF untracked未收0141 hash，保留核验边界，不冒称基线证明。Root gitlinks/uv不暂存。
+- **完整业务验收不增加**：70组仍11通过/8失败/14待复测/36未验/1支付后置；无新增单测/mock、正常HTTP赠送/用户积分/收费聊天/真实Scheduler/浏览器本轮未执行，0主动模型/充值/结算。正常八服务继续复用，不重复启动/重置PG或Redis。收费风险选项一次待答，严格guards保持；BFF flag false、Agent正式Billingconsumer/normal Billing与modelworker缺口仍OPEN。
+- **证据与下一行动**：ignored var/dev/r255-preserve/0141-{billing-commit-receipt,bff-commit-receipt,grant-root-pg-receipt,billing-root-gates,bff-root-gates}.json。沿T-P02同卡准入实际source/schema/receipt切片，原BFF负责人已交59369f7e，Root纠正漏项后精确26现文件（13生产/13现测试与fixture），无新层。正常installer仅支持empty-owner，数据保留激活仍需独立前置；不启动候选破坏现正常schema，不创建新计划中心/数据库角色/运维平台。Wave0–7完整范围与现goal保留；历史工程绿/局部读200都不是最终用户闭环。
+
 ## R255 01:26 终态：MCP真实列表加载恢复，排程时间与收费聊天仍未闭环
 
 - **实际页面修复范围**：正常3310外挂→管理连接器→连接器设置→重试，真实GET `/api/hub/self/mcp/servers` 原502 `skill_response_invalid`。只读源码定位为Platform正常composition未启用已实现的mcp-server HTTP surface（owner404被BFF转502），非MCP响应误套Skills schema。Root仅在原ignored0600 `.env.local`保留三Skills并追加mcp-server及具名provider catalog=[]；保持原projection.read凭据、认证与RPC执行准入，不造Connected或SQL数据。原66685受控退出0、确认旧PID/端口释放后启动唯一47954/8086，源码9ab3b653 clean。正式入口再打开、硬刷新后再打开均真实200 `{"data":{"servers":[]}}`，UI合法空态、无加载错误，关闭设置恢复原页。

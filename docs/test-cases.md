@@ -1,3 +1,18 @@
+## R255 01:41 QA子例结果：真实owner事务回归，不冒完整用户E2E
+
+下列仍归既有T-B07/T-P02；不新增第71组。当前正常70组保持11通过/8失败/14待复测/36未验/1支付后置。Billing前置均为abd809a1现服务层+真实隔离PG fixture及可信tx actor，无mock/正常余额写入；主链系统验收必须另走真实管理员入口→目标授权→赠送→本人余额流水→聊天预占/结算，现未通过。
+
+|用例ID/分类|用例标题|预置条件|测试步骤|预期结果/本次实际|优先级|测试类型|
+|---|---|---|---|---|---|---|
+|T-B07.R255-REASON-01 主链|赠送原因保持原文且可审计|现Credit effect、本人账户、合法含中文/emoji及两端空格原因|合法grant→读journal/receipt/audit→用相同身份/同键/同payload重放→再次读账|原文reason一致、v2 digest/version=2、一次账务效果；真实PG通过。非正常管理员页面E2E|P0|业务事务集成|
+|T-B07.R255-REASON-02 异常/幂等|同键只改原因不重复入账|已成功grant及原receipt|其他字段保持、修改reason后以原key重试→核receipt/余额/journal/audit|幂等冲突且无第二次effect；真实PG通过|P0|异常/账务一致性|
+|T-B07.R255-REASON-03 边界|原因1及500个Unicode码点合法，501与空原因拒绝|新自有账户/命令identity|依次提交1/500码点合法原因；独立key提交missing/nonstring/empty/whitespace/501/NUL/单surrogate→查各账务事实|合法两边界保存原文；非法请求零grant/journal/audit/receipt变化；真实PG通过，原RED曾缺/空/超长仍入账|P1|边界/数据完整性|
+|T-B07.R255-REASON-04 状态/回滚|effect非法原因被catch仍令外层回滚|外层真实PG事务及effect直入口|先在同事务产生写入→调用非法reason effect→捕获异常并尝试commit→查库；另验audit失败尾部回滚|不得partial commit；所有当前事务事实回滚，真实PG通过|P0|生命周期/事务容错|
+|T-P02.R255-NEXT-CONTRACT-01 边界|锚点输入/next输出机器候选|BFF1d9c5e61 public8.0.0尚未发布；原92ops|现canonical schema检查→破坏nullable/required/date-time/回退旧字段→同semantic入口检查|合法机器候选通过、四破坏拒绝；Root focused77/0/fullcontract242/0；仅辅助，不是正常路由行为通过|P1|契约一致性|
+|T-P02.R255-NEXT-02 主链/状态|正常weekly08:00确认与刷新|原真实3310/IAM/Scheduler及现任务；当前source/SQL仍旧实现|正常创建→观察pending next→等Scheduler确认→列表/硬刷新→编辑→再确认→暂停→刷新|待确认应null，确认应owner正确08:00，暂停应null、旧ACK不覆盖；当前原创建next=创建瞬时点反例仍FAIL，本轮未重跑/未关闭|P0|完整系统E2E（待实现复验）|
+
+Root154PG通过/12legacy skip与诊断9通过仅支持上列内部修复；不拿skip/工程数量充当业务完成。不执行同共享库reset；隔离库目录前后77 exact。测试通过标准仍是当前正式页面的完整交互+权威持久结果+异常恢复，截图/ready/contract绿均不足。
+
 ## R255 01:26 MCP列表有限修复复验（不关闭T-K05整组）
 
 |用例ID/分类|标题/优先级/类型|预置条件|真实步骤|预期与实际|
