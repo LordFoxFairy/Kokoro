@@ -1,3 +1,17 @@
+### R259 T-K03 安装元信息与个人管理正常 E2E 补证
+
+当前源Platformc94909f/BFF7269e97/Web8b355ba，正常账号/持久开发配置/原PG与Redis。只以下子路径PASS；完整70组计数不变，T-K03整组RETEST，不把工程测试量当业务完成率。证据r259-skills-metadata-normal-browser.json（800baada…）、installed-final/settings-metadata-final截图；12真实200响应，最终五段缓冲未截断。此前截断/旧body不可回读不冒有效记录。
+
+|用例ID / 类别 / 标题|预置条件|E2E步骤|预期结果|实际结果/状态|优先级 / 类型|
+|---|---|---|---|---|---|
+|T-K03.R259-INSTALL-METADATA / 主链 / 真实安装名称|正常登录，本人既有合法纯清单发布源，正式三owner元信息|已安装→我发布的→安装→Get/List→硬刷新|同固定revision真实名称简介来源，不暴露技术ID为标题|PASS子路径；原“暂无名称”RED保留，当前卡显示R255正常开发清单/真实summary/来源可用|P0 / 用户E2E|
+|T-K03.R259-ENABLED-STATE / 状态 / 来源与启停独立|同已安装源active|停用→权威Get/List→刷新→启用→Get/List|enabled false/true，来源仍active，不误称来源失效|PASS子路径；实际PUT200 change disabled/enabled，刷新保持先前停用；fresh body同name/summary/source|P0 / 状态机E2E|
+|T-K03.R259-REMOVE-REINSTALL / 生命周期 / 软移除与重装|本人安装，无外部执行权限变化|移除→Get installed false→默认空态→removed筛选→我发布的重装→Get/List→刷新|移除后disabled；重装复用同installation_id，无重复记录，真实元信息保持|PASS子路径；DELETE200 removed、POST200 reinstalled、同f0b0d695/revision1、最终enabled true，源未永久删|P0 / 用户E2E|
+|T-K03.R259-SETTINGS-METADATA / 主链 / 两入口一致|正常安装启用|账户→设置→技能→关闭设置|单标题、同已安装/我发布的、同真实卡；不重复我的技能回环|PASS正向；实际Settings截图，未宣称全设置能力|P1 / 交互E2E|
+|T-K03.R259-UNTESTED / 安全、边界、异常|各真实账号/来源状态/版本与可控故障|跨主体/撤准入/四状态×五op/receipt重放/非BMP/冲突/发布包CRUD/窄屏逐例|按现安全、生命周期与UI准则，不借fallback通过|UNVERIFIED/原RETEST保持；辅助strict矩阵不是这些真实路径通过|P0–P2 / 待系统E2E|
+
+个人技能正向安装子切片可接收；整页上线仍需全部约定P0/P1用户路径及上述异常/授权回归，没有跳过、模拟、免费积分或放宽门禁。
+
 ### R259 T-K03 首片真实验收与尚未接通边界
 
 - 子例 ADMISSION：现Skills读取绑定真正probe boundary；辅助 held GET/POST/fresh恢复已绿，真实撤权/多主体页仍未验，不从副本绿当越权消除。

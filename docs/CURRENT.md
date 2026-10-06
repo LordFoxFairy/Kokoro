@@ -1,3 +1,14 @@
+### R259 个人技能安装管理已真实接通（2026-10-06 18:55 UTC）
+
+用户已批准先清晰个人管理，不扩全发现目录；本节更新下方历史“安装名称仍占位/消费者未接/正常Platform旧进程”的当前状态，旧失败证据保留。完整Wave0–7仍active，页面CRUD优先、Agent推理后置；70完整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
+
+- Root正式提交 BFF **7269e97e5da5eba7a328372bf6f541299475b363**（79明确路径，8.3.0/99，YAML463bb9f6）与Web **8b355bab3c362a630cca1d1829f8dfb6616045cf**（30明确路径），消费Platform **c94909f1c593f2b7ffd5f325786739da744ff31f**。安装固定revision真实display_name/summary/source_status由owner统一投影，List/Get/Install/SetEnabled/Remove一致；不造名、不Web目录join/N+1、不复制数据库事实、不把来源状态当安装启停或执行授权。
+- **正常真实账号页面子链已验**：默认已安装→我发布的→安装→权威Get/List→停用→刷新保持→启用→移除→空态/removed筛选禁写→重装原installation_id→硬刷新同真实名称/简介/来源可用/已启用。Root补录完整未截断五操作：PUT enabled两次、DELETE、POST reinstalled及对应GET/List，共12个真实200响应；相同f0b0d695安装记录/revision1，无重复安装。Settings→技能只有一个标题、同两视图与真实卡。最终保留该既有纯清单技能已安装启用，源未删除，无工具执行/外部授权/模型/资金动作。
+- 证据 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r259-skills-metadata-normal-browser.json`（SHA800baada7b9048ca1d419b0ae017b7108cbb346829d23fb6fa0be0f4ab97db76）、`r259-skills-installed-final.png`及`r259-skills-settings-metadata-final.png`。较早CDP缓冲被截断且旧响应body不可回读，未冒完整证据；已重新实际执行启停/移除/重装，最后五段truncated全false并保存脱敏body，无凭据或header。SetEnabled实际HTTP为PUT，不写成PATCH。
+- 正常源码进程仅兼容配对重载Platform/BFF：Node24.20.0 session40187/PID87671，Node22.22.2 session83600/PID87691，固定原.env.local、端口8086/53714、原数据库；readyz200。原Web31693/10713继续HMR，未碰normal.next。初NODE_OPTIONS不支持--env-file在应用启动前失败，改显式Node参数启动正规pnpm dev，错误日志保留；正常进程注册表已补真实祖先PID。PG/Redis/MinIO/ClamAV/IAM等未重启/reset，不新增应用数据库或临时运行配置。Agent旧/health探针未获得有效健康证据，不据此宣称HTTP故障，推理worker仍后置。
+- Root辅助工程门仅作为源码放行：BFF75122完整check+format exit0，contract264/0、主830/0/2旧skip、lint/types/generation/build0。Web29096合同278/0、架构50/0、7具名focused509/0+lint0，68271显式Node22 types/build0；708编译图副本byte exact，normal输出未污染。首副本all-tracked oracle因.dockerignore未复制在门前失败，改实编译图核验；不存在的settings-skills-boundary参数未匹配，不虚增8文件。独审BFF6a6e6858与Web40ef115b无确定P0/P1/P2。最终79/30冻结逐SHA无漂移，Rootuv/two mixed exact。
+- **未闭环仍保留**：完整技能发布/编辑/撤回/包生命周期、真实撤准入/跨主体、全部四来源状态×五操作、异常/版本冲突、非BMP及metadata receipt重放真实HTTP、移动视觉矩阵未全验；不将当前安装正向子链冒整页/执行能力/全组PASS。MCP创建404、文件下载/删除、排程控制剩余CRUD及后台Web接线仍待推进。Storage原owner独立只读已交r259-storage-delete-d2-read.md（29d3cf1a），现3 missing-handler失败+2 types错误保留，未写source/运行资源。
+
 ### R259 个人技能首片已接收，安装元信息 owner 已发布（2026-10-06）
 
 用户批准先清晰个人管理，不扩全发现目录。Web Root精确24路径提交 **df2c08afdf3657e24b9cca472c9fac95a692674d**：默认“已安装”/“我发布的”，移除“我的技能”设置回环，空态/分页/错误明确，技术ID移至详情；真实登录边界退役reader，取消迟到读写。Root真实测试发现120秒probe会清空详情，随后有效timer两RED+重叠focus两RED→请求序号与UI scope分离，健康同subject重核不换scope，unknown/索引失信/离页/换subject在reload前撤准入；并未取消服务器每请求授权或延长失败预算。

@@ -1,3 +1,43 @@
+### R259 元信息切片集成验收与交接
+
+BFF原owner交付→独审→Root79路径提交7269e97；Web原owner交付→独审→Root30路径提交8b355ba。三名原生代理均已STOP，Root不抢写；正常兼容配对重载后真实五操作和设置同reader子链已验，详细源commit、正常句柄、实际响应与未验边界见CURRENT本轮18:55记录。Root最终79/30冻结无漂移、two mixed/uv exact，Git只按具名路径；完整技能组仍RETEST、不升全组PASS。Root错误NODE_OPTIONS启动参数/副本oracle/初相对task路径与较早CDP截断均保留，最终证据已修正来源与覆盖。
+
+|任务|当前状态|交付/验收|后续owner|
+|---|---|---|---|
+|R259-SKILLS-METADATA-BFF-D1|已验收本切片|7269e97，固定8.3机器/安全五op投影；Root全门、独审与正常真实五op200回读|BFF仍负责未验异常/metadata replay矩阵|
+|R259-SKILLS-METADATA-WEB-D1|已验收安装管理正向子链|8b355ba，默认已安装/我发布的，真实元信息与详情；正常安装启停移除重装/刷新/Settings实际通过|Web/Root按现T-K03补发布生命周期、安全/窄屏，不扩发现目录|
+|R258-FILE-DELETE-D2-READ|只读交接完成，生产未实现|r259-storage-delete-d2-read.md，SHA29d3cf1a；3handler失败/2types保留，9机器候选及17Prisma未改|Root按现T-F01/F02收敛最窄实现集后续派原Storage owner；不与Agent推理绑前置|
+
+原九服务/基础设施继续正规源码运行；只Root自有验证标签收尾关闭，原用户标签和数据保留。Root本轮仅四现台账提交，未夹带八混合gitlinks/uv/任何资源证据/依赖副本。
+
+### R259 独立文件 CRUD 后继只读并行
+
+R258-FILE-DELETE-D2-READ：原Storage owner bff_admin_routing_d0_r257 在BFF源发行后转只读现Storage5b15fe3、9机器候选与17 protected Prisma；不改源/docs/生成/资源/Git。核现三D0/schema/contract候选/3 missing handlers/typecheck两个真失败，给单Asset删除最窄production/tests/必要Schema正规生成和当前正常演进停止线、现失败测试与正向/引用共享Blob/同digest再上传验收路径。仅ignored独有交接；Root先完成当前Skills正常真用户链，不以文件调查阻塞其余页、不预报删除功能支持。
+
+### R259 Web 元信息正式消费实施
+
+BFF Root按79明确路径发行7269e97e5da5eba7a328372bf6f541299475b363 / public8.3.0/99 / 原YAML463bb9f6b500d952989a0bb46c991ea44c36355a452ae307e19d4f89fc966f3f；normal真实集成仍待消费者齐全配对重载。Web D0独审b9a8ce4e、Root三suffix/two mixed exact，三doc63c8d67已提交。原Web唯一writerD1仅handoff所列两production+九locale、正规snapshot/generator/产物/README、十一现测试、三D0自有prefix，先有效RED→窄source→freeze；Root副本build/最终浏览器。Team15预期字节不变但必须实测，two mixed/normal.next保护。不动客户端/route/preview新store或后端、不把name placeholder换成假名，不消费工作树或任意发布目录。
+
+### R259 BFF 8.3 源发行与 Web 实施准入边界
+
+Root完整Node22 check+format75122 exit0（合同264/0、主830/0/2旧skip、lint/types/generation/build0），独审6a6e6858起终79exact/27历史exact，无确定P0/P1/P2。冻结源按明确路径发布immutable artifact供Web消费，但功能状态仍待正常真实五op与浏览器集成，不叫已验收；为遵循用户正常开发/真实用户验收，采用最终兼容Platform+BFF+Web同步重载后的正常OIDC→owner五op验证，不另建临时全组合进程或用mock代替。安装原真实RED已建立。四状态×五op/非BMP/metadata replay未全覆盖如实OPEN，先精确正常主路径。后继Web原writer仅D0已批准集、固定新BFFcommit/digest后有效RED→正规生成/strict schema/真实卡→freeze→独审/Root门/正常浏览器；所有状态机/权限与两mixed保。
+
+### R259 BFF 冻结接收前范围偏差
+
+writer未先报告而同步buf.platform.json旧vendor路径，超出最初具名清单；Root实际核diff仅单一模块路径，确属正规generator必需输入，现追加审查准入而非隐去偏差。禁止其它扩围。79冻结路径待独审/Root全门；原handoff被追加D1、原D0 SHA历史不再现文件，Root保留已提交D0为事实来源。正常安装POST/GET/list200已真实复现名称占位，r259-skills-installed-name-red记录，不预报元信息消费完成。Root首证据复制调用误用BFF工作目录写Root相对task路径报FileNotFound，未改task/资源；随即改绝对路径，原门75122已启动沿原句柄。
+
+### R259 BFF 固定 pin 影响集补齐
+
+原writer静态核四现测试 skill-package-begin-http / skill-package-complete-http / skill-validate-http / skill-publish-http 硬编码旧494b vendor，Root批准仅同文件路径pin更新为c949、原V5历史内容oracle保持，不删除/弱化断言。这是clean删除旧vendor必要消费者同步，无新业务/源码/依赖/资源。原D1五测试RED与其它边界不变；三D0自有prefix同步具名范围，Root最终检查全部oldpin引用。Web D0独审并行，尚不预消费未发布BFF。
+
+### R259-SKILLS-METADATA-BFF-D1：固定机器与现投影实现
+
+BFF D0空summary/PBpresence/JSlimit、V6history/latestpin分离与27/93范围经独审b24a2e2e和Root原suffix exact已闭合。原bff_admin_routing_d0_r257唯一writer，先现platform-connect-contract、skill-installation-http、contract/openapi-contract、contract-governance、architecture测试新增十二字段/invalid matrix有效RED；再按三D0明确集 cleanrepin Platformc94909f，Protoe5fd71e436f8d0ad271ae4ccfbcc323dbb691aafeacca04e29297e8f0a068db0/descriptor0467c1c45e8ac27c79cb906e27bfdb679d88739e45bfa38128f0f629bec686d5，原27history不变。现generator正规产src/generated/platform-connect；public8.3/99/OpenAPI与既有checker.version oracle；唯一production personal-installation-response.ts严格三字段五op投影。只准三D0自有prefix同步阶段，禁止DDL/依赖变更/服务/DB/Git及其他源边界。发现额外受影响文件先报Root；不改原权限、deadline、errorcode/receipt、historyartifact/safeFields9，不手generated。冻结→独审→RootNode22完整check与真实owner→Web发布，正常进程仍不重载。
+
+### R259-SKILLS-METADATA-WEB-D0：并行准备，固定消费者依赖
+
+Web原writer agent_planned_guarantee_system_r257 仅只读/三D0自有prefix方案；worktree /Users/nako/.codex/worktrees/kokoro-r257-admin-web HEADdf2c08a，两mixed禁止。已批准字段语义来自Platformc94909f+BFF D0：display_name非空白<=255，summary空合法<=65535不trim，source_status active/disabled/withdrawn/quarantined；不是执行授权。现hub/schemas runtime安装strict与personal-skills-read渲染为主；复用现shadcn Card/Select/Button/Dialog与locale键，删暂无名称占位，不发目录N+1/造名/第二状态机。此阶段只核最窄正式BFF8.3固定pin/生成/strict consumer/UI/test文件范围、三面设计；BFF机器尚未发布不得source/runtime消费，不猜新commit，不动资源/Git。Root继续BFF实现关键链，Web设计可独立并行，原goal70组不变。
+
 ### R259 本波交付接收与后继
 
 Web df2c08afdf3657e24b9cca472c9fac95a692674d首片Root335/0/Node22lint/types/build0与真实120秒poll详情保持、设置两视图接收；原Web writer STOP。Platform c94909f1c593f2b7ffd5f325786739da744ff31f Root最终纯1272/0/284skip+真实隔离PG33/0/资源无残留、独审6ee0adba接收。正常Platform/BFF旧进程暂不重载、安装元信息消费者未接，不称全页面完成；BFF原writer只D0最短消费分析，Root独占后继机器放行/正常重载/浏览器与提交。详细证据在CURRENT/现测试台账，原失败/后继范围不删除。
