@@ -1,3 +1,13 @@
+04:40 最终冻结补证：runtime测试只修4处lint类型/异常包装后SHA8c17c056；Root59457同3+24重跑27/0、5.48秒、16freeze/PG77exact，Root75376九生产+runtime lint0。Root53849最终直接tsc仍同6旧栈错误；不冒全工程通过。独审55f43483绑定前一测试e8e5054e及两源码，最终4处测试类型差异由Root复核，业务断言/预算/屏障保持；不冒独审已覆盖后修测试。
+
+## R255 04:40 当前事实：三路并行推进，正常用户验收仍 OPEN
+
+- Web main **ad9183915c39c2a424eef1ee9c57fdb9a5ed2a5b**：只接收两现路径的双时序测试/记录。原快ACK创建重进全部业务断言保留，新增deferred诊断独立存在；Root UI+engine全部73文件1426/0，两个case114/153ms，lint与直接tsc0，独审d3f5e2b无已证P0/P1/P2。该宽集不是历史未保存完整命令的16文件同序，旧461/1失败不抹除，不声称原因已修或普通浏览器通过。
+- Billing main仍 **261a20f0**、源码候选未提交/未在正常环境启动：正式唯一main的本人余额/流水实测1/0；真实owner PG HTTP矩阵24/0。独审四P2中两项实际故障有效RED（DI抢exit、deadline后进程仍活）→最窄factory/main修后同3runtime+24读27/0，5.51秒，16冻结路径保持、77库目录exact、自有资源已关。初始异常回caller、最终deadline明确code1/signalnull；不改变超时数值、鉴权、资金、wire或费用规则。
+- **未收尾**：stop-accept/drain先于Prisma销毁、readiness已连接响应黑洞客户端截止、结构化日志/脱敏；旧server及15核心caller的有效断言迁移，直接tsc仍6条已记录失败（旧server/runtime/config），full test/build/schema/contract正常切换门未通过。不能以恢复alias/runtime.server、删除有效业务断言或跳过门清零；19未实现operation/worker/支付保持完整后继，不再错误作为两读设计的前置。
+- 八原进程同PID仍alive/200，仅可用性；0正常重启/新增服务/资金/模型/schema/reset。浏览器getState超时/内核reset仍0DOM/动作，新用户PASS=0；70组保持**11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**，Wave0–7/原goal不变。两个原业务决定及一次浏览器重开问题继续待答，不重复询问。
+- ignored0440-{web-dual-commit-receipt,billing-first-source-green,billing-read-regression,billing-fault-red,billing-fault-green,current-protection,running-handles,owner-health}绑定实际结果。证据纠偏：Root复用旧runner phase覆盖了历史0419首次404的raw json/log；24351实际工具输出和历史台账仍在，不伪造raw复原。当前故障证据固定0440，runner已拒覆盖既有phase（0440-evidence-overwrite记录）。
+
 ## R255 04:19 当前事实：工作区终态窄修已提交，完整页面仍待验
 
 - Web main `521841d37ec6d0a52936e5ae7968723f6683259b`，4路径：既有导航派生条件使A被拒/B回退水合失败进入error后不再无限loading，原URL与Retry保留；真实AppFrame/SessionEngine UI反例先1FAIL→定向2PASS，独审f73e6a4f零已证P0/P1/P2。非空错路由仅静态核对，未冒行为PASS。

@@ -1,3 +1,12 @@
+04:40 最终runtime测试550行/8c17c056，非Error包装保cause、Promise<unknown>去冗余，九生产同freeze未再变；Root最终27/0+窄lint0，tsc仍6旧栈错误。Billing正常未启，未提交候选；Web ad918391为测试诊断提交，不是正常项目链路修复。
+
+## R255 04:40 实际入口与测试地图（Billing候选未启用）
+
+- Web mainad918391：现tests/ui/app-frame.smoke.test.tsx原快ACKcase保全，另独立deferred阶段诊断；导航源码仍521841d/f98e06fd，不新增状态/网络协议。Root73file1426/0仅fixture辅助，normal浏览器及旧间歇失败根因未闭环。
+- Billing main261a20f工作树候选：唯一src/main→bootstrap/create-billing-runtime→AppModule→DatabaseModule/BillingHttpModule→canonical Credit两GET + three probes；无第二runner/legacy proxy。factory显式abortOnError:false，main失败最终exit1；真实source故障2RED→3runtime+24realPG读27/0。当前该候选无Git交付、正常Billing OFF，不能按HEAD宣称已切换。
+- 旧src/interfaces/http/server.ts待删除；readonly1a1ecc03列15核心caller和有效未承接断言，精确范围见原T-B07任务。drain/readiness/日志及完整工程门仍缺，不把旧注册metrics别名或runtime.server塞回新图；目标24/当前5/其余19业务明确分开，不删能力。所有DB/contract的事实owner不变，正常余额/模型/schema无写入。
+- ignored0440收据是研发证据而非用户验收或第二任务中心；Root原八processes.json同句柄持续使用。完整Wave0–7/70用户组不变，浏览器控制仍观察阻塞。
+
 ## R255 04:19 当前入口增量
 
 - Web main521841d：现 `src/components/blocks/app-frame/use-app-frame-navigation.ts` 独占URL归属/水合派生状态，error且错位或空正文的终态与loading互斥；AppFrame既有错误面/原URL重试、engine和权限保持。现app-frame.smoke新增实际组件/engine组合反例，属于UI fixture辅助而非normal owner/browser E2E。

@@ -1,3 +1,17 @@
+04:40 最终冻结补证：runtime测试只修4处lint类型/异常包装后SHA8c17c056；Root59457同3+24重跑27/0、5.48秒、16freeze/PG77exact，Root75376九生产+runtime lint0。Root53849最终直接tsc仍同6旧栈错误；不冒全工程通过。独审55f43483绑定前一测试e8e5054e及两源码，最终4处测试类型差异由Root复核，业务断言/预算/屏障保持；不冒独审已覆盖后修测试。
+
+## R255 04:40 子例实测（普通用户整组仍不新增PASS）
+
+|用例ID/类别|标题/优先级/类型|预置条件|行为步骤|预期|当前实测与限制|
+|---|---|---|---|---|---|
+|T-C04.R255-FASTACK 异常/状态|未知创建重进保原意图，P0/交互|实际AppFrame/SessionEngine UI fixture，首次立即503、第二立即200|A网站草稿→失败→改B→同菜单重进→回Direct|同key/body、导航canonical A项目、A/B各草稿不串|原步骤断言全保，仅finally清stub；本轮宽73file中114ms通过；历史16file失败保留，normal/browser根因未证|
+|T-C04.R255-DEFERACK 状态|明确ACK阶段诊断，P1/交互|第二POST受控响应、合法创建receipt|菜单关闭→重进→观察第2POST同身份→释放ACK→导航→回Direct|ACK前不导航、ACK后A/B归属正确|独立新case153ms通过，不替代快ACK/真实产品验收；Webad918391|
+|T-B07.R255-SOURCE-READ 主链|正规本人读入口，P0/owner组合|原main child、真实隔离PG、合法fixture账户、五因素BFF身份|source启动→两本人GET→关自有资源|200/no-store、真实账本结果，正常数据零改|旧404有效RED→现1/0；read HTTP矩阵另24/0；normal Billing仍OFF，用户积分链未闭环|
+|T-B07.R255-INITFAULT 异常|DI错误传回并清理，P1/进程|语法合法config与故意错误resource audience、真实DI|config解析→factory→真实verifier拒绝→caller catch|不由Nest提前抢exit；caller取得原错误|实际RED→abortOnError:false后GREEN；当前fixture child不是普通IAM登录|
+|T-B07.R255-SHUTDOWN 异常/生命周期|最终deadline有界退出，P1/可靠性|原main、有效EdDSA请求已进入受控JWKS并挂起、deadline250ms|确认在途→SIGTERM→观测1500ms内退出|最终错误退出code1/signalnull，不以cleanup SIGKILL计成功|实际RED→main明确强退后GREEN；预算未放宽；graceful drain/readiness黑洞仍未验|
+
+Root56132同3runtime+24读27/0、5.51秒、16freeze保持、PG77→77 exact/own资源回收。Web全部UI/engine73files1426/0与lint/tsc0；这些研发辅助彼此有重叠，不换算用户完成比例。Billing直接tsc仍6旧栈错误、工程cutover/正式资金/真实浏览器均OPEN。70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，完整用户PASS新增0。
+
 ## R255 04:19 子例记录（不增加70组分母或整组PASS）
 
 |用例ID/分类|标题与优先级/类型|预置条件|测试步骤|预期结果|实际结果/后续|

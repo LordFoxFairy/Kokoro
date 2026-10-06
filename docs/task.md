@@ -1,3 +1,48 @@
+04:40 最终所有原测试句柄结束：59457最终27/0/5.48秒/16freeze/77库exact；75376窄lint0；53849最终tsc仍同6旧栈错误。runtime最终8c17c056仅4处类型/异常包装，Root复核无业务变化；55f43483独审两源码/前测试，不冒覆盖后修测试。候选未Git交付/正常Billing OFF，三原代理均停写。下一具体任务仍按本卡drain/ready/日志/旧栈有效断言承接，不复开原进程或全量支付阻塞现本人读。
+
+04:40 lint实际失败补记：Root77726窄slice lint exit1，唯一runtime测试三处throw unknown与一处Response|unknown冗余union共4错误，生产9路径无已报错误。原writer仅修这四类型/错误包装，非Error保为cause，不吞原错/cleanup、改断言/预算；冻结交Root复跑同27及lint。工程FAIL保留，不调用disable或放宽规则。
+
+### R255 04:40 本波冻结终态与原卡后继
+
+Web ad918391双时序测试两路径已提交；Root宽UI/engine73file1426/0、lint/types0与独审d3f5e2b，未证明旧16顺序根因或用户CRUD。Billing原writer已停写，Root56132同3runtime+24读实际27/0/5.51秒/77库exact；独审55f43483对两单行窄修无新增已证P0/P1/P2。仅有界code1/signalnull获实测，测试未区分立即close错误与timer唯一归因，也不保证stderr flush；源码timer/race语义按本地Nest核对。候选仍未提交，normal服务未启，最终cutover未通过。
+
+下一沿原T-B07负责人：先既有受控JWKS在途→SIGTERM→释放后原请求可完成的真实drain反例，再只在factory顺序修复；readiness客户端截止与真实故障负控；随后15核心caller有效断言承接/旧server删除/工程门及正常持久配置激活。跨owner financial资格/模型费用决定与19后继仍原任务，支付最后。Root原八服务/六仓protected/index/uv保持、原浏览器观察问题待答；不重建goal/计划、不重复服务、不以研发数字充当用户PASS。
+
+### R255 04:40 故障窄修放行前复审
+
+T-B07.R255-BILLING-FAULT-FIX-REVIEW：iam_grant_source_scope_0244只读原Billing负责人新freeze16路径（0440-billing-fault-green-freeze）。核factory65d8714e、maine13f974b、runtime teste8e5054e；两实际RED对齐、退出code1/signalnull、不改预算/鉴权/业务wire。Root56132正在同3+24真实PG矩阵，不预报结果；其余drain/readiness/日志及旧栈未收尾明确保留，不将2修冒全部P2清零。报告仓外，Root唯一资源/Git。
+
+04:40 同卡补充：deadline子例只强化为child code=1且signal=null，原not0接受null不够严密；原预算/屏障/cleanup不变。writer在唯一现runtime测试改两断言后重新freeze；不改变已取得真实RED的前置与失败判定方向。
+
+### R255 04:40 生命周期两有效RED → 最窄源码准入
+
+Root72296现15路径冻结下真实原main/PG/TCP：3例1PASS/2FAIL、4.6秒、77库目录exact/自有资源回收。DI已CONFIG_PARSED且真实audience verifier构造异常被Nest先exit；250ms deadline日志后真实在途HTTP仍活至1500ms失败，非fixture失效。只准原Billing writer在现factory加入abortOnError:false使caller清理可达，现main在graceful close失败/最终deadline耗尽明确非零强退；不改budget/test/其余生产/contract。先freeze交Root同3例再24读负控实跑。drain顺序与readiness黑洞仍独立待证，不冒两修涵盖四P2。
+
+证据维护纠偏：Root复用了旧runner phase，历史0419首次404的raw json/log被当前故障跑覆盖；24351实际工具输出/历史台账仍在，不伪重建raw。当前故障receipt已固定0440-billing-fault-red；runner改为当前唯一phase且拒覆盖，后继不再复用名称。
+
+### R255 04:40 双时序候选放行前独审
+
+同只读 iam_grant_source_scope_0244 在旧栈盘点后核Web main521841d→smoke freeze7b2abfda：原立即ACK业务操作/断言完整，仅finally清stub；独立新增deferred诊断，不替代旧失败。Root已跑UI/engine全部73file1426/0（两case114/153ms），该宽集不是已知原16顺序，未冒根因；lint/直接tsc0。只读报告同仓外，生产/测试禁止写，Root精确Git待独审。
+
+### R255 04:40 旧栈有效语义迁移只读卡
+
+T-B07.R255-BILLING-RETIRED-INVENTORY：iam_grant_source_scope_0244/gpt-6-astra，只读Billing261a20f+冻结15候选，Root审/Git。沿原C3/D0，核6条tsc失败和旧server精确所有caller；按旧传输已替代、canonical已有等价行为、19未承接后继三类逐项列实际代码/test证据。只交/tmp范围报告，不改仓/Git/资源，不删除有效业务断言或放宽门；为下一Root准入提供最小清理集，不把全部支付变成已实现读启动前置。
+
+### R255 04:40 冻结审查与不削弱反例的后继
+
+|原任务|唯一负责人/基线/文件集|当前证据与准入|
+|---|---|---|
+|T-C04.R255-PROJECT-RETRY-DIAG|system_guarantee_read_0315 / Web main521841d；仅现tests/ui/app-frame.smoke.test.tsx|Root19730诊断宽跑462/0，但deferred ACK改变原fast-ACK时序，不关闭旧失败。恢复原立即503/200 case（仅finally清stub可），另新增当前deferred诊断case；其他case/生产代码禁止。冻结后Root重跑，不调期限、不冒根因或用户PASS。|
+|T-B07.R255-BILLING-RUNTIME-FAULT-RED|billing_read_activation_0340 / Billing261a20f+五mixed+冻结15候选；仅现test/integration/billing-runtime.test.ts|Root70742真实原main/PG两读1/0、目录77→77 exact。独审2e0724b8发现4P2生命周期风险；先以现fixture真实故障反例证明初始化异常与drain/deadline，源码不提前修。测试子进程/自有库资源由Root执行；writer不跑资源/Git，先交最小可执行freeze。|
+
+Root77111直接tsc exit2：6个错误均在旧server或旧runtime/config测试，原门仍红，不skip/删有效断言清账。正常Billing/modelworker仍OFF，浏览器观察原阻塞；完整70组/用户PASS增量0。
+
+### R255 04:40 接续原句柄与两个独立切片
+
+- T-B07.R255-BILLING-RUNTIME-SOURCE：billing_read_activation_0340 原writer仍运行，261a20f+五mixed；9source/runtime及Ready正规生成按原准入实施，Root等freeze再实跑，不重启/重复启动正常服务。旧server删除/断言承接未收尾，不冒完成。
+- T-C04.R255-PROJECT-RETRY-DIAG：原 system_guarantee_read_0315 续任Web唯一测试writer；main521841d+原四mixed。仅现app-frame.smoke中该未知结果重进case：维持默认期限，观测第二菜单/POST同key-body→显式deferred ACK→导航/草稿；finally清全局stub。先冻结交Root宽同序与定向实跑，生产修复未准。只辅助隔离诊断，不冒真实用户E2E。
+- Root复核所有原测试句柄已结束，八服务原句柄保持；一次20秒browser getState再次timeout/内核reset、0DOM/动作/新tab，原人类刷新面板问题不重复。当前加载实际用户根因仍未证，完整目标/70组保持，正常资金/模型/schema写0。
+
 ### R255 04:19 Root交付与后继
 
 Web4路径已精确提交521841d，source/test commit blobs与两freeze完全相同，独审f73e6a4f。反例RED1→定向GREEN2；宽回归461/1项目重进失败保留，原Web负责人只读核查不放宽门。Billing原负责人已准9source+runtime/Ready正规派生未提交候选，旧server删除/有效断言承接待Root后继精确准入，不接收test debt为最终cutover。Root24351/65524/9677/40765/63973/93182均结束；八原服务200，无重复/重启/正常写。全目标与70组保持，正常UI E2E仍未验。
