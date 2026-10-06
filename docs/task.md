@@ -1,3 +1,59 @@
+## R255 02:02 本波最终交接（替代本波拟扩第27文件的判断）
+
+|任务|owner/执行/审查|提交与验收|当前状态与后继|
+|---|---|---|---|
+|T-P02.R255-NEXT-SOURCE|BFF bff_skills_v2_owner_r251唯一writer；bff_scheduled_projection_review_0202只读；Root集成/资源/Git|e603bd55，24批准源码/现测试+CURRENT；3mixed反向patch/hash证明保护。暂存tree77c81139复跑Node22八门0/fullcontract242/0，真实PG175/0/0skip；独审625092a8零问题|源码已验收、writer停止；T-P02页面组仍FAIL，normal未激活，Web契约pin待串行同步，持续next读/事件未闭合|
+|T-B07.R255-IAM-GRANT-TARGET-D0|IAM iam_grant_target_d0_0202；Billing billing_grant_reason_review_0141只读；Root裁决/提交|aab41820三设计文档当前前缀；财务资格独立于普通组织角色，具名managed client metadata/当前授权集合+人类Session；独审ba7bb5c4零问题|设计已接收、writer停止；实现前精确列owner contract/source/审计/当前metadata校验范围；Billing consumer等owner artifact后再动，无赠送|
+|T-P02.R255-NORMAL-ACTIVATION|Root独占normal资源；八原句柄不变|只读证明现模块仅scheduled_18ce2a4c0b2745e247fce557562be15b暂停QA任务及3条所属outbox；normal next旧NOTNULL/无anchor|局部重建许可一次待答；未删QA/改schema/重启。Web pin与发布先对齐；保会话/专案/文件/积分/其他schema与共享Redis，不建旧兼容|
+
+基线计数澄清：492个保留路径由490 tracked+2原untracked构成；提交前除24source其余468路径exact，CURRENT前缀追加后467任务外路径exact。BFF后继45e67f0只纠正该文档计数，不改源码/test；原两untracked保护且不入Git。
+
+原“control-client未验ACK”P1已撤回：generated client原responseValidator有效，真实HTTP负控13/13在无新增生产修改下通过。control-client不在最终写集，原26范围实际24修改，两fixture无必要改。fence=0、过去claim时间、URLoptions三类无效fixture日志不伪装业务RED；有效旧PG RED8/1/7与最终index PG175/0分别记。最终保HEAD原R237测试，禁止把mixed删除项并入本切片。
+
+完整70组11/8/14/36/1不变，正常收费聊天与MCP生命周期仍OPEN；本轮浏览器/模型/资金调用均0。任务验收不由工程断言数代替最终用户操作；normal schema许可及收费风险两个原一次问题待答，不重复询问、不放宽守卫、不阻断其他独立owner研发。沿原Wave0–7和既有goal接续，不新建计划/QA中心。以下本波阶段记录为历史（尤其第27文件/P1判断不再有效）。
+
+### R255 02:02 最终提交前独立核验
+
+- T-P02.R255-NEXT-SOURCE，基线 BFF main1d9c5e61；Root已只暂存24批准路径（26范围中两现fixture无需改）。三个mixed以反向批准patch/删除两新断言重建0202基线SHA，468其他tracked exact；原Project删除/ownedProjectId/schema测试改动不入暂存。
+- 原 bff_scheduled_projection_review_0202 只读审查暂存24路径及工作树冻结差异，禁止写Git/文件/资源；Root同步在自有暂存快照重跑Node22纯门与真实PG/Redis相关路径，避免只验证mixed却发布不同代码。快照不是正常开发服务，不操作用户库/Redis reset；证据仍var/dev/r255-preserve/0202-*。
+- 正常八服务不重启；正常排程唯一QA暂停任务已只读盘点，一次局部重建请求待答，不自行清理。70组仍11/8/14/36/1，无浏览器新PASS。
+
+### R255 02:02 BFF 冻结审查 P1：先补完整 ACK 负控
+
+- 原24path frozen9706a338，Node22 Root types/lint/build/schema/semantic/default779pass0fail1skip。真实PG第一次6pass2fail由stale fixture首fence=1减1成0（未到SQL）导致；仅fixture改合法错fence+1后8pass0fail，生产guard保留。原RED未到stale断言，证据不扩张。
+- 新独审候选P1：control-client只验error，2xx没有固定owner生成schema验完整ACK（缺meta/id或非法日历日仍可被投影）。同卡加现control-client.ts第27path，职责只补接收owner成功响应校验，生成物/pins/合同不改，不建helper层。
+- 原writer先仅现scheduled-outbox.integration.mjs追加真实PG+网络负控：残缺/非法receipt不可投影不可succeeded。Root先旧冻结dist真实RED后再放行control-client成功schema校验；现unit fixture只作必要合法wire对齐，不新增unit/mock行为用例。审查员绑定最终freeze，Root只自有fixture与Git，不碰normal schema/资源。
+
+### R255 02:02 IAM 独审 P1 窄修（不新建权限平台）
+
+- IAM 三D0冻结 c99d1b7b/5f7e4816/86a5bd19；Root验证原mixed后缀exact。独审94374a6a发现P1：把平台资金赠送放OrganizationRole会产生组织owner/role/member/invitation扩权与自授面，三面门不通过，不发wire/source。
+- Root纠正归属：Member仅核target同tenant；财务授权使用现受控managed OAuth client metadata的显式financial-grant purpose+精确授权人类User.id集合与单一scope，固定组织role不增加财务权限。当前operator是现client provision/update初始管理authority，但仅operator身份不准资金操作，须另有显式授予事实；普通role/member/invitation无financial metadata writer。
+- iam_grant_target_d0_0202续派仅窄修原三前缀；用当前client管理/metadata/读回/refresh实现事实核方案，确有新缺口直接记录，不造现能力。明确专用user client scope+发行transport、专用Billing machine purpose/verify scope及当前授权人集合的受控授予/撤销与回读；不实现源码、不操作资金/正常资源。Root冻结独审后决定D0是否可放行，BFF原writer继续独立源码收尾。
+
+### R255 02:02 正式赠送 IAM 前置设计（独立于BFF源码）
+
+|任务|owner/负责人/基线|允许文件/既有事实/放置|目标与阶段门|
+|---|---|---|---|
+|T-B07.R255-IAM-GRANT-TARGET-D0|IAM；iam_grant_target_d0_0202，gpt-6-astra，唯一docs writer；mainc9a9872c、原mixed全保；Root审查/Git|仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md顶部追加一致当前D0；现authorization/billing四角色文件是消费本人准入，不能改名冒actor→target。依Root与reader a8501b1b、既有0114只读报告，源码/schema/contract/generated/配置/资源禁止写|Root目标固定真实人类管理员actor credential与purpose-bound Billing machine caller分开；核当前grant资格后再同snapshot核同tenant target，拒绝冒header/普通OAuth operator自动财务权限。只复用当前IAM角色/权限/审计/用户成员事实，无新roles体系/表/永久authorization receipt；如现可信credential/permission无法闭合，精确保留未决不发明既有能力。报告后Root收敛三D0→owner机器合同/实现/固定SDK→Billing第25operation，不让消费者先猜接口|
+
+采用现authorization/billing内窄actor→target能力，淘汰复用本人consume、Billing直SQL/跨owner读取、新admin平台与兼容v1桥。此片只设计授权事实，不执行资金或改变Web普通登录scope，不取代BFF排程源码主切片；数据/API/source阶段门后再派实现，正常用户E2E最后。
+
+### R255 02:02 Source第二阶段放行（Root真实RED后）
+
+- T-P02.R255-NEXT-SOURCE，BFF原负责人唯一writer，Root独占Git/资源/审查；基线1d9c5e61+0202-baseline492路径，tests-first freeze e3303485。Root自有临时PG运行真实旧实现：8 tests/1pass/7fail/0skip（六子例失败+父失败）；explicit anchor缺字段TypeError、omitted anchor缺字段、确认receipt被丢、paused/stale仍有旧next、rollback前创建next未null分别记录，不把raw数量说成六独立产品bug。原幂等/恢复大用例通过；库目录77→77 exact，normal库未写。
+- 仅批准0202-source-scope.json枚举的26现文件（13 canonical/source、13现test/必要fixture）。原mixed仅schema两列、scheduled repository的task/outbox/settlement、schema-governance的Scheduled列hunk；installer及其余mixed保护。设计引用59369f7e和已提交三D0/机器合同，不新建模块/表/索引/通用框架/兼容。
+- port固定markScheduledTaskOutboxSucceeded(lease, completedAt, projection)第三项正式必需，delete显式null；不是旧行为fallback。规则anchor与nullable确认next分开；Scheduler.version不等BFF revision；网络事务外、可信receipt→当前revision/lease/fence→task projection+outbox成功同事务，旧ACK不覆盖，暂停next null。
+- 新行为用例只在现真实PG/HTTP或owner机器contract入口；既有unit/mock仅字段/fixture/断言一致性必要对齐，不新增unit/mock用来冒用户验收。worker只跑纯门/Node22，不访问PG/Redis/env/正常进程/浏览器，不自动重载候选或资金调用；source tsx非watch原运行态保留。交冻结hash/diff及混合原hunk保护，Root再真实PG/适当纯门/独审，正常schema数据保留cutover与最终浏览器仍独立未闭环。
+
+## R255 02:02 原卡继续：先真实ScheduledTask PG反例，正式赠送接线独立只读
+
+|任务|owner/角色与基线|写集/依赖/停止线|本阶段验收与交付|
+|---|---|---|---|
+|T-P02.R255-NEXT-SOURCE-RED|BFF原负责人 bff_skills_v2_owner_r251；唯一writer；main1d9c5e61、原19mixed；0202基线含原untracked|第一阶段仅现test/scheduled-outbox.integration.mjs：追加最小真实PG行为失败用例（create pending/null、当前revision确认、paused/null、迟到ACK、同事务回滚）；既有大用例保持。禁止生产/SQL/其他test/新unit/mock/contract/generated/服务/数据库/Git。放置沿现真实outbox PG入口，淘汰新测试中心|先冻结仅此文件交Root；Root自有临时fixture、schema kokoro_bff复用PG实例跑RED，不触normal库。RED后再按59369f7e的26现文件精确放行source；不把旧API/rawSQL错误当完整用户E2E|
+|T-B07.R255-ADMIN-GRANT-ENTRY-SCOPE|Billing 原独审 billing_grant_reason_review_0141；只读；mainabd809a1；五mixed及IAM原mixed保护|只读现三D0 ADMIN-GRANT-DOC与0114 IAM target报告，列已实现v2 POST入口/可信actor/target/权限/Prisma effect/composition的准确缺口和最小owner顺序；输出/tmp/r255-admin-grant-entry-scope-0202.md。禁止修改仓、测试资源、env/secret、赠送/SQL注资、角色新平台或重复M0/M1|区分正常main v1与已实现v2测试组合；只按当前源码/D0定位，不冒已上线。独立于BFF，可并行；报告后停等Root范围裁决|
+
+Root独占正常进程、浏览器、所有资源fixture与Git；收费风险选项原一次待答、strict guards不变。source前置三D0+机器合同已接收，正常empty-owner installer的数据保留激活仍单列，不用共享reset/兼容解决。完整Wave0–7与70组11/8/14/36/1保持。
+
 ## R255 01:41 原任务卡交接与后继（无业务PASS扩张）
 
 |任务|owner/执行与审查|交付/Root实际验证|状态与下一行动|

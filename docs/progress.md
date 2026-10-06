@@ -1,3 +1,15 @@
+## R255 02:02 进度裁决（完整用户验收不增加）
+
+|切片|当前交付与证据|实际状态/下一步|
+|---|---|---|
+|T-P02 排程规则/next投影源码|BFF e603bd55：24source/test+CURRENT；真实旧PG RED8/1/7，最终暂存源码PG175/0/0skip，Node22八门0、fullcontract242/0；最终独审625092a8零问题|**源码切片已验收，页面组仍FAIL**。normal BFF未重载、Web pin未更新、正常局部schema激活一次待答；持续next读/事件待实现。必须真实UI创建→编辑→暂停/恢复→刷新→时区/执行复验|
+|T-B07 财务actor→target前置|IAM aab41820：三D0，普通角色不承载财务赠送资格；显式managed client授权当前user，普通Webscope不扩大；独审ba7bb5c4零问题|**设计已接收，接口/SDK/Billing接线未实现**，没有赠送或收费聊天PASS；不得用operator/admin词汇自动授财务资格|
+|T-C01 正规收费聊天|BFF正常flag false；Agent正式Billing consumer缺口、normal Billing/modelworker未启；收费风险原一次待答|仍OPEN，保持strict守卫；沿既定System→Agent reader→Billing M2→Agent consumer，不用免费fallback或SQL注资|
+
+Root直接重跑的是精确index tree77c81139，而非只验mixed后提交另一套代码；最终source commit仅多CURRENT前缀。实际175含HEAD原R237 catalog；mixed174不扩写成同一结果。默认779pass有2资源skip，schema纯10pass/2skip并非资源全通过；原mixed工作树format exit1保留。localhost真实HTTP但远端owner doubles，真实PG/Redis不是正常浏览器/真实providerE2E。撤回validator误判，三类错误fixture原日志保留。
+
+70组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**；本轮浏览器未操作、资金/主动模型0。八原服务alive200/句柄不变，不重启/清共享数据。四具名原生负责人/审查员已交接停写，Root独占Git与资源，原修改/uv/gitlinks不打包。证据沿0202同目录，task/test-cases同一份台账；完整Wave0–7及既有goal未缩小、未重建、未宣称完成。
+
 ## R255 01:41 集成交付：赠送原因真实PG修复；排程仅机器合同完成
 
 - **Billing `abd809a1a2f1a1d5a8b0f67ee36a4245d171025f`**：现Credit grant强制显式原文reason，纳入credit.grant/v2 digest/receipt schema version=2并写audit；同键只改reason冲突，完全重放不重复入账。拒绝缺失/空白/超长/NUL/非法Unicode；effect入口在事务内校验，捕获无效输入仍触发外层回滚。无默认sourceKind/旧v1兼容、SQL/HTTP/IAM/normal主入口变化。Root真实隔离PG先9断言7失败2通过，修后9通过；现4 integration文件154通过0失败、另legacy文件12因DATABASE_URL未设置而跳过，明确不是已验。自有临时库清理前后77库目录exact，不触正常余额/赠送；format/lint/types/build/schema/contract均exit0，独审b44b3aab零P0/P1/P2。

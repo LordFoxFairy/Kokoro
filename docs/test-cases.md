@@ -1,3 +1,22 @@
+## R255 02:02 排程源修复证据与正式用户复测待办（沿T-P02）
+
+**验收状态不变：70组11通过/8失败/14待复测/36未验/1支付后置。T-P02仍FAIL。** 本轮没有浏览器操作、真实Scheduler执行或真实模型费用，以下正式用户路径尚未重新执行，不能用175工程断言代替。
+
+|用例ID/分类|标题/优先级/测试类型|预置条件|真实用户步骤|预期结果/本轮实际|
+|---|---|---|---|---|
+|T-P02.R255-NEXT-UI 主链路|周任务持久规则与下次时间，P0/系统E2E|BFF候选已发布，Web固定消费者对齐，批准的局部schema激活，真实IAM/Scheduler；当前尚未满足|正规登录→排程页创建weekly、08:00与IANA时区→等保存结束→看列表→硬刷新→重新打开|规则/anchor稳定；pending不得编造时间，confirmed next与Scheduler一致；刷新字段/身份不变。**未复测**，此前创建瞬时点当08:00的FAIL保留|
+|T-P02.R255-NEXT-EDIT 状态机|编辑/暂停/恢复后显示一致，P0/交互E2E|同上述，仅本次QA任务|打开编辑改时间→保存→看真实回执→刷新；暂停→刷新；恢复→刷新|提交有界/防重复，修改后旧next立即失效；暂停next为空/不显示运行中；恢复只展示当前规则确认next；无整页永久loading。**未复测**，此前保存收尾子例已通过不扩张|
+|T-P02.R255-NEXT-TZ 边界|时区/周锚点/DST边界，P1/业务E2E|真实任务UI/API、确定规则及可观测真实Scheduler；任务不触发外部资金/工具|比较本地UTC边界与IANA时区；创建/编辑跨日期周规则；有DST时验证过渡日前后|时区与weekday按owner原锚点规则，UTC瞬时点/本地展示分开；无Web自算两份事实、非法值明确拒绝。**未复测**，原weekly语义没因字段分离改规则|
+|T-P02.R255-NEXT-ERROR 异常|网络失败/错误回执后恢复，P0/系统异常|受控局部故障，既有正常服务/数据保护；任务自己的数据|保存期间断网→恢复→重开列表；受控owner拒绝/无效receipt→重试→刷新|不显示伪成功/旧确认next；错误可恢复且有限重试；同幂等任务只一份。**未复测**；内部PG/HTTP负控仅支撑实现|
+|T-P02.R255-NEXT-PRIVATE 权限|跨主体/租户隔离，P0/安全E2E|两个正规独立用户，授权与owner真实|另一用户打开QA task URL/列表尝试编辑→原用户刷新核事实|无泄露/他人写入、错误稳定，原数据不变。**未复测**；不能用SessionAdmissionDouble当真实权限通过|
+|T-P02.R255-NEXT-EXEC 状态机|到期执行及持续next刷新，P0/完整业务E2E|正规费用许可、真实Scheduler→BFF→Agent→provider与durable终态；当前尚缺|安全任务到期→观察执行/Agent事件→刷新任务→核下一次→取消/失败验证余额及流水|执行无重入，同轮事实唯一，next随当前Scheduler事实更新；已核实实际费用结算/余占释放/流水一致。**未执行且持续next读取仍需实现**，不能关闭完整排程组|
+
+**辅助源码证据（不是上述用户PASS）**：BFF e603bd55、verified index77c81139；旧真实PG8 tests/1pass/7fail（父fail计入），修后混合5文件174/0，再精确index5文件175/0/0skip并保HEAD R237 catalog；真实PG/共享既有Redis无reset，自有库目录77→77 exact。Scheduler/Agent/IAM为localhost/in-process doubles或替身，真实provider未用。纯门默认779pass/2资源skip、schema10pass/2skip、完整contract242pass/0fail。原mixed工作树format1保留，干净index format0分别记账，不冒仓库整体干净。
+
+**测试问题归因纠正**：生成ACK validator已有，负控13/13无生产改动即通过，不是有效新RED；前次validator P1撤回。fence0、过去claim时间、URL options属于fixture错误，原日志保留；修正后有效stale反例在success前确认仍leased/next=null再正控成功。最终暂存独审625092a8零问题。现正常schema仍旧、一次局部重建请求待答，normal服务未重载/Web pin未更新，产品状态不变。IAM aab41820只是财务授权D0，未充值/赠送/调用模型/结算。
+
+所有证据仍Root ignored var/dev/r255-preserve/0202-*，任务/缺陷沿原同卡。退出标准必须上述完整用户路径真实通过、错误可恢复且owner资金/权限一致；不靠断言数量/接口200清零缺陷。
+
 ## R255 01:41 QA子例结果：真实owner事务回归，不冒完整用户E2E
 
 下列仍归既有T-B07/T-P02；不新增第71组。当前正常70组保持11通过/8失败/14待复测/36未验/1支付后置。Billing前置均为abd809a1现服务层+真实隔离PG fixture及可信tx actor，无mock/正常余额写入；主链系统验收必须另走真实管理员入口→目标授权→赠送→本人余额流水→聊天预占/结算，现未通过。

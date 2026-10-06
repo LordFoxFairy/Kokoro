@@ -1,3 +1,10 @@
+## R255 02:02 当前源码入口增量
+
+- BFF main45e67f0（源码提交e603bd55，后继仅CURRENT计数纠正；正常dev尚未重载）：scheduled input/domain/task contract → scheduled-task-repository create/replace（持久recurrence_anchor_at、next=null）→严格V2 outbox → Scheduler固定generated client（原validator）→outbox-delivery业务核验 →dispatcher必需projection → repository同事务核验task revision/lease token/fence并投影next+settle成功。Scheduler.version与task revision不同；no V1 fallback。delete显式null、paused/disabled/stale不复活；持续occurrence后next尚待owner读/事件，不在此源码完成范围。
+- 提交24源码/现测试及CURRENT前缀，Project删除三个mixed批准外hunks保留；control-client没有变更/重复validator。Root精确index tree77c81139快照真实PG175/0、纯门/contract0，仅辅助源码，不是正常IAM/Scheduler/模型/浏览器E2E。正常empty-owner installer不变，旧排程数据局部激活请求待答，Web publicpin尚未同步。
+- IAM main aab41820只TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL当前D0：具名managedOauthClient metadata拥有explicit财务human/service purpose与授权user集合；普通OrganizationRole/Member不加finance。human Code+PKCE、当前metadata复核、具名集合短事务+audit已定；source/机器contract/generated/Billing actor→target接口尚未实现，operator不自动获赠送权。
+- 正常八原source services/PID仍同var/dev/processes.json，normal Billing/modelworker未启，BFF聊天flagfalse/Agent authorization consumer缺口不因排程提交解除。测试175/partial读200不等完整70组验收；下一调用顺序与冻结证据见同task/CURRENT，Root uv/gitlinks保护。
+
 ## R255 01:41 当前两处变化定位（未改变拓扑/owner）
 
 - Billing mainabd809a1：现 src/modules/credit/{credit.types,credit.service}.ts 负责required reason→effect→v2幂等摘要→audit。现 test/integration/credit-{metering,read,read-http}.test.ts 显式callers/真实PG反例；未创建新模块/HTTP/SQL。普通operator目标准入与normal composition仍未接通，不能把effect当正式管理员赠送。

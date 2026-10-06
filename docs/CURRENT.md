@@ -1,3 +1,12 @@
+## R255 02:02 本波终态：排程源码接收，正常页面与收费聊天仍 OPEN
+
+- **BFF e603bd55a69b1f3d4721cde7b63fb73cf01061fb**：规则锚点与确认后 next 分离；V2严格payload、Scheduler回执生成校验和业务核验、task revision + outbox lease/token/fence保护，投影及命令成功同事务。迟到/错误回执不覆盖当前任务；暂停/禁用 next=null。持续执行后的 next 同步仍待 owner 读/事件，不声称整个排程生命周期完成。
+- **Root验收的是实际提交内容**：先真实PG旧实现8 tests/1pass/7fail，后mixed5文件174/0，再从精确暂存24路径构造只读发布候选快照，在Node22.22.2复验真实PG/Redis175/0/0skip（含原HEAD R237 catalog），库目录77→77 exact。只用自身临时fixture，没有清共享PG/Redis。真实网络为localhost owner double，IAM/真实Scheduler/provider/浏览器本轮未验；175工程校验不是175用户用例通过。暂存快照 format/lint/types/build/semantic/schema/generated/fullcontract均0；默认779/0/2资源skip、schema10/0/2skip、fullcontract242/0/0skip。原mixed工作树format仍1（两个原Project文件），保留失败不格式化其他修改。
+- **审查纠偏**：生成Scheduler client原已验证完整ACK；前次“control-client漏validator”是假阳性，现HTTP负控13/13在无生产改动时通过，撤回P1并删除拟扩写第27文件。错误fixture（fence=0、过去的claim时间、URL options）日志保留，不算产品失败或新RED。最终暂存独审625092a8零P0/P1/P2。三个mixed仅批准hunks入Git，其他原修改保护；提交仅24源码/现测试与CURRENT新增前缀，源码tree77c81139与最终commit仅该文档差异。后继45e67f0仅纠正CURRENT将含两untracked的基线路径误称tracked的计数，不改source/test。
+- **IAM aab41820fcc060d9dba29ac9cac9172706204e50 仅三D0**：财务赠送资格不塞进普通OrganizationRole/Member角色；复用具名managed OAuth client metadata+授权user集合、正常人类Session+PKCE及当前metadata复核。普通Web权限不扩大，operator不是自动财务管理员；具名短事务更新及audit、撤销/过期检查已裁决，source/contract/SDK/正常赠送尚未实施。原全文后缀保护，独审ba7bb5c4零问题。D0不冒用户积分已赠送或HTTP入口已可用。
+- **运行与退出线**：八原句柄/PID均alive/200，0重启/新normal服务/主动模型/赠送/结算；正常Billing和模型worker未运行。BFF源码dev非watch仍旧加载，Web pin未更新、候选未发布。现排程仅本次1个暂停QA任务及3条原outbox，Root只读盘点；一次局部排程表重建请求待答，未写正常库。先owner artifact→Web同步→批准局部激活→真实浏览器创建/编辑/暂停/刷新/时区/执行，再关闭T-P02；不拿接口或fixture绿替代它。
+- **完整范围与证据**：Wave0–7及原goal blocked保留；70组仍11通过/8失败/14待复测/36未验/1支付后置，本轮用户E2E新增PASS=0。聊天按System具体能力→Agent planned/bound reader→Billing M2→Agent授权consumer接续，收费风险一次待答保持strict，不重做已有M0/M1。证据同ignored var/dev/r255-preserve/0202-{bff-source-commit-receipt,bff-index-gates,index-contract-full,next-pg-index-broader-green-receipt,iam-d0-commit-receipt,normal-scheduled-own-fixture-proof,postcommit-owner-health}.json；同task/progress/test-cases/map，没有新计划中心。
+
 ## R255 01:41 集成交付：赠送原因真实PG修复；排程仅机器合同完成
 
 - **Billing `abd809a1a2f1a1d5a8b0f67ee36a4245d171025f`**：现Credit grant强制显式原文reason，纳入credit.grant/v2 digest/receipt schema version=2并写audit；同键只改reason冲突，完全重放不重复入账。拒绝缺失/空白/超长/NUL/非法Unicode；effect入口在事务内校验，捕获无效输入仍触发外层回滚。无默认sourceKind/旧v1兼容、SQL/HTTP/IAM/normal主入口变化。Root真实隔离PG先9断言7失败2通过，修后9通过；现4 integration文件154通过0失败、另legacy文件12因DATABASE_URL未设置而跳过，明确不是已验。自有临时库清理前后77库目录exact，不触正常余额/赠送；format/lint/types/build/schema/contract均exit0，独审b44b3aab零P0/P1/P2。
