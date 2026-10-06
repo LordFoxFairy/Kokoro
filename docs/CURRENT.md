@@ -1,3 +1,26 @@
+### R258 项目CRUD源码已集成，真实正向回读与工具越界修复（2026-10-06）
+
+按用户要求所有页面CRUD优先、Agent执行后置，完整Wave0–7 active。完整70组仍11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST，本轮新增完整组0；以下子链不冒整页完成。
+
+- Web正常开发worktree已Root精确13路径提交 **bf2bee9b5ccd7804e2bad6ab4cc3eca00856e1a5**，普通项目CRUD展示不再绑定Agent执行Flag；上传取消/旧scope迟到、owner拒绝关闭私有读两P1源修已独审5a9e7847。Root最终8辅助文件216/0、lint/types/build0；提交后4文件166/0。两mixed与三doc原suffix保留。真实owner撤权及服务端取消事务尚未验证，取消不承诺服务端回滚。
+- Root正常浏览器最终冻结第二个100B自有QA文件真实POST200→Storage scan clean→权威GET同asset/hash，硬刷新后两个QA文件都在；提交后专案指令同保存文本。证据r258-project-final-frozen-browser.json与r258-project-final-refresh.png。项目资源下载/单项删除仍无正式动作；未删QA资源、未调用模型/改资金。
+- 排程当前已真实显示日历/任务列表/编辑，不是静态卡。仅编辑原自有QA标题为“QA-R258 页面 CRUD 验收 · 保持暂停”，ACK200及GET200，owner enabled=false/status=paused/next_run_at=null；规则America/New_York每日23:58与auto_approve=false不变。刷新保持验证另记录r258-schedule-name-update.json。恢复/删除/跨主体及异常未验，不冒完整排程或执行PASS。
+- Storage D0仅五docs已afb34ca，D1九机器候选仍未提交：32/3真实missing-handler失败、typecheck2，不能发布。contract生成旧normalize遍历整个generated误碰17原dirty，Root unchanged canonical+Prisma7.10再生成逐SHA17/17恢复exact；首备份cwd错误未执行而shell继续生成偏差留证。最窄工具两路径Root提交 **5b15fe3fed2b8ce63514d3280bd343abdd0de2a8**：normalize只proto，Prisma原生入口独立。Root真实contract:check0+architecture4/0，生成后17保护仍exact；不把工具绿算删除完成。
+- 九个应用既有入口及PG/Redis/MinIO/ClamAV已实际读核，MinIO持久volume与真实扫描上传在用，未重复启动/reset。Agent HTTP存在，执行model worker仍后置；正常BFF loaded43ca与accepted bac0仍异，管理页面尚待接线，不称全部新功能已加载。MCP实际创建404 bff_route_not_found仍FAIL。
+- 原生分工本轮：Web原writer交付，Storage原writer修工具保护，独立reviewer梳理下一排程控制面/Admin最短切片，Root浏览器/集成/Git。独审r258-crud-next-review.md明确先复用现排程动作，无需新API；恢复需实际安全未来next与当前Scheduler ACK，删除需明确确认与owner终态，不SQL代删。随后沿既有ADMIN03页面读/visible Save，文件删除依次Storage→BFF→Web；不重复PRD/计划中心。
+
+### R258 当前顺序：页面CRUD优先，正常依赖已核，候选仍待终审（2026-10-06）
+
+完整Wave0–7仍active；按用户最新要求先全部页面CRUD/业务交互，再Agent推理执行；不再用Agent能力作为其他页面前置。70完整用户组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0，以下只是真实子路径。
+
+- 九个既有应用源码进程均在；PostgreSQL SELECT1、Redis PING、ClamAV PING、Storage真实凭据S3 HeadBucket/ListObjects通过。MinIO39190/39191和扫描43310健康，MinIO现/data volume保留，无启动/重启/reset/删卷；证据 `var/dev/r255-preserve/r258-normal-infrastructure-read.json`。正常BFF loaded仍43ca、accepted bac0cbf不同，正常Web8bb+源码候选；服务健康不冒全部新CRUD已接。
+- 正常浏览器自有QA专案创建→改名→detail/list回读→硬刷新保持；新 project_b98f476a…，原两专案/会话未改。本人既有合法纯清单技能安装→停用→刷新保持→启用→移除→removed筛选→重装同installation→再移除恢复installed空态；源技能未删。证据 normal-crud-browser、skill-installation-crud两JSON与截图；无模型/外部授权/资金。
+- 新QA专案指令保存200→owner project/history200→历史当前revision→硬刷新同文本；110B无敏感QA文件真POST200→Storage scan clean→权威资源GET200→硬刷新同asset/hash。`r258-project-positive-browser.json`、`r258-project-resource-refresh.jpg`。项目资源目前没有下载/单项删除操作，这不冒完整文件CRUD；自有QA资源保留，不擅永久清理。
+- 正常Plugins本人connections GET200为空；建立自订MCP实际POST `/api/hub/self/connectors/mcp` 404 `bff_route_not_found`，不是MinIO/Redis未启动。当前Server注册与本人Connection授权均有正式缺口，不仅改URL/静态卡。真实截图r258-mcp-create-red.jpg；原T-K05/T-U04 FAIL保留。
+- Web普通项目三CRUD区被误绑定Agent执行Flag，原writer候选移除别名，正常三模块显示；Root第一冻结201辅助断言+lint/typecheck/build0仍不放行。独审9d11d04a两P1：上传未取消/fence、owner拒绝后私有资源读未关；原writer先7+1有效RED后续最窄修。只按原卡扩两个现source/一个现contract test；未提交/未终审，候选mutable正向不是最终页面接受。两Web mixed/Root uv与所有任务外gitlinks保留。
+- Storage删除两个旧P1（最后引用cleanup永久pending、retired digest阻止同bytes再上传）设计承接；Root采本地Prisma7.10实际validate的typed partialunique，不增active_sha256冗余列；preview取舍写现ADR，四D0仍文档目标，零source/DDL/生成/正常资源变化。真实PG/provider并发、cleanup及正常演进仍待验，不以文档算完成。
+- 三路原生并行：Web当前CRUD生命周期writer；Storage设计writer；独立只读审查按冻结切片续派，Root独占正常浏览器/资源/Git。既有10分钟检查提示已改CRUD优先，原PAUSED状态保留，不称已重新自动运行。当前原用户tab7/8保留，仅Root自有18用于验证，收尾关闭。
+
 ### R257 已提交管理owner子链与当前页面边界（2026-10-06 16:20 UTC）
 
 完整Wave0–7仍active；70完整用户组维持 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。用户授权旧排程仅1条+3条失败命令已清理，其余正常数据保留，新QA继续暂停。

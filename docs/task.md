@@ -1,3 +1,92 @@
+### R258 当前交付与下一控制面动作
+
+Web13路径Root提交bf2bee9，最终独审+Root辅助216/0及提交后166/0、正常真实上传/scan/read/硬刷新和指令回读已接收；两P1源码闭合不等owner撤权/完整组验收。Storage仅工具两路径提交5b15fe3，D1机器9路径不完整未发布、17原dirty exact，完整失败证据保持。
+
+下步沿原T-P01/T-P02，Root在正常浏览器对自有QA排程实际编辑/硬刷新后，恢复前必须核当前时间与owner next安全未来、当前revision接纳；最后暂停，并经具体永久删除确认后才验删除与Scheduler终态。已有Source初始写集0。随后现ADMIN03固定机器消费与真实管理页，原Web owner续派需先精确范围/文档门/失败页面，不恢复Agent优先。review报告r258-crud-next-review.md755b5b51。
+
+### R258 契约生成越界恢复与最窄续派
+
+R258-FILE-DELETE-D1生成器实际遍历整个src/generated，误规范化17个受保护Prisma原dirty文件。Root以未改canonical schema及已安装Prisma7.10重新生成，逐SHA **17/17恢复exact**；首incident备份因cwd失败，shell仍继续生成，该偏差明确留证，不称先已备份。git ls-files -v 大写H为普通tracked，非assume-unchanged。证据r258-storage-prisma-recovery.json/log。D1机器候选9路径未提交，32PASS/3真实missing-handler FAIL及typecheck2保留，不能发布不完整服务。
+
+R258-FILE-DELETE-D1-GENERATOR：原Storage writer bff_admin_routing_d0_r257，HEAD afb34ca，单仓writer，Root Git。最窄批准仅现scripts/normalize-generated.ts与现test/architecture/prisma-write-boundary.test.ts第一oracle（其他原断言保留）；package.json读/断言不改，原prisma:generate已独立；先只读确定契约/Prisma生成各入口，报告当前/目标与现有测试落点；contract:generate只规范proto生成物，不触Prisma；原其他Prisma生成命令若需要normalize保明确入口，不泛化新框架。17dirty与9D1候选均snapshot字节/hash保护。先有效越界RED再修，禁止DB/服务/schema/删除/安装/Git；若必要新增测试先报告现目录/文件粒度获Root准入。最终冻结与根验证待审，不弱化三handler失败。
+
+R258-CRUD-NEXT-REVIEW：原iam_grant_source_scope_0244只读，按r258-crud-page-inventory.md及当前真实源码，梳理下一个最短可交付页面CRUD切片（排程现CRUD/管理入口/个人资料库缺口优先），给exact文件与真实页面验收步骤、依赖，不写源码/计划/资源/服务/Git。仅独有ignored报告，Root当前做Web冻结提交及正常浏览器回读；Agent推理仍后置。
+
+### R258 项目生命周期P1冻结复审
+
+R258-PROJECT-CRUD-VISIBILITY-REVIEW2：iam_grant_source_scope_0244 独立只读，基线Web8bb02d6，13路径freeze d8975b3e/交付afae9c56（Root var/dev/r255-preserve/r258-project-visibility-p1-{freeze.json,delivery.md}），核旧9d11d04a两P1与新RED对齐、迟到body/取消/owner404/history否定后无私有GET/状态更新，原mixed/suffix保。仅ignored独有review2报告可写；不Git/源码/资源/浏览器。Root当前正常刷新/回读及辅助门并行，不把正向UI当撤权真服务验证。
+
+### R258 Storage设计已Root提交，准具名机器切片
+
+Storage D0已Root精确五路径提交 afb34cac63376f3a2f25ba3de440f365c4a916f5 / codex/r258-storage-asset-delete-d0；17 generated原dirty逐hash exact。Root现Node24隔离copied canonical Prisma validate实际exit0，仅解析能力，未改正式schema/DB；五doc窄diffcheck0，全工作树diffcheck有既有generated空白，不格式化或冒全树绿。
+
+R258-FILE-DELETE-D1：原Storage owner bff_admin_routing_d0_r257，基线afb34ca，同工作目录；D0机器精确允许5机器/生成与4现contract tests，原16 RPC wire不变，add DeleteAsset/字段与fixedminor版本，正规contract:generate/check，不手改generated。先machine有效RED，commit权限Root；零Prisma/schema/生产source/config/服务/DB/正常数据。若contract门因handler未实现需要生产改动，只记录下阶段RED，不放宽/skip补假handler。保护17generated manifest r258-storage-generated-protected.json。冻结交文件/hash/现命令/未决，Root独审集成，不以机器绿算用户删除功能闭环。
+
+### R258 Storage D0 最简方案裁决
+
+Root采纳review2 0efcaeea的实际Prisma7.10验证：用现canonical PSL typed partial unique retired_at IS NULL，启用局部partialIndexes preview，不增active_sha256冗余列、不升级依赖；唯一事实仍sha256+retired_at。preview取舍/退出条件写本仓现ADR-0002自有append；不建立新迁移平台。现全unique selector同步改active findFirst、数据库predicate保并发唯一与Blob独立代，实际generate/PG/错误meta/cleanup仍待验。
+
+R258-FILE-DELETE-D0原Storage writer bff_admin_routing_d0_r257：只准四D0自有prefix与现ADR-0002自有新append，原正文exact；明确两个旧P1与新Blob/upload identity、旧cleanup exact对象、source/test/fileset和当前保护17 generated。禁止schema/Proto/source/generated/安装/资源/Git。Root再次三面一致收口后才准契约RED，实现正常数据演进另停止线。
+
+### R258 冻结审查两项P1，原Web owner续最窄生命周期修复
+
+独审9d11d04a证两缺口：resource mutation无取消/context fence；session admitted不等current Project owner准入。原有效151绿/正常正向仍保留，不提交候选为完成。
+
+R258-PROJECT-CRUD-VISIBILITY后继仍同Web唯一writer：原10路径之外仅准既有 src/components/blocks/app-frame/use-app-frame-project.ts、src/features/app/project-resource-upload.ts，以及现 tests/ui/app-frame-project-instructions.test.tsx 与现上传helper测试（先核实际名称，不新建目录）。三D0只自有prefix更新现范围/状态；复用现Project context与controller，signal贯穿上传与await后复核；确定owner拒绝关闭私有projection/read，loading/retryable失败保明确状态与重试，不重绑执行Flag。已准入的服务端写可能在取消前落库，前端取消不宣称回滚，旧flight不得更新新scope或自动重写。先旧flight/owner拒绝有效RED再修，冻结独审、Root正常页复验；其余两mixed保持，不Git/资源/服务写。
+
+### R258 项目页面冻结候选独立审查
+
+R258-PROJECT-CRUD-VISIBILITY-REVIEW：bff_admin_routing_d0_r257 原角色只读Web候选，基线8bb02d6、工作目录 /Users/nako/.codex/worktrees/kokoro-r257-admin-web、冻结清单 var/dev/r255-preserve/r258-project-visibility-freeze.json。只读四源码/三UI测试/三D0 prefix，核三普通CRUD权限/撤准入/同project不同身份代际/旧异步回包/preview隔离/未接云盘动作不冒支持。保护两mixed exact；仅独有ignored报告可写，不Git/服务/资源。若freeze与工作树漂移只报未冻结，不冒PASS；Root最终正常页面验证。
+
+### R258 当前 CRUD 并行续派与存储二次审查（2026-10-06）
+
+用户明确页面 CRUD 优先，Agent 推理链后置，完整 Wave 0–7 不删。Root 独占正常浏览器/共享基础设施/提交；Web 原 writer 继续 R258-PROJECT-CRUD-VISIBILITY，仅四源码、三测试、三原自有 D0 prefix，补 current subject/context 代际退役有效 RED 后冻结交审；两 mixed 保持。
+
+- R258-FILE-DELETE-D0-REVIEW2：Storage 14f2bc9c 基线；iam_grant_source_scope_0244 只读审查已修订四 D0（4977b217/c8988565/542724c0/647e0da6），重点 personal/active project last-ref cleanup 与 retired digest 再上传。比较实际 Prisma7.10 已锁能力下 partial unique 与 nullable active_sha256 两方案，未裁决前禁止 source/schema/generated/apply；只可独有 ignored 报告，Root 接收审查，不做 Git/服务/数据写。
+- Root 正常真实子路径已有：新 QA 专案创建/改名/刷新；本人技能安装/停用/启用/移除/重装；MCP 创建真实404 bff_route_not_found。只这些正向子路径，不变更完整70组状态。九应用与 PG/Redis/MinIO/ClamAV 实际读取通过，正常 BFF accepted source 与 loaded source 尚异，健康不冒所有 CRUD 接通。
+
+### R258 用户页面有效RED与CRUD实施准入
+
+Root正常浏览器Plugins→建立→自订MCP→无凭据loopback QA草稿保存实际 POST /api/hub/self/connectors/mcp **404 bff_route_not_found**，弹层明确失败，不产生连接授权；截图r258-mcp-create-red.jpg，原code不被“服务都活着”掩盖。当前Server注册本身无正式生产实现、本人Connection另需批准声明/proof，不能只改路径或静态卡当Connected。此记录续T-K05/T-U04，整组FAIL保留。
+
+|任务|角色/基线/允许集|验收与停止线|
+|---|---|---|
+|R258-FILE-DELETE-D0-REVIEW|原iam_grant_source_scope_0244独立只读审查Storage新四prefix，HEAD14f2bc9，CURRENT be8a9689/TECH d6491f69/API738107a7/DATA b5319c24|对照现receipt/serializable/scope-release/object-cleanup/caller实际源码，审三面一致、error names/protocol与17dirty保护；唯一ignored r258-file-delete-d0-review.md。零实现/docs/Git/资源；Root放行前不得动Proto。|
+|R258-PROJECT-CRUD-VISIBILITY|Web原agent_planned_guarantee_system_r257为后继唯一writer；正常Web8bb、两mixed排除；先原三D0自有prefix明确普通CRUD展示不同于Agent执行Feature，再existing helper/app-frame consumer及最小existingUI断言，精确文件集由其只读报告批准|Root实际overview缺模块RED已成立；只已实现项目会话/指令/资源，连接/网站/项目技能/排程不假开放；API每次授权仍保，Root真实QA项目指令保存/回读/刷新与资源扫描下载验收后方称子链PASS。不得改System机器/配置、runtime flags全true或新框架。|
+
+### R258 正常专案创建/改名已真实通过，项目能力展示缺口继续定位
+
+Root正常IAB自有QA project_b98f476a-51cb-4c61-850b-ff1a42e76796 创建→改名“QA R258 CRUD 专案”→PATCH/name200→GET detail/list200→硬刷新同标题、外部Direct常驻、loadingfalse已通过；只C/R/name-U子链，不算删除/指令/完整Project组PASS。原两个项目/会话未修改，QA新项目保留供后续 CRUD，不擅永久清理。截图r258-project-created-renamed-refresh.jpg。
+
+|任务|角色/基线/写集|停止线|
+|---|---|---|
+|R258-PROJECT-SURFACE-GATE（沿T-C02/C05）|原agent_planned_guarantee_system_r257只读Web/System；Web8bb与System146、Root正常页面截图；唯一ignored r258-project-surface-gate.md|项目overview只标题/输入框，instructions/resources/projectConversations当前均无显示；核projectWorkspaceCapabilities flags与正常Product presentation/owner支持如何对齐，区别执行Feature与CRUD展示，不简单全部前端true。给准确已批准配置/消费者最窄修复与RED；不source/docs/Git/网络/服务/secret写。|
+
+Storage D0仍Root审查中：初稿错用非本仓错误名，已要求沿实际StorageErrorCode修正、固定response与300s GET TTL，保留首次缺陷记录；尚未准机器/实现。
+
+### R258 并行后继准入：文件删除设计与MCP创建接缝
+
+Root真实正常依赖只读通过：PG SELECT1/Redis PING/ClamAV PING/Storage身份S3 HeadBucket+ListObjects全部成功；MinIO /data现volume保留，restart_policy=no待正规开发配置收口，不重建/删卷。证据r258-normal-infrastructure-read.json。正常新IAB页Plugins→管理连接器→硬刷新本人connections200/空态，无console error；旧两个用户tab获取超时未关闭，独立自有页可操作。
+
+|任务|Owner/执行/基线/允许文件|交付、停止线|
+|---|---|---|
+|R258-FILE-DELETE-D0（沿T-F01/F02）|Storage原bff_admin_routing_d0_r257，唯一文档writer；apps/kokoro-storage HEAD14f2bc9；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md自有新prefix；17个generated Prisma既有dirty全部保护|冻结个人/项目ordinary单Asset删除语义、授权/幂等/引用/锁序/cleanup，给准确Proto/src/test文件集及RED路径；零Proto/Schema/source/config/Git/资源写，Root审核三面一致后才准机器实现。不能承诺既有presigned URL即时失效；明晰已有URL TTL与新签发拒绝。|
+|R258-MCP-CREATE-SEAM（沿T-K05/T-U04）|原iam_grant_source_scope_0244只读；现正常Web/BFF/Platform三D0+contract/source；唯一ignored r258-mcp-create-seam.md|定位Plugins建立自订MCP保存→同源→BFF→Platform实际Server/Connection区别、哪些正式CRUD已有但未接、准确拒绝点/最小后继。禁止把静态catalog当已接/把Server创建当Connection授权；禁止源码/docs/Git/网络资源/凭据读取。|
+
+Root负责真实页面RED/资源/验收；原CRUD inventory仍独立，不抢写任何子仓源码。正常数据与测试外变更保留。
+
+### R258 用户重排：页面CRUD先行，Agent执行后置（2026-10-06 16:26 UTC）
+
+用户明确优先全部CRUD功能页面，再回Agent主链；完整Wave0–7范围不缩，Agent保证/推理资金扩展暂不派新实现（非暂停goal）。Root掌基础设施/正常进程/IAB/Git与实际页面验收，使用执行计划/并行排障技能续现任务；不再把readiness或owner辅助门当完整页面PASS。现场9source进程alive，7owner ready200、Agent未带凭据ready401且health200、Web无health path404不误报离线；PG5432/Redis6379、Docker实际MinIO39190/39191与ClamAV43310健康，非默认9000端口。缺口先区分没运行/配置未接/功能缺失，复用已启依赖，禁止重复起/reset。
+
+|当前并行卡|Owner/角色/基线/允许范围|交付与禁止|
+|---|---|---|
+|R258-CRUD-PAGE-INVENTORY|原agent_planned_guarantee_system_r257，只读QA/产品；Root现PRD/test-cases/正常Web8bb/BFFbac0 source、各页面contract|按页面及具名C/R/U/D/归属/状态/权限给精确已实现与缺失、优先验证路径和最小后继，不编新PRD/计划或拿静态作PASS；只ignored r258-crud-page-inventory.md。零source/docs/Git/正常浏览器/服务/资源写。|
+|R258-STORAGE-INFRA-AUDIT|原bff_admin_routing_d0_r257，只读Storage/启动接线；现StorageREADME/AGENTS/三D0/compose/dev config字段名/normal registry，Root独占真正env/凭据与资源|核真实MinIO/ClamAV的现start入口、profile/bucket/URL链、持久数据与服务健康为什么不保证fileCRUD；给精确最小缺口与已有门。只ignored r258-storage-infra-audit.md，禁止读/输出凭据、Docker/PG/Redis/启动/网络/Git写。|
+|R258-CRUD-QA-ORDER|原iam_grant_source_scope_0244，只读独立验收审查；现70组/PRD/既有卡|核全部页面覆盖/权限/CRUD与不适用项，给最小可观测业务验收顺序/失败记录模板、应删除假成功/重复展示，不从Unit统计定义PASS；只ignored r258-crud-qa-order.md，不改任务台账/代码/资源/Git。|
+
+同仓单writer，原三卡均read-only；Root眼前先真实存储依赖认证只读及当前连接器页面正常请求/DOM，随后用当前卡先修首个CRUD缺失，不等Agent能力完成。任务外文件/两Web mixed/uv锁保留。
+
 ### R256-ADMIN-03.WEB 下阶段只读交接已收口（2026-10-06 16:23 UTC）
 
 原agent_planned_guarantee_system_r257报告r257-admin-web-next-read.md / SHA692ee675已Root回读、STOP；Admin实际只有准入壳，不将其算CRUD。已核最终consumer元组：BFF8.2 / bac0cbf7319c021b3c48a75851ecfe57c785a8a8 / OpenAPI b682b2c528dcfe974c3d5e367b71346a26513451203df24400ee0e40fc858b26。Root选择沿现Hub固定artifact+strict narrowing窄形式，不建新万能generator/后台框架；先续原Web owner完成当前三D0前缀和§8精确放置表，再准pin/测试RED/源码，two mixed仍排除。只做三读/已有row visible单编辑，冻结其余3字段/version/key，PUT后有界GET权威匹配才确认；跨页找不到不假成功，unknown不自动重写。正式浏览器admin由合法测试身份/正常OIDC独立前置，normal用户不擅授资格；普通403/撤权需真实身份/正规CLI，不能坏token替代。后继写集/资源正式配对尚未派写，不声称D0/页面已通过；三native子代理当前全部STOP，本轮资源句柄全部终态。

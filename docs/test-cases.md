@@ -1,3 +1,30 @@
+### R258 当前页面用户子路径补证（不增加完整组PASS）
+
+|现用例/子路径|本次真实结果|未闭环项|
+|---|---|---|
+|项目页前置 / T-C05关联规则|正常项目指令保存/历史/硬刷新同文本；Web bf2bee9当前页面三个普通CRUD区显示|完整项目删除/关联清理与撤权仍待验|
+|T-F01 / 项目资源正向|100B真实上传200、scan clean、权威GET hash一致、硬刷新两QA文件在；r258-project-final-frozen-browser.json|下载/单项删除未接，跨主体与服务端取消未验|
+|T-K03 本人安装控制|本人纯清单技能安装/暂停/启用/移除/重装/最终移除回初始空态|不当技能执行/版本冲突/完整组PASS|
+|T-P01/T-P02 编辑与刷新|自有QA标题PATCH200→GET200→刷新保持；paused/next null/原timezone规则保持，r258-schedule-name-update.json|恢复/Scheduler当代接纳/删除/跨身份/到期执行仍未验|
+|T-K05/T-U04 创建MCP|正常本人连接空态GET200；创建实际404 bff_route_not_found，错误UI不冒Connected|Server与Connection生产缺口仍FAIL|
+|T-R02 正常依赖可用|九入口与PG/Redis/MinIO/ClamAV读核、真实S3上传扫描，不reset|健康不当各功能/Agent worker/全页面PASS|
+
+完整70组仍11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST。Storage契约工具修复5b15fe3只辅助工程，D1 missing handler失败与typecheck2保留，绝不记用户删除PASS。
+
+### R258 页面CRUD当前实测补录（完整组计数不变）
+
+当前用户重排页面CRUD优先、Agent执行后置；原70用例ID继续，11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST。真实positive子路径不得把完整组未验负控清零。
+
+|既有组/业务|实际行为与证据|本轮状态/未验|
+|---|---|---|
+|项目页前置 / T-C05关联规则|正常自有QA创建、名称保存owner回读、硬刷新；指令保存→project/history200→当前历史→刷新同值；r258-project-positive-browser.json|正向子链已验；候选仍2P1修复中，删除/取消/未知/跨身份完整分支未验，整组不改|
+|T-F01/F02 文件|QA专案110B真实上传200、scan clean、资源GET/hash、刷新可见；r258-project-resource-refresh.jpg|上传/列表正向已验；此页无下载/单项删除，扫描负控/跨人/取消/并发未验，完整CRUD未过|
+|T-K03 本人技能安装|源合法published纯清单安装→停用→刷新→启用→remove→removed筛选禁写→同ID重装→remove恢复installed空；r258-skill-installation-crud.json|正向控制CRUD已验；源技能保留，权限撤回/unknown/双tab冲突/执行采用未验，不整组PASS|
+|T-K05/T-U04 MCP|本人连接真实GET200空；自订MCP保存POST404 bff_route_not_found，取消草稿不产生授权；r258-mcp-create-red.jpg|真实FAIL保留；Server注册/Connection命令消费者缺口，九服务在运行不能解决源码缺失|
+|T-R02 依赖/运行|9应用进程存活；PG/Redis/ClamAV/S3实际认证读通过；r258-normal-infrastructure-read.json|只实际接线健康，不等全部最新源码/worker或功能通过；BFFaccepted/loaded仍不同|
+
+独审r258-project-visibility-review.md两P1与后继有效RED单独保留；Root首次201工程辅助绿不作业务验收标准。QA项目/文件只新增自有对象，原数据保留，无推理/资金/永久清理。
+
 ### R257 管理子链实际验收更新（2026-10-06 16:20 UTC）
 
 |用例ID/类别/标题|预置条件|步骤|预期结果|实际/证据|优先级|类型|

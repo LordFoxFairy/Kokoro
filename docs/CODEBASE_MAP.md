@@ -1,3 +1,8 @@
+## R258 当前 CRUD 页面源码与未接 owner
+
+正常Web `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` bf2bee9：app-frame-helpers只普通已准入Project展示三现CRUD区；use-app-frame-project复用指令context并持资源flight abort/fence；project-resource-upload同signal贯穿Fetch/body，kokoro-project-workspace当代私有投影隔离。资源下载/单项删除仍未接，不新增fallback/第二权限源。
+Storage原checkout HEAD5b15fe3只D0设计+contract normalize限定proto；DeleteAsset九机器候选未提交且handler/type缺口真实保留，Prisma17原dirty已exact恢复，暂不可发布消费者。正常loaded服务未因此重启。排程现surface/client/admitted同源/BFF outbox既有CRUD由Root继续真实验证；Admin现资格壳沿原ADMIN03接三读+visible CAS，不建新后台体系。
+
 ## R257 当前管理HTTP位置与正常加载边界（2026-10-06 16:20 UTC）
 
 - 正式BFF worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEADbac0cbf：`src/http/routes/model-routing-admin.ts` 只四具名operation、身份/请求/生命周期；`src/infrastructure/clients/owner/system-model-routing.ts` 固定System3.0转交/严格response/owner错误tuple；`src/bootstrap/server.ts` IAM准入后/generic mutation前分派，不建任意proxy；默认test/format已挂现15项。零BFF DDL/新Redis事实。
