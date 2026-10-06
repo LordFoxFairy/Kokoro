@@ -1,3 +1,17 @@
+## R255 00:30 正常3310 Skills本人主链实测（T-K02/T-K03组内证据）
+
+| 用例 | 前置 | 用户步骤 | 预期/实际 | 优先级/分类 |
+|---|---|---|---|---|
+| T-K02.R255-N01 | 正常IAM登录，正式Platform/Storage/BFF持久组合 | 技能→本人已发布 | 合法空态，实际正常终态；旧加载失败已解除 | P1/主链路 |
+| T-K02.R255-N02 | 同上；393B普通manifest V2+SKILL.md ZIP | 发布个人技能→选包→填名称简介标签→上传并发布 | 上传/扫描/Validate/Publish真实owner200，UI ACTIVE发布回执与列表；实际通过 | P1/主链路 |
+| T-K03.R255-N01 | 本次已发布revision1 | 安装→本人安装→停用→硬刷新→本人安装 | installed/enabled→disabled，刷新仍disabled；实际通过 | P1/状态机 |
+| T-K03.R255-N02 | 本次disabled安装 | 启用→移除安装→硬刷新→本人安装→本人已发布 | 安装合法空态、发布源仍保留；实际通过 | P1/状态机 |
+| T-K02.R255-N03 | Platform正常listener，不带认证 | GET /v1/skills | 实际401；仅匿名负控，不冒tenant隔离全验 | P0/安全 |
+
+最终PNG确认主区标题/卡片贴左，间距/视觉一致性作为T-U01后继P2，未因功能通过抹掉。
+
+以上是正常开发页面而非旧隔离fixture，唯一技能skill:e493e093-84c4-40df-bbcd-e7426a985e44/revision1；只新增本次QA发布源，安装已正规移除，可重新安装。0模型/资金调用，不删除用户既有数据。证据var/dev/r255-preserve/browser-normal-skills-journey-receipt.json和8终态DOM/最终PNG。恶意包/超限ZIP/越权/ACK未知/详情撤回/Agent真正加载执行/MCP尚未验；整组T-K02/T-K03不关闭，70组11通过/6失败/14待复测/38未验/1支付后置不变。
+
 ## T-F01.R255-NORMAL：正常持久源代码资料库用户验收（组内子例）
 
 |用例ID/类别|标题/优先级/类型|预置条件|真实测试步骤|预期结果/实测状态|

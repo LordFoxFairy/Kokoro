@@ -1,3 +1,9 @@
+## R255 00:30 正常 Platform 运行接续
+
+物理apps/kokoro-capability现494b118正常Node24/pnpm11.25源码，持久.env.local显式shell加载，三surface skill-catalog/skill-source/skill-installation-product；正式IAM脚本operator provisioning资源+四client后，owner-only var/dev/platform四凭据由Root保管。Storage原已有独立kokoro-platform身份保持，不新增/复用BFFsecret或无谓重启。Platform句柄66685/8086，BFF原32914受控exit130后1963/53714；八正常owner200。唯一句柄var/dev/processes.json，原七进程除BFF不变。
+
+真实IAB3/tab8同3310技能普通V2ZIP→上传扫描Validate发布→安装停用刷新启用移除→刷新源保留已证；正常匿名Platform读401。无新应用DB/role/reset/fixture launcher，Agent执行/费用/MCP仍OPEN。文档默认纯门必须隔离真实连接env，资源门用任务自有URL，不用正常开发数据当测试fixture。
+
 ## R255 00:17续推终态：正常资料库主链实测，Platform持久schema已就绪
 
 - Root在既有IAB3/tab8、正常3310/Web73444e65/BFF97a99d35/Storage14f2bc9，完成本次唯一123B UTF-8文本选择→上传→扫描通过→权威文件行→硬刷新保留→原生下载保存；下载与原文件byte-exact，SHA256 c78880987bcf92bd249fd8d8539eda47a82017d3005036147943b405525f1c3e。1048577B超限选择/提交被明确拒绝，原文件保持，错误后刷新可恢复正常列表。只上传本次QA文件，保留用户数据、0模型/资金调用；Agent作品标签仅观察初始loading、未等待终态，不写空态/PASS。download事件工具超时但实际原生文件已保存并核SHA，是工具观察缺口而非伪造产品失败。

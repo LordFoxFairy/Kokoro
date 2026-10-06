@@ -1,3 +1,12 @@
+## R255 00:30续推终态：正常Skills本人主链已实测，完整Wave0–7仍OPEN
+
+- Root复用现IAM operator Session，正式owner脚本五操作exit0：Platform资源及四独立client；四持久0600凭据，不复制sandbox-v1/fixture身份。第一次Storage新增断言发现原正常配置已存在独立kokoro-platform后停止核实并保留；未改Storage map/无谓重启，保留BFF独立secret。Platform同单库kokoro_platform/source pnpm dev句柄66685/8086 ready200，BFF原32914真实exit130后1963/53714受控重载；八owner当前200，原其余六个服务句柄/基础设施/数据不重置。
+- Root真实IAB3/tab8正常3310：Skills合法空态→393B普通二字段V2 ZIP→填写本人名称简介标签→真实Draft/Begin/Complete/Validate/Publish六次owner请求200→UI ACTIVE发布回执→安装已启用→停用→硬刷新仍停用→启用→移除安装→硬刷新安装合法空态、本人发布源保留。匿名Platform读401。不是只ready或测试绿，也不是旧隔离fixture通过；原加载失败的正常页面主链已解除。唯一QA源skill:e493e093-84c4-40df-bbcd-e7426a985e44/revision1保留，0模型/费用/用户数据删除。
+- Platform原owner只改README/RUNBOOK/.env.example三现文档；独审发现默认verify会在source正常env后触真实integration，窄修隔离子shell/unset连接env，真实资源门须任务自有URL，skip不冒integration通过。原writer停止；Root目标Prettier/diff检查均0，最终独审d42ab76a零P0/P1/P2，精确三doc提交9ab3b653、子仓clean；生产/合同/schema/lock零改。
+- Skills恶意包/超限/tenant越权/ACK未知/详情撤回、Agent真正加载执行、MCP、Billing正式资金/model仍未验，不关闭整组T-K02/T-K03，不缩小完整Wave0–7；70组11通过/6失败/14待复测/38未验/1支付后置保持，支付最后。正常Billing/模型worker仍未启，原C3阶段裁决一次待答不重复。Root所有服务句柄在同var/dev/processes.json，任务外gitlink/uv/mixed保护。
+- Root本次topology再跑exit1，仍七子仓HEAD与受保护gitlink不一致，未暂存任务外gitlink/uv清零。最终截图另确认Skills主区标题/卡片贴左，页面间距与视觉一致性仍须Web后继窄修，当前只证明用户功能主链，不称UI完善。
+- 证据ignored var/dev/r255-preserve/browser-normal-skills-journey-receipt.json、8终态DOM/最终PNG、normal-platform-iam-provision-receipt.json、normal-platform-persistent-inputs-receipt.json、normal-platform-eight-owner-ready.json；保第一次准备断言失败，不当产品失败或绕过门。沿同任务/测试台账继续，不另建计划中心。以下为历史，不覆盖本节。
+
 ## R255 00:17续推终态：正常资料库主链实测，Platform持久schema已就绪
 
 - Root在既有IAB3/tab8、正常3310/Web73444e65/BFF97a99d35/Storage14f2bc9，完成本次唯一123B UTF-8文本选择→上传→扫描通过→权威文件行→硬刷新保留→原生下载保存；下载与原文件byte-exact，SHA256 c78880987bcf92bd249fd8d8539eda47a82017d3005036147943b405525f1c3e。1048577B超限选择/提交被明确拒绝，原文件保持，错误后刷新可恢复正常列表。只上传本次QA文件，保留用户数据、0模型/资金调用；Agent作品标签仅观察初始loading、未等待终态，不写空态/PASS。download事件工具超时但实际原生文件已保存并核SHA，是工具观察缺口而非伪造产品失败。

@@ -1,4 +1,25 @@
+## R255 00:30续推终态：正常Skills本人主链已实测，完整Wave0–7仍OPEN
+
+- Root复用现IAM operator Session，正式owner脚本五操作exit0：Platform资源及四独立client；四持久0600凭据，不复制sandbox-v1/fixture身份。第一次Storage新增断言发现原正常配置已存在独立kokoro-platform后停止核实并保留；未改Storage map/无谓重启，保留BFF独立secret。Platform同单库kokoro_platform/source pnpm dev句柄66685/8086 ready200，BFF原32914真实exit130后1963/53714受控重载；八owner当前200，原其余六个服务句柄/基础设施/数据不重置。
+- Root真实IAB3/tab8正常3310：Skills合法空态→393B普通二字段V2 ZIP→填写本人名称简介标签→真实Draft/Begin/Complete/Validate/Publish六次owner请求200→UI ACTIVE发布回执→安装已启用→停用→硬刷新仍停用→启用→移除安装→硬刷新安装合法空态、本人发布源保留。匿名Platform读401。不是只ready或测试绿，也不是旧隔离fixture通过；原加载失败的正常页面主链已解除。唯一QA源skill:e493e093-84c4-40df-bbcd-e7426a985e44/revision1保留，0模型/费用/用户数据删除。
+- Platform原owner只改README/RUNBOOK/.env.example三现文档；独审发现默认verify会在source正常env后触真实integration，窄修隔离子shell/unset连接env，真实资源门须任务自有URL，skip不冒integration通过。原writer停止；Root目标Prettier/diff检查均0，最终独审d42ab76a零P0/P1/P2，精确三doc提交9ab3b653、子仓clean；生产/合同/schema/lock零改。
+- Skills恶意包/超限/tenant越权/ACK未知/详情撤回、Agent真正加载执行、MCP、Billing正式资金/model仍未验，不关闭整组T-K02/T-K03，不缩小完整Wave0–7；70组11通过/6失败/14待复测/38未验/1支付后置保持，支付最后。正常Billing/模型worker仍未启，原C3阶段裁决一次待答不重复。Root所有服务句柄在同var/dev/processes.json，任务外gitlink/uv/mixed保护。
+- Root本次topology再跑exit1，仍七子仓HEAD与受保护gitlink不一致，未暂存任务外gitlink/uv清零。最终截图另确认Skills主区标题/卡片贴左，页面间距与视觉一致性仍须Web后继窄修，当前只证明用户功能主链，不称UI完善。
+- 证据ignored var/dev/r255-preserve/browser-normal-skills-journey-receipt.json、8终态DOM/最终PNG、normal-platform-iam-provision-receipt.json、normal-platform-persistent-inputs-receipt.json、normal-platform-eight-owner-ready.json；保第一次准备断言失败，不当产品失败或绕过门。沿同任务/测试台账继续，不另建计划中心。以下为历史，不覆盖本节。
+
+## R255 00:30续推检查点：Platform正式持久组合
+
+Root已完成五次现IAM operator provisioning实际exit0，四独立IAM凭据落持久0600文件；正常Storage已有独立kokoro-platform身份，首轮assert发现已存在后停下核实并复用，未轮换/借用BFF身份/无谓重启。Platform正常pnpm dev句柄66685/8086 ready200；仅原BFF32914 exit130后同源码持久配置重载1963/53714 ready200，八owner原探针200。真实浏览器Skills目录已从失败恢复正常合法空态；发布/上传/扫描/安装后继验收，不计整组PASS。
+
+| 子任务 | owner/角色 | 范围/基线 | 验证/交付 |
+|---|---|---|---|
+| T-K02.R255-NORMAL-PLATFORM-DOC-REVIEW | web_r247_skill_header_owner，独立只读 | Platform494b118；README/RUNBOOK/.env.example三冻结path，handoff c12a6e26；禁止凭据/资源/仓写/Git | 核现源码运行/config/schema语义与启动指引；报告P0/P1/P2和绝对路径行；Root复跑format并唯一提交 |
+
 ## R255 00:17续推：独立页面用户路径与正常Platform准入
+
+T-K02.R255-NORMAL-PLATFORM-DOC：原capability_composition_owner_r247唯一tracked文档writer，Platform494b118 clean；只README.md/docs/RUNBOOK.md/.env.example，现源码/contract/Schema/locks全部排除。修旧CAPABILITY键/public/逐owner独立DB/重复apply及旧候选静态状态，明确当前SHA发布与正常源码持久.env加载方式（现pnpm dev不会自行读取env，不改package），Root只负责ignored运行配置/资源，无源码writer。冻结后Root源对照/文档门/精确提交；不得编造正常已启动或Skills通过。
+
+00:30后继 T-K02.R255-NORMAL-PLATFORM-PROVISION：Root独占正式IAM应用context读回/已批准最小client创建/0600持久输入、Storage/BFF受控单次重载和Platform标准源码dev句柄；沿原三surface/一库schema，不新服务框架、不用fixture issuer/cleanup、不共享秘密、不改权限语义。先operator session/current资源client exact盘点；readback未知或失败停止该写入，既有7服务保留；正常Skills用户路径最后验。生产源码/合同均不在写集，子代理仅独立文档盘点。
 
 Root本轮纯topology门exit1，当前子仓HEAD与Root gitlink差异保留，不改任务外gitlink；日志var/dev/r255-preserve/root-normal-library-topology.log，发布门未关闭。
 
