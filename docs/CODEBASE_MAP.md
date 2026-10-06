@@ -1,3 +1,15 @@
+## R262 已提交路径与登录恢复接缝（2026-10-06 20:57 UTC）
+
+正常 Web worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` 当前 HEAD **f90c45d4b73e695a9fc88a6be3d965461b0b2e0c**：现 machine 的active eviction、navigation实际scope guard、surface唯一Next usePathname已提交。下方ab5c431候选记录为历史；未提交Admin25/protected28仍保持。正常Move往返/刷新同历史可见，不冒整个用户体系通过。
+
+个人技能双视图展示已接真实owner；最新同页只读session重试200 authenticated:false仍unavailable、hard reload恢复，调查接缝为现 `src/ui/auth/use-session-state.ts` / `app-gate.tsx` / `product-auth-client.ts`及正式server session/layout，不新状态中心、不改授权。Storage三D0目标B仅文档冻结/独审，两恢复/版本来源P2未闭；实现/正常bucket/Schema不变。证据与完整70组状态以CURRENT最新前缀为准。
+
+## R262 当前Move路由与个人管理入口（2026-10-06 20:44 UTC）
+
+Web正常worktree HEADab5c431上的候选三source：engine/machine.ts的reconcileConversationCache复用activateConversation；app-frame/use-app-frame-navigation.ts按实际Project/Direct scope守护syncConversationUrl；features/app/kokoro-app-surface.tsx由Next usePathname唯一持有pathname，不再第二window snapshot。现网络仍AG-UI/原same-origin/BFF；无新模块/contract/状态中心。源/7test+locale精确冻结/独审与Root门见同task；正常Move往返/刷新同4消息真实证据见CURRENT和test-cases，原loading/撤准入/晚ACKguard保留。
+
+Skills仍正式个人管理两视图，不扩发现目录/复制provider目录；MCP真正自订Server onboarding缺producer，Storage精确物理清理固定provider原子条件不合格，Admin正向正常凭据待人类。全70组11/8/14/36/1/完整Wave0–7保持，availability或工程不当完整能力完成。
+
 ## R261 当前个人技能、文件删除候选与后台接线位置
 
 - 正常Web持久worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEADab5c431；个人技能已采用R259已发布8b355ba，正常浏览器双视图/真实名称来源与安装状态再次可见。Admin候选25尚未提交：`src/contract/admin-model-routing.ts`闭集runtime/schema，`src/hub/admin-model-routing-client.ts`4具名操作/共预算/分页确认，`src/lib/server/admin-model-routing.ts`freshadmin/Origin/closed adapter，`src/app/admin/model-routing-panel.tsx`三读/单visible保存/退役，现access-view与catchall接入，无新后台框架/权限事实。Root15032完整默认3259/6，六实际失败并行归因，普通404不等管理员正向闭环。

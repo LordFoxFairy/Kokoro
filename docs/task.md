@@ -1,3 +1,92 @@
+### R262 登录恢复只读交接已核（本轮不冒已修）
+
+原 Web owner 报告 r262-skills-late-admission-read.md（852e901a99e066f70b7a6ad6de1642ded04e38f1cd1e2f38da3c8775c778a744）已交并STOP，Root读源码核因果：unknown续期latch后只读GET、持续false保持unavailable，现UI只有同一种Retry所以无正式再认证出口。首次unknown/expired原因未获网络时序，layout serverAdmitted不执行refresh；hard reload可能已有SSO/callback或他tab cookie更新，不宣称无协议登录。后继最窄候选复用openProductSignIn和现return-target allowlist显式恢复，保只读Retry/私有scope退役/不重放未知POST；尚未准实施，当前技能页长期会话恢复FAIL仍OPEN。当前两视图截图仅刷新后展示，不等完整技能管理验收。
+
+### R262 最终提交、独审及新增真实恢复问题（2026-10-06 20:57 UTC）
+
+- Root Web精确8路径提交 f90c45d4b73e695a9fc88a6be3d965461b0b2e0c，原normal Move往返/刷新四消息子链已验；Git对象对绑定实测输入，Admin25/protected28/two mixed均保持。完整copy70704未加诊断3270/0（171文件），工程38976全0；早先欢迎页重进FAIL仍OPEN，不以重跑抹除。证据见 r262-web-move-commit-receipt / final-v3-copy-default receipt与原日志。
+- R262-STORAGE-PRIMITIVE-D0-REVIEW / P0：原独审 iam_grant_source_scope_0244 /只读，HEAD5b15fe3，三D095a3dba0/460c49f8/b5c870f9及freeze47a6e44f。Root已重核55/原suffix，独审346dd8bd交接STOP，无已证P0/P1；两P2需后继裁定：post-delete确切absence与泛404区别、正式presigned staging无可信原写回执接缝。暂不准完整D0发布或source/正常数据操作，有限RED另准；保原失败和停止线。
+- R262-SKILLS-LATE-ADMISSION-READ / P0：原Web owner agent_planned_guarantee_system_r257 /只读，正常worktree HEADf90，Admin25/28保护。Root同/app/skills末验出现unknown；真实重试GET200 authenticated:false无恢复，hard reload同URL短loading后双视图/卡/目录恢复。只读现use-session-state/app-gate/runtime-loading/product-auth-client/server session/layout与相邻tests，独有ignored r262-skills-late-admission-read.md；区分实证/推断，给最窄正规恢复方案和失败E2E，不简单改false→anonymous/重复未知POST/去scope fence，不写source/tests/仓docs/Git/资源/browser/凭据。Root保验证和最终设计决定。failure及reload-recovery JSON/PNG均保存。
+- 本轮完整组不升；仅Root当前五既有台账可更新/精确提交，不暂存gitlinks、uv或子仓未交接候选；无新计划中心、服务或正常数据变化。
+
+### R262 Storage primitive 方案裁定与三设计面窄更新
+
+Root按真实四格及exact release/source裁定：不升级provider、不再把IfMatch204当CAS。目标B为所有staging/final cleanup必需可信实际非null VersionId，以同版本Head核key/version/ETag完整一致后仅删除exact VersionId；版本不可变使该核验后不误选新版本，绝不HEAD current补version/无version final key fallback。现DB authorize/tenant/scope/generation/零live引用/cleanup snapshot CAS、取消/未知pending全部保持。未获版本的既有normal对象不倒推或“修复”版本、不自动清理，正常bucketnot-enabled仍发行停止线；资格矩阵先证明wrongETag零Delete、oldVersion移除/newVersion保留、缺version零IO、撤权/引用零Delete。先当前三D0收敛再Root单独准test/source，不拿目标改变擦原IfMatch失败。
+
+R262-STORAGE-PRIMITIVE-D0 / P0：原Storage唯一writer bff_admin_routing_d0_r257，apps/kokoro-storage HEAD5b15fe3及已冻结55；只现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md新R262 prefix，保原suffix/其余52 exact，无新目录/文件/模块/协议schema/机器/generated/runtime。明确当前A/目标B/无version拒绝/normal停止线/当前publicDelete未消费；列精确后继文件集与行为矩阵在ignored handoff而非另开计划中心。Root与原独审核三D0再准RED；worker零测试/资源/服务/browser/Git，freeze后三D0与55新manifest后STOP。交接未经Root门不称实现或可用。
+
+### R262 对象存储原子 primitive 独立只读预备
+
+R262-STORAGE-PRIMITIVE-READ / P0：原bff_admin_routing_d0_r257只读现Storage三D0/候选55/固定MinIO与r261-provider-matrix；A固定provider带IfMatch是否真实CAS，B确切不可变VersionId删除是否满足防误删（identity来源/持久化/无version拒绝/normal not-enabled前提）。仅ignored r262-storage-primitive-read.md，可核primary官方源码/文档；不升级、bucket配置、owner资源/Schema/test/source/docs/Git写入，不以弱化oracle过门。Root最终技术裁定/后续原Storage writer实施；并行Web真实门与正常用户验证，没有切换业务优先级。
+
+### R262 正常用户 Move 子链实证与回归未全绿
+
+正常3310自有IAB25：Direct R243→QA R258专案→实际正文4消息→硬刷新→返回Direct→folder leaf→移回Direct→硬刷新保持。两次初缓冲truncated=true，原first ACK未留不能虚报；随后重新紧邻取证两次POST200/ACK分别project_b98f476a…/null、两个GET200同4消息，fresh两段truncated=false/hasMore=false，原Direct绑定已恢复；r262-normal-move-fresh-{project,reload,return}.json/restored-reload.json及截图。瞬时loading存在但实际终止，不删loading guard。零新会话/项目/模型/权限/账务操作，原用户7/8标签保留，tab25已回个人技能已安装真实卡。
+
+Root77846完整v2仍3269/1失败，原Project前置case已PASS，新唯一失败为欢迎页503未知结果后菜单第二次重进1660最终URL/；后续55046同完整smoke120/0，但单次重跑不抹原失败或先称flaky。原writer只读归因第二POST实际未被失败前断言证明，当前未授新修。Root38976最终合同295/架构51/lint/types/build均0，8候选same/copy exact、25+28/Redis33exact，normal.next未使用。Admin25仍不提交；全70组不新增PASS。
+
+### R262 最终 smoke 前置纠正准入
+
+Root86110终态1：完整默认171文件3269PASS/1FAIL；77真实Next系统全部PASS。唯一fail为“专案页点击新建会话切换到会话视图并聚焦Composer”：beforeEach actual URL=/，case却仅传projectWorkspace/projectRef=kokoro，未建立真实Project路径，scope guard正确拒绝Project闭包写Direct/根URL。原日志与失败保留，不删除断言/延预算/改production。
+
+R262-SMOKE-PRECONDITION / P1：原agent_planned_guarantee_system_r257唯一writer，Web worktree HEADab5c431；仅现tests/ui/app-frame.smoke.test.tsx的该case在render前设实际history /app/project/kokoro和mockedPathname同值。保原conversation output、conv query、Composer focus全部断言及其余正文/7路径冻结；ignored handoff独有新prefix，STOP后Root重验。独审iam_grant_source_scope_0244只读新diff与原失败；Root独占copy运行/正常浏览器/Git。Admin25/protected28/两mixed保持，零资源/服务/数据操作。
+
+### R262 UI framework publication fixture 准入（完整门真实失败后）
+
+Root35769 clean-copy完整默认终态1：171文件169PASS/2FAIL、3266例3251PASS/15FAIL，真实Next77例全PASS。15失败精确仅rail3/smoke12，固定usePathname mock未承接nativehistory/PopState的框架commit；不能据此恢复生产第二pathname owner，也不把所有失败自动当fixture正确。
+
+原Web唯一writer追加仅tests/ui/app-frame-rail.test.tsx与tests/ui/app-frame.smoke.test.tsx现next/navigation fixture：在test-only hook内模拟已锁Next公开nativehistory/pathname publication，订原surface-navigation与popstate，更新原可变pathname值并通知React（可用React useSyncExternalStore），不patch全局history/新文件/新mock框架/生产helper，不改transport、wire、权限/业务fake或budget。smoke原R257 Back/Forward用例最终mock必须表示已提交目标pathname；不保“最后Next=/app却要求Scheduled”为不可能最终状态，但保Back/Forward目标URL、合法conversation/query/history、正文与engine identity全部原责任。保其它SSR/初值与手工phase控制，不机械加rerender/删waitFor/skip。
+
+原locale/twooracle合法create第二GET/unknown Direct前置/held+abort+late+fresh3GET+noDispose+toBe+draft全部保；只修框架publication接缝，若仍业务FAIL逐例报告Root，不扩大source。Rootfull失败日志永存。Admin25/protected28/mixed正常文件不动，copy运行已停，可冻结后Root仅copy接收新候选→独审→完整171/真实77/正常3310验收。不冒mock绿为正常页面PASS。
+
+### R262 Move 最窄正式源准入（原真浏览器 RED→copy GREEN）
+
+Root89279原R192/R194在真实Next/Chromium副本 **2PASS/0FAIL**，包括新绑定snapshot、正文、Direct返回/刷新、Project leaf及响应丢失同command恢复；75仅本次filter未运行不冒全门。43905原2FAIL日志保。Root按现三D0及局部职责门裁决：Web cache eviction属于machine本地投影、URL归属属于现navigation hook、surface唯一pathname属于现App Router usePathname；不新对象/目录/模块/API/Schema/状态框架。删除第二window pathname store，无fallback/双读；保nativehistory、自有navigation事件消费者、原ACK/subject/epoch/route/selection fences和SSR首帧。正常数据/infra零写。
+
+R262-MOVE-WEB-SOURCE / P0：原Web agent_planned_guarantee_system_r257唯一writer，worktree /Users/nako/.codex/worktrees/kokoro-r257-admin-web，HEADab5c431；准三现source严格对应 Root r262-clean-copy-candidate-freeze.json hunk（machine active清thread/已有fallback水合，新本地fallback零GET；navigation exact实际scope写URLguard；KokoroAppSurface仅usePathname去第二store）。不得复制diagnostics或另改hydrationdep/Move coordinator/receipt/owner/SSE/contract/locale/Admin25。
+
+测试只准现tests/engine/machine.test.ts加active新fallback、已有fallback与inactive lateACK保当前thread/run/draft三行为，现tests/architecture/governance.test.ts加surface唯一pathname/source边界断言；现两oracle保持已冻结。正式mixed system/server不改。现rail/smoke fixed usePathname mock已报告与Nextnativehistory失真，**本准入尚不改mock**：Root35769清诊断copy完整默认跑中，真实失败后另准所需局部fixture，不把未完成测试计通过、不skip/加预算/删安全oracle。
+
+本片不动正常.next/服务/PG/Redis/浏览器/Git、无新文件/目录；三D0当前Admin前缀和原suffix保持，必要当前设计说明暂由本任务卡与源注释承接，Root收口后具名更新。不改Admin25/保护28，无生产fake。workersource/tests冻结→独审→Root全部真实门/正常用户移动链→Root精确提交；候选通过不是正式完整组PASS。
+
+### R262 真实 Move 渲染根因与单 pathname owner 验证（2026-10-06 20:20 UTC）
+
+Root原92568确证matching ACK后的active cache/thread矛盾和旧scope URL写；67829/79686两窄copy假设分别推进到正确pathname/query，但正文仍真实FAIL。12961/25748真实Next副本两例0PASS/2FAIL，target list200而无postMove snapshot，最终仍Loading。43905 parent三值实证：Next usePathname已Project，但window旧canonical仍/app，第二window external-store因此投影Direct；随后HistoryUpdater insertion写回Project却没有该store通知，保Direct engine/fallback。撤回“仅hydrate依赖漏query”为当前根因/准入建议，不补假fixture/删Loading/加预算。Root89279仅copy采用标准usePathname唯一surface pathname，保native-history integration、自有navigation事件和全ACK/actor/route fences；正式source尚未准写。
+
+|任务|角色/基线/范围|验收及责任|
+|---|---|---|
+|R262-MOVE-ROUTER-OWNER-READ / P0|原Web owner agent_planned_guarantee_system_r257只读，HEADab5c431，正常worktree；读现surface/navigation/engine邻测试和mock，仅独有ignored交接。Admin25/protected28/two oracle保持，source/tests/docs/Git/资源不写。|确认移除第二pathname store的最窄后继测试文件集，保SSR/Next nativehistory/BackForward/scope/lateACK/standalone全部原断言；Root89279原两case实际结果前不准源实现。|
+|R262-MOVE-ROUTER-OWNER-REVIEW / P0|原独审iam_grant_source_scope_0244只读副本与43905实证，独有报告prefix，正式源码零写。|审标准usePathname唯一owner安全/生命周期/SSR，保自有事件消费者；Root保设计裁决/真实门/最终Git。|
+
+Root5882最终两oracle/邻probe三文件133PASS/0FAIL（原90139 132/1日志保）；恢复Direct真实前置而非删Composer toBe，held/abort/late/fresh3GET/无新POST全达。仍是工程辅助，不冒真实用户页面整组；copy含待验源假设，后继需exact候选与完整门复跑。正常9owner/基础设施/数据未改。
+
+### R262 Oracle 实测触达尾断言后的精确前置修正
+
+Root90139三文件132PASS/1FAIL，13s；locale闭集、两实际owner401/badshape及quiet已触达，unknown真实abort/旧包无复活/恢复第3GET均过，仅Composer DOM identity末尾失败。独审核 Koko​roProjectWorkspace instructionContext key 在撤准入恢复时合法重挂该局部surface；新create ACK使原Direct安全断言的前置变成了Project，不能用toStrictEqual/删assertion遮掩。
+
+原Web唯一writer仅准继续现 tests/ui/app-frame-rail.test.tsx 此一个unknown用例：真实create→第二GET已held→通过现Direct link回/app，并明确Direct stage而非只URL前置已落地、held signal仍未abort/calls仍2；捕获Direct Composer/草稿再unknown，保原abort/late/fresh3GET/一次POST/toBe/noDispose及所有预算。其余tests/生产/Admin25/保护28/locale闭集保持，不运行资源。freeze交接STOP，Root复验，不以首次132通过声称最终门。
+
+### R262 Move 取证已到达具体覆盖点
+
+Root92568受控真实Next两例0PASS/2FAIL（75仅filter不执行），42.99s，Redis33→33exact/正常源码25+28exact；start/retry wasActive=true，settle confirmed/live/current/admitted=true，confirmedFallback=true，真正commit目标Project push已发生，随后Next历史旧canonical `/app`覆盖，再旧Direct非空thread用fallback activeId恢复query。不再猜“ACK未返回/目标folder未展开”。日志r262-move-diagnostic及receipt保存。
+
+Root67829仅copy将active缓存eviction复用既有activateConversation、保inactive index-only，第二原测试仍2FAIL但已达到Project pathname、conversation query被旧Direct微任务删掉；receipt/原断言保留。第二受控假设79686在copy对syncConversationUrl按既有kokoroAppRoute/engine project scope拒旧跨surface写，保catalog canonicalize。未准正常source写、不加等待、未改protected测试assertions；待实测和独审后由原Webwriter窄实施。
+
+### R262 MCP 最终能力与 owner 边界核对（只读并行）
+
+任务 R262-MCP-OWNER-D0-READ：原 bff_admin_routing_d0_r257，沿原 T-K05/T-U04 完整连接器 CRUD 用户目标，只读现正式 Platform c949、BFF42ac/Webab5 与已批准 PRD/TECH/API/DATA/contract，核自订 URL Server onboarding、Connector授权、Connection create/revoke与已宣称enable/disable的真实最终能力；不得以较易现有provider slice替代完整目标。不新计划中心/设计模块/Schema/权限。交ignored r262-mcp-owner-target-read.md：明确已批准/未决、现有owner命令输入reserved原因、两可行承接位置、最小真正owner D0后继及原用户404如何修；现无源码或仓docs准写。与 Web两个测试 writer/Root Move副本验证独立，零Git/服务/资源/browser/凭据读取。Root后裁决唯一Platform writer和门，不能静态卡假Connected。
+
+### R262 CRUD 回归修正与 Move 真实取证准入
+
+上一回合个人技能可视复验已记录，完整目标保持 active；本回合优先实际修正已批准 R259 行为所需验收观察点，并诊断已打开非空会话 Move 后不进入 canonical Project URL 两个真实 FAIL，不把工程门冒页面通过。
+
+|任务|负责人/基线/允许范围|完成条件与禁止项|
+|---|---|---|
+|R262-WEB-ORACLE / P1 / 进行中|原 Web writer agent_planned_guarantee_system_r257；/Users/nako/.codex/worktrees/kokoro-r257-admin-web HEAD ab5c431；仅 tests/i18n/resolve.test.ts、tests/ui/app-frame-rail.test.tsx，ignored handoff。|closed reviewed 原19+R25910翻译集合/九语言非空及批准label/source；两个owner坏读需真实创建ACK触发第二GET，保401/bad shape/error/零旧行/retry原断言；quiet正控保intent无额外GET，真正unknown撤准入时持有实际在途读/abort/迟到不复活/恢复fresh GET/Chat不重挂。不得改生产、保护mixed、Admin25、locale内容、预算/skip/弱化断言/服务/资源/Git。先保真实原失败，交diff/freeze后STOP；Root独占运行资源与重验。|
+|R262-MOVE-DIAG / P0 / 进行中|Root；仅自有已安装固定依赖的 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r261-admin-build-7fex31qj 受控副本诊断，主Web源和保护两mixed byte exact。|原R192/R194预算/断言不改，副本记录wasActive/projection live/current/admitted/route equality/source index与history sequence脱敏，运行真实Next/Chromium/原Redis fixture，确认实际返回点后才准生产修。无正常next/服务/用户数据/资金操作，日志保留真实失败。|
+
+只读 Move 报告 c9c83a9c明确“先evict然后settle”及非空thread差异，不冒具体race已证明。Root Admin25/保护28冻结，Storage55/provider FAIL发行阻断不变；两独立面可同时推进。其余owner停止，Root统一Git与验收。
+
 ### R261 Web 完整默认门真实 6 FAIL：冻结保留、并行只读归因
 
 Root15032终态1：171文件3259PASS/6FAIL（77真实Next/Chromium/Redis controlled IAM/BFF中75PASS/2FAIL），172.81s；catalog77exact/Redis keysetexact/25+28sourceexact。失败：skills.personal翻译key计数19vs29一例、rail健康focus→401/bad-shape错误投影两例、同subject重核读取计数一例、R192正常Move与R194丢ACK恢复后canonical project URL两例。日志r261-admin-root-default.log/readable.log及receipt保留；不skip/加预算/把三ERROR视为已修。管理候选尚不提交，不能从其focused/build/独审绿冒全门。

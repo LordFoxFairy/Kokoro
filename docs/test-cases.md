@@ -1,3 +1,24 @@
+### R262 最后观察追加：技能页登录恢复异常（2026-10-06 20:57 UTC）
+
+|用例ID/类别/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级/类型|
+|---|---|---|---|---|---|
+|T-K03.R262-LATE-ADMISSION / 异常、状态机 / 正常技能页长期停留后的恢复|正常3310同账号个人技能已安装卡可见，Web f90c45d|保持实际页→出现登录不可确认→点击重试→核真实session响应→普通hard reload|撤准入后无旧私有卡，正规恢复有明确出口，不无限仅只读失败循环；不重复未知续期POST、不误认身份|FAIL/OPEN：200 authenticated:false但仍unavailable且侧栏不可用，两个重试未恢复；hard reload后真实恢复仅子步骤PASS。failure/reload-recovery各JSON/PNG保存，Root委派原Web owner只读，不冒已修|P0/真实浏览器E2E|
+
+此前 T-K03.R262-VIEW 只表示当时双视图正向展示，不涵盖此新增长期会话/恢复异常，完整技能页仍未验收。最后未加诊断完整工程70704为3270/0，不清除 T-C05.R262-CREATE-RETRY 先前真实失败，不充当此正常用户链修复证据。
+
+### R262 当前正常用户子用例与仍失败回归
+
+沿原TC-R254-C03/C06与T-K03追加本次证据，不新测试中心/完整组，不把后端工程当用户验收。
+
+|ID / 分类 / 标题|预置条件|步骤|预期结果|实际结果与状态|优先级/类型|
+|---|---|---|---|---|---|
+|T-C03.R262-MOVE / 主链、生命周期 / Direct与项目绑定往返|正常9owner/持久3310账号，本人R243 Direct4消息及QA R258项目，冻结3源|真实菜单移入QA→正文→硬刷新→Direct→folder leaf→移回Direct→硬刷新|同ID/历史不复制，原组与目标组列表一致，正确URL/query，正文恢复不永久loading|PASS此正常子链；两fresh POST200/ACK project/null、两GET200同4消息、无截断，r262-normal-move-browser-receipt.json；完整跨项目/晚ACK/异主体异常仍待用户链，不全组PASS|P0/正常浏览器E2E|
+|T-K03.R262-VIEW / 主链 / 清晰个人技能页|本人既有真实安装启用，Platformc949/BFF7269/Web8b355已正常接|skills→我发布的→已安装→最终保留|两视图/真实名称简介状态、编号详情、无重复跳转|PASS展示子链，r262-skills-personal-final.json/png；完整发布/撤回/安全异常未验|P1/正常浏览器E2E|
+|T-C03.R262-SCOPE / 安全、状态 / 路由与engine匹配|真实Next/Chromium/Redis、controlled IAM/BFF peers；固定原77例|同原R192/R194及断线/丢ACK/返回/刷新|ACK后目标正文渲染，旧engine不改新URL，迟到不抢scope，原预算不放宽|原两实际RED→GREEN；最终v2真实77/0。此是受控系统反例/恢复，不冒全部真实owner安全路径完成|P0/受控系统|
+|T-C05.R262-CREATE-RETRY / 异常、状态 / 欢迎页503未知后原意图重进|原正常组件装配+即刻ACK替身，保key/name/A草稿与B回Direct|首次503→改B→重新菜单同意图→ACK→A入A→Direct B|两POST同key/body、不假项目、不丢A/B、原预算|OPEN真实回归：77846完整3269/1此case最终URL=/；55046全smoke120/0不清失败。Root后继先证第二POST/menu/flight/fence/history，不skip/增预算，诊断5078f9ee|P1/组件观察，非正常E2E|
+
+退出仍是完整约定P0/P1真实用户链+owner事实核对；仅首行PASS不关闭原TC-R254-C06的全部跨项目/安全异常，更不将70组统计上调。
+
 ### R261 当前系统行为矩阵与真实页面边界
 
 沿既有T-F01/F02、T-K03、ADMIN03子例更新，不新增完整组PASS。Root当前正常个人技能真实复验可见，不把工程数量当业务完成率。

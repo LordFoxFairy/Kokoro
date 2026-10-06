@@ -1,3 +1,28 @@
+### R262 登录恢复只读交接已核（本轮不冒已修）
+
+原 Web owner 报告 r262-skills-late-admission-read.md（852e901a99e066f70b7a6ad6de1642ded04e38f1cd1e2f38da3c8775c778a744）已交并STOP，Root读源码核因果：unknown续期latch后只读GET、持续false保持unavailable，现UI只有同一种Retry所以无正式再认证出口。首次unknown/expired原因未获网络时序，layout serverAdmitted不执行refresh；hard reload可能已有SSO/callback或他tab cookie更新，不宣称无协议登录。后继最窄候选复用openProductSignIn和现return-target allowlist显式恢复，保只读Retry/私有scope退役/不重放未知POST；尚未准实施，当前技能页长期会话恢复FAIL仍OPEN。当前两视图截图仅刷新后展示，不等完整技能管理验收。
+
+### R262 最终证据与新增登录恢复失败（2026-10-06 20:57 UTC）
+
+完整 Wave0–7 active，个人技能管理及页面 CRUD 优先；70 完整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮不升完整组。
+
+- Web 三源与五测试已由 Root 精确提交 **f90c45d4b73e695a9fc88a6be3d965461b0b2e0c**（parent ab5c431，8路径，Git对象与实测输入一致）；Admin25/protected28及两 mixed 保持原冻结，未夹带提交。正常真实 Direct R243→项目→刷新→返回→移回 Direct→刷新同四消息子链通过，原 Direct 绑定恢复；不等全部项目/会话异常完成。
+- 最后完整未加诊断的同输入副本门70704：171文件 **3270 PASS/0 FAIL**，真实Next controlled-peer 77/0；合同295、架构51、lint/types/build0仅工程辅助。早先77846欢迎页503原意图重进失败及只读诊断仍OPEN；一次后续全绿不证明该偶发缺陷已修。详见 r262-final-v3-copy-default-receipt.json/log、r262-web-move-commit-receipt.json。
+- **最终正常个人技能页复验新增真实FAIL**：此前 postcommit 已安装/我发布的、真实名称简介/来源/启停及折叠技术详情可见；随后同页登录状态不可确认、侧栏不可用，两个真实重试未恢复。紧邻GET /api/auth/session=200、body authenticated:false、buffer无截断；不能把此前截图称当前通过。普通hard reload后同URL短loading真实结束，卡片/目录恢复；仅证明刷新恢复，不关闭只读重试卡点。证据 r262-skills-late-admission-failure.json/png 与 r262-skills-final-reload-recovery.json/png。原Web owner只读定位 latch/正规恢复接缝，未准源码修、不改 anonymous分类/重复未知POST/权限边界。
+- Storage方案B三D0冻结47a6e44f、Root55路径/三原suffix核验和独审346dd8bd：无已证P0/P1，两P2未决——确切版本消失/未知ACK完成判据，以及预签名staging原写VersionId可信来源。可做有限安全RED，**尚未准RED/source、完整恢复/发行不放行**；normal bucket not-enabled/旧null停止线与原IfMatch204失败保留，不能将D0文案称实现闭环。Admin正常合法管理员正向仍待已有输入，MCP自订producer缺口仍OPEN，文件删除消费者未接。
+- 正常服务/PG/Redis/MinIO/ClamAV未重启或reset；uv/gitlinks/任务外mixed均保留。当前自有tab25保留刷新恢复技能页，原用户tabs未关闭。全部新失败与下一owner落同task/test-cases，不新建计划中心。
+
+### R262 个人管理与会话移动真实子链（2026-10-06 20:44 UTC）
+
+完整Wave0–7 active，页面CRUD优先、Agent执行后置；70完整组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，本轮新增完整组0。
+
+- 用户确认个人技能先行：正常3310/app/skills已安装/我发布的两视图、真实名称简介/来源/启停、技术ID折叠、无重复我的技能回环；R259真实安装启停/移除/重装证据保留。当前Root自有tab25回默认已安装并标记保留，r262-skills-personal-final.json/png。完整发布/撤回/包CRUD、安全异常及窄屏仍未全验。
+- 实修Move三个现source：active源索引evict时用现activateConversation清旧thread/Run并有界fallback；实际target scope匹配才允许旧engine同步URL；surface只有Next usePathname唯一owner，删除会读上次canonical的第二window store。未改owner/协议/权限/receipt/期限、未去Loading guard/加hydration effect补丁。Root原真实Next R192/R194均RED→两例GREEN，晚ACK/丢ACK/返回/刷新断言保留；独审99b2205a及前置独审8ec7b6dd无确定P0/P1/P2。
+- 正常真实账号Direct R243→QA R258项目→正文4消息→硬刷新→Direct返回→folder leaf→移回Direct→硬刷新，URL/目录归属/同4消息一致。最初网络buffer截断保留，不冒首ACK；再实际往返两POST200、ACK project_b98f476a…/null、两snapshot200同4消息，truncated/hasMore均false。r262-normal-move-browser-receipt.json及fresh-project/reload/return/restored-reload；原Direct绑定恢复，无新项目/会话/权限/模型/资金动作。瞬时loading存在但真实终止，非声称从不loading。
+- Root最终工程38976合同295/架构51/lint/types/build全0，8候选/copy exact、Admin25/protected28与Redis33exact，normal.next未用。完整171门86110及77846均3269/1：前者Project case实际URL=/而只propsProject，已两行正确前置修→后者该casePASS但欢迎页503第二菜单重进1660FAIL。55046全smoke120/0不能抹失败；第二POST未在失败前证明，原writer只读具体分段报告5078f9ee，不直接称flaky或weakening oracle。Root后续在自有copy只加failure观测、不改原断言/预算，原日志保持。
+- Admin25未提交/正常合法管理员正向仍待已有输入，普通隐藏404不替代。Storage261真实PG与工程已验但固定MinIO wrongIfMatch204仍阻断发行；BFF删除只3D0目标42ac、无public DELETE。MCP自订创建producer缺口/404仍OPEN；现provider授权Connection create/revoke不等URL Server onboarding/enable-disable。原owner并行只读精确version primitive研究，Root裁决后才能写。
+- 本轮正常服务/PG/Redis/MinIO/ClamAV未重启/reset/新临时组合，uv/two Web mixed/gitlinks保持；原用户tabs7/8未关闭，无新标签。工程门/受控peer不是完整页面验收，后继继续现台账、不新计划中心。
+
 ### R261 个人管理复验与独立 CRUD 实门（2026-10-06 19:54 UTC）
 
 完整 Wave0–7 active；按用户裁决先清晰个人技能管理及全部页面CRUD，不扩技能发现目录、不把Agent执行当其它页面前置。完整70组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
