@@ -1,3 +1,11 @@
+## R255 01:03 续推：正常聊天实际失败，owner环依赖已精确纠正
+
+- **真实用户验收仍FAIL**：正常3310/IAM登录→新对话→输入“1+1”→点击发送，第二次受观察提交的POST `/api/session/sessions/conv_53cf018a-3648-47db-af76-a276aeb47fa3/messages` 返回503 `agent_not_configured`；页面有限进入失败/重试，无assistant输出。BFF持久配置AGENT_ENABLED=false而URL已配，源码chat.ts在chatTurns.submit之前拒绝，本次没有服务端Message/outbox提交；不是已接受数据丢失。第一条提交观察未启Network，仅保存UI失败；刷新同URL snapshot404→空Home，是未提交临时会话显示/恢复问题，不能推成数据库回滚/快照事务损坏。
+- **实际首缺口不是再改登录页/翻开关**：独立BFF源审查32f30ee9确认开true可持久提交并202，但Agent模型final prepare后无条件抛authorization consumer unavailable；现生产Worker无Billing消费client，零provider send，无旧free fallback。先前未实现的System具体部署capacity/usage声明→Agent immutable bound/唯一reader→Billing现M2→Agent正式授权consumer必须代码闭环；现System目录cap已存在，禁止重做M0/M1、通用配置平台或再问已确认失败收费。正常worker仍未启，不冒HTTP200等于执行准备完成。
+- **本次已交付仅设计纠错，不冒功能实现**：Agent main95a11500466e01a27115ddb214df8d6b4f76221c精确三D0+6行；Billing main674990739bc895c09bb5ffe0f57a2c64dfc9ae91精确三D0十替换。去后继request_ref前置/两个reader/商业账户环依赖、区分planned与actual，纠正System已有cap的过期措辞；唯一reader、guarantee、paid guards未放宽。独审5ac9bc8c零P0/P1/P2，Root逐字逆重建六文件原before SHA及HEAD相对增量后用Git对象只暂存批准段。Agent build/、Billing五mixed、Root gitlinks/uv全保护；源代码/合同/schema/资源实现零变更。
+- **资源与完成口径**：八原PID/exec句柄全部alive/探针200，无重启/重复服务/PG或Redis reset。normal Billing/模型worker仍未启。Root topology实跑exit1，七checkout HEAD与受保护gitlink不一致，未靠暂存任务外内容清零。六doc仅diff检查/一致性审查，不跑代码单测伪造产品通过；70组保持11通过/6失败/14待复测/38未验/1支付后置，完整Wave0–7 goal仍blocked且未重建/缩小。
+- 证据：ignored var/dev/r255-preserve/0103-d0-{staging-preflight,commit-receipt}.json、0103-owner-health.json、0103-topology.log、browser-chat-{submit-error.json,submit-red.md,submit-red.png,normal-red.md,normal-refresh-errors.json}；两个原IAB页未新增/清理用户页，验证页保留失败现场。下一关键切片由System现model-catalog发布一个固定技术绑定的最小部署声明；无可核证声明的绑定保持unsupported，后继Agent/Billing沿同任务卡实施，不再重复读审当代码完成。
+
 ## R255 00:45续推终态：Skills页面窄修已提交，正式计费主链缺口已重新定位
 
 - Web main **2dece456b487f818062c468173eb2258eecb549b**：只改现Skills feature两source，正式页漏host而Preview已有布局是真实根因；不改AppFrame/Settings共用reader/其他页面。Root当前lint/types/build全exit0、既有7文件141pass/0fail为辅助；独审15823e27零P0/P1/P2。原四mixed与全部其他tracked字节、Root uv保持；未暂存Root gitlinks。

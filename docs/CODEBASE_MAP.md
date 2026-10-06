@@ -1,3 +1,7 @@
+## R255 01:03 当前入口纠错
+
+正常Web2dece456/BFF97a99d35新消息真实503 agent_not_configured：BFF src/http/routes/chat.ts:214在持久提交前核Agent enabled/URL；当前持久开关false。开关true本身不补Agent执行，现Agent src/kokoro_agent/model/call_runtime.py:164仍无条件拒绝缺失authorization consumer，WorkerClients无Billing client。最小代码依赖：System具体技术声明→Agent bound/单次planned+bound reader→Billing M2→Agent authorization consumer；不在BFF写计费/翻flag作假成功。Agent95a11500与Billing67499073只三D0当前段纠错，机器artifact仍未发布；正常HTTP ingress与worker是两个现进程，当前worker未运行。原八服务句柄仍同var/dev/processes.json，均复验alive200。真实失败/test-cases/收据同CURRENT，不增加整组PASS。
+
 ## R255 00:45当前入口增量
 
 Web main2dece456：现src/features/app/kokoro-skills-surface.tsx仅正式PersonalSkillsRead外加局部host，同名module.css拥有24px/窄16px边距、60rem与单滚动；Settings共用reader/Preview/AppFrame不改。真实几何/无效包400证据见同CURRENT/test-cases，不凭辅助141断言整页。Agent后继main307db318只读核planned-bound与Billing M2 D0漂移（后继request_ref/商业pricing account）；现planned无provider_account_ref，不能假字段已存在。保证/reader/收费normal仍未实施；只读报告待接收，支付最后。

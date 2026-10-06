@@ -1,3 +1,13 @@
+## R255 01:03 正常聊天失败复现（沿T-C01，不增加统计组）
+
+|用例ID/类别|标题/优先级/类型|预置条件|真实用户步骤|预期与实际|
+|---|---|---|---|---|
+|T-C01.R255-NORMAL-SUBMIT 主链路|正常新会话真实模型回答，P0/系统E2E|当前Web2dece456/BFF97a99d35，正规IAM Session；八现owner alive|新对话→输入非敏感1+1→发送一次→等终态|预期正式积分许可后回答与durable终态；实际POST503 agent_not_configured、无回答，**FAIL**。当前false开关在持久提交前拒绝；未声称模型已被调用/扣费|
+|T-C01.R255-NORMAL-REFRESH 状态机/异常|未接受消息刷新不伪装已存会话，P1/交互E2E|第一条提交已失败、仅本地临时conv与提示|硬刷新原conversation URL→读界面和实际snapshot响应|实际snapshot404，URL仍临时ID而界面空Home；记恢复/提示UX待对齐，不能视为已接受消息丢失或证明snapshot事务错误。不得据此放行发送→刷新续流|
+|T-C01.R255-NORMAL-DEPENDENCY 异常|缺依赖不以免费fallback发送，P0/安全链路待验|当前BFF开关false，Agent现代码缺Billing consumer|只读核打开开关后的完整调用序|源码会202后到Agent dependency_unavailable，零provider send；这是只读判断，未实际打开/运行worker，不计E2E PASS|
+
+本轮提交观察前已启Network，稳定error body与PNG留存；第一条提交Network未启、刷新capture静态事件truncated，两观察局限明确保留。agents GET404实际route_not_found、billing summary503、runtime-manifest403只列观测，不凭无body推相同根因。没有并发启动/重置/绕过收费许可，八探针200不是聊天通过。70组11/6/14/38/1保持，源代码修复与正常模型回答、正规积分结算、断线续流退出门均仍OPEN。
+
 ## R255 00:45 正常Skills页面与无效包组内验收
 
 |用例ID/分类|标题/优先级/类型|预置条件|真实用户步骤|预期与实际|

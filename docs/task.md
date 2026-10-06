@@ -1,3 +1,32 @@
+## R255 01:03 续推：正常聊天实际失败，owner环依赖已精确纠正
+
+- **真实用户验收仍FAIL**：正常3310/IAM登录→新对话→输入“1+1”→点击发送，第二次受观察提交的POST `/api/session/sessions/conv_53cf018a-3648-47db-af76-a276aeb47fa3/messages` 返回503 `agent_not_configured`；页面有限进入失败/重试，无assistant输出。BFF持久配置AGENT_ENABLED=false而URL已配，源码chat.ts在chatTurns.submit之前拒绝，本次没有服务端Message/outbox提交；不是已接受数据丢失。第一条提交观察未启Network，仅保存UI失败；刷新同URL snapshot404→空Home，是未提交临时会话显示/恢复问题，不能推成数据库回滚/快照事务损坏。
+- **实际首缺口不是再改登录页/翻开关**：独立BFF源审查32f30ee9确认开true可持久提交并202，但Agent模型final prepare后无条件抛authorization consumer unavailable；现生产Worker无Billing消费client，零provider send，无旧free fallback。先前未实现的System具体部署capacity/usage声明→Agent immutable bound/唯一reader→Billing现M2→Agent正式授权consumer必须代码闭环；现System目录cap已存在，禁止重做M0/M1、通用配置平台或再问已确认失败收费。正常worker仍未启，不冒HTTP200等于执行准备完成。
+- **本次已交付仅设计纠错，不冒功能实现**：Agent main95a11500466e01a27115ddb214df8d6b4f76221c精确三D0+6行；Billing main674990739bc895c09bb5ffe0f57a2c64dfc9ae91精确三D0十替换。去后继request_ref前置/两个reader/商业账户环依赖、区分planned与actual，纠正System已有cap的过期措辞；唯一reader、guarantee、paid guards未放宽。独审5ac9bc8c零P0/P1/P2，Root逐字逆重建六文件原before SHA及HEAD相对增量后用Git对象只暂存批准段。Agent build/、Billing五mixed、Root gitlinks/uv全保护；源代码/合同/schema/资源实现零变更。
+- **资源与完成口径**：八原PID/exec句柄全部alive/探针200，无重启/重复服务/PG或Redis reset。normal Billing/模型worker仍未启。Root topology实跑exit1，七checkout HEAD与受保护gitlink不一致，未靠暂存任务外内容清零。六doc仅diff检查/一致性审查，不跑代码单测伪造产品通过；70组保持11通过/6失败/14待复测/38未验/1支付后置，完整Wave0–7 goal仍blocked且未重建/缩小。
+- 证据：ignored var/dev/r255-preserve/0103-d0-{staging-preflight,commit-receipt}.json、0103-owner-health.json、0103-topology.log、browser-chat-{submit-error.json,submit-red.md,submit-red.png,normal-red.md,normal-refresh-errors.json}；两个原IAB页未新增/清理用户页，验证页保留失败现场。下一关键切片由System现model-catalog发布一个固定技术绑定的最小部署声明；无可核证声明的绑定保持unsupported，后继Agent/Billing沿同任务卡实施，不再重复读审当代码完成。
+
+### T-C01.R255-NORMAL-AGENT-CONFIG-READ（01:03 实际RED后置调查）
+
+Root真实正常3310新消息POST返回503 `agent_not_configured`；BFF持久.env.local明确AGENT_ENABLED=false而Agent URL存在；受保护收费/执行依赖尚未就绪，不直接开开关绕过。原BFF负责人 bff_skills_v2_owner_r251 只读调查正常chat submit/Agent workers/Billing admission装配最窄启用条件；main97a99d35，mixed原设计保护。允许只写/tmp/r255-normal-agent-config-read.md，禁止secret值/网络/数据库/仓写/测试/Git/启服务。说明实际false由谁设、开启后调用顺序及是否旧免费路径，已存在代码与缺少代码分开；不要重造24operation或把安全界限当已通过。Root主浏览器和资源，交付后停止。
+
+### T-B07.R255-D0-ALIGN-REVIEW（01:03 三D0独审）
+
+System原只读负责人 system_capacity_owner_r255 审查Agent与Billing冻结增量handoff（46e9305b /23146e84），仅六doc当前段，保original历史/mixed；只/tmp/r255-d0-align-review.md，不改仓/资源/Git。核request_ref下游绑定、技术与商业账户边界、planned不当actual、唯一受认证reader、System现cap与尚缺exact部署保证，以及未伪称实现。Root重构精确Git对象只提交批准增量。
+
+## R255 01:03：消除契约环依赖，主窗口验证真实聊天入口
+
+Root接收Agent只读8cf2ce1d：Billing要求preauthorization reader含后继request_ref/商业pricing account及“两个reader”，与Agent当前D0的一次planned+bound读取冲突。**裁决**：reader只证明同attempt技术绑定/界；后继request_ref归authorization/Admission幂等身份、商业mapping归Billing；actual provider attribution归sealed evidence。现planned没有provider_account_ref，不补假字段，不改M0/usage机器合同，不放行无guarantee paid dispatch。这是既有owner边界纠错，不新能力/框架；当前保证缺口由System现model-catalog只读核最小证据，不新增配置模块。
+
+|任务|owner/角色/基线|允许文件/排除项|交付与验收|
+|---|---|---|---|
+|T-B07.R255-AGENT-D0-ALIGN|agent_bound_owner_r255原负责人，Agent唯一doc writer main307db318，build/保护|仅三现D0当前R252前缀追加上段边界澄清，历史后缀逐字保持；排除全部代码/schema/contract/tests/env/资源/Git/Root台账|三冻结SHA/最小diff，Root核逐字后缀、身份与无机器发布，Root精确提交；不称reader实现|
+|T-B07.R255-BILLING-D0-ALIGN|bff_skills_v2_owner_r251原只读负责人转Billing唯一doc writer main54a64427，5mixed原文保护|只三现D0当前目标区域替换上述错配及System3.0已给cap的过时句；现CURRENT/IMPLEMENTATION_PLAN及历史正文、代码/schema/contract/生成/资源/Git全排除|交精确替换before/after及SHA，Root只将批准diff应用于HEAD Git对象，工作树原mixed剩余逐字保持；Root审/提交，不改C3入口裁决|
+|T-B07.R255-SYSTEM-CAPACITY-READ|system_capacity_owner_r255，只读，System main955bd587，现dirty保护|仅读现model-catalog三D0/resolve/revision/route policy/Agent与Billing已发布语义；只/tmp/r255-system-capacity-read.md；无secret/env/网络/测试/DB/服务/Git|核一固定目标模型与网关所需证据、现合同能承诺什么/欠什么，最多两正规最小方案及需Root裁决；不把目录cap冒保证，不扩成新平台|
+|T-C01.R255-CHAT-NORMAL-RED|Root正常3310原生浏览器QA，Web2dece456/BFF97a99d35，八服务复用|正常UI一次新QA对话/非敏感简短提示，记录真实request/响应状态与终态；不cookie注入/免费/造grant、不写owner数据或启动provider绕许可|先取得首个真实业务失败/成功，定位最早owner；实测阶段不冒完整计费闭环|
+
+同仓一writer，Root独占Git/证据/浏览器/服务，完整Wave0–7/70组保持。快照文件var/dev/r255-preserve/0103-owner-d0-before-private.json用于保护原mixed，不新计划中心。
+
 ## R255 00:45续推终态：Skills页面窄修已提交，正式计费主链缺口已重新定位
 
 - Web main **2dece456b487f818062c468173eb2258eecb549b**：只改现Skills feature两source，正式页漏host而Preview已有布局是真实根因；不改AppFrame/Settings共用reader/其他页面。Root当前lint/types/build全exit0、既有7文件141pass/0fail为辅助；独审15823e27零P0/P1/P2。原四mixed与全部其他tracked字节、Root uv保持；未暂存Root gitlinks。
