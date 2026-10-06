@@ -1,3 +1,11 @@
+### R257 当前恢复演练、正规源码与设置候选（2026-10-06）
+
+- Root38284用正常IAM/BFF同一真实快照隔离恢复并运行各owner check/apply/check/replay：43表1850行原事实投影保持，管理员默认false/0、preferences零行；自有库0连接后删除、库集合保持。首轮preflight类型错误及65621事实投影cast oracle错误均保留，未对normal执行DDL/重启/授账号。最终receipt：`var/dev/r255-preserve/r257-owner-evolution-restore-final-ul8l1eya/receipt.json`。这不是正常浏览器保存或切换后的验证。
+- 独审09bc5051确认当前BFF直接重启会加载19任务外mixed会话行为。Root新建正式持久源码worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal`，固定975a2d8/codex/r257-bff-normal-current，锁定离线安装0；Root94815 Node22完整check813PASS/0/2skip、lint/types/contract/build0，65947真实PG/TCP演进6PASS/0/0skip，clean tracked/数据库集合/Redis15零保持。原mixed全保留，不把旧mixed-tree门转记本纯HEAD；没有启动新服务或更换配置身份。
+- Web原负责人交preferences31路径、59实际dirty冻结d91e4eb0，28保护exact。Root15611 Node22 lint/types/contract276/Settings组件60/build0，正确Hub/adapter二文件补跑147PASS；两错误文件筛选未执行，数量按实际而非作者349转记。独立源审d167c6e已证保存/核实期间仍可编辑且迟到旧闭包覆盖新草稿的P1，以及operation错误矩阵P2；当前不放行，原owner续最窄修。正式owner组合/浏览器显式保存、双标签冲突、权限撤销仍待验；作者Node24提示不作为正规工具链证据。
+- Agent Root96350真实HTTP/PG1FAIL：既有receipt字段被candidate误改，合法append在Pydantic拒，未到GET。独审fa1a70b另证head/绑定漏核与host header/request-id缺口，原writer仅先恢复receipt及准备真实负控，不发布半版本。source/自有库集合/Redis15保持；正式推理/可信计费仍OPEN。
+- 九既有服务readiness200（12:48:36Z）仅可用性。normal配对切换等Web源审与认证500收口；后台资格入口不是后台CRUD。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，Wave0–7 active、整组新增0。本goal turn已有真实恢复/正规源码验证与新缺陷定位，判定progress，不冒整体闭环。
+
 ### R257 正常侧栏窄链已交付，设置与后台继续分线（2026-10-06 12:30 UTC）
 
 - Web正常源码 **5416bc965fead0b5edbba08c212087fe8ee15ac1** 精确六路径：复用当前会话controller，confirmed-delete统一退役迟到Move，专案overview用route身份而非隐藏engine记忆。Root38476四UI254PASS/0，70755 lint/typecheck/build0；首次normal rail fixture夹candidate管理员字段导致1FAIL，已恢复normal原fixture仅追加overview断言，最终重跑通过。五原mixed buffer exact，独审0026c3af六路径无admin夹带。

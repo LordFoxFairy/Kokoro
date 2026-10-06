@@ -1,3 +1,11 @@
+## R257 当前验证状态（正常用户验收不冒通过）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级|类型|
+|---|---|---|---|---|---|---|
+|R257-RECOVERY 恢复与具名演进|正常IAM/BFF同snapshot、仅Root自有隔离DB|真实备份恢复→两owner check/apply/check/replay→比原事实→清自有资源|原身份/会话/业务事实保持，仅批准字段和表变化|PASS限定恢复演练：43表1850行、零新增管理员/偏好；38284 receipt；normal未apply，非用户E2E|P0|恢复/异常|
+|T-U04-R257-SAVE 正式偏好保存与刷新|当前普通用户正式Settings、正式BFF owner已接新表|读本人→编辑→blur→显式保存→权威回读→关重开/硬刷新|blur零写，CAS一致后反馈；失败保草稿，不假成功|RETEST准备：31路径冻结，Root正确Node22组件60/Hub147辅助通过；当前正常页原FAIL保留，未执行正式owner浏览器|P1|完整用户E2E/状态机|
+|T-A01-R257-FINAL 合法封口后证据读取|自有真实PG、正式repository已有final evidence、专用caller|prepare/grant/dispatch/append→真实HTTP exact GET|原append可用，exact sealed head/身份/bytes一致且鉴权先行|FAIL：96350在append receipt字段回归拒绝，尚未到GET；另独审head/身份/host边界缺口，原writer续修；不将186纯门称链路通过|P0|系统集成/安全|
+
 ## R257 侧栏用户行为增量（完整组不关闭）
 
 |用例ID/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级|类型|
