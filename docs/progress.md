@@ -1,3 +1,12 @@
+### R257 正常侧栏窄链已交付，设置与后台继续分线（2026-10-06 12:30 UTC）
+
+- Web正常源码 **5416bc965fead0b5edbba08c212087fe8ee15ac1** 精确六路径：复用当前会话controller，confirmed-delete统一退役迟到Move，专案overview用route身份而非隐藏engine记忆。Root38476四UI254PASS/0，70755 lint/typecheck/build0；首次normal rail fixture夹candidate管理员字段导致1FAIL，已恢复normal原fixture仅追加overview断言，最终重跑通过。五原mixed buffer exact，独审0026c3af六路径无admin夹带。
+- 正常IAM→Web→BFF既有数据真实浏览器：专案overview硬刷新退出loading且不选旧会话→点击文件夹子会话显示原KOKORO_R145_E2E历史→点外部R243显示两历史，folder/Direct均常驻、加载结束。证据 `var/dev/r255-preserve/r257-r141-normal-live.json` 与project/direct-history.jpg；自有tab13已关闭、原7/8保留，无新推理/资金/业务数据写。仅此读导航子路径通过，不冒全CRUD/触屏/所有页面通过。
+- BFF具名演进候选Root84066真实PG/TCP六例6PASS、schema门0，51345精确只读loader架构例外后architecture0、完整check813PASS/0/1skip且lint/types/contract/build0。前PG18误拒和relay自回连/cleanup失败保留；Root单独核唯一自有遗留DB0连接后清理，最终库集合77 exact。独审90088b81无新增已证P0–P2、7candidate/65protected exact；Root精确七路径提交 **975a2d8a538dfb1f4b83b33b98bc9262a77c00f2**（schema-governance仅18行新append，原mixed保持）。normal仍旧进程/未演进，Settings页面FAIL不清零。
+- 隔离Web系统75287为76PASS/1FAIL：R141/R183/R195已过，pending-refresh读取Next JSON.parse截断500保OPEN；不把76项冒全系统通过。后台资格/Settings入口/server gate仍候选，实际后台管理模块未实现，管理员帐号未确认、不自行授予。后台同步owner管理操作/审计仍正式页面验收条件。
+- Agent前两次HTTP/PG尝试先后停在fixture evidence毫秒格式、JWKS构造，不是目标业务RED；修后Root45671正式封口PG evidence存在而真实GET404≠200，1FAIL/1.41s形成有效route缺失RED。Redis15后0、随机自有库清理/catalog77 exact，DB14非空未动；原owner准已批准D0正式只读源码/机器契约窄片，尚未发布/计费链未连。Web设置消费者另唯一writer在原隔离worktree继续，当前51实际dirty buffer保护而非沿用旧47计数。
+- 完整70组仍 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**，Wave0–7不缩小，整组新增0。正常service健康不等模型worker/可信扣费或全页面闭环。
+
 ### R257 后继真实阻塞已定位（2026-10-06）
 
 BFF具名单表安全扩展设计4b1665b已提交，源码/normal未实施；Root32810全77系统70PASS/7FAIL/0unhandled，30380定向3PASS/4FAIL/70skip；R141双live控制器已定位并派原writer最窄修。Agent/Billing只读0102bb47确认正式admission→provider permit→strict evidence→actual-only结算缺运行接线，不只是少启动worker；不启旧v1/free兼容。Settings四字段Web设计冻结待审，后台实际模块同步盘点独立推进；原70组与完整Wave状态保持。

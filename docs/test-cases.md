@@ -1,3 +1,11 @@
+## R257 侧栏用户行为增量（完整组不关闭）
+
+|用例ID/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级|类型|
+|---|---|---|---|---|---|---|
+|T-C04-R257-OVERVIEW 总览不偷选|正常本人，专案有既有会话|从历史点击专案标题→硬刷新|只显示overview，子会话未pressed，不持续loading|PASS子例：normal5416bc9/tab13实际渲染；r257-r141-normal-live.json；未测试overview发新任务|P0|用户E2E/状态机|
+|T-C04-R257-LEAF/DIRECT 两列表常驻|同正常本人有专案与Direct历史|点folder子会话→点外部R243|同canonical历史正确，外部聊天列表一直在|PASS子例：project KOKORO_R145_E2E，Direct两KOKORO_R243_CHAT_OK；project/direct-history.jpg；未新调用|P0|用户E2E/主链路|
+|T-C04-R257-DELETE-LATE 迟到Move不抢导航|现组件辅助fixture，Move pending|确认删除→删除ACK→释放旧Move结果|不导航回已删除会话、索引淘汰|辅助254PASS含该有效RED修后断言；正常提交删除CRUD仍UNVERIFIED，非用户链PASS|P0|异常/竞态|
+
 ## R256 用户交互与后台准入验收补充（沿同一测试账）
 
 |用例ID/标题|预置条件|测试步骤|预期结果|实际状态/证据|优先级|类型|
@@ -9,7 +17,7 @@
 |R256-ADMIN-02 撤权立即失效|合法管理员当前session，正式撤权命令/审计|访问后台→正式撤权→旧页/API/新标签/刷新|旧资格不复活、拒绝访问且审计可查|UNVERIFIED：隔离issuer同旧token正式撤权HTTP已拒资格；正常浏览器后台/旧页/API/新标签尚未验，不按token自然到期冒验收|P0|安全/状态机|
 |R256-PAGES-01 个性化保存失败|正式非preview Settings；BFF正式preferences operation缺口|修改普通测试偏好→保存/blur→观察请求/反馈→重开|ACK/回读才显示保存，失败可解释且草稿不丢|FAIL：R257正常IAM浏览器，昵称QA-R257→blur实际PATCH404（22555.164）/界面无error；硬刷新昵称空。BFF399e70d已正式提供GET/显式PUT CAS并有隔离PG11/0，Web正式consumer/正常单表演进仍未接；页面FAIL保持，不用后端门清零|P1|异常/完整交互|
 
-|T-C01-R257-READ 单一当前会话列表读取|正式Next/Chromium，当前Direct/Project与展开非当前folder，当前Session准入|打开当前页→观察列表读取→模拟503/unfinished→只显式Retry→切scope/撤准入|当前scope只一个live controller；Retry只新增一次，非当前folder独立且晚结果退役|FAIL：Root30380两例2GET/3ms间隔；源码AppFrame+ScopedGroup重复controller，已派局部复用修复，未报GREEN|P1|系统交互/加载/竞态|
+|T-C01-R257-READ 单一当前会话列表读取|正式Next/Chromium，当前Direct/Project与展开非当前folder，当前Session准入|打开当前页→观察列表读取→模拟503/unfinished→只显式Retry→切scope/撤准入|当前scope只一个live controller；Retry只新增一次，非当前folder独立且晚结果退役|窄例PASS：5416bc9当前controller复用；Root75287真实Next/Chromium相关R141/R183/R195通过（全系统76/1，另认证500仍OPEN）；正常overview硬刷新→leaf→Direct历史与两列表常驻实证通过。全部CRUD/撤权用户链仍待验|P1|系统交互/加载/竞态|
 
 退出标准：每页读写→真实owner回读→刷新→异常恢复与角色权限通过；后台管理同步完成对应owner操作/审计。后端纯门/只读盘点、健康200/菜单可见不替代。当前完整70组不增PASS。
 
