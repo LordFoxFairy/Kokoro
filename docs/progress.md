@@ -1,3 +1,13 @@
+## R255 02:44 进度：消费者代码收口，不冒完整用户通过
+
+|原任务|本波实际结果|剩余验收|
+|---|---|---|
+|T-P02 Web排程契约消费|main022e820，24批准现路径；required nullable next/null不造日期，fixed BFF45e67f0/public8/0802；Root9有效RED→八工程门0→提交后148/0，独审99cc868e零问题|**源码已验收，页面组仍FAIL**。正常BFF旧loaded/schema未激活；持续next同步未实现；真实weekly/暂停恢复/刷新/执行未复验|
+|T-B07 IAM正式赠送入口|只读核原生before真实path/body/Session，撤回私有context框架；aab41820 clean，零source/机器合同/SDK/资金变更|原三D0保持，后继同owner先真实provision/HTTP失败后实施，不把普通admin/operator自动当财务actor|
+|T-C01 正规收费聊天|原strict、BFFflagfalse/Agentconsumer缺口及normal Billing/modelworker OFF保持|费用风险一次待答，按原owner依赖推进；支付最后，不免费/SQL注资|
+
+八原资源alive200/无重复进程；浏览器focus控制超时是观察阻塞，未操作页面。70组11/8/14/36/1不变，用户PASS+0；non-system2657、contract274与focused148相互重叠且仅工程辅助，不求和当用户进度。全system/Playwright/axe/移动视觉/bundle/provider本轮未验。证据同0244-*，Root uv/gitlinks及mixed保护，未创建第二计划中心。
+
 ## R255 02:02 进度裁决（完整用户验收不增加）
 
 |切片|当前交付与证据|实际状态/下一步|

@@ -1,3 +1,15 @@
+## R255 02:44 排程消费者验证记录（T-P02 子例，非新测试中心）
+
+系统验收统计仍70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST；本波用户PASS+0。工程辅助不替代下表正常系统路径。
+
+|用例ID/类别|标题|预置条件|步骤|预期结果/实际|优先级|类型|
+|---|---|---|---|---|---|---|
+|T-P02.R255-NEXT-WEB-01 主链/状态|owner null与确认时间投影|冻结Web022e820、actual Response辅助输入，不是正常网络|接收paused/null及active/confirmed string→client→列表→日历|null原样保持、无time/无calendar event；string原样显示/分组。Root旧实现四文件148/139/9失败；冻结修后及提交后148/0。仅辅助通过，真实页面未验|P0|契约/交互辅助|
+|T-P02.R255-NEXT-WEB-02 边界/异常|缺字段和旧next输入拒绝|现wire十required与owner45e67f0固定artifact|逐required字段去除→strict parse；合法/非法UTC anchor；旧next create/PATCH；核exact snapshot/pins|缺失不当null、旧next/未知属性拒；合法optional anchor接受。Rootfullcontract274/0、非system2657/0；不是完整系统E2E|P1|边界/契约一致性辅助|
+|T-P02.R255-NEXT-02 主链/生命周期|正常排程创建/确认/暂停恢复/刷新|正常IAM/BFF/Scheduler；先安全局部schema激活，再browser控制可观察|正规登录→weekly08:00创建→待owner确认→列表/日历/硬刷新→暂停→刷新→恢复→确认→刷新→观实际执行与下一次|pending/null、confirmed owner正确UTC、暂停null不保旧日期，持续next/执行事实一致。**本波未执行**：schema请求一次待答、BFF旧loaded；browser focus超时无页面证据，T-P02整组仍原FAIL而非新PASS|P0|完整系统E2E待验|
+
+正常HTTP健康200仅资源检查；浏览器CDP focus timeout归观察阻塞、不归产品loading失败。未跑全system/Playwright/axe/视觉/移动/bundle或真实provider，不用辅助数量冒最终上线条件；退出仍需真实用户完整路径/异常恢复与权威结果。证据同0244-web-root-{red,contract,non-system,postcommit-focused}.log、0244-web-commit-receipt.json及0244-browser-observation-block.json。
+
 ## R255 02:02 排程源修复证据与正式用户复测待办（沿T-P02）
 
 **验收状态不变：70组11通过/8失败/14待复测/36未验/1支付后置。T-P02仍FAIL。** 本轮没有浏览器操作、真实Scheduler执行或真实模型费用，以下正式用户路径尚未重新执行，不能用175工程断言代替。

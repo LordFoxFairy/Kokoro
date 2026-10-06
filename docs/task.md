@@ -1,3 +1,38 @@
+## R255 02:44 本波交接与后继（原任务不新增组）
+
+|任务|owner/角色/基线与文件|交付与Root放行状态|
+|---|---|---|
+|T-P02.R255-WEB-NEXT|web_scheduled_consumer_owner_0244，gpt-5.6-sol；Web main97a79d45+原四mixed；§4准确24现路径，Root唯一Git|022e820；19非文档index与已验证freeze exact，五文档只自有prefix+HEAD，原suffix保护。RootNode22八门0/提交后148目标0fail；独审web_scheduled_consumer_review_0244（gpt-5.6-sol），99cc868e零问题。**源码已验收**，两代理停止；正常页面T-P02仍FAIL，安全局部激活请求一次待答、持续next与真实E2E后继|
+|T-B07.R255-IAM-GRANT-SOURCE-SCOPE|iam_grant_source_scope_0244，gpt-6-astra；IAMaab41820 clean；只读现Auth/authorization与锁定native provider|acf7c8d2实施范围+a96dcef5聚焦报告已接收；native before真实上下文，不新ALS/标记权限框架。官方create有内部事务但后续link/readback非全原子，不假rollback；source/HTTP/SDK/资金未放行，下一先原真实入口RED→同owner具名source|
+|T-P02正常用户复验/跨仓发布|Root独占原八normal句柄/Git/数据与browser；BFFef2d306本地artifact交接|0重启/共享reset/资金/模型；浏览器focus超时停止无效重试、0新tabs/动作。正常局部schema许可与费用风险两原问题仍一次待答；不绕过、不重问，不阻断独立研发；70组不增加PASS|
+
+证据var/dev/r255-preserve/0244-web-{final-freeze,stage-proof,commit-receipt,root-gates}.json；739Web/490BFF/436IAM/313Billing其他路径和uv保持。全system/真实provider/Playwright等未运行，不拿辅助工程绿宣称能力闭环。完整Wave0–7/原goal不变，Root接续原台账；以下阶段卡为本波历史。
+
+### R255 02:44 Web 冻结独审安排
+
+T-P02.R255-WEB-NEXT-REVIEW：web_scheduled_consumer_review_0244（gpt-5.6-sol/high）只读；基线Web main97a79d45与0244-baseline，写集无。先核owner fixed artifact与三D0/测试，Root给最终freeze后绑定精确hash审24批准路径；只写仓外/tmp/r255-web-next-review-0244.md，禁止Git/测试资源/服务/浏览器。Root负责后继重跑与提交，不将变化中树或worker绿冒最终验收。Next16本地官方CLI文档第60行证实dev `.next/dev` 与build `.next`原生隔离；Root只在writer停写后执行冻结源码build，不因错误冲突猜测改config或创建临时开发服务。实际生产源码在index与worktree一致后才提交，三mixed文档只批准前缀入Git，原system不入本切片。
+
+### R255 02:44 Web 生产/生成阶段准入
+
+Root已核三D0当前前缀一致与五原suffix SHA exact，四测试对旧冻结source/snapshot实跑：148项139pass/9fail；失败为旧digest、旧next string、open PATCH、null schema/guard/Response→UI拒绝及含null的原project合同，不是环境缺失。log0244-web-root-red.log；其余754 tracked exact。辅助层不是正常用户E2E。
+
+准入同writer报告24现路径：两generator与exact whole-public snapshot/failure provenance、8现public contract pin/test、4现scheduled schema/model/calendar/client、3现scheduled/UI测试、5文档前缀；完整准确集见 /tmp/r255-web-scheduled-consumer-scope-0244.md §4。现schema对owner已声明required的prompt/timezone/auto_approve/enabled/status不得继续optional（同wire职责窄收敛，先现contract用例补逐字段缺失负控）；preview view-model可以optional，live mapper始终required next:string|null。Team15 generated业务字节不得改变；failure只两个provenance值变。不改editor/list/route/样式/其它模块，不新增层、unit/mock、配置/资源/Git；两正规generators write/check，worker仅纯门且排除system资源fixture。Root重跑、冻结独审、精确提交；normal激活/浏览器最终验收仍分离。
+
+### R255 02:44 阶段放行：Web 三D0与现合同反例（未放行生产）
+
+- T-P02.R255-WEB-NEXT：同 web_scheduled_consumer_owner_0244 唯一writer；基线 main97a79d45、0244-baseline，原四mixed保护。先仅在五现文档顶部追加当前方案（TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/contract README）并扩现 contract/api-contract.test.ts、tests/scheduled/{client,contract-calendar}.test.ts、tests/ui/kokoro-scheduled-surface.test.tsx；禁止生产/generated/generator/Git/资源。保原文档全文后缀，不写新单测/mock，不改原system文件。Root验D0并实跑旧实现反例后才同owner准入报告准确24现路径。
+- producer本地交接已固定：BFF artifact commit45e67f0、SHA2560802a31f9469a17cd8fc8b78e6d2326e0571bc93f3ac8d19811a42a1b185df95/public8.0.0；Root BFF docs handoff ef2d306，不冒remote release/normal激活。新要求只 required nullable next、optional anchor与closedPATCH；Team/failure业务图不变。Web不自行计算next/anchor，preview计算保持显式preview。
+- IAM同 iam_grant_source_scope_0244 继续只读核财务managed-create实际原生上下文；不批准新的ALS/标记权限框架，不实施source。Root负责Git/资源/最终用户E2E，两个原人类决策仍一次待答；正常库与八原句柄不变，70组统计不扩张。
+
+## R255 02:44 后继任务卡（独立调查并行、写入另行放行）
+
+|任务|owner/执行角色/基线|允许范围与依赖|验收/交付|
+|---|---|---|---|
+|T-P02.R255-WEB-NEXT-SCOPE|Web；web_scheduled_consumer_owner_0244，gpt-5.6-sol；main97a79d45+原四mixed全保，0244-baseline|第一阶段只读现三D0、fixed BFF publisher/generator、scheduled mapper/editor/list与现系统测试；仅写仓外/tmp/r255-web-scheduled-consumer-scope-0244.md。不可更改Web/合同/generated/配置/资源/Git/Root台账|明确新artifact SHA/digest/version实际发布态、最小准确文件集、nullable next UI/anchor输入、现真实Response/浏览器失败路径。Root确认后同owner按先失败后改放行；不新建层或永久loading|
+|T-B07.R255-IAM-GRANT-SOURCE-SCOPE|IAM；原文档负责人同名若可续接，否则iam_grant_source_scope_0244，gpt-6-astra；mainaab41820 clean，0244-baseline|第一阶段只读已接收三D0当前前缀、现authorization/billing/client metadata/session/claims/code发行/审计；仅写/tmp/r255-iam-grant-source-scope-0244.md。不写源码/合同/SQL/生成物/资源、资金/角色/platform新模型|确定实际单操作actor→target机器合同和最小源码调用链，指出Human purpose/client授权当前user如何可信闭合，保普通登录权限。列精确原路径与必要新文件位置、真实ownerHTTP/E2E失败路线与发布先后；Root裁决后才写|
+
+Root负责BFF固定版本artifact交接事实与normal进程/Git；这两项不等待正常排程局部数据调整或收费风险答复。既有请求只一次待答，不重问、不清共享数据、不放宽strict guards；完整Wave0–7与70组11/8/14/36/1保持。此卡只接续原T-P02/T-B07，非新增计划中心。
+
 ## R255 02:02 本波最终交接（替代本波拟扩第27文件的判断）
 
 |任务|owner/执行/审查|提交与验收|当前状态与后继|

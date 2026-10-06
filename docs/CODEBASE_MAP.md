@@ -1,3 +1,11 @@
+## R255 02:44 当前消费者入口（正常 BFF/schema 仍旧加载）
+
+Web main022e820：唯一src/generated/bff-public-openapi.yaml固定BFF45e67f0/public8/0802全文；现两generator派生Team（15文件不变）与failure（仅provenance）。src/contract/scheduled.ts拥有strict十required、next:string|null、optional recurrence_anchor_at；features/scheduled-tasks/api/scheduled-task-client.ts严格parse后始终投影nextRun；model/scheduled-task.ts保preview optional/live nullable，model/calendar.ts null无日期。现editor/list/routes不改，preview next计算不进入live。三D0/current/contractREADME只当前前缀，无新目录/层/网络协议。
+
+normal BFF原1963/7449非watch尚未加载e603source，旧schema局部激活原一次待答；消费者提交不证明真实暂停/恢复/持续next/执行。Root源码门0与独审99cc868e仅工程证据；browser控制focus超时没有DOM/像素，不编产品结果。八原资源台账不变，70组11/8/14/36/1保持。
+
+IAMaab41820仍D0-only：现src/modules/auth/better-auth/better-auth.config.ts before +现oauth/clients/management.policy的当前operator Session可做financial registered-client严格准入；不要新增ALS/私有调用标记。官方native单次create事务与IAM后续多步readback/link边界不同。报告a96dcef5只是静态依据，source/SDK/正式赠送尚未写；调用顺序与原owner保持。
+
 ## R255 02:02 当前源码入口增量
 
 - BFF main45e67f0（源码提交e603bd55，后继仅CURRENT计数纠正；正常dev尚未重载）：scheduled input/domain/task contract → scheduled-task-repository create/replace（持久recurrence_anchor_at、next=null）→严格V2 outbox → Scheduler固定generated client（原validator）→outbox-delivery业务核验 →dispatcher必需projection → repository同事务核验task revision/lease token/fence并投影next+settle成功。Scheduler.version与task revision不同；no V1 fallback。delete显式null、paused/disabled/stale不复活；持续occurrence后next尚待owner读/事件，不在此源码完成范围。

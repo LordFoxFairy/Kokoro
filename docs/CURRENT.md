@@ -1,3 +1,10 @@
+## R255 02:44 收尾：Web 排程消费者已提交，正常系统验收仍 OPEN
+
+- **Web main022e820ccdd8b1405ca5ac5b0f7171bf82e8572e**：24现路径、零新层；固定BFF45e67f0/public8/0802a31f本地artifact。十required、必有nullable next、optional anchor；live保null，不由浏览器推算日期；Team15 byte-equal、failure仅两provenance。Root先旧实现148/139/9有效RED，再独立Node22八门exit0（contract274/0、architecture50/0、非system153文件2657/0、lint/types/build/两generated），提交后四目标148/0。独审99cc868e绑定freeze63e5ba58零P0/P1/P2；这些只验源码，不关闭用户组。
+- **运行/用户证据**：八原句柄/PID复核alive200，0服务重启/正常schema写/共享reset/模型/赠送/结算。Next16本地官方CLI说明dev/build输出原生隔离，不把构建当未经证明的loading原因。normal BFF仍旧已加载实现，排程局部数据激活原一次待答；持续next同步尚缺。浏览器控制三次focus超时，无DOM/像素及页面操作；记观察阻塞，不记产品FAIL/PASS。正式创建→确认→暂停/恢复→刷新/时区/执行尚未复验；system全量、Playwright/axe/视觉/移动/bundle/provider本轮未跑。
+- **并行与保护**：Web唯一writer及冻结独审停写；IAM只读a96dcef5撤回私有context/ALS建议，现native before真实operator Session+strict current client可承接；官方单次create有事务，后续双读/link非整体原子，失败不假rollback。IAMaab41820仍clean、grant source/SDK/Billingconsumer未实现。Root精确Git对象只加五文档自有前缀，三原mixed与system保留；Web739/BFF490/IAM436/Billing313其他路径、uv原SHA/index保护。BFF ef2d306只本地artifact交接docs，非remote发布。
+- **整体边界**：Wave0–7及原goal blocked不重建/缩小；70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，本轮用户PASS新增0。聊天既定System→Agent reader→Billing M2→Agent consumer仍OPEN，normal Billing/modelworker未启，费用风险原一次待答strict保持。下一沿原T-P02安全激活+真实UI、T-B07原生financial入口源码，不重复计划中心。证据同ignored var/dev/r255-preserve/0244-{web-commit-receipt,web-root-gates,postcommit-owner-health,browser-observation-block}.json。
+
 ## R255 02:02 本波终态：排程源码接收，正常页面与收费聊天仍 OPEN
 
 - **BFF e603bd55a69b1f3d4721cde7b63fb73cf01061fb**：规则锚点与确认后 next 分离；V2严格payload、Scheduler回执生成校验和业务核验、task revision + outbox lease/token/fence保护，投影及命令成功同事务。迟到/错误回执不覆盖当前任务；暂停/禁用 next=null。持续执行后的 next 同步仍待 owner 读/事件，不声称整个排程生命周期完成。
