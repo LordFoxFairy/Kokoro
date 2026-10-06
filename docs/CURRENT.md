@@ -1,8 +1,9 @@
-### R257 当前并行状态（2026-10-06 11:05 UTC）
+### R257 当前并行状态（2026-10-06）
 
-Web MCP8f73e94已验窄读；后台Web D0ed95ae6、IAM两列演进D0fa50fc3、BFF四字段保存D06675fc3均Root全文审/精确提交，设计不算功能PASS。Root65873合法新me两真实HTTP反例2FAIL/exit1明确strict consumer缺口。Web负责人的正式隔离branch codex/r257-admin-web-current在 /Users/nako/.codex/worktrees/kokoro-r257-admin-web（ed95ae6、Root43967 Node22/pnpm11.25锁定离线安装0）准备current qualification/入口/server gate，不激活normal HMR半版本；无复制env/新应用启动，原normal test90173629及三文档/OIDC原mixed保留。候选必须Root审并在协调窗口集成到主仓重跑，不冒隔离绿色等于正式可用。
-
-BFF原负责人仅现business-store测试追加合法保存HTTP/PG反例；IAM原负责人仅具名ADR-007及索引，Root审后准源片。三个原native owner独立并行，同仓一个writer；Root独占正常资源/审查/Git/浏览器。Root11:05:23Z新readonly探针9listener alive且9HTTP200，BFFnormal仍6d46ec8，model_worker_running=false；无重复服务或数据reset，健康不是真实执行/扣费/后台CRUD闭环。证据r257-end-normal-readiness.json。完整70组仍11/8/14/36/1；后台正常入口/管理员本人操作、偏好保存、真实Agent执行和可信Credits全链尚未通过。
+- 三原owner源码并行：Web当前管理员资格/Settings入口/server gate在正式隔离分支；IAM具名两列已有数据扩展；BFF本人个性化GET/显式保存CAS/权威回读。Root审定IAM ADR-007并精确提交05d5c7d，不增加迁移平台或第二认证。
+- Root46862 Node22实际build0、隔离真实PG/Redis且普通Session `/me`200后合法个性化GET404，1FAIL/0skip/exit1；有效缺口而非缺fixture。自有库0connection后删除，原库集合保持/Redis仅ping；证据 `r257-personalization-bff-red.json/log`。现BFF源码实施已准，不称正常保存通过。
+- Root正常IAM只读catalog实证User旧7列、17表、零FK，两资格列确实缺失，未更改身份/Session/正常数据；证据 `r257-normal-iam-readonly-catalog.json`。Web新strict资格源不能先进入normal HMR半版本；三仓协调切换与真实普通/管理员操作尚未完成。管理员账号未明确，未授任意资格。
+- 已验窄切片仍Web8f73e94本人Connection空读、单标题/退出加载；全CRUD/调用未验。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，不新增整组PASS。最新九normal健康仅readiness；真实Agent worker/费用全链、后台实际管理模块与其他页面闭环保留。
 
 ## R257 本轮已验收切片与完整页面缺口（2026-10-06）
 

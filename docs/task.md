@@ -1,10 +1,12 @@
-### R257 并行后继写入边界
+### R257 并行后继写入边界（当前）
 
-- Web原capability_composition_owner_r247：仅正式隔离worktree /Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current / ed95ae6；Node22/pnpm11冻结离线安装exit0（43967），无env/服务。先固定ac3cd1d合法required me与现Session/Settings入口、server路由当前gate；准新src/app/admin/page.tsx及必要现lib/server普通gate helper按已审D0位置，不造CRUD成功/不可用模块卡片，不开放任意owner代理。正常main与四mixed禁止写入；最后交精确manifest/root审查，不自行Git。
-- BFF原system_guarantee_read_0315：D0已Root审/精确prefix6675fc3。仅现test/business-store.integration.mjs新增独立R257 personalization合法普通Session GET/PUT/回读case，原字节与fixture行为保留；当前route404应失败，不缺store/auth或未来方法导入冒RED。新case复用已有租户清理/SQL前置，禁止全局DROP/TRUNCATE/Redis reset、禁止自行资源/运行。Root只在自有隔离PG/Redis前缀与精确filter跑；冻结测试后才准源片。
-- IAM原iam_grant_source_scope_0244：D0已Root审/精确prefixfa50fc3；下一仅批准新docs/ADR/ADR-007-platform-admin-schema-evolution.md与现docs/ADR/README.md添加索引，落实具名两列例外/复用依赖/失败恢复，不引入迁移平台；旧正文/其余文件保持。不写source/schema/script/test/Git/正常资源。ADR Root审后才准真实旧shape有数据演练与源片。
+|任务|负责人 / 唯一写入范围|当前实证与完成条件|
+|---|---|---|
+|R256-ADMIN-01|Web / capability_composition_owner_r247；正式隔离worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web`，`codex/r257-admin-web-current`，基线ed95ae6；资格链/Settings/server gate/pin/tests/i18n；admin page、gate helper、路由error与allowed本地化view普通文件|Root65873合法新me true/false两HTTP反例FAIL；候选197断言为worker辅助结果，Root尚未验收；普通false正常、入口仅fresh true、直链拒绝/撤权/换主体/错误可恢复后，协调IAM/BFF/Web切换再真实用户验证。后台管理CRUD未实现，不以资格页代替。normal主仓四mixed/HMR不改。|
+|R256-ADMIN-02|IAM / iam_grant_source_scope_0244；05d5c7d已审ADR-007，四具名evolution scripts/package入口/现schema门/新隔离integration|Root正常库只读确认iam_user旧7列、17表、零FK，无资格两列。准check/apply严格两列原子扩展/期限/漂移拒绝/unknown只读核定及身份Session事实保留测试；不改canonical/正常库/帐号资格。隔离已有数据演练与三仓配对通过才Root正常执行。|
+|R256-PAGES-01 / T-U04|BFF / system_guarantee_read_0315；6675fc3三D0，4具名source/现services/repos/server/client/新增表与public8.1精确契约/tests|Root46862实际build0、普通/me200后GET personalization404，1FAIL/0skip；隔离库已删除/库集合保持，Redis仅ping。准本人GET/显式PUT CAS/回读及跨人/竞态/错误矩阵，不造偏好引擎。原19mixed保护；正常有数据演进、Web保存反馈及真实刷新持久性仍后继，禁止单侧重载。|
 
-Root仍独占正常基础设施、Git、审查/集成/用户E2E；并行依赖明确，不等全部后端才验证页面，也不为赶进度激活half-version或叫假闭环。
+Root独占Git/正常资源/浏览器/最终集成；三原owner按独立仓并行。原70组完整状态保持；接口/工程通过不替代正常用户完整页面链。所有worker不启动资源、不清共享PG/Redis、不授任意账号；新范围仅沿已审D0，不扩大其他owner。
 
 ### R256-ADMIN-01 隔离正式分支准备（不激活正常Web半版本）
 
