@@ -1,3 +1,15 @@
+06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
+
+## R255 06:12 用户路径进度（原完整计划续接）
+
+|原任务|本轮已证|未完成及下一行动|
+|---|---|---|
+|T-F01/F02个人文件|页面真实下载原123B，实际字节与owner SHA一致；硬刷新同一文件/200、Direct常在、loadingfalse|本轮新文件仅选择未上传。删除按钮/正式BFF API/Storage operation均缺失；完整生命周期FAIL/OPEN，Storage先定义单Asset释放与同Blob兄弟保护→BFF→Web，不用整scope/AbortUpload/私SQL|
+|T-C01旧preset目录|真实hard-refresh两404；三D0原suffix保护；Settings模型可选后旧目录调用有效组件RED|原Web唯一writer执行已准14生产/7测试/9语言/3integration退役；AppFrame反例label观察错误先纠正；真实Settings/刷新与完整适当门待GREEN，不删模型/技能/执行setup|
+|T-B07启动前置|Root原main同PG/同port两次自然重启读回；39/0、19hash/77库集合exact，窄format/lint0，严格装配负例1/0，独审b844fd54|整types仅余旧server/stripe两条exit2；其余13caller/完整cutover/source-dist/正常Billing激活及19业务、正规赠送→预占→实际结算/释放→流水仍OPEN；工程辅助不冒用户E2E|
+
+70组保持11/8/14/36/1，新增完整组0；八原服务复用/availability200，正常资金/模型/schema/reset/重启0，新选文件未提交避免残留。证据同ignored0612 receipt与本CURRENT/任务/用例台账，不新建中心。候选冻结/实施与最终验收分开。
+
 ## R255 05:44 进度：入口恢复已验，未把页面可读当模块全成
 
 |既有任务|本轮真实推进|仍未闭环/后继|

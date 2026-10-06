@@ -1,3 +1,19 @@
+06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
+
+## R255 06:12 系统质量与真实文件/旧目录验收增量
+
+风险：文件页面看似能用但单文件删除owner协议缺失；旧preset目录请求不存在导致静默空selector；正常Billing候选尚未正式激活。完整70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST不因以下子例变化。
+
+|ID/类别|标题|预置条件|测试步骤|预期结果与实际状态|优先级/类型|
+|---|---|---|---|---|---|
+|T-F01.R255-DOWNLOAD 主链/状态|页面下载字节与刷新一致|正常3310/IAM本人既有123B clean文件|点原文件下载→等待浏览器download完成→读真实本地bytes/hash→硬刷新列表|实际123B/c7888098…与owner SHA一致，同asset仍一行200/Direct常在/loadingfalse；本READ子例PASS，非新上传/全CRUD|P1/真实用户下载E2E子例|
+|T-F02.R255-DELETE 异常/生命周期|单个人文件删除入口与owner协议|同正常页面，113B本轮文件仅选择尚未上传|核删除controls→独审正式Web/BFF/Storage操作→确认completed Upload中止不是删除|应可正式删除本人单Asset且不删同Blob兄弟；实际按钮0且三层均缺协议，FAIL/OPEN；停止新上传，正常owner写0，不借整scope/SQL清理；既有文件保持|P1/真实页面缺陷、owner协议审查|
+|T-C01.R255-PRESET 主链/异常|工作区及Settings不消费无owner目录|正常3310会话；旧source，合法模型目录|真实hard-refresh观察网络→组件Settings正常模型选存后要求零旧目录请求|实际浏览器两次agents404；组件真实调用导致assert FAIL构成RED。另AppFrame label未匹配为fixture观察错误，不冒第二产品失败；退役源码实施待RootGREEN|P1/真实网络、交互辅助反例|
+|T-C01.R255-PREF 边界/状态|严格model-only偏好，无旧兼容|新model-only及旧model+agent/null两形状|新选择保存/重挂载→旧形状回默认→新选择只写model|已冻结对应反例/保留控制，尚未跑完GREEN；待验，不迁移旧model、不碰其他storage/session/draft|P1/浏览器偏好边界|
+|T-B07.R255-RESTART 异常/状态|原main同端口持久事实重启|自有隔离真实PG/现canonical账户/有限JWKS、env无Redis/provider|main启动→ready200+同账户200→SIGTERM自然0→同PG/port再main→两body exact→SIGTERM自然0→回收|Root39/0组合、19freeze/77集合exact，本可靠性子例通过；8config与mock严格拒绝1/0独立记。窄format/lint0、全types仍2旧栈FAIL，不是正常积分用户链|P1/真实owner启动辅助|
+
+E2E：正常资料库→页面原文件下载→实际本地length/SHA→硬刷新同asset；新文件选入未提交，完整删除缺口保留。退出标准仍上传/扫描/读回/下载/取消与删除/越权/恢复完整真实用户路径，以及正式费用余额/预占/已核消耗唯一结算释放/流水一致；开发测试数、真实空态、健康探测都不替代它。自有浏览器已关闭，用户IAB未动，无新推理/资金/owner文件写。
+
 ## R255 05:44 系统质量与真实用户验收增量
 
 核心风险：正式presentation误把管理页面当执行Feature导致入口隐藏；BFF公开setup存在但实际生产无接线；正常Billing未启与旧栈工程门未清。完整70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，新增整组0。以下只更新原组子例，不以可靠性30项充业务数量，历史0522导航FAIL由本轮子例正控续接而非删除失败历史。

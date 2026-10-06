@@ -1,3 +1,33 @@
+06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
+
+06:12 T-C01最终门未捕获异常不得清零：7916同567业务断言全PASS但actual exit1/UnhandledErrors1，RadixFocusScope卸载0ms callback跨jsdom realm造成非Event。locked源码及sync afterEach已核；准原writer只新增R255 Settings describe内cleanup+原生0ms macrotask，归还已拥有焦点任务，不ignoreUnhandled/fakeTimer/吞错/拉长预算/改框架。types/lint各0，Root27321 contract275/0、architecture50/0、build0；最终新hash回归需真exit0才接收。真实正常Settings/工作区/各刷新旧agents请求0、Direct/历史保持；真实models200空数组，默认同值点击不触发保存，保存切换只组件正控，用户完整推理/费用仍OPEN。
+
+06:12 T-C01工程失败保留与窄修：Root30914首轮12file566PASS/1FAIL，composer现646漏旧fixture AGENTS导致ReferenceError，初types同2错误此行；writer仅renderComposer()保send/model cluster断言，新c70495b3。Root84972新5例PASS，真实工作区hard-refresh旧agents0/models200/loadingfalse/旧历史保持。Root7916 final36冻结Node22同567/types/lint重跑；实际Settings locator初错对话vs对话偏好30秒观察失败保留，不冒业务失败。正常模型目录当前200但空数组，仅默认选项，非可用模型已验；不能靠fixture/空catalog称模型切换用户闭环。
+
+06:12 T-B07后继已收口（只读交付0f0be0ca，尚未授权写）：剩13旧入口consumer不是仅删2types错误。A就地承接admission/checkout/durable-result/persisted-json/stripe-gating原有效规则，现source runtime补精确health body/metrics真实HTTP；B依赖A后删旧server/readiness/server/target-v1并收紧3architecture/verify-openapi及v1 current说明，不新alias/兼容server。ready+两读已有等价证据，19target operation的当前service证据与HTTP OPEN逐条保留，不删有效断言造绿，v1 YAML/旧contract gate暂不扩大写集。Root后继按原Billing唯一writer准入，一切候选及5mixed仍冻结。
+
+06:12 T-C01 D2清旧类型/样式收尾补准：17生产现文件，额外两CSS只删preset专属app-frame-main.module.css中agent分支两行（保model/mode组）及composer-controls.module.css的无caller .modelSelector成员（保.modeSelect），不改皮肤/模型布局。测试创建意图用现有效literal presentation，slides是观察记录中的错误名字，已纠正，不改production意图enum。
+
+06:12 T-C01 D2唯一范围补充：composer-menu.tsx现dataComposerControl union中的agent在preset退役后无调用，准入仅去该union成员，原model/mode及交互不改（15生产）。新增AppFrame测试空欢迎页hideModelSelector=true导致原定位FAIL已静态核定，用既有合法pending-creation-intent=slides fixture显现模型，不改生产显示规则或冒产品根因。
+
+06:12 T-C01 D2源码准入：Root11420两挂载反例实际exit1；Settings已先选/保存正常模型后因真实agents调用assert FAIL，构成有效RED。AppFrame另例因button label不匹配未达assert，是fixture观察错误而非第二产品证据，原log保留，writer在批准现测试路径纠正定位。Root真浏览器两个404仍基线。批准原Web唯一writer现报告14生产/7测试/9语言/3integration文件退役无owner preset；不碰三D0原mixed suffix、公开chat.agent/generated、oidc mixed、依赖、接口/数据库、独立setup/技能/模型/mode/todo/retry。严格model-only无迁移；保原有效unknown-ACK同key/body。完成冻结Root full适当门+真实workspace/Settings刷新，再独审/提交，不以RED或writer报成冒闭环。
+
+06:12 T-C01 D1准入：Root三D0审查通过、公共MessageCreate.agent/generated pin不变、Web无SQL；原writer只现settings-modal.test.tsx与app-frame.smoke.test.tsx先加正常挂载零旧agents目录请求及model-only偏好负控，原handler/模型/有效retry等不删，不让接口方法缺失成为假RED。Root正常3310硬刷新已实际观测两次/api/session/agents404（loading已退出，独立旧消费缺陷），0612-web-preset-browser-red.json。测试冻结Root运行后才能进入14生产/7测试/9语言/3integration已列范围；不新文件/依赖/契约/存储/迁移/兼容，保独立setup/Todo/Skill/model/mode/不可变retry。Root独占资源/Git，原四mixed及D0原suffix保护。
+
+06:12 T-F01 独立只读审查卡：system_guarantee_read_0315，Webaaf577/BFFef2d306/Storage现HEAD以本地真实核验；现library files state/render/client、BFF public文件CRUD与Storage发布contract仅只读，给Root正式上传/下载/删除路径及UI缺口、幂等/owner绑定与自有文件清理方法。禁止仓写/秘密/网络/browser/测试/共享资源/Git；报告/tmp/r255-library-file-lifecycle-read-0612.md。Root负责实际本用户路径，Web唯一writer仍另agent D0，不能抢写。
+
+### 06:12 原 R255 并行续卡：去旧消费者与正常研发启动断言承接
+
+基线Root6455e04a/Webaaf577d/Billing261a20f+已审18候选，全部main；0612-baseline.json保护六仓/原mixed/uv/registry。Root独占Git、基础设施、正常浏览器；八原服务复用，normal Billing/modelworker OFF。本波执行现计划，不新中心、不缩Wave0–7。
+
+|原任务|负责人/当前精确写集|依赖/行为与验收|
+|---|---|---|
+|T-B07 旧启动依赖承接|billing_read_activation_0340，Billing唯一writer；现test/unit/runtime-config.test.ts、test/integration/runtime-redis-loss.test.ts、test/integration/billing-runtime.test.ts|沿已批准三D0/0440盘点：严格当前credential/JWKS/issuer/audience/schema/shutdown配置，保有效拒绝；现真实source main+同自有PG无Redis启动→自然关闭→同port重启真实200，保原6例全部。承接后删除已无运行意义旧Redis-degraded runtime测试，不恢复runtime.server/旧字段。先冻结候选，Root现PG runner与原30/新增重启+窄门；其他13旧caller/server/stripe及19后继保持OPEN，不冒完整cutover。|
+|T-C01 旧Agent preset消费者退役 D0|iam_grant_source_scope_0244，Web唯一writer当前仅三D0顶部准入前缀，原mixed suffix逐字保留|Root现PRD+0522静态报告已裁决：没有真实preset目录/选择执行contract，UI不再查询/发送旧Agent选择。模型/Skill/mode/Todo/subagents/connection setup保留，BFF公开agent字段本片不改。用户明确不兼容旧本地数据，单一新model-only偏好shape不迁移旧agent，不留alias/双轨。只比较扩现消费者 vs伪owner目录，采用前者；源/测试后继精确文件集与验证先D0交Root，不先生产写。|
+|T-F01 真实文件旅程|Root，正常3310/IAM用户，仅读现Storage/Web/BFF owner；仅新建本轮非敏感文本自有样本|真实上传→owner ACK→正常列表/刷新→下载字节/hash→删除自有新文件/刷新；无按钮即记真实业务缺口，不用API假冒UI完整。清理仅本轮文件经正规owner接口，不动原123B或他人数据，无DB/reset/模型/资金。|
+
+按实际业务与状态矩阵验收，后台门只辅助；已有费用/schema问题不重复问。Billing与Web互不抢文件，Root不直接写派出路径。
+
 ### 05:44 本波交接与明确后继（沿完整Wave0–7）
 
 三原具名代理已STOP，Root源与资源/Git审核完成。T-U01两笔正常System presentation写/CAS replay200及五模块真实逐点/硬刷新验收，Direct列表/原历史保持；管理页面null feature分类正式收敛，不新Feature/exposure/flags/release。T-U04新setup404精确BFF public contract→Agent未知route、无bindingCRUD；三D0/agents.md先owner/provider语义收口，但普通Chat/Run不依赖它，主链并行继续。MCP真实空态/本人Skills/暂停排程/123B文件/作品真空态仅read子例，本轮无新CRUD/模型/资金，完整组不增。

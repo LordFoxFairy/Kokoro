@@ -1,3 +1,12 @@
+06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
+
+## R255 06:12 当前调试事实与后继范围
+
+- 文件实际路径：Web library file-card→同源content→BFF下载校验→Storage owner，Root真实浏览器download为123B/c7888098…、刷新同asset200。现FileCard仅download/cancel，BFF唯一public library paths无DELETE，Storage16RPC无单Asset release；completed Upload不能Abort。原scope release/retirement只能整scope，不能伪个人单文件清理。后继Storage→BFF→Web按原T-F01/F02补single personal Asset生命周期/共享Blob引用和幂等，Schema已有deletedAt不代表功能实现。本轮新113B文件只选未上传。
+- Web旧preset：现use-composer-selectors/Settings→listAgents→/api/session/agents实际404，选中仅trace，独立connection setup仍另一OPEN能力。三D0前缀原suffix保持、报告d8432984给14生产/7测试/9lang/3integration精确退役范围；公开chat.agent/generated保持，model-only strict无旧数据兼容。RootSettings有效RED后原Web writer实施中，正常workspace/Settings刷新GREEN尚待验。
+- Billing原source child/main→canonical module graph只装PG与两本人GET；旧runtime Redis config/test shape退休后Root同PG/port自然重启39/0、19freeze/77集合exact，窄format/lint0、整tsc仍旧server/stripe两条。独审b844fd54仅三测试切片，无正常Billing激活/资金或19业务完成；13旧caller有效断言后继，不补alias恢复runtime.server。
+- Root只现台账/资源/Git；八原PID/200为availability，normal模型/Billing OFF。完整Wave0–7/70组11/8/14/36/1不变，用户真实E2E仍唯一完整验收，不另建计划中心。
+
 ## R255 05:44 当前入口与真实缺口（保原owner，不新模块）
 
 - System现 Products navigationItemSchema允许普通管理页面feature_key:null；Feature自身为immutable执行result contract。Root同app既有en-US presentation增加五页、缺zh-CN presentation正规创建，chat仍feature_key=chat；现GET runtime-manifest正常返回六导航，Web过滤重复chat而显示五入口。各locale有效theme/namespaces/flags/现release/binding/config保持，不新Feature/exposure或前端常开旗。正规CAS/replay与浏览器五页刷新证据0544-normal-presentation-cas/normal-browser-journey。
