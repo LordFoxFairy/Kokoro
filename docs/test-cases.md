@@ -1,3 +1,20 @@
+## R255 01:26 MCP列表有限修复复验（不关闭T-K05整组）
+
+|用例ID/分类|标题/优先级/类型|预置条件|真实步骤|预期与实际|
+|---|---|---|---|---|
+|T-K05.R255-LIST-02 主链/异常|正常目录空态恢复，P1系统E2E|同IAM/3310、Platform9ab3b653正常持久四surface、既有projection凭据|外挂→管理连接器→等终态→关闭设置|真实GET200、body data.servers=[]；合法空态，无加载错误；关闭回外挂。只证明server目录，不证明本人连接/实际provider接通|
+|T-K05.R255-LIST-03 状态机|硬刷新后重读，P1系统E2E|同配置与正常服务，关闭modal|硬刷新→等页面→管理连接器→读取→关闭|再次实际GET200（70268.2745）且同servers=[]，UI空态可关闭；通过该子例。刷新期间短暂workspace loading随后已渲染，不当无限loading修复证据|
+
+证据0126-mcp-green-response.json、0126-mcp-refresh-response.json、0126-mcp-green-refresh.{md,png}；无cookie注入/隐藏fetch/mock/数据库填空。Root受控Platform旧会话exit0后单副本重载，八探针200仅资源检查。MCP注册/授权连接/撤销/重连/执行与server目录混用UI尚未闭环，T-K05整体继续失败，70组11通过/8失败/14待复测/36未验/1支付后置。下段为本轮真实RED历史，不覆盖当前列表子例。
+
+## R255 01:26 MCP管理实际失败（归T-K05）
+
+|用例ID/类别|标题与优先级|预置条件|步骤|预期/实际|
+|---|---|---|---|---|
+|T-K05.R255-LIST-01 主链/异常|本人连接器列表，P1系统E2E|正常IAM会话、3310及Platform原进程|外挂→管理连接器→连接器设置→重试→关闭设置|应真实列表或合法空态；实际502 skill_response_invalid/加载失败，重试仍失败；关闭设置恢复原页面，非无限loading。未创建或改变任何连接权限|
+
+证据var/dev/r255-preserve/0126-mcp-response.json及0126-mcp-settings-red.{md,png}。T-K05未验→失败，70组11通过/8失败/14待复测/36未验/1支付后置；T-K01防假Connected旧pass不变。新失败尚未修，不填空列表冒成功。
+
 ## R255 01:14 排程真实行为用例（归T-P01/P02，不新增组）
 
 |用例ID/类别|标题/优先级/类型|预置条件|真实用户步骤|预期与实际|
@@ -1708,7 +1725,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-K02 | Platform→Storage→BFF | Skill草稿/整包上传/校验/发布/读回；恶意ZIP与非法路径拒绝 | 待复测 | R252当前五owner真实无痕IAM→普通二字段ZIP发布/读回/安装启停移除刷新有限主链PASS，/tmp/r252-skills-real-user-journey.json；恶意包/越权/未知ACK/执行仍未验，原3310未同步，整组不关闭 |
 | T-K03 | Platform→BFF→Web | 个人安装/启用/禁用/移除/重装持久；版本/重复/另一用户拒绝 | 待复测 | R252真实无痕五owner安装→停用→刷新同版本仍停用→启用→移除→刷新安装筛选为空且发布源保留；重装/多版本/跨账号/并发/未知ACK未验，/tmp/r252-skills-real-user-journey.json与独审715480d4；整组不关闭 |
 | T-K04 | Web→BFF→Agent | Composer选择精确Skill refs→提交冻结→真实加载；禁用/撤权拒绝 | 未验 | formal selector与执行展示未贯通 |
-| T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 未验 | 正式管理mutation与凭据/audience边界待实现发布 |
+| T-K05 | Platform→BFF→Web | MCP connect/scopes/授权回执/撤销/需重连；目录不等于连接 | 失败 | R255 01:26真实502已定位并在正常持久composition启用现mcp-server；同入口与硬刷新再读200合法servers空态，加载子例恢复。目录非本人连接，UI语义、现注册Unimplemented与连接/撤销/执行生命周期仍未闭环；整个组继续失败，不凭列表200转PASS。 |
 | T-K06 | Web→BFF→Agent→Platform | MCP opaque refs选择、每次调用fresh授权、args identity；撤销零调用 | 未验 | 旧free-text mcp_servers需owner-first替换，无fallback |
 | T-K07 | Platform→Agent | 工具schema closed profile/输入输出校验/超时取消/越权/注入 | 未验 | 不能把协议profile文档当执行测试 |
 | T-A01 | Agent→BFF→Web | 简单聊天只回复；复杂任务Todo完整表更新、不被子Agent覆盖 | 未验 | E101严格HTTP5 reader/decoder/safe CUSTOM149 pure通过；E108进一步真实验证BFF过程持久化、public7、锚定分页、provenance/GC（完整三资源74/74）并发布a68cbe5。仅后端切片；当前正式Web及浏览器完整能力未验，不提升整组；历史失败保留。 |

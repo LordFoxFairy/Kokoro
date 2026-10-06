@@ -1,3 +1,10 @@
+## R255 01:26 当前运行与排程D0增量
+
+- Platform物理仍apps/kokoro-capability，源码9ab3b653 clean；现持久正常配置追加mcp-server与空provider目录，原三个Skills surface保留。HTTP `/v1/mcp/servers` 现注册，现BFF平台projection.read读到Web `/api/hub/self/mcp/servers`；正常浏览器空态200已证。不是本人connection owner写入、provider配置或Agent MCP执行接通；现注册RPC仍Unimplemented，UI语义后继需对齐。
+- Platform唯一normal exec47954/root44705/listener44713/8086，替换旧66685已exit0；其余七进程原句柄不变，唯一台账var/dev/processes.json。正常Billing/模型worker未启；sharedPG/Redis未重置。
+- BFF98017488三D0当前方案：recurrence_anchor_at是周规则锚点，nullable next_run_at仅owner确认值；outbox aggregate_revision/locked task fence与Scheduler.version不同。机器contract/schema/source暂未更新，继续现文件切片，不建新cron/兼容路径。原19mixed保护，不以D0提交称已实现。
+- 完整用户验收70组11/8/14/36/1，Wave0–7与正式聊天/时间/MCP生命周期仍OPEN。浏览器读200和八ready200不扩张业务完成口径。
+
 ## R255 01:14 当前排程入口
 
 Web97a79d45单文件src/features/scheduled-tasks/ui/scheduled-task-editor-state.ts：useMountedRef effect每次setup true/cleanup false；仅submission hook使用。正常保存弹窗永久pending已由真实编辑200→自动关闭→刷新paused/标题保持复测；原762 tracked字节保持。现BFFsrc/application/scheduled/input.ts缺省nextRunAt=new Date，同字段兼周锚点；Scheduler control receipt已给权威next_due_at但BFFoutbox-delivery只保succeeded、settlement未投影。后继归T-P02，owner-first分离recurrence anchor与待确认next、现receipt fenced同事务投影；持续next还需Scheduler既有Schedule读边界，不前端计算/跨库读取/新平台。QA唯一scheduled_18ce...正规paused，8原服务句柄同processes.json，不重启。

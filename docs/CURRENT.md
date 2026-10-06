@@ -1,3 +1,12 @@
+## R255 01:26 终态：MCP真实列表加载恢复，排程时间与收费聊天仍未闭环
+
+- **实际页面修复范围**：正常3310外挂→管理连接器→连接器设置→重试，真实GET `/api/hub/self/mcp/servers` 原502 `skill_response_invalid`。只读源码定位为Platform正常composition未启用已实现的mcp-server HTTP surface（owner404被BFF转502），非MCP响应误套Skills schema。Root仅在原ignored0600 `.env.local`保留三Skills并追加mcp-server及具名provider catalog=[]；保持原projection.read凭据、认证与RPC执行准入，不造Connected或SQL数据。原66685受控退出0、确认旧PID/端口释放后启动唯一47954/8086，源码9ab3b653 clean。正式入口再打开、硬刷新后再打开均真实200 `{"data":{"servers":[]}}`，UI合法空态、无加载错误，关闭设置恢复原页。
+- **MCP整组仍失败/未闭环**：本子例只证明现server目录读与空态恢复。目录并非本人连接；UI“已新增连接器/还没有连接”与server注册目录语义仍须对齐，注册RPC现Unimplemented，connect/授权回执/撤销/需重连/Agent调用没有通过。T-K05从未验记实际失败，保留失败组，不因读200关闭；T-K01旧防假Connected通过不扩张。完整70组现11通过/8失败/14待复测/36未验/1支付后置，历史统计保留。
+- **排程交付仅D0**：BFF main98017488f789e0a21839df08ab309ea721363bb8精确三文档57新增行，独立recurrence_anchor_at与Scheduler确认nullable next_run_at；保既有周锚点规则、receipt/outbox事务与fence。Scheduler.version不是BFF task.revision，现receipt没有task_revision，使用outbox.aggregate_revision与锁定任务校验；后继持续读另需可信绑定。Root只暂存批准前缀，原19mixed后缀与其他tracked保护；机器contract/schema/source尚未变，错误next_run_at反例仍FAIL，不称功能修好。
+- **聊天设计边界需一次决策**：Agent只读报告指出“调用前证明第三方网关全部成本上界”强于已核实实际费用结算，成为网关部署证明阻塞。Root已一次请求选择严格保证或“预算预占+限制输出+核实结算+余占释放；用户扣款不超预占、罕见超额平台记录承担；未知挂账且停止后续调用”，尚待答，不自行放宽。既有失败/取消只结已核实实际消耗决定不再询问；现BFF flag false、Agent授权consumer及normal Billing/worker仍未完成，0主动模型调用/赠送/费用结算。
+- **资源/证据**：八现服务listener存活且探针200；仅Platform一次受控重载，其余七原句柄/PID不变，0重复服务/PG或Redis reset/新库或role。五仓保护仅批准BFF三D0变化，Root uv原SHA保持、gitlinks不暂存。本轮未跑单测/mock/全量工程门，不以文档或ready冒业务通过。证据ignored `var/dev/r255-preserve/0126-mcp-{settings-red.png,response.json,green-refresh.png,green-refresh.md,green-response.json,refresh-response.json}`、0126-final-owner-health.json、0126-final-source-protection.json、0126-platform-config-receipt.json；私有env备份0600不提交。
+- **接续**：同Wave0–7及原goal blocked保持；下一排程切片先owner机器合同/schema/source一致实施，再当前正常浏览器复验；聊天沿已批准依赖与待答费用风险边界继续，不新建计划中心/扩大运维。三个具名原生子Agent已交接停止，Root独占Git/资源/最终验收。报告 `/tmp/r255-scheduled-next-d0-handoff.json`（2e8f8edb）、`/tmp/r255-admission-simplicity-review.md`（e23affec）、`/tmp/r255-mcp-list-response-read.md`（3aa756df）。
+
 ## R255 01:14 终态：排程保存态已真实修复，时间投影新增有效FAIL
 
 - **源码与真实用户修复**：Web main97a79d45f93a6007fb0f37002372fd503cd0d373仅现scheduled-task-editor-state.ts一文件，StrictMode每次effect setup恢复mounted=true、真cleanup仍false，不禁StrictMode/不改API/模式/初值。正常3310创建/list200后弹窗永远保存中为实际RED；修后编辑同QA任务→PATCH/list200→弹窗自动关闭→硬刷新标题和paused状态保持；空白标题保存disabled→取消原标题保持。保存收尾子例闭环，不冒排程执行/整个CRUD完成。
