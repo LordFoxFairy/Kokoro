@@ -1,3 +1,13 @@
+05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
+
+## R255 05:22 现入口增量与依赖接续
+
+Web aaf577d：use-app-frame-layout唯一宽屏偏好read-once在有效layoutEffect microtask才置ref，StrictMode取消首callback后第二setup可完成；SSR初树/compact临时/mounted不重读保持。test/ui现rail StrictMode5子例，原smoke及所有现rail行为保留；正常源码HMR宽/窄硬刷新真实验收，不创建第二UI或fixture服务。
+
+正常System同Site policy仅allow zh-CN、version2 via CAS，runtime-manifest返回200；产品projection现navigation空/只chat标志导致高级导航隐藏，现Products/Sites/presentation/exposures/releases仍事实owner，不能靠前端忽略配置伪齐。agents目录404已只读证明旧namespace preset消费者无owner发布目录，执行chat→GENERAL_AGENT保持；退役消费者精确范围待原Web独占后继，不伪新增Agent目录或删除Agent真实过程/连接setup。
+
+BillingPrismaService.ping使用同既有privatePool单次SELECT1 query_timeout1000ms；pg错误release(err)淘汰/active socket end，真实隔离sourcePG29/0。main/factory lifecycle/15其余freeze保持；旧server/有效断言迁移与完整门未收尾，实际正常Billing未启。Root registry原八句柄/77目录不变，0522 ignored证据非新进程或新计划中心。
+
 ## R255 05:03 现入口证据接续
 
 当前正常3310真实用户入口已由Root在可用Playwright原空白页完成可见IAM登录、两project folder与外部列表、既有会话Direct→P→Q→Direct及硬刷新恢复；不使用preview/受控IAM/新seed，Root自有浏览器已关闭，IAB仍原观察问题。证据var/dev/r255-preserve/0503-normal-browser-journey.json与0503-normal-project-restore.png；不增加完整70组PASS。现GET /api/session/agents404/summary503/runtime-manifest403分别按原owner续推进，df4631ef只读报告区分未契约目录与未启owner/鉴权策略，禁止猜测放宽。

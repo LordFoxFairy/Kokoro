@@ -1,3 +1,15 @@
+05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
+
+## R255 05:22 进度（用户操作证据优先）
+
+|原卡|本轮实际完成|未完成/下一owner|
+|---|---|---|
+|T-C01/T-C04 侧栏状态|Web aaf577d三路径精确提交；正常宽屏展开/收起硬刷新及compact往返保持偏好，页面无loading；Root独审+提交后5/0，原四mixed保留|其余项目CRUD/跨tab/队列/完整页面未全验；本子例通过不增加整组|
+|T-U01 中文入口|真实403差分→同Site policy正规CAS仅加zh-CN、回放/回读/实际页面200，其他未允许locale仍拒绝|新真实偏差：live projection空navigation/只chat flag隐藏高级页面入口；System正式配置接续，不在Web绕过|
+|T-B07 正式积分owner启动前置|真实已连接PG响应黑洞4/1→ping有限query/坏连接淘汰恢复后29/0/77exact、独审/窄lint通过|候选未提交/正常Billing仍OFF；整仓types6旧栈FAIL，日志/旧有效断言承接删除/fullcutover与正规赠送/消费/流水未闭环|
+
+70完整用户组11/8/14/36/1不变，新增完整组0。八原资源复用、无正常模型/资金/schema写/服务重启；一次Site正规配置变更已审计，不把研发数字冒整体能力。Root自有页已关闭，IAB未操作。详情同CURRENT/task/test-cases与ignored0522证据，无重复计划。
+
 ## R255 05:03 实际闭环切片：正常浏览器旅程 + Billing drain
 
 - **真实用户浏览器已能推进**：未继续循环超时IAB；可用Playwright工具原about:blank上正常3310→可见IAM邮箱/密码表单→/app，无cookie注入/seed/新tab。两专案独立展开、外部直接会话区保持；原QA会话Direct→P→Q→Direct三次真实move200，同Conversation ID/历史保持，项目与外部列表更新，硬刷新后正文一致，最终原2条Direct恢复。只执行可逆既有会话操作，无模型/资金/永久删除；Root自有浏览器已close，用户IAB未动。证据0503-normal-browser-journey.json/截图。

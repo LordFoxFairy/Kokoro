@@ -1,3 +1,12 @@
+05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
+
+## R255 05:22 实际交互修复与正式入口新偏差
+
+- Web main `aaf577dcfd7045c89bf2d68c80eff8e0e34ba152`：Root已证宽屏展开cookie=true硬刷新丢栏，最窄首次reconcile标记移到有效callback后；真实正常3310硬刷新展开/收起两方向及700→1200往返通过、loading=false、原会话/外部列表在，自有Playwright页关闭、用户IAB未动。辅助两有效RED（初第五例fixture错误另记）→rail+smoke173/0、窄lint/直接tsc0；提交后StrictMode5/0，62非匹配未执行。三路径commit exact、四原mixed保护，build/完整e2e/axe/移动/bundle未跑；不冒全页面完成。
+- 正常中文manifest403已精确归System同站点locale名单仅en-US，非凭据或public开关。Root正规admin owner API同site CAS只追加zh-CN/version1→2、实际IAM subject actor/幂等回放与回读200，public/product/default保持；真正页面manifest200，zh/en仍403负控。**新问题仍OPEN：live navigation=[]且flags只chat，Agent/Skills/MCP/排程/资料库入口消失**；沿System原owner核正式presentation/exposure/release，不用Web强制开旗或fallback伪修。agents404 route_not_found与billing503 billing_unavailable仍在。
+- Billing未提交候选：原main真实PG/TCP已建连接响应黑洞有效RED4/1→同privatePool单次ping query_timeout1000ms、坏连接淘汰/新连接恢复，Root26240现5runtime+24负控29/0、8.08s/16freeze/77库目录exact；55387窄lint0，61943整仓tsc同6旧栈错误exit2。独审最终cafca64c无新增确定问题、清理次因P2聚合修；TLS/逐资源独立清理deadline未覆盖。日志/旧server有效断言承接删除/source-dist与正常启动仍OPEN，normal Billing/modelworker OFF，不以29冒正规资金用户链。
+- 八原root PID/句柄alive且probe200、registry SHA c4b9c000不变（仅可用性）；正常资金/模型/schema/reset/服务重启0，**Site政策一次正规业务变更**与侧栏用户偏好操作如实记，不写零配置变更。完整Wave0–7/70用户组仍11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST，新增完整组0。原费用/schema决定不重复问，后继同任务/进度/QA台账。
+
 ## R255 05:03 实际闭环切片：正常浏览器旅程 + Billing drain
 
 - **真实用户浏览器已能推进**：未继续循环超时IAB；可用Playwright工具原about:blank上正常3310→可见IAM邮箱/密码表单→/app，无cookie注入/seed/新tab。两专案独立展开、外部直接会话区保持；原QA会话Direct→P→Q→Direct三次真实move200，同Conversation ID/历史保持，项目与外部列表更新，硬刷新后正文一致，最终原2条Direct恢复。只执行可逆既有会话操作，无模型/资金/永久删除；Root自有浏览器已close，用户IAB未动。证据0503-normal-browser-journey.json/截图。

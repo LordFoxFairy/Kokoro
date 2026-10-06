@@ -1,3 +1,41 @@
+05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
+
+### 05:22 本波收尾（既有完整目标未缩小）
+
+Web aaf577d精确三路径已交，Root173/0/lint/types0、commit后5/0，真实宽屏保存两方向/compact往返及正文恢复通过；原四mixed/index保护，独审有效。Site正规CAS只加zh-CN/version2/回放回读及真正页面manifest200，未开public；新live空navigation/chat-only高级入口缺失保持P0OPEN，System原负责人只读正式projection管理链接续。agents旧namespace preset消费无owner契约，先明确退役范围再Web唯一writer后继，不造假目录/缩减Agent执行能力。
+
+Billing ping同pool真实blackhole有效RED4/1→最终29/0/16freeze/77exact、窄lint0与cafca64c独审；types同6旧栈exit2，候选未提交/normal OFF。下一同owner日志真实结构/脱敏→旧有效业务断言承接+server删除/完整门/source-dist→正常持久配置启动；正常正规赠送/费用/模型/user E2E继续原任务。原费用/schema决定不重复问；Root八服务/registry/共享基础设施保留，所有本轮测试句柄终态，自有页关闭。70完整用户组11/8/14/36/1不变，新增整组0。
+
+05:22 新正常入口偏差（不隐藏）：中文manifest403修为200后，真实1200px截图侧栏只新对话/专案/外部聊天，Agent/Skills/MCP/排程/资料库入口消失。Root同正规Web只读manifest确认navigation=[]、featureFlags仅chat=true；这是已有控制面projection配置与完整能力UI不一致，非将错误fallback当正常配置。续原System只读负责人核既有产品release/tenant binding/flags管理owner与最小正规发布范围，禁止Web强制忽略manifest/假开功能/私改DB。完整Wave0–7/70组不缩小，新增已知风险留OPEN。
+
+05:22 RAIL冻结独审：billing_read_activation_0340在本仓READY冻结后只读Web两路径c809ea18/cfb8fde2，Root26718 rail+smoke173/0、16945窄lint0、49434直接tsc0；实际正常宽cookie expanded与collapsed硬刷新均恢复，Root续compact往返。核StrictMode cleanup/SSR/mounted不重读且原断言保护，报告/tmp/r255-web-rail-final-review-0522.md。不改仓/资源/Git，Root接收后精确Web两路径+CURRENT验收前缀提交。
+
+05:22 RAIL源码准入：Root28358初5例2PASS/3FAIL中第5fixture JSX错误不算产品；合法稳定ComponentType修后80103同5例3PASS/2FAIL、3.86s，两保存cookie方向119行有效state FAIL，无cookie与mounted导航PASS。源码唯一use-app-frame-layout.ts在有效microtask执行后置ref，保SSR/cleanup/不重读，测试cfb8不再改。Root后完整rail/smoke+live/browser/窄lint/types及独审；初invalid/有效RED日志各保留。
+
+05:22 READY独审窄补充：只准原writer在新增readiness case末尾保primary为cause、同次cleanupErrors非空时聚合secondary，不改原4例或预算/断言/relay。独审已发现primary优先分支吞secondary，保真实RED2497原证据不覆盖；新freezeRoot同5+24复验。30s仅总case限，自有资源逐项独立deadline未全覆盖，PG77真实回收不扩张为全部故障清理验收。
+
+05:22 READY源码准入：Root93797实际source+自有PG/TCP 5例4PASS/1FAIL、11.48s；初ready200/同已有连接上行增长+PG下行gate/无新握手断言全部先通过，真实3500ms Abort而非503（1148行/TimeoutError）。16freeze与77库集合exact，资源回收。只准原Billing writer现src/database/prisma.service.ts ping：assertReady保持，同原privatePool.query单次SELECT1 query_timeout1000ms，局部typed config satisfies不any/强转/新pool/全局业务预算/Promise.race；坏连接driver release(err)与新连接恢复须Root同例实证。其余15freeze保持，Root同5+24矩阵/窄lint/types、独审，最终source-dist/cutover仍OPEN。
+
+05:22 READY反例独审：system_guarantee_read_0315只读Billing 0522-ready-red-freeze16/test2497d68f（1204行），Root93797真实原main/PG执行中；核已连接gate有效性、close/recovery、资源/错误/敏感边界，待Root有效RED再审现ping候选。禁止改仓/跑测试/服务/Git，报告/tmp/r255-billing-ready-review-0522.md。Root同时负责正常Site locale CAS/browser与Web rail真实回归，独立并行不新计划。
+
+### 05:22 T-C01.R255-RAIL-PERSIST 最窄交互修复卡
+
+原iam_grant_source_scope_0244续任Web唯一writer（gpt-6-astra），ad918391/0522基线+四mixed保持；只准现tests/ui/app-frame-rail.test.tsx及现components/blocks/app-frame/use-app-frame-layout.ts。Root实际正常宽1200：手动展开→sidebar_state=true→硬刷新后正文可见/loadingfalse但栏52px/cookie仍true，真实用户RED。测试先真实AppFrame+StrictMode验证已存expanded/collapsed/default与mount replay，不以helper单测代替；freeze交Root辅助RED。源码只准首次cookie reconcile在有效callback真正执行后才锁ref，保SSR初树与cleanup、mounted surface不重读、compact临时不写cookie；不改sidebar/layout/协议/目录/catalog/其余tests。Root正常源码HMR+同浏览器宽屏刷新与compact往返验证为最终本子例证据。Git/资源Root独占，先test freeze，不额外运行资源或测试。
+
+### 05:22 正常中文入口策略修复准入
+
+Root真实同源浏览器已证en-US 200、zh-CN 403 POLICY_DENIED；正规System system-admin只读同BFF tenant/host现site policy200：version1/public_manifest=true/kokoro允许/allowed_locales仅en-US。只准Root对该正常开发站点现policy正规CAS API增加zh-CN，保default_locale、其余locale/products/public_manifest；实际已登录IAM subject作actor、唯一幂等key、If-Match当前版本、Audit与generation沿原owner。禁止直SQL/重置/新site/放宽public或身份/部署变更；写后正规回读和相同用户浏览器zh-CN200/旧locale拒绝，实际正常配置写如实记录，不称零写。
+
+### R255 05:22 原卡并行接续（Root资源/Git与最终用户验收）
+
+|任务|负责人/角色/基线/精确范围|完成条件与停止线|
+|---|---|---|
+|T-B07.R255-READY-RED|billing_read_activation_0340，Billing唯一writer；main261a20f及0503冻结16候选/原五mixed；只现test/integration/billing-runtime.test.ts|原main/source+自有PG透明TCP relay：ready先200、已有同连接上行/挡住下行屏障→HTTP应3500ms内真实503，坏连接实际关闭、恢复200。未来ping单次query预算1000ms，pool acquisition原2000ms不变。保持30s单例、原4例/所有断言与清理；先冻结交Root执行RED，生产未准；不启动正常资源/改环境/Git。|
+|T-C01.R255-AGENT-CATALOG-READ|iam_grant_source_scope_0244，只读Agent/BFF/Web/PRD；95a115/ef2d306/ad918391+0522保护基线|核真实GET agents404的preset/profile产品需求、owner已发布契约/消费者方向，给最小正规删除或owner实现范围。禁止伪空200/复制Skills/models/改仓/资源/Git/secret/browser；报告/tmp/r255-agent-catalog-read-0522.md。|
+|T-C01.R255-MANIFEST-READ|system_guarantee_read_0315，只读Web/BFF/System；ad918391/ef2d306/955bd587+0522保护基线|沿现runtime-manifest403核精确错误code判别、实际配置字段源与安全修复范围；只核代码/非秘密文件，不读取凭据值/启动资源/改仓/Git/browser。Root正规浏览器获取实际响应与私有相等性后交审；报告/tmp/r255-manifest-read-0522.md。|
+
+沿原完整Wave0–7与70组，不创建重复中心。Root同时真实正常浏览器复核403与宽屏侧栏状态；不seed、不模型/资金/schema写，不重启八原进程/共享基础设施，关闭自有页，不碰用户IAB。原未决费用/schema决定不重复问，研发回归不充用户全路径PASS。
+
 ### 05:03 本波冻结收尾与后继（沿原卡，不建立新计划）
 
 三原负责人均STOP，Root65723 drain最终28/0、6.17s，16freeze/77exact、资源关闭；72779窄lint0，66327整仓types同6旧栈exit2。独审f70c7dde绑定factoryf481/test6a7无新增已证问题，仅此slice，不接收正常切换。Billing后继原writer先现runtime test真实已连接响应黑洞RED→PrismaService.ping同pool单次query_timeout及坏连接释放/恢复→日志真实脱敏→15旧caller有效断言承接与server删除/工程完整门→正常持久配置激活；不在当前未验冻结上并行乱写。

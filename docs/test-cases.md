@@ -1,3 +1,22 @@
+05:22 正规控制面只读取证补齐：同System admin通道现web application ba84cee9/site dbc22d78/product226e1ee1；现feature列表及app exposure均仅chat enabled。en-US user-web presentation200/version1/navigation[chat]；zh-CN同surface与NULL变体均404（没有中文展示），两locale同release e94969ff/configVersion1，中文navigation空。证据0522-normal-product-navigation-read.json，不是前端rail修复删除菜单。下一准入应沿现Products正规feature/exposure/presentation管理补批准完整五入口、保主题/locale/release其他事实与权限，Root真实页面逐入口回归；不得强开Web flags或凭空声明执行已实现。仅只读，尚无导航配置写/新发布；该P0保持OPEN，39行只读b4105134给发布/binding风险，不据此删旧binding或共享release。
+
+## R255 05:22 系统质量、真实用户子例与剩余风险
+
+完整70组仍11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST，新增整组0。核心风险：首次偏好同步被StrictMode取消；正式产品配置隐藏能力入口；正常积分owner未启且旧栈未清。接口/组件数只作诊断，退出线仍完整真实用户链。
+
+|ID/类别|标题|预置条件|测试步骤|预期结果/实际|优先级/类型|
+|---|---|---|---|---|---|
+|T-C01.R255-RAIL-PERSIST 主链/状态|宽屏偏好跨刷新|正规3310/IAM既有会话、1200宽、默认collapsed|真实点击展开→核cookie=true→硬刷新等待正文/loading解除；收起→刷新；重新展开恢复|展开/收起均按保存值，正文保留；实际旧RED刷新仍collapsed、新Web aaf577d两方向PASS；不当全部布局通过|P1/正常浏览器交互|
+|T-C01.R255-RAIL-COMPACT 边界/状态|compact不覆盖宽屏偏好|上例expanded=true，真实fine-pointer浏览器|1200→700→真实展开→核cookie不变→回1200→硬刷新|窄屏临时展开可达且不覆wide；实际cookie始终true，回宽与刷新expanded、loadingfalse PASS；其他移动/触摸/axe待验|P1/正常浏览器交互|
+|T-U01.R255-LOCALE 主链/异常/权限|正常中文manifest准入|同product/surface/hop、正常Site既有public=true/kokoro允许|en-US/zh-CN/zh/en GET差分→正规owner只读policy→同Site仅追加zh-CN CAS→幂等回放/回读→真实页面reload|原en-US200/中文403精确locale缺失；CAS1→2/replay200无新变更/zh-CN真正页面200；zh/en仍403，未放开public/tenant/用户角色；此子例PASS|P1/真实跨owner配置与浏览器|
+|T-U01.R255-NAVIGATION 异常|live导航缺失能力入口|上例manifest200、正常authenticated页面|观察侧栏与正规manifest只读projection|应有已批准能力入口；实际navigation=[]、flags仅chat，Agent/Skills/MCP/排程/资料库入口不在；**FAIL仍开放**，System product正式projection配置定位，禁止前端硬开|P0/真实系统交互|
+|T-P01/T-B07.R255-READ 异常|目录与积分入口|同正常会话/当前服务|实际页面requests，安全只提取code/request-id|agents404 route_not_found；summary503 billing_unavailable仍FAIL；正常Billing OFF，不伪空列表或免费|P0/真实业务缺陷|
+|T-B07.R255-READY 异常/状态|已连接PG响应黑洞有界失败恢复|原source main、自有owner PG/局部TCP relay，无正常资金/模型|ready200→同已有socket上行增长/下行gate/无新握手→期待3500ms内真实503→旧socketclose→release→新socketready200|旧Root93797真实Abort有效4/1；ping窄修后26240同5+24=29/0，503/body/旧close/新200与77目录exact。仅可靠性辅助，不是正规用户资金E2E|P1/真实owner故障集成|
+
+辅助RAIL28358第五fixture错误不当产品FAIL；合法fixture80103两有效FAIL/3PASS→完整rail+smoke26718 173/0，postcommit26909 5/0（62非匹配未执行）；窄lint与直接types0。Billing61943 types6旧栈错误exit2保留，未skip删有效断言；日志/fullbuild/cutover及收费Agent链尚未关闭。独立review cafca64c（Billing）与Web两hash无新增已证问题，均非完整产品认证。
+
+正常Site配置一次正规业务变化/侧栏偏好操作已记；模型/资金/schema/reset/服务重启0，Root自有浏览器close成功，用户IAB未动。图/动作见ignored0522-normal-browser-journey.json，实际输入/历史仅旧QA会话，未生成新推理或假结算。
+
 ## R255 05:03 当前真实用户子例与未关闭的质量门
 
 完整70组仍**11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST**；本轮新增完整组0。正常浏览器子例与开发可靠性门分开记录，不以28项owner绿代用户收费链。
