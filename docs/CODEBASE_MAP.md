@@ -1,3 +1,7 @@
+## R255 00:45当前入口增量
+
+Web main2dece456：现src/features/app/kokoro-skills-surface.tsx仅正式PersonalSkillsRead外加局部host，同名module.css拥有24px/窄16px边距、60rem与单滚动；Settings共用reader/Preview/AppFrame不改。真实几何/无效包400证据见同CURRENT/test-cases，不凭辅助141断言整页。Agent后继main307db318只读核planned-bound与Billing M2 D0漂移（后继request_ref/商业pricing account）；现planned无provider_account_ref，不能假字段已存在。保证/reader/收费normal仍未实施；只读报告待接收，支付最后。
+
 ## R255 00:30 正常 Platform 运行接续
 
 物理apps/kokoro-capability现494b118正常Node24/pnpm11.25源码，持久.env.local显式shell加载，三surface skill-catalog/skill-source/skill-installation-product；正式IAM脚本operator provisioning资源+四client后，owner-only var/dev/platform四凭据由Root保管。Storage原已有独立kokoro-platform身份保持，不新增/复用BFFsecret或无谓重启。Platform句柄66685/8086，BFF原32914受控exit130后1963/53714；八正常owner200。唯一句柄var/dev/processes.json，原七进程除BFF不变。

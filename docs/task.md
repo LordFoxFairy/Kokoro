@@ -1,3 +1,35 @@
+## R255 00:45续推终态：Skills页面窄修已提交，正式计费主链缺口已重新定位
+
+- Web main **2dece456b487f818062c468173eb2258eecb549b**：只改现Skills feature两source，正式页漏host而Preview已有布局是真实根因；不改AppFrame/Settings共用reader/其他页面。Root当前lint/types/build全exit0、既有7文件141pass/0fail为辅助；独审15823e27零P0/P1/P2。原四mixed与全部其他tracked字节、Root uv保持；未暂存Root gitlinks。
+- **真实正常3310页面验收**：1280×720展开主区h1 x300→324（24px边距），折叠内容居中960px；360×720内容328px、16px内边距，既有紧凑展开按钮预留标题位置、操作按钮换行，无横向溢出。手机发布表单正常打开、缺字段提交disabled、关闭返回；“我的技能”到设置同技能正常读回且无新增wrapper，关闭返回。viewport高级接口两次超时停止重复，改文档支持的CDP尺寸模拟成功并clear恢复1280×720；这属工具限制，不当产品失败。
+- **无效包负控真实通过**：普通无执行内容的V1 manifest ZIP经正常表单上传，Platform实际ValidateSkillDraft 400，UI明确owner拒绝/需新尝试，无发布成功；关闭/硬刷新仅原合法QA源保留。未删用户资料/无模型或资金调用，失败草稿是否清理另待owner生命周期验，不冒所有恶意包/tenant边界通过。
+- Billing只读复核纠正旧建议：M0完整24项合同和M1发布/选版已存在，禁止重做；失败/取消只结算已核实实际消耗、释放其余预占已是用户决定，不再称待答。真正下一依赖是Agent受认证immutable bound/reader与Billing既有M2。新Agent只读负责人发现两仓D0漂移：Billing要求后继request_ref/pricing account，而Agent bound明确排除，现planned闭集也无provider_account_ref；由Root先消除环依赖/核技术身份，不把所有问题重复问用户。可信exact-binding capacity保证仍未发布，paid路径保持0 provider send；正式operator grant/IAM target与normal Billing main仍未完成，C3旧一次阶段问题未重复询问。
+- Root本次topology实际exit1，七子仓HEAD与记录gitlink仍不一致，未暂存任务外gitlink绕过；八现服务句柄均alive/200，零重复启动/共享reset；同Wave0–7与70组11通过/6失败/14待复测/38未验/1支付后置保持。这里只放行页面窄修与两个用户子例，非整页/整仓/完整聊天计费闭环。
+- 证据ignored var/dev/r255-preserve/page-inset-root-commit-receipt.json、browser-page-inset-{desktop-green,collapsed-green,mobile-green}.json、最终PNG、Settings DOM、invalid-skill拒绝/刷新DOM及page-inset-final-owner-health.json。Agent只读卡接续既有关键路径，无新计划中心。
+
+### T-B07.R255-AGENT-BOUND-NEXT-READ（关键路径只读对齐）
+
+Agent后继负责人 agent_bound_owner_r255，gpt-6-astra；main307db318，仅build/原untracked保护。读取Agent三D0/现prepare/reader/System3.0机器事实与Billing R80-M2已批准依赖；纠正重复M0/M1建议，失败/取消实际消耗结算原则已确认，不再询问。只读核最小可实施切片及可信capacity保证是否仍独立硬阻断；现D0未满足时不先写代码/新schema/启动worker/发送provider。Root仅批准后同仓唯一writer，Git/共享资源留Root；报告/tmp/r255-agent-bound-next-read.md。文件集候选必须列现路径、最窄D0增量、前置owner和真实用户验收，不重造tokenizer/财务框架/隐藏free。
+
+### T-U01.R255-PAGE-INSET-REVIEW（冻结独审）
+
+原Platform负责人只读审查Web两现source，基线73444e65，handoff ca7ae746/589b8aa1；只写/tmp/r255-page-inset-review.md，不改仓/Git/测试/服务/浏览器。核CSS作用域、窄屏溢出、Settings/preview不受影响；Root独占真实浏览器与工程复验、提交。
+
+### T-U01.R255-PAGE-INSET-GREEN（Root批准，00:45同卡）
+
+Root真实浏览器RED：1280×720、sidebar展开，main x300/w980，Skills h1 x300/y4，inset=0；正常页面已有限进入终态，不冒新的无限loading根因。源码正式分支直接返回共用PersonalSkillsRead，旧feature布局仅Preview，漏了正式页面host职责。Root批准原Web owner唯一writer，仅现 src/features/app/kokoro-skills-surface.tsx 与同名module.css，不改共用PersonalSkillsRead/Settings/AppFrame/Sidebar或三mixeddoc/system test。
+
+放置：扩现Skills feature host/CSS；淘汰全AppFrame padding（其他Library/Scheduled/Plugins已有inset，Chat回归/双padding）；不建通用layout框架/新模块。复用现Skills60rem内容尺度与24px桌面/≤42rem16px边距、1rem顶/2rem底，独立page scroller flex/min-height0/min-width0/overflow auto；窄屏只在wrapper内直接header/action换行。无owner/API/SQL/schema/auth变化，无兼容/新依赖。只改两source，不新增底层单测；真实浏览器几何RED→冻结GREEN/窄屏/折叠/发布按钮状态为主验，Root再跑现对应UI及类型/lint/build辅助门。Root独占Git/服务/最终截图，writer交两sha/diff停写，禁止越界格式化。
+
+## R255 00:45续推：现页面布局反例与Billing主链准入复核
+
+|任务|归属/角色/基线|范围与依赖|验收/停止线|
+|---|---|---|---|
+|T-U01.R255-PAGE-INSET-READ|原web_r247_skill_header_owner，Web只读；main73444e65，3mixed设计doc及system test保护|现Skills标题/卡片贴左截图真实反例；核Skills/Library/Scheduled/Plugins共同content owner与现token/组件/CSS，输出最小现文件修复集。禁止仓写/凭据/资源/Git；不重新设计登录/导航/能力流程|给具体根因、现token的padding/gap/窄屏复用方案、两位置比较与排除项、现测试/E2E几何断言。Root批准后原writer窄修；整页不因局部CSS通过关闭|
+|T-B07.R255-GRANT-ADMISSION-READ|原bff_skills_v2_owner_r251，Billing只读；main54a64427，5mixed文档保护|沿现C3完整24operation与R255决策边界，不改决策/源码/D0；只核正式operator赠送transport、IAM授权、正常main装配与Agent消费依赖，报告首个最小可执行切片。相关SQL03/TS08/map必读|不读取secret/env、不调用服务/DB、不启动/重置、不跑测试、不改文件/Git；区分代码存在/实际发布/运行验收；不重复开发已有对象，C3一次待答不重复询问|
+
+Root继续现八正常句柄与实际浏览器，只在冻结后复验UI，同仓单writer。完整Wave0–7/70组统计保持，支付最后，不新增计划中心。
+
 ## R255 00:30续推终态：正常Skills本人主链已实测，完整Wave0–7仍OPEN
 
 - Root复用现IAM operator Session，正式owner脚本五操作exit0：Platform资源及四独立client；四持久0600凭据，不复制sandbox-v1/fixture身份。第一次Storage新增断言发现原正常配置已存在独立kokoro-platform后停止核实并保留；未改Storage map/无谓重启，保留BFF独立secret。Platform同单库kokoro_platform/source pnpm dev句柄66685/8086 ready200，BFF原32914真实exit130后1963/53714受控重载；八owner当前200，原其余六个服务句柄/基础设施/数据不重置。

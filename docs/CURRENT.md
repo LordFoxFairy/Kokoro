@@ -1,3 +1,12 @@
+## R255 00:45续推终态：Skills页面窄修已提交，正式计费主链缺口已重新定位
+
+- Web main **2dece456b487f818062c468173eb2258eecb549b**：只改现Skills feature两source，正式页漏host而Preview已有布局是真实根因；不改AppFrame/Settings共用reader/其他页面。Root当前lint/types/build全exit0、既有7文件141pass/0fail为辅助；独审15823e27零P0/P1/P2。原四mixed与全部其他tracked字节、Root uv保持；未暂存Root gitlinks。
+- **真实正常3310页面验收**：1280×720展开主区h1 x300→324（24px边距），折叠内容居中960px；360×720内容328px、16px内边距，既有紧凑展开按钮预留标题位置、操作按钮换行，无横向溢出。手机发布表单正常打开、缺字段提交disabled、关闭返回；“我的技能”到设置同技能正常读回且无新增wrapper，关闭返回。viewport高级接口两次超时停止重复，改文档支持的CDP尺寸模拟成功并clear恢复1280×720；这属工具限制，不当产品失败。
+- **无效包负控真实通过**：普通无执行内容的V1 manifest ZIP经正常表单上传，Platform实际ValidateSkillDraft 400，UI明确owner拒绝/需新尝试，无发布成功；关闭/硬刷新仅原合法QA源保留。未删用户资料/无模型或资金调用，失败草稿是否清理另待owner生命周期验，不冒所有恶意包/tenant边界通过。
+- Billing只读复核纠正旧建议：M0完整24项合同和M1发布/选版已存在，禁止重做；失败/取消只结算已核实实际消耗、释放其余预占已是用户决定，不再称待答。真正下一依赖是Agent受认证immutable bound/reader与Billing既有M2。新Agent只读负责人发现两仓D0漂移：Billing要求后继request_ref/pricing account，而Agent bound明确排除，现planned闭集也无provider_account_ref；由Root先消除环依赖/核技术身份，不把所有问题重复问用户。可信exact-binding capacity保证仍未发布，paid路径保持0 provider send；正式operator grant/IAM target与normal Billing main仍未完成，C3旧一次阶段问题未重复询问。
+- Root本次topology实际exit1，七子仓HEAD与记录gitlink仍不一致，未暂存任务外gitlink绕过；八现服务句柄均alive/200，零重复启动/共享reset；同Wave0–7与70组11通过/6失败/14待复测/38未验/1支付后置保持。这里只放行页面窄修与两个用户子例，非整页/整仓/完整聊天计费闭环。
+- 证据ignored var/dev/r255-preserve/page-inset-root-commit-receipt.json、browser-page-inset-{desktop-green,collapsed-green,mobile-green}.json、最终PNG、Settings DOM、invalid-skill拒绝/刷新DOM及page-inset-final-owner-health.json。Agent只读卡接续既有关键路径，无新计划中心。
+
 ## R255 00:30续推终态：正常Skills本人主链已实测，完整Wave0–7仍OPEN
 
 - Root复用现IAM operator Session，正式owner脚本五操作exit0：Platform资源及四独立client；四持久0600凭据，不复制sandbox-v1/fixture身份。第一次Storage新增断言发现原正常配置已存在独立kokoro-platform后停止核实并保留；未改Storage map/无谓重启，保留BFF独立secret。Platform同单库kokoro_platform/source pnpm dev句柄66685/8086 ready200，BFF原32914真实exit130后1963/53714受控重载；八owner当前200，原其余六个服务句柄/基础设施/数据不重置。
