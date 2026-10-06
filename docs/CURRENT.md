@@ -1,3 +1,11 @@
+## R255 最新左栏与连接器验收（2026-10-06）
+
+- Web已接收8727585（folder非数据意图分离+空branch压缩）、8399310（MCP嵌入单标题）；原三D0/OIDC mixed未提交。Root实际正常IAM/BFF IAB：两folder修前重核200后收起，修后重核200/恢复侧栏后true/true、Direct常驻/同ID历史；具体timer/focus未分别归因。空branch43.52→26.80px；最新P有真实会话/Q空、1200×460 scroll0→204→0，Direct底346.55<footer356.80，无横溢。撤准入后的scroll位置恢复没有实现，物理触屏/长分页/全CRUD未验。
+- 最新连接器管理正常读/api/hub/self/mcp/servers200+真实空态，实际重复标题2→1。未复现原截图error的同次请求，不能称根因已消除。静态品牌目录不代表已连接；只读审查6e4063c8确认此页读全局Server声明，不是Platform3.2.0本人Connection，BFF/Web尚未承接本人connection，非GET MCP503/旧注册RPC Unimplemented，真实创建授权/启用/Agent调用仍OPEN。续派原T-P02只读消费者切片，不虚造配置/凭据/成功。
+- 正常九既有源码服务18PID alive，实际登记probe9/9 HTTP200，registry fixture=false；PG/Redis/registry/uv未改、不重复启动。健康不等于业务全通，不能由fixture标记证明所有provider真实推理。Root自有验证页测试，用户原tab同步超时及默认尺寸变化按实际重定位；本轮无资金/模型调用，原数据绑定移动验证已恢复。
+- 辅助门：sidebar新增RED1/2PASS→3UI167/0/exit0，lint/types/build0；标题RED2 heading→1，69/0；初次typecheck新增TestingLibrary exact参数TS2769保留日志，锚定正则后明确Node22.22.2重跑69/0及lint/types/build全部0。独审c6633e25、布局b9579edd无新增确定P0/P1/P2。真实用户子路径才是本切片结论，辅助数量不算完整产品通过。
+- 全Wave0–7仍active，70组11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST未增整组PASS；现task/test-cases继续记录，费用FG2仅暂停切换当前UI关键路径未丢弃。证据现ignored var/dev/r255-preserve/sidebar-intent-*、sidebar-new-*、connectors-heading-*、sidebar-connectors-live-readiness.json与三只读报告。
+
 ## R255 当前左栏复验与 FG1 原生发行切片（2026-10-06 08:26 UTC）
 
 - **本轮判定 progress，非整体闭环。** Web仍bf04df7（侧栏实现9e1c8c3），Root正常IAM既有session真实页面再次两folder展开、1200×460 wheel0→262→0，content宽276无横溢、Direct底346.8<footer356.8、branch43.52px/loading0。390×640触屏模拟从project行起滑0→194，pan-y、body0、content宽260无横溢；硬刷新/项目P→原外部会话，Direct始终在、同ID两历史marker保持。仅UI偏好操作，无新模型/资金/会话数据。自有页已close；用户IAB getTab20s超时，不称已控制其标签/物理设备。新截图sidebar-current-full-height.png，console本人Billing未开户404不冒侧栏错误；首次两click工具字段错未执行，纠正target后重跑。

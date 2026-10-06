@@ -1,3 +1,7 @@
+## R255 本次入口更新
+
+Web `workspace-rail-shell` 非数据folderIntentIdentity按verified subject隔离，readgeneration/admitted不改；McpContent嵌入投影省重复h2。当前已新增读取Server声明，后继本人Connection owner现Platform3.2.0→BFF→Web，见既有T-P02；不把静态connector目录或Server200算执行能力。Web8727585/8399310证据见CURRENT/test-cases。
+
 ## R255 当前左栏复验与 FG1 原生发行切片（2026-10-06 08:26 UTC）
 
 - **本轮判定 progress，非整体闭环。** Web仍bf04df7（侧栏实现9e1c8c3），Root正常IAM既有session真实页面再次两folder展开、1200×460 wheel0→262→0，content宽276无横溢、Direct底346.8<footer356.8、branch43.52px/loading0。390×640触屏模拟从project行起滑0→194，pan-y、body0、content宽260无横溢；硬刷新/项目P→原外部会话，Direct始终在、同ID两历史marker保持。仅UI偏好操作，无新模型/资金/会话数据。自有页已close；用户IAB getTab20s超时，不称已控制其标签/物理设备。新截图sidebar-current-full-height.png，console本人Billing未开户404不冒侧栏错误；首次两click工具字段错未执行，纠正target后重跑。

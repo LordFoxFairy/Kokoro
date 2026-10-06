@@ -1,3 +1,71 @@
+### T-P01 已交付 / T-P02 正式本人连接链接续（本轮事实）
+
+T-P01 Web已提交8399310（标题）/8727585（左栏）。Root现9服务18PID alive、登记探针9/9 HTTP200、registry fixture=false；原PG/Redis/registry/uv无变更。Root真实正常浏览器servers GET200与空态，重复标题2→1；原截图error同次请求缺证，保持待追。当前目录名牌本地静态，已新增页仍读Server声明，不能宣本人连接/功能完成。仅加载read不代表授权/创建/启用/调用。
+
+T-P02 产品语义已明确为本人已连接/已授权列表，owner Platform现3.2.0 connections既有API，不另问server vs connection，不新平行模型。接续先只读设计盘点：Platform owner current artifact/SHA、BFF public/generated/client/actor映射与Web schema/current dirty，对比已有Server声明read和本人Connection语义。system_guarantee_read_0315负责只读BFF消费者差距/最窄切片，报告/tmp/r255-mcp-self-connection-consumer-plan.md；不写仓/Git/运行资源/凭据。先三D0门一致，owner artifact固定后消费者更新；先真实失败（正常登录点已新增→本人列表→正式创建授权→启用→Agent真实工具→撤销）再源实现，未知外部授权不得造凭据/直写库/把preview开关变正式功能。
+
+原截图故障需要同次安全status/code/request_id串联日志；上游返回200仍要strictschema/no-store/ID验证。owner正规注册RPC当前Unimplemented与BFF非GET503是明确研发缺口，不归咎运维配置、不删fail-closed造成功。本文延续原T-P01/T-P02与完整Wave0–7；70组11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST不变。真实连接完整组仍OPEN。
+
+### T-P01 最新连接器页异常：真实资源与重复标题（2026-10-06）
+
+Root九既有源码进程18PID alive，登记探针实际9/9 HTTP200，fixture=false；未重复启动/reset。正常IAM浏览器 /app/plugins→管理连接器：/api/hub/self/mcp/servers 两次200，最终真实空列表，不是截图error复现；标题h1/h2重复已实际确认。静态 connector-catalog-data 名牌卡片不是已安装或真实可调用证明。原失败需要owner请求日志/原因继续复核，不以本200冒CRUD/连接调用全通过。
+
+Web窄修归属settings嵌入面标题呈现，比较删settings总标题与McpProjectionRead按embedded省重复标题，采用后者；无新文件/协议/存储/服务。原Web writer仅现 tests/ui/settings-modal.test.tsx 先增正常非preview嵌入连接器一个标题断言（原合法client fixture，当前真实页面另验），Root RED后准 mcp-content.tsx 传现embedded与mcp-projection-read.tsx 使用embedded省内标题。独立MCP面保标题/读/错误/空态。侧栏已freeze并Root167辅助回归PASS，三D0/OIDC mixed不动。Root唯一Git/真实UI；Capability owner只读跨服务失败调查，不写资源/Git。
+
+### T-C04 同主体登录重核与文件夹展示意图分离（本次窄修）
+
+源码实证：use-session-state 的 focus/visibility/pageshow/120秒 check 无条件 generation++ 与撤准入；AppFrame 将 generation 作为 reader identity；RailShell 同时清 folderState。真实 IAB 多次观察展开→加载→同主体恢复收起。独审报告 /tmp/r255-sidebar-new-interaction-review.md（8040dc1e）指出既有撤准入隔离必须保留。
+
+归属 Web 浏览器非数据展示意图；比较修改认证重核/跳过读隔离与现 Shell 独立稳定主体展示 key，采用后者。现 RailConversationReads 增加可选 folderIntentIdentity，AppFrame 用已验证 subject（未知=null）；读 identity/generation、admitted、请求过期栅栏均不改。明确提供稳定 key 时同主体 pending 仅隐藏私有分支，保展开意图；主体变更/null清除。未提供稳定 key 的既有受控 fixture 保持保守撤准入退役。无新文件/存储/契约/SQL/服务。
+
+唯一 writer iam_grant_source_scope_0244：先只现 tests/ui/workspace-rail.test.tsx 新增同主体重核隐藏/恢复与主体更换/注销清空用例，STOP；Root真实 RED 后才准 workspace-rail-types.ts、workspace-rail-shell.tsx、app-frame.tsx 三现源码。原三D0/OIDC与其余文件保持；Root独占 Git，独审只读。验收：原退役用例保持，新增组件 RED→GREEN；正常 IAB 展开两folder→切换窗口→返回重核后保持，并短高上下滚动/Direct常驻。实际触屏和原user tab同步超时仍待验，不冒整体闭环。
+
+### T-C04 本次正常 IAB 留白实证与 CSS 窄修准入
+
+Root新建正常IAB验证标签（同真实session/3310，非fixture）：两项目分别空态，branch child31.53px + nav margin11.99px，合43.52px/每个，两个87.04px；正常1280×720截图有完整empty反馈，原用户tab7 debugger同步超时，不能冒同标签或截图已更新。1200×460展开两folder从项目起wheel到262、Direct底346.8<footer356.8；compact overflow auto/max30可达project，两次collapse展开第二次folder保持，首次viewport重载观察不当业务RED。实际移动R243验收会话Direct→P：P1/Direct1/Q0，列表正确；最终须移回/核同ID历史。
+
+视觉批准目标：空branch单行自然高约27px，压缩重复上下间距但保状态文案/会话行/加载错误/工具44px手机命中。仅现 items.module.css 的 `.projectFolderChildren .list` 上下margin与 `.projectFolderChildren .empty` padding/font/line-height，真实行/listNotice不压、shared primitives不改。归属Web现folder列表局部节奏；比较删DOM空态与现CSS压间距，采用后者，不新组件/协议/状态/持久化/目录。唯一writer iam_grant_source_scope_0244；原三D0/OIDC mixed 与其余源码保持，基线sidebar-new-baseline.json。
+
+writer交付freeze STOP，Root正常IAB重跑两空folder尺寸/短窗口scroll/外部列表/项目会话移动恢复、mobileSheet touch和按钮；独立审查再精准提交。原用户标签滑动原因及所有CRUD仍OPEN，不把本次视觉片冒整体修复。
+
+## R255 用户最新左栏与滚动反馈（2026-10-06，本次优先）
+
+最新用户要求是左栏文件夹区及滑动问题；暂停本轮 FG2 source 准入，保已完成 D0/计划。复用 T-C01/T-C04，不另建任务中心。Web 基线 bf04df7aa9db60a2f1688087907720d8b72c5cff、原三D0/OIDC mixed；Root b194c961 与现 task 增量保留。
+
+|角色|范围|交付/限制|
+|---|---|---|
+|Root 真实页面验收|当前用户 IAB、正常3310、项目展开/收起、外部列表、滚动及刷新|先截图/真实失败，再最窄实现授权；不重启资源/清库、不冒历史子例为本次通过；Git/台账独占。|
+|billing_read_activation_0340 布局审查|只读Web workspace-rail/sidebar primitives/CSS及当前提交|重点滚动链、folder留白、:has/compact/mobile和fixed header/footer；报告/tmp/r255-sidebar-new-layout-review.md；不改仓/Git/资源/浏览器。|
+|system_guarantee_read_0315 交互审查|只读Web folder/sidebar会话加载/选择/错误空态/对应业务验收|核独立folder状态与常驻Direct、快速切换/刷新/请求取消竞态；报告/tmp/r255-sidebar-new-interaction-review.md；不改仓/Git/资源/浏览器。|
+
+候选实现仅现Web owner，Root真实失败后再指定原writer范围；不要同时写同仓。所有完整页面CRUD/70组保持未验状态，费用FG2完整后继不删除。
+
+#### IAM-FG2 P3 第一真实 RED 准入
+
+Root采用原owner计划4f078d20、原三D0 P3与当前8738bd7（仅TECH纠偏，source仍bb4663a）。iam_grant_source_scope_0244现在唯一writer只准现test/integration/oauth-client-lifecycle.test.ts EOF新增一个case，原2683行逐字节保持：真实operator Session/正式创建fresh IAMresource/managed tenant_machine purpose=billing_grant_authorization与单iam:billing-grant-authorization.verify/真实tenant→官方与持久回读→native Basic client_credentials/internal resource→JWKS验签固定client/tenant/kind/scope/audience/no user/refresh。无新fixture/目录/tokenforge/mocks或source/Schema/contract/CLI/Git/资源/secret修改。
+
+freeze STOP后Root原隔离PG runner执行同case，必须注册strict拒绝的业务RED而非类型/fixture/404失败；随后才准原owner计划P3八现source与同case负控。Root所有resource/Git持有，正常服务/PG/Redis/原data不重启reset。完整grant-target四新角色/verified-exp/HTTP/current名单/target/Audit/artifact仍原FG2完整后继，不缩成machine发行即可关闭目标。
+
+#### FG2 verified expiry 接缝主控裁决
+
+Root采用独审已核原native verifier接缝：AccessTokenVerification 的 valid分支独立required expiresAt（只取同次jwtVerify+schema结果），不将expiry机械加到所有identity principal、不optional/fallback。guard仅新grant operation在受信request字段绑定同次machine expiry，controller缺失fail-closed；新grant service入参expiry必填，actor用同次verified result，响应截止min(评估时点+30秒、machine/actor已验exp、本人Session expiry)，有限Date/提交后时限/取消均核。现consume四文件与Execution自动serialization retry不复制改写，FG2明确不自动tx retry。此为方案裁决，源码未实施。
+
+IAM TECH自有prefix一处P2旧“FG1仍待实现”已纠正为bb4663a已验收/FG2仍OPEN，原suffix exact；当前authority沿原三D0，不另起权限设计。Billing现698da77仅五prefix60行正式提交，原五mixed suffix及所有源保护；独审f5056d39的术语/精度三点由Root精准纠正，不冒资金验证。
+
+#### T-B07 Billing 当前D0独审补充
+
+billing_read_activation_0340 续原只读角色：Billing261a20f加原mixed，Root仅五D0/PLAN/CURRENT最前12行自有prefix，原正文exact且stage仅prefix+HEAD；报告/tmp/r255-fg2-billing-d0-review.md。核actor与target分离、actual-only已裁与gift独立依赖，不写仓/资源/Git/secret。Root负责精准commit不夹原mixed；仅文档进展不冒账务通过。
+
+### T-B07 FG2 当前授权 / verified exp 准备（2026-10-06）
+
+上一goal turn progress：Root b194c961 / IAM bb4663a 实际提交与正常左栏复验。当前IAM clean、Root仅原gitlinks/uv dirty保护；FG1不是正常赠送。继续原三D0既定FG2，不新计划中心。
+
+|角色/原负责人|基线/允许读集|交付与限制|
+|---|---|---|
+|IAM FG2 owner只读方案：iam_grant_source_scope_0244|IAM bb4663a；现authorization/billing、internal-access、billing-access、oauth/clients与生成脚本/现真实integration fixture；Root地图/TS/SQL手册与IAM三D0|现文件最窄RED、machine注册/真实actor发行/完整current snapshot/target/Audit/exp接缝与精确写集；输出/tmp/r255-fg2-owner-plan.md。不得写仓、跑资源/Git/服务或读取secret；先Root新文件放置/文档门再准实现。|
+|FG2独立安全/exp审查：system_guarantee_read_0315|同IAM frozen bb4663a现internal verifier/types/guard/introspection、billing及execution/skill消费者、D0|核verified exp传播与短决策截止/取消、actor当前名单先于target、machine purpose边界；给Root当前设计确定风险与caller受影响路径，报告/tmp/r255-fg2-exp-review.md。只读无资源/修改/Git，不能另发明架构。|
+|Root后端业务与验收|Root b194c961；现docs与保护台账、正常进程句柄、Billing mixed五D0及已完成只读建议|主控核owner/依赖、保护原dirty，修确定D0当前态/调用边界；资源/浏览器/Git仍Root独占，provider/资金不能用mock或仅unit冒E2E。FG2实际业务RED后明确单仓唯一writer。|
+
 ### FG1 已验收 / 同任务后继与左栏实际复验
 
 原 iam_grant_source_scope_0244 交付STOP，Root同398freeze重跑44/0及938/0、独审c3b53298后精确10路径提交IAM bb4663a。原system_guarantee_read_0315只读审查STOP，原billing_read_activation_0340报告已收。FG1阶段已验收不等T-B07赠送/资金用户闭环；FG2的当前授权/verified exp/machine/SDK/target仍待派工。原Root台账5ebf07c9接续，无新任务中心。
