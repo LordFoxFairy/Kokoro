@@ -1,3 +1,21 @@
+侧栏三source及相邻CURRENT/INDEX/ACCEPTANCE精确6路径已提交 Web66e6f76e319c5f7434f7299ccb03f0e7f06b3009，原4mixed未纳入。首次提交前保护命令误用Web cwd，两个检查失败后shell仍继续精准提交；后续Root绝对路径重核原mixed/uv/registry/3source冻结全部exact、index空，失败留存，不虚写首次命令通过。真实浏览器与最终门证据不变，完整70组不增PASS。
+
+本次侧栏切片状态：待提交验收记录；Root真实页面GREEN与最终146辅助UI/build/lint/types/contract/architecture均0，独审e0829f2b。仅三source与相邻事实文档提交，所有任务外修改保持。完整70组不增PASS。
+
+06:55 侧栏空Direct补充准入：独审核实Root批准R254 direct常驻与原UI404–416断言，但items CSS52旧wide .emptyDirectList display:none 隐藏整个空区，是确定业务违背。只准原Web writer同items CSS删除该旧隐藏规则及过时说明，compact仍由原组件控制；另两candidate路径保持freeze。Root原现empty UI辅助断言重跑，不当真实0Direct E2E（正常账号2条保留，不删除/seed制造空态）。新items hash冻结/独审，再正常页面正控与build复验，完整CRUD仍OPEN。
+
+## R255 用户侧栏树与滚动窄修（2026-10-06 06:47 UTC，T-C01/T-C04）
+
+基线 Web main df609a0a0bb511a1c2c2f5a6456994c4efaa73c6；原三D0 mixed/OIDC修改与Root原gitlinks/uv/registry保留。Root真实正常3310既有IAM会话测得：展开d93d8972后children x292.65超出276内容列、内容scrollWidth455；1200×460主content clientHeight289/scrollHeight544，wheel700仍scrollTop0、Direct位于y495被截，页面scrollY0。这是有效真实浏览器RED，不是API/单测替代。
+
+|原卡/角色|负责人/范围|依赖/验收/提交|
+|---|---|---|
+|T-C01/C04 侧栏实现|iam_grant_source_scope_0244，Web唯一writer；只现workspace-rail-navigation.tsx、workspace-rail-items.module.css、workspace-rail.module.css|复用已批准R254_FOLDER_LISTS，项目独立列纵向树；主导航/项目/Direct单一可轮滚内容区，header/footer固定、nested list不争滚动；保持身份/scope/分页/Move/拖拽/宽栏cookie，无新API/目录/依赖；Root准入后写、冻结交接，不Git/resource/browser|
+|独立布局审查|system_guarantee_read_0315，只读同基线和candidate|准确结构根因/边界，无资源或仓修改；Root冻结后审差异|
+|真实验收/集成|Root，docs/task.md、CURRENT/progress/test-cases/CODEBASE_MAP与Web CURRENT/INDEX必要事实|实际正常浏览器展开两空项目/局部反馈、Direct常驻/选原会话、短高/窄栏/Sheet轮滚、resize/hard-refresh；不新增/seed用户会话，不发模型或资金请求。适当lint/types/架构/构建辅助，Root精确路径提交。完整CRUD/所有页面仍OPEN，不增加整组PASS|
+
+归属一句话：既有Web rail本地布局职责修复，不改变业务owner、契约、状态机或数据；比较通用Sidebar覆盖与局部rail修复，采用后者，防止其他sidebar受到影响。原item flex-row使folder children横排与空态换行，desktop content overflow:hidden切断唯一有界滚动；删除这两处冲突布局而非新造滚动框架。
+
 06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
 
 06:12 T-C01最终门未捕获异常不得清零：7916同567业务断言全PASS但actual exit1/UnhandledErrors1，RadixFocusScope卸载0ms callback跨jsdom realm造成非Event。locked源码及sync afterEach已核；准原writer只新增R255 Settings describe内cleanup+原生0ms macrotask，归还已拥有焦点任务，不ignoreUnhandled/fakeTimer/吞错/拉长预算/改框架。types/lint各0，Root27321 contract275/0、architecture50/0、build0；最终新hash回归需真exit0才接收。真实正常Settings/工作区/各刷新旧agents请求0、Direct/历史保持；真实models200空数组，默认同值点击不触发保存，保存切换只组件正控，用户完整推理/费用仍OPEN。

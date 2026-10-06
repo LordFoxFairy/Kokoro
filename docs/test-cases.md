@@ -1,3 +1,20 @@
+## R255 侧栏树与滚动用户验收（2026-10-06，T-C01/T-C04，正常浏览器已复测）
+
+不新增70组分母；正常3310既有IAM会话、既有P/Q与两条Direct，0会话/项目/模型/资金写入。风险：项目children横排溢出、被裁列表无wheel可达、nested滚动与头尾互相抢空间。
+
+|用例ID/类别|标题|预置条件|步骤|预期结果|优先级/类型|实际状态|
+|---|---|---|---|---|---|---|
+|T-C04.R255-TREE/主链|每项目自身纵向子列表|正常IAM、两个现项目|依次展开P/Q，再折叠P，不打开正文|每children位于自身header下且缩进/不溢出；空态可见；Q独立、Direct区保持|P1/真实UI|真实RED保留；GREEN两folder children.y=各header.bottom/right=288，content276/scroll276，空反馈可见、Enter/Space不改URL|
+|T-C01.R255-SCROLL/边界|短窗口单侧栏滚动|1200×460，展开Q|真实wheel向下到Direct→向上到导航，测header/footer与主区|content top改变；头尾固定、Direct可点击、无nested纵滚/横溢出，页面不滚|P1/真实UI|真实RED保留；最终GREEN content289/542，wheel到top253、Direct bottom346.68<固定footer356.8，原会话可点击/正文保持；上滚回0|
+|T-C01.R255-NARROW/边界|窄栏/临时窄屏展开|现宽栏偏好expanded|700×460展开→滚轮到聊天→恢复1200→hard-refresh|无裁切/横溢出；wide偏好保留、无永久loading|P1/真实UI|PASS（下述实际证据限本子例）|
+|T-C04.R255-KEY/状态|disclosure键盘与scope隔离|现P/Q/既有QA正文|聚焦toggle用Enter/Space展开折叠→点P概览→点外部QA会话→刷新|toggle不改URL/草稿/正文；概览导航准确；Direct一直存在/历史不丢|P1/真实UI|PASS（下述实际证据限本子例）|
+|T-C01.R255-COMPACT/边界|图标栏短高入口可达|1200×320、收起|轮滚到底→最后入口可见→展开返回正常|图标轨道能滚且不挤压头/账户，展开后内容可访问|P1/真实UI|PASS（下述实际证据限本子例）|
+|T-C01.R255-ERROR/异常|列表故障仍局部|原已有失败处理测试/真实可控owner故障|读取超时/拒绝后重试，不改身份数据|局部明确反馈、其他组保留、无整页永久loading|P1/系统UI|本次不主动停owner；历史辅助断言回归与正常空态分开，真实故障注入未验|
+
+本次实际：700×460 fine-pointer窄屏展开 top0→265，header/footer固定；回1200刷新展开/原4条历史/Direct2保留；252px栏宽等动画完成后content228/scroll228，恢复300；1200×320 compact top0→170、项目入口y136可达；项目概览→外部原QA正文通过。两观察错误保留：初tree locator误匹配disclosure+sort；700错误假设dialog导致30秒超时，真实为fine-pointer rail而非Sheet；首次resize动画中测量后明确等settled重测，不算产品失败。
+
+空Direct旧CSS隐藏规则也按已批准R254退役；真实本账号2条Direct保留，0条账号/触屏Sheet、真实列表故障注入/长分页尚未验。原项目概览导航另见会话conv_807... GET404、正常Billing503仍OPEN，不用局部导航通过抹掉。源仅三rail路径，独审e0829f2b无新增确定问题；适当工程门是辅助，不当业务闭环。退出条件仅本次正常主链/树结构/滚轮/窗口切换子例通过，不以此宣称项目/会话全CRUD、全部页面或完整Wave上线。
+
 06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
 
 ## R255 06:12 系统质量与真实文件/旧目录验收增量

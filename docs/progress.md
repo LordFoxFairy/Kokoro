@@ -1,3 +1,13 @@
+侧栏三source及相邻CURRENT/INDEX/ACCEPTANCE精确6路径已提交 Web66e6f76e319c5f7434f7299ccb03f0e7f06b3009，原4mixed未纳入。首次提交前保护命令误用Web cwd，两个检查失败后shell仍继续精准提交；后续Root绝对路径重核原mixed/uv/registry/3source冻结全部exact、index空，失败留存，不虚写首次命令通过。真实浏览器与最终门证据不变，完整70组不增PASS。
+
+## R255 用户侧栏树与滚动已修（2026-10-06）
+
+Web基线df609a0；仅现workspace-rail-navigation.tsx一处folder class、items CSS与rail CSS，未改数据/API/身份/scope/Move/拖拽/宽栏cookie。Root正常3310既有IAM真实复现：项目children横排超内容列（scrollWidth455/276），1200×460主content hidden使wheel700仍top0且Direct裁切。现项目纵向树/同元素padding、各列表自然高、唯一content纵向滚动/横向约束，header/footer固定；compact同样滚动。另退役违背R254的空Direct旧隐藏规则，不重造业务。
+
+实际浏览器GREEN：两空项目子列表位于自身header下/反馈可见；1200×460最终top253、Direct bottom346.68<固定footer356.8、原QA点击与4条历史保持；上下滚回0，700×460 fine-pointer top0→265后回宽hard-refresh仍展开/Direct2/loadingfalse；1200×320图标栏top0→170最后项目可达；键盘disclosure不导航，252px栏宽等动画后content228/scroll228，恢复300。项目概览→外部会话列表始终在，但概览另有会话GET404，不算Project完整成功。0 owner数据写/模型推理/资金调用，无服务重启或PG/Redis reset；用户IAB未动。
+
+Root Node22辅助门：lint0/typecheck0、contract275/0、architecture50/0；最终现5UI文件146/0且actual exit0、最终CSS build0。独审最终e0829f2b，三source冻结准确。两前置locator/对dialog错误假设与过早动画测量保留，不伪装产品失败/静态E2E。真实0Direct、触屏Sheet/长分页/故障注入、全量test与所有页面test:e2e、axe/视觉/bundle未验；普通2Direct不证明空账号业务闭环。原三mixed设计文档与OIDC/Root uv/gitlinks/registry保护，70组11/8/14/36/1不变。原任务/QA台账与ignored sidebar-scroll-*证据续接，无新计划中心。
+
 06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
 
 ## R255 06:12 用户路径进度（原完整计划续接）

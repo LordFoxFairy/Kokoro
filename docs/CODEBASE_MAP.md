@@ -1,3 +1,7 @@
+## R255 当前侧栏布局入口（2026-10-06）
+
+Web66e6f76现 `src/components/blocks/workspace-rail/workspace-rail-navigation.tsx` 给项目li专用folder class；`workspace-rail-items.module.css` 拥有纵向folder/同元素项目padding/自然高列表与常驻空Direct；`workspace-rail.module.css` 拥有唯一纵滚content与固定头尾，compact共享。未改scope/身份/数据/API/宽栏偏好；实际正常页证据与未验项见现CURRENT/ACCEPTANCE及Root docs/test-cases.md。
+
 06:12 收口：Web `df609a0a0bb511a1c2c2f5a6456994c4efaa73c6` 已提交并接收旧preset消费者退役源码片。Root有效Settings RED→最窄退役；首宽回归566/1漏旧fixture及次567断言全绿但exit1卸载异常均保留，最后同567/0真exit0/types/lint0；Node22非system153文件2663/0、contract275/0、architecture50/0、build0，提交后新5/0（154非匹配未跑），36实际blob/工作树exact，独审2d1d234c。正常工作区/Settings/各刷新及提交后真实页旧agents请求0、models200、loadingfalse、原Direct/历史保持；真实模型目录为空，默认同值点击未保存，不冒模型可调用/切换保存、推理/资金/完整Agent通过。原3文档mixed suffix及OIDC修改未暂存，Root40精准路径无外带；Billing39/0仍未提交/normal OFF/两旧types失败。文件真实123B下载hash通过，单Asset删除三层未实现、新文件只选未传；完整70组11/8/14/36/1不变。原8服务复用、无正常模型/资金/owner文件/schema/reset/重启，自有页关闭，用户IAB未动。详情同0612 receipt与原任务卡；后继Billing旧13caller/正常两读激活、System现模型目录与费用/授权主链、Storage单文件生命周期，独立工作可并行，不等Agent setup阻塞其他页面。
 
 ## R255 06:12 当前调试事实与后继范围
