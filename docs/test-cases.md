@@ -1,3 +1,17 @@
+## R255 05:03 当前真实用户子例与未关闭的质量门
+
+完整70组仍**11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST**；本轮新增完整组0。正常浏览器子例与开发可靠性门分开记录，不以28项owner绿代用户收费链。
+
+|子例/分类|标题|预置条件|实际步骤|预期与实际结果|优先级/类型|
+|---|---|---|---|---|---|
+|T-C01.R255-NORMAL-LOGIN 主链|正常IAM进入工作区|八原正常服务、保留合法QA账号、可用Playwright既有空白页|/app→真实可见IAM表单填邮箱密码→登录→/app|可信/session200与欢迎页可见；实际完成，无cookie注入/seed；不证明所有认证异常|P0/真实浏览器E2E子例|
+|T-C04.R255-NORMAL-FOLDER 主链/状态|独立项目folder与外部会话列表|正常已登录、既有P/Q、两条Direct、展开rail|Home展开P/Q→P概览→既有QA会话Direct→P→Q→Direct→硬刷新/恢复展开|三真实move200、同ID/文本保持，源列表移除/目标新增，外部区仍在，最终原2Direct恢复；实际完成本路线，未验其他CRUD/并发/草稿|P0/真实用户交互子例|
+|T-C01.R255-OBSERVATION 边界/异常|刷新/折叠的观察前提|同正常浏览器|textarea刚可见比较→再等对话记录和loading隐藏；Q/rail折叠时等待行→显式展开|初次过早比对false与两15s超时保留；后续真正终态/展开后正确，不把观测修正当生产源码修复或宽屏偏好通过|P1/状态与QA记录|
+|T-P01/T-B07/T-U01.R255-NORMAL-READ 异常|正常页面后台能力缺口|正规session与当前owner组合|正常页面真实请求agents/summary/manifest，核网络状态|实际404/503/403，仍FAIL待owner定位；不假列表/免费/放宽权限清零|P0/真实系统缺陷|
+|T-B07.R255-DRAIN 异常/状态|已接受读完成后正规关闭|真实隔离owner PG合法账户、原source main、受控签名JWKS；不当正常IAMowner|JWKS入站屏障→SIGTERM→实际ECONNREFUSED且child活→release→消费响应→退出|有效RED22101为503；顺序修5718先200但deadline，native idle回收后65723同4+24=28/0，200/no-store/精确4560000与code0/signalnull、77库exact；只可靠性门，不是完整Billing用户链|P0/真实owner故障集成辅助|
+
+正常E2E no新模型/资金/schema/永久删除，原QA绑定恢复、Root自有浏览器关闭，用户IAB untouched。截图/脱敏动作/网络和失败修正证据0503-normal-browser-journey.json；完整用户退出线未改。Billing窄lint0、整仓tsc同6旧栈FAIL、候选未提交/normal OFF；readiness客户端截止/日志/旧有效断言迁移/完整门及后继19operation继续待验。源码审查f70c7dde/冻结hash不代替浏览器付款、真实模型/队列/审批/文件/Skills/MCP验收。
+
 04:40 最终冻结补证：runtime测试只修4处lint类型/异常包装后SHA8c17c056；Root59457同3+24重跑27/0、5.48秒、16freeze/PG77exact，Root75376九生产+runtime lint0。Root53849最终直接tsc仍同6旧栈错误；不冒全工程通过。独审55f43483绑定前一测试e8e5054e及两源码，最终4处测试类型差异由Root复核，业务断言/预算/屏障保持；不冒独审已覆盖后修测试。
 
 ## R255 04:40 子例实测（普通用户整组仍不新增PASS）

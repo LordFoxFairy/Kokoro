@@ -1,3 +1,33 @@
+### 05:03 本波冻结收尾与后继（沿原卡，不建立新计划）
+
+三原负责人均STOP，Root65723 drain最终28/0、6.17s，16freeze/77exact、资源关闭；72779窄lint0，66327整仓types同6旧栈exit2。独审f70c7dde绑定factoryf481/test6a7无新增已证问题，仅此slice，不接收正常切换。Billing后继原writer先现runtime test真实已连接响应黑洞RED→PrismaService.ping同pool单次query_timeout及坏连接释放/恢复→日志真实脱敏→15旧caller有效断言承接与server删除/工程完整门→正常持久配置激活；不在当前未验冻结上并行乱写。
+
+Root正常Playwright可用，实际IAM表单→folder/外部列表→Direct/P/Q/Direct/刷新恢复已记原QA子例，浏览器自有页已close；不是IAB恢复。下一可独立推进原Agent目录GET契约缺口与manifest403准确code/request-id调查、各页面真实CRUD验收，正规Billing summary仍等本owner。原费用/schema两业务决定不重复询问，正常会话三可逆move已恢复、无新模型/资金/schema/reset/服务重启；完整70组/全Wave目标不变，用户全能力退出线尚未达到。
+
+### 05:03 DRAIN-FIX 第二根因已核，factory单文件后继
+
+Root5718先200/no-store/精确余额通过，自然关闭仍3000ms deadline→code1，27/1不得冒GREEN。真实Node24.20 native_http_server源码627/674/696/1096与锁定Fastify finish hook独审：server.close仅初始一次清idle，已接受请求完成后转keepalive没有closing分支。批准原Billing writer只同factory在init前注册onResponse，局部closing只close开始true，closing且reply.raw.writableFinished时同native server.closeIdleConnections，只清finished idle、保其他active；done明确完成。保先adapter drain→Nest destroy/两清理/幂等，不改normalkeepalive、budget、Connection:close测试或forceCloseAll/其余源码。Root仍同6a7测试+24负控验证，测试/生产冻结后独审；readiness/log/旧栈全门后继不变。
+
+05:03 原T-C01/C04真实正常浏览器推进：Playwright既有空白页→正常3310→可见IAM表单合法凭据→/app；两专案独立展开、外部2条会话常在。原QA会话Direct→P→Q→Direct，每次move200，同ID/历史保持，硬刷新后body一致；刷新侧栏重置collapsed需手动展开，初次过早text比对/未展开等待失败明确保留，展开后原2条恢复。无新模型/资金/seed/永久删除。另真实agents404、billing summary503、runtime-manifest403仍FAIL不冒全能力绿。新完整70组PASS不增加，子例证据待归档。
+
+### 05:03 T-B07.R255-DRAIN-FIX 最窄源码准入
+
+Root22101修正客户端即时消费后仍真实RED：4例3/1、7.01秒；已接受的合法账户读返回503而非200，有body，16freeze/PG77集合exact，原3例绿。原88700只有deadline观测保留为初轮，不当精确业务归因。批准原唯一Billing writer只现src/bootstrap/create-billing-runtime.ts：cached closePromise内部先adapter.close stop-accept/drain，再application.close destroy；二者失败仍都尝试，primary保留/secondary聚合，禁止改budget/断言/main/Prisma/鉴权/contract/generated/五mixed。冻结后Root同4runtime+24读、窄lint/type及独审；没有正常服务/资金/模型写入。readiness/日志/旧栈cutover与完整70组保持OPEN。
+
+05:03 浏览器观察后继：发现已启用Playwright浏览器工具，readonly list实返仅一个about:blank（不是用户右侧IAB，0新标签）；Root在既有空白页对正常3310走正规IAM可见表单及项目/外部列表，不注cookie、不seed、不调用模型/资金、不复开旧服务。IAB原超时不冒恢复。当前只入口盘点实际完成，页面路径待执行；复用原T-C01/04及70组，不另建runner/计划。
+
+05:03 Root88700原main/真实PG drain RED：4例3PASS/1FAIL、6.99秒，16freeze与77库目录exact。已入站/实际ECONNREFUSED/仍活屏障后释放JWKS，child却SIGTERM deadline3000ms→code1，code0断言失败；尚未到200正文断言，不虚称观测500。独审核测试response/close时序，生产未准先修；readiness只读7acdd139与正常浏览器入口只读4f30891b已交，均不冒运行结果。
+
+## R255 05:03 原卡接续：真实在途关闭与独立读取调查
+
+|任务|原负责人/角色/基线/允许范围|行为基线、验证与后继|
+|---|---|---|
+|T-B07.R255-DRAIN-RED|billing_read_activation_0340，Billing唯一test writer；main261a20f+既有候选及五mixed，baseline0503；只现test/integration/billing-runtime.test.ts|复用原main/真实PG/JWKS屏障，已入站合法用户读→SIGTERM→关闭期间不得接新工作→释放JWKS后原请求保持正确业务结果→自然code0。先freeze交Root真实RED，生产未准；不用sleep/放宽budget/fakehandler/删除原3例，Root资源/Git。|
+|T-B07.R255-READY-READ|iam_grant_source_scope_0244，Billing只读；同261a20f/候选，Prisma ping/query pool/client真实failure边界|核最小真实已连接响应阻断反例与既有fixture可复用性；先仓外精确方案，不改仓/测试/资源/Git，不搭新框架/进程。保持同一pool、timeout连接释放、旧业务query预算不变；日志启用仅核最小现配置/脱敏，不冒修复。|
+|T-C01.R255-REAL-BROWSER-ENTRY-READ|system_guarantee_read_0315，Web/BFF/IAM只读；Webad918391、BFFef2d306、IAMc2014a3d+原mixed，0503baseline|沿现PRD/70组/测试入口核正常3310组合可执行浏览器E2E路径和已有合法QA凭据入口，仅给Root明确当前可用/缺失，不新建计划/fixture、登录假态/绕IAM，禁止读secret值/仓写/资源/Git/browser。Cua原观察阻塞未变，不能用controlled owner通过替代normal路径。|
+
+Root先确认原测试句柄全部finished与三代理completed，复用八原服务，不重复启动；原human决策及一次浏览器重开问题待答不重复。完整Wave0–7/70组11/8/14/36/1不变，normal资金/模型/schema写0；本片是关闭生命周期可靠性前置，真实用户验收仍OPEN。
+
 04:40 最终所有原测试句柄结束：59457最终27/0/5.48秒/16freeze/77库exact；75376窄lint0；53849最终tsc仍同6旧栈错误。runtime最终8c17c056仅4处类型/异常包装，Root复核无业务变化；55f43483独审两源码/前测试，不冒覆盖后修测试。候选未Git交付/正常Billing OFF，三原代理均停写。下一具体任务仍按本卡drain/ready/日志/旧栈有效断言承接，不复开原进程或全量支付阻塞现本人读。
 
 04:40 lint实际失败补记：Root77726窄slice lint exit1，唯一runtime测试三处throw unknown与一处Response|unknown冗余union共4错误，生产9路径无已报错误。原writer仅修这四类型/错误包装，非Error保为cause，不吞原错/cleanup、改断言/预算；冻结交Root复跑同27及lint。工程FAIL保留，不调用disable或放宽规则。

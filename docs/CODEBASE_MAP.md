@@ -1,3 +1,9 @@
+## R255 05:03 现入口证据接续
+
+当前正常3310真实用户入口已由Root在可用Playwright原空白页完成可见IAM登录、两project folder与外部列表、既有会话Direct→P→Q→Direct及硬刷新恢复；不使用preview/受控IAM/新seed，Root自有浏览器已关闭，IAB仍原观察问题。证据var/dev/r255-preserve/0503-normal-browser-journey.json与0503-normal-project-restore.png；不增加完整70组PASS。现GET /api/session/agents404/summary503/runtime-manifest403分别按原owner续推进，df4631ef只读报告区分未契约目录与未启owner/鉴权策略，禁止猜测放宽。
+
+Billing唯一factory关闭顺序与idle完成回收候选f481e4a7、原runtime test6a7dcdf8；现原source main+真实PG/TCP4runtime和24本人读负控28/0、Root65723/6.17s/16freeze/77exact，72779lint0，66327types仍旧栈6错误。Node24.20内嵌_http_server已保存ignored0503-node24-http-server.js供语义审查；不新建框架/网络协议。readiness/log/旧server有效语义承接与source-dist/fullcutover仍待做，正常Billing OFF，19项/支付worker保持后继。独审f70c7dde与三原代理STOP/Root句柄finished记录于同台账。
+
 04:40 最终runtime测试550行/8c17c056，非Error包装保cause、Promise<unknown>去冗余，九生产同freeze未再变；Root最终27/0+窄lint0，tsc仍6旧栈错误。Billing正常未启，未提交候选；Web ad918391为测试诊断提交，不是正常项目链路修复。
 
 ## R255 04:40 实际入口与测试地图（Billing候选未启用）

@@ -1,3 +1,12 @@
+## R255 05:03 实际闭环切片：正常浏览器旅程 + Billing drain
+
+- **真实用户浏览器已能推进**：未继续循环超时IAB；可用Playwright工具原about:blank上正常3310→可见IAM邮箱/密码表单→/app，无cookie注入/seed/新tab。两专案独立展开、外部直接会话区保持；原QA会话Direct→P→Q→Direct三次真实move200，同Conversation ID/历史保持，项目与外部列表更新，硬刷新后正文一致，最终原2条Direct恢复。只执行可逆既有会话操作，无模型/资金/永久删除；Root自有浏览器已close，用户IAB未动。证据0503-normal-browser-journey.json/截图。
+- **观察边界**：首次textarea可见不等水合完成，未等loading隐藏就比较得false；Q与rail刷新后折叠造成两次15s locator失败，展开后恢复。保留初次实际失败/纠正，不把超时冒数据根因。1200px截图不证明宽屏偏好所有断点；移动/多tab/草稿/删除/队列/执行续流未覆盖，完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，新增完整组PASS=0。
+- **真实业务失败未隐藏**：正常agents404（Web→BFF现generic/agents，正式GET契约尚缺）、Billing summary503（normal owner OFF）、runtime-manifest403（服务鉴权或站点策略尚未精确定位）。三只读报告给后继原owner最窄范围，不虚构目录、恢复fallback或放宽权限。
+- **Billing drain 有效RED→修复证据**：Root88700初轮只deadline失败3/1；立即消费body排除观察依赖后22101确认在途本人读503非200，3/1、7.01秒。先HTTP drain→Nest销毁provider后5718业务200/精确余额通过，但自然退出仍deadline3000ms/code1（27/1）；真实Node24.20内嵌HTTP源码与Fastify核定active转idle缺再次reap。只现factory关闭期onResponse+writableFinished→native closeIdleConnections（不强杀active、不改keepalive/预算）。Root65723同4runtime+24真实owner读负控**28/0、6.17秒**，16freeze/77数据库集合exact、自有child/JWKS/库回收，accepted200/no-store/4560000与自然code0/signalnull均通过。
+- **仍不交付整仓**：factory f481e4a7/test6a7dcdf8冻结；Root72779两路径lint0，Root66327整仓直接tsc exit2仍同6旧栈错误。独审f70c7dde该最窄片无新增已证P0/P1/P2；readiness已连接响应黑洞、日志脱敏、15旧栈caller有效断言迁移/server删除、source/dist/fullbuild/contract门及正常Billing激活仍OPEN。候选未提交；19业务operation/worker/支付后继不缩水。
+- Root36b74fc基线；Webad918391/BFFef2d306/IAMc2014a3d/Agent95a11500/System955bd587均无本轮仓写，Billing只两批准路径变化，原mixed/gitlinks/uv保护。八原进程registry c4b9c000不变，同句柄alive/200仅可用性；无正常服务重启/重复、PG/Redis reset、资金/模型/schema变更。三原具名代理已STOP，Root所有88700/22101/5718/65723/72779/66327结束。原费用/schema业务决定及IAB问题待答不重复；normalPlaywright可用不冒IAB恢复。
+
 04:40 最终冻结补证：runtime测试只修4处lint类型/异常包装后SHA8c17c056；Root59457同3+24重跑27/0、5.48秒、16freeze/PG77exact，Root75376九生产+runtime lint0。Root53849最终直接tsc仍同6旧栈错误；不冒全工程通过。独审55f43483绑定前一测试e8e5054e及两源码，最终4处测试类型差异由Root复核，业务断言/预算/屏障保持；不冒独审已覆盖后修测试。
 
 ## R255 04:40 当前事实：三路并行推进，正常用户验收仍 OPEN
