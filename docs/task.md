@@ -1,3 +1,19 @@
+## R255 00:17续推：独立页面用户路径与正常Platform准入
+
+Root本轮纯topology门exit1，当前子仓HEAD与Root gitlink差异保留，不改任务外gitlink；日志var/dev/r255-preserve/root-normal-library-topology.log，发布门未关闭。
+
+本轮交付：Root正常资料库123B文件上传/CLEAN/刷新/下载byte-equal及超限拒绝实际通过子路径；Agent作品只初始loading不PASS。Platform494b118现正规installer/精确catalog门均exit0，单库kokoro_platform9表/fixed slot、邻owner catalog unchanged，持久输入0600；尚无Platform listener/正规凭据组合/Skills用户PASS。三原只读角色已停读，未派源码writer/提交。receipt见CURRENT；原70统计不变。
+
+T-K02.R255-NORMAL-PLATFORM-SCHEMA：Root唯一资源writer；Platform494b118 clean，既有三面/installer schema边界已批准。真实只读现库kokoro_development中kokoro_platform absent/0表，先保存邻owner catalog摘要，显式Node24/pnpm11.25运行现db:apply-schema一次，只新建本owner canonical与fixed slot，不seed用户/fixture/改代码/清库；后验exact并核邻catalog不变。固定.env.local仅持久开发输入，缺正式IAM/Storage凭据期间不启动listener、不称页面闭环。
+
+T-K02.R255-NORMAL-PLATFORM-PROVISION-READ：原bff_skills_v2_owner_r251仅只读IAM现operator API/旧fixture的正常API调用shape、Storage/BFF配置声明；只/tmp/r255-platform-provisioning-read.md，不读私密或连接资源、不改仓/Git。Root先核已有真实授权client再按正式owner入口组合，禁止复制临时issuer或共用credential。
+
+|任务/既有归属|角色与基线|写入/资源边界|验收与依赖|
+|---|---|---|---|
+|T-F01.R255-NORMAL-LIBRARY|Root真实浏览器QA；Root20b13543/Web73444e65；既有IAB3/tab8|仅既有正常UI、本次唯一QA文本文件及ignored证据；不删用户资料，不调用模型，不新启服务；源码只读|本人资料库→选本次文件→上传/扫描→刷新→下载逐字核对；先记录真实失败，完整文件/作品异常组不随子例关闭|
+|T-K02.R255-NORMAL-PLATFORM-READ|原capability_composition_owner_r247只读；当前Platform工作树/commit现场核；Root审|仅读当前三D0/schema/入口/合同/BFF配置声明；只写/tmp/r255-normal-platform-preflight.md；不读秘密、不改仓/Git、连接DB或启动服务|核普通源码单库owner-schema启用是否已批准且可行，最小缺口/原文件切片与验收；不得以readiness或旧fixture冒发布安装执行闭环|
+|T-F01.R255-NORMAL-LIBRARY-READ|原web_r247_skill_header_owner只读；Web73444e65/BFF97a99d35/Storage现SHA核|仅读文件UI→同源→BFF→Storage合同与设计；只写/tmp/r255-normal-library-preflight.md；无浏览器/共享资源/Git写|给当前实际文件限额、扫描、下载/过期/失败业务状态、可用UI行为；Root按真实浏览器失败决定最窄修复，非自动授权源码重写|
+
 ## R255 23:41 CODE 补充：侧栏账户唯一 consumer
 
 Root 发现并实际浏览器复现侧栏账户无 owner 事实仍显示“免费”，且新 schema 使 workspace-rail-account.tsx:97 balance_micros 触发 TS2339。同一 Web writer 追加授权两个既有文件：src/components/blocks/workspace-rail/workspace-rail-account.tsx、tests/ui/workspace-rail.test.tsx；先新增账户未知不冒免费与新 available_micros 显示行为反例，再窄改消费字段和移除无事实套餐标签，保留订阅入口/账户身份/布局职责。只读审查和 Root 集成复跑后验收，不新文件/合同/依赖/服务/认证框架，不扩大资金职责；原混合变更保持。模型授权 consumer 仍硬阻塞真实聊天，70组统计不变。

@@ -1,3 +1,11 @@
+## R255 00:17续推终态：正常资料库主链实测，Platform持久schema已就绪
+
+- Root在既有IAB3/tab8、正常3310/Web73444e65/BFF97a99d35/Storage14f2bc9，完成本次唯一123B UTF-8文本选择→上传→扫描通过→权威文件行→硬刷新保留→原生下载保存；下载与原文件byte-exact，SHA256 c78880987bcf92bd249fd8d8539eda47a82017d3005036147943b405525f1c3e。1048577B超限选择/提交被明确拒绝，原文件保持，错误后刷新可恢复正常列表。只上传本次QA文件，保留用户数据、0模型/资金调用；Agent作品标签仅观察初始loading、未等待终态，不写空态/PASS。download事件工具超时但实际原生文件已保存并核SHA，是工具观察缺口而非伪造产品失败。
+- 复用7原正常PID/工具句柄均200，没有重复服务/临时库/Redis reset。Platform494b118 clean，Root只读实证单库kokoro_development中kokoro_platform absent；现Node24.20/pnpm11.25正规db:apply-schema exit0，后续assertPersistedCanonicalSchema exit0，当前9表/fixed slot、邻6owner catalog摘要96ce12d2 unchanged，无新role/数据库/应用seed。持久0600 .env.local保存正常开发输入，未放置fixture凭据，Platform尚未启动listener。
+- 三原子Agent独立只读完成Library规则、Platform源码准入和IAM正式provisioning顺序；Platform正常源支持单库边界，阻断不是重写installer，而是现IAM operator exact资源/client盘点与正式独立凭据交付、Storage/BFF受控装载。后继仍现pnpm dev与持久配置，不启旧fixture launcher、不复制sandbox-v1，不以schema绿冒Skills发布/安装/执行闭环。Billing正式admission/赠送/费用与Agent硬缺口保持；C3原一次待答不重复。
+- Root本次纯topology门exit1：现7子仓HEAD与Root记录gitlink不同（既有未提交保护边界），未靠暂存gitlink/放宽检查清零；日志normal-library-topology留存。资料库业务子例与该仓库发布门分别记账，正式全仓发布仍OPEN。
+- 同task/test-cases更新组内主链、超限和未验边界，70组11通过/6失败/14待复测/38未验/1支付后置不虚增。证据ignored var/dev/r255-preserve/browser-normal-library-journey-receipt.json、normal-platform-schema-{before,after}.json及exact/install日志；三/tmp只读报告供接续，不新建计划中心。以下上一切片证据为历史，仍有效但不覆盖本节新事实。
+
 ## R255 23:41续推终态：个人积分消费者已提交，完整用户能力仍未闭环
 
 - Web main73444e65a1c6d22d94101acc5cfeb9c5b123d457精确34path提交：固定BFF97a99d35/public8.0.0/33971eaa两读，删除旧wallet/quota/daily/by-model与无owner免费推导。本人可用/预占与journal保精确decimal/BigInt；wireUTC Z、本地日历/locale展示；总headers/body/parse10秒及真abort/release；mounted refresh/分页/actor退役，不建认证/钱包/通用框架。
