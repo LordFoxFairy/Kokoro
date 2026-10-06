@@ -1,3 +1,16 @@
+## R255 正常 Billing 启动与左栏当前反馈实证（2026-10-06 07:16–07:25 UTC）
+
+- **实际正常开发增量**：正式安装入口在正常kokoro_development唯一空kokoro_billing schema安装成功，邻owner464个catalog对象逐项exact；db:verify-schema exit0/differences=[]。没有业务seed/余额/赠送。现持久ignored .env.local权限0600；Billing唯一源码pnpm dev session6148/root59116/listener59122/4245，health/ready200。仅BFF原1963经句柄Ctrl-C exit130后按原持久环境补正规两读URL/独立role token并重载为48037/59614/59620/53714；其余七服务/PG/Redis保持，唯一processes registry更新，当前九root PID活且各probe200。probe不冒完整业务。
+- **真实IAM用户计费页**：正常3310点用量与计费，summary/ledger均实际404，浏览器同源只读补核两个code=billing_account_not_found。现不存在本人credit account；页面退出loading，点击现重新加载仍同两404/终态error（loading0）。正式owner读取已从OFF/503接通，但UI仍把未开户显示成通用加载失败，是确定展示缺口；不得冒零余额/开户/扣款链闭环。No gift/hold/settle/release/model执行。后继按Credit owner正式开户/授权赠送与Web未开户语义，C3其余19operation/完整Agent费用链继续OPEN。
+- **左栏当前实测**：Web66e6f76原布局修复未重写。正常两个folder自身空态GET200；1200×460真实wheel top0→331→0，client289/content620、width276/scrollWidth276，Direct底346.60可达且footer固定；点外部QA历史两原标记保留/loading0。实际P→Q→P→Direct导航均正确、Direct2常在；项目概览额外conv_807…snapshot404仍有。只读索引已证P activeId精确等该ID，client404→null/machine清hydrating留local draft，因此非list404、非已证跨scope泄漏；overview隐式恢复后继必须保同ID深链/Direct恢复/hidden pending，不据此盲清本地数据。独审e0dc4471报告；完整CRUD仍OPEN。截图sidebar-current-feedback-expanded.png与sidebar-billing-current-browser.json；两30秒旧label/折叠假设观察错误如实保留、据新snapshot纠正。Root自有页已close，用户IAB未动/未宣称其已更新。
+- **辅助工程/风险**：A4/A6最终20path冻结exact，Root真PG/source HTTP46/0、actualexit0/10.48s、77库目录exact；最初runtime正则非法导致收集exit1虽39PASS保留，唯一转义修复与独审补充绑定92a169b3。窄format/lint0；整tsc仍旧server/stripe两错误exit2，修好Node24 pnpm shim后正常build仍旧server missing registerMetricsRoute exit2，不恢复alias隐藏失败。原Billing候选未提交，四拒收legacy承接草稿保存且原文件exact恢复；原Web四mixed、Root uv/gitlinks保留。完整70组仍11 PASS/8 FAIL/14 RETEST/36 UNVERIFIED/1 PAYMENT-LAST，不新增整组PASS。完整Wave0–7 goal active。
+
+## R255 当前用户左栏反馈复核（2026-10-06 07:05–07:08 UTC）
+
+沿 Web66e6f76 已提交布局片，Root正常3310真实IAM既有账号复测：两个folder各自展开且children位于其header下；1200×460左栏wheel top0→331→0、宽276/scrollWidth276、头尾固定，滚到底Direct bottom346.60小于footer356.80；收起一folder不收起另一folder，Direct2保留。重新进入/等待实际水合后展开，真实空项目反馈与原两次回答标记保持，工作区loading0。此次无新Web源码、业务数据/模型/资金写入或服务重启，自有验证页已关闭。用户原IAB tab7同步超时，不能冒原标签已更新；首reload观察过早判断disclosure导致30s等待失败，后据实际状态重选/等待清单终态成功，失败不抹去。重跑证据sidebar-current-0705-recheck.json。布局/滚动子例正控不冒全部左栏CRUD、触屏或整体系统完成。
+
+Billing并行A阶段审查发现原0612承接前提错误：Admission/Checkout/Settlement/Stripe工厂仍依赖旧表，现canonical只有credit/metering，无对应承接API。Root已停写四候选，逐hash确认STOP内容、保存拒收草稿后精确恢复到本轮起点（四原文件非mixed，原SHA核对）；不造旧表/skip/伪RED。仅A4持久JSON/A6现main probes待真实验证，未提交/未启动normal Billing；余原候选/mixed保持。报告fc8a0c6a与b4650ebd、恢复回执billing-next-rejected-restoration.json；正常两本人读不需等待支付19项，完整目标不缩。
+
 侧栏三source及相邻CURRENT/INDEX/ACCEPTANCE精确6路径已提交 Web66e6f76e319c5f7434f7299ccb03f0e7f06b3009，原4mixed未纳入。首次提交前保护命令误用Web cwd，两个检查失败后shell仍继续精准提交；后续Root绝对路径重核原mixed/uv/registry/3source冻结全部exact、index空，失败留存，不虚写首次命令通过。真实浏览器与最终门证据不变，完整70组不增PASS。
 
 ## R255 用户侧栏树与滚动已修（2026-10-06）

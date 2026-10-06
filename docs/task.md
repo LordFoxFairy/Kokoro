@@ -1,3 +1,45 @@
+## R255 本轮交付与后继（2026-10-06 07:25 UTC）
+
+本轮实际progress：正常Billing schema安装/漂移通过、正常唯一main启动、BFF原句柄正式重载、真实IAM计费页从503转正规缺账户404；当前左栏轮滚与folder子例正控复核、项目隐式local draft恢复ID来源已实证。非全用户闭环。原代理均STOP；Root自有页关闭，九normal进程运行供继续调试。
+
+后继原T-B07：Web缺账户友好终态与正式Credit开户/授权赠送（禁止GET seed/假零），Billing现C3 canonical承接/旧server及13caller有效规则退休、整build/type两失败；现19operation/worker/Agent费用链不缩。原T-C01/C04：完整项目/会话CRUD、触屏/分页/局部故障真实验收仍OPEN；项目overview多余draft snapshot按原owner最窄设计先核同ID深链/在途保护，当前404不是list失败。独立业务面继续并行，不反复重造已修CSS。现CURRENT/progress/test-cases/map记录具体证据；完整70组11/8/14/36/1不变。
+
+## R255 左栏当前反馈：真实操作复核与业务边界审查（2026-10-06）
+
+Root负责正常3310既有IAM会话的两个项目展开/收起、短窗口上下滚动、项目入口与外部会话往返及硬刷新；不新增用户数据、模型或资金调用。原T-C01/T-C04继续。iam_grant_source_scope_0244负责只读Web当前66e6f76左栏结构及项目列表加载/入口边界审查，范围仅workspace-rail、project surface与现navigation/client；不改文件、运行服务或操作浏览器/Git。先区分已修布局和仍失败业务，Root记录真实结果后决定最窄修复；独审报告/tmp/r255-sidebar-current-feedback-review.md。Billing当前读取激活验收同时收口，不冒整页/CRUD完成。
+
+## R255 正常 Billing 读取激活接续（2026-10-06，T-B07）
+
+上一goal turn分类progress：真实左栏证据更新且发现/纠正Billing旧表承接前提，四拒收草稿保存并精确恢复；不靠状态重述算进度。Root fb75f2d8/Web66e6f76/Billing261a20f+原候选及mixed保持。
+
+|任务/角色|原负责人、写入范围|完成条件/边界|
+|---|---|---|
+|现 A4/A6冻结审查|system_guarantee_read_0315，只读Billing现persisted-json/runtime两测试及原source graph|绑定当前hash保原有效断言/probe/lifecycle；不改仓或运行共享资源/Git。A1/2/3/5已恢复不冒承接；正常2read不等待19/payment。|
+|正规BFF→IAM→Billing读取准入|iam_grant_source_scope_0244，只读BFF配置/startup、IAM已发布profile、Billing鉴权、正常dev机制|给Root持久配置字段/重载方法/本人身份来源/正常schema已有数据语义；不得读取/输出secret值、SQL跨owner、启动服务或写仓；不伪余额/赠送。|
+|Root真实资源/集成验收|Root，现ignored evidence/持久.env.local/唯一processes registry及既有台账|现source真实PG+精确HTTP/lifecycle冻结复验；只读核正常owner-schema，准确列工程残留；唯一源码开发main启动，正规BFF消费→真实IAM积分页余额/流水，不存在账户404不假seed。必要BFF配置重载先检查原句柄，其他7服务/PG/Redis保持，记录新句柄；完整C3/收费/19目标仍OPEN。|
+
+没有新模块/contract/schema/临时预览。所有生产候选只按批准原位设计；若发现正常依赖/入口实际缺口，先owner归属及真实失败后窄切片，不恢复legacy栈。
+
+## R255 当前用户左栏反馈复核（2026-10-06 07:05–07:08 UTC）
+
+沿 Web66e6f76 已提交布局片，Root正常3310真实IAM既有账号复测：两个folder各自展开且children位于其header下；1200×460左栏wheel top0→331→0、宽276/scrollWidth276、头尾固定，滚到底Direct bottom346.60小于footer356.80；收起一folder不收起另一folder，Direct2保留。重新进入/等待实际水合后展开，真实空项目反馈与原两次回答标记保持，工作区loading0。此次无新Web源码、业务数据/模型/资金写入或服务重启，自有验证页已关闭。用户原IAB tab7同步超时，不能冒原标签已更新；首reload观察过早判断disclosure导致30s等待失败，后据实际状态重选/等待清单终态成功，失败不抹去。重跑证据sidebar-current-0705-recheck.json。布局/滚动子例正控不冒全部左栏CRUD、触屏或整体系统完成。
+
+Billing并行A阶段审查发现原0612承接前提错误：Admission/Checkout/Settlement/Stripe工厂仍依赖旧表，现canonical只有credit/metering，无对应承接API。Root已停写四候选，逐hash确认STOP内容、保存拒收草稿后精确恢复到本轮起点（四原文件非mixed，原SHA核对）；不造旧表/skip/伪RED。仅A4持久JSON/A6现main probes待真实验证，未提交/未启动normal Billing；余原候选/mixed保持。报告fc8a0c6a与b4650ebd、恢复回执billing-next-rejected-restoration.json；正常两本人读不需等待支付19项，完整目标不缩。
+
+## R255 Billing 旧入口断言承接 A（续原T-B07，2026-10-06）
+
+上轮分类：progress，Web66e6f76/Rootfb75f2d8已改变权威源码并真实浏览器验收，完整70组未闭。本轮沿完整Wave0–7，normal余额读取不等待支付19项，但收费/全部操作最后验收目标不缩。
+
+基线Billing main261a20f+原19候选及五mixed，billing-next-baseline.json逐tracked/非ignored保护，Rootfb75f2d8/Web66e6f76。所有Git/资源/正常browser由Root，原八进程先验句柄再复用，不重复启动或reset。
+
+|原任务/角色|负责人/范围|阶段门/完成条件|
+|---|---|---|
+|T-B07 A有效断言承接|billing_read_activation_0340，Billing唯一writer，仅现test/integration/{admission-command-receipts,checkout-http-replay,durable-result-http,stripe-payment-gating,billing-runtime}.test.ts及test/unit/persisted-json.test.ts|先Root实际原源码门2FAIL已证，再按0612只读报告A1–A6承接现service/真实PG资金与幂等/损坏/签名规则；health/metrics加当前原main HTTP正控。保持原7runtime预算/cleanup/日志，原candidate其他18保持。不要创建transport helper/mock server/alias/新API或schema；Stripe component不冒HTTP ingress。冻结后Root真实PG、typed/lint/format和独审；B删除旧server与13caller后继另准，不先删断言。|
+|独立范围与消费审查|system_guarantee_read_0315，只读Billing/Sys/BFF/IAM正规两读准入与现D0|核A六路径有效断言承接、最小B与正常2read配置依赖；不得资源/秘密/browser/仓写。Root后继启动正常读取，不让支付/19项误成前置。|
+|Root真实资源与验收|Root，现私有runner/正常持久配置与CURRENT/task/progress/test-cases/map|唯一既有PG实例隔离测试库，仅自己的临时库回收；真实失败记录与同source门；B后唯一source/dist/正规两读→真实IAM用户积分页，不伪造充值/free/全验收。原19operation/授权赠送/Model/Agent chain后继保持。|
+
+放置引用Billing三D0当前Nest增量组合/SQL owner schema及0612报告0f0be0ca：采用现六测试就地保有效业务断言，淘汰恢复旧runtime.server/第二HTTP栈。owner/公开API/SQL无变化，无新目录；删除项是测试中已停用v1调用而不是业务保障，所有未承接19能力仍OPEN。共享contract/generated/lockfile/数据库与五mixed文档不授权。
+
 侧栏三source及相邻CURRENT/INDEX/ACCEPTANCE精确6路径已提交 Web66e6f76e319c5f7434f7299ccb03f0e7f06b3009，原4mixed未纳入。首次提交前保护命令误用Web cwd，两个检查失败后shell仍继续精准提交；后续Root绝对路径重核原mixed/uv/registry/3source冻结全部exact、index空，失败留存，不虚写首次命令通过。真实浏览器与最终门证据不变，完整70组不增PASS。
 
 本次侧栏切片状态：待提交验收记录；Root真实页面GREEN与最终146辅助UI/build/lint/types/contract/architecture均0，独审e0829f2b。仅三source与相邻事实文档提交，所有任务外修改保持。完整70组不增PASS。

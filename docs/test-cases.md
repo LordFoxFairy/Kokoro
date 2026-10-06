@@ -1,3 +1,13 @@
+## R255 当前正常浏览器复核与正规积分读取（2026-10-06 07:25 UTC）
+
+|原用例/类别|预置条件|实际步骤|预期/实际结果|优先级/状态|
+|---|---|---|---|---|
+|T-C01.R255-SCROLL 边界|正常IAM、两原项目展开、1200×460|鼠标wheel下700→点原Direct QA→wheel上700|top0→331→0、宽276无横溢出、固定footer、原2回答/Direct2/loading0；布局子例通过，不冒CRUD|P1/子例PASS|
+|T-C04.R255-TREE 主链/状态|同正常账号、原P/Q|展开两folder→P概览→Q→P→外部QA|各空列表200/自身反馈、外部2条保持/正文不丢；额外draft snapshot404未作为list失败，原scope索引已证ID对应|P1/读取子例PASS，完整组OPEN|
+|T-B07 正规本人两读 异常/状态|正常Billing已正式装schema并启动，未创建账户|页面点用量与计费→等待两个终态→点重新加载|实际summary/ledger404 billing_account_not_found，loading0、重试同终态；当前通用加载失败文案不正确表达未开户，未有余额/扣款/流水PASS|P0/正式读取接通，页面与完整资金链OPEN|
+
+根源分别为已修CSS布局/有界滚动与独立未开户UI语义；项目额外404是恢复local draft而非列表失败，不追加无证race修复。两旧label/折叠状态假设导致30s观察失败保留；实际状态重选后成功。真实UI与浏览器同源只读补核分开，辅助46/0不替代用户验收。现截图和sidebar-billing-current-browser.json记录；Root自有页已关，用户IAB未动。
+
 ## R255 侧栏树与滚动用户验收（2026-10-06，T-C01/T-C04，正常浏览器已复测）
 
 不新增70组分母；正常3310既有IAM会话、既有P/Q与两条Direct，0会话/项目/模型/资金写入。风险：项目children横排溢出、被裁列表无wheel可达、nested滚动与头尾互相抢空间。

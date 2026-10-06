@@ -1,3 +1,9 @@
+## R255 当前正常调试入口更新（2026-10-06 07:25 UTC）
+
+正常九owner源码进程已运行：Billing现main→canonical Nest/Credit两GET+health/ready/metrics，持久.env.local/4245/session6148；BFF仅正规两读配置重载53714/session48037。唯一registry var/dev/processes.json记录，其余七进程/PG/Redis保持。正常kokoro_billing schema由本仓db:apply-schema安装、db:verify-schema无漂移，未seed账户/资金；浏览器两本人读404 billing_account_not_found，Web现billing panel通用error而不是未开户语义，不能假账户/零余额。
+
+左栏现三布局source66e6f76已复核；project scope本地索引→browserEngine→machine首次hydrate(activeId)是overview额外snapshot路径，与folder list的scope=project_ref分开。P索引activeId实际对应conv_807…；client404返回null且机器清loading保local draft，非已证scope泄漏。省略隐式hydrate须同时保同IDdeep-link与在途，不简单删除恢复。无新模块/契约，完整CRUD/收费链继续原台账。
+
 ## R255 当前侧栏布局入口（2026-10-06）
 
 Web66e6f76现 `src/components/blocks/workspace-rail/workspace-rail-navigation.tsx` 给项目li专用folder class；`workspace-rail-items.module.css` 拥有纵向folder/同元素项目padding/自然高列表与常驻空Direct；`workspace-rail.module.css` 拥有唯一纵滚content与固定头尾，compact共享。未改scope/身份/数据/API/宽栏偏好；实际正常页证据与未验项见现CURRENT/ACCEPTANCE及Root docs/test-cases.md。
