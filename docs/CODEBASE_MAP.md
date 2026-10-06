@@ -1,3 +1,7 @@
+### R255 03:40 Billing D0已收口（261a20f0，尚未实现启动）
+
+Root精确接收四D0前缀104行：唯一main/source/dist增量canonical Nest、现两本人GET+真实probes先正常启动，19项/worker/支付仍完整后继，不保v1代理/第二runner/假成功。仅前缀+旧HEAD入index，四原mixed suffix及CURRENT/source全部保护；修正新runtime测试放现test/integration，不建单文件smoke目录。D0源码/contract/Schema/资源变化0，不能称Billing已启动。后继原负责人只写合法原main/真实PG/TCP composition RED；Root实跑后才准source。
+
 ## R255 03:40 现入口定位增量（不新增owner/运行模式）
 
 - IAM main `c2014a3d`：现oauth/clients schema/readback/repository/service→具名replace/read；exact client PG行锁后CAS先no-op，仅名单metadata+现AuditWriter同tx；commit后官方/持久双读再ACK。现src/provisioning/provisioning.config.ts及scripts/provision-oauth.ts两个命令64KiB/5秒stdin与原0600Session Cookie；授权read返回名单，日志/Audit只摘要。7source/test freeze exact、CURRENT仅验收前缀；issuer/native四安全源未改，资金完整consumer不在此片。

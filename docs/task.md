@@ -1,3 +1,11 @@
+### R255 03:40 Billing 正常入口行为RED卡
+
+T-B07.R255-BILLING-RUNTIME-RED：billing_read_activation_0340/gpt-5.6-sol唯一test writer；main261a20f+原五mixed，Root审/Git/资源。只准现test/integration内新billing-runtime.test.ts（§8已采用现目录，不新模块），以及仓外freeze/交接报告；其他文件禁止。按已收四D0，复用现真实owner PG fixture/Canonical CreditService建合法测试账户、五因素BFFmachine auth及原main source子进程/随机TCP；先health控制可达，v2本人两读200预期对旧入口404实际RED。只证明composition缺失，deep现credit-read-http矩阵后续同跑，不冒正常用户PASS。env明确allowlist、子进程deadline/有限输出/敏感信息不日志、finally终止并等待后关闭fixture；作者不运行PG/Redis/provider/正常env/服务/Git，不调用正常赠送；Root冻结后实跑隔离资源。source patch未准入，禁止提前改main/module/config/旧测试/contract。
+
+### R255 03:40 Billing D0已收口（261a20f0，尚未实现启动）
+
+Root精确接收四D0前缀104行：唯一main/source/dist增量canonical Nest、现两本人GET+真实probes先正常启动，19项/worker/支付仍完整后继，不保v1代理/第二runner/假成功。仅前缀+旧HEAD入index，四原mixed suffix及CURRENT/source全部保护；修正新runtime测试放现test/integration，不建单文件smoke目录。D0源码/contract/Schema/资源变化0，不能称Billing已启动。后继原负责人只写合法原main/真实PG/TCP composition RED；Root实跑后才准source。
+
 ### R255 03:40 Root纠偏：正式读入口不能继续等待全部支付能力
 
 Root不采纳只新增未被main使用的C3-F factory作为读页面修复：它仍让个人余额/流水等待19个后继operation和支付/worker，违背用户正常开发、支付最后及用户旅程优先。完整24operation目标/有效业务语义保留，不删能力，也不冒全部上线。下一D0明确**增量研发入口**：唯一src/main.ts/source/dist用当前canonical Nest模块图，最先装现两个人GET+真实probes，未承接operation仍明确未实现、不代理旧v1/不seed/不做成功占位。已替代旧runtime实现同片删除，禁止第二mode/端口/runner；旧有效业务语义按原任务承接并删除残余路径，不以保留旧运行栈作兼容。最终全24/worker/支付真实验收仍总退出线，但不作已有只读页面的开发启动前置。

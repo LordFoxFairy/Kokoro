@@ -1,3 +1,7 @@
+### R255 03:40 正常读取入口准入状态更新
+
+Billing四D0已提交261a20f0：总24operation退出不变，但不再把赠送/全部支付能力作为现两GET开发启动前置。正常runtime仍未实现/启动，T-B07.R255-NORMAL-READ仍未执行；下一先实际原src/main.ts+隔离PG/TCP的composition RED，不拿404当完整用户业务结果。70组状态不变。
+
 ## R255 03:40 T-B07 名单切片辅助记录（不增加70个完整用户组）
 
 **统计保持11 PASS /8 FAIL /14 RETEST /36 UNVERIFIED /1 PAYMENT-LAST；本轮完整用户PASS新增0。** IAM mainc2014a3d。

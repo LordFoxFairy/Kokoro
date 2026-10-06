@@ -1,3 +1,7 @@
+### R255 03:40 Billing D0已收口（261a20f0，尚未实现启动）
+
+Root精确接收四D0前缀104行：唯一main/source/dist增量canonical Nest、现两本人GET+真实probes先正常启动，19项/worker/支付仍完整后继，不保v1代理/第二runner/假成功。仅前缀+旧HEAD入index，四原mixed suffix及CURRENT/source全部保护；修正新runtime测试放现test/integration，不建单文件smoke目录。D0源码/contract/Schema/资源变化0，不能称Billing已启动。后继原负责人只写合法原main/真实PG/TCP composition RED；Root实跑后才准source。
+
 ### R255 03:40 主控纠偏裁决
 
 只新增未被main使用的Billing factory、不切正常入口并继续等19个operation/支付，不作为当前读页面修复。Root已沿原C3放行四D0前缀对齐：唯一main/source/dist增量装配现canonical两读+probes，无第二mode/临时runner/旧v1代理/假成功；全24/worker/支付仍最终退出线，但不再卡已有读功能的正常开发启动。旧有效业务语义逐项承接、已替代运行实现删除；四D0由原负责人写入中，源码仍未放行，不能称正常Billing已启动。
