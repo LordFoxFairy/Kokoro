@@ -243,6 +243,9 @@ def parse_args(argv=None):
     ):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(argv)
+    postgres = urlsplit(args.postgres_admin_url)
+    if postgres.scheme != "postgresql" or not postgres.username:
+        parser.error("explicit PostgreSQL role is required for the isolated CLI")
     for name in ("iam_node_bin", "bff_node_bin", "bff_source"):
         setattr(args, name, Path(getattr(args, name)).expanduser().resolve())
     return args
@@ -459,6 +462,141 @@ def main(argv=None) -> int:
                         == owner_before,
                         "read_changed_system_route",
                     )
+                evidence["stage"] = "admin_owner_lists"
+                for public_path, owner_path in (
+                    ("/v1/admin/model-labels", "/v1/system/model-catalog/labels"),
+                    (
+                        "/v1/admin/model-revisions",
+                        "/v1/system/model-catalog/revisions",
+                    ),
+                ):
+                    authoritative = system.data_of(
+                        system.http_json(
+                            system_base,
+                            owner_path,
+                            headers={
+                                "authorization": "Bearer " + system_token,
+                                "x-kokoro-service": "web-bff",
+                                "x-kokoro-tenant-id": ready.tenant_id,
+                                "x-kokoro-iam-permissions": "system:read",
+                                "x-request-id": secrets.token_hex(16),
+                            },
+                        )
+                    )
+                    status, body = session.request(
+                        bff_base, public_path, headers=headers
+                    )
+                    require(
+                        status == 200
+                        and set(body) == {"data", "meta"}
+                        and body["data"] == authoritative["items"]
+                        and body["meta"]["next_cursor"] == authoritative["next_cursor"],
+                        "admin_owner_list_projection_invalid",
+                    )
+
+                evidence["stage"] = "admin_visible_cas"
+                write_body = {
+                    "model_revision_id": route["model_revision_id"],
+                    "visible": False,
+                    "is_default": route["is_default"],
+                    "priority": route["priority"],
+                }
+                write_headers = {
+                    **headers,
+                    "idempotency-key": secrets.token_hex(16),
+                    "if-match": '"' + route["version"] + '"',
+                }
+                public_write_path = "/v1/admin/model-routing/" + route["label_id"]
+                status, body = session.request(
+                    bff_base,
+                    public_write_path,
+                    method="PUT",
+                    headers=write_headers,
+                    body=write_body,
+                )
+                saved = session.require_success(status, body, "routing CAS save")
+                require(
+                    saved
+                    == {
+                        **route,
+                        **write_body,
+                        "version": "2",
+                        "updated_at": saved.get("updated_at"),
+                    }
+                    and isinstance(saved.get("updated_at"), str),
+                    "admin_visible_cas_invalid",
+                )
+                authoritative_saved = route_read(
+                    system_base, ready.tenant_id, system_token
+                )
+                require(
+                    authoritative_saved == {"items": [saved], "next_cursor": None},
+                    "admin_visible_authoritative_read_failed",
+                )
+                status, body = session.request(
+                    bff_base, "/v1/admin/model-routing", headers=headers
+                )
+                require(
+                    status == 200 and body.get("data") == [saved],
+                    "admin_visible_public_read_failed",
+                )
+
+                evidence["stage"] = "admin_system_receipt_replay"
+                status, body = session.request(
+                    bff_base,
+                    public_write_path,
+                    method="PUT",
+                    headers=write_headers,
+                    body=write_body,
+                )
+                require(
+                    status == 200 and body.get("data") == saved,
+                    "admin_system_receipt_replay_failed",
+                )
+                for conflict_headers, conflict_body, expected_code in (
+                    (
+                        write_headers,
+                        {**write_body, "visible": True},
+                        "admin_model_routing_idempotency_conflict",
+                    ),
+                    (
+                        {**write_headers, "idempotency-key": secrets.token_hex(16)},
+                        write_body,
+                        "admin_model_routing_version_conflict",
+                    ),
+                ):
+                    status, body = session.request(
+                        bff_base,
+                        public_write_path,
+                        method="PUT",
+                        headers=conflict_headers,
+                        body=conflict_body,
+                    )
+                    require(
+                        status == 409
+                        and set(body) == {"error", "meta"}
+                        and body["error"]["code"] == expected_code,
+                        "admin_write_conflict_invalid",
+                    )
+                evidence["stage"] = "admin_invalid_session_rejection"
+                status, body = session.request(
+                    bff_base,
+                    "/v1/admin/model-routing",
+                    headers={**headers, "authorization": "Bearer invalid-session"},
+                )
+                require(
+                    status == 401
+                    and set(body) == {"error", "meta"}
+                    and body["error"]["code"]
+                    in {"session_invalid", "session_authentication_required"},
+                    "admin_invalid_session_not_rejected",
+                )
+                require(
+                    route_read(system_base, ready.tenant_id, system_token)
+                    == authoritative_saved,
+                    "admin_replay_or_rejection_changed_owner",
+                )
+                evidence["owner_cas_replay_conflict_session_checks"] = "passed"
                 evidence["status"] = "passed"
             except Exception as error:
                 # Never format arbitrary parser, credential, SQL or process output.

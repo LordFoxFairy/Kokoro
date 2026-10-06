@@ -1,3 +1,10 @@
+## R257 当前管理HTTP位置与正常加载边界（2026-10-06 16:20 UTC）
+
+- 正式BFF worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEADbac0cbf：`src/http/routes/model-routing-admin.ts` 只四具名operation、身份/请求/生命周期；`src/infrastructure/clients/owner/system-model-routing.ts` 固定System3.0转交/严格response/owner错误tuple；`src/bootstrap/server.ts` IAM准入后/generic mutation前分派，不建任意proxy；默认test/format已挂现15项。零BFF DDL/新Redis事实。
+- Root现 `scripts/e2e/run_admin_model_routing_smoke.py` 是自有真实IAM CLI/PKCE→BFF→System PG子链验收，明确显式已有PGrole、owned生命周期/cleanup/secret scan；不是WebE2E。IAM现fixture只安全诊断27行，无normal授予。
+- 正常BFF仍43ca源进程，accepted bac0cbf尚未重载；Web8bb02d6后台占位仍未读写新四op。前端沿既有ADMIN03后继，先固定BFF8.2 immutable pin/generated与现Admin布局，再真实浏览器验证，不另立后台权限体系或PRD。
+- System1460820仅三D0保证提案，production/System3.0不变。完整70组和九仓目标仍按CURRENT，不把本子链读写当全部页面完成。
+
 ## R257 当前导航源码与管理机器边界（2026-10-06）
 
 - 正常Web持久源码worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEAD8bb02d6：`src/ui/navigation/mounted-surface-navigation.ts` 是纯pathname分类与mounted history写的现唯一位置；`src/features/app/kokoro-app-surface.tsx` 投影browser pathname、SSR snapshot；`src/components/blocks/app-frame/use-app-frame-navigation.ts` 管会话query/settings hash的scope归属，不反向import feature。无新路由模块/alias，真实浏览器Back/Forward与两scope证据见CURRENT。

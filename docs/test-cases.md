@@ -1,3 +1,14 @@
+### R257 管理子链实际验收更新（2026-10-06 16:20 UTC）
+
+|用例ID/类别/标题|预置条件|步骤|预期结果|实际/证据|优先级|类型|
+|---|---|---|---|---|---|---|
+|R256-ADMIN-03.HTTP / 主链 / 正式管理员读取保存确认|自有真实PG、IAM CLI资格/Audit/CodePKCE/current session，BFFbac0cbf/System3.0|三个具名列表读取→单row visible CAS更新→owner和BFF回读|同tenant/label、版本2、完整目标字段相同|PASS仅owner子链：Root75617/r257-admin-http-committed-real-owner.json；正常浏览器未验|P0|真实owner系统集成|
+|R256-ADMIN-03.REPLAY / 状态/异常 / owner幂等与冲突|同owner临时row、已保存原key/body/precondition|原key重放→同key异body→新key旧version|原结果不再递增，异body409与version409，权威row不变|PASS同75617；不是管理员撤权重放验证|P0|真实持久化/异常|
+|R256-ADMIN-03.SECURITY / 权限 / 坏Session拒绝|真实IAM/现四管理operation|换invalid-session读取→回读System|401、稳定error envelope、owner不变|PASS子例同75617；合法普通Session403、撤权后原key、正常管理员入口仍UNVERIFIED|P0|安全/系统集成|
+|R256-ADMIN-03.HEADERS / 边界 / 正式HTTP层不误拒|BFF当前source/正式System3.0header语义|无body GET带JSONmedia头；owner成功不带Cache头|200且BFF public仍no-store，body/CAS/错scope仍拒绝|真实400/502有效RED后75617绿；15辅助纳默认829中，不代替页面|P1|边界/真实owner辅助|
+
+70完整组仍11/8/14/36/1，新增整组0；旧失败证据与所有未验项保留。后台页面、正常数据/双身份完整路径通过前不关闭T-U04或全面宣称上线。
+
 ## R257 本轮最新用户与机器验收（2026-10-06 15:29 UTC）
 
 完整70组状态不变；下列是当前**子路径**证据，不借局部通过关闭整个页面/能力组。以下历史失败保留。

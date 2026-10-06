@@ -1,3 +1,14 @@
+### R257 已提交管理owner子链与当前页面边界（2026-10-06 16:20 UTC）
+
+完整Wave0–7仍active；70完整用户组维持 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。用户授权旧排程仅1条+3条失败命令已清理，其余正常数据保留，新QA继续暂停。
+
+- BFF管理HTTP源码已Root精确9路径提交 **bac0cbf7319c021b3c48a75851ecfe57c785a8a8**（前独立旧测试排版427b75a）；三具名读+单行CAS写，不建新服务/DDL/兼容代理。IAM只有安全诊断fixture27行提交 **28b1ccceb125f207d9b402d920687e9be62c37dc**，非production资格改造或normal授予。System **1460820eab10ade1ca62cd9fdf18b8ac700c0d7a** 只三D0文档提案，System3.0原artifact94ed9165/runtime不变；初docs commit落main后Root创建codex/r257-system-route-evidence同SHA，未reset/rewrite，偏差保留。
+- **提交后Root75617实际exit0**：真实IAM CLI资格/Audit/CodePKCE/current admission→BFF routing/labels/revisions→System真实PG官方seed→visible CAS保存/权威回读→原key重放→异body409/旧version409→坏Session401均通过。PG库清单77→77/IAM前缀keys0→0、cleanup passed；未调用provider/写资金/修改normal资格。证据 `var/dev/r255-preserve/r257-admin-http-committed-real-owner.json`。这是真实owner集成子链，**不是浏览器或后台页面验收**；合法普通Session403/撤权后原key重放/普通models展示仍待验。
+- **提交后Root17110 Node22 check+format实际exit0**：contract264/0、默认829PASS/0FAIL/2既有资源skip、lint/typecheck/drift/build0；15具名HTTP辅助全部纳入默认门。独审ea30e379及起终hash/Git对象exact；Root Python runner Ruff两门0，IAMfixturetypecheck62015/Prettier0。未跑全IAM、全九仓静态门或全浏览器门；这些数量不当页面完成率。
+- 原真实404→400（错禁bodyless GET媒体头）→502（强求System未发布cache头）与先前null-prototype正控误拒都保留失败证据。BFF自身/fetch no-store、原strict bytes/generated、权限、条件/幂等、deadline与cancel不弱化；cancel辅助改按实际server close建立先后，原偶发1≠0保留。独审此前错误tuple/cache层漏检已报告纠正，不能只信静态绿。
+- **正常BFF仍旧进程未重载**，registry明确区分accepted source与loaded source；Web后台仍占位。之前真实Web8bb02d6 Back/Forward、设置hash恢复/关闭及项目子历史→外部Direct读导航子路径通过，其他CRUD/Skills/MCP/作品/排程到期/审批/真实聊天积分未冒闭环。原两Web mixed与Root uv.lock f7e1c30d保留，所有任务外gitlinks未暂存；未重启PG/Redis或任何正常服务。
+- 下一沿既有R256-ADMIN-03.WEB接固定8.2消费与实际页面读取/单row保存确认，普通用户隐藏+服务端拒绝和管理员当前资格双身份验证；System保证提案仍有来源/闭合profile/有限窗口/Schema-wire四项未决，不将文档批准冒计费保证。
+
 ### R257 本轮真实导航验收与管理机器发布（2026-10-06 15:29 UTC）
 
 完整Wave0–7 active，不缩目标。70完整用户测试组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，新增完整组0；本节取代下方本轮旧“Forward失败/机器未通过”的当前状态，原失败证据保留。
