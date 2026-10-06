@@ -1,9 +1,10 @@
-### R257 当前并行状态（2026-10-06）
+### R257 当前页面交付与真实未闭环（2026-10-06）
 
-- 三原owner源码并行：Web当前管理员资格/Settings入口/server gate在正式隔离分支；IAM具名两列已有数据扩展；BFF本人个性化GET/显式保存CAS/权威回读。Root审定IAM ADR-007并精确提交05d5c7d，不增加迁移平台或第二认证。
-- Root46862 Node22实际build0、隔离真实PG/Redis且普通Session `/me`200后合法个性化GET404，1FAIL/0skip/exit1；有效缺口而非缺fixture。自有库0connection后删除，原库集合保持/Redis仅ping；证据 `r257-personalization-bff-red.json/log`。现BFF源码实施已准，不称正常保存通过。
-- Root正常IAM只读catalog实证User旧7列、17表、零FK，两资格列确实缺失，未更改身份/Session/正常数据；证据 `r257-normal-iam-readonly-catalog.json`。Web新strict资格源不能先进入normal HMR半版本；三仓协调切换与真实普通/管理员操作尚未完成。管理员账号未明确，未授任意资格。
-- 已验窄切片仍Web8f73e94本人Connection空读、单标题/退出加载；全CRUD/调用未验。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，不新增整组PASS。最新九normal健康仅readiness；真实Agent worker/费用全链、后台实际管理模块与其他页面闭环保留。
+- 本人四字段BFF正式源码 **399e70d** / public8.1.0已提交：Root合法404反例后，隔离真实PG11条本人读写/冲突/取消/权威回读通过；Root77639 Node22完整check809PASS/0/1skip、lint/types/contract/build0。只精确21路径，原19mixed保留；不将这些结果称用户设置页面PASS。正常仍旧进程，4b1665b具名扩展设计已准，Root2085真实旧owner GET503业务RED/原事实catalog与库集合保全；三脚本候选正在实施。Web303cb63显式保存设计已准，Root77450实际初始GET=0两组件RED，正常页面仍未修复。
+- Web管理员当前资格、Settings入口与server gate仍在正式隔离分支候选。Root完整90184发现21失败/12未处理异常；严格fixture生命周期与精确返回路径修正后，Root69317真实Next/Chromium系统69PASS/8FAIL/0未处理异常。Root32810全系统70PASS/7FAIL/0unhandled；精确folder locator后30380定向3PASS/4FAIL/70skip，实证同scope两个live reader（3ms间隔）为R141 production P2，原writer做当前controller复用；两R195 retry已confirmed但用户overview不应被偷，按既有规则保overview并显式点leaf核历史，不强改导航或削弱次数/安全/超时门；后台实际管理模块尚未完成，normal没有提前激活半版本，也没有授任意管理员资格。
+- IAM具名两列演进源码ac62c38已提交；真实已有数据保留与TCP提交ACK丢失/独立锁定核定已有证据。正常owner check仍legacy，未apply。正常备份恢复与IAM/BFF/Web配对切换、管理员本人操作仍待验。
+- Root正常浏览器新验收页12实际展开专案→子会话→硬刷新：当前历史与外部Direct列表常驻、退出加载；仅此已有读链子例通过（r257-current-project-read.json/png），不冒全部CRUD。原标签8连接超时保持记录，使用自有页后已关闭，原7/8保留，原折叠状态恢复。账户菜单积分为“—”，仍不是资金闭环。
+- 2026-10-06T11:42:24Z既有九listener alive/HTTP200，仅readiness；**model_worker_running=false**，只读T-A01两报告确认Agent正式计费consumer/证据读取与Billing新admission/actual结算运行接口未接，BFF正常enabled=false；启动进程本身解决不了研发接线，旧v1整笔扣款不作兼容。下一沿原T-A01/T-B07按owner发布顺序补齐。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，Wave0–7 active，新增完整组0。每页还须真实用户读写、回读、刷新、异常/权限，以及同期对应后台owner管理操作；不以工程数量/空列表/入口可见冒完成。
 
 ## R257 本轮已验收切片与完整页面缺口（2026-10-06）
 

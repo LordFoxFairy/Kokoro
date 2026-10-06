@@ -2,11 +2,14 @@
 
 |任务|负责人 / 唯一写入范围|当前实证与完成条件|
 |---|---|---|
-|R256-ADMIN-01|Web / capability_composition_owner_r247；正式隔离worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web`，`codex/r257-admin-web-current`，基线ed95ae6；资格链/Settings/server gate/pin/tests/i18n；admin page、gate helper、路由error与allowed本地化view普通文件|Root65873合法新me true/false两HTTP反例FAIL；候选197断言为worker辅助结果，Root尚未验收；普通false正常、入口仅fresh true、直链拒绝/撤权/换主体/错误可恢复后，协调IAM/BFF/Web切换再真实用户验证。后台管理CRUD未实现，不以资格页代替。normal主仓四mixed/HMR不改。|
-|R256-ADMIN-02|IAM / iam_grant_source_scope_0244；05d5c7d已审ADR-007，四具名evolution scripts/package入口/现schema门/新隔离integration|Root正常库只读确认iam_user旧7列、17表、零FK，无资格两列。准check/apply严格两列原子扩展/期限/漂移拒绝/unknown只读核定及身份Session事实保留测试；不改canonical/正常库/帐号资格。隔离已有数据演练与三仓配对通过才Root正常执行。|
-|R256-PAGES-01 / T-U04|BFF / system_guarantee_read_0315；6675fc3三D0，4具名source/现services/repos/server/client/新增表与public8.1精确契约/tests|Root46862实际build0、普通/me200后GET personalization404，1FAIL/0skip；隔离库已删除/库集合保持，Redis仅ping。准本人GET/显式PUT CAS/回读及跨人/竞态/错误矩阵，不造偏好引擎。原19mixed保护；正常有数据演进、Web保存反馈及真实刷新持久性仍后继，禁止单侧重载。|
+|R256-ADMIN-01|Web / capability_composition_owner_r247；正式隔离worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web`，`codex/r257-admin-web-current`，基线ed95ae6；47资格/入口/gate文件与现system测试|Root90184 Node22完整回归21FAIL/2903PASS/12unhandled；合法refresh fixture和精确return_to修正后69317真实Next/Chromium系统69PASS/8FAIL/0unhandled。Root32810全系统70PASS/7FAIL，30380定向3PASS/4FAIL；实证R141同scope双live controller P2，准现AppFrame/Rail类型/session-list复用当前controller；仅非current folder自有reader。R195重试保持overview、显式点击后验证原canonical，数量/timeout不放宽。normal未激活，管理员帐号未明确；后台实际管理CRUD仍未实现，不用access view冒完成。|
+|R256-ADMIN-02|IAM / iam_grant_source_scope_0244；owner源码ac62c38，ADR05d5c7d、具名演进855daab、真实ACK测试ac62c38已Root提交|Root42507真实PG11/0、83349完整verify940/0、90969真实TCP提交ACK抑制1/0与新锁定check=current；正常具名check=legacy（旧7列/17表/零FK），未apply/授帐号。备份恢复、消费者配对与普通/管理员浏览器仍停止线。|
+|R256-PAGES-01 / T-U04|BFF / system_guarantee_read_0315；本人四字段源码399e70d/public8.1已Root精确提交；后继ADR003/三D0已Root精确提交4b1665b；当前仅新独立真实HTTP/PG旧owner行为基线|Root合法GET404 RED→52796隔离真实PG本人GET/PUT CAS/权威回读11PASS→77639完整check809PASS/0/1skip、独审8028无已证P0–P2。schema与schema-test仅新append提交，19原mixed保留。normal未reload；4b1665b设计已准，Root2085真实旧owner有事实且fresh拒非空/本人GET503≠200的1FAIL，原库集合exact；原writer具名有界演进实现中。Web303cb63设计已准，77450初始GET=0两业务FAIL，保存/blur后继断言未到达，页面原FAIL保持。|
+|T-A01.R257-RUNTIME（只读接续）|Agent 主链路诊断 / agent_runtime_review_r257 / gpt-5.6-sol；只读 apps/kokoro-agent 与现 System/BFF 运行契约，输出既有 ignored 证据目录|只读报告17f9e14a/0102bb47已交：正常worker=false/BFF enabled=false；Agent prepare后无条件authorization unavailable，Billing新admission/evidence/actual-only接口尚未装配，非单纯启动问题。旧v1整笔结算不符合已批规则，不借兼容/free绕过。A1 evidence read与B1 admission设计可跨owner并行，机器publication先于消费者；均须沿原T-A01/T-B07再准源码，真实用户聊天仍OPEN。|
+|R256-ADMIN-03（只读页面/管理同步）|IAM原审查负责人 iam_grant_source_scope_0244；只读九owner当前公开机器契约/装配与现Web/admin候选，报告在既有ignored目录|只列本人页面对应最小后台管理动作、真实owner能力有无及优先级，区分入口与模块CRUD；不发明新权限模型/owner/表，不实现mock后台，不读秘密、不改仓/资源/Git。管理员资格仍须正式IAM当前值；正常账号未确认不擅自授予。|
+|T-A01.R257-A1（Agent evidence只读发布D0）|Agent / agent_runtime_review_r257，gpt-5.6-sol；95a1150，三现TECH/API/DATA顶部一致设计前缀，其余全部只读|基于已交0102bb47审查：Agent唯一拥有immutable final usage evidence，Billing通过正式service-auth owner contract读、不含金额/账本/全局浏览器访问。先明确读取身份/tenant+attempt/seal/错误/有限等待/retention及现文件放置，零schema或兼容旧v1；三D0Root审后再真HTTP/PG RED与源码，正常provider与费用未闭环。|
 
-Root独占Git/正常资源/浏览器/最终集成；三原owner按独立仓并行。原70组完整状态保持；接口/工程通过不替代正常用户完整页面链。所有worker不启动资源、不清共享PG/Redis、不授任意账号；新范围仅沿已审D0，不扩大其他owner。
+Root独占Git/正常资源/浏览器/最终集成；独立owner实施、Web消费设计和Agent执行诊断并行，每仓单writer。原70组完整状态保持；接口/工程通过不替代正常用户完整页面链。所有worker不启动资源、不清共享PG/Redis、不授任意账号；新范围仅沿已审D0，不扩大其他owner。
 
 ### R256-ADMIN-01 隔离正式分支准备（不激活正常Web半版本）
 

@@ -5,9 +5,11 @@
 |T-C04-R256-01 标题不误触改名|真实IAM本人/原P下有会话，717窄窗|普通点击项目会话标题两次|进入同ID历史，不打开改名|实际RED两次rename→单CSSGREEN同conv_ffd7历史/rename0；red与green receipt|P0|用户E2E/交互|
 |T-C04-R256-02 工具独立|同本人P与Direct，各工具可见|改名→Escape；移动→Escape；删除→取消；转Direct|每次仅对应动作，取消无持久改动；两列表均保留|本轮真实通过取消/切换子路径；不冒实际CRUD提交通过|P0|异常/状态机|
 |T-C01-R256-03 响应式命中/滚动|正常页，390×640与1200×460|测title/三action中心命中→Tab→上下滑→刷新|命中自身，手机44px，滚动可达，历史恢复|四命中全true；桌面32/窄屏44；Tab rename；113.5→204→0；viewport reset；物理触摸未验|P1|边界/交互|
-|R256-ADMIN-01 管理员入口与直链|正式IAM资格与BFF投影已发布；真实管理员/普通用户|各自Settings→后台；普通用户直接打开/admin|仅管理员见入口；普通用户直链/API拒绝；业务owner逐次授权|UNVERIFIED：IAM d24aa2b已发布当前资格/管理contract0.8，真实owner34/0；BFF ac3cd1d当前资格投影已发布并经Root owner门，normal仍旧组合；Web后台路由与同期切换未接，帐号待用户，不猜email角色|P0|权限/系统E2E|
+|R256-ADMIN-01 管理员入口与直链|正式IAM资格与BFF投影已发布；真实管理员/普通用户|各自Settings→后台；普通用户直接打开/admin|仅管理员见入口；普通用户直链/API拒绝；业务owner逐次授权|UNVERIFIED：IAM d24aa2b已发布当前资格/管理contract0.8，真实owner34/0；BFF ac3cd1d当前资格投影已发布并经Root owner门，normal仍旧组合；Web当前资格/Settings入口/server gate在隔离候选，Root全系统70PASS/7FAIL，后继定向3PASS/4FAIL仍未放行；同期切换/后台实际模块未接，帐号待用户，不猜email角色|P0|权限/系统E2E|
 |R256-ADMIN-02 撤权立即失效|合法管理员当前session，正式撤权命令/审计|访问后台→正式撤权→旧页/API/新标签/刷新|旧资格不复活、拒绝访问且审计可查|UNVERIFIED：隔离issuer同旧token正式撤权HTTP已拒资格；正常浏览器后台/旧页/API/新标签尚未验，不按token自然到期冒验收|P0|安全/状态机|
-|R256-PAGES-01 个性化保存失败|正式非preview Settings；BFF正式preferences operation缺口|修改普通测试偏好→保存/blur→观察请求/反馈→重开|ACK/回读才显示保存，失败可解释且草稿不丢|FAIL：R257正常IAM浏览器，昵称QA-R257→blur实际PATCH404（22555.164）/界面无error；硬刷新昵称空。原静态无GET/吞失败原因保持；未修复/未通过|P1|异常/完整交互|
+|R256-PAGES-01 个性化保存失败|正式非preview Settings；BFF正式preferences operation缺口|修改普通测试偏好→保存/blur→观察请求/反馈→重开|ACK/回读才显示保存，失败可解释且草稿不丢|FAIL：R257正常IAM浏览器，昵称QA-R257→blur实际PATCH404（22555.164）/界面无error；硬刷新昵称空。BFF399e70d已正式提供GET/显式PUT CAS并有隔离PG11/0，Web正式consumer/正常单表演进仍未接；页面FAIL保持，不用后端门清零|P1|异常/完整交互|
+
+|T-C01-R257-READ 单一当前会话列表读取|正式Next/Chromium，当前Direct/Project与展开非当前folder，当前Session准入|打开当前页→观察列表读取→模拟503/unfinished→只显式Retry→切scope/撤准入|当前scope只一个live controller；Retry只新增一次，非当前folder独立且晚结果退役|FAIL：Root30380两例2GET/3ms间隔；源码AppFrame+ScopedGroup重复controller，已派局部复用修复，未报GREEN|P1|系统交互/加载/竞态|
 
 退出标准：每页读写→真实owner回读→刷新→异常恢复与角色权限通过；后台管理同步完成对应owner操作/审计。后端纯门/只读盘点、健康200/菜单可见不替代。当前完整70组不增PASS。
 
