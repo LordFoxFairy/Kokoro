@@ -1,3 +1,9 @@
+## R257 当前导航源码与管理机器边界（2026-10-06）
+
+- 正常Web持久源码worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web` HEAD8bb02d6：`src/ui/navigation/mounted-surface-navigation.ts` 是纯pathname分类与mounted history写的现唯一位置；`src/features/app/kokoro-app-surface.tsx` 投影browser pathname、SSR snapshot；`src/components/blocks/app-frame/use-app-frame-navigation.ts` 管会话query/settings hash的scope归属，不反向import feature。无新路由模块/alias，真实浏览器Back/Forward与两scope证据见CURRENT。
+- 正常BFF持久源码worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEAD4238460：public8.2管理四op已正规机器发布；`contract/dependencies/system-http.json` 固定System3.0/955bd587、vendor原artifact，`scripts/generate-system-http-client.mjs` 产16client/strict schema。**生产HTTP管理route仍缺失**；后继现三D0只指定具名route/client及bootstrap早分派，不扩大owner proxy。CLI/CodePKCE/System合法→BFF404有效RED留OPEN。
+- 以上是实际worktree/owner，不把原apps mixed checkout/gitlink状态当已集成；Root Git/index/服务/浏览器独占，既有normal9服务/PG/Redis复用。
+
 ## R255 本次入口更新
 
 Web `workspace-rail-shell` 非数据folderIntentIdentity按verified subject隔离，readgeneration/admitted不改；McpContent嵌入投影省重复h2。当前已新增读取Server声明，后继本人Connection owner现Platform3.2.0→BFF→Web，见既有T-P02；不把静态connector目录或Server200算执行能力。Web8727585/8399310证据见CURRENT/test-cases。

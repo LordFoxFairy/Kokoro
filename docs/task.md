@@ -1,3 +1,99 @@
+### R256-ADMIN-03.HTTP 实现准入（2026-10-06 15:38 UTC）
+
+Root纠正作者测试自身 URL 后真实 Node22 HTTP 重跑：6例2PASS/4FAIL，四个失败均目标管理route404，不再含loader/URL前置错误；文件SHA654cb8156da469f93972cce14766a9d3a397cace8a6e1715212f41b5f78bbbd9。替身仅辅助本方行为，原真实CLI→IAM→System→BFF404证据58122保留。合法业务RED成立，不能称管理已通过。
+
+|项目|本切片明确责任与门|
+|---|---|
+|任务/Owner|R256-ADMIN-03.HTTP / P0 / BFF具名管理wire；唯一writer bff_admin_routing_d0_r257，原模型继承；Root审查/Git/资源/共享入口集成；独立只读审查 iam_grant_source_scope_0244。|
+|基线|/Users/nako/.codex/worktrees/kokoro-r257-bff-normal，codex/r257-bff-normal-current，423846024830b1b7b095bc3e90aeadbc1ccd580f；仅新HTTP测试untracked，原生产/机器保护。三D0设计门和固定System3.0/public8.2机器已通过，直接引用其放置表。|
+|writer范围|仅新src/http/routes/model-routing-admin.ts、src/infrastructure/clients/owner/system-model-routing.ts、现新test/model-routing-admin.test.ts；确有独立client负控需要时新test/system-model-routing-client.test.ts（先报）。不新目录/模块/服务；strict generated为唯一wire。共享src/bootstrap/server.ts早分派以ignored patch交Root，writer不得编辑该入口。|
+|边界|三GET与单PUT、current admission/platformAdmin strict true、受信tenant/actor、最小system:read/write、closed合法全四字段/CAS原头原key、单10秒预算/body上限/AbortSignal/无retry、System唯一receipt；在generic mutation前精确分派。无BFF写库/缓存/第二receipt/任意owner proxy。|
+|保护|contract/generated/package/lock/config/schema/owner.ts/upstream.ts全部不改；无正常账号授资格/资金/provider/浏览器/共享服务/PG/Redis动作；生产source不得mock/fake。|
+|验证/交付|作者仅静态门，无监听或资源；冻结精确文件SHA及共享最小patch，STOP后Root集成入口并重跑HTTP/完整check；独审固定候选，最终三真实owner合法读/CAS/重放/冲突/撤权与正常浏览器后方可称对应用户路径通过。初期4目标辅助绿不替代此验收。Root独占提交，不扩大当前范围。|
+
+### T-A01.R257 技术与计费单位边界裁决（2026-10-06 15:33 UTC）
+
+Root接收只读报告dd9904cb41ded83ff487fb9e65bc0220f238646e637d0abd86f8a94c567cf75a。首Git只读偏差透明保留、无Git/资源/资金写。裁决：System现model-catalog拥有具名技术route/执行语义发布，Agent拥有本方单次HTTP/无retry/redirect/claim状态与逐attempt bound，Billing唯一商业计价/金额；不新保证中心、模块、服务或万能配置。不是要求审计任意网关内部物理实现：实际支持route的正式合同若覆盖一个API计费单元的全部上界，可作为具名版本/账户/endpoint/有效期的前置；若内部额外收费可突破上界，保持该路线不具paid-bound资格。声明/签名/管理员权限不等于证据。此裁决不冒当前provider合同已核实、不造正控bound；后继三D0须消除physical wording歧义，先现零send、取消、rollback、ACKunknown与closed-profile负控，不等待外部证明后才做全部研发。
+
+R256-ADMIN-03.HTTP-RED Root预置审发现：作者新test config tenantId=null导致前置503，不是目标route404；PUT permission oracle偏System system:write；502码偏已发布response_invalid；预aborted fetch只证明client未发，不证明BFF timeout。先仅原新tests修这些fixture/oracle、用已生成strict schema核正控；不准production、不将静态tsc当合法业务RED。原三owner真实合法404证据仍保留。修改后的测试Root listen资源独占运行。
+
+### R256-ADMIN-03.HTTP-RED 测试准备准入（2026-10-06 15:28 UTC）
+
+BFF固定机器切片已Root提交423846024830b1b7b095bc3e90aeadbc1ccd580f：最终Node22完整check46931 contract264/0、主814/0/2既有skip，lint/types/drift/build0；独审d125f4b6四P2闭合；34精确路径，原95/三D0后缀/vendor/生产0变。合法实际CLI/CodePKCE/System route→BFF404 RED仍有效，后台运行时未关闭。
+
+沿原approved三D0放置表，准原bff_admin_routing_d0_r257继续唯一BFF tests-only writer：只新增现test/下普通文件test/model-routing-admin.test.ts，不新目录/不改生产或机器。复用现真实BFF HTTP server与规范IAM/具名System响应替身，证明当前资格true的四具名route缺失/错误结果、false撤权/tenant自报拒绝/条件头与幂等透传/closed上游/期限零旁路；不能以缺import/module/伪token当业务RED。System响应替身只能辅助本方逻辑，真正owner正向及资金仍留Root独立runner。新client直接import缺模块的测试不是有效RED，先不创建。现test入口能自行pure聚焦，不启动PG/Redis/服务/browser；production、shared bootstrap/package/contract/schema/Git/index保护。先报告新文件定位、预置/expected、合法前置，再实现测试；冻结后Root真实运行目标失败，下一片才准既定2production文件及shared bootstrap具名早分派。
+
+### T-A01.R257-GUARANTEE-SYSTEM-READ（2026-10-06 15:22 UTC）
+
+只读独立任务：Root指定System model-catalog技术保证来源调查，agent_planned_guarantee_system_r257 / gpt-6-astra / 只读；基线 System955bd587、Agent6a21f7da、Billing当前mixed保护。读取现三D0/canonical/machine与r257-agent-planned-bound-review.md、r257-billing-b1-current-owner-review.md，判断exact-route/single-physical-dispatch/closed-usage guarantee哪部分已可由当前代码证明、哪部分必须provider/gateway真实证据；给Root最窄owner裁决/阶段门与文件集，不捏造positive vector。只ignored报告 r257-system-guarantee-source-review.md；禁source/doc/contract/schema/Git/浏览器/配置/服务/PG/Redis/provider/资金。独立于Web已接收导航与BFF machine最终门，不新计划中心，不授实现。
+
+### R257 冻结独审后最窄收口（2026-10-06 15:17 UTC）
+
+Root48994：Web三UI/parser186PASS，lint/typecheck/build exit0。真实正常IAB硬刷新→R243→排程→Back原两历史→Forward排程heading且chat0→任务列表真实QA paused23:58→专案overview/文件夹子历史→Direct两历史无串线；证据 r257-forward-fixed-browser/scope-browser.json 与 scheduled-list/direct-project.jpg。两错误wait locator未命中属于Root工具定位，不冒产品失败/成功。仍不证明所有页面CRUD/记忆active hydrate/模型积分。
+
+- Web源独审00e5fcc5唯一P2：hook反向import feature surface形成模块环。准原Web唯一writer仅现 mounted-surface-navigation.ts 承接原pure KokoroAppRoute/type/decoder；kokoro-app-surface.tsx 删除原定义并直接import（无re-export/alias/双轨）；use-app-frame-navigation.ts 改正向import；现 tests/ui/kokoro-app-surface-routing.test.ts 只改import，原所有assertions保留。三已准source其余语义不变，原7冻结/两mixed保护保持。Owner Web navigation，两个位置比较：现navigation明确公共路由职责，feature surface造成component环淘汰；不新文件/目录/协议，不加泛用router。Root新四目标与工程门、实际browser后才提交。
+- BFF Root60510 Node22完整check实际：contract264/0；主test813PASS/1FAIL/2skip，唯一现 architecture.test.ts:605精确8.1版本oracle。准原BFF唯一writer仅该行同步8.2，保会话scope全部assertions；此前新Admin403/503机器profile再补实际前置准入：403 service_auth_failed/product_tenant_forbidden/session_forbidden，503 product_tenant_not_configured，401不得错列service_auth_failed。准现 test/contract/openapi-contract.test.mjs 与 test/system-http-contract.test.mjs 必要新Admin机器断言，旧边界不动；不改任何production/session admission/SQL/配置。独审原owner继续只读核profile，writer冻结后Root全check再跑。HTTP生产route仍未授，真实合法Admin404 RED未关闭。
+
+### R257 Forward 实施准入：浏览器URL唯一页面投影（2026-10-06 15:08 UTC）
+
+Root18456实际辅助RED119PASS/2FAIL：Next subscriber0、Forward rail非scheduled；正常硬刷新P1实证独立保留。准原Web writer仅现 src/ui/navigation/mounted-surface-navigation.ts、src/features/app/kokoro-app-surface.tsx、现use-app-frame-navigation.ts最窄修；只如必要扩原两test的正确行为断言，不弱化旧断言。Owner为Web已挂载surface路由/交互，不改业务contract/owner/新模块。
+
+Root裁决：Next history entry写入不携带其私有__NA/internal tree，遵守公开history API；页面投影以浏览器目标pathname为唯一事实，复用既有popstate/surface-navigation事件订阅，淘汰nativeNavigation.basePathname与usePathname竞选的双状态。可用React useSyncExternalStore读取window.location.pathname，SSR snapshot遵守现usePathname/水合；现App Router路径更新导致render亦读取当前URL。不新router/helper模块/私有Nextstate/额外listener/timeout/reload。查询与Settings、合法Direct/Project深链/跨scope/当前Run保持；Root两mixed tests保护。最终纯门+原真实Back/Forward/正常项目与目录回归后才提交。
+
+### R257 两个真实失败的原 owner 续派准入（2026-10-06 15:04 UTC）
+
+- Web Root已在硬刷新固定0789ce6f后重复真实 Forward URL/DOM失配，P1；e02cf31b只读报告确定 mounted helper把Next内部__NA原state传回patched push而跳过pathname同步。现职责归属现 ui/navigation/mounted-surface-navigation.ts（history owner），不新模块；下一 tests-only仅 tests/ui/mounted-surface-navigation.test.tsx + 现app-frame.smoke增量，保四候选/两mixed；原writer准备faithful wrapper辅助RED，Root重跑后授权最窄history source，不加listener/timeout/reload掩盖。最终以真实Next Back/Forward检验，不用wrapper宣称完整链通过。
+- BFF完整独审b6240f2d证四新machine P2，Root21445实252PASS/10FAIL。准原BFF唯一writer仅原machine集合修复，另精确新增允许现 test/contract/openapi-contract.test.mjs、test/contract-governance.test.mjs：合法8.2版本及注册oracle同步，保原业务/反向变异断言。data数组/default50/owner合法域/502429headersclosed/error组合只四新operations与新Admin schema；旧95wire/shared参数原字节保护。System zod闭集通过固定config/生成脚本正规生成，不能手改产物或vendor。新增变异反例由原machine test与semantic承担；完整Node22 check/独审通过前不发布、不接production HTTP。
+
+### R257 当前真实导航 FAIL 与 Admin contract 未放行（2026-10-06 15:04 UTC）
+
+|任务|基线/唯一 owner 与允许集|当前实证、停止线|
+|---|---|---|
+|R257-STANDALONE-FORWARD-DIAG|正式 Web f1c5e68 + 四候选冻结；web_preferences_review_r257 只读；Root独占IAB17，保护两mixed tests|Root73114两文件182PASS/lint/types/build0、独审e87f4fb6只说明旧 popstate P2源码闭合。真实硬刷新后R243→scheduled→Back→Forward再次 URL scheduled 而 DOM chat，r257-standalone-forward-frozen-repeat.json。当前不提交、不冒导航通过；先精确根因/现tests-only范围，零源码/Git/资源改，后由Root批准。|
+|R256-ADMIN-03.CONTRACT.REVIEW|正式BFF43ca000 + machine-only candidate，原writer STOP；iam_grant_source_scope_0244独立只读，RootNode22纯门|Root21445 pnpm check 252PASS/10FAIL/exit1；旧8.1精确oracle/注册不同步与四operation漏429。独审另证 data.items违D0 data数组、bound/header/502与generated strip问题。先完整行级报告，未授生产HTTP/未发布；原95wire/lockfile/三D0 suffix保护。|
+|R256-ADMIN-03.RED.ACCEPT|Root正式runner7c5b8319 + IAMhost5be2c323；三owner实际隔离组合|Root58122真实资格CLI/Audit→CodePKCE/current me true→System route200→BFF route404，有效RED，cleanup77→77/keys0→0；独审f1eb97c9，两文件凭据扫描0/format/lint/types0。IAMfixture已Root精确提交53bb60a，正常账号零授资格/零资金/provider。|
+
+BFF排程源修43ca000已Root接收：完整 check813PASS/0/2skip，全真实PG/TCP8文件277PASS/0/0skip；正常BFF47994/Scheduler58683唯一源码启动，真实新QA rev4 replace成功/真实Scheduler paused/occurrences0。正常浏览器标题回读/硬刷新保持；这里只控制链通过，执行/Agent/收费仍OPEN。旧测试清理仅用户批准的1+3，其余数据保留。Root当前 registry ACK状态待补；其他七原服务/共享PG/Redis不动。
+
+### R256-ADMIN-03.CONTRACT 发布准入（2026-10-06 15:00 UTC）
+
+Root已核System immutable 955bd587f46a771e43a4330d202d90a7d2d67262 的 contract/openapi/system.openapi.json bytes SHA94ed91655741cbba66ce80a4c41717b9179cc509cb6858534e0b78aa3e6dc059、version3.0.0。BFF三D0 ae3d6d0 已一致；首合法管理员真实owner route404 RED存在，格式后Root58122重跑进行中。准原bff_admin_routing_d0_r257继续唯一writer，基线正式BFF43ca000f71b001304f33f4e9de883731c570dca3（正常运行source）。仅D0机器/generated切片：contract/openapi/v1/openapi.yaml、contract/README.md、contract/tests/v1-operations.json、scripts/verify-openapi.ts、scripts/check-contract.mjs；新system-http dependency/vendor immutable原bytes/provenance、openapi-ts.system.config.ts、scripts/generate-system-http-client.mjs、正规src/generated/system-http/**；package.json仅生成/check/窄格式；现三D0仅当前发布前缀。准现D0所列机器测试追加及test/system-http-contract.test.mjs，先报精准集合再写。禁production route/client/bootstrap/config/SQL/lockfile及其他owner。public8.2/99、原95wire不变、System四operation exact，不手写generated、不新万能proxy/兼容轨。Root独占资源/Git/正常重载与最终验收，未通过机器门前不授HTTP生产实现。
+
+### R257 当前源修冻结与真实链路后继（15:00 UTC）
+
+- Web Root52950独立两文件176PASS/5FAIL，五目录URL错误消费conversation形成有效RED；准两现source局部修，已冻结bd66f2d2/7f4c2dfd与两tests不变，Root后继正式工程/真实浏览器。保留记忆activeId自动hydrate独立未闭合项，不将目标参数零GET冒全部加载问题修好。
+- BFF Root52722 check813PASS/0/2skip，独审475c1ae3无确定P0–P2；Root全PG/HTTP156PASS/1FAIL是新增HTTP oracle全局Scheduler calls被其他tenant fixture污染。按当前tenant/task精确筛选仍exact1，最终HTTPtest e4e016be，Root47213完整重跑；初始错误revision字段oracle及资源前置错误保留。正常服务未重载，DNS配置尚未变更。
+- T-B07只读35c8bece确认System3.0 capacity已发布、IAM consume已发布；实际缺Agent pre-dispatch planned/bound reader与Billing B1装配/原子admission。FG2只赠送依赖，不能把赠送/支付排为整个消费研发前置，亦不以只读evidence替代许可。
+
+|任务|Owner/角色/模型/基线/精确范围|验收、停止线、提交|
+|---|---|---|
+|T-A01.R257-BOUND-D0-REVIEW|Agent只读架构审查，具名agent_planned_bound_review_r257/gpt-6-astra；apps/kokoro-agent HEAD6a21f7d，无源码写；只现三D0/model/repository/HTTP/System3.0与Billing三D0|复用当前设计判断trusted planned/bound读发布的最窄可实施片、来源/有效期/规范bytes、真实RED前置，避免循环依赖。只ignored报告，不改仓/contract/资源/Git/provider/资金；Root整体裁决后才能授writer。|
+
+### T-B07/R257-B1 当前事实只读接续
+
+iam_grant_source_scope_0244完成DNS只读后接独立Billing admission审计；只读当前Billing三D0/canonical/装配/机器合同及Agent A1正式5.0 artifact，引用现r257-agent-billing-boundary-review而不新建规划中心。Root/BFF排程writer/Web目录writer并行不受此依赖。只ignored报告：B1 create/get当前实现缺口、必需正式System bound与IAM FG2契约是否已发布、最窄三个设计面未决项/精确后继切片。禁止Billing/source/doc/contract/schema/资金/PG/Redis/Git/服务写。不得依旧v1整笔扣或fake/free取代已裁actual-only，Admin route可独立推进但非Billing全部闭环。
+
+### R257 排程有效 RED / 两 owner 独立实施准入
+
+Root58478在正式ae3d6d0+两tests冻结，build0后真实PG及BFF HTTP目标业务RED：5PASS/5FAIL/0skip，四断言均task实际active≠failed（HTTP、current register、current replace、回滚恢复，父例合计5FAIL）；前两次Root新schema/URL schema guard前置错误保留不冒RED。资源库77→77、Redis15 keys0→0、298freeze exact、自有DB0连接DROP。receipt r257-schedule-failure-red2-0a8eb4ec。准BFF唯一writer仅 src/infrastructure/postgres/scheduled-task-repository.ts 承接既有success同事务锁/lineage/lease/current revision，当前enabled active register/replace终止失败置failed+next null；tests原冻结保持。无schema/contract/状态枚举/新目录/配置/运维或其它源。Root重跑目标与完整两PG/HTTP并独审后才正常重载。
+
+Web原只读报告79a4b376：已证standalone漏传到会话导航边界，五目录页可错误消费conversation；观察跳/app的redirect路径尚未实证，不冒称竞态。准原web_preferences_review_r257为Web唯一tests-only writer，仅现 tests/ui/app-frame.smoke.test.tsx 和 tests/lib/product-return-target.test.ts append；基线f1c5e68+两保护test及新next-env自动buffer全部保留，零production/Git/资源。合法direct/project深链保持；catalog非法query须不触发detail GET并保自有query。Root真实组件RED后才准AppFrame+navigation两现源码，无放宽server return parser。
+
+### R257 排程 RED 前置失败与最窄开发接线核定（14:28 UTC）
+
+Root36623 build0但两新集成例在canonical安装前PG报no schema selected；自有新DB未先建立kokoro_bff namespace。这是Root隔离fixture前置失败，不是已证业务RED，禁止先改production。真实库集合77→77/Redis15 keys0→0/298freeze exact，0连接回收。Root补只新DB CREATE SCHEMA owner，再相同冻结重跑。
+
+R257-SCHEDULE-TARGET复核采用现正式解析器而非宽绑定：Go httpclient.resolveTarget对每个DNS地址只选择allowlist允许的地址；现OS hostname返回127和LAN并不要求唯一。Root拟只持久BFFtarget换现OS DNS hostname、Scheduler exact host→127.0.0.1/32，保持BFF loopback绑定及所有SSRF/credentials/ports不变，无hosts写/外部DNS/新代理/新进程。iam_grant_source_scope_0244只读复核Schedule.Validate/解析/allowlist/runtime env读取与接纳/dispatch风险，交ignored结论后Root实际Go解析探测及受控配置；不将smoke的uniqueDNS helper约束误当生产domain规则。零worker资源/Git/源码/config写。
+
+### R257 当前goal接续与独立并行任务（14:24 UTC）
+
+上一goal turn判定progress：正常精确清理+真实页面回读与有效Admin路由404 RED、资源回收、台账259688fa均已改变证据；不缩小Wave0–7、不标完成。原BFF tests-only writer仍真实运行，Root继续核正常资源/接收后验证，不重复启动原服务。
+
+|任务|唯一owner/范围/基线|验收与停止线|
+|---|---|---|
+|R256-ADMIN-03.RED-FORMAT|IAM原author iam_grant_source_scope_0244；仅现IAM test/fixtures/model-routing-admin-host.ts与Root scripts/e2e/run_admin_model_routing_smoke.py|已实际prettier/ruff-format两文件要求格式化（Ruff lint0），只formatter/已证eslint格式规范最窄修，不改功能/真实性oracle。交新freeze后Root typecheck、真实owner RED重跑及独审。零正常授权/资源/Git。|
+|R257-SCHEDULE-ROUTE-DIAG|web_preferences_review_r257，只读正式Web f1c5e68+BFF ae3d6d，现路由/normal browser receipt|定位scheduled携conversation硬刷新跳/app，owner与依赖边界；只ignored复现设计与精确写集，不改源码/test/docs/浏览器/服务/Git，不抢BFF writer。|
+
 ### R257 当前运行与验收补记（14:21 UTC）
 
 BFF现68959/listener16308实际Node22.22.2；88337的Node24子进程误用已停止，独立IAB16重读暂停/23:58成功并关闭。新QA排程保留paused/rev3，三command均invalid_schedule，旧清理范围不扩大。详见CURRENT/progress/test-cases最新同轮前缀。70完整组计数不变。Root62795已退出1，合法后台缺GET route RED、cleanup passed，不重复启动测试进程。

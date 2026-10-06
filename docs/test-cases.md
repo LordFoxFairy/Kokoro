@@ -1,3 +1,29 @@
+## R257 本轮最新用户与机器验收（2026-10-06 15:29 UTC）
+
+完整70组状态不变；下列是当前**子路径**证据，不借局部通过关闭整个页面/能力组。以下历史失败保留。
+
+|用例 ID|标题|预置条件|测试步骤|预期结果|实际结果/状态|优先级|测试类型/类别|
+|---|---|---|---|---|---|---|---|
+|T-C-R257-FORWARD|浏览器前进地址/内容一致|正常IAM用户、Web8bb02d6、原R243两历史|硬刷新→已排程→后退→前进→任务页|后退原会话；前进真实排程，不显示聊天|PASS子路径：两markers→heading=true/chat0；真实QA paused23:58；forward-final-browser.json/jpg|P1|用户E2E/状态流|
+|T-C-R257-SETTINGS-HISTORY|设置深链与历史恢复|同原会话、设置hash|打开设置→Back→Forward→硬刷新→关闭|保会话query；modal随hash；关闭清hash|PASS子路径：原两历史保留、hash恢复/关闭清空、普通人管理入口0；无偏好写|P1|用户E2E/边界/状态流|
+|T-C-R257-PROJECT-DIRECT|文件夹子历史与外部会话常驻|本人两个现专案与原历史|展开5251folder→子会话→Direct|所属leaf正确，外部列表常驻，不串历史|PASS读导航子路径：R145→R243两历史；scope-browser.json/direct-project.jpg。完整CRUD/触屏滚动未验|P0|用户E2E/主链|
+|R256-ADMIN-03.CONTRACT|管理机器契约闭合|BFF4238460、System固定3.0 artifact|RootNode22完整check+独审原四P2|99ops、old95exact、错误界/headers/strict均一致|PASS机器切片：contract264/0、主814/0/2skip、工程0；不是Admin页面/HTTP成功|P1|合同/安全/辅助|
+|R256-ADMIN-03.HTTP|真实管理员正向后台路由|正式CLI资格+CodePKCE、System合法routing|current me=true→owner读200→BFF管理GET|合法200且受当前资格/tenant约束|FAIL/有效RED仍OPEN：实际三owner BFF404；纠正fixture后真实HTTP辅助6例2PASS/4FAIL均404。两具名生产文件已准原owner实施，shared入口Root接线；未称页面通过|P0|系统集成/主链|
+
+**退出判据不变：** 同完整用户主链、边界、异常、权限与状态回归及真实owner/数据回读均通过，P0/P1清零后才称完整闭环；模型/账务必须正式预占→已核实实际结算/余释放→流水，无fake/free路径。
+
+## R257 本轮真实交互验收与新失败（2026-10-06 15:06 UTC）
+
+|用例 ID / 类别 / 标题|预置条件|测试步骤|预期结果|实际结果与证据|优先级|测试类型|
+|---|---|---|---|---|---|---|
+|T-S-R257-CONTROL / 主链 / 正常排程控制接纳|正常IAM Session、BFF43ca000与真实Scheduler；新QA仍暂停|真实页面编辑标题→保存→真实owner回读→硬刷新|同task/rev4 command成功，Scheduler同名paused；页面新标题/23:58保持；不发生执行|PASS仅此控制子路径：r257-schedule-normal-owner-ack.json；succeeded/paused/occurrences0；真实页面截图同名current.jpg。完整执行仍UNVERIFIED|P0|真实浏览器/跨owner系统|
+|T-S-R257-FAIL / 异常 / 终止失败不假运行|自有真实PG、合法当前lease/fence/revision，正式BFF HTTP|register/replace收到closed永久拒绝→GET；旧revision/paused/delete/retry/rollback负控|当前active/enabled终止failed+next=null；其他事实不误改，原子回滚|源修43ca000已验；本方PG/HTTP157/0及全8文件277/0，响应替身不冒真实Scheduler故障/正常页面执行|P0|真实持久化/异常辅助|
+|T-C-R257-FORWARD / 状态机 / 浏览器前进内容与地址一致|硬刷新正式Web四冻结候选；正常R243两历史|点击R243→侧栏排程→Back→Forward；再次fresh硬刷新重跑|Back保持同ID两消息；Forward显示排程而非聊天，地址/高亮/内容同owner|**FAIL P1**：Back通过，Forward URL scheduled/heading false/chat log true稳定重现；r257-standalone-forward-frozen-repeat.json。原owner接定位/测试/源修，不能用182辅助绿关闭|P0|真实浏览器/路由状态机|
+|T-C-R257-STANDALONE / 边界 / 目录不消费会话参数|正常本人、scheduled目录自有tab=list与非当前conversation|复合URL进入目录→读网络→硬刷新|保目录tab，自有参数正确，非法目标不GET；不偷Direct历史|窄子例PASS：r257-standalone-normal-browser.json；目标GET0。记忆activeId一次hydrate另OPEN；五页面实际均未全验|P1|真实浏览器/边界|
+|R256-ADMIN-03.RED / 权限/主链 / 正式管理员路由|自有真实IAM/BFF/System，各正式owner；正式CLI资格与CodePKCE|当前me资格true→System合法row读200→BFF admin routing GET|目标200、data数组与真实owner exact、meta闭合，读后owner不变|**FAIL**：Root58122目标404；正常账号零授权，资源cleanup保持。正式两测试commit53bb60a/b81793f7，真实route研发缺失不以菜单/健康替代|P0|真实owner组合/权限辅助，非Admin浏览器|
+
+退出条件保持：完整页面读写/权威回读/刷新/异常恢复/权限与同步后台管理真实通过，才关闭完整组。70组仍11/8/14/36/1；本輪整组新增0。辅助工程门不作为最终用户验收。
+
 ## R257 最新正常页面验收（2026-10-06 14:21 UTC，仅子路径不关闭70整组）
 
 下表是实际执行账；下方旧轮次状态保留历史，不能用旧候选/旧失败覆盖本节最新证据。每个完整页仍须完整主链、边界、异常、安全、状态流与对应后台管理才能关闭。

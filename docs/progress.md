@@ -1,3 +1,25 @@
+### R257 本轮真实导航验收与管理机器发布（2026-10-06 15:29 UTC）
+
+完整Wave0–7 active，不缩目标。70完整用户测试组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，新增完整组0；本节取代下方本轮旧“Forward失败/机器未通过”的当前状态，原失败证据保留。
+
+- 用户批准旧排程task1+failed command3精确清理已完成，配对备份/恢复/其余事实保留；新QA未删。正常真实Scheduler rev4成功接纳，paused/23:58/occurrences0；仍不证明到期执行、Agent/provider/资金。既有9服务readiness200，只表示可用，PG/Redis未重启/reset。
+- Web已Root提交 **8bb02d6d7e61a1e3b926f502eab87a5ea0f8f193** 9精确路径。真实Next硬刷新→R243原两历史→排程→Back两历史→Forward排程heading/chat0，设置hash硬刷新恢复/关闭；同语义源项目folder子历史→Direct不串线。截图 r257-forward-final-scheduled.jpg；JSON r257-forward-final-browser.json / scope-browser.json。原pure路由type/decoder/route原bytes搬到现navigation，删feature环，无alias。Root27571 Node22四focused197/0、architecture50/0、lint/typecheck/build0；独审00e5fcc5无确定P0/P1，唯一P2已Root核原bytes/正向import收口。2mixed tests未暂存且接收前后exact；正常Web原31693继续源码/HMR，无新服务。本人admin入口仍隐藏。仅上述读导航子链通过，不冒所有页面CRUD/记忆active hydrate/完整聊天验收。
+- BFF管理机器切片已Root提交 **423846024830b1b7b095bc3e90aeadbc1ccd580f** 34精确路径，public8.2/99、原95wire与三D0 suffix exact，固定System3.0/955bd587原vendor、正规16生成物/20strict对象。Root46931 Node22完整check actual exit0：contract264/0、主814/0/2既有资源skip、lint/typecheck/drift/build0、4既有warning；独审d125f4b6闭合四P2，architecture最终仅version一行。252/10与813/1/2skip先前失败不删。机器工程过不替代生产：当前合法管理员真实三owner GET404 RED仍OPEN，没有正常授资格/推理/资金；Root纠正测试自身URL后 Node22真实HTTP 6例2PASS/4FAIL，四失败均目标404；原owner已按同task准入具名两生产文件，shared bootstrap只交patch由Root接线。独立权限/wire审查并行，当前未实现/未验收。辅助替身不替代原CLI/IAM/System合法404或最终页面。
+- Agent/Billing继续独立：System技术保证来源只读 agent_planned_guarantee_system_r257/gpt-6-astra 已交dd9904cb，Root在同task核technical与billable单位边界、采用现System model-catalog owner，非新保证中心；不造positive bound/免费/整笔capture，不用运营赠送FG2阻塞所有消费研发，支付最后。可信pre-dispatch bound与Billing原子admission/实际结算尚未接通。完整页/后台管理/正式积分模型链未通过。
+- 本轮Root临时浏览器tab17已关闭；原用户7/8保留。所有工程句柄27571/46931等已结束，不把观察超时当终止或重复拉服务。主Agent接收/审查/提交，BFF tests-only与System只读并行，后续沿同任务台账。
+
+### R257 排程真实控制链通过，导航与后台仍有明确失败（2026-10-06 15:06 UTC）
+
+完整 Wave 0–7 继续；70完整用户测试组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，新增完整组0。本节为当前事实；以下历史错误/旧进程记录不删除。
+
+- 已严格履行用户清理授权：只旧测试排程 scheduled_18ce2a4c0b2745e247fce557562be15b 与3条失败调度command；其他账号、会话、项目、文件、资金及历史receipt保留。备份/隔离恢复/精确事务证据同 r257-schedule-cutover/receipt.json，不扩大到新QA。
+- BFF terminal-failure 源修已Root精确提交 **43ca000f71b001304f33f4e9de883731c570dca3**：有效当前lease/fence+current revision的enabled active register/replace永久失败，同事务投影failed+next=null；暂停/旧revision/delete/可重试不误改。Root有效业务RED→两文件157/0；最终 check813/0/2skip与8真实PG/TCP文件277/0/0skip，独审475c1ae3。PG/HTTP用合法Session/Scheduler响应替身仅证明本方分支，不冒真实调度服务或完整用户链。
+- 正常真实浏览器→Web→BFF→Scheduler 已接纳新QA rev4 command（succeeded）、Scheduler paused、occurrences0；标题编辑/保存/硬刷新保持23:58与暂停。证据 r257-schedule-normal-owner-ack.json 与 r257-schedule-normal-owner-ack-current.jpg。正常仅BFF原68959、Scheduler原68731受控停止后用各源码持久配置重启到 **47994/listener26375** 与 **58683/listener26393**；BFF实Node22.22.2。精确现OS hostname→127/32 allowlist与loopback绑定/凭据/SSRF拒绝保留，配置私有备份。同registry已记录接纳而非awaiting ACK；其他七服务/共享PG/Redis不重启/重置。这只是暂停的控制链，不是到期执行、Agent/provider、积分账务通过。
+- Web四候选bd66f2d2/0789ce6f/7487e4dc/d2b7b34f针对目录误消费conversation，Root73114两文件182/0、lint/types/build0；独审e87f4fb6仅关闭旧render删除Direct URL的P2。真实正常排程目录自有query/刷新正确、非法目标detail GET0；记忆activeId hydrate仍独立OPEN。**硬刷新后R243→排程→Back→Forward稳定重现URL scheduled但DOM chat（P1）**，r257-standalone-forward-frozen-repeat.json/jpg。e02cf31b锁定Next16.2.6与mounted helper复用__NA旧tree根因；当前四候选未提交为完整导航修复。原Web唯一writer续tests-only，Root真实浏览器验收必须再过。
+- Admin正式RED测试已发布：IAM fixture **53bb60a563a5a3b77afc80c72fc7c442856901a6** 与Root runner **b81793f7b72af1c664a46fd264ec087ebba20fbd**，冻结5be2c323/7c5b8319。Root58122真实CLI资格CAS/Audit→CodePKCE/current me true→System合法发布routing200→BFF管理GET404≠200，cleanup PG77→77/IAMkeys0→0，最终凭据扫描0、format/lint/types0，独审f1eb97c9。正常用户未授管理员、无推理/资金。该route缺失RED保留，非后台功能通过。
+- BFF Admin machine8.2/99候选完整Root21445 check实际252PASS/10FAIL/exit1（发生于contract:test，其后全test/build未跑）。独审b6240f2d四P2：新列表envelope偏D0、字段界/默认、错误/header遗漏、generated Zod未拒未知。原95wire/三D0 suffix/vendor pin/prod0变均核定；不发布半合同。原owner只machine范围续修，新增准两现machine tests版本/注册oracle同步，不skip/改旧业务。
+- T-A01/T-B07：Agent正式final证据6a21f7d不替代pre-dispatch bound；只读15ebc7ff/35c8bece确认尚缺具名可信技术guarantee/bound producer-reader与Billing原子admission/actual结算装配。IAM consume已发布，FG2只赠送前置、支付最后，不作为所有消费研发阻塞。model_worker_running=false；不接旧整笔capture/fake grant/free路径。全页面CRUD/后台同步管理、正常用户模型和积分完整链未通过。原Root全门失败仍保留未重跑。
+
 ### R257 正常页面最新实测与精确排程清理（2026-10-06 14:21 UTC）
 
 本节取代下方旧“normal未切换/设置候选”作为当前事实；历史失败与证据保留。完整Wave0–7继续，70整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮新增完整组0。
