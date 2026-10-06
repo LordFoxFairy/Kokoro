@@ -1,3 +1,14 @@
+## T-B07.R255-FG1 真实发行流程回归（2026-10-06）
+
+|用例ID/类别|标题|预置条件|测试步骤|预期结果/当前实际|优先级|测试类型|
+|---|---|---|---|---|---|---|
+|T-B07.R255-FG1-HUMAN 主链/权限|列名财务HUMAN无需操作租户Member|隔离真实IAM PG、正式注册client/名单；本人真实Session；非operator、Member0、activeOrg=null|真实authorize+S256+显式consent→Basic+PKCE换码→真实JWKS验签→核sub/sid/fixedtenant/exactscope/audience/expiry、无refresh/Member副作用|当前真实RED：302到/auth/select-tenant而非/auth/consent，1FAIL/12非匹配/exit1、PG77→77；后半尚未执行，不冒成功；原owner实施中|P0|正式provider handler/真实PG系统流程，非浏览器/TCP全链|
+|T-B07.R255-FG1-REVOKE 状态/安全|当前名单撤销与独立code|FG1候选冻结后，合法真实operator roster CAS及真实HUMAN code|分别authorize前/consent前/有效code后撤名，独立重复流程；未列名operator/空名单；核无新token/refresh|预期全部拒绝且无身份提升，旧JWT在线撤权留FG2；当前未运行，UNVERIFIED|P0|真实状态机/授权撤销|
+|T-B07.R255-FG1-DRIFT 边界/异常|发行依赖漂移不发token|真实Session/User/Tenant/client/resource/binding|独立各流程设置自有过期/缺失/disabled/错误binding，错Basic/PKCE/redirect/resource|预期fail closed、无token/refresh，普通Web登录/refresh保持；当前UNVERIFIED，不用单例RED证明整矩阵|P0|真实依赖/凭据负控|
+|T-B07.R255-FG2-CURRENT 状态/安全|旧已签JWT撤权在线拒绝|FG2专用machine与grant-target contract/SDK正式发布后|合法新grant-target决策→名单撤销→原JWT再验证→target跨tenant/removed/会话撤销→Audit故障|预期403/404/503无allow/零账务I/O；当前未实现/UNVERIFIED，不把FG1或自然expiry当在线撤权|P0|后继跨owner系统与资金前置|
+
+通过条件：FG1完整正负矩阵及普通流程回归、代码冻结独审和Root重跑；这只放行issuer切片。整用户闭环仍须FG2正式artifact→Billing调用→单次授权赠送→本人余额/刷新→模型预占/实际消费结算或释放→流水。当前完整70组不增PASS。
+
 ## R255 最新左栏与未开户验收（2026-10-06，Web 9e1c8c3/bf04df7）
 
 核心风险：draggable行吞纵向touch pan；展开folder重复标题/工具行导致低信息密度；未开户错误被当网络失败。真实正常3310/IAM/BFF用户，非preview/mock；touch是Chromium模拟，不冒物理终端。完整70组11/8/14/36/1保持，仅以下子例验收。

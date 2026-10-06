@@ -1,3 +1,32 @@
+### IAM-FG1 有效业务 RED / source 准入（2026-10-06）
+
+Root98176现正式fixture/provider handler+真实PG：新合法名单HUMAN（非operator/Member0/activeOrg=null）authorize实际/auth/select-tenant，而应/auth/consent；1FAIL/12非匹配未执行、exit1/2.13秒，398 source/test/contract等freeze exact，PG77→77 exact。有效业务RED，不是类型/fixture失败。原2117行prefix exact。此真实handler集成不冒浏览器/TCP/资金E2E。
+
+三D0408bfc1已精准提交，独审894d373d；原source纯verify102/938、contract/sdk/Prisma0只是基线。Root现在将IAM唯一writer移交原iam_grant_source_scope_0244，只准4现生产文件：src/modules/auth/better-auth/{better-auth.config,better-auth.types}.ts、src/modules/auth/oauth/token-claims.service.ts、src/modules/auth/oauth/clients/oauth-client.repository.ts，以及现test/integration/oauth-client-lifecycle.test.ts。三D0/Git/Schema/contract/generated/CLI/组织角色/其他仓排除。
+
+源目标引用原三D0+只读9602fd4b：只用public extensions.claims.accessToken携带框架认证client/sessionId/grantType，删除旧customAccessTokenClaims接线避免重复编排；保全路径customTokenResponseFields金融strict准入，code selector只能来自已校验且认证绑定的native verificationValue，不读body.client_id。现Repository具名短RepeatableRead读当前financial完整注册/resource/binding/User/本人Session/active fixedTenant/名单，无actor Member/operator特权、不返回secret、不改名单CAS/管理writer。financial authorize/consent/current code exchange次次重核，不改Session active org；普通发行/refresh/consent规则原样。无新类模块/目录/依赖/endpoint/表/缓存/第二协议。
+
+原临时“合法financial仍总拒签”断言只准显式迁移为合法签发及真实current撤名拒绝，不删注册/资源/native reserved/名单锁CAS与Audit回滚安全断言。仍现lifecycle补真实authorize前/consent前/有效code后正式名单撤销、非列名operator/空名单、Session/user/Tenant/client/resource/binding漂移、错Basic/PKCE/redirect/resource与不发refresh的正负矩阵。每次失败换码用独立真实code；负控不能仅重复消耗旧code。若额外callee/type/schema需要修改，先报告Root另准，不放宽旧断言或恢复alias。
+
+writer只跑无资源types/窄lint/format、交freeze停止；资源/Git/正常运行全归Root。Root同一隔离PG runner全lifecycle+fixedWeb/session、纯verify/Prisma与第三agent冻结独审，最终正常用户/赠送仍等FG2/artifact/Billing后继，旧JWT在线撤权不冒FG1完成。正常服务仍原PID、不自动重启/临时身份/资金操作。
+
+### IAM-FG1 首个真实业务 RED 准入
+
+Root 已核锁定 oauth-provider 1.7.3 public extensions.claims.accessToken 的 authenticated client/sessionId/grantType 接缝；原 customAccessTokenClaims 缺这些参数，不能以 body client_id/旧 metadata补信任。issuer普通 postLogin当前强制activeOrganization，合法列名但无 Member/无 active selection 的 HUMAN真实路径将被送 select-tenant，不符合既有 financial fixed-tenant设计。
+
+现仅准 iam_grant_source_scope_0244 独占修改 test/integration/oauth-client-lifecycle.test.ts，新增一个独立真实案例 issues a financial-grant Code+PKCE token for an explicitly listed human without tenant membership。通过现 fixture真实User/Session与正式managed注册/当前名单、框架authorize/显式consent/Basic+PKCE/JWKS签名验证，期望固定tenant、exact scope/audience/sid/sub且无refresh/id_token；先断言该User非operator且无Member/activeOrganizationId=null。全部原用例及原零发行临时拒签断言本阶段逐字节保留；不改fixture/生产source/contract/schema/resources/Git。先freeze，Root运行隔离真实PG，必须业务RED非TypeError。有效RED后另准source及原拒签断言正式变更，普通Web/注册/CAS安全断言不得删。
+
+## R255 FG1 发行前置接续（2026-10-06，原 T-B07）
+
+上一 goal turn 为 progress：Web 两切片提交与 Root 正常浏览器验收、台账 7021436a；不把子例冒整组。当前 IAM c2014a3ddba9ee90261cfda4ca2f4a68a38d7aed clean，Root codex/r255-sidebar-qa-20261006；Billing 261a20f 加原候选/mixed 保留，九正常进程保持。先原 D0 当前态纠偏，后正式 provider 发行 RED，不新计划中心、不假充值。
+
+|原卡/角色|负责人/精确范围|本阶段完成条件|
+|---|---|---|
+|T-B07 IAM-FG1 owner 方案核实|iam_grant_source_scope_0244；仅只读 IAM better-auth config/types、token-claims、clients schema/service/repository、internal verifier/types 与现 lifecycle test；本阶段不得写仓/Git/网络/资源|读取 Root 地图/TS/SQL 手册与 IAM 三 D0，查框架实际认证 client 上下文及 authorize/换码当前名单链，给现文件最窄 RED 与 source 写集；报告 /tmp/r255-fg1-provider-read.md，不提前把 request.client_id 当认证身份。原 financial 拒签保持到 Root 有效 RED/source 授权。|
+|T-B07 Billing 文档与依赖独审|billing_read_activation_0340；只读 Billing 三 D0、IMPLEMENTATION_PLAN/CURRENT 与 IAM 已裁 D0/source，不写仓或资源|核 financial HUMAN 当前 User/Session/名单而非 actor Member/operator；列已确认取消费用规则与旧串行依赖应改的精确文本；报告 /tmp/r255-fg1-billing-dependency-read.md。资金与完整19/payment仍未完成，不替消费者发明 owner API。|
+|T-B07 IAM 三面独审|system_guarantee_read_0315；只读最新三 D0 自有前缀及 financial 现源码，报告 /tmp/r255-fg1-d0-review.md|核 current/target、FG1/FG2阶段、安全/失败/owner一致；不写仓或资源，不以文档当实现；Root纠正确定发现后冻结复核。|
+|Root D0、验证、提交|Root 唯一 IAM 文档 writer，仅三现 D0 顶部自有 R255 前缀，原正文逐字节保留；现 Root 台账和 ignored证据|主控确认注册/CAS已 c2014a3/current，但 issuer/machine/grant verifier 尚未实现；目标 actor 无 Member、current roster 与 authenticated client 身份保留。读取框架冻结源码及实际失败证据；收到 owner/read 后单独精准 RED/source 准入。共享服务/PG/Redis/正常身份资金不改，无新 schema/contract/generated/CLI。|
+
 ## R255 当前用户左栏反馈与未开户交互已提交（2026-10-06 07:54 UTC）
 
 - Web分支codex/r255-sidebar-credit-20261006。左栏9e1c8c3a50e8afef00bb56c86e24aac2cbaf065b，仅现items CSS+三相邻事实文档：触屏draggable none→pan-y；展开folder重复视觉标题退役，原创建/排序回所属folder行、保状态反馈/导航标签/数据owner。最终CSS93009a20；独审2227f645精确diff。真实正常IAM页面390×640 touch模拟原项目起滑0→0/资料库0→171.5，修后项目0→171.5/会话反滑→101.5；最终硬刷新项目0→234.5、四按钮44px/hittrue/真实sort菜单可达。Desktop1200×460两folder独立、children77.92→43.52px、唯一wheel0→262→0/Direct底346.8<footer356.8，宽276无横溢；Space/Escape与原两历史marker保持，工作区loading0。物理设备/用户原IAB未冒验收，IAB tab7同步超时另记。

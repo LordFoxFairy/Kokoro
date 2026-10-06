@@ -1,3 +1,7 @@
+## R255 financial 当前发行接缝（2026-10-06，IAM408bfc1 D0）
+
+注册/roster由现oauth/clients owner实现；financial provider仍总拒签。已核锁1.7.3 public options.extensions[].claims.accessToken提供认证client/sessionId/grantType，现customAccessTokenClaims没有这些，不引入ALS/私有provider import或第二token服务。FG1只发行当前资格，FG2才在线撤旧JWT与target双token决策/生成artifact；正常Billingcanonical两读已经独立启动。Owner实际implementation仍待真实RED/source放行，不把D0当功能完成。
+
 ## R255 当前左栏/未开户入口（2026-10-06，Web bf04df7）
 
 Web现components/blocks/workspace-rail/workspace-rail-items.module.css拥有触屏pan-y与所属folder工具定位；原nav/list/engine/owner scope未搬移，Direct常驻/反馈不隐藏。现contract/billing.ts严格未开户错误体→billing/client.ts typed missing_account→ui/billing各独立state/Empty，复用唯一预算/取消读取链；原四mixed和其它候选保持。Root正常IAM浏览器、desktopwheel/touch模拟及截图证据同task/test-cases，未冒真实物理设备/原用户IAB或全部CRUD/收费能力完成。

@@ -1,3 +1,15 @@
+### FG1 首业务真实 RED 已确认
+
+Root隔离PG/正式provider handler：合法financial名单HUMAN、非operator/Member0/activeOrg=null，302跳/auth/select-tenant而不是/auth/consent；1FAIL/12未匹配/exit1，398freeze exact，PG77→77。生产现拒签仍保持，本轮已精确放行原owner四现source+现lifecycle的专用issuer修复；不扩大普通角色、不造token/资金，FG2/artifact/收费完整链未完成。证据fg1-provider-red.json/log与原任务卡；这不是浏览器/正常赠送完成。
+
+## R255 正式 financial 发行接续（2026-10-06）
+
+- 上一轮为progress。IAM三D0仅自有前缀已修正当前/目标，提交408bfc1：注册与名单CAS已实现，发行拒签及machine/grant-target/SDK未完成；旧JWT在线撤权明确由FG2承接。不把operator/组织角色或actor Member当赠送资格，target仍需同tenant当前Member。原正文suffix逐字节exact，独审894d373d无未解决确定P0/P1/P2。
+- Root Node24.20实际contract:check、sdk:check、prisma:validate全部exit0；现源pnpm verify 102纯文件938项/0，format/lint/types/contract/breaking/SDK/build全部0。只是当前工程基线，不是新financial发行或资金E2E通过。九normal root/listener PID均alive，未重启或操作正常资金/身份。
+- 已核锁定oauth-provider1.7.3 public extensions.claims.accessToken有认证client/sessionId/grantType；customAccessTokenClaims本身缺这些，不能从body或旧code metadata替代可信身份。原IAM负责人当前只获现lifecycle新增真实无Member/无activeOrg但列名HUMAN正控授权；Root有效业务RED后再给source许可，现生产拒签仍保持。
+- Billing只读依赖独审54300925给17组原句修订建议：失败/取消仅核实实际消耗结算，确认未使用预占释放，unknown待核；C1/C2/C3/19项/payment仍整收费退出线，但不阻FG1/FG2与赠送独立研发。本轮尚未把Billing mixed文档全打包或实施消费者。完整Wave0–7 active、70组11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST保持，不新增完整组PASS。
+- 后继仍FG1真实provider发行与撤名旧code→FG2当前target verifier/artifact→Billing pin/正规赠送→真实用户余额/预占/结算释放流水；不伪开户/充值/free。原同台账继续，不新任务中心。证据原ignored fg1-* 与两只读报告；目标账号/program/source/amount必须真实入账前明确。
+
 ## R255 当前用户左栏反馈与未开户交互已提交（2026-10-06 07:54 UTC）
 
 - Web分支codex/r255-sidebar-credit-20261006。左栏9e1c8c3a50e8afef00bb56c86e24aac2cbaf065b，仅现items CSS+三相邻事实文档：触屏draggable none→pan-y；展开folder重复视觉标题退役，原创建/排序回所属folder行、保状态反馈/导航标签/数据owner。最终CSS93009a20；独审2227f645精确diff。真实正常IAM页面390×640 touch模拟原项目起滑0→0/资料库0→171.5，修后项目0→171.5/会话反滑→101.5；最终硬刷新项目0→234.5、四按钮44px/hittrue/真实sort菜单可达。Desktop1200×460两folder独立、children77.92→43.52px、唯一wheel0→262→0/Direct底346.8<footer356.8，宽276无横溢；Space/Escape与原两历史marker保持，工作区loading0。物理设备/用户原IAB未冒验收，IAB tab7同步超时另记。
