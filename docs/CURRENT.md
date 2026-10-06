@@ -1,3 +1,11 @@
+## R255 01:14 终态：排程保存态已真实修复，时间投影新增有效FAIL
+
+- **源码与真实用户修复**：Web main97a79d45f93a6007fb0f37002372fd503cd0d373仅现scheduled-task-editor-state.ts一文件，StrictMode每次effect setup恢复mounted=true、真cleanup仍false，不禁StrictMode/不改API/模式/初值。正常3310创建/list200后弹窗永远保存中为实际RED；修后编辑同QA任务→PATCH/list200→弹窗自动关闭→硬刷新标题和paused状态保持；空白标题保存disabled→取消原标题保持。保存收尾子例闭环，不冒排程执行/整个CRUD完成。
+- **QA数据与安全边界**：只新增本次scheduled_18ce2a4c0b2745e247fce557562be15b，自动核准保持false，已正规暂停且刷新保留；Root未恢复/删除任务、触发外部工具、赠送资金或主动调用模型；后台是否曾尝试执行未作本轮验收结论。create返回错误的next_run_at为创建瞬时点2026-10-06T01:16:12.377Z而非08:00；不因HTTP200称时区/周期通过，也不把列表active文案“运行中”当真实Agent执行。来源核查：BFF input缺省new Date，同字段兼weekly锚点；现Scheduler权威next_due_at receipt被outbox丢弃，持续next另无owner读来源。该问题归既有T-P02由未验→失败；完整70组现11通过/7失败/14待复测/37未验/1支付后置，历史统计保留。
+- **Root工程/审查仅辅助**：现8文件79pass/0fail、lint/typecheck/build实际exit0；独审3c0b9d11零P0/P1/P2。原763 tracked保护仅批准source改变，其余762 exact（原四mixed保持），Root仅一文件提交；没有新增底层单测/mock、没有执行其他system fixture/全量e2e/axe/镜像门，不当命令绿替代用户验收。八原进程/句柄仍alive/200，0服务重启/重复/DB或Redis reset，原Billing/模型worker仍未运行。
+- **并行结果与下一切片**：IAM只读2c2da17f确认当前本人consume不支持管理员actor→target，OAuth operator不自动授财务权限，不能SQL注资或用header假管理员；需在现authorization/billing具名窄扩/实际actor凭据闭合，未实现/未赠送。Scheduler时间只读a8045fc2给现outbox/receipt锚点与next投影最窄边界，禁止Web自行计算日期/同步远端塞SQL事务/新cron框架；后继先owner三D0与机器contract收敛，独立于聊天授权consumer缺口，不把两项只读报告记成功能完成。
+- **任务归类纠正**：本轮writer/报告沿T-S01.R255临时卡名接续，QA子例全部归入既有T-P01/P02；T-S01整体System组不改变，不增加第71组/重复计划中心。完整Wave0–7仍OPEN/原goal blocked，不重建/缩小。证据ignored var/dev/r255-preserve/0114-web-{gates.log,commit-receipt.json,before.json}、scheduled-0114-browser-receipt.json、scheduled-create-pending-red.{md,png}、scheduled-edit-{green.png,refresh-green.md}、scheduled-empty-cancel-green.md；原两个IAB页复用，验证页保留paused现场。
+
 ## R255 01:03 续推：正常聊天实际失败，owner环依赖已精确纠正
 
 - **真实用户验收仍FAIL**：正常3310/IAM登录→新对话→输入“1+1”→点击发送，第二次受观察提交的POST `/api/session/sessions/conv_53cf018a-3648-47db-af76-a276aeb47fa3/messages` 返回503 `agent_not_configured`；页面有限进入失败/重试，无assistant输出。BFF持久配置AGENT_ENABLED=false而URL已配，源码chat.ts在chatTurns.submit之前拒绝，本次没有服务端Message/outbox提交；不是已接受数据丢失。第一条提交观察未启Network，仅保存UI失败；刷新同URL snapshot404→空Home，是未提交临时会话显示/恢复问题，不能推成数据库回滚/快照事务损坏。

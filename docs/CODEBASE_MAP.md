@@ -1,3 +1,7 @@
+## R255 01:14 当前排程入口
+
+Web97a79d45单文件src/features/scheduled-tasks/ui/scheduled-task-editor-state.ts：useMountedRef effect每次setup true/cleanup false；仅submission hook使用。正常保存弹窗永久pending已由真实编辑200→自动关闭→刷新paused/标题保持复测；原762 tracked字节保持。现BFFsrc/application/scheduled/input.ts缺省nextRunAt=new Date，同字段兼周锚点；Scheduler control receipt已给权威next_due_at但BFFoutbox-delivery只保succeeded、settlement未投影。后继归T-P02，owner-first分离recurrence anchor与待确认next、现receipt fenced同事务投影；持续next还需Scheduler既有Schedule读边界，不前端计算/跨库读取/新平台。QA唯一scheduled_18ce...正规paused，8原服务句柄同processes.json，不重启。
+
 ## R255 01:03 当前入口纠错
 
 正常Web2dece456/BFF97a99d35新消息真实503 agent_not_configured：BFF src/http/routes/chat.ts:214在持久提交前核Agent enabled/URL；当前持久开关false。开关true本身不补Agent执行，现Agent src/kokoro_agent/model/call_runtime.py:164仍无条件拒绝缺失authorization consumer，WorkerClients无Billing client。最小代码依赖：System具体技术声明→Agent bound/单次planned+bound reader→Billing M2→Agent authorization consumer；不在BFF写计费/翻flag作假成功。Agent95a11500与Billing67499073只三D0当前段纠错，机器artifact仍未发布；正常HTTP ingress与worker是两个现进程，当前worker未运行。原八服务句柄仍同var/dev/processes.json，均复验alive200。真实失败/test-cases/收据同CURRENT，不增加整组PASS。

@@ -1,3 +1,15 @@
+## R255 01:14 排程真实行为用例（归T-P01/P02，不新增组）
+
+|用例ID/类别|标题/优先级/类型|预置条件|真实用户步骤|预期与实际|
+|---|---|---|---|---|
+|T-P01.R255-SAVE-01 主链/状态机|保存终态收尾，P1/系统E2E|正常IAM/3310，单次本QA任务|建立→填标题/提示词/每周08:00→保存→等接口与UI|旧create/list200但saving/取消disabled永久保留，为有效RED；本次仅保存生命周期修复。未重新创建另一任务作GREEN（已知排程时间错误），不声称完整创建复测通过|
+|T-P01.R255-SAVE-02 主链/状态机|编辑成功自动退出，P1/系统E2E|同QA已暂停；冻结Web97a79d45|任务菜单编辑→改QA标题→保存→等弹窗hidden→刷新|PATCH/list200、弹窗自动关闭；标题保存且paused保持；真实GREEN。新内容未从preview/mock来|
+|T-P01.R255-SAVE-03 边界/取消|空白标题不可提交、取消无写，P1/UI E2E|同已保存paused QA|编辑→标题填空格→核保存disabled→取消|实际保存disabled，取消退出且列表仍已保存标题；通过。迟到回包/卸载错误分支仅独审，未完整网络故障实测|
+|T-P01.R255-PAUSE-01 状态机|正常暂停持久，P0/系统E2E|本次唯一QA任务active，autoApprove=false|菜单暂停→等200→硬刷新|已暂停且刷新保持；通过。不认为UI此前运行中=真实Agent已执行；未恢复/永久删|
+|T-P02.R255-NEXT-01 异常/时区|每周08:00不显示创建时刻，P0/系统E2E|同真实每周08:00 America/New_York输入|创建一次→读取响应/list→核页面当地时间|实际next_run_at=2026-10-06T01:16:12.377Z，当地21:16不是08:00；FAIL未修，T-P02从未验改失败。BFF丢owner receipt与周锚点混用确证；不私改前端补算/默认值|
+
+Root现8文件79辅助通过与lint/types/build0不替代上述行为；独审3c0b9d11只源码放行。唯一QA scheduled_18ce2a4c0b2745e247fce557562be15b保持paused，Root未删除/恢复任务、主动调用模型或写入资金；未据此断言后台执行次数为零。现70组统计11通过/7失败/14待复测/37未验/1后置；其余历史统计为当时事实。任务卡与handoff旧T-S01.R255名称属于worker切片，现系统组T-S01不受影响；用户用例归既有T-P01/P02。
+
 ## R255 01:03 正常聊天失败复现（沿T-C01，不增加统计组）
 
 |用例ID/类别|标题/优先级/类型|预置条件|真实用户步骤|预期与实际|
@@ -1682,8 +1694,8 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-C09 | BFF→Web | 活动/终态刷新：同事务Message/执行head/过程与event_watermark一致 | 失败 | E109 Web恢复无executionProcess、分页未请求、signal未传递，属D-R135-02–04；源码修复/Root复测及浏览器未执行。E108后端projection46/46、T-C09.1–5历史范围保留，不由后端绿关闭Web失败。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
 | T-C10 | BFF→Web | SSE断线/cursor replay/重复/间隙/过期与GC；不丢字、不双气泡 | 失败 | E109 Web过程410未fresh snapshot且分页未请求（D-R135-03），深层重复过期/错误cursor/浏览器未到达。E108后端74/74已关闭E107 partial-GC缺陷，保留该限定证据；不同层新失败尚未修复复测。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
 | T-C11 | Web | 同scope真实重挂/双owner/StrictMode；最后卸载才close SSE；injected不被释放 | 通过 | E11：Root真实RED→完整门及独立审，已提交/推送a52a623；仅生命周期组件切片，不证明W2 |
-| T-P01 | BFF→Scheduler→Agent | 独立任务不进入会话列表；project_id仅关联；创建/修改/暂停/删除/权限 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
-| T-P02 | BFF→Scheduler→Agent | IANA timezone/DST、周期/一次、边界时间与misfire | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
+| T-P01 | BFF→Scheduler→Agent | 独立任务不进入会话列表；project_id仅关联；创建/修改/暂停/删除/权限 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 ；R255正常UI创建200后saving永久pending已修，编辑200自动关闭/刷新标题与paused保持/空白disabled及取消通过；删除/恢复/越权/真实执行未验，不关闭整组 |
+| T-P02 | BFF→Scheduler→Agent | IANA timezone/DST、周期/一次、边界时间与misfire | 失败 | R255正常3310每周08:00 America/New_York创建200，next_run_at却创建当时01:16Z/当地21:16；BFF默认now/周锚点混用并丢Scheduler权威next_due_at，尚未修复。QA已正规paused；不把HTTP200/源码查阅称时区通过，后继owner contract+真实Scheduler→BFF→Web复验 |
 | T-P03 | BFF→Scheduler→Agent | 重复唤醒/投递、幂等receipt、ACK unknown与Outbox恢复 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P04 | BFF→Scheduler→Agent | 进程崩溃/lease到期/重启、旧worker失fence；不重复Occurrence执行 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P05 | BFF→Scheduler→Agent | 暂停/删除不伪造已接纳任务终态；串行dispatch/Agent terminal释放 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
