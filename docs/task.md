@@ -1,3 +1,73 @@
+### R322 Skills 展示切片已集成，完整页面验收边界保留（2026-10-07）
+
+当前用户先修Skills的要求已落地：Web **b97a9a2e3f2c40ef964c1284dcc4bfea14f7fa69**（parent62de024）精确12paths：三production、四现test共7定位、三D0批准prefix、现CURRENT/skillsINDEX。原创插画书封替代几何壳、source_ref稳定装饰、两行标题简介/轻卡留白/22px页头；零API/SQL/市场目录/假使用量或外部图片。reader业务handlers inverse exact，原27Admin mixed status/字节保持、index空；Root独占提交，原writer/独审STOP。用户当前正常3310已显示，不用源码库存冒页面。
+
+Root真实路径：搜索/两视图同source图案、详情Escape归焦、More/空发布取消、withdrawn硬禁用、R255停用再启用各PUT→canonicalGET→listGET200且刷新恢复原三安装；390长名全文详情/44触控、Settings嵌入/无横溢及稳定深色。最终截图 **var/dev/r255-preserve/r322-skills-final.png**、结构证据r322-skills-user-verification.json、提交收据r322-web-commit-receipt.json。最后恢复默认1280×720浅色三卡/无Dialog，临时metrics/media/touch已还原、Network关闭、用户Manus参考tab保留。五组本地展示行为中TC02全局Settings关闭按钮32px仍PARTIAL；不掩盖并称全站44通过。媒体首瞬态非稳定对比PASS。尾网络两billing/summary404/七导航canceled保留为全局后继，不能据Skills清零。
+
+Root原Node22.22.2完整30910自然exit0，pnpm check=309contract/51architecture/3438default与lint/typecheck/build，仅辅助回归；此前surface53/3、完整3433/5重复装饰文本定位及Rootexact选项typecheck失败保留。四现test只7处FindByText改真实button角色，原业务断言/fixtures/预算exact，原QA报告c8858c53；无新unit/mock替用户验收。样式按Manus卡片层级参照，不冒像素一致或全CRUD。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **14PASS/7PARTIAL/12UNVERIFIED**，T-K03/T-K05 OPEN。全SkillsCRUD/多页/第二身份/未知结果、全test:e2e/axe/视觉预算仍未验；完整Wave0–7 active/支付最后，不标全仓上线。R321 BFF四本人MCP读后继仍三D0候选/两P2未授实现，不挤占本轮用户Skills优先；九服务/PG/Redis/ObjectStore没有本轮重复启动/reset，原八gitlinks/uv不暂存。下一依用户当前页面顺序推进尚缺用户行为，保持同一计划/验收台账。
+
+### R322 用户当前 Skills 展示修复（优先于未授写的 MCP 后继）
+
+用户最新明确先修 Skills 与 Manus 的展示差异。Root 已在正常3310 Tab27与 Manus Tab26实际对照；现三安装卡真实可读，但装饰只有几何书壳、页头/卡片像管理表格，原截图旧结构不作当前完成证据。沿用户已批准个人「已安装 / 我发布的」范围；不伪造市场目录、使用量、作者、封面上传字段，不改变 owner、API、SQL、权限或安装/发布状态机。R321 BFF 三D0独审有两P2待澄清，尚未授源码/测试/机器写，保持候选不动；本轮不分散当前 Skills 用户要求。
+
+#### §8 当前设计与放置
+
+|项|结论|
+|---|---|
+|Owner|Web ui/skills；原 web_interaction_astra_r296 唯一 writer，Root独占Git/台账/最终用户验证|
+|当前事实|Web 62de024/codex/r257-admin-web-current、773tracked、原27Admin mixed；r322-web-start.json逐hash保护。reader两处cover重复，当前CSS nth-child颜色会随筛选变；真实状态与命令有效|
+|目标职责|独立纯装饰 PersonalSkillCover 按现 source_ref 稳定选择原创编辑式矢量书封，真实名称不冒封面业务字段；页面留白/页头/卡片更贴参考|
+|目录方案|比较直接往699行reader塞插画与现ui/skills普通presentational文件；选 personal-skill-cover.tsx，避免插画变化挤入命令状态；不建新子目录/模块/资产服务|
+|粒度|一个纯组件承接两现cover；现CSS复用统一形状/纸墨局部色token。不新增依赖、网络图片或复杂生成系统|
+|依赖|组件仅React JSX及相邻现CSS，props为title/sourceRef；无effect、IO、随机、时间、provider、window、ID DOM重复或dangerousHTML|
+|数据/API|现读模型原字段，source_ref只是稳定装饰种子；零contract/schema/cache/后端配置/身份变化|
+|删除项|替换两重复BookOpen+尖括号文字+横线书壳；移除旧nth-child着色和无用BookOpen import/旧纯装饰规则；有效生命周期/分页/unknown/状态硬禁用保留|
+|验证|Root先存实际现页视觉差异；冻结后原QA独审、RootNode22 lint/typecheck/build及适当既有门，真实正常3310搜索/筛选/两视图/详情归焦/发布空表取消/启停/窄屏/Settings验证，实际图可交付；不新增unit/mock替用户验收|
+
+|任务|角色/写入集|验收|
+|---|---|---|
+|R322-WEB-SKILLS-VISUAL|原web_interaction_astra_r296；先只读精确方案，准入后只新 personal-skill-cover.tsx、现personal-skills-read.tsx中两cover/import/必要页头结构、现同名CSS；CURRENT/INDEX Root|插画真实原创纯装饰、stable source seed、2:1封面/3:4书、两行真实标题/摘要、清楚真实来源与状态、轻卡无表格式分隔、设置与触控/键盘不回退；业务handlers全文exact。零资源/Git/其它文件写|
+|R322-SKILLS-DESIGN-QA|原agent_planned_guarantee_system_r257只读；冻结前后精确审查边界与装饰信息真实性|禁止冒市场/作者/使用量、保disabled/focus/loading/empty/error/unknown，无新IO或外部资产；只读报告用原ignored入口；不跑资源/浏览器或改tracked|
+|R322-ROOT-E2E|Root正常Tab27唯一操作，Tab26只读参考|当前视觉RED与后续真实链/不同尺寸实际证据、保护原修改、独占精确Git。此局部不升级全33/70或完整Wave0–7|
+
+#### R322 当前执行证据与范围补充
+
+原Web owner已冻3production：cover 3993b776、reader ccbb9d34、CSS015ea97e；Root正常3310已完成五组展示行为：真实搜索/详情/归焦、空反馈/More/空发布取消、withdrawn原硬禁用、R255真实停用再启用6条owner响应200并刷新保留、390长名/1379字完整详情、Settings两尺寸、mobile coarse实际44触控、深色稳定样本及恢复默认1280三卡。本轮源不改API/SQL/状态机、不生成目录/使用量；证据r322-skills-user-verification.json及r322-skills-final.png。尾观察窗口有2次 /api/session/billing/summary 404及7次导航canceled，原事件保留不冒零异常；Skills启停观测6×200、搜索窗口零业务请求。媒体切换首瞬态对比不计PASS，稳定样本另记。Settings全局close32不是本轮44触控全站验收。
+
+Root完整工程第一次34149仅现surface53PASS/3FAIL，原因重复装饰标题。授权原owner仅将现kokoro-skills-surface三Mine定位改真实button角色，断言exact。97790工程309contract/51architecture/lint通过、typecheck因Root误给Testing Library不支持的exact选项而失败；窄删这3选项后原39874 typecheck通过，默认3433PASS/5FAIL，build未运行。五失败同封面标题重复，授权原owner仅追加现app-frame.smoke一Shell private skill、settings-modal两我的技能、use-session-state一Poll skill（两参数）的button定位。四test共7处替换，原fixtures/撤权/状态/预算/其余断言全保，既有辅助测试定位修正不替真实用户验收。四文件扩大为本R322辅助范围，原27Admin mixed仍排除；Root Node22完整30910重跑在途，独审原QA只读这四文件inverse，零资源/Git。
+
+#### R322 系统级用户验收清单（正常浏览器已执行，工程收尾在途）
+
+|ID/分类/优先级|预置与行为步骤|预期/状态|
+|---|---|---|
+|TC-SK-R322-01 主链路 P1|正常登录3310、当前真实三安装；搜索R255→打开详情→Escape→清空搜索→已发布→搜索同source|同source图案稳定、标题按钮正确归焦，搜索窗零请求；本轮PASS（限当前页/同source）|
+|TC-SK-R322-02 边界 P1|771宽、390×420、Settings嵌入；长名称/简介，打开完整详情并关闭|两列/单列无横溢、正文两行/全文详情可达、个人页触控44；PARTIAL：Skills详情close44，Settings全局close32仍后继|
+|TC-SK-R322-03 状态 P0|现active R255与withdrawn R267；筛停用→查看撤回禁用→还原→真实停用/启用R255→刷新|真实已启/停/来源撤回硬禁用不被封面替代、每命令一次且刷新持久化；本轮PASS（启停完整6条200，非全CRUD）|
+|TC-SK-R322-04 异常 P1|无匹配搜索、打开发布空表→关闭/取消、打开More/筛选后Escape|明确当前页空反馈、发布空表取消零写、正确回trigger、无SVG焦点；本轮PASS（非成功发布或完整异常矩阵）|
+|TC-SK-R322-05 展示 P1|浅/深色自动媒体、1280桌面最终页|原创主体/轻卡留白/真实状态与稳定媒体实图已核；本轮展示PASS，非像素一致/axe/全视觉预算|
+
+退出条件：三文件独审无确定阻断、Root当前工程门通过且以上实际正常浏览器路径有证据；不升级全Skills CRUD/跨身份或完整33/70。Web三既有D0仅Root R322前缀入选提交，原Admin候选全文保留、不打包。
+
+R321独审实际两P2已记录：approved_scopes须拒任何空白；owner Canceled且caller仍live须闭集503，仅真实caller断开才不写响应。该BFF任务尚未授机器/source修改，用户Skills当前优先，不冒方案完成等于四读能力。
+
+R322 当前工程真失败：Node22.22.2，原34149现 kokoro-skills-surface 文件 **53PASS/3FAIL**，三旧 `findByText("Mine")` 因aria-hidden装饰题签+真实标题重名；错误与log保留，不靠隐藏文本救门。首18073命令中一个文件名误写 nonexistent，实际只skills-panel **92PASS**，不能冒两文件验收。补充原Web唯一writer仅授现 `tests/ui/kokoro-skills-surface.test.tsx` 三定位改 `findByRole("button", {name:"Mine",exact:true})`；其余业务断言全文exact，不增Unit/mock、不改组件真实名称/任何行为。Root再跑当前完整check与真实用户路径后定稿。
+
+R322 Root完整97790工程门实际停止typecheck exit2：contract309/architecture51/lint先通过，Root指示的Testing Library ByRoleOptions不支持exact:true（与CUA Playwright API不同）。此为Root定位指示错误，非生产bug；不放宽类型。原writer补授权仅三已改定位删除exact:true，使用默认精确字符串name。完成后Root完整重新运行，旧失败日志保留。深色首切换采样标题rgb69/背景23、后稳定采样rgb205/背景23；前者不当稳定对比PASS、不据此随意改CSS，最终主题验收再核。
+
+### R321 正式 MCP 四读消费者（原计划后继）
+
+上一目标回合为progress：Web62de024/Rootb8659123实际提交与用户Skills路径、正式IAM token HTTP资格已形成证据。本轮沿R320三D0冻结与当前BFF a3e9a7e / codex/r257-bff-normal-current /551tracked；三D0候选是唯一既有变更，r321-bff-start.json保护。完整目标/70与33不缩小、不以新HTTP读替全CRUD。§8引用R320完整五普通TS职责表与零Schema方案；不新建目录/owner/协议、旧有效execution projection保留。Root独占当前资源、台账与Git。
+
+|任务|负责人/范围|阶段门/验收|
+|---|---|---|
+|R321-D0-QA|原 agent_planned_guarantee_system_r257 只读，三D0冻结及Platform固定owner43RPC/本人字段/分页/status/error/IAM资格|先确认三面一致、五文件粒度、单10秒/取消/身份/closed public；明确真实测试资源接缝。零tracked/Git/资源/browser写。|
+|R321-BFF-READ-CONTRACT|原 platform_iam_consumer_r298 BFF唯一writer；开始只读现OpenAPI/verify/两contract tests/operations oracle，D0通过后单独授现test/contract/openapi-contract.test.mjs新增missing四GET RED|Root先运行真缺口RED，不是新Unit/mock。随后窄授唯一openapi8.7.0/109/operation四追加与相关现校验；保持旧105语义/Platform固定artifact/全部源码Schema/配置资格不变。完成即freeze，Root重跑正式机器门/审查/提交。|
+|R321-ROOT-RUNTIME-QUALIFICATION|Root只读现正式IAM fixture/Platform系统composition/BFF真实测试资源入口|为四GET下一真实系统RED准备现owner隔离资源，token必须实际HTTP，不导入邻owner fixture进BFF源码、不读其SQL。正常九服务/PG/Redis/ObjectStore不重复启动/reset；已有句柄先查，源码运行门精确Node22/24。|
+
+D0独审或真实失败不放宽授权/oracle。运行五TS+config/server仅真实系统RED后另授；正常激活与Web消费依赖BFF发行/真实四读链，不把机器契约通过计用户PASS。
+
 ### R320 用户 Skills 当前展示与真实移除恢复（2026-10-07）
 
 Web **62de02446e0094e76f452ef97e0921b0473eb313** 已提交CSS/Skills INDEX/CURRENT三路径：彩色印刷书封与15/13/12px文字层级，原结构比例/操作状态保持；原负责人实现、独审62755efb、Root复核770任务外文件和两doc全文suffix，提交后原27Admin mixed status exact。Root当前正常3310实际搜索/详情Escape归焦、空结果、390长名双行及完整详情、1280三列/771双列/390单列、Settings两尺寸和自动深色已核；模拟恢复默认1280×720/浅色/展开侧栏/默认三安装、Network关闭。最终真实图 **var/dev/r255-preserve/r320-skills-final.png**，详细范围与模拟截图缩放/过渡旧几何另记 r320-skills-user-verification.json；Manus插画级像素一致、axe/视觉预算与全test:e2e未验。Node22.22.2原92144完整pnpm check自然exit0（309contract/51architecture/3437default、lint/typecheck/build），只辅助工程回归不替用户路径。

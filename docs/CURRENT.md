@@ -1,3 +1,13 @@
+### R322 Skills 展示切片已集成，完整页面验收边界保留（2026-10-07）
+
+当前用户先修Skills的要求已落地：Web **b97a9a2e3f2c40ef964c1284dcc4bfea14f7fa69**（parent62de024）精确12paths：三production、四现test共7定位、三D0批准prefix、现CURRENT/skillsINDEX。原创插画书封替代几何壳、source_ref稳定装饰、两行标题简介/轻卡留白/22px页头；零API/SQL/市场目录/假使用量或外部图片。reader业务handlers inverse exact，原27Admin mixed status/字节保持、index空；Root独占提交，原writer/独审STOP。用户当前正常3310已显示，不用源码库存冒页面。
+
+Root真实路径：搜索/两视图同source图案、详情Escape归焦、More/空发布取消、withdrawn硬禁用、R255停用再启用各PUT→canonicalGET→listGET200且刷新恢复原三安装；390长名全文详情/44触控、Settings嵌入/无横溢及稳定深色。最终截图 **var/dev/r255-preserve/r322-skills-final.png**、结构证据r322-skills-user-verification.json、提交收据r322-web-commit-receipt.json。最后恢复默认1280×720浅色三卡/无Dialog，临时metrics/media/touch已还原、Network关闭、用户Manus参考tab保留。五组本地展示行为中TC02全局Settings关闭按钮32px仍PARTIAL；不掩盖并称全站44通过。媒体首瞬态非稳定对比PASS。尾网络两billing/summary404/七导航canceled保留为全局后继，不能据Skills清零。
+
+Root原Node22.22.2完整30910自然exit0，pnpm check=309contract/51architecture/3438default与lint/typecheck/build，仅辅助回归；此前surface53/3、完整3433/5重复装饰文本定位及Rootexact选项typecheck失败保留。四现test只7处FindByText改真实button角色，原业务断言/fixtures/预算exact，原QA报告c8858c53；无新unit/mock替用户验收。样式按Manus卡片层级参照，不冒像素一致或全CRUD。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **14PASS/7PARTIAL/12UNVERIFIED**，T-K03/T-K05 OPEN。全SkillsCRUD/多页/第二身份/未知结果、全test:e2e/axe/视觉预算仍未验；完整Wave0–7 active/支付最后，不标全仓上线。R321 BFF四本人MCP读后继仍三D0候选/两P2未授实现，不挤占本轮用户Skills优先；九服务/PG/Redis/ObjectStore没有本轮重复启动/reset，原八gitlinks/uv不暂存。下一依用户当前页面顺序推进尚缺用户行为，保持同一计划/验收台账。
+
 ### R320 用户 Skills 当前展示与真实移除恢复（2026-10-07）
 
 Web **62de02446e0094e76f452ef97e0921b0473eb313** 已提交CSS/Skills INDEX/CURRENT三路径：彩色印刷书封与15/13/12px文字层级，原结构比例/操作状态保持；原负责人实现、独审62755efb、Root复核770任务外文件和两doc全文suffix，提交后原27Admin mixed status exact。Root当前正常3310实际搜索/详情Escape归焦、空结果、390长名双行及完整详情、1280三列/771双列/390单列、Settings两尺寸和自动深色已核；模拟恢复默认1280×720/浅色/展开侧栏/默认三安装、Network关闭。最终真实图 **var/dev/r255-preserve/r320-skills-final.png**，详细范围与模拟截图缩放/过渡旧几何另记 r320-skills-user-verification.json；Manus插画级像素一致、axe/视觉预算与全test:e2e未验。Node22.22.2原92144完整pnpm check自然exit0（309contract/51architecture/3437default、lint/typecheck/build），只辅助工程回归不替用户路径。
