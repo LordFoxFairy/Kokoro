@@ -1,3 +1,33 @@
+### R292 三个实际交付固定；Manus个人技能展示已落到页面（2026-10-07）
+
+Web0a20bd125b4717fd99354dd63a00326514a73049精确六路径（既定五+Root CURRENT）：真实个人卡名称/状态同层、完整简介/来源/安装事实，启停+更多核对移除，轻边界/none shadow、容器最多双列。Root正常771两205.5px/390单358px/1440两474px实测无横溢；771×480菜单bottom376、390Escape原trigger、真实published详情焦点、Settings嵌套Escape不误关与390单192px卡均实际走通。本人原R255enabled=true正常停用一次PUT200/GET200、硬刷新仍停用，再启用一次PUT200/GET200、硬刷新已恢复；无永久移除/新publish/withdraw/新401403或unknown注入，完整页面CRUD/全UI仍OPEN。清除了尺寸覆盖，最终截图r292-ui-normal-final.png。
+
+Root20956 Node22 lint/types/test/contract/architecture/build均0，默认3365/contract299/architecture51 PASS；初次完整tracked冻结。独审菜单oracle P2用真实Radix属性窄修，三hunk inverse原40238 exact，独审eb9b2fa2关闭；Root9004最终默认3365/0、targetlint0，source/test冻结，全部tracked只有Root追加CURRENT前缀发生变化，allTrackedFreeze=false明确记录，不掩盖为true。六Git对象等freeze，原Admin/i18n mixed未暂存。
+
+BFF76098c089dbcf23cc10d49140000ab04889ed7d7精确15paths，真实15PG/默认867+2原SKIP及最终architecture35/Storage固定生成检查0；正常仍39db/public8.5，真实Storage/IAM/17用户删除链未激活。IAMfa5152334dd723cfc32c5f0d0cdfccf28acbfaeb精确18paths，正规contract/SDK0.9仅三语义差异，Root verify941/0与prismavalidate0，生成独审5a937637；clean committed Node24 SDK pack0，归档digest428e9bb9740030bf4781e24b8ee2009e344e3161e956aae2516be30137a4af9e（96entries）。不是消费者或正常MCP CRUD激活；CLI/资源维护/owner后继仍OPEN。
+
+完整70仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人33仍13PASS/6PARTIAL/14UNVERIFIED；本片真实展示/原有启停回归不升整能力闭环。完整Wave0–7 active，同现计划续行连接器/排程/资料库/Settings/Home/侧栏以及正规owner链，无新中心/市场/兼容层。正常服务无重启、无DDL/reset/权限或资金操作；仅上述本人技能常规启停及恢复原值。uv f7e1c30d和原八gitlinks任务外保持，Root独占Git。
+
+### R292 实际并行交付推进（2026-10-07）
+
+用户已明确Manus高一致视觉目标；Root同771×752实际before截图/DOM已保存，Web唯一writer按既有五路径实施个人技能展示，当前两列/状态同层/启停+更多已在正常浏览器观察到，但尚未冻结或最终验收，不称整页或全UI闭环。
+
+BFF Root最终35architecture/Storage固定生成检查各0、五docs旧suffix与全其它tracked保护exact，精确15paths已提交76098c089dbcf23cc10d49140000ab04889ed7d7（Git对象等freeze）。既有15真实PG/867默认PASS+2原SKIP与8实现独审依据绑定此片；正常运行仍39db/public8.5，真实Storage/IAM/17用户删除链未激活或验证。
+
+IAM Root正规contract:generate/sdk:generate各0，仅机器JSON+SDK types/zod三生成物变化；deep semantic严格info0.9及mcp_personal request/scope response三处。完整verify0（102files/941PASS；format/lint/type/contract/breaking/sdk/build均0）与prisma:validate0，执行起终全tracked exact；原43真实integration另据保留，不冒本轮全integration。生成物独审与固定提交/消费者/演进CLI/正常激活/本人MCP CRUD仍待。
+
+完整70与个人33矩阵不变，完整Wave0–7 active。正常九服务/共享PG/Redis/MinIO/资金零重启清理写入，原uv及八gitlinks保留。Root继续真实UI验收与独立owner收尾，不用工程门数量作界面完成率。
+
+### R291 实际 owner 推进；Manus 视觉目标再确认（2026-10-07）
+
+用户明确希望Manus展示高一致还原；以其已提供截图和已登录页面为视觉基准，不再各页另发明布局。保Kokoro品牌/真实数据与既定个人技能管理业务；此轮UI源码未改、不宣展示完成。
+
+BFF原writer三source窄修已冻结：required claim SQL前单调观察、实际clock_timestamp lease与剩余，dispatcher以原观察加剩余；冷却恢复最多1占总batch，普通补余额。Root真实2FAIL后完整15PG PASS/0FAIL/0SKIP，Node22 build/check/format/exact source format均0；默认867PASS/0FAIL/2既有资源SKIP。所有tracked+10hash运行起终exact，旧helper接缝inverse完整c2c9原文exact、190113HEAD保护；独审a4cc4484无新增确定阻断。自有r285库结束26表0行/0其它客户端，正常资源未动。BFF五当前说明前缀已更新，尚待最终文档/范围复核与Root提交；不是正式Storage/IAM或17浏览器删除子例PASS。
+
+IAM固定五source/test经真实native issuer/正式HTTP两case各PASS，随后完整两integration43PASS/0FAIL/0SKIP；原四正控与错误Basic/projection冒用/purpose/scopes漂移/client/tenant disabled均实际到达，全部tracked冻结、原PGcatalog零缺失/新增。独审无新增确定阻断。Root verify真实在format/lint/type0后contract drift1；原writer只把唯一generator、SDK package、三version oracle和contract README候选升0.9，四D0追加当前事实，旧正文完整保。交付35fded1c8已STOP；机器OpenAPI/SDK仍原0.8，Root正规生成/语义diff/全门/固定提交digest尚待，演进CLI/消费者/正常激活/本人MCP CRUD仍OPEN。
+
+完整70仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人33仍13PASS/6PARTIAL/14UNVERIFIED；工程资格不替代用户闭环，完整Wave0–7保持active。原八gitlinks与uv.lock f7e1c30d保持，Root正常服务/共享PG/Redis/MinIO/资金零重启清理写入。后继以当前冻结及原资源句柄为准，继续固定owner资格与页面CRUD，不新建中心或缩小目标。
+
 ### R289 展示以 Manus 为基准，具体 UI 尚未实施（2026-10-07）
 
 Root再次实际对照771×752已登录Manus技能目录/个人技能管理与正常Kokoro技能页，零安装/发布/保存/消息或权限变更；退出参考弹窗恢复原技能目录。明确媒体目录不等个人管理，不新增虚假目录/官方技能/使用次数。两只读角色并行交付七页面真实入口映射与12条自然用户验收，原Web97be7f7五路径起终保持。方案采用现组件与token统一层级，不新框架/市场/API，首片名称+状态、完整简介、启停+更多，保继续撤回/unknown。用户整体Manus方向已明确；具体展示方案待用户审阅后实施。源码零改变，整体UI仍OPEN，不冒已修复。

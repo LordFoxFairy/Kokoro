@@ -1,3 +1,77 @@
+R292终态：Web0a20bd1真实展示首片精确提交；BFF76098c0候选固定未正常激活；IAMfa51523候选0.9/SDK归档固定，消费者/正常MCP待接。Root所有句柄已自然终态，子Agent均STOP；完整目标保持active，整体CRUD/UI及剩余页按原矩阵推进。
+
+|R292-WEB-FROZEN-REVIEW|原agent_planned_guarantee_system_r257只读；五源码/测试冻结，Root导出HEAD与当前diff|生产无新P0/P1，菜单oracle P2三hunk已修及inverse exact，独审eb9b2fa2；Root真实浏览器已按现证据，最终默认复跑进行中。|
+|R292-WEB-P2-ORACLE|原Webwriter只现surface test三hunk；原40238全文保存；新e690324f|菜单实际aria/data-disabled资格，原请求/预算/恢复断言保，不改生产四paths；作者10/0，Root全test/targetlint后精确六路径提交（第六为Root当前证据文档）。|
+
+R292进展：BFF精确15paths已提交76098c0，正常未激活；IAM正规两生成/verify/prisma均0，独审进行中。Webbefore已完成并授权生产，实际UI终态验收待冻结。
+
+### R292 当前继续：Manus首片实施与owner固定交付并行（2026-10-07）
+
+上一goal切片有实质progress：BFF真实RED→窄实现→15PG/全门通过及独审；IAM43真实integration通过，contract drift保留、0.9可编辑来源冻结。上一人类问答只确认视觉目标，当前不将口头对齐冒UI实现。全部目标/原70和33矩阵保留。
+
+**Manus展示首片 Implementation Plan**（复用此有效计划，不另建中心）：Goal=以已提供/已登录Manus页面高一致视觉层级还原现个人技能管理，不另创视觉风格；Architecture=同一reader供主页/Settings、既有tokens/Dropdown与正规handlers不变；Stack=现React/CSS modules。Owner Web单writer；Root浏览器/资源/Git独占。用户已确认高一致展示，首片沿r285五路径及r289七面方案/用户验收，不新增市场/cover/usage假数据，整体其余页不缩范围。
+
+|任务|角色/基线/范围|步骤/验收|
+|---|---|---|
+|R292-WEB-MANUS-SKILLS|新Web实现负责人；/Users/nako/.codex/worktrees/kokoro-r257-admin-web HEAD97be7f7；原Admin/i18n全部保；仅personal-skills-read.tsx/.module.css、kokoro-skills-surface.test.tsx、skills-panel.test.tsx、src/ui/skills/INDEX.md|先记录已知三等权动作/状态分散自然用户失败，补行为回归；现reader名称+状态同行/完整简介/异常source显式、启停+更多核对移除、轻边界无重阴影、紧凑14px元信息与统一spacing。正常宽度471内容双列、窄屏单列/最多两列，不借造假cover复刻市场；Tabs/技术/unknown恢复保。Root同尺寸正常浏览器/键盘/Settings/刷新/权限与真实回执验收，测试绿不计整体页面PASS。|
+|R292-ROOT-IAM-GENERATE|Root接原IAM writer冻结15路径；现唯一contract:generate/sdk:generate，生成层只机器diff|before/after完整tracked+vendor/dependency/lock、五源码固定；真实0.9仅additive enum/info变化，旧ops/components除准入enum保持；全verify/breaking/build/schema及43实际结果后精确提交，不冒CLI/正常激活。|
+|R292-BFF-CANDIDATE-COMMIT|Root接99bbda35+已审8source/2test/五说明前缀|先补文档/INDEX冻结复核、契约/架构再跑，精确15路径提交与treehash回执；正常39db/8.5不替换，真实Storage/IAM/17用户链后继。|
+
+- [ ] Root记录正常UI同尺寸before证据；Web writer先行为失败后现五路径收敛。
+- [ ] Root独立源码/交互审查，保旧handlers/key/unknown/tenant retirement和无写关闭。
+- [ ] Root正常浏览器390/771/1440/短高与Settings，观察真实数据/操作/焦点/刷新，记录未验分支。
+- [ ] 当前片commit/同台账证据；再推进连接器/排程/资料库/Settings/Home/rail的既定完整能力，不仅技能页。
+
+|R292-IAM-GENERATED-REVIEW|原 iam_mcp_owner_r288 只读；2d374e1+现18路径；机器正常生成后三项语义变化/SDK固定0.9、vendor/dependency/锁保持|Root已两生成exit0，43029全verify/prisma进行中；审18 SHA起终及旧操作完整，不改任何source/generated/docs/资源/Git/browser。报告r292-iam-generated-contract-review.md，工程发行不冒MCP页面PASS。|
+
+R291交接终态已同步CURRENT/progress：BFF15真PG与全部已执行门0，五说明前缀已补但尚未最终提交；IAM43真实integration0失败，契约drift明确保留，0.9可编辑来源已冻结但机器生成/发行OPEN。用户明确Manus高一致视觉目标；不把后台资格冒UI完成。
+
+|R291-IAM-CONTRACT-SYNC|原IAM writer；现generator版本、SDK package、三个contract版本oracle、contract README、三D0/CURRENT前缀；正规generator唯一写contract JSON/SDK api生成层|Root真实verify93268 format/lint/type0后contract drift1，schema变更机器未同步。批准0.9.0 additive候选（非正常发行/消费者切换）；唯一新增mcp_personal与scope，所有旧operations/components/执行依赖/vendor/breaking baseline/lock保持，版本oracle仅字面值。Root正规生成/全门/审diff后才提交或固定digest。禁止CLI/源资格五路径再改、资源/正常服务/Git；文档明确当前候选与正常0.8不同。|
+
+R291 Root终态：IAM3263同两真实case各1PASS（其余36/5筛选未执行），59273完整两integration43PASS/0FAIL/0SKIP，全部tracked起终exact、原PGcatalog保零新增/缺失。MCP正控之后旧四HTTP与wrong-secret/projection冒用/purpose漂移/scopes漂移/client/tenant disabled全部实际到达；未发行/未正常激活，仍非页面PASS。独审五路径无新增确定阻断。
+
+Root2806：Node22 build0，两个新PG实际0PASS/2FAIL/0SKIP，恢复limit1领普通而非冷却项、真实600ms checkout后owner调用0；候选8source/2test冻结exact、自有库26表最终0行/0其它客户端。凭据完整9PASS及定向15次各PASS，原默认FAIL历史保留。满载disabled-phase遗漏被Root发现，精确集合修为遗留ordinary+新ordinary，不移除数据伪绿。
+
+下一BFF窄修设计：owner仍本BFF现具名outbox。恢复最多1条先选，并占总limit内一slot；普通数量limit减恢复数，不再依普通是否存在。租期边界用真实claim SQL发起时共同monotonic采样＋SQL实际clock_timestamp剩余，新增内部required leaseObservedAtMs；dispatcher只用该原始观察＋remaining，不以自己领取前/每项调用时重新起算。删除repo完整claim elapsed扣减，池等待发生租约建立前不消耗新lease；SQL/commit/批内排队时间仍自然扣且settle真实时钟CAS不变。不新表/公开contract/compat fallback。
+
+|R291-BFF-LEASE-RECOVERY-FIX|原BFF writer，待独审Root真实RED/窄设计准入；仅现port、repo、dispatcher三source与现integration helper/固定clock调用接缝|required观察字段只改旧追加段fixture对象/调用参数，原断言不改；旧223530prefix改动仅该字段和参数时需inverse exact，原190113HEAD仍byteexact。合同/schema/另5source/credential/共享配置禁止。先记录精确窄修改后由Root再跑15真PG和整个门。|
+
+### R291 续行：冻结资格推进，未以图片回复冒实现（2026-10-07）
+
+上一回合只对照实际UI并重述展示方向，未改变源码或验收状态，归no-progress。本轮重新核原句柄/工作树，继续既有Wave0–7，正常服务与共享数据保持。
+
+|任务|角色/基线/精确范围|完成条件|
+|---|---|---|
+|R291-BFF-RED-FIXTURE-PRECISION|原BFF writer；99bbda35；仅business-store.integration.mjs新增R290尾与skill-create-draft-credential.test.mjs原最后case|独审e9ebe1c1：limit10造满10普通、恢复占slot总10/普通9；终态使用正式storage_terminal_3；harness每轮醒后检查独立1s上限。原223530bytes与原其它凭据case保持。生产8/其它tracked不写；Root真实RED与重复凭据验证。|
+|R291-IAM-IMPLEMENTATION-REVIEW|独立只读QA；IAM2d374e1当前五路径冻结|审常量单行、schema/policy两窄准入与newtail两nullable oracle，完整旧前缀/其它源码/pin保护，后继contract发行仍独立；仅ignored报告，无资源/Git/浏览器。|
+|R291-ROOT-OWNER-RERUN|Root唯一资源；IAM随机自有PG/Redis fixture与既有BFF r285自有库|Node24同两正式issuer/HTTP资格，Node22真实PG两失败路径与凭据重复。源码前后冻结/原PGcatalog保护，不改正常资源；实际失败后才派窄生产修。|
+
+### R290 完整目标续行：真实 owner 资格与冻结实现审查（2026-10-07）
+
+|R290-IAM-MCP-ADMISSION|原IAM writer；仅现platform-workload-token.schema.ts、platform-workload.policy.ts及新增lifecycle尾部两raw oracle literal|Root v2真实正式HTTP400及独审c458d456准入；request加mcp_personal/tenant response加scope，policy固定kokoro-bff+tenant_machine+单purpose/scope。lifecycle仅enableEndSession/requirePKCE false→null是provider1.7.3可空storage事实，业务false归一不弱化。原97349prefix/HTTP全文保持；其它source/schema/role/contract/generated/CLI/正常服务不动。Root同case重跑负控，不冒发行。|
+
+R290 完整8独审6d5ce730：九hash起终exact，未新增P0/P1；保两P2（冷却恢复被普通due阻塞、claim elapsed组合双扣），均未以局部13绿放行。后继tests-only现a817完整223530bytes保护，实际PG并存恢复与真实饱和pool600ms等待→repository→dispatcher的1000ms lease组合；生产冻结。Root选择恢复占总batch一slot、每轮最多一且冷却300秒，limit1/10均不超总limit，不因有普通due禁止恢复；测试先证明当前违反，后才窄修，不扩Schema/权限。
+
+IAM常量单行3b7afb2a候选实跑v2：managed/native token已越过；lifecycle2844仅native持久requirePKCE=null对新oracle=false，需独审nullable事实后只修新增testtail字面值，不改既有prefix。HTTP真实正式端点407取得400/期望200，现在成立schema缺mcp_personal的真实RED。两case仍各1FAIL，后续负控未执行；445其它trackedHEAD保、三hash起终exact、全部原库保零新库。
+
+R290 credential原样定向15次均PASS，不能抹去完整默认门已见时钟屏障FAIL；原测试/生产2c2d均HEAD39db exact，失败在held credential释放前。调查定位单次短timer不证明performance截止，后继只准现credential测试该case：带独立harness ceiling的monotonic重检，保reject/signal false/fetch0，finally释放deferred并consume。零production/全局配置变化，Root再定向重复与默认门。
+
+R290 Root真实结果：BFF7667 build0、13PASS/0FAIL/0SKIP，九hash起终exact，旧默认门失败不清零。IAM21562 lifecycle1FAIL/36筛选SKIP、HTTP候选1FAIL/5筛选SKIP：正式operator/native resource六scope更新与双读均已过，最早失败在createManagedClient purpose enum/allowlist，尚未到token/HTTP，不称HTTPRED。两hash起终exact，全部原PGcatalog保留、零新增残留库。
+
+|后继切片|精确范围|准入|
+|---|---|---|
+|R290-IAM-MCP-PURPOSE|原iam_mcp_owner_r288，IAM2d374e1；仅现src/modules/auth/oauth/oauth.constants.ts新增platform_ingress_mcp_personal→platform:mcp-personal.manage|Root真实managed RED成立；现schema/profile/token依constants动态映射，原purpose/scope不改；无新角色/表/secret/权限/服务或兼容路径。两test冻结，Root重跑同case观察下一阶段，机器发行/policy另需准入。|
+|R290-BFF-RECOVERY-RED|原BFF writer后继tests-only，现business-store.integration.mjs尾追加；现a817完整223530bytes保护|独审发现NOT EXISTS(ordinary)使独立冷却恢复可能永远不领；先真实PG普通due和正规blocked并存，limit1/10均须有限总batch、最多1恢复且PermissionDenied等保持blocked；Root实际RED后才准production选择窄修。|
+
+上一人类回合只重述图片展示差异，按no-progress处理；现重新核真实工作树，完整Wave0–7保持，采取已可执行后端动作，不把具体UI审阅阻断已批准MCP/Project资格。不新建计划中心。
+
+|任务|owner/基线/范围|准入与交付|
+|---|---|---|
+|R290-BFF-FULL-REVIEW|原agent_planned_guarantee_system_r257只读，BFF99bbda35+九冻结文件a475/a817|审完整8源码与当前测试语义/接线/停止/预算/lease/事务/55P03，原四P1和后继delta是否关闭；只ignored报告，零source/Git/资源。|
+|R290-BFF-CREDENTIAL-INVESTIGATION|原bff_admin_routing_d0_r257只读，未改credential测试274行与生产token source|查默认check时钟断言失败；只读定位/复现方案，不先改原测试/放宽门。资源与实际复跑Root独占。|
+|R290-IAM-RED-REVIEW|iam_mcp_red_review_r290独立只读，IAM2d374e1与两tests-only c80c/5d8|审真实operator/native resource更新/独占tenant_machine/HTTP分阶段RED与资源隔离，零实现/Git/共享资源。Root执行Node24实际RED后才准具名生产切片。|
+|R290-ROOT-QUALIFICATION|Root唯一资源/Git；BFF现自有r285库与IAM随机自有fixture|独立跑BFF13真PG（不冒默认全绿），IAM两阶段真实RED，精确before/after源码hash与库存。不重启正常服务/不改共享PG/Redis/MinIO或普通数据。|
+
 ### R289 Manus 展示对齐：整体规则与首片（2026-10-07）
 
 用户再次明确要求展示向 Manus 对齐。Root实际读取同771×752的已登录Manus技能目录及个人管理、Kokoro个人技能页：目录媒体卡不等于个人管理页，不复制不存在的目录、官方技能或使用数量。Kokoro三同级按钮和状态散落仍未改变，不称UI完成。
