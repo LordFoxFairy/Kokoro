@@ -1,3 +1,15 @@
+### R278 排程父项目 fence 已提交；新增 Manus 真实界面参考（2026-10-07）
+
+BFF正常工作树 **826a345971c7ebda132aca6a4a8f6eebd428e8f3** 仅现repository与integration测试两路径：同事务本人binding预读→包含墓碑的本人Project FOR SHARE→Task FOR UPDATE复核；已有outbox恢复不重复写，新intent才校验active。Direct正常、完整旧HTTP ACK可回放但不会重新启用任务。原BFF负责人实施、原QA独审最终10c7a439、Root独占资源/门/Git；旧测试prefix及其余532 BFF路径exact，Web775/Rootuv/八原gitlinks保持。
+
+Root真实隔离PG+HTTP先 **1PASS/6FAIL（含父级汇总）**：墓碑后PATCH/retry200、实际锁方向错。修后新片 **9PASS/0FAIL**；冻结最终R73/R237/R278回归 **97PASS/0FAIL/0SKIP**，通过真实pg_blocking_pids核两胜序。仅SessionAdmissionDouble/idle owner dispatch装配，不冒真实IAM、Scheduler或用户Project DELETE验收。初404测试错误套用了Rename error-only/retryable，且禁止合法新404 receipt写，已按现scheduled机器共享error+meta和本请求namespace精确receipt修正，Task/revision/outbox与旧receipt exact保；初失败日志保留。
+
+最终配置format/lint/types/build exit0、contract **298PASS/0FAIL**、默认 **867PASS/0FAIL/2既有SKIP**。初format配置门失败保留；repository独立整文件formatter仍报原旧块格式，未捎带重排，新增signature收敛。Root默认本轮实际 **155规范violations/0unverified、8原gitlink偏差、scripts1735PASS/1FAIL/3SKIP**（同历史checkpoint pin）。不放宽/清零。唯一Rootowned测试DB已在零连接时删除，preexisting库保留、私有fixture文件移除；正常九listener及PG/Redis/MinIO/ClamAV现PID/TCP均活，仅存活证据。正常BFF仍已资格runtime39db/8.5；本次未activate/restart/reset正常服务/库。
+
+用户新授权已登录Manus供参考，Root实际读取同一用户tab26的技能目录、个人/全部已添加技能、连接器空态、自订MCP空表单与主页，零安装/发布/保存/会话提交，退出所有配置弹窗，未打开私人会话。参考结论：清楚的页面标题/唯一主动作；紧凑名称/简介/开关状态的管理行；正常空态与失败分开；MCP必填name/URL、可选header、未完成禁保存；侧栏项目与外部任务分组、首页输入/项目选择独立。Kokoro仍按已批准个人“已安装 / 我发布的”、默认已安装，不复制市场、官方目录、默认安装或宣传能力。浏览器两视图真实可加载，最终恢复两原安装卡；截图r278-personal-skills-current.png，无新写动作PASS。Manus表单展示header不证明其秘密存储架构，原凭据本机/后端托管问题不因此擅自裁决。
+
+后继只读报告a02b8c29明确aggregate要提取现chat-repository same-client核心，不能循环独立事务；冻结全部仍绑定成员（含已单删未释放scope），不遗漏Storage N+1 release；保Message/immutableAGUI/独立任务规则。聚合runtime/两表/worker/Web及17用户子例仍待实施/执行；T-C05与T-K03 OPEN、T-K05真实404 FAIL。完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **13PASS/6PARTIAL/14待验**，完整Wave0–7 active。证据统一r278-schedule-project-fence-receipt.json；UI借鉴与后继修复落既有台账，不另建计划中心。
+
 ### R277 当前项目删除机器候选入口
 
 BFF正常worktree /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，HEADe68196cd0a02c4a91c84ec5b6c283a0f31594f14：唯一contract/openapi/v1/openapi.yaml8.6/105，既有scripts/verify-openapi.ts与test/contract/openapi-contract.test.mjs增加deleteProject/getProjectDeletion精确profile；Root正规baseline105。原103wire/components不变；没有删除runtime/SQL/Web消费，正式运行仍39db/8.5。三D0顶部明确候选与正式态，Root本次工程门及失败见CURRENT与r277-project-machine-receipt.json。原T-C05.D01–D06的17七字段子例已进入docs/test-cases.md，全部待执行，不扩新任务中心。确定后继仅task update/resume的Project活性同锁及聚合同client核心，已有创建/Move锁不重复改。

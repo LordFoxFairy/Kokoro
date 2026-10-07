@@ -1,3 +1,5 @@
+R278补充资格（不改变原70/个人33与17用户子例状态）：排程墓碑后新PATCH/retry拒绝、普通Direct/active正控、旧完整ACK与outbox-only恢复、Project→Task两胜序，Root真实隔离PG/本方HTTP最终97/0；受控Session/idle worker，T-C05.D05.1–D05.2仍待正式删除/Scheduler/浏览器链。原404与receipt oracle纠偏及初format失败见同receipt，不删业务断言。正常个人技能两视图本轮只读可加载，无新CRUD动作PASS；Manus参考只读不计Kokoro验收。
+
 R277 执行状态补充：BFF机器候选已提交e68196cd0a02c4a91c84ec5b6c283a0f31594f14；13路径工程资格已记录CURRENT，不等项目删除运行实现或17子例通过。完整70与个人33计数不变。当前实际skills截图仅观察，无新动作PASS。Root默认155规范违规/8gitlink偏差/1历史checkpoint失败仍OPEN。
 
 ### R277 T-C05 项目删除用户验收子例（2026-10-07；全部待执行）

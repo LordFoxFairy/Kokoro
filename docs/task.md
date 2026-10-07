@@ -1,3 +1,37 @@
+### R278 排程父项目 fence 已提交；新增 Manus 真实界面参考（2026-10-07）
+
+BFF正常工作树 **826a345971c7ebda132aca6a4a8f6eebd428e8f3** 仅现repository与integration测试两路径：同事务本人binding预读→包含墓碑的本人Project FOR SHARE→Task FOR UPDATE复核；已有outbox恢复不重复写，新intent才校验active。Direct正常、完整旧HTTP ACK可回放但不会重新启用任务。原BFF负责人实施、原QA独审最终10c7a439、Root独占资源/门/Git；旧测试prefix及其余532 BFF路径exact，Web775/Rootuv/八原gitlinks保持。
+
+Root真实隔离PG+HTTP先 **1PASS/6FAIL（含父级汇总）**：墓碑后PATCH/retry200、实际锁方向错。修后新片 **9PASS/0FAIL**；冻结最终R73/R237/R278回归 **97PASS/0FAIL/0SKIP**，通过真实pg_blocking_pids核两胜序。仅SessionAdmissionDouble/idle owner dispatch装配，不冒真实IAM、Scheduler或用户Project DELETE验收。初404测试错误套用了Rename error-only/retryable，且禁止合法新404 receipt写，已按现scheduled机器共享error+meta和本请求namespace精确receipt修正，Task/revision/outbox与旧receipt exact保；初失败日志保留。
+
+最终配置format/lint/types/build exit0、contract **298PASS/0FAIL**、默认 **867PASS/0FAIL/2既有SKIP**。初format配置门失败保留；repository独立整文件formatter仍报原旧块格式，未捎带重排，新增signature收敛。Root默认本轮实际 **155规范violations/0unverified、8原gitlink偏差、scripts1735PASS/1FAIL/3SKIP**（同历史checkpoint pin）。不放宽/清零。唯一Rootowned测试DB已在零连接时删除，preexisting库保留、私有fixture文件移除；正常九listener及PG/Redis/MinIO/ClamAV现PID/TCP均活，仅存活证据。正常BFF仍已资格runtime39db/8.5；本次未activate/restart/reset正常服务/库。
+
+用户新授权已登录Manus供参考，Root实际读取同一用户tab26的技能目录、个人/全部已添加技能、连接器空态、自订MCP空表单与主页，零安装/发布/保存/会话提交，退出所有配置弹窗，未打开私人会话。参考结论：清楚的页面标题/唯一主动作；紧凑名称/简介/开关状态的管理行；正常空态与失败分开；MCP必填name/URL、可选header、未完成禁保存；侧栏项目与外部任务分组、首页输入/项目选择独立。Kokoro仍按已批准个人“已安装 / 我发布的”、默认已安装，不复制市场、官方目录、默认安装或宣传能力。浏览器两视图真实可加载，最终恢复两原安装卡；截图r278-personal-skills-current.png，无新写动作PASS。Manus表单展示header不证明其秘密存储架构，原凭据本机/后端托管问题不因此擅自裁决。
+
+后继只读报告a02b8c29明确aggregate要提取现chat-repository same-client核心，不能循环独立事务；冻结全部仍绑定成员（含已单删未释放scope），不遗漏Storage N+1 release；保Message/immutableAGUI/独立任务规则。聚合runtime/两表/worker/Web及17用户子例仍待实施/执行；T-C05与T-K03 OPEN、T-K05真实404 FAIL。完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **13PASS/6PARTIAL/14待验**，完整Wave0–7 active。证据统一r278-schedule-project-fence-receipt.json；UI借鉴与后继修复落既有台账，不另建计划中心。
+
+R278任务状态：原BFF writer/两个只读Agent均STOP，Root已审查提交826a345并实跑冻结工程/PG，状态为此**父项目排程恢复工程切片已验收**，不是整T-C05验收。Root自身五台账与ignored证据为唯一写集。
+
+后继沿现ID：T-C05聚合same-client本地事务→Storage正式异步释放→Web删除/17用户用例；T-K03个人页继续按Manus信息密度/真实状态，不扩市场；T-K05仍先IAM→Platform正式本人producer、消费者随后。先任务卡和现三D0阶段门，不以参考截图给实现自动写权。
+
+### R278 项目删除的排程恢复 fence：真实 PG/HTTP 切片（2026-10-07）
+
+阶段A已冻结，Root在唯一自有隔离测试库真实执行HTTP+PG：**1PASS/6FAIL（含父级汇总）**，墓碑后的新PATCH/retry仍200/active；删除先行时更新实际等待Task而非Project，更新先行时删除不等待。日志`var/dev/r255-preserve/r278-http-pg-red.log`保留。仅此隔离库使用owner canonical installer，正常九服务与共享数据未重启/清理；SessionAdmissionDouble/idle owner worker不冒真实IAM/Scheduler/页面验收。
+
+Stage B授权原BFF writer仅现`src/infrastructure/postgres/scheduled-task-repository.ts`及其R278测试suffix：本人canonical binding预读→包含墓碑的本人Project FOR SHARE→Task FOR UPDATE复核，已有outbox恢复不重写，新intent才active校验；不改generic complete ACK replay。新404合法可完成generic receipt，测试需核Task/revision/outbox无新写、原receipt exact与新404 receipt闭合，而非错误要求所有receipt零写；不删除业务拒绝/锁序oracle。旧测试prefix及其它532tracked路径保护。Root独占所有资源/门/Git。
+
+并行续派原QA iam_grant_source_scope_0244只读新404 receipt与历史恢复oracle，原agent_planned_guarantee_system_r257只读后继aggregate same-client/现Storage契约与canonical表放置；各仅Root ignored原报告/`r278-project-aggregate-next-review.md`，不抢source/Git/资源。完整17条用户删除子例仍未执行，不升T-C05 PASS。
+
+上轮为 progress：BFF e68196c提交两操作机器候选，Root0da25756将17用户子例落同一台账；正常runtime仍39db/8.5，T-C05待验。当前BFF工作树e68196c tracked clean/原var保、Root原uv/八gitlinks保。复用三D0已经批准的Project→Task锁序、删除后不恢复已失效上下文，不另建状态机/owner/schema/权限/迁移。
+
+|任务|归属/基线/范围|阶段门与完成条件|
+|---|---|---|
+|R278-BFF-SCHEDULE-PROJECT-FENCE / T-C05.D05.1|原bff_admin_routing_d0_r257，BFF唯一writer，/Users/nako/.codex/worktrees/kokoro-r257-bff-normal e68196c；阶段A仅现test/business-store.integration.mjs追加R278 HTTP/PG行为回归，不改旧测试/fixture；阶段B另授权现scheduled-task-repository.ts窄修及三D0/current实际态|正规HTTP创建Project/关联任务→Root自有PG墓碑与pause→PATCH/retry应拒/任务和outbox不变；普通无项目任务仍可更新。同key已确认回放不能重新写/启用；新意图失效Project fail closed。至少实测删除锁先赢的独立PGclient阻塞→HTTP失败和update先赢的锁顺序，无sleep猜race。测试只证明PG/本方HTTP，不冒真实IAM/Scheduler/正常页面PASS|
+|R278-QA-SCHEDULE-REPLAY|原iam_grant_source_scope_0244，只读现repository/HTTP durable receipt与已有机器404边界；Root ignored r278-schedule-project-fence-review.md|核重放与新意图资格/期望码、绑定复核与锁方向、真实PG屏障/cleanup。不改任何tracked/Git/服务/数据，不能因mock成功冒QA通过|
+|R278-ROOT-REAL-PG|Root唯一资源/命令/Git/浏览器/台账；正常九服务与PG/Redis复用|本次唯一Rootowned临时测试DB/随机tenant，canonical fresh install；绝不指正常DB，不DROP共享数据/flushRedis，不启动基础设施。Root亲跑真实RED后授权source，最终重跑全工程+新真实PG/HTTP、冻结审查、精确提交；未触正常runtime/Web，不把此切片当项目删除完整用户闭环|
+
+放置：扩既有ScheduledTask repository（负责同一PG事务的task/outbox）而非新Project服务绕过task锁；测试留现owner真实HTTP/PG integration而非新底层mock类测试。无新文件/目录/Schema/公开operation，依赖既有Project tombstone与唯一scope；禁止跨owner SQL、Task锁后再锁Project、把历史receipt恢复当新写。具体404采用现formal处理，不扩新错误profile。阶段A旧测试/源码534冻结，Root真实失败后才能写源。
+
 ### R277 项目删除机器切片已提交；真实页面闭环仍待验（2026-10-07）
 
 BFF正常工作树 **e68196cd0a02c4a91c84ec5b6c283a0f31594f14** 仅13批准路径：现owner OpenAPI8.6/105机器候选、正规baseline、新两操作精确profile/verifier与现回归、三D0当前态和入口。正式运行/已发行消费者仍8.5/103；新DELETE/status尚无runtime/SQL/worker/Web入口，不记T-C05 PASS。原BFF负责人实施，两个原只读Agent分别独审机器与用户链，Root独占集成/Git；旧103operation/components结构deep equal、其余521BFF tracked exact，Web775原Admin mixed exact，Rootuv/八gitlinks保持。
