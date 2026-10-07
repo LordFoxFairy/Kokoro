@@ -1,3 +1,22 @@
+### R309 Skills 成功关闭已真实修复（2026-10-07）
+
+Web **bb210dadfb9d9566bb8f5b00e5accdaa98b603af** 精确三paths：现reader/Skills INDEX/CURRENT。reader三hunk只成功刷新前设稳定“我发布的”归焦目标；不当场focus、不改Dialog/原一次许可与scope/unknown/samekey/任何tests，未加changeView额外hunk。Root独立inverse原1823e190 exact/其余772保护；原writer157辅助PASS，原QA5162a12d无确定阻断。Root冻结Node22 check64310自然exit0/190.882秒：309contract/51architecture/3431default、lint/type/build0；只是工程辅助，原Adminmixed原status和缓存外文件保留，精确Git对象已核。
+
+Root正常3310自有ZIP版本4实际CreateVersion201→GET200/Begin201→MinIOPUT200→Complete200→Validate200→Publish200→本人GET200，两完整非截断窗口；回执active/revision4/replayedfalse，成功时焦点仍Dialog。点击footer关闭后两次稳定焦点BUTTON“我发布的”/pressedtrue/noDialog，原BODY RED已修；硬刷新三原安装不变/无自动安装，新简介精确定位canonicalGET200，名称255/简介/tags/revision逐值一致。普通版本取消仍回精确卡名、完整窗零request；新建X取消回header，末窗仅安装GET200。截图r309-skills-desktop.png为771×752/DPR1明确桌面QA，最终CDPclear/viewportreset回该tab原386×376/DPR2，不留模拟。Network关/无Dialog，未删QA源、不重启/reset九服务/DDL，不改权限/凭据/资金/模型。原uv与八gitlinks保持。
+
+只TC-SK-UX-308-06实际footer成功关闭FAIL→PASS，不冒成功X/Escape/Settings/读失败关闭及全CRUD。个人33 **14PASS/6PARTIAL/13UNVERIFIED**、完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**不升级，T-K03/自然401/多页/另一身份及全test:e2e/axe/视觉预算OPEN，完整Wave0–7继续。
+
+并行原Platform只读续接R298报告2f508476，514路径exact、零源码/门/资源写。纠正旧报告泛化：主plugins创建弹层确实正式可见但POST没有ownerroute，Settings旧tabs才限preview；T-K05仍FAIL。四个本人管理读RPC与实际mcp_personal准入只是下一候选，不授权源码/权限/正常重载，不以只读或auth-none子链替完整CRUD。secret政策/privateServer/编辑启停重连未决留原任务，不新建计划中心或反复问题。
+
+### R309 生产准入与并行原owner续接
+
+Root复核3f618507只读D0与现reader源码。已批准归属为Web现Skills reader；Root真实R308成功关闭BODY是RED。仅授原Webowner `personal-skills-read.tsx` 三现hunk：publishedTab ref、现我发布的按钮ref、仅onPublished在原刷新前更新lifecycleOpener。不准本轮changeView额外hunk（无自然RED且非本问题必要），不改Dialog/flow/client/schema/任何tests/当前身份、同key、unknown、原刷新或清意图。无新增文件/焦点框架/重试。基线60cee26与r309-start773；源码冻结后原QA独审，Root真正发布新版本、关闭归焦及原取消路径复验与适当既有门，Root独占Git/INDEX/CURRENT/资源。
+
+|任务|Owner/角色/范围|交付与边界|
+|---|---|---|
+|R309-WEB-FOCUS-IMPLEMENT|原Web writer，只现reader三hunk，Web60cee26/原Admin mixed|reader归属由已有D0确定；作者既有三相关UI门/lint/tsc辅助后冻结，报告精确diff/SHA，零新单测/mock，不触浏览器/共享服务/Git/正式docs。|
+|R298-MCP-D0-RESUME|原Platform负责人，只读当前6cf6057 clean，现R298/R299报告/三D0/机器契约与IAM发行接缝|续原个人MCP任务，不新计划中心；只ignored r309-mcp-d0-resume.md，核已定事实、真正未决项与最小后继顺序；明确secret政策未决，不用auth-none子链冒全MCP。不得生产/Proto/schema/权限/资源/Git/browser写。|
+
 ### R309 后继任务卡：成功发布关闭归焦
 
 |任务|角色/基线/范围|完成条件与排除|

@@ -1,3 +1,11 @@
+#### R309 真实用户验收增量（非单测）
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|测试类型|执行结果/证据|
+|---|---|---|---|---|---|---|---|
+|TC-SK-UX-309-01|成功关闭稳定归焦|本人正常登录；自有合法ZIP与可发版本3|详情→发布版本4→等待正式成功→footer关闭→再读焦点|success时焦点不提前离开Dialog；关闭后回已选中“我发布的”，不会落BODY|P2|状态机、键盘、完整用户链|PASS；真实各ownerACK/两非截断窗口，r309-success-focus-green.json；不推广X/Escape/Settings成功|
+|TC-SK-UX-309-02|成功后刷新持久化|上例正式active/revision4|硬刷新→已安装→我发布的→按新简介点详情|新版本持久；原安装不自动升级；名称/简介/tags正确|P0|功能、持久化、端到端|PASS；三原安装卡，canonical GET200/revision4逐值核对，r309-version-persisted.json|
+|TC-SK-UX-309-03|普通取消精确归焦保护|同本人版本4详情；新建未提交|版本入口→空取消；另新建→X取消|分别回原标题/发布header，不产生发布写请求|P1|异常、交互、状态同步|PASS；版本窗口零网络、新建尾窗只有安装GET200；非成功X路径|
+
 #### R308 真实业务测试增量
 
 |用例ID|标题/预置条件|测试步骤|预期与实际|优先级/类型|
@@ -7,7 +15,7 @@
 |TC-SK-UX-308-03|合法ZIP/标签，65535ASCII简介|明确提交|原整体65536UTF8具体指引、不误成简介字符错误、零request；PASS|P1/边界、异常|
 |TC-SK-UX-308-04|同ZIP经错误后纠正，自有revision2|明确提交→上传→检查→发布→刷新→按新简介详情|真正MinIO/owner各正式ACK、成功active/revision3/replayedfalse，刷新canonical逐值exact、未自动安装；PASS|P0/完整业务链、持久化|
 |TC-SK-UX-308-05|390×420版表单|提交重复tags→纠正|首错focus/无横溢/X44/body可滚；提示末行需要滚动，未宣初始全部可見；有限子路径PASS|P1/UI、响应式|
-|TC-SK-UX-308-06|发布成功弹窗|点关闭→再读activeElement|预期焦点回可用明确入口；实际BODY持续，FAIL/OPEN后继R309，普通取消PASS不覆盖|P2/键盘、状态流转|
+|TC-SK-UX-308-06|发布成功弹窗|点关闭→再读activeElement|预期焦点回可用明确入口；R308初次BODY持续FAIL保留；R309正式version4成功后footer关闭两次稳定BUTTON“我发布的”/pressed=true/noDialog，复验PASS（X/Escape/Settings成功仍待）|P2/键盘、状态流转|
 
 ### R308 Skills 发布输入纠错：用户链已验收（2026-10-07）
 

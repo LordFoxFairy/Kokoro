@@ -1,3 +1,13 @@
+### R309 Skills 成功关闭已真实修复（2026-10-07）
+
+Web **bb210dadfb9d9566bb8f5b00e5accdaa98b603af** 精确三paths：现reader/Skills INDEX/CURRENT。reader三hunk只成功刷新前设稳定“我发布的”归焦目标；不当场focus、不改Dialog/原一次许可与scope/unknown/samekey/任何tests，未加changeView额外hunk。Root独立inverse原1823e190 exact/其余772保护；原writer157辅助PASS，原QA5162a12d无确定阻断。Root冻结Node22 check64310自然exit0/190.882秒：309contract/51architecture/3431default、lint/type/build0；只是工程辅助，原Adminmixed原status和缓存外文件保留，精确Git对象已核。
+
+Root正常3310自有ZIP版本4实际CreateVersion201→GET200/Begin201→MinIOPUT200→Complete200→Validate200→Publish200→本人GET200，两完整非截断窗口；回执active/revision4/replayedfalse，成功时焦点仍Dialog。点击footer关闭后两次稳定焦点BUTTON“我发布的”/pressedtrue/noDialog，原BODY RED已修；硬刷新三原安装不变/无自动安装，新简介精确定位canonicalGET200，名称255/简介/tags/revision逐值一致。普通版本取消仍回精确卡名、完整窗零request；新建X取消回header，末窗仅安装GET200。截图r309-skills-desktop.png为771×752/DPR1明确桌面QA，最终CDPclear/viewportreset回该tab原386×376/DPR2，不留模拟。Network关/无Dialog，未删QA源、不重启/reset九服务/DDL，不改权限/凭据/资金/模型。原uv与八gitlinks保持。
+
+只TC-SK-UX-308-06实际footer成功关闭FAIL→PASS，不冒成功X/Escape/Settings/读失败关闭及全CRUD。个人33 **14PASS/6PARTIAL/13UNVERIFIED**、完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**不升级，T-K03/自然401/多页/另一身份及全test:e2e/axe/视觉预算OPEN，完整Wave0–7继续。
+
+并行原Platform只读续接R298报告2f508476，514路径exact、零源码/门/资源写。纠正旧报告泛化：主plugins创建弹层确实正式可见但POST没有ownerroute，Settings旧tabs才限preview；T-K05仍FAIL。四个本人管理读RPC与实际mcp_personal准入只是下一候选，不授权源码/权限/正常重载，不以只读或auth-none子链替完整CRUD。secret政策/privateServer/编辑启停重连未决留原任务，不新建计划中心或反复问题。
+
 ### R308 Skills 发布输入纠错：用户链已验收（2026-10-07）
 
 Web **60cee2628fa4652683b3b7b5f36ce8c7ec532690** 精确5paths：现publishDialog/messages三新行/overlays三新行/Skills INDEX/CURRENT。Root确认三source完整inverse与其余770tracked exact，原Adminmixed未暂存；原close与异步恢复/flow/client/schema/alltests不变，零新增mock/unit。根因现Zod metadata错误被generic catch吞，改为创建意图前复用同schema、有限首字段提示/aria/ref焦点与仅该字段编辑清错，不复制100/128等阈值、不输出原异常/payload。原writer75辅助PASS、独审4e7eb4c8无确定阻断；Root冻结完整Node22 check21577 exit0/196.633秒（309contract/51architecture/3431default、lint/type/build通过），不以辅助数量替真实用户验收。
