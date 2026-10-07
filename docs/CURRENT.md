@@ -1,3 +1,15 @@
+### R323 Skills 用户发布升级已验证，版本展示修复已提交（2026-10-07）
+
+Web **f251041b929eb96eaa30054d3d400aaf80f43df6**，精确六paths：现reader两真实revision徽标、三D0批准prefix、现CURRENT/skillsINDEX。原创插画/轻卡层级沿b97a9a2，不伪造Manus目录/使用量；旧同名两版本零可见version真实RED→桌面/390 v1/v2常显，无新API/SQL/CSS/handler或推断。原独审26710536，Root inverse/768任务外tracked及原27Admin mixed/6untracked保护，index空。
+
+正常3310真实自有ZIP发布v1→安装v1→同series发布v2→仍保v1→显式安装v2同installation ID→刷新保v2→可恢复移除；原三安装不改/默认列表回三卡，两私人发布版本保留。九局部业务用例已在同task R323矩阵记录，TC05旧FAIL与修后PASS并列。当前图 **var/dev/r255-preserve/r323-skills-versions-final.png**、结构r323-skills-user-verification.json与提交收据r323-web-commit-receipt.json。v1首网络窗无截断/所见全2xx但canceled保留；v2长窗truncated=true，另新detail/list200读窗不补称旧窗完整。两billing summary404及导航取消仍全局后继；未永久删除/模型费用/权限扩张，原服务/PG/Redis/ObjectStore未重启或reset。metrics恢复/Network关闭，Tab27保留交付、Manus26参考。
+
+Root Node22.22.2原72266完整check自然exit0：309contract/51architecture/3438default、lint/typecheck/build，仅辅助回归不替用户验收。Skills撤回、多身份、多页、未知结果、全test:e2e/axe/视觉预算仍未验；完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**与个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升级，T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。
+
+独立BFF **c91fee642c5bac79d5beab90b15a1eaf97637047** 精确十二paths发行唯一机器public8.7/109，仅四本人MCP GET，runtime/Schema/正常身份未激活。三D0两P2与四missing RED=77旧PASS/4新FAIL；首contract73381 302PASS/1FAIL旧R240闭集纳新增，仅剥4path/4ID保原hash与92；header RED=2PASS/1FAIL拒86401后仅新header/verifier两行修1..86400/绝对末尾。最终Root71468完整check自然0：contract304/default877PASS、2原资源SKIP，lint/types/build；13002format0，独审1fa085a4。Root完整旧105 document剥增量后deepEqual、539任务外tracked/index空/原var保护，收据r323-bff-commit-receipt.json。两skip不计真实集成，尚无四读HTTP组合/连接器页CRUD，后继先正规IAM HTTP→owner/BFF系统RED再授五运行文件。Root收据脚本初次list.get形状错误发生于写前，最窄适配后提交验算0，非产品故障。原八gitlinks/uv不暂存。
+
+<!-- R323-ROOT-CURRENT-END -->
+
 ### R322 Skills 展示切片已集成，完整页面验收边界保留（2026-10-07）
 
 当前用户先修Skills的要求已落地：Web **b97a9a2e3f2c40ef964c1284dcc4bfea14f7fa69**（parent62de024）精确12paths：三production、四现test共7定位、三D0批准prefix、现CURRENT/skillsINDEX。原创插画书封替代几何壳、source_ref稳定装饰、两行标题简介/轻卡留白/22px页头；零API/SQL/市场目录/假使用量或外部图片。reader业务handlers inverse exact，原27Admin mixed status/字节保持、index空；Root独占提交，原writer/独审STOP。用户当前正常3310已显示，不用源码库存冒页面。

@@ -1,3 +1,46 @@
+### R323 既有 Skills 用户路径与 R321 MCP 机器后继续接
+
+上一目标回合为 progress：Web b97a9a2 / Root71c0bf5d精确交付与正常用户展示证据，未完成全CRUD。当前读取Git与同台账，完整70/33不变、Wave0–7 active。Root关键路径继续当前Skills真实发布/版本更新；独立BFF机器四读沿原R321/原负责人，不新建计划中心、不抢Webwriter。九正常服务不重启，PG/Redis/ObjectStore不reset，原句柄30910已终态0，不重复工程资源。
+
+|任务|Owner/基线/范围|准入与交付|
+|---|---|---|
+|R323-SKILLS-USER-PUBLISH|Root正常3310原Tab27，Web b97a9a2；不改source/contract/SQL|从现正式包规范/正常发布UI做真实self-contained个人技能创建与更新，错误/取消/权威回读/刷新逐项记录，保现三卡；无外部工具/文件/资金，不永久删除源、不扩大权限。fixture只本次具名私有技能，正常资源与会话保留。任何真实失败先取证再授现owner窄修；不得按历史发布PASS。|
+|R323-BFF-D0-P2|原platform_iam_consumer_r298，BFF a3e9a7e/codex/r257-bff-normal-current；三R320 D0现prefix only，原suffix/548其余源保护|Root裁决：approved_scopes每项1–128且拒绝任何空白字符、不trim；owner Canceled而当前caller仍live映503 dependency；只有真实caller abort/disconnect才不迟到写。半配置/单10s/OAuth HTTP/closed public/5ordinary文件方向保持。三D0最小精确字面修正，freeze+原QA审后再授现contract test四GET missing RED。零生产/Schema/资源/Git/正常credential写。|
+|R323-BFF-MACHINE-RED|同原owner；D0审后仅现test/contract/openapi-contract.test.mjs追加四GET closed shape期望|Root实际执行旧105+新增4missing失败，随后另授唯一OpenAPI8.7.0/109及现verify/oracle/contract测试最小切片；Platform固定vendor/generated与运行源码不变。Root运行机器门/独审/精确Git，机器发行不计用户通过。|
+
+R323正常用户发布已实际通过v1、安装canonical回读及v2：真实ZIP→draft→presigned ObjectStore PUT→Complete→Validate→Publish→ACTIVE确认→本人列表/detail，未用模拟。v2后原installation仍v1，无自动升级。发现真实展示RED：同一series两active版本卡片同名、均无可见版本，只有开技术详情才能区分；r323-skills-version-visibility-before.png/当前两同名按钮与0个v1/v2 badge取证。
+
+|任务|Owner/范围|验收与禁止|
+|---|---|---|
+|R323-WEB-VERSION-ID|原web_interaction_astra_r296，Web b97a9a2；先只读现reader两metadata与既有revision类型，批准后只现reader添加真实版本badge，CURRENT/skillsINDEX/三D0短前缀Root|不新增字段/别名/网络/caching/安装状态推断。现published与installed卡都用现严格revision展示vN，名称button与handlers不变，依据真实两个版本区分；若readmodel不含revision必须报告不猜。保原27Admin mixed与其它773tracked、Root工程/独审/正常浏览器返验。无需新目录/新组件/架构。|
+
+此局部§8归Web ui/skills已有reader卡片元信息展示，扩现metadata而非新version组件；比较放折叠技术详情仍有实际同名歧义，选择常显版本。现R322插画/来源/状态和命令全部保持，三D0仅Root以短prefix记录替代旧版本仅技术细节的UX取舍；零API/SQL。
+
+§8引用已批准R320五普通TS职责/目录/零Schema表。本回合D0和后续现contract测试增量不新建文件/目录；归BFF public projection，测试保证四read可消费闭集；root真实页面行为与机器发布分开，不冒正常四read runtime已激活。
+
+
+### R323 Skills 当前用户验收记录（同一计划，不新建中心）
+
+Web已集成 **f251041b929eb96eaa30054d3d400aaf80f43df6**，parentb97a9a2；Root原72266自然exit0，完整check 309/51/3438及lint/types/build仅辅助。原独审26710536无阻断，reader仅两个真实revision徽标，原27Admin mixed/768任务外tracked及6untracked保持，三D0仅批准prefix暂存。当前正常3310已显示原创封面与同名v1/v2；最终图r323-skills-versions-final.png，收据r323-web-commit-receipt.json。
+
+所有下表预置：正常3310本人登录/当前正式owner服务、自有私有最简无外部工具ZIP；原R255/R267/R301数据不改。结果只覆盖本次具名技能，不升级T-K03/T-K05全CRUD。
+
+|用例ID/标题|附加预置|真实E2E步骤|预期与实际结果|优先级/类型|
+|---|---|---|---|---|
+|TC-SK-R323-01 发布v1|未发布本次源|填名称/简介/tags，选本次v1ZIP，提交，打开本人列表和详情|上传完成/校验/发布成功，active、revision1；PASS|P0/主链路|
+|TC-SK-R323-02 安装v1|本次v1已active|点安装，核对当前安装/技术快照|installed、enabled，准确source1/revision1；PASS|P0/主链路|
+|TC-SK-R323-03 发布新版本|原series已有v1|详情发布新版本，名称只读，修改简介并上传v2ZIP，提交/详情|同series新source2、revision2/新简介；PASS|P0/生命周期|
+|TC-SK-R323-04 升级不隐式发生|v1已安装，v2刚发布|进入已安装查看现快照|仍source1/revision1/旧简介，不自动替换；PASS|P0/状态机|
+|TC-SK-R323-05 同名版本可辨|两同名active版本|我发布的搜索R323，桌面及390观察卡片|原0版本标识FAIL保留；修后v1/v2常显无横溢PASS|P1/交互回归|
+|TC-SK-R323-06 显式安装v2|v1仍安装|选准确v2点安装，核对权威当前安装|同installation ID/series变source2/revision2/新简介；PASS|P0/主链路|
+|TC-SK-R323-07 刷新保v2|显式升级已成功|硬刷新已安装页|v2与新简介保持；PASS|P0/持久化|
+|TC-SK-R323-08 可恢复移除|自有v2已安装|More→移除安装，确认；查看默认列表和已移除筛选|仅当前安装退出默认列表；已移除保v2/源可用/停用且禁启用；原三安装恢复默认可见；PASS|P0/生命周期|
+|TC-SK-R323-09 重新读回|先前长观测窗截断|新观察窗打开v2详情、硬刷新、发布列表|正式detail/list200、准确source2/revision2和两徽标；PASS（独立新读窗）|P1/恢复验证|
+
+实际v1首窗truncated=false、所见响应全2xx，PUT后canceled保留；v2升级/移除累计窗truncated=true，不声称全网络序列完整；新窗不是旧窗补证。两窗口billing/summary404与导航取消留后继。只自有安装可恢复移除，两私人发布版本保留；未永久删除/扩权/模型扣款。多身份、多页、撤回、未知结果、完整test:e2e/axe/视觉预算仍未验。Network关闭/metrics还原，原Tab27 deliverable/Manus26 handoff。
+
+独立BFF：三D0两P2已审；Root38116四missing GET真正RED=77旧PASS/4新FAIL。原作者七文件8.7/109 machine freeze后，Root73381 contract:check=302PASS/1FAIL：旧R240闭集哈希把四新增path纳入，独审证实只剥四path恢复原hash、另剥四ID保92。新Retry-After还存在1..86400/尾LF语义P2；已授权原owner最窄现test先RED，不改旧response/旧hash/四RED组，随后再批准header/verifier修。运行源码/Schema/正常身份未启用，机器候选未提交，不冒四读用户闭环。
+
 ### R322 Skills 展示切片已集成，完整页面验收边界保留（2026-10-07）
 
 当前用户先修Skills的要求已落地：Web **b97a9a2e3f2c40ef964c1284dcc4bfea14f7fa69**（parent62de024）精确12paths：三production、四现test共7定位、三D0批准prefix、现CURRENT/skillsINDEX。原创插画书封替代几何壳、source_ref稳定装饰、两行标题简介/轻卡留白/22px页头；零API/SQL/市场目录/假使用量或外部图片。reader业务handlers inverse exact，原27Admin mixed status/字节保持、index空；Root独占提交，原writer/独审STOP。用户当前正常3310已显示，不用源码库存冒页面。
@@ -13885,3 +13928,6 @@ R315 当前视觉source已freeze b4b63ed1，独审f9c13078无确定阻断，Root
 R315 最终工程63273显式Node22.22.2自然exit0：309contract/51architecture/3437default、lint/typecheck/build通过；工程后正常3310三安装/noDialog可见。Root两规则source inverse精确原文、其余770 tracked及原Admin mixed保持；仅CSS/现INDEX/CURRENT精确提交。全test:e2e/axe/完整视觉预算与完整CRUD未验；33/70不升级。原Platform只读方案和准入缺口保持后继，不装新flag/权限或重启正常服务。
 
 R315 最终Web精确三paths提交 e78d3f9ca83e51cd7499f71e1fe370127d98bbc4；Root提交对象/父7509/770其他tracked/两原doc suffix/index空已核，r315-web-commit-receipt.json。缓存前manifest相对路径误用失败保留，后验绝对路径实际通过，不冒第一次脚本通过。默认三安装/尺寸恢复/Network关闭，正常源服务未重启，完整目标继续。
+
+
+R323最终BFF机器已发行 c91fee642c5bac79d5beab90b15a1eaf97637047（精确12paths/539其它tracked exact/index空/原var保留）。Rootheader RED2PASS/1FAIL拒86401后两行最窄修；原71468完整check自然0，contract304/default877PASS、2原资源SKIP，lint/types/build；13002format0、独审1fa085a4两P2关闭。原四RED组与旧105document语义exact，旧R240 hash/92保留。未实施四GET runtime、Schema/正常权限不变；机器发行不冒用户连接器CRUD。原收据脚本首次list.get误读发生于写前，适配list后实际完整提交验算0，r323-bff-commit-receipt.json保结果。所有本轮门句柄已终态，不重复启动；当前Skills仍是用户优先路径。
