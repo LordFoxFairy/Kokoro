@@ -1,3 +1,13 @@
+### R294 Manus展示继续落地；真实资料库上传已走，完整CRUD仍OPEN（2026-10-07）
+
+Web精确五路径 **1b35a7a625e4e0480517106c97bd11769e04cbc9**：现上传展示初始只留选择与限制，选定后才出现明确提交；局部长名换行，原state/client/页面意图/同key/读取链不动。3新用户行为先Root真实1FAIL/2PASS（首次误筛48SKIP不计RED），旧首oracle只必要反向、其余50483逆转exact；新签名类型修两次记录Node24回退/1warning，不伪称初次门绿。最终Root正确Node22完整check0：默认3371/contract299/architecture51，lint/types/build0，全773tracked起终exact；独审9fcbdf72无确定新增P0/P1。四Git对象等freeze，INDEX只现上传职责一hunk，原Admin前缀及所有i18n/mixed保护。
+
+Root正常已登录页面真实自有121B非敏感QA文件：选择/跨作品页签零POST，390×480长文件名换行63px/文档390；显式一次POST200，正式CLEAN回执sha ba9888e10d3103226c4e1fe81f88af4e6318d8a9534be022c4562ffeb7e276f4→GET200卡，硬刷新仍持久；771/1440无横溢，尺寸已恢复。该QA文件保留，原正常数据不清理。下载实际GET200，但browser download事件10s超时、CDP响应body观察为空，**下载落盘/原字节尚未确认**，不据200或无错误冒PASS。现上传无总budget/响应体限额与clean长期刷新文案为后继风险；删除owner/API、全test:e2e/axe/视觉预算、完整页面CRUD未完成。
+
+IAM原writer冻结八source四unit、原436其它tracked/三D0/lifecycle/HTTP保护。RootNode24同真实operatorCLI由R293的exit1转本轮1PASS/37筛选未执行；完整两integration44PASS/0FAIL/0SKIP（真实旧资格与新增CLI），两次全部448tracked起终冻结、原PGcatalog零缺失/新增。完整verify0：957PASS且format/lint/types/contract/breaking/sdk/build0，全tracked冻结；独审91403bb4无确定P0/P1，保state/count联动与stdout丢ACK unknown诊断两P2。此12paths及四D0/test尾仍候选，未最终提交/未正常资源演进/消费者切换/本人MCP CRUD；先收这两细节，零自动PATCH或未知结果冒成功。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **13PASS/6PARTIAL/14UNVERIFIED**，不把工程数量作产品完成率。完整Wave0–7 active，同计划续行；原正常Web/PG/Redis/MinIO无重启或reset，零正常权限/资金/模型操作。uv f7e1c30d与八gitlinks任务外保持；当前证据位于Root var/dev/r255-preserve/r294-*。下一原owner独立收IAM两P2与Web真实上传预算/下载验收，不引入市场/假数据/兼容层或重复中心。
+
 ### R293 Manus 视觉续行：连接器空态已交付，完整管理链仍 OPEN（2026-10-07）
 
 用户要求整体展示以 Manus 高一致还原；沿原 r289 七面与已批准个人技能管理范围，不各页另造设计、不借假封面/官方技能/使用次数冒真实目录。Root 独占正常浏览器，原 Web / IAM / 独立 QA 分工；现个人技能页持续真实显示，连接器页管理空态已精确修复，整 UI 与全 CRUD 仍未完成。

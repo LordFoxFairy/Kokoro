@@ -1,3 +1,31 @@
+|R294-IAM-P2-DESIGN|原 IAM owner 只读；现12paths冻结，fa515233＋r294-iam-freeze；独审91403bb4、Root真CLI/44integration/verify957证据|给 state/count严格两分支与新mode stdout ACK丢失精确unknown脱敏诊断的最窄方案（已有schema/script/serviceunit/provisionunit范围内），不改旧模式/共享API/normal权限/资源。Root三D0既定语义不放宽，无新文件。仅ignored r294-iam-p2-design.md；未授source/test/Git/服务资源。后继tests-first及Root同真CLI再跑。|
+|R294-WEB-LIBRARY-RECOVERY-DESIGN|原 Web owner 只读，1b35a7a；既有client/state/upload lifecycle，不改本已提交展示|核Root正常POST/CLEAN/GET已过、downloadGET200但事件超时/body空证据，不猜落盘；现fetch/json未总预算/限额、clean状态长期刷新文案需有限恢复设计与准入写集。只给下一tests-first自然验收/正常browser原字节方案，不改原UI/字典/API/资金/数据、不猜Mock已闭环；仅ignored报告。|
+
+R294 收口：Web精确5paths提交1b35a7a（3交付＋CURRENT＋INDEX现行单hunk，不含Admin旧前缀）；RootNode22check0：3371默认/299contract/51architecture，lint/types/build0、773tracked执行起终冻结；独审9fcbdf72。正常选择/切tab零POST→唯一提交POST200/CLEAN121B真hash→GET200卡/硬刷新持久，390/771/1440无横溢。下载GET200但实际download事件10s超时、CDPbody空，落盘/字节未知明确不PASS；QA自有文件保留。上传有限budget/clean刷新提示OPEN。IAM同真CLI1PASS/37filtered、完整两integration44PASS/0FAIL/0SKIP，全部448tracked起终冻结、原库0缺失/0新增；Node24verify957/0且各format/lint/types/contract/breaking/sdk/build0。IAM仍12source/unit＋4D0＋test尾候选未最终提交/未激活，独审91403bb4保2P2先收口，不宣正常MCP CRUD；完整70/33不变。
+
+|R294-WEB-LIBRARY-FROZEN-REVIEW|原独立QA只读；Web d6f43aa，upload ba75e687/CSS9c5da744/test052fbbb7，原773 tracked冻结|审3文件行为最窄变化/旧唯一oracle与generic类型修inverse/新增3tail语义，state/client/surface保护。Root真实选择零POST/跨tab/390长名、一次POST200 CLEAN digest121bytes＋GET200持久卡；下载GET200但download事件超时与Network body空，下载落盘仍未证，不冒PASS。现上传缺总timeout与clean长期“正在刷新”提示为既有后继风险，不塞本3文件。仅ignored报告/STOP，Root完整纯门在途。|
+
+R294 TYPE后继同签名边界：具名_unused仍产生1条ESLint warning，Root不以exit0冒全lint0；只准该vi.fn改为显式callable泛型 `<(input: string | Request) => Promise<Response>>`、原零参callback复原。mock.calls保同类型，无多余运行时参数/断言变化；须target eslint --max-warnings=0真实通过，新tailinverse回初始3de93fd8。
+
+|R294-IAM-FROZEN-REVIEW|原独立 QA 只读 IAMfa515233＋冻结12paths；r294-iam-freeze.json，全部436其它 tracked、lifecycle/HTTP/三D0固定|独立核8source/4unit、15字段schema/ACK/503unknown、严格模式/文件权限/stdout ACK、当前零PATCH/legacy单PATCH/审计identifier，变化只内部不发明contract。Root同时真实同CLI和完整2integration/全门。仅ignored报告，零资源/测试/Git/browser/source/docs。|
+
+|R294-WEB-LIBRARY-TYPE-ORACLE|原Web tests-only；仅新尾首例 vi.fn 回调零参数→显式 `_input: string | Request` 类型参数|作者typecheck2真实TS2493/TS18048，新尾 mock.calls tuple推断错误；仅该签名，其他新尾/旧oracle/source两SHA保持，Rootinverse原3de93fd8 exact。作者Node24因错误opt路径回退不冒Node22；Root确认 /Users/nako/.nvm/versions/node/v22.22.2/bin/node v22.22.2 正常。最终RootNode22完整门/浏览器后再提交。|
+
+|R294-WEB-LIBRARY-IMPLEMENT|原 Web 唯一 writer d6f43aa，允许 upload.tsx/现surface CSS/现surface test 三路径；现首旧oracle仅一条替换，新增三例尾冻结|Root8029真实1FAIL/2PASS/45filtered未执行（93266误筛48SKIP不作RED）；独审7ce89c0f无确定阻断。初始无intent不渲染提交，选中文件保唯一明确提交/重试/上传中/terminal/clean；state/client/surface/其他旧assert全部保护。Root正常三尺寸+真实选文件/跨tab、独审冻结、适当门与精确Git后才验收；normal上传/下载如未实操不冒PASS。相邻INDEX无局部文件，Root收到STOP后只补原全局INDEX既有该上传行的职责窄hunk并保护Admin原前缀；CURRENT事实另由Root单writer。|
+
+|R294-WEB-LIBRARY-RED|原 Web 唯一 writer；d6f43aa+原 Admin/i18n mixed；先仅现 tests/ui/kokoro-library-surface.test.tsx 尾追加，完整旧正文保留，Root 773 tracked 基线保存|Root 正常771真实 before已见无选择时固定禁用上传按钮；只追加自然行为：初始选择入口/真实限制但无提交；选择不自动POST，选择后显式提交，retry与跨tab intent/状态不弱化。Root先复跑业务RED后才授生产。禁止source/CSS/旧oracle/Git/browser/服务/资源，报告ignored。|
+|R294-WEB-LIBRARY-D0-REVIEW|原独立 QA 只读 Web d6f43aa 和 r294-web-library-design c861f942，变化中test不视冻结|核现职责/三精确后继路径与渐进披露状态、旧firstcase初始上传oracle必要更新（后继仅该oracle）、无自动上传/未知重试/页面intent退化。仅ignored r294-web-library-plan-review.md，零写源码/测试/docs/Git/资源/浏览器。|
+
+### R294 当前实施：正常MCP管理准入与资料库展示独立推进（2026-10-07）
+
+上一目标轮属于 progress：Web d6f43aa 精确UI交付、Root ede4a58f台账、IAM真实CLI首read业务RED与三D0冻结。Root现读三D0当前前缀、独审20e4e652及五路径保护回执接受一致性门：owner仍现OAuth resource、无HTTP/schema/generated变化、官方API唯一writer、明确失败恢复与八production写集；未正常激活，不冒已完成。完整Wave0–7和原70/33不变。
+
+|任务|角色/基线/精确范围|完成条件|
+|---|---|---|
+|R294-IAM-MCP-CLI-IMPLEMENT|原IAM唯一writer；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam，codex/r255-financial-human-20261006，fa515233＋R293冻结5paths；仅8现production：oauth.constants、clients schema/repository/service、provisioning config、scripts/provision-oauth、audit constants/subject policy；4现unit：oauth-client.service/repository、provision-oauth、auth-audit.service|R293真实1FAIL先行；补边界oracles后实现两strict zeroargv mode、完整15字段双读、单PATCH/target no-op、成功ACK/unknown零自动重试、正式审计与脱敏stdout ACK。runtime只认六项不放宽；冻结lifecycle103631旧prefix与8424新tail/所有HTTP test，三D0/contract/generated/schema/角色/package/lock和其它tracked保护。writer仅纯门，不访共享资源/browser/Git；Root正式CLI同case、旧资格回归/独审后精确提交；正常CRUD另待。|
+|R294-WEB-LIBRARY-DESIGN|原Web owner只读；/Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，d6f43aa＋原Admin/i18n mixed|沿已批准r289七面/Manus设计，核当前资料库个人文件/Agent作品的正常分支及预览/静态分界；给下一最小真实展示/交互修复写集、状态与用户验收，无新市场/假作品/新API。Root独占browser同尺寸before，未真实失败前不授source；仅Root ignored r294-web-library-design.md。|
+|R294-ROOT-VERIFY|Root独占正常browser/原共享实例/随机fixture/Git/台账|保正常服务与资金/权限不变；收冻结后实际operatorCLI正控、旧caller/whole2integration与审计；前后全tracked/PGcatalog保护。不能用后端绿替代本人MCP完整CRUD/全UI。|
+
 R293 IAM Root58243已自然终态：真实CLI首read exit1，1FAIL/37筛选未执行，旧client/link与official legacy创建已过；448tracked运行起终exact，原PGcatalog无新增/缺失，原103631bytes test prefix保。独审20e4e652无确定设计阻断，原owner仅四D0前缀收敛，后继生产八路径与正常激活未准。当前正常技能页再次真实读取并保存 r293-skills-current.png；原七页面/70与33矩阵不变。
 
 |R293-IAM-EVOLUTION-D0-SYNC|原 IAM 单 writer，fa515233；仅现 docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md 追加当前前缀，原正文完整保|Root58243真实 CLI 首 read exit1/1FAIL，fixture/原库448tracked起终保持、零残留库；现 parser不含两个mode。独审20e4e652无确定P0/P1；将八source含两audit、15-field只读快照、成功ACK需校验/503 Response即unknown、单PATCH/零自动重试、stdout脱敏、runtime六项不放宽与无CAS排他边界落现三D0一致。只文档，不准生产/generated/权限/正常资源；Root复核三面后再授实现。|
