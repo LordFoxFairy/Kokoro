@@ -1,3 +1,7 @@
+### R277 当前项目删除机器候选入口
+
+BFF正常worktree /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，HEADe68196cd0a02c4a91c84ec5b6c283a0f31594f14：唯一contract/openapi/v1/openapi.yaml8.6/105，既有scripts/verify-openapi.ts与test/contract/openapi-contract.test.mjs增加deleteProject/getProjectDeletion精确profile；Root正规baseline105。原103wire/components不变；没有删除runtime/SQL/Web消费，正式运行仍39db/8.5。三D0顶部明确候选与正式态，Root本次工程门及失败见CURRENT与r277-project-machine-receipt.json。原T-C05.D01–D06的17七字段子例已进入docs/test-cases.md，全部待执行，不扩新任务中心。确定后继仅task update/resume的Project活性同锁及聚合同client核心，已有创建/Move锁不重复改。
+
 ### R276 个人页与并行 CRUD 当前入口
 
 Web6924651仅现personal-skills-read.tsx新Enable资格及两现测试；来源非active且disabled禁新Enable，unknown/核对/移除/已enabled停用保持。Root实际412→修后canonical/fresh GET200→硬刷新两原卡，独审449ec444；源hash82e1391d/surfacecb680bfe/panelb13b48e0。BFF26655f7仅三D0项目删除target8.6/105，机器/runtime仍8.5/103，Storage project release已正式发布但消费编排未实现；Platform本人MCP当前POST404/缺private Product mutation，报告8649a41f，凭据政策未决。证据r276-user-acceptance-receipt.json；个人33为13/6/14，完整70为11/7/15/36/1，不能由辅助406绿升完整页面PASS。九源码listener复用，原Admin/Storage mixed保持。

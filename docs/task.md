@@ -1,3 +1,40 @@
+### R277 项目删除机器切片已提交；真实页面闭环仍待验（2026-10-07）
+
+BFF正常工作树 **e68196cd0a02c4a91c84ec5b6c283a0f31594f14** 仅13批准路径：现owner OpenAPI8.6/105机器候选、正规baseline、新两操作精确profile/verifier与现回归、三D0当前态和入口。正式运行/已发行消费者仍8.5/103；新DELETE/status尚无runtime/SQL/worker/Web入口，不记T-C05 PASS。原BFF负责人实施，两个原只读Agent分别独审机器与用户链，Root独占集成/Git；旧103operation/components结构deep equal、其余521BFF tracked exact，Web775原Admin mixed exact，Rootuv/八gitlinks保持。
+
+真实推进：Root先重跑新3FAIL/0PASS，再纠正header-only request ID/closed retryable/canonical ID/无migration链；独审发现GET400错误包含DELETE key两码及可选字段闭合缺口，同切片修正。首次完整contract **297PASS/1FAIL**（现governance仍钉8.5）保留；仅当前版本标题/regex同步8.6，旧生命周期断言逆转字节exact。最终format/lint/typecheck/build均exit0，contract **298PASS/0FAIL**，默认 **867PASS/0FAIL/2既有SKIP**，目标contract+architecture **112PASS/0FAIL**，4既有OpenAPI warning保留。工程门只证明此候选，不代替真实用户删除。
+
+T-C05.D01–D06在原测试台账细化17条七字段验收子例，**全部待执行**。源码只读纠偏：会话提交/排程创建已有Project FOR SHARE，Move已有排序FOR UPDATE，不重复重写；确定后继是排程update/resume缺Project先锁与active复核，以及聚合删除same-client核心/receipt/N+1 release outbox，随后Root隔离真PG→正式owner→正常页面链。现PG测试会DROP/apply且有SessionAdmissionDouble，禁止跑正常共享库或冒真IAM/页面PASS。
+
+并行MCP审查发现当前四workload无本人mutation；普通用户管理自己连接无需新人类角色，新具名机器scope仍需IAM正式producer。当前resource要求exact scopes，新scope与现resource必须受控同片演进，不能仅改HTTP或借global权限。凭据本机/后端托管问题仍待产品回复，不上传secret；auth=none子链设计先行但不删完整需求。T-K05现真实404仍FAIL。
+
+Root默认门实际：规范 **155 violations/0 unverified**，拓扑 **8原gitlink/HEAD mismatch**，scripts **1735PASS/1FAIL/3SKIP/474 subtests PASS**（历史checkpoint pin不匹配）；未清零/放宽，不称全仓绿。九正常源码listener及PG/Redis/MinIO/ClamAV均现场TCP可连接，只作存活证据，零重复启动/restart/reset/DDL/资金/模型调用。浏览器当前真实技能页仍“已安装 / 我发布的”、默认两真实安装卡，撤回源启用禁用；本轮没有新增技能动作PASS。完整70仍**11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍**13PASS/6PARTIAL/14待验**，完整Wave0–7 active。
+
+证据：Root `var/dev/r255-preserve/r277-project-machine-receipt.json`、final-pure-gates、old-wire-preservation、final-review与userflow-qa；实际页面r277-personal-skills-current.png。下一由原BFF owner先补项目删除真实失败行为/最窄实现，再接Web并按17用户子例验收；MCP IAM→Platform正式生产者后再接BFF/Web，不以接口门数冒CRUD完成。
+
+R277 完整contract门首次实际297PASS/1FAIL：现contract-governance.test.mjs:481仍钉8.5当前版本，实际8.6 candidate导致失败；旧生命周期断言与103wire保持。补充授权原writer只改该现用例标题的当前版本文字及481精确版本8.5→8.6，旧其他业务断言全文exact。Root保首次失败日志，随后重跑完整门，不通过删除/skip测试解决。
+
+### R277-BFF-PROJECT-MACHINE 阶段 B 放置与授权（2026-10-07）
+
+Root 已实际重跑修正后的 R277 RED：3FAIL/0PASS，8.5/103 缺两操作；旧测试 prefix exact，其余530 tracked路径 exact。Owner/BFF 原负责人为唯一 writer；当前三D0 profile已纠正，独审同时只读。扩展既有 owner OpenAPI 与既有 verifier/test，不新建模块/contract中心/迁移链；删除项为本切片错误的meta envelope、泛型新ID和migration描述，无103旧wire兼容/改写。依赖现Storage正式scope-release契约，不实现运行路由/数据库/消费者。
+
+允许机器候选路径：`contract/openapi/v1/openapi.yaml`、`contract/README.md`、`scripts/verify-openapi.ts`、`scripts/check-contract.mjs`（只确需的版本数量约束）、`test/contract/openapi-contract.test.mjs`、`test/architecture.test.ts`（只确需current oracle）、现三D0顶部与`docs/CURRENT.md`/`docs/INDEX.md`当前机器入口（按实际现入口补充授权，根INDEX排除）。`contract/tests/v1-operations.json`由Root正规生成命令唯一写入；不存在的provenance.json/check-contract.ts不创建。保旧103 operations与旧components逐结构exact；仅新DELETE、新status path及新components，target8.6/105，尚未发行。Root独占生成/Git/门/服务；writer冻结交接后Root重跑 lint/semantic/contract/typecheck/build，并对全部旧wire结构比较，未通过不提交/消费。后续真实PG与页面T-C05待验，不因候选合同绿升级。
+
+### R277 项目删除正式机器契约与 MCP 接缝审查（2026-10-07）
+
+上轮为progress：Web6924651窄交互修复经Root真实412→GET/fresh200/硬刷新及独审后提交；BFF26655f7仅三D0，Root111e0233记录证据，完整Wave0–7 active。本轮正常BFF codex/r257-bff-normal-current 26655f7877c95ab56f6ca66f361036c32bef49f6 tracked clean、仅原var untracked保；正常Web6924651原Admin mixed与Rootuv/八gitlinks保，九原listener kill0均活。
+
+|任务|Owner/Agent/范围|验收与阶段门|
+|---|---|---|
+|R277-BFF-PROJECT-MACHINE / T-C05|原 bff_admin_routing_d0_r257，BFF单writer，已批准三D0；阶段A只改现test/contract/openapi-contract.test.mjs新精确项目DELETE/status系统wire oracle；阶段B须Root真实RED后单独授权|目标8.6/105只两operation；103旧operation及旧components/wire保持，既有权限、幂等、empty-body/404/202 pending replay/GET logical与恒pending physical/no-store/request-id均按26655f7。Root独占命令/Git/生成与资源；worker仅读/写handoff，不能改source/schema/启动/删除数据/消费者repin；机器候选不等发行或页面PASS|
+|R277-MCP-INGRESS-REVIEW / T-K05|原 agent_planned_guarantee_system_r257，只读Platform/IAM现三D0/ADR/contract与PRD；仅Root ignored r277-mcp-ingress-review.md|沿报告8649a41f定位当前机器identity/scope与Product session代言的最小合法本人mutation，不借global unsupported/Skills或Agentproof、不新增复杂权限/UI。精确producer先后/放置/新源风险，credential未决不代产品裁决；不改tracked/Git/门/共享资源|
+|R277-PROJECT-USERFLOW-QA / T-C05|原 iam_grant_source_scope_0244，只读现BFF源码/现Web项目与会话入口/已批准D0；仅Root ignored r277-project-userflow-qa.md|给正常用户删除项目→两列表→刷新→独立排程/Library/Share/活动Run的端到端验收矩阵（七字段），同时定位真实成员/task writer锁缺口与现真实PG测试资源边界。旧CRUD/Move基线不能冒delete通过；不写source/tests/台账/Git/资源/浏览器，不只做类方法单测|
+|R277-ROOT-INTEGRATION|Root、现目录/原70用例；BFF machine受限集成审查/真实RED/纯contract门|核原103machine字节/775Web保护/标准及现root状态；机器冻结后spec审查再质量审查与Root门；批准状态保留未实现，之后真实PG/owner/页面链才完T-C05。不缩整体目标/不新计划中心|
+
+R277 阶段A Root真实machine RED：3FAIL/0PASS，现8.5/两operation缺失，不是harness。Root另发现已批准D0与当前手册两处矛盾（request ID应仅header/新错误需closed retryable；V1无migration链），及共用ProjectId仍允许slug的输入缺口。先续派原BFF writer仅R276三D0顶部+新R277 appended tests，改data-only/error-only、operation-specific canonical ProjectDeletionId、绝对结束key/Location；原103/旧tests/历史suffix保持。409in_progress retryable=true但冲突false；不改当前发布profile、不触库。修正后Root重跑RED，机器阶段B尚未授权。
+
+MCP Root裁决：普通当前Product Session仅管理自己连接，不新建人类role/permission、不默认管理员可读他人私有数据；新具名machine workload授权仍须IAM正式producer，当前四surface不可借用。凭据本机/后端托管已向用户异步询问，未决定前不实现secret传输。
+
 ### R276 CRUD 缺口 owner 收敛与真实页面验收（2026-10-07）
 
 前轮是实质进展：Root b0befc7b提交真实发布未知恢复与正常排程weekly08→09/暂停，F09 PARTIAL/T-P02 RETEST；全Wave0–7保持active。本轮基线Root b0befc7bb8b19ba225c79a927b2d58f6442a46fa、Web649e5d4原Admin mixed、BFF93bd/runtime39db、Platform6e5、Scheduler e8d；共享进程先实际kill0复用，不重启/清库。Root独占浏览器、Git、门禁、台账。

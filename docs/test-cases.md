@@ -1,3 +1,29 @@
+R277 执行状态补充：BFF机器候选已提交e68196cd0a02c4a91c84ec5b6c283a0f31594f14；13路径工程资格已记录CURRENT，不等项目删除运行实现或17子例通过。完整70与个人33计数不变。当前实际skills截图仅观察，无新动作PASS。Root默认155规范违规/8gitlink偏差/1历史checkpoint失败仍OPEN。
+
+### R277 T-C05 项目删除用户验收子例（2026-10-07；全部待执行）
+
+沿既有 T-C05.D01–D06细化17子例，不新增第71组，不把机器契约/纯门计用户PASS。预置只使用Root明确可删除的QA项目P/Q/空E；P内A/B、Q内C、普通D，关联排程SP/无关联SD、独立Library引用G及分享SA，先记录canonical ID/原权威响应；不同用户/tenant走正规IAM。不可恢复删除在操作时确认；活动Run/模型费用后置专项，不为静态CRUD自动调用模型。当前新删除runtime/SQL/Web入口未实施，以下不是已完成结果。
+
+|ID|标题|预置|步骤|预期|优先级|类型|
+|---|---|---|---|---|---|---|
+|T-C05.D03.1|取消项目删除|P及A/B，合法登录|从P具名删除入口开确认；核项目名/影响说明；取消；键盘重开再Esc|零DELETE/零release，P/A/B原ID/内容/任务保持；焦点回合法原按钮，不误删当前Direct|P0|真实浏览器交互/可用性|
+|T-C05.D01.1|整项目删除与两类清单|P有A/B、D/Q不属P|确认P→等待正式202→查看项目列表/展开其它folder/普通会话→硬刷新|P和A/B从项目及全会话清单消失，不被转Direct；D/Q/C保持；有界反馈，不空白或无限loading；202只本地提交|P0|真实系统主链|
+|T-C05.D01.2|当前页面及旧深链不复活|当前打开A正文并记P/A URL|确认删除→Back/Forward→硬刷新旧P/A URL→回Direct D|旧P/A拒绝/不可用，不恢复旧缓存/草稿投影为持久内容；不自动选已删会话，D正文与URL正确；无写重试/模型调用|P0|真实浏览器导航/恢复|
+|T-C05.D02.1|移出后保留|P有A/B、D、Q|先正式Move A到Direct或Q并GET/硬刷新确认，再删除P→再打开A/B|A原ID/消息/既有有效资源与目标归属保留，B随P删除，无复制/双列表ghost；不能只看Move乐观UI后马上判集合|P0|真实系统归属|
+|T-C05.D02.2|并发Move的两胜序|可删除P/Q；Root隔离PG屏障|Move持Project锁后发DELETE并确认阻塞→commit；另轮DELETE先锁再Move|先移入者纳入删除，先移出者保留；DELETE胜后Move拒；无漏成员/死锁/跨项目伤害|P0|真实PG并发+HTTP，不计浏览器PASS|
+|T-C05.D03.2|空项目与防双击|空E，当前owner|快速双击确认/按Enter；保存请求key；状态GET并刷新|单一意图/同key，无多receipt/outbox；空E也恰1个Project scope command；pending防重，不假称物理完成|P1|真实浏览器边界+owner核对|
+|T-C05.D03.3|删除ACK未知原意图恢复|P；Root受控Response-held已提交202|取消网络/关闭重开→显式恢复原key→status GET|原DELETE重放原202 pending data/Location；request-id为本次header；不新key/不再次冻结/不多N+1；GET当前released也不改变DELETE receipt；读成功不是物理ACK|P0|真实故障恢复|
+|T-C05.D03.4|新key与跨项目key域|已删P、另一活Q|同P原key重放；同P新key；Q使用相同key|原key可授权重放，新key404；Q独立命令不与P冲突；同namespace异digest409，不泄露receipt/内部对象key|P0|正式HTTP幂等/安全|
+|T-C05.D04.1|非owner/跨tenant/失效Session|U的P、独立V及旧U会话|V尝试删除/读status；U撤准入后显式重试，核U数据|新operation当前admission；404不泄露owner项目存在性；身份失败稳定闭合；零本地/owner副作用；UI清旧私有结果、迟到结果不跨主体|P0|真实IAM+浏览器权限|
+|T-C05.D04.2|事务失败不半删|独立临时PG P/A/B/SP|在成员、pause、receipt、N+1任一点真实约束/SQL故障→恢复后GET|整个事务回滚；没有部分墓碑、部分停任务、孤receipt/outbox；客户端未知与明确失败区分，不能自动新key；禁止正常库故障注入|P0|真实PG回滚|
+|T-C05.D04.3|慢读/取消与迟到状态|删除pending，受控status GET慢/503|等待既定有限预算→显式Retry；切项目/主体后释放旧响应|失败不是released/空历史；Retry只GET原status；退出后旧响应不抢URL/写投影；没有持续loading或自动重复DELETE|P1|浏览器异常/代际|
+|T-C05.D05.1|关联排程暂停而非删除|SP属P且启用，SD无关联；先记录ID/规则/历史|删除P→排程页及硬刷新→查看SP→尝试恢复/修改；查看SD|SP仍同ID/原project绑定、paused/false/next=null，规则与历史保留；resume/replace拒绝；SD不变。不是把SP从列表藏掉就通过|P0|真实Scheduler/BFF用户链|
+|T-C05.D05.2|旧排程ACK/已到期请求|隔离SP原revision outbox held|提交删除递增revision→放旧ACK/旧dispatch→送新replace|旧ACK不恢复next/enabled，删除后新调度不得进入失效上下文；已有inflight Run仅以真实owner结果评价，不宣称瞬时全取消|P0|真实PG+Scheduler协议并发|
+|T-C05.D05.3|分享与活动输出|A有有效分享SA；另批准活动Run|删除P→打开SA/旧会话→释放迟到事件→必要重启仅自有fixture worker|分享失效；stream/fence阻迟到复活；Message/ledger留存仅owner审计可核，不从普通页面读出；durable cancel不冒Agent terminal，终态须Agent证据|P0|跨owner恢复/后置执行|
+|T-C05.D06.1|仅项目文件与独立保存引用|P专属F，G在独立Library或Q有有效引用|删除P→项目资源及Library→fresh下载授权→再读G|F不再项目可见；G及其他scope不被物理删；逻辑release按冻结scope；不得以已签旧URL仍可读就断言越权，也不得承诺瞬间撤销既发凭证|P0|真实Storage/Library完整性|
+|T-C05.D06.2|异步释放阻塞/重放与物理边界|N成员，多scope释放；自有owner故障|一条timeout/可信terminal拒；status读取；故障恢复后同command重放|pending/blocked/released准确聚合；只可信ACK置released，late旧lease不落库；physical始终pending；不因404/队列空宣称物理完成|P0|真实owner/worker恢复|
+|T-C05.D01.3|大清单和窄屏可达|P会话超过一页，其它组长列表；390窄屏|删除确认键盘操作→完成→翻页/搜索/展开/刷新|不只删UI首50条；全部冻结成员隐藏，未删组分页仍正确；确认可滚、取消/确定不遮挡，focus不落旧卸载节点|P1|真实浏览器分页/可用性|
+
 ### R276 个人管理交互窄修与 CRUD 接缝进展（2026-10-07）
 
 用户确认先修清晰个人技能管理，保持“已安装 / 我发布的”、默认已安装，不扩市场。Web **69246512ff177da20cc19b02477f295764bcb37f** 仅3路径：现reader新Enable的disabled条件、原surface/panel回归；已停用且来源非active不再开放新启用，已有启用仍可停用，核对/移除及历史unknown原key恢复不变。原writer实施、独审449ec444无确定阻断，Root独占集成/Git与真实页面验收，775任务外路径（含Admin mixed）exact、uv/八gitlinks保留。

@@ -1,3 +1,17 @@
+### R277 项目删除机器切片已提交；真实页面闭环仍待验（2026-10-07）
+
+BFF正常工作树 **e68196cd0a02c4a91c84ec5b6c283a0f31594f14** 仅13批准路径：现owner OpenAPI8.6/105机器候选、正规baseline、新两操作精确profile/verifier与现回归、三D0当前态和入口。正式运行/已发行消费者仍8.5/103；新DELETE/status尚无runtime/SQL/worker/Web入口，不记T-C05 PASS。原BFF负责人实施，两个原只读Agent分别独审机器与用户链，Root独占集成/Git；旧103operation/components结构deep equal、其余521BFF tracked exact，Web775原Admin mixed exact，Rootuv/八gitlinks保持。
+
+真实推进：Root先重跑新3FAIL/0PASS，再纠正header-only request ID/closed retryable/canonical ID/无migration链；独审发现GET400错误包含DELETE key两码及可选字段闭合缺口，同切片修正。首次完整contract **297PASS/1FAIL**（现governance仍钉8.5）保留；仅当前版本标题/regex同步8.6，旧生命周期断言逆转字节exact。最终format/lint/typecheck/build均exit0，contract **298PASS/0FAIL**，默认 **867PASS/0FAIL/2既有SKIP**，目标contract+architecture **112PASS/0FAIL**，4既有OpenAPI warning保留。工程门只证明此候选，不代替真实用户删除。
+
+T-C05.D01–D06在原测试台账细化17条七字段验收子例，**全部待执行**。源码只读纠偏：会话提交/排程创建已有Project FOR SHARE，Move已有排序FOR UPDATE，不重复重写；确定后继是排程update/resume缺Project先锁与active复核，以及聚合删除same-client核心/receipt/N+1 release outbox，随后Root隔离真PG→正式owner→正常页面链。现PG测试会DROP/apply且有SessionAdmissionDouble，禁止跑正常共享库或冒真IAM/页面PASS。
+
+并行MCP审查发现当前四workload无本人mutation；普通用户管理自己连接无需新人类角色，新具名机器scope仍需IAM正式producer。当前resource要求exact scopes，新scope与现resource必须受控同片演进，不能仅改HTTP或借global权限。凭据本机/后端托管问题仍待产品回复，不上传secret；auth=none子链设计先行但不删完整需求。T-K05现真实404仍FAIL。
+
+Root默认门实际：规范 **155 violations/0 unverified**，拓扑 **8原gitlink/HEAD mismatch**，scripts **1735PASS/1FAIL/3SKIP/474 subtests PASS**（历史checkpoint pin不匹配）；未清零/放宽，不称全仓绿。九正常源码listener及PG/Redis/MinIO/ClamAV均现场TCP可连接，只作存活证据，零重复启动/restart/reset/DDL/资金/模型调用。浏览器当前真实技能页仍“已安装 / 我发布的”、默认两真实安装卡，撤回源启用禁用；本轮没有新增技能动作PASS。完整70仍**11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍**13PASS/6PARTIAL/14待验**，完整Wave0–7 active。
+
+证据：Root `var/dev/r255-preserve/r277-project-machine-receipt.json`、final-pure-gates、old-wire-preservation、final-review与userflow-qa；实际页面r277-personal-skills-current.png。下一由原BFF owner先补项目删除真实失败行为/最窄实现，再接Web并按17用户子例验收；MCP IAM→Platform正式生产者后再接BFF/Web，不以接口门数冒CRUD完成。
+
 ### R276 个人管理交互窄修与 CRUD 接缝进展（2026-10-07）
 
 用户确认先修清晰个人技能管理，保持“已安装 / 我发布的”、默认已安装，不扩市场。Web **69246512ff177da20cc19b02477f295764bcb37f** 仅3路径：现reader新Enable的disabled条件、原surface/panel回归；已停用且来源非active不再开放新启用，已有启用仍可停用，核对/移除及历史unknown原key恢复不变。原writer实施、独审449ec444无确定阻断，Root独占集成/Git与真实页面验收，775任务外路径（含Admin mixed）exact、uv/八gitlinks保留。
