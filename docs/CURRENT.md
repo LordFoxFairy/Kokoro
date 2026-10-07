@@ -1,3 +1,15 @@
+### R319 Skills 真实启停体验与 BFF 固定消费已分别提交（2026-10-07）
+
+优先用户Skills当前页：Web **9f81ba12567d147df05662d6e6cb6064b324ae81** 精确reader/CURRENT/skills INDEX三路径；原负责人唯一writer、独审e9858c39、Root当前完整重跑及独占Git。Root真实RED是启停canonical核对后主动清空整卡且BODY失焦，不是服务不通；修复仅同identity第一页保留明确refreshing的已核对snapshot，canonical实际更新命中行，原key/unknown/cancel/授权epoch/来源硬禁用均保留。ref同步防重复写、当前按钮aria-disabled保焦点，行离开筛选仅有许可时回安装tab，主动移焦不抢。CSS/新API/假使用量不改，原772tracked及27Admin mixed保护、提交后三路径之外status exact。
+
+Root正常3310实际500ms：连按两次Return仅1PUT200、canonical/list200，三卡不整片卸载且同按钮保焦点。1500ms：canonical已回而list待回时busy=true/三卡/写锁；主动点搜索在完成后仍INPUT。启用filter停用R255后只剩R301、焦点安装tab。恢复原R255enabled/default installed/all、硬刷新三卡状态正确；延迟恢复0/Network关闭，无服务重启/reset/权限资金修改。现真实图 **var/dev/r255-preserve/r319-skills-final.png**、结构记录r319-skills-user-verification.json，旧RED与pending图保留；窗口200后ERR_ABORTED单列，不冒零异常。Root Node22.22.2原18943完整pnpm check自然exit0：309contract/51architecture/3437default、lint/typecheck/build通过，仅辅助工程回归，不代用户旅程。withdrawn enabled停用后hard-disabled可能BODY失焦、自然授权退役、完整CRUD/多页/第二身份/axe/视觉预算仍OPEN。
+
+并行BFF **a3e9a7ed6615e35bcf722d5d20bddd997dcf7e86** 固定消费Platform e83a2ad发布38Git对象，V8→V7→V6→V5逐byte/hash链、43 RPC当前与39父描述一致，11消息/4本人读生成仅common/platform。旧c949 vendor单轨删除，Storage第三proto只固定完整来源不生成其它owner；public/Schema/客户端runtime/身份和正常服务不改，generated-not-activated，不冒本人读真实HTTP/E2E完成。82路径freeze55c03a99+Root2docprefix（no-renames84），其余499保护、三D0原suffix exact；独审f40caa91与六test9处pin inverse exact。首次correct Node22门53294 contract289PASS/9FAIL旧路径ENOENT保留，仅字面pin迁移后最终54243完整check自然exit0：contract298PASS/default873中871PASS/0FAIL/2原资源SKIP、lint/typecheck/build/生成固定验证通过；最终format92634 exit0。48723误Node24固定guard拒绝另记。不用通过数冒真实用户或190语义cases已执行。
+
+只读真实身份后继：IAM官方token HTTP fixture实际入口与BFF CatalogTokenSource POST client_credentials已核；既有refresh grant资格/此前native issuer不证明完整本人读token HTTP链。本轮零新fixture/凭据/扩权/正常服务重载；下一后继先失败测试、实际token HTTP→introspection→BFF四本人读接入→Web逐项验收，保持已有效owner方向，不加fallback或重复计划。用户当前优先Skills未转移为Agent研发。
+
+完整70保持 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33 **14PASS/7PARTIAL/12UNVERIFIED**；T-K03/T-K05 OPEN、Wave0–7 active/支付最后。全CRUD/所有页面/正式上线不宣完成，Manus彩色插画/像素一致未完成；本轮新增能力为局部启停交互与机器固定消费。Root四原台账续记、原八gitlinks与uv不暂存，无新任务中心。
+
 ### R318 Skills 书封展示已提交，真实页面验证与完整能力分开（2026-10-07）
 
 Web **9a8c2eccfb5e4d2150340e572934b3d277fe6fbc** 精确三路径：现Skills CSS只book装饰hunk、Skills INDEX与CURRENT prefix。原负责人唯一writer、只读QA终审2d8b8a65、Root实际重跑与独占Git。纸底/墨字、低对比印刷几何和14px真实标题，不新增封面API/图片、虚构使用量/能力；原cover2:1/book3:4/min60%11rem/24px顶部、所有管理状态与命令不改。Root冻结SHA ad48ddf6、另770tracked以及原27Admin mixed保护、两doc原suffix exact，提交后原27status exact。

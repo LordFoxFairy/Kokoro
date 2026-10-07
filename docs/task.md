@@ -1,3 +1,46 @@
+### R319 Skills 真实启停体验与 BFF 固定消费已分别提交（2026-10-07）
+
+优先用户Skills当前页：Web **9f81ba12567d147df05662d6e6cb6064b324ae81** 精确reader/CURRENT/skills INDEX三路径；原负责人唯一writer、独审e9858c39、Root当前完整重跑及独占Git。Root真实RED是启停canonical核对后主动清空整卡且BODY失焦，不是服务不通；修复仅同identity第一页保留明确refreshing的已核对snapshot，canonical实际更新命中行，原key/unknown/cancel/授权epoch/来源硬禁用均保留。ref同步防重复写、当前按钮aria-disabled保焦点，行离开筛选仅有许可时回安装tab，主动移焦不抢。CSS/新API/假使用量不改，原772tracked及27Admin mixed保护、提交后三路径之外status exact。
+
+Root正常3310实际500ms：连按两次Return仅1PUT200、canonical/list200，三卡不整片卸载且同按钮保焦点。1500ms：canonical已回而list待回时busy=true/三卡/写锁；主动点搜索在完成后仍INPUT。启用filter停用R255后只剩R301、焦点安装tab。恢复原R255enabled/default installed/all、硬刷新三卡状态正确；延迟恢复0/Network关闭，无服务重启/reset/权限资金修改。现真实图 **var/dev/r255-preserve/r319-skills-final.png**、结构记录r319-skills-user-verification.json，旧RED与pending图保留；窗口200后ERR_ABORTED单列，不冒零异常。Root Node22.22.2原18943完整pnpm check自然exit0：309contract/51architecture/3437default、lint/typecheck/build通过，仅辅助工程回归，不代用户旅程。withdrawn enabled停用后hard-disabled可能BODY失焦、自然授权退役、完整CRUD/多页/第二身份/axe/视觉预算仍OPEN。
+
+并行BFF **a3e9a7ed6615e35bcf722d5d20bddd997dcf7e86** 固定消费Platform e83a2ad发布38Git对象，V8→V7→V6→V5逐byte/hash链、43 RPC当前与39父描述一致，11消息/4本人读生成仅common/platform。旧c949 vendor单轨删除，Storage第三proto只固定完整来源不生成其它owner；public/Schema/客户端runtime/身份和正常服务不改，generated-not-activated，不冒本人读真实HTTP/E2E完成。82路径freeze55c03a99+Root2docprefix（no-renames84），其余499保护、三D0原suffix exact；独审f40caa91与六test9处pin inverse exact。首次correct Node22门53294 contract289PASS/9FAIL旧路径ENOENT保留，仅字面pin迁移后最终54243完整check自然exit0：contract298PASS/default873中871PASS/0FAIL/2原资源SKIP、lint/typecheck/build/生成固定验证通过；最终format92634 exit0。48723误Node24固定guard拒绝另记。不用通过数冒真实用户或190语义cases已执行。
+
+只读真实身份后继：IAM官方token HTTP fixture实际入口与BFF CatalogTokenSource POST client_credentials已核；既有refresh grant资格/此前native issuer不证明完整本人读token HTTP链。本轮零新fixture/凭据/扩权/正常服务重载；下一后继先失败测试、实际token HTTP→introspection→BFF四本人读接入→Web逐项验收，保持已有效owner方向，不加fallback或重复计划。用户当前优先Skills未转移为Agent研发。
+
+完整70保持 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33 **14PASS/7PARTIAL/12UNVERIFIED**；T-K03/T-K05 OPEN、Wave0–7 active/支付最后。全CRUD/所有页面/正式上线不宣完成，Manus彩色插画/像素一致未完成；本轮新增能力为局部启停交互与机器固定消费。Root四原台账续记、原八gitlinks与uv不暂存，无新任务中心。
+
+### R319 固定消费完整门发现与最窄修正准入
+
+Root首次48723误用pnpm子进程Node24，固定Node22guard自然拒绝；保原日志、不归源码缺陷。明确export Node22 PATH后53294实际完整check自然exit1：contract298中289PASS/9FAIL，全为6既有测试旧c949 vendor引用ENOENT。不能用作者定向16PASS/QA冻结无逻辑发现冒整片通过，也不留旧vendor救门。
+
+同切片追加writer仅 `test/contract/openapi-contract.test.mjs`、`test/skill-installation-http.test.mjs`、`test/skill-package-begin-http.test.mjs`、`test/skill-package-complete-http.test.mjs`、`test/skill-publish-http.test.mjs`、`test/skill-validate-http.test.mjs` 的旧commit→e83a字面pin引用；历史V5输入已经逐byte原exact，原所有断言/版本/count不变。三D0prefix注明现consumer引用，旧suffix保持。Root重新全门与QA核字面inverse前不提交；第一次合法完整失败保留。format43626真实exit0，不能代替其它门。
+
+### R319 Skills 当前用户路径补充（独立 Web 局部交互，仍优先用户 Skills）
+
+Root 正常3310现三卡真实点击R255停用：PUT enabled200→GET安装200→GET本人列表200，刷新后确为已停用。实际缺陷是成功核对阶段主动清空全部卡片，焦点退到body；不是服务不可用，不以后端测试说明体验正常。原Web9a8c2ec/773tracked及27Admin mixed已存r319-web-start.json，正常授权/资源不改。
+
+|任务|owner/角色/文件|放置/验收/依赖|
+|---|---|---|
+|R319-WEB-SKILLS-INTERACTION|原web_interaction_astra_r296；先只读现reader/既有批准D0/真实步骤，方案Root确认后最多仅src/ui/skills/personal-skills-read.tsx局部修复|沿现共同Skills reader处理同身份已核对列表与焦点，无新文件/store/owner/contract/SQL/网络调用。保持单在途/原key/unknown/cancel/401退役/来源撤回禁启用；不能用保留旧卡制造已刷新，重新核验中明确锁住写，过滤/分页/切视图/换身份不展示旧集合。Root实际启用/停用/刷新/筛选/键盘路径作失败与修复证据，不新增mock或Unit；Root独占原当前门/审查/Git，CSS/所有Admin mixed保留。|
+
+此局部修复不改变既有职责/契约，归现Skills reader状态同步；三D0现准入设计继续有效。完整CRUD/彩色插画和正常认证根因仍OPEN；后台辅助门不替完整用户验收。
+
+### R319 BFF 固定 Platform V8 消费切片（现计划续接）
+
+上一goal turn为progress：Web9a8c2ec三路径与Root3a1d0bf3四台账提交、真实Skills页面证据；完整Wave0–7保持active。本轮依R318只读后继推进实际BFF机器消费，非重复UI/只改计划。BFF76098c0/codex/r257-bff-normal-current/543tracked与唯一untracked var见r319-bff-start.json；Platforme83a2ad clean。Root从该正式Git对象物化38固定输入至ignored r319-platform-fixed-inputs（不是新可编辑contract中心）。
+
+§8总体裁决：owner=Platform机器契约、BFF唯一consumer；本片只有固定V8→V7→V6→V5/43RPC描述消费，不新增BFF公开操作、DB、scope、client/runtime或HTTP。采用现contract/vendor/kokoro-platform/<exactcommit> +现generator，而非新SDK层/Rootcontract镜像/手写DTO；现业务projection及HTTP artifact语义不同，不删。旧Connect c949单vendor替换为唯一e83a且原V5–V7bytes保持，原proto39历史由parent39descriptor保护；无latest/fallback/双pin。生成必须经现Node22/Buf/ES本地两次bytes一致，现common输出应exact，未激活标记保留不冒runtime kill-switch或正式用户功能。
+
+|任务|owner/角色/范围|验收/依赖/提交|
+|---|---|---|
+|R319-BFF-V8-D0|原platform_iam_consumer_r298临时BFF唯一writer、原实际模型；先仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL具名前缀|先按上述裁决收敛三D0、明确机器消费与后续真实IAM/BFF四读/正常维护界限，冻结后Root审查放行代码。原三D0suffix与其他540tracked保护。|
+|R319-BFF-V8|同唯一writer；通过D0后限定现buf.platform.json、generator、现platform-connect-contract.test.mjs、正规生成dependency manifest及两generated；新增唯一e83a vendor38固定inputs，删除旧c949 vendor；CURRENT/INDEX由Root最终prefix|先现contract测试附真实固定V8期望取得机器缺口RED，然后窄更新固定pin/完整proof/source/descriptor准入与既有负控。禁止改package/lock/buf.gen/API/SQL/client/runtime/credentials/正常资源；不新增单测/mock或用辅助门称用户闭环。freeze diff/SHA，Root重跑Node22固定生成/check/build/现contract/default/arch与审查；Git由Root。|
+|R319-QA|原agent_planned_guarantee_system_r257只读独审上述冻结范围|核单pin、历史bytes、43与parent39、190vectors完整provenance、有界固定语义、不弱化既有拒绝漂移/树与双生成；零source/Git/resources/browser写，原ignored报告续接。|
+|R319-IAM-HTTP-D0|Root保关键路径，独立只读核真实HTTP token链的可运行接口/预算与准入|不启动/扩权/写credential；R317native签发不冒BFF HTTP获取已通。仅据现事实列后继测试输入/owner，不阻碍机器消费。正常9/PG/Redis/MinIO不重启/reset。|
+
+完整70/个人33状态不因机器消费提升；T-K03/T-K05、全部CRUD与最终Root浏览器验收保留，Billing最后。原八gitlinks/uv与任务外文件不暂存。
+
 ### R318 本轮交付与后继（现任务卡完成回执）
 
 - R318-SKILLS-COVER / R318-QA：Web9a8c2ecc三path已审查/Root集成验证/提交；唯一CSS候选ad48ddf6、QA2d8b8a65。真实正常浏览器搜索/筛选/详情归焦、本人两视图、窄屏/Settings/自动深色检查已实际执行；完整CRUD/彩色插画及像素一致不宣完成。
