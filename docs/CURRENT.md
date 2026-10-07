@@ -1,3 +1,13 @@
+### R281 界面本身优先：侧栏缩窗缺陷已修，整体UI尚未验收（2026-10-07）
+
+用户指出的是界面不友好，不再以接口门数量回应UI完成度。Web **4871c2eeccd6a3ca977376a0fa078dce07bed031** 仅两现source/test+CURRENT：容器缩小及同宽重新展开时钳制宽度，指针读当前矩形，保300默认与既有边界/Canvas/手势。Root正常浏览器1440调440→771原main331，修后settled rail351/main420/page771；折叠440记忆→771展开351、键盘335、扩回1440保持335实测。短高771×480账户bottom472可见，滚动和Canvas组合未全面验收；清除viewport后硬刷新771×752/rail300/main471、技能页已渲染。证据r281-ui-browser-proof.json、r281-ui-normal-final.png；中间CSS动画尺寸不作终态、临时CDP下pointer click未切换只记工具观察，键盘Enter真实闭合折叠，不假报pointer路径PASS。
+
+原UI writer与两次独审完成：source3e3e71f9/testa628bcb4，fixture初两个失败及lint和后继setup泄漏P2已窄修且原业务expect保持。Root94463终态：Node22四file154/0、lint/typecheck/build0；92657 contract299/0、architecture51/0。全默认3358PASS/1FAIL为原i18n闭集30对34，未动字典/原test或放宽门，不称全仓绿；全test:e2e/axe/视觉预算未跑。精确三路径Git对象等冻结，775保护清单减本轮两文件及上一片三文件后770其它tracked exact，原Admin/i18n mixed保留。完整UI仍OPEN，下一仍现个人双视图密度/唯一主动作/详情披露和各管理页，不扩市场/新框架，不把该几何修复称整个UI友好度完成。
+
+BFF候选15paths已冻结未提交/正常激活：Root55730最终16真实PG/HTTP PASS，check0（contract298/default867PASS+2原skip/build）、Node22format0、schema12PASS+2原skip；runtime与SQL独审已记录。same-snapshot真实成员核验、绝对budget清理、新两表8CHECK已补；旧wrongProjectscope在新schema被23514阻止，保历史失败而不伪造新schema503。Root最新直接比534基线：仅10批准旧路径变、524其余exact，加5批准新文件；旧integration155319字节prefix exact。报告“其它534”措辞按此精确数量纠正。SessionAdmissionDouble/idle worker只是该资格装配；Storage worker、正常17用户删除路径仍未验，T-C05 OPEN，正常BFF仍39db/8.5。Rootowned隔离DB在零客户端后已移除、私有fixture文件已清，正常九PID/TCP和PG/Redis/MinIO/ClamAV全部现场活，零正常重启/DDL/reset/资金/模型调用。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**；个人33仍 **13PASS/6PARTIAL/14未验**。完整Wave0–7保持active；既有台账续记，不因本轮辅助绿扩大页面PASS。总证据r281-current-receipt.json及最终日志/审查报告，原uv与八gitlink任务外差异保留。
+
 ### R279 UI 首页入口实际修复；项目删除仍有真实失败（2026-10-07）
 
 Web两CSS+CURRENT已由Root精确3路径提交 `7b30e846deb45233636bd285fb7d6551e1d02e67`；Git对象等已验freeze，任务外mixed未暂存。

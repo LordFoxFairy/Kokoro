@@ -1,3 +1,7 @@
+### R281 当前UI与项目删除候选入口
+
+Web4871c2ee现src/ui/rail/use-rail-resize.ts收缩/visibility observer与current pointer rect，tests/ui/rail-resize.test.tsx两新增回归及fixture cleanup；无新模块/文件/契约。正常Web HMR实际1440rail440→771rail351/main420及折叠/键盘，恢复正常300/main471；管理页新视觉未实现。候选BFF826a345之上15paths主入口project-delete.ts/conversation-delete.ts、两route/input与schema两个关系，Root16真PG/HTTP仅隔离资格、未提交/正常激活；Storageworker和17用户页链仍后继。证据Root r281-current-receipt.json，原Admin mixed与其它owner保持。
+
 ### R279 UI 首页入口实际修复；项目删除仍有真实失败（2026-10-07）
 
 Web两CSS+CURRENT已由Root精确3路径提交 `7b30e846deb45233636bd285fb7d6551e1d02e67`；Git对象等已验freeze，任务外mixed未暂存。

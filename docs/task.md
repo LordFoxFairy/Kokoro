@@ -1,3 +1,66 @@
+### R281 当前切片收尾与后继（2026-10-07）
+
+Web侧栏几何窄修已Root精确三路径提交4871c2ee，真实窗口/折叠/键盘及恢复页面证据r281-ui-browser-proof.json。原writer与独审已STOP，94463/92657均终态；新fixture P2闭合，不忽略原i18n全默认1FAIL。任务外770tracked及Admin mixed保护；新视觉尚未实施，当前整体UI OPEN。后继继续现个人双视图信息密度与次级操作、项目树标题占位/滚动、管理页布局，按真实页面验收，不用后端门数作页面成果；待原视觉选择回复，不重复提问或扩市场。
+
+BFF15paths freeze待Root集成提交及Storage worker/Web用户链，16真PG/HTTP只是隔离资格，T-C05 OPEN。Root已回收本人隔离DB，九正常服务/四基础设施未重启且现场活。完整70/个人33与Wave0–7不缩小，当前总收据r281-current-receipt.json。以下历史阶段证据保留，不把旧在途状态当当前句柄。
+
+### R281-SQL 新表合法性负控后准入（2026-10-07）
+
+独审7dfead18已由Root读取：Root12真PG探测中的10非法接受对应8个缺CHECK。原writer续写仅原15paths内database/schema.sql两新关系、test/schema-governance.test.mjs现相应新断言、test/business-store.integration.mjs R279/R280后继suffix。保所有旧表/旧testprefix/其它runtime和installer；无migration/FK/hash重算/正常库DDL。CHECK固定完整lease leased双非NULL、其它双NULL；actor=subject；Project scope_id=project_id；digest/fingerprint64小写hex；key原ASCII边界；response_data全JSONB equality jsonb_build_object本行project_id/两pending；location精确本行路径。事实/current owner/实际成员集继续应用同事务，不以DBCHECK代替。
+
+追加真实PG SAVEPOINT逐坏例23514/合法两例可插，全ROLLBACK且自己的unique IDs；保源码3故障回滚、missing/zero/correct-count wrongConversation负控。原wrong Project scope fixture现在将被CHECK拒，必须明确断言精确23514+原行未变，再读原pending，记录“约束护栏”而非假造503；不可drop/disable约束、放宽检查或删除负控。旧非法已存GET503的历史证据保留，不能强行制造新schema不可能状态。同前缀保护、合法短/长key边界与JSONextra/missing不能NULL逃逸，命名沿原schema风格。writer只源码/冻结SHA STOP，Rootowned零连接fresh schema、重跑真PG与冻结纯门；正常库不触。
+
+### R281-UI-RAIL 当前几何约束真实失败后窄修（2026-10-07）
+
+Root正常tab25技能页，通过真实键盘五次Shift+ArrowRight在1440×900将rail调440，再临时缩771×752；actual rail440、main331、documentWidth771，违背现WORKSPACE_MAIN_MIN420。r281-rail-shrink-red.json/png为实际RED，不是假截图/推导。先前viewport工具一次超时未生效，恢复原tab/control后真实执行；无服务重启。视口已reset，reload恢复初宽300，页面短时loading待完成。
+
+归属Web现use-rail-resize宽度owner，原iam_grant_source_scope_0244唯一writer；基线7b30e846与原Admin/i18n mixed保。精确写集仅现src/ui/rail/use-rail-resize.ts、tests/ui/rail-resize.test.tsx。Root真实RED已具备；补容器宽变更回归，复用当前clampRailWidth与shell ref，在有效shell收缩后重钳制既有实际宽度，保main420与canvas reserve、pointer/keyboard/dpr/compact/collapsed既有语义及清理生命周期。不得改default300/compact768/min240/max440、全局CSS、项目动作菜单、dictionary或新的卡片设计；不新preferred-state/store/框架，observer清理不泄漏，不在drag时竞态重置用户。仅这一现有约束缺陷，不冒整个UI友好度修复。
+
+worker交两SHA与diff/说明后STOP，不跑门/Git/资源/browser；Root重跑现rail/canvas/appframe回归与完整纯门、正常1440拖440→771、恢复/键盘/短高实际浏览器并独审后提交。视觉列表/卡片仍单次待回复，不成为本几何bug的外部阻塞。
+
+### R281 继续项目删除当前事实闭环（2026-10-07）
+
+前一goal turn为progress：Root新正常技能截图、两个原Agent独立UI报告给出了先修width/title-actions/card密度的准确现有文件集；尚未实施新UI，原视觉选择单次待回复，不重复问。完整Wave0–7保持active。
+
+R280 Root真实两例1PASS/1FAIL：等量替换会话scope仍错误200（必须503）；取消SELECT ACK后未完成ROLLBACK退役exact client为PASS，覆盖该实际时序，不关闭finally bare rollback所有风险。13此前正向绿及12canonical探测2合法/10非法未拒都保留。完整工程唯一默认failure为共同Artifact SQL空格，format失败也真实记录。
+
+|任务|归属 / 基线 / 允许写集|阶段门与交付|
+|---|---|---|
+|R281-BFF-INTEGRITY-FIX / T-C05|原bff_admin_routing_d0_r257唯一BFF writer，/Users/nako/.codex/worktrees/kokoro-r257-bff-normal826a345；原15paths中project-delete.ts、conversation-delete.ts，以及原测试R279/R280 suffix；格式只五new文件+五old批准文件当前hunk|same SQL snapshot逐项核Conversation scope实际sameowner/Project成员，不以count冒一致；signal/exhausted precheck准确退役，finally不得无限ROLLBACK，cleanup用原绝对budget；原Artifact DELETE文本恢复，原chat-service.test不改。existing testprefix/旧source块保，formatter no-semi print-width160仅new/currenthunk。不授SQL/其它scope/Git/门/资源；source SHA交接STOP后Root编译、同15真PG/HTTP与完整工程重跑|
+|R281-SQL-INVARIANT-REVIEW|原agent_planned_guarantee_system_r257只读现两新表/canonical、三D0、input/契约、Root12探测结果；不读变化中runtime作冻结审查|精确映射10坏case到CHECK、SQL NULL语义、lease非leased两个NULL/leased两个非NULL、actor=subject、Project scope identity、hex/key/receipt closed语义。保CREATE IF NOT EXISTS允许规则，无FK/跨owner/migration/新表或权限。只写Root ignored r281-sql-invariant-review.md，交SHA STOP；此报告不自动授权SQL实施|
+|R281-ROOT-VERIFY|Root唯一门/资源/browser/Git与同5台账|零共享服务重启/正常库DDL；读取原进程句柄，不因超时重复启动。自有fixture ownership复核，真实失败与候选门分开；正常Web17Project删除用例、正式Storageworker仍待验。仅终验当前冻结树，不在worker写入中运行最终门|
+
+### R280-UI 整体界面友好度纠偏与两面只读审查（2026-10-07）
+
+用户再次明确聚焦界面本身，不以后端接口门数回答友好度。Root在正常771×752同视口读取Kokoro首页、Manus首页及Kokoro个人技能页：两安装卡占满主要内容高度，技术/来源/启停逐行堆叠，核对/启停/移除三同级按钮；侧栏300宽使主内容约471宽。此次仅观察/正常导航，零外部发布/安装/数据写入，不冒新增修复。上一片只关闭首页场景裁切，整体仍OPEN。原紧凑列表/卡片设计问题仍待回复，不重复问，不未经批准实施新视觉。
+
+|任务|Owner / 角色 / 基线与范围|验收与责任|
+|---|---|---|
+|R280-UI-SHELL-REVIEW|原agent_planned_guarantee_system_r257，只读Web 7b30e846，/Users/nako/.codex/worktrees/kokoro-r257-admin-web；现sidebar布局/项目树/滚动及直接CSS引用|查300默认宽、项目展开留白、主滚动边界、固定底部、窄屏/短高/键盘；只给准确文件行和最小现有组件方案。禁止tracked/Git/门/资源/browser。报告Root ignored r280-ui-shell-review.md，Root浏览器最终验收|
+|R280-UI-MANAGEMENT-REVIEW|原iam_grant_source_scope_0244，只读同Web基线；现skills已交报告复用，新增连接器/排程/资料库的页面组件与直接CSS|统一标题/唯一主动作/正常空态与失败/详情渐进披露；不扩市场或功能、不改API/字典/权限，不把宣传卡当已接线。给对应用户步骤和现有最小写集，报告Root ignored r280-ui-management-review.md；Root裁定设计、用户确认与最终验收|
+
+两原只读负责人已交STOP，Root读报告：shell 8de410923a74b7ef74c9e33150d0919c180464b9f925528f9d99512593c982ce；management a65f87c5c67abd4b489e3b05721709535344816e3a750ca5f297188a476da5ab。侧栏300挤主区为现场事实，隐藏三动作仍占位/缩窗未reclamp/短高与管理页工具栏为源码风险或设计建议，未冒浏览器FAIL。无空项目fixed spacer或双滚动确定证据，不按猜测改。连接器静态参考不等真实已连接；排程重复标题/大留白、资料库长名称与工具栏待真实几何复验。当前技能截图 r280-ui-skills-observed.png；只导航与保存截图，未改产品源码/数据、未新增PASS。下一设计收敛先局部两卡密度与侧栏可用宽度，复用既有组件，不新架构；此前视觉选择仍待回复。
+
+Root保持唯一台账/浏览器/Git owner；原Admin/i18n mixed及八gitlink/uv保。两个只读面可并行，不抢Web写入。BFF候选不擅自激活或扩大写集；新R280两例实跑1PASS/1FAIL，等量错会话scope真实失败，取消ACK子例通过但不证明finally无界风险关闭，保原日志。独立后端进展不替代本次界面结论。
+
+R280 canonical追加真实验证：Root本人隔离fixture事务+逐例SAVEPOINT探测12项，2合法PASS/10非法未拒FAIL；全部ROLLBACK/正常库零写。非leased单lease字段、actor不等subject、wrong Project scope、坏digest、空白key、坏fingerprint、receipt缺字段/错project/location均现库接受，证据r280-canonical-constraint-red.json。这将原SQL P2从静态风险升级为实际约束缺口；仍只准现两新表CHECK+现schema治理测试后继，不改其它表/installer为全库迁移，正常schema未演进。当前原writer仅Stage D tests-only，未因此自动扩大写权。
+
+### R280 BFF 二次负控与完整工程实际失败（2026-10-07）
+
+Root34407已自然终态：check1（lint/types/contract通过，默认866PASS/1FAIL/2既有SKIP；链式末build未执行），format:check1五旧批准文件新片格式，显式五新文件正规no-semi/160检查全部失败。默认唯一失败为提取共同Conversation核心后Artifact SQL空格与原硬断言不一致，源码恢复原SQL文本而非改test。真实完整工程失败不能由13局部绿覆盖。
+
+原writer Stage D仍先tests-only，仅R279 suffix补等量wrongConversation scope真实PG负控及cleanup边界afterQuery真实ACK观察负控：保原r241ObservePool源码，所有SQL到真实PG，准确client退役/后续正常请求可用，取消的原owner请求已结束且无晚副作用。scope三错计数仍相等，要求503；cleanup已取消/耗预算只退役不得无界裸ROLLBACK。不mockPG结果/权限，不增资源proxy/进程/文件。交freeze后Root真实RED，才授原project-delete.ts窄修；旧2P2 SQL另切，不自动授。工程格式与Artifact文本修复也等此负控执行后统一同原15路径，保旧testprefix/历史source块。独审1ba6281d起终exact/STOP，source不在正在变更树上冒终验。
+
+### R280 延续 R279：UI 待产品样式选择，BFF 真实负控续验（2026-10-07）
+
+前一goal turn为progress：Web7b30e84真实页面窄布局修复已提交，Root8e7b5f33同步证据；完整Wave0–7不缩小。当前BFF原writer新freeze a543c822编译均0、Root同13真实HTTP/PG13PASS/0FAIL/0SKIP，但独审已给等量替换scope与finally裸rollback两个确定P1，尚不放行。Root34407完整工程/配置format及五新文件显式format在途，原句柄消费，期间源码冻结。
+
+|任务|归属/角色/基线与范围|验收/边界|
+|---|---|---|
+|R280-UI-PERSONAL-SKILLS-DESIGN / T-K03|原iam_grant_source_scope_0244只读，Web7b30e84+原Admin mixed；仅现src/ui/skills/personal-skills-read.tsx/module.css、surface/panel与现UI测试一层引用，Root现docs/test-cases.md T-K03|用户已批准双视图个人管理、Root已展示真实卡片问题；紧凑列表与卡片最终视觉选择已单次异步提问，未收到前不实施新视觉方案。只给可复用组件/最小文件集及主链、边界、异常、权限、状态机七字段用户验收补点，不建新计划中心/market/store/API、不改tracked/跑门/资源/browser。Root负责与当前测试台账合并而非重复计数|
+|R280-BFF-CORE-REVIEW|原agent_planned_guarantee_system_r257只读同15freeze与三D0；仅ignored新review|在manifest起终稳定后交两P1准确反例/最窄方案，状态读scope必须真实成员逐项匹配，cleanup不得无界。不跑门/资源/Git，不以13正向绿称整用户通过；源码后继改变前先STOP|
+|R280-ROOT-VERIFY|Root所有资源/门/台账/Git|同一owner隔离fixture，13真实全绿不替代Storage投递/正常库演进/浏览器17删除子例。工程34407沿原句柄取结果后才解除冻结准新负控，保旧prefix/773Web原mixed、原uv/八gitlinks|
+
 ### R279 后继源修准入与UI交付（2026-10-07）
 
 Root实际v4 7PASS/6FAIL已到真实反例；原BFF唯一writer仅原15批准路径中的project-delete.ts、GETstatus route、Project service/port/repository及R279测试suffix：回执需墓碑一致；GET同一读snapshot校验冻结N+1计数、唯一正确Project scope及owner/actor，不把缺行返回404或伪released；沿现删除局部有界lease方案将signal贯穿status，准确取消/超时退役和late acquisition释放，正常GET只读、无全局Pool修改/新框架/文件。保十秒累计预算、当前admission/契约/旧测试prefix/全三回滚硬断言，修已删时间oracle为相同表示的PG前后exact值，不改变产品。源码freeze+SHA后STOP；Root重跑同13并独审，禁止自己跑资源/Git/正常库。并发DELETE/COMMIT unknown/Storage worker及正常Web删除仍OPEN。配置format仅五新文件及已修改段，不能捎带重排旧块。
