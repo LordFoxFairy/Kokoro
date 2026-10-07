@@ -1,3 +1,13 @@
+### R285 Manus 展示基准与管理页选中态窄修（2026-10-07）
+
+用户明确要求展示以已登录 Manus 为参考，优先真实 CRUD 页面，不以工程数量代替产品验收。Root 实际对照 Manus 首页/技能目录/个人空态，零安装、发布、保存或提交，已恢复原首页。个人技能下一展示方案为保「已安装 / 我发布的」、清晰名称/简介/状态与次级技术详情、常用启停与次要操作分层；准确五文件建议已交付，但新菜单/布局尚未实施，不称 Manus 风格完成。
+
+Web **97be7f7e0a43ea8b5c6b95440e9562c7e6628afd** 仅三路径：两处管理页 rail activeId=null 投影、现shell INDEX 一句、现rail测试尾部5例，769其它tracked SHA保持。Root先5FAIL，后5PASS与完整74PASS/0FAIL，lint/typecheck/build各0，原独审无确定阻断。正常浏览器五管理页均无错误会话选中，返回Direct与Project叶的完整URL、原历史与唯一selected恢复，外部聊天列表持续可见，技能硬刷新正常完成。没有发送新模型消息或改任何业务数据；只关闭选中展示缺陷，未验草稿/新SSE/全部CRUD/完整UI。证据 `var/dev/r255-preserve/r285-ui-route-selection-browser.json` 与 commit.json，原Admin/i18n mixed保持。
+
+BFF新释放实现冻结仍待审修：独审确认stop后投递、batch排队lease、PG预算取消及事务旧时刻CAS四项P1；生产未因build放行。已授原owner测试先行，原202774-byte R285前缀保护；PG锁/取消/未知COMMIT与真实Storage owner、正常17用户删除路径仍OPEN。正常九服务未重启、共享PG/Redis/MinIO未reset；Root自有 r285_bff_6b22cee840ec fixture保留供原切片后继验证，不属于正常应用数据。
+
+完整70组仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **13PASS/6PARTIAL/14UNVERIFIED**，不是页面完成率。完整Wave0–7保持active；已存在任务表继续，不新增计划中心。
+
 ### R284 实际UI修复已提交；完整界面验收仍OPEN（2026-10-07）
 
 Web **dae05dfa0398c1c8633af4b2e607839fb05ffee9** 只现技能reader两class+CURRENT：安装卡复用已有批准样式，正常771实测每卡286→238px，390与1440无横向溢出；技术详情、已安装/我发布的切换、真实详情、Escape焦点恢复、正常硬刷新渲染均真实浏览器验证，未改业务/权限/确认与CSS。临时尺寸已清，最终截图r284-ui-normal-final.png。Root沿25104/47464自然终态：145定向/3359默认/299contract/51architecture均0失败，Node22 lint/types/build各0；独审55be51a3、两class逆转完整HEAD exact、768其它tracked保护exact，精确两路径Git对象等freeze。仅重复留白缺陷关闭，不把工程绿冒整体UI/T-K03通过；动作层级、各管理页视觉/CRUD、全E2E/axe/视觉预算仍待验。

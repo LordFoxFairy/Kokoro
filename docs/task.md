@@ -1,3 +1,25 @@
+### R285 完整目标续行：真实释放失败与可见动作审查（2026-10-07）
+
+本次 goal continuation 对上一 UI-only turn 判定为 no progress：只有实际参考、方向记录与询问，未实现/验收新能力；现已重新核当前工作树，并执行下一安全动作。Root Node22 原句柄90201已自然终态：build0；唯一自有 r285_bff_6b22cee840ec / kokoro_bff真实 PG+Redis、HTTP/固定 generated Storage受控wire两行为 **0PASS/2FAIL/0SKIP**，均在已成功202后的等待投递/释放条件超时，不是missing import或schema失败。日志 `r285-bff-release-red.log` / result.json；测试冻结28e33c0b、原190113 bytes exact，原独审最终484adca9三P2关闭。此证据只证明缺worker的 BFF 行为，不冒真实Storage durability/IAM/browser通过。
+
+|任务|负责人/基线/唯一写集|依赖、交付与验收|
+|---|---|---|
+|R285-BFF-RELEASE-IMPLEMENT / T-C05|沿原 bff_admin_routing_d0_r257，BFF99bbda35，Root审查/提交；4新普通文件：application/ports/project-scope-release-outbox.ts、application/project-scope-release-outbox-dispatcher.ts、infrastructure/clients/storage/scope-release-client.ts、infrastructure/postgres/project-scope-release-outbox-repository.ts；4现接线：application/ports/bff-business-store.ts、infrastructure/postgres/repositories.ts、bootstrap/runtime.ts、bootstrap/server.ts；仅批准现business-store.integration.mjs继续尾部追加负流，现202774-byte R285 v2与原prefix不改|R284三D0与Root当前行为RED已通过准入。无schema/contract/generated/config/package/lockfile、删除命令生成/202receipt或其它仓修改。四文件职责/绝对预算/同持久身份/新fence CAS/Project序列化聚合/unknown不耗尽/blocked普通不领/正规UNAUTHENTICATED300s每轮至多1条恢复按既有D0完整落实；不只实现两成功场景。缺配置0claims。先freeze精确文件/SHA与风险交接，Root再同自有PG资格、owner及正常用户链；未通过前不发行/激活。worker不操作Git/共享资源/服务/浏览器，Root唯一资源及提交负责人。|
+|R285-UI-ROUTE-SELECTION / T-C03|原 iam_grant_source_scope_0244，Webdae05dfa+原Admin mixed；先只现 tests/ui/app-frame-rail.test.tsx尾部追加行为测试，旧文件prefix保护；实现待Root RED准入，只现components/blocks/app-frame/app-frame.tsx 与相邻INDEX.md|Root正常浏览器 `/app/skills` 真实DOM确认Direct R243行 data-active/aria-pressed=true，技能主导航也选中，错误把后台记忆engine当当前可见会话。修复归现AppFrame rail投影，不清engine/草稿，不重建reader/请求，不改URL或其它页面设计；管理页无会话选中、列表仍可见可导航；回Direct/Project按原当前route恢复正确选中。此为既有导航规则bug修复，独立于新样式方案审批。writer先只测试并STOP，Root实跑失败再准两现文件；不改认证/contract/CSS/共享组件/原Admin路径，无资源/browser/Git。|
+
+UI准入补充：Root句柄27455自然终态，5管理页组件行为 **0PASS/5FAIL**（69未选），都实际管理页出现1个pressed而期待0；正常浏览器同缺陷截图/DOM `r285-ui-route-selection-before.json`，非fixture或import错误。测试196d08ab/原99778 bytes exact。授权原writer仅两现railProps投影（standaloneSurface时可见active ID为null，Project仍原routedConversationId），engine/reader与交互全保；因app-frame/blocks没有INDEX，相邻职责文档采用已明确引用AppFrame的 `src/ui/shell/INDEX.md` 仅补导航投影一句，不新建文件。测试freeze不再改，原Admin/mixed保护，Root工程+真实导航回归后才提交。
+
+用户进一步明确：问题是界面本身不友好，要求展示向已登录 Manus 对齐，而不是仅修接口或重复局部留白。Root 本轮只读实看同正常窗口 Manus 首页、技能目录、个人技能管理空态与 Kokoro 个人技能页；未安装、发布、保存或提交会话。已定位安装卡常规核对/启停/移除三动作同级，现技术详情实际已折叠。提出沿已批准双视图保卡片、常用启停显式、核对/移除归既有更多菜单，异常恢复保持显式；统一轻边框、弱阴影与管理页面层级。具体动作方案已询问，待回复，不宣称已实施。当前界面证据 `var/dev/r255-preserve/r285-ui-actions-current.png`；只读报告 `r285-ui-actions-audit.md`。不新增计划中心，不复制未实现技能市场/宣传能力，不把视觉方向审批阻断其它已批准切片。BFF tests-only v2已冻结，待 Root 真实执行，尚无 R285 PASS。
+
+上一goal回合为progress：Web dae05dfa实际修复/浏览器验收与BFF99bbda35四D0门已提交，Rootbec94ff3同台账收敛；不是状态重述。本轮先取真实故障，不以D0代替用户路径。
+
+|任务|Owner/角色/基线/范围|验收与边界|
+|---|---|---|
+|R285-BFF-RELEASE-RED / T-C05|原 bff_admin_routing_d0_r257，BFF99bbda35；唯一writer，仅 test/business-store.integration.mjs 尾部追加测试，原完整prefix逐字保护|已批准R284三面方案沿用。至少真实HTTP DELETE含已单删成员的Project→持久N+1→正规固定Storage generated Connect受控wire→期望logical released/physical pending和原202回放不变；另lost ACK同命令replay。只测试，无source/schema/contract/入口/原tests改动；不以missing import/source文本断言作业务RED。先提交可执行测试SHA/资源需要/限制，Root独占自有PG/Redisprefix和命令。作者不跑资源/服务/Git；freeze后原独审，Root实跑，真实行为失败才授4具名source+4装配。
+|R285-UI-ACTIONS-AUDIT / T-K03|原 iam_grant_source_scope_0244，Webdae05dfa+原Admin mixed；只读现personal技能页面/CSS/共用已有组件/测试与已批准PRD|聚焦实际三按钮同级、管理页内容/按钮层级，给不改业务权限/unknown/确认的最小现组件接线方案、2方案比较、精确文件与系统行为矩阵；不扩目录/市场，不写source/字典/Root台账，不操作browser/资源/Git。只交Root var/dev/r255-preserve/r285-ui-actions-audit.md。Root保留浏览器/产品审批与实施准入。
+
+两面独立并行，同BFF仅原作者一writer；Root保留真实资源与浏览器。完整70/个人33与全Wave0–7范围保持；原服务先核句柄/PID与端口，不因旧日志重启，不动正常数据/资金。
+
 ### R284 当前任务交付（2026-10-07）
 
 - R284-UI-CARD-SPACING **已验收，仅重复留白子缺陷**：Web dae05dfa两class+CURRENT，原UI writer实施/原独审55be51a3/Root真实771/390/1440与详情/焦点/刷新复验；145/3359/299/51与lint/types/build均0失败、768其它tracked exact。截图与proof见现r284-ui-*。整体UI/T-K03仍OPEN，下一按用户优先推进可见动作层级和各CRUD页，不让后台工程门代替界面交付。
@@ -12921,3 +12943,11 @@ R240原IAB tab1 inventory成功/getTab仍Emulation.setFocusEmulationEnabled 31.6
 R240 Root治理最新实际仍失败：standard153违反，topology6个gitlink/HEAD不一致；只限定topology脚本7/0通过，不冒全门。Web dev源闭包静态508文件472同/36异，live generated public7.0 vs正式Web7.1，原源码9/12样本相同不能当全组合一致；未执行热覆盖/清用户数据/重启。
 
 R248本次真实验收receipt：`/tmp/r248-browser-real-receipt.json`；49143已停止回收、原3310保持。两片冻结/独审435fb559通过；Root9284实际47/35通过、Web142及lint/typecheck/build通过，仅辅助。Root已精确提交Web b8c3360b/Root1d51949a并真实复验PUT200→Complete200/CLEAN/hash一致；Validate412仍失败，无Publish通过。89449已回收；最简用户包已问产品确认，下一并行Library认证恢复只读，不增架构。
+
+R285 用户再次明确展示以 Manus 为基准，不是仅换配色。Root 本轮实际对照已登录 Manus 首页、技能目录与个人管理空态，零安装/发布/保存/消息；最终恢复原首页。下一视觉切片沿已批准个人双视图收敛：名称/简介/使用状态层级、轻边框弱阴影、常用启停显式、次要操作更多菜单、技术详情折叠；不能借样式扩大市场或隐藏未知结果恢复。原 UI owner 仅只读交付精确五文件建议 `r285-manus-skills-next-slice.md`，尚未实施新的菜单/布局，不将方向确认称展示完成。
+
+R285 选中态候选 Root 实际聚焦5PASS/69名称过滤、完整现rail74PASS/0FAIL；原独审三路径无确定阻断。正常浏览器依次点击连接器/资料库/排程/Agent/技能，五管理页无会话错误选中；返回 Direct R243 原完整URL/原历史/pressed=true，再进文件夹内1+1会话仅Project叶pressed=true、Direct=false，外部列表始终可见。技能硬刷新最初booting随后完成正常渲染、Direct未选中，未提交模型/CRUD/资金写。证据 `r285-ui-route-selection-browser.json`；新样式方案未实施、完整UI仍OPEN，工程门原句柄77764待终态，未预报提交。
+
+BFF 八路径实现已冻结、独审发现4项P1：stop后投递、batch等待未扣lease、PG全链预算/取消缺失、CURRENT_TIMESTAMP按事务旧时刻接受过期ACK。只授权原owner追加3个行为RED，生产8路径保持；第二case首条也超usable预算却期望write1是oracle冲突，Root要求首条lease2000/次条1000隔离首成功次过期，禁止先改实现。剩余真实PG锁/取消/COMMIT未知仍需Root资源验证。未发行或启用正常BFF候选，不把build或成功路径冒完整删除闭环。
+
+R285 UI窄修最终Root精确3路径提交 Web97be7f7e0a43ea8b5c6b95440e9562c7e6628afd；原769路径exact，原index空/任务外未暂存。77764终态lint/types/build=0/0/0，完整rail74/0与真实浏览器五管理页/Direct/Project恢复证据已绑定。仅选中缺陷验收，不升级整页面/Manus视觉或完整CRUD。
