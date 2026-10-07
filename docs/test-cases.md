@@ -1,3 +1,13 @@
+### R269 正式个人生命周期接入已提交；页面两动作仍有真实缺口（2026-10-07）
+
+BFF正式发行文档93bdc0d（runtime固定39db/public8.5/103/raw01009），Root受控复用原持久env/53714重载至93bdc0def0c2fcf35506018838b0bc09fa609cfb；新43358/PID15101 health/ready200，其余8 listener与配置hash保持，零DDL/reset。原owner73秒资格不重复充页面进展。
+
+Web三D0仅62行新前缀分离原Admin提交e9d7bfa；固定消费正式39db/raw01009，Root正规snapshot/两generator，14精确路径提交 **d0a3653d68a798bda268dd8bde181cdcf077286e**（tree180b076）。原Admin untracked测试只pin同步、整file未提交；Team15与ChatMessage exact，任务外760保护（最终两docs只追加前缀）。独审a4748ff7无确定阻断；精确暂存tree独立CoW依赖验证contract282PASS/0FAIL、architecture51PASS/0FAIL、lint/typecheck/build0；正常mixed合同299/0另列，未跑完整默认、原历史失败保持，不称全仓绿。有效两contractRED0PASS/2FAIL保留；Root误把append test套suffix校验的harness失败已纠正，未动测试业务assert。
+
+Root正常浏览器新BFF双view/真实详情正常；本人active详情实际新版本与撤回入口各0，既有L01/L02记 **FAIL（入口缺失；后续mutation未执行）**。个人33现 **6PASS/1PARTIAL/2FAIL/24待验**；完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST、T-K03 OPEN/Wave0–7 active。另实际R267自有已安装卡停用→当前fresh列表已停用→硬刷新保持→启用→fresh已启用通过，仅此active源子路径；不冒撤回源U15/启用后二次刷新/Run或资金负向验证。最终页面留默认已安装，原安装恢复enabled，无新tab/正常数据清理。
+
+下一直接在已批三D0/实际UI RED上接版本发布分支与撤回确认/原key恢复，同一reader与唯一上传引擎；不再复述设计或重跑资格、不扩市场。证据现var/dev/r255-preserve/r269-{normal-lifecycle-activation,web-pin-commit-receipt,normal-skills-user-receipt,personal-lifecycle-ui-red}.json、web-pin-exact-tree-gates.log及personal-skills-final.png。未闭环项与原Admin/Storage55/uv/gitlinks保持。
+
 ### R268 真实 owner 前提已通过，用户页面矩阵不冒增（2026-10-07）
 
 固定Q6831、BFF39db/IAM28b/Platform6e5/Storage5b实际73.036s通过完整发布/安装后版本创建、原key重放/冲突、包未继承、精确原安装revision保持、撤回/重放/终态412及当前撤权原两key401/零owner请求。库存3/43/2/0与receipt3completed+1retryable失败事件实查，resources clean；这些是实际owner HTTP组合，不是正常浏览器新版本/撤回UI。个人33仍6PASS/1PARTIAL/26待验，全70组11/8/14/36/1与T-K03 OPEN不变。正常UI本轮GET200 false→显式正规登录返回个人页两安装卡恢复，首unknown原因未证。原真实FAIL/RETEST均保；runner旧V1 fixture导致正式V2拒绝已严格纠偏，非产品门放宽。证据 r268-real-owner-lifecycle-result.json / r268-personal-skills-recovered.png，后继真实页面版本/撤回/刷新/失败恢复逐项补，不以94工程目标计用户PASS。
@@ -47,8 +57,8 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|待验|
 |R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|部分通过：R267实际发布成功→本人active列表/详情→硬刷新仍active；早段HTTP buffer淘汰，内部Run/资金负向待独立证据，不升级完整PASS|
 |R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|待验|
-|R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|待验/阻塞：本两GET不提供命令UI|
-|R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|待验/阻塞：正式写消费者未接|
+|R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|FAIL：R269正常本人active详情无发布新版本入口（实际count0）；后续mutation未执行，证据r269-personal-lifecycle-ui-red.json/png|
+|R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|FAIL：R269正常本人active详情无撤回入口（实际count0）；后续mutation未执行，证据r269-personal-lifecycle-ui-red.json/png|
 |R266-L03|新版本/撤回非法base或异owner场景，正式命令已发行|自然重复动作/旧版本操作/失败后读回|稳定前置/拒绝错误，旧原版与安装不伪变更，不自动换key重写|P0/L|待验/阻塞：另owner错误修复及写消费者|
 |R266-L04|包上传中断/扫描非clean/attempt变化真实输入|取消/恢复、读取当前attempt、显式继续|不把管理draft可见当可执行或可续传；仅现授权包状态流程，无管理read泄露包URL|P0/L|待验；包状态回归独立|
 

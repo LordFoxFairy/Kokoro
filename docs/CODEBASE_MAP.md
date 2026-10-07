@@ -1,3 +1,7 @@
+### R269 当前个人技能接缝（2026-10-07）
+
+正常BFF43358/PID15101现93bdc0d（runtime39db），正式public8.5/103/raw01009；Web正常原3310/31693源码HEADd0a3653，现generated snapshot和两generator固定39db，Team15/Chat unchanged。个人源入口仍 src/ui/skills/personal-skills-read.tsx 与唯一publish dialog/flow，实际两生命周期UI入口缺失，下一沿三R269 D0原位置实现，不新建页面/market/store。Root实际双view读/active安装停用刷新启用子链与缺入口FAIL见CURRENT/test-cases；工程282/51不作为用户闭环。原资源、Admin混合与Storage55保持。
+
 ### R268 Root 个人技能生命周期实际验收入口（2026-10-07）
 
 现 scripts/e2e/run_bff_skill_draft_sandbox_smoke.py 在既有product-installation后追加显式personal-skill-lifecycle，复用正规IAM/owner/资源finally；CountingTcpProxy以有界HTTP1 CL/chunked framing观察完整请求，错误拒资格PASS。ZIPfixture/Validate oracle唯一正式V2；现product_skill_installation_smoke.py严格11字段metadata及精确revision/source_status。对应两scripts/tests仅工程辅助。Root自有固定源码资格6831实际73s PASS（完整结果见CURRENT），不是normal Web接线或新开发环境。原正常Web3e4/BFF930/Platform6e5/固定基础设施仍持久源码；BFF39db 8.5运行候选未正式重载/被Web消费，后继仍原owner串行接线，不新增服务/contract中心。33与70用户矩阵未升。

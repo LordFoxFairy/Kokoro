@@ -1,3 +1,13 @@
+### R269 正式个人生命周期接入已提交；页面两动作仍有真实缺口（2026-10-07）
+
+BFF正式发行文档93bdc0d（runtime固定39db/public8.5/103/raw01009），Root受控复用原持久env/53714重载至93bdc0def0c2fcf35506018838b0bc09fa609cfb；新43358/PID15101 health/ready200，其余8 listener与配置hash保持，零DDL/reset。原owner73秒资格不重复充页面进展。
+
+Web三D0仅62行新前缀分离原Admin提交e9d7bfa；固定消费正式39db/raw01009，Root正规snapshot/两generator，14精确路径提交 **d0a3653d68a798bda268dd8bde181cdcf077286e**（tree180b076）。原Admin untracked测试只pin同步、整file未提交；Team15与ChatMessage exact，任务外760保护（最终两docs只追加前缀）。独审a4748ff7无确定阻断；精确暂存tree独立CoW依赖验证contract282PASS/0FAIL、architecture51PASS/0FAIL、lint/typecheck/build0；正常mixed合同299/0另列，未跑完整默认、原历史失败保持，不称全仓绿。有效两contractRED0PASS/2FAIL保留；Root误把append test套suffix校验的harness失败已纠正，未动测试业务assert。
+
+Root正常浏览器新BFF双view/真实详情正常；本人active详情实际新版本与撤回入口各0，既有L01/L02记 **FAIL（入口缺失；后续mutation未执行）**。个人33现 **6PASS/1PARTIAL/2FAIL/24待验**；完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST、T-K03 OPEN/Wave0–7 active。另实际R267自有已安装卡停用→当前fresh列表已停用→硬刷新保持→启用→fresh已启用通过，仅此active源子路径；不冒撤回源U15/启用后二次刷新/Run或资金负向验证。最终页面留默认已安装，原安装恢复enabled，无新tab/正常数据清理。
+
+下一直接在已批三D0/实际UI RED上接版本发布分支与撤回确认/原key恢复，同一reader与唯一上传引擎；不再复述设计或重跑资格、不扩市场。证据现var/dev/r255-preserve/r269-{normal-lifecycle-activation,web-pin-commit-receipt,normal-skills-user-receipt,personal-lifecycle-ui-red}.json、web-pin-exact-tree-gates.log及personal-skills-final.png。未闭环项与原Admin/Storage55/uv/gitlinks保持。
+
 ### R268 个人技能生命周期真实 owner 资格通过；整页 CRUD 仍待验（2026-10-07）
 
 Root 固定真实源码 BFF **39db896b9755a8b710d27ae1a220cdbb182b72b7**、IAM28b1ccce、Platform6e5c284、Storage正式5b15fe3，资格Root **6831e0bb330127d9172bf99e51d020b7257f794e**。本轮实际73.036秒 IAM→BFF→Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV组合 **PASS/resources clean**：原完整发布与安装五动作序列之后，重新安装→创建revision2→原key重放→异body409→新draft不继承包→撤回原revision1→原key重放→新key终态412，现安装identity/revision1/enabled保持、source_status真实withdrawn；最终库存3 Skill/43 receipts/2 published/0原源active，新增3completed+1retryable failed及精确withdraw事件。正式撤销当前用户后原两生命周期key401，代理真实HTTP请求及新TCP连接均零增量的assert通过。未使用Agent/模型/资金，未关闭冻结门、未写owner状态伪造结果。

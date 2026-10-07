@@ -1,3 +1,24 @@
+### R269-T-K03 接续结论与下一行动
+
+BFF93bd发行文档/正常受控重载、Web三D0e9d7与正式固定消费d0a3653已由Root审查/精确tree验证/提交。原Web与BFFwriter、独审已STOP；Root独占Git/服务/browser。当前真实FAIL L01/L02入口缺失，个人33为6PASS/1PARTIAL/2FAIL/24待验，完整70不变。下一原Webwriter直接按已批r268放置表/三R269 D0实现exact两命令同源接线、new/version唯一上传引擎分支与具名撤回confirm，原key/body/取消/late fence/current GET分离；用户UI失败基线已具备，不能再以重复文档或资格代替实现。消费已验收，后继尚待派工/源码冻结与Root真实浏览器创建新版本、发布、撤回、刷新/旧安装路径。完整T-K03与Wave0–7仍active。
+
+### R269-T-K03-WEB-D0/PIN：producer已固定，消费与页面接续
+
+Root已审两发行文档并提交BFF93bdc0d（runtime39db完全不变），正式artifact固定39db896b9755a8b710d27ae1a220cdbb182b72b7/public8.5/103/raw01009fb40ba2fbd2bb4829543e4b038d151ae56bcd1e11666f11c6a51344f296；正常BFF43358/PID15101同持久env/53714 ready200。其余8 listener不变，零DDL/reset。
+
+原Web唯一writer iam_grant_source_scope_0244，基线3e4f3d2及r269-web-start-freeze。第一步仅三现D0追加已批准方案前缀与现 tests/contract/bff-skills-mcp-public.test.ts追加两具名业务contract缺失断言；保原正文/断言。Root跑有效RED/核三D0后续准原r269-web-consumer-preflight精确11手写pin（包括原Admin untracked测试只pin增量、其业务保持），Root独写snapshot/两generator。禁止生产UI/route/schema写入直到消费冻结验收，原Admin/mixed/其余文件保持。所有工程门仍不替代后继UI版本/撤回、刷新/旧安装真实用户路径，33/70计数不升。
+
+### R269-T-K03：正式生命周期接入 → 个人页 CRUD（接续，不新建计划）
+
+|项|当前切片与负责人|
+|---|---|
+|目标/优先级|原T-K03 P0，默认已安装/我发布的；已有真实owner73.036s PASS，不再重复该资格作为页面推进替代|
+|BFF/唯一writer|原 bff_admin_routing_d0_r257；/Users/nako/.codex/worktrees/kokoro-r257-bff-normal / codex/r257-bff-normal-current / 39db896b9755a8b710d27ae1a220cdbb182b72b7，当前tracked clean。只更新现 contract/README.md、docs/CURRENT.md 的最新头部，发布8.5/103固定源码与已实测owner依据，历史后缀不改；不改机器、运行源、配置、Schema、生成或锁|
+|Web/并行只读预备|原 iam_grant_source_scope_0244；/Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current / 3e4f3d26fa129e1ef844029c49f54b2cd014f5e8；原Admin/mixed全部保。沿r268-web-lifecycle-readonly.md检查现两generator/pin精确范围和三D0最小增量；此阶段只写ignored交接，不接未固定发行|
+|Root/依赖|Root独占Git、正常BFF原33630重载、浏览器与台账；owner发行固定commit/digest后Web才可生成与消费；不reset PG/Redis/MinIO/正常数据，无新业务契约决策|
+|验证/停止线|Root核源码/contract字节和旧文档后缀、已有资格receipt；重载复用持久env/port并验真实ready，再推进Web固定消费与UI生命周期。工程门、owner资格、用户用例分别记；完整33与70计数不先升|
+|交付|BFF两文档SHA/精确diff/原contract SHA；Web最小路径/D0和生成命令交接；Root审查提交与实际激活receipt，原失败/任务外变更保留|
+
 ### R268-ROOT-INTEGRATION：真实个人生命周期 owner 资格已验收，页面接线待续
 
 Root真实owner Q6831 **PASS/73.036s/resources clean**，最终四脚本94PASS与两独审冻结；目标不是整页完工。原正常进程/库/桶名字exact，Rootuv/八gitlinks保护，正常BFF930/8.4尚未发行或重载39db/8.5。个人33矩阵6/1/26及全70组11/8/14/36/1不变。批准的RootV2 fixture迁移依据正式Platform/BFF，而非放宽服务；首draft502、Validate412与counter/ZIP实际RED都保。QUAL-RUNNER/REVIEW/ASSEMBLY本slice已冻结验收，原writer STOP；后继同T-K03正常producer发行→Web新版本/撤回接线→用户E2E，不新计划中心。
