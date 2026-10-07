@@ -1,3 +1,38 @@
+### R320 用户 Skills 当前展示与真实移除恢复（2026-10-07）
+
+Web **62de02446e0094e76f452ef97e0921b0473eb313** 已提交CSS/Skills INDEX/CURRENT三路径：彩色印刷书封与15/13/12px文字层级，原结构比例/操作状态保持；原负责人实现、独审62755efb、Root复核770任务外文件和两doc全文suffix，提交后原27Admin mixed status exact。Root当前正常3310实际搜索/详情Escape归焦、空结果、390长名双行及完整详情、1280三列/771双列/390单列、Settings两尺寸和自动深色已核；模拟恢复默认1280×720/浅色/展开侧栏/默认三安装、Network关闭。最终真实图 **var/dev/r255-preserve/r320-skills-final.png**，详细范围与模拟截图缩放/过渡旧几何另记 r320-skills-user-verification.json；Manus插画级像素一致、axe/视觉预算与全test:e2e未验。Node22.22.2原92144完整pnpm check自然exit0（309contract/51architecture/3437default、lint/typecheck/build），只辅助工程回归不替用户路径。
+
+真实自有R255：移除取消零命令并回More；可恢复移除DELETE/canonical/list均200，source仍active/revision1；显式再Install恢复同installation/source/revision1且enabled，硬刷新原三卡正确。重装创建时间更新不冒保持；重装观测窗截断、不称完整网络链，另有导航取消。没有永久删除发布源/假数据/资金/权限变更。IAM独立官方HTTP fixture原78264自然exit0：client_credentials实际tokenHTTP200、introspection200、错surface403/扩大scope400/官方disable旧token401；finally自有fixture.close，448源exact，不冒BFF个人类或四读组合通过。BFF原负责人三D0冻结，Root已核548其它文件和旧suffix exact；独立spec审查/机器/5TS/正常激活尚未授，保用户Skills优先，不用文档当实现。九现服务/PG/Redis/ObjectStore未重复启动或reset。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33仍 **14PASS/7PARTIAL/12UNVERIFIED**；T-K03/T-K05与全CRUD OPEN。完整Wave0–7 active、支付最后。下一仍沿同原任务记录处理Skills尚未验证路径，再按原MCP owner依赖继续，不新建计划中心、不把局部通过冒整体闭环。收据r320-current-receipt.json；Root原八gitlinks/uv保留不暂存。
+
+### R320 Skills 视觉对齐追加切片（用户当前优先）
+
+沿用户已批准的 Manus 卡片方向与个人已安装/我发布的范围，不重新设计目录或数据模型。当前实际 3310 默认三卡恢复成功，R255 取消移除零写入、移除与重新安装真实执行并恢复同 installation/source/revision1、已启用；刷新当前三卡正确。实际视觉仍全白书封，文字层级偏小。选现 CSS 的具名封面色变量/纯装饰印刷构图，不新增封面 API/图片资源/市场使用量，颜色不表示状态；保真实名称和所有硬禁用/恢复/来源信息。比较新增资产或抄参考图片会扩大资源生命周期，淘汰；不创建新目录/文件。归 Web UI，不改事实 owner、contract/SQL 或 reader 状态。
+
+|任务|负责人/范围|验收与限制|
+|---|---|---|
+|R320-WEB-SKILLS-VISUAL|原 web_interaction_astra_r296 唯一 Web writer，9f81ba1；只现 personal-skills-read.module.css 的书封装饰和卡片文字层级规则；CURRENT/Skills INDEX Root|先给精确候选再实施；沿已批准封面2:1/书3:4尺寸与页头/filter/操作保持。装饰颜色用局部语义变量，不挪用error/success色，无能力/usage承诺。Root实际桌面/窄屏/Settings/深色/搜索详情归焦/安装状态核验，独立审查与辅助工程门后Git提交；原27Admin mixed与其余772文件保护，不启动资源/运行门/Git。|
+|R320-WEB-SKILLS-QA|原 agent_planned_guarantee_system_r257 只读审查，现CSS最终freeze后核|状态硬禁用不以颜色伪装，伪元素不拦事件，标题/概要尺寸/主题对比，非授CSS规则exact；零tracked/Git/资源/browser写，旧报告追加。|
+
+本片不声称与 Manus 插画像素一致或完整所有CRUD通过。BFF三D0冻结保持未授代码，用户 Skills 完成优先。
+
+R320-ROOT-TOKEN-HTTP 已实际自然exit0（78264）：官方完整Nest HTTP fixture→独立personal managed client→fetch client_credentials token HTTP200/300s/Bearer→真实introspection200/本人tenant；错surface403、扩大scope400 invalid_scope、官方disable旧token401。不是native提前签发本人token，正常进程/权限没变；finally官方fixture.close/私有日志0600、IAM448tracked全部exact。证据r320-iam-http-result.json，不冒BFF未实现类/4read完整链。下一D0明确已证资格，正常激活仍后继。
+
+### R320 连接器正式消费者后继与 Skills 真实 CRUD（现计划续接）
+
+上一goal turn=progress：Web9f81ba1启停焦点真实链、BFFa3e9a7e固定V8与Root57196538四台账已提交；全部目标/70与33矩阵保持，不重启已存在进程。当前基线与保护见r320-{bff,web,iam}-start.json。
+
+§8 Root总体裁决：BFF拥有公开Product读取，Platform拥有四本人MCP事实，IAM拥有独立机器资格，Web只同源adapter；零新表/缓存事实/owner。采用现platform目录五具名普通文件credential/token/connect/response与现http/routes/mcp-personal.ts，不选扩projection/catalog scope union或新SDK模块；四public GET为self/mcp/connectors、connector_id详情与其connections、connection_id详情，closed安全投影/owneropaque cursor/当前admission tenant+subject。旧有效execution projection语义不同保留，无new失败fallback。本轮先收敛三D0，不授runtime/machine源码；四read不是完整CRUD，secret宿主/mutation仍后继。沿TS手册§1/4–6/8.4，预算绝对10秒贯穿credential→实际tokenHTTP→RPC→decode与return，无每阶段重置。
+
+|任务|Owner/角色/基线/文件|验收与限制|
+|---|---|---|
+|R320-BFF-PERSONAL-D0|原platform_iam_consumer_r298沿原实际模型，BFF唯一doc writer；a3e9a7e/codex/r257-bff-normal-current；仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL prefix+原ignored r316-iam-resource-handoff.md|三面明确public4read shape/error/input、资格/预算、普通文件写集与零Schema；先freeze Root独审后另授机器/源；CURRENT/INDEX Root。无src/contract/generated/test/runtime/config/Git/资源/browser/credential写，不另建计划。|
+|R320-ROOT-TOKEN-HTTP|Root独占隔离资源，IAM现正式fixture及现BFF模式|核实际官方client_credentials HTTP/token→真实introspection可执行资格；不拿native handler提前签发当通过。只ignored受保护临时host与结果，现共享PG/Redis复用、本人隔离schema/库和namespace，生命周期有句柄；零正常资格/凭据权限变更、零共享reset。发现规则矛盾先固定失败证据不扩scope。|
+|R320-ROOT-SKILLS-CRUD|Root唯一正常浏览器；Web9f81ba1/原27Admin mixed全保|按原33例继续真实自有安装的移除取消/可恢复Remove/再Install/刷新状态与精确revision，操作前实际UI决定。不永久删除发布源；source/owner只读审查可并行。若真实bug，再授原Web负责人单现文件修复；不能由接口门代替用户PASS。|
+
+全目标Wave0–7 active/Billing最后，单仓writer/RootGit、所有任务外修改保护。
+
 ### R319 Skills 真实启停体验与 BFF 固定消费已分别提交（2026-10-07）
 
 优先用户Skills当前页：Web **9f81ba12567d147df05662d6e6cb6064b324ae81** 精确reader/CURRENT/skills INDEX三路径；原负责人唯一writer、独审e9858c39、Root当前完整重跑及独占Git。Root真实RED是启停canonical核对后主动清空整卡且BODY失焦，不是服务不通；修复仅同identity第一页保留明确refreshing的已核对snapshot，canonical实际更新命中行，原key/unknown/cancel/授权epoch/来源硬禁用均保留。ref同步防重复写、当前按钮aria-disabled保焦点，行离开筛选仅有许可时回安装tab，主动移焦不抢。CSS/新API/假使用量不改，原772tracked及27Admin mixed保护、提交后三路径之外status exact。

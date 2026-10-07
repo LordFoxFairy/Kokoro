@@ -1,3 +1,11 @@
+### R320 用户 Skills 当前展示与真实移除恢复（2026-10-07）
+
+Web **62de02446e0094e76f452ef97e0921b0473eb313** 已提交CSS/Skills INDEX/CURRENT三路径：彩色印刷书封与15/13/12px文字层级，原结构比例/操作状态保持；原负责人实现、独审62755efb、Root复核770任务外文件和两doc全文suffix，提交后原27Admin mixed status exact。Root当前正常3310实际搜索/详情Escape归焦、空结果、390长名双行及完整详情、1280三列/771双列/390单列、Settings两尺寸和自动深色已核；模拟恢复默认1280×720/浅色/展开侧栏/默认三安装、Network关闭。最终真实图 **var/dev/r255-preserve/r320-skills-final.png**，详细范围与模拟截图缩放/过渡旧几何另记 r320-skills-user-verification.json；Manus插画级像素一致、axe/视觉预算与全test:e2e未验。Node22.22.2原92144完整pnpm check自然exit0（309contract/51architecture/3437default、lint/typecheck/build），只辅助工程回归不替用户路径。
+
+真实自有R255：移除取消零命令并回More；可恢复移除DELETE/canonical/list均200，source仍active/revision1；显式再Install恢复同installation/source/revision1且enabled，硬刷新原三卡正确。重装创建时间更新不冒保持；重装观测窗截断、不称完整网络链，另有导航取消。没有永久删除发布源/假数据/资金/权限变更。IAM独立官方HTTP fixture原78264自然exit0：client_credentials实际tokenHTTP200、introspection200、错surface403/扩大scope400/官方disable旧token401；finally自有fixture.close，448源exact，不冒BFF个人类或四读组合通过。BFF原负责人三D0冻结，Root已核548其它文件和旧suffix exact；独立spec审查/机器/5TS/正常激活尚未授，保用户Skills优先，不用文档当实现。九现服务/PG/Redis/ObjectStore未重复启动或reset。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33仍 **14PASS/7PARTIAL/12UNVERIFIED**；T-K03/T-K05与全CRUD OPEN。完整Wave0–7 active、支付最后。下一仍沿同原任务记录处理Skills尚未验证路径，再按原MCP owner依赖继续，不新建计划中心、不把局部通过冒整体闭环。收据r320-current-receipt.json；Root原八gitlinks/uv保留不暂存。
+
 ### R319 Skills 真实启停体验与 BFF 固定消费已分别提交（2026-10-07）
 
 优先用户Skills当前页：Web **9f81ba12567d147df05662d6e6cb6064b324ae81** 精确reader/CURRENT/skills INDEX三路径；原负责人唯一writer、独审e9858c39、Root当前完整重跑及独占Git。Root真实RED是启停canonical核对后主动清空整卡且BODY失焦，不是服务不通；修复仅同identity第一页保留明确refreshing的已核对snapshot，canonical实际更新命中行，原key/unknown/cancel/授权epoch/来源硬禁用均保留。ref同步防重复写、当前按钮aria-disabled保焦点，行离开筛选仅有许可时回安装tab，主动移焦不抢。CSS/新API/假使用量不改，原772tracked及27Admin mixed保护、提交后三路径之外status exact。
