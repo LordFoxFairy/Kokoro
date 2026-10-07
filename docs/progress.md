@@ -1,3 +1,13 @@
+### R295 两个正式切片固定；正常上传恢复已验证（2026-10-07）
+
+Web **6a443b29487a691e82d5df855fc58c4842665b84** 精确4paths：现client单10s应用预算覆盖测量/fetch/成功与错误body，单向abort、绝对deadline/晚结果fence、finally清理；原state/UI/i18n/API不动。Root先4FAIL/15PASS、旧4792bytes保护；最终Node22 pnpm check0：309contract/51architecture/3381默认PASS，lint/types/build0，773tracked起终exact。独审15586e69无确定阻断，代码/test Git对象等最终门freeze，INDEX只职责行、Admin/i18n mixed未暂存。
+
+Root正常资料库：旧请求持12,828ms仍上传中为真实RED；新hold后unknown与明确重试入口实际可见（观察258032ms，非恰10s浏览器测量）。完整未截断Fetch窗口只有初始与一次明确重试两POST，key相同5b441102；重试POST200正式CLEAN114B及hash2722565e5e1c8a7cf4dc7c08c348ca3a6fa4579bce8f925bde23198da0383076，硬刷新恢复完整资料库/真实卡。08:26同名QA卡在新重试前已有、来源未归因，旧hold→owner零写推断已撤销；不把取消等同owner回滚。网络干预已撤、原数据保留，图r295-library-normal-final.png。response字节cap、CLEAN长期刷新文案、下载落盘/原字节、完整资料库CRUD仍OPEN；全test:e2e/axe/视觉预算未跑，不据工程绿升整页。
+
+IAM **87e5437a10f44cd6f2155c0e0215e24168cd44f5** 精确17paths（8生产4unit4D0/integration尾）：真实operatorCLI read/extend、完整15字段双读/单PATCH/正式审计与有效ACK，runtime仅六项；两state/count非法组合Root最终2FAIL/81PASS后严格修复。新两mode stdout ACK丢失仅脱敏unknown/exit1、close二次失败保首因，零自动PATCH/重写stdout。RootNode24verify0：978PASS且各format/lint/types/contract/breaking/sdk/build0；完整两真实integration44PASS/0FAIL/0SKIP、55.55s，448tracked起终exact、原PGcatalog0缺失/0新增。独审196454ef无确定阻断；初reviewer模型容量错误改派原独立QA，未虚报其交付。实际main双故障注入未做，接线独审+writer/mapper/selector测试不冒完整进程故障证明。正常资源演进/消费者固定切换/本人MCP CRUD仍OPEN，无正常权限写。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**；个人33 **13PASS/6PARTIAL/14UNVERIFIED**，完整Wave0–7 active，同任务中心续行。正常Web/PGRedis/MinIO未重启/reset，零正常资金/模型/权限操作；Root仅自有非敏感QA上传保留。uv f7e1c30d及原8gitlinks任务外保持。下一沿已批准七面继续完整CRUD/Manus统一展示及MCP正式消费者链；不把参考图的市场假内容放个人页，不宣全UI一模一样已完成。
+
 ### R294 Manus展示继续落地；真实资料库上传已走，完整CRUD仍OPEN（2026-10-07）
 
 Web精确五路径 **1b35a7a625e4e0480517106c97bd11769e04cbc9**：现上传展示初始只留选择与限制，选定后才出现明确提交；局部长名换行，原state/client/页面意图/同key/读取链不动。3新用户行为先Root真实1FAIL/2PASS（首次误筛48SKIP不计RED），旧首oracle只必要反向、其余50483逆转exact；新签名类型修两次记录Node24回退/1warning，不伪称初次门绿。最终Root正确Node22完整check0：默认3371/contract299/architecture51，lint/types/build0，全773tracked起终exact；独审9fcbdf72无确定新增P0/P1。四Git对象等freeze，INDEX只现上传职责一hunk，原Admin前缀及所有i18n/mixed保护。

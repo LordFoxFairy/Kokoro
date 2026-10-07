@@ -1,3 +1,31 @@
+### R295 收口与后继（同原计划）
+
+- [x] 原owner两恢复切片tests-first实施，Root独审/冻结/真实复跑后精确提交。
+- [x] 正常个人上传hold→unknown→同key明确重试→正式CLEAN→硬刷新持久卡；仅该子路径，不升资料库整页。
+- [x] Web6a443b2 / IAM87e5437；门与Git对象绑定，当前证据见同CURRENT/progress及r295-commit-receipt.json。
+- [ ] 正常本人MCP链：IAM已具名CLI交付但尚未正常维护/消费者切换；Platform→BFF→Web正式个人CRUD仍OPEN。安全敏感权限扩展在动作时确认，不用脚本绕确认。
+- [ ] 原七面Manus统一UI与完整CRUD、上传bytecap/成功刷新文案、下载落盘原字节及完整test:e2e/axe/视觉预算继续原owner，不新中心/伪数据。
+
+|R295-IAM-FINAL-REVIEW-REASSIGN|原 Web reviewer 模型容量错误、未交付；续派原独立 QA agent_planned_guarantee_system_r257 只读 IAM 四 P2 path 与真实入口接线|Root Web check0/3381默认+309contract+51architecture、IAM verify0/978、真两integration44/0均terminal、全tracked冻结；替代角色只ignored审查，零写仓/门/资源/Git/browser。|
+
+|R295-IAM-FINAL-REVIEW|原Web owner独立只读IAM；fa515233＋schema d9938911/script532e1df9/service-test79082bd0/provision-testefe5bcf1|核r294完整12paths与本轮4paths最终、state/count与newmode ACK/close首因实际接线、旧模式/所有D0/lifecycle/HTTP保护。Root68261真两integration/28134全verify在途；只ignored独审报告，零门/服务/资源/Git/browser/写仓。|
+
+|R295-WEB-FROZEN-REVIEW|原独审只读；Web1b35a7a＋client b9cebe5f/test730956f1固定；两source/test职责|核10s总预算/绝对单调fence/未知4xx错误体优先级/单向abort/迟到body清理/旧4792prefix、全其它771保护。Root63618完整check在途，Root正常hold/retry独立；仅ignored报告，零门/资源/Git/browser/写仓。|
+
+|R295-IAM-P2-IMPLEMENT|原IAM单writer；Root最终testSHA同两unit2FAIL/81PASS，真实state/count非法组合；仅现schema/script＋两unit尾/必要import|strict两分支、新两mode输出ACK丢失outcome=unknown脱敏/exit1/零重写stdout/零retry；若application.close二次失败仍保原ACK marker且执行close，旧roster/模式shape保持。全其它444tracked（含6原source/2unit/D0/integration）冻结；Root真CLI/44integration/全门与独审后提交，正常切换另待。|
+
+|R295-WEB-UPLOAD-IMPLEMENT|原Web唯一writer；仅现upload-client.ts＋既定contract test尾；Root Node22真实4FAIL/15PASS，正常browser持POST12,828ms仍loading已截图|10s总预算race覆盖measure/fetch/json；每阶段abort fence迟到零后续IO，内部取消不abort调用者，timer/listener finally清理；原分类/receipt/同key不变，不自动重试。冻结后Root真browser hold→unknown→同key显式retry/GET/刷新，独审及完整门。|
+
+### R295 既有 owner 两个独立恢复切片（2026-10-07）
+
+上一目标实施轮为 progress（Web1b35a7a真实上传/刷新与 Root0bd0a430台账、IAM44真实integration）；随后人类问答只确认Manus目标，为 no-progress。本轮重新核Root0bd0a430、Web1b35a7a、IAMfa515233当前树及原owner STOP。接受既有两只读方案：IAM79e4b7ac、Web7ffb1454，不新建计划中心；完整Wave0–7、70/33矩阵与正规页面CRUD目标保持。
+
+|任务|角色/基线/允许范围|完成条件|
+|---|---|---|
+|R295-IAM-P2-RED|原IAM单writer；fa515233＋r294-iam-freeze；先仅现 test/unit/oauth-client.service.test.ts、provision-oauth.test.ts 末尾与必要import|state/count交叉反例，真实CLI stdout marker→顶层具名mode诊断；旧正文/其他446tracked保护。先 Root RED；后继仅现 oauth-client.schema.ts 与 scripts/provision-oauth.ts，旧roster/classification不变。writer零共享资源/browser/Git/服务；Root固定CLI/44真实integration/全门与独审后才提交。|
+|R295-WEB-UPLOAD-RED|原Web单writer；1b35a7a＋Admin/i18n mixed；先仅现 tests/contract/library-file-upload.test.ts 尾追加与必要测试清理|总10s预算覆盖measure/fetch/成功与错误body，调用者取消、迟到CLEAN不成功、零自动重试、同key。Root自然RED后仅现 upload-client.ts 实施；state/UI/i18n/其他772tracked冻结。作者仅纯门；Root正常页hold→unknown→同key明确retry与原正常CLEAN回读，下载落盘/response cap仍另待。|
+|R295-ROOT-INTEGRATE|Root Git/台账/正常browser/现PGRedis唯一负责人|审冻结范围/原文inverse与不变量，真实owner复跑、用户链证据独立记录，不以辅助纯门升整模块PASS。未知结果不冒失败或成功，不重复启动/重置共享服务。|
+
 |R294-IAM-P2-DESIGN|原 IAM owner 只读；现12paths冻结，fa515233＋r294-iam-freeze；独审91403bb4、Root真CLI/44integration/verify957证据|给 state/count严格两分支与新mode stdout ACK丢失精确unknown脱敏诊断的最窄方案（已有schema/script/serviceunit/provisionunit范围内），不改旧模式/共享API/normal权限/资源。Root三D0既定语义不放宽，无新文件。仅ignored r294-iam-p2-design.md；未授source/test/Git/服务资源。后继tests-first及Root同真CLI再跑。|
 |R294-WEB-LIBRARY-RECOVERY-DESIGN|原 Web owner 只读，1b35a7a；既有client/state/upload lifecycle，不改本已提交展示|核Root正常POST/CLEAN/GET已过、downloadGET200但事件超时/body空证据，不猜落盘；现fetch/json未总预算/限额、clean状态长期刷新文案需有限恢复设计与准入写集。只给下一tests-first自然验收/正常browser原字节方案，不改原UI/字典/API/资金/数据、不猜Mock已闭环；仅ignored报告。|
 

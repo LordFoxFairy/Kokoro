@@ -1,3 +1,11 @@
+### R295 资料库真实恢复子路径验收（2026-10-07）
+
+|ID|标题|预置条件|测试步骤|预期结果/实际结果|优先级|类型|
+|---|---|---|---|---|---|---|
+|T-LIB-UPLOAD-RECOVERY R295|等待中断后同一文件明确恢复|正常已登录资料库，Root非敏感114B QA文件，Web6a443b2，真实服务；只对本次POST受控hold|选择文件→明确提交→保持请求不返回→观察unknown/重试入口→明确重试→释放网络干预到真实服务→核正式CLEAN回执→正常硬刷新|旧版持12,828ms仍loading RED；新版实际unknown、可重试，观察258032ms不冒10s实测。完整窗口仅2POST（初次与明确retry）同key5b441102；retry200/CLEAN114B，hash2722565e5e1c8a7cf4dc7c08c348ca3a6fa4579bce8f925bde23198da0383076正确，刷新后真实卡仍在，仅该恢复子路径PASS。初始hold不证明owner零写；08:26同名卡已存在未归因，未清理数据|P0|用户主链/异常/状态机/真实浏览器|
+
+证据Root var/dev/r255-preserve/r295-upload-{green-browser,paused-requests}.json与r295-library-normal-final.png；网络干预清除。10s严格预算为辅助contract验证，不冒浏览器精确计时；下载落盘/原字节、Agent作品/完整CRUD、bytecap/长期刷新文案、全test:e2e/axe/视觉预算未验。IAM87e5437真实operatorCLI与44owner集成不新增本人MCP页面PASS；完整70仍11/7/15/36/1，个人33仍13/6/14。
+
 ### R284 界面子缺陷真实验收（2026-10-07）
 
 |ID|标题|预置条件|步骤|预期/实际|优先级|类型|
