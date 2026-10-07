@@ -1,3 +1,13 @@
+### R308 Skills 发布输入纠错：用户链已验收（2026-10-07）
+
+Web **60cee2628fa4652683b3b7b5f36ce8c7ec532690** 精确5paths：现publishDialog/messages三新行/overlays三新行/Skills INDEX/CURRENT。Root确认三source完整inverse与其余770tracked exact，原Adminmixed未暂存；原close与异步恢复/flow/client/schema/alltests不变，零新增mock/unit。根因现Zod metadata错误被generic catch吞，改为创建意图前复用同schema、有限首字段提示/aria/ref焦点与仅该字段编辑清错，不复制100/128等阈值、不输出原异常/payload。原writer75辅助PASS、独审4e7eb4c8无确定阻断；Root冻结完整Node22 check21577 exit0/196.633秒（309contract/51architecture/3431default、lint/type/build通过），不以辅助数量替真实用户验收。
+
+Root正常3310真实三RED→GREEN：101tags/129单tag/trim重复三次明确tags纠错、aria-invalid/describedby对应单alert、焦点标签，所有输入仍可纠正；仅改summary不清tags错也不抢焦点，改tags清错且不自动发请求。四完整非截断窗口零request，原65535ASCIIsummary整体UTF8限额提示保持。390×420文档390、单正文scroll、X44持续可見、首错focus；错误末行需正文滚动，不冒整个提示初始全可见。一次reset后瞬时click节点失效，读取新状态后重新正常点击，不冒业务失败。
+
+同一已选择合法462B自有ZIP纠正后明确提交原链：CreateVersion201→upload GET200/Begin201→实际MinIO PUT200→Complete200→Validate200→Publish200，连续两完整窗口零截断；正式active/revision3/replayedfalse和成功提示，刷新后按简介定位非假定同名排序，canonical GET200名字255/简介/两tags逐值exact，未自动安装。保存r308-metadata-green.json/publish-network.json/version-persisted.json与两反馈图/成功图；同名last首次只读命中revision2已更正，不当revision3证据。
+
+新未闭环UX缺陷：**成功发布后关闭表单，焦点持续落BODY**；当前源码未处理，不能把普通取消归焦PASS冒成功关闭PASS。下一R309只读定位父reader触发按钮/清意图与onPublished刷新边界，保原异步事实，不放宽准入。自然401、真实多页/第二身份撤权/全CRUD/test:e2e/axe/视觉预算保持OPEN。个人33 **14PASS/6PARTIAL/13UNVERIFIED**、完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**不升级，完整Wave0–7继续。最终默认三真实安装卡/尺寸已恢复，Network关；不删除自有版本、不重启或reset基础设施、不改权限/账务/模型，原uv与八gitlinks保持。
+
 ### R307 技能页真实边界与加载诊断收口（2026-10-07）
 
 Web **c1ad8497104f3842dd9ef137af550bda8491f4ef** 仅原R139 system case隔离hunk与现CURRENT；Root完整Node22 check53664自然exit0/193.325秒（309contract/51architecture/3431default、lint/type/build通过），冻结原773仅该test改变，逆转全文等原mixed0c1ed7c2/772外部exact。独审e4ef2fd6无确定阻断，原15秒firstMain/45秒预算/登录前置/第二tab断言不变，仅固定安全失败取证；catch本轮未触发，不解释旧R306FAIL或自然401。原Admin混合未暂存，正常9原PID起初alive只是存活，无重启/reset/权限/资金/模型变更。
