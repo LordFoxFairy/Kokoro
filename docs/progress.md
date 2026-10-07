@@ -1,3 +1,13 @@
+### R293 Manus 视觉续行：连接器空态已交付，完整管理链仍 OPEN（2026-10-07）
+
+用户要求整体展示以 Manus 高一致还原；沿原 r289 七面与已批准个人技能管理范围，不各页另造设计、不借假封面/官方技能/使用次数冒真实目录。Root 独占正常浏览器，原 Web / IAM / 独立 QA 分工；现个人技能页持续真实显示，连接器页管理空态已精确修复，整 UI 与全 CRUD 仍未完成。
+
+Web **d6f43aaf04f450d462d59eac7ada848b4738db03** 五路径：现 reader 空态复用 Empty/Cable、同目录轻样式、空 ul 删除、只有 next/history 才分页，原 effect/handlers/身份/错误恢复保持。Root 真实 before 与三个组件 RED 后，正常771/390短高/1440、硬刷新加载完成、关闭设置焦点回管理连接器均实操；正常数据为空，非空分页仅组件验证。Root Node22 lint/types/build0、默认3368/0、正规 contract299/0、architecture51/0；首次误用不存在的 test:contract 命令1保留，不冒初次成功。独审424c32c0无确定阻断；四Git对象等freeze，772tracked其余769保持，旧test25887bytes exact。全test:e2e/axe/视觉预算、正式创建启停删除与连接器 owner 接线仍待。原Admin/i18n mixed未暂存。
+
+IAM fa515233 仅现生命周期 test 尾新增真实 CLI 单例 aeb00ecc，原103631bytes b047f205 byte-exact。Root58243复用共享实例、独占随机库执行：真实 operator/official resource与旧client绑定先通过，首 read subprocess 实际 exit1（signalnull/errorfalse），**1FAIL/37筛选未执行**，不是缺symbol/收集失败。448tracked运行起终exact、全部原库保留且零新增残留；未到 extend/current/replay/审计后段，不称 resource演进或正常CRUD已通过。独审20e4e652接受最窄八source方案但要求 AuthAudit PATCH两file、完整15字段保留、校验成功ACK/503 Response归unknown、单PATCH/零自动重试、stdout脱敏、target-onlyruntime六项与无CAS单writer边界。原IAM owner仅续四D0前缀收敛，**生产尚未准入**；正常资源/角色/凭据/消费者/服务未切换。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**；个人33仍 **13PASS/6PARTIAL/14UNVERIFIED**，不是页面完成率。完整Wave0–7 active，复用现台账；下一先审IAM三D0一致再实施，同时沿既有七页面视觉/CRUD验证，不缩成单个空态。Root证据目录 var/dev/r255-preserve 包含 r293-mcp-normal-final.png、r293-skills-current.png、前后尺寸/保护/Git回执、真实CLIRED日志与结果、两独审。正常共享PG/Redis/MinIO无重启/reset，零正常DDL/权限/资金/模型操作；原八gitlinks与uv f7e1c30d任务外差异保留。
+
 ### R292 三个实际交付固定；Manus个人技能展示已落到页面（2026-10-07）
 
 Web0a20bd125b4717fd99354dd63a00326514a73049精确六路径（既定五+Root CURRENT）：真实个人卡名称/状态同层、完整简介/来源/安装事实，启停+更多核对移除，轻边界/none shadow、容器最多双列。Root正常771两205.5px/390单358px/1440两474px实测无横溢；771×480菜单bottom376、390Escape原trigger、真实published详情焦点、Settings嵌套Escape不误关与390单192px卡均实际走通。本人原R255enabled=true正常停用一次PUT200/GET200、硬刷新仍停用，再启用一次PUT200/GET200、硬刷新已恢复；无永久移除/新publish/withdraw/新401403或unknown注入，完整页面CRUD/全UI仍OPEN。清除了尺寸覆盖，最终截图r292-ui-normal-final.png。

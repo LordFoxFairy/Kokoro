@@ -1,3 +1,32 @@
+R293 IAM Root58243已自然终态：真实CLI首read exit1，1FAIL/37筛选未执行，旧client/link与official legacy创建已过；448tracked运行起终exact，原PGcatalog无新增/缺失，原103631bytes test prefix保。独审20e4e652无确定设计阻断，原owner仅四D0前缀收敛，后继生产八路径与正常激活未准。当前正常技能页再次真实读取并保存 r293-skills-current.png；原七页面/70与33矩阵不变。
+
+|R293-IAM-EVOLUTION-D0-SYNC|原 IAM 单 writer，fa515233；仅现 docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md 追加当前前缀，原正文完整保|Root58243真实 CLI 首 read exit1/1FAIL，fixture/原库448tracked起终保持、零残留库；现 parser不含两个mode。独审20e4e652无确定P0/P1；将八source含两audit、15-field只读快照、成功ACK需校验/503 Response即unknown、单PATCH/零自动重试、stdout脱敏、runtime六项不放宽与无CAS排他边界落现三D0一致。只文档，不准生产/generated/权限/正常资源；Root复核三面后再授实现。|
+
+R293 Web 正式连接器空态/有效分页窄片已 Root 精确五路径提交 **d6f43aaf04f450d462d59eac7ada848b4738db03**。Root Node22 lint/types/build0，默认3368/0、contract299/0、architecture51/0；初次 test:contract 不存在命令1保留，核 package 后 pnpm contract0。独审424c32c0无阻断；四Git对象等freeze，772原tracked其余769保持，旧test25887bytes exact。正常771/390短高/1440与硬刷新/关闭焦点实际通过，仅empty数据；不是正常MCP CRUD/全UI或全E2E。IAM原owner现仅tests-only，独审D0并行，完整范围不变。
+
+|R293-IAM-D0-REVIEW|原独立 QA 只读，IAM fa515233 与 r293-iam-evolution-design；作者仅test尾变化中的工作树，审查不宣称test冻结|核 explicit legacy5/current6、两read/extend CLI、完整非目标保留、双读/单PATCH/unknown、AuthAudit PATCH八source写集与无CAS边界。仅ignored报告，零源码/docs/Git/服务/资源/browser/测试；后继生产先D0三面一致，Root实际CLIRED独立。|
+
+|R293-IAM-MCP-CLI-RED|原 IAM 唯一 writer；fa515233，codex/r255-financial-human-20261006；仅现 test/integration/oauth-client-lifecycle.test.ts 尾追加；原 103631 bytes / b047f205b70e0b447dc361e697ef121119864a683dabd9422e34266d576fc089 保持|沿 R287 D0 / r293-iam-evolution-design §8，真实 operator Cookie + official resource API + subprocess read/extend/current/replay + PG 双读/审计。Root 提供自有 PG/Redis 并执行；writer 不运行服务/资源/测试/Git。第一模式真实业务 RED 前禁止 production。AuthAudit PATCH 新缺口保留，生产八文件需后继 D0 一致性门；正常 resource/角色/凭据/服务全部不动。|
+
+|R293-WEB-MCP-IMPLEMENT|原Web唯一writer；Web0a20bd1+newtail a879905f，精确四路径：现mcp-projection-read.tsx、新同目录module.css、现mcp-panel.test.tsx新增尾、mcp/INDEX.md|Root91261实际3FAIL：首例旧双禁pager nav非null；其它新empty标记缺。前两无效RED（test-id先失败/错误英文oracle）日志保，未当业务准入。独审b8051321/设计4d028dbd无确定阻断；沿已批准Manus/r289，复用现Empty/Cable/语义token、无重阴影/无假CTA；ready空才empty，非空才ul；仅page&&(history有或next)才pager。effect/handlers/cursor/identity/cards旧语义冻结。Root原正常before、三尺寸/短高/刷新/键盘与错误恢复检查；原Admin/i18n/其它tracked严格保，Git归Root。|
+
+|R293-WEB-MCP-RED|原Webwriter；先仅现 tests/ui/mcp-panel.test.tsx 末尾新增正式三场景，不改任何旧正文；Root已保存772 tracked基线|真实首空无空ul/禁用pager；第一页有next但空仍能前进；分页后空仍能返回。复用现Locale/client正常分支，无previewCRUD。仅测试候选，Root执行RED后才准source。|
+
+### R293 继续既有完整目标：设置/连接器视觉与 MCP 资源演进（2026-10-07）
+
+上一人类问答只确认 Manus 展示方向，归 no-progress；本轮以当前 Web0a20bd1 / IAMfa51523 / BFF76098c0 和正常浏览器复核续行，不缩目标、不重复开中心。沿 r289 七面方案与 IAM R287 既有 D0，先独立定位精确后继，再准入实施；原70/33矩阵不升级。
+
+|任务|角色、基线、范围|完成条件与交付|
+|---|---|---|
+|R293-WEB-MCP-DESIGN|原 web_manus_skills_r292，只读；/Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，0a20bd125b4717fd99354dd63a00326514a73049；现Settings/MCP projection/目录入口及各CSS/tests，Admin/i18n mixed保护|核当前正式本人只读与preview分界，沿已批准r289方案选最小真实展示缺陷，精确文件集/两位置比较/自然用户验收；仅Root ignored r293-web-mcp-design.md，零源码/Git/服务/browser/资源。Root实际before后批准独占Webwriter。|
+|R293-IAM-MCP-EVOLUTION-DESIGN|原 iam_mcp_owner_r288，只读；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam，codex/r255-financial-human-20261006，fa5152334dd723cfc32c5f0d0cdfccf28acbfaeb；现D0与provisioning service/schema/script/test|对照既有R287两具名read/extend模式，核官方typedAPI、旧5/目标6闭集、单writer/unknown只读，给精确tests-first写集与Root自有集成入口。仅ignored r293-iam-evolution-design.md，不改source/generated/docs/Git/服务/权限/资源。|
+|R293-ROOT-UI-BEFORE|Root独占原正常浏览器tab25和Manus26，原用户tab7/8保留|真实目录→Settings连接器，核错误/空态、标题、长宽/滚动/键盘，保存截图/DOM；只读，不创建连接/发消息/写权限，不冒CRUD已完成。Root后继审查、门、提交及台账。|
+
+- [x] 当前状态与角色重新核定，任务卡先行。
+- [x] 根浏览器定位真实展示缺陷，收取两原owner设计并裁决。
+- [x] Web设计门与tests-first窄片已Root复跑/正常空态用户路径验收；IAM仅CLI测试尾候选，生产及正常CRUD未准。
+- [x] 同台账更新本轮真实证据、OPEN风险和下一owner；Wave0–7 active。
+
 R292终态：Web0a20bd1真实展示首片精确提交；BFF76098c0候选固定未正常激活；IAMfa51523候选0.9/SDK归档固定，消费者/正常MCP待接。Root所有句柄已自然终态，子Agent均STOP；完整目标保持active，整体CRUD/UI及剩余页按原矩阵推进。
 
 |R292-WEB-FROZEN-REVIEW|原agent_planned_guarantee_system_r257只读；五源码/测试冻结，Root导出HEAD与当前diff|生产无新P0/P1，菜单oracle P2三hunk已修及inverse exact，独审eb9b2fa2；Root真实浏览器已按现证据，最终默认复跑进行中。|
