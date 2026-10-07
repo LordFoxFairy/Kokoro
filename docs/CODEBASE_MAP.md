@@ -1,3 +1,7 @@
+### R298 当前 Platform IAM 消费入口
+
+Platform apps/kokoro-capability 已提交6cf6057，vendor/iam唯一正式0.9archive与内外provenance严格固定；package/lock/checker及两tests/fixture，生产src/iam仍原四surface和独立E2。新SDK第五surface不等Product MCP adapter/contract已存在，正常8086未重载。Root同CURRENT/task保实际门/失败与用户验收缺口。后继个人MCP正式契约先按现UI/BFF/Platform事实只读D0，不把Agent execution proof或read-only projection复用为mutation。
+
 ### R284 当前UI与后继worker入口
 
 Web dae05dfa：现 `src/ui/skills/personal-skills-read.tsx` 安装Card/CardContent复用现managedCard/managedContent，CSS/事件/状态无改；真实界面和Gate边界见Root r284-ui-proof.json。BFF99bbda35只四D0，后继client/dispatcher/outbox port/repository四现目录文件与四现装配入口已确定，但source尚不存在，不作已完成地图；正常仍39db/8.5。T-K03/T-C05与其它完整页面保持OPEN。

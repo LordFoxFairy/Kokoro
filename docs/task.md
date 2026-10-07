@@ -1,3 +1,26 @@
+### R298 收口与原 owner 后继
+
+- [x] Platform6cf6057精确14paths，0.9唯一pin/两checker漏洞修复；Root自然RED/六门/独审/Git对象与501保护已绑定，同CURRENT保首失败与skip边界。
+- [ ] 个人MCP正式contract/runtime/BFF/Web/正常授权与真实CRUD仍待；SDKwire通过不冒用户链通过，70/33保持。
+
+|任务|归属/基线/范围|完成条件与责任|
+|---|---|---|
+|R298-MCP-PRODUCT-CONTRACT-D0-READ|原Platform负责人 platform_iam_consumer_r298，仅只读6cf6057 clean；Root CODEBASE_MAP/既有三D0/当前BFF/Web个人管理需求；唯一ignored报告r298-mcp-personal-contract-design.md|映射现CRUD UI→BFF→Platform唯一事实/receipt，不复用Agent E2/projection写；给§8放置表、最小正式RPC方法与request/安全response/subject/self/幂等/撤权/错误/metadata、V8发行与consumer顺序。核secret/reference实际owner和现接口，真实新不可逆决策单列不自行发明。不写仓/Git/资源/browser/服务/依赖；Root裁决D0后另准入。|
+
+|R298-PLATFORM-SDK-FIXTURE-TYPES|原Platform唯一writer；Root54601全门format0/lint0/build0但types/verify各2，原514起终freeze|仅现test/fixtures/platform-admission.ts允许新增unsupported surface closed guard（以现policy keys判定，禁止承认第五surface，旧四输入/响应/断言保），和新integration observed类型optional→显式undefined字段窄修。源runtime/两archive/checker/package/lock/四D0全冻结。Root重跑完整门/独审，保首3TS错误日志。|
+
+|R298-PLATFORM-IAM09-PIN-IMPLEMENT|原Platform唯一writer，6e5c284＋六D0/RED冻结；Root9792实际13FAIL/25PASS，旧SDKrequest拒第五surface、checker误接收runtime→dev与sidecar空白；其它508exact/四D0旧suffix exact|准入现package.json、checker、vendor/provenance，拷正式0.9archive/删除0.7archive共五路径；pnpm-lock由Root唯一正规生成，writer不得手改/安装。checker保持严格pin/section完整性，加runtime dependencies所属与raw byte equality。不改原四surface/source/API/schema/history/已冻结两tests；仅两变更source显式format。冻结后Root install/全门/独审/精确提交；正常服务权限与CRUD未准。|
+
+### R298 正式 Platform 消费 IAM 0.9 前提切片（2026-10-07）
+
+上一续行仅真实浏览器复核R297搜索/详情/视图，未改变后继依赖，归类 no-progress；现以当前树重新核验并继续既有R296-PLATFORM-IAM09-D0，不新计划中心。Root接受现设计报告b4ab312b中的§8放置表：仅原vendor/pin/checker及测试，零runtime/schema/Proto/API写入；第五surface、本人MCP契约和真实CRUD仍后继，不以SDK升级冒完成。
+
+|任务|归属、基线与写入集|依赖、验证与提交|
+|---|---|---|
+|R298-PLATFORM-IAM09-D0-RED|Platform负责人 platform_iam_consumer_r298 / gpt-6-astra，唯一writer；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability，codex/r259-skills-metadata，6e5c284，clean；Root r298-platform-baseline 514 paths。先仅四现D0顶部与两现test：test/architecture/iam-sdk-artifact.test.ts、test/integration/iam-platform-sdk.integration.test.ts，保旧全文/所有四surface及Basic/E2断言。|沿r296设计；四D0一致、真实0.7 pin不符合0.9 RED后Root准入。作者零Git/browser/服务/共享资源/依赖安装，不改checker/package/vendor/lock/source/generated/schema；Root运行RED和所有Git。|
+|R298-PLATFORM-IAM09-REVIEW|原独立QA agent_planned_guarantee_system_r257，只读6e5c284/r296方案及固定archive；仅ignored审查报告|核archive/source/provenance、消费者pin方案、2test旧保护与拒绝mutant；不运行门/资源、不写仓。Root收冻结后才最终复审。|
+|R298-ROOT-INTEGRATION|Root独占共享Git、依赖安装和集成门|当前archive428e9bb9、sourcefa515233、内provenance/sidecar精确绑定；旧0.7删除无fallback，四surface/runtime/history字节保护。获得RED后才授六pin路径；完整owner适当门与独审后精确提交。正常权限/BFF/Web串行消费/浏览器CRUD仍未准，原70/33不升，Billing最后。|
+
 ### R297 当前收口
 
 - [x] 用户指定Skills优先；原Web唯一writer实现，独立QA审查，Root真实浏览器与共享Git负责。

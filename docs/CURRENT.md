@@ -1,3 +1,13 @@
+### R298 正式 Platform IAM 消费前提已提交，用户连接器链仍待（2026-10-07）
+
+Platform **6cf6057990e0be8e6417183af08aec17014079bf** 精确14paths：直接固定IAM官方0.9archive/sourcefa515233/digest428e9bb9，正规pnpm11.25生成锁与安装，删除旧0.7无fallback。唯一checker收紧runtime dependencies所属和内外provenance原bytes；Root先实测旧checker将三行移dev仍exit0，13FAIL/25PASS自然RED后修复。SDK第五surface编解码可用但生产policy/call site仍四项，原独立E2/Basic保持；没有借SDK enum放开个人管理或写正常权限。
+
+Root初54601 format/lint/build0但types/verify2（三TS错误），日志保；作者只两tests修真实policy typeguard与observed类型，未放宽断言/生产准入。最终82185 target65PASS，format/lint/type/verify/build均0，默认1292PASS/292原资源SKIP；513present tracked起终exact，新archive另核。不是实际IAM/PG/Redis或浏览器CRUD验收。独审64938cd4，fixture3hunk逆转及原wire/test字节保护；Root只后加四文档当前事实与INDEX窄版本，最终format/sdk/diff-check0。Git对象等14freeze、其余501原文件/三D0旧suffix保护，commit后仓clean。
+
+当前九原PID/TCP与PG/Redis/MinIO/ClamAV全部活，7后端ready200；Agent匿名ready401、Web无两健康路由404如实记，不冒全健康。零重启/reset/正常DDL/权限/资金/推理调用；正常8086尚未加载此片。本人MCP machine contract/Product admission/BFF/Web/授权/完整CRUD仍OPEN，继续既有owner顺序；支付最后。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST** 与个人33 **13PASS/6PARTIAL/14UNVERIFIED** 不升级，完整Wave0–7 goal保持。
+
+Root证据同var/dev/r255-preserve：r298-platform-commit-receipt/final-freeze、root-platform-red/result、gates-result-v2、三handoff/设计与独审、normal-listener-check。原八gitlinks与uv f7e1c30d保护。下一先把现个人MCP页面需求与Platform真实资源/授权/secret边界核成最小正式机器契约D0，再实施/发行/消费，不新计划中心或假connector。
+
 ### R297 技能页正式展示与交互验收（2026-10-07）
 
 Web **fc99691c09777e21843a1af95252d22a51b2fafa**，现reader/CSS、两UI test、个人文案九字典/闭集test、三D0/INDEX/CURRENT共19paths；原Admin/i18n混合与原未跟踪路径仍保持原status，九字典只提交三key，三D0只收R297前缀及Root结论。安装/发布协议、授权/unknown/同key链未改，零虚构目录、usage、作者或远程封面资产。
