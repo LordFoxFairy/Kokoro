@@ -1,3 +1,7 @@
+### R317 当前运行接缝导航（2026-10-07）
+
+Platform e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42：现 personal/mcp-personal.{admission,request-binding,reader,mapper,rpc}.ts 与原 authorizer/module/middleware 接入固定 V8四读；仅mcp-personal flag/fifthsurface启用，同MCP_MUTATION有界port，不改Schema/机器或旧surface。真实系统与未激活正常消费边界见RootCURRENT R317、现production-composition.integration.test.ts；完整CRUD仍OPEN。Webe78d3f9 Skills现reader/CSS网格为当前展示，无本轮新UI源；真实只读与登录恢复记录同台账，不用后台门替页面验收。
+
 ### R316 本人数据库读入口（未对外注册）
 
 Platform apps/kokoro-capability / dfa38f29c35e558fea2e6e5e6a2cb42f80815691：新 src/modules/mcp/personal/mcp-personal.transaction.ts 同database/admission有界readonly算法，现mcp-transaction具名forward；现mcp.ports/repository四本人方法、src/config独立mcp-personal flag。原Schema/wire/四surface/正常8086保持，Product handler与BFF/Web消费仍未实现；真实PG与辅助门只验该内部切片。详Root CURRENT/task R316，正常Web e78d3f9 Skills展示复验无新增写动作。

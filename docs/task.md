@@ -1,3 +1,32 @@
+### R317 本人 MCP 运行接缝已提交；Skills 当前展示与真实登录恢复分开记录（2026-10-07）
+
+Platform **e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42** 精确13paths（八生产源/一现系统测试/四当前文档prefix），原负责人实现、QA三修终审3de8743e、Root冻结重跑/独占Git。旧521任务外原文件、四doc原suffix、九源码测试Git对象 exact，子仓clean。四本人读仅独立flag+第五surface注册，沿真实IAM/同Prisma实例有界只读port；严格JSON/protobuf、SQL本人谓词先于map、安全输出/分页与绝对budget保持，wire/Schema/generated/旧四policy/drain不改，正常8086/身份未重载扩权。
+
+实际失败与修复：正式缺route四404 RED；首次fixture EOF/ENOENT为setupfail；四401由Root独立核token自然五分钟到期，不冒routebug。新slowbinary/client-fuse及三缺wrapper403≠400两组RED后最窄三修：真实EOF检测+原timer拒绝、按$typeName强制wrapper、project后业务return前fence。最终三真实TCP/PG/IAM组 **3PASS/9筛除**（slowbinary HTTP408/102.315ms），正式production-composition整文件 **12PASS/0SKIP**，旧九组各自装配不冒全部真实IAM。完整Node24type/lint/build/九TS定向格式、contract/artifact/schema均0；91文件1219辅助PASS不作用户验收标准。全资源integration/smoke/format与Root三默认门本轮未复跑，原四D0格式/Prisma索引warning及全局历史失败不清零。
+
+Root自有官方IAM fixture2791签发native issuer handler、实际TCPintrospection200/错scope403，官方disable后原token401，stop自然exit0；三private文件移除、62413关闭。正常九原句柄最终均live，PG/Redis/ObjectStore不reset/重复启动，uv f7e1c30d与原八gitlinks不暂存。
+
+**Skills本轮没有新Web源码提交，仍e78d3f9。** 用户旧大按钮/技术字段列表已由既有已验收展示切片改为搜索+筛选+个人两视图+封面卡网格。当前实际观察先遇登录确认不可用；显式Retry实际GETsession200/false仍unavailable，原Web日志另一request_id的POST401为cookie_missing，不能合并成同次根因。点击现正式Login后SSO回原Skills，三安装卡GET200；回跳网络窗truncated，不冒完整登录网络链PASS。原tab25因真实layout0截图失效，关闭该agent测试tab，以新正常tab27验收并保留，不动用户tab。
+
+正常3310再次实际：R301搜索仅一张→安装详情→Escape回精确原标题；不存在的搜索正常空结果；已停用filter仅本人撤回源一张且Enable disabled；恢复全部三卡/noDialog。最终默认尺寸1280×720截图 **var/dev/r255-preserve/r317-skills-final.png**，不是新UI设计完成声明。临时QA metrics已clear/viewport reset；当前Tab27 deliverable、Manus26 handoff。不以登录恢复、只读操作或后台门关闭完整Skills/MCP CRUD；自然401为何cookie缺失、多身份/多页/在途迟到与全部能力仍未验。当前附带Billingsummary404留独立未验/失败，不在Skills切片修成假绿。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **14PASS/7PARTIAL/12UNVERIFIED**；T-K03/T-K05 OPEN。后继沿原Platform发行与BFF固定V8消费者/正式个人四读，另实现完整mutation与授权政策；Web继续现真实Skills用户验收，不新建计划/降低安全/假使用量。完整Wave0–7 active，支付最后。收据r317-current-receipt/r317-platform-commit-receipt，原报告持续更新，历史证据保留。
+
+### R317 本人 MCP 正式 HTTP/IAM/PG 接入
+
+上一goal turn为 **progress**：Platform dfa38f29数据库13path与Root685e26ba台账均真实提交，证据改变后继行动；不是单纯状态复述。完整Wave0–7不缩减，资金最后、原70/33页面状态不升级。Root当前八gitlinks/uv原任务外保持，Platform dfa38f29/codex/r259-skills-metadata clean、525 tracked SHA见 r317-platform-start.json。
+
+§8沿已批准 R310/R312 三D0和 R315 13source放置，不再发明owner/机器wire/Schema。当前5source有界读已正式提交，后继仅五personal ordinary文件（admission/request-binding/reader/mapper/rpc）与现authorizer/mcp.module/rpc.middleware三个接缝，属于同Product四读运行，不是最终缩成只读CRUD。选择已批personal业务目录而非扩大旧Agent RPC/Skills parser或通用middleware平台；同MCP_MUTATION真实实例复用只读能力，取消/十秒单budget/本人SQL-before-map/安全wire/旧四scope与drain全部保。新目录已存在transaction且明确五文件增长。
+
+|任务|角色与文件集|阶段门/验收/交付|
+|---|---|---|
+|R317-PLATFORM-HTTP|原platform_iam_consumer_r298唯一writer，沿实际原模型；先仅现test/integration/production-composition.integration.test.ts末尾新R317组|真实createRuntime+随机HTTP+隔离PG+真实IAM受保护输入，无overrideProvider、IAM peer/mock/邻ownerfixtureimport；正控自有种子后四reads、错scope/缺subject/越权/安全wire负控。Root实跑缺路由RED后再单独授既定8source；作者禁资源/Git，旧test prefix及其它524文件exact。|
+|R317-QA|原agent_planned_guarantee_system_r257只读，沿实际模型；D0/机器V8/准入注册/parser/四读|核真实系统测试是否覆盖IAM-first/owner-before-map/十秒budget，原四surface及原drain保持；复用r313-mcp-machine-review增量，无tracked/资源/Git写。|
+|R317-CONSUMER-REVIEW|原web_interaction_astra_r296仅只读BFF消费核对，沿实际模型；正常BFF现read-only projection和个人MCP消费接缝|列现消费者缺口、确定依赖owner runtime先发行的最窄后继，不能另造协议、凭据政策、后台或改Web；原报告增量，零资源/Git/浏览器/源码写。|
+|R317-ROOT|Root独占资源/命令/台账/Git；当前原9dev句柄与基础设施复用|新IAM fixture仅系统测试隔离，自有库/Redis前缀，官方owner创建/签发/撤权；正常开发不换临时环境。Root同冻结全门/真实系统组合与后续BFF/Web用户E2E方放行，运行八source待RED才准。|
+
+原正式机器V1–V8/Proto/generated/schema/manifest/lockfile全冻结；其余两integration/architecture及数据库五source保持。新测试以受保护path环境变量取合法token，不把credentials放stdout/tracked；包括错surface只作否定控制，原Agent E2不复用为本人授权。Root首15474实际ENOENT仅setupfail（原host95001 stdin EOF自然exit0并清理3凭据）；保原日志后PTY原句柄10859重试隔离IAM正控200/错scope403，3文件0600。Root41978正式HTTP/PG运行自然exit1：schema/createRuntime/TCP确实经过，四方法均404，1FAIL/9旧筛除、1.61秒，r317-http-red-runtime.log。据此授既定8source，正常九服务/权限不变；四正控不等安全负控通过，更不等页面CRUD闭环。
+
 ### R316 有界本人 MCP 数据库切片已提交；页面验收不冒进（2026-10-07）
 
 Platform **dfa38f29c35e558fea2e6e5e6a2cb42f80815691** 精确13路径，原负责人实现、QA独审、Root实际重跑/独占Git：独立 mcp-personal 配置、四方法只读能力、同database/admission的RepeatableRead具名函数、SQL前tenant/user本人谓词与逐SQL正budget/局部timeout。旧command/recovery/projection与Schema/wire/secret/依赖不变，无第二实例或兼容层；512任务外路径、五doc历史全文suffix及Git对象freeze exact，子仓clean。三轮真实缺能力/错误Prisma itx guard/工程门失败及新AST解构六负控RED均保留，最窄修复后原P2由独审关闭。

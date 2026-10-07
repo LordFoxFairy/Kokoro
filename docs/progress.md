@@ -1,3 +1,17 @@
+### R317 本人 MCP 运行接缝已提交；Skills 当前展示与真实登录恢复分开记录（2026-10-07）
+
+Platform **e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42** 精确13paths（八生产源/一现系统测试/四当前文档prefix），原负责人实现、QA三修终审3de8743e、Root冻结重跑/独占Git。旧521任务外原文件、四doc原suffix、九源码测试Git对象 exact，子仓clean。四本人读仅独立flag+第五surface注册，沿真实IAM/同Prisma实例有界只读port；严格JSON/protobuf、SQL本人谓词先于map、安全输出/分页与绝对budget保持，wire/Schema/generated/旧四policy/drain不改，正常8086/身份未重载扩权。
+
+实际失败与修复：正式缺route四404 RED；首次fixture EOF/ENOENT为setupfail；四401由Root独立核token自然五分钟到期，不冒routebug。新slowbinary/client-fuse及三缺wrapper403≠400两组RED后最窄三修：真实EOF检测+原timer拒绝、按$typeName强制wrapper、project后业务return前fence。最终三真实TCP/PG/IAM组 **3PASS/9筛除**（slowbinary HTTP408/102.315ms），正式production-composition整文件 **12PASS/0SKIP**，旧九组各自装配不冒全部真实IAM。完整Node24type/lint/build/九TS定向格式、contract/artifact/schema均0；91文件1219辅助PASS不作用户验收标准。全资源integration/smoke/format与Root三默认门本轮未复跑，原四D0格式/Prisma索引warning及全局历史失败不清零。
+
+Root自有官方IAM fixture2791签发native issuer handler、实际TCPintrospection200/错scope403，官方disable后原token401，stop自然exit0；三private文件移除、62413关闭。正常九原句柄最终均live，PG/Redis/ObjectStore不reset/重复启动，uv f7e1c30d与原八gitlinks不暂存。
+
+**Skills本轮没有新Web源码提交，仍e78d3f9。** 用户旧大按钮/技术字段列表已由既有已验收展示切片改为搜索+筛选+个人两视图+封面卡网格。当前实际观察先遇登录确认不可用；显式Retry实际GETsession200/false仍unavailable，原Web日志另一request_id的POST401为cookie_missing，不能合并成同次根因。点击现正式Login后SSO回原Skills，三安装卡GET200；回跳网络窗truncated，不冒完整登录网络链PASS。原tab25因真实layout0截图失效，关闭该agent测试tab，以新正常tab27验收并保留，不动用户tab。
+
+正常3310再次实际：R301搜索仅一张→安装详情→Escape回精确原标题；不存在的搜索正常空结果；已停用filter仅本人撤回源一张且Enable disabled；恢复全部三卡/noDialog。最终默认尺寸1280×720截图 **var/dev/r255-preserve/r317-skills-final.png**，不是新UI设计完成声明。临时QA metrics已clear/viewport reset；当前Tab27 deliverable、Manus26 handoff。不以登录恢复、只读操作或后台门关闭完整Skills/MCP CRUD；自然401为何cookie缺失、多身份/多页/在途迟到与全部能力仍未验。当前附带Billingsummary404留独立未验/失败，不在Skills切片修成假绿。
+
+完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33仍 **14PASS/7PARTIAL/12UNVERIFIED**；T-K03/T-K05 OPEN。后继沿原Platform发行与BFF固定V8消费者/正式个人四读，另实现完整mutation与授权政策；Web继续现真实Skills用户验收，不新建计划/降低安全/假使用量。完整Wave0–7 active，支付最后。收据r317-current-receipt/r317-platform-commit-receipt，原报告持续更新，历史证据保留。
+
 ### R316 有界本人 MCP 数据库切片已提交；页面验收不冒进（2026-10-07）
 
 Platform **dfa38f29c35e558fea2e6e5e6a2cb42f80815691** 精确13路径，原负责人实现、QA独审、Root实际重跑/独占Git：独立 mcp-personal 配置、四方法只读能力、同database/admission的RepeatableRead具名函数、SQL前tenant/user本人谓词与逐SQL正budget/局部timeout。旧command/recovery/projection与Schema/wire/secret/依赖不变，无第二实例或兼容层；512任务外路径、五doc历史全文suffix及Git对象freeze exact，子仓clean。三轮真实缺能力/错误Prisma itx guard/工程门失败及新AST解构六负控RED均保留，最窄修复后原P2由独审关闭。
