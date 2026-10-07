@@ -1,3 +1,13 @@
+### R283 冻结切片已提交，完整用户闭环仍未完成（2026-10-07）
+
+Root当前验收并精确提交BFF **6f20f81a8d15992b35bc07e76ac8808d7072bee8**（19路径）：Project本地同事务聚合删除、正规202回执/状态读取、N+1释放命令与两canonical表。当前本人隔离fresh schema真实HTTP/PG **16PASS/0FAIL/0SKIP**；Node22 check exit0（contract298/0、default867/0+2既有skip、build0）、配置format与五new显式format各0。首次子脚本选到Node24触固定artifact Node pin failure，保r283-bff-check.log；显式Node22 PATH重跑通过，没有改pin/放宽门。原QA当前19起终freeze、14对R281 exact、520原tracked整文件及四D0旧suffix、integration旧155319字节都核；Rootscheduled去新增helper并还原旧委托后HEAD字节exact。R282格式前整文件186e0e34旧helper字节未保存，未声称该preformat逆转PASS；当前helper行为独审无确定阻断。Git对象逐文件等19freeze，BFF剩原var。
+
+Web **0011e32d5048c41fb365ba9c2dc3b3d7b442152d**仅现i18n test+clean CURRENT（两路径）：纳入R273已批准四条恢复文案，原30key/九语言label/全部严格断言保持，production字典与UI未改。当前定向RED26/1→27/0，默认172files/3359PASS/0FAIL，lint/typecheck/build0、contract299/0、architecture51/0；反演完整原test=HEAD exact，769其它tracked相对原保护清单exact，Admin/i18n mixed未暂存。此为验收oracle遗漏修复，不是新视觉效果或页面功能PASS；全test:e2e/axe/视觉预算本轮未跑。上一用户回复仅观察/方向，不冒实现progress；本轮两正式切片改变权威状态。
+
+九正常listener原PID kill0/TCP及PG/Redis/MinIO/ClamAV现场均活，只作存活；无重复服务/正常DDL/reset/资金/模型调用。Rootowned r283_bff_98d5593199ae测试库在零客户端后删除，原库名全保、私有fixture移除。正常BFF仍39db/public8.5，6f20候选未激活/发行；Storage投递、正常Schema组合、并发DELETE/COMMIT unknown及Web17删除用户子例未验，T-C05 OPEN。完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**；个人33仍 **13PASS/6PARTIAL/14未验**，T-K03与整体UI未闭环；既有视觉选择不重复提问、不擅自扩技能市场。
+
+R284沿原BFF owner先收敛具名Storage release worker现四D0，Root固定四业务文件/现四入口、lease-CAS与独立300秒UNAUTHENTICATED恢复政策，不新表/repair API/通用bus；源码需文档门与真实失败后单独准入。完整Wave0–7保持active，现台账复用，不另建计划中心。证据r283-bff-commit-receipt.json、web-commit-receipt.json、final-freeze/protection、fixture-cleanup/listener-live与当前门日志、独审3b36180f；原uv及八gitlink任务外差异保留。
+
 ### R281 当前UI与项目删除候选入口
 
 Web4871c2ee现src/ui/rail/use-rail-resize.ts收缩/visibility observer与current pointer rect，tests/ui/rail-resize.test.tsx两新增回归及fixture cleanup；无新模块/文件/契约。正常Web HMR实际1440rail440→771rail351/main420及折叠/键盘，恢复正常300/main471；管理页新视觉未实现。候选BFF826a345之上15paths主入口project-delete.ts/conversation-delete.ts、两route/input与schema两个关系，Root16真PG/HTTP仅隔离资格、未提交/正常激活；Storageworker和17用户页链仍后继。证据Root r281-current-receipt.json，原Admin mixed与其它owner保持。

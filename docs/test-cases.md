@@ -1,3 +1,10 @@
+### R283 当前证据边界（2026-10-07）
+
+- T-C05本地资格已交付6f20f81a：本人隔离fresh PG/HTTP16/0/0，正规门当前0；SessionAdmissionDouble/idle其它worker只是装配，不是真Storage/IAM/Scheduler或浏览器。本地提交不升17真实删除子例PASS，正常runtime39db/8.5、Storage worker/Web仍缺。完整DELETE并发与COMMIT unknown依旧待验。
+- T-K03整体与UI依旧OPEN；0011e32仅修R273四文案的既有闭集oracle，定向26/1→27/0、全默认3359/0，没动生产界面，不新增页面PASS。完整test:e2e/axe/视觉预算未跑；九语言静态字典完整不等于母语/实际交互全部验收。
+- 下一已有T-C05系统矩阵：本人Project含active+已单删成员→N+1真实Storage ACK→logical released且physical pending；真实提交丢ACK同命令恢复；A过期B接管晚A零CAS；错误资格blocked→仅UNAUTHENTICATED受限同命令恢复；错误scope/digest/precondition不盲重试；取消/耗budget不无限loading；最终正常浏览器完整删除、刷新、回放与邻租户隔离。仍按原七字段子例维护，不用纯测试数替换业务结论。
+- 70业务组仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人33仍13PASS/6PARTIAL/14未验，历史失败日志保持。
+
 ### R281 当前验收范围更新（2026-10-07）
 
 现T-C-R257-PROJECT-DIRECT增加布局子路径复验，不新增业务组或改变70/33计数：

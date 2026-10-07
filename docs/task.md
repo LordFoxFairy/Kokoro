@@ -1,3 +1,35 @@
+### R284 后继准入：具名 Storage release worker 文档门（2026-10-07）
+
+BFF 本地事务切片已由Root提交6f20f81a（19精确路径，当前隔离真PG/HTTP16/0及Node22工程门）；正常39db/8.5仍未激活，Storage worker与Web17用户路径仍OPEN。原BFF负责人仅写现四D0，先收敛设计，不并行改源码。
+
+|任务|Owner / 基线 / 写入范围|决定 / 交付|
+|---|---|---|
+|R284-BFF-RELEASE-D0 / T-C05|原 bff_admin_routing_d0_r257，BFF6f20f81a；只 docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md、docs/CURRENT.md|复用现两表及固定Storage e8b992/c22b5；选择具名client、dispatcher、outbox port、outbox repository四普通文件（现目录），及现四装配入口。不改source/schema/contract/锁文件，先第8节放置表与三D0一致当前/目标、真实失败矩阵和可运行入口。源码实施须Root后继单独准入。清理R276旧“runtime/SQL未实现”状态句而保已批准业务设计，不叠第二套当前方案|
+
+Root锁定后继技术恢复政策：普通claim只due pending与过期lease；unknown/无ACK/transport cancel与deadline、有正规retryable tuple继续同command/digest退避，不耗8次冒终态。可信terminal tuple blocked。仅固定owner正规UNAUTHENTICATED资格错误可进独立受限恢复分支：至少300秒冷却、每轮最多一条、同原命令/可信identity/新lease fence、一次可能写的RPC；不是只读验证，不改token/scope/actor，不借新key或用户新登录。PermissionDenied、InvalidArgument、digest mismatch、precondition、结构损坏不自动恢复；保blocked等owner/代码修复，不暗改表或增加repair API。缺Storage配置不启动claim并明确观测。网络事务外，settle同Project序列化+当前lease CAS，过期晚ACK零写；十秒单次预算取剩余lease并预留结算、有界shutdown。原202回执不变、physical恒pending。Root将用真实owner失效凭据→恢复同命令资格负控验证该自动分支，不把普通claim吞blocked算PASS。
+
+文档必须指出未验：完整DELETE并发/COMMIT-unknown、Storage真实ACK未知恢复、正常Schema组合激活、浏览器17路径；不因16局部绿移除这些任务。worker交四文档SHA、改动清单与现owner契约/schema验证入口后STOP；Root独审一致性再派tests-first与具名实现。
+
+### R283 延续全目标：界面纠偏与冻结切片验收（2026-10-07）
+
+上一用户回复仅界面观察与方向重述，未实施新界面，按 goal 审计记 no progress；本轮重新核工作树与 R282 原负责人交付，推进当前可执行切片，完整 Wave 0–7 不变。UI 列表/卡片单次选择仍未回复，不借自动续跑批准新视觉；后端候选不是整体验收。Root 继续唯一资源、浏览器、Git 与台账负责人。
+
+|任务|负责人 / 基线 / 精确范围|验收与交付|
+|---|---|---|
+|R283-WEB-I18N-ORACLE|原 iam_grant_source_scope_0244，Web4871c2ee+原Admin mixed；仅 tests/i18n/resolve.test.ts|R282诊断b1e4a222与 R273649e5d4明确四恢复文案已批准。仅把四具名key纳入原精确闭集并更新标题；原30key/九label/每key非空/全集合比较保持，不改字典/运行码，不skip/放宽。交SHA STOP；Root当前RED、定向与全默认复跑。仅修验收遗漏，不冒UI友好度或真实用户链PASS|
+|R283-BFF-LOCAL-REVIEW|原 agent_planned_guarantee_system_r257 只读，BFF826a345+19候选；R28115freeze与R282 handoff为基线|核新两个helper仅格式变化与四D0前缀当前态、其它14 source exact、保护旧testprefix/任务外524；只ignored报告，不写tracked/门/资源/Git。Root重跑冻结工程及隔离本人PG/HTTP后才精确19路径提交；Storage worker/正常Web17子例继续OPEN|
+|R283-ROOT-INTEGRATE|Root，Web clean docs/CURRENT.md 当前证据前缀唯一writer|核实原句柄/资源不重复启动；私有fixture安全隔离，不动正常数据。记录真实失败/门/提交，保持完整测试台账，不以oracle修复缩小用户UI及业务目标|
+
+### R282 已有切片集成与剩余owner接缝（2026-10-07）
+
+上一goal turn为progress：Web4871c2ee真实几何修复/Rootf9793a56同台账提交、fixture泄漏P2修复与正常浏览器验收改变权威状态；全部句柄已终态，完整Wave0–7仍active。当前BFF826a345+15候选/原var保护，UI4871c2ee+原Admin/i18n mixed；正常资源原PID复用，Root唯一资源/Git/浏览器。
+
+|任务|角色/基线/写入范围|验收/依赖/交付|
+|---|---|---|
+|R282-BFF-LOCAL-INTEGRATE / T-C05|原bff_admin_routing_d0_r257唯一BFF writer，现15freeze基线；只准scheduled-task-repository.ts新增两个helper局部格式，与现CURRENT/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL顶部当前态前缀|Root已读15实际diff：只改善新helper可读性不改逻辑/旧代码；四D0准确记录本地runtime/SQL已实现但正常39db、正式8.5、worker/Web用户链未完成。其它14路径冻结，原testprefix/任务外524保持，无source搬迁/契约/资源/门/Git。交新SHA STOP，Root重跑门再精确19路径提交，不因局部提交升T-C05 PASS|
+|R282-WEB-I18N-DIAG|原iam_grant_source_scope_0244只读Web4871c2ee现tests/i18n/resolve.test.ts与九现字典，Root r281-ui-full-test-final.log、CURRENT/PRD双视图；不写tracked|确认现唯一closed-set失败是批准R273四文案漏纳还是真实产品不一致，逐key/语言/消费者/精确旧HEAD来源举证；只ignored r282-web-i18n-diagnosis.md，禁止为了绿删除文案/放宽数量/skip，不跑资源/Git。Root决定单独窄tests-only切片是否合理，非整个UI验收|
+|R282-BFF-STORAGE-SEAM / T-C05|原agent_planned_guarantee_system_r257只读BFF15freeze、Storage正式e8b992固定generated与现worker/lease/bootstrap/三D0；不审正在改helper正文|给具名Project scope release现outbox→固定Storage RPC的最小准确调用/ACK/digest/lease错误与恢复方案、允许文件集和真实owner失败验证入口；比较现worker扩展与具名文件，不造通用bus/新表/repair API。只ignored r282-bff-storage-seam.md；不写tracked/运行资源/门/Git/调用owner。Root总边界裁决后才授实现|
+
 ### R281 当前切片收尾与后继（2026-10-07）
 
 Web侧栏几何窄修已Root精确三路径提交4871c2ee，真实窗口/折叠/键盘及恢复页面证据r281-ui-browser-proof.json。原writer与独审已STOP，94463/92657均终态；新fixture P2闭合，不忽略原i18n全默认1FAIL。任务外770tracked及Admin mixed保护；新视觉尚未实施，当前整体UI OPEN。后继继续现个人双视图信息密度与次级操作、项目树标题占位/滚动、管理页布局，按真实页面验收，不用后端门数作页面成果；待原视觉选择回复，不重复提问或扩市场。
