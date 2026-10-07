@@ -1,3 +1,16 @@
+### R267-SKILLS-LIFECYCLE-D1-MACHINE：两命令正式 public 机器候选（未发行/未实现）
+
+Root已按Node22真实跑两R267病例：**0PASS/2FAIL**，都在旧8.4/101正式操作inventory缺少目标operation的assert失败，无TypeError/fixture错误；现log r267-bff-lifecycle-contract-red.log。基线D0 BFF1d373ba，当前test纯append74行已冻结b14facea。这是业务机器缺失，不是完整用户验收。
+
+|项|阶段范围|
+|---|---|
+|writer/基线|原 bff_admin_routing_d0_r257 / BFF1d373ba；Root命令/共享index/Git/服务/浏览器；tracked仅已准test append，var/保留|
+|许可|contract/openapi/v1/openapi.yaml 版本8.5/103，仅新增既定两path与必要operation-specific parameters/schemas/closed responses；contract/README.md追加candidate头部（机器尚未发行/runtime未实现）；scripts/{verify-openapi.ts,check-contract.mjs}具名治理并维持所有旧规则；test/{contract/openapi-contract.test.mjs,contract-governance.test.mjs}仅新操作正反断言及必要info.version/count whole-artifact oracle同步，原业务断言保持|
+|Root独写生成|contract/tests/v1-operations.json 只由Root现 contract:update-baseline 正规重生，writer不手改；Platform Proto/generated/pin已等价，不写任何generated/vendor/依赖/锁/Schema/source/runtime/docs其他路径|
+|机器约束|依正式三D0与Root裁决完整metadata、只读display_name断言、正十进制revision>=2/uint64范围、新ID非base由runtimeguard，withdraw exact source_ref/evt64hex/非空白reason1..2048；closed error无retryable、每HTTP tuple/header/meta/no-store/Retry-After有界，单key必需且可信owner不body自报；旧101 operations/components/Team15/ChatMessage字节保持（只info版本必要变化）|
+|严格边界|regex/schema锁反例：revision 0/1/01/负/小数/换行/越uint64，event多字/末换行，reason仅空白/超长，name空/未知owner等；外壳不是通用ErrorResponse放宽。原operation任何wire变化先报告，不以删测试skip过门|
+|交付/后继|worker不运行门/资源/Git，不新增文件/目录；freeze许可路径与原baseline旧101/components比对报告r267-skills-lifecycle-machine-handoff.json后STOP。Root正规baseline生成、全部contract/architecture/lint/typecheck/build与独审；machine只是candidate，不准Web消费/运行路径宣传，后继另准runtime/source/真实owner/正常浏览器|
+
 ### R267-SKILLS-LIFECYCLE-D1-RED：正式公开两命令缺失基线（仅测试先行）
 
 D0三面已Root按精确SHA/下方byte exact审查并正式 **BFF1d373babe3e55bf9fbc388af8a700c6333216e22**（118行，仅设计）；独审d3624指出三澄清已原writer修，Root核。现两Proto完全等c949，Node22 check两次生成/descriptor链exit0；此为机器等价，不是运行命令/页面可用。
