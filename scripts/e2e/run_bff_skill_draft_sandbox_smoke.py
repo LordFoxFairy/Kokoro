@@ -84,6 +84,7 @@ class Phase(str, Enum):
     PACKAGE_REFERENCE = "package_reference"
     AGENT_SOURCE = "agent_source"
     PRODUCT_INSTALLATION = "product_installation"
+    PERSONAL_SKILL_LIFECYCLE = "personal_skill_lifecycle"
     INVENTORY = "inventory"
     REVOKE = "revoke"
     CLEANUP = "cleanup"
@@ -286,6 +287,133 @@ class JsonRequest(Protocol):
     ) -> tuple[int, dict[str, object]]: ...
 
 
+class _HttpRequestCounter:
+    """Bounded HTTP/1 framing observer that discards all payload bytes."""
+
+    MAX_SECTION = 65_536
+
+    def __init__(self) -> None:
+        self._buffer = bytearray()
+        self._state = "headers"
+        self._remaining = 0
+        self.completed = 0
+
+    def _line(self) -> bytes | None:
+        boundary = self._buffer.find(b"\r\n")
+        if boundary < 0:
+            if len(self._buffer) > self.MAX_SECTION:
+                raise ValueError("HTTP section too large")
+            return None
+        if boundary > self.MAX_SECTION:
+            raise ValueError("HTTP section too large")
+        line = bytes(self._buffer[:boundary])
+        del self._buffer[: boundary + 2]
+        return line
+
+    def _complete(self) -> None:
+        self.completed += 1
+        self._state = "headers"
+        self._remaining = 0
+
+    def feed(self, data: bytes) -> None:
+        self._buffer.extend(data)
+        while True:
+            if self._state == "headers":
+                boundary = self._buffer.find(b"\r\n\r\n")
+                if boundary < 0:
+                    if len(self._buffer) > self.MAX_SECTION:
+                        raise ValueError("HTTP headers too large")
+                    return
+                if boundary > self.MAX_SECTION:
+                    raise ValueError("HTTP headers too large")
+                header = bytes(self._buffer[:boundary])
+                del self._buffer[: boundary + 4]
+                lines = header.split(b"\r\n")
+                if (
+                    not lines
+                    or re.fullmatch(rb"[A-Z]+ [^ ]+ HTTP/1\.[01]", lines[0]) is None
+                ):
+                    raise ValueError("HTTP request line invalid")
+                fields: list[tuple[bytes, bytes]] = []
+                for line in lines[1:]:
+                    if b":" not in line:
+                        raise ValueError("HTTP header invalid")
+                    name, value = line.split(b":", 1)
+                    fields.append((name.strip().lower(), value.strip().lower()))
+                lengths = [value for name, value in fields if name == b"content-length"]
+                transfers = [
+                    value for name, value in fields if name == b"transfer-encoding"
+                ]
+                if lengths and transfers:
+                    raise ValueError("HTTP framing ambiguous")
+                if transfers:
+                    if transfers != [b"chunked"]:
+                        raise ValueError("HTTP transfer encoding invalid")
+                    self._state = "chunk_size"
+                    continue
+                if len(lengths) > 1 or (lengths and not lengths[0].isdigit()):
+                    raise ValueError("HTTP content length invalid")
+                self._remaining = int(lengths[0]) if lengths else 0
+                if self._remaining == 0:
+                    self._complete()
+                    continue
+                self._state = "fixed_body"
+            elif self._state == "fixed_body":
+                if not self._buffer:
+                    return
+                consumed = min(self._remaining, len(self._buffer))
+                del self._buffer[:consumed]
+                self._remaining -= consumed
+                if self._remaining:
+                    return
+                self._complete()
+            elif self._state == "chunk_size":
+                line = self._line()
+                if line is None:
+                    return
+                size_text = line.split(b";", 1)[0]
+                if re.fullmatch(rb"[0-9A-Fa-f]+", size_text) is None:
+                    raise ValueError("HTTP chunk size invalid")
+                self._remaining = int(size_text, 16)
+                self._state = "trailers" if self._remaining == 0 else "chunk_data"
+            elif self._state == "chunk_data":
+                if len(self._buffer) < self._remaining:
+                    self._remaining -= len(self._buffer)
+                    self._buffer.clear()
+                    return
+                del self._buffer[: self._remaining]
+                self._remaining = 0
+                self._state = "chunk_data_end"
+            elif self._state == "chunk_data_end":
+                if len(self._buffer) < 2:
+                    return
+                if self._buffer[:2] != b"\r\n":
+                    raise ValueError("HTTP chunk terminator invalid")
+                del self._buffer[:2]
+                self._state = "chunk_size"
+            else:
+                if self._buffer.startswith(b"\r\n"):
+                    del self._buffer[:2]
+                    self._complete()
+                    continue
+                boundary = self._buffer.find(b"\r\n\r\n")
+                if boundary < 0:
+                    if len(self._buffer) > self.MAX_SECTION:
+                        raise ValueError("HTTP trailers too large")
+                    return
+                if boundary > self.MAX_SECTION:
+                    raise ValueError("HTTP trailers too large")
+                trailers = bytes(self._buffer[:boundary])
+                del self._buffer[: boundary + 4]
+                for line in trailers.split(b"\r\n"):
+                    if b":" not in line or line.split(b":", 1)[0].strip().lower() in {
+                        b"content-length",
+                        b"transfer-encoding",
+                    }:
+                        raise ValueError("HTTP trailer invalid")
+                self._complete()
+
+
 class CountingTcpProxy:
     """Count BFF's Platform TCP connections while transparently forwarding bytes."""
 
@@ -300,6 +428,10 @@ class CountingTcpProxy:
             self._listener.close()
             raise SmokeError("owned proxy selected reserved port")
         self.count = 0
+        self.request_count = 0
+        self.protocol_failure_count = 0
+        self.protocol_failed = False
+        self._count_lock = threading.Lock()
         self._closed = threading.Event()
         self._thread = threading.Thread(target=self._serve, daemon=True)
         self._thread.start()
@@ -320,10 +452,25 @@ class CountingTcpProxy:
             client.close()
             return
 
-        def copy(source: socket.socket, destination: socket.socket) -> None:
+        def copy(
+            source: socket.socket,
+            destination: socket.socket,
+            observe_requests: bool = False,
+        ) -> None:
+            counter = _HttpRequestCounter() if observe_requests else None
             try:
                 while data := source.recv(65536):
+                    if counter is not None:
+                        before = counter.completed
+                        counter.feed(data)
+                        if counter.completed != before:
+                            with self._count_lock:
+                                self.request_count += counter.completed - before
                     destination.sendall(data)
+            except ValueError:
+                with self._count_lock:
+                    self.protocol_failure_count += 1
+                    self.protocol_failed = True
             except OSError:
                 pass
             finally:
@@ -332,7 +479,7 @@ class CountingTcpProxy:
                 except OSError:
                     pass
 
-        a = threading.Thread(target=copy, args=(client, upstream), daemon=True)
+        a = threading.Thread(target=copy, args=(client, upstream, True), daemon=True)
         a.start()
         copy(upstream, client)
         a.join(timeout=1)
@@ -653,7 +800,7 @@ def require_public_skill_validate(
         or data["valid"] is not True
         or data["content_digest"] != content_sha256
         or not isinstance(data["manifest_identity"], str)
-        or re.fullmatch(r"zip-v1:sha256:[a-f0-9]{64}", data["manifest_identity"])
+        or re.fullmatch(r"zip-v2:sha256:[a-f0-9]{64}", data["manifest_identity"])
         is None
         or type(data["replayed"]) is not bool
     ):
@@ -1172,6 +1319,123 @@ def _http_json(
     return response.status, value
 
 
+def _http_lifecycle(
+    base: str,
+    path: str,
+    *,
+    token: str,
+    secret: str,
+    key: str,
+    body: dict[str, object],
+) -> tuple[int, dict[str, object]]:
+    parsed = urlsplit(base)
+    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=12)
+    encoded = json.dumps(body, separators=(",", ":")).encode()
+    request_id = "skill-sandbox-" + secrets.token_hex(8)
+    try:
+        connection.request(
+            "POST",
+            path,
+            body=encoded,
+            headers={
+                "authorization": "Bearer " + token,
+                "x-kokoro-service": "web-bff",
+                "x-kokoro-internal-secret": secret,
+                "x-kokoro-request-id": request_id,
+                "idempotency-key": key,
+                "content-type": "application/json",
+            },
+        )
+        response = connection.getresponse()
+        raw = response.read(1_048_577)
+        headers = response.getheaders()
+        status = response.status
+    finally:
+        connection.close()
+    if len(raw) > 1_048_576:
+        raise SmokeError("BFF lifecycle response too large")
+    returned_id = [value for name, value in headers if name.lower() == "x-request-id"]
+    cache = [value for name, value in headers if name.lower() == "cache-control"]
+    if returned_id != [request_id] or cache != ["no-store"]:
+        raise SmokeError("BFF lifecycle response headers invalid")
+    try:
+        value = json.loads(raw)
+    except (ValueError, UnicodeError):
+        raise SmokeError("BFF lifecycle response is not JSON") from None
+    if not isinstance(value, dict):
+        raise SmokeError("BFF lifecycle response envelope invalid")
+    envelope = {"data", "meta"} if 200 <= status < 300 else {"error", "meta"}
+    if set(value) != envelope or value.get("meta") != {"request_id": request_id}:
+        raise SmokeError("BFF lifecycle response envelope invalid")
+    return status, value
+
+
+def require_personal_skill_version(
+    response: tuple[int, dict[str, object]],
+    *,
+    base_skill_id: str,
+    series_id: str,
+    replayed: bool,
+    expected_skill_id: str | None = None,
+) -> dict[str, object]:
+    status, body = response
+    data = body.get("data")
+    if (
+        status != 201
+        or not isinstance(data, dict)
+        or set(data) != {"skill_id", "series_id", "revision", "status", "replayed"}
+        or not isinstance(data.get("skill_id"), str)
+        or data["skill_id"] == base_skill_id
+        or data.get("series_id") != series_id
+        or data.get("revision") != "2"
+        or data.get("status") != "draft"
+        or data.get("replayed") is not replayed
+        or (expected_skill_id is not None and data["skill_id"] != expected_skill_id)
+    ):
+        raise SmokeError("BFF personal Skill version response invalid")
+    return data
+
+
+def require_personal_skill_withdraw(
+    response: tuple[int, dict[str, object]],
+    *,
+    skill_id: str,
+    replayed: bool,
+    expected_event_id: str | None = None,
+) -> dict[str, object]:
+    status, body = response
+    data = body.get("data")
+    if (
+        status != 200
+        or not isinstance(data, dict)
+        or set(data) != {"source_ref", "status", "event_id", "replayed"}
+        or data.get("source_ref") != "skill:" + skill_id
+        or data.get("status") != "withdrawn"
+        or not isinstance(data.get("event_id"), str)
+        or re.fullmatch(r"evt:[a-f0-9]{64}", data["event_id"]) is None
+        or data.get("replayed") is not replayed
+        or (expected_event_id is not None and data["event_id"] != expected_event_id)
+    ):
+        raise SmokeError("BFF personal Skill withdraw response invalid")
+    return data
+
+
+def require_lifecycle_error(
+    response: tuple[int, dict[str, object]], status: int, code: str
+) -> None:
+    observed_status, body = response
+    error = body.get("error")
+    if (
+        observed_status != status
+        or not isinstance(error, dict)
+        or set(error) != {"code", "message"}
+        or error.get("code") != code
+        or not isinstance(error.get("message"), str)
+        or not error["message"]
+    ):
+        raise SmokeError("BFF personal Skill lifecycle error invalid")
+
+
 def _http_publish_empty(
     base: str, path: str, *, token: str, secret: str, key: str
 ) -> tuple[int, dict[str, object]]:
@@ -1342,16 +1606,14 @@ def platform_published_skill_get(
 def upload_zip_bytes(
     skill_id: str, revision: int, *, agent_source: bool = False
 ) -> bytes:
-    """A bounded owner ZIP V1 bound to the fresh draft's identity."""
+    """Build the strict owner ZIP V2 while retaining caller identity guards."""
     if type(agent_source) is not bool:
         raise SmokeError("ZIP Source mode must be explicit")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", skill_id) or revision < 1:
         raise SmokeError("ZIP fixture Skill identity invalid")
     manifest = json.dumps(
         {
-            "schema_version": 1,
-            "skill_id": skill_id,
-            "revision": revision,
+            "schema_version": 2,
             "entry": "SKILL.md",
         },
         separators=(",", ":"),
@@ -1638,6 +1900,57 @@ def platform_publish_event(
         return int(cursor.fetchone()[0])
 
 
+def platform_lifecycle_receipts(database_url: str, tenant: str) -> tuple[int, int]:
+    """Count only completed and retryable-failed receipts in the owned tenant."""
+    import psycopg
+
+    with (
+        psycopg.connect(
+            platform_inventory_connection_url(database_url), connect_timeout=5
+        ) as connection,
+        connection.cursor() as cursor,
+    ):
+        cursor.execute(
+            "SELECT count(*) FILTER (WHERE status::text = %s), "
+            "count(*) FILTER (WHERE status::text = %s AND failure_kind::text = %s) "
+            'FROM "kokoro_platform"."command_receipt" WHERE tenant_id = %s',
+            ("completed", "failed", "retryable", tenant),
+        )
+        row = cursor.fetchone()
+        return int(row[0]), int(row[1])
+
+
+def platform_withdraw_event(
+    database_url: str, tenant: str, skill_id: str, event_id: str, reason: str
+) -> int:
+    """Read the one owner event bound to the exact withdrawn source and reason."""
+    import psycopg
+
+    with (
+        psycopg.connect(
+            platform_inventory_connection_url(database_url), connect_timeout=5
+        ) as connection,
+        connection.cursor() as cursor,
+    ):
+        cursor.execute(
+            'SELECT count(*) FROM "kokoro_platform"."outbox_event" '
+            "WHERE tenant_id = %s AND event_id = %s AND event_type = %s "
+            "AND aggregate_type = %s AND aggregate_id = %s "
+            "AND payload_json ->> 'sourceRef' = %s "
+            "AND payload_json ->> 'reason' = %s",
+            (
+                tenant,
+                event_id,
+                "skill.withdrawn",
+                "skill",
+                skill_id,
+                "skill:" + skill_id,
+                reason,
+            ),
+        )
+        return int(cursor.fetchone()[0])
+
+
 def _redis_keys(url: str, pattern: str) -> set[str]:
     if not pattern or pattern == "*":
         raise SmokeError("unbounded Redis inventory forbidden")
@@ -1788,10 +2101,16 @@ class RunArguments:
     agent_source: bool = False
     agent_redis_url: str | None = None
     product_installation: bool = False
+    personal_skill_lifecycle: bool = False
 
 
 def platform_surfaces(args: RunArguments) -> str:
     product_helper.preflight(args.product_installation, args.agent_source)
+    if type(args.personal_skill_lifecycle) is not bool or (
+        args.personal_skill_lifecycle
+        and (not args.product_installation or args.agent_source)
+    ):
+        raise SmokeError("personal_skill_lifecycle_mode_invalid")
     base = "skill-catalog,skill-source"
     if args.product_installation:
         return base + ",skill-installation-product"
@@ -1810,6 +2129,7 @@ def owned_bucket_name(prefix: str, run_id: str) -> str:
 def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, object]:
     """Run the real composition. Source freezing happens before all side effects."""
     product_helper.preflight(args.product_installation, args.agent_source)
+    platform_surfaces(args)
     source_helper.preflight(args.agent_source, args.agent_redis_url, args.redis_url)
     frozen_sources()
     source_env = dict(os.environ if env is None else env)
@@ -1908,6 +2228,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     product_installation = None
     product_result = None
     product_inventory = None
+    lifecycle_result = None
+    lifecycle_version_body = None
+    lifecycle_version_key = None
+    lifecycle_withdraw_body = None
+    lifecycle_withdraw_key = None
     log_path = directory / "owners.log"
     restore_sigterm = install_sigterm_cleanup_handler()
     try:
@@ -3212,6 +3537,175 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         raise SmokeError(
                             "Product installation changed publication facts"
                         )
+                    if args.personal_skill_lifecycle:
+                        phase = Phase.PERSONAL_SKILL_LIFECYCLE
+                        lifecycle_before = product_inventory
+                        lifecycle_receipts_before = platform_lifecycle_receipts(
+                            urls["kokoro_platform"], ready.tenant_id
+                        )
+                        installed = product_installation.reinstall_for_lifecycle(
+                            "skill:" + begin_skill_id
+                        )
+                        lifecycle_version_key = "lifecycle-version-" + run_id
+                        lifecycle_version_body = {
+                            "display_name": "Signed PUT sandbox skill",
+                            "summary": "sandbox lifecycle revision",
+                            "tags": ["sandbox", "lifecycle"],
+                        }
+                        version_path = (
+                            "/v1/self/skills/"
+                            + quote(begin_skill_id, safe="")
+                            + "/versions"
+                        )
+                        created = require_personal_skill_version(
+                            _http_lifecycle(
+                                bff_base,
+                                version_path,
+                                token=ready.access_token,
+                                secret=web_secret,
+                                key=lifecycle_version_key,
+                                body=lifecycle_version_body,
+                            ),
+                            base_skill_id=begin_skill_id,
+                            series_id=str(begin_series_id),
+                            replayed=False,
+                        )
+                        new_skill_id = str(created["skill_id"])
+                        require_personal_skill_version(
+                            _http_lifecycle(
+                                bff_base,
+                                version_path,
+                                token=ready.access_token,
+                                secret=web_secret,
+                                key=lifecycle_version_key,
+                                body=lifecycle_version_body,
+                            ),
+                            base_skill_id=begin_skill_id,
+                            series_id=str(begin_series_id),
+                            replayed=True,
+                            expected_skill_id=new_skill_id,
+                        )
+                        require_lifecycle_error(
+                            _http_lifecycle(
+                                bff_base,
+                                version_path,
+                                token=ready.access_token,
+                                secret=web_secret,
+                                key=lifecycle_version_key,
+                                body={**lifecycle_version_body, "summary": "changed"},
+                            ),
+                            409,
+                            "skill_idempotency_conflict",
+                        )
+                        product_installation.require_lifecycle_source_status(
+                            installed, "active"
+                        )
+                        status, body = _http_get_json(
+                            bff_base,
+                            "/v1/skills/"
+                            + quote(new_skill_id, safe="")
+                            + "/package-upload",
+                            token=ready.access_token,
+                            secret=web_secret,
+                        )
+                        require_public_package_get(status, body, new_skill_id)
+                        lifecycle_withdraw_key = "lifecycle-withdraw-" + run_id
+                        lifecycle_withdraw_body = {
+                            "reason": "Superseded by the sandbox lifecycle revision"
+                        }
+                        withdraw_path = (
+                            "/v1/self/skills/"
+                            + quote(begin_skill_id, safe="")
+                            + "/withdraw"
+                        )
+                        withdrawn = require_personal_skill_withdraw(
+                            _http_lifecycle(
+                                bff_base,
+                                withdraw_path,
+                                token=ready.access_token,
+                                secret=web_secret,
+                                key=lifecycle_withdraw_key,
+                                body=lifecycle_withdraw_body,
+                            ),
+                            skill_id=begin_skill_id,
+                            replayed=False,
+                        )
+                        require_personal_skill_withdraw(
+                            _http_lifecycle(
+                                bff_base,
+                                withdraw_path,
+                                token=ready.access_token,
+                                secret=web_secret,
+                                key=lifecycle_withdraw_key,
+                                body=lifecycle_withdraw_body,
+                            ),
+                            skill_id=begin_skill_id,
+                            replayed=True,
+                            expected_event_id=str(withdrawn["event_id"]),
+                        )
+                        require_lifecycle_error(
+                            _http_lifecycle(
+                                bff_base,
+                                withdraw_path,
+                                token=ready.access_token,
+                                secret=web_secret,
+                                key="lifecycle-withdraw-terminal-" + run_id,
+                                body=lifecycle_withdraw_body,
+                            ),
+                            412,
+                            "skill_precondition_failed",
+                        )
+                        product_installation.require_lifecycle_source_status(
+                            installed, "withdrawn"
+                        )
+                        lifecycle_inventory = platform_inventory(
+                            urls["kokoro_platform"], ready.tenant_id, begin_skill_id
+                        )
+                        if lifecycle_inventory != (
+                            lifecycle_before[0] + 1,
+                            lifecycle_before[1] + 4,
+                            lifecycle_before[2],
+                            0,
+                        ):
+                            raise SmokeError(
+                                "Platform personal lifecycle inventory drift"
+                            )
+                        lifecycle_receipts = platform_lifecycle_receipts(
+                            urls["kokoro_platform"], ready.tenant_id
+                        )
+                        if lifecycle_receipts != (
+                            lifecycle_receipts_before[0] + 3,
+                            lifecycle_receipts_before[1] + 1,
+                        ):
+                            raise SmokeError(
+                                "Platform personal lifecycle receipt states drift"
+                            )
+                        if (
+                            platform_withdraw_event(
+                                urls["kokoro_platform"],
+                                ready.tenant_id,
+                                begin_skill_id,
+                                str(withdrawn["event_id"]),
+                                str(lifecycle_withdraw_body["reason"]),
+                            )
+                            != 1
+                        ):
+                            raise SmokeError(
+                                "Platform personal lifecycle withdraw event drift"
+                            )
+                        lifecycle_result = {
+                            "version_replay": True,
+                            "version_conflict": True,
+                            "installation_exact_revision": True,
+                            "new_version_package_none": True,
+                            "withdraw_replay": True,
+                            "terminal_precondition": True,
+                            "installed_source_withdrawn": True,
+                            "platform_inventory": lifecycle_inventory,
+                            "completed_receipts_added": 3,
+                            "retryable_failed_receipts_added": 1,
+                            "withdraw_event": True,
+                        }
                 if agent_source is not None:
                     phase = Phase.AGENT_SOURCE
                     before_source = platform_inventory(
@@ -3248,8 +3742,42 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 iam.stdin.flush()
                 require_revoke_result(reader.record(timeout=30))
                 before_revoked = proxy.count
+                before_revoked_requests = proxy.request_count
                 if product_installation is not None:
                     product_installation.require_revoked("skill:" + begin_skill_id)
+                if args.personal_skill_lifecycle:
+                    if not all(
+                        isinstance(value, dict)
+                        for value in (lifecycle_version_body, lifecycle_withdraw_body)
+                    ) or not all(
+                        isinstance(value, str)
+                        for value in (lifecycle_version_key, lifecycle_withdraw_key)
+                    ):
+                        raise SmokeError("personal lifecycle revoke state absent")
+                    require_lifecycle_error(
+                        _http_lifecycle(
+                            bff_base,
+                            version_path,
+                            token=ready.access_token,
+                            secret=web_secret,
+                            key=lifecycle_version_key,
+                            body=lifecycle_version_body,
+                        ),
+                        401,
+                        "session_invalid",
+                    )
+                    require_lifecycle_error(
+                        _http_lifecycle(
+                            bff_base,
+                            withdraw_path,
+                            token=ready.access_token,
+                            secret=web_secret,
+                            key=lifecycle_withdraw_key,
+                            body=lifecycle_withdraw_body,
+                        ),
+                        401,
+                        "session_invalid",
+                    )
                 status, body = _http_get_json(
                     bff_base,
                     published_path,
@@ -3339,6 +3867,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 time.sleep(0.2)
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")
+                if proxy.request_count != before_revoked_requests:
+                    raise SmokeError("revoked request reached a Platform HTTP method")
+                if proxy.protocol_failed or proxy.protocol_failure_count != 0:
+                    raise SmokeError(
+                        "owned Platform proxy observed invalid HTTP framing"
+                    )
                 summary = safe_summary(None)
                 summary["storage_v2_package_reference"] = "PASS"
                 if source_result is not None:
@@ -3355,6 +3889,8 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     summary["product_execution_boundary"] = (
                         "Agent disabled; no SourceDriver (structural, not Run-store observation)"
                     )
+                if lifecycle_result is not None:
+                    summary["personal_skill_lifecycle"] = lifecycle_result
     except BaseException as exc:
         error = (
             exc
@@ -3494,6 +4030,7 @@ def main() -> int:
     modes.add_argument("--agent-source", action="store_true")
     modes.add_argument("--product-installation", action="store_true")
     parser.add_argument("--agent-redis-url")
+    parser.add_argument("--personal-skill-lifecycle", action="store_true")
     try:
         ns = parser.parse_args()
         result = execute(
@@ -3508,6 +4045,7 @@ def main() -> int:
                 ns.agent_source,
                 ns.agent_redis_url,
                 ns.product_installation,
+                ns.personal_skill_lifecycle,
             )
         )
     except BaseException as exc:

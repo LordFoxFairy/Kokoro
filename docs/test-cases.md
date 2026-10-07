@@ -1,3 +1,7 @@
+### R268 真实 owner 前提已通过，用户页面矩阵不冒增（2026-10-07）
+
+固定Q6831、BFF39db/IAM28b/Platform6e5/Storage5b实际73.036s通过完整发布/安装后版本创建、原key重放/冲突、包未继承、精确原安装revision保持、撤回/重放/终态412及当前撤权原两key401/零owner请求。库存3/43/2/0与receipt3completed+1retryable失败事件实查，resources clean；这些是实际owner HTTP组合，不是正常浏览器新版本/撤回UI。个人33仍6PASS/1PARTIAL/26待验，全70组11/8/14/36/1与T-K03 OPEN不变。正常UI本轮GET200 false→显式正规登录返回个人页两安装卡恢复，首unknown原因未证。原真实FAIL/RETEST均保；runner旧V1 fixture导致正式V2拒绝已严格纠偏，非产品门放宽。证据 r268-real-owner-lifecycle-result.json / r268-personal-skills-recovered.png，后继真实页面版本/撤回/刷新/失败恢复逐项补，不以94工程目标计用户PASS。
+
 ### R268 验收边界更新：个人管理完整 T-K03 仍 OPEN（2026-10-07）
 
 BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/digest子门通过，未运行正式IAM→BFF→Platform PG资格、未接Web、没有新生命周期用户E2E。原33用户子例 **6PASS/1PARTIAL/26待验**与70组 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**保持；不把22目标或864默认计数折算业务通过率。正常本人管理双视图五卡只读仍可见，未新增操作证据。

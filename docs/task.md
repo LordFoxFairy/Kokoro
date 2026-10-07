@@ -1,3 +1,17 @@
+### R268-ROOT-INTEGRATION：真实个人生命周期 owner 资格已验收，页面接线待续
+
+Root真实owner Q6831 **PASS/73.036s/resources clean**，最终四脚本94PASS与两独审冻结；目标不是整页完工。原正常进程/库/桶名字exact，Rootuv/八gitlinks保护，正常BFF930/8.4尚未发行或重载39db/8.5。个人33矩阵6/1/26及全70组11/8/14/36/1不变。批准的RootV2 fixture迁移依据正式Platform/BFF，而非放宽服务；首draft502、Validate412与counter/ZIP实际RED都保。QUAL-RUNNER/REVIEW/ASSEMBLY本slice已冻结验收，原writer STOP；后继同T-K03正常producer发行→Web新版本/撤回接线→用户E2E，不新计划中心。
+
+上一目标turn为实质进展：BFF候选39db896与Root b2400fcf已提交，工程/受控wire证据齐备，但真实IAM/PG/用户路径未运行，完整Wave0–7与用户矩阵不变。本轮沿同卡推进，不新建中心。
+
+|任务/owner|基线、许可与职责|验证/停止线|
+|---|---|---|
+|QUAL-RUNNER / Root验收脚本唯一writer（原bff_admin_routing_d0_r257续接，仅此范围）|Root b2400fcf，cwd /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro；只现 scripts/e2e/{run_bff_skill_draft_sandbox_smoke,product_skill_installation_smoke}.py 与现 scripts/tests/{test_bff_skill_draft_sandbox_smoke,test_product_skill_installation_smoke}.py；其他/旧业务oracle保护。复用原runner及helper，淘汰新平行runner/新contract/关闭frozen_sources。依原r268-real-owner-qualification报告增加显式个人lifecycle验收mode，在原product sequence后/正式revoke前追加真实commands，保旧段不变；精确同步安装新metadata，代理计真实HTTP请求而非仅TCP连接。无业务源码/Schema/依赖/配置/Git/服务/资源权限。|Root已实际复现旧严格helper拒合法11字段，product_installation_fields_invalid（harness证据非产品E2E）。writer保原断言，仅必要正式shape fixture同步，新mode正反qualification行为；不得skip/弱化closed/cleanup。冻结四hash和实际request/receipt断言交Root STOP。Root纯门与真链、Git统一。|
+|QUAL-ASSEMBLY / Root|BFF39db896、IAM28b1ccce、Platform6e5c284、Storage正式5b15fe3（现Storage55未提交候选全部保护）；在Root ignored自有资格装配固定四commit，独立index/gitlink/依赖/构建，不更改正常Root gitlink/任一源与共享数据。|先保原frozen_sources严格clean+gitlink与四source真实构建；限定自有临时测试库/Redisprefix/bucket，复用共享infra，finally回收验证；normal原PID/data保护。正常开发仍持久源码服务，不以资格装配替代。|
+|QUAL-REVIEW / 原agent_planned_guarantee_system_r257，只读|只冻结runner增量与正式commit，原CODEBASE_MAP/手册/资格报告；不写tracked/运行门/启动共享资源。|审核真实请求级观察、幂等/current撤权、精确安装revision/no packageinherit、总/分段库存与失败receipt、secret脱敏/回收。只Root ignored报告，Root运行是最终证据。|
+
+明确真实命令请求经当前IAM用户→BFF公开API→正式Platform owner；不readowner DB伪造状态、无模型调用/资金写，不用响应替身冒真链。新版draft必须同series/revision2、不继承package、不自动升级；withdraw原keyreplay/新key终态412，当前撤权两key401+真实owner请求零增量。全部通过后才推进Web消费和页面E2E。
+
 ### R268-SKILLS-LIFECYCLE-RUNTIME：沿 R267 机器候选补正式命令（进行中）
 
 上一轮分类为实质进展：Web3e4f3d2局部卡片与成功发布用户路径已验证、BFFa55f70f机器候选已提交、Rootfe626110统一台账提交；不冒整页/全Wave完成。本轮先复核当前树与原正常句柄，无重复启动/reset；范围保持Wave0–7与当前CRUD优先。

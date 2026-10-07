@@ -54,6 +54,9 @@ def installation(identity="installation-a", source="skill:source-a", **changes):
         "enabled": True,
         "installed_at": "2026-09-30T12:00:00.000Z",
         "updated_at": "2026-09-30T12:00:00.000Z",
+        "display_name": "Published source",
+        "summary": "",
+        "source_status": "active",
         **changes,
     }
 
@@ -77,6 +80,11 @@ def test_exact_public_installation_and_presence():
     m = helper()
     row = installation()
     assert m.require_installation(row) == row
+    for status in ("active", "disabled", "withdrawn", "quarantined"):
+        assert (
+            m.require_installation({**row, "source_status": status})["source_status"]
+            == status
+        )
     removed = installation(
         installed=False, enabled=False, removed_at="2026-09-30T12:00:00.000Z"
     )
@@ -94,6 +102,10 @@ def test_exact_public_installation_and_presence():
         {**row, "updated_at": "2026-09-29T12:00:00.000Z"},
         {**row, "installed_at": "2026-09-30T12:00:00+00:00"},
         {**row, "source_ref": "skill:skill:source-a"},
+        {**row, "display_name": "\t"},
+        {**row, "display_name": "😀" * 128},
+        {**row, "summary": "😀" * 32768},
+        {**row, "source_status": "draft"},
         {**row, "installed": False},
         {**removed, "enabled": True},
     ]
@@ -480,6 +492,26 @@ def test_sequence_rejects_identity_drift_inside_valid_mutation_receipt():
             m.ProductInstallationSmoke(
                 lambda *_a, **_kw: responses.pop(0), "owned-run"
             ).exercise(("skill:source-a", "skill:source-b"))
+
+
+def test_lifecycle_reinstall_and_withdrawn_read_preserve_installation_identity():
+    m = helper()
+    active = installation()
+    withdrawn = {**active, "source_status": "withdrawn"}
+    responses = [(200, ack(active, "reinstalled")), (200, {"data": withdrawn})]
+    calls = []
+
+    def request(method, path, **kwargs):
+        calls.append((method, path, kwargs))
+        return responses.pop(0)
+
+    driver = m.ProductInstallationSmoke(request, "owned-run")
+    observed = driver.reinstall_for_lifecycle("skill:source-a")
+    assert observed == active
+    assert driver.require_lifecycle_source_status(active, "withdrawn") == withdrawn
+    assert calls[0][2]["key"] == "product-owned-run-lifecycle-reinstall"
+    assert calls[1][0] == "GET"
+    assert not responses
 
 
 def test_unpublished_is_precondition_missing_is_private_not_found_and_revoke_all_five():

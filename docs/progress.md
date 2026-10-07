@@ -1,3 +1,13 @@
+### R268 个人技能生命周期真实 owner 资格通过；整页 CRUD 仍待验（2026-10-07）
+
+Root 固定真实源码 BFF **39db896b9755a8b710d27ae1a220cdbb182b72b7**、IAM28b1ccce、Platform6e5c284、Storage正式5b15fe3，资格Root **6831e0bb330127d9172bf99e51d020b7257f794e**。本轮实际73.036秒 IAM→BFF→Platform/Storage/PostgreSQL/Redis/MinIO/ClamAV组合 **PASS/resources clean**：原完整发布与安装五动作序列之后，重新安装→创建revision2→原key重放→异body409→新draft不继承包→撤回原revision1→原key重放→新key终态412，现安装identity/revision1/enabled保持、source_status真实withdrawn；最终库存3 Skill/43 receipts/2 published/0原源active，新增3completed+1retryable failed及精确withdraw事件。正式撤销当前用户后原两生命周期key401，代理真实HTTP请求及新TCP连接均零增量的assert通过。未使用Agent/模型/资金，未关闭冻结门、未写owner状态伪造结果。
+
+先前真实FAIL保留：Q64首draft502；修合法Connect chunked framing后Q c4e2/1a619走至旧Validate412。只读实际owner receipt明确package_manifest_invalid，定位Root旧脚本仍上传V1四字段、正式owner只允许V2两字段；批准严格迁移到唯一V2并保owner/content/replay/current撤权安全断言，未放宽服务。proxy旧chunked与coalesced/闭合超限真实RED均保。最终四脚本目标94PASS/0FAIL、format/lint0；最终全Root默认1735PASS/1FAIL/3既有SKIP（121.87秒），原test_contract_checkpoint的gitlink/evidence漂移失败保留，详见r268-root-final-all-pure.log，不把工程门当用户验收。独审counter c989cb93、V2 ae536c45；Root AST原frozen_sources、execute except/finally、原product exercise byteexact，其余旧function除批准8项全部exact。Storage隔离Prisma生成17文件只空白drift经逐文件逆转证据核实并归一后重构建0；正常Storage55候选未动，该生成格式缺口未冒修复。
+
+正常固定开发服务/数据不替换为资格fixture：原listener身份/数据库名字/MinIO桶名字前后exact，自有库/Redis prefix/bucket均原finally及独立检查回收；normal BFF仍930028b、Web3e4f3d2，**8.5/103候选未发行/正常重载，Web尚未消费**。本轮真实浏览器曾unknown，重试GET200 authenticated:false、无POST，有限pending解除；显式正式登录/SSO返回/app/skills后默认已安装两真实卡、专案3项及外部会话恢复。截图 r268-personal-skills-recovered.png；恢复出口通过不等unknown首因已证，权限/寿命未改。
+
+个人33用户子用例仍 **6PASS/1PARTIAL/26待验**；完整70组 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**不变，T-K03 OPEN、Wave0–7 active。下一沿原producer受控正式发行/正常源码重载→原Web个人发布流程承接新版本/撤回→正常浏览器完整CRUD/刷新/精确安装revision路径；不扩市场。证据同 Root var/dev/r255-preserve/r268-real-owner-lifecycle-result.json、r268-real-owner-lifecycle-run-v6.log、r268-final-runner-root-protection.json 和本轮独审/RED日志。
+
 ### R268 个人技能生命周期源码候选已提交；真实服务与页面验收待续（2026-10-07）
 
 BFF候选 **39db896b9755a8b710d27ae1a220cdbb182b72b7**（parent a55f70f3）仅16精确路径：两input、两正式3.0 digest projector、两具名route及窄10秒生命周期helper，现client/token/bootstrap/package接缝、两test与三现文档前缀；public8.5/103机器无新diff。**未发行、Web禁止消费**；正常BFF仍930028b/8.4，Web3e4f3d2与Platform6e5及原基础设施/句柄不变，没有重启/reset/正常DDL/资金/模型/权限写。

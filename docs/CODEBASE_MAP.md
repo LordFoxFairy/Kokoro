@@ -1,3 +1,7 @@
+### R268 Root 个人技能生命周期实际验收入口（2026-10-07）
+
+现 scripts/e2e/run_bff_skill_draft_sandbox_smoke.py 在既有product-installation后追加显式personal-skill-lifecycle，复用正规IAM/owner/资源finally；CountingTcpProxy以有界HTTP1 CL/chunked framing观察完整请求，错误拒资格PASS。ZIPfixture/Validate oracle唯一正式V2；现product_skill_installation_smoke.py严格11字段metadata及精确revision/source_status。对应两scripts/tests仅工程辅助。Root自有固定源码资格6831实际73s PASS（完整结果见CURRENT），不是normal Web接线或新开发环境。原正常Web3e4/BFF930/Platform6e5/固定基础设施仍持久源码；BFF39db 8.5运行候选未正式重载/被Web消费，后继仍原owner串行接线，不新增服务/contract中心。33与70用户矩阵未升。
+
 ### R268 个人生命周期运行候选入口（未发行）
 
 BFF worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEAD **39db896b9755a8b710d27ae1a220cdbb182b72b7**：`src/http/{create-personal-skill-version-input,withdraw-personal-skill-input}.ts`严格输入/command ID；`src/http/routes/{create-personal-skill-version,withdraw-personal-skill,personal-skill-lifecycle}.ts`只两命令/单10秒/迟到fence/未完成body回复后退役；`src/infrastructure/clients/platform/{create-personal-skill-version-projector,withdraw-personal-skill-projector}.ts`正式owner3.0presence/digest。现Catalog/Token与bootstrap扩具名接缝，零SQL/新receipt/Proto变更。

@@ -29,6 +29,9 @@ FIELDS = frozenset(
         "enabled",
         "installed_at",
         "updated_at",
+        "display_name",
+        "summary",
+        "source_status",
     }
 )
 CHANGES = frozenset(
@@ -42,6 +45,7 @@ CHANGES = frozenset(
         "unchanged",
     }
 )
+SOURCE_STATUSES = frozenset({"active", "disabled", "withdrawn", "quarantined"})
 
 
 class ProductError(RuntimeError):
@@ -80,6 +84,13 @@ def _instant(value: object) -> datetime:
         raise ProductError("product_installation_instant_invalid") from None
 
 
+def _javascript_length(value: str) -> int:
+    try:
+        return len(value.encode("utf-16-le")) // 2
+    except UnicodeEncodeError:
+        raise ProductError("product_installation_metadata_invalid") from None
+
+
 def require_installation(value: object) -> dict[str, object]:
     if not isinstance(value, dict) or set(value) not in (
         FIELDS,
@@ -102,6 +113,17 @@ def require_installation(value: object) -> dict[str, object]:
         raise ProductError("product_installation_revision_invalid")
     if type(value["installed"]) is not bool or type(value["enabled"]) is not bool:
         raise ProductError("product_installation_state_invalid")
+    display_name = value["display_name"]
+    summary = value["summary"]
+    if (
+        not isinstance(display_name, str)
+        or not display_name.strip()
+        or _javascript_length(display_name) > 255
+        or not isinstance(summary, str)
+        or _javascript_length(summary) > 65535
+        or value["source_status"] not in SOURCE_STATUSES
+    ):
+        raise ProductError("product_installation_metadata_invalid")
     installed = _instant(value["installed_at"])
     updated = _instant(value["updated_at"])
     removed = _instant(value["removed_at"]) if "removed_at" in value else None
@@ -609,3 +631,37 @@ class ProductInstallationSmoke:
                 401,
                 "session_invalid",
             )
+
+    def reinstall_for_lifecycle(self, source: str) -> dict[str, object]:
+        value = require_ack(
+            self.request(
+                "POST",
+                COLLECTION,
+                body={"source_ref": source},
+                key=self._key("lifecycle-reinstall"),
+            ),
+            "reinstalled",
+            False,
+        )
+        row = value["installation"]
+        if (
+            row["source_ref"] != source
+            or row["installed"] is not True
+            or row["enabled"] is not True
+            or row["source_status"] != "active"
+        ):
+            raise ProductError("product_installation_lifecycle_reinstall_invalid")
+        return row
+
+    def require_lifecycle_source_status(
+        self, before: dict[str, object], expected: str
+    ) -> dict[str, object]:
+        status, body = self.request(
+            "GET", COLLECTION + "/" + quote(str(before["installation_id"]), safe="")
+        )
+        if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
+            raise ProductError("product_installation_lifecycle_read_invalid")
+        after = require_installation(body["data"])
+        if after != {**before, "source_status": expected}:
+            raise ProductError("product_installation_lifecycle_identity_changed")
+        return after

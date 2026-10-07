@@ -373,22 +373,24 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertEqual(kwargs["headers"]["content-length"], "0")
         self.assertNotIn("content-type", kwargs["headers"])
 
-    def test_signed_put_zip_fixture_binds_current_draft_identity(self):
+    def test_signed_put_zip_fixture_uses_strict_v2_manifest_without_embedded_identity(
+        self,
+    ):
         payload = smoke.upload_zip_bytes("skill-current", 1)
         with zipfile.ZipFile(BytesIO(payload)) as archive:
             self.assertEqual(archive.namelist(), ["manifest.json", "SKILL.md"])
             self.assertEqual(
                 json.loads(archive.read("manifest.json")),
                 {
-                    "schema_version": 1,
-                    "skill_id": "skill-current",
-                    "revision": 1,
+                    "schema_version": 2,
                     "entry": "SKILL.md",
                 },
             )
             self.assertIn(b"# Sandbox", archive.read("SKILL.md"))
         with self.assertRaises(smoke.SmokeError):
             smoke.upload_zip_bytes("../other", 1)
+        with self.assertRaises(smoke.SmokeError):
+            smoke.upload_zip_bytes("skill-current", 0)
 
     def test_public_validate_requires_exact_owner_verified_zip_projection(self):
         valid = {
@@ -397,7 +399,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "series_id": "series-current",
                 "valid": True,
                 "content_digest": "a" * 64,
-                "manifest_identity": "zip-v1:sha256:" + "b" * 64,
+                "manifest_identity": "zip-v2:sha256:" + "b" * 64,
                 "replayed": False,
             }
         }
@@ -411,7 +413,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             {"series_id": "other"},
             {"valid": False},
             {"content_digest": "A" * 64},
-            {"manifest_identity": "zip-v1:sha256:INVALID"},
+            {"manifest_identity": "zip-v2:sha256:INVALID"},
+            {"manifest_identity": "zip-v1:sha256:" + "b" * 64},
             {"replayed": "false"},
             {"asset_id": "private"},
         ):
@@ -1154,20 +1157,185 @@ class SkillDraftSandboxGuards(unittest.TestCase):
 
         def echo():
             client, _ = server.accept()
-            client.sendall(client.recv(16))
+            client.sendall(client.recv(1024))
             client.close()
 
         worker = threading.Thread(target=echo)
         worker.start()
         proxy = smoke.CountingTcpProxy(port)
         client = socket.create_connection(("127.0.0.1", proxy.port))
-        client.sendall(b"ok")
-        self.assertEqual(client.recv(2), b"ok")
+        request = b"GET / HTTP/1.1\r\nHost: owner\r\nContent-Length: 0\r\n\r\n"
+        client.sendall(request)
+        self.assertEqual(client.recv(len(request)), request)
         client.close()
         worker.join()
         server.close()
         proxy.close()
         self.assertEqual(proxy.count, 1)
+        self.assertEqual(proxy.request_count, 1)
+
+    def test_counting_proxy_counts_fragmented_keepalive_requests_without_treating_body_as_headers(
+        self,
+    ):
+        import socket
+        import threading
+
+        server = socket.socket()
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        received = bytearray()
+        complete = threading.Event()
+        first = b"POST /one HTTP/1.1\r\nHost: owner\r\nContent-Length: 5\r\n\r\nabcde"
+        second = b"POST /two HTTP/1.1\r\nHost: owner\r\nContent-Length: 3\r\n\r\nxyz"
+        expected = first + second
+
+        def consume():
+            client, _ = server.accept()
+            client.settimeout(2)
+            try:
+                while len(received) < len(expected):
+                    chunk = client.recv(1024)
+                    if not chunk:
+                        break
+                    received.extend(chunk)
+                complete.set()
+            finally:
+                client.close()
+
+        worker = threading.Thread(target=consume)
+        worker.start()
+        proxy = smoke.CountingTcpProxy(server.getsockname()[1])
+        client = socket.create_connection(("127.0.0.1", proxy.port))
+        try:
+            for fragment in (
+                expected[:7],
+                expected[7:53],
+                expected[53:61],
+                expected[61:95],
+                expected[95:],
+            ):
+                client.sendall(fragment)
+            self.assertTrue(complete.wait(2))
+            self.assertEqual(bytes(received), expected)
+            self.assertEqual(proxy.request_count, 2)
+            self.assertEqual(proxy.protocol_failure_count, 0)
+        finally:
+            client.close()
+            worker.join(timeout=2)
+            server.close()
+            proxy.close()
+
+    def test_counting_proxy_counts_fragmented_chunked_keepalive_requests_with_bounded_trailers(
+        self,
+    ):
+        import socket
+        import threading
+
+        server = socket.socket()
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        first = b"POST /one HTTP/1.1\r\nHost: owner\r\nTransfer-Encoding: chunked\r\n\r\n2\r\nab\r\n3\r\ncde\r\n0\r\nX-Proof: one\r\n\r\n"
+        second = b"POST /two HTTP/1.1\r\nHost: owner\r\nTransfer-Encoding: chunked\r\n\r\n1\r\nx\r\n0\r\n\r\n"
+        expected = first + second
+        received = bytearray()
+        complete = threading.Event()
+
+        def consume():
+            client, _ = server.accept()
+            client.settimeout(2)
+            try:
+                while len(received) < len(expected):
+                    chunk = client.recv(1024)
+                    if not chunk:
+                        break
+                    received.extend(chunk)
+                complete.set()
+            finally:
+                client.close()
+
+        worker = threading.Thread(target=consume)
+        worker.start()
+        proxy = smoke.CountingTcpProxy(server.getsockname()[1])
+        client = socket.create_connection(("127.0.0.1", proxy.port))
+        try:
+            cuts = (9, 51, 69, 73, 81, 97, 121, len(expected))
+            offset = 0
+            for end in cuts:
+                client.sendall(expected[offset:end])
+                offset = end
+            self.assertTrue(complete.wait(2))
+            self.assertEqual(bytes(received), expected)
+            self.assertEqual(proxy.request_count, 2)
+            self.assertEqual(proxy.protocol_failure_count, 0)
+        finally:
+            client.close()
+            worker.join(timeout=2)
+            server.close()
+            proxy.close()
+
+    def test_counting_proxy_fails_closed_on_malformed_chunk_or_oversized_request_headers(
+        self,
+    ):
+        import socket
+        import threading
+
+        def rejected(payload):
+            server = socket.socket()
+            server.bind(("127.0.0.1", 0))
+            server.listen()
+            upstream_closed = threading.Event()
+
+            def consume():
+                client, _ = server.accept()
+                client.settimeout(2)
+                try:
+                    while client.recv(1024):
+                        pass
+                    upstream_closed.set()
+                finally:
+                    client.close()
+
+            worker = threading.Thread(target=consume)
+            worker.start()
+            proxy = smoke.CountingTcpProxy(server.getsockname()[1])
+            client = socket.create_connection(("127.0.0.1", proxy.port))
+            client.settimeout(2)
+            try:
+                client.sendall(payload)
+                self.assertEqual(client.recv(1), b"")
+                self.assertTrue(upstream_closed.wait(2))
+                self.assertEqual(proxy.request_count, 0)
+                self.assertEqual(proxy.protocol_failure_count, 1)
+                self.assertTrue(proxy.protocol_failed)
+            finally:
+                client.close()
+                worker.join(timeout=2)
+                server.close()
+                proxy.close()
+
+        rejected(
+            b"POST / HTTP/1.1\r\nHost: owner\r\nTransfer-Encoding: chunked\r\n\r\nnot-hex\r\nx\r\n0\r\n\r\n"
+        )
+        rejected(b"GET / HTTP/1.1\r\nHost: " + b"a" * 65_536)
+
+    def test_http_counter_accepts_empty_chunk_trailer_coalesced_with_next_request(self):
+        counter = smoke._HttpRequestCounter()
+        counter.feed(
+            b"POST /one HTTP/1.1\r\nHost: owner\r\nTransfer-Encoding: chunked\r\n\r\n"
+            b"1\r\nx\r\n0\r\n\r\n"
+            b"GET /two HTTP/1.1\r\nHost: owner\r\nContent-Length: 0\r\n\r\n"
+        )
+        self.assertEqual(counter.completed, 2)
+
+    def test_http_counter_rejects_closed_header_section_larger_than_limit(self):
+        counter = smoke._HttpRequestCounter()
+        with self.assertRaises(ValueError):
+            counter.feed(
+                b"GET / HTTP/1.1\r\nHost: "
+                + b"a" * smoke._HttpRequestCounter.MAX_SECTION
+                + b"\r\n\r\n"
+            )
+        self.assertEqual(counter.completed, 0)
 
     def test_http_contract_requires_create_replay_and_conflict(self):
         calls = []
@@ -1651,7 +1819,8 @@ class AgentSourceOptInTests(unittest.TestCase):
                     else b"# Sandbox\n\nOwned signed PUT smoke.\n",
                 )
                 self.assertEqual(
-                    json.loads(archive.read("manifest.json"))["skill_id"], "skill-one"
+                    json.loads(archive.read("manifest.json")),
+                    {"schema_version": 2, "entry": "SKILL.md"},
                 )
         for enabled in ("1", 1, None):
             with self.subTest(enabled=enabled), self.assertRaises(smoke.SmokeError):
@@ -1698,6 +1867,93 @@ class AgentSourceOptInTests(unittest.TestCase):
                 smoke.execute(args, {})
             frozen.assert_not_called()
             directory.assert_not_called()
+
+    def test_personal_lifecycle_mode_requires_product_without_agent(self):
+        from dataclasses import replace
+
+        base = smoke.RunArguments(
+            "postgresql://user@127.0.0.1/db",
+            "redis://127.0.0.1/0",
+            *(Path("/node") for _ in range(4)),
+            "test-bucket",
+        )
+        smoke.platform_surfaces(
+            replace(
+                base,
+                product_installation=True,
+                personal_skill_lifecycle=True,
+            )
+        )
+        for invalid in (
+            replace(base, personal_skill_lifecycle=True),
+            replace(
+                base,
+                agent_source=True,
+                product_installation=True,
+                personal_skill_lifecycle=True,
+            ),
+            replace(base, personal_skill_lifecycle=1),
+        ):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaises(
+                    (smoke.SmokeError, smoke.product_helper.ProductError)
+                ),
+            ):
+                smoke.platform_surfaces(invalid)
+
+    def test_lifecycle_success_error_and_replay_envelopes_are_closed(self):
+        created = (
+            201,
+            {
+                "data": {
+                    "skill_id": "skill-two",
+                    "series_id": "series-one",
+                    "revision": "2",
+                    "status": "draft",
+                    "replayed": False,
+                },
+                "meta": {"request_id": "request"},
+            },
+        )
+        self.assertEqual(
+            smoke.require_personal_skill_version(
+                created,
+                base_skill_id="skill-one",
+                series_id="series-one",
+                replayed=False,
+            )["skill_id"],
+            "skill-two",
+        )
+        withdrawn = (
+            200,
+            {
+                "data": {
+                    "source_ref": "skill:skill-one",
+                    "status": "withdrawn",
+                    "event_id": "evt:" + "a" * 64,
+                    "replayed": True,
+                },
+                "meta": {"request_id": "request"},
+            },
+        )
+        smoke.require_personal_skill_withdraw(
+            withdrawn, skill_id="skill-one", replayed=True
+        )
+        smoke.require_lifecycle_error(
+            (
+                409,
+                {
+                    "error": {
+                        "code": "skill_idempotency_conflict",
+                        "message": "closed",
+                    },
+                    "meta": {"request_id": "request"},
+                },
+            ),
+            409,
+            "skill_idempotency_conflict",
+        )
 
     def test_product_mode_hooks_use_both_real_published_sources_and_existing_revoke(
         self,
