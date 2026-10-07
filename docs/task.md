@@ -1,3 +1,35 @@
+### R311 Skills 当前展示已调整，真实登录刷新缺陷仍待修（2026-10-07）
+
+Web **19178cdfd5c7f129dacb028556b7879a267a0702** 仅四paths：现reader/CSS/Skills INDEX/CURRENT；单本120×160直立封面、100px区顶部24px裁切；名称占整行/启停独立行；筛选outline+装饰icon且实际DropdownTrigger slot样式命中。Root独立保护其余769tracked与原Admin mixed，原state/ref/命令/资格/恢复/tests未改，无新资产或假usage。独审051b33dc无确定阻断。Root冻结Node22完整check27998自然exit0/188.787秒（contract309/architecture51/default3431/lint/type/build通过），773起终exact；工程辅助不作页面完成标准。
+
+正常3310实际：771×752两列203.5×266.594卡，无横溢；390×420单列358px、touch实际coarse后各控件44px；名称搜索/无匹配/清空与发布tag/简介搜索完整窗零请求，筛已停用真实GET200一条→恢复默认GET200三卡。安装详情/技术展开/菜单Escape回准确trigger零managedGET；255名卡两行、完整详情canonicalGET200/title255/summary确认后Escape回255名入口；首轮loading即取消保留不冒完成。Settings436px实际两列/无自有h1，子Escape父设置保留/回原标题。最终默认三卡/noDialog、Network/touch/media/viewport恢复，图r311-skills-after.png和行为r311-skills-user-verification.json。未进行安装/启停/移除/发布、权限/凭据/资金/模型或正常服务重启/reset。
+
+新实测认证失败保持OPEN：GETcsrf200→POSTsession401→GETsession200，界面暂不能确认登录、Skills私有子树退出；Retry未恢复，正常reload后SkillGET200/三卡恢复只是正控。故障窗完整，401body已evict、reload窗truncated，不能补造错误码/完整reload链；原报告281aa89c只读枚举POST唯一显式401=currentProductSession空、CSRF403/provider503/CAS409不同、GET/POST同cookie/Redis链、Retry只GET，具体失效原因仍缺证，不把工程check时间相关当因果。下一沿现session检查安全拒绝分类/request_id取证定位，不放宽准入、不改授权代替修复。
+
+个人33 **14PASS/6PARTIAL/13UNVERIFIED**、完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**不升级；完整CRUD/多页/另一身份撤权/test:e2e/axe/视觉预算待验。完整Wave0–7继续。并行R310 Project增量50c5e51与Platform四D0 c58ba3b3已冻结STOP，后者仅文档四paths原suffix/其余510保护，Root文档门审核尚待；未授machine/正常重载，不宣MCP四RPC已实现。
+
+### R311 Skills 当前视觉差异收敛（用户首优先）
+
+沿已有 R297 Manus 个人管理设计，不扩公共目录、不伪造封面资产/使用次数；Root 已复看当前页面，旧图文字堆叠已由前序切片消除，不冒本轮新修。当前实际同771×752仍有纸堆封面与直立书封、无边框筛选与轻边框筛选、标题/状态挤占的呈现差异。当前用户要求继续聚焦 Skills；R310 后端文档独立续接，不抢 Web writer。
+
+|任务|Owner/角色/范围|验收/停止线|
+|---|---|---|
+|R311-WEB-VISUAL|原 web_interaction_astra_r296；Web bb210dad，r311-web-start 全tracked及原Admin mixed基线；先只读现reader/CSS与当前设计|给同文件纯呈现最小hunk，封面/筛选/状态可读；原命令、身份、ref、state、unknown恢复/真实metadata/本人两视图保持，不新owner/契约/图像依赖。只ignored设计报告；Root准入后才授source。|
+|R311-QA-VISUAL|原 agent_planned_guarantee_system_r257；只读当前候选与同33用户矩阵|独审呈现边界、触控/窄屏/键盘、不得削弱技术信息可达或取消未知恢复；不写tracked/Git/资源/browser。|
+|R311-ROOT|Root唯一Git/浏览器/工程门、现任务和证据|同尺寸771×752对照与390窄屏，实际搜索/筛选/详情/取消/两视图；所选来源保留，未授权安装删除不执行。视觉调整不替完整CRUD或70/33进度；精确提交切片、不stage原Admin混合。|
+
+R311 呈现准入：Root已核现源码、真实771×752前图和 DropdownTrigger slot。现 reader/CSS 唯一writer；100px封面区单本120×160纵向书封顶部24px裁切，删除纸堆伪元素与奇偶旋转；identity单列保原状态DOM；筛选outline+装饰icon/正确slot。现命令/state/ref/资格/恢复/数据/所有tests/字典冻结，无新文件或API。原R297设计覆盖本地呈现微调，Root独占真实浏览器与最终提交。
+
+### R310 完整目标后端接缝推进
+
+上一R309为progress：Webbb210dad实际提交、真实版本4关闭/持久读与Root3aae54c3台账完成。完整Wave0–7及70/33不缩，工程门不计页面完成。当前BFF76098c0 clean（原var保留）worker已提交资格，正常仍39db/8.5；Platform6cf6057 clean/514 baseline见r310-platform-start。
+
+|任务|Owner/角色/范围|交付/停止线|
+|---|---|---|
+|R310-PLATFORM-MCP-D0-SYNC|原platform_iam_consumer_r298唯一文档writer；现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT四现文档的具名增量；原正文完整保|采用原R298/R309放置边界：Product本人管理四读与实际mcp_personal第五surface是完整CRUD必要前提；四读不是完整交付目标。明确四wire请求/响应、subject/cursor/401403/404、当前与目标/43方法候选/旧39保护、零schema/secret。精确下一machine与runtime写集/真实owner验收，原secret/privateServer/编辑启停未决仍列，不删完整CRUD；不再另做总体调查。仅四docs/ignoredhandoff，source/Proto/schema/tests/资源/Git/browser禁改，Root文档门审核后单独授machine。|
+|R310-QA-PROJECT-OWNER-READINESS|原agent_planned_guarantee_system_r257只读；当前BFF76098c0、固定Storagee8b992、原r288路径报告和现Root项目runner|复核原A追加独立删除scenario是否仍最小、当前已提交source/固定pin/源装配和真实生命周期17例；只给既有报告增量精确准入，不新计划或代码。不运行门/资源/Git/browser。Root准备自有严格assembly并承担正式脚本写集，保护正常runtime与原mixed。|
+|R310-ROOT|Root独占Git/资源/正常浏览器|检查原具名存活句柄/严格源装配与现runner，不跳过clean/gitlink门、不在正常库注故障。能执行才准备真实ownerProject删除；未执行不冒PASS。不对未授权Skills安装删除重问或执行。|
+
 ### R309 Skills 成功关闭已真实修复（2026-10-07）
 
 Web **bb210dadfb9d9566bb8f5b00e5accdaa98b603af** 精确三paths：现reader/Skills INDEX/CURRENT。reader三hunk只成功刷新前设稳定“我发布的”归焦目标；不当场focus、不改Dialog/原一次许可与scope/unknown/samekey/任何tests，未加changeView额外hunk。Root独立inverse原1823e190 exact/其余772保护；原writer157辅助PASS，原QA5162a12d无确定阻断。Root冻结Node22 check64310自然exit0/190.882秒：309contract/51architecture/3431default、lint/type/build0；只是工程辅助，原Adminmixed原status和缓存外文件保留，精确Git对象已核。

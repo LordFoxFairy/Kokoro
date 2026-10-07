@@ -1,3 +1,18 @@
+### R311 实际 Skills 用户验收（Web 19178cdfd5c7f129dacb028556b7879a267a0702）
+
+工程门与页面结果分开；这六条为现有Skills测试计划增量，不替换原70/33任务计数。
+
+|用例ID|标题|预置条件|操作步骤|预期结果与实际结论|优先级|测试类型|
+|---|---|---|---|---|---|---|
+|TC-SK-UX-311-01|卡片比例与触控命中|正常三真实安装/771×752及390×420|同尺寸对照→缩窄→开启实际touch后测控件|双列203.5px/单列358px、书120×160裁切、文档无横溢；coarse真实为true且各控件44px；PASS。仅media pointer未生效，不算触控结果|P1|UI、边界、可访问性|
+|TC-SK-UX-311-02|当前页搜索及空态|已安装/本人发布ready|名称→无匹配→清空；发布tag→简介|单条/准确空态/恢复三条、tag两条/简介一条，完整窗零Skill请求；PASS；多页前置未满足仍待|P1|功能、边界|
+|TC-SK-UX-311-03|真实筛选与菜单键盘|三安装/两启用一停用|Enter筛选→已停用→恢复启用状态全部→Escape；More→Escape|真实installed=true/enabled=false GET200一条，默认GET200三条；回精确触发button，零命令；PASS|P1|功能、状态机|
+|TC-SK-UX-311-04|卡面截断不丢信息|安装R301与本人255名revision4|安装Enter展开技术→Escape；发布搜索→Enter等待真实读→Escape|安装全文/技术可达零managedGET；发布正式GET200/title255/summary正确，回原标题；PASS；首次loading即取消不作完成|P1|边界、键盘、完整读链|
+|TC-SK-UX-311-05|设置内嵌详情取消|Settings Skills实际reader436px|开安装详情→Escape→关闭Settings|自身无重复h1、按436px实际两列，子层关闭父设置仍在、回原标题；PASS。未宣更窄Settings全覆盖|P1|状态机、UI|
+|TC-SK-UX-311-06|自然会话刷新失败恢复|正常登录/页面ready|自然csrfGET→sessionPOST→重试→正常reload|应保持合法会话或明确恢复；实测POST401后私有UI退出，Retry未恢复，reload后SkillGET200三卡仅正控；FAIL/根因OPEN。body已evict，不造错误码或刷新即修复|P0|异常、认证、恢复|
+
+证据：Root ignored r311-skills-user-verification.json、before/after/narrow图片、auth-transient.json/png。搜索/筛选/详情等完整窗口无Skills mutation；reload窗口truncated保留，不宣整窗零写。完整Skills CRUD、授权失败/多页/未决动作仍按原矩阵待验。
+
 #### R309 真实用户验收增量（非单测）
 
 |用例ID|标题|预置条件|测试步骤|预期结果|优先级|测试类型|执行结果/证据|

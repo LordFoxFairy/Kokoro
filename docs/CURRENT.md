@@ -1,3 +1,13 @@
+### R311 Skills 当前展示已调整，真实登录刷新缺陷仍待修（2026-10-07）
+
+Web **19178cdfd5c7f129dacb028556b7879a267a0702** 仅四paths：现reader/CSS/Skills INDEX/CURRENT；单本120×160直立封面、100px区顶部24px裁切；名称占整行/启停独立行；筛选outline+装饰icon且实际DropdownTrigger slot样式命中。Root独立保护其余769tracked与原Admin mixed，原state/ref/命令/资格/恢复/tests未改，无新资产或假usage。独审051b33dc无确定阻断。Root冻结Node22完整check27998自然exit0/188.787秒（contract309/architecture51/default3431/lint/type/build通过），773起终exact；工程辅助不作页面完成标准。
+
+正常3310实际：771×752两列203.5×266.594卡，无横溢；390×420单列358px、touch实际coarse后各控件44px；名称搜索/无匹配/清空与发布tag/简介搜索完整窗零请求，筛已停用真实GET200一条→恢复默认GET200三卡。安装详情/技术展开/菜单Escape回准确trigger零managedGET；255名卡两行、完整详情canonicalGET200/title255/summary确认后Escape回255名入口；首轮loading即取消保留不冒完成。Settings436px实际两列/无自有h1，子Escape父设置保留/回原标题。最终默认三卡/noDialog、Network/touch/media/viewport恢复，图r311-skills-after.png和行为r311-skills-user-verification.json。未进行安装/启停/移除/发布、权限/凭据/资金/模型或正常服务重启/reset。
+
+新实测认证失败保持OPEN：GETcsrf200→POSTsession401→GETsession200，界面暂不能确认登录、Skills私有子树退出；Retry未恢复，正常reload后SkillGET200/三卡恢复只是正控。故障窗完整，401body已evict、reload窗truncated，不能补造错误码/完整reload链；原报告281aa89c只读枚举POST唯一显式401=currentProductSession空、CSRF403/provider503/CAS409不同、GET/POST同cookie/Redis链、Retry只GET，具体失效原因仍缺证，不把工程check时间相关当因果。下一沿现session检查安全拒绝分类/request_id取证定位，不放宽准入、不改授权代替修复。
+
+个人33 **14PASS/6PARTIAL/13UNVERIFIED**、完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**不升级；完整CRUD/多页/另一身份撤权/test:e2e/axe/视觉预算待验。完整Wave0–7继续。并行R310 Project增量50c5e51与Platform四D0 c58ba3b3已冻结STOP，后者仅文档四paths原suffix/其余510保护，Root文档门审核尚待；未授machine/正常重载，不宣MCP四RPC已实现。
+
 ### R309 Skills 成功关闭已真实修复（2026-10-07）
 
 Web **bb210dadfb9d9566bb8f5b00e5accdaa98b603af** 精确三paths：现reader/Skills INDEX/CURRENT。reader三hunk只成功刷新前设稳定“我发布的”归焦目标；不当场focus、不改Dialog/原一次许可与scope/unknown/samekey/任何tests，未加changeView额外hunk。Root独立inverse原1823e190 exact/其余772保护；原writer157辅助PASS，原QA5162a12d无确定阻断。Root冻结Node22 check64310自然exit0/190.882秒：309contract/51architecture/3431default、lint/type/build0；只是工程辅助，原Adminmixed原status和缓存外文件保留，精确Git对象已核。
