@@ -1,3 +1,23 @@
+### R266 当前个人管理读代码入口（2026-10-07 00:37 UTC）
+
+Web正式工作树/Users/nako/.codex/worktrees/kokoro-r257-admin-web HEAD b901986c55bef01d395f3112231879b3cab5f6a7：src/hub/{schemas,client}.ts拥有managed safe8/query/envelope/10s读取；src/app/api/hub/[...path]/route.ts两self GET到正式BFF930028b与单独非self ACTIVE confirmation；src/ui/skills/personal-skills-read.tsx同时服务主页/Settings、安装/管理两view、撤准入publisher abort及详情焦点。BFF930028b/public8.4/101，Platform6e5c284/HTTP3.3；normal BFF33630/53714、Platform54280/8086、Web31693/3310持久源码复用。无市场、版本/撤回命令UI新入口。
+
+原Admin与两mixed仍工作树待独立审查，不属于b901986；精确tree59587b1工程五门与698目标通过，完整默认仍有真实失败，不把地图当完工状态。用户证据现Root var/dev/r255-preserve/r266-skills-real-user-acceptance.json；主计划/33矩阵继续原入口。
+
+### R266 Web 管理读固定消费（23:54 UTC）
+
+正常Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web HEADa46c796已固定BFF930028b/public8.4/raw111d2408；现snapshot和两generator承接正规artifact，Team15 exact、AgentFailure仅provenance。本人管理五源仍待实施；catchall现self strip与reader旧ACTIVE是已定位接缝，新self具名两GET/旧ACTIVE确认精确无self读取按三D0分流，不整体重写self代理。Root实际管理契约/架构/默认工程绿不冒用户全页；原管理后台/mixed未提交保护。正常BFF/Platform已加载930/6e5，句柄见registry；33用户待验/完整70组不变。
+
+### R266 正常本人管理读入口（2026-10-06 23:41 UTC）
+
+正式BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal HEAD930028b：新src/http/routes/managed-personal-skills.ts仅两exact GET在bootstrap通用admission前分派，现platform/projection-http.ts只新generated具名读取；单10秒与safe8严格映射，旧六后缀exact、无表/cache/新进程。public8.4/101 raw111d2408；HTTP producer3d4/3.3/rawb6e5、Connectc949独立。正常33630/53714与Platform54280/8086已加载正式930028b/6e5c284，同env/data。Web ee4056c仍旧消费，三设计面目标self保留/ACTIVE发布确认分流，不是页面已闭环。
+
+### R266 当前入口与消费边界（2026-10-06）
+
+Platform物理 apps/kokoro-capability正式6e5c284：现modules/skills/catalog/skill-catalog.service.ts仅三稳定前置错误，原receipt事务不变；HTTP3.3/rawb6e5与Connect c949独立，BFF HTTP仍待repin3d4。正常BFF worktree /Users/nako/.codex/worktrees/kokoro-r257-bff-normal三D0正式3b8d18f，目标public本人GET /v1/self/skills及精确detail，不走旧ACTIVE discovery或DB镜像；新源尚未实施。Web正式ee4056c现personal-skills-read默认两view，self同源strip与发布active确认共享需后继明确分流，不能单改UIparser假接五状态。
+
+验收统一docs/test-cases.md原T-K03下新增33真实用户子用例，全部待验；状态/身份/长名真实输入前提保留。原9服务/固定PG Redis MinIO ClamAV共享句柄保持，owner健康不代表业务通过；测试与候选产物只Root ignored var/dev/r255-preserve。原repo责任/目录无变化，无新中心。
+
 ## R265 本人管理读取正式源码接缝（2026-10-06 22:50 UTC）
 
 Platform物理 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability HEAD **3d4ba6c3462e3896481f902adf47e0713c4187e4**：现 Skills/source controller/query/mapper/service + model/repository 与现http投影、guard、telemetry、Prisma错误分类承接两本人管理GET。HTTP OpenAPI3.3/八path raw b6e5/combined9ad2；现check-contract严格限定新self只GET/继承security，v6读既有历史3.2 snapshot，Proto/Schema/generated与V1–V7不变。Root22path正式发行，不增模块/cache/表。

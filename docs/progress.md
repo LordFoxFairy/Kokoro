@@ -1,3 +1,41 @@
+### R266 新管理读取切片交付，4个真实用户子场景通过（2026-10-07 00:37 UTC）
+
+Web b901986（26精确路径）已提交，BFF930028b与Platform6e5正常源码复用。Root真实tab25：默认已安装→本人管理→ACTIVE/草稿详情→折叠/展开→关闭返原卡→设置技能→草稿→关闭→硬刷新默认安装→本人管理三记录，实际self GET 200/safe8/meta。U01/U02/U03/U11本轮PASS，其余29待验；没有新增安装/发布/Run/权限/资金事实。全70组11/8/14/36/1不变，完整新增0，Wave0–7不缩。
+
+正式提交tree59587b1独立CoW副本五工程门通过（contract280、architecture51，lint/typecheck/build exit0），十目标698PASS/0。工作树默认3300/1 Next manifest实际失败，单例1PASS复跑只作补充；精确staged默认3099/1/77setup SKIP/2失败套件保留（旧auth redirect oracle及欢迎页unknown断言），十目标复跑通过不替代全套。早工程共享链接错误由Root恢复、之后完全独立依赖；原Admin/mixed/744保护及uv不动。
+
+原独审P1在途publisher撤权未abort、P2超限归503已tests-first实证修复；正常auth unknown根因仍未修。完整技能CRUD/版本撤回UI/剩余真实安全与故障场景OPEN。全部状态与证据回写现33矩阵和任务卡，单测/health不能代替全用户验收。
+
+### R266 管理页真实草稿已读回；独审两个缺陷仍在修复（2026-10-07 00:17 UTC）
+
+Root正常tab25新本人管理读已读回旧真实R255无效包草稿、R255/R264 ACTIVE：真实名称/简介与草稿状态可见，草稿无安装按钮、详情默认折叠技术信息、X返原卡焦点。无新增正常数据/模型/权限/资金操作。随后自然auth unknown再现，Retry session200但authenticated:false、未恢复；保留实际失败截图与safe分类。显式登录后回原/app/skills/default安装及侧栏，最终document与读200已观测，但中间redirect未抓取，不冒完整IAM trace或unknown根因已修。
+
+原两独审确定P2超限catch误归503和P1管理401/403只隐藏而不取消在途publisher。Root实际70983一RED503≠502、2815两REDsignal false≠true，原writer按同卡最窄修并待最终冻结；工程/正常browser未最终验收，不称全页完成。旧3业务RED/早harness误名/全部失败日志保留。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST、完整新增0，Wave0–7 active。Web正式HEAD仍a46c796，候选22路径，不夹带原Admin/mixed，Root独占Git/资源/browser。
+
+### R266 Web 正式管理契约已消费，页面源码接续（2026-10-06 23:54 UTC）
+
+Web正常源码worktree正式HEAD **a46c796116475566d6921a61adc0a7fd253aff93**（parent9ccebbed）：Root精确12path消费BFF930028b/public8.4/101/raw111d2408，由两现generator正规write/check，Team15 exact、AgentFailure仅provenance、ChatMessage指纹不变；原99操作/components和所有旧非pin断言保护。原Admin全文件/三D0内Admin前缀/两mixed依旧未提交，757其余机器片保护文件exact。原16RED/54PASS、随后69/1旧count漏更新和296/1旧scheduled pin漏更新记录均保留，后两只精确oracle修复，未删断言。Root最终contract297/0、architecture51/0、lint0、noEmit0、default171files3284PASS/0FAIL；build尚未跑，正常.next未用作工程build。
+
+这仍非全页验收：Root正常浏览器旧页面default安装真实R255可见；点击我发布的最终真实R255/R264两卡与安装按钮可见，无管理状态标记，短暂loading已结束。未新增正常数据、不用五状态seed冒真实输入。Source下一片沿现三D0，原writer只tests-first两现tests，Root执行业务RED后准五源/必要fixture；原独审只读交接STOP。新managed自有两GET与ACTIVE发布确认分流，编号仍在默认折叠详情、两view不扩市场。版本/撤回写UI、33用户用例与完整CRUD仍待验，全70组11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，本轮完整新增0，Wave0–7 active。
+
+正常BFF33630/53714/930028b与Platform54280/8086/6e5已持久配置加载；其余应用和PG/Redis/MinIO/ClamAV复用，无重置/正常DDL/模型/权限/资金写。实际收据r266-web-pin-commit-receipt.json与同名red/green/default/final-gates-v2日志、独审723ef1d2；只读源码预备报告f760e84f，不代替页面通过。
+
+### R266 个人技能管理接线推进（2026-10-06 23:41 UTC）
+
+BFF930028b本人管理两GET/public8.4/101已Root提交，Platform6e5c284稳定生命周期错误保持；两正常源进程已重载、同持久配置/data，非临时fixture。actual freshHTTP44/0、contract276/0、architecture35/0、default841/0/2资源SKIP辅助证据见CURRENT，不能抵作用户通过。Web仍ee4056c/8.3，原writer只三设计面消费D0；五状态/版本/撤回与33真实子用例待验。全70完整组11/8/14/36/1不升、完整新增0、Wave0–7 active，后台正向/MCP自订/Storage provider/welcome unknown缺口保留。
+
+### R266 已提交的业务修复与当前页面接缝（2026-10-06 23:10 UTC）
+
+个人技能仍按用户选择优先，默认「已安装 / 我发布的」、不扩市场。Root已验收并精确提交Platform **6e5c28487651541fffdabe63624fb997536bd3d2**（parent3d4ba6c）：系列改名、非法版本化base、非法撤回状态三处由Internal改现稳定FailedPrecondition；原判定/回执/权限/事务顺序未改。撤回原key终态重放与异body冲突机制保持。源码及正式HTTP3.3读取为后续接线基础，不代表正常进程已载入或页面命令已通过。
+
+Root实际旧源三RPC RED→最终整38自有PG PASS/0FAIL/0SKIP；IAM/包状态/Redis RPC为受控边界，正常库零使用，catalog77/Redis0 exact且自有库回收。最终check/lint/目标format/build/verify全0，默认1288 PASS/292资源SKIP（旧289+新3另实PG跑），独审5489665e绑定source961b/testdd508。首轮四test类型错误与runner错误、失败日志保留；owner提交后clean。收据r266-platform-lifecycle-{final-gates-receipt,final-receipt,commit-receipt}.json。
+
+BFF三D0已精确提交 **3b8d18f1150f65b1a646da2881be725c69ec8eb3**；确定正式本人两GET、public8.4/101目标、现用户admission与owner3d4 HTTP固定消费，旧99/六ACTIVE读取不变。Root实际新pin及两bootstrap HTTP得到3项有效FAIL（3.2≠3.3、list/detail404≠200）；当前机器与生成/路由仍后续候选，不冒已接通。测试早期全局fetch错截本地请求已在有效RED前修正；另negative过滤误匹配全文件致held测试13s超时/fixture重叠，Root只终止自有node测试进程，单独保harness错误、不把它冒正式旧回归失败。客户端熔断收口与准确positive筛选按同卡继续，原10s业务oracle不放宽。
+
+现同test-cases新增33具名真实用户子用例（16主交互/4安全/9故障/4生命周期），均待验，归原T-K03、不另建计划中心。Web现ee4056c/default两视图与旧正常发布、安装、focus子链保持；新管理五状态读取、版本/撤回写入口和全页CRUD仍OPEN，须正式BFF→Web与真实浏览器逐项验收。全Wave0–7 active、70完整组仍 **11 PASS / 8 FAIL / 14 RETEST / 36 UNVERIFIED / 1 PAYMENT-LAST**，本轮完整新增0。
+
+正常8后端+Web与PG/Redis/MinIO/ClamAV已实际观测运行，health只代表启动；本轮未重启共享服务或reset、未增正常数据/模型/权限/资金写。保Root uv/gitlinks/原Web Admin/mixed与所有任务外变更；Root唯一集成/Git/browser，原BFF writer继续机器卡、其他原角色已STOP，不遗留无名任务。
+
 ### R265 本人技能管理源码正式发行，页面 CRUD 仍待消费者闭环（2026-10-06 22:50 UTC）
 
 用户确认先清晰个人管理页，不扩技能市场。正常 Web `ee4056c5979ab076f467a048ab94139cdddc6a67` 的两视图、真实名称/简介/状态、技术信息默认折叠维持；Root 正常浏览器 X/Escape 返回精确原卡、390×200 正文独立滚动与固定关闭、提交后键盘关闭再验均通过。证据 `r265-focus-{x-normal,escape-390x640,short-x,postcommit-normal}.json`、截图 `r265-skills-personal-handoff.png`。安装启停/移除/重装与正常发布/上传/扫描/验证/读回历史子链保持，不把这些标成全生命周期通过。

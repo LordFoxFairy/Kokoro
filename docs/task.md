@@ -1,3 +1,145 @@
+### R266-SKILLS-WEB-READ final-v3 精确提交与 Root 验收交接（2026-10-07 00:37 UTC）
+
+|项|当前事实|
+|---|---|
+|业务/范围|按已确认先清晰个人管理页；默认已安装/我发布的，不扩市场；本人两读取与ACTIVE发布确认分流|
+|owner/角色|Web原负责人 iam_grant_source_scope_0244：26许可路径已冻结STOP；原协议/UI/fixture审查员已STOP；Root独占Git/正常服务/浏览器与集成|
+|基线/交付|/Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current；a46c796→**b901986c55bef01d395f3112231879b3cab5f6a7**，tree59587b1b6fd51907dbe2f8ffeb68a884b2eb64cb|
+|保护|原Admin import/dispatch、proxy 199行block及mock、九locale Admin增量只留工作树；两mixed无变/未暂存，744其余保护exact；正常PG/Redis/MinIO与数据不reset，Root uv原hash不动|
+|工程|冻结工作树六目标544/0+四fixture197/0；精确staged副本独立依赖：contract280/0、architecture51/0、lint/typecheck/build0、十目标698/0|
+|全套失败|工作树3300/1（Next refresh manifest），具名复跑1/0/76未选不抹FAIL；精确staged3099/1/77setup SKIP、两套件失败（保护auth旧redirect oracle、welcome unknown断言），不得称完整门通过|
+|真实用户|正常tab25 U01/U02/U03/U11观测PASS；提交后硬刷新默认已安装/再读三真实管理记录；两列表/两ID详情GET200，无mock/正常数据写；仅4/33，不冒完整CRUD|
+|证据|现Root var/dev/r255-preserve：r266-web-managed-read-source-commit-receipt.json、r266-skills-real-user-acceptance.json、final-v3冻结d0df3a、两独审报告及actual日志/截图|
+|未完成/后继|保持T-K03完整个人CRUD OPEN：版本/撤回UI、29用户场景由原owner按依赖续派；Root下一并行面核查保护auth/欢迎回归与实际unknown恢复，先明确定界/任务卡再写，不抢Admin/mixed|
+
+工程切片已提交，四读取子例已观察验收；完整默认门与T-K03仍OPEN。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，完整新增0；不缩Wave0–7、不新计划中心、不将复跑或本read误报整体上线。
+
+### R266-SKILLS-WEB-READ 默认全门 consumer fixture 收口（2026-10-07 00:23 UTC）
+
+Root59233冻结64a0全default终态171files3301例 **3290PASS/11FAIL**：app-frame smoke1、use-session装配8旧scope_kind/list/detail shape，i18n闭集1漏新增draft，skill-publish-client1仍期望旧self ACTIVE确认path。不是新业务成功，全部失败log保。原只读985f251b定位三fixtures，第四只130行固定确认path。准原Webwriter仅四已有tests：tests/ui/app-frame.smoke.test.tsx、tests/ui/use-session-state.test.tsx、tests/i18n/resolve.test.ts、tests/hub/skill-publish-client.test.ts；managed safe8/meta-header同步、limit50及无self ACTIVE确认、draft30key精确闭集。原身份/代际/撤权/portal/abort/未知intent/请求计数/closedi18n强oracle和其余文件保持；不放宽parser、skip或删测试。原22候选冻结，新增四consumer适配总26路径；Root独占Git/资源/browser。完成freeze后完整复跑，不先改运行中的树；59233已经终止正常exit1，不因观察超时停服务。
+
+Root4173最终六target544PASS/0FAIL；独立工程copy五门contract/architecture/lint/typecheck/build实际0（9938），但仅工程不是用户闭环。首次工程72348错误共享node_modules symlink导致pnpm自动重链三workspace依赖，引发normal tsconfig Build Error；Root已精准恢复三相对链接、全remainingEngineeringLinks0，正常页刷新恢复，记录r266-engineering-shared-link-setup-failure.json。不重启共享服务/改源/owner数据；第二copy使用独立CoW依赖克隆，无共享目录副作用，原失败不删除。
+
+### R266-SKILLS-WEB-READ 独审缺陷与正常用户证据（2026-10-07 00:17 UTC）
+
+沿原 T-K03/原 Web writer，不新中心。22候选冻结5de11后原协议审 e768554e 确定P2：传输真实1MiB超限提前throw被新catch误归503；Root70983现真error类用例503≠502 RED，日志r266-web-managed-read-size-red.log。准仅本route import/新catch，取消/期限优先503，类超限502；不改共享helper。原UI独审977a4149确定P1：management401/403仅隐藏publisher，原controlled Dialog不退役在途flow；Root2815真实组件/合法File+hash/Draft held→401/403→late合法ACK，signal false≠true两例RED。原writer准本reader local authorizationRetired/实际unmount abort/按钮禁用/安装error非无限loading，只有fresh有效管理或安装读复许可；普通network失败不退役unknown意图。原七fixture/九locale及Admin/two mixed保持，冻结后Root完整目标/工程与正常browser/独审；版本撤回写UI未准。
+
+正常同tab25本人管理新列表实际真实旧R255草稿+R255/R264 ACTIVE三卡可见，草稿无Install，详情草稿/技术默认折叠，X返精确原卡焦点；r266-skills-real-draft-detail.json，零新数据/安装/执行/资金写。随后自然出现unknown登录状态，Retry网络GET session200/body authenticated:false且不恢复，原FAIL保留png与safe分类；实际显式登录后原/app/skills恢复默认安装/R255及侧栏，无新权限确认或凭据写。r266-skills-normal-unknown-login-return.json有最终document200和正常读取，未捕redirect事件，不冒完整IAM中间trace或unknown根因已修。上述候选子链待最终冻结后复验，不升级全CRUD/完整70组。
+
+### R266-SKILLS-WEB-READ 三目标RED实证与源GO（23:57 UTC）
+
+Root26918旧源实际：self limit50 400≠200、exact无self ACTIVE确认404≠200、UI合法旧schema/card/name/summary/Install this Skill前置通过但Source active缺失；三目标FAIL/188本次未选，log r266-web-managed-read-red-v2.log。首UI按钮观察错误另存旧log，不混成业务RED。原Web writer现按上一精确范围源GO，冻结后Root实际回归/独审/build/正常浏览器；不增33用例PASS、不关闭全CRUD，active goal保持。
+
+### R266-SKILLS-WEB-READ Source 准入（23:57 UTC）
+
+机器片已正式Web a46c796（12path），Root实际正常旧卡无状态。tests-first仅两tests三具名病例：两route400/404目标失败已证，首UI Install按钮名harness错误保留，最窄改精确现Install this Skill后Root重跑。后继原writer允许五已审source与七既有fixture/test准确集（hub/client、app/hub-proxy、ui/skills-panel、ui/kokoro-skills-surface、ui/mcp-panel、ui/settings-modal、src/dev/preview-clients）；必要九locale只新增skills.personal.source.draft，四旧状态键复用，INDEX仅src/ui/skills/INDEX.md本职责行。新增managed接口required，删旧personalList管理用方法/schema和旧相应测试语义，迁移获批管理断言保留等强安全/身份/分页/取消要求；原published ACTIVE path断言仅依明确无self分流改，MCP/安装/发布command/Admin其余保留，不能为形式byteexact保旧兼容consumer。原Admin同文件增量与三D0前缀不提交；原two mixed不改，rootfreeze/正常.next保护。
+
+源片当前没有新文件/DDL/contract/依赖；若现route/client职责确实应拆普通file，先给位置比较，不静默增加。Worker不运行门/Git服务/浏览器；Root真实RED通过后go，源码冻结后Root独审、target完整/纯门、非normal.next工程build、正常browser四子链。版本/撤回写UI未准，本读片不冒所有CRUD/33完整用户子例完成。
+
+### R266-SKILLS-WEB-READ：个人管理页面消费切片（准入设计，未开始写源）
+
+Owner Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web；原/root/iam_grant_source_scope_0244唯一writer，Root审查/Git/服务/正常浏览器，原独审只读。基线9ccebbed + machine pin12path已Root暂存，待正式提交后给准确HEAD。三D0已正式，BFF930028b/8.4/101/raw111d与Platform6e5正常加载；Root正常两卡仍旧ACTIVE读/无状态，为当前业务基线。沿T-K03，不另建PRD/目录/测试中心。
+
+按已审三D0扩现schemas/client/catchall/personal-skills-read/skill-publish-client五路径：新增required具名管理读，管理reader删除旧ACTIVE list消费与旧list方法/相应旧schema，不保双读；旧published七字段ACTIVE只给发布确认，用exact无self单GET，原命令仍self/suffix。技术details仍原默认折叠，编号不在卡片，非ACTIVE无Install，已有安装五op不变；状态词五状态，default已安装/我发布的不改。
+
+测试先准现tests/app/hub-proxy.test.ts与tests/ui/skills-panel.test.tsx最窄业务RED：新exactself请求被旧strip/query拦、旧非self发布确认被404、当前卡无真实状态；不要以不存在新方法TypeError或fixture类型错误冒业务RED。原Admin199行前缀保护，同file按明确追加/精确迁移，禁止删Admin或旧安全oracle以过门。Root复跑RED后另放行五源与tests/hub/client.test.ts。完整HubClient必要fixture仅src/dev/preview-clients.ts、tests/ui/{skills-panel,mcp-panel,settings-modal,kokoro-skills-surface}.test.tsx；现发布client/flow/resume回归不改语义。九locale仅新草稿状态词必要键，保护原Admin前缀，source4状态现键复用；相邻src/ui/skills/INDEX.md只本人管理读取职责，普通新文件/目录须先位置审查再准入。其余auth/normal.next/包锁/generated/Admin/mixed/owner/基础设施禁止写。
+
+浏览器/同源各本地一次绝对10s、1MiB/fatalUTF8/strictsafe8/meta-headerrequestid与状态code tuple，无retryable；取消/late/body/同步耗时后deadline检查，读失败不伪空。现Session无signal只能有界隔离+late后续IO fence，不承诺物理取消，不改认证producer。沿现subject/generation/client退休、分页循环/手动next、detail关闭焦点与单scroll保护，不新增状态框架。Root持正常tab25四真实路径：default已安装→现R255/R264管理状态+详情→Settings同reader→硬刷新；五状态异常/取消矩阵辅助不能冒正常数据，未真实可操作项仍待验。版本/撤回写UI下一片，完整CRUD不因本读片关闭。Root当前default6138仍跑冻结机器树，writer待Rootgo才改任何Web文件，不因为观察等待停任务或重复启动。
+
+### R266-SKILLS-WEB-PIN 精确 oracle 补齐（2026-10-06 23:51 UTC）
+
+Root旧8.3真实contract RED16FAIL/54PASS；正式930028b固定blob/raw111d复制与现两generator/write/check0，Team15零diff。首八files69PASS/1FAIL为原整体99数漏101；fullcontract296PASS/1FAIL为现contract/api-contract.test.ts613–614仍旧463/8.3。授权原Web writer仅前者count99→101及后者两wholeartifact oracle111d/8.4，所有业务断言逆向exact，STOP。此前十文件许可之外只增加此已有contract测试两行，不改源/UI/认证/数据库；Root继续复跑/精准stage，原Admin全文件不提交，33用户用例待验。
+
+### R266-SKILLS-WEB-PIN：正式本人管理契约消费机器切片（2026-10-06 23:45 UTC）
+
+三D0已Root独审并按仅自有前缀提交Web9ccebbed58e578af6c9673a44eee301895f04f55，原三Admin2189字节前缀各完整留工作区未暂存；其余mixed保持。正式producer BFF930028b/public8.4/101/raw111d2408，正常BFF/Platform已原资源配对加载。原Web owner /root/iam_grant_source_scope_0244 续任唯一writer，先机器/测试RED、Root正规生成/审查，不提前改五source/UI。
+
+仅准两现generator固定pin常量、七whole-public现test的精确commit/hash/version与skills test新两op断言；另现untracked tests/contract/bff-admin-model-routing-public.test.ts仅两pin/version oracle及标题，原四admin行为完全保持且不暂存全文件。禁止删旧业务断言/skip/hash门、改ChatMessage fingerprint/owner wire/其他Admin/src/locale/INDEX/package/lock。snapshot src/generated/bff-public-openapi.yaml和generated产物Root负责从正式git blob复制/现generator生成，worker不手改。先在原8.3snapshot下运行新期望形成有效pin/schemaRED，再Root复制正式字节和generate，两现generator仅生成既有Team/AgentFailure，不另建Skills代码生成体系。
+
+基线Web9ccebbe、原769文件及Admin保护；Rootstart和本片before双冻结。交付明确文件hash/精确变更/原旧断言保护，Root唯一Git/资源/浏览器；正规consumer工程通过只算接缝，33用户用例与全部CRUD依旧待验，源下一片另准。
+
+### R266-SKILLS-BFF-MANAGED：已验收源码、正常激活，Web消费接续（2026-10-06 23:41 UTC）
+
+原BFF writer/独审交接STOP；Root最终源码/机器21path正式930028b，工程与freeze详CURRENT；原source与机器门实际FAIL保持。Root正常BFF33630/53714、Platform54280/8086已复用原env/data加载，health/ready200不代替业务。Web原writer只三D0尚在途，正式目标pin930028b/raw111d2408/8.4/101，不准提前源/generated写。下一依既有T-K03做D0独审→精确consumer RED/源→Root新门/真实33浏览器子用例；版本/withdraw后继仍OPEN，无新中心/完整组升级。
+
+### R266-BFF-ARCH-ORACLE：现架构三固定 oracle 同步（23:40 UTC）
+
+Root66229实际 lint/types/targetformat/contract全0（contract276/0），architecture32PASS/3FAIL，完整test因set-e尚未运行；源/API独审无剩余阻断但不是页面PASS。三个失败仅已批准新exact route import边界与public8.4/101/ownerHTTP3.3固定版本仍旧oracle。续原BFF writer只准现test/architecture.test.ts：新增精确route允许（不得宽glob），public精确8.4/101，owner精确3.3/正式3d4 pin/digest，其它断言保持；禁止更改源码/机器/测试删skip/DDL/服务。原起始freeze及其余文件全保护，Root重跑架构/full工程，Root提交。
+
+### R266-SKILLS-WEB-MANAGED-D0：用户已确认个人管理，两视图消费设计（2026-10-06 23:37 UTC）
+
+|项|本次范围|
+|---|---|
+|目标/完成条件|原T-K03；默认已安装/我发布的、不扩市场。三设计面明确self管理两GET与既有ACTIVE发布确认分流，经Root审查后才准消费正式BFF，真实33子用例仍待验。|
+|owner/角色|Web；原 /root/iam_grant_source_scope_0244 续派本片唯一文档writer，Root审查/集成/浏览器/Git；原QA agent只读最终BFF runtime，Root重跑当前BFF门。|
+|基线|/Users/nako/.codex/worktrees/kokoro-r257-admin-web；codex/r257-admin-web-current；ee4056c5979ab076f467a048ab94139cdddc6a67；所有既有Admin/mixed保留。|
+|准写|仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md，新增事实/目标前缀，原suffix byte exact；ignored Root var只交接摘要，不写源/test/contract/generated/locale/INDEX。|
+|依赖/裁决|现r266-skills-web-consumer-qa-read.md；BFF候选8.4/101实际fresh-build44HTTP通过但尚未正式发行，D0只目标、不提前repin。管理GET保self；发布确认仅exactGET /api/hub/skills/{id}→现ACTIVE BFF detail；命令仍/self/skills/{id}/suffix，不全局改共用path helper。|
+|最窄后继|现hub/schemas.ts、client.ts、catchall route、personal-skills-read.tsx、skill-publish-client.ts；精确consumer pin/snapshot生成、现mock必需类型/原skills测试/相邻INDEX按另授权。安装五操作/焦点/scroll/身份fence保持。需要新普通文件先报告放置理由。|
+|验证/交付|本次只读取和三文档prefix；Root核原suffix/保护/hash、三面一致并审查。后继实际RED→实现→Root工程与真实Browser，D0/工程不等CRUD；Root唯一commit。|
+
+### R266 个人管理读运行时实施准入
+
+机器正规生成16 write/check0，旧99 public/6owner wire/components Root深相等；纠偏后最终semantic0与83契约用例83PASS/0FAIL。原首次19失败、fixture负控边界2失败、closed error checker遗漏1失败全保，旧R240 hash与固定92未放宽，新RetryAfter仅1..86400。D0已正式3b8d18f，候选仍未发行/正常加载；机器绿不算用户链通过。
+
+沿R266-SKILLS-BFF-READ-RUNTIME原唯一BFF writer，允许仅新增既有目录普通src/http/routes/managed-personal-skills.ts、改src/bootstrap/server.ts exactGET早分派与现src/infrastructure/clients/platform/projection-http.ts新两operation严格消费。原六源码行为保持，固定正式generated two funcs/strictZod为第一层safe8身份/tuple/UTF8/body/header为第二层，list缺cursor→null；同一10s绝对signal从fresh admission到响应，consume迟到/取消无后续IO，无新cache/表/receipt。现machine token共享flight机制复用，不改projection-token.ts；必要越界先报机制。测试/机器/generated/所有其它source保护，worker零运行/服务/Git/browser，3路径freeze/handoff后STOP；Root实际先失败链GREEN及旧回归/安全取消/工程/独审才验收，后继真实owner+Web浏览器仍待接。
+
+### R266 机器生成与实门纠偏
+
+Root正规16生成write/check均0；结构化深比原99 public wire/metadata/components及旧六owner路径/components exact，非generated保护498 exact。pin两例2PASS/build0/governance101 0，但semantic1：新增ManagedPersonalSkillErrorResponse未接现generic error-envelope例外和新具名error response识别。实际openapi/governance82例63PASS/19FAIL，集中上述精确注册及旧8.3/99oracle，原失败log保；不是runtime业务GREEN。
+
+同唯一BFF writer续修仅现scripts/verify-openapi.ts和test/contract/openapi-contract.test.mjs：现generic错误envelope名单新增精确ManagedPersonalSkillErrorResponse，具名两self路径的error响应按D0精确映射识别，不泛startswith放行；新增managed检查确切status→response/code及闭合error/meta/no-store，给现测试追加实际负控，旧断言不删。现8.3精确version/regex与baseline99同步实际8.4/101（generator工具0.99绝不改）。其余源/机器/generated冻结保护，worker零运行/资源/Git；freeze后STOP由Root重跑门，runtime三路径仍未准，语义通过再续。
+
+### R266 BFF新路径有效RED→机器固定消费
+
+Root正常BFF Node22实HTTP三新例FAIL：HTTP pin3.2≠3.3，合法controlled session list/detail实际bootstrap404≠200，fixture exact本地请求已委托原生fetch；freeze起终exact。只执行3新例，其余复合断言/期限未执行不报PASS。早期fixture假截获在执行前纠正，不当产品RED。另旧六baseline98079的negative筛选误匹配全文件导致held测试超时/fixture重叠，Root仅终止自有node55631/55629；不当正式旧回归或期限结论，原日志另保。后续改准确positive筛选/候选全文件回归，正常shared资源零接触。
+
+现准R266-SKILLS-BFF-READ-MACHINE原负责人唯一writer：D0既定8现machine/config/scripts/README与旧vendor→固定3d4vendor（Root从git正式字节提取到ignored r266-platform-http-3d4ba6c.openapi.json，rawb6e5核），public8.4/101独立safe8+5status/query/headers/closed标准meta/error，两new具名GET；原99 operations逐项wire/metadata与旧六owner深相等，其它components不改语义。Connect/Proto/schema/package/lock不变。generator只改现pin/version/supported operations必要检查，不放宽normalization match count；16generated仅Root正规write/check，worker不手改。原platform-http-contract.test既有oracle只同步最新pin/version/rawpath（六op同断言保）；新case保。route test只有deadline例追加客户端12秒AbortSignal安全熔断，保持13s测试预算与9..10.75响应oracle，防旧无限准入让harness本身挂起，不声称已实测deadline。
+
+writer零其它source/resources/Git/browser/测试/生成命令，机器+两必要test与完整保护freeze Root ignored r266-skills-bff-read-machine-freeze.json/handoff后STOP，Root真实生成/strict/旧99deepcompare与RED复跑；runtime managed route/bootstrap/client为下一授权片，不抢写未准source，不冒正常进程/页面已接。
+
+### R266 生命周期验收接管与小切片提交
+
+原writer和独审已STOP，finalfreeze9078/source961b/testdd508；Root51406整38实际PG0skip，自有回收/catalog77Redis0exact，46658五门0/default1288/292资源skip（新增3另实PG执行），独审5489665e无确定block。Root接管仅owner docs/CURRENT.md增加事实前缀、原suffix保持，不动已验源/测试/机器；本业务切片精确source/test/CURRENT3路径提交，正常8086不重载、不假称浏览器CRUD。当前剩余新BFF两read/source/正常激活/Web管理绑定仍下一连续片。
+
+### R266 生命周期工程类型收口（不改变已验生产源）
+
+Root75666实际整38PG PASS/0skip，自有库回收/catalog77Redis0exact；15046 check2/verify2为新增test四TS错误（RPC定义可能同步或Promise的三.then、eventId可undefined），lint0/两targetformat0/build0。这不是生产三throw业务失败，但不可带类型失败提交。原writer只现test新块将三RPC捕获用Promise.resolve/async兼容，不改调用/断言顺序；first.eventId先显式typeof string且非空收窄再复用，不非空断言掩盖。原test字节/生产source961b完整保，新freeze类型收口后STOP；Root实际再全PG/工程/独审。旧失败log不覆盖，不能将仅build0标全绿。
+
+### R266 BFF D0最终审查与管理读取RED切片
+
+原独审67c9ee57已实际回读纠偏，无剩余确定D0阻断；Root最后明确machine token现cache/共享flight不变（不持久/不新增授权cache）。三D0最终冻结后Root精确提交，仅三doc；旧suffix/其余522保持。后继R266-SKILLS-BFF-READ-RED沿原负责人唯一tests writer，仅现test/platform-http-contract.test.mjs与test/platform-projection-route.test.mjs追加管理读契约与实际bootstrap HTTP行为。新tests仅调用现createBffServer，不导缺文件/生成函数造编译RED；旧六断言保持。pin/public路径可读现artifact验证，原3.2测试改用旧immutable git原字节仅后继pin阶段另准，不先删旧断言。正式3d4producer固定。
+
+须包含正常本人五状态safe8/detail/空summary/省略cursor归null、当前admission拒绝/权限与跨租户、closed查询/framing/key、错误tuple/旧六正控；期限/取消负控使用真实HTTP请求与受控peer，晚结果拒绝与owner调用计数，绑定原10s不扩预算。全部明确受控IAM/owner工程HTTP，不冒浏览器用户验收；先正常新路径有效404/不同wire RED，Root保存后才准machine/生成与3path runtime。若追加需要新helper/file/生产import先报告，零机器/源/doc/资源/Git/browser/运行命令，两个tests+完整保护Root ignored freeze/handoff后STOP。以D0发布新commit为执行基线，不改其他owner。Root唯一执行/审查/提交。
+
+### R266 生命周期有效RED→最窄生产修复准入
+
+Root自有canonical PG实际3项FAIL：三处均已合法RPC准入/事务/摘要正控后收到Internal13而非FailedPrecondition9，原key撤回重放/异body冲突/越权保护及零新业务outbox全部先过；filter未跑35不计PASS。源freeze exact，PGcatalog77/Redis0起终exact、自有库已回收。初次runner错cwd造成Prisma模块查找失败另保setup receipt，不算产品RED。现准原Platform writer仅catalog/skill-catalog.service.ts引入既有FailedPreconditionError并替换三throw，不改变原信息/顺序/receipt/状态/权限；现新增test仅纯格式修空行，旧断言预算保持。source/test2路径冻结后STOP，Root实际全PG/工程/独审/精确提交后才称此错误切片验收；非页面CRUD闭环。
+
+### R266 生命周期稳定前置错误：现owner窄修，测试先行
+
+Root实际核 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/src/modules/skills/catalog/skill-catalog.service.ts：createSkillVersion名称不可变、base非active/disabled和withdraw非active/disabled三处plain Error经现runRpc落Internal；应按已正式R264三D0目标使用既有FailedPreconditionError，既有mapper已支持，不能增加字符串mapper/新error体系。Withdraw原receipt预准入与终态current校验机制正确，严禁重排为先ACTIVE读取。归属为Platform现catalog模块；只两现文件，无目录/contract/Schema变更，真实PG业务回归与固定命令身份验。
+
+R266-SKILLS-LIFECYCLE-OWNER-RED由原 iam_grant_source_scope_0244 完成只读报告后续派同owner唯一样例writer：只现 test/integration/skill-command-receipt-postgres.integration.test.ts 增加已确定三前置业务RPC回归与Withdraw首次→同原key/body终态replay→异body原key冲突→新key终态前置拒、本人/他人上下文边界，不删除旧断言或改seed外的数据。当前Platform HEAD3d4ba6c clean，branch codex/r259-skills-metadata，r266-start-freeze基线。只能必要test import/现helper扩展，若需另test文件/命令先报；source全保持旧字节，测试先冻结STOP，由Root自有PG跑实际RED。原fixture受控IAM/包验证非真实用户链，报告不能混称真实端到端。
+
+有效RED后再准实现仅 catalog/skill-catalog.service.ts 添加现FailedPreconditionError import并替换这三个throw（原信息/算法/receipt/权限/状态/事务不变）；后续Root实际组合/全门/审查/精确提交。三D0已批准该错误语义，不造新public/schema。worker无命令/Git/资源/browser，正常库零写；Root唯一执行器。证据ignored r266-lifecycle-owner-red-freeze.json/handoff.md，原Admin/Web/BFF/资金模型无修改。
+
+### R266 三独立工作面：个人技能管理消费设计与后继漏洞审查
+
+前轮是 progress：Web ee4056c 正常具名浏览器验证；Platform本人管理source/HTTP3.3已Root正式3d4ba6c发行、十工程门0与ownedPG/HTTP50/0/0skip，Root台账dbd0be74精确提交。全goal/Wave0–7不缩，完整70组不升。本轮优先形成可实施的正式消费者，不另建任务中心。
+
+Root 统一决定：BFF新增 public `GET /v1/self/skills` 与 `GET /v1/self/skills/{skill_id}`，operation `listManagedPersonalSkills` / `getManagedPersonalSkill`，metadata `product.skill.read_managed_personal`（公开操作治理名，不伪造IAM新增grant）、owner kokoro-bff、public、beta（沿当前Skills公开协议成熟度）、idempotency none。独立本人管理safe八字段/五状态，limit/cursor/status closed，detail精确ID；每次当前Session准入、tenant/subject以受信上下文，拒raw body/mutationkey，成功和错误no-store/request-id，10秒绝对预算从既有准入入口开始并贯穿token/owner/响应，取消与迟到结果不落成功。旧六ACTIVE discovery不变，不把旧列表补历史为新owner事实，不增BFF表/cache/receipt。
+
+版本号按实际实施顺序收敛：当前public8.3/99，本次本人两read将为8.4/101；尚未发行/消费的Storage两delete D0旧8.4/101目标只属历史占位，明确后继在本slice后基于实际发行改为8.5/103，其他删除权限/预算/Schema设计不变，不同时抢同版本。Root承担裁决，不让两个worker发明版本。当前正式machine未改，版本目标不冒发布。
+
+|任务|owner/Agent/权限|基线/允许写集|依赖/交付/验证|
+|---|---|---|---|
+|R266-SKILLS-BFF-D0|BFF / 原 bff_admin_routing_d0_r257 / 唯一doc writer，模型沿原|正常 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal；HEAD42ac39ee，branch codex/r257-bff-normal-current；原untracked var保留。仅三设计文档TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL新增前缀，原全文suffix byteexact，不增目录/source/machine|固定Platform3d4ba6c HTTP3.3/rawb6e5/combined9ad2；Connectc949独立不改。明确§8路径/取消截止接缝/错误闭集/当前目标和版本顺序；只ignored handoff/freeze；Root审核与Git，worker零命令/资源/browser/提交。后继有效wire RED再机器/生成/源，非本卡准入|
+|R266-SKILLS-LIFECYCLE-OWNER-READ|Platform / 原 iam_grant_source_scope_0244 / 只读|物理 apps/kokoro-capability HEAD3d4ba6c；当前skill catalog/version/withdraw/idempotency/真实用例|检查现新版本displayName/base-state plainError与withdraw receipt replay真实机制及最小稳定FailedPrecondition修复放置；只ignored r266-skills-lifecycle-owner-read.md，零正式文件/命令/服务/Git/browser。不重新设计权限/协议|
+|R266-SKILLS-WEB-CONSUMER-QA-READ|Web / 原 agent_planned_guarantee_system_r257 / 只读|正常 /Users/nako/.codex/worktrees/kokoro-r257-admin-web HEADee4056c，既有Admin25/protected28/mixed保留|根据正式owner与Root两public路径，检查self strip/management映射和UI代际/分页/状态安全，给最窄现文件集与完整真实用户E2E矩阵（每项ID/条件/步骤/预期/优先级/结果待验）；只ignored r266-skills-web-consumer-qa-read.md，不写src/test/普通docs，无命令/browser/资源/Git|
+
+所有Agent阅读Root AGENTS、TS/SQL手册、CODEBASE_MAP与本仓三设计及contract。r266-start-freeze绑定起始，Root保所有共享命令/资源/Git/browser；三交接STOP，无重启正常应用、reset或数据mutation。版本/withdraw full CRUD待后继，不能以三D0齐全称用户通过。
+
 ### R265 RELEASE 已提交与下一消费者停止线（2026-10-06 22:50 UTC）
 
 Root 已验收 Platform 本人管理读取的**源码发行**，不是全页CRUD：3d4ba6c3462e3896481f902adf47e0713c4187e4，parent a3655ab，精确22路径，owner clean；proof8e7/source190/历史/generated/Schema冻结保护与两doc原suffix exact。十工程门0/真实owned PG+HTTP50/0/0skip/IAM受控/自有清理，发行文档之后正式contract生成与目标格式再次0。独审62750无确定阻断，原失败证据保留。HTTP raw b6e5/combined9ad2正式固定；正常8086与BFF仍旧，不冒已部署/消费者完成。

@@ -1,3 +1,53 @@
+## R266 个人技能管理完整用户验收矩阵（33子用例：4 PASS / 29待验）
+
+本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式b901986、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后硬刷新及自然点击观测U01/U02/U03/U11四项PASS，29项仍待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
+
+共有前提：Root固定正式BFF8.4与Web新commit、正常owner兼容激活，使用现正式IAM用户A（及经授权的真实B）；不selfgrant、不DB造状态、不mock/preview代替正常用户。每行保存commit、URL/viewport、自然操作顺序、脱敏request-id/status/公开body、实际DOM与必要截图；不得保存token/内部header。用户数据新增/生命周期改变由Root在明确自有QA记录进行，先确认可逆/保留，不因本报告执行。
+
+类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。本轮仅上述四项新增PASS；其余保留待验，不沿用旧子链PASS覆盖新commit。
+
+|ID|前置|自然操作|预期可观察结果|优先级/类型|状态|
+|---|---|---|---|---|---|
+|R266-U01|A正式准入，有现安装记录|打开/app/skills、硬刷新|默认已安装，真实name/summary/来源状态；不预先拉全部管理页；无重复入口|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
+|R266-U02|A有本人active源|切管理视图（现「我发布的」）→点真实名称→展开技术详情→Close|管理GET保持self；safe8名称/summary/tags和exactskill/series/revision；不读别人的发现目录|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
+|R266-U03|A正式已有draft|管理页→draft详情→刷新|draft中文状态、完整字段，无Install/伪编辑/假发布成功；刷新仍draft|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
+|R266-U04|A正式已有disabled源|同上打开disabled卡|来源停用与安装enabled分开，非active无Install；现安装记录不凭源状态消失|P0/U|待验，需正式状态输入|
+|R266-U05|A正式已有withdrawn源|管理列表/详情→刷新|撤回仍本人可管理读，精确revision；不冒删除、安装移除或ACTIVE|P0/U|待验，需正式状态输入|
+|R266-U06|A正式已有quarantined源|打开卡/详情|隔离中文态，无安装/执行；不显示包URL/内部失败payload|P0/U|待验，需正式状态输入|
+|R266-U07|A该view首次无记录|切管理页|准确首次空态，不称已发布/已安装；有正式发布入口，无假零数据错误|P1/U|待验|
+|R266-U08|A真实记录超一页|Next→第二页detail→Previous→末页|opaquecursor原样、前后页正确/无跨页串卡；终页按钮正确；无自动扫全量|P0/U|待验，需合法多页数据|
+|R266-U09|有状态filter且各状态真实记录|第二页切状态→返回all|新filter从首cursor开始；旧detail/晚页不留；筛选空不冒从未创建|P1/U|待验，取决首片filter准入|
+|R266-U10|A正式owner读恢复空页且旧cursor末页为空|到该页→Previous|显示分页空不是首次空，保返回路径，不环形读|P1/U|待验|
+|R266-U11|已在/app且A准入|Settings→Skills→两view→详情关闭|同reader同正式数据、无第二h1/重复导航；关闭回精确触发按钮|P1/U|PASS：本轮正常浏览器真实读取；绑定b901986|
+|R266-U12|合法255长名、长summary/tags真实源|390×200/390×640打开详情、展开技术信息、滚到底、X/Escape|完整可读，唯一bodyscroll；X持续画面可见；回exact opener且focus-visible；不靠自动scrollIntoView判PASS|P1/U|待验，需合法长文本真实源|
+|R266-U13|同主体healthy且detail已开|保持打开超过120s例行probe，再操作键盘|view/detail/草稿不因成功poll重挂；不新增管理GET/POST作为poll副作用|P0/U|待验|
+|R266-S01|A detail开，实际准入转unknown|等待probe→只读Retry→明确登录恢复|旧卡/detail/publish/install同步退役，禁private IO；unknown非匿名；恢复新代freshGET无旧POST|P0/S|待验，真实准入故障前提|
+|R266-S02|A与B各自正式身份及不同自有源|A读后退出/按正规流程切B→管理列表|无A卡/游标/草稿/详情；B只读B；旧A响应迟到不复活|P0/S|待验，B身份输入待Root|
+|R266-S03|已授权跨人安全测试，有A精确ID|B在同浏览器会话经正式同源detail请求该ID并与不存在ID比较|均404同安全错误，不泄露A名称/状态/series；页面不显示旧详情|P0/S|待验；非现UI入口，需真实HTTP伴随证据|
+|R266-S04|本人当前权限被正式撤销或session过期|页内重读/Retry|401/403不是空成功、不复用旧授权；无管理/安装动作；仅正式恢复出口|P0/S|待验，禁止为测试自授角色|
+|R266-F01|A管理页尚未完成GET，浏览器离线|切view/点Retry→恢复网络→再Retry|明确error非empty，无无限loading/自动POST；freshGET成功|P0/F|待验|
+|R266-F02|A detail GET在途，受控延迟|关详情或切view，再释放旧响应|abort+late fence，旧dialog不重开/旧卡不回灌；恢复新请求只当前ID|P0/F|待验|
+|R266-F03|同scope详情A在途，B为另一卡|点B后释放A，再Close|只B详情、Close回B原button；A错误也不覆盖B|P1/F|待验|
+|R266-F04|管理下一页GET在途|返回上一页或离开Skills，释放下一页|旧页不覆盖当前；请求取消；回Skills按当前scope重新读|P0/F|待验|
+|R266-F05|正式单请求依赖累计超过10秒|点管理read/Retry|有限时间退出loading，依赖失败无200/空列表；迟到结果不进页面，手动恢复可freshGET|P0/F|待验，须Root受控真实链延迟|
+|R266-F06|真实链detail暂503/404|点detail→看到error→Retry|错误不继续loading或冒active；Retry同ID且opener保持，成功后完整详情|P1/F|待验|
+|R266-F07|Root受控响应坏shape/陌生status/循环cursor|进入相应页或翻页|strict拒绝、显式error/可退回，不假空、不loop、不N+1补字段|P0/F|待验；协议故障浏览器不冒正常owner数据|
+|R266-U14|A有active源未安装|管理卡显式Install→当前安装GET→刷新已安装|真实receipt后current确认、元信息精确revision；管理read不授额外安装权限/不启动Run|P0/U|待验|
+|R266-U15|A已有安装且source后变非active|已安装CheckCurrent、合法Disable/Remove→刷新|不先要求active源GET；保owner允许管理、来源状态与enabled区分；拒绝按正式错误呈现|P0/U|待验，状态producer前提|
+|R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|待验|
+|R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|待验，新consumer正向回归|
+|R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|待验|
+|R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|待验/阻塞：本两GET不提供命令UI|
+|R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|待验/阻塞：正式写消费者未接|
+|R266-L03|新版本/撤回非法base或异owner场景，正式命令已发行|自然重复动作/旧版本操作/失败后读回|稳定前置/拒绝错误，旧原版与安装不伪变更，不自动换key重写|P0/L|待验/阻塞：另owner错误修复及写消费者|
+|R266-L04|包上传中断/扫描非clean/attempt变化真实输入|取消/恢复、读取当前attempt、显式继续|不把管理draft可见当可执行或可续传；仅现授权包状态流程，无管理read泄露包URL|P0/L|待验；包状态回归独立|
+
+
+最短首轮 Root 真用户链：U01→U02→U11→U13→U12（真实长名输入不足时保待验）→U16→U14；随后F09/F08和S01/S02。五状态U03–U06需正式状态来源；不能用unit构造响应或正常数据库UPDATE代替。生命周期L01–L03待后继真实写入口，是完整CRUD仍OPEN的原因，不为本read切片扩写入集。
+
+
+---
+
 ### R265 最新证据归类（2026-10-06 22:50 UTC）
 
 | 验收项 | 执行路径 | 当前结果 | 证据与范围 |
