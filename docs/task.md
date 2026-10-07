@@ -1,3 +1,43 @@
+### R297 当前收口
+
+- [x] 用户指定Skills优先；原Web唯一writer实现，独立QA审查，Root真实浏览器与共享Git负责。
+- [x] Web fc99691c09777e21843a1af95252d22a51b2fafa 精确19paths；正式卡片/工具栏/当前页搜索/筛选/详情与Settings正常交互及提交后刷新已验。
+- [x] Root完整check最终0/309contract/51architecture/3386default、lint/types/build0；旧v1/v2/v3失败全保，未改欢迎页/Next fixture两条，原样复跑绿不作根因关闭。
+- [x] 九locale原mixed只收3key、三D0旧mixed与755任务外保护；原作者STOP、独审26f65586、commit receipt绑定Git对象。
+- [ ] 完整Skills CRUD/真实多页/资格故障/全test:e2e/axe/视觉预算；原70/33不升级，MCP消费者链仍OPEN、支付最后。完整Wave0–7继续。
+
+|R297-I18N-INVENTORY|原Web writer仅现tests/i18n/resolve.test.ts第18path；Root10161完整门exit1、3385PASS/1FAIL，原773起终exact|原34个人key闭集漏新批准3key，不删闭集/原label/source/九locale非空断言；具名R297三项加inventory，范围文案精确断言。其余17冻结v2与任务外756保护；作者定向27后Root完整门/独审再提交。|
+
+|R297-FOCUS-GATE-FIX|原Web writer仅现reader CSS；Root完整check66240真实exit1，contract309PASS/architecture50PASS1FAIL，773 tracked起终exact|新search input outline:none违反既有可见焦点门。删除抑制/保可见outline，不改gate/shared input；独审其余freeze继续，v2定向architecture+139UI后Root全门和真实焦点重跑。|
+
+|R297-SKILLS-IMPLEMENT|web_interaction_astra_r296 唯一Web writer，gpt-6-astra；Root接受三D0/445d61c3设计/独审bb95f251；17精确paths：reader/CSS、两test、skills INDEX、九locale、三D0|Root首5FAIL含1新增Settings h1错误oracle，修scope后48095有效5FAIL/134未筛；before截图/DOM无search/cover。现完整卡片结构/toolbar/search/dropdown/安装详情/退役与focus按已批实现；原perform/unknown/wire保持。三D0/snapshot/旧tests字节保，旧三展示定位仅必要改为新dropdown/detail入口及closed menu oracle，后续断言不弱化；原Admin/i18n mixed精确hunk保护。writer仅纯定向测试，不Git/browser/共享服务/资源；Root实际门/用户E2E/独审后提交。|
+
+|R297-SKILLS-D0-RED|web_interaction_astra_r296 唯一Web writer，gpt-6-astra，Web6a443b2＋r297 baseline；只现三D0顶部R297与两UI tests尾追加/必要import|Root接受设计5d7670b8和真实before（771、search0、卡278.7、无封面/技术在卡面）。三D0固定本页查询/装饰封面/安装快照详情/身份退役，无wire/schema变化；原全文保护。先5类用户行为回归RED，未Root准入不改生产或字典。所有原Admin/i18n mixed保护；不Git、不服务资源/browser。|
+
+|R297-SKILLS-DESIGN-REVIEW|agent_planned_guarantee_system_r257 原独立QA，只读Web6a443b2与R297设计；唯一ignored报告|复核截图目标的结构变化与真实source metadata、分页搜索范围、安装详情身份退役和原恢复链；不改源码/Git/资源/browser，Root浏览器和实现者分离。|
+
+### R297 用户指定优先：Skills 与 Manus 展示对齐（2026-10-07）
+
+上一人类问答只确认目标，no-progress；R296正常下载GET200但事件超时未据此验收；本轮Root精确磁盘复核自有114B文件存在且hash2722565e原字节一致，r297-download-disk-verified.json记录两点击/事件超时；仅下载原字节子路径，不升资料库整页。当前用户明确 Skills 先修，沿既有七面方案与个人管理业务，把主视觉从工程状态卡改为参考的搜索/工具栏/封面卡布局；不编造目录、次数、来源或新能力。完整 Wave0–7 与原70/33保持。
+
+|任务|角色/范围/基线|验收与交付|
+|---|---|---|
+|R297-SKILLS-MANUS-DESIGN|web_interaction_astra_r296 / gpt-6-astra，只读原 Web6a443b2＋Admin/i18n mixed；Root r297-web-baseline|核真实metadata/正式搜索能力，§8放置表与3D0影响；顶部轻工具栏、参考卡片层级、技术信息入详情，保既有状态/未知重试/资格/焦点。不造市场数据。只ignored报告；Root真实before与设计准入后才授writer。|
+|R297-ROOT-UI-ACCEPTANCE|Root正常浏览器/共享Git/台账|同771/390/1440对照、已安装/我发布的/筛选/详情/菜单/发布关闭与键盘/刷新真实操作；选用旧账号事实、不新增权限/资金/共享reset。完整CRUD缺口记录、不据样式或纯门称完成。|
+|R296-PLATFORM-IAM09-D0|原IAM只读仍独立继续|仅消费者方案，不竞争Web；不在正常资源写权限、不提前接线或重复启动。|
+
+|R296-WEB-AUDIT-MODEL-FALLBACK|gpt-5.6-sol worker实际容量错误未执行，Root改派gpt-6-astra只读架构/交互调查；无writer交付不冒完成|写集仍只ignored报告，原Web source/test/数据库/浏览器冻结；不重复启动服务或CLI worker。|
+
+### R296 正式消费者接线与页面完整交互续行（2026-10-07）
+
+上一目标轮属于 progress：Web6a443b2、IAM87e5437和Rootf7f479e0提交及真实上传恢复；所有原句柄已terminal。当前Root复核三仓与原owner状态，完整Wave0–7/70/33及七面Manus目标不缩，不新任务中心。
+
+|任务|角色/模型/基线与范围|完成条件/责任|
+|---|---|---|
+|R296-PLATFORM-IAM09-D0|原IAM负责人只读跨owner消费者调查，沿当前模型；Platform6e5c284 clean、IAM87e5437，Root r296-baseline；只ignored报告|核IAM已发行0.9正式archive/SDK API与Platform0.7当前四surface消费、MCP个人第五需要；第8节放置表、3D0最窄更新/测试先行写集及冻结旧发布物方案。零源码/docs/Git/依赖安装/服务/资源/browser；不得自建新SDK或放宽资格。Root负责边界/D0准入和全部消费者切换。|
+|R296-WEB-SEVEN-SURFACE-AUDIT|新Web UI角色，gpt-5.6-sol（原web_manus_skills_r292因容量错误terminal，无未交接writer）；Web6a443b2+原Admin/i18n mixed；先只读|读取既有r289七面方案/12自然用户路径，选本轮一个真实未闭环关键交互，给具体rootcause/现文件集/自然RED和状态约束；Root实际browser before后再准入，不擅增市场/假卡/新框架。只ignored报告，零源码/docs/Git/服务/资源/browser。|
+|R296-ROOT-INTEGRATE|Root主控、共享Git/台账/正常browser/现PGRedis唯一负责人|按owner依赖先发行再消费；真实页面失败与CRUD验收不以工程计数替代，保护原8gitlinks/uv/正常数据。不重复启动/重置共享服务；权限材料扩展在动作时确认。|
+
 ### R295 收口与后继（同原计划）
 
 - [x] 原owner两恢复切片tests-first实施，Root独审/冻结/真实复跑后精确提交。

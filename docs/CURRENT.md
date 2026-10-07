@@ -1,3 +1,17 @@
+### R297 技能页正式展示与交互验收（2026-10-07）
+
+Web **fc99691c09777e21843a1af95252d22a51b2fafa**，现reader/CSS、两UI test、个人文案九字典/闭集test、三D0/INDEX/CURRENT共19paths；原Admin/i18n混合与原未跟踪路径仍保持原status，九字典只提交三key，三D0只收R297前缀及Root结论。安装/发布协议、授权/unknown/同key链未改，零虚构目录、usage、作者或远程封面资产。
+
+Root正常登录浏览器实际验收：紧凑搜索/工具栏、装饰书页封面卡、两行名称/简介、真实状态/标签、技术信息入详情；搜索匹配/无匹配/清除/切view与filter清query，完整观测零请求；安装两状态详情零managed GET、Escape回具体trigger；disabled/active过滤、all复原；本人发布详情、新版本/撤回入口保留；发布表单只开/取消未提交，更多→核对当前状态实际成功；Settings共用展示，内部Escape不关外壳。实际390单列/771双列/1440容器三列无文档横溢、771×420详情Close可见，键盘search focus-visible/2px外圈；提交后硬刷新两原安装卡仍可见。临时viewport/CDP干预全部撤，最终图 `var/dev/r255-preserve/r297-skills-final.png`。
+
+实际命令：显式Node22.22.2 `pnpm check` 最终exit0，309contract/51architecture/3386default PASS，lint/typecheck/build0，773tracked起终exact。v1真实CSS焦点抑制FAIL→去抑制；v2原34闭集漏新3key FAIL→保原34/source/label/九locale非空、明确37闭集并加精确范围文案。v3旧欢迎页1秒路径等待与Next fixture JSON.parse两FAIL，相关文件/源码/超时没有修改；原样完整v4复跑全部通过，**两项根因未关闭**，不把复跑绿冒修复。全门包含保留的原Admin工作树，非clean checkout独立门。初Settings新h1 oracle错纳外壳已限定reader；三旧UI定位hunk只必要换dropdown/detail，后续请求/assertion逆转exact。
+
+独审 **26f65586**无确定阻断；18候选freeze-v3、19精确提交/Git对象与保护见 `r297-commit-receipt.json`，正常用户路径见 `r297-skills-browser.json`、键盘焦点见 `r297-skills-focus-v2.json`，旧失败日志全保。Web来源切片验收只覆盖本次展示及上述正常操作；完整Skills CRUD/真实多页/资格故障/全test:e2e/axe/视觉预算仍待验，现默认Playwright预览编排不替代真实链。完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33 **13PASS/6PARTIAL/14UNVERIFIED**，Wave0–7继续active，不以辅助门计数升整页。
+
+附邻项事实：R297精确磁盘检查本人114B QA下载存在、hash2722565e与上传原字节一致，记录两次点击/下载事件超时，不宣精确单点击或延迟；仅下载子路径。R296 Platform→IAM0.9只读方案报告b4ab312b，514tracked基线保护，无消费者实施/正常权限扩展。正常九服务/PGRedis/MinIO本轮未重启/reset；原8gitlinks和uv f7e1c30d任务外保持。后续按用户Skills优先与既有owner顺序补完整CRUD及七面展示，MCP正式消费者链仍OPEN，不新计划中心。
+
+---
+
 ### R295 两个正式切片固定；正常上传恢复已验证（2026-10-07）
 
 Web **6a443b29487a691e82d5df855fc58c4842665b84** 精确4paths：现client单10s应用预算覆盖测量/fetch/成功与错误body，单向abort、绝对deadline/晚结果fence、finally清理；原state/UI/i18n/API不动。Root先4FAIL/15PASS、旧4792bytes保护；最终Node22 pnpm check0：309contract/51architecture/3381默认PASS，lint/types/build0，773tracked起终exact。独审15586e69无确定阻断，代码/test Git对象等最终门freeze，INDEX只职责行、Admin/i18n mixed未暂存。

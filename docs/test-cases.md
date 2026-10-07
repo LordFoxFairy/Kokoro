@@ -1,3 +1,17 @@
+### R297 技能页 Manus 展示与交互复验（2026-10-07）
+
+复用T-K03与原个人33矩阵，不新增业务组、不以组件辅助RED/绿冒系统验收。当前Root真实before：771×752、搜索0、无封面、技术入口在卡面；参考图与正常浏览器已记录。三D0只批准展示、本页搜索和安装快照详情，正式操作协议不变。
+
+|ID|标题|预置条件|测试步骤|预期结果/执行状态|优先级|类型|
+|---|---|---|---|---|---|---|
+|T-K03 UX/R297-main|真实个人技能卡片与工具栏|正常登录、原两安装、正式Skills页|查看页头/两视图/卡片；切我发布的再返回；正常刷新|轻搜索/主标题/小发布工具栏；上封面下两行名称简介/真实状态/紧凑footer；无虚构作者/次数/分类；原两视图数据不丢。正常两入口、真实两安装/七发布及硬刷新PASS；新提交/完整CRUD未重验|P1|主链/视觉/真实浏览器|
+|T-K03 UX/R297-search|当前页搜索不冒全部搜索|本页有数据；分页另需多页真实fixture|输入名称/简介/不匹配词→清除→切视图/筛选/分页|范围明确，搜索/清除零新请求；无匹配不伪造全库为空，仍保owner分页；转换清query。本页匹配/零匹配/清除、非空query切view/filter清空、搜索零请求PASS；真实多页fixture及翻页待验|P1|边界/状态机/真实浏览器|
+|T-K03 UX/R297-detail|完整安装快照详情|两正常安装，来源active及withdrawn|点精确名称→读完整简介/IDs→Escape；我发布的详情再关闭|安装零本人managed GET，不授版本/撤回；原ID/revision/status完整，仅详情显示技术ID；合法关闭回精确trigger。active/withdrawn安装全文/IDs/Escape焦点与零GET、本人发布详情及更多核对PASS；资格故障/迟到响应本轮只辅助门|P0|权限/交互/真实浏览器|
+|T-K03 UX/R297-filter|筛选与两个入口一致|正常安装；Settings技能|开筛选→选disabled/installed组合→复原；打开详情/筛选并Escape|原query/cursor规则保持；错误/空态区分；嵌入无重复标题，Escape先关内部浮层不关Settings；关闭回合法trigger。正常disabled/active一项、all复原、Settings详情/filter Escape保外壳与关闭回账户PASS；错误/权限路径本轮未故障注入|P1|主链/异常/生命周期|
+|T-K03 UX/R297-layout|窗口/长文/滚动可达|正常事实；390/771/1440及短高|缩放观察列数、卡片/菜单/详情/Close、滚动、键盘|按内容宽度布局，无横溢/重叠；两行卡面全文详情可读，技术不撑高，单页滚动owner清楚。实际390单列/771双列/1440容器三列、文档宽等视口无横溢、771×420详情Close可见PASS；键盘搜索focus-visible/外圈2px通过；极长真实fixture、全axe/视觉预算待验|P1|响应式/无障碍/真实浏览器|
+
+工程辅助Root87423首5FAIL，其中新增Settings h1 screen oracle误纳原合法外壳标题；限定reader后48095有效5FAIL/134未筛，正体现缺cover/search/title。错误日志保，未生产改外壳或放宽业务断言。完整CRUD/权限故障/unknown原key恢复依原33继续；全库search无当前owner契约，本片只明确本页搜索。原70/33计数不变。Root完整门v1因新CSS抑制焦点失败；v2修CSS后默认3385PASS/1FAIL：原34字典闭集需明确追加批准三key。v3保原34和全部source/label/非空断言、增九语言范围精确矩阵。Root v3旧欢迎页/Next fixture两FAIL未改，原样v4完整check exit0、309contract/51architecture/3386default及lint/types/build0；这两项根因仍OPEN。Web提交fc99691c09777e21843a1af95252d22a51b2fafa；不以改oracle或复跑绿抹去真实失败，不升完整CRUD。
+
 ### R295 资料库真实恢复子路径验收（2026-10-07）
 
 |ID|标题|预置条件|测试步骤|预期结果/实际结果|优先级|类型|
