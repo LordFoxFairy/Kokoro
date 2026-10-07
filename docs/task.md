@@ -1,3 +1,27 @@
+### R312 本轮交接终态
+
+- Web原owner候选Root已独审并验收提交fa23531；三源原准入/单eval不变，401安全原因取证只是后继定位能力。Root27307实际91PASS，20631完整check0；自然401原因仍OPEN，下一有真实同ID事件再修原因，不按当前200关闭缺陷。
+- Platform D0 0604694正式，原两测试33有效FAIL、其余512及原prefix exact；机器生产尚未授写。原owner仅原handoff增量精确机器/V8写集交接，完成后STOP，正常权限/runtime仍不动。
+- Root正常Skills可用路径已复验与留图，零mutation；Network关/尺寸恢复，原混合修改及uv保持。T-K03/T-K05/整个Wave0–7和70/33计数保持，不另建计划中心。
+
+### R312 已有 owner 续接：认证拒绝取证与 MCP 契约门
+
+R312 auth Root真实RED：22711首6FAIL含新增cache oracle错误；只该新增exact期望按Next现场修为private,no-store,max-age=0后39160自然exit1/18.38秒，4Redis拒绝reason/observer缺失＋2真实Next HTTP缺事件为有效RED，85筛选skip非漏验成功。现三D0/五paths原768保护已核。准原Web owner仅现product-session-store.ts/product-session.ts/auth catchall route三源码observer实现，原写入算法/准入/公开响应/tests冻结；不是认证根因修复。
+
+R312 Platform四D0正式0604694c5c7626c4899338416618056b98f25c87已由Root精确提交，现机器仍39/20/24；允许原owner下一tests-first，只现contract/platform-contract-cutover.test.ts与platform-execution-operations.test.ts精确增量验证目标四新descriptor/presence/父39保留，旧断言不改。生产/Proto/V8生成仍待Root真实RED和另授权；旧510与V1–V7保持。
+
+R312 Platform审查f58e8293两P1已由Root核源码：run固定Infinity/caller signal丢失、详情tenant-only先map破本人404。当前拒机器准入，原Platform owner仅修四R310前缀：现具名runPersonalRead/事务与repository boundary、本人SQL先谓词、cursor严格预校验；原510＋旧suffix保持，无Schema/全局policy/机器/runtime权限。Root现contract/schema两exit0且514起终exact，只证旧机器/Schema。
+
+R312 auth阶段准入：Root已审5150b80d的3现文件observer方案，当前只授权原Web owner在三现D0最前追加具名R312前缀，现tests/server/product-session-store.test.ts与tests/system/oidc-rp-next-http.integration.test.ts尾增实际Redis/HTTP诊断RED；原mixed正文全保，生产三文件尚未授权，Root独占真实资源运行/Git。无新Unit/Mock测试或框架，fixture不作自然根因/用户闭环证据。
+
+上一轮 R311 为实际 progress：Web19178/source提交与真实展示路径、Roota75c1eec台账已提交，登录刷新实际401未修，完整Wave0–7不缩小；70/33计数不变。
+
+|任务|负责人/基线/写入集|验收与停止线|
+|---|---|---|
+|R312-WEB-AUTH-D0|原web_interaction_astra_r296；Web19178与r312-web-start完整mixed基线；仅原r305-auth-evidence-design.md ignored报告增量，暂只读|按R311实际POST401检查点给最小原route/currentProductSession/inspectSession原因闭集方案。比较observer或结构化结果，保原cookie/准入/TTL/一次eval；精确现文件职责与三D0前缀候选/真实验收，不泛化managed GET，不改生产/测试/文档，Root审核后另准。|
+|R312-PLATFORM-D0-REVIEW|原agent_planned_guarantee_system_r257；Platform6cf6057+冻结四R310docs，r312-platform-start；只读报告|独审四读wire/实际mcp_personal/subject/keyset/cursor/安全投影与旧39保留、现Schema可承接；指出确定阻断和最小machine切片文件集。不运行资源/浏览器/Git/生成门、不修改tracked；报告复用原r310-mcp-d0-handoff邻接ignored review。|
+|R312-ROOT|唯一Git/资源/浏览器；正常九源码服务不重复启停|审三D0一致性、当前contract/schema门、四docs原suffix/其余510保护。独审通过才提交D0并准原Platform owner machine；auth另收敛原检查点，不放宽401、不自动重试refresh或伪造身份。工程门不算用户完整CRUD通过。|
+
 ### R311 Skills 当前展示已调整，真实登录刷新缺陷仍待修（2026-10-07）
 
 Web **19178cdfd5c7f129dacb028556b7879a267a0702** 仅四paths：现reader/CSS/Skills INDEX/CURRENT；单本120×160直立封面、100px区顶部24px裁切；名称占整行/启停独立行；筛选outline+装饰icon且实际DropdownTrigger slot样式命中。Root独立保护其余769tracked与原Admin mixed，原state/ref/命令/资格/恢复/tests未改，无新资产或假usage。独审051b33dc无确定阻断。Root冻结Node22完整check27998自然exit0/188.787秒（contract309/architecture51/default3431/lint/type/build通过），773起终exact；工程辅助不作页面完成标准。

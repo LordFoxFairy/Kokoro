@@ -1,3 +1,11 @@
+### R312 技能页用户复验与认证取证正式切片（2026-10-07）
+
+Web **fa23531e347881dca37c9c366e02f178be156b11** 精确九paths：三现session/store/auth源码、两现真实资源测试、三D0前缀与CURRENT。同一次eval/原检查顺序、cookie/写算法/准入不变；只有POST原current=null401输出有限原因与同响应request_id，observer/sink失败不改响应。原Admin与HTTP mixed仅新hunk入index，旧全文/765任务外tracked保持；独审7068d17c无确定阻断。
+
+Root原两文件完整Redis/Next HTTP27307自然exit0/91PASS/145.85秒；39160六有效RED与首22711缓存oracle误设保留。完整Node22.22.2 pnpm check20631自然exit0：309contract/51architecture/3437default、lint/type/build0。仅工程/诊断机制证据，不冒真实IAM或自然401已修；全test:e2e/axe/视觉预算/全部原因与sink动态分支未跑。正常3310实际R301搜索单卡→安装快照完整详情→Escape归焦原标题→清空三卡；771×752图r312-skills-current.png。完整正常观察窗仅session/csrf200，没再现自然401，不猜原因。Network关闭/尺寸恢复，无技能mutation或正常服务重启/reset/授权/资金操作。
+
+并行Platform四D0 **0604694c5c7626c4899338416618056b98f25c87** 正式提交，修正runPersonalRead预算及SQL先本人谓词设计；现contract/schema门各exit0只证旧机器。原owner仅两现contract测试尾增，Root真实33FAIL/98filterSKIP/388ms有效缺四读服务与11messages，原prefix/另512 exact，父descriptor0467c1c4 bytes已核。没有新Proto/V8/runtime或正常权限/reload；仅精确后继machine写集交接，不冒MCP用户CRUD。T-K03/T-K05/自然401与完整Wave0–7仍OPEN；70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/6PARTIAL/13UNVERIFIED**不升级。完整证据同var/dev/r255-preserve/r312-*。
+
 ### R311 Skills 当前展示已调整，真实登录刷新缺陷仍待修（2026-10-07）
 
 Web **19178cdfd5c7f129dacb028556b7879a267a0702** 仅四paths：现reader/CSS/Skills INDEX/CURRENT；单本120×160直立封面、100px区顶部24px裁切；名称占整行/启停独立行；筛选outline+装饰icon且实际DropdownTrigger slot样式命中。Root独立保护其余769tracked与原Admin mixed，原state/ref/命令/资格/恢复/tests未改，无新资产或假usage。独审051b33dc无确定阻断。Root冻结Node22完整check27998自然exit0/188.787秒（contract309/architecture51/default3431/lint/type/build通过），773起终exact；工程辅助不作页面完成标准。

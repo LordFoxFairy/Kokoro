@@ -1,3 +1,7 @@
+### R312 当前验收入口（2026-10-07）
+
+Webfa23531精确九paths的POST401闭集取证已提交，原检查/响应/资源写语义保持；Root真实两资源91PASS与完整check0、独审7068d17c，仅诊断不关闭自然401。正常Skills搜索→详情→Escape归焦→恢复三卡实际复验，图r312-skills-current.png；沿19178呈现，没有新增假目录/使用次数。Platform0604694四D0已提交，两个现machine尾增Root33有效FAIL，仍未生产/发行/CRUD。70与个人33不升级；详细事实与未验以CURRENT R312及r312-root-verification.json为准，完整Wave0–7继续。
+
 ### R311 Skills 当前展示已调整，真实登录刷新缺陷仍待修（2026-10-07）
 
 Web **19178cdfd5c7f129dacb028556b7879a267a0702** 仅四paths：现reader/CSS/Skills INDEX/CURRENT；单本120×160直立封面、100px区顶部24px裁切；名称占整行/启停独立行；筛选outline+装饰icon且实际DropdownTrigger slot样式命中。Root独立保护其余769tracked与原Admin mixed，原state/ref/命令/资格/恢复/tests未改，无新资产或假usage。独审051b33dc无确定阻断。Root冻结Node22完整check27998自然exit0/188.787秒（contract309/architecture51/default3431/lint/type/build通过），773起终exact；工程辅助不作页面完成标准。
