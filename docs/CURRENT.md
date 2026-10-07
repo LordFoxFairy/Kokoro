@@ -1,3 +1,13 @@
+### R301 Skills 发布恢复切片已提交（2026-10-07）
+
+Web **5a0a1a9900ca6217800bd57e5686233dae491926** 精确七路径；Root复核源码/test等完整门freeze、其余766字节及原Admin混合status exact，三D0只收本片前缀不夹原Admin。每旧远程操作10秒绝对预算与1MiB JSON/fatal UTF8，PUT安全与原同key单重试/七字段ACTIVE确认保持；无新增API/schema/权限/框架。沿R300 Manus布局不另造页面。
+
+正常真实用户路径：旧GET200 hold16451ms仍loading RED→新9998.826ms有界失败/可重试→同草稿完整上传/验证；两Publish200 ACK与其后确认GET200皆丢失→多阶段约30s unknown→关闭/继续重开零POST→显式仅严格ACTIVE GET200核实后成功/八真实发布卡。两POST仅核同key/path/status，receipt body未捕获，不宣event/replayed一致。后继刷新八记录及新技能详情持久化，Close回trigger，最终默认两安装卡，图r301-skills-final.png。未自动安装/资金推理操作，保自有非敏感QA源，原数据不清。
+
+刷新另有未关闭异常：首硬刷新操作观察chat/unauthenticated，窗口多个private401而不同时间session projection true；保存r301-refresh-auth-failure.json的snapshot已是后续Skills恢复态，不含最初失败画面，responses缺严格时序，不能据此确证根因。第二硬刷新恢复不是修复；原Web owner只读核跨tab/generation与build，需补时序而非假关闭。
+
+Root完整Node22 pnpm check exit0：309contract/51architecture/3396default PASS、lint/types/build0，773tracked起终exact；提交前再跑client/flow/resume48PASS。包含原Admin混合非clean checkout隔离。独审6cd9fb62无确定阻断；工程计数非用户完成率。完整Skills CRUD/多页/资格/极端边界及全test:e2e/axe/视觉预算仍待，70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **13PASS/6PARTIAL/14UNVERIFIED** 不升级；T-K03 OPEN、Wave0–7 active、支付最后。证据同var/dev/r255-preserve/r301-*，Fetch空/Network关/无尺寸override，正常服务零重启/reset，原uv f7e1c30d/八gitlinks保留。
+
 ### R300 Skills 布局与真实触屏缺口已修复（2026-10-07）
 
 Web **4e585d44cba700e01c611eb26422c31af3a2b4b7** 精确三paths（原reader CSS、skills INDEX、本仓CURRENT），原Admin/i18n混合status与770任务外tracked保；源码仅CSS。沿已批准个人管理/Manus展示设计，右上宽search/下行发布、左filter、100px封面/紧凑卡片，无新市场/usage/资产/接口/权限。Root同771卡318.59→268.19、input196→275；390单列/1440七真实发布卡三列与Settings正常/窄嵌入无横溢；搜索/无匹配/两视图/停用筛选/空发布取消/详情与嵌套Escape/短屏Close/键盘可见焦点/正常硬刷新实际验证。

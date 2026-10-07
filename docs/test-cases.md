@@ -1,3 +1,15 @@
+### R301 对现个人技能用例的真实增量证据（2026-10-07）
+
+复用 R266-F05/F09/L04，不新增重复测试中心，13PASS/6PARTIAL/14UNVERIFIED与完整70原计数不变。
+
+|关联|预置与实际步骤|观察结果与判定|优先级/类型|
+|---|---|---|---|
+|F05/F09 有界等待与未知恢复|正常本人账号/自有非敏感ZIP；Draft后hold准确GetUpload200→重试同草稿→正常MinIO/Complete/Validate→hold两Publish200与ACTIVE200→关闭继续→显式核对|RED16451ms仍loading；新GET9998.826ms退出可重试；同草稿后续真实成功。两POST同key，body没捕获不宣receipt equality；约30秒进入unknown，重开零POST、仅七字段ACTIVE核实GET200后成功→八真实卡/详情；此子链通过，完整变体仍PARTIAL|P0/异常、状态机、真实E2E|
+|L04 上传取消/继续子路径|旧状态读取hold期间UI取消，解除后同session明确继续原草稿|未证明owner回滚；同草稿继续实际到上传/验证/发布。扫描非clean/attempt变化未验，整例仍待验不冒PASS|P0/生命周期|
+|既有登录/刷新异常|发布成功后首次硬刷新/再正常刷新|操作观察首chat/unauthenticated与private401，不同时间session true；保存snapshot已恢复Skills，无初始chat画面/精确时序，根因OPEN。第二刷新恢复八发布/新详情不是修复。后继须完整认证时序与多tab复现|P0/异常、权限、状态同步|
+
+Web5a0a1a9，真实证据r301-publish-browser-{red,deadline-green,unknown,recovery-green}.json、refresh-auth-failure/refresh-recovered-detail与当前截图；工程门仅辅助，完整T-K03仍OPEN。
+
 ### R297 技能页 Manus 展示与交互复验（2026-10-07）
 
 复用T-K03与原个人33矩阵，不新增业务组、不以组件辅助RED/绿冒系统验收。当前Root真实before：771×752、搜索0、无封面、技术入口在卡面；参考图与正常浏览器已记录。三D0只批准展示、本页搜索和安装快照详情，正式操作协议不变。

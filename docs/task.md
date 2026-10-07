@@ -1,3 +1,26 @@
+### R301 当前交付与后继
+
+- [x] Web原writer实现/冻结，独立QA终审，Root真实RED→上传恢复/unknown/仅ACTIVE核对、完整check与精确七路径提交 **5a0a1a9**，原混合status与766字节保。
+- [x] 刷新后新发布记录/详情持久化与Close返回、默认两安装卡实际验证；当前截图r301-skills-final.png。
+- [ ] 首刷新401/错页观察仍OPEN；已保存文件snapshot为后续恢复态，不能当初始失败图。原Web负责人只读调查，需真实时序证明，不因第二刷新正常关闭。
+- [ ] 完整Skills CRUD/多页/资格/极限/全无障碍及视觉预算仍沿原33矩阵续行，70/33计数不升。R301三个任务交付限本切片，不冒整体目标完成；Root所有集成/Git/浏览器独占。
+
+R301 Root现client27例真实执行：11FAIL/16PASS、exit1（Node22，r301-publish-client-red.log）；8新增行为失败及3组合signal旧oracle预期变化，源码仍f33b82c2。正常浏览器GET response hold16,451ms仍loading的业务RED已存。独立D0 278aae89与作者D0 d9aa3e7c已读，三文档当前/目标与原suffix保护明确，准最窄现client生产局部helper及具名ACTIVE getter，lifecycle原字节/shared client/UI/flow/协议冻结。另准现skills INDEX一职责hunk与CURRENT自有前缀；不得新增重试/更改预算/权限/放宽闭集。作者冻结后Root全门、独审与相同正常页面恢复，不把辅助27例当全CRUD。
+
+## R301 Skills 发布等待与恢复（2026-10-07）
+
+上一 R300 为实际布局/触屏源码与真实浏览器进展；完整 CRUD 仍 OPEN。本轮继续 Skills 优先，排查旧发布、上传、ACTIVE确认无应用期限导致加载不退出；不转去 MCP 或新建任务中心。
+
+|任务|归属、基线、范围|阶段与完成条件|
+|---|---|---|
+|R301-WEB-D0|原 web_interaction_astra_r296，Web唯一后继writer；4e585d44，/Users/nako/.codex/worktrees/kokoro-r257-admin-web，原Admin/i18n混合与773 tracked见r301-web-baseline.json|先只读定位及精确设计、测试清单，生产尚未准入。后继最窄现skill-publish-client.ts旧命令、PUT与七字段ACTIVE确认；保lifecycleCommand、shared client/parser、UI/flow/CSS/contract/generated。D0仅现三文档前缀，tests先原client test尾；越界须Root裁决。|
+|R301-QA-D0|原 agent_planned_guarantee_system_r257，只读独审，同基线|核期限、caller取消、晚结果、旧错误族与ACTIVE确认、既有同key单重试/明确继续；只ignored报告，不跑资源/改仓/Git。|
+|R301-ROOT-E2E|Root独占IAB、资源、最终门、Git；Root83fe28dc，九原PID/TCP与7后端ready已核|UI提交自有非敏感QA包，GET上传状态响应停滞真实RED，解除后同意图恢复；成功、未知、取消、刷新分别证据，不以命令门冒完整CRUD，不重启/清数据/改权限资金。冻结后完整check、独审和精确提交。|
+
+放置决定：扩现 src/hub/skill-publish-client.ts 的客户端等待、预算、错误归一职责；淘汰全局client改写、UI倒计时掩盖与通用框架。无新owner、API、schema或持久状态；各远程操作10秒含headers/body/解析，不宣多操作发布总10秒。超时只表示浏览器结果未确认，不证明回滚；原同key/body、既有一次network重试和明确继续保持。getPublished仍旧无self路径、七字段ACTIVE，不能用managed五状态替代。预算/封闭解析实施待D0与有效RED裁决。
+
+当前33/70计数不变。证据 var/dev/r255-preserve/r301-*；原8gitlinks/uv及任务外字节保护。沿原任务续派，不批量开放子仓写权限。
+
 ### R300 收口与后继（沿既有Skills任务）
 
 - [x] 原Web writer仅CSS实现/冻结，Root正常几何RED与两次触屏真实RED→GREEN；独立QA afdc4d43只读终审，Root共享Git/集成独占。
