@@ -1,3 +1,11 @@
+### R302 Skills 真实安装与独立页面恢复（2026-10-07）
+
+沿 R300 Manus 风格个人管理布局与 R301 发布恢复，不重做市场、不造使用次数或公共技能。正常本人 R301 自有源真实 POST installation200 → canonical GET200、固定 revision1；停用与启用分别 PUT200 → canonical GET200，刷新真实 enabledfalse/true。首组合网络窗口截断，Root另分步重做完整非截断停用/启用，不用缺失旧响应冒完整网络证据。菜单打开/Escape已验；实际“移除安装”直接执行 DELETE，没有确认层，本轮没有点击、没有删除或“删除确认取消”PASS。
+
+另真实复现独立 Skills 被聊天 snapshot timeout 覆盖：同次刷新 hold snapshot GET上游404和Direct列表GET上游200，10秒取消后主面变聊天错误；旧Document pause/stale ID不当目标证据。原Web writer只在现 MainSurface 七条件加独立surface隔离，mounted/身份/EmptyState key、parent/engine/侧栏/协议保持。新三例Root有效RED均FAIL（120未筛，不冒旧正控）；最终独审无确定阻断。相同双GET hold真实GREEN：列表/快照均ERR_ABORTED，Skills仍渲染、搜索R301可用；侧栏错误保留，解除注入点击重试后列表恢复且query不丢，详情打开/关闭回trigger。返回Direct R243原历史/输入可用，回Skills正常三安装卡；没有发送模型消息/资金/权限/清数据/重启操作。
+
+Root完整Node22.22.2 pnpm check原句柄9930自然终态exit0、192.670秒：309contract/51architecture/3399default PASS，lint/types/build0，773tracked起终exact；包含原Admin混合非clean独立门。Web精确三路径提交 **ec28a8f8ee08694c53cca8ae6c31924cb763c88e**，Git对象等freeze/原mixed status exact，其余770任务外tracked保。正常最终硬刷新三真实安装卡渲染、Direct历史正控已验；工程辅助不当用户完成率。首自然401根因、完整Skills CRUD/真正多页/身份资格/移除与全部异常边界仍OPEN；70 11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST、个人33 13PASS/6PARTIAL/14UNVERIFIED不升级，Wave0–7保持。当前源码6c3e6edc/testd77d9406冻结，作者只两个tracked变动，其余771保护；原Admin混合保留。浏览器Fetch空/Network关闭，未加viewport；证据同var/dev/r255-preserve/r302-*，正常最终图r302-skills-final.png。
+
 ### R301 Skills 发布恢复切片已提交（2026-10-07）
 
 Web **5a0a1a9900ca6217800bd57e5686233dae491926** 精确七路径；Root复核源码/test等完整门freeze、其余766字节及原Admin混合status exact，三D0只收本片前缀不夹原Admin。每旧远程操作10秒绝对预算与1MiB JSON/fatal UTF8，PUT安全与原同key单重试/七字段ACTIVE确认保持；无新增API/schema/权限/框架。沿R300 Manus布局不另造页面。

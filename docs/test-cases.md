@@ -1,3 +1,14 @@
+### R302 同一矩阵增量（2026-10-07）
+
+|关联|预置与用户步骤|实际证据/验收边界|优先级/类型|
+|---|---|---|---|
+|U14 固定安装|真实本人/R301自有已发布源，发布视图安装→canonical读回→安装视图详情|POST200+GET200、fixed revision1、真实卡可见；补当前证据，历史PASS不新增计数|P0/主链、真实E2E|
+|U15 启停/刷新|上述真实安装→停用→刷新→启用→刷新；另分步重做完整网络观察|PUT200、canonical GET200、刷新false/true通过。首次组合window截断已记；撤回/更新/资格完整变体仍PARTIAL|P0/状态机、持久化|
+|T-K03 独立页恢复|正常Skills刷新hold真实snapshot404与Direct列表200至预算取消→搜索→解除注入→侧栏重试→详情→Direct/Skills切换|旧主面被聊天timeout覆盖RED；七guard后同故障GREEN，Skills不被覆盖，侧栏错误保留可重试且query保持，详情焦点恢复；Direct原历史仍可读取，无新发送。首自然401仍OPEN|P0/异常、竞态、真实E2E|
+|移除子路径|安装更多菜单→Escape|仅菜单取消；当前无确认层，未点击DELETE、不算删除/删除确认PASS|P0/生命周期，未完成|
+
+工程门仅辅助；三新增UI有效RED/最终source/test独审留同证据目录，Root全门句柄9930已终态exit0（309contract/51architecture/3399default、lint/types/build通过；mixed checkout）；Web精确三路径ec28a8f已提交，正常浏览器双hold→恢复与最终硬刷新实际通过。70/33原计数不变，完整T-K03不升级；正常基础设施不reset、原数据保留。
+
 ### R301 对现个人技能用例的真实增量证据（2026-10-07）
 
 复用 R266-F05/F09/L04，不新增重复测试中心，13PASS/6PARTIAL/14UNVERIFIED与完整70原计数不变。

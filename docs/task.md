@@ -1,3 +1,34 @@
+### R302 Skills 真实安装与独立页面恢复（2026-10-07）
+
+沿 R300 Manus 风格个人管理布局与 R301 发布恢复，不重做市场、不造使用次数或公共技能。正常本人 R301 自有源真实 POST installation200 → canonical GET200、固定 revision1；停用与启用分别 PUT200 → canonical GET200，刷新真实 enabledfalse/true。首组合网络窗口截断，Root另分步重做完整非截断停用/启用，不用缺失旧响应冒完整网络证据。菜单打开/Escape已验；实际“移除安装”直接执行 DELETE，没有确认层，本轮没有点击、没有删除或“删除确认取消”PASS。
+
+另真实复现独立 Skills 被聊天 snapshot timeout 覆盖：同次刷新 hold snapshot GET上游404和Direct列表GET上游200，10秒取消后主面变聊天错误；旧Document pause/stale ID不当目标证据。原Web writer只在现 MainSurface 七条件加独立surface隔离，mounted/身份/EmptyState key、parent/engine/侧栏/协议保持。新三例Root有效RED均FAIL（120未筛，不冒旧正控）；最终独审无确定阻断。相同双GET hold真实GREEN：列表/快照均ERR_ABORTED，Skills仍渲染、搜索R301可用；侧栏错误保留，解除注入点击重试后列表恢复且query不丢，详情打开/关闭回trigger。返回Direct R243原历史/输入可用，回Skills正常三安装卡；没有发送模型消息/资金/权限/清数据/重启操作。
+
+Root完整Node22.22.2 pnpm check原句柄9930自然终态exit0、192.670秒：309contract/51architecture/3399default PASS，lint/types/build0，773tracked起终exact；包含原Admin混合非clean独立门。Web精确三路径提交 **ec28a8f8ee08694c53cca8ae6c31924cb763c88e**，Git对象等freeze/原mixed status exact，其余770任务外tracked保。正常最终硬刷新三真实安装卡渲染、Direct历史正控已验；工程辅助不当用户完成率。首自然401根因、完整Skills CRUD/真正多页/身份资格/移除与全部异常边界仍OPEN；70 11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST、个人33 13PASS/6PARTIAL/14UNVERIFIED不升级，Wave0–7保持。当前源码6c3e6edc/testd77d9406冻结，作者只两个tracked变动，其余771保护；原Admin混合保留。浏览器Fetch空/Network关闭，未加viewport；证据同var/dev/r255-preserve/r302-*，正常最终图r302-skills-final.png。
+
+R302任务状态：原writer与QA均STOP冻结；Root原全门已终态0、真实浏览器GREEN与Web ec28a8f三路径提交完成；仅本隔离切片验收，后继完整CRUD仍Root独占正常浏览器/Git。MainSurface只7guard、现test尾3例；不改独立页面API/权限、不卡等待其它模块。原计划“移除确认取消”实际未实施：当前无确认层，只有菜单Escape；永久移除本轮未授权/未点击，保持未验。
+
+R302准入：作者设计c713ccab/原QA具体分支审查与Root精确双GET browser RED已核。Root v1三FAIL中仅case2业务有效，另两新harness前置失败不作产品RED；作者只修tail后Root v2实际3业务FAIL/120未筛（过滤deep link未匹配旧正控，未宣执行）。原189799-byte前缀保持。准现src/components/blocks/app-frame/app-frame-main-surface.tsx唯一source：mounted后standalone先于聊天loading/error、connection/Todo/canvas聊天控制不侵入，保侧栏/Direct/Project原恢复、身份准入/emptyState key/现props。生产仅局部条件，不改parent/engine/auth/路由/CSS/字典。tests冻结；必要相邻INDEX一职责行由Root最后补，CURRENT Root独占。冻结后Root完整check/独审/准确双hold故障浏览器+正常独立页面及Direct正控。
+
+### R302 独立页面错误隔离：真实失败后修复接缝
+
+Root当前 /app/skills 出现主面“会话列表加载失败 / snapshot read timeout”，真实DOM/PNG r302-shell-cross-surface-red已存。受控session读取延迟/timeout，不是自然401根因复现；首次Fetch事件为旧Document /app/skills且Invalid ID、已清patterns，不能冒准确目标pause证据。现source明确MainSurface先conversationHydrationFailed再EmptyState，使standalone Skills被会话错误覆盖。局部职责归Web现AppFrame主面选择：独立页面应不被会话错误/加载占有；侧栏真实失败/重试保留，Direct/Project聊天恢复保持，无wire/data/auth放宽。
+
+|任务|归属/当前范围|门|
+|---|---|---|
+|R302-WEB-SURFACE-RED|原web_interaction_astra_r296，Web5a0a1a9＋Admin原mixed；现main surface/parent/现两smoke测试只读设计，允许现tests/ui/app-frame.smoke.test.tsx尾新增用户行为回归，原全文保持|先ignored放置与最窄方案，现测试尾RED冻结；生产尚未准。不改认证/engine/route/schema/CSS/字典/协议，不服务资源/Git。Root实际RED/纯门后授既有source；同仓唯一writer。|
+|R302-QA-SURFACE-REVIEW|原QA只读审已知共享壳分支与新tests，原生命周期审查先交|确认standalone呈现优先级、侧栏错误仍可操作、Direct/Project loading/error正控、焦点/嵌入范围，零源码/Git/资源/browser。|
+
+### R302 Skills 真实安装生命周期与认证调查
+
+上一R301为progress：Web5a0a1a9和Root40b6387c提交、真实有限等待/恢复路径改变验收事实。完整Wave0–7保持，不新建计划中心。本轮当前九原PID/TCP仍存活，不冒全部ready；原Web773 tracked/混合基线已保存r302-start.json。
+
+|任务|负责人/范围/基线|完成条件|
+|---|---|---|
+|R302-ROOT-SKILLS-LIFECYCLE|Root正常tab25，Web5a0a1a9，只操作自有R301非敏感已发布源；无源码、配置、权限、资金或Gitlink改动|真实安装→默认已安装→详情→停用/刷新→启用/刷新→移除确认取消，逐操作status/公开安全receipt/DOM/焦点。永久移除须当时确认，不以取消冒删除PASS；发现失败先保RED。|
+|R301-AUTH-AUDIT-CONTINUE|原web_interaction_astra_r296当前原句柄running，只读既定报告|继续准确定位session generation/refreshing与build隔离边界。首刷新文件仅后续恢复snapshot、缺时序；不凭假设改认证、不宣修复。|
+|R302-QA-MATRIX-READ|原agent_planned_guarantee_system_r257，仅只读现矩阵/设计|指出安装生命周期尚未闭合验收点、固定revision/原key/撤回来源/重开/并发的证据要求；仅ignored报告，不资源或源码写入。Root独占正常浏览器与所有Git。|
+
 ### R301 当前交付与后继
 
 - [x] Web原writer实现/冻结，独立QA终审，Root真实RED→上传恢复/unknown/仅ACTIVE核对、完整check与精确七路径提交 **5a0a1a9**，原混合status与766字节保。
