@@ -1,3 +1,9 @@
+### R268 验收边界更新：个人管理完整 T-K03 仍 OPEN（2026-10-07）
+
+BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/digest子门通过，未运行正式IAM→BFF→Platform PG资格、未接Web、没有新生命周期用户E2E。原33用户子例 **6PASS/1PARTIAL/26待验**与70组 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**保持；不把22目标或864默认计数折算业务通过率。正常本人管理双视图五卡只读仍可见，未新增操作证据。
+
+继续现T-K03版本/撤回/unknown同key、当前撤权与安装固定revision场景，真实链确认后才更新对应状态；原FAIL/RETEST不清零。证据入口r268-runtime-candidate-commit-receipt.json，真实owner资格前提r268-real-owner-qualification.md；候选commit不代表公开发行。
+
 ## R266 个人技能管理完整用户验收矩阵（33子用例：6 PASS / 1部分通过 / 26待验）
 
 本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。

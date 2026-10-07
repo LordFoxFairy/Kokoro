@@ -1,3 +1,34 @@
+### R268-SKILLS-LIFECYCLE-RUNTIME：沿 R267 机器候选补正式命令（进行中）
+
+上一轮分类为实质进展：Web3e4f3d2局部卡片与成功发布用户路径已验证、BFFa55f70f机器候选已提交、Rootfe626110统一台账提交；不冒整页/全Wave完成。本轮先复核当前树与原正常句柄，无重复启动/reset；范围保持Wave0–7与当前CRUD优先。
+
+|任务|Owner/执行/模式|基线与范围|完成条件/停止线|
+|---|---|---|---|
+|R268-RUNTIME-PLAN|BFF 原 bff_admin_routing_d0_r257；只读|/Users/nako/.codex/worktrees/kokoro-r257-bff-normal，codex/r257-bff-normal-current，a55f70f3；当前仅untracked var；读三R267 D0、机器103、现Catalog/auth/bootstrap/相邻projector及测试|给最窄新普通文件/现接缝清单、先失败业务HTTP病例和准确运行命令；不改生产/测试/文档/Git/资源。Root批准写集后再tests-first。|
+|R268-RUNTIME-REVIEW-PLAN|原 agent_planned_guarantee_system_r257；独立只读|同a55f70f3与Rootfe626110，D0单10秒、严格输入、trusted subject、durable receipt/当前replay、取消恢复|列确定实现风险与真实owner验证前提，报告仅Root ignored var/dev/r255-preserve/r268-lifecycle-runtime-plan-review.md；不改任何tracked文件或启动服务。|
+|R268-WEB-LIFECYCLE-PLAN|Web原 iam_grant_source_scope_0244；只读|/Users/nako/.codex/worktrees/kokoro-r257-admin-web，HEAD3e4f3d2，保护Admin/mixed；现reader/publisher/hub与BFFa55候选|盘点新版本草稿续包/撤回确认/unknown原key恢复的现UI接缝与最窄消费文件；只Root ignored报告，BFF正式producer前不改Web/生成/服务。|
+|R268-ROOT-INTEGRATION|Root唯一Git/服务/browser owner|Rootfe626110与保护uv/gitlinks，正常BFF930028b/Web3e4/Platform6e5；docs/CURRENT/progress/task/test-cases/map唯一编辑Root|真正RED→源码→独审→完整适当工程门→真实owner HTTP→正常浏览器分层；候选不发行/不Web消费直到producer完整可验证。保持33子矩阵6/1/26、70组11/8/14/36/1，未验不升。|
+
+R268只读计划272e5035已Root批准最窄运行候选：新增两input/command-id（src/http/create-personal-skill-version-input.ts、withdraw-personal-skill-input.ts）、两正式3.0projector（src/infrastructure/clients/platform/create-personal-skill-version-projector.ts、withdraw-personal-skill-projector.ts）、两route与窄request lifecycle helper（src/http/routes/create-personal-skill-version.ts、withdraw-personal-skill.ts、personal-skill-lifecycle.ts），现catalog-connect两methods、bootstrap exact早dispatch和package精确注册。采用相邻普通文件、不建目录/新模块；淘汰只读managed route塞命令与通用proxy/第二client。reason必须按批准D0 **code points**（Array.from长度）1..2048而非计划误写JS code units；metadata沿既有draft策略，不trim。sole10s由准入前起，ownerreceipt唯一、无preGET、无自动重试/新key，身份不从body。
+
+现catalog-token.ts仅get增加第三可选deadlineAt（旧两参calls不变），在入口与await credential后两fence同时检查caller signal及单调绝对deadline：Root已复核读凭据后才查signal会迟开IAM；不改cache/flight行为。tests-first仅新增test/personal-skill-lifecycle-http.test.mjs（真实本BFF HTTP但admission/owner边界受控，明确不是正常用户E2E）、现test/skill-create-draft-credential.test.mjs仅append取消病例；先冻结两hash由Root跑合法version/withdraw返回缺失RED和慢credential取消零IO RED，后才准生产。optional descriptor/architecture既有文件先保持，遇真实gate失败再单独许可。root526trackedfreeze r268-runtime-start-freeze.json；Git/门/资源/browser仍Root独占。
+
+Root原84188已终态：旧源码build0，合法两path实际 **0PASS/2FAIL（404≠201/200）**，token四新病例 **0PASS/4FAIL（credential/fetch1≠0）**，非module错误/假RED；日志r268-runtime-{http,token}-red.log。526原tracked仅credential test append变化，其他525exact。现准原writer按上述七新source/三现接缝+package实施；两个REDtest原断言冻结，新suite剩余受控HTTP/生成Connect/取消预算需后继补齐，不宣称真实owner/用户通过。
+
+无BFF SQL/schema/receipt/Redis写入，无Platform变更或临时正常开发服务，无原Admin/mixed暂存。Root本轮已探测九源码原PID及PG/Redis/MinIO/Scan监听均存活，七owner ready/health200；没有重启或reset。正常两个新path无authority403是既有拒绝而非有效命令RED，证据r268-normal-unauthorized-before.json。原基础设施/九源码服务复用；机器/接口门不当完整用户验收。
+
+
+R268首源码13hash与521保护Root核exact；Root43359首build1（唯一TS6133 unused type），原writer仅删该type import新6f1e5d91，Root93596重build0→同原HTTP/credential两suite **13PASS/0FAIL/0SKIP**。原合法2缺路由/4token迟到RED仍保，受控边界通过不当正常用户CRUD。当前source独审与真owner资格独立并行，正常930028b未重启。Root发现withdraw机器reason禁NUL但input漏检，另helper非timeout throw清掉timer后未回复；下一仅准原writer同新HTTP test追加具名NUL/准入抛错负控及raw重复key fixture补Content-Length隔离原因，不先改源码。后继Root真实RED后再窄修；budget/原断言不放宽。
+
+
+R268追加负控不是完成声明：Root84029 safety源码build0/两suite16PASS；Root11019此前3actualFAIL（NUL200/准入抛错悬空/坏429）已窄修并原断言通过。独审进一步发现新的timedOut return、incomplete body、raw alias与两digest presence缺口：Root28985实际2FAIL（13s held准入无503、alias201），49534实际1FAIL（完整413后socket未退役）；正规Platform6e5 v4 golden两projector **0PASS/2FAIL**，不能拿受控owner仅64hex断言当互通。已授原writer仅helper/两route/两projector五source补闭合，不改global auth/path/parser/机器/Schema；unknown protobuf ACK依D0仅两新命令拒非空$unknown，尚须真实generated Connect负控，不先改decoder。独审报告r268-lifecycle-runtime-source-review.md（2P1/3P2）保原v2截面，完整producer尚未发行。
+
+真实owner资格报告r268-real-owner-qualification.md：现runner frozen_sources正常gitlink与candidate worktree不一致，必须Root单次独立冻结装配，不改正常Root gitlink；安装harness未同步正式3metadata、TCP新socket计数不等请求数。后继保原旧库存阶段再插新版本/撤回/安装精确revision与当前撤权命令，所有fixture resources自有且finally回收；该报告只读、没有跑真链。正常九源码/共享基础设施仍原句柄，没有重启/reset，Web不消费未发行两命令。33与70业务矩阵原数不改。
+
+R268 新增真实 wire / 早拒绝收口：Root30712 build0，新三病例1PASS/2FAIL；golden通过，binary root unknown ACK实际201≠502；early首次为harness错误oracle（正式缺key应idempotency_key_required），不记产品RED。原writer仅更正后Root63443实际0PASS/1FAIL（完整400后不完整socket1500ms未退休），日志r268-early-socket-red-v2.log。现只准三新route/helper统一unfinished-body完整回复后退役和两命令root/嵌套非空protobuf未知字段拒502；原13source其余/521保护exact、uv原hashexact。新wire用真实generated Connect二进制，并非JS owner mock；首fail后余下四unknown格尚未执行，不冒均已RED。候选仍未发行、正常930028b未重启，用户33/70矩阵不变。
+
+R268 当前交接：原writer/两独审均STOP，最终BFF候选 **39db896b9755a8b710d27ae1a220cdbb182b72b7** 仅16精确路径已Root审查与提交，未发行。Root最终format/lint/types/build0、contract295/0、architecture35/0、default864/0/2原SKIP、focused22/0/0；13freeze/521保护及原Catalog/bootstrap/credential inverse exact，独审1338f91c。原TS2345/格式及oracle/harness失败保留。下一仍R268-ROOT-INTEGRATION真owner资格，不跳Web消费；runner现strict installation metadata缺三字段、count仅新socket不能证明零owner请求，须按原报告最窄修且不放宽frozen_sources。正常所有服务复用，33/70用户状态不变。
+
 ### R267-SKILLS-LIFECYCLE-D1-MACHINE：两命令正式 public 机器候选（未发行/未实现）
 
 ### 同期 R267-WEB-MANAGED-CARD-LAYOUT（已批准个人管理展示的局部修复）

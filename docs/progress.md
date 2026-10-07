@@ -1,3 +1,13 @@
+### R268 个人技能生命周期源码候选已提交；真实服务与页面验收待续（2026-10-07）
+
+BFF候选 **39db896b9755a8b710d27ae1a220cdbb182b72b7**（parent a55f70f3）仅16精确路径：两input、两正式3.0 digest projector、两具名route及窄10秒生命周期helper，现client/token/bootstrap/package接缝、两test与三现文档前缀；public8.5/103机器无新diff。**未发行、Web禁止消费**；正常BFF仍930028b/8.4，Web3e4f3d2与Platform6e5及原基础设施/句柄不变，没有重启/reset/正常DDL/资金/模型/权限写。
+
+Root最终冻结重跑format/lint/typecheck/build0、contract:check295PASS/0FAIL、architecture35PASS/0FAIL、default864PASS/0FAIL/2既有SKIP、focused22PASS/0FAIL/0SKIP；4既有OpenAPI warning保留。二进制generated Connect正向与五个未知ACK格全部通过，early完整错误回复后socket退役、held10秒晚结果和正式两digest向量通过；这是本地受控HTTP/transport校验，不是正式IAM/Platform PG组合或用户整页闭环。独审1338f91c、manifest e99ffc08、Root521原文件保护与原Catalog/bootstrap/credential前缀inverse exact；三文档原suffix exact。原实际RED、类型/格式FAIL、缺keyoracle错误与Rootinverse漏删批准imports的harness错误均保留。
+
+完整T-K03仍OPEN，个人33子用例 **6PASS/1PARTIAL/26待验**、全70组 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**不变，Wave0–7 active。本轮正常浏览器只读仍个人两视图/真实五卡可见，没有新增生命周期用户操作或PASS。后继：依 r268-real-owner-qualification.md 固定该候选与正式IAM/Platform/Storage源码，修验收runner的严格安装metadata/请求级观测并走真实receipt/replay/撤权/精确安装revision资格，之后再让Web消费及浏览器验收。工程绿不替代上述链路。
+
+收据：Root `var/dev/r255-preserve/r268-runtime-candidate-commit-receipt.json`；完整工程日志r268-runtime-final-*；正常tab25保留handoff。Rootuv.lock及原八gitlinks不提交。
+
 ### R267 个人管理卡片局部样式修复已真实验收（2026-10-07）
 
 Web正式 **3e4f3d26fa129e1ef844029c49f54b2cd014f5e8**（parent2c302835）仅现reader导入/四class与同目录4规则CSS：不改API、状态/动作、cn或全站primitive，不新增依赖。Root真实CSS先失败证据：默认Button冲突utility及unlayered继承导致title nowrap/font400、Card/Content双padding；修后正常423px内容面板单列、font600/正常换行、单16pxpadding，新样例卡302→178px。320/390窄viewport无横向溢出，1280时实际932px容器两列；标题点开真实详情→Escape返原焦点，Settings技能同真实列表/样式/详情焦点也通过。viewport已reset，Settings关闭，正常页留给用户。截图与用户receipt：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r267-personal-skills-refined.png、r267-managed-card-layout-user-receipt.json。

@@ -1,3 +1,9 @@
+### R268 个人生命周期运行候选入口（未发行）
+
+BFF worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEAD **39db896b9755a8b710d27ae1a220cdbb182b72b7**：`src/http/{create-personal-skill-version-input,withdraw-personal-skill-input}.ts`严格输入/command ID；`src/http/routes/{create-personal-skill-version,withdraw-personal-skill,personal-skill-lifecycle}.ts`只两命令/单10秒/迟到fence/未完成body回复后退役；`src/infrastructure/clients/platform/{create-personal-skill-version-projector,withdraw-personal-skill-projector}.ts`正式owner3.0presence/digest。现Catalog/Token与bootstrap扩具名接缝，零SQL/新receipt/Proto变更。
+
+public8.5/103尚未发行，正常BFF930028b/8.4和Web3e4f3d2不变；下一真实owner资格沿Root现 `scripts/e2e/run_bff_skill_draft_sandbox_smoke.py`及原报告r268-real-owner-qualification.md，禁止关闭frozen_sources或用受控generated Connect冒真实IAM/PG。完整状态以CURRENT与原T-K03/33矩阵为准。
+
 ### R267 个人管理卡片局部样式修复已真实验收（2026-10-07）
 
 Web正式 **3e4f3d26fa129e1ef844029c49f54b2cd014f5e8**（parent2c302835）仅现reader导入/四class与同目录4规则CSS：不改API、状态/动作、cn或全站primitive，不新增依赖。Root真实CSS先失败证据：默认Button冲突utility及unlayered继承导致title nowrap/font400、Card/Content双padding；修后正常423px内容面板单列、font600/正常换行、单16pxpadding，新样例卡302→178px。320/390窄viewport无横向溢出，1280时实际932px容器两列；标题点开真实详情→Escape返原焦点，Settings技能同真实列表/样式/详情焦点也通过。viewport已reset，Settings关闭，正常页留给用户。截图与用户receipt：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r267-personal-skills-refined.png、r267-managed-card-layout-user-receipt.json。
