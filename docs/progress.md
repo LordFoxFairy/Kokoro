@@ -1,3 +1,9 @@
+### R299 用户要求 Skills 优先：当前正式页面复验（2026-10-07）
+
+当前 Web `fc99691c09777e21843a1af95252d22a51b2fafa` 技能 reader/CSS 与提交字节一致，本轮无新 UI 源码改动。Root 在正常已登录页面与 Manus 同尺寸实际读取，已观察搜索/轻工具栏、封面卡/两行简介/技术详情入弹层。实操 R255 搜索单卡、无匹配空态、详情/Escape 焦点、停用筛选、七张真实发布 revision 卡、发布表单打开/空表禁用提交/取消、硬刷新从工作区 loading 恢复两安装卡。未提交发布/安装/移除/撤回，未验证全多页/权限故障；不升完整 Skills CRUD 或70/33计数。一次隔开操作搜索清除归因未知，紧接重做 fill/open 保留 query；不宣已修复新竞态。证据 `var/dev/r255-preserve/r299-skills-browser-recheck.json` 与 `r299-skills-current-user-review.png`。
+
+当前人类优先级仍 Skills 展示及完整用户链；邻项 MCP 两原 owner 仅只读契约/UX调查，绝不以其报告代替本次技能交付或开放 writer。保持已批准个人管理而非虚构市场/使用次数；完整Wave0–7继续。
+
 ### R298 正式 Platform IAM 消费前提已提交，用户连接器链仍待（2026-10-07）
 
 Platform **6cf6057990e0be8e6417183af08aec17014079bf** 精确14paths：直接固定IAM官方0.9archive/sourcefa515233/digest428e9bb9，正规pnpm11.25生成锁与安装，删除旧0.7无fallback。唯一checker收紧runtime dependencies所属和内外provenance原bytes；Root先实测旧checker将三行移dev仍exit0，13FAIL/25PASS自然RED后修复。SDK第五surface编解码可用但生产policy/call site仍四项，原独立E2/Basic保持；没有借SDK enum放开个人管理或写正常权限。

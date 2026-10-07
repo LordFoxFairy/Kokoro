@@ -1,3 +1,18 @@
+### R299 当前人类优先级：Skills 展示与真实交互
+
+- [x] Root 正常浏览器复验当前 fc99691 展示与搜索/无匹配/详情返回/筛选/已发布视图/空发布表单取消/硬刷新；现 reader/CSS 等提交。本轮无新实现，证据 r299-skills-browser-recheck.json 与当前实图。
+- [ ] 完整 Skills CRUD/多页/资格故障及与参考精确视觉差异仍按原用例验收，不据展示升整页PASS。MCP 两调查保持只读并交接STOP，不取代当前用户技能优先级。
+
+### R299 个人连接器正式业务链：契约与用户验收并行核定
+
+上一目标轮为progress：Platform6cf6057与Root762baa7c真实提交、Root完整门/独审/SDKwire与漏洞RED→GREEN；本轮已核当前clean owner及原Platform只读句柄running，不重复派该任务、不重复启动服务。
+
+|任务|归属/当前基线与范围|验收/责任|
+|---|---|---|
+|R299-MCP-UX-ACCEPTANCE-READ|原Web负责人 web_interaction_astra_r296，只读 /Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，fc99691＋原Admin/i18n mixed；BFF76098c0只读；Root同CODEBASE_MAP/现测试矩阵/PRD；唯一ignored r299-mcp-user-path-audit.md|将现主页面/Settings连接器与自定义MCP的全部CRUD/启停/授权/列表恢复映射到当前client/wire；独立给七字段自然E2E矩阵、loading/error/unknown/retry/取消与焦点状态，指出缺的真接口而非图样假PASS。零仓写/Git/门/资源/browser/服务。Root独占实际页面与后续边界裁决。|
+|R298-MCP-PRODUCT-CONTRACT-D0-READ|原Platform负责人原句柄正在运行，仅既定ignored报告|继续现资源/receipt/secret owner与正式mcp_personal契约设计，尚未准source/schema/Proto。与Web用户验收只读并行，不共同发明wire；Root收两报告审定三D0一致后再准入。|
+|R299-ROOT-MCP-BOUNDARY|Root主控|核当前secret/reference/外部owner服务事实，识别真正未决而非擅造新的secret owner；不使用Agent E2伪造个人管理。原70/33及完整Wave0–7不缩，Billing最后；保八gitlinks/uv与正常数据。|
+
 ### R298 收口与原 owner 后继
 
 - [x] Platform6cf6057精确14paths，0.9唯一pin/两checker漏洞修复；Root自然RED/六门/独审/Git对象与501保护已绑定，同CURRENT保首失败与skip边界。
