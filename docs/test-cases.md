@@ -1,3 +1,11 @@
+### R284 界面子缺陷真实验收（2026-10-07）
+
+|ID|标题|预置条件|步骤|预期/实际|优先级|类型|
+|---|---|---|---|---|---|---|
+|T-K03 UX/card-spacing|个人技能安装卡去重复留白|正常IAM已登录3310技能页，两真实安装项，Web dae05dfa|正常771查看两卡→390/1440核范围→展开收合技术详情→切我发布的打开既有详情→Escape→回已安装→正常硬刷新|RED原286px/双padding；现771两卡238px、Content0；390卡16..374/按钮33..343，1440卡390..1350/218px，pageWidth等viewport；原禁启用和动作保留，详情返回焦点正确，尺寸已清、真实渲染。仅此子缺陷PASS，无发布/安装/移除新验收|P1|UI/边界/状态机/真实浏览器|
+
+证据r284-ui-proof.json、normal-final.png、独审55be51a3与Web精确两路径commit；全test:e2e/axe/视觉预算未跑，整体T-K03不升级。BFF99bbda35只是D0门一致，不新增T-C05用户PASS。完整70仍11/7/15/36/1，个人33仍13/6/14；下一继续原完整业务矩阵，不另建任务中心。
+
 ### R283 当前证据边界（2026-10-07）
 
 - T-C05本地资格已交付6f20f81a：本人隔离fresh PG/HTTP16/0/0，正规门当前0；SessionAdmissionDouble/idle其它worker只是装配，不是真Storage/IAM/Scheduler或浏览器。本地提交不升17真实删除子例PASS，正常runtime39db/8.5、Storage worker/Web仍缺。完整DELETE并发与COMMIT unknown依旧待验。

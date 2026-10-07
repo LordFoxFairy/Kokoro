@@ -1,3 +1,16 @@
+### R284 当前任务交付（2026-10-07）
+
+- R284-UI-CARD-SPACING **已验收，仅重复留白子缺陷**：Web dae05dfa两class+CURRENT，原UI writer实施/原独审55be51a3/Root真实771/390/1440与详情/焦点/刷新复验；145/3359/299/51与lint/types/build均0失败、768其它tracked exact。截图与proof见现r284-ui-*。整体UI/T-K03仍OPEN，下一按用户优先推进可见动作层级和各CRUD页，不让后台工程门代替界面交付。
+- R284-BFF-RELEASE-D0 **D0已验收，不是worker完成**：BFF99bbda35精确四D0，DATA四审查阻断已收敛，Root当前pin/semantic/schema门0；代码/正常组合/真实owner/用户链仍后继，实施需独立测试失败准入。完整Wave0–7/70与个人33状态不缩水，原owner责任保持。
+
+### R284-UI 安装卡遗漏既有样式的真实界面修复（2026-10-07）
+
+Root当前正常771×752技能页实际两安装卡均286px高，Card外padding24px 0、Content内16px 24px；源码installed只有min-w/space-y/p-4，未复用published现managedCard/managedContent。r284-installed-card-red.png与真实DOM为重复留白证据。本切片仅补既有批准双视图卡片样式遗漏，不改卡片为列表、不裁简介、不删动作/状态/确认或实施仍待选择的新视觉。
+
+|任务|Owner / 基线 / 允许写集|验收|
+|---|---|---|
+|R284-UI-CARD-SPACING|原 iam_grant_source_scope_0244，Web0011e32d+原Admin mixed；仅 src/ui/skills/personal-skills-read.tsx 的installed Card/CardContent两class|安装卡复用已存在styles.managedCard/managedContent，除两class文本外逐字原样；不改CSS/handler/网络/过滤/详情/消息/字典，不新文件、skip测试或改功能。Root真实RED已具，writer交sourceSHA及两hunkinverse=HEAD后STOP，不跑门/资源/Git/browser。Root不套旧测试计数：按实际现personal技能测试/lint/types/build并正常浏览器已安装/我发布的切换/详情/刷新/窄宽及按钮保留验；当前修复不替代全部UI/T-K03闭环|
+
 ### R284 后继准入：具名 Storage release worker 文档门（2026-10-07）
 
 BFF 本地事务切片已由Root提交6f20f81a（19精确路径，当前隔离真PG/HTTP16/0及Node22工程门）；正常39db/8.5仍未激活，Storage worker与Web17用户路径仍OPEN。原BFF负责人仅写现四D0，先收敛设计，不并行改源码。

@@ -1,3 +1,7 @@
+### R284 当前UI与后继worker入口
+
+Web dae05dfa：现 `src/ui/skills/personal-skills-read.tsx` 安装Card/CardContent复用现managedCard/managedContent，CSS/事件/状态无改；真实界面和Gate边界见Root r284-ui-proof.json。BFF99bbda35只四D0，后继client/dispatcher/outbox port/repository四现目录文件与四现装配入口已确定，但source尚不存在，不作已完成地图；正常仍39db/8.5。T-K03/T-C05与其它完整页面保持OPEN。
+
 ### R283 冻结切片已提交，完整用户闭环仍未完成（2026-10-07）
 
 Root当前验收并精确提交BFF **6f20f81a8d15992b35bc07e76ac8808d7072bee8**（19路径）：Project本地同事务聚合删除、正规202回执/状态读取、N+1释放命令与两canonical表。当前本人隔离fresh schema真实HTTP/PG **16PASS/0FAIL/0SKIP**；Node22 check exit0（contract298/0、default867/0+2既有skip、build0）、配置format与五new显式format各0。首次子脚本选到Node24触固定artifact Node pin failure，保r283-bff-check.log；显式Node22 PATH重跑通过，没有改pin/放宽门。原QA当前19起终freeze、14对R281 exact、520原tracked整文件及四D0旧suffix、integration旧155319字节都核；Rootscheduled去新增helper并还原旧委托后HEAD字节exact。R282格式前整文件186e0e34旧helper字节未保存，未声称该preformat逆转PASS；当前helper行为独审无确定阻断。Git对象逐文件等19freeze，BFF剩原var。

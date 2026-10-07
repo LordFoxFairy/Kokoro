@@ -1,3 +1,9 @@
+### R284 实际UI修复已提交；完整界面验收仍OPEN（2026-10-07）
+
+Web **dae05dfa0398c1c8633af4b2e607839fb05ffee9** 只现技能reader两class+CURRENT：安装卡复用已有批准样式，正常771实测每卡286→238px，390与1440无横向溢出；技术详情、已安装/我发布的切换、真实详情、Escape焦点恢复、正常硬刷新渲染均真实浏览器验证，未改业务/权限/确认与CSS。临时尺寸已清，最终截图r284-ui-normal-final.png。Root沿25104/47464自然终态：145定向/3359默认/299contract/51architecture均0失败，Node22 lint/types/build各0；独审55be51a3、两class逆转完整HEAD exact、768其它tracked保护exact，精确两路径Git对象等freeze。仅重复留白缺陷关闭，不把工程绿冒整体UI/T-K03通过；动作层级、各管理页视觉/CRUD、全E2E/axe/视觉预算仍待验。
+
+BFF **99bbda35432ba8c1f91b43ba340f655fe666815e** 仅四D0：具名Storage release worker三面一致门已接受，原审9dd2380e发现DATA四处列/身份/派生operation/当前态问题，原writer精确修、Root复核canonical一致；Storage固定pin/OpenAPI semantic/schema12PASS0FAIL2原SKIP各0，source/schema/contract未改。worker仍未实现，正常BFF仍39db/8.5，Storage真实投递/17用户删除链/正常schema组合/并发DELETE与COMMIT未知仍OPEN。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33 **13PASS/6PARTIAL/14未验**不变；完整Wave0–7保持active。原服务/数据/资金无重启清理写入，八gitlinks与uv任务外修改保留。证据r284-ui-proof.json、web-commit-receipt.json、bff-d0-commit-receipt.json及当前日志/审查。
+
 ### R283 冻结切片已提交，完整用户闭环仍未完成（2026-10-07）
 
 Root当前验收并精确提交BFF **6f20f81a8d15992b35bc07e76ac8808d7072bee8**（19路径）：Project本地同事务聚合删除、正规202回执/状态读取、N+1释放命令与两canonical表。当前本人隔离fresh schema真实HTTP/PG **16PASS/0FAIL/0SKIP**；Node22 check exit0（contract298/0、default867/0+2既有skip、build0）、配置format与五new显式format各0。首次子脚本选到Node24触固定artifact Node pin failure，保r283-bff-check.log；显式Node22 PATH重跑通过，没有改pin/放宽门。原QA当前19起终freeze、14对R281 exact、520原tracked整文件及四D0旧suffix、integration旧155319字节都核；Rootscheduled去新增helper并还原旧委托后HEAD字节exact。R282格式前整文件186e0e34旧helper字节未保存，未声称该preformat逆转PASS；当前helper行为独审无确定阻断。Git对象逐文件等19freeze，BFF剩原var。
