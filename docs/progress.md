@@ -1,3 +1,17 @@
+### R324 Skills 异常用户旅程已验证，401显式恢复入口已提交（2026-10-07）
+
+Web **3328b8540446a4f16a784ccf3bfbce5c2352525c**（parent f251041），精确现reader/两原UI tests/CURRENT/skillsINDEX五路径；原769任务外tracked与6Admin untracked、27mixed status exact，Root独占提交/收据r324-web-commit-receipt.json。现reader仅401显式正规Login，403仍权限提示/no Login；复用现helper/10秒同步单flight/异常解除/卸载timer清理，fresh成功清状态。Retry只fresh GET，无自动refresh或原mutation重放，封面/CSS/API/SQL/共享身份与业务引擎不改。源c16e0df3、独审da3789f7/两测试93702ca4无确定阻断。
+
+Root实际正常3310：空提交disabled、空取消零请求/归焦；首次缺entry提交先draft401→Retry GET401，是实际恢复缺口，旧失败保留。普通硬刷新正规session GET/csrf/POST200→原三安装恢复，仅正控不推断底层cookie/access原因。随后真实缺entry ZIP→draft201/ObjectStore PUT200/Complete200/Validate412、零Publish、busy解除/新意图入口；用户明确重选纠正ZIP→Validate/Publish/list200，当前私人source3b8bc9c5-3fe3-49ad-beba-dcc3bd89f0d9/v1。缺entry草稿ca0eccc2保留、不永久删除，原三安装不改。新来源详情准确/Escape回trigger，最终三个fresh列表/detail/安装GET200、默认三卡/无Dialog，图 **var/dev/r255-preserve/r324-skills-final.png**，结构r324-skills-user-verification.json。所有新增分段窗无截断；PUT200后canceled及硬刷新五导航canceled、billing summary404保留。owner拒绝/成功UUID技术文案P2后继。
+
+Root原97198完整check自然exit1：contract309/architecture51/lint/typecheck通过、default3434PASS/4FAIL，build链未运行，旧401统一forbidden文案断言失败。仅三处401/403文字分流及Login显隐同步，原key/body/次数/abort/lateACK/预算exact；原76316最终Node22.22.2 pnpm check自然exit0，contract309/architecture51/default3438、lint/typecheck/build通过。这些是辅助回归不是用户完成证据。**新版Login自然401点击返回正控仍待**，不冒恢复已验收；auth具体失效原因、多身份、多页、全SkillsCRUD、全test:e2e/axe/视觉预算仍OPEN。已还原默认尺寸/视图、Network关闭、Tab27交付/Manus26保留，原九服务/PG/Redis/ObjectStore没有重启/reset。
+
+独立两原负责人只读MCP系统前置STOP：Platform正式 RegisterMcpServer global准入后Unimplemented/GLOBAL_OPERATION_UNSUPPORTED，空隔离库不能沿正式API造非空Connection；personal读token不替execution proof，BFF不导入owner SQL seed。现BFF c91fee642四读机器发行仍无runtime/正式用户四读正控，需按Platform owner注册先后继续；只读报告r316-iam-resource-handoff.md90aa4d7与原QA报告新93702ca4。未新增服务/凭据/扩权，不把空读/静态方案冒完整连接器CRUD。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持；T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。Root仅续同四台账，原八gitlinks/uv f7e1c30d不暂存。下一优先技能错误反馈与当前未验恢复行为，再沿已批准owner推进其它页面；不新建重复计划中心。
+
+<!-- R324-ROOT-END -->
+
 ### R323 Skills 用户发布升级已验证，版本展示修复已提交（2026-10-07）
 
 Web **f251041b929eb96eaa30054d3d400aaf80f43df6**，精确六paths：现reader两真实revision徽标、三D0批准prefix、现CURRENT/skillsINDEX。原创插画/轻卡层级沿b97a9a2，不伪造Manus目录/使用量；旧同名两版本零可见version真实RED→桌面/390 v1/v2常显，无新API/SQL/CSS/handler或推断。原独审26710536，Root inverse/768任务外tracked及原27Admin mixed/6untracked保护，index空。

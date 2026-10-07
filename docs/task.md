@@ -1,3 +1,61 @@
+### R324 Skills 异常用户旅程已验证，401显式恢复入口已提交（2026-10-07）
+
+Web **3328b8540446a4f16a784ccf3bfbce5c2352525c**（parent f251041），精确现reader/两原UI tests/CURRENT/skillsINDEX五路径；原769任务外tracked与6Admin untracked、27mixed status exact，Root独占提交/收据r324-web-commit-receipt.json。现reader仅401显式正规Login，403仍权限提示/no Login；复用现helper/10秒同步单flight/异常解除/卸载timer清理，fresh成功清状态。Retry只fresh GET，无自动refresh或原mutation重放，封面/CSS/API/SQL/共享身份与业务引擎不改。源c16e0df3、独审da3789f7/两测试93702ca4无确定阻断。
+
+Root实际正常3310：空提交disabled、空取消零请求/归焦；首次缺entry提交先draft401→Retry GET401，是实际恢复缺口，旧失败保留。普通硬刷新正规session GET/csrf/POST200→原三安装恢复，仅正控不推断底层cookie/access原因。随后真实缺entry ZIP→draft201/ObjectStore PUT200/Complete200/Validate412、零Publish、busy解除/新意图入口；用户明确重选纠正ZIP→Validate/Publish/list200，当前私人source3b8bc9c5-3fe3-49ad-beba-dcc3bd89f0d9/v1。缺entry草稿ca0eccc2保留、不永久删除，原三安装不改。新来源详情准确/Escape回trigger，最终三个fresh列表/detail/安装GET200、默认三卡/无Dialog，图 **var/dev/r255-preserve/r324-skills-final.png**，结构r324-skills-user-verification.json。所有新增分段窗无截断；PUT200后canceled及硬刷新五导航canceled、billing summary404保留。owner拒绝/成功UUID技术文案P2后继。
+
+Root原97198完整check自然exit1：contract309/architecture51/lint/typecheck通过、default3434PASS/4FAIL，build链未运行，旧401统一forbidden文案断言失败。仅三处401/403文字分流及Login显隐同步，原key/body/次数/abort/lateACK/预算exact；原76316最终Node22.22.2 pnpm check自然exit0，contract309/architecture51/default3438、lint/typecheck/build通过。这些是辅助回归不是用户完成证据。**新版Login自然401点击返回正控仍待**，不冒恢复已验收；auth具体失效原因、多身份、多页、全SkillsCRUD、全test:e2e/axe/视觉预算仍OPEN。已还原默认尺寸/视图、Network关闭、Tab27交付/Manus26保留，原九服务/PG/Redis/ObjectStore没有重启/reset。
+
+独立两原负责人只读MCP系统前置STOP：Platform正式 RegisterMcpServer global准入后Unimplemented/GLOBAL_OPERATION_UNSUPPORTED，空隔离库不能沿正式API造非空Connection；personal读token不替execution proof，BFF不导入owner SQL seed。现BFF c91fee642四读机器发行仍无runtime/正式用户四读正控，需按Platform owner注册先后继续；只读报告r316-iam-resource-handoff.md90aa4d7与原QA报告新93702ca4。未新增服务/凭据/扩权，不把空读/静态方案冒完整连接器CRUD。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持；T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。Root仅续同四台账，原八gitlinks/uv f7e1c30d不暂存。下一优先技能错误反馈与当前未验恢复行为，再沿已批准owner推进其它页面；不新建重复计划中心。
+
+<!-- R324-ROOT-END -->
+
+### R324 正规本人 MCP 系统链与 Skills 异常用户路径继续推进
+
+上一目标回合分类 progress：Web f251041/Root9f4cd496交付实际技能版本用户旅程，BFF c91fee642发行四读机器契约；不是整体完成。本轮先核当前HEAD、同台账/规范/原句柄，所有R323门均终态；保持完整Wave0–7、70/33与Billing最后，不改目标。
+
+|任务|Owner/角色/基线/允许范围|验收与限制|
+|---|---|---|
+|R324-BFF-SYSTEM-SEAM-READ|原platform_iam_consumer_r298，只读；BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal / codex/r257-bff-normal-current / c91fee642；现D0批准 test/mcp-personal.integration.mjs 与五ordinary TS目标，不授写|具体盘点真实HTTP route/admission/fixture/配置接缝与最小可执行 RED 设计，固定owner API生成本人/另一subject资源，真实IAM HTTP token、真实Platform TCP/PG；不能在BFF导入IAM私有fixture或写PlatformSQL，不用fakeowner。只Rootignored原handoff追加，列测试预置/现API/隔离/cleanup/资源句柄；Root资源与Git独占。|
+|R324-MCP-IDENTITY-SAFETY-READ|原agent_planned_guarantee_system_r257，只读；BFF同c91fee/Platform e83a与IAM当前正式源、Root r320官方HTTP host/启动器|独立核官方token HTTP资格如何接真实BFF session admission与Platform个人surface，一次绝对budget/轮换/隔离与已批准scope；给最小Root fixture可执行路径及不可假冒项。只原ignored review报告追加；不启动服务/跑门/Git/修改源或访问正常凭据值。|
+|R324-SKILLS-EXCEPTION-USER|Root，Web f251041 / 原正常3310 Tab27|沿现页面测试空取消、无效/缺entry ZIP与发布错误可恢复，优先实际失败/取消态，不永久撤回/删除源、不扩权、不修改原三安装；每步记录失败/当前UI与权威请求，不以原工程PASS代页面。发现缺陷再按现owner最窄派工。|
+
+新 ordinary integration file 的位置直接引用 BFF R320/R323 三面已批准方案：test 根而非新目录；比较现contract套件不足真实HTTP链、选单个独立系统文件承接正式资源，现public contract/owner固定生成物不改。当前只读阶段不新文件/代码，任何写入授权和资源真实RED另由Root记录。
+
+R324当前正常页面实测：空发布submit disabled；取消完整无截断窗零请求且回发布trigger。真实缺entry ZIP提交先POST /api/hub/self/skills/drafts401，closed code=session_authentication_required；实际尚未走上传/校验，不称包拒绝通过。页私有卡退休但只“检查登录状态/重试”；点Retry实际GET /api/hub/self/skills401，完整新窗，无正式登录或session renew动作。截图r324-skills-auth-denied.png。此为真实用户恢复缺口，Root先定位session生命周期及页面401恢复，不扩权限/硬绕；不因静态工程通过清零。
+
+|R324-WEB-AUTH-RECOVERY-READ|原web_interaction_astra_r296，只读Web f251041、现skills reader/hub auth private错误/RuntimeBrowserSession/product-session链，保原27Admin mixed|定位正常user401后为何Retry只重复GET、共享session退役/刷新接缝的真实行为，给现最窄修复及系统复现入口；禁止源码/Git/门/资源/浏览器及读取正常secret值。Root保存当前真实请求/页面证据，判定后再授实现。|
+
+### R324 Skills 401 正规恢复窄修准入
+
+局部§8归Web现ui/skills reader认证失败面；现helper与AppGate单flight导航已有效，比较全局epoch新port与局部显式Login后采用后者，不改变认证owner/契约/Schema/状态机，不新组件或文件。真实RED为正常发布401→仅GET Retry401；硬刷新正规session POST200恢复是正控，不证明cookie_missing/access底层原因。
+
+|任务|Owner/写入集/基线|验收与禁止|
+|---|---|---|
+|R324-WEB-AUTH-RECOVERY-FIX|原web_interaction_astra_r296唯一writer；Web f251041/原分支；仅src/ui/skills/personal-skills-read.tsx；774tracked及6原untracked保护r324-web-start.json|仅当前401已退役错误面显式正常Login，复用openProductSignIn/现文案和AppGate10s单flight/抛错解除/卸载timer清理；403仍权限错误不自动Login。显式保存退役status，fresh成功清除；保Retry仅fresh GET且导航pending禁用/事件guard。零自动refresh或旧mutation重放、零新locale/API/SQL/source目录；不改共享AppGate/探针/安装发布命令。freeze后Root完整辅助check、原QA独审、正常浏览器返验与精确Git，未验留OPEN。|
+
+R324候选reader c16e0df3独审da3789f7无确定阻断/779保护；Root97198真实完整门自然exit1：contract309/architecture51/lint/types通过，default3434PASS/4FAIL，build因链式停止未运行。四FAIL均原401统一forbidden文案断言，403同cases仍通过；不冒工程已绿。只授原writer两个现UI tests的三处文案分流（R271参数401两失败+surface两），401Login可见/403无Login/fresh清除紧邻断言，原client/mock/命令/key/body/abort/lateACK/预算不改。源码freeze保持、无新mock或底层用例，Root重跑仍仅辅助。现真实系统fixture缺Skills owner分支，未拿anonymous系统test冒Skills恢复，动态返验OPEN。
+
+### R324 当前真实用户验收（正常3310，无模拟owner）
+
+预置：本人既有登录/正式运行服务，原R255/R267/R301三安装不改，本次自有无外部工具ZIP；没有启动第二套共享基础设施/改权限/永久删除。
+
+|用例ID/标题|附加预置|实际E2E步骤|预期与当前结果|优先级/类型|
+|---|---|---|---|---|
+|TC-SK-R324-01 空发布保护|新空对话框|打开发布，不填字段观察提交|提交disabled；PASS|P1/边界|
+|TC-SK-R324-02 空取消|未提交|关闭发布/观察请求与焦点|零请求完整窗，回发布trigger；PASS|P1/状态机|
+|TC-SK-R324-03 401恢复入口|首次本次新意图|缺entry包提交先draft401；点击Retry|私有卡退役且无自动重放正确，但只重复GET401/no正规恢复入口；FAIL。source候选已补显式Login，动态401返验仍待；此前缺entry阶段未执行|P0/异常与安全|
+|TC-SK-R324-04 硬刷新恢复|上项401|普通硬刷新|GET session/csrf与POST session200、安装list200/原三卡恢复；PASS恢复正控，不证明底层cookie/access原因修复|P0/恢复|
+|TC-SK-R324-05 缺入口ZIP拒绝|正式恢复后明确新意图|重新填本次私有字段、选缺entry包，明确提交|draft201/对象PUT200/Complete200/Validate412，零Publish、busy解除/新尝试可达；业务PASS，owner技术措辞P2保留|P0/异常|
+|TC-SK-R324-06 纠正包再发布|上项已拒绝|用户点击新尝试，重新填/选正确ZIP，明确提交并关闭|新draft201/Complete200/Validate200/Publish200/列表200，来源可用v1；PASS，无自动失败重放|P0/主链路/生命周期|
+|TC-SK-R324-07 默认原安装恢复|本次源已发布但未安装|清空搜索/切已安装|原三卡/版本/来源状态准确；PASS（不是完整CRUD）|P1/回归|
+
+结构r324-skills-user-verification.json分段完整无截断窗；第一次上传PUT200后canceled与硬刷新五导航canceled保留，billing/summary404仍OPEN。证据归档脚本一次对缺responses数组迭代失败，改缺省空数组后保存，属于证据脚本不是产品错误。对象路径仅保owned-upload，不保token/签名query/正文。本次草稿ca0eccc2-2f9a-4108-8c50-3f81b7950434留本人草稿；纠正发布source3b8bc9c5-3fe3-49ad-beba-dcc3bd89f0d9/revision1留私人源，不删除。最终截图后继。
+
+独立MCP只读两原负责人已STOP，BFF c91fee642未授runtime：现Platform RegisterMcpServer真实global准入后明确Unimplemented/GLOBAL_OPERATION_UNSUPPORTED，空隔离资源不能通过正式API预置非空connection。不能把R317 owner SQL seed抄BFF或用personal读token造execution资源；完整四读真实正控/双subject与分页仍OPEN。原reports r316-iam-resource-handoff.md90aa4d7、r313-mcp-machine-review.md e5877e5（后续Skills终审追加后sha变化）给正规IAM HTTP/空读缺路由RED接缝，下一须先owner注册能力，不用空读替全路径。
+
 ### R323 既有 Skills 用户路径与 R321 MCP 机器后继续接
 
 上一目标回合为 progress：Web b97a9a2 / Root71c0bf5d精确交付与正常用户展示证据，未完成全CRUD。当前读取Git与同台账，完整70/33不变、Wave0–7 active。Root关键路径继续当前Skills真实发布/版本更新；独立BFF机器四读沿原R321/原负责人，不新建计划中心、不抢Webwriter。九正常服务不重启，PG/Redis/ObjectStore不reset，原句柄30910已终态0，不重复工程资源。
