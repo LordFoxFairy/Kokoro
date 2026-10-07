@@ -1,3 +1,90 @@
+### R289 Manus 展示对齐：整体规则与首片（2026-10-07）
+
+用户再次明确要求展示向 Manus 对齐。Root实际读取同771×752的已登录Manus技能目录及个人管理、Kokoro个人技能页：目录媒体卡不等于个人管理页，不复制不存在的目录、官方技能或使用数量。Kokoro三同级按钮和状态散落仍未改变，不称UI完成。
+
+方案取舍：采用现组件和真实读端的展示收敛，不做全仓一次性重写；纯换色不能解决层级问题，不新增市场/API/状态机。统一轻边界、弱阴影、明确标题和单一页面主动作。侧栏项目保持可展开子会话，外部聊天持续显示，滚动与业务归属不变。首页输入区清楚聚焦，快捷能力不展示未实现宣传。技能、连接器、排程、资料库、Settings逐页复用同一层级，错误/空态分别展示。
+
+首片沿现五路径个人技能方案：已安装/我发布的，真实名称与启用状态同层、完整简介、异常来源显式、常用启停+更多（核对/移除），技术细节次级。保unknown恢复、继续撤回、权限退役与原请求/key语义。引用现r285-manus-skills-next-slice.md及r287-ui-comparison-review.md，不另建计划中心。具体实现需当前方案审查与用户审阅，此处未写代码或声明验收。
+
+|任务|角色/基线与范围|交付与验收|
+|---|---|---|
+|R289-UI-SURFACE-MAP|ui_manus_surface_map_r289，只读产品/前端；Web97be7f7+原Admin/i18n mixed；仅ignored报告|读规则/CODEBASE_MAP，梳理侧栏/Home/技能/连接器/排程/资料库/Settings真实入口与可复用样式、业务缺口及分片；零source/Git/服务/browser。|
+|R289-UI-ACCEPTANCE|原agent_planned_guarantee_system_r257，只读QA；五路径方案/当前源码|审查首片动作分层、390/771/1440及短高/键盘/Settings/权限/unknown，交自然用户验收清单；零source/资源/Git/browser。Root负责实际页面与最终验收。|
+
+两只读交付已接收：七面映射9fc842b7、12条用户验收4c524890，无新增方案阻断；源码五路径起终exact，新UI全部待实现/待验。
+
+后台R288 Root19050自然结束：check1、format0、八source显式format0；13真PG因check失败未运行。默认869项为866PASS/1FAIL/2原SKIP；失败在未改skill-create-draft-credential.test.mjs第274行performance.now() >= deadlineAt断言，根因尚未验证。冻结九hash前后exact，不重复启动、不放宽门、不冒UI进度。完整目标/CRUD范围不缩小。
+
+### R288 继续完整目标：真实 COMMIT 迟到失败与 IAM D0 窄修（2026-10-07）
+
+上一回合为限定 progress：真实同窗 UI 对照与独立审查发现“继续撤回”必须保留，改变展示方案下一动作；不是新 UI 实现或页面 PASS。具体菜单仍待现审批，不重复发问；完整 Wave0–7 与既有70/33矩阵不缩小。当前可执行后端切片继续，不把此证据冒为 UI 修复。
+
+|任务|Owner / 基线 / 精确范围|验证与责任|
+|---|---|---|
+|R288-BFF-COMMIT-RED / T-C05|Root独占资源；BFF99bbda35，repo84032584/port89bebba37/dispatcher6cee9df0/runtime59dc，test0afcbc95仅现尾新增R287|复用唯一自有r285_bff_6b22cee840ec，先Node22 build与真实PG迟到COMMIT业务RED；准确客户端退休、已提交事实读回和旧lease replay，不用网络mock冒ACK丢失。原writer仅待真实RED后授权同现within成功后deadline/signal fence；无新公共contract/schema/正常服务。|
+|R288-IAM-D0-WORD-FIX / T-K05|原writer已终态，Root接管一个文档短语；IAM28b1ccce，TECH f0c7d6dc，第15行 enabled→disabled=false；另三D0冻结、全部原suffix与source/机器保护|独审7b1c6511指出不存在字段；Root仅一处修正后原iam_mcp_d0_review_r287只读复核，contract:check/prisma:validate真实命令和HEAD suffix保护，Root精确四D0提交。未实施新scope/正常激活/CRUD，不计页面PASS。|
+
+Root68927实际SQL分类RED：test539a5be7/repo408783d6起终exact；0PASS/1FAIL，真实driver55P03于约1119ms、成功ROLLBACK、准确PID14994正常归还与listener清理在断言失败前已观察。失败为锁超时逃逸而非正常未确认false，后续权威行保留/原lease恢复尚未执行；独审275914cc接受。原writer只准精确55P03分类，不吞任意SQL/不覆盖尚未真实证明的57014；公开contract/schema/原tests/其它source禁止写。
+
+|独立后继资格调查|基线/范围|验收|
+|---|---|---|
+|R288-PROJECT-TRUE-OWNER-PATH|原agent_planned_guarantee_system_r257只读；现Root run_web_project_resource_chromium_smoke.py、固定producer/currentD0与9服务注册，只ignored报告|核候选BFF99bb/worktree vs物理975a mixed、旧runner是否承接实际aggregate DELETE→durable outbox→真实Storage/IAM→用户回执与17子例；给现入口最小后继资格位置/必要资源及未覆盖点，不启动/修改runner、正常服务、PG/Redis/MinIO/browser，不关闭冻结源码检查；Root统一选择下片。|
+
+Root54909当前完整门真实失败：pnpm check停在lint（outbox repo CTE SELECT *），format:check因现integration追加段格式失败；八批准source显式format0。不能因旧12绿称全门通过。Root只读Prettier observation证实原190113-byte完整HEAD prefix仍afdbbc exact，必要格式差异始于新追加段；正确semantic AST（排除SourceFile.text/位置flag、仅归一无效括号）前后相等，保全部调用/断言/文字。第一次诊断把整SourceFile.text算入AST，false为检查器问题，已明示纠正、不冒测试行为失败。保存539a5原完整测试供独审，后继仅获准新追加后缀pure-format，旧202774字节保护在本明确格式切片中替换为AST语义保持+原190113完整HEAD字节保护，不弱化业务预期。
+
+|工程门窄修|范围|准入与限制|
+|---|---|---|
+|R288-BFF-FORMAT-PROJECTION|原BFF writer仅现repo的CTE两投影和RETURNING明确必要列；现integration仅原190113 bytes后的追加段纯Prettier格式|Root真实lint/format RED，sql03显式投影规范；不改SQL条件、计数/lease/CAS/budget/错误分类，不改tests任何语义/expect/原HEAD前缀，不改门/配置/其它文件。Root再Node22完整check/format/13真PG和原独审，禁止以放宽门消除失败。|
+
+Root83141自然终态：新repo408783d6/test0afcbc95起终exact，Node22 build0，全部R285/R287真实PG+受控dispatcher **12PASS/0FAIL/0SKIP**。新真实COMMIT成功后迟到回执改为精确UNKNOWN，准确PID退役/零猜ROLLBACK，独立连接见已released且原lease重放false/权威row不变。独审bef4ff8b仅关闭该迟到P1，不关闭独立SQL55P03/57014分类P2或全Storage/IAM/浏览器删除链。
+
+|后继异常切片|基线与范围|验收|
+|---|---|---|
+|R288-BFF-SQL-TIMEOUT-RED|原bff_admin_routing_d0_r257；BFF99bbda35/newrepo408783d6/test0afcbc95当前219423 bytes保；只现business-store.integration.mjs尾部新case，source冻结|真实aggregate锁使server lock_timeout=1s在明确更长累计budget/signal前触发PG55P03，期望正常未结算false/无状态修改、原lease后继可恢复、准确归还/rollback与pool可用；不是吞任意SQL错。Root实跑RED后才准classification窄修。作者零资源/Git/browser。|
+
+IAM四D0已由Root精确提交 2d374e1588eb0fdf960453b060065fd142105217，448 tracked仅四docs变、444其它Git完整保，原四HEAD全文suffix exact；contract raw0153a16f、现0.8不变。Node24 contract:check/prisma:validate各0，独审44f0773a无新阻断。Root现只新增事实验收前缀，不冒实现/激活。
+
+|后继任务|Owner / 基线 / 范围|停止线与责任|
+|---|---|---|
+|R288-IAM-MCP-RED / T-K05|原IAM作者不在当前live inventory，续接新 iam_mcp_owner_r288，gpt-5.6-sol，IAM2d374e1；仅现test/integration/platform-workload-http.test.ts、oauth-client-lifecycle.test.ts新末尾cases，原完整bytes保护|读批准三D0，合法当前operator/native资源/current tenant/独占purpose+scope/Basic真实链，旧四保持；零missing import/schema文本断言或假的token。需要扩fixture/source先报告精确原因，不越界。Root独占integration隔离PG/Redis/issuer运行与Git，作者不启动资源/浏览器/清共享数据。不新增生产/schema/contract/generated/CLI，RED源码准入和新发行版本由Root后继固定。|
+
+
+### R287 用户明确要求 Manus 同等展示舒适度（2026-10-07）
+
+Root 当前真实浏览器对照已登录 Manus 的首页、技能目录、个人技能管理与 Kokoro 首页/技能页。只读、未提交/安装/发布/保存或打开私人会话；Manus 恢复首页。当前差异不是接口绿：Kokoro 技能卡仍核对/启停/移除三动作同级、技术详情占独立常态行、状态散落；两套页面需要统一轻边界与操作层级。技术详情当前已默认折叠，不虚报为未折叠。Manus 当前首页含 Studio 宣传内容，但不据此复制未实现能力或扩市场。
+
+沿 R285-UI-ACTIONS-AUDIT 和 r285-manus-skills-next-slice.md 现五路径方案，先个人技能管理：名称与启用状态同层、简介完整、来源异常可见、启停显式、核对/移除归已有更多菜单；未知恢复保持显式。现读端/状态机/权限/API/key 完全保留，无新目录/通用框架。已向用户呈现此具体展示方案，等待精准确认后派原 Web writer；不把方案当新 UI 实现/验收。侧栏、首页、其它 CRUD 页继续完整目标，不缩为技能单页。
+
+R287-UI-COMPARISON 当前人类请求优先：Root 在同一正常 771×752 窗口重新实看已登录 Manus 首页与正常 Kokoro 技能页，明确此轮是展示对齐，不把 PG/IAM 工程成果当 UI 完成。续派原独审 agent_planned_guarantee_system_r257 为只读 UI/QA 审查，模型保持原配置，Web97be7f7 + 原Admin mixed；读现 r285-manus-skills-next-slice.md、技能reader/CSS及主页/rail已有设计，准确复核五路径方案与系统验收矩阵，只交现 ignored 报告，不改source/tests/台账，不操作浏览器/服务/Git。Root负责真实页面对照与产品确认。新菜单仍未获具体确认，零实施；整体侧栏/Home/其它页面范围保留。
+
+Root新实看首页补证：同771×752，Kokoro标题36px衬线、导航44px行高；输入框聚焦为2px box-shadow，失焦为轻边界，textarea本身border0，不误报常态双边框。实际首页/技能页只读导航已恢复技能页，Manus原首页保持；证据现 r287-ui-reference-observation.json及两主页截图。独审识别“继续撤回”是既有独立恢复动作，单主动作规则仅限无待恢复撤回的常态，禁止为了简洁隐藏该入口或unknown Alert。Settings已有Dropdown outside guard无需新增框架，但Escape/焦点/主体退役必须真实验证。当前尚未新写UI，不改70/33验收状态。
+
+R286-BFF-P1 原 writer 并行仅测试后缀三个审查 delta：合法饱和排队与 late checkout 零 SQL 归还、持锁准确 PID 消失、先证 BEGIN/实际阻塞再跨真实 lease。绑定独审 d00f6b31，生产 repo/port 未授权写入，Root 后继真实 RED；不让该后台窄切片替代当前 UI 请求。
+
+R287 后台继续实际推进（不计 UI 成果）：Root47189在既有自有fixture执行Node22 build0、R285正式HTTP/PG与受控wire/dispatcher测试 **8PASS/3FAIL/0SKIP**，冻结5ee3ed08起终exact。三真实PG失败分别为持锁调用超过预算、真实lease过期仍true并提交、pool饱和迟迟不返回。独审另指出第一PG观察器在claim前安装可同PID误取claim lease，原writer仅后缀移至claim后；Root重跑该修正oracle再授权生产。完整用户删除/真实Storage/IAM/正常发行未因此通过。
+
+|续派任务|Owner、基线与精确写集|验收与责任|
+|---|---|---|
+|R287-IAM-MCP-D0 / T-K05|原 iam_grant_source_scope_0244；IAM codex/r255-financial-human-20261006 /28b1ccceb125f207d9b402d920687e9be62c37dc，当前clean；仅现 docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md 四路径|Root沿已定R277固定 surface=mcp_personal、purpose=platform_ingress_mcp_personal、scope=platform:mcp-personal.manage；BFF per-tenant独占专用machine，现audience/Basic保持；普通用户人类current Session+self，不新role。D0明确当前4surface与目标5、新resource exact集合受控演进/读回/unknown失败恢复、唯一目标闭集，现三面共同收敛。不写source/机器contract/generated/schema/provision秘密，不启动资源/Git、不改Root台账；冻结交接与独审后Root准tests-first生产owner发行，消费者等待。|
+
+R287 PG生产准入已成立：Root12191 corrected ebbece42 前后 exact，8PASS/3FAIL/0SKIP，与首次同三个真实PG失败；独审7c18b3f5确认oracle。原 BFF writer准仅 outbox repo/未发行内部port/dispatcher必需budget/cancel；runtime保持59dcaa63，202774测试prefix保持。required signal+累计budget，晚acquire零SQL归还、准确backend退役、锁后真实clock lease CAS、未知COMMIT不冒success；不新增Schema/公开contract/通用pool/helper。当前生产修复在途，未先报GREEN。
+
+|独立审查任务|归属/基线/范围|验收|
+|---|---|---|
+|R287-IAM-MCP-D0-REVIEW|原 IAM 四文档候选 f0c7d6dc/5b17d3c7/49e29f57/0c535e90；独立 iam_mcp_d0_review_r287，gpt-5.6-sol，只读|核单purpose/scope/current tenant身份、resource精确集合受控演进/非CAS/unknown边界、原suffix与机器/source保护；只ignored报告，不修改源码/台账，不运行资源/Git。Root统一审查与提交。|
+
+### R286 原释放切片继续：预算负流与独立 MCP CRUD 缺口（2026-10-07）
+
+上一goal回合为 progress：Root提交Web97be7f7三路径和Rootcb2a94d8同三台账，真实浏览器五管理页/Direct/Project/硬刷新新增证据改变权威状态；不是仅状态重述。完整Wave0–7及70组原验收范围不缩小。
+
+|任务|归属、基线与写入集|依赖、验收及责任|
+|---|---|---|
+|R286-BFF-P1 / T-C05|原bff_admin_routing_d0_r257，BFF99bbda35；已授现dispatcher窄修，现port必要budget接线；PG生产仍冻结，现integration只原prefix保护后尾追加|Root先3controlled 0PASS/3FAIL，再作者dispatcher6e9bd62a冻；独审追加发现10s cap尚漏，准tests-only late result/throw，current209849/SHA0f25fbff。PG真实aggregate锁跨1000ms lease case同尾追加。Root用原自有r285 fixture真实RED，后依证据授现repo预算/取消/实时CAS修；不扩文件/层/schema/contract，不冒port-double为真PG。Root独占资源/集成/Git。|
+|R286-BFF-P1-REVIEW|原agent_planned_guarantee_system_r257，只读冻结test0f25fbff、dispatcher6e9bd62a、repo13c476b3、portab298033|核fixture、lease/10s cap、清理、精确客户端退役及真实CAS时钟，给明确通过范围/未验限制，起终SHA绑定。零源码/资源/Git/browser；Root43695实跑在途沿原句柄，不重复构建/服务。|
+|R286-MCP-CRUD-GAP / T-K05|原iam_grant_source_scope_0244，只读现Web/BFF/Platform/IAM沿固定版本三D0/机器契约，Root CODEBASE_MAP注入|沿已批准本人连接管理及实际POST404，盘点auth=none创建/列表/编辑/启停/删除准确producer/consumer缺口、需要的具名机器scope和已有授权入口；保完整secret需求不代用户裁决托管。只Root私有r286-mcp-crud-gap.md，不写源/任务/新计划，不跑资源/浏览器/Git。|
+
+Root本轮实际复用自有 r285_bff_6b22cee840ec：26 owner-schema表、0其它客户端、0outbox，未清正常PG/Redis或重启服务。正常UI新视觉菜单仍未实施，独立只读面不被BFF实现串行阻塞。
+
 ### R285 完整目标续行：真实释放失败与可见动作审查（2026-10-07）
 
 本次 goal continuation 对上一 UI-only turn 判定为 no progress：只有实际参考、方向记录与询问，未实现/验收新能力；现已重新核当前工作树，并执行下一安全动作。Root Node22 原句柄90201已自然终态：build0；唯一自有 r285_bff_6b22cee840ec / kokoro_bff真实 PG+Redis、HTTP/固定 generated Storage受控wire两行为 **0PASS/2FAIL/0SKIP**，均在已成功202后的等待投递/释放条件超时，不是missing import或schema失败。日志 `r285-bff-release-red.log` / result.json；测试冻结28e33c0b、原190113 bytes exact，原独审最终484adca9三P2关闭。此证据只证明缺worker的 BFF 行为，不冒真实Storage durability/IAM/browser通过。
@@ -12951,3 +13038,5 @@ R285 选中态候选 Root 实际聚焦5PASS/69名称过滤、完整现rail74PASS
 BFF 八路径实现已冻结、独审发现4项P1：stop后投递、batch等待未扣lease、PG全链预算/取消缺失、CURRENT_TIMESTAMP按事务旧时刻接受过期ACK。只授权原owner追加3个行为RED，生产8路径保持；第二case首条也超usable预算却期望write1是oracle冲突，Root要求首条lease2000/次条1000隔离首成功次过期，禁止先改实现。剩余真实PG锁/取消/COMMIT未知仍需Root资源验证。未发行或启用正常BFF候选，不把build或成功路径冒完整删除闭环。
 
 R285 UI窄修最终Root精确3路径提交 Web97be7f7e0a43ea8b5c6b95440e9562c7e6628afd；原769路径exact，原index空/任务外未暂存。77764终态lint/types/build=0/0/0，完整rail74/0与真实浏览器五管理页/Direct/Project恢复证据已绑定。仅选中缺陷验收，不升级整页面/Manus视觉或完整CRUD。
+
+R285 后继P1 oracle已修至首lease2000/次1000，test SHA5ac57dcc、原202774前缀exact。Root Node22实际三个controlled-port行为0PASS/3FAIL/0SKIP，exit1，r285-bff-release-p1-red.log；这不是PG或真实owner集成。原BFF writer获现dispatcher/port窄修准入，PG仅准tests追加、Root真实RED后再授repository生产。保正常资源与原8冻结其余文件。
