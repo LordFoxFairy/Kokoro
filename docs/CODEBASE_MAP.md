@@ -1,3 +1,7 @@
+### R276 个人页与并行 CRUD 当前入口
+
+Web6924651仅现personal-skills-read.tsx新Enable资格及两现测试；来源非active且disabled禁新Enable，unknown/核对/移除/已enabled停用保持。Root实际412→修后canonical/fresh GET200→硬刷新两原卡，独审449ec444；源hash82e1391d/surfacecb680bfe/panelb13b48e0。BFF26655f7仅三D0项目删除target8.6/105，机器/runtime仍8.5/103，Storage project release已正式发布但消费编排未实现；Platform本人MCP当前POST404/缺private Product mutation，报告8649a41f，凭据政策未决。证据r276-user-acceptance-receipt.json；个人33为13/6/14，完整70为11/7/15/36/1，不能由辅助406绿升完整页面PASS。九源码listener复用，原Admin/Storage mixed保持。
+
 ### R275 当前页面验收与下一接缝
 
 Web649e5d4现唯一publish flow保持原session/key；真实两ACK丢失→unknown→关闭重开→严格无self七字段ACTIVE确认GET→本人safe管理list/详情恢复，不增Draft/Publish。现BFF93bd/runtime39db包含e603bd5 scheduled锚点与fenced owner next投影，不按旧报告重写；真实weekly08→09硬刷新next12Z→13Z，最终paused/null-next。入口Root r275-user-acceptance-receipt.json与两个原只读报告；F09 PARTIAL/T-P02 RETEST、个人33为13/6/14、完整70为11/7/15/36/1。下一Platform自订MCP owner正式onboarding与BFF消费Storage project release删除编排，原owner/source门先行，不让Web造事实。

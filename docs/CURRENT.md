@@ -1,3 +1,17 @@
+### R276 个人管理交互窄修与 CRUD 接缝进展（2026-10-07）
+
+用户确认先修清晰个人技能管理，保持“已安装 / 我发布的”、默认已安装，不扩市场。Web **69246512ff177da20cc19b02477f295764bcb37f** 仅3路径：现reader新Enable的disabled条件、原surface/panel回归；已停用且来源非active不再开放新启用，已有启用仍可停用，核对/移除及历史unknown原key恢复不变。原writer实施、独审449ec444无确定阻断，Root独占集成/Git与真实页面验收，775任务外路径（含Admin mixed）exact、uv/八gitlinks保留。
+
+**真实页面**：先遇自然401/session200 authenticated=false；显式正常登录后session authenticated=true、项目和安装列表200恢复，首401根因未证，不冒登录全通过。恢复后独立新Enable正式412/skill_installation_precondition_failed，确认来源已撤回却仍可点击是交互漏洞。窄修后实际“核对当前状态”精确GET200→fresh list200；该段无写请求且完整未截断。正常硬刷新仍默认两真实卡：撤回源“已安装·已停用”启用disabled、核对/移除可用；active原记录停用可用；无持续loading/对话框。未执行本轮真实Remove/Disable，不把控件可用冒动作全验收。
+
+**并行其它CRUD**：自订MCP真实POST /api/hub/self/connectors/mcp仍404 bff_route_not_found，T-K05 FAIL，非服务未启动；Platform缺本人scoped Server/Product mutation，owner报告8649a41f。无凭据HTTP可先闭合真实discover/批准selector/连接/撤销，凭据local-only与cloud secret仍须产品裁决，不借全局注册/Agent权限证明。BFF项目删除三D0 **26655f7877c95ab56f6ca66f361036c32bef49f6** 已收敛：幂等原202回放、项目锁/成员冻结、同事务receipt+N+1 scope-release outbox、独立任务暂停、保Message/AGUI历史、不假Agent/物理GC完成。独审拒首幂等/锁序/历史处理矛盾后修正，Root再消歧slug文本；当前8.5/103机器/runtime未变，目标8.6/105未实现，T-C05不升PASS。
+
+工程辅助：Root旧源码选22例 **12FAIL/10PASS**（111仅未选）；最终六文件 **406PASS/0FAIL**、目标eslint/typecheck/build均exit0。只证明对应回归，不代替用户路径。全默认/全页面Playwright及owner合同/架构/schema未重跑：本片无协议/schema变更；BFF仅设计提交，无源实现/SQL/资源验收。个人33仍**13PASS/6PARTIAL/14待验**，完整70仍**11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03 OPEN、Wave0–7 active。
+
+证据：Root `var/dev/r255-preserve/r276-user-acceptance-receipt.json`（actual命令/逐SHA/风险）、skills-action-red/green/typecheck/build、skills-unavailable-action-green、skills-action-refresh-green、mcp-browser-red、auth-login-recovery；最终截图r276-personal-skills-action-final.png。九正常源码listener最后kill0仍活，无重复启动/restart/reset/DDL/秘密/资金/模型调用。Storage55原mixed漂移不充正式release验收。
+
+下一依已批准CRUD顺序：BFF项目删除唯一机器契约/真实失败系统行为→最小实现→owner集成→页面用户链；Platform无凭据本人MCP三D0/正式producer先行，消费者随后。原任务ID续派，不仅死磕个人技能、不跳Agent、不新建计划中心。
+
 ### R275 发布未知恢复与排程页面复验（2026-10-07）
 
 Root6884e659基线；Web649e5d4/BFF93bd(runtime39db)/Platform6e5/Scheduler e8d均未改源码。两原只读Agent已STOP：发布依据ed6f543f；CRUD盘点1a1fe749与排程纠偏c1469d67。原Admin mixed、Rootuv/八gitlinks保；九正常源码listener现场kill0存活，无重启/DDL/reset/权限/资金/模型操作。

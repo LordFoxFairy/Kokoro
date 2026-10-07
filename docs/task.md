@@ -1,3 +1,39 @@
+### R276 CRUD 缺口 owner 收敛与真实页面验收（2026-10-07）
+
+前轮是实质进展：Root b0befc7b提交真实发布未知恢复与正常排程weekly08→09/暂停，F09 PARTIAL/T-P02 RETEST；全Wave0–7保持active。本轮基线Root b0befc7bb8b19ba225c79a927b2d58f6442a46fa、Web649e5d4原Admin mixed、BFF93bd/runtime39db、Platform6e5、Scheduler e8d；共享进程先实际kill0复用，不重启/清库。Root独占浏览器、Git、门禁、台账。
+
+|任务|owner/执行角色与允许范围|完成条件/依赖与排除|
+|---|---|---|
+|R276-MCP-D0 / T-K05 P0|原 agent_planned_guarantee_system_r257，Platform/MCP只读设计审查；当前Root map、PlatformAGENTS/三D0/contract/schema/current与PRD|给当前私有HTTP onboarding最小设计/两位置比较、approved事实、PRD local-only凭据与当前cloud owner冲突、精确owner机器/源写集及有效RED；仅Root ignored r276-mcp-owner-d0.md，不改tracked/Git/资源/浏览器、不发明已批准决定。Root先总体裁决后才给三D0写权限|
+|R276-PROJECT-DELETE / T-C05 P0|原 bff_admin_routing_d0_r257，BFF只读删除生命周期审查；BFF93bd与Storage正式project release、原任务/产品裁决|确认当前实现与缺口、删除冻结成员/保移出/文件引用/独立任务语义及producer先后；给最小真实RED与现文件写集，仅Root ignored r276-project-delete-d0.md；不改tracked、SQL、Git/服务、权限、用户数据|
+|R276-ROOT-PAGES / P0|Root正常IAB tab25/现本人记录与原70测试ID；源码仍冻结|先MCP当前真实入口失败再其它已可执行页面CRUD；有效网络/DOM证据，所有注入清除、无不可恢复删除/授权扩大或秘密提交。对上述三D0未通过只盘点设计，不先重写；实际FAIL才授权最窄owner修复|
+
+
+R276 后继卡（同目标/同测试ID，不新计划中心）：
+
+|任务|owner/角色/精确写集|阶段门与交付|
+|---|---|---|
+|R276-PROJECT-D0-WRITE/CORRECT|原 bff_admin_routing_d0_r257，BFF唯一writer；normal93bd，仅三现D0顶部，原suffix保护|独审d8b85527拒首候选幂等/锁序/历史处理歧义；Root裁决后修正冻结437073ae/f470cd89/1fe24196，Root独占审查/提交；machine/source/schema/数据未实施，不升T-C05|
+|R276-SKILLS-ACTION-RED/FIX|原 iam_grant_source_scope_0244，Web唯一writer；normal649e5d4，仅现surface/panel两tests先RED，后经Root批准仅reader按钮disabled条件|已知nonactive且disabled安装不开放新Enable；active仍owner逐次验证，nonactive已enabled仍可停用；核对/移除和unknown原key恢复不改。R271/R273首读合法active、后继仍withdrawn，不删安全/迟到/original-key oracle；原Admin mixed全部保。Root先真UI412再工程RED，冻结后Root重跑目标UI/lint/type/build并真实页面核对|
+|R276-SKILLS-ACTION-REVIEW|原 agent_planned_guarantee_system_r257，只读owner资格与冻结候选审查|report a8273adb；prepare启用true要求exact source active，停用/remove不依该检查；不把前端disabled冒权限gate或丢历史未知意图。Root批准后独审三hash|
+|R276-AUTH-NATURAL / Root+原只读iam|无source授权；现正常浏览器与8现auth/source只读|真实PUT本地401，session200 authenticated=false，Retry有限unknown；显式Login→session200 true/projects与installations200恢复。自然expiry/cookie/generation/refresh首请求链根因未证明，报告ad86a7c1；不冒source412、不盲修auth。恢复后另新Enable真实412已保r276-skills-nonactive-enable-red.json|
+
+MCP真实POST404已保r276-mcp-browser-red.json/png；私有scoped Server与正式Product mutation缺口报告8649a41f。无凭据HTTP可独立推进，带凭据local-only与cloud secret规则仍需真正产品裁决；不借global Server/execution proof、不缩全目标。九现源码进程本轮kill0仍活，无restart/reset/DDL/秘密或资金提交。
+
+### R276 个人管理交互窄修与 CRUD 接缝进展（2026-10-07）
+
+用户确认先修清晰个人技能管理，保持“已安装 / 我发布的”、默认已安装，不扩市场。Web **69246512ff177da20cc19b02477f295764bcb37f** 仅3路径：现reader新Enable的disabled条件、原surface/panel回归；已停用且来源非active不再开放新启用，已有启用仍可停用，核对/移除及历史unknown原key恢复不变。原writer实施、独审449ec444无确定阻断，Root独占集成/Git与真实页面验收，775任务外路径（含Admin mixed）exact、uv/八gitlinks保留。
+
+**真实页面**：先遇自然401/session200 authenticated=false；显式正常登录后session authenticated=true、项目和安装列表200恢复，首401根因未证，不冒登录全通过。恢复后独立新Enable正式412/skill_installation_precondition_failed，确认来源已撤回却仍可点击是交互漏洞。窄修后实际“核对当前状态”精确GET200→fresh list200；该段无写请求且完整未截断。正常硬刷新仍默认两真实卡：撤回源“已安装·已停用”启用disabled、核对/移除可用；active原记录停用可用；无持续loading/对话框。未执行本轮真实Remove/Disable，不把控件可用冒动作全验收。
+
+**并行其它CRUD**：自订MCP真实POST /api/hub/self/connectors/mcp仍404 bff_route_not_found，T-K05 FAIL，非服务未启动；Platform缺本人scoped Server/Product mutation，owner报告8649a41f。无凭据HTTP可先闭合真实discover/批准selector/连接/撤销，凭据local-only与cloud secret仍须产品裁决，不借全局注册/Agent权限证明。BFF项目删除三D0 **26655f7877c95ab56f6ca66f361036c32bef49f6** 已收敛：幂等原202回放、项目锁/成员冻结、同事务receipt+N+1 scope-release outbox、独立任务暂停、保Message/AGUI历史、不假Agent/物理GC完成。独审拒首幂等/锁序/历史处理矛盾后修正，Root再消歧slug文本；当前8.5/103机器/runtime未变，目标8.6/105未实现，T-C05不升PASS。
+
+工程辅助：Root旧源码选22例 **12FAIL/10PASS**（111仅未选）；最终六文件 **406PASS/0FAIL**、目标eslint/typecheck/build均exit0。只证明对应回归，不代替用户路径。全默认/全页面Playwright及owner合同/架构/schema未重跑：本片无协议/schema变更；BFF仅设计提交，无源实现/SQL/资源验收。个人33仍**13PASS/6PARTIAL/14待验**，完整70仍**11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03 OPEN、Wave0–7 active。
+
+证据：Root `var/dev/r255-preserve/r276-user-acceptance-receipt.json`（actual命令/逐SHA/风险）、skills-action-red/green/typecheck/build、skills-unavailable-action-green、skills-action-refresh-green、mcp-browser-red、auth-login-recovery；最终截图r276-personal-skills-action-final.png。九正常源码listener最后kill0仍活，无重复启动/restart/reset/DDL/秘密/资金/模型调用。Storage55原mixed漂移不充正式release验收。
+
+下一依已批准CRUD顺序：BFF项目删除唯一机器契约/真实失败系统行为→最小实现→owner集成→页面用户链；Platform无凭据本人MCP三D0/正式producer先行，消费者随后。原任务ID续派，不仅死磕个人技能、不跳Agent、不新建计划中心。
+
 ### R275 发布未知恢复与排程页面复验（2026-10-07）
 
 Root6884e659基线；Web649e5d4/BFF93bd(runtime39db)/Platform6e5/Scheduler e8d均未改源码。两原只读Agent已STOP：发布依据ed6f543f；CRUD盘点1a1fe749与排程纠偏c1469d67。原Admin mixed、Rootuv/八gitlinks保；九正常源码listener现场kill0存活，无重启/DDL/reset/权限/资金/模型操作。
