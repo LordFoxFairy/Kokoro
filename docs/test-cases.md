@@ -1,10 +1,10 @@
-## R266 个人技能管理完整用户验收矩阵（33子用例：4 PASS / 29待验）
+## R266 个人技能管理完整用户验收矩阵（33子用例：5 PASS / 1部分通过 / 27待验）
 
-本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式b901986、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后硬刷新及自然点击观测U01/U02/U03/U11四项PASS，29项仍待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
+本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式b901986、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；合计5PASS/1部分通过/27待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
 
 共有前提：Root固定正式BFF8.4与Web新commit、正常owner兼容激活，使用现正式IAM用户A（及经授权的真实B）；不selfgrant、不DB造状态、不mock/preview代替正常用户。每行保存commit、URL/viewport、自然操作顺序、脱敏request-id/status/公开body、实际DOM与必要截图；不得保存token/内部header。用户数据新增/生命周期改变由Root在明确自有QA记录进行，先确认可逆/保留，不因本报告执行。
 
-类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。本轮仅上述四项新增PASS；其余保留待验，不沿用旧子链PASS覆盖新commit。
+类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。已观察五项PASS与一项部分通过；其余保留待验，不沿用旧子链PASS覆盖新commit。
 
 |ID|前置|自然操作|预期可观察结果|优先级/类型|状态|
 |---|---|---|---|---|---|
@@ -32,10 +32,10 @@
 |R266-F05|正式单请求依赖累计超过10秒|点管理read/Retry|有限时间退出loading，依赖失败无200/空列表；迟到结果不进页面，手动恢复可freshGET|P0/F|待验，须Root受控真实链延迟|
 |R266-F06|真实链detail暂503/404|点detail→看到error→Retry|错误不继续loading或冒active；Retry同ID且opener保持，成功后完整详情|P1/F|待验|
 |R266-F07|Root受控响应坏shape/陌生status/循环cursor|进入相应页或翻页|strict拒绝、显式error/可退回，不假空、不loop、不N+1补字段|P0/F|待验；协议故障浏览器不冒正常owner数据|
-|R266-U14|A有active源未安装|管理卡显式Install→当前安装GET→刷新已安装|真实receipt后current确认、元信息精确revision；管理read不授额外安装权限/不启动Run|P0/U|待验|
+|R266-U14|A有active源未安装|管理卡显式Install→当前安装GET→刷新已安装|真实receipt后current确认、元信息精确revision；管理read不授额外安装权限/不启动Run|P0/U|PASS：R267正常自有新技能显式安装→current确认→硬刷新真实installed/enabled/revision1；绑定b901986，证据r267-skills-real-user-acceptance.json|
 |R266-U15|A已有安装且source后变非active|已安装CheckCurrent、合法Disable/Remove→刷新|不先要求active源GET；保owner允许管理、来源状态与enabled区分；拒绝按正式错误呈现|P0/U|待验，状态producer前提|
 |R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|待验|
-|R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|待验，新consumer正向回归|
+|R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|部分通过：R267实际发布成功→本人active列表/详情→硬刷新仍active；早段HTTP buffer淘汰，内部Run/资金负向待独立证据，不升级完整PASS|
 |R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|待验|
 |R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|待验/阻塞：本两GET不提供命令UI|
 |R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|待验/阻塞：正式写消费者未接|

@@ -1,3 +1,11 @@
+### R267 真实个人发布/安装验收与生命周期缺口（2026-10-07 00:55 UTC）
+
+正式Web b901986/BFF930028b/Platform6e5、原正常源码与PG/Redis/MinIO/Scan复用。Root正常tab25用自有498字节无外部工具ZIP，经真实文件选择、填写名称简介标签、上传发布获得新skill b5540ef2… revision1的实际成功确认；本人管理列表/详情active、显式安装得到current确认，硬刷新仍installed/enabled/source_status active/revision1。新实际U14 PASS；U16发布结果及刷新读通过，但早段CDP buffer被淘汰且Run/资金负向未独立核验，保留PARTIAL而不虚报完整PASS。原33矩阵现 **5PASS/1PARTIAL/27待验**，全70组仍 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**、完整新增0。证据/截图：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r267-skills-real-user-acceptance.json；正确fresh管理读capture不截断，两GET200+安全公开body。初次cursor对象误用及修正后truncated旧capture均保，不用“没抓到”宣称零请求。
+
+原两个Agent独立核查已交：auth首次unknown仍OPEN，固定1h是既有批准上限，只是待对时间核验候选，不放宽安全；Platform已正式Connect创建版本/撤回，缺BFF public与Web消费。原BFFwriter续派仅三D0头部，Root裁定不可变display_name断言、精确版本、owner receipt/当前授权、零额外owner/持久化、下一8.5/103；三设计已独审/三窄纠偏并Root按SHA与原下方byte exact复核，正式BFF1d373ba（仅文档）；下一D1仅新增两具名机器缺失RED，完整机器/runtime仍未实施，不称功能实现。Root两Proto当前6e5与c949 vendor/pin逐字节一致，Node22正规check两次生成一致exit0；先shell变量误用/Node24环境失败日志保，非产品fail亦不抹。没有新增服务/reset基础设施、模型/资金或权限UI动作。发布成功后仍显示disabled“重试同一次尝试”列UX待打磨，不冒已修。
+
+现个人CRUD完整T-K03仍OPEN，新版本/撤回UI、生命周期/安全/故障场景与登录未知首因继续按原owner推进；上一完整默认回归的真实失败仍保。Root独占集成/Git；原Admin/mixed、uv与8gitlinks保护，不夹带提交。
+
 ### R266 新管理读取切片交付，4个真实用户子场景通过（2026-10-07 00:37 UTC）
 
 Web b901986（26精确路径）已提交，BFF930028b与Platform6e5正常源码复用。Root真实tab25：默认已安装→本人管理→ACTIVE/草稿详情→折叠/展开→关闭返原卡→设置技能→草稿→关闭→硬刷新默认安装→本人管理三记录，实际self GET 200/safe8/meta。U01/U02/U03/U11本轮PASS，其余29待验；没有新增安装/发布/Run/权限/资金事实。全70组11/8/14/36/1不变，完整新增0，Wave0–7不缩。

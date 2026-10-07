@@ -1,3 +1,7 @@
+### R267 个人 CRUD 后继入口（2026-10-07）
+
+当前运行源码仍 Web b901986 / BFF930028b / Platform6e5；本人真实发布、安装、硬刷新证据现 Root var/dev/r255-preserve/r267-skills-real-user-acceptance.json，33用户矩阵5PASS/1PARTIAL/27待验，不变完整70组。BFF文档commit1d373ba三D0新R267前缀定义下一public8.5/103两个个人版本/撤回命令（尚未发行/实施），复用现 catalog-connect 与 Platform SkillCatalogService 的已正式命令；不新增 Platform HTTP mutation/owner/receipt/数据库。Node22现生成check与两Proto byte等价已实测，Web消费必须等正式producer发行；正常服务句柄不变。auth unknown只读报告 r267-auth-unknown-readonly.md 明确首因OPEN，不把已批准1h上限当确定bug。
+
 ### R266 当前个人管理读代码入口（2026-10-07 00:37 UTC）
 
 Web正式工作树/Users/nako/.codex/worktrees/kokoro-r257-admin-web HEAD b901986c55bef01d395f3112231879b3cab5f6a7：src/hub/{schemas,client}.ts拥有managed safe8/query/envelope/10s读取；src/app/api/hub/[...path]/route.ts两self GET到正式BFF930028b与单独非self ACTIVE confirmation；src/ui/skills/personal-skills-read.tsx同时服务主页/Settings、安装/管理两view、撤准入publisher abort及详情焦点。BFF930028b/public8.4/101，Platform6e5c284/HTTP3.3；normal BFF33630/53714、Platform54280/8086、Web31693/3310持久源码复用。无市场、版本/撤回命令UI新入口。
