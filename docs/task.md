@@ -1,3 +1,27 @@
+### R306 收口与后继
+
+- [x] 原Web负责人：仅两现词条和两个test尾增，独审aee82f59，Root六路径提交 **d51a2d858d73db9ee107d9f63195847b59a4e3fa**；旧测试prefix/其余769源码exact，原Admin混合保持。
+- [x] Root实际上传发布长文本QA源、硬刷新全文、两极短屏详情/技术信息/精确归焦、新提示/空表禁用/取消零命令；R266-U12仅PARTIAL，33为13/7/13。
+- [x] Root原check69414终态1、3430/1FAIL保留；原R139不改任何文件单独复跑1PASS/76筛除，另build0。773 tracked门前后exact，未放宽门。
+- [x] R306-QA-R139：原Web负责人只读报告261ae8c2完成STOP；首失败发生第一document，尚未开第二tab/草稿，不能称跨tab索引回归。空context依赖完整登录前置，前匿名测试尚未等完整登录链与共享nonce交错只候选；首次失败无安全URL/status/诊断，根因OPEN。后继原例接现observer/失败safe diagnostic需独立准入，不改15秒或断言，复跑不关闭自然401。
+- [ ] T-K03完整CRUD/多页/资格与极端tags及全页面验收仍OPEN；完整Wave0–7/70原计数保持。沿现任务与owner继续，不另建中心、不复做已通过布局。
+
+R306最终门真实失败：Root原69414自然exit1/194秒，contract309与architecture51、lint/types0，默认3430PASS/1FAIL（R139 second document firstMain15秒不可见），build未达。773tracked冻结exact，不放宽timeout/改oracle/擦日志。续派原Web负责人只读该用例fixture/admission清理及前置相邻测试，Root同当前冻结源码仅原用例隔离复跑+独立build；不改生产或旧混合测试，不把复跑覆盖首次FAIL。自然401根因与全模块仍OPEN。
+
+R306生产准入：Root定向新增20例实跑11FAIL/9PASS/34未筛，11均旧intro断言，后续取消保护未达；两原prefix16070/11300字节exact，其余771tracked保持。仅授原Webwriter messages.ts与overlays.ts的skills.publishDescription两值换已定文案，测试尾冻结；versionDescription/原混合hunks/组件/flow/API全部不动。作者完整两文件/定向lint+类型后冻结；Root真实新intro/空表取消与既有unknown边界及长名真实owner链验证后精确提交。当前真实自有462B ZIP长名255/简介1379已正规发布（ACK active/revision1/replayedfalse），极短布局初resize瞬态不作bug，稳定390×200与390×640详情单滚动/X44及精确归焦已观测，保该自有QA源不删除。
+
+R306设计裁决：现publishDescription归messages.ts中文与overlays.ts共用英语，两现词条替换优于组件硬编码；不改九语言versionDescription，不扩状态/成功含义。中文固定“选择一个 ZIP 技能包。上传后会进行检查和验证，确认发布完成后会显示成功提示。”；英文“Choose one ZIP skill package. It will be checked and validated after upload. A success message appears once publication is confirmed.”。仅现resolve.test.ts与personal-skill-publish-dialog.test.tsx纯尾增用户提示/空提交/取消保护；Root有效RED后才授两现词条值。原mixed与其它全文保持，flow/handlers/协议不动，当前只tests准入。
+
+### R306 Skills 发布表单人类提示（既有 Skills / Wave 0–7 续接）
+
+上一R305完成真实同尺寸参考/用户子路径证据与台账提交，未新增Web源码；本轮要改变仍外露的技术提示，不重复已通过布局。基线Web2015124e/原773tracked与Admin mixed见r306-start.json，完整目标与33/70不缩。
+
+|任务|Owner /角色 /范围|验收与限制|
+|---|---|---|
+|R306-WEB-COPY-D0|原Web负责人只读现发布Dialog与现词典/overlay/语言解析及用例|只ignored r306-skills-copy-design.md；核publishDescription与必要紧邻版本说明，给准确词条所有权/最小两位置比较/替换语义，保“验证后可用”、成功仅owner确认，不改flow/handler/协议/状态/新文件。Root先裁决再仅tests-first与现词条写。|
+|R306-QA-COPY-D0|原独审只读相同UI与生命周期事实|只ignored r306-skills-copy-qa.md；核提示不承诺未支持格式/即时成功/自动安装，取消零命令与unknown仍独立可见，给用户浏览器验收oracle。不改tracked/Git/资源/browser。|
+|R306-ROOT|Root独占正常浏览器/Git/正式台账与最终门|保存实际旧文案→新文案同入口可见，空表提交仍禁用/取消零mutation，保原混合hunks；另沿既有R266-U12正式发布自有非敏感长名QA包，255字符名称/长简介实际390短屏详情验收，不改库或造状态；保新QA源不删除。不冒完整CRUD。|
+
 ### R305 当前收口：技能展示优先，认证只读留后继
 
 - [x] Root已同尺寸读取Manus目录/个人管理与当前正式Skills，实际执行搜索、无匹配、安装详情Escape归焦、发布视图、空表单禁用与取消、返回安装三卡；8网络事件完整非截断、零技能写。证据r305-skills-user-review.json与r305-skills-current.png。

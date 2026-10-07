@@ -1,3 +1,13 @@
+### R306 技能页：发布提示修正与真实长文本验收（2026-10-07）
+
+Web **d51a2d858d73db9ee107d9f63195847b59a4e3fa** 精确六路径提交：现两发布说明值、两个原测试尾增、现Skills INDEX/CURRENT。原Admin混合修改不暂存；冻结773 tracked起终exact，原两个测试前缀保持。当前卡片/搜索/筛选布局已来自R297/R300/R304，本轮不冒重新实现；仅去掉发布表单的ACTIVE/receipt术语，保持检查验证及正式确认成功规则。原Webwriter和QA协作，独审aee82f59无确定阻断，Root独占实际浏览器/门/Git。
+
+正常3310实际自有ZIP发布：255字符名称/1379字符简介/三个普通标签，Draft201→Begin201→MinIO实际PUT200→Complete200→Validate200→Publish200，正式回执active/revision1/replayed=false，刷新全文仍可读且未自动安装。20网络事件完整脱敏；刷新后未能重取draft/validate body，不冒精确扫描/digest字段。稳定390×200与390×640详情无横溢、单正文滚动、关闭44持续可见，Enter打开、展开技术信息、X/Escape精确归焦已验；刚resize同调用瞬态不作新缺陷。真实新提示/空提交disabled/取消关窗归焦，完整取消窗口零事件。最终默认三安装卡图r306-skills-final.png；详情证据r306-long-detail-proof.json、持久回读r306-long-persisted.json、真实上传r306-long-publish-network.json。
+
+Root辅助旧提示RED11FAIL/9PASS，最终两文件54PASS。原完整Node22 pnpm check69414自然exit1/194秒：contract309/architecture51/lint/typecheck通过，默认3430PASS/1FAIL（R139 second document firstMain15秒超时），链build未达；独立build0/16.103秒。原例不改timeout/断言单独复跑1PASS/76筛除/23.028秒，不抹首次FAIL或推断自然401原因。当前完整门没有通过；原Web只读报告261ae8c2已STOP：首失败尚未开第二tab，整登录前置/前匿名请求晚到仅候选，首次缺安全URL/status诊断，根因仍OPEN。后继接现observer/失败诊断需独立准入，不放宽15秒。历史自然401仍OPEN。
+
+R266-U12由UNVERIFIED→PARTIAL，仅长tag极端尚未覆盖；个人33现 **13PASS/7PARTIAL/13UNVERIFIED**，完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03与完整Wave0–7不关闭。其它CRUD/多页/真实身份撤权/全test:e2e/axe/视觉预算待验；新自有QA源保留不删除，原移除重装确认不重复问。未改权限/账务/模型/正常基础设施，Network关闭/viewport恢复，原uv和八gitlinks保持。
+
 ### R305 Skills 当前正式展示对照与用户复验（2026-10-07）
 
 按最新人类要求先聚焦技能展示，不把认证调查扩大为当前主线。正式 Web HEAD 2015124e64fb6282921a68c56f9f11aeb2e0199d 已包含 R297/R300/R304 展示切片，本轮没有新增源码修复；Root 核773 tracked逐SHA和原Admin混合status全部exact，不能将旧提交说成本轮新修。正常3310与Manus同771×752读取：当前搜索/轻工具栏、双列封面卡、两行简介、状态标签、技术详情进入弹层，已不同于用户旧截图的长文本控制堆叠。Manus首页是技能目录，“我的技能”进入个人设置；Kokoro保持用户已批准个人管理两视图，不虚构公共目录、次数或复制图像资产。

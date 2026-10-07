@@ -1,3 +1,13 @@
+### R306 技能页：发布提示修正与真实长文本验收（2026-10-07）
+
+Web **d51a2d858d73db9ee107d9f63195847b59a4e3fa** 精确六路径提交：现两发布说明值、两个原测试尾增、现Skills INDEX/CURRENT。原Admin混合修改不暂存；冻结773 tracked起终exact，原两个测试前缀保持。当前卡片/搜索/筛选布局已来自R297/R300/R304，本轮不冒重新实现；仅去掉发布表单的ACTIVE/receipt术语，保持检查验证及正式确认成功规则。原Webwriter和QA协作，独审aee82f59无确定阻断，Root独占实际浏览器/门/Git。
+
+正常3310实际自有ZIP发布：255字符名称/1379字符简介/三个普通标签，Draft201→Begin201→MinIO实际PUT200→Complete200→Validate200→Publish200，正式回执active/revision1/replayed=false，刷新全文仍可读且未自动安装。20网络事件完整脱敏；刷新后未能重取draft/validate body，不冒精确扫描/digest字段。稳定390×200与390×640详情无横溢、单正文滚动、关闭44持续可见，Enter打开、展开技术信息、X/Escape精确归焦已验；刚resize同调用瞬态不作新缺陷。真实新提示/空提交disabled/取消关窗归焦，完整取消窗口零事件。最终默认三安装卡图r306-skills-final.png；详情证据r306-long-detail-proof.json、持久回读r306-long-persisted.json、真实上传r306-long-publish-network.json。
+
+Root辅助旧提示RED11FAIL/9PASS，最终两文件54PASS。原完整Node22 pnpm check69414自然exit1/194秒：contract309/architecture51/lint/typecheck通过，默认3430PASS/1FAIL（R139 second document firstMain15秒超时），链build未达；独立build0/16.103秒。原例不改timeout/断言单独复跑1PASS/76筛除/23.028秒，不抹首次FAIL或推断自然401原因。当前完整门没有通过；原Web只读报告261ae8c2已STOP：首失败尚未开第二tab，整登录前置/前匿名请求晚到仅候选，首次缺安全URL/status诊断，根因仍OPEN。后继接现observer/失败诊断需独立准入，不放宽15秒。历史自然401仍OPEN。
+
+R266-U12由UNVERIFIED→PARTIAL，仅长tag极端尚未覆盖；个人33现 **13PASS/7PARTIAL/13UNVERIFIED**，完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03与完整Wave0–7不关闭。其它CRUD/多页/真实身份撤权/全test:e2e/axe/视觉预算待验；新自有QA源保留不删除，原移除重装确认不重复问。未改权限/账务/模型/正常基础设施，Network关闭/viewport恢复，原uv和八gitlinks保持。
+
 ### R305 Skills 当前正式展示对照与用户复验（2026-10-07）
 
 按最新人类要求先聚焦技能展示，不把认证调查扩大为当前主线。正式 Web HEAD 2015124e64fb6282921a68c56f9f11aeb2e0199d 已包含 R297/R300/R304 展示切片，本轮没有新增源码修复；Root 核773 tracked逐SHA和原Admin混合status全部exact，不能将旧提交说成本轮新修。正常3310与Manus同771×752读取：当前搜索/轻工具栏、双列封面卡、两行简介、状态标签、技术详情进入弹层，已不同于用户旧截图的长文本控制堆叠。Manus首页是技能目录，“我的技能”进入个人设置；Kokoro保持用户已批准个人管理两视图，不虚构公共目录、次数或复制图像资产。
@@ -239,7 +249,7 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 
 继续现T-K03版本/撤回/unknown同key、当前撤权与安装固定revision场景，真实链确认后才更新对应状态；原FAIL/RETEST不清零。证据入口r268-runtime-candidate-commit-receipt.json，真实owner资格前提r268-real-owner-qualification.md；候选commit不代表公开发行。
 
-## R266 个人技能管理完整用户验收矩阵（R275 当前：33子用例 / 13 PASS / 6部分通过 / 0当前FAIL / 14待验）
+## R266 个人技能管理完整用户验收矩阵（R306 当前：33子用例 / 13 PASS / 7部分通过 / 0当前FAIL / 13待验）
 
 历史起始截面（R266–R267；当前状态以R275头部和逐行状态为准）：本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
 
@@ -260,7 +270,7 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-U09|有状态filter且各状态真实记录|第二页切状态→返回all|新filter从首cursor开始；旧detail/晚页不留；筛选空不冒从未创建|P1/U|待验，取决首片filter准入|
 |R266-U10|A正式owner读恢复空页且旧cursor末页为空|到该页→Previous|显示分页空不是首次空，保返回路径，不环形读|P1/U|待验|
 |R266-U11|已在/app且A准入|Settings→Skills→两view→详情关闭|同reader同正式数据、无第二h1/重复导航；关闭回精确触发按钮|P1/U|PASS：正常读取；R267 3e4f3d2 设置同新布局/真实详情/Escape返回内层触发按钮通过|
-|R266-U12|合法255长名、长summary/tags真实源|390×200/390×640打开详情、展开技术信息、滚到底、X/Escape|完整可读，唯一bodyscroll；X持续画面可见；回exact opener且focus-visible；不靠自动scrollIntoView判PASS|P1/U|待验，需合法长文本真实源|
+|R266-U12|合法255长名、长summary/tags真实源|390×200/390×640打开详情、展开技术信息、滚到底、X/Escape|完整可读，唯一bodyscroll；X持续画面可见；回exact opener且focus-visible；不靠自动scrollIntoView判PASS|P1/U|PARTIAL：R306正常ZIP实际发布255字符名/1379字符简介，刷新exact；稳定390×200与390×640全文/单body scroll/X44持续可见、Enter与X/Escape精确归焦已验。三个普通标签可读，极端长tags仍待，不冒全项PASS；证据r306-long-detail-proof.json与long-persisted.json，Web d51a2d8|
 |R266-U13|同主体healthy且detail已开|保持打开超过120s例行probe，再操作键盘|view/detail/草稿不因成功poll重挂；不新增管理GET/POST作为poll副作用|P0/U|PASS：R267真实详情134979ms/正常续期200仍authenticated，视图和详情保持；无技能请求，Escape返原名称按钮；证据r267-dialog-probe-user-receipt.json|
 |R266-S01|A detail开，实际准入转unknown|等待probe→只读Retry→明确登录恢复|旧卡/detail/publish/install同步退役，禁private IO；unknown非匿名；恢复新代freshGET无旧POST|P0/S|待验，真实准入故障前提|
 |R266-S02|A与B各自正式身份及不同自有源|A读后退出/按正规流程切B→管理列表|无A卡/游标/草稿/详情；B只读B；旧A响应迟到不复活|P0/S|待验，B身份输入待Root|
