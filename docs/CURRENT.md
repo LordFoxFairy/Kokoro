@@ -1,3 +1,15 @@
+### R274 个人安装 CRUD 与真实回执恢复增量（2026-10-07）
+
+当前Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660** 未改源码；Root正常右侧浏览器与九原listener复用，无重启/DDL/清共享状态。原Web负责人只读a8674fa3、owner独审99d78019指出revision2 withdrawn安装移除后无法用revision1降级恢复；Root保原4f69a36a…不动，选择本人专用active源 **ff0f1c74… / 个人技能发布反馈 · R267 验收**，真实安装canonical **79dc02b9…**。
+
+实际用户链：Remove合法200(change=removed)→精确GET受控held自然10s取消→页面保“命令已确认”→显式核对仅GET同ID200+fresh安装list200，无第二DELETE/新key；默认列表消失、硬刷新仍移除。“已移除”筛选真实200见该条installed/enabled=false，核对可用而启用/移除禁用。后继从本人发布卡明确重装，实际200回执change=reinstalled/原canonical ID、产生新event/time；响应在浏览器Response阶段held并已保存真实body，客户端unknown后用户Retry **原key db4a889d… / 同source_ref body**，真实200 replayed=true且event/time/installation逐字段与held ACK一致，再独立GET200确认。不是GET猜ACK，也不是第二笔重装。
+
+最终正常无注入Remove→200 ACK/精确GET false/fresh installed list200→硬刷新：原另外两条投影与本轮首次Remove后读取逐字段exact；QA安装逻辑removed、源/包未删除，仍可同源重新安装。浏览器Fetch patterns清除、无持续loading/对话框，默认已安装两卡；截图r274-personal-skills-final.png。这里只证明安装/重装/移除及两恢复子路径，不证明withdrawn Remove、自然换身份/撤权、全部分页及其它页面完整CRUD。
+
+个人33仍 **13PASS/5PARTIAL/15待验**（F08补充真实子链，不夸成全身份/竞态PASS）；完整70仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，T-K03 OPEN/Wave0–7 active。无代码变更，不重复工程门；R273407/282/51等是历史辅助，不冒本轮全页面验收。Root实际脱敏证据断言通过，原九listener kill0均存活。初harness缺resourceType拒绝、标量capture闭包游标问题/截断正向补读、采样非pause提前结束、初receipt格式假设KeyError均保留；正式reinstall/Remove两段capture全untruncated，按真实timeout而非计划failRequest记录。
+
+证据统一Root `var/dev/r255-preserve/r274-personal-skills-user-receipt.json`（各证据SHA）、reinstall-held-real-ack/reinstall-samekey-replay-green、remove-confirmed-current-failure/remove-get-only-recovery、removed-filter-real/remove-normal-final/personal-skills-final-refresh。下一沿现33继续身份/分页/长文本与publish未知回执，再回其余既有CRUD优先级，不扩市场或只盯Agent。
+
 ### R273 个人管理恢复出口已真实验收；完整 CRUD 仍 OPEN（2026-10-07）
 
 Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660**（parent1061303）仅12精确路径：现reader安装unknown独立GET核对/显式结束本地恢复、当前view fresh读前写禁用；九词典各四文案、现技能INDEX与surface六例。保原key/body/status，GET不是ACK，Install不猜ID；退出仅停止本地重试、不撤销已发送请求，不新增owner/API/store/依赖。原Admin mixed逐字保留，Rootuv/八gitlinks保，九正常源码listener均存活，无restart/reset/DDL/资金/模型调用。

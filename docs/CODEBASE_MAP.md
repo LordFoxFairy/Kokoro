@@ -1,3 +1,7 @@
+### R274 个人安装生命周期验收入口
+
+源码仍Web649e5d4现reader/client，同正式BFF93bd(runtime39db)/Platform6e5，不新增路径/契约。真实QA active源ff0f1c74… / canonical79dc02b9…验证Remove ACK后只读恢复、removed筛选、同源重装ACK丢失同key/event回执重放，末态逻辑removed；原withdrawn2安装不做降级恢复。证据Root r274-personal-skills-user-receipt.json；个人33仍13/5/15、T-K03 OPEN。原Admin mixed/uv/gitlinks及九源码listener保持。
+
 ### R273 当前个人安装恢复交互入口
 
 Web649e5d4：现 src/ui/skills/personal-skills-read.tsx 的unknown inspection独立GET/同activeAction fence/明确结束本地恢复+当前view fresh gate；Alert单col-start-2内容容器、按钮flexwrap防真实命中重叠。现九i18n各四文案、同模块INDEX与surface六回归，无新文件/协议/store/owner/依赖。Root真实held启用同key412→GET当前事实仍unknown→结束安装fresh、未知Install无猜ID→结束published fresh已验；完整F08仅PARTIAL/T-K03 OPEN，证据r273-personal-skills-user-receipt.json。原Admin mixed与全部正常资源保持。
