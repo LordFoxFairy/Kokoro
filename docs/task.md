@@ -1,3 +1,27 @@
+### R271 交付与同任务后继
+
+Root已提交Web23882d2四精确路径；原writer/独审STOP，最终769源码保护减去唯一Root INDEX前缀后另768exact。真实F01/F02/F06新增PASS；当前安装403退役错误修复与两view真实恢复验收，非自然owner撤权；U15启用拒绝子链补齐但Remove未验，S04不升级。33现12PASS/2PARTIAL/19待验，70仍11/8/14/36/1，Wave0–7未完。工程165/1既有发布刷新失败（ef5原35/1）明确保留，contract282/51architecture/lint/type/build已跑；不称全部绿。下一沿同33补未验用户边界与安装unknown/自然授权身份，另查原发布刷新测试根因，不重跑已经完成的资格替代页面进展。无共享资源重启/reset、无权限/资金/模型写、原Admin/uv/gitlinks保。
+
+### R271-T-K03 用户异常与边界验收（继续同33矩阵）
+
+上一goal turn为实际进展：Web ef5f93e/Root36d6b07c提交，真实L01/L02/U05与U15停用子链改变用户验收状态；完整Wave0–7未完成。本轮重新读取AGENTS/质量手册/CURRENT/task/progress/map及实际Git、原九源码listener kill0均存活，未重启/reset。Root独占浏览器/服务/Git/台账，normal Web ef5f93e及原Admin mixed、Rootuv/八gitlinks保护。
+
+|任务/角色|只读范围与交付|本轮验收/边界|
+|---|---|---|
+|R271-WEB-QA / 原 iam_grant_source_scope_0244|Web ef5f93e current reader/client/dialog/现UXlocale与已有33矩阵；仅Root ignored r271-web-user-fault-grounding.md|给真实F01/F02/F03/F06/当前安装失败的准确控件/状态/焦点oracle、确定代码风险与最窄归属。不改tracked/不运行门/服务/浏览器；Root实测失败后再批准修复，不复述通用规划|
+|R271-OWNER-BOUNDARY / 原 bff_admin_routing_d0_r257|正式BFF93bd/runtime39db/public8.5、Platform6e5个人命令/当前三D0与相关Data/contract；仅Root ignored r271-personal-boundary-grounding.md|核合法长名/summary/tags上限与UTF8/codepoint、withdrawn安装Enable/Remove正式语义、真实B身份前提；不读/写owner数据库、配置、凭据、Git或共享资源，不为补状态发明API|
+|R271-ROOT-USER / Root|正常IAB既有skills tab25，现自有QA记录，原9服务/真实owner/PG Redis MinIO|执行受控浏览器仅GET失败/延迟→error/取消/重试→fresh真实页面；每项保存非敏感网络/DOM/截图和恢复注入证据。Controlled fault不冒自然ownerFAIL、接口数量不作整页PASS；失败再沿原writer窄修。仍33与70现状，不预升|
+
+Root已得到受控浏览器安装CheckCurrent GET403 RED：标准error/header，经真实client显示泛化拒绝、2张私有卡仍显示且发布入口可用；非真实owner撤权，无DB/权限改变。现追加R271-WEB-DENIAL窄卡：原Web iam_grant_source_scope_0244 唯一writer，仅现 src/ui/skills/personal-skills-read.tsx 与 tests/ui/skills-panel.test.tsx；现retireAuthorization复用，不改职责/契约。先append mutation及ACK/read401/403、late结果退役UI断言，冻结后Root跑RED；Root批准后仅perform catch current fence之后、confirmed分支之前退役，不改412/unknown/原key分支。所有其他772原文件、Admin/mixed、依赖/配置/Schema保护；Root唯一Git/门/浏览器，独审原 agent_planned_guarantee_system_r257只读。
+
+R271窄源四行后Root真实同GET403 GREEN（0私有卡/发布disabled/明确forbidden），撤注入→显式Retry只有真实GET200→2真实卡恢复；不是自然owner撤权。工程新增5例GREEN但扩大related166为162/4：3旧授权断言与新退役语义冲突，1publish场景旧fixture失败待原源baseline核。不跳失败。现原Web先只读收敛published view退役明确错误文案及旧3授权oracle更新；需Root准入，不弱化unknown非授权原key恢复。
+
+Root原ef5 reader独立回归surface为35PASS/1FAIL，唯一publish refresh旧fixture失败；新3授权FAIL不是历史。现批准同R271-WEB-DENIAL扩唯一现 tests/ui/kokoro-skills-surface.test.tsx，仅3auth oracle：撤权后私有卡清空/发布disabled、不显示server sentinel；显式Retry只fresh managed GET，不携带旧key重发mutation。非授权network unknown同key原例、所有其它旧assert保持。reader现published error唯一文案分支 authorizationRetired ? forbidden : loadError；无新state/locale/contract，先保原3业务FAIL证据再实施。原publish fixture不在此切片修，不降低全related0FAIL标准，历史1FAIL独立列明。
+
+原writer两源码阶段已STOP，Root接收769路径保护；Root作为集成文档唯一writer仅现 Web src/ui/skills/INDEX.md追加本窄授权退役入口与实际验证范围，原全文保持。原三代码/测试冻结不变，独审续核3路径。
+
+所有共享文件唯一Root，生产写入按上述先RED后授权；同任务独立调查并行，不重复计划/市场/代理。只清自己的浏览器网络注入/viewport，不删除正常QA记录或重置共享状态。
+
 ### R270 接续验收与交付（Root 已提交窄切片；整页待续）
 
 原Web writer、producer核查与独审均STOP；Root正式提交Web ef5f93e（22路径/parent d0a3653），独审ed38c329及最终freeze e460deec，756原文件exact、原Admin只留working tree。Root精确tree工程282contract/51architecture/130focused均0FAIL、lint/type/build0；normal mixed177/0分列，不以其称用户完成。真实UI新版本400 RED→仅UTF8 CL修→显式同key201→新包上传/校验/发布→硬刷新原版与新版可读；显式同series安装升级后，revision2撤回200响应受控丢失→unknown当前GET非receipt→关/继续→同key/bodyreplay200→fresh→硬刷新withdrawn。现安装revision2保留、CheckCurrent/Disable/硬刷新持久化；不是新建第二installation，Remove未执行。实际receipt与历史/harness失败均在r270-personal-lifecycle-user-receipt.json。

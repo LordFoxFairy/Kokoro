@@ -1,3 +1,13 @@
+### R271 个人技能异常交互实测与权限退役修复（2026-10-07）
+
+沿用户确认的清晰个人管理页，默认“已安装 / 我发布的”，不扩市场。Root已审查并精确提交Web **23882d274917f9d6135878f2f637c92ab51a9f44**（parent ef5f93e，4路径）：当前安装动作401/403复用既有私有子树退役，两个视图明确权限提示；非授权unknown原key、412和ACK后当前读语义不变。原writer/原独审均STOP，三代码SHA与工程tree exact、另768起始路径保护；原Admin mixed、Rootuv/八gitlinks保持。
+
+Root真实浏览器：管理GET网络失败→明确error→手动Retry真实200；真实详情200响应held→正常Close/abort/dialog0/原卡归焦；受控详情503→error→同IDRetry真实200/完整详情/归焦。新增F01/F02/F06 PASS。撤回源Enable正式PUT412/稳定precondition code、有限error且disabled保持；U15仍PARTIAL（Remove未验）。安装CheckCurrent标准403受控RED：2私有卡/发布可用；修后同403为0卡/发布disabled/明确forbidden。已发布页安装意图在浏览器请求阶段拦截403、未转发owner写入，同样退役；两视图各显式Retry只有真实GET200恢复，不续写旧意图。网络注入全部清除、最终默认已安装两真实卡，无dialog/整页loading。
+
+受控故障不等真实IAM撤权；S04仍待验。个人33为 **12PASS/2PARTIAL/19待验**；完整70仍 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**，整T-K03 OPEN、Wave0–7 active。工程辅助：新5例有效RED→GREEN，扩大related首162/4；原ef5 source基线surface35/1，后三授权oracle按已批D0强化清投影与GET-only恢复后最终165/1，唯一既有发布刷新测试失败保留、根因尚待定位，不凭“fixture”描述断言根因已证。contract282/0、architecture51/0、lint/type/build0；未重跑全默认/全页面E2E，历史失败不清零。
+
+证据Root `var/dev/r255-preserve/r271-personal-skills-user-receipt.json`、实际原source RED/最终门、browser网络/DOM与最终截图；独审59a9d845绑定最终四hash。9正常源码listener最后均kill0存活，未重启/reset/DDL/权限/资金/模型写。下一同33补剩余异常/边界与自然授权身份、查既有发布刷新测试、继续完整个人CRUD；安装client有限loading风险仍待真实取证，不扩无关重构，不以本slice冒整页完工。
+
 ### R270 个人页新版本与撤回已真实走通；完整 CRUD 仍 OPEN（2026-10-07）
 
 Web **ef5f93e56e1fadbe67addb866252fb5a96506259**（parent d0a3653）仅22精确路径，承接原reader与唯一上传引擎；新增具名撤回确认组件，无市场/新owner/Schema/依赖。新版本固定原名、新包、新ID/同series/revision；撤回按精确版本，unknown保原key/body，ACK后仅当前读；旧发布协议不放宽。原writer实施、原独审ed38c329复核、Root756原文件字节保护与clean任务tree审查提交；原Admin mixed、Rootuv/八gitlinks、Storage55保留。

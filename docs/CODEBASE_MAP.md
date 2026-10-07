@@ -1,3 +1,7 @@
+### R271 个人技能权限错误交互入口
+
+Web23882d2：现 `src/ui/skills/personal-skills-read.tsx` current安装catch复用retireAuthorization、published错误显式forbidden；相邻INDEX与现panel/surface测试，无新目录/契约。Root真实两视图受控403退役→真实GET-only恢复及F01/F02/F06证据r271-personal-skills-user-receipt.json；33为12/2/19，T-K03仍OPEN。原normal九源码服务及Admin/mixed保持；工程既有发布刷新1FAIL保留，根因待定位。
+
 ### R270 当前个人生命周期页面入口（2026-10-07）
 
 Web正常源码 /Users/nako/.codex/worktrees/kokoro-r257-admin-web 正式 ef5f93e：现 src/ui/skills/personal-skills-read.tsx 同reader，personal-skill-publish-dialog/flow承接唯一new/version上传引擎；同目录新普通 personal-skill-withdraw-dialog.tsx 负责精确版本确认/未知原key恢复/ACK当前读。现 hub/skill-publish-client.ts、schemas.ts 与 app/api/hub/[...path]/route.ts 两exact self POST仅生命周期协议/10秒/UTF8实际Content-Length；旧publicCommand不放宽。无新目录/框架/市场/owner/schema/包依赖。BFF正常93bd/runtime39db/public8.5，Platform6e5及九持久源码进程复用。
