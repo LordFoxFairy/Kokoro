@@ -1,3 +1,38 @@
+### R316 有界本人 MCP 数据库切片已提交；页面验收不冒进（2026-10-07）
+
+Platform **dfa38f29c35e558fea2e6e5e6a2cb42f80815691** 精确13路径，原负责人实现、QA独审、Root实际重跑/独占Git：独立 mcp-personal 配置、四方法只读能力、同database/admission的RepeatableRead具名函数、SQL前tenant/user本人谓词与逐SQL正budget/局部timeout。旧command/recovery/projection与Schema/wire/secret/依赖不变，无第二实例或兼容层；512任务外路径、五doc历史全文suffix及Git对象freeze exact，子仓clean。三轮真实缺能力/错误Prisma itx guard/工程门失败及新AST解构六负控RED均保留，最窄修复后原P2由独审关闭。
+
+Root最终Node24 **type/lint/build/八TS格式、contract:check/platform-artifact:check/schema:check均exit0**；contract281/architecture104/unit834只是辅助工程门。**真实PG整文件13PASS/0SKIP，配置2PASS/7旧筛除**；不是整仓资源integration/smoke/format通过，四个旧D0格式与原Prisma索引warning保留。自有IAM官方native issuer handler签发（非TCP token endpoint）、实际TCP本人introspection200/错scope403、官方disable后原token401；随后host5432自然退出0，自有凭据移除/listener54525已关闭，原IAM448 tracked exact。正常九原句柄最终均live，没有重复启动/reset/正常权限变化。
+
+用户Skills展示本轮在正常3310再次真实只读核验：三安装卡，停用筛选仅本人撤回源一张且Enable disabled；不存在的搜索正常空结果；详情Escape回准确原标题；本人发布视图可读，再回默认已安装/noDialog。1000×850文档无横溢，图 **var/dev/r255-preserve/r316-skills-current.png**；Web仍e78d3f9，没有新假数据/使用量或写动作。不把已通过比例修复、当前读交互或后端门提升为完整Skills/MCP CRUD。
+
+**仍未实现/验收：** Product四读handler/admission/reader/mapper/authorizer/注册八接缝；独立IAM第五surface运行、真实Platform HTTP、BFF/Web MCP全CRUD；在途取消/饱和deadline/锁与迟到settlement、第二身份/多页/自然401。下一行动沿原Platform owner在现production-composition系统测试先取得真实HTTP缺路由RED，再逐接缝实现与真实IAM/PG验证，不新建计划中心、不缩减完整目标。完整70仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人33仍14PASS/7PARTIAL/12UNVERIFIED；T-K05/T-K03保持OPEN。Root默认三门本轮未复跑，历史全局失败不清零，运维配置不深入。
+
+统一收据 r316-current-receipt.json、r316-platform-commit-receipt.json；原只读报告r313-mcp-machine-review最终963b2792、r310-mcp-d0-handoff最终e6312f4d。完整Wave0–7保持active；原uv和八gitlink任务外修改保持、不暂存。
+
+### R316 同一目标：MCP 正式运行接入，不重复 UI 小修
+
+Root 基线 d06475e1；Platform /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability，codex/r259-skills-metadata、15eca78 clean，524 文件保护见 r316-platform-start.json。九原进程句柄本轮重新观察仍 live，不重复启动/reset。原 Web e78d3f9 比例修复已交付；全70/个人33原状态不变。
+
+Root 裁决沿 R310/R312 三面设计：新增第12现文件 src/config/runtime.ts 的独立 mcp-personal flag，默认 skill-catalog 不变，IAM名仍 mcp_personal；同 mcp.ports.ts 具名 McpPersonalReadPort / read capability 不扩大旧 mutation/repository interface，真实类同时实现两能力、module用同真实实例交集类型，不增旧 Mock/fallback。其余11源路径沿 r310-mcp-d0-handoff R315 精确清单。不是新架构或重问政策。
+
+|任务|角色、模型、文件集|阶段门、验收与交付|
+|---|---|---|
+|R316-PLATFORM-TESTS|原 platform_iam_consumer_r298 唯一 writer（沿原配置）；只三现 D0 窄更正上两裁决、两现 integration 文件末尾新增具名 R316 组|先真实 PG 缺 runPersonalRead 行为 RED，正式 loadConfig 独立 flag RED另记配置层，HTTP组不使用 admission override/peer/mock。原524非授路径与旧test prefix exact。禁运行资源/Git；Root资源与命令。冻结后单独准12源路径，不先实施未准源码。|
+|R316-QA-RUNTIME|原 agent_planned_guarantee_system_r257 只读（沿原配置）；同当前冻结与新测试尾|核十秒单budget、取消迟到/真实PG有限settlement、本人SQL在mapper之前、原四scope不扩。原 r313-mcp-machine-review 增量，零tracked/Git/资源/浏览器写。|
+|R316-IAM-RESOURCE|原 web_interaction_astra_r296 转 IAM 只读协调（沿原实际配置；新spawn未成功）；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam，现官方issuer、test/integration/platform-workload-http.test.ts、oauth-client-lifecycle及CLI|给Root隔离真实issuer/合法resource-server/nativeBFF tenant_machine六scope/撤权的现成最短入口和 protected file交接。不改源码、正常授权或启动资源/Git；不访问他ownerDB、不用HTTP peer冒真IAM。Root另准资源后才执行。|
+|R316-ROOT-INTEGRATION|Root独占任务表、资源、运行验证、Git|真实RED后推进生产实现；独立临时owner库只作测试隔离，正常九源码服务持续。系统验收不等用户页面PASS；只有 BFF→Web 全CRUD真实旅程通过才关闭原T-K05。|
+
+§8 placement 引用已批准 R310/R312 三D0与R315精确12path职责表；新 personal/ 五文件各有持续独立职责，不创通用层或第二owner。测试仅扩现 integration 目录两个文件，不编 Unit/Mock。三D0必须先对齐窄裁决，契约/schema旧事实不改；正式机器V1–V8与19path冻结。资金/凭据政策/privateServer/全CRUD仍原任务OPEN。
+
+R316 首实现实际：17749同四PG4PASS/9filterSKIP；86632完整现PG文件13PASS/0SKIP、19.67秒，旧崩溃12秒lease/ACK/CAS等保持；65590配置2PASS/7filterSKIP。首3517为3PASS/1FAIL，真实Prisma7.10交互proxy仍暴露$transaction导致错误root判定；仅个人guard按实际itx deny $connect/$disconnect修，旧helper/tests不变，历史失败保留。52505 type/lint/281contract0；architecture92PASS/3FAIL（raw文件闭集、821行、typed Reflect），后build未执行，不冒全门绿。
+
+§8最窄纠偏放置：Owner仍Platform/mcp，原owner唯一writer；同db/admission实现有界read算法，旧command事务类不换owner/边界。候选位置A现821行mcp-transaction继续堆：违反实际800门且read与receipt命令独立演进，淘汰；位置B已批personal目录普通 mcp-personal.transaction.ts：承接现runPersonalRead算法函数、无新公开wire/Schema/进程/生命周期，采用。个人目录原五文件增长计划确定；新增第13普通source并非通用transaction框架/第二repository。旧类具名forward同database/admission，不复制算法或wrapper class，移除原重复method块。三D0先窄更正该落点（历史suffix保）。个人repo以in窄化后dot检查当前itx deny和typed$queryRaw，旧helper不动。现 test/architecture/architecture.test.ts 精确列新readonly事务与repo，但每个实际raw只准两个固定parameterized set_config tagged模板字段（statement_timeout/lock_timeout、local=true），旧raw CRUD/unsafe/800/typedNonDot规则全部保。Root已采独审范围裁决，作者只此纠偏和三D0，其他8runtime仍冻结。Root重跑原13真实PG/配置/全工程，不能靠改oracle清FAIL。
+
+R316 Root 配置RED原14749已自然exit1：新mcp-personal非法1FAIL、旧默认1PASS/7filterSKIP，明确配置层未经过HTTP/IAM。独立真实IAM原5432现ready于54525；本次fixture官方managed client/native issuer handler签发，真实TCP introspection personal200、projection错scope403；0600私有文件只交当前测试，未改正常54042/53711/client/scope。精确创建namespace与库由原IAM fixture负责，Root将沿此句柄验证并finally关闭自有资源。未调用reset/新PG或Redis；E2未执行不称E2通过。首两tests/D0独审9c66c48c确认原prefix/suffix及519任务外exact。系统输入路径只在ignored私有交接，凭据不入tracked文档；r316-current-receipt.json脱敏。
+
+R316 Root 首真实 RED：原句柄62362已终态exit1，真实fresh PG/schema/Prisma/slot读取到达断言，runPersonalRead缺失1FAIL/9旧用例filter skip、1.26秒；r316-pg-red.log。此仅数据库能力缺口，不称HTTP/IAM经过。Root据此授既定12src范围，要求先冻结三现事务/ports/repository＋独立config小切片及真实SQL/已取消/过期门，不等全12才交；原proto/V8/Schema/旧四scope/正常服务权限保持。独立IAM资源协调spawn因thread limit真实失败，未隐形冒新增agent；复用已STOP原Web owner转只读IAM角色，任务记录沿原实际模型不冒5.6-sol。
+
 ### R315 原目标继续：Skills 用户验收与 MCP 运行边界
 
 R315 用户 Skills 展示优先收敛：Root正常3310在1000×850实际封面316×100（比例3.16:1）、书120×160；固定100px只在约200px卡宽接近参考2:1，桌面封面明显偏小。既有R297/R311的单书、浅背景、双视图与用户Manus方向已确认；局部样式归属现Web CSS，仅改 `.cover`/`.book` 两规则为随卡宽2:1预览及3:4书封，保其余全部选择器/真实数据/事件/准入/reader/tests不变。不新增资产、目录或假使用量，不复制Manus账号内容。

@@ -1,3 +1,15 @@
+### R316 有界本人 MCP 数据库切片已提交；页面验收不冒进（2026-10-07）
+
+Platform **dfa38f29c35e558fea2e6e5e6a2cb42f80815691** 精确13路径，原负责人实现、QA独审、Root实际重跑/独占Git：独立 mcp-personal 配置、四方法只读能力、同database/admission的RepeatableRead具名函数、SQL前tenant/user本人谓词与逐SQL正budget/局部timeout。旧command/recovery/projection与Schema/wire/secret/依赖不变，无第二实例或兼容层；512任务外路径、五doc历史全文suffix及Git对象freeze exact，子仓clean。三轮真实缺能力/错误Prisma itx guard/工程门失败及新AST解构六负控RED均保留，最窄修复后原P2由独审关闭。
+
+Root最终Node24 **type/lint/build/八TS格式、contract:check/platform-artifact:check/schema:check均exit0**；contract281/architecture104/unit834只是辅助工程门。**真实PG整文件13PASS/0SKIP，配置2PASS/7旧筛除**；不是整仓资源integration/smoke/format通过，四个旧D0格式与原Prisma索引warning保留。自有IAM官方native issuer handler签发（非TCP token endpoint）、实际TCP本人introspection200/错scope403、官方disable后原token401；随后host5432自然退出0，自有凭据移除/listener54525已关闭，原IAM448 tracked exact。正常九原句柄最终均live，没有重复启动/reset/正常权限变化。
+
+用户Skills展示本轮在正常3310再次真实只读核验：三安装卡，停用筛选仅本人撤回源一张且Enable disabled；不存在的搜索正常空结果；详情Escape回准确原标题；本人发布视图可读，再回默认已安装/noDialog。1000×850文档无横溢，图 **var/dev/r255-preserve/r316-skills-current.png**；Web仍e78d3f9，没有新假数据/使用量或写动作。不把已通过比例修复、当前读交互或后端门提升为完整Skills/MCP CRUD。
+
+**仍未实现/验收：** Product四读handler/admission/reader/mapper/authorizer/注册八接缝；独立IAM第五surface运行、真实Platform HTTP、BFF/Web MCP全CRUD；在途取消/饱和deadline/锁与迟到settlement、第二身份/多页/自然401。下一行动沿原Platform owner在现production-composition系统测试先取得真实HTTP缺路由RED，再逐接缝实现与真实IAM/PG验证，不新建计划中心、不缩减完整目标。完整70仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人33仍14PASS/7PARTIAL/12UNVERIFIED；T-K05/T-K03保持OPEN。Root默认三门本轮未复跑，历史全局失败不清零，运维配置不深入。
+
+统一收据 r316-current-receipt.json、r316-platform-commit-receipt.json；原只读报告r313-mcp-machine-review最终963b2792、r310-mcp-d0-handoff最终e6312f4d。完整Wave0–7保持active；原uv和八gitlink任务外修改保持、不暂存。
+
 ### R315 Skills 封面按卡片比例缩放（2026-10-07）
 
 Web已提交 **e78d3f9ca83e51cd7499f71e1fe370127d98bbc4**（精确CSS/Skills INDEX/CURRENT三paths），仅现 `personal-skills-read.module.css` 两规则：封面由固定100px改为宽100%/2:1；装饰书由120×160上限改为宽min(60%,176px)/3:4，原24px顶部裁切、token、正文、触控、网格与所有事件不变。没有新图片资产、假使用量、API/状态机/权限变化。Root接管前原writer已中断且CSS diff空；候选SHA b4b63ed1da67e77ecea4defb7d974e0e68fff9fb45d58fb44e460cf3743a263a，inverse回旧文件exact，另772 tracked与原Admin mixed保持。

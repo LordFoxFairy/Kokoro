@@ -1,3 +1,7 @@
+### R316 本人数据库读入口（未对外注册）
+
+Platform apps/kokoro-capability / dfa38f29c35e558fea2e6e5e6a2cb42f80815691：新 src/modules/mcp/personal/mcp-personal.transaction.ts 同database/admission有界readonly算法，现mcp-transaction具名forward；现mcp.ports/repository四本人方法、src/config独立mcp-personal flag。原Schema/wire/四surface/正常8086保持，Product handler与BFF/Web消费仍未实现；真实PG与辅助门只验该内部切片。详Root CURRENT/task R316，正常Web e78d3f9 Skills展示复验无新增写动作。
+
 ### R298 当前 Platform IAM 消费入口
 
 Platform apps/kokoro-capability 已提交6cf6057，vendor/iam唯一正式0.9archive与内外provenance严格固定；package/lock/checker及两tests/fixture，生产src/iam仍原四surface和独立E2。新SDK第五surface不等Product MCP adapter/contract已存在，正常8086未重载。Root同CURRENT/task保实际门/失败与用户验收缺口。后继个人MCP正式契约先按现UI/BFF/Platform事实只读D0，不把Agent execution proof或read-only projection复用为mutation。
