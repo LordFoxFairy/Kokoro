@@ -1,3 +1,20 @@
+### R270 接续验收与交付（Root 已提交窄切片；整页待续）
+
+原Web writer、producer核查与独审均STOP；Root正式提交Web ef5f93e（22路径/parent d0a3653），独审ed38c329及最终freeze e460deec，756原文件exact、原Admin只留working tree。Root精确tree工程282contract/51architecture/130focused均0FAIL、lint/type/build0；normal mixed177/0分列，不以其称用户完成。真实UI新版本400 RED→仅UTF8 CL修→显式同key201→新包上传/校验/发布→硬刷新原版与新版可读；显式同series安装升级后，revision2撤回200响应受控丢失→unknown当前GET非receipt→关/继续→同key/bodyreplay200→fresh→硬刷新withdrawn。现安装revision2保留、CheckCurrent/Disable/硬刷新持久化；不是新建第二installation，Remove未执行。实际receipt与历史/harness失败均在r270-personal-lifecycle-user-receipt.json。
+
+状态：L01/L02/U05新增PASS，U15 PARTIAL；个人33为9/2/22，完整70仍11/8/14/36/1，T-K03 OPEN、Wave0–7 active。九正常listener最终均存活，无共享资源reset或正常服务重启。下一同任务补剩余读故障/未知回执/安全与长文本；维持默认已安装/我发布的，不扩目录，不新建计划中心，完整用户验收后才放行整个模块。
+
+### R270-T-K03-WEB：直接实施个人生命周期交互（已批设计，不再D0）
+
+|项|执行范围|
+|---|---|
+|目标/基线|原T-K03 P0，/Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current / d0a3653d68a798bda268dd8bde181cdcf077286e；r270-web-start-freeze及原Admin/mixed保。上轮已真实FAIL L01/L02入口缺失；上轮progress为正式BFF激活/Web固定消费，不是全CRUD|
+|owner/writer|Web原 iam_grant_source_scope_0244 唯一writer；Root独占Git/服务/browser/验收；只读独审 agent_planned_guarantee_system_r257；BFF原owner并行只读核对两wire与已有正式ZIP发布实际要求|
+|实施|已批三R269 D0与r268放置表：六现source reader、publish dialog/flow、skill-publish-client、schemas、hub catchall；同目录具名withdraw dialog新普通文件。精确self两个POST、single10s/closedwire；唯一new/version发布引擎，名称只读/newID/同series/新revision/新ZIP；原key/body unknown恢复，ACK和freshGET分离，不自动升级原安装|
+|配套|现skills INDEX及现i18n九locale/messages仅必要键，现 tests/app/hub-proxy、tests/hub/skill-publish-client、现UI/flow/resume用例新增对应断言。新增withdraw dialog可配套一个同职责UI test，无新框架/目录；必需新增client方法影响的原fixture只补明确方法，不改旧断言/skip|
+|排除|锁/依赖、generator/snapshot/owner机器、Schema、normal env、auth hook/寿命/权限、Admin候选语义/其它sharedprimitive/CSS全部不改。混合route/i18n/测试仅新增生命周期hunk，原内容逐字保护，不夹带提交|
+|并行/停止线|writer实现后freeze源码/测试及文件清单SHA与保护交Root；不自行服务/浏览器/数据库/Git，不在变动树声称最终验收。独审只读候选，Root冻结后重跑相关工程、正常真实新版本上传发布/撤回/刷新/旧安装完整链，未过不升状态|
+
 ### R269-T-K03 接续结论与下一行动
 
 BFF93bd发行文档/正常受控重载、Web三D0e9d7与正式固定消费d0a3653已由Root审查/精确tree验证/提交。原Web与BFFwriter、独审已STOP；Root独占Git/服务/browser。当前真实FAIL L01/L02入口缺失，个人33为6PASS/1PARTIAL/2FAIL/24待验，完整70不变。下一原Webwriter直接按已批r268放置表/三R269 D0实现exact两命令同源接线、new/version唯一上传引擎分支与具名撤回confirm，原key/body/取消/late fence/current GET分离；用户UI失败基线已具备，不能再以重复文档或资格代替实现。消费已验收，后继尚待派工/源码冻结与Root真实浏览器创建新版本、发布、撤回、刷新/旧安装路径。完整T-K03与Wave0–7仍active。

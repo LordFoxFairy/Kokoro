@@ -1,3 +1,15 @@
+### R270 个人页新版本与撤回已真实走通；完整 CRUD 仍 OPEN（2026-10-07）
+
+Web **ef5f93e56e1fadbe67addb866252fb5a96506259**（parent d0a3653）仅22精确路径，承接原reader与唯一上传引擎；新增具名撤回确认组件，无市场/新owner/Schema/依赖。新版本固定原名、新包、新ID/同series/revision；撤回按精确版本，unknown保原key/body，ACK后仅当前读；旧发布协议不放宽。原writer实施、原独审ed38c329复核、Root756原文件字节保护与clean任务tree审查提交；原Admin mixed、Rootuv/八gitlinks、Storage55保留。
+
+Root正常右侧浏览器先复现新版本 **400**，定位Web→BFF Node HTTP未给真实UTF8 Content-Length；仅两新命令补实际byteLength后，用户显式原key/body重试 **201**，真实MinIO PUT200、Complete/Validate/Publish200，新增 **5797a41c… revision2**。硬刷新本人列表/详情原 **b5540ef2… revision1 active** 与新revision2均可读；发布没有自动改安装。随后用户路径显式安装升级 ACK **change=upgraded**，是同一installation **4f69a36a…** 从revision1到2，绝不是两套独立安装。
+
+真实撤回仅revision2：Root受控浏览器拦住已返回200的响应直到客户端有限超时，页面unknown；核对GET真实withdrawn且明确不是命令回执，关闭/继续保原意图，显式同key/body重试200 **replayed=true**，当前读与列表均withdrawn。网络注入已清除（Fetch.enable patterns=[]）；硬刷新后本人详情withdrawn、无安装/写动作，原revision1仍active。已安装页仍有同installation/revision2；CheckCurrent200→停用200→当前读/列表→硬刷新仍installed/disabled、source withdrawn，来源状态与enabled分开；R255原安装未动。Remove与拒绝启用分支未执行，U15只记PARTIAL。
+
+个人33矩阵现 **9PASS / 2PARTIAL / 22待验 / 0当前FAIL**：本轮新增L01/L02/U05 PASS、U15 PARTIAL，原R269入口缺失FAIL保留历史。全70组仍 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03 OPEN、Wave0–7 active。工程辅助：精确提交tree contract282/0、architecture51/0、focused130/0、lint/types/build0；正常mixed focused177/0另列（含原Admin47例），未跑全默认、不宣全仓绿。原TS/lint/new-harness失败、真实400均保，不以工程计数代替用户路径。
+
+证据：Root var/dev/r255-preserve/r270-personal-lifecycle-user-receipt.json、r270-web-commit-receipt.json、r270-withdraw-replay-success.json、r270-final-managed-refresh-proof.json、r270-withdrawn-install-{disable,refresh}.json、r270-personal-skills-final.png。早段旧capture变量误保存为空已标无效，纠正capture保请求/status与fresh公开body；旧ACK body经reload淘汰、MinIO positive buffer截断不作负向证据；故障注入首次pattern拒绝/过晚body读取及错误本地化selector、Root zsh保留变量错误均列harness缺口，不伪报产品失败或覆盖历史。九正常源码listener最终仍存活，无重启/reset/DDL/模型/资金调用。下一按同33矩阵补读故障、未知ACK、身份安全与长文本，不扩市场；其后继续既有CRUD优先级，不跳Agent。
+
 ### R269 正式个人生命周期接入已提交；页面两动作仍有真实缺口（2026-10-07）
 
 BFF正式发行文档93bdc0d（runtime固定39db/public8.5/103/raw01009），Root受控复用原持久env/53714重载至93bdc0def0c2fcf35506018838b0bc09fa609cfb；新43358/PID15101 health/ready200，其余8 listener与配置hash保持，零DDL/reset。原owner73秒资格不重复充页面进展。

@@ -1,3 +1,9 @@
+### R270 当前个人生命周期页面入口（2026-10-07）
+
+Web正常源码 /Users/nako/.codex/worktrees/kokoro-r257-admin-web 正式 ef5f93e：现 src/ui/skills/personal-skills-read.tsx 同reader，personal-skill-publish-dialog/flow承接唯一new/version上传引擎；同目录新普通 personal-skill-withdraw-dialog.tsx 负责精确版本确认/未知原key恢复/ACK当前读。现 hub/skill-publish-client.ts、schemas.ts 与 app/api/hub/[...path]/route.ts 两exact self POST仅生命周期协议/10秒/UTF8实际Content-Length；旧publicCommand不放宽。无新目录/框架/市场/owner/schema/包依赖。BFF正常93bd/runtime39db/public8.5，Platform6e5及九持久源码进程复用。
+
+Root真实页面版本发布/显式安装升级/撤回丢ACK恢复/刷新及撤回源安装停用子链证据 r270-personal-lifecycle-user-receipt.json；个人33仅9PASS/2PARTIAL/22待验、整T-K03 OPEN。不把同series安装升级误写成两独立安装。原Admin mixed和其它未闭环模块保持，后继沿现矩阵逐项验收。
+
 ### R269 当前个人技能接缝（2026-10-07）
 
 正常BFF43358/PID15101现93bdc0d（runtime39db），正式public8.5/103/raw01009；Web正常原3310/31693源码HEADd0a3653，现generated snapshot和两generator固定39db，Team15/Chat unchanged。个人源入口仍 src/ui/skills/personal-skills-read.tsx 与唯一publish dialog/flow，实际两生命周期UI入口缺失，下一沿三R269 D0原位置实现，不新建页面/market/store。Root实际双view读/active安装停用刷新启用子链与缺入口FAIL见CURRENT/test-cases；工程282/51不作为用户闭环。原资源、Admin混合与Storage55保持。

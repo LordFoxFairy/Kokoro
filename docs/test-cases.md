@@ -1,3 +1,15 @@
+### R270 个人页新版本与撤回已真实走通；完整 CRUD 仍 OPEN（2026-10-07）
+
+Web **ef5f93e56e1fadbe67addb866252fb5a96506259**（parent d0a3653）仅22精确路径，承接原reader与唯一上传引擎；新增具名撤回确认组件，无市场/新owner/Schema/依赖。新版本固定原名、新包、新ID/同series/revision；撤回按精确版本，unknown保原key/body，ACK后仅当前读；旧发布协议不放宽。原writer实施、原独审ed38c329复核、Root756原文件字节保护与clean任务tree审查提交；原Admin mixed、Rootuv/八gitlinks、Storage55保留。
+
+Root正常右侧浏览器先复现新版本 **400**，定位Web→BFF Node HTTP未给真实UTF8 Content-Length；仅两新命令补实际byteLength后，用户显式原key/body重试 **201**，真实MinIO PUT200、Complete/Validate/Publish200，新增 **5797a41c… revision2**。硬刷新本人列表/详情原 **b5540ef2… revision1 active** 与新revision2均可读；发布没有自动改安装。随后用户路径显式安装升级 ACK **change=upgraded**，是同一installation **4f69a36a…** 从revision1到2，绝不是两套独立安装。
+
+真实撤回仅revision2：Root受控浏览器拦住已返回200的响应直到客户端有限超时，页面unknown；核对GET真实withdrawn且明确不是命令回执，关闭/继续保原意图，显式同key/body重试200 **replayed=true**，当前读与列表均withdrawn。网络注入已清除（Fetch.enable patterns=[]）；硬刷新后本人详情withdrawn、无安装/写动作，原revision1仍active。已安装页仍有同installation/revision2；CheckCurrent200→停用200→当前读/列表→硬刷新仍installed/disabled、source withdrawn，来源状态与enabled分开；R255原安装未动。Remove与拒绝启用分支未执行，U15只记PARTIAL。
+
+个人33矩阵现 **9PASS / 2PARTIAL / 22待验 / 0当前FAIL**：本轮新增L01/L02/U05 PASS、U15 PARTIAL，原R269入口缺失FAIL保留历史。全70组仍 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03 OPEN、Wave0–7 active。工程辅助：精确提交tree contract282/0、architecture51/0、focused130/0、lint/types/build0；正常mixed focused177/0另列（含原Admin47例），未跑全默认、不宣全仓绿。原TS/lint/new-harness失败、真实400均保，不以工程计数代替用户路径。
+
+证据：Root var/dev/r255-preserve/r270-personal-lifecycle-user-receipt.json、r270-web-commit-receipt.json、r270-withdraw-replay-success.json、r270-final-managed-refresh-proof.json、r270-withdrawn-install-{disable,refresh}.json、r270-personal-skills-final.png。早段旧capture变量误保存为空已标无效，纠正capture保请求/status与fresh公开body；旧ACK body经reload淘汰、MinIO positive buffer截断不作负向证据；故障注入首次pattern拒绝/过晚body读取及错误本地化selector、Root zsh保留变量错误均列harness缺口，不伪报产品失败或覆盖历史。九正常源码listener最终仍存活，无重启/reset/DDL/模型/资金调用。下一按同33矩阵补读故障、未知ACK、身份安全与长文本，不扩市场；其后继续既有CRUD优先级，不跳Agent。
+
 ### R269 正式个人生命周期接入已提交；页面两动作仍有真实缺口（2026-10-07）
 
 BFF正式发行文档93bdc0d（runtime固定39db/public8.5/103/raw01009），Root受控复用原持久env/53714重载至93bdc0def0c2fcf35506018838b0bc09fa609cfb；新43358/PID15101 health/ready200，其余8 listener与配置hash保持，零DDL/reset。原owner73秒资格不重复充页面进展。
@@ -18,13 +30,13 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 
 继续现T-K03版本/撤回/unknown同key、当前撤权与安装固定revision场景，真实链确认后才更新对应状态；原FAIL/RETEST不清零。证据入口r268-runtime-candidate-commit-receipt.json，真实owner资格前提r268-real-owner-qualification.md；候选commit不代表公开发行。
 
-## R266 个人技能管理完整用户验收矩阵（33子用例：6 PASS / 1部分通过 / 26待验）
+## R266 个人技能管理完整用户验收矩阵（R270 当前：33子用例 / 9 PASS / 2部分通过 / 22待验）
 
-本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
+历史起始截面（R266–R267；当前状态以R270头部和逐行状态为准）：本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
 
-共有前提：Root固定正式BFF8.4与Web新commit、正常owner兼容激活，使用现正式IAM用户A（及经授权的真实B）；不selfgrant、不DB造状态、不mock/preview代替正常用户。每行保存commit、URL/viewport、自然操作顺序、脱敏request-id/status/公开body、实际DOM与必要截图；不得保存token/内部header。用户数据新增/生命周期改变由Root在明确自有QA记录进行，先确认可逆/保留，不因本报告执行。
+共有前提：当前Root固定正式BFF8.5/runtime39db与Web ef5f93e、正常owner兼容激活，使用现正式IAM用户A（及经授权的真实B）；不selfgrant、不DB造状态、不mock/preview代替正常用户。每行保存commit、URL/viewport、自然操作顺序、脱敏request-id/status/公开body、实际DOM与必要截图；不得保存token/内部header。用户数据新增/生命周期改变由Root在明确自有QA记录进行，先确认可逆/保留，不因本报告执行。
 
-类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。已观察六项PASS与一项部分通过；其余保留待验，不沿用旧子链PASS覆盖新commit。
+类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。当前累计9项PASS与2项部分通过；本轮变更相关L01/L02/U05/U15有真实浏览器证据，旧六项保历史绑定，不冒全量回归通过。
 
 |ID|前置|自然操作|预期可观察结果|优先级/类型|状态|
 |---|---|---|---|---|---|
@@ -32,7 +44,7 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-U02|A有本人active源|切管理视图（现「我发布的」）→点真实名称→展开技术详情→Close|管理GET保持self；safe8名称/summary/tags和exactskill/series/revision；不读别人的发现目录|P0/U|PASS：正常读取；R267 3e4f3d2另真实标题/卡布局→详情→Escape返回精确焦点通过|
 |R266-U03|A正式已有draft|管理页→draft详情→刷新|draft中文状态、完整字段，无Install/伪编辑/假发布成功；刷新仍draft|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
 |R266-U04|A正式已有disabled源|同上打开disabled卡|来源停用与安装enabled分开，非active无Install；现安装记录不凭源状态消失|P0/U|待验，需正式状态输入|
-|R266-U05|A正式已有withdrawn源|管理列表/详情→刷新|撤回仍本人可管理读，精确revision；不冒删除、安装移除或ACTIVE|P0/U|待验，需正式状态输入|
+|R266-U05|A正式已有withdrawn源|管理列表/详情→刷新|撤回仍本人可管理读，精确revision；不冒删除、安装移除或ACTIVE|P0/U|PASS：R270真实revision2撤回→当前read/list→硬刷新→本人withdrawn详情，原revision1仍active；safe8 exact、无Install/生命周期写按钮。证据r270-final-managed-refresh-proof.json/png，Web ef5f93e|
 |R266-U06|A正式已有quarantined源|打开卡/详情|隔离中文态，无安装/执行；不显示包URL/内部失败payload|P0/U|待验，需正式状态输入|
 |R266-U07|A该view首次无记录|切管理页|准确首次空态，不称已发布/已安装；有正式发布入口，无假零数据错误|P1/U|待验|
 |R266-U08|A真实记录超一页|Next→第二页detail→Previous→末页|opaquecursor原样、前后页正确/无跨页串卡；终页按钮正确；无自动扫全量|P0/U|待验，需合法多页数据|
@@ -53,12 +65,12 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-F06|真实链detail暂503/404|点detail→看到error→Retry|错误不继续loading或冒active；Retry同ID且opener保持，成功后完整详情|P1/F|待验|
 |R266-F07|Root受控响应坏shape/陌生status/循环cursor|进入相应页或翻页|strict拒绝、显式error/可退回，不假空、不loop、不N+1补字段|P0/F|待验；协议故障浏览器不冒正常owner数据|
 |R266-U14|A有active源未安装|管理卡显式Install→当前安装GET→刷新已安装|真实receipt后current确认、元信息精确revision；管理read不授额外安装权限/不启动Run|P0/U|PASS：R267正常自有新技能显式安装→current确认→硬刷新真实installed/enabled/revision1；绑定b901986，证据r267-skills-real-user-acceptance.json|
-|R266-U15|A已有安装且source后变非active|已安装CheckCurrent、合法Disable/Remove→刷新|不先要求active源GET；保owner允许管理、来源状态与enabled区分；拒绝按正式错误呈现|P0/U|待验，状态producer前提|
+|R266-U15|A已有安装且source后变非active|已安装CheckCurrent、合法Disable/Remove→刷新|不先要求active源GET；保owner允许管理、来源状态与enabled区分；拒绝按正式错误呈现|P0/U|部分通过：R270同installation显式upgrade到revision2后source撤回；CheckCurrent200→Disable200→fresh→硬刷新仍installed/disabled/withdrawn，不先active GET；Remove与拒绝启用分支未执行。证据r270-withdrawn-install-{disable,refresh}.json|
 |R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|待验|
 |R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|部分通过：R267实际发布成功→本人active列表/详情→硬刷新仍active；早段HTTP buffer淘汰，内部Run/资金负向待独立证据，不升级完整PASS|
 |R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|待验|
-|R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|FAIL：R269正常本人active详情无发布新版本入口（实际count0）；后续mutation未执行，证据r269-personal-lifecycle-ui-red.json/png|
-|R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|FAIL：R269正常本人active详情无撤回入口（实际count0）；后续mutation未执行，证据r269-personal-lifecycle-ui-red.json/png|
+|R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|PASS：R270真实新版本400 RED→UTF8 CL窄修→显式同key/body201→新ZIP真实MinIO PUT/完成/校验/发布→硬刷新原revision1 active与同series新ID/revision2可读；发布未自动升级安装。旧入口FAIL历史保留，证据r270-personal-lifecycle-user-receipt.json，Web ef5f93e|
+|R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|PASS：R270只撤回精确revision2，实际200 ACK被受控浏览器延迟至客户端abort；unknown GET withdrawn不是receipt→关闭/继续同key/body200 replayed=true→fresh→硬刷新withdrawn，原revision1仍active；注入已恢复。原入口FAIL保历史，证据r270-withdraw-replay-success.json / r270-final-managed-refresh-proof.json|
 |R266-L03|新版本/撤回非法base或异owner场景，正式命令已发行|自然重复动作/旧版本操作/失败后读回|稳定前置/拒绝错误，旧原版与安装不伪变更，不自动换key重写|P0/L|待验/阻塞：另owner错误修复及写消费者|
 |R266-L04|包上传中断/扫描非clean/attempt变化真实输入|取消/恢复、读取当前attempt、显式继续|不把管理draft可见当可执行或可续传；仅现授权包状态流程，无管理read泄露包URL|P0/L|待验；包状态回归独立|
 
