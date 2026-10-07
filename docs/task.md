@@ -1,3 +1,86 @@
+### R279 后继源修准入与UI交付（2026-10-07）
+
+Root实际v4 7PASS/6FAIL已到真实反例；原BFF唯一writer仅原15批准路径中的project-delete.ts、GETstatus route、Project service/port/repository及R279测试suffix：回执需墓碑一致；GET同一读snapshot校验冻结N+1计数、唯一正确Project scope及owner/actor，不把缺行返回404或伪released；沿现删除局部有界lease方案将signal贯穿status，准确取消/超时退役和late acquisition释放，正常GET只读、无全局Pool修改/新框架/文件。保十秒累计预算、当前admission/契约/旧测试prefix/全三回滚硬断言，修已删时间oracle为相同表示的PG前后exact值，不改变产品。源码freeze+SHA后STOP；Root重跑同13并独审，禁止自己跑资源/Git/正常库。并发DELETE/COMMIT unknown/Storage worker及正常Web删除仍OPEN。配置format仅五新文件及已修改段，不能捎带重排旧块。
+
+Root Web单独交付仅两现CSS+clean docs/CURRENT.md，已有真实771/390/1440与菜单/草稿/刷新证据，独审0；原Admin/i18n任务外修改不得暂存。全默认已存在i18n失败明确记录，不声称全门或整UI完成。Root五台账复用当前计划，不新建中心。
+
+### R279 UI 首页入口实际修复；项目删除仍有真实失败（2026-10-07）
+
+Web两CSS+CURRENT已由Root精确3路径提交 `7b30e846deb45233636bd285fb7d6551e1d02e67`；Git对象等已验freeze，任务外mixed未暂存。
+
+用户强调 UI 友好度，Root 现场只读对照已登录 Manus，不安装/发布/保存或读取私人会话。Web6924651 两 CSS 窄修：场景 flex 自然换行，删除窄桌面隐藏横向滚动。真实771窗口原“更多”right826超viewport，修后right494；390/1440所有五入口均可见、pageWidth等viewport。真实点击更多展开六项、Escape焦点返回、简报预填并清掉本人未发送草稿；reset视口后硬刷新，正常IAM/BFF页面完成渲染且五入口可见。截图与DOM证据 `var/dev/r255-preserve/r279-ui-scenes-final.png` / `r279-ui-scenes-browser.json`。只关闭此裁切缺陷，不冒整体UI/手机触控/全CRUD验收；技能卡层级、侧栏整体仍待修。
+
+Root Node22 lint/typecheck/build各exit0，architecture51/0、contract299/0；全默认3356PASS/1FAIL，未宣称全门绿。失败为现i18n闭集期望30而四已存在文案令实际34，隔离原同用例26PASS/1FAIL重现；test/全部字典相对保护基线未改变，未删除文案或放宽断言。独审两CSS无确定阻断，反向hunk重建HEAD exact，773其它tracked相对原保护SHA exact；原Admin混合修改保留。全test:e2e/axe/视觉预算未跑，不替代实际页面验收。
+
+BFF R279 原三正向3/0后，Root v2真实6PASS/2FAIL（ledger sequence冲突/HTTP OWS错误oracle）；v4修fixture并新增负控后13例7PASS/6FAIL，日志 `r279-http-pg-fault-v4.log/json`。其中一项墓碑时间仅同UTC时刻JSON字符串+00:00与Date Z比较的oracle差异；五业务失败为active Project回执错误202、missing/zero/wrong scope错误200/404、HTTP取消后锁仍持有时准确status query pid未退役。三个tenant限定PG中途故障均全事实回滚并同keyretry/replay通过。v3先解锁再核取消有假绿风险，Root未运行，改为v4持锁准确pid后才真实执行。所有测试仅本人隔离DB，SessionAdmissionDouble装配；正常库/服务零DDL重启，未验Storage投递或17条用户删除链，候选未提交/激活。
+
+完整70仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人技能33仍13PASS/6PARTIAL/14待验；不按辅助数量计算页面完成率。Wave0–7保持active，UI与BFF原owner分面并行，原uv/八gitlinks及所有任务外修改保留。
+
+### R279 Stage C 真实故障与入口边界验收补齐（2026-10-07）
+
+Root 修正冻结候选重新 typecheck/build均exit0；仅Rootowned隔离DB在零连接后重建本人owner schema，canonical实际26表，正常库零DDL。原3个R279 HTTP/PG已实跑3PASS/0FAIL/0SKIP，保首RED0/3和编译失败。此只证明本地pending事实，不是Storage释放或用户删除完成。
+
+原 BFF writer 续派 Stage C tests-only：仅现 test/business-store.integration.mjs R279 suffix，保826a345旧prefix。必须补3tenant+ID限定PG故障trigger（第二活成员核心/最后scope command/最终receipt），全tenant权威事实排序to_jsonb快照逐字一致，finally移除fault，同key真实成功一次+replay不追加；加attempted unknown与未尝试Agent区别、原墓碑时间、Message/immutable AGUI保留断言；正规原raw HTTP入口负控（canonical path/body/query/重复key及边界/current owner/GET mutation key/CL0/条件头不改变读取）。不mock删除或PG结果，不启动资源/跑门/Git，不修改源或旧fixture。Root执行失败后再授权对应修复，不删断言。暂不在此卡声称完整并发/COMMIT-unknown实测，缺项继续OPEN。
+
+原 core QA 可并行只读冻结 source/canonical/D0/runtime，报告确定缺口与准确最窄修集；两新表和单client事务不因正向3例绿自动验收。
+
+### R279-UI-FIT 首页场景真实负控后窄修授权（2026-10-07）
+
+Root 正常首页771×752现场 DOM：更多按钮 x768/right826，场景容器 x316/right755/client439/scroll510，scrollLeft0，nowrap+auto；按钮既超容器也超viewport。r279-ui-scenes-red.json及home截图保留，真实布局FAIL，不是后端测试结果。
+
+UI 唯一writer iam_grant_source_scope_0244；Web6924651，原Admin mixed与其它tracked保护。写集仅现 src/features/app/kokoro-welcome-direct-core.module.css、kokoro-welcome-direct-responsive.module.css；修场景自然换行，取消该行窄桌面隐藏滚动行为，保场景数量/业务handler/按钮焦点/触屏命中/其它区域布局。属已批准现主页响应式布局缺陷修复，不新设页面或设计系统；不调整默认侧栏宽度、不改技能页新布局、不改 TSX/API/i18n。worker仅交两文件SHA+diff并STOP，不跑门/Git/服务/browser，Root真实复验771/390/宽屏和点击已有场景。三个重点系统/页面验收仍分别记录，不能用这片替代整体UI完成。
+
+### R279 Root 候选首轮诊断失败与原 writer 窄续派（2026-10-07）
+
+Root 对冻结候选实际 typecheck exit2 / build exit1：Project repository 新方法落在 class 外，ScheduledTask lineage 缺 tenantId，候选不可运行。原日志 r279-typecheck-first.log / r279-build-first.log 保留；没有正常激活。Root 源码复核另发现 canonical release 表缺源码所写 owner_subject_id/actor_id/fence，receipt INSERT 未提供 NOT NULL operation/response_status，状态 GET 缺 mutation-key 拒绝，schema oracle 与 unique 顺序不同。不是用户路径通过，不放宽标准。
+
+原 bff_admin_routing_d0_r257 继续唯一 writer，仅已批准15路径：先修编译及上述确定接缝，正规 formatter 仅新文件及已变更段，不重排任务外旧块；本阶段测试仅维持3原 R279 正向。冻结后 Root 重新编译、仅自有 fixture fresh canonical install和正规HTTP/PG运行；随后再授权缺失3事务中途故障全快照、真实unknown与入口边界测试，不把3正向当聚合完成。原旧测试prefix/其它tracked保护；Git/门/共享资源/正常库/browser仍 Root 独占。
+
+### R279-UI 用户纠偏：实际界面友好度优先（2026-10-07）
+
+用户明确指出当前 UI 本身不友好，不能用后端/接口通过代替界面验收。Root 已现场只读对照已登录 Manus 首页、技能目录、个人技能弹窗与 Kokoro skills/home；无外部安装、发布、保存或私人会话读取。当前 Kokoro 实际两张个人技能卡占据大部分内容区，同级核对/启停/移除按钮与技术详情抢占扫描路径；窄内容区首页场景按钮横向裁切，侧栏专案行留白偏大。此为观察到的展示问题，未宣称已修复。
+
+原 iam_grant_source_scope_0244 续任 UI 只读定位；基线 Web6924651，保护原 Admin mixed。范围仅现个人技能 reader/surface/panel 的 TSX/CSS、现 composer 及 sidebar 相关布局引用，追到一层直接引用；不改 tracked/Git/服务/数据/browser，不运行门，报告直接回 Root。目标给名称-简介-状态-主动作的紧凑层级、技术/危险动作收纳、窄屏不裁切的现有组件最小修改集及真实页面验收步骤。不增加技能市场/角色/协议/状态机，不掩盖真实失败/未知或删安全确认；Root 负责实际浏览器和设计对齐。BFF R279 候选保持冻结待验，三个回滚用例缺口仍 OPEN，UI 任务不冒删除闭环。
+
+### R279 并行固定 Storage 消费边界审查（2026-10-07）
+
+原agent_planned_guarantee_system_r257只读BFF固定Storage e8b9928/c22b5与Storage该正式commit源码（不以55 mixed候选为正式），仅Root ignored r279-storage-release-consumer-qa.md。核两scope command identity/digest/可信metadata、unknown原command恢复、blocked/released状态机与既有Owner token/预算接线；提出后继最窄worker设计和真实owner/E2E负控。不得写tracked/跑门/资源/browser；当前R279只是持久命令，零worker网络、pending不是已释放。Root不借此给未冻结source自动验收。
+
+### R279 并行真实页面登录恢复调查（2026-10-07）
+
+Root在正常tab25现场读取：登录未知banner/专案及外部会话不可用；点现“重试”，Network真实 GET /api/auth/session 200、精确body仅 authenticated=false，页面仍未知；无持续loading、未改cookie/数据库、未重新登录。不能据此推断IAM失效原因或恢复锁根因。
+原iam_grant_source_scope_0244续只读Web会话探针/正规RP读与刷新语义，基线Web6924651、原Admin mixed775保护；仅Root ignored r279-session-recovery-qa.md。目标确定false是失效与access到期的混合信号、refreshUnconfirmed锁与恢复出口是否确属缺陷，给真实E2E复现和最窄可实施切片；不改tracked、不跑门/Git/资源/浏览器，不利用User授权参考Manus推定秘密存储政策。BFF原writer阶段B不受影响，Root独占浏览器。
+
+### R279 Stage B 本地聚合实施授权（2026-10-07）
+
+Root真实Stage A结果 **0PASS/3FAIL/0SKIP**；三个正规HTTP DELETE实际503 `upstream_not_configured`（不是预估404），说明新入口落generic upstream而非Project owner。真实种子/PG正常，测试前缀与其余533 tracked exact；日志r279-http-pg-red.log/json保留。两原只读QA已交STOP：ingress82475506、corefd4523b4。此结果不冒正常browser或Storage/Scheduler验收。
+
+原bff_admin_routing_d0_r257继续唯一BFF writer、Root独占门/资源/Git。阶段B精确已有写集：src/application/ports/project-repository.ts、src/application/project-service.ts、src/infrastructure/postgres/project-repository.ts、chat-repository.ts、scheduled-task-repository.ts、src/bootstrap/server.ts、database/schema.sql、scripts/apply-schema.mjs、test/schema-governance.test.mjs、test/business-store.integration.mjs。允许新普通文件仅现目录：src/infrastructure/postgres/conversation-delete.ts（same-client共同核心）、project-delete.ts（Project聚合事务/回执/状态读）、src/http/project-deletion-input.ts（两operation专用raw输入）、src/http/routes/project-delete.ts、project-deletion-status.ts（专用入口）。若Task outbox原语需额外文件，先报Root而非越界；禁止其它tracked、contract/generated/lock/原工程门/源AGUI/Agent/Storage/正常资源。
+
+|设计项|本阶段确定结论|
+|---|---|
+|Owner/事实|BFF Project唯一事实owner，原826a345/534 SHA冻结；新机器8.6候选已审，三D0当前态/目标态一致，正常runtime仍39db/8.5|
+|职责/位置|扩既有Project service/port/repository；新增same-client会话核心放原postgres目录而非新generic模块；专用HTTP routes沿现rename接缝，不循环public删除，不形成第二receipt|
+|粒度/依赖|各新文件单一输入、入口或事务变化原因；query/PoolClient仅persistence内部；固定Project→fresh全部Conversation排序→Task排序，不嵌套事务，不事务内网络|
+|SQL/API|两个D0 canonical关系、精确unique/check/claim索引；当前admission后具名route立即return，绕过generic活Project预查和pool receipt。仅本人墓碑原key可回原202 pending；GET无副作用，物理恒pending|
+|删除/承接|现single Conversation事实SQL提取为唯一核心并两调用，无重复删除路径；既有Task outbox具名原语承接，保R278恢复fence及callback。无新compat/alias/migration/SAGA/owner/权限|
+|验证/交付|writer仅实现/追加真实负控/三处PG回滚/unknown用例，保原test prefix；不运行门/共享资源/Git。交精确diff/哈希与handoff后STOP，由Root fresh自有fixture实跑红绿/纯门/独审再提交。Storage worker、正常库演进、Web17用户链仍后继未验|
+
+新建表只fresh canonical测试，正常库未触。单client有界等待/取消/未知COMMIT必须退役准确连接；不能仅race未取消query。Content-Type alone合法空body，GET任何CL（含0）拒，非法Node framing单列transport层。冻结所有仍绑定本人成员含已删，既有墓碑时间不改；Message/immutableAGUI保，scope N+1固定；关联Task暂停不detach，Direct/他人保留。3故障点逐行事务rollback全事实exact，不捏造未知dispatch terminal或Storage已释放。
+
+### R279 项目删除真实入口与聚合同事务实施（2026-10-07）
+
+上轮 progress：Root7b89ee35/BFF826a345已验收父Project排程恢复工程切片，真实隔离HTTP/PG97/0；没有代替Project删除17用户用例。当前Root原uv/八gitlinks、正常Web6924651/Admin mixed保；BFF826a345 tracked clean/原var保，九原服务复用。唯一设计沿已批准R276三D0/8.6机器与R278独审接缝，不新增计划中心/权限/迁移/SAGA。
+
+|任务|owner/角色/基线/精确范围|验收与交付|
+|---|---|---|
+|R279-BFF-PROJECT-DELETE-RED / T-C05|原bff_admin_routing_d0_r257，BFF唯一writer；/Users/nako/.codex/worktrees/kokoro-r257-bff-normal826a345；阶段A仅现test/business-store.integration.mjs追加R279真实HTTP/PG行为，不改原prefix/fixture/源/Schema/contract/门/Git/服务|真实HTTP先创建Project/有关联与无关联Task，DELETE要求空body/key、规范202data/header-onlyID/Location，GETstatus规范pending；PG核Project墓碑、Task暂停绑定/revision、专用receipt与N+1稳定命令。含零成员和完整原key回放、新key404与currentSession拒绝；成员构造复用真实repository/HTTP，绝不mock ProjectDelete。先交测试Hash与明确预置方式，由Root执行RED后才另授StageB|
+|R279-QA-PROJECT-INGRESS|原iam_grant_source_scope_0244，只读当前bootstrap/rename具名独立入口/机器8.6/三D0；仅Root ignored r279-project-ingress-qa.md|核新DELETE/status应在generic mutation receipt前具名承接，仍当前admission；body/framing/query/key/canonicalpath/closederrorprofile。给可执行负控步骤，不发明新权限/alias/控制面；不写tracked/不运行门/Git/资源/浏览器|
+|R279-QA-ATOMIC-CORE|原agent_planned_guarantee_system_r257，只读现chat核心、Task原子outbox、canonical/install与已批准D0；仅Root ignored r279-project-core-qa.md|Root裁决冻结全部仍绑定本人成员，含已单删未释放scope；活成员转换/已墓碑保原日期且仍写稳定release。same-client共同核心保现dispatch未知/未尝试区别、Message/immutableledger/用户Task规则，确认新增两表精确约束/故障回滚oracle与最窄source文件集。禁止跨ownerSQL/独立事务循环/事务内网络；无tracked/Git/资源|
+|R279-ROOT-REAL-ENTRY|Root唯一设计/台账/资源/门/Git/正常browser|唯一Rootowned隔离PG canonical fixture复用共享PG/Redis，SessionDouble仅装配；新endpointRED/冻结工程与真实owner链/用户17子例分开。先完成当下atomic本地事实，正式worker与Web随后，不把局部接口绿升级用户删除PASS|
+
+放置既定：扩现Project application/port/repository；新的same-client会话删除helper仅放现src/infrastructure/postgres/conversation-delete.ts，比较并淘汰route循环独立事务和新genericSAGA模块。Project聚合持唯一client，Project→fresh按canonical排序全部绑定Conversation→Task；内部pause复用现正式scheduler.replace原语，不嵌套publicupdate。scope release只存ownercommand，不复制Storage表/对象清单；固定e8b992/c22b5 owner contract。后继新增project-delete持久化helper与两具名HTTProute按原D0，最终精确写集由Root看StageA交接/两只读报告后再授权，不先给全仓修改权。normal库演进需单独备份/停止线，不用测试installer当正常自动迁移；未触正常库DDL。
+
 ### R278 排程父项目 fence 已提交；新增 Manus 真实界面参考（2026-10-07）
 
 BFF正常工作树 **826a345971c7ebda132aca6a4a8f6eebd428e8f3** 仅现repository与integration测试两路径：同事务本人binding预读→包含墓碑的本人Project FOR SHARE→Task FOR UPDATE复核；已有outbox恢复不重复写，新intent才校验active。Direct正常、完整旧HTTP ACK可回放但不会重新启用任务。原BFF负责人实施、原QA独审最终10c7a439、Root独占资源/门/Git；旧测试prefix及其余532 BFF路径exact，Web775/Rootuv/八原gitlinks保持。

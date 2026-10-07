@@ -1,3 +1,15 @@
+### R279 UI 首页入口实际修复；项目删除仍有真实失败（2026-10-07）
+
+Web两CSS+CURRENT已由Root精确3路径提交 `7b30e846deb45233636bd285fb7d6551e1d02e67`；Git对象等已验freeze，任务外mixed未暂存。
+
+用户强调 UI 友好度，Root 现场只读对照已登录 Manus，不安装/发布/保存或读取私人会话。Web6924651 两 CSS 窄修：场景 flex 自然换行，删除窄桌面隐藏横向滚动。真实771窗口原“更多”right826超viewport，修后right494；390/1440所有五入口均可见、pageWidth等viewport。真实点击更多展开六项、Escape焦点返回、简报预填并清掉本人未发送草稿；reset视口后硬刷新，正常IAM/BFF页面完成渲染且五入口可见。截图与DOM证据 `var/dev/r255-preserve/r279-ui-scenes-final.png` / `r279-ui-scenes-browser.json`。只关闭此裁切缺陷，不冒整体UI/手机触控/全CRUD验收；技能卡层级、侧栏整体仍待修。
+
+Root Node22 lint/typecheck/build各exit0，architecture51/0、contract299/0；全默认3356PASS/1FAIL，未宣称全门绿。失败为现i18n闭集期望30而四已存在文案令实际34，隔离原同用例26PASS/1FAIL重现；test/全部字典相对保护基线未改变，未删除文案或放宽断言。独审两CSS无确定阻断，反向hunk重建HEAD exact，773其它tracked相对原保护SHA exact；原Admin混合修改保留。全test:e2e/axe/视觉预算未跑，不替代实际页面验收。
+
+BFF R279 原三正向3/0后，Root v2真实6PASS/2FAIL（ledger sequence冲突/HTTP OWS错误oracle）；v4修fixture并新增负控后13例7PASS/6FAIL，日志 `r279-http-pg-fault-v4.log/json`。其中一项墓碑时间仅同UTC时刻JSON字符串+00:00与Date Z比较的oracle差异；五业务失败为active Project回执错误202、missing/zero/wrong scope错误200/404、HTTP取消后锁仍持有时准确status query pid未退役。三个tenant限定PG中途故障均全事实回滚并同keyretry/replay通过。v3先解锁再核取消有假绿风险，Root未运行，改为v4持锁准确pid后才真实执行。所有测试仅本人隔离DB，SessionAdmissionDouble装配；正常库/服务零DDL重启，未验Storage投递或17条用户删除链，候选未提交/激活。
+
+完整70仍11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST，个人技能33仍13PASS/6PARTIAL/14待验；不按辅助数量计算页面完成率。Wave0–7保持active，UI与BFF原owner分面并行，原uv/八gitlinks及所有任务外修改保留。
+
 ### R278 排程父项目 fence 已提交；新增 Manus 真实界面参考（2026-10-07）
 
 BFF正常工作树 **826a345971c7ebda132aca6a4a8f6eebd428e8f3** 仅现repository与integration测试两路径：同事务本人binding预读→包含墓碑的本人Project FOR SHARE→Task FOR UPDATE复核；已有outbox恢复不重复写，新intent才校验active。Direct正常、完整旧HTTP ACK可回放但不会重新启用任务。原BFF负责人实施、原QA独审最终10c7a439、Root独占资源/门/Git；旧测试prefix及其余532 BFF路径exact，Web775/Rootuv/八原gitlinks保持。
