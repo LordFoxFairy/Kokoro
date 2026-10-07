@@ -1,3 +1,19 @@
+### R267 个人管理卡片局部样式修复已真实验收（2026-10-07）
+
+Web正式 **3e4f3d26fa129e1ef844029c49f54b2cd014f5e8**（parent2c302835）仅现reader导入/四class与同目录4规则CSS：不改API、状态/动作、cn或全站primitive，不新增依赖。Root真实CSS先失败证据：默认Button冲突utility及unlayered继承导致title nowrap/font400、Card/Content双padding；修后正常423px内容面板单列、font600/正常换行、单16pxpadding，新样例卡302→178px。320/390窄viewport无横向溢出，1280时实际932px容器两列；标题点开真实详情→Escape返原焦点，Settings技能同真实列表/样式/详情焦点也通过。viewport已reset，Settings关闭，正常页留给用户。截图与用户receipt：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r267-personal-skills-refined.png、r267-managed-card-layout-user-receipt.json。
+
+仅类型/目标lint exit0为辅助，独审b9310f52与Root其余767保护exact；无新mock或单测充当UI验收。上述当前真实名称不代替255最长记录/390×200极端/全部触控验收，U12仍待验；33矩阵 **6PASS/1PARTIAL/26待验**及全70组 **11/8/14/36/1**不变，完整个人CRUD、版本/撤回、auth首次unknown和历史默认门失败仍OPEN。正常Web句柄31693复用，BFF运行930028b不变；机器a55f70f候选非runtime，下一正式producer沿原owner推进。
+
+### R267 个人技能发布反馈已修复；详情续期行为新增真实通过（2026-10-07）
+
+BFF机器切片已独立提交 **a55f70f3ac74c0eb6ac3d46028ea5b8bd6e976e1**：8.5/103仅定义两个生命周期命令，运行路由仍未实施、Web禁止消费；实际contract282/0、architecture35/0、default847/0/2既有SKIP，lint/semantic/types/build exit0（4既有lint warning）。Root old101 inventory与旧raw逆转字节exact，独审a5a5534e；receipt /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r267-machine-v8-commit-receipt.json。机器门不作个人页面完整通过证据，原正常运行930028b不变。
+
+用户确认先清晰个人管理，不扩市场。Web正式 **2c3028355f444f5f810d003e342b93a2bdc585ad**（parent b901986）只提交publish dialog成功footer和3个行为断言，原Admin/mixed与其余768冻结文件、Root uv/gitlinks保持。正常tab25用自有无网络ZIP发布新skill ff0f1c74…，真实草稿201→上传完成/校验/发布200，active/revision1回执；成功后零submit/无retry，只保关闭。关闭重开字段为空、上传禁用；硬刷新后管理列表仍真实新名称。证据与截图：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r267-publish-success-ux-user-receipt.json、r267-publish-success-normal.png、r267-personal-skills-final.png。Root两UI/flow目标7PASS+三关联30PASS、types/lint0与独审34f9a1bf为辅助，不代替上述用户路径；实际RED1FAIL/TS2367和历史默认门失败均保。
+
+正常已开详情持续134979ms期间CSRF GET/session POST200、authenticated true，管理view/detail保持且无技能请求，Escape返原名称按钮；U13新增PASS，证据r267-dialog-probe-user-receipt.json。原33子矩阵现 **6PASS/1PARTIAL/26待验**，U16仍缺Run/资金负向不改完整PASS；全70组仍 **11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST**、完整新增0，Wave0–7 active。后续自然auth观测buffer截断、session新过期时间与view reset缺首transition，证据缺口保留，不宣称auth unknown首因修复。
+
+BFF仍运行930028b/public8.4/101，Platform6e5及正常基础设施/服务句柄复用，未重启/reset/造资金。BFF个人新版本/撤回两命令的8.5/103机器候选在原1d373ba三D0后继续独立切片；未实现运行路由、未允许Web消费，个人CRUD生命周期与安全/故障矩阵仍OPEN。下一步沿该owner完成正式producer后再接页面，不把候选机器门作为用户功能闭环。
+
 ### R267 个人 CRUD 后继入口（2026-10-07）
 
 当前运行源码仍 Web b901986 / BFF930028b / Platform6e5；本人真实发布、安装、硬刷新证据现 Root var/dev/r255-preserve/r267-skills-real-user-acceptance.json，33用户矩阵5PASS/1PARTIAL/27待验，不变完整70组。BFF文档commit1d373ba三D0新R267前缀定义下一public8.5/103两个个人版本/撤回命令（尚未发行/实施），复用现 catalog-connect 与 Platform SkillCatalogService 的已正式命令；不新增 Platform HTTP mutation/owner/receipt/数据库。Node22现生成check与两Proto byte等价已实测，Web消费必须等正式producer发行；正常服务句柄不变。auth unknown只读报告 r267-auth-unknown-readonly.md 明确首因OPEN，不把已批准1h上限当确定bug。

@@ -1,15 +1,15 @@
-## R266 个人技能管理完整用户验收矩阵（33子用例：5 PASS / 1部分通过 / 27待验）
+## R266 个人技能管理完整用户验收矩阵（33子用例：6 PASS / 1部分通过 / 26待验）
 
-本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式b901986、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；合计5PASS/1部分通过/27待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
+本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
 
 共有前提：Root固定正式BFF8.4与Web新commit、正常owner兼容激活，使用现正式IAM用户A（及经授权的真实B）；不selfgrant、不DB造状态、不mock/preview代替正常用户。每行保存commit、URL/viewport、自然操作顺序、脱敏request-id/status/公开body、实际DOM与必要截图；不得保存token/内部header。用户数据新增/生命周期改变由Root在明确自有QA记录进行，先确认可逆/保留，不因本报告执行。
 
-类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。已观察五项PASS与一项部分通过；其余保留待验，不沿用旧子链PASS覆盖新commit。
+类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。已观察六项PASS与一项部分通过；其余保留待验，不沿用旧子链PASS覆盖新commit。
 
 |ID|前置|自然操作|预期可观察结果|优先级/类型|状态|
 |---|---|---|---|---|---|
 |R266-U01|A正式准入，有现安装记录|打开/app/skills、硬刷新|默认已安装，真实name/summary/来源状态；不预先拉全部管理页；无重复入口|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
-|R266-U02|A有本人active源|切管理视图（现「我发布的」）→点真实名称→展开技术详情→Close|管理GET保持self；safe8名称/summary/tags和exactskill/series/revision；不读别人的发现目录|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
+|R266-U02|A有本人active源|切管理视图（现「我发布的」）→点真实名称→展开技术详情→Close|管理GET保持self；safe8名称/summary/tags和exactskill/series/revision；不读别人的发现目录|P0/U|PASS：正常读取；R267 3e4f3d2另真实标题/卡布局→详情→Escape返回精确焦点通过|
 |R266-U03|A正式已有draft|管理页→draft详情→刷新|draft中文状态、完整字段，无Install/伪编辑/假发布成功；刷新仍draft|P0/U|PASS：本轮正常浏览器真实读取；绑定b901986|
 |R266-U04|A正式已有disabled源|同上打开disabled卡|来源停用与安装enabled分开，非active无Install；现安装记录不凭源状态消失|P0/U|待验，需正式状态输入|
 |R266-U05|A正式已有withdrawn源|管理列表/详情→刷新|撤回仍本人可管理读，精确revision；不冒删除、安装移除或ACTIVE|P0/U|待验，需正式状态输入|
@@ -18,9 +18,9 @@
 |R266-U08|A真实记录超一页|Next→第二页detail→Previous→末页|opaquecursor原样、前后页正确/无跨页串卡；终页按钮正确；无自动扫全量|P0/U|待验，需合法多页数据|
 |R266-U09|有状态filter且各状态真实记录|第二页切状态→返回all|新filter从首cursor开始；旧detail/晚页不留；筛选空不冒从未创建|P1/U|待验，取决首片filter准入|
 |R266-U10|A正式owner读恢复空页且旧cursor末页为空|到该页→Previous|显示分页空不是首次空，保返回路径，不环形读|P1/U|待验|
-|R266-U11|已在/app且A准入|Settings→Skills→两view→详情关闭|同reader同正式数据、无第二h1/重复导航；关闭回精确触发按钮|P1/U|PASS：本轮正常浏览器真实读取；绑定b901986|
+|R266-U11|已在/app且A准入|Settings→Skills→两view→详情关闭|同reader同正式数据、无第二h1/重复导航；关闭回精确触发按钮|P1/U|PASS：正常读取；R267 3e4f3d2 设置同新布局/真实详情/Escape返回内层触发按钮通过|
 |R266-U12|合法255长名、长summary/tags真实源|390×200/390×640打开详情、展开技术信息、滚到底、X/Escape|完整可读，唯一bodyscroll；X持续画面可见；回exact opener且focus-visible；不靠自动scrollIntoView判PASS|P1/U|待验，需合法长文本真实源|
-|R266-U13|同主体healthy且detail已开|保持打开超过120s例行probe，再操作键盘|view/detail/草稿不因成功poll重挂；不新增管理GET/POST作为poll副作用|P0/U|待验|
+|R266-U13|同主体healthy且detail已开|保持打开超过120s例行probe，再操作键盘|view/detail/草稿不因成功poll重挂；不新增管理GET/POST作为poll副作用|P0/U|PASS：R267真实详情134979ms/正常续期200仍authenticated，视图和详情保持；无技能请求，Escape返原名称按钮；证据r267-dialog-probe-user-receipt.json|
 |R266-S01|A detail开，实际准入转unknown|等待probe→只读Retry→明确登录恢复|旧卡/detail/publish/install同步退役，禁private IO；unknown非匿名；恢复新代freshGET无旧POST|P0/S|待验，真实准入故障前提|
 |R266-S02|A与B各自正式身份及不同自有源|A读后退出/按正规流程切B→管理列表|无A卡/游标/草稿/详情；B只读B；旧A响应迟到不复活|P0/S|待验，B身份输入待Root|
 |R266-S03|已授权跨人安全测试，有A精确ID|B在同浏览器会话经正式同源detail请求该ID并与不存在ID比较|均404同安全错误，不泄露A名称/状态/series；页面不显示旧详情|P0/S|待验；非现UI入口，需真实HTTP伴随证据|

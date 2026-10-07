@@ -1,5 +1,47 @@
 ### R267-SKILLS-LIFECYCLE-D1-MACHINE：两命令正式 public 机器候选（未发行/未实现）
 
+### 同期 R267-WEB-MANAGED-CARD-LAYOUT（已批准个人管理展示的局部修复）
+
+Root已验收并精确提交Web 3e4f3d26fa129e1ef844029c49f54b2cd014f5e8 两路径；source inverse逻辑byteexact、其余767保护、types/lint0、独审b9310f52。真实normal423panel单列/单padding/font600，样例302→178；320/390无横向溢出、1280两列，主页面与Settings title→detail→Escape精确焦点通过，viewport reset。receipt r267-managed-card-layout-user-receipt.json，当前QA记录不代替最长255/extreme200px/全部安装与生命周期验收；33/70完整计数不变。
+
+Root正常771×744实际CSS/DOM RED：管理title white-space nowrap/font400/justify center，默认Button与h-auto/whitespace-normal/px-0并存；cn只是join没有解决冲突，Card外24px+Content16px24px双重内边距，205.5px卡高302px。截图r267-personal-skills-final.png、metrics r267-managed-cards-layout-before.json。不全站改cn/依赖或primitive，最窄修同个人管理卡片。
+
+|项|裁决|
+|---|---|
+|Owner/唯一writer|Web原 iam_grant_source_scope_0244；Root browser/审查/Git/资源|
+|基线/保护|/Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，2c302835；原Admin/mixed/768保护保留，本片仅许可下两路径|
+|当前事实/目标|现src/ui/skills/personal-skills-read.tsx 管理card/title；复用shadcn Card/Button，修真实长名换行/左对齐/font600及重复padding；标题仍原button/accessible name/onClick/focus-return，保全部reader/query/state/安装/动作|
+|目录方案/粒度|采用同UI目录新普通 personal-skills-read.module.css（共享主页与Settings的同reader样式）；不改features/app/kokoro-skills-surface.module.css，因为仅主页会导致Settings同组件漂移；无新目录/一级模块|
+|许可|仅现personal-skills-read.tsx导入上述CSS且替换管理grid/Card/CardContent/title四处class；新module仅对应4具名规则，局部font/white-space/padding/height/wrapping/responsive布局，不覆盖安装卡/全站/其它控件；不!important/inline style/第二组件体系|
+|依赖/API/数据/删除项|无API/schema/generated/package/lockfile变更；标题唯一focus按钮不变；用局部module移除这四处冲突utility而非新增fallback，原互动业务全保|
+|验证|Root实际RED已保存；交两文件hash/现source inverse旧字节后STOP，Root新771及390窄屏标题wrap/完整可见/无横向溢出、click详情/Escape返原button、Settings同reader，types/lint/相关现UI行为辅助、独审；不worker跑门/服务/数据/Git|
+
+本轮Root最终验收：Web **2c3028355f444f5f810d003e342b93a2bdc585ad** 两文件已精确提交；正常发布/成功无重试/Close重开清空/刷新持久化用户路径通过，receipt r267-publish-success-ux-user-receipt.json；U13详情134979ms正常续期保持新增PASS，33矩阵6PASS/1PARTIAL/26待验，完整70组不变。BFF机器独立commit a55f70f3ac74c0eb6ac3d46028ea5b8bd6e976e1（未发行）; v8 原14474终态：contract lint/semantic/types/lint/build exit0（4既有lint warning），contract282PASS/0、architecture35PASS/0；默认原88746终态847PASS/0FAIL/2既有SKIP，不称外部owner或用户闭环。独审a5a5534e与Root8hash/旧raw逆转111d/旧101inventory exact已核验；v1–v7真实失败、Root命令误名与两个新增RED全部保。正常BFF仍930028b，机器候选未发行/无运行route，Web禁止consume。Root只提交8候选文件，var/不纳入；下一原owner实施运行命令需独立tests-first范围门，无新任务中心。
+
+Root v7正规baseline重生103后，contract lint0/architecture35PASS/typecheck/lint/build0，semantic真实2FAIL保 r267-machine-v7-gates.log；Root误用不存在test:contract命令也保，随后以package实际contract:test重跑。原writer只读1585f1ee定位既有 collectOperationBlocks 错误匹配两空格components，而YAML顶层零缩进，末withdraw吞全部components污染503。续v8仅scripts/verify-openapi.ts将边界修为真实顶层，以及现test/contract/openapi-contract.test.mjs追加末operation→components正反边界病例（不改任何旧oracle/块/103inventory/其余六hash）。现semantic已是RED；freeze两hash后Root正规全contract/architecture/types/lint/build重跑与独审；不dummy path、不运行源码或消费者发行。
+
+独立Web UX两文件冻结2be5c319/faead5e7，Root目标2文件7PASS与关联发布3文件30PASS、types/lint0；独审34f9a1bf保原flow/guard。正常tab25新自有无网络技能ff0f1c74沿真实草稿201→upload/complete/validate/publish200，最终active/revision1回执，成功DOM只有关闭、0submit/无retry，截图r267-publish-success-normal.png；仍待关闭重开/刷新与Root精确提交，不冒完整CRUD完成。
+
+并行只读 R267-WEB-PUBLISH-SUCCESS-UX：原 iam_grant_source_scope_0244 / Web b901986+受保护Admin/mixed，只读现 PersonalSkillPublishDialog 与原行为测试；定位真实发布成功仍留disabled“重试同一次尝试”的状态/按钮条件，给最窄现文件修法与先失败用户行为断言，不改源码/测试/台账/Git/资源，仅Root ignored r267-publish-success-ux-readonly.md。这是独立UI打磨，不等待生命周期命令，也不预授新版本/撤回消费。
+
+上述只读5812e499确认成功保session且footer非restart一律submit，成功显示禁用retry但submit guard不允许重发。续同Web原writer只授权 tests/ui/personal-skill-publish-dialog.test.tsx 原pending→重开→成功病例尾追加成功后无submit/retry断言，其他原ZIP/key/次数/恢复oracle保持。先freeze仅test由Root跑真实RED，随后才准 src/ui/skills/personal-skill-publish-dialog.tsx 成功不渲染submit的单处footer修复；unknown/session/close/data不改。既有文件同职责局部修，无新目录/contract；Root实际工程与正常发布E2E、独审/Git，保护原Admin/mixed/其余源码；不跑共享资源/门或自行提交。
+
+Root复审六文件冻结发现 verify-openapi.ts 的批量替换误将三个 response 名插入七个旧 ManagedPersonalSkill response profile，Node22 实跑 contract:semantic exit1/ERR_INVALID_TYPESCRIPT_SYNTAX（1761），证据 r267-machine-syntax-red.log。仅准原 writer 恢复这七个旧 profile 为 HEAD 原文；新三名仅保留合法 allow-list 位置，新 lifecycle validator 不扩范围。交 v2 六文件 hash 后 STOP；修前失败保留，未授 runtime/Web 或共享资源修改。
+
+独审同时发现 YAML 新 schemas/responses 误插入旧 personalization GET（line61），真实解析/Root contract:lint 失败。窄授权原 writer 将新增块移到唯一 components.schemas/components.responses 正确位置，旧 GET 及全部旧101 operation/component 恢复 HEAD 字节；其余语义不变，不手改 baseline。交 v2 需原块保护证明，两原真实失败保留。
+
+v3移除新增块/退version可恢复原111d2408字节，Root正规baseline103生成0，但不证明有效YAML：Root下一真实解析在4363发现插入末尾缺newline与PersonalizationFields粘连，r267-machine-yaml-v3-red.log保留。独审2be77a50内存定位另确认uint64两合法大值被拒和前导换行合法reason被拒；Root语义行为尚未跑到，不记3FAIL。续准同writer仅YAML新增块newline及revision/reason约束、verify新lifecycle helper、现test新增R267段：修完整uint64>=2及任意跨行非空白，治理锁十status精确response/code/header/closed envelope/必需key，正反例直接解析求值而非字符串marker。原101/raw保护不变，不增validator依赖/文件、不写Root生成baseline，四其余路径保护；新v4 freeze后Root全门与独审，不授运行源码。
+
+Root92917 v4七门已终态：contract lint1（两新operation缺summary）、semantic1（22新规则注册接缝）、contract259PASS/21FAIL、architecture34PASS/1FAIL（唯一8.4全机版本oracle）、typecheck/lint/build0；全部真实失败保。独审v4还指出新status const未治理/宽mutation缺基线零错，以及新version metadata约束不等既有draft。续同writer v5仅三既有候选路径加test/architecture.test.ts一处8.4→8.5 oracle：新operation summary；两具名exact-route error/idempotency允许规则（禁止宽前缀/全局ErrorResponse集合放宽）；新metadata properties逐字/语义复用现draft政策；新helper锁status/envelopes/body/key与定向反例先证明基线无错误。旧101/components/旧所有断言保持。四新机器文件及Root生成inventory之外不写，不改runtime/依赖/资源，freeze后全门复跑。
+
+Root66837 v5终态：lint/typecheck/build0、architecture35PASS，semantic仍两专属key未注册（hasParameter分支实际未改）、contract259PASS21FAIL级联。只准原writer在verify idempotencyErrors增加两exact method/path/operation→对应专属Key引用判断，原分支保持，其他七hash冻结；v6 STOP后重跑。报告声称注册不替代源码与真实门。
+
+Root75121 v6终态semantic0/contract271PASS9FAIL/architecture35PASS/typecheck/lint/build0。九失败分开：两旧Chat fixture仍8.4、一MCP count101、rename原路径digest需排除明确两新增path；四旧宽first-replace/block-end采样被前插新增块截获；一新const负控揭露helper漏status。续v7仅候选YAML把新paths/parameters/schemas/responses追加在对应旧集合末尾（原块顺序/字节不改），verify新helper补status const/typed refs及缺schema guard，现openapi test三旧整机oracle最窄8.5/103/排除仅两新增path后保原digest，现R267反例按新块定向与清洁基线。禁止修改原负控业务值/删断言/skip/宽放错误或生产路径。独审60c2fa39剩余缺口跟随闭合。
+
+Web UX Root15153真实RED：1FAIL/2名称未选，成功状态中确有disabled retry submit；日志r267-publish-success-ux-red.log。现只准原writer footer success分支不渲染submit，保session/unknown/Close/原key恢复与其余源码；交两hash STOP后Root旧3病例和关联页面验证。
+
+UX首candidate footer分支消除success后旧disabled比较触TS2367；Root48669 tsc真实exit2，r267-publish-success-ux-type-red.log。只准删除同一footer已冗余的disabled success比较，submit函数独立success防重复保；type失败保留后Root复跑，其他源码/test冻结。
+
 Root已按Node22真实跑两R267病例：**0PASS/2FAIL**，都在旧8.4/101正式操作inventory缺少目标operation的assert失败，无TypeError/fixture错误；现log r267-bff-lifecycle-contract-red.log。基线D0 BFF1d373ba，当前test纯append74行已冻结b14facea。这是业务机器缺失，不是完整用户验收。
 
 |项|阶段范围|
