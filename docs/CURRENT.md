@@ -1,3 +1,17 @@
+### R304 Skills 短屏与触控展示已验收（2026-10-07）
+
+Web **2015124e64fb6282921a68c56f9f11aeb2e0199d** 精确9路径：三现TSX展示、四现UI test、现Skills INDEX/CURRENT。不改命令/handler/ref/state/权限/字段顺序/disabled；无CSS/字典/全局primitive/契约/新增文件。原Admin混合status完整保持，764任务外tracked exact，Git对象逐path等冻结。本轮沿Manus个人管理页，不扩市场或假使用次数/图像资产；完整Wave0–7不缩。
+
+Root同390×420/coarse真实RED→GREEN：安装和管理详情、撤回确认X32/英文及36动作变中文44；新建/新版本表单旧X/footer在画面外，现有界壳内单正文scroll，X独立可见。两表单Tab到footer时正文scrollTop208/234、按钮44全可见、文档390无横溢，空提交仍disabled；Textarea原内部滚动不改变。安装关闭回原标题；Settings本人详情Escape只关子窗/父设置保留/焦点回真实标题。完整非截断25网络事件零技能写，正常GET200；未提交撤回/新版本或实际移除重装。最终正常771×752硬刷新三真实安装卡可见，图r304-skills-final.png。搜索名称/简介、无匹配、合法过滤空/历史removed、恢复默认只补现矩阵子路径，不以当前8来源/3安装冒真第二页或首次空。
+
+Root辅助定向RED5FAIL/158未筛有效，原四prefix与其余769exact；原作者163UI PASS/类型与lint0、独审860b6ff2无确定阻断。Root冻结完整Node22.22.2 pnpm check句柄41036已自然exit0、194.350秒：309contract/51architecture/3411default PASS、lint/type/build0、773tracked起终exact。含原Admin混合，不冒clean checkout独立门或用户完成率；全test:e2e/axe/视觉预算本轮未跑。
+
+自然认证异常再现且保初始失败图：显式Retry GET401/session_authentication_required/request_id 983799c7-6a4b-4993-8267-83c39ad96a34。Web本地admission与BFF透传同码两producer未裁决；1199保存日志/现devlog无匹配，正常pipe新读亦无确定关联（Web旧输出截断，不能排除）。源码BFF Bearer语法拒绝不是IAM session_invalid；不得宣已证明IAM过期。hard reload恢复、静置session200→csrf200→sessionPOST200与随后当前安装/列表GET200只是正控，根因OPEN。ExtraInfo仅保set-cookie存在/无blocked reasons，无rawsecret。Billing summary404精确billing_account_not_found另属后继，不伪造余额/赠送。
+
+证据沿var/dev/r255-preserve/r304-*：四真实RED/PNG、touch-green/network、settings-escape-green/final、root完整门/log/freeze、作者45baeb45、QA860b6ff2、auth producer b449f2fc与精确提交receipt。9原PID/TCP起终仍活只表存活，零服务重启/reset/正常DDL/授权/资金/模型操作；Fetch未注入、Network关、viewport/touch恢复。原8gitlinks及uv f7e1c30d保持未暂存。
+
+完整T-K03仍OPEN：真实多页、合法极端文案、身份撤权、完整移除/重装及未知写异常仍待；已询问仅自有R301安装移除范围的回答尚未收到，不重复删除其它记录。70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **13PASS/6PARTIAL/14UNVERIFIED**保持。后继继续Skills用户链和认证因果，不以本触控片冒整页完成，支付最后。
+
 ### R303 Skills 移除确认切片已验收（2026-10-07）
 
 沿当前Manus个人管理布局，不扩市场/假usage/图片资产。Web **0aa08c01435b408429e916fe8c62a75e62262f28** 精确15paths：现reader确认/两UI与i18n test/九字典两key/INDEX与CURRENT；九mixed字典仅cached两key，原Admin混合status保持，758任务外tracked exact。原command/recovery整块27f30012逐字保护，无API/schema/持久意图/全局组件/CSS改变。确认默认取消、显示名称与仅安装影响；一次消费ref后才旧命令，权限/身份/view/page退役。

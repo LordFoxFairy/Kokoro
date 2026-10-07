@@ -1,3 +1,19 @@
+### R304 同一系统矩阵：真实交互增量（2026-10-07）
+
+Web 2015124e64fb6282921a68c56f9f11aeb2e0199d；现33原格保持，不建立重复测试中心。每行当前观察结果只覆盖所列变体，优先级不以辅助测试数量调整。
+
+|用例ID/原格|标题与预置条件|测试步骤|预期结果/实际判定|优先级/类型|
+|---|---|---|---|---|
+|TC-SK-UI-304-01 / U11|安装详情触控；本人三安装，390×420/coarse|R301标题→详情→X关闭|X中文/44×44、可见，回原标题、零managed GET/写入；本子路径PASS，32px/Close原RED已留|P1/UI、边界、焦点|
+|TC-SK-UI-304-02 / U11|管理与撤回弹层；本人active R301源|我发布的→标题详情→撤回→空原因→取消|管理生命周期/X及取消/禁确认均44，空确认disabled，取消无撤回写且回标题；PASS，不等实际撤回PASS|P1/状态机、异常、触控|
+|TC-SK-UI-304-03 / U11/U12|新建与新版本空表；390短屏无File|分别打开→Tab到标签后footer→关闭|X独立44始终画面内，单正文scrollTop208/234后footer44可达，文档390/空提交禁用；本子路径PASS，合法长名/全部语言仍待|P1/UI、边界、键盘|
+|TC-SK-UI-304-04 / U02|Settings内真实发布详情|设置→技能→我发布的→R301详情→Escape|仅子Dialog关闭、父设置保留、焦点回具体标题；PASS，无写入|P1/状态流转、焦点|
+|TC-SK-READ-304-05 / U01/U07/U09|当前名称/简介/无匹配及合法过滤空|搜R301/简介与无匹配→清除；筛已移除+已启用→恢复all|搜索本地零request，合法GET空不是首次空；恢复真实历史removed；子路径PASS，不冒多页/首空，完整读取窗24事件无技能写|P1/功能、边界|
+|TC-SK-AUTH-304-06 / F01/S04|正常已登录操作自然出错|管理详情后权限提示→显式Retry→保存失败图/status→正常reload|预期有效session不退役且private GET可用；实际Retry401 session_authentication_required，根因OPEN/FAIL子路径；reload恢复不算修复|P0/异常、安全、状态同步|
+|TC-SK-AUTH-304-07 / F01|刷新恢复后的只读正控|静置观察常规auth轮询→仅核对当前安装|sessionGET200/csrfGET200/sessionPOST200，随后安装与列表GET200；仅本窗口PASS，不关闭304-06或跨tab竞态|P0/恢复、真实E2E|
+
+真实GREEN完整25事件无截断、零技能POST/PUT/PATCH/DELETE；表单未选File未新建意图，取消不冒实际CRUD。Root辅助RED5FAIL→完整check309/51/3411与独审只是支撑证据。最终hard reload三真实卡、默认尺寸/noDialog/Network关，证据r304-*；全test:e2e/axe/视觉预算及全部未具备数据前提的格仍UNVERIFIED。原70 11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST、个人33 13PASS/6PARTIAL/14UNVERIFIED不升级。
+
 ### R303 同一测试矩阵增量（2026-10-07）
 
 |关联|预置与操作|实际结果与边界|优先级/类型|

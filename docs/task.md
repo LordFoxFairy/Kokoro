@@ -1,3 +1,31 @@
+### R304 收尾与责任续接
+
+- [x] R304-WEB-TOUCH / 原web_interaction_astra_r296唯一writer / 三TSX+四test：有效RED后局部实现，163PASS/type/lint；原prefix/逆源码保护，STOP冻结。
+- [x] R304-QA-TOUCH / 原agent_planned_guarantee_system_r257只读 / 原报告860b6ff2：七路径独立逆转/766外部逐SHA exact、无确定阻断；STOP，不冒浏览器执行。
+- [x] R304-ROOT / 正常浏览器四弹层390短屏/Settings Escape/焦点/零技能写/硬刷新、完整冻结check0、精确9路径提交 **2015124e64fb6282921a68c56f9f11aeb2e0199d**，764外部保护和原mixed status exact。
+- [x] R304-AUTH-REQUEST-CORRELATION / 原platform_iam_consumer_r298只读 / 报告b449f2fc：local与upstream同码producer仍两候选；现日志不足归因，STOP。Root原正常句柄只读追加安全白名单，无secret/新采集进程。
+- [ ] 首自然401根因与完整Skills CRUD仍OPEN；原移除/重装操作范围确认待回答，其它已可执行功能继续，原完整Wave0–7及70/33计数保持。三原代理交付均冻结，Root下轮续派原owner，不新建计划中心或兼容层。
+
+Root本轮只新增同一四台账证据；Web门已在Root docs更新前完成，源码7path未变。正常9句柄/PID保持；无新服务/配置/资金/推理写入。用户页面图r304-skills-final.png，不用工程数代替真实用户验收。
+
+R304生产准入：Root Node22定向有效5FAIL/158未筛、四原prefix与其余769tracked exact，独审a4ee642d确认无fixture阻断。仅授原Web writer现reader/publish-dialog/withdraw-dialog三TSX按4e9d7270局部props/class/单发布body包装，不改handler/ref/state/命令/disabled/字段顺序/身份。另仅准skills-panel四原Close定位1358/1379/1398/1409→既有Close dialog，原其它全文保护/可逆；四尾测试其余冻结。不写CSS/字典/docs/新文件/契约/Git/资源/browser。作者定向全四文件/类型/lint实际通过后冻结SHA/逆转保护，Root全check及真实390短屏/Settings验收后唯一提交；自然401与全CRUD仍OPEN。
+
+### R304 自然认证失败：独立只读请求链定位
+
+R304-AUTH-REQUEST-CORRELATION / 原 platform_iam_consumer_r298 只读审查 / Root集成。基线Web0aa08c0及r304-start773；范围现route、admission、已存在正常进程日志及Root脱敏证据，以request_id 983799c7-6a4b-4993-8267-83c39ad96a34与时间查producer。不改任何源码/正式文档/Git/数据/配置，不调用API/浏览器/网络、不启动或重启资源；只允许ignored r304-auth-producer-review.md交付。完成条件：有确定本地或上游producer证据则列精确路径/行/安全摘录；日志缺失明确未知，不以同code/reload推断根因。与原Web四tests尾增独立并行，不能抢Web writer。
+
+R304触控设计准入：Root真实三图/几何RED（详情生命周期36/X32英文，撤回36/X32英文，发布短屏X/footer全画面外）；原QA412641af与作者D04e9d7270一致，采用现reader/publishDialog/withdrawDialog三TSX局部utilities与发布单body scroll，不新增CSS/组件/字典/契约/状态，不改handler/焦点/命令。当前仅准四现UI测试文件纯尾增R304用户行为RED（surface/panel/publish/withdraw），旧全文保护；生产未准。作者定向跑/冻结，Root复跑后才授三源码；四旧panel Close定位届时只准确换既有本地化名、后继断言保持。真实像素仍Root，不以jsdom class冒通过。原自然401已补精确Retry code，但可本地admission或上游同码，source定位非根因关闭；实际画面/时序及新ExtraInfo cookiepresence保。
+
+### R304 Skills 深入浏览验收与认证时序定位（2026-10-07）
+
+上一目标回合为progress：Web0aa08c0/Rootc94def07真实确认取消/Settings/短屏与冻结全门验收；完整Wave0–7保持。新基线773 tracked/原Admin mixed见r304-start.json，无活跃原运行门。实际移除仍待操作确认，不使只读验收停摆。
+
+|任务|Owner/角色/范围|依赖与验收|
+|---|---|---|
+|R304-WEB-AUTH-DIAG|原web_interaction_astra_r296只读，Web0aa08c0/现auth与skills入口、R301与R303脱敏刷新证据；CODEBASE_MAP与TS手册|核session刷新/代际/private拒绝的可证时序与缺字段，给最小观测方案。只ignored r304-auth-diagnosis.md，不改源码/测试/字典/文档、不Git/资源/browser、不dump秘密、不接受旧代/refreshing。|
+|R304-QA-SKILLS-REMAIN|原agent_planned_guarantee_system_r257只读，同基线与原33矩阵/现reader|核剩余当前可执行自然搜索/filter/技术详情/键盘/切页/错误恢复入口及约束，不把测试计数升业务PASS；只ignored r304-skills-qa.md，不改tracked/资源/browser/Git。|
+|R304-ROOT-BROWSER|Root独占现25Skills/26Manus/资源/Git，正式源码0aa08c0|自然两view/filter/query/no-match/detail/刷新，网络完整时序受限保存path/method/status/code/时间；不重复启动服务，不伪造状态/角色/资金/模型请求、不清原QA或永久删除。真实失败先保存再最窄派原writer。|
+
 ### R303 Skills 移除确认切片已验收（2026-10-07）
 
 沿当前Manus个人管理布局，不扩市场/假usage/图片资产。Web **0aa08c01435b408429e916fe8c62a75e62262f28** 精确15paths：现reader确认/两UI与i18n test/九字典两key/INDEX与CURRENT；九mixed字典仅cached两key，原Admin混合status保持，758任务外tracked exact。原command/recovery整块27f30012逐字保护，无API/schema/持久意图/全局组件/CSS改变。确认默认取消、显示名称与仅安装影响；一次消费ref后才旧命令，权限/身份/view/page退役。
