@@ -1,3 +1,9 @@
+### R300 本轮实际推进：Skills 展示修复与真实点击验收
+
+- 已验收本切片：Web4e585d44三paths；771卡268.19/input275，390/1440/Settings/短屏无横溢，搜索/详情/筛选/取消/键盘/硬刷新真实路径；触屏两处旧缺口按真实DOM/层叠RED→GREEN，最终7control≥44×44。
+- Root完整check0（309+51+3386）、773起终freeze、独审afdc4d43、Git对象/770保护；原Admin/i18n任务外混合保留。不以测试计数代用户验收，正常截图r300-skills-final.png。
+- 未完成：完整Skills CRUD、多页、资格失败、最长多语状态/axe/视觉与bundle；本轮未写入CRUD，不升70/33总计。现个人管理显示继续为第一优先级，无新计划中心或架构扩张。
+
 ### R299 用户要求 Skills 优先：当前正式页面复验（2026-10-07）
 
 当前 Web `fc99691c09777e21843a1af95252d22a51b2fafa` 技能 reader/CSS 与提交字节一致，本轮无新 UI 源码改动。Root 在正常已登录页面与 Manus 同尺寸实际读取，已观察搜索/轻工具栏、封面卡/两行简介/技术详情入弹层。实操 R255 搜索单卡、无匹配空态、详情/Escape 焦点、停用筛选、七张真实发布 revision 卡、发布表单打开/空表禁用提交/取消、硬刷新从工作区 loading 恢复两安装卡。未提交发布/安装/移除/撤回，未验证全多页/权限故障；不升完整 Skills CRUD 或70/33计数。一次隔开操作搜索清除归因未知，紧接重做 fill/open 保留 query；不宣已修复新竞态。证据 `var/dev/r255-preserve/r299-skills-browser-recheck.json` 与 `r299-skills-current-user-review.png`。

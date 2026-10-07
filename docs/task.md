@@ -1,3 +1,20 @@
+### R300 收口与后继（沿既有Skills任务）
+
+- [x] 原Web writer仅CSS实现/冻结，Root正常几何RED与两次触屏真实RED→GREEN；独立QA afdc4d43只读终审，Root共享Git/集成独占。
+- [x] Web4e585d44精确CSS+skills INDEX+CURRENT；正常771/390/1440、Settings嵌套/短屏/搜索/筛选/取消/键盘/刷新与44×44真实验收；Root最终check0/309+51+3386，773 gatefreeze与770提交外保护。
+- [ ] 完整Skills发布/版本/撤回/安装/启停/移除、多页/资格失败、长多语边界、axe/视觉/bundle仍待对应用户用例，不因CSS切片升整体PASS。两原writer/reviewerSTOP；MCP D0只读交接未准写，整体Wave0–7与现70/33保持。
+
+### R300 Skills 同尺寸布局修复（原 R297 设计内，不扩大业务）
+
+上一轮只重验既有 UI 与补台账，未解决新的实现缺口，归类 no-progress。本轮确认 Root3358dc61/Webfc99691 及原 owner STOP；正常771×752实测卡203.5×318.59/cover136，Manus卡203.5×244.25，且本页搜索input196宽而参考283。此真实几何不符为本局部布局RED，不用单测冒浏览器证据。
+
+Owner仍Web现个人Skills reader/CSS，同主页与Settings；沿已批准个人管理/Manus设计，仅既有 CSS 布局变化，不改职责/契约/身份/请求/数据/metadata/恢复链。无新目录、API、Schema、依赖或资产。比较现 CSS 定向布局与另造市场/全局tokens；采用前者，删除本 CSS 被替代规则，不叠fallback。
+
+|任务|负责人/基线/写集|验收/提交|
+|---|---|---|
+|R300-SKILLS-GEOMETRY|原Web负责人 web_interaction_astra_r296，唯一writer；fc99691 + protected Admin/i18n mixed；r300-web-baseline773路径。只 src/ui/skills/personal-skills-read.module.css|右上较宽search/下行action；filter置左、两个人视图仍清楚；降低cover与纵向冗余，真实状态保识别层，正常771卡≤280px。390/Settings可用、触屏44、focus与详情不损。禁止 TS/字典/tests/其它 CSS/docs/Git/服务/资源/browser；Root现真实几何RED准入，冻结后Root复跑既有工程门/三尺寸与交互/独审，Root单独文档及精确提交。|
+|R300-SKILLS-REVIEW|原独立QA agent_planned_guarantee_system_r257，只读原css/实施交付，唯一ignored报告|核现语义token/可读性/长名状态宽度、容器断点/Settings/焦点44命中，不以静态门假像素。Root独占浏览器与工程门/共享Git。|
+
 ### R299 当前人类优先级：Skills 展示与真实交互
 
 - [x] Root 正常浏览器复验当前 fc99691 展示与搜索/无匹配/详情返回/筛选/已发布视图/空发布表单取消/硬刷新；现 reader/CSS 等提交。本轮无新实现，证据 r299-skills-browser-recheck.json 与当前实图。

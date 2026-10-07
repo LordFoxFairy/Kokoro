@@ -1,3 +1,13 @@
+### R300 Skills 布局与真实触屏缺口已修复（2026-10-07）
+
+Web **4e585d44cba700e01c611eb26422c31af3a2b4b7** 精确三paths（原reader CSS、skills INDEX、本仓CURRENT），原Admin/i18n混合status与770任务外tracked保；源码仅CSS。沿已批准个人管理/Manus展示设计，右上宽search/下行发布、左filter、100px封面/紧凑卡片，无新市场/usage/资产/接口/权限。Root同771卡318.59→268.19、input196→275；390单列/1440七真实发布卡三列与Settings正常/窄嵌入无横溢；搜索/无匹配/两视图/停用筛选/空发布取消/详情与嵌套Escape/短屏Close/键盘可见焦点/正常硬刷新实际验证。
+
+触屏首失败保留：Dropdown触发slot覆盖→旧更多32×32；修真实元素后AppFrame高优先级min-height:0→启停36×40；局部coarse真实reader+type/slot/size收紧selector，统一44×44并删重复icon。最终390/coarse七control实测均≥44×44，more Escape回trigger；没改全局/TS/API或重启服务、清数据、改授权。本轮零发布/安装/启停/移除/撤回写入；这是展示与指定交互验收，不冒完整CRUD。
+
+Root最终Node22.22.2 `pnpm check` exit0，309contract/51architecture/3386default PASS，lint/typecheck/build0；773tracked起终exact。包含原Admin工作树，非clean checkout独立门。独审afdc4d43无确定阻断，最终CSS0b6e6b7f，三路径Git对象equal；正常截图 `var/dev/r255-preserve/r300-skills-final.png` 与 `r300-skills-browser.json`，全门result/log、作者/独审、commit receipt同目录。临时viewport/touch/CDP CSS/DOM均撤。
+
+完整Skills CRUD/真实多页/IAM资格故障、最长多语状态/全test:e2e/axe/视觉回归与bundle预算仍待；未跑项不写PASS。70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **13PASS/6PARTIAL/14UNVERIFIED** 保持，完整Wave0–7不缩，下一仍Skills用户能力链、MCP邻项只读D0交接不抢优先级，支付最后。
+
 ### R299 用户要求 Skills 优先：当前正式页面复验（2026-10-07）
 
 当前 Web `fc99691c09777e21843a1af95252d22a51b2fafa` 技能 reader/CSS 与提交字节一致，本轮无新 UI 源码改动。Root 在正常已登录页面与 Manus 同尺寸实际读取，已观察搜索/轻工具栏、封面卡/两行简介/技术详情入弹层。实操 R255 搜索单卡、无匹配空态、详情/Escape 焦点、停用筛选、七张真实发布 revision 卡、发布表单打开/空表禁用提交/取消、硬刷新从工作区 loading 恢复两安装卡。未提交发布/安装/移除/撤回，未验证全多页/权限故障；不升完整 Skills CRUD 或70/33计数。一次隔开操作搜索清除归因未知，紧接重做 fill/open 保留 query；不宣已修复新竞态。证据 `var/dev/r255-preserve/r299-skills-browser-recheck.json` 与 `r299-skills-current-user-review.png`。
