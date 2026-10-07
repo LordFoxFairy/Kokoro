@@ -1,3 +1,7 @@
+### R275 当前页面验收与下一接缝
+
+Web649e5d4现唯一publish flow保持原session/key；真实两ACK丢失→unknown→关闭重开→严格无self七字段ACTIVE确认GET→本人safe管理list/详情恢复，不增Draft/Publish。现BFF93bd/runtime39db包含e603bd5 scheduled锚点与fenced owner next投影，不按旧报告重写；真实weekly08→09硬刷新next12Z→13Z，最终paused/null-next。入口Root r275-user-acceptance-receipt.json与两个原只读报告；F09 PARTIAL/T-P02 RETEST、个人33为13/6/14、完整70为11/7/15/36/1。下一Platform自订MCP owner正式onboarding与BFF消费Storage project release删除编排，原owner/source门先行，不让Web造事实。
+
 ### R274 个人安装生命周期验收入口
 
 源码仍Web649e5d4现reader/client，同正式BFF93bd(runtime39db)/Platform6e5，不新增路径/契约。真实QA active源ff0f1c74… / canonical79dc02b9…验证Remove ACK后只读恢复、removed筛选、同源重装ACK丢失同key/event回执重放，末态逻辑removed；原withdrawn2安装不做降级恢复。证据Root r274-personal-skills-user-receipt.json；个人33仍13/5/15、T-K03 OPEN。原Admin mixed/uv/gitlinks及九源码listener保持。

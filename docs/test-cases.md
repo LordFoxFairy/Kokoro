@@ -1,3 +1,15 @@
+### R275 发布未知恢复与排程页面复验（2026-10-07）
+
+Root6884e659基线；Web649e5d4/BFF93bd(runtime39db)/Platform6e5/Scheduler e8d均未改源码。两原只读Agent已STOP：发布依据ed6f543f；CRUD盘点1a1fe749与排程纠偏c1469d67。原Admin mixed、Rootuv/八gitlinks保；九正常源码listener现场kill0存活，无重启/DDL/reset/权限/资金/模型操作。
+
+**真实个人页**：自有新源dfeec824…，一次Draft201/上传完成200/Validate200；真实Publish两次200均被Response阶段丢弃，原key c408eff3…、同event977cb701…，首replayed=false/次true。随后确认GET也受控网络失败，UI明确unknown；正常关闭/“继续当前发布”重开零额外请求、保原metadata/ID；显式“重新核对发布状态”仅严格七字段ACTIVE GET200→本人列表GET200→成功，无新Draft/上传/Publish。正常刷新后本人列表/详情仍active revision1，默认已安装仍两原记录，不自动安装。F09从待验改PARTIAL（此恢复子链通过，闭合404/nonactive/自然身份变体未验）；个人33现**13PASS/6PARTIAL/14待验**，T-K03仍OPEN。旧Publish与确认GET无浏览器自有10s是源码风险，未凭静态审查冒新增FAIL。
+
+**真实排程页**：独审纠正旧报告：e603bd5锚点/null-next/fenced receipt已在正常runtime，不再重复实现。Root自有scheduled_0abaee… weekly08:00 America/New_York正常创建后next先null；稍后正常硬刷新公开GET为2026-10-07T12:00Z、页面08:00，非创建时刻。真实键盘改09:00→PATCH200→硬刷新next13:00Z/页面09:00；显式暂停200→硬刷新enabled=false/status=paused/next=null，原R258暂停记录保持。没有直接owner Schedule读取、DST/misfire/occurrence执行或删除验收，T-P02旧FAIL仅该weekly缺陷修后复验，通过范围记入原ID，整组转RETEST；完整70现**11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，Wave0–7 active。
+
+证据：Root var/dev/r255-preserve/r275-user-acceptance-receipt.json（逐证据SHA/actual断言），publish-held-real-ack-1/2、publish-close-reopen、publish-authoritative-recovery、published-detail-after-refresh、schedule-refresh-next/schedule-keyboard-refresh-next/schedule-pause-refresh；真实截图r275-published-result.png、r275-schedule-next-real.png、r275-personal-skills-final.png。网络故障已清除，验收排程最终暂停，原正常记录/源包保留。首success文案和动态dialog标题selector错误、time.fill DOM09:15但请求仍08:00（真实ArrowUp保存09:00，工具差异不冒产品FAIL）、首次安装导出过滤遗漏已从同raw events修正、首次刷新落/app原因未证均留receipt；最终exact/app/skills刷新200正常。工程门本轮未重跑：仅正常浏览器/真实公开响应和Root证据断言，不用历史407/282/51冒整体验收。
+
+**后继**：沿原测试ID补排程DST/misfire及真实owner接缝资格；并行准备Platform MCP本人自订onboarding（三D0/owner正式契约→BFF→Web，当前404仍FAIL）与BFF项目删除总编排（已有Storage project release，先真实RED/确认不可恢复语义）。不新建市场/计划中心，不抢原Admin/Storage writer、不仅死磕个人技能或先跳Agent。
+
 ### R274 个人安装 CRUD 与真实回执恢复增量（2026-10-07）
 
 当前Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660** 未改源码；Root正常右侧浏览器与九原listener复用，无重启/DDL/清共享状态。原Web负责人只读a8674fa3、owner独审99d78019指出revision2 withdrawn安装移除后无法用revision1降级恢复；Root保原4f69a36a…不动，选择本人专用active源 **ff0f1c74… / 个人技能发布反馈 · R267 验收**，真实安装canonical **79dc02b9…**。
@@ -62,13 +74,13 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 
 继续现T-K03版本/撤回/unknown同key、当前撤权与安装固定revision场景，真实链确认后才更新对应状态；原FAIL/RETEST不清零。证据入口r268-runtime-candidate-commit-receipt.json，真实owner资格前提r268-real-owner-qualification.md；候选commit不代表公开发行。
 
-## R266 个人技能管理完整用户验收矩阵（R272 当前：33子用例 / 13 PASS / 4部分通过 / 1 FAIL / 15待验）
+## R266 个人技能管理完整用户验收矩阵（R275 当前：33子用例 / 13 PASS / 6部分通过 / 0当前FAIL / 14待验）
 
-历史起始截面（R266–R267；当前状态以R270头部和逐行状态为准）：本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
+历史起始截面（R266–R267；当前状态以R275头部和逐行状态为准）：本矩阵接在现T-K03下，不另建任务中心、不增加完整70组总数。Web正式3e4f3d2（管理读取b901986、成功UX2c30283来源）、BFF930028b/public8.4/101、Platform6e5正常源码复用；用户已确认先清晰个人管理页，不扩市场。Root正常tab25提交后自然操作观测U01/U02/U03/U11四项PASS；R267另以自有ZIP正常发布/安装/硬刷新，U14新增PASS，U16发布结果与刷新回读观测通过但早段HTTP证据淘汰/Run与资金负向未独立核验，保留部分通过；R267正常详情保持134979ms，例行CSRF GET/session POST200且authenticated true，不重读技能，Escape返回精确名称按钮，U13新增PASS；R267另真实ff0f1c74发布回执后零submit/无retry、Close重开清空、硬刷新仍记录（r267-publish-success-ux-user-receipt.json），不改U16缺Run/资金核验的部分通过；合计6PASS/1部分通过/26待验；完整CRUD/版本撤回和全套默认失败均OPEN。证据见/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r266-skills-real-user-acceptance.json（实际DOM、safe8公开body、request_id、截图、commit），不以698工程目标代替用户路径。自然auth unknown与完整默认失败同CURRENT记录，复跑通过不删除原失败。
 
 共有前提：当前Root固定正式BFF8.5/runtime39db与Web ef5f93e、正常owner兼容激活，使用现正式IAM用户A（及经授权的真实B）；不selfgrant、不DB造状态、不mock/preview代替正常用户。每行保存commit、URL/viewport、自然操作顺序、脱敏request-id/status/公开body、实际DOM与必要截图；不得保存token/内部header。用户数据新增/生命周期改变由Root在明确自有QA记录进行，先确认可逆/保留，不因本报告执行。
 
-类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。当前累计9项PASS与2项部分通过；本轮变更相关L01/L02/U05/U15有真实浏览器证据，旧六项保历史绑定，不冒全量回归通过。
+类型：U=正常用户浏览器；S=真实身份安全；F=受控网络/并发故障浏览器（单独注明故障前提，不伪称自然发生）；L=生命周期端到端（当前producer/UI缺口阻塞）。历史R270累计9项PASS与2项部分通过；当轮变更相关L01/L02/U05/U15有真实浏览器证据，旧六项保历史绑定，不冒全量回归通过。
 
 |ID|前置|自然操作|预期可观察结果|优先级/类型|状态|
 |---|---|---|---|---|---|
@@ -100,7 +112,7 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-U15|A已有安装且source后变非active|已安装CheckCurrent、合法Disable/Remove→刷新|不先要求active源GET；保owner允许管理、来源状态与enabled区分；拒绝按正式错误呈现|P0/U|部分通过：R270同installation显式upgrade到revision2后source撤回；CheckCurrent200→Disable200→fresh→硬刷新仍installed/disabled/withdrawn，不先active GET；Remove与拒绝启用分支未执行。证据r270-withdrawn-install-{disable,refresh}.json；R271真实Enable PUT412 skill_installation_precondition_failed/有限error且原withdrawn disabled保；Remove仍未验，r271-withdrawn-enable-rejected.json|
 |R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|部分通过 · R273 Web649e5d4真实启用holding→unknown→同key/body重试正式412→独立canonical GET200仍unknown/显示当前revision2 disabled→显式结束本地恢复，fresh安装GET200读中禁写、随后所有卡可用；另Install POST受控Request hold取消（未转发）→无猜ID核对→显式结束后fresh当前published GET200读中禁写/成功解锁。真实按钮重叠RED→单容器flexwrap修后三命中正确；原key保护。仅这些恢复出口通过，R274另实测自有active源安装/重装ACK成功后Response-held取消→unknown→原key/body200 replayed=true且canonical/event/time与held ACK完全相同→当前GET200；Remove200 ACK后canonical GET held取消→confirmed→仅显式GET200/fresh list恢复，无第二DELETE。此两正式回执恢复子链通过；其它动作/自然撤scope/全部身份竞态变体仍待验；证据r274-reinstall-held-real-ack.json、r274-reinstall-samekey-replay-green.json、r274-remove-confirmed-current-failure.json、r274-remove-get-only-recovery.json；原R272锁住FAIL保历史。证据r273-personal-skills-user-receipt.json、recovery-current-get-green.json、recovery-end-fresh-green.json、install-end-published-green.json|
 |R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|部分通过：R267实际发布成功→本人active列表/详情→硬刷新仍active；早段HTTP buffer淘汰，内部Run/资金负向待独立证据，不升级完整PASS|
-|R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|待验|
+|R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|部分通过：R275一次Draft/上传完成/Validate后，两真实Publish200 ACK Response丢失，第二原key/event replayed=true；随后确认GET网络失败→明确unknown→关闭/继续重开零请求→显式核实仅精确严格七字段ACTIVE GET200/本人fresh list200→成功，无新Draft/上传/Publish；刷新本人列表/详情仍active。闭合404/nonactive/自然identity变体未验，非整例PASS；证据r275-user-acceptance-receipt.json|
 |R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|PASS：R270真实新版本400 RED→UTF8 CL窄修→显式同key/body201→新ZIP真实MinIO PUT/完成/校验/发布→硬刷新原revision1 active与同series新ID/revision2可读；发布未自动升级安装。旧入口FAIL历史保留，证据r270-personal-lifecycle-user-receipt.json，Web ef5f93e|
 |R266-L02|后继正式withdraw public/UI发行|本人指定revision撤回→读回→刷新→原key重放|仅目标revision withdrawn，原receipt replay合法，不先ACTIVE预GET拦掉；非latest猜测|P0/L|PASS：R270只撤回精确revision2，实际200 ACK被受控浏览器延迟至客户端abort；unknown GET withdrawn不是receipt→关闭/继续同key/body200 replayed=true→fresh→硬刷新withdrawn，原revision1仍active；注入已恢复。原入口FAIL保历史，证据r270-withdraw-replay-success.json / r270-final-managed-refresh-proof.json|
 |R266-L03|新版本/撤回非法base或异owner场景，正式命令已发行|自然重复动作/旧版本操作/失败后读回|稳定前置/拒绝错误，旧原版与安装不伪变更，不自动换key重写|P0/L|待验/阻塞：另owner错误修复及写消费者|
@@ -2374,7 +2386,7 @@ E66：archive真实import成功后calls非空Root1行为失败，原WIN03测试f
 | T-C10 | BFF→Web | SSE断线/cursor replay/重复/间隙/过期与GC；不丢字、不双气泡 | 失败 | E109 Web过程410未fresh snapshot且分页未请求（D-R135-03），深层重复过期/错误cursor/浏览器未到达。E108后端74/74已关闭E107 partial-GC缺陷，保留该限定证据；不同层新失败尚未修复复测。  E112：Root七完整file371/371，原15及新增4具体失败限定复测关闭；整组状态保留，完整工程/深层恢复/当前浏览器仍待验。 |
 | T-C11 | Web | 同scope真实重挂/双owner/StrictMode；最后卸载才close SSE；injected不被释放 | 通过 | E11：Root真实RED→完整门及独立审，已提交/推送a52a623；仅生命周期组件切片，不证明W2 |
 | T-P01 | BFF→Scheduler→Agent | 独立任务不进入会话列表；project_id仅关联；创建/修改/暂停/删除/权限 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 ；R255正常UI创建200后saving永久pending已修，编辑200自动关闭/刷新标题与paused保持/空白disabled及取消通过；删除/恢复/越权/真实执行未验，不关闭整组 |
-| T-P02 | BFF→Scheduler→Agent | IANA timezone/DST、周期/一次、边界时间与misfire | 失败 | R255正常3310每周08:00 America/New_York创建200，next_run_at却创建当时01:16Z/当地21:16；BFF默认now/周锚点混用并丢Scheduler权威next_due_at，尚未修复。QA已正规paused；不把HTTP200/源码查阅称时区通过，后继owner contract+真实Scheduler→BFF→Web复验 |
+| T-P02 | BFF→Scheduler→Agent | IANA timezone/DST、周期/一次、边界时间与misfire | 待复测 | R255创建时刻误作weekly08 next的FAIL保历史；e603bd5修复已进入正常runtime39db。R275正常页面自有weekly08 America/New_York创建→硬刷新next2026-10-07T12:00Z/页面08:00，真实键盘改09→PATCH200→硬刷新next13:00Z/页面09，暂停200→刷新paused/next=null。仅该原weekly缺陷已真实复验；DST春秋/跨日/misfire/occurrence推进及direct owner读取仍未验，整组RETEST非PASS。证据r275-user-acceptance-receipt.json，QA最终正规paused |
 | T-P03 | BFF→Scheduler→Agent | 重复唤醒/投递、幂等receipt、ACK unknown与Outbox恢复 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P04 | BFF→Scheduler→Agent | 进程崩溃/lease到期/重启、旧worker失fence；不重复Occurrence执行 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |
 | T-P05 | BFF→Scheduler→Agent | 暂停/删除不伪造已接纳任务终态；串行dispatch/Agent terminal释放 | 未验 | 按现ScheduledTask/Occurrence owner契约，真PG/Redis/HTTP组合 |

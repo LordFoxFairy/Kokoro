@@ -1,3 +1,15 @@
+### R275 发布未知恢复与排程页面复验（2026-10-07）
+
+Root6884e659基线；Web649e5d4/BFF93bd(runtime39db)/Platform6e5/Scheduler e8d均未改源码。两原只读Agent已STOP：发布依据ed6f543f；CRUD盘点1a1fe749与排程纠偏c1469d67。原Admin mixed、Rootuv/八gitlinks保；九正常源码listener现场kill0存活，无重启/DDL/reset/权限/资金/模型操作。
+
+**真实个人页**：自有新源dfeec824…，一次Draft201/上传完成200/Validate200；真实Publish两次200均被Response阶段丢弃，原key c408eff3…、同event977cb701…，首replayed=false/次true。随后确认GET也受控网络失败，UI明确unknown；正常关闭/“继续当前发布”重开零额外请求、保原metadata/ID；显式“重新核对发布状态”仅严格七字段ACTIVE GET200→本人列表GET200→成功，无新Draft/上传/Publish。正常刷新后本人列表/详情仍active revision1，默认已安装仍两原记录，不自动安装。F09从待验改PARTIAL（此恢复子链通过，闭合404/nonactive/自然身份变体未验）；个人33现**13PASS/6PARTIAL/14待验**，T-K03仍OPEN。旧Publish与确认GET无浏览器自有10s是源码风险，未凭静态审查冒新增FAIL。
+
+**真实排程页**：独审纠正旧报告：e603bd5锚点/null-next/fenced receipt已在正常runtime，不再重复实现。Root自有scheduled_0abaee… weekly08:00 America/New_York正常创建后next先null；稍后正常硬刷新公开GET为2026-10-07T12:00Z、页面08:00，非创建时刻。真实键盘改09:00→PATCH200→硬刷新next13:00Z/页面09:00；显式暂停200→硬刷新enabled=false/status=paused/next=null，原R258暂停记录保持。没有直接owner Schedule读取、DST/misfire/occurrence执行或删除验收，T-P02旧FAIL仅该weekly缺陷修后复验，通过范围记入原ID，整组转RETEST；完整70现**11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，Wave0–7 active。
+
+证据：Root var/dev/r255-preserve/r275-user-acceptance-receipt.json（逐证据SHA/actual断言），publish-held-real-ack-1/2、publish-close-reopen、publish-authoritative-recovery、published-detail-after-refresh、schedule-refresh-next/schedule-keyboard-refresh-next/schedule-pause-refresh；真实截图r275-published-result.png、r275-schedule-next-real.png、r275-personal-skills-final.png。网络故障已清除，验收排程最终暂停，原正常记录/源包保留。首success文案和动态dialog标题selector错误、time.fill DOM09:15但请求仍08:00（真实ArrowUp保存09:00，工具差异不冒产品FAIL）、首次安装导出过滤遗漏已从同raw events修正、首次刷新落/app原因未证均留receipt；最终exact/app/skills刷新200正常。工程门本轮未重跑：仅正常浏览器/真实公开响应和Root证据断言，不用历史407/282/51冒整体验收。
+
+**后继**：沿原测试ID补排程DST/misfire及真实owner接缝资格；并行准备Platform MCP本人自订onboarding（三D0/owner正式契约→BFF→Web，当前404仍FAIL）与BFF项目删除总编排（已有Storage project release，先真实RED/确认不可恢复语义）。不新建市场/计划中心，不抢原Admin/Storage writer、不仅死磕个人技能或先跳Agent。
+
 ### R274 个人安装 CRUD 与真实回执恢复增量（2026-10-07）
 
 当前Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660** 未改源码；Root正常右侧浏览器与九原listener复用，无重启/DDL/清共享状态。原Web负责人只读a8674fa3、owner独审99d78019指出revision2 withdrawn安装移除后无法用revision1降级恢复；Root保原4f69a36a…不动，选择本人专用active源 **ff0f1c74… / 个人技能发布反馈 · R267 验收**，真实安装canonical **79dc02b9…**。
