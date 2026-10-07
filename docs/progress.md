@@ -1,3 +1,11 @@
+### R307 技能页真实边界与加载诊断收口（2026-10-07）
+
+Web **c1ad8497104f3842dd9ef137af550bda8491f4ef** 仅原R139 system case隔离hunk与现CURRENT；Root完整Node22 check53664自然exit0/193.325秒（309contract/51architecture/3431default、lint/type/build通过），冻结原773仅该test改变，逆转全文等原mixed0c1ed7c2/772外部exact。独审e4ef2fd6无确定阻断，原15秒firstMain/45秒预算/登录前置/第二tab断言不变，仅固定安全失败取证；catch本轮未触发，不解释旧R306FAIL或自然401。原Admin混合未暂存，正常9原PID起初alive只是存活，无重启/reset/权限/资金/模型变更。
+
+用户主线：正常3310本人原R306技能第二版本当前canonical GET200是active/revision2，255名/19620简介/100×128字符标签逐值exact。初发布窗口truncated，不能宣完整Draft/MinIO/Publish ACK链；中途无Rootreload却document刷新，原因UNKNOWN，不重发。刷新后当前事实已实读，稳定390×200/640详情全文/技术标签可读，单正文scroll、X44持续可见、Enter打开与X/Escape精确返回最后同名opener；选择badge节点匹配0仅选择器局限，不冒节点geometry证据。R266-U12由PARTIAL→PASS，个人33 **14PASS/6PARTIAL/13UNVERIFIED**；完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03/完整Wave0–7保持OPEN。
+
+新真实UX缺陷：合法自有ZIP版本表单提交101tags/129字符tag/trim重复tags，前三全部本地有限拒绝但只有generic“发布未完成”，用户纠错指引缺失；第四65535ASCIIsummary总UTF8超过65536显示正确具体指引。四完整非截断窗口均零request，字段仍可编辑，取消零第三版本写。R308原Webowner只读最小方案续派，不能升级为已修。正常返回已安装三真实卡/尺寸恢复/noDialog/Network关；图r307-skills-current.png，当前事实r307-version-current-read.json/长屏证据r307-long-detail-proof.json/负例r307-negative-boundaries.json。保自有源，原移除重装确认不重复问。真实多页/资格失败/完整CRUD/test:e2e/axe/视觉预算仍待，不用辅助门替整页完成。
+
 ### R306 技能页：发布提示修正与真实长文本验收（2026-10-07）
 
 Web **d51a2d858d73db9ee107d9f63195847b59a4e3fa** 精确六路径提交：现两发布说明值、两个原测试尾增、现Skills INDEX/CURRENT。原Admin混合修改不暂存；冻结773 tracked起终exact，原两个测试前缀保持。当前卡片/搜索/筛选布局已来自R297/R300/R304，本轮不冒重新实现；仅去掉发布表单的ACTIVE/receipt术语，保持检查验证及正式确认成功规则。原Webwriter和QA协作，独审aee82f59无确定阻断，Root独占实际浏览器/门/Git。

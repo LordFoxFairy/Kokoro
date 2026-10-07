@@ -1,3 +1,11 @@
+### R307 技能页真实边界与加载诊断收口（2026-10-07）
+
+Web **c1ad8497104f3842dd9ef137af550bda8491f4ef** 仅原R139 system case隔离hunk与现CURRENT；Root完整Node22 check53664自然exit0/193.325秒（309contract/51architecture/3431default、lint/type/build通过），冻结原773仅该test改变，逆转全文等原mixed0c1ed7c2/772外部exact。独审e4ef2fd6无确定阻断，原15秒firstMain/45秒预算/登录前置/第二tab断言不变，仅固定安全失败取证；catch本轮未触发，不解释旧R306FAIL或自然401。原Admin混合未暂存，正常9原PID起初alive只是存活，无重启/reset/权限/资金/模型变更。
+
+用户主线：正常3310本人原R306技能第二版本当前canonical GET200是active/revision2，255名/19620简介/100×128字符标签逐值exact。初发布窗口truncated，不能宣完整Draft/MinIO/Publish ACK链；中途无Rootreload却document刷新，原因UNKNOWN，不重发。刷新后当前事实已实读，稳定390×200/640详情全文/技术标签可读，单正文scroll、X44持续可见、Enter打开与X/Escape精确返回最后同名opener；选择badge节点匹配0仅选择器局限，不冒节点geometry证据。R266-U12由PARTIAL→PASS，个人33 **14PASS/6PARTIAL/13UNVERIFIED**；完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03/完整Wave0–7保持OPEN。
+
+新真实UX缺陷：合法自有ZIP版本表单提交101tags/129字符tag/trim重复tags，前三全部本地有限拒绝但只有generic“发布未完成”，用户纠错指引缺失；第四65535ASCIIsummary总UTF8超过65536显示正确具体指引。四完整非截断窗口均零request，字段仍可编辑，取消零第三版本写。R308原Webowner只读最小方案续派，不能升级为已修。正常返回已安装三真实卡/尺寸恢复/noDialog/Network关；图r307-skills-current.png，当前事实r307-version-current-read.json/长屏证据r307-long-detail-proof.json/负例r307-negative-boundaries.json。保自有源，原移除重装确认不重复问。真实多页/资格失败/完整CRUD/test:e2e/axe/视觉预算仍待，不用辅助门替整页完成。
+
 ### R306 技能页：发布提示修正与真实长文本验收（2026-10-07）
 
 Web **d51a2d858d73db9ee107d9f63195847b59a4e3fa** 精确六路径提交：现两发布说明值、两个原测试尾增、现Skills INDEX/CURRENT。原Admin混合修改不暂存；冻结773 tracked起终exact，原两个测试前缀保持。当前卡片/搜索/筛选布局已来自R297/R300/R304，本轮不冒重新实现；仅去掉发布表单的ACTIVE/receipt术语，保持检查验证及正式确认成功规则。原Webwriter和QA协作，独审aee82f59无确定阻断，Root独占实际浏览器/门/Git。
@@ -270,7 +278,7 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-U09|有状态filter且各状态真实记录|第二页切状态→返回all|新filter从首cursor开始；旧detail/晚页不留；筛选空不冒从未创建|P1/U|待验，取决首片filter准入|
 |R266-U10|A正式owner读恢复空页且旧cursor末页为空|到该页→Previous|显示分页空不是首次空，保返回路径，不环形读|P1/U|待验|
 |R266-U11|已在/app且A准入|Settings→Skills→两view→详情关闭|同reader同正式数据、无第二h1/重复导航；关闭回精确触发按钮|P1/U|PASS：正常读取；R267 3e4f3d2 设置同新布局/真实详情/Escape返回内层触发按钮通过|
-|R266-U12|合法255长名、长summary/tags真实源|390×200/390×640打开详情、展开技术信息、滚到底、X/Escape|完整可读，唯一bodyscroll；X持续画面可见；回exact opener且focus-visible；不靠自动scrollIntoView判PASS|P1/U|PARTIAL：R306正常ZIP实际发布255字符名/1379字符简介，刷新exact；稳定390×200与390×640全文/单body scroll/X44持续可见、Enter与X/Escape精确归焦已验。三个普通标签可读，极端长tags仍待，不冒全项PASS；证据r306-long-detail-proof.json与long-persisted.json，Web d51a2d8|
+|R266-U12|合法255长名、长summary/tags真实源|390×200/390×640打开详情、展开技术信息、滚到底、X/Escape|完整可读，唯一bodyscroll；X持续画面可见；回exact opener且focus-visible；不靠自动scrollIntoView判PASS|P1/U|PASS：R306合法255名/1379简介与R307正式版本19620简介/100×128tags，当前canonical GET200 active/revision2逐值exact；稳定390×200/640全文/技术标签可读、单body scroll/X44始终可见、Enter/X/Escape精确归焦最后同名opener。证据r307-long-detail-proof.json与version-current-read.json，Web c1ad849；发布初窗截断不冒ACK，badge选择器0不冒逐badge geometry|
 |R266-U13|同主体healthy且detail已开|保持打开超过120s例行probe，再操作键盘|view/detail/草稿不因成功poll重挂；不新增管理GET/POST作为poll副作用|P0/U|PASS：R267真实详情134979ms/正常续期200仍authenticated，视图和详情保持；无技能请求，Escape返原名称按钮；证据r267-dialog-probe-user-receipt.json|
 |R266-S01|A detail开，实际准入转unknown|等待probe→只读Retry→明确登录恢复|旧卡/detail/publish/install同步退役，禁private IO；unknown非匿名；恢复新代freshGET无旧POST|P0/S|待验，真实准入故障前提|
 |R266-S02|A与B各自正式身份及不同自有源|A读后退出/按正规流程切B→管理列表|无A卡/游标/草稿/详情；B只读B；旧A响应迟到不复活|P0/S|待验，B身份输入待Root|

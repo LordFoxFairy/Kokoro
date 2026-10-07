@@ -1,3 +1,33 @@
+### R307 技能页真实边界与加载诊断收口（2026-10-07）
+
+Web **c1ad8497104f3842dd9ef137af550bda8491f4ef** 仅原R139 system case隔离hunk与现CURRENT；Root完整Node22 check53664自然exit0/193.325秒（309contract/51architecture/3431default、lint/type/build通过），冻结原773仅该test改变，逆转全文等原mixed0c1ed7c2/772外部exact。独审e4ef2fd6无确定阻断，原15秒firstMain/45秒预算/登录前置/第二tab断言不变，仅固定安全失败取证；catch本轮未触发，不解释旧R306FAIL或自然401。原Admin混合未暂存，正常9原PID起初alive只是存活，无重启/reset/权限/资金/模型变更。
+
+用户主线：正常3310本人原R306技能第二版本当前canonical GET200是active/revision2，255名/19620简介/100×128字符标签逐值exact。初发布窗口truncated，不能宣完整Draft/MinIO/Publish ACK链；中途无Rootreload却document刷新，原因UNKNOWN，不重发。刷新后当前事实已实读，稳定390×200/640详情全文/技术标签可读，单正文scroll、X44持续可见、Enter打开与X/Escape精确返回最后同名opener；选择badge节点匹配0仅选择器局限，不冒节点geometry证据。R266-U12由PARTIAL→PASS，个人33 **14PASS/6PARTIAL/13UNVERIFIED**；完整70仍 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**，T-K03/完整Wave0–7保持OPEN。
+
+新真实UX缺陷：合法自有ZIP版本表单提交101tags/129字符tag/trim重复tags，前三全部本地有限拒绝但只有generic“发布未完成”，用户纠错指引缺失；第四65535ASCIIsummary总UTF8超过65536显示正确具体指引。四完整非截断窗口均零request，字段仍可编辑，取消零第三版本写。R308原Webowner只读最小方案续派，不能升级为已修。正常返回已安装三真实卡/尺寸恢复/noDialog/Network关；图r307-skills-current.png，当前事实r307-version-current-read.json/长屏证据r307-long-detail-proof.json/负例r307-negative-boundaries.json。保自有源，原移除重装确认不重复问。真实多页/资格失败/完整CRUD/test:e2e/axe/视觉预算仍待，不用辅助门替整页完成。
+
+### R307 用户边界新发现与后继准入
+
+Root正常3310版本表单实际选择合法自有462B ZIP后提交101标签、129字符单tag、trim后重复tag：三者均即时本地拒绝且完整非截断网络窗口零request，但统一显示“发布未完成。请检查文件或稍后重新开始。”，用户不知道怎样纠正；65535 ASCII简介整体UTF8超限则正确显示65536字节指引。真实失败证据 r307-negative-boundaries.json。关闭未创建session表单，无新增第三revision/数据清理。
+
+|任务|Owner/角色/文件范围|验收与限制|
+|---|---|---|
+|R308-WEB-METADATA-D0|原Web负责人，只读现publishDialog/flow/contract schema/i18n与原测试，基线d51a2d8＋已冻结R307单case诊断|定位Zod错误被generic吞的具体边界；复用已有schema，不复制规则、不展示原异常/raw payload；最少固定本地化指导与字段关联，比较两个已有位置。仅ignored r308-metadata-feedback-design.md；现完整check53664运行期间禁止tracked写/Git/资源/browser。Root先裁决再准tests-first。|
+
+用户首优先仍Skills Manus式个人管理展示/真实CRUD；R139只是失败取证辅助，不转移主线。完整目标/原矩阵不缩，Root独占验证/提交，原Admin混合保护。
+
+R307诊断准入：Root核作者0b559941与独审0f9fab04，无新增owner/API/数据。仅授原Web writer现混合 tests/system/oidc-rp-next-http.integration.test.ts 的具名R139首document用例内一个可逆hunk，被动observer/最多32固定路径事件和原wait catch安全投影；不扩共享helper，不用body/excerpt/screenshot/proxy，不输出任意URL/message/header/subject。原15秒wait/45秒例预算/登录前置/secondtab与全部旧断言保持。只纯tsc/该file eslint由作者，资源系统门Root独占；其余772全文exact。Root只最后补CURRENT与可用现INDEX，禁止整文件格式化/Git。实际技能长tags已正规写成自有revision2/current ACTIVE，发布旧窗口因额外整document刷新truncated，禁止补造ACK/推断刷新原因，后继只读exact核对，不自动重发。
+
+### R307 Skills 后续边界与加载失败诊断（既有 Wave 0–7 续接）
+
+上一回合为progress：Web d51a2d8 / Root94acc170已精确提交，新提示与实际长名发布/短屏验证改变当前事实，完整目标/个人13/7/13与70原计数保持。当前773 tracked/原Admin mixed见r307-start.json；旧门均终态，不重复启动或重置资源。
+
+|任务|owner /角色 /基线 /允许范围|完成条件 /排除|
+|---|---|---|
+|R307-WEB-R139-D0|原web_interaction_astra_r296，只读现系统测试与原observer/browserProbeDiagnostic，Web d51a2d8；父AGENTS/TS手册/CODEBASE_MAP/子仓设计|仅ignored r307-r139-diagnostic-design.md，给现失败用例安全诊断的精确最小hunk；不改变15秒/断言/登录前置/自动重试，不输出query/cookie/token，不改生产/tests。Root裁决后才授原混合test一个隔离hunk。|
+|R307-QA-SKILLS-STATE|原agent_planned_guarantee_system_r257，只读当前33矩阵/现reader与publish/version输入契约、三D0|仅ignored r307-skills-boundary-review.md，明确长tags/summary实际合同边界、可正常输入的资格与生命周期状态、本轮实测路径及不可伪造前提。禁止tracked/Git/浏览器/资源/状态写。|
+|R307-ROOT|Root正常tab25/原源码与资源/Git/同一四台账|优先实际长tag与summary界限、正常搜索/详情/版本入口；只自有非敏感QA记录通过正式UI，保所有来源，未授权移除不执行。浏览器遇自然auth先保完整安全时序/失败图；冻结后复跑相应门，工程数不替页面验收。|
+
 ### R306 收口与后继
 
 - [x] 原Web负责人：仅两现词条和两个test尾增，独审aee82f59，Root六路径提交 **d51a2d858d73db9ee107d9f63195847b59a4e3fa**；旧测试prefix/其余769源码exact，原Admin混合保持。
