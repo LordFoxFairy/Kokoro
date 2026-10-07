@@ -1,3 +1,27 @@
+### R272 切片交付与下一项
+
+Root已提交Web1d4beb1单字符fixture与1061303安装有限浏览器预算两路径；全部writer/独审STOP，Root冻结770保护、401/0、目标lint/type/build0和原真实28s RED→10,003ms取消→fresh真实GET恢复完成。本slice属于实质progress，不代表完整Wave0–7；33现13/4/1/15，70原11/8/14/36/1。新F08 FAIL保：unknown原keyRetry412/nonretryable后仅Retry全卡锁住。
+
+下一 R272-RECOVERY-412 继续同T-K03 P0：原Web负责人/Root承接，正式owner只读裁决2850c54b已确定prepare在receipt前拒绝，不能把闭合412视为旧命令未成功。需先明确独立当前GET不是ACK、unknown原意图/同key人工恢复与用户明确结束操作出口；沿现reader/既有用例窄修，不加store/框架/新owner、不改auth/资金/兼容。不重复正式资格或扩大技能市场，Root实际同故障路径重新验收后才升F08；后端10s admission总预算仍由原owner后继。已保存全部失败/正常九句柄，禁止reset/重启活服务、Task外Git/格式化。
+
+### R272-T-K03 同个人CRUD继续验收与已知失败定位
+
+前一goal turn是实质进展：Web23882d2/Root44f15b5e提交，实际权限错误UI修复及F01/F02/F06新增PASS；完整Wave0–7 active，不重定义目标。本轮读AGENTS/手册/CURRENT/task/progress/map，Root八gitlinks/uv与Web原Admin mixed保，9正常listener kill0均活，不重启/reset；Web23882d2起始772路径freeze r272-web-start-freeze.json。Root唯一浏览器/Git/服务/台账，暂无生产写入授权。
+
+|任务/角色|基线与只读范围|交付/边界|
+|---|---|---|
+|R272-WEB-PUBLISH-ROOTCAUSE / 原 iam_grant_source_scope_0244|normalWeb23882d2，现唯一publish dialog/flow/client/schema及既有surface发布刷新例；Root原ef5 35/1与最终165/1日志|定位在哪个真实client闭合响应/状态断言止步，列精确规范证据与最窄修复（业务or测试fixture），先只读ignored r272-publish-refresh-rootcause.md；无源码/测试/Git/门/服务/浏览器/资源写，不猜fixture原因|
+|R272-OWNER-TIMEOUT / 原 bff_admin_routing_d0_r257|正式BFF93bd/runtime39db/public8.5安装五动作、Web23882d2现client/route和三D0|核单预算/取消/response body/当前命令unknown与read应有区别、可复用现运输机制与最窄既有测试；只读ignored r272-installation-deadline-grounding.md，不写业务/测试/配置/凭据/ownerDB，不改契约|
+|R272-ROOT-USER / Root|当前normalIAB skills tab25与现自有QA记录、原33矩阵|继续F03真实modal正常Close→另一卡与晚响应、F05正常读有限deadline、安装pending有限退出核查；只能精确浏览器目标fault且finally解除，恢复必须真实GET；无删除/权限/DB造状态/Run/资金。实际失败后才按现卡授权窄修，33/70不先升级|
+
+R272 Root核定唯一发布引擎跨阶段身份检查：成功fixture草稿revision1而Publish ACK为"3"，应拒绝且不触发onPublished。批准R272-WEB-PUBLISH-FIX原Web负责人为唯一writer，仅现 tests/ui/kokoro-skills-surface.test.tsx 该成功病例Publish ACK "3"→"1"一个字面值；原managed GET总2、installation POST0、session IO0及所有旧断言/fixture保持。不改生产/schema/parser，不运行门/Git/资源；交付唯一diff/hash并STOP，Root重跑原失败用例及相关6文件。另安装有限预算仍仅风险，Root真实held GET取证后再决定源码切片。
+
+R272-INSTALL-BUDGET：Root真实28,001ms RED（仅浏览器exactGET请求holding，不冒ownerdeadline），取消后需alert核对、真实GET200才恢复。Root批准已读r272-browser-installation-budget-plan窄局部方案，归属Web installation私有request；不建文件/目录/框架、不变contract。第一阶段唯一writer原 iam_grant_source_scope_0244，仅现tests/hub/client.test.ts与tests/ui/kokoro-skills-surface.test.tsx append有效行为例，保所有旧oracle及已修单字面值：五动作fetch pending10s、fetch/body共期限、caller abort/latebody、列表/CheckCurrent有限退出、mutation unknown原key及ACK后GET-only。冻结交Root先RED；生产src/hub/client.ts禁止写直到RED准入。后阶段只installation私有request复用现managed的预算/abort/factory-wait/latecleanup模式，不改managed或publish方法/其它客户端；不加1MiB错误容量限制。超时network/statusnull，calleraborted/statusnull，正式已完整401/403仍原闭合错误。单请求10s是browserwatchdog，不冒Web adapter/BFF admission单预算；原后端风险明确留后继owner。Root唯一门/浏览器/Git，现Adminmixed/uv/gitlinks保。
+
+R272预算第一阶段收窄为现client.test append13例；Root原source运行8FAIL/5PASS（其它222仅-t未选执行，不是豁免skip），对应held/body/caller实际未退出，日志r272-installation-budget-red.log。现批准原writer仅src/hub/client.ts的installation私有request实施既准10s期限，原managed/publish/其它函数字节保护；测试仅752原caller signal引用身份toBe内部oracle改为有效组合signal及caller取消传播行为，非法selector零IO/最终aborted原断言保持。原UI测试与reader不改，unknown/ACK仅读由已有相关用例及Root真实浏览器重跑验证。完成freeze三路径/其余771保护交Root，禁止资源/Git/门；Root最终完整client+相关6/target lint/type/build、同28秒原故障浏览器GREEN、独审后精确提交。
+
+预算候选Root扩大7组实际396PASS/5FAIL，新增13全部通过但旧UI回归不能跳过。原writer与Root核定五项统一由installation wait人工microtask延后start导致：初安装GET切view前未dispatch→顺序fixture错位/POST即时计数0/新scopeGET错后采样；并非旧ACK回灌或body重复消费。现批准只该wait注册abort监听后同步check/start，catch同步throw并消费Promise两路径；不改任何五旧oracle/timeout/receipt/新13。记录真实FAIL后重跑，原其他字节保护。
+
 ### R271 交付与同任务后继
 
 Root已提交Web23882d2四精确路径；原writer/独审STOP，最终769源码保护减去唯一Root INDEX前缀后另768exact。真实F01/F02/F06新增PASS；当前安装403退役错误修复与两view真实恢复验收，非自然owner撤权；U15启用拒绝子链补齐但Remove未验，S04不升级。33现12PASS/2PARTIAL/19待验，70仍11/8/14/36/1，Wave0–7未完。工程165/1既有发布刷新失败（ef5原35/1）明确保留，contract282/51architecture/lint/type/build已跑；不称全部绿。下一沿同33补未验用户边界与安装unknown/自然授权身份，另查原发布刷新测试根因，不重跑已经完成的资格替代页面进展。无共享资源重启/reset、无权限/资金/模型写、原Admin/uv/gitlinks保。

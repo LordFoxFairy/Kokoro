@@ -1,3 +1,15 @@
+### R272 个人管理有限加载修复与真实恢复缺口（2026-10-07）
+
+用户确认维持“已安装 / 我发布的”、默认已安装，不扩市场。原Web writer实施、原独审复核、Root单一Git/浏览器/服务集成。Web **1d4beb1de7a2b0b9e74e84526ec404e3064c86f0**只成功发布fixture一个revision字面值纠偏（草稿1/发布1，原所有oracle保），Root相关6组166/0；**1061303835484fea77f019b41062a02b2c735d7e**只现client installation私有request与其现测试两路径：单请求10s覆盖fetch/body/parse/return，caller取消、迟到body退役；原closed errors/receipt/unknown意图不放宽、不加1MiB错误限制，不改其它client/reader/API/owner。其余770路径含原Admin mixed逐hash exact，Rootuv/八gitlinks保。
+
+Root原正常浏览器安装核对GET holding28,001ms仍busy/全卡锁定RED；修后同路径实际 **10,003.169ms ERR_ABORTED**→有限error与显式核对→真实GET200恢复所有操作。仅浏览器watchdog证明，不是Web adapter/BFF admission累计单预算。F03真实A在途正常Close→B真实200详情→A取消/晚释放退役→Close归焦B PASS；管理GET超时与坏shape错误恢复各部分通过。随后同一QA记录启用命令目标holding→unknown→显式原key/bodyRetry正式412/nonretryable后仍unknown、所有卡操作锁定，**新增F08 FAIL**，不是完整CRUD完工。
+
+Owner只读裁决2850c54b：Platform prepare在durable receipt查询前可拒withdrawn enable；该412不能证明历史未知命令未成功，不能粗暴把recovering=false或GET冒ACK。下一沿现任务处理未知意图的独立当前状态核对/明确退出恢复交互或必要owner语义修复，先原用户FAIL再窄实施，不自行猜终态、不丢原key。刷新恢复正式默认已安装两真实卡，无error/dialog/loading；没有正常数据删除、权限/资金/模型写。Fetch patterns均恢复，九正常源码listener最终均存活，未restart/reset/DDL。
+
+工程辅助真实历史保：新增13例旧源码8FAIL/5正控；首扩大396/5（人为microtask晚启动导致五旧UI回归）→只同步start修、全部旧oracle保持；两unused lint warning→typedstub修。最终Root精确任务tree7组 **401PASS/0FAIL**、目标lint/typecheck/build exit0，独审c5033f94绑定最终两hash；没有重跑全默认/全页面E2E，原全局历史FAIL/SKIP不清零。用户33现 **13PASS/4PARTIAL/1FAIL/15待验**；完整70仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，T-K03 OPEN、Wave0–7 active。
+
+证据同Root var/dev/r255-preserve/r272-personal-skills-user-receipt.json、fixture-commit-receipt.json、installation-budget-final-gates.log、browser-timing/recovery与recovery-412-locked-red.json/png，最终r272-personal-skills-final.png。harness首cp相对路径错误、首替换范围断言、首次detail分步自然超时、首次enable漏/enabled pattern及不存在核对控件点击均保留，不冒产品通过或覆盖真实失败。
+
 ### R271 个人技能异常交互实测与权限退役修复（2026-10-07）
 
 沿用户确认的清晰个人管理页，默认“已安装 / 我发布的”，不扩市场。Root已审查并精确提交Web **23882d274917f9d6135878f2f637c92ab51a9f44**（parent ef5f93e，4路径）：当前安装动作401/403复用既有私有子树退役，两个视图明确权限提示；非授权unknown原key、412和ACK后当前读语义不变。原writer/原独审均STOP，三代码SHA与工程tree exact、另768起始路径保护；原Admin mixed、Rootuv/八gitlinks保持。
