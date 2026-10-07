@@ -1,3 +1,11 @@
+### R305 Skills 当前正式展示对照与用户复验（2026-10-07）
+
+按最新人类要求先聚焦技能展示，不把认证调查扩大为当前主线。正式 Web HEAD 2015124e64fb6282921a68c56f9f11aeb2e0199d 已包含 R297/R300/R304 展示切片，本轮没有新增源码修复；Root 核773 tracked逐SHA和原Admin混合status全部exact，不能将旧提交说成本轮新修。正常3310与Manus同771×752读取：当前搜索/轻工具栏、双列封面卡、两行简介、状态标签、技术详情进入弹层，已不同于用户旧截图的长文本控制堆叠。Manus首页是技能目录，“我的技能”进入个人设置；Kokoro保持用户已批准个人管理两视图，不虚构公共目录、次数或复制图像资产。
+
+Root真实用户步骤：R301名称搜索单卡→打开安装快照详情→Escape精确归焦原标题→无匹配空态→清除→本人发布GET200八条真实记录→空发布表单提交disabled→关闭→已安装GET200恢复三卡。完整非截断8网络事件仅技能GET，零技能mutation；同时正常csrfGET200/sessionPOST200只是当前正控，不关闭历史自然401。最终截图r305-skills-current.png，完整行为与白名单网络r305-skills-user-review.json，字节保护r305-review-receipt.json。无注入、无viewport改变、无服务/数据/资金/权限操作；Network关，现Skills留作交付。
+
+两原代理认证只读报告489147de/50843cc7完成并STOP；静态代际窗口仅候选受控反例，不是既有自然401根因，认证仍OPEN并留后继。完整Skills CRUD、真实多页、移除重装与其它未验项仍待；本轮未重新运行工程门或全test:e2e/axe/视觉预算，不引用历史工程门冒当前整页完成。70 11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST与个人33 13PASS/6PARTIAL/14UNVERIFIED不升级，完整Wave0–7保持。
+
 ### R304 Skills 短屏与触控展示已验收（2026-10-07）
 
 Web **2015124e64fb6282921a68c56f9f11aeb2e0199d** 精确9路径：三现TSX展示、四现UI test、现Skills INDEX/CURRENT。不改命令/handler/ref/state/权限/字段顺序/disabled；无CSS/字典/全局primitive/契约/新增文件。原Admin混合status完整保持，764任务外tracked exact，Git对象逐path等冻结。本轮沿Manus个人管理页，不扩市场或假使用次数/图像资产；完整Wave0–7不缩。

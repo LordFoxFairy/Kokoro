@@ -1,3 +1,20 @@
+### R305 当前收口：技能展示优先，认证只读留后继
+
+- [x] Root已同尺寸读取Manus目录/个人管理与当前正式Skills，实际执行搜索、无匹配、安装详情Escape归焦、发布视图、空表单禁用与取消、返回安装三卡；8网络事件完整非截断、零技能写。证据r305-skills-user-review.json与r305-skills-current.png。
+- [x] 原Web只读报告489147de、原QA只读报告50843cc7均STOP；不授认证源码写入，静态窗口不冒自然401根因。
+- [x] Web773 tracked及原mixed status全部exact，HEAD2015124e；本轮没有新Web修改，不重跑与重复宣传旧工程门。
+- [ ] 完整Skills CRUD/实际移除重装/真实多页及历史自然401仍OPEN，完整Wave0–7/原计数保持；下轮沿现Skills任务继续，不扩市场或技术架构。
+
+### R305 认证跨页面稳定性与取证（既有 Wave 0–7 续接）
+
+上一R304是progress：真实UI/冻结全门/两正式commit已完成，完整目标保持。当前Web2015124e/Rootfb021cca，773tracked与原Admin mixed保存在r305-start.json；原自有安装移除确认仍待，不靠等待该项停止其它工作。
+
+|任务|Owner/角色/写入边界|依赖与验收|
+|---|---|---|
+|R305-WEB-AUTH-D0|原web_interaction_astra_r296，只读设计；现product session/store/refresh/admission、browser session projection和hub adapter；只写ignored r305-auth-evidence-design.md|读前R304两报告/精确401与新当前代码；指出确定因果或最小安全观测方案，比较两个位置、绝不放宽active/generation/expiry/auth。无生产/tests/正式docs/Git/资源/browser。提交Root阶段准入后才tests-first。|
+|R305-QA-AUTH-FLOW|原agent_planned_guarantee_system_r257，只读复审UI入站/刷新/身份退役/显式恢复|只写ignored r305-auth-flow-qa.md；独立检查什么时候会正常session GET200但privateGET401，哪些可观测证据能区分、现真实E2E怎样证明；不能假定有正常失败根因，不执行底层门或造数据。|
+|R305-ROOT-RUNTIME|Root独占正常tab25/CDP/原session31693与43358|采集完整非敏感auth时序/请求关联，正常Skills读取与真实登录恢复。原9基础设施先查活句柄，不新进程/reset；保原数据、不写授权/账务/模型。确认最终方案后Root复跑用户反例与工程门并精确提交。|
+
 ### R304 收尾与责任续接
 
 - [x] R304-WEB-TOUCH / 原web_interaction_astra_r296唯一writer / 三TSX+四test：有效RED后局部实现，163PASS/type/lint；原prefix/逆源码保护，STOP冻结。
