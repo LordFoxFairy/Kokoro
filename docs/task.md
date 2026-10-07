@@ -1,3 +1,34 @@
+### R313 已交付终态
+
+Web 7509c0b35821e18bb77da02588266431df683be0 仅四path，原writer与独审均STOP；Root最终43705自然check0、实际窄屏组合RED→GREEN、宽账户正控及Tab后续搜索保持均已验，截图/证据见CURRENT R313。771任务外tracked与原Admin mixed保护。延迟epoch guard经独审，但精确帧重开/聊天Composer本轮未单独浏览器验收，不填PASS。70/33计数保持，完整Wave0–7继续，后续完整SkillsCRUD与认证自然401仍原卡OPEN。原Platform A2b26293完成，B19尚未授权，本轮不继续后台contract代替用户页面验收。
+
+R313 关闭归焦生产准入：Root两次真实771→390关闭均BODY，现可见导航按钮32×32/connected已记录；原D0 a766c211与QA98df8cc已复核。只授权原Web writer现settings-modal.tsx、use-app-frame-overlays.ts两个现职责文件，取消Settings关闭路径对marker盲信并按实际可见原入口→可见Composer→同shell可见navigation选择；三关闭回调执行时重新核验，不主动展开/跳页、不改变原URL/命令/身份/Skills源码、共享helpers/primitive/tests冻结，不引入新框架/依赖。原已批准R297设计无需重新设计，两现文件局部修复归属现Dialog与父overlay生命周期。Root真实RED已作为行为基线，无新增Unit/Mock；静态辅助后冻结/独审，再Root实际同路径、原宽屏/聊天回退与重开保护验证。原773及Admin mixed保，Root独占提交与现CURRENT/INDEX增量。
+
+### R313 用户 Skills 优先与真实窄屏焦点缺陷
+
+最新用户要求先修 Skills，原 MCP B 的19path尚未授权，后续完整 owner 链继续保留。A历史输入接缝已由Root重跑门/独审/精确5path提交2b26293，原两R312测试尾继续未提交；工程门不计页面验收。
+
+Root当前fa23531真实用户只读步骤：771两列→我发布的12卡→已安装3卡→我发布的，完整未截断网络窗只有Skills GET200，零技能写；自然请求已完成不冒迟到竞态验证。390×420 Settings 中筛选键盘Escape回精确触发按钮、Tab3→More Enter/Escape父设置保留、发布→快捷键→技能重进默认安装/无残留菜单、文档390无横溢均实际验证。新RED：从771账户打开设置后390侧栏隐藏，关闭设置持续focus BODY。证据r313-skills-user-paths.json，不能以普通宽屏归焦PASS覆盖该组合失败。
+
+|任务|归属/基线/范围|准入与验收|
+|---|---|---|
+|R313-WEB-FOCUS-D0|原Web负责人只读；fa23531/773及原Admin混合完整r313-web-focus-start|Root真实RED后仅原r313-skills-user-path-review增量，核现Settings/父shell三归焦路线、既有可见导航按钮fallback。无新focus框架/Skills命令/URL/权限变更，无source/tests/Git/浏览器/资源。|
+|R313-QA-FOCUS|原QA只读；现三路径与Web方案；原r313-mcp-machine-review增量|判断真实BODY是否预期，核隐藏标记target及三路迟到覆盖；无资源或tracked写。|
+|R313-ROOT|唯一浏览器、资源、Git、台账writer|批准精确现文件局部方案后原owner写，真实同路径RED→GREEN及宽屏原opener/聊天Composer回归；保三子Escape/只读/单层scroll。完整CRUD、自然401与33/70不提升。|
+
+### R313 承接完整 Wave0–7：MCP 正式机器发行接缝
+
+上一轮为progress：Webfa23531与Root35790142已提交，真实Skills用户路径/诊断机制证据入账；自然401和完整CRUD未关闭。本轮原owner续接R312有效33机器RED，不重复调查、新建计划或放宽测试。
+
+§8放置：Platform仍唯一contract owner，基线0604694＋两R312现test尾增，r313-platform-start514 manifest。新增platform-v8-parent39.binpb只冻结将来V8 additive父图（43624B/0467c1c4），选既有contract/descriptor优于execution JSON目录或Root副本作为正式事实；不是runtime兼容路径，零API/Schema/数据写。现v6-artifact历史codec固定到既有V6 descriptor，现V5 census与六V6负控改为对应历史输入；删除的是误读latest import，不删旧发行快照。历史所有V1–V7 bytes/源码Schema/正常8086保持。Root独占资源/门/Git，原owner唯一writer，A历史4paths先验收→B既定四新RPC/11messages+V8原子机器，B未先授生产。后继五personal运行边界→BFF固定发行消费→Web正式连接器CRUD仍完整保留，四read不冒最终闭环。
+
+|任务|角色/基线/范围|验证与停止线|
+|---|---|---|
+|R313-PLATFORM-A-HISTORY|原platform_iam_consumer_r298唯一writer；0604694/514；只parent39新快照、现v6-artifact.ts、platform-personal-installation-v5.test.ts、platform-execution-operations.test.ts六V6 mutation精确hunk；原R312尾部不改|静态检查后STOP，Root实际非筛选历史门与33既定RED分记；不改Proto/生成物/V8/正常源码/权限/服务/资金；Root只提交A自身hunk。引用原r310-mcp-d0-handoff最后A/B19path清单与三D0。|
+|R313-QA-MACHINE|原agent_planned_guarantee_system_r257只读；审核A/B原具名接缝及父39保护，报告r313-mcp-machine-review.md|无tracked/Git/门/资源/browser写；A冻结独审、B新增profile/descriptor/artifact及历史泄漏只评确定问题，不发明第四checker或新的owner。|
+|R313-WEB-QA-PATH|原web_interaction_astra_r296只读；Webfa23531及原Admin mixed，既有33矩阵和当前Skills源码|给尚未验收的真实用户路径与最小下一个非破坏性验证，身份/加载/取消/菜单/详情生命周期关注，复用r313-skills-user-path-review.md，不重复已PASS或新增底层unit/mock。无tracked/Git/浏览器/资源/服务动作。|
+|R313-ROOT|唯一审查/缓存index/正常browser/资源运行|前述基线保护、实际门终态、独审、精确提交、当前台账；工程门与页面验收分开。正常活句柄先检查，不重复启动；不reset共享PG/Redis/MinIO，不依据当前200关闭自然401。|
+
 ### R312 本轮交接终态
 
 - Web原owner候选Root已独审并验收提交fa23531；三源原准入/单eval不变，401安全原因取证只是后继定位能力。Root27307实际91PASS，20631完整check0；自然401原因仍OPEN，下一有真实同ID事件再修原因，不按当前200关闭缺陷。

@@ -1,3 +1,13 @@
+### R313 Skills 真实组合验收（2026-10-07）
+
+当前Web7509c0b，以下为原U02/U11/F02的用户路径补充，不替换70/33主矩阵或升级整页CRUD。全部正常已登录浏览器实际操作，零新Unit/Mock。
+
+|用例ID|标题|预置条件|测试步骤|预期结果|优先级|类型|当前结果/证据|
+|---|---|---|---|---|---|---|---|
+|TC-SK-UX-313-01|连续个人视图切换|正常三安装/十二本人版本，无未决写|我发布的→已安装→我发布的|选中视图、卡片与操作一致，零Skills mutation|P1|功能/状态同步|PASS自然切换；读取已完成，不冒迟到竞态；r313-skills-user-paths.json完整窗|
+|TC-SK-UX-313-02|窄设置父子菜单与重新进入|390×420 Settings Skills，原记录|筛选Enter/Escape→Tab3到More→Enter/Escape→我发布的→父快捷键→技能|子Escape回准确trigger且父层保留；重进默认已安装，无残留菜单/横溢|P1|生命周期/键盘/边界|PASS此组合；父Settings关闭另列，不推广完整unknown/CRUD|
+|TC-SK-UX-313-03|隐藏原入口后关闭设置归焦|771 Skills账户打开Settings→390，账户仍connected但祖先display:none；无Composer，当前导航可见|关闭设置→稳定观察焦点；另重走子菜单/父tab组合后关闭|回当前同shell可见展开侧栏按钮，零自动展开/跳页；不得持续BODY|P2|状态机/可访问性|PASS最终冻结后真实组合；两次原RED保留；r313-final-user-verification.json：BUTTON展开侧栏、无Dialog/menu、390无横溢；下一Tab到搜索，宽原账户正控保持|
+
 ### R312 本轮测试证据边界（2026-10-07）
 
 正常Skills实际路径：名称搜索仅一张真实卡→打开列表安装快照完整详情→Escape返回准确标题→清空恢复三卡（r312-skills-browser.json/截图）。本轮不扩33用例或把既有子路径重复计为新PASS，完整CRUD/真实多页/另一身份仍待。认证实际自然401缺陷仍OPEN：诊断三源码fa23531的91真实Redis/Next HTTP回归及完整工程check0只证明拒绝分类与原响应保持，不替自然根因或正式IAM全旅程；正常观察仅200不写修复PASS。Platform新四读机器33FAIL是后继有效RED，不把缺服务当页面已通过。现70与33各状态不变，失败历史保留。

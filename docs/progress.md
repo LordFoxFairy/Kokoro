@@ -1,3 +1,13 @@
+### R313 Skills 页面局部用户链已验收（2026-10-07）
+
+Web **7509c0b35821e18bb77da02588266431df683be0** 精确四paths：现Settings Modal/父overlay两关闭生命周期源码、Settings INDEX、CURRENT。Skills当前展示沿已提交19178（搜索/筛选/封面卡片/技术详情），不是本轮新建目录或假使用量。真实缺陷为窄屏隐藏账户入口仍connected被marker盲信；关闭重新核同shell与祖先可见性，依次可见原入口→Composer→当前导航；旧epoch/新弹层/已有正常焦点防夺焦。独审最终11350a09无P0/P1，v1静态P2已收敛。Root另外771源tracked与原Admin mixed保护，四path完整缓存审查提交，不暂存旧Admin/测试修改。
+
+Root真实RED两次BODY保留；冻结后正常3310最终GREEN：771账户打开→390 Settings Skills→筛选Enter/Escape→Tab3 More Enter/Escape父设置保留且回准确trigger→我发布的→快捷键→技能重进安装三卡→关闭回可见展开侧栏；随后Tab到搜索。390×420无横溢，宽771关闭回原账户。最终网络窗完整未截断，仅Skills GET200及退役aborted/认证200、零Skills mutation；r313-final-user-verification.json。图r313-skills-final.png为1100×850 QA尺寸，终态恢复该tab原386×376/DPR2、三卡/noDialog/Network关闭，原九服务不重启/reset。
+
+Root最终Node22.22.2完整 pnpm check43705自然exit0：309contract/51architecture/3437default、lint/type/build0（r313-web-final-check.log），不是最终业务验收标准。只TC-SK-UX-313-03新窄屏归焦FAIL→PASS，另两自然组合已PASS不重复升级主矩阵。HMR空白一次正常reload恢复但因果未证，留观察项；自然401/完整CRUD/多页/第二身份/迟到hold/精确帧重开/test:e2e/axe/视觉预算保持未验。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/6PARTIAL/13UNVERIFIED**不升级，完整Wave0–7继续。
+
+并行原Platform历史发行输入接缝精确五path **2b26293** 已提交：父39快照/V6固定descriptor/V5历史census/六V6 mutation旧hunk/CURRENT，原两R312测试尾保持。Root历史各门与49PASS通过、完整execution91PASS/1FAIL是原新服务RED，不冒整体GREEN；B19path机器生产与运行未授写，未分散本轮Skills优先任务。原uv SHA f7e1c30d与八gitlinks保持未暂存。
+
 ### R312 当前验收入口（2026-10-07）
 
 Webfa23531精确九paths的POST401闭集取证已提交，原检查/响应/资源写语义保持；Root真实两资源91PASS与完整check0、独审7068d17c，仅诊断不关闭自然401。正常Skills搜索→详情→Escape归焦→恢复三卡实际复验，图r312-skills-current.png；沿19178呈现，没有新增假目录/使用次数。Platform0604694四D0已提交，两个现machine尾增Root33有效FAIL，仍未生产/发行/CRUD。70与个人33不升级；详细事实与未验以CURRENT R312及r312-root-verification.json为准，完整Wave0–7继续。
