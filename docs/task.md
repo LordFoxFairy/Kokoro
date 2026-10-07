@@ -1,3 +1,23 @@
+### R318 本轮交付与后继（现任务卡完成回执）
+
+- R318-SKILLS-COVER / R318-QA：Web9a8c2ecc三path已审查/Root集成验证/提交；唯一CSS候选ad48ddf6、QA2d8b8a65。真实正常浏览器搜索/筛选/详情归焦、本人两视图、窄屏/Settings/自动深色检查已实际执行；完整CRUD/彩色插画及像素一致不宣完成。
+- RootNode22原62060完整check自然exit0（309/51/3437辅助项及lint/type/build），当前真实用户动作/5个SkillsGET200及已恢复浏览器模拟见r318-skills-user-verification.json；图片r318-skills-final.png。原27Admin mixed、两Webdoc历史suffix保护。
+- R318-CONSUMER-D0：原Platform owner只读报告完成，BFF543原文件exact；四本人读public候选/固定V8/独立资格已列下一最窄切片。下一先由BFF三D0和public契约裁决，不拿R317native签发代替实际OAuth token HTTP链，不误删仍有效projection。零消费代码或正常权限写。
+- 完整Wave0–7 active、70/33不升级，T-K03/T-K05与自然认证退役/完整CRUD仍OPEN，支付最后。无资源重启/reset/正常身份、资金或模型变更；Root Git独占，仅本回执/台账明确路径提交。
+
+### R318 Skills 封面质感与固定消费后继（现计划续接）
+
+上一goal turn为progress：Platform e83a2ad13path与Root366d6e01四台账已提交，真实HTTP/IAM/PG证据改变后继行动。完整Wave0–7仍active，70/33不以辅助门提升。用户Skills优先；本轮沿其已批准Manus式个人两视图/上封面卡片，不重新设计市场或假能力。
+
+局部§8归属：Web现CSS只承接装饰书封质感，现reader/所有状态/控制/API不动。比较现CSS装饰与新增assets/封面API，选现CSS静态纸感/墨色构图：无需新目录、下载Manus图片、owner字段或HTTP；三图仅视觉不能伪装实技能。保2:1/3:4、字号可读、标题在装饰上方、aria-hidden、现token和focus/touch，不借颜色表达启停/来源。原Web27Admin mixed与773 tracked按r318-web-start.json保护。
+
+|任务|owner/角色/允许文件|完成条件/依赖/交付|
+|---|---|---|
+|R318-SKILLS-COVER|原web_interaction_astra_r296唯一Web writer，原实际模型；仅src/ui/skills/personal-skills-read.module.css。INDEX与CURRENT最终prefix由Root独占|先读当前CSS/reader/已批D0，给最窄构图说明；保原全部非书封规则与尺寸，零state/JS/网络/测试/全局token变动。Root实际旧空白封面截图为行为/视觉基线，不新造Unit/mock。冻结完整diff+SHA后STOP；Root审查/Node22完整check/真实桌面窄屏Settings与dark/read/focus后提交。|
+|R318-QA|原agent_planned_guarantee_system_r257只读独审；当前WebCSS冻结后检查|核装饰不含能力承诺/状态映射，标题可读/布局尺寸/伪元素不抢事件/focus/touch/主题；零tracked/资源/Git/browser写，原ignored报告续接。|
+|R318-CONSUMER-D0|原platform_iam_consumer_r298只读；正常BFF76098c0及已发行Platform e83a2ad/V8|列固定artifact生成入口/真实personal身份与四读public映射的现owner落点、必须删除旧哪些候选而不删除有效旧projection。只给D0/有限后继文件表与验证输入，禁止BFF/Platform/Web/contract/Schema/credential/Git/resource写；当前不是授新业务写权限。|
+|R318-ROOT|Root独占正常浏览器、服务句柄、门、记录与Git|不重启/reset共享九服务/PG/Redis/MinIO；用实际页面逐步骤验证，不称整SkillsCRUD或整个Wave完成。原财务/身份/模型配置保留，所有任务外变更不暂存。|
+
 ### R317 本人 MCP 运行接缝已提交；Skills 当前展示与真实登录恢复分开记录（2026-10-07）
 
 Platform **e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42** 精确13paths（八生产源/一现系统测试/四当前文档prefix），原负责人实现、QA三修终审3de8743e、Root冻结重跑/独占Git。旧521任务外原文件、四doc原suffix、九源码测试Git对象 exact，子仓clean。四本人读仅独立flag+第五surface注册，沿真实IAM/同Prisma实例有界只读port；严格JSON/protobuf、SQL本人谓词先于map、安全输出/分页与绝对budget保持，wire/Schema/generated/旧四policy/drain不改，正常8086/身份未重载扩权。

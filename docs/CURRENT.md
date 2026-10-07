@@ -1,3 +1,13 @@
+### R318 Skills 书封展示已提交，真实页面验证与完整能力分开（2026-10-07）
+
+Web **9a8c2eccfb5e4d2150340e572934b3d277fe6fbc** 精确三路径：现Skills CSS只book装饰hunk、Skills INDEX与CURRENT prefix。原负责人唯一writer、只读QA终审2d8b8a65、Root实际重跑与独占Git。纸底/墨字、低对比印刷几何和14px真实标题，不新增封面API/图片、虚构使用量/能力；原cover2:1/book3:4/min60%11rem/24px顶部、所有管理状态与命令不改。Root冻结SHA ad48ddf6、另770tracked以及原27Admin mixed保护、两doc原suffix exact，提交后原27status exact。
+
+Root正常3310实际搜索R255→单卡→详情→Escape准确归焦，空查询结果/清空、停用filter仅本人撤回源且Enable disabled、发布14真实版本→恢复三安装。桌面1280×720封面298×149/书176×234.664；390×844一列356×178无横溢；Settings Skills桌面367.5×183.75、390×420为190×95/关闭可见且回展开侧栏。系统深色媒体实际触发现自动主题、两伪元素不收pointer；touch模拟coarse=true后常用发布/视图/filter/actions44px，原标题按钮原尺寸保持。临时media/touch/metrics全恢复、Network关闭，没有改变用户偏好或资源。连续完整非截断Skills读窗5GET200，另取消ERR_ABORTED单列；未覆盖早期详情/搜索，不冒全旅程网络或认证通过。真实最终图 **var/dev/r255-preserve/r318-skills-final.png**；手机截图采集缩放异常不做像素验收，实际窄屏几何另存r318-skills-user-verification.json。Manus彩色封面插画/像素一致未宣完成。
+
+Root显式Node22.22.2原句柄62060完整pnpm check自然exit0：contract309/architecture51/default3437、lint/typecheck/build通过，日志r318-web-root-check.log；它们只作辅助工程回归，不替用户E2E。全test:e2e/axe/视觉预算/完整CRUD/第二身份/多页/自然私有详情退役仍未验。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升级；T-K03/T-K05 OPEN，Wave0–7 active、支付最后。
+
+并行R318-CONSUMER-D0只读完成：Platform e83a2ad/BFF76098c0与BFF543路径保护，固定V8来源/四本人读public候选/独立personal资格/窄普通文件放置已交原ignored报告，尚非BFF设计门或代码完成。特别R317native issuer+TCPintrospection不证明BFF实际POST OAuth token HTTP链；下一后继必须先收敛BFF三D0/固定消费artifact，再tests-first真实完整身份链。旧active本人projection与管理四读语义不同，不误删有效入口或加fallback。正常Platform/BFF未重载/扩权，九资源不重复启动/数据不reset；Root原八gitlinks/uv不暂存。
+
 ### R317 本人 MCP 运行接缝已提交；Skills 当前展示与真实登录恢复分开记录（2026-10-07）
 
 Platform **e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42** 精确13paths（八生产源/一现系统测试/四当前文档prefix），原负责人实现、QA三修终审3de8743e、Root冻结重跑/独占Git。旧521任务外原文件、四doc原suffix、九源码测试Git对象 exact，子仓clean。四本人读仅独立flag+第五surface注册，沿真实IAM/同Prisma实例有界只读port；严格JSON/protobuf、SQL本人谓词先于map、安全输出/分页与绝对budget保持，wire/Schema/generated/旧四policy/drain不改，正常8086/身份未重载扩权。

@@ -1,3 +1,7 @@
+### R318 Skills 当前展示导航（2026-10-07）
+
+Web 9a8c2eccfb5e4d2150340e572934b3d277fe6fbc：现src/ui/skills/personal-skills-read.module.css仅book规则纸感/墨字/14px题字，不改reader/API/状态/尺寸；真实页面与Settings验证见RootCURRENT R318和r318-skills-user-verification.json，最终图r318-skills-final.png。Platform e83a/BFF76098c0后继四本人读消费仅只读D0提案，不作源码导航或正常激活完成；完整CRUD及自然身份退役仍OPEN。
+
 ### R317 当前运行接缝导航（2026-10-07）
 
 Platform e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42：现 personal/mcp-personal.{admission,request-binding,reader,mapper,rpc}.ts 与原 authorizer/module/middleware 接入固定 V8四读；仅mcp-personal flag/fifthsurface启用，同MCP_MUTATION有界port，不改Schema/机器或旧surface。真实系统与未激活正常消费边界见RootCURRENT R317、现production-composition.integration.test.ts；完整CRUD仍OPEN。Webe78d3f9 Skills现reader/CSS网格为当前展示，无本轮新UI源；真实只读与登录恢复记录同台账，不用后台门替页面验收。
