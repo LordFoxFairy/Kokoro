@@ -1,3 +1,23 @@
+### R315 原目标继续：Skills 用户验收与 MCP 运行边界
+
+R315 用户 Skills 展示优先收敛：Root正常3310在1000×850实际封面316×100（比例3.16:1）、书120×160；固定100px只在约200px卡宽接近参考2:1，桌面封面明显偏小。既有R297/R311的单书、浅背景、双视图与用户Manus方向已确认；局部样式归属现Web CSS，仅改 `.cover`/`.book` 两规则为随卡宽2:1预览及3:4书封，保其余全部选择器/真实数据/事件/准入/reader/tests不变。不新增资产、目录或假使用量，不复制Manus账号内容。
+
+|任务|归属与范围|验收|
+|---|---|---|
+|R315-WEB-COVER|原web_interaction_astra_r296唯一writer；7509c0b/r315-web-start；仅现src/ui/skills/personal-skills-read.module.css的cover/book两个规则|Root已记录实际差异，先给两规则候选，Root准后实现并freeze；禁止Git或启动资源。Root1000桌面/771窄双列/390单列/Settings嵌入，核2:1、无横溢、搜索与详情实际用户链，再独审/工程门。Root独占INDEX/CURRENT与提交，不能把比例修复冒全SkillsCRUD通过。|
+
+
+上一轮progress：Root4312f524台账、Skills真实同attempt取消恢复/新旧版本读回、Platform15eca78机器切片；个人33为14/7/12，完整70不变。九原句柄本轮实际全部live，不重启/reset。已提交机器不等运行能力，完整Wave0–7继续。
+
+|任务|角色/基线/允许范围|当前行动、验收与停止线|
+|---|---|---|
+|R315-ROOT-SKILLS|Root独占浏览器/资源/Git/台账；Web7509c0b与原Admin mixed，r315-web-start|沿既有33未验身份与列表路径，核当前真实失败再修；正常账号/包/服务复用，不伪造状态、不对已通过子例重复升级。无新Unit/Mock，任何权限或不可逆动作按规则确认；证据完整才改对应行。|
+|R315-PLATFORM-RUNTIME-D0|原Platform负责人仅只读；15eca78 clean/r315-platform-start；原R310/R312三D0、五personal＋三既有事务/repo＋两个注册/authorizer接缝|查实际入口并给具名最窄运行写集/系统级RED入口；不重复架构、另造协议/DTO/Schema或兼容层。原19machine/V1–V8冻结；仅复用r310-mcp-d0-handoff报告增量，未经准入不改source/tests，不启动资源/Git/正常权限。|
+|R315-QA-RUNTIME|原独审仅只读；同Platform冻结和既有D0|核同10秒budget/取消/本人SQL先mapper/四surface不扩大、真实IAM和PG负控的验收缺口；原r313-mcp-machine-review增量。不给静态审查PASS，不改tracked/Git/资源/浏览器。|
+|R315-WEB-USER-QA|原Web负责人只读；7509c0b原773/r315-web-start；既有33与auth诊断|明确当前33未验可正常操作路径，优先身份切换/空态/真实页序与错误恢复；只报告具体入口和已有支持，不新造计划/Unit/Mock。原r313-skills-user-path-review增量，零source/tests/Git/browser/resources。|
+
+§8运行放置已由R310/R312三面锁定，本轮只核对实际代码与阶段门。Root收到最窄source/test方案并取得有效业务RED后才单独授写；consumer依赖owner正式运行契约，不并行发明字段。只读三Agent与Root浏览器并行，同仓仍一名writer；提交仅Root。
+
 ### R314 同一目标继续：Skills 上传恢复与 MCP machine 并行
 
 上一轮是progress：7509c0b四文件正式提交、正常窄Skills关闭RED→GREEN、Root2741f114台账；不重做已PASS视图/焦点。完整Wave0–7、70/33状态保持。
@@ -13625,3 +13645,11 @@ BFF 八路径实现已冻结、独审发现4项P1：stop后投递、batch等待�
 R285 UI窄修最终Root精确3路径提交 Web97be7f7e0a43ea8b5c6b95440e9562c7e6628afd；原769路径exact，原index空/任务外未暂存。77764终态lint/types/build=0/0/0，完整rail74/0与真实浏览器五管理页/Direct/Project恢复证据已绑定。仅选中缺陷验收，不升级整页面/Manus视觉或完整CRUD。
 
 R285 后继P1 oracle已修至首lease2000/次1000，test SHA5ac57dcc、原202774前缀exact。Root Node22实际三个controlled-port行为0PASS/3FAIL/0SKIP，exit1，r285-bff-release-p1-red.log；这不是PG或真实owner集成。原BFF writer获现dispatcher/port窄修准入，PG仅准tests追加、Root真实RED后再授repository生产。保正常资源与原8冻结其余文件。
+
+R315-WEB-COVER 写入交接：原owner已完成只读方案后尚未实施，Root中断该writer并核CSS diff空，现Root接管两规则局部修改；无并发writer。独审原QA继续只读，其他源/原Admin mixed保护，Root独占实际验收与Git。
+
+R315 当前视觉source已freeze b4b63ed1，独审f9c13078无确定阻断，Root六视图真实比例/无横溢、两视图与窄详情/Settings及完整Skills零mutation已验（r315-skills-user-verification.json）。初check63586错误Node24 engine，Root仅终止该独占PGID65311，143/无残留；正式Node22句柄63273在途，不并发重复构建或重启九正常服务。原Platform运行D0需runtime.ts第五flag/具名只读接口与真实IAM provisioning裁决，报告仅只读，完整CRUD仍后继，当前不抢Skills任务。
+
+R315 最终工程63273显式Node22.22.2自然exit0：309contract/51architecture/3437default、lint/typecheck/build通过；工程后正常3310三安装/noDialog可见。Root两规则source inverse精确原文、其余770 tracked及原Admin mixed保持；仅CSS/现INDEX/CURRENT精确提交。全test:e2e/axe/完整视觉预算与完整CRUD未验；33/70不升级。原Platform只读方案和准入缺口保持后继，不装新flag/权限或重启正常服务。
+
+R315 最终Web精确三paths提交 e78d3f9ca83e51cd7499f71e1fe370127d98bbc4；Root提交对象/父7509/770其他tracked/两原doc suffix/index空已核，r315-web-commit-receipt.json。缓存前manifest相对路径误用失败保留，后验绝对路径实际通过，不冒第一次脚本通过。默认三安装/尺寸恢复/Network关闭，正常源服务未重启，完整目标继续。

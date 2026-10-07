@@ -1,3 +1,11 @@
+### R315 Skills 封面按卡片比例缩放（2026-10-07）
+
+Web已提交 **e78d3f9ca83e51cd7499f71e1fe370127d98bbc4**（精确CSS/Skills INDEX/CURRENT三paths），仅现 `personal-skills-read.module.css` 两规则：封面由固定100px改为宽100%/2:1；装饰书由120×160上限改为宽min(60%,176px)/3:4，原24px顶部裁切、token、正文、触控、网格与所有事件不变。没有新图片资产、假使用量、API/状态机/权限变化。Root接管前原writer已中断且CSS diff空；候选SHA b4b63ed1da67e77ecea4defb7d974e0e68fff9fb45d58fb44e460cf3743a263a，inverse回旧文件exact，另772 tracked与原Admin mixed保持。
+
+Root正常3310实际：1000×850封面316×158，771×752为201.5×100.75，390×420为356×178；Settings宽/窄分别208×104和190.3828125×95.1875。六视图全部2:1（舍入误差<0.02px），书3:4、文档无横溢。本人搜索R314两个真实版本；切安装三原卡；窄屏完整详情→Escape回精确原标题；Settings Skills宽窄读到三卡后关闭。两连续网络窗完整、零Skills写，实际读200；被替代安装GET取消与最终GET200分列。证据Root `var/dev/r255-preserve/r315-skills-user-verification.json`，图r315-skills-after.png。当前自然auth POST200仅正控，不关闭R311自然401缺陷。
+
+首工程句柄63586从目标目录选到Node24.20.0（engine不符），Root只终止该独占PGID65311并确认无残留，终态143；不当代码失败或通过。Root显式Node22.22.2原句柄63273完整 pnpm check 自然exit0：contract309/architecture51/default3437、lint/typecheck/build通过（r315-web-node22-check.log），只是辅助工程回归，不代替完整用户验收。独审f9c13078对两CSS规则无确定阻断，Root逆转与原全文/其余772精确保护已核。提交缓存前保护脚本因Web目录相对manifest路径失误失败；先前770保护与提交后绝对路径审计均通过，实际commit仅三paths、旧两doc suffix及Git对象exact/index空，不改写历史。收据r315-web-commit-receipt.json。全test:e2e/axe/视觉预算、全部CRUD/第二身份/分页仍未验，33为14/7/12与完整70状态不变。正常九服务复用，无数据reset或权限/资金/模型变化。结束正常技能页三安装/noDialog，Network关闭/临时QA尺寸恢复；原服务未重启。
+
 ### R314 Skills 上传取消与显式恢复：真实用户子链已验证（2026-10-07）
 
 Web仍 **7509c0b35821e18bb77da02588266431df683be0**，沿19178已提交搜索/筛选/封面卡片，不以后台新门替页面打磨。本轮无Web代码修改；正常3310/现九服务与真实MinIO39190复用，Root逐SHA核原773 tracked及Admin mixed保持。
