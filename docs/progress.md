@@ -1,3 +1,15 @@
+### R314 Skills 上传取消与显式恢复：真实用户子链已验证（2026-10-07）
+
+Web仍 **7509c0b35821e18bb77da02588266431df683be0**，沿19178已提交搜索/筛选/封面卡片，不以后台新门替页面打磨。本轮无Web代码修改；正常3310/现九服务与真实MinIO39190复用，Root逐SHA核原773 tracked及Admin mixed保持。
+
+自有567B合法QA ZIP，新建revision1正常发布；首9000错误hold未拦截，不能称中断。revision2首OPTIONS hold触发有限超时（测试操作原因）；随后同尝试真实PUT200响应hold时点击“取消上传”，关闭显示“继续当前发布”。重开完整窗口零IO；明确重试同一次尝试，三Begin请求key/body SHA与attempt/upload/epoch逐值相等，只创建一个revision2，恢复依次真实PUT200→Complete200（clean/7da46cb1内容hash）→Validate200→Publish200 active/revision2。取消窗口未发Complete；恢复窗口仅四技能POST，没有重建draft/version。不是部分字节断传、Storage回滚或跨刷新File恢复证明。
+
+硬刷新默认原三安装保持、不自动安装；搜索本人新记录，canonical GET200分别revision2/1、同series、各自简介保持，两个详情关闭各回精确同名卡。恢复窗口完整无截断，刷新后附加窗truncated因此只以独立GET body/可见DOM证明持久化，不冒全刷新零请求。证据 **var/dev/r255-preserve/r314-skills-upload-recovery.json** SHA26f5c72bb9440d2ac348283f4390b5405c8df16e1348ee23d3b8b75cb32b8274；Root收据校验r314-root-skills-verification.json通过。图r314-skills-after.png、r314-skills-published-persisted.png。结束无Dialog，Fetch规则清空/Network关闭/尺寸恢复，正常数据保留、不重启/reset或改权限/资金/模型。
+
+R266-L04仅未验→PARTIAL；个人33 **14PASS/7PARTIAL/12UNVERIFIED**，U16仍PARTIAL（owner层零Run/资金变化未单独核验）。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**不变；完整CRUD、真实非clean/attempt变化、多页、第二身份、自然401、全页面/agent链仍OPEN，完整Wave0–7继续。
+
+并行Platform B19机器切片已由Root精确25path提交 **15eca78e3215698b5eb41bfb78776e5eae535526**，机器inactive/unroutable而非运行服务发行；原39图/V1–V7及其他499原tracked exact，六文档旧suffix保，index与子仓clean。原presence及1.5整体corpus失败均保历史；最窄四path修正真实number1.5后Root34053两个checker、281contract、95architecture全0，190 wire实际执行。31659正式owner目录contract/schema/types/lint/build全0；format仍原四D0失败，不宣全owner门绿。QA最终4646a15e无确定阻断，Root提交对象逐SHA等冻结；收据r314-platform-commit-receipt.json。完整default/真实IAM与PG本人查询/运行handler/第五surface/BFF与WebMCP CRUD都未验，正常8086不重载；工程成果不升级70/33页面状态。初Root目录pnpm版本入口失败单列工具选择问题，正式owner目录重跑未绕检查。
+
 ### R313 Skills 页面局部用户链已验收（2026-10-07）
 
 Web **7509c0b35821e18bb77da02588266431df683be0** 精确四paths：现Settings Modal/父overlay两关闭生命周期源码、Settings INDEX、CURRENT。Skills当前展示沿已提交19178（搜索/筛选/封面卡片/技术详情），不是本轮新建目录或假使用量。真实缺陷为窄屏隐藏账户入口仍connected被marker盲信；关闭重新核同shell与祖先可见性，依次可见原入口→Composer→当前导航；旧epoch/新弹层/已有正常焦点防夺焦。独审最终11350a09无P0/P1，v1静态P2已收敛。Root另外771源tracked与原Admin mixed保护，四path完整缓存审查提交，不暂存旧Admin/测试修改。

@@ -1,3 +1,26 @@
+### R314 同一目标继续：Skills 上传恢复与 MCP machine 并行
+
+上一轮是progress：7509c0b四文件正式提交、正常窄Skills关闭RED→GREEN、Root2741f114台账；不重做已PASS视图/焦点。完整Wave0–7、70/33状态保持。
+
+|任务|角色/基线/范围|实际验收/停止线|
+|---|---|---|
+|R314-ROOT-SKILLS-L04|Root唯一正常浏览器/资源/Git；Web7509c0b原Admin mixed/r314-web-start；既有R266-L04与U16|先真实自有QA版本上传中断/显式恢复，核正常Storage attempt与正式回执，非clean输入不模拟成自然。无源写/权限/资金/删除；如有效BUG，先收敛现职责方案再授原Web owner。完整链证据再升级对应子例，未验分支仍待。|
+|R314-PLATFORM-B-MACHINE|原platform_iam_consumer_r298唯一writer；Platform2b26293＋两原R312测试尾/r314-platform-start；精确原r310-mcp-d0-handoff B19paths|已有三D0及R313 A已放行，现准B19原子机器：四RPC/11messages、正规生成、V8发行及闭集验证。原V1–V7/父39 bytes/旧20command24proof保持。无runtime/IAM准入/Schema/依赖/正常服务重载，零业务数据/资金。Root独占资源/最终测试/Git，writer定向静态后冻结交付SHA/diff/inverse。不得改原R312增量断言或旧历史门放宽。|
+|R314-QA-PLATFORM|原agent_planned_guarantee_system_r257只读；同D0/B19/frozen输入|独审新增四wire/presence/身份元数据/safe-output、43/20/24与剥离父39相等，V8继承/向量是否真执行规则。无tracked/Git/资源/browser写，复用ignored r313-mcp-machine-review增量，冻结后复核。|
+|R314-WEB-L04-READ|原web_interaction_astra_r296只读；Web7509c0b、现flow/dialog/client；既有R266-L04|给正常UI可执行的上传中断→当前attempt→继续最小路径及安全观测，核“取消关闭”与真实abort语义，不新造Unit/Mock/源代码/状态。零Git/服务/浏览器/资源写，复用r313-skills-user-path-review增量。|
+
+§8 placement引用已通过Platform三D0的R310/R312与原B19表，不另建owner/模块/协议。V8新文件各职责按原handoff；下一runtime/BFF/Web仍依赖owner正式发行，不把机器通过叫连接器CRUD完成。模型沿原负责人实际配置，未另切换。
+
+R314 Root用户子链终态：真实PUT ACK取消→关闭/重开零IO→显式同key/body/attempt恢复→Complete clean→Validate→Publish→刷新新旧revision2/1保持；原三安装/773源保持。证据r314-skills-upload-recovery.json，L04升PARTIAL不是全PASS，个人33为14/7/12，完整70不变。正常九原服务句柄全部live，不重启/reset。调试网络/尺寸已回收。
+
+R314 Platform最终30363两个checker1/contract275PASS6FAIL/architecture95PASS：新向量1.5与原strict整数parser冲突，逐例前失败。QA最终29d04024不放行；仅原owner只读最窄B19方案续派，未经准入不放宽parser/删除负控或发行。原19/父39/历史/其他505保护，完整MCP CRUD继续OPEN。
+
+R314 最窄修复准入：Root已核原handoff34226009与QA实际P1，授权原Platform writer仅B19内v8-profile.ts、v8-artifact.ts、vectors/personal-mcp-read.json、v8/provenance.json四path。两具名fractional-limit负控用固定整数对3/2保存，在try外严格核配置后恢复真实number1.5再交原validator/codec；非登记188例原样。无泛化fixture DSL/新parser/旧门放宽，保190 ID/outcome、原R312、父39/V1–V7及剩余15exact。仅corpus pin/provenance机械重算，静态后freeze，Root重跑原正式四门，QA绑定新freeze。Root独占Git/资源/台账。
+
+R314 四path修正已冻，Root34053同冻结实跑cutover/artifact/全contract/architecture均0（281/95，190wire仅machine）；原writerSTOP。现Root唯一writer准Platform六现文档CURRENT/API_CONTRACT/TECHNICAL_DESIGN/DATA_MODEL/INDEX/contract README短当前前缀：记录43机器但runtime39/四surface未接线、V8 inactive与exactdigest、无Schema变动与历史保护。只增当前事实/入口，不改历史suffix、不批量format四旧D0或新建文档中心。六paths随机器精确提交，仍不称完整仓/CRUD通过；Root最终工程/保护/独审后放行。
+
+R314 最终机器25path提交15eca78e3215698b5eb41bfb78776e5eae535526，原owner/QA均STOP。Root34053纠正后两checker/281contract/95architecture均0；31659 owner目录contract/schema/types/lint/build0，format旧四D0失败保留，未执行全default或资源/浏览器MCP验收。Root缓存对象与冻结逐SHA相等/原499/六doc suffix exact，Platform子仓clean。完整Web Skills33为14/7/12、70不变；运行handler/实际mcp_personal/本人SQL→BFF→Web完整CRUD仍后继按已准owner继续，正常服务/权限不擅自重载。
+
 ### R313 已交付终态
 
 Web 7509c0b35821e18bb77da02588266431df683be0 仅四path，原writer与独审均STOP；Root最终43705自然check0、实际窄屏组合RED→GREEN、宽账户正控及Tab后续搜索保持均已验，截图/证据见CURRENT R313。771任务外tracked与原Admin mixed保护。延迟epoch guard经独审，但精确帧重开/聊天Composer本轮未单独浏览器验收，不填PASS。70/33计数保持，完整Wave0–7继续，后续完整SkillsCRUD与认证自然401仍原卡OPEN。原Platform A2b26293完成，B19尚未授权，本轮不继续后台contract代替用户页面验收。
