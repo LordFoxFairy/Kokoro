@@ -1,3 +1,13 @@
+### R303 Skills 移除确认切片已验收（2026-10-07）
+
+沿当前Manus个人管理布局，不扩市场/假usage/图片资产。Web **0aa08c01435b408429e916fe8c62a75e62262f28** 精确15paths：现reader确认/两UI与i18n test/九字典两key/INDEX与CURRENT；九mixed字典仅cached两key，原Admin混合status保持，758任务外tracked exact。原command/recovery整块27f30012逐字保护，无API/schema/持久意图/全局组件/CSS改变。确认默认取消、显示名称与仅安装影响；一次消费ref后才旧命令，权限/身份/view/page退役。
+
+Root真RED7FAIL/139未筛：首直接DELETE1，其余6缺Dialog；未到后继断言不冒已证竞态。最终Root完整Node22.22.2 pnpm check原45599终态0、197.437秒，309contract/51architecture/3406default PASS、lint/types/build0，773tracked起终exact；独审c43b4008无确定阻断。包含原Admin混合，不冒clean checkout独立门/真实用户完成率。
+
+正常3310菜单→确认→取消/X/Escape实际完整网络窗口零request，三种返回均焦点精确More；Settings Escape只关子确认、父设置保留。390×420/coarse Cancel/Confirm/X各44px、全可见且文档390无横溢；尺寸/touch恢复，正常硬刷新三真实安装卡，图r303-skills-final.png。原历史removed只读筛选一条，disabled启用/再次移除，非新DELETE。当前实际Confirm/移除/重装未执行，已向用户请求仅自有R301 QA安装的操作确认，不升级完整CRUD/33或70。自然401仍OPEN；本次单刷新auth/private200窗口truncated不冒完整根因，Billing summary404仅待后继定位。
+
+证据同var/dev/r255-preserve/r303-*（作者d45b5aeb、QA c43b4008、门result/log/freeze、browser cancel/settings/touch/confirm/最终图、web commit receipt）。九原PID/TCP alive只表存活；零正常权限/账务/模型/服务重启/reset。Network关、Fetch无注入、默认viewport/touch已恢复。完整Wave0–7保持，Skills用户链仍首优先，支付最后；70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **13PASS/6PARTIAL/14UNVERIFIED**不变。
+
 ### R302 Skills 真实安装与独立页面恢复（2026-10-07）
 
 沿 R300 Manus 风格个人管理布局与 R301 发布恢复，不重做市场、不造使用次数或公共技能。正常本人 R301 自有源真实 POST installation200 → canonical GET200、固定 revision1；停用与启用分别 PUT200 → canonical GET200，刷新真实 enabledfalse/true。首组合网络窗口截断，Root另分步重做完整非截断停用/启用，不用缺失旧响应冒完整网络证据。菜单打开/Escape已验；实际“移除安装”直接执行 DELETE，没有确认层，本轮没有点击、没有删除或“删除确认取消”PASS。

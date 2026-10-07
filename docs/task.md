@@ -1,3 +1,31 @@
+### R303 Skills 移除确认切片已验收（2026-10-07）
+
+沿当前Manus个人管理布局，不扩市场/假usage/图片资产。Web **0aa08c01435b408429e916fe8c62a75e62262f28** 精确15paths：现reader确认/两UI与i18n test/九字典两key/INDEX与CURRENT；九mixed字典仅cached两key，原Admin混合status保持，758任务外tracked exact。原command/recovery整块27f30012逐字保护，无API/schema/持久意图/全局组件/CSS改变。确认默认取消、显示名称与仅安装影响；一次消费ref后才旧命令，权限/身份/view/page退役。
+
+Root真RED7FAIL/139未筛：首直接DELETE1，其余6缺Dialog；未到后继断言不冒已证竞态。最终Root完整Node22.22.2 pnpm check原45599终态0、197.437秒，309contract/51architecture/3406default PASS、lint/types/build0，773tracked起终exact；独审c43b4008无确定阻断。包含原Admin混合，不冒clean checkout独立门/真实用户完成率。
+
+正常3310菜单→确认→取消/X/Escape实际完整网络窗口零request，三种返回均焦点精确More；Settings Escape只关子确认、父设置保留。390×420/coarse Cancel/Confirm/X各44px、全可见且文档390无横溢；尺寸/touch恢复，正常硬刷新三真实安装卡，图r303-skills-final.png。原历史removed只读筛选一条，disabled启用/再次移除，非新DELETE。当前实际Confirm/移除/重装未执行，已向用户请求仅自有R301 QA安装的操作确认，不升级完整CRUD/33或70。自然401仍OPEN；本次单刷新auth/private200窗口truncated不冒完整根因，Billing summary404仅待后继定位。
+
+证据同var/dev/r255-preserve/r303-*（作者d45b5aeb、QA c43b4008、门result/log/freeze、browser cancel/settings/touch/confirm/最终图、web commit receipt）。九原PID/TCP alive只表存活；零正常权限/账务/模型/服务重启/reset。Network关、Fetch无注入、默认viewport/touch已恢复。完整Wave0–7保持，Skills用户链仍首优先，支付最后；70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **13PASS/6PARTIAL/14UNVERIFIED**不变。
+
+R303任务终态：原writer与独审STOP；Root最终冻结全门/浏览器取消及响应式/精确Git完成。仅确认前子路径验收，实际移除重装待用户操作确认；无需等待该确认才做其他只读验收。原已批准scope唯一writer保，下一沿原33矩阵补Skills剩余生命周期/异常，不重复开计划或宣全页完成。
+
+R303生产准入：Root原79862定向两UI file自然终态1，7FAIL/139未筛（首真实DELETE1≠0，其余6缺Dialog；后继尚未到达，非完整异常RED）；两原prefix71992/98460bytes与771其余tracked已独立核。QA3468d2ef无确定阻断，批准writer唯一现reader＋九字典两键、现i18n闭集37→39、两个旧入口仅追加确认click。原perform/cancelAction/unknown/inspect/同key/ACK后GET不变，原测试网络断言保；新增tail冻结，若真正新test fixture问题先报告。INDEX/CURRENT仍Root最后负责，三D0/客户端/Schema/路由/全局primitive/CSS/新文件排除。有限瞬时target/ref，不持久化。源码冻结后Root全门/真实取消Escape/Settings/短屏与实际移除按授权确认。当前九服务PID/TCP复核alive，仅存活不冒readiness；真实历史removed筛选一条保留、启用/再次移除disabled，再还原正常3卡，不新DELETE。
+
+R303设计准入：作者3b672d69/独立QA209ab1cf已核，既有技能个人管理/移除取消路径的UX缺口，非新增owner/契约。采用现reader局部Dialog，两key removeConfirmTitle/Description九语言按作者表，原cancel/remove词条；确认只移除安装不撤回来源，不承诺随时可恢复。取消回精确More，确认后More disabled时回当前已安装tab；退役不归焦。当前只授tests/ui/kokoro-skills-surface.test.tsx与tests/ui/skills-panel.test.tsx纯尾新增用户交互RED，原全文/两旧直发入口保持。writer自跑定向RED后冻结，Root复跑且独审；生产/字典/i18n闭集尚未授。预期下一13代码/test/字典路径，不新三D0/框架/文件。Root一次正常硬刷新收脱敏auth GET/POST200和其后private200，原buffer标truncated保事实，不当完整401复现/关闭；当前Billing summary404单列后继，未变账务。
+
+### R303 Skills 移除交互与用户生命周期后继（2026-10-07）
+
+上一目标回合为progress：Web ec28a8f/Root fcfde07e、真实固定安装/启停/刷新及独立页面错误隔离改变当前事实。完整Wave0–7不缩，沿Skills优先/原33矩阵，无新计划中心。Web773 tracked与原Admin mixed baseline见var/dev/r255-preserve/r303-start.json。
+
+|任务|Owner/角色/范围|验收/限制|
+|---|---|---|
+|R303-WEB-REMOVE-D0|原web_interaction_astra_r296，Web ec28a8f，/Users/nako/.codex/worktrees/kokoro-r257-admin-web；当前只读个人reader、现installation命令client/schema、现UI用例/九字典/目录门|最窄移除确认设计与准确回归位置，未知/同key/身份代际/焦点保持。只ignored r303-remove-design.md，不先改生产/测试/文档；Root设计后授现文件tests-first。禁止新框架/新API/文件夹、持久状态/兼容层、Git/资源/browser。|
+|R303-QA-REMOVE-READ|原agent_planned_guarantee_system_r257，同Web baseline与Root原70/33矩阵，只读|核安装移除的真实owner语义/可恢复程度/未知与canonical回读，以及取消零命令、双击单意图、Settings nested Escape、撤权卸载/焦点的验收规格；只ignored r303-remove-qa.md，不改代码/正式台账/资源/Git/browser。|
+|R303-ROOT-USER-RED|Root独占正常浏览器/资源/Git与最终全门|先保存实际菜单点击移除的“尚无确认层”UI/源码证据；执行DELETE前按实际可逆性/确认规则处理，不自动永久删除。先验证取消/身份退役与错误恢复；不会用辅助UI用例冒真实删除PASS。|
+
+Owner仍现PersonalSkillsRead个人页交互、安装事实归Platform经BFF；确认只是UI瞬时待选target，不创造receipt/预写成功。采用现reader Dialog优于通用动作中心；待原owner精确调查，Root统一裁决新文案与范围，保护原Admin/i18n混合。支付最后，首自然401继续OPEN不得放宽认证。
+
 ### R302 Skills 真实安装与独立页面恢复（2026-10-07）
 
 沿 R300 Manus 风格个人管理布局与 R301 发布恢复，不重做市场、不造使用次数或公共技能。正常本人 R301 自有源真实 POST installation200 → canonical GET200、固定 revision1；停用与启用分别 PUT200 → canonical GET200，刷新真实 enabledfalse/true。首组合网络窗口截断，Root另分步重做完整非截断停用/启用，不用缺失旧响应冒完整网络证据。菜单打开/Escape已验；实际“移除安装”直接执行 DELETE，没有确认层，本轮没有点击、没有删除或“删除确认取消”PASS。
