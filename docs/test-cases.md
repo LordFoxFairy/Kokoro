@@ -1,3 +1,15 @@
+### R273 个人管理恢复出口已真实验收；完整 CRUD 仍 OPEN（2026-10-07）
+
+Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660**（parent1061303）仅12精确路径：现reader安装unknown独立GET核对/显式结束本地恢复、当前view fresh读前写禁用；九词典各四文案、现技能INDEX与surface六例。保原key/body/status，GET不是ACK，Install不猜ID；退出仅停止本地重试、不撤销已发送请求，不新增owner/API/store/依赖。原Admin mixed逐字保留，Rootuv/八gitlinks保，九正常源码listener均存活，无restart/reset/DDL/资金/模型调用。
+
+Root正常浏览器原启用holding→unknown→同key412仅Retry全卡锁住RED再次复现。首候选又实际暴露Alert直接多children落零宽grid列：Retry与CheckCurrent同坐标重叠，点Retry发GET；以真实几何/请求证明而非407测试绿放行。窄修单内容容器/按钮flexwrap后，实际三按钮独立命中：原key **78c22509…** Retry真实PUT412→独立当前GET200→明确仍unknown且显示revision2/installed/disabled→“结束本地恢复”只fresh安装GET200，held fresh期间发布禁用/无旧卡可写，恢复两真实卡可操作。另未知Install POST在Request stage被hold取消，未转发：无猜ID核对/额外GET，显式结束后fresh本人发布GET200，读中禁写→六真实源恢复；没有实际升级/移除安装。所有Fetch patterns清除，硬刷新默认已安装两卡与原revision2 disabled、R255 enabled保持，没有持续loading。
+
+工程辅助：六例旧源码6FAIL；首扩大406PASS/1新Remove采样误取DELETE→只精准GET predicate，407PASS/lint0但四类型FAIL；最终条件spread/三可空访问与布局窄修后Root精确任务tree **407PASS/0FAIL**、contract **282/0**、architecture **51/0**、目标lint/typecheck/build exit0。旧业务oracle全文不动，原失败保留；独审最终48848e54绑定b3237b80/2ba3b530与12冻结，Root其余760路径exact。全默认套件/全页面Playwright未重跑（本片以相关回归与真实目标浏览器验收，不扩到共享全页面测试）；原全局历史FAIL/SKIP与Storage55漂移保持，不称全仓绿。
+
+个人33矩阵现 **13PASS / 5PARTIAL / 0当前FAIL / 15待验**：F08从当前FAIL改为PARTIAL，仅本次unknown恢复出口/双视图fresh与命中链通过，Install成功ACK丢失重放、ACK后读失败、Remove及全部身份/竞态变体仍待真实验收。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，T-K03 OPEN、完整Wave0–7 active。下一沿原个人CRUD矩阵补这些确切用户路径，再返回其余既有CRUD优先级，不跳Agent/扩市场。
+
+证据同Root var/dev/r255-preserve/r273-personal-skills-user-receipt.json、recovery-layout-final-gates.log、recovery-contract-architecture.log、recovery-current-get-green.json、recovery-end-fresh-green.json、install-end-published-green.json、recovery-actions-overlap-geometry.json。最终真实页r273-personal-skills-final.png。早期多时段CDP body补读buffer截断不作负向证明；正式分段capture均untruncated，原harness错误保留。
+
 ### R272 用户异常路径继续验收（2026-10-07）
 
 F03新增PASS；F05/F07仅部分路径有真实页面证据，当前13PASS/4PARTIAL/1FAIL/15待验。安装CheckCurrent请求被受控holding28,001ms仍全卡busy的P0真实UI RED，已由Web1061303修复：同路径实际10,003.169ms ERR_ABORTED/有限error→显式核对真实200恢复。此为浏览器watchdog，不是正式后端单预算。随后新增F08真实FAIL：同key/body启用重试正式412/nonretryable后仍unknown/全卡锁定；后继owner语义核查与窄修待续。全部浏览器注入恢复，无正常数据删除/权限/资金写。全70与T-K03 OPEN保持。
@@ -74,7 +86,7 @@ BFF新版本/撤回运行候选39db896仅工程与受控HTTP/generated binary/di
 |R266-F07|Root受控响应坏shape/陌生status/循环cursor|进入相应页或翻页|strict拒绝、显式error/可退回，不假空、不loop、不N+1补字段|P0/F|部分通过 · R272受控200坏shape/future status→显式error/无假空→Retry真实200六记录；循环cursor等变体未验，r272-malformed-managed-{error,recovery}.json|
 |R266-U14|A有active源未安装|管理卡显式Install→当前安装GET→刷新已安装|真实receipt后current确认、元信息精确revision；管理read不授额外安装权限/不启动Run|P0/U|PASS：R267正常自有新技能显式安装→current确认→硬刷新真实installed/enabled/revision1；绑定b901986，证据r267-skills-real-user-acceptance.json|
 |R266-U15|A已有安装且source后变非active|已安装CheckCurrent、合法Disable/Remove→刷新|不先要求active源GET；保owner允许管理、来源状态与enabled区分；拒绝按正式错误呈现|P0/U|部分通过：R270同installation显式upgrade到revision2后source撤回；CheckCurrent200→Disable200→fresh→硬刷新仍installed/disabled/withdrawn，不先active GET；Remove与拒绝启用分支未执行。证据r270-withdrawn-install-{disable,refresh}.json；R271真实Enable PUT412 skill_installation_precondition_failed/有限error且原withdrawn disabled保；Remove仍未验，r271-withdrawn-enable-rejected.json|
-|R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|FAIL · R272真实启用PUT受控holding→10s取消/unknown→显式原key/body第二PUT→正式412 skill_installation_precondition_failed retryable:false→仍unknown且全部卡操作锁定，只剩重试；无当前核对出口。仅原key保持通过，后端receipt语义待owner裁决；ACK后仅读/Install丢ACK分支未验，r272-installation-mutation-samekey-retry.json / r272-recovery-412-locked-red.json|
+|R266-F08|Install ACK丢失或currentGET失败|用户Retry|unknown同原key/body；已ACK仅GET；不因管理read切换重POST/另生key，撤scope后旧意图不恢复|P0/F|部分通过 · R273 Web649e5d4真实启用holding→unknown→同key/body重试正式412→独立canonical GET200仍unknown/显示当前revision2 disabled→显式结束本地恢复，fresh安装GET200读中禁写、随后所有卡可用；另Install POST受控Request hold取消（未转发）→无猜ID核对→显式结束后fresh当前published GET200读中禁写/成功解锁。真实按钮重叠RED→单容器flexwrap修后三命中正确；原key保护。仅这些恢复出口通过，成功Install ACK丢失同key回执、已ACK后GET失败、Remove/全身份变体仍待真实验收；原R272锁住FAIL保历史。证据r273-personal-skills-user-receipt.json、recovery-current-get-green.json、recovery-end-fresh-green.json、install-end-published-green.json|
 |R266-U16|A合法自有ZIP/metadata|发布→upload→scan→validate→publish→管理列表→详情→刷新|只真实active回执/确认后刷新；新列表safe8，发布≠安装；无新Run/资金请求|P0/U|部分通过：R267实际发布成功→本人active列表/详情→硬刷新仍active；早段HTTP buffer淘汰，内部Run/资金负向待独立证据，不升级完整PASS|
 |R266-F09|上述publish ACK未知|关闭重开同scope→显式继续/核实|active确认仍七字段/原404与同key规则；非active管理读不能伪造确认；无新draft/自动POST|P0/F|待验|
 |R266-L01|后继正式新版本public/UI发行|本人active或disabled版本→新版本→新包→发布→读原版与新版|明确新skill_id、同series、精确递增revision；旧版未假改名/换包，管理列表均可读|P0/L|PASS：R270真实新版本400 RED→UTF8 CL窄修→显式同key/body201→新ZIP真实MinIO PUT/完成/校验/发布→硬刷新原revision1 active与同series新ID/revision2可读；发布未自动升级安装。旧入口FAIL历史保留，证据r270-personal-lifecycle-user-receipt.json，Web ef5f93e|

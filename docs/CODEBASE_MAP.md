@@ -1,3 +1,7 @@
+### R273 当前个人安装恢复交互入口
+
+Web649e5d4：现 src/ui/skills/personal-skills-read.tsx 的unknown inspection独立GET/同activeAction fence/明确结束本地恢复+当前view fresh gate；Alert单col-start-2内容容器、按钮flexwrap防真实命中重叠。现九i18n各四文案、同模块INDEX与surface六回归，无新文件/协议/store/owner/依赖。Root真实held启用同key412→GET当前事实仍unknown→结束安装fresh、未知Install无猜ID→结束published fresh已验；完整F08仅PARTIAL/T-K03 OPEN，证据r273-personal-skills-user-receipt.json。原Admin mixed与全部正常资源保持。
+
 ### R272 当前个人技能浏览器有限请求入口
 
 Web1061303承接已安装/我发布的个人页；现 `src/hub/client.ts` 的installation私有request为五动作浏览器10s/取消/迟到body边界，公开schema/API/owner未变，无新模块/transport。唯一现tests/hub/client.test追加13例与signal传播oracle，Root401/0与目标lint/types/build0仅辅助。正常浏览器10,003ms取消/真实GET恢复已实测；unknown→同key412后仅Retry锁定缺口仍OPEN，owner prepare先于receipt意味着不能用当前GET或412冒历史命令ACK。整T-K03未验收，原Admin mixed/Rootgitlinks/uv保持。

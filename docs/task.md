@@ -1,3 +1,28 @@
+### R273 个人管理恢复出口已真实验收；完整 CRUD 仍 OPEN（2026-10-07）
+
+Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660**（parent1061303）仅12精确路径：现reader安装unknown独立GET核对/显式结束本地恢复、当前view fresh读前写禁用；九词典各四文案、现技能INDEX与surface六例。保原key/body/status，GET不是ACK，Install不猜ID；退出仅停止本地重试、不撤销已发送请求，不新增owner/API/store/依赖。原Admin mixed逐字保留，Rootuv/八gitlinks保，九正常源码listener均存活，无restart/reset/DDL/资金/模型调用。
+
+Root正常浏览器原启用holding→unknown→同key412仅Retry全卡锁住RED再次复现。首候选又实际暴露Alert直接多children落零宽grid列：Retry与CheckCurrent同坐标重叠，点Retry发GET；以真实几何/请求证明而非407测试绿放行。窄修单内容容器/按钮flexwrap后，实际三按钮独立命中：原key **78c22509…** Retry真实PUT412→独立当前GET200→明确仍unknown且显示revision2/installed/disabled→“结束本地恢复”只fresh安装GET200，held fresh期间发布禁用/无旧卡可写，恢复两真实卡可操作。另未知Install POST在Request stage被hold取消，未转发：无猜ID核对/额外GET，显式结束后fresh本人发布GET200，读中禁写→六真实源恢复；没有实际升级/移除安装。所有Fetch patterns清除，硬刷新默认已安装两卡与原revision2 disabled、R255 enabled保持，没有持续loading。
+
+工程辅助：六例旧源码6FAIL；首扩大406PASS/1新Remove采样误取DELETE→只精准GET predicate，407PASS/lint0但四类型FAIL；最终条件spread/三可空访问与布局窄修后Root精确任务tree **407PASS/0FAIL**、contract **282/0**、architecture **51/0**、目标lint/typecheck/build exit0。旧业务oracle全文不动，原失败保留；独审最终48848e54绑定b3237b80/2ba3b530与12冻结，Root其余760路径exact。全默认套件/全页面Playwright未重跑（本片以相关回归与真实目标浏览器验收，不扩到共享全页面测试）；原全局历史FAIL/SKIP与Storage55漂移保持，不称全仓绿。
+
+个人33矩阵现 **13PASS / 5PARTIAL / 0当前FAIL / 15待验**：F08从当前FAIL改为PARTIAL，仅本次unknown恢复出口/双视图fresh与命中链通过，Install成功ACK丢失重放、ACK后读失败、Remove及全部身份/竞态变体仍待真实验收。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，T-K03 OPEN、完整Wave0–7 active。下一沿原个人CRUD矩阵补这些确切用户路径，再返回其余既有CRUD优先级，不跳Agent/扩市场。
+
+证据同Root var/dev/r255-preserve/r273-personal-skills-user-receipt.json、recovery-layout-final-gates.log、recovery-contract-architecture.log、recovery-current-get-green.json、recovery-end-fresh-green.json、install-end-published-green.json、recovery-actions-overlap-geometry.json。最终真实页r273-personal-skills-final.png。早期多时段CDP body补读buffer截断不作负向证明；正式分段capture均untruncated，原harness错误保留。
+
+### R273 / T-K03 个人技能未知操作恢复出口（2026-10-07）
+
+局部归属：Web 现 personal-skills-read 的安装操作交互，不改 owner/契约/数据库；先补真实 F08 复现对应行为断言，再窄修、Root 独审/工程门/真实页面复测。现33矩阵保持13PASS/4PARTIAL/1FAIL/15待验，全Wave0–7 active。
+
+| 任务 | 角色/owner/状态 | 基线与写入范围 | 完成条件/证据 |
+| --- | --- | --- | --- |
+| R273-RECOVERY-412 / P0 | 原 iam_grant_source_scope_0244，Web 唯一writer，已交付/Root局部验收；Root Git/集成 | /Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，1061303835484fea77f019b41062a02b2c735d7e；只现 personal-skills-read.tsx、tests/ui/skills-panel.test.tsx、tests/ui/kokoro-skills-surface.test.tsx、现i18n9词典必要新增文案、src/ui/skills/INDEX.md现入口 | 测试先RED；unknown保原key与状态；SetEnabled/Remove独立精确GET且不冒ACK；显式结束本地恢复并重新读取清单，零隐性mutation；取消/迟到/401403退役保护。Root重跑相关7组、目标lint/types/build和真实held PUT→同key412→GET核对→显式结束恢复→卡可操作。 |
+| R273-RECOVERY-REVIEW / P0 | 原 agent_planned_guarantee_system_r257，只读独审，已审查冻结12路径 | 同Web冻结候选，Root owner语义报告r272-unknown-recovery-412-grounding.md；禁止改仓/Git/服务/数据 | 确认GET不是ACK、退出不冒终态、原oracle/任务外Admin exact；冻结hash评审。 |
+
+约束：原Admin mixed、Root uv/gitlinks保，服务/基础设施复用；shared Git仅Root。未知Install source_ref不得猜installation ID，不扫描series冒receipt；不新增持久恢复存储/接口/市场。检查unknown当前事实时仍保存意图，检查失败仍有明确出口；结束恢复须明确说明仅停止本地重试、不撤销已发送请求，清单重读不冒receipt。原真实F08失败保留，不提前报闭环。
+
+R273实际过程：Root六新增例真实6FAIL；初7组406PASS/1新Remove采样误取DELETE，仅predicate精确GET修后407PASS/lint0；types4项错误待窄修。真实浏览器又发现Alert多direct child落零宽grid列，Retry/CheckCurrent同x341/y358重叠，点击Retry实际GET；这是新页面阻断，不以407绿放行。授权唯一writer现reader单内容容器/按钮flexwrap+四类型位置窄修，保持所有业务oracle/owner。原失败日志和截图保留，冻结后再Root全门/实际命中复测。
+
 ### R272 切片交付与下一项
 
 Root已提交Web1d4beb1单字符fixture与1061303安装有限浏览器预算两路径；全部writer/独审STOP，Root冻结770保护、401/0、目标lint/type/build0和原真实28s RED→10,003ms取消→fresh真实GET恢复完成。本slice属于实质progress，不代表完整Wave0–7；33现13/4/1/15，70原11/8/14/36/1。新F08 FAIL保：unknown原keyRetry412/nonretryable后仅Retry全卡锁住。

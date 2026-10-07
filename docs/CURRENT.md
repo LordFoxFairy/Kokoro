@@ -1,3 +1,15 @@
+### R273 个人管理恢复出口已真实验收；完整 CRUD 仍 OPEN（2026-10-07）
+
+Web **649e5d4cb8c3f2ae71c31056cd9a2450332e6660**（parent1061303）仅12精确路径：现reader安装unknown独立GET核对/显式结束本地恢复、当前view fresh读前写禁用；九词典各四文案、现技能INDEX与surface六例。保原key/body/status，GET不是ACK，Install不猜ID；退出仅停止本地重试、不撤销已发送请求，不新增owner/API/store/依赖。原Admin mixed逐字保留，Rootuv/八gitlinks保，九正常源码listener均存活，无restart/reset/DDL/资金/模型调用。
+
+Root正常浏览器原启用holding→unknown→同key412仅Retry全卡锁住RED再次复现。首候选又实际暴露Alert直接多children落零宽grid列：Retry与CheckCurrent同坐标重叠，点Retry发GET；以真实几何/请求证明而非407测试绿放行。窄修单内容容器/按钮flexwrap后，实际三按钮独立命中：原key **78c22509…** Retry真实PUT412→独立当前GET200→明确仍unknown且显示revision2/installed/disabled→“结束本地恢复”只fresh安装GET200，held fresh期间发布禁用/无旧卡可写，恢复两真实卡可操作。另未知Install POST在Request stage被hold取消，未转发：无猜ID核对/额外GET，显式结束后fresh本人发布GET200，读中禁写→六真实源恢复；没有实际升级/移除安装。所有Fetch patterns清除，硬刷新默认已安装两卡与原revision2 disabled、R255 enabled保持，没有持续loading。
+
+工程辅助：六例旧源码6FAIL；首扩大406PASS/1新Remove采样误取DELETE→只精准GET predicate，407PASS/lint0但四类型FAIL；最终条件spread/三可空访问与布局窄修后Root精确任务tree **407PASS/0FAIL**、contract **282/0**、architecture **51/0**、目标lint/typecheck/build exit0。旧业务oracle全文不动，原失败保留；独审最终48848e54绑定b3237b80/2ba3b530与12冻结，Root其余760路径exact。全默认套件/全页面Playwright未重跑（本片以相关回归与真实目标浏览器验收，不扩到共享全页面测试）；原全局历史FAIL/SKIP与Storage55漂移保持，不称全仓绿。
+
+个人33矩阵现 **13PASS / 5PARTIAL / 0当前FAIL / 15待验**：F08从当前FAIL改为PARTIAL，仅本次unknown恢复出口/双视图fresh与命中链通过，Install成功ACK丢失重放、ACK后读失败、Remove及全部身份/竞态变体仍待真实验收。完整70组仍11PASS/8FAIL/14RETEST/36UNVERIFIED/1PAYMENT-LAST，T-K03 OPEN、完整Wave0–7 active。下一沿原个人CRUD矩阵补这些确切用户路径，再返回其余既有CRUD优先级，不跳Agent/扩市场。
+
+证据同Root var/dev/r255-preserve/r273-personal-skills-user-receipt.json、recovery-layout-final-gates.log、recovery-contract-architecture.log、recovery-current-get-green.json、recovery-end-fresh-green.json、install-end-published-green.json、recovery-actions-overlap-geometry.json。最终真实页r273-personal-skills-final.png。早期多时段CDP body补读buffer截断不作负向证明；正式分段capture均untruncated，原harness错误保留。
+
 ### R272 个人管理有限加载修复与真实恢复缺口（2026-10-07）
 
 用户确认维持“已安装 / 我发布的”、默认已安装，不扩市场。原Web writer实施、原独审复核、Root单一Git/浏览器/服务集成。Web **1d4beb1de7a2b0b9e74e84526ec404e3064c86f0**只成功发布fixture一个revision字面值纠偏（草稿1/发布1，原所有oracle保），Root相关6组166/0；**1061303835484fea77f019b41062a02b2c735d7e**只现client installation私有request与其现测试两路径：单请求10s覆盖fetch/body/parse/return，caller取消、迟到body退役；原closed errors/receipt/unknown意图不放宽、不加1MiB错误限制，不改其它client/reader/API/owner。其余770路径含原Admin mixed逐hash exact，Rootuv/八gitlinks保。
