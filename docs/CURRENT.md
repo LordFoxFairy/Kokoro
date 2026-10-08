@@ -1,3 +1,15 @@
+### R331 技能卡片预览已实测，正文与新刷新任务仍 OPEN（2026-10-07）
+
+Web **18d81ed9260504fd12985b4a8778561706b3397c**（parent2502143）精确四paths：现reader/CSS/CURRENT/skillsINDEX，卡主区复用原名称button，操作区独立；两真实预览宽布局、原封面、实际标签与完整描述；安装/版本/撤回沿原命令。原27Admin mixed和778非范围文件保护，Root独占Git；独审3a677900/原writerf6f0166b。没有伪作者、使用量或SKILL.md。
+
+Root真实3310：封面零Dialog RED→主区/键盘预览/原名称归焦；安装快照零managedGET/More零误开；真实R255预览安装一个POST200＋canonicalGET200，原installation ID不变；真实GET200故障中断→错误/显式Retry200；hold实际响应→Escape abort/迟到不重开；100标签与19620字完整、390×420稳定358×388单body滚动/44px，Settings Escape先子后父；普通硬刷新恢复真实四安装、withdrawn禁用。十局部用例证据 **var/dev/r255-preserve/r331-skills-user-verification.json**、最终r331-skills-final.png。特殊viewport native canvas不作为视觉回归，原工具Fetch缺resourceType拒绝保留非产品失败。临时网络/viewport已恢复，服务/PG/Redis/ObjectStore未重启/reset。
+
+Node22.22.2 Root原89386工程contract309/architecture51/lint/typecheck/build自然0，只辅助；default全test/test:e2e/axe/视觉预算本轮未运行。全部Skills CRUD/多身份/双击命令/真实SKILL.md及安装tags消费者仍未验。Platform package三D0只冻结未提交/未机器运行，旧Agent proof不借用；不把文档当正文能力完成。
+
+最新R332同身份异步刷新：Root既有QA R258指令不改内容真实PATCH200，hold列表GET200即三个folder消失/标题专案不可用，10秒后error，正式Retry恢复；before图与原网络证据保留。确认refresh revision被当展示身份的根因，先最小Project切片、会话与Skills后继；权限变化仍清私有数据。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升，T-K03/T-K05与Wave0–7仍OPEN，原八gitlinks/uv保留。
+
+<!-- R331-ROOT-PREVIEW-RESULT-END -->
+
 ### R330 已验真实卡面标签溢出，安装来源标签仍未到页面（2026-10-07）
 
 Web **2502143d6767eaf147d251661a500de85b890330** 已精确三paths提交（reader、CURRENT、Skills INDEX），仅真实tags>2追加+N。Root正常3310真实100标签卡面RED→+98、详情100完整；R267两标签无+0、R270三标签+1/详情完整、Escape原名称归焦及390无横溢；最终r330-skills-final.png与r330-skills-user-verification.json。没有伪作者/状态替分类或安装tags完成声明。原27Admin mixed及其它文件保持；正常服务/PG/Redis/ObjectStore不重启/reset、零本轮业务写入。

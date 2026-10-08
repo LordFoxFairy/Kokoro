@@ -1,3 +1,40 @@
+### R331 技能卡片预览已实测，正文与新刷新任务仍 OPEN（2026-10-07）
+
+Web **18d81ed9260504fd12985b4a8778561706b3397c**（parent2502143）精确四paths：现reader/CSS/CURRENT/skillsINDEX，卡主区复用原名称button，操作区独立；两真实预览宽布局、原封面、实际标签与完整描述；安装/版本/撤回沿原命令。原27Admin mixed和778非范围文件保护，Root独占Git；独审3a677900/原writerf6f0166b。没有伪作者、使用量或SKILL.md。
+
+Root真实3310：封面零Dialog RED→主区/键盘预览/原名称归焦；安装快照零managedGET/More零误开；真实R255预览安装一个POST200＋canonicalGET200，原installation ID不变；真实GET200故障中断→错误/显式Retry200；hold实际响应→Escape abort/迟到不重开；100标签与19620字完整、390×420稳定358×388单body滚动/44px，Settings Escape先子后父；普通硬刷新恢复真实四安装、withdrawn禁用。十局部用例证据 **var/dev/r255-preserve/r331-skills-user-verification.json**、最终r331-skills-final.png。特殊viewport native canvas不作为视觉回归，原工具Fetch缺resourceType拒绝保留非产品失败。临时网络/viewport已恢复，服务/PG/Redis/ObjectStore未重启/reset。
+
+Node22.22.2 Root原89386工程contract309/architecture51/lint/typecheck/build自然0，只辅助；default全test/test:e2e/axe/视觉预算本轮未运行。全部Skills CRUD/多身份/双击命令/真实SKILL.md及安装tags消费者仍未验。Platform package三D0只冻结未提交/未机器运行，旧Agent proof不借用；不把文档当正文能力完成。
+
+最新R332同身份异步刷新：Root既有QA R258指令不改内容真实PATCH200，hold列表GET200即三个folder消失/标题专案不可用，10秒后error，正式Retry恢复；before图与原网络证据保留。确认refresh revision被当展示身份的根因，先最小Project切片、会话与Skills后继；权限变化仍清私有数据。完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升，T-K03/T-K05与Wave0–7仍OPEN，原八gitlinks/uv保留。
+
+<!-- R331-ROOT-PREVIEW-RESULT-END -->
+
+### R332 用户要求：同身份后台刷新不跳动（2026-10-07）
+
+沿现个人页面与专案任务，不新建计划中心。Root先核当前真实浏览器；原Web负责人只读检查专案/侧栏/会话与Skills刷新，原独审只读核身份退役/请求竞态。Web基线18d81ed9260504fd12985b4a8778561706b3397c，工作树 /Users/nako/.codex/worktrees/kokoro-r257-admin-web，原27 Admin mixed全部保护；当前未授源码/测试/共享资源/Git。先提出精确最小文件集、业务失败步骤和已有可复用实现，Root真实RED后准实施。原Platform三面冻结独立待审，不抢Web关键路径。
+
+验收规则：同已准入身份、同列表/目标的后台重读保留内容、滚动、展开、搜索、输入与焦点；成功只更新真实数据，不整树卸载；失败保旧内容并显式重试，无无限loading。首次无数据才骨架；切身份/失去准入/401或403仍立即退役私有内容，不借旧缓存。每目标单flight/请求代际或abort，旧响应不覆盖新目标，不重放命令。真正导航/分页/删除导致的数据变化不冒零布局变化保证。不加轮询框架、全局缓存或新协议。Root唯一浏览器、真实故障重验、门和提交。
+
+|任务|执行|当前范围/交付|
+|---|---|---|
+|R332-WEB-REFRESH|原 web_interaction_astra_r296，只读|现 features/app 专案/会话与 components/blocks/workspace-rail、ui/skills reader；报告追加原r324-web-auth-recovery-read.md，给根因/精确paths/修复与真实E2E步骤，不写仓或启动服务|
+|R332-QA-REFRESH|原 agent_planned_guarantee_system_r257，只读|独立核同身份保留vs身份退役/授权变化、竞态与loading解除，报告追加原r313-mcp-machine-review.md，不写仓/资源/Git|
+
+完整70/个人33不升级、T-K03/T-K05及Wave0–7仍OPEN；真实用户验收不由工程计数代替。
+
+<!-- R332-REFRESH-READ-TASK-END -->
+
+### R331 正文后继设计收敛（只授三面，未授机器/运行）
+
+Root接收原Platform报告51db5f41：当前确实没有Product SKILL.md/文件树接口，现Agent GetApprovedSkillPackageReference要求执行proof，不借用。采用两条授权分离的 Product inspection 读RPC（本人source的skill_id / 本人installation_id）；optional file_path缺省只目录、存在读该单文件及目录，显式空路径拒绝。比四List/Get RPC更小，比oneof混source/installation授权更清晰；复用现package安全下载/ZIP，两个当前source/installation服务提供具名已核绑定/最终复核，不新一级模块或Schema，不改Agent执行权限/默认feature flag。
+
+状态：本人来源active/disabled/withdrawn且validated可读；安装installed=true且来源active/disabled/withdrawn，读精确安装snapshot而非最新版本。draft/removed/quarantined不供正文。每个读取同现Product准入、budget覆盖全部await，末端重核权限/来源/安装/Storage CLEAN，变更fail closed。只安全文本目录/选定原UTF8文本，路径exact命中现ZIP校验，无落盘执行或远端HTML/脚本。真实已有ZIP32MiB/128entry/单16MiB/总128MiB/path256B/manifest16KiB照用；RPC现编码1MiB上限包括Proto/JSON开销，超限明确不可预览、不截断。目录与正文不要冒下载包、API资产/服务header不向浏览器漏。
+
+唯一原Platform writer现在仅准现 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 具名前缀，明确当前缺口/目标、实际数据绑定接缝/是否缺字段、新方法准入及预算、错误、停用/撤回/隔离、安全解析、原ZIP验证与历史机器保护、真实IAM+PG+ObjectStore全链失败→修复→浏览器路径。CURRENT/Git/生成/机器/runtime/新文件/测试/资源仍由Root后继另授。三面在当前2bce483基线上收敛、后缀全保，Root/独审后方可生成协议；严禁无期限停在文档或把文档当已通。原R330安装tags运行后继保留，不以机器完成冒页面分类已修。当前preview业务仍metadata，正式正文未完成。
+
+<!-- R331-PACKAGE-D0-AUTH-END -->
+
 ### R330 已验真实卡面标签溢出，安装来源标签仍未到页面（2026-10-07）
 
 Web **2502143d6767eaf147d251661a500de85b890330** 已精确三paths提交（reader、CURRENT、Skills INDEX），仅真实tags>2追加+N。Root正常3310真实100标签卡面RED→+98、详情100完整；R267两标签无+0、R270三标签+1/详情完整、Escape原名称归焦及390无横溢；最终r330-skills-final.png与r330-skills-user-verification.json。没有伪作者/状态替分类或安装tags完成声明。原27Admin mixed及其它文件保持；正常服务/PG/Redis/ObjectStore不重启/reset、零本轮业务写入。
