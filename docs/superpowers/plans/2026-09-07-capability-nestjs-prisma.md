@@ -16,7 +16,7 @@
 ### R353-P2：一次完整 Skills owner 发行任务卡（2026-10-08，开始实施）
 
 - 设计基线正式 `8e869ded1f58354297217af1db13e5b9ade3a447`（parent95d8a09）；原Platform writer、原IAM独审三SHA/具名18RPC与12command/tags/正式依赖无确定阻断。Root核586非范围/三历史suffix、前缀格式及精确三paths后提交。第一次Root格式检查cwd错误留存，纠正绝对路径后0；只设计通过。
-- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），只读 reviewer `iam_skills_admission_review_r343`；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：116修改（初103＋最终CAS9＋完整历史逆剥3＋正规生成路径1）、28新建（含只读旧Storage文本快照）、5删除、22仅正式生成输出；448其余tracked SHA与三历史suffix保护，越界先报。
+- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），只读 reviewer `iam_skills_admission_review_r343`；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：127修改（初103＋最终CAS9＋完整历史逆剥3＋正规生成路径1＋11必要fixture适配）、29新建（含只读旧Storage文本快照、精确product纯映射）、5删除、22仅正式生成输出；437其余tracked SHA与三历史suffix保护，越界先报。
 - 一次交付：全部真实product字段/来源/持久草稿/CAS/发布与管理/包cover/read准入/installation.available_update、唯一机器+当前handler+native schema/ADR005/具名expand。旧V1–V9/examples/categories/digest3原字节及完整父逆剥保持，不能只更新计数或dummyhandler；record不猜payload、S06四路径仍保完整目标。
 - 固定IAM source7c62e75/SDK0.10正式archive；Storage正式d13f33a/v3/47e2659契约。从正式对象取固定依赖，只更新已授权消费者，不接旧混合候选/别仓DB。AI/GitHub只受信BFFtyped输入，实际producer及Share/usage后继BFF同次接线，不当已存在；不存在新Skills服务/通用workflow。
 - 先具名行为失败（保基线与负控）再实现，冻结交具体SHA/RED/GREEN/未完成项。writer只跑无共享资源的精准验证和官方生成；Root负责自有PG旧→新完整catalog、旧十表数据/权限/恢复/资源资格及独审后的适当重跑，不重复无关全仓门。正常DDL/资产修复/权限/服务配对不随源码授权。
@@ -26,6 +26,7 @@
 
 ### R353-BFF-D0：Skills 整份消费三设计（仅设计，源码另授）
 
+- 三设计正式 `56c73358d56ed39abbf533c72997e4e94abe1253`（parent88fe387），仅75新当前行；Root核3SHA/580非范围/三完整原suffix/diffcheck0。初scratch EOF分隔空行格式FAIL与错误root pnpm版本调用保留，纠正临时提取/cwd后前缀格式0，未改历史正文。三处歧义已收敛：显式移除重装而非Upgrade RPC、失效link仍可由创建者撤、无coverage走合法unavailable不挡目录。仅设计，尚无Public9源码发行或页面验收。
 - 基线 `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal@88fe387`（原var保留）；原IAM reviewer转BFF三设计唯一writer，Root审查/资源/Git，Platform继续自己的整份源码。只允许现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL新当前前缀各≤60行，完整原正文保护；精确保护收据 `var/dev/r255-preserve/r353-bff-d0-three-design-baseline.json`，不改机器/schema/runtime或服务。
 - 已核两个P1：旧conversation匿名Share入口没当前subject，不可原样接Skill；AGUI session水位不是tenant历史usage覆盖证明。先闭合这两个真实边界，不以UI假0或token扩权绕过。
 - Root裁定Share：扩现bff_share typed资源，不新link服务/独立生命周期；旧conversation匿名读取不变且显式只匹配conversation。Skill链接只登录后同tenant/fresh Platform read admission，不扩大audience；每个 `(tenant,creator_subject,exact_source_ref)` 一条active链接、到期先退旧；有当前可见资格的普通用户可创建，只有创建者可撤销自己的链接，管理员下架/隔离由Platform立即拒所有链接。Actor来自可信session，非body/缓存授权；不新增IAM管理员动作。
