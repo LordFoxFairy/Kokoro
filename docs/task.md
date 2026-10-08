@@ -1,3 +1,45 @@
+### R336-P-IMPL 运行实现准入（Root最终冻结真实系统RED后）
+
+Root原96031自然exit1，Node24.20.0，最终d7754d36起终exact。正式OAuth目录/投影200；真实Platform PG/Redis/TCP；CreateDraft/Begin/Complete/Validate/Publish/Install各200，实际S3 PUT与ClamAV CLEAN通过前置断言；随后source/installation各目录+SKILL.md四响应均404，全部期望200自然RED（1系统用例FAIL/12非选用例skipped；不是setup/import失败）。两轮自有completed包各清单0600保留，正式包清理权限缺口OPEN，IAM临时host原81775仍活跃；正常服务未重启。
+
+原Platform owner唯一writer授R331三面已审的12运行候选，位置/变化原因直接引用TECHNICAL_DESIGN精确表（4新普通package inspection types/reader/binding/rpc，现ZIP扫描器/source.service/installation.service/installation.repository/skill.repository/skill-transaction/skills.module/rpc.middleware）；不新增权限/Schema/机器版本/通用层。额外仅现production-composition R336新增尾可以修正或增强，本轮之前48415字节保留。Root独占Git/正常启动/资源，独QA审核冻结实现。当前HEAD9808f91、r336-platform-start547 SHA保护；当前RED尾d7754d36冻结。其余非范围路径原SHA，发现额外必要路径先报告Root。
+
+须沿现事务具名有限read入口、初末同itx三只读快照、本人安装SQL谓词先映射、精确revision/CLEAN复核、一个绝对10秒预算与取消/迟到观察、JSON+Proto实际编码<=1MiB闭集，无receipt/outbox，无第二ZIP解析。全UTF8/CRC/路径/炸弹旧校验保留；目录真文件、SKILL.md原字节，不拼简介，disabled/withdrawn本人合法读，foreign/draft/removed/quarantine拒绝。源/安装两个flags独立DI，不依赖execution surface。现下载finally cancel潜在不结算由有限编排处理，不伪物理abort即时完成。Storage网络不占PG事务，不换身份权限读取。
+
+实现后冻结交付文件/SHA及实际命令，不启动正常服务。Root再真实系统GREEN，负控/短deadline/源安装权限/事务资源门按实际追加，不因4读成功称全页面闭环；BFF正式发行及Web查看详情、通用目录资格、管理员仍未授/OPEN。其他模块暂停，完整Wave0–7目标保active。
+
+<!-- R336-RUNTIME-IMPLEMENT-END -->
+
+R336 Root首跑41731已自然exit1：所有真实建立前置通过，4读404自然RED。执行期间owner格式/类型与绝对路径收口后通知新e2cf替代de3，未把变化中执行当最终冻结证据；独审OAuth坏JSON潜在敏感SyntaxError P2仅decode点固定无cause修后重新freeze再跑。原本组completed包manifest归档保留不丢ID，正式包清理权限仍OPEN，不换scope删除。
+
+R336 Root实际Storage授权核验发现清理方案还需纠正：src/common/auth/service-authorization.ts 的 platformPackageOperations不含delete_asset，web-bff也不允许skill_package scope；因此即使当前Storage client有DeleteAsset，也不存在这类已完成包的正式删除权限。禁止换身份/换scope/直SQL/直MinIO绕过。当前仅本组最小一个真实包资产可创建并0600 manifest准确保留，未完成上传可走Platform已有AbortUpload；completed包暂保留且明确OPEN，不冒清理完成。后继由Storage owner补正式包retention/lifecycle切片，当前不扩大Skills授权面/不改正常服务。此前DeleteAsset承诺被此实际源码证据替代。
+
+R336-P-RED 清理接缝裁决：Platform固定Storage client尚无DeleteAsset，不越权拼协议/更新artifact。仅额外授test将自有tenant_id/subject_id/skill_id/upload_id/asset_id即时写入Root指定0600 ignored清单 var/dev/r255-preserve/r336-storage-owned-resources.json（绝不写token/凭据/签名URL）；路径通过 KOKORO_SKILL_PACKAGE_OWNED_RESOURCES_FILE 指定，缺失则创建前失败。Root在Storage owner使用其当前正式client最终DeleteAsset，未完成upload走AbortUpload；记录实际清理结果。测试不能自行SQL或ObjectStore删除，其他源冻结约束原样。
+
+### R336-P-RED tests-only 与真实资源准入
+
+三只读审计已收：Platform547/Web785起终exact，QA e54002c7；新增明确目录通用正文资格尚缺，现两读只本人来源/安装，scope/installed不是资格证明，后继BFF不得推断或自动安装。当前先完成这两正式本人读真实运行，目录资格/可见目录正文补齐仍是同T-K03必需后继，不将它们替代完整目录详情目标。
+
+授原Platform owner唯一writer仅现 test/integration/production-composition.integration.test.ts 尾追加R336组（原全文byte保持）；测试读取 Root 提供 KOKORO_SKILL_PACKAGE_SYSTEM_INPUT_FILE。Root在IAM owner checkout沿既存官方internal-http fixture启动自有隔离IAM/Tenant/用户/managed credentials（实际OAuth HTTP、真实PG/Redis），正常IAM53711不动；真实Storage8085/S3-MinIO39190/ClamAV43310复用，仅本组正式上传的asset记清单/按Storage DeleteAsset收尾，不写Storage SQL。Platform runtime/库由其原owned helper隔离创建与清理，Root独占启动/命令。
+
+输入 JSON 固定 iam_base_url/tenant_id/subject_id/catalog_credential_file/projection_credential_file/resource_server_credential_file/tenant_credential_file/storage_url/storage_service_credential_file；内容/private logs0600，不打印凭据/token。catalog/projection在测试通过正式OAuth HTTP当场交换，不用native token或假IAM。原正式digest模块构造CreateDraft→Begin→PUT→Complete→scan→Validate→Publish→Install，各前置断言单列；然后两inspect各directory与SKILL.md原文当前应缺route404。setup失败不当正文RED、不自动重启共享服务/降为mock。其余生产源码/机器/Schema/测试不授；冻结完整append/source保护后Root实际执行。系统组不替浏览器最终卡片→详情→文件→返回。
+
+<!-- R336-SYSTEM-RED-TASK-END -->
+
+### R336 同 T-K03：真实 Skill 包正文运行准入（2026-10-08）
+
+上一目标回合为 progress：Platform9808f91机器与Webe78a514/Roota75765af提交及真实UI证据改变权威状态；不是完整Skills通过。仍仅Skills，完整Wave0–7保active，其它模块/kokoro-10暂停。
+
+|角色/任务|基线及只读范围|依赖/验收|
+|---|---|---|
+|Platform原owner platform_iam_consumer_r298 / R336-P-AUDIT|physical apps/kokoro-capability / codex/r259-skills-metadata / 9808f91，现R331 D0前缀、12运行候选、production-composition与原package fixtures；只读|核真实系统RED放置、官方IAM/Storage/ObjectStore资源准入；先报告最窄测试append及已有helper可复用事实，当前无源/测试/资源/Git写授权|
+|独立QA agent_planned_guarantee_system_r257 / R336-Q-AUDIT|同Platform9808f91，包读机器与当前ZIP/事务/身份/source-installation接缝；只读|核R335 D0与当前机器一致、预算/本人/末端复核/安全路径闭集；报告具体阻断与必要覆盖，不自行另造contract或新框架|
+|Web原owner web_interaction_astra_r296 / R336-W-AUDIT|normal /Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current / e78a514，现目录/个人预览与既存detail源码；只读|制定现预览“查看详情”→真实SKILL.md/目录→单文件→返回的最窄UI/API接缝，只消费BFF，拒绝旧拼接正文/假usage；owner契约先完成，不授消费者写入|
+
+Root独占正常进程/共享基础设施、实际系统RED、任务文档与Git；两个ignored全文件SHA r336-{platform,web}-start.json冻结。三角色先只读、禁止服务启动/重置/SQL种子/权限凭据改动、生成文件/Git与代码写入；后继tests-only→Root实际失败→12运行候选另授→正式提交→BFF固定发行→Web消费/浏览器验收。缺少真实资源不能用override/mock或源码静态观察称system PASS。方案继续引用R331/R335六消息和具名有限read事务，不建重复计划中心。
+
+<!-- R336-READ-AUDIT-TASK-END -->
+
 R335 提交收据：Web **e78a51450384cba1a71d2a5e7bc4fadce3f7bcce**（parent980172f），Root 精确五paths提交，三源SHA仍冻结值；提交后余780原SHA、工作切片diff/index空。Root原66723提交后contract309/architecture51自然0；正常3310同页面无Dialog/空query/R255卡可见、截图已保存。Platform9808f91保持clean；所有本轮验证句柄terminal。原Admin/R332混合、Root八gitlinks/uv保留。未验正文/后台/全Playwright保持OPEN，不升70/33完整业务汇总。
 
 ### R335 Skills 单项推进：视觉布局已局部实测，正文及后台仍 OPEN（2026-10-08）

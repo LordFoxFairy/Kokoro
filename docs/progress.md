@@ -1,3 +1,15 @@
+### R336 Skills 真实包链已打通前置，正文读取缺口已复现（2026-10-08）
+
+沿同T-K03，仅Skills推进，其余模块/kokoro-10保持暂停，完整Wave0–7 active。Platform physical apps/kokoro-capability HEAD9808f91、Web normal e78a514不变。原三个owner只读并行审计已完成（Platform547/Web785路径exact），一名Platform writer进入运行实现，Root保Git/资源/集成。
+
+Root最终冻结系统test SHA d7754d36、原48415字节prefix/546路径保护；原96031在Node24.20.0真实执行自然exit1：两个正式IAM OAuth交换200，Platform真实独立PG/Redis/TCP；CreateDraft、Begin、Complete、Validate、Publish、Install均200，实际MinIO PUT/ClamAV CLEAN通过前置断言；随后本人来源/安装的目录和SKILL.md四读取均404（一个系统用例4失败断言，12非选用例skipped）。不是接口collection/import错误，不是伪Storage或SQL种子。首41731相同真实结果但执行与作者收口交叠，不作为最终freeze；独审发现OAuth坏JSON裸异常可能带token片段P2已窄catch固定无cause修，Root最终再跑起终d7754d36一致。
+
+当前12运行候选按R331三面实现准入，机器/Schema/权限不扩；正常Web/BFF/Platform服务未重启。临时自有IAM host原81775实际HTTP64251，正常IAM53711不动；资源输入0600/秘密不输出。两次本组最小completed包分别manifest0600追踪；Root实查Storage平台包权限不含delete_asset，禁止换身份/scope/SQL/MinIO删除，故完成包回收OPEN留Storage owner后继，不冒清理完成。
+
+真实证据 Root ignored r336-package-system-final-red.log、r336-iam-positive-controls.json、r336-red-freeze.json、r336-storage-owned-resources{,-first}.json。全Skills目录通用详情资格/BFF固定发行/Web真正文与焦点返回/作者usage真实封面/管理员仍OPEN；4读缺口RED或后继GREEN均不替完整用户路径。Web默认既有70FAIL/全Playwright未验仍原事实，不宣Skills已完成。
+
+<!-- R336-SYSTEM-RED-RESULT-END -->
+
 R335 提交收据：Web **e78a51450384cba1a71d2a5e7bc4fadce3f7bcce**（parent980172f），Root 精确五paths提交，三源SHA仍冻结值；提交后余780原SHA、工作切片diff/index空。Root原66723提交后contract309/architecture51自然0；正常3310同页面无Dialog/空query/R255卡可见、截图已保存。Platform9808f91保持clean；所有本轮验证句柄terminal。原Admin/R332混合、Root八gitlinks/uv保留。未验正文/后台/全Playwright保持OPEN，不升70/33完整业务汇总。
 
 ### R335 Skills 单项推进：视觉布局已局部实测，正文及后台仍 OPEN（2026-10-08）
