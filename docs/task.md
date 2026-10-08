@@ -1,3 +1,15 @@
+### R346 Skills 外部预览示例：已定位真实缺项，尚未实现（2026-10-08）
+
+仅 Skills 继续，其它模块与 kokoro-10 暂停；完整 Wave0–7 active。外部目录、预览、正文、我的技能和后台同在范围内，不只 Settings。正常本地 R255 与真实 Manus 同 800×752 / dialog760×600 对照：本地无示例/作者/usage/分享下载，Manus有三行示例；现页面不合格，未称完成。完整原图为 ignored `var/dev/r255-preserve/r346-{local-examples-missing,manus-examples-reference}-exact.png`，native参考缩放异常不冒同尺寸证据。正规登录 cookie_missing 曾导致准入失败，Retry失败后正常Login恢复；无cookie注入/权限扩大/新用户或Skills数据写入。
+
+Platform仅四设计文件正式提交 `7dbaa75fcb0b2403aba0f68293ca737d1cddcb35`（parent780c8a0），原owner platform_skills_examples_owner_r346 / gpt-6-astra；独审 iam_skills_admission_review_r343。最小事实：精确revision有序example_prompts数组，旧行新增独立集合[]、不解旧opaque bytes、不猜三例；CreateDraft/CreateVersion完整写入，不隐式继承。canonical presence仅present加键，旧absent digest保持。正常库具名单列expand需先隔离实测，未执行DDL。独审temp shadow P2已在设计修正，三旧suffix exact、canonical SHA不变、四scope/diffcheck Root独验；不是源码或产品修复。
+
+Root实跑当前binary bytes/digest基线27PASS/0FAIL；新Proto metadata5/installation15 descriptor负控0PASS/2FAIL，自然exit1；Prisma7.10.0实际只读old→proposed diff一条JSONB NOTNULL DEFAULT[] ALTER，自然0，未连接数据库。所有源/机器契约/schema/服务保持原版本，P42873/B5007/Web66154原句柄复用，没有服务/基础设施reset。工程门只作支持，最终仍须正常浏览器完整路径与同尺寸截图，R345全回归既有失败与全Playwright/axe待验继续OPEN。
+
+下一R347同Platform owner只读精确machine publication inventory，由Root确认最小发行图再先owner实现→BFF固定消费→Web真实编辑/预览示例→正常浏览器验收；45RPC/20commands/24proof、历史V1–V9不盲改。Skills其余真实字段、创建/后台与完整CRUD仍OPEN，原70/33业务汇总不升。Root八gitlinks及uv.lock、Web27tracked/6untracked Admin混合修改保留，不夹带提交。
+
+<!-- R346-ROOT-EXAMPLES-D0-RECEIPT-END -->
+
 ### R344 严格对齐整个 Skills：外部目录、预览与详情、我的技能（沿 T-K03，2026-10-08）
 
 |任务|归属/执行|基线/范围|依赖与验收|状态|

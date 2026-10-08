@@ -1,3 +1,41 @@
+## R346 Skills 示例列表：事实与契约设计调查（2026-10-08）
+
+仅 Skills 继续；其它模块与 kokoro-10 暂停，完整 Wave 0–7 目标保持。用户已批准按照真实 Manus 内外展示，包括预览简介下示例列表和查看详情，不另创新 UI。当前外部正常卡没有示例；只接通日期不算页面完成。本片先确定真实可编辑、按精确 revision 读取的示例事实；不得按标题生成固定三例，也不得复制 Manus 示例冒充用户 Skill 数据。
+
+| 任务 | owner / 角色 / 模型 | 当前基线与范围 | 依赖、验证与交付 |
+| --- | --- | --- | --- |
+| R346-P-A | Platform / platform_skills_examples_owner_r346 / gpt-6-astra / 只读 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`，codex/r259-skills-metadata，780c8a0，tracked clean；现 Skills 源码/测试/机器契约、Prisma、三设计文档；BFF 两 create 入口只读 | 比较现 opaque metadataJson 正式收窄与显式 typed examplePrompts 字段；列 revision/receipt/旧值/精确安装与 Admin 写入影响、绝对路径行号和 RED。不写源码/SQL/契约、不启动服务、不操作共享数据、不提交。Root 裁决后另给三面设计文档写入集。 |
+| R346-P-R | Platform 边界独审 / iam_skills_admission_review_r343 / 继承原模型 / 只读 | 同 P 基线；BFF7565877、Webe7c7370 持久树只读，原 Web27tracked/6untracked Admin 修改保护 | 与 P-A 独立并行，核 bytes 契约/历史 digest/未知字段/旧数据和授权；报告确定风险，不自行批准字段/tag/DDL。Root统一审查与 Git。 |
+| R346-ROOT | Root / 当前模型 / 原计划与4台账 writer、浏览器验收 | Rootfa70c63d，原8gitlinks+uv.lock；正常进程句柄 Web66154、P42873、B5007已核 PID存活且P/B ready200 | 亲读真实 Manus 示例按钮位置和状态，对照本地缺项；审查两方案，记录最小决定、D0→owner契约→固定消费者依赖。不以只读报告/测试数算页面闭环。 |
+
+当前关键事实：metadataJson 是 proto bytes tag4 / nullable BYTEA，仅65,536字节上限，单测明确保留 `[0,1,255]`，所以全量改成 strict JSON 是 breaking 而非无成本复用。BFF create 当前硬编码 `{}`；其固定消费者必须随正式写入契约切换，不使用临时 UI 假数组或 BFF 自建事实。
+
+### Root R346 当前裁决及文档 writer
+
+选择 revision 级 typed 示例 + 独立 nullable JSONB 列，不改变 opaque metadataJson/BYTEA；NULL/Proto absence 为未提供，present [] 为明确无例。CreateDraft、CreateVersion 均按完整本次 metadata 写入：absence 写NULL，不隐式继承；Web编辑加载精确base后显式提交原列表或[]。最多10条，每条1–1000 Unicode scalar、非全空白、无unpaired surrogate，总UTF8≤16384字节，合法原文原序保留。唯一 canonical 对象仅present时增加数组key，absent不加key，故原absence bytes digest不变；新present语义仍须正式binding发行，不假称旧artifact已覆盖。
+
+R346-P-D0 唯一 writer 为同 `platform_skills_examples_owner_r346` / gpt-6-astra；只准三现设计文档R346前缀（旧suffix精确）及普通`docs/ADR/ADR-003-skill-example-prompts-expand.md`，Root Git。现已核message不存在、metadata tag5 / installation tag15未占用；D0明确目标，不改机器/源码/Schema/generated。ADR比较bounded具名expand与通用migration，采用前者只允许canonical old→new diff中的一项nullable列；正常库不reset、不非空dbpush、不自动修drift，先隔离全原值/rowcounts/slot/receipt/outbox/其它schemas不变，再由Root协调owner停机与持久库演进。
+
+Root本轮实际现binary bytes映射+request digest基线27PASS（句柄36657自然0），拟加两Proto字段descriptor负控0PASS/2FAIL（自然1），分别保存`r346-root-existing-metadata-baseline.log`、`r346-root-example-fields-red.log`。浏览器真R255预览仅安装/查看详情/关闭、无示例；Manus实际3示例按钮44px/y366/422/478，不把当前不同viewport当完整视觉一致。正常登录cookie_missing导致准入退役，Retry未恢复，点击正规登录恢复Skills；没有注入cookie/创建用户/扩大权限。图和receipt保存在原ignored r255-preserve。
+
+### R346 最终简化裁决（覆盖以上 nullable 候选）
+
+为避免Prisma SQL NULL/JSON null判别引入额外raw读或CHECK，最终采用非nullable `Json @default("[]") @db.JsonB` 的revision string[]事实。[]定义为“当前记录的独立示例集合为空”，不推断作者表态、不解opaque bytes、不造占位三例。新writer显式写数组，absence完整metadata输入缺省[]且不继承；默认只初始化旧行与旧writer。读API required `example_prompts`数组，Product响应message必present（prompts可空）；坏JSONnull/object/mixed/nested数据稳定拒绝，不读侧fallback。
+
+独审原IAM reviewer已复核该取舍无须退回nullable；最终4D0由P唯一writer更新，Root待最终SHA复核。typed presence canonical仍只present加键，absent原digest保持；新present语义发行仍待Root精确inventory，历史V1–V9不修改。单列NOTNULL/constantDEFAULT的真正DDL与锁/rollback须隔离实测，不运行共享库或提前发未知字段。
+
+Root已核仓内Prisma7.10.0 `migrate diff --help`自然0并真实800×752两Dialog760×600/x20/y76；native参考截图缩放异常不作像素证据，CDP完整clip corrected screenshots为`r346-{local-examples-missing,manus-examples-reference}-exact.png`，真实缺作者/usage/分享下载/示例，未宣Manus一致。以上是设计与失败证据进展，不是用户页示例完成。
+
+### R346 最终交付与 R347 续派
+
+四D0已由Root逐路径提交 `7dbaa75fcb0b2403aba0f68293ca737d1cddcb35`，三旧suffix与canonical原SHA保持。独审P2临时表shadow通过显式pg_temp末位+DDL前拒绝pg_temp.skill修正，Root核官方语义与四冻结SHA后放行。仅设计验收，不是示例实现或页面验收。Schema/contract/runtime/DB都未修改；Root真实RED与浏览器缺项保留。
+
+| 任务 | owner / 角色 / 模型 / 权限 | 基线与允许范围 | 依赖 / 验证 / 状态 |
+| --- | --- | --- | --- |
+| R347-P-M | 原Platform owner platform_skills_examples_owner_r346 / gpt-6-astra / 只读 | 正常物理P 7dbaa75，machine profile/projection/descriptor/OpenAPI/provenance/历史parent图及BFF固定消费者；不写任何文件或操作DB/服务/Git | 确定最小正式examples publication版本/父图及精确机器切片，不改变旧absent digest或V1–V9字节；45RPC/20commands/24proof保持。Root读源码复核后再授权writer，进行中。 |
+
+<!-- R346-EXAMPLES-INVESTIGATION-END -->
+
 # Capability → Platform：NestJS + Prisma 实施任务板
 
 状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 及其粒度整改均已验收（`f9dc3a3` + `9f237f9`）。`IAM-ATTESTATION-D` 文档设计门已由 IAM owner 提交 `bf160be`；Agent execution-proof A1/A2a/A2b/A2c owner 切片已分别提交 `cd2e698`、`43d5705`、`960a16b`、`02011bb`。下一个串行 P0 是 Platform typed identity、最终 RPC 名与 operation/request-binding owner contract；Platform 先发布不激活的 owner artifact，IAM 再按该 artifact 更新封闭 catalog并以 NestJS + Prisma 实现 verifier/OpenAPI/generated SDK，之后 Platform 才以单个可构建切片切换 Proto/runtime，Agent、BFF、System、Storage 与 Root 消费者完成代码发布后再协调激活。P4b-4 在该 owner-first 链和真实跨owner sandbox闭环前不放行，P4c–P4e 与其余 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
