@@ -1,3 +1,15 @@
+### R326 Skills 未知结果恢复的真实用户闭环切片（2026-10-07）
+
+当前 Web **6c1e6ce33bf78c8547d27fd9598be0d70e6120ef**（parent f352cfcc），Root精确三paths：现publish-dialog两个呈现guard/unknown真实名称vN、现CURRENT/Skills INDEX前缀。全部函数/footer/session/key/File及原警示/default折叠身份保持；独审dfd14d10、Root inverse全文exact，771其它tracked与6untracked/原27Admin mixed/index空保护。没有新增unit/mock/API/SQL/CSS/模块。
+
+正常3310真实v6与v7均沿版本创建→真实对象上传/Complete/Validate，浏览器仅hold两个实际Publish200和一个ACTIVE确认GET200（不伪造payload/status）直至请求预算退出。原unknown整禁用表单挤出恢复动作的P2与before图保留；修后unknown318px/真实名称v7/零字段，两44px动作首屏可见。390×844无横溢/44px/键盘完整ID，清拦截零自动请求，显式Recheck→精确ACTIVE GET200+list200→同v7success，零新draft/upload/Publish。正常刷新后详情ID/v7/summary正确；旧刷新网络窗truncated明确保留，另fresh detail/installations两GET200无截断/无错误，原三安装状态保持。私有v6/v7保留，没有永久删除/安装/资金/权限修改。
+
+原Root92314 Node22.22.2完整pnpm check自然exit0：309contract/51architecture/default172files3438PASS与lint/typecheck/build，只辅助；真正用户证据独立 **var/dev/r255-preserve/r326-skills-user-verification.json**、r326-web-commit-receipt.json及 **r326-skills-final.jpg**/r326-skills-unknown-compact.jpg/mobile.jpg。工具两次Fetch配置拒绝/3s观察超时明确记录，不当产品失败；清理使用Fetch.enable patterns[]，Network关闭/原1280×720/default原三安装/无Dialog/参考Manus保留。所有本轮门终态；正常服务/PG/Redis/ObjectStore未重启/reset。
+
+7局部用例6PASS/1修前FAIL，修后对应TC04PASS保留双证，不抹历史。当前自然401正规返回、多身份/多页、全SkillsCRUD、全test:e2e/axe/视觉预算仍OPEN，Billing summary404与导航取消不冒清零。整体70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持，T-K03/T-K05 OPEN、完整Wave0–7 active/支付最后。以本轮可见呈现与真实恢复交付，不冒Manus像素一致/虚构市场和使用量或整体上线。
+
+<!-- R326-ROOT-END -->
+
 ### R325 技能发布反馈与紧凑完成态已真实验证（2026-10-07）
 
 Web **f352cfccf79ae4d7553b828c3ae0fb691e903a57**（parent3328b854）精确六paths：现dialog、messages三词条hunk、overlays英文fallback、原成功oracle、CURRENT/skillsINDEX；Root独占Git，原Admin mixed/27status/768其它tracked+6untracked保持，index空。原状态/函数/footer/意图/File/key/unknown恢复行为inverse exact，零API/SQL/新模块。旧owner术语换可操作用户提示，成功名称与真实vN常显、编号默认折叠，明确success收起整disabled表单/原上传指引。独审ae849b64无确定阻断；当前Radix卸载Description清关联，Root实际aria-describedby=null，不加旧版本假设补丁。

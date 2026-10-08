@@ -1,3 +1,54 @@
+### R326 Skills 未知结果恢复的真实用户闭环切片（2026-10-07）
+
+当前 Web **6c1e6ce33bf78c8547d27fd9598be0d70e6120ef**（parent f352cfcc），Root精确三paths：现publish-dialog两个呈现guard/unknown真实名称vN、现CURRENT/Skills INDEX前缀。全部函数/footer/session/key/File及原警示/default折叠身份保持；独审dfd14d10、Root inverse全文exact，771其它tracked与6untracked/原27Admin mixed/index空保护。没有新增unit/mock/API/SQL/CSS/模块。
+
+正常3310真实v6与v7均沿版本创建→真实对象上传/Complete/Validate，浏览器仅hold两个实际Publish200和一个ACTIVE确认GET200（不伪造payload/status）直至请求预算退出。原unknown整禁用表单挤出恢复动作的P2与before图保留；修后unknown318px/真实名称v7/零字段，两44px动作首屏可见。390×844无横溢/44px/键盘完整ID，清拦截零自动请求，显式Recheck→精确ACTIVE GET200+list200→同v7success，零新draft/upload/Publish。正常刷新后详情ID/v7/summary正确；旧刷新网络窗truncated明确保留，另fresh detail/installations两GET200无截断/无错误，原三安装状态保持。私有v6/v7保留，没有永久删除/安装/资金/权限修改。
+
+原Root92314 Node22.22.2完整pnpm check自然exit0：309contract/51architecture/default172files3438PASS与lint/typecheck/build，只辅助；真正用户证据独立 **var/dev/r255-preserve/r326-skills-user-verification.json**、r326-web-commit-receipt.json及 **r326-skills-final.jpg**/r326-skills-unknown-compact.jpg/mobile.jpg。工具两次Fetch配置拒绝/3s观察超时明确记录，不当产品失败；清理使用Fetch.enable patterns[]，Network关闭/原1280×720/default原三安装/无Dialog/参考Manus保留。所有本轮门终态；正常服务/PG/Redis/ObjectStore未重启/reset。
+
+7局部用例6PASS/1修前FAIL，修后对应TC04PASS保留双证，不抹历史。当前自然401正规返回、多身份/多页、全SkillsCRUD、全test:e2e/axe/视觉预算仍OPEN，Billing summary404与导航取消不冒清零。整体70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持，T-K03/T-K05 OPEN、完整Wave0–7 active/支付最后。以本轮可见呈现与真实恢复交付，不冒Manus像素一致/虚构市场和使用量或整体上线。
+
+<!-- R326-ROOT-END -->
+
+### R326 本轮已提交的系统级用户验收矩阵
+
+基线f352cfcc→6c1e6ce；下面均为真实正常3310/BFF/Platform/ObjectStore用户操作，原三安装保持，故障仅浏览器响应接收。所有case属于同一Skills计划，完整页面尚未整体验收。
+
+|ID/标题|预置条件|测试步骤|预期结果与实际|优先级/类型|
+|---|---|---|---|---|
+|TC-SK-R326-01 真实结果未知|本人v5可用；纠正ZIP|新v6提交；两个实际Publish200和确认GET200丢失接收|预算退出，unknown非失败/成功，身份保持；PASS|P0/异常/状态|
+|TC-SK-R326-02 显式恢复幂等|v6unknown，网络已恢复|用户点Recheck|同ID/v6 ACTIVE读确认，零新草稿/上传/Publish；PASS|P0/恢复/幂等|
+|TC-SK-R326-03 修前按钮挤出|f352cfcc unknown；1280×720|观察并操作恢复弹窗|预期首屏可达，实际被整禁用表单挤下；FAIL保留before图|P1/交互/边界|
+|TC-SK-R326-04 修后紧凑未知态|6c7fc607候选；本人v6|新v7同真实故障|明确unknown+真实名称/v7，318px/0字段，恢复与关闭44px首屏可见；PASS|P1/交互/状态|
+|TC-SK-R326-05 窄屏与键盘|v7unknown；390×844|Enter展开完整ID，再清故障|无横溢/44px/完整ID；恢复网络无自动命令；PASS|P1/边界/可访问性|
+|TC-SK-R326-06 修后正式核对|v7unknown；故障已清|用户明确Recheck|精确ACTIVE GET200+list200→同v7success，零mutation；PASS|P0/主链路/恢复|
+|TC-SK-R326-07 刷新回读与回归|v7确认；原1280×720|关闭→hardrefresh→详情→Escape→安装列表|ID/v7/summary正确，原3安装保持；PASS；旧刷新窗截断不冒完整链，另fresh两GET200无截断|P0/持久化/回归|
+
+本轮完成判定只绑定以上切片：修前真实FAIL、最窄source/独审、Root完整辅助门92314自然0、修后同故障与桌面/窄屏/显式确认/刷新真实通过，并已精确Web三文件提交。未执行的多身份/多页/整个SkillsCRUD与全站验收保留，不用辅助3438测试冒用户链。各截图/请求/保护证据在同ignored目录，6PASS/1修前FAIL保留历史；作者/独审均STOP，Root资源与Git独占。
+
+### R326 Unknown 完整表单挤出恢复动作：真实失败后的窄修准入
+
+Root正常3310自有v5→正式新v6 eb242298：versions201/上传与validate200；精确非Document Response-stage阻浏览器接收两个实际Publish200及ACTIVE GET200，三请求预算后出现unknown，恢复拦截零自动命令；显式Recheck canonicalGET200→真实v6 success，零新Draft/PUT/Publish。已保留before图r326-skills-unknown.jpg。真实P2：unknown禁用整表单挤出Close/Recheck，必须滚动才可达。
+
+|任务|归属与冻结范围|验收与禁止项|
+|---|---|---|
+|R326-WEB-UNKNOWN-COMPACT|原web_interaction_astra_r296唯一Web writer；Web f352cfcc，仅现src/ui/skills/personal-skill-publish-dialog.tsx render条件与unknown name/vN呈现，相关现有unknown展示oracle若确实失配可列后由Root准；原27Admin mixed保持|仅unknown与success同样收起旧上传说明/禁用字段，unknown警示、session真实名称及draft revision、原默认折叠skillId、原Recheck/Close保留。无function/footer/状态机/API/词条/CSS更改；除unknown/success外呈现exact。先冻结交接，Root原功能与真实同故障新v7返验/完整辅助门/精确Git。|
+|R326-QA-UNKNOWN-COMPACT|原QA只读冻结候选|验证inverse精确、原unknown语义不冒success、draft身份严格/所有函数与footer不改；Root真实桌面与窄屏恢复另证。只原ignored报告。|
+
+现有reader目录负责发布用户呈现，局部修已有dialog，不新目录/模块/contract/schema；本切片仅视图收敛，业务恢复原函数完整保持。Root先关闭本次已确认v6再授写，避免开发HMR退休未确认意图；私人v6保留、原三安装不改。
+
+### R326 Skills 当前页面与结果未知恢复验收
+
+沿用户已批准 Manus 视觉与个人技能管理双视图，不新增市场、假使用量或重复计划。基线 Root85d91001/Web f352cfcc，正常3310/原三安装保持；既有R325门已终态，本轮不重复启动服务。
+
+|任务|Owner/角色/范围|验收与提交责任|
+|---|---|---|
+|R326-SKILLS-USER|Root，当前Tab27；只正常浏览器与本轮ignored证据、现四台账|先核当前呈现，再实际测试自有版本提交的真实丢失确认与显式恢复；仅阻断浏览器接收真实响应，不伪造owner结果，不改PG/Redis/凭据。每段记录现请求与UI/恢复/刷新，结束还原浏览器故障设置/默认列表。|
+|R326-WEB-RECOVERY-READ|原web_interaction_astra_r296，只读Web f352cfcc / /Users/nako/.codex/worktrees/kokoro-r257-admin-web；现publish-flow/dialog/client|核真实response丢失后unknown→显式Recheck的预算、同意图/版本身份与错误反馈；只追加原r324-web-auth-recovery-read.md。不写仓/跑门/Git/服务/浏览器；缺陷先交具体最窄改动，当前未授实现。|
+|R326-QA-SKILLS-READ|原agent_planned_guarantee_system_r257，只读同Web f352cfcc及现Skills三D0/卡片/CSS|独立按用户两图核当前展示与真实页面需验项，另审unknown恢复是否重建/重复上传/身份混淆；只追加原r313-mcp-machine-review.md，不写仓/跑门/Git/浏览器。Root当前E2E另证，不把审查当PASS。|
+
+一仓无source writer，仅Root台账writer；保护27Admin mixed与Root八gitlinks/uv。只为真实失败再派原owner最窄修复；全SkillsCRUD、多身份/多页与全站70/33未验项不因本切片清零。
+
 ### R325 技能发布反馈与紧凑完成态已真实验证（2026-10-07）
 
 Web **f352cfccf79ae4d7553b828c3ae0fb691e903a57**（parent3328b854）精确六paths：现dialog、messages三词条hunk、overlays英文fallback、原成功oracle、CURRENT/skillsINDEX；Root独占Git，原Admin mixed/27status/768其它tracked+6untracked保持，index空。原状态/函数/footer/意图/File/key/unknown恢复行为inverse exact，零API/SQL/新模块。旧owner术语换可操作用户提示，成功名称与真实vN常显、编号默认折叠，明确success收起整disabled表单/原上传指引。独审ae849b64无确定阻断；当前Radix卸载Description清关联，Root实际aria-describedby=null，不加旧版本假设补丁。
