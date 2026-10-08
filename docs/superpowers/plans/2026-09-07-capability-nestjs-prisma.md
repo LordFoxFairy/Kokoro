@@ -1,3 +1,39 @@
+### R352-P3 Root 真实 catalog 预核与后继准备
+
+Root Node24 自有随机隔离PG诊断库：旧完整catalog214608c1、新42e3c244580582f6811b17aa174b71b83181060256299f64fa71d184b12b2796；indexed候选fresh/expand完全相同、命令自然0，probe库已清理，正常库未访问。证据ignored r352-p3-root-catalog-receipt.json；这里只证明空诊断目录，不冒有数据/业务事务通过。新hash已交唯一Platform writer用于精确gate，正式runtime生成与有数据Root集成待冻结。
+
+并行只读后继准备：原IAM reviewer iam_skills_admission_review_r343核BFF @88fe387固定owner8014/HTTP4→public9分类consumer最小scope、精确query与presence；禁止写/Git/DB/服务。原bff reviewer已terminal用量失败，不重启或冒使用。Platform原writer写入继续，Root不抢写；BFF实现须owner提交后另授权。两任务沿原会话模型，本轮未更换或新建agent。
+
+### R352-P3 运行完整切片授权
+
+设计正式c559a4e，Root独立candidate Prisma validate/diff、contract checker、diffcheck实际0；5旧文档完整suffix及其它tracked保持。原IAM确定P2分类访问索引已采纳并复核放行，无新增阻断，实际PG计划待验。原Platform owner唯一writer，Root独占Git/共享资源，精确授权ignored r352-p3-authorized-scope.json：17production修改/2new、16test修改/4new、2delete、预测8正规Prisma生成及3设计仅追加本片prefix。目标nativeindex也包含在canonical/3-statement严格expand；超集必须报告。原machine/history与所有非范围tracked字节冻结r352-p3-protected.json。
+
+先具名输入/投影/事务/category cursor实际RED再实现；worker无DB/Redis/服务/浏览器/正常expand权限，Root自有隔离PG核定target catalog并做集成。冻结后Root重跑纯门/类型/lint/schema/build及真实隔离PG，固定BFF9/Web/正常维护/真实浏览器依赖继续，不称页面闭环。其它模块/heartbeat继续暂停。
+
+### R352-P3 独审索引修订
+
+原IAM只读独审确定P2：PK(tenant,skill,key)不支持正式三list tenant+key过滤。Root采纳native index(tenant,key,skill)，实际重新validate/diff0；修订schema95707af1/DDL3fbec06c，4NOTNULL/零FK、三statement，仅新表及两个索引，无旧父unique。三设计与ADR004当前前缀已同步，旧suffix保留；实际PG/query计划待验，不称已完成。
+
+### R352-P3 三设计与放置门（2026-10-08）
+
+| 项 | 本片结论 |
+| --- | --- |
+| Owner | Platform modules/skills，原owner唯一writer；Root设计/审查/Git/隔离PG |
+| 当前事实 | Platform8014 clean，机器HTTP4/运行HTTP3.5，9表，scope收据r352-p3-runtime-scope.json；Root8gitlinks/uv与WebAdmin原修改保护 |
+| 目标职责 | 精确revision独立分类存写/读取/filter/cursor/receipt与known-old具名expand；不新taxonomy |
+| 目录方案 | 采用现Skills普通mapper与现scripts具名expand、现docs/ADR004；淘汰新category模块/通用migrations/另canonical |
+| 粒度 | 同事实完整runtime+Prisma+负控一片，不机械拆纯helper；现三设计仅加前缀保旧suffix |
+| 依赖 | Browser→Web→BFF→Platform；nativePrisma同owner，禁跨ownerSQL/业务raw路径/预查全IDs |
+| 数据/API | 唯一Prisma从属值表/现事务/tenant过滤，机器8014不改；target catalog须隔离PG实测 |
+| 删除 | 旧categories=tags、旧examples expand及具名单测；无兼容alias |
+| 验证 | 实际RED→pure/type/lint/build/schema/contract→Root隔离PG→固定BFF/Web→正常维护→真实浏览器；未跑不称通过 |
+
+Root独立Node24/Prisma7.10候选validate/diff均0，与ownerDDL逐字节一致SHA607b5656，4NOTNULL/零FK、仅表+index；无DB。三设计R352-P3及ADR004是当前裁决，原3完整suffix保留；独审另收。新target hash待隔离PG，不猜值；正常服务/库未动。后继授权精确scope，不自动开放其它仓。
+
+### R352-P3 运行与持久化设计收敛（先核定，一次接通）
+
+上一goal轮为progress：正式machine8014acc与Root98files1594PASS已提交。本轮继续真实分类链，不恢复其它模块、不新计划。Root因Prisma7.10实际数组DDL缺NOTNULL，重新裁决存储候选：保独立category_keys wire；优先采用本owner Skill revision的有序从属值集合SkillCategory（普通required key/position列），空集合为零行，不建立taxonomy或新一级模块/身份；用nativePrisma relation/filter和同事务写入，不引入手工DDL解释框架、双SQL schema或NULL转空fallback。与原native数组+NULL判定、DDL补丁三方案比较：原数组无法无损判断坏NULL，DDL补丁偏离单一原生canonical；从属集合增加一张值表但原生required列与有序/唯一约束可证。只读阶段由原Platform owner核定现repo/model/txn/cursor/installer精确影响、Prisma真实无FK生成、方案限制及runtime+schema完整单片文件集；Root同时三设计面/ADR门，未授任何tracked写入/DDL。唯一canonical仍Prisma，跨owner与wire数量/权限不变；正常9表行事实保持。先实际负控→实现→Root真实隔离PG→固定BFF→Web→持久库明确expand→完整浏览器分类CRUD。
+
 ### R352-P2 正式机器提交与 Root 放行（2026-10-08）
 
 Platform `8014acc6a372538f3ef0176a23816ef8631ead9a`（parent e0e9e90），Root精确27paths提交、工作树clean。Root冻结后一次完整纯门98files/1594PASS，Node24类型/lint/contract lint+正规生成/cutover/artifact/build/diffcheck自然0；生成后27SHA/556非范围/3旧完整suffix再核保持。原IAM独审无确定P0/P1/P2，完整三wrapper与全父图/HTTP/8-input publication逆回6旧inputs，并重算provenance仍拒篡改；48accept/88reject向量。正式provenance138c07b8。旧107历史发行、17Prisma产物保持；三旧文档全format仍FAIL，没有越界格式化或称全门。初RED4FAIL与首纯门1590PASS/3FAIL保留，批准字段/版本断言更新后1594PASS。Root日志 `var/dev/r255-preserve/r352-p2-root-gates.log`、冻结收据machine-freeze；均不替代完整浏览器验收。
