@@ -134,6 +134,14 @@ IAM D0正式 `3ee0f76ec5705bcaa4466bcf001b5e4bacc53401`，精确三设计/445其
 
 专用machine只限制受信BFF transport；每个admin请求/重放仍fresh人类IAM及Platform资源/CAS校验。未知依赖不伪missing或零计数。Storage物理cleanup与记录参考尚OPEN，禁止这些未核能力被接口纯门清零。此卡授权I1源码实施，不等于资源激活、完整字段发行或Skills完成。
 
+I1范围补准：Root监测两未授权既有文件已变，原writer立即停写、候选保留未覆盖。逐差异核定publisher确需InternalAccess闭集`internal-principal.types.ts`及`internal-auth.guard.ts`精确scope/profile/path/query与单RR下游接线；另用原基线SHA批准这两路径（modify21→23），无其他遗漏，不能冒首次保护通过。收据 `r353-d1-iam-i1-scope-correction.json`。新publisher测试首次missing-module仅收集失败，随后13PASS不是行为RED；现动作/机器缺项仍由Root实际13FAIL/1PASS基线支持，后继HTTP入口负控与旧普通行为须完整回归。 第二次Root发现补准guard对应既有单测也未列，writer停写后逐diff批准唯一`test/unit/internal-auth.guard.test.ts`（19→20旧test）；只新增具名operation及严格准入负控，旧断言保持。原SHA与候选收据`r353-d1-iam-i1-guard-test-correction.json`保留，首次范围盘点遗漏未抹去。
+
+#### D1-ST2：封面依赖的真实停止线（只读，不扩成其它模块研发）
+
+原Platform reviewer报告 `r353-d1-st2-versionid-review.json`（SHA abb57818416b7d7c925bdeae1ec2b15da769b6fca00defc2757aa7ca3b8fe16e）：7现production/6test的最小精确版本清理修订可以保护已持久化真实版本，零新增Schema/Proto/deps；但现presigned客户端PUT无可信写回执/终止边界，Complete/current HEAD及promote丢写响应的问题不能仅换DELETE参数补齐。旧null与未知staging须保pending，normal配置阻塞激活不阻塞自有versioned bucket核验；不把“不误删”宣称为“所有上传/中止可回收”。
+
+Root保55候选，本轮不授Storage源码/bucket/DDL权限、不临时发零fallback半成品，也不盲采用历史multipart候选。完整cover依赖还需一次收敛可信写入/producer边界与正式owner合同，再纳入同字段发行；不因这项未决停止可执行IAM实现。清理资源验证必须真实owner路径v1/v2并存与撤权/unknown矩阵，旧If-Match FAIL保留。最终Skills页面仍OPEN，下一审IAM统一I1冻结并按真实HTTP放行。
+
 ## D. 执行顺序与职责（减少跨仓来回改）
 
 | 批次 | 一次交付范围 | Owner与执行 | 放行依据 |
