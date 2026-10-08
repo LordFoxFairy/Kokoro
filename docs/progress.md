@@ -1,3 +1,17 @@
+### R345 Skills 内外真实日期已接通，完整 Manus 效果仍未完成（2026-10-08）
+
+仅 Skills 继续，其它模块与 kokoro-10 暂停，完整 Wave0–7 active。Platform runtime03ee664/当前文档780c8a0，BFF machine17be2fa/public8.9/111+runtime2e5fbaf/当前文档7565877，Web正式e7c7370。原Root八gitlinks与uv.lock、Web原Admin/R332混合27tracked/6untracked语义保留，未整体提交或清工作树。
+
+Root真实正常配对：同持久source/env drain旧BFF32003/Platform40745→Platform42873/listener92130 ready200→BFF5007/listener92197 ready200；Web66154/31451 HMR不重启，IAM/Storage/PG/Redis/MinIO不重置。切换期间catalog502与准入不可确认真实失败保留，正常重试恢复原登录；未造用户/免费余额/权限或任何Skills POST。
+
+800×752实际外部R255 catalog200中的Skill时间2026-10-06T00:38:54.049Z与预览time datetime一致，非安装时间。标题y169/20px/26px/600，日期y203/13px/18px，安装和查看详情y241/32px；这三个位置与实际Manus相同，但不冒整弹窗一致。真实点击查看详情→SKILL.md正文Normal checklist→Back同预览→Close原卡/query R255；本人已安装卡/预览及我发布的预览同原日期。390×420/coarse dialog370.5×378、无横溢、安装/详情/关闭44px，仿真与Network已恢复。截图r345-local-external-preview-after.jpg、reference.jpg、mobile.jpg与r345-live-browser-read-receipt.json均在原ignored r255-preserve。
+
+Root辅助：Platform unit97PASS+自有隔离PG/Redis112PASS/0SKIP，完整verify1437PASS/1旧IAM fifth-surface FAIL/300资源SKIP仍OPEN；BFF新seconds边界RED0/1→最终check324contract+904PASS/2既有资源SKIP，独审P1关闭；Web RED0/5→contract312/architecture51/具名5PASS+308名称过滤/完整wire-publish-withdraw295PASS，lint/types/build0，独审无确定P0P1P2。所有门句柄已自然终态；默认Web全回归历史70FAIL、全Playwright/axe/最终完整视觉与CRUD未重跑，不清零，不用工程门代页面验收。
+
+仍缺：作者、example_prompts列表、真实Storage封面/usage、分享下载、未安装目录正文资格、创建四能力与Skills后台。下一先补同Skills的真实示例事实与列表/详情呈现，并同步管理写入；不恢复其它模块、不造固定三例，也不以当前局部日期验收称Skills完成。现metadataJson无类型规则、包manifest无示例字段；owner设计先比较扩现有metadata事实或独立typed字段，避免无依据加新仓/配置中心/通用框架。
+
+<!-- R345-ROOT-REAL-DATE-RECEIPT-END -->
+
 ### R344 Skills 内外预览仍未完整对齐（2026-10-08，沿 T-K03）
 
 Web 局部正式提交 `d8d0f74f33c2d0d9491c9f07e05fb94ebbaad235`（parent9196162），Root仅4具名路径：本人安装卡名称/真实Switch/三行简介/135px紧凑卡；普通安装与发布预览去状态堆叠/技术快照提示；两预览封面位置与32px动作窄修。原混合Admin/R332与27tracked/6untracked保护，范围外SHA无改变。

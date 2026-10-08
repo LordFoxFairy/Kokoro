@@ -22,6 +22,33 @@ R344-CAT：外部已安装卡常驻“查看详情”。Root裁决为现 Web cat
 
 R344交付：Web d8d0f74（4path）与a9ae62c（3path）已Root精确提交；本人与外部已安装正文/返回/归焦实操通过，13focused与types/lint/build0仅局部门。Platform dcc2102仅3D0，字段仍未发行；其它展示及后台OPEN。外部读取缺口已局部验收，不升级完整Skills/70/33。
 
+### R345：外部预览真实更新时间接线，非仅 Settings（沿 T-K03）
+
+- Platform D0 已提交 dcc2102；Root 2026-10-08 实查正常进程31887由 `tsx src/main.ts` 启动，非 watch；生成/源码磁盘修改不主动激活，禁止启动新服务或重启原句柄40745。BFF44454亦非watch。旧新闭集投影必须由Root后继成对受控启用。
+- R345-P-MACHINE / Platform 唯一 writer `platform_skills_presentation_owner_r344`（沿用 gpt-5.6-sol），基线 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`、codex/r259-skills-metadata、dcc2102，tracked clean。允许 D0 具名机器、生成、provenance、现 checker/contract tests，以及三份已批准完整父图 snapshot与一个现目录具名差分checker；不改 runtime/SQL/env/依赖/旧V1–V9发行物/旧parent。先实际负控失败，后正式生成；HTTP3.4只三schema required skill_updated_at；Proto精确Timestamp/tag14，45RPC原图剥tag14还原父图。不建V10。Root独审/重跑/精确提交后再授运行源码，当前不宣字段上线或UI完成。
+- R345-B-REVIEW / 原 BFF owner `bff_skills_public_owner_r342`，只读411e690：准备最小 fixed owner消费与public8.9闭集字段范围、停止/成对切换验证；不提前发明或写新owner contract，不改共享进程/数据。
+- Root保留真实Manus/正常Web浏览器对照、owner边界、Git与集成。作者、例子list、真实封面、usage、任意未安装项正文资格、创建与后台继续同Skills OPEN；其它模块及kokoro-10暂停。默认工程门是接线防回归，不替最终真实用户全链路。
+
+R345-B-D0：沿原 BFF Skills owner `bff_skills_public_owner_r342` 转唯一文档 writer；正常树411e690/codex原分支，只有docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md最窄当前前缀。引用Platform已提交dcc2102 D0：固定正式owner commit/digest待机器提交后填，不提前消费候选；public8.9只四closed Skill/ManagedPersonalSkillResource/PublishedPersonalSkillResource/SkillInstallation required skill_updated_at，111 ops和原8.8完整parsed剥除还原；安装tag8不变，零SQL/授权/幂等变化；后继现客户端/generated/mapper按精确文件清单。新普通checker具名只验证此发行差分，现目录而非新模块；原历史checker需先剥R345字段还原父图，旧hash不更新掩盖漂移。Root精确提交/文档门后再授权机器；本阶段不改机器/runtime/env/服务/Git/历史suffix。
+
+R345-B-MACHINE：BFF原owner唯一writer；D0已Root精确提交f0e1baa，Platform正式机器af38f4419f6aa123d5bffaeaf14bd73a0b06c191（runtime未启）。允许D0具名两fixed consumer manifest/generator/generated及正式vendor publication路径、public8.9四schema/既有111全文保护checker与相关现contract/architecture测试；新增普通scripts/verify-skill-updated-at-contract.mjs单职责。从正式git commit读取，不复制候选。先真实RED再GREEN；禁止runtime/SQL/env/服务/Git、依赖升级与放宽历史检查。Root冻审重跑精确提交后再授runtime；不将required字段提前激活。旧vendored publication是byte-frozen历史证据，不形成运行fallback，最新固定点是唯一runtime消费者。
+
+R345-W-STATE-READ：沿IAM独审Agent只读Web Skills状态调查，基线a9ae62c正常树保护Admin/R332。Root真实外部搜索R255/打开预览后在跨参考页观察期间，搜索与预览曾丢失，随后重新搜索同包4GET都200/真实SKILL.md可读；原因未定，不冒确认修复。仅读skill-catalog-read及auth/use-session-state/current页面装配，分析入站边界generation与focus/pageshow/dev刷新，给可验证假设/最小Skills修复范围；不改文件/Git/用户鉴权/服务/浏览器/数据，Root掌握实际UI与网络。
+
+R345-P-RUNTIME：Platform原owner唯一writer，基线af38f44 tracked clean。仅D0具名8现源码（skill.model/source service+projection mapper；installation model/repository/product mapper/service/product RPC）和9现测试：unit/{bff-projection,skill-published-read,skill-installation-product-mapper,skill-installation-product-rpc,skill-installation}；integration/{skill-projection-postgres,skill-installation,bff-projection,nest-ingress}。先新增来源时间与安装时间故意不同、精确revision/非latest、replay fresh safe metadata负控实跑RED，Root复跑后实现。sourceUpdatedAt必需来自已核row.skill.updatedAt或currentSkill.updatedAt；不进receipt/digest/outbox/schema，不用安装时间fallback。官方JSON白名单只精确加既有tags13与新必需skill_updated_at，不放宽，IAM旧fifth surface失败留OPEN另行处理。其它fixture若缺类型字段先报告再增授权，禁止批量改。正常进程31887非watch旧投影保持，不启动或重启，真实隔离资源由Root控制。
+
+R345-W-D0：Web原owner唯一writer，正常树a9ae62c，原27tracked/6untracked Admin/R332逐SHA保护。仅在docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md前加当前方案前缀，原后缀byte保留；固定BFF public8.9四必需skill_updated_at严格消费，catalog/本人预览显示真实Skill更新时间，不冒installed_at/updated_at，不构造作者/examples/usage。先盘点确切source/test/generator范围，当前只D0，formal B machine发布后再授权consumer/runtime；其它模块与服务/资源/Git操作排除。Root独占截图比较与集成提交。
+
+R345-B-RUNTIME：原BFF owner唯一writer，machine冻结129paths待Root提交后；P运行03ee664已提交但正常未激活。仅2源码 projection-http.ts/personal-installation-response.ts，以及现 test/platform-projection-{http,route}.test.mjs 和 skill-installation-http.test.mjs、test/architecture.test.ts。严格4投影field缺失/非法/非Z/extra负控；Proto14必需映射且与7/8分离，nanos越界/缺失拒绝。另5既有test/{skill-publish,skill-validate,skill-installation,skill-package-begin,skill-package-complete}-http.test.mjs只更新固定已正式owner路径字面与必要installation fixture，旧V5向量bytes不动。先tests RED→Root复跑→GREEN；不改SQL/权限/receipt/package/domain/环境/服务/resources/Git。完整现门恢复后Root配对启用，不留旧vendor fallback。
+
+R345-W-CONSUMER：Web原owner在3a46696续写，B正式17be2fa/public8.9/111 source f7f69075…0846可固定。先仅D0具名contract/hub/UI测试写RED冻结，Root重跑后再唯一artifact＋两generator正规派生＋2wire schema＋小型SkillUpdatedAt及2现reader/CSS。九字典不改（既有updatedAt）；Admin contract只换pin、hub-proxy仅必要fixturehunk，原27tracked/6untracked混合及文档suffix逐SHA保留。不扩全局auth/会话/主题/package/数据库/依赖；正常HMR前须Root准备配对后端，界面日期只来自Skill事实。工程门辅助，最终目录/本人真实点击与同尺寸截图为准。
+
+R345 Root补充：B runtime完整check原89767自然exit0，contract323PASS/default903PASS/2原资源SKIP；独审发现Timestamp seconds合法范围缺失P1，未放行。Root同新负控0PASS/1FAIL后准现helper两bigint边界比较，不改授权/receipt/安装时间绑定。Web三文件原75015真实RED0PASS/5FAIL/308名称过滤：四closedschema旧valid=false/missing=true与预览/卡片time=null，已准原owner最窄消费与真实日期呈现。两个正常非watch后端仍旧配对，未重启，共享数据保留；真正UI与Manus一致仍OPEN。
+
+R345-W补充唯一类型闭包：准现src/dev/preview-clients.ts三原DEV-only fixtures仅增加显式固定skill_updated_at，不从安装时间fallback、不改变DEV开关/路由/normal响应；实际用户严禁替fixture。后端runtime Root已精确11路径提交2e5fbaf（contract324/default904PASS、2资源SKIP），原正常进程未切换。
+
+R345终态：Platform03ee664真实来源投影/BFF2e5fbaf严格public8.9消费/Webe7c7370内外date全部已Root局部验收；当前文档780c8a0/7565877，normal P42873/92130、B5007/92197、W66154/31451。Root25711与78290自然0，312contract/51architecture/5聚焦/295wire及lint/types/build；真实目录+本人两view同date、SKILL.md/Back/Close与800位置/390触控通过，整体作者/示例/cover/usage/创建/后台仍OPEN。其它模块暂停；下一示例字段先沿Platform owner确认最小typed事实落点及Admin写入，不额外计划中心。
+
 <!-- R344-REFERENCE-TASK-END -->
 
 ### R343 本人正文切片已提交；Manus 完整设计仍未验收（2026-10-08，沿 T-K03）
