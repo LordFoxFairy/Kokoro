@@ -1,3 +1,57 @@
+### R344 严格对齐整个 Skills：外部目录、预览与详情、我的技能（沿 T-K03，2026-10-08）
+
+|任务|归属/执行|基线/范围|依赖与验收|状态|
+|---|---|---|---|---|
+|T-K03-R344-REF：真实参考及个人列表展示差异|Root 浏览器；原 Web owner 只读准备|Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web，HEAD919616264c9bfa7d437c491fbdc3b0df6e19912b；R343已提交，原 Admin/R332 保留；只读 personal reader/CSS、Settings装配、typed字段及现测|已登录 Manus 我的技能→全部，真实卡：名称/开关、3行简介、更新日期、12px圆角/12px间隔；去除卡面“来源/安装/启停”状态堆叠。正式数据事实不得伪造；不触及其它模块、全局Settings壳层、DB或contract。Root批准仅 personal-skills-read.tsx/CSS 与现 kokoro-skills-surface.test.tsx：单列/12gap/头名称+Switch/三行48px简介；卡面无三组状态；保原More/撤回源禁重新启用/幂等恢复与R343正文；不新造日期或origin分类，未匹配部分继续OPEN|参考已取得；R343 9196162已提交，Web唯一writer获三文件窄授权|
+|T-K03-R344-META：严格参考所需展示字段最小契约方案|原 BFF Skills owner，只读方案|BFF normal411e690 / Platform1f6f764；现 modules/skills、真实Metadata/package投影与API/SQL设计，不改文件/资源|明确Skill更新时间、作者显示名、example_prompts、封面、官方/个人/第三方分类的事实源与最小字段；不重发历史泛审，不造usage；Root在现任务与文档门裁决后按owner逐片实现|只读方案已交；更新时间事实存在、examples等展示事实未投影，尚未实现|
+
+Manus 预览当前 Manim 分类→20/26标题→作者/更新/usage→32px动作→简介→44px示例（12px间距）；本地尚缺真实metadata/examples，仍未一致。截图 r344-manus-preview-reference.png / r344-manus-my-skills-all-reference.png 只是参考，不冒本地修后。
+
+
+R344-REF 同Web owner后继现CSS窄授权：新增 skill-catalog-read.module.css 与原 personal-skills-read.module.css 的预览book原盒105×140、start60/bottom-10/rotate6.21、标签12/16、动作14/18与136主按钮；安装>=768两列/窄单列。Root实测参考；现catalog692容器三列保留。已有文件局部呈现职责不变，无新目录/API/SQL，保原business handlers、44coarse、package mode、未知恢复与共享Settings壳。实际尚无作者/更新时间/examples，禁止空填行冒一致。Root收新的两CSS冻结后真实浏览器及对应工程返验。
+
+最新用户明确：不只Settings，外部预览/详情与示例list同样不合格。Root已真实打开Manus“互联网技能搜索器”与Kokoro外部R255卡并保存修前图：本地title y171 vs参考169，动作y217 vs241；本地无作者/Skill更新时间行、示例list，任意已安装目录卡查看详情仍未出现。不是仅CSS或135px安装卡即完成。参考当前分别1113与662视口，不冒同尺寸；临时viewport操作未即时生效，已reset。
+
+|继续切片|Owner/角色/模型|基线及唯一写集|约束与交付|
+|---|---|---|---|
+|R344-PRESENT-D0：真实Skill更新时间展示前置|Platform原物理apps/kokoro-capability；platform_skills_presentation_owner_r344，gpt-5.6-sol；Root审查|HEAD1f6f764，分支及SHA启动自核；仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md增加具名当前设计前缀，原后缀保留|Skill.updatedAt现事实，无SQL新字段或安装时间冒充；catalog/managed/published/installation正式投影，RPC additive tag14，HTTP有版本固定策略、BFF closed消费者发布顺序。先设计门，禁止先代码/机器/数据库/生成物；不改其它模块、Git或共享进程。examples/署名/cover/usage及任意目录正文资格明确后继，不造空实现|
+
+R344-REF 同 Web owner 本轮后继授权：仅 personal-skills-read.tsx 与现 surface test 删除普通本人安装预览的来源/安装/启停三状态及快照技术提示、本人来源预览的状态提示；保原授权/未知恢复/操作错误、包详情与焦点。Root 实际外部 R255 预览仍无作者日期/示例/常驻详情，明确不以个人卡局部修复冒外部完成。其它模块暂停。
+
+R344-CAT：外部已安装卡常驻“查看详情”。Root裁决为现 Web catalog 安装交互局部接线：正式 BFF 8.8 本人安装 list/GET/package 已足，无新owner/API/SQL；仅现 use-catalog-installation.ts、skill-catalog-read.tsx、surface test，同Web唯一writer。对用户当前选中且 catalog installed===true 的卡有界分页读取本人安装，exact source_ref/revision/installed 匹配并 canonical GET 再核ID；不凭scope/名称/series猜资格、不POST补资格。缺失/重复/错误/超预算明确未知与Retry，401/403退役、切卡/关闭/identity取消丢迟到。原freshACK/unknown命令恢复保留。当前未安装公开项正文资格仍OPEN；优先当前点击读而非遍历所有目录卡/N+1预抓。不新增框架文件，Root重跑门与真实外部Click详情→Back→Close。基线 d8d0f74，原混合修改保护。
+
+R344交付：Web d8d0f74（4path）与a9ae62c（3path）已Root精确提交；本人与外部已安装正文/返回/归焦实操通过，13focused与types/lint/build0仅局部门。Platform dcc2102仅3D0，字段仍未发行；其它展示及后台OPEN。外部读取缺口已局部验收，不升级完整Skills/70/33。
+
+<!-- R344-REFERENCE-TASK-END -->
+
+### R343 本人正文切片已提交；Manus 完整设计仍未验收（2026-10-08，沿 T-K03）
+
+Web 正式切片 **919616264c9bfa7d437c491fbdc3b0df6e19912b**（parent2138a10），Root仅39具名路径，mixed三D0/九字典/route/测试逆转保护原 Admin/R332，745非范围原tracked SHA exact。原27tracked与6untracked继续未提交。固定 BFF public8.8.0/111 SHA1273ebcd；runtime411e690，Platform/Storage真实本人目录与正文四Web GET均200/绑定/private no-store，未新增用户、包或安装。
+
+真实662×752：本人已安装与发布卡→查看详情→SKILL.md/manifest→Back、Close归焦实操；详情壳628.8984×600/x16.5508/y76，标题x61.5508/y99.5/16/22与Manus该局部相符。首Escape曾真实误关Dialog，窄修父Radix后第一次仅收文件菜单并归焦文件、第二次关闭归原卡；frontmatter原文不被误当setext标题。只验这些读取入口，不冒任意目录卡详情已齐或整页像素一致。
+
+Root最终冻结正常树：contract310PASS、focused81PASS、architecture51PASS，lint/typecheck/build0；default3394PASS/70FAIL（6文件）继续OPEN。精确index导出另contract293/route+focused168/architecture51/lint0；build因为核验依赖symlink超出Turbopack项目根失败，不冒构建PASS。核验pnpm自动workspace重链接导致正常页面构建遮罩，Root已修回三包正常链接、移除共享核验链接并触发原watcher重读；auth200/未登录app307、随后真实Settings正常渲染，未重启owner/reset。错误图保留，不冒有效布局修前图。
+
+Manus预览作者/Skill更新时间/example_prompts/usage/真实封面、任意可见目录读取资格、四创建能力、Skills后台及全Playwright/axe/最终390px/暗色/200%仍OPEN。R344依最新用户要求先照真实“我的技能→全部”截图窄修安装卡名称+Switch/三行简介/去状态堆叠；不是恢复其它模块，kokoro-10保持暂停、完整Wave0–7 active，原业务70/33汇总不升级。
+
+<!-- R343-LIVE-DETAIL-REVIEW-END -->
+
+### T-K03 / R343 Skills 真实展示字段只读核对
+
+- Owner：Platform（物理 apps/kokoro-capability）；执行沿 bff_skills_public_owner_r342，原模型 gpt-5.6-sol，Root审查；仅只读、无Git/服务/资源操作。
+- 基线：Platform 1f6f764、BFF 411e690；核对前后tracked SHA与现git状态，保护var与其他混合改动。
+- 范围：现Skills catalog/managed/installation/package model、API/机器契约、DATA_MODEL以及BFF fixed消费；不得写代码、契约、SQL或文档。
+- 目标：明确author展示名、Skill更新时间、example_prompts、usage、真实cover各字段当前是否有事实、由谁提供；对缺失给最小owner路径，不以现用户/安装日期/frontmatter猜测充数。任意catalog查看正文资格单列。
+- 依赖：可与Web当前窄详情实现并行审计；后继写入要Root另审，禁止绕过D0。交付现字段+证据绝对路径/行号和未决项，Root browser验收仍是完成标准。
+
+### R343 Web 原改动恢复与真实 UI 验收保留（2026-10-08）
+
+当前 Skills 页面仍未达到 Manus 一致效果。Web 唯一 writer 在 16 个既有文件误执行默认格式化，Root立即停写；所有功能候选逐路径保存在 ignored r343-web-format-candidate，不提交误格式化。Root借基线SHA与当前源码source map恢复15文件，再由原历史patch精确恢复hub-proxy混合测试；16/16均等原基线SHA，receipt all_exact=true。不是用HEAD覆盖协作者修改。恢复后已重新授权同writer窄语义补丁。未清理数据或重启服务。
+
+Root亲读新client/adapter/detail候选另发现真实风险：deadline被当主动取消会遗留loading；只传signal却不race会使不响应取消的准入/读流超预算；managed adapter未单独绑定source_ref。已交回同writer，恢复后先负控再窄修，未冒候选已可靠。真实Manus重新点击查看详情并保存当前截图；同弹窗安全正文/文件/返回、同尺寸位置、作者日期例子list与Skills后台均按实际证据验收，工程PASS不替代UI。其他模块与kokoro-10继续暂停，完整Wave0–7 active，原70/33汇总不升级。
+
+<!-- R343-WEB-RECOVERY-RECEIPT-END -->
+
 ### R343 Skills 真实正文链已接通，UI 尚待冻结返验（2026-10-08）
 
 仅Skills继续，其它模块与kokoro-10仍暂停；完整Wave0–7 active。BFF Root精确13路径提交 **411e6906f651087dbbd8ff8afd96d53e38b352c0**（parent e705627）。558非范围tracked/原var保护；public8.8.0/111机器字节不改。新增两本人包GET运行：真实本人来源与安装目录/SKILL.md四GET从0PASS/4个404→4PASS/0FAIL/0SKIP；另正常HTTP九边界/缺失读取9PASS。正式既有source/package/安装与真实Storage bytes，无新fixture/user/data。工程证据不代浏览器。

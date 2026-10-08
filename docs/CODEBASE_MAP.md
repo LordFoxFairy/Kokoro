@@ -1,3 +1,41 @@
+### R344 Skills 内外预览仍未完整对齐（2026-10-08，沿 T-K03）
+
+Web 局部正式提交 `d8d0f74f33c2d0d9491c9f07e05fb94ebbaad235`（parent9196162），Root仅4具名路径：本人安装卡名称/真实Switch/三行简介/135px紧凑卡；普通安装与发布预览去状态堆叠/技术快照提示；两预览封面位置与32px动作窄修。原混合Admin/R332与27tracked/6untracked保护，范围外SHA无改变。
+
+Root正常开发树 typecheck/lint/build自然0，精确4例PASS/57过滤SKIP。广pattern误包含两历史个人入口断言，实际2FAIL/4PASS/55过滤SKIP保留；此前3FAIL广pattern和3394PASS/70FAIL完整回归仍历史OPEN，不以四例替完整业务。独审最终两源码/测试SHA及先前CSS无新增确定阻断；粗指针44px为静态复核，最终触屏/宽双列/axe/全Playwright仍待验。
+
+Root真实R255停用→启用恢复原true、More移除确认→取消未删除；撤回源R267禁止重启。本人R323预览已无三状态/hint，查看详情读实际SKILL.md→Back→Close归原标题PASS。本轮未创建包/账号、不重启服务/reset。外部R255修前初次打开只有添加按钮、无详情/作者日期/示例，真实FAIL保留；同800×752 Manus Internet Skill Finder参考已用完整clip存jpg，三示例44px/y366/422/478，安装/查看详情32px/y241，预览760×600/x20/y76。原native截图缩放异常不作同尺寸证据。
+
+R344-CAT同Web唯一writer已冻结，Root补现正式安装list+canonicalGET精确source/revision/installed映射常驻详情的真实外部验收（下方收据）；不POST制造资格，无新owner/contract。任意未安装catalog包读资格、作者/Skill日期/examples/usage/真实cover、创建4能力与Skills后台继续OPEN。Platform仅三D0提交 `dcc2102`，更新时间设计独审4阻断已改，旧suffix exact；机器/运行未激活、不冒字段可见。
+
+只Skills继续，其它模块及kokoro-10仍暂停；完整Wave0–7 active，70/33业务汇总不升级，不宣Skills完成。
+
+R344-CAT 外部已安装卡读取切片已提交 `a9ae62c740c84e994236e3a5e8abeaad7705a63c`（parentd8d0f74），Root精确3paths，非范围tracked SHA全保持；无新API/SQL/owner/依赖。正常树Root 13PASS/60过滤SKIP，typecheck/lint/build自然0；独审三冻结SHA无确定新增阻断。Writer全surface24PASS/49旧FAIL只是交付报告，Root未重新跑完整default/全Playwright/axe，不冒完整回归清零。
+
+Root真实外部R255目录响应installed=true，精确source `skill:e493e093-84c4-40df-bbcd-e7426a985e44` / revision1 → 本人安装list200 → canonical安装f0b0d695 GET200 → package目录200 → SKILL.md200，实际正文“Normal checklist”，Back保持同预览/详情入口，Close归焦原R255卡。网络观察只有4个GET、0POST，无再次安装或伪造数据。实际800×752修前/参考/修后jpg与请求receipt在现ignored r255-preserve；外部现在有常驻查看详情，但作者/日期/示例/usage/真实封面/未安装项读取资格/创建与后台仍OPEN，不称Manus一致。
+
+<!-- R344-LOCAL-REVIEW-END -->
+
+### R343 本人正文切片已提交；Manus 完整设计仍未验收（2026-10-08，沿 T-K03）
+
+Web 正式切片 **919616264c9bfa7d437c491fbdc3b0df6e19912b**（parent2138a10），Root仅39具名路径，mixed三D0/九字典/route/测试逆转保护原 Admin/R332，745非范围原tracked SHA exact。原27tracked与6untracked继续未提交。固定 BFF public8.8.0/111 SHA1273ebcd；runtime411e690，Platform/Storage真实本人目录与正文四Web GET均200/绑定/private no-store，未新增用户、包或安装。
+
+真实662×752：本人已安装与发布卡→查看详情→SKILL.md/manifest→Back、Close归焦实操；详情壳628.8984×600/x16.5508/y76，标题x61.5508/y99.5/16/22与Manus该局部相符。首Escape曾真实误关Dialog，窄修父Radix后第一次仅收文件菜单并归焦文件、第二次关闭归原卡；frontmatter原文不被误当setext标题。只验这些读取入口，不冒任意目录卡详情已齐或整页像素一致。
+
+Root最终冻结正常树：contract310PASS、focused81PASS、architecture51PASS，lint/typecheck/build0；default3394PASS/70FAIL（6文件）继续OPEN。精确index导出另contract293/route+focused168/architecture51/lint0；build因为核验依赖symlink超出Turbopack项目根失败，不冒构建PASS。核验pnpm自动workspace重链接导致正常页面构建遮罩，Root已修回三包正常链接、移除共享核验链接并触发原watcher重读；auth200/未登录app307、随后真实Settings正常渲染，未重启owner/reset。错误图保留，不冒有效布局修前图。
+
+Manus预览作者/Skill更新时间/example_prompts/usage/真实封面、任意可见目录读取资格、四创建能力、Skills后台及全Playwright/axe/最终390px/暗色/200%仍OPEN。R344依最新用户要求先照真实“我的技能→全部”截图窄修安装卡名称+Switch/三行简介/去状态堆叠；不是恢复其它模块，kokoro-10保持暂停、完整Wave0–7 active，原业务70/33汇总不升级。
+
+<!-- R343-LIVE-DETAIL-REVIEW-END -->
+
+### R343 Web 原改动恢复与真实 UI 验收保留（2026-10-08）
+
+当前 Skills 页面仍未达到 Manus 一致效果。Web 唯一 writer 在 16 个既有文件误执行默认格式化，Root立即停写；所有功能候选逐路径保存在 ignored r343-web-format-candidate，不提交误格式化。Root借基线SHA与当前源码source map恢复15文件，再由原历史patch精确恢复hub-proxy混合测试；16/16均等原基线SHA，receipt all_exact=true。不是用HEAD覆盖协作者修改。恢复后已重新授权同writer窄语义补丁。未清理数据或重启服务。
+
+Root亲读新client/adapter/detail候选另发现真实风险：deadline被当主动取消会遗留loading；只传signal却不race会使不响应取消的准入/读流超预算；managed adapter未单独绑定source_ref。已交回同writer，恢复后先负控再窄修，未冒候选已可靠。真实Manus重新点击查看详情并保存当前截图；同弹窗安全正文/文件/返回、同尺寸位置、作者日期例子list与Skills后台均按实际证据验收，工程PASS不替代UI。其他模块与kokoro-10继续暂停，完整Wave0–7 active，原70/33汇总不升级。
+
+<!-- R343-WEB-RECOVERY-RECEIPT-END -->
+
 ### R343 Skills 两本人原文读取运行入口
 
 当前正常BFF worktree正式411e6906（parent e705627/public8.8/111），运行三个普通文件`src/http/routes/skill-package-inspection.ts`与`src/infrastructure/clients/platform/skill-package-inspection-{connect,response}.ts`；server generic前exact分流。真实正常4GET/9边界Root通过，无SQL/正文缓存。Web唯一writer在既有r257-admin-web接package client/server adapter/同Dialog详情，未冻结/UI未验；当前事实与证据见CURRENT R343。物理Platform仍apps/kokoro-capability，Storage唯一对象字节；五正常依赖复用，当前BFF注册32003/PID44454，历史句柄不作当前事实。
