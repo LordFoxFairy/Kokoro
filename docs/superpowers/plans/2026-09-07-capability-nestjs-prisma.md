@@ -20,7 +20,7 @@
 
 | ID | 用户路径 | 最终浏览器验收条件 | 当前事实/待交付 |
 | --- | --- | --- | --- |
-| S01 | 外部目录、搜索、分类、分页 | 搜索→切换真实分类→翻页→打开卡片→返回仍保条件/位置；空结果/错误可恢复；结果来自真实后端 | 分类machine已正式，存写P3实施；BFF9/Web未切换，整体OPEN |
+| S01 | 外部目录、搜索、分类、分页 | 搜索→切换真实分类→翻页→打开卡片→返回仍保条件/位置；空结果/错误可恢复；结果来自真实后端 | 分类machine与存写P3已正式；正常服务/BFF9/Web未切换，整体OPEN |
 | S02 | 卡片/预览完整真实字段 | 发布方、更新时间、分类、简介、示例及适用的真实封面/usage或GitHub来源/Star/Fork在卡片和预览一致；来源variant按实际参考，不编造统计/作者/封面事实 | 示例v1/v2已真实打通；作者/usage/真实封面/GitHub统计仍OPEN |
 | S03 | 查看详情与包文件 | 预览→详情→切换文件→返回→关闭→重开，正文可读，权限/缺包错误明确；持续内容无反复闪白、错误包不作为有效技能 | R351修过重复加载局部；完整视觉/准入/异步回归仍OPEN |
 | S04 | 添加、启停、移除、同步 | 添加同revision→我的技能出现→启停/移除→返回目录状态同步→刷新仍正确；重复点击不重复安装；操作失败保旧列表并可恢复；新revision发布后明确旧安装保持原版、提示与显式升级/移除重装语义，不随刷新偷偷换源 | 原安装/管理有局部证据，不冒本轮整链完成 |
@@ -126,7 +126,7 @@ IAM D0正式 `3ee0f76ec5705bcaa4466bcf001b5e4bacc53401`，精确三设计/445其
 | 项 | 本片锁定 |
 | --- | --- |
 | 任务/Owner | R353-D1-IAM-I1，Skills发布方与管理员依赖；IAM原iam_skills_admission_review_r343唯一writer，Root集成/Git，原Platform owner冻结后独审 |
-| 基线/范围 | IAM3ee0f76 clean；精确scope `r353-d1-iam-implementation-scope.json`，Root原字节保护 `r353-d1-iam-i1-root-baseline.json`；21生产/脚本/SDK说明修改、13新增、19现有测试、1机器源及正规SDK实际diff；禁止其它仓、Schema/依赖/Member API/三个D0历史字节修改 |
+| 基线/范围 | IAM3ee0f76 clean；最终精确53路径freeze `r353-d1-iam-i1-f3-owner-freeze.json`，原范围与窄补准历史保留；Root原字节保护 `r353-d1-iam-i1-root-baseline.json`，408范围外保持；禁止其它仓、Schema/依赖/Member API/三个D0历史字节修改 |
 | 目标/位置 | 一次IAM internal/SDK0.10.0、28operations。新publisher四普通文件置现organization子能力；无状态transaction-local user-delegated-tenant-access供两个repo在各自同一RR内复用有限事实，不另开事务、不复制鉴权；admin action policy独立不可动态赋予 |
 | 契约/数据 | 3普通action+8独立adminaction、publisher scope与专用skills_admin machine purpose/scope同片；复用原Session/User/Member/Client/Resource/Binding，不DDL。ref id非空≤255不trim，tenant复用现trim/255；显示原name/string与image/string或null，不虚构字段 |
 | 删除/依赖 | 替换skill repo内重复准入代码而保留原普通行为；无alias/新role/管理员API。正规code-first机器生成、SDK干净临时目录生成对比；固定consumer后继，不在本片切BFF/Platform/Web或正常权限 |
@@ -136,11 +136,35 @@ IAM D0正式 `3ee0f76ec5705bcaa4466bcf001b5e4bacc53401`，精确三设计/445其
 
 I1范围补准：Root监测两未授权既有文件已变，原writer立即停写、候选保留未覆盖。逐差异核定publisher确需InternalAccess闭集`internal-principal.types.ts`及`internal-auth.guard.ts`精确scope/profile/path/query与单RR下游接线；另用原基线SHA批准这两路径（modify21→23），无其他遗漏，不能冒首次保护通过。收据 `r353-d1-iam-i1-scope-correction.json`。新publisher测试首次missing-module仅收集失败，随后13PASS不是行为RED；现动作/机器缺项仍由Root实际13FAIL/1PASS基线支持，后继HTTP入口负控与旧普通行为须完整回归。 第二次Root发现补准guard对应既有单测也未列，writer停写后逐diff批准唯一`test/unit/internal-auth.guard.test.ts`（19→20旧test）；只新增具名operation及严格准入负控，旧断言保持。原SHA与候选收据`r353-d1-iam-i1-guard-test-correction.json`保留，首次范围盘点遗漏未抹去。
 
+I1冻结后Root真实隔离issuer/HTTP首轮20PASS/4FAIL：publisher注册被正式OAuth scope白名单拒绝（真实生产接线遗漏），MCP旧fixture仅认可5/6项而当前已7项。PG前后78库无新增/删除，冻结49SHA保持。独审另确认Publisher演进3P1：未知ACK被回读改记成功、scope以外事实/consent未保持、CLI未接受控脱敏。未放行或激活正常服务，不以987纯门冒真实准入完成。
+
+R353-D1-IAM-I1-P1续派原IAM唯一writer：沿现service/schema/repository/CLI及具名既有测试一起关闭上述缺项；精确新增授权仅better-auth.config.ts的publisher发行scope，原SHA与Root授权收据r353-d1-iam-i1-p1-root-grant.json，其他旧scope字节/Member/Schema不扩改。旧Skill-only迁移行为保持；新publisher固定完整前快照、只追加scope、保consent/binding/tenant；任一未知ACK停止后继写且不重发，后续显式read不能追认原操作成功。先具名真实RED再实现，冻结后原Platform reviewer复审，Root重跑实际HTTP与受控演进证据后才提交；S01–S10仍未验收。
+
+I1-P1首重冻51paths，Root实际issuer/HTTP生命周期59PASS/4FAIL（publisher403、窄scope fixture缺refresh、演进unknown）。独审ACK/CLI关闭，client精确scopes与完整标量保留仍OPEN。沿原writer一次F2续修同问题，增授权仅既有publisher HTTP/公共fixture，真实ACK须按当前provider核定，fresh internal resource漏publisher上限也必须闭合；不得放宽准入/给无offline_access强造refresh。Root纯门1036PASS及静态均成功执行，shell最后误用zsh只读status使wrapper退出1另记，不能称该wrapper0；独立diffcheck0。未放行或激活正常链。
+
+I1-F2冻结53paths，Root静态wrapper自然0（1038PASS），完整机器逆剥还原旧27PASS；同4真实HTTP60PASS/3FAIL，publisher准入已通过且scope演进全行保持，失败为null错误期望false及两个旧Skill fixture未回到旧阶段。独审原3P1全部关闭，完整binding只读resourceId仍有P2；F3仅授权现7路径补binding全行快照及精确fixture（r353-d1-iam-i1-f3-root-grant.json），不放宽production、不把null改false、不扩角色。冻后实际HTTP仍须全通过才提交，正常服务未激活、页面未验收。
+
+证据完整性：原writer确认F2新增scope/name漂移两负控未在对应production修改前单独跑RED，首次为GREEN；这项缺口明确保留，不把此前独审或首次13FAIL冒作这两条RED。F3 binding重建/metadata负控要求先真实RED，最终Root完整negative/真实门和代码审查仍必需。
+
+#### I1 正式源码与依赖资格收尾（2026-10-08，非页面验收）
+
+IAM `7c62e759760448e127b21200f87adeefdc6016f7`，Root串行精确53paths提交、IAM工作树clean；F3 freeze08aa1083、408保护及865 Root保护逐字节PASS。原owner停写；原Platform独审报告r353-d1-iam-i1-f3-independent-review.md（d5b9abe0）关闭3P1/binding P2，无新增确定阻断。Root最终四真实issuer/HTTP/lifecycle63PASS/零FAIL与108files1040purePASS、format/lint/type/contract/sdk/schema validate/build/diffcheck全自然0；句柄27870/90475自然终态，不重复启动测试。严格逆剥机器还原旧27完整图、最终机器31010c6b不变，非Member admin catalog保持。
+
+正式Node24.20.0 `pnpm sdk:pack` exit0；0.10.0/96entries，包来源绑定同7c62e75，archive66f83688，实际tar内provenance/contract SHA已Root复核；收据r353-d1-iam-i1-root-{qualification,commit-receipt,sdk-artifact-receipt}.json。最终PG前后78库、added/removed为空、normal retained，未激活正常issuer/resource/client权限、不改正常Schema/基础设施/服务。首次真实失败与RED缺口仍记历史，不反标全程先RED。资格通过只放行后继固定owner消费；S01–S10全部仍OPEN，无新UI或正常浏览器验收。
+
+Root台账提交前首HEAD断言误用最初6bc940f3而非当前正式ba8d5ae3，实报FAIL且未暂存；核中间779979be/ba8d5ae3均仅现四台账范围、865保护与原8gitlink raw保持后，改按真实ba8d5ae3基线提交。收据r353-d1-root-docs-initial-head-check.json，未reset或覆盖其它修改。
+
 #### D1-ST2：封面依赖的真实停止线（只读，不扩成其它模块研发）
 
 原Platform reviewer报告 `r353-d1-st2-versionid-review.json`（SHA abb57818416b7d7c925bdeae1ec2b15da769b6fca00defc2757aa7ca3b8fe16e）：7现production/6test的最小精确版本清理修订可以保护已持久化真实版本，零新增Schema/Proto/deps；但现presigned客户端PUT无可信写回执/终止边界，Complete/current HEAD及promote丢写响应的问题不能仅换DELETE参数补齐。旧null与未知staging须保pending，normal配置阻塞激活不阻塞自有versioned bucket核验；不把“不误删”宣称为“所有上传/中止可回收”。
 
 Root保55候选，本轮不授Storage源码/bucket/DDL权限、不临时发零fallback半成品，也不盲采用历史multipart候选。完整cover依赖还需一次收敛可信写入/producer边界与正式owner合同，再纳入同字段发行；不因这项未决停止可执行IAM实现。清理资源验证必须真实owner路径v1/v2并存与撤权/unknown矩阵，旧If-Match FAIL保留。最终Skills页面仍OPEN，下一审IAM统一I1冻结并按真实HTTP放行。
+
+#### D1-ST3：封面链与历史回收分离（Root只读裁决，待三设计，不授权实现）
+
+原Platform agent再次核定：历史/未知垃圾保pending本身不挡Skills UI；真正前置是封面所选bytes、扫描与最终Asset的精确版本。Root采用现presigned PUT→Complete→scan→promote的最小方向：Complete source_version_id仅不可信locator，Storage按当前Upload可信key/tenant/scope及预期digest对指定版本HEAD/全流SHA/scan独立核验；在现fence事务冻结来源VersionId/ETag，命令fingerprint绑定版本。promote保存本次PUT响应的最终版本，不从current HEAD追认；Asset读取始终指定冻结版本。未知/晚PUT/丢ACK不产生可用Asset，留可观察pending，已知版本清理不删除后来版本。不建设新上传服务或第二套fallback。
+
+后继只在Storage既有Upload/Asset内修三D0，一次锁定必要两个来源列、Complete字段/digest及cover合同；版本Enabled与CORS暴露版本回执是正常链激活前置，当前未改正常bucket。禁止只给封面加名称就绕过包上传的同类身份问题；发行前盘点Complete全部固定消费者（package/其它复用upload入口）并统一更新，不能无声破坏现正常路径。新server字节上传因transport/背压/恢复增量更大淘汰，旧55未合并、原If-Match FAIL与未知物理回收OPEN保留。此为后继设计决定，不冒Schema/资源/页面完成；实证须错版本/跨key/摘要、晚PUT、unknown、重放、v1清理保v2及真正浏览器封面完整链。
 
 ## D. 执行顺序与职责（减少跨仓来回改）
 

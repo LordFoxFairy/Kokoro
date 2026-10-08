@@ -1,3 +1,11 @@
+### R353 Skills 身份依赖已正式交付，整页尚未验收（2026-10-08）
+
+IAM正式 `7c62e759760448e127b21200f87adeefdc6016f7`：发布方最小显示读取、普通Skills动作、独立管理员动作与专用受信后台调用面一起发行，internal/SDK0.10.0/28operations；不改Schema、Member API或新增业务角色。Root精确53paths、408 IAM与865 Root非范围原字节保持，原owner冻结后独审原3P1及binding P2关闭。实际四个自有隔离issuer/HTTP/lifecycle文件63PASS/零FAIL；纯门108files1040PASS，format/lint/type/contract/SDK/schema validate/build/diffcheck均自然0。SDK正式打包96entries，来源同commit、机器SHA31010c6b，artifact SHA66f83688；旧27operations整个逆剥图保持。上述仅依赖源码资格，不是页面验收。
+
+首20/4、续59/4、60/3真实失败、范围补准与F2新增scope/name负控缺实施前RED均保留；binding本片真实2FAIL→88PASS。PG起终78库零新增/删除，正常库保留；未重启服务、未激活正常权限、未做DDL或修改正常bucket。原8gitlinks/uv.lock及Web Admin混合修改保留。
+
+下一沿同一R353清单：Storage仅锁定封面精确版本/扫描与全部Complete消费者，再Platform整份字段/准入/草稿能力发行→固定BFF消费→Web内外Skills及后台完整页面片→正规普通/管理员S01–S10浏览器和同尺寸Manus对照。历史未知垃圾回收不作为UI前置，不另建上传服务；参考记录入口语义仍OPEN。Skills仍未完成，本轮没有新浏览器完成证据，不升业务完成数；其它模块/heartbeat继续暂停，完整Wave0–7 active。
+
 ### R353 Skills 整体链路：身份依赖进入统一实现（2026-10-08）
 
 IAM三设计正式 `3ee0f76`，独审发现的准入矛盾已修正并复核；仅设计，不是接口或页面完成。原IAM owner现获精确I1源码任务：一次发布方显示、普通/管理员动作与专用受信后台调用面，internal/SDK目标0.10.0/28operations；Schema/依赖/原Member API不改。Root当前真实schema/contract13FAIL/1PASS为缺项基线，不作产品验收。原Platform agent只读核Storage必要精确VersionId清理修订，两个独立工作面并行、同仓一个writer，Root独占集成/Git。
