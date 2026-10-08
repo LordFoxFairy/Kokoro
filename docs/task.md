@@ -1,10 +1,16 @@
-### R353 当前：完整 Skills 同一清单，真实联调停止线（2026-10-08）
+### R353 当前：Skills 整片接线与真实页面差距（2026-10-08，页面未验收）
 
-只推进既有 Skills S01–S10；其它模块和 heartbeat 暂停，完整 Wave0–7 active。BFF B1 正式 9d1cc19b（Root真实入口7PASS、PG/Redis259PASS，正常环境未激活）；完整 B2消费方案 f0bd80b6 已收敛，等待 Platform 正式发行。Web内外页、预览/查看详情、我的技能、四创建入口、后台和异步稳定性在同一整片范围；S01–S10全部仍OPEN，不把工程门当页面验收。
+只推进同一计划 Skills S01–S10；其它模块及 heartbeat 暂停，完整 Wave0–7 active。外部目录、预览、正文、我的技能/Settings、四创建入口、分享下载、对应后台及异步稳定性是同一交付范围。下方旧记录均为历史切片，不覆盖本节当前事实；辅助门与局部截图均不升级页面完成数，S01–S10全部OPEN。
 
-Platform最后206文件冻结6e950a90经Root逐SHA核对、416保护/5删除/三历史suffix保持；Root重跑1888纯PASS及工程十门0，独审01669f96无新增确定P0–P2。真实13文件PG/Redis185PASS/0FAIL/0SKIP关闭F1–F6，Root精确174实际变更路径正式提交701aedb5b79a2a39ae8c81199d19156efb93b830。F5使用显式owned/existing修正Prisma7.10嵌套事务误判，F6按完整观察CAS汇聚同上传：首次完成只增一次双版本，后续command仅同结果receipt而不改Skill/Asset/source/time；wrongA/stale/changedAsset/感染/lease丢失负控均实测。原150PASS/19FAIL、178PASS/2FAIL和全部RED保留；自有库drop、全库清单不变、正常数据零写。此资源组IAM/Storage仍明确double，不是真实HTTP/MinIO/scanner配对或UI资格；原四历史文档全format失败保持，不称全门通过。正式HTTP5/63RPC/32commands/24proof Product1.0组合5d4bc1e可供完整BFF消费，正常环境未激活。
+Platform正式701aedb5：HTTP5/Product1、63RPC/32commands/24proof、组合5d4bc1e；Root完整冻结已核真实PG/Redis185PASS、pure1888PASS及工程十门0、独审01669f96。该资源组IAM/Storage是double，正常环境未激活，旧四历史文档formatFAIL保留。Storage正式d13f33a sole v3；正常37 final-null资产未修，真实配对/ObjectStore/scanner和普通/管理员持久浏览器旅程仍待验，未改正常库/权限/服务。
 
-必要Agent Artifact消费只读审查41c21ebb确认现生成client仍v2，而正式Storage d13只注册v3；PUT又丢失VersionId且pending恢复会重PUT。仅S06所需依赖前置，Root窄核1f89860d三设计并正式提交4f6802d；原reviewer改为Agent唯一writer，精确20修改/7新/7删/369保护实施同A持久与恢复，不恢复其它Agent功能，不机械repin后宣称链路可用。完整BFF B2原负责人已续只读正式pin/精确生成与整片测试范围方案，不在缺合同基础上修改页面。正常37 final-null资产、真实paired owner与Record交互仍OPEN。当前浏览器读取一次CDP焦点仿真超时，未重复启动浏览器/服务，未据此证明闪动原因或完成UI；原四张同尺寸差异图和最终普通/管理员持久用户旅程仍是页面验收依据。
+BFF B1正式9d1cc19b；完整B2三设计2ffefc9及最小现receipt CAS补充d2695c4已正式。整片卡e8c69593：124修改/35仅生成/107新/65实际删/369保护。原负责人已完成三owner正规生成、Platform63/32/24完整父逆门、上传selected command/digest候选；上传v3恢复矩阵及全部Public9真实业务尚未完成。原writer明确上下文耗尽停写，Root核369保护与237交接字节后，同任务由bff_skills_whole_owner_r353_continuation（gpt-5.6-sol）续接，不回滚候选/另建计划；交接d94ba95e。无冻结/提交/正常激活，动态文件由唯一writer继续，不按编译中间态放行。
+
+S06必要Agent v3尾冻03764b82：Root实际PG13PASS/0SKIP、focused93PASS、lock/ruff/pyright/codegen/diff0，369保护/27候选/7删除保持；仅依赖资格，非真实Storage HTTP/MinIO/browser。独审933bf4c4确认旧同lease CAS loser覆盖赢家(P1)及null阶段恢复(P2)源修关闭，但真实PG未贯穿client→deliver→middleware同一竞争链的证据缺口仍OPEN；原writer仅现integration测试一文件续补，保两旧freeze与失败，不扩生产/其它Agent功能，尚未提交。
+
+Root本轮正常登录Manus与本地只读同实际1113×752对照：两预览都是800×600、x156.5/y76，安装/查看详情主动作均32px且位置匹配，保这些已匹配几何，不盲改整弹窗。真正差距：本地108任意tag分类、装饰封面、缺真实publisher/usage/来源variant；真实已安装SKILL.md可打开，但平面目录/裸frontmatter阅读器与参考不同。四张正确同尺寸预览/阅读器jpg及数值见r353-root-live-ui-comparison-receipt.json(58d8bf6d)；首目录图尺寸不一致明确排除。记录菜单实际点击仅关闭、具体流程仍OPEN；未复现健康同身份续期闪动，不猜HMR原因。S09源码4708dd3f确认ready→loading卸载路径，仅条件因果，不是用户现场完成证据；临时诊断tab已关闭/viewport还原，用户原tabs/服务保留。
+
+下一固定顺序：完整BFF真实Product接线冻结→内外页/Settings/后台同一Web片（保ready正文与滚动/焦点，删旧假preview）→真实依赖配对/必要旧资产资格→S01–S10完整普通与管理员浏览器旅程及Manus宽/中/窄逐图核验。未验证能力明确OPEN，不用接口测试、worker报告或局部“已修复”替整页验收。
 
 ### R353 当前并行切片与实页差距（2026-10-08，仍未整页验收）
 

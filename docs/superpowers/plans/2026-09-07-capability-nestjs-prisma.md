@@ -15,20 +15,21 @@
 
 ### 本轮真实冻结与下一步（2026-10-08，页面完成数不变）
 
-- Platform最后206冻源6e950a90，Root1888纯PASS/工程十门0、独审01669f96；完整13文件真实PG/Redis185PASS/0FAIL/0SKIP关闭F1–F6，Root精确174实际变更路径正式提交701aedb5。HTTP5/63RPC/32commands/24proof Product1.0组合5d4bc1e正式可供消费者；原150/19与178/2和RED保留。IAM/Storage在该PG组是double，正常数据/服务未改，真实HTTP/ObjectStore/scanner配对及UI仍OPEN，原四历史文档全formatFAIL不冒全门通过。
-- BFF完整消费方案 f0bd80b6 已收敛：复用B1 Share/usage，不重写其schema/AGUI；AI复用现Conversation Artifact/Storage精确读取和durable receipt，不新checkpoint/feature flag/双decoder。正式Platform commit后一次完整消费授权，未激活原无watch进程不冒充新增activation机制。
-- S06必要Agent→Storage只读41c21ebb确认v2路由/VersionId/恢复缺口；原位delivery/journal、无DDL、单v3的D0经Root逐项核后正式4f6802d，原reviewer授Agent唯一writer20修改/7新/7删/369保护，只S06必要依赖源；不授正常激活。此必要前置不恢复其它Agent任务。正常37旧资产配对与记录真实语义仍OPEN。
-- 外部目录、预览、正文详情、Settings与后台必须一起交付；最终同尺寸Manus对照及S01–S10普通/管理员完整持久浏览器路径通过前，所有页面仍未验收。当前浏览器一次读取焦点仿真超时，不推断成闪动根因、不重复启动资源。
+- Platform完整正式701aedb5/HTTP5/Product1/63-32-24，Root185真实PG/Redis与1888pure；IAM/Storage在该组为double，不是正常配对或页面资格，旧失败/全format历史失败保留。
+- BFF B1正式9d1cc19b；B2正式三设计2ffefc9→现receipt最小CAS设计d2695c4，原卡e8c69593完整124修改/35仅生成/107新/65实际删/369保护。正式三owner生成与63-32-24父逆已通过，上传command/digest已接候选，v3恢复矩阵/50Public9行为与全接线仍进行中。原writer因上下文限制停写；Root原字节核定d94ba95e交接同任务新上下文，不重做、不分散UI补丁，不把编译通过当freeze。
+- Agent仅S06必要依赖尾冻03764b82；Root实际PG13PASS0SKIP、focused93PASS及六工程门0。旧P1/P2源码由独审933bf4c4确认关闭，但真实PG与实际client→deliver→middleware竞争链证据仍缺；仅原integration测试续补，尚未提交/正常激活。正常37旧资产与正式HTTP/MinIO/scanner组合仍OPEN。
+- Root实际1113×752同尺寸预览两侧800×600/x156.5/y76、两个主动作32px位置一致；保已匹配部分，只修真实字段/分类/阅读器与缺能力。正确预览/详情四张jpg及测量绑定58d8bf6d；第一目录图异尺寸不用于放行。记录菜单无实际后续flow仍OPEN；临时tab关闭、viewport复原、不改正常进程。
+- 外部目录、预览、正文、我的技能/Settings、创建/导入、后台及异步体验同一整片；S01–S10普通/管理员持久浏览器最终通过前均OPEN，既有R350/R351仅局部资格。S09静态4708dd3f确认ready卸载条件链，尚未现场证明健康续期因果；最终同身份刷新保内容/滚动/焦点，真实换主体或撤权仍退役。
 
 ### 当前人员与整片交付节奏（2026-10-08）
 
-| 工作面 | 原负责人 / 当前角色 | 本次交付与边界 |
+| 工作面 | 当前负责人 / 角色 | 本次交付与边界 |
 | --- | --- | --- |
-| Platform Skills | platform_skills_examples_owner_r346 / 唯一writer | 整份真实字段、草稿发布、安装、封面/包及后台动作；不另造Skills服务 |
-| BFF 独立业务 | iam_skills_admission_review_r343 / BFF唯一writer | B1 typed Share与durable usage当前29修改/10新/554保护；Root真实259PASS，独审5efafcc2放行，Root精确提交9d1cc19b。完整Platform发行后再一次Product接线；正常PID44830/父44824无watch，不重启/正常DDL |
-| Web 页面 | skills_whole_ui_review_r353 / 只读UI交互审查 | 整份W0已交Root复核：内外/Settings/后台精确范围、删除假preview、稳定状态与完整浏览器矩阵；正式Product后只授整片，保原混合修改，不做逐字段页面补丁 |
-| 必要Agent依赖 | bff_skills_core_review_r353 / Agent唯一writer | 原BFF审查保留；正式D0 4f6802d后，仅既有Artifact delivery固定Storagev3、A持久与恢复，不开展其它Agent功能；Root独占真实资源/Git |
-| 总验收 | Root | 真实依赖、普通/管理员完整旅程、持久数据与同viewport图对照；辅助门只供排错 |
+| Platform Skills | platform_skills_examples_owner_r346 / 已正式交付、只读后继审查 | 完整701已发行；不并行重写owner，不另造Skills服务 |
+| BFF整份业务消费 | bff_skills_whole_owner_r353_continuation / 唯一writer，gpt-5.6-sol | 同卡e8c完整Public9接线与恢复；原iam负责人明确停写，237候选/369保护Root核定，交接d94ba95e；不授正常DDL/服务重启 |
+| Web完整页面 | Root集成后授唯一writer；W0已只读交付 | 正式Product后同片内外/Settings/后台及稳定状态；保护既有混合修改，不逐字段写UI |
+| 必要Agent依赖 | bff_skills_core_review_r353 / 原唯一writer | 当前仅integration一文件补真实PG实际竞争链；无生产扩写。原独审容量失败有记录，skills_agent_tail_review_r353/gpt-5.6-sol只读替补已交933bf4c4 |
+| 总验收 | Root | 资源/Git独占，当前实际参考截图/测量，最终普通/管理员完整路径；辅助门只供排错 |
 
 - 当前BFF严格native三路径Root资格已通过：旧/fresh、old有数据expand/replay、五真实分组/regex/精度/default/FK负控；前一版误判current失败保留。原package仅两脚本追加2纯/3集成入口，旧值/元数据/依赖保持。Root915PASS/3环境SKIP、类型/lint/build0，仅工程支持。最终真正投影/Share/usage入口7PASS，完整5文件259PASS零SKIP；第一次完整257PASS/2FAIL保留，usage fixture清理闭集/合法source_ref及stale精确version_conflict修正未动生产。合并29SHA b702217d；554保护/三历史suffix保持，最终独审5efafcc2无新增阻断，Root精确29路径提交9d1cc19b/其后usage2PASS；正常环境未激活，不是页面完成。
 - BFF完整故障历史保留：真正入口初5例1PASS/4FAIL；集中尾负控7例3PASS/4FAIL，修后7PASS。终态后可信Skills bookkeeping只記source/usage，实际insertedFrames为零，不复活dispatch；同语义不同proof保第一证据，event-id/seq/digest/session/status冲突仍拒；source_ref197/opaque IAM身份；expiry按锁后DB时刻及实际INSERT条件判。最后seq碰撞与完整回归两旧fixture独立记录，禁止放宽生产规则。当前原卡29修改/10新/554保护，不授正常DDL/服务/新表协议或依赖；两方向不同session与同batch真正入口均实测。
