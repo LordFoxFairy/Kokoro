@@ -1,3 +1,29 @@
+### R337 同T-K03：Skills 可见视觉精修（2026-10-08）
+
+现 Web e78a514/codex/r257-admin-web-current；785已有路径哈希冻结 r337-web-start.json，原Admin/R332混合保护。原Web owner web_interaction_astra_r296为唯一writer；Root独占浏览器/资源/Git/集成，原QA只读。frontend-design/refactoring-ui已读，复用现token和CSS Module，不新目录/依赖/框架。仅修改3现源：src/ui/skills/skill-catalog-read.tsx、skill-catalog-read.module.css、personal-skills-read.module.css；仅呈现职责/标签可展开，不变API/身份/安装/发布handlers。文档INDEX/CURRENT及全门由writer STOP后Root接管。
+
+Root同1280实际RED：R307真实100分类占整个preview顶部，标题y3081、安装y3305；真实800同窗标题37 vs参考32、操作50 vs48、分类98 vs96；卡边框/白底偏弱；内容692–767参考三列而旧门768仍两列。最窄本轮：hero只前2分类/+N，完整分类移简介后可展开；完整原名/简介仍保单body滚动，不新增假查看详情/作者/usage。卡面名称单行与完整预览区分；两reader字体14/20 medium、简介12/16两行32；封面2:1与书3:4/24px位置保持，明确灰底/可见轻边框。catalog窄页头top8、2行32+8+32/标题center、88px title栏+8gap+其余search；header两button局部gap4（真实宽72/64）；grid独立692px阈值，toolbar宽48rem原门保持，长分类换行/coarse44及移动单列原边界保护。
+
+必须先冻结3SHA与782任务外哈希、给diff/范围/type/lint证据，再Root真实1280/800/390、短高、100分类展开全文/取消/原焦点-query、MySkills两个视图/菜单/启停不误点；未验200%/dark/axe/全Playwright明确保留。作者/usage/真实cover/body/admin仍OPEN。Root完整Wave0–7及70/33不升、其它任务暂停。
+
+<!-- R337-VISUAL-TASK-END -->
+
+### R336 最终冻结切片收口及 Skills 视觉并行只读（2026-10-08）
+
+Root接收原Platform writer STOP，独占仅现Platform CURRENT追加事实并精确Git；生产14/TECH/architecture/test共17交付路径冻结不改。真实37995最终1PASS/12筛除；25753辅助门及45370最终types/lint通过，四旧format失败保留。完成Storage包回收、安全headers/error完整shape及强预算/途中撤权/CLEAN/PG锁保持OPEN，不追加测试反复造包来冒用户页面完成。81775隔离IAM已正常stop0，仅自有资源fixture收尾，正常九服务不重启。
+
+同T-K03并行原QA agent_planned_guarantee_system_r257只读最终test1d1bebad（原48415B与16源保护），原Web owner web_interaction_astra_r296只读视觉细差（e78a514、frontend-design/refactoring-ui、现catalog/个人CSS/cover；不操作浏览器/资源/Git）；无确定测试阻断，headers精确断言OPEN。Root负责同尺寸Manus真实对照、下一精确视觉授权与页面验收；不授其它模块写入、不建重复计划。
+
+<!-- R336-FINAL-INTEGRATION-TASK-END -->
+
+R336 Root修正freeze2后原4776真实系统自然exit0：正规包链前置和两本人方法目录/SKILL.md共4读全部200、exact原文本/目录/同revision/两codec断言通过（1系统用例PASS、12非选skipped）。DI修正确实消除了首GREEN启动失败；仍非完整页面/管理员通过。原25753 Root纯门在跑。
+
+下一仅原Platform owner测试尾强化：12+2生产/TECH/architecture源继续freeze2不改；在现R336尾保前置链与四正控，新增真实subject/tenant目标拒绝、错误scope、JSON未知/重复键及optional空路径/穿越/missing、二进制原文件与空/BOM文本、选中超1MiB编码边界、disabled/withdrawn本人读及removed安装拒绝。沿同一个正式包增最小真实ZIPentries（无假Storage/SQLseed），目录预期相应准确，不删原四断言；真实projection/auth/default文字读取、每安全code/reason/no-store断言明确。不借生成未知字段直接mock成功，真实Connect binary可用正式codec +真实未知field负控。source-only及installation-only启动沿同真实IAM/PG/Storage组合，无新的共享服务/身份。若复杂故障和scan退役未验必须保OPEN，初始本组已有complete包manifest按轮归档，回收权限仍OPEN不改。
+
+R336 Root原11656在冻结实现真实architecture自然exit1：103PASS/1FAIL，唯一失败是handwrittenRaw旧四闭集新增skill-transaction.ts（实际五）。另授原owner仅现 test/architecture/architecture.test.ts：精确白名单增Skills事务一项，并将现timeout-only AST检查扩该路径/tx.$queryRaw，原两MCP/unsafe alias/parameterization/固定set_config全部保留，不放宽任意rawSQL。新事务模板number字面沿现AST精确2_000/10形式，生产只等值数字呈现调整允许；新增负控须证明Skills路径也拒绝wrongtag/模板/插值/rawalias，不以删除断言清零。其余原架构未改门保留。
+
+R336真实运行首GREEN原69653自然exit1：在合法IAM交换后 createRuntime 编译Nest模块失败，SkillsModule的inspection provider无法解析父AppModule独占的HttpDrainService；未达到正文请求、无新完成包，不冒正文业务RED。原freeze1fdf12源起终exact。Root裁决现runtime.module.ts注册并export同HttpDrain singleton、app.module.ts删本地provider及直接export（已export RuntimeModule），Skills仍imports同runtime动态module；主HTTP拦截与子Skills观察共用一实例。相比重复Skills provider（导致独立drain/不跟Root关闭，淘汰）与在每请求boundary塞presentation回调（多额外状态和职责，淘汰），采用既存Runtime资源归属，无新模块/进程/owner/权限。原Platform writer额外授这两个现源文件及TECH R331前缀精确补两表行/12→14候选（原后缀byte保，API/Schema不变）；原范围/唯一writer/RootGit保持。
+
 ### R336-P-IMPL 运行实现准入（Root最终冻结真实系统RED后）
 
 Root原96031自然exit1，Node24.20.0，最终d7754d36起终exact。正式OAuth目录/投影200；真实Platform PG/Redis/TCP；CreateDraft/Begin/Complete/Validate/Publish/Install各200，实际S3 PUT与ClamAV CLEAN通过前置断言；随后source/installation各目录+SKILL.md四响应均404，全部期望200自然RED（1系统用例FAIL/12非选用例skipped；不是setup/import失败）。两轮自有completed包各清单0600保留，正式包清理权限缺口OPEN，IAM临时host原81775仍活跃；正常服务未重启。

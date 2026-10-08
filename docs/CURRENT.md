@@ -1,3 +1,11 @@
+### R336 提交收据：正文 owner 已实现，仍待 BFF/Web 页面消费（2026-10-08）
+
+Platform **1f6f764bc4bcf09d235e086ae7fe137acf16d63d**（parent9808f910）：Root精确18路径提交，534非范围/原48415B测试前缀保护，工作树clean。真实四读404 RED→DI/架构两真实失败→正式IAM HTTP/PG/Redis/Storage/MinIO/ClamAV完整包链及正文四读200；最终强化组1PASS/12非选筛除，辅助111架构/350合同与type/lint/build/schema0，最后types/lint0；四旧format失败保留。81775隔离IAM正常stop0，仅自有资源回收；四completed包正式回收权限缺口manifest保留OPEN。
+
+独审最终test1d1bebad无确定阻断；no-store/request-ID/完整error shape精确断言、强预算/途中撤权/CLEAN/PG锁未验。正常Platform/BFF/Web未重启；因此不宣正常页面“查看详情”已通、Skills完整/管理员完成或70/33升档。当前用户视觉精修继续同T-K03，其他模块/自动化仍暂停，完整Wave0–7 active。
+
+<!-- R336-COMMIT-ROOT-END -->
+
 ### R336 Skills 真实包链已打通前置，正文读取缺口已复现（2026-10-08）
 
 沿同T-K03，仅Skills推进，其余模块/kokoro-10保持暂停，完整Wave0–7 active。Platform physical apps/kokoro-capability HEAD9808f91、Web normal e78a514不变。原三个owner只读并行审计已完成（Platform547/Web785路径exact），一名Platform writer进入运行实现，Root保Git/资源/集成。
