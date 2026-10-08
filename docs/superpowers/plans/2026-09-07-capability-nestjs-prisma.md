@@ -20,6 +20,7 @@
 - 一次交付：全部真实product字段/来源/持久草稿/CAS/发布与管理/包cover/read准入/installation.available_update、唯一机器+当前handler+native schema/ADR005/具名expand。旧V1–V9/examples/categories/digest3原字节及完整父逆剥保持，不能只更新计数或dummyhandler；record不猜payload、S06四路径仍保完整目标。
 - 固定IAM source7c62e75/SDK0.10正式archive；Storage正式d13f33a/v3/47e2659契约。从正式对象取固定依赖，只更新已授权消费者，不接旧混合候选/别仓DB。AI/GitHub只受信BFFtyped输入，实际producer及Share/usage后继BFF同次接线，不当已存在；不存在新Skills服务/通用workflow。
 - 先具名行为失败（保基线与负控）再实现，冻结交具体SHA/RED/GREEN/未完成项。writer只跑无共享资源的精准验证和官方生成；Root负责自有PG旧→新完整catalog、旧十表数据/权限/恢复/资源资格及独审后的适当重跑，不重复无关全仓门。正常DDL/资产修复/权限/服务配对不随源码授权。
+- 并行只读R353-BFF-D0：原IAM reviewer在正常BFF树88fe387核既有Share typed Skill资源扩展、usage持久ready/严格completed/去重/GC保存、AI/GitHub既有producer准入与最小三设计文件集；仅有界方案输入，不写BFF/资源/Git、不抢Platform。Root裁决，后继另授BFF三设计及整份consumer实现，不直接以本盘点发版。
 - 后继唯一顺序：本owner正式完整发行→BFF一次固定消费与必要业务→Web内外Skills/Settings/后台完整页面片（删旧preview假事实）→S01–S10真实浏览器与同尺寸Manus。设计/辅助测试/commit均不代用户路径完成；当前整页仍未完成。
 
 
