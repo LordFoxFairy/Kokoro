@@ -1,3 +1,11 @@
+### R348 外部技能目录与预览局部修正，完整页面仍未验收（2026-10-08）
+
+Web `92b420c569531b0ad0110bd9e0da42438be5bb1a` 仅既有外部CSS：封面装饰书120px、宽屏搜索外壳240px/间距8px、头部及预览动作字重500。Root实际1280/800/390浏览器核验无横溢，并点击已安装卡→查看详情→SKILL.md正文→返回→关闭，保留R255搜索与卡焦点；触控按钮44px。原IAM独审无确定阻断；Node22具名2PASS/72过滤、type/lint/build/diffcheck0仅辅助，不冒产品完成。787tracked非CSS字节及旧Admin27tracked/6untracked保留。
+
+示例列表当前仍缺，作者/usage/真实封面/分享下载/四创建与后台继续OPEN，尚未实现完整Manus展示。Platform原owner R348-P1仅真实输入接线进行中，未持久化/DDL/服务激活；外部宽屏分类后继原Web owner只读盘点。只Skills继续，其它模块与kokoro-10暂停，完整Wave0–7 active，业务汇总不升；原服务句柄/8gitlinks/uv.lock保留。实际截图在同ignored r255-preserve/r348-local-*-after.png。
+
+<!-- R348-ROOT-EXTERNAL-STYLE-END -->
+
 ### R347 正式示例契约已提交；外部页面仍不合格（2026-10-08）
 
 Platform machine 源码 `48c157c250f0fc0756b5741a8114520d76a8ea64`，当前文档 `165073decbde536d1e6ed52c1e9f317c9b69eb64`；Root23paths/SHA与非范围原字节复核，独审无确定阻断。Root实际 contract/architecture/unit1387PASS、type/lint/build/contract/cutover/artifact/diffcheck均自然0；全format仍4旧文档FAIL，不称全门通过。这里只发布真实示例数组机器事实，不是浏览器完成。

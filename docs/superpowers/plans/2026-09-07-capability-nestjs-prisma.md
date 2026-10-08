@@ -58,6 +58,26 @@ P2正式机器源码48c157c、当前文档165073d；Root23SHA/旧完整父图/�
 |R348-W-A|Web / bff_skills_consumer_review_r341 / 原模型 / 只读|持久W e7c7370，27tracked/6untracked Admin混合保护；现skill-catalog-read/personal-skills-read两reader/CSS/详情/Dialog组件|根据Root真实Manus同尺寸测量，列可独立修的外部视觉差异、现查询和焦点行为，不伪数据、不动BFF/API，不浏览共享页或写文件；交精确局部修复集，Root统一浏览器。|
 |R348-ROOT|Root / 当前模型 / 台账与浏览器|Root3d446ba，原8gitlinks/uv.lock；正常服务原句柄|仅Skills，真实宽窄截图与逐项测量；原计划/4台账唯一writer，后继源码由owner，Root审查/重跑/逐路径提交。|
 
+### R348-W1 外部实际样式窄修授权
+
+Root在正常登录恢复后1280×900有效目录对照：两卡宽300/封面容器150，参考书封宽120而本地176；本地search外壳320而参考240；头部/hero动作font-weight400而参考500。dialog800×600和标题/hero/日期/详情位置已匹配，不重排。参考宽屏分类inline而本地dropdown、作者/usage/examples/真实封面/创建缺项仍OPEN，不假称本片修完。
+
+唯一Web writer仍 bff_skills_consumer_review_r341，仅允许既有 `src/ui/skills/skill-catalog-read.module.css` 的卡内装饰书宽7.5rem（限card非preview）、宽屏search max15rem、toolbar列gap8px（实测search x856→参考864）、header和hero CTA font-weight500；不改全局token、个人CSS、JSX、网络/contract、原Admin27+6或任何其他文件。Root实际修前测量作为行为RED；交付CSS SHA/精确diff、具名外部目录/详情既有回归、type/lint。Root独占浏览器重测1280/800/390、真实卡→详情→Back→Close、原query/焦点，方可逐路径提交；未完成正式数组接线不称页面完成。
+
+R348-W1 已局部验收并由Root提交 Web `92b420c569531b0ad0110bd9e0da42438be5bb1a`，唯一CSS SHA70d031159d419acf0cc0767908d5f7d2c69a216203f2564286441862f422567b；787 tracked快照除CSS均exact，27tracked/6untracked旧Admin混合保留。独审原IAM无确定阻断。Root Node22具名详情2PASS/72名称过滤、type/lint/build/diffcheck自然0；初次regex只1PASS/73过滤，后补正确2例，不虚报计数。实际正常浏览器1280/800/390无横溢、装饰书120/search外壳240/header与hero500；已安装外部卡→查看详情→SKILL.md/Normal checklist→返回→关闭，保持R255搜索和卡焦点。触控实际coarse时三个按钮44px。截屏ignored r348-local-{catalog-desktop,preview-desktop,preview-mobile}-after.png，不是整页完成；示例当前仍0，作者/usage/分享下载/四创建/后台OPEN。
+
+R349-W2沿原Web owner只读盘点外部真实分类inline宽屏/窄屏dropdown的现状态与精确JSX/CSS/test集；不写不浏览共享页。Root实际Manus分类为全部/编程/数据/自动化/商业/设计/媒体/内容/应用，仅真实已有分类可展示，后继另授唯一writer，不造category。Platform R348-P1仍原owner输入slice进行中，未DDL/重启/激活，正常基础设施句柄保留。
+
+### R348-P1 示例真实输入接线授权（运行未激活）
+
+原Platform唯一writer platform_skills_examples_owner_r346，基线165073d/clean，Root Git。独审原IAM确认：两Create rawJSON在fromJson前拒null/alias/重复；其它+json编码拒绝但binary typed最终守卫保留，其它方法不改。Root亲核PG JSONB拒U+0000，窄收紧新typed示例，不换BYTEA/造转义替代；普通input原文/序/重复仍保持。当前具名profile修订1.0.1，未激活HTTP3.5.0三数组item加NUL禁止，唯一provenance固定；原60vectors字节保留并只append4NUL negatives（20/44），45/20/24与历史V1–V9/3.0.0/父图不变。
+
+允许14 paths：src/modules/skills/skill-example-prompts.schema.ts、test/unit/skill-example-prompts.test.ts、src/modules/skills/catalog/skill-catalog.request-binding.ts、src/modules/skills/catalog/skill-catalog-json.ts（新普通parser）、src/rpc/rpc.middleware.ts、test/unit/skill-catalog-example-prompts.test.ts（新）、test/contract/skill-catalog-example-prompts.test.ts（新）、test/contract/skill-example-prompts.test.ts、contract/execution-operations/skill-example-prompts-v1.json、contract/execution-operations/skill-example-prompts-v1.vectors.json、scripts/platform-execution-operations/skill-example-prompts-artifact.ts、scripts/platform-execution-operations/skill-example-prompts-descriptor.ts、contract/openapi/platform-http.openapi.json、contract/provenance.json。另允许三D0新R348前缀及ADR003末尾窄补NUL/新增列末scalar与两Create协议边界，所有旧suffix字节保持。
+
+禁止Prisma/generated/Proto/descriptor二进制/持久模型/repository/权限/包/receipt事实/依赖/其它仓/共享服务与DB。新parser按catalog业务归属而非通用rpc/build脚本；复用当前JCS/纯schema，runtime不import scripts。只实现输入校验与canonical，不声称持久或UI已齐。先真实NUL/digest/实际middleware负控→最小实现；自有临时listener/内存stub只证明协议入口，非integration。1MiB/有限bodybudget/preparsed拒绝、charset普通JSON、另类+json拒绝与其他方法不受影响均实测；binary实际支持矩阵测清，不冒未测协议。
+
+交14+4精确SHA/范围外原字节、真实失败及冻结后Node24 type/lint/contract/artifact/cutover/unit与具名contract门；Root独审重跑后提交，正常运行原句柄不动。下一持久/单列expand独立任务按现ADR003（canonical新列须updatedAt之后最后scalar、fresh与expand完整catalog一致）由Root先自有隔离PG实测再另行正常维护，不自动升级共享库。
+
 <!-- R346-EXAMPLES-INVESTIGATION-END -->
 
 # Capability → Platform：NestJS + Prisma 实施任务板
