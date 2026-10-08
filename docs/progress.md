@@ -1,3 +1,11 @@
+### R349 外部目录局部实测与 R348 示例输入接线（2026-10-08）
+
+外部目录/卡片预览/详情与Settings/后台同属Skills范围；页面整体仍未验收。Web `1f07d38e5214c36d411e9d9d563856436c7b2825` 仅既有3paths：Root真实108分类（含100长tag）发现首版换行挤走卡片、选中字重覆盖后修正，最终单行32px/400与500/局部滚动、窄dropdown跨宽portal关闭；真实R255搜索→清单→卡片→查看详情→SKILL.md正文→返回→关闭保搜索和焦点，1280/800/390无页面横溢。Root Node22具名9PASS/72过滤、contract312/architecture51、type/lint/build/diffcheck0，原IAM独审无新增阻断；这些只支持本局部，不替代完整浏览器验收。784非范围tracked和旧Admin27tracked/6untracked保留。
+
+Platform `94bd0ea94aabc60c666fdb2cfa8784baf194e24b` 精确19paths：真实raw/typed示例输入及canonical接线，binary实际handler负控先2FAIL后IAM/receipt/catalog零副作用；原独审P1已关闭。Root Node24实际95files/1488PASS、type/lint/contract/checkers/artifact/diffcheck0、19SHA与551非范围字节核验。未持久写入/DDL/重启/激活，正常P/B/Web原句柄42873/5007/66154保持。
+
+真实预览仍缺示例list、作者/usage、分享下载；taxonomy与任意tags分离、真实封面、四创建及后台继续OPEN。正常截图 `var/dev/r255-preserve/r349-local-{catalog-native,preview-native}.jpg` 与实际 `r349-browser-receipt.json`；PNG清晰度异常不冒像素一致证据。R350-P2沿原Platform owner仅持久化/具名单列expand精确盘点，Root审后另授writer，owner→固定BFF→Web真实字段；没有新计划中心。只Skills继续，其它模块与kokoro-10暂停，完整Wave0–7 active、70/33业务汇总不升；8gitlinks/uv.lock保留。
+
 ### R348 外部技能目录与预览局部修正，完整页面仍未验收（2026-10-08）
 
 Web `92b420c569531b0ad0110bd9e0da42438be5bb1a` 仅既有外部CSS：封面装饰书120px、宽屏搜索外壳240px/间距8px、头部及预览动作字重500。Root实际1280/800/390浏览器核验无横溢，并点击已安装卡→查看详情→SKILL.md正文→返回→关闭，保留R255搜索与卡焦点；触控按钮44px。原IAM独审无确定阻断；Node22具名2PASS/72过滤、type/lint/build/diffcheck0仅辅助，不冒产品完成。787tracked非CSS字节及旧Admin27tracked/6untracked保留。

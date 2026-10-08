@@ -1,3 +1,11 @@
+### R349 外部目录局部实测与 R348 示例输入接线（2026-10-08）
+
+外部目录/卡片预览/详情与Settings/后台同属Skills范围；页面整体仍未验收。Web `1f07d38e5214c36d411e9d9d563856436c7b2825` 仅既有3paths：Root真实108分类（含100长tag）发现首版换行挤走卡片、选中字重覆盖后修正，最终单行32px/400与500/局部滚动、窄dropdown跨宽portal关闭；真实R255搜索→清单→卡片→查看详情→SKILL.md正文→返回→关闭保搜索和焦点，1280/800/390无页面横溢。Root Node22具名9PASS/72过滤、contract312/architecture51、type/lint/build/diffcheck0，原IAM独审无新增阻断；这些只支持本局部，不替代完整浏览器验收。784非范围tracked和旧Admin27tracked/6untracked保留。
+
+Platform `94bd0ea94aabc60c666fdb2cfa8784baf194e24b` 精确19paths：真实raw/typed示例输入及canonical接线，binary实际handler负控先2FAIL后IAM/receipt/catalog零副作用；原独审P1已关闭。Root Node24实际95files/1488PASS、type/lint/contract/checkers/artifact/diffcheck0、19SHA与551非范围字节核验。未持久写入/DDL/重启/激活，正常P/B/Web原句柄42873/5007/66154保持。
+
+真实预览仍缺示例list、作者/usage、分享下载；taxonomy与任意tags分离、真实封面、四创建及后台继续OPEN。正常截图 `var/dev/r255-preserve/r349-local-{catalog-native,preview-native}.jpg` 与实际 `r349-browser-receipt.json`；PNG清晰度异常不冒像素一致证据。R350-P2沿原Platform owner仅持久化/具名单列expand精确盘点，Root审后另授writer，owner→固定BFF→Web真实字段；没有新计划中心。只Skills继续，其它模块与kokoro-10暂停，完整Wave0–7 active、70/33业务汇总不升；8gitlinks/uv.lock保留。
+
 ## R346 Skills 示例列表：事实与契约设计调查（2026-10-08）
 
 仅 Skills 继续；其它模块与 kokoro-10 暂停，完整 Wave 0–7 目标保持。用户已批准按照真实 Manus 内外展示，包括预览简介下示例列表和查看详情，不另创新 UI。当前外部正常卡没有示例；只接通日期不算页面完成。本片先确定真实可编辑、按精确 revision 读取的示例事实；不得按标题生成固定三例，也不得复制 Manus 示例冒充用户 Skill 数据。
@@ -68,6 +76,74 @@ R348-W1 已局部验收并由Root提交 Web `92b420c569531b0ad0110bd9e0da42438be
 
 R349-W2沿原Web owner只读盘点外部真实分类inline宽屏/窄屏dropdown的现状态与精确JSX/CSS/test集；不写不浏览共享页。Root实际Manus分类为全部/编程/数据/自动化/商业/设计/媒体/内容/应用，仅真实已有分类可展示，后继另授唯一writer，不造category。Platform R348-P1仍原owner输入slice进行中，未DDL/重启/激活，正常基础设施句柄保留。
 
+### R349-W2 外部真实分类展示授权
+
+Owner Web原 bff_skills_consumer_review_r341，基线92b420c/旧Admin27tracked+6untracked保留；Root独占Git/浏览器，原IAM独审。仅三个既有paths：src/ui/skills/skill-catalog-read.tsx、src/ui/skills/skill-catalog-read.module.css、tests/ui/kokoro-skills-surface.test.tsx。当前category/categories与真实owner tags、query/cursor/reset/abort已有唯一事实；仅扩同组件显示与既有测试，不新模块/文件/依赖/字段/i18n/API。比较扩现有filters或新独立组件，选择前者因单职责局部展示，后者无增长且产生无益抽象。
+
+宽容器≥48rem真实categories内联All+原序去重tag按钮、32px/14px、普通400/选中500、gap4px/圆角8px/selected轻pill、单行nowrap/局部滚动；窄容器保现dropdown，复用categoryAria/categoryAll和唯一selectCategory(value)，同值不重读、不造九预设分类。沿已有reset清分页/详情/installation，保搜索与异步取消/迟到丢弃/权限退役。menu选择与inline选择均关闭filterOpen。需处理窄屏已open portal跨宽断点残留：仅filterOpen期间观察既有body尺寸，并读inline真实computed display判定关闭（CSS为断点唯一事实），cleanup；不引入第二常驻viewport状态或全局框架。if无需此effect而已有边界可解决则报告Root。
+
+先具名失败行为再最小实现，至少真实分类/去重/空All、保query发tags并清cursor、同值no-op、快切取消迟到不回写、401/403退役；root实际宽/窄/菜单open→断点验证和截图，独审冻结后Root适当unit/contract/architecture/type/lint/build重跑。只本局部展示，不宣称examples/author/usage/创建/后台已完成。不得改既有网络/安装/包权限或其它文件，冻结交3SHA及全非范围原字节证据。
+
+R349-W2 第一冻结Root实浏览失败，不放行：正常未过滤owner数据存在100个128scalar长tag，flex-wrap分类nav垂直膨胀挤走卡片；实际selected字重400，因通用categoryTabs button[type][data-slot][data-size]选择器覆盖aria-pressed rule。不是backend/单测通过即可完成。原3paths窄纠正：按真实Manus单行nowrap分类，nav局部水平overflow、不让页面横溢；普通button400/selected500用匹配specificity，32px/r8/gap4保持。合法长tag单buttonmax12rem/ellipsis且title保原文可读、native焦点仍可达；100真实tag不删除/改名/映射成假九类，不伪造taxonomy。Root正式taxonomy与任意tags分离仍OPEN，不以本局部展示称字段全齐。对应测试与真实100tag/宽窄portal回归冻结重跑。
+
+### R350-W3 Web 外部示例接线只读盘点
+
+沿原Web bff_skills_consumer_review_r341，基线1f07d38e5214c36d411e9d9d563856436c7b2825、旧Admin混合保留；只读已有Skills contract/catalog/personal/editor/i18n，交最小消费字段/真实有序例子按钮与编辑回显提交清空清单。依赖Platform持久P2后固定BFF，暂不授写；不造三例或author/usage，不操作共享浏览器/数据/服务/Git。Root真实Manus1280×900外部预览800×600(x240,y150)、title20px/600(x265,y243)、CTA32px/y315、description14px/y396、例子44px/y440/496/552/gap12。Root保持视觉/真实端到端验收职责。
+
+### R350-P2a 真实示例 revision 持久化实现授权
+
+原Platform唯一writer platform_skills_examples_owner_r346；基线94bd0ea94aabc60c666fdb2cfa8784baf194e24b / codex/r259-skills-metadata / clean；Root独占Git、正常服务及数据库。依据现ADR003/TECH/API/DATA已通过设计，不另建架构。业务完成条件：完整Create输入显式存数组（absent=[]、不继承base），catalog/managed/published与安装精确revision读真实原文/原序/重复，坏JSONB拒绝，成功receipt最终以当前精确来源无条件覆盖含[]。唯一新增生产普通script只允许既定具名单列expand；不拓展fresh installer、权限、Proto/HTTP/机器profile、包、manifest或其它owner。沿现业务位置扩展（而非新examples表/目录/快照）理由见ADR003。
+
+Root先行实测：Node24.20.0/Prisma7.10.0 actual old→proposed diff仅一条ALTER；在Root自建并已删除的独立诊断库，旧完整catalog `2574c40645911b3e6a700c3accc8924bd33bd44ed6903136fb36ccbb5fc1c311`→新增JSONB末scalar，expand与fresh完整catalog同为 `214608c1fca854fd725a7bf32348834acd441d758c35a567f6e199bdd9cc0737`。正常库、source canonical/服务均未动；此空数据catalog探针不是保有数据expand验收。忽略诊断脚本首次quote语法错误（未执行）已修，不冒行为RED。证据同ignored r350-catalog-probe-receipt.json。
+
+精确授权production14（全部相对当前Platform根）：
+```
+src/modules/skills/skill.model.ts
+src/modules/skills/skill.repository.ts
+src/modules/skills/skill-rpc.service.ts
+src/modules/skills/catalog/skill-catalog.service.ts
+src/modules/skills/source/skill-source.service.ts
+src/modules/skills/source/skill-projection.mapper.ts
+src/modules/skills/installation/skill-installation.model.ts
+src/modules/skills/installation/skill-installation.repository.ts
+src/modules/skills/installation/skill-installation.service.ts
+src/modules/skills/installation/skill-installation-product.mapper.ts
+src/modules/skills/installation/skill-installation-product.rpc.ts
+prisma/schema.prisma
+scripts/canonical-schema-state.ts
+scripts/expand-skill-example-prompts.ts
+```
+生成只允许实际锁定prisma generate+既有normalize产生4：src/generated/prisma/models/Skill.ts、internal/class.ts、internal/prismaNamespace.ts、internal/prismaNamespaceBrowser.ts；超范围先停报告，禁止手改。新列放updatedAt之后最后scalar，旧schema SHA c9b7e79a8760c8f2ba899d21e56bf45bcb7b4e7ee120e63bae15aaab9e81ff4b，目标SHA冻结后固定，catalog仅采用Root以上实测值。
+
+精确test18：
+```
+test/fixtures/in-memory-capability-state-store.ts
+test/fixtures/prisma-skill-repository.ts
+test/unit/postgres-state-store.test.ts
+test/unit/postgres-keyset-pagination.test.ts
+test/unit/bff-projection.test.ts
+test/unit/skill-published-read.test.ts
+test/unit/skill-transaction.test.ts
+test/unit/skill-installation.test.ts
+test/unit/skill-installation-product-mapper.test.ts
+test/unit/skill-installation-product-rpc.test.ts
+test/unit/iam/skill-rpc-admission.test.ts
+test/unit/canonical-schema-state.test.ts
+test/unit/expand-skill-example-prompts.test.ts
+test/integration/schema-installer.integration.test.ts
+test/integration/skill-command-receipt-postgres.integration.test.ts
+test/integration/skill-projection-postgres.integration.test.ts
+test/integration/skill-installation.integration.test.ts
+test/architecture/prisma-persistence.test.ts
+```
+仅expand单元test为新普通文件；fixture可以初始化[]，生产类型/读取不得optional/fallback。另允许3设计文件新R350当前/目标前缀和ADR003状态窄更新，不重写旧suffix/历史证据。
+
+先真实行为RED：两Create接线/存写/不继承、原序持久映射/坏值、精确多revision、安装[]present和旧成功receipt/ACK unknown覆盖，再实现。展开脚本需single ALTER严格白名单、旧与目标schema/hash、owner search_path与pg_temp shadow拒绝、共用installer锁、有限timeout/取消、全旧事实证据/rollback/独立readback；不含任意修漂移/新框架。Worker仅pure/unit/contract/architecture/type/lint/format/Prisma validate/generate/build；本卡不授访问任何数据库/Redis/服务，真实隔离PG由Root冻结后运行（既有integration fixture独立临时DB，不是应用新库/临时应用流程）。发现额外受影响fixtures先报告；最终交精确SHA、差分、RED/GREEN、未完成资源项。Root独审/适当工程门/隔离有数据PG门后精确提交，正常维护另行裁决，BFF固定消费后Web真实示例外部端到端才称用户路径闭环。
+
+### R350-P2 外部预览示例持久化接线盘点
+
+Owner沿原Platform platform_skills_examples_owner_r346；只读，Root唯一Git/正常资源/DDL。基线94bd0ea94aabc60c666fdb2cfa8784baf194e24b / codex/r259-skills-metadata / 当前clean。业务目标为外部预览真实example_prompts，不是Settings局部或模拟三例。先按既有ADR003和三份设计盘点：精确revision写入/读取/安装projection/成功receipt、Prisma末scalar一列及已有installer锁/strict catalog、具名单列expand现有脚本可扩或新增普通脚本的取舍。只交精确14production+测试/生成文件inventory（数量以事实修正）、行为RED与隔离PG验证方案；本卡不授权源码/Schema/生成/DB写入。Root审清再授唯一writer，owner提交后固定BFF消费，再Web真实编辑与外部预览示例list；正常库维护须隔离实测通过，旧数据保留且旧revision新数组[]，不从opaque metadata猜例子。其余模块暂停；作者/usage/正式taxonomy/分享下载/后台仍OPEN。
+
 ### R348-P1 示例真实输入接线授权（运行未激活）
 
 原Platform唯一writer platform_skills_examples_owner_r346，基线165073d/clean，Root Git。独审原IAM确认：两Create rawJSON在fromJson前拒null/alias/重复；其它+json编码拒绝但binary typed最终守卫保留，其它方法不改。Root亲核PG JSONB拒U+0000，窄收紧新typed示例，不换BYTEA/造转义替代；普通input原文/序/重复仍保持。当前具名profile修订1.0.1，未激活HTTP3.5.0三数组item加NUL禁止，唯一provenance固定；原60vectors字节保留并只append4NUL negatives（20/44），45/20/24与历史V1–V9/3.0.0/父图不变。
@@ -127,6 +203,8 @@ R349-W2沿原Web owner只读盘点外部真实分类inline宽屏/窄屏dropdown�
 | P5 / P1     | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover         | Root 协调各仓负责人 / 后续授权                      | 独立切换任务卡，未授予其他仓写权                                                                                             | P1–P4；跨仓串行交接                 | 待派工                                                                                                                                                                                      |
 
 ## 实施检查清单
+
+R348-P1 第一冻结Root实际1482PASS/95files与type/lint/contracts/checkers/artifact0，18SHA/552非范围字节、三suffix/ADRprefix/旧60vectors一致。但独审确定1P1：binary typed guard在现SkillRpcService IAM admission后，不满足零IAM承诺，未放行/未提交。Root确认真实执行顺序，原owner仅额外授权既有src/modules/skills/skill-rpc.service.ts两Create handler在authorizeWorkload前复用同一catalog纯typed校验；binding既有helper可导出恰当业务名供同一代码复用，不复制规则。原test/contract/skill-catalog-example-prompts.test.ts补真实SkillRpcService+admission/catalog/receipt spies，经实际binary两命令NUL负测保证IAM/receipt/catalog零，先真实失败再修；合法binary/JSON及absent/present canonical保持。总范围19paths（前18+此单RPC），其它原字节不变；不得接持久/DDL/服务/其它RPC。冻结后同独审重审与Root重跑。
 
 ### P0：设计门
 
