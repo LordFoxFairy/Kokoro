@@ -1,3 +1,7 @@
+### R352 当前 Skills 分类进展（2026-10-08）
+
+Platform `7e465ae`设计门、`e0e9e90`纯分类校验已提交：Root连旧示例70PASS、类型/lint/格式无错误，572原tracked保护、独审无新增阻断。未接契约/存写/页面、无DDL或重启；现目录分类仍旧tags，Skills整体未验收。证据和后继依赖见既有 `docs/superpowers/plans/2026-09-07-capability-nestjs-prisma.md` R352记录。仅Skills继续、其它模块/heartbeat暂停，完整goal active；R351详情闪动浏览器修复证据保持。
+
 ### R351 Skills 详情重复闪动已修正（2026-10-08）
 
 Web `de6b73784934e5c68919964c11d7cfe9071bc460`，仅 catalog reader / 具名回归 / Skills INDEX 三路径。真实390外部详情打开文件菜单造成两package GET、目录/正文清空；根因为parent内联target与retire变更触发子读effect。现在按安装ID/source/revision稳定目标、稳定退役callback，真正目标变化仍重读，无缓存或契约变更。新增RED1FAIL→具名7PASS，现package7PASS；已提交重跑R3511PASS，type/lint/build/diffcheck0，独审无新增阻断。工程首diffcheck因新EOF空行失败已修；保护校验旧W3清单命中已提交W4 hook变化，按正式44f88d替代后748原字节+1正式W4全保持。未执行无关全仓/e2e套件，原失败不删除。

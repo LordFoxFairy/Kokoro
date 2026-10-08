@@ -1,3 +1,19 @@
+### R352 分类校验局部提交，页面分类尚未接通（2026-10-08）
+
+Platform设计门 `7e465ae489a3467dde7b1644027cb5c559e1eb38` 与纯校验 `e0e9e90416b6aef99da3b11bf138d536e1c0f196` 已由Root精确提交，原owner实现/原IAM只读审查无新增阻断。两新增文件仅闭集8键、0–8/唯一/原序/不default或规范化；收集缺模块与行为RED36PASS/1FAIL分开，GREEN37PASS。Root已重跑连旧示例70PASS，Node24类型/lint/两文件格式/diffcheck无错误；572原tracked逐字节保持，Platformclean。现contract/prisma只读设计门0，未build/生成/DDL/服务重启；日志与freeze收据在既有ignored r255-preserve/r352-*。
+
+这只准备独立分类事实；现运行仍0e60/HTTP3.5，目录依旧tags投影，未称Manus分类或Skills整页完成。后继正式机器HTTP4/BFF9→owner存写/精确过滤→固定BFF→Web→正常库具名扩展→真实浏览器按依赖验收；禁止猜旧tag归类、假作者/usage/封面和无效按钮。详情闪动R351正常浏览器证据保持，其他模块/heartbeat暂停、完整Wave0–7 active，原Admin混合/8gitlinks/uv.lock保留。
+
+### R352-P1 设计门与纯分类校验（不冒运行分类完成）
+
+设计门正式提交 `7e465ae489a3467dde7b1644027cb5c559e1eb38`（parent0e60e5d）；Root contract checker / Prisma validate / diffcheck实际0，三旧suffix逐字节保持；原IAM只读独审无确定阻断。P1基线此SHA，只有两个新增文件，原其余569tracked字节冻结。
+
+Root三前缀位于Platform docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md，当前0e60，目标HTTP4/BFF9及category_keys独立8类已裁决；内部Proto6/12/16随后机器全图复核。比较现Skills纯schema/放catalog/新模块，采用现Skills普通文件；无新一级模块或框架。writer原platform_skills_examples_owner_r346，仅新增src/modules/skills/skill-category.schema.ts与test/unit/skill-category.test.ts，两文件。Root提交/集成，禁止其它owner、SQL、contract、generated、manifest/lock、服务与数据修改。真实Manus8类与本地tags分类偏差已证明；新测试缺模块属于收集RED，不冒行为RED，实际负控/边界执行证据须明确区分。冻结后Root重跑具名/类型/lint/格式，原schema/contract门结果绑定日志；纯validator不是分类数据或UI完成。
+
+### R352 Skills 真实分类事实收敛（只读盘点，未授实现）
+
+下一实际缺项：当前页面把任意个人tags当作Manus分类，108长tag进入分类条，用户已指出设计严重不一致。Root负责真实Manus分类入口/字段取证与整体裁决；沿原 Platform owner platform_skills_examples_owner_r346 只读盘点现revision/catalog/installer/write/canonical/SQL及三设计面，给最小owner方案与精确路径/失败断言，不写源码/文档、不开服务、不改SQL/权限。基线Platform0e60e5d，正常应用数据保留；其它模块继续暂停。只有Root完成整体放置与文档门后另授single writer实施；不得映射任意tags假充正式taxonomy、不得猜旧行category，不新增一级模块/通用metadata框架。
+
 ### R351 Skills 详情重复闪动已修正（2026-10-08）
 
 Web `de6b73784934e5c68919964c11d7cfe9071bc460`，仅 catalog reader / 具名回归 / Skills INDEX 三路径。真实390外部详情打开文件菜单造成两package GET、目录/正文清空；根因为parent内联target与retire变更触发子读effect。现在按安装ID/source/revision稳定目标、稳定退役callback，真正目标变化仍重读，无缓存或契约变更。新增RED1FAIL→具名7PASS，现package7PASS；已提交重跑R3511PASS，type/lint/build/diffcheck0，独审无新增阻断。工程首diffcheck因新EOF空行失败已修；保护校验旧W3清单命中已提交W4 hook变化，按正式44f88d替代后748原字节+1正式W4全保持。未执行无关全仓/e2e套件，原失败不删除。
