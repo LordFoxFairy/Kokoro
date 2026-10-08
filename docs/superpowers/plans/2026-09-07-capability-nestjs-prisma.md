@@ -1,3 +1,36 @@
+### R350 消费者与正常浏览器示例链已接通，完整 Skills 仍未验收（2026-10-08）
+
+Platform `0e60e5d` → BFF `88fe387`（public8.10/111）→ Web `b548477`，其后真实 Settings 异步 Back 竞态修正 `44f88d93b4969bb7d9893664df4be3840273beff`（仅3现有文件）。正常持久库单列 expand 已执行，9表旧事实哈希保持；原 Platform42873/BFF5007 正常停止后，同原配置源码运行 Platform64000/BFF55498，Web66154 HMR复用，PG/Redis/MinIO未重置。进程收据位于既有 `var/dev/processes.json`。
+
+真实本人发布“清单整理 · R350 页面验收”：上传→扫描→验证→v1发布→安装→外部预览真实3例→查看SKILL.md→返回→示例回填原会话，保首尾空格/换行/重复。Settings入口旧版实测FAIL（异步history.back覆盖新导航），新增负控1FAIL后2PASS、type/lint/diffcheck0，原IAM审查无新增阻断；正式修正后正常浏览器Composer可见且聚焦，保原conv，仅GET auth/session，无新会话或执行请求。新版本编辑载入原3例→明确清空→正常上传/扫描/发布v2→刷新后v2无示例、v1原3例保持，零虚构示例。
+
+BFF Root一次默认909PASS/2既有SKIP及附加10PASS，生成/类型/lint/build0；Web contract313、wire423及具名14PASS、类型/lint/build0仅为辅助，不替代上述用户旅程。原49目录/9Settings旧断言失败未删除，不宣称全门。实际截图 `var/dev/r255-preserve/r350-local-preview-real-examples.jpg` / `r350-manus-preview-comparison.jpg`；浏览器回填收据 `r350-settings-history-browser.json`、刷新截图 `r350-settings-real-examples-after-reload.jpg`。按钮单行46px与参考44px仍有差异；作者/usage/真实封面/分享下载/分类事实/四创建/后台仍OPEN，绝不称像素一致或整页完成。其它模块与kokoro-10保持暂停、完整Wave0–7 active；原Admin混合、8gitlinks及uv.lock保留，业务完成数不升级。
+
+### R350-W4 真实浏览器发现 Settings history.back 导航竞态
+
+W3正式Web b548477 /BFF88fe387 /Platform0e60已正常同配置激活，真实发布/扫描/安装/外部预览3例/正文返回/原文Composer与同active会话已验。Settings点击示例真实FAIL：closeSettings先异步history.back，随后新chat push又被back退回目录；组件立即断言未覆盖后续遍历。Root唯一writer仅现 `src/components/blocks/app-frame/{app-frame.tsx,use-app-frame-overlays.ts}` 与现新增2case `tests/ui/app-frame.smoke.test.tsx`。先新assert明确该forward动作零history.back RED，再closeSettings具名optional replaceHistory、此动作同步replace关闭后正常navigate，不动一般关闭的back语义/原旧tests或Admin2行。Root重跑2case/类型/局部lint与真实浏览器Settings回填，独审窄diff；不扩大其它Settings/owner/持久API。
+
+### R350-W3 真实示例编辑、目录预览与本人管理一次性接线
+
+Root接管最终4现reader/CSS视觉窄修（worker已freeze停写）：实际Manus1280×900 DOM示例按钮44px、font16/radius12/padding12/icon-gap8、16px MessageCircleMore；补同现lucide图标及规则，不扩业务/文件集。原freeze45/749及Root工程门通过，四新SHA另绑定具名14/类型/lint和最终真实浏览器，不能据旧freeze报新视觉完成。
+
+R350-W3机器断言补准：既有 `tests/contract/bff-skills-mcp-public.test.ts` 除SHA外只更新四read required/两Create optional的example_prompts字段集与规则断言，保持111路由、原所有字段/错误/permission与strict闭集，不放宽其它语义。原304PASS/新增机器8FAIL为真实阶段证据，修正的是批准合同新增字段而非隐藏旧失败。
+
+R350-W3测试补准：允许既有 `tests/ui/app-frame.smoke.test.tsx` 只追加2个真实shell用例：目录/Settings选择示例后保active会话、可见Composer保原文且run=0。复用现navigateMountedSurface，先closeSettings与handlePrompt，standalone只跳chatHref携activeId；不使用会trim的stashPendingDraft。原harness/旧断言全文保持。
+
+R350-W3范围补准：允许四既有文件 `src/components/blocks/app-frame/{app-frame.tsx,app-frame-overlay-surfaces.tsx}`、`src/ui/settings/settings-modal.tsx`、`src/ui/skills/skills-panel.tsx` 只转发 optional onPrompt；shell端先关闭Settings再调用现 actions.handlePrompt，不调用旧startSkillUseFromSettings/newChat/run。app-frame 原Admin2行混合保留，提交只新hunk，其它三文件保其余bytes。现本人reader也使用相同真实example click；对应已准UI测试覆盖。属于既有回调链局部修复，零新增对象/模块/owner。
+
+|任务|归属/基线/文件集|依赖与验收|
+|---|---|---|
+|R350-W3|Web，platform_skills_examples_owner_r346 接任唯一writer；Root审查/Git/资源/浏览器，IAM原审查员独审。工作树 `/Users/nako/.codex/worktrees/kokoro-r257-admin-web`，分支codex/r257-admin-web-current，HEAD1f07d38；保护27tracked/6untracked Admin混合。|BFF正式88fe38733d1147bb61b3edbf2c66374725ddacb6/public8.10/111，固定原字节SHA640f47f9c70341aa49934eec319a4dcc5bab76bba83e4407d6a9e0c3ab0ac389；Platform0e60源码与94机器。先行为RED后完整该slice，Root冻结后单次适当工程门+真实浏览器，整页不提前完成。|
+
+Owner为Web既有hub严格wire与ui/skills；无持久化事实、新模块、依赖或通用框架。沿当前schema、publish flow/dialog、catalog reader/CSS与app callback扩展；不选新全局store或另建skill feature，因为同一职责已存在。真实required四读取失败关闭；两Create optional严格保presence，编辑每例独立textarea，最多10，版本载入base原数组、清空发送[]；不split换行、不trim、不造示例，原序/重复/1000Unicode scalar/总16384UTF8与BFF一致。正常链仍Browser→Web→BFF→Platform，权限/命令身份/未知ACK恢复不变。外部与本人预览均沿真实array展示44px/gap12示例按钮，[]不占位；点击只填现Composer+关闭/导航，无自动发送或run。保持目录搜索/filter/卡焦点/详情返回及不跳动刷新。新contract和read严格字段与正常旧配对互斥，最终Root统一激活，不在中间冒正常页面完成。
+
+允许：现generated BFF snapshot及两个generate-bff脚本/正规生成输出；src/hub/{schemas.ts,skill-catalog-client.ts}（若纯validator需新文件先报告）；src/ui/skills/{personal-skill-publish-flow.ts,personal-skill-publish-dialog.tsx,skill-catalog-read.tsx,skill-catalog-read.module.css,personal-skills-read.tsx,personal-skills-read.module.css}；src/features/app/kokoro-skills-surface.tsx；src/dev/preview-clients.ts仅3既有fixtures真实空数组；src/i18n/{messages.ts,overlays.ts}仅skill例子文案。三D0仅批准短前缀，skills INDEX及CURRENT收据。
+允许对应现tests/hub/{skill-catalog-client,client,skill-publish-client,skill-publish-flow,skill-publish-resume}.test.ts、tests/ui/{kokoro-skills-surface,personal-skill-publish-dialog,personal-skill-withdraw-dialog,skills-panel}.test.tsx；contract/api-contract.test.ts；八现fixedpublicpin测试仅固定SHA；tests/app/hub-proxy.test.ts只required fixture hunk且原混合全文保持。不要删旧tests。锁文件/package/schema/Admin/全局theme/Root台账/浏览器/服务/凭据/数据/Git排除。
+
+四创建/作者/usage/真实封面/分享下载/分类事实/后台仍OPEN，不用仿造数据和空按钮补齐。Root真正UI验收与进一步已定目标持续推进；本片不是范围收缩。
+
 ### R350 示例真实存写已提交，消费者与页面尚在接线（2026-10-08）
 
 Platform正式 `0e60e5d65e0f3a0c66b098bac011a8beadb5e871`，Root40精确路径提交、工作树clean；独审无确定阻断。Root一次纯门1516PASS/type/lint/schema/build0；四隔离PG文件首95PASS/7FAIL，修唯一fixture search_path后7PASS/14名称过滤，旧字段/BYTEA/9表/其它owner/fresh/重放/锁/取消/回滚/ACK实证已完成。正常持久库和P42873/B5007/Web66154原运行未激活新字段，外部示例仍未可见，不升业务完成数。

@@ -1,3 +1,11 @@
+### R350 消费者与正常浏览器示例链已接通，完整 Skills 仍未验收（2026-10-08）
+
+Platform `0e60e5d` → BFF `88fe387`（public8.10/111）→ Web `b548477`，其后真实 Settings 异步 Back 竞态修正 `44f88d93b4969bb7d9893664df4be3840273beff`（仅3现有文件）。正常持久库单列 expand 已执行，9表旧事实哈希保持；原 Platform42873/BFF5007 正常停止后，同原配置源码运行 Platform64000/BFF55498，Web66154 HMR复用，PG/Redis/MinIO未重置。进程收据位于既有 `var/dev/processes.json`。
+
+真实本人发布“清单整理 · R350 页面验收”：上传→扫描→验证→v1发布→安装→外部预览真实3例→查看SKILL.md→返回→示例回填原会话，保首尾空格/换行/重复。Settings入口旧版实测FAIL（异步history.back覆盖新导航），新增负控1FAIL后2PASS、type/lint/diffcheck0，原IAM审查无新增阻断；正式修正后正常浏览器Composer可见且聚焦，保原conv，仅GET auth/session，无新会话或执行请求。新版本编辑载入原3例→明确清空→正常上传/扫描/发布v2→刷新后v2无示例、v1原3例保持，零虚构示例。
+
+BFF Root一次默认909PASS/2既有SKIP及附加10PASS，生成/类型/lint/build0；Web contract313、wire423及具名14PASS、类型/lint/build0仅为辅助，不替代上述用户旅程。原49目录/9Settings旧断言失败未删除，不宣称全门。实际截图 `var/dev/r255-preserve/r350-local-preview-real-examples.jpg` / `r350-manus-preview-comparison.jpg`；浏览器回填收据 `r350-settings-history-browser.json`、刷新截图 `r350-settings-real-examples-after-reload.jpg`。按钮单行46px与参考44px仍有差异；作者/usage/真实封面/分享下载/分类事实/四创建/后台仍OPEN，绝不称像素一致或整页完成。其它模块与kokoro-10保持暂停、完整Wave0–7 active；原Admin混合、8gitlinks及uv.lock保留，业务完成数不升级。
+
 ### R350 示例真实存写已提交，消费者与页面尚在接线（2026-10-08）
 
 Platform正式 `0e60e5d65e0f3a0c66b098bac011a8beadb5e871`，Root40精确路径提交、工作树clean；独审无确定阻断。Root一次纯门1516PASS/type/lint/schema/build0；四隔离PG文件首95PASS/7FAIL，修唯一fixture search_path后7PASS/14名称过滤，旧字段/BYTEA/9表/其它owner/fresh/重放/锁/取消/回滚/ACK实证已完成。正常持久库和P42873/B5007/Web66154原运行未激活新字段，外部示例仍未可见，不升业务完成数。
