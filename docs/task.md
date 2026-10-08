@@ -1,3 +1,28 @@
+### R341 Skills 正文前置已提交，真实页面仍未完成（2026-10-08）
+
+BFF Root提交 **d218a1ae9f2a153814327fda049888ffc86eedd8**（parent e431aa3）：正式Platform1f完整52固定消费/正规生成，两inspection机器符号可用；当前45RPC与历史43分开，原图/provenance/六旧断言保护。独审发现原BOM/合法空presence未守卫；Root补后实际20PASS/1FAIL确认Protobuf2.14.0默认decoder剥BOM，窄进程wire初始化修正，strict非法UTF8仍拒绝，不以假数据补原文。源码/三D0/机器/窄收据按明确路径提交，494范围外tracked/原var保护；public8.7/109、SQL/身份/正常服务未改。
+
+Root最终冻结Node22.22.2完整check句柄15282自然0：contract304PASS/default883PASS、2原资源SKIP，lint/typecheck/generation/build0；format先新增长assert失败→仅三行换行→完整check+format最终0。独审最终无新增源码/安全阻断，CURRENT/INDEX陈旧固定点已加当前收据、原TECH错误384纠正270，提交后20冻结SHA exact；本片是工程接线前置，不是用户详情验收，原70/33不升。
+
+用户要求逐项实际看/同尺寸截图：现已保存Manus与Kokoro800×752原图，Root复看，仍缺查看详情/原文文件树/示例list/作者日期usage，安装动作高24px、首卡短33.5px。正常Web2138a10没改，图不冒本片修后。此续接浏览器控制三次 request-header policy读取失败，没有新增在线E2E证据，不反复开窗口/重启服务；不因此把静态门换成验收。证据仍var/dev/r255-preserve/r341-{manus-preview,manus-detail,manus-list}.png与r341-kokoro-{preview,list}.jpg。
+
+下一只沿Skills接正文两公开GET/实际owner系统链/同弹窗详情，然后发布者真实examples与metadata→BFF投影→Web（后台同owner验证），不造作者usage/固定三示例/假创建菜单，不进入其它模块。完整Wave0–7 active，kokoro-10与其它模块继续暂停，完整Skills未验收。
+
+<!-- R341-FIXED-CONSUMER-RECEIPT-END -->
+
+### R341 同 Skills：原文解码真实失败与窄修复授权（2026-10-08）
+
+|项|确定方案|
+|---|---|
+|任务/owner|P1 原BOM保留；BFF Root 唯一writer/提交；独审 bff_skills_consumer_review_r341（gpt-5.6-sol）只读|
+|基线|/Users/nako/.codex/worktrees/kokoro-r257-bff-normal，codex/r257-bff-normal-current，e431aa366；完整fixed consumer待审候选及原var保留|
+|真实失败|保原BOM+混合换行向量后 node --test 平台合同20PASS/1FAIL，2.14.0默认decoder剥U+FEFF；不是UI或正式系统通过|
+|放置比较|采用现src/infrastructure/protobuf-text-encoding.ts普通文件（进程wire策略）；不放Platform Skills业务模块或generated，不建新目录|
+|职责/依赖|公开同步幂等configureBffProtobufTextEncoding；官方wire API，复用encode/check，只替strict/non-strict decoder；server composition前一次配置，无请求中切换|
+|写集|原fixed consumer授权+新普通文件、现bootstrap/server首句、现test平台合同、现package format路径一项；TECH/API/DATA仅窄当前说明；CURRENT/INDEX Root收据|
+|零变更|owner协议/52正式bytes/public109/SQL/credential/token/runtime路由/正常服务；不升级依赖，不借JSON transport|
+|验证/交付|保真实RED原文/空presence，strict/non-strict/幂等；Root重跑完整check/format及独审冻结后明确路径提交；查看详情/示例/用户E2E仍待验|
+
 ### R341 用户重验：逐项 Manus 差异及 R340 固定消费续接（2026-10-08）
 
 用户要求先实际看 Manus、同尺寸截图、不虚假完成。Root独占浏览器真实预览→查看详情→文件选择、目录截图及尺寸测量；独QA /root/skills_visual_review_r339只读现Web源码与展示字段来源，查example prompts/作者/更新时间/usage/封面接缝，不改UI/数据/契约/资源。其它模块仍暂停，Skills完整不降格为CSS。

@@ -1,3 +1,15 @@
+### R341 Skills 正文前置已提交，真实页面仍未完成（2026-10-08）
+
+BFF Root提交 **d218a1ae9f2a153814327fda049888ffc86eedd8**（parent e431aa3）：正式Platform1f完整52固定消费/正规生成，两inspection机器符号可用；当前45RPC与历史43分开，原图/provenance/六旧断言保护。独审发现原BOM/合法空presence未守卫；Root补后实际20PASS/1FAIL确认Protobuf2.14.0默认decoder剥BOM，窄进程wire初始化修正，strict非法UTF8仍拒绝，不以假数据补原文。源码/三D0/机器/窄收据按明确路径提交，494范围外tracked/原var保护；public8.7/109、SQL/身份/正常服务未改。
+
+Root最终冻结Node22.22.2完整check句柄15282自然0：contract304PASS/default883PASS、2原资源SKIP，lint/typecheck/generation/build0；format先新增长assert失败→仅三行换行→完整check+format最终0。独审最终无新增源码/安全阻断，CURRENT/INDEX陈旧固定点已加当前收据、原TECH错误384纠正270，提交后20冻结SHA exact；本片是工程接线前置，不是用户详情验收，原70/33不升。
+
+用户要求逐项实际看/同尺寸截图：现已保存Manus与Kokoro800×752原图，Root复看，仍缺查看详情/原文文件树/示例list/作者日期usage，安装动作高24px、首卡短33.5px。正常Web2138a10没改，图不冒本片修后。此续接浏览器控制三次 request-header policy读取失败，没有新增在线E2E证据，不反复开窗口/重启服务；不因此把静态门换成验收。证据仍var/dev/r255-preserve/r341-{manus-preview,manus-detail,manus-list}.png与r341-kokoro-{preview,list}.jpg。
+
+下一只沿Skills接正文两公开GET/实际owner系统链/同弹窗详情，然后发布者真实examples与metadata→BFF投影→Web（后台同owner验证），不造作者usage/固定三示例/假创建菜单，不进入其它模块。完整Wave0–7 active，kokoro-10与其它模块继续暂停，完整Skills未验收。
+
+<!-- R341-FIXED-CONSUMER-RECEIPT-END -->
+
 ### R341 用户重验：Manus 实际页面对照，Skills 仍不合格（2026-10-08）
 
 Root复用现tab26/27，实际点Manus查看详情/文件选择/Back/创建菜单；统一800×752浏览器布局，完整CDP clip800避免原native截图662裁切冒同尺寸。Kokoro正常3310在观察中登录临时不可确认→正式Retry恢复，原因尚未诊断，未改身份/重启服务/数据。本轮零UI修复，不把R339外壳局部验收当用户认可或完整功能。
