@@ -16,11 +16,12 @@
 ### R353-P2：一次完整 Skills owner 发行任务卡（2026-10-08，开始实施）
 
 - 设计基线正式 `8e869ded1f58354297217af1db13e5b9ade3a447`（parent95d8a09）；原Platform writer、原IAM独审三SHA/具名18RPC与12command/tags/正式依赖无确定阻断。Root核586非范围/三历史suffix、前缀格式及精确三paths后提交。第一次Root格式检查cwd错误留存，纠正绝对路径后0；只设计通过。
-- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），只读 reviewer `iam_skills_admission_review_r343`；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：127修改（初103＋最终CAS9＋完整历史逆剥3＋正规生成路径1＋11必要fixture适配）、29新建（含只读旧Storage文本快照、精确product纯映射）、5删除、22仅正式生成输出；437其余tracked SHA与三历史suffix保护，越界先报。
+- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），只读 reviewer `iam_skills_admission_review_r343`；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：131修改（初103＋最终CAS9＋完整历史逆剥3＋正规生成路径1＋11必要fixture适配＋cover恢复registry＋事件闭集/过滤3）、35新建（含只读旧Storage文本快照、精确product纯映射、cover恢复pointer及release三普通文件/两测试）、5删除、22仅正式生成输出；433其余tracked SHA与三历史suffix保护，越界先报。
 - 一次交付：全部真实product字段/来源/持久草稿/CAS/发布与管理/包cover/read准入/installation.available_update、唯一机器+当前handler+native schema/ADR005/具名expand。旧V1–V9/examples/categories/digest3原字节及完整父逆剥保持，不能只更新计数或dummyhandler；record不猜payload、S06四路径仍保完整目标。
 - 固定IAM source7c62e75/SDK0.10正式archive；Storage正式d13f33a/v3/47e2659契约。从正式对象取固定依赖，只更新已授权消费者，不接旧混合候选/别仓DB。AI/GitHub只受信BFFtyped输入，实际producer及Share/usage后继BFF同次接线，不当已存在；不存在新Skills服务/通用workflow。
 - 先具名行为失败（保基线与负控）再实现，冻结交具体SHA/RED/GREEN/未完成项。writer只跑无共享资源的精准验证和官方生成；Root负责自有PG旧→新完整catalog、旧十表数据/权限/恢复/资源资格及独审后的适当重跑，不重复无关全仓门。正常DDL/资产修复/权限/服务配对不随源码授权。
 - 并行只读R353-BFF-D0：原IAM reviewer在正常BFF树88fe387核既有Share typed Skill资源扩展、usage持久ready/严格completed/去重/GC保存、AI/GitHub既有producer准入与最小三设计文件集；仅有界方案输入，不写BFF/资源/Git、不抢Platform。Root裁决，后继另授BFF三设计及整份consumer实现，不直接以本盘点发版。
+- Root本轮固定candidate/diff真实PG保数据资格：旧十表各2行，旧列完整hash `88785f4e0880c715f8a90f5197c208716f09691c13e4311744ac2b2e35c8aaf3` 前后相同（JSON/有序重复数组/NULL/BYTEA/毫秒UTC等）；新历史未知字段保持NULL、audience owner/state1，fresh/expanded目录同a746e99。只自有probe库创建/删除且总清单保持。收据 `var/dev/r255-preserve/r353-p2-root-native-data-receipt.json`；此是固定DDL，不代最终具名expand/recovery/正常激活。cover新pointer注册获授权；Root与原reviewer已确认现outbox无运行投递。必要release收敛为同SkillsModule/进程三普通package文件与现表closed事件过滤：同CAS事务精确asset-delete/upload-abort intent、commit后稳定Storage command/可信原mutation actor、仅exactACK成功标记、有界串行/退避/重启/drain，其余业务event不误mark。不新schema/process/通用GC/全局exact-once I/O锁；旧revision/其它Skill/package不参与。Storage正式Delete/Abort无额外origin-upload subject限定，不为此伪造来源或新列。须先补三当前设计再具名RED与源实现，当前尚未释放。
 - 后继唯一顺序：本owner正式完整发行→BFF一次固定消费与必要业务→Web内外Skills/Settings/后台完整页面片（删旧preview假事实）→S01–S10真实浏览器与同尺寸Manus。设计/辅助测试/commit均不代用户路径完成；当前整页仍未完成。
 
 
@@ -33,6 +34,9 @@
 - Root裁定usage：ready observation与run terminal两持久事实，同AGUI source摄取事务/精确身份去重，严格completed才计、乱序可闭合，永不从公开frame计数。一份最小tenant覆盖证明与证明水位，没有可信完整历史时返回unavailable，不假0；完整回补须owner授权事件与边界证据，启动时间/session水位不是覆盖证明。长期去重/terminal/coverage不随frame GC，不新后台job/第二Agent事件协议；按有界sources一条批量聚合，不N+1。
 - 全消费同时锁固定Platform完整product目标/IAM0.10/Storagev3、真实publisher批量聚合、包/cover byte代理、draft/admin操作、Share/usage、AI可信association与GitHub受限公开adapter/public9。依赖未正式的digest不填猜值；record参考仍OPEN，整页四创建目标不缩小。三面应给明确operations/状态/失败/SQL保数据expand及后继精确文件集，不写source。
 - Root同时已实测Platform固定candidate6742e99/diffd1362bf：自有PG old42e3c244→target完整catalog a746e99c1fc48e507311e6a21c35c1229201b579663e6c0be3265dcb0f10415b，expanded/fresh相等、仅自有库drop/全库清单exact。只空目录资格，旧十表数据及锁/取消/rollback待验；shell尾部zsh只读status失败单独保留，Node完成receipt与Root断言0，正常库未访问。
+
+- 原reviewer只读完整source盘点：Public111中26 Skills操作，22具名handler；`previewGithubSkill/importGithubSkill`仅契约/替身且正常入口503，`getSkillQuota/listSkillRevisions`也缺真实handler。Root核server/route与四机器operation，全部纳入整份消费缺口，不把契约当能力；两个历史无owner操作须先按产品需求裁决实现或clean删除，未自行缩S01–S10。后继新增18RPC、身份/包cover/draft/admin/share/usage/AI/GitHub同时映射，避免逐字段消费。
+- 记录入口当前真实账号：AX/text/父级interactive DIV点击均只闭创建菜单；Root已询问用户实际打开后的截图，未猜输入/新协议，其他可执行源码继续。
 
 ## A. 产品与视觉基线（锁定后不再自行创新）
 
