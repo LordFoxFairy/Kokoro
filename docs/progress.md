@@ -1,6 +1,10 @@
-### R353 本轮：完整 Skills 仍待验收，集中关闭真实阻断（2026-10-08）
+### R353 当前：完整 Skills 同一清单，真实联调停止线（2026-10-08）
 
-只推进既有Skills S01–S10整链，其它模块/heartbeat暂停，完整Wave0–7 active。BFF B1当前29修改/10新/554保护：Root真实入口7PASS、五文件真实PG/Redis259PASS零SKIP、pure915PASS/3环境SKIP及类型/lint/build0；首次完整回归257PASS/2FAIL保留，精确旧fixture与stale断言修正后通过，最终独审5efafcc2无新增阻断，Root已精确29路径提交9d1cc19b，提交后usage两例通过。原生old→expand有数据保持/replay及五drift负控通过，未正常DDL/激活，尚非完整Product接线或页面完成。Platform当前148修改/36新/5删/416保护，首完整205冻源Root纯1868PASS/工程门0，但实际PG150PASS/19FAIL；独审2P1/3P2不放行。只测试集中负控已Root复现unit10PASS/11FAIL、PG10FAIL/62名称过滤、安装3FAIL/31名称过滤；三安装失败后实际installation/receipt/outbox已提交，精确首cause为DriverAdapterError transaction timeout，嵌套/锁根因待定位，不归旧fixture、不加timeout或fallback。正常数据未改、各自有库drop/全库清单保持。Root已授原Platform writer一次集中F1–F4生产修（publisher准入/七admin audit/cover fence），F5先只读定位、方案另审；Web只读整片范围已交，内外/Settings/后台尚未整片实现/浏览器验收，不升页面完成数。Manus记录入口本轮实点仍仅收起菜单，无可确认后续，S06仍OPEN；正常37旧资产final-null配对仍OPEN。
+只推进既有 Skills S01–S10；其它模块和 heartbeat 暂停，完整 Wave0–7 active。BFF B1 正式 9d1cc19b（Root真实入口7PASS、PG/Redis259PASS，正常环境未激活）；完整 B2消费方案 f0bd80b6 已收敛，等待 Platform 正式发行。Web内外页、预览/查看详情、我的技能、四创建入口、后台和异步稳定性在同一整片范围；S01–S10全部仍OPEN，不把工程门当页面验收。
+
+Platform最后206文件冻结6e950a90经Root逐SHA核对、416保护/5删除/三历史suffix保持；Root重跑1888纯PASS及工程十门0，独审01669f96无新增确定P0–P2。真实13文件PG/Redis185PASS/0FAIL/0SKIP关闭F1–F6，Root精确174实际变更路径正式提交701aedb5b79a2a39ae8c81199d19156efb93b830。F5使用显式owned/existing修正Prisma7.10嵌套事务误判，F6按完整观察CAS汇聚同上传：首次完成只增一次双版本，后续command仅同结果receipt而不改Skill/Asset/source/time；wrongA/stale/changedAsset/感染/lease丢失负控均实测。原150PASS/19FAIL、178PASS/2FAIL和全部RED保留；自有库drop、全库清单不变、正常数据零写。此资源组IAM/Storage仍明确double，不是真实HTTP/MinIO/scanner配对或UI资格；原四历史文档全format失败保持，不称全门通过。正式HTTP5/63RPC/32commands/24proof Product1.0组合5d4bc1e可供完整BFF消费，正常环境未激活。
+
+必要Agent Artifact消费只读审查41c21ebb确认现生成client仍v2，而正式Storage d13只注册v3；PUT又丢失VersionId且pending恢复会重PUT。仅S06所需依赖前置，Root窄核1f89860d三设计并正式提交4f6802d；原reviewer改为Agent唯一writer，精确20修改/7新/7删/369保护实施同A持久与恢复，不恢复其它Agent功能，不机械repin后宣称链路可用。完整BFF B2原负责人已续只读正式pin/精确生成与整片测试范围方案，不在缺合同基础上修改页面。正常37 final-null资产、真实paired owner与Record交互仍OPEN。当前浏览器读取一次CDP焦点仿真超时，未重复启动浏览器/服务，未据此证明闪动原因或完成UI；原四张同尺寸差异图和最终普通/管理员持久用户旅程仍是页面验收依据。
 
 ### R353 当前并行切片与实页差距（2026-10-08，仍未整页验收）
 

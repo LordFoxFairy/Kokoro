@@ -13,6 +13,13 @@
 - S06四入口都进入同一持久草稿/包验证/发布链，不用浏览器数组假完成；参考“记录技能”的具体流程仍未核实，不自行设计后宣称一致。
 - 必要封面/包读取与既有资产可用性要闭合，历史GC/运维不当整页前置。Storage正式d13f33a/v3；Root最终真实PG247、pure529及各工程门通过只是依赖资格。实际MinIO精确版本/ObjectLock4PASS，个人文件/封面真实Clam2PASS（包1过滤SKIP、本地HTTP）；原403/400失败已按MinIO固定版本精确typed错误核实并保对象保持断言，原失败保留。全diffcheck生成Prisma450条空白仍FAIL，手写范围0。正常37 final-null未修/未激活，S01–S10不升完成数。
 
+### 本轮真实冻结与下一步（2026-10-08，页面完成数不变）
+
+- Platform最后206冻源6e950a90，Root1888纯PASS/工程十门0、独审01669f96；完整13文件真实PG/Redis185PASS/0FAIL/0SKIP关闭F1–F6，Root精确174实际变更路径正式提交701aedb5。HTTP5/63RPC/32commands/24proof Product1.0组合5d4bc1e正式可供消费者；原150/19与178/2和RED保留。IAM/Storage在该PG组是double，正常数据/服务未改，真实HTTP/ObjectStore/scanner配对及UI仍OPEN，原四历史文档全formatFAIL不冒全门通过。
+- BFF完整消费方案 f0bd80b6 已收敛：复用B1 Share/usage，不重写其schema/AGUI；AI复用现Conversation Artifact/Storage精确读取和durable receipt，不新checkpoint/feature flag/双decoder。正式Platform commit后一次完整消费授权，未激活原无watch进程不冒充新增activation机制。
+- S06必要Agent→Storage只读41c21ebb确认v2路由/VersionId/恢复缺口；原位delivery/journal、无DDL、单v3的D0经Root逐项核后正式4f6802d，原reviewer授Agent唯一writer20修改/7新/7删/369保护，只S06必要依赖源；不授正常激活。此必要前置不恢复其它Agent任务。正常37旧资产配对与记录真实语义仍OPEN。
+- 外部目录、预览、正文详情、Settings与后台必须一起交付；最终同尺寸Manus对照及S01–S10普通/管理员完整持久浏览器路径通过前，所有页面仍未验收。当前浏览器一次读取焦点仿真超时，不推断成闪动根因、不重复启动资源。
+
 ### 当前人员与整片交付节奏（2026-10-08）
 
 | 工作面 | 原负责人 / 当前角色 | 本次交付与边界 |
@@ -20,7 +27,7 @@
 | Platform Skills | platform_skills_examples_owner_r346 / 唯一writer | 整份真实字段、草稿发布、安装、封面/包及后台动作；不另造Skills服务 |
 | BFF 独立业务 | iam_skills_admission_review_r343 / BFF唯一writer | B1 typed Share与durable usage当前29修改/10新/554保护；Root真实259PASS，独审5efafcc2放行，Root精确提交9d1cc19b。完整Platform发行后再一次Product接线；正常PID44830/父44824无watch，不重启/正常DDL |
 | Web 页面 | skills_whole_ui_review_r353 / 只读UI交互审查 | 整份W0已交Root复核：内外/Settings/后台精确范围、删除假preview、稳定状态与完整浏览器矩阵；正式Product后只授整片，保原混合修改，不做逐字段页面补丁 |
-| BFF核心独审 | bff_skills_core_review_r353 / 只读 | 原23/28生产审查及尾审阻断保留；当前29合并冻结b702217d，最终窄核生产修与精确fixture/断言，不冒历史审查为当前放行 |
+| 必要Agent依赖 | bff_skills_core_review_r353 / Agent唯一writer | 原BFF审查保留；正式D0 4f6802d后，仅既有Artifact delivery固定Storagev3、A持久与恢复，不开展其它Agent功能；Root独占真实资源/Git |
 | 总验收 | Root | 真实依赖、普通/管理员完整旅程、持久数据与同viewport图对照；辅助门只供排错 |
 
 - 当前BFF严格native三路径Root资格已通过：旧/fresh、old有数据expand/replay、五真实分组/regex/精度/default/FK负控；前一版误判current失败保留。原package仅两脚本追加2纯/3集成入口，旧值/元数据/依赖保持。Root915PASS/3环境SKIP、类型/lint/build0，仅工程支持。最终真正投影/Share/usage入口7PASS，完整5文件259PASS零SKIP；第一次完整257PASS/2FAIL保留，usage fixture清理闭集/合法source_ref及stale精确version_conflict修正未动生产。合并29SHA b702217d；554保护/三历史suffix保持，最终独审5efafcc2无新增阻断，Root精确29路径提交9d1cc19b/其后usage2PASS；正常环境未激活，不是页面完成。
