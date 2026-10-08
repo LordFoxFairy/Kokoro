@@ -4,9 +4,9 @@
 
 Platform正式701aedb5：HTTP5/Product1、63RPC/32commands/24proof、组合5d4bc1e；Root完整冻结已核真实PG/Redis185PASS、pure1888PASS及工程十门0、独审01669f96。该资源组IAM/Storage是double，正常环境未激活，旧四历史文档formatFAIL保留。Storage正式d13f33a sole v3；正常37 final-null资产未修，真实配对/ObjectStore/scanner和普通/管理员持久浏览器旅程仍待验，未改正常库/权限/服务。
 
-BFF B1正式9d1cc19b；完整B2三设计2ffefc9及最小现receipt CAS补充d2695c4已正式。整片卡e8c69593：124修改/35仅生成/107新/65实际删/369保护。原负责人已完成三owner正规生成、Platform63/32/24完整父逆门、上传selected command/digest候选；上传v3恢复矩阵及全部Public9真实业务尚未完成。原writer明确上下文耗尽停写，Root核369保护与237交接字节后，同任务由bff_skills_whole_owner_r353_continuation（gpt-5.6-sol）续接，不回滚候选/另建计划；交接d94ba95e。无冻结/提交/正常激活，动态文件由唯一writer继续，不按编译中间态放行。
+BFF B1正式9d1cc19b；完整B2三设计2ffefc9及最小现receipt CAS补充d2695c4已正式。整片卡e8c69593：124修改/35仅生成/107新/65实际删/369保护。原负责人已完成三owner正规生成、Platform63/32/24完整父逆门、上传selected command/digest候选；上传v3恢复矩阵及全部Public9真实业务尚未完成。原writer明确上下文耗尽停写，Root核369保护与237交接字节后，同任务先由bff_skills_whole_owner_r353_continuation（gpt-5.6-sol）续接；其完成候选54具名GREEN后亦明确上下文耗尽停写，现由bff_skills_product_source_r353继承主控模型续接真实Product source，不回滚候选/另建计划；交接d94ba95e。无冻结/提交/正常激活，动态文件由唯一writer继续，不按编译中间态放行。
 
-S06必要Agent v3尾冻03764b82：Root实际PG13PASS/0SKIP、focused93PASS、lock/ruff/pyright/codegen/diff0，369保护/27候选/7删除保持；仅依赖资格，非真实Storage HTTP/MinIO/browser。独审933bf4c4确认旧同lease CAS loser覆盖赢家(P1)及null阶段恢复(P2)源修关闭，但真实PG未贯穿client→deliver→middleware同一竞争链的证据缺口仍OPEN；原writer仅现integration测试一文件续补，保两旧freeze与失败，不扩生产/其它Agent功能，尚未提交。
+S06必要Agent v3正式ee736cdf：最终27源冻1590efea，Root实际PG14PASS/0SKIP（含真实PG＋实际client→deliver→middleware同lease竞争）、focused93PASS、ruff/pyright/diff0，原lock/codegen0源未变，369保护/7删除/三历史suffix保持。独审8459ee99无确定P0–P2：B预选择仍可owner调用/PUT，CAS失败后零Complete/Artifact/finish且A/started原字节保持，释放A后成功；不是物理PUT恰一次。Root仅34具名no-renames路径提交，原build/保留。旧两source缺陷及竞争链测试缺口已关闭，原默认2个protected失败仍保留；此只依赖源码资格，正常激活及真实Storage HTTP/MinIO/browser组合仍待验，不升S06或页面完成数。
 
 Root本轮正常登录Manus与本地只读同实际1113×752对照：两预览都是800×600、x156.5/y76，安装/查看详情主动作均32px且位置匹配，保这些已匹配几何，不盲改整弹窗。真正差距：本地108任意tag分类、装饰封面、缺真实publisher/usage/来源variant；真实已安装SKILL.md可打开，但平面目录/裸frontmatter阅读器与参考不同。四张正确同尺寸预览/阅读器jpg及数值见r353-root-live-ui-comparison-receipt.json(58d8bf6d)；首目录图尺寸不一致明确排除。记录菜单实际点击仅关闭、具体流程仍OPEN；未复现健康同身份续期闪动，不猜HMR原因。S09源码4708dd3f确认ready→loading卸载路径，仅条件因果，不是用户现场完成证据；临时诊断tab已关闭/viewport还原，用户原tabs/服务保留。
 
