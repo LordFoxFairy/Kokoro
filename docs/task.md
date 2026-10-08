@@ -1,3 +1,13 @@
+### R347 正式示例契约已提交；外部页面仍不合格（2026-10-08）
+
+Platform machine 源码 `48c157c250f0fc0756b5741a8114520d76a8ea64`，当前文档 `165073decbde536d1e6ed52c1e9f317c9b69eb64`；Root23paths/SHA与非范围原字节复核，独审无确定阻断。Root实际 contract/architecture/unit1387PASS、type/lint/build/contract/cutover/artifact/diffcheck均自然0；全format仍4旧文档FAIL，不称全门通过。这里只发布真实示例数组机器事实，不是浏览器完成。
+
+正常P/B/Web继续原句柄42873/5007/66154，未激活新契约、未DDL。当前两Create present-digest负控0PASS/4FAIL，外部预览示例仍缺；作者/usage/封面/分享下载、四创建入口与后台继续OPEN。其它模块和kokoro-10保持暂停，完整Wave0–7 active，70/33业务汇总不升，原8gitlinks/uv.lock及Web Admin混合保留。
+
+R348沿同计划：原Platform owner只读确定最小运行接线与具名schema扩展文件集；原Web owner并行只读对照外部目录/预览结构，Root负责真实同尺寸截图与布局测量。两调查结束后各仓另授精确写入；不以等待数据为由忽略可修样式，不造示例/作者/usage或假按钮。正式数据接线先owner→固定BFF→Web，最终普通浏览器整条交互验收。
+
+<!-- R347-ROOT-MACHINE-RECEIPT-END -->
+
 ### R347 示例数据校验已交付，外部 Skills 展示仍未完成（2026-10-08）
 
 Platform源代码局部提交 `00ae1ad640ad7ccb515c9fb27ab963009928a646`（parent7dbaa75），仅普通pure-schema与31例测试两paths；原owner实现、独审原IAM reviewer、Root重跑。真实行为RED17PASS/14FAIL后GREEN31PASS；Root连旧bytes/digest共58PASS/0FAIL，type/lint/格式/diffcheck实际0。首次missing-module收集错误不冒行为RED；一次格式失败后只格式化两授权文件。校验保真实有序原文/重复、0–10项/1–1000scalar/总UTF8≤16384、拒坏类型/孤立surrogate/ECMAScript trim空白。无新依赖/DB/请求注册；未跑会生成Prisma输出的build，未称整仓门全通。

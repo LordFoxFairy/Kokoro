@@ -48,6 +48,16 @@ R347-P2 同Platform原owner唯一writer、基线00ae1ad，RootGit；原Reviewer�
 
 严格排除：runtime业务/requestbinding/rawJSONmiddleware/model/repo、Prisma/SQL/expand、package/lock、其它仓/Root/docs、P1已提交两文件、旧V1–V9所有字节。机械Buf生成common/storage如无语义diff不得夹带；范围需要调整先报告。先当前descriptor/presence/digest真实RED，继而新schema/profile/vector及wholegraph与HTTPinverse，不另设计中心。Root最终需当前机器type/contract/artifact/architecture/lint验证和独审；runtime‘present改变digest’真实RED仍下一片、未恢复正常进程。任务状态进行中，不是用户页面完成。
 
+### R347-P2 交付及 R348 同 Skills 并行调查卡
+
+P2正式机器源码48c157c、当前文档165073d；Root23SHA/旧完整父图/非范围全字节独验，原IAM独审无确定阻断。Root1387PASS及适当纯门全部0；全format旧4文档FAIL保持。runtime负控0/4FAIL、正常Web外部无示例，未激活机器/DDL，不称页面完成。
+
+|任务|owner / Agent / 权限|基线 / 文件范围|依赖 / 验收 / 提交|
+|---|---|---|---|
+|R348-P-A|Platform / platform_skills_examples_owner_r346 / 原gpt-6-astra / 只读|物理P165073d、tracked clean；现Skill模型/metadata mapping/两Create digest与rawJSON入口/repository/读投影、canonicalPrisma与installer，现ADR003与三D0|只列运行/持久单列expand最小精确文件集及真实失败；不写、不DB/服务/Git；Root裁决后另授writer。|
+|R348-W-A|Web / bff_skills_consumer_review_r341 / 原模型 / 只读|持久W e7c7370，27tracked/6untracked Admin混合保护；现skill-catalog-read/personal-skills-read两reader/CSS/详情/Dialog组件|根据Root真实Manus同尺寸测量，列可独立修的外部视觉差异、现查询和焦点行为，不伪数据、不动BFF/API，不浏览共享页或写文件；交精确局部修复集，Root统一浏览器。|
+|R348-ROOT|Root / 当前模型 / 台账与浏览器|Root3d446ba，原8gitlinks/uv.lock；正常服务原句柄|仅Skills，真实宽窄截图与逐项测量；原计划/4台账唯一writer，后继源码由owner，Root审查/重跑/逐路径提交。|
+
 <!-- R346-EXAMPLES-INVESTIGATION-END -->
 
 # Capability → Platform：NestJS + Prisma 实施任务板
