@@ -1,3 +1,90 @@
+R335 提交收据：Web **e78a51450384cba1a71d2a5e7bc4fadce3f7bcce**（parent980172f），Root 精确五paths提交，三源SHA仍冻结值；提交后余780原SHA、工作切片diff/index空。Root原66723提交后contract309/architecture51自然0；正常3310同页面无Dialog/空query/R255卡可见、截图已保存。Platform9808f91保持clean；所有本轮验证句柄terminal。原Admin/R332混合、Root八gitlinks/uv保留。未验正文/后台/全Playwright保持OPEN，不升70/33完整业务汇总。
+
+### R335 Skills 单项推进：视觉布局已局部实测，正文及后台仍 OPEN（2026-10-08）
+
+用户要求采用设计技能精细化，本轮保持其它模块及 kokoro-10 暂停。沿同 T-K03，不缩小完整 Wave0–7。当前正常 Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web，基线980172f；Platform physical apps/kokoro-capability，机器已提交9808f910f29b57940c103c2733fcbc8a91bae243（parent809f9ab）。Web UI交付SHA及当前默认回归结果见紧随本条的收据，不用历史工程结果冒当前完成。
+
+**可见 UI：** frontend-design/refactoring-ui；仅catalog reader去创建Plus、现两CSS。Root先同1280真实旧两行RED，再修宽内容≥48rem同一行/顶8px、font14/18/局部pad8及中性canvas；窄保两行/单列。1280标题y12、操作y8、高32；分类y56、高32、卡gridy104。我的技能74 vs参考72、创建68 vs参考64，故不称像素完全一致。独审发现长分类溢出，Root实际宽32/client30/scroll51与窄36/client34/scroll89 RED保留；auto/min-height修后1280/800/390分别64/100/136，client=scroll，无横溢。900侧栏收/放实际跨内容断点12/8→37/50，coarse手机三操作44。
+
+|真实用户用例|步骤/预期|本轮结果|
+|---|---|---|
+|R335-UI-01 主布局|同尺寸参照标题/search/操作同row，窄屏两row；无横溢|1280/800/390与900sidebar实测PASS；非像素相同|
+|R335-UI-02 边界分类|真实128码点分类选择→宽/窄完整换行，不覆盖卡片|修前FAIL与修后PASS双证|
+|R335-UI-03 搜索|真实R255搜索→卡；不存在查询→空态→恢复|PASS；非mock/伪响应|
+|R335-UI-04 状态/键盘|search Tab→MySkills→Create/Enter/Escape；preview Escape原卡/query保|PASS；无安装或发布写入|
+|R335-UI-05 手机|390×420 preview350×388、close44、单body306/长名滚动且不横溢|PASS；coarse=true header/filter44|
+|R335-UI-06 未验|200%浏览器缩放、暗色/axe/视觉budget/全Playwright、多身份与全部CRUD|UNVERIFIED，不泛称全页面通过|
+
+Root真实证据 r335-skills-user-verification.json、r335-skills-final.png、header/longcategory修前图；最终清尺寸/touch覆盖、空query/无Dialog、正常800×752交付/Manus参考保留。构建期间close no_matches且preview/query已退役，原因未诊断，结束后重新验，不称异步刷新已修。本地九实际listener及PG5432/Redis6379/ObjectStore39190/39191复用；registry部分PID过期，不因旧句柄死重启。没有服务重启/reset/权限/资金/模型或新增用户数据。
+
+**Platform只有读机器前置，不是正文：** 两服务、2request＋2method response＋2shared叶=六消息；request optional file_path、不接受body身份/旧proof。真实RED45PASS/3FAIL后首门71191 Buf100/contract7FAIL＋1收集FAIL，修shared响应违反唯一响应政策与历史Platform计数后7850：contract350PASS/architecture104、Buf/checker/artifact/types/lint/build/schema0；format:check仍四既有D0/CURRENT FAIL，Prisma既有warning保留。旧policy/历史V1–V9不削弱、530非范围及三suffix exact，独审94801cc6，Root精确18paths提交。普通runtime、Storage实际读/ZIP及BFF固定消费/Web SKILL.md还未实施，管理员保持OPEN。
+
+Root UI最终11811 Node22.22.2自然0：contract309/architecture51/lint/typecheck/build均0；旧60022 test:contract不存在命令仅编排错误保存。三源独审c93cb6ab无确定阻断、其余782原SHA；Root补两文档后余780精确保护，原Admin/R332混合及Root八gitlinks/uv不夹带。默认工程回归不会替用户验收、失败不改tests清零。
+
+下一仍同Skills：优先真实正文/文件树所需Platform运行→BFF发行→Web查看详情与返回，再补Skills管理员正式权限/前后台同步；作者/usage/真实cover/同series归并仍欠，不伪造。完整70与个人33业务汇总不升、T-K03/T-K05 OPEN，不称Skills完成/正式上线。
+
+Root 默认全回归原83804自然exit1：172文件（166PASS/6FAIL）、3369PASS/70FAIL，168.66秒；仍与上轮同计数，不代表逐失败根因全部核完。未改tests/Mocks清零，工程失败保留，全Playwright/axe仍未运行。
+
+<!-- R335-ROOT-RESULT-END -->
+
+R335 UI字体精度：Root实测Manus“我的技能”font14/line18/padding0 8/width72，而本地font16/line24/padding0 12/width90；窄修后短分类仍34而非32。授权原Web仅现两CSS＋reader现“创建”按钮删除Plus单图标（不删其他install用Plus、不改handlers/import）。header/filter按钮局部高specificity font14/line18，header paddinginline8，分类auto/min32或36/现pad4以保证完整长文；coarse44保。无global/字典/状态/API改动。宽/窄/长分类真实验后仅三源＋Root CURRENT/Skills INDEX交付，新增reader范围原始before与785SHA已在既有fixture冻结，其余782保护。
+
+R335 UI同P2窄屏续验：Root真实800同128字分类 button36/client34/scroll89（width452/y98）仍溢出；不能只修wide。仅现catalog CSS把auto增长提升到base filters button、min36/padding.25；宽规则只覆min32，coarse44保，不复制新处理层。短名窄36/宽32＋长名800/1280/390全部真实返验后放行。
+
+R335 UI独审长分类P2已Root真实重现：现128codepoint QA000分类选中，宽1280按钮height32/y56..88，但Range内容38.5..105.5、scrollHeight51>client30；真实文字溢出侵入下一行，r335-long-category-red.json/png保留。原h36已有边界，本片降32加剧，不冒第一次引入。原Web唯一writer仅现catalogCSS宽filters按钮最窄改height:auto/min32/padding-block:0.25rem允许多行自增，短名须仍32、coarse>=44；其余CSS/业务维持。Root返验同长分类+短名、手机再冻结/重门。
+
+R335 UI补充局部呈现：Root同真实浏览器已核宽屏title12/actions8/filter56各32px，首个布局差异修后通过；另当前Manus画布rgb(248,248,247)、本地白255差异保留。沿相同两CSS增加Skills页局部token混合中性色背景（background30%/muted70%，浅色约248），卡面保card token；不改全局skin/其它route/无新的设计系统。不冒色差像素完全一致或暗色参考已验。
+
+### R335 Skills 视觉布局实现准入（2026-10-08）
+
+Root已保同1280桌面真实RED r335-ui-header-red.json与修前图；同T-K03原Web唯一writer授仅现catalog CSS＋Skills surface CSS两文件，HEAD980172f与r335-ui-start全文件SHA保护。沿已有呈现职责：宽内容≥48rem标题/search/actions同一行，顶8px；窄保现两行/手机单列16px顶，使用surface container和catalog补偿维持按真实内容宽判定，不引布局框架/新组件/状态/API。同断点宽search boxed32px及分类32px精确对齐参考；coarse目标44px保。Root只浏览器/Git/门，独审冻结diff；reader业务与其它模块原样。真实返验1280/800/390、sidebar收放、长语言/缩放、Tab/Escape/归焦/search；未通过不宣Manus一致。
+
+<!-- R335-UI-PRECISION-IMPLEMENT-END -->
+
+### R335 Skills 视觉精细化并行只读审计（2026-10-08）
+
+同T-K03，Web原owner web_interaction_astra_r296只读审计；正常 /Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current / 980172f，R332六源和27Admin mixed保护。Root唯一浏览器操作者，实测同1280×800：两边侧栏300/main980，标题均18/24，Kokoro title y37/搜索y17/操作y50，Manus titley12/搜索y13.5/操作y8；Kokoro固定两行header而Manus宽屏同一行，卡面下移。owner只读分析现两个CSS/reader和Skills surface布局，frontend-design/refactoring-ui，比较保用户旧截图两行窄屏与当前宽屏一行方案，不扩其他模块/新UI框架/API，先报告最窄写集和验收。暂不写源/测试/文档/Git/资源或浏览器；平台机器修正独立并行。
+
+<!-- R335-UI-PRECISION-AUDIT-END -->
+
+### R335-C 修正准入：真实门发现共享响应违反既有协议（2026-10-08）
+
+Root 原71191自然exit1：Buf100/contract checker1；contract332PASS、7FAIL与1收集FAIL，architecture104PASS、types/lint/build/schema0；format5文件FAIL（四既有D0＋本片RED尾）。不得放宽Buf或RPC唯一响应政策。最窄修正沿同owner，三D0 R331前缀与既有14机器paths，共17paths：改两个method-specific response InspectPersonalSkillPackageResponse/InspectPersonalSkillInstallationPackageResponse，每个仍原四字段，消息五→六；共享file/selected两叶事实不复制。比较共享response（被既有规范禁止）与各method response（沿现规范，采用），不增通用envelope/alias/新权限/Schema。历史43父计数只Platform包而非Storage全部方法；旧历史字段/wholegraph约束保留。本片cutover文件允许精确格式化新增RED尾与现本片改动，语义不降、旧未改部分byte保留。重新正规生成后冻结；Root/独审全门重跑，正文运行/BFF/Web仍未授。
+
+<!-- R335-MACHINE-CORRECTION-END -->
+
+### R335-C 包正文两读机器切片（2026-10-08）
+
+Root已在主工作树真实执行source/generated/compiled缺方法RED：cutover **45 PASS/3 FAIL**，三个均ProductSkillPackageInspectionService缺席，非import/收集失败，日志r335-package-wire-red.log。旧全文和543非范围由owner冻结，Root检查后另授权同owner三D0定义的14机器paths；普通runtime12paths、BFF/Web、SQL/身份和正常进程暂不授。
+
+唯一writer platform_iam_consumer_r298；独审agent_planned_guarantee_system_r257；Root独占Git/资源/重跑。正式父2bce483双快照37207ddd/c4caf5f9在ignored r335-package-parent{-generated,}.binpb，仅复制至批准两个parent文件。新helper整图严格剥唯一两服务/五消息后回父43，同时current generated全图等compiled；原installation tags checker改用新冻结历史双父且原tags13→0712/whole断言与codec强度保留，V1–V9发行全部bytes原样。只当前census43→45，20commands/24proofs与历史断言不改。两请求optional presence/闭集JSON与uint64字符串codec正负控沿现contract文件，不能做不存在runtime的假成功。
+
+Root RED后才授；正规生成非手改generated，Common/Storage byte-exact，无新版本家族/依赖/Schema；14集越界先报Root，不借省略旧门通过。freeze/独审/Root所有实际门后精确commit，机器成功仍不等真实正文/管理员/UI闭环。
+
+<!-- R335-PACKAGE-MACHINE-TASK-END -->
+
+### R335-B 包正文真实机器缺口 RED（2026-10-08）
+
+Platform三D0已正式提交809f9ab（parent2bce483，4paths含Root事实回执），独审b2f97849、Root541保护及当前四检查0；正文仍未实现。下一原owner唯一writer仅授现test/contract/platform-contract-cutover.test.ts尾追加两新Product服务/五消息在source/generated/compiled的缺口断言；原43/20/24及历史断言全文保留，不import尚不存在helper/Schema、不加unit/mock、不写生产或其它测试。Root在主工作树真实运行，要求自然业务缺方法RED、非收集/import错误；然后才另授14机器候选。该RED只是工程准入，最终仍要正式PG/Storage/IAM/BFF/Web用户完整路径。
+
+<!-- R335-PACKAGE-RED-TASK-END -->
+
+### R335 同 T-K03：技能包正文契约准入（2026-10-08）
+
+上一目标回合为 progress：Web980172f和Root882f729b已提交，真实局部用户路径与未闭环证据更新；没有把70回归失败或正文/后台OPEN改成完成。继续用户唯一优先Skills，其余模块和kokoro-10保持暂停，完整Wave0–7目标不缩小。
+
+|项|本片裁决|
+|---|---|
+|owner/基线|Platform Skills原platform_iam_consumer_r298，唯一writer；physical apps/kokoro-capability / codex/r259-skills-metadata / 2bce483；已有三R331 D0未提交，冻结r335-platform-start.json。|
+|目标与位置|沿R331两独立本人包读与现modules/skills/package；Storage唯一字节owner，IAM资格；不借Agent execution proof或创建通用文件框架。|
+|本阶段写集|仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md的R331前缀；后缀逐字保留。代码/机器/SQL/测试/服务/凭据暂不授写。Root唯一Git/CURRENT/任务表。|
+|最窄修正|初次绑定及末次复核各沿现skill-transaction.ts新增无receipt具名短只读入口；同database/admission与单剩余请求预算，RepeatableRead一致来源/安装/包快照，Storage/下载不占PG事务。禁旧unbounded run或runFenced，不把外层race当物理SQL取消。现事务文件加入后继运行候选。|
+|授权语义|本人安装先SQL tenant/id/user targetOwner/removed=null筛选再映射，foreign坏来源仍NotFound；本人来源与安装精确revision分开，disabled/withdrawn生命周期沿已批准设计，quarantine拒绝。|
+|评审/验证|原QA agent_planned_guarantee_system_r257独立只读；Root核三面与实际源码、suffix/protected SHA，再执行当前机器/Schema检查并提交D0。后继在现cutover尾先真实缺方法RED，再独立授权43→45 additive机器；运行与BFF/Web消费串行。|
+|完成条件|三面一致、当前commit/检查/保护明确，正文与后台仍未实现；最终必须浏览器卡片→预览→真实SKILL.md/文件目录→选文件→返回，不能以D0/机器检查称用户闭环。|
+
+<!-- R335-PACKAGE-D0-TASK-END -->
+
 R334 局部 Web 已提交 **980172f998d0c3b58e20bd80d14fc25f60ed563a**（parent1b2abd6，精确19paths）；Root提交后核766非范围文件原SHA、三混合D0原suffix和九字典单行逆转 exact、Web index空。提交后正常技能搜索结束并渲染R255卡，点击预览760×600、普通technical details=0/bare skill ID=false，截图var/dev/r255-preserve/r334-skills-postcommit.png；临时网络拦截/观察与尺寸覆盖已清，交付页与参考页保留。正文与管理员仍OPEN。
 
 提交后Root显式Node22.22.2重跑contract309PASS、architecture51PASS、typecheck exit0（原26213终态0）；第一次编排contract309PASS后因zsh只读变量status而退出1，仅工具编排错误，保原日志，不当产品失败。默认70FAIL、全Playwright/axe/正文/后台未验保持。
