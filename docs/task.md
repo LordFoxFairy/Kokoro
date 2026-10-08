@@ -1,3 +1,61 @@
+### R333 Skills 真目录分层：局部用户路径已验，整页与回归仍 OPEN（2026-10-07）
+
+Web局部切片交付 **1b2abd6c664f28f45fc82488f5e63c9a0c52a004**（parent18d81ed，精确11paths）；完整Skills与71回归失败仍OPEN，不作为上线放行。
+
+沿用户 Skills 唯一优先，正常 /app/skills 现只消费固定 BFF public8.5真实目录：Web /api/hub/skills/catalog → BFF /v1/skills/catalog → Platform modules/skills；个人管理转现 Settings Skills，未新建市场/Owner/Schema。当前原 physical capability 名称不冒 cutover。六source及三D0只目录首片，原 R332 六源和 Admin mixed保留；Root核775非范围SHA exact、两旧source逆转、三D0原suffix exact，独审原两P2（声明超限归类/service_auth_failed tuple）最窄修复后通过。
+
+Root真实3310：目录GET200非截断窗/19真实active来源卡；My Skills进入原4安装Settings、关闭准确归焦；R255搜索一张→完整metadata预览→Escape归原卡且query保持；R301实际GET200响应hold→消费者预算后明确错误/Retry→真实200恢复（不伪body/status/写入，未记录精准毫秒）；长分类菜单真实RED1817.71>771且点击屏外，修复后320/right644且清单实际可点，390窄屏right336；长名多revision实际四卡、+98/100tags与19620描述全可达，390预览358×388/close44/一个306px滚动体无横溢；真实ZIP创建表单空关闭零发布、归创建。证据 Root var/dev/r255-preserve/r333-skills-user-verification.json（10项含OPEN/UNVERIFIED）、r333-skills-final.png及分类RED图。临时Fetch/尺寸恢复、Network随后关闭；没有业务写入、服务重启/reset或权限/资金/模型改变。
+
+Node22.22.2 Root原6488自然终止：lint/typecheck/contract309/architecture51/build均0；修复后原20699自然终止，同五门0，default test **3368PASS/71FAIL（7失败文件/172文件）**，最终test=1不隐藏。部分现旧测试仍要求旧管理页挂主route，其余暂停Project/长摘要等失败未全部排尽；本轮未改任何测试断言/Mock以清零。工程只辅助，当前是局部目录用户路径验收与提交候选，不是全回归或完整Skills通过。
+
+下一继续同T-K03：真实Product SKILL.md/文件树与目录安装；安装tags运行与BFF固定消费；作者/使用量/真正cover事实；同series目录多revision目前仍独立卡需owner产品语义收敛；跨身份/分页/实际发布刷新及全部CRUD/axe/全Playwright/视觉预算未验。现error仍复用旧“技能池加载失败”文案，后继目录文案收敛；本轮不改九字典混合变更。完整70/个人33计数不升级，T-K03/T-K05与Wave0–7 OPEN，其他模块仍暂停，kokoro-10仍PAUSED，不以本片宣Manus像素完全一致或正式上线。
+
+<!-- R333-ROOT-CATALOG-RESULT-END -->
+
+### R333 当前裁决：真实目录接入与 Manus 页面分层首切片
+
+Root实际只读 Manus：/app/skills 主页面含搜索、我的技能、创建、分类全部、封面卡片；我的技能打开 #settings/skills/personal 管理层，返回不离开目录；创建菜单4项只观察不执行。正常本地 /app/skills 实际仅个人安装/发布管理。两个原 owner 审计确认真实 BFF /v1/skills/catalog 已实现且在当前固定 public snapshot 有契约，Platform source controller/query/mapper 提供 identity-visible active 来源、服务器 query/tags/scope_kind/limit/cursor。不是公开市场；当前所有可见数据依赖 owner，不预置 Manus 内容。
+
+明确根因：Web正式surface只挂 PersonalSkillsRead；旧 /self/skills/catalog 命中 managed skillId读，旧catalog validator遗漏source_ref/revision且分类受旧固定enum限制，旧scope official/third_party不符正式scope_kind。旧preview有固定usage/正文拼接，禁止直接切preview=false冒接通。Root浏览器直接观察该API路径被浏览器 ERR_BLOCKED_BY_CLIENT 拒绝，未取得HTTP，记录为工具限制、不记产品失败；源码路由冲突另有实证。
+
+|设计门项目|本片明确结论|
+|---|---|
+|Owner/唯一writer|Web原 web_interaction_astra_r296；Root浏览器/集成/Git，BFF/Platform本轮只读，不改事实owner|
+|目标职责|正式目录消费/浏览与个人管理分层，按当前BFF正式SkillCatalogResponse，不新市场/全局缓存/新API协议|
+|位置比较|扩老preview组件会混入假使用量/旧上传/正文；采用现 ui/skills 新普通catalog reader及CSS，hub新增专用真实catalog client，server新增同源catalog adapter；不创建新目录|
+|数据/依赖|Web同源exact /api/hub/skills/catalog → 现 BFF /v1/skills/catalog；身份来自原admittedsession，no-store/request ID/error/10秒/1MiB/UTF8/取消及晚包屏障按现规则；用固定public生成validator，不手改generated/owner契约|
+|删除/保护|不恢复旧preview为production、不触R332六源/原27Admin混合；catchall原文件仅exact catalog dispatch局部新调用，不格式化全文；其余personal状态机原样保留|
+|验收|真实目录200→搜索/分类/分页→卡主区预览→退出/我的技能管理→真正ZIP发布入口；安装沿既有客户端准确source/ref/revision，不新增假快捷命令；未接通正文/作者/封面资源/统计不造值。首片不称完整Skills已验收|
+
+唯一writer准精确source集：src/features/app/kokoro-skills-surface.tsx；src/ui/skills/skill-catalog-read.tsx（新普通文件）；src/ui/skills/skill-catalog-read.module.css（新普通文件）；src/hub/skill-catalog-client.ts（新普通文件）；src/lib/server/skill-catalog.ts（新普通文件）；src/app/api/hub/[...path]/route.ts（仅catalog分流/import）。三面 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 仅R333当前前缀记录此既有契约消费设计，先更新三面后实现；INDEX/CURRENT/任务/所有Git由Root。需要额外文件/共用helper必须先报告，不越界。
+
+浏览入口与管理入口不同：我的技能调用现onOpenSettings('skills', opener)；创建菜单只提供真实包创建上传路径（可重用PersonalSkillPublishDialog，不接旧pseudo-import）。分类用真实tags，不按名称推断或伪全库分类；作者/使用数当前字段不存在，不显示伪值。双击/未知结果/安装准确revision等先保现Product客户端语义；卡预览完整summary，源技术字段折叠，不将metadata当SKILL.md。先交真实目录接入及主视觉，不以所有能力未齐继续停在个人管理版式。
+
+<!-- R333-CATALOG-WRITE-AUTH-END -->
+
+### R333 Skills 唯一优先：Manus 展示与真实 owner 链路对齐（2026-10-07）
+
+用户明确暂停其他模块，仅推进 Skills；最新要求是 Manus 一致的页面层级与交互，不再把个人管理双视图当作技能浏览目录。沿现 T-K03 记录，不新建计划中心。Root 负责实际 Manus 只读 UI/网络研究、当前页面失败证据、架构裁决、验收和 Git。业务调用固定 Web 同源 → BFF → Platform modules/skills；Platform 拥有技能/安装/状态，Storage 拥有包字节，BFF 做可信身份、产品 API 与业务编排，不跨 owner SQL；UI 由 Web 实现。
+
+|任务|负责人/权限|范围与验收|
+|---|---|---|
+|R333-WEB-AUDIT|原 web_interaction_astra_r296，只读|活跃 Web 18d81ed 工作树；核真实路由、页面/卡片/筛选/详情/创建入口与现客户端，给精确最小修复文件集及当前真实 API 缺口；不改文件、不操作浏览器/共享进程/Git|
+|R333-SKILLS-CHAIN|原 platform_iam_consumer_r298，只读|当前 Platform 2bce483 与活跃 BFF 固定消费；核现 Skills 模块/CRUD/安装/目录/作者分类/包详情及已冻 D0 的最窄后继；报告实际文件/operation/字段，不把规划当运行能力；不改文件/启动服务/访问业务数据库/Git|
+
+暂未授 R333 生产写入；收到两个审计后由 Root 定确切切片。参考真实 Manus，不复制其内容/虚构作者、使用量、目录或按钮；真实存在能力才可交付，待接通路径明确保留。UI 对照包含顶部搜索/我的技能/创建、分类筛选、封面卡片、预览/详情层级、个人管理和异步不跳动；业务验收必须真实浏览器完整操作链。
+
+R332 六源候选按用户要求暂停，未审查/未提交/未验收，保留工作树不回滚。Root 原 21531 已自然 exit1：172文件169通过/3失败、3430通过/8失败，原日志保留；含 Skills 长摘要结构断言、Project ready新增字段等失败，未清零。实际刷新可保三个文件夹/标题/草稿/展开，但主滚动62.5→0；仅取消指令弹窗亦62.5→0，尚未修复，不冒零跳动。全部旧共享服务及资源保持。原27 Admin mixed、Root八gitlinks/uv保护，完整70/个人33计数不升级，Wave0–7总目标不缩小，仅当前次序改变。
+
+<!-- R333-SKILLS-ONLY-TASK-END -->
+
+### R332 Project 刷新首切片实现授权
+
+Root真实RED：既有QA R258不改指令保存PATCH200，hold同源列表GET200后立即三folder消失/专案标题不可用/会话loading；预算到期出现error且重挂，显式Retry恢复。只临时网络延迟，无fake body/seed/重启。原独审fb4f558e确认revision混入key及error混入身份。采用现hook分离稳定授权身份与请求代际；淘汰新缓存框架或放宽私有准入。类型ready可带refreshing/refreshError，暂时失败保最后已验同scope数据，错误显式retry；401/403仍全投影retire，404精确目标仍不可用。首轮无新API/Schema/文件/依赖。
+
+唯一原Web writer现授六paths：src/features/app/use-project-list.ts、src/features/app/project-identity.tsx、src/components/blocks/app-frame/app-frame.tsx、src/components/blocks/workspace-rail/workspace-rail-types.ts、src/components/blocks/workspace-rail/workspace-rail-shell.tsx、src/components/blocks/workspace-rail/workspace-rail-navigation.tsx。Root负责CURRENT/现features INDEX/全部验证/Git。其余原27mixed与所有源码/test保护；本轮不改Skills/会话/资源后继、不写新单测/mock。保持旧rename ACK精确GET→list屏障/取消权限及私有retirement；请求晚包不得回灌；refresh只更新最后已验同身份数据，首次仍loading，失败无数据仍error。重试中不要整树替骨架，轻状态不重复堆新控件，不承诺数据真变化零位移。冻结六SHA、其它文件保护后原独审/Root真实保存→等待/故障→Retry、展开/草稿/scroll与切目标晚包验证，再工程门。
+
+<!-- R332-PROJECT-WRITE-AUTH-END -->
+
 ### R331 技能卡片预览已实测，正文与新刷新任务仍 OPEN（2026-10-07）
 
 Web **18d81ed9260504fd12985b4a8778561706b3397c**（parent2502143）精确四paths：现reader/CSS/CURRENT/skillsINDEX，卡主区复用原名称button，操作区独立；两真实预览宽布局、原封面、实际标签与完整描述；安装/版本/撤回沿原命令。原27Admin mixed和778非范围文件保护，Root独占Git；独审3a677900/原writerf6f0166b。没有伪作者、使用量或SKILL.md。

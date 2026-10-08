@@ -1,3 +1,11 @@
+### R333 Skills 目录当前入口补充（2026-10-07）
+
+Web局部切片交付 **1b2abd6c664f28f45fc82488f5e63c9a0c52a004**（parent18d81ed，精确11paths）；完整Skills与71回归失败仍OPEN，不作为上线放行。
+
+活跃 Web `/Users/nako/.codex/worktrees/kokoro-r257-admin-web`：`src/features/app/kokoro-skills-surface.tsx` formal分支只挂`src/ui/skills/skill-catalog-read.tsx`/同CSS；`src/hub/skill-catalog-client.ts` strict固定BFF目录消费；`src/lib/server/skill-catalog.ts`只同源准入/转BFF；现`src/app/api/hub/[...path]/route.ts` exact skills/catalog分流。`personal-skills-read.tsx`仍拥有Settings本人安装/发布管理。实际BFF目录与Platform source owner不改，Storage包字节不复制到Web。当前Product文件详情与目录安装尚缺；目录仅身份可见active来源，不是公开技能市场。局部用户路径证据与71回归失败见CURRENT R333；R332/Admin混合保留。
+
+<!-- R333-CATALOG-MAP-END -->
+
 ### R331 技能卡片预览已实测，正文与新刷新任务仍 OPEN（2026-10-07）
 
 Web **18d81ed9260504fd12985b4a8778561706b3397c**（parent2502143）精确四paths：现reader/CSS/CURRENT/skillsINDEX，卡主区复用原名称button，操作区独立；两真实预览宽布局、原封面、实际标签与完整描述；安装/版本/撤回沿原命令。原27Admin mixed和778非范围文件保护，Root独占Git；独审3a677900/原writerf6f0166b。没有伪作者、使用量或SKILL.md。

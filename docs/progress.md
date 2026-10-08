@@ -1,3 +1,27 @@
+### R333 Skills 真目录分层：局部用户路径已验，整页与回归仍 OPEN（2026-10-07）
+
+Web局部切片交付 **1b2abd6c664f28f45fc82488f5e63c9a0c52a004**（parent18d81ed，精确11paths）；完整Skills与71回归失败仍OPEN，不作为上线放行。
+
+沿用户 Skills 唯一优先，正常 /app/skills 现只消费固定 BFF public8.5真实目录：Web /api/hub/skills/catalog → BFF /v1/skills/catalog → Platform modules/skills；个人管理转现 Settings Skills，未新建市场/Owner/Schema。当前原 physical capability 名称不冒 cutover。六source及三D0只目录首片，原 R332 六源和 Admin mixed保留；Root核775非范围SHA exact、两旧source逆转、三D0原suffix exact，独审原两P2（声明超限归类/service_auth_failed tuple）最窄修复后通过。
+
+Root真实3310：目录GET200非截断窗/19真实active来源卡；My Skills进入原4安装Settings、关闭准确归焦；R255搜索一张→完整metadata预览→Escape归原卡且query保持；R301实际GET200响应hold→消费者预算后明确错误/Retry→真实200恢复（不伪body/status/写入，未记录精准毫秒）；长分类菜单真实RED1817.71>771且点击屏外，修复后320/right644且清单实际可点，390窄屏right336；长名多revision实际四卡、+98/100tags与19620描述全可达，390预览358×388/close44/一个306px滚动体无横溢；真实ZIP创建表单空关闭零发布、归创建。证据 Root var/dev/r255-preserve/r333-skills-user-verification.json（10项含OPEN/UNVERIFIED）、r333-skills-final.png及分类RED图。临时Fetch/尺寸恢复、Network随后关闭；没有业务写入、服务重启/reset或权限/资金/模型改变。
+
+Node22.22.2 Root原6488自然终止：lint/typecheck/contract309/architecture51/build均0；修复后原20699自然终止，同五门0，default test **3368PASS/71FAIL（7失败文件/172文件）**，最终test=1不隐藏。部分现旧测试仍要求旧管理页挂主route，其余暂停Project/长摘要等失败未全部排尽；本轮未改任何测试断言/Mock以清零。工程只辅助，当前是局部目录用户路径验收与提交候选，不是全回归或完整Skills通过。
+
+下一继续同T-K03：真实Product SKILL.md/文件树与目录安装；安装tags运行与BFF固定消费；作者/使用量/真正cover事实；同series目录多revision目前仍独立卡需owner产品语义收敛；跨身份/分页/实际发布刷新及全部CRUD/axe/全Playwright/视觉预算未验。现error仍复用旧“技能池加载失败”文案，后继目录文案收敛；本轮不改九字典混合变更。完整70/个人33计数不升级，T-K03/T-K05与Wave0–7 OPEN，其他模块仍暂停，kokoro-10仍PAUSED，不以本片宣Manus像素完全一致或正式上线。
+
+<!-- R333-ROOT-CATALOG-RESULT-END -->
+
+### R333 用户暂停其他工作，只推进 Skills 目录/UI/真实接口（2026-10-07）
+
+Root与两个原owner完成当前源码审计，真实Manus只读验证：主技能页是目录，搜索/我的技能/创建/分类＋卡片；我的技能打开Settings个人管理层；卡片预览→真正SKILL.md/文件树→返回预览。当前正式Kokoro却把个人安装/发布管理挂主页面。实际BFF /v1/skills/catalog 与Platform源码已有身份可见active目录；Web旧地址误入managed单资源分支且旧schema/scope语义不符。不能直接开启旧preview（固定usage/拼接正文）假装接通。证据在 var/dev/r255-preserve/r333-skills-reference.json 与三张实际截图；API地址直接浏览被ERR_BLOCKED_BY_CLIENT，无HTTP证据，不当产品FAIL。
+
+仅当前Skills首片由原Web唯一writer接正式固定contract目录/独立主浏览层、真实预览、我的技能管理与真实ZIP创建；原QA独立核公开契约/owner/source/身份/预算，Root唯一浏览器/验收/Git。生产candidate尚未交付，本条不是完成。作者/使用数/真实coverasset/Product正文/安装tags runtime及consumer缺口明确OPEN，不能伪造。后台顺序保持owner边界，不新市场/通用框架。
+
+R332按最新用户要求暂停：未提交六源保持，原21531自然exit1，3430通过/8失败（3文件）；刷新已能保folder/title/draft但主滚动62.5→0，取消指令弹窗亦发生，未修/未验收。Root清理自己未发送测试草稿、关网络拦截/观察，不触用户其它草稿或服务/数据。全部共享服务与PG/Redis/ObjectStore保持，原27Admin mixed、八gitlinks/uv保留。完整70/个人33计数不升级、T-K03/T-K05 OPEN，总Wave0–7不缩小，仅当前优先级聚焦Skills。
+
+<!-- R333-SKILLS-ALIGNMENT-RESULT-END -->
+
 ### R331 技能卡片预览已实测，正文与新刷新任务仍 OPEN（2026-10-07）
 
 Web **18d81ed9260504fd12985b4a8778561706b3397c**（parent2502143）精确四paths：现reader/CSS/CURRENT/skillsINDEX，卡主区复用原名称button，操作区独立；两真实预览宽布局、原封面、实际标签与完整描述；安装/版本/撤回沿原命令。原27Admin mixed和778非范围文件保护，Root独占Git；独审3a677900/原writerf6f0166b。没有伪作者、使用量或SKILL.md。
