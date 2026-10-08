@@ -1,3 +1,13 @@
+### R351 Skills 详情重复闪动已修正（2026-10-08）
+
+Web `de6b73784934e5c68919964c11d7cfe9071bc460`，仅 catalog reader / 具名回归 / Skills INDEX 三路径。真实390外部详情打开文件菜单造成两package GET、目录/正文清空；根因为parent内联target与retire变更触发子读effect。现在按安装ID/source/revision稳定目标、稳定退役callback，真正目标变化仍重读，无缓存或契约变更。新增RED1FAIL→具名7PASS，现package7PASS；已提交重跑R3511PASS，type/lint/build/diffcheck0，独审无新增阻断。工程首diffcheck因新EOF空行失败已修；保护校验旧W3清单命中已提交W4 hook变化，按正式44f88d替代后748原字节+1正式W4全保持。未执行无关全仓/e2e套件，原失败不删除。
+
+Root正常浏览器390外部与本人详情文件菜单保持展开且正文保留、零额外package GET；外部文件切换→返回→重新详情，1280正文可见、dialog800×600、明确重新打开仅目录/正文两GET，关闭保R350搜索。收据 `var/dev/r255-preserve/r351-browser-{red,green}.json`，实际截图 `r351-external-detail-{narrow,wide}.jpg`。这只闭合重复清空加载缺陷，整页Manus视觉/作者/usage/封面/分享下载/分类/创建及后台仍OPEN。其它模块与kokoro-10暂停；正常服务/基础设施不重启，Admin混合/8gitlinks/uv.lock保留，Wave0–7 active。
+
+### R351 Skills 查看详情闪动局部修复
+
+Owner Web，Root唯一writer，基线44f88d93，保原Admin混合；现skill-catalog-read.tsx稳定精确installation目标与授权退役callback，不新增状态层/缓存/模块/契约。真实390外部包正文→打开文件菜单导致两次package GET与正文退回加载，parent内联target/retire改变触发子loadDirectory effect重新加载；本人managed稳定目标作为对照。只修改既有catalog reader、tests/ui/kokoro-skills-surface.test.tsx追加具名R351稳定性负控、src/ui/skills/INDEX.md入口说明。先RED再改，Root局部门+真实宽窄目录/本人详情/文件选择/返回/关闭验证；权限/版本变化、取消、latest-wins仍保持。其它Skills视觉缺口未宣称完成，其它模块暂停。
+
 ### R350 消费者与正常浏览器示例链已接通，完整 Skills 仍未验收（2026-10-08）
 
 Platform `0e60e5d` → BFF `88fe387`（public8.10/111）→ Web `b548477`，其后真实 Settings 异步 Back 竞态修正 `44f88d93b4969bb7d9893664df4be3840273beff`（仅3现有文件）。正常持久库单列 expand 已执行，9表旧事实哈希保持；原 Platform42873/BFF5007 正常停止后，同原配置源码运行 Platform64000/BFF55498，Web66154 HMR复用，PG/Redis/MinIO未重置。进程收据位于既有 `var/dev/processes.json`。
