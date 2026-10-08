@@ -1,3 +1,13 @@
+### R329 用户纠正：Skills 徽标是作者＋分类，不是版本（2026-10-07）
+
+当前用户截图要求绑定为：真实发布者/平台徽标＋真实分类；溢出标签显示 +N 并在详情展示完整值。vN/UUID 属于技术详情，状态不代作者/分类。当前正常3310与活跃Web ac099fd 已现场核对两视图无vN卡面徽标（R327既有交付，不称本轮新修）；我发布的R267有真「清单/个人」tags但无作者，安装列表仍无分类/作者。reader slice(0,2)无+N是现源码缺口，不以当前两标签样本冒已测试多标签边界。
+
+原Platform负责人只读报告 c9fde8eebd520c18b20875c4e962b096d76af3bb83408083d86688f6f3c6f008：源SkillSummary有tags，安装repository已include真实来源但Proto ProductSkillInstallation/BFF public/Web安装类型均未投影；实际作者/平台名称无可信显示字段。下一在同T-K03先沿Platform来源tags安全投影→BFF固定消费→Web（不新建分类表、不借当前管理分页/active-only详情凑安装来源）；作者事实另需现owner明确，不假冒官方发布或拿安装者充作者。MCP R328 runtime后继保留，不抢当前用户Skills展示优先级。
+
+本轮只读真实UI和数据定位，没有新增生产修复或业务写入、资源重启/reset。浏览器登录投影曾退役，点击正式登录恢复三安装；无HTTP观测，不作认证根因或整链通过。证据 var/dev/r255-preserve/r329-skills-tags-verification.json 与两截图，Tab27恢复R267发布列表交付。未跑工程门：无生产源码变更；原Admin mixed、八gitlinks/uv全保留。完整70/个人33计数不变、T-K03/T-K05 OPEN、完整Wave0–7继续；本轮不称标签完整验收或Manus完全一致。
+
+<!-- R329-SKILLS-TAGS-RESULT-END -->
+
 ### R328 MCP 正式注册机器前置已提交，用户完整链仍 OPEN（2026-10-07）
 
 原Platform负责人唯一writer、独立QA并行，Root独占集成/Git。现physical capability / branch codex/r259-skills-metadata；三面设计 **4a4f7580163ad9dc9c316c8da4996654634b6095**，V9机器 **0712d42ae83a01d2670943b76028d2bd66fa8234**。同唯一RegisterMcpServer新增registration8及四字段message，无新runtime/Schema/权限；原reserved/响应/43-20-24和V1–V8发行原bytes保持，双父43快照真实核固定，V8剥父39/190完整保持。V9 aggregate **19c1466ab398c6dbb43130f3977fe776532e41e00e2487476d465f22fc936073**，build-time inactive/unroutable。

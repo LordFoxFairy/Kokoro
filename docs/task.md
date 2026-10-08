@@ -1,3 +1,18 @@
+### R329 Skills 作者与分类标签核对（用户最新要求）
+
+用户最新截图明确要求：卡片徽标表达发布者/平台与分类（如自动化、媒体、内容），不是版本号。沿 R327 已删除卡面版本徽标，不重复添加 vN，不用状态假冒分类，不伪造作者、目录或用量。本轮先真实浏览器核对与 owner 数据追踪，不授 runtime/Schema/契约重写。
+
+|任务|Owner/角色/基线/范围|验收/边界|
+|---|---|---|
+|R329-SKILLS-TAG-UI|Root 只读当前正常 3310；Web 活跃源码 /Users/nako/.codex/worktrees/kokoro-r257-admin-web HEAD ac099fd，原 Admin mixed 全保留|核对两视图没有 vN 卡面徽标、真实已有 tags 与详情信息；零业务写入、不重启服务。|
+|R329-SKILLS-TAG-DATA|原 platform_iam_consumer_r298 只读；Platform 0712d42、BFF 与 Web 当前正式契约/Skills read 模型；报告追加原 r316-iam-resource-handoff.md|指出 published/installation 发布者与 tags 当前各边界实际可用字段；给最小缺口与下一 owner，不发明契约，不写仓/运行资源/Git。|
+
+现有整体 70/33 与 T-K03/T-K05 状态不因标签核对升级；MCP R328 runtime 后继保留，当前先响应用户 Skills 展示问题。
+
+实际核对完成：两视图卡面无vN；发布tags可见但作者缺、安装分类缺、slice(0,2)无+N均保留未修。来源已有tags，只需沿owner安装投影，不新增分类体系。真实UI/作者数据审计证据 r329-skills-tags-verification.json；原owner只读STOP。接续T-K03先补安装分类的正式链路，再卡面作者事实与溢出呈现；不把只读核对算完成。
+
+<!-- R329-SKILLS-TAGS-TASK-END -->
+
 ### R328 MCP 正式注册机器前置已提交，用户完整链仍 OPEN（2026-10-07）
 
 原Platform负责人唯一writer、独立QA并行，Root独占集成/Git。现physical capability / branch codex/r259-skills-metadata；三面设计 **4a4f7580163ad9dc9c316c8da4996654634b6095**，V9机器 **0712d42ae83a01d2670943b76028d2bd66fa8234**。同唯一RegisterMcpServer新增registration8及四字段message，无新runtime/Schema/权限；原reserved/响应/43-20-24和V1–V8发行原bytes保持，双父43快照真实核固定，V8剥父39/190完整保持。V9 aggregate **19c1466ab398c6dbb43130f3977fe776532e41e00e2487476d465f22fc936073**，build-time inactive/unroutable。
