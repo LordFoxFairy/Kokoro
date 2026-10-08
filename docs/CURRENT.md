@@ -1,3 +1,33 @@
+### R342 详情接口契约已提交；Skills 页面仍未验收（2026-10-08）
+
+BFF正式 **e70562759e80a18a959c0e418e495721027ac54f**（parent d218a1a），Root精确15路径提交：public8.8.0/111两本人package GET＋具名checker与负控＋五现文档窄收据。原109完整parsed剥回、architecture仅escaped版本行逆变换、552其它tracked/旧文档suffix完整保护；fixed52/45、runtime/source/SQL/正常配置不改。
+
+独审发现绑定/path漏守，不能凭初次886PASS放行；Root新增负控实跑16PASS/10FAIL后最窄补强。最终Root23333完整check自然0：contract317PASS/0SKIP、default896PASS/0FAIL/2原资源SKIP，lint/typecheck/生成/build通过；9511 format自然0。独审复核10冻结SHA并关闭P1/P2。Root inverse审计两次因escaped regex字面处理错误失败，改为精确第607行后全bytes通过，未改产品。机器工程验收不代真实系统或浏览器。
+
+Root实际Manus点击/截图明确同弹窗详情200px文件列、正文、返回及四创建项；Kokoro当前缺正文入口/例子/metadata与目录资格，UI继续OPEN/历史FAIL，不升70/33。五个Skills正常开发依赖已恢复并探测200，复用持久配置/共享基础设施；原Kokoro错误标签等待用户原页手动刷新，尚无本轮本地E2E。Web2138a10源码未修，Next开发自动改next-env.d.ts生成引用单列保护；后台与任意目录卡片查看资格仍未完成。
+
+下一仍同Skills：先真实IAM准入＋Platform/Storage/BFF两本人包读取失败基线，接生产路由，再正规Web固定消费与同弹窗文件/正文/返回/不跳动；随后真实例子/metadata和后台同步。完整Wave0–7 active，不缩目标，其它模块及kokoro-10保持暂停。
+
+<!-- R342-PUBLIC-REFERENCE-RECEIPT-END -->
+
+### R342 Skills 用户验收现状：未完成（2026-10-08）
+
+本轮仍只处理 Skills，其它模块及 kokoro-10 保持暂停。Root 在已登录的 Manus 原标签页实际打开预览、点击“查看详情”、返回、查看创建菜单；没有点试用/例子、安装或创建付费任务。截图见现 Root ignored `var/dev/r255-preserve/r342-manus-{preview,detail,create}.png`，视口 800×752，观察后恢复。
+
+|用户能力|真实参考|Kokoro当前验收|
+|---|---|---|
+|查看详情|同一760×600弹窗内切换，200px文件区，SKILL.md/LICENSE.txt及目录，真实YAML/Markdown正文，返回预览|未接通，OPEN|
+|预览位置与例子|动作y241、32px高；此技能两行简介，例子y386/442/498、44px高/12px间隔|当前本地未重验；历史动作高24px/卡片短33.5px，保持FAIL，不拿旧图当修后|
+|作者/日期/usage/封面|当前技能真实作者与日期，usage可选；例子属于具体技能|真实字段未齐，禁止默认usage或固定三例补齐，OPEN|
+|创建菜单|使用Manus创建/记录/本地文件/GitHub导入|只有上传能力，OPEN，不增加假菜单|
+|目录卡片正文资格|卡片可以进入详情|当前catalog缺可信package-read目标，不能凭scope/installed猜owner或installation_id；本人管理页的两本人目标可明确，完整目录资格仍OPEN|
+
+真实资源故障：原Web/BFF/IAM/Platform/Storage应用进程均已退出；PG/Redis/MinIO/ClamAV仍在，Root只复用基础设施。沿持久0600配置和正式源码恢复五个Skills依赖，当前health/ready及Web页面200；Storage采用已发布5b15fe3的正规长期Git worktree，未启原53个未提交删除候选。未reset数据、创建账号/授权或修改schema，健康200不代表页面通过。实际句柄见 `var/dev/processes.json` 和 `r342-restored-runtime.json`。
+
+原Kokoro标签页留在浏览器错误页，浏览器工具拒绝该页协议；已请用户在原标签页手动刷新，不绕过、不新开窗口。尚无本轮Kokoro实际截图/E2E，Web源码未修。Backend机器契约独审又发现请求—响应绑定/path漏守；Root实跑9负控均失败，正在窄修，未放行。完整70/个人33不升级，完整Skills与Wave0–7不宣完成。下一阶段仍是两正式本人包读取→真实服务链→同弹窗文件/正文→发布者例子/metadata及后台同owner验证，最后同尺寸截图逐项对照。
+
+<!-- R342-USER-QUALITY-STATUS-END -->
+
 ### R341 Skills 正文前置已提交，真实页面仍未完成（2026-10-08）
 
 BFF Root提交 **d218a1ae9f2a153814327fda049888ffc86eedd8**（parent e431aa3）：正式Platform1f完整52固定消费/正规生成，两inspection机器符号可用；当前45RPC与历史43分开，原图/provenance/六旧断言保护。独审发现原BOM/合法空presence未守卫；Root补后实际20PASS/1FAIL确认Protobuf2.14.0默认decoder剥BOM，窄进程wire初始化修正，strict非法UTF8仍拒绝，不以假数据补原文。源码/三D0/机器/窄收据按明确路径提交，494范围外tracked/原var保护；public8.7/109、SQL/身份/正常服务未改。

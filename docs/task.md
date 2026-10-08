@@ -1,3 +1,49 @@
+### R342 详情接口契约已提交；Skills 页面仍未验收（2026-10-08）
+
+BFF正式 **e70562759e80a18a959c0e418e495721027ac54f**（parent d218a1a），Root精确15路径提交：public8.8.0/111两本人package GET＋具名checker与负控＋五现文档窄收据。原109完整parsed剥回、architecture仅escaped版本行逆变换、552其它tracked/旧文档suffix完整保护；fixed52/45、runtime/source/SQL/正常配置不改。
+
+独审发现绑定/path漏守，不能凭初次886PASS放行；Root新增负控实跑16PASS/10FAIL后最窄补强。最终Root23333完整check自然0：contract317PASS/0SKIP、default896PASS/0FAIL/2原资源SKIP，lint/typecheck/生成/build通过；9511 format自然0。独审复核10冻结SHA并关闭P1/P2。Root inverse审计两次因escaped regex字面处理错误失败，改为精确第607行后全bytes通过，未改产品。机器工程验收不代真实系统或浏览器。
+
+Root实际Manus点击/截图明确同弹窗详情200px文件列、正文、返回及四创建项；Kokoro当前缺正文入口/例子/metadata与目录资格，UI继续OPEN/历史FAIL，不升70/33。五个Skills正常开发依赖已恢复并探测200，复用持久配置/共享基础设施；原Kokoro错误标签等待用户原页手动刷新，尚无本轮本地E2E。Web2138a10源码未修，Next开发自动改next-env.d.ts生成引用单列保护；后台与任意目录卡片查看资格仍未完成。
+
+下一仍同Skills：先真实IAM准入＋Platform/Storage/BFF两本人包读取失败基线，接生产路由，再正规Web固定消费与同弹窗文件/正文/返回/不跳动；随后真实例子/metadata和后台同步。完整Wave0–7 active，不缩目标，其它模块及kokoro-10保持暂停。
+
+<!-- R342-PUBLIC-REFERENCE-RECEIPT-END -->
+
+### R342 公开契约独审发现漏守，先失败再收口
+
+原十文件冻结独审发现：managed响应source_ref没有明确绑定路径skill_id；selected_file.path没有明确绑定请求file_path；两个输出path只核字段存在，类型/minLength/安全语义可漂移。Root实跑新增9强负控：26 total / 16 PASS / 10 FAIL（含父套件），原完整check的886 PASS不覆盖此缺口，不能据此放行。
+
+沿原BFF writer bff_skills_public_owner_r342续派：先仅现contract-governance追加负控；Root重跑RED后另授唯一openapi.yaml＋具名checker最窄补强，锁两operation请求响应关联及两path的string/minLength1/完整安全路径。原109整体、fixed vendor/generated、source/SQL/配置/服务不改。后续完整check/format与独审再冻结提交；当前没有UI修复或正文路由激活。
+
+### R342 Skills 详情 UI 接线只读核对
+
+只读 QA：沿 bff_skills_consumer_review_r341（gpt-5.6-sol），当前Web2138a10＋原Admin/R332 mixed保护；Root操浏览器与真实资源。仅核 src/ui/skills/{skill-catalog-read,personal-skills-read} 与相邻现client/proxy/Markdown组件，依据本轮真实Manus r342-manus-preview/detail.png/metrics。交付最窄同弹窗详情接线文件集与状态机验收，不写文件/Git/资源/服务，不造examples/metadata/正文，也不重复BFF机器实现。此只读报告不是UI通过。
+
+### R342 Skills 正常开发依赖恢复（2026-10-08）
+
+Root现场确认Web/BFF/IAM/Platform/Storage五端口均无listener、旧PID均不存在；PG/Redis/MinIO/ClamAV仍活。沿原持久0600配置只恢复Skills所需依赖，无新账号/授权/库/schema/bucket/reset。IAM61500、BFF29105、Web66154已启动并真实health/ready或页面200；Platform7660自然exit1，明确skills-storage not ready，不重复启动。
+
+Storage原apps/kokoro-storage HEAD5b15fe3有53 tracked+2 untracked其它单Asset删除候选，current正常数据库尚未partial index切换；禁止盲启该候选。放置/责任：Storage同业务同服务、Root唯一运行资源writer；比较原mixed源直接启与正规Git clean长期开发worktree，选择现发布5b15fe3建立codex/r342-storage-normal（/Users/nako/.codex/worktrees/kokoro-r342-storage-normal），保持原未提交文件字节。新checkout不是临时fixture/复制源，运行仍pnpm dev并显式加载原Storage持久.env.local，不复制秘密、不安装schema。共享已锁node_modules只作依赖；无跨ownerSQL/API改变、新模块、新端口或新服务身份。先check exact HEAD/clean/端口，启动后真实Storage ready200再恢复同Platform。该恢复不计页面或包读取验收，公开合同agent不获共享资源修改权。
+
+### R342 Skills 查看详情公开接口机器切片（2026-10-08）
+
+上一goal回合为progress：BFF d218a1a消费正式inspection+修真实BOM失败；Root96b11365记录用户UI仍FAIL。当前不缩小Wave0–7，其他模块继续暂停。
+
+|项|确定结论|
+|---|---|
+|任务/归属|T-K03/P0 Skills查看详情数据接线；BFF唯一writer bff_skills_public_owner_r342（gpt-5.6-sol），Root审查/独占Git与资源|
+|基线|/Users/nako/.codex/worktrees/kokoro-r257-bff-normal；codex/r257-bff-normal-current；d218a1ae9f2a153814327fda049888ffc86eedd8；仅原var未跟踪保留；完整快照r342-bff-start.json|
+|已有设计|现三D0 R340/R341确定两本人GET、closed表示/error与预算；fixed52/45正式已提交，无新owner/SQL决定|
+|范围|唯一openapi.yaml、正规v1-operations.json、scripts/check-contract.mjs和verify-openapi.ts窄接线/仅当前版本计数、两现合同tests；现contract/README当前切片说明。新普通scripts/verify-skill-package-inspection-contract.mjs，现test/contract/openapi-contract末尾增加专用断言与负控。package仅format该脚本路径；CURRENT/INDEX/三D0收据Root独占|
+|放置比较|采用scripts现目录具名Skills包契约checker，main只调用；不继续把新业务checker堆入既有2800行verify-openapi.ts，不建目录/模块/新进程|
+|职责/依赖|checker只审两公开GET/closedschemas/errors/headers，existing主semantic入口调用；既有Redocly js-yaml正式工具依赖解析不新增包；新测试沿现合同文件，不创建UI mock/runtime|
+|删除/保护|无alias/fallback；只有当前8.7/109字面晋8.8/111；原109路径、metadata、参数、response、schema整体剥两增量后deepEqual；旧historical hashes/负控不削弱，fixed vendor/generated/SQL/source全保护|
+|前置/验收|先只追加两路径缺失/新表示缺失断言，Root实际RED后另授机器实施；自然工程门不代实际系统和浏览器链；后继真实IAM/Platform/Storage四读→runtime→Web同弹窗详情|
+|并行只读|Root调查正式Skills系统验证入口/现资源句柄；独读审查员后于冻结审新机器，不能启动/重置共享服务或写文件|
+
+公开两GET：/v1/self/skills/{skill_id}/package getManagedPersonalSkillPackage；/v1/skill-installations/{installation_id}/package getPersonalSkillInstallationPackage。省略file_path目录/selected_file:null，存在文件原text（含空/BOM）；source_ref/revision/files[{path,size_bytes}]/selected_file精确表示，uint64十进制string。只统一404skill_package_not_found，无凭message猜file_not_found；429确定limit/no retry，现session admission429可retry+严格Retry-After分开。其余完整closed/error/安全预算按现API R340，不另发明契约。
+
 ### R341 Skills 正文前置已提交，真实页面仍未完成（2026-10-08）
 
 BFF Root提交 **d218a1ae9f2a153814327fda049888ffc86eedd8**（parent e431aa3）：正式Platform1f完整52固定消费/正规生成，两inspection机器符号可用；当前45RPC与历史43分开，原图/provenance/六旧断言保护。独审发现原BOM/合法空presence未守卫；Root补后实际20PASS/1FAIL确认Protobuf2.14.0默认decoder剥BOM，窄进程wire初始化修正，strict非法UTF8仍拒绝，不以假数据补原文。源码/三D0/机器/窄收据按明确路径提交，494范围外tracked/原var保护；public8.7/109、SQL/身份/正常服务未改。

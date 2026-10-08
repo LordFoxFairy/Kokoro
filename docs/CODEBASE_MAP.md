@@ -1,3 +1,9 @@
+### R342 Skills 两本人包读取机器入口（2026-10-08）
+
+BFF正规开发worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` 当前正式e705627/public8.8.0/111；机器唯一 `contract/openapi/v1/openapi.yaml`，具名 `scripts/verify-skill-package-inspection-contract.mjs`经现主semantic checker调用。两路径 `/v1/self/skills/{skill_id}/package` 与 `/v1/skill-installations/{installation_id}/package`仅已发机器，runtime三文件/Web详情尚未实现，运行进程基线d218a1a不冒新路由已启。
+
+Skills事实owner仍物理apps/kokoro-capability（目标kokoro-platform），Storage唯一bytes；调用仍Browser→Web同源→BFF→Platform→Storage。Root正常Storage长期源码worktree `/Users/nako/.codex/worktrees/kokoro-r342-storage-normal`固定5b15fe3，保护原Storage53候选不激活。五依赖注册句柄见ignored var/dev/processes.json，健康不代用户验收。旧地图按各历史时点读，完整Skills功能仍OPEN。
+
 R335 提交收据：Web **e78a51450384cba1a71d2a5e7bc4fadce3f7bcce**（parent980172f），Root 精确五paths提交，三源SHA仍冻结值；提交后余780原SHA、工作切片diff/index空。Root原66723提交后contract309/architecture51自然0；正常3310同页面无Dialog/空query/R255卡可见、截图已保存。Platform9808f91保持clean；所有本轮验证句柄terminal。原Admin/R332混合、Root八gitlinks/uv保留。未验正文/后台/全Playwright保持OPEN，不升70/33完整业务汇总。
 
 ### R335 Skills 单项推进：视觉布局已局部实测，正文及后台仍 OPEN（2026-10-08）

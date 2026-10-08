@@ -1,3 +1,15 @@
+### R342 详情接口契约已提交；Skills 页面仍未验收（2026-10-08）
+
+BFF正式 **e70562759e80a18a959c0e418e495721027ac54f**（parent d218a1a），Root精确15路径提交：public8.8.0/111两本人package GET＋具名checker与负控＋五现文档窄收据。原109完整parsed剥回、architecture仅escaped版本行逆变换、552其它tracked/旧文档suffix完整保护；fixed52/45、runtime/source/SQL/正常配置不改。
+
+独审发现绑定/path漏守，不能凭初次886PASS放行；Root新增负控实跑16PASS/10FAIL后最窄补强。最终Root23333完整check自然0：contract317PASS/0SKIP、default896PASS/0FAIL/2原资源SKIP，lint/typecheck/生成/build通过；9511 format自然0。独审复核10冻结SHA并关闭P1/P2。Root inverse审计两次因escaped regex字面处理错误失败，改为精确第607行后全bytes通过，未改产品。机器工程验收不代真实系统或浏览器。
+
+Root实际Manus点击/截图明确同弹窗详情200px文件列、正文、返回及四创建项；Kokoro当前缺正文入口/例子/metadata与目录资格，UI继续OPEN/历史FAIL，不升70/33。五个Skills正常开发依赖已恢复并探测200，复用持久配置/共享基础设施；原Kokoro错误标签等待用户原页手动刷新，尚无本轮本地E2E。Web2138a10源码未修，Next开发自动改next-env.d.ts生成引用单列保护；后台与任意目录卡片查看资格仍未完成。
+
+下一仍同Skills：先真实IAM准入＋Platform/Storage/BFF两本人包读取失败基线，接生产路由，再正规Web固定消费与同弹窗文件/正文/返回/不跳动；随后真实例子/metadata和后台同步。完整Wave0–7 active，不缩目标，其它模块及kokoro-10保持暂停。
+
+<!-- R342-PUBLIC-REFERENCE-RECEIPT-END -->
+
 ### R341 Skills 正文前置已提交，真实页面仍未完成（2026-10-08）
 
 BFF Root提交 **d218a1ae9f2a153814327fda049888ffc86eedd8**（parent e431aa3）：正式Platform1f完整52固定消费/正规生成，两inspection机器符号可用；当前45RPC与历史43分开，原图/provenance/六旧断言保护。独审发现原BOM/合法空presence未守卫；Root补后实际20PASS/1FAIL确认Protobuf2.14.0默认decoder剥BOM，窄进程wire初始化修正，strict非法UTF8仍拒绝，不以假数据补原文。源码/三D0/机器/窄收据按明确路径提交，494范围外tracked/原var保护；public8.7/109、SQL/身份/正常服务未改。
