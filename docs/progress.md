@@ -1,3 +1,27 @@
+### R341 用户重验：Manus 实际页面对照，Skills 仍不合格（2026-10-08）
+
+Root复用现tab26/27，实际点Manus查看详情/文件选择/Back/创建菜单；统一800×752浏览器布局，完整CDP clip800避免原native截图662裁切冒同尺寸。Kokoro正常3310在观察中登录临时不可确认→正式Retry恢复，原因尚未诊断，未改身份/重启服务/数据。本轮零UI修复，不把R339外壳局部验收当用户认可或完整功能。
+
+|真实对照|Manus|Kokoro当前|结论|
+|---|---|---|---|
+|预览壳|x20/y76/760×600|同|只有外壳局部一致|
+|标题/安装动作|y169/y241，button136×32|y171/y217，button134×32|标题+2、动作-24；缺真实metadata行，不能空垫一行冒完成|
+|简介|x45/y322/14px/20line|同起点/字号|仅此局部一致，不代表整体|
+|详情|可点查看详情→同弹窗Back、文件树、真实SKILL.md Markdown/YAML|无按钮/文件/正文|FAIL|
+|示例list|三可点例子，x45/y366、422、478/710×44，12px间隔|没有例子字段/列表|FAIL；未点击以免创建付费任务|
+|作者/日期/usage/封面|真实作者/更新时间/usage/图|契约缺前三、封面为本地hash SVG装饰|OPEN；不伪字段|
+|目录页头|800标题x324/y32，MySkills632/48/72×32、Create712/48/64×32|同|局部一致；筛选92宽/13字 vs90宽/14字仍差|
+|首卡|x324/y148/218×251.5|x324/y148/218×218|缺publisher/usage使高度与节奏不一致|
+|创建|使用Manus创建/记录/本地文件/GitHub导入|只有上传技能|能力不一致，不能假菜单填齐|
+
+实际图/量测：var/dev/r255-preserve/r341-{manus-preview,manus-detail,manus-list}.png、r341-kokoro-{preview,list}.jpg、r341-preview-metrics.json。视口覆盖已恢复、两现tab保交付/参考，未开新窗口。普通源码与服务未改，界面继续未验收。
+
+两原owner独读结论：formal parser仅source_ref/name/description/hash/scope/revision/enabled/installed/categories；现metadataJson≤65536存储容器无example schema、source更新时间可用但未公开，安装updated_at不冒来源日期。legacy preview拼YAML/文件树/三固定例子及96k usage，正常入口不走，禁止拿它凑真实能力。Platform独读还指出tags13 mapper仍未赋值，当前机器不冒runtime标签完整。后继example在现Skills metadata定义发布者填写有限列表→原创建/版本/本人管理/Admin同验证→BFF投影→Web；不用新分类表/新后台副本，从描述推三例更不算对齐。
+
+正在同R340正式消费：BFF三D0 Root提交e431aa3；现唯一BFF writer仅完整Platform1f固定consumer/正规生成，未授public/runtime/正常激活。Root随后独审/重跑，再接真实正文public/Web；这不代表页面有查看详情。完整Skill与管理员、作者/usage/封面/examples、全Playwright/axe等仍OPEN，原70/33不升、Wave0–7active、其它模块/kokoro-10暂停。
+
+<!-- R341-REFERENCE-RECEIPT-END -->
+
 ### R339 UI 用户纠正已局部实测（2026-10-08）
 
 Web **2138a10d4a6a779c39073a25affb02e80f470cb0**（parent44cbc99）：原Web owner单writer仅catalog/personal两CSS，Root加现CURRENT/INDEX精确四路径提交；781其它tracked/extra原SHA保护。独立QA /root/skills_visual_review_r339（gpt-5.6-sol）冻结96c787c/7e4fc06无确定静态阻断，Root实际3310验收，不用该审查或工程门代用户测试。

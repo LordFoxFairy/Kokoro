@@ -1,3 +1,23 @@
+### R341 用户重验：逐项 Manus 差异及 R340 固定消费续接（2026-10-08）
+
+用户要求先实际看 Manus、同尺寸截图、不虚假完成。Root独占浏览器真实预览→查看详情→文件选择、目录截图及尺寸测量；独QA /root/skills_visual_review_r339只读现Web源码与展示字段来源，查example prompts/作者/更新时间/usage/封面接缝，不改UI/数据/契约/资源。其它模块仍暂停，Skills完整不降格为CSS。
+
+R340 D0已Root提交BFF e431aa366c5d281574b44597facaea63ed30f1ce，TECH最终270f8bb3（原CURRENT误记384de170下轮窄收据纠正）；API51d71b/DATAd02ab1原suffix保护。现新snapshot r340-bff-machine-start.json 551tracked。授原BFF owner唯一writer仅完整固定consumer：现scripts/generate-platform-connect-client.mjs、buf.platform.json、test/platform-connect-contract.test.mjs；正规两generated common/platform；contract/dependencies/platform-connect.json；完整52正式ownerGit1f6f764 vendor替旧e83a单pin；六现tests skill-publish/validate/installation/package-begin/package-complete-http及contract/openapi-contract仅旧vendor字面pin替换，原断言保持。buf.platform.gen/toolchain/package/lock/HTTP public/runtime/Schema/身份/正常服务全部不授。Root独占Git/集成。
+
+全52聚合按owner仓相对path含contract/为e4201bc，不改变算法冒新发行。保历史V8/V9各43/20/24完整bytes，current45/20/24，三双父完整图剥回及V8父39，保190/128历史向量与所有旧漂移负控，只正规generator生成、不手改产物。冻结后Root实际重跑generator/check/contract/types/lint/build，再审查提交；这仅详情前置，不算页面可用。正文与example list都仍待真实owner字段/public/Web交互。Root实查登录偶发error→正式Retry恢复记录，不冒已修认证根因。
+
+<!-- R341-USER-REFERENCE-TASK-END -->
+
+### R340 同 Skills：正式查看详情消费前置（2026-10-08）
+
+上一回合progress：Web2138a10/Rootc4e37e8e及六真实UI证据；完整目标不缩小。R339预览局部已验，本轮继续同Skills补真正文，不恢复其它模块。R339暂停仅前一UI优先切片，本轮解除Skills内BFF前置暂停；kokoro-10继续暂停。
+
+BFF原owner /root/bff_skills_body_r338 唯一writer，Root独占Git/资源/集成；基线c91fee642 / codex/r257-bff-normal-current / /Users/nako/.codex/worktrees/kokoro-r257-bff-normal；551 tracked冻结r340-bff-start，原var保留。独读审核 /root/skills_visual_review_r339（gpt-5.6-sol）转BFF文档/固定consumer审查。第一授权只三个现D0前缀；Root批准后另授固定机器切片，不授public/runtime/Schema。沿R339放置表与已确定接口/错误/预算，无新增owner；System/Agent/MCP/Admin/Billing均不写。
+
+完成条件：D0一致且current/target明确；完整Platform1f6f764固定consumer、两inspection正规生成、当前45/历史V8和V9各43不放宽、三双父剥回等图、原V5–V9字节完整且单pin无compat；Root执行实际生成/契约/类型/build，不以这些判浏览器详情已通过。后继仍真实系统→正规公开两GET→Web查看详情/文件切换/返回；暂不造入口。提交Root按阶段精确路径。
+
+<!-- R340-BFF-TASK-END -->
+
 ### R339 UI 用户纠正已局部实测（2026-10-08）
 
 Web **2138a10d4a6a779c39073a25affb02e80f470cb0**（parent44cbc99）：原Web owner单writer仅catalog/personal两CSS，Root加现CURRENT/INDEX精确四路径提交；781其它tracked/extra原SHA保护。独立QA /root/skills_visual_review_r339（gpt-5.6-sol）冻结96c787c/7e4fc06无确定静态阻断，Root实际3310验收，不用该审查或工程门代用户测试。
