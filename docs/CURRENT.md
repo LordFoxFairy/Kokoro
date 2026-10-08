@@ -1,5 +1,7 @@
 ### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
 
+Root本轮后继：扫描撤权/并发及dedup挂钩修正后，前冻真实27文件247PASS/525pure/type-lint-build0；独审uploadId错绑P2用最终两文件4FAIL→Root32PASS/type0关闭。最终隔离真实个人文件/封面2PASS，包用例1过滤SKIP（local HTTP非production HTTPS/浏览器）。物理ObjectLock清理独立FAIL：期望403但typed400，具体错误未核，禁止泛化接纳400；自有bucket/库删除且全清单保持。原失败保留，源码未正式提交/正常激活；正常37 final-null与S01–S10 OPEN保持。Root既有计划c3570849已锁整页顺序/删除重复preview假事实，下一整份Platform字段发行，不再逐字段改UI。
+
 用户再次要求整Skills设计/交互一次梳理。Root复用原S01–S10，独立只读整页审查确认正常Web使用SkillCatalogRead，而旧preview仍有猜分类/固定usage/临时import；不得混回产品，Web整页片须清理重复实现并保详情稳定target。外部、预览正文、Settings、四创建、分享下载、后台及异步一张清单，不逐字段交付页面。当前仅最小依赖续修，不扩历史GC/运维；其它模块暂停。
 
 Root后继冻结真实PG：27文件/247用例，245PASS/2FAIL；自有库drop且全库清单前后保持。失败为dedup旧findUnique barrier未拦当前findFirst，以及cover扫描状态改unknown后Complete同command重放仍返回历史clean（不是删除后重放）。原唯一writer按准确根因集中修，禁止放宽barrier/撤权断言。最终4个cover smoke fixture窄审无新增确定阻断，只是审查；Root真实MinIO/Clam smoke尚未执行，正常37 final-null停止线、S01–S10 OPEN保持。证据r353-st5-root-frozen-integration-second.log/json和同计划，不把500纯门当页面完成。

@@ -11,7 +11,7 @@
 - 当前真实Web入口已是`SkillCatalogRead`，不能误把`PreviewKokoroSkillsSurface`当产品实现：后者仍有名称猜分类、固定usage数字、装饰封面及临时import数组。整页片必须清理该重复路径及相关调用/测试，不将其假数据或状态接回正常页面；具体删除范围由Web任务卡绑定实际引用后授权。
 - 已有详情稳定target、Back只切view、Close归焦骨架保留；新字段不重建整个弹窗/reader。统一管理动作刷新，搜索/分类/分页/滚动/正文/未保存输入均保留；滚动恢复目前未证实，最终真实浏览器必验。
 - S06四入口都进入同一持久草稿/包验证/发布链，不用浏览器数组假完成；参考“记录技能”的具体流程仍未核实，不自行设计后宣称一致。
-- 必要封面/包读取和既有资产可用性要闭合；历史GC、全仓运维与重复全门不是UI前置。当前Storage冻结真实PG为245PASS/2FAIL：dedup fixture仍挂旧findUnique；cover当前scan撤权后Complete重放仍返回旧clean。原writer仅修这两根因；原RED、正常数据与37条final-null停止线保持。没有新页面验收证据。
+- 必要封面/包读取和既有资产可用性要闭合；历史GC、全仓运维与重复全门不是UI前置。Storage首冻真实PG245PASS/2FAIL已保留；dedup旧hook及cover当前scan撤权/并发重放已精准修，Root次冻27文件247PASS、525pure和type/lint/build0。独审错uploadId P2另两路径RED4FAIL→Root具名32PASS/type0、窄审关闭。最终实际PG/Redis/MinIO/Clam隔离个人文件与封面2PASS/包1过滤SKIP，本地HTTP非production HTTPS或浏览器资格。ObjectLock精确清理另FAIL（预期403、真实typed400，错误原因尚未确认），自有bucket/库清理且正常清单保持；该历史物理清理不阻塞整页设计，但不得冒通过。正常37条final-null停止线与全部页面未验收保持。
 
 ## A. 产品与视觉基线（锁定后不再自行创新）
 

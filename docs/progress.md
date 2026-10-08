@@ -1,5 +1,7 @@
 ### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
 
+Root本轮后继：扫描撤权/并发及dedup挂钩修正后，前冻真实27文件247PASS/525pure/type-lint-build0；独审uploadId错绑P2用最终两文件4FAIL→Root32PASS/type0关闭。最终隔离真实个人文件/封面2PASS，包用例1过滤SKIP（local HTTP非production HTTPS/浏览器）。物理ObjectLock清理独立FAIL：期望403但typed400，具体错误未核，禁止泛化接纳400；自有bucket/库删除且全清单保持。原失败保留，源码未正式提交/正常激活；正常37 final-null与S01–S10 OPEN保持。Root既有计划c3570849已锁整页顺序/删除重复preview假事实，下一整份Platform字段发行，不再逐字段改UI。
+
 本轮整页审查已写回原S01–S10：正常SkillCatalogRead与旧preview假分类/固定usage/临时import明确分开，后继Web完整片清理重复实现，保详情稳定与全页异步状态；不另建计划或逐字段交付。Root最新真实PG245PASS/2FAIL，自有库已清理/全库清单不变；dedup旧findUnique hook及cover scan撤权后receipt复放旧clean交原writer最小续修，不扩大等待/放宽断言。4个cover smoke fixture窄审无新增确定阻断，MinIO/Clam真实门尚未跑；正常37 final-null及全部页面OPEN保持，其它模块暂停。
 
 Root 收到完整冻结（99改/15新/2删，收据2e53c2f6）并逐字节核308当前文件、166范围外保护；实际重跑492纯检查及类型/lint/build/契约/schema均0，只是工程支持。随后真实隔离PG全integration为153PASS/93FAIL＋1未处理错误：大量收尾cleanup:<hex>写UUID列失败，旧fixture漏locator/enum迁移另列；自有库全部清理、全库清单前后保持，正常数据未改。完整独审51c08e9e另检出fresh不同command重删错误成功与native timeout错误分类两P1。Root已续派原唯一writer精准修复＋RED，未提交/激活候选，不放宽断言、不重跑动态最终门。正常37 final-null停止线和S01–S10 OPEN保持。
