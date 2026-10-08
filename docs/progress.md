@@ -1,3 +1,15 @@
+### R327 卡面版本标签按用户要求纠正（2026-10-07）
+
+Web **ac099fd188db4d826aea393e0b68e56744803172**（parent6c1e6ce）：现reader精确删除两vN span；五现文档前缀记录最新用户决定替代R323，精确详情/真实tags/状态/handlers与操作目标保持。无API/SQL/CSS/新组件或伪作者分类。Root staged三混合D0仅R327前缀+HEAD，原Admin mixed后缀与774其它文件、27status保持/index空；独审b033a625，Root inverse exact。
+
+正常3310真实两视图卡片无版本徽标、发布R267实际清单/个人标签保留；同名两卡按真实简介进入原source/ref及revision1/2，技术详情可核、Escape归焦；撤回安装仍revision2/停用/启用disabled；390无横溢，尺寸恢复1280，硬刷新正常无无限加载。局部五QA用例PASS，旧版本卡面RED留before图；实际正常登录投影中途退役，点击原正规登录入口后恢复，仅UI观察不升级身份全链。最终图 **var/dev/r255-preserve/r327-skills-final.jpg**，结构r327-skills-user-verification.json与r327-web-commit-receipt.json。无业务写入/共享资源重启或reset；Tab27交付/Manus26保留。
+
+原9667完整check自然0却误Node24，不计正式门；Root显式Node22.22.2原2690完整check自然0：309contract/51architecture/3438default、lint/types/build，均仅辅助，不代用户验收。全部当前门终态。全test:e2e/axe/视觉预算/多身份/全CRUD未验。managed无publisher、installation无tags/publisher，作者与安装分类仍需要owner后继，不拿状态或版本凑标签，未称Manus完整一致。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升级；T-K03/T-K05 OPEN、完整Wave0–7 active/支付最后。MCP注册三D0后继尚未派写，先完成本轮用户可见纠正。原八gitlinks/uv保护不暂存。
+
+<!-- R327-ROOT-END -->
+
 ### R326 Skills 未知结果恢复的真实用户闭环切片（2026-10-07）
 
 当前 Web **6c1e6ce33bf78c8547d27fd9598be0d70e6120ef**（parent f352cfcc），Root精确三paths：现publish-dialog两个呈现guard/unknown真实名称vN、现CURRENT/Skills INDEX前缀。全部函数/footer/session/key/File及原警示/default折叠身份保持；独审dfd14d10、Root inverse全文exact，771其它tracked与6untracked/原27Admin mixed/index空保护。没有新增unit/mock/API/SQL/CSS/模块。

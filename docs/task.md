@@ -1,3 +1,30 @@
+### R327 卡面版本标签按用户要求纠正（2026-10-07）
+
+Web **ac099fd188db4d826aea393e0b68e56744803172**（parent6c1e6ce）：现reader精确删除两vN span；五现文档前缀记录最新用户决定替代R323，精确详情/真实tags/状态/handlers与操作目标保持。无API/SQL/CSS/新组件或伪作者分类。Root staged三混合D0仅R327前缀+HEAD，原Admin mixed后缀与774其它文件、27status保持/index空；独审b033a625，Root inverse exact。
+
+正常3310真实两视图卡片无版本徽标、发布R267实际清单/个人标签保留；同名两卡按真实简介进入原source/ref及revision1/2，技术详情可核、Escape归焦；撤回安装仍revision2/停用/启用disabled；390无横溢，尺寸恢复1280，硬刷新正常无无限加载。局部五QA用例PASS，旧版本卡面RED留before图；实际正常登录投影中途退役，点击原正规登录入口后恢复，仅UI观察不升级身份全链。最终图 **var/dev/r255-preserve/r327-skills-final.jpg**，结构r327-skills-user-verification.json与r327-web-commit-receipt.json。无业务写入/共享资源重启或reset；Tab27交付/Manus26保留。
+
+原9667完整check自然0却误Node24，不计正式门；Root显式Node22.22.2原2690完整check自然0：309contract/51architecture/3438default、lint/types/build，均仅辅助，不代用户验收。全部当前门终态。全test:e2e/axe/视觉预算/多身份/全CRUD未验。managed无publisher、installation无tags/publisher，作者与安装分类仍需要owner后继，不拿状态或版本凑标签，未称Manus完整一致。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升级；T-K03/T-K05 OPEN、完整Wave0–7 active/支付最后。MCP注册三D0后继尚未派写，先完成本轮用户可见纠正。原八gitlinks/uv保护不暂存。
+
+<!-- R327-ROOT-END -->
+
+### R327 用户纠正 Skills 标签语义（当前优先，既有计划续接）
+
+用户明确卡片参照 Manus 的作者/分类而非 v1/v2。Root 正常3310已观察三原安装卡的 v1/v2，修前截图 r327-skills-before.jpg。本片先纠正错误替代：移除两视图卡片版本徽标；精确版本继续在原技术详情中可核对，真实状态和 published 的真实 tags 保留。现 installation 投影没有 tags/publisher，managed 投影没有 publisher，不伪造作者/分类，不新增请求或跨owner读。R323“版本常显”视觉决定被此用户要求替代；revision事实和 exact安装/升级规则不变。
+
+归属：Web 现 ui/skills/personal-skills-read.tsx 单一呈现原因，扩现两处metadata而非新增卡片组件/状态机/模块；无 API/SQL/generated/权限变化。三设计面仅追加本视觉决定前缀，保原 Admin mixed后缀。Root 独占Git/浏览器/集成验证，不改共享资源。
+
+|任务|Owner / 基线 / 范围|完成条件|
+|---|---|---|
+|R327-SKILLS-CARD-METADATA|原 web_interaction_astra_r296，Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current /6c1e6ce；仅现 reader 两版本span删除及三D0、CURRENT、skills/INDEX前缀；Root审查与提交|原状态/handlers/详情/意图/key/数据严格保持；无新文件/API/CSS/mock。冻结后独审、Root适当辅助门及正常3310两视图、搜索、详情版本和窄屏真实用户返验。|
+|R327-SKILLS-METADATA-REVIEW|原 agent_planned_guarantee_system_r257，只读同基线 reader/schemas/原R323决定|核真实标签数据、精确版本依然可核对、操作目标不改变；只原ignored报告追加，不写仓/服务/Git。|
+
+完整Wave0–7/70/33汇总不升级，MCP后继尚未派写，当前先响应用户可见Skills纠正。
+
+<!-- R327-TASK-END -->
+
 ### R326 Skills 未知结果恢复的真实用户闭环切片（2026-10-07）
 
 当前 Web **6c1e6ce33bf78c8547d27fd9598be0d70e6120ef**（parent f352cfcc），Root精确三paths：现publish-dialog两个呈现guard/unknown真实名称vN、现CURRENT/Skills INDEX前缀。全部函数/footer/session/key/File及原警示/default折叠身份保持；独审dfd14d10、Root inverse全文exact，771其它tracked与6untracked/原27Admin mixed/index空保护。没有新增unit/mock/API/SQL/CSS/模块。
