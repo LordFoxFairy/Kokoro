@@ -1,3 +1,13 @@
+### R339 UI 用户纠正已局部实测（2026-10-08）
+
+Web **2138a10d4a6a779c39073a25affb02e80f470cb0**（parent44cbc99）：原Web owner单writer仅catalog/personal两CSS，Root加现CURRENT/INDEX精确四路径提交；781其它tracked/extra原SHA保护。独立QA /root/skills_visual_review_r339（gpt-5.6-sol）冻结96c787c/7e4fc06无确定静态阻断，Root实际3310验收，不用该审查或工程门代用户测试。
+
+真实前白surface/opaque边框/896最大宽/128封面/动作44/gray23.1简介→暖灰语义token/6%边框/800最大宽/220封面列160裁底/桌面32/coarse44/foreground14/20。同Manus800：760×600、正文顶137、hero466+24+220/底298、简介322；1280两者800×600；390×420稳定370.5×378、关闭和安装44、封面隐藏/无横溢。真实R307 title255/简介19620/100tags前2+98，单body滚动；Escape保query/原卡；本人已安装R255同壳且先退父Settings原卡。六自然用例PASS，列表本轮未改，不冒整页像素一致。
+
+Root92644 Node22 lint/typecheck/build自然0；contract/architecture/default/fullPlaywright/axe/暗色实际/200%本片未跑，仅CSS、无API/React变化；原3369PASS/70FAIL不清零。证据var/dev/r255-preserve/r339-skills-ui-verification.json和r339-skills-preview-after.png，尺寸/touch恢复、正常预览交付/参考保留。动态resize中间动画读数不是稳定失败结论，重新打开实查。无业务写入/服务重启/reset。普通正文查看详情/作者usage真实cover/Admin同步仍OPEN；用户当前UI优先，原R339BFF准备设计保留但暂停，其他模块/kokoro-10暂停，完整Wave0–7active及70/33不升。
+
+<!-- R339-ROOT-UI-RECEIPT-END -->
+
 ### R338 用户纠正提交与正文接缝事实（2026-10-08）
 
 Web **44cbc99e70877af65c3cbef468b5eec9c4e4b36f**（parent3a726ee）：Root删除用户否决的详情“技能分类”折叠区及三deadCSS，仅标题上方前2/+N标签。真实R267修前重复summary/两对标签，修后summary0/单对标签；390短屏关闭安装44无横溢；100分类R307保前2/+98，无summary/单body，Escape原卡/query保持。Root86730 Node22 targeted lint/types0；未重跑build/default/全Playwright。775其它tracked/原混合保护；截图 r338-category-corrected.png，自然用例 r338-user-category-verification.json。旧R337分类全文展开是历史不再认可的设计，不继续宣传。

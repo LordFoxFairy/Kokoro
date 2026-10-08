@@ -1,3 +1,47 @@
+### R339 UI 用户纠正已局部实测（2026-10-08）
+
+Web **2138a10d4a6a779c39073a25affb02e80f470cb0**（parent44cbc99）：原Web owner单writer仅catalog/personal两CSS，Root加现CURRENT/INDEX精确四路径提交；781其它tracked/extra原SHA保护。独立QA /root/skills_visual_review_r339（gpt-5.6-sol）冻结96c787c/7e4fc06无确定静态阻断，Root实际3310验收，不用该审查或工程门代用户测试。
+
+真实前白surface/opaque边框/896最大宽/128封面/动作44/gray23.1简介→暖灰语义token/6%边框/800最大宽/220封面列160裁底/桌面32/coarse44/foreground14/20。同Manus800：760×600、正文顶137、hero466+24+220/底298、简介322；1280两者800×600；390×420稳定370.5×378、关闭和安装44、封面隐藏/无横溢。真实R307 title255/简介19620/100tags前2+98，单body滚动；Escape保query/原卡；本人已安装R255同壳且先退父Settings原卡。六自然用例PASS，列表本轮未改，不冒整页像素一致。
+
+Root92644 Node22 lint/typecheck/build自然0；contract/architecture/default/fullPlaywright/axe/暗色实际/200%本片未跑，仅CSS、无API/React变化；原3369PASS/70FAIL不清零。证据var/dev/r255-preserve/r339-skills-ui-verification.json和r339-skills-preview-after.png，尺寸/touch恢复、正常预览交付/参考保留。动态resize中间动画读数不是稳定失败结论，重新打开实查。无业务写入/服务重启/reset。普通正文查看详情/作者usage真实cover/Admin同步仍OPEN；用户当前UI优先，原R339BFF准备设计保留但暂停，其他模块/kokoro-10暂停，完整Wave0–7active及70/33不升。
+
+<!-- R339-ROOT-UI-RECEIPT-END -->
+
+### R339 UI 优先：暂停 BFF 实现，只校正现 Skills 两个预览（2026-10-08）
+
+用户再次否决不一致。Owner Web；原 Web owner 单 writer，Root 浏览器/集成/Git，独立只读审核。基线44cbc99、779 tracked及6 untracked按r339-ui-web-start.json保护；仅允许 skill-catalog-read.module.css、personal-skills-read.module.css 和最终现CURRENT/Skills INDEX。零React/网络/API/schema/业务写入。现元素职责不变，采用现CSS局部覆盖，不改全局Dialog或创建第二主题。
+
+真实参考同800：dialog760×600/50rem width/95vw max/90dvh bound、60px顶部操作行、暖灰surface/6% border、hero正文466+24+220封面/min160+bottom边线、summary14/20 foreground，桌面动作32、触控44。Root已存white/大动作/小封面 RED截图。对齐现尺寸/palette/hero，缺作者、usage、正文和真实查看详情仍OPEN，不用假数据或按钮补高度。验收同800/1280、390短屏coarse、正常卡打开/关闭/原焦点-query/单滚动，无技术或重复分类。R339原BFF设计保留但暂停，其他模块/自动化暂停，完整goal不缩小。
+
+<!-- R339-UI-PRIORITY-END -->
+
+### R339 同T-K03：BFF Skills inspection 文档与固定消费准入（2026-10-08）
+
+上一目标回合progress：Web44cbc99/Root760daa74用户分类纠正＋实际页面RED/GREEN改变权威状态；完整Skills/目标未完成。当前只Skills，用户否决的重复分类不恢复，Wave0–7 active，其它模块/kokoro-10暂停。
+
+Root已按R338审计裁决：原BFF owner bff_skills_body_r338为唯一writer；基线 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal / codex/r257-bff-normal-current / c91fee642，551tracked原哈希r338-bff-start保护，原var保留。第一段仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md前缀，不改变旧suffix；Root独占审查/Git/资源。此三面冻结、独审和Root gate后才授完整固定consumer（非runtime/Public）写入。
+
+|§8项|Root决定|
+|---|---|
+|Owner|BFF public安全投影；Platform唯一包资格及内容metadata owner；Storage唯一bytes，IAM准入；一名BFF writer|
+|当前事实|当前BFFConnect e83a/43缺两inspection，Root已真实generated qualification exit1；public8.7/109，normal另一已发行态，不冒激活；原projection身份可用但预算/rotation待加强|
+|目标职责|真正文文件列表/选择原文，两本人GET；先完整正式固定consumer，无UI假按钮/简介充正文|
+|位置比较|新具名三普通route/connect/response位于现http/routes、infrastructure/clients/platform；淘汰HTTP projection union塞RPC与installation command client混读生命周期。无新模块/通用framework|
+|粒度|三小文件职责不同；现server精确route接线；现projection credential/token安全强化另slice，避免新身份；当前机器consumer仅扩现generator/test/vendor|
+|依赖|Browser→Web→BFF→Platform固定1f6f764…contract；禁止owner SQL/源码相对import/直Storage/借catalogtoken|
+|数据API|零SQL/Redis/receipt/outbox；可信session tenant/subject；owner两RPC当前本人绑定，不靠目录scope/installed；newpublic8.8/111两GET目标，机器后独立实现|
+|删除项|单一vendor切换时删旧e83a Connectvendor，不保双pin；V5–V9历史proof完整固定，只历史结构校验不路由|
+|验证|固定Node22完整generator/check，old43三精确父图剥新增回原，旧V8→parent39；生成Common/Platform两输出；contract/lint/types/build/default/format由Root重跑，后继真实IAM HTTP/PG/Storage/Platform/BFF系统及浏览器，缺资源不冒通过|
+
+API目标：GET /v1/self/skills/{skill_id}/package、/v1/skill-installations/{installation_id}/package，仅optional file_path（省略directory，存在选精确文本）；公开data精确source_ref/revision/files[{path,size_bytes}]/selected_file(null或{path,text})，uint64规范十进制字符串，原BOM/空/换行保留，无trim/截断/HTML/secret/rawID资产。query/body/未知/重复/path严格当前ownerZIP路径，文件必须目录存在。成功全部实际JSON编码≤1MiB；owner两codec≤1MiB不等public预算。public超上限统一429 skill_package_limit_exceeded/no retry，不截断；文件not previewable仍ownerResourceExhausted语义429，不擅冒412/413。
+
+错误目标：400 invalid_skill_package_request(false)；404 skill_package_not_found(false)，缺失/foreign/removed统一，具体missing file另skill_package_file_not_found；429 skill_package_limit_exceeded(false)，共享有效ownerResourceExhausted不能只靠message分类；412 skill_package_precondition_failed(false)；502 skill_package_response_invalid(false)；503 skill_package_dependency_unavailable(true，token/workload403/Unavailable/Canceled/Deadline同依赖)，session401/403/429按既有IAM闭集。no-store/同requestID，所有消息固定脱敏。route首await前唯一绝对10秒含session admission/credential/token/RPC/decode/publicencode，caller断开不写、owner取消而callerlive返回503；无自动retry/cache正文。response method-specific/identity/path/顺序/重复/大小严格，正文可空和目录null分开。
+
+正式输入Root再核完整52owner文件（proto3、descriptor8、execution-v5..9共39、provenance＋HTTP2），aggregate e4201bc8674c470bf49c840712f87c34e869b96e59a0e96ba83eb3e4df19446a；pin当前1f6f764bc4bcf09d235e086ae7fe137acf16d63d，whole45/20/24而旧V8始终43，latestgenerated整图等于compiled；三双父回chain，不改V8/V9历史bytes。任意可见非本人/未安装catalog资格、作者usage/series/admin仍OPEN，不缩小最终Skills必须闭环目标。
+
+<!-- R339-BFF-DESIGN-GATE-END -->
+
 ### R338 用户纠正提交与正文接缝事实（2026-10-08）
 
 Web **44cbc99e70877af65c3cbef468b5eec9c4e4b36f**（parent3a726ee）：Root删除用户否决的详情“技能分类”折叠区及三deadCSS，仅标题上方前2/+N标签。真实R267修前重复summary/两对标签，修后summary0/单对标签；390短屏关闭安装44无横溢；100分类R307保前2/+98，无summary/单body，Escape原卡/query保持。Root86730 Node22 targeted lint/types0；未重跑build/default/全Playwright。775其它tracked/原混合保护；截图 r338-category-corrected.png，自然用例 r338-user-category-verification.json。旧R337分类全文展开是历史不再认可的设计，不继续宣传。
