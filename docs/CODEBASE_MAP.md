@@ -1,3 +1,9 @@
+### R343 Skills 两本人原文读取运行入口
+
+当前正常BFF worktree正式411e6906（parent e705627/public8.8/111），运行三个普通文件`src/http/routes/skill-package-inspection.ts`与`src/infrastructure/clients/platform/skill-package-inspection-{connect,response}.ts`；server generic前exact分流。真实正常4GET/9边界Root通过，无SQL/正文缓存。Web唯一writer在既有r257-admin-web接package client/server adapter/同Dialog详情，未冻结/UI未验；当前事实与证据见CURRENT R343。物理Platform仍apps/kokoro-capability，Storage唯一对象字节；五正常依赖复用，当前BFF注册32003/PID44454，历史句柄不作当前事实。
+
+<!-- R343-RUNTIME-MAP-END -->
+
 ### R342 Skills 两本人包读取机器入口（2026-10-08）
 
 BFF正规开发worktree `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` 当前正式e705627/public8.8.0/111；机器唯一 `contract/openapi/v1/openapi.yaml`，具名 `scripts/verify-skill-package-inspection-contract.mjs`经现主semantic checker调用。两路径 `/v1/self/skills/{skill_id}/package` 与 `/v1/skill-installations/{installation_id}/package`仅已发机器，runtime三文件/Web详情尚未实现，运行进程基线d218a1a不冒新路由已启。

@@ -1,3 +1,81 @@
+### R343 Skills 真实正文链已接通，UI 尚待冻结返验（2026-10-08）
+
+仅Skills继续，其它模块与kokoro-10仍暂停；完整Wave0–7 active。BFF Root精确13路径提交 **411e6906f651087dbbd8ff8afd96d53e38b352c0**（parent e705627）。558非范围tracked/原var保护；public8.8.0/111机器字节不改。新增两本人包GET运行：真实本人来源与安装目录/SKILL.md四GET从0PASS/4个404→4PASS/0FAIL/0SKIP；另正常HTTP九边界/缺失读取9PASS。正式既有source/package/安装与真实Storage bytes，无新fixture/user/data。工程证据不代浏览器。
+
+真实登录正常但Platform准入403，根因官方resource仍legacy5/currentvalidator需6；Root匹配既有operator经IAM官方read/extend/read=current6，fresh token introspection200。client/role/binding/凭据未扩变。Root受控重启当前正常BFF后，旧manifestfalse遮正式.envtrue误导致安装503，已明确修正启动方式仅用持久.env.local；来源/安装列表均200。当前BFF句柄32003/PID44454/53714，registry已更新，未重启其它四owner/PG/Redis/MinIO，无数据reset。
+
+Root显式Node22.22.2完整check自然0：contract317PASS、default897PASS/0FAIL/2原资源SKIP，lint/typecheck/固定consumer生成/build通过；完整format与八源码/测试定向Prettier0。独审iam_skills_admission_review_r343绑定八SHA无确定P0/P1/P2阻断。Root首次误用Node24 check在固定Node22门失败，保留真实日志、未放宽pin。另HTTP正控4与边界9是运行验证，不冒前台已完成。
+
+原用户本地标签本轮库存title已外部恢复为Kokoro Web，Root随后合法读取/操作；无绕过原错误页安全限制。真实800×752 DOM旧预览: dialog20/76/760×600、title45/171、安装45/217/134×32；Manus标题169/动作241，两者仍缺真实metadata引起位置差，本地没有查看详情或示例。Root实际Manus点击同Dialog文件/正文/返回，参考图r343-manus-preview/detail.jpg。新本地图捕捉出现画面尺寸/过渡与DOM不一致，不能把r343-kokoro-before{,-exact,-stable}.jpg当可靠像素一致证据；保留并标未验证，没有修改页面/图片伪造一致。临时viewport/CDP emulation已清，未安装/删除/点付费例子。
+
+Web沿原owner唯一writer已通过三D0（原suffix exact），正在fixed8.8＋两同源adapter/严格consumer/同Dialog详情200px文件区/安全正文/返回接线，尚未冻结及Root端到端验收。作者/Skill时间/例子list/usage/任意catalog正文资格与后台仍OPEN，不造固定三示例、不复活假正文legacy、不宣Manus一样。原完整70/个人33汇总不升；最新Web默认3369PASS/70FAIL仍历史待本轮重跑。后继先冻结→独审→正规同源与本地真点击/可靠截图/边界/不跳动→正式metadata/examples及Skills后台，不恢复其它模块。
+
+<!-- R343-ROOT-REAL-PACKAGE-RECEIPT-END -->
+
+### R343 正常启动配置纠正（实测，不修改产品规则）
+
+Root第一次受控启动错误地先注入旧page-runtime manifest，再加载现持久.env.local；Node环境优先导致旧manifest的Skills enabled=false遮盖现正式true。真实四新GET已4PASS，但本人安装列表503可稳定复现，Root检查bootstrap条件确定client=null；非IAM再次拒绝/非产品mapper回归。现.env.local含全部旧manifest keys，故停止该刚启句柄84439，仅用当前正式持久.env.local启动同源码同端口，不再旧manifest注入。没有修改配置值/权限/schema/数据，不把四GET绿冒整个Skills已正常；随后重跑本人列表与四GET。第一次Node24 fullcheck另因固定Node22门失败，留日志；Root已启动显式Node22重新完整check。
+
+### R343 BFF 冻结独审与正式运行验收
+
+BFF writer交8文件冻结，HEAD仍e705627；Root已亲读route/connect/response及server diff。独审沿iam_skills_admission_review_r343（gpt-5.6-sol）只读绑定8冻结SHA、查源码/closed契约/预算/身份/rotation/取消与真实输入测试；禁Git/文件/数据库/服务资源写。Root独占受控正常BFF旧句柄29105/PID31429退出并复用持久配置同53714启动源码，先核原句柄而非重复服务；其余四应用与共享基础设施不重启。运行激活只对本片，不把健康当页面完成；fresh正规HTTP登录与已有本人包expected→四真正GET重跑，完整工程门独立记录。
+
+### R343 Web 详情实现准入：三设计面审查通过，用户界面仍未验收
+
+Root已亲读三D0：TECH 9fb5e601、API ef2f5e2f、DATA 232a8179，三个原suffix SHA逐字等基线。沿同T-K03，同owner bff_skills_consumer_review_r341（gpt-5.6-sol）由D0转唯一Web实现writer；Root独占Git、共享进程、真实用户数据与浏览器。
+
+允许写集严格沿TECH“后继确切文件集”：唯一generated/bff-public-openapi.yaml固定e705627原字节＋现两个generator正规生成结果/版本pin，现具名public contract断言；四新普通package client/adapter/detail组件/CSS；现catch-all两exact dispatch、两Skills readers及CSS、九字典只具名词条与相邻INDEX；新client/detail tests及现hub-proxy/skills/settings tests。package/lock/全局主题/共用Hub schema/client/Markdown renderer/SQL/权限/正常配置/其它页面禁改，原Admin/R332混合与next-env自动生成状态保护。不得操作资源或Git。
+
+先实际固定consumer/缺详情行为RED，再最窄实现；同弹窗preview→详情200px文件列/安全Markdown→返回/关闭，真实目标及单10s/1MiB/取消/epoch防迟到，零伪正文/metadata/examples/创建菜单。目录仅正规ACK+canonical安装ID明确目标；任意目录查看资格、作者/Skill日期/例子/usage保持OPEN。后继Root收冻结、独审、适当工程门、正规运行四GET与浏览器同尺寸截图验收；未完成界面不因工程PASS升级。
+
+### R343 BFF 正文运行接线：真实4个404后实施授权
+
+Root复用正常持久账号/五开发进程，无临时fixture/新账号/新包/新Asset/安装写入。IAM固定resource official legacy5→updated→current6后，fresh token introspection200；BFF现本人发布列表200/24、安装列表200/6。由当前API选择同本人active来源及installed同ref/revision；Platform两正式inspection目录+全部两真实文件原文分别200，源/安装结果严格相等。Root外部0600输入保存真实期望，再实跑新四HTTP用例 **0PASS/4FAIL/0SKIP，全部实际404**；日志r343-root-real-red，非401/依赖伪RED。
+
+沿BFF bff_skills_public_owner_r342唯一实现writer，基线e705627＋已交test文件，Root独占服务与Git。本片授既定三个普通runtime文件 src/http/routes/skill-package-inspection.ts、src/infrastructure/clients/platform/skill-package-inspection-{connect,response}.ts；现bootstrap/server.ts精确hook在generic前；现projection-credential.ts/projection-token.ts只准三D0已批准的10s绝对budget、取消/有界读取/轮换防旧credential接收所需窄强化。必要测试沿现test真实HTTP文件及现platform合同/源测试，不动public机器、生成/SQL/角色/client/token权限、package/lock/正常配置与共享transport通用框架。新文件只分别拥有请求编排、固定Connect调用与owner响应映射，不新目录。
+
+语义完全沿现三D0与8.8 contract：两精确本人GET，无body/重复未知query/idempotency，安全ID/path单decode，目录selected_file null/原text包括空BOM，不截断，源ref/request目标/file绑定，uint64decimal、0..128有序唯一files；actual encoded1MiB，单绝对monotonic10s覆盖准入/凭据/OAuth/RPC/decode/encode/返回fence，无budget重置/autoretry；断连不response，caller活的ownerCancelled/localdeadline503；closed已发error tuples，不猜file-not-found。原109/RPC45完整保护，default原2资源SKIP保留。
+
+Root收交接冻结后独审＋真实4GET GREEN/正常源码受控激活/完整适当工程回归，再Web真实端到端。同ManusUI及作者/examples/任意目录资格与后台继续OPEN，不以4GET代页完成；原Web设计writer并行只三D0。
+
+### R343 Skills 正常准入故障已纠正，正文四读后继
+
+IAM只读实证：现Platform resource legacy5，已提交87e5437 runtime只接受current6，导致Skills projection403。Root正常正式operator cookie配置比对true，官方read自然0/legacy5→官方extend自然0/status updated→官方read自然0/current6。无角色/用户/client scope/binding/secret/SQL手写/reset或进程重启；官方固定resource演进含stable字段与官方/持久双回读。不建立MCP客户端、不恢复其它模块；此修复不是Skills页面完成。最初任务收据工具误用子仓cwd读取Root相对docs/task.md失败，CLI仍执行；本条明确补录实序，不冒此前已写。
+
+Root继续重新跑同真实token introspection与现BFF列表；只有正控200再判四新GET缺路由RED。原Web D0 writer仅三文档，IAM只读已结束，正常数据无新增测试资源。
+
+### R343 Skills Web 查看详情当前设计门（与IAM只读调查并行）
+
+Owner Web，沿现 consumer_review Agent 转本仓唯一 D0 writer，Root审查/Git/浏览器与资源；基线2138a10＋原Admin/R332 mixed＋Next next-env生成漂移，完整r343-web-start冻结保护。本阶段仅现docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md最窄前缀，不改后缀；审核后另授实现，不作UI已交声明。
+
+方案：正式消费BFF已提交e705627 public8.8.0/111，仍Browser→同源adapter→BFF→Platform→Storage。用现hub/client与lib/server相邻普通包读文件，ui/skills普通同弹窗文件正文组件（比较塞reader与独立component，选后者；不新业务目录/全局主题）；managed/installation精确区分目标；目前catalog只有成功ACK+canonical GET installation_id可信，不猜scope/boolean，不N+1补资格。无持久化/SQL/身份scope改变。10s总预算、1MiB闭集data、安全path/源/版本绑定、null/空正文区分，abort+epoch迟到丢弃、401/403身份退役清私有。现MarkdownMessage GFM安全渲染，无rawHTML、无伪YAML/目录/usage/examples。作者/日期/例子未由owner提供继续OPEN，后继同Skills补事实，不以空壳算一致。
+
+后继候选集：正式BFF public消费pin/source及正规生成物（先清楚列现发布入口再Root授权）；新hub/skill-package-client.ts、lib/server/skill-package.ts、ui/skills/skill-package-detail.tsx/.module.css；现api/hub/[...path]/route.ts精确hook、personal-skills-read两本人弹窗/现CSS、catalog仅可信installed目标详情；九既有字典具名详情/文件加载词条，相邻INDEX与必要合同/交互测试。原mixed、其他生成/source、公用网络核心不授；Root实际系统链绿前不声称正常页面接通。验收最后必须800×752双截图/390/键盘/真实正文与快速切文件/关闭返回/硬刷新，不靠单测代替。
+
+### R343 正常 Skills 读取真实失败：IAM 只读定位并行卡
+
+Root正常持久账号正式form/OAuth HTTP登录200、本人身份正控200；BFF本人发布列表503/本人安装列表403；Platform日志对应403；同持久projection credentials经实际token HTTP200，但IAM /internal/v1/platform-workload-tokens/introspect projection403/PERMISSION_DENIED。尚未判新GET缺路由RED，不拿准入故障冒用例正确失败。
+
+独立只读调查 IAM owner：新 iam_skills_admission_review_r343，gpt-5.6-sol，目录 apps/kokoro-iam HEAD87e5437，Root保正常共享进程与资源。只核自身官方当前PlatformWorkloadRepository.readCurrent策略、现持久clients/resource/bindings与normal凭据关系；允许IAM自身只读官方repository/Prisma查询（不跨owner SQL），只输出字段符合/差异，不输出秘密/用户信息。不写代码/数据/文档/Git，不provision、不授予权限、不启停资源；所有修复由Root据实际根因另审，不把“health200”当授权通。
+
+Root继续实际Manus UI/字段参考与BFF四读测试审查，BFF原writer已交只读真实HTTP测试文件SHA待Root输入执行。浏览器原本地标签仍错误页且上一用户手动刷新请求未回复，不绕过工具安全拒绝、不用HTTP登录伪造浏览器验收。
+
+### R343 Skills 正文真实调用链：先用户态 HTTP 失败基线
+
+上一轮有实质进展：BFF e705627正式两GET机器、Root5ac62b61实际对照/资源收据提交；UI仍未完成，完整目标不缩小。现同T-K03/P0，其它模块与heartbeat继续暂停。
+
+|项|任务卡|
+|---|---|
+|Owner/角色|BFF沿bff_skills_public_owner_r342（gpt-5.6-sol）唯一测试/后继实现writer；Root真实资源与Git；独审沿consumer_review|
+|基线|/Users/nako/.codex/worktrees/kokoro-r257-bff-normal / codex/r257-bff-normal-current / e70562759e80a18a959c0e418e495721027ac54f；567tracked冻结r343-bff-start，只有原var保留|
+|本阶段写集|仅新普通test/skill-package-inspection.integration.mjs，先四个本人目录/原文GET真实HTTP断言；无src/package/机器/SQL/配置/生成/Git/共享资源写入|
+|放置/职责|现test根与既定R340三D0一致；比较test根black-box与新目录/重复owner fixture，选前者，测试只HTTP消费Root受保护输入，不导入IAM/Platform私有源或SQL，不造响应/预签token|
+|输入/依赖|优先 Root 沿持久账号走正常正式登录/OAuth HTTP，只读现本人已发布/已安装资源与现Platform/Storage（不新增临时应用/用户数据）；只有现数据不满足正控才采用官方隔离fixture。提供0600 JSON：bff_base_url/user_access_token/web_secret/managed_skill_id/installation_id/source_ref/revision/files[{path,size_bytes,text}]；不在正常用户数据写入|
+|真实失败/完成条件|先确认现发布来源/安装读取正控200与真实StorageCLEAN；四新GET失败才判RED，不把401/依赖故障误判缺路由；Root亲自执行，同调用链之后另授runtime三文件/现server及必要credential预算强化|
+|交付/验证|worker只交文件SHA与命令，Root执行Node22 HTTP测试与独审；缺input明示未验，REQUIRE_REAL_INTEGRATION=1时失败不skip；无新增角色/scope/调用方向/SQL/正文cache，不把工程门当浏览器|
+
+Root测试准备优先复用正常五服务与已有本人数据，全程HTTP只读，不读owner SQL、不伪造目录/正文；隔离资源仅在真实需要时使用现owner官方fixture/schema接口，先探测所有句柄，不重启正常五服务，不重用已关闭R336私有host。测试进程仅测试隔离，不替3310正常持久开发。旧Storage四个测试资源清理债务不扩大为normal数据删除，新的自有资源创建前精确登记，结束通过owner删除并核实；任何cleanup失败留受保护清单，不reset共享PG/Redis/ObjectStore。
+
 ### R342 详情接口契约已提交；Skills 页面仍未验收（2026-10-08）
 
 BFF正式 **e70562759e80a18a959c0e418e495721027ac54f**（parent d218a1a），Root精确15路径提交：public8.8.0/111两本人package GET＋具名checker与负控＋五现文档窄收据。原109完整parsed剥回、architecture仅escaped版本行逆变换、552其它tracked/旧文档suffix完整保护；fixed52/45、runtime/source/SQL/正常配置不改。

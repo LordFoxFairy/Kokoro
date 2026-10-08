@@ -1,3 +1,17 @@
+### R343 Skills 真实正文链已接通，UI 尚待冻结返验（2026-10-08）
+
+仅Skills继续，其它模块与kokoro-10仍暂停；完整Wave0–7 active。BFF Root精确13路径提交 **411e6906f651087dbbd8ff8afd96d53e38b352c0**（parent e705627）。558非范围tracked/原var保护；public8.8.0/111机器字节不改。新增两本人包GET运行：真实本人来源与安装目录/SKILL.md四GET从0PASS/4个404→4PASS/0FAIL/0SKIP；另正常HTTP九边界/缺失读取9PASS。正式既有source/package/安装与真实Storage bytes，无新fixture/user/data。工程证据不代浏览器。
+
+真实登录正常但Platform准入403，根因官方resource仍legacy5/currentvalidator需6；Root匹配既有operator经IAM官方read/extend/read=current6，fresh token introspection200。client/role/binding/凭据未扩变。Root受控重启当前正常BFF后，旧manifestfalse遮正式.envtrue误导致安装503，已明确修正启动方式仅用持久.env.local；来源/安装列表均200。当前BFF句柄32003/PID44454/53714，registry已更新，未重启其它四owner/PG/Redis/MinIO，无数据reset。
+
+Root显式Node22.22.2完整check自然0：contract317PASS、default897PASS/0FAIL/2原资源SKIP，lint/typecheck/固定consumer生成/build通过；完整format与八源码/测试定向Prettier0。独审iam_skills_admission_review_r343绑定八SHA无确定P0/P1/P2阻断。Root首次误用Node24 check在固定Node22门失败，保留真实日志、未放宽pin。另HTTP正控4与边界9是运行验证，不冒前台已完成。
+
+原用户本地标签本轮库存title已外部恢复为Kokoro Web，Root随后合法读取/操作；无绕过原错误页安全限制。真实800×752 DOM旧预览: dialog20/76/760×600、title45/171、安装45/217/134×32；Manus标题169/动作241，两者仍缺真实metadata引起位置差，本地没有查看详情或示例。Root实际Manus点击同Dialog文件/正文/返回，参考图r343-manus-preview/detail.jpg。新本地图捕捉出现画面尺寸/过渡与DOM不一致，不能把r343-kokoro-before{,-exact,-stable}.jpg当可靠像素一致证据；保留并标未验证，没有修改页面/图片伪造一致。临时viewport/CDP emulation已清，未安装/删除/点付费例子。
+
+Web沿原owner唯一writer已通过三D0（原suffix exact），正在fixed8.8＋两同源adapter/严格consumer/同Dialog详情200px文件区/安全正文/返回接线，尚未冻结及Root端到端验收。作者/Skill时间/例子list/usage/任意catalog正文资格与后台仍OPEN，不造固定三示例、不复活假正文legacy、不宣Manus一样。原完整70/个人33汇总不升；最新Web默认3369PASS/70FAIL仍历史待本轮重跑。后继先冻结→独审→正规同源与本地真点击/可靠截图/边界/不跳动→正式metadata/examples及Skills后台，不恢复其它模块。
+
+<!-- R343-ROOT-REAL-PACKAGE-RECEIPT-END -->
+
 ### R342 详情接口契约已提交；Skills 页面仍未验收（2026-10-08）
 
 BFF正式 **e70562759e80a18a959c0e418e495721027ac54f**（parent d218a1a），Root精确15路径提交：public8.8.0/111两本人package GET＋具名checker与负控＋五现文档窄收据。原109完整parsed剥回、architecture仅escaped版本行逆变换、552其它tracked/旧文档suffix完整保护；fixed52/45、runtime/source/SQL/正常配置不改。
