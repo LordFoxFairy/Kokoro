@@ -1,3 +1,15 @@
+### R337 Skills 视觉切片已局部验收，整项仍 OPEN（2026-10-08）
+
+Web Root 精确提交 **3a726eedb7114a223cc11474273aee1e689fb6d6**（基线e78a514）：三现源catalog reader/CSS与personal CSS，两事实文档CURRENT/Skills INDEX。原 owner STOP 后 Root 仅接管文档/提交；独QA冻结审核无确定阻断；原780非本切片路径逐SHA保持（含Admin/R332混合），不暂存Root gitlinks/uv.lock。
+
+真实用户验证：正常3310搜索/预览/关闭、100分类原生键盘展开全文/关闭/原焦点-query；同800页头标题32、动作48、分类96、首卡148；1040内容692三列、1039内容691两列；390×420/coarse短屏预览350×388、关闭与安装44、单body306无横溢；我的技能已安装/我发布的、更多菜单退出、本人预览返回通过。100分类原RED标题3081/安装3305，修后171/395，全部100原文仍在。未点业务写入、未借假作者/usage/正文补参考高度。
+
+Root原97346 Node22.22.2辅助门：contract309PASS、architecture51PASS、lint/typecheck/build0，自然exit0；源码冻结与提交exact。默认全回归未再跑，历史3369PASS/70FAIL保留。6条结构化自然UI用例与截图在 var/dev/r255-preserve/r337-skills-user-verification.json、r337-skills-final.png，尺寸/touch恢复、空query/无弹窗。不冒像素完全一致（分类按钮90 vs参考92；元数据缺口真实保留）。
+
+同T-K03仅此视觉切片已验收；完整Skills正文/文件树仍待Platform新发行→BFF正规public→Web查看详情；目录通用正文资格、作者/usage/真实封面、series收敛、多身份、管理员与前后台同步未闭环。全Playwright/axe/暗色/200%/预算未验，Wave0–7保持active、70/33不升，其它模块/kokoro-10仍暂停。下一只沿Skills补实际详情能力，不恢复其它模块、不新建计划中心。
+
+<!-- R337-ROOT-RECEIPT-END -->
+
 ### R337 同T-K03：Skills 可见视觉精修（2026-10-08）
 
 现 Web e78a514/codex/r257-admin-web-current；785已有路径哈希冻结 r337-web-start.json，原Admin/R332混合保护。原Web owner web_interaction_astra_r296为唯一writer；Root独占浏览器/资源/Git/集成，原QA只读。frontend-design/refactoring-ui已读，复用现token和CSS Module，不新目录/依赖/框架。仅修改3现源：src/ui/skills/skill-catalog-read.tsx、skill-catalog-read.module.css、personal-skills-read.module.css；仅呈现职责/标签可展开，不变API/身份/安装/发布handlers。文档INDEX/CURRENT及全门由writer STOP后Root接管。
