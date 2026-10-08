@@ -6,6 +6,13 @@
 
 **架构**：浏览器→Web同源adapter→BFF公开ProductAPI→Platform modules/skills；当前物理owner仓是kokoro-capability，不另建skills服务。Platform持有revision/发布/安装/分类及技能业务事实；Storage持有包/封面字节和扫描，IAM持有身份/角色/权限；BFF只聚合，不读其它owner数据库；Web只渲染与交互。只调用Skills闭环所需依赖，不恢复其它模块的独立研发。
 
+**本轮执行约束（用户再次要求一次梳理、减少返工）**：这份S01–S10是唯一交付清单。先固定全部字段、操作与页面状态，再一次Platform发行→一次BFF消费→Web内外页/Settings/后台完整片；仅真实缺陷才调整方案，不按单个字段来回改页面。Root负责参考截图与最终用户旅程，原owner负责实现，独立只读审查并行；其它模块暂停。辅助测试仅排错，不改变页面完成数。
+
+- 当前真实Web入口已是`SkillCatalogRead`，不能误把`PreviewKokoroSkillsSurface`当产品实现：后者仍有名称猜分类、固定usage数字、装饰封面及临时import数组。整页片必须清理该重复路径及相关调用/测试，不将其假数据或状态接回正常页面；具体删除范围由Web任务卡绑定实际引用后授权。
+- 已有详情稳定target、Back只切view、Close归焦骨架保留；新字段不重建整个弹窗/reader。统一管理动作刷新，搜索/分类/分页/滚动/正文/未保存输入均保留；滚动恢复目前未证实，最终真实浏览器必验。
+- S06四入口都进入同一持久草稿/包验证/发布链，不用浏览器数组假完成；参考“记录技能”的具体流程仍未核实，不自行设计后宣称一致。
+- 必要封面/包读取和既有资产可用性要闭合；历史GC、全仓运维与重复全门不是UI前置。当前Storage冻结真实PG为245PASS/2FAIL：dedup fixture仍挂旧findUnique；cover当前scan撤权后Complete重放仍返回旧clean。原writer仅修这两根因；原RED、正常数据与37条final-null停止线保持。没有新页面验收证据。
+
 ## A. 产品与视觉基线（锁定后不再自行创新）
 
 2026-10-08 Root再次在已登录Manus实际核定：外部搜索/全部及8分类；创建菜单四入口；“我的技能”实际打开Settings中的“已添加的技能”，带搜索/浏览技能/创建与来源筛选“全部/个人/官方/第三方”。该来源筛选不是外部编程/数据等分类，不能混用。新图为ignored r353-manus-create-reference.jpg、r353-manus-my-skills-reference.jpg；预览字段/正文既有真实Manus截图沿R346/R350保存。Manus账号当前已添加列表为空，因此有内容行的更多菜单仍需实际参考，不凭空宣已看过。新本地DOM/截图读取发生focus/CDP超时，未得到新本地截图；不是页面验收证据或应用API失败结论。

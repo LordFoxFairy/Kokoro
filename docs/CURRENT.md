@@ -1,5 +1,9 @@
 ### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
 
+用户再次要求整Skills设计/交互一次梳理。Root复用原S01–S10，独立只读整页审查确认正常Web使用SkillCatalogRead，而旧preview仍有猜分类/固定usage/临时import；不得混回产品，Web整页片须清理重复实现并保详情稳定target。外部、预览正文、Settings、四创建、分享下载、后台及异步一张清单，不逐字段交付页面。当前仅最小依赖续修，不扩历史GC/运维；其它模块暂停。
+
+Root后继冻结真实PG：27文件/247用例，245PASS/2FAIL；自有库drop且全库清单前后保持。失败为dedup旧findUnique barrier未拦当前findFirst，以及cover扫描状态改unknown后Complete同command重放仍返回历史clean（不是删除后重放）。原唯一writer按准确根因集中修，禁止放宽barrier/撤权断言。最终4个cover smoke fixture窄审无新增确定阻断，只是审查；Root真实MinIO/Clam smoke尚未执行，正常37 final-null停止线、S01–S10 OPEN保持。证据r353-st5-root-frozen-integration-second.log/json和同计划，不把500纯门当页面完成。
+
 Root 收到完整冻结（99改/15新/2删，收据2e53c2f6）并逐字节核308当前文件、166范围外保护；实际重跑492纯检查及类型/lint/build/契约/schema均0，只是工程支持。随后真实隔离PG全integration为153PASS/93FAIL＋1未处理错误：大量收尾cleanup:<hex>写UUID列失败，旧fixture漏locator/enum迁移另列；自有库全部清理、全库清单前后保持，正常数据未改。完整独审51c08e9e另检出fresh不同command重删错误成功与native timeout错误分类两P1。Root已续派原唯一writer精准修复＋RED，未提交/激活候选，不放宽断言、不重跑动态最终门。正常37 final-null停止线和S01–S10 OPEN保持。
 
 Root后继实跑具名expand：首真实SQL拼接歧义FAIL→cast修正，续fresh/expand枚举与列顺序FAIL→canonical追加顺序修正，第三Rootfixture列名校验错误如实保留；第四raw有数据目录匹配。独审提交前取消P1再经真实PG两分支2FAIL→修复后8case通过，完整old回滚/fresh与expand目录相等、9表旧列值/JSON/NULL哈希保持、每次仅自有两库创建及drop且全库清单前后不变。最终脚本4a9985e、独审741e384e关闭该P1；这些只放行脚本子集，不是整体源码、正常配置或页面验收。
