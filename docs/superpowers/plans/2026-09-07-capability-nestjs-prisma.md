@@ -89,12 +89,57 @@ Root实际核三冻结SHA、586其它tracked字节及三个完整历史suffix，
 
 下一步固定为同一完整字段发行清单：IAM最小发布方/管理员权限合同、Storage既有Upload/Asset中的skill_cover合同、BFF既有Share的Skill资源canonical及usage投影保留/重建规则、创建受信产物handoff与记录入口真实参考。Root先收敛这些依赖并指定各仓唯一writer；不扩大成其它模块研发，不先接旧字段再接新字段。记录入口实测未获得稳定结果仍OPEN；GitHub第三方文本卡/真实作者链接/Star与Fork与官方封面/usage variant已纳入同一清单。之后正式owner机器→固定BFF→Web完整页面片→正常浏览器S01–S10验收；所有未完成项仍OPEN。
 
+### R353-D1 最小依赖合同盘点任务卡（2026-10-08，进行中）
+
+前一goal turn分类：progress，Platform三设计95d8a09及Root完整清单6bc940f3已实际提交，不是无动作状态复述。D1仅服务已批准Skills完整链，不恢复其它模块。
+
+| 任务/角色 | 基线、允许范围与依赖 | 验收/提交 |
+| --- | --- | --- |
+| D1-IAM：原iam_skills_admission_review_r343只读身份/管理员合同盘点 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam` HEAD87e5437，clean。复核已有verifySessionAuthorization/platform_admin是否足以准入；最小user/org发布方有界批量查询与当前主体准入，精确设计/机器/实现增量。禁止写文件、Git、服务或数据库 | 有界结论（已有可复用/确需新增/风险）、精确文件清单和正式发行前置；Root审，后续另授唯一writer |
+| D1-ST：原platform_skills_examples_owner_r346只读Storage封面合同盘点 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-storage` HEAD5b15fe3。现有54+混合变更全保护，只以HEAD提交文件为权威审计；对比既有skill_package与个人图片的scope/purpose/scan/GET/ref释放，给skill_cover最小增量与交接前置 | 不写混合文档/源码、不生成客户端、无服务/DB操作；Root决定原变更交接方式后才实施 |
+| D1-Root：BFF Share与usage、创建handoff/真实参考 | BFF正常树88fe387仅var未跟踪、Platform95d8a09；Root读取既有Share/Agent摄取/保留及真实Manus记录入口。只读研究，不另建通用workflow服务 | 在同清单选唯一最小调用/数据设计，列新增vs复用与明确未核项，防止consumer多次发行；本阶段不冒runtime/浏览器完成 |
+
+必读Root AGENTS、CODEBASE_MAP、TypeScript/SQL专项与owner三设计；各worker最多一页结论及必要精准源码引用，不重抄规范/历史。owner依赖正式合同先提交，再Platform统一机器与BFF/Web固定消费。原writer停写、两只读可并行，Root独占任务台账及Git。
+
+#### D1-IAM-D0：Root已裁定最小IAM合同，三设计写入授权
+
+IAM原reviewer转本仓设计writer，HEAD87e5437 clean，Root保护收据 `r353-d1-iam-d0-root-baseline.json`；仅三个现有设计文档新R353前缀，完整旧suffix保留，不改runtime/machine/schema/role/scope或服务。各前缀≤60行，避免复抄历史，冻结后原Platform agent独立审查，Root精确提交。
+
+决定：复用现session verify及skill action check，不建管理员role/API。普通action仅增加update_draft/discard_draft/set_publication_audience；admin闭集8项admin_read/admin_create_version/official_publish/admin_withdraw/quarantine/restore/admin_set_publication_audience/admin_discard_draft独立、不可member动态授予。admin当前boolean/version、固定Product client/tenant及session/member/client/resource/角色完整性每次复核；响应非可转交签名决定，Platform只信专用受信BFF调用面，不接浏览器或body admin布尔。
+
+发布方同tenant姓名/头像与当前tenant组织名/logo作为可见Skill展示允许读取，不新增隐私功能或复制IAM事实；新增一个user-delegated有界1–100 refs的批量projection和唯一新scope iam:publisher-profile.read，BFF只传当前页去重refs，输入重复/跨tenant拒；逐ref明确found/missing union、保持输入顺序，image nullable；异常/损坏/依赖失败不是missing。组织只能当前tenant，用户须当前同tenantmember；不给email/roles/member清单，恒定2–3queries，不给machine枚举。文档必须引用准确scope provisioning/readback与生成清单；没有SQL事实变化，不新DDL。
+
+Storage实际封面依赖已经定位：正式HEAD无单asset delete，原53tracked+2untracked删除候选重叠须Root先接收冻结，不能抢写或当已发行；封面复用Upload/Asset的scope/purpose与真实图片校验、optional cover。Reference记录入口再实测只关闭菜单，未出现dialog且无可见日志错误，截图r353-d1-manus-record-no-dialog.jpg，记录语义仍OPEN。其它owner依赖继续收敛，不恢复其它模块研发。
+
+#### D1-Root：BFF与Storage真实事实收敛（2026-10-08）
+
+- BFF真实为SQL-first `database/schema.sql`，不是Prisma（第一次误查不存在Prisma路径的exit2保留，不据此推断缺schema）。现`bff_share`强绑定conversation，domain/port/public reader亦强绑定Conversation。Root比较全局typed-resource改现会话Share与在既有Share能力新增BFF-owned精确Skill share表，选择后者：不伪造conversation_id、不重写现会话分享；同一Share能力内typed Skill操作/生命周期及当前接收者准入。正式canonical字段/expiry/revoke/CAS与API三设计后继由BFF writer锁定，不把本决定当表或接口已存在。
+- Usage接现Agent reader→`AgUiProjectionService`→同PG commit，不新worker/Agent事件；持久ready集合和严格completed事实、去重成功使用证据须与`source_high_watermark`同事务。现source event表仅identity/digest不保存原payload，run activity只最新状态且GC会删除activity/process；故不可从latest或GC后公共ledger伪重建。保留独立成功使用证据与projection coverage/checkpoint，不与chat retention同删；未完成Run ready事实直到合法terminal或明确不可恢复仍保留，cancelled/failed不计，historical coverage未知为unavailable。现`projection.ts`对run.completed的非cancelled状态默认completed，计数必须在正规source raw payload处严格验证status=completed，不能用该默认转换误计。数据库仍BFF唯一owner，无跨库查询。
+- Storage55原候选实际冻结核定：52非文档SHA全等R261，只有三个文档后来加R262 VersionId设计。并非全55完全一致；原R261 provider If-Match资格已真实失败，R262精确version清理尚未实现。R262记录normal bucket未启versioning，本轮未重验该bucket；禁止因需要cover就盲提交旧delete/reconcile并假称物理删除可靠，禁止改normal bucket/搬运旧对象。收据r353-d1-storage-handoff-read.json，保全部55现字节。cover功能与精确asset引用释放仍需owner正式收敛，正常物理cleanup资格OPEN。
+- 封面读取不可向浏览器暴露300s可重放Storage signed GET再宣撤权立即生效；后继采用Web同源→BFF当前准入→Platform当前revision准入→Storage的图片字节读取，内部签名URL只用于owner调用，不持久/泄漏浏览器。撤回/隔离后新请求拒；已交付客户端字节不声称能撤销。Cover optional不代表present ref的错误可被隐藏。
+- Manus本轮记录入口有明确菜单，但点击后无dialog、URL仍Skills、console errors/warns为空，未传数据/启动录制；官方文档说明AI可把既有成功流程打包为SKILL.md+脚本（https://help.manus.im/en/articles/14753565-how-to-share-and-use-skills-in-manus），这只支持AI产物链，不证明菜单“记录技能”的具体行为，S06记录继续OPEN。
+
+#### D1-IAM-I1：统一身份依赖实现任务卡（2026-10-08）
+
+IAM D0正式 `3ee0f76ec5705bcaa4466bcf001b5e4bacc53401`，精确三设计/445其它tracked/三个历史suffix保持；独审首P1（current org缺失分支与整体拒绝矛盾）已修并窄复核关闭。Root实际当前schema/contract行为基线13FAIL/1PASS，退出1，日志 `r353-d1-iam-current-contract-red.log`；只是缺项证据，不冒产品测试。
+
+| 项 | 本片锁定 |
+| --- | --- |
+| 任务/Owner | R353-D1-IAM-I1，Skills发布方与管理员依赖；IAM原iam_skills_admission_review_r343唯一writer，Root集成/Git，原Platform owner冻结后独审 |
+| 基线/范围 | IAM3ee0f76 clean；精确scope `r353-d1-iam-implementation-scope.json`，Root原字节保护 `r353-d1-iam-i1-root-baseline.json`；21生产/脚本/SDK说明修改、13新增、19现有测试、1机器源及正规SDK实际diff；禁止其它仓、Schema/依赖/Member API/三个D0历史字节修改 |
+| 目标/位置 | 一次IAM internal/SDK0.10.0、28operations。新publisher四普通文件置现organization子能力；无状态transaction-local user-delegated-tenant-access供两个repo在各自同一RR内复用有限事实，不另开事务、不复制鉴权；admin action policy独立不可动态赋予 |
+| 契约/数据 | 3普通action+8独立adminaction、publisher scope与专用skills_admin machine purpose/scope同片；复用原Session/User/Member/Client/Resource/Binding，不DDL。ref id非空≤255不trim，tenant复用现trim/255；显示原name/string与image/string或null，不虚构字段 |
+| 删除/依赖 | 替换skill repo内重复准入代码而保留原普通行为；无alias/新role/管理员API。正规code-first机器生成、SDK干净临时目录生成对比；固定consumer后继，不在本片切BFF/Platform/Web或正常权限 |
+| 验证/交付 | 持久新行为RED→实现→具名/完整pure、type/lint/build、contract/generator/breaking/SDK；资源测试先编写不擅跑共享库。冻结精确SHA+非范围保护，Root重跑且真实隔离issuer/HTTP后才正式提交/消费；最终S01–S10仍正常浏览器验收 |
+
+专用machine只限制受信BFF transport；每个admin请求/重放仍fresh人类IAM及Platform资源/CAS校验。未知依赖不伪missing或零计数。Storage物理cleanup与记录参考尚OPEN，禁止这些未核能力被接口纯门清零。此卡授权I1源码实施，不等于资源激活、完整字段发行或Skills完成。
+
 ## D. 执行顺序与职责（减少跨仓来回改）
 
 | 批次 | 一次交付范围 | Owner与执行 | 放行依据 |
 | --- | --- | --- | --- |
-| 1 当前 | R352-P3完整分类runtime/Prisma/具名expand/负控，冻结正式owner；不因新计划推倒已验证成果 | 原platform_skills_examples_owner_r346唯一writer；Root集成与自有隔离PG；原IAM独审 | 原输入RED→纯门/类型/Schema/真实PG；保9旧事实，无重置正常数据 |
-| 2 字段收敛 | 对S02/S06/S07/S08当前真实事实、4创建与权限列做一次有界审计，定最小owner合同；合并相关字段增量而非一字段一轮整仓重跑 | Root作总裁决；原owner实施；只读审查可并行 | 精确文件/契约/状态/失败清单与当前三设计一致，无新层/垃圾桶 |
+| 1 owner已交付，正常页面未切 | R352-P3完整分类runtime/Prisma/具名expand/负控，冻结正式owner；不因新计划推倒已验证成果 | 原platform_skills_examples_owner_r346唯一writer；Root集成与自有隔离PG；原IAM独审 | 原输入RED→纯门/类型/Schema/真实PG；保9旧事实，无重置正常数据 |
+| 2 当前字段收敛与依赖实现 | 对S02/S06/S07/S08当前真实事实、4创建与权限列做一次有界审计，定最小owner合同；合并相关字段增量而非一字段一轮整仓重跑 | Root作总裁决；原owner实施；只读审查可并行 | 精确文件/契约/状态/失败清单与当前三设计一致，无新层/垃圾桶 |
 | 3 消费接线 | 固定正式Platform→BFF public9及后继确定字段→Web同源client；不消费变化工作树、不手改generated | 复用原owner按仓串行writer，Root独占Git | BFF已只读核8014范围；category_key禁止trim、required/optional presence保持、111operations不乱增 |
 | 4 页面完整片 | 外部目录/预览正文/我的技能与Settings/创建分享下载/后台Skills一起完成结构、文案、状态和样式；按真实截图清单，不再做2px孤立交付冒完成 | Web唯一writer；Root视觉取证；原IAM独审 | 源码/组件检查及真实浏览器动作，不用“差不多”放行 |
 | 5 全链收尾 | 正常持久配置明确维护与正式配对；S01–S10逐条浏览器完整路径、宽窄/异步/权限/刷新/故障 | Root最终负责，原owner修同一验收发现，不派全新重复计划 | 每条路径保存当前commit/结果/截图；失败保持OPEN；整页一致且全交互通过才最终验收 |

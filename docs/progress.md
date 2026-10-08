@@ -1,3 +1,11 @@
+### R353 Skills 整体链路：身份依赖进入统一实现（2026-10-08）
+
+IAM三设计正式 `3ee0f76`，独审发现的准入矛盾已修正并复核；仅设计，不是接口或页面完成。原IAM owner现获精确I1源码任务：一次发布方显示、普通/管理员动作与专用受信后台调用面，internal/SDK目标0.10.0/28operations；Schema/依赖/原Member API不改。Root当前真实schema/contract13FAIL/1PASS为缺项基线，不作产品验收。原Platform agent只读核Storage必要精确VersionId清理修订，两个独立工作面并行、同仓一个writer，Root独占集成/Git。
+
+Storage旧If-Match物理清理已真实资格失败，旧55候选保留未合并；52非文档保持原冻结、3文档含新VersionId设计，正常bucket本轮未改。BFF Share选既有能力内单独Skill资源，usage沿现摄取同事务且独立保留成功证据；不造作者、封面或计数。IAM/BFF/Platform现存正常源码服务 `/readyz` 本轮均200，只有依赖就绪，不冒Skills链路通过；未重启或清数据。最初误探测 `/health/ready` 的404及诊断脚本错误保留，改按实际入口核验。
+
+全部外部目录/预览正文/我的技能/四创建/分享下载/后台/异步与视觉验收仍按同一R353 S01–S10；页面尚未验收，记录菜单语义和Storage物理cleanup仍OPEN。唯一既有实施计划维护精确任务卡，后继正式owner→固定BFF→Web完整页面片→真实普通/管理员浏览器。其它模块/heartbeat暂停，完整Wave0–7 active，8gitlinks/uv与原混合修改保护。
+
 ### R353 Skills 完整设计已收敛，页面尚未验收（2026-10-08）
 
 Platform三设计正式 `95d8a09`：外部目录/预览正文/Settings/创建安装编辑/分享下载/后台同一完整字段与交互清单；真实Manus官方与GitHub第三方展示variant分开，不虚构作者/封面/使用量。原IAM两P1修正后窄复核关闭，Root三SHA/586原字节/三旧suffix及精确三路径核定。仅文档，未变机器/运行/SQL/正常服务；首次前缀格式检查的拼接EOF问题已记录，未改历史suffix。
