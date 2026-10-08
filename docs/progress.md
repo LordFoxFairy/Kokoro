@@ -1,3 +1,9 @@
+### R350 示例真实存写已提交，消费者与页面尚在接线（2026-10-08）
+
+Platform正式 `0e60e5d65e0f3a0c66b098bac011a8beadb5e871`，Root40精确路径提交、工作树clean；独审无确定阻断。Root一次纯门1516PASS/type/lint/schema/build0；四隔离PG文件首95PASS/7FAIL，修唯一fixture search_path后7PASS/14名称过滤，旧字段/BYTEA/9表/其它owner/fresh/重放/锁/取消/回滚/ACK实证已完成。正常持久库和P42873/B5007/Web66154原运行未激活新字段，外部示例仍未可见，不升业务完成数。
+
+用户要求减少反复：不再重复只读/无关全门，沿同计划一次完成固定BFF消费者→Web编辑与内外真实示例→同尺寸Manus截图及完整浏览器操作。BFF原writer模型用量限制工具明确terminal，保留已落候选；P2原owner已停P写入，转为BFF本片唯一writer，固定94机器/public8.10/111，无其它仓/权限扩展。此为实质源码和资源进展，不是UI交付；作者/usage/封面/分享下载/分类事实/四创建与Skills后台仍OPEN。其它模块与kokoro-10暂停，完整Wave0–7 active、8gitlinks/uv.lock和Web原Admin混合保护。
+
 ### R349 外部目录局部实测与 R348 示例输入接线（2026-10-08）
 
 外部目录/卡片预览/详情与Settings/后台同属Skills范围；页面整体仍未验收。Web `1f07d38e5214c36d411e9d9d563856436c7b2825` 仅既有3paths：Root真实108分类（含100长tag）发现首版换行挤走卡片、选中字重覆盖后修正，最终单行32px/400与500/局部滚动、窄dropdown跨宽portal关闭；真实R255搜索→清单→卡片→查看详情→SKILL.md正文→返回→关闭保搜索和焦点，1280/800/390无页面横溢。Root Node22具名9PASS/72过滤、contract312/architecture51、type/lint/build/diffcheck0，原IAM独审无新增阻断；这些只支持本局部，不替代完整浏览器验收。784非范围tracked和旧Admin27tracked/6untracked保留。

@@ -1,3 +1,9 @@
+### R350 示例真实存写已提交，消费者与页面尚在接线（2026-10-08）
+
+Platform正式 `0e60e5d65e0f3a0c66b098bac011a8beadb5e871`，Root40精确路径提交、工作树clean；独审无确定阻断。Root一次纯门1516PASS/type/lint/schema/build0；四隔离PG文件首95PASS/7FAIL，修唯一fixture search_path后7PASS/14名称过滤，旧字段/BYTEA/9表/其它owner/fresh/重放/锁/取消/回滚/ACK实证已完成。正常持久库和P42873/B5007/Web66154原运行未激活新字段，外部示例仍未可见，不升业务完成数。
+
+用户要求减少反复：不再重复只读/无关全门，沿同计划一次完成固定BFF消费者→Web编辑与内外真实示例→同尺寸Manus截图及完整浏览器操作。BFF原writer模型用量限制工具明确terminal，保留已落候选；P2原owner已停P写入，转为BFF本片唯一writer，固定94机器/public8.10/111，无其它仓/权限扩展。此为实质源码和资源进展，不是UI交付；作者/usage/封面/分享下载/分类事实/四创建与Skills后台仍OPEN。其它模块与kokoro-10暂停，完整Wave0–7 active、8gitlinks/uv.lock和Web原Admin混合保护。
+
 ### R349 外部目录局部实测与 R348 示例输入接线（2026-10-08）
 
 外部目录/卡片预览/详情与Settings/后台同属Skills范围；页面整体仍未验收。Web `1f07d38e5214c36d411e9d9d563856436c7b2825` 仅既有3paths：Root真实108分类（含100长tag）发现首版换行挤走卡片、选中字重覆盖后修正，最终单行32px/400与500/局部滚动、窄dropdown跨宽portal关闭；真实R255搜索→清单→卡片→查看详情→SKILL.md正文→返回→关闭保搜索和焦点，1280/800/390无页面横溢。Root Node22具名9PASS/72过滤、contract312/architecture51、type/lint/build/diffcheck0，原IAM独审无新增阻断；这些只支持本局部，不替代完整浏览器验收。784非范围tracked和旧Admin27tracked/6untracked保留。
@@ -86,6 +92,30 @@ Owner Web原 bff_skills_consumer_review_r341，基线92b420c/旧Admin27tracked+6
 
 R349-W2 第一冻结Root实浏览失败，不放行：正常未过滤owner数据存在100个128scalar长tag，flex-wrap分类nav垂直膨胀挤走卡片；实际selected字重400，因通用categoryTabs button[type][data-slot][data-size]选择器覆盖aria-pressed rule。不是backend/单测通过即可完成。原3paths窄纠正：按真实Manus单行nowrap分类，nav局部水平overflow、不让页面横溢；普通button400/selected500用匹配specificity，32px/r8/gap4保持。合法长tag单buttonmax12rem/ellipsis且title保原文可读、native焦点仍可达；100真实tag不删除/改名/映射成假九类，不伪造taxonomy。Root正式taxonomy与任意tags分离仍OPEN，不以本局部展示称字段全齐。对应测试与真实100tag/宽窄portal回归冻结重跑。
 
+### R350-B2 固定示例消费者一次性实现授权
+
+R350-B1只读已交，Root亲核Git94的Proto/descriptor/HTTP SHA分别5fd99ca0/d9b82ed8/370e3d71。BFF原writer bff_skills_consumer_review_r341 已因模型用量限制工具明确terminal，非观察超时；保留已落固定vendor/生成/两输入候选，不回滚。P2原owner已冻结停写，转派 platform_skills_examples_owner_r346 为BFF本片唯一writer；不会同时写Platform。基线7565877、原??var及候选保留，Root独占Git/服务/真实验收；运行配对仍串行。固定Platform94bd0ea/HTTP3.5，BFF public8.10.0/111，无新路径/权限/SQL，Publish零body不变。先三设计前缀收敛（旧suffix不改），一次完成消费者并冻结，不再拆反复只读/格式化阶段。
+
+|设计项|本片决定|
+|---|---|
+|Owner/事实|Platform拥有revision示例，BFF仅固定契约校验、转发、投影；BFF不存新字段，不直读owner DB。|
+|位置/粒度|纯owner校验扩现有platform client目录普通skill-example-prompts.ts，与放http目录相比可被HTTP输入与owner读共用且不倒置infra依赖；不新模块/通用框架。新verify脚本沿现scripts具名业务checker，比塞入大verify-openapi.ts更单责，现入口只注册。|
+|依赖/API|两Create optional保presence/原序/重复/原文，absent canonical省键/present保键；四读required坏值失败，不fallback；Proto installation message必present。现raw JSON严格解析承接重复key/非法UTF8，不改别的输入职责。|
+|删除/保护|固定60文件完整publication+单HTTP，正规生成，删除两旧af38 vendor目录，不双pin；历史V1–V9与45/20/24、111operations及其它owner pin保持。|
+|验证|先具名负控，再生成/semantic/contract/architecture/units/type/lint/build；Root冻结后一次必要重跑与配对真实浏览器，不用工程PASS代页面验收。|
+
+允许文件集：docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md仅R350前缀；contract/dependencies/platform-{connect,http}.json、buf.platform.json、openapi-ts.platform-http.config.ts、scripts/generate-platform-{connect,http}-client.mjs；contract/vendor/kokoro-platform/94bd0ea94aabc60c666fdb2cfa8784baf194e24b完整60files与contract/vendor/kokoro-platform-http/同SHA/platform-http.openapi.json，删两旧af38目录；src/generated/platform-connect/kokoro/{common/v1/common_pb.ts,platform/v1/platform_runtime_pb.ts}与src/generated/platform-http现16files仅正规机械输出（无diff不夹带）。
+
+机器与语义：test/platform-{connect,http}-contract.test.mjs、test/architecture.test.ts；test/contract/openapi-contract.test.mjs和test/skill-{installation,package-begin,package-complete,publish,validate}-http.test.mjs仅旧pin断言反pin/新增真实字段fixture不放宽；contract/openapi/v1/openapi.yaml、scripts/verify-skill-example-prompts-contract.mjs（新）、scripts/verify-openapi.ts、scripts/verify-skill-package-inspection-contract.mjs、scripts/verify-skill-updated-at-contract.mjs仅父checker接线、scripts/check-contract.mjs、contract/README.md、test/contract-governance.test.mjs。旧父8.9 canonical e95f026581b389dad643d390f543f9ab057a2bfd0cbb02dfab0aeb8cc662631d应从剥本次字段+version严格复原，不改旧checker规则逃门。
+
+运行与测试：src/infrastructure/clients/platform/skill-example-prompts.ts（新）；src/http/{create-skill-draft-input,create-personal-skill-version-input}.ts、src/http/routes/{create-skill-draft,create-personal-skill-version}.ts、src/infrastructure/clients/platform/{create-skill-draft-projector,create-personal-skill-version-projector,catalog-connect,projection-http,personal-installation-response}.ts；test/skill-example-prompts.test.ts（新）、test/skill-create-draft-input.test.ts、test/skill-create-draft-http.test.mjs、test/personal-skill-lifecycle-http.test.mjs、test/platform-projection-{http,route}.test.mjs、test/skill-installation-http.test.mjs。禁止package/lock/111列表/其它模块/Admin/IAM/数据库/服务/Web/Root写入；确需fixture额外路径一次集中报告。交付最终精确清单/hash/RED→GREEN/未验项，停止写入。用户要求节省token，不贴历史长报告、不重复无关门。
+
+### R350-B1 BFF 已提交示例契约固定消费只读盘点
+
+原 bff_skills_consumer_review_r341 当前Web只读盘点已交，转为BFF Skills消费者负责人（同一时刻不写Web）。BFF基线756587703168e35baa0193af4854c556ba1697ff / /Users/nako/.codex/worktrees/kokoro-r257-bff-normal / codex/r257-bff-normal / 仅原??var保留。Platform正式机器已提交94bd0ea94aabc60c666fdb2cfa8784baf194e24b，P2只实现持久/新Schema而不改机器publication，故此固定契约消费可与P2源码并行；必须从git固定94取完整bytes，不能读变动工作树。实际运行配对、正常DDL及浏览器仍等P2完成，不启动/发布不匹配runtime。
+
+只读核现TECH/API/DATA三文档，交最小文档/机器vendor与生成清单、既有CreateDraft/CreateVersion输入和HTTP/Proto读投影文件集、semantic/public契约版本及具名RED矩阵。公共必需example_prompts arrays；input可absent/[]/原数组，不改Publish空body。不添加author/usage/后台API，schema/test常规校验复用，不加通用validation框架。本卡不授写/生成/Git/DB/服务/浏览器，Root统一审清后另授唯一writer。
+
 ### R350-W3 Web 外部示例接线只读盘点
 
 沿原Web bff_skills_consumer_review_r341，基线1f07d38e5214c36d411e9d9d563856436c7b2825、旧Admin混合保留；只读已有Skills contract/catalog/personal/editor/i18n，交最小消费字段/真实有序例子按钮与编辑回显提交清空清单。依赖Platform持久P2后固定BFF，暂不授写；不造三例或author/usage，不操作共享浏览器/数据/服务/Git。Root真实Manus1280×900外部预览800×600(x240,y150)、title20px/600(x265,y243)、CTA32px/y315、description14px/y396、例子44px/y440/496/552/gap12。Root保持视觉/真实端到端验收职责。
@@ -115,11 +145,12 @@ scripts/expand-skill-example-prompts.ts
 ```
 生成只允许实际锁定prisma generate+既有normalize产生4：src/generated/prisma/models/Skill.ts、internal/class.ts、internal/prismaNamespace.ts、internal/prismaNamespaceBrowser.ts；超范围先停报告，禁止手改。新列放updatedAt之后最后scalar，旧schema SHA c9b7e79a8760c8f2ba899d21e56bf45bcb7b4e7ee120e63bae15aaab9e81ff4b，目标SHA冻结后固定，catalog仅采用Root以上实测值。
 
-精确test18：
+精确test19（追加skill-state既有直接SkillState构造仅初始化[]，不弱化业务类型）：
 ```
 test/fixtures/in-memory-capability-state-store.ts
 test/fixtures/prisma-skill-repository.ts
 test/unit/postgres-state-store.test.ts
+test/unit/skill-state.test.ts
 test/unit/postgres-keyset-pagination.test.ts
 test/unit/bff-projection.test.ts
 test/unit/skill-published-read.test.ts
