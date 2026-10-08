@@ -1,5 +1,9 @@
 ### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
 
+Root 收到完整冻结（99改/15新/2删，收据2e53c2f6）并逐字节核308当前文件、166范围外保护；实际重跑492纯检查及类型/lint/build/契约/schema均0，只是工程支持。随后真实隔离PG全integration为153PASS/93FAIL＋1未处理错误：大量收尾cleanup:<hex>写UUID列失败，旧fixture漏locator/enum迁移另列；自有库全部清理、全库清单前后保持，正常数据未改。完整独审51c08e9e另检出fresh不同command重删错误成功与native timeout错误分类两P1。Root已续派原唯一writer精准修复＋RED，未提交/激活候选，不放宽断言、不重跑动态最终门。正常37 final-null停止线和S01–S10 OPEN保持。
+
+Root后继实跑具名expand：首真实SQL拼接歧义FAIL→cast修正，续fresh/expand枚举与列顺序FAIL→canonical追加顺序修正，第三Rootfixture列名校验错误如实保留；第四raw有数据目录匹配。独审提交前取消P1再经真实PG两分支2FAIL→修复后8case通过，完整old回滚/fresh与expand目录相等、9表旧列值/JSON/NULL哈希保持、每次仅自有两库创建及drop且全库清单前后不变。最终脚本4a9985e、独审741e384e关闭该P1；这些只放行脚本子集，不是整体源码、正常配置或页面验收。
+
 原Storage负责人在稳定分支 `/Users/nako/.codex/worktrees/kokoro-r353-storage-skills` 从正式0b5042d实施；Root保原55混合候选及正常预览，独占资源/Git。现v3/17与Prisma生成已有候选，不是正式发行；writer具名RED/局部GREEN及剩余client/fixture/expand/资源用例/冻结条件见同计划。Root实时精确范围核93个变化均获授权、其余Storage与865 Root原字节及8gitlinks保持，不对动态树宣验收。
 
 Root真实单独sharp0.35.5/libvips8.18.7：PNG/JPEG full decode、JPEG metadata成功而截断全解码失败；4096方形raw为67,108,864bytes。destroy(Error)首次无listener实际exit1；有listener后native仍继续到终态，要求取消后禁止发布、admission保持到drain。native包许可证含LGPL-3.0-or-later；只是本机依赖资格，非负载SLO/应用或浏览器验收。

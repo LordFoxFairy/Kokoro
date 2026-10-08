@@ -209,6 +209,9 @@ Storage正式设计 `0b5042db24b029d146c2fcd717d387b2e47906f3`（parent5b15fe3�
 
 #### ST5 Root并行资格与原数据停止线（非页面完成）
 
+- 全源码冻结后当前验收：Root 收到完整冻结（99改/15新/2删，收据2e53c2f6）并逐字节核308当前文件、166范围外保护；实际重跑492纯检查及类型/lint/build/契约/schema均0，只是工程支持。随后真实隔离PG全integration为153PASS/93FAIL＋1未处理错误：大量收尾cleanup:<hex>写UUID列失败，旧fixture漏locator/enum迁移另列；自有库全部清理、全库清单前后保持，正常数据未改。完整独审51c08e9e另检出fresh不同command重删错误成功与native timeout错误分类两P1。Root已续派原唯一writer精准修复＋RED，未提交/激活候选，不放宽断言、不重跑动态最终门。正常37 final-null停止线和S01–S10 OPEN保持。
+- Root后继实跑具名expand：首真实SQL拼接歧义FAIL→cast修正，续fresh/expand枚举与列顺序FAIL→canonical追加顺序修正，第三Rootfixture列名校验错误如实保留；第四raw有数据目录匹配。独审提交前取消P1再经真实PG两分支2FAIL→修复后8case通过，完整old回滚/fresh与expand目录相等、9表旧列值/JSON/NULL哈希保持、每次仅自有两库创建及drop且全库清单前后不变。最终脚本4a9985e、独审741e384e关闭该P1；这些只放行脚本子集，不是整体源码、正常配置或页面验收。
+- 实证路径：r353-st5-root-catalog-{first,second,third,fourth}-qualification.json、r353-st5-root-expand-runtime-{red,green}.json、r353-st5-expand-independent-review.md；真实旧catalog c09e01ed／目标bdf6a2c与canonical a9afe9db固定。原Storage291非文档tracked＋2untracked逐字节保持。
 - 原writer现正规v3/17生成与Prisma校验已有候选，13FAIL起始与full-decode/source-intent/delete负控保留；剩余固定client/fixture、清理负控、有界expand、实际资源与完整静态冻结。Root不在动态树重跑最终门，不抢源码。
 - Root单独sharp fixture实测完整PNG/JPEG、截断JPEG metadata能过但full decode失败；4096² raw67,108,864bytes。destroy(Error)未订阅error首次exit1，订阅后native仍运行到终态，须保持admission/drain且取消不得发布。r353-st5-root-codec-qualification/codec-licenses/native-cancel-*为依赖实证，不是应用/SLO完成；第一次receipt相对路径写失败如实另记。
 - READ ONLY正常Storage inventory：37有效Asset finalVersion全部NULL（个人5、项目2、技能包30）。仅阻正常激活，源码继续；不猜填版本、不删旧包、不静默换已发revision。原IAM正式基线只读报告SHA173409dd确认既有同hash/scope snapshot CAS repair可保原Blob/Asset/安装ref及hash，旧NULL retirement仍pending。Root后继只在隔离PG/provider实证后决定维护，不建立新repair服务。
