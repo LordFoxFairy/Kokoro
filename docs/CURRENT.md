@@ -1,3 +1,11 @@
+### R347 示例数据校验已交付，外部 Skills 展示仍未完成（2026-10-08）
+
+Platform源代码局部提交 `00ae1ad640ad7ccb515c9fb27ab963009928a646`（parent7dbaa75），仅普通pure-schema与31例测试两paths；原owner实现、独审原IAM reviewer、Root重跑。真实行为RED17PASS/14FAIL后GREEN31PASS；Root连旧bytes/digest共58PASS/0FAIL，type/lint/格式/diffcheck实际0。首次missing-module收集错误不冒行为RED；一次格式失败后只格式化两授权文件。校验保真实有序原文/重复、0–10项/1–1000scalar/总UTF8≤16384、拒坏类型/孤立surrogate/ECMAScript trim空白。无新依赖/DB/请求注册；未跑会生成Prisma输出的build，未称整仓门全通。
+
+尚未将该事实接到写入、数据库、BFF或Web，因此外部预览当前仍没有示例，作者/usage/分享下载和其它Skills缺项继续OPEN，不称页面修复。R347-P2同原Platform唯一writer仅正式machine/profile/vector/Proto/HTTP与生成校验，保持旧V1–V9字节、digest3.0.0、45/20/24；独审方案无确定阻断，Root已核三完整父。数据/运行/BFF/UI按依赖后继接线，不启动其它模块或重置正常基础设施。浏览器最终仍按真实交互与同尺寸截图验收，不以本58辅助测试替代。
+
+<!-- R347-ROOT-PURE-VALIDATOR-END -->
+
 ### R346 Skills 外部预览示例：已定位真实缺项，尚未实现（2026-10-08）
 
 仅 Skills 继续，其它模块与 kokoro-10 暂停；完整 Wave0–7 active。外部目录、预览、正文、我的技能和后台同在范围内，不只 Settings。正常本地 R255 与真实 Manus 同 800×752 / dialog760×600 对照：本地无示例/作者/usage/分享下载，Manus有三行示例；现页面不合格，未称完成。完整原图为 ignored `var/dev/r255-preserve/r346-{local-examples-missing,manus-examples-reference}-exact.png`，native参考缩放异常不冒同尺寸证据。正规登录 cookie_missing 曾导致准入失败，Retry失败后正常Login恢复；无cookie注入/权限扩大/新用户或Skills数据写入。

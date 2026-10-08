@@ -34,6 +34,20 @@ Root已核仓内Prisma7.10.0 `migrate diff --help`自然0并真实800×752两Dia
 | --- | --- | --- | --- |
 | R347-P-M | 原Platform owner platform_skills_examples_owner_r346 / gpt-6-astra / 只读 | 正常物理P 7dbaa75，machine profile/projection/descriptor/OpenAPI/provenance/历史parent图及BFF固定消费者；不写任何文件或操作DB/服务/Git | 确定最小正式examples publication版本/父图及精确机器切片，不改变旧absent digest或V1–V9字节；45RPC/20commands/24proof保持。Root读源码复核后再授权writer，进行中。 |
 
+### R347 Root 最小机器裁决及首个代码切片
+
+接受P-M建议：现execution-operations目录两个具名examples profile/vectors文件（1.0.0），纳入唯一provenance供BFF精确固定；不V10、不增目录/权限、不改V1–V9或COMMAND/BINDING3.0.0。compiled/generated/HTTP3.4完整父分别冻结fcfab521242b07c17b08efad33463022625fd5163f1e62beb18ddd9589053808、e416d960b344797b89418a2534f90c3b6923e9359ad48a6943a11005b9cd9567、ca90f41f124c53a690746434cb66ac774f4a134acf109decd44bb110fafa61d6。后继HTTP3.5三schema required数组剥回完整父，Proto剥仅message+tag5/15，历史门以固定父保持严校验。两Create rawJSONnull拒绝/runtimecanonical需后继真正接线，本片机器不冒服务支持。
+
+R347-P1先交单一pure-validator可审查代码（普通文件位置沿TECH现放置表），同P原owner唯一writer、基线7dbaa75；仅允许 `src/modules/skills/skill-example-prompts.schema.ts`、`test/unit/skill-example-prompts.test.ts`。不得动模型/Prisma/contract/runtime/docs/服务/DB/Git。先真实失败，再最小校验unknown数组，最多10/单项1–1000scalar/总UTF8≤16384、拒空白和孤立surrogate、原序原文保留；不承担presence缺省或注册请求。交付差分/REDGREEN/type/lint/hash，Root独审重跑后仅两paths提交。R347-P2机器切片等该冻结后另授精确集；不并行抢同仓writer。
+
+### R347-P1交付及P2机器writer授权
+
+P1 Root提交 `00ae1ad640ad7ccb515c9fb27ab963009928a646`，两文件SHA schema8387d6344d76fb598312c7c9cdffc155ddc6348cb742c83353e81302693b1e79/test2fcf4b38edfc2f80797830a6f11dd64378904109fce102943170d619db3530e9精确；独审无确定阻断，Root58PASS/type/lint/两文件format0，tracked范围保留、未运行build或注册runtime。whitespace采用ECMAScript trim集合，机器profile不得冒另一Unicode White_Space定义。
+
+R347-P2 同Platform原owner唯一writer、基线00ae1ad，RootGit；原Reviewer对具名profile/inverse/provenance方案只读放行。允许精确现有：contract/proto/kokoro/platform/v1/platform_runtime.proto、contract/openapi/platform-http.openapi.json、contract/provenance.json、contract/descriptor/platform-v1.binpb、src/generated/proto/kokoro/platform/v1/platform_runtime_pb.ts、scripts/check-contract.ts、scripts/check-platform-contract-cutover.ts、scripts/check-platform-execution-operations.ts、scripts/platform-execution-operations/installation-skill-updated-at-descriptor.ts、scripts/platform-execution-operations/personal-skill-package-descriptor.ts；新普通文件：contract/descriptor/platform-skill-example-prompts-{parent.binpb,parent-generated.binpb,http-3.4.0.json}、contract/execution-operations/skill-example-prompts-v1{.json,.vectors.json}、scripts/platform-execution-operations/skill-example-prompts-{descriptor,projection,artifact}.ts、test/contract/skill-example-prompts.test.ts。测试允许现test/contract/{platform-contract-cutover,platform-execution-operations,bff-projection,platform-personal-installation-v5,platform-published-skill-read}.test.ts；只有已批准新机器事实的断言/fixture更新，不能削弱旧负控或伪造运行。
+
+严格排除：runtime业务/requestbinding/rawJSONmiddleware/model/repo、Prisma/SQL/expand、package/lock、其它仓/Root/docs、P1已提交两文件、旧V1–V9所有字节。机械Buf生成common/storage如无语义diff不得夹带；范围需要调整先报告。先当前descriptor/presence/digest真实RED，继而新schema/profile/vector及wholegraph与HTTPinverse，不另设计中心。Root最终需当前机器type/contract/artifact/architecture/lint验证和独审；runtime‘present改变digest’真实RED仍下一片、未恢复正常进程。任务状态进行中，不是用户页面完成。
+
 <!-- R346-EXAMPLES-INVESTIGATION-END -->
 
 # Capability → Platform：NestJS + Prisma 实施任务板
