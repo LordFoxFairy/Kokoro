@@ -4,11 +4,17 @@
 
 Platform正式701aedb5：HTTP5/Product1、63RPC/32commands/24proof、组合5d4bc1e；Root完整冻结已核真实PG/Redis185PASS、pure1888PASS及工程十门0、独审01669f96。该资源组IAM/Storage是double，正常环境未激活，旧四历史文档formatFAIL保留。Storage正式d13f33a sole v3；正常37 final-null资产未修，真实配对/ObjectStore/scanner和普通/管理员持久浏览器旅程仍待验，未改正常库/权限/服务。
 
-BFF B1正式9d1cc19b；完整B2三设计2ffefc9及最小现receipt CAS补充d2695c4已正式。整片卡e8c69593：124修改/35仅生成/107新/65实际删/369保护。原负责人已完成三owner正规生成、Platform63/32/24完整父逆门、上传selected command/digest候选；上传v3恢复矩阵及全部Public9真实业务尚未完成。原writer明确上下文耗尽停写，Root核369保护与237交接字节后，同任务先由bff_skills_whole_owner_r353_continuation（gpt-5.6-sol）续接；其完成候选54具名GREEN后亦明确上下文耗尽停写，现由bff_skills_product_source_r353继承主控模型续接真实Product source，不回滚候选/另建计划；交接d94ba95e。无冻结/提交/正常激活，动态文件由唯一writer继续，不按编译中间态放行。
+BFF B1正式9d1cc19b；B2三设计2ffefc9/receipt CAS补充d2695c4。当前唯一writer bff_skills_product_source_r353继承主控模型，沿原e8c69593卡保369路径；前两writer明确上下文耗尽停写，原候选不回滚。其已落Product/client/input/普通与管理员独立凭据、draft/admin/download/cover/share/usage候选，报告247向量/导出断言与build通过；不是Root最终资格。交接曾称三owner生成完成，实际HTTP/IAM generator config仍旧pin，现已正规修正发行配置；原缺口保留，不复述错误完成声明。唯一补卡36d85fa0仅共用skill-product-schema.ts，避免infrastructure反向依赖HTTP。AI/GitHub、catalog/package完整CAS、Public9全部行为仍进行中，无最终freeze/提交/正常激活。
 
 S06必要Agent v3正式ee736cdf：最终27源冻1590efea，Root实际PG14PASS/0SKIP（含真实PG＋实际client→deliver→middleware同lease竞争）、focused93PASS、ruff/pyright/diff0，原lock/codegen0源未变，369保护/7删除/三历史suffix保持。独审8459ee99无确定P0–P2：B预选择仍可owner调用/PUT，CAS失败后零Complete/Artifact/finish且A/started原字节保持，释放A后成功；不是物理PUT恰一次。Root仅34具名no-renames路径提交，原build/保留。旧两source缺陷及竞争链测试缺口已关闭，原默认2个protected失败仍保留；此只依赖源码资格，正常激活及真实Storage HTTP/MinIO/browser组合仍待验，不升S06或页面完成数。
 
 Root本轮正常登录Manus与本地只读同实际1113×752对照：两预览都是800×600、x156.5/y76，安装/查看详情主动作均32px且位置匹配，保这些已匹配几何，不盲改整弹窗。真正差距：本地108任意tag分类、装饰封面、缺真实publisher/usage/来源variant；真实已安装SKILL.md可打开，但平面目录/裸frontmatter阅读器与参考不同。四张正确同尺寸预览/阅读器jpg及数值见r353-root-live-ui-comparison-receipt.json(58d8bf6d)；首目录图尺寸不一致明确排除。记录菜单实际点击仅关闭、具体流程仍OPEN；未复现健康同身份续期闪动，不猜HMR原因。S09源码4708dd3f确认ready→loading卸载路径，仅条件因果，不是用户现场完成证据；临时诊断tab已关闭/viewport还原，用户原tabs/服务保留。
+
+Root本轮逐owner独立REPEATABLE READ READ ONLY正常盘点467df146：30包/30Blob全finalVersion NULL，26资产有Skill引用（21active/4draft/1withdrawn），7未移除安装（5enabled/2disabled）。首次读source_version_id列真实FAIL，正常旧Schema尚无该列，保失败；改为只读列存在辨别，不是应用fallback。两owner表快照保持、无跨ownerSQL/正常写入。已有本地ZIP比对1edd3e0b匹配26资产及全部7安装，只证明相同字节候选，不授发布旧revision上传维修；原7个人/项目文件未处理。禁止盲激活strict读取或替旧revision/安装偷偷换引用。
+
+必要Storage ST6仅test-only单文件52331317/307保护，生产src/fixture/schema/contract/lock未变。Root冻结实际MinIO/Clam/PG/HTTP旧NULL拒→新source全验证→同Blob/Asset/Scan/Upload/receipt保→旧ref exact-version字节恢复1PASS/3明确过滤，source未变、自有bucket/DB清理、全清单保持；不证明normal维修/HTTPS/浏览器。独审明确组合真实stale-CAS缺口（非生产CAS bug），当前约束无确定barrier，保OPEN且未提交/放行，不造无控并发或SQL语义替代。原d13真实PG deterministic CAS与本次真实object happy path分层列证据，不冒同case。
+
+Root新真实普通登录文件切换复现15606522：临时tab8由SKILL.md→manifest→SKILL.md，网络临时延迟5s时正文被“正在读取文件”替代，导航/800×600几何/焦点仍在，实际package GET200；仅刻意文件切换的body-clear条件，不是健康续期/轮询自发闪动证明。截图r353-s09-live-file-switch-pending.png；网络恢复、tab8关闭、用户原tab/进程保留。整片Web须保已ready内容直到新文件提交、明确pending目标并保持滚动/焦点，真正身份变化/撤权仍退役；S09和S01–S10均OPEN。
 
 下一固定顺序：完整BFF真实Product接线冻结→内外页/Settings/后台同一Web片（保ready正文与滚动/焦点，删旧假preview）→真实依赖配对/必要旧资产资格→S01–S10完整普通与管理员浏览器旅程及Manus宽/中/窄逐图核验。未验证能力明确OPEN，不用接口测试、worker报告或局部“已修复”替整页验收。
 

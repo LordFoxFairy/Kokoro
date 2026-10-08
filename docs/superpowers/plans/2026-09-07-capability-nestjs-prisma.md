@@ -16,10 +16,14 @@
 ### 本轮真实冻结与下一步（2026-10-08，页面完成数不变）
 
 - Platform完整正式701aedb5/HTTP5/Product1/63-32-24，Root185真实PG/Redis与1888pure；IAM/Storage在该组为double，不是正常配对或页面资格，旧失败/全format历史失败保留。
-- BFF B1正式9d1cc19b；B2正式三设计2ffefc9→现receipt最小CAS设计d2695c4，原卡e8c69593完整124修改/35仅生成/107新/65实际删/369保护。正式三owner生成与63-32-24父逆已通过，上传command/digest已接候选，v3恢复矩阵/50Public9行为与全接线仍进行中。原writer因上下文限制停写；Root原字节核定d94ba95e交接同任务新上下文，不重做、不分散UI补丁，不把编译通过当freeze。
+- BFF B1正式9d1cc19b；B2三设计2ffefc9/receipt CAS补充d2695c4。当前唯一writer bff_skills_product_source_r353继承主控模型，沿原e8c69593卡保369路径；前两writer明确上下文耗尽停写，原候选不回滚。其已落Product/client/input/普通与管理员独立凭据、draft/admin/download/cover/share/usage候选，报告247向量/导出断言与build通过；不是Root最终资格。交接曾称三owner生成完成，实际HTTP/IAM generator config仍旧pin，现已正规修正发行配置；原缺口保留，不复述错误完成声明。唯一补卡36d85fa0仅共用skill-product-schema.ts，避免infrastructure反向依赖HTTP。AI/GitHub、catalog/package完整CAS、Public9全部行为仍进行中，无最终freeze/提交/正常激活。
 - Agent仅S06必要依赖正式ee736cdf；最终27源冻1590efea，Root实际PG14PASS0SKIP含实际client→deliver→middleware同lease竞争、focused93PASS/ruff/pyright/diff0。独审8459ee99无确定P0–P2，369保护/三suffix/旧build保留，34精确no-renames路径提交。两个旧默认protected失败保留。正常激活及37旧资产/HTTP/MinIO/scanner组合仍OPEN，不升页面完成数。
 - Root实际1113×752同尺寸预览两侧800×600/x156.5/y76、两个主动作32px位置一致；保已匹配部分，只修真实字段/分类/阅读器与缺能力。正确预览/详情四张jpg及测量绑定58d8bf6d；第一目录图异尺寸不用于放行。记录菜单无实际后续flow仍OPEN；临时tab关闭、viewport复原、不改正常进程。
 - 外部目录、预览、正文、我的技能/Settings、创建/导入、后台及异步体验同一整片；S01–S10普通/管理员持久浏览器最终通过前均OPEN，既有R350/R351仅局部资格。S09静态4708dd3f确认ready卸载条件链，尚未现场证明健康续期因果；最终同身份刷新保内容/滚动/焦点，真实换主体或撤权仍退役。
+
+- Root本轮逐owner独立REPEATABLE READ READ ONLY正常盘点467df146：30包/30Blob全finalVersion NULL，26资产有Skill引用（21active/4draft/1withdrawn），7未移除安装（5enabled/2disabled）。首次读source_version_id列真实FAIL，正常旧Schema尚无该列，保失败；改为只读列存在辨别，不是应用fallback。两owner表快照保持、无跨ownerSQL/正常写入。已有本地ZIP比对1edd3e0b匹配26资产及全部7安装，只证明相同字节候选，不授发布旧revision上传维修；原7个人/项目文件未处理。禁止盲激活strict读取或替旧revision/安装偷偷换引用。
+- 必要Storage ST6仅test-only单文件52331317/307保护，生产src/fixture/schema/contract/lock未变。Root冻结实际MinIO/Clam/PG/HTTP旧NULL拒→新source全验证→同Blob/Asset/Scan/Upload/receipt保→旧ref exact-version字节恢复1PASS/3明确过滤，source未变、自有bucket/DB清理、全清单保持；不证明normal维修/HTTPS/浏览器。独审明确组合真实stale-CAS缺口（非生产CAS bug），当前约束无确定barrier，保OPEN且未提交/放行，不造无控并发或SQL语义替代。原d13真实PG deterministic CAS与本次真实object happy path分层列证据，不冒同case。
+- Root新真实普通登录文件切换复现15606522：临时tab8由SKILL.md→manifest→SKILL.md，网络临时延迟5s时正文被“正在读取文件”替代，导航/800×600几何/焦点仍在，实际package GET200；仅刻意文件切换的body-clear条件，不是健康续期/轮询自发闪动证明。截图r353-s09-live-file-switch-pending.png；网络恢复、tab8关闭、用户原tab/进程保留。整片Web须保已ready内容直到新文件提交、明确pending目标并保持滚动/焦点，真正身份变化/撤权仍退役；S09和S01–S10均OPEN。
 
 ### 当前人员与整片交付节奏（2026-10-08）
 
@@ -29,6 +33,7 @@
 | BFF整份业务消费 | bff_skills_product_source_r353 / 唯一writer，继承主控模型 | 同卡e8c完整Public9接线与恢复；原iam与其5.6-sol续接者均明确上下文耗尽停写，原候选与369保护Root核定；两次交接保留，当前直接实现真实Product source；不授正常DDL/服务重启 |
 | Web完整页面 | Root集成后授唯一writer；W0已只读交付 | 正式Product后同片内外/Settings/后台及稳定状态；保护既有混合修改，不逐字段写UI |
 | 必要Agent依赖 | bff_skills_core_review_r353 / 已交付停写 | Root实际14PG及独审8459ee99后正式ee736cdf；原默认失败保留，不授正常激活/其它Agent功能 |
+| 旧包无损资格 | skills_storage_legacy_qualification_r353 / test-only已冻结停写；独审独立 | 单文件真实object happy path已诊断，组合stale-CAS缺口OPEN；Root只读旧引用盘点，不授正常维修/激活 |
 | 总验收 | Root | 资源/Git独占，当前实际参考截图/测量，最终普通/管理员完整路径；辅助门只供排错 |
 
 - 当前BFF严格native三路径Root资格已通过：旧/fresh、old有数据expand/replay、五真实分组/regex/精度/default/FK负控；前一版误判current失败保留。原package仅两脚本追加2纯/3集成入口，旧值/元数据/依赖保持。Root915PASS/3环境SKIP、类型/lint/build0，仅工程支持。最终真正投影/Share/usage入口7PASS，完整5文件259PASS零SKIP；第一次完整257PASS/2FAIL保留，usage fixture清理闭集/合法source_ref及stale精确version_conflict修正未动生产。合并29SHA b702217d；554保护/三历史suffix保持，最终独审5efafcc2无新增阻断，Root精确29路径提交9d1cc19b/其后usage2PASS；正常环境未激活，不是页面完成。
