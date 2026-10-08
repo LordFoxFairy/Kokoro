@@ -1,6 +1,6 @@
-### R353 本轮：原生演进资格通过，真实投影入口仍待修（2026-10-08）
+### R353 本轮：完整 Skills 仍待验收，集中关闭真实阻断（2026-10-08）
 
-Root三路径严格native实证：旧/fresh目录可判定，old→expand保旧行并可重放；分组、regex大小写、时间精度、default+interval、额外FK五真实负控全部拒绝。先前四误判current失败保留；正常数据未动、每个自有库drop/全库清单保持。独立23冻源审查确认actual terminal-first被旧guard拒、distinct事实重复回滚及身份/source宽度/锁后expiry问题；Root真正projectSessionEvents→commitProjection＋真实PG/Redis复现5例1PASS/4FAIL、零SKIP（Root URL/search_path夹具失败另存，不冒生产缺陷）。原BFF writer现获原范围集中修，28修改/10新/555保护；三测试先冻RED，源码未放行/未激活，usage未知仍unavailable。Platform整片147修改/35新/5删/417保护实施中，原120失败留存，剩余类型/纯门/真实资源冻结待交。Web W0已完整审查，尚无整片源码/浏览器验收，不升S01–S10状态；其它模块/heartbeat暂停、完整Wave0–7 active。
+只推进既有Skills S01–S10整链，其它模块/heartbeat暂停，完整Wave0–7 active。BFF B1当前29修改/10新/554保护：Root真实入口7PASS、五文件真实PG/Redis259PASS零SKIP、pure915PASS/3环境SKIP及类型/lint/build0；首次完整回归257PASS/2FAIL保留，精确旧fixture与stale断言修正后通过，最终独审5efafcc2无新增阻断，Root已精确29路径提交9d1cc19b，提交后usage两例通过。原生old→expand有数据保持/replay及五drift负控通过，未正常DDL/激活，尚非完整Product接线或页面完成。Platform当前148修改/36新/5删/416保护，首完整205冻源Root纯1868PASS/工程门0，但实际PG150PASS/19FAIL；独审2P1/3P2不放行。只测试集中负控已Root复现unit10PASS/11FAIL、PG10FAIL/62名称过滤、安装3FAIL/31名称过滤；三安装失败后实际installation/receipt/outbox已提交，精确首cause为DriverAdapterError transaction timeout，嵌套/锁根因待定位，不归旧fixture、不加timeout或fallback。正常数据未改、各自有库drop/全库清单保持。Root已授原Platform writer一次集中F1–F4生产修（publisher准入/七admin audit/cover fence），F5先只读定位、方案另审；Web只读整片范围已交，内外/Settings/后台尚未整片实现/浏览器验收，不升页面完成数。Manus记录入口本轮实点仍仅收起菜单，无可确认后续，S06仍OPEN；正常37旧资产final-null配对仍OPEN。
 
 ### R353 当前并行切片与实页差距（2026-10-08，仍未整页验收）
 
