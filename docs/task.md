@@ -1,3 +1,7 @@
+### R353 当前并行切片与实页差距（2026-10-08，仍未整页验收）
+
+仅Skills继续：原Platform writer整份139修改/35新/5删/425保护；BFF独立Share/usage27修改/10新/556保护，Root资源/Git。Web W0整页只读范围与S01–S10浏览器矩阵已交、Root复核，不逐字段修UI；正式owner→完整BFF Product→内外页/Settings/后台同一Web片。Root实际分类108按钮由页内标签累计、装饰封面与缺publisher/usage；已安装预览→真实正文能打开，四张1280×800 PNG明确差异，完整能力仍OPEN。真实PG首Share NUL锁22021失败窄修后通过；第二轮6例5PASS/1FAIL，fresh canonical演进因具名NOT NULL目录不匹配仍unavailable，原三路径续修完整字段集合/drift与old数据保持，未提交/正常DDL/激活。三旧文档后缀由Root恢复原卡，其余保护保持；自有库清理、全库清单保持。健康同身份续期/轮询不增generation；弹窗消失未证因果，S09须真实timer/focus/renew保DOM/正文/滚动、换主体仍退役，不凭HMR猜因。正常37 final-null及记录入口语义OPEN，临时诊断两tab已关闭、用户原tab保留。最终只完整普通/管理员持久旅程及Manus逐图通过称闭环；其它模块/heartbeat暂停，完整Wave0–7 active。
+
 ### R353 当前：必要存储源码正式交付，Skills 完整设计锁定（2026-10-08，页面仍未验收）
 
 Storage 正式 `d13f33acfc7a482d61ebffc58e7b2667b58ae197`，sole v3/17 RPC；Root冻结重跑真实PG 27文件247PASS、pure529PASS及type/lint/build/contract/schema0。实际MinIO精确版本/ObjectLock用例4PASS，个人文件/封面与真实Clam两PASS（包1过滤SKIP、本地HTTP）；先前403/400失败经官方固定版本错误及原对象保持证据闭合。全diffcheck仍有原生Prisma生成450条空白问题，手写范围0，不冒全门/页面完成。正常37 final-null资产未修、未激活配对；原正常数据/服务保留。
