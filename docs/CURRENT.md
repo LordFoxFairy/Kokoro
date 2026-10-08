@@ -1,3 +1,9 @@
+### R353 当前：必要存储源码正式交付，Skills 完整设计锁定（2026-10-08，页面仍未验收）
+
+Storage 正式 `d13f33acfc7a482d61ebffc58e7b2667b58ae197`，sole v3/17 RPC；Root冻结重跑真实PG 27文件247PASS、pure529PASS及type/lint/build/contract/schema0。实际MinIO精确版本/ObjectLock用例4PASS，个人文件/封面与真实Clam两PASS（包1过滤SKIP、本地HTTP）；先前403/400失败经官方固定版本错误及原对象保持证据闭合。全diffcheck仍有原生Prisma生成450条空白问题，手写范围0，不冒全门/页面完成。正常37 final-null资产未修、未激活配对；原正常数据/服务保留。
+
+Platform三设计正式 `8e869ded1f58354297217af1db13e5b9ade3a447`：整份skill-product1.0/HTTP5、63RPC/32commands/24proof目标及AI/GitHub受信BFF handoff、安装不隐式升级、admin新revision、native expand同次锁定；仅设计，未发行机器或运行。原owner整份源码任务R353-P2沿唯一现有计划精确文件卡；独审并行只读、Root独占资源/Git/最终浏览器。GitHub生产route当前缺失、记录实际语义仍OPEN，不伪造能力。S01–S10全程普通/管理员持久浏览器与同尺寸Manus最终验收仍OPEN；其它模块/heartbeat暂停，Wave0–7 active。
+
 ### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
 
 Root本轮后继：扫描撤权/并发及dedup挂钩修正后，前冻真实27文件247PASS/525pure/type-lint-build0；独审uploadId错绑P2用最终两文件4FAIL→Root32PASS/type0关闭。最终隔离真实个人文件/封面2PASS，包用例1过滤SKIP（local HTTP非production HTTPS/浏览器）。物理ObjectLock清理独立FAIL：期望403但typed400，具体错误未核，禁止泛化接纳400；自有bucket/库删除且全清单保持。原失败保留，源码未正式提交/正常激活；正常37 final-null与S01–S10 OPEN保持。Root既有计划c3570849已锁整页顺序/删除重复preview假事实，下一整份Platform字段发行，不再逐字段改UI。
