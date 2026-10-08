@@ -1,3 +1,33 @@
+### R338 用户纠正提交与正文接缝事实（2026-10-08）
+
+Web **44cbc99e70877af65c3cbef468b5eec9c4e4b36f**（parent3a726ee）：Root删除用户否决的详情“技能分类”折叠区及三deadCSS，仅标题上方前2/+N标签。真实R267修前重复summary/两对标签，修后summary0/单对标签；390短屏关闭安装44无横溢；100分类R307保前2/+98，无summary/单body，Escape原卡/query保持。Root86730 Node22 targeted lint/types0；未重跑build/default/全Playwright。775其它tracked/原混合保护；截图 r338-category-corrected.png，自然用例 r338-user-category-verification.json。旧R337分类全文展开是历史不再认可的设计，不继续宣传。
+
+同T-K03三只读审计已收且STOP：BFF551/Platform551起终SHA exact；Web先779tracked＋6extra exact后Root小修。Root实际Node22 fixed generated qualification自然exit1：BFF当前43RPC且缺两inspection services（r338-bff-consumer-red.json）；不是正式系统或浏览器失败测试。Platform当前1f6f764可作完整机器唯一pin，45RPC/20command/24proof，旧V8历史43不改；52固定输入包含旧链/三双父/provenance/currentHTTP，审计aggregate e4201bc8674c470bf49c840712f87c34e869b96e59a0e96ba83eb3e4df19446a。正常服务不重启。
+
+后继仍需BFF三D0→正规完整固定生成→public两本人GET及安全限额→真实IAM/Platform系统RED/运行→Web正规消费和查看详情E2E。原projection scope可复用，不借catalog；现credential整文件读取、rotation/迟到token缓存需窄强化不能冒已可靠。public路径/版本仍候选待Root文档门，任意可见未安装目录正文资格/作者usage/series/管理员前后台仍OPEN；用户本次UI纠正先落地，不新建计划中心，不恢复其它模块，完整Wave0–7 active、70/33不升/kokoro-10暂停。
+
+<!-- R338-ROOT-RECEIPT-END -->
+
+### R338-U 用户纠正：删除详情弹窗重复技能分类（2026-10-08）
+
+用户明确否决R337新加“技能分类”原生折叠区，按Manus仅标题上方标签展示，不新增标签全文区/另一折叠/tooltip来替换。Root接管局部两现源（Web3a726ee，skill-catalog-read.tsx / module.css）；原Web owner只读已STOP，Backend三面审计只读不授写。分类仍真实前2/+N，安装/身份/请求/焦点handlers不改；删除刚新增details JSX及categoryDetails三deadCSS。此前100分类展开UI验收按旧需求历史保留，不代表用户认可，当前本片明确撤回该设计。Root在正常页面先复现存在，然后删除、真实预览验证无summary/无重复分类/手机/关闭query-focus；工程只辅助，不替页面闭环。
+
+<!-- R338-USER-CATEGORY-CORRECTION-END -->
+
+### R338 同T-K03：Skills 正文 BFF 消费接缝核验（2026-10-08）
+
+上一目标回合为 progress：Web3a726ee/Rootbf3f4925提交与6条实际用户UI证据改变权威状态；不是整项Skills通过。继续仅Skills，完整Wave0–7 active，其它任务/kokoro-10暂停。
+
+|任务/角色|基线/范围|阶段门与责任|
+|---|---|---|
+|R338-BFF BFF正文消费者负责人 bff_skills_body_r338（原负责人不可用，原生续接职责）|/Users/nako/.codex/worktrees/kokoro-r257-bff-normal，codex/r257-bff-normal-current，c91fee642；只读生成器、固定vendor、本人Skill读route/client、三D0/契约/已有系统验收；原var保护|先审计发布接缝、现两本人inspection输入/映射、正规token复用、public差分建议与最窄文件集。禁止写/生成/Git/资源/browser；Root裁决和文档门后另授|
+|R338-OWNER 原Platform owner platform_iam_consumer_r298|physical apps/kokoro-capability，1f6f764，clean；只读当前机器artifact/descriptor/provenance、inspection实现与发布规则|交付正规BFF固定消费的精确文件/摘要/与e83a2ad父链关系；不改owner/身份/Schema，不开服务，不重复测试造包|
+|R338-WEB 原Web owner web_interaction_astra_r296|/Users/nako/.codex/worktrees/kokoro-r257-admin-web，3a726ee；只读Skill两个预览/同源adapter、固定BFF生成入口|只列真实详情文件树/正文交互所需public shape/取消/焦点/异步不跳要求，不编新owner contract或写UI。原Admin/R332混合保护|
+
+Root已读取权威入口与当前Git，为三仓tracked冻结 r338-{bff,platform,web}-start.json。Root独占边界、资源、Git、实际系统/浏览器；不重启正常服务，不直读owner SQL或伪正文。只读阶段不新建D0/API/目录，审计后沿现任务卡裁决写入集；有依赖的Platform发行→BFF消费→Web串行。
+
+<!-- R338-READONLY-TASK-END -->
+
 ### R337 Skills 视觉切片已局部验收，整项仍 OPEN（2026-10-08）
 
 Web Root 精确提交 **3a726eedb7114a223cc11474273aee1e689fb6d6**（基线e78a514）：三现源catalog reader/CSS与personal CSS，两事实文档CURRENT/Skills INDEX。原 owner STOP 后 Root 仅接管文档/提交；独QA冻结审核无确定阻断；原780非本切片路径逐SHA保持（含Admin/R332混合），不暂存Root gitlinks/uv.lock。

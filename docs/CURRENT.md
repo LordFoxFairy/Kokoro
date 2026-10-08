@@ -1,3 +1,13 @@
+### R338 用户纠正提交与正文接缝事实（2026-10-08）
+
+Web **44cbc99e70877af65c3cbef468b5eec9c4e4b36f**（parent3a726ee）：Root删除用户否决的详情“技能分类”折叠区及三deadCSS，仅标题上方前2/+N标签。真实R267修前重复summary/两对标签，修后summary0/单对标签；390短屏关闭安装44无横溢；100分类R307保前2/+98，无summary/单body，Escape原卡/query保持。Root86730 Node22 targeted lint/types0；未重跑build/default/全Playwright。775其它tracked/原混合保护；截图 r338-category-corrected.png，自然用例 r338-user-category-verification.json。旧R337分类全文展开是历史不再认可的设计，不继续宣传。
+
+同T-K03三只读审计已收且STOP：BFF551/Platform551起终SHA exact；Web先779tracked＋6extra exact后Root小修。Root实际Node22 fixed generated qualification自然exit1：BFF当前43RPC且缺两inspection services（r338-bff-consumer-red.json）；不是正式系统或浏览器失败测试。Platform当前1f6f764可作完整机器唯一pin，45RPC/20command/24proof，旧V8历史43不改；52固定输入包含旧链/三双父/provenance/currentHTTP，审计aggregate e4201bc8674c470bf49c840712f87c34e869b96e59a0e96ba83eb3e4df19446a。正常服务不重启。
+
+后继仍需BFF三D0→正规完整固定生成→public两本人GET及安全限额→真实IAM/Platform系统RED/运行→Web正规消费和查看详情E2E。原projection scope可复用，不借catalog；现credential整文件读取、rotation/迟到token缓存需窄强化不能冒已可靠。public路径/版本仍候选待Root文档门，任意可见未安装目录正文资格/作者usage/series/管理员前后台仍OPEN；用户本次UI纠正先落地，不新建计划中心，不恢复其它模块，完整Wave0–7 active、70/33不升/kokoro-10暂停。
+
+<!-- R338-ROOT-RECEIPT-END -->
+
 ### R337 Skills 视觉切片已局部验收，整项仍 OPEN（2026-10-08）
 
 Web Root 精确提交 **3a726eedb7114a223cc11474273aee1e689fb6d6**（基线e78a514）：三现源catalog reader/CSS与personal CSS，两事实文档CURRENT/Skills INDEX。原 owner STOP 后 Root 仅接管文档/提交；独QA冻结审核无确定阻断；原780非本切片路径逐SHA保持（含Admin/R332混合），不暂存Root gitlinks/uv.lock。
