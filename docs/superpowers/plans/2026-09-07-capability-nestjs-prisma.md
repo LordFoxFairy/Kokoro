@@ -196,6 +196,26 @@ Storage正式设计 `0b5042db24b029d146c2fcd717d387b2e47906f3`（parent5b15fe3�
 
 本轮已有正常五依赖ready200仅证明进程就绪；新的本地tab绑定发生CDP focus超时，无新本地UI截图，不把它误报应用API失败。Manus记录技能点击只关闭菜单的真实图仍保，语义OPEN。其它模块与heartbeat继续暂停，完整Wave0–7 active；不另建计划中心、不追加无关基建／历史GC项目。下一具体动作为正式基线的Storage必要源码实现与真实资格，不再重新发散设计。
 
+#### R353-ST5 正式源码实施任务卡（2026-10-08，非页面验收）
+
+| 项 | 本阶段精确授权 |
+| --- | --- |
+| Owner/角色 | Storage既有Upload/Asset/Scan，续原platform_skills_examples_owner_r346唯一源码writer；原IAM reviewer冻后独审；Root保护、资源资格、集成与Git |
+| 基线 | 稳定开发分支 `/Users/nako/.codex/worktrees/kokoro-r353-storage-skills` / codex/r353-storage-skills / 正式0b5042d；原apps55候选与正常r342预览不拷入、不触碰，正常数据不变 |
+| 范围 | 唯一精确授权/295原字节基线收据 `r353-st5-source-grant.json` 与worktree-baseline；包含必要当前业务源码、v3 machine/生成、Prisma/有界expand、sharp及具名测试。COMMON/OpenAPI/配置不改，任何越界先停报；writer零Git/服务/DB/bucket权限 |
+| 设计收敛 | 同ST4实施，不重开方向。DeleteAsset必须从正式16方法源码新实现；复用正式R258已批准同名partial active-canonical predicate，必须把此索引替换明确纳入三设计/ADR及exact old→newexpand允许delta（不是“只四列”），禁止复制原候选Schema或自动演进正常库 |
+| 验证顺序 | Root已实跑正式47files448purePASS；pnpm从Root --dir误选12.3.4首次安装FAIL，切正确cwd11.25.0/frozen安装0，不改packageManager绕过。原writer先真实行为RED→最小实现→pure/type/lint/build/contract/schema读验证，再冻结；真实PG/versioned bucket/scanner及正常consumer/页面由Root后继放行 |
+| 完成条件 | 17方法单v3、all-purpose source intent/精确ACK/恢复、真实cover full decode/scan/尺寸/引用释放、严格目的scope/零current猜版本、具名保数据演进；所有旧有效行为回归，不放宽断言。完整owner资格前不宣正式发行/页面完成 |
+
+#### ST5 Root并行资格与原数据停止线（非页面完成）
+
+- 原writer现正规v3/17生成与Prisma校验已有候选，13FAIL起始与full-decode/source-intent/delete负控保留；剩余固定client/fixture、清理负控、有界expand、实际资源与完整静态冻结。Root不在动态树重跑最终门，不抢源码。
+- Root单独sharp fixture实测完整PNG/JPEG、截断JPEG metadata能过但full decode失败；4096² raw67,108,864bytes。destroy(Error)未订阅error首次exit1，订阅后native仍运行到终态，须保持admission/drain且取消不得发布。r353-st5-root-codec-qualification/codec-licenses/native-cancel-*为依赖实证，不是应用/SLO完成；第一次receipt相对路径写失败如实另记。
+- READ ONLY正常Storage inventory：37有效Asset finalVersion全部NULL（个人5、项目2、技能包30）。仅阻正常激活，源码继续；不猜填版本、不删旧包、不静默换已发revision。原IAM正式基线只读报告SHA173409dd确认既有同hash/scope snapshot CAS repair可保原Blob/Asset/安装ref及hash，旧NULL retirement仍pending。Root后继只在隔离PG/provider实证后决定维护，不建立新repair服务。
+- Root动态scope93变化均在授权，原非范围字节/Root865/8gitlinks保持。现Manus记录技能点击只关菜单，未知具体流程；本地getTab再次focus超时，无新截图，不冒应用失败/页面完成。相同S01–S10全链继续，下一是源码冻结→独审→Root真实owner组合→一次固定消费者/整页。
+
+Root原8gitlinks/uv及Storage55保护，安装过程不复制.env、不启动服务。既有发布字段无来源则unknown，不编造cover/usage。后继仍整份Platform→BFF固定消费→Web完整页面＋后台→正常S01–S10，而非新一轮视觉碎补。
+
 ## D. 执行顺序与职责（减少跨仓来回改）
 
 | 批次 | 一次交付范围 | Owner与执行 | 放行依据 |

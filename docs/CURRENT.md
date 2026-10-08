@@ -1,3 +1,11 @@
+### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
+
+原Storage负责人在稳定分支 `/Users/nako/.codex/worktrees/kokoro-r353-storage-skills` 从正式0b5042d实施；Root保原55混合候选及正常预览，独占资源/Git。现v3/17与Prisma生成已有候选，不是正式发行；writer具名RED/局部GREEN及剩余client/fixture/expand/资源用例/冻结条件见同计划。Root实时精确范围核93个变化均获授权、其余Storage与865 Root原字节及8gitlinks保持，不对动态树宣验收。
+
+Root真实单独sharp0.35.5/libvips8.18.7：PNG/JPEG full decode、JPEG metadata成功而截断全解码失败；4096方形raw为67,108,864bytes。destroy(Error)首次无listener实际exit1；有listener后native仍继续到终态，要求取消后禁止发布、admission保持到drain。native包许可证含LGPL-3.0-or-later；只是本机依赖资格，非负载SLO/应用或浏览器验收。
+
+正常Storage库READ ONLY实查37有效Asset（5个人/2项目/30技能包）final版本全NULL；禁止盲切strict读破坏原文件/安装。原IAM只读报告确认既有同tenant/exact scope/samehash+size canonical snapshot CAS可保同Blob/Asset/Skill refs；旧NULL retirement保持pending、不current HEAD补版本。源码继续，正常恢复/配置切换待隔离真实资格，未修改正常数据/bucket/权限/服务。现Manus记录入口仍只关闭菜单；本地tab绑定focus超时，无新UI截图或完成证据。完整S01–S10仍OPEN，其它模块/heartbeat暂停，Wave0–7 active。
+
 ### R353 Skills 完整实施顺序锁定，封面依赖设计正式交付（2026-10-08）
 
 唯一现有计划S01–S10继续覆盖外部目录/预览正文/我的技能/四创建/分享下载/后台及异步体验；用户要求以同尺寸Manus与真实用户整链验收，尚未完成页面。Storage设计正式0b5042d，只三当前前缀＋ADR，原55混合与完整旧dirty正文保留。Root实查首FAIL纠正了正式16RPC与候选17混淆；目标v3需正式实现DeleteAsset，不冒已发行。291tracked＋2原untracked/3suffix保持，独审无确定阻断；未实施源码、DDL、bucket、正常权限或服务切换，sharp亦未安装。
