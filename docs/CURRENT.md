@@ -1,3 +1,21 @@
+R334 局部 Web 已提交 **980172f998d0c3b58e20bd80d14fc25f60ed563a**（parent1b2abd6，精确19paths）；Root提交后核766非范围文件原SHA、三混合D0原suffix和九字典单行逆转 exact、Web index空。提交后正常技能搜索结束并渲染R255卡，点击预览760×600、普通technical details=0/bare skill ID=false，截图var/dev/r255-preserve/r334-skills-postcommit.png；临时网络拦截/观察与尺寸覆盖已清，交付页与参考页保留。正文与管理员仍OPEN。
+
+提交后Root显式Node22.22.2重跑contract309PASS、architecture51PASS、typecheck exit0（原26213终态0）；第一次编排contract309PASS后因zsh只读变量status而退出1，仅工具编排错误，保原日志，不当产品失败。默认70FAIL、全Playwright/axe/正文/后台未验保持。
+
+### R334 Skills 目录安装与 Manus 局部呈现已实测，整项仍 OPEN（2026-10-07）
+
+当前切片基线 Web1b2abd6。沿同T-K03，正常目录新增单操作安装hook，精确source/revision/key→真实ACK→同installation canonical确认；unknown仅显式同key重试，已ACK后仅GET。进入我的技能仅退役已完成success，保未决恢复。个人两个普通预览删除裸ID/版本/技术details，原业务handlers保持；九locale只增addToMySkills一个key，原mixed不夹带。
+
+Root真实3310：R323第二版双击1POST200/reinstalled→同ID GET200→五安装及正常刷新；POST响应hold后unknown同body/key显式恢复replayed=true；ACK后GET hold/关闭→仅GET恢复；fresh installed=false与MySkills启用态变更两实际RED修后通过；旧版真实412不覆盖v2，R255正规停用/恢复后原enabled=true。没有模型/费用/权限/源撤回、数据reset或服务重复启动。
+
+使用frontend-design/refactoring-ui与Manus同800×752实测：卡title14/20、简介12/16、textgap2；freshgridy150 vs参考148；预览760×600/title20/26。完整小书封/局部弱blur，不伪作者/usage/SKILL.md。旋转封面实际710<719横滚RED→左右10px安全边距，最终目录/个人body710=scroll710、封面right752.23<755；390×420稳定350×388、关闭44、单body306px、100tags/19620简介完整、Escape归原卡。视口切换瞬间动画中间读数不充稳定结论。
+
+独审最终f368d85d，Root保护768非范围原路径、九字典单行逆转/三D0suffix exact。Root61049自然exit1：contract309/architecture51/lint/typecheck/build0，default3369PASS/70FAIL（6失败文件/172）；其中R264原technical-provenance断言与批准删除不符，其余69未全部排尽。最终仅两CSS安全padding/死规则删除后60972 lint/typecheck/build自然0，全default未再次运行。未改tests清零，工程只辅助，不代用户闭环。
+
+真实用例证据在Root var/dev/r255-preserve/r334-skills-user-verification.json（12局部用例：11局部PASS含修前RED/1管理员OPEN）、r334-skills-final.png及mobile/catalog/RED图。正文/文件树、真实作者/usage/cover资产、series目录收敛、安装tags runtime消费者、跨身份、Skills管理员正式清单/详情/上下架与前后台同步仍OPEN；现个人接口不冒管理员API，service manage scope不等于humanadmin。全Playwright/axe/视觉预算未验。T-K03/T-K05与Wave0–7保active/OPEN，其他模块及kokoro-10继续暂停；完整70/个人33计数不升级，不称Manus像素一致或正式上线。
+
+<!-- R334-ROOT-RESULT-END -->
+
 ### R333 Skills 真目录分层：局部用户路径已验，整页与回归仍 OPEN（2026-10-07）
 
 Web局部切片交付 **1b2abd6c664f28f45fc82488f5e63c9a0c52a004**（parent18d81ed，精确11paths）；完整Skills与71回归失败仍OPEN，不作为上线放行。

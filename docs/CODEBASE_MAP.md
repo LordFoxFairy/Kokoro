@@ -1,3 +1,13 @@
+R334 局部 Web 已提交 **980172f998d0c3b58e20bd80d14fc25f60ed563a**（parent1b2abd6，精确19paths）；Root提交后核766非范围文件原SHA、三混合D0原suffix和九字典单行逆转 exact、Web index空。提交后正常技能搜索结束并渲染R255卡，点击预览760×600、普通technical details=0/bare skill ID=false，截图var/dev/r255-preserve/r334-skills-postcommit.png；临时网络拦截/观察与尺寸覆盖已清，交付页与参考页保留。正文与管理员仍OPEN。
+
+提交后Root显式Node22.22.2重跑contract309PASS、architecture51PASS、typecheck exit0（原26213终态0）；第一次编排contract309PASS后因zsh只读变量status而退出1，仅工具编排错误，保原日志，不当产品失败。默认70FAIL、全Playwright/axe/正文/后台未验保持。
+
+### R334 Skills 当前入口补记（2026-10-07）
+
+正常dev Web仍使用 /Users/nako/.codex/worktrees/kokoro-r257-admin-web。现src/ui/skills/use-catalog-installation.ts拥有目录单操作意图/ACK/current与恢复；skill-catalog-read.tsx/.module.css拥有目录/预览呈现，PersonalSkillsRead保本人管理且普通预览不露裸技术身份。Browser→Web same-origin→BFF public→Platform modules/skills方向不变；physical capability名称尚未cutover。真实包正文/作者/usage与Skills human-admin全链仍OPEN，不能拿个人接口或service scope替代。R334实际证据/未通过门见同docs/CURRENT.md与docs/task.md；原Admin/R332 mixed保护。
+
+<!-- R334-MAP-END -->
+
 ### R333 Skills 目录当前入口补充（2026-10-07）
 
 Web局部切片交付 **1b2abd6c664f28f45fc82488f5e63c9a0c52a004**（parent18d81ed，精确11paths）；完整Skills与71回归失败仍OPEN，不作为上线放行。

@@ -1,3 +1,65 @@
+R334 局部 Web 已提交 **980172f998d0c3b58e20bd80d14fc25f60ed563a**（parent1b2abd6，精确19paths）；Root提交后核766非范围文件原SHA、三混合D0原suffix和九字典单行逆转 exact、Web index空。提交后正常技能搜索结束并渲染R255卡，点击预览760×600、普通technical details=0/bare skill ID=false，截图var/dev/r255-preserve/r334-skills-postcommit.png；临时网络拦截/观察与尺寸覆盖已清，交付页与参考页保留。正文与管理员仍OPEN。
+
+提交后Root显式Node22.22.2重跑contract309PASS、architecture51PASS、typecheck exit0（原26213终态0）；第一次编排contract309PASS后因zsh只读变量status而退出1，仅工具编排错误，保原日志，不当产品失败。默认70FAIL、全Playwright/axe/正文/后台未验保持。
+
+### R334 Skills 目录安装与 Manus 局部呈现已实测，整项仍 OPEN（2026-10-07）
+
+当前切片基线 Web1b2abd6。沿同T-K03，正常目录新增单操作安装hook，精确source/revision/key→真实ACK→同installation canonical确认；unknown仅显式同key重试，已ACK后仅GET。进入我的技能仅退役已完成success，保未决恢复。个人两个普通预览删除裸ID/版本/技术details，原业务handlers保持；九locale只增addToMySkills一个key，原mixed不夹带。
+
+Root真实3310：R323第二版双击1POST200/reinstalled→同ID GET200→五安装及正常刷新；POST响应hold后unknown同body/key显式恢复replayed=true；ACK后GET hold/关闭→仅GET恢复；fresh installed=false与MySkills启用态变更两实际RED修后通过；旧版真实412不覆盖v2，R255正规停用/恢复后原enabled=true。没有模型/费用/权限/源撤回、数据reset或服务重复启动。
+
+使用frontend-design/refactoring-ui与Manus同800×752实测：卡title14/20、简介12/16、textgap2；freshgridy150 vs参考148；预览760×600/title20/26。完整小书封/局部弱blur，不伪作者/usage/SKILL.md。旋转封面实际710<719横滚RED→左右10px安全边距，最终目录/个人body710=scroll710、封面right752.23<755；390×420稳定350×388、关闭44、单body306px、100tags/19620简介完整、Escape归原卡。视口切换瞬间动画中间读数不充稳定结论。
+
+独审最终f368d85d，Root保护768非范围原路径、九字典单行逆转/三D0suffix exact。Root61049自然exit1：contract309/architecture51/lint/typecheck/build0，default3369PASS/70FAIL（6失败文件/172）；其中R264原technical-provenance断言与批准删除不符，其余69未全部排尽。最终仅两CSS安全padding/死规则删除后60972 lint/typecheck/build自然0，全default未再次运行。未改tests清零，工程只辅助，不代用户闭环。
+
+真实用例证据在Root var/dev/r255-preserve/r334-skills-user-verification.json（12局部用例：11局部PASS含修前RED/1管理员OPEN）、r334-skills-final.png及mobile/catalog/RED图。正文/文件树、真实作者/usage/cover资产、series目录收敛、安装tags runtime消费者、跨身份、Skills管理员正式清单/详情/上下架与前后台同步仍OPEN；现个人接口不冒管理员API，service manage scope不等于humanadmin。全Playwright/axe/视觉预算未验。T-K03/T-K05与Wave0–7保active/OPEN，其他模块及kokoro-10继续暂停；完整70/个人33计数不升级，不称Manus像素一致或正式上线。
+
+<!-- R334-ROOT-RESULT-END -->
+
+### R334 同 Skills：按 Manus 实测参数精细化（2026-10-07）
+
+最新用户再次批准 Manus 一致展示，要求使用设计技能精细化；Root已读取frontend-design/refactoring-ui，沿已批准设计与同任务，不开第二计划。Root实际同800×752：Manus卡标题14/20、正文12/16、卡padding12/16、grid y148；当前15/21、13/20、padding16、grid y162。Manus预览760×600、标题20/26、分隔约y298/正文y322；现768×600、标题24/31.2、正文y405，被192px封面撑高。实际RED图r334-preview-refinement-red.png，参考r334-manus-preview-800.png。个人已安装/已发布两预览源码仍裸ID/版本，普通浏览予以删除，不动未知命令的精确恢复校验。
+
+局部修复归属Web现ui/skills，原web_interaction_astra_r296唯一writer，允许现catalog reader/CSS、personal reader/CSS四源及现三D0仅R334前缀；安装hookabb32de保持冻结。比较全局改token/共享Dialog与现技能局部CSS，选后者，不增库/目录/API/Schema/Owner。原Admin mixed/R332/字典旧值及全部其它文件保留；Root独占真实浏览器、门禁、Git，原QA独立审查。后继布局用等尺寸实测字体/间距/封面比例，触屏/关闭保44px、单body滚动、长名/100标签完整可达，不伪作者/统计/正文/分享或下载入口。
+
+完成条件：同尺寸目录与预览截图；两个个人预览无“技术详情”裸ID，所有原操作与状态不变；目录安装、MySkills改变启用态后旧完成态退役、390短屏/键盘退出归焦真实验证。工程门只辅助，真实正文与Skills管理员链仍OPEN，不以本视觉片宣Skills完整。
+
+<!-- R334-REFINEMENT-TASK-END -->
+
+### R334 目录预览安装准入（同 T-K03，2026-10-07）
+
+Root正常3310先取得实际RED：R323第二版目录预览只有真实metadata和技术详情，没有安装入口；截图var/dev/r255-preserve/r334-catalog-install-red.png。此前会话短暂退役，正式Retry恢复目录但无有效HTTP事件窗口，认证根因仍OPEN，不称本轮修好认证。
+
+|项|Root裁决|
+|---|---|
+|Owner/唯一writer|Web原web_interaction_astra_r296；Root唯一浏览器、门禁、Git；原agent_planned_guarantee_system_r257独立审查。|
+|当前事实|Web1b2abd6、原混合Admin/R332保留，r334-web-baseline.json冻结784路径；catalog元数据预览与真实安装client已存在。|
+|目标/位置|只补目录选中精确source/revision的显式安装与正规canonical确认；新ui/skills/use-catalog-installation.ts单操作hook，现catalog reader/CSS呈现。比较塞reader和通用框架，选普通hook分离异步命令变化原因，不新目录/owner。|
+|依赖/API/数据|复用createSkillInstallationClient及原词条；Browser→same-origin→BFF→Platform Skills。无新contract/schema/generated/权限/持久化、正文或Agent修改。|
+|事实/恢复|同步ref冻结source_ref/revision/key；ACK与当前事实分开；unknown仅同key显式重试，known ACK后只GET；安装不偷启用，关闭不回滚，目录层恢复可达，身份退役清私有且拒晚包。|
+|删除/范围|不恢复旧假usage/拼接正文preview；旧个人管理/client冻结。先三D0短前缀，后授权三源，不改测试清失败、字典或公共层。|
+|最新用户/展示|Root真实同800×752测现768×350 vs Manus760×600。同slice预览独立完整封面/上部主操作/下部简介，移裸技术ID；新增addToMySkills单key于现九字典且原mixed保护。三D0仅R334 prefix更新。正文/作者/usage无事实不造空入口；对应Skills后台由原Platform owner只读盘点，用户新要求列入同T-K03后继，不扩其它模块。|
+|验证/交付|Root真实目录→安装ACK→精确ID GET→我的技能→刷新；双击、unknown、已ACK读失败/关闭、窄屏。contract/architecture/lint/typecheck/build及现默认回归实际记录；71既有失败不隐藏。冻结文件清单→独审→Root精确提交，不冒全部Skills通过。|
+
+只读方案r324-web-auth-recovery-read.md SHA84c7b505；独立准入r313-mcp-machine-review.md SHA6beb2a16。原正文/series/作者/使用量/安装tags缺口仍OPEN，其他模块与kokoro-10保持暂停；完整目标不缩小。
+
+<!-- R334-ROOT-INSTALL-ADMISSION-END -->
+
+### R334 同 T-K03：目录预览安装正规闭环（2026-10-07，只读设计阶段）
+
+前一goal回合为progress：Web1b2abd6精确11paths与Root e0606914已改变权威状态，真实目录/搜索/Settings分层/超时恢复及长标签修复有浏览器证据，完整Skills和71回归仍OPEN。完整Wave0–7目标不缩小；用户当前仅Skills，其它模块及R332仍暂停，不恢复kokoro-10。
+
+|任务|Owner/角色/模型|基线与范围|交付/验收|
+|---|---|---|---|
+|R334-CATALOG-INSTALL-DESIGN|Web 原web_interaction_astra_r296，只读，沿当前模型|/Users/nako/.codex/worktrees/kokoro-r257-admin-web，codex/r257-admin-web-current，1b2abd6；现catalog reader/client与PersonalSkillsRead安装状态机，原Admin mixed/R332全保护|精确写集、单flight/不可变意图、ACK与canonical绑定、关闭/unknown恢复、已安装snapshot语义及现locale可复用keys；只报告，不写仓/门/Git/浏览器/资源|
+|R334-INSTALL-QA|原agent_planned_guarantee_system_r257，独立只读，沿当前模型|同Web及固定公开Install契约/真实owner入口|独立核source/revision/身份/未知/取消/同key/已确认GET恢复，给真实E2E负例；不写仓/门/Git/浏览器/资源|
+
+Root独占实际浏览器RED、总体方案/写入授权、资源/集成与Git。候选采用现严格createSkillInstallationClient而非第二transport；若必要，单普通use-catalog-installation hook承单操作生命周期，目录reader承呈现，比较将整个安装状态机塞reader并淘汰；没有新owner/API/schema/缓存框架。任何新文件先完成§8放置和三面同步、Root授权再写。未授代码或测试。当前正文inspection仍需正式owner实现，不以metadata充SKILL.md；本轮不绕执行proof、不伪市场作者/计数。
+
+真实目标路径：卡片→预览→显式安装→真实ACK→精确canonicalGET→我的技能确认→正常刷新持久。补双击只一命令、ACK后GET故障只GET恢复、POST未知同key明确重试、关闭不当取消owner、身份变更退役。默认套件71失败仍单列回归债，最终不由工程计数代用户链，个人33/完整70计数暂不升级。
+
+<!-- R334-INSTALL-DESIGN-TASK-END -->
+
 ### R333 Skills 真目录分层：局部用户路径已验，整页与回归仍 OPEN（2026-10-07）
 
 Web局部切片交付 **1b2abd6c664f28f45fc82488f5e63c9a0c52a004**（parent18d81ed，精确11paths）；完整Skills与71回归失败仍OPEN，不作为上线放行。
