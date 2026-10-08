@@ -1,3 +1,66 @@
+### R325 技能发布反馈与紧凑完成态已真实验证（2026-10-07）
+
+Web **f352cfccf79ae4d7553b828c3ae0fb691e903a57**（parent3328b854）精确六paths：现dialog、messages三词条hunk、overlays英文fallback、原成功oracle、CURRENT/skillsINDEX；Root独占Git，原Admin mixed/27status/768其它tracked+6untracked保持，index空。原状态/函数/footer/意图/File/key/unknown恢复行为inverse exact，零API/SQL/新模块。旧owner术语换可操作用户提示，成功名称与真实vN常显、编号默认折叠，明确success收起整disabled表单/原上传指引。独审ae849b64无确定阻断；当前Radix卸载Description清关联，Root实际aria-describedby=null，不加旧版本假设补丁。
+
+Root正常3310真实缺entry升级versions201/PUT200/Complete200/Validate412零Publish，旧提示RED保留；修后同链/新尝试可达，纠正ZIP正式v4发布并hard刷新回读。v4完成框实际挤出Close二次P2也保留；再修success呈现，正式v5发布，桌面256px/Close44px首屏可见，390无横溢/44px/Enter展开完整身份，关闭回我发布的，v5正式详情GET200＋原三安装GET200恢复。私人source55ac037d-ff9e-4342-92aa-77b46317d2cf/v5、v4与两拒绝草稿保留，无永久删除/安装变更/权限资金修改。最终图 **var/dev/r255-preserve/r325-skills-final.jpg**；紧凑图r325-skills-compact-success.jpg；同目录r325-skills-user-verification.json与r325-web-commit-receipt.json。所有新增分段窗无截断/hasMore，PUT/validate200后canceled及导航取消、全站billing summary404保留。字典开发HMR曾整页刷新/退休原内存意图，明确新意图返验，不冒跨reload保意图或自动重放。
+
+Root Node22.22.2原44444与最终37802完整pnpm check都自然0，contract309/architecture51/default3438/lint/typecheck/build，仅辅助，真实用户路径另证。新版Login自然401点击返回、unknown新呈现真实故障恢复、多身份/多页/全部SkillsCRUD及全test:e2e/axe/视觉预算仍OPEN，不把局部PASS升整体。浏览器已还原1280×720/默认原三安装/无Dialog，Network关闭、Tab27交付/Manus26保留；正常服务/PG/Redis/ObjectStore未重启/reset。
+
+独立MCP只读更正（报告ccb9d19b）：现RegisterMcpServer unsupported是正式批准合同，Proto仅request_id且旧tags2–7/字段名reserved，V1–V8 globalCommandIdentity forbidden；内部register仍tenant事务，不能直接接globalRPC。不是遗漏运行接线，后继需Platform三D0/新机器版及System正式caller，当前不授源码/扩权/跨ownerSQL种子。BFF c91fee642机器四读仍未runtime激活/未真实四读完整正控，旧未验保留。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升级，T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。原八gitlinks/uv不暂存。下一沿原个人Skills任务补当前未验恢复行为及其余CRUD；MCP依合同owner设计先行，保持同一计划，不新建中心、不宣称所有页面或子仓上线。
+
+<!-- R325-ROOT-END -->
+
+### R325 技能发布反馈与 MCP 注册真实入口（既有计划续接）
+
+上一目标回合分类 **progress**：Web3328b854/Root485ba0f7精确提交401显式入口及真实异常ZIP→纠正发布/详情/归焦证据，原76316完整辅助门终态0，不把用户Login待验算完成。本回合原所有门均终态；完整Wave0–7/70/33/支付最后不缩小，原正常资源与Admin mixed保留。
+
+|任务|Owner/角色/基线/允许范围|验收与限制|
+|---|---|---|
+|R325-SKILLS-FEEDBACK-READ|原web_interaction_astra_r296，只读Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web / codex/r257-admin-web-current /3328b854，现publish dialog和九locale键/原cases；只原ignored r324报告追加|沿已批准“用户名称状态优先、编号技术详情折叠”，指出restart owner术语、success裸ID/version与unknown恢复必要编号如何最窄收敛；不变status/意图/key/receipt/取消或回读，不新增能力。保护原27Admin混合/6untracked，Root裁决后另授写。|
+|R325-MCP-REGISTER-READ|原platform_iam_consumer_r298，只读Platform /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability /当前e83a2ad及System现owner调用；BFFc91fee642保持|核现三面/Proto/RegisterMcpServer实际准入→Unimplemented与内部service输入/事务/proof/幂等，提出一个正式注册owner切片的具体缺口/最小现测试RED，不伪API预置、auth-none/跨ownerSQL或新fallback；只原r316报告追加，零源码/资源/Git/凭据访问。|
+|R325-FEEDBACK-SEMANTICS-READ|原agent_planned_guarantee_system_r257，只读Web同3328b854，现publish-flow/dialog/i18n/用户R324拒绝和成功证据|独立确认412拒绝和unknown并非同一结论：不能把不确定或扫描pending说成失败/已发布；真实ID/版本保可展开技术详情，不新增猜测或响应私密正文。提出现行为验收与精确测试断言影响；只原r313报告追加，不写仓/资源/Git。|
+
+此阶段纯盘点/审查，无新文件/目录/模块/Contract/Schema。局部反馈后继归Web现ui/skills渲染与已有九locale文案，复用现details而非建第二发布结果组件；现已批准个人页信息层级是业务依据。MCP若需新职责/契约必须先Root按§8与§8.1裁定，当前不授批量实现或数据库改动。
+
+### R325 已取得当前真实 RED，窄反馈实现准入
+
+Root正常3310本人R324已发布v1详情→新版本→既有缺entry ZIP，实际versions201/对象PUT200/Complete200/Validate412、零Publish；新自有v2草稿25074708-cb01-4680-9a2c-c8773a7855f0保留。当前3328b854仍显示“当前尝试已被 owner 拒绝，需要明确重新开始。”，截图r325-skills-feedback-before.jpg。完整观测窗无截断/hasMore；PUT200后canceled保留，不删失败事实。原三安装未改。
+
+|任务|Owner/基线/文件集|批准变化与验收|
+|---|---|---|
+|R325-SKILLS-FEEDBACK-WRITE|原web_interaction_astra_r296唯一Web writer，3328b854；仅src/ui/skills/personal-skill-publish-dialog.tsx、src/i18n/messages.ts、src/i18n/overlays.ts及tests/ui/personal-skill-publish-dialog.test.tsx原第46行断言|只渲染与现三词条：restart=本次发布未完成。请检查输入后重新开始。；auth=当前登录状态或访问权限已失效。请重新登录后再继续。；unknown=发布结果尚未确认，请勿重复上传；请稍后查看个人技能列表。英文同义。success短句保原，常显session.input.display_name真实名称与vN；success/unknown完整身份移现原生details默认折叠，复用skills.personal.details。原函数/status/session/key/file/receipt/取消/扫描pending/显式unknown核对重放原样；零新API/SQL/CSS/locale键。现成功断言拆成success/name/vN和展开技术详情准确sourceRef/revision，原fixture/次数/key/业务断言exact，不新增mock/unit用例。freeze后Root独审/辅助完整门/真实纠正包升级和刷新回读，Root独占Git；不得暂存messages原Admin混合。|
+
+本局部§8：Web现ui/skills发布反馈唯一变化原因，扩现dialog与现字典，比新结果组件/新状态机更简单；现已批准名称状态优先/编号折叠直接适用，契约/数据面零影响。原报告d83196ef与79c33e30均无确定P0/P1，提示412/身份变化/scan pending不能一概归包校验；unknown原key恢复保留。八非中文locale无覆盖，实际英文归overlays fallback，不改九字典。Root保护原774文件/6untracked快照r325-web-start.json。
+
+R325-MCP只读更正：现RegisterMcpServer unsupported是已批准合同，不是runtime漏接。Proto仅request_id，旧tags2–7/字段名reserved，V1–V8 globalCommandIdentity forbidden；内部register仍tenant事务，不能直接包global RPC。未来必须Platform三设计面与新机器版先裁决，System正式global caller消费后继；不授源码/Schema/权限扩大。报告ccb9d19b，之前R324将此推定为“注册运行缺口”的表述以本核验纠正，原失败与未验计数保留。
+
+### R325 成功态实际视觉返验发现二次 P2
+
+Root原44444完整Node22 check已自然exit0，contract309/architecture51/default3438/lint/types/build通过，仅辅助。当前真实纠正包版本v4发布200/回读后，r325-skills-publish-success.jpg显示确认态还保留全部disabled上传字段，占满720px弹窗，关闭动作在首屏底边被挤出；真实确认并未失败，但完成态交互仍笨重。批准沿同dialog做纯render窄修：仅status.kind===success时隐藏已完成的输入字段、其字段错误和原上传指引，保成功名称/vN、技术details及原close/footer；其它所有状态DOM/props/handlers与引擎/身份保持。无新状态/键/组件/API/SQL/CSS。优于新“成功页面”或重建上传流程，直接扩现成功分支；Root再走正式新版本确认的实景，不能拿之前v4截图替修后。
+
+|任务|Owner/范围|验收|
+|---|---|---|
+|R325-SUCCESS-COMPACT|原Web writer续派，只现publish-dialog JSX；其它三候选冻结|只确认成功隐藏输入，其他失败/pending/unknown/取消仍保原；闭合tag与typecheck完整。Root当前独审更新，完整辅助门重跑、真实新版本→名称版本/详情→关闭可见/归焦/刷新。禁止变事件函数或引擎、不代替unknown判定。|
+
+### R325 当前用户验收矩阵（现任务表续接）
+
+共同预置：正常3310本人正式登录/当前真实owner＋ObjectStore；自有R324私人系列，原三安装保持，既有自有ZIP；非模拟响应，无授权扩大或永久删除。全部用例按真实UI步骤验收，辅助check不代替结果。
+
+|ID / 标题|附加预置|E2E步骤|预期结果 / 当前证据|优先级 / 类型|
+|---|---|---|---|---|
+|TC-SK-R325-01 旧失败反馈|基线3328，私人v1可用|详情→新版本→缺entryZIP→提交|应可理解且新意图可达；旧owner术语实际RED保留，versions201/validate412/零Publish|P1/异常|
+|TC-SK-R325-02 修后拒绝反馈|冻结新文案，明确新意图|重复正式缺entry升级|友好提示/忙态解除/新尝试入口；同412、零Publish，PASS|P1/异常/状态机|
+|TC-SK-R325-03 纠正后发布|上项已拒绝|新尝试→纠正ZIP→明确提交|真实Publish200/列表200/v4；名称版本常显、原意图不自动重放，PASS|P0/主链路|
+|TC-SK-R325-04 编号键盘可达|已确认v4|Enter展开/关闭技术详情|默认关闭、完整source/revision可见、44px/零请求，PASS|P1/可访问性|
+|TC-SK-R325-05 刷新与归焦|私人v4确认|详情→Escape→硬刷新→发布列表/详情|名称trigger归焦、正式回读正确/原安装保持，PASS|P0/状态/持久化|
+|TC-SK-R325-06 紧凑成功框|原v4为可用source|正式发布新版本v5|确认后仅名称版本/details/Close；256px高、Close44可见，PASS；旧disabled表单挤出Close P2留前图|P1/主链路/交互|
+|TC-SK-R325-07 窄屏完成态|v5 confirmed，390测试viewport|观察/Enter详情/关闭|无横溢、44pxClose首屏可见、身份完整，PASS；测试尺寸已还原|P1/边界/可访问性|
+|TC-SK-R325-08 原安装回归|v5已发布未安装|正式v5详情→技术详情→Escape→已安装|GET详情200准确source/v5，默认原三安装200/状态保持，PASS|P0/回归|
+
+开发字典HMR整页刷新观察单列，不计用户业务PASS；unknown自然失败/当前401正规返回未验，仍OPEN。最终作者与独审STOP，Root重跑37802与六path提交f352cfcc完成；不升级70/33汇总或宣称全SkillsCRUD。未运行全test:e2e/axe/视觉预算，需独立真实资源/配置与浏览器验收，非本次辅助门。
+
 ### R324 Skills 异常用户旅程已验证，401显式恢复入口已提交（2026-10-07）
 
 Web **3328b8540446a4f16a784ccf3bfbce5c2352525c**（parent f251041），精确现reader/两原UI tests/CURRENT/skillsINDEX五路径；原769任务外tracked与6Admin untracked、27mixed status exact，Root独占提交/收据r324-web-commit-receipt.json。现reader仅401显式正规Login，403仍权限提示/no Login；复用现helper/10秒同步单flight/异常解除/卸载timer清理，fresh成功清状态。Retry只fresh GET，无自动refresh或原mutation重放，封面/CSS/API/SQL/共享身份与业务引擎不改。源c16e0df3、独审da3789f7/两测试93702ca4无确定阻断。

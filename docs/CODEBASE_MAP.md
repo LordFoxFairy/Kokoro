@@ -1,3 +1,17 @@
+### R325 技能发布反馈与紧凑完成态已真实验证（2026-10-07）
+
+Web **f352cfccf79ae4d7553b828c3ae0fb691e903a57**（parent3328b854）精确六paths：现dialog、messages三词条hunk、overlays英文fallback、原成功oracle、CURRENT/skillsINDEX；Root独占Git，原Admin mixed/27status/768其它tracked+6untracked保持，index空。原状态/函数/footer/意图/File/key/unknown恢复行为inverse exact，零API/SQL/新模块。旧owner术语换可操作用户提示，成功名称与真实vN常显、编号默认折叠，明确success收起整disabled表单/原上传指引。独审ae849b64无确定阻断；当前Radix卸载Description清关联，Root实际aria-describedby=null，不加旧版本假设补丁。
+
+Root正常3310真实缺entry升级versions201/PUT200/Complete200/Validate412零Publish，旧提示RED保留；修后同链/新尝试可达，纠正ZIP正式v4发布并hard刷新回读。v4完成框实际挤出Close二次P2也保留；再修success呈现，正式v5发布，桌面256px/Close44px首屏可见，390无横溢/44px/Enter展开完整身份，关闭回我发布的，v5正式详情GET200＋原三安装GET200恢复。私人source55ac037d-ff9e-4342-92aa-77b46317d2cf/v5、v4与两拒绝草稿保留，无永久删除/安装变更/权限资金修改。最终图 **var/dev/r255-preserve/r325-skills-final.jpg**；紧凑图r325-skills-compact-success.jpg；同目录r325-skills-user-verification.json与r325-web-commit-receipt.json。所有新增分段窗无截断/hasMore，PUT/validate200后canceled及导航取消、全站billing summary404保留。字典开发HMR曾整页刷新/退休原内存意图，明确新意图返验，不冒跨reload保意图或自动重放。
+
+Root Node22.22.2原44444与最终37802完整pnpm check都自然0，contract309/architecture51/default3438/lint/typecheck/build，仅辅助，真实用户路径另证。新版Login自然401点击返回、unknown新呈现真实故障恢复、多身份/多页/全部SkillsCRUD及全test:e2e/axe/视觉预算仍OPEN，不把局部PASS升整体。浏览器已还原1280×720/默认原三安装/无Dialog，Network关闭、Tab27交付/Manus26保留；正常服务/PG/Redis/ObjectStore未重启/reset。
+
+独立MCP只读更正（报告ccb9d19b）：现RegisterMcpServer unsupported是正式批准合同，Proto仅request_id且旧tags2–7/字段名reserved，V1–V8 globalCommandIdentity forbidden；内部register仍tenant事务，不能直接接globalRPC。不是遗漏运行接线，后继需Platform三D0/新机器版及System正式caller，当前不授源码/扩权/跨ownerSQL种子。BFF c91fee642机器四读仍未runtime激活/未真实四读完整正控，旧未验保留。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**不升级，T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。原八gitlinks/uv不暂存。下一沿原个人Skills任务补当前未验恢复行为及其余CRUD；MCP依合同owner设计先行，保持同一计划，不新建中心、不宣称所有页面或子仓上线。
+
+<!-- R325-ROOT-END -->
+
 ### R324 Skills 异常用户旅程已验证，401显式恢复入口已提交（2026-10-07）
 
 Web **3328b8540446a4f16a784ccf3bfbce5c2352525c**（parent f251041），精确现reader/两原UI tests/CURRENT/skillsINDEX五路径；原769任务外tracked与6Admin untracked、27mixed status exact，Root独占提交/收据r324-web-commit-receipt.json。现reader仅401显式正规Login，403仍权限提示/no Login；复用现helper/10秒同步单flight/异常解除/卸载timer清理，fresh成功清状态。Retry只fresh GET，无自动refresh或原mutation重放，封面/CSS/API/SQL/共享身份与业务引擎不改。源c16e0df3、独审da3789f7/两测试93702ca4无确定阻断。
