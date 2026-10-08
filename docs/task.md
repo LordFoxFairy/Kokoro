@@ -1,3 +1,7 @@
+### R353 本轮：原生演进资格通过，真实投影入口仍待修（2026-10-08）
+
+Root三路径严格native实证：旧/fresh目录可判定，old→expand保旧行并可重放；分组、regex大小写、时间精度、default+interval、额外FK五真实负控全部拒绝。先前四误判current失败保留；正常数据未动、每个自有库drop/全库清单保持。独立23冻源审查确认actual terminal-first被旧guard拒、distinct事实重复回滚及身份/source宽度/锁后expiry问题；Root真正projectSessionEvents→commitProjection＋真实PG/Redis复现5例1PASS/4FAIL、零SKIP（Root URL/search_path夹具失败另存，不冒生产缺陷）。原BFF writer现获原范围集中修，28修改/10新/555保护；三测试先冻RED，源码未放行/未激活，usage未知仍unavailable。Platform整片147修改/35新/5删/417保护实施中，原120失败留存，剩余类型/纯门/真实资源冻结待交。Web W0已完整审查，尚无整片源码/浏览器验收，不升S01–S10状态；其它模块/heartbeat暂停、完整Wave0–7 active。
+
 ### R353 当前并行切片与实页差距（2026-10-08，仍未整页验收）
 
 仅Skills继续：原Platform writer整份139修改/35新/5删/425保护；BFF独立Share/usage27修改/10新/556保护，Root资源/Git。Web W0整页只读范围与S01–S10浏览器矩阵已交、Root复核，不逐字段修UI；正式owner→完整BFF Product→内外页/Settings/后台同一Web片。Root实际分类108按钮由页内标签累计、装饰封面与缺publisher/usage；已安装预览→真实正文能打开，四张1280×800 PNG明确差异，完整能力仍OPEN。真实PG首Share NUL锁22021失败窄修后通过；第二轮6例5PASS/1FAIL，fresh canonical演进因具名NOT NULL目录不匹配仍unavailable，原三路径续修完整字段集合/drift与old数据保持，未提交/正常DDL/激活。三旧文档后缀由Root恢复原卡，其余保护保持；自有库清理、全库清单保持。健康同身份续期/轮询不增generation；弹窗消失未证因果，S09须真实timer/focus/renew保DOM/正文/滚动、换主体仍退役，不凭HMR猜因。正常37 final-null及记录入口语义OPEN，临时诊断两tab已关闭、用户原tab保留。最终只完整普通/管理员持久旅程及Manus逐图通过称闭环；其它模块/heartbeat暂停，完整Wave0–7 active。

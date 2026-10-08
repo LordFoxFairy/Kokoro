@@ -18,11 +18,14 @@
 | 工作面 | 原负责人 / 当前角色 | 本次交付与边界 |
 | --- | --- | --- |
 | Platform Skills | platform_skills_examples_owner_r346 / 唯一writer | 整份真实字段、草稿发布、安装、封面/包及后台动作；不另造Skills服务 |
-| BFF 独立业务 | iam_skills_admission_review_r343 / BFF唯一writer | typed Share与durable usage独立先推进；正式owner后再整份Product接线。27修改/10新/556保护卡r353-bff-b1-source-task-card.json；正常PID44830/父44824无watch，不重启/正常DDL |
+| BFF 独立业务 | iam_skills_admission_review_r343 / BFF唯一writer | typed Share与durable usage独立先推进；正式owner后再整份Product接线。28修改/10新/555保护卡r353-bff-b1-source-task-card.json；正常PID44830/父44824无watch，不重启/正常DDL |
 | Web 页面 | skills_whole_ui_review_r353 / 只读UI交互审查 | 整份W0已交Root复核：内外/Settings/后台精确范围、删除假preview、稳定状态与完整浏览器矩阵；正式Product后只授整片，保原混合修改，不做逐字段页面补丁 |
+| BFF核心独审 | bff_skills_core_review_r353 / 只读 | 23冻结路径审查，三动态演进路径排除；报告c0d6a3de确认2P1/3P2，Root重现后原writer集中修 |
 | 总验收 | Root | 真实依赖、普通/管理员完整旅程、持久数据与同viewport图对照；辅助门只供排错 |
 
-- BFF B1当前首次freeze存在确定expand P1：coverage表存在不证明完整target；尚未放行。仅原3演进文件续修完整old/current catalog、partial/drift拒绝及共享installer锁，其余freeze保持。usage缺可信全历史覆盖时只unavailable，没有伪造complete晋升；Skill Share只持久层，尚不接缺fresh Platform准入的HTTP。
+- 当前BFF严格native三路径Root资格已通过：旧/fresh、old有数据expand/replay、五真实分组/regex/精度/default/FK负控；前一版四误判current失败仍保留。原package仅两脚本追加2纯/3集成入口，旧值/元数据/依赖保持。Root lint/type/build0、相关pure98PASS/2旧SKIP只是排错资格，不是整片或页面完成。
+- BFF核心独审阻断后，Root先冻结真正入口RED测试：5例1PASS/4FAIL、0SKIP，命中late ready的AGUI_POST_TERMINAL_SOURCE、opaque IAM身份、锁后到期未拒、distinct READY_CONFLICT。原URL/search_path夹具失败另存；所有自有库drop/全库清单保持，Redis仅randomtenant通知、无清空。Root固定最小修正：终态后可信Skills bookkeeping仅记source/usage不产UI帧、不复活dispatch；同语义重复保第一proof，event-id/digest及session/status冲突仍拒；source_ref197跟正式owner、身份不自造字符集；到期按锁后DB时刻判。原writer先RED后集中实施，原卡28修改/10新/555保护，不授正常DDL/服务/新表协议或依赖；必要仅当前文档前缀，旧suffix不动。增加两方向不同session拒绝，不能让helper通过替代真实入口闭合。
+- BFF B1历史首次freeze存在确定expand P1：coverage表存在不证明完整target；尚未放行。仅原3演进文件续修完整old/current catalog、partial/drift拒绝及共享installer锁，其余freeze保持。usage缺可信全历史覆盖时只unavailable，没有伪造complete晋升；Skill Share只持久层，尚不接缺fresh Platform准入的HTTP。
 - Root真实隔离PG首轮发现Share锁键含NUL导致22021，原writer窄修JSON元组后实际Share通过；第二轮6例5PASS/1FAIL，fresh canonical演进仍unavailable。原生catalog显示PG具名NOT NULL与预期约束清单不一致，另fresh/ALTER追加物理列顺序必须按明确完整字段集合比较；原3演进路径续修与真实old→new/数据保持/drift拒绝，未提交/正常激活。每轮自有库drop、全库清单保持；三历史文档被整篇formatter改写已由Root恢复原卡后缀，冻结哈希更新，其余556保护保持。
 - W0最终报告SHA `5f26da18ca0d37a1bbf2847710d1d8c85ab3b85b31c30f6aae0ab2c40819cf89`，仅ignored报告。外部目录、预览、正文、Settings、创建和后台同一整片；明确删除旧假分享/下载/树/示例及临时数组，保R350/R351、身份退役与幂等恢复。实际健康同subject轮询/续期不增generation；Root观察到弹窗消失但未证因果，不把HMR猜测当根因。S09必须联合真实useSessionProbe核同身份timer/focus/renew保弹窗DOM/正文/筛选/滚动且零额外包读取，真正换主体/准入失效仍退役。预览/详情统一确定响应式高度，目录/文件刷新保上一ready内容并局部busy；最终真实三尺寸截图及数值边界验证，不靠裁切或初loading图放行。
 - Platform parent→child release先持久锁定candidate再删除，ACK未知可重启追同candidate；admin新revision是当前已准入管理员自己的新draft，同series但旧owner/包/安装不改。完整当前设计同片记录；自报3FAIL→7PASS/2FAIL→20PASS只待Root验证，不算页面通过。
@@ -32,7 +35,7 @@
 ### R353-P2：一次完整 Skills owner 发行任务卡（2026-10-08，开始实施）
 
 - 设计基线正式 `8e869ded1f58354297217af1db13e5b9ade3a447`（parent95d8a09）；原Platform writer、原IAM独审三SHA/具名18RPC与12command/tags/正式依赖无确定阻断。Root核586非范围/三历史suffix、前缀格式及精确三paths后提交。第一次Root格式检查cwd错误留存，纠正绝对路径后0；只设计通过。
-- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），实现冻结后由Root另派独立只读reviewer（原IAM reviewer现负责BFF，不兼审动态Platform）；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：139修改（前133＋6必要package/product/v3 fixture适配）、35新建（含只读旧Storage文本快照、精确product纯映射、cover恢复pointer及release三普通文件/两测试）、5删除、22仅正式生成输出；425其余tracked SHA与三历史suffix保护，越界先报。
+- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），实现冻结后由Root另派独立只读reviewer（原IAM reviewer现负责BFF，不兼审动态Platform）；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：147修改（前139＋8必要current product/CAS/router fixture适配）、35新建（含只读旧Storage文本快照、精确product纯映射、cover恢复pointer及release三普通文件/两测试）、5删除、22仅正式生成输出；417其余tracked SHA与三历史suffix保护，越界先报。
 - 一次交付：全部真实product字段/来源/持久草稿/CAS/发布与管理/包cover/read准入/installation.available_update、唯一机器+当前handler+native schema/ADR005/具名expand。旧V1–V9/examples/categories/digest3原字节及完整父逆剥保持，不能只更新计数或dummyhandler；record不猜payload、S06四路径仍保完整目标。
 - 固定IAM source7c62e75/SDK0.10正式archive；Storage正式d13f33a/v3/47e2659契约。从正式对象取固定依赖，只更新已授权消费者，不接旧混合候选/别仓DB。AI/GitHub只受信BFFtyped输入，实际producer及Share/usage后继BFF同次接线，不当已存在；不存在新Skills服务/通用workflow。
 - 先具名行为失败（保基线与负控）再实现，冻结交具体SHA/RED/GREEN/未完成项。writer只跑无共享资源的精准验证和官方生成；Root负责自有PG旧→新完整catalog、旧十表数据/权限/恢复/资源资格及独审后的适当重跑，不重复无关全仓门。正常DDL/资产修复/权限/服务配对不随源码授权。
