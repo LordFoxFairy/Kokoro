@@ -4,7 +4,7 @@ Storage 正式 `d13f33acfc7a482d61ebffc58e7b2667b58ae197`，sole v3/17 RPC；Roo
 
 Platform三设计正式 `8e869ded1f58354297217af1db13e5b9ade3a447`：整份skill-product1.0/HTTP5、63RPC/32commands/24proof目标及AI/GitHub受信BFF handoff、安装不隐式升级、admin新revision、native expand同次锁定；仅设计，未发行机器或运行。原owner整份源码任务R353-P2沿唯一现有计划精确文件卡；独审并行只读、Root独占资源/Git/最终浏览器。GitHub生产route当前缺失、记录实际语义仍OPEN，不伪造能力。S01–S10全程普通/管理员持久浏览器与同尺寸Manus最终验收仍OPEN；其它模块/heartbeat暂停，Wave0–7 active。
 
-BFF三设计正式 `56c73358d56ed39abbf533c72997e4e94abe1253`：完整Product消费、技能链接当前权限、真实使用量未知分支、AI/GitHub可信输入一次收敛；Root已核三文档及580保护。Platform源码仍由原owner统一实施，新增11必需fixture精确授权，不放宽行为断言。隔离PG仅证明新旧空目录一致，尚非旧数据/正常激活或浏览器证据。下一是完整owner发行→BFF整体接线→Web内外页/Settings/后台整片→S01–S10真实浏览器与Manus同尺寸对照；未把设计/接口通过算成页面完成。
+BFF三设计正式 `56c73358d56ed39abbf533c72997e4e94abe1253`：完整Product消费、技能链接当前权限、真实使用量未知分支、AI/GitHub可信输入一次收敛；Root已核三文档及580保护。Platform源码仍由原owner统一实施，新增11必需fixture精确授权，不放宽行为断言。Root固定DDL隔离PG已核十旧表各2行旧列哈希保持、新历史未知字段不伪造、fresh与expand目录相等且自有库清理；仍非最终expand/正常激活或浏览器验收。另实查cover恢复两registry和outbox投递未接完，已在同源码卡最小注册恢复/同进程有界release，未冒pending event为已释放。下一是完整owner发行→BFF整体接线→Web内外页/Settings/后台整片→S01–S10真实浏览器与Manus同尺寸对照；未把设计/接口通过算成页面完成。
 
 ### R353-ST5 Skills 封面/上传依赖源码实施中（2026-10-08，页面未验收）
 
