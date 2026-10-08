@@ -53,6 +53,33 @@
 
 未核定的creator/usage/cover/share/创建接口，先一次查现owner事实与最小机器增量，按owner事实/ref/显示值/权限/失败/机器增量六列汇成同一字段矩阵再实施，禁止各worker另造契约。新持久事实遵守三设计/owner门；技术层presence、digest、错误、幂等不可为美化UI放宽。
 
+## C.1 一次字段审计结论与后继设计门（R353，真实源码核定）
+
+原Platform owner和原IAM reviewer已完成有界只读审计，Root核实际CreateVersion与准入路径。下表是后继三设计门的输入，**不是字段已经存在或接口已经发布**。不再为每个字段分别发版并改一次页面；剩余字段/准入/四创建先形成同一合同清单，再按owner依赖正式交付。
+
+| 能力 | 当前真实事实与缺口 | 收敛边界/禁止项 |
+| --- | --- | --- |
+| 作者/发布方 | Skill仅有owner scope与package上传subject，没有作者/发布方事实；IAM有name/image，现tenant members分页管理接口不是发布方批量读取 | Platform保存受信creator/publisher引用，BFF按可见技能引用批量聚合IAM最小显示字段；不存复制姓名，不拿上传subject/ownerId/字符串推断作者；IAM最小contract先正式再消费 |
+| 来源筛选 | scope_kind是user/project/organization/session，不是个人/官方/第三方 | 新来源语义与creation方法分开；官方标记只由管理员受信发布动作产生，普通body不可自报；GitHub来源绑定正规导入的repo/commit/path，不按名称猜，旧行不得批量编造历史来源 |
+| 封面 | Storage正式HEAD已有skill_package六操作，但没有skill cover用途/绑定/读取准入；普通个人图片对Platform也未授权 | Platform持有具体revision的cover引用；Storage在既有Upload/Asset能力内明确Skill-cover范围/用途及上传/clean扫描/当前授权读取，不新增服务；缺图用明确占位，ZIP首图/装饰生成书/短期URL都不是封面事实 |
+| 使用次数 | 每次CreateVersion新skill UUID，因此skill:<id>已唯一绑定具体revision；Agent已有durable ready refs及严格completed终态 | 使用定义为同tenant成功Run中distinct(run_id, source_ref)，ready且终态status=completed才计1；cancelled/failed/选择/安装不计，重放/恢复不重计。BFF持有由授权持久事件派生的产品投影和去重，不扩Agent事件、不跨库查Agent、不按series冒具体版计数；正式投影前不填假0 |
+| 发布与预览/下载 | 当前publish visibility仅接受1，本人/已安装包详情可读；active不等于公开，未安装接收者准入缺失 | 先明确owner/tenant/catalog与链接接收范围，新增显式read admission；元数据/正文/包/下载/安装分别校验。默认分享不把私有技能公开；跨tenant和匿名按明确范围拒绝，不因参考UI放宽execution proof |
+| 分享 | BFF现Share只绑定conversation；Platform没有Share链接生命周期 | BFF在自己Share能力增加精确Skill资源，不挤进conversation_id、不造假会话；候选比较typed资源扩展与BFF-owned技能Share表后选一份canonical，Platform每次重验revision可见性/状态，Storage只字节 |
+| 四创建与草稿 | 正常ZIP上传/扫描/验证/发布链已存在；AI/记录/GitHub完整受信handoff不存在，前端组件不代表接口成立 | 四入口共用持久Skill draft及包链，明确保存/继续/废弃与幂等；GitHub仅公开正规repo并固定commit/path，有限下载/防SSRF/包校验。AI只给受信产物，不写Skill。记录入口实际行为未核完，禁止擅自解释成录屏或会话转技能后开发假路径 |
+| 编辑名称/新版本 | 当前CreateVersion强制名称不变，无法支持S05改名 | 后继设计必须明确同series新revision可编辑哪些字段及唯一约束，保原revision内容不变；不先美化编辑按钮再靠silent ignore假保存 |
+| 管理后台 | 后台已有混合修改，不能按存在页面推断所有动作可用 | 独立列Skills实际动作→权限→状态→事件→前台读回，复用normal/admin两角色；所有后台绕UI请求也需拒绝普通用户，保护任务外修改 |
+
+### 原owner后继任务卡：R353-D0（只写设计，随后固定实现）
+
+- owner/执行：Platform Skills，原platform_skills_examples_owner_r346；Root裁决跨仓事实/Git；原iam_skills_admission_review_r343只读审查。基线Platform b38358f；Root其它混合变更原样保留。
+- 本阶段允许修改仅Platform `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`，以新前缀引用上述审计、保持历史suffix；先不给runtime/schema/contract/generated或其它仓写权限。
+- 三设计一起给出：各字段可核事实/引用/显示值/缺失语义/创建与修改者，revision不可变部分；来源和官方权限；最小封面与IAM依赖；真实usage投影；发布/分享读准入；四创建同持久draft状态与失败恢复；名称编辑规则及完整管理员动作。凡参考交互尚未实际核定，明确列阻塞，不自己发明替代。
+- 比较位置：扩现有Skills catalog/package/source/installation（采用）与新一级Skill市场/通用工作流服务（淘汰）；Share只属BFF既有能力。不新增万能metadata袋、重复draft状态或横跨owner事务。
+- 输出一份字段/操作/机器增量表和精确实现文件集（可引用现有目录），比较SQL位置、索引、事务、保数据升级、幂等和失败恢复；Root确认后由对应owner正式契约先提交，BFF/Web再消费。**public9分类消费等到该清单收敛，不为了赶进度先做一轮再重做。**
+- 验证本阶段仅三设计一致性/引用与diff检查、独审；后继runtime各有真实RED、冻结纯门与owner集成，最后S01–S10浏览器。设计文档不冒实现、接口测试不冒页面完成。
+
+原IAM独审本块无P1阻断；D0须将两项P2写实：usage投影tenant/run/source_ref唯一身份、乱序/重复/终态晚到/ledger GC后的保留或重建；cover选定精确scope/purpose及签发/替换/撤回/删除生命周期。Platform文档只引用其它owner机器依赖，不复制其可编辑契约。Root实际另打开Manus Settings GitHub导入：公开仓库URL＋导入按钮，截图ignored r353-manus-github-import-reference.jpg；记录入口点击未获得稳定交互结果，返回发生其它路由后已恢复原Skills地址，未提交输入/上传/启动录制，仍不把未核行为当设计事实。
+
 ## D. 执行顺序与职责（减少跨仓来回改）
 
 | 批次 | 一次交付范围 | Owner与执行 | 放行依据 |
@@ -82,6 +109,12 @@
 - [ ] 同一台账只在真实完成/失败/决策时更新通知；不把每个helper、测试数量或不变状态长篇播报。
 
 R353独审已采纳：BFF Share归属修正、5主体矩阵、安装升级、持久草稿及Web无障碍验收补齐；不新增中心/角色/模块，仍不称Skills实现完成。
+
+### R352-P3 已冻结源码交付，未做正常页面切换
+
+Platform正式b38358f1d250e90c65b45d763238e8747cbe8326；Root核原57冻结路径和533protected（CURRENT另授权收据前缀/旧内容保留）。纯门101files/1719PASS和类型/lint/contract/schema/build/精确TS格式实际0。Root自有隔离PG五完整文件首113PASS/1FAIL；新增fixture project来源仅授user而报拒绝，原owner仅将该用例两个来源绑定user，权限及断言未变；重冻后同五文件114PASS/零SKIP，Root自有库清理，正常数据库不变。小数据EXPLAIN选择position索引，不称新增filter索引规模性能已验。
+
+Root暂存路径比较首因Git默认两rename折叠为56而期望58返回失败，未丢弃记录；正式commit实际no-renames精确58路径（57worker＋1Root CURRENT）、无缺/多、Platformclean。收据ignored r352-p3-root-commit-receipt.json，首FAIL和重跑日志均保留。正常服务/BFF/Web未激活新分类；该提交不算S01/Skills/Manus整页完成。后继按C.1一次字段设计收敛，不推倒R350/R351局部成果。
 
 ---
 
