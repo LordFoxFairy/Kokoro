@@ -1,3 +1,9 @@
+### R353-ST4 三设计＋ADR已提交，完整Skills尚未验收（2026-10-08）
+
+Storage0b5042d(parent5b15)，247新增行／精确四文档，Root仅新prefix＋正式HEAD旧正文入index，原3dirty suffix/其余291tracked/2原untracked保持。冻结6012105d与独审d6fe93d5无确定阻断；Root先实际发现正式只有16RPC而非候选17的FAIL，writer修正后重验正式空tag7/8/13、范围／diffcheck均0。Root两处文档引用窄修另记，不伪称全部full working字节已提交。收据r353-st4-root-design-qualification.json、root-commit-receipt.json和initial-formal-contract-fail.json保留。
+
+5仓28文件Complete消费者已读盘点；sharp0.35.5仅官方/npm元数据核验，不是运行资格。正常Web/IAM/BFF/Platform/Storage ready200；未重启、改bucket/DDL/权限或数据。Manus记录菜单点击无流程仍OPEN，本地CDP焦点绑定超时无新截图。最终S01–S10／真实普通管理员浏览器／同尺寸视觉仍待验，不以此D0或ready冒页面完成。下一依同计划进入Storage必要源码，不发散历史垃圾回收；整份Platform→BFF→Web＋后台→最终用户验收顺序锁定。只Skills继续，其他模块及heartbeat暂停，完整goal active，原8gitlinks/uv与混合保护。
+
 ### R353 Skills 身份依赖已正式交付，整页尚未验收（2026-10-08）
 
 IAM正式 `7c62e759760448e127b21200f87adeefdc6016f7`：发布方最小显示读取、普通Skills动作、独立管理员动作与专用受信后台调用面一起发行，internal/SDK0.10.0/28operations；不改Schema、Member API或新增业务角色。Root精确53paths、408 IAM与865 Root非范围原字节保持，原owner冻结后独审原3P1及binding P2关闭。实际四个自有隔离issuer/HTTP/lifecycle文件63PASS/零FAIL；纯门108files1040PASS，format/lint/type/contract/SDK/schema validate/build/diffcheck均自然0。SDK正式打包96entries，来源同commit、机器SHA31010c6b，artifact SHA66f83688；旧27operations整个逆剥图保持。上述仅依赖源码资格，不是页面验收。

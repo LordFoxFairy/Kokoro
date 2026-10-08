@@ -1,3 +1,9 @@
+### R353-ST4 Skills 封面依赖设计已交付；完整UI任务保持OPEN（2026-10-08）
+
+任务owner Storage Upload/Asset，原platform_skills_examples_owner_r346本阶段设计writer，原IAM owner只读独审，Root集成/Git。正式0b5042db24b029d146c2fcd717d387b2e47906f3仅四设计路径，Rootprefix-only提交保原55；首正式16/候选17误判实际FAIL→事实修正→Root空tag/保护/diffcheck资格0，独审无确定阻断。没有runtime／Schema／服务／资源操作，不升页面完成数。
+
+统一实施次序及逐步完成条件已写回唯一既有计划ST4收据：Storage必要版本/封面源码与保旧数据资格→Platform整份真实Skills字段/准入/草稿/后台→BFF一次消费→Web内外Skills/Settings/后台完整页面→S01–S10正常用户与管理员浏览器及同尺寸Manus。现不派其它模块，不重写已闭合闪动局部；记录入口与最终UI仍OPEN。Root原8gitlinks/uv、Storage55与正常数据保持，Wave0–7 active。
+
 ### R353 Skills 身份依赖已正式交付，整页尚未验收（2026-10-08）
 
 IAM正式 `7c62e759760448e127b21200f87adeefdc6016f7`：发布方最小显示读取、普通Skills动作、独立管理员动作与专用受信后台调用面一起发行，internal/SDK0.10.0/28operations；不改Schema、Member API或新增业务角色。Root精确53paths、408 IAM与865 Root非范围原字节保持，原owner冻结后独审原3P1及binding P2关闭。实际四个自有隔离issuer/HTTP/lifecycle文件63PASS/零FAIL；纯门108files1040PASS，format/lint/type/contract/SDK/schema validate/build/diffcheck均自然0。SDK正式打包96entries，来源同commit、机器SHA31010c6b，artifact SHA66f83688；旧27operations整个逆剥图保持。上述仅依赖源码资格，不是页面验收。

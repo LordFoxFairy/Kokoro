@@ -1,3 +1,9 @@
+### R353 Skills 完整实施顺序锁定，封面依赖设计正式交付（2026-10-08）
+
+唯一现有计划S01–S10继续覆盖外部目录/预览正文/我的技能/四创建/分享下载/后台及异步体验；用户要求以同尺寸Manus与真实用户整链验收，尚未完成页面。Storage设计正式0b5042d，只三当前前缀＋ADR，原55混合与完整旧dirty正文保留。Root实查首FAIL纠正了正式16RPC与候选17混淆；目标v3需正式实现DeleteAsset，不冒已发行。291tracked＋2原untracked/3suffix保持，独审无确定阻断；未实施源码、DDL、bucket、正常权限或服务切换，sharp亦未安装。
+
+下一沿同计划：Storage必要源码/真实版本资格→Platform整份Skills事实→BFF一次固定消费与业务接线→Web内外页及后台完整页面片→普通/管理员S01–S10持久浏览器与Manus逐图对照。旧final-null引用须先盘点并走合法恢复，不静默破坏旧安装；历史未知GC不当UI前置。正常五依赖ready200不是链路验收，新本地CDP绑定超时不冒应用失败或新截图。只Skills继续，其它模块/heartbeat暂停，完整Wave0–7 active，原8gitlinks/uv及混合保护。
+
 ### R353 Skills 身份依赖已正式交付，整页尚未验收（2026-10-08）
 
 IAM正式 `7c62e759760448e127b21200f87adeefdc6016f7`：发布方最小显示读取、普通Skills动作、独立管理员动作与专用受信后台调用面一起发行，internal/SDK0.10.0/28operations；不改Schema、Member API或新增业务角色。Root精确53paths、408 IAM与865 Root非范围原字节保持，原owner冻结后独审原3P1及binding P2关闭。实际四个自有隔离issuer/HTTP/lifecycle文件63PASS/零FAIL；纯门108files1040PASS，format/lint/type/contract/SDK/schema validate/build/diffcheck均自然0。SDK正式打包96entries，来源同commit、机器SHA31010c6b，artifact SHA66f83688；旧27operations整个逆剥图保持。上述仅依赖源码资格，不是页面验收。

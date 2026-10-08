@@ -166,6 +166,36 @@ Root保55候选，本轮不授Storage源码/bucket/DDL权限、不临时发零fa
 
 后继只在Storage既有Upload/Asset内修三D0，一次锁定必要两个来源列、Complete字段/digest及cover合同；版本Enabled与CORS暴露版本回执是正常链激活前置，当前未改正常bucket。禁止只给封面加名称就绕过包上传的同类身份问题；发行前盘点Complete全部固定消费者（package/其它复用upload入口）并统一更新，不能无声破坏现正常路径。新server字节上传因transport/背压/恢复增量更大淘汰，旧55未合并、原If-Match FAIL与未知物理回收OPEN保留。此为后继设计决定，不冒Schema/资源/页面完成；实证须错版本/跨key/摘要、晚PUT、unknown、重放、v1清理保v2及真正浏览器封面完整链。
 
+### R353-ST4 封面与上传版本：三设计＋ADR任务卡（2026-10-08）
+
+| 项 | 本片范围 |
+| --- | --- |
+| Owner/角色 | Storage Upload/Asset，续派platform_skills_examples_owner_r346仅本阶段三设计writer；Root跨仓Complete消费者盘点/裁决/Git，IAM原owner冻结后只读独审 |
+| 基线 | Storage5b15fe3/codex/r258-storage-asset-delete-d0，原55混合候选不合并；r353-st4-storage-baseline.json逐字节保护。normal另在kokoro-r342-storage-normal，任何正常源码/配置/bucket/数据/进程不变 |
+| 允许文件 | 仅Storage TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL三个现文件**新增当前前缀**，原完整正文逐字节保留；另准普通ADR `docs/ADR/0005-exact-upload-version-and-skill-cover.md`，承接SQL手册持续有数据演进门。比较现ADR目录（采用）与新migration目录（淘汰）；不改source/schema/contract/generated/tests/deps，不建目录/服务/其它计划中心 |
+| 当前/目标 | D1-ST3已裁决：现direct PUT→Complete→scan→promote；source_version_id是locator，Storage独立校验指定版本bytes+扫描，fence冻结来源身份，promote存实际PUT ACK并按确切版本读取。旧null保unknown、禁止current猜身份。封面用途/可信scope/引用准入与版本链同一正式发行，不把历史垃圾回收当UI前置 |
+| 位置/粒度 | 扩现Upload/Asset/object-store/transport及唯一Prisma，比较并淘汰新通用上传服务；列精确后继源码/测试/生成/两来源列具名expand，无同表新状态副本或跨owner查询 |
+| 契约/依赖 | 库/版本/错误/幂等与全部Complete调用者一并盘点；明确包、个人/项目文件、Agent作品每入口回执传递；不因Skills新增字段破坏其它正常入口，不把未来consumer当已实现 |
+| 验证/交付 | 当前只读源码/正式契约与三文档prefix/suffix检查；输出一份完整实现scope、验收矩阵和未决项。Root按prefix-only审查提交、原55保留；之后另授源码先真实RED→正式owner→固定消费者→正常配置资格→真正Skills浏览器 |
+
+- [ ] 三设计收敛精确版本、封面用途/权限/读取及持久事实，不沿R262零Schema旧结论。
+- [ ] Root核全部Complete消费者并决定最小一致改动；readonly reviewer核错误/撤权/未知ACK/重放。
+- [ ] 无确定阻断且三面一致后才授权一份正式contract/runtime；当前无实现、bucket或资源授权。
+
+#### ST4 正式设计交付与唯一实施顺序（2026-10-08，页面未验收）
+
+Storage正式设计 `0b5042db24b029d146c2fcd717d387b2e47906f3`（parent5b15fe3），仅三当前前缀＋ADR0005；未把原55候选或三旧dirty正文一起提交。Root复核291 tracked＋2原untracked、3完整旧suffix，精确四index路径／diffcheck自然0；冻结6012105d、原IAM独审d6fe93d5无确定P0/P1/P2。Root窄修两处“后文R262”引用为受保护工作树候选，正式commit保HEAD历史正文；语义不变，差异收据保留。
+
+首资格实际FAIL：正式5b15只有16RPC、无DeleteAsset，原候选才17；同writer窄纠正，v3目标17=正式16＋待从正式基线重新实现审查的DeleteAsset。正式空tag7/8/13已Root重验可用，不再将mixed machine当正式发行。新依赖sharp0.35.5仅官方/npm只读核验，未安装/运行；没有Schema、正常bucket、配置、权限、服务或数据变更。资格与原失败收据同ignored r255-preserve/r353-st4-root-*，不作页面完成证据。
+
+- [ ] **依赖完整实现**：原Storage负责人成员续接正式0b5042隔离源码分支，先真实RED再实现精确版本/封面/必要引用释放；保原55及正常预览。先核旧canonical／DeleteAsset已批准R258 partial-index的必要差分，再明确有界expand全部允许项，不把旧候选夹带成“仅四列”；Root独占资源与Git。IAM已正式7c62e75；依赖正式发行后才固定消费者。
+- [ ] **Platform整份Skills事实发行**：同一版本收敛真实发布方/来源/分类/封面/示例、目录正文准入、安装与持久草稿、四创建handoff及后台动作；不每次补一字段重做UI。记录入口具体行为仍需参考实证，不用无效按钮交差。
+- [ ] **BFF一次消费与业务接线**：固定正式owner合同；聚合真实展示、Skill Share/下载/usage与管理员准入，禁止跨owner SQL或伪计数。所有上传入口的版本恢复同步资格，不静默破坏文件/作品/旧安装。
+- [ ] **Web一次完整页面片**：外部目录＋预览＋SKILL.md/files＋我的技能Settings＋四创建＋Skills后台同时按S01–S09交付。沿同一视觉token／真实Manus参考，不新增技术折叠或状态堆叠。保搜索/滚动/焦点、内容常驻与晚请求隔离，不全页loading刷新。
+- [ ] **Root最终验收**：持久正常依赖／正规普通及管理员账号走S01–S10；刷新与重新登录、撤权、失败重试和旧数据保持；1280/800/390同尺寸Manus逐图对照及实际交互。只有此步骤全部通过才称Skills完成；工程PASS、ready200、旧截图及worker报告均不代替。
+
+本轮已有正常五依赖ready200仅证明进程就绪；新的本地tab绑定发生CDP focus超时，无新本地UI截图，不把它误报应用API失败。Manus记录技能点击只关闭菜单的真实图仍保，语义OPEN。其它模块与heartbeat继续暂停，完整Wave0–7 active；不另建计划中心、不追加无关基建／历史GC项目。下一具体动作为正式基线的Storage必要源码实现与真实资格，不再重新发散设计。
+
 ## D. 执行顺序与职责（减少跨仓来回改）
 
 | 批次 | 一次交付范围 | Owner与执行 | 放行依据 |
