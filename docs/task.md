@@ -1,3 +1,79 @@
+### R328 MCP 正式注册机器前置已提交，用户完整链仍 OPEN（2026-10-07）
+
+原Platform负责人唯一writer、独立QA并行，Root独占集成/Git。现physical capability / branch codex/r259-skills-metadata；三面设计 **4a4f7580163ad9dc9c316c8da4996654634b6095**，V9机器 **0712d42ae83a01d2670943b76028d2bd66fa8234**。同唯一RegisterMcpServer新增registration8及四字段message，无新runtime/Schema/权限；原reserved/响应/43-20-24和V1–V8发行原bytes保持，双父43快照真实核固定，V8剥父39/190完整保持。V9 aggregate **19c1466ab398c6dbb43130f3977fe776532e41e00e2487476d465f22fc936073**，build-time inactive/unroutable。
+
+Root真实机器RED39PASS/3FAIL→42PASS；随后实际JSON duplicate-root误接受RED153PASS/6FAIL，最窄复用现strictParseRawJson/正文拒绝catch修复，配置仍外。冻结128JSON/binary向量（17接受/107InvalidArgument/4FailedPrecondition）、6图负控/5重hash出版负控；原8220bytes cutover与旧execution两输入逆转完整保持。独审 **baac015d129f4594e45cec2da688fb191bebdf2f2aeeedc3137fbbf3c6fdf95b** 无确定阻断，Root亲核21SHA及520非范围；只额外由Root维护CURRENT事实回执，精确22paths提交，Platform工作树clean/index空。
+
+Root当前Node24.20.0原84104自然exit0：cutover/artifact/contract297/architecture104/types/lint/build/schema/contract九门；原54337 format:check exit1，仅四既有D0文档（API/CURRENT/DATA/TECH）格式，Prisma既有index warning保留，不称全仓门全绿。提交后原24532再跑artifact＋两整contract文件 **159PASS/0FAIL** 自然exit0。全部本轮句柄terminal；只机器/工程辅助，不算用户验收。证据在同ignored var/dev/r255-preserve/r328-*，含原RED、freeze、Root工程及postcommit、两个正式commit收据。
+
+下一沿同owner：当前合法V9请求的真实官方IAM OAuth HTTP＋Platform真实PG/Redis运行RED→既定有界global事务实现与重放/竞争/取消/未知提交验证→System固定consumer→BFF非空本人四读/Web管理CRUD。当前Runtime仍IAM准入后Unimplemented；没有注册成功或连接可用结论。System资格、secret宿主/privateServer/本人mutation与完整连接器能力不省略，不伪tenant/跨ownerSQL种子或mock链。正常九服务/PG/Redis/ObjectStore/凭据不重启/reset/扩权，本轮无provider调用或用户业务写入。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持；T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。上一目标回合progress，本轮也是progress（权威contract/code commit及实际机器RED→绿改变，不冒用户闭环）。原Root八gitlinks/uv保留不暂存，不新建计划中心。
+
+### T-K05 后继真实系统验收入口（未执行，不增完成计数）
+
+|用例/分类|预置条件|真实行为步骤|预期结果/当前状态|优先级/类型/Owner|
+|---|---|---|---|---|
+|TC-MCP-GLOBAL-01 主链路|V9固定消费、官方operator资格、同owner隔离资源|HTTP OAuth取得正式token→合法注册→owner API回读→合法连接声明验证→本人管理列表/详情刷新|注册定义真实落盘/连接真实核声明，非空列表持久正确；UNVERIFIED|P0/系统端到端/Platform→System→BFF→Web|
+|TC-MCP-GLOBAL-02 边界/权限|同01，不从body自报tenant/身份|missing payload、旧保留字段、非法URL/transport/digest及错误caller/scope逐一请求|稳定拒绝/零非法写；正常原行保持；UNVERIFIED|P0/安全异常/Platform+IAM|
+|TC-MCP-GLOBAL-03 状态/恢复|真实PG与同admission，正式调用|同canonical顺序/并发重放→异定义冲突→inactive重放→真实锁等待/取消/未知结果→显式同定义重放|只一事实行/同ID，冲突不改原行、不复活；预算有限、settlement后slot回收、未知不伪零写；UNVERIFIED|P0/并发生命周期/Platform|
+
+这些是T-K05必要子路径，不替代其完整个人创建/编辑/凭据/启停/撤销/重连/权限和页面验收；正式支付仍最后，运营配置不深入。
+
+<!-- R328-ROOT-RECEIPT-END -->
+
+### R328-MCP-GLOBAL-V9 机器实现准入
+
+Root实际Node24.20.0整cutover：**39 PASS /3 FAIL**，三个实际source/generated/compiled入口都因缺registration8失败（原log r328-platform-machine-red.log），不是收集失败；独审e388a684确认旧8220bytes/39断言保护。Root另冻结e83a完整parent43 46659bytes/5f0f00f6…与generated FileDescriptorProto 35139bytes/25197edc…，现V8 writeUnknownFields:false等值不放宽（初raw unknown差异只快照工具纠正，非产品RED）。
+
+|任务|Owner / 准许范围|冻结验收|
+|---|---|---|
+|R328-MCP-GLOBAL-V9|原platform_iam_consumer_r298，同4a4f758；仅TECH R328编号21个机器paths，唯一writer；Root独占执行门/Git|新增唯一registration8/nested4字段、generated/FDS/provenance机械同步；双parent从Root已核快照复制且pin精确。历史V8仅输入固定到43＋generated快照，保原strip39和190向量；原V1–V8发行bytes不改。既有execution测试只有历史输入路径窄改＋新V9尾oracle，全部旧assertions保。列新向量inventory/count/sha及各mutation负控；freeze后独审和Root机器/工程门。|
+
+作者可仅为机械生成执行正式contract:generate与buf build、格式化本片新/改TS及V9 JSON，不自行跑验收门。不编辑runtime/Schema/lock/正常权限/其他owner；COMMON/STORAGE generated及所有非21paths须保持。新V9为inactive/unroutable发行metadata，未准System消费或正常运行激活。发现21外必需改动先报Root；D0事实回执由Root后维护。完整用户CRUD未验、70/33不升级。
+
+<!-- R328-V9-MACHINE-TASK-END -->
+
+### R328-MCP-GLOBAL-MACHINE-RED 阶段准入
+
+Platform 三面设计已独审无确定阻断（报告68d31ec9），Root独立核四旧suffix/526其它文件exact；当前 **4a4f7580163ad9dc9c316c8da4996654634b6095** 四文档提交，Node24.20.0现contract:check/schema:check自然exit0，无新注册实现或用户PASS。原Prisma索引warning保持。
+
+|任务|Owner / 当前允许写集|完成条件|
+|---|---|---|
+|R328-MCP-GLOBAL-MACHINE-RED|原platform_iam_consumer_r298唯一writer；同Platform branch/4a4f758；只现test/contract/platform-contract-cutover.test.ts原全文尾追加三个入口测试；Root提交/审查|source Proto、generated FileDescriptorProto、compiled FileDescriptorSet分别断言批准registration=8/nested四精确字段和原reserved/response/43-20-24保护；原39测试全文不改，不import不存在V9。作者不跑门，freeze后Root执行真实RED；除该测试外529tracked保持。|
+
+禁止Proto/generated/Schema/runtime/package/artifact/资源/Git写入。21路径机器实现仍待RED与Root另授；正常服务/权限不激活，完整70/33及Wave0–7不升级。RED为机器缺口证据，不是用户页面验收。
+
+<!-- R328-MACHINE-RED-TASK-END -->
+
+### R328 正式全局 MCP 服务器注册设计与机器 RED（原计划续接）
+
+上一目标回合分类progress：Web ac099fd/Root ee426a0a 与真实正常3310五用例证据已改变权威状态；原9667/2690均terminal，完整目标保持。本轮实际Platform branch **codex/r259-skills-metadata**、HEAD e83a2ad3a7c7d333ad0b0b8e7f3d3f64e497bc42、工作树clean（不沿记忆旧branch）。现RegisterMcpServer只有request_id，旧2–7字段/名称reserved，正式global准入后Unimplemented；内部register必须tenant mutation。当前Contract V8是现事实，非漏接runtime。完整MCP非空用户CRUD须先正式global precondition，不造BFF SQL种子。
+
+Root §8/8.1目标裁决（设计门通过前仅文档）：
+
+|项|当前/目标结论|
+|---|---|
+|Owner|Platform现modules/mcp/server唯一注册事实owner，原platform_iam_consumer_r298唯一writer；Root独占Git、资源及集成。|
+|当前事实|现Proto/43RPC/20command/24proof，V1–V8冻结；McpServer全局无tenant、唯一server_identity varchar255，canonical Prisma不变；旧tenant register不可直接用于global。|
+|目标职责|沿现唯一RegisterMcpServer RPC新增具名McpServerRegistration registration=8；nested provider_key=1/string、server_identity=2/string、transport=3/McpTransport、declaration_digest=4/string。旧tags2–7及旧names继续reserved，response原三字段保持；不增加execution_proof/CommandIdentity/attestation。request_id-only新当前合同明确InvalidArgument，不留运行兼容或两个注册入口。|
+|位置/粒度|扩现server service/RPC与既有port/runtime/authorizer接缝；具名全局注册事务算法可放现server/mcp-server-registration.transaction.ts，对比放入超800行旧tenant command事务或新一级global模块，采用现业务普通文件，淘汰万能module/tenant伪装。V9发行在现contract/execution-operations/v9家族，优于改V8；新版profile/descriptor/vector脚本沿现生成家族，不复制可编辑DTO。具体机器写集须owner列清单经Root另授。|
+|身份/依赖|caller kokoro-system、operator_machine、platform_ingress_global、platform:mcp-server.register、platform-internal资源保持；不接受tenant/subject/body身份。BFF不注册/不直查SQL。System固定消费仅owner新版本提交后，正常权限/服务本轮不激活。|
+|输入/策略|provider沿现catalog语法^[a-z0-9][a-z0-9._-]{0,63}$；raw及normalizedURL最大255 UTF16 code units与现varchar255保守对齐，仍现安全URL/允许origin及路径段策略，禁止credentials/query/fragment/编码分隔等；transport=2仅streamableHTTP，1/3明确FailedPrecondition，其余InvalidArgument；digest64 lowercase hex。注册只定义，不网络握手/不等于连接可用。|
+|幂等/SQL|现唯一canonical serverIdentity作业务自然幂等：相同provider/transport/digest返回原ID/status/replayed；冲突definition原行不变，inactive不复活。无新tenant receipt/outbox/虚拟tenant/Schema/缓存。own schema唯一写，事务内insert-if-absent+canonical-read；全局独立ReadCommitted保证竞争winner在后继SELECT可见。|
+|预算/恢复|同一caller绝对预算覆盖IAM/provider lookup/admission/SQL/commit，复用现MCP_MUTATION admission实例、不走旧Infinity runner；局部statement/lock timeout为正有限值。最多三事务尝试，仅已证实rollback的可重试数据库错误，退避jitter纳入同预算；未知commit不自动重写，调用者明确重放同definition收敛。取消/失败须等底层settlement、有限rollback/permit release后再复用slot，不承诺即时中断已发SQL。|
+|删除/历史|活跃unsupported路径/伪tenant旧注册执行路径在正式runtime切片替代删除，旧reserved/冻结发布历史保留为验证资料，不放宽V1–V8 oracle、不新增alias/fallback。|
+|验证|D0三面先审；继而现contract测试追加registration tag8/nested/历史reserved与机器父43不漂移真实RED；V9正式机器→真实IAM OAuthHTTP/PG/并发/取消/锁/commit恢复→System固定consumer→BFF/Web用户非空CRUD。机器或纯门不算页面闭环。|
+
+|任务|角色/基线/当前允许写集|验收与阶段|
+|---|---|---|
+|R328-MCP-GLOBAL-D0|原platform_iam_consumer_r298，沿原模型，/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability / codex/r259-skills-metadata / e83a；仅现docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md追加R328前缀|把Root裁决落成一致当前/目标方案、实际接缝/机器新增文件清单/验证入口；不改Proto/generated/Schema/runtime/tests/package/artifact、资源或Git。freeze后独审/Root确认三面，后继另授机器RED。|
+|R328-MCP-GLOBAL-D0-REVIEW|原agent_planned_guarantee_system_r257，只读同e83a；现文档/Proto/Schema/事务/admission/IAM及V8生成/verifier|独立审查Root候选及冻结三面，重点ReadCommitted竞争可见性、预算/rollback、无tenant自然幂等、V8 immutable inputs与新增tag8不可复用reserved。只原ignored报告，不写仓/资源/Git；有确定阻断立即列精确行证据。|
+
+正常服务/PostgreSQL/Redis/ObjectStore不重启/reset、不扩权；原Root八gitlinks/uv保护，完整70/33与T-K03/T-K05/Wave0–7不升级/不另建计划中心。
+
+<!-- R328-TASK-D0-END -->
+
 ### R327 卡面版本标签按用户要求纠正（2026-10-07）
 
 Web **ac099fd188db4d826aea393e0b68e56744803172**（parent6c1e6ce）：现reader精确删除两vN span；五现文档前缀记录最新用户决定替代R323，精确详情/真实tags/状态/handlers与操作目标保持。无API/SQL/CSS/新组件或伪作者分类。Root staged三混合D0仅R327前缀+HEAD，原Admin mixed后缀与774其它文件、27status保持/index空；独审b033a625，Root inverse exact。

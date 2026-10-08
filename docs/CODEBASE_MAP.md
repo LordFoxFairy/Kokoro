@@ -1,3 +1,17 @@
+### R328 MCP 正式注册机器前置已提交，用户完整链仍 OPEN（2026-10-07）
+
+原Platform负责人唯一writer、独立QA并行，Root独占集成/Git。现physical capability / branch codex/r259-skills-metadata；三面设计 **4a4f7580163ad9dc9c316c8da4996654634b6095**，V9机器 **0712d42ae83a01d2670943b76028d2bd66fa8234**。同唯一RegisterMcpServer新增registration8及四字段message，无新runtime/Schema/权限；原reserved/响应/43-20-24和V1–V8发行原bytes保持，双父43快照真实核固定，V8剥父39/190完整保持。V9 aggregate **19c1466ab398c6dbb43130f3977fe776532e41e00e2487476d465f22fc936073**，build-time inactive/unroutable。
+
+Root真实机器RED39PASS/3FAIL→42PASS；随后实际JSON duplicate-root误接受RED153PASS/6FAIL，最窄复用现strictParseRawJson/正文拒绝catch修复，配置仍外。冻结128JSON/binary向量（17接受/107InvalidArgument/4FailedPrecondition）、6图负控/5重hash出版负控；原8220bytes cutover与旧execution两输入逆转完整保持。独审 **baac015d129f4594e45cec2da688fb191bebdf2f2aeeedc3137fbbf3c6fdf95b** 无确定阻断，Root亲核21SHA及520非范围；只额外由Root维护CURRENT事实回执，精确22paths提交，Platform工作树clean/index空。
+
+Root当前Node24.20.0原84104自然exit0：cutover/artifact/contract297/architecture104/types/lint/build/schema/contract九门；原54337 format:check exit1，仅四既有D0文档（API/CURRENT/DATA/TECH）格式，Prisma既有index warning保留，不称全仓门全绿。提交后原24532再跑artifact＋两整contract文件 **159PASS/0FAIL** 自然exit0。全部本轮句柄terminal；只机器/工程辅助，不算用户验收。证据在同ignored var/dev/r255-preserve/r328-*，含原RED、freeze、Root工程及postcommit、两个正式commit收据。
+
+下一沿同owner：当前合法V9请求的真实官方IAM OAuth HTTP＋Platform真实PG/Redis运行RED→既定有界global事务实现与重放/竞争/取消/未知提交验证→System固定consumer→BFF非空本人四读/Web管理CRUD。当前Runtime仍IAM准入后Unimplemented；没有注册成功或连接可用结论。System资格、secret宿主/privateServer/本人mutation与完整连接器能力不省略，不伪tenant/跨ownerSQL种子或mock链。正常九服务/PG/Redis/ObjectStore/凭据不重启/reset/扩权，本轮无provider调用或用户业务写入。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持；T-K03/T-K05 OPEN，完整Wave0–7 active/支付最后。上一目标回合progress，本轮也是progress（权威contract/code commit及实际机器RED→绿改变，不冒用户闭环）。原Root八gitlinks/uv保留不暂存，不新建计划中心。
+
+<!-- R328-ROOT-RECEIPT-END -->
+
 ### R327 卡面版本标签按用户要求纠正（2026-10-07）
 
 Web **ac099fd188db4d826aea393e0b68e56744803172**（parent6c1e6ce）：现reader精确删除两vN span；五现文档前缀记录最新用户决定替代R323，精确详情/真实tags/状态/handlers与操作目标保持。无API/SQL/CSS/新组件或伪作者分类。Root staged三混合D0仅R327前缀+HEAD，原Admin mixed后缀与774其它文件、27status保持/index空；独审b033a625，Root inverse exact。
