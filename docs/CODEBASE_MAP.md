@@ -1,3 +1,7 @@
+### R352-P2 Skills 分类契约已提交，页面仍未切换（2026-10-08）
+
+Platform正式 `8014acc`（HTTP4/category_keys），Root27paths/生成后保护/独审及98files1594PASS、type/lint/build/contract/inverse实际0；三旧文档format仍FAIL。未接运行/SQL/BFF/Web，正常服务未重启，页面分类仍tags，不称Manus一致或Skills完成。P3先闭合已实测Prisma数组列无NOTNULL的设计差异，再推进存写与消费。细节见同一既有实施计划R352-P2；完整goal active，其它模块/heartbeat保持暂停。
+
 ### R352 当前 Skills 分类进展（2026-10-08）
 
 Platform `7e465ae`设计门、`e0e9e90`纯分类校验已提交：Root连旧示例70PASS、类型/lint/格式无错误，572原tracked保护、独审无新增阻断。未接契约/存写/页面、无DDL或重启；现目录分类仍旧tags，Skills整体未验收。证据和后继依赖见既有 `docs/superpowers/plans/2026-09-07-capability-nestjs-prisma.md` R352记录。仅Skills继续、其它模块/heartbeat暂停，完整goal active；R351详情闪动浏览器修复证据保持。

@@ -1,3 +1,23 @@
+### R352-P2 正式机器提交与 Root 放行（2026-10-08）
+
+Platform `8014acc6a372538f3ef0176a23816ef8631ead9a`（parent e0e9e90），Root精确27paths提交、工作树clean。Root冻结后一次完整纯门98files/1594PASS，Node24类型/lint/contract lint+正规生成/cutover/artifact/build/diffcheck自然0；生成后27SHA/556非范围/3旧完整suffix再核保持。原IAM独审无确定P0/P1/P2，完整三wrapper与全父图/HTTP/8-input publication逆回6旧inputs，并重算provenance仍拒篡改；48accept/88reject向量。正式provenance138c07b8。旧107历史发行、17Prisma产物保持；三旧文档全format仍FAIL，没有越界格式化或称全门。初RED4FAIL与首纯门1590PASS/3FAIL保留，批准字段/版本断言更新后1594PASS。Root日志 `var/dev/r255-preserve/r352-p2-root-gates.log`、冻结收据machine-freeze；均不替代完整浏览器验收。
+
+正常Platform64000/BFF55498/Web66154未重启、未DDL；运行仍旧0e60/HTTP3.5，当前Skills分类条仍tags。HTTP4/category_keys是机器正式事实，BFF9/owner存写精确过滤/Web/正常扩展尚未接通。只Skills继续、其它模块与heartbeat暂停、Wave0–7 active、原混合修改保留。P3现明确风险是Prisma7.10 list列没有NOTNULL，不猜NULL为空或放宽校验；在runtime/schema授权前一次收敛物理/读取方案，再由原owner接通真实分类链。
+
+R352-P2 范围补准：初纯门1590PASS/3FAIL原样保留。批准两既有contract测试仅随正式合同更新：test/contract/platform-execution-operations.test.ts最新HTTP3.5→4.0（历史v6不变）；test/contract/platform-published-skill-read.test.ts required集合只新增category_keys。精确范围27paths/9new18modified0delete；不是放宽语义或删除失败，原所有其它断言保持。
+
+### R352-P3 Schema 预核发现工具事实（非阻断 P2）
+
+Root 2026-10-08 使用现Prisma7.10.0仅从schema文件diff目标String[]/default[]/VARCHAR(32)，真实生成列没有NOT NULL，不能按旧文档推断物理约束。零DB连接/DDL，证据ignored `r352-category-proposed-ddl.sql`。Prisma [官方v7 Client文档](https://www.prisma.io/docs/orm/v7/reference/prisma-client-reference)说明数组filter对NULL有独立限制；[维护者问题#13880](https://github.com/prisma/orm/issues/13880)记载历史NULL被读为空数组，当前7.10实际读取语义须隔离PG核验，不能据历史冒实测。P3须先裁决并验证物理nullable与业务fail-closed一致性，禁止偷加双canonical/custom-DDL框架或掩盖NULL；本轮P2仅machine继续，不授权schema/runtime/DDL。
+
+### R352-P2 精确机器写入授权
+
+基线e0e9e90，writer原Platform owner，Root独占Git。精确25paths（新增9/修改16/删除0）冻结于ignored `var/dev/r255-preserve/r352-p2-machine-scope.json`；compiled d9b82ed8/generated7bfaf427/HTTP370e3d71三父Root独算一致。三个Proto空闲tag6/12/16统一SkillCategoryKeys wrapper keys=1，Metadata optional-presence、Summary/Installation required-response；单值category_key不trim。现Skills metadata功能延伸，机器profile放现contract/execution-operations根级命名artifact1.0.0而非V10，纯projection/descriptor/artifact沿现同责scripts集合；不创建新业务模块/框架。仅生成现Platform_pb与platform-v1.binpb，旧examples/V1–V9冻结，三设计只加P2前缀保旧suffix。原完整图与HTTP inverse先还原3.5父然后旧链，无放宽checker。先实际字段/查询缺失RED，再生成与machine向量/完整图semantic负控、类型/lint/build/contract/cutover/artifact；首版失败原样记录。原运行/runtime/SQL/DB/服务/BFF/Web不修改、不宣页面已通；冻结交25SHA及非范围字节，Root审查重跑后提交。
+
+### R352-P2 独立分类正式机器发行（进行中）
+
+上一goal轮为progress：Platform设计与纯validator正式7e465ae/e0e9e90，非状态重述。本轮沿同Skills范围继续真实分类，而非新增计划或恢复其它模块。基线Platform e0e9e90/clean；Root负责整体边界/Git/验证，原platform_skills_examples_owner_r346先只读核定HTTP4、Proto6/12/16、具名categories profile/vectors、生成与provenance/checkers的精确文件集，然后同一任务授权一次正式机器发行。旧V1–V9、examples1.0.1/digest3.0.0、45RPC/20command/24proof与IAM/tenant语义保持；旧categories clean替换，无alias。机器提交后存写/过滤、固定BFF、Web、正常库单列扩展与真实浏览器按依赖继续，P2本身不冒页面完成。只读期间禁止写/Git/DB/服务/浏览器，原正常句柄保留。
+
 ### R352 分类校验局部提交，页面分类尚未接通（2026-10-08）
 
 Platform设计门 `7e465ae489a3467dde7b1644027cb5c559e1eb38` 与纯校验 `e0e9e90416b6aef99da3b11bf138d536e1c0f196` 已由Root精确提交，原owner实现/原IAM只读审查无新增阻断。两新增文件仅闭集8键、0–8/唯一/原序/不default或规范化；收集缺模块与行为RED36PASS/1FAIL分开，GREEN37PASS。Root已重跑连旧示例70PASS，Node24类型/lint/两文件格式/diffcheck无错误；572原tracked逐字节保持，Platformclean。现contract/prisma只读设计门0，未build/生成/DDL/服务重启；日志与freeze收据在既有ignored r255-preserve/r352-*。
