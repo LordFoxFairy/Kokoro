@@ -16,7 +16,7 @@
 ### R353-P2：一次完整 Skills owner 发行任务卡（2026-10-08，开始实施）
 
 - 设计基线正式 `8e869ded1f58354297217af1db13e5b9ade3a447`（parent95d8a09）；原Platform writer、原IAM独审三SHA/具名18RPC与12command/tags/正式依赖无确定阻断。Root核586非范围/三历史suffix、前缀格式及精确三paths后提交。第一次Root格式检查cwd错误留存，纠正绝对路径后0；只设计通过。
-- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），只读 reviewer `iam_skills_admission_review_r343`；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：103修改、27新建、5删除、22仅正式生成输出；461其余tracked SHA与三历史suffix保护，越界先报。
+- 工作目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability`；writer `platform_skills_examples_owner_r346`（原gpt-6-astra），只读 reviewer `iam_skills_admission_review_r343`；Root独占Git、共享资源和最终集成。精确文件卡 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-p2-platform-source-task-card.json`：112修改（初103＋Begin/Validate最终CAS9精确路径）、27新建、5删除、22仅正式生成输出；452其余tracked SHA与三历史suffix保护，越界先报。
 - 一次交付：全部真实product字段/来源/持久草稿/CAS/发布与管理/包cover/read准入/installation.available_update、唯一机器+当前handler+native schema/ADR005/具名expand。旧V1–V9/examples/categories/digest3原字节及完整父逆剥保持，不能只更新计数或dummyhandler；record不猜payload、S06四路径仍保完整目标。
 - 固定IAM source7c62e75/SDK0.10正式archive；Storage正式d13f33a/v3/47e2659契约。从正式对象取固定依赖，只更新已授权消费者，不接旧混合候选/别仓DB。AI/GitHub只受信BFFtyped输入，实际producer及Share/usage后继BFF同次接线，不当已存在；不存在新Skills服务/通用workflow。
 - 先具名行为失败（保基线与负控）再实现，冻结交具体SHA/RED/GREEN/未完成项。writer只跑无共享资源的精准验证和官方生成；Root负责自有PG旧→新完整catalog、旧十表数据/权限/恢复/资源资格及独审后的适当重跑，不重复无关全仓门。正常DDL/资产修复/权限/服务配对不随源码授权。
