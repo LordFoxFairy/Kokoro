@@ -178,8 +178,8 @@ Root保55候选，本轮不授Storage源码/bucket/DDL权限、不临时发零fa
 | 契约/依赖 | 库/版本/错误/幂等与全部Complete调用者一并盘点；明确包、个人/项目文件、Agent作品每入口回执传递；不因Skills新增字段破坏其它正常入口，不把未来consumer当已实现 |
 | 验证/交付 | 当前只读源码/正式契约与三文档prefix/suffix检查；输出一份完整实现scope、验收矩阵和未决项。Root按prefix-only审查提交、原55保留；之后另授源码先真实RED→正式owner→固定消费者→正常配置资格→真正Skills浏览器 |
 
-- [ ] 三设计收敛精确版本、封面用途/权限/读取及持久事实，不沿R262零Schema旧结论。
-- [ ] Root核全部Complete消费者并决定最小一致改动；readonly reviewer核错误/撤权/未知ACK/重放。
+- [x] 三设计收敛精确版本、封面用途/权限/读取及持久事实，不沿R262零Schema旧结论。
+- [x] Root核全部Complete消费者并决定最小一致改动；readonly reviewer核错误/撤权/未知ACK/重放。
 - [ ] 无确定阻断且三面一致后才授权一份正式contract/runtime；当前无实现、bucket或资源授权。
 
 #### ST4 正式设计交付与唯一实施顺序（2026-10-08，页面未验收）
