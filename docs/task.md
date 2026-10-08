@@ -1,3 +1,61 @@
+### R330 已验真实卡面标签溢出，安装来源标签仍未到页面（2026-10-07）
+
+Web **2502143d6767eaf147d251661a500de85b890330** 已精确三paths提交（reader、CURRENT、Skills INDEX），仅真实tags>2追加+N。Root正常3310真实100标签卡面RED→+98、详情100完整；R267两标签无+0、R270三标签+1/详情完整、Escape原名称归焦及390无横溢；最终r330-skills-final.png与r330-skills-user-verification.json。没有伪作者/状态替分类或安装tags完成声明。原27Admin mixed及其它文件保持；正常服务/PG/Redis/ObjectStore不重启/reset、零本轮业务写入。
+
+Platform D0 **c959d210512f3a6a934adb6c5657fcd377e4d5cf**、机器 **2bce4832ffb1a29615b76cf96c867b103f3fd32d** 精确15paths（14机器+RootCURRENT）；ProductSkillInstallation只增真实tags13，全图严格剥字段等0712双父、V1–V9 105发行原bytes/43-20-24不改；独审bcc3bd02、Root非范围保护。实际机器42PASS/3FAIL→当前contract310PASS/architecture104及cutover/artifact/types/lint/build/schema/contract自然0（Node24.20.0）。format:check实际exit1，四既有设计文档不隐藏；安装五runtime与BFF固定消费/Web显示未实现，作者事实未有。
+
+WebRoot Node22.22.2首次完整check实际3437PASS/1FAIL（既有R183 Move菜单缺失），保留原日志不标flaky或猜根因；同例独立复验1PASS/78SKIP、再完整check309contract/51architecture/3438default和lint/types/build自然0。工程计数只是辅助，不替用户链验收；全test:e2e/axe/预算/多身份及所有SkillsCRUD仍待验。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持，T-K03/T-K05 OPEN、Wave0–7 active/支付最后。最新用户要求R331先Skills卡片→真实预览→包文件详情；原owner并行现Web预览呈现/Platform内容授权设计，未验正文不冒完整闭环。Root八gitlinks及uv不暂存。
+
+<!-- R330-ROOT-RESULT-END -->
+
+### R331 Skills 卡片与预览：实际 Manus 研究后的用户优先切片
+
+Root实际登录参考浏览器读到 ListHubSkills/GetSkill/DownloadSkill200；GetSkill返回技能展示字段与短时包reference；查看详情后是 SKILL.md 和文件树，返回按钮回到预览并聚焦查看详情。本次观察不当官方公开契约或复制其资产；初窗truncated，点击详情fresh窗无新skill请求只说明此时内容已加载，不推断完整下载实现。参考 Escape 未关闭预览，不照搬这个键盘不足。Root本地真实RED：已发布R267反馈卡封面点击零Dialog（r331-cover-before.png）；reader现名称button唯一入口/cover pointer-events:none，两个现内联详情仅摘要/技术身份，不是包正文。
+
+|任务|Owner/执行与写集|行为验收与责任|
+|---|---|---|
+|R331-WEB-PREVIEW|原web_interaction_astra_r296唯一writer；活跃Web2502143，原27mixed保护；仅src/ui/skills/personal-skills-read.tsx及同module.css|整卡主区（封面/摘要/名称）同一现名称button展开真实技能预览，卡片独立操作不误开；两视图预览采用宽弹窗/类别、名称、现真实状态、右侧自有封面与完整描述；保既有取消/竞态/授权退役/焦点与未知恢复。发布active预览可沿原安装命令，关闭预览让真实反馈可见；不添加伪作者/usage/示例/市场，不拿身份折叠当文件详情。Root真实浏览器/门/Git/相邻文档。|
+|R331-PACKAGE-READ-AUDIT|原platform_iam_consumer_r298只读；现Platform2bce483；原r316报告|核包manifest/reference现契约、授权来源、Storage关系及BFF浏览器读取缺口；不写仓/共享资源/测试/Git；真正文件详情须真实owner内容，不拼fake SKILL.md。|
+|R331-QA|原agent_planned_guarantee_system_r257只读冻结2文件|独立审卡主区与内联按钮不重叠/不重复动作，生命周期/焦点/授权/样式响应式；Root集成验收，QA不跑资源/Git。|
+
+§8放置：Web现reader拥有列表与已授权预览交互，现CSS拥有该页呈现；扩这两个既有文件不改职责/契约。复用现reader采用；复用旧SkillDetailDialog淘汰（假文件树/市场数据不是本人真实管理契约）；不新组件/模块/API。Platform包读取只读先确认3面，不启动重构。展示细节依据用户已批准Manus方向与个人管理两视图决定，当前不额外新建spec/计划中心。正文/作者/安装分类后继仍OPEN。所有服务及PG/Redis/ObjectStore不重启/reset，完整70/33/Wave0–7保持。
+
+<!-- R331-SKILLS-PREVIEW-TASK-END -->
+
+### R330 安装分类机器 RED 后的唯一实现授权
+
+三面D0已由Root独占集成 **c959d210512f3a6a934adb6c5657fcd377e4d5cf**，原538非范围与三全文suffix exact；独审59d19680，Root Node24 contract:check/schema:check自然exit0（既有Prisma索引warning）。现cutover只追加三实际入口：Root45例实际 **42PASS/3FAIL**，均缺ProductSkillInstallation tags13，不是收集失败；旧13577bytes/42例全文保留，log r330-platform-tags-red.log。该机器RED不替用户验收。
+
+原platform_iam_consumer_r298继续唯一writer，现只准三D0列的14机器paths；不准runtime5/Schema/SQL/Unit/mock/旧发行JSON/package/lock/正常资源/Git。Root已从正式0712固定两完整父图：46951bytes SHA0e9d45786e09d528402e5971880bb73bf1a7aae474322eb960c6fc7acba4ec18；generated FileDescriptorProto35431bytes SHA9aa6cf2b817bf021f42e031b8eab2cd7d8cfb8701bb994aa3717b5ba815b8915，均与现source compiled正规等值。普通tags delta helper只承本字段/全图；旧V9改历史输入、原128vectors和strip父43等值不变。V5十二字段与两旧List codec均改固定0712历史registry输入，保全部assert/fixture/alwaysEmitImplicit，仅历史page类型观察窄标注；新增当前空/非空tags oracle另用当前generated。不是生产旧数据兼容层。
+
+作者可正规Buf/normalize生成，不跑门/资源/Git；freeze14SHA/其余非范围后独审，Root重跑实际门。当前正常安装/BFF/Web消费和发布者仍未完成；MCP不抢用户Skills优先级，完整70/33/Wave0–7保持。
+
+<!-- R330-TAGS-MACHINE-AUTH-END -->
+
+### R330 Skills 分类投影与标签溢出（沿原 T-K03，不新建计划中心）
+
+上一目标回合为 progress：真实两视图与 owner 字段核对确认缺口，Root b6f303c6 已记录；未完成新标签实现。本轮依用户截图推进真实分类投影及 +N，不靠版本/状态/静态品牌凑作者，不缩小 Wave0–7。
+
+|任务|归属/基线/写入范围|验收、边界与责任|
+|---|---|---|
+|R330-PLATFORM-TAGS-D0|原 platform_iam_consumer_r298；Platform 0712d42 clean；先只读与原交接报告|Root裁决来源 tags 原样投影（授权后同来源tenant/id/series/revision，含 withdrawn/disabled/quarantined/removed）；ProductSkillInstallation仅新增 repeated string tags=13，无 SQL/权限/分类表/作者猜测。提出现三面+机器发行精确paths与历史保护方式、真实PG/RPC RED入口；未经再授权不改仓。Root独占Git/资源。|
+|R330-WEB-TAG-OVERFLOW|原 web_interaction_astra_r296；活跃 /Users/nako/.codex/worktrees/kokoro-r257-admin-web ac099fd，原27Admin mixed保持；待Root真实大标签RED才准现reader一处呈现修改|仅我发布的真实 tags 前2项后显示 +N（N=其余真实数量），完整 tags 仍原详情；不改作者/安装数据/handlers/API/CSS/语言字典/测试、不写Git/资源。Root唯一服务/浏览器/工程验证及提交。局部现文件职责不变，不建模块。|
+|R330-INDEPENDENT-QA|原 agent_planned_guarantee_system_r257，只读上述冻结源码与三面|独审来源权限/撤回与重复安装生命周期、tag语义及历史机器保护；报告原r313-mcp-machine-review.md，零资源/Git/仓写。|
+
+并行仅上述无共享写集的现Web呈现和Platform设计审查；依赖的 Platform→BFF→Web 安装投影仍按owner串行发行。来源 metadata 不可因取不到而 fallback 猜标签；空tags是真空，非法owner数据稳定失败。分类是当前真 tags，不增分类体系。作者/平台显示名需独立可信事实，仍OPEN。
+
+Root正常3310真实RED已取得：R306/R307大标签来源详情100个 QA000..QA099，卡面只有 QA000/QA001 且零 +N；before图r330-tags-before.png。现准原Web writer只在现reader的 tags.slice(0,2) 后追加条件span（真实length>2才 +length-2、复用现tag样式），零新状态/handler/API/字典/CSS/测试；完整详情保持。冻结后Root实际验 +98、两标签不 +0、详情100及键盘/窄屏。
+
+Root §8/8.1 裁决：Platform 唯一 writer 继续原负责人，现 installation Product 资源新增 tags=13，复用同查询来源；目标是 list/get/mutation/replay 一致真实标签，不是新增分类/作者体系。目录比较：新一级分类模块无独立事实，淘汰；既有五 installation 文件各承接自己的 model/repository/service/mapper/RPC 变化，采用。机器比较：放宽现V9全图保护淘汰；机械复制V10 operation/proof 家族无新执行规则淘汰；采用现 canonical Proto/provenance 新commit/digest发行＋现scripts/platform-execution-operations 一个普通严格tags13 delta checker，冻结0712完整FDS/generated父图。没有新的运行目录或进程。
+
+允许 build-time helper 读 owner generated/FDS，不导入runtime/数据库；它只剥精确 tags13 并与0712完整父图等值，最新 generated 与完整FDS另等值。旧V9固定0712双快照后原whole strip-registration/128 codec/原hash保持，V8 190/旧9字段安全集/12字段历史断言及全部V1–V9发行bytes不改。两现入口＋contract:check都检查新图，不借只冻结旧输入遗漏当前类型。SQL/schema/事务/tenant/owner/CommandIdentity/IAM/缓存/receipt digest保持；bad tagsJson拒绝，不fallback空。只有现授权后的原来源关系可出tags。
+
+三面现在准原writer仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL具名前缀（原全文保持），CURRENT由Root后维护；列当前/目标、14机器paths＋五运行paths＋必要现测试构造、当前replay刷新补tags、合法非draft/removed生命周期、测试夹具IAM边界及正常消费者尚未激活。Root/独审收敛后才准tests-only machine/真实PG RED，RED后另授实现。作者未经另授不生成、写machine/runtime/tests或跑资源/Git。新helper普通文件以严格唯一字段机器责任解释，不加ADR/业务模块/分类表。具体门沿报告R330建议，全部未执行不可冒完成。
+
+<!-- R330-SKILLS-TAGS-TASK-END -->
+
 ### R329 Skills 作者与分类标签核对（用户最新要求）
 
 用户最新截图明确要求：卡片徽标表达发布者/平台与分类（如自动化、媒体、内容），不是版本号。沿 R327 已删除卡面版本徽标，不重复添加 vN，不用状态假冒分类，不伪造作者、目录或用量。本轮先真实浏览器核对与 owner 数据追踪，不授 runtime/Schema/契约重写。

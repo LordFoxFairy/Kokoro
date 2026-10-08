@@ -1,3 +1,15 @@
+### R330 已验真实卡面标签溢出，安装来源标签仍未到页面（2026-10-07）
+
+Web **2502143d6767eaf147d251661a500de85b890330** 已精确三paths提交（reader、CURRENT、Skills INDEX），仅真实tags>2追加+N。Root正常3310真实100标签卡面RED→+98、详情100完整；R267两标签无+0、R270三标签+1/详情完整、Escape原名称归焦及390无横溢；最终r330-skills-final.png与r330-skills-user-verification.json。没有伪作者/状态替分类或安装tags完成声明。原27Admin mixed及其它文件保持；正常服务/PG/Redis/ObjectStore不重启/reset、零本轮业务写入。
+
+Platform D0 **c959d210512f3a6a934adb6c5657fcd377e4d5cf**、机器 **2bce4832ffb1a29615b76cf96c867b103f3fd32d** 精确15paths（14机器+RootCURRENT）；ProductSkillInstallation只增真实tags13，全图严格剥字段等0712双父、V1–V9 105发行原bytes/43-20-24不改；独审bcc3bd02、Root非范围保护。实际机器42PASS/3FAIL→当前contract310PASS/architecture104及cutover/artifact/types/lint/build/schema/contract自然0（Node24.20.0）。format:check实际exit1，四既有设计文档不隐藏；安装五runtime与BFF固定消费/Web显示未实现，作者事实未有。
+
+WebRoot Node22.22.2首次完整check实际3437PASS/1FAIL（既有R183 Move菜单缺失），保留原日志不标flaky或猜根因；同例独立复验1PASS/78SKIP、再完整check309contract/51architecture/3438default和lint/types/build自然0。工程计数只是辅助，不替用户链验收；全test:e2e/axe/预算/多身份及所有SkillsCRUD仍待验。
+
+完整70 **11PASS/7FAIL/15RETEST/36UNVERIFIED/1PAYMENT-LAST**、个人33 **14PASS/7PARTIAL/12UNVERIFIED**保持，T-K03/T-K05 OPEN、Wave0–7 active/支付最后。最新用户要求R331先Skills卡片→真实预览→包文件详情；原owner并行现Web预览呈现/Platform内容授权设计，未验正文不冒完整闭环。Root八gitlinks及uv不暂存。
+
+<!-- R330-ROOT-RESULT-END -->
+
 ### R329 用户纠正：Skills 徽标是作者＋分类，不是版本（2026-10-07）
 
 当前用户截图要求绑定为：真实发布者/平台徽标＋真实分类；溢出标签显示 +N 并在详情展示完整值。vN/UUID 属于技术详情，状态不代作者/分类。当前正常3310与活跃Web ac099fd 已现场核对两视图无vN卡面徽标（R327既有交付，不称本轮新修）；我发布的R267有真「清单/个人」tags但无作者，安装列表仍无分类/作者。reader slice(0,2)无+N是现源码缺口，不以当前两标签样本冒已测试多标签边界。
