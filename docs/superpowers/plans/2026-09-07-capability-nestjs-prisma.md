@@ -11,8 +11,8 @@
 2026-10-08 Root再次在已登录Manus实际核定：外部搜索/全部及8分类；创建菜单四入口；“我的技能”实际打开Settings中的“已添加的技能”，带搜索/浏览技能/创建与来源筛选“全部/个人/官方/第三方”。该来源筛选不是外部编程/数据等分类，不能混用。新图为ignored r353-manus-create-reference.jpg、r353-manus-my-skills-reference.jpg；预览字段/正文既有真实Manus截图沿R346/R350保存。Manus账号当前已添加列表为空，因此有内容行的更多菜单仍需实际参考，不凭空宣已看过。新本地DOM/截图读取发生focus/CDP超时，未得到新本地截图；不是页面验收证据或应用API失败结论。
 
 - [ ] 固定同viewport/浏览器缩放，对外部目录、预览、正文、我的技能、创建分别截图和测量；本地与参考逐项核字号、行高、边距、布局、宽高、圆角、边框、封面比例、图标及按钮位置。宽/中/窄实际1280/800/390重验，不把不同尺寸或模糊截图当像素一致。
-- [ ] 外部卡片只展示封面、名称、简介、真实发布方、分类/标签及真实使用次数；不显示技术ID、裸版本数字、来源撤回/已安装/已停用成堆堆叠。管理动作留在对应管理界面或更多菜单。
-- [ ] 预览为参考居中弹窗：分类→标题→发布方/更新时间/使用次数→添加到我的技能/查看详情，右侧封面；下方完整简介与真实示例列表，右上分享/下载/关闭。无“技术详情”“技能分类”折叠替代内容。
+- [ ] 外部卡片按真实参考来源展示：官方封面卡显示名称、简介、发布方、分类及真实使用次数；GitHub第三方是文本卡/真实仓库作者与Star数，不强造封面、不把Star当使用次数。不显示技术ID、裸版本数字、来源撤回/已安装/已停用成堆堆叠。管理动作留在对应管理界面或更多菜单。
+- [ ] 预览为参考居中弹窗：分类→标题→发布方/更新时间/使用次数→添加到我的技能/查看详情，官方右侧封面；GitHub第三方对应为真实GitHub作者链接/更新日/Star及Fork数，不强放官方字段或封面。下方完整简介与真实示例列表，右上分享/下载/关闭。无“技术详情”“技能分类”折叠替代内容。
 - [ ] “查看详情”显示真实SKILL.md/包文件，返回预览、关闭和重新打开都保搜索/分类/滚动与焦点；不是只显示skill:id和1。
 - [ ] 我的技能与Settings使用同一管理能力/同一真实数据，不再做两套重复页面；外部目录不退回旧个人管理卡片。来源筛选依据真实来源，不猜名称、tags或摘要。
 
@@ -21,7 +21,7 @@
 | ID | 用户路径 | 最终浏览器验收条件 | 当前事实/待交付 |
 | --- | --- | --- | --- |
 | S01 | 外部目录、搜索、分类、分页 | 搜索→切换真实分类→翻页→打开卡片→返回仍保条件/位置；空结果/错误可恢复；结果来自真实后端 | 分类machine已正式，存写P3实施；BFF9/Web未切换，整体OPEN |
-| S02 | 卡片/预览完整真实字段 | 发布方、更新时间、使用次数、分类、封面、简介、示例在卡片和预览一致；无编造统计/作者/封面事实 | 示例v1/v2已真实打通；作者/usage/真实封面仍OPEN |
+| S02 | 卡片/预览完整真实字段 | 发布方、更新时间、分类、简介、示例及适用的真实封面/usage或GitHub来源/Star/Fork在卡片和预览一致；来源variant按实际参考，不编造统计/作者/封面事实 | 示例v1/v2已真实打通；作者/usage/真实封面/GitHub统计仍OPEN |
 | S03 | 查看详情与包文件 | 预览→详情→切换文件→返回→关闭→重开，正文可读，权限/缺包错误明确；持续内容无反复闪白、错误包不作为有效技能 | R351修过重复加载局部；完整视觉/准入/异步回归仍OPEN |
 | S04 | 添加、启停、移除、同步 | 添加同revision→我的技能出现→启停/移除→返回目录状态同步→刷新仍正确；重复点击不重复安装；操作失败保旧列表并可恢复；新revision发布后明确旧安装保持原版、提示与显式升级/移除重装语义，不随刷新偷偷换源 | 原安装/管理有局部证据，不冒本轮整链完成 |
 | S05 | 编辑与发布新revision | 原内容真实回显→编辑名称/简介/分类/示例/包→保存/扫描/验证/发布→目录及后台同步；旧revision内容不被改，新版显式空集合正确 | 示例真实v1→v2清空已验；分类与其它字段全链待验 |
@@ -59,10 +59,11 @@
 
 | 能力 | 当前真实事实与缺口 | 收敛边界/禁止项 |
 | --- | --- | --- |
-| 作者/发布方 | Skill仅有owner scope与package上传subject，没有作者/发布方事实；IAM有name/image，现tenant members分页管理接口不是发布方批量读取 | Platform保存受信creator/publisher引用，BFF按可见技能引用批量聚合IAM最小显示字段；不存复制姓名，不拿上传subject/ownerId/字符串推断作者；IAM最小contract先正式再消费 |
+| 作者/发布方 | Skill仅有owner scope与package上传subject，没有作者/发布方事实；IAM有name/image，现tenant members分页管理接口不是发布方批量读取；GitHub第三方真实参考显示外部repo作者链接 | 区分受信IAM主体与正规GitHub repo身份variant，Platform持引用/provenance；BFF只对IAM分支有界聚合最小显示字段，外部作者以核定repo数据读取。不复制IAM姓名，不拿上传subject/ownerId/字符串推断作者；正式contract先提交再消费 |
 | 来源筛选 | scope_kind是user/project/organization/session，不是个人/官方/第三方 | 新来源语义与creation方法分开；官方标记只由管理员受信发布动作产生，普通body不可自报；GitHub来源绑定正规导入的repo/commit/path，不按名称猜，旧行不得批量编造历史来源 |
 | 封面 | Storage正式HEAD已有skill_package六操作，但没有skill cover用途/绑定/读取准入；普通个人图片对Platform也未授权 | Platform持有具体revision的cover引用；Storage在既有Upload/Asset能力内明确Skill-cover范围/用途及上传/clean扫描/当前授权读取，不新增服务；缺图用明确占位，ZIP首图/装饰生成书/短期URL都不是封面事实 |
 | 使用次数 | 每次CreateVersion新skill UUID，因此skill:<id>已唯一绑定具体revision；Agent已有durable ready refs及严格completed终态 | 使用定义为同tenant成功Run中distinct(run_id, source_ref)，ready且终态status=completed才计1；cancelled/failed/选择/安装不计，重放/恢复不重计。BFF持有由授权持久事件派生的产品投影和去重，不扩Agent事件、不跨库查Agent、不按series冒具体版计数；正式投影前不填假0 |
+| GitHub统计variant | Root实际第三方卡为Star数，预览为GitHub作者链接＋更新时间＋Star/Fork，不是官方封面/usage；真实截图r353-manus-third-party-preview-reference.jpg | 正规导入取可核repo login/url/stars/forks/observed_at，统计与内容commit身份分开，未核/失败不填0；按来源选择展示，不让所有publisher都变IAM或给第三方造封面 |
 | 发布与预览/下载 | 当前publish visibility仅接受1，本人/已安装包详情可读；active不等于公开，未安装接收者准入缺失 | 先明确owner/tenant/catalog与链接接收范围，新增显式read admission；元数据/正文/包/下载/安装分别校验。默认分享不把私有技能公开；跨tenant和匿名按明确范围拒绝，不因参考UI放宽execution proof |
 | 分享 | BFF现Share只绑定conversation；Platform没有Share链接生命周期 | BFF在自己Share能力增加精确Skill资源，不挤进conversation_id、不造假会话；候选比较typed资源扩展与BFF-owned技能Share表后选一份canonical，Platform每次重验revision可见性/状态，Storage只字节 |
 | 四创建与草稿 | 正常ZIP上传/扫描/验证/发布链已存在；AI/记录/GitHub完整受信handoff不存在，前端组件不代表接口成立 | 四入口共用持久Skill draft及包链，明确保存/继续/废弃与幂等；GitHub仅公开正规repo并固定commit/path，有限下载/防SSRF/包校验。AI只给受信产物，不写Skill。记录入口实际行为未核完，禁止擅自解释成录屏或会话转技能后开发假路径 |
@@ -79,6 +80,14 @@
 - 验证本阶段仅三设计一致性/引用与diff检查、独审；后继runtime各有真实RED、冻结纯门与owner集成，最后S01–S10浏览器。设计文档不冒实现、接口测试不冒页面完成。
 
 原IAM独审本块无P1阻断；D0须将两项P2写实：usage投影tenant/run/source_ref唯一身份、乱序/重复/终态晚到/ledger GC后的保留或重建；cover选定精确scope/purpose及签发/替换/撤回/删除生命周期。Platform文档只引用其它owner机器依赖，不复制其可编辑契约。Root实际另打开Manus Settings GitHub导入：公开仓库URL＋导入按钮，截图ignored r353-manus-github-import-reference.jpg；记录入口点击未获得稳定交互结果，返回发生其它路由后已恢复原Skills地址，未提交输入/上传/启动录制，仍不把未核行为当设计事实。
+
+### R353-D0 当前交付与停止线（2026-10-08）
+
+Platform三设计正式提交 `95d8a091e9940caa7378553fe54b188f9d6141cd`，parent `b38358f`；原owner写入、原IAM独审、Root集成。独审首次两P1（第三方日期语义与optional cover前置矛盾）已修正并窄复核关闭。三面统一：更新日取具体本地Skill revision updated_at，不猜GitHub日期；所有来源封面optional，包始终fresh clean，存在封面时才要求fresh clean及准确身份，依赖失败不能降级成absent。
+
+Root实际核三冻结SHA、586其它tracked字节及三个完整历史suffix，精确提交三文件，Platform树clean；无runtime/schema/contract/generated/数据库/服务变更。第一次隔离前缀stdin格式检查exit1，检查确认仅拼接旧suffix的尾部空行被当EOF；去掉这一个拼接分隔空行作格式输出字节比较全部通过，原文件未修改。收据 `var/dev/r255-preserve/r353-d0-root-commit-receipt.json` 与格式日志保留。设计通过仅允许对应owner合同设计/机器清单及RED规划，**不是接口发行、正常服务激活、页面完成或S01–S10验收**。
+
+下一步固定为同一完整字段发行清单：IAM最小发布方/管理员权限合同、Storage既有Upload/Asset中的skill_cover合同、BFF既有Share的Skill资源canonical及usage投影保留/重建规则、创建受信产物handoff与记录入口真实参考。Root先收敛这些依赖并指定各仓唯一writer；不扩大成其它模块研发，不先接旧字段再接新字段。记录入口实测未获得稳定结果仍OPEN；GitHub第三方文本卡/真实作者链接/Star与Fork与官方封面/usage variant已纳入同一清单。之后正式owner机器→固定BFF→Web完整页面片→正常浏览器S01–S10验收；所有未完成项仍OPEN。
 
 ## D. 执行顺序与职责（减少跨仓来回改）
 
