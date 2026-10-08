@@ -1,3 +1,9 @@
+### R353 Skills 完整交付范围已锁定（2026-10-08）
+
+用户要求一次完整梳理，不再零散反复。唯一现有实施计划顶部R353已集中S01–S10：外部目录/预览正文/我的技能Settings/安装升级/四创建及持久草稿/分享下载/Skills后台/异步无障碍/真实完整浏览器验收。Root再次查看真实Manus菜单和“我的技能”来源筛选并留截图；独审修正Share归BFF及权限主体矩阵后放行。所有未打通能力保持OPEN，未称Skills或Manus一致完成；同计划先字段/接口一起收敛再完整页面片，禁止假统计/作者/封面。
+
+原Platform R352-P3唯一writer继续完整分类运行切片，设计正式c559a4e；Root自有PG空诊断catalog42e3c244/fresh-expand一致仅目录预核，非有数据验收；原输入RED50/29、首pure1698/4FAIL保留，候选未冻结，正常服务/数据不重启不重置。辅助检查不升级业务汇总，其它模块/heartbeat保持暂停，完整Wave0–7 active，原混合修改保护。详见同计划R353与R352-P3授权收据。
+
 ### R352-P2 Skills 分类契约已提交，页面仍未切换（2026-10-08）
 
 Platform正式 `8014acc`（HTTP4/category_keys），Root27paths/生成后保护/独审及98files1594PASS、type/lint/build/contract/inverse实际0；三旧文档format仍FAIL。未接运行/SQL/BFF/Web，正常服务未重启，页面分类仍tags，不称Manus一致或Skills完成。P3先闭合已实测Prisma数组列无NOTNULL的设计差异，再推进存写与消费。细节见同一既有实施计划R352-P2；完整goal active，其它模块/heartbeat保持暂停。

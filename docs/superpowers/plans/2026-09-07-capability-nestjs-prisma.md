@@ -1,3 +1,98 @@
+# Skills 完整交付锁定清单（R353，2026-10-08 当前优先入口）
+
+> 当前只推进Skills；其它模块和heartbeat继续暂停，完整Wave0–7目标保留。复用本计划，不再另建计划中心。Root使用writing-plans梳理既有产品要求，以真实Manus页面为唯一视觉参考；实施沿原owner和subagent-driven-development，辅助门不替代浏览器用户验收。
+
+**目标**：把外部目录→预览→正文详情→添加/管理→创建/导入→后台管理连成完整真实用户链，页面结构、字段、间距、动作和异步体验按Manus对照，不再用零散局部“通过”冒整页完成。
+
+**架构**：浏览器→Web同源adapter→BFF公开ProductAPI→Platform modules/skills；当前物理owner仓是kokoro-capability，不另建skills服务。Platform持有revision/发布/安装/分类及技能业务事实；Storage持有包/封面字节和扫描，IAM持有身份/角色/权限；BFF只聚合，不读其它owner数据库；Web只渲染与交互。只调用Skills闭环所需依赖，不恢复其它模块的独立研发。
+
+## A. 产品与视觉基线（锁定后不再自行创新）
+
+2026-10-08 Root再次在已登录Manus实际核定：外部搜索/全部及8分类；创建菜单四入口；“我的技能”实际打开Settings中的“已添加的技能”，带搜索/浏览技能/创建与来源筛选“全部/个人/官方/第三方”。该来源筛选不是外部编程/数据等分类，不能混用。新图为ignored r353-manus-create-reference.jpg、r353-manus-my-skills-reference.jpg；预览字段/正文既有真实Manus截图沿R346/R350保存。Manus账号当前已添加列表为空，因此有内容行的更多菜单仍需实际参考，不凭空宣已看过。新本地DOM/截图读取发生focus/CDP超时，未得到新本地截图；不是页面验收证据或应用API失败结论。
+
+- [ ] 固定同viewport/浏览器缩放，对外部目录、预览、正文、我的技能、创建分别截图和测量；本地与参考逐项核字号、行高、边距、布局、宽高、圆角、边框、封面比例、图标及按钮位置。宽/中/窄实际1280/800/390重验，不把不同尺寸或模糊截图当像素一致。
+- [ ] 外部卡片只展示封面、名称、简介、真实发布方、分类/标签及真实使用次数；不显示技术ID、裸版本数字、来源撤回/已安装/已停用成堆堆叠。管理动作留在对应管理界面或更多菜单。
+- [ ] 预览为参考居中弹窗：分类→标题→发布方/更新时间/使用次数→添加到我的技能/查看详情，右侧封面；下方完整简介与真实示例列表，右上分享/下载/关闭。无“技术详情”“技能分类”折叠替代内容。
+- [ ] “查看详情”显示真实SKILL.md/包文件，返回预览、关闭和重新打开都保搜索/分类/滚动与焦点；不是只显示skill:id和1。
+- [ ] 我的技能与Settings使用同一管理能力/同一真实数据，不再做两套重复页面；外部目录不退回旧个人管理卡片。来源筛选依据真实来源，不猜名称、tags或摘要。
+
+## B. 完整交互验收矩阵（全部满足才称Skills完成）
+
+| ID | 用户路径 | 最终浏览器验收条件 | 当前事实/待交付 |
+| --- | --- | --- | --- |
+| S01 | 外部目录、搜索、分类、分页 | 搜索→切换真实分类→翻页→打开卡片→返回仍保条件/位置；空结果/错误可恢复；结果来自真实后端 | 分类machine已正式，存写P3实施；BFF9/Web未切换，整体OPEN |
+| S02 | 卡片/预览完整真实字段 | 发布方、更新时间、使用次数、分类、封面、简介、示例在卡片和预览一致；无编造统计/作者/封面事实 | 示例v1/v2已真实打通；作者/usage/真实封面仍OPEN |
+| S03 | 查看详情与包文件 | 预览→详情→切换文件→返回→关闭→重开，正文可读，权限/缺包错误明确；持续内容无反复闪白、错误包不作为有效技能 | R351修过重复加载局部；完整视觉/准入/异步回归仍OPEN |
+| S04 | 添加、启停、移除、同步 | 添加同revision→我的技能出现→启停/移除→返回目录状态同步→刷新仍正确；重复点击不重复安装；操作失败保旧列表并可恢复；新revision发布后明确旧安装保持原版、提示与显式升级/移除重装语义，不随刷新偷偷换源 | 原安装/管理有局部证据，不冒本轮整链完成 |
+| S05 | 编辑与发布新revision | 原内容真实回显→编辑名称/简介/分类/示例/包→保存/扫描/验证/发布→目录及后台同步；旧revision内容不被改，新版显式空集合正确 | 示例真实v1→v2清空已验；分类与其它字段全链待验 |
+| S06 | 创建菜单四条路径 | 使用Kokoro创建、记录技能、本地文件、GitHub导入分别真正产出可保存/验证/发布/安装的Skill；取消/失败恢复；中途关闭/刷新/重新登录后可发现持久草稿并继续/废弃/防重复；辅助创建只给受信草稿输入，Agent不写Skill，仍同Platform验证发布；不只回填一句话或摆假按钮 | 现有本地publish/import组件可复用；四条完整产出路径OPEN，必须核实际入口能力 |
+| S07 | 分享与下载 | 分享链接接收方按可见性查看正确revision，不泄漏私有内容；下载真实包/正确文件名且hash匹配；撤回/无权限/缺包正确处理 | OPEN，不把copy id或假download当完成 |
+| S08 | 对应后台管理 | 管理员从Settings进后台，普通用户看不到且后端拒绝；Skills查询/详情/上架撤回/隔离/恢复等既有动作与目录/安装同步，非法状态失败可恢复 | 原Admin混合修改保护，Skills当前能力与缺项须逐动作验收 |
+| S09 | 异步刷新与竞态 | 列表/弹窗/正文局部刷新不卸载整页、不跳动、不丢搜索/滚动/焦点/未保存内容；旧请求不覆盖新选择；取消、断网、会话到期正确；键盘/菜单与弹窗两次Escape/焦点归还/读屏/reduced-motion/axe/390粗指针44px一并验 | R350 Back/R351 target稳定有局部实证；整页/多入口回归OPEN |
+| S10 | 完整旅程与视觉收尾 | 正规普通/管理员账号在持久PG/Redis/MinIO等真实依赖下走以上路径；刷新/重新登录后数据保持，同尺寸参考对照通过 | 最终未验收；不以测试数量、worker报告、旧截图替代 |
+
+
+### 固定权限主体与安装/草稿状态矩阵
+
+角色仍只有普通用户/管理员，不因验收另建业务角色。按已有事实验证发布本人、同tenant另一普通用户、跨tenant用户、匿名（产品允许链接时）及管理员；对目录metadata、SKILL正文/包、下载、分享撤销/过期、后台动作逐一记录页面与HTTP允许/拒绝，session退役后重验。单一登录账号不算权限验收；正常身份/凭据不伪造，隔离测试用户与资源不污染正常数据。
+
+安装精确revision：已有旧版→发布新版本→旧安装仍指原revision→提示/用户显式升级或移除重装→新包hash与正文同步；版本来源不能因后台刷新隐式变化。草稿：四入口分别正常完成/关闭后再访问/刷新后恢复/重新登录/取消废弃/重复提交；最终同一Platform验证发布，Agent与Conversation不成为另一个Skill writer。
+
+## C. 真实字段与权限一次对齐，避免反复改UI补假数据
+
+| 字段/能力 | 唯一事实与约束 | 消费/展示 |
+| --- | --- | --- |
+| 分类 | Platform独立category_keys闭集8键；非任意tags，旧无分类不猜；R352 native值表当前方案 | BFF public9 fixedowner→Web标签/filter/编辑/后台一致 |
+| 名称/简介/更新时间/示例 | 精确Skill revision，真实可编辑；旧版保留，示例非按标题生成 | 卡片/预览/详情/我的技能/后台读同revision |
+| 发布方/来源 | IAM可信身份与Platform发布事实；个人/官方/第三方业务来源独立于分类 | 展示真实发布方与来源筛选，不把Kokoro冒充所有作者 |
+| 封面 | Storage实际asset与Platform对应revision引用，来源/尺寸/读取权限可核 | 替换现装饰生成书的冒事实呈现；未提供封面需明确非事实占位，最终实际封面路径要验 |
+| 使用次数 | 真实技能使用事实的计数口径先查既有owner事件/事实，不按安装数假装、不写固定数字 | 卡片与预览同口径；无计数能力是OPEN，不静态填数 |
+| 包详情/下载 | Platform可见性/发布/包准入＋Storage真实字节；目录可见不自动授权任意私有包 | 发布可见、本人、安装与管理员不同路径逐项核；相关准入按owner显式合同实现，不默默扩大权限 |
+| 分享 | BFF Share拥有链接/资源身份、接收范围、撤销/过期及审计；Platform拥有精确revision可见性/发布/包准入，访问时重新授权，Storage仅字节；先查现Share绑定Skill是否足够，不另造Platform链接生命周期 | 复制实际可用链接，接收者真实浏览器验证；私有分享/公开扩权另外按实际动作确认 |
+| 四创建 | 不新增通用工作流平台；沿既有Skills草稿/包/发布链，必要Agent能力只服务此Skills路径 | 两人工导入与两辅助创建最终都落同一Skill，不保两套状态/假成功 |
+
+未核定的creator/usage/cover/share/创建接口，先一次查现owner事实与最小机器增量，按owner事实/ref/显示值/权限/失败/机器增量六列汇成同一字段矩阵再实施，禁止各worker另造契约。新持久事实遵守三设计/owner门；技术层presence、digest、错误、幂等不可为美化UI放宽。
+
+## D. 执行顺序与职责（减少跨仓来回改）
+
+| 批次 | 一次交付范围 | Owner与执行 | 放行依据 |
+| --- | --- | --- | --- |
+| 1 当前 | R352-P3完整分类runtime/Prisma/具名expand/负控，冻结正式owner；不因新计划推倒已验证成果 | 原platform_skills_examples_owner_r346唯一writer；Root集成与自有隔离PG；原IAM独审 | 原输入RED→纯门/类型/Schema/真实PG；保9旧事实，无重置正常数据 |
+| 2 字段收敛 | 对S02/S06/S07/S08当前真实事实、4创建与权限列做一次有界审计，定最小owner合同；合并相关字段增量而非一字段一轮整仓重跑 | Root作总裁决；原owner实施；只读审查可并行 | 精确文件/契约/状态/失败清单与当前三设计一致，无新层/垃圾桶 |
+| 3 消费接线 | 固定正式Platform→BFF public9及后继确定字段→Web同源client；不消费变化工作树、不手改generated | 复用原owner按仓串行writer，Root独占Git | BFF已只读核8014范围；category_key禁止trim、required/optional presence保持、111operations不乱增 |
+| 4 页面完整片 | 外部目录/预览正文/我的技能与Settings/创建分享下载/后台Skills一起完成结构、文案、状态和样式；按真实截图清单，不再做2px孤立交付冒完成 | Web唯一writer；Root视觉取证；原IAM独审 | 源码/组件检查及真实浏览器动作，不用“差不多”放行 |
+| 5 全链收尾 | 正常持久配置明确维护与正式配对；S01–S10逐条浏览器完整路径、宽窄/异步/权限/刷新/故障 | Root最终负责，原owner修同一验收发现，不派全新重复计划 | 每条路径保存当前commit/结果/截图；失败保持OPEN；整页一致且全交互通过才最终验收 |
+
+“同一完整页面片”不等于一次打包全部仓、不测就合并；owner机器先提交、消费者固定后实施；同仓一个writer，共享Git由Root串行，原27Admin混合/8gitlinks/uv不夹带。当前分类P3不打断，不重做R350/R351已验证局部，最终全链包含其回归。
+
+### 当前精确代码入口（后继任务卡从这里收紧文件集，不授权整目录重写）
+
+- Platform：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability/src/modules/skills/`；P3精确scope已记录ignored r352-p3-authorized-scope.json。
+- BFF：`/Users/nako/.codex/worktrees/kokoro-r257-bff-normal/src/infrastructure/clients/platform/{catalog-connect,projection-http,personal-installation-response}.ts`、`src/http/routes/platform-projection.ts`、两Createinput/projector、ownerpin/publiccontract及正规生成；原IAM已核category_key统一trim缺陷与presence缺项。
+- Web外部/预览：`/Users/nako/.codex/worktrees/kokoro-r257-admin-web/src/features/app/kokoro-skills-surface.tsx` 与 `src/ui/skills/skill-catalog-read.tsx`/CSS；先核live/preview分支，不恢复legacy title-regex猜分类。
+- Web管理/创建/正文：同checkout `src/ui/skills/{skills-panel,personal-skills-read,personal-skill-publish-dialog,github-import-dialog,skill-upload-dialog,skill-package-detail,skill-detail-dialog}.tsx`及对应CSS、hub clients/server adapters；旧管理技术ID/版本/来源诊断不放回用户主界面。
+- 后台Skills入口先窄核现Admin页面和既有混合修改归属，另列精确交接文件；不盲改整个后台或重写IAM。
+
+### 每批操作与证据规则
+
+- [ ] 批前对照同份字段/视觉/交互矩阵，记录实际失败；缺能力不是删按钮后宣布完成。
+- [ ] 最小实现→冻结→Root检查范围/非任务修改→一次适当纯门/真实集成，失败保原记录；独立只读审查不代替Root。
+- [ ] 正常浏览器从入口到最终结果完整走通，操作后刷新再查；没有真实结果标OPEN。
+- [ ] 视觉对照与业务链一起验，不先做假数据UI再反复补后端；异步保内容、条件和焦点是全页要求。
+- [ ] 同一台账只在真实完成/失败/决策时更新通知；不把每个helper、测试数量或不变状态长篇播报。
+
+R353独审已采纳：BFF Share归属修正、5主体矩阵、安装升级、持久草稿及Web无障碍验收补齐；不新增中心/角色/模块，仍不称Skills实现完成。
+
+---
+
+### R352-P3 首纯门与当前准入断言补准
+
+原writer首完整pure1698PASS/4FAIL保r352-p3-suite-first.log；3为范围内新增required投影适配。仅另补准test/unit/iam/skill-current-gate.test.ts完整findFirst预计参数增加分类include（child tenant/positionasc/take9），原where准入/身份/enabled条件全保；不改权限、不放宽断言。1原SHA留收据，精确scope同步。Root尚未重跑冻结候选，无整体通过声明。
+
+### R352-P3 首负控与必要 fixture 补准
+
+原writer实际两Create输入负控79项50PASS/29FAIL（含pre-IAM binary/digest/raw缺项），Root读取真实r352-p3-input-red.log确认计数；不是缺模块收集失败。正规Prisma生成自然0且实际8files与授权预测一致。首type失败保r352-p3-type-first.log；仅补准5现有直接fixture显式categoryKeys=[]：tenant-isolation、nest-application、nest-ingress、postgres-repository.integration、skill-installation；不放宽类型/改断言，范围和5原SHA已追加同authorized-scope/保护收据。其它非范围、机器、历史仍保护；未跑PG，不称用户完成。
+
 ### R352-P3 Root 真实 catalog 预核与后继准备
 
 Root Node24 自有随机隔离PG诊断库：旧完整catalog214608c1、新42e3c244580582f6811b17aa174b71b83181060256299f64fa71d184b12b2796；indexed候选fresh/expand完全相同、命令自然0，probe库已清理，正常库未访问。证据ignored r352-p3-root-catalog-receipt.json；这里只证明空诊断目录，不冒有数据/业务事务通过。新hash已交唯一Platform writer用于精确gate，正式runtime生成与有数据Root集成待冻结。
