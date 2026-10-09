@@ -1190,7 +1190,12 @@ class ProductInstallationSmoke:
         return row
 
     def require_lifecycle_source_status(
-        self, before: dict[str, object], expected: str
+        self,
+        before: dict[str, object],
+        expected: str,
+        *,
+        source_state_version: str | None = None,
+        source_updated_at: str | None = None,
     ) -> dict[str, object]:
         status, body = self.request(
             "GET", COLLECTION + "/" + quote(str(before["installation_id"]), safe="")
@@ -1198,6 +1203,28 @@ class ProductInstallationSmoke:
         if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
             raise ProductError("product_installation_lifecycle_read_invalid")
         after = require_installation(body["data"])
-        if after != {**before, "source_status": expected}:
+        if expected == "active":
+            if (
+                source_state_version is not None
+                or source_updated_at is not None
+                or before["source_status"] != "active"
+                or after != before
+            ):
+                raise ProductError("product_installation_lifecycle_identity_changed")
+            return after
+        version = require_state_version(source_state_version)
+        if (
+            expected != "withdrawn"
+            or int(version) != int(before["product"]["state_version"]) + 1
+            or _instant(source_updated_at) < _instant(before["skill_updated_at"])
+        ):
+            raise ProductError("product_installation_lifecycle_source_fact_invalid")
+        expected_product = {**before["product"], "state_version": version}
+        if after != {
+            **before,
+            "source_status": expected,
+            "product": expected_product,
+            "skill_updated_at": source_updated_at,
+        }:
             raise ProductError("product_installation_lifecycle_identity_changed")
         return after

@@ -564,7 +564,11 @@ def test_sequence_rejects_identity_drift_inside_valid_mutation_receipt():
 def test_lifecycle_reinstall_and_withdrawn_read_preserve_installation_identity():
     m = helper()
     active = installation()
-    withdrawn = {**active, "source_status": "withdrawn"}
+    withdrawn = {
+        **active,
+        "source_status": "withdrawn",
+        "product": {**active["product"], "state_version": "2"},
+    }
     responses = [(200, ack(active, "reinstalled")), (200, {"data": withdrawn})]
     calls = []
 
@@ -575,10 +579,96 @@ def test_lifecycle_reinstall_and_withdrawn_read_preserve_installation_identity()
     driver = m.ProductInstallationSmoke(request, "owned-run")
     observed = driver.reinstall_for_lifecycle("skill:source-a")
     assert observed == active
-    assert driver.require_lifecycle_source_status(active, "withdrawn") == withdrawn
+    assert (
+        driver.require_lifecycle_source_status(
+            active,
+            "withdrawn",
+            source_state_version="2",
+            source_updated_at=withdrawn["skill_updated_at"],
+        )
+        == withdrawn
+    )
     assert calls[0][2]["key"] == "product-owned-run-lifecycle-reinstall"
     assert calls[1][0] == "GET"
     assert not responses
+
+
+def test_active_lifecycle_projection_keeps_entire_original_installation():
+    m = helper()
+    row = installation()
+    driver = m.ProductInstallationSmoke(
+        lambda *_a, **_kw: (200, {"data": row}), "owned-run"
+    )
+    assert driver.require_lifecycle_source_status(row, "active") == row
+    with pytest.raises(m.ProductError):
+        driver.require_lifecycle_source_status({**row, "summary": "changed"}, "active")
+
+
+def test_withdrawn_projection_changes_only_exact_owner_source_version_and_time():
+    m = helper()
+    active = installation()
+    changed = {
+        **active,
+        "source_status": "withdrawn",
+        "product": {**active["product"], "state_version": "2"},
+        "skill_updated_at": "2026-09-30T12:01:00.000Z",
+    }
+    driver = m.ProductInstallationSmoke(
+        lambda *_a, **_kw: (200, {"data": changed}), "owned-run"
+    )
+    assert (
+        driver.require_lifecycle_source_status(
+            active,
+            "withdrawn",
+            source_state_version="2",
+            source_updated_at=changed["skill_updated_at"],
+        )
+        == changed
+    )
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("installation_id", "other"),
+        ("source_ref", "skill:other"),
+        ("series_id", "other"),
+        ("revision", "2"),
+        ("installed", False),
+        ("enabled", False),
+        ("installed_at", "2026-09-30T12:00:01.000Z"),
+        ("updated_at", "2026-09-30T12:00:01.000Z"),
+        ("skill_updated_at", "2026-09-30T12:00:01.000Z"),
+        ("product", {**installation()["product"], "state_version": "3"}),
+        (
+            "product",
+            {
+                **installation()["product"],
+                "state_version": "2",
+                "publication_audience": "tenant",
+            },
+        ),
+    ],
+)
+def test_withdrawn_projection_rejects_identity_or_exact_source_fact_drift(field, value):
+    m = helper()
+    active = installation()
+    after = {
+        **active,
+        "source_status": "withdrawn",
+        "product": {**active["product"], "state_version": "2"},
+        field: value,
+    }
+    driver = m.ProductInstallationSmoke(
+        lambda *_a, **_kw: (200, {"data": after}), "owned-run"
+    )
+    with pytest.raises(m.ProductError):
+        driver.require_lifecycle_source_status(
+            active,
+            "withdrawn",
+            source_state_version="2",
+            source_updated_at=active["skill_updated_at"],
+        )
 
 
 def test_unpublished_is_precondition_missing_is_private_not_found_and_revoke_all_five():

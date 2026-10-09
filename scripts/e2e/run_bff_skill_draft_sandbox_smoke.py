@@ -2321,6 +2321,34 @@ def platform_lifecycle_receipts(database_url: str, tenant: str) -> tuple[int, in
         return int(row[0]), int(row[1])
 
 
+def platform_withdrawn_source_fact(
+    database_url: str, tenant: str, skill_id: str
+) -> dict[str, str]:
+    """Read actual version/time from the isolated Platform-owned withdrawn row."""
+    from datetime import datetime, timezone
+    import psycopg
+
+    with psycopg.connect(
+        platform_inventory_connection_url(database_url),
+        connect_timeout=5,
+        options="-c default_transaction_read_only=on -c statement_timeout=5000",
+    ) as connection:
+        row = connection.execute(
+            'SELECT state_version, updated_at FROM "kokoro_platform"."skill" '
+            "WHERE tenant_id = %s AND skill_id = %s AND status::text = %s",
+            (tenant, skill_id, "withdrawn"),
+        ).fetchone()
+    if row is None or not isinstance(row[1], datetime) or row[1].tzinfo is None:
+        raise SmokeError("Platform withdrawn source fact invalid")
+    return {
+        "state_version": public_state_version({"state_version": str(row[0])}),
+        "updated_at": row[1]
+        .astimezone(timezone.utc)
+        .isoformat(timespec="milliseconds")
+        .replace("+00:00", "Z"),
+    }
+
+
 def platform_withdraw_event(
     database_url: str, tenant: str, skill_id: str, event_id: str, reason: str
 ) -> int:
@@ -4139,8 +4167,18 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             412,
                             "skill_precondition_failed",
                         )
+                        source_fact = platform_withdrawn_source_fact(
+                            urls["kokoro_platform"], ready.tenant_id, begin_skill_id
+                        )
+                        if source_fact["state_version"] != withdrawn["state_version"]:
+                            raise SmokeError(
+                                "Platform withdraw ACK source version drift"
+                            )
                         product_installation.require_lifecycle_source_status(
-                            installed, "withdrawn"
+                            installed,
+                            "withdrawn",
+                            source_state_version=source_fact["state_version"],
+                            source_updated_at=source_fact["updated_at"],
                         )
                         lifecycle_inventory = platform_inventory(
                             urls["kokoro_platform"], ready.tenant_id, begin_skill_id
