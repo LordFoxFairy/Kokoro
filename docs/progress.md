@@ -1,3 +1,9 @@
+### T-K03.4 R357 BFF正规新包回应与个人导入设计已收敛（2026-10-09）
+
+BFF正式`7bca3305420a7d6bb5214938b38438d4b77557dd`：Root正确Node22.22.2 build/typecheck/lint/semantic0、四测试文件144PASS、冻结11/650exact、独审无确定缺陷。纠正Validate/handoff两响应的正规skill-md-v1闭集，保严格zip-v2/unknown拒绝；未改vendor/权限/数据，正常运行BFF仍待消费者配齐后有序加载新源码，不能据工程宣称浏览器502消失。
+
+Platform个人导入三设计正式`36e589127c5e11291ce645a1558d840a9368ecb8`，职责/准入/Storage恢复/单事务一致；Root schema基线0（既有索引建议警告仍在）。接下来先owner机器契约与新增单intent事实，再BFF/Web；已派原owner，不新计划中心。Web两回应schema候选另续派，页面设计/用户上传/Admin整体仍未验收。
+
 ### T-K03.4 R357 Skills身份根因修复正式验收（2026-10-09）
 
 Platform `2f0c39359768278c583e8726bab0dfe2ad5c0264`，Root重跑68PASS（42unit/26真实独立PG）、typecheck/lint/contract0，11变化/656保护SHA完全一致，独立审查无确定缺陷。唯一package identity闭集覆盖正规skill-md-v1与严格persisted zip-v2；未知仍拒绝，未变Schema/wire/权限/正常数据。此片仅是正规包激活的工程阻断修复，不证明浏览器个人上传闭环。

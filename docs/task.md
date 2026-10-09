@@ -15429,3 +15429,7 @@ T-K03.4 R357-IDENTITY：Platform formal9b4b43e5唯一writer skills_platform_impl
 T-K03.4 最新后台边界确认：普通Settings仅给管理员提供“后台管理”跳转入口，进入独立 `/admin` 页面；后台拥有独立布局、导航及后台设置页面，不在普通Settings弹窗内嵌管理功能。普通用户不显示入口，直接访问页面/接口仍服务端拒绝；当前代码已有账户页 `/admin` 链接及三层授权，完整独立后台设置与CRUD尚待真实验收。
 
 T-K03.4 identity owner正式2f0c39359768278c583e8726bab0dfe2ad5c0264，Root68PASS含26真实PG、type/lint/contract0、11after/656protected SHA exact，独审无确定缺陷。BFF唯一writer skills_contract_review_r357续修两runtime/twoOpenAPI值域，既存vendor9ed activeartifact本来正确两身份，无wire变更不盲repin；Root实际核验路径为vendor/execution-operations/skill-series-current-v1.json（最初两次错误路径已纠正）。正常服务未重启，用户完整上传仍待真正local import。
+
+T-K03.4 BFF身份消费者正式7bca3305420a7d6bb5214938b38438d4b77557dd：Root独立正确Node22.22.2 build/type/lint/semantic0、4文件144PASS、11after/650保护exact、独审无确定缺陷；原vendor已正确两身份，未无效repin。Root尝试跨agent进程句柄观察失败，仅读取原log/请求writer原handle终态，未重复启动。Web原owner续派两schema及正规contract snapshot消费，不改UI含义。
+
+T-K03.4 Local import三设计正式36e589127c5e11291ce645a1558d840a9368ecb8：Root纠正5项资格/状态/重放不一致后批准；单intent、source两个普通service/state文件、fresh create_draft AND install、Storage同command900s transfer、completed receipt独立30d回放、24h未完成TTL、Get严格只读、private Skill/current/installation同事务。Root schema:check0，既有Prisma relationMode索引建议警告保留。Platform唯一writer先机器合同/唯一Schema/fixed known-parent expand与门，不实施正常库/服务；后继业务及Web真实上传仍OPEN。
