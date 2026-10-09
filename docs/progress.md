@@ -1,3 +1,9 @@
+### T-K03.4 R357 Root 发现上传候选真实交互缺口（2026-10-09）
+
+Root对变化中Web候选只读，不作为冻结终验：local-skill-import-dialog的drop label没有onDragOver/onDrop，文案虽称拖放但当前只支持点击；成功callback异步refresh rejection缺catch可能成为未处理rejection；success关闭后state不复位，重开仍展示旧成功而不能选择第二技能。已通知原唯一writer，在现已授权dialog/client/tests内先补真实行为负控，再实现：拖拽共用入口/busy fence、成功与列表刷新错误分离且不重复Finalize、完成后下一独立intent与未知pending保留恢复区分。不能只更新旧oracle宣称闭环；Manus图标/要求区/帮助的视觉差异仍待截图验收。
+
+正常原生浏览器只读实测：当前/app/skills，auth session200且authenticated=true/platform_admin=false，/admin/settings404；3310/53714/8086原进程16286/44904/65067仍监听，未重复启动。这仅证明普通用户权限负控，不是管理员正向或完整Skills通过。
+
 ### T-K03.4 R357 BFF 接线切片已提交，边界与 Web 回归继续（2026-10-09）
 
 前一 goal turn仅核独立后台结构并回复用户，属于无新增实现进展；本轮已重读当前工作树及冻结文档，续派两名原 owner。BFF接线正式 a71d846e7486c0dab2ca60e7915544730d22a3f8，196 materialized 路径、563保护字节exact；Git rename显示110并非范围丢失，Root以 --no-renames 确核196后提交。Root默认1287PASS/8FAIL/3SKIP仍保持失败，正常BFF未重载，提交不等于完整验收。
