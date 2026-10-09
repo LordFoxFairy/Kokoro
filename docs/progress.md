@@ -26,7 +26,13 @@ Platform 三设计正式提交 `b0c0dbecabf019bb2dfe2be55dd1921b5eb947ee`（pare
 
 D3只读前置已结束：当前IAM工作负载mcp-personal scope名称并未发行human写/admin/credential-use能力。下一IAM现Session/tenant/member/platform-admin事实与现CheckAuthorization最小扩展，不新角色/权限库/服务；IAM→Platform正式控制面A→BFF→Web，执行B按Agent/System/Storage正式依赖打通。完整模块未验收，顺序仍连接器→定时→列表归属→按钮/Settings。
 
-IAM 三设计1773df7已落实最小身份源码，Root正式提交 `55befe5092f96d617088549df3166e1d381e6b1c`，正规 internal/SDK0.11与clean包已发行（包SHA899f700f…）。现CheckAuthorization只扩本人/tenant管理/平台目录闭集，当前Session/成员/角色/issuer事实同有界事务，局部strict raw/no-store；无新角色/Schema/权限框架。Root新完整verify109文件1084PASS及schema0，真实native issuer＋自有PGRedis三个HTTP文件47PASS/0FAIL/0SKIP、78库完整目录exact；首RED/正规6RED→6GREEN、全合同对象逆与独审/441保护保持。旧三设计完整docformat失败原样保留，源码完整format门实际0，不混为全Markdown已canonical。正常IAM未激活，连接器CRUD/调用/Admin和页面仍未验收；新workload/完整body预算cancel后继OPEN，原owner已获Platform A1唯一writer（54允许/593保护），完整本人CRUD＋provider真实读取；Root另负责实际资源/Git/终验，不继续重写计划。
+IAM 三设计1773df7已落实最小身份源码，Root正式提交 `55befe5092f96d617088549df3166e1d381e6b1c`，正规 internal/SDK0.11与clean包已发行（包SHA899f700f…）。现CheckAuthorization只扩本人/tenant管理/平台目录闭集，当前Session/成员/角色/issuer事实同有界事务，局部strict raw/no-store；无新角色/Schema/权限框架。Root新完整verify109文件1084PASS及schema0，真实native issuer＋自有PGRedis三个HTTP文件47PASS/0FAIL/0SKIP、78库完整目录exact；首RED/正规6RED→6GREEN、全合同对象逆与独审/441保护保持。旧三设计完整docformat失败原样保留，源码完整format门实际0，不混为全Markdown已canonical。正常IAM未激活，连接器CRUD/调用/Admin和页面仍未验收；新workload/完整body预算cancel后继OPEN，原owner已获Platform A1唯一writer（67允许/582保护），完整本人CRUD＋provider真实读取；Root另负责实际资源/Git/终验，不继续重写计划。
+
+R357当前接线：Platform A1已捕获实际binary Create未注册404的行为RED；正规Prisma输出及现publication严格父逆必要路径获具名补卡，当前67允许/582保护，仍在实现而非验收。Root正常IAM只读发现internal资源已允许authorization.check、Product Web client却缺该scope，Web OIDC也未请求；收据r357-normal-iam-qualification-readonly.json，无正常写入。先沿现正式OAuth管理API保当前client字段补scope并正常登录，不伪造token或放宽资格。BFF H1卡以727df38/40允许/613保护授st6唯一writer，仅固定消费已正式IAM55/0.11、人类MCP read/manage与单一预算/取消；不消费Platform候选、不增public API/SQL/框架、不激活正常服务。原Reviewer只读核已结束，转后述S2实现。连接器CRUD/真实连接/后台与最终页面全链仍OPEN。
+
+IAM S2沿现owner新窄provisioning helper，15具名路径/454保护候选，原reviewer复用为IAM唯一writer；只发行exact Product授权scope read/extend，不公开server-only API、不借旧skip_consent变更分支、不改角色/Schema/SDK。保原scope顺序、client完整字段/secret指纹/binding/resource；单PATCH、fresh operator、unknown后只读，不盲重试。Root负责冻结审查/真实issuer/正常资源，Platform6→7另走既有正规命令，正常激活仍待。
+
+Root已真实GET正常issuer Session200，当前用户匹配配置operator（只读资格收据r357-normal-operator-session-readonly.json）；未输出cookie/主体、未改scope/resource。正常Platform资源6→7须原正式read/extend命令先执行，否则激活IAM当前strict7会使workload拒绝；不靠重启假修复。参考创建菜单再次实读：API名称/图标/备注/多密钥，MCP名称/HTTP/图标/备注/URL/headers，另JSON导入和URL Beta；只开/取消，外部写入0，不猜私有API。
 
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
