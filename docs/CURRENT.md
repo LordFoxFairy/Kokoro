@@ -1,3 +1,11 @@
+### T-K03.4 R357 正规目录下载真实对象字节链通过（2026-10-09）
+
+上一goal turn补Web proxy准入及0d5cc008真实数据核验属progress。本轮原Web writer经原生live确认继续，Root不重派/重启或验收移动Web树。Root利用真实普通浏览器登录会话请求既有参考DownloadSkill，新私有series7d9396fa准备200/版本精确，返回subject-bound opaque同源句柄；实际GET200 application/zip、content-length349，349字节逐byte等原上传包，SHA256 019b9929bcddbfe5766c619ddfd14476beda070bf3d0b8881924e6f2d6b1fed2，ZIP仅根SKILL.md且内容名称一致。
+
+这是已正式BFF74b1b92、Platform/Storage/对象存储正常链真实数据证据，不是mock或仅listener；但由browser request API执行，不冒用户点击下载或Web正在实施的installation/managed/share资格闭环。收据r357-skills-real-catalog-download-bytes.json与本地zip私有保存，不存handle/token。旧pin≠current、withdrawn拒绝、分享撤销与UI全旅程继续待验。零数据改写、零服务重启。
+
+下一行动原Web负责人完成10s exact准备proxy/client/caller与取消/错误tuple负控，冻结后Root纯门/独审、真实UI下载文件，再主个人Skills视觉与后台。完整Skills/Admin/Wave0–7保持OPEN，不能用本次current绿色缩小目标。
+
 ### T-K03.4 R357 Web 下载设计接线与真实数据矩阵核验（2026-10-09）
 
 上一goal turn正规BFF重载、37b08ce9与Web派工属progress。本轮原Web writer live，Root不在移动工作树跑最终门或重复实现。下载consumer批准新增普通hub/skill-qualified-download-client.ts，src/generated/bff-skill-download-policy.json仅复制正式BFF74b1b92原字节并固定commit/digest、禁止编辑成第二契约；现三设计/测试先行。发现现/api/browser/v1 catchall只派local import，批准现route的closed精确下载分派及新src/lib/server/skill-qualified-download.ts、具名proxy测试，保持local import原路径、取消/空body/Origin/session边界，禁通用relay或借local import承接不同职责。Root只读预审要求status200、实际Content-Length一致及503 tuple按owner事实，不凭code名称自拟retryable。
