@@ -1,3 +1,7 @@
+### T-K03.4 R357 v10正式机器发行已验收（2026-10-09）
+
+Root21507自然exit0，默认JSON success=true：2191PASS/0FAIL/402SKIP；49focused与contract/artifact/cutover/typecheck/lint/build0、真实Ingress39187四PASS、独审与12/677字节保护共同放行。Root按exact12路径正式提交Platform84262b664275229c62370d49f51ad5e276116148，v10 aggregate dddb0d194af44dbf0b83a0a0443d774f3dee63f8cb03c364ad529c4c230fb85b，root digest8a850363580521fadf75bc20b1be70bfe62c20004568c00b72a77f614caa672f。机器发行active/routable/runtimeVerified，后者仅隔离真实owner资格，不冒normal部署/浏览器完成。正常schema/服务未切换，后续Root按同卡快照→drain→固定expand→facts/idempotence→源码reload；再BFF正式pin/注册和Web普通上传/独立后台双身份验收。完整Wave0–7仍active。
+
 ### T-K03.4 R357 active候选与正常数据保护实证（2026-10-09）
 
 Root只读正常库快照：Platform14表、skill27、installation7，失败draft93c1711b-4ad4-4afb-acf5-55ce6aae74eb真实存在；Storage9表、storage_asset74、storage_blob37、upload74。历史“37 assets”不是当前准确计数，后续必须保全部74asset/37blob，不能按旧37过滤；每表全行canonical hash已存私有ignored r357-normal-{platform,storage}-pre-activation-facts.json。首快照相对env路径错误在连接前失败、首draft查询误用id而非skill_id真实SQL失败，随后按canonical映射纠正；均无数据写入/删除。
