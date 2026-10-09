@@ -1,3 +1,11 @@
+### R357 当前正式消费者集成与真实页面失败（2026-10-09）
+
+Root正式BFF后继已提交 `2b57a1bb300687d34b02eee05357a6c330d2cfb6`，197改删/548保护逐字节核定，独审无确定P0/P1，最新Root七文件131 PASS、typecheck/lint/build0；Public12完整SHA20025230不变，正常旧进程仍未配对升级。正式Platform9ed6801与Storagebe3ab0c均保留，无兼容alias/fallback。
+
+Web原P2 35路径依赖原混合checkout未提交的Skills前置，不能整件打包。Root已建立干净正式集成worktree `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release`（a540084 / codex/r357-web-skills-release），使用真实APFS依赖clone；原Web唯一负责人续派在此集成当前Public12普通Skills+对应后台。独立只读审计给出普通runtime/UI/test闭包、六obsolete删除、Skills Admin六独立A文件与admin-access两窄hunk；shared Settings/i18n/Hub仅Skills，排除model-routing/MCP/Billing/Project/IAM/Agent。原mixed129状态全部只读，Root独占Git/正常资源。任务仍同T-K03.4，已更新原任务卡，不重放废弃接口或另建计划中心。
+
+Root真实浏览器旧用户tab3连接focus超时，未动原tab/服务；同browser2新tab13正常恢复，Skills显示“技能池加载失败”，实际点击重试后ListHubSkills与ListSkills均502 InvalidResponse。证据与截图 `var/dev/r255-preserve/r357-skills-normal-pre-pair-502.{json,jpg}`。正常BFF仍loaded旧adcdac3，正规源码新2b57未配对，不能据此放宽新版严格合同或称页面通过。后续：干净Web闭包冻结→Root审查/重跑→真实drain及原37对象修复→正式配对→普通/Admin全交互与Manus截图对照。数据库/对象写0，重启0，完整Wave0–7和S01–S10仍OPEN。
+
 ### R357 Web P2 资格实证与审查误报纠正
 
 Root对最新Web96979c22冻结35路径同时核原源码/隔离copy exact、切片外原mixed93记录保持，独立原reviewer确认版本围栏、formal source闭集、布尔严格解析及双参数下载头四项已关闭、无新增确定P0/P1。Root当前纯门实际6files389 PASS（含独立skills-panel）、contract307、architecture51、lint/typecheck/defaultTurbopack build全0，句柄26360已终态0；收据r357-root-web-p2-qualification-receipt.json。仍不冒真实页面/Admin验收：正式干净源码闭包/原mixed前置集成、BFF容量后继、配对正常升级、37项repair与浏览器尚OPEN。
