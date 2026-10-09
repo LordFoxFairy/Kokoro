@@ -1,3 +1,13 @@
+### T-K03.4 R357 权威上传终态恢复已独审；Root 全门运行中（2026-10-09）
+
+Root复核最新Web冻结0ba5cbfad95e6e1e817840d4d7de2a95ba234070cdf503d2a64824c81a74491f，34 changed与808保护tracked均原字节exact。独立窄审确认权威GET rejected/Complete infected清active及session恢复、零旧Finalize，新包使用新Begin key；pending/unknown仍保原三key，原终态死锁P1关闭，无新增确定P0/P1。CSS改局部正常specificity、无!important。Root真实普通浏览器稳定几何1200viewport dialog800×492/x200，390viewport358×540/x16，无页面横溢；首两帧仍处宽度转换瞬态，不拿瞬态测量冒作终态。实际上传/管理员正向整链尚未验收。
+
+Root实际Node22完整type/lint/test/build句柄61324已启动，日志var/dev/r255-preserve/r357-web-terminal-root-full.log；当前type/lint通过，默认韩文覆盖失败已出现，进程仍运行，未宣称全门绿。writer默认3463PASS/1FAIL/79SKIP及OIDC收集失败仅为交接辅助，待Root实际终态。未修改服务/正常数据或提交候选Web。
+
+正常BFF只读已核exec9724/PID44904/53714 ready200、正规0600配置apps/kokoro-bff/.env.local及Node22原launch链；代码HEAD49b555c尚未载入。发现main未把SIGINT/SIGTERM接入已有shutdown，旧wrapper仅转发信号，不能声称应用drain。原BFF owner先只读提出最小现main/lifecycle测试方案，Root批准后修复再正规单进程重载，禁止临时配置、共享reset或重复启动。独立后台正式/admin/settings仍保持，用户Settings仅管理员跳转；普通账号不得自授管理员。
+
+前turn只是后台结构只读取证与答复，未推进实现；本turn继续实际冻结核验、独审、浏览器几何与Root完整门。完整Wave0–7 active，当前仍仅Skills及其必要运行闭环，其它业务切片暂停。
+
 ### T-K03.4 R357 BFF 职责整改正式交付；Web 终态恢复后继（2026-10-09）
 
 Root17463自然0：当前BFF typecheck/lint/contract/build0，默认1295PASS/0FAIL/3SKIP、contract704PASS；独审确认职责P1关闭，无新增P0/P1。原MCP标题虚称CRUD经Root实际核并改为fail-closed，格式化唯一旧local-import HTTP测试的规范化语义hash保持；Root10586真实format0/55PASS0FAIL0SKIP。最终freeze70836f6a090f155be3eef8ffc6bddbb951f1c1c9b89996b1faa1cc093077c65a：Root核13含删除路径、661其它tracked原字节exact后正式提交BFF49b555c227edd24f7ba2497bf6732a2597bb982e。应用聚合/下载规则保application，owner wire decode在单一infra facade，types单源归application；强门和HTTP最终strictparse不放宽。正常BFF44904/53714仍原运行，尚未以新HEAD重载，非真实用户上传验收。
