@@ -1,3 +1,11 @@
+### T-K03.4 R357 精确下载 D0 已审查提交；BFF 实施准入（2026-10-09）
+
+上一goal turn裁决完整下载语义并提交99d5b1eb，属progress。本轮Root拒收初D0“零payload一律拒CL0”的重复Finalize缺陷与HTTP route承载业务，原owner修正实际零字节有界首winner及application职责。独审最终无P0/P1；Root重核3最终SHA exact、670其它tracked原bytes exact、diff-check0，正式BFF设计e380066，仅3docs，无机器合同/代码/资源变更。
+
+实施任务卡沿T-K03.4：BFF原负责人唯一writer，基线e380066，Root审查/提交。允许现HTTP skill-download、handles、bootstrap runtime/server，以及必须补入的application skill-specification(.types)窄迁移catalog_current binding；新普通application/exact-skill-download.ts，现route目录skill-download.policy.ts单一code-first机器源→contract/skill-download-policy.json确定性生成（scripts/generate-skill-download-policy.mjs）；具名application/policy测试与现HTTP/architecture测试、package脚本及3设计/CURRENT。具体owner client/projector若需越界，先报告实际现路径才可写。无public OpenAPI/Platform contract/SQL变化；旧binding alias删除，参考DownloadSkill wire/current不变；Web停写至BFF正式发行。
+
+RED/验收不能缩小：catalog陈旧与旧安装+新current分别正确；installed=false必须download0；managed/installation/share非ACTIVE exact源不能绕owner下载资格或fallback；同tenant share非creator新登录可另prepare，但旧subject handle拒，撤销/到期/跨tenant先失败；path单次解码%2F/%252F owner0；CL0/空stream/非零/首winner/late；60s/128、spool前后confirm/末admit/hashsize/finally。先锁真实失败再实施，冻结后Root纯门/独审/正常owner/browser下载文件，不以候选HTTP200宣用户闭环。完整Skills/Admin/其余Wave0–7仍OPEN。
+
 ### T-K03.4 R357 精确下载资格契约门：拒绝只修新包（2026-10-09）
 
 上一goal turn真实旧包阅读/启停与下载失败定位、提交baa9419b，属progress。Root复核BFF server removedSkillRead明确删除旧/v1/skills/{version}/download；Web安装/managed/shared Preview仍落入退役GET，是确定调用偏差。原Web owner提出三caller全部传series_id，Root拒收：BFF prepareDownload→detail→owner.current，不能满足技术设计73/API合同88已有“安装固定旧version”要求；share也不能用series current丢失share资格。新包恰与current相同的单绿不代表旧包成功。
