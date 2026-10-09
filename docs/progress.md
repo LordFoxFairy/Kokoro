@@ -1,3 +1,13 @@
+### T-K03.4 R357 BFF 公开相位正式修复；真实私有上传恢复成功、列表仍失败（2026-10-09）
+
+上一goal turn有Platform正式上线和真实枚举缺陷定位，属进展。本轮BFF显式public闭集5paths freeze173830ed4经Root复核5hash/668其它tracked exact；独审无P0/P1，Root97838实际type/lint/default/build0，1302PASS/0FAIL/3SKIP（结尾echo变量名误拼不影响逐命令exit累计与终态0），正式bfb151c。VALIDATED→valid；UNSPECIFIED/INTENT/999 direct拒绝，Finalize/completedGet exactvalid及facade消费覆盖。Root审查纠正独审“facade是raw内部不必改”的错误：实际先同mapper再比较，所以现facade同步valid必需，独立package-upload合法validated未动。
+
+旧正常BFF15350/PID5611 Ctrl-C自然0与listener消失；首次84483误继承PATH令子进程Node24，实测后自然stop0并纠正PATH，新96552/PID23250实际Node22.22.2、原envSHA/ready200，其它10listeners exact，零DDL/reset。保留误启动事实，不冒首次正规Node22。收据r357-bff-package-phase-normal-reload.json，进程表已更新。
+
+真实普通用户原intent99d4facc重试仅GET，UI出现包名与“完成”；最终Node22下再GET200 completed/valid，skill7d9396fa、installedtrue、audienceowner、权威skill_updated_at、sessionStorage recovery0，零新Begin/PUT/Complete/Finalize。点击完成→我的技能真实列表GET503 skill_installation_dependency_unavailable，重试仍失败，因此完整上传→已安装→详情/刷新旅程尚未验收；已沿原BFF负责人只读定位，不掩错误。收据r357-normal-local-import-completed-detail-pending.json。
+
+Web12path最新默认3551PASS/6FAIL，剩项目树/refresh写计数未擅改。独审发现OIDC partial toMatchObject放过platform_admin/expiry缺失，Root拒收并仅原test补exact四字段与负控；候选仍未提交，不以多数绿冒全门。独立后台/admin/settings保持、普通Settings仅管理员跳转，管理员正向与完整Skills/Wave0–7仍OPEN，goal active。
+
 ### T-K03.4 R357 owner 时间戳正式上线；真实恢复暴露 BFF 枚举投影错误（2026-10-09）
 
 上一goal turn只核后台结构并答复，没有推进实现，本轮继续安全可执行路径。Platform四路径freeze dcccc8d4经Root核4hash及685其它tracked exact；Root93559实际focused49PASS/type/lint/contract/build0，独审无P0/P1/P2，正式提交35d96d1c686c55165e56c51f05bf2e344087175d。Writer默认2191PASS/402SKIP只作辅助，Root未复跑完整default。旧正常45001/PID65067单次Ctrl-C后runtime.stopped/natural0、8086 listener消失；同Node24/原0600配置SHA启动唯一76495/PID17787/ready200，其它10listeners PIDset exact，零installer/DDL/reset。已纠正processes.json过期Platform句柄，收据r357-platform-timestamp-normal-reload.json。
