@@ -15445,3 +15445,5 @@ Root原句柄84372自然exit1：真实PostgreSQL expansion 3FAIL均落在fixture
 T-K03.4 Local import机器v2冻结ae2430ac已由Root实际验31变化/648protected exact，8focused/contract/artifact/schema通过，native80120真实PG3PASS/0FAIL（fresh=expand幂等、DDL回滚/unknown parent、post-COMMIT ACK恢复）；catalog78与原baseline全digest exact，前轮3fixture泄漏已精确清理。独审scan_state P1关闭。正常数据/服务未写；四runtime缺口仍在，不提交编译失败release。原Platform唯一writer续派测试先行runtime，范围与依赖记同私有卡；Root独占真实PG/Git/运行放行。后台实际仅独立Skills页，缺shell/navigation/settings，后继不复用普通弹窗或造空占位页。
 
 T-K03.4 后继BFF只读提案四`/v1/skill-imports` public资源未准入：用户公开命名严格Manus已知suffix v2→v1，未观察公开上传write，现四方法仅internal批准；Root阻止发明公开接口，要求沿现browser-private ingress复核。不新BFF Storage/SQL/receipt，fresh双action与预算、900s/24h恢复方案保留；owner runtime正式发行前不消费repin/写。Platform已报告精确source service/state+现capability transaction族、parser返回真实description测试范围，Root确认符合既存三设计，先行为RED/native冻结。
+
+T-K03.4 runtime测试先行freeze5341b3d四文件：Root实际native入口exit1/缺新transaction模块collect失败/0项执行，未访问PG业务，不称真实资源RED。此为新能力缺实现基线，原唯一writer准入批准production；须完整实现后交Root真实PG四写回滚、双Finalize、ACK lost、expiry/tenant隔离及清理门，无stub制造假失败。编译缺口必须同slice关闭；active v10/正常服务与Web链路仍未放行。
