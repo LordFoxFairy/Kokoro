@@ -15591,3 +15591,6 @@ Root修复初次感染无receipt终态：tests-only真实31PASS/3FAIL；初实�
 Root97094真实运行clean、EICAR、ACK-lost三个独立生命周期均通过（每场景4tests含3IPC纯负控；不冒充12个真实用户路径）；真实MinIO/Clam/Storage owner/Platform PG与正式Connect调用，不用mock Storage替代。感染首次稳定零后续Complete、ACK丢失正规同command恢复、Finalize/Get/重放及精确清理均覆盖。本次资源0；正常PG与MinIO catalogs真实exact，之前3具名失败Storage DB/桶仍保留，不能把“latest0”冒充历史资源全清。正式Platform smoke7b1b9d0b63cca1406d794d04afba208ed236878a；Root独占runner8b27251d4cd951cdf84bb88184cd162a67c3992d。
 
 正常Platform库未扩展、服务未重载、v10仍inactive；BFF正式3e19仍未正常注册，Web普通上传未切换，因此完整Skills与Wave0–7未验收。下一沿同卡正规发行/激活及Web单上传、Manus视觉与浏览器；独立后台20paths候选已冻结但Root待审/门禁重跑，全量Web当前报告有失败，不接受口头“既有”归类；后台与浏览器完整验收仍OPEN。
+
+R357-WEB-ADMIN-SETTINGS 当前用户边界重申（2026-10-09）：用户Settings仅管理员入口跳转/admin；独立后台shell及/admin/settings，不基于普通Settings弹窗。Root核production-freeze a3f1f48d：20候选与813保护全部exact，Node22 focused4files/10PASS、typecheck0。独审发现P1：三列表只读取首100且忽略next_cursor，可遗漏已有routing并错误采用create CAS。沿原唯一Web writer仅tests-only跨页与cursor/generation负控冻结，Root真实RED后才准现client/query有界完整分页，一次同generation提交；不扩API/schema/store/其它模块，不把局部门当作页面验收。
+R357-WEB-ADMIN-SETTINGS分页P1：tests-only de1efced仅1test替换；Root实核833总文件exact，Node22真实2FAIL/1skip（第二页遗漏、重复cursor仍显示partial）。准原Web唯一writer最窄现model-routing-settings.tsx与既有client有界逐页读取，cursor去环/页或总量上限/每页取消、三集合全部完成同generation一次commit；补late page撤权负控。保留所有其它候选及813保护；不新增API/模块/store。Root冻结后重跑及只读复审，独立后台与完整Wave仍未验收。
