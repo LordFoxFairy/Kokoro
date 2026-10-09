@@ -1,3 +1,11 @@
+### R357 真实预览、文件详情与下载阻断已修正（2026-10-09）
+
+Web正式 `e79b8556b73ba21493c853eff35d45d4bea6811d` 仅3paths：目录稳定series与安装exact version不再混用；按series唯一定位安装，canonical详情仍逐项核ID/source/revision/series/installed。Root79/79 UI、typecheck/lint/default build全0；独审含动态切版旧响应回归无确定P0/P1。正常旧v1安装/当前v2目录预览实际安装list+detail200、错误消失，原安装未自动换版。
+
+Platform正式 `9b4b43e50f46767dfe6180280dbc01dbd44951f8` 仅7paths：真实550byte完整SHA原包的已持久zip-v2 identity被合法frontmatter重算成skill-md导致412；现在只在持久expected与严格包内manifest原摘要exact时保留身份，新上传仍新规范，错身份/变字节/非clean/取消继续拒绝，无数据/Schema/wire改写。Root12文件110/110、typecheck/lint0、7修改/659保护exact；独审无确定P0/P1。原59935正常drain0，正式46806 sameenv源码readyz200，PG/Redis/MinIO不动。
+
+Root真实浏览器外部R350：目录→预览→查看详情→SKILL.md→manifest.json→返回预览→DownloadSkill200→实际下载ZIP550bytes/SHA与ownerbinding一致；package树与两正文接口均200。正常37原资产精确版本GET与hash前已独立通过。截图 `var/dev/r255-preserve/r357-normal-package-detail-green.jpg`，收据 `r357-normal-package-detail-download-green.json` 与 `r357-normal-preview-binding-green.json`。仅以上实际链路闭合，不冒充整页Manus像素一致/全部CRUD/Admin/APIkey/OAuth合格；S01–S10/完整Wave0–7仍OPEN。下一继续同Skills任务卡正常个人/后台CRUD与视觉对照；maintenance并发query弃用警告仍具名待根因整改，不宣称无遗留债务。其他模块暂停、原混合修改/Gitlinks/uv.lock保留。
+
 ### R357 正常持久资源正式配对已执行；真实预览仍有阻断（2026-10-09）
 
 Root原六进程均实际drain并确认旧监听消失，PG/Redis/MinIO/Clam未重置；排他收据 `var/dev/r255-preserve/r357-normal-pair-writer-exclusion.json`。drain后新Storage/Platform owner-schema备份已私有保存。正常Storage正式be3执行fixed expand与maintenance：dry checked37、apply checked37/verified37，独立只读VersionId+IfMatch GET逐对象SHA/size复验37通过（36独立Blob）；37资产原字段与ID保持，新增image dimensions均NULL，Blob仅批准locator改变。收据 `r357-normal-storage-independent-readback.json`；不声称旧NULL版本物理清理。maintenance PG并发query弃用警告保留，尚须owner整改，不当作无债务完成。
