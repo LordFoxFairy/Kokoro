@@ -1,3 +1,11 @@
+### T-K03.4 R357 八个安装详情可读、启停持久化通过；下载真实502待修（2026-10-09）
+
+上一goal turn完成真实详情/刷新并提交56a4aa09，属progress。本轮原Web负责人只读生命周期审查：列表effect cleanup abort与current围栏保留；开发StrictEffects符合每次一abort一success，未取得initiator故不冒唯一闪动根因。Root真实1440×1000的查看详情过渡120rAF帧preview→loading→body、rect固定800×600/emptyFrames0，只证明这一过渡；不删除取消安全边界、不称所有路径无闪。
+
+Root正常UI逐个打开原七安装详情与SKILL.md（网络1504–1517均200），没有修复/删除/替换旧数据；旧包缺版本导致详情失败的历史风险在当前这些路径未复现，不能再当已证实当前阻塞。新私有安装828ac689两次实际启停PUT1518/1589均200，各整页刷新后状态保持，最终恢复enabledtrue。Manus已登录现页667×726直接对照：本地preview dialog633.65×600、h2 20px、详情94×32；与参考关键尺寸一致但完整卡片/字段/交互视觉仍未验收，不编造私有包缺失categories/examples/usage。
+
+新真实失败：该私有技能preview下载GET /api/hub/skills/7d9396fa-7c5f-4911-9e03-02a5e4493d89/download（1660）502 skill_response_invalid，UI错误用了“技能池加载失败”，download event20s超时。已沿原BFF负责人只读定位Web binary adapter/BFF/Platform契约及target，不擅改契约或另发写入句柄。收据var/dev/r255-preserve/r357-skills-installed-download-followup.json。下一行动：确定owner后先失败断言再窄修下载及对应提示，Root真实下载文件复验；管理员正向、完整Skills/六default失败/Root治理/整体Wave0–7继续OPEN。
+
 ### T-K03.4 R357 正规 OAuth scope 登记与私有安装详情刷新真实通过（2026-10-09）
 
 上一 goal turn 只核后台路由并答复，属 no progress；本轮推进原私有安装的真实详情和刷新验收。Web 1f3a1e6 已正式提交三路径 scope 切片；Root 48107 type/lint/unit/build 终态0、unit28PASS，日志 r357-web-publisher-scope-root.log。拒收并删除错误的 fake IAM authorize403；Web unit只证明自己的授权URL/回调闭集，不冒 owner权限证据。
