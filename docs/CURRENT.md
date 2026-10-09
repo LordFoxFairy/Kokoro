@@ -1,3 +1,17 @@
+### R357 本轮两项根因修复已正式提交；真实发布仍未验收（2026-10-09）
+
+Storage `d5a575a4886a68080ff2e7a3f7e13d27b085dccc`：Root自有真实PG先复现同client queued2/DeprecationWarning1，候选同RepeatableRead逐scalar读取后Root1项PG通过、warning0、完整旧事实digest一致，26unit/typecheck/lint通过，3修改/309保护SHAexact、独审无确定P0/P1，原37journal/manifest/sourcepin未写。仅维护snapshot窄修，不全局串行、无Schema/运行服务重启，也不冒整页通过；首fixture配置失败及真实RED保留。
+
+Web `33e8b60975920048d89d22b11b504b1efd46d3e7`：真实UI新草稿403并非缺服务或普通member政策。Root只读IAM正常事实是owner、active tenant、正确Product client/profile、既有skill scope/client-resource binding齐全；Web唯一OIDC_SCOPE却漏 `iam:skill-authorization.check`。现只补这个已provision scope，strict scope/resource/PKCE不弱化、未改IAM角色/凭据；Root正确Node22.22.2重跑27项/typecheck/lint/default build全0，3paths独审并提交。先误用Node24的工程通过带engine警告，不作为正式资格，正确重跑结果独立保留。`iam:publisher-profile.read`虽有正式契约但正常client/resource尚未provision，未把它塞进scope造成invalid_scope；需正式IAM演进后另验发布。
+
+Root为实际写验证通过正式菜单退出旧授权会话，目前本地登录页需用户用原账号重新登录（未改密码，不在聊天接收密码）；已提出页面登录请求，不能据纯门称draft创建/上传/发布/Admin已完成。当前普通写链真实RED截图 `var/dev/r255-preserve/r357-normal-personal-publish-403.jpg`，资格矩阵 `r357-normal-publish-iam-approved-scope-readback.json`。沿同T-K03.4继续，完整Skills/Admin/视觉与Wave0–7仍OPEN，其他模块仍暂停；原混合Gitlinks/uv.lock无暂存。
+
+### R357 当前普通用户发布实测失败；不以读取成功冒充 CRUD（2026-10-09）
+
+Root正式9服务当前监听均存活，Skills目录/个人读取200不等于写操作可用。真实Settings→我发布的→添加本地合法349byte SKILL.md ZIP，填写名称/简介/自动化分类/真实示例→上传并发布，第一步 `POST /api/hub/self/skills/drafts` 实际403 `skill_forbidden` / BFF user admission failed。未获得新draft/上传/发布成功回执，原7安装与37资产没有因此改写。证据 `var/dev/r255-preserve/r357-normal-personal-publish-red.json`、截图同名前缀403.jpg；已续派原只读owner调查BFF/IAM admission，不擅自授予权限或弱化校验。
+
+“我发布的”同series多个版本源于正式managed contract按exact分页，生命周期按钮实际在详情内（分享/下载/查看详情/新版本/撤回），不是接口没有接线。若收敛为每series一行，必须owner正规current投影及历史读取，不用前端按名字/最大revision去重掩盖历史。Storage维护警告聚焦真实PG首次Root执行因fixture缺必需clamav字段失败，自有随机库已删除，尚未取得目标warning RED；原writer只准修fixture后再复现，不抢改生产。全Skills/Admin/视觉与完整Wave0–7仍OPEN，沿同任务卡，不新建中心。
+
 ### R357 真实预览、文件详情与下载阻断已修正（2026-10-09）
 
 Web正式 `e79b8556b73ba21493c853eff35d45d4bea6811d` 仅3paths：目录稳定series与安装exact version不再混用；按series唯一定位安装，canonical详情仍逐项核ID/source/revision/series/installed。Root79/79 UI、typecheck/lint/default build全0；独审含动态切版旧响应回归无确定P0/P1。正常旧v1安装/当前v2目录预览实际安装list+detail200、错误消失，原安装未自动换版。

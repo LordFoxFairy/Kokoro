@@ -15409,3 +15409,5 @@ R315 最终Web精确三paths提交 e78d3f9ca83e51cd7499f71e1fe370127d98bbc4；Ro
 
 
 R323最终BFF机器已发行 c91fee642c5bac79d5beab90b15a1eaf97637047（精确12paths/539其它tracked exact/index空/原var保留）。Rootheader RED2PASS/1FAIL拒86401后两行最窄修；原71468完整check自然0，contract304/default877PASS、2原资源SKIP，lint/types/build；13002format0、独审1fa085a4两P2关闭。原四RED组与旧105document语义exact，旧R240 hash/92保留。未实施四GET runtime、Schema/正常权限不变；机器发行不冒用户连接器CRUD。原收据脚本首次list.get误读发生于写前，适配list后实际完整提交验算0，r323-bff-commit-receipt.json保结果。所有本轮门句柄已终态，不重复启动；当前Skills仍是用户优先路径。
+
+R357 T-K03.4：Storage维护snapshot真实PG RED→GREEN后正式d5a575a；Web普通Skills403定位为OIDC漏已provision skill check scope，正式33e8b60、Root27/Node22工程0，未改IAM角色。正常publisher scope未演进、退出旧授权后需原账号页面登录，已询问；真实发布/Admin/视觉与完整目标继续OPEN。原37/7数据与其他修改保护；taskcard更新原中心。
