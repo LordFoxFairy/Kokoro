@@ -32,7 +32,8 @@ import tempfile
 import threading
 import time
 import zipfile
-from typing import Callable, Iterator, Protocol
+from typing import Callable, Iterator, Protocol, Mapping
+from types import MappingProxyType
 from uuid import UUID, uuid4
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
@@ -46,12 +47,66 @@ except ModuleNotFoundError:
 
 
 ROOT = Path(__file__).resolve().parents[2]
-OWNERS = {
-    "iam": ROOT / "apps/kokoro-iam",
-    "bff": ROOT / "apps/kokoro-bff",
-    "platform": ROOT / "apps/kokoro-capability",
-    "storage": ROOT / "apps/kokoro-storage",
-}
+OWNERS = MappingProxyType(
+    {
+        "iam": ROOT / "apps/kokoro-iam",
+        "bff": ROOT / "apps/kokoro-bff",
+        "platform": ROOT / "apps/kokoro-capability",
+        "storage": ROOT / "apps/kokoro-storage",
+    }
+)
+FORMAL_PINS = MappingProxyType(
+    {
+        "bff": "427d126be01b24614bca51b78e3d3e33da24268b",
+        "platform": "e566843b68abc19603d37f372a3abd44aa6e3d6e",
+        "storage": "a1206d0194c1b1e405834f4c4548168fddbb5d52",
+        "iam": "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a",
+        "agent": "ee736cdf68a63e4434d6b8800c8e266f5c3b005d",
+    }
+)
+LOGICAL_GITLINKS = MappingProxyType(
+    {
+        **{name: str(path.relative_to(ROOT)) for name, path in OWNERS.items()},
+        "agent": "apps/kokoro-agent",
+    }
+)
+
+
+def owner_sources(
+    bff_source: Path | None = None,
+    storage_source: Path | None = None,
+    *,
+    agent_source: bool = False,
+) -> Mapping[str, Path]:
+    paths = dict(OWNERS)
+    for name, path in (("bff", bff_source), ("storage", storage_source)):
+        if path is not None:
+            if not path.is_absolute():
+                raise SmokeError(f"{name} source requires an absolute Git worktree")
+            paths[name] = path.resolve()
+    if agent_source:
+        paths["agent"] = ROOT / LOGICAL_GITLINKS["agent"]
+    return MappingProxyType(paths)
+
+
+def storage_schema_fixture(directory: Path, source: Path) -> Path:
+    """Existing Storage fresh fixture copied only from this run's frozen source."""
+    fixture = directory / "storage-schema"
+    (fixture / "scripts").mkdir(parents=True)
+    (fixture / "prisma").mkdir()
+    for path in (
+        "package.json",
+        "prisma.config.ts",
+        "prisma/schema.prisma",
+        "scripts/apply-schema.ts",
+    ):
+        shutil.copyfile(source / path, fixture / path)
+    (fixture / "node_modules").symlink_to(
+        source / "node_modules", target_is_directory=True
+    )
+    return fixture
+
+
 LOCAL_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 # Keep stdin/protocol handles alive after a failed drain: GC/EOF can otherwise
 # make IAM tear down its DB while a Source executor still uses it. No new work
@@ -251,32 +306,50 @@ def credential_file(payload: dict[str, object]) -> Iterator[Path]:
 
 def frozen_sources(
     run: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    *,
+    owners: Mapping[str, Path] | None = None,
 ) -> dict[str, str]:
-    """Reject dirty or non-gitlink candidates before any infrastructure side effect."""
+    """Require clean formal full SHA, logical Root pin and common Git ownership."""
+    paths = OWNERS if owners is None else owners
     result: dict[str, str] = {}
-    for name, path in OWNERS.items():
-        status = run(
-            ["git", "-C", str(path), "status", "--porcelain"],
-            text=True,
-            capture_output=True,
-            check=True,
-        ).stdout
-        if status:
+    for name, path in paths.items():
+        if name not in FORMAL_PINS or not path.is_absolute():
+            raise SmokeError("owner source mapping invalid")
+
+        def git(source: Path, *args: str) -> str:
+            return run(
+                ["git", "-C", str(source), *args],
+                text=True,
+                capture_output=True,
+                check=True,
+                timeout=10,
+            ).stdout
+
+        if git(path, "status", "--porcelain"):
             raise SmokeError(f"{name} source is not frozen")
-        sha = run(
-            ["git", "-C", str(path), "rev-parse", "HEAD"],
-            text=True,
-            capture_output=True,
-            check=True,
-        ).stdout.strip()
-        tree = run(
-            ["git", "-C", str(ROOT), "ls-tree", "HEAD", f"apps/{path.name}"],
-            text=True,
-            capture_output=True,
-            check=True,
-        ).stdout
-        if not tree.startswith(f"160000 commit {sha}\t"):
+        sha = git(path, "rev-parse", "HEAD").strip()
+        if sha != FORMAL_PINS[name]:
+            raise SmokeError(f"{name} source is not the approved formal commit")
+        logical = LOGICAL_GITLINKS[name]
+        if (
+            git(ROOT, "ls-tree", "HEAD", logical).strip()
+            != f"160000 commit {sha}\t{logical}"
+        ):
             raise SmokeError(f"{name} source is not pinned by Root HEAD")
+        selected = git(
+            path, "rev-parse", "--path-format=absolute", "--git-common-dir"
+        ).strip()
+        original = git(
+            ROOT / logical, "rev-parse", "--path-format=absolute", "--git-common-dir"
+        ).strip()
+        if (
+            not selected
+            or not original
+            or not Path(selected).is_absolute()
+            or not Path(original).is_absolute()
+            or Path(selected).resolve() != Path(original).resolve()
+        ):
+            raise SmokeError(f"{name} source belongs to another Git repository")
         result[name] = sha
     return result
 
@@ -528,6 +601,15 @@ def local_http_origin(value: str, label: str) -> str:
     return value.rstrip("/")
 
 
+def public_state_version(data: object) -> str:
+    try:
+        return product_helper.require_state_version(
+            data.get("state_version") if isinstance(data, dict) else None
+        )
+    except product_helper.ProductError:
+        raise SmokeError("BFF Skill state version invalid") from None
+
+
 def _draft(
     body: dict[str, object], expected_status: int
 ) -> tuple[str | None, str | None, bool | None, str | None]:
@@ -535,14 +617,24 @@ def _draft(
         if set(body) != {"data"} or not isinstance(body["data"], dict):
             raise SmokeError("BFF Skill draft success response invalid")
         data = body["data"]
+        public_state_version(data)
         if (
-            set(data) != {"skill_id", "series_id", "revision", "status", "replayed"}
+            set(data)
+            != {
+                "skill_id",
+                "series_id",
+                "revision",
+                "status",
+                "replayed",
+                "state_version",
+            }
             or not isinstance(data["skill_id"], str)
             or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", data["skill_id"])
             is None
             or not isinstance(data["series_id"], str)
             or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", data["series_id"])
             is None
+            or type(data["revision"]) is not int
             or data["revision"] != 1
             or data["status"] != "draft"
             or type(data["replayed"]) is not bool
@@ -562,10 +654,41 @@ def public_error_code(value: object) -> str:
     return "unknown"
 
 
-def require_public_package_get(status: int, body: object, skill_id: str) -> None:
+def public_source_version(data: object, expected: str | None = None) -> dict[str, str]:
+    """Preserve owner presence; compare an observed locator to its real PUT ACK."""
+    if not isinstance(data, dict) or "source_version_id" not in data:
+        return {}
+    value = data["source_version_id"]
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(r"[\x21-\x7e]{1,1024}", value) is None
+        or value == "null"
+        or (expected is not None and value != expected)
+    ):
+        raise SmokeError("BFF current Skill package source version invalid")
+    return {"source_version_id": value}
+
+
+def require_public_package_get(
+    status: int,
+    body: object,
+    skill_id: str,
+    *,
+    expected_source_version: str | None = None,
+) -> None:
     """The fresh draft has no package attempt; reject stale or expanded public data."""
+    version = public_state_version(body.get("data") if isinstance(body, dict) else None)
+    locator = public_source_version(
+        body.get("data") if isinstance(body, dict) else None, expected_source_version
+    )
     if status != 200 or body != {
-        "data": {"skill_id": skill_id, "attempt_epoch": "0", "phase": "none"}
+        "data": {
+            "skill_id": skill_id,
+            "attempt_epoch": "0",
+            "phase": "none",
+            "state_version": version,
+            **locator,
+        }
     }:
         raise SmokeError("BFF current Skill package GET projection invalid")
 
@@ -577,13 +700,21 @@ def require_public_package_pending(
     attempt_id: str,
     upload_id: str,
     attempt_epoch: str,
+    *,
+    expected_source_version: str | None = None,
 ) -> None:
     """Observe the same owner attempt through BFF's non-signing recovery read."""
+    version = public_state_version(body.get("data") if isinstance(body, dict) else None)
+    locator = public_source_version(
+        body.get("data") if isinstance(body, dict) else None, expected_source_version
+    )
     if status != 200 or body != {
         "data": {
             "skill_id": skill_id,
             "attempt_epoch": attempt_epoch,
             "phase": "upload_pending",
+            "state_version": version,
+            **locator,
             "attempt_id": attempt_id,
             "upload_id": upload_id,
         }
@@ -598,12 +729,20 @@ def require_public_package_uploaded(
     attempt_id: str,
     upload_id: str,
     attempt_epoch: str,
+    *,
+    expected_source_version: str | None = None,
 ) -> None:
+    version = public_state_version(body.get("data") if isinstance(body, dict) else None)
+    locator = public_source_version(
+        body.get("data") if isinstance(body, dict) else None, expected_source_version
+    )
     if status != 200 or body != {
         "data": {
             "skill_id": skill_id,
             "attempt_epoch": attempt_epoch,
             "phase": "uploaded",
+            "state_version": version,
+            **locator,
             "attempt_id": attempt_id,
             "upload_id": upload_id,
         }
@@ -618,12 +757,20 @@ def require_public_package_validated(
     attempt_id: str,
     upload_id: str,
     attempt_epoch: str,
+    *,
+    expected_source_version: str | None = None,
 ) -> None:
+    version = public_state_version(body.get("data") if isinstance(body, dict) else None)
+    locator = public_source_version(
+        body.get("data") if isinstance(body, dict) else None, expected_source_version
+    )
     if status != 200 or body != {
         "data": {
             "skill_id": skill_id,
             "attempt_epoch": attempt_epoch,
             "phase": "validated",
+            "state_version": version,
+            **locator,
             "attempt_id": attempt_id,
             "upload_id": upload_id,
         }
@@ -638,13 +785,26 @@ def require_public_package_aborted(
     attempt_id: str,
     upload_id: str,
     attempt_epoch: str,
+    *,
+    expected_source_version: str | None = None,
 ) -> None:
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("BFF current Skill package aborted projection invalid")
     data = body["data"]
+    public_state_version(data)
+    public_source_version(data, expected_source_version)
+    if isinstance(data, dict):
+        data = {key: value for key, value in data.items() if key != "source_version_id"}
     if not isinstance(data, dict) or set(data) not in (
-        {"skill_id", "attempt_epoch", "phase", "attempt_id"},
-        {"skill_id", "attempt_epoch", "phase", "attempt_id", "upload_id"},
+        {"skill_id", "attempt_epoch", "phase", "attempt_id", "state_version"},
+        {
+            "skill_id",
+            "attempt_epoch",
+            "phase",
+            "attempt_id",
+            "upload_id",
+            "state_version",
+        },
     ):
         raise SmokeError("BFF current Skill package aborted fields invalid")
     if (
@@ -672,6 +832,7 @@ def require_public_package_begin(
     if status != 201 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("BFF Skill package Begin response invalid")
     data = body["data"]
+    public_state_version(data)
     if not isinstance(data, dict) or set(data) != {
         "skill_id",
         "attempt_id",
@@ -679,6 +840,7 @@ def require_public_package_begin(
         "upload_id",
         "transfer_reference",
         "replayed",
+        "state_version",
     }:
         raise SmokeError("BFF Skill package Begin data invalid")
     typed_id = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}\Z")
@@ -747,6 +909,7 @@ def require_public_package_complete(
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("BFF Skill package Complete response invalid")
     data = body["data"]
+    public_state_version(data)
     if not isinstance(data, dict) or set(data) != {
         "skill_id",
         "attempt_id",
@@ -756,6 +919,7 @@ def require_public_package_complete(
         "replayed",
         "content_sha256",
         "scan_state",
+        "state_version",
     }:
         raise SmokeError("BFF Skill package Complete data invalid")
     if (
@@ -785,6 +949,7 @@ def require_public_skill_validate(
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("BFF Skill Validate response invalid")
     data = body["data"]
+    public_state_version(data)
     if not isinstance(data, dict) or set(data) != {
         "skill_id",
         "series_id",
@@ -792,6 +957,7 @@ def require_public_skill_validate(
         "content_digest",
         "manifest_identity",
         "replayed",
+        "state_version",
     }:
         raise SmokeError("BFF Skill Validate data invalid")
     if (
@@ -815,12 +981,14 @@ def require_public_skill_publish(
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("BFF Skill Publish response invalid")
     data = body["data"]
+    public_state_version(data)
     if not isinstance(data, dict) or set(data) != {
         "source_ref",
         "revision",
         "status",
         "event_id",
         "replayed",
+        "state_version",
     }:
         raise SmokeError("BFF Skill Publish data invalid")
     revision = data["revision"]
@@ -885,13 +1053,12 @@ def require_platform_guard_denial(
 
 
 def require_platform_published_skill_read(
-    status: int, body: object, skill_id: str, revision: str
+    status: int, body: object, skill_id: str, revision: str, *, enriched: bool = False
 ) -> None:
-    """Accept only the public-safe owner projection, never package metadata."""
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("Platform published Skill response invalid")
     data = body["data"]
-    if not isinstance(data, dict) or set(data) != {
+    fields = {
         "skill_id",
         "source_ref",
         "revision",
@@ -899,7 +1066,14 @@ def require_platform_published_skill_read(
         "name",
         "summary",
         "tags",
-    }:
+        "skill_updated_at",
+        "example_prompts",
+        "category_keys",
+        "product",
+    }
+    if not isinstance(data, dict) or not fields <= set(data) <= fields | (
+        {"publisher_profile"} if enriched else set()
+    ):
         raise SmokeError("Platform published Skill fields invalid")
     if (
         data["skill_id"] != skill_id
@@ -907,7 +1081,7 @@ def require_platform_published_skill_read(
         or data["revision"] != revision
         or not isinstance(revision, str)
         or re.fullmatch(r"[1-9][0-9]{0,19}", revision) is None
-        or int(revision) > 18_446_744_073_709_551_615
+        or int(revision) > 18446744073709551615
         or data["status"] != "active"
         or not isinstance(data["name"], str)
         or not isinstance(data["summary"], str)
@@ -915,6 +1089,18 @@ def require_platform_published_skill_read(
         or any(not isinstance(tag, str) for tag in data["tags"])
     ):
         raise SmokeError("Platform published Skill projection invalid")
+    try:
+        product_helper.require_product_fields(data, enriched=enriched)
+    except product_helper.ProductError:
+        raise SmokeError("Platform published Skill Product invalid") from None
+
+
+def require_public_published_skill_read(
+    status: int, body: object, skill_id: str, revision: str
+) -> None:
+    require_platform_published_skill_read(
+        status, body, skill_id, revision, enriched=True
+    )
 
 
 def require_bff_projection_revoked(status: int, body: object) -> None:
@@ -962,12 +1148,16 @@ def require_bff_personal_skill_list(
         "scope",
         "revision",
         "enabled",
-        "categories",
+        "category_keys",
+        "example_prompts",
+        "product",
+        "skill_updated_at",
     }
     matches = 0
     for item in page["skills"]:
         if not isinstance(item, dict) or not required <= set(item) <= required | {
-            "installed"
+            "installed",
+            "publisher_profile",
         }:
             raise SmokeError("BFF personal Skill list item invalid")
         item_revision = item["revision"]
@@ -983,17 +1173,195 @@ def require_bff_personal_skill_list(
             or re.fullmatch(r"[1-9][0-9]{0,19}", item_revision) is None
             or int(item_revision) > 18_446_744_073_709_551_615
             or not isinstance(item["enabled"], bool)
-            or not isinstance(item["categories"], list)
-            or any(not isinstance(category, str) for category in item["categories"])
+            or not isinstance(item["category_keys"], list)
+            or any(not isinstance(category, str) for category in item["category_keys"])
             or ("installed" in item and not isinstance(item["installed"], bool))
         ):
             raise SmokeError("BFF personal Skill list item invalid")
+        try:
+            product_helper.require_product_fields(item)
+        except product_helper.ProductError:
+            raise SmokeError("BFF personal Skill Product invalid") from None
         if item["source_ref"] == "skill:" + skill_id:
             matches += 1
             if item_revision != revision:
                 raise SmokeError("BFF personal Skill list revision drift")
     if matches != 1:
         raise SmokeError("BFF personal Skill list lost published Skill")
+
+
+def require_managed_page(
+    response: tuple[int, object],
+) -> tuple[list[dict[str, object]], str | None]:
+    status, body = response
+    if (
+        status != 200
+        or not isinstance(body, dict)
+        or set(body) != {"data", "meta"}
+        or not isinstance(body["meta"], dict)
+        or set(body["meta"]) != {"request_id"}
+        or not isinstance(body["meta"]["request_id"], str)
+        or not body["meta"]["request_id"]
+    ):
+        raise SmokeError("Owned Skill page envelope invalid")
+    page = body["data"]
+    if (
+        not isinstance(page, dict)
+        or set(page) != {"skills", "next_cursor"}
+        or not isinstance(page["skills"], list)
+        or len(page["skills"]) > 100
+    ):
+        raise SmokeError("Owned Skill page invalid")
+    required = {
+        "skill_id",
+        "source_ref",
+        "series_id",
+        "revision",
+        "name",
+        "summary",
+        "tags",
+        "status",
+        "skill_updated_at",
+        "example_prompts",
+        "category_keys",
+        "product",
+    }
+    seen = set()
+    for row in page["skills"]:
+        if (
+            not isinstance(row, dict)
+            or not required <= set(row) <= required | {"publisher_profile"}
+            or any(
+                not isinstance(row[x], str)
+                or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", row[x]) is None
+                for x in ("skill_id", "series_id")
+            )
+            or row["source_ref"] != "skill:" + row["skill_id"]
+            or row["skill_id"] in seen
+            or not isinstance(row["revision"], str)
+            or re.fullmatch(r"[1-9][0-9]{0,19}", row["revision"]) is None
+            or int(row["revision"]) > 18446744073709551615
+            or not isinstance(row["status"], str)
+            or row["status"]
+            not in {
+                "draft",
+                "active",
+                "disabled",
+                "withdrawn",
+                "quarantined",
+                "discarded",
+            }
+        ):
+            raise SmokeError("Owned Skill identity invalid")
+        try:
+            product_helper.require_product_fields(row)
+            if (
+                not isinstance(row["name"], str)
+                or not row["name"].strip()
+                or product_helper._javascript_length(row["name"]) > 255
+                or not isinstance(row["summary"], str)
+                or product_helper._javascript_length(row["summary"]) > 65535
+                or not isinstance(row["tags"], list)
+                or len(row["tags"]) > 100
+                or any(
+                    not isinstance(tag, str)
+                    or not tag.strip()
+                    or product_helper._javascript_length(tag) > 128
+                    for tag in row["tags"]
+                )
+                or len(set(row["tags"])) != len(row["tags"])
+            ):
+                raise product_helper.ProductError("metadata invalid")
+        except (product_helper.ProductError, UnicodeError):
+            raise SmokeError("Owned Skill Product invalid") from None
+        seen.add(row["skill_id"])
+    cursor = page["next_cursor"]
+    if cursor is not None and (
+        not isinstance(cursor, str)
+        or re.fullmatch(r"[A-Za-z0-9_-]{1,2048}", cursor) is None
+    ):
+        raise SmokeError("Owned Skill cursor invalid")
+    return page["skills"], cursor
+
+
+def require_owned_error(
+    response: tuple[int, object], status: int = 400, code: str = "invalid_skill_request"
+) -> None:
+    observed, body = response
+    if (
+        observed != status
+        or not isinstance(body, dict)
+        or set(body) != {"error", "meta"}
+        or not isinstance(body["meta"], dict)
+        or set(body["meta"]) != {"request_id"}
+        or not isinstance(body["meta"]["request_id"], str)
+        or not body["meta"]["request_id"]
+        or not isinstance(body["error"], dict)
+        or set(body["error"]) != {"code", "message"}
+        or body["error"]["code"] != code
+        or not isinstance(body["error"]["message"], str)
+        or not body["error"]["message"]
+    ):
+        raise SmokeError("Owned Skill error invalid")
+
+
+def exercise_owned_queries(
+    request: Callable[[str], tuple[int, object]], sources: tuple[str, str]
+) -> bool:
+    """The same owner HTTP query and cursor semantics, with no current-page filter."""
+    base = "/v1/self/skills"
+    filters = {"status": "active", "source_kind": "personal", "query": "sandbox"}
+    rows, cursor = require_managed_page(
+        request(base + "?" + urlencode({**filters, "limit": "100"}))
+    )
+    if (
+        cursor is not None
+        or len(rows) != 2
+        or {r["source_ref"] for r in rows} != set(sources)
+    ):
+        raise SmokeError("Owned Skill complete query inventory invalid")
+    first, cursor = require_managed_page(
+        request(base + "?" + urlencode({**filters, "limit": "1"}))
+    )
+    if len(first) != 1 or cursor is None:
+        raise SmokeError("Owned Skill first query page invalid")
+    last, after = require_managed_page(
+        request(base + "?" + urlencode({**filters, "limit": "1", "cursor": cursor}))
+    )
+    if after is not None or first + last != rows:
+        raise SmokeError("Owned Skill query pagination invalid")
+    for query in (
+        {**filters, "source_kind": "official"},
+        {**filters, "source_kind": "third_party"},
+        {**filters, "query": "%_\\"},
+    ):
+        if require_managed_page(request(base + "?" + urlencode(query))) != ([], None):
+            raise SmokeError("Owned Skill literal/source query invalid")
+    if require_managed_page(
+        request(
+            base
+            + "?"
+            + urlencode({**filters, "query": " \tsandbox \n", "limit": "100"})
+        )
+    ) != (rows, None):
+        raise SmokeError("Owned Skill trimmed query invalid")
+    for changes in ({"query": "changed"}, {"source_kind": "official"}):
+        require_owned_error(
+            request(
+                base
+                + "?"
+                + urlencode({**filters, **changes, "limit": "1", "cursor": cursor})
+            )
+        )
+    for suffix in (
+        "query=%20",
+        "query=a&query=b",
+        "query=" + "a" * 1025,
+        "source_kind=unknown",
+        "source_kind=personal&source_kind=official",
+    ):
+        require_owned_error(request(base + "?" + suffix))
+    return True
 
 
 def require_package_response_headers(
@@ -1380,10 +1748,12 @@ def require_personal_skill_version(
 ) -> dict[str, object]:
     status, body = response
     data = body.get("data")
+    public_state_version(data)
     if (
         status != 201
         or not isinstance(data, dict)
-        or set(data) != {"skill_id", "series_id", "revision", "status", "replayed"}
+        or set(data)
+        != {"skill_id", "series_id", "revision", "status", "replayed", "state_version"}
         or not isinstance(data.get("skill_id"), str)
         or data["skill_id"] == base_skill_id
         or data.get("series_id") != series_id
@@ -1405,10 +1775,12 @@ def require_personal_skill_withdraw(
 ) -> dict[str, object]:
     status, body = response
     data = body.get("data")
+    public_state_version(data)
     if (
         status != 200
         or not isinstance(data, dict)
-        or set(data) != {"source_ref", "status", "event_id", "replayed"}
+        or set(data)
+        != {"source_ref", "status", "event_id", "replayed", "state_version"}
         or data.get("source_ref") != "skill:" + skill_id
         or data.get("status") != "withdrawn"
         or not isinstance(data.get("event_id"), str)
@@ -1630,12 +2002,21 @@ def upload_zip_bytes(
     return stream.getvalue()
 
 
-def signed_put(reference: dict[str, object], payload: bytes) -> None:
-    """Send bytes only to the already-validated signed origin, without IAM headers."""
+def signed_put(reference: dict[str, object], payload: bytes) -> str:
+    """Return the real PUT ACK version; never infer it from ETag or latest."""
     transfer = reference["transfer_reference"]
-    if not isinstance(transfer, dict):
-        raise SmokeError("BFF signed PUT transfer missing")
+    if (
+        not isinstance(transfer, dict)
+        or transfer.get("method") != "PUT"
+        or transfer.get("required_headers") != {"content-type": "application/zip"}
+    ):
+        raise SmokeError("BFF signed PUT transfer invalid")
     parsed = urlsplit(str(transfer["url"]))
+    local_http_origin(
+        urlunsplit((parsed.scheme, parsed.netloc, "", "", "")), "signed PUT"
+    )
+    if parsed.fragment or not parsed.path or not parsed.query:
+        raise SmokeError("signed PUT locator invalid")
     connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=12)
     try:
         connection.request(
@@ -1648,6 +2029,17 @@ def signed_put(reference: dict[str, object], payload: bytes) -> None:
         response.read(1024)
         if response.status not in {200, 204}:
             raise SmokeError("signed package PUT was rejected")
+        values = [
+            v for k, v in response.getheaders() if k.lower() == "x-amz-version-id"
+        ]
+        if (
+            len(values) != 1
+            or not isinstance(values[0], str)
+            or re.fullmatch(r"[\x21-\x7e]{1,1024}", values[0]) is None
+            or values[0] == "null"
+        ):
+            raise SmokeError("signed PUT version ACK invalid")
+        return values[0]
     finally:
         connection.close()
 
@@ -2102,6 +2494,8 @@ class RunArguments:
     agent_redis_url: str | None = None
     product_installation: bool = False
     personal_skill_lifecycle: bool = False
+    bff_source: Path | None = None
+    storage_source: Path | None = None
 
 
 def platform_surfaces(args: RunArguments) -> str:
@@ -2131,7 +2525,10 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     product_helper.preflight(args.product_installation, args.agent_source)
     platform_surfaces(args)
     source_helper.preflight(args.agent_source, args.agent_redis_url, args.redis_url)
-    frozen_sources()
+    owners = owner_sources(
+        args.bff_source, args.storage_source, agent_source=args.agent_source
+    )
+    frozen_sources(owners=owners)
     source_env = dict(os.environ if env is None else env)
     admin_url = normalized_postgres_admin_url(args.postgres_admin_url)
     postgres = urlsplit(admin_url)
@@ -2286,9 +2683,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     str(args.iam_node),
                     "--import",
                     "tsx",
-                    str(OWNERS["iam"] / "test/fixtures/web-oidc-flow-host.ts"),
+                    str(owners["iam"] / "test/fixtures/web-oidc-flow-host.ts"),
                 ],
-                cwd=OWNERS["iam"],
+                cwd=owners["iam"],
                 env=iam_env,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
@@ -2369,11 +2766,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             storage_env["KOKORO_STORAGE_SERVICE_CREDENTIALS"] += (
                 f",kokoro-platform={storage_platform_secret}"
             )
-            fixture = storage_helper._storage_schema_fixture(directory)
+            fixture = storage_schema_fixture(directory, owners["storage"])
             _run(
                 [
                     str(args.storage_node),
-                    str(OWNERS["storage"] / "node_modules/tsx/dist/cli.mjs"),
+                    str(owners["storage"] / "node_modules/tsx/dist/cli.mjs"),
                     "scripts/apply-schema.ts",
                 ],
                 fixture,
@@ -2407,6 +2804,8 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_DOMAIN": f"{run_id}.smoke.localhost",
                 "KOKORO_IAM_BASE_URL": ready.base_url,
                 "KOKORO_AGENT_ENABLED": "false",
+                "KOKORO_STORAGE_RPC_BASE_URL": storage_base,
+                "KOKORO_BFF_STORAGE_SECRET": storage_secret,
                 "KOKORO_STORAGE_OBJECT_ORIGIN": source_env[
                     "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"
                 ],
@@ -2417,7 +2816,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "pnpm",
                     "db:apply-schema",
                 ],
-                OWNERS["platform"],
+                owners["platform"],
                 platform_env,
                 log,
                 "Platform schema installation",
@@ -2425,7 +2824,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             )
             _run(
                 [str(args.bff_node.parent / "corepack"), "pnpm", "db:apply-schema"],
-                OWNERS["bff"],
+                owners["bff"],
                 bff_env,
                 log,
                 "BFF schema installation",
@@ -2444,40 +2843,36 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     }
                 )
                 storage = _start(
-                    [str(args.storage_node), str(OWNERS["storage"] / "dist/main.js")],
-                    OWNERS["storage"],
+                    [str(args.storage_node), str(owners["storage"] / "dist/main.js")],
+                    owners["storage"],
                     storage_env,
                     log,
                 )
                 processes.append(storage)
                 _wait_ready(storage_base, storage)
                 platform = _start(
-                    [str(args.platform_node), str(OWNERS["platform"] / "dist/main.js")],
-                    OWNERS["platform"],
+                    [str(args.platform_node), str(owners["platform"] / "dist/main.js")],
+                    owners["platform"],
                     platform_env,
                     log,
                 )
                 processes.append(platform)
                 _wait_ready(platform_base, platform)
                 proxy = CountingTcpProxy(platform_port)
-                # First boot proves the production default remains closed.
+                # First boot omits catalog credential: formal dependency must fail closed.
                 phase = Phase.DEFAULT_OFF
                 proxied_platform = f"http://127.0.0.1:{proxy.port}"
                 bff_env.update(
                     {
                         "KOKORO_PLATFORM_BASE_URL": proxied_platform,
-                        "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE": str(
-                            files["bff-catalog.json"]
-                        ),
                         "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": str(
                             files["bff-projection.json"]
                         ),
-                        "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "false",
                     }
                 )
                 closed = _start(
-                    [str(args.bff_node), str(OWNERS["bff"] / "dist/main.js")],
-                    OWNERS["bff"],
+                    [str(args.bff_node), str(owners["bff"] / "dist/main.js")],
+                    owners["bff"],
                     bff_env,
                     log,
                 )
@@ -2583,10 +2978,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
                 processes.remove(closed)
-                bff_env["KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED"] = "true"
+                bff_env["KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE"] = str(
+                    files["bff-catalog.json"]
+                )
                 active = _start(
-                    [str(args.bff_node), str(OWNERS["bff"] / "dist/main.js")],
-                    OWNERS["bff"],
+                    [str(args.bff_node), str(owners["bff"] / "dist/main.js")],
+                    owners["bff"],
                     bff_env,
                     log,
                 )
@@ -2621,9 +3018,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 _run(
                     [
                         str(args.platform_node),
-                        str(OWNERS["platform"] / "scripts/smoke-storage-package.mjs"),
+                        str(owners["platform"] / "scripts/smoke-storage-package.mjs"),
                     ],
-                    OWNERS["platform"],
+                    owners["platform"],
                     platform_package_probe_env(
                         base,
                         args.platform_node,
@@ -2635,7 +3032,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         str(result["skill_id"]),
                     ),
                     log,
-                    "Platform real Storage v2 Complete, ZIP Validate and Publish",
+                    "Platform real Storage v3 Complete, ZIP Validate and Publish",
                     secret_values,
                 )
                 phase = Phase.INVENTORY
@@ -2677,6 +3074,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     },
                 )
                 begin_skill_id, begin_series_id, replayed, _ = _draft(body, status)
+                begin_state_version = public_state_version(body.get("data"))
                 if status != 201 or replayed is not False or begin_skill_id is None:
                     raise SmokeError("BFF Begin fixture draft was not created")
                 if args.product_installation:
@@ -2721,6 +3119,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     begin_skill_id, 1, agent_source=args.agent_source
                 )
                 begin_body = {
+                    "expected_state_version": begin_state_version,
                     "filename": "sandbox.zip",
                     "mime_type": "application/zip",
                     "size_bytes": len(payload),
@@ -2810,6 +3209,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     body={
                         **begin_body,
                         "replaces_attempt_id": first_begin["attempt_id"],
+                        "expected_state_version": first_begin["state_version"],
                     },
                 )
                 replacement = require_public_package_begin(
@@ -2842,11 +3242,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "2",
                 )
                 phase = Phase.CANDIDATE_PACKAGE_COMPLETE
-                signed_put(replacement, payload)
+                replacement_version = signed_put(replacement, payload)
                 complete_path = begin_path + "/complete"
                 complete_body = {
                     "attempt_id": replacement["attempt_id"],
                     "upload_id": replacement["upload_id"],
+                    "source_version_id": replacement_version,
+                    "expected_state_version": replacement["state_version"],
                     "content_sha256": begin_body["content_sha256"],
                     "size_bytes": len(payload),
                 }
@@ -2942,6 +3344,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     str(replacement["attempt_id"]),
                     str(replacement["upload_id"]),
                     "2",
+                    expected_source_version=replacement_version,
                 )
                 # EICAR is the Storage scanner's test fixture. It deliberately
                 # is not a valid ZIP and proves rejection before ZIP validation.
@@ -2955,6 +3358,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "size_bytes": len(infected_payload),
                     "content_sha256": hashlib.sha256(infected_payload).hexdigest(),
                     "replaces_attempt_id": replacement["attempt_id"],
+                    "expected_state_version": public_state_version(body.get("data")),
                 }
                 status, body = _http_json(
                     bff_base,
@@ -2978,10 +3382,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or infected["attempt_epoch"] != "3"
                 ):
                     raise SmokeError("BFF infected Begin attempt drift")
-                signed_put(infected, infected_payload)
+                infected_version = signed_put(infected, infected_payload)
                 infected_complete_body = {
                     "attempt_id": infected["attempt_id"],
                     "upload_id": infected["upload_id"],
+                    "source_version_id": infected_version,
+                    "expected_state_version": infected["state_version"],
                     "content_sha256": infected_body["content_sha256"],
                     "size_bytes": len(infected_payload),
                 }
@@ -3014,6 +3420,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         str(infected["attempt_id"]),
                         str(infected["upload_id"]),
                         "3",
+                        expected_source_version=infected_version,
                     )
                 status, body = _http_json(
                     bff_base,
@@ -3021,7 +3428,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     token=ready.access_token,
                     secret=web_secret,
                     key="package-recover-begin-" + run_id,
-                    body={**begin_body, "replaces_attempt_id": infected["attempt_id"]},
+                    body={
+                        **begin_body,
+                        "replaces_attempt_id": infected["attempt_id"],
+                        "expected_state_version": public_state_version(
+                            body.get("data")
+                        ),
+                    },
                 )
                 recovered = require_public_package_begin(
                     status,
@@ -3064,11 +3477,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     str(recovered["upload_id"]),
                     "4",
                 )
-                signed_put(recovered, payload)
+                recovered_version = signed_put(recovered, payload)
                 recovered_complete_body = {
                     **complete_body,
                     "attempt_id": recovered["attempt_id"],
                     "upload_id": recovered["upload_id"],
+                    "source_version_id": recovered_version,
+                    "expected_state_version": recovered["state_version"],
                 }
                 status, body = _http_json(
                     bff_base,
@@ -3121,6 +3536,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "content_sha256": hashlib.sha256(bad_payload).hexdigest(),
                     "size_bytes": len(bad_payload),
                     "replaces_attempt_id": recovered["attempt_id"],
+                    "expected_state_version": recovered_complete["state_version"],
                 }
                 status, body = _http_json(
                     bff_base,
@@ -3144,10 +3560,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or bad_begin["attempt_epoch"] != "5"
                 ):
                     raise SmokeError("BFF bad ZIP Begin attempt drift")
-                signed_put(bad_begin, bad_payload)
+                bad_begin_version = signed_put(bad_begin, bad_payload)
                 bad_complete_body = {
                     "attempt_id": bad_begin["attempt_id"],
                     "upload_id": bad_begin["upload_id"],
+                    "source_version_id": bad_begin_version,
+                    "expected_state_version": bad_begin["state_version"],
                     "content_sha256": bad_begin_body["content_sha256"],
                     "size_bytes": len(bad_payload),
                 }
@@ -3197,7 +3615,10 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 validate_path = (
                     "/v1/skills/" + quote(begin_skill_id, safe="") + "/validate"
                 )
-                bad_validate_body = {"attempt_id": bad_begin["attempt_id"]}
+                bad_validate_body = {
+                    "attempt_id": bad_begin["attempt_id"],
+                    "expected_state_version": bad_complete["state_version"],
+                }
                 bad_validate_key = "package-bad-zip-validate-" + run_id
                 for _ in range(2):
                     status, body = _http_json(
@@ -3227,6 +3648,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         str(bad_begin["attempt_id"]),
                         str(bad_begin["upload_id"]),
                         "5",
+                        expected_source_version=bad_begin_version,
                     )
                 status, body = _http_json(
                     bff_base,
@@ -3234,7 +3656,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     token=ready.access_token,
                     secret=web_secret,
                     key="package-zip-recover-begin-" + run_id,
-                    body={**begin_body, "replaces_attempt_id": bad_begin["attempt_id"]},
+                    body={
+                        **begin_body,
+                        "replaces_attempt_id": bad_begin["attempt_id"],
+                        "expected_state_version": public_state_version(
+                            body.get("data")
+                        ),
+                    },
                 )
                 zip_recovered = require_public_package_begin(
                     status,
@@ -3250,11 +3678,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or zip_recovered["attempt_epoch"] != "6"
                 ):
                     raise SmokeError("BFF bad ZIP recovery attempt drift")
-                signed_put(zip_recovered, payload)
+                zip_recovered_version = signed_put(zip_recovered, payload)
                 zip_complete_body = {
                     **complete_body,
                     "attempt_id": zip_recovered["attempt_id"],
                     "upload_id": zip_recovered["upload_id"],
+                    "source_version_id": zip_recovered_version,
+                    "expected_state_version": zip_recovered["state_version"],
                 }
                 zip_complete_key = "package-zip-recover-complete-" + run_id
                 status, body = _http_json(
@@ -3299,7 +3729,10 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     )
                 if zip_complete["scan_state"] != "clean":
                     raise SmokeError("BFF ZIP recovery Complete was not CLEAN")
-                validate_body = {"attempt_id": zip_recovered["attempt_id"]}
+                validate_body = {
+                    "attempt_id": zip_recovered["attempt_id"],
+                    "expected_state_version": zip_complete["state_version"],
+                }
                 validate_key = "package-zip-validate-" + run_id
                 status, body = _http_json(
                     bff_base,
@@ -3348,6 +3781,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     str(zip_recovered["attempt_id"]),
                     str(zip_recovered["upload_id"]),
                     "6",
+                    expected_source_version=zip_recovered_version,
                 )
                 status, body = _http_json(
                     bff_base,
@@ -3426,7 +3860,18 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 require_platform_published_skill_read(
                     status, body, begin_skill_id, str(revision)
                 )
-                if body["data"] != {
+                if {
+                    k: body["data"][k]
+                    for k in (
+                        "skill_id",
+                        "source_ref",
+                        "revision",
+                        "status",
+                        "name",
+                        "summary",
+                        "tags",
+                    )
+                } != {
                     "skill_id": begin_skill_id,
                     "source_ref": "skill:" + begin_skill_id,
                     "revision": revision,
@@ -3442,10 +3887,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     token=ready.access_token,
                     secret=web_secret,
                 )
-                require_platform_published_skill_read(
+                require_public_published_skill_read(
                     status, public_read, begin_skill_id, str(revision)
                 )
-                if public_read != body:
+                if {
+                    k: v
+                    for k, v in public_read["data"].items()
+                    if k != "publisher_profile"
+                } != body["data"]:
                     raise SmokeError(
                         "BFF published Skill projection drifted from owner"
                     )
@@ -3522,6 +3971,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("Platform public Publish event was not durable")
                 if iam.stdin is None:
                     raise SmokeError("IAM command pipe absent")
+                owned_queries = exercise_owned_queries(
+                    lambda path: _http_get_json(
+                        bff_base, path, token=ready.access_token, secret=web_secret
+                    ),
+                    ("skill:" + str(result["skill_id"]), "skill:" + begin_skill_id),
+                )
                 if product_installation is not None:
                     phase = Phase.PRODUCT_INSTALLATION
                     # Catalog probes and Product reads share IAM's resource-client
@@ -3548,6 +4003,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         )
                         lifecycle_version_key = "lifecycle-version-" + run_id
                         lifecycle_version_body = {
+                            "expected_state_version": publication["state_version"],
                             "display_name": "Signed PUT sandbox skill",
                             "summary": "sandbox lifecycle revision",
                             "tags": ["sandbox", "lifecycle"],
@@ -3865,6 +4321,16 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 ):
                     raise SmokeError("revoked IAM session reached BFF Skill Publish")
                 time.sleep(0.2)
+                require_owned_error(
+                    _http_get_json(
+                        bff_base,
+                        "/v1/self/skills?query=sandbox",
+                        token=ready.access_token,
+                        secret=web_secret,
+                    ),
+                    401,
+                    "session_invalid",
+                )
                 if proxy.count != before_revoked:
                     raise SmokeError("revoked request opened a Platform socket")
                 if proxy.request_count != before_revoked_requests:
@@ -3874,6 +4340,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         "owned Platform proxy observed invalid HTTP framing"
                     )
                 summary = safe_summary(None)
+                summary["owned_source_query_cursor"] = owned_queries
                 summary["storage_v2_package_reference"] = "PASS"
                 if source_result is not None:
                     summary["agent_source"] = source_result
@@ -4026,6 +4493,8 @@ def main() -> int:
     parser.add_argument("--platform-node", required=True, type=Path)
     parser.add_argument("--storage-node", required=True, type=Path)
     parser.add_argument("--exclusive-bucket", required=True)
+    parser.add_argument("--bff-source", required=True, type=Path)
+    parser.add_argument("--storage-source", required=True, type=Path)
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--agent-source", action="store_true")
     modes.add_argument("--product-installation", action="store_true")
@@ -4046,6 +4515,8 @@ def main() -> int:
                 ns.agent_redis_url,
                 ns.product_installation,
                 ns.personal_skill_lifecycle,
+                ns.bff_source,
+                ns.storage_source,
             )
         )
     except BaseException as exc:

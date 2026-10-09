@@ -196,6 +196,10 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             "name": "Sandbox skill",
             "summary": "sandbox draft",
             "tags": ["sandbox"],
+            "product": formal_product(),
+            "example_prompts": [],
+            "category_keys": [],
+            "skill_updated_at": "2026-10-08T01:00:00.000Z",
         }
         smoke.require_platform_published_skill_read(
             200, {"data": data}, "skill-current", "1"
@@ -259,7 +263,15 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             "scope": "personal",
             "revision": "1",
             "enabled": True,
-            "categories": ["sandbox"],
+            "product": formal_product(),
+            "example_prompts": [],
+            "category_keys": [],
+            "skill_updated_at": "2026-10-08T01:00:00.000Z",
+            "publisher_profile": {
+                "kind": "user",
+                "id": "user-one",
+                "status": "missing",
+            },
         }
         page = {"data": {"skills": [item], "next_cursor": None}}
         smoke.require_bff_personal_skill_list(200, page, "skill-current", "1")
@@ -290,6 +302,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "status": "active",
                 "event_id": "123e4567-e89b-12d3-a456-426614174000",
                 "replayed": False,
+                "state_version": "1",
             }
         }
         self.assertFalse(
@@ -401,6 +414,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "content_digest": "a" * 64,
                 "manifest_identity": "zip-v2:sha256:" + "b" * 64,
                 "replayed": False,
+                "state_version": "1",
             }
         }
         self.assertFalse(
@@ -438,6 +452,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "replayed": False,
                 "content_sha256": "a" * 64,
                 "scan_state": "clean",
+                "state_version": "1",
             }
         }
         for scan in ("clean", "pending", "unknown"):
@@ -489,6 +504,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                     "expires_at": expires,
                 },
                 "replayed": False,
+                "state_version": "1",
             }
         }
         reference = smoke.require_public_package_begin(
@@ -573,6 +589,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "phase": "upload_pending",
                 "attempt_id": "attempt-one",
                 "upload_id": "upload-one",
+                "state_version": "1",
             }
         }
         smoke.require_public_package_pending(
@@ -596,6 +613,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "phase": "uploaded",
                 "attempt_id": "attempt-two",
                 "upload_id": "upload-two",
+                "state_version": "1",
             }
         }
         smoke.require_public_package_uploaded(
@@ -631,6 +649,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "phase": "aborted",
                 "attempt_id": "attempt-three",
                 "upload_id": "upload-three",
+                "state_version": "1",
             }
         }
         smoke.require_public_package_aborted(
@@ -717,7 +736,12 @@ class SkillDraftSandboxGuards(unittest.TestCase):
 
     def test_public_get_requires_exact_current_none_state(self):
         expected = {
-            "data": {"skill_id": "skill-current", "attempt_epoch": "0", "phase": "none"}
+            "data": {
+                "skill_id": "skill-current",
+                "attempt_epoch": "0",
+                "phase": "none",
+                "state_version": "1",
+            }
         }
         smoke.require_public_package_get(200, expected, "skill-current")
         for body in (
@@ -1062,27 +1086,25 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             s3.deleted, [{"Bucket": "owned-bucket", "Key": "marker", "VersionId": "v1"}]
         )
 
-    def test_disabled_and_enabled_bff_differ_only_by_activation_flag(self):
-        base = {
-            "KOKORO_PLATFORM_BASE_URL": "http://127.0.0.1:4400",
-            "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE": "/owned/catalog.json",
-            "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": "/owned/projection.json",
-            "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "false",
-        }
-        active = {**base, "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "true"}
-        self.assertEqual(
-            {
-                key: value
-                for key, value in base.items()
-                if key != "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED"
-            },
-            {
-                key: value
-                for key, value in active.items()
-                if key != "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED"
-            },
+    def test_formal_missing_catalog_dependency_remains_closed_without_flag(self):
+        import ast
+
+        tree = ast.parse(PATH.read_text())
+        execute = next(
+            n
+            for n in tree.body
+            if isinstance(n, ast.FunctionDef) and n.name == "execute"
         )
-        self.assertNotIn("KOKORO_PLATFORM_CATALOG_CREDENTIAL_FILE", active)
+        code = ast.unparse(execute)
+        self.assertNotIn("KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED", code)
+        credential = "bff_env['KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE'] = str(files['bff-catalog.json'])"
+        self.assertLess(code.index("closed = _start("), code.index(credential))
+        self.assertLess(code.index(credential), code.index("active = _start("))
+        self.assertIn("if proxy.count != 0:", code)
+        self.assertIn(
+            "'KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE': str(files['bff-projection.json'])",
+            code,
+        )
 
     def test_redis_inventory_requires_an_owned_pattern(self):
         with self.assertRaises(smoke.SmokeError):
@@ -1349,6 +1371,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         "revision": 1,
                         "status": "draft",
                         "replayed": False,
+                        "state_version": "1",
                     }
                 },
             ),
@@ -1361,6 +1384,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         "revision": 1,
                         "status": "draft",
                         "replayed": True,
+                        "state_version": "1",
                     }
                 },
             ),
@@ -1390,6 +1414,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         "revision": 1,
                         "status": "draft",
                         "replayed": False,
+                        "state_version": "1",
                     }
                 },
             ),
@@ -1402,6 +1427,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         "revision": 1,
                         "status": "draft",
                         "replayed": True,
+                        "state_version": "1",
                     }
                 },
             ),
@@ -1646,6 +1672,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             "status": "draft",
             "replayed": False,
             "series_id": "series_1",
+            "state_version": "1",
         }
         for skill_id in ("", "bad/id", "x" * 192):
             with self.subTest(skill_id=skill_id), self.assertRaises(smoke.SmokeError):
@@ -1660,6 +1687,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         "skill_id": "skill_1",
                         "series_id": "series_2",
                         "replayed": True,
+                        "state_version": "1",
                     }
                 },
             ),
@@ -1912,6 +1940,7 @@ class AgentSourceOptInTests(unittest.TestCase):
                     "revision": "2",
                     "status": "draft",
                     "replayed": False,
+                    "state_version": "1",
                 },
                 "meta": {"request_id": "request"},
             },
@@ -1933,6 +1962,7 @@ class AgentSourceOptInTests(unittest.TestCase):
                     "status": "withdrawn",
                     "event_id": "evt:" + "a" * 64,
                     "replayed": True,
+                    "state_version": "1",
                 },
                 "meta": {"request_id": "request"},
             },
@@ -2051,3 +2081,435 @@ class AgentSourceOptInTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# R356 formal source and HTTP wire regressions; no real resources are used here.
+def formal_product():
+    return {
+        "publication_audience": "owner",
+        "state_version": "7",
+        "source_kind": "personal",
+        "presentation_kind": "first_party",
+        "creator_ref": {"kind": "user", "id": "user-one"},
+        "publisher": {"kind": "iam", "iam": {"kind": "user", "id": "user-one"}},
+        "creation_provenance": {"kind": "local"},
+    }
+
+
+def test_r356_formal_state_version_closed_and_signed_range():
+    data = {
+        "skill_id": "skill-one",
+        "series_id": "series-one",
+        "revision": 1,
+        "status": "draft",
+        "replayed": False,
+        "state_version": "1",
+    }
+    assert smoke._draft({"data": data}, 201)[:3] == ("skill-one", "series-one", False)
+    for bad in (None, "0", "01", "9223372036854775808", True, 1, "-1"):
+        with unittest.TestCase().assertRaises(smoke.SmokeError):
+            smoke._draft({"data": {**data, "state_version": bad}}, 201)
+    with unittest.TestCase().assertRaises(smoke.SmokeError):
+        smoke._draft(
+            {"data": {k: v for k, v in data.items() if k != "state_version"}}, 201
+        )
+
+
+def test_r356_signed_put_returns_only_exact_opaque_ack_and_closes():
+    sent, closed = [], []
+
+    class Response:
+        status = 200
+
+        def getheaders(self):
+            return [("x-amz-version-id", "opaque+/Version=7")]
+
+        def read(self, _limit):
+            return b""
+
+    class Connection:
+        def __init__(self, *_args, **_kwargs):
+            pass
+
+        def request(self, *args, **kwargs):
+            sent.append((args, kwargs))
+
+        def getresponse(self):
+            return Response()
+
+        def close(self):
+            closed.append(True)
+
+    reference = {
+        "transfer_reference": {
+            "url": "http://127.0.0.1:4400/key?sig=SECRET",
+            "method": "PUT",
+            "required_headers": {"content-type": "application/zip"},
+        }
+    }
+    with patch.object(smoke.http.client, "HTTPConnection", Connection):
+        assert smoke.signed_put(reference, b"zip") == "opaque+/Version=7"
+    assert closed == [True]
+    assert sent[0][1]["headers"] == {"content-type": "application/zip"}
+    for headers in (
+        [],
+        [("etag", "hash")],
+        [("x-amz-version-id", "null")],
+        [("x-amz-version-id", " v")],
+        [("x-amz-version-id", "v"), ("X-Amz-Version-Id", "v")],
+    ):
+        with (
+            patch.object(smoke.http.client, "HTTPConnection", Connection),
+            patch.object(Response, "getheaders", return_value=headers),
+        ):
+            with unittest.TestCase().assertRaises(smoke.SmokeError):
+                smoke.signed_put(reference, b"zip")
+    assert len(closed) == 6
+
+
+def test_r356_owner_mapping_is_local_immutable_and_logical():
+    selected = smoke.owner_sources(
+        Path("/formal/bff-worktree"), Path("/formal/storage-worktree")
+    )
+    assert selected["bff"] == Path("/formal/bff-worktree")
+    assert selected["storage"] == Path("/formal/storage-worktree")
+    assert smoke.OWNERS["bff"] == smoke.ROOT / "apps/kokoro-bff"
+    with unittest.TestCase().assertRaises(TypeError):
+        selected["bff"] = Path("/bad")
+    with unittest.TestCase().assertRaises(smoke.SmokeError):
+        smoke.owner_sources(Path("relative"), None)
+
+
+def test_r356_source_gate_checks_full_pin_root_logical_gitlink_and_common_git_dir():
+    selected = {"bff": Path("/formal/not-the-submodule-basename")}
+    calls = []
+
+    def run(argv, **_kwargs):
+        calls.append(argv)
+        if "status" in argv:
+            value = ""
+        elif "ls-tree" in argv:
+            value = f"160000 commit {smoke.FORMAL_PINS['bff']}\tapps/kokoro-bff\n"
+        elif "--git-common-dir" in argv:
+            value = "/root/modules/bff\n"
+        else:
+            value = smoke.FORMAL_PINS["bff"] + "\n"
+        return type("Result", (), {"stdout": value})()
+
+    assert smoke.frozen_sources(run, owners=selected) == {
+        "bff": smoke.FORMAL_PINS["bff"]
+    }
+    assert any(x[-1] == "apps/kokoro-bff" for x in calls if "ls-tree" in x)
+    assert len([x for x in calls if "--git-common-dir" in x]) == 2
+    for failure in ("wrong_pin", "wrong_common", "wrong_root"):
+
+        def invalid(argv, **kw):
+            result = run(argv, **kw)
+            if failure == "wrong_pin" and argv[-1] == "HEAD" and "rev-parse" in argv:
+                result.stdout = "0" * 40
+            if failure == "wrong_root" and "ls-tree" in argv:
+                result.stdout = ""
+            if (
+                failure == "wrong_common"
+                and "--git-common-dir" in argv
+                and str(selected["bff"]) in argv
+            ):
+                result.stdout = "/unrelated/git"
+            return result
+
+        with unittest.TestCase().assertRaises(smoke.SmokeError):
+            smoke.frozen_sources(invalid, owners=selected)
+
+
+def test_r356_public_owner_and_iam_enriched_projection_are_distinct():
+    data = {
+        "skill_id": "skill-one",
+        "source_ref": "skill:skill-one",
+        "revision": "1",
+        "status": "active",
+        "name": "Sandbox",
+        "summary": "",
+        "tags": [],
+        "example_prompts": [],
+        "category_keys": [],
+        "skill_updated_at": "2026-10-08T01:00:00.000Z",
+        "product": formal_product(),
+    }
+    smoke.require_platform_published_skill_read(200, {"data": data}, "skill-one", "1")
+    enriched = {
+        **data,
+        "publisher_profile": {
+            "kind": "user",
+            "id": "user-one",
+            "status": "found",
+            "display_name": "User",
+            "image_url": None,
+        },
+    }
+    smoke.require_public_published_skill_read(200, {"data": enriched}, "skill-one", "1")
+    with unittest.TestCase().assertRaises(smoke.SmokeError):
+        smoke.require_platform_published_skill_read(
+            200, {"data": enriched}, "skill-one", "1"
+        )
+    for bad in ({"id": "other"}, {"status": "missing", "display_name": "Invented"}):
+        with unittest.TestCase().assertRaises(smoke.SmokeError):
+            smoke.require_public_published_skill_read(
+                200,
+                {
+                    "data": {
+                        **enriched,
+                        "publisher_profile": {**enriched["publisher_profile"], **bad},
+                    }
+                },
+                "skill-one",
+                "1",
+            )
+
+
+def test_r356_owned_queries_preserve_full_pages_and_literal_cursor_filters():
+    from urllib.parse import parse_qs, urlsplit
+
+    rows = []
+    for index in ("one", "two"):
+        rows.append(
+            {
+                "skill_id": "skill-" + index,
+                "source_ref": "skill:skill-" + index,
+                "series_id": "series-" + index,
+                "revision": "1",
+                "name": "Sandbox " + index,
+                "summary": "",
+                "tags": [],
+                "status": "active",
+                "example_prompts": [],
+                "category_keys": [],
+                "skill_updated_at": "2026-10-08T01:00:00.000Z",
+                "product": formal_product(),
+                "publisher_profile": {
+                    "kind": "user",
+                    "id": "user-one",
+                    "status": "missing",
+                },
+            }
+        )
+    calls = []
+
+    def request(path):
+        calls.append(path)
+        q = parse_qs(urlsplit(path).query, keep_blank_values=True)
+        text = q.get("query", ["sandbox"])[0].strip()
+        source = q.get("source_kind", ["personal"])[0]
+        if (
+            any(len(v) != 1 for v in q.values())
+            or source not in {"personal", "official", "third_party"}
+            or not text
+            or len(text) > 1024
+            or ("cursor" in q and (text != "sandbox" or source != "personal"))
+        ):
+            return 400, {
+                "error": {"code": "invalid_skill_request", "message": "Invalid"},
+                "meta": {"request_id": "owned"},
+            }
+        current = rows if source == "personal" and text.casefold() == "sandbox" else []
+        cursor = None
+        if current and q.get("limit") == ["1"]:
+            if "cursor" in q:
+                current = [rows[1]]
+            else:
+                current = [rows[0]]
+                cursor = "page_2"
+        return 200, {
+            "data": {"skills": current, "next_cursor": cursor},
+            "meta": {"request_id": "owned"},
+        }
+
+    assert (
+        smoke.exercise_owned_queries(request, ("skill:skill-one", "skill:skill-two"))
+        is True
+    )
+    assert any("query=%25_%5C" in x for x in calls)
+    assert any("cursor=page_2" in x and "query=changed" in x for x in calls)
+    bad = {
+        **rows[0],
+        "publisher_profile": {"kind": "user", "id": "other", "status": "missing"},
+    }
+    with unittest.TestCase().assertRaises(smoke.SmokeError):
+        smoke.require_managed_page(
+            (
+                200,
+                {
+                    "data": {"skills": [bad], "next_cursor": None},
+                    "meta": {"request_id": "owned"},
+                },
+            )
+        )
+
+
+def test_r356_storage_schema_fixture_uses_only_mapped_formal_source():
+    with tempfile.TemporaryDirectory() as directory:
+        base = Path(directory)
+        source = base / "formal-storage"
+        output = base / "owned"
+        (source / "scripts").mkdir(parents=True)
+        (source / "prisma").mkdir()
+        output.mkdir()
+        for path in (
+            "package.json",
+            "prisma.config.ts",
+            "prisma/schema.prisma",
+            "scripts/apply-schema.ts",
+        ):
+            (source / path).write_text("FORMAL:" + path)
+        fixture = smoke.storage_schema_fixture(output, source)
+        assert (
+            fixture / "prisma/schema.prisma"
+        ).read_text() == "FORMAL:prisma/schema.prisma"
+        assert (fixture / "node_modules").readlink() == source / "node_modules"
+
+
+def test_r356_actual_execute_wiring_all_put_acks_and_local_owner_paths():
+    import ast
+
+    module = ast.parse(PATH.read_text())
+    execute = next(
+        n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "execute"
+    )
+    text = ast.unparse(execute)
+    assert "OWNERS[" not in text and "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED" not in text
+    assert "storage_schema_fixture(directory, owners['storage'])" in text
+    assert "frozen_sources(owners=owners)" in text
+    assert "'KOKORO_STORAGE_RPC_BASE_URL': storage_base" in text
+    assert "'KOKORO_BFF_STORAGE_SECRET': storage_secret" in text
+    for name in ("replacement", "infected", "recovered", "bad_begin", "zip_recovered"):
+        assert name + "_version = signed_put(" + name in text
+        assert "'source_version_id': " + name + "_version" in text
+    assert "exercise_owned_queries(" in text
+
+
+def test_r356_state_version_is_consumed_in_cas_not_only_displayed():
+    import ast
+
+    tree = ast.parse(PATH.read_text())
+    execute = next(
+        n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "execute"
+    )
+    code = ast.unparse(execute)
+    for binding in (
+        "'expected_state_version': begin_state_version",
+        "'expected_state_version': replacement['state_version']",
+        "'expected_state_version': infected['state_version']",
+        "'expected_state_version': recovered['state_version']",
+        "'expected_state_version': bad_begin['state_version']",
+        "'expected_state_version': zip_recovered['state_version']",
+    ):
+        assert binding in code
+
+
+def test_r356_default_owner_locations_are_immutable():
+    with unittest.TestCase().assertRaises(TypeError):
+        smoke.OWNERS["bff"] = Path("/unapproved")
+
+
+def test_r356_cli_requires_both_explicit_absolute_source_options():
+    import ast
+    import inspect
+
+    tree = ast.parse(inspect.getsource(smoke.main))
+    required = {
+        n.args[0].value: any(
+            keyword.arg == "required"
+            and isinstance(keyword.value, ast.Constant)
+            and keyword.value.value is True
+            for keyword in n.keywords
+        )
+        for n in ast.walk(tree)
+        if isinstance(n, ast.Call)
+        and isinstance(n.func, ast.Attribute)
+        and n.func.attr == "add_argument"
+        and n.args
+        and isinstance(n.args[0], ast.Constant)
+    }
+    assert required["--bff-source"] and required["--storage-source"]
+
+
+def test_r356_formal_901_pin():
+    assert smoke.FORMAL_PINS["bff"] == "427d126be01b24614bca51b78e3d3e33da24268b"
+    assert smoke.FORMAL_PINS["platform"] == "e566843b68abc19603d37f372a3abd44aa6e3d6e"
+    assert smoke.FORMAL_PINS["storage"] == "a1206d0194c1b1e405834f4c4548168fddbb5d52"
+    assert smoke.FORMAL_PINS["iam"] == "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a"
+
+
+def test_r356_formal_901_optional_get_locator_identity():
+    functions = [
+        (
+            smoke.require_public_package_get,
+            ("skill-current",),
+            {"phase": "none", "attempt_epoch": "0"},
+        ),
+        (
+            smoke.require_public_package_pending,
+            ("skill-current", "attempt-two", "upload-two", "2"),
+            {
+                "phase": "upload_pending",
+                "attempt_epoch": "2",
+                "attempt_id": "attempt-two",
+                "upload_id": "upload-two",
+            },
+        ),
+        (
+            smoke.require_public_package_uploaded,
+            ("skill-current", "attempt-two", "upload-two", "2"),
+            {
+                "phase": "uploaded",
+                "attempt_epoch": "2",
+                "attempt_id": "attempt-two",
+                "upload_id": "upload-two",
+            },
+        ),
+        (
+            smoke.require_public_package_validated,
+            ("skill-current", "attempt-two", "upload-two", "2"),
+            {
+                "phase": "validated",
+                "attempt_epoch": "2",
+                "attempt_id": "attempt-two",
+                "upload_id": "upload-two",
+            },
+        ),
+        (
+            smoke.require_public_package_aborted,
+            ("skill-current", "attempt-two", "upload-two", "2"),
+            {
+                "phase": "aborted",
+                "attempt_epoch": "2",
+                "attempt_id": "attempt-two",
+                "upload_id": "upload-two",
+            },
+        ),
+    ]
+    for function, args, state in functions:
+        data = {"skill_id": "skill-current", "state_version": "1", **state}
+        function(200, {"data": data}, *args)
+        for locator in ("opaque+/=", "Null", "x" * 1024):
+            function(200, {"data": {**data, "source_version_id": locator}}, *args)
+        for invalid in (None, "", "null", "x y", "é", "x" * 1025, [], 1):
+            with unittest.TestCase().assertRaises(smoke.SmokeError):
+                function(200, {"data": {**data, "source_version_id": invalid}}, *args)
+        for leak in ("asset_id", "transfer_reference"):
+            with unittest.TestCase().assertRaises(smoke.SmokeError):
+                function(200, {"data": {**data, leak: "private"}}, *args)
+        function(
+            200,
+            {"data": {**data, "source_version_id": "opaque+/="}},
+            *args,
+            expected_source_version="opaque+/=",
+        )
+        with unittest.TestCase().assertRaises(smoke.SmokeError):
+            function(
+                200,
+                {"data": {**data, "source_version_id": "other-version"}},
+                *args,
+                expected_source_version="opaque+/=",
+            )
+        # The contract does not invent phase-dependent mandatory locator presence.
+        function(200, {"data": data}, *args, expected_source_version="opaque+/=")

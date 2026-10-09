@@ -3,6 +3,7 @@
 from copy import deepcopy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
 from unittest.mock import patch
@@ -22,11 +23,16 @@ def helper():
     return module
 
 
-def test_collection_and_five_operations_match_pinned_bff_machine_contract():
+def test_collection_and_six_operations_match_pinned_bff_machine_contract():
     m = helper()
     root = PATH.parents[2]
     operations = json.loads(
-        (root / "apps/kokoro-bff/contract/tests/v1-operations.json").read_text()
+        (
+            Path(
+                os.environ.get("KOKORO_SMOKE_BFF_SOURCE", str(root / "apps/kokoro-bff"))
+            )
+            / "contract/tests/v1-operations.json"
+        ).read_text()
     )["operations"]
     actual = {
         (x["method"], x["path"])
@@ -39,6 +45,7 @@ def test_collection_and_five_operations_match_pinned_bff_machine_contract():
         ("GET", m.COLLECTION + "/{installation_id}"),
         ("DELETE", m.COLLECTION + "/{installation_id}"),
         ("PUT", m.COLLECTION + "/{installation_id}/enabled"),
+        ("GET", m.COLLECTION + "/{installation_id}/package"),
     }
     assert expected == actual
     assert m.COLLECTION == "/v1/skill-installations"
@@ -57,6 +64,18 @@ def installation(identity="installation-a", source="skill:source-a", **changes):
         "display_name": "Published source",
         "summary": "",
         "source_status": "active",
+        "tags": [],
+        "example_prompts": [],
+        "category_keys": [],
+        "skill_updated_at": "2026-09-30T12:00:00.000Z",
+        "product": {
+            "publication_audience": "owner",
+            "state_version": "1",
+            "source_kind": "personal",
+            "presentation_kind": "first_party",
+            "publisher": {"kind": "iam", "iam": {"kind": "user", "id": "user-one"}},
+        },
+        "publisher_profile": {"kind": "user", "id": "user-one", "status": "missing"},
         **changes,
     }
 
@@ -426,6 +445,54 @@ def transcript():
         (200, ack(db, "disabled")),
         (200, {"data": [da], "meta": {"next_cursor": "opaque+/="}}),
         (200, {"data": [db]}),
+        (200, {"data": [da], "meta": {"next_cursor": "filtered_page_2"}}),
+        (200, {"data": [db]}),
+        (200, {"data": []}),
+        (200, {"data": []}),
+        (200, {"data": [da, db]}),
+        (200, {"data": []}),
+        (400, error("invalid_skill_installation_request")),
+        (400, error("invalid_skill_installation_request")),
+        *[(400, error("invalid_skill_installation_request")) for _ in range(5)],
+        (
+            200,
+            {
+                "data": {
+                    "source_ref": b["source_ref"],
+                    "revision": b["revision"],
+                    "files": [
+                        {
+                            "path": "SKILL.md",
+                            "size_bytes": str(
+                                len("# Sandbox\n\nOwned signed PUT smoke.\n".encode())
+                            ),
+                        }
+                    ],
+                    "selected_file": None,
+                }
+            },
+        ),
+        (
+            200,
+            {
+                "data": {
+                    "source_ref": b["source_ref"],
+                    "revision": b["revision"],
+                    "files": [
+                        {
+                            "path": "SKILL.md",
+                            "size_bytes": str(
+                                len("# Sandbox\n\nOwned signed PUT smoke.\n".encode())
+                            ),
+                        }
+                    ],
+                    "selected_file": {
+                        "path": "SKILL.md",
+                        "text": "# Sandbox\n\nOwned signed PUT smoke.\n",
+                    },
+                }
+            },
+        ),
         (200, ack(ra, "removed")),
         (200, ack(ra, "removed", True)),
         (200, {"data": ra}),
@@ -450,7 +517,7 @@ def test_sequence_historical_ack_never_overwrites_current_pagination_and_removal
     driver = m.ProductInstallationSmoke(request, "owned-run")
     proof = driver.exercise(("skill:source-a", "skill:source-b"))
     assert not responses
-    assert proof["five_public_operations"] is True
+    assert proof["six_public_operations"] is True
     assert proof["historical_receipt_current_read"] is True
     assert proof["opaque_two_page_false_filter"] is True
     assert calls[1] == calls[2] == calls[7]
@@ -529,8 +596,167 @@ def test_unpublished_is_precondition_missing_is_private_not_found_and_revoke_all
     driver = m.ProductInstallationSmoke(request, "owned-run")
     driver.before_publish("skill:source-a")
     assert len(calls) == 2
-    responses.extend([(401, error("session_invalid"))] * 5)
+    responses.extend([(401, error("session_invalid"))] * 6)
     driver.installation_ids = ("installation-a", "installation-b")
     driver.require_revoked("skill:source-a")
-    assert [x[0] for x in calls[2:]] == ["GET", "GET", "POST", "PUT", "DELETE"]
+    assert [x[0] for x in calls[2:]] == ["GET", "GET", "GET", "POST", "PUT", "DELETE"]
     assert not responses
+
+
+def test_r356_formal_installation_product_and_available_update_strict():
+    m = helper()
+    row = {
+        **installation(),
+        "tags": [],
+        "example_prompts": [],
+        "category_keys": [],
+        "skill_updated_at": "2026-10-08T01:00:00.000Z",
+        "product": {
+            "publication_audience": "owner",
+            "state_version": "1",
+            "source_kind": "personal",
+            "presentation_kind": "first_party",
+            "publisher": {"kind": "iam", "iam": {"kind": "user", "id": "user-one"}},
+        },
+        "publisher_profile": {"kind": "user", "id": "user-one", "status": "missing"},
+        "available_update": {"source_ref": "skill:next", "revision": "2"},
+    }
+    assert m.require_installation(row) == row
+    for changes in (
+        {"available_update": {"source_ref": row["source_ref"], "revision": "2"}},
+        {"available_update": {"source_ref": "skill:next", "revision": "1"}},
+        {"categories": []},
+        {"product": {**row["product"], "state_version": "0"}},
+        {"publisher_profile": {"kind": "user", "id": "other", "status": "missing"}},
+    ):
+        with pytest.raises(m.ProductError):
+            m.require_installation({**row, **changes})
+
+
+def test_r356_p4_source_query_forwarding_and_cursor_binding_full_pages():
+    from urllib.parse import parse_qs, urlsplit
+
+    m = helper()
+    a, b = (
+        installation(enabled=False),
+        installation(
+            "installation-b", "skill:source-b", series_id="series-b", enabled=False
+        ),
+    )
+    calls = []
+
+    def request(method, path, **kwargs):
+        assert method == "GET" and not kwargs
+        calls.append(path)
+        q = parse_qs(urlsplit(path).query, keep_blank_values=True)
+        text = q.get("query", [""])[0].strip()
+        source = q.get("source_kind", ["personal"])[0]
+        if "cursor" in q and (text != "Published" or source != "personal"):
+            return 400, error("invalid_skill_installation_request")
+        if (
+            any(len(v) != 1 for v in q.values())
+            or source not in {"personal", "official", "third_party"}
+            or ("query" in q and (not text or len(text) > 1024))
+            or ("cursor" in q and (text != "Published" or source != "personal"))
+        ):
+            return 400, error("invalid_skill_installation_request")
+        rows = (
+            [a, b]
+            if source == "personal"
+            and (not text or text.casefold() in "published source")
+            else []
+        )
+        if q.get("limit") == ["1"] and rows:
+            if "cursor" in q:
+                return 200, {"data": [b]}
+            return 200, {"data": [a], "meta": {"next_cursor": "page_2"}}
+        return 200, {"data": rows}
+
+    proof = m.ProductInstallationSmoke(request, "owned-run").verify_filtered_pages(
+        [a, b], "Published"
+    )
+    assert proof == {
+        "source_query_before_pagination": True,
+        "cursor_filter_binding": True,
+        "literal_query": True,
+    }
+    assert any(
+        "source_kind=personal" in path
+        and "query=Published" in path
+        and "cursor=page_2" in path
+        for path in calls
+    )
+    assert any("query=%25_%5C" in path for path in calls)
+    assert any(
+        "source_kind=official" in path and "cursor=page_2" in path for path in calls
+    )
+
+
+def test_r356_sixth_package_read_checks_exact_revision_directory_and_text():
+    m = helper()
+    row = installation()
+    text = "# Sandbox\n\nOwned signed PUT smoke.\n"
+    data = {
+        "source_ref": row["source_ref"],
+        "revision": row["revision"],
+        "files": [{"path": "SKILL.md", "size_bytes": str(len(text.encode()))}],
+        "selected_file": None,
+    }
+    selected = {**data, "selected_file": {"path": "SKILL.md", "text": text}}
+    responses = [(200, {"data": data}), (200, {"data": selected})]
+    calls = []
+
+    def request(method, path, **kwargs):
+        calls.append((method, path, kwargs))
+        return responses.pop(0)
+
+    m.ProductInstallationSmoke(request, "owned-run").verify_package(row, text)
+    assert len(calls) == 2 and calls[1][1].endswith("/package?file_path=SKILL.md")
+    for bad in (
+        {"source_ref": "skill:other"},
+        {"revision": "2"},
+        {"selected_file": {"path": "SKILL.md", "text": "WRONG"}},
+    ):
+        responses[:] = [(200, {"data": data}), (200, {"data": {**selected, **bad}})]
+        with pytest.raises(m.ProductError):
+            m.ProductInstallationSmoke(request, "owned-run").verify_package(row, text)
+
+
+def test_r356_product_closed_enum_types_never_raise_unhashable_exception():
+    m = helper()
+    row = installation()
+    for field in ("publication_audience", "source_kind", "presentation_kind"):
+        for bad in ({}, [], None):
+            with pytest.raises(m.ProductError):
+                m.require_installation(
+                    {**row, "product": {**row["product"], field: bad}}
+                )
+    with pytest.raises(m.ProductError):
+        m.require_installation({**row, "source_status": []})
+    with pytest.raises(m.ProductError):
+        m.require_installation(
+            {
+                **row,
+                "product": {
+                    **row["product"],
+                    "creator_ref": {"kind": [], "id": "user-one"},
+                },
+            }
+        )
+
+
+@pytest.mark.parametrize("source_kind", ["personal", "unknown", [], None])
+@pytest.mark.parametrize("enriched", [True, False])
+def test_r356_present_null_publisher_never_bypasses_product_source(
+    source_kind, enriched
+):
+    m = helper()
+    row = installation()
+    assert m.require_installation(deepcopy(row)) == row
+    row.pop("publisher_profile")
+    row["product"] = {**row["product"], "publisher": None, "source_kind": source_kind}
+    with pytest.raises(m.ProductError, match="product_publisher_invalid"):
+        if enriched:
+            m.require_installation(row)
+        else:
+            m.require_product_fields(row, enriched=False)

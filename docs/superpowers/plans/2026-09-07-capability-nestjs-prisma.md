@@ -1,3 +1,13 @@
+### R356 正式依赖已收敛，Skills 页面仍待完整验收
+
+仅 Skills 继续，其余模块和 heartbeat 仍暂停。BFF 正式 `427d126`（Public9.0.1，132 操作）已补真实上传版本 ACK 与游标错误；Storage 正式 `a1206d0` 保既有包 canonical 在非 clean 扫描时不被替换；IAM 正式 `61ccdbb` 仅修 Skills 沙箱真实发布者读取；Platform 正式 `e566843` 仅使原真实包烟测消费 v3、每次 PUT 的实际版本 ACK 和原取消信号。均为必要接线，不代表页面完成。
+
+正常 MinIO 已实际启用 Versioning，原 73 对象版本 metadata 哈希 `f805513c…` 保持，无正常对象 PUT/DELETE、SQL 写入或服务重启。之前未启用的只读发现保留为历史。37 个旧有效资产的未知最终版本、26 个技能及 7 个安装关系仍原值；保数据恢复和新运行链激活尚待，不删除、不换引用、不自动重装。
+
+Root 组合 runner 的 null publisher 漏验已真实 RED8→GREEN8；现纯门 147 PASS / 3 既有 Agent 原生组件 SKIP，格式/lint/语法通过。原独审 P2 及首次错误测试文件名、格式失败日志保留。固定正式 owner 版本与 clean/common-Git/Root-pin 停止线均保留；为不碰旧 dirty smoke 和仍运行的 v2 checkout，Storage 新固定正式源码目录仅供受控验证，未替换正常服务。真实 owner 组合尚未执行，纯门不冒充 UI。
+
+st6 仍唯一 Web writer，一次交付目录/预览/正文/我的技能/Settings/创建/分享下载/后台与稳定异步；AI 从既有作品双 ID 选择实际 ZIP，经正式同源导入进入唯一 PublishFlow，不修改资料库、不造 ZIP/手填 UUID。普通与管理员完整页面操作、Manus 同尺寸逐图与持久数据闭环仍待；S01–S10 全 OPEN。返工经验仅在完整页面验收后沉淀进现有手册，不提前称完成。
+
 ### R356 Skills 同一整项继续：参考事实与正常存储前置
 
 已实际核 Manus 官方 v2 skill.list：已安装列表包含停用项，读取不启用；网站目录/弹窗仍按已保存的真实 Manus UI 参考，不把公开 API 当其私有市场协议，不造作者/分类/用量。旧数据恢复由 Root 承担，原 ID/版本/安装关系保持。
