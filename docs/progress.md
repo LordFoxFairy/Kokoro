@@ -1,3 +1,9 @@
+### T-K03.4 R357 独立冻结审查确认视觉P1（2026-10-09）
+
+上一turn冻结实核与实际截图暴露偏差属progress。本轮原只读reviewer确认同freeze2361486c…的确定P1：settings-modal.module.css565–589后置窄屏规则隐藏brandCopy/switcher/settingsSearch/sectionLabel，本片Skills规则未以specificity恢复；personal-skills-read.tsx539–566及CSS9–21把search/actions/secondary manage分多行。Root再看真实Manus667参考：设置标题、账户/scope、Settings搜索、文字横nav均可见，技能搜索/探索/添加同一行；本地geometry正确但此层布局不合格。其余单cursor/权限/取消/unknown精确GET+usage POST未发现确定阻断，不等整体验收。
+
+Root35200仍原句柄live；已实际完成6files254PASS、type/lint，default待终态。原writer已仅续派只读最窄修正方案，freeze不动，待Root门终态再授修改；限定现Skills CSS/toolbar/可见语义，不重写其它Settings/admin/API、不伪造账户字段。下一同owner修正P1→新freeze→Root三尺寸截图/单body滚动与完整用户链，完整Wave0–7 active。
+
 ### T-K03.4 R357 UI 冻结接收与真实窄屏偏差（2026-10-09）
 
 原78111 wrapper0/内部pnpm1终态：3591PASS/6原OIDC FAIL。Root核freeze2361486c…32changed全部exact、819其它tracked与b704bab baseline逐byteexact，原writer停写；独立冻结审查已续派原reviewer，无写/服务/data权。Root35200正在同SHA重跑具名/type/lint/default，不重复启动。
