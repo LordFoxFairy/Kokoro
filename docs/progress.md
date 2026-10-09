@@ -1,5 +1,8 @@
 ### R353-P3 必要循环已关闭，Skills整页仍OPEN（2026-10-08）
 
+仅Skills继续，当前调整为Web整页实现与BFF必要接线并行，而非页面串行等待底层。Web唯一writer st6已开始正文不跳动/同target不重复读取/鉴权失效清私有内容，继续Manus整页与后台装配；正式新API消费待BFF提交。Platform P4 fa185ed2已正式；BFF导入后在线准入与owner响应分界修正由Root实际复核，最后同writer消费正式P4中。页面S01–S10仍全部OPEN；截图/真实完整普通与管理员交互尚待，不升级完成声明。
+
+
 Platform必要GitHub循环修正现正式52eeb0b891326a7538926e5fc5ffc89fe87f3c54（parent bb286e1）；Product1.1/HTTP5.1、63RPC/32commands/24proof保持。Root逐SHA核38变化/573保护/四历史suffix，实际14文件PG/Redis193PASS零SKIP（含新增8个创建前无Asset、旧值保持、回滚/ACK/shadow/cancel/drift）和1905pure/十工程门0，独审bc446420无确定P0–P2；精确38paths提交、child clean。原四历史文档全format失败仍保留。Root自有库全回收/总清单保持、正常库/服务未改，IAM/Storage该组仍double，不冒真实配对或页面完成。BFF仅获02974acb精确新52机器pin/76正式输入、删除原701候选副本；HTTP读同一vendor，另be87be95仅删原HTTP701副本，不建双轨。Storage正常37 final-null及S01–S10仍OPEN。
 
 必要Storage ST6 test-only旧引用happy-path仍52331317/307保护、Root实际object链1PASS/3名称过滤，不是正常维修。新422ca908只读核锁序：双canonical UPDATE等待的原假设被同旧key advisory锁排除，writer按停止线无改动/无资源，未执行新竞争；Root已校正计划，不减生产锁、不造winner，组合证据OPEN且不新增为Web前置。

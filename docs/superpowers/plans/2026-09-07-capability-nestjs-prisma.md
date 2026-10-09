@@ -1,5 +1,11 @@
 ## R353 整体 Skills 接线：两条三设计收敛任务（2026-10-08，S01–S10 OPEN）
 
+R353 当前落地：Platform搜索/来源正式fa185ed2（35精确paths、全源冻结与实际资源核验；新fixture两次wire形状错误已原日志保留后修正）。BFF导入session/owner错误修正Root独核11变化与578保护，实际相关HTTP通过，最后正式P4消费同writer卡34106830进行中。Web同一整页writer已开始现正式客户端下正文切换/同target重绘与401清私有内容修复、继续Manus整页装配；未宣称浏览器完成。S01–S10全部OPEN，不以此工程结果升级页面状态。
+
+
+用户指出长期未交付后，调整执行顺序：R353-W2原Web负责人ST6唯一writer即刻推进整页布局与稳定交互，复用正式D0/W0/W1；新wire/generated/client消费仍待正式BFF/P4 SHA。整片卡e4c727d2保护原mixed及任务外字节。BFF并行修实际session/response缺陷，P2仅必要安装mapper补卡；P4仅新fixture catalog误用skill_id修source_ref，真实失败保留后复跑。不扩大设计、不以工程门代页面，S01–S10仍OPEN。
+
+
 复用本计划，不另建计划中心；只 Skills 继续。Root 实际 source_kind raw/typed RED 为缺省2PASS、三合法来源6FAIL，证明 BFF 转发不是 owner 可用。接线与整个 UI 范围已一次映射，以下只同步三设计，随后分别授权源码；不继续逐字段交付页面。
 
 | 任务 | owner/唯一 writer | 基线与允许范围 | 完成条件与交付 |
@@ -7,7 +13,20 @@
 | P4-D0 真实来源筛选与全结果搜索 | Platform / platform_github_p3_frozen_review_r353 | apps/kokoro-capability，52eeb0b；仅三设计当前前缀，626 tracked保护；卡24e16c25 | source_kind5运行修正、query6/ownedquery、分页前同owner精确revision查询、零Schema；候选Product1.2/HTTP5.2、52完整父逆向；Root核后精确提交，源码另授 |
 | W2-D0 完整 Skills 页面与交互 | Web / st6_legacy_competition_r353（原Storage调查已结束，工具线程上限后限定转派） | kokoro-r257-admin-web，de6b737；仅三设计当前前缀，785 tracked及原28 mixed保护；卡ca2a9818 | W0/W1完整内外页/预览正文/Settings/创建导入/分享下载/后台/稳定刷新同一片；实际Manus几何、正式Public9依赖、Record未观察保持OPEN；Root核后精确提交，源码另授 |
 
-BFF此前默认1201PASS/6FAIL/3SKIP，六失败为必要直接YAML依赖19行lock造成manifest共同hash变化，Root仅授四保护manifest正规重生lock字段，其余owner/config/generated全部保持；不是业务或页面验收。P4-D0正式a24180eb：Root三完整suffix/626保护/diffcheck0独核，仅3文档/86行提交、子仓clean。P4源码沿原负责人一次授权29现路径/5不可编辑正式父快照，源卡按52完整父、零Schema及具名RED与真实资源后继，未发行/激活。W2-D0正式c79e119：Root三suffix/785保护/28mixed/diffcheck0独核，真实归属独审已修，只3docs/101行提交；完整UI源码尚待正式BFF输入，不消费候选。Root真实GitHub两组三GET200/44候选/同SHA真实57707bytes包成功，只读取非完整import/页面。两设计任务并行于现BFF唯一writer收尾；原文件全字节suffix保持、每当前前缀约40行，不新增服务/表/发布状态机/计划或资源。Root独占Git/集成/资源；正常服务不重启，未升级任何页面完成状态。最终普通与管理员真实持久浏览器链及同尺寸Manus逐图仍是页面验收条件，工程门不替代。
+BFF此前默认1201PASS/6FAIL/3SKIP，六失败为必要直接YAML依赖19行lock造成manifest共同hash变化，Root仅授四保护manifest正规重生lock字段，其余owner/config/generated全部保持；不是业务或页面验收。P4-D0正式a24180eb：Root三完整suffix/626保护/diffcheck0独核，仅3文档/86行提交、子仓clean。P4原具名9例RED7FAIL/2PASS后实施；Root另实际PG READ ONLY VALUES确认三special字面查询0PASS/3FAIL（escaped探测3PASS），只授既有通用repo唯一contains hunk与安装relation同次转义，service/cursor保原字面，catalog/owned/admin/install一致，无新helper/框架。P4源码沿原负责人一次授权29现路径/5不可编辑正式父快照，源卡按52完整父、零Schema及具名RED与真实资源后继，未发行/激活。W2-D0正式c79e119：Root三suffix/785保护/28mixed/diffcheck0独核，真实归属独审已修，只3docs/101行提交；完整UI源码尚待正式BFF输入，不消费候选。Root真实GitHub两组三GET200/44候选/同SHA真实57707bytes包成功，只读取非完整import/页面。两设计任务并行于现BFF唯一writer收尾；原文件全字节suffix保持、每当前前缀约40行，不新增服务/表/发布状态机/计划或资源。Root独占Git/集成/资源；正常服务不重启，未升级任何页面完成状态。最终普通与管理员真实持久浏览器链及同尺寸Manus逐图仍是页面验收条件，工程门不替代。
+
+P4源码已冻7a55557b，Root独核634全源/599保护/唯一contains替回/三旧suffix，现单hunk marker完全匹配原卡（worker直接移除用错算法只是记录差异）。R353-P4-FROZEN-REVIEW由st6只读七现runtime，卡993f2272，无写/Git/资源；Root并行实际隔离PG。P4候选未激活或页面验收。
+
+### BFF整片独审真实缺陷修正（2026-10-08）
+
+独审st6对freeze7c86确认P1：AI/GitHub长source IO后未传现readmitSkill，可在撤session后仍继续写；P2：owner response ZodError错误归用户400。Root复核当前调用链，同原唯一BFF writer按卡ec9f5949一次修required在线readmit＋owner/input错误分界；先HTTP deferred-body真实负控，后源码，不扩auth/owner/契约/表。Root先前58实际PG与纯门是冻结局部资格，不覆盖此两真实漏洞；原失败保留。其它源/机器/生成保持，修正后按相关门重跑，再接完整Web，不把其它模块/广泛门作UI前置。
+
+### BFF整片冻结后的独立审查与Root资源验收（2026-10-08）
+
+|任务|负责人/范围|基线与阶段门|
+|---|---|---|
+|R353-B2-FROZEN-REVIEW|st6_legacy_competition_r353，独立只读BFF整片；无写入/资源/Git权限，卡ba2e535f|d2695c4＋freeze7c86a079；Root逐227present/65tracked删除/137absence/362保护/三suffix/66其它owner生成/76正式52机器输入核验已通过；再审真实运行职责/权限/恢复，不升页面完成数|
+|R353-B2-ROOT-QUALIFY|Root独占集成与隔离PG/完整纯门|冻结源不编辑，复用现PG/Redis；自有隔离fixture，保正常数据及进程；真实配对/普通与管理员浏览器仍OPEN|
 
 # Skills 完整交付锁定清单（R353，2026-10-08 当前优先入口）
 

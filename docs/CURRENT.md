@@ -1,5 +1,8 @@
 ### R353 当前：Skills 整片接线与真实页面差距（2026-10-08，页面未验收）
 
+仅Skills继续，当前调整为Web整页实现与BFF必要接线并行，而非页面串行等待底层。Web唯一writer st6已开始正文不跳动/同target不重复读取/鉴权失效清私有内容，继续Manus整页与后台装配；正式新API消费待BFF提交。Platform P4 fa185ed2已正式；BFF导入后在线准入与owner响应分界修正由Root实际复核，最后同writer消费正式P4中。页面S01–S10仍全部OPEN；截图/真实完整普通与管理员交互尚待，不升级完成声明。
+
+
 只推进同一计划 Skills S01–S10；其它模块及 heartbeat 暂停，完整 Wave0–7 active。外部目录、预览、正文、我的技能/Settings、四创建入口、分享下载、对应后台及异步稳定性是同一交付范围。下方旧记录均为历史切片，不覆盖本节当前事实；辅助门与局部截图均不升级页面完成数，S01–S10全部OPEN。
 
 已完成整项三设计收敛，而非逐字段UI修补：Platform D0正式a24180eb（3文档/86行，Root原suffix/626保护/diffcheck0）；Web D0正式c79e119（3文档/101行，Root原suffix/785保护/28mixed/diffcheck0），独审纠正usage/Share归BFF、个人发布者Profile归IAM→BFF。原完整旧文保留，无新服务/表/发布状态机/计划中心。P4已一次授原owner完整29现路径/5固定父快照，source_kind5实际边界RED2PASS/6FAIL、query6/ownedquery/分页前精确旧revision与cursor同次闭合；候选1.2/5.2未正式。BFF仍原唯一writer收尾，必要四manifest仅正规共同lockhash更新，未正常激活或升级页面状态。
