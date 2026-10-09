@@ -1,3 +1,20 @@
+### T-K03.4 R357 个人 Skills 单列表 UI 实施准入（2026-10-09）
+
+上一turn Web b704bab下载正式提交与真实点击验收属progress。Root核当前mounted surface、return-target与Settings装配，原owner只读方案获得实施准入，沿同一任务中心，不重建计划。基线Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release，codex/r357-web-skills-release，b704bab13bb86cbd42614470aaf17e68d3e19a97，当前clean；owner为原skills_platform_implementation_r357唯一writer，Root审查/提交/服务。业务不增加owner、SQL或BFF聚合。
+
+| 项 | 当前裁决 |
+| --- | --- |
+| Owner/职责 | Web Skills浏览器交互；Settings主面仅installation事实，独立/app/skills/manage承接本人合法draft/version/withdraw，不放官方发布/审核 |
+| 位置比较 | 继续Settings双tab会重复两cursor且偏离批准参考，淘汰；独立本人二级mounted surface复用reader的mode，采用，不复制client/schema/状态机 |
+| 粒度/依赖 | 既有PersonalSkillsRead显式installations/managed mode，各挂载唯一owner读；新Next空壳及features/app装配普通文件，不新业务模块 |
+| 数据/API | 来源四项使用既有owner source_kind分页前过滤；搜索/游标绑定；不前端merge、name去重、换pin或伪造usage/examples |
+| 删除项 | Settings可见已安装/我发布的双tab与changeView路径、重复技能heading/subtitle；保本人生命周期能力于二级管理，禁tab alias/fallback |
+| 验证 | 先请求计数真实RED，主面0managed读、管理0installation读；navigation/return-target精确路径、取消/迟到/CAS/unknown负控；type/lint/default/build、390/667/1440真实截图/滚动/聚焦/入口/权限 |
+
+授权现文件：personal-skills-read.tsx/module.css、skills-panel.tsx/module.css、settings-modal.tsx/module.css仅Skills布局、kokoro-app-surface.tsx、mounted-surface-navigation.ts、product-return-target.ts、kokoro-skills-surface.tsx仅入口、九现locale、ui/skills/INDEX与Web三设计/CURRENT。新增仅src/app/app/skills/manage/page.tsx、src/features/app/kokoro-skill-management-surface.tsx、tests/ui/skill-management-surface.test.tsx。测试复用skills-panel/kokoro-skills-surface/settings-modal/mounted-surface-navigation/product-return-target及现Skills tests；额外文件先报路径与职责。管理员/admin、下载切片生产、sharedcontract/lock/owner服务排除；若复用reader必须修改download绑定，只允许保语义而先报告。
+
+先更新既有三设计并核一致，记录明确文件集和保护清单，再RED→实施，不靠CSS隐藏旧tab。667×726参考modal380×580/居中radius16、固定上部chrome、唯一body滚动；390安全边距/44px、1440按已有参考实测，不把667数值机械套全部宽度。不改其它Settings行为；管理员身份仍独立准入，普通Account只条件跳转/admin。Root冻结后独审+重跑+同尺寸真实链路，默认已知六失败不跳/放宽。完整Wave0–7 active。
+
 ### T-K03.4 R357 Web 精确下载正式提交与真实用户点击验收（2026-10-09）
 
 上一turn真实prepare字节核验与admin归因更正属progress。本轮Root正常浏览器/app/skills→我的技能→r357 installed卡→preview下载按钮→native download event→保存ZIP，failure=null、349bytes与原上传逐字节exact、SHA019b9929…fed2；弹窗保留、零alert。私有收据r357-skills-installed-ui-download.json/zip。旧withdrawn个人清单整理R267实际UI下载显示专属“下载失败，请重试。”，session200/true保持；原BFF只读核Platform assertSkillProductRead对非active下载故意NotFound、BFF正规404投影符合D0，不改为403或放宽资格。收据r357-skills-withdrawn-ui-download.json。
