@@ -1,8 +1,16 @@
+### R356 Skills 同一整项继续：参考事实与正常存储前置
+
+已实际核 Manus 官方 v2 skill.list：已安装列表包含停用项，读取不启用；网站目录/弹窗仍按已保存的真实 Manus UI 参考，不把公开 API 当其私有市场协议，不造作者/分类/用量。旧数据恢复由 Root 承担，原 ID/版本/安装关系保持。
+
+Root 正常 MinIO 仅三项配置读取：Versioning 响应空（未 Enabled）、ObjectLock404、BucketCors404；无对象读写/重启。这是新确认的版本化前置，不据 BucketCors404 推断浏览器数据面失败。收据 r355-normal-object-store-readonly.json。当前仍旧服务，S01–S10 全 OPEN。
+
+沿现计划并行：st6 保持唯一 Web writer 完整 Public9 页面与后台；原 BFF 负责人转唯一 Root Skills 组合 runner writer，精确四现路径，卡 r356-root-skills-combo-source-task-card.json；Root 保留实际资源、集成/Git与最终浏览器验收。该 runner 只资格现 draft/install/source 链，不冒充全部网页完成；源 clean/正式 pin/归属门不能放宽。Web 第三 preview callback 仅获 b89cbddd 拒绝假 Product 的窄补卡，其余 preview/正常客户端保持。完成后才沉淀验收与返工经验。
+
 ### R355 正常 Storage 配对前置实证（完整页面仍 OPEN）
 
 Root 真实正常库 READ ONLY 与隔离 formal-old catalog 对照：固定 owner search_path 后完整 definitions 零差，正常catalog等已资格 old c09e01…；自有DB已drop、库总清单保持、无DDL/服务重启/正常写入。首次漏固定search_path产生假fingerprint差、隔离DDL同类失败均保原收据后纠正，不误报应用drift。正常仍37有效Asset未知final版本（30包/5个人/2项目，36Blob）；30包映射26个Skill与7个未移除安装。真实逐owner源读取保持，不能凭聚合或旧provider通过静默补版本/换引用。
 
-已向用户发一项明确产品决定：7个已安装旧版本原ID/原引用恢复，或保旧记录经正式发布新版本后明确重新安装；等待回答期间 Web整页与后台继续，不删除/自动升级。BFF已正式6e803829；同原BFF负责人只读现Root组合runner的正式 Public9/v3/P4定位差距，Root独占后继修改/资源。仅Web dev preview两callback获e52939d6精确empty/拒绝补卡，不伪造新Product字段、不触动正常同源客户端。S01–S10仍全OPEN，完整Wave0–7 active/其它模块暂停。
+用户已再次要求参考 Manus API 与页面，未授权删旧数据、换安装引用或重新安装；内部恢复方案由 Root 承担，不再等待用户选择技术迁移。原技能 ID、版本与安装关系保留，Web 整页及后台继续。BFF已正式6e803829；同原BFF负责人只读现Root组合runner的正式 Public9/v3/P4定位差距，Root独占后继修改/资源。仅Web dev preview两callback获e52939d6精确empty/拒绝补卡，不伪造新Product字段、不触动正常同源客户端。S01–S10仍全OPEN，完整Wave0–7 active/其它模块暂停。
 
 本轮沿既有卡执行：Root只读正常owner/canonical资格与真实资源；bff_skills_product_source_r353只读 scripts/e2e/run_bff_skill_draft_sandbox_smoke.py / 正式三设计，唯一报告r355-formal-combo-runner-readonly.md、不写源码/Git/资源；st6仍唯一Web writer、原73/30/6范围＋e52939d6两preview callbacks补卡。Root负责正式集成及最终普通/管理员持久浏览器验收。
 
