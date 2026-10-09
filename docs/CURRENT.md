@@ -2,7 +2,7 @@
 
 Storage 原引用恢复四文件由 Root 提交 `be3ab0c3ade4ba2932910676c2c4758cbb7e2979`。Root 真实隔离 HTTP v3 / PostgreSQL / MinIO 版本桶 / Clam / Redis 重跑通过：37 项正常链、丢失 ACK / 迟到 PUT、真实 caller 拒绝、原行漂移拒绝、EICAR 隔离且无 clean 下载；1 file / 1 scenario PASS，12.68s。首次负控仅错误把 scanner metadata 期望为品牌名而失败，原 FAIL 日志保留，按生产 `configured` 修正 oracle 后通过，生产代码未迎合测试修改。原 3 源文件与 308 保护项未变。此为恢复入口资格，不是正常旧数据已恢复：正式持久库尚未 apply，原 37 Asset / 7 安装引用未改。
 
-Platform 候选 Root contract/architecture/具名 unit 实跑 36 files / 828 PASS；独审仍发现三处产品阻断：新包 manifest 可绕过 SKILL.md frontmatter、主 audience/withdraw 未同事务维护显式 publication、旧库 backfill 后续 mutation 链未核。同一 owner 继续最小修复，不放行、不重新建计划。backfill 裁决恢复的是当前快照，原 Skill audience 可作为当前权威事实，旧 publish 缺 audience 本身不是缺陷；须核最新 exact publish 与后续合法 audience/withdraw 最终事件和原行一致，禁止 MAX revision 或旧版本 fallback。
+Platform 候选 Root contract/architecture/具名 unit 实跑 36 files / 828 PASS；独审三处阻断经同一 owner 最小修复与独审复核均闭合。Root 真实隔离 PostgreSQL 首37PASS/9FAIL及cleanup失败为旧fixture缺publication/清理顺序；修正式seed和自身tenant清理后，完整两文件47PASS/0FAIL，隔离库已清理、正常库未写。正式发行前又发现父基线含未提交MCP A1，freeze哈希并非commit；正在拆清共享前置，不夹任务外、不冒已正式发布。backfill 裁决恢复的是当前快照，原 Skill audience 可作为当前权威事实，旧 publish 缺 audience 本身不是缺陷；须核最新 exact publish 与后续合法 audience/withdraw 最终事件和原行一致，禁止 MAX revision 或旧版本 fallback。
 
 BFF 同一 owner 已推进五规范读取与 opaque 字节 handle，等待上述正式 owner 发布再接真实 adapter；候选 pending 503 不算通。Root 已重新操作 Manus 真实“查看详情”并保存 `var/dev/r255-preserve/r357-manus-file-detail-current.png`，用于唯一 Web 详情对照。正常本地目录仍展示多个旧版本，完整普通/管理员页面路径仍 OPEN。下一顺序固定：关闭 owner 三阻断 → 正式 paired 资源升级及保引用恢复 → BFF/Web/后台接线 → 同尺寸与完整浏览器验收；不扩散其它模块、不把纯门数量冒充交付。
 
