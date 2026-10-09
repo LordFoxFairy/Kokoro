@@ -8,6 +8,10 @@
 
 **本轮执行约束（用户再次要求一次梳理、减少返工）**：这份S01–S10是唯一交付清单。先固定全部字段、操作与页面状态，再一次Platform发行→一次BFF消费→Web内外页/Settings/后台完整片；仅真实缺陷才调整方案，不按单个字段来回改页面。Root负责参考截图与最终用户旅程，原owner负责实现，独立只读审查并行；其它模块暂停。辅助测试仅排错，不改变页面完成数。
 
+本轮为避免Web整页之后再返工，Root并行启动只读W1接线映射（web_skills_public9_mapping_r353，卡55a65b42）与原BFF唯一writer收尾，不另建计划。实际发现三项产品缺口：Platform正式52e已含source_kind=5，BFF当前parser/client漏接（BFF首条误称owner缺字段已撤回，Root核正式Proto/profile；继续深入发现Product RPC未映射且typed/raw白名单拒该字段，P4只读沿真实查询边界一起核来源与query，不以BFF loopback证明owner可用）；个人跨分页query尚无owner输入；GitHub真实URL-only弹窗与现fullSHA+手填metadata接口不符，Root已授e2e2370c：preview URL→公开repo默认branch真实SHA→受限包与真实SKILL metadata→import固定selector重验，复用原receipt、不新阶段；生产完整YAML parser固定最新兼容js-yaml4.3.2/@types4.0.9，只必要lock hunk。W1报告6b7c1414列S01–S10精确接线/28混合修改保护，Root独立核788字节；BFF两旧current fixture精确补卡ddd7402e保auth/项目/排程断言。不得用前端当前页过滤、手填SHA或假metadata冒闭环。外部分享接收路由也纳W1整片映射，未落Web假入口。
+
+Root新增Manus实际上传参考：1113×752，上传技能弹窗400×347.5，要求根SKILL.md及YAML名称/描述、.zip/.skill；未选择/上传文件，Escape后dialog=0且目录恢复，console无error/warn。截图/量测与差距收据bd41b6bf保留。正常Web31451/Platform44808/BFF44830原进程仍在，未重启/DDL/数据写入；BFF/整页未freeze与验收，S01–S10仍全部OPEN。
+
 - 当前真实Web入口已是`SkillCatalogRead`，不能误把`PreviewKokoroSkillsSurface`当产品实现：后者仍有名称猜分类、固定usage数字、装饰封面及临时import数组。整页片必须清理该重复路径及相关调用/测试，不将其假数据或状态接回正常页面；具体删除范围由Web任务卡绑定实际引用后授权。
 - 已有详情稳定target、Back只切view、Close归焦骨架保留；新字段不重建整个弹窗/reader。统一管理动作刷新，搜索/分类/分页/滚动/正文/未保存输入均保留；滚动恢复目前未证实，最终真实浏览器必验。
 - S06四入口都进入同一持久草稿/包验证/发布链，不用浏览器数组假完成；参考“记录技能”的具体流程仍未核实，不自行设计后宣称一致。
