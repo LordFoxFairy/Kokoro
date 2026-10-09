@@ -1,3 +1,9 @@
+### T-K03.4 R357 UI 冻结接收与真实窄屏偏差（2026-10-09）
+
+原78111 wrapper0/内部pnpm1终态：3591PASS/6原OIDC FAIL。Root核freeze2361486c…32changed全部exact、819其它tracked与b704bab baseline逐byteexact，原writer停写；独立冻结审查已续派原reviewer，无写/服务/data权。Root35200正在同SHA重跑具名/type/lint/default，不重复启动。
+
+Root正常浏览器667×726实际打开我的技能，dialog[143.5,73,380,580]/radius16、无横溢、安装8项读取并唯一485px body scroll；但真实截图r357-personal-ui-root-667.png显示chrome只有居中K头像，无参考设置标题/账户名/个人版/可见search，工具栏和管理入口分多行空白，首卡y468。因此尺寸相同不等于批准视觉一致，已传独审按代码行号核该明确偏差；本片尚不放行，不把pure gates冒页面闭环。下一行动先收同句柄门禁终态和独审，再同owner最窄视觉修正/重新冻结，真实390/667/1440完整交互后放行。Wave0–7 active，正常数据和任务外修改保留。
+
 R357 UI必要i18n oracle范围追加：Root核tests/i18n/resolve.test.ts仅将skills.personal.manage加入已有个人Skills九语言闭集，批准该路径必要单key调整，不改其它断言。原writer报告143focused PASS、110 i18n/Settings PASS以及unknown实际恢复GET self/skills→usage POST精确序列，仍待Root冻结重跑。原default78111对应PID61669本轮实核live，原上一default3589PASS/8FAIL的新增两项已定点修复，原六OIDC失败仍不免门。原writer终态后冻结停写再Root验收，未把报告冒实际浏览器完成。
 
 ### T-K03.4 R357 UI 当前失败收敛实证（2026-10-09）
