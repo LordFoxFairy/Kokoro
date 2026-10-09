@@ -1,3 +1,7 @@
+### R357 实际接线停止线：不以纯门掩盖后台缺入口
+
+Root逐新114真实文件SHA与Git变更集exact，但静态审查发现去混合model-routing时hubroute误恢复为HEAD：已批准的Skills Admin/share/draft/cover/binary/usage/import/githubpreview imports与dispatch全部丢失，客户端却仍指向这些同源入口。新446纯门绿色不能证明这些功能存在。Root已阻断候选26b628提交/激活，令原writer仅恢复必要Skills hunk（仍排除model-routing两行）并保持strict Publish；补真正route层入口/方法/撤权测试，禁止删除有效职责。旧106freeze假目录已改真实114，旧证据保留。原37资产、7安装与正常服务未改；页面/后台闭环仍OPEN。
+
 ### R357 干净集成仍未放行：Root 实际全入口失败
 
 Web作者干净候选首冻结106记录里含现存目录误记deleted，Root核验失败，已要求改为实际tracked变更+untracked文件闭集、不以is_file忽略目录冒exact。作者26具名410与其它门绿色未覆盖关键hub-proxy。Root实际扩展25文件489项：446 PASS / 43 FAIL，原句柄12456终态1、日志 `r357-root-web-clean-closure-gates.log` 保留。41项来自整件copy当前测试夹带R260 model-routing块，GitHEAD确无该块，须剔除任务外mixed hunk，不将其当baseline故障；余2项是真Skills Publish严格请求/用例不一致，交原writer按正式Public12定位并正规修，不弱化安全边界或跳过测试。
