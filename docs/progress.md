@@ -1,3 +1,9 @@
+### T-K03.4 R357 历史契约与current聚合正式修复（2026-10-09）
+
+Platform正式50a338c，Root21精确路径提交、668其它tracked post-build原字节exact；固定source snapshot SHA12f357…未刷新。历史固定parent/delta与current v10分离，两个独立只读审查均无确定P0/P1。Root76930六contract412PASS，check-contract/current cutover/typecheck/lint/build自然0；三删除负控调用真实生产assertCurrentPlatformSource，current精确74/39/24、历史MCP69/36/24及Product63/v4 34/17/24保持。旧初census fail与regex-only假负控候选均保留为整改过程，不冒已通过。
+
+全门仍原58860八assertion失败，沿同计划仅5现tests纠正oracle/真正Validate fixture进入目标语义；只读初报告错误将BFF算contract/serializer算15被Root拒收，重核真实11/18/20与user-owned upload/CAS/attempt准入后才授权原writer。正常基础设施/九运行owner监听均实际复核未重复启动，normal v10仍inactive、Schema未升级、用户上传与独立后台正向未闭环。后台验收管理员身份未指定，当前正规登录实际普通用户；已异步询问管理员账号，不擅自授资格。完整Wave0–7 active。
+
 ### T-K03.4 R357 历史候选Root重跑：371通过，全门仍8失败（2026-10-09）
 
 Root对正式Platform基线3ba9fcb核669受保护路径原字节exact、20候选SHA冻结；独审未见确定P0/P1。真实五contract371PASS，check-contract通过6fcc148f…；16531在cutover旧current文本69诊断遇正规v10实际74失败，保日志、不宣称聚合通过。独立58860实际typecheck/lint/build通过后默认全门自然exit1：6failed files、8failed assertions、2138PASS、401skip，另platform-contract-cutover收集失败。Reporter命令多余 -- 导致JSON未生成，真实完整stdout日志保留；不冒称JSON证据。首次Root重跑错误log相对路径在测试前exit1，随后纠正，非行为RED。
