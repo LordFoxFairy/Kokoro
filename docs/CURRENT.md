@@ -6,7 +6,15 @@ Skills 规范直接采用 Manus 官方文档中已定义的请求、响应、字
 
 用户响应9项，顶层 skills/tagOptions；skillId/originalName/displayName/userDescription、icon对象、publishStatus、currentVersion对象、publisherType/verified、usageCount十进制字符串、exampleQuestions数组、tags.values、type/coverImage；来源对象与syncStatus按真实生命周期供给。currentVersion.archiveSize是十进制字符串、fileCount是整数、current是布尔、时间是UTC字符串；禁止把内部 revision/source_ref 或任意标签/安装状态当产品展示事实，禁止冒官方认证、统计/封面或复制参考目录当本地数据。
 
-唯一TODO与具名角色在 docs/task.md 的 T-K03.1–8；当前只推进第1步字段/接口实证盘点。S01–S10仍全部OPEN；原运行旧包详情失败仍实证保留。
+唯一TODO与具名角色在 docs/task.md 的 T-K03.1–8；字段/接口实证盘点已交接，D2三设计已收敛，现进入 T-K03.3 owner实现与必要旧包恢复。S01–S10仍全部OPEN；原运行旧包详情失败仍实证保留。
+
+### R357 强制 API 命名与连续执行裁决（用户最新要求）
+
+正式对外接口严格采用 Manus 对应文档命名：只把路径版本段 `/v2/` 替换为 `/v1/`，其余 suffix 原样保留，例如 `GET /v1/skill.list`、`GET /v1/user.me`；不得再改为 `/skills` 或 `/users/me`。HTTP方法、参数位置、字段名/嵌套/类型、可选/缺省、成功/错误结构逐接口保持对应文档规范，不能统一套旧data/meta；user.me的成功user_id在顶层，skill.list的技能数组在data。域名/实际身份/凭据由Kokoro正式边界承担，不把Manus的服务身份或品牌装成本地事实。既有AGENTS/历史ADR资源名词化或旧响应包装选择在这组对应Product API上由本次用户裁决覆盖。
+
+公开文档未提供的Hub/详情/下载/创建等网站能力，沿已观察的真实网站方法/字段补齐本地正式契约；没有实际参考的操作不擅造“Manus同名接口”。BFF唯一拥有对外Product API；Platform/Storage/IAM等子服务按事实owner同步支持该产品合同，浏览器只走Web同源→BFF；不把每个子服务变成重复公共API，不建兼容facade/双轨。
+
+连续执行规则：当前只完成Skills全部规范＋UI＋后台＋真实普通/管理员交互；之后才按原TODO扩散其它接口。现T-K03.2进入owner三设计/字段矩阵收敛，固定最小完整改集后直接实现、接线、运行升级、浏览器验收，不重开计划中心。每类失败首轮保真实证据，定位原因再修；同一失败两轮仍无进展即改变处理方法或报告具体阻塞，不盲重跑历史门、不无限逐字格式化。Root独占共享资源/Git/集成/浏览器，原ID/版本/7安装/37Asset保留。功能主路径失败必须修；可见样式差异按同尺寸参考对照，不靠“感觉已完成”。
 
 ### R357 Skills 规范盘点实证（未完成契约改造）
 
@@ -17,6 +25,21 @@ Root正常重载用户参考页，实际取得5次POST200：ListSkills `{}`→us
 三具名只读角色已交付并停写：Platform事实与契约、BFF/Web全接口消费者、Manus证据/公开文档；其它writer冻结。Root独核当前BFF机器SHA2cbbf413…、42路径/47操作（catalog/self/draft/upload/validate/publish/versions/withdraw/import/install/package/download/cover/share/usage/project/Admin全纳入），收据r357-skills-local-route-inventory.json。记录技能仍disabled、网站写命令错误/准入未观测，未算完成。已确认现目录的revision/source_ref、product/category_keys形状与参考差异，不只UI。稳定skill身份/确切version、全包fileCount、current版本、来源同步、作者及usage真实事实须在第2步裁决，不能复制字段值或自动换旧7安装引用。Root/Platform/BFF各按正式owner更新现契约，不在Root复制机器定义。
 
 这次只更新执行TODO与参考决定；Skills代码、数据库和正常服务尚未改造，S01–S10仍全OPEN，旧包详情/下载失败保留。下一只进入T-K03.2，不扩散连接器/排程等模块，不以辅助检查数量称UI或完整交互已验收。
+
+
+### R357 本轮真实资源资格（仍未正常激活/页面完成）
+
+Root Node24实际Storage维护构建0、具名unit26PASS、真实v3 HTTP/独立PostgreSQL/版本MinIO/Clam/Redis smoke1PASS，37隔离旧NULL对象恢复和未知Complete/晚PUT覆盖；原正常37尚未改。独审主实现无P0/P1，真实拒绝/漂移负控P2另授原writer仅补smoke，未冒四依赖阴性都已完成。Root正常Storage在规定owner search_path只读核旧catalog c09e01ed…精确；未执行DDL。
+
+Platform显式series schema实际两Root自有库 fresh/expand全目录同a5c9f96b…，两库已清、共享78库目录exact，正常写0。首次Rootcwd generator真实DDL drift失败，原因调用者cwd，owner固定cwd后Root同12e35 nativeDDL再核PASS；不修改正确hash迎合错误。active合同重发/oldseriescurrent恢复/正常数据升级和真实浏览器仍待，不把资源资格当Skills完成。
+
+### R357 连续实现已派（本轮实际状态，不是页面完成）
+
+BFF三设计纠正后独审原6问题全部关闭，Root核全部原正文/三SHA/仅三路径diff并正式提交8ba907305f2babcd5c28da0b7773170acf2f206a。Platform D2三完整原正文与646保护Root独核通过，按已决定series/current方案进入源实施；不再停留无限设计盘点。具名Platform、BFF、Storage必要依赖三writer分属各仓，Root独占集成/Git/正常资源与浏览器，未授权其它功能新增。
+
+Root真实正常浏览器：目录→卡片预览→查看详情仍503“技能文件读取失败”，URL旧package；本轮七个正常owner /readyz均200，Agent401为保护入口，不把错误归因为全部没启动。原7安装/37Asset未改，正常资源与服务无重置/重复启动。已保存同764×849当前Manus与本地预览截图r357-manus-preview-current.png/r357-local-preview-current.png；本地缺作者/示例且包失败，绝不声明一致。
+
+新实证：Manus我的技能→添加→上传表单只要求根SKILL.md的.zip/.skill和YAML名称描述，没有自造manifest.json要求；官方agentskills.io/specification最小结构确认。Platform实现同步消除新包产品强制manifest差异，保原ZIP全扫描/CRC/尺寸/身份/扫描安全与旧原字节引用，未知字段不虚构。参考上传/导入只打开取消，未往Manus上传/创建/安装。
 
 ### R357 用户指定后继顺序：连接器完整闭环优先（2026-10-09）
 

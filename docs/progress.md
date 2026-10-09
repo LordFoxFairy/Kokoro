@@ -1,3 +1,5 @@
+R357 本轮：D2 BFF正式8ba9073且6审查问题关闭；Platform方案B已Root核准并派源writer，Storage37保引用维护实现进行中，BFF新5读/下载源实现进行中。真实普通详情仍503、七owner readyz200，非服务没启动。只Skills继续，S01–S10仍OPEN，不称发布/页面一致。
+
 ## 当前唯一执行队列：Skills 全接口规范与 UI 闭环（2026-10-09 用户最新裁决）
 
 本节覆盖下面此前“连接器优先”等历史顺序。先把 **Skills 所有相关接口与 UI** 完成并由 Root 真实端到端验收，再扩散连接器、排程、列表关系、其它功能按钮/Settings。其它功能暂停新增实现；已冻结连接器 A1/Storage D1仅保存交接，不冒整模块完成。原完整 Wave0–7 goal 仍 active，heartbeat 保持原暂停；沿本文件 T-K03/S01–S10，不新建计划中心。
@@ -7,6 +9,14 @@ Skills 规范直接采用 Manus 官方文档中已定义的请求、响应、字
 用户响应9项，顶层 skills/tagOptions；skillId/originalName/displayName/userDescription、icon对象、publishStatus、currentVersion对象、publisherType/verified、usageCount十进制字符串、exampleQuestions数组、tags.values、type/coverImage；来源对象与syncStatus按真实生命周期供给。currentVersion.archiveSize是十进制字符串、fileCount是整数、current是布尔、时间是UTC字符串；禁止把内部 revision/source_ref 或任意标签/安装状态当产品展示事实，禁止冒官方认证、统计/封面或复制参考目录当本地数据。
 
 唯一TODO与具名角色在 docs/task.md 的 T-K03.1–8；当前只推进第1步字段/接口实证盘点。S01–S10仍全部OPEN；原运行旧包详情失败仍实证保留。
+
+### R357 强制 API 命名与连续执行裁决（用户最新要求）
+
+正式对外接口严格采用 Manus 对应文档命名：只把路径版本段 `/v2/` 替换为 `/v1/`，其余 suffix 原样保留，例如 `GET /v1/skill.list`、`GET /v1/user.me`；不得再改为 `/skills` 或 `/users/me`。HTTP方法、参数位置、字段名/嵌套/类型、可选/缺省、成功/错误结构逐接口保持对应文档规范，不能统一套旧data/meta；user.me的成功user_id在顶层，skill.list的技能数组在data。域名/实际身份/凭据由Kokoro正式边界承担，不把Manus的服务身份或品牌装成本地事实。既有AGENTS/历史ADR资源名词化或旧响应包装选择在这组对应Product API上由本次用户裁决覆盖。
+
+公开文档未提供的Hub/详情/下载/创建等网站能力，沿已观察的真实网站方法/字段补齐本地正式契约；没有实际参考的操作不擅造“Manus同名接口”。BFF唯一拥有对外Product API；Platform/Storage/IAM等子服务按事实owner同步支持该产品合同，浏览器只走Web同源→BFF；不把每个子服务变成重复公共API，不建兼容facade/双轨。
+
+连续执行规则：当前只完成Skills全部规范＋UI＋后台＋真实普通/管理员交互；之后才按原TODO扩散其它接口。现T-K03.2进入owner三设计/字段矩阵收敛，固定最小完整改集后直接实现、接线、运行升级、浏览器验收，不重开计划中心。每类失败首轮保真实证据，定位原因再修；同一失败两轮仍无进展即改变处理方法或报告具体阻塞，不盲重跑历史门、不无限逐字格式化。Root独占共享资源/Git/集成/浏览器，原ID/版本/7安装/37Asset保留。功能主路径失败必须修；可见样式差异按同尺寸参考对照，不靠“感觉已完成”。
 
 ### R357 Skills 规范盘点实证（未完成契约改造）
 

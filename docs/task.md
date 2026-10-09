@@ -1,3 +1,7 @@
+R357 T-K03.3-BFF 已派：原BFF writer platform_github_p3_frozen_review_r353，D2正式8ba9073、独审原6问题全部关闭；按已定范围实施5读/下载句柄与新active机器，正式owner依赖后固定消费。Root独占提交/资源/完整浏览器；源卡var/dev/r255-preserve/r357-skills-bff-implementation-card.json。
+
+
+R357 T-K03.3-PLATFORM 已派：skills_platform_implementation_r357（Platform唯一writer），Root独核D2三完整父与646保护通过；实施现Skills稳定series/current、真实包metadata及owner契约，保A1/MCP和原ID引用。源卡var/dev/r255-preserve/r357-skills-platform-implementation-card.json；无正常资源/Git权限，Root最后真实集成与浏览器。
 ## 当前唯一执行队列：Skills 全接口规范与 UI 闭环（2026-10-09 用户最新裁决）
 
 本节覆盖下面此前“连接器优先”等历史顺序。先把 **Skills 所有相关接口与 UI** 完成并由 Root 真实端到端验收，再扩散连接器、排程、列表关系、其它功能按钮/Settings。其它功能暂停新增实现；已冻结连接器 A1/Storage D1仅保存交接，不冒整模块完成。原完整 Wave0–7 goal 仍 active，heartbeat 保持原暂停；沿本文件 T-K03/S01–S10，不新建计划中心。
@@ -11,7 +15,7 @@ Skills 规范直接采用 Manus 官方文档中已定义的请求、响应、字
 | 子步骤 | TODO / 完成条件 | 当前状态与负责人 |
 | --- | --- | --- |
 | T-K03.1 | 盘点全部 Skills API：目录/筛选、详情、文件树/正文、下载、草稿/创建/编辑/发布/撤回、各来源导入/同步、版本、安装/启停/移除、分享、后台审核/管理；列实际参考request/response/error与本地路由、owner、字段/类型差异 | 进行中；Root统筹，Platform/BFF-Web/参考证据3只读角色并行；三只读角色已交付并停写；Root核现BFF42路径/47操作及SHA、9项样本/5次网站POST200、公开list原文；参考写协议/异常仍待补 |
-| T-K03.2 | 收敛同一字段矩阵与 owner 三设计/机器契约：身份、skill与version区分、枚举、每接口真实数值/时间类型（公开Unix秒int64、网站大数字符串/UTC字符串）、optional/absence、分页/筛选/tagOptions、下载语义与权限、错误/取消/异步；定稿后才写实现 | 待1；Root裁决/审查；Platform维护Skills事实契约，BFF维护公开产品契约，Web维护同源边界，各仓单writer；Storage/IAM保原owner |
+| T-K03.2 | 收敛同一字段矩阵与 owner 三设计/机器契约：身份、skill与version区分、枚举、每接口真实数值/时间类型（公开Unix秒int64、网站大数字符串/UTC字符串）、optional/absence、分页/筛选/tagOptions、下载语义与权限、错误/取消/异步；定稿后才写实现 | 进行中；Root已裁决公开路径/字段规范；Platform维护Skills事实契约，BFF维护公开产品契约，Web维护同源边界，各仓单writer；Storage/IAM保原owner |
 | T-K03.3 | Skills owner全部业务接口改造＋必要存量修复：原ID/版本/7安装关系和37Asset保留；正规发布/查询/版本/导入/安装/后台真实落库，无伪造显示字段 | 待2；单仓单writer；真实依赖、旧包详情/下载不通则不通过 |
 | T-K03.4 | BFF＋Web同源所有Skills接口同步固定新owner artifact；一次删旧误形状/别名/fallback，列表/详情/下载/文件/创建/安装/Admin统一消费，浏览器不访问内部owner | 待owner正式发行；BFF、Web按依赖串行，各单writer |
 | T-K03.5 | 内外Skills页、我的技能/Settings、预览/查看详情、文件浏览器、创建/导入、后台按同尺寸Manus截图修UI：字段、位置/间距、主次动作、分类、示例列表一致；后台相应能力齐全 | 待契约定稿，可先只读量测；写入受4依赖，不制作伪数据UI |
@@ -20,6 +24,16 @@ Skills 规范直接采用 Manus 官方文档中已定义的请求、响应、字
 | T-K03.8 | 对照1的全API矩阵与S01–S10逐项销账、用户可见截图/实际证据、提交与经验沉淀；未通项明确OPEN；Skills全部验收后才恢复其它模块 | 待7；Root；不冒正式第一版已发布 |
 
 禁止跑偏：只修改该步骤明确文件集；先失败再实现；owner contract先发行后消费者接；同仓只有一writer；Root独占Git/集成/资源/浏览器。参考接口未取得的字段列“待观察”，不擅自补“类似规范”。不要把色彩/边距局部通过称Manus一致，更不要以后台测试数量清空业务TODO。
+
+### R357 强制 API 命名与连续执行裁决（用户最新要求）
+
+正式对外接口严格采用 Manus 对应文档命名：只把路径版本段 `/v2/` 替换为 `/v1/`，其余 suffix 原样保留，例如 `GET /v1/skill.list`、`GET /v1/user.me`；不得再改为 `/skills` 或 `/users/me`。HTTP方法、参数位置、字段名/嵌套/类型、可选/缺省、成功/错误结构逐接口保持对应文档规范，不能统一套旧data/meta；user.me的成功user_id在顶层，skill.list的技能数组在data。域名/实际身份/凭据由Kokoro正式边界承担，不把Manus的服务身份或品牌装成本地事实。既有AGENTS/历史ADR资源名词化或旧响应包装选择在这组对应Product API上由本次用户裁决覆盖。
+
+公开文档未提供的Hub/详情/下载/创建等网站能力，沿已观察的真实网站方法/字段补齐本地正式契约；没有实际参考的操作不擅造“Manus同名接口”。BFF唯一拥有对外Product API；Platform/Storage/IAM等子服务按事实owner同步支持该产品合同，浏览器只走Web同源→BFF；不把每个子服务变成重复公共API，不建兼容facade/双轨。
+
+连续执行规则：当前只完成Skills全部规范＋UI＋后台＋真实普通/管理员交互；之后才按原TODO扩散其它接口。现T-K03.2进入owner三设计/字段矩阵收敛，固定最小完整改集后直接实现、接线、运行升级、浏览器验收，不重开计划中心。每类失败首轮保真实证据，定位原因再修；同一失败两轮仍无进展即改变处理方法或报告具体阻塞，不盲重跑历史门、不无限逐字格式化。Root独占共享资源/Git/集成/浏览器，原ID/版本/7安装/37Asset保留。功能主路径失败必须修；可见样式差异按同尺寸参考对照，不靠“感觉已完成”。
+
+Skills必要包依赖已授权 T-K03.3-STORAGE-PREREQUISITE：原st6唯一writer，正式Storage D1通过Root三设计/完整父字节核对；仅2维护脚本＋2具名测试，旧37对象实际读取资格与正常详情失败已有实证。Root独占真实资源/服务切换/备份/37集合apply与验收；维护默认只读、只复用合法Upload RPC和原Blob CAS，不修改普通exact读取、不换旧ID/7安装。此依赖不恢复其它模块开发。
 
 ### R357 Skills 规范盘点实证（未完成契约改造）
 
