@@ -1,3 +1,11 @@
+### T-K03.4 R357 BFF 接线切片已提交，边界与 Web 回归继续（2026-10-09）
+
+前一 goal turn仅核独立后台结构并回复用户，属于无新增实现进展；本轮已重读当前工作树及冻结文档，续派两名原 owner。BFF接线正式 a71d846e7486c0dab2ca60e7915544730d22a3f8，196 materialized 路径、563保护字节exact；Git rename显示110并非范围丢失，Root以 --no-renames 确核196后提交。Root默认1287PASS/8FAIL/3SKIP仍保持失败，正常BFF未重载，提交不等于完整验收。
+
+R357-BFF-BOUNDARY-AND-ORACLE：原BFF owner唯一writer，基线a71d846e；Root实际评审三设计D0，仅25新增行、freeze 2a545a821d09a1d3b123a4e513bade369572623c8206892e57be2a28f0d0530d，669保护。批准现application/skill-specification职责移入既有infra/platform并删除旧路径；runtime/HTTP测试/architecture/bff mock共六源码测试路径。保强application边界、canonical exact12与fresh权限，不造ports/DTO/兼容API；先RED后实现，Root最终验证/Git。Billing75ms仅受控诊断，默认失败不被focused通过抹除。
+
+Web原owner非验收候选freeze b3427b76ed04316cd72508b0e0805c82487eeffeff18c08ecc1eaca71af634aa：31路径/811保护，focused201PASS/typecheck/lint/build0；default3423PASS/23FAIL/79SKIP。续派现已授权三个测试族的21旧local发布oracle按正式Begin/PUT/Complete/Finalize修fixture，保撤权/迟到/取消/恢复强断言；OIDC307和韩文两失败继续具名，不提前提交。正常Platform已升级，其余正常服务与所有用户数据保留。后台仍独立/admin/settings，管理员正向真实旅程待身份确认；完整Skills与Wave0–7仍OPEN。
+
 ### R357 真实预览、文件详情与下载阻断已修正（2026-10-09）
 
 Web正式 `e79b8556b73ba21493c853eff35d45d4bea6811d` 仅3paths：目录稳定series与安装exact version不再混用；按series唯一定位安装，canonical详情仍逐项核ID/source/revision/series/installed。Root79/79 UI、typecheck/lint/default build全0；独审含动态切版旧响应回归无确定P0/P1。正常旧v1安装/当前v2目录预览实际安装list+detail200、错误消失，原安装未自动换版。
