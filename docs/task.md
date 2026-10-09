@@ -1,3 +1,7 @@
+### T-K03.4 R357 UI 当前失败收敛实证（2026-10-09）
+
+上一goal turn实核原59849/59851 lint/build live及九owner200属verified wait。本轮Root复核原59849已不在进程表，build日志含完整route输出，但exit仍待所属writer原句柄报告，未重复启动。实际/tmp/r357-ui5.json为143tests、139PASS/4FAIL；三个安装POST revoked/generation/subject迟到ACK负控及unknown仍失败。/tmp/r357-ui-broad.json为268tests、267PASS/1FAIL（SettingsModal owner只读投影）。这些仅moving-tree实施证据，不冒冻结最终验收，尤其退役负控不能放宽。已传原唯一writer精确失败集合与终态/请求归因要求，下一保持同owner修复→冻结→Root独审/E2E；Wave0–7 active，任务外修改/服务/数据未动。
+
 ### T-K03.4 R357 UI fixture 独立中间审查与后台边界（2026-10-09）
 
 上一turn仅重申独立后台及核现路由，不构成新功能交付，分类no progress。本轮重新核原Web writer原生状态running与b704bab移动工作树；未冻结，Root不抢写/跑最终门。只读skills_platform_frozen_review_r357已完成并同步原writer：/tmp/r357-ui3.log的107PASS/36FAIL主要为旧双tab fixture；安装筛选/分页/开关/移除用installations，本人详情/版本生命周期用managed，不能恢复双读换绿。R303切mode和导航测试须保abort/late ACK/零DELETE/焦点负控。unknown4→5须锁定实际method/path，空managed list仅一次本人list，返回source才允许对应usage读取，不放宽总次数或删除未知写断言。独审为moving-tree中间纠偏，不是最终放行。
