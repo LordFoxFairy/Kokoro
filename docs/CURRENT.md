@@ -1,3 +1,11 @@
+### T-K03.4 R357 上传候选真实截图与 Root 门禁整改（2026-10-09）
+
+Root复核Web freeze a29aaaabe3df290dc8394715b8b1227e751a4e2393b8aff4ae268d4631a60c59，34路径/808其它tracked原字节exact。5407最终typecheck/lint/build0；默认3454PASS/1FAIL/79SKIP及1收集失败自然1，韩文1650/1752<95%、OIDC307/49305ms实际复现，不冒绿。独审确认大文件预检、写前keys持久化、drag/刷新catch/success reset等前轮问题已有实现与负控；仍发现PUT transfer不严校且默认跟随redirect、Complete infected/pending均自动Finalize，候选未放行。
+
+Root真实普通浏览器创建→从本地文件添加只打开弹窗、未写数据：DOM dialog512×512，截图r357-local-import-browser-final-candidate.png实际查看；shared sm:max-w-lg覆盖800，CSS把OKLCH token包hsl导致背景/虚线丢失，Upload箭头/重复要求/details仍不符合Manus截图。原Web writer获现范围窄修：正式transfer规则与redirect:error、scan分支/同key显式pending恢复、局部dialog800/窄屏/真实颜色/三纸图标/要求列表帮助行；不改全局Dialog，不臆造ownerheader，先负控后冻/Root再截图验。正常BFF仍旧runtime，未做伪成功上传。
+
+Root12062治理纯门已自然结束：standard166violations exit1、topology exit1、scripts/tests1779PASS/2FAIL/3SKIP；失败为IAM checkpoint过期期待与安装package路径census，日志r357-root-governance-current.log。这不是完整Wave0–7通过；未趁此扩散重写其它仓。BFF原writer已明确context耗尽停写，Root按交接改派bff_skills_boundary_successor_r357（gpt-5.6-sol、无历史fork）唯一writer，按D0v3/精确源范围继续；不重复服务/资源或覆盖正常数据。
+
 ### T-K03.4 R357 BFF Root全门通过但职责审查未放行（2026-10-09）
 
 修订D0 v2已Root实读：freeze 2fd9408de3ba91c5e71cb41a657bd73298de626f52ab983dab65bf425d3029fd，上一6源码候选保持原字节。Root授权原writer恢复application聚合、新增既有infra窄facade，现source/context seam从infra单源移动到application并同步唯一runtime/route消费者；无alias/复制。Owner能力及确有语义差异的四结果事实类型同放现application types，不另造多ports/DTO。实现尚未冻结；原BFF与Web两owner当前live继续，不重启或抢写。
