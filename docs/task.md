@@ -1,3 +1,7 @@
+### R357 后继真实失败与停止线
+
+Root 对后继候选27aa7cbd / formal6d2的26实际delta重跑5个具名文件，实际91 PASS / 2 FAIL（旧admission expected未包含新targetOwnerScope）；工程串行门自然停止，日志r357-root-platform-read-successor-pure.log保留。跨owner独审发现nullable sourceKind被Prisma NOT official误排，shuffle SQL/hydration不一致可截断页，已授权原writer窄修NULL语义及正式自有PG回归，未放行此候选。旧候选另存r357-skills-platform-read-successor-pre-review.json，不覆盖失败证据；正常服务与原数据未动。
+
 ### R357 BFF 规范首片正式发行，后继与页面继续
 
 BFF 首片由 Root 正式提交 `498da4436f23486148072ab7e13896baa934ac53`：冻结207改删路径/535保护逐SHA核验，独审P0/P1无；Root同源隔离重跑六文件102 PASS / 0 FAIL / 0 SKIP，type/lint/build/contract均0，合同671 PASS。两个原陈旧负控和undefined fixture已正规修，原失败日志保留；额外IAM旧0.10 oracle更新为已正式消费的0.11固定artifact，未改IAM权限/源码。Root隔离copy漏21原配置/元文件已补原字节；初Git名称核对因rename detection改用no-renames精确207核对，不放宽范围。收据r357-bff-five-read-formal-release-receipt.json。正常服务尚未激活，project/filter/shuffle/exact元字段后继仍OPEN；不是页面或Skills整体验收。
