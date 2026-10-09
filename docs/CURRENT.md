@@ -1,3 +1,7 @@
+### R357 资源失败改变处理方法与 Web 并行推进
+
+后继真实 PG 首轮0 PASS / 3 FAIL（known publisher/provenance fixture不合规范），第二轮1 PASS / 2 FAIL（repositoryId非十进制）；两日志原样保存。Root已要求改为先用现正式Zod对全部seed完整预检再跑资源，不继续逐字段猜修；project disabled exact安装实际已到达PASS。两轮自有库回收/共享库inventory exact，正常写0。Web正式BFF498消费者与Manus UI沿T-K03.4已派原盘点负责人，先三设计与保护混合集；不等待资源门而重复空转。
+
 ### R357 后继真实失败与停止线
 
 Root 对后继候选27aa7cbd / formal6d2的26实际delta重跑5个具名文件，实际91 PASS / 2 FAIL（旧admission expected未包含新targetOwnerScope）；工程串行门自然停止，日志r357-root-platform-read-successor-pure.log保留。跨owner独审发现nullable sourceKind被Prisma NOT official误排，shuffle SQL/hydration不一致可截断页，已授权原writer窄修NULL语义及正式自有PG回归，未放行此候选。旧候选另存r357-skills-platform-read-successor-pre-review.json，不覆盖失败证据；正常服务与原数据未动。

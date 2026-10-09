@@ -1,3 +1,7 @@
+### T-K03.4 Web 已派：Skills 规范消费与参考 UI
+
+Root 将 Web 精确范围交同盘点负责人 skills_platform_frozen_review_r357（唯一 writer），基线 a540084，正式 BFF498da443 / Public12 / SHA20025230。三窄 Next 同源 route、现 Skills readers/server clients/目录/预览/正文/Settings 及 Admin 回归；先三设计一致，再正规生成消费与真实 RED→实现，保护原混合 Admin/Skills，不抢写其它模块。不得新增 Hub alias、公共 Web API、前端猜重或假作者/usage；包内文件树与原 CRUD/Admin 职责继续存在。后继 BFF owner 过滤/项目/shuffle 字段未发行前不正常激活，不将临时503作最终能力。任务卡 r357-skills-web-implementation-card.json；Root独占正常服务、浏览器、资源、Git和最终验收。
+
 ### R357 后继真实失败与停止线
 
 Root 对后继候选27aa7cbd / formal6d2的26实际delta重跑5个具名文件，实际91 PASS / 2 FAIL（旧admission expected未包含新targetOwnerScope）；工程串行门自然停止，日志r357-root-platform-read-successor-pure.log保留。跨owner独审发现nullable sourceKind被Prisma NOT official误排，shuffle SQL/hydration不一致可截断页，已授权原writer窄修NULL语义及正式自有PG回归，未放行此候选。旧候选另存r357-skills-platform-read-successor-pre-review.json，不覆盖失败证据；正常服务与原数据未动。

@@ -1,3 +1,7 @@
+### R357 资源失败改变处理方法与 Web 并行推进
+
+后继真实 PG 首轮0 PASS / 3 FAIL（known publisher/provenance fixture不合规范），第二轮1 PASS / 2 FAIL（repositoryId非十进制）；两日志原样保存。Root已要求改为先用现正式Zod对全部seed完整预检再跑资源，不继续逐字段猜修；project disabled exact安装实际已到达PASS。两轮自有库回收/共享库inventory exact，正常写0。Web正式BFF498消费者与Manus UI沿T-K03.4已派原盘点负责人，先三设计与保护混合集；不等待资源门而重复空转。
+
 ### R357 BFF 规范首片正式发行，后继与页面继续
 
 BFF 首片由 Root 正式提交 `498da4436f23486148072ab7e13896baa934ac53`：冻结207改删路径/535保护逐SHA核验，独审P0/P1无；Root同源隔离重跑六文件102 PASS / 0 FAIL / 0 SKIP，type/lint/build/contract均0，合同671 PASS。两个原陈旧负控和undefined fixture已正规修，原失败日志保留；额外IAM旧0.10 oracle更新为已正式消费的0.11固定artifact，未改IAM权限/源码。Root隔离copy漏21原配置/元文件已补原字节；初Git名称核对因rename detection改用no-renames精确207核对，不放宽范围。收据r357-bff-five-read-formal-release-receipt.json。正常服务尚未激活，project/filter/shuffle/exact元字段后继仍OPEN；不是页面或Skills整体验收。
