@@ -15653,3 +15653,16 @@ Root真实Ingress25949自然0为4PASS，正式IAM/Storage/MinIO/Clam完整上传
 R357-HISTORICAL-CHECKER-BOUNDARY 后继Root放置门/授权：Root从正式commit fa185ed2b25c3e81946cfdcd12d7665d02b8bad3提取唯一contract/descriptor/platform-skill-product-source.proto.snapshot，50210bytes/SHA12f357a7f81363c4242954fd0415fc786436685618ad542a50182304153bc22c；等于双已发行pin，未刷新hash。owner为Platform build-time历史publication验证，不作current proto/网络API/运行时输入；位置descriptor与既有父同职责，淘汰execution-operations payload位置；schema/tenant/transaction不变，退出current→future-strip误实现，保正式v10 current强校验。
 
 原writer可续同卡完成：原10paths+三artifact(skill-product,skill-category-keys,skill-example-prompts-artifact.ts)+两旧descriptor(personal-skill-package,installation-skill-updated-at-descriptor.ts)+原3设计docs；新snapshot原字节冻结只读不得改。禁止另新增文件/目录或改proto/generated/descriptor/provenance/profile/vector/v1-v9/旧strip/hash；完整固定parent/delta/current v10/tamper验证。P1 composition正式3ba9fcb的3paths另作保护不可回退。现33组真实RED沿原Root报告，冻结后Root完整相关pure/contract/cutover/type/lint/build和全默认门，与独审绑定同字节；其它8个oracle/fixture另顺序修，不冒页面成功。
+
+R357-BFF-ACTIVATION-READONLY 后继消费者盘点：原skills_contract_review_r357仅只读正式BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal（预期3e19fbed，以实际Git核）；给出当前四private route/client的入口、未注册门、等待Platform active/routable的固定artifact pin、human IAM权限要求、generated规范更新及正常服务reload最窄步骤/测试文件。不得写文件/Git、签发token、调用有副作用接口或启动/停止任何服务；Root保留契约发行/正常激活/最终判断。与Platform writer独立，只Skills范围，不开启后续连接器或Agent重写。
+
+
+T-K03.4 用户再次确认后台边界（2026-10-09）：后台使用独立 /admin 页面布局及 /admin/settings 设置页，不嵌套或扩展普通用户 Settings 弹窗。普通用户 Settings 仅在管理员身份下显示“后台管理”跳转入口，后台服务端重新验证权限。现正式 Web ac505841 已有独立 shell/layout/gate；本轮核对实际源码确认。已取得正规普通用户浏览器证据：authenticated=true、platform_admin=false，账户 Settings 无后台入口、直达 /admin/settings 404；不据此宣称管理员正向跳转、CRUD、刷新或撤权通过，均待真实管理员浏览器验收。证据截图仍在既有 r357-browser-native-r255-detail.png，Skills 及完整 Wave0–7 未验收。
+
+R357-HISTORICAL-CHECKER-BOUNDARY 聚合入口范围补充：Root实际核 scripts/check-contract.ts:211 仍把 current 经 MCP restoration 传给固定历史 examples strip，writer真实371PASS后该聚合校验仍失败。授权原 Platform writer仅追加此既有入口的历史输入选择及三原设计docs说明，复用 skillExamplePromptsHistoricalHttpDocument；current v10/checkSkillSeriesCurrent、provenance/digest/closed schema assertions原强度保留。不新目录/框架/fallback，不改正常资源。先保真实失败日志，再最窄修及聚合/contract/type/lint/build、现负控；若需改test先报告具体既有路径，不自行扩张。原所有保护仍有效，Root独占冻结审查/提交。
+
+### T-K03.4 R357 原生浏览器恢复及普通用户边界实测（2026-10-09）
+
+CUA原tab focus超时仍保留为历史失败，原生Playwright浏览器已实际可用，复用正规已登录普通用户（authenticated true / platform_admin false），未重启服务或授予权限。真实账户Settings无后台入口，直接/admin/settings返回404；正式Web ac505841已核独立admin shell/layout与fresh gate。管理员正向跳转、CRUD、刷新与撤权仍待验，不把普通用户负控称后台闭环。
+
+Root真实R255技能卡片→预览→查看详情显示SKILL.md正文；manifest.json切换→SKILL.md正文恢复→返回预览→重开详情实际成功。观察4个package GET恰为两次文件切换+重开目录与正文，无写入请求；这仅证明既有详情读取交互，不证明完整Manus视觉或上传发布。截图r357-browser-native-r255-detail.png已实际查看。正常v10仍inactive，普通上传未切换，完整Skills/Wave0–7继续OPEN。后继先冻结历史校验候选并Root审查，再正常owner激活/消费者接线/真实前后台验收。

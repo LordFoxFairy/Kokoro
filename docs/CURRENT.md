@@ -1,3 +1,9 @@
+### T-K03.4 R357 原生浏览器恢复及普通用户边界实测（2026-10-09）
+
+CUA原tab focus超时仍保留为历史失败，原生Playwright浏览器已实际可用，复用正规已登录普通用户（authenticated true / platform_admin false），未重启服务或授予权限。真实账户Settings无后台入口，直接/admin/settings返回404；正式Web ac505841已核独立admin shell/layout与fresh gate。管理员正向跳转、CRUD、刷新与撤权仍待验，不把普通用户负控称后台闭环。
+
+Root真实R255技能卡片→预览→查看详情显示SKILL.md正文；manifest.json切换→SKILL.md正文恢复→返回预览→重开详情实际成功。观察4个package GET恰为两次文件切换+重开目录与正文，无写入请求；这仅证明既有详情读取交互，不证明完整Manus视觉或上传发布。截图r357-browser-native-r255-detail.png已实际查看。正常v10仍inactive，普通上传未切换，完整Skills/Wave0–7继续OPEN。后继先冻结历史校验候选并Root审查，再正常owner激活/消费者接线/真实前后台验收。
+
 ### T-K03.4 R357 纯MCP启动依赖缺陷已实测修复（2026-10-09）
 
 独审核出生产P1而非旧fixture：LocalImport无条件provider导致纯MCP错误要求Storage；Root真实71762三compositionRED，原writer仅3现路径条件注册+Nest Optional+负控。Root86947原三例3PASS（48名称过滤）、45469全unit9PASS/typecheck/具名lint/build自然0；685非范围（含11历史候选）SHA exact，独审无确定P0/P1。Platform正式P1 commit 3ba9fcb，仅3路径，未夹历史checker候选。
