@@ -1944,6 +1944,24 @@ class AgentSourceOptInTests(unittest.TestCase):
             ):
                 smoke.platform_surfaces(invalid)
 
+    def test_version_error_reports_http_failure_before_positive_data_validation(self):
+        with self.assertRaisesRegex(
+            smoke.SmokeError,
+            "version response invalid: observed status=503 code=skill_dependency_unavailable",
+        ):
+            smoke.require_personal_skill_version(
+                (
+                    503,
+                    {
+                        "error": {"code": "skill_dependency_unavailable"},
+                        "meta": {"request_id": "request"},
+                    },
+                ),
+                base_skill_id="skill-one",
+                series_id="series-one",
+                replayed=False,
+            )
+
     def test_lifecycle_success_error_and_replay_envelopes_are_closed(self):
         created = (
             201,
@@ -2447,7 +2465,7 @@ def test_r356_cli_requires_both_explicit_absolute_source_options():
 
 
 def test_r356_formal_901_pin():
-    assert smoke.FORMAL_PINS["bff"] == "a9ef95ce40d8c9686ce0e71493bffc38787d55af"
+    assert smoke.FORMAL_PINS["bff"] == "727df38c810927cc88950d853a84223c9aa9c029"
     assert smoke.FORMAL_PINS["platform"] == "5b47eaf7c7996fe836022d57b973b2085dcd852a"
     assert smoke.FORMAL_PINS["storage"] == "a1206d0194c1b1e405834f4c4548168fddbb5d52"
     assert smoke.FORMAL_PINS["iam"] == "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a"
@@ -2595,3 +2613,43 @@ def test_positive_publish_and_replay_use_same_current_command_body():
     assert set(fields) == {"expected_state_version", "audience"}
     assert ast.unparse(fields["expected_state_version"]) == "validated_state_version"
     assert fields["audience"].value == "owner"
+
+
+def test_ordinary_version_command_uses_metadata_without_unsupported_base_cas():
+    import ast
+
+    tree = ast.parse(PATH.read_text())
+    definition = next(
+        node.value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Dict)
+        and any(
+            isinstance(target, ast.Name) and target.id == "lifecycle_version_body"
+            for target in node.targets
+        )
+    )
+    assert {key.value for key in definition.keys} == {"display_name", "summary", "tags"}
+
+
+def test_withdraw_freezes_original_publication_cas_for_same_key_replay():
+    import ast
+
+    tree = ast.parse(PATH.read_text())
+    definition = next(
+        node.value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Dict)
+        and any(
+            isinstance(target, ast.Name) and target.id == "lifecycle_withdraw_body"
+            for target in node.targets
+        )
+    )
+    fields = dict(
+        zip((key.value for key in definition.keys), definition.values, strict=True)
+    )
+    assert set(fields) == {"reason", "expected_state_version"}
+    assert (
+        ast.unparse(fields["expected_state_version"]) == "publication['state_version']"
+    )

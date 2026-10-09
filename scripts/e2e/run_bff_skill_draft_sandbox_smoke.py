@@ -57,7 +57,7 @@ OWNERS = MappingProxyType(
 )
 FORMAL_PINS = MappingProxyType(
     {
-        "bff": "a9ef95ce40d8c9686ce0e71493bffc38787d55af",
+        "bff": "727df38c810927cc88950d853a84223c9aa9c029",
         "platform": "5b47eaf7c7996fe836022d57b973b2085dcd852a",
         "storage": "a1206d0194c1b1e405834f4c4548168fddbb5d52",
         "iam": "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a",
@@ -1747,6 +1747,15 @@ def require_personal_skill_version(
     expected_skill_id: str | None = None,
 ) -> dict[str, object]:
     status, body = response
+    if status != 201:
+        error = body.get("error")
+        code = error.get("code") if isinstance(error, dict) else None
+        if not isinstance(code, str) or re.fullmatch(r"[a-z_]{1,80}", code) is None:
+            code = "invalid_error_code"
+        raise SmokeError(
+            "BFF personal Skill version response invalid: "
+            f"observed status={status} code={code}"
+        )
     data = body.get("data")
     public_state_version(data)
     if (
@@ -4022,7 +4031,6 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         )
                         lifecycle_version_key = "lifecycle-version-" + run_id
                         lifecycle_version_body = {
-                            "expected_state_version": publication["state_version"],
                             "display_name": "Signed PUT sandbox skill",
                             "summary": "sandbox lifecycle revision",
                             "tags": ["sandbox", "lifecycle"],
@@ -4086,7 +4094,8 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         require_public_package_get(status, body, new_skill_id)
                         lifecycle_withdraw_key = "lifecycle-withdraw-" + run_id
                         lifecycle_withdraw_body = {
-                            "reason": "Superseded by the sandbox lifecycle revision"
+                            "expected_state_version": publication["state_version"],
+                            "reason": "Superseded by the sandbox lifecycle revision",
                         }
                         withdraw_path = (
                             "/v1/self/skills/"
