@@ -15724,3 +15724,5 @@ R357-BFF-ACTIVATION必要HTTP config范围追加：真实Node22 HTTP generator�
 R357-BFF-ACTIVATION机械test范围追加：全仓非历史旧981引用仅Connect test（已授）、HTTP dependency（正规再生）及test/platform-http-contract.test.mjs，Root批准最后一项仅ownerCommit更新，其余断言不动。Root正常浏览器真实read-only ListHubSkills200（skills10/tagOptions）、ListSkills200（userAddedSkills7/officialSkills），说明Platform正常reload后既有读链可用，不冒上传闭环。
 
 R357-WEB-LOCAL-IMPORT Root接受D0-v2冻结83bbd1…：三docs只加prefix，历史正文逐字节恢复，拒此前全文件格式化。授权原writer6新普通实现文件（contract/local-skill-import、hub client、ui dialog/CSS、api/browser/v1薄route、lib/server代理）与三对应client/UI/proxy tests；现接线menu/catalog/personal、现具名regression/routing/E2E、三docs/两INDEX/九locale必要文案。先tests-only真RED，后compact同key恢复/strict闭集/subject-generation/取消迟到/稳定refresh，保Admin/版本/GitHub/AI/旧功能/public bytes，旧hub不加alias。Manus上传截图对照含真实帮助/示例，不假链接。Root独占正常资源/服务/Git/最终E2E，Web目前仅授权待实施；完整Wave0–7保持active。
+
+R357-BFF-ACTIVATION Root实施中审查：新增production test只assert四method存在及缺配置undefined，并未真正经production composition HTTP四route；拒将其称D0集成成功。要求原writer同现test用自有loopback owner/正规generated wire+独立测试credential fixture走实际BFF分发，四配置缺一实际404/owner计数0、显式seam保持；真实IAM/Storage/用户浏览器仍Root后继，不扩生产API。候选尚未冻结或提交，保护数据不变。
