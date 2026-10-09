@@ -3,6 +3,7 @@
 - Storage：Root `be3ab0c3ade4ba2932910676c2c4758cbb7e2979` 四路径已集成；真实 37 正常链及 caller/PG drift/Clam 负控通过。正常持久库恢复未执行，原引用保留。
 - Platform：共享前置01f9bdc与Skills正式6d2a3bd已独立提交；79路径exact/72改集、clean，真实stable/生命周期/归属完整，current资格take前，两固定维护DDL无演进canonical耦合。Root真实串行old→A1→Skills/replay/fresh/legacy保持PASS；PG50、unit144、相关门0、独审P0/P1无；正常激活/完整页面仍待。
 - BFF：原 writer `platform_github_p3_frozen_review_r353` 完成规范读/字节 handle，已收到Platform正式6d2a3bd，接固定artifact与真实owner adapter。非 Skills 85 operations 保留，旧只读 fixture 不属于 active/fallback。
+- 正常升级资格：Root真实原数据clone已过Platform A1→Skills→backfill11，7安装/12表facts不变；Storage原37Asset与全原表expand/replay不变，两自有库已回收，正常写0。public project_id、includeOfficial=false、初始shuffle=true未闭合，不把稳定503算完成；同T-K03.3后继补正式语义，不扩散其它功能。
 - Web/后台：继续既有 T-K03.4–8；正式合同后更新，不以旧多版本目录/503 详情称完成。S01–S10 全部 OPEN。
 - 真实资源/Git/浏览器只有 Root 操作；正常数据库、7 安装、37 Asset 尚未写入；其它模块与 heartbeat 保持暂停。
 

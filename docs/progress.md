@@ -8,6 +8,10 @@ Root最终当前源码实际隔离串行 old→A1→Skills 与fresh目录完全�
 
 BFF原负责人已收到正式Platform `6d2a3bd` / active digest `58f8f442…`，接固定generated与真实binary adapter，不再等待freeze伪SHA；已明确网站过滤未知事实不得假排名/页内过滤、project权限不可忽略。下一是BFF正式契约/真实owner消费者、paired正常数据恢复与服务升级、Web/后台接线及完整普通/管理员浏览器验收。正常旧目录多版本/详情503仍未称解决，S01–S10保持OPEN，不扩散其它模块。
 
+Root正常原数据资格已追加，不再只依赖seed：只读备份Platform owner并恢复到Root自有库，正式6d2a3bd串行A1→Skills→backfill11成功；原12表facts前后同3c77f42c…、7安装保持、targetcatalog a5c9、ownDB回收。Storage正常37Asset snapshot同样只在自有库expand/replay通过，所有原表facts同5e87e82c…、targetcatalog bdf6、ownDB回收；首次额外catalog读取未设owner search_path而FAIL，原日志保留、补正规上下文后通过，未改生产SQL/hash。两正式v3 Proto SHA1021e603…与BFF d13f33a固定消费exact。两个私有备份/收据在var/dev/r255-preserve/r357-formal-cutover-backup；这是pre-drain snapshot，正常apply前仍要重核当时真实原事实与writer排除，正常DB/对象写0。
+
+BFF正式生成实际census70RPC/36command/24proof，首旧硬数量失败保留后按正式输入生成；binary current adapter已RED→GREEN，五读/handle/aggregate具名34PASS，但源仍在收尾未冻结/正式提交。public project_id、includeOfficial=false和初始shuffle=true仍缺完整正式语义，稳定拒绝只算在途状态，不算全部能力完成；已回派同任务后继，禁止project旧skill_name猜stable身份或BFF页内假筛/假排名。完整Skills不绕过这些缺口。
+
 ## 当前唯一执行队列：Skills 全接口规范与 UI 闭环（2026-10-09 用户最新裁决）
 
 本节覆盖下面此前“连接器优先”等历史顺序。先把 **Skills 所有相关接口与 UI** 完成并由 Root 真实端到端验收，再扩散连接器、排程、列表关系、其它功能按钮/Settings。其它功能暂停新增实现；已冻结连接器 A1/Storage D1仅保存交接，不冒整模块完成。原完整 Wave0–7 goal 仍 active，heartbeat 保持原暂停；沿本文件 T-K03/S01–S10，不新建计划中心。
