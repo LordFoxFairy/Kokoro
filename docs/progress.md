@@ -26,6 +26,8 @@ Platform 三设计正式提交 `b0c0dbecabf019bb2dfe2be55dd1921b5eb947ee`（pare
 
 D3只读前置已结束：当前IAM工作负载mcp-personal scope名称并未发行human写/admin/credential-use能力。下一IAM现Session/tenant/member/platform-admin事实与现CheckAuthorization最小扩展，不新角色/权限库/服务；IAM→Platform正式控制面A→BFF→Web，执行B按Agent/System/Storage正式依赖打通。完整模块未验收，顺序仍连接器→定时→列表归属→按钮/Settings。
 
+IAM 三设计1773df7已落实最小身份源码，Root正式提交 `55befe5092f96d617088549df3166e1d381e6b1c`，正规 internal/SDK0.11与clean包已发行（包SHA899f700f…）。现CheckAuthorization只扩本人/tenant管理/平台目录闭集，当前Session/成员/角色/issuer事实同有界事务，局部strict raw/no-store；无新角色/Schema/权限框架。Root新完整verify109文件1084PASS及schema0，真实native issuer＋自有PGRedis三个HTTP文件47PASS/0FAIL/0SKIP、78库完整目录exact；首RED/正规6RED→6GREEN、全合同对象逆与独审/441保护保持。旧三设计完整docformat失败原样保留，源码完整format门实际0，不混为全Markdown已canonical。正常IAM未激活，连接器CRUD/调用/Admin和页面仍未验收；新workload/完整body预算cancel后继OPEN，下一原owner回Platform真实控制面CRUD，不继续重写计划。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。
