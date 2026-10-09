@@ -1,3 +1,9 @@
+### T-K03.4 R357 普通私有上传切片正式交付；完整 Skills 仍未验收（2026-10-09）
+
+Web正式32843707261eb4a629d0acb5c6df2ee10d965352，Root精确34路径提交、808其它tracked保护exact，独审权威终态恢复无新增P0/P1。Root61324实际自然结束：Node22 typecheck/lint/build0，默认191files通过/2files失败，3463PASS/1FAIL/79SKIP；韩文1650/1752覆盖不足及OIDC真实Next /app 307 readiness收集失败仍保留，不宣称全门绿。日志r357-web-terminal-root-full.log。正式切片是私有本地包四步骤与恢复语义，不是整个Skills、Manus视觉、管理员或Wave0–7完成。普通浏览器稳定几何收据r357-web-terminal-browser-geometry.json，尚未真实提交包。
+
+正常BFF仍旧运行；原owner获现main/lifecycle/TECH/CURRENT四路径限定准入，复用已有shutdown，先真实子进程RED→SIGINT/SIGTERM单次drain→31s未settle失败终态，保HTTP/worker/store顺序，不改owner API/SQL/配置，不称hard exit为drain。Root负责后继复验、提交与正规同配置单进程重载，再真实用户上传/查看详情/刷新整链；其它业务保持暂停、完整goal active。
+
 ### T-K03.4 R357 权威上传终态恢复已独审；Root 全门运行中（2026-10-09）
 
 Root复核最新Web冻结0ba5cbfad95e6e1e817840d4d7de2a95ba234070cdf503d2a64824c81a74491f，34 changed与808保护tracked均原字节exact。独立窄审确认权威GET rejected/Complete infected清active及session恢复、零旧Finalize，新包使用新Begin key；pending/unknown仍保原三key，原终态死锁P1关闭，无新增确定P0/P1。CSS改局部正常specificity、无!important。Root真实普通浏览器稳定几何1200viewport dialog800×492/x200，390viewport358×540/x16，无页面横溢；首两帧仍处宽度转换瞬态，不拿瞬态测量冒作终态。实际上传/管理员正向整链尚未验收。
