@@ -1,3 +1,5 @@
+
+R357 窄屏参考补充：真实Manus390×844 dialog[5,132,380,580]/radius16、无文档横溢；已截图并传原owner，原2rem安全宽候选在390得358px与参考差22px，须按380宽参考并仅极窄屏安全收缩，不把参考字段伪造成本地数据。已resetviewport。收据追加同r357-manus-personal-skills-responsive-reference.json，当前本地UI仍未冻结验收。
 ### T-K03.4 R357 UI 组装回归测试边界补充（2026-10-09）
 
 上一turn原UI writer live并完成九owner健康核验属verified wait，不把监听当产品验收。本轮Root移动树预审只用于早期纠偏：compact仍隐藏brand/search、来源仍dropdown，是实施中间态，已明确冻结前必须恢复参考账号/search chrome与直接四来源，而非尺寸-only。原writer报告聚焦115PASS/28FAIL，尚未冻结，不声明绿色。
