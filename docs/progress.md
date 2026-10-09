@@ -2,11 +2,11 @@
 
 Storage 原引用恢复四文件由 Root 提交 `be3ab0c3ade4ba2932910676c2c4758cbb7e2979`。Root 真实隔离 HTTP v3 / PostgreSQL / MinIO 版本桶 / Clam / Redis 重跑通过：37 项正常链、丢失 ACK / 迟到 PUT、真实 caller 拒绝、原行漂移拒绝、EICAR 隔离且无 clean 下载；1 file / 1 scenario PASS，12.68s。首次负控仅错误把 scanner metadata 期望为品牌名而失败，原 FAIL 日志保留，按生产 `configured` 修正 oracle 后通过，生产代码未迎合测试修改。原 3 源文件与 308 保护项未变。此为恢复入口资格，不是正常旧数据已恢复：正式持久库尚未 apply，原 37 Asset / 7 安装引用未改。
 
-Platform 候选 Root contract/architecture/具名 unit 实跑 36 files / 828 PASS；独审三处阻断经同一 owner 最小修复与独审复核均闭合。Root 真实隔离 PostgreSQL 首37PASS/9FAIL及cleanup失败为旧fixture缺publication/清理顺序；修正式seed和自身tenant清理后，完整两文件47PASS/0FAIL，隔离库已清理、正常库未写。正式发行前又发现父基线含未提交MCP A1，freeze哈希并非commit；正在拆清共享前置，不夹任务外、不冒已正式发布。backfill 裁决恢复的是当前快照，原 Skill audience 可作为当前权威事实，旧 publish 缺 audience 本身不是缺陷；须核最新 exact publish 与后续合法 audience/withdraw 最终事件和原行一致，禁止 MAX revision 或旧版本 fallback。
+Platform 正式源码已拆分发行：Root 从正常正式4ec395f隔离恢复73路径A1冻结前置，独审范围与原Skills资格保持，通过contract/artifact/types/lint/build、25具名与实际PG expand3/personal2后提交 `01f9bdc0505a297e99500a511127a4fa78402292`；不是MCP产品验收。其后Skills79冻结路径逐SHA相同、72实际改集单独提交 `6d2a3bd005d483f036efaa1b6990b5c620024bc3`，工作树clean；原apps混合/A1保护不动。补齐真实created_at/updated_at/owner_scope/series_id，current publication资格在数据库take前，不能以exact version冒stable身份或以安装/发布推算创建时间。两个维护expander改为自身唯一哈希锁定只读DDL，不再耦合演进canonical、临时换schema或运行旧Prisma diff；没有第二canonical/迁移runner。
 
-BFF 同一 owner 已推进五规范读取与 opaque 字节 handle，等待上述正式 owner 发布再接真实 adapter；候选 pending 503 不算通。Root 已重新操作 Manus 真实“查看详情”并保存 `var/dev/r255-preserve/r357-manus-file-detail-current.png`，用于唯一 Web 详情对照。正常本地目录仍展示多个旧版本，完整普通/管理员页面路径仍 OPEN。下一顺序固定：关闭 owner 三阻断 → 正式 paired 资源升级及保引用恢复 → BFF/Web/后台接线 → 同尺寸与完整浏览器验收；不扩散其它模块、不把纯门数量冒充交付。
+Root最终当前源码实际隔离串行 old→A1→Skills 与fresh目录完全同a5c9f96…，两步exact replay、原legacy connector字段保持、2自有库清理、共享78库目录前后exact、正常写0。最终PG3 files/50PASS、unit10 files/144PASS、contract/artifact/types/lint/build0、相关63TS格式0，独审P0/P1无；收据 `var/dev/r255-preserve/r357-platform-skills-formal-release-receipt.json`。早期37PASS/9FAIL旧fixture与首次patch串行/cwd错误均保日志，后按真实父和原对象修正；不把历史通过冒当前。Git diff首次两个固定Prisma SQL末尾空行警告，不修改已资格DDL hash字节，只有这两生成物按命令级关闭blank-at-EOF检查，其余路径plain check0，未改仓库配置。正常持久数据/服务仍未升级，7安装/37Asset原引用未动。
 
-R357 本轮：D2 BFF正式8ba9073且6审查问题关闭；Platform方案B已Root核准并派源writer，Storage37保引用维护实现进行中，BFF新5读/下载源实现进行中。真实普通详情仍503、七owner readyz200，非服务没启动。只Skills继续，S01–S10仍OPEN，不称发布/页面一致。
+BFF原负责人已收到正式Platform `6d2a3bd` / active digest `58f8f442…`，接固定generated与真实binary adapter，不再等待freeze伪SHA；已明确网站过滤未知事实不得假排名/页内过滤、project权限不可忽略。下一是BFF正式契约/真实owner消费者、paired正常数据恢复与服务升级、Web/后台接线及完整普通/管理员浏览器验收。正常旧目录多版本/详情503仍未称解决，S01–S10保持OPEN，不扩散其它模块。
 
 ## 当前唯一执行队列：Skills 全接口规范与 UI 闭环（2026-10-09 用户最新裁决）
 
