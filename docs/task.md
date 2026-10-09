@@ -15550,3 +15550,17 @@ Root最终核112materialized/84旧vendor删除/560保护exact，真实HTTP28PASS
 Root真实Storage资格四轮自然失败均保留：journal父目录缺失、Unix异步ACK半关闭、raw Proto与StorageClient扁平command混用、canonical阶段残留嵌套command引用。前三轮仅明确run-owned空桶/无连接DB经全catalog与inventory证明后定向删除，正常PG78与MinIO2 catalog exact，私有清理收据已保存。第四轮真实PUT及Complete已到canonical登记，失败资源仍保留（manifest runtimeStopped=true/activeSockets=0）；有对象，不按空桶假设删除，必须用该run journal与完整S3版本inventory exact核验。最新canonical-projection冻结a71650cc仅runner投影与负控修正，尚待Root真实重跑；没有激活v10或修改原37assets/7installations/失败draft。
 
 独立后台只读盘点完成：普通Settings管理员入口/admin已存在；独立layout/nav、/admin/settings及正式模型路由adapter/client/UI确实缺失。使用现System→BFF Public12契约，不复用普通Settings弹窗，不新增configs owner。后继按R357-WEB-ADMIN-SETTINGS先真实权限/跳转RED、独立壳与真实设置再双身份浏览器；不是后台已完成。Skills优先与完整Wave0–7范围不变。
+
+### T-K03.4 R357-WEB-ADMIN-SETTINGS 设计门任务卡（2026-10-09）
+
+| 项 | 当前阶段与批准范围 |
+| --- | --- |
+| Owner/writer/review | Web；skills_contract_review_r357仅三设计文档writer；Root审查/提交。与Root隔离runner不共享文件。 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release；codex/r357-web-skills-release；76d23417d8061bfd173834718e8c049fcea1f795；已核clean。 |
+| 目标 | 用户Settings只保管理员/admin跳转；后台独立shell/nav与/admin/settings，现Skills管理保留；设置仅正式模型路由，非普通用户弹窗叠加。 |
+| 当前事实/目录 | 现admin单页双fresh gate与Skills CRUD存在；layout/nav/settings及model-routing adapter/client/UI不存在。采用admin segment壳、现hub/server边界；淘汰user Settings后台tab或每页重复nav/gate。 |
+| 阶段文件 | 仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md局部补当前/目标。代码、contract/schema、资源、README、其它locale暂不写；README过期实现声明先报告。 |
+| 数据/依赖/删除 | Web无持久化owner；Browser→same-origin→BFF Public12→System模型路由，四正式API、CAS条件、原idem key、unknown恢复；权限不可body自报。新实现不得双壳或普通Settings复用；不新增configs/SQL/API owner。 |
+| 验证/下一门 | 三设计一致、无新owner/contract决策后Root冻结复核；再tests-only具名RED→Root真实失败→implementation→工程门→管理员/普通用户真实浏览器跳转、刷新、CRUD/撤权验证。尚未实施，不称闭环。 |
+
+第五轮真实Storage仍失败：canonical proof接收Wire numeric scan state而fixture要求内部string。最新scan-state冻结7114e8仅正规同仓常量引用和负控，尚待整体语义审查后重跑，停止逐行盲跑；第四、第五轮有对象资源继续具名保留。正常服务未重载，Wave0–7与Skills完整范围不缩减。
