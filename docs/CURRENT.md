@@ -1,3 +1,9 @@
+### R357 干净集成仍未放行：Root 实际全入口失败
+
+Web作者干净候选首冻结106记录里含现存目录误记deleted，Root核验失败，已要求改为实际tracked变更+untracked文件闭集、不以is_file忽略目录冒exact。作者26具名410与其它门绿色未覆盖关键hub-proxy。Root实际扩展25文件489项：446 PASS / 43 FAIL，原句柄12456终态1、日志 `r357-root-web-clean-closure-gates.log` 保留。41项来自整件copy当前测试夹带R260 model-routing块，GitHEAD确无该块，须剔除任务外mixed hunk，不将其当baseline故障；余2项是真Skills Publish严格请求/用例不一致，交原writer按正式Public12定位并正规修，不弱化安全边界或跳过测试。
+
+独审另发现现Skills INDEX正文仍称已删除cover/upload/detail当前入口，需正文收敛；无调用旧admin.accessVerified不得补不真实canonical“仍接线”文案，Root批准八locale窄清未用旧键以修baseline孤儿资源。Root批准的另两前置仅dev Skillsfixture schema与HEAD孤儿合同test所需4strict model schemas，不扩model业务。其它模块/原mixed/正常服务与37资产保持，配对与实际页面仍OPEN。任务卡同T-K03.4更新，不新建中心；候选不提交、不声明页面完成。
+
 ### R357 当前正式消费者集成与真实页面失败（2026-10-09）
 
 Root正式BFF后继已提交 `2b57a1bb300687d34b02eee05357a6c330d2cfb6`，197改删/548保护逐字节核定，独审无确定P0/P1，最新Root七文件131 PASS、typecheck/lint/build0；Public12完整SHA20025230不变，正常旧进程仍未配对升级。正式Platform9ed6801与Storagebe3ab0c均保留，无兼容alias/fallback。
