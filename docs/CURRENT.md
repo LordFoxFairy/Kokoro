@@ -1,3 +1,7 @@
+### R357 BFF 规范首片正式发行，后继与页面继续
+
+BFF 首片由 Root 正式提交 `498da4436f23486148072ab7e13896baa934ac53`：冻结207改删路径/535保护逐SHA核验，独审P0/P1无；Root同源隔离重跑六文件102 PASS / 0 FAIL / 0 SKIP，type/lint/build/contract均0，合同671 PASS。两个原陈旧负控和undefined fixture已正规修，原失败日志保留；额外IAM旧0.10 oracle更新为已正式消费的0.11固定artifact，未改IAM权限/源码。Root隔离copy漏21原配置/元文件已补原字节；初Git名称核对因rename detection改用no-renames精确207核对，不放宽范围。收据r357-bff-five-read-formal-release-receipt.json。正常服务尚未激活，project/filter/shuffle/exact元字段后继仍OPEN；不是页面或Skills整体验收。
+
 ### R357 当前 Skills 后继：移除在途缺口，不保留兼容债务
 
 Root 当前变化中独审实际发现 official 排除一入口未进 SQL、另一入口未绑定 cursor；shuffle 仍缺 seed/SQL seek，原 owner 正在修，未放行。Root 另实读 shuffle SQL 发现次键使用 version skill_id 而非批准 stable series_id，已要求改为 stable 复合 seek，防 current 更新后的跨页重复。BFF 隔离当前门实际 89 PASS / 3 FAIL：旧 RPC 数量提前遮挡负控、历史 Oneof fixture 缺值、projection fixture 未定义 skillUpdatedAt，均交原 writer 修正并保留 FAIL 日志。Web 后继已纠正为三个窄 Next 同源 route（两 observed service 与下载 handle），不在 /api/hub 留 alias、不误建 Web public API；文件树仍保留独立职责。

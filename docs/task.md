@@ -1,3 +1,7 @@
+### R357 BFF 规范首片正式发行，后继与页面继续
+
+BFF 首片由 Root 正式提交 `498da4436f23486148072ab7e13896baa934ac53`：冻结207改删路径/535保护逐SHA核验，独审P0/P1无；Root同源隔离重跑六文件102 PASS / 0 FAIL / 0 SKIP，type/lint/build/contract均0，合同671 PASS。两个原陈旧负控和undefined fixture已正规修，原失败日志保留；额外IAM旧0.10 oracle更新为已正式消费的0.11固定artifact，未改IAM权限/源码。Root隔离copy漏21原配置/元文件已补原字节；初Git名称核对因rename detection改用no-renames精确207核对，不放宽范围。收据r357-bff-five-read-formal-release-receipt.json。正常服务尚未激活，project/filter/shuffle/exact元字段后继仍OPEN；不是页面或Skills整体验收。
+
 ### R357 当前 Skills 后继：移除在途缺口，不保留兼容债务
 
 Root 已将 project_id、includeOfficialSkills=false、首屏 shuffle=true 和确切安装版本创建/来源字段纳入同一 T-K03.3 后继，不将稳定 503 作为最终能力。Platform 原负责人唯一写入既有 Skills 模块；BFF 原负责人接正规 owner 发行，独立审查员只读审计。项目范围仅当前 IAM 验证的 BFF workload 可投影 x-kokoro-project-ref；BFF 先核当前 tenant/subject 的 Project，再传返回 canonical ID，结束前复核授权，不使用旧 skill_name 猜身份。筛选在 SQL take 前；随机顺序由游标绑定 seed/主体/范围/条件，后页不重新洗牌。无新增表、业务模块或第二事实源，不留 alias/fallback；正常原数据与进程尚未改动，页面和后台仍待真实验收。
