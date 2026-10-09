@@ -1,3 +1,9 @@
+### T-K03.4 R357 Runtime候选独审阻断（2026-10-09）
+
+Root核初freeze94e84的43变化/643保护exact；真实native60852为8PASS/1FAIL，原因两不可见get断言undefined而Prisma正式返回null。原writer仅两tests修为精确null+RPC跨subject/tenant NOT_FOUND；v2 freeze85ae6已停写，Root33499真实PG9PASS/0FAIL。原全catalog78/hash exact，自有库清理，无正常资源写。此9项只是既有transaction/expand范围，不证明完整upload旅程。
+
+独审发现确定P1：Finalize completed原key先phase conflict且在receipt前访问Storage；terminal感染phase更新错误且取消/未知parse错误可能被rejected；receipt/wholegraph只看存在tenant而非完整绑定；appclock重新裁决DB expiry；RPC绝对总预算未落transaction admission；installation响应用Skill时间拼。Root未提交/激活候选，原writer仅补具名RED，真实PG负控由Root先跑后再准production修。Begin pending原key允许正规Storage同upload重签且不持久URL；Complete重放仅DBproof+freshScan，不再次complete/status；Finalize completed30天纯DB精确重放。正常Platform仍原版本，完整Skills及Wave0–7 OPEN。
+
 ### T-K03.4 R357 私有上传消费者设计已提交（2026-10-09）
 
 BFF正式`99bf89c`仅4既有docs，Root核freeze-v2 fc18716f与4after/657protected exact，public OpenAPI/source/generated未改。不发明Manus公开上传方法；本地上传后继固定`/browser/v1/skills/local-imports...`四私有route，Web专属同源adapter，fresh三写双IAM含replay、Get纯读、零BFF Storage/SQL/receipt。Begin重签只在未到期pending，后phase明确错误再Get，Finalize completed原key按至少30天receipt重放；避免返回伪PUT或第二upload。原CORS PUT严格取得VersionId且旧Complete200支持source version字段，不等于新旅程通过。
