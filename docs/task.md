@@ -44,6 +44,10 @@ Root已真实GET正常issuer Session200，当前用户匹配配置operator（只
 
 Root已在自有唯一临时库用正规Prisma from-empty DDL实际装新canonical并实读全catalog：schema b185e918…、DDL cb305862…、catalog22e27572…；自有库已清、共享78库目录前后exact、正常写0。前两probe漏固定search_path引42501，原失败和源码保留；修Root探针遵当前owner search_path后PASS，非放宽生产门。实际hash已交A1更新fresh/expand门；A1完整生产CRUD/扩展/撤权、正常组合、页面与Admin仍待，不将该Schema探针当产品验收。
 
+Root正常开发前置已实际推进：沿正式IAM55既有read/extend命令，仅将Platform resource原6scope按顺序追加为7；官方ACK updated、再读current7。resource其它字段、全部client/secret与binding完整前后哈希保持，正常SQL直接写0。其后原IAM61500自然drain exit130且旧监听消失，再同持久环境源码启动21412/listener21149，health/ready均200；无DDL/reset或其它服务重启。实际source55加未提交的单项只读repository overlay e31f83cb…如实记录，非clean commit运行声明。收据r357-normal-platform-resource-evolution.json、r357-normal-iam-activation.json及原失败均保留。
+
+Root正常浏览器旧tab曾准入不可确认/disabled加载，明确reload后恢复页面，管理连接器终态真实“当前没有可用连接。”，不冒加载失败，也不冒完整新资格链；本轮无CRUD写入/新用户/伪造token。Product client scope-only演进、Web OIDC及正规重新登录、Platform/BFF新源码激活和前后台动作仍OPEN。当前A1卡补现declaration snapshot停用闸为68allow/581protect，只关闭enabled=false的声明读取；provider真实停用/删除拒新grant/replay，旧缺metadata不伪造回填。整个连接器与后继四项仍未验收。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。
