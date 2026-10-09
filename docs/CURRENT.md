@@ -1,3 +1,11 @@
+### R357 Web 当前消费者正式提交，进入正常资源配对
+
+Root对最终115真实文件冻结5d6af980逐SHA、Git改删/未跟踪闭集与暂存no-renames精确核定，独审确认全部Skills分派、Publish未知结果围栏、当前文档和权限scope无确定P0/P1。正式实现 `6c762ef29ec404aa507f014461613414482e75c0`，单独本仓CURRENT事实提交 `2fba224ee6d05cb0b2533fb33cce496fc51d05e6`，release干净。原mixed121记录按已资格P2覆盖核exact，无任务外Gitlink/uv.lock暂存。
+
+Root主体验证session46298终态0：26文件451 PASS、contract307、architecture51、typecheck/lint/defaultTurbopack build0；最后仅现route测试扩表，114记录不变，Root该文件17 PASS覆盖全部16正式装配路径及方法/权限响应保留。这些只证明工程与装配；handlermock不冒真实IAM或浏览器。原43失败、缺dispatch阻断与旧freeze保留。收据 `var/dev/r255-preserve/r357-web-clean-formal-release-receipt.json`。
+
+正常配对目标已固定：Web2fba/实现6c76、BFF2b57、Platform9ed6801、Storagebe3ab0c。Root已实测formalStorage Node24入口、原持久env指kokoro_development/kokoro_storage/S3，maintenance sourcepin341b15c及3原caller存在（无凭据打印/正常写）。尚未drain/apply/重启；下一Root真实排他+fresh备份、Storage expand+原37修复、Platform固定expand/backfill11，然后正式源码配对与普通/Admin页面实操/Manus同尺寸截图，S01–S10与完整Wave0–7仍OPEN。
+
 ### R357 实际接线停止线：不以纯门掩盖后台缺入口
 
 Root逐新114真实文件SHA与Git变更集exact，但静态审查发现去混合model-routing时hubroute误恢复为HEAD：已批准的Skills Admin/share/draft/cover/binary/usage/import/githubpreview imports与dispatch全部丢失，客户端却仍指向这些同源入口。新446纯门绿色不能证明这些功能存在。Root已阻断候选26b628提交/激活，令原writer仅恢复必要Skills hunk（仍排除model-routing两行）并保持strict Publish；补真正route层入口/方法/撤权测试，禁止删除有效职责。旧106freeze假目录已改真实114，旧证据保留。原37资产、7安装与正常服务未改；页面/后台闭环仍OPEN。
