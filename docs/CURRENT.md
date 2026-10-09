@@ -1,3 +1,9 @@
+### T-K03.4 R357 exact 下载 BFF 正式提交，待正常服务与浏览器验收（2026-10-09）
+
+Root 已核405修复新freeze 14c4b162：21文件hash exact，与前Root全门候选仅route/header及现HTTP三入口负控2paths不同；658其它基线tracked bytes最终仍exact。独审原P1关闭、无新增P0/P1。Root35871最终format/type/lint/contract/default/build自然exit0，合同716PASS、default1312PASS/0FAIL/3SKIP（实际日志r357-bff-exact-download-405-root-final.log）；没有把旧全门承袭给修后候选。
+
+Root独占Git按21显式path提交正式BFF 74b1b9231fb481b22b64dd93ebd5f5cc15518f64。private机器schema、三exact准备、closed qualifier、原current语义及opaque bytes通道正式源码已发行；public/Platform contract/SQL未改。正常BFF进程仍旧代码未重载，Web尚未消费，所以当前用户下载502尚未复验解决，不能称Skills闭环。下一行动是Root按原配置/Node22受控重载唯一BFF并核其它进程保持，再批准Web消费者切片与真实owner/browser下载文件及旧pin/share矩阵。完整Skills/Admin/UI与Wave0–7继续active。
+
 ### T-K03.4 R357 精确下载冻结纯门通过；独审拒收405追踪缺口（2026-10-09）
 
 上一goal turn以5ba4e0fa/97293ab3审查和授权修正真实ID/机器合同/错误映射，属progress。本轮原writer完成21path freeze 6b5a1215：Root实际逐文件hash exact，按基线e380066 ls-tree重核658其它tracked bytes exact。Root32620自然exit0，format/type/lint/contract/default/build全部实际通过；日志r357-bff-exact-download-root-final.log，合同715PASS、default1311PASS/0FAIL/3SKIP。这些仅绑定旧freeze，不冒实际owner/browser下载。首次contract/default失败和误名green日志保留，基线真实HTTP exact POST404 RED已取代missing-export断言作为行为证据，不冒实施前RED。
