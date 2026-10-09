@@ -1,3 +1,11 @@
+### T-K03.4 R357 owner 时间戳正式上线；真实恢复暴露 BFF 枚举投影错误（2026-10-09）
+
+上一goal turn只核后台结构并答复，没有推进实现，本轮继续安全可执行路径。Platform四路径freeze dcccc8d4经Root核4hash及685其它tracked exact；Root93559实际focused49PASS/type/lint/contract/build0，独审无P0/P1/P2，正式提交35d96d1c686c55165e56c51f05bf2e344087175d。Writer默认2191PASS/402SKIP只作辅助，Root未复跑完整default。旧正常45001/PID65067单次Ctrl-C后runtime.stopped/natural0、8086 listener消失；同Node24/原0600配置SHA启动唯一76495/PID17787/ready200，其它10listeners PIDset exact，零installer/DDL/reset。已纠正processes.json过期Platform句柄，收据r357-platform-timestamp-normal-reload.json。
+
+Root普通浏览器真实session200/authenticated，重新同349-byte文件，原intent99d4facc只GET1329→502，未新Begin/PUT/Complete/Finalize。错误message现在等于code，说明越过BFF先前timestamp缺口而被Web严格schema拒绝。原owner只读定位BFF skill-product-response机械enum小写把VALIDATED投为validated，而其自有OpenAPI和Web严格词汇为valid；不是消费者放宽。已沿原负责人授权BFF现mapper/现测试/CURRENT最小切片，先真实exact phase RED再显式已知映射，保持unknown failclosed；服务仍正式旧BFF，未知终态intent保留，不称用户上传成功。
+
+Web10path冻结默认3536PASS/20FAIL：17OIDC后续fixture错误旋转opaque、2admin旧中文oracle、1app-frame stale节点；只读证据后沿原writer扩大现2测试路径为12，补合法refresh序列负控/真实英语oracle/重新查询挂载节点，不改产品auth/阈值/skip、不机械格式。后台独立/admin/settings保持，普通Settings仅管理员跳转；管理员正向/完整Skills/整体Wave0–7仍OPEN，goal active。
+
 ### T-K03.4 R357 空正文正式修复；真实恢复定位 owner 时间戳遗漏（2026-10-09）
 
 Web正式a18745109b6b1cd8c388a4d7d0ccc58f522a0e73，Root仅2paths提交、840其它tracked当前候选bytes exact保留。初两次绿仍有reader abort与超限await cancel缺口被拒收；独审第二次漏超限前置await，Root直接反例纠正后最终freezea96268fb：真实1byte+cancel永挂RED→14PASS。Root44016最终14PASS/type/lint0；前13版Root70947 build0只属前候选，不冒最终全build/全default。最终reader固定20s、abort/deadline firstwinner、非await cancel、finally释放，严格CL/TE/实际0byte无body不放宽。
