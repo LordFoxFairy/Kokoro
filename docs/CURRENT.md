@@ -1,3 +1,9 @@
+### T-K03.4 R357 P1b 真实失败已重现（2026-10-09）
+
+Root核tests-only freeze101940全部3变化/40保留候选/643保护SHA exact。真实自有PG40751自然exit1：19PASS/1FAIL，合法后续生命周期原Finalize重放被receipt_invalid；Root纯门26PASS/3FAIL，分别是重放读mutable当前事实、Get第二读预算未贯穿、感染后第三次Complete重入上传路径。失败均是具名行为，不是收集缺模块。原PostgreSQL catalog78全字段hash d2fc0c2b… exact，自有库清理收据已保存。候选仍未激活，正常服务/数据无变动。
+
+原Platform唯一writer获准在同范围整改初始完整响应的严格事务receipt快照、不可变绑定核验与合法生命周期分离、完整取消预算及稳定感染终态；不扩公开wire、不新增owner、不先接消费者。证据在ignored r255-preserve/r357-local-import-runtime-p1b-root-{native,pure}-red.log及native-cleanup.json。全Skills/独立后台Settings/Wave0–7仍未验收。
+
 ### T-K03.4 R357 P1 复审：生命周期与精确恢复仍待整改（2026-10-09）
 
 Root读取当前Platform源码，确认新freeze bc8c688（43变化/643保护）仍有三项确定阻断：Finalize复验将合法停用/移除/metadata/current变化当篡改，并用当前Skill拼旧安装而非完整初始响应；Get completed第二读未使用2秒boundary；Complete感染后同key重放误报receipt invalid。原候选未激活/提交/正常库应用。沿原Platform唯一writer仅补三项具名RED并纠正把合法状态当篡改的测试，Root实际重跑失败后才准实现；不可变owner/package/ID/outbox绑定仍必须验证。
