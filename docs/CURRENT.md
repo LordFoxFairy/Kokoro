@@ -1,3 +1,9 @@
+### T-K03.4 R357 active候选与正常数据保护实证（2026-10-09）
+
+Root只读正常库快照：Platform14表、skill27、installation7，失败draft93c1711b-4ad4-4afb-acf5-55ce6aae74eb真实存在；Storage9表、storage_asset74、storage_blob37、upload74。历史“37 assets”不是当前准确计数，后续必须保全部74asset/37blob，不能按旧37过滤；每表全行canonical hash已存私有ignored r357-normal-{platform,storage}-pre-activation-facts.json。首快照相对env路径错误在连接前失败、首draft查询误用id而非skill_id真实SQL失败，随后按canonical映射纠正；均无数据写入/删除。
+
+原Platform writer冻结active12路径，freeze f76320d69c4c61179cce5ccd136b7f76abffb1017c50b1e497926621c2d32e5b；独审无确定P0/P1，Root核12SHA exact/677其它tracked post-build原字节exact。Root21507真实focused49PASS、contract/artifact/cutover/typecheck/lint/build0，默认门仍同句柄运行，未重复启动。Root39187真实Ingress自然0：4PASS，四RPC与fresh IAM/真实Storage链成功；receipt cleanup-complete/databaseOutcome deleted/runtimeStopped true/activeSockets0，仅本轮资源0，不冒历史全清。日志r357-v10-activation-root-ingress.log，资源目录kokoro-q-cde3ep9q。候选未正式提交，正常schema/服务/BFF仍未切换；下一待同句柄全门终态后Root正式发行、严格drain/expand/reload与消费者/页面闭环。完整Wave0–7 active。
+
 ### T-K03.4 R357 Platform默认门与真实PG切片已验收（2026-10-09）
 
 Root正式提交Platform afa2bb1ae1733a9e48b727d66687fae9539a75a9（7既有路径），最终freeze SHA447820fc7abf396357174d58aea244be55938a697816f3051dd5374d12a7a106；682其它tracked post-build原字节保持。独审首次发现Nest新增三对象仅核keys的P1，已最窄补exact facts并复审无剩余确定P0/P1。

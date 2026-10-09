@@ -15696,3 +15696,9 @@ Root51437自然exit0，独立JSON success=true：默认2188PASS/0FAIL/402SKIP；
 正常v10仍inactive、schema未扩展、Platform/BFF未重载，用户单上传和独立后台管理员正向尚未闭环。下一原Platform owner先三设计文档门，再正规v10 active发行、Root正常drain/扩展/reload、BFF repin/生产注册、Web单上传及真实浏览器验收。完整Wave0–7仍active；上一用户确认turn仅核现结构，未新交付功能，本轮采取可执行下一动作。
 
 R357-V10-ACTIVATION Root D0审查/源码授权（2026-10-09）：原writer三设计文档冻结，Root实际diff核仅3路径；API首段“digest不变”与active再生矛盾，要求最窄明确wire/Proto/descriptor/V1–V9不变而v10 aggregate/root combined变化；正常四RPC写验仅BFF/Web真实旅程或显式自有intent，不隐式reset。授权原Platform唯一writer同卡准确12既有路径实施（三docs+v10 profile/artifact+四产物+聚合checker+两tests），先active预期/真实checker篡改RED，再single writer生成与机械新pin、纯门/默认/type/lint/build；无SQL/资源/Git权。Root独占真实owner资格、正常维护与集成提交，正式37assets/7installations/draft仍保留。
+
+### T-K03.4 R357 active候选与正常数据保护实证（2026-10-09）
+
+Root只读正常库快照：Platform14表、skill27、installation7，失败draft93c1711b-4ad4-4afb-acf5-55ce6aae74eb真实存在；Storage9表、storage_asset74、storage_blob37、upload74。历史“37 assets”不是当前准确计数，后续必须保全部74asset/37blob，不能按旧37过滤；每表全行canonical hash已存私有ignored r357-normal-{platform,storage}-pre-activation-facts.json。首快照相对env路径错误在连接前失败、首draft查询误用id而非skill_id真实SQL失败，随后按canonical映射纠正；均无数据写入/删除。
+
+原Platform writer冻结active12路径，freeze f76320d69c4c61179cce5ccd136b7f76abffb1017c50b1e497926621c2d32e5b；独审无确定P0/P1，Root核12SHA exact/677其它tracked post-build原字节exact。Root21507真实focused49PASS、contract/artifact/cutover/typecheck/lint/build0，默认门仍同句柄运行，未重复启动。Root39187真实Ingress自然0：4PASS，四RPC与fresh IAM/真实Storage链成功；receipt cleanup-complete/databaseOutcome deleted/runtimeStopped true/activeSockets0，仅本轮资源0，不冒历史全清。日志r357-v10-activation-root-ingress.log，资源目录kokoro-q-cde3ep9q。候选未正式提交，正常schema/服务/BFF仍未切换；下一待同句柄全门终态后Root正式发行、严格drain/expand/reload与消费者/页面闭环。完整Wave0–7 active。
