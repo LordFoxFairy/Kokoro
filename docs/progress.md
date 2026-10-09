@@ -1,3 +1,11 @@
+### T-K03.4 R357 精确下载冻结纯门通过；独审拒收405追踪缺口（2026-10-09）
+
+上一goal turn以5ba4e0fa/97293ab3审查和授权修正真实ID/机器合同/错误映射，属progress。本轮原writer完成21path freeze 6b5a1215：Root实际逐文件hash exact，按基线e380066 ls-tree重核658其它tracked bytes exact。Root32620自然exit0，format/type/lint/contract/default/build全部实际通过；日志r357-bff-exact-download-root-final.log，合同715PASS、default1311PASS/0FAIL/3SKIP。这些仅绑定旧freeze，不冒实际owner/browser下载。首次contract/default失败和误名green日志保留，基线真实HTTP exact POST404 RED已取代missing-export断言作为行为证据，不冒实施前RED。
+
+独立冻结审查发现405分支绕runSkillRoute缺x-request-id，D0要求所有响应有追踪ID；Root拒绝因全绿放行。原writer保持停写至Root门自然结束后，仅现skill-download.ts及现HTTP测试准入三入口wrong-method负控→设置header→新freeze，旧freeze收据保留，不改通用send或放宽oracle。原default generated类型穿透已复用既有projection strict adapter修正，architecture原门未扩。零服务重启/SQL/reset，BFF正常实例仍旧正式代码。
+
+并行原Web owner仅只读给后继放置表：主个人installation单cursor/四来源/固定chrome，旧本人合法管理分离二级surface，不把管理员发布审核搬到普通用户；具体路由与权限尚待Root核定，正式BFF发布前仍无Web写入授权。后台保持独立/admin/settings。下一行动：最终405修复冻结复验后正式BFF，再Web消费和真实下载文件/旧pin/share/同尺寸UI；完整Skills/Admin/Wave0–7仍OPEN。
+
 ### T-K03.4 R357 下载实施消费者范围与机器合同缺口（2026-10-09）
 
 上一 goal turn 只核独立后台路由并答复，未改变实施状态，分类 no progress。本轮原生 live 状态确认原 BFF writer running，未重派或重启。Root 核当前 platform-projection.ts 三行必要迁移，批准仅 catalog_current kind 与 seriesId 校验，补入既有任务范围；既有 contract-governance 精确脚本断言更新属于已批准相关契约测试。
