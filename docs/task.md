@@ -1,3 +1,11 @@
+### R357 Web P2 资格实证与审查误报纠正
+
+Root对最新Web96979c22冻结35路径同时核原源码/隔离copy exact、切片外原mixed93记录保持，独立原reviewer确认版本围栏、formal source闭集、布尔严格解析及双参数下载头四项已关闭、无新增确定P0/P1。Root当前纯门实际6files389 PASS（含独立skills-panel）、contract307、architecture51、lint/typecheck/defaultTurbopack build全0，句柄26360已终态0；收据r357-root-web-p2-qualification-receipt.json。仍不冒真实页面/Admin验收：正式干净源码闭包/原mixed前置集成、BFF容量后继、配对正常升级、37项repair与浏览器尚OPEN。
+
+Root核证纠正独审误报：BFF src/http/routes/skill-download.ts在父498及ad110冻结保护字节均已固定filename=skill.zip + 正规RFC5987编码，原“直接插值filename畸形”P1撤回；原reviewer已承认，BFF生产header不重改、不造RED，只新增quote/semicolon/Unicode真实HTTP正例。Web单参数regex跨仓502、BFF进程128句柄GetSkill预览占位耗尽仍是真实缺陷，后者原writer实际4RED/3PASS→47GREEN，进行新冻结资格。Root旧ad110工程41962终态0，合同671PASS；124pure/typecheck/lint/build也0，不能销未修容量。
+
+Web35允许改集有28项原mixed交集，Root已派只读集成审计确认HEAD与before字节差异及有效Skills前置，防整文件gitadd夹带任务外Admin修改；不据保护摘要一致就默认可提交，不再次大改已资格源码。原完整Wave0–7及原数据保留。
+
 ### R357 后继下载交互阻断：直接改造，不放行假完成
 
 Web原3P1已原writer实际RED8 FAIL / 3 PASS→GREEN（6文件361/contract307/architecture51/types/lint0），新freeze34e14daf仍待Root独审。BFF后继独审745/745源与保护exact后发现2P1：进程128 handle且GetSkill预览占位可正常多主体全局503；filename引号/分号/Unicode直接quoted-header插值畸形；另跨仓确定阻断，Web只接受单filename regex而BFF正式输出filename+filename*，普通下载也502。Root已分别续派原BFF/Web唯一writer按现责任窄修容量回收/安全header与精确两参数解析，补实际RED与负控，不调大常量假解决、不宽松透传。保持旧冻结与失败、原数据/权限/合同，未提交候选或正常升级。
