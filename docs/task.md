@@ -1,3 +1,11 @@
+### T-K03.4 R357 Finalize 400定位为 Web 空正文误判；读取取消反例未放行（2026-10-09）
+
+Root与原BFF owner核现正式2be5f21：BFF明确接Finalize空body且现真实Connect测试已证明上游调用；Webadapter把任何Content-Length及非null空stream当正文拒绝，故修复归Web而非错误放宽BFF/契约。既有intent99d4facc及349-byte clean对象继续保留，同Finalize key恢复，不重建包/intent。
+
+Web两路径初freeze7a22d8230caf23e15cba6b7e9296ce5b2f532e67414965333b7fa420bef67968；Root840其它tracked当前bytes核exact（含暂停locale/OIDC候选），实际14391聚焦10PASS/type/lint/build0。此绿不代表接收：独审发现新允许空stream若永不close，readBounded未观察Request abort且上游20s尚未启动，确定取消/有界P1。Root拒收并沿原writer仅现reader/现proxy测试2paths，先held-stream abort与timeout RED，补固定读取deadline、firstwinner取消/reader释放/迟到零forward，保持严格framing/原key/无body一次上游；未提交候选或做第二次真实Finalize。
+
+本轮是确定根因与真实边界反例进展，非等待或闭环。正常BFF15350/5611、Platform45001/65067及其它owner/基础设施保持，无reset/删除。后台独立/admin/settings保持，管理员与完整Skills用户路径仍OPEN，完整Wave0–7 active。
+
 ### T-K03.4 R357 正规 BFF 已重载；真实上传在 Finalize 失败（2026-10-09）
 
 BFF正式2be5f21ce3af84e971436b1f8cd188f25c480e0f，Root4paths/669保护exact、独审无P0/P1/P2；Root31337实际format/lint/type/default/build0，1300PASS/0FAIL/3SKIP。Root最初误用不存在test:contract命令exit1保留，改正确contract:test句柄36816自然0/704PASS，未改代码或门消除错误。生命周期deadline保持ref、同步throw/重复signal/永久挂起真实child覆盖，不把强制失败退出冒资源drain。
