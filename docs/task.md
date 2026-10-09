@@ -1,3 +1,13 @@
+### T-K03.4 R357 正规 OAuth scope 登记与私有安装详情刷新真实通过（2026-10-09）
+
+上一 goal turn 只核后台路由并答复，属 no progress；本轮推进原私有安装的真实详情和刷新验收。Web 1f3a1e6 已正式提交三路径 scope 切片；Root 48107 type/lint/unit/build 终态0、unit28PASS，日志 r357-web-publisher-scope-root.log。拒收并删除错误的 fake IAM authorize403；Web unit只证明自己的授权URL/回调闭集，不冒 owner权限证据。
+
+正规 IAM 原进程无需重启：实际 invalid_scope 指向 Product Web 登记缺 publisher scope。旧 normal-operator-session.cookie 返回 INVALID_ARGUMENT；原合格 normal-fixed-operator-session.cookie 只读得到 legacy/resource23/client12。历史04:20 updated是 authorization scope，不是 publisher。Root以owner正规命令单次 extend-product-web-publisher-scope ACK updated，另一次独立读取 current/resource24/client13；无reset、DDL、用户角色/管理员授权、登记自动重试。IAM source ec66c06c，正规浏览器 /login 经既有issuer会话完成新的OAuth，不注入认证。
+
+Root实际普通用户session200/authenticated/adminfalse：我的技能列表200显示原私有导入 r357-skills-user-journey，点击→查看详情→包目录200→SKILL.md200，原YAML与中文正文完整展示；真实整页刷新后重开列表/详情，三请求仍200、正文exact。原intent99d4facc GET200 completed/valid，安装828ac689仍installedtrue，audienceowner；零新Begin/PUT/Complete/Finalize。收据 var/dev/r255-preserve/r357-normal-private-import-details-reload-verified.json。最初定位器匹配隐藏移动文件树产生超时，后以可访问正文核验，不把定位器错误当产品失败。
+
+网络仍出现列表1423/1494 ERR_ABORTED后1424/1495成功，是否与用户报告闪动有关待只读生命周期审查，不用最终200抹掉异常。仅本次原私有上传恢复→列表→详情→刷新路径获得证据；完整Manus视觉/其他交互、管理员正向、Web default六失败、Root治理失败与整体Wave0–7仍OPEN，goal active。后台独立/admin/settings，普通Settings仅管理员入口，不嵌管理表单。
+
 ### T-K03.4 R357 Web 严格会话切片正式交付；安装列表定位 OAuth 缺申请 scope（2026-10-09）
 
 上一goal turn有BFF正式修复与真实完成恢复，属进展。本轮Root核Web v3冻结bc9fa06512paths/830保护原bytes exact、独审关闭partial-session P1；93562最终type/lint/build0，locale+Admin50PASS，真实OIDC1PASS/81过滤skip；最初-t未覆盖独立negative，Root另22044实际negative1PASS/81过滤skip。正式提交624f9c4。没有称完整default绿：writer最终3551PASS/6FAIL仍留，六个项目树旧fixture/全局refresh写计数需后继边界核验，不以纯门多数通过代整体用户成功。
