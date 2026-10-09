@@ -15510,3 +15510,9 @@ BFF正式0154e60仅四docs：owner新版机器先发行即可pin并隔离consume
 | 放置/粒度 | input沿现http输入校验；route/policy沿现routes唯一policy；client/projector沿现Platform clients，淘汰全塞route造成传输/业务混合；不建新模块/command bus/兼容alias。 |
 | 准入/状态 | 三写含replay同一次fresh用户结果顺序create_draft和install，两者失败零Platform；Get freshread；10/10/20/2秒统一budget/cancel/fence；Begin后phase转Get；unknown保原key。 |
 | 验证/交付 | 先具名真实HTTP/准入行为RED（不是missing module），正式生成/pin与纯门、4route隔离HTTP、双IAM/replay/预算/late与public字节保护；冻结Root重跑。正常owner Storage/activeartifact与浏览器后继，不以fake Platform断言整体完成。Root独占Git。 |
+
+### T-K03.4 R357 准入机器事实已发行，BFF消费者开始隔离实施（2026-10-09）
+
+Platform正式981df60e74b65eccfc2d58044db9965928e4d37e仅6机器路径：双边准入owner结构化；唯一生成入口重发v10及总provenance，Proto/descriptor/v1-v9保持字节。Root focused5PASS、contract/artifact/typecheck/lint0、6after与108具名保护及全部680非范围tracked exact、独审无确定P0/P1。Root首freeze校验误用sha256键失败，按真实after_sha256重跑完整成功，不掩盖首诊断。v10aggregate277a2bf24b4fdc34196dac3c5fbba89ef88df75a3b96054af63547f9ae53ff0b；总contract6fcc148fddb4aaab73076dfb5b6109e2b4d9f0209e93ef58b0c510e3ed28b693；仍inactive/不可正常路由。
+
+原BFF writer已按同任务卡在formal0154e60基线承接官方pin/四私有route隔离实施，先真实行为RED再Root准implementation；生产dispatch不注册。真实Storage资格只读已定位现ownerSmokeProvider/Runtime/Metadata及ClamAV正规链，Platform不得跨仓import私有fixture，由Root拥有隔离资源编排，单Platform smoke只走正式wire。未启动新服务、未改正常数据/资源，完整Skills/独立后台Settings/Wave0–7仍OPEN。
