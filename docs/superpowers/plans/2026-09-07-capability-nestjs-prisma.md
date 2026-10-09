@@ -13,6 +13,12 @@
 - S06四入口都进入同一持久草稿/包验证/发布链，不用浏览器数组假完成；参考“记录技能”的具体流程仍未核实，不自行设计后宣称一致。
 - 必要封面/包读取与既有资产可用性要闭合，历史GC/运维不当整页前置。Storage正式d13f33a/v3；Root最终真实PG247、pure529及各工程门通过只是依赖资格。实际MinIO精确版本/ObjectLock4PASS，个人文件/封面真实Clam2PASS（包1过滤SKIP、本地HTTP）；原403/400失败已按MinIO固定版本精确typed错误核实并保对象保持断言，原失败保留。全diffcheck生成Prisma450条空白仍FAIL，手写范围0。正常37 final-null未修/未激活，S01–S10不升完成数。
 
+### R353-P3 必要阻塞修正：GitHub 创建来源先于包资产（2026-10-08）
+
+实际正式701aedb5的GitHub provenance必填assetRef，与既定Create持久草稿→Begin/Complete包上传形成循环；BFF公开仓adapter此时仅有受信repo/完整commit/path、真实ZIP SHA/size/MIME。Root与只读审查已锁最小方案：仅GitHub assetRef变optional（有值仍须真实既存Storage资产），AI既有artifact assetRef保持required；没有值时canonical/proto/HTTP真实omit，不伪造编号或借personal_file污染资料库。共享来源列nullable且按method严格解码，保留旧非NULL值；仍由既有skill_package事实持有后续上传资产，不加表/服务/owner/创建方法。
+
+任务R353-P3-D0：Platform `platform_github_provenance_r353`（继承主控模型）唯一writer，Root审查/Git；701aedb5 clean基线，只允许三设计当前前缀、原suffix及619其它路径保持。精确卡ec11ba13 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-platform-github-provenance-d0-task-card.json`；先三设计/具名路径收口，再Root授权必要机器/Schema/源码/生成切片。BFF原writer继续其余独立Public9接线，GitHub等待owner正式修正，不自行改pin或发假provenance。三设计Root核619保护/原全文suffix并独审后正式bb286e1；仅设计，不是运行发行。P3源码精确卡9da005e9授同owner 23手写/21正规生成/7具名新增/578保护，先真实RED再实施Product1.1/HTTP5.1，AI及其它协议保持；去掉重复Proto全文快照与第三发行脚本，Root独占真实资源/Git/激活。目录真实缺少category/source查询及发布方聚合另获既有单文件精确补卡67bfe01a；误报config.test.ts缺口已实查撤回且原文件未改。此为真实阻塞，不是新增产品设计；S01–S10仍OPEN。
+
 ### 本轮真实冻结与下一步（2026-10-08，页面完成数不变）
 
 - Platform完整正式701aedb5/HTTP5/Product1/63-32-24，Root185真实PG/Redis与1888pure；IAM/Storage在该组为double，不是正常配对或页面资格，旧失败/全format历史失败保留。
