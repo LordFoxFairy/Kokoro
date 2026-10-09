@@ -1,3 +1,11 @@
+### T-K03.4 R357 Web 下载设计接线与真实数据矩阵核验（2026-10-09）
+
+上一goal turn正规BFF重载、37b08ce9与Web派工属progress。本轮原Web writer live，Root不在移动工作树跑最终门或重复实现。下载consumer批准新增普通hub/skill-qualified-download-client.ts，src/generated/bff-skill-download-policy.json仅复制正式BFF74b1b92原字节并固定commit/digest、禁止编辑成第二契约；现三设计/测试先行。发现现/api/browser/v1 catchall只派local import，批准现route的closed精确下载分派及新src/lib/server/skill-qualified-download.ts、具名proxy测试，保持local import原路径、取消/空body/Origin/session边界，禁通用relay或借local import承接不同职责。Root只读预审要求status200、实际Content-Length一致及503 tuple按owner事实，不凭code名称自拟retryable。
+
+Root真实普通browser list200读取8安装；新私有包active，4f69a36a安装仍true但source withdrawn，可用于真实拒下载负控。两现revision2安装series与version不同，但正确SkillOptionalService/GetSkill实际current200正好等安装version，因此不冒“旧pin≠current”验证样本。Root首次误用SkillService/GetSkill404保留为探测错误，非产品bug。收据r357-skills-exact-download-browser-data-audit.json，零写/删/角色变更。旧pin与新current分离真实矩阵仍OPEN，后继仅以独立本人验收数据经正式功能构建，不修改其他历史记录。
+
+下载候选仍未冻结/Root验收，Web默认已知六失败不降门。下一行动原writer完成server/client/三个caller exact接线及负控，冻结后Root纯门/独审/真实文件下载，再UI；管理员独立/admin/settings与完整Wave0–7目标不缩小。
+
 ### T-K03.4 R357 正规 BFF exact 服务重载；Web 下载消费者实施准入（2026-10-09）
 
 上一goal turn正式BFF 74b1b923及Root493e796c属progress。本轮Root核原96552/PID23250仍live后单次Ctrl-C自然exit0、53714 listener消失；完全同0600持久env SHA/Node22/cwd启动唯一52818/PID47322，readyz200，全部其它已记录服务listener PIDset exact。没有installer/reset/DDL/新临时配置。收据r357-bff-exact-download-normal-before.json与normal-reload.json，processes.json更新。真实新三个准备路由GET均405/Allow POST/no-store/x-request-id/body exact；这只证明正式路由激活，不证明登录资格/owner/文件下载。
