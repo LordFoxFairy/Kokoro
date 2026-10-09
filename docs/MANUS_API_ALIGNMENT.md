@@ -1,3 +1,13 @@
+# 当前 Skills API 对齐裁决（2026-10-09）
+
+用户最新要求覆盖下方2026-09-02基线对Skills的“只参考语义、不对齐字段”选择。Skills直接采用[Manus官方文档](https://open.manus.ai/docs/v2/skill.list)明确的请求/响应、字段名/嵌套/类型/错误与列表语义；Kokoro使用自己的 `/v1` 版本和正式IAM认证，不继承Manus域名、凭据或品牌身份。
+
+官方公开已安装列表与网站Hub目录/详情/下载是不同资源表示；后者以用户提供的JSON和真实网站观察补足。重要类型逐接口核对，不能把公开Unix秒int64时间改成网站UTC字符串，也不能把Hub archiveSize/usageCount字符串任意转number。尚未取得的完整写协议、可选/缺省、权限、幂等和错误由现owner三设计与机器契约明确，不从单次成功样本猜完整规则。
+
+本页不是第二份wire source；Platform维护Skills事实契约，BFF维护公开产品契约，Web同源消费固定版本。直接替换旧误形状，不新增manus_compat facade、别名、fallback或双轨。原Skill/版本/安装/Asset事实保留，真实作者/统计/认证/包文件数不得伪造。具体TODO、文件集与阶段证据唯一维护在 [现有任务表](task.md) T-K03.1–8，规范＋UI＋普通/管理员端到端全部通过后才扩散其它模块。
+
+## 以下为历史基线（Skills字段/兼容层选择已被上方覆盖）
+
 # Kokoro v1 API 设计对齐 Manus
 
 状态：2026-09-02 · Root 设计基线

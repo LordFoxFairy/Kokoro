@@ -1,3 +1,23 @@
+## 当前唯一执行队列：Skills 全接口规范与 UI 闭环（2026-10-09 用户最新裁决）
+
+本节覆盖下面此前“连接器优先”等历史顺序。先把 **Skills 所有相关接口与 UI** 完成并由 Root 真实端到端验收，再扩散连接器、排程、列表关系、其它功能按钮/Settings。其它功能暂停新增实现；已冻结连接器 A1/Storage D1仅保存交接，不冒整模块完成。原完整 Wave0–7 goal 仍 active，heartbeat 保持原暂停；沿本文件 T-K03/S01–S10，不新建计划中心。
+
+Skills 规范直接采用 Manus 官方文档中已定义的请求、响应、字段类型与业务语义，发布为 Kokoro `/v1`；不是再发明一套字段。网站目录、预览、下载等公开文档未覆盖的部分，以用户响应和当前登录网站真实请求补齐。公开 `skill.list` 与网站 ListHubSkills/GetSkill/DownloadSkill 分别对齐，不混为同一接口。已有 docs/MANUS_API_ALIGNMENT.md“不是照搬路径/字段”的旧选择不再用于拒绝这次 Skills 重要字段/类型对齐。面向页面契约的重要字段名、嵌套、类型对齐该真实参考；内部 owner 单一事实/调用方向不变，不另造兼容 facade 或双轨。未知 request/response/错误/可选项先读取真实证据，不根据单一样本猜完整 enum、默认值或业务状态。
+
+用户响应9项，顶层 skills/tagOptions；skillId/originalName/displayName/userDescription、icon对象、publishStatus、currentVersion对象、publisherType/verified、usageCount十进制字符串、exampleQuestions数组、tags.values、type/coverImage；来源对象与syncStatus按真实生命周期供给。currentVersion.archiveSize是十进制字符串、fileCount是整数、current是布尔、时间是UTC字符串；禁止把内部 revision/source_ref 或任意标签/安装状态当产品展示事实，禁止冒官方认证、统计/封面或复制参考目录当本地数据。
+
+唯一TODO与具名角色在 docs/task.md 的 T-K03.1–8；当前只推进第1步字段/接口实证盘点。S01–S10仍全部OPEN；原运行旧包详情失败仍实证保留。
+
+### R357 Skills 规范盘点实证（未完成契约改造）
+
+Root已核官方 `https://open.manus.ai/docs/v2/skill.list`：公开已安装列表是 GET `/v2/skill.list`，可选 project_id，成功 ok/request_id/data、错误 error.code/message；id/name/description/owner_type/creator_info，created_at/updated_at 为 Unix 秒 int64。Kokoro目标版本是 `/v1`，重要字段与类型采用该规范，保留本地IAM正式准入；列表包含停用技能、读取不启用。公开文档内缺失required与machine security声明不代表允许匿名或降低本地权限，正式owner须明确这些约束。
+
+Root正常重载用户参考页，实际取得5次POST200：ListSkills `{}`→userAddedSkills/officialSkills；ListHubSkills pageSize9/shuffle/includeOfficialSkills→skills/tagOptions，pageSize1另有nextPageToken；GetSkill和DownloadSkill `{skillId}`→skill/downloadInfo，downloadUrl/filename/expiresAt均string。用户9项样本SHA262d4df1…保持。新收据 `var/dev/r255-preserve/r357-manus-skills-protocol-observed.json` 只存请求形状/全路径字段类型，未保存凭据或签名URL；事件窗口truncated明确，未观察的写入、下一页请求和错误协议仍OPEN。实际“查看详情”可打开SKILL.md正文；当次无新Skills网络请求，不发明文件HTTP API；参考截图r357-manus-skills-view-details.png。
+
+三具名只读角色已续派现负责人：Platform事实与契约、BFF/Web全接口消费者、Manus证据/公开文档；其它writer冻结。已确认现目录的revision/source_ref、product/category_keys形状与参考差异，不只UI。稳定skill身份/确切version、全包fileCount、current版本、来源同步、作者及usage真实事实须在第2步裁决，不能复制字段值或自动换旧7安装引用。Root/Platform/BFF各按正式owner更新现契约，不在Root复制机器定义。
+
+这次只更新执行TODO与参考决定；Skills代码、数据库和正常服务尚未改造，S01–S10仍全OPEN，旧包详情/下载失败保留。下一只进入T-K03.2，不扩散连接器/排程等模块，不以辅助检查数量称UI或完整交互已验收。
+
 ### R357 用户指定后继顺序：连接器完整闭环优先（2026-10-09）
 
 最新用户要求取代此前“仅 Skills”执行优先级：连接器先 UI → 真实 CRUD 接口 → 对应功能 → 后台管理整体闭环；其后定时任务、专案/外部聊天列表归属展示与交互、剩余功能按钮及交互、Settings 逐页能力。沿既有 Wave0–7/任务台账，不新建计划中心；heartbeat 仍暂停，不自动启动其它模块写入。Skills S01–S10 未完成项原样保留，不能因转序标成已验收，也不删除旧数据或自动重装。
@@ -46,6 +66,37 @@ Web正式 `a540084`仅2现路径补OIDC_SCOPE同scope；真实旧redirect负控R
 
 用户新Skills故障Root已实际复现：tab3重试GET /api/hub/skills/catalog返回502/skill_response_invalid，原截图/网络收据保留。所有9正式HTTP端口皆监听、PG/Redis/MinIO/Clam监听，IAM/BFF/Platform/Storage/System/Scheduler/Billing裸ready200；Agent裸ready401是受保护入口，不能误记进程未启动/无鉴权ready通过。模型worker仍未启动，不虚称“全部能力”或所有worker运行。当前正常BFF仍88fe387、Platform0e60e5d，而Web新整Skills strict消费已前置，正常配对版本不一致；原st6紧急只读核精确缺字段/正常持久Schema与正式token资格演进前置，Root先修此回归，不回退UI、不放宽schema/伪造数据。连接器完整任务不缩小，其后原四项队列保持。
 
+
+#### R357 第一版发布续接：依赖恢复与连接器冻结审查并行（2026-10-09）
+
+用户要求主动更新/重启、能力完整闭环并抓紧正式第一版；由 Root 负责运行配对、资源、安全保数据切换及浏览器验收，不再将 routine restart 交用户提醒。沿原完整目标和同台账，无新增计划中心/缩小范围，无发行日期或“已发布”虚构承诺。
+
+| 任务/角色 | 基线/范围 | 验收/依赖 |
+| --- | --- | --- |
+| R357-SKILLS-LEGACY-READ-D0 / st6 / 只读 | normal Platform4ec395f、Storage normal5b15fe3与 formal a1206d0；仅现 package client、UploadsService/Store、formal expand 与现恢复测试，读Root CODEBASE_MAP和三设计；禁止文件/Git/数据库/服务/browser写 | 确定保原37Asset/7安装refs的合法修复入口、真实Version ACK与配置/DDL顺序；不得从current HEAD猜version。给最小正常恢复动作和代码缺口，Root独占资源 |
+| R357-A1-CORRECTION-REVIEW / reviewer / 只读 | apps/kokoro-capability b0c0dbe + correction freeze5a85305b；73允许/576保护；只审P1八文件变化与command/provider读边界 | 完整资格保持、原tool授权不退化；不写文件/运行资源，Root另外执行真实PG/原生IAM，未验不激活 |
+| R357-ROOT-V1-INTEGRATION / Root | 现owner冻结交付和固定运行台账；Root独占Git/资源/browser与三台账 | 依赖修复按owner→消费者→运行更新→真实普通/管理员页面；需要重启则按原句柄优雅停止、同持久配置源码启动，禁止reset/假数据/重复服务 |
+
+
+R357-A1-REAL-PG-EXPAND-RED：Root7真实PG文件91PASS/3FAIL/3unhandled；均测试fixture还原parent目录不匹配，错误cleanup先DROP仍开pool引发57P01。Root亲建库已清理、全库目录exact。原A1负责人现仅授权test/integration/expand-mcp-product-postgres.integration.test.ts，72其余冻结/576保护；禁止改固定expected/hash放宽资格，Root独占PG/正常资源，修正后重跑；当前A1仍不激活。
+
+
+R357-STORAGE-LEGACY-CLEAN-QUALIFICATION：Storage formal a1206d0已clean；37原Asset正常strict v3切换需同Blob合法重新上传修复。现R356仅capability_package有非clean复用双拒，ordinary Asset缺同等保护。st6唯一writer仅UploadsService/UploadsStore/canonical-lifecycle三个现路径，先新增ordinary existing canonical非clean及首上传隔离/clean原ID保留测试，Root真实PG RED后另授生产条件扩展；无Schema/API/目录变更，不动正常数据。Root保备份/资源/正常源切换；此局部资格不替代37项真实修复或页面验收。
+
+
+Root已定位A1真实生产升级缺陷：fresh把新6列放旧列前，ALTER ADD追加，完整attnum目录必不相等。原A1 owner扩卡仅现schema/expand/canonical checker/expand unit/DataModel前缀及原已授权Prisma生成路径，把新增6列按正式ADD顺序附在旧字段末；固定旧parent digest不改。新目标由Root实际isolated PostgreSQL fresh/expand完整目录核验后固定，不换oracle迎合错误fixture；现三设计字段语义/API不变，五完整旧文档后缀继续保护。
+
+R357-STORAGE-LEGACY-MAINTENANCE-D1：st6 续任 Storage 唯一 writer，正式基线5b44e9d；仅现三设计新增当前维护前缀，完整旧正文保持。先收敛固定旧NULL manifest经现正式Upload RPC合法恢复同Blob、实际两次Version ACK与未知结果续原意图的最小维护入口，再由Root通过设计/放置门授权源路径。当前不写代码/契约/Schema、不动正常资源，原37对象只读内容资格通过不冒修复完成。
+
+#### R357 V1 集成实证：两项升级资格收敛，未发行第一版（2026-10-09）
+
+Root 正式 Storage `5b44e9d9f27b66f39d98c497d1d03ce41d512bb0`（parent a1206d0，仅3现路径），现 canonical 的非clean双拒已扩全部用途；首次隔离和 clean 同Blob/CAS恢复保持。Root实际RED6FAIL/3PASS→完整真实PG41PASS、unit400PASS、type/范围lint/format/build0、305保护/3文件freeze与独审一致。正常Storage仍5b15fe3 v2，未激活新源码，37实际对象恢复不因此称通过。
+
+Root实际指定旧 `VersionId=null`＋IfMatch GET37原对象，完整size/SHA/ETag全匹配、原Asset/Blob快照前后保持；旧响应全省VersionId，初严格header负控FAIL保留，当前只称原指定内容可读，不把它当新的版本ACK。正常桶实际版本化Enabled（本轮只读，无Root设置变更）；旧finalVersion仍NULL，原7安装/Skill ref未更换。证据r357-storage-normal-readonly.json、r357-storage-null-read-qualification.json。维护入口三设计D1后继由原st6单writer收敛；正常expand/真实scan/两次非NULL ACK与页面详情尚待。
+
+Platform最终schema正确保旧12列ordinal，新增6列按官方ADD顺序附后；Root实际parent/fresh/expand全图资格2bc25227…一致、fixed origin1c8/b082和delta5f0保持。原资源外2自有库清理、正常78库目录exact。原91PASS/3FAIL/3unhandled及Root诊断cwd误用失败保留；修后7文件94PASS（其中connector-revocation为memory辅助，余具名真实PG）、111纯文件1947PASS、完整type/lint/build和机器contract/artifact/schema/IAM检查0，73freeze/576保护/5文档完整父suffix exact。新OpenAPI范围格式回归已实读失败（父canonical），原owner只获同卡最小格式/发行hash修正，不放宽正式checker；最终commit/正常激活/真实IAM组合/前后台CRUD仍待，不将这些研发门当页面验收。
+
+Root再看真实Skills页：目录卡片可见，点击旧技能→查看详情仍实际“技能文件读取失败”；截图r357-skills-details-v1-blocker.jpg/浏览器收据r357-skills-v1-browser-blocker.json，仍是V1明确阻断，S01–S10不标完成。9HTTP端口仍原监听、七owner裸ready200；Agent裸ready401是认证边界，Web不存在/api/health（404诊断保留），实际/app200与浏览器渲染，模型worker仍未运行。正常数据/共享基础设施未重置，新服务版本未冒切换。下一旧存量合法恢复并按对应正式版本更新运行，再真实普通/管理员完整连接器路径；用户后继顺序不变。
 
 #### R357 正常 Skills 加载故障：目录与本人安装列表恢复，旧包详情仍 OPEN（2026-10-09）
 
