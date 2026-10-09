@@ -1,3 +1,13 @@
+### T-K03.4 R357 正规基础设施复核与真实 Settings 视觉偏差（2026-10-09）
+
+上一goal turn设计e380066与实施任务9911d915已正式交付，属progress。本轮原BFF writer经原生状态确认为running；一次120s等待超时不等于停止，不重派/重启。Root保眼前关键路径，同时完成独立只读实际UI对照。
+
+现PG/Redis/Web/BFF/Platform/IAM/Storage/Agent/Scheduler/System/Billing 11listener原PID实测保留；MinIO正确宿主39190 live200（39191 console），ClamAV43310与MinIO容器healthy。9000/9001宿主无listener是Docker端口映射，不误判服务缺失。未启停/重置资源，listener不是完整调用链通过证据。
+
+Root在已登录Manus实际MySkills截图与DOM核667×726：Settings modal[143.5,73,380,580]/radius16、横向菜单、搜索/探索技能/添加与全部/个人/官方/第三方四来源；个人空态可见。本地同尺寸modal[33,36.30,601,653.40]、窄图标轨而非横向header、重复“已新增的技能”和已安装/我发布的双tab；详情关闭后顶部操作y=-634随内部列表滚出。原Web owner源码只读确认根因，不能再称UI一致。
+
+后继UI边界：主个人技能页采用已添加/安装单一列表及来源四选；保留有效旧发布/未安装管理到独立二级管理surface，不把两套cursor前端合并、不按name/MAXrevision去重，不让普通添加返回公开publish。此为Root产品呈现裁决，具体二级入口/权限/导航与文件表在Web消费正式下载合同后同切片设计，不另建计划中心或先写未发行schema。先完成BFF exact下载，再Web消费者、退休下载路径删除、专属错误提示、Settings固定chrome与同尺寸截图矩阵。收据r357-runtime-ui-current-audit.json，完整Skills/Admin/Wave0–7仍OPEN。
+
 ### T-K03.4 R357 精确下载 D0 已审查提交；BFF 实施准入（2026-10-09）
 
 上一goal turn裁决完整下载语义并提交99d5b1eb，属progress。本轮Root拒收初D0“零payload一律拒CL0”的重复Finalize缺陷与HTTP route承载业务，原owner修正实际零字节有界首winner及application职责。独审最终无P0/P1；Root重核3最终SHA exact、670其它tracked原bytes exact、diff-check0，正式BFF设计e380066，仅3docs，无机器合同/代码/资源变更。
