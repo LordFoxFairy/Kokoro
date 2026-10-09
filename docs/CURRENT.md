@@ -1,3 +1,11 @@
+### T-K03.4 R357 空正文正式修复；真实恢复定位 owner 时间戳遗漏（2026-10-09）
+
+Web正式a18745109b6b1cd8c388a4d7d0ccc58f522a0e73，Root仅2paths提交、840其它tracked当前候选bytes exact保留。初两次绿仍有reader abort与超限await cancel缺口被拒收；独审第二次漏超限前置await，Root直接反例纠正后最终freezea96268fb：真实1byte+cancel永挂RED→14PASS。Root44016最终14PASS/type/lint0；前13版Root70947 build0只属前候选，不冒最终全build/全default。最终reader固定20s、abort/deadline firstwinner、非await cancel、finally释放，严格CL/TE/实际0byte无body不放宽。
+
+Root正常浏览器持久记录原intent99d4facc与349-byte文件仍在，重新选择同文件只GET200 uploaded→同Finalize key/空body，未新Begin/PUT/Complete。400已消失，但真实Finalize502 message“Local Skill import request failed”，明确来自BFFprojector而非Web本地parse；刷新真实session200/authenticated后Get也502，首次直GET401保留、不推定完成。收据r357-normal-local-import-recovery-projection-failure.json。Platform当前skill-rpc.service.ts两处completed installation漏contract必填skillUpdatedAt，BFF严格projectInstallation因此拒绝；BFF/Web不放宽，原owner切为Platform唯一writer四现路径窄补authoritative skill timestamp，已真实RED49执行/47PASS/2FAIL（与安装时间不同）；正常实例未重载新候选，未知终态intent/对象保留。
+
+独立OIDC调查证明/v1/me旧fixture缺platform_admin与header x-request-id=meta.request_id导致回调正确failclosed503级联，原Web writer仅现fixture按正式严格契约补全及负控；八locale同Admin Routing23键闭集继续。没有产品认证源码变更/跳过/95%放宽。后台/admin/settings保持独立，管理员正向、完整Skills与Wave0–7仍OPEN/goal active。
+
 ### T-K03.4 R357 Finalize 400定位为 Web 空正文误判；读取取消反例未放行（2026-10-09）
 
 Root与原BFF owner核现正式2be5f21：BFF明确接Finalize空body且现真实Connect测试已证明上游调用；Webadapter把任何Content-Length及非null空stream当正文拒绝，故修复归Web而非错误放宽BFF/契约。既有intent99d4facc及349-byte clean对象继续保留，同Finalize key恢复，不重建包/intent。
