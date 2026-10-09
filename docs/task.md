@@ -15433,3 +15433,5 @@ T-K03.4 identity owner正式2f0c39359768278c583e8726bab0dfe2ad5c0264，Root68PAS
 T-K03.4 BFF身份消费者正式7bca3305420a7d6bb5214938b38438d4b77557dd：Root独立正确Node22.22.2 build/type/lint/semantic0、4文件144PASS、11after/650保护exact、独审无确定缺陷；原vendor已正确两身份，未无效repin。Root尝试跨agent进程句柄观察失败，仅读取原log/请求writer原handle终态，未重复启动。Web原owner续派两schema及正规contract snapshot消费，不改UI含义。
 
 T-K03.4 Local import三设计正式36e589127c5e11291ce645a1558d840a9368ecb8：Root纠正5项资格/状态/重放不一致后批准；单intent、source两个普通service/state文件、fresh create_draft AND install、Storage同command900s transfer、completed receipt独立30d回放、24h未完成TTL、Get严格只读、private Skill/current/installation同事务。Root schema:check0，既有Prisma relationMode索引建议警告保留。Platform唯一writer先机器合同/唯一Schema/fixed known-parent expand与门，不实施正常库/服务；后继业务及Web真实上传仍OPEN。
+
+T-K03.4 Web canonical回应正式76d23417：Root52+307/type/lint/隔离默认build0，21/800保护；独审P2仅文档一处已关闭。BFF正常9724 sameenv从旧39031有序替换，readyz200；原数据/其它服务不动。browser14焦点CDP连续三超时但inventory仍在，真实页面读回尚未验，不由超时猜停服务；机器导入owner继续，不将工程修复冒充用户全链。

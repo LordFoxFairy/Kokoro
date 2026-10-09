@@ -1,3 +1,9 @@
+### T-K03.4 R357 Web回应修复已提交、BFF已正常重载（2026-10-09）
+
+Web正式`76d23417d8061bfd173834718e8c049fcea1f795`：Root52focused+307contract/typecheck/lint0、独立复制冻结源码与本地依赖的默认build0（未操作live.next build）；21变化/800其它tracked保留。独审P2文档“legacy全部拒绝”矛盾由Root仅一处修为“已移除zip-v1…拒绝”，生产未扩权限/UI。BFF正式7bca330旧39031实际live后Ctrl-C130退出，旧53714监听消失，再same持久env唯一新9724/44904，readyz200；PG/Redis/MinIO/其它服务无重置/重启。
+
+当前浏览器tab14仍在，但AX、DOM及重新绑定同tab均在Emulation.setFocusEmulationEnabled超时；没有据此重启服务或新建/刷新标签，不宣称原502已在浏览器消失。普通新上传、视觉/Admin全链仍未验收。Platform正在正规Local import机器合同/单intent Schema切片，Root不重启其变化中source；原37资产/7安装/失败draft保留。
+
 ### T-K03.4 R357 用户上传与后台发布边界纠正（2026-10-09）
 
 当前优先目标是普通个人技能上传/添加，不是扩大publisher权限以跑通旧公开发布表单。Root已实际读取登录Manus的个人上传：单drop/click，接受`.skill,.zip`，根`SKILL.md` YAML名称/描述，无名称/简介/标签/分类/示例输入。普通Settings实际为全部/个人/官方/第三方，没有本地“我发布的”管理tab等价证据。管理员catalog治理须独立服务端授权；未观察Manus管理员界面，不臆造其后台能力。
