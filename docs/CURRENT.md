@@ -1,3 +1,9 @@
+### T-K03.4 R357 真实clean上传通过，初次感染终态仍失败（2026-10-09）
+
+Root核canonical-binding 3a96908c两文件exact，资源0 dry通过、独审首次绑定已闭合。第六真实运行66415自然exit1：clean完整4PASS（真实Storage/MinIO/Clam→Finalize/Get/replay，正规清理）；随后EICAR 3PASS/1FAIL，CompleteUpload实际2对预期1。根因已定位：初次扫描即感染只保存rejected intent而无Complete receipt，第二调用replayComplete提前null，service.get读到rejected仍重入Storage；历史有receipt后转感染负控没有覆盖此路径。原writer先只读给最窄owner修正方案，不放宽测试、不伪造receipt、不激活正常服务。EICAR本轮资源继续具名保留，ACK-lost尚未运行；不是整个资格通过。
+
+第4/5保留资源Root真实只读audit：每桶2version，journal4记录只登记staging，1canonical version缺已登记proof。没有删除任何对象，明确保留；不采用新Provider冒认旧run。独立后台三设计正式26ea3e6，Root真实tests-only5FAIL/1PASS后唯一Web writer实施；当前尚未冻结或浏览器验收。浏览器tab14 DOM仍focus timeout，不重复开服务/标签绕过。
+
 ### T-K03.4 R357 BFF隔离消费者正式提交；真实Storage资格仍OPEN（2026-10-09）
 
 Root最终核112materialized/84旧vendor删除/560保护exact，真实HTTP28PASS、合同28PASS，Connect/HTTP双生成、policy/typecheck/lint/build实际0；独审无确定P0/P1。BFF正式3e19fbed74d31898ba109b8339b1fef3331048bd，工作树clean。Get稳定series anchor与当前revision已纠正；正常dispatch未注册、服务未重载，不能据此称用户上传闭环。

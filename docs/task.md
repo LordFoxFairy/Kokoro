@@ -15565,3 +15565,9 @@ Root真实Storage资格四轮自然失败均保留：journal父目录缺失、Un
 
 第五轮真实Storage仍失败：canonical proof接收Wire numeric scan state而fixture要求内部string。最新scan-state冻结7114e8仅正规同仓常量引用和负控，尚待整体语义审查后重跑，停止逐行盲跑；第四、第五轮有对象资源继续具名保留。正常服务未重载，Wave0–7与Skills完整范围不缩减。
 R357-WEB-ADMIN-SETTINGS后继门（2026-10-09）：三设计正式26ea3e6406446f451fa22f31df644678e941a2a8，Root三hash及其余821 tracked保护核验。仅两个tests-only候选a8d85f4；Root Node22真实5行为FAIL/1无session零上游PASS，不是missing module。准同Web唯一writer实施范围：src/app/admin/layout.tsx、admin-shell.tsx及CSS、settings/page.tsx、settings/model-routing-settings.tsx及CSS；既有admin/page.tsx、admin-access-view.tsx；src/contract/admin-model-routing.ts、src/lib/server/admin-model-routing.ts、src/hub/admin-model-routing-client.ts、现api/hub/[...path]/route.ts、src/i18n/messages.ts中文源；tests/app/admin-model-routing-routing.test.ts、tests/ui/admin-layout.test.tsx、tests/hub/admin-model-routing-client.test.ts、tests/ui/admin-model-routing-settings.test.tsx、既有settings-modal/platform-admin-gate相关测试；contract/README.md仅剔除过期实现声明及上述三设计文档当前证据。禁止owner snapshot/generated、普通用户发布流程、其它模块、lockfile/依赖、SQL/资源。最小独立壳与真实模型设置，Skills后台不改业务；CAS/idem/unknown、权限、取消围栏统一处理，Root独占Git、冻结后重跑工程与双身份浏览器，浏览器故障仍待真实验收而非放宽。
+
+### T-K03.4 R357 真实clean上传通过，初次感染终态仍失败（2026-10-09）
+
+Root核canonical-binding 3a96908c两文件exact，资源0 dry通过、独审首次绑定已闭合。第六真实运行66415自然exit1：clean完整4PASS（真实Storage/MinIO/Clam→Finalize/Get/replay，正规清理）；随后EICAR 3PASS/1FAIL，CompleteUpload实际2对预期1。根因已定位：初次扫描即感染只保存rejected intent而无Complete receipt，第二调用replayComplete提前null，service.get读到rejected仍重入Storage；历史有receipt后转感染负控没有覆盖此路径。原writer先只读给最窄owner修正方案，不放宽测试、不伪造receipt、不激活正常服务。EICAR本轮资源继续具名保留，ACK-lost尚未运行；不是整个资格通过。
+
+第4/5保留资源Root真实只读audit：每桶2version，journal4记录只登记staging，1canonical version缺已登记proof。没有删除任何对象，明确保留；不采用新Provider冒认旧run。独立后台三设计正式26ea3e6，Root真实tests-only5FAIL/1PASS后唯一Web writer实施；当前尚未冻结或浏览器验收。浏览器tab14 DOM仍focus timeout，不重复开服务/标签绕过。

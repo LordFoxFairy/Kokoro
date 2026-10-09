@@ -12254,3 +12254,9 @@ Root最终核112materialized/84旧vendor删除/560保护exact，真实HTTP28PASS
 Root真实Storage资格四轮自然失败均保留：journal父目录缺失、Unix异步ACK半关闭、raw Proto与StorageClient扁平command混用、canonical阶段残留嵌套command引用。前三轮仅明确run-owned空桶/无连接DB经全catalog与inventory证明后定向删除，正常PG78与MinIO2 catalog exact，私有清理收据已保存。第四轮真实PUT及Complete已到canonical登记，失败资源仍保留（manifest runtimeStopped=true/activeSockets=0）；有对象，不按空桶假设删除，必须用该run journal与完整S3版本inventory exact核验。最新canonical-projection冻结a71650cc仅runner投影与负控修正，尚待Root真实重跑；没有激活v10或修改原37assets/7installations/失败draft。
 
 独立后台只读盘点完成：普通Settings管理员入口/admin已存在；独立layout/nav、/admin/settings及正式模型路由adapter/client/UI确实缺失。使用现System→BFF Public12契约，不复用普通Settings弹窗，不新增configs owner。后继按R357-WEB-ADMIN-SETTINGS先真实权限/跳转RED、独立壳与真实设置再双身份浏览器；不是后台已完成。Skills优先与完整Wave0–7范围不变。
+
+### T-K03.4 R357 真实clean上传通过，初次感染终态仍失败（2026-10-09）
+
+Root核canonical-binding 3a96908c两文件exact，资源0 dry通过、独审首次绑定已闭合。第六真实运行66415自然exit1：clean完整4PASS（真实Storage/MinIO/Clam→Finalize/Get/replay，正规清理）；随后EICAR 3PASS/1FAIL，CompleteUpload实际2对预期1。根因已定位：初次扫描即感染只保存rejected intent而无Complete receipt，第二调用replayComplete提前null，service.get读到rejected仍重入Storage；历史有receipt后转感染负控没有覆盖此路径。原writer先只读给最窄owner修正方案，不放宽测试、不伪造receipt、不激活正常服务。EICAR本轮资源继续具名保留，ACK-lost尚未运行；不是整个资格通过。
+
+第4/5保留资源Root真实只读audit：每桶2version，journal4记录只登记staging，1canonical version缺已登记proof。没有删除任何对象，明确保留；不采用新Provider冒认旧run。独立后台三设计正式26ea3e6，Root真实tests-only5FAIL/1PASS后唯一Web writer实施；当前尚未冻结或浏览器验收。浏览器tab14 DOM仍focus timeout，不重复开服务/标签绕过。
