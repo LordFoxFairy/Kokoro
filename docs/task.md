@@ -15627,3 +15627,9 @@ Root追加pending-owner回调负控真实通过：2s强制+2s未settle仅preserv
 ### T-K03.4 R357-FULL-GATE-BASELINE（2026-10-09）
 
 Root当前Platform全门真实13failed files/44failed tests/2100PASS/401skip（另有suite collection failure；不以退出码或局部资格冒全绿）。同卡只读评审skills_platform_frozen_review_r357负责基线7b1b9d0在ignored隔离快照复现，与当前JSON报告逐用例比较；允许仅创建私有测试证据与隔离源码快照、链接现node_modules，不改正式仓，不提交，不启动/重置共享资源。Root负责当前完整JSON重跑20334、冻结保护核验和集成决策。5正式变化/683保护现SHA exact，真实PG61PASS、Ingress4PASS及本轮cleanup-complete仅证明该链路；正常激活和浏览器仍OPEN。
+
+### T-K03.4 R357 全门基线裁决与后续历史契约校验收敛（2026-10-09）
+
+Root唯一48803基线重跑exit1，独立JSON报告；当前44FAIL均在7b1b9d0复现、新增0，另同platform-contract-cutover收集失败。基线额外expand失败来自隔离目录缺兄弟parent-schema fixture，不宣称修复历史失败。原独审曾3进程共写reporter瑕疵已记录，以Root单进程报告为准。候选5路径实测61focused/真实Ingress4PASS/type/lint/build0、683保护exact，经Root正式提交9f890c1（完整SHA由Platform Git记录）；全仓仍红，正常未激活。
+
+R357-HISTORICAL-CHECKER-BOUNDARY沿原Platform writer单仓：先仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/CURRENT.md三文档门，把既有历史固定输入/current由v10校验裁决落为精确方案；DATA_MODEL无变。比较新通用inverse框架与复用固定parent+既有profile delta，采用后者，拒新增snapshot/目录或刷新旧hash。后继拟5既有checker（mcp-personal-product、skill-product、skill-category-keys、skill-example-prompts descriptor及check-platform-contract-cutover）与5对应contract tests，保护旧strip/hash/v1-v9/Proto/generated/descriptor/provenance；先文档冻结Root审后另授写入，不一次性批量改。另11个oracle/fixture失败仍OPEN，在同卡顺序处理；最终仍真实Web上传/后台和Manus视觉验收。

@@ -1,3 +1,9 @@
+### T-K03.4 R357 全门基线裁决与后续历史契约校验收敛（2026-10-09）
+
+Root唯一48803基线重跑exit1，独立JSON报告；当前44FAIL均在7b1b9d0复现、新增0，另同platform-contract-cutover收集失败。基线额外expand失败来自隔离目录缺兄弟parent-schema fixture，不宣称修复历史失败。原独审曾3进程共写reporter瑕疵已记录，以Root单进程报告为准。候选5路径实测61focused/真实Ingress4PASS/type/lint/build0、683保护exact，经Root正式提交9f890c1（完整SHA由Platform Git记录）；全仓仍红，正常未激活。
+
+R357-HISTORICAL-CHECKER-BOUNDARY沿原Platform writer单仓：先仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/CURRENT.md三文档门，把既有历史固定输入/current由v10校验裁决落为精确方案；DATA_MODEL无变。比较新通用inverse框架与复用固定parent+既有profile delta，采用后者，拒新增snapshot/目录或刷新旧hash。后继拟5既有checker（mcp-personal-product、skill-product、skill-category-keys、skill-example-prompts descriptor及check-platform-contract-cutover）与5对应contract tests，保护旧strip/hash/v1-v9/Proto/generated/descriptor/provenance；先文档冻结Root审后另授写入，不一次性批量改。另11个oracle/fixture失败仍OPEN，在同卡顺序处理；最终仍真实Web上传/后台和Manus视觉验收。
+
 ### T-K03.4 R357 真实上传入口已通过，全仓回归仍失败（2026-10-09）
 
 Root修复local不可变来源投影：具名tests-onlyRED59PASS/2FAIL，最终unit36+真实自有PG25=61PASS；5变化/683保护SHA exact，独审无确定P0/P1，Node24 typecheck/五路径lint/build自然0。新第九真实Ingress9152自然0为4PASS：正规IAM逐RPC准入、真实Storage/MinIO/Clam上传扫描、Begin/Complete/Finalize/Get与重放200，missing401/wrong-write403；preabort仅客户端负控不冒服务取消。最新receipt phase=cleanup-complete、databaseOutcome=deleted、runtimeStopped=true、activeSockets0，bearer文件已删；历史失败资源仍具名保留。
