@@ -1,3 +1,9 @@
+### T-K03.4 R357 P1 复审：生命周期与精确恢复仍待整改（2026-10-09）
+
+Root读取当前Platform源码，确认新freeze bc8c688（43变化/643保护）仍有三项确定阻断：Finalize复验将合法停用/移除/metadata/current变化当篡改，并用当前Skill拼旧安装而非完整初始响应；Get completed第二读未使用2秒boundary；Complete感染后同key重放误报receipt invalid。原候选未激活/提交/正常库应用。沿原Platform唯一writer仅补三项具名RED并纠正把合法状态当篡改的测试，Root实际重跑失败后才准实现；不可变owner/package/ID/outbox绑定仍必须验证。
+
+用户再次明确后台独立页面：普通Settings仅管理员入口跳转/admin，独立后台布局/导航及/admin/settings；不复用普通Settings弹窗。当前独立Settings仍缺，页面/API双授权与普通用户直接访问拒绝均列入同Skills验收范围，不以入口存在冒称完成。完整Skills及Wave0–7仍OPEN，其它模块保持暂停；正常资源和原数据不改。
+
 ### T-K03.4 R357 Runtime候选独审阻断（2026-10-09）
 
 Root核初freeze94e84的43变化/643保护exact；真实native60852为8PASS/1FAIL，原因两不可见get断言undefined而Prisma正式返回null。原writer仅两tests修为精确null+RPC跨subject/tenant NOT_FOUND；v2 freeze85ae6已停写，Root33499真实PG9PASS/0FAIL。原全catalog78/hash exact，自有库清理，无正常资源写。此9项只是既有transaction/expand范围，不证明完整upload旅程。

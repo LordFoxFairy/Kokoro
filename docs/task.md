@@ -15461,3 +15461,9 @@ Root核初freeze94e84的43变化/643保护exact；真实native60852为8PASS/1FAI
 独审发现确定P1：Finalize completed原key先phase conflict且在receipt前访问Storage；terminal感染phase更新错误且取消/未知parse错误可能被rejected；receipt/wholegraph只看存在tenant而非完整绑定；appclock重新裁决DB expiry；RPC绝对总预算未落transaction admission；installation响应用Skill时间拼。Root未提交/激活候选，原writer仅补具名RED，真实PG负控由Root先跑后再准production修。Begin pending原key允许正规Storage同upload重签且不持久URL；Complete重放仅DBproof+freshScan，不再次complete/status；Finalize completed30天纯DB精确重放。正常Platform仍原版本，完整Skills及Wave0–7 OPEN。
 
 T-K03.4 P1 RED freeze5db9f495仅3tests，Root49580真实PG12项6PASS/6FAIL（感染pending与Begin/Finalize绑定变更被错误接受），catalog78全hash exact、自有库清理；Complete tamper因组合case首断言失败未执行，Root明确要求分拆，不能冒实际RED。原writer已准全部具名根因修，production scope仍原slice，v10inactive/正常资源/Git不动；完整修freeze后Root重跑PG/纯门/独审再决定发行。
+
+### T-K03.4 R357 P1 复审：生命周期与精确恢复仍待整改（2026-10-09）
+
+Root读取当前Platform源码，确认新freeze bc8c688（43变化/643保护）仍有三项确定阻断：Finalize复验将合法停用/移除/metadata/current变化当篡改，并用当前Skill拼旧安装而非完整初始响应；Get completed第二读未使用2秒boundary；Complete感染后同key重放误报receipt invalid。原候选未激活/提交/正常库应用。沿原Platform唯一writer仅补三项具名RED并纠正把合法状态当篡改的测试，Root实际重跑失败后才准实现；不可变owner/package/ID/outbox绑定仍必须验证。
+
+用户再次明确后台独立页面：普通Settings仅管理员入口跳转/admin，独立后台布局/导航及/admin/settings；不复用普通Settings弹窗。当前独立Settings仍缺，页面/API双授权与普通用户直接访问拒绝均列入同Skills验收范围，不以入口存在冒称完成。完整Skills及Wave0–7仍OPEN，其它模块保持暂停；正常资源和原数据不改。
