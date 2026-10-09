@@ -1,3 +1,11 @@
+### T-K03.4 R357 管理员404归因更正；真实安装包下载通过（2026-10-09）
+
+上一turn冻结核验与404发现属progress。本轮Root复核admin/layout.tsx与platform-admin-gate.ts：forbidden主动notFound；正常浏览器/api/auth/session实际200 authenticated=true/platform_admin=false。因此上一条“后台设置运行偏差”归因更正为当前普通身份准入拒绝，路由及dev manifest均存在，未发现须重启/放宽权限的证据。管理员正向独立/admin→/admin/settings仍待正规管理员身份，不冒通过；不自授角色。
+
+正常浏览器request以私有安装828ac689走新增exact准备200，source/revision精确，正式Web /api/skill-downloads opaque GET200 application/zip/349bytes；Root逐字节等原包，SHA019b9929…fed2，收据r357-skills-real-installation-download-bytes.json0600。初探测遗漏/api前缀导致404属Root探测错误，非产品失败，已纠正。该证据非UI点击；managed/share/旧pin≠current及UI仍OPEN。旧withdrawn安装4f69a36a真实prepare404 skill_not_found，登录仍200/true；不虚报为403，原BFF owner只读核当前owner投影及映射语义。
+
+Root全门78368与实际PID53195当前live，7files145PASS/typecheck/lint0，default仍运行不重复启动；freeze停写且diff-check0。下一行动确认全门终态与负控归因、正式提交下载切片后真实UI验收，再个人技能布局及后台正向。完整Wave0–7 active，不缩小。
+
 ### T-K03.4 R357 Web 下载冻结复核与后台设置真实404（2026-10-09）
 
 上一 goal turn 仅澄清独立后台方向，未改变实现，分类为 no progress；本轮完成原 writer 终态与冻结核验。原49826由所属writer确认自然exit1，非Root Unknown handle推断；报告3588PASS/6FAIL，既有OIDC project rail/R242失败保留。Root实核freeze11c2a6ff…、31 changed SHA全部exact、817其它tracked与1f3a1e6逐字节一致；独立只读审查未见确定P0/P1/P2。Root重跑78368当前live，7具名文件145PASS、typecheck/lint自然0，full default尚未终态，完整输出留r357-web-qualified-download-root-gates.log；未提交Web或冒称完整Skills闭环。
