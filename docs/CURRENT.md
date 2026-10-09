@@ -1,3 +1,11 @@
+### T-K03.4 R357 独立后台设置正式提交；完整页面验收仍OPEN（2026-10-09）
+
+Web正式ac505841af6c24ba05cfc74b3d1c440d5c81b0e6，21paths/812保护exact、独审无确定P0/P1。用户Settings仅管理员/admin跳转；独立shell与/admin/settings真实模型路由四API，fresh server/client gate、CAS/unknown同intent恢复。有界完整分页修复Root真实2FAIL后13PASS；新增route assembly未隔离server-only造成真实收集回归，基线17PASS对照后同步具名proxy mock，Root最终5files/34PASS。Node22 typecheck/lint/build0，build对应相同20生产字节；全门仍3failed suites/9failed tests/3433PASS/79skip，不冒充全绿。Root独立26ea3e归档真实复现8poll+1ko及RP Next307/readiness失败，均具名保留为后继修复，不跳过或放宽。
+
+正常Web现cwd已核正式release，未重复启动；真实未登录HTTP /admin/settings404、admin API401。浏览器tab14真实DOM仍focus超时，管理员登录后的跳转、CRUD、刷新、撤权与Manus视觉未验，不称后台/Skills闭环。v10未激活、正常Platform未扩表，完整Wave0–7保持active。
+
+激活前只读纠正验证范围：已通过Storage三场景仅service/transaction，不是Connect ingress/fresh IAM。现正常catalog凭据有正规IAM provision与0600 manifest，隔离owner DB可复用固定tenant而非虚构随机tenant。采用现Root runner + Platform单smoke补正式四RPC；正常服务先保持，等该资格后Root正规drain/expand/active发行/BFF/Web串联。
+
 ### T-K03.4 R357 真实Storage三场景资格已通过；页面仍待闭环（2026-10-09）
 
 Root修复初次感染无receipt终态：tests-only真实31PASS/3FAIL；初实现真实33PASS/1合法request-bound回归，独审同时发现terminal CASmiss proof漂移。最窄修后freeze33f21810，Root实际unit12+自有PG24=36PASS/typecheck/lint/build0，独审无确定P0/P1，4变化/682保护exact；Platform正式f34799f0fd1a2c20afa29c06ff918e08c8656486，不新Schema/API/receipt。历史失败完整保留。

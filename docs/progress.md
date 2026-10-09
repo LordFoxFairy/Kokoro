@@ -12268,3 +12268,11 @@ Root修复初次感染无receipt终态：tests-only真实31PASS/3FAIL；初实�
 Root97094真实运行clean、EICAR、ACK-lost三个独立生命周期均通过（每场景4tests含3IPC纯负控；不冒充12个真实用户路径）；真实MinIO/Clam/Storage owner/Platform PG与正式Connect调用，不用mock Storage替代。感染首次稳定零后续Complete、ACK丢失正规同command恢复、Finalize/Get/重放及精确清理均覆盖。本次资源0；正常PG与MinIO catalogs真实exact，之前3具名失败Storage DB/桶仍保留，不能把“latest0”冒充历史资源全清。正式Platform smoke7b1b9d0b63cca1406d794d04afba208ed236878a；Root独占runner8b27251d4cd951cdf84bb88184cd162a67c3992d。
 
 正常Platform库未扩展、服务未重载、v10仍inactive；BFF正式3e19仍未正常注册，Web普通上传未切换，因此完整Skills与Wave0–7未验收。下一沿同卡正规发行/激活及Web单上传、Manus视觉与浏览器；独立后台20paths候选已冻结但Root待审/门禁重跑，全量Web当前报告有失败，不接受口头“既有”归类；后台与浏览器完整验收仍OPEN。
+
+### T-K03.4 R357 独立后台设置正式提交；完整页面验收仍OPEN（2026-10-09）
+
+Web正式ac505841af6c24ba05cfc74b3d1c440d5c81b0e6，21paths/812保护exact、独审无确定P0/P1。用户Settings仅管理员/admin跳转；独立shell与/admin/settings真实模型路由四API，fresh server/client gate、CAS/unknown同intent恢复。有界完整分页修复Root真实2FAIL后13PASS；新增route assembly未隔离server-only造成真实收集回归，基线17PASS对照后同步具名proxy mock，Root最终5files/34PASS。Node22 typecheck/lint/build0，build对应相同20生产字节；全门仍3failed suites/9failed tests/3433PASS/79skip，不冒充全绿。Root独立26ea3e归档真实复现8poll+1ko及RP Next307/readiness失败，均具名保留为后继修复，不跳过或放宽。
+
+正常Web现cwd已核正式release，未重复启动；真实未登录HTTP /admin/settings404、admin API401。浏览器tab14真实DOM仍focus超时，管理员登录后的跳转、CRUD、刷新、撤权与Manus视觉未验，不称后台/Skills闭环。v10未激活、正常Platform未扩表，完整Wave0–7保持active。
+
+激活前只读纠正验证范围：已通过Storage三场景仅service/transaction，不是Connect ingress/fresh IAM。现正常catalog凭据有正规IAM provision与0600 manifest，隔离owner DB可复用固定tenant而非虚构随机tenant。采用现Root runner + Platform单smoke补正式四RPC；正常服务先保持，等该资格后Root正规drain/expand/active发行/BFF/Web串联。
