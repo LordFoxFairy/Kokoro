@@ -48,6 +48,12 @@ Root正常开发前置已实际推进：沿正式IAM55既有read/extend命令，
 
 Root正常浏览器旧tab曾准入不可确认/disabled加载，明确reload后恢复页面，管理连接器终态真实“当前没有可用连接。”，不冒加载失败，也不冒完整新资格链；本轮无CRUD写入/新用户/伪造token。Product client scope-only演进、Web OIDC及正规重新登录、Platform/BFF新源码激活和前后台动作仍OPEN。当前A1卡补现declaration snapshot停用闸为68allow/581protect，只关闭enabled=false的声明读取；provider真实停用/删除拒新grant/replay，旧缺metadata不伪造回填。整个连接器与后继四项仍未验收。
 
+Root已正式提交IAM S2 `587e64a`：15paths/454保护、5完整父suffix及6源码/测试inverse独核；Root当前verify1115PASS与真实issuer/自有PG+Redis3PASS/0SKIP，正常78库目录exact、无正常Schema写。正式scope-only CLI正常执行原Product client11→12，仅末尾追加iam:authorization.check，ACK updated；完整client含secret、所有其它client/resource/binding前后SHA保持。首次read漏cookie配置失败不含资源写，补原0600cookie后read legacy通过，原失败保留。
+
+Web正式 `a540084`仅2现路径补OIDC_SCOPE同scope；真实旧redirect负控RED→全25PASS/type/lint0，原st6独审无确定P0–P2、所有原混合保护。初负控status期待误用502已按原strict403纠正并重现RED1，原FAIL保留。Root正常退出/原账号重新Login，authorize确含新scope，工作区/旧对话实际渲染，连接器管理终态真实空；无新用户/更换密码/CRUD数据，新的BFF H1实际资格与连接器整体仍待。正常.next未build/typegen，原devHMR。
+
+用户新Skills故障Root已实际复现：tab3重试GET /api/hub/skills/catalog返回502/skill_response_invalid，原截图/网络收据保留。所有9正式HTTP端口皆监听、PG/Redis/MinIO/Clam监听，IAM/BFF/Platform/Storage/System/Scheduler/Billing裸ready200；Agent裸ready401是受保护入口，不能误记进程未启动/无鉴权ready通过。模型worker仍未启动，不虚称“全部能力”或所有worker运行。当前正常BFF仍88fe387、Platform0e60e5d，而Web新整Skills strict消费已前置，正常配对版本不一致；原st6紧急只读核精确缺字段/正常持久Schema与正式token资格演进前置，Root先修此回归，不回退UI、不放宽schema/伪造数据。连接器完整任务不缩小，其后原四项队列保持。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。
