@@ -15491,3 +15491,9 @@ Root核P1d e4f8 freeze45变化/641保护exact。native63275首21PASS/1FAIL是测
 Platform正式2c0b3a378b59b3469b1bc3a8f4d91078695df1e8：Root明确45paths提交，641非范围字节保持，工作树clean，独审无确定P0/P1。合法withdraw与first-cancel winner具名RED后修复；Root真实PG23PASS、相关纯门181PASS/typecheck/lint/build0，最终first-winner后68focused/typecheck/lint/build重跑0。首cached检查发现新SQL EOF空行，未提交；仅EOF+digest正规同步后Root2unit/3真实fresh-expand全部PASS，再cached check0提交，原失败保留。固定expand SQL新摘要eb040666da647648cfea3b33436eed64f0b259b606e35b53126c9f68091a1186，schema目标不变。
 
 v10仍inactive/unroutable，正常库未扩展、服务未重载，BFF/Web仍原上传路径，因此不是完整Skills用户闭环。下一沿同任务激活正式owner artifact并真实Storage/owner集成，再BFF私有四route→Web单上传与Manus视觉→独立后台Settings/权限CRUD浏览器验收。完整Wave0–7保持active，其它模块暂停；Root原gitlinks/uv.lock未暂存。
+
+### T-K03.4 R357 双边准入与隔离消费者依赖已裁决（2026-10-09）
+
+Root采用既有固定调用方向：BFF唯一消费fresh human session，三写及replay均同session顺序检查create_draft AND install；Platform每请求fresh introspect严格BFF workload并绑定tenant/context subject=user owner，不复制human bearer/授权布尔或新增delegation接口。Platform正式bbd4c0a仅四docs明确此边界；v10五machine措辞/profile后继仍inactive。真实Storage全链资格当前缺口明确，不能用PG fake Storage或readyz冒称；以owner独立PG/bucket与真实MinIO/ClamAV验证，正常资产不参与fixture。
+
+BFF正式0154e60仅四docs：owner新版机器先发行即可pin并隔离consumer实现，正常dispatch等待真实Storage与active/routable，不提前注册或null 503，解除循环依赖。旧owner盘点误报7bca330/docs未提交已退回，正式99bf基线重核；初Root prettier检查四docs失败，全量格式化造成任务外格式变更已在本自有未共享提交amend剔除，最终4增/4减diffcheck0，不宣称format全门通过。当前源码/client/正常路由均未改，完整Skills/独立后台Settings/Wave0–7仍OPEN。
