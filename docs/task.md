@@ -15516,3 +15516,19 @@ BFF正式0154e60仅四docs：owner新版机器先发行即可pin并隔离consume
 Platform正式981df60e74b65eccfc2d58044db9965928e4d37e仅6机器路径：双边准入owner结构化；唯一生成入口重发v10及总provenance，Proto/descriptor/v1-v9保持字节。Root focused5PASS、contract/artifact/typecheck/lint0、6after与108具名保护及全部680非范围tracked exact、独审无确定P0/P1。Root首freeze校验误用sha256键失败，按真实after_sha256重跑完整成功，不掩盖首诊断。v10aggregate277a2bf24b4fdc34196dac3c5fbba89ef88df75a3b96054af63547f9ae53ff0b；总contract6fcc148fddb4aaab73076dfb5b6109e2b4d9f0209e93ef58b0c510e3ed28b693；仍inactive/不可正常路由。
 
 原BFF writer仅新增两具名HTTP负控，Root在formal0154e60实际重跑0PASS/2FAIL（现404对Begin201与dual-IAM deny403），661原tracked逐GitHEAD字节exact；不是missing-module失败。现已准同任务卡官方pin/四私有route隔离implementation，生产dispatch不注册。真实Storage资格只读已定位现ownerSmokeProvider/Runtime/Metadata及ClamAV正规链，Platform不得跨仓import私有fixture，由Root拥有隔离资源编排，单Platform smoke只走正式wire。未启动新服务、未改正常数据/资源，完整Skills/独立后台Settings/Wave0–7仍OPEN。
+
+### T-K03.4 R357-STORAGE-QUALIFY 真实本地上传资格切片（2026-10-09）
+
+| 项 | 批准范围与放置决定 |
+| --- | --- |
+| 目标 | 通过正式Platform→Storage→MinIO/ClamAV的单文件本地导入、感染拒绝及响应丢失恢复；不等同浏览器/后台闭环。 |
+| owner/writer | Platform smoke事实在Platform；Root隔离runner负责资源。skills_platform_implementation_r357在两个明确测试文件上唯一writer；Root此切片只读审查、资源运行与Git提交，不并行写Root台账。 |
+| 基线 | Platform /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/platform-release 981df60e74b65eccfc2d58044db9965928e4d37e clean；Root /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro 5a6f75debdf0067bfbdb4ecaa12312dfb84e71b3，原gitlinks/uv.lock保留；Storage /Users/nako/.codex/worktrees/kokoro-storage-formal只读fixture。 |
+| 文件/粒度 | 新Platform test/smoke/local-skill-import-storage.e2e.test.ts、新Root scripts/e2e/run_platform_local_skill_import_storage_smoke.py；扩旧4550行draft sandbox被淘汰，避免不同业务耦合。单测试/聚焦runner，不新模块/owner/生产接口；不改Storage正式文件。 |
+| 依赖 | Platform三设计面与正式v10机器已收敛；只消费正式ConnectStoragePackageClient与Storage同仓SmokeProvider/Metadata/Runtime。禁止Platform跨仓fixture import、Root/Platform跨owner业务SQL与摘要算法复制。 |
+| 资源/握手 | 每用例独占bucket/tenant/Storage DB/runtime，复用共享PG/Redis/MinIO/Clam。Root创建启版本/ObjectLock桶，Provider仅资格核验。Begin真实动态skillId后绑定Metadata，首PUT前beginWrite落journal；PUT后登记VersionId/ETag；Complete前expectCompletion落journal，成功后registerCanonical。握手四闭集消息exact幂等ACK；同scope漂移拒绝。 |
+| 删除/失败 | 删除仅本runner明确创建资源；Provider精确已登记版本释放后全桶分页证明空才DeleteBucket。未知版本/未证明完成保留资源和证据，不宽前缀清理、不正常库迁移。 |
+| 验证 | 首检查编译/类型与闭集IPC负控、隔离runner静态与清理负控；冻结后Root执行真实clean完整Finalize/Get/重放、EICAR稳定拒绝、Storage ACK丢失同command恢复及hash。catalog前后exact；日志脱敏，凭据仅私有env。失败具名保留，不假设新测试必绿；不激活v10/重启正常服务。 |
+| 交付 | 两文件freeze、实际命令/退出/证据、资源清理或保留清单；Root独审/重跑后决定资格，原37assets/7installations/失败draft不变。独立后台Settings/UI/正式激活和完整Wave0–7保持OPEN。 |
+
+只读设计的事后beginWrite方案已撤回：现Provider拒绝已存在对象；改为首PUT之前登记。后台只读核实当前只有Skills真实管理API，独立布局可复用双gate；/admin/settings仍须真实owner配置契约，不把普通Settings弹窗或假开关作为完成。
