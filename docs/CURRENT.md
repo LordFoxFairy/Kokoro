@@ -1,3 +1,9 @@
+### T-K03.4 R357 Web 下载冻结复核与后台设置真实404（2026-10-09）
+
+上一 goal turn 仅澄清独立后台方向，未改变实现，分类为 no progress；本轮完成原 writer 终态与冻结核验。原49826由所属writer确认自然exit1，非Root Unknown handle推断；报告3588PASS/6FAIL，既有OIDC project rail/R242失败保留。Root实核freeze11c2a6ff…、31 changed SHA全部exact、817其它tracked与1f3a1e6逐字节一致；独立只读审查未见确定P0/P1/P2。Root重跑78368当前live，7具名文件145PASS、typecheck/lint自然0，full default尚未终态，完整输出留r357-web-qualified-download-root-gates.log；未提交Web或冒称完整Skills闭环。
+
+Root正常浏览器尝试/admin/settings实际404，curl亦404；3310唯一PID16286的cwd正确，source路由page存在。因此不是已证明的普通用户权限拒绝，管理员跳转/后台设置仍有真实运行偏差。恢复浏览器/app/skills标题Kokoro Web。原Web owner仅获只读路由manifest/proxy/build-dev调查授权，冻结保持，禁止自行改写/重启。Root原52619句柄确认仍live，未重复启动任何服务或改共享数据。下一行动取得Root全门终态、定位404并按原owner切片修复，再真实installation/managed/share下载和独立后台验收；完整Wave0–7保持active。
+
 ### T-K03.4 R357 正规目录下载真实对象字节链通过（2026-10-09）
 
 上一goal turn补Web proxy准入及0d5cc008真实数据核验属progress。本轮原Web writer经原生live确认继续，Root不重派/重启或验收移动Web树。Root利用真实普通浏览器登录会话请求既有参考DownloadSkill，新私有series7d9396fa准备200/版本精确，返回subject-bound opaque同源句柄；实际GET200 application/zip、content-length349，349字节逐byte等原上传包，SHA256 019b9929bcddbfe5766c619ddfd14476beda070bf3d0b8881924e6f2d6b1fed2，ZIP仅根SKILL.md且内容名称一致。
