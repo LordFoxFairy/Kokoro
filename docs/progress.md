@@ -1,5 +1,7 @@
 ### T-K03.4 R357 BFF Root全门通过但职责审查未放行（2026-10-09）
 
+修订D0 v2已Root实读：freeze 2fd9408de3ba91c5e71cb41a657bd73298de626f52ab983dab65bf425d3029fd，上一6源码候选保持原字节。Root授权原writer恢复application聚合、新增既有infra窄facade，现source/context seam从infra单源移动到application并同步唯一runtime/route消费者；无alias/复制。Owner能力及确有语义差异的四结果事实类型同放现application types，不另造多ports/DTO。实现尚未冻结；原BFF与Web两owner当前live继续，不重启或抢写。
+
 前一goal turn已发现真实上传缺陷并续派，属证据改变下一动作的进展。本轮Root逐核BFF冻结9materialized/664保护exact；原6088完整check自然0：typecheck/lint/contract/build0，contract704PASS，default1295PASS/0FAIL/3SKIP。日志r357-bff-boundary-root-check.log。绿门不抹此前失败、不证明用户闭环，正常BFF未重载。
 
 独审初将infrastructure type-only引用application port一概判反向违规，Root依手册与实际Postgres adapter反证要求纠正；审查员已撤回机械禁止建议。真实问题是整体搬迁把跨owner稳定series/revision、official筛选、usage/profile聚合和下载tenant/subject二次确认应用规则混入Platform transport。Root因此撤回原整体搬移D0裁决，候选不提交：原唯一BFF owner先仅修三现D0设计段，保应用聚合、generated/wire具体细节留既有infra，提出最窄依赖形状和精确源码集合后另授权；不造多余ports/DTO，不放宽架构门。MCP测试标题仍虚称CRUD完成但只有两503，后继改诚实fail-closed名称并保持现GET专测，不将当前未接通mutation称成功。
