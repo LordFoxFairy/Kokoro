@@ -1,3 +1,9 @@
+### T-K03.4 R357 Local import内部runtime已正式提交，用户上传尚未切换（2026-10-09）
+
+Platform正式2c0b3a378b59b3469b1bc3a8f4d91078695df1e8：Root明确45paths提交，641非范围字节保持，工作树clean，独审无确定P0/P1。合法withdraw与first-cancel winner具名RED后修复；Root真实PG23PASS、相关纯门181PASS/typecheck/lint/build0，最终first-winner后68focused/typecheck/lint/build重跑0。首cached检查发现新SQL EOF空行，未提交；仅EOF+digest正规同步后Root2unit/3真实fresh-expand全部PASS，再cached check0提交，原失败保留。固定expand SQL新摘要eb040666da647648cfea3b33436eed64f0b259b606e35b53126c9f68091a1186，schema目标不变。
+
+v10仍inactive/unroutable，正常库未扩展、服务未重载，BFF/Web仍原上传路径，因此不是完整Skills用户闭环。下一沿同任务激活正式owner artifact并真实Storage/owner集成，再BFF私有四route→Web单上传与Manus视觉→独立后台Settings/权限CRUD浏览器验收。完整Wave0–7保持active，其它模块暂停；Root原gitlinks/uv.lock未暂存。
+
 ### T-K03.4 R357 当前投影与预算局部门已通过，两个真实缺项仍阻断（2026-10-09）
 
 Root核P1d e4f8 freeze45变化/641保护exact。native63275首21PASS/1FAIL是测试要求省略属性等于own undefined，原writer仅修断言，生产字节不变；P1d2 be90完整freeze exact，Root52689真实PG22PASS/0FAIL。Root35621纯门173PASS，45757 typecheck/lint/contract/artifact/schema自然0（Schema既有relationMode索引warnings保留）；不称全仓或浏览器通过。
