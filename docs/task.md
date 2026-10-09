@@ -1,3 +1,11 @@
+### T-K03.3 当前交付与停止线（R357，2026-10-09）
+
+- Storage：Root `be3ab0c3ade4ba2932910676c2c4758cbb7e2979` 四路径已集成；真实 37 正常链及 caller/PG drift/Clam 负控通过。正常持久库恢复未执行，原引用保留。
+- Platform：原 writer `skills_platform_implementation_r357` 继续关闭独审三个具名阻断（新 ZIP 必填元数据、主 mutation 的 publication 原子写、backfill 后续事件一致性）；Root 36/828 纯门不替代阻断闭合。
+- BFF：原 writer `platform_github_p3_frozen_review_r353` 完成规范读/字节 handle，真实 owner adapter 依赖 Platform 正式发行。非 Skills 85 operations 保留，旧只读 fixture 不属于 active/fallback。
+- Web/后台：继续既有 T-K03.4–8；正式合同后更新，不以旧多版本目录/503 详情称完成。S01–S10 全部 OPEN。
+- 真实资源/Git/浏览器只有 Root 操作；正常数据库、7 安装、37 Asset 尚未写入；其它模块与 heartbeat 保持暂停。
+
 R357 T-K03.3-BFF 已派：原BFF writer platform_github_p3_frozen_review_r353，D2正式8ba9073、独审原6问题全部关闭；按已定范围实施5读/下载句柄与新active机器，正式owner依赖后固定消费。Root独占提交/资源/完整浏览器；源卡var/dev/r255-preserve/r357-skills-bff-implementation-card.json。
 
 
