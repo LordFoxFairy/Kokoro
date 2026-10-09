@@ -1,3 +1,9 @@
+### T-K03.4 R357 真实上传入口已通过，全仓回归仍失败（2026-10-09）
+
+Root修复local不可变来源投影：具名tests-onlyRED59PASS/2FAIL，最终unit36+真实自有PG25=61PASS；5变化/683保护SHA exact，独审无确定P0/P1，Node24 typecheck/五路径lint/build自然0。新第九真实Ingress9152自然0为4PASS：正规IAM逐RPC准入、真实Storage/MinIO/Clam上传扫描、Begin/Complete/Finalize/Get与重放200，missing401/wrong-write403；preabort仅客户端负控不冒服务取消。最新receipt phase=cleanup-complete、databaseOutcome=deleted、runtimeStopped=true、activeSockets0，bearer文件已删；历史失败资源仍具名保留。
+
+全仓默认91917真实exit1：13failed files/44failed tests/2100PASS/401skip，不称全门通过。Root20334重跑完整JSON取证，原独审隔离7b1b9d0基线比较后决定整改范围，不放宽断言、跳过失败或口头归类既有。v10 inactive、正常库/运行未切换、Web普通上传和独立后台浏览器未验；完整Skills与Wave0–7继续OPEN。下一先完成失败基线裁决，再同卡正常激活→BFF→Web及真正浏览器验收。
+
 
 ### T-K03.4 R357 后继消费者与真实Storage资格仍有具名阻断（2026-10-09）
 
@@ -12276,3 +12282,15 @@ Web正式ac505841af6c24ba05cfc74b3d1c440d5c81b0e6，21paths/812保护exact、独
 正常Web现cwd已核正式release，未重复启动；真实未登录HTTP /admin/settings404、admin API401。浏览器tab14真实DOM仍focus超时，管理员登录后的跳转、CRUD、刷新、撤权与Manus视觉未验，不称后台/Skills闭环。v10未激活、正常Platform未扩表，完整Wave0–7保持active。
 
 激活前只读纠正验证范围：已通过Storage三场景仅service/transaction，不是Connect ingress/fresh IAM。现正常catalog凭据有正规IAM provision与0600 manifest，隔离owner DB可复用固定tenant而非虚构随机tenant。采用现Root runner + Platform单smoke补正式四RPC；正常服务先保持，等该资格后Root正规drain/expand/active发行/BFF/Web串联。
+
+### T-K03.4 R357 Connect ingress 接线与有界保留预检（2026-10-09）
+
+Root续接现runner（未提交）新增显式ingress_clean，不重复三场景；正式BFF CredentialSource读取与TokenSource签发置于资源启动前，严格固定tenant/随机run-owned subject/ready一致，bearer仅0600文件路径。真实Storage bytes透明观察，Create回包前bind、Complete转发前prepare及回包前canonical，operation counts写清理receipt；成功只删除两bearer文件、保留证据。Platform单smoke p3 SHA56c9f0dd独审未见确定P0/P1；未运行真实入口，不反推fresh IAM调用次数。
+
+Root初observer半开负控实际FAIL（不完整header被Node idle-close，负控未成立）；改为完整header/未完body后负控证明forced drain保持失败。最后py_compile、diff-check及 --case ingress_clean --dry-run 实际0，资源0，覆盖module/协议负控、真实loopback半开body drain、IPC async ACK、runtime-stop preservation、正式credential-read。独审发现裸close与迟到callback两个资源边界，已加2s force+2s settle、controller/fence、未settle仅写preserved且不关闭依赖；迟到provider callback专门负控和最终复审仍待验，不提前正式提交或资源运行。正常服务/37assets/7installations/draft未变，v10仍inactive。下一同卡冻结runner、补owner callback保留负控和fresh IAM实证后真实四RPC，继而正规激活与用户浏览器/独立后台闭环；完整Wave0–7保持active。
+
+### T-K03.4 R357 真实四RPC入口发现local来源投影缺陷（2026-10-09）
+
+Root追加pending-owner回调负控真实通过：2s强制+2s未settle仅preserved、不关闭依赖，release后lateWrites0；独审无确定P0/P1。正常基础设施已核IAM21149/PG61199/Redis61190复用。真实7轮资格保留全部日志与资源，不伪绿：Unix长路径EINVAL→短路径及启动前100byte gate；Storage readiness入口漏转发→正规GET/readyz透明转发；ephemeral config.port0误连80→actual server.address；IAM观察只看init漏Request.headers造成假503→正确effective headers且观测不改变响应；Storage GetUploadStatus漏观察→按正式client闭集补齐；Get误用catalog凭据403→正规projection凭据，生产权限未改。
+
+最后22773自然exit1，3PASS/1FAIL：missing401/wrong-write403/preabort只client负控，真实Begin/Complete/Finalize和全部replay200，正规OAuth与逐调用真实IAM HTTP计数已实际通过；Get正规projection准入后500“Skill creation source snapshot is incomplete”。定位Finalize写local immutable source，而旧product mapper仅接受AI/GitHub child，是真实owner业务缺陷，不放宽断言/删proof/伪返回。沿同卡原Platform writer先两现tests-onlyRED，再4paths局部mapper/schema修，Root随后重跑真实入口与浏览器；v10仍inactive，正常库/服务/37assets/7installations/draft不变。新7组失败Storage DB/桶全部具名保留（每receipt runtimeStopped=true/activeSockets0），不把最新失败或保留资源冒为正常目录exact/零资源成功。完整Wave0–7仍active，独立后台与Skills用户闭环未验收。
