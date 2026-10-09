@@ -1,3 +1,11 @@
+### T-K03.4 R357 真实Storage三场景资格已通过；页面仍待闭环（2026-10-09）
+
+Root修复初次感染无receipt终态：tests-only真实31PASS/3FAIL；初实现真实33PASS/1合法request-bound回归，独审同时发现terminal CASmiss proof漂移。最窄修后freeze33f21810，Root实际unit12+自有PG24=36PASS/typecheck/lint/build0，独审无确定P0/P1，4变化/682保护exact；Platform正式f34799f0fd1a2c20afa29c06ff918e08c8656486，不新Schema/API/receipt。历史失败完整保留。
+
+Root97094真实运行clean、EICAR、ACK-lost三个独立生命周期均通过（每场景4tests含3IPC纯负控；不冒充12个真实用户路径）；真实MinIO/Clam/Storage owner/Platform PG与正式Connect调用，不用mock Storage替代。感染首次稳定零后续Complete、ACK丢失正规同command恢复、Finalize/Get/重放及精确清理均覆盖。本次资源0；正常PG与MinIO catalogs真实exact，之前3具名失败Storage DB/桶仍保留，不能把“latest0”冒充历史资源全清。正式Platform smoke7b1b9d0b63cca1406d794d04afba208ed236878a；Root独占runner8b27251d4cd951cdf84bb88184cd162a67c3992d。
+
+正常Platform库未扩展、服务未重载、v10仍inactive；BFF正式3e19仍未正常注册，Web普通上传未切换，因此完整Skills与Wave0–7未验收。下一沿同卡正规发行/激活及Web单上传、Manus视觉与浏览器；独立后台20paths候选已冻结但Root待审/门禁重跑，全量Web当前报告有失败，不接受口头“既有”归类；后台与浏览器完整验收仍OPEN。
+
 ### T-K03.4 R357 真实clean上传通过，初次感染终态仍失败（2026-10-09）
 
 Root核canonical-binding 3a96908c两文件exact，资源0 dry通过、独审首次绑定已闭合。第六真实运行66415自然exit1：clean完整4PASS（真实Storage/MinIO/Clam→Finalize/Get/replay，正规清理）；随后EICAR 3PASS/1FAIL，CompleteUpload实际2对预期1。根因已定位：初次扫描即感染只保存rejected intent而无Complete receipt，第二调用replayComplete提前null，service.get读到rejected仍重入Storage；历史有receipt后转感染负控没有覆盖此路径。原writer先只读给最窄owner修正方案，不放宽测试、不伪造receipt、不激活正常服务。EICAR本轮资源继续具名保留，ACK-lost尚未运行；不是整个资格通过。
