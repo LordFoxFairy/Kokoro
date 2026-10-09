@@ -14,7 +14,7 @@ Root已核官方 `https://open.manus.ai/docs/v2/skill.list`：公开已安装列
 
 Root正常重载用户参考页，实际取得5次POST200：ListSkills `{}`→userAddedSkills/officialSkills；ListHubSkills pageSize9/shuffle/includeOfficialSkills→skills/tagOptions，pageSize1另有nextPageToken；GetSkill和DownloadSkill `{skillId}`→skill/downloadInfo，downloadUrl/filename/expiresAt均string。用户9项样本SHA262d4df1…保持。新收据 `var/dev/r255-preserve/r357-manus-skills-protocol-observed.json` 只存请求形状/全路径字段类型，未保存凭据或签名URL；事件窗口truncated明确，未观察的写入、下一页请求和错误协议仍OPEN。实际“查看详情”可打开SKILL.md正文；当次无新Skills网络请求，不发明文件HTTP API；参考截图r357-manus-skills-view-details.png。
 
-三具名只读角色已续派现负责人：Platform事实与契约、BFF/Web全接口消费者、Manus证据/公开文档；其它writer冻结。已确认现目录的revision/source_ref、product/category_keys形状与参考差异，不只UI。稳定skill身份/确切version、全包fileCount、current版本、来源同步、作者及usage真实事实须在第2步裁决，不能复制字段值或自动换旧7安装引用。Root/Platform/BFF各按正式owner更新现契约，不在Root复制机器定义。
+三具名只读角色已交付并停写：Platform事实与契约、BFF/Web全接口消费者、Manus证据/公开文档；其它writer冻结。Root独核当前BFF机器SHA2cbbf413…、42路径/47操作（catalog/self/draft/upload/validate/publish/versions/withdraw/import/install/package/download/cover/share/usage/project/Admin全纳入），收据r357-skills-local-route-inventory.json。记录技能仍disabled、网站写命令错误/准入未观测，未算完成。已确认现目录的revision/source_ref、product/category_keys形状与参考差异，不只UI。稳定skill身份/确切version、全包fileCount、current版本、来源同步、作者及usage真实事实须在第2步裁决，不能复制字段值或自动换旧7安装引用。Root/Platform/BFF各按正式owner更新现契约，不在Root复制机器定义。
 
 这次只更新执行TODO与参考决定；Skills代码、数据库和正常服务尚未改造，S01–S10仍全OPEN，旧包详情/下载失败保留。下一只进入T-K03.2，不扩散连接器/排程等模块，不以辅助检查数量称UI或完整交互已验收。
 

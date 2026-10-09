@@ -10,7 +10,7 @@ Skills 规范直接采用 Manus 官方文档中已定义的请求、响应、字
 
 | 子步骤 | TODO / 完成条件 | 当前状态与负责人 |
 | --- | --- | --- |
-| T-K03.1 | 盘点全部 Skills API：目录/筛选、详情、文件树/正文、下载、草稿/创建/编辑/发布/撤回、各来源导入/同步、版本、安装/启停/移除、分享、后台审核/管理；列实际参考request/response/error与本地路由、owner、字段/类型差异 | 进行中；Root统筹，Platform/BFF-Web/参考证据3只读角色并行；9项样本与5次真实POST200已核，公开list原文已核；全部写协议/异常仍待补 |
+| T-K03.1 | 盘点全部 Skills API：目录/筛选、详情、文件树/正文、下载、草稿/创建/编辑/发布/撤回、各来源导入/同步、版本、安装/启停/移除、分享、后台审核/管理；列实际参考request/response/error与本地路由、owner、字段/类型差异 | 进行中；Root统筹，Platform/BFF-Web/参考证据3只读角色并行；三只读角色已交付并停写；Root核现BFF42路径/47操作及SHA、9项样本/5次网站POST200、公开list原文；参考写协议/异常仍待补 |
 | T-K03.2 | 收敛同一字段矩阵与 owner 三设计/机器契约：身份、skill与version区分、枚举、每接口真实数值/时间类型（公开Unix秒int64、网站大数字符串/UTC字符串）、optional/absence、分页/筛选/tagOptions、下载语义与权限、错误/取消/异步；定稿后才写实现 | 待1；Root裁决/审查；Platform维护Skills事实契约，BFF维护公开产品契约，Web维护同源边界，各仓单writer；Storage/IAM保原owner |
 | T-K03.3 | Skills owner全部业务接口改造＋必要存量修复：原ID/版本/7安装关系和37Asset保留；正规发布/查询/版本/导入/安装/后台真实落库，无伪造显示字段 | 待2；单仓单writer；真实依赖、旧包详情/下载不通则不通过 |
 | T-K03.4 | BFF＋Web同源所有Skills接口同步固定新owner artifact；一次删旧误形状/别名/fallback，列表/详情/下载/文件/创建/安装/Admin统一消费，浏览器不访问内部owner | 待owner正式发行；BFF、Web按依赖串行，各单writer |
@@ -27,7 +27,7 @@ Root已核官方 `https://open.manus.ai/docs/v2/skill.list`：公开已安装列
 
 Root正常重载用户参考页，实际取得5次POST200：ListSkills `{}`→userAddedSkills/officialSkills；ListHubSkills pageSize9/shuffle/includeOfficialSkills→skills/tagOptions，pageSize1另有nextPageToken；GetSkill和DownloadSkill `{skillId}`→skill/downloadInfo，downloadUrl/filename/expiresAt均string。用户9项样本SHA262d4df1…保持。新收据 `var/dev/r255-preserve/r357-manus-skills-protocol-observed.json` 只存请求形状/全路径字段类型，未保存凭据或签名URL；事件窗口truncated明确，未观察的写入、下一页请求和错误协议仍OPEN。实际“查看详情”可打开SKILL.md正文；当次无新Skills网络请求，不发明文件HTTP API；参考截图r357-manus-skills-view-details.png。
 
-三具名只读角色已续派现负责人：Platform事实与契约、BFF/Web全接口消费者、Manus证据/公开文档；其它writer冻结。已确认现目录的revision/source_ref、product/category_keys形状与参考差异，不只UI。稳定skill身份/确切version、全包fileCount、current版本、来源同步、作者及usage真实事实须在第2步裁决，不能复制字段值或自动换旧7安装引用。Root/Platform/BFF各按正式owner更新现契约，不在Root复制机器定义。
+三具名只读角色已交付并停写：Platform事实与契约、BFF/Web全接口消费者、Manus证据/公开文档；其它writer冻结。Root独核当前BFF机器SHA2cbbf413…、42路径/47操作（catalog/self/draft/upload/validate/publish/versions/withdraw/import/install/package/download/cover/share/usage/project/Admin全纳入），收据r357-skills-local-route-inventory.json。记录技能仍disabled、网站写命令错误/准入未观测，未算完成。已确认现目录的revision/source_ref、product/category_keys形状与参考差异，不只UI。稳定skill身份/确切version、全包fileCount、current版本、来源同步、作者及usage真实事实须在第2步裁决，不能复制字段值或自动换旧7安装引用。Root/Platform/BFF各按正式owner更新现契约，不在Root复制机器定义。
 
 这次只更新执行TODO与参考决定；Skills代码、数据库和正常服务尚未改造，S01–S10仍全OPEN，旧包详情/下载失败保留。下一只进入T-K03.2，不扩散连接器/排程等模块，不以辅助检查数量称UI或完整交互已验收。
 
