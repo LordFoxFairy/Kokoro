@@ -1,3 +1,11 @@
+### T-K03.4 R357 精确下载资格契约门：拒绝只修新包（2026-10-09）
+
+上一goal turn真实旧包阅读/启停与下载失败定位、提交baa9419b，属progress。Root复核BFF server removedSkillRead明确删除旧/v1/skills/{version}/download；Web安装/managed/shared Preview仍落入退役GET，是确定调用偏差。原Web owner提出三caller全部传series_id，Root拒收：BFF prepareDownload→detail→owner.current，不能满足技术设计73/API合同88已有“安装固定旧version”要求；share也不能用series current丢失share资格。新包恰与current相同的单绿不代表旧包成功。
+
+Root下载D0裁决：保持参考DownloadSkill({skillId})原series current语义/路径/字段；新增本地具名browser-private资格分别承接installation pin、managed exact version、share exact source，统一复用opaque字节句柄，不恢复退休GET、无fallback/隐式按安装优先/新库。优先比较现/ browser/v1具名动作与改参考请求selector两方案；采用前者以免改参考字段或同series两个意图冲突。每个准备与句柄GET都重新H/IAM/tenant及对应资格；share不授匿名/跨tenant；owner RPC若缺必要exact事实则先报告，不复制ownerSQL或猜latest。现数据不变化。
+
+任务卡D0：owner BFF，原bff_skills_boundary_successor_r357为唯一文档writer，Root审查/提交；目录/基线 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal bfb151c。本阶段仅docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md允许写；contract现唯一机器事实源只读盘点，先给字段/错误/资格/文件影响表，Root批准后才改机器合同/实现。Web原owner停写。依赖：既有Platform exact source_ref download与BFF installation/share资格实际核验；无新模块/进程/SQL。设计后按BFF正式发行→Web固定消费、删退休binary download/route/oracle及修各locale下载错误提示顺序串行，不缩小完整Skills与Wave0–7。RED必须同series旧安装+新current双意图、managed历史、share撤销、双身份/撤权/expiry/late、字节hash精确；Root最终正常浏览器下载文件验证而非仅200。
+
 ### T-K03.4 R357 八个安装详情可读、启停持久化通过；下载真实502待修（2026-10-09）
 
 上一goal turn完成真实详情/刷新并提交56a4aa09，属progress。本轮原Web负责人只读生命周期审查：列表effect cleanup abort与current围栏保留；开发StrictEffects符合每次一abort一success，未取得initiator故不冒唯一闪动根因。Root真实1440×1000的查看详情过渡120rAF帧preview→loading→body、rect固定800×600/emptyFrames0，只证明这一过渡；不删除取消安全边界、不称所有路径无闪。
