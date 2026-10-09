@@ -60,6 +60,20 @@ def ready():
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
+    def test_high_volume_owner_matrix_yields_before_public_candidate(self):
+        source = PATH.read_text()
+        start = source.index(
+            '"Platform real Storage v3 Complete, ZIP Validate and Publish"'
+        )
+        end = source.index("phase = Phase.CANDIDATE_PACKAGE_BEGIN", start)
+        self.assertIn("source_helper.wait_for_iam_window(True)", source[start:end])
+
+    def test_full_installation_matrix_yields_before_personal_lifecycle(self):
+        source = PATH.read_text()
+        start = source.index("phase = Phase.PERSONAL_SKILL_LIFECYCLE")
+        end = source.index("product_installation.reinstall_for_lifecycle", start)
+        self.assertIn("source_helper.wait_for_iam_window(True)", source[start:end])
+
     def test_platform_guard_denials_are_exact_and_do_not_return_data(self):
         for status, code, message in (
             (401, "capability.service_auth_failed", "BFF workload bearer is required"),

@@ -1,8 +1,12 @@
-### R356 实际页面仍失败：普通 Publish 契约漏接与刷新恢复聚焦修正
+### R356 当前：Skills 真实发布/安装已推进，新增版本与完整页面仍待验收
 
-Root 实际只读浏览器：Manus 技能目录正常有卡片，Kokoro 同窄宽仍“技能池加载失败”；未称 UI 一致或闭环。真实 owner 组合已走过当前包上传/验证，停在普通 Publish：BFF 机器与路由仍声明旧空 body，Platform 当前需 CAS/audience。具名注册 HTTP/二进制 RED 已确认，原负责人唯一写入做预激活 beta 单次 Public10 当前契约/接线修正，不双轨、不放宽响应；同一任务卡与完整历史父逆继续。
+用户选择参考 Manus API/UI，不据此删旧技能或自动重装；原 ID、版本和 7 个安装关系保持。只推进同一 Skills 整项，其他模块与 heartbeat 暂停。页面展示/交互按真实 Manus 参考；业务仍归 Platform Skills，经 BFF 与 Web 同源入口，不把公开 Manus API 冒作其网站私有协议。
 
-Web 两项持久草稿恢复已交接：Validate 自身提交丢 ACK 仍原 key/CAS 重放；显式选择 ZIP 才按正式旧 attempt 替换原草稿。Root 重跑五相关文件 88 PASS，仅为辅助回归；独审、最终接线和真实浏览器继续待验。正常旧包/安装/服务均未改。旧 NULL 保关系方案仅实际完成自有临时桶的同 key Copy ACK/精确内容/元数据与旧版本保留资格，桶已清理；未恢复任何正常资产。其余模块/heartbeat仍暂停，S01–S10 保持 OPEN。
+BFF 正式 a9ef95c/Public10 已接当前 Publish CAS/audience，Web 消费者与两项刷新恢复已冻结并独审。Root 六相关文件 323 PASS、两 generator 和独立输出目录正常 pnpm build 通过，仅辅助证据。整页审查发现本人已有封面重传缺旧 attempt selector；原 owner 两路径修正后 Root 三文件 99 PASS、最终构建通过，单次 GET 冻结 body/CAS/selector，丢 ACK 原 key 重放。运行中 Web 的输出目录未被构建覆盖。
+
+真实 owner 组合已确认原 Publish503 是 IAM 第101次鉴权429；现复用既有限定窗口分阶段，不修改生产限流/权限、不清计数、不自动重试503。后续两次真实运行已走过发布/原键重放/持久事件及完整安装矩阵，但首个创建新版本返回503，明确仍 FAIL，继续定位；旧“state version invalid”是验收器先读错误包字段造成的失焦诊断。自有库/桶均清理，正常库/桶清单保持，无正常服务重启或数据改写。
+
+正常页面仍使用旧后端且曾实测加载失败，不称 UI 一致或整页完成。旧 NULL 定位恢复、记录技能、管理员他人封面入口、普通/管理员真实浏览器及 Manus 同尺寸最终对照仍待；S01–S10 保持 OPEN。先修实际新增版本链路，再完成保数据切换及页面验收；完整 Wave0–7 目标仍 active，经验仅完整验收后沉淀。
 
 ### R356 真实组合首草稿失败已定位并修接线，页面验收仍 OPEN
 

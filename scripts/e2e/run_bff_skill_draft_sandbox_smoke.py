@@ -3058,6 +3058,10 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError(
                         "published Skill package GET did not reject non-draft"
                     )
+                # The owner probe and negative matrix share IAM's real 100/60s
+                # resource-client quota. Separate phases; never reset the counter
+                # or retry an arbitrary publication failure.
+                source_helper.wait_for_iam_window(True)
                 # Keep the owner CLI's published fixture intact; a second fresh
                 # draft proves the BFF public Begin and direct data plane.
                 phase = Phase.CANDIDATE_PACKAGE_BEGIN
@@ -4008,6 +4012,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         )
                     if args.personal_skill_lifecycle:
                         phase = Phase.PERSONAL_SKILL_LIFECYCLE
+                        source_helper.wait_for_iam_window(True)
                         lifecycle_before = product_inventory
                         lifecycle_receipts_before = platform_lifecycle_receipts(
                             urls["kokoro_platform"], ready.tenant_id

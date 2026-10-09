@@ -1,6 +1,12 @@
-### R356 唯一普通发布契约已固定，消费者接线继续
+### R356 当前：Skills 真实发布/安装已推进，新增版本与完整页面仍待验收
 
-BFF 正式 a9ef95ce / Public10.0.0 / raw2f98f529、132操作：只改预激活beta Publish输入与版本，保完整9.0.1及8.10父逆和131其它操作。Root重跑build、131具名HTTP/契约用例及semantic，独审无确定P0–P2；非页面完成。Web唯一writer st6 按 r356-web-public10-consumer-card.json 固定消费并贯通 flow→同源adapter→BFF。普通发布固定真实audience/CAS，不从未知ACK刷新重base；Root并行真实owner组合，最终页面验收仍OPEN。
+用户选择参考 Manus API/UI，不据此删旧技能或自动重装；原 ID、版本和 7 个安装关系保持。只推进同一 Skills 整项，其他模块与 heartbeat 暂停。页面展示/交互按真实 Manus 参考；业务仍归 Platform Skills，经 BFF 与 Web 同源入口，不把公开 Manus API 冒作其网站私有协议。
+
+BFF 正式 a9ef95c/Public10 已接当前 Publish CAS/audience，Web 消费者与两项刷新恢复已冻结并独审。Root 六相关文件 323 PASS、两 generator 和独立输出目录正常 pnpm build 通过，仅辅助证据。整页审查发现本人已有封面重传缺旧 attempt selector；原 owner 两路径修正后 Root 三文件 99 PASS、最终构建通过，单次 GET 冻结 body/CAS/selector，丢 ACK 原 key 重放。运行中 Web 的输出目录未被构建覆盖。
+
+真实 owner 组合已确认原 Publish503 是 IAM 第101次鉴权429；现复用既有限定窗口分阶段，不修改生产限流/权限、不清计数、不自动重试503。后续两次真实运行已走过发布/原键重放/持久事件及完整安装矩阵，但首个创建新版本返回503，明确仍 FAIL，继续定位；旧“state version invalid”是验收器先读错误包字段造成的失焦诊断。自有库/桶均清理，正常库/桶清单保持，无正常服务重启或数据改写。
+
+正常页面仍使用旧后端且曾实测加载失败，不称 UI 一致或整页完成。旧 NULL 定位恢复、记录技能、管理员他人封面入口、普通/管理员真实浏览器及 Manus 同尺寸最终对照仍待；S01–S10 保持 OPEN。先修实际新增版本链路，再完成保数据切换及页面验收；完整 Wave0–7 目标仍 active，经验仅完整验收后沉淀。
 
 ### R356 当前普通发布接线与持久草稿恢复修正（页面仍 OPEN）
 
