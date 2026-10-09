@@ -1,3 +1,9 @@
+### T-K03.4 R357 UI fixture 独立中间审查与后台边界（2026-10-09）
+
+上一turn仅重申独立后台及核现路由，不构成新功能交付，分类no progress。本轮重新核原Web writer原生状态running与b704bab移动工作树；未冻结，Root不抢写/跑最终门。只读skills_platform_frozen_review_r357已完成并同步原writer：/tmp/r357-ui3.log的107PASS/36FAIL主要为旧双tab fixture；安装筛选/分页/开关/移除用installations，本人详情/版本生命周期用managed，不能恢复双读换绿。R303切mode和导航测试须保abort/late ACK/零DELETE/焦点负控。unknown4→5须锁定实际method/path，空managed list仅一次本人list，返回source才允许对应usage读取，不放宽总次数或删除未知写断言。独审为moving-tree中间纠偏，不是最终放行。
+
+当前角色：原skills_platform_implementation_r357为Web唯一writer；skills_platform_frozen_review_r357本轮只读fixture审查已终态，无Git/服务/数据权；Root集成与最终验收。后台需求维持独立/admin/settings及独立布局，用户Settings仅管理员可见跳转，普通身份服务端拒绝；已有路由不等于管理员正向CRUD已通过。下一行动原writer按审查完成精确fixture/请求归因与390/667/1440布局后冻结，Root同SHA独审、门禁及真实浏览器完整交互。完整Wave0–7 active，不缩小目标，不改任务外数据或重启服务。
+
 
 R357 窄屏参考补充：真实Manus390×844 dialog[5,132,380,580]/radius16、无文档横溢；已截图并传原owner，原2rem安全宽候选在390得358px与参考差22px，须按380宽参考并仅极窄屏安全收缩，不把参考字段伪造成本地数据。已resetviewport。收据追加同r357-manus-personal-skills-responsive-reference.json，当前本地UI仍未冻结验收。
 ### T-K03.4 R357 UI 组装回归测试边界补充（2026-10-09）
