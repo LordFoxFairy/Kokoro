@@ -2513,3 +2513,71 @@ def test_r356_formal_901_optional_get_locator_identity():
             )
         # The contract does not invent phase-dependent mandatory locator presence.
         function(200, {"data": data}, *args, expected_source_version="opaque+/=")
+
+
+def test_stale_validate_probe_keeps_current_cas_and_stale_attempt():
+    import ast
+
+    tree = ast.parse(PATH.read_text())
+    probes = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_http_json"
+        and any(
+            keyword.arg == "key"
+            and isinstance(keyword.value, ast.BinOp)
+            and isinstance(keyword.value.left, ast.Constant)
+            and keyword.value.left.value == "package-stale-validate-"
+            for keyword in node.keywords
+        )
+    ]
+    assert len(probes) == 1
+    body = next(
+        keyword.value for keyword in probes[0].keywords if keyword.arg == "body"
+    )
+    assert isinstance(body, ast.Dict)
+    fields = dict(zip((key.value for key in body.keys), body.values, strict=True))
+    assert set(fields) == {"attempt_id", "expected_state_version"}
+    assert ast.unparse(fields["attempt_id"]) == "bad_begin['attempt_id']"
+    assert ast.unparse(fields["expected_state_version"]) == "validated_state_version"
+
+
+def test_positive_publish_and_replay_use_same_current_command_body():
+    import ast
+
+    tree = ast.parse(PATH.read_text())
+    commands = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_http_json"
+        and len(node.args) > 1
+        and isinstance(node.args[1], ast.Name)
+        and node.args[1].id == "publish_path"
+    ]
+    assert len(commands) == 3
+    fixed = [
+        keyword.value.id
+        for node in commands
+        for keyword in node.keywords
+        if keyword.arg == "body" and isinstance(keyword.value, ast.Name)
+    ]
+    assert fixed == ["publish_body", "publish_body"]
+    definition = next(
+        node.value
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "publish_body"
+            for target in node.targets
+        )
+    )
+    fields = dict(
+        zip((key.value for key in definition.keys), definition.values, strict=True)
+    )
+    assert set(fields) == {"expected_state_version", "audience"}
+    assert ast.unparse(fields["expected_state_version"]) == "validated_state_version"
+    assert fields["audience"].value == "owner"

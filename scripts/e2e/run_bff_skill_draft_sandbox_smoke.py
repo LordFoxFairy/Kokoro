@@ -1811,7 +1811,7 @@ def require_lifecycle_error(
 def _http_publish_empty(
     base: str, path: str, *, token: str, secret: str, key: str
 ) -> tuple[int, dict[str, object]]:
-    """Send exactly zero body bytes for the fixed PERSONAL Publish command."""
+    """Send zero body bytes only for default-off or authentication-negative probes."""
     parsed = urlsplit(base)
     connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
     request_id = "skill-sandbox-" + secrets.token_hex(8)
@@ -3783,13 +3783,17 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "6",
                     expected_source_version=zip_recovered_version,
                 )
+                validated_state_version = public_state_version(body.get("data"))
                 status, body = _http_json(
                     bff_base,
                     validate_path,
                     token=ready.access_token,
                     secret=web_secret,
                     key="package-stale-validate-" + run_id,
-                    body={"attempt_id": bad_begin["attempt_id"]},
+                    body={
+                        "attempt_id": bad_begin["attempt_id"],
+                        "expected_state_version": validated_state_version,
+                    },
                 )
                 if (
                     status != 412
@@ -3801,12 +3805,17 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "/v1/skills/" + quote(begin_skill_id, safe="") + "/publish"
                 )
                 publish_key = "package-publish-" + run_id
-                status, body = _http_publish_empty(
+                publish_body = {
+                    "expected_state_version": validated_state_version,
+                    "audience": "owner",
+                }
+                status, body = _http_json(
                     bff_base,
                     publish_path,
                     token=ready.access_token,
                     secret=web_secret,
                     key=publish_key,
+                    body=publish_body,
                 )
                 publication = require_public_skill_publish(status, body, begin_skill_id)
                 if publication["replayed"] is not False:
@@ -3916,12 +3925,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 )
                 require_platform_published_skill_absent(status, body)
                 phase = Phase.CANDIDATE_PUBLISH
-                status, body = _http_publish_empty(
+                status, body = _http_json(
                     bff_base,
                     publish_path,
                     token=ready.access_token,
                     secret=web_secret,
                     key=publish_key,
+                    body=publish_body,
                 )
                 publication = require_public_skill_publish(status, body, begin_skill_id)
                 if (
@@ -3930,12 +3940,16 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     or publication["revision"] != revision
                 ):
                     raise SmokeError("BFF Publish replay changed the owner event")
-                status, body = _http_publish_empty(
+                status, body = _http_json(
                     bff_base,
                     publish_path,
                     token=ready.access_token,
                     secret=web_secret,
                     key="package-publish-second-" + run_id,
+                    body={
+                        "expected_state_version": public_state_version(publication),
+                        "audience": "owner",
+                    },
                 )
                 if (
                     status != 412
