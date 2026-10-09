@@ -1,3 +1,11 @@
+
+### T-K03.4 R357 后继消费者与真实Storage资格仍有具名阻断（2026-10-09）
+
+Root对BFF初freeze168c核108materialized/564protected/84旧vendor删除exact，聚焦28PASS；Connect双生成/policy/typecheck通过，但HTTP生成实际ENOENT：旧vendor9ed硬编码未随981 pin替换。组合shell最后0曾掩盖中间1，按日志逐项保留失败，不宣称全部通过。独审另查3P1：body流未受budget取消唤醒、响应未绑定path/Complete proof、completed合法移除installation被误拒且nonterminal单边presence漏拒。原writer仅tests-only fd451冻结，Root真实HTTP8项4PASS/4FAIL（含10秒半开body），不是模块缺失；准统一修复并同步唯一HTTP generator/config旧pin，不放行正常dispatch。
+
+真实Storage资格两个测试文件已冻结1bbf，仅dry-run与IPC纯负控通过，未启动资源。运行前独审确定缺bind_scope可信headers、临时harness包解析、runtime停止失败后清理边界与早期资源身份manifest。Root实际load-only引用全部imports，资源0且module-resolution失败；首不使用imports的探针因转译删除imports误绿已纠正，原日志保留。原writer沿两文件统一整改，正常资源未改、v10仍inactive，原37/7/失败draft保留。
+
+后台只读已核：独立layout/nav当前缺失；/admin/settings可消费正式System3.0→BFF Public12已有模型路由CAS资源，Web已有固定schema但缺adapter/client/UI，不需要新configs模块或假设置。此为真实后继契约盘点，不是后台功能已完成。浏览器现tab14/15库存有效，DOM与截图仍focus命令超时；未重启/刷新/创建替代标签，不宣称页面验证。完整Skills与Wave0–7保持OPEN，其它模块暂停。
 ### T-K03.4 R357 准入机器事实已发行，BFF消费者开始隔离实施（2026-10-09）
 
 Platform正式981df60e74b65eccfc2d58044db9965928e4d37e仅6机器路径：双边准入owner结构化；唯一生成入口重发v10及总provenance，Proto/descriptor/v1-v9保持字节。Root focused5PASS、contract/artifact/typecheck/lint0、6after与108具名保护及全部680非范围tracked exact、独审无确定P0/P1。Root首freeze校验误用sha256键失败，按真实after_sha256重跑完整成功，不掩盖首诊断。v10aggregate277a2bf24b4fdc34196dac3c5fbba89ef88df75a3b96054af63547f9ae53ff0b；总contract6fcc148fddb4aaab73076dfb5b6109e2b4d9f0209e93ef58b0c510e3ed28b693；仍inactive/不可正常路由。
