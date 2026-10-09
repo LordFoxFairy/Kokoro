@@ -1,3 +1,9 @@
+### T-K03.4 R357 UI 组装回归测试边界补充（2026-10-09）
+
+上一turn原UI writer live并完成九owner健康核验属verified wait，不把监听当产品验收。本轮Root移动树预审只用于早期纠偏：compact仍隐藏brand/search、来源仍dropdown，是实施中间态，已明确冻结前必须恢复参考账号/search chrome与直接四来源，而非尺寸-only。原writer报告聚焦115PASS/28FAIL，尚未冻结，不声明绿色。
+
+发现tests/ui/use-session-state.test.tsx不在原明确授权集，已要求停该文件核范围。当前8个R259-POLL组装用例依赖已删除的先installation空态再双tab切managed；批准仅这些fixture显式mode变更纳入切片，auth production/probe/generation/subject/POST/pagehide/unknown与late断言保持。unknown真实请求计数4→5尚未归因，禁止直接改count、删计数或skip；原owner须列新增method/path/触发、确认同identity不重复owner读及显式retry刷新事实，再按实际原因修。移动树仍由原唯一writer，Root不终验/提交候选，不重启或改数据。下一行动原owner完成真实RED→UI/恢复回归→冻结，Root独审/全门/同尺寸真实旅程；完整Wave0–7 active。
+
 ### T-K03.4 R357 Manus 个人 Skills 当前响应式实测（2026-10-09）
 
 上一turn正式managed下载与UI准入属progress。本轮Root读取真实已登录Manus tab15 #settings/skills/personal，667×726实际dialog[143.5,73,380,580]/radius16，并截图确认横向Settings导航、search/探索/添加、四来源单列表；1440×900实际dialog[144,45,1152,810]/radius16、左完整导航，heading[446.5,79,768,30]、探索按钮[1050.5,150,72,32]、添加[1130.5,150,84,32]。search input[481.5,155,152,22]仅input不冒整个外框。override reset后实核恢复667×726及原dialog，未改Manus数据或上传。
