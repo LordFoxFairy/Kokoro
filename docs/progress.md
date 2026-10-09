@@ -12,6 +12,10 @@ Root新增实际Manus参考2dc71123：同1113×752，已添加的技能/搜索/�
 
 只推进同一计划 Skills S01–S10；其它模块及 heartbeat 暂停，完整 Wave0–7 active。外部目录、预览、正文、我的技能/Settings、四创建入口、分享下载、对应后台及异步稳定性是同一交付范围。下方旧记录均为历史切片，不覆盖本节当前事实；辅助门与局部截图均不升级页面完成数，S01–S10全部OPEN。
 
+已完成整项三设计收敛，而非逐字段UI修补：Platform D0正式a24180eb（3文档/86行，Root原suffix/626保护/diffcheck0）；Web D0正式c79e119（3文档/101行，Root原suffix/785保护/28mixed/diffcheck0），独审纠正usage/Share归BFF、个人发布者Profile归IAM→BFF。原完整旧文保留，无新服务/表/发布状态机/计划中心。P4已一次授原owner完整29现路径/5固定父快照，source_kind5实际边界RED2PASS/6FAIL、query6/ownedquery/分页前精确旧revision与cursor同次闭合；候选1.2/5.2未正式。BFF仍原唯一writer收尾，必要四manifest仅正规共同lockhash更新，未正常激活或升级页面状态。
+
+Root新增真实GitHub非模拟读取：公开repo→真实默认branch SHA→固定ZIP三GET200返回44可选Skills；按同49f948…SHA读取skill-creator又三GET200，真实frontmatter/57707bytes/SHA确认，源前后相同。只read，无import/任何外部或正常数据写入，非持久完整路径/浏览器完成。两provider收据及D0主控收据在既有ignored目录；最终S01–S10真实普通/管理员操作与Manus逐图仍全OPEN。
+
 本轮为避免Web整页之后再返工，Root并行启动只读W1接线映射（web_skills_public9_mapping_r353，卡55a65b42）与原BFF唯一writer收尾，不另建计划。实际发现三项产品缺口：Platform正式52e已含source_kind=5，BFF当前parser/client漏接（BFF首条误称owner缺字段已撤回，Root核正式Proto/profile；继续深入发现Product RPC未映射且typed/raw白名单拒该字段，P4只读沿真实查询边界一起核来源与query，不以BFF loopback证明owner可用）；个人跨分页query尚无owner输入；GitHub真实URL-only弹窗与现fullSHA+手填metadata接口不符，Root已授e2e2370c：preview URL→公开repo默认branch真实SHA→受限包与真实SKILL metadata→import固定selector重验，复用原receipt、不新阶段；生产完整YAML parser固定最新兼容js-yaml4.3.2/@types4.0.9，只必要lock hunk。W1报告6b7c1414列S01–S10精确接线/28混合修改保护，Root独立核788字节；BFF两旧current fixture精确补卡ddd7402e保auth/项目/排程断言。不得用前端当前页过滤、手填SHA或假metadata冒闭环。外部分享接收路由也纳W1整片映射，未落Web假入口。
 
 Root新增Manus实际上传参考：1113×752，上传技能弹窗400×347.5，要求根SKILL.md及YAML名称/描述、.zip/.skill；未选择/上传文件，Escape后dialog=0且目录恢复，console无error/warn。截图/量测与差距收据bd41b6bf保留。正常Web31451/Platform44808/BFF44830原进程仍在，未重启/DDL/数据写入；BFF/整页未freeze与验收，S01–S10仍全部OPEN。

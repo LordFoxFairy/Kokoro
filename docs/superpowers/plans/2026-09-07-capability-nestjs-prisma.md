@@ -1,3 +1,14 @@
+## R353 整体 Skills 接线：两条三设计收敛任务（2026-10-08，S01–S10 OPEN）
+
+复用本计划，不另建计划中心；只 Skills 继续。Root 实际 source_kind raw/typed RED 为缺省2PASS、三合法来源6FAIL，证明 BFF 转发不是 owner 可用。接线与整个 UI 范围已一次映射，以下只同步三设计，随后分别授权源码；不继续逐字段交付页面。
+
+| 任务 | owner/唯一 writer | 基线与允许范围 | 完成条件与交付 |
+| --- | --- | --- | --- |
+| P4-D0 真实来源筛选与全结果搜索 | Platform / platform_github_p3_frozen_review_r353 | apps/kokoro-capability，52eeb0b；仅三设计当前前缀，626 tracked保护；卡24e16c25 | source_kind5运行修正、query6/ownedquery、分页前同owner精确revision查询、零Schema；候选Product1.2/HTTP5.2、52完整父逆向；Root核后精确提交，源码另授 |
+| W2-D0 完整 Skills 页面与交互 | Web / st6_legacy_competition_r353（原Storage调查已结束，工具线程上限后限定转派） | kokoro-r257-admin-web，de6b737；仅三设计当前前缀，785 tracked及原28 mixed保护；卡ca2a9818 | W0/W1完整内外页/预览正文/Settings/创建导入/分享下载/后台/稳定刷新同一片；实际Manus几何、正式Public9依赖、Record未观察保持OPEN；Root核后精确提交，源码另授 |
+
+BFF此前默认1201PASS/6FAIL/3SKIP，六失败为必要直接YAML依赖19行lock造成manifest共同hash变化，Root仅授四保护manifest正规重生lock字段，其余owner/config/generated全部保持；不是业务或页面验收。P4-D0正式a24180eb：Root三完整suffix/626保护/diffcheck0独核，仅3文档/86行提交、子仓clean。P4源码沿原负责人一次授权29现路径/5不可编辑正式父快照，源卡按52完整父、零Schema及具名RED与真实资源后继，未发行/激活。W2-D0正式c79e119：Root三suffix/785保护/28mixed/diffcheck0独核，真实归属独审已修，只3docs/101行提交；完整UI源码尚待正式BFF输入，不消费候选。Root真实GitHub两组三GET200/44候选/同SHA真实57707bytes包成功，只读取非完整import/页面。两设计任务并行于现BFF唯一writer收尾；原文件全字节suffix保持、每当前前缀约40行，不新增服务/表/发布状态机/计划或资源。Root独占Git/集成/资源；正常服务不重启，未升级任何页面完成状态。最终普通与管理员真实持久浏览器链及同尺寸Manus逐图仍是页面验收条件，工程门不替代。
+
 # Skills 完整交付锁定清单（R353，2026-10-08 当前优先入口）
 
 > 当前只推进Skills；其它模块和heartbeat继续暂停，完整Wave0–7目标保留。复用本计划，不再另建计划中心。Root使用writing-plans梳理既有产品要求，以真实Manus页面为唯一视觉参考；实施沿原owner和subagent-driven-development，辅助门不替代浏览器用户验收。
