@@ -46,6 +46,19 @@ Web正式 `a540084`仅2现路径补OIDC_SCOPE同scope；真实旧redirect负控R
 
 用户新Skills故障Root已实际复现：tab3重试GET /api/hub/skills/catalog返回502/skill_response_invalid，原截图/网络收据保留。所有9正式HTTP端口皆监听、PG/Redis/MinIO/Clam监听，IAM/BFF/Platform/Storage/System/Scheduler/Billing裸ready200；Agent裸ready401是受保护入口，不能误记进程未启动/无鉴权ready通过。模型worker仍未启动，不虚称“全部能力”或所有worker运行。当前正常BFF仍88fe387、Platform0e60e5d，而Web新整Skills strict消费已前置，正常配对版本不一致；原st6紧急只读核精确缺字段/正常持久Schema与正式token资格演进前置，Root先修此回归，不回退UI、不放宽schema/伪造数据。连接器完整任务不缩小，其后原四项队列保持。
 
+
+#### R357 正常 Skills 加载故障：目录与本人安装列表恢复，旧包详情仍 OPEN（2026-10-09）
+
+本轮真实故障不是所有服务未启动：正常 Web 新严格 product/category_keys 字段消费与运行旧 Platform/BFF 不配对，原 `/api/hub/skills/catalog` 502 `skill_response_invalid`。Root 在保留原 A1 混合候选前提下设固定源码正常 Platform checkout `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/platform-normal`、固定分支 codex/platform-normal，不使用复制源码、临时应用库或 mock 服务。正规历史 category expand → 正规 product expand，以及 BFF skill-share-usage narrow evolution 已执行；前置分别 owner 私有备份，原 Platform 9 表347行和 BFF27表192行原列全哈希精确保持。后续浏览器读取造成仅 Platform transaction_admission_slot 合法租约变化；严格全事实复核因该行报差异，原失败保留，非 admission 业务事实单独复核全保持，不冒称读后全表字节不变。
+
+BFF H1 Root 正式 `adcdac3fc1f8af875c5290ed605e895e65b70914`（parent727df38，26有效路径），Node22实跑111PASS、IAM artifact/类型/lint/build0；613保护及5文档完整父后缀精确保持，独审无确定阻断。原默认Node24不支持告警未作Node22资格，日志保留。正规人类身份/当前成员/单一绝对请求预算与取消已接，但旧MCP未实现写503仍明确，连接器 CRUD/真实连接/Admin不因H1通过称完成。
+
+首次正常目录恢复后实际点击又发现本人列表502和旧包详情503。本人列表根因更新候选未筛对象版本资格，NULL高版本触发正常 Storage v2 未发行 GetPackageReference，使整个列表 Code.Unimplemented。复用 st6 本片唯一 writer，仅现 repository 一行 `packageSourceVersionId:{not:null}` 在 MAX 前筛选并复用；不筛旧安装、不自动升级引用、不吞合格候选依赖错误。Root 真实隔离PG先2FAIL/2PASS→冻结后完整43PASS/0FAIL/0SKIP，107纯文件1922PASS，类型/两文件lint/格式/diffcheck0；独审无确定P0–P2，632保护及生产原字节逆精确。Root 正式提交 `4ec395f714c106374496a90894886432f2cf30b8`（parentb0c0dbe，仅2路径）。纯门仅研发辅助，不代替浏览器。
+
+正常旧 Platform64000/BFF55498 已按原句柄自然停机，配对 Platform46208/BFF12126源码启动；资格修复冻结集成后只正常停止46208并重启94239，当前 Platform41791、BFF34838。Web66154 HMR复用。Root 实际再核九HTTP监听、七owner readyz200；Agent裸readyz401是认证边界，不冒已授权ready证据。PG5432/Redis6379/MinIO39190–39191/Clam43310保持原进程，没有清库/清缓存/重复基础设施。Agent模型worker仍未运行：当前正式消费端授权调用守卫及持久配置尚未闭合，贸然启动会处理原durable排队；不以HTTP监听或Billing余额冒全worker可用，不去守卫、假免费或临时聊天组合。
+
+真实浏览器原tab3：catalog200/21真实技能、R255搜索200→清空；点击原卡本人 list200/7原安装、本人detail200，进入“我的技能”七记录可读且无加载失败；正常刷新后 workspace loading退出、catalog再次200。全部未安装/升级/删除数据。旧技能包“查看详情”仍503 `skill_dependency_unavailable`，确认为旧NULL对象版本和Storage版本配对后继，禁止自动换引用/猜版本。真实证据 `var/dev/r255-preserve/r357-normal-skills-browser-pair.json`、`r357-skills-catalog-normal-green.jpg`、`r357-personal-installations-normal-green.jpg`；preview旧green文件含当时失败，不作为完整成功。整页Skills S01–S10、Manus视觉、旧包/后台及四创建仍OPEN；后续优先顺序与完整Wave0–7 active均不变，heartbeat保持暂停。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。
