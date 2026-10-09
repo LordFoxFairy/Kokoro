@@ -1,3 +1,18 @@
+### R356 唯一普通发布契约已固定，消费者接线继续
+
+BFF 正式 a9ef95ce / Public10.0.0 / raw2f98f529、132操作：只改预激活beta Publish输入与版本，保完整9.0.1及8.10父逆和131其它操作。Root重跑build、131具名HTTP/契约用例及semantic，独审无确定P0–P2；非页面完成。Web唯一writer st6 按 r356-web-public10-consumer-card.json 固定消费并贯通 flow→同源adapter→BFF。普通发布固定真实audience/CAS，不从未知ACK刷新重base；Root并行真实owner组合，最终页面验收仍OPEN。
+
+### R356 当前普通发布接线与持久草稿恢复修正（页面仍 OPEN）
+
+真实 owner 组合已通过包上传与验证，当前普通 Publish 接口却仍使用旧零字节 body；当前 Platform 必需 CAS/audience，BFF 机器契约与路由都遗漏，停在旧空 body 接线；保留失败收据 r356-formal-combo-public-cas-run-receipt.json。独审另确认刷新恢复时 Validate 丢 ACK 和既有上传 replacement 两项 P2，不放宽 CAS/身份以掩盖。
+
+| 任务 | owner / 唯一 writer | 范围 / 基线 | 验收 / 提交 |
+| --- | --- | --- | --- |
+| R356 普通 Publish | BFF / bff_skills_product_source_r353 | 正式46ed4ef；未激活 beta 单次 Public10 修正，现 route/client/机器/既有门与文档；精确卡 r356-bff-publish-current-input-card.json | 具名2RED已确认；当前 CAS/audience 与唯一机器同修、原完整父逆保留；Root 联调，Root 提交 |
+| R356 持久草稿恢复 | Web / st6_legacy_competition_r353 | 冻源 c79e119，现 flow/resume tests；精确卡 r356-web-publish-recovery-card.json | 原 key/CAS 未知 ACK 重放及明确 replacement；Root 页面刷新实测，Root 提交 |
+
+两仓独立并行，Root 独占集成与资源；其他工作仍暂停。旧记录/安装不删除或换引用；完整 UI/后台、旧包恢复及浏览器仍待验。
+
 ### R356 真实组合首草稿失败已定位并修接线，页面验收仍 OPEN
 
 真实 IAM/BFF/Platform/Storage/版本化 MinIO/Clam 组合首草稿曾返回502，HTTP现场证明新 BFF wrappers 漏 request-id、Platform binary200 漏 no-store。BFF正式46ed4ef与Platform正式43005cc分别仅修传输接线，原准入/取消/严格响应检查和数据契约保持；Root独审、31HTTP及1922辅助用例通过，原失败证据保留。数据库/桶前后清单保持，正常服务和旧安装关系未改。固定新正式源码重跑真实组合中；未称页面闭环，前端仍唯一 writer，记录协议/管理员他人封面、旧NULL恢复和最终浏览器明确待验。

@@ -1,3 +1,9 @@
+### R356 实际页面仍失败：普通 Publish 契约漏接与刷新恢复聚焦修正
+
+Root 实际只读浏览器：Manus 技能目录正常有卡片，Kokoro 同窄宽仍“技能池加载失败”；未称 UI 一致或闭环。真实 owner 组合已走过当前包上传/验证，停在普通 Publish：BFF 机器与路由仍声明旧空 body，Platform 当前需 CAS/audience。具名注册 HTTP/二进制 RED 已确认，原负责人唯一写入做预激活 beta 单次 Public10 当前契约/接线修正，不双轨、不放宽响应；同一任务卡与完整历史父逆继续。
+
+Web 两项持久草稿恢复已交接：Validate 自身提交丢 ACK 仍原 key/CAS 重放；显式选择 ZIP 才按正式旧 attempt 替换原草稿。Root 重跑五相关文件 88 PASS，仅为辅助回归；独审、最终接线和真实浏览器继续待验。正常旧包/安装/服务均未改。旧 NULL 保关系方案仅实际完成自有临时桶的同 key Copy ACK/精确内容/元数据与旧版本保留资格，桶已清理；未恢复任何正常资产。其余模块/heartbeat仍暂停，S01–S10 保持 OPEN。
+
 ### R356 真实组合首草稿失败已定位并修接线，页面验收仍 OPEN
 
 真实 IAM/BFF/Platform/Storage/版本化 MinIO/Clam 组合首草稿曾返回502，HTTP现场证明新 BFF wrappers 漏 request-id、Platform binary200 漏 no-store。BFF正式46ed4ef与Platform正式43005cc分别仅修传输接线，原准入/取消/严格响应检查和数据契约保持；Root独审、31HTTP及1922辅助用例通过，原失败证据保留。数据库/桶前后清单保持，正常服务和旧安装关系未改。固定新正式源码重跑真实组合中；未称页面闭环，前端仍唯一 writer，记录协议/管理员他人封面、旧NULL恢复和最终浏览器明确待验。

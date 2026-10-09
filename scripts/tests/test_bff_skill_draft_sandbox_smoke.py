@@ -2433,7 +2433,7 @@ def test_r356_cli_requires_both_explicit_absolute_source_options():
 
 
 def test_r356_formal_901_pin():
-    assert smoke.FORMAL_PINS["bff"] == "46ed4ef9ab29714da63cb43596c0062560671ba0"
+    assert smoke.FORMAL_PINS["bff"] == "a9ef95ce40d8c9686ce0e71493bffc38787d55af"
     assert smoke.FORMAL_PINS["platform"] == "5b47eaf7c7996fe836022d57b973b2085dcd852a"
     assert smoke.FORMAL_PINS["storage"] == "a1206d0194c1b1e405834f4c4548168fddbb5d52"
     assert smoke.FORMAL_PINS["iam"] == "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a"

@@ -57,7 +57,7 @@ OWNERS = MappingProxyType(
 )
 FORMAL_PINS = MappingProxyType(
     {
-        "bff": "46ed4ef9ab29714da63cb43596c0062560671ba0",
+        "bff": "a9ef95ce40d8c9686ce0e71493bffc38787d55af",
         "platform": "5b47eaf7c7996fe836022d57b973b2085dcd852a",
         "storage": "a1206d0194c1b1e405834f4c4548168fddbb5d52",
         "iam": "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a",
