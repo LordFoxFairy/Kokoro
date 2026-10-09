@@ -15720,3 +15720,7 @@ R357-WEB-LOCAL-IMPORT D0授权（2026-10-09）：原Platform实施agent转Web唯
 R357-BFF-ACTIVATION必要config范围追加：Node22正规Connect generator在verifyInputs实际拒buf.platform.json旧981路径，不能跳过验证。Root批准仅追加该现文件固定842 proto路径与机械manifest configSHA，不改其余Buf规则/依赖；production composition undefined实际1FAIL为行为RED，误Node24及Node22旧pin失败各保为生成证据。87vendor从正式Git对象映射来源逐项exact、publicationinventory保持，若新必要文件先报告。
 
 R357-BFF-ACTIVATION必要HTTP config范围追加：真实Node22 HTTP generator因openapi-ts.platform-http.config.ts旧981 input且旧vendor已删报ENOENT，Root批准仅ownerCommit单行842与机械manifest configSHA，其余options不变。要求一次核所有必要旧pin引用后freeze，不跳过检查。Web D0三docs冻结0762841cf021e422aa02f17de40b6c74876b94d99262681cc520cd8d7cbab846，其余830保护；compact/API私有namespace/同keypending恢复与session-bound非敏感intent方案已交付，Root待审未授实现。
+
+R357-BFF-ACTIVATION机械test范围追加：全仓非历史旧981引用仅Connect test（已授）、HTTP dependency（正规再生）及test/platform-http-contract.test.mjs，Root批准最后一项仅ownerCommit更新，其余断言不动。Root正常浏览器真实read-only ListHubSkills200（skills10/tagOptions）、ListSkills200（userAddedSkills7/officialSkills），说明Platform正常reload后既有读链可用，不冒上传闭环。
+
+R357-WEB-LOCAL-IMPORT Root接受D0-v2冻结83bbd1…：三docs只加prefix，历史正文逐字节恢复，拒此前全文件格式化。授权原writer6新普通实现文件（contract/local-skill-import、hub client、ui dialog/CSS、api/browser/v1薄route、lib/server代理）与三对应client/UI/proxy tests；现接线menu/catalog/personal、现具名regression/routing/E2E、三docs/两INDEX/九locale必要文案。先tests-only真RED，后compact同key恢复/strict闭集/subject-generation/取消迟到/稳定refresh，保Admin/版本/GitHub/AI/旧功能/public bytes，旧hub不加alias。Manus上传截图对照含真实帮助/示例，不假链接。Root独占正常资源/服务/Git/最终E2E，Web目前仅授权待实施；完整Wave0–7保持active。
