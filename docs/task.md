@@ -1,3 +1,11 @@
+### R357 正常持久资源正式配对已执行；真实预览仍有阻断（2026-10-09）
+
+Root原六进程均实际drain并确认旧监听消失，PG/Redis/MinIO/Clam未重置；排他收据 `var/dev/r255-preserve/r357-normal-pair-writer-exclusion.json`。drain后新Storage/Platform owner-schema备份已私有保存。正常Storage正式be3执行fixed expand与maintenance：dry checked37、apply checked37/verified37，独立只读VersionId+IfMatch GET逐对象SHA/size复验37通过（36独立Blob）；37资产原字段与ID保持，新增image dimensions均NULL，Blob仅批准locator改变。收据 `r357-normal-storage-independent-readback.json`；不声称旧NULL版本物理清理。maintenance PG并发query弃用警告保留，尚须owner整改，不当作无债务完成。
+
+正常Platform9ed执行固定MCP A1与Skills expand、正式历史发布backfill inserted11；Storage27144/Platform59935/BFF39031/Web52619源码已运行，Storage/Platform/BFF readyz200、Web实际Skills HTTP200。Agent HTTP75242、Scheduler76613原持久配置恢复；Scheduler readyz200，Agent未认证readyz401，不能据此称认证就绪。原7安装不删除/自动换引用，normal model worker仍未启动。当前进程事实更新同 `var/dev/processes.json`。
+
+Root正常浏览器tab14真实目录已加载10张卡，但点击R350预览仍显示“技能池加载失败”。重试实际只有安装列表200且返回skill_updated_at，没有GetSkill请求；不是凭服务启动即宣称闭环。原只读审查Agent正核消费者严格schema和预览准备链，Root保留失败证据后修最窄跨仓不一致，再继续真实详情/下载/CRUD/Admin和Manus同尺寸对照。S01–S10与完整Wave0–7仍OPEN，其他模块保持暂停；原混合修改/Gitlinks/uv.lock未暂存。
+
 ### R357 Web 当前消费者正式提交，进入正常资源配对
 
 Root对最终115真实文件冻结5d6af980逐SHA、Git改删/未跟踪闭集与暂存no-renames精确核定，独审确认全部Skills分派、Publish未知结果围栏、当前文档和权限scope无确定P0/P1。正式实现 `6c762ef29ec404aa507f014461613414482e75c0`，单独本仓CURRENT事实提交 `2fba224ee6d05cb0b2533fb33cce496fc51d05e6`，release干净。原mixed121记录按已资格P2覆盖核exact，无任务外Gitlink/uv.lock暂存。
