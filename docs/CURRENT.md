@@ -1,3 +1,11 @@
+### T-K03.4 R357 BFF Root全门通过但职责审查未放行（2026-10-09）
+
+前一goal turn已发现真实上传缺陷并续派，属证据改变下一动作的进展。本轮Root逐核BFF冻结9materialized/664保护exact；原6088完整check自然0：typecheck/lint/contract/build0，contract704PASS，default1295PASS/0FAIL/3SKIP。日志r357-bff-boundary-root-check.log。绿门不抹此前失败、不证明用户闭环，正常BFF未重载。
+
+独审初将infrastructure type-only引用application port一概判反向违规，Root依手册与实际Postgres adapter反证要求纠正；审查员已撤回机械禁止建议。真实问题是整体搬迁把跨owner稳定series/revision、official筛选、usage/profile聚合和下载tenant/subject二次确认应用规则混入Platform transport。Root因此撤回原整体搬移D0裁决，候选不提交：原唯一BFF owner先仅修三现D0设计段，保应用聚合、generated/wire具体细节留既有infra，提出最窄依赖形状和精确源码集合后另授权；不造多余ports/DTO，不放宽架构门。MCP测试标题仍虚称CRUD完成但只有两503，后继改诚实fail-closed名称并保持现GET专测，不将当前未接通mutation称成功。
+
+Web中间独审另证P1：文件在size/name校验前完整arrayBuffer+SHA，超大误选可冻结；已让原writer先复用正式Begin约束负控bytes/fetch0。Root还发现Begin写前未持久化key、rejected误判pending、有界响应先全读后检查等恢复缺口，已同步授权现范围内强行为测试；非已修声明。完整Skills和Wave0–7仍active，全部正常资源与用户数据保留。
+
 ### T-K03.4 R357 Root 发现上传候选真实交互缺口（2026-10-09）
 
 Root对变化中Web候选只读，不作为冻结终验：local-skill-import-dialog的drop label没有onDragOver/onDrop，文案虽称拖放但当前只支持点击；成功callback异步refresh rejection缺catch可能成为未处理rejection；success关闭后state不复位，重开仍展示旧成功而不能选择第二技能。已通知原唯一writer，在现已授权dialog/client/tests内先补真实行为负控，再实现：拖拽共用入口/busy fence、成功与列表刷新错误分离且不重复Finalize、完成后下一独立intent与未知pending保留恢复区分。不能只更新旧oracle宣称闭环；Manus图标/要求区/帮助的视觉差异仍待截图验收。
