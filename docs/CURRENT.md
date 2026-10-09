@@ -1,3 +1,11 @@
+### T-K03.4 R357 下载实施消费者范围与机器合同缺口（2026-10-09）
+
+上一 goal turn 只核独立后台路由并答复，未改变实施状态，分类 no progress。本轮原生 live 状态确认原 BFF writer running，未重派或重启。Root 核当前 platform-projection.ts 三行必要迁移，批准仅 catalog_current kind 与 seriesId 校验，补入既有任务范围；既有 contract-governance 精确脚本断言更新属于已批准相关契约测试。
+
+Root 对未冻结工作树只读预审发现真实缺口：runtime 安装 resolver 未核返回 installation_id 等于请求 ID，managed resolver 未核返回版本 ID 等于请求 ID；生成 skill-download-policy.json 只有 visibility/version/path，没有 strict success schema、空请求及错误状态闭集，尚不构成可消费下载合同。已要求原 writer 补相应真实负控及机器政策/运行时一致断言，仍同仓单 writer，Root 不在变动树上宣最终验收。54 focused PASS 仅候选辅助；首次 2 FAIL 属旧 binding fixture，不冒实施前业务 RED，缺口明确保留，要求隔离基线行为验证。
+
+后台仍独立 /admin 与 /admin/settings，普通 Settings 仅管理员入口；管理员实际正向与完整 Skills UI/下载/旧 pin/share/其他 Wave 0–7 未闭环。下一行动：原 writer 修上述准入缺口并冻结，Root 受保护文件核验、纯门与独审后正式发布 BFF，再推进 Web 消费及真实浏览器文件字节验收。零共享数据清理、零服务重启。
+
 ### T-K03.4 R357 正规基础设施复核与真实 Settings 视觉偏差（2026-10-09）
 
 上一goal turn设计e380066与实施任务9911d915已正式交付，属progress。本轮原BFF writer经原生状态确认为running；一次120s等待超时不等于停止，不重派/重启。Root保眼前关键路径，同时完成独立只读实际UI对照。
