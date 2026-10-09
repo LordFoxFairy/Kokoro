@@ -1,3 +1,11 @@
+### T-K03.4 R357 Web 严格会话切片正式交付；安装列表定位 OAuth 缺申请 scope（2026-10-09）
+
+上一goal turn有BFF正式修复与真实完成恢复，属进展。本轮Root核Web v3冻结bc9fa06512paths/830保护原bytes exact、独审关闭partial-session P1；93562最终type/lint/build0，locale+Admin50PASS，真实OIDC1PASS/81过滤skip；最初-t未覆盖独立negative，Root另22044实际negative1PASS/81过滤skip。正式提交624f9c4。没有称完整default绿：writer最终3551PASS/6FAIL仍留，六个项目树旧fixture/全局refresh写计数需后继边界核验，不以纯门多数通过代整体用户成功。
+
+Root正常浏览器同一次MySkills重试22:10:05，正规Platform76495日志trace08ad7904 ListPersonalSkillInstallations200；IAM原21412仅startup无访问日志，不能臆造实际403。只读完整链已确认确定源码缺陷：Web显式OIDC_SCOPE未申请iam:publisher-profile.read，authorize与callback exact scope共用该常量；IAM publisher.profile.resolve guard要求user_delegated/同tenant/此scope，OAuth显式scope不会隐式补客户端allowedscope。普通请求缺scope必被该guard拒绝，待正规新登录实证。尝试只读cookie诊断工具dynamic import不可用，后取得0600私有cookie但未用、立即删除，零凭据输出/仓提交。
+
+已沿原Web owner授权现OIDCprovider/现两测试/现文档最小scope读权限切片：先actual authorize RED→GREEN、保持callbackstrictscope与IAM权限/role/admin边界，Root随后正式复验、新正规登录和已安装/详情/刷新整链。不重复服务/资源、不读ownerSQL、不自授管理员。原intent/私有安装已成功恢复保持，列表503与完整Skills/Wave0–7仍OPEN/goal active。
+
 ### T-K03.4 R357 BFF 公开相位正式修复；真实私有上传恢复成功、列表仍失败（2026-10-09）
 
 上一goal turn有Platform正式上线和真实枚举缺陷定位，属进展。本轮BFF显式public闭集5paths freeze173830ed4经Root复核5hash/668其它tracked exact；独审无P0/P1，Root97838实际type/lint/default/build0，1302PASS/0FAIL/3SKIP（结尾echo变量名误拼不影响逐命令exit累计与终态0），正式bfb151c。VALIDATED→valid；UNSPECIFIED/INTENT/999 direct拒绝，Finalize/completedGet exactvalid及facade消费覆盖。Root审查纠正独审“facade是raw内部不必改”的错误：实际先同mapper再比较，所以现facade同步valid必需，独立package-upload合法validated未动。
