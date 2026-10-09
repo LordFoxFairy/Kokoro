@@ -15666,3 +15666,11 @@ R357-HISTORICAL-CHECKER-BOUNDARY 聚合入口范围补充：Root实际核 script
 CUA原tab focus超时仍保留为历史失败，原生Playwright浏览器已实际可用，复用正规已登录普通用户（authenticated true / platform_admin false），未重启服务或授予权限。真实账户Settings无后台入口，直接/admin/settings返回404；正式Web ac505841已核独立admin shell/layout与fresh gate。管理员正向跳转、CRUD、刷新与撤权仍待验，不把普通用户负控称后台闭环。
 
 Root真实R255技能卡片→预览→查看详情显示SKILL.md正文；manifest.json切换→SKILL.md正文恢复→返回预览→重开详情实际成功。观察4个package GET恰为两次文件切换+重开目录与正文，无写入请求；这仅证明既有详情读取交互，不证明完整Manus视觉或上传发布。截图r357-browser-native-r255-detail.png已实际查看。正常v10仍inactive，普通上传未切换，完整Skills/Wave0–7继续OPEN。后继先冻结历史校验候选并Root审查，再正常owner激活/消费者接线/真实前后台验收。
+
+R357-HISTORICAL-CHECKER 聚合职责补充Root授权（2026-10-09）：实际16531五contract371PASS、check-contract通过，但cutover诊断真实expected69 got74；v10正式manifest与artifact均精确74RPC/39command/24proof。默认58860已自然exit1后准原writer只增现test/contract/platform-contract-cutover.test.ts，并修已准check-platform-contract-cutover.ts：current raw Proto精确74/39/24，规范generated/compiled完整相等及v10强检；v4固定34/17/24不变，R312历史personal四读用fixed publication child69/36/24及inverse parent hash，禁止以两伪来源标binary/generated。其它R330/R335/R345事实继续current存在性。不是放宽、跳过或删除安全断言；当前全门日志与收集RED保留，无资源变更。原20冻结paths保护，只准上述2聚合路径及原3设计docs一致性更新；Root再冻结独审/聚合/全门。
+
+### T-K03.4 R357 历史候选Root重跑：371通过，全门仍8失败（2026-10-09）
+
+Root对正式Platform基线3ba9fcb核669受保护路径原字节exact、20候选SHA冻结；独审未见确定P0/P1。真实五contract371PASS，check-contract通过6fcc148f…；16531在cutover旧current文本69诊断遇正规v10实际74失败，保日志、不宣称聚合通过。独立58860实际typecheck/lint/build通过后默认全门自然exit1：6failed files、8failed assertions、2138PASS、401skip，另platform-contract-cutover收集失败。Reporter命令多余 -- 导致JSON未生成，真实完整stdout日志保留；不冒称JSON证据。首次Root重跑错误log相对路径在测试前exit1，随后纠正，非行为RED。
+
+真实v10 manifest/artifact精确74RPC/39command/24proof；原聚合混历史/current职责，沿同卡只准原writer两既有聚合文件修正及负控，历史v4 34/17/24与MCP固定child69/36/24及parent hash保持。其余8旧fixture/oracle已派原只读review给精确改法，不放宽断言或用不合规范生产变更掩盖。正常服务/Schema/v10状态未变，真实用户上传与管理员正向链仍OPEN。

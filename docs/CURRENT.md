@@ -1,3 +1,9 @@
+### T-K03.4 R357 历史候选Root重跑：371通过，全门仍8失败（2026-10-09）
+
+Root对正式Platform基线3ba9fcb核669受保护路径原字节exact、20候选SHA冻结；独审未见确定P0/P1。真实五contract371PASS，check-contract通过6fcc148f…；16531在cutover旧current文本69诊断遇正规v10实际74失败，保日志、不宣称聚合通过。独立58860实际typecheck/lint/build通过后默认全门自然exit1：6failed files、8failed assertions、2138PASS、401skip，另platform-contract-cutover收集失败。Reporter命令多余 -- 导致JSON未生成，真实完整stdout日志保留；不冒称JSON证据。首次Root重跑错误log相对路径在测试前exit1，随后纠正，非行为RED。
+
+真实v10 manifest/artifact精确74RPC/39command/24proof；原聚合混历史/current职责，沿同卡只准原writer两既有聚合文件修正及负控，历史v4 34/17/24与MCP固定child69/36/24及parent hash保持。其余8旧fixture/oracle已派原只读review给精确改法，不放宽断言或用不合规范生产变更掩盖。正常服务/Schema/v10状态未变，真实用户上传与管理员正向链仍OPEN。
+
 ### T-K03.4 R357 原生浏览器恢复及普通用户边界实测（2026-10-09）
 
 CUA原tab focus超时仍保留为历史失败，原生Playwright浏览器已实际可用，复用正规已登录普通用户（authenticated true / platform_admin false），未重启服务或授予权限。真实账户Settings无后台入口，直接/admin/settings返回404；正式Web ac505841已核独立admin shell/layout与fresh gate。管理员正向跳转、CRUD、刷新与撤权仍待验，不把普通用户负控称后台闭环。
