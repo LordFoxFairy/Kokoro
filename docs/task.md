@@ -15706,3 +15706,9 @@ Root只读正常库快照：Platform14表、skill27、installation7，失败draf
 ### T-K03.4 R357 v10正式机器发行已验收（2026-10-09）
 
 Root21507自然exit0，默认JSON success=true：2191PASS/0FAIL/402SKIP；49focused与contract/artifact/cutover/typecheck/lint/build0、真实Ingress39187四PASS、独审与12/677字节保护共同放行。Root按exact12路径正式提交Platform84262b664275229c62370d49f51ad5e276116148，v10 aggregate dddb0d194af44dbf0b83a0a0443d774f3dee63f8cb03c364ad529c4c230fb85b，root digest8a850363580521fadf75bc20b1be70bfe62c20004568c00b72a77f614caa672f。机器发行active/routable/runtimeVerified，后者仅隔离真实owner资格，不冒normal部署/浏览器完成。正常schema/服务未切换，后续Root按同卡快照→drain→固定expand→facts/idempotence→源码reload；再BFF正式pin/注册和Web普通上传/独立后台双身份验收。完整Wave0–7仍active。
+
+### T-K03.4 R357 正常Platform已增量升级并源码重载（2026-10-09）
+
+Root实际复核旧46806句柄live及PID21372/cwd/config，SIGTERM正规drain；原句柄自然0并runtime.stopped，8086无listener才扩展。20527正式fixed-parent增量事务自然0：first.changed=true/target b948735b7d8895b0bf5b8343a4982ef2bcc423a7f0ef366bc9d7028cd1718e53，second.changed=false；14原表全行hash与停机前/后exact（facts48ef9c…），未删除原数据。receipt r357-normal-v10-expand-receipt.json。新正式源码84262b6复用原.env与Node24.20.0启动，句柄45001/PID65067，healthz与readyz实际200；证据r357-normal-v10-platform-reload.json。非四RPC真实用户验收、非BFF已注册。
+
+下一R357-BFF-ACTIVATION：owner BFF现正式3e19fbed，目录/Users/nako/.codex/worktrees/kokoro-r257-bff-normal，分支codex/r257-bff-normal-current，已核clean；消费者职责为固定Platform正式84262b664275229c62370d49f51ad5e276116148与新active aggregate dddb0d…，正规vendor/generated更新及src/bootstrap/runtime.ts生产client注册。优先现client/tokenSource/config与composition test，淘汰新adapter/fallback/兼容层；不新API/SQL/权限。写前先三现docs设计门及现生成工具完整文件集/保护清单，Root另授源码。写fresh create_draft AND install包含replay，Getfresh read、人token不forward，配置缺任一四项404/owner0，原explicit seam保持。正常服务/资源/Git均Root独占；最后Web单上传及管理员浏览器仍OPEN，完整Wave0–7 active。
