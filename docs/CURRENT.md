@@ -1,3 +1,11 @@
+### T-K03.4 R357 BFF隔离消费者正式提交；真实Storage资格仍OPEN（2026-10-09）
+
+Root最终核112materialized/84旧vendor删除/560保护exact，真实HTTP28PASS、合同28PASS，Connect/HTTP双生成、policy/typecheck/lint/build实际0；独审无确定P0/P1。BFF正式3e19fbed74d31898ba109b8339b1fef3331048bd，工作树clean。Get稳定series anchor与当前revision已纠正；正常dispatch未注册、服务未重载，不能据此称用户上传闭环。
+
+Root真实Storage资格四轮自然失败均保留：journal父目录缺失、Unix异步ACK半关闭、raw Proto与StorageClient扁平command混用、canonical阶段残留嵌套command引用。前三轮仅明确run-owned空桶/无连接DB经全catalog与inventory证明后定向删除，正常PG78与MinIO2 catalog exact，私有清理收据已保存。第四轮真实PUT及Complete已到canonical登记，失败资源仍保留（manifest runtimeStopped=true/activeSockets=0）；有对象，不按空桶假设删除，必须用该run journal与完整S3版本inventory exact核验。最新canonical-projection冻结a71650cc仅runner投影与负控修正，尚待Root真实重跑；没有激活v10或修改原37assets/7installations/失败draft。
+
+独立后台只读盘点完成：普通Settings管理员入口/admin已存在；独立layout/nav、/admin/settings及正式模型路由adapter/client/UI确实缺失。使用现System→BFF Public12契约，不复用普通Settings弹窗，不新增configs owner。后继按R357-WEB-ADMIN-SETTINGS先真实权限/跳转RED、独立壳与真实设置再双身份浏览器；不是后台已完成。Skills优先与完整Wave0–7范围不变。
+
 
 ### T-K03.4 R357 后继消费者与真实Storage资格仍有具名阻断（2026-10-09）
 

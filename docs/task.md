@@ -15542,3 +15542,11 @@ Root对BFF初freeze168c核108materialized/564protected/84旧vendor删除exact，
 后台只读已核：独立layout/nav当前缺失；/admin/settings可消费正式System3.0→BFF Public12已有模型路由CAS资源，Web已有固定schema但缺adapter/client/UI，不需要新configs模块或假设置。此为真实后继契约盘点，不是后台功能已完成。浏览器现tab14/15库存有效，DOM与截图仍focus命令超时；未重启/刷新/创建替代标签，不宣称页面验证。完整Skills与Wave0–7保持OPEN，其它模块暂停。
 
 R357-BFF-LOCAL-IMPORT范围补充：唯一Platform vendor repin必须同步scripts/generate-platform-http-client.mjs与openapi-ts.platform-http.config.ts现有固定owner pin，正规生成HTTP artifact/check；不得留旧alias。R357-STORAGE-QUALIFY两文件原writer负责headers捕获、真正pre-resource import load门、stop ACK失败保留所有自有资源、创建前与各阶段0600原子manifest；Root继续资源独占，冻结复审后才运行。
+
+### T-K03.4 R357 BFF隔离消费者正式提交；真实Storage资格仍OPEN（2026-10-09）
+
+Root最终核112materialized/84旧vendor删除/560保护exact，真实HTTP28PASS、合同28PASS，Connect/HTTP双生成、policy/typecheck/lint/build实际0；独审无确定P0/P1。BFF正式3e19fbed74d31898ba109b8339b1fef3331048bd，工作树clean。Get稳定series anchor与当前revision已纠正；正常dispatch未注册、服务未重载，不能据此称用户上传闭环。
+
+Root真实Storage资格四轮自然失败均保留：journal父目录缺失、Unix异步ACK半关闭、raw Proto与StorageClient扁平command混用、canonical阶段残留嵌套command引用。前三轮仅明确run-owned空桶/无连接DB经全catalog与inventory证明后定向删除，正常PG78与MinIO2 catalog exact，私有清理收据已保存。第四轮真实PUT及Complete已到canonical登记，失败资源仍保留（manifest runtimeStopped=true/activeSockets=0）；有对象，不按空桶假设删除，必须用该run journal与完整S3版本inventory exact核验。最新canonical-projection冻结a71650cc仅runner投影与负控修正，尚待Root真实重跑；没有激活v10或修改原37assets/7installations/失败draft。
+
+独立后台只读盘点完成：普通Settings管理员入口/admin已存在；独立layout/nav、/admin/settings及正式模型路由adapter/client/UI确实缺失。使用现System→BFF Public12契约，不复用普通Settings弹窗，不新增configs owner。后继按R357-WEB-ADMIN-SETTINGS先真实权限/跳转RED、独立壳与真实设置再双身份浏览器；不是后台已完成。Skills优先与完整Wave0–7范围不变。

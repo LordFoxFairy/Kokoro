@@ -12246,3 +12246,11 @@ Root15200完整门终态exit1：installer/build/check0，辅助745pass/2资源sk
 Root60631终态exit0：installer/build/check/format/test:integration全部0；辅助745pass/2明确资源skip，完整真实PG/Redis222pass/0fail/0skip（62.732秒）。manifest `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-r241-bff-full-e72w5lym/manifest.json`。Root回读result/所有steps及四资源不变量均true，owned DB absent。现test f6fc6e81仅诊断catch格式hunk，原1445行70511字节及195assert结构保持；独审 `/tmp/r241-rename-host-tenant-review.md` 0P0/P1/P2，原missing tenant P1覆盖关闭。仍是隔离候选，未Git提交/consumer repin/3310启用，不增加整组PASS。
 
 Root已给原BFF writer明确测试-only后继：同key/异key并发、锁内资格变更、真实SQL/连接故障回滚、真实COMMIT后应用ACK丢失、pool/锁/累计预算/HTTP取消及exact client观测。source/contract冻结；待自然实跑不提前猜修复。Web消费审查独立只读，Billing只读三D0草稿已Root核四语义裁决（usage manifest aggregate、Billing policy.json单源原bytes SHA、执行倍率/换算严格正、持久不支持ref归CORRUPT），没有SQL/源码/价格/资金权限。
+
+### T-K03.4 R357 BFF隔离消费者正式提交；真实Storage资格仍OPEN（2026-10-09）
+
+Root最终核112materialized/84旧vendor删除/560保护exact，真实HTTP28PASS、合同28PASS，Connect/HTTP双生成、policy/typecheck/lint/build实际0；独审无确定P0/P1。BFF正式3e19fbed74d31898ba109b8339b1fef3331048bd，工作树clean。Get稳定series anchor与当前revision已纠正；正常dispatch未注册、服务未重载，不能据此称用户上传闭环。
+
+Root真实Storage资格四轮自然失败均保留：journal父目录缺失、Unix异步ACK半关闭、raw Proto与StorageClient扁平command混用、canonical阶段残留嵌套command引用。前三轮仅明确run-owned空桶/无连接DB经全catalog与inventory证明后定向删除，正常PG78与MinIO2 catalog exact，私有清理收据已保存。第四轮真实PUT及Complete已到canonical登记，失败资源仍保留（manifest runtimeStopped=true/activeSockets=0）；有对象，不按空桶假设删除，必须用该run journal与完整S3版本inventory exact核验。最新canonical-projection冻结a71650cc仅runner投影与负控修正，尚待Root真实重跑；没有激活v10或修改原37assets/7installations/失败draft。
+
+独立后台只读盘点完成：普通Settings管理员入口/admin已存在；独立layout/nav、/admin/settings及正式模型路由adapter/client/UI确实缺失。使用现System→BFF Public12契约，不复用普通Settings弹窗，不新增configs owner。后继按R357-WEB-ADMIN-SETTINGS先真实权限/跳转RED、独立壳与真实设置再双身份浏览器；不是后台已完成。Skills优先与完整Wave0–7范围不变。
