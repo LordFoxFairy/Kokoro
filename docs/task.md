@@ -42,6 +42,8 @@ IAM S2沿现owner新窄provisioning helper，15具名路径/454保护候选，�
 
 Root已真实GET正常issuer Session200，当前用户匹配配置operator（只读资格收据r357-normal-operator-session-readonly.json）；未输出cookie/主体、未改scope/resource。正常Platform资源6→7须原正式read/extend命令先执行，否则激活IAM当前strict7会使workload拒绝；不靠重启假修复。参考创建菜单再次实读：API名称/图标/备注/多密钥，MCP名称/HTTP/图标/备注/URL/headers，另JSON导入和URL Beta；只开/取消，外部写入0，不猜私有API。
 
+Root已在自有唯一临时库用正规Prisma from-empty DDL实际装新canonical并实读全catalog：schema b185e918…、DDL cb305862…、catalog22e27572…；自有库已清、共享78库目录前后exact、正常写0。前两probe漏固定search_path引42501，原失败和源码保留；修Root探针遵当前owner search_path后PASS，非放宽生产门。实际hash已交A1更新fresh/expand门；A1完整生产CRUD/扩展/撤权、正常组合、页面与Admin仍待，不将该Schema探针当产品验收。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。
