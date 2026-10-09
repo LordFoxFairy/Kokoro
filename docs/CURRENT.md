@@ -1,3 +1,5 @@
+R357 UI必要i18n oracle范围追加：Root核tests/i18n/resolve.test.ts仅将skills.personal.manage加入已有个人Skills九语言闭集，批准该路径必要单key调整，不改其它断言。原writer报告143focused PASS、110 i18n/Settings PASS以及unknown实际恢复GET self/skills→usage POST精确序列，仍待Root冻结重跑。原default78111对应PID61669本轮实核live，原上一default3589PASS/8FAIL的新增两项已定点修复，原六OIDC失败仍不免门。原writer终态后冻结停写再Root验收，未把报告冒实际浏览器完成。
+
 ### T-K03.4 R357 UI 当前失败收敛实证（2026-10-09）
 
 上一goal turn实核原59849/59851 lint/build live及九owner200属verified wait。本轮Root复核原59849已不在进程表，build日志含完整route输出，但exit仍待所属writer原句柄报告，未重复启动。实际/tmp/r357-ui5.json为143tests、139PASS/4FAIL；三个安装POST revoked/generation/subject迟到ACK负控及unknown仍失败。/tmp/r357-ui-broad.json为268tests、267PASS/1FAIL（SettingsModal owner只读投影）。这些仅moving-tree实施证据，不冒冻结最终验收，尤其退役负控不能放宽。已传原唯一writer精确失败集合与终态/请求归因要求，下一保持同owner修复→冻结→Root独审/E2E；Wave0–7 active，任务外修改/服务/数据未动。
