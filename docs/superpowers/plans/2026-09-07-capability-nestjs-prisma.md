@@ -1,3 +1,7 @@
+### R356 真实组合首草稿失败已定位并修接线，页面验收仍 OPEN
+
+真实 IAM/BFF/Platform/Storage/版本化 MinIO/Clam 组合首草稿曾返回502，HTTP现场证明新 BFF wrappers 漏 request-id、Platform binary200 漏 no-store。BFF正式46ed4ef与Platform正式43005cc分别仅修传输接线，原准入/取消/严格响应检查和数据契约保持；Root独审、31HTTP及1922辅助用例通过，原失败证据保留。数据库/桶前后清单保持，正常服务和旧安装关系未改。固定新正式源码重跑真实组合中；未称页面闭环，前端仍唯一 writer，记录协议/管理员他人封面、旧NULL恢复和最终浏览器明确待验。
+
 ### R356 正式依赖已收敛，Skills 页面仍待完整验收
 
 仅 Skills 继续，其余模块和 heartbeat 仍暂停。BFF 正式 `427d126`（Public9.0.1，132 操作）已补真实上传版本 ACK 与游标错误；Storage 正式 `a1206d0` 保既有包 canonical 在非 clean 扫描时不被替换；IAM 正式 `61ccdbb` 仅修 Skills 沙箱真实发布者读取；Platform 正式 `e566843` 仅使原真实包烟测消费 v3、每次 PUT 的实际版本 ACK 和原取消信号。均为必要接线，不代表页面完成。
