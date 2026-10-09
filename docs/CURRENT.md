@@ -22,6 +22,10 @@ Root 正常3310实际626×752/1113×752/390×752分别294单列/376.5双列/358�
 
 Platform 三设计正式提交 `b0c0dbecabf019bb2dfe2be55dd1921b5eb947ee`（parent5b47eaf，只有3现设计前缀）。Root与独审核完整父正文和631保护；现机器只读check-contract及Prisma schema validate通过，未做DB drift/DDL或运行验收。完整三文档Prettier门实际FAIL：原父文档已不canonical，本片新正文与接缝canonical；只补3个接缝空行，原正文原字节保持，失败日志保留，未称完整format通过。新目标不借Agentproof替human、不新secret服务；MCP专属凭据、private Server、REST/BYOK/多项JSON与Admin全范围保留。正常服务不激活。下一具名源路径与IAM资格盘点后按owner发行正式写契约及实现，消费者不猜候选字段。
 
+运行台账已按真实句柄纠正：原Agent HTTP/System/Scheduler/Billing四进程无监听、旧句柄Unknown，Root只复用原正常持久环境和源码补启动。System、Scheduler、Billing真实ready200；Agent首次health200/ready503定位psycopg拒ORM专用schema URL参数，仅正常Agent DSN删该参数且保独立kokoro_agent schema、同库/凭据/地址，重启该句柄后ready200。未运行installer/DDL/reset/充值/调用；原PG/Redis/MinIO/Clam和五原服务未重复启动。原503与原私有配置备份保留，真实句柄在var/dev/processes.json；Agent模型worker仍未运行、Billing当前只读能力，不能把九个HTTP服务监听称所有功能完成。
+
+D3只读前置已结束：当前IAM工作负载mcp-personal scope名称并未发行human写/admin/credential-use能力。下一IAM现Session/tenant/member/platform-admin事实与现CheckAuthorization最小扩展，不新角色/权限库/服务；IAM→Platform正式控制面A→BFF→Web，执行B按Agent/System/Storage正式依赖打通。完整模块未验收，顺序仍连接器→定时→列表归属→按钮/Settings。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。

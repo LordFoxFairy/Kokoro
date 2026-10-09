@@ -12,7 +12,8 @@
 | R357-CONNECTOR-API-D0 / bff_skills_product_source_r353 / 只读 | BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，727df38；Platform apps/kokoro-capability，5b47eaf；仅连接器/MCP现 owner、public/admin 契约、消费者、数据模型及测试 | 读 AGENTS、TS/SQL手册、CODEBASE_MAP 与三设计；列 UI 动作到实际契约/owner 的映射、权限/CRUD/连接实际执行缺口；交不超过 30 行报告。禁止文件/Git/数据库/服务/浏览器操作 |
 | R357-CONNECTOR-UI-W1 / st6_legacy_competition_r353 / Web唯一writer | c79e119候选原树；精确6现路径与全部非范围SHA/原文见 ignored r357-connector-ui-w1-card.json；无新文件/契约/依赖/文档/Git/服务写入 | 主区响应式和正式projection异步保画面；先具名RED，保身份/取消/迟到负控。Root独占Git/浏览器与集成；已提交1fc4846；Root实际107辅助检查/type/lint与3尺寸浏览器通过；循环恢复P2关闭，非空E2E及整体仍OPEN |
 | R357-CONNECTOR-P-D2 / bff_skills_product_source_r353 / Platform唯一文档writer | 5b47eaf clean；仅现 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 当前前缀，原全文及其它文件SHA见 ignored r357-connector-platform-d2-card.json；生产/schema/机器/Git/资源不写 | Root决定MCP专属凭据字节归属、元数据目录/private Server/human管理及完整自定义API目标；三设计一致交冻结+原全文逆，已提交b0c0dbe；Root schema/现contract/631保护及独审通过，完整历史格式门FAIL明确保留，尚非实现验收 |
-| R357-CONNECTOR-P-D3 / bff_skills_product_source_r353 / 只读源前置 | Platform b0c0dbe、IAM正式当前源、BFF727df38；只读已批准MCP/personnel/admin资源入口及contract/schema/test，不写文件/Git/服务/数据 | 20行内给实际IAM可复用/缺失资格、正式owner方法发行边界、具名实施写集/2个最小切片及依赖；不再重做整体架构、不删完整REST/BYOK/JSON/Admin目标；Root据此授下一单仓writer |
+| R357-CONNECTOR-P-D3 / bff_skills_product_source_r353 / 只读源前置 | Platform b0c0dbe、IAM正式当前源、BFF727df38；只读已批准MCP/personnel/admin资源入口及contract/schema/test，不写文件/Git/服务/数据 | 已只读交18行并停写；IAM须正式资格，精确Platform A控制面/B实际执行写集已交；不再重做整体架构、不删完整REST/BYOK/JSON/Admin目标；Root据此授下一单仓writer |
+| R357-CONNECTOR-IAM-D4 / bff_skills_product_source_r353 / IAM唯一文档writer（继承主控模型） | IAM61ccdbb clean；仅3现设计前缀；卡r357-connector-iam-d4-card.json锁完整原正文/非范围SHA，无源码/Git/资源操作 | 复用current session/active member/platform_admin，不新角色/库；最小human/admin与Agentcredential用途资格及精确后继源集；冻结独审Root提交，未发行能力 |
 | R357-CONNECTOR-ROOT / Root / 文档与浏览器 | Root 58fe4c74；仅更新现 docs/CURRENT.md、docs/task.md、docs/progress.md；保留 gitlinks/uv.lock 和所有未交接变更 | 核运行句柄、实际浏览器失败与参考 UI；收两只读报告后再授单仓精确 writer，先行为失败再修，不凭旧通过数放行 |
 
 原失败基线：两原负责人只读盘点已完成并停写；Root 实际浏览器 626×752 对照 Manus 插件目录/详情。当时本地目录为静态 APP_CONNECTORS/DATA_SOURCE_CONNECTORS，卡片点击无详情；主区窄时仍双列且字段严重截断。管理入口此次真实终态为空，不能误记加载失败；自订 MCP 仅打开/取消未提交。参考 Gmail 实际可打开详情、连接按钮、四示例与分类/类型/作者/网站/隐私，未授权或执行第三方动作。证据在既有 ignored var/dev/r255-preserve/r357-connector-browser-baseline.json 及三张 r357 对照截图。
@@ -24,6 +25,10 @@ Root 当前连接器 UI 切片正式提交 Web `1fc484621b86427ed1d38923772c682a
 Root 正常3310实际626×752/1113×752/390×752分别294单列/376.5双列/358单列，无document横溢；管理入口真实空态，无正常数据写入/服务重启。截图与收据 r357-local-connector-catalog-w1.jpg、r357-local-connector-mobile-w1.jpg、r357-connector-ui-w1-browser.json。布局问题已验证，正常非空异步分页、目录详情、CRUD、真实调用、Admin和Manus整体一致仍OPEN；组件mock不作E2E。Platform三现设计D2已收敛完整MCP/REST/BYOK/多server JSON、MCP专属凭据、private Server和human/admin边界，尚未修改源码/契约/schema或激活正常服务。
 
 Platform 三设计正式提交 `b0c0dbecabf019bb2dfe2be55dd1921b5eb947ee`（parent5b47eaf，只有3现设计前缀）。Root与独审核完整父正文和631保护；现机器只读check-contract及Prisma schema validate通过，未做DB drift/DDL或运行验收。完整三文档Prettier门实际FAIL：原父文档已不canonical，本片新正文与接缝canonical；只补3个接缝空行，原正文原字节保持，失败日志保留，未称完整format通过。新目标不借Agentproof替human、不新secret服务；MCP专属凭据、private Server、REST/BYOK/多项JSON与Admin全范围保留。正常服务不激活。下一具名源路径与IAM资格盘点后按owner发行正式写契约及实现，消费者不猜候选字段。
+
+运行台账已按真实句柄纠正：原Agent HTTP/System/Scheduler/Billing四进程无监听、旧句柄Unknown，Root只复用原正常持久环境和源码补启动。System、Scheduler、Billing真实ready200；Agent首次health200/ready503定位psycopg拒ORM专用schema URL参数，仅正常Agent DSN删该参数且保独立kokoro_agent schema、同库/凭据/地址，重启该句柄后ready200。未运行installer/DDL/reset/充值/调用；原PG/Redis/MinIO/Clam和五原服务未重复启动。原503与原私有配置备份保留，真实句柄在var/dev/processes.json；Agent模型worker仍未运行、Billing当前只读能力，不能把九个HTTP服务监听称所有功能完成。
+
+D3只读前置已结束：当前IAM工作负载mcp-personal scope名称并未发行human写/admin/credential-use能力。下一IAM现Session/tenant/member/platform-admin事实与现CheckAuthorization最小扩展，不新角色/权限库/服务；IAM→Platform正式控制面A→BFF→Web，执行B按Agent/System/Storage正式依赖打通。完整模块未验收，顺序仍连接器→定时→列表归属→按钮/Settings。
 
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
