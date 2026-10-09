@@ -1,3 +1,11 @@
+### T-K03.4 R357 BFF 职责整改正式交付；Web 终态恢复后继（2026-10-09）
+
+Root17463自然0：当前BFF typecheck/lint/contract/build0，默认1295PASS/0FAIL/3SKIP、contract704PASS；独审确认职责P1关闭，无新增P0/P1。原MCP标题虚称CRUD经Root实际核并改为fail-closed，格式化唯一旧local-import HTTP测试的规范化语义hash保持；Root10586真实format0/55PASS0FAIL0SKIP。最终freeze70836f6a090f155be3eef8ffc6bddbb951f1c1c9b89996b1faa1cc093077c65a：Root核13含删除路径、661其它tracked原字节exact后正式提交BFF49b555c227edd24f7ba2497bf6732a2597bb982e。应用聚合/下载规则保application，owner wire decode在单一infra facade，types单源归application；强门和HTTP最终strictparse不放宽。正常BFF44904/53714仍原运行，尚未以新HEAD重载，非真实用户上传验收。
+
+Web第二P1冻结Root核34/808 exact。58753使用真实Node22.22.2重跑type/lint/build0；默认3462PASS/2FAIL/79SKIP及OIDC收集失败，新增!important违反CSS强门真实保留，旧ko/OIDC仍未闭。真实浏览器desktop800×492/drop dashed+灰底已生效；390viewport首探在宽度转换瞬态528，等两帧稳定358/x16，不能把瞬态截图冒作窄屏终态失败。两张真实截图已保存。独审发现确定感染/拒绝后active持久记录/UI不释放导致下一合法包死锁，Root纠正先前过宽“不清terminal”裁决：只权威terminal可结束，unknown/pending保原key。原唯一Web writer获现范围窄修terminal后新包恢复及移除!important、actual default负控，正常数据/Git服务均不动；最后仍Root浏览器完整链。
+
+前一goal turn是实测截图/全门发现失败与续派，属进展。本轮正式BFF代码交付，不将纯门绿/desktop尺寸改善称完整Skills或Wave0–7闭环。其它仓和基础设施保持运行与原数据，后台管理员正向旅程仍待已问的实际身份。
+
 ### T-K03.4 R357 上传候选真实截图与 Root 门禁整改（2026-10-09）
 
 Root复核Web freeze a29aaaabe3df290dc8394715b8b1227e751a4e2393b8aff4ae268d4631a60c59，34路径/808其它tracked原字节exact。5407最终typecheck/lint/build0；默认3454PASS/1FAIL/79SKIP及1收集失败自然1，韩文1650/1752<95%、OIDC307/49305ms实际复现，不冒绿。独审确认大文件预检、写前keys持久化、drag/刷新catch/success reset等前轮问题已有实现与负控；仍发现PUT transfer不严校且默认跟随redirect、Complete infected/pending均自动Finalize，候选未放行。
