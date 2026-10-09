@@ -15682,3 +15682,15 @@ R357-STALE-ORACLE-AND-VALIDATE-FIXTURE：历史slice正式50a338c，Root412PASS/
 Platform正式50a338c，Root21精确路径提交、668其它tracked post-build原字节exact；固定source snapshot SHA12f357…未刷新。历史固定parent/delta与current v10分离，两个独立只读审查均无确定P0/P1。Root76930六contract412PASS，check-contract/current cutover/typecheck/lint/build自然0；三删除负控调用真实生产assertCurrentPlatformSource，current精确74/39/24、历史MCP69/36/24及Product63/v4 34/17/24保持。旧初census fail与regex-only假负控候选均保留为整改过程，不冒已通过。
 
 全门仍原58860八assertion失败，沿同计划仅5现tests纠正oracle/真正Validate fixture进入目标语义；只读初报告错误将BFF算contract/serializer算15被Root拒收，重核真实11/18/20与user-owned upload/CAS/attempt准入后才授权原writer。正常基础设施/九运行owner监听均实际复核未重复启动，normal v10仍inactive、Schema未升级、用户上传与独立后台正向未闭环。后台验收管理员身份未指定，当前正规登录实际普通用户；已异步询问管理员账号，不擅自授资格。完整Wave0–7 active。
+
+R357-STALE-ORACLE fixture边界裁决：Root拒绝内联begin/complete/validate stub冒真包业务闭环，不新建InMemory package持久模型。现capability-service属RPC组合fixture，明确命名为包服务typed failure映射/owner准入，stub仅证明映射；原无binding/Storage0与pending recoverability业务断言落在现test/integration/skill-package-validate-postgres.integration.test.ts（授权追加唯一此既有文件），复用其真实PrismaValidateTransaction+test-owned PG；pending已有真实uploaded/scan_pending/external_unknown断言保留，补无binding及state/CAS负控按实际服务。真正Begin/Complete状态链由现owner PostgreSQL测试与已实测Ingress资格支持，不伪造stub phase来称链路。禁止扩test/fixtures/in-memory-capability-state-store.ts或test/doubles，若PG测试需要新范围先报告。Root资源独占执行真实PG聚焦，writer仅纯门/fixture编辑、无服务/库操作。
+
+R357-V10-ACTIVATION 后继设计任务（仅前置计划，尚未发源码许可）：复用Platform/Skills既存v10运行发布，Root真实Ingress25949与clean/infected/ACK-lost资格支持runtimeVerified=true仅指隔离owner链，不冒normal/浏览器成功。默认51437已自然0且fixture slice正式afa2bb1，允许进入三文档设计门，源码仍须Root另授。前置接受该slice后，原owner先仅3原设计文档收敛active发行门；DATA_MODEL/schema/Proto/wire不变。后继拟12现路径：v10-profile.ts/v10-artifact.ts，v10/{manifest,local-skill-import-v1,provenance}.json + contract/provenance.json正规再生，check-platform-execution-operations.ts，local-skill-import-v10/cutover两现contract tests精确新aggregate +3docs；不另建文件/版本/兼容层。current v10改变状态并正规生成manifest/profile/provenance，V1–V9与所有wire/schema/identity/budget pins原字节保护；inactive/false tamper负控须实际checker拒绝。Root冻结/纯门/全门/真实owner资格绑定该SHA后正式发行。然后Root正常数据hash/ID快照→原46806正规drain→固定parent/SQL expand→目标schema/catalog及保护exact→重启既定源码正常Platform→BFF固定新owner SHA/aggregate正规生成/生产composition→Web单上传及管理员完整浏览器。绝不在运行的正常Platform下改schema，不将37 Storage assets误称37 Skills、不清原7 installations/失败draft。
+
+### T-K03.4 R357 Platform默认门与真实PG切片已验收（2026-10-09）
+
+Root正式提交Platform afa2bb1ae1733a9e48b727d66687fae9539a75a9（7既有路径），最终freeze SHA447820fc7abf396357174d58aea244be55938a697816f3051dd5374d12a7a106；682其它tracked post-build原字节保持。独审首次发现Nest新增三对象仅核keys的P1，已最窄补exact facts并复审无剩余确定P0/P1。
+
+Root51437自然exit0，独立JSON success=true：默认2188PASS/0FAIL/402SKIP；typecheck/lint/build实际0。Root55579真实自有PostgreSQL Begin8/Complete19/Validate11共38PASS，缺binding负控三Storage调用trace0、receipt0；只读pg_database核本轮三个fixture前缀count0。证据为var/dev/r255-preserve/r357-stale-root-final-default.json、r357-stale-root-final-default.log、r357-stale-root-real-pg.log。SKIP不冒真实集成已验，历史失败资源未删除。
+
+正常v10仍inactive、schema未扩展、Platform/BFF未重载，用户单上传和独立后台管理员正向尚未闭环。下一原Platform owner先三设计文档门，再正规v10 active发行、Root正常drain/扩展/reload、BFF repin/生产注册、Web单上传及真实浏览器验收。完整Wave0–7仍active；上一用户确认turn仅核现结构，未新交付功能，本轮采取可执行下一动作。

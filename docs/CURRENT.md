@@ -1,3 +1,11 @@
+### T-K03.4 R357 Platform默认门与真实PG切片已验收（2026-10-09）
+
+Root正式提交Platform afa2bb1ae1733a9e48b727d66687fae9539a75a9（7既有路径），最终freeze SHA447820fc7abf396357174d58aea244be55938a697816f3051dd5374d12a7a106；682其它tracked post-build原字节保持。独审首次发现Nest新增三对象仅核keys的P1，已最窄补exact facts并复审无剩余确定P0/P1。
+
+Root51437自然exit0，独立JSON success=true：默认2188PASS/0FAIL/402SKIP；typecheck/lint/build实际0。Root55579真实自有PostgreSQL Begin8/Complete19/Validate11共38PASS，缺binding负控三Storage调用trace0、receipt0；只读pg_database核本轮三个fixture前缀count0。证据为var/dev/r255-preserve/r357-stale-root-final-default.json、r357-stale-root-final-default.log、r357-stale-root-real-pg.log。SKIP不冒真实集成已验，历史失败资源未删除。
+
+正常v10仍inactive、schema未扩展、Platform/BFF未重载，用户单上传和独立后台管理员正向尚未闭环。下一原Platform owner先三设计文档门，再正规v10 active发行、Root正常drain/扩展/reload、BFF repin/生产注册、Web单上传及真实浏览器验收。完整Wave0–7仍active；上一用户确认turn仅核现结构，未新交付功能，本轮采取可执行下一动作。
+
 ### T-K03.4 R357 历史契约与current聚合正式修复（2026-10-09）
 
 Platform正式50a338c，Root21精确路径提交、668其它tracked post-build原字节exact；固定source snapshot SHA12f357…未刷新。历史固定parent/delta与current v10分离，两个独立只读审查均无确定P0/P1。Root76930六contract412PASS，check-contract/current cutover/typecheck/lint/build自然0；三删除负控调用真实生产assertCurrentPlatformSource，current精确74/39/24、历史MCP69/36/24及Product63/v4 34/17/24保持。旧初census fail与regex-only假负控候选均保留为整改过程，不冒已通过。
