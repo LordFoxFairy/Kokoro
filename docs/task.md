@@ -1,3 +1,11 @@
+### T-K03.4 R357 Web 精确下载正式提交与真实用户点击验收（2026-10-09）
+
+上一turn真实prepare字节核验与admin归因更正属progress。本轮Root正常浏览器/app/skills→我的技能→r357 installed卡→preview下载按钮→native download event→保存ZIP，failure=null、349bytes与原上传逐字节exact、SHA019b9929…fed2；弹窗保留、零alert。私有收据r357-skills-installed-ui-download.json/zip。旧withdrawn个人清单整理R267实际UI下载显示专属“下载失败，请重试。”，session200/true保持；原BFF只读核Platform assertSkillProductRead对非active下载故意NotFound、BFF正规404投影符合D0，不改为403或放宽资格。收据r357-skills-withdrawn-ui-download.json。
+
+Root78368自然exit1：195 files PASS/1 FAIL，3588 tests PASS/6 FAIL，与原OIDC project rail/R242集合一致；7具名文件145PASS、type/lint0，日志r357-web-qualified-download-root-gates.log。Root43158 build自然0，含/admin与/admin/settings；build日志独立保存。31冻结SHA验证后未变、817其它tracked保护，独审无确定P0/P1/P2。Root按31路径独占暂存提交Web b704bab13bb86cbd42614470aaf17e68d3e19a97，未夹带任务外文件、服务/数据不变。该提交是下载切片交付，不把默认六失败或Skills/Admin全流程标绿。
+
+当前安装正向与withdrawn负控已实际用户点击验收；managed/share/旧pin≠current/撤销及整体视觉仍OPEN。原Web负责人仅获下一个人Skills单cursor/四来源/fixedchrome、独立本人管理与后台隔离的只读设计准入，未先写UI。下一行动逐项真实exact下载剩余矩阵与批准UI小切片、管理员正向；完整Wave0–7 active。
+
 ### T-K03.4 R357 管理员404归因更正；真实安装包下载通过（2026-10-09）
 
 上一turn冻结核验与404发现属progress。本轮Root复核admin/layout.tsx与platform-admin-gate.ts：forbidden主动notFound；正常浏览器/api/auth/session实际200 authenticated=true/platform_admin=false。因此上一条“后台设置运行偏差”归因更正为当前普通身份准入拒绝，路由及dev manifest均存在，未发现须重启/放宽权限的证据。管理员正向独立/admin→/admin/settings仍待正规管理员身份，不冒通过；不自授角色。
