@@ -1,3 +1,13 @@
+### R357 正常配对前：原对象备份与实际运行核验
+
+Root本轮正常九listener PID全部存活；7个owner readyz200，Web/app200，Agent裸readyz401受认证保护；未重启或将401判故障。证据r357-runtime-pre-paired-activation-check.json。CUA browser2剩本地tab3，原getTab两次Emulation.setFocusEmulationEnabled超时，未据此重启或声明浏览器通过。
+
+Root以Storage owner只读repeatable-read重核原37 Asset/Blob与已保存完整snapshot逐字段exact（30包/7普通、scan clean、final version NULL）。对37指定key做GET VersionId=null + 原IfMatch，逐个全字节SHA/size核对并保存0700目录/0600文件私有备份，共27701字节；数据库/对象写0。证据r357-storage-original-objects-pre-drain.log与r357-formal-cutover-backup/storage-original-objects-pre-drain.private.json。这是排他窗口前备份，不构造writer_exclusion_receipt、不替代drain后再核与正式37项apply。
+
+实际bucket GetBucketCors返回NoSuchCORSConfiguration404，但不能因此断言浏览器PUT失败：Root实际正常Web origin的OPTIONS返回204，allow-origin精确127.0.0.1:3310、PUT/content-type获准；同origin签名原NULL GET200且完整SHA相同，Expose-Headers含Etag/X-Amz*/\*。Web现putPackage/putSkillCover都显式credentials omit（src/hub/skill-publish-client.ts），最终VersionId能否浏览器读取仍须正式配对后真实PUT证明，不以服务端fetch冒浏览器通过，不擅改bucket权限。证据r357-storage-cors-readonly.jsonl。
+
+只读负责人已核Platform/Storage固定v3一致与现env身份凭据匹配（不输出值），剩实际配对停止线仍为Root真实drain/严格manifest与progress、Storage expand+37修复、Platform固定expand/backfill、BFF/Web正式消费者。Web当前实现会热更三窄新route，而正常BFF尚旧；writer明确新POST可能503及旧mock21RED，原日志须保留并按新正式合同承接同功能/安全覆盖，不靠删除行为测试清绿。正常新旧配对未完成，页面/Admin全部闭环仍OPEN。
+
 ### R357 Skills 后继正式交付，继续消费者与 UI（2026-10-09）
 
 Root 对最新93路径冻结450dae0225逐SHA核验、独立只读审查后，精确28路径正式提交 Platform `9ed6801673ca279f446712de6eee3476717bfb24`，父6d2a3bd，formal release clean。Root5具名文件96 PASS、contract/artifact/typecheck/lint/build0；最后fixture完整schema预检后真实PG3 PASS / 0 FAIL / 0 SKIP（session24301终态0），自有数据库回收、共享inventory exact、正常数据库写0。两个原seed失败日志保留，不删除或改生产规则迎合fixture。修复NULL来源SQL/hydration一致、跨页shuffle稳定series key、owner前置official过滤与确切安装metadata；canonical schema不变，无新表/alias/fallback。收据var/dev/r255-preserve/r357-platform-read-successor-formal-release-receipt.json。
