@@ -1,3 +1,11 @@
+### T-K03.4 R357 纯MCP启动依赖缺陷已实测修复（2026-10-09）
+
+独审核出生产P1而非旧fixture：LocalImport无条件provider导致纯MCP错误要求Storage；Root真实71762三compositionRED，原writer仅3现路径条件注册+Nest Optional+负控。Root86947原三例3PASS（48名称过滤）、45469全unit9PASS/typecheck/具名lint/build自然0；685非范围（含11历史候选）SHA exact，独审无确定P0/P1。Platform正式P1 commit 3ba9fcb，仅3路径，未夹历史checker候选。
+
+Root真实Ingress25949自然0为4PASS，正式IAM/Storage/MinIO/Clam完整上传/Finalize/Get/replay并本轮资源清理0，目录kokoro-q-5_03ixc5；此前33374错误指定不存在Homebrew Node22路径，启动前FileNotFoundError日志保留，改用已核nvm Node22正规路径，不冒行为RED。正常服务/数据未升级，v10仍inactive，完整Skills与后台浏览器未验。当前浏览器tab14再探仍CDP focus超时（未重复开tab或服务），不伪称E2E通过。
+
+历史checker首候选错误未来strip已被Root拒收，原writer纠正固定年代parent并冻结11候选；剩余两descriptor/三artifact与其它oracle待按同卡闭合。Root找到唯一缺历史Proto正规commit fa185ed2b25c3e81946cfdcd12d7665d02b8bad3、SHA12f357a7f81363c4242954fd0415fc786436685618ad542a50182304153bc22c（50210bytes），只读来源证据已存，未新建机器snapshot。完整Wave0–7 active，不缩目标。
+
 ### T-K03.4 R357 全门基线裁决与后续历史契约校验收敛（2026-10-09）
 
 Root唯一48803基线重跑exit1，独立JSON报告；当前44FAIL均在7b1b9d0复现、新增0，另同platform-contract-cutover收集失败。基线额外expand失败来自隔离目录缺兄弟parent-schema fixture，不宣称修复历史失败。原独审曾3进程共写reporter瑕疵已记录，以Root单进程报告为准。候选5路径实测61focused/真实Ingress4PASS/type/lint/build0、683保护exact，经Root正式提交9f890c1（完整SHA由Platform Git记录）；全仓仍红，正常未激活。

@@ -15633,3 +15633,19 @@ Root当前Platform全门真实13failed files/44failed tests/2100PASS/401skip（�
 Root唯一48803基线重跑exit1，独立JSON报告；当前44FAIL均在7b1b9d0复现、新增0，另同platform-contract-cutover收集失败。基线额外expand失败来自隔离目录缺兄弟parent-schema fixture，不宣称修复历史失败。原独审曾3进程共写reporter瑕疵已记录，以Root单进程报告为准。候选5路径实测61focused/真实Ingress4PASS/type/lint/build0、683保护exact，经Root正式提交9f890c1（完整SHA由Platform Git记录）；全仓仍红，正常未激活。
 
 R357-HISTORICAL-CHECKER-BOUNDARY沿原Platform writer单仓：先仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/CURRENT.md三文档门，把既有历史固定输入/current由v10校验裁决落为精确方案；DATA_MODEL无变。比较新通用inverse框架与复用固定parent+既有profile delta，采用后者，拒新增snapshot/目录或刷新旧hash。后继拟5既有checker（mcp-personal-product、skill-product、skill-category-keys、skill-example-prompts descriptor及check-platform-contract-cutover）与5对应contract tests，保护旧strip/hash/v1-v9/Proto/generated/descriptor/provenance；先文档冻结Root审后另授写入，不一次性批量改。另11个oracle/fixture失败仍OPEN，在同卡顺序处理；最终仍真实Web上传/后台和Manus视觉验收。
+
+R357-HISTORICAL-CHECKER-BOUNDARY 文档门Root通过：三绝对路径位于var/dev/platform-release/docs/{TECHNICAL_DESIGN,API_CONTRACT,CURRENT}.md；既有DATA_MODEL不变，无Schema/API变动或新owner；Root三文档prettier/diffcheck0，正式文档提交由本仓Git记录。已知current默认44断言及cutover收集失败保留为本切片RED。现授权原writer仅四既有descriptor + check-platform-contract-cutover.ts及五具名contract tests（见上卡），实现固定parent/profile发行输入和v10 current强校验。旧strip/hash/proto/generated/v1-v9/profile/vector/descriptor/provenance禁止改；不增加新文件/目录/snapshot，不操作正常资源。交付完整freeze及失败至GREEN，Root纯门/contract/cutover/type/lint/build重跑和独审，其它11失败另卡同计划处理；正常页面未完成。
+
+R357-LOCAL-IMPORT-COMPOSITION P1后继根因（只读确认，尚未授权实施）：skills.module.ts把LocalSkillImportService无条件加入providers，与config/runtime.ts needsStorage纯MCP=false矛盾；skill-rpc.service.ts constructor的TypeScript可选形参未使用Nest Optional，须共同评审DI边界。Root71762真实聚焦3FAIL/46名称过滤，日志r357-local-import-mcp-composition-root-red.log。不得给纯MCP伪加Storage fixture来掩盖生产缺陷；后继原writer仅在当前10path冻结后逐slice修条件注册/DI及纯MCP与缺Storage技能failclosed负控。普通用户上传链、后台浏览器仍未验收。
+
+R357-HISTORICAL-CHECKER-BOUNDARY 范围纠正：Root与独审拒收最初current→剥V10候选（与20e4eb8文档方向冲突），writer已撤掉自有future-strip并正确使用各实际年代固定parent。现4descriptor直接验证通过/MCP4PASS/typecheck0仅writer交付，不当Root验收。真实依赖再确认personal-skill-package与installation-skill-updated-at两个旧descriptor旁路亦读current，三artifact逆链把current provenance当历史inventory；允许原writer先在同3设计文档补精确5现文件后继边界并核source固定输入是否缺失。可能新固定parent Proto文件须先证明既有profile/bytes不足与正规parent commit/hash，再由Root第8节放置门另准，不建历史child三套snapshot。禁止current fallback、重算旧hash或改test绕过。
+
+R357-LOCAL-IMPORT-COMPOSITION 当前写入授权：Platform同原writer，基线20e4eb8+11自有历史候选（freeze r357-history-partial-freeze.json SHA2a9cb91d，保护677），历史候选暂停并保护原字节。现仅3路径src/modules/skills/skills.module.ts、src/modules/skills/skill-rpc.service.ts、test/unit/skills-module.test.ts；LocalImport归Skills source/catalog，纯MCP不实例化此provider，Nest Optional配合原handler unavailable保护，启用技能却缺Storage仍failclosed。无schema/contract/module边界改变、不新文件；现三composition具名RED已由Root71762复现，再补provider absent/技能缺Storage负控、pure gate/type/lint，冻结后Root同3integration/unit行为和真实Ingress复跑并审查。禁止在无关fixture注入假Storage，Root仅3paths提交，11历史候选不夹带，普通页面闭环仍OPEN。
+
+### T-K03.4 R357 纯MCP启动依赖缺陷已实测修复（2026-10-09）
+
+独审核出生产P1而非旧fixture：LocalImport无条件provider导致纯MCP错误要求Storage；Root真实71762三compositionRED，原writer仅3现路径条件注册+Nest Optional+负控。Root86947原三例3PASS（48名称过滤）、45469全unit9PASS/typecheck/具名lint/build自然0；685非范围（含11历史候选）SHA exact，独审无确定P0/P1。Platform正式P1 commit 3ba9fcb，仅3路径，未夹历史checker候选。
+
+Root真实Ingress25949自然0为4PASS，正式IAM/Storage/MinIO/Clam完整上传/Finalize/Get/replay并本轮资源清理0，目录kokoro-q-5_03ixc5；此前33374错误指定不存在Homebrew Node22路径，启动前FileNotFoundError日志保留，改用已核nvm Node22正规路径，不冒行为RED。正常服务/数据未升级，v10仍inactive，完整Skills与后台浏览器未验。当前浏览器tab14再探仍CDP focus超时（未重复开tab或服务），不伪称E2E通过。
+
+历史checker首候选错误未来strip已被Root拒收，原writer纠正固定年代parent并冻结11候选；剩余两descriptor/三artifact与其它oracle待按同卡闭合。Root找到唯一缺历史Proto正规commit fa185ed2b25c3e81946cfdcd12d7665d02b8bad3、SHA12f357a7f81363c4242954fd0415fc786436685618ad542a50182304153bc22c（50210bytes），只读来源证据已存，未新建机器snapshot。完整Wave0–7 active，不缩目标。

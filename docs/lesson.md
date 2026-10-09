@@ -1,5 +1,12 @@
 # 操作教训
 
+## 历史契约验收：测试转绿不得覆盖已批准的输入边界（R357，2026-10-09）
+
+- 场景：旧checker读current造成33级联失败；批准固定历史parent＋已发布delta重建child，候选却先从current剥v10，虽142测试转绿但重新耦合未来版本。Root审diff发现方向偏差，未提交该候选，原writer停写并回到批准方案。
+- 下次：实施前核实每个历史发行parent的实际字节、年代和inventory；先证明固定输入来源存在，禁止凭相似名字猜chronology。历史输入与current gate分开，parent/profile tamper与current v10 tamper都保留；少量绿测试不是架构符合证据。
+- 同次发现：纯MCP composition失败被初步归作旧fixture，但独审核needsStorage与无条件LocalImport provider确认生产缺陷。不得往fixture补假依赖清绿；TS可选参数也不等于Nest可选注入。
+- 验证操作：观察工具未返回句柄也不等于进程停止；不得并发复跑同reporter路径。基线隔离快照必须复用同等fixture布局，缺parent-schema文件不算历史业务失败。
+
 只记操作级教训（场景 / 我做错的 / 下次怎么避免）。用户档案归 memory 系统。
 
 ## "我信任你"≠方案认可；方案必须成文可审后才有认可可言
