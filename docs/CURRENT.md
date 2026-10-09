@@ -1,3 +1,9 @@
+### R357 原账号凭据入口已找回，登录阻塞纠正（2026-10-09）
+
+本地开发原账号记录一直保存在 `var/dev/r255-preserve/preserved-login-credentials-private.json`（0600，Git ignored，仅 email/password；禁止打印值、提交或复制到文档）。Root 接续时先查此入口，不因摘要遗漏要求用户重复输入，不重建账号/改密码。此前“必须等待用户登录”的判断因未查询此现存记录而错误，已纠正。
+
+Root已使用这份原凭据走真实浏览器登录成功，原对话记录/输入保留，再进入Skills，正常目录10项真实可见。截图 `var/dev/r255-preserve/r357-original-account-login-recovered.jpg`。原登录阻塞解除；正常publisher grant/fresh scope及个人发布/Admin整链仍待正式验收，不据目录读取宣完成。沿同T-K03.4继续，不新建计划中心或提交secret。
+
 ### R357 IAM 授权半完成恢复已根因修正；普通发布仍待登录验收（2026-10-09）
 
 IAM 正式 `ec66c06c04922a8bc98245f4d6b095d51d233a32`：原 resource scope 提交后 ACK 丢失导致 current/legacy 被永久拒绝，新增真实 RED4FAIL/1PASS 后沿原正式入口修正四态。新的严格合格显式调用仅补缺失 client scope，原 unknown 立即停止、不内部重试、不重复 resource 写，不降低 operator/exact client/完整事实/binding 校验；provider 无 CAS，仍需覆盖所有注册 writer 排他窗口。本片无 Schema、公开契约、正常 grant/角色/凭据或服务启停。

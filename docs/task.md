@@ -15417,3 +15417,5 @@ R357 T-K03.4：Storage维护snapshot真实PG RED→GREEN后正式d5a575a；Web�
 基线 IAM 587e64a5；Root 三设计前缀批准现 publisher extend 四态，原调查员唯一 writer，仅 oauth-client.service、现 unit/native 与 CURRENT。C/L 新调用仅补 client，不重发 resource/内部 retry；unknown 原样、L/C 拒绝、C/C 无写。Root 独占 Git、正常服务/资源及集成，独审后 Root 自有 PG + 用户页面另验。三设计文件位于 apps/kokoro-iam/docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md。无 Schema/public/generated 新增；原7安装独立只读 hash exact（收据见同一私有卡），真实用户登录仍待用户页面操作，全部 Skills/Admin 尚未验收。
 
 T-K03.4 本恢复片正式 ec66c06（7paths/462保护exact）：Root148工程＋3真实PG恢复通过，独审无确定P0/P1；normal grant/fresh token/UI/Admin未验，当前原登录表单等待用户完成。无正常数据/服务写，不升整体完成数。
+
+T-K03.4 登录前置已恢复：原凭据现存于私有 ignored 0600 文件（入口见CURRENT），Root实际登录后正常Skills10项可见；先前等待用户判断纠正，不再反复索取。发布scope演进与普通/Admin完整写验收待续。
