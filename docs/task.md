@@ -1,3 +1,11 @@
+### T-K03.4 R357 正规 BFF exact 服务重载；Web 下载消费者实施准入（2026-10-09）
+
+上一goal turn正式BFF 74b1b923及Root493e796c属progress。本轮Root核原96552/PID23250仍live后单次Ctrl-C自然exit0、53714 listener消失；完全同0600持久env SHA/Node22/cwd启动唯一52818/PID47322，readyz200，全部其它已记录服务listener PIDset exact。没有installer/reset/DDL/新临时配置。收据r357-bff-exact-download-normal-before.json与normal-reload.json，processes.json更新。真实新三个准备路由GET均405/Allow POST/no-store/x-request-id/body exact；这只证明正式路由激活，不证明登录资格/owner/文件下载。
+
+原Web负责人沿T-K03.4为唯一writer，基线var/dev/web-skills-release 1f3a1e6，Root独占提交和服务。先下载消费者切片：现preview/installed/managed/share caller、skill-binary-client、server skill-binary、hub catchall、具名现tests、下载专属文案各locale、现owner pin与三设计/CURRENT/INDEX。新普通文件先报告实际路径/职责；先三设计对齐正式BFF私有机器政策，再实施，禁止改owner字段/路径或series current替代exact资格；保持tenant/取消/迟到/严格binary边界，删除退休versionGET/fallback。先真实RED、冻结与全门，既知Web六默认失败保留，不跳/放宽。此切片不同时改Settings UI或角色。
+
+后继UI仍主installation单cursor/四来源/fixedchrome；二级management逐项核本人合法action，管理员公开目录/审核能力不能搬给普通用户。后台独立/admin/settings。下一行动Root待下载consumer冻结后重跑与真实浏览器文件bytehash、旧pin/managed/share链，再进行同尺寸UI切片。完整Skills/Admin/Wave0–7仍OPEN，goal active。
+
 ### T-K03.4 R357 exact 下载 BFF 正式提交，待正常服务与浏览器验收（2026-10-09）
 
 Root 已核405修复新freeze 14c4b162：21文件hash exact，与前Root全门候选仅route/header及现HTTP三入口负控2paths不同；658其它基线tracked bytes最终仍exact。独审原P1关闭、无新增P0/P1。Root35871最终format/type/lint/contract/default/build自然exit0，合同716PASS、default1312PASS/0FAIL/3SKIP（实际日志r357-bff-exact-download-405-root-final.log）；没有把旧全门承袭给修后候选。
