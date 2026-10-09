@@ -1,3 +1,11 @@
+### T-K03.4 R357 剩余 Web 门已定位；正规 BFF 生命周期修复进行中（2026-10-09）
+
+前一goal turn为正式Web3284370及Root实际全门交付，属进展。本轮Root直接核正式proxy/App layout与integration oracle：无session /app真实canonical跳转 /login?return_to=%2Fapp，旧readiness仅认/login导致正常307循环超时；授权仅现OIDC测试精确canonical307（同时拒匿名200/外部或错return_to），不改认证产品代码/超时/skip。韩文覆盖缺口已定位已上线Admin Routing23键闭集，授权现ko和完整性测试真实韩文补齐，不随机凑15键/降95%门。Web唯一writer共3paths，先RED、全门和freeze，Root待重跑。
+
+BFF唯一writer在既有main/lifecycle及必要两docs四paths实现OS信号→现shutdown；Root变更中审查发现deadline.unref可能未settle但无active handle自然exit0，已要求真实无额外handle永挂child负控并保持deadline ref至settle，不能将未drain标成功。生产30s grace/31s失败终态仍固定，正常服务9724/44904未动。当前工作树不是冻结或正式交付，不冒最终验收；正常PG/Redis/MinIO与所有owner仍复用，不重置。
+
+独立后台设置/admin/settings及用户Settings管理员跳转结构保持。Skills真实上传整链与管理员正向浏览器仍待验，完整Wave0–7 active；仅当前Skills必要后继，不扩散其它CRUD业务。
+
 ### T-K03.4 R357 普通私有上传切片正式交付；完整 Skills 仍未验收（2026-10-09）
 
 Web正式32843707261eb4a629d0acb5c6df2ee10d965352，Root精确34路径提交、808其它tracked保护exact，独审权威终态恢复无新增P0/P1。Root61324实际自然结束：Node22 typecheck/lint/build0，默认191files通过/2files失败，3463PASS/1FAIL/79SKIP；韩文1650/1752覆盖不足及OIDC真实Next /app 307 readiness收集失败仍保留，不宣称全门绿。日志r357-web-terminal-root-full.log。正式切片是私有本地包四步骤与恢复语义，不是整个Skills、Manus视觉、管理员或Wave0–7完成。普通浏览器稳定几何收据r357-web-terminal-browser-geometry.json，尚未真实提交包。
