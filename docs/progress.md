@@ -1,3 +1,9 @@
+### T-K03.4 R357 Skills身份根因修复正式验收（2026-10-09）
+
+Platform `2f0c39359768278c583e8726bab0dfe2ad5c0264`，Root重跑68PASS（42unit/26真实独立PG）、typecheck/lint/contract0，11变化/656保护SHA完全一致，独立审查无确定缺陷。唯一package identity闭集覆盖正规skill-md-v1与严格persisted zip-v2；未知仍拒绝，未变Schema/wire/权限/正常数据。此片仅是正规包激活的工程阻断修复，不证明浏览器个人上传闭环。
+
+普通用户真实Manus上传已取证为单文件drop/click、根SKILL.md metadata；旧浏览器先造metadata草稿再公开Publish的产品方向停止。后继按owner local import合同→BFF→Web，后台管理独立 `/admin` 与自身settings，普通Settings仅管理员可见跳转入口；完整权限CRUD与视觉仍OPEN。Root已派BFF narrow身份消费者及Platform设计文档门，同T-K03.4，不新中心，不清理原7安装/37资产及失败attempt，不扩大publisher grant。
+
 ### R357 IAM 授权半完成恢复已根因修正；普通发布仍待登录验收（2026-10-09）
 
 IAM 正式 `ec66c06c04922a8bc98245f4d6b095d51d233a32`：原 resource scope 提交后 ACK 丢失导致 current/legacy 被永久拒绝，新增真实 RED4FAIL/1PASS 后沿原正式入口修正四态。新的严格合格显式调用仅补缺失 client scope，原 unknown 立即停止、不内部重试、不重复 resource 写，不降低 operator/exact client/完整事实/binding 校验；provider 无 CAS，仍需覆盖所有注册 writer 排他窗口。本片无 Schema、公开契约、正常 grant/角色/凭据或服务启停。

@@ -15423,3 +15423,9 @@ T-K03.4 登录前置已恢复：原凭据现存于私有 ignored 0600 文件（�
 ### T-K03.4 普通用户上传目标纠正（2026-10-09）
 
 Root真实读取已登录Manus当前上传弹窗：单上传区域、.zip/.skill、根SKILL.md YAML名称/描述及帮助/示例；没有Kokoro现“发布个人技能”手填名称/简介/标签/分类/示例表单。当前普通发布旅程停止，不扩publisher grant、不追重试/删新draft；改造目标必须是正规个人上传/添加，元数据由owner解析，不仅改标题。参考截图用户已给，后继owner设计需承接上传顺序与幂等、失败恢复，后台目录管理独立。新包身份Platform skill-md-v1已合法而BFF/Web/Platform publish仍zip-v2-only的跨仓RED定位已保存，按owner顺序闭合，不批量宽化schema。
+
+T-K03.4 R357-IDENTITY：Platform formal9b4b43e5唯一writer skills_platform_implementation_r357，精确package identity helper/validate/publish/构造器及现unit/native/contract门、三设计/CURRENT；Root独占Git/正常资源，未知identity拒绝、原zip-v2严格资格保留。新文件归既存Skills/package，不放catalog或utils，无Schema/wire/history artifact改动。Root同时核正式local pre-draft import最小边界与普通/admin权限矩阵（两独立只读审查），Web实现等待owner契约，禁止仅改标题或伪metadata。参考真实弹窗尺寸已存CURRENT，当前未称闭环。
+
+T-K03.4 最新后台边界确认：普通Settings仅给管理员提供“后台管理”跳转入口，进入独立 `/admin` 页面；后台拥有独立布局、导航及后台设置页面，不在普通Settings弹窗内嵌管理功能。普通用户不显示入口，直接访问页面/接口仍服务端拒绝；当前代码已有账户页 `/admin` 链接及三层授权，完整独立后台设置与CRUD尚待真实验收。
+
+T-K03.4 identity owner正式2f0c39359768278c583e8726bab0dfe2ad5c0264，Root68PASS含26真实PG、type/lint/contract0、11after/656protected SHA exact，独审无确定缺陷。BFF唯一writer skills_contract_review_r357续修两runtime/twoOpenAPI值域，既存vendor9ed activeartifact本来正确两身份，无wire变更不盲repin；Root实际核验路径为vendor/execution-operations/skill-series-current-v1.json（最初两次错误路径已纠正）。正常服务未重启，用户完整上传仍待真正local import。

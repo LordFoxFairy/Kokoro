@@ -1,3 +1,15 @@
+### T-K03.4 R357 用户上传与后台发布边界纠正（2026-10-09）
+
+当前优先目标是普通个人技能上传/添加，不是扩大publisher权限以跑通旧公开发布表单。Root已实际读取登录Manus的个人上传：单drop/click，接受`.skill,.zip`，根`SKILL.md` YAML名称/描述，无名称/简介/标签/分类/示例输入。普通Settings实际为全部/个人/官方/第三方，没有本地“我发布的”管理tab等价证据。管理员catalog治理须独立服务端授权；未观察Manus管理员界面，不臆造其后台能力。
+
+真实参考667×726 CSS viewport：dialog400×347.5、圆角16、背景rgb(248,248,247)；标题18px/600，header padding20px 56px 12px 20px；dropzone360×151、2px dashed、圆角12。截图`var/dev/r255-preserve/r357-manus-personal-upload-reference.jpg`。这些是当前尺寸实际测量，不把用户截图物理像素直接当CSS。
+
+现Web先浏览器metadata CreateDraft，再上传/validate/Publish，与此流程不符；仅改标题/隐藏输入会生成伪metadata，已拒绝。现本地上传需要已存在skill_id，正式pre-draft import缺口由Platform owner→BFF contract→Web依次承接；浏览器不解析YAML、不猜名字、不公开发布。Root正在审最小上传意图、Storage扫描、包metadata、私有可用/安装与幂等恢复边界。
+
+当前真实新attempt `93c1711b-4ad4-4afb-acf5-55ce6aae74eb` 已draft201、对象PUT200、complete200；Platform Validate200而BFF502 `skill_response_invalid`。原因是正规新包`skill-md-v1`与BFF/Web及Platform激活处旧`zip-v2`值域漂移。保留该attempt，不重试/删除/发布。原37资产与7安装继续保护。Platform唯一writer只修精确新旧两种身份共享闭集，未知拒绝，先真实RED；Root审查/PG验证/提交，当前仍未验收。
+
+同任务T-K03.4及私有卡继续。普通上传、外部详情/视觉、后台完整权限CRUD及全Wave0–7仍OPEN。正常服务不重复启动，原账号已真实登录，不再要求用户提供已有凭据。
+
 ### R357 原账号凭据入口已找回，登录阻塞纠正（2026-10-09）
 
 本地开发原账号记录一直保存在 `var/dev/r255-preserve/preserved-login-credentials-private.json`（0600，Git ignored，仅 email/password；禁止打印值、提交或复制到文档）。Root 接续时先查此入口，不因摘要遗漏要求用户重复输入，不重建账号/改密码。此前“必须等待用户登录”的判断因未查询此现存记录而错误，已纠正。
