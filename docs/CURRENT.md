@@ -1,3 +1,9 @@
+### T-K03.4 R357 BFF激活候选实证与全门失败分类（2026-10-09）
+
+候选196 materialized含87旧vendor删除/87新正式Git842来源，Root post-build冻结SHA及563保护exact；独审无slice新增P0/P1。Root33532 focused58PASS、全contract704PASS/typecheck/lint/build0；默认自然1为1287PASS/8FAIL/3skip，不能用writer1288/7替代。Root83075隔离正式3e19 archive真实默认1010PASS/18FAIL/3skip：原7leaf均同基线复现；另9ed缺fixture失效已机械pin修，不恢复第二vendor。Root新增Billing summary503!=200真实保留；3368受控具名candidate/baseline均0，支持75ms资源敏感但不反推全门绿。实际production债为application/skill-specification依infra/generated，另OpenAPI9oracle与4mock断言后继待正规修。候选未提交/正常BFF未重载，Skills用户闭环仍OPEN。
+
+Web独立compact实现进行，真实默认3421PASS/25FAIL/79skip含旧大表单oracle；Root追加授权3现app-frame/settings-modal/use-session-state tests仅新入口oracle，保auth/generation/取消/权限断言，不增兼容旧表单。OIDC307/i18n韩文失败保实证，Root最终同字节复验不口头免门。所有服务与原owner数据保留，完整Wave0–7 active。
+
 ### T-K03.4 R357 正常Platform已增量升级并源码重载（2026-10-09）
 
 Root实际复核旧46806句柄live及PID21372/cwd/config，SIGTERM正规drain；原句柄自然0并runtime.stopped，8086无listener才扩展。20527正式fixed-parent增量事务自然0：first.changed=true/target b948735b7d8895b0bf5b8343a4982ef2bcc423a7f0ef366bc9d7028cd1718e53，second.changed=false；14原表全行hash与停机前/后exact（facts48ef9c…），未删除原数据。receipt r357-normal-v10-expand-receipt.json。新正式源码84262b6复用原.env与Node24.20.0启动，句柄45001/PID65067，healthz与readyz实际200；证据r357-normal-v10-platform-reload.json。非四RPC真实用户验收、非BFF已注册。
