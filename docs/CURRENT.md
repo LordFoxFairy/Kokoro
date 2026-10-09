@@ -1,3 +1,11 @@
+### R354 Skills 完整 BFF 已发行，Web 正式接线已放行（页面仍未验收）
+
+Root 正式提交 BFF `6e803829d8b6b6d918437e150fc0ee192f72a4c8`（parent d2695c47）：完整 Public9/B2 与正式 Platform P4 同片发行，而非逐字段候选。Root 核 297 no-renames 精确路径、232提交对象、482父字节/362原保护、81正式 owner Git 输入及9个fixture完整逆；当前正规生成两门、build、7个P4与47个准入/owner响应HTTP均实际通过。原阶段真实PG资格保持历史证据，未冒本轮新配对。整体staged diffcheck真实2，仅不可编辑formal owner Proto EOF空行；精确发行字节保持且日志保留，不宣称全空白门通过。
+
+同一 Web writer 已获正式 SHA，沿原W2整片接入目录/预览/正文/我的技能/Settings/创建/分享下载/后台；原28mixed保护，禁止候选wire与owner直连。Root 正常3310只读实页已确认原任意QA tags分类移除、R255预览→真实SKILL.md/manifest→返回可用，预览800×600；这是变化中的诊断，不是最终验收。两截图/收据和正式提交收据位于既有 `var/dev/r255-preserve/r354-*`。
+
+正常BFF/Platform/Storage仍原句柄未激活，旧资产维修与真实普通/管理员持久整链、Manus等尺寸对照仍待；S01–S10全部OPEN，其它模块/heartbeat暂停，完整Wave0–7 goal active。下一由Root完成必要真实owner配对及保数据资格，Web完成全片后再真实浏览器验收。用户要求的返工经验沉淀仅在完整验收后执行，不提前称已完成。
+
 ### R353 当前：Skills 整片接线与真实页面差距（2026-10-08，页面未验收）
 
 仅Skills继续，当前调整为Web整页实现与BFF必要接线并行，而非页面串行等待底层。Web唯一writer st6已开始正文不跳动/同target不重复读取/鉴权失效清私有内容，继续Manus整页与后台装配；正式新API消费待BFF提交。Platform P4 fa185ed2已正式；BFF导入后在线准入与owner响应分界修正由Root实际复核，最后同writer消费正式P4中。页面S01–S10仍全部OPEN；截图/真实完整普通与管理员交互尚待，不升级完成声明。
