@@ -15694,3 +15694,5 @@ Root正式提交Platform afa2bb1ae1733a9e48b727d66687fae9539a75a9（7既有路�
 Root51437自然exit0，独立JSON success=true：默认2188PASS/0FAIL/402SKIP；typecheck/lint/build实际0。Root55579真实自有PostgreSQL Begin8/Complete19/Validate11共38PASS，缺binding负控三Storage调用trace0、receipt0；只读pg_database核本轮三个fixture前缀count0。证据为var/dev/r255-preserve/r357-stale-root-final-default.json、r357-stale-root-final-default.log、r357-stale-root-real-pg.log。SKIP不冒真实集成已验，历史失败资源未删除。
 
 正常v10仍inactive、schema未扩展、Platform/BFF未重载，用户单上传和独立后台管理员正向尚未闭环。下一原Platform owner先三设计文档门，再正规v10 active发行、Root正常drain/扩展/reload、BFF repin/生产注册、Web单上传及真实浏览器验收。完整Wave0–7仍active；上一用户确认turn仅核现结构，未新交付功能，本轮采取可执行下一动作。
+
+R357-V10-ACTIVATION Root D0审查/源码授权（2026-10-09）：原writer三设计文档冻结，Root实际diff核仅3路径；API首段“digest不变”与active再生矛盾，要求最窄明确wire/Proto/descriptor/V1–V9不变而v10 aggregate/root combined变化；正常四RPC写验仅BFF/Web真实旅程或显式自有intent，不隐式reset。授权原Platform唯一writer同卡准确12既有路径实施（三docs+v10 profile/artifact+四产物+聚合checker+两tests），先active预期/真实checker篡改RED，再single writer生成与机械新pin、纯门/默认/type/lint/build；无SQL/资源/Git权。Root独占真实owner资格、正常维护与集成提交，正式37assets/7installations/draft仍保留。
