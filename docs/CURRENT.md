@@ -1,3 +1,13 @@
+### T-K03.4 R357 正规 BFF 已重载；真实上传在 Finalize 失败（2026-10-09）
+
+BFF正式2be5f21ce3af84e971436b1f8cd188f25c480e0f，Root4paths/669保护exact、独审无P0/P1/P2；Root31337实际format/lint/type/default/build0，1300PASS/0FAIL/3SKIP。Root最初误用不存在test:contract命令exit1保留，改正确contract:test句柄36816自然0/704PASS，未改代码或门消除错误。生命周期deadline保持ref、同步throw/重复signal/永久挂起真实child覆盖，不把强制失败退出冒资源drain。
+
+Root正规旧exec9724实际Ctrl-C exit130、原44884→44904链及53714 listener消失后，完全同0600 env hash/Node22/cwd启动唯一新exec15350/PID5611，readyz200，其它10listeners原PIDexact。旧运行未载signal hook，因此这次旧停止不称应用drain；新正式入口已接。未installer/reset/临时env/重复服务。收据r357-bff-normal-lifecycle-reload.json与原processes已更新。
+
+Root真实普通用户从创建→本地文件添加→既有349-byte r357-skills-user-journey.zip：Begin201、实际对象字节上传、Get200、Complete200/clean/uploaded；Finalize无body400 invalid_local_skill_import_request，UI真实失败，不称成功或Skills闭环。新intent99d4facc-4e81-472b-b4bb-2e9ea1e1df2a与已上传asset均保留，不新建重复intent/删除数据；原BFF owner只读定位无body校验链后Root授权最小修，继续同key恢复。收据r357-normal-local-import-browser-failure.json。
+
+Web默认解除readiness旧oracle后实际执行暴露更多callback503、其它locale同Admin Routing23键缺译，不将首次可执行失败说成全绿。Root允许八locale同闭集真实翻译、原匿名helper精确canonical，callback503先只读根因；三文件机械格式噪声拒收恢复。全目标仍active，管理员正向和完整Skills/UI/其余Wave0–7未验收。
+
 ### T-K03.4 R357 剩余 Web 门已定位；正规 BFF 生命周期修复进行中（2026-10-09）
 
 前一goal turn为正式Web3284370及Root实际全门交付，属进展。本轮Root直接核正式proxy/App layout与integration oracle：无session /app真实canonical跳转 /login?return_to=%2Fapp，旧readiness仅认/login导致正常307循环超时；授权仅现OIDC测试精确canonical307（同时拒匿名200/外部或错return_to），不改认证产品代码/超时/skip。韩文覆盖缺口已定位已上线Admin Routing23键闭集，授权现ko和完整性测试真实韩文补齐，不随机凑15键/降95%门。Web唯一writer共3paths，先RED、全门和freeze，Root待重跑。
