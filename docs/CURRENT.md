@@ -1,3 +1,9 @@
+### T-K03.4 R357 Manus 个人 Skills 当前响应式实测（2026-10-09）
+
+上一turn正式managed下载与UI准入属progress。本轮Root读取真实已登录Manus tab15 #settings/skills/personal，667×726实际dialog[143.5,73,380,580]/radius16，并截图确认横向Settings导航、search/探索/添加、四来源单列表；1440×900实际dialog[144,45,1152,810]/radius16、左完整导航，heading[446.5,79,768,30]、探索按钮[1050.5,150,72,32]、添加[1130.5,150,84,32]。search input[481.5,155,152,22]仅input不冒整个外框。override reset后实核恢复667×726及原dialog，未改Manus数据或上传。
+
+收据r357-manus-personal-skills-responsive-reference.json0600，当前参考观测已传原Web唯一writer，要求三设计先记录桌面/窄屏差异，不把667的380×580或横向顶栏机械套桌面。这只提供精确实现参考，不证明本地候选视觉完成；Root不对正在实施树做最终门。下一行动原owner真实RED、候选冻结后Root同尺寸截图/滚动/焦点/权限/下载复验。完整Wave0–7 active。
+
 ### T-K03.4 R357 本人 managed 下载真实点击通过（2026-10-09）
 
 Root在已正式Web b704bab、下一UI尚未实施的旧本人managed入口，实际我发布的→r357私有技能卡→preview下载→native browser event→保存349bytes，failure=null、无alert，与原ZIP逐字节及SHA019b9929…fed2一致；收据r357-skills-managed-ui-download.json及ZIP0600。初locator误用tab导致timeout属Root探测错误，纠正实际button后成功，不是产品失败。此证据仅managed下载旧入口，不冒迁移后新route/UI/分享/旧pin≠current已验收。
