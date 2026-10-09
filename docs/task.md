@@ -1,3 +1,9 @@
+### R357 后继下载交互阻断：直接改造，不放行假完成
+
+Web原3P1已原writer实际RED8 FAIL / 3 PASS→GREEN（6文件361/contract307/architecture51/types/lint0），新freeze34e14daf仍待Root独审。BFF后继独审745/745源与保护exact后发现2P1：进程128 handle且GetSkill预览占位可正常多主体全局503；filename引号/分号/Unicode直接quoted-header插值畸形；另跨仓确定阻断，Web只接受单filename regex而BFF正式输出filename+filename*，普通下载也502。Root已分别续派原BFF/Web唯一writer按现责任窄修容量回收/安全header与精确两参数解析，补实际RED与负控，不调大常量假解决、不宽松透传。保持旧冻结与失败、原数据/权限/合同，未提交候选或正常升级。
+
+Root当前BFF七文件124 PASS/0 FAIL/0 SKIP；原句柄62145随后Root误用不存在pnpm types终态1，日志原样保留，实际README/package正确typecheck已更正，新独立工程句柄41962继续typecheck/lint/build/contract，未重启正常服务或重复纯门。Web首片隔离defaultbuild37271已终态0，不能替新P1候选。最终BFF/Web修复新冻→Root重跑相应门与逐操作浏览器，不因历史绿放行。
+
 ### R357 Web 首片未放行：独审发现三项真实 P1
 
 Web首片冻结54aa6828（35路径），Root逐SHA及原mixed121记录中切片外93项按原file/non-file规则exact，实际隔离重跑5文件348 PASS、contract306、architecture51、lint/typecheck0。独审发现三项P1：GetSkill只核series ID可把新metadata/旧exact包tree/新下载混版本；Web strict Hub schema漏正式optional source导致合法200→502；shuffle/includeOfficial布尔非法值静默false。Root已停止放行并续派原Web唯一writer按现文件3真实RED→窄修、保异步状态和版本条件、正式schema闭集与原安全覆盖；不是页面完成。
