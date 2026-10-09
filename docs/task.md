@@ -15447,3 +15447,9 @@ T-K03.4 Local import机器v2冻结ae2430ac已由Root实际验31变化/648protect
 T-K03.4 后继BFF只读提案四`/v1/skill-imports` public资源未准入：用户公开命名严格Manus已知suffix v2→v1，未观察公开上传write，现四方法仅internal批准；Root阻止发明公开接口，要求沿现browser-private ingress复核。不新BFF Storage/SQL/receipt，fresh双action与预算、900s/24h恢复方案保留；owner runtime正式发行前不消费repin/写。Platform已报告精确source service/state+现capability transaction族、parser返回真实description测试范围，Root确认符合既存三设计，先行为RED/native冻结。
 
 T-K03.4 runtime测试先行freeze5341b3d四文件：Root实际native入口exit1/缺新transaction模块collect失败/0项执行，未访问PG业务，不称真实资源RED。此为新能力缺实现基线，原唯一writer准入批准production；须完整实现后交Root真实PG四写回滚、双Finalize、ACK lost、expiry/tenant隔离及清理门，无stub制造假失败。编译缺口必须同slice关闭；active v10/正常服务与Web链路仍未放行。
+
+### T-K03.4 R357 私有上传消费者设计已提交（2026-10-09）
+
+BFF正式`99bf89c`仅4既有docs，Root核freeze-v2 fc18716f与4after/657protected exact，public OpenAPI/source/generated未改。不发明Manus公开上传方法；本地上传后继固定`/browser/v1/skills/local-imports...`四私有route，Web专属同源adapter，fresh三写双IAM含replay、Get纯读、零BFF Storage/SQL/receipt。Begin重签只在未到期pending，后phase明确错误再Get，Finalize completed原key按至少30天receipt重放；避免返回伪PUT或第二upload。原CORS PUT严格取得VersionId且旧Complete200支持source version字段，不等于新旅程通过。
+
+Platform机器v2已Root8focused/3真实PG通过、catalog78exact；runtime唯一writer在闭合真实实现，Root预检已指出canonical Begin IDs、信号/deadline/commitunknown与typed receipt、去可选mock双轨等，候选仍未冻结/激活/正常库应用。Web两普通本地入口的手填Draft→Publish根因与单上传替换范围已只读确认，消费者合同发布后才写；独立后台Settings仍待实现。完整Skills与Wave0–7保持OPEN，不以设计或纯门称用户闭环。

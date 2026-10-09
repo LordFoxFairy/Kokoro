@@ -1,3 +1,9 @@
+### T-K03.4 R357 私有上传消费者设计已提交（2026-10-09）
+
+BFF正式`99bf89c`仅4既有docs，Root核freeze-v2 fc18716f与4after/657protected exact，public OpenAPI/source/generated未改。不发明Manus公开上传方法；本地上传后继固定`/browser/v1/skills/local-imports...`四私有route，Web专属同源adapter，fresh三写双IAM含replay、Get纯读、零BFF Storage/SQL/receipt。Begin重签只在未到期pending，后phase明确错误再Get，Finalize completed原key按至少30天receipt重放；避免返回伪PUT或第二upload。原CORS PUT严格取得VersionId且旧Complete200支持source version字段，不等于新旅程通过。
+
+Platform机器v2已Root8focused/3真实PG通过、catalog78exact；runtime唯一writer在闭合真实实现，Root预检已指出canonical Begin IDs、信号/deadline/commitunknown与typed receipt、去可选mock双轨等，候选仍未冻结/激活/正常库应用。Web两普通本地入口的手填Draft→Publish根因与单上传替换范围已只读确认，消费者合同发布后才写；独立后台Settings仍待实现。完整Skills与Wave0–7保持OPEN，不以设计或纯门称用户闭环。
+
 ### T-K03.4 R357 Local import机器门发现真实失败（2026-10-09）
 
 Root原句柄84372自然exit1：真实PostgreSQL expansion 3FAIL均落在fixture setup，第63行DROP owner schema后直接执行DDL，search_path落入pg_catalog；不是业务expand已经通过。原日志`var/dev/r255-preserve/r357-local-import-root-native.log`保留。只读catalog识别本次PID46628的三个fixture库，剔除它们后的78库全字段digest与此前Root probe baseline exact；确认无连接后仅删除这三个自有库，catalog恢复78/exact，无正常资源写。清理收据`r357-local-import-native-fixture-cleanup.json`。
