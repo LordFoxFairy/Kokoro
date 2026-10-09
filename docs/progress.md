@@ -1,3 +1,11 @@
+### R357 Web 首片未放行：独审发现三项真实 P1
+
+Web首片冻结54aa6828（35路径），Root逐SHA及原mixed121记录中切片外93项按原file/non-file规则exact，实际隔离重跑5文件348 PASS、contract306、architecture51、lint/typecheck0。独审发现三项P1：GetSkill只核series ID可把新metadata/旧exact包tree/新下载混版本；Web strict Hub schema漏正式optional source导致合法200→502；shuffle/includeOfficial布尔非法值静默false。Root已停止放行并续派原Web唯一writer按现文件3真实RED→窄修、保异步状态和版本条件、正式schema闭集与原安全覆盖；不是页面完成。
+
+Root首隔离默认Turbopack build真实失败：外指normal node_modules symlink越出root，日志r357-root-web-frozen-engineering.log保留。排查另发现pnpm workspace曾将normal三个@kokoro链接重指/tmp；Root已恢复其正常packages目的地，隔离node_modules改为APFS clone真实目录、全symlink0个越界，不改生产nextconfig/不切webpack/不碰normal.next。同冻结默认build随后实际exit0，日志r357-root-web-frozen-build-local-dependencies.log。保护文件按原is_file语义复核，目录exists不能冒文件漂移。此build是首片资格，不能销三项P1或冒最终UI。
+
+BFF后继已冻ad110e50（196改删/549保护），Root在原隔离snapshot核全SHA/deleted absence并补13原元文件，七文件/类型/lint/build/contract当前运行句柄62145，非未知即重启。Public12完整字节未变；独立Platform owner正在只读审查project/filter/shuffle/exact资格。正常升级/37项apply尚未开始，完整Wave0–7与S01–S10仍OPEN。
+
 ### R357 正常配对前：原对象备份与实际运行核验
 
 Root本轮正常九listener PID全部存活；7个owner readyz200，Web/app200，Agent裸readyz401受认证保护；未重启或将401判故障。证据r357-runtime-pre-paired-activation-check.json。CUA browser2剩本地tab3，原getTab两次Emulation.setFocusEmulationEnabled超时，未据此重启或声明浏览器通过。
