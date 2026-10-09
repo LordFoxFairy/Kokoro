@@ -1,3 +1,9 @@
+### T-K03.4 R357 本人 managed 下载真实点击通过（2026-10-09）
+
+Root在已正式Web b704bab、下一UI尚未实施的旧本人managed入口，实际我发布的→r357私有技能卡→preview下载→native browser event→保存349bytes，failure=null、无alert，与原ZIP逐字节及SHA019b9929…fed2一致；收据r357-skills-managed-ui-download.json及ZIP0600。初locator误用tab导致timeout属Root探测错误，纠正实际button后成功，不是产品失败。此证据仅managed下载旧入口，不冒迁移后新route/UI/分享/旧pin≠current已验收。
+
+下一UI原owner获09c54d52任务卡准入且已续派，唯一writer，Root不抢写或对移动树做最终门；冻结后同尺寸截图与真实下载重跑。原shared owner/SQL、infra、其它Settings/Admin/下载契约不改。完整Skills/Admin/Wave0–7仍active，当前推进不是只做下载而缩小原目标。
+
 ### T-K03.4 R357 个人 Skills 单列表 UI 实施准入（2026-10-09）
 
 上一turn Web b704bab下载正式提交与真实点击验收属progress。Root核当前mounted surface、return-target与Settings装配，原owner只读方案获得实施准入，沿同一任务中心，不重建计划。基线Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release，codex/r357-web-skills-release，b704bab13bb86cbd42614470aaf17e68d3e19a97，当前clean；owner为原skills_platform_implementation_r357唯一writer，Root审查/提交/服务。业务不增加owner、SQL或BFF聚合。
