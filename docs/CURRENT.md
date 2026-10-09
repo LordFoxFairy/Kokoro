@@ -1,3 +1,9 @@
+### R357 Skills 后继正式交付，继续消费者与 UI（2026-10-09）
+
+Root 对最新93路径冻结450dae0225逐SHA核验、独立只读审查后，精确28路径正式提交 Platform `9ed6801673ca279f446712de6eee3476717bfb24`，父6d2a3bd，formal release clean。Root5具名文件96 PASS、contract/artifact/typecheck/lint/build0；最后fixture完整schema预检后真实PG3 PASS / 0 FAIL / 0 SKIP（session24301终态0），自有数据库回收、共享inventory exact、正常数据库写0。两个原seed失败日志保留，不删除或改生产规则迎合fixture。修复NULL来源SQL/hydration一致、跨页shuffle稳定series key、owner前置official过滤与确切安装metadata；canonical schema不变，无新表/alias/fallback。收据var/dev/r255-preserve/r357-platform-read-successor-formal-release-receipt.json。
+
+BFF原负责人 platform_github_p3_frozen_review_r353 已续派同T-K03.3唯一writer，基线498da443，消费正式9ed6801并删除首片临时unsupported分支，打通project授权/official过滤/shuffle/exact安装元字段；网站路径/字段保持原定。Web原负责人 skills_platform_frozen_review_r357继续T-K03.4唯一writer的真实接线和参考UI。Root独占提交、资源、正常服务与浏览器；正常版本尚未配对激活，37 Asset/7安装原数据保持，页面/Admin闭环与S01–S10仍OPEN。最新用户要求问题直接正规改造，不遗留不可维护兼容实现；只删实际被替代路径，独立package文件/CRUD/Admin职责保留。
+
 ### R357 资源失败改变处理方法与 Web 并行推进
 
 后继真实 PG 首轮0 PASS / 3 FAIL（known publisher/provenance fixture不合规范），第二轮1 PASS / 2 FAIL（repositoryId非十进制）；两日志原样保存。Root已要求改为先用现正式Zod对全部seed完整预检再跑资源，不继续逐字段猜修；project disabled exact安装实际已到达PASS。两轮自有库回收/共享库inventory exact，正常写0。Web正式BFF498消费者与Manus UI沿T-K03.4已派原盘点负责人，先三设计与保护混合集；不等待资源门而重复空转。

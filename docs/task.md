@@ -1,3 +1,9 @@
+### R357 Skills 后继正式交付，继续消费者与 UI（2026-10-09）
+
+Root 对最新93路径冻结450dae0225逐SHA核验、独立只读审查后，精确28路径正式提交 Platform `9ed6801673ca279f446712de6eee3476717bfb24`，父6d2a3bd，formal release clean。Root5具名文件96 PASS、contract/artifact/typecheck/lint/build0；最后fixture完整schema预检后真实PG3 PASS / 0 FAIL / 0 SKIP（session24301终态0），自有数据库回收、共享inventory exact、正常数据库写0。两个原seed失败日志保留，不删除或改生产规则迎合fixture。修复NULL来源SQL/hydration一致、跨页shuffle稳定series key、owner前置official过滤与确切安装metadata；canonical schema不变，无新表/alias/fallback。收据var/dev/r255-preserve/r357-platform-read-successor-formal-release-receipt.json。
+
+BFF原负责人 platform_github_p3_frozen_review_r353 已续派同T-K03.3唯一writer，基线498da443，消费正式9ed6801并删除首片临时unsupported分支，打通project授权/official过滤/shuffle/exact安装元字段；网站路径/字段保持原定。Web原负责人 skills_platform_frozen_review_r357继续T-K03.4唯一writer的真实接线和参考UI。Root独占提交、资源、正常服务与浏览器；正常版本尚未配对激活，37 Asset/7安装原数据保持，页面/Admin闭环与S01–S10仍OPEN。最新用户要求问题直接正规改造，不遗留不可维护兼容实现；只删实际被替代路径，独立package文件/CRUD/Admin职责保留。
+
 ### T-K03.4 Web 已派：Skills 规范消费与参考 UI
 
 Root 将 Web 精确范围交同盘点负责人 skills_platform_frozen_review_r357（唯一 writer），基线 a540084，正式 BFF498da443 / Public12 / SHA20025230。三窄 Next 同源 route、现 Skills readers/server clients/目录/预览/正文/Settings 及 Admin 回归；先三设计一致，再正规生成消费与真实 RED→实现，保护原混合 Admin/Skills，不抢写其它模块。不得新增 Hub alias、公共 Web API、前端猜重或假作者/usage；包内文件树与原 CRUD/Admin 职责继续存在。后继 BFF owner 过滤/项目/shuffle 字段未发行前不正常激活，不将临时503作最终能力。任务卡 r357-skills-web-implementation-card.json；Root独占正常服务、浏览器、资源、Git和最终验收。
