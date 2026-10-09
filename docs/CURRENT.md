@@ -1,5 +1,7 @@
 ### R357 当前 Skills 后继：移除在途缺口，不保留兼容债务
 
+Root 当前变化中独审实际发现 official 排除一入口未进 SQL、另一入口未绑定 cursor；shuffle 仍缺 seed/SQL seek，原 owner 正在修，未放行。Root 另实读 shuffle SQL 发现次键使用 version skill_id 而非批准 stable series_id，已要求改为 stable 复合 seek，防 current 更新后的跨页重复。BFF 隔离当前门实际 89 PASS / 3 FAIL：旧 RPC 数量提前遮挡负控、历史 Oneof fixture 缺值、projection fixture 未定义 skillUpdatedAt，均交原 writer 修正并保留 FAIL 日志。Web 后继已纠正为三个窄 Next 同源 route（两 observed service 与下载 handle），不在 /api/hub 留 alias、不误建 Web public API；文件树仍保留独立职责。
+
 Root 已将 project_id、includeOfficialSkills=false、首屏 shuffle=true 和确切安装版本创建/来源字段纳入同一 T-K03.3 后继，不将稳定 503 作为最终能力。Platform 原负责人唯一写入既有 Skills 模块；BFF 原负责人接正规 owner 发行，独立审查员只读审计。项目范围仅当前 IAM 验证的 BFF workload 可投影 x-kokoro-project-ref；BFF 先核当前 tenant/subject 的 Project，再传返回 canonical ID，结束前复核授权，不使用旧 skill_name 猜身份。筛选在 SQL take 前；随机顺序由游标绑定 seed/主体/范围/条件，后页不重新洗牌。无新增表、业务模块或第二事实源，不留 alias/fallback；正常原数据与进程尚未改动，页面和后台仍待真实验收。
 
 ### R357 连续集成实证与剩余阻断（2026-10-09）
