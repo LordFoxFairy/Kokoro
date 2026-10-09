@@ -1,3 +1,21 @@
+### R357 用户指定后继顺序：连接器完整闭环优先（2026-10-09）
+
+最新用户要求取代此前“仅 Skills”执行优先级：连接器先 UI → 真实 CRUD 接口 → 对应功能 → 后台管理整体闭环；其后定时任务、专案/外部聊天列表归属展示与交互、剩余功能按钮及交互、Settings 逐页能力。沿既有 Wave0–7/任务台账，不新建计划中心；heartbeat 仍暂停，不自动启动其它模块写入。Skills S01–S10 未完成项原样保留，不能因转序标成已验收，也不删除旧数据或自动重装。
+
+统一验收：正常源码开发服务和持久数据；真实浏览器创建/读取/编辑/删除/刷新再读取、取消/失败恢复、前后台同步、普通用户/管理员隔离；真实功能动作而非只有列表或按钮。无数据空态与加载失败分开，未知/不支持能力明确显示，禁止假成功/模拟连接器能力。异步刷新保留列表、滚动和弹窗，不整页跳动。接口和纯门只作研发证据，不替代完整用户路径。管理员 Settings 管理入口仅管理员可见，后端同时检查权限。
+
+连接器事实方向保持 Browser → Web 同源 → BFF → Platform/modules/mcp；认证事实由 IAM，凭据不向浏览器或日志泄露。先盘点实际 owner 契约，不发明通用配置中心或新仓。
+
+| 任务/角色 | 基线与允许范围 | 依赖/验收/交付 |
+| --- | --- | --- |
+| R357-CONNECTOR-UI-D0 / st6_legacy_competition_r353 / 只读 | Web /Users/nako/.codex/worktrees/kokoro-r257-admin-web，c79e119；仅现 plugins surface、ui/mcp、Settings/admin 相关入口与测试。全部原 Skills/Admin 混合变更保留；禁止文件、Git、服务或数据写入 | 读本仓 AGENTS、Root CODEBASE_MAP、当前设计；逐动作列真实/缺失/模拟/错误及最小现文件写集，交不超过 30 行报告。Root 唯一浏览器操作者与集成者 |
+| R357-CONNECTOR-API-D0 / bff_skills_product_source_r353 / 只读 | BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，727df38；Platform apps/kokoro-capability，5b47eaf；仅连接器/MCP现 owner、public/admin 契约、消费者、数据模型及测试 | 读 AGENTS、TS/SQL手册、CODEBASE_MAP 与三设计；列 UI 动作到实际契约/owner 的映射、权限/CRUD/连接实际执行缺口；交不超过 30 行报告。禁止文件/Git/数据库/服务/浏览器操作 |
+| R357-CONNECTOR-ROOT / Root / 文档与浏览器 | Root 6e63c101；仅更新现 docs/CURRENT.md、docs/task.md、docs/progress.md；保留 gitlinks/uv.lock 和所有未交接变更 | 核运行句柄、实际浏览器失败与参考 UI；收两只读报告后再授单仓精确 writer，先行为失败再修，不凭旧通过数放行 |
+
+状态：两原负责人只读盘点已完成并停写；Root 实际浏览器 626×752 对照 Manus 插件目录/详情。当前本地目录为静态 APP_CONNECTORS/DATA_SOURCE_CONNECTORS，卡片点击无详情；主区窄时仍双列且字段严重截断。管理入口此次真实终态为空，不能误记加载失败；自订 MCP 仅打开/取消未提交。参考 Gmail 实际可打开详情、连接按钮、四示例与分类/类型/作者/网站/隐私，未授权或执行第三方动作。证据在既有 ignored var/dev/r255-preserve/r357-connector-browser-baseline.json 及三张 r357 对照截图。
+
+Root 已复核源码阻断：BFF 旧 MCP 非 GET 仍503、Platform global Server 注册仍 Unimplemented；本人四读机器已发布但 BFF runtime 未装配，现正常 Settings 只挂连接 projection。旧 Web 创建路径和 preview/mock 不是正式 CRUD。后台暂无连接器产品管理面。下一先将参考 UI 的动作/状态与真实能力矩阵收敛，修窄主区布局与真实详情；写入/连接/后台必须沿现 owner 正式人类/管理员契约接线，禁止借 Agent execution 身份、伪造成功或恢复退役双轨。新增字段/协议先通过既有三设计门，UI 不展示假接通能力。连接器整体未实现/未验收，后继四项排队；Skills S01–S10 仍 OPEN。
+
 ### R356 当前：Skills 真实普通生命周期已通过，整页仍待验收
 
 用户要求参考 Manus API/UI；只推进 Skills，其它模块与 heartbeat 暂停，完整 Wave0–7 active。原 ID、版本及 7 个安装关系保留，不删除、不自动重装。页面按真实参考验收，业务走 Web 同源 → BFF → Platform，不把 Manus 公开 API 当网站私有协议。
