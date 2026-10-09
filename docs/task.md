@@ -15473,3 +15473,9 @@ Root读取当前Platform源码，确认新freeze bc8c688（43变化/643保护）
 Root核tests-only freeze101940全部3变化/40保留候选/643保护SHA exact。真实自有PG40751自然exit1：19PASS/1FAIL，合法后续生命周期原Finalize重放被receipt_invalid；Root纯门26PASS/3FAIL，分别是重放读mutable当前事实、Get第二读预算未贯穿、感染后第三次Complete重入上传路径。失败均是具名行为，不是收集缺模块。原PostgreSQL catalog78全字段hash d2fc0c2b… exact，自有库清理收据已保存。候选仍未激活，正常服务/数据无变动。
 
 原Platform唯一writer获准在同范围整改初始完整响应的严格事务receipt快照、不可变绑定核验与合法生命周期分离、完整取消预算及稳定感染终态；不扩公开wire、不新增owner、不先接消费者。证据在ignored r255-preserve/r357-local-import-runtime-p1b-root-{native,pure}-red.log及native-cleanup.json。全Skills/独立后台Settings/Wave0–7仍未验收。
+
+### T-K03.4 R357 恢复快照已通过局部实证，当前投影与取消仍阻断（2026-10-09）
+
+Root核P1b freeze63fe7全43变化/643保护exact，真实PG88886自然0为20PASS，纯门16153自然0为150PASS（37unit/113architecture）；catalog78/hash保持exact。证据支持Finalize初始严格快照、合法后续生命周期精确重放和Complete感染稳定终态，不等于完整上传或浏览器已通过。
+
+复审另查Get completed仍拼旧import Skill与当前安装，切版/remove可失败；四RPC budget缺finally dispose及取消后await栅栏、已耗尽caller却授新1ms。原writer仅tests-only P1c freeze00178，Root实际14328 exit1为18PASS/22具名行为FAIL，1test变化/42保留候选/643保护exact。真实repository切版/remove的独立PG RED仍须补齐后统一整改，禁止mock通过代替owner事实。候选未提交/激活/正常库应用，独立后台Settings/完整Skills/Wave0–7仍OPEN。
