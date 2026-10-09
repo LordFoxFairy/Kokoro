@@ -1,3 +1,9 @@
+### T-K03.4 R357 当前投影与预算局部门已通过，两个真实缺项仍阻断（2026-10-09）
+
+Root核P1d e4f8 freeze45变化/641保护exact。native63275首21PASS/1FAIL是测试要求省略属性等于own undefined，原writer仅修断言，生产字节不变；P1d2 be90完整freeze exact，Root52689真实PG22PASS/0FAIL。Root35621纯门173PASS，45757 typecheck/lint/contract/artifact/schema自然0（Schema既有relationMode索引warnings保留）；不称全仓或浏览器通过。
+
+独审确定仅两个剩P1：合法withdrawn current被Get误判receipt损坏；四handler忽略signal晚响应的原生Abort/Timeout异常落Internal而非Canceled/DeadlineExceeded。曾怀疑publication单独binding遗漏，复核正规repository同current Skill CAS后撤回，不新增冗余字段或伪正常越库测试。原writer仅两项具名RED再统一修复，v10 inactive、未提交/正常库应用/服务重载；完整Skills/独立后台Settings/Wave0–7保持OPEN。
+
 ### T-K03.4 R357 恢复快照已通过局部实证，当前投影与取消仍阻断（2026-10-09）
 
 Root核P1b freeze63fe7全43变化/643保护exact，真实PG88886自然0为20PASS，纯门16153自然0为150PASS（37unit/113architecture）；catalog78/hash保持exact。证据支持Finalize初始严格快照、合法后续生命周期精确重放和Complete感染稳定终态，不等于完整上传或浏览器已通过。
