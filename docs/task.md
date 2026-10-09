@@ -15411,3 +15411,9 @@ R315 最终Web精确三paths提交 e78d3f9ca83e51cd7499f71e1fe370127d98bbc4；Ro
 R323最终BFF机器已发行 c91fee642c5bac79d5beab90b15a1eaf97637047（精确12paths/539其它tracked exact/index空/原var保留）。Rootheader RED2PASS/1FAIL拒86401后两行最窄修；原71468完整check自然0，contract304/default877PASS、2原资源SKIP，lint/types/build；13002format0、独审1fa085a4两P2关闭。原四RED组与旧105document语义exact，旧R240 hash/92保留。未实施四GET runtime、Schema/正常权限不变；机器发行不冒用户连接器CRUD。原收据脚本首次list.get误读发生于写前，适配list后实际完整提交验算0，r323-bff-commit-receipt.json保结果。所有本轮门句柄已终态，不重复启动；当前Skills仍是用户优先路径。
 
 R357 T-K03.4：Storage维护snapshot真实PG RED→GREEN后正式d5a575a；Web普通Skills403定位为OIDC漏已provision skill check scope，正式33e8b60、Root27/Node22工程0，未改IAM角色。正常publisher scope未演进、退出旧授权后需原账号页面登录，已询问；真实发布/Admin/视觉与完整目标继续OPEN。原37/7数据与其他修改保护；taskcard更新原中心。
+
+### T-K03.4 R357 IAM 显式恢复窄切片（2026-10-09）
+
+基线 IAM 587e64a5；Root 三设计前缀批准现 publisher extend 四态，原调查员唯一 writer，仅 oauth-client.service、现 unit/native 与 CURRENT。C/L 新调用仅补 client，不重发 resource/内部 retry；unknown 原样、L/C 拒绝、C/C 无写。Root 独占 Git、正常服务/资源及集成，独审后 Root 自有 PG + 用户页面另验。三设计文件位于 apps/kokoro-iam/docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL}.md。无 Schema/public/generated 新增；原7安装独立只读 hash exact（收据见同一私有卡），真实用户登录仍待用户页面操作，全部 Skills/Admin 尚未验收。
+
+T-K03.4 本恢复片正式 ec66c06（7paths/462保护exact）：Root148工程＋3真实PG恢复通过，独审无确定P0/P1；normal grant/fresh token/UI/Admin未验，当前原登录表单等待用户完成。无正常数据/服务写，不升整体完成数。

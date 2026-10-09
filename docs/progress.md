@@ -1,3 +1,11 @@
+### R357 IAM 授权半完成恢复已根因修正；普通发布仍待登录验收（2026-10-09）
+
+IAM 正式 `ec66c06c04922a8bc98245f4d6b095d51d233a32`：原 resource scope 提交后 ACK 丢失导致 current/legacy 被永久拒绝，新增真实 RED4FAIL/1PASS 后沿原正式入口修正四态。新的严格合格显式调用仅补缺失 client scope，原 unknown 立即停止、不内部重试、不重复 resource 写，不降低 operator/exact client/完整事实/binding 校验；provider 无 CAS，仍需覆盖所有注册 writer 排他窗口。本片无 Schema、公开契约、正常 grant/角色/凭据或服务启停。
+
+Root Node24.20.0独立工程148PASS/typecheck/lint0，真实隔离PG原正常＋两中断恢复3PASS/38名称未选；postgres catalog78前后exact，自有库清理。最终freeze7变化/462保护逐SHAexact、独审无确定P0/P1，明确7paths提交，IAM源工作树干净。初Rootfreeze检查错误cwd产生FileNotFound，后绝对路径完整复验通过，不掩盖首诊断。证据 `var/dev/r255-preserve/r357-iam-publisher-recovery-root-native.{json,log}` 与 owner freeze。Root另独立只读确认原7安装原字段hash exact，无自动换引用。
+
+当前浏览器仍是原账号登录表单；此前已请求用户页面登录，未重置密码或绕过授权。正常 publisher scope 尚未演进、fresh token/真实个人发布/Admin/Manus视觉未完成，不以本片工程证据称完整Skills闭环。继续同T-K03.4，其他模块仍暂停，保护Root原gitlinks/uv.lock。
+
 ### R357 本轮两项根因修复已正式提交；真实发布仍未验收（2026-10-09）
 
 Storage `d5a575a4886a68080ff2e7a3f7e13d27b085dccc`：Root自有真实PG先复现同client queued2/DeprecationWarning1，候选同RepeatableRead逐scalar读取后Root1项PG通过、warning0、完整旧事实digest一致，26unit/typecheck/lint通过，3修改/309保护SHAexact、独审无确定P0/P1，原37journal/manifest/sourcepin未写。仅维护snapshot窄修，不全局串行、无Schema/运行服务重启，也不冒整页通过；首fixture配置失败及真实RED保留。
