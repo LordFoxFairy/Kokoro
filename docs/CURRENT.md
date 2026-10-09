@@ -1,3 +1,9 @@
+### T-K03.4 R357 Local import机器门发现真实失败（2026-10-09）
+
+Root原句柄84372自然exit1：真实PostgreSQL expansion 3FAIL均落在fixture setup，第63行DROP owner schema后直接执行DDL，search_path落入pg_catalog；不是业务expand已经通过。原日志`var/dev/r255-preserve/r357-local-import-root-native.log`保留。只读catalog识别本次PID46628的三个fixture库，剔除它们后的78库全字段digest与此前Root probe baseline exact；确认无连接后仅删除这三个自有库，catalog恢复78/exact，无正常资源写。清理收据`r357-local-import-native-fixture-cleanup.json`。
+
+独审另有P1：shared immutable upload proof必填scan_state，intent未存且Get承诺纯DB，合同无法实现。原Platform唯一writer已续派fixture正规schema事务与失败清理、proof删除scan_state/Complete单列并正规生成，禁止加可变scan DB快照或Get查Storage。inactive v10未激活，四runtime handler尚未实施，typecheck缺口如实保留；不提交编译失败候选、不重启正常Platform。后台独立settings路由由原审查员只读盘点，Root继续导入关键路径，不扩其它模块。
+
 ### T-K03.4 R357 Web回应修复已提交、BFF已正常重载（2026-10-09）
 
 Web正式`76d23417d8061bfd173834718e8c049fcea1f795`：Root52focused+307contract/typecheck/lint0、独立复制冻结源码与本地依赖的默认build0（未操作live.next build）；21变化/800其它tracked保留。独审P2文档“legacy全部拒绝”矛盾由Root仅一处修为“已移除zip-v1…拒绝”，生产未扩权限/UI。BFF正式7bca330旧39031实际live后Ctrl-C130退出，旧53714监听消失，再same持久env唯一新9724/44904，readyz200；PG/Redis/MinIO/其它服务无重置/重启。

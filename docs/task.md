@@ -15435,3 +15435,9 @@ T-K03.4 BFF身份消费者正式7bca3305420a7d6bb5214938b38438d4b77557dd：Root�
 T-K03.4 Local import三设计正式36e589127c5e11291ce645a1558d840a9368ecb8：Root纠正5项资格/状态/重放不一致后批准；单intent、source两个普通service/state文件、fresh create_draft AND install、Storage同command900s transfer、completed receipt独立30d回放、24h未完成TTL、Get严格只读、private Skill/current/installation同事务。Root schema:check0，既有Prisma relationMode索引建议警告保留。Platform唯一writer先机器合同/唯一Schema/fixed known-parent expand与门，不实施正常库/服务；后继业务及Web真实上传仍OPEN。
 
 T-K03.4 Web canonical回应正式76d23417：Root52+307/type/lint/隔离默认build0，21/800保护；独审P2仅文档一处已关闭。BFF正常9724 sameenv从旧39031有序替换，readyz200；原数据/其它服务不动。browser14焦点CDP连续三超时但inventory仍在，真实页面读回尚未验，不由超时猜停服务；机器导入owner继续，不将工程修复冒充用户全链。
+
+### T-K03.4 R357 Local import机器门发现真实失败（2026-10-09）
+
+Root原句柄84372自然exit1：真实PostgreSQL expansion 3FAIL均落在fixture setup，第63行DROP owner schema后直接执行DDL，search_path落入pg_catalog；不是业务expand已经通过。原日志`var/dev/r255-preserve/r357-local-import-root-native.log`保留。只读catalog识别本次PID46628的三个fixture库，剔除它们后的78库全字段digest与此前Root probe baseline exact；确认无连接后仅删除这三个自有库，catalog恢复78/exact，无正常资源写。清理收据`r357-local-import-native-fixture-cleanup.json`。
+
+独审另有P1：shared immutable upload proof必填scan_state，intent未存且Get承诺纯DB，合同无法实现。原Platform唯一writer已续派fixture正规schema事务与失败清理、proof删除scan_state/Complete单列并正规生成，禁止加可变scan DB快照或Get查Storage。inactive v10未激活，四runtime handler尚未实施，typecheck缺口如实保留；不提交编译失败候选、不重启正常Platform。后台独立settings路由由原审查员只读盘点，Root继续导入关键路径，不扩其它模块。
