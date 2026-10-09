@@ -2,11 +2,11 @@
 
 只推进同一计划 Skills S01–S10；其它模块及 heartbeat 暂停，完整 Wave0–7 active。外部目录、预览、正文、我的技能/Settings、四创建入口、分享下载、对应后台及异步稳定性是同一交付范围。下方旧记录均为历史切片，不覆盖本节当前事实；辅助门与局部截图均不升级页面完成数，S01–S10全部OPEN。
 
-Platform正式701aedb5：HTTP5/Product1、63RPC/32commands/24proof、组合5d4bc1e；Root完整冻结已核真实PG/Redis185PASS、pure1888PASS及工程十门0、独审01669f96。该资源组IAM/Storage是double，正常环境未激活，旧四历史文档formatFAIL保留。Storage正式d13f33a sole v3；正常37 final-null资产未修，真实配对/ObjectStore/scanner和普通/管理员持久浏览器旅程仍待验，未改正常库/权限/服务。
+Platform必要GitHub循环修正现正式52eeb0b891326a7538926e5fc5ffc89fe87f3c54（parent bb286e1）；Product1.1/HTTP5.1、63RPC/32commands/24proof保持。Root逐SHA核38变化/573保护/四历史suffix，实际14文件PG/Redis193PASS零SKIP（含新增8个创建前无Asset、旧值保持、回滚/ACK/shadow/cancel/drift）和1905pure/十工程门0，独审bc446420无确定P0–P2；精确38paths提交、child clean。原四历史文档全format失败仍保留。Root自有库全回收/总清单保持、正常库/服务未改，IAM/Storage该组仍double，不冒真实配对或页面完成。BFF仅获02974acb精确新52机器pin/76正式输入、删除原701候选副本；HTTP读同一vendor，另be87be95仅删原HTTP701副本，不建双轨。Storage正常37 final-null及S01–S10仍OPEN。
 
 BFF B1正式9d1cc19b；B2三设计2ffefc9/receipt CAS补充d2695c4。当前唯一writer bff_skills_product_source_r353继承主控模型，沿原e8c69593卡保369路径；前两writer明确上下文耗尽停写，原候选不回滚。其已落Product/client/input/普通与管理员独立凭据、draft/admin/download/cover/share/usage候选，报告247向量/导出断言与build通过；不是Root最终资格。交接曾称三owner生成完成，实际HTTP/IAM generator config仍旧pin，现已正规修正发行配置；原缺口保留，不复述错误完成声明。唯一补卡36d85fa0仅共用skill-product-schema.ts，避免infrastructure反向依赖HTTP。AI/GitHub、catalog/package完整CAS、Public9全部行为仍进行中，无最终freeze/提交/正常激活。
 
-Root本次证实GitHub创建合同环：正式701aedb5要求创建前已有来源assetRef，但既定持久草稿先于包上传。最小裁决仅GitHub ref optional/AI仍required，SHA/size/MIME/repo/commit/path保必需，缺失真实omit，保旧实际值；不伪造编号、不借personal_file污染资料库、不加表/服务。三设计bb286e1已核619保护/三全文suffix并独审；P3源码9da005e9由platform_github_provenance_r353独占23手写/21正规生成/7新增/578保护，目标Product1.1/HTTP5.1尚未发行，BFF原owner继续其余独立接线，正常服务未动。已去除重复Proto全文快照和第三发行脚本。目录原GET实际缺category/source查询及发布方聚合，单文件补卡67bfe01a已授；config.test.ts误报缺口实查撤回且原字节保留。当前仍设计/实施，不升级S01–S10。
+Root已修正GitHub创建合同环：旧正式701要求创建前已有来源assetRef，而持久草稿先于包上传。正式52e仅GitHub ref optional/AI仍required，SHA/size/MIME/repo/commit/path保必需，缺失真实omit、旧真实ref保持；不伪造编号、不借personal_file、不加表/服务。原P3源码卡及精准catalog/四current HTTP测试补卡已Root验提交，原失败保留。目录GET category/source及发布方聚合沿BFF同一完整Public9片；config.test.ts误报仍撤回、原字节保持。BFF源持续实现，尚无全片freeze/正常激活/页面验收。
 
 S06必要Agent v3正式ee736cdf：最终27源冻1590efea，Root实际PG14PASS/0SKIP（含真实PG＋实际client→deliver→middleware同lease竞争）、focused93PASS、ruff/pyright/diff0，原lock/codegen0源未变，369保护/7删除/三历史suffix保持。独审8459ee99无确定P0–P2：B预选择仍可owner调用/PUT，CAS失败后零Complete/Artifact/finish且A/started原字节保持，释放A后成功；不是物理PUT恰一次。Root仅34具名no-renames路径提交，原build/保留。旧两source缺陷及竞争链测试缺口已关闭，原默认2个protected失败仍保留；此只依赖源码资格，正常激活及真实Storage HTTP/MinIO/browser组合仍待验，不升S06或页面完成数。
 
@@ -14,7 +14,9 @@ Root本轮正常登录Manus与本地只读同实际1113×752对照：两预览�
 
 Root本轮逐owner独立REPEATABLE READ READ ONLY正常盘点467df146：30包/30Blob全finalVersion NULL，26资产有Skill引用（21active/4draft/1withdrawn），7未移除安装（5enabled/2disabled）。首次读source_version_id列真实FAIL，正常旧Schema尚无该列，保失败；改为只读列存在辨别，不是应用fallback。两owner表快照保持、无跨ownerSQL/正常写入。已有本地ZIP比对1edd3e0b匹配26资产及全部7安装，只证明相同字节候选，不授发布旧revision上传维修；原7个人/项目文件未处理。禁止盲激活strict读取或替旧revision/安装偷偷换引用。
 
-必要Storage ST6仅test-only单文件52331317/307保护，生产src/fixture/schema/contract/lock未变。Root冻结实际MinIO/Clam/PG/HTTP旧NULL拒→新source全验证→同Blob/Asset/Scan/Upload/receipt保→旧ref exact-version字节恢复1PASS/3明确过滤，source未变、自有bucket/DB清理、全清单保持；不证明normal维修/HTTPS/浏览器。独审明确组合真实stale-CAS缺口（非生产CAS bug），当前约束无确定barrier，保OPEN且未提交/放行，不造无控并发或SQL语义替代。原d13真实PG deterministic CAS与本次真实object happy path分层列证据，不冒同case。
+必要Storage ST6 test-only旧引用happy-path仍52331317/307保护、Root实际object链1PASS/3名称过滤，不是正常维修。新422ca908只读核锁序：双canonical UPDATE等待的原假设被同旧key advisory锁排除，writer按停止线无改动/无资源，未执行新竞争；Root已校正计划，不减生产锁、不造winner，组合证据OPEN且不新增为Web前置。
+
+Root新增实际Manus参考2dc71123：同1113×752，已添加的技能/搜索/探索/添加/四来源筛选；当前参考账户列表为空，不猜 populated row。GitHub创建仅打开400×344 URL弹窗、保存截图/量测、Escape回目录，无输入/导入/外部写。完整内外Skills同一Web片以真实参考为准，不新增技术详情/版本/猜分类；记录技能流程仍OPEN。
 
 Root新真实普通登录文件切换复现15606522：临时tab8由SKILL.md→manifest→SKILL.md，网络临时延迟5s时正文被“正在读取文件”替代，导航/800×600几何/焦点仍在，实际package GET200；仅刻意文件切换的body-clear条件，不是健康续期/轮询自发闪动证明。截图r353-s09-live-file-switch-pending.png；网络恢复、tab8关闭、用户原tab/进程保留。整片Web须保已ready内容直到新文件提交、明确pending目标并保持滚动/焦点，真正身份变化/撤权仍退役；S09和S01–S10均OPEN。
 

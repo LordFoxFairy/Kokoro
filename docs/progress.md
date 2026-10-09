@@ -1,3 +1,13 @@
+### R353-P3 必要循环已关闭，Skills整页仍OPEN（2026-10-08）
+
+Platform必要GitHub循环修正现正式52eeb0b891326a7538926e5fc5ffc89fe87f3c54（parent bb286e1）；Product1.1/HTTP5.1、63RPC/32commands/24proof保持。Root逐SHA核38变化/573保护/四历史suffix，实际14文件PG/Redis193PASS零SKIP（含新增8个创建前无Asset、旧值保持、回滚/ACK/shadow/cancel/drift）和1905pure/十工程门0，独审bc446420无确定P0–P2；精确38paths提交、child clean。原四历史文档全format失败仍保留。Root自有库全回收/总清单保持、正常库/服务未改，IAM/Storage该组仍double，不冒真实配对或页面完成。BFF仅获02974acb精确新52机器pin/76正式输入、删除原701候选副本；HTTP读同一vendor，另be87be95仅删原HTTP701副本，不建双轨。Storage正常37 final-null及S01–S10仍OPEN。
+
+必要Storage ST6 test-only旧引用happy-path仍52331317/307保护、Root实际object链1PASS/3名称过滤，不是正常维修。新422ca908只读核锁序：双canonical UPDATE等待的原假设被同旧key advisory锁排除，writer按停止线无改动/无资源，未执行新竞争；Root已校正计划，不减生产锁、不造winner，组合证据OPEN且不新增为Web前置。
+
+Root新增实际Manus参考2dc71123：同1113×752，已添加的技能/搜索/探索/添加/四来源筛选；当前参考账户列表为空，不猜 populated row。GitHub创建仅打开400×344 URL弹窗、保存截图/量测、Escape回目录，无输入/导入/外部写。完整内外Skills同一Web片以真实参考为准，不新增技术详情/版本/猜分类；记录技能流程仍OPEN。
+
+精确源freeze a2316f4f、Root629全源/保护资格bf8b736d、193实际PG收据1def178c、独审bc446420、commit收据facab494；最初Root把vendor扁平v5路径当owner路径的Git show FAIL发生在卡写入前，现按实际manifest+既有vendorPath核76，失败留存。下一只有完整BFF消费冻结→同一Web内外/Settings/后台片→正常真实普通/管理员完整路径与逐图核验；辅助门不升完成数，其它模块/heartbeat暂停，goal active。
+
 ### R353 当前：Skills 整片接线与真实页面差距（2026-10-08，页面未验收）
 
 只推进同一计划 Skills S01–S10；其它模块及 heartbeat 暂停，完整 Wave0–7 active。外部目录、预览、正文、我的技能/Settings、四创建入口、分享下载、对应后台及异步稳定性是同一交付范围。下方旧记录均为历史切片，不覆盖本节当前事实；辅助门与局部截图均不升级页面完成数，S01–S10全部OPEN。

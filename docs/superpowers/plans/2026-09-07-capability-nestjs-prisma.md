@@ -17,7 +17,9 @@
 
 实际正式701aedb5的GitHub provenance必填assetRef，与既定Create持久草稿→Begin/Complete包上传形成循环；BFF公开仓adapter此时仅有受信repo/完整commit/path、真实ZIP SHA/size/MIME。Root与只读审查已锁最小方案：仅GitHub assetRef变optional（有值仍须真实既存Storage资产），AI既有artifact assetRef保持required；没有值时canonical/proto/HTTP真实omit，不伪造编号或借personal_file污染资料库。共享来源列nullable且按method严格解码，保留旧非NULL值；仍由既有skill_package事实持有后续上传资产，不加表/服务/owner/创建方法。
 
-任务R353-P3-D0：Platform `platform_github_provenance_r353`（继承主控模型）唯一writer，Root审查/Git；701aedb5 clean基线，只允许三设计当前前缀、原suffix及619其它路径保持。精确卡ec11ba13 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-platform-github-provenance-d0-task-card.json`；先三设计/具名路径收口，再Root授权必要机器/Schema/源码/生成切片。BFF原writer继续其余独立Public9接线，GitHub等待owner正式修正，不自行改pin或发假provenance。三设计Root核619保护/原全文suffix并独审后正式bb286e1；仅设计，不是运行发行。P3源码精确卡9da005e9授同owner 23手写/21正规生成/7具名新增/578保护，先真实RED再实施Product1.1/HTTP5.1，AI及其它协议保持；去掉重复Proto全文快照与第三发行脚本，Root独占真实资源/Git/激活。目录真实缺少category/source查询及发布方聚合另获既有单文件精确补卡67bfe01a；误报config.test.ts缺口已实查撤回且原文件未改。此为真实阻塞，不是新增产品设计；S01–S10仍OPEN。
+任务R353-P3-D0：Platform `platform_github_provenance_r353`（继承主控模型）唯一writer，Root审查/Git；701aedb5 clean基线，只允许三设计当前前缀、原suffix及619其它路径保持。精确卡ec11ba13 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/r255-preserve/r353-platform-github-provenance-d0-task-card.json`；先三设计/具名路径收口，再Root授权必要机器/Schema/源码/生成切片。BFF原writer继续其余独立Public9接线，GitHub等待owner正式修正，不自行改pin或发假provenance。三设计Root核619保护/原全文suffix并独审后正式bb286e1；仅设计，不是运行发行。P3源码精确卡9da005e9授同owner 23手写/21正规生成/7具名新增/578保护，先真实RED再实施Product1.1/HTTP5.1，AI及其它协议保持；去掉重复Proto全文快照与第三发行脚本，Root独占真实资源/Git/激活。目录真实缺少category/source查询及发布方聚合另获既有单文件精确补卡67bfe01a；误报config.test.ts缺口已实查撤回且原文件未改。此为真实阻塞，不是新增产品设计；S01–S10仍OPEN。 P3当前纯门1903项中1888PASS/15FAIL：四既有合同测试的current HTTP版本仍锁5.0。Root核四原始保护SHA后仅授current expectation/title升级5.1；原historical snapshot和负控拒绝保持，既有授权checker保原明确错误子串，不放宽逆向闭集校验。 最终a231冻源Root193真实PG/Redis零SKIP、1905pure与十工程门0、独审bc446420无确定P0–P2；38paths已正式52eeb0b，child clean，正常未激活。BFF精准02974acb切唯一52/76机器输入与be87be95删旧HTTP候选，原IAM/Storage pins不动，无双目录/假Asset；S01–S10仍OPEN。
+
+R353-ST6必要旧包资格续片：精确卡fe718060仅现smoke单文件/307保护。实际只读调查422ca908确认原“双canonical UPDATE等锁”假设与正式锁序冲突：完整旧snapshot比较后先持同旧object key的事务advisory锁，第一请求等待Blob行锁时第二请求停在advisory锁，不会进入第二UPDATE。writer按停止线无改动/无资源/未执行竞争，旧52331317与307保护保持。组合资格仍OPEN，不弱化生产锁或伪造winner；这是测试观察假设错误，不是页面新设计或生产CAS缺陷。后继可核对“一个真实UPDATE＋一个精确旧key advisory等待”的合法观察，但不作为Web整片的新增前置。
 
 ### 本轮真实冻结与下一步（2026-10-08，页面完成数不变）
 
@@ -30,6 +32,8 @@
 - Root本轮逐owner独立REPEATABLE READ READ ONLY正常盘点467df146：30包/30Blob全finalVersion NULL，26资产有Skill引用（21active/4draft/1withdrawn），7未移除安装（5enabled/2disabled）。首次读source_version_id列真实FAIL，正常旧Schema尚无该列，保失败；改为只读列存在辨别，不是应用fallback。两owner表快照保持、无跨ownerSQL/正常写入。已有本地ZIP比对1edd3e0b匹配26资产及全部7安装，只证明相同字节候选，不授发布旧revision上传维修；原7个人/项目文件未处理。禁止盲激活strict读取或替旧revision/安装偷偷换引用。
 - 必要Storage ST6仅test-only单文件52331317/307保护，生产src/fixture/schema/contract/lock未变。Root冻结实际MinIO/Clam/PG/HTTP旧NULL拒→新source全验证→同Blob/Asset/Scan/Upload/receipt保→旧ref exact-version字节恢复1PASS/3明确过滤，source未变、自有bucket/DB清理、全清单保持；不证明normal维修/HTTPS/浏览器。独审明确组合真实stale-CAS缺口（非生产CAS bug），当前约束无确定barrier，保OPEN且未提交/放行，不造无控并发或SQL语义替代。原d13真实PG deterministic CAS与本次真实object happy path分层列证据，不冒同case。
 - Root新真实普通登录文件切换复现15606522：临时tab8由SKILL.md→manifest→SKILL.md，网络临时延迟5s时正文被“正在读取文件”替代，导航/800×600几何/焦点仍在，实际package GET200；仅刻意文件切换的body-clear条件，不是健康续期/轮询自发闪动证明。截图r353-s09-live-file-switch-pending.png；网络恢复、tab8关闭、用户原tab/进程保留。整片Web须保已ready内容直到新文件提交、明确pending目标并保持滚动/焦点，真正身份变化/撤权仍退役；S09和S01–S10均OPEN。
+
+Root新增实际Manus参考2dc71123：同1113×752，已添加的技能/搜索/探索/添加/四来源筛选；当前参考账户列表为空，不猜 populated row。GitHub创建仅打开400×344 URL弹窗、保存截图/量测、Escape回目录，无输入/导入/外部写。完整内外Skills同一Web片以真实参考为准，不新增技术详情/版本/猜分类；记录技能流程仍OPEN。
 
 ### 当前人员与整片交付节奏（2026-10-08）
 
