@@ -15441,3 +15441,5 @@ T-K03.4 Web canonical回应正式76d23417：Root52+307/type/lint/隔离默认bui
 Root原句柄84372自然exit1：真实PostgreSQL expansion 3FAIL均落在fixture setup，第63行DROP owner schema后直接执行DDL，search_path落入pg_catalog；不是业务expand已经通过。原日志`var/dev/r255-preserve/r357-local-import-root-native.log`保留。只读catalog识别本次PID46628的三个fixture库，剔除它们后的78库全字段digest与此前Root probe baseline exact；确认无连接后仅删除这三个自有库，catalog恢复78/exact，无正常资源写。清理收据`r357-local-import-native-fixture-cleanup.json`。
 
 独审另有P1：shared immutable upload proof必填scan_state，intent未存且Get承诺纯DB，合同无法实现。原Platform唯一writer已续派fixture正规schema事务与失败清理、proof删除scan_state/Complete单列并正规生成，禁止加可变scan DB快照或Get查Storage。inactive v10未激活，四runtime handler尚未实施，typecheck缺口如实保留；不提交编译失败候选、不重启正常Platform。后台独立settings路由由原审查员只读盘点，Root继续导入关键路径，不扩其它模块。
+
+T-K03.4 Local import机器v2冻结ae2430ac已由Root实际验31变化/648protected exact，8focused/contract/artifact/schema通过，native80120真实PG3PASS/0FAIL（fresh=expand幂等、DDL回滚/unknown parent、post-COMMIT ACK恢复）；catalog78与原baseline全digest exact，前轮3fixture泄漏已精确清理。独审scan_state P1关闭。正常数据/服务未写；四runtime缺口仍在，不提交编译失败release。原Platform唯一writer续派测试先行runtime，范围与依赖记同私有卡；Root独占真实PG/Git/运行放行。后台实际仅独立Skills页，缺shell/navigation/settings，后继不复用普通弹窗或造空占位页。
