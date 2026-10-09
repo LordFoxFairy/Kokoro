@@ -15419,3 +15419,7 @@ R357 T-K03.4：Storage维护snapshot真实PG RED→GREEN后正式d5a575a；Web�
 T-K03.4 本恢复片正式 ec66c06（7paths/462保护exact）：Root148工程＋3真实PG恢复通过，独审无确定P0/P1；normal grant/fresh token/UI/Admin未验，当前原登录表单等待用户完成。无正常数据/服务写，不升整体完成数。
 
 T-K03.4 登录前置已恢复：原凭据现存于私有 ignored 0600 文件（入口见CURRENT），Root实际登录后正常Skills10项可见；先前等待用户判断纠正，不再反复索取。发布scope演进与普通/Admin完整写验收待续。
+
+### T-K03.4 普通用户上传目标纠正（2026-10-09）
+
+Root真实读取已登录Manus当前上传弹窗：单上传区域、.zip/.skill、根SKILL.md YAML名称/描述及帮助/示例；没有Kokoro现“发布个人技能”手填名称/简介/标签/分类/示例表单。当前普通发布旅程停止，不扩publisher grant、不追重试/删新draft；改造目标必须是正规个人上传/添加，元数据由owner解析，不仅改标题。参考截图用户已给，后继owner设计需承接上传顺序与幂等、失败恢复，后台目录管理独立。新包身份Platform skill-md-v1已合法而BFF/Web/Platform publish仍zip-v2-only的跨仓RED定位已保存，按owner顺序闭合，不批量宽化schema。
