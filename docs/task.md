@@ -15497,3 +15497,16 @@ v10仍inactive/unroutable，正常库未扩展、服务未重载，BFF/Web仍原
 Root采用既有固定调用方向：BFF唯一消费fresh human session，三写及replay均同session顺序检查create_draft AND install；Platform每请求fresh introspect严格BFF workload并绑定tenant/context subject=user owner，不复制human bearer/授权布尔或新增delegation接口。Platform正式bbd4c0a仅四docs明确此边界；v10五machine措辞/profile后继仍inactive。真实Storage全链资格当前缺口明确，不能用PG fake Storage或readyz冒称；以owner独立PG/bucket与真实MinIO/ClamAV验证，正常资产不参与fixture。
 
 BFF正式0154e60仅四docs：owner新版机器先发行即可pin并隔离consumer实现，正常dispatch等待真实Storage与active/routable，不提前注册或null 503，解除循环依赖。旧owner盘点误报7bca330/docs未提交已退回，正式99bf基线重核；初Root prettier检查四docs失败，全量格式化造成任务外格式变更已在本自有未共享提交amend剔除，最终4增/4减diffcheck0，不宣称format全门通过。当前源码/client/正常路由均未改，完整Skills/独立后台Settings/Wave0–7仍OPEN。
+
+### T-K03.4 R357-BFF-LOCAL-IMPORT 消费者任务卡（2026-10-09）
+
+| 项 | 当前批准范围 |
+| --- | --- |
+| 目标/优先级 | Skills单文件上传四私有route、fresh同session双IAM、精确owner响应；仅隔离实现，正常dispatch不得注册。 |
+| owner/writer/review | kokoro-bff；skills_contract_review_r357唯一writer；Root集成/提交、原Platform独审员只读审查。 |
+| 基线 | /Users/nako/.codex/worktrees/kokoro-r257-bff-normal；codex/r257-bff-normal-current；0154e60，工作树须重新核clean。 |
+| 正式依赖 | Platform981df60e74b65eccfc2d58044db9965928e4d37e；v10 aggregate277a2bf24b4fdc34196dac3c5fbba89ef88df75a3b96054af63547f9ae53ff0b；总contract6fcc148f…；inactive不可正常注册。 |
+| 文件集 | 原唯一vendor Platform树正规替换、buf.platform.json/generate-platform-connect-client.mjs/platform-connect dependencies与正规generated；local-skill-import input/route/policy/client/response普通文件；user-admission、typed runtime/server注入seam；policy生成器与只读JSON；相关contract/governance/architecture/HTTP/IAM/input测试及必要4docs/package test命令。禁止public OpenAPI/SDK/count、SQL/Storageclient、其它owner pin、正常资源。 |
+| 放置/粒度 | input沿现http输入校验；route/policy沿现routes唯一policy；client/projector沿现Platform clients，淘汰全塞route造成传输/业务混合；不建新模块/command bus/兼容alias。 |
+| 准入/状态 | 三写含replay同一次fresh用户结果顺序create_draft和install，两者失败零Platform；Get freshread；10/10/20/2秒统一budget/cancel/fence；Begin后phase转Get；unknown保原key。 |
+| 验证/交付 | 先具名真实HTTP/准入行为RED（不是missing module），正式生成/pin与纯门、4route隔离HTTP、双IAM/replay/预算/late与public字节保护；冻结Root重跑。正常owner Storage/activeartifact与浏览器后继，不以fake Platform断言整体完成。Root独占Git。 |
