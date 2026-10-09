@@ -1,3 +1,7 @@
+### R357 当前 Skills 后继：移除在途缺口，不保留兼容债务
+
+Root 已将 project_id、includeOfficialSkills=false、首屏 shuffle=true 和确切安装版本创建/来源字段纳入同一 T-K03.3 后继，不将稳定 503 作为最终能力。Platform 原负责人唯一写入既有 Skills 模块；BFF 原负责人接正规 owner 发行，独立审查员只读审计。项目范围仅当前 IAM 验证的 BFF workload 可投影 x-kokoro-project-ref；BFF 先核当前 tenant/subject 的 Project，再传返回 canonical ID，结束前复核授权，不使用旧 skill_name 猜身份。筛选在 SQL take 前；随机顺序由游标绑定 seed/主体/范围/条件，后页不重新洗牌。无新增表、业务模块或第二事实源，不留 alias/fallback；正常原数据与进程尚未改动，页面和后台仍待真实验收。
+
 ### R357 连续集成实证与剩余阻断（2026-10-09）
 
 Storage 原引用恢复四文件由 Root 提交 `be3ab0c3ade4ba2932910676c2c4758cbb7e2979`。Root 真实隔离 HTTP v3 / PostgreSQL / MinIO 版本桶 / Clam / Redis 重跑通过：37 项正常链、丢失 ACK / 迟到 PUT、真实 caller 拒绝、原行漂移拒绝、EICAR 隔离且无 clean 下载；1 file / 1 scenario PASS，12.68s。首次负控仅错误把 scanner metadata 期望为品牌名而失败，原 FAIL 日志保留，按生产 `configured` 修正 oracle 后通过，生产代码未迎合测试修改。原 3 源文件与 308 保护项未变。此为恢复入口资格，不是正常旧数据已恢复：正式持久库尚未 apply，原 37 Asset / 7 安装引用未改。

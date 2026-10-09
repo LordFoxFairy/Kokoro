@@ -1,3 +1,7 @@
+### R357 当前 Skills 后继：移除在途缺口，不保留兼容债务
+
+Root 已将 project_id、includeOfficialSkills=false、首屏 shuffle=true 和确切安装版本创建/来源字段纳入同一 T-K03.3 后继，不将稳定 503 作为最终能力。Platform 原负责人唯一写入既有 Skills 模块；BFF 原负责人接正规 owner 发行，独立审查员只读审计。项目范围仅当前 IAM 验证的 BFF workload 可投影 x-kokoro-project-ref；BFF 先核当前 tenant/subject 的 Project，再传返回 canonical ID，结束前复核授权，不使用旧 skill_name 猜身份。筛选在 SQL take 前；随机顺序由游标绑定 seed/主体/范围/条件，后页不重新洗牌。无新增表、业务模块或第二事实源，不留 alias/fallback；正常原数据与进程尚未改动，页面和后台仍待真实验收。
+
 ### T-K03.3 当前交付与停止线（R357，2026-10-09）
 
 - Storage：Root `be3ab0c3ade4ba2932910676c2c4758cbb7e2979` 四路径已集成；真实 37 正常链及 caller/PG drift/Clam 负控通过。正常持久库恢复未执行，原引用保留。
