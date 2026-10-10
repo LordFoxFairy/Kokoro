@@ -13071,3 +13071,11 @@ Admin `4b576a8` main，精确九文件，工作树 clean；保留原 Ant/IAM/Sys
 现服务正规 HTTP me401→csrf200（原协议无 request-id）→POST session200→me200→Skills200 已实测；新浏览器消费者实际跨到期仍待验，不以纯测冒充该路径。Web `29027a3` 当前 build exit0；正式新版本4通过真实 MinIO 上传/验证/发布，浏览器 ListHub/List/Get 均200、目录和摘要可读。实测仍有弹窗硬编码 Manus、分类显示原枚举、缺可见“查看详情”；未安装 catalog 的公开包 inspection 尚缺 owner 边界，后继沿原任务收敛，禁止合成包/示例。旧个人样本 audience 命令503的原 body/key 保留，未盲重试。
 
 本轮按用户要求提交已验收切片到本地 main，未远端 push；Root 保留其余 Agent/BFF/Billing/Storage/System gitlink、Web mixed 与 uv.lock，不打包未验收修改。普通用户/其他管理员负控、Web默认 system门、Skills视觉/包详情及完整Wave0–7仍 OPEN。
+
+### T-K03.14 Skills 展示提交 main 与 Admin 跨到期浏览器实证（2026-10-10）
+
+Web正式 `d2545a3` main，精确三现文件：卡片/弹窗共用真实 scope、品牌及八分类本地化映射；封面仅消费 owner revision 绑定 cover_image，缺图不造URL。品牌/分类真实 RED10FAIL32PASS、封面 RED2FAIL66PASS；Root 当前155files/2874PASS、type/lint/build/diff0，独审无确定P1/P2，三hash与769任务外tracked全部保持。五mixed未暂存。实际新tab46目录/Get可读、弹窗显示Kokoro及真实描述；本样本无分类/封面/例子，视觉不冒充带图与分类整体验收。截图 /tmp/kokoro-skills-publisher-browser.jpg。
+
+Admin已提交4b576a8的浏览器消费者现真实跨access到期：同一tab45点击原列表刷新，skills401→csrf200→POST session200→原skills200，页面始终/manage/hub、四条原记录保持，无二次密码、导航或调整TTL。证据 /tmp/kokoro-admin-session-browser-expiry.json、/tmp/kokoro-admin-session-browser-expiry.jpg。跨到期读链已证；写意图/权限负控仍待验。
+
+纠正此前owner缺接口推断：正式BFF939bf0e已发布GET /v1/skills/{revision_id}/package、ProductSkillReadService.InspectSkillPackage，Platform32666c1已有未安装目录资格和真实文本读取；现缺Web同源consumer接线（Root真实GET /api/hub/skills/{v4revision}/package 404）。后继不新增RPC，不混self/install资格，先现Web三设计D0，再真实SKILL.md/文本reader。“所有文件”现owner只提供UTF8文本，二进制省略；不生成假目录。当前Root topology实际5个未接收owner gitlink差异，未强行pin混合checkout。完整Wave0–7与Skills包详情、默认system门仍OPEN。

@@ -16538,3 +16538,32 @@ Admin `4b576a8` main，精确九文件，工作树 clean；保留原 Ant/IAM/Sys
 现服务正规 HTTP me401→csrf200（原协议无 request-id）→POST session200→me200→Skills200 已实测；新浏览器消费者实际跨到期仍待验，不以纯测冒充该路径。Web `29027a3` 当前 build exit0；正式新版本4通过真实 MinIO 上传/验证/发布，浏览器 ListHub/List/Get 均200、目录和摘要可读。实测仍有弹窗硬编码 Manus、分类显示原枚举、缺可见“查看详情”；未安装 catalog 的公开包 inspection 尚缺 owner 边界，后继沿原任务收敛，禁止合成包/示例。旧个人样本 audience 命令503的原 body/key 保留，未盲重试。
 
 本轮按用户要求提交已验收切片到本地 main，未远端 push；Root 保留其余 Agent/BFF/Billing/Storage/System gitlink、Web mixed 与 uv.lock，不打包未验收修改。普通用户/其他管理员负控、Web默认 system门、Skills视觉/包详情及完整Wave0–7仍 OPEN。
+
+### T-K03.14-WEB-DETAIL-PRESENTATION（2026-10-10）
+
+原 Web apps/kokoro-app；web_identity_owner 唯一 writer，Root 审查、提交。基线29027a3、五 mixed 路径全部排除。局部现展示修复，不改职责/契约/目录：现 manus-skill-detail-dialog.tsx 硬编码 Manus、直接原枚举，与现 kokoro-skills-surface.tsx 品牌及八分类映射不一致；仅修改这两个现文件及 tests/ui/kokoro-skills-surface.test.tsx，按 card 同一现品牌/scope与分类映射传入，不复制另一套映射、不伪造 publisher。先真实 RED 官方/社区及 MEDIA/APPS 双语一致断言，再修复；零新 API/schema/data/依赖，不新增 fake ViewDetails、文件树、示例。冻结三路径 hash、记录任务外保护后 Root 当前纯门/type/lint与实际浏览器复验。公开 catalog inspection 的 owner 边界由独立只读审查，依赖先 owner contract 再消费者，不并行发明契约。
+
+T-K03.14-WEB-DETAIL-PRESENTATION 同三路径追加已实证封面错误：cardArt 拼 series/self cover 而非消费已批准 revision 绑定 cover_image。先真实路径 RED，再仅消费真实 cover_image，缺图不合成 URL/素材。Root/独审核正式 BFF 已有 GET /v1/skills/{revision_id}/package → ProductSkillReadService.InspectSkillPackage；撤回先前“缺公开 inspection”推断。当前缺口是 Web 同源接线/消费，不新增 owner API；现 owner 返回可 UTF-8 文本文件，非全二进制包目录，后继明确此范围。
+
+### T-K03.14 Skills 展示提交 main 与 Admin 跨到期浏览器实证（2026-10-10）
+
+Web正式 `d2545a3` main，精确三现文件：卡片/弹窗共用真实 scope、品牌及八分类本地化映射；封面仅消费 owner revision 绑定 cover_image，缺图不造URL。品牌/分类真实 RED10FAIL32PASS、封面 RED2FAIL66PASS；Root 当前155files/2874PASS、type/lint/build/diff0，独审无确定P1/P2，三hash与769任务外tracked全部保持。五mixed未暂存。实际新tab46目录/Get可读、弹窗显示Kokoro及真实描述；本样本无分类/封面/例子，视觉不冒充带图与分类整体验收。截图 /tmp/kokoro-skills-publisher-browser.jpg。
+
+Admin已提交4b576a8的浏览器消费者现真实跨access到期：同一tab45点击原列表刷新，skills401→csrf200→POST session200→原skills200，页面始终/manage/hub、四条原记录保持，无二次密码、导航或调整TTL。证据 /tmp/kokoro-admin-session-browser-expiry.json、/tmp/kokoro-admin-session-browser-expiry.jpg。跨到期读链已证；写意图/权限负控仍待验。
+
+纠正此前owner缺接口推断：正式BFF939bf0e已发布GET /v1/skills/{revision_id}/package、ProductSkillReadService.InspectSkillPackage，Platform32666c1已有未安装目录资格和真实文本读取；现缺Web同源consumer接线（Root真实GET /api/hub/skills/{v4revision}/package 404）。后继不新增RPC，不混self/install资格，先现Web三设计D0，再真实SKILL.md/文本reader。“所有文件”现owner只提供UTF8文本，二进制省略；不生成假目录。当前Root topology实际5个未接收owner gitlink差异，未强行pin混合checkout。完整Wave0–7与Skills包详情、默认system门仍OPEN。
+
+### T-K03.14-WEB-CATALOG-PACKAGE-DETAIL D0
+
+| 项 | 结论 |
+| --- | --- |
+| Owner/writer | Web apps/kokoro-app，web_identity_owner 唯一 writer；Root 审查提交。BFF/Platform 现契约不修改 |
+| 当前事实 | main d2545a3；现detail/client/schema/hub同源route；三设计及两tests mixed受保护，原bytes保留；公开package读实际同源404 |
+| 职责/位置 | 扩现manus详情弹窗及client/adapter消费真实目录revision包；采用现hub闭集route，不新建目录、不恢复旧合成skill-detail reader、不扩self/install资格 |
+| 依赖 | Browser→Web→BFF既有/v1/skills/{revision}/package→Platform；禁止直owner/DB、ZIP浏览器解包、series当revision |
+| API/data | 只具名GET与唯一file_path；strict source_ref/revision/files/path/size/selected_file与请求资源绑定，UTF8实际byte验证、128文件/1MiB/10s现界；无SQL/权限/依赖/owner机器契约改动 |
+| UI | 摘要按钮“查看详情”进入真实SKILL.md与文本文件列表；真实loading/error/empty、取消与旧响应隔离，不闪退/空白刷新；无技术编号裸露/假内容 |
+| 删除项 | 后继若替代旧合成reader需核真实调用再删，不恢复旧API或fallback |
+| D0范围 | 先仅三设计文档新增具名本任务前缀，旧mixed全文bytes不变，不写业务代码；machine schema/契约路径与当前commit核验后冻结供Root精准index提取 |
+| 实施预计 | 现detail tsx/CSS、manus-skill-client、hub schemas、hub同源route、现对应client/UI/proxy tests；D0验收后Root精确授权 |
+| 验证 | 先404/资源错/文件穿越/重复query/迟到取消RED；Root纯门/type/lint/build、真实未安装目录SKILL.md与文本/资格失败/browser；owner全负控历史不替代当前链 |

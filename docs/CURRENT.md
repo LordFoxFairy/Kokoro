@@ -1,3 +1,11 @@
+### T-K03.14 Skills 展示提交 main 与 Admin 跨到期浏览器实证（2026-10-10）
+
+Web正式 `d2545a3` main，精确三现文件：卡片/弹窗共用真实 scope、品牌及八分类本地化映射；封面仅消费 owner revision 绑定 cover_image，缺图不造URL。品牌/分类真实 RED10FAIL32PASS、封面 RED2FAIL66PASS；Root 当前155files/2874PASS、type/lint/build/diff0，独审无确定P1/P2，三hash与769任务外tracked全部保持。五mixed未暂存。实际新tab46目录/Get可读、弹窗显示Kokoro及真实描述；本样本无分类/封面/例子，视觉不冒充带图与分类整体验收。截图 /tmp/kokoro-skills-publisher-browser.jpg。
+
+Admin已提交4b576a8的浏览器消费者现真实跨access到期：同一tab45点击原列表刷新，skills401→csrf200→POST session200→原skills200，页面始终/manage/hub、四条原记录保持，无二次密码、导航或调整TTL。证据 /tmp/kokoro-admin-session-browser-expiry.json、/tmp/kokoro-admin-session-browser-expiry.jpg。跨到期读链已证；写意图/权限负控仍待验。
+
+纠正此前owner缺接口推断：正式BFF939bf0e已发布GET /v1/skills/{revision_id}/package、ProductSkillReadService.InspectSkillPackage，Platform32666c1已有未安装目录资格和真实文本读取；现缺Web同源consumer接线（Root真实GET /api/hub/skills/{v4revision}/package 404）。后继不新增RPC，不混self/install资格，先现Web三设计D0，再真实SKILL.md/文本reader。“所有文件”现owner只提供UTF8文本，二进制省略；不生成假目录。当前Root topology实际5个未接收owner gitlink差异，未强行pin混合checkout。完整Wave0–7与Skills包详情、默认system门仍OPEN。
+
 ### T-K03.14 原 Admin 会话刷新切片提交 main（2026-10-10）
 
 Admin `4b576a8` main，精确九文件，工作树 clean；保留原 Ant/IAM/System 后台，仅统一现消费者的严格本地过期判断、single-flight 刷新、取消与累计 body/deadline 边界、原 body/key/CAS 至多一次重放。迟到响应 body 清理先真实 RED1FAIL/84PASS，再修复；Root 当前默认完整 9files/85PASS、typecheck/lint/build/diff-check 全 exit0，独审 P2 关闭。最终冻结 SHA402796f91370d787021c1547c191d1427c9a48dfefe5e92de6697974285b3201。日志 /tmp/kokoro-admin-session-root-{test,type,lint,build}.log。未变权限、TTL、SQL或服务。
