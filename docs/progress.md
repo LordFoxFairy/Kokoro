@@ -13110,3 +13110,7 @@ T-K03.14-WEB-LOCAL-IMPORT网络片真实RED：正式Begin同源路径404（期�
 Web正式c408f0397b78709cf3f7ecd2fba87047b02f5e7b，仅九路径消费既有四browser-private操作及真实版本PUT；Finalize创建事实严格active/personal/owner/installed/enabled，Get允许当前停用或缺安装。404与未cancel PUT真实RED2FAIL/120PASS，Finalize状态RED1FAIL/30PASS；Root32527当前157files/2958PASS、type/lint/build exit0，独审唯一P2关闭。冻结c85f4366与九hash/768任务外原bytes一致，五mixed未暂存。日志/tmp/kokoro-local-import-network-root-final-{pure,type,lint,build}.log；此片未接上传UI，未冒充真实MinIO导入/完整Skills闭环。
 
 T-K03.14-WEB-LOCAL-IMPORT UI片真实RED：普通个人新建旧入口仍打开手填metadata发布窗而非共用上传窗，实际1FAIL/90SKIP；Root已读/tmp/kokoro-local-import-ui-red.log，不复用网络片RED。原writer在现19授权路径继续flow/UI，未冻结不作最终验证。独立只读余Skills核GitHub Import201仅validated draft，不是安装成功；既有普通PublishDraft（原state_version、audience owner）→Install（真实source_ref）可承接，原各stage key/body保留，后继不新API/不伪造installed卡片；源码可行不当正规账号旅程通过。
+
+### T-K03.14-PLATFORM-LOCAL-IMPORT-WIRE（2026-10-10）
+Root真实上传Begin201/Complete200后Finalize与同intent Get均502；只读复现确定Platform两个RPC installation漏已有必填skillUpdatedAt，BFF严格投影拒绝。Owner为Platform skills，platform_expand_review唯一writer，Root审查/commit；基线apps/kokoro-capability main32666c1 clean。仅现src/modules/skills/skill-rpc.service.ts及test/unit/local-skill-import-rpc.test.ts；不新目录/契约/SQL，不放宽BFF/Webschema，取真实skill.skillUpdatedAt。先Finalize/Get字段真实RED，再unit/contract/type/lint/build冻结，Root重跑并必要时只重载Platform，原intent查询恢复并浏览器验证真实安装/嵌套文件树。
+Web UI候选仍未接收：Root纯门实际2970PASS/2FAIL及6未处理mock错误；原writer只准另两现测试tests/ui/personal-skill-publish-dialog.test.tsx、tests/ui/settings-modal.test.tsx核实旧新建入口/可信sessionprobe fixture，保分页和权限业务断言，不忽略错误或恢复旧手填表单。其它冻结/五mixed保留。

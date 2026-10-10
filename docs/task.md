@@ -16625,3 +16625,7 @@ T-K03.14-WEB-LOCAL-IMPORT第2片现准原web_identity_owner唯一writer：新增
 T-K03.14-WEB-LOCAL-IMPORT第2片范围补充：仅tests/ui/mcp-panel.test.tsx移除已废previewUpload/confirmUpload两个typed HubClient fixture成员，其余MCP断言禁止修改。身份复用现useSessionProbe.projectReadBoundary admitted/subject；generation仅取消代数，locator按可信subject归属，匿名/换账号清状态，unavailable不能沿旧subject授权。Root已在既有ignored私有fixture目录准备真实SKILL.md+references/checklist.md ZIP及哈希收据，尚未上传/安装；后继真实MinIO及嵌套reader验收，不合成目录。
 
 T-K03.14-WEB-LOCAL-IMPORT UI片真实RED：普通个人新建旧入口仍打开手填metadata发布窗而非共用上传窗，实际1FAIL/90SKIP；Root已读/tmp/kokoro-local-import-ui-red.log，不复用网络片RED。原writer在现19授权路径继续flow/UI，未冻结不作最终验证。独立只读余Skills核GitHub Import201仅validated draft，不是安装成功；既有普通PublishDraft（原state_version、audience owner）→Install（真实source_ref）可承接，原各stage key/body保留，后继不新API/不伪造installed卡片；源码可行不当正规账号旅程通过。
+
+### T-K03.14-PLATFORM-LOCAL-IMPORT-WIRE（2026-10-10）
+Root真实上传Begin201/Complete200后Finalize与同intent Get均502；只读复现确定Platform两个RPC installation漏已有必填skillUpdatedAt，BFF严格投影拒绝。Owner为Platform skills，platform_expand_review唯一writer，Root审查/commit；基线apps/kokoro-capability main32666c1 clean。仅现src/modules/skills/skill-rpc.service.ts及test/unit/local-skill-import-rpc.test.ts；不新目录/契约/SQL，不放宽BFF/Webschema，取真实skill.skillUpdatedAt。先Finalize/Get字段真实RED，再unit/contract/type/lint/build冻结，Root重跑并必要时只重载Platform，原intent查询恢复并浏览器验证真实安装/嵌套文件树。
+Web UI候选仍未接收：Root纯门实际2970PASS/2FAIL及6未处理mock错误；原writer只准另两现测试tests/ui/personal-skill-publish-dialog.test.tsx、tests/ui/settings-modal.test.tsx核实旧新建入口/可信sessionprobe fixture，保分页和权限业务断言，不忽略错误或恢复旧手填表单。其它冻结/五mixed保留。
