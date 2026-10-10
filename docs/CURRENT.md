@@ -1,3 +1,6 @@
+### T-K03.14 原Admin自然到期后的真实写入（2026-10-10）
+Root在原Ant后台/manage/hub准备QA版本5的新版本表单，自然等待316秒（未改IAM默认300秒TTL/服务/令牌），点击确认；实际me401→csrf200→session200→me200→原versions201，页面仅新增本人版本6草稿。随后仅该未发布验收草稿通过正式discard200，页面读回已删除，既有发布版本不变。收据/tmp/kokoro-admin-natural-expiry-final-receipt.json，写入截图/tmp/kokoro-admin-natural-expiry-draft-green.jpg。该自然续期浏览器写证据已补，不冒写接口自身401/原key逐字抓包或所有普通用户浏览器负控；普通用户既有正式HTTP403/admin_required及后续401仍为既有证据。仅既有实现验收，无新增功能或后台重写，完整Wave及任务外mixed继续未结项。
+
 ### T-K03.14 共享技能下载真实落盘验收（2026-10-10）
 Root沿既有shared ACK入口正常浏览器点击下载，取得真实583字节ZIP；SHA256为39b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313，与原正式上传包逐字一致，包含SKILL.md与references/checklist.md。当前Web ffc6c7c/BFF e1769b56已有exact-source/revision下载链，原“shared缺handle”记录已过时；本轮无API/代码重写、无共享基础设施或数据重置。收据/tmp/kokoro-skills-share-download-final-receipt.json，截图/tmp/kokoro-skills-shared-download-final.jpg。未捕获本轮网络状态码，不把浏览器落盘虚称另有HTTP收据。Root及12初始化子仓本地heads复核仅main。原Admin普通用户HTTP负控已有403/admin_required及后续401，但当前浏览器负控与自然access到期写仍未追加实测；完整Skills/Admin与Wave交付保持未结项，不扩散其它模块。
 
