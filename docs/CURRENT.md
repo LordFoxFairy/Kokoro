@@ -1,3 +1,11 @@
+### T-K03.4 R357 独立 Admin Web：身份读取 contract 与技能入口恢复（2026-10-10）
+
+本轮为真实交付，不是占位后台。BFF owner 在 `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` 提交 **e74a8c521631562d29b844e004c9e85111d114f7**：新增且仅新增三个版本化 Admin Identity read：`GET /v1/admin/identity/members`、`/invitations`、`/roles`。每个请求先通过 fresh `platform_admin` 准入；tenant、actor、bearer、request id 只取可信 context，调用者不能以 header/query 选 tenant；page query 严格限制 `limit` 1–100（默认25）与 opaque `cursor`。IAM 仍是 membership/invitation/role 唯一 owner；BFF 不读 owner SQL、不做缓存/镜像/泛化 relay、不含 audit、全局用户目录或写入。Public OpenAPI 基线已从133更新为136，Admin service identity allowlist只开放这三条路径。BFF lint/typecheck/build、完整 `contract:check`、IAM generation drift 和本地真实 HTTP 正/负控均通过；Redocly 仅保留既有3个不相关warning。
+
+独立 Admin Web 在 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release` 将该固定 owner artifact pin 至上述 BFF commit+SHA，生成 consumer 后提交 **9a993145a225e0a39bd8aa59a03c611a4f3b9b40**。browser-private adapter 是闭合 `/api/v1/admin/*` 映射：拒绝外来 authorization/service headers、未登记路径、重复/越界 query、伪造 `tenant_id` 和缺失 mutation idempotency；它以 HttpOnly session/server credential 访问 BFF。随后提交 **b9695ca86420550d480d07bd09da8818cf7c2b17**：补上实际 `/skills` 管理页，修复 `/manage` 对不存在 `/skills` 的 404；页面只读取同源真实技能列表，保留可见内容于刷新失败时不跳动，并提供显式重试。未认证 `GET /skills` 的本地运行实测为 `307 /manage`，证明路由已由运行中dev服务加载；管理员正向浏览器数据验收仍待 BFF 活跃进程切换至 e74a8c5 后进行。
+
+Admin Web 当前独立切片的 `pnpm test` 28 PASS、lint/typecheck/build通过，`/skills` 已出现在 Next production route 表。此闭合的是后台入口、首个 IAM real-read contract 和真实技能管理读取；并非后台所有模块/CRUD、Skills完整生命周期或 Wave0–7完成。下一：受控切换运行中 BFF 到已验收 commit，再做真实管理员/普通用户两身份浏览器验证；之后回到用户指定的连接器 CRUD→排程→专案/外部会话关系顺序。
+
 
 ### T-K03.4 R357-IAM-ADMIN-CLIENT-D0：独立后台人类client准入（2026-10-09）
 
