@@ -1,3 +1,9 @@
+### T-K03.4 R357 三尺寸稳态核验与来源筛选真实400阻断（2026-10-09）
+
+Root实核P1 freeze ea944909…34changed与817baseline protected exact，独审code无新确定阻断；Root72508同字节gate运行，不改冻结。正常浏览器先连续切viewport测到transition中间值，随后按目标宽稳态条件重测，纠正非产品故障：390[5,132,380,580]、667[143.5,73,380,580]、1440[144,45,1152,810]，radius16/无document横溢；窄屏唯一body scroll，桌面当前8项不溢无需scroll。stable三截图保存同r357-personal-ui-p1-stable-{390,667,1440}.png。Settings title/search/纯文字nav和单行toolbar当前可见；品牌非真实profile仍OPEN，不声明全面视觉完全相同。
+
+真实完整交互发现阻断：点击官方/第三方/个人分别GET /api/hub/self/skill-installations?source_kind=official|third_party|personal&installed=true&limit=50 全部400 invalid_skill_installation_request；全部无source_kind200。不能用mock focused通过或吞400冒来源筛选闭环。本人管理菜单跳转/app/skills/manage且原r357私有卡实际可见，此窄导航成功不抹筛选失败。原BFF owner bff_skills_boundary_successor_r357已续派只读query/contract/generated/Platform过滤归因，无写/服务/data权限；Web维持冻结，禁止前端filter或alias。下一精确owner归因→正规小切片修复→Root真实四来源及完整路径重验；所有Wave0–7与后台正向、profile、六OIDC仍active/open。
+
 ### T-K03.4 R357 Root原冻结门终态与P1最窄修正准入（2026-10-09）
 
 Root35200原句柄自然wrapper0，实际focused0/type0/lint0/default1；6files254PASS，default197files196PASS/1FAIL、3591PASS/6原OIDC FAIL，219.57s。post-gates原32changed SHA exact、diff-check0，未把wrapper0当默认绿。已确定视觉P1故不提交原候选。
