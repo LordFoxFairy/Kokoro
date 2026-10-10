@@ -16148,3 +16148,6 @@ BFF三设计最小closed service policy方向获Root当前user-admission/relay�
 
 ### R357-IAM-ADMIN-CLIENT 实施放行（Root真实73997 RED）
 Root隔离PG正式fixture第三跑73997终态exit1：三例各保Product真实正控，随后独立Admin Session投影false、Skills403、MCPallowed=false，准确命中旧单client逻辑；54未选择测试不计通过。准原IAM唯一writer按已批三D0精确源集实施optional IAM_ADMIN_WEB_CLIENT_ID、现oauth/clients普通pure eligibility policy、BetterAuth固定tenant两处及三个授权repository；原helper/fresh role完整性保持，零Schema/API/SDK变化，不env/data/Git/服务。新增纯policy/config负控、固定tenant双client和三真实授权回归，范围按三D0既有test及现fixture引用。配置缺项保持Product；相等/保留machine配置冲突拒绝；未知client不能得admin。Root冻审后重跑实际三例、完整相关PG与纯工程门再提交/reload，普通用户和实际Admin登录另验。
+
+### R357-BFF-ADMIN-INGRESS 生产放行（Root92266）
+Root基于冻结test实际build0，四文件node --test终态70PASS/3FAIL/0skip，3FAIL为config缺Adminsecret、正确独立Admin token backchannel403、/v1/me403。准原BFF唯一writer仅现src/config/runtime.ts（必要现env示例），现src/auth/user-admission.ts、src/http/routes/iam-protocol-relay.ts、新普通src/auth/browser-service-credential.policy.ts与其既有测试/三D0；Admin入口资格必须基于现真实具名operation/method/path，不能泛化admin前缀，不改全局authorizeServerOnly或其它owner/music/Team/Storage准入。若实际serverdispatch必须调整，先报准确路径/原因，不自行扩scope。两secret严格独立、重复raw service/secret拒；relay仅现token/userinfo/revoke/JWKS固定backchannel；User原协议与fixedtenant/fresh/admin/action/cancel完整保持。零SQL/contract/generated/正常env.local/进程/data/Git变化，Root负责冻审和正式重载。
