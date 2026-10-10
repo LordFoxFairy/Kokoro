@@ -3469,3 +3469,5 @@ Web main `3d2b419f971aaa3478b22d7f4e96f34190dff79b`，精确五现路径。新�
 
 ### T-K03.14-WEB-LOCAL-IMPORT 网络片 main（2026-10-10）
 Web正式c408f0397b78709cf3f7ecd2fba87047b02f5e7b，仅九路径消费既有四browser-private操作及真实版本PUT；Finalize创建事实严格active/personal/owner/installed/enabled，Get允许当前停用或缺安装。404与未cancel PUT真实RED2FAIL/120PASS，Finalize状态RED1FAIL/30PASS；Root32527当前157files/2958PASS、type/lint/build exit0，独审唯一P2关闭。冻结c85f4366与九hash/768任务外原bytes一致，五mixed未暂存。日志/tmp/kokoro-local-import-network-root-final-{pure,type,lint,build}.log；此片未接上传UI，未冒充真实MinIO导入/完整Skills闭环。
+
+T-K03.14-ADMIN-ANT-PROPS mainc43eee3：仅原Admin现Skills组件3处orientation及Drawer size640、现test两断言，RED2FAIL→Root默认9files87PASS/type/lint/build0；2hash/86保护exact。真实同源/manage/hub新加载5记录，详情抽屉640px、全部原命令保留；本次日志不再Space/Drawer两warning，ProLayout hydration依赖缺陷仍实际存在（SSR无断点/browser初态读取断点），未掩盖/禁SSR/重建壳。截图/tmp/kokoro-admin-antd-props-browser.jpg，日志/tmp/kokoro-admin-antd-props-root-{test,type,lint,build}.log。此小片不冒完整Admin权限与七命令旅程验收。

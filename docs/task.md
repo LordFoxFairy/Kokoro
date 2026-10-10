@@ -16683,3 +16683,5 @@ T-K03.14 最终一次验收按六项收敛（不重做已验收布局/树）：G
 Root五路径/777保护最终exact，独审无P1/P2；两正式POST404真实RED2FAIL→focused150PASS。Root默认test实际3164PASS、81SKIP、1suite失败（旧匿名/app readiness精确/login不符当前/login?return_to=%2Fapp）；不称默认全绿。另排system纯门159files3042PASS，type/lint/build exit0，日志/tmp/kokoro-github-network-root-{isolated,type,lint,build}.log。精确五路径main4fde8f0，不含mixed或UI。原writer后继仅三D0授权UI/删除19路径，真实Preview→immutable Import draft→owner Publish→Install→权威重读，网络本片不称浏览器完整导入。
 只读定位旧system失败为fixture精确redirect目标过时，后续仅readiness及匿名断言同步真实return_to，不放宽任意3xx/skip/产品认证；原mixed全文须保留。真实ZIP下载已验证583bytes/根SKILL.md与references/checklist.md，剩余最终六项沿同任务，不重做已过布局/树、不重建Admin。
 
+
+T-K03.14-ADMIN-ANT-PROPS mainc43eee3：仅原Admin现Skills组件3处orientation及Drawer size640、现test两断言，RED2FAIL→Root默认9files87PASS/type/lint/build0；2hash/86保护exact。真实同源/manage/hub新加载5记录，详情抽屉640px、全部原命令保留；本次日志不再Space/Drawer两warning，ProLayout hydration依赖缺陷仍实际存在（SSR无断点/browser初态读取断点），未掩盖/禁SSR/重建壳。截图/tmp/kokoro-admin-antd-props-browser.jpg，日志/tmp/kokoro-admin-antd-props-root-{test,type,lint,build}.log。此小片不冒完整Admin权限与七命令旅程验收。
