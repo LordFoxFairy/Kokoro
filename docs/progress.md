@@ -1,3 +1,13 @@
+### T-K03.14 BFF Public13 正式提交，Web完整发布消费者实施中（2026-10-10）
+
+Root串行重跑BFF contract727PASS、默认1326PASS/0FAIL/3既有SKIP，lint/type/build/diffcheck0；独审18授权路径及665保护文件hash一致，无确定P1/P2。正式37efd64a81a66b83df2f8d0a678c6e0e8971cb31，snapshot SHA256 f100463d3d9b686745e13fd2c07d6fdf8d305fcc8b66169cecddded0f2f82801；Public13是契约版本，URL仍/v1。Begin/Complete/Validate必填真实signed64字符串CAS，BFF只授权/精确转发，不复制owner事务。generated Connect loopback证据不冒称真实owner或浏览器闭环。
+
+核原29204句柄live、实际listener93003及CWD；对原wrapper92986正常TERM、端口释放后复用原apps/kokoro-bff/.env.local与Node22 pnpm dev重载正式37efd64，74418新句柄和真实listener登记私有registry，readyz200。PG/Redis/MinIO及其它服务不重启、不清数据。
+
+Web D0正式79d1710：Root只把三唯一设计prefix与HEAD正文合成index提交，原mixed三正文和两测试逐字节保留。批准完整ACK/CAS/PUT对象version/当前manifest/显式Publish/不可变阶段body-key/managed draft刷新恢复；web_identity_owner为唯一writer，Root提交，已授七现代码及六相邻测试。追加两现generator和六current pin contract测试仅正式37efd64/public13/digest更新，新增生成输出须再审，不整包复制release，不改原Admin。实施必须先真实RED；设计不是成功证据。
+
+当前真实draft及原幂等键保留，Web正常consumer与Admin mutation/浏览器尚未闭环；完整Wave0–7 active。下一完成Web冻结、Root门与真实Storage发布恢复，再原Admin CRUD，Billing仍后置。
+
 ### T-K03.14 IAM 后台非空 Skills 读取已修复（2026-10-10）
 
 IAM设计847ae11、正式实现5cd6d2012680bf6b9b05931635800829abd71f9c，精确四现路径：publisher repository/unit/HTTP integration/application.setup。Product原资格保留；独立configured Admin同Product tenant，在同RepeatableRead完整身份/OAuth链上额外核当前platformAdmin/version/角色完整性，无权限缓存/SQL/schema/wire/grant改动。no-store仅现POST闭集补publisher精确路径，原Guard401头缺口不放宽。
