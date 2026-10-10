@@ -1,3 +1,11 @@
+### T-K03.14 后继原Admin Skills实施边界（只读审计，2026-10-10）
+
+基线Admin952304b/BFF37efd64。独审确认正式hub只挂原Ant AdminSkills list/detail，旧SkillUploadModal仅旧ResourceTable引用且/api/action无实现；不是可复用的正式上传成功链。七已发布Admin命令为versions/publish/withdraw/quarantine/restore/audience/discard，全部须冻结Idempotency-Key＋真实product.state_version；versions201，其余200，成功完整skill/event_id/replayed。现apiPost缺幂等头、adapter把全部错误压成admin_operation_failed、UI只首50且未消费cursor，尚未闭环。
+
+后继Owner仍apps/kokoro-admin，不重写shell/新控制台；先补本仓缺失三设计，限定现admin-skills、lib/api、closed route、admin-admission/admin-api与对应测试。严格保持fresh管理员准入，精确ID/具名错误、分页、状态与迟到结果隔离；普通用户负控不可省略。官方publish仅已有validated包的IAM publisher晋升，七命令无新包上传链；完整后台新version上传必须另定精确同owner接线，不恢复旧base64/namespace preview流或宣称七命令已经覆盖。当前仅审计，不预授权代码/新目录，Web完整发布冻结验收后接续该任务。
+
+浏览器现有tab20仍21秒focus控制超时；没有绕保护、新开重复页面或以HTTP充视觉。Root拓扑实际失败9个gitlink与当前checkout不一致，保持任务外混合gitlink，最终跨仓验收前必须精确审查同步，非静态绿。完整Wave0–7 active。
+
 ### T-K03.14 真实对象上传与校验通过，Publish同源旧限制仍失败（2026-10-10）
 
 Root复用既有私有draft/幂等键，经正规登录与原Admin SSO重新验证后，正式Public13实际Begin201、MinIO PUT200并收到真实x-amz-version-id、Complete200/scan_state clean、Validate200/valid=true。manifest字段实际为manifest_identity且skill-md-v1:sha256:；私有runner初打印错manifest_version造成currentFormat=false，按真实持久ACK字段复核true并修runner，没有修改产品/伪造校验。
