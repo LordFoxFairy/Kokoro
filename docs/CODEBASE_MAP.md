@@ -1,3 +1,7 @@
+### 2026-10-10 MCP个人读取当前接线边界
+
+BFF正式main ee423b7四read已实现并Root完整check通过；IAM main2ac3c01，Platform正式personal surface已启用，实际PID27064/8086与BFF27131/53714 readiness200。Web main567af6fe本人四read仍因adapter去self转错canonical路径503；原Web ownerD0与独立契约审查推进，不将旧guard/未启surface记录当当前故障。Skills批准主链已交付；CRUD/connection授权/Admin provider与全Wave仍OPEN，Billing最后。五Web mixed与其他任务外修改保留。
+
 ### 2026-10-10 当前正式基线（Skills已批准主链收尾，连接器续接）
 
 Web main567af6fe；Platform main1eeac36（物理kokoro-capability，目标重命名未完成）；原Admin main97cc927，同源3310/manage；正式BFF apps/kokoro-bff main4239cf1（e1769b56源码仅新增MCP三设计短前缀）；Storage main4ab2f23；System main1460820；Agent mainee736cd；Billing main25e7103。Root及12子仓本地仅main。Skills已批准主链/真实文件树/原Admin已验，不恢复旧伪入口或重复该收尾；AI仅composer/录制未实现不冒全部功能。

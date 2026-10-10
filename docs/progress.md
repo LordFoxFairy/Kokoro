@@ -1,3 +1,8 @@
+### T-K03.13 当前四读接线与正式运行证据（2026-10-10）
+上一goal turn仅重述Skills/main状态，分类no-progress；本轮继续连接器完整目标，不重开Skills验收。BFF A1已main ee423b7，Root57145完整pnpm check自然exit0：1472PASS/0FAIL/3既有SKIP，contract/type/lint/build全0；独审final freeze 90b3394ce7343b0a228bc70fa6ebfdbfd8f43e9438c79adb518cf2bd272134ed无P1/P2，18实际路径/674保护exact。两次真实旧fixture失败均保留：umask077负控需显式chmod644；下载响应结束不等于spool释放，受控cleanup证明后fixture等待原route完整结束，生产预算/容量/断言未放宽。
+正式IAM一次发行独立personal workload，私有0600持久凭据保存在var/dev/platform/mcp-personal.json；personal introspection200及catalog负控403，不复用Skills管理员凭据。Root核旧PID/cwd后仅Platform与BFF有序TERM及源码重启，一项配置差异各自启用personal surface/credential；当前实际Platform27064/session35638、BFF27131/session26816，readyz均200，PG/Redis/MinIO与其他服务不变。既有私有processes.json已更新；凭据/环境不入Git。
+正常开发账号正式Web登录后四personal读仍实际503 platform_operation_not_available（/tmp/kokoro-mcp-root-formal-read.jsonl）：现Web bffBusinessPath去self，错误转到/v1/mcp，而已发行BFF四读为/v1/self/mcp。下一片T-K03.13-WEB-MCP-PERSONAL-READ-D0：原web_identity_owner只读盘点，platform_expand_review独立契约审查；先设计准入再写，保active六字段GET self/mcp/connections与五Web mixed。不得从readiness/四读推断CRUD、授权connection、provider原Admin或完整Wave已闭环，Billing最后。
+
 ### 2026-10-10 T-K03.14 预览实测修复
 Web mainbad2b6b：参考800×600、例44/间隔24与字号实际对齐，reader桌面/窄屏真实正文通过；Root3134PASS/type/lint/build0，790protected exact；截图/tmp/kokoro-skills-preview-metrics-final.jpg。首次正文瞬态失败/正式重试200恢复均留证，完整Wave及其它未证项不冒闭环。
 续片Web main567af6f：编程/数据标签与参考一致，3135PASS/type/lint/build0；reader当前首读200、搜索与分类真实恢复收据已存。未伪称AI生成/录制或所有矩阵通过。
