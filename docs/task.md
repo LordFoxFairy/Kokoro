@@ -1,3 +1,7 @@
+### T-K03.14-V10-MERGE 当前进行中（2026-10-10）
+
+Owner Platform；Root 唯一集成 writer/index/commit；原 platform_expand_review 只读。基线 apps/kokoro-capability / codex/r259-skills-metadata / f971064 clean，合入现运行消费者的 84262b。范围既有 Local import 源码、canonical/contract/生成/安装工具及完整测试；保留候选 SKILL.md/publicationFrom 修复。禁止写其它仓/切消费者pin/重启共享服务。三设计先明确真实基线；准入为恢复当前功能并全量回归，随后固定消费者与 Web/Admin 实证，不另建计划。
+
 ### T-K03.14 Platform owner 集成已通过，整体候选仍待审查（2026-10-10）
 
 Root 已修正历史 schema expand 使用可变当前 schema 的问题，改为固定历史快照；同步当前 series publication、Storage 对象版本及 MCP provider read 的真实测试 fixture/契约断言，保留旧事实、事务回滚、租户和私有字段负控。首次全量失败为 23 failed /436 passed /4 skipped；最新同一真实 integration 终态 **exit 0：35 files、462 passed、4 既有 skipped**（246s），日志 `/tmp/kokoro-platform-integration-current.log`。纯门 115 files/1974 passed，schema/build/typecheck/lint/contract/artifact 检查通过；此证据基于 HEAD b0c0dbec 加未提交候选，不是发行 commit。
