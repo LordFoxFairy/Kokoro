@@ -1,3 +1,9 @@
+### T-K03.14 合并首次 Root 全门失败，继续原 owner 修正（2026-10-10）
+
+原 writer 冻结91路径、599保护文件后，Root在同冻结字节跑完整纯门：121files，2058PASS/1FAIL，缺本仓外私有parent文件。Root已以f971064真实canonical a2f84dad固化 scripts/local-skill-import-parent.prisma.snapshot，单元2PASS，最终全门仍待重跑。真实integration原句柄17551自然终止，236.58s、37files、487PASS/6FAIL/4SKIP，另1suite因缺精确parent配置setup失败；失败涉及MCP历史DDL摘要3项、freshcatalog旧期待1项、NULL source-version fixture2项，负控不得删除或放宽。
+
+独审另确认代码组合缺口：Local Finalize个人技能没有标准Begin attemptId/epoch，现OfficialPublish会拒绝；随后Get/replay还机械要求personal/原publisher。Root三设计批准使用completed exact intent事实资格、不可变包/creator与合法发布状态分离，原owner已续派先真实PG RED再实现，同仓单writer、Root只管最终审查/index/提交；未放行正常服务或消费者。纠正旧诊断：四导入RPC属于SkillCatalogService，Root早前SkillSourceService存在断言对象错，不计有效RED；当前正确compiled四方法实际PASS。整体Skills/Admin/Wave0–7仍未完成。
+
 ### T-K03.14 正常运行观测与依赖后继切片（2026-10-10）
 
 Root 只读实测所有登记 owner HTTP 健康为 200（Agent 仅 healthz，不证明依赖授权）；3310 用户页与同源 /manage 均 200，PostgreSQL/Redis 实际监听存在，MinIO 是配置中的 39190，/minio/health/live 为 200，不是默认 9000。Web/BFF/Platform 的旧 registry PID 已失效但已有新 listener，已纠正真实 PID/CWD 观测，没有重复启动或重启：Web14285 apps/kokoro-app、Admin14310 apps/kokoro-admin、BFF56015 既有正式 worktree、Platform78792 var/dev/platform-release。进程存在和健康不等于 Skills 用户旅程通过；session 句柄未重新证明，不假造句柄。
