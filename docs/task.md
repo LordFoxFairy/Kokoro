@@ -1,3 +1,5 @@
+T-K03.14-WEB-INSTALLATION-ACTION 实证补范围：Root正常tab49仅对唯一“清单整理（开发验收）”安装执行停用，正式成功/本人安装读回已停用；关闭设置后目录仍disabled已添加，确认跨settings缓存不失效。候选未提交，Root39847仅旧候选门。授权同writer追加现personal-skills-read.tsx/manus-skill-client.ts，共五现路径，无新文件/API/数据事实：同一目录resource key维护在现client给两消费方，个人安装ACK后invalidate；新权威catalog读取替换过期本地ACK展示覆盖，保旧数据异步刷新不整页跳动。先RED再冻结，Root恢复此fixture原安装pin，不删source/不自动升级。
+
 ### T-K03.14 独立文件树纠偏 main（2026-10-10）
 
 Web main e7a9c2d67515ff277ac696aad2f2d61ea21e4be4，仅reader现TSX/CSS/UItest；真实RED inline与层级各1FAIL，独审P2复合ARIA角色不完整经真实RED1FAIL关闭，最终普通层级list/native按钮保真实目录。Root79519终态155files/2891PASS、type/lint/build0，3hash及769任务外保护一致，独审无确定P1/P2。正常tab49实际简介→独立左右文件列表/正文，Enter返回简介、Space再开并读取SKILL.md通过；真实样本只有一个文件，嵌套文件夹/其它文件选择仅纯测，未冒浏览器多文件验收。截图 /tmp/kokoro-reader-tree-final-browser.jpg。旧tab48已从浏览器会话删除，创建新tab无重启服务。
