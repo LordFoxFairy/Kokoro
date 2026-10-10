@@ -1,3 +1,9 @@
+### T-K03.14 恢复 active v10 的集成已开始（2026-10-10）
+
+只读固定提交比较确认 84262b 为 74 RPC/39 command/24 proof，f971064 为 70/36/24；候选不仅缺四个 Local import 方法，还缺 SkillImportIntent、合法 local 来源 mapper 与 description parser 出口。HTTP 相同不证明功能等价。Root 已先提交三设计门 2648844，随后发起 84262b 的真实三方 merge，45 个冲突待解决；原 skills_platform_implementation_r357 接管唯一实现写入，Root 保持 index/commit/最终全门权限，platform_expand_review 只读复审。合并承接现有上传，不恢复被撤销的 zip-v2/manifest 兼容，publicationFrom/YAML 修复继续保留。
+
+本轮没有切消费者 pin/gitlink、没有重启正常进程、没有重置数据。1984/463 旧缩减图门禁不作为合并通过证据。供应链复核独立只读进行，未与功能合并混入依赖升级。当前仍未达到 Skills/Web/Admin 或 Wave0–7 完成条件。
+
 ### T-K03.14 用户授权 Skills 本地 clean-slate（2026-10-10）
 
 Root 已具名接收136路径功能候选提交 `e64355a`，新增SQL EOF空行被cached diff-check发现，但首轮shell未停止而仍提交；随即独立修正 `f971064`（2文件/2行，非业务变更）。在固定HEAD f971064重跑纯门1984PASS、format/type/lint/build/contract/artifact/diff-check均通过且工作树clean。新增YAML依赖升级为兼容4.x修复版js-yaml4.3.2，升级后真实package PG37PASS、audit中js-yaml公告0；其他传递依赖仍1critical/5high/3moderate/1low，发行安全门未过。

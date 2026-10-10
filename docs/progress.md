@@ -1,3 +1,9 @@
+### T-K03.14 恢复 active v10 的集成已开始（2026-10-10）
+
+只读固定提交比较确认 84262b 为 74 RPC/39 command/24 proof，f971064 为 70/36/24；候选不仅缺四个 Local import 方法，还缺 SkillImportIntent、合法 local 来源 mapper 与 description parser 出口。HTTP 相同不证明功能等价。Root 已先提交三设计门 2648844，随后发起 84262b 的真实三方 merge，45 个冲突待解决；原 skills_platform_implementation_r357 接管唯一实现写入，Root 保持 index/commit/最终全门权限，platform_expand_review 只读复审。合并承接现有上传，不恢复被撤销的 zip-v2/manifest 兼容，publicationFrom/YAML 修复继续保留。
+
+本轮没有切消费者 pin/gitlink、没有重启正常进程、没有重置数据。1984/463 旧缩减图门禁不作为合并通过证据。供应链复核独立只读进行，未与功能合并混入依赖升级。当前仍未达到 Skills/Web/Admin 或 Wave0–7 完成条件。
+
 ### T-K03.14 Platform owner 集成已通过，整体候选仍待审查（2026-10-10）
 
 Root 已修正历史 schema expand 使用可变当前 schema 的问题，改为固定历史快照；同步当前 series publication、Storage 对象版本及 MCP provider read 的真实测试 fixture/契约断言，保留旧事实、事务回滚、租户和私有字段负控。首次全量失败为 23 failed /436 passed /4 skipped；最新同一真实 integration 终态 **exit 0：35 files、462 passed、4 既有 skipped**（246s），日志 `/tmp/kokoro-platform-integration-current.log`。纯门 115 files/1974 passed，schema/build/typecheck/lint/contract/artifact 检查通过；此证据基于 HEAD b0c0dbec 加未提交候选，不是发行 commit。
