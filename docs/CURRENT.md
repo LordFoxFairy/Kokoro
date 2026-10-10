@@ -1,3 +1,7 @@
+### T-K03.14-WEB-DETAIL-REFERENCE-FRAME（2026-10-10）
+Web main745f273595fa4fbacd3d700eef4b6f821c570e82，精确现有detail TSX/CSS/UItest三路径。Root最终3hash/776保护一致；当前UI99PASS、type/lint/build exit0（/tmp/kokoro-detail-reference-final-root-{ui,type,lint,build}.log），独审短视口P2真实RED后关闭。692×764真实浏览器最终框657.398×600、x17.3/y82、radius12、背景近248；与同视口Manus外框对照。320×240摘要可滚动且详情入口可用，恢复尺寸后真实SKILL.md/references/checklist.md可读取。截图/tmp/kokoro-detail-reference-final.jpg。缺失真实封面/分类/用量/例子不伪造，未称整体像素一致或Skills闭环；GitHub旧入口404仍待下片。
+用户要求最终Skills/Admin验收后全部本地main并清理其他分支，已只读盘点发现多仓有活跃worktree及未合并提交；仅在接收对应owner交付后收敛，不强删/重置。其他owner和uv.lock保留，完整Wave0–7 active，Billing最后。
+
 
 ### T-K03.14-BFF-GITHUB-PATH-CONTRACT 已验收（2026-10-10）
 正式BFF源 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal main486ec7e80e834471878dd031553571d7f16c03bd，精确七路径提交；public13.2.0仅五Github输入/选择path maxLength2048→256字符，对齐既有运行parser，UTF8 archive relative含文件名256bytes不变。新增inverse仅恢复版本和五约束，得到原13.1完整digest418db950后原历史门，extraURL256漏检P2有真实RED且已关闭。未改owner运行/SQL/服务/权限，URL及历史provenance2048保持。

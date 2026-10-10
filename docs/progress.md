@@ -1,3 +1,7 @@
+### T-K03.14-WEB-DETAIL-REFERENCE-FRAME（2026-10-10）
+Web main745f273595fa4fbacd3d700eef4b6f821c570e82，精确现有detail TSX/CSS/UItest三路径。Root最终3hash/776保护一致；当前UI99PASS、type/lint/build exit0（/tmp/kokoro-detail-reference-final-root-{ui,type,lint,build}.log），独审短视口P2真实RED后关闭。692×764真实浏览器最终框657.398×600、x17.3/y82、radius12、背景近248；与同视口Manus外框对照。320×240摘要可滚动且详情入口可用，恢复尺寸后真实SKILL.md/references/checklist.md可读取。截图/tmp/kokoro-detail-reference-final.jpg。缺失真实封面/分类/用量/例子不伪造，未称整体像素一致或Skills闭环；GitHub旧入口404仍待下片。
+用户要求最终Skills/Admin验收后全部本地main并清理其他分支，已只读盘点发现多仓有活跃worktree及未合并提交；仅在接收对应owner交付后收敛，不强删/重置。其他owner和uv.lock保留，完整Wave0–7 active，Billing最后。
+
 ### T-K03.14 独立文件树纠偏 main（2026-10-10）
 
 Web main e7a9c2d67515ff277ac696aad2f2d61ea21e4be4，仅reader现TSX/CSS/UItest；真实RED inline与层级各1FAIL，独审P2复合ARIA角色不完整经真实RED1FAIL关闭，最终普通层级list/native按钮保真实目录。Root79519终态155files/2891PASS、type/lint/build0，3hash及769任务外保护一致，独审无确定P1/P2。正常tab49实际简介→独立左右文件列表/正文，Enter返回简介、Space再开并读取SKILL.md通过；真实样本只有一个文件，嵌套文件夹/其它文件选择仅纯测，未冒浏览器多文件验收。截图 /tmp/kokoro-reader-tree-final-browser.jpg。旧tab48已从浏览器会话删除，创建新tab无重启服务。
