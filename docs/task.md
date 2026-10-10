@@ -16166,7 +16166,7 @@ User Web 已从 Settings 直接输出经服务器校验的独立 Admin 绝对 or
 
 ## 2026-10-09 Admin Web 边界纠偏（Root）
 
-用户指出独立 Admin Web 不得被重做成 Skills-only 新后台。Root 实核：IAM 现有 `IamAdministrationService` 已拥有用户、用户访问、团队、安全事件、会话撤销与用户生命周期；独立 Admin 的当前 BFF v12 artifact 只公开 Skills/Model Routing，IAM 管理能力尚未成为浏览器 contract。故本轮撤回未验收的 Skills-only 根页；3320 保持独立 OIDC/session，但后续按 manifest 壳承接 IAM/System/Platform。依赖顺序固定为 **IAM owner contract → BFF v1 named admin operations → Admin generated client/精确同源适配器 → 页面/浏览器验收**；未接 owner API/授权/审计/测试的模块不注册菜单、不造空卡片或 generic proxy。现 Admin docs 已记录该缺口；先补 BFF/IAM contract 再写界面。
+用户指出独立 Admin Web 不得被重做成 Skills-only 新后台。Root 复核后纠正先前错误盘点：活跃 IAM internal OpenAPI 当前拥有 tenant、member、invitation、role、tenant-status 和 tenant-scoped audit；platform-admin 变更仍是受保护的本地管理命令，尚无 global user-directory、用户生命周期或会话撤销 HTTP contract。独立 Admin 的当前 BFF v12 artifact 只公开 Skills/Model Routing，IAM 管理能力尚未成为浏览器 contract。故本轮撤回未验收的 Skills-only 根页；3320 保持独立 OIDC/session，但后续按 manifest 壳承接 IAM/System/Platform。依赖顺序固定为 **IAM owner contract（缺失能力先由 IAM 发布）→ BFF v1 named admin operations → Admin generated client/精确同源适配器 → 页面/浏览器验收**；未接 owner API/授权/审计/测试的模块不注册菜单、不造空卡片或 generic proxy。现 Admin docs 已记录该缺口；先补 IAM/BFF contract 再写界面。
 
 
 ### R357 Admin OIDC relay policy drift cleanup（2026-10-09）
