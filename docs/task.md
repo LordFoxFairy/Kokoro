@@ -1,3 +1,7 @@
+### T-G00 Root 发布基线仍未达标（2026-10-10）
+
+Root 重跑统一门：`verify-ten-repository-standard.py` 当前报告 **166** 条规则违规；`verify-repository-topology.py` 报告 9 个 runtime module，但 `kokoro-app`、`kokoro-bff`、`kokoro-agent`、`kokoro-iam`、`kokoro-system`、`kokoro-billing`、`kokoro-storage` 的 checkout HEAD 与 Root 记录的 gitlink 不一致。随后启动的 `python3 -m pytest scripts/tests` 已自然结束，但此次调用未保留可复核的终态摘要，因此不记录为通过或失败。上述基线直接否定“可正式发布”结论；未重置子仓、未回退任何工作树，也未把 gitlink 指针改写为当前候选。下一轮将按 owner 与既有任务卡逐项处理，不以局部 Skills/Admin 绿门替代 Root 发布验收。
+
 ### T-K03.10 现行 Admin 草稿发布预填已在浏览器核验（2026-10-10）
 
 Root 用既有管理员 session 对运行中 `127.0.0.1:3310/admin` 做只读核验：技能列表正常读取；打开真实草稿“个人清单 · R324 异常恢复验收”，选择“发布”后，发布者类型为“用户”，发布者身份自动为当前经准入的主体 ID。未点击“保存”，未改变草稿、发布状态或目录内容。该结果证明 **e1f61c4** 已经由 HMR 生效；只覆盖该表单预填，未替代完整管理员 CRUD、普通用户负控或官方目录验收。
