@@ -1,10 +1,18 @@
-### T-K03.14-BFF-SHARE-REVISION（2026-10-10；D0已提交、实施进行中）
+### T-K03.14-WEB-SHARE（2026-10-10；原owner续接）
+- Owner：Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main d0b9aa9；web_identity_owner唯一writer，Root Git/审查；五旧mixed保护。目标仅真实Share创建/复制、精确共享摘要、原详情文件树，不扩其它模块。
+- 依赖：BFF正式e1769b56/public13.3/137/SHA0a9683b38cfd30534931dd0cd7821e3ccded94d6d15613a711cebc1f1e83a209，Platform91bc3655。先现三设计D0与正式pin/生成消费放置审查，再实施；新模块/SQL/服务禁止。
+- 范围：原manus详情tsx/css、现i18n、return-target/test、hub adapter/test、正式BFF snapshot及资格test/generator（先盘点准确闭集），现INDEX；新增同hub风格share schema/client及test、src/app/skills/shared/[id]/page.tsx和test。preview缺UID不伪造身份；如移除fakeShare须单独列精确两现路径。原conversation /shared 不改。
+- 行为：POST原六字段ACK严格source_ref/同源URL；unknown不自动重建；复制失败只复用ACK；真实caller精确UID摘要及文件树，不current冒旧版本、不伪造已安装/品牌/封面/示例。保持异步原正文不跳动、10s取消预算/资源切换隔离。
+- 验收：先真实RED，冻结后Root纯门/type/lint/build/契约、现浏览器创建复制/另一页面精确版本/详情树/撤销权限；worker不Git/服务/共享数据修改。完整Skills/Admin尚未闭环。
+
+### T-K03.14-BFF-SHARE-REVISION（2026-10-10；BFF已验收、Web接线进行中）
 - 目标：Skills分享仍读所分享的精确发布revision，完整摘要和文件树，不把series最新元数据当旧版本；只收尾Skills/原Admin，其他模块暂停。
 - Owner/基线：BFF原writer web_identity_owner；正式目录 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，main c9e8fab；Root审查、Git和最终集成。Platform正式发行91bc3655已通过Root九门与隔离PG19PASS，不是候选pin。
 - 当前授权：三设计D0正式main1bf002c，Root实际三hash/680保护/suffix exact；独审摘要业务通过，漏buf/HTTP旧vendor路径已在同清单补齐。原writer按D0精确业务/机器/生成闭集先RED后实施；无Git/服务/SQL。拟GET /v1/skill-shares/{share_id}/skill，public13.3/137操作；先查有效分享→正式GetSkillRevision→严格摘要/真实IAM作者→返回前复核。原Resolve六字段与GetSkill current不动；无SQL变化、无品牌/用量/示例伪造，source_kind取owner事实。
 - 依赖/验收：准确vendor输入闭集与三设计冻结审查后，才正式消费75图/历史74父验证；新GET404与缺revisionSummary真实RED2FAIL已保存；仅准package两门纳既有spec test、正规库存加1operation，Root重跑type/lint/contract/test/build，再运行与浏览器验精确旧版本、权限、撤销/过期。Web分享正式接线随后串行，不做reader-only半页。
 - 独立Admin收尾：admin_skills_owner已只读确认SSR/browser断点初值不一致；三设计D0 main085f387已核3hash/3suffix/85保护且独审无P1/P2；五实现路径maincc297cc，Root42078默认89PASS/type/lint/build/frozen-install0、独审/5hash/85保护exact；真实浏览器无hydration错误但列表502正在原owner只读定位；原Ant/IAM/System壳/SSR/权限/API/SQL不变，不Git/重启。七命令当前浏览器及普通菜单隐藏仍待补验。
 - Admin列表真实502已归因：BFF200且headers/JSON合规，Github来源机器asset_ref可选、Admin误必填；两路径正式main927bacb，Root29201默认92PASS/type/lint/build0、2hash/88保护与独审通过；实际7项含两个Github/正常401→refresh→200恢复，保持strict/present值/关联校验，不过滤记录、不改BFF。
+- BFF正式交付：main e1769b56aefa2e00e6460195c049cea81a9eea3b；Root5907自然exit0，contract:check/typecheck/lint/test/build全0，default1433PASS/3既有SKIP/0FAIL；独审无P1/P2，冻结123/保护564/删除87exact。git rename检测使暂存name-only计121，Root随后--no-renames核208原始增改删exact；未夹带文件。format九项既有失败保持OPEN，运行和Web消费仍待验。
 - 最终交付：全部实际闭环后各仓main-only；未交接mixed/活跃未合并worktree保留并接收，不以强删冒完成。无远端push。
 
 ### T-K03.14-PLATFORM-SKILL-REVISION-READ（2026-10-10）
