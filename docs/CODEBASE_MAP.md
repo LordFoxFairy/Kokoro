@@ -1,3 +1,7 @@
+### 2026-10-10 Admin 已验证首读修复
+
+运行中 `var/dev/web-skills-release` 的既有模型路由 client 已在 **caa7222** 修复 Next 注入的 `private, no-store, max-age=0` header 误判；只检查 `no-store` directive，读写回归均覆盖。它不是新后台或接口变更；管理员正向浏览器验收仍待既有会话。
+
 ### 2026-10-10 Admin 基座纠偏（当前约束）
 
 `var/dev/admin-web-release` 的简化独立壳已停止运行，不能作为正式后台或继续扩写。当前唯一可复用管理基座是正在运行的 Web 源码 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release/src/app/admin/`：它已有 `platform_admin` server gate、模型路由与 Skills 管理模块。`/Users/nako/.codex/worktrees/kokoro-r257-admin-web/src/app/admin/` 只是不应被误作运行基座的未集成候选。后续 Admin 仅在当前运行基座扩展模块和 BFF owner action，不新建替代性 UI、路由或业务链；若恢复历史独立 Admin 项目，必须先找到可验证的源码来源并完成迁移设计/验收，再切换入口。BFF `e74a8c5` identity read contract 有效但尚未成为 Admin 完整闭环证据。

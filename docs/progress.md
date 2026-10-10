@@ -1,3 +1,7 @@
+### T-K03.5 Admin 现有设置页首读修复（2026-10-10）
+
+只修复已实测的既有 Admin 首读失败：运行中 Next 同源 route 对有效 JSON 返回 `Cache-Control: private, no-store, max-age=0`，而既有模型路由 client 错把它与字面 `no-store` 比较，造成 `/admin/settings` 读取失败。运行源码 `var/dev/web-skills-release` 提交 **caa7222** 仅改为检查标准 `no-store` directive，并以读、写两个回归覆盖实际 header；具名 5 PASS、lint/typecheck PASS。未改变路由、页面结构、权限、BFF contract 或后台边界；无持久会话的浏览器请求仍按现有认证路径返回 404，管理员正向浏览器验收待既有登录会话完成后执行。
+
 ### T-K03.4 R357 Admin 基座纠偏：停止替代性后台壳（2026-10-10）
 
 用户明确纠正：已有 Admin Web/既有后台能力必须作为唯一基座；本轮新建的 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release` 简化壳不再作为管理后台，不再向其中新增 UI 或业务模块。Root 已确认它没有复用当前正在运行的 Web 源码 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release/src/app/admin/` 管理面：该管理面已有 server `platform_admin` gate、模型路由管理和 Skills 管理组件。并行的 `/Users/nako/.codex/worktrees/kokoro-r257-admin-web/src/app/admin/` 是未集成候选，不是当前运行基座。先前把新壳当作主后台是实现方向错误；其已有提交仅保留为迁移考古，不作为产品入口、验收或后续扩展依据。
