@@ -16151,3 +16151,19 @@ Root隔离PG正式fixture第三跑73997终态exit1：三例各保Product真实�
 
 ### R357-BFF-ADMIN-INGRESS 生产放行（Root92266）
 Root基于冻结test实际build0，四文件node --test终态70PASS/3FAIL/0skip，3FAIL为config缺Adminsecret、正确独立Admin token backchannel403、/v1/me403。准原BFF唯一writer仅现src/config/runtime.ts（必要现env示例），现src/auth/user-admission.ts、src/http/routes/iam-protocol-relay.ts、新普通src/auth/browser-service-credential.policy.ts与其既有测试/三D0；Admin入口资格必须基于现真实具名operation/method/path，不能泛化admin前缀，不改全局authorizeServerOnly或其它owner/music/Team/Storage准入。若实际serverdispatch必须调整，先报准确路径/原因，不自行扩scope。两secret严格独立、重复raw service/secret拒；relay仅现token/userinfo/revoke/JWKS固定backchannel；User原协议与fixedtenant/fresh/admin/action/cancel完整保持。零SQL/contract/generated/正常env.local/进程/data/Git变化，Root负责冻审和正式重载。
+
+### R357 三owner冻结审查（沿原卡，不新计划中心）
+IAM原writer已冻结18路径（ec66c06c基线，其他453 tracked保持），Root79006正在真实4-suite PG回归；BFF原writer冻结policy/runtime/两准入+测试/env示例，Root负责完整门；Admin最终freeze SHA a7ebba1039523d52f50ea16f2e5558b150d808a024f10986f56f4cb82b7eaadc（51changed/10protected）。准原IAM agent改任BFF只读源码独审、原BFF agent改任Admin只读源码独审；均不改文件/Git/服务/data、绑定实际冻结字节与Root门，Root独占IAM源审/提交/重载。未解决P1/P2不得以纯门掩盖；真实OAuth/普通拒绝/CRUD仍后续同卡。
+
+### T-K03.4 R357 统一 IAM 的 Admin 入口闭环证据（2026-10-09）
+
+Root 将独立后台改为 Web 已登录管理员点击后自动进入的同一 IAM 会话链，不保留第二次帐号登录页作为正常路径。正式 Web release 提交 `14c31a7`（仅配置的 Admin callback）与 `f528ea2`（租户/同意交互继续该 callback）；独立 Admin 提交 `8eade08`（已有 Admin product session 时直接呈现后台入口，缺会话才自动发起授权）。真实本地链：IAM email session 200 → Admin begin 302 → Web authorize 302 → tenant interaction 302 → continuation 303 到 Admin callback → callback 303 `/` → Admin `/api/v1/me` 200、`authenticated=true`、`platform_admin=true`。该证据只证明管理员正向单点登录与会话建立；普通用户负控、Admin Skills/模型路由 CRUD 页面与撤权回归仍 OPEN。正常库数据未重置；Web 3310按新环境重载，Admin 3320保持运行。
+
+### T-K03.4 R357 独立 Admin 入口切换证据（2026-10-09）
+
+User Web 已从 Settings 直接输出经服务器校验的独立 Admin 绝对 origin，仅在 Product Session 的 `platform_admin=true` 投影下可见；未向浏览器公开服务凭据。Root 先以新增配置负控测试，再在 Node22 下实跑 `tests/app/iam-relay-route.test.ts` + `tests/ui/settings-modal.test.tsx`（117 PASS）、`pnpm typecheck`、`pnpm lint` 全绿。真实本地浏览器已登录 `3310/app?settings=account` 的“后台管理”链接解析为 `http://127.0.0.1:3320/`；点击/直达后由独立 Admin Web 同一 IAM 会话落到 3320，不显示二次帐号密码。Web 切片提交 `949f80f`、`9668826`。旧 `/admin` 源码尚待独立 Admin 的 Skills/模型页面完成及完整 cutover 时统一删除；不将其误称已清理。
+
+
+## 2026-10-09 Admin Web 边界纠偏（Root）
+
+用户指出独立 Admin Web 不得被重做成 Skills-only 新后台。Root 实核：IAM 现有 `IamAdministrationService` 已拥有用户、用户访问、团队、安全事件、会话撤销与用户生命周期；独立 Admin 的当前 BFF v12 artifact 只公开 Skills/Model Routing，IAM 管理能力尚未成为浏览器 contract。故本轮撤回未验收的 Skills-only 根页；3320 保持独立 OIDC/session，但后续按 manifest 壳承接 IAM/System/Platform。依赖顺序固定为 **IAM owner contract → BFF v1 named admin operations → Admin generated client/精确同源适配器 → 页面/浏览器验收**；未接 owner API/授权/审计/测试的模块不注册菜单、不造空卡片或 generic proxy。现 Admin docs 已记录该缺口；先补 BFF/IAM contract 再写界面。

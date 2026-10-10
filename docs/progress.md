@@ -12760,3 +12760,8 @@ IAM Root23651首跑2FAIL为fixture回调未匹配，不算授权RED；44555修�
 R357-IAM Root73997真实RED终态：3FAIL/54未选择，全部准确落独立Admin授权断言，Product正控已过（Sessionfalse、Skills403、MCPfalse）。前两次fixture错位失败如实保留，不替代最终证据。现批准原owner精确生产policy/配置/BetterAuth及三repo切片，未改正常配置/服务/数据，无新Schema/contract。
 
 R357-BFF Root92266实际build0+四test 70PASS/3FAIL/0skip终态，确认独立凭据接线行为RED，准原owner最小closed policy/runtime/two-admission生产切片。不是正常服务已切换/真实Admin登录；所有现正常进程保持，原profile三D0保护。
+
+
+## 2026-10-09 Admin Web 边界纠偏（Root）
+
+用户指出独立 Admin Web 不得被重做成 Skills-only 新后台。Root 实核：IAM 现有 `IamAdministrationService` 已拥有用户、用户访问、团队、安全事件、会话撤销与用户生命周期；独立 Admin 的当前 BFF v12 artifact 只公开 Skills/Model Routing，IAM 管理能力尚未成为浏览器 contract。故本轮撤回未验收的 Skills-only 根页；3320 保持独立 OIDC/session，但后续按 manifest 壳承接 IAM/System/Platform。依赖顺序固定为 **IAM owner contract → BFF v1 named admin operations → Admin generated client/精确同源适配器 → 页面/浏览器验收**；未接 owner API/授权/审计/测试的模块不注册菜单、不造空卡片或 generic proxy。现 Admin docs 已记录该缺口；先补 BFF/IAM contract 再写界面。

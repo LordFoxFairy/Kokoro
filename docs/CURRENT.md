@@ -3064,3 +3064,8 @@ R240 Root治理最新实际仍失败：standard153违反，topology6个gitlink/H
 
 ### R357 独立后台认证接线核验与 IAM tests-only（2026-10-09）
 Root 重新读取当前源码及真实 IAM discovery：权威 issuer/authorize 为3310/iam，独立Admin候选错误从adminOrigin推导issuer且没有该relay；BFF现relay与产品请求仅接web-bff，候选admin-web-bff未接纳。实际登录尚未验收，11测试/build不作完成依据；原writer停写，原独审员沿现task进行只读冻结审查。IAM三设计候选46行、零机器/SQL变化已由Root核BetterAuth固定tenant与三个授权消费者，准原owner仅tests-only真实旧行为RED；正常服务/data不变。上一turn只事实核验未完成交付，本轮新增有证据的接线反例和可执行测试阶段，完整goal保持active。
+
+
+## 2026-10-09 Admin Web 边界纠偏（Root）
+
+用户指出独立 Admin Web 不得被重做成 Skills-only 新后台。Root 实核：IAM 现有 `IamAdministrationService` 已拥有用户、用户访问、团队、安全事件、会话撤销与用户生命周期；独立 Admin 的当前 BFF v12 artifact 只公开 Skills/Model Routing，IAM 管理能力尚未成为浏览器 contract。故本轮撤回未验收的 Skills-only 根页；3320 保持独立 OIDC/session，但后续按 manifest 壳承接 IAM/System/Platform。依赖顺序固定为 **IAM owner contract → BFF v1 named admin operations → Admin generated client/精确同源适配器 → 页面/浏览器验收**；未接 owner API/授权/审计/测试的模块不注册菜单、不造空卡片或 generic proxy。现 Admin docs 已记录该缺口；先补 BFF/IAM contract 再写界面。
