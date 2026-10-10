@@ -1,3 +1,9 @@
+### T-K03.4 R357 筛选400精确归因与Web adapter修复准入（2026-10-09）
+
+原BFF owner只读确认：拒绝发生在Web现src/app/api/hub/[...path]/route.ts217的安装list key白名单，仅installed/enabled/limit/cursor，source_kind与query在到BFF前400；同Web既有schema与正式BFF/Platform链均已支持三值及owner侧页前过滤。因此归因更正为Web adapter契约漂移，不修改BFF/Platform/generated/SQL，不前端filter。Root直接核route/schema一致，根因确定。
+
+Root72508原终态focused0/type0/lint0/default1：3592PASS/原六FAIL，219.91s，原P1视觉已三尺寸稳态实核但来源失败阻整体验收。追加原Web唯一writer最窄两现文件route.ts及tests/app/hub-proxy.test.ts，先三合法来源/query真实route RED（不是client mock）再仅补合法query闭集；保未知key/非法all/重复/空白/超长400且upstream0。三现设计/CURRENT必要记录可补，不触原34候选其它字节。冻结后Root同SHA测试/真实四来源查询、搜索、menu/manage/上传下载与稳定刷新后放行；完整Wave0–7及profile/admin/OIDC风险保持OPEN。
+
 ### T-K03.4 R357 三尺寸稳态核验与来源筛选真实400阻断（2026-10-09）
 
 Root实核P1 freeze ea944909…34changed与817baseline protected exact，独审code无新确定阻断；Root72508同字节gate运行，不改冻结。正常浏览器先连续切viewport测到transition中间值，随后按目标宽稳态条件重测，纠正非产品故障：390[5,132,380,580]、667[143.5,73,380,580]、1440[144,45,1152,810]，radius16/无document横溢；窄屏唯一body scroll，桌面当前8项不溢无需scroll。stable三截图保存同r357-personal-ui-p1-stable-{390,667,1440}.png。Settings title/search/纯文字nav和单行toolbar当前可见；品牌非真实profile仍OPEN，不声明全面视觉完全相同。
