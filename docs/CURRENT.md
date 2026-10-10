@@ -1,3 +1,8 @@
+### T-K03.14-WEB-GITHUB-IMPORT UI main d0b9aa9（2026-10-10）
+Root原4157自然exit0：排system纯门160files/3021PASS，type/lint/build均0；日志/tmp/kokoro-github-ui-final-root-{pure,type,lint,build}.log。最终freeze212a9c3f十九路径及原765/追加778保护一致，独审P2 completed重开已关闭，unknown原key/body保持。精确19路径main d0b9aa9，未含五mixed；默认OIDC旧精确/login断言失败仍OPEN。
+真实GitHubPreview200、选不可变目录后Import412，未确认Publish/Install。正式BFF本owner只读receipt唯一匹配admitted，排除本次Complete/Validate归因；PUT前再次Create replay与已Begin推进CAS冲突为确定代码缺陷，后继T-K03.14-BFF-GITHUB-ADMISSION仅原handoff/route及现测试，先RED保存真实Create初始CAS，不减1/换key/放宽Platform。既有缺字段intent恢复待正式原receipt证明，不冒恢复成功。
+Skills/Admin整体验收及所有本地main收敛仍未完成。当前仅验收切片提交main；活跃未合并worktree、其他owner和uv.lock保留，无远端push。
+
 ### T-K03.14-WEB-GITHUB-IMPORT NETWORK main4fde8f0（2026-10-10）
 Root五路径/777保护最终exact，独审无P1/P2；两正式POST404真实RED2FAIL→focused150PASS。Root默认test实际3164PASS、81SKIP、1suite失败（旧匿名/app readiness精确/login不符当前/login?return_to=%2Fapp）；不称默认全绿。另排system纯门159files3042PASS，type/lint/build exit0，日志/tmp/kokoro-github-network-root-{isolated,type,lint,build}.log。精确五路径main4fde8f0，不含mixed或UI。原writer后继仅三D0授权UI/删除19路径，真实Preview→immutable Import draft→owner Publish→Install→权威重读，网络本片不称浏览器完整导入。
 只读定位旧system失败为fixture精确redirect目标过时，后续仅readiness及匿名断言同步真实return_to，不放宽任意3xx/skip/产品认证；原mixed全文须保留。真实ZIP下载已验证583bytes/根SKILL.md与references/checklist.md，剩余最终六项沿同任务，不重做已过布局/树、不重建Admin。

@@ -1,3 +1,14 @@
+### T-K03.14-BFF-GITHUB-ADMISSION（2026-10-10）
+| 项目 | 当前切片 |
+|---|---|
+| 目标 | 修复GitHub已admitted上传前重复Create导致412，真实导入后验收；不扩大Skills范围 |
+| Owner/writer | 正式BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal；web_identity_owner仅此仓；Root审查/提交 |
+| 基线 | main486ec7e，工作树clean；Web UI已精确十九路径main d0b9aa9 |
+| 范围 | 现skill-ai-handoff.ts、http/routes/skill-ai-import.ts和相邻现测试，具体清单先确认；不改Platform/schema/public契约/服务 |
+| 设计 | 同一handoff冻结真实Create初始CAS，PUT只重放原Begin；已有旧intent不推算CAS/换key；设计门先复核 |
+| 验证 | 真实RED再改，Root重跑BFF纯门及真实浏览器Import→Publish→Install；未知结果原key/body保留 |
+| 状态 | 负责人审计方案中；整体Skills/Admin未验收；Root独占Git |
+
 T-K03.14-WEB-INSTALLATION-ACTION 实证补范围：Root正常tab49仅对唯一“清单整理（开发验收）”安装执行停用，正式成功/本人安装读回已停用；关闭设置后目录仍disabled已添加，确认跨settings缓存不失效。候选未提交，Root39847仅旧候选门。授权同writer追加现personal-skills-read.tsx/manus-skill-client.ts，共五现路径，无新文件/API/数据事实：同一目录resource key维护在现client给两消费方，个人安装ACK后invalidate；新权威catalog读取替换过期本地ACK展示覆盖，保旧数据异步刷新不整页跳动。先RED再冻结，Root恢复此fixture原安装pin，不删source/不自动升级。
 
 ### T-K03.14 独立文件树纠偏 main（2026-10-10）
