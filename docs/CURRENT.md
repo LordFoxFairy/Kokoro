@@ -1,3 +1,9 @@
+### T-K03.14 用户 Skills 授权接通，真实上传后继失败（2026-10-10）
+
+Web正式3c59071d8188f025b3d7b7683bb2d8560ceaa0fa，仅既有OIDC常量和scope具名测试两路径；原10项保序追加三个已登记scope，严格redirect不放宽。Root官方IAM只读client enabled/13且authorization、skill、publisher均存在，零注册/角色/SQL变更。真实正常登录草稿先403 skill_forbidden，消费者RED5FAIL/27PASS；Root独立4suite91PASS/type/lint/diff-check0，独审无确定P1/P2，冻结两文件及五mixed匹配。重新正规登录同持久幂等键草稿201，真实draft已保存在既有private状态文件；原Admin同源SSO和四读取此时200。未重跑build/浏览器/全套，未称完整闭环。
+
+继续实际上传：尚未传对象，begin返回502 skill_response_invalid；Platform原live句柄2482真实BeginSkillPackageUpload400，故不是未启动。新draft创建后Admin list consumer返回503，而owner ListAdminSkills200；三个身份读取仍200。Root保留draft、幂等键和原句柄，无盲重试/删除/基础设施重启，续派原只读review核请求及projection契约。正常三readyz200；下一修精确消费者/owner不匹配，再完成真实上传发布与后台CRUD，不放宽校验。证据/tmp/kokoro-skill-{draft-current-red,draft-current-green,upload-current}.log与var/dev/r255-preserve/r357-normal-skill-crud-private.json（私有，不入Git）。完整Wave0–7 active。
+
 ### T-K03.14 Admin 只读授权与实际读取已接通（2026-10-10）
 
 Admin 正式952304b（codex/r357-admin-read-scope），只现config.ts/config.test.ts：原8+已批准五read scope，共13且唯一，OIDC请求/校验使用同常量。先RED1FAIL/2PASS，Root默认4files19PASS、type/lint/build通过；独审无确定P1/P2、冻结hash一致。原后台Ant Design壳和业务页面未重写。

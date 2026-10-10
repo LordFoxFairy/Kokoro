@@ -1,3 +1,15 @@
+### T-K03.14 用户 Skills 授权接通，真实上传后继失败（2026-10-10）
+
+Web正式3c59071d8188f025b3d7b7683bb2d8560ceaa0fa，仅既有OIDC常量和scope具名测试两路径；原10项保序追加三个已登记scope，严格redirect不放宽。Root官方IAM只读client enabled/13且authorization、skill、publisher均存在，零注册/角色/SQL变更。真实正常登录草稿先403 skill_forbidden，消费者RED5FAIL/27PASS；Root独立4suite91PASS/type/lint/diff-check0，独审无确定P1/P2，冻结两文件及五mixed匹配。重新正规登录同持久幂等键草稿201，真实draft已保存在既有private状态文件；原Admin同源SSO和四读取此时200。未重跑build/浏览器/全套，未称完整闭环。
+
+继续实际上传：尚未传对象，begin返回502 skill_response_invalid；Platform原live句柄2482真实BeginSkillPackageUpload400，故不是未启动。新draft创建后Admin list consumer返回503，而owner ListAdminSkills200；三个身份读取仍200。Root保留draft、幂等键和原句柄，无盲重试/删除/基础设施重启，续派原只读review核请求及projection契约。正常三readyz200；下一修精确消费者/owner不匹配，再完成真实上传发布与后台CRUD，不放宽校验。证据/tmp/kokoro-skill-{draft-current-red,draft-current-green,upload-current}.log与var/dev/r255-preserve/r357-normal-skill-crud-private.json（私有，不入Git）。完整Wave0–7 active。
+
+### T-K03.14-WEB-SKILL-SCOPE（2026-10-10，进行中）
+
+Root正常用户→原Admin读取已通过；当前正式POST `/api/hub/self/skills/drafts` 实际403 `skill_forbidden`，草稿尚未创建，持久幂等键保留。IAM正式getOAuthClient只读证实Product client enabled且13 scopes，authorization/skill/publisher三项都已登记；Web当前OIDC_SCOPE仍只有原10项，未请求这三项。先修消费者，禁止新增权限、SQL直改或将403改成功。
+
+局部归属：Web既有OIDC消费者与具名scope测试，不改变模块/公开API/SQL。writer沿用web_identity_owner，Root审查提交；基线fcd7bbe，允许 `src/lib/server/oidc-provider.ts`、`tests/server/oidc-provider.test.ts`，其它5个混合路径全部保护。已有tests/server为准确验证位置，不新建目录或机械DTO。依赖现IAM正式登记，固定原10+三项有序唯一scope，严格redirect校验同常量；删除旧10项正向断言，保留缺项/重复/extra/reordered拒绝。先真实RED→实现→具名测试/type/lint，冻结后Root重跑并正规登录+同幂等草稿请求。完整CRUD/浏览器/Wave0–7仍OPEN。
+
 ### T-K03.14-V10-MERGE 当前进行中（2026-10-10）
 
 Owner Platform；三设计门由 Root 提交 2648844，Root 发起 merge 后已交接原 skills_platform_implementation_r357 为唯一实现 writer；Root 独占 index/commit，platform_expand_review 只读。合并634c83b＋工具hash修正e2f6dbf已提交clean；Root最终纯门2059PASS、真实integration500PASS/4SKIP及七工程门通过，独审晋升/明确current P1关闭。阶段进入固定消费者/正常网络/Web/Admin旅程验收；供应链独立后继仍OPEN，未切pin/重启。基线 apps/kokoro-capability / codex/r259-skills-metadata / f971064 clean，合入现运行消费者的 84262b。范围既有 Local import 源码、canonical/contract/生成/安装工具及完整测试；保留候选 SKILL.md/publicationFrom 修复。禁止写其它仓/切消费者pin/重启共享服务。三设计先明确真实基线；准入为恢复当前功能并全量回归，随后固定消费者与 Web/Admin 实证，不另建计划。
