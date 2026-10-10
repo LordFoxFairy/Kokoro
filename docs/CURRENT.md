@@ -1,3 +1,9 @@
+### T-K03.14 正常运行观测与依赖后继切片（2026-10-10）
+
+Root 只读实测所有登记 owner HTTP 健康为 200（Agent 仅 healthz，不证明依赖授权）；3310 用户页与同源 /manage 均 200，PostgreSQL/Redis 实际监听存在，MinIO 是配置中的 39190，/minio/health/live 为 200，不是默认 9000。Web/BFF/Platform 的旧 registry PID 已失效但已有新 listener，已纠正真实 PID/CWD 观测，没有重复启动或重启：Web14285 apps/kokoro-app、Admin14310 apps/kokoro-admin、BFF56015 既有正式 worktree、Platform78792 var/dev/platform-release。进程存在和健康不等于 Skills 用户旅程通过；session 句柄未重新证明，不假造句柄。
+
+独立供应链只读审查建议功能合并后另做 Nest12.0.3 正规父升级及合法范围内 proxy-addr2.0.8/fast-uri3.1.8 lock 修补，不覆盖当前 writer 的 manifest。Prisma7.10.0 精确固定 mysql2/deepmerge-ts 的三条公告仍 OPEN：子依赖已有修复，未核实稳定父版本资格，不用 Prisma8 RC 或强制 major override 清零。最终安全结论须绑定实际安装/audit/全门，不以审查建议升级通过数。
+
 ### T-K03.14 恢复 active v10 的集成已开始（2026-10-10）
 
 只读固定提交比较确认 84262b 为 74 RPC/39 command/24 proof，f971064 为 70/36/24；候选不仅缺四个 Local import 方法，还缺 SkillImportIntent、合法 local 来源 mapper 与 description parser 出口。HTTP 相同不证明功能等价。Root 已先提交三设计门 2648844，随后发起 84262b 的真实三方 merge，45 个冲突待解决；原 skills_platform_implementation_r357 接管唯一实现写入，Root 保持 index/commit/最终全门权限，platform_expand_review 只读复审。合并承接现有上传，不恢复被撤销的 zip-v2/manifest 兼容，publicationFrom/YAML 修复继续保留。
