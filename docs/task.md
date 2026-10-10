@@ -1,3 +1,11 @@
+### T-K03.4 R357 四来源真实通过；本人管理导航被旧Settings遮挡（2026-10-09）
+
+上一goal turn仅重申独立后台及查看现route，分类no progress；本轮重验并推进。Root41975原句柄自然terminal wrapper0，实际ROOT_RESULTS proxy0/type0/lint0/default1/build0；105具名PASS，默认3602PASS/原6FAIL、197files196PASS/1FAIL，219.19s。最终候选freeze5a02266c…仍未放行，不将wrapper0或纯门冒整页闭环。
+
+真实正常浏览器重新点击我的技能后reader挂载，session200 authenticated=true/platform_admin=false，先前等待timeout未复现，不归因服务未启动。官方/第三方/个人/全部四次实际点击均owner请求200；Unicode“数据 分析”搜索200空结果、r357-skills-user-journey搜索200精确原安装828ac689；%00非法query400 invalid_skill_installation_request且session保留。此关闭已确认Web allowlist 400缺陷的运行重验，不声明Unicode单元覆盖完整或所有Skills完成。
+
+新增真实阻断：Settings添加→管理我的技能，地址/app/skills/manage且hash空，但多次独立快照仍settings-modal可见、旧安装reader保持并遮挡本人管理主面，非瞬时过渡。现onManage直接navigateMountedSurface，已续派原Web唯一writer只读导航/关闭history归因与最窄RED方案；冻结生产字节暂不动，不重启/改共享数据。私有0600收据var/dev/r255-preserve/r357-filter-and-managed-navigation-root.json。下一明确归因→批准最窄现文件→RED/修复→Root同页导航、返回/刷新/焦点实验，再决定提交；后台独立/admin/settings正向、真实profile、六OIDC与完整Wave0–7保持OPEN。
+
 ### T-K03.4 R357 筛选400精确归因与Web adapter修复准入（2026-10-09）
 
 原BFF owner只读确认：拒绝发生在Web现src/app/api/hub/[...path]/route.ts217的安装list key白名单，仅installed/enabled/limit/cursor，source_kind与query在到BFF前400；同Web既有schema与正式BFF/Platform链均已支持三值及owner侧页前过滤。因此归因更正为Web adapter契约漂移，不修改BFF/Platform/generated/SQL，不前端filter。Root直接核route/schema一致，根因确定。
