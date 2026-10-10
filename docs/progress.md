@@ -12888,3 +12888,9 @@ Package clean-slate：删除 legacy manifest helper/预期旧identity参数/消�
 续进：实际新 ZIP parser 的 identity 进入 Publish 被拒，旧 identity 却通过，具名正确基线 2 FAIL。发布规则改为唯一 skill-md-v1 后 33 unit PASS；真实隔离 PostgreSQL 发布 23 PASS，typecheck/lint/diff-check 通过（Node24）。历史冻结 contract 字节未改，不支持旧格式发布；完整上传/校验网络链、官方晋升同key重放、解析器兼容删除、整片冻结及浏览器验收仍待办。BFF 保网关转发与自有业务编排边界，不复制 Platform 发布业务。
 
 Root 单事务清理实际 `kokoro_platform` Skills 数据：skill 77、installation 9、publication 58、category 1、creation_source 2、import_intent 2、receipt 225、outbox 104；目标表零行复核通过。显式锁、无活动 lease/非终态命令检查、0600 私有备份，无 CASCADE；IAM/其他 schema/MCP/Redis/ObjectStore 未改。旧包兼容要求撤销，后续删除对应分支；新包发布 identity 与官方晋升幂等重放两个 P1 仍需真实失败测试和修复，候选未冻结、完整用户路径未验收。
+
+### T-K03.14 Root 当前 owner 真实 Storage/Connect 验证（2026-10-10）
+
+Root 明确指定 Platform 固定提交 `e2f6dbf213eb551f71a85628587c96cda790a31e` 的实际 checkout，未使用默认旧运行副本；既有 `run_platform_local_skill_import_storage_smoke.py` 的 dry-run 四场景通过、启动资源0。随后原进程句柄62689正常终止 exit0，clean/eicar/ack_lost/ingress_clean 各4测试，共16PASS，真实 PostgreSQL、S3对象版本、ClamAV扫描与正规IAM token exchange/Connect四导入RPC均参与；缺bearer401、错误workload403负控通过。四场景cleanup完成、run-owned剩余资源0，未重置共享PG/Redis或重启正常服务。日志 `/tmp/kokoro-platform-e2f6dbf-storage-connect-smoke.log`，四资源收据目录见日志终行。
+
+此证据只覆盖本地导入网络生命周期、扫描拒绝、ACK丢失重放和身份边界，不覆盖正式Web/Admin浏览器、官方晋升全网络链或全部Wave。当前BFF正常worktree `00e4b791` clean，仍固定Platform `84262b`；下一按owner发行顺序更新固定消费者并验证，再切正常服务和完整用户/原Admin操作。供应链与整体闭环仍OPEN。
