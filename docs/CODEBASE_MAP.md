@@ -1,3 +1,7 @@
+### 2026-10-09 独立 Admin Web 目标边界
+
+ADR-034 已采纳；拟 apps/kokoro-admin-web，当前尚未注册。迁移文档工作目录 var/dev/admin-web-release，无业务数据库，经既有 BFF 调用；当前运行后台仍在用户 Web /admin，不冒独立项目完成。任务沿 T-K03.4 R357-ADMIN-PROJECT-D0。
+
 ### R352-P2 Skills 分类契约已提交，页面仍未切换（2026-10-08）
 
 Platform正式 `8014acc`（HTTP4/category_keys），Root27paths/生成后保护/独审及98files1594PASS、type/lint/build/contract/inverse实际0；三旧文档format仍FAIL。未接运行/SQL/BFF/Web，正常服务未重启，页面分类仍tags，不称Manus一致或Skills完成。P3先闭合已实测Prisma数组列无NOTNULL的设计差异，再推进存写与消费。细节见同一既有实施计划R352-P2；完整goal active，其它模块/heartbeat保持暂停。

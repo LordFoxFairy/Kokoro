@@ -16085,3 +16085,11 @@ R357-BFF-ACTIVATION全门真实失败裁决：writer默认428PASS/10FAIL来自9�
 候选196 materialized含87旧vendor删除/87新正式Git842来源，Root post-build冻结SHA及563保护exact；独审无slice新增P0/P1。Root33532 focused58PASS、全contract704PASS/typecheck/lint/build0；默认自然1为1287PASS/8FAIL/3skip，不能用writer1288/7替代。Root83075隔离正式3e19 archive真实默认1010PASS/18FAIL/3skip：原7leaf均同基线复现；另9ed缺fixture失效已机械pin修，不恢复第二vendor。Root新增Billing summary503!=200真实保留；3368受控具名candidate/baseline均0，支持75ms资源敏感但不反推全门绿。实际production债为application/skill-specification依infra/generated，另OpenAPI9oracle与4mock断言后继待正规修。候选未提交/正常BFF未重载，Skills用户闭环仍OPEN。
 
 Web独立compact实现进行，真实默认3421PASS/25FAIL/79skip含旧大表单oracle；Root追加授权3现app-frame/settings-modal/use-session-state tests仅新入口oracle，保auth/generation/取消/权限断言，不增兼容旧表单。OIDC307/i18n韩文失败保实证，Root最终同字节复验不口头免门。所有服务与原owner数据保留，完整Wave0–7 active。
+
+### T-K03.4 R357-ADMIN-PROJECT-D0：独立后台迁移准入（2026-10-09）
+
+上轮取得历史物理 pin 与退役边界证据，改变下一行动，属于进度而非后台完成。Root采纳 ADR-034；旧项目位于退休 Platform，不将同名 kokoro-app worktree误认独立仓。当前正式用户Web d3cacda仍承载/admin，正常服务与用户数据保持。
+
+任务卡：owner kokoro-admin-web / 原Web负责人 skills_platform_implementation_r357（继承模型，仅文档 writer），Root审查与Git；基线新独立本地Git工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release，拟分支 codex/r357-admin-web-release，无初始commit。允许 README.md、INDEX.md、AGENTS.md、docs/INDEX.md、docs/CURRENT.md、docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md、docs/SECURITY.md、docs/RELIABILITY.md、docs/ACCEPTANCE.md、docs/SLO.md、docs/RUNBOOK.md；仅基线设计，不写生产源码/生成契约/package/lock、不改用户Web/BFF/IAM/远端/进程/数据、不Git提交。Root先初始化独立仓供唯一writer使用。
+
+依赖：ADR-034、现Web d3cacda、BFF74b1b固定发行；明确实际generated artifact而非猜digest。比较独立repo/同项目路由/旧gateway，选择前者；文件粒度按实际Skills/模型路由及登录职责。Web无业务DB。交付必须提供三设计绝对路径、精确迁移源/目标/删除集、OIDC独立身份与环境键、RED/门禁/真实双身份旅程，未决项如实记载。Root审核后才放行生产实现。正式remote与gitlink、IAMclient与管理员grant、3320登录/CRUD/撤权及前后台目录同步均未完成；完整Wave0–7保持active。

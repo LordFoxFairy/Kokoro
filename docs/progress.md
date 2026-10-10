@@ -12707,3 +12707,11 @@ Root初observer半开负控实际FAIL（不完整header被Node idle-close，负�
 Root追加pending-owner回调负控真实通过：2s强制+2s未settle仅preserved、不关闭依赖，release后lateWrites0；独审无确定P0/P1。正常基础设施已核IAM21149/PG61199/Redis61190复用。真实7轮资格保留全部日志与资源，不伪绿：Unix长路径EINVAL→短路径及启动前100byte gate；Storage readiness入口漏转发→正规GET/readyz透明转发；ephemeral config.port0误连80→actual server.address；IAM观察只看init漏Request.headers造成假503→正确effective headers且观测不改变响应；Storage GetUploadStatus漏观察→按正式client闭集补齐；Get误用catalog凭据403→正规projection凭据，生产权限未改。
 
 最后22773自然exit1，3PASS/1FAIL：missing401/wrong-write403/preabort只client负控，真实Begin/Complete/Finalize和全部replay200，正规OAuth与逐调用真实IAM HTTP计数已实际通过；Get正规projection准入后500“Skill creation source snapshot is incomplete”。定位Finalize写local immutable source，而旧product mapper仅接受AI/GitHub child，是真实owner业务缺陷，不放宽断言/删proof/伪返回。沿同卡原Platform writer先两现tests-onlyRED，再4paths局部mapper/schema修，Root随后重跑真实入口与浏览器；v10仍inactive，正常库/服务/37assets/7installations/draft不变。新7组失败Storage DB/桶全部具名保留（每receipt runtimeStopped=true/activeSockets0），不把最新失败或保留资源冒为正常目录exact/零资源成功。完整Wave0–7仍active，独立后台与Skills用户闭环未验收。
+
+### T-K03.4 R357-ADMIN-PROJECT-D0：独立后台迁移准入（2026-10-09）
+
+上轮取得历史物理 pin 与退役边界证据，改变下一行动，属于进度而非后台完成。Root采纳 ADR-034；旧项目位于退休 Platform，不将同名 kokoro-app worktree误认独立仓。当前正式用户Web d3cacda仍承载/admin，正常服务与用户数据保持。
+
+任务卡：owner kokoro-admin-web / 原Web负责人 skills_platform_implementation_r357（继承模型，仅文档 writer），Root审查与Git；基线新独立本地Git工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release，拟分支 codex/r357-admin-web-release，无初始commit。允许 README.md、INDEX.md、AGENTS.md、docs/INDEX.md、docs/CURRENT.md、docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md、docs/SECURITY.md、docs/RELIABILITY.md、docs/ACCEPTANCE.md、docs/SLO.md、docs/RUNBOOK.md；仅基线设计，不写生产源码/生成契约/package/lock、不改用户Web/BFF/IAM/远端/进程/数据、不Git提交。Root先初始化独立仓供唯一writer使用。
+
+依赖：ADR-034、现Web d3cacda、BFF74b1b固定发行；明确实际generated artifact而非猜digest。比较独立repo/同项目路由/旧gateway，选择前者；文件粒度按实际Skills/模型路由及登录职责。Web无业务DB。交付必须提供三设计绝对路径、精确迁移源/目标/删除集、OIDC独立身份与环境键、RED/门禁/真实双身份旅程，未决项如实记载。Root审核后才放行生产实现。正式remote与gitlink、IAMclient与管理员grant、3320登录/CRUD/撤权及前后台目录同步均未完成；完整Wave0–7保持active。

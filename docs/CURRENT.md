@@ -1,3 +1,12 @@
+
+### T-K03.4 R357-ADMIN-PROJECT-D0：独立后台迁移准入（2026-10-09）
+
+上轮取得历史物理 pin 与退役边界证据，改变下一行动，属于进度而非后台完成。Root采纳 ADR-034；旧项目位于退休 Platform，不将同名 kokoro-app worktree误认独立仓。当前正式用户Web d3cacda仍承载/admin，正常服务与用户数据保持。
+
+任务卡：owner kokoro-admin-web / 原Web负责人 skills_platform_implementation_r357（继承模型，仅文档 writer），Root审查与Git；基线新独立本地Git工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release，拟分支 codex/r357-admin-web-release，无初始commit。允许 README.md、INDEX.md、AGENTS.md、docs/INDEX.md、docs/CURRENT.md、docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md、docs/SECURITY.md、docs/RELIABILITY.md、docs/ACCEPTANCE.md、docs/SLO.md、docs/RUNBOOK.md；仅基线设计，不写生产源码/生成契约/package/lock、不改用户Web/BFF/IAM/远端/进程/数据、不Git提交。Root先初始化独立仓供唯一writer使用。
+
+依赖：ADR-034、现Web d3cacda、BFF74b1b固定发行；明确实际generated artifact而非猜digest。比较独立repo/同项目路由/旧gateway，选择前者；文件粒度按实际Skills/模型路由及登录职责。Web无业务DB。交付必须提供三设计绝对路径、精确迁移源/目标/删除集、OIDC独立身份与环境键、RED/门禁/真实双身份旅程，未决项如实记载。Root审核后才放行生产实现。正式remote与gitlink、IAMclient与管理员grant、3320登录/CRUD/撤权及前后台目录同步均未完成；完整Wave0–7保持active。
+
 ### T-K03.4 R357 用户纠偏：后台必须区分独立Web项目与独立路由（2026-10-09）
 
 用户指出历史后台是单独Web项目。Root实核2026-07-13-wave5-admin-duo spec及Wave0旧plan存在kokoro-admin-web + kokoro-platform-admin；当前正式d3cacda代码却在kokoro-app同项目/admin与/admin/settings，仅路由/布局独立。Root先前将其描述为符合独立后台要求属理解偏差，不用当前路由存在冒独立项目完成。旧r257-admin-web只是remote kokoro-app的worktree，不是独立admin项目。

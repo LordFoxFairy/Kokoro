@@ -37,6 +37,10 @@ Browser -> Web -> BFF -> internal owner services / Agent / Scheduler
 | `kokoro-storage`   | Blob、Upload、Asset、Artifact、Scan、ObjectStore metadata                          |
 | `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch                               |
 
+### 2.0 独立后台前端补充（2026-10-09）
+
+按 [ADR-034](kokoro-handbook/decisions/ADR-034-independent-admin-web.md)，新增目标 consumer `kokoro-admin-web`，独立工程/部署/OIDC/session，经既有 BFF 访问业务 owner，无业务数据库，不改变上述九个业务事实 owner。当前后台仍位于用户 Web `/admin`，迁移与正式组合登记未完成；用户 Settings 最终仅保管理员可见的外部跳转。
+
 ### 2.1 已裁决的收敛
 
 ```text
