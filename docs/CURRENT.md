@@ -1,3 +1,9 @@
+### T-K03.4 R357 Root原冻结门终态与P1最窄修正准入（2026-10-09）
+
+Root35200原句柄自然wrapper0，实际focused0/type0/lint0/default1；6files254PASS，default197files196PASS/1FAIL、3591PASS/6原OIDC FAIL，219.57s。post-gates原32changed SHA exact、diff-check0，未把wrapper0当默认绿。已确定视觉P1故不提交原候选。
+
+原writer只读方案获最窄实施准入：现settings-modal.module.css的Skills限定后置窄屏specificity恢复title/brandCopy/search/文字nav；现personal-skills-read.tsx/CSS紧凑同一行search/浏览/添加及下一行四来源，secondary本人管理不独占行。现SkillCreateMenu无onManage接口，批准该现文件仅新增可选导航callback/menu项并接线，保持原upload/AI/GitHub状态机、取消与下载不变，禁复制第二create menu。只修改相应现Settings/Skills/menu测试及三设计/CURRENT必要记录；无新文件/owner/API/SQL/admin/locale/服务/data。先可见chrome和真实toolbar关系RED，后同owner修正→重冻结，Root真实390/667/1440截图和操作放行；真实品牌字段不得冒用户名/套餐，缺可信profile先报告。整体Wave0–7 active，旧6失败继续OPEN。
+
 ### T-K03.4 R357 独立冻结审查确认视觉P1（2026-10-09）
 
 上一turn冻结实核与实际截图暴露偏差属progress。本轮原只读reviewer确认同freeze2361486c…的确定P1：settings-modal.module.css565–589后置窄屏规则隐藏brandCopy/switcher/settingsSearch/sectionLabel，本片Skills规则未以specificity恢复；personal-skills-read.tsx539–566及CSS9–21把search/actions/secondary manage分多行。Root再看真实Manus667参考：设置标题、账户/scope、Settings搜索、文字横nav均可见，技能搜索/探索/添加同一行；本地geometry正确但此层布局不合格。其余单cursor/权限/取消/unknown精确GET+usage POST未发现确定阻断，不等整体验收。
