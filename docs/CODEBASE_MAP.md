@@ -1,3 +1,7 @@
+### 2026-10-10 连接器四read已接 / A2契约续接
+
+Web main50508e55已准确消费BFF ee423b7 personal四GET，正常HTTP200/404/404/404及原active浏览器空态通过，Root纯3169/contract278/type/lint/build0。五Webmixed保护。BFF原owner转A2只读D0，后继正式四写/Provider两读/metadata-CAS、Platform普通授权→Connection与原Admin Provider管理尚未完成。不要再用旧self去前缀失败或未启surface推断现接口故障，不把静态推荐当真实已连接。
+
 ### 2026-10-10 MCP个人读取当前接线边界
 
 BFF正式main ee423b7四read已实现并Root完整check通过；IAM main2ac3c01，Platform正式personal surface已启用，实际PID27064/8086与BFF27131/53714 readiness200。Web main567af6fe本人四read仍因adapter去self转错canonical路径503；原Web ownerD0与独立契约审查推进，不将旧guard/未启surface记录当当前故障。Skills批准主链已交付；CRUD/connection授权/Admin provider与全Wave仍OPEN，Billing最后。五Web mixed与其他任务外修改保留。

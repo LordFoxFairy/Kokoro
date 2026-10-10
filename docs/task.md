@@ -1,3 +1,8 @@
+### T-K03.13 Web四读已接收，CRUD下一片（2026-10-10）
+上一goal turn为progress（正式配置持久纠偏、真实RED及后继依赖明确）。Web main50508e55d68e865b922dcaee565be310fb6a891c精确5路径：独立personal schema+现adapter/proxy tests/INDEX；三D0设计18fd52da已接，五mixedbody保留。Root核freeze4107766f的8after/786保护exact，独审无P1/P2；真实四路RED4FAIL+active正控1PASS，Retry-After86401真RED后上限86400修，初typeFAIL及workerpostlude外层exit1均保日志。Root38327串行contract278PASS、纯165files3169PASS、type/lint/build全自然exit0，日志/tmp/kokoro-web-mcp-personal-read-a1/root-*.log；默认system/完整E2E未作为本片门运行，不冒全Wave。
+正常开发帐号隔离正规/login→四read200/404/404/404，真实items=[]与mcp_personal_not_found，完整header proof请求ID/Cache-Control private,no-store,max-age=0合格；初脚本精确==no-store false是观察误判，保原日志，后headers脚本exit0。CUA旧62焦点timeout及API新63 ERR_BLOCKED_BY_CLIENT未当服务停止，未弱化安全；新64正常/app/plugins→管理连接器原active空态/无错误/翻页disabled通过，截图/tmp/kokoro-web-mcp-personal-read-a1/root-active-projection-browser.png后关闭临时页，不称新四读已有UI CRUD。
+下一T-K03.13 A2仅BFF原web_identity_owner只读D0：发布现owner四写+Provider两读及真实metadata/CAS；Root裁决版本/契约/目录后再授实施，normalauthorize/Connection及Provider原Admin仍后继完整目标。没有新增服务/资源或SQL操作，Billing最后。
+
 ### T-K03.13 后继闭环依赖（当前只读事实，非完成）
 原owner只读绑定Platform1eeac365/BFFee423b7/Admin97cc927：personal10已有四CRUD写和Provider两读，但public13.3仅四读，Connector五字段缺display_name/description/enabled/state_version/时间，无法据此完成编辑。个人自定义URL不在正式Create/Update；旧authorize/Connection入口为tenant_execution，不可借来给普通用户。Provider原Admin管理命令/API/UI尚缺，不拿静态推荐冒真实provider。
 
