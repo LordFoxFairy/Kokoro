@@ -45,3 +45,4 @@
 [submodule "kokoro-admin"]
 	path = apps/kokoro-admin
 	url = https://github.com/LordFoxFairy/kokoro-admin.git
+	branch = main

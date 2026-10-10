@@ -47,6 +47,8 @@ def test_root_metadata_uses_remote_names_without_a_web_alias() -> None:
     names = re.findall(r'(?m)^\[submodule "([^\"]+)"\]$', gitmodules)
     topology = runpy.run_path(str(ROOT / "scripts/verify-repository-topology.py"))
     assert set(names) == set(topology["MODULES"])
+    admin = gitmodules.split('[submodule "kokoro-admin"]', 1)[1]
+    assert "branch = main" in admin
 
 
 def test_root_current_distinguishes_root_governance_tests_from_subrepository_tests() -> None:
