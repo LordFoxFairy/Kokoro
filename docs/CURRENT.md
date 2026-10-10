@@ -1,5 +1,6 @@
 ### T-K03.14 真实预览尺寸纠偏（2026-10-10）
 Web main bad2b6bb05e5a6ad62f827b43f31c682386ba129仅CSS/tests：按当前Manus1280×720 DOM将summary960→800、例72→44、简介14/20、例文字13/18、间距24；Root冻结后浏览器逐项实测一致。reader保持960桌面与390窄屏370.5/x9.75、嵌套真实正文；首次正文alert未抓响应，正式重试package两200恢复，保留瞬态证据而非冒首次通过。Root22427自然exit0：3134纯PASS/type/lint/build0；独立审查freeze6619ab28无P1/P2，790任务外tracked/五mixed逐字不变。截图/tmp/kokoro-skills-preview-metrics-final.jpg、私有收据/tmp/kokoro-skills-preview-metrics-receipt.json；临时两页视口已清除。仅该展示切片闭合，不伪造封面/分类/使用统计或未实现记录技能；完整Wave继续active，其他owner未验修改不打包。
+续片Web main567af6fe109e48e83572ab947d9e23e54f433b42：修分类“编程/数据”，真实RED缺编程后定向110PASS、Root全纯3135PASS/type/lint/build0；789其它tracked及已提交CSS字节不变。当前reader两package200/首读正文成功，历史alert未复现且旧网络已evicted，不无据改接口。真实搜索skill-creator、分类自动化空态→全部恢复通过；搜索是消费分页后的本地筛选，无新增请求、多页尚无浏览器证据。收据/tmp/kokoro-skills-read-final-audit.json、截图/tmp/kokoro-skills-category-label-final.jpg。只读当前交付审计确认上传/GitHub/个人版本与安装/共享包/原Ant Admin主链已有真实证据，不因历史OPEN重复重写；AI创建仅composer、录制未实现，分享撤销过期/多页及封面组合缺证，仍待后续能力/验收切片，完整Wave active。
 
 ### T-K03.14 创建入口最后文案验收（2026-10-10）
 Web main 9aceeec2fa124475c76f4c2b25cf0287b22542d4：目录触发器恢复“创建”，保留三个已有真实入口，不新增未实现录制项。Root纯门3132PASS；新增断言曾typecheck FAIL，修为锚定regex后Root定向5PASS、typecheck/lint/build均exit0。正常浏览器已验证创建菜单三项，截图/tmp/kokoro-skills-create-label-final.jpg。789保护文件逐字不变，五mixed仍未暂存。Root与12子仓当前本地分支仅main，topology exit0；已提交不等于完整Wave/严格视觉/记录技能等剩余项完成。

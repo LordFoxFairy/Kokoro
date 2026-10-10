@@ -1,5 +1,6 @@
 ### 2026-10-10 T-K03.14 预览实测修复
 Web mainbad2b6b：参考800×600、例44/间隔24与字号实际对齐，reader桌面/窄屏真实正文通过；Root3134PASS/type/lint/build0，790protected exact；截图/tmp/kokoro-skills-preview-metrics-final.jpg。首次正文瞬态失败/正式重试200恢复均留证，完整Wave及其它未证项不冒闭环。
+续片Web main567af6f：编程/数据标签与参考一致，3135PASS/type/lint/build0；reader当前首读200、搜索与分类真实恢复收据已存。未伪称AI生成/录制或所有矩阵通过。
 
 ### 2026-10-10 T-K03.14 创建触发器
 Web main9aceeec：简洁“创建”与三项既有能力核对通过。Root3132PASS、类型修复定向5PASS/type/lint/build0，截图/tmp/kokoro-skills-create-label-final.jpg。Root与12子仓仅main/topology0；五mixed及其它owner未验项保留，不冒整体闭环。
