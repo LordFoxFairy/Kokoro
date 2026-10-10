@@ -1,3 +1,9 @@
+### T-K03.14 Platform 候选不得冻结：全量真实 integration 明确失败（2026-10-10）
+
+Root 完整运行 `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration`，终态 **exit 1：35 files 中 8 failed，463 tests 中 23 failed、436 passed、4 skipped**（226.26s）。失败覆盖候选同时改动的 Skills 演进与 MCP 读取边界：Skill 旧 revision/source 读取和 literal `%`/`_`/`\` 查询投影返回空、Skill 产品 expand 的保留/回滚断言失败、GitHub provenance schema 演进失败、MCP personal read capability 比预期暴露新增 provider read，以及 Nest ingress 清理未完成。该结果否定冻结/接线 BFF/Web 的前提；此前 personal MCP 专项 PostgreSQL 2 PASS、unit/contract/architecture 仅证明局部，不覆盖该失败集合。
+
+Root 不重置、不回退、不提交这 126 路候选，也不把失败改为 skip 或放宽断言。下一步仅限 Platform owner 将 schema expand、旧事实保留、projection query 和最窄 read port 逐个修正并以同一真实 integration 重验；在该门全绿前，连接器用户端/后台 CRUD 保持未接线。
+
 ### T-K03.13 当前后台物理拓扑与连接器 owner 候选复核（2026-10-10）
 
 Root 已复核当前源树和实际监听：用户端是 `apps/kokoro-app`（3310），独立后台是同级 gitlink `apps/kokoro-admin`（3320）；后者基于历史 `kokoro-web/apps/admin` 的既有 Ant Design 控制台路由（users、teams、credit、payment、sites、models、hub、approvals、audit、operators），不是嵌入用户端的替代页面。用户端仅通过账户菜单、且仅 `platform_admin` 合格时投影后台入口；管理员首次进入 `/manage` 走同一 IAM SSO，已存在后台 session 则回到原控制台根路径。匿名实测：3310 `/admin` 为 404，3320 `/manage` 为 200；因此以后不得把用户端 3310 `/admin` 作为后台当前事实，也不得再新造第三套后台壳。
