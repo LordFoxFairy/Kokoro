@@ -16494,3 +16494,6 @@ Web原owner独立小修唯一writer，与BFF policy不同仓；maincce0a2c＋五
 
 ### T-K03.14-ADMIN-SKILLS-IMPLEMENT
 原Admin唯一writer admin_skills_owner，Root审查/提交main；基线main6319b68＋Root当前三D0放置提交，clean。允许现components/shell/admin-skills.tsx、lib/api.ts及api.test.ts、lib/server/admin-api.ts/admin-admission.ts、app/api/v1/admin/[...path]/route.ts、vitest.config.ts；新lib/admin-skills.schemas.ts/client.ts/intent.ts及test/admin-skills-contract.test.ts/client.test.ts/intent.test.ts/adapter.test.ts（实际文件全admin-skills-前缀）。其它壳/IAM/System/OIDC/依赖/SQL禁改。正式BFF四服务准入939bf0e已提交，机器Public13.1/digest不变。先真实RED再一次完成七命令＋新版本四包链、分页/异步保内容/严格ACK/原意图，Root当前默认baseline19PASS非新能力证据。readonly review与Root真实SSO/CRUD/权限负控/浏览器后放行；worker不Git/服务/data，先建codex分支可，共享indexRoot独占。
+
+### T-K03.14-WEB-NAV-TEST-ISOLATION
+Root已两次实证Git79d1710基线9FAIL240PASS与当前12f3879全纯2798PASS9FAIL同九导航失败。原Webowner唯一writer仅现tests/ui/app-frame-rail.test.tsx、tests/ui/app-frame.smoke.test.tsx、tests/ui/workspace-rail.test.tsx精确fixture接线；不得改生产/布局/权限/断言/预期调用数。先原失败具名RED，给/api/admin-access显式真实形状非管理员Response与独立mock；conversation/upload fetchMock仍保持原严格调用次数/Move资格/项目过滤断言，断言新admin请求本身闭集路径，不过滤调用记录、不跳过或放宽断言。若生产根因或范围更大先停报。Root测试/审查/提交main，五mixed原字节保护；其它测试不改、不新增helper目录。
