@@ -1,3 +1,9 @@
+### T-K03.13 当前后台物理拓扑与连接器 owner 候选复核（2026-10-10）
+
+Root 已复核当前源树和实际监听：用户端是 `apps/kokoro-app`（3310），独立后台是同级 gitlink `apps/kokoro-admin`（3320）；后者基于历史 `kokoro-web/apps/admin` 的既有 Ant Design 控制台路由（users、teams、credit、payment、sites、models、hub、approvals、audit、operators），不是嵌入用户端的替代页面。用户端仅通过账户菜单、且仅 `platform_admin` 合格时投影后台入口；管理员首次进入 `/manage` 走同一 IAM SSO，已存在后台 session 则回到原控制台根路径。匿名实测：3310 `/admin` 为 404，3320 `/manage` 为 200；因此以后不得把用户端 3310 `/admin` 作为后台当前事实，也不得再新造第三套后台壳。
+
+连接器下一 owner 候选位于物理 Platform 仓 `apps/kokoro-capability` 的未提交单一候选中，含个人 MCP provider/connector 的读取和 Create/Update/Enable/Remove command contract；Root 未接入 BFF/Web、未伪造连接器数据。当前纯门已实测：typecheck、lint、contract:check、platform-artifact:check 通过；MCP focused 25 PASS、完整 unit 1,171 PASS、architecture 113 PASS；隔离临时 PostgreSQL 的 personal MCP integration 2 PASS（持久 receipt 重放、CAS、软移除、目录游标绑定）。候选仍需 Root 逐项审查、其余真实 integration、冻结提交，之后才允许 BFF 和用户/后台 UI 消费；连接器 CRUD 尚未闭环。
+
 ### T-K03.12 上传弹窗格式说明与实际校验一致（2026-10-10）
 
 运行界面只读核验发现：文件选择器和输入校验均接受 `.zip`、`.skill`，但第二行说明误写成“ZIP 格式”。运行 Web 提交 **41d588f** 把各 locale 的同一说明统一为“`.zip` 或 `.skill` 包；根 `SKILL.md` 必含 YAML `name`、`description`”，不改变上传协议、大小限制、扫描、发布或权限。先补失败断言，再定向 4 PASS、lint、typecheck、production build 通过；本轮命令仍为 Node 24，故不把它记作 Node 22 门禁。该修复只消除已实测的误导性文案，不代表技能目录内容、完整创建流程或 Manus 整体视觉已完成。
