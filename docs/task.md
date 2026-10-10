@@ -1,3 +1,9 @@
+### T-K03.14-BFF-SKILL-AUTH-ERROR（2026-10-10；进行中）
+
+Web唯一writer实测strict403 skill_forbidden漏contract；Root核正式src/auth/skill-authorization.client.ts:47已有403 PERMISSION_DENIED→skill_forbidden。归属BFF当前37efd64，由原bff_platform_pin_owner单writer，Root审查/提交；只修真正走该授权链的403 error family机器枚举，不改准入/runtime/SQL/ownerwire。兼容添加版本13.1.0、URL/v1不变。现openapi、contract测试、verify-openapi/verify-skill-product门、architecture current版本期待、CURRENT六路径；其它必须路径先报。
+
+先具名RED→精确schema添加→Node22串行contract/lint/type/test/build冻结交Root；无新目录/兼容层/万能错误枚举。Web继续UI/flow但暂停最终snapshot/pin冻结，正式BFF后统一消费唯一最终SHA/digest，不能让消费者与schema长期两轨。原完整发布及Wave0–7验收要求不变。
+
 ### T-K03.14 安装测试失败归因修正（2026-10-10）
 
 Root进一步核对源码：默认scripts/tests读取apps/kokoro-bff HEAD975a2d8，其operations仅五安装操作；实际运行/本切片正式源为独立normal worktree37efd64，已有六操作包括GET package。故上一条“旧安装下载测试未对齐”归因不精确，真实原因是默认源与批准运行源不同，不能删除测试或当前API。
