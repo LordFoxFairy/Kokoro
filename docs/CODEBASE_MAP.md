@@ -4,25 +4,11 @@
 
 Root 通过 BFF 已配置的正式 Platform projection credential 做只读 catalog 探测，`include_official_skills=true` 返回 11 项且 `official=0`、无下一页。因此本地目录继续呈现个人/历史内容不是前端隐藏官方卡片；当前不存在可用于验证 Manus 卡片封面、官方发布者、使用量与三条示例的官方实体。没有伪造目录、封面或使用次数，也没有将个人技能自动改为官方。下一步固定为复用既有 Admin Skills 管理面完成真实官方发布/审核的 owner 闭环，并以实际发布内容重新做目录与详情的浏览器对照；在此之前不继续猜测式改 UI、不把样式称为完成。完整 Skills/Admin CRUD、连接器、排程及 Wave0–7仍未完成。
 
-### 2026-10-10 Admin 真实路径证据
+### 2026-10-10 Admin 当前边界
 
-既有管理员 session 已真实验证账户菜单 → `/admin` 技能列表 → `/admin/settings` 空记录页，运行源码已加载入口和响应 header 两个修复；未做写入。
+正式后台已独立为 `apps/kokoro-admin`（GitHub：`LordFoxFairy/kokoro-admin`），与 `apps/kokoro-app` 同级；它保留历史 Admin 的页面与模块作为迁移基座，并只通过当前 IAM 与 BFF 调用。旧的 `apps/kokoro-web/apps/admin` 注册已撤销，不再作为正式入口或扩展目标。
 
-### 2026-10-10 Admin 账户入口
-
-`var/dev/web-skills-release` 的账户菜单在 **5041dfa** 固定管理员入口为既有同源 `/admin`；停止的 `3320/manage` 不再是用户入口。
-
-### 2026-10-10 Admin 已验证首读修复
-
-运行中 `var/dev/web-skills-release` 的既有模型路由 client 已在 **caa7222** 修复 Next 注入的 `private, no-store, max-age=0` header 误判；只检查 `no-store` directive，读写回归均覆盖。它不是新后台或接口变更；管理员正向浏览器验收仍待既有会话。
-
-### 2026-10-10 Admin 基座纠偏（当前约束）
-
-`var/dev/admin-web-release` 的简化独立壳已停止运行，不能作为正式后台或继续扩写。当前唯一可复用管理基座是正在运行的 Web 源码 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release/src/app/admin/`：它已有 `platform_admin` server gate、模型路由与 Skills 管理模块。`/Users/nako/.codex/worktrees/kokoro-r257-admin-web/src/app/admin/` 只是不应被误作运行基座的未集成候选。后续 Admin 仅在当前运行基座扩展模块和 BFF owner action，不新建替代性 UI、路由或业务链；若恢复历史独立 Admin 项目，必须先找到可验证的源码来源并完成迁移设计/验收，再切换入口。BFF `e74a8c5` identity read contract 有效但尚未成为 Admin 完整闭环证据。
-
-### 2026-10-09 独立 Admin Web 目标边界
-
-ADR-034 已采纳；拟 apps/kokoro-admin-web，当前尚未注册。迁移文档工作目录 var/dev/admin-web-release，无业务数据库，经既有 BFF 调用；当前运行后台仍在用户 Web /admin，不冒独立项目完成。任务沿 T-K03.4 R357-ADMIN-PROJECT-D0。
+`apps/kokoro-admin` 已完成独立工程、当前 IAM OIDC 接入层与 BFF 同源适配的静态验证；尚未配置本地独立客户端并完成真实登录、权限负控和原有管理页面的数据接线，因此不作为已运行或已闭环后台宣称。下一步只在该正式仓完成会话守卫、原 Admin 壳内 Skills 管理、IAM/BFF 真连接与浏览器验收；用户端管理员入口随后指向 `/manage`，普通用户不展示入口。
 
 ### R352-P2 Skills 分类契约已提交，页面仍未切换（2026-10-08）
 
