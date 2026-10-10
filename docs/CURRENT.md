@@ -1,3 +1,7 @@
+### T-K03.14 当前完整system门与普通用户浏览器负控（2026-10-10）
+Root逐字核候选src/tests/contract/scripts及manifest与Web mainffc6c7c无差异；原87448自然exit0：14files/199PASS、0FAIL，149.19s，日志/tmp/kokoro-skills-final-committed-system.log，补齐前197+定向2的完整门。首次误在Root执行pnpm找不到vitest，未产生代码变更，随后在正确独立候选运行。
+普通fixture正规登录/app并打开账户菜单，后台管理入口count0；截图/tmp/kokoro-ordinary-user-no-admin-menu.jpg。直接/manage真实停留隐藏登录表单，捕获csrf200/me503，未捕获signin POST；API直导航另报浏览器ERR_BLOCKED_BY_CLIENT。这不是403权限验收通过，也未确定服务终止。原Admin owner只读确认me503是session/身份读取异常而非权限拒绝；下一片T-K03.14-ADMIN-ORDINARY-ENTRY仅归因表单POST/CSRF布尔资格/残留RP身份，上游失败与浏览器拦截需分开，不放宽鉴权或重写壳。已正常退出普通账号、恢复原开发管理员，现同源/manage自动SSO及原hub10真实记录读回，截图/tmp/kokoro-admin-restored-after-ordinary-proof.jpg。无服务重启/共享数据改动；其它模块仍不扩写，完整Wave保持active。
+
 ### T-K03.14 原Admin自然到期后的真实写入（2026-10-10）
 Root在原Ant后台/manage/hub准备QA版本5的新版本表单，自然等待316秒（未改IAM默认300秒TTL/服务/令牌），点击确认；实际me401→csrf200→session200→me200→原versions201，页面仅新增本人版本6草稿。随后仅该未发布验收草稿通过正式discard200，页面读回已删除，既有发布版本不变。收据/tmp/kokoro-admin-natural-expiry-final-receipt.json，写入截图/tmp/kokoro-admin-natural-expiry-draft-green.jpg。该自然续期浏览器写证据已补，不冒写接口自身401/原key逐字抓包或所有普通用户浏览器负控；普通用户既有正式HTTP403/admin_required及后续401仍为既有证据。仅既有实现验收，无新增功能或后台重写，完整Wave及任务外mixed继续未结项。
 
