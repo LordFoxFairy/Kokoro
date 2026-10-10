@@ -1,5 +1,7 @@
 ### T-K03.14 用户授权 Skills 本地 clean-slate（2026-10-10）
 
+整片冻结前门禁已自然终止：Root Node24 全量真实 integration **35 files /463 PASS /4 既有 SKIP、exit 0、229.54s**，日志 `/tmp/kokoro-platform-clean-slate-full-integration.log`（原句柄16160，未重复启动）。原审查员复审当前工作树未发现确定残留 P1/P2，静态审查不冒充运行验收。可进入具名候选文件审查/冻结提交，随后接固定消费者和浏览器；未将此结果称 Web/Admin 完成。
+
 最新 package 切片已删除 `skill-package-manifest.ts`、expectedLegacyIdentity 参数及消费者调用，Validate/Publish identity 唯一 skill-md-v1；可选 manifest.json 是普通内容，不参与元数据/identity/额外旧格式限制。CRC/ZIP 边界/摘要/大小/路径/取消保护保留。具名先 4 FAIL（旧回退/旧 manifest 限制）、Validate codec 1 FAIL 后通过。Root Node24 当前纯门 **115 files /1984 PASS**，真实隔离 PG package Validate/Publish/Get/Safety **4 files /37 PASS**，lint/typecheck/build/contract/diff-check 通过；冻结旧 contract 字节未改。解析器旧分支与官方晋升 replay 的两个实现缺口已修，但整体混合候选尚未冻结，正常服务/完整网络/浏览器/Admin 验收仍待完成。
 
 续进：官方晋升同 key 重放实测 `publish_snapshot_conflict`，原因是提交后 current 行不再包含原个人发布状态。现 receipt 在同事务保存 `publicationFrom`（普通发布 null，官方保存原 status/audience/version），verifyEvent 使用原快照重建；不新增表或公开字段、不补旧 receipt fallback。三设计已同步此次裁决。Root Node24 当前 unit 15 PASS、隔离 PostgreSQL 发布 24 PASS，含晋升正常重放、提交成功但 ACK 丢失后的恢复、篡改 snapshot version 拒绝且状态仍 3。独审追加发现 codec String(enum) 接受数组，具名 1 FAIL 后改严格字符串 enum，15 PASS；替身 CAS=7 的快照已改为 7。未冻结整个混合候选，旧 parser 分支和完整网络/浏览器路径仍待完成。

@@ -12855,6 +12855,8 @@ Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 
 - Next: owner artifact pin, BFF exact admin reads, then real `/manage` module pages. No placeholder routes/cards.
 # 2026-10-10 T-K03.14 本地 Skills clean-slate 授权执行
 
+Root 全量 owner integration 当前 Node24 终态35files463PASS/4既有SKIP、exit0、229.54s，原句柄16160自然结束；日志 `/tmp/kokoro-platform-clean-slate-full-integration.log`。独审当前工作树无确定残留P1/P2。下一具名冻结候选→固定BFF/Web/Admin消费者→真实浏览器验收，非全产品完成。
+
 Package clean-slate：删除 legacy manifest helper/预期旧identity参数/消费者调用；元数据仅根SKILL.md，Validate receipt 也删除zip-v2接受。RED4FAIL＋codec1FAIL后，纯门115files1984PASS、真实PG4files37PASS；lint/type/build/contract/diff-check通过，冻结artifact字节不改。只读复审续派原审查员；全候选未冻结、真实前后端链未称闭环。
 
 官方晋升 durable replay 切片：真实 PG 原行为 FAIL publish_snapshot_conflict，保存原 publicationFrom 于同事务 receipt 后通过；当前 PG 24 PASS，覆盖正常重放、未知 ACK 恢复及 receipt 快照版本篡改拒绝。unit 15 PASS；独审数组 enum 漏洞先 1 FAIL 后严格字符串修正。三设计同步，新 receipt 无旧 shape fallback，零公开 API/表新增。中间语法错误与 unknown ACK 用例旧 replayed=false 断言错误已修，均不冒充产品反例。候选未冻结/提交、全链仍 OPEN。
