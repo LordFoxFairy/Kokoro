@@ -1,3 +1,7 @@
+### T-K03.14 后继契约接线（2026-10-10，待 owner 设计审查）
+
+只读核当前真实失败后，已确定两处独立边界：①Platform package RPC必须expected_state_version>=1；Web begin输入未包含该字段，BFF仅optional透传。下一由BFF owner先核公开契约/设计把CAS前置条件与当前owner统一，再Web消费者按真实state_version提交；不填常数或绕过并发控制。②有真实draft后Admin list首次需要iam_user publisher enrichment；IAM publisher repository仅接纳ProductWeb固定client，独立Admin即使有publisher scope仍被拒。空目录之前未调用resolve，原200不证明有记录读取。此项为源码强证据推断，仍待实际IAM边界safe status复验后由IAM owner按已配置Admin身份精确修正，不用Product token替换Admin、不松成任意client。Root保留真实draft和同幂等键，无对象上传，分别由owner完成设计/RED/实现，最后Root正常用户及原Admin有数据验收。
+
 ### T-K03.14 用户 Skills 授权接通，真实上传后继失败（2026-10-10）
 
 Web正式3c59071d8188f025b3d7b7683bb2d8560ceaa0fa，仅既有OIDC常量和scope具名测试两路径；原10项保序追加三个已登记scope，严格redirect不放宽。Root官方IAM只读client enabled/13且authorization、skill、publisher均存在，零注册/角色/SQL变更。真实正常登录草稿先403 skill_forbidden，消费者RED5FAIL/27PASS；Root独立4suite91PASS/type/lint/diff-check0，独审无确定P1/P2，冻结两文件及五mixed匹配。重新正规登录同持久幂等键草稿201，真实draft已保存在既有private状态文件；原Admin同源SSO和四读取此时200。未重跑build/浏览器/全套，未称完整闭环。
