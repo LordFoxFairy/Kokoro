@@ -1,3 +1,13 @@
+### T-K03.14 同源 Admin 正规登录接通，身份读取 scope 缺口仍待后继（2026-10-10）
+
+Root正式IAM getOAuthClient读回当前已配置独立Admin client：native/enabled，callback/logout仍旧3320无/manage，确证本次invalid_redirect。IAM设计0d73cd9与实现89a6503已具名提交；Web严格双callback消费者fcd7bbe已提交。IAM先合法pair RED1FAIL、raw空白RED40FAIL及内部控制符RED12FAIL，最终Root331PASS/type/lint/串行build通过；独审原URL归一化P2关闭。原中间全unit1097仅中间版本证据，最终全unit未重跑，不冒称最终全门。WebRoot88PASS/type/lint/build通过，770保护hash及五mixed保持。
+
+Root初次与writer并发Prisma generate造成ENOTEMPTY/缺model编排失败；停止writer全部命令后Root串行正式generate/build/type成功，没有手删代码或data。正式注册更新前私有runner误查metadata.profile而非公开readback顶层profile，fail-closed且wrote=false；修正后只通过operator官方PATCH更新两URI，现official＋ownerrepository双读一致，scope/secret/tenant/resource/consent等其它字段与资源绑定保持，旧注册私有备份已保存。
+
+真实同源HTTP完整用户登录→Admin CSRF/signin→/manage/overview200，无第二次密码；用户与Admin session均authenticated=true，Admin Skills读取200。身份成员读取仍403 admin_operation_failed；正式Admin scope maintainer只读状态legacy、8 client scopes/24 resource scopes，下一按已批准现owner scope扩展与Admin消费者请求对齐后重新登录复验。不将该403放宽或伪造成功。证据var/dev/r255-preserve/r357-admin-same-origin-redirect-receipt.json；正常IAM/BFF/Platform readyz200，无共享资源重启/SQL直改。
+
+这些是正式HTTP链证据而非浏览器视觉验收；完整Skills/Admin CRUD、普通用户负控、浏览器、供应链与Wave0–7仍OPEN。
+
 ### T-K03.14 正规用户登录修复已提交，Admin 失败根因继续核对（2026-10-10）
 
 Web 正式 `a6c8fd3284b1638705156c9ec30de93dcdf4f453` 仅 product-identity consumer 与具名回归两文件：精确消费当前 user_id/tenant_id/platform_admin 三字段，boolean 强校验、身份绑定保留，不缓存管理员权限。先 RED 3FAIL/26PASS；Root Node22 四文件83PASS、typecheck/lint/diff-check通过，独审无确定P1/P2；原5个混合路径哈希核验保持。全 Web build/e2e 未运行，不称完整Skills闭环。
