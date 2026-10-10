@@ -1,3 +1,11 @@
+### T-K03.4 R357 本地管理员明确授权与真实profile设计门（2026-10-09）
+
+上轮Web正式切片提交与两个只读面续派属progress。本轮9现listener均唯一存活，8owner healthz/readyz及Web /app/skills实际200，PG/Redis/MinIO监听；初猜/health路径404/401是Root探测路径错误，已按现正式readiness路径纠正，无服务重启。私有0600收据r357-current-source-service-readiness.json，processes.json更新Web正式d3cacda及最新浏览器证据，基础健康不冒功能闭环。
+
+用户明确答“授权设置本地开发管理员”：仅已保存本地开发主体，通过IAM既有manage-platform-admin CLI、真实native Session、明确manager配置、CAS/version与Audit授予platform_admin；不原始SQL、不org-owner推断、不放宽Web/BFF/Platform gate。当前普通session authenticatedtrue/platform_adminfalse、/admin/settings404为授权前负控。Root独占正常配置/操作，先read再version条件grant再fresh read/browser，凭据不输出/提交，保普通负控身份另验。此授权不允许批量提升其它账号。
+
+另独立profile面确认IAM既有publisher-profiles是name/image事实owner，BFF已有resolver，当前/v1/me无profile，OIDC callback不持久profile不可从NextAuth/brand取。原BFF owner仅获三现设计文档写入门（74b1b基线），设计明确found/missing/权限与故障/预算取消、机器版本与generated发行、无新SQL/缓存/IAMendpoint；Root审准后再生产代码→固定Web消费。新资料不能冒套餐，Billing仍后续。完整Skills后台正向、profile、分享/旧pin及全Wave0–7仍OPEN。
+
 ### T-K03.4 R357 个人Skills管理与两个筛选adapter正式小切片（2026-10-09）
 
 上一轮导航真实GREEN及managed400定位/修复准入属progress。本轮Root实核最终managed freeze dbb9125d…5delta/846保护exact、累计36候选SHA与815非范围tracked保留；Root52582自然terminal proxy110PASS/type0/lint0，Root42296最终build0。父41975默认3602PASS/原六OIDC FAIL和50530 UI223PASS仍明确为父/相应增量证据，未重跑本最终树default，不冒当前全门绿。独立managed审查无新确定缺陷、合法Unicode及tenant/admission未扩大。
