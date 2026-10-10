@@ -1,3 +1,7 @@
+### T-K03.6 Admin 账户入口回归既有控制台（2026-10-10）
+
+用户账户菜单的“后台管理”已不再跳转被停止的 `3320/manage` 简化壳；运行源码 `var/dev/web-skills-release` 提交 **5041dfa** 固定进入既有同源 `/admin`，仍仅对 server-confirmed `platform_admin` 显示。未变更 IAM session、外部 callback allowlist、BFF 或后台模块。账户菜单/relay 具名 125 PASS，lint/typecheck PASS；需在已登录管理员浏览器会话中完成最终点击验收。
+
 ### T-K03.5 Admin 现有设置页首读修复（2026-10-10）
 
 只修复已实测的既有 Admin 首读失败：运行中 Next 同源 route 对有效 JSON 返回 `Cache-Control: private, no-store, max-age=0`，而既有模型路由 client 错把它与字面 `no-store` 比较，造成 `/admin/settings` 读取失败。运行源码 `var/dev/web-skills-release` 提交 **caa7222** 仅改为检查标准 `no-store` directive，并以读、写两个回归覆盖实际 header；具名 5 PASS、lint/typecheck PASS。未改变路由、页面结构、权限、BFF contract 或后台边界；无持久会话的浏览器请求仍按现有认证路径返回 404，管理员正向浏览器验收待既有登录会话完成后执行。

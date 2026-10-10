@@ -1,3 +1,7 @@
+### 2026-10-10 Admin 账户入口
+
+`var/dev/web-skills-release` 的账户菜单在 **5041dfa** 固定管理员入口为既有同源 `/admin`；停止的 `3320/manage` 不再是用户入口。
+
 ### 2026-10-10 Admin 已验证首读修复
 
 运行中 `var/dev/web-skills-release` 的既有模型路由 client 已在 **caa7222** 修复 Next 注入的 `private, no-store, max-age=0` header 误判；只检查 `no-store` directive，读写回归均覆盖。它不是新后台或接口变更；管理员正向浏览器验收仍待既有会话。
