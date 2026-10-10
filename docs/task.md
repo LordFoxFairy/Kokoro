@@ -16093,3 +16093,11 @@ Web独立compact实现进行，真实默认3421PASS/25FAIL/79skip含旧大表单
 任务卡：owner kokoro-admin-web / 原Web负责人 skills_platform_implementation_r357（继承模型，仅文档 writer），Root审查与Git；基线新独立本地Git工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release，拟分支 codex/r357-admin-web-release，无初始commit。允许 README.md、INDEX.md、AGENTS.md、docs/INDEX.md、docs/CURRENT.md、docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md、docs/SECURITY.md、docs/RELIABILITY.md、docs/ACCEPTANCE.md、docs/SLO.md、docs/RUNBOOK.md；仅基线设计，不写生产源码/生成契约/package/lock、不改用户Web/BFF/IAM/远端/进程/数据、不Git提交。Root先初始化独立仓供唯一writer使用。
 
 依赖：ADR-034、现Web d3cacda、BFF74b1b固定发行；明确实际generated artifact而非猜digest。比较独立repo/同项目路由/旧gateway，选择前者；文件粒度按实际Skills/模型路由及登录职责。Web无业务DB。交付必须提供三设计绝对路径、精确迁移源/目标/删除集、OIDC独立身份与环境键、RED/门禁/真实双身份旅程，未决项如实记载。Root审核后才放行生产实现。正式remote与gitlink、IAMclient与管理员grant、3320登录/CRUD/撤权及前后台目录同步均未完成；完整Wave0–7保持active。
+
+### T-K03.4 R357-ADMIN-PROJECT-A1：独立工程与认证边界实施（2026-10-09）
+
+D0已Root审查并在独立本地仓提交 b01fca0：13Markdown，三设计一致、无业务DB；Root实核14条method/path/operationId与BFF74b1b committed artifact exact，SHA40a5d3de…一致。不是登录或CRUD验收。Root文档决策 f1a2a6d3。原任务外修改与所有服务保持。
+
+A1唯一writer仍原Web负责人，目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release，分支 codex/r357-admin-web-release，基线 b01fca0，工作树干净。允许三设计TECHNICAL_DESIGN A1明确allowlist的tooling、固定BFFconsumer、app/auth/admission及tests；本片先独立工程/配置/身份隔离和精确只读准入，不实施两feature UI、业务mutation代理或cutover。必要Next构建入口next-env.d.ts、vitest.config.ts、server-only测试alias、.gitignore、健康/readinessroute及consumer生成配置/脚本须先具名报告并补现设计，不造泛化框架。测试根test/，Node22/既有固定稳定依赖，不升整个应用。迁用原auth验证行为，不相对import；cookie/salt/Redis/nonce/PKCE/CSRF独立，用户Websession不得被接纳。新OAuthclient真实binding与grant由Root后续，不伪造授权，不共享旧cookie绕过。
+
+实现先建立可执行tooling再具名身份隔离/未知路由/原client误用/取消负控RED，Root复跑后放行最终候选；该阶段使用fixture仅支持工程断言，真实登录/拒绝/CRUD仍待Root。冻结返回exact文件SHA和命令结果，停写，由Root审查/重跑并提交；worker不Gitcommit、不启动任何服务/改.env/秘密/数据库/Redis/远端/原用户Web。目标是尽快可独立运行并验证的工程，不为profile/视觉/分享扩范围。
