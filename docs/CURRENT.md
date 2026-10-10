@@ -1,3 +1,9 @@
+### T-K03.8 Skills 目录证据纠偏：正式字段已接线，官方内容尚不存在（2026-10-10）
+
+本轮只修复两个由运行契约直接证明的 Web 映射缺陷，运行源码为 `var/dev/web-skills-release`：**836fae8** 令 `ListHubSkills` 默认发送 Manus 字段 `includeOfficialSkills: true`；**43e7864** 将 BFF 明确返回的同源候选封面路径 `/api/v1/skills/{id}/cover` 严格改写为已有 Web 二进制代理 `/api/hub/skills/{id}/cover`，不接受外链或任意路径。每个切片均先有失败断言，随后 `skill-catalog-client` 11 PASS、lint、typecheck；当前 exact commit `43e7864` 的 Node 22 `pnpm build` 通过。
+
+Root 通过 BFF 已配置的正式 Platform projection credential 做只读 catalog 探测，`include_official_skills=true` 返回 11 项且 `official=0`、无下一页。因此本地目录继续呈现个人/历史内容不是前端隐藏官方卡片；当前不存在可用于验证 Manus 卡片封面、官方发布者、使用量与三条示例的官方实体。没有伪造目录、封面或使用次数，也没有将个人技能自动改为官方。下一步固定为复用既有 Admin Skills 管理面完成真实官方发布/审核的 owner 闭环，并以实际发布内容重新做目录与详情的浏览器对照；在此之前不继续猜测式改 UI、不把样式称为完成。完整 Skills/Admin CRUD、连接器、排程及 Wave0–7仍未完成。
+
 ### T-K03.7 现有后台真实管理员路径验收（2026-10-10）
 
 Root 使用既有持久管理员 session 在运行中 `127.0.0.1:3310` 实测：`/app` 账户菜单仅显示给平台管理员的“后台管理”→同源 `/admin`，真实技能列表可读；再进入 `/admin/settings`，模型路由设置正常显示“暂无记录”，不再出现读取失败。该路径验证了 **5041dfa** 的入口修正与 **caa7222** 的 header 修正均已由 HMR 实际加载。Web 完整 `pnpm test` exit 0；Node 22 `pnpm build` exit 0，路由表含 `/admin` 与 `/admin/settings`。未执行管理写入、未验证普通用户负控，Skills/Admin 全部 CRUD 与 Wave0–7仍未完成。
