@@ -16177,3 +16177,11 @@ Root 检验候选对 BFF `iam-protocol-relay.policy.ts` 手工加入 `kokoro_iam
 ### R357 独立 Admin IAM Browser 路由实测（2026-10-09）
 
 Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 为 200 且带 request ID；`GET /api/v1/admin/users` 与 `/api/v1/admin/security-events` 均为 404 `admin_operation_not_found`。这证明 IAM 的已有 Administration RPC 尚未被独立 Admin/BFF 发布，不能把后台缺口归因于页面样式。后继先由 owner 发布固定 v1 BFF 命名操作与 generated client，再注册 IAM 导航和 CRUD；不放开 catch-all。收据 `/tmp/r357-admin-iam-route-check.mjs` 仅输出状态/错误码，不记录凭据。
+### T-K03.4 R357 Admin `/manage` and IAM tenant-read chain（进行中）
+
+| Task | Owner / baseline | Delivered evidence | Remaining dependency / acceptance |
+| --- | --- | --- | --- |
+| sole Admin entry | User Web `e29e39a`; Admin Web `20bdad1` | Settings admin-only target is `/manage`; root redirect and Admin type/build pass; fabricated module-card home deleted | Real Admin shell must not claim unavailable modules |
+| IAM existing tenant reads | IAM `00a18c6` | closed operator provisioning of five exact Admin browser read scopes; 41 focused tests, format/type/lint pass | isolated real IAM fixture variables missing; then issue/pin owner artifact |
+| BFF admin identity/security read slice | BFF active worktree, not started | existing IAM GET owner operations identified | consume pinned IAM release; publish exact named BFF operations and tests |
+| Admin UI groups | Admin Web, blocked on BFF contract | no fake page remains | render Identity & security, System, Platform only after each real operation exists |

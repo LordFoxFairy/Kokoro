@@ -3079,3 +3079,17 @@ Root 检验候选对 BFF `iam-protocol-relay.policy.ts` 手工加入 `kokoro_iam
 ### R357 独立 Admin IAM Browser 路由实测（2026-10-09）
 
 Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 为 200 且带 request ID；`GET /api/v1/admin/users` 与 `/api/v1/admin/security-events` 均为 404 `admin_operation_not_found`。这证明 IAM 的已有 Administration RPC 尚未被独立 Admin/BFF 发布，不能把后台缺口归因于页面样式。后继先由 owner 发布固定 v1 BFF 命名操作与 generated client，再注册 IAM 导航和 CRUD；不放开 catch-all。收据 `/tmp/r357-admin-iam-route-check.mjs` 仅输出状态/错误码，不记录凭据。
+### T-K03.4 R357 Admin `/manage` entry and IAM read-scope owner slice（2026-10-09）
+
+Root removed the fabricated 3320 two-card dashboard: root now redirects only to `/manage`, and an authenticated
+`/manage` opens a real existing operation rather than claiming IAM/System pages that do not exist. User Web commit
+`e29e39a` sends the administrator-only Settings entry directly to `<admin-origin>/manage`; Admin Web commit
+`20bdad1` makes `/manage` its only console entry. Admin typecheck/build pass. This is an entry correction, not a
+complete management console.
+
+IAM commit `00a18c6` generalizes the existing closed browser-client scope maintenance instead of cloning it and adds
+operator-only Admin-client read/extend commands. The exact append-only read scope set is member, invitation, role,
+tenant, and audit. Unit RED/green result: 41 passing; format/type/lint pass. The real-infrastructure integration
+fixture is not run because `IAM_TEST_ADMIN_URL`, `IAM_TEST_REDIS_URL`, and `IAM_TEST_POSTGRES_URL` are absent. Next
+owner sequence remains IAM release/pin -> BFF named tenant/audit reads -> generated Admin client -> `/manage` shell
+with real IAM/System/Platform modules. No empty cards or invented routes are permitted.
