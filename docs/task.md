@@ -16483,3 +16483,5 @@ Root以正式IAM BrowserAuthorizationScopeService运行append-only扩展，updat
 Root全纯真实12FAIL/2778PASS，最终freeze34hash一致，独审确定P2错误code/status笛卡尔组合过宽。续派原web_identity_owner唯一writer，Root审查/提交；基线Web79d1710＋最终冻结候选，保护其余路径和五mixed。仅允许现src/hub/skill-publish-client.ts、tests/hub/skill-publish-client.test.ts逐operation错误闭集；现contract/api-contract.test.ts旧public8固定pin改正式13.1/digest且保全部recurrence断言；现src/ui/skills/personal-skills-read.tsx两aria-label接既有i18n，必要时只现messages/overlays加同一标签。先真实错配RED后实现；不修改owner权限/SQL/导航/断言数量，不动Manus详情未改路径。交付精确diff/hash/原保护与终态日志后停写，Root完整复验及真实链再决定后继。其它9导航失败由Root定向基线归因，未归因为历史，不删测试。
 
 T-K03.14-WEB-PUBLISH-REVIEW-FIX追加现tests/hub/client.test.ts正式managed503正控与502错配负控，先RED。原Admin上传设计纠偏6319b68：复用现Platform本人owner包生命周期，后继BFF/原Admin精确四操作接线，不新建RPC/SQL。Root隔离Git基线导航240PASS/9FAIL，原全局失败继续OPEN。
+
+T-K03.14-WEB-PUBLISH/REVIEW-FIX正式cce0a2c main，Root contract277PASS/lint/type0，全纯2791PASS10FAIL保OPEN；正常持久Publish/安装/读取/停启/移除真实200。原Admin实际HTTP读/SSO通过非七命令完成，后继沿原模块接七mutation及既有四包操作，完整Wave0–7继续。

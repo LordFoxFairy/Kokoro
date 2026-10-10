@@ -1,3 +1,11 @@
+### T-K03.14 Web正式切片已提交main，真实发布安装链通过（2026-10-10）
+
+Web正式cce0a2c98fcecee281908d07c8f13e17791af9c4并快进main，Root准确35冻结hash/765review保护与五mixed原字节核对、独审P2已关闭。仅33实际差异文件提交，三设计只提交D0前缀；五mixed仍保留未暂存。Root92493终态：contract277PASS，lint/typecheck/diff0；完整纯门2791PASS/10FAIL，剩余1未改Manus i18n及9已证原Git基线导航失败。未跑build/system全门/浏览器，工程整体仍OPEN，不以局部门代替。
+
+Root69817正规持久账号登录、原Admin无感SSO/manage/overview及四真实读取200；保留原draft/body/key/真实Validate CAS，Publish由原400变200。随后实际MinIO/Storage既有包引用的install、managed active read、installation detail、disable、enable、remove均200，runner终态0，日志 `/tmp/kokoro-web-publish-root-real-crud.log`。没有新增重复草稿、清SQL/Redis、假安装或替换Admin；此为真实HTTP消费链，不冒称浏览器视觉或Admin七mutation全闭环。
+
+按用户要求已验切片归并各main：Webcce0a2c、Admin6319b68、IAM5cd6d20、Platform32666c1、实际BFF2f36787。Root记录精确正式gitlink；BFF物理checkout仍975a2d8及其19mixed不能强制覆盖，与normal正式运行源差异仍待单独治理。其余owner/gitlink及uv.lock任务外保留，尚未远端push。下一原Admin七管理命令与精确四包路径接线、剩余工程/浏览器及完整Wave0–7，Billing最后。
+
 ### T-K03.14 基线归因与Admin包接线纠偏（2026-10-10）
 
 Root将Web Git79d1710原对象展开为只读隔离测试输入、复用既有依赖、单worker仅执行三原导航测试，44753终态exit1：240PASS/9FAIL；九失败名称与当前全纯导航失败逐项一致，日志 `/tmp/kokoro-web-publish-baseline-navigation.log`。无正常源码/服务/数据库修改，因此这九项确实存在于本切片前；仍保整体修复OPEN，不删或放宽请求数量/Move资格断言。Root另逐Git对象核736个任务外HEAD文件0差异，两个mixed测试hash及三mixed设计正文全保持，合计738保护文件。
