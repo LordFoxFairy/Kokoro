@@ -1,3 +1,7 @@
+### 2026-10-10 原 Admin Web 基座已恢复，替代路由已撤销
+
+真实原后台源码已从 `LordFoxFairy/kokoro-web` 纳入 `apps/kokoro-web`（commit `5a3a0c4`），其管理台位于 `apps/admin`，含站点、用户、团队、审批、审计、积分、支付、模型与 Hub 模块。此前 `var/dev/web-skills-release/src/app/admin` 是错误的替代实现，已由 `c9b02b6` 删除，`/admin` 当前实测为 404，用户端账户菜单不再指向该路由。原后台当前仍使用旧的 MySQL/gateway/magic-link 配置，尚未与当前 IAM/BFF 接通；在完成该实际迁移前，不启动它冒充可用后台，也不再向已删除的用户 Web 管理壳写入模块。
+
 ### T-K03.8 Skills 目录证据纠偏：正式字段已接线，官方内容尚不存在（2026-10-10）
 
 本轮只修复两个由运行契约直接证明的 Web 映射缺陷，运行源码为 `var/dev/web-skills-release`：**836fae8** 令 `ListHubSkills` 默认发送 Manus 字段 `includeOfficialSkills: true`；**43e7864** 将 BFF 明确返回的同源候选封面路径 `/api/v1/skills/{id}/cover` 严格改写为已有 Web 二进制代理 `/api/hub/skills/{id}/cover`，不接受外链或任意路径。每个切片均先有失败断言，随后 `skill-catalog-client` 11 PASS、lint、typecheck；当前 exact commit `43e7864` 的 Node 22 `pnpm build` 通过。
