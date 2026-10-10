@@ -1,3 +1,6 @@
+### T-K03.14 共享技能下载真实落盘验收（2026-10-10）
+Root沿既有shared ACK入口正常浏览器点击下载，取得真实583字节ZIP；SHA256为39b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313，与原正式上传包逐字一致，包含SKILL.md与references/checklist.md。当前Web ffc6c7c/BFF e1769b56已有exact-source/revision下载链，原“shared缺handle”记录已过时；本轮无API/代码重写、无共享基础设施或数据重置。收据/tmp/kokoro-skills-share-download-final-receipt.json，截图/tmp/kokoro-skills-shared-download-final.jpg。未捕获本轮网络状态码，不把浏览器落盘虚称另有HTTP收据。Root及12初始化子仓本地heads复核仅main。原Admin普通用户HTTP负控已有403/admin_required及后续401，但当前浏览器负控与自然access到期写仍未追加实测；完整Skills/Admin与Wave交付保持未结项，不扩散其它模块。
+
 ### T-K03.14-BILLING-MAIN-FIXTURE（2026-10-10，真实RED）
 Owner Billing / writer admin_skills_owner / Root审查提交；main5c7caf8、25mixed逐字保护。Root精确main archive verify0（1415PASS/480SKIP）/generated0/prisma隔离0；10文件真实PG226PASS1FAIL，prisma-lifecycle shares cleanup after initialization failure的固定unreachable URL漏必需schema导致构造期先拒绝，未覆盖连接失败清理。仅现test/integration/prisma-lifecycle.test.ts该fixture加schema=kokoro_billing，使同真实拒连接进入onModuleInit；不改生产schema解析/断言/超时/其他测试。先保存RED，隔离HEAD-only准入，Root重跑同10文件PG门，clean main完整门仍需新SHA证据；不接Nest mixed、资金流程或共享应用库。
 
