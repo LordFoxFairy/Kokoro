@@ -1,3 +1,9 @@
+### T-K03.14 BFF精确权限错误契约正式发布13.1（2026-10-10）
+
+Root正式2f3678736287241bbe620e087ab3b0da95fd2fb8，artifact SHA256418db9504b179d29113385f334628d304130491d4bbc86169e20c712cf2cd045，136operations与/v1不变。六路径冻结/677保护一致，独审无确定P1/P2；Root串行contract729PASS、默认1328PASS/0FAIL/3既有SKIP、lint/type/build/diff0。26实际skill action的403精准接skill_forbidden，安装仅三个mutation挂窄403组件；Get/managed/inspection不扩大。runtime/权限/SQL均未变，不做无意义重启。
+
+Root首freeze读取错用files键触发KeyError且未写index，核实际tracked字典后全hash核验再精准提交；没有放弃保护验证。Web获唯一最终正式pin继续冻结；追加现client/preview及四相邻tests为删除旧published wire并迁唯一managed本人active与detail，非目录catalog、非fallback。Root私有正常runner已准备发布后本人读/安装/停用/启用/可恢复移除，语法校验通过，未在仍编辑Web树上执行并冒称最终通过。完整Wave0–7仍active，下一Root验Web完整冻结与真实用户/后台旅程。
+
 ### T-K03.14 安装测试失败归因修正（2026-10-10）
 
 Root进一步核对源码：默认scripts/tests读取apps/kokoro-bff HEAD975a2d8，其operations仅五安装操作；实际运行/本切片正式源为独立normal worktree37efd64，已有六操作包括GET package。故上一条“旧安装下载测试未对齐”归因不精确，真实原因是默认源与批准运行源不同，不能删除测试或当前API。
