@@ -16491,3 +16491,6 @@ T-K03.14-WEB-PUBLISH/REVIEW-FIX正式cce0a2c main，Root contract277PASS/lint/ty
 
 ### T-K03.14-WEB-SKILL-I18N
 Web原owner独立小修唯一writer，与BFF policy不同仓；maincce0a2c＋五mixed原字节保护。仅现src/ui/skills/manus-skill-detail-dialog.tsx、src/i18n/messages.ts、src/i18n/overlays.ts及tests/ui/kokoro-skills-surface.test.tsx相邻本地化断言；复用现i18n键/相同九处文案，禁止改变字段、数据路径、布局、权限、品牌或扩大catalog实现。Root真实全纯已有该组件硬编码RED，writer再具名i18n RED→GREEN，zh/en展示与原组件功能断言保持。无新文件/目录，Root审查/提交main，五mixed保留，九导航失败另卡。
+
+### T-K03.14-ADMIN-SKILLS-IMPLEMENT
+原Admin唯一writer admin_skills_owner，Root审查/提交main；基线main6319b68＋Root当前三D0放置提交，clean。允许现components/shell/admin-skills.tsx、lib/api.ts及api.test.ts、lib/server/admin-api.ts/admin-admission.ts、app/api/v1/admin/[...path]/route.ts、vitest.config.ts；新lib/admin-skills.schemas.ts/client.ts/intent.ts及test/admin-skills-contract.test.ts/client.test.ts/intent.test.ts/adapter.test.ts（实际文件全admin-skills-前缀）。其它壳/IAM/System/OIDC/依赖/SQL禁改。正式BFF四服务准入939bf0e已提交，机器Public13.1/digest不变。先真实RED再一次完成七命令＋新版本四包链、分页/异步保内容/严格ACK/原意图，Root当前默认baseline19PASS非新能力证据。readonly review与Root真实SSO/CRUD/权限负控/浏览器后放行；worker不Git/服务/data，先建codex分支可，共享indexRoot独占。
