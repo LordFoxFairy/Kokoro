@@ -16329,3 +16329,11 @@ Root以已保存开发凭据经过实际同源GET/login→IAM authorize→签名
 | 删除项 | 旧两字段consumer断言，由唯一current三字段替换，零双读兼容 |
 | 验证 | 当前BFFshape调用实际函数先RED，正控true/false；缺/坏/多字段及subject/tenant错拒绝；Root重跑具名/类型/lint，正常同源完整login再验 |
 | 交付/排除 | writer不碰index/commit/服务/data/五个混合路径；冻结文件hash交Root；原大目标与Skills/Admin浏览器仍OPEN |
+
+### T-K03.14 正规用户登录修复已提交，Admin 失败根因继续核对（2026-10-10）
+
+Web 正式 `a6c8fd3284b1638705156c9ec30de93dcdf4f453` 仅 product-identity consumer 与具名回归两文件：精确消费当前 user_id/tenant_id/platform_admin 三字段，boolean 强校验、身份绑定保留，不缓存管理员权限。先 RED 3FAIL/26PASS；Root Node22 四文件83PASS、typecheck/lint/diff-check通过，独审无确定P1/P2；原5个混合路径哈希核验保持。全 Web build/e2e 未运行，不称完整Skills闭环。
+
+Root再次实际同源正规登录至/app200，/api/auth/session200且authenticated=true。随后正规Admin CSRF/signin仍502 iam_relay_response_invalid，Admin session及管理读取401。进一步只读实际BFF relay边界返回200 JSON导航至同源/iam/error，稳定error=invalid_redirect；未输出code/state/cookie/凭据。故不能将当前失败直接归咎于Web callback allowlist。源码另存在Web只接受用户callback、Admin使用/manage callback的潜在后继缺口，先核IAM正式客户端注册与实际redirect，再逐层修，不放宽为任意路径或跳过认证。
+
+沿现有任务续派 platform_expand_review 只读调查，Root保留关键路径与提交；正常进程/SQL/Redis/MinIO未改。BFF承担严格转发与按需聚合，owner业务/事务留对应服务，不以BFF重复CRUD解决接线。浏览器控制与完整用户/后台CRUD、供应链和Wave0–7仍OPEN。下一动作：用IAM正式管理读回核对Admin注册callback，完成精确修复与同源无感跳转负控。

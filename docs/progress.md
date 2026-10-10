@@ -12912,3 +12912,11 @@ Platform最终32666c1真实IAM/Storage/PG Connect复跑4PASS、run-owned资源0�
 Root先核原登记句柄：7403实为已自然结束的旧Platform会话，9724/72265均missing；同时真实端口8086/53714仍由PID78792/56015监听，CWD分别旧release/正式BFF。据实际listener＋CWD复核后只向这两个PID发SIGTERM，确认端口释放；没有因句柄失效重复启动。复用原持久env-file与pnpm dev源码运行新Platform32666c1（Node24，session2482/PID92981）和BFFb097f64（Node22，session29204/PID93003），两readyz实际200，registry已写真实句柄/源码SHA。Canonical b5→326无Schema差异，零DDL/SQL清理/Redis/MinIO重启，任务外变更保留。
 
 真实用户端3310 /app/skills、/manage与/api/auth/session HTTP均200，但仅页面/端点存在，不证明有会话或CRUD。浏览器控制首次现有tab20选择CDP focus超时，按正式troubleshooting同browser新验证tab41导航出现ERR_BLOCKED_BY_CLIENT；现有tab读取也相同focus超时。未绕浏览器保护、未改UI/用户tab/权限，浏览器验收当前缺证据，仍OPEN。下一调查浏览器控制恢复，并通过正规同源IAM用户/管理员旅程验证；不以HTTP200替代完整页面。
+
+### T-K03.14 正规用户登录修复已提交，Admin 失败根因继续核对（2026-10-10）
+
+Web 正式 `a6c8fd3284b1638705156c9ec30de93dcdf4f453` 仅 product-identity consumer 与具名回归两文件：精确消费当前 user_id/tenant_id/platform_admin 三字段，boolean 强校验、身份绑定保留，不缓存管理员权限。先 RED 3FAIL/26PASS；Root Node22 四文件83PASS、typecheck/lint/diff-check通过，独审无确定P1/P2；原5个混合路径哈希核验保持。全 Web build/e2e 未运行，不称完整Skills闭环。
+
+Root再次实际同源正规登录至/app200，/api/auth/session200且authenticated=true。随后正规Admin CSRF/signin仍502 iam_relay_response_invalid，Admin session及管理读取401。进一步只读实际BFF relay边界返回200 JSON导航至同源/iam/error，稳定error=invalid_redirect；未输出code/state/cookie/凭据。故不能将当前失败直接归咎于Web callback allowlist。源码另存在Web只接受用户callback、Admin使用/manage callback的潜在后继缺口，先核IAM正式客户端注册与实际redirect，再逐层修，不放宽为任意路径或跳过认证。
+
+沿现有任务续派 platform_expand_review 只读调查，Root保留关键路径与提交；正常进程/SQL/Redis/MinIO未改。BFF承担严格转发与按需聚合，owner业务/事务留对应服务，不以BFF重复CRUD解决接线。浏览器控制与完整用户/后台CRUD、供应链和Wave0–7仍OPEN。下一动作：用IAM正式管理读回核对Admin注册callback，完成精确修复与同源无感跳转负控。
