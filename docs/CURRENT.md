@@ -1,3 +1,9 @@
+### T-K03.14 Root全局门实测未绿（2026-10-10）
+
+Root scripts/tests当前1782PASS/2FAIL/3SKIP（116.21s）：历史w1e-iam07 checkpoint verify返回285项gitlink/evidence不匹配；installation smoke六操作期待仍含已不在当前机器operations的GET安装package。未删断言/放宽/更新历史证据假装成功。Root拓扑另实测9子仓checkout/gitlink不一致；保留任务外gitlink，最终owner冻结后按实际契约重建当前checkpoint/安装下载smoke，不把历史报告替代当前事实。
+
+当前Web完整publish唯一writer已RED client2FAIL13PASS、flow1FAIL3PASS，UI/恢复尚未冻结；Root不并发跑该仓门。追加现i18n messages/overlays少量本片草稿/继续/显式可见范围/replacement标签，中文源与既有非中文fallback，不扩其它语言范围。浏览器读取仍focus timeout；这些门失败不阻塞当前Web实施，也不缩小完整Wave0–7。
+
 ### T-K03.14 真实对象上传与校验通过，Publish同源旧限制仍失败（2026-10-10）
 
 Root复用既有私有draft/幂等键，经正规登录与原Admin SSO重新验证后，正式Public13实际Begin201、MinIO PUT200并收到真实x-amz-version-id、Complete200/scan_state clean、Validate200/valid=true。manifest字段实际为manifest_identity且skill-md-v1:sha256:；私有runner初打印错manifest_version造成currentFormat=false，按真实持久ACK字段复核true并修runner，没有修改产品/伪造校验。

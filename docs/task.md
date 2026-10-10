@@ -1,3 +1,9 @@
+### T-K03.14 Root全局门实测未绿（2026-10-10）
+
+Root scripts/tests当前1782PASS/2FAIL/3SKIP（116.21s）：历史w1e-iam07 checkpoint verify返回285项gitlink/evidence不匹配；installation smoke六操作期待仍含已不在当前机器operations的GET安装package。未删断言/放宽/更新历史证据假装成功。Root拓扑另实测9子仓checkout/gitlink不一致；保留任务外gitlink，最终owner冻结后按实际契约重建当前checkpoint/安装下载smoke，不把历史报告替代当前事实。
+
+当前Web完整publish唯一writer已RED client2FAIL13PASS、flow1FAIL3PASS，UI/恢复尚未冻结；Root不并发跑该仓门。追加现i18n messages/overlays少量本片草稿/继续/显式可见范围/replacement标签，中文源与既有非中文fallback，不扩其它语言范围。浏览器读取仍focus timeout；这些门失败不阻塞当前Web实施，也不缩小完整Wave0–7。
+
 ### T-K03.14 后继原Admin Skills实施边界（只读审计，2026-10-10）
 
 基线Admin952304b/BFF37efd64。独审确认正式hub只挂原Ant AdminSkills list/detail，旧SkillUploadModal仅旧ResourceTable引用且/api/action无实现；不是可复用的正式上传成功链。七已发布Admin命令为versions/publish/withdraw/quarantine/restore/audience/discard，全部须冻结Idempotency-Key＋真实product.state_version；versions201，其余200，成功完整skill/event_id/replayed。现apiPost缺幂等头、adapter把全部错误压成admin_operation_failed、UI只首50且未消费cursor，尚未闭环。
