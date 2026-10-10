@@ -1,3 +1,9 @@
+### T-K03.14 安装测试失败归因修正（2026-10-10）
+
+Root进一步核对源码：默认scripts/tests读取apps/kokoro-bff HEAD975a2d8，其operations仅五安装操作；实际运行/本切片正式源为独立normal worktree37efd64，已有六操作包括GET package。故上一条“旧安装下载测试未对齐”归因不精确，真实原因是默认源与批准运行源不同，不能删除测试或当前API。
+
+使用已有KOKORO_SMOKE_BFF_SOURCE显式指向正式normal源，原安装smoke测试49PASS/0FAIL（0.07s），零代码/断言变更。默认Root全门2FAIL记录仍是其原命令事实，不冒改成全绿；后继需Root正式源/gitlink治理与checkpoint对齐，不能长期两源冒充统一。完整Wave0–7仍OPEN。
+
 ### T-K03.14 Root全局门实测未绿（2026-10-10）
 
 Root scripts/tests当前1782PASS/2FAIL/3SKIP（116.21s）：历史w1e-iam07 checkpoint verify返回285项gitlink/evidence不匹配；installation smoke六操作期待仍含已不在当前机器operations的GET安装package。未删断言/放宽/更新历史证据假装成功。Root拓扑另实测9子仓checkout/gitlink不一致；保留任务外gitlink，最终owner冻结后按实际契约重建当前checkpoint/安装下载smoke，不把历史报告替代当前事实。
