@@ -13037,3 +13037,7 @@ Web正式2e69b3b63ad4ac935752e4ad0b69ee1ce964f564 main，仅三授权导航测�
 Root40711实际原Admin8files62PASS/type/lint/diff0，43885 build0；19冻结hash与67任务外tracked原字节一致。独审发现readJsonBody声明长度不等于实际读取边界：arrayBuffer缺慢流deadline/取消，尚不放行；同原writer仅该函数与adapter具名流负控RED修复，七命令/四包链其余冻结保持。Root私有Admin配置已复用既有BFF KOKORO_STORAGE_OBJECT_ORIGIN同步（0600），服务重载待最终冻结，不新建配置事实。
 
 当前真实浏览器tab42打开/app/skills呈“技能池加载失败”；重试两个List操作均200。ListHubSkills实际skills/tagOptions，真实item含publishStatus和完整currentVersion；现Web严格schema漏字段而拒绝，原owner只读直接导入consumer逐项复现确定解析失败。不是服务没启动，也不伪造目录；下一精确按正式BFF939bf0e机器schema闭合三读/下载消费者，先RED。系统307失败另已定位旧/login期待与真实/login?return_to=%2Fapp冲突，但该system文件mixed尚未交接，不擅改。完整Wave0–7、真实Admin命令/权限负控和浏览器仍OPEN。
+
+### T-K03.14 原Admin技能实施正式main（2026-10-10）
+
+原Admin正式2d4ec6f1f7ca8d23f97268211f2bd414eddffa48，19精确路径提交并原子快进main，工作树clean；原Ant/IAM/System壳不重建。Root88583最终8files67PASS/type/lint/diff0，43885原完整候选build0；后继仅reader两文件P2修复，独审关闭、其余17冻结字节保持。19hash与67任务外保护Root核实。七命令/四包接线源码已提交，但真实owner mutation/其他管理员与普通用户负控/浏览器尚待验，不称整体Skills/Admin闭环。Web精确消费者纠偏卡271c569e继续，真实目录解析失败仍OPEN；正常配置已同源复用，无共享基础设施清理或远端push。

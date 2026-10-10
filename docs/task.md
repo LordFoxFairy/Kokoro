@@ -16508,3 +16508,5 @@ T-K03.14-ADMIN-SKILLS-IMPLEMENT复门：Root62PASS/type/lint/build0；独审P2�
 
 ### T-K03.14-WEB-SKILL-READ-CONTRACT
 真实browser目录200但解析失败，正式BFF939bf0e/13.1契约不变；Web原owner唯一writer，Root审查/index/commit/main。基线Web main2e69b3b＋五mixed原字节。只13现路径：src/ui/skills/manus-skill-client.ts；src/hub/schemas.ts；src/features/app/kokoro-skills-surface.tsx；src/ui/skills/manus-skill-detail-dialog.tsx；src/i18n/messages.ts、overlays.ts；tests/ui/kokoro-skills-surface.test.tsx；tests/hub/client.test.ts；src/app/api/hub/[...path]/route.ts；tests/app/hub-proxy.test.ts；三设计仅现D0新前缀。比较扩现消费者与另建wire client：采用现模块，避免双轨/新目录；严格完整owner shape/type/资源身份、List installed与enabled独立、真实APPS分类、封面仅exact owner revision同源闭集GET，不合成URL、不passthrough、不复制owner事务。先更新三设计当前消费纠偏门并冻结前缀供Root核对，再具名完整response/错误类型/unknown字段/id/第八分类/cover恶意路径RED，实现后Root纯门/真实浏览器，五mixed正文与两测试不入index。禁止依赖/API/SQL/其它模块/服务重启，正常日志token/签名URL不输出。其余wave不缩小。
+
+T-K03.14-ADMIN-SKILLS-IMPLEMENT已提交2d4ec6f main；Root67PASS/type/lint/build与独审P2关闭。仍待真实owner链/权限/浏览器，不升级整体闭环；Web消费者纠偏卡继续。
