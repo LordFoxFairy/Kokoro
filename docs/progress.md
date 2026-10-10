@@ -12770,3 +12770,8 @@ R357-BFF Root92266实际build0+四test 70PASS/3FAIL/0skip终态，确认独立�
 ### R357 Admin OIDC relay policy drift cleanup（2026-10-09）
 
 Root 检验候选对 BFF `iam-protocol-relay.policy.ts` 手工加入 `kokoro_iam_csrf`，现有 policy projection 测试真实 RED（runtime source 与 `contract/iam-relay-policy.json` 字节不一致）；这会把 owner 未发布 cookie 规则硬塞进 BFF。Root 已撤回该手工改动，Node 构建 + relay policy/transport 35 PASS；不把该纯门当作独立 Admin 登录完成。若 IAM 正式发行该 interaction cookie，必须由 IAM owner 更新版本化 policy/source artifact、BFF 重新固定生成后再接，不留手写 allowlist。
+
+
+### R357 独立 Admin IAM Browser 路由实测（2026-10-09）
+
+Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 为 200 且带 request ID；`GET /api/v1/admin/users` 与 `/api/v1/admin/security-events` 均为 404 `admin_operation_not_found`。这证明 IAM 的已有 Administration RPC 尚未被独立 Admin/BFF 发布，不能把后台缺口归因于页面样式。后继先由 owner 发布固定 v1 BFF 命名操作与 generated client，再注册 IAM 导航和 CRUD；不放开 catch-all。收据 `/tmp/r357-admin-iam-route-check.mjs` 仅输出状态/错误码，不记录凭据。
