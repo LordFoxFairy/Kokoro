@@ -16520,3 +16520,9 @@ T-K03.14-ADMIN-SKILLS-ME-CONSUMER正式99e65e3 main，Root74PASS/type/lint，独
 Web四读消费者候选冻结10代码hash经Root核对，Root20596实际全纯155files/2825PASS、type/lint exit0。独审仍有唯一P2：四读fetch/json缺总deadline、实际body上限，详情已有AbortController未传请求；仅原writer现client/detail/test三路径续修，其他冻结与五mixed保持。尚未提交该候选，不以纯门替代网络生命周期或浏览器。
 
 原Admin真实浏览器创建本轮测试draft新版本3成功、显示三行与本人包按钮；随后正式删除该测试草稿提交呈“当前管理权限失效”且停写，实际响应状态未捕获，根因待实证，草稿删除尚未通过。仅授权原Adminowner只读归因，不重试未知结果、不重置SQL/Redis、不改权限。失败截图 /tmp/kokoro-admin-draft-browser-failure.jpg。既有已验切片在各main，完整Wave0–7仍active，未宣称全部完成或远端push。
+
+### T-K03.14 四读消费者正式main与后台余命令实证（2026-10-10）
+
+Web正式29027a3a346b3bd11d44af2d5e45ed7171e20c13 main，仅10已授权代码路径；Root58208当前155files/2840PASS、type/lint/diff0，10freeze、759任务外tracked与三mixed全文保持，独审唯一网络生命周期P2已关闭。四读10s总deadline/1MiB实际累计/取消，详情Get/Download关闭换资源取消。真实新tab44目录不再“技能池加载失败”，现无匹配卡片：官方开发v2已在本轮正式撤回，不能伪造目录。完整非空卡片/详情/视觉对照、default system门仍待验；此提交不冒充整体Skills验收。
+
+原Admin真实Network实证：刷新时me401，经正常同源SSO返回overview200/me200；重读本轮draft仍草稿，随后discard200/UI已删除，官方开发v2 withdraw200，独立GET200确认withdrawn/CAS存在。七命令已有真实HTTP或浏览器成功证据，但另管理员owner与已登录普通用户负控仍OPEN。数分钟后读个人v1实际401/admin_session_required，已交原owner只读定位短access失效/现刷新链，不调长TTL或放宽权限。原失败唯一根因尚未证；截图 /tmp/kokoro-admin-draft-browser-passed.jpg 与 /tmp/kokoro-admin-withdraw-browser-passed.jpg。Root实际PID14310/CWD原Admin已补私有进程登记，无重启/共享数据清理。完整Wave0–7仍active。
