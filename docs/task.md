@@ -1,6 +1,6 @@
 ### T-K03.14-WEB-SHARE（2026-10-10；原owner续接）
 - Owner：Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main d0b9aa9；web_identity_owner唯一writer，Root Git/审查；五旧mixed保护。目标仅真实Share创建/复制、精确共享摘要、原详情文件树，不扩其它模块。
-- 依赖：BFF正式e1769b56/public13.3/137/SHA0a9683b38cfd30534931dd0cd7821e3ccded94d6d15613a711cebc1f1e83a209，Platform91bc3655。先现三设计D0与正式pin/生成消费放置审查，再实施；新模块/SQL/服务禁止。
+- 依赖：BFF正式e1769b56/public13.3/137/SHA0a9683b38cfd30534931dd0cd7821e3ccded94d6d15613a711cebc1f1e83a209，Platform91bc3655。三设计D0正式main4bf5944、Root三hash/三suffix/783保护exact且独审无P1/P2；现授权freeze候选网络5/pin12/UI12/删假preview2共31路径原writer实施，先RED、一次完整slice冻结；新模块/SQL/服务禁止。
 - 范围：原manus详情tsx/css、现i18n、return-target/test、hub adapter/test、正式BFF snapshot及资格test/generator（先盘点准确闭集），现INDEX；新增同hub风格share schema/client及test、src/app/skills/shared/[id]/page.tsx和test。preview缺UID不伪造身份；如移除fakeShare须单独列精确两现路径。原conversation /shared 不改。
 - 行为：POST原六字段ACK严格source_ref/同源URL；unknown不自动重建；复制失败只复用ACK；真实caller精确UID摘要及文件树，不current冒旧版本、不伪造已安装/品牌/封面/示例。保持异步原正文不跳动、10s取消预算/资源切换隔离。
 - 验收：先真实RED，冻结后Root纯门/type/lint/build/契约、现浏览器创建复制/另一页面精确版本/详情树/撤销权限；worker不Git/服务/共享数据修改。完整Skills/Admin尚未闭环。
