@@ -1,7 +1,7 @@
 ### 2026-10-10 当前正式基线（Skills已批准主链收尾，连接器续接）
 
 Web main567af6fe；Platform main1eeac36（物理kokoro-capability，目标重命名未完成）；原Admin main97cc927，同源3310/manage；正式BFF apps/kokoro-bff main4239cf1（e1769b56源码仅新增MCP三设计短前缀）；Storage main4ab2f23；System main1460820；Agent mainee736cd；Billing main25e7103。Root及12子仓本地仅main。Skills已批准主链/真实文件树/原Admin已验，不恢复旧伪入口或重复该收尾；AI仅composer/录制未实现不冒全部功能。
-当前连接器T-K03.13：Platform本人10方法已发行，BFF四read仅contract且实际self guard503；Web旧custom提交/api/hub/self/connectors/mcp404，静态推荐无连接操作，Settings仅真实active六字段投影。正常Platform PID44292 surface不含mcp-personal；原Web owner本阶段转BFF唯一writer按A1接四read，Root独占正常激活/资源/Git。个人CRUD/授权→connection/原Admin provider管理完整后继保留，读取片不冒闭环。五Web mixed、Billing25mixed、Agent build与uv.lock未接收保留；完整Wave0–7 active、Billing最后。下方均历史，不覆盖本当前态。
+当前连接器T-K03.13：Platform本人10方法已发行，BFF四read仅contract且实际self guard503；Web旧custom提交/api/hub/self/connectors/mcp404，静态推荐无连接操作，Settings仅真实active六字段投影。正常Platform PID44292 surface不含mcp-personal；原Web owner本阶段转BFF唯一writer按A1接四read，Root独占正常激活/资源/Git。个人CRUD/授权→connection/原Admin provider管理完整后继保留，读取片不冒闭环。 IAM main2ac3c01已修MCP provisioning reader对合法7-scope后继的误拒，正式read current7；scope本就存在，未做扩权或降级。五Web mixed、Billing25mixed、Agent build与uv.lock未接收保留；完整Wave0–7 active、Billing最后。下方均历史，不覆盖本当前态。
 
 ### 2026-10-10 当前已验收基线（Root）
 
