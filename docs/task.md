@@ -16136,3 +16136,8 @@ Root以正式IAM create-managed-client一次创建tenant_machine / platform_ingr
 
 ### R357-IAM-ADMIN-CLIENT tests-only 放行（Root 当前源审查）
 Root 核 Better Auth post-login/consent 两处固定 Product tenant 分支、Skills helper 单client shortcut、三个授权仓库及环境 schema。三设计面零 API/Schema 变化方案通过本阶段：纯 browser eligibility 放现 oauth/clients、保持全部 fresh事实与 role完整性、同 Product tenant且可选独立client，无任意client授权。仅授原 IAM D0 writer 既有设计列明 test/ 文件与新纯policy test；生产文件尚不准写。明确配置碰撞只针对运行配置实际已有保留client（Product/introspection/Billing）；其他machine拒绝由持久profile测试证明，不能声称可用静态配置枚举所有client。先提供最小实际旧实现行为 RED，不以缺模块/源码字符串断言替代。独立隔离PG由Root执行，正常库/Redis/服务不动。
+
+### R357-ADMIN-A1 定向修正 tests-only / R357-BFF-ADMIN-INGRESS-D0
+Root 独审确认两项全链接线阻断（错误issuer、未登记BFF服务身份）及三项可靠性/安全缺口（无限缓冲/无总预算、重复RP cookie、持久化取消围栏）；不冒正常已发布服务P0事故。只修既有认证职责，不扩feature或新owner。
+Admin唯一writer仍 skills_platform_implementation_r357：50文件冻结基线，仅现三设计与test/增加行为RED：可信显式canonical issuer、授权query闭集、重复RP cookie、held/oversize stream预算、callback/refresh取消及logout清cookie。候选配置 KOKORO_ADMIN_IAM_ISSUER_URL 指权威3310/iam；callback/admin cookie仍3320。不加Admin /iam代理、不共享User secret。Root实核测试前不写生产；新有界HTTP helper先报告放置。
+BFF D0唯一文档writer为原 skills_platform_frozen_review_r357；目录 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，正式基线74b1b9231fb481b22b64dd93ebd5f5cc15518f64，保护既有3个profile D0修改。只准TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL短前缀，旧全文和源码/contract/SDK/env/Git/服务/data不动。目标现IAM relay及user-admission复用具名closed browser-service credential policy；web-bff保持，admin-web-bff独立optional secret，未配拒绝、无fallback/相等。不放宽其他服务或绕fresh bearer/tenant/action，不新Admin BFF/API/SQL。先列精确消费者与实现/测试负控，Root审D0后才授tests-only。

@@ -12752,3 +12752,5 @@ Root以正式IAM create-managed-client一次创建tenant_machine / platform_ingr
 
 ### R357 独立后台认证接线核验与 IAM tests-only（2026-10-09）
 Root 重新读取当前源码及真实 IAM discovery：权威 issuer/authorize 为3310/iam，独立Admin候选错误从adminOrigin推导issuer且没有该relay；BFF现relay与产品请求仅接web-bff，候选admin-web-bff未接纳。实际登录尚未验收，11测试/build不作完成依据；原writer停写，原独审员沿现task进行只读冻结审查。IAM三设计候选46行、零机器/SQL变化已由Root核BetterAuth固定tenant与三个授权消费者，准原owner仅tests-only真实旧行为RED；正常服务/data不变。上一turn只事实核验未完成交付，本轮新增有证据的接线反例和可执行测试阶段，完整goal保持active。
+
+R357-ADMIN-A1 Root复跑：11/11 unit、15-file contract check、lint/typecheck、diff-check通过；真实issuer与BFF身份阻断仍在。独审确认接线和有界读/重复cookie/迟到持久化缺口，候选不放行。Root授权原Admin owner仅测试/设计修正、原独审员转BFF三D0 writer，IAM原ownertests-only已交付；三仓无并发writer或正常服务/data变化。普通负控、完整CRUD和独立登录继续OPEN。
