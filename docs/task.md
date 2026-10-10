@@ -16777,3 +16777,14 @@ Root核BFF旧975a2d8及Storage旧0b5042d/5b15fe3/a1206d0均正式main祖先，�
 ### T-K03.14 四项Project回归正式main收尾（2026-10-10）
 Web mainb7dbfe8ea5d74adc1ba3502d4010a1e1a14b4521，仅现system fixture15行真实Toggle展开及原会话选择，未改生产/API/key/body/草稿/timeout/skip。Root81727自然exit0：完整system14files203PASS/0FAIL/0unhandled，type/lint0；独审无确定P1/P2，freeze fdd3eecbd96641b5b219d25cb14cf142447650c3e2404a98c5ccfba7175b4756与789保护exact，HEAD-only准入没有夹带巨大mixed。原199PASS4FAIL为真RED，首宽locator3FAIL保留且已修；日志/tmp/kokoro-project-move-fixture-root-{system,type,lint}.log。
 本turn实质完成system收尾与4条已合并分支无损清理；原Admin97cc927/真实8项与版本5发布保持。全仓最终交付仍OPEN：Web两非main分支含未接收历史、Billing唯一docs及mixed待接收；BFF/Storagerefs仅main但canonical physical迁回尚未做，旧mixed保全，Root拓扑门仍4个HEAD/gitlink mismatch。没有push、没有宣称像素全一致或全Wave完成；其它新功能暂停。
+
+
+### T-K03.14 canonical main 归位与当前复核（2026-10-10）
+上一turn为progress：Web b7dbfe8与Root89477f31正式提交，203系统回归及4祖先分支清理；无live gate。此turn Root将BFF e1769b56、Storage4ab2f23正式main完整落回apps物理主树、tracked/index clean；旧19/55mixed及ignored、symlink完整rename保全，私有source/runtime proof在 /Users/nako/.codex/preserve/kokoro-main-cutover-20261010，独审BFF8185/Storage33800条无丢失。原formal sameHEAD detached保留依赖；最初新node_modules symlink因ignore目录规则出现untracked真实FAIL，改为实际copytree目录后clean，未删旧字节。
+仅核cwd的BFF44323/Storage15936 TERM并确认端口释放，原env精确复制0600、源码pnpm dev从apps启动BFF94354/PID75692与Storage60899/PID75750，readyz各200；共享PG/Redis/MinIO及其它应用未重启。Root BFF type/lint/test/build0（1433PASS/3原SKIP）；Storage type/lint/build0，首parallel full612PASS1typed-lint启动超时FAIL，原5秒门不改，无并发完整重跑67files613PASS/229原resourceSKIP，50576自然exit0。日志/tmp/kokoro-{bff,storage}-canonical-main-*.log。
+真实正常新browser56读取技能池3项、官方当前三示例，查看详情实际SKILL.md和references/checklist.md及正文选择通过；原Admin53手动刷新加载结束、9row含8真实数据、空alert，原Ant/IAM/System导航保留。截图/tmp/kokoro-skills-canonical-main-tree-browser.jpg；旧50/54观察通道timeout未当应用错误或成功，没有接管其页面状态。
+System现已提交四commit到main1460820经独审无P1/P2；Root38166自然check/contract/test/fresh全0，完整205PASS、contract16PASS、fresh23assertions22tables临时库，原应用库不执行installer。finite bounds owner3.0.0/v1实现已提交，BFF/Agent消费者pin及1460820收费保证提案仍待后继，不冒当前收费链完成；Root本片接收Systemgitlink。其它新功能暂停；全Wave及旧Web/Billingmixed主线接收仍OPEN。
+
+
+### T-K03.14 Billing 已提交历史裁决接收（2026-10-10）
+Billing main5c7caf846acec35f3e570b1e7a7d4111b28d0a29仅五HEAD-only文档前缀纠偏：唯一technical业务裁决、另四引用；去currentNest已运行误称，正式createBillingRuntime与未接收mixed分开，FG2/资金旅程保持OPEN。698da77历史已承接；独审无P1/P2、308保护及mixed正文exact。主控精确15+/48−提交、fast-forward main、同tree switch main/-d旧branch，本地refs仅main；25项未接收mixed仍逐字保持，无资金/服务/SQL变更。Root旧Billinggitlinke04bff9至当前main另有待复核前驱链，本片未盲pin未审源码；应用门不适用于这五文档小片，不冒Billing资金验收或最终所有bytes已commit。旧Web两非main分支仍待只读归并，完整Wave目标保持active。
