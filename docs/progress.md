@@ -1,3 +1,6 @@
+### T-K03.14 本地main-only已实测收敛（2026-10-10）
+Root mainf638c842，拓扑门当前PASS；Root及12个已初始化子仓refs/heads均仅main。Web两旧分支已完整git bundle私有保全并verify，旧worktree同SHA detach；831/836可见文件、index/status前后exact，当前main/正在实现个人切片不变。私有proof /Users/nako/.codex/preserve/kokoro-main-cutover-20261010/web-main-only-archive-proof.json，未删除旧内容或将107旧有效职责虚称已承接。主控本片仅refs归档，不含Web/Billing未接mixed、Agentbuild/Rootuv.lock。Skills个人生命周期尚实施中，最终整个交付未称完成。
+
 ### T-K03.14 Billing main接收与当前交付边界（2026-10-10）
 Billing正式main25e7103350acefbeacc644710834104a302be03a：仅测试固定unreachable URL补owner schema，真实构造期RED226PASS1FAIL→同10文件PG227PASS0FAIL，断言/timeout/生产不改；精确archive候选313tracked除该fixture外逐字与5c7caf8一致，原25mixed保护。Node24/prisma generate后完整verify0（1415PASS/480资源SKIP）、generatedcheck0、独立临时PG prismacheck0；Root15845自然结束，未连共享应用库或重启Billing。日志/tmp/kokoro-billing-main-fixture-{pg-green,verify-green}.log；未跑的其它真实资源门、Nest mixed/FG2/完整资金链仍OPEN。Root本片接收已审20commit前驱链与1行fixture的gitlink，main-only Billing refs不冒混合树全已commit。
 个人Skills生命周期D0三设计门已核通过，Web唯一writer按18source/test闭集实施，正式两接口错误独审已确认；201仅新draft，owner权限404、CAS/state412，错误无retryable。其它模块不扩写，全仓264规范违规和历史checkpoint真实FAIL保留，完整Wave与全部交付仍未称完成。
