@@ -1,3 +1,7 @@
+### 2026-10-10 Admin 基座纠偏（当前约束）
+
+`var/dev/admin-web-release` 的简化独立壳已停止运行，不能作为正式后台或继续扩写。当前唯一可复用管理基座是活跃 Web worktree `/Users/nako/.codex/worktrees/kokoro-r257-admin-web/src/app/admin/`：它已有 `platform_admin` server gate、模型路由与 Skills 管理模块。后续 Admin 仅在此基座扩展模块和 BFF owner action，不新建替代性 UI、路由或业务链；若恢复历史独立 Admin 项目，必须先找到可验证的源码来源并完成迁移设计/验收，再切换入口。BFF `e74a8c5` identity read contract 有效但尚未成为 Admin 完整闭环证据。
+
 ### 2026-10-09 独立 Admin Web 目标边界
 
 ADR-034 已采纳；拟 apps/kokoro-admin-web，当前尚未注册。迁移文档工作目录 var/dev/admin-web-release，无业务数据库，经既有 BFF 调用；当前运行后台仍在用户 Web /admin，不冒独立项目完成。任务沿 T-K03.4 R357-ADMIN-PROJECT-D0。

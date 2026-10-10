@@ -1,3 +1,9 @@
+### T-K03.4 R357 Admin 基座纠偏：停止替代性后台壳（2026-10-10）
+
+用户明确纠正：已有 Admin Web/既有后台能力必须作为唯一基座；本轮新建的 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release` 简化壳不再作为管理后台，不再向其中新增 UI 或业务模块。Root 已确认它没有复用当前 Web 中已存在的 `/Users/nako/.codex/worktrees/kokoro-r257-admin-web/src/app/admin/` 管理面：该管理面已有 server `platform_admin` gate、模型路由管理和 Skills 管理组件。先前把新壳当作主后台是实现方向错误；其已有提交仅保留为迁移考古，不作为产品入口、验收或后续扩展依据。
+
+Root 已受控停止该壳的 3320 开发进程（listener `10370`，进程组 `10352`，SIGINT 后端口已释放），避免账户菜单继续把管理员引向重复/不完整界面。BFF `e74a8c5` 的 IAM identity read contract 仍是有效的 owner 增量，不回滚；它后续只能被既有 Admin 面按需消费。下一步骤固定为：盘点既有 Admin 的模块、路由和待接 BFF actions，复用其 UI/认证/权限链为 Skills 增加模块；在确认原独立 Admin 的可恢复来源前，不新造第二套后台、不切换 `/manage`、不删除现有管理功能。完整 Skills、连接器、排程与 Wave0–7 均未完成。
+
 ### T-K03.4 R357 独立 Admin Web：身份读取 contract 与技能入口恢复（2026-10-10）
 
 本轮为真实交付，不是占位后台。BFF owner 在 `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` 提交 **e74a8c521631562d29b844e004c9e85111d114f7**：新增且仅新增三个版本化 Admin Identity read：`GET /v1/admin/identity/members`、`/invitations`、`/roles`。每个请求先通过 fresh `platform_admin` 准入；tenant、actor、bearer、request id 只取可信 context，调用者不能以 header/query 选 tenant；page query 严格限制 `limit` 1–100（默认25）与 opaque `cursor`。IAM 仍是 membership/invitation/role 唯一 owner；BFF 不读 owner SQL、不做缓存/镜像/泛化 relay、不含 audit、全局用户目录或写入。Public OpenAPI 基线已从133更新为136，Admin service identity allowlist只开放这三条路径。BFF lint/typecheck/build、完整 `contract:check`、IAM generation drift 和本地真实 HTTP 正/负控均通过；Redocly 仅保留既有3个不相关warning。
