@@ -12855,6 +12855,8 @@ Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 
 - Next: owner artifact pin, BFF exact admin reads, then real `/manage` module pages. No placeholder routes/cards.
 # 2026-10-10 T-K03.14 本地 Skills clean-slate 授权执行
 
+提交功能候选e64355a（136路径），修SQL EOF f971064；冻结后纯门1984PASS及format/type/lint/build/contract/artifact通过。YAML4.3.2升级后PG37PASS/audit该库0公告，其余发行风险仍有。消费者对比揭示BFF已固定84262b active v10而新候选缺本地导入方法，generated存在断言真实FAIL；未降级pin/服务/Rootgitlink。下一合并已有v10和三设计，原审查员只读续审，Root独占writer。
+
 Root 全量 owner integration 当前 Node24 终态35files463PASS/4既有SKIP、exit0、229.54s，原句柄16160自然结束；日志 `/tmp/kokoro-platform-clean-slate-full-integration.log`。独审当前工作树无确定残留P1/P2。下一具名冻结候选→固定BFF/Web/Admin消费者→真实浏览器验收，非全产品完成。
 
 Package clean-slate：删除 legacy manifest helper/预期旧identity参数/消费者调用；元数据仅根SKILL.md，Validate receipt 也删除zip-v2接受。RED4FAIL＋codec1FAIL后，纯门115files1984PASS、真实PG4files37PASS；lint/type/build/contract/diff-check通过，冻结artifact字节不改。只读复审续派原审查员；全候选未冻结、真实前后端链未称闭环。

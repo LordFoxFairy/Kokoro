@@ -1,5 +1,9 @@
 ### T-K03.14 用户授权 Skills 本地 clean-slate（2026-10-10）
 
+Root 已具名接收136路径功能候选提交 `e64355a`，新增SQL EOF空行被cached diff-check发现，但首轮shell未停止而仍提交；随即独立修正 `f971064`（2文件/2行，非业务变更）。在固定HEAD f971064重跑纯门1984PASS、format/type/lint/build/contract/artifact/diff-check均通过且工作树clean。新增YAML依赖升级为兼容4.x修复版js-yaml4.3.2，升级后真实package PG37PASS、audit中js-yaml公告0；其他传递依赖仍1critical/5high/3moderate/1low，发行安全门未过。
+
+消费者切换前发现基线偏差：运行BFF00e4b791固定的Platform84262b已拥有active v10 Begin/Complete/FinalizeLocalSkillImport，而f971064从较早b0c0dbec分支承接，缺这些已实现功能。HTTP5.3字节/digest相同不证明Connect等价；编译generated service的beginLocalSkillImport存在断言实际FAIL。禁止将f971064降级替换运行服务/消费者，Root未切pin/改gitlink/重启。原审查员续做两提交只读差异审查；下一三设计先对齐真实当前态，再合并既有v10，保本轮new identity/receipt修复及全量用户路径。当前不是可发行冻结候选。
+
 整片冻结前门禁已自然终止：Root Node24 全量真实 integration **35 files /463 PASS /4 既有 SKIP、exit 0、229.54s**，日志 `/tmp/kokoro-platform-clean-slate-full-integration.log`（原句柄16160，未重复启动）。原审查员复审当前工作树未发现确定残留 P1/P2，静态审查不冒充运行验收。可进入具名候选文件审查/冻结提交，随后接固定消费者和浏览器；未将此结果称 Web/Admin 完成。
 
 最新 package 切片已删除 `skill-package-manifest.ts`、expectedLegacyIdentity 参数及消费者调用，Validate/Publish identity 唯一 skill-md-v1；可选 manifest.json 是普通内容，不参与元数据/identity/额外旧格式限制。CRC/ZIP 边界/摘要/大小/路径/取消保护保留。具名先 4 FAIL（旧回退/旧 manifest 限制）、Validate codec 1 FAIL 后通过。Root Node24 当前纯门 **115 files /1984 PASS**，真实隔离 PG package Validate/Publish/Get/Safety **4 files /37 PASS**，lint/typecheck/build/contract/diff-check 通过；冻结旧 contract 字节未改。解析器旧分支与官方晋升 replay 的两个实现缺口已修，但整体混合候选尚未冻结，正常服务/完整网络/浏览器/Admin 验收仍待完成。
