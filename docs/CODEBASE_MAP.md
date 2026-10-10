@@ -1,3 +1,11 @@
+### 2026-10-10 当前 Skills / Admin 定位（Root）
+
+- 用户端正式 `apps/kokoro-app` main8100ad7：d2545a3 展示代码已验收；8100ad7 仅真实包详情设计，reader 尚未实施。当前运行源码为该正式目录，旧 `var/dev/web-skills-release` 记录只属历史。
+- 后台唯一 `apps/kokoro-admin` main4b576a8，原 Ant/IAM/System 壳；同源3310 `/manage`、内部3320。已实测短access到期401→CSRF/refresh200→原读200，无二次密码。不要恢复旧 `/admin` 或 Skills-only dashboard。
+- BFF 正式源 `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` main939bf0e；物理 `apps/kokoro-bff` 是旧祖先＋未交接mixed，不从该目录推断正式缺接口。既有 publishedSkillPackageInspectionRoute → ProductSkillReadService.InspectSkillPackage 已提供公开目录revision的真实UTF8包文件。
+- 目录公开开发样本版本4已通过真实MinIO上传/验证/发布；不再将早期“官方目录为空”报告当当前事实。不伪造图、用量、例子。URL使用 currentVersion.versionUid，不使用series skillId；response decimal revision又是另一字段。
+- Web 本轮新reader唯一writer web_identity_owner；精确范围及证据以 docs/task.md T-K03.14-WEB-CATALOG-PACKAGE-DETAIL、docs/CURRENT.md最新段为准，下面历史地图不授新写入范围。
+
 ### T-K03.8 Skills 目录证据纠偏：正式字段已接线，官方内容尚不存在（2026-10-10）
 
 本轮只修复两个由运行契约直接证明的 Web 映射缺陷，运行源码为 `var/dev/web-skills-release`：**836fae8** 令 `ListHubSkills` 默认发送 Manus 字段 `includeOfficialSkills: true`；**43e7864** 将 BFF 明确返回的同源候选封面路径 `/api/v1/skills/{id}/cover` 严格改写为已有 Web 二进制代理 `/api/hub/skills/{id}/cover`，不接受外链或任意路径。每个切片均先有失败断言，随后 `skill-catalog-client` 11 PASS、lint、typecheck；当前 exact commit `43e7864` 的 Node 22 `pnpm build` 通过。
