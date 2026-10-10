@@ -4,8 +4,8 @@
 | 目标 | 修复GitHub已admitted上传前重复Create导致412，真实导入后验收；不扩大Skills范围 |
 | Owner/writer | 正式BFF /Users/nako/.codex/worktrees/kokoro-r257-bff-normal；web_identity_owner仅此仓；Root审查/提交 |
 | 基线 | main486ec7e，工作树clean；Web UI已精确十九路径main d0b9aa9 |
-| 范围 | 现skill-ai-handoff.ts、http/routes/skill-ai-import.ts和相邻现测试，具体清单先确认；不改Platform/schema/public契约/服务 |
-| 设计 | 同一handoff冻结真实Create初始CAS，PUT只重放原Begin；已有旧intent不推算CAS/换key；设计门先复核 |
+| 范围 | 精确现handoff/route/两相邻测试和三设计小段共7文件；不改Platform/schema/public契约/服务 |
+| 设计 | 私有created冻结真实Create初始CAS再Begin；completed冻结真实Complete CAS再Validate，恢复不再重复上一步；旧intent不推算CAS/换key，三设计先一致 |
 | 验证 | 真实RED再改，Root重跑BFF纯门及真实浏览器Import→Publish→Install；未知结果原key/body保留 |
 | 状态 | 负责人审计方案中；整体Skills/Admin未验收；Root独占Git |
 
