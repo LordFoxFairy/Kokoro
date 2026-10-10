@@ -1,3 +1,9 @@
+### T-K03.14-ADMIN-SKILLS D0（2026-10-10；待审查）
+
+Owner原apps/kokoro-admin，基线952304b，Root仅三设计writer；独审platform_expand_review。允许新本仓docs/TECHNICAL_DESIGN.md/API_CONTRACT.md/DATA_MODEL.md，无新业务模块/进程/contract中心，原Ant壳/身份/System页保留，比较采用本仓文档与原feature而非新后台。依赖BFF正式2f36787/Public13.1/418db950，当前七命令只adapter可达，UI/幂等头/精准错误/游标未接；无业务SQL owner故不建空schema。
+
+目标精确七管理命令、可信fresh admin、完整SkillProductRecord/CAS/原key-body、分页与失败恢复；新Admin版本包上传缺owner正式准入契约明确OPEN，不恢复旧preview/confirm，不用个人包接口冒充他人管理员包能力。D0审查通过后才派代码writer，Root保留跨仓/API新增裁决。文档验证为实际diffcheck＋机器事实/状态审查；应用门/真实操作/浏览器待实现后执行，不以文档称闭环。原正常Web完整consumer继续原writer，Root不抢写。
+
 ### T-K03.14 BFF精确权限错误契约正式发布13.1（2026-10-10）
 
 Root正式2f3678736287241bbe620e087ab3b0da95fd2fb8，artifact SHA256418db9504b179d29113385f334628d304130491d4bbc86169e20c712cf2cd045，136operations与/v1不变。六路径冻结/677保护一致，独审无确定P1/P2；Root串行contract729PASS、默认1328PASS/0FAIL/3既有SKIP、lint/type/build/diff0。26实际skill action的403精准接skill_forbidden，安装仅三个mutation挂窄403组件；Get/managed/inspection不扩大。runtime/权限/SQL均未变，不做无意义重启。
