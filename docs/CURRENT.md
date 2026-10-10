@@ -1,3 +1,9 @@
+### T-K03.4 R357 用户纠偏：后台必须区分独立Web项目与独立路由（2026-10-09）
+
+用户指出历史后台是单独Web项目。Root实核2026-07-13-wave5-admin-duo spec及Wave0旧plan存在kokoro-admin-web + kokoro-platform-admin；当前正式d3cacda代码却在kokoro-app同项目/admin与/admin/settings，仅路由/布局独立。Root先前将其描述为符合独立后台要求属理解偏差，不用当前路由存在冒独立项目完成。旧r257-admin-web只是remote kokoro-app的worktree，不是独立admin项目。
+
+原Web owner仅续派只读历史项目/删除裁决及独立后台Web迁出设计：保已验证Skills管理逻辑与正式owner API，不复活万能网关/跨ownerDB/alias/双轨；明确OIDC/session/Settings跳转、权限、独立启动构建和目录/contract验证，Root按新增运行项目设计门裁决后才写。用户已授权当前开发账号正式platform_admin设置，但Root尚未改IAM manager配置/执行grant，也未直接SQL；该授权保留，后台拓扑先纠偏。BFF真实profile仅三文档D0已交，生产未写，待Root审；当前九进程保复用。独立后台项目与完整Skills/Wave0–7仍OPEN。
+
 ### T-K03.4 R357 本地管理员明确授权与真实profile设计门（2026-10-09）
 
 上轮Web正式切片提交与两个只读面续派属progress。本轮9现listener均唯一存活，8owner healthz/readyz及Web /app/skills实际200，PG/Redis/MinIO监听；初猜/health路径404/401是Root探测路径错误，已按现正式readiness路径纠正，无服务重启。私有0600收据r357-current-source-service-readiness.json，processes.json更新Web正式d3cacda及最新浏览器证据，基础健康不冒功能闭环。
