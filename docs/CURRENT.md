@@ -3434,3 +3434,9 @@ tenant, and audit. Unit RED/green result: 41 passing; format/type/lint pass. The
 fixture is not run because `IAM_TEST_ADMIN_URL`, `IAM_TEST_REDIS_URL`, and `IAM_TEST_POSTGRES_URL` are absent. Next
 owner sequence remains IAM release/pin -> BFF named tenant/audit reads -> generated Admin client -> `/manage` shell
 with real IAM/System/Platform modules. No empty cards or invented routes are permitted.
+
+### T-K03.14 安装动作与详情入口当前验收（2026-10-10）
+
+Web main `3d2b419f971aaa3478b22d7f4e96f34190dff79b`，精确五现路径。新增安装按所选 revision；已安装停用通过正式列表定位唯一原 installation ID，启用保留旧 pin；未知 ACK 保留原 intent/body/key。设置 ACK 后失效同一目录缓存，持续打开的弹窗展示与执行共用新安装事实，不换当前详情 revision。真实 RED 覆盖错 revision、未知结果、设置缓存/覆盖与持续弹窗旧快照；Root 5008 当前纯门155 files/2905 PASS，typecheck/lint/build exit0；独审 P2 已关闭，五 hash及767保护不变，mixed五文件未暂存。
+
+正常浏览器真实设置停用后，原弹窗按钮恢复可点击；点击“添加到我的技能”实际 enabled200，原 installation `5566b467-fe9d-46e1-847f-cc4ba984577c`、source_ref `skill:33fe755e-af36-40ae-aeeb-5a0c1ad46cad`、revision1 保持，enabled=true恢复；不是误装当前v4。接着“查看详情”实际读取 SKILL.md，独立左文件列表/右内容可见。收据 /tmp/kokoro-install-action-browser-final.json（私有0600）；截图 /tmp/kokoro-skills-reader-install-final.jpg。样本仅一个真实文本文件，不冒充嵌套文件夹浏览器验收。新安装的正式浏览器写入、完整 Skills CRUD、Admin权限负控与默认system门仍OPEN；内存未知意图不宣称刷新后持久恢复。原用户页面无重置，未重启共享服务/清数据。
