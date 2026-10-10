@@ -1,3 +1,7 @@
+### T-K03.14-WEB-SHARE 正式main3c5c302（2026-10-10）
+Root3620自然exit0：纯162files3070PASS、contract20files278PASS、type/lint/build0；独审两P2修复后34hash/756保护exact，原29候选文件不动，五mixed保留，精确33实际路径提交main3c5c30292ab8d65ffbe0d2e3bc35b5839914a8fb。前Root55166真实legacy旧fakeShare断言1FAIL3064PASS与精确RED五FAIL原日志保留；不重加假入口。日志/tmp/kokoro-web-share-root-final-*.log。
+真实正常浏览器POST/api/hub/skill-shares201、显示链接已复制；从服务ACK链接打开精确shared摘要/原本人已安装事实，查看详情读真实SKILL.md、references/checklist.md嵌套正文(package200)，截图/tmp/kokoro-skills-shared-files-browser.jpg。私有/tmp/kokoro-skills-share-browser-private.json只存ACK及safe状态；工具clipboard桥返回空，未冒实际字节比较通过。Shared exact下载handle缺口保留，不借series current。当前仅此slice通过，原Admin剩余权限/跨到期写、默认旧OIDC mixed失败、其它owner未交接/main-only及完整Wave0–7仍未完成，其它模块暂停。
+
 ### T-K03.14 当前源运行与后台可逆写验证（2026-10-10）
 Root只停止核对cwd的旧Platform93411/BFF22827并确认8086/53714释放；复用原配置源码启动Platform3312/PID44292/main91bc3655及BFF78790/PID44323/maine1769b56，readyz均200，未重启/修改共享PG/Redis/对象库或其它应用。收据/tmp/kokoro-share-revision-runtime-cutover.json，精确新RPC/浏览器Share尚待消费验证。
 原Admin当前正常浏览器对既有开发QA revision4可见范围窄化后正式恢复原技能池，两写200/event ACK/replayed false，原7项保持；仅UI及正式写正控，本次未遇401，不冒跨到期写重放。私有收据/tmp/kokoro-admin-scope-roundtrip-private.json，截图/tmp/kokoro-admin-final-management-browser.jpg。Root拓扑门真实exit1：physical BFF/Agent/System/Billing/Storage HEAD与gitlink不一致，正式BFFmain在既有外部worktree；未交接mixed保留，各仓main-only待准确整合，不force删除。Web同任务D0待审，其它模块暂停。

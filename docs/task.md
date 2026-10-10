@@ -1,11 +1,13 @@
-### T-K03.14-WEB-SHARE（2026-10-10；原owner续接）
-- Owner：Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main d0b9aa9；web_identity_owner唯一writer，Root Git/审查；五旧mixed保护。目标仅真实Share创建/复制、精确共享摘要、原详情文件树，不扩其它模块。
+### T-K03.14-WEB-SHARE（2026-10-10；main3c5c302已验收）
+- Owner：Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main3c5c302；web_identity_owner冻结交付，Root Git/审查；五旧mixed保护。目标仅真实Share创建/复制、精确共享摘要、原详情文件树，不扩其它模块。
 - 依赖：BFF正式e1769b56/public13.3/137/SHA0a9683b38cfd30534931dd0cd7821e3ccded94d6d15613a711cebc1f1e83a209，Platform91bc3655。三设计D0正式main4bf5944、Root三hash/三suffix/783保护exact且独审无P1/P2；现授权freeze候选网络5/pin12/UI12/删假preview2共31路径原writer实施，先RED、一次完整slice冻结；新模块/SQL/服务禁止。
 - 范围：原manus详情tsx/css、现i18n、return-target/test、hub adapter/test、正式BFF snapshot及资格test/generator（先盘点准确闭集），现INDEX；新增同hub风格share schema/client及test、src/app/skills/shared/[id]/page.tsx和test。preview缺UID不伪造身份；如移除fakeShare须单独列精确两现路径。原conversation /shared 不改。
 - 行为：POST原六字段ACK严格source_ref/同源URL；unknown不自动重建；复制失败只复用ACK；真实caller精确UID摘要及文件树，不current冒旧版本、不伪造已安装/品牌/封面/示例。保持异步原正文不跳动、10s取消预算/资源切换隔离。
 - 验收：先真实RED，冻结后Root纯门/type/lint/build/契约、现浏览器创建复制/另一页面精确版本/详情树/撤销权限；worker不Git/服务/共享数据修改。完整Skills/Admin尚未闭环。
 - 最窄追加：Root实核现installation request无总deadline/body界，批准src/hub/client.ts和tests/hub/client.test.ts仅installation request10s/1MiB取消cleanup，其他Hub/schema不动，最终共33路径同片冻结。
 - main-only当前：Root复核ancestor main且无worktree绑定后安全-d删除8个已合并分支；System clean/HEAD=main1460820切main并-d其已合并分支，原Admin现仅main。其它未合并/bound/mixed保留待接收，不冒所有仓main-only完成。
+- Root收尾门实际：44170 type/lint0后误用不存在test:pure driver1（无测试）；正规55166纯门3064PASS/1FAIL（legacy测试仍要求已删fakeShare）。独审两P2：shared首目录缺decimal revision绑定、Share GET未拒CL/TE。原writer仅五现路径修复，追加tests/ui/skill-detail-dialog.test.tsx真实移除入口断言，总34范围；先错版本/GET-bodyheaders负控RED，冻后Root重跑，不恢复假入口或扩大owner。
+- 最终：独审两P2已关闭；Root3620完整纯162files3070PASS、contract20files278PASS、type/lint/build0，34hash756保护exact。33实际路径精确main3c5c302不含五mixed。当前正常浏览器POST201/UI显示已复制→正式ACK链接共享完整摘要/已安装状态→真实SKILL.md及references/checklist.md正文/package200。剪贴板桥read空，未冒字节核对；shared精确下载handle尚缺且不借current。完整Skills/Admin和其它仓main-only仍有已列缺口，不宣称全目标完成。
 
 ### T-K03.14-BFF-SHARE-REVISION（2026-10-10；BFF已验收、Web接线进行中）
 - 目标：Skills分享仍读所分享的精确发布revision，完整摘要和文件树，不把series最新元数据当旧版本；只收尾Skills/原Admin，其他模块暂停。
