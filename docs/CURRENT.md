@@ -1,3 +1,15 @@
+### T-K03.14 Runtime 基线错误映射回归（2026-10-10）
+
+Root发现实际运行Platform `var/dev/platform-release` HEAD b5d4280不是e2f6dbf祖先，已追加比较其三个正式修复而非仅84262b。独审确认P2：e2f6dbf缺5b2d35e的SkillPublishError精确Connect code与x-kokoro-error-code映射，正常Admin失败会退回Internal；对应原admission边界测试亦缺。晋升service/state已承接，旧无attempt宽门已由精确completed intent资格替换，不恢复宽门。BFF writer暂停pin生成，机器contract169文件仍逐字节相同。
+
+| 项 | T-K03.14-RPC-ERROR 补片 |
+| --- | --- |
+| owner/writer | Platform /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability e2f6dbf clean；skills_platform_implementation_r357唯一writer；platform_expand_review只读；Root提交 |
+| 范围/归属 | 仅src/rpc/rpc-handler.ts和既有test/unit/skill-admin-admission.test.ts；已有错误边界保持真实稳定code，不新增文件/层/协议/SQL |
+| 设计门 | 现owner TECHNICAL_DESIGN/API_CONTRACT错误语义承接正式runtime 5b2d35e；属于局部既有adapter修复，不改变职责/契约 |
+| 验证 | 原正式publishOfficialSkill错误边界先真实RED→修复→所有具名admin/error tests、type/lint/build；冻结交接后Root复跑/提交，BFF再固定最终SHA |
+| 排除 | SQL/contract/generated/依赖/正常服务/数据及其它仓；不得以放宽错误或mock规则清零 |
+
 ### T-K03.14 Root 当前 owner 真实 Storage/Connect 验证（2026-10-10）
 
 Root 明确指定 Platform 固定提交 `e2f6dbf213eb551f71a85628587c96cda790a31e` 的实际 checkout，未使用默认旧运行副本；既有 `run_platform_local_skill_import_storage_smoke.py` 的 dry-run 四场景通过、启动资源0。随后原进程句柄62689正常终止 exit0，clean/eicar/ack_lost/ingress_clean 各4测试，共16PASS，真实 PostgreSQL、S3对象版本、ClamAV扫描与正规IAM token exchange/Connect四导入RPC均参与；缺bearer401、错误workload403负控通过。四场景cleanup完成、run-owned剩余资源0，未重置共享PG/Redis或重启正常服务。日志 `/tmp/kokoro-platform-e2f6dbf-storage-connect-smoke.log`，四资源收据目录见日志终行。

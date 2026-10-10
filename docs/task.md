@@ -16284,3 +16284,15 @@ Root 明确指定 Platform 固定提交 `e2f6dbf213eb551f71a85628587c96cda790a31
 | 删除项 | 消费者旧84262b vendored副本及现行旧pin引用；不可改历史事实以制造通过，不留第二套current消费 |
 | 验证 | 先实际新pin断言RED；正规生成/check、lint/type/build、现local import及Platform contract测试；冻结交文件清单/摘要；Root重跑适当全门 |
 | 完成条件 | 当前消费者所有current pin一致、字段/方法/摘要准确、既有行为与授权保持；不代表服务/browser/Wave完成 |
+
+### T-K03.14 Runtime 基线错误映射回归（2026-10-10）
+
+Root发现实际运行Platform `var/dev/platform-release` HEAD b5d4280不是e2f6dbf祖先，已追加比较其三个正式修复而非仅84262b。独审确认P2：e2f6dbf缺5b2d35e的SkillPublishError精确Connect code与x-kokoro-error-code映射，正常Admin失败会退回Internal；对应原admission边界测试亦缺。晋升service/state已承接，旧无attempt宽门已由精确completed intent资格替换，不恢复宽门。BFF writer暂停pin生成，机器contract169文件仍逐字节相同。
+
+| 项 | T-K03.14-RPC-ERROR 补片 |
+| --- | --- |
+| owner/writer | Platform /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-capability e2f6dbf clean；skills_platform_implementation_r357唯一writer；platform_expand_review只读；Root提交 |
+| 范围/归属 | 仅src/rpc/rpc-handler.ts和既有test/unit/skill-admin-admission.test.ts；已有错误边界保持真实稳定code，不新增文件/层/协议/SQL |
+| 设计门 | 现owner TECHNICAL_DESIGN/API_CONTRACT错误语义承接正式runtime 5b2d35e；属于局部既有adapter修复，不改变职责/契约 |
+| 验证 | 原正式publishOfficialSkill错误边界先真实RED→修复→所有具名admin/error tests、type/lint/build；冻结交接后Root复跑/提交，BFF再固定最终SHA |
+| 排除 | SQL/contract/generated/依赖/正常服务/数据及其它仓；不得以放宽错误或mock规则清零 |
