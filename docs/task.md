@@ -16359,3 +16359,11 @@ Root初次与writer并发Prisma generate造成ENOTEMPTY/缺model编排失败；�
 ### T-K03.14-ADMIN-READ-SCOPE-CONSUMER
 
 局部现有consumer修复，无职责/契约/目录变化：Admin lib/server/config.ts现OIDC scope遗漏已批准IAM五只读member/invitation/role/tenant/audit范围。Owner apps/kokoro-admin，admin_scope_owner唯一writer；Root提交。基线4a9cf0e clean，允许仅现config.ts/config.test.ts。不加write/global user权限，不改IAM/SQL/secret/tenant/后台UI；先真实RED scopeexact断言，再请求原8+已批准5且唯一，Root复跑unit/type/lint/build、正式IAM BrowserAuthorizationScopeService.extend append-only授权＋readback，重新同源完整登录与五读取验证。Root另负责正式operator运行，writer不运行服务/data/indexcommit。
+
+### T-K03.14 Admin 只读授权与实际读取已接通（2026-10-10）
+
+Admin 正式952304b（codex/r357-admin-read-scope），只现config.ts/config.test.ts：原8+已批准五read scope，共13且唯一，OIDC请求/校验使用同常量。先RED1FAIL/2PASS，Root默认4files19PASS、type/lint/build通过；独审无确定P1/P2、冻结hash一致。原后台Ant Design壳和业务页面未重写。
+
+Root以正式IAM BrowserAuthorizationScopeService运行append-only扩展，updated后官方＋持久snapshot读回current13/24。首私有runner未装RequestContext返回unknown；先读回legacy8证实未写，再按正式CLI相同上下文修正执行，无盲重试。重新正常用户登录后新范围首次触发真实consent，使用签名CSRF表单明确agree；后续再登录consentCount=0、/manage/overview200、Admin sessionauthenticated=true，Skills/members/invitations/roles四读取均200；无凭据四读取均401。未冒充普通已登录用户负控。最初shell for path触发zsh PATH特殊变量导致curl未找到，随后换endpoint真实重跑四负控，未影响服务。
+
+实际Skills目录返回skills/next_cursor，当前skills为空0，未伪造官方内容。HTTP读链不是页面/管理CRUD或普通用户权限整体证据；下一在既有Skills管理面用正式上传/发布链创建真实开发样本并验证状态命令与目录/详情。身份管理旧页面尚有历史API待后继，不把四200称全部后台完成。记录var/dev/r255-preserve/r357-admin-read-scope-receipt.json；正常共享资源不重置，完整Wave0–7继续active。
