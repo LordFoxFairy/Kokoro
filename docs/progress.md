@@ -1,3 +1,7 @@
+### T-K03.14-ADMIN-GITHUB-SCHEMA main927bacb（2026-10-10）
+原Admin Github asset_ref误必填令两真实Github记录使整list502；正式机器required不含它。仅现schema/test两路径改Github optional、present严格、AI仍required；真实RED1FAIL13PASS→14PASS，Root29201终态default10files92PASS/type/lint/build全0，2hash/88保护exact、独审无P1/P2，精确两路径main927bacb。日志/tmp/kokoro-admin-github-schema-root-*.log。
+正常浏览器HMR后原7条全部显示（未过滤Github），刷新自然401→CSRF200→session200→原Skills200，无密码/无新授权，原表保7项。收据/tmp/kokoro-admin-github-schema-root-browser-proof.json，截图/tmp/kokoro-admin-github-schema-root-browser.jpg；不冒七写命令/分享/全Skills已完。后台ProLayout移动Drawer及Alert弃用warning仍OPEN，SSR hydration本片保持无错误。BFF分享正式消费及main-only待后继，其他模块暂停。
+
 ### T-K03.14-ADMIN-HYDRATION maincc297cc（2026-10-10）
 原Admin五精确路径修固定ProUtils2.18.0 es/lib断点首帧；原SSR/Ant/IAM/System壳、权限/API/SQL不变。真实原包RED2FAIL→GREEN2PASS；Root42078自然exit0：默认10files89PASS、type/lint/build及frozen-install全0，5hash/85保护exact、独审无P1/P2。日志/tmp/kokoro-admin-hydration-root-*.log。当前浏览器自然SSO回原Ant，390 reload与默认宽屏无hydration错误、响应式保留；未重启服务。内部移动Drawer width与错误Alert message deprecated仍OPEN。
 浏览器同时实测Skills列表502 admin_upstream_invalid，Retry一次同502；不是闭环/模拟空列表，原Admin owner只读正式链定位，未放宽schema。截图/tmp/kokoro-admin-hydration-root-browser.jpg。BFF共享revision原writer最终串行86094仍运行未冻结，不重复开门/服务；Share仍未正式Web消费。全Skills/Admin与main-only未完成，其他模块暂停。

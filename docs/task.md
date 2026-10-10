@@ -4,6 +4,7 @@
 - 当前授权：三设计D0正式main1bf002c，Root实际三hash/680保护/suffix exact；独审摘要业务通过，漏buf/HTTP旧vendor路径已在同清单补齐。原writer按D0精确业务/机器/生成闭集先RED后实施；无Git/服务/SQL。拟GET /v1/skill-shares/{share_id}/skill，public13.3/137操作；先查有效分享→正式GetSkillRevision→严格摘要/真实IAM作者→返回前复核。原Resolve六字段与GetSkill current不动；无SQL变化、无品牌/用量/示例伪造，source_kind取owner事实。
 - 依赖/验收：准确vendor输入闭集与三设计冻结审查后，才正式消费75图/历史74父验证；新GET404与缺revisionSummary真实RED2FAIL已保存；仅准package两门纳既有spec test、正规库存加1operation，Root重跑type/lint/contract/test/build，再运行与浏览器验精确旧版本、权限、撤销/过期。Web分享正式接线随后串行，不做reader-only半页。
 - 独立Admin收尾：admin_skills_owner已只读确认SSR/browser断点初值不一致；三设计D0 main085f387已核3hash/3suffix/85保护且独审无P1/P2；五实现路径maincc297cc，Root42078默认89PASS/type/lint/build/frozen-install0、独审/5hash/85保护exact；真实浏览器无hydration错误但列表502正在原owner只读定位；原Ant/IAM/System壳/SSR/权限/API/SQL不变，不Git/重启。七命令当前浏览器及普通菜单隐藏仍待补验。
+- Admin列表真实502已归因：BFF200且headers/JSON合规，Github来源机器asset_ref可选、Admin误必填；两路径正式main927bacb，Root29201默认92PASS/type/lint/build0、2hash/88保护与独审通过；实际7项含两个Github/正常401→refresh→200恢复，保持strict/present值/关联校验，不过滤记录、不改BFF。
 - 最终交付：全部实际闭环后各仓main-only；未交接mixed/活跃未合并worktree保留并接收，不以强删冒完成。无远端push。
 
 ### T-K03.14-PLATFORM-SKILL-REVISION-READ（2026-10-10）
