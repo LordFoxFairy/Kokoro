@@ -1,3 +1,7 @@
+### T-K03.14 当前源运行与后台可逆写验证（2026-10-10）
+Root只停止核对cwd的旧Platform93411/BFF22827并确认8086/53714释放；复用原配置源码启动Platform3312/PID44292/main91bc3655及BFF78790/PID44323/maine1769b56，readyz均200，未重启/修改共享PG/Redis/对象库或其它应用。收据/tmp/kokoro-share-revision-runtime-cutover.json，精确新RPC/浏览器Share尚待消费验证。
+原Admin当前正常浏览器对既有开发QA revision4可见范围窄化后正式恢复原技能池，两写200/event ACK/replayed false，原7项保持；仅UI及正式写正控，本次未遇401，不冒跨到期写重放。私有收据/tmp/kokoro-admin-scope-roundtrip-private.json，截图/tmp/kokoro-admin-final-management-browser.jpg。Root拓扑门真实exit1：physical BFF/Agent/System/Billing/Storage HEAD与gitlink不一致，正式BFFmain在既有外部worktree；未交接mixed保留，各仓main-only待准确整合，不force删除。Web同任务D0待审，其它模块暂停。
+
 ### T-K03.14-BFF-SHARE-REVISION main e1769b56（2026-10-10）
 Root5907自然exit0：contract:check/typecheck/lint/test/build全0，default1433PASS/0FAIL/3既有SKIP；冻结123/保护564/删除87一致、独审无P1/P2。正规Platform91bc3655固定75图/74父及历史原值保全，新GET精确分享revision与真实caller/作者，返回前撤销期限复核。提交原始208增改删路径（rename显示121）核exact；format九既有项仍OPEN，日志/tmp/kokoro-bff-share-revision-root-*.log。正常运行cutover与Web真实消费待验，不称全Skills/Admin完成；其他模块暂停。Web原owner沿同任务续接，无远端push、各仓main-only待完整验收。
 
