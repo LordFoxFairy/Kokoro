@@ -16337,3 +16337,7 @@ Web 正式 `a6c8fd3284b1638705156c9ec30de93dcdf4f453` 仅 product-identity consu
 Root再次实际同源正规登录至/app200，/api/auth/session200且authenticated=true。随后正规Admin CSRF/signin仍502 iam_relay_response_invalid，Admin session及管理读取401。进一步只读实际BFF relay边界返回200 JSON导航至同源/iam/error，稳定error=invalid_redirect；未输出code/state/cookie/凭据。故不能将当前失败直接归咎于Web callback allowlist。源码另存在Web只接受用户callback、Admin使用/manage callback的潜在后继缺口，先核IAM正式客户端注册与实际redirect，再逐层修，不放宽为任意路径或跳过认证。
 
 沿现有任务续派 platform_expand_review 只读调查，Root保留关键路径与提交；正常进程/SQL/Redis/MinIO未改。BFF承担严格转发与按需聚合，owner业务/事务留对应服务，不以BFF重复CRUD解决接线。浏览器控制与完整用户/后台CRUD、供应链和Wave0–7仍OPEN。下一动作：用IAM正式管理读回核对Admin注册callback，完成精确修复与同源无感跳转负控。
+
+### T-K03.14-IAM-ADMIN-REDIRECT
+
+Owner IAM auth/oauth/clients；独立原生 iam_admin_redirect_owner 唯一writer，Root提交/集成。基线 apps/kokoro-iam 当前HEAD和clean由writer核验。Root正规官方getOAuthClient实际读回旧3320 native callback，不读取secret。设计门：现IAM TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL新增精确同源/manage路径对，无SQL/公开operation变化。允许仅现oauth-client.schema.ts与test/unit/oauth-client.service.test.ts；不碰其它文件/服务/data/index。测试先RED合法Adminpair，然后用户pair、错base/port/path/encoded/localhost负控；Root重跑类型/lint/build/相关unit后再正式operator注册更新和Web后继。排除scope/权限/DB/secret/resource重构，完整goal active。
