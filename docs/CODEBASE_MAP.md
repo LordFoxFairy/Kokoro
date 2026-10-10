@@ -1,3 +1,7 @@
+### 2026-10-10 Admin 真实路径证据
+
+既有管理员 session 已真实验证账户菜单 → `/admin` 技能列表 → `/admin/settings` 空记录页，运行源码已加载入口和响应 header 两个修复；未做写入。
+
 ### 2026-10-10 Admin 账户入口
 
 `var/dev/web-skills-release` 的账户菜单在 **5041dfa** 固定管理员入口为既有同源 `/admin`；停止的 `3320/manage` 不再是用户入口。

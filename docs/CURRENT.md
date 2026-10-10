@@ -1,3 +1,7 @@
+### T-K03.7 现有后台真实管理员路径验收（2026-10-10）
+
+Root 使用既有持久管理员 session 在运行中 `127.0.0.1:3310` 实测：`/app` 账户菜单仅显示给平台管理员的“后台管理”→同源 `/admin`，真实技能列表可读；再进入 `/admin/settings`，模型路由设置正常显示“暂无记录”，不再出现读取失败。该路径验证了 **5041dfa** 的入口修正与 **caa7222** 的 header 修正均已由 HMR 实际加载。Web 完整 `pnpm test` exit 0；Node 22 `pnpm build` exit 0，路由表含 `/admin` 与 `/admin/settings`。未执行管理写入、未验证普通用户负控，Skills/Admin 全部 CRUD 与 Wave0–7仍未完成。
+
 ### T-K03.6 Admin 账户入口回归既有控制台（2026-10-10）
 
 用户账户菜单的“后台管理”已不再跳转被停止的 `3320/manage` 简化壳；运行源码 `var/dev/web-skills-release` 提交 **5041dfa** 固定进入既有同源 `/admin`，仍仅对 server-confirmed `platform_admin` 显示。未变更 IAM session、外部 callback allowlist、BFF 或后台模块。账户菜单/relay 具名 125 PASS，lint/typecheck PASS；需在已登录管理员浏览器会话中完成最终点击验收。
