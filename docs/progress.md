@@ -1,3 +1,9 @@
+### T-K03.14-BFF-GITHUB-ADMISSION main73c88c8（2026-10-10）
+Root冻结8hash/675保护exact，独审无P1/P2；真实RED原handoff及AI/GitHub Create重复行为后，私有proofVersion2 created冻结真实Create CAS再Begin、completed冻结真实Complete CAS再Validate；旧200缺proof零mutation，terminal201原ACK保持，不恢复旧admitted intent。
+Root原65290自然exit0：default1366PASS/3既有SKIP/0FAIL、contract:check最终765PASS、type/lint/build0，日志/tmp/kokoro-bff-github-admission-root-{type,lint,test,contract,build}.log；现八文件精确main73c88c8，公开契约/Platform/schema不变。
+Root停止原27501并核53714释放，复用原私有配置仅定向BFF源码重启39729/listener20291，ready200；PG/Redis/MinIO及其它应用保持。真实新intent Preview200→Import201→managed200→publish200→installation200→ListHub/ListSkills200→GetSkill200→真实文件包200，页面显示skill-creator已添加、SKILL.md及真实八文件目录/正文。证据/tmp/kokoro-github-admission-browser-proof.json，截图/tmp/kokoro-github-import-completed-browser.jpg、/tmp/kokoro-github-import-files-browser.jpg。原旧intent未恢复，不以新intent绿冒原key恢复。
+GitHub此业务路径通过；Skills整体仍有Share正式接线、个人CRUD/原Admin权限负控及旧OIDC fixture待收尾，各仓本地main-only尚未收敛，未声称全部交付。其他owner/未交接mixed保留，无远端push。
+
 ### T-K03.14-WEB-GITHUB-IMPORT UI main d0b9aa9（2026-10-10）
 Root原4157自然exit0：排system纯门160files/3021PASS，type/lint/build均0；日志/tmp/kokoro-github-ui-final-root-{pure,type,lint,build}.log。最终freeze212a9c3f十九路径及原765/追加778保护一致，独审P2 completed重开已关闭，unknown原key/body保持。精确19路径main d0b9aa9，未含五mixed；默认OIDC旧精确/login断言失败仍OPEN。
 真实GitHubPreview200、选不可变目录后Import412，未确认Publish/Install。正式BFF本owner只读receipt唯一匹配admitted，排除本次Complete/Validate归因；PUT前再次Create replay与已Begin推进CAS冲突为确定代码缺陷，后继T-K03.14-BFF-GITHUB-ADMISSION仅原handoff/route及现测试，先RED保存真实Create初始CAS，不减1/换key/放宽Platform。既有缺字段intent恢复待正式原receipt证明，不冒恢复成功。
