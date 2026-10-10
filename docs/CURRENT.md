@@ -1,6 +1,6 @@
 ### T-G00 Root 发布基线仍未达标（2026-10-10）
 
-Root 重跑统一门：`verify-ten-repository-standard.py` 当前报告 **166** 条规则违规；`verify-repository-topology.py` 报告 9 个 runtime module，但 `kokoro-app`、`kokoro-bff`、`kokoro-agent`、`kokoro-iam`、`kokoro-system`、`kokoro-billing`、`kokoro-storage` 的 checkout HEAD 与 Root 记录的 gitlink 不一致。随后启动的 `python3 -m pytest scripts/tests` 已自然结束，但此次调用未保留可复核的终态摘要，因此不记录为通过或失败。上述基线直接否定“可正式发布”结论；未重置子仓、未回退任何工作树，也未把 gitlink 指针改写为当前候选。下一轮将按 owner 与既有任务卡逐项处理，不以局部 Skills/Admin 绿门替代 Root 发布验收。
+Root 重跑统一门：`verify-ten-repository-standard.py` 当前报告 **166** 条规则违规（BFF 36、Billing 34、IAM 31、Platform 23、Agent 14、Web 14、Storage 11、Scheduler 3）；`verify-repository-topology.py` 报告 9 个 runtime module，但 `kokoro-app`、`kokoro-bff`、`kokoro-agent`、`kokoro-iam`、`kokoro-system`、`kokoro-billing`、`kokoro-storage` 的 checkout HEAD 与 Root 记录的 gitlink 不一致。随后启动的 `python3 -m pytest scripts/tests` 已自然结束，但此次调用未保留可复核的终态摘要，因此不记录为通过或失败。上述基线直接否定“可正式发布”结论；未重置子仓、未回退任何工作树，也未把 gitlink 指针改写为当前候选。下一轮将按 owner 与既有任务卡逐项处理，不以局部 Skills/Admin 绿门替代 Root 发布验收。
 
 ### T-K03.10 现行 Admin 草稿发布预填已在浏览器核验（2026-10-10）
 
