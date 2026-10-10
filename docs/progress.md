@@ -12756,3 +12756,5 @@ Root 重新读取当前源码及真实 IAM discovery：权威 issuer/authorize �
 R357-ADMIN-A1 Root复跑：11/11 unit、15-file contract check、lint/typecheck、diff-check通过；真实issuer与BFF身份阻断仍在。独审确认接线和有界读/重复cookie/迟到持久化缺口，候选不放行。Root授权原Admin owner仅测试/设计修正、原独审员转BFF三D0 writer，IAM原ownertests-only已交付；三仓无并发writer或正常服务/data变化。普通负控、完整CRUD和独立登录继续OPEN。
 
 IAM Root23651首跑2FAIL为fixture回调未匹配，不算授权RED；44555修回调后Skills403/MCPfalse达旧行为反例，但Session在Product正控false，发现fixture运行config复制导致db.config修改不入repo。Root准仅现fixture显式runtimeConfig引用供三例真实配置，不生产，待重跑。Admin Root auth实跑6PASS/4FAIL终态，准原owner定向生产修复；BFF三D0已核准tests-only。Root正常IAM库/服务未改，首跑自有iam_hardening数据库回收count0。
+
+R357-IAM Root73997真实RED终态：3FAIL/54未选择，全部准确落独立Admin授权断言，Product正控已过（Sessionfalse、Skills403、MCPfalse）。前两次fixture错位失败如实保留，不替代最终证据。现批准原owner精确生产policy/配置/BetterAuth及三repo切片，未改正常配置/服务/数据，无新Schema/contract。
