@@ -1,3 +1,9 @@
+### 2026-10-10 当前已验收基线（Root）
+
+Web main2073390，Platform main4f7501b：普通本地导入原intent实际恢复completed/installed/enabled，真实SKILL.md与references/checklist.md选择、目录折叠展开通过；Root Web2972PASS、Platform2063PASS及各type/lint/build0，默认system与整体验收未完。原Admin4b576a8保持原Ant/IAM/System壳，同源3310/manage。BFF正式源仍/Users/nako/.codex/worktrees/kokoro-r257-bff-normal main939bf0e，勿误用physical旧mixed仓。
+
+下一执行为T-K03.14-WEB-GITHUB-IMPORT：现Web仍走self伪入口及合成installed卡片；必须消费既有Preview→immutable selector Import draft→owner Publish→真实Install，未知结果保每stage原body/key。完整Skills/Admin与Wave0–7仍active，Billing最后，五mixed与其他owner未交接修改保留。以下旧记录只属历史，不覆盖此基线。
+
 ### T-K03.14 独立文件树纠偏 main（2026-10-10）
 
 Web main e7a9c2d67515ff277ac696aad2f2d61ea21e4be4，仅reader现TSX/CSS/UItest；真实RED inline与层级各1FAIL，独审P2复合ARIA角色不完整经真实RED1FAIL关闭，最终普通层级list/native按钮保真实目录。Root79519终态155files/2891PASS、type/lint/build0，3hash及769任务外保护一致，独审无确定P1/P2。正常tab49实际简介→独立左右文件列表/正文，Enter返回简介、Space再开并读取SKILL.md通过；真实样本只有一个文件，嵌套文件夹/其它文件选择仅纯测，未冒浏览器多文件验收。截图 /tmp/kokoro-reader-tree-final-browser.jpg。旧tab48已从浏览器会话删除，创建新tab无重启服务。

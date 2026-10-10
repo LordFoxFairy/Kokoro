@@ -16635,3 +16635,6 @@ Platform main4f7501b仅两文件补既有必填skill_updated_at真实来源，�
 Web UI正式提交按下述当前SHA，21精确路径、五mixed及758保护保持；Root23962终态158files2972PASS/0unhandled，type/lint/build0，独审两追加fixture无P1/P2。默认system门未重跑，不称全仓绿。
 正常tab50沿原未知intent 502f3214-6fcf-4d24-8483-854d498e42ca仅Get恢复200/completed，真实installation aaf09684/source_ref skill:1106ce31/revision1 installed/enabled true；没有新建重复intent或修改安装引用。原Begin201/MinIO真实版本/Complete200已经写入，Finalize旧502属返回投影而非数据库失败。恢复后卡片已添加，查看详情独立左文件树/右内容，真实SKILL.md及references/checklist.md选择读取200、目录折叠展开通过，非模拟树；截图/tmp/kokoro-local-import-tree-browser-final.jpg，私有收据/tmp/kokoro-local-import-tree-browser-final.json。此证明原intent恢复及安装/多文件reader，不冒新Finalize重放200或整个Skills/Admin全部完成。剩余GitHub/分享/管理权限负控仍OPEN，完整Wave0–7 active。
 Web当前正式main：2073390da478d2640e963e3d53de6647cb78db79。
+
+### T-K03.14-WEB-GITHUB-IMPORT D0 审计（2026-10-10）
+Owner Web skills，原web_identity_owner当前只读方案，platform_expand_review独立只读契约审查；Root最终放行与唯一提交。基线Web2073390/Platform4f7501b/BFF正规939bf0e；五mixed保护。已知现self/github adapter拒绝、URL直导入和surface合成hash/installed不是正式事实。仅先按既有契约核Preview(可多路径)→immutable selector Import draft ACK→owner Publish原CAS→Install真实source_ref；盘点strict schemas、错误、每阶段独立key/未知重放与取消。提交精确路径/三设计前缀及RED计划后Root准代码，不新owner接口/SQL/服务，不重写Admin，不插兼容路由。

@@ -1,3 +1,9 @@
+### 2026-10-10 当前已验收基线（Root）
+
+Web main2073390，Platform main4f7501b：普通本地导入原intent实际恢复completed/installed/enabled，真实SKILL.md与references/checklist.md选择、目录折叠展开通过；Root Web2972PASS、Platform2063PASS及各type/lint/build0，默认system与整体验收未完。原Admin4b576a8保持原Ant/IAM/System壳，同源3310/manage。BFF正式源仍/Users/nako/.codex/worktrees/kokoro-r257-bff-normal main939bf0e，勿误用physical旧mixed仓。
+
+下一执行为T-K03.14-WEB-GITHUB-IMPORT：现Web仍走self伪入口及合成installed卡片；必须消费既有Preview→immutable selector Import draft→owner Publish→真实Install，未知结果保每stage原body/key。完整Skills/Admin与Wave0–7仍active，Billing最后，五mixed与其他owner未交接修改保留。以下旧记录只属历史，不覆盖此基线。
+
 ### 2026-10-10 当前 Skills / Admin 定位（Root）
 
 - 用户端正式 `apps/kokoro-app` main8100ad7：d2545a3 展示代码已验收；8100ad7 仅真实包详情设计，reader 尚未实施。当前运行源码为该正式目录，旧 `var/dev/web-skills-release` 记录只属历史。
