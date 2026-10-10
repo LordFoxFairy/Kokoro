@@ -1,3 +1,7 @@
+### T-K03.14-BFF-SHARE-ORIGIN mainc9e8fab（2026-10-10）
+Root现composition/Share route/HTTPtest三个路径，真实RED2FAIL→focused4PASS，最终89787自然exit0：default1368PASS/3既有SKIP/0FAIL、type/lint/build0；3hash/680保护exact，独审无P1/P2。POST使用已验证iamRelay.webOrigin，保本地http/3310，不再httpsdomain；缺origin503且零inspect/create，GET/DELETE保持。无public/schema/数据变化，HTTP正控实际本地URL；日志/tmp/kokoro-share-origin-root-{type,lint,test,build}.log。不冒用户端分享已接线或真实共享页面通过。
+Root停止原39729核端口释放，复用原配置源码重启70664，readyz200；仅BFF更新，其它基础设施保持。后继Share依赖发现：Resolve仅六字段，GetSkill为series current，禁止拿最新元数据替旧revision；Platform现productRecord有受准exact原语但无普通Product RPC，下一仅owner D0具名exact revision read再发行/消费，不造reader-only半页。
+
 ### T-K03.14-BFF-GITHUB-ADMISSION main73c88c8（2026-10-10）
 Root冻结8hash/675保护exact，独审无P1/P2；真实RED原handoff及AI/GitHub Create重复行为后，私有proofVersion2 created冻结真实Create CAS再Begin、completed冻结真实Complete CAS再Validate；旧200缺proof零mutation，terminal201原ACK保持，不恢复旧admitted intent。
 Root原65290自然exit0：default1366PASS/3既有SKIP/0FAIL、contract:check最终765PASS、type/lint/build0，日志/tmp/kokoro-bff-github-admission-root-{type,lint,test,contract,build}.log；现八文件精确main73c88c8，公开契约/Platform/schema不变。

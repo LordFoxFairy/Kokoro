@@ -1,3 +1,16 @@
+### T-K03.14-PLATFORM-SKILL-REVISION-READ D0（2026-10-10）
+| 项目 | 方案约束 |
+|---|---|
+| Owner/writer | Platform现apps/kokoro-capability modules/skills；platform_expand_review此阶段仅三设计writer；Root审查/Git |
+| 当前事实 | productRecord受准exact UID原语存在；ProductSkillReadService仅current/包/下载/封面；Web分享只复制当前URL |
+| 目标职责 | 普通Product受准GetSkillRevision按source_ref返回原revision完整展示元数据，不借Admin/current入口 |
+| 目录/粒度 | 扩现skills ProductRead；淘汰新Share模块，因为Share lifecycle归BFF，元数据仍Platform事实 |
+| 依赖 | Platform owner contract先发行/pin；BFF正规publisher enrichment，Web完整摘要/reader后消费；禁止跨DB |
+| 数据/API | tenant/audience/status/UID/series/revision绑定；无新增SQL事实；三设计说明当前/目标和响应语义 |
+| 删除项 | 无兼容/fallback，不恢复历史模块；后继删假复制URL行为，不构造SkillCard |
+| 验证 | 旧revision与新current不同仍旧值；跨tenant/owner-only/撤回/隔离/source错配；Root owner全门和浏览器 |
+| 状态 | 仅D0放置表审计，待Root确认精确三文写入；完整Skills/Admin与Wave0–7 active |
+
 ### T-K03.14-BFF-GITHUB-ADMISSION（2026-10-10）
 | 项目 | 当前切片 |
 |---|---|
