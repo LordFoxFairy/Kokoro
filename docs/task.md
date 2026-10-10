@@ -1,3 +1,16 @@
+### T-K03.13 后继闭环依赖（当前只读事实，非完成）
+原owner只读绑定Platform1eeac365/BFFee423b7/Admin97cc927：personal10已有四CRUD写和Provider两读，但public13.3仅四读，Connector五字段缺display_name/description/enabled/state_version/时间，无法据此完成编辑。个人自定义URL不在正式Create/Update；旧authorize/Connection入口为tenant_execution，不可借来给普通用户。Provider原Admin管理命令/API/UI尚缺，不拿静态推荐冒真实provider。
+
+| 顺序 | owner / 原负责人 | 目标与依赖 | 验收 |
+| --- | --- | --- | --- |
+| 当前A1 | Web / web_identity_owner，Root Git与集成 | 四GET准确消费现public13.3；原active投影不变 | 真实RED4FAIL+正控1PASS已确认；冻结后Root门与正规四读 |
+| A2 | BFF / 原web_identity_owner后续串行转仓 | 发行现owner四写+Provider两读及真实metadata/CAS，先contract设计/测试再消费者 | 正常CRUD/原key重放/stale CAS/主体隔离，不把pending称已连接 |
+| A3 | Platform / 后继指定唯一writer | 普通授权→Connection正规契约与provider/auth投影，不用execution代理 | provider sandbox完整回跳/取消/过期/重放/撤权→Connection→Enable |
+| A4 | Platform→BFF→原Admin串行 | Provider管理正式命令/管理员公开资格/原Ant模块扩展 | 原/manage真实CRUD、普通用户负控及用户目录同步 |
+| 后继 | 正式owner按既有批准顺序 | custom/BYOK凭据生命周期和真实表单；然后排程、项目/聊天、剩余Settings，Billing最后 | 完整用户旅程而非局部测试数量 |
+
+此表续接既有T-K03.13，不新增计划中心；A2–A4仅依赖盘点，未授实现、未声称权限/接口已发行。变化树预审发现Retry-After机器上限86400窄问题已交原writer，未放宽契约或改服务。
+
 T-K03.13运行续接（本goal turn前一轮为progress）：Root现拓扑检查exit0（/tmp/kokoro-mcp-web-d0-root-topology.log）。实际lsof核Platform27064/BFF27131 canonical cwd均apps；纠正既有私有processes.json遗留BFF旧worktree source_checkout。两已运行personal配置原仅/tmp环境快照，本轮只将相同一键各自持久到原ignored .env.local并0600，其他配置行逐字不变，独立personal凭据仍复用一次发行文件，未重启任何进程或共享设施。原配置私有备份/无敏感值proof位于var/dev/r255-preserve/mcp-personal-persistent-config-proof.json。Web A1原writer运行中；另原admin_skills_owner仅只读核后继CRUD/个人授权/Admin provider契约缺口，不抢写或缩小整体目标。
 
 T-K03.13-WEB-MCP-PERSONAL-READ-D0已接收：Root核freeze8455a057三mixed suffix/789保护exact、独审无P1/P2；三HEAD-only前缀32行正式Web main18fd52da38e5d2c867573e571a7b8ab6cd6184b3，五mixed保留。原web_identity_owner沿同卡A1已准入精确8scope的四GET adapter/独立schema/现proxy tests与INDEX，先真实RED；Root保留集成/Git与运行验证，当前尚无四读200或CRUD完成证据。
