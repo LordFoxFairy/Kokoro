@@ -1,3 +1,9 @@
+A2 早审新增确定 P1：变化树 BFF response Create ACK 错将 enabled=false 判失败；Root 实读与正式 Platform 创建必为 false/CAS1 对照确认。已交原 writer 先加真实 false ACK RED 正控及 true 负控后定向修复，未上线、未改 owner 资格；最终验收仍待冻结。
+
+### T-K03.13 A2 实施观察与 A3 真实授权边界（2026-10-10）
+上一 goal turn 仅重述已交付 Skills/main 状态，归类 no-progress；本轮重新核当前 Git 与原生 agent 状态。BFF main c3770f6 上原 web_identity_owner 为唯一 writer，当前 A2 实施中；真实先行 RED 日志 /tmp/kokoro-bff-mcp-personal-crud-a2/red.log 自然 exit1、7FAIL/0PASS（六正式操作被旧 guard 503 拒绝及 contract 旧版本断言），不是 fixture/import 失败。Root 不在变化树跑最终门、不单边切正常 BFF；原 platform_expand_review 已续派只读 input/CAS/JCS 早期审查，freeze 后再正式审查与 Root 重跑。
+原 admin_skills_owner A3 只读调查已完成：普通本人授权→Connection 现无正式方法，旧执行资格不得借用；现 authorization bridge 不等于 provider OAuth code/PKCE/token owner，SecretHandlePort.assertUsable 不证明受管 credential 字节生命周期。后继仍归 Platform modules/mcp，复用当前状态机/事务/recovery，分别补真实 OAuth attempt+credential、自定义私有 Server、BYOK 三链；当前正常配置未证明外部 provider sandbox 可用，IAM workload OAuth 不冒该资格。Provider 原 Admin 写入仍后继。此为具体待实现缺口，不新增服务、不改 SQL/凭据、不缩小全 Wave 目标；Billing 最后。
+
 T-K03.13 A2 D0正式接收：BFF mainc3770f6d61c4ad847e26aa5b85bb3d5dba05d621仅三设计+contractREADME四前缀38行。Rootfreeze b10a核四after/原committedsuffix/690保护与13.3canonicalexact，首检查wrapper误用字段after KeyError后改实际after_sha256复核通过，无仓改动；独审无P1/P2。原web_identity_owner沿24精确路径已授机器/runtime六能力及真实metadata/CAS，先真实RED，Root独占Git及激活；现正常BFF仍ee423b7，新contract尚未实施/发布，Web新pin与配对切换后继，不称CRUD已通。
 
 ### T-K03.13 A2 版本与调用边界裁决（2026-10-10）

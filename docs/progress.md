@@ -1,3 +1,7 @@
+A2 早审新增确定 P1：变化树 BFF response Create ACK 错将 enabled=false 判失败；Root 实读与正式 Platform 创建必为 false/CAS1 对照确认。已交原 writer 先加真实 false ACK RED 正控及 true 负控后定向修复，未上线、未改 owner 资格；最终验收仍待冻结。
+
+T-K03.13 A2 当前原 BFF writer 实施中，先行真实 RED7FAIL/0PASS 已核；原审查员续派只读 input/CAS/JCS，冻结后 Root 最终门。A3 调查确认本人授权→Connection、受管 credential 与 provider sandbox 资格仍缺，详见 CURRENT 最新边界；未把 IAM workload 资格冒第三方 OAuth。前 goal turn 状态重述为 no-progress，本轮核现树并续派具体审查；正常服务/SQL保持，完整 Wave active、Billing最后。
+
 T-K03.13 A2 D0正式接收：BFF mainc3770f6d61c4ad847e26aa5b85bb3d5dba05d621仅三设计+contractREADME四前缀38行。Rootfreeze b10a核四after/原committedsuffix/690保护与13.3canonicalexact，首检查wrapper误用字段after KeyError后改实际after_sha256复核通过，无仓改动；独审无P1/P2。原web_identity_owner沿24精确路径已授机器/runtime六能力及真实metadata/CAS，先真实RED，Root独占Git及激活；现正常BFF仍ee423b7，新contract尚未实施/发布，Web新pin与配对切换后继，不称CRUD已通。
 
 ### T-K03.13 A2 版本与调用边界裁决（2026-10-10）
