@@ -1,3 +1,9 @@
+### T-K03.14 正常源码服务已重载，浏览器控制失败（2026-10-10）
+
+Root先核原登记句柄：7403实为已自然结束的旧Platform会话，9724/72265均missing；同时真实端口8086/53714仍由PID78792/56015监听，CWD分别旧release/正式BFF。据实际listener＋CWD复核后只向这两个PID发SIGTERM，确认端口释放；没有因句柄失效重复启动。复用原持久env-file与pnpm dev源码运行新Platform32666c1（Node24，session2482/PID92981）和BFFb097f64（Node22，session29204/PID93003），两readyz实际200，registry已写真实句柄/源码SHA。Canonical b5→326无Schema差异，零DDL/SQL清理/Redis/MinIO重启，任务外变更保留。
+
+真实用户端3310 /app/skills、/manage与/api/auth/session HTTP均200，但仅页面/端点存在，不证明有会话或CRUD。浏览器控制首次现有tab20选择CDP focus超时，按正式troubleshooting同browser新验证tab41导航出现ERR_BLOCKED_BY_CLIENT；现有tab读取也相同focus超时。未绕浏览器保护、未改UI/用户tab/权限，浏览器验收当前缺证据，仍OPEN。下一调查浏览器控制恢复，并通过正规同源IAM用户/管理员旅程验证；不以HTTP200替代完整页面。
+
 ### T-K03.14 BFF 最终固定消费者已提交（2026-10-10）
 
 BFF正常worktree正式 `b097f64d132ba947bfcaf1e6324dcaeee9005451` clean，固定Platform `32666c1c18360e707048a1104efe6b50e375002f`。87正式vendor逐字节原样更名、旧current删除，生成客户端零变；只current pin/生成出处摘要与具名测试引用更新，无业务/public API/SQL/权限改动。独审770freeze记录（含87删除）全匹配、575任务外tracked原字节保留、无新增确定P1/P2。Root实际重跑contract716PASS、默认test1315PASS/0FAIL/3既有SKIP及lint/type/build/diff-check通过；日志 `/tmp/kokoro-bff-32666c1-root-{contract,lint,type,test,build}.log`，原句柄89559自然exit0。Root初次freeze校验未处理sha=null删除项误报，随后按实际absence语义复核0差异后才提交。
