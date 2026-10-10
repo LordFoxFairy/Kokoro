@@ -1,7 +1,7 @@
-### 2026-10-10 当前正式收尾基线（Root62221ad9）
+### 2026-10-10 当前正式收尾基线（Roote2b82d16）
 
-Web main611ae53；Platform main1eeac36（tree与91bc3655相同）；原Admin main97cc927（原意图恢复已接收），同源3310/manage；正式BFF外部worktree maine1769b56；正式Storage外部worktree main4ab2f23；Agent mainee736cd。GitHub导入与分享精确revision消费者已交付，真实固定包下载及嵌套文件树已验；不要恢复下方历史伪入口或重做已验布局。
-当前T-K03.14仅收尾系统失败、原Admin未验项与旧分支接收。系统实际183PASS/20FAIL/17unhandled，不假定全部单因；Web两mixed测试/三mixed文档及其它owner未交接字节保留。其它功能依用户要求仍暂停；完整Wave0–7目标保持，Billing最后。下方较旧“下一执行/尚未实现”只属历史。
+Web mainb7dbfe8；Platform main1eeac36（tree与91bc3655相同）；原Admin main97cc927（原意图恢复已接收），同源3310/manage；正式BFF外部worktree maine1769b56；正式Storage外部worktree main4ab2f23；Agent mainee736cd。GitHub导入与分享精确revision消费者已交付，真实固定包下载及嵌套文件树已验；不要恢复下方历史伪入口或重做已验布局。
+当前T-K03.14仅收尾系统失败、原Admin未验项与旧分支接收。系统最新Root81727自然exit0：14files203PASS/0FAIL/0unhandled、type/lint0；四项旧Project交互fixture只补真实Toggle展开和显式原会话选择，mainb7dbfe8仅15行，无production/timeout/skip改动；Web两mixed测试/三mixed文档及其它owner未交接字节保留。其它功能依用户要求仍暂停；完整Wave0–7目标保持，Billing最后。下方较旧“下一执行/尚未实现”只属历史。
 
 ### 2026-10-10 当前已验收基线（Root）
 

@@ -1,3 +1,10 @@
+### T-K03.14 四项Project回归正式main收尾（2026-10-10）
+Web mainb7dbfe8ea5d74adc1ba3502d4010a1e1a14b4521，仅现system fixture15行真实Toggle展开及原会话选择，未改生产/API/key/body/草稿/timeout/skip。Root81727自然exit0：完整system14files203PASS/0FAIL/0unhandled，type/lint0；独审无确定P1/P2，freeze fdd3eecbd96641b5b219d25cb14cf142447650c3e2404a98c5ccfba7175b4756与789保护exact，HEAD-only准入没有夹带巨大mixed。原199PASS4FAIL为真RED，首宽locator3FAIL保留且已修；日志/tmp/kokoro-project-move-fixture-root-{system,type,lint}.log。
+本turn实质完成system收尾与4条已合并分支无损清理；原Admin97cc927/真实8项与版本5发布保持。全仓最终交付仍OPEN：Web两非main分支含未接收历史、Billing唯一docs及mixed待接收；BFF/Storagerefs仅main但canonical physical迁回尚未做，旧mixed保全，Root拓扑门仍4个HEAD/gitlink mismatch。没有push、没有宣称像素全一致或全Wave完成；其它新功能暂停。
+
+### T-K03.14 已合并分支无损清理（2026-10-10）
+Root核BFF旧975a2d8及Storage旧0b5042d/5b15fe3/a1206d0均正式main祖先，无独有提交；四旧checkout同HEAD detach后仅branch -d，HEAD/index/status及全部tracked、非忽略untracked内容/链接/删除状态前后exact。两仓本地分支引用仅main；正常formal进程及源码不变，physical旧mixed仍保留，不能称其已迁入canonical main。私有proof0600 /tmp/kokoro-main-only-ancestor-cleanup-proof.json。Web107独有/旧Admin129mixed、Billing唯一60行历史裁决及25mixed仍待接收；不强删或整包提交。
+
 
 ### T-K03.14 原Admin意图恢复已提交main（2026-10-10）
 原Admin main97cc927a2ed5e19bfb739f8729d8c9f8e41b80cf精确12路径：七管理命令单tab原意图64KiB/15分钟严格绑定subject+tenant/key/body/CAS；两身份ACK从fresh Product identity投影tenant_id，blocked client与原登录壳未改，不自动重放/不存包签名。真实RED6FAIL1PASS→Root79969自然exit0：default11files103PASS/type/lint/build0；freeze d8199d8e665f7281e9060e5d373293a25b25ceb541fe20b08789b0717b48a5f7、9实现/3设计/80保护exact，独审无P1/P2。日志/tmp/kokoro-admin-intent-recovery-root-*.log。
