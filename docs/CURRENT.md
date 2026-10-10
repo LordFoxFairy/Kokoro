@@ -1,3 +1,5 @@
+T-K03.13 A2 D0正式接收：BFF mainc3770f6d61c4ad847e26aa5b85bb3d5dba05d621仅三设计+contractREADME四前缀38行。Rootfreeze b10a核四after/原committedsuffix/690保护与13.3canonicalexact，首检查wrapper误用字段after KeyError后改实际after_sha256复核通过，无仓改动；独审无P1/P2。原web_identity_owner沿24精确路径已授机器/runtime六能力及真实metadata/CAS，先真实RED，Root独占Git及激活；现正常BFF仍ee423b7，新contract尚未实施/发布，Web新pin与配对切换后继，不称CRUD已通。
+
 ### T-K03.13 A2 版本与调用边界裁决（2026-10-10）
 前goal turn为progress：Web50508e55/Root050ef03a已提交四读并正式验收。当前BFF ee423b7 tracked clean，原web_identity_owner唯一A2负责人只读D0；platform_expand_review只读独审。Fixed Platform75方法已含personal10，A2不新增owner SQL/API/凭据；候选六operation为POST connectors、PATCH connectors/{id}、PUT connectors/{id}/enabled、DELETE connectors/{id}及GET providers/list+detail。Connector统一公开真实enabled/positive CAS与optional name/description/time，connection6/旧active投影不变，不造replayed/eventid/连接成功。
 Root明确本地开发clean-slate配对cutover例外：public14.0.0/143仍/v1，承认现Web strict5已正常激活且扩字段breaking，不援历史未激活beta，也不静默改minor。依据用户仅v1/本地重新走新结构/不留兼容轨的要求，唯一已核Web消费者先固定正式BFFcommit/digest并更新strictschema验，之后Root才切正常runtime。未来对外稳定发行仍原/v2策略，本例外不泛化；六operations/schema/inverse与历史门须同片证明。BFF运行与现Web不在设计阶段单边切换，不留fallback。
