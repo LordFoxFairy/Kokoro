@@ -1,3 +1,7 @@
+### T-K03.14 原Admin身份消费main与浏览器实证（2026-10-10）
+
+Admin正式99e65e333444a5bffd2e1dfa50844de64dab701c main/clean，仅四路径strict消费既有bare me/subject，组织ID显式输入不假造tenant；Root99230实际74PASS/type/lint/diff0、四hash与82任务外原字节一致，独审无P1/P2。Root真实浏览器新tab43同源/manage直接进入原Ant /manage/overview，无第二次密码；点原技能模块/manage/hub真实两行个人＋官方，打开官方详情具名七命令及包按钮，已发布包按钮按状态禁用。当前有Next dev Issues提示尚未归因，不以渲染结果称无错误或全CRUD。真实HTTP版本/对象包/发布/隔离/恢复/可见范围通过证据保持；撤回/草稿删除、普通用户和另一管理员负控、完整浏览器仍OPEN。Web原owner继续正式四读消费者纠偏，未冻结不可并发验收。
+
 ### T-K03.14 原Admin真实owner包发布与管理链（2026-10-10）
 
 Root正规持久账号重新登录、用户session与原Admin无感SSO/manage/overview及Skills/IAM四read均200，正常Admin当前目录非空1。仅正式HTTP创建Admin新版本（新ID/sameSeries）201；真实包状态200→Begin201→MinIO PUT200/真实x-amz-version-id→Complete200→Validate200→Admin catalog publish200；随后quarantine/restore/audience owner→catalog均200，每命令实际GET读回status/CAS相等。原body/key/ACK与对象version持久0600保留，无SQL/Redis重置、重复草稿或伪造使用数。日志 /tmp/kokoro-admin-skills-root-real-{read,lifecycle,lifecycle-final,commands}.log。

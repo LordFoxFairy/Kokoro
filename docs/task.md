@@ -16512,3 +16512,5 @@ T-K03.14-ADMIN-SKILLS-IMPLEMENT复门：Root62PASS/type/lint/build0；独审P2�
 T-K03.14-ADMIN-SKILLS-IMPLEMENT已提交2d4ec6f main；Root67PASS/type/lint/build与独审P2关闭。仍待真实owner链/权限/浏览器，不升级整体闭环；Web消费者纠偏卡继续。
 
 T-K03.14-ADMIN-SKILLS-ME-CONSUMER：原owner仅components/shell/admin-skills.tsx、lib/admin-skills.client.ts、lib/admin-skills.schemas.ts与test/admin-skills-client.test.ts。正式2d4ec6f；现me bare subject真实200与旧UI data/user_id错配已证，先RED、strict读取真实bare/失败闭合、本人publisher/creator用subject，organization ID显式输入，不改me/auth/其它owner。Root审查提交。原真实包publish/quarantine/restore/audience通过，withdraw/discard/权限/浏览器仍OPEN。
+
+T-K03.14-ADMIN-SKILLS-ME-CONSUMER正式99e65e3 main，Root74PASS/type/lint，独审通过；真实/manage原Ant列表/详情显示，dev Issues待归因、其余真实CRUD/权限仍OPEN。
