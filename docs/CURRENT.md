@@ -1,3 +1,9 @@
+### T-K03.14 当前收尾复验与真实失败（2026-10-10）
+
+Web四读消费者候选冻结10代码hash经Root核对，Root20596实际全纯155files/2825PASS、type/lint exit0。独审仍有唯一P2：四读fetch/json缺总deadline、实际body上限，详情已有AbortController未传请求；仅原writer现client/detail/test三路径续修，其他冻结与五mixed保持。尚未提交该候选，不以纯门替代网络生命周期或浏览器。
+
+原Admin真实浏览器创建本轮测试draft新版本3成功、显示三行与本人包按钮；随后正式删除该测试草稿提交呈“当前管理权限失效”且停写，实际响应状态未捕获，根因待实证，草稿删除尚未通过。仅授权原Adminowner只读归因，不重试未知结果、不重置SQL/Redis、不改权限。失败截图 /tmp/kokoro-admin-draft-browser-failure.jpg。既有已验切片在各main，完整Wave0–7仍active，未宣称全部完成或远端push。
+
 ### T-K03.14 原Admin身份消费main与浏览器实证（2026-10-10）
 
 Admin正式99e65e333444a5bffd2e1dfa50844de64dab701c main/clean，仅四路径strict消费既有bare me/subject，组织ID显式输入不假造tenant；Root99230实际74PASS/type/lint/diff0、四hash与82任务外原字节一致，独审无P1/P2。Root真实浏览器新tab43同源/manage直接进入原Ant /manage/overview，无第二次密码；点原技能模块/manage/hub真实两行个人＋官方，打开官方详情具名七命令及包按钮，已发布包按钮按状态禁用。当前有Next dev Issues提示尚未归因，不以渲染结果称无错误或全CRUD。真实HTTP版本/对象包/发布/隔离/恢复/可见范围通过证据保持；撤回/草稿删除、普通用户和另一管理员负控、完整浏览器仍OPEN。Web原owner继续正式四读消费者纠偏，未冻结不可并发验收。

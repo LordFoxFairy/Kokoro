@@ -16514,3 +16514,9 @@ T-K03.14-ADMIN-SKILLS-IMPLEMENT已提交2d4ec6f main；Root67PASS/type/lint/buil
 T-K03.14-ADMIN-SKILLS-ME-CONSUMER：原owner仅components/shell/admin-skills.tsx、lib/admin-skills.client.ts、lib/admin-skills.schemas.ts与test/admin-skills-client.test.ts。正式2d4ec6f；现me bare subject真实200与旧UI data/user_id错配已证，先RED、strict读取真实bare/失败闭合、本人publisher/creator用subject，organization ID显式输入，不改me/auth/其它owner。Root审查提交。原真实包publish/quarantine/restore/audience通过，withdraw/discard/权限/浏览器仍OPEN。
 
 T-K03.14-ADMIN-SKILLS-ME-CONSUMER正式99e65e3 main，Root74PASS/type/lint，独审通过；真实/manage原Ant列表/详情显示，dev Issues待归因、其余真实CRUD/权限仍OPEN。
+
+### T-K03.14 当前收尾复验与真实失败（2026-10-10）
+
+Web四读消费者候选冻结10代码hash经Root核对，Root20596实际全纯155files/2825PASS、type/lint exit0。独审仍有唯一P2：四读fetch/json缺总deadline、实际body上限，详情已有AbortController未传请求；仅原writer现client/detail/test三路径续修，其他冻结与五mixed保持。尚未提交该候选，不以纯门替代网络生命周期或浏览器。
+
+原Admin真实浏览器创建本轮测试draft新版本3成功、显示三行与本人包按钮；随后正式删除该测试草稿提交呈“当前管理权限失效”且停写，实际响应状态未捕获，根因待实证，草稿删除尚未通过。仅授权原Adminowner只读归因，不重试未知结果、不重置SQL/Redis、不改权限。失败截图 /tmp/kokoro-admin-draft-browser-failure.jpg。既有已验切片在各main，完整Wave0–7仍active，未宣称全部完成或远端push。
