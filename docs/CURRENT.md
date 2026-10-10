@@ -1,4 +1,15 @@
 
+### T-K03.4 R357 管理员资格真实完成；后台缺少机器凭据已定位（2026-10-09）
+
+上一turn D0提交/A1派工是进度。本轮原writer仍running，Root未重复启动。准许A1具名9工程入口（含pnpm12 pnpm-workspace.yaml strictDepBuilds闭集）；生成目录依实际HeyAPI机械输出，完整固定BFFartifact字节不改，14operations生成filter；Admin scope移除User Team六项，只保八项，详细三设计由原writer同步。A1仍tooling/tests-only阶段，生产auth未放行。
+
+Root依用户明确“授权设置本地开发管理员”执行正常IAM流程：真实native /iam/get-session200、当前主体与已保存developer及配置operator一致、未过期；持久.env.local追加该唯一主体 IAM_PLATFORM_ADMIN_MANAGER_USER_IDS，原文件0600私有备份保留，不提交秘密、不重启issuer。正式manage-platform-admin CLI先read false/version0，再CAS replace仅一次 true/version1，独立fresh read三canonical字段吻合，owner事务与Audit路径。Root误将command ACK额外changed/operationId与read闭集整体比较导致AssertionError；无mutation重试，纠正只比较userId/enabled/version后成立。无原始SQL、未扩大其它账号。私有r357-admin-authorized-grant-receipt.json等0600证据。
+
+浏览器正规session200 authenticatedtrue/platform_admintrue，fresh gate已生效无需盲重登录。旧/admin进入后台shell，但实际点击重试 /api/hub/admin/skills503 skill_dependency_unavailable、页面技能池加载失败。这不是闭环成功；首heading探测误猜“技能管理”超时，snapshot实际“后台管理/技能”保留为Rootprobe错误。配置事实 apps/kokoro-bff/.env.local 缺 KOKORO_BFF_SKILLS_ADMIN_CREDENTIAL_FILE，runtime skillAdminClient=null时明确Unavailable；正式IAM只读 read-platform-skills-admin-scope state=current/allowedScopeCount7，resource已注册。下一Root正规provision独立tenant-machine purpose platform_ingress_skills_admin/唯一scope，持久credential配置后按原句柄drain/reload再真实list；禁止复用catalog/execution凭据或放宽权限。尚未provision该机器client/配置/重启，原页面失败不掩盖。
+
+普通用户历史负控仍保留，但当前已授管理员的账号不再作为普通负控；后继需另一真实普通身份。独立Admin3320尚未启动，完整CRUD/撤权/cutover、Skills/Wave0–7仍OPEN。除持久IAMmanager配置与被授权资格写入外，业务数据/进程与任务外源码保留。
+
+
 ### T-K03.4 R357-ADMIN-PROJECT-A1：独立工程与认证边界实施（2026-10-09）
 
 D0已Root审查并在独立本地仓提交 b01fca0：13Markdown，三设计一致、无业务DB；Root实核14条method/path/operationId与BFF74b1b committed artifact exact，SHA40a5d3de…一致。不是登录或CRUD验收。Root文档决策 f1a2a6d3。原任务外修改与所有服务保持。
