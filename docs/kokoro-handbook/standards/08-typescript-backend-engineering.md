@@ -41,6 +41,10 @@
 5. **[Production]** Repository、Mapper、Domain Model、CQRS 只在解决真实复杂度时增加；“文件齐全”不等于架构成熟。
 6. **[Project]** 数据库、外键、schema/migration、协议、Zod/class-validator 和 ORM 选择必须由目标仓技术方案或 ADR 裁决。
 
+### Kokoro 统一采用决定（2026-10-10）
+
+**[Project] 所有 TypeScript 后端统一采用 NestJS 原生运行时、Module、Controller/协议 adapter、Provider 和依赖注入。** 不再把手写 Node HTTP/独立 Express/Fastify 应用作为并列业务框架；Express/Fastify 只可作为 Nest HTTP adapter。RPC、第三方认证 handler 与 worker 挂接同一 Nest 生命周期，不重复建设业务入口。现有非 Nest 服务逐 owner 原子替换，删除旧启动/路由/重复编排；目标不能冒充当前已迁移。Web/Admin 保留前端框架，Python Agent 与 Go Scheduler 保持已批准语言边界。Root `nestjs-runtime` 结构门检查运行依赖及启动入口；依赖存在不替代真实 DI、路由、关闭恢复和 owner 全门验证。
+
 ## 2. NestJS 官方原生基线
 
 ### 2.1 官方 starter 与 feature module

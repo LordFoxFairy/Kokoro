@@ -6,6 +6,8 @@ Root 已修正历史 schema expand 使用可变当前 schema 的问题，改为�
 
 Root 后续已纠正 Admin 的拓扑登记与 submodule section 名，新增名称闭集回归先失败后通过（7 PASS），保留九个业务 owner；完整拓扑仍有 7 个 checkout/gitlink 未对齐，不擅自接收任务外提交。独立审查及 Root 复核确认 Platform 的 IAM 调用用于 workload/Agent execution 边界，不重复人类 session。旧物理 BFF checkout 未装配 SkillAuthorizationClient，但真实运行源码 `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEAD `00e4b791153ada9bb65e8236731353d3df2a2c64` clean 已装配并覆盖普通命令、安装、本人生命周期及后台 action；撤销将旧 checkout 缺口当作运行漏洞的结论。未对齐的是源码/contract 基线，不能另写重复认证或删除 Platform 验证门。
 
+用户已明确统一 TypeScript 后端为 NestJS（2026-10-10）：唯一语言手册增加项目采纳决定，Root `nestjs-runtime` 结构门验证运行依赖及从 main 可达的原生 bootstrap，支持委托启动和泛型工厂，不机械要求业务都塞 main。当前真实扫描该门只报告物理 BFF 缺运行依赖/原生启动；其他 owner 已有 Nest 启动，但内部职责与全门仍待逐仓验收。整体规则门当前 168 违规，不以依赖存在或规范文字称全面迁移。Web/Admin、Python Agent、Go Scheduler保持原语言框架边界。Platform 描述符切片已提交 `88c71f9`，Node24定向 163 PASS、typecheck/lint/contract/artifact/build通过；三条binding向量不变、错配负控先失败后通过。
+
 ### T-K03.13 当前后台物理拓扑与连接器 owner 候选复核（2026-10-10）
 
 Root 已复核当前源树和实际监听：用户端是 `apps/kokoro-app`（3310），独立后台源码是同级 gitlink `apps/kokoro-admin`（内部监听 3320）；后者基于历史 `kokoro-web/apps/admin` 的既有 Ant Design 控制台路由（users、teams、credit、payment、sites、models、hub、approvals、audit、operators），不是嵌入用户端的替代页面。浏览器公开入口固定为同源 `http://127.0.0.1:3310/manage`：3310 的 reverse proxy 将 `/manage` 交给原 Admin Web，Admin 保持 `basePath=/manage`，IAM callback 也固定回 3310/manage；直接访问 3320 的认证端点实测 403。用户端仅通过账户菜单、且仅 `platform_admin` 合格时投影相对入口 `/manage`；管理员首次进入走同一 IAM SSO，已存在后台 session 则回到原控制台首页。匿名实测 3310 `/manage` 为 200、3310 `/api/admin-access` 为 401；因此以后不得把用户端 3310 `/admin` 或公开 3320 作为后台事实，也不得再新造第三套后台壳。

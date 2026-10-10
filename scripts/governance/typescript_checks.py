@@ -217,6 +217,42 @@ def check_node_consistency(
             )
 
 
+def check_nest_runtime(
+    repository_name: str, repository: Path, failures: list[Failure]
+) -> None:
+    """Structural adoption check; owner runtime tests still prove composition."""
+    dependencies = package_manifest(repository).get("dependencies", {})
+    if not isinstance(dependencies, dict) or not all(
+        name in dependencies for name in ("@nestjs/core", "@nestjs/common")
+    ):
+        add(failures, repository_name, "nestjs-runtime", "NestJS core/common runtime dependencies are required")
+    source_root = (repository / "src").resolve()
+    pending = [source_root / "main.ts"]
+    visited: set[Path] = set()
+    native_bootstrap = False
+    while pending:
+        path = pending.pop()
+        if path in visited or not path.is_relative_to(source_root):
+            continue
+        visited.add(path)
+        source = read_text(path)
+        if re.search(r"from\s+[\"']@nestjs/core[\"']", source) and re.search(
+            r"\bNestFactory\.(?:create|createApplicationContext)(?:<[^;]*?>)?\s*\(", source
+        ):
+            native_bootstrap = True
+            break
+        for relative in re.findall(r"from\s+[\"'](\.[^\"']+)[\"']", source):
+            target = (path.parent / relative).resolve()
+            if target.suffix == ".js":
+                target = target.with_suffix(".ts")
+            elif not target.suffix:
+                target = target.with_suffix(".ts")
+            if target.is_file():
+                pending.append(target)
+    if not native_bootstrap:
+        add(failures, repository_name, "nestjs-runtime", "src/main.ts must reach a native NestJS application or worker bootstrap")
+
+
 def check_typescript(
     repository_name: str,
     failures: list[Failure],
@@ -233,6 +269,7 @@ def check_typescript(
                 f"src/{source_path}/ is missing",
             )
     if profile.kind == "typescript-service":
+        check_nest_runtime(repository_name, repository, failures)
         retired = [
             name
             for name in profile.retired_source_paths

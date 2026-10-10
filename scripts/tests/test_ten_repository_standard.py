@@ -1636,3 +1636,35 @@ def test_review_yaml_block_scalar_content_is_not_an_operation(
     assert contract_checks.check_openapi_contract("kokoro-billing", spec, failures)
     assert [item.rule for item in failures] == ["openapi-governance"]
     assert "POST /v1/items" in failures[0].detail
+
+
+def test_nest_runtime_gate_rejects_handwritten_server(tmp_path):
+    repository = tmp_path / "service"
+    (repository / "src").mkdir(parents=True)
+    (repository / "src/main.ts").write_text('import { createServer } from "node:http";\n')
+    (repository / "package.json").write_text('{"dependencies": {}}')
+    failures = []
+    typescript_checks.check_nest_runtime("kokoro-bff", repository, failures)
+    assert {item.rule for item in failures} == {"nestjs-runtime"}
+    assert len(failures) == 2
+
+
+def test_nest_runtime_gate_accepts_native_bootstrap(tmp_path):
+    repository = tmp_path / "service"
+    (repository / "src").mkdir(parents=True)
+    (repository / "src/main.ts").write_text('import { NestFactory } from "@nestjs/core";\nawait NestFactory.create(AppModule);\n')
+    (repository / "package.json").write_text('{"dependencies": {"@nestjs/core": "12.0.0", "@nestjs/common": "12.0.0"}}')
+    failures = []
+    typescript_checks.check_nest_runtime("kokoro-bff", repository, failures)
+    assert failures == []
+
+
+def test_nest_runtime_gate_follows_native_bootstrap_import(tmp_path):
+    repository = tmp_path / "service"
+    (repository / "src/bootstrap").mkdir(parents=True)
+    (repository / "src/main.ts").write_text('import { start } from "./bootstrap/start.js";\nawait start();\n')
+    (repository / "src/bootstrap/start.ts").write_text('import { NestFactory } from "@nestjs/core";\nexport const start = () => NestFactory.create<NestExpressApplication>(AppModule);\n')
+    (repository / "package.json").write_text('{"dependencies": {"@nestjs/core": "12.0.0", "@nestjs/common": "12.0.0"}}')
+    failures = []
+    typescript_checks.check_nest_runtime("kokoro-bff", repository, failures)
+    assert failures == []
