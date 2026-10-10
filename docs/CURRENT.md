@@ -1,3 +1,5 @@
+T-K03.13运行续接（本goal turn前一轮为progress）：Root现拓扑检查exit0（/tmp/kokoro-mcp-web-d0-root-topology.log）。实际lsof核Platform27064/BFF27131 canonical cwd均apps；纠正既有私有processes.json遗留BFF旧worktree source_checkout。两已运行personal配置原仅/tmp环境快照，本轮只将相同一键各自持久到原ignored .env.local并0600，其他配置行逐字不变，独立personal凭据仍复用一次发行文件，未重启任何进程或共享设施。原配置私有备份/无敏感值proof位于var/dev/r255-preserve/mcp-personal-persistent-config-proof.json。Web A1原writer运行中；另原admin_skills_owner仅只读核后继CRUD/个人授权/Admin provider契约缺口，不抢写或缩小整体目标。
+
 T-K03.13-WEB-MCP-PERSONAL-READ-D0已接收：Root核freeze8455a057三mixed suffix/789保护exact、独审无P1/P2；三HEAD-only前缀32行正式Web main18fd52da38e5d2c867573e571a7b8ab6cd6184b3，五mixed保留。原web_identity_owner沿同卡A1已准入精确8scope的四GET adapter/独立schema/现proxy tests与INDEX，先真实RED；Root保留集成/Git与运行验证，当前尚无四读200或CRUD完成证据。
 
 ### T-K03.13 当前四读接线与正式运行证据（2026-10-10）
