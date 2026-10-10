@@ -16638,3 +16638,6 @@ Web当前正式main：2073390da478d2640e963e3d53de6647cb78db79。
 
 ### T-K03.14-WEB-GITHUB-IMPORT D0 审计（2026-10-10）
 Owner Web skills，原web_identity_owner当前只读方案，platform_expand_review独立只读契约审查；Root最终放行与唯一提交。基线Web2073390/Platform4f7501b/BFF正规939bf0e；五mixed保护。已知现self/github adapter拒绝、URL直导入和surface合成hash/installed不是正式事实。仅先按既有契约核Preview(可多路径)→immutable selector Import draft ACK→owner Publish原CAS→Install真实source_ref；盘点strict schemas、错误、每阶段独立key/未知重放与取消。提交精确路径/三设计前缀及RED计划后Root准代码，不新owner接口/SQL/服务，不重写Admin，不插兼容路由。
+
+T-K03.14-WEB-GITHUB-IMPORT真实浏览器RED（2026-10-10）：正常tab50在既有GitHub导入窗输入公开openai/skills并提交，POST /api/hub/self/skills/github/import404，UI显示导入失败；没有创建draft或安装。证据/tmp/kokoro-github-import-browser-red.json、jpg。只读对照正式契约证明应为Preview→原commit/path selector Import draft→owner Publish原CAS→Install。独审另发现机器path max2048/运行256及archive UTF8 relative256边界漂移：先由BFF owner收敛真实契约，不让Web隐式猜测或放宽包安全限制。
+网络候选5路径：新src/hub/skill-github-import.schema.ts、skill-github-import-client.ts、tests/hub/skill-github-import-client.test.ts；现src/app/api/hub/[...path]/route.ts、tests/app/hub-proxy.test.ts。UI候选19路径已原owner具名报告，三设计前缀未写，Root尚未准业务代码。此轮是已复现失败与设计审查，未冒修复完成；旧/正常上传与文件树已验收成果保持，全部目标active。
