@@ -1,3 +1,7 @@
+### T-K03.10 现行 Admin 草稿发布预填已在浏览器核验（2026-10-10）
+
+Root 用既有管理员 session 对运行中 `127.0.0.1:3310/admin` 做只读核验：技能列表正常读取；打开真实草稿“个人清单 · R324 异常恢复验收”，选择“发布”后，发布者类型为“用户”，发布者身份自动为当前经准入的主体 ID。未点击“保存”，未改变草稿、发布状态或目录内容。该结果证明 **e1f61c4** 已经由 HMR 生效；只覆盖该表单预填，未替代完整管理员 CRUD、普通用户负控或官方目录验收。
+
 ### T-K03.9 既有 Admin 发布表单的真实缺口已收窄（2026-10-10）
 
 不新增后台或路由。运行 Web 源码 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/web-skills-release` 提交 **e1f61c4** 只修复已有 `/admin` Skills 管理面：真实草稿未带 `product.publisher` 时，发布表单默认使用已通过服务器准入的 `subject` 作为用户发布者；若记录已有 IAM 发布者仍保留其真实 kind/id。此前表单要求管理员输入不透明的发布者 ID，导致正常草稿发布流程卡住。具名 RED→GREEN 回归覆盖默认值及最终 command body；当前工作树 `vitest` 3 PASS、lint、typecheck、production build 均通过（本次命令运行于 Node 24，项目声明 Node 22，故不把它冒称 Node 22 证据）。未执行 Save/发布写入，也未将历史/测试技能自动发布或冒充官方；Admin/Skills 完整 CRUD、双身份浏览器验收与 Wave0–7仍未完成。
