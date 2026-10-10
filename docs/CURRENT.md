@@ -1,3 +1,18 @@
+### T-K03.14-WEB-IDENTITY 当前正规登录失败（2026-10-10）
+
+Root以已保存开发凭据经过实际同源GET/login→IAM authorize→签名CSRF表单POST/auth/sign-in→选tenant→callback复现503 `product_session_unavailable`，两次实际同一错误。初次直接POST/iam/sign-in/email 405属于错误测试入口，不计产品RED；旧/api/hub/skills/catalog 404亦不是当前接口验收。Root核源码BFF当前/v1/me含user_id/tenant_id/platform_admin，Web product-identity仍exact两字段，确定当前消费者接线缺口，不能删BFF管理员字段或松成任意shape。
+
+| 项 | T-K03.14-WEB-IDENTITY 切片 |
+| --- | --- |
+| Owner | Web apps/kokoro-app，原生web_identity_owner唯一writer；Root审查/提交 |
+| 当前事实 | 现src/lib/server/product-identity.ts；BFF正式b097f64实际me返回三字段；Web有5个未提交设计/测试路径，全部任务外保护，不动它们 |
+| 目标/粒度 | 精确解析当前三字段且platform_admin必须boolean，保持subject/tenant比对；不将权限缓存进Product session；一现consumer文件＋一个具名tests/server/product-identity.test.ts |
+| 目录比较 | 用现tests/server聚合服务端adapter验证；不建新目录或混入已被他人改的大型OIDC system test，不机械加DTO/新层 |
+| 依赖/API/data | 只消费BFF已发布/v1/me；禁止直读IAM、删admin字段、任意extra字段fallback；无SQL/Redis schema/cookie字段或公开API变化 |
+| 删除项 | 旧两字段consumer断言，由唯一current三字段替换，零双读兼容 |
+| 验证 | 当前BFFshape调用实际函数先RED，正控true/false；缺/坏/多字段及subject/tenant错拒绝；Root重跑具名/类型/lint，正常同源完整login再验 |
+| 交付/排除 | writer不碰index/commit/服务/data/五个混合路径；冻结文件hash交Root；原大目标与Skills/Admin浏览器仍OPEN |
+
 ### T-K03.14 正常源码服务已重载，浏览器控制失败（2026-10-10）
 
 Root先核原登记句柄：7403实为已自然结束的旧Platform会话，9724/72265均missing；同时真实端口8086/53714仍由PID78792/56015监听，CWD分别旧release/正式BFF。据实际listener＋CWD复核后只向这两个PID发SIGTERM，确认端口释放；没有因句柄失效重复启动。复用原持久env-file与pnpm dev源码运行新Platform32666c1（Node24，session2482/PID92981）和BFFb097f64（Node22，session29204/PID93003），两readyz实际200，registry已写真实句柄/源码SHA。Canonical b5→326无Schema差异，零DDL/SQL清理/Redis/MinIO重启，任务外变更保留。
