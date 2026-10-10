@@ -16629,3 +16629,9 @@ T-K03.14-WEB-LOCAL-IMPORT UI片真实RED：普通个人新建旧入口仍打开�
 ### T-K03.14-PLATFORM-LOCAL-IMPORT-WIRE（2026-10-10）
 Root真实上传Begin201/Complete200后Finalize与同intent Get均502；只读复现确定Platform两个RPC installation漏已有必填skillUpdatedAt，BFF严格投影拒绝。Owner为Platform skills，platform_expand_review唯一writer，Root审查/commit；基线apps/kokoro-capability main32666c1 clean。仅现src/modules/skills/skill-rpc.service.ts及test/unit/local-skill-import-rpc.test.ts；不新目录/契约/SQL，不放宽BFF/Webschema，取真实skill.skillUpdatedAt。先Finalize/Get字段真实RED，再unit/contract/type/lint/build冻结，Root重跑并必要时只重载Platform，原intent查询恢复并浏览器验证真实安装/嵌套文件树。
 Web UI候选仍未接收：Root纯门实际2970PASS/2FAIL及6未处理mock错误；原writer只准另两现测试tests/ui/personal-skill-publish-dialog.test.tsx、tests/ui/settings-modal.test.tsx核实旧新建入口/可信sessionprobe fixture，保分页和权限业务断言，不忽略错误或恢复旧手填表单。其它冻结/五mixed保留。
+
+### T-K03.14 上传安装与真实文件夹树当前验收（2026-10-10）
+Platform main4f7501b仅两文件补既有必填skill_updated_at真实来源，真实RED2FAIL47PASS→49PASS；Root24609终态121files2063PASS，type/lint/build0，独审无P1/P2，688保护一致。只重载原Platform源码服务，原2482正常退出，新77435 ready；PG/Redis/MinIO及其它服务未重启。
+Web UI正式提交按下述当前SHA，21精确路径、五mixed及758保护保持；Root23962终态158files2972PASS/0unhandled，type/lint/build0，独审两追加fixture无P1/P2。默认system门未重跑，不称全仓绿。
+正常tab50沿原未知intent 502f3214-6fcf-4d24-8483-854d498e42ca仅Get恢复200/completed，真实installation aaf09684/source_ref skill:1106ce31/revision1 installed/enabled true；没有新建重复intent或修改安装引用。原Begin201/MinIO真实版本/Complete200已经写入，Finalize旧502属返回投影而非数据库失败。恢复后卡片已添加，查看详情独立左文件树/右内容，真实SKILL.md及references/checklist.md选择读取200、目录折叠展开通过，非模拟树；截图/tmp/kokoro-local-import-tree-browser-final.jpg，私有收据/tmp/kokoro-local-import-tree-browser-final.json。此证明原intent恢复及安装/多文件reader，不冒新Finalize重放200或整个Skills/Admin全部完成。剩余GitHub/分享/管理权限负控仍OPEN，完整Wave0–7 active。
+Web当前正式main：2073390da478d2640e963e3d53de6647cb78db79。
