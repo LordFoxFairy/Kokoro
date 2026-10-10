@@ -16341,3 +16341,7 @@ Root再次实际同源正规登录至/app200，/api/auth/session200且authentica
 ### T-K03.14-IAM-ADMIN-REDIRECT
 
 Owner IAM auth/oauth/clients；独立原生 iam_admin_redirect_owner 唯一writer，Root提交/集成。基线 apps/kokoro-iam 当前HEAD和clean由writer核验。Root正规官方getOAuthClient实际读回旧3320 native callback，不读取secret。设计门：现IAM TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL新增精确同源/manage路径对，无SQL/公开operation变化。允许仅现oauth-client.schema.ts与test/unit/oauth-client.service.test.ts；不碰其它文件/服务/data/index。测试先RED合法Adminpair，然后用户pair、错base/port/path/encoded/localhost负控；Root重跑类型/lint/build/相关unit后再正式operator注册更新和Web后继。排除scope/权限/DB/secret/resource重构，完整goal active。
+
+### T-K03.14-WEB-ADMIN-CALLBACK
+
+Owner Web existing IAM relay response adapter；web_identity_owner唯一writer，Root审查提交。基线a6c8fd3，保护原5混合路径。仅src/lib/server/iam-relay-response.ts与新tests/server/iam-relay-response.test.ts；放置现server测试聚合，无新目录/层。职责为承接已经批准同源/manage Admin callback，不开放/iam/error或任意/manage。closed两条callbackpath，保持sameorigin/issuer/三参数唯一/code与state格式及native/JSON防护；无新wire/schema/cookie/SQL/publicoperation。先RED合法Admin native302/JSON再修；用户正控、origin/issuer/extra/重复/路径变体负控，Root重跑test/type/lint。未碰大型混合OIDC system test与三设计文档；真实SSO在IAM正式注册修复后Root统一验证。
