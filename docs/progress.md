@@ -1,3 +1,11 @@
+### T-K03.14 Billing main接收与当前交付边界（2026-10-10）
+Billing正式main25e7103350acefbeacc644710834104a302be03a：仅测试固定unreachable URL补owner schema，真实构造期RED226PASS1FAIL→同10文件PG227PASS0FAIL，断言/timeout/生产不改；精确archive候选313tracked除该fixture外逐字与5c7caf8一致，原25mixed保护。Node24/prisma generate后完整verify0（1415PASS/480资源SKIP）、generatedcheck0、独立临时PG prismacheck0；Root15845自然结束，未连共享应用库或重启Billing。日志/tmp/kokoro-billing-main-fixture-{pg-green,verify-green}.log；未跑的其它真实资源门、Nest mixed/FG2/完整资金链仍OPEN。Root本片接收已审20commit前驱链与1行fixture的gitlink，main-only Billing refs不冒混合树全已commit。
+个人Skills生命周期D0三设计门已核通过，Web唯一writer按18source/test闭集实施，正式两接口错误独审已确认；201仅新draft，owner权限404、CAS/state412，错误无retryable。其它模块不扩写，全仓264规范违规和历史checkpoint真实FAIL保留，完整Wave与全部交付仍未称完成。
+
+### T-K03.14 当前全仓收尾门及个人管理缺口（2026-10-10）
+Root68735b79真实全仓门：scripts/tests自然120.84s结束1783PASS/1FAIL/3SKIP，失败为历史w1e-iam07 checkpoint拿旧evidence gitlink与当前owner比对（287实际差异），未跳过或弱化；ten-repository-standard真实264违规/0unverified，不把子仓绿冒全仓绿。十个现服务只读health均200，基础设施未重置。完整交付保持OPEN。
+旧Web107独有commit经只读分组仍含本人日期/真实例子/版本/撤回及其他有效职责，不能整体丢弃或ours合并。现普通包导入/目录文件树/分享已承接；先沿正式BFF本人versions/withdraw契约补个人生命周期，owner任务T-K03.14-WEB-PERSONAL-LIFECYCLE，其他模块暂停，不增加普通用户公开目录发布权。Root将Billingmain5c7caf8精确archive到0700私有隔离树、313tracked blobs核与commit零差异；frozen install及prisma generate后verify0（1415PASS/480资源SKIP）、generatedcheck0，首次漏generate导致typedlint真实1451error已保日志，未改代码/规则；prismacheck真实隔离PG0，10文件隔离PG门仍在原15796句柄，未连共享应用DATABASE_URL。Billinggitlink等该门自然结束后再接收，25mixed不接。
+
 ### T-K03.14-WEB-SHARE 正式main3c5c302（2026-10-10）
 Root3620自然exit0：纯162files3070PASS、contract20files278PASS、type/lint/build0；独审两P2修复后34hash/756保护exact，原29候选文件不动，五mixed保留，精确33实际路径提交main3c5c30292ab8d65ffbe0d2e3bc35b5839914a8fb。前Root55166真实legacy旧fakeShare断言1FAIL3064PASS与精确RED五FAIL原日志保留；不重加假入口。日志/tmp/kokoro-web-share-root-final-*.log。
 真实正常浏览器POST/api/hub/skill-shares201、显示链接已复制；从服务ACK链接打开精确shared摘要/原本人已安装事实，查看详情读真实SKILL.md、references/checklist.md嵌套正文(package200)，截图/tmp/kokoro-skills-shared-files-browser.jpg。私有/tmp/kokoro-skills-share-browser-private.json只存ACK及safe状态；工具clipboard桥返回空，未冒实际字节比较通过。Shared exact下载handle缺口保留，不借series current。当前仅此slice通过，原Admin剩余权限/跨到期写、默认旧OIDC mixed失败、其它owner未交接/main-only及完整Wave0–7仍未完成，其它模块暂停。

@@ -1,3 +1,9 @@
+### T-K03.14-BILLING-MAIN-FIXTURE（2026-10-10，真实RED）
+Owner Billing / writer admin_skills_owner / Root审查提交；main5c7caf8、25mixed逐字保护。Root精确main archive verify0（1415PASS/480SKIP）/generated0/prisma隔离0；10文件真实PG226PASS1FAIL，prisma-lifecycle shares cleanup after initialization failure的固定unreachable URL漏必需schema导致构造期先拒绝，未覆盖连接失败清理。仅现test/integration/prisma-lifecycle.test.ts该fixture加schema=kokoro_billing，使同真实拒连接进入onModuleInit；不改生产schema解析/断言/超时/其他测试。先保存RED，隔离HEAD-only准入，Root重跑同10文件PG门，clean main完整门仍需新SHA证据；不接Nest mixed、资金流程或共享应用库。
+
+### T-K03.14-WEB-PERSONAL-LIFECYCLE（2026-10-10，待设计门）
+Owner Web / 唯一 writer web_identity_owner / Root审查与提交；基线 apps/kokoro-app main b7dbfe8，5项现mixed逐字保护。只接本人真实日期/例子、同series新包版本完整上传验证发布、CAS撤回；不恢复普通用户公开目录发布权，不改普通导入/目录reader/其他模块。现BFF两正式接口已存在，无owner数据库/contract/pin修改。放置方案扩现schemas/publish-client/同源route/个人flow/dialog/read及现CSS/i18n/skills-panel；撤回独立普通dialog+test，不建模块。先三设计文档仅具名前缀并保原mixed，再Root核门放行代码；source/test允许集以原生owner本轮放置表为准，不改巨大system混合测试。每stage原body/key/CAS，201仅draft，新包不可借旧包，数组省略不得静默清空，安装pin不自动升级。先真实RED后实现、Root完整Web适当门/真实owner浏览器验收，阶段冻结后HEAD-only准入。旧107独有commit逐职责归并，未承接有效职责不强删旧refs。
+
 ### T-K03.14-WEB-SHARE（2026-10-10；main3c5c302已验收）
 - Owner：Web /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-app，main3c5c302；web_identity_owner冻结交付，Root Git/审查；五旧mixed保护。目标仅真实Share创建/复制、精确共享摘要、原详情文件树，不扩其它模块。
 - 依赖：BFF正式e1769b56/public13.3/137/SHA0a9683b38cfd30534931dd0cd7821e3ccded94d6d15613a711cebc1f1e83a209，Platform91bc3655。三设计D0正式main4bf5944、Root三hash/三suffix/783保护exact且独审无P1/P2；现授权freeze候选网络5/pin12/UI12/删假preview2共31路径原writer实施，先RED、一次完整slice冻结；新模块/SQL/服务禁止。
