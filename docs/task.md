@@ -16676,3 +16676,10 @@ Web main745f273595fa4fbacd3d700eef4b6f821c570e82，精确现有detail TSX/CSS/UI
 
 
 T-K03.14-WEB-GITHUB-IMPORT-D0 已接收：Web main94d7926三前缀精确index提交，原mixed正文逐字节保留；Root核正式BFF13.2及486ec7e，独审无P1/P2，仅修首段当前基线745f273。NETWORK原web_identity_owner唯一writer仅授权五路径，先RED，不准UI19/其他文件；Root独占提交和最终验证。原admin_skills_owner只读盘点最终用户闭环项，不新计划中心或新架构。当前Web无cookie/app307是登录边界、同源manage200、Platformready200；未把匿名307当服务停机。
+
+T-K03.14 最终一次验收按六项收敛（不重做已验收布局/树）：GitHub完整导入；权威分享链接；实际下载；个人移除/再装及已有草稿命令；原Admin普通用户/跨owner权限负控；原Admin完整七命令与跨到期写。下载本轮已实际通过：正常tab50点击当前local-import-checklist下载，落盘/Users/nako/Downloads/r357-local-import-real-tree.zip，583bytes/SHA25639b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313；ZIP真实SKILL.md与references/checklist.md及正文一致。收据/tmp/kokoro-skills-final-download.json、截图/tmp/kokoro-skills-download-browser.jpg；不把series下载泛化为其他旧pin版本。分享现只有复制页面URL，现BFF已有skill-shares但Web缺consumer/准确分享页，GitHub完成后沿原owner接现契约，不新API。
+
+### T-K03.14-WEB-GITHUB-IMPORT NETWORK main4fde8f0（2026-10-10）
+Root五路径/777保护最终exact，独审无P1/P2；两正式POST404真实RED2FAIL→focused150PASS。Root默认test实际3164PASS、81SKIP、1suite失败（旧匿名/app readiness精确/login不符当前/login?return_to=%2Fapp）；不称默认全绿。另排system纯门159files3042PASS，type/lint/build exit0，日志/tmp/kokoro-github-network-root-{isolated,type,lint,build}.log。精确五路径main4fde8f0，不含mixed或UI。原writer后继仅三D0授权UI/删除19路径，真实Preview→immutable Import draft→owner Publish→Install→权威重读，网络本片不称浏览器完整导入。
+只读定位旧system失败为fixture精确redirect目标过时，后续仅readiness及匿名断言同步真实return_to，不放宽任意3xx/skip/产品认证；原mixed全文须保留。真实ZIP下载已验证583bytes/根SKILL.md与references/checklist.md，剩余最终六项沿同任务，不重做已过布局/树、不重建Admin。
+

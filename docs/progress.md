@@ -1,3 +1,7 @@
+### T-K03.14-WEB-GITHUB-IMPORT NETWORK main4fde8f0（2026-10-10）
+Root五路径/777保护最终exact，独审无P1/P2；两正式POST404真实RED2FAIL→focused150PASS。Root默认test实际3164PASS、81SKIP、1suite失败（旧匿名/app readiness精确/login不符当前/login?return_to=%2Fapp）；不称默认全绿。另排system纯门159files3042PASS，type/lint/build exit0，日志/tmp/kokoro-github-network-root-{isolated,type,lint,build}.log。精确五路径main4fde8f0，不含mixed或UI。原writer后继仅三D0授权UI/删除19路径，真实Preview→immutable Import draft→owner Publish→Install→权威重读，网络本片不称浏览器完整导入。
+只读定位旧system失败为fixture精确redirect目标过时，后续仅readiness及匿名断言同步真实return_to，不放宽任意3xx/skip/产品认证；原mixed全文须保留。真实ZIP下载已验证583bytes/根SKILL.md与references/checklist.md，剩余最终六项沿同任务，不重做已过布局/树、不重建Admin。
+
 ### T-K03.14-WEB-DETAIL-REFERENCE-FRAME（2026-10-10）
 Web main745f273595fa4fbacd3d700eef4b6f821c570e82，精确现有detail TSX/CSS/UItest三路径。Root最终3hash/776保护一致；当前UI99PASS、type/lint/build exit0（/tmp/kokoro-detail-reference-final-root-{ui,type,lint,build}.log），独审短视口P2真实RED后关闭。692×764真实浏览器最终框657.398×600、x17.3/y82、radius12、背景近248；与同视口Manus外框对照。320×240摘要可滚动且详情入口可用，恢复尺寸后真实SKILL.md/references/checklist.md可读取。截图/tmp/kokoro-detail-reference-final.jpg。缺失真实封面/分类/用量/例子不伪造，未称整体像素一致或Skills闭环；GitHub旧入口404仍待下片。
 用户要求最终Skills/Admin验收后全部本地main并清理其他分支，已只读盘点发现多仓有活跃worktree及未合并提交；仅在接收对应owner交付后收敛，不强删/重置。其他owner和uv.lock保留，完整Wave0–7 active，Billing最后。
