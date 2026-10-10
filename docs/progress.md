@@ -1,3 +1,5 @@
+T-K03.13-WEB-MCP-PERSONAL-READ-D0已接收：Root核freeze8455a057三mixed suffix/789保护exact、独审无P1/P2；三HEAD-only前缀32行正式Web main18fd52da38e5d2c867573e571a7b8ab6cd6184b3，五mixed保留。原web_identity_owner沿同卡A1已准入精确8scope的四GET adapter/独立schema/现proxy tests与INDEX，先真实RED；Root保留集成/Git与运行验证，当前尚无四读200或CRUD完成证据。
+
 ### T-K03.13 当前四读接线与正式运行证据（2026-10-10）
 上一goal turn仅重述Skills/main状态，分类no-progress；本轮继续连接器完整目标，不重开Skills验收。BFF A1已main ee423b7，Root57145完整pnpm check自然exit0：1472PASS/0FAIL/3既有SKIP，contract/type/lint/build全0；独审final freeze 90b3394ce7343b0a228bc70fa6ebfdbfd8f43e9438c79adb518cf2bd272134ed无P1/P2，18实际路径/674保护exact。两次真实旧fixture失败均保留：umask077负控需显式chmod644；下载响应结束不等于spool释放，受控cleanup证明后fixture等待原route完整结束，生产预算/容量/断言未放宽。
 正式IAM一次发行独立personal workload，私有0600持久凭据保存在var/dev/platform/mcp-personal.json；personal introspection200及catalog负控403，不复用Skills管理员凭据。Root核旧PID/cwd后仅Platform与BFF有序TERM及源码重启，一项配置差异各自启用personal surface/credential；当前实际Platform27064/session35638、BFF27131/session26816，readyz均200，PG/Redis/MinIO与其他服务不变。既有私有processes.json已更新；凭据/环境不入Git。
