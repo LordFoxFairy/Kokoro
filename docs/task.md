@@ -1,3 +1,11 @@
+### T-K03.14 真实对象上传与校验通过，Publish同源旧限制仍失败（2026-10-10）
+
+Root复用既有私有draft/幂等键，经正规登录与原Admin SSO重新验证后，正式Public13实际Begin201、MinIO PUT200并收到真实x-amz-version-id、Complete200/scan_state clean、Validate200/valid=true。manifest字段实际为manifest_identity且skill-md-v1:sha256:；私有runner初打印错manifest_version造成currentFormat=false，按真实持久ACK字段复核true并修runner，没有修改产品/伪造校验。
+
+下一Publish按真实Validate CAS和显式audience=owner发送，同源400 invalid_skill_request，确认旧Web route拒非空JSON。尚未发布；原stage body/key/ACK持久保留，零重复draft/SQL清理/基础设施重启。runner已保存既有var/dev/r255-preserve/r357-normal-skill-crud-runner.mjs，私有收据r357-normal-skill-cas-receipt.json，敏感状态不入Git。
+
+Web唯一writer仍做完整consumer切片；独审确认managed读不含package状态，必须另GET package-upload。该GET无hash/size/scan/manifest/receipt，uploaded以真实attempt/CAS发新Validate，validated以真实CAS/显式audience发新Publish；刷新丢原PUT证明不能造Complete，显式replacement新意图与原命令重放分开。追加唯一generated bff-agent-failure.ts仅正规generator更新三provenance字段，其它tuple/fingerprint保持。原后台现模块只正式读、旧upload-preview/confirm不代表Admin新CRUD，后继必须在原Ant基座闭环；完整Wave0–7与浏览器未完成。
+
 ### T-K03.14 BFF Public13 正式提交，Web完整发布消费者实施中（2026-10-10）
 
 Root串行重跑BFF contract727PASS、默认1326PASS/0FAIL/3既有SKIP，lint/type/build/diffcheck0；独审18授权路径及665保护文件hash一致，无确定P1/P2。正式37efd64a81a66b83df2f8d0a678c6e0e8971cb31，snapshot SHA256 f100463d3d9b686745e13fd2c07d6fdf8d305fcc8b66169cecddded0f2f82801；Public13是契约版本，URL仍/v1。Begin/Complete/Validate必填真实signed64字符串CAS，BFF只授权/精确转发，不复制owner事务。generated Connect loopback证据不冒称真实owner或浏览器闭环。
