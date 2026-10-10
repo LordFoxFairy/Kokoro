@@ -1,3 +1,8 @@
+### T-K03.14 当前收尾（2026-10-10）
+Platform D0三设计main e0f507d8已审查，3hash/688保护/历史suffix/diffcheck一致，独审无P1/P2；原writer只实施精确发布revision读取，真实首RED9FAIL/120PASS，代码尚未验收。分享仍待owner正式发行与BFF/Web接线，不称Skills完成。
+实际9应用＋原Admin探测：System/BFF/Storage/IAM/Scheduler/Platform/Billing ready200，Web/Admin页面200；Agent匿名health401是资格边界，不冒健康正控。发现本地SMTP缺失后启动官方固定Mailpit v1.31.4 digest b68349e3、本地1025/8025捕获且messages200，登记既有ignored进程表；未重启其他服务。普通fixture正式注册200／真实邮箱verify302已完成，当前缺Product membership403，原Admin owner仅沿既有Web正式邀请继续，未授管理员/改SQL。
+用户最终交付要求保持：Skills与原Admin完整验收后Root统一提交main并处理各仓分支；活跃未合并worktree/mixed不强删。当前仅上述验收片进入main，完整Wave0–7仍active，其它模块暂停。
+
 ### T-K03.14-BFF-SHARE-ORIGIN mainc9e8fab（2026-10-10）
 Root现composition/Share route/HTTPtest三个路径，真实RED2FAIL→focused4PASS，最终89787自然exit0：default1368PASS/3既有SKIP/0FAIL、type/lint/build0；3hash/680保护exact，独审无P1/P2。POST使用已验证iamRelay.webOrigin，保本地http/3310，不再httpsdomain；缺origin503且零inspect/create，GET/DELETE保持。无public/schema/数据变化，HTTP正控实际本地URL；日志/tmp/kokoro-share-origin-root-{type,lint,test,build}.log。不冒用户端分享已接线或真实共享页面通过。
 Root停止原39729核端口释放，复用原配置源码重启70664，readyz200；仅BFF更新，其它基础设施保持。后继Share依赖发现：Resolve仅六字段，GetSkill为series current，禁止拿最新元数据替旧revision；Platform现productRecord有受准exact原语但无普通Product RPC，下一仅owner D0具名exact revision read再发行/消费，不造reader-only半页。
