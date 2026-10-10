@@ -16127,3 +16127,12 @@ Root以正式IAM create-managed-client一次创建tenant_machine / platform_ingr
 整体决定：仍IAM auth/authorization唯一owner；无新API/Schema/SQL/服务。在现环境schema引入明确独立IAM_ADMIN_WEB_CLIENT_ID（不默认回退原client，不允许二者相等），其与现Product tenant绑定；现UserWeb仍需管理员Settings链接资格。现授权模块一份纯client eligibility policy让session、Skills admin、MCP global使用相同显式两client+tenant判断；保所有fresh Session/User/Client/resource/binding、scope、version、membership/rolegraph与tenant坏事实failclosed。不是任意user_delegatedclient可获platform_admin，不删除原安全检查。旧UserWeb后台surface最后按ADR034删，不能用client资格改动冒cutover完成。
 
 任务卡：原 bff_skills_boundary_successor_r357 转任IAM D0唯一文档writer（继承模型），Root审查；目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam，基线ec66c06c04922a8bc98245f4d6b095d51d233a32，当前子仓clean（Rootgitlink差异属先前提交，不暂存）。仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md允许前缀设计，旧全文保持。先核实际helper/config/三authorizationrepository是否有更窄现存policy，再给精确实施/测试集与readonly/PG真实客户端负控；无源码/机器/SDK/Schema/.env/服务/data/Git。原Webwriter同时独立仓A1认证，互不抢写/调用契约不自行发明。Root按文档门审批后才准tests-only→生产→固定commit→正常IAMreload→Admin独立OAuth实测。完整goal仍active。
+
+### T-K03.4 R357-ADMIN-A1-FROZEN-REVIEW（2026-10-09）
+- 角色：原 skills_platform_frozen_review_r357，只读认证/调用边界审查；Root 独占集成、台账与 Git。Owner independent Admin Web；目录 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/var/dev/admin-web-release`，branch codex/r357-admin-web-release，基线 b01fca0；50 文件候选 manifest digest 92b87ff800fcebf69f681465ec151cf6d1ca45f5b375f1ee89da69cf8cae3d11，工作树变化须逐项注明，不依旧报告冒冻结。
+- 范围：只读候选 auth/config/session/transport/tests 与实际 BFF/IAM relay 契约；不改任何文件、Git、配置、进程、资源或数据。输出可验证 P0/P1/P2、准确路径与最小修复集，未验证项明确保留。
+- Root 当前反例：3310 IAM discovery 权威 issuer/authorize 均3310/iam；候选却从 adminOrigin 推导 issuer，且无 Admin /iam relay；当前 BFF iam-protocol-relay.ts 只接 web-bff。认证候选工程绿不证明真实独立登录。审查应核 callback/state/PKCE/CSRF、refresh/logout、fresh admin 与普通拒绝、deadline/取消和有界读取，禁止扩新业务owner/通用代理。
+- 依赖：IAM-ADMIN-CLIENT-D0 仅3设计候选，未发行；A1 writer 停写。Root 审核边界后才授权原 writer 定向修复及真实登录。完整 Wave0–7 及其未闭环项保持。
+
+### R357-IAM-ADMIN-CLIENT tests-only 放行（Root 当前源审查）
+Root 核 Better Auth post-login/consent 两处固定 Product tenant 分支、Skills helper 单client shortcut、三个授权仓库及环境 schema。三设计面零 API/Schema 变化方案通过本阶段：纯 browser eligibility 放现 oauth/clients、保持全部 fresh事实与 role完整性、同 Product tenant且可选独立client，无任意client授权。仅授原 IAM D0 writer 既有设计列明 test/ 文件与新纯policy test；生产文件尚不准写。明确配置碰撞只针对运行配置实际已有保留client（Product/introspection/Billing）；其他machine拒绝由持久profile测试证明，不能声称可用静态配置枚举所有client。先提供最小实际旧实现行为 RED，不以缺模块/源码字符串断言替代。独立隔离PG由Root执行，正常库/Redis/服务不动。

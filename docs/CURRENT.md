@@ -3061,3 +3061,6 @@ R233/R234各次失败、复测、SHA及资源终态集中保留在 [progress.md]
 所有本轮Root资源验证句柄均终态，不重复启动服务或共享数据库/Redis；后继原生owner按同task表续派，主控保留集成与Git职责。完整Wave0–7 goal保持active，支付最后。
 
 R240 Root治理最新实际仍失败：standard153违反，topology6个gitlink/HEAD不一致；只限定topology脚本7/0通过，不冒全门。Web dev源闭包静态508文件472同/36异，live generated public7.0 vs正式Web7.1，原源码9/12样本相同不能当全组合一致；未执行热覆盖/清用户数据/重启。
+
+### R357 独立后台认证接线核验与 IAM tests-only（2026-10-09）
+Root 重新读取当前源码及真实 IAM discovery：权威 issuer/authorize 为3310/iam，独立Admin候选错误从adminOrigin推导issuer且没有该relay；BFF现relay与产品请求仅接web-bff，候选admin-web-bff未接纳。实际登录尚未验收，11测试/build不作完成依据；原writer停写，原独审员沿现task进行只读冻结审查。IAM三设计候选46行、零机器/SQL变化已由Root核BetterAuth固定tenant与三个授权消费者，准原owner仅tests-only真实旧行为RED；正常服务/data不变。上一turn只事实核验未完成交付，本轮新增有证据的接线反例和可执行测试阶段，完整goal保持active。
