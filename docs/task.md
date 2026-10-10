@@ -16477,3 +16477,7 @@ Admin 正式952304b（codex/r357-admin-read-scope），只现config.ts/config.te
 Root以正式IAM BrowserAuthorizationScopeService运行append-only扩展，updated后官方＋持久snapshot读回current13/24。首私有runner未装RequestContext返回unknown；先读回legacy8证实未写，再按正式CLI相同上下文修正执行，无盲重试。重新正常用户登录后新范围首次触发真实consent，使用签名CSRF表单明确agree；后续再登录consentCount=0、/manage/overview200、Admin sessionauthenticated=true，Skills/members/invitations/roles四读取均200；无凭据四读取均401。未冒充普通已登录用户负控。最初shell for path触发zsh PATH特殊变量导致curl未找到，随后换endpoint真实重跑四负控，未影响服务。
 
 实际Skills目录返回skills/next_cursor，当前skills为空0，未伪造官方内容。HTTP读链不是页面/管理CRUD或普通用户权限整体证据；下一在既有Skills管理面用正式上传/发布链创建真实开发样本并验证状态命令与目录/详情。身份管理旧页面尚有历史API待后继，不把四200称全部后台完成。记录var/dev/r255-preserve/r357-admin-read-scope-receipt.json；正常共享资源不重置，完整Wave0–7继续active。
+
+### T-K03.14-WEB-PUBLISH-REVIEW-FIX（2026-10-10）
+
+Root全纯真实12FAIL/2778PASS，最终freeze34hash一致，独审确定P2错误code/status笛卡尔组合过宽。续派原web_identity_owner唯一writer，Root审查/提交；基线Web79d1710＋最终冻结候选，保护其余路径和五mixed。仅允许现src/hub/skill-publish-client.ts、tests/hub/skill-publish-client.test.ts逐operation错误闭集；现contract/api-contract.test.ts旧public8固定pin改正式13.1/digest且保全部recurrence断言；现src/ui/skills/personal-skills-read.tsx两aria-label接既有i18n，必要时只现messages/overlays加同一标签。先真实错配RED后实现；不修改owner权限/SQL/导航/断言数量，不动Manus详情未改路径。交付精确diff/hash/原保护与终态日志后停写，Root完整复验及真实链再决定后继。其它9导航失败由Root定向基线归因，未归因为历史，不删测试。
