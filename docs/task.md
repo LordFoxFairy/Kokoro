@@ -1,3 +1,6 @@
+### T-K03.14-WEB-PREVIEW-METRICS（2026-10-10，已验收 Web main bad2b6b）
+归属现Web Skills预览模块，原web_identity_owner唯一writer、Root审查提交；基线main9aceeec，五mixed排除。只改现src/ui/skills/manus-skill-detail-dialog.module.css和tests/ui/kokoro-skills-surface.test.tsx，不变职责/契约/数据或新目录。Root当前1280×720 DOM参考：Manus summary800×600、示例44px/padding12px/radius12px、简介14px/20px；Web960×600、示例72px、简介16px/26.4px。先断言真实RED再修CSS、冻结；独立reader保持其原宽度/滚动；Root重跑定向/type/lint/build与同尺寸浏览器。没有封面/分类/使用次数时仍不虚构；非整体视觉完成声明。参考截图/tmp/kokoro-skills-manus-reference-full-1280.jpg、当前/tmp/kokoro-skills-preview-1280.jpg；其余owner暂停扩写。 Root复验800×600、例44/文字13/18/间隔24、简介14/20；reader桌面960及390窄屏370.5/x9.75真实正文通过。首次正文不可用未捕获响应，正式重试两package200恢复并嵌套正文读回，不隐瞒瞬态。纯3134PASS/type/lint/build0，独立审查freeze无P1/P2，790protected exact；截图/tmp/kokoro-skills-preview-metrics-final.jpg、收据/tmp/kokoro-skills-preview-metrics-receipt.json。未冒所有视觉/录制能力/full Wave已完成。
+
 ### T-K03.14 创建文案切片已验收（2026-10-10）
 原Web owner唯一writer，Root精确3文件提交Web main9aceeec；3132纯门PASS、类型错误修复后定向5PASS/type/lint/build0；浏览器创建菜单三项真实可见。五mixed保留。所有13仓本地只main已核对；不将任务外未验变更打包交付，完整Wave仍active。
 
