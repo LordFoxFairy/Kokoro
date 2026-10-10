@@ -1,3 +1,11 @@
+### T-K03.4 R357 本人管理关闭链真实通过；managed查询同类漂移定位（2026-10-09）
+
+上轮真实筛选、导航RED及修复准入属progress。本轮增量freeze bc6a1f42…7delta/844parent保护Root全SHA实核无差异；原writer停写，独审无新确定阻断。Root50530终态4files223PASS/type0/lint0；父41975 full3602PASS/原6FAIL及build0保留，不把旧完整门当当前新增全门。真实正常浏览器Settings→添加→管理：/app/skills/manage/hash空/modal0/heading可见；原r357预览→查看详情SKILL.md可读→返回→关闭还焦点原卡；reload仍manage无Settings→浏览返回/app/skills/dialog0。私有0600收据r357-manage-handoff-root-green.json。本片关闭遮挡链成立，但候选尚不整体验收。
+
+随后真实managed搜索query=r357-skills-user-journey返回400 invalid_skill_request，source_kind=personal同400；裸limit50为200，session200/true。原BFF只读一次盘点三读链：managed Web proxyManagedPersonalSkills list白名单仍仅limit/cursor/status，漏source_kind/query；canonical Web schema、BFF固定generated与Platform正式owner已支持，拒绝在上游前，故不改BFF/Platform/generated。installation现一致；当前catalog走POST ListHubSkills，非旧无生产调用listSkillCatalog路径，不复活alias。
+
+准入原Web唯一writer仅现route.ts managed list白名单加两合法key及hub-proxy.test.ts：先三来源/有效Unicode真实route RED，再补合法闭集；managed/installation同测重复/unknown/空白/NUL/1025 scalar upstream-zero拒绝。三文档必要记录可补，不改其它freeze字节/API/SQL/服务/data/Git。搜索HTML maxLength按UTF16计数而契约按Unicode scalar；保现2048可容1024非BMP字符，不机械改1024削合法输入，交互边界另按正式scalar语义核验。冻结后Root真实四来源/Unicode/精确原技能搜索以及管理跳转重验，同任务收敛而非另开计划。后台正向/profile/六OIDC与完整Wave0–7 OPEN。
+
 ### T-K03.4 R357 Settings发起本人管理的最窄关闭交接准入（2026-10-09）
 
 Root与原Web owner只读核验：mounted导航变pathname但AppFrame settingsTab仅自身open/close/popstate更新，Settings主控仍非null；现Browse已导航后requestClose，Manage未传同owner关闭回调。采用现callback透传复用Browse关闭顺序，淘汰全局surface事件强关所有Settings，避免扩大其它合法overlay/history行为。
