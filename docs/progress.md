@@ -12765,3 +12765,8 @@ R357-BFF Root92266实际build0+四test 70PASS/3FAIL/0skip终态，确认独立�
 ## 2026-10-09 Admin Web 边界纠偏（Root）
 
 用户指出独立 Admin Web 不得被重做成 Skills-only 新后台。Root 实核：IAM 现有 `IamAdministrationService` 已拥有用户、用户访问、团队、安全事件、会话撤销与用户生命周期；独立 Admin 的当前 BFF v12 artifact 只公开 Skills/Model Routing，IAM 管理能力尚未成为浏览器 contract。故本轮撤回未验收的 Skills-only 根页；3320 保持独立 OIDC/session，但后续按 manifest 壳承接 IAM/System/Platform。依赖顺序固定为 **IAM owner contract → BFF v1 named admin operations → Admin generated client/精确同源适配器 → 页面/浏览器验收**；未接 owner API/授权/审计/测试的模块不注册菜单、不造空卡片或 generic proxy。现 Admin docs 已记录该缺口；先补 BFF/IAM contract 再写界面。
+
+
+### R357 Admin OIDC relay policy drift cleanup（2026-10-09）
+
+Root 检验候选对 BFF `iam-protocol-relay.policy.ts` 手工加入 `kokoro_iam_csrf`，现有 policy projection 测试真实 RED（runtime source 与 `contract/iam-relay-policy.json` 字节不一致）；这会把 owner 未发布 cookie 规则硬塞进 BFF。Root 已撤回该手工改动，Node 构建 + relay policy/transport 35 PASS；不把该纯门当作独立 Admin 登录完成。若 IAM 正式发行该 interaction cookie，必须由 IAM owner 更新版本化 policy/source artifact、BFF 重新固定生成后再接，不留手写 allowlist。
