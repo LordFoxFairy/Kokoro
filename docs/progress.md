@@ -13008,3 +13008,6 @@ Root将Web Git79d1710原对象展开为只读隔离测试输入、复用既有�
 Admin上传缺口经独审＋Root实际源码核对纠偏：Platform已有完整owner-only包RPC；CreateAdminSkillVersion新ID/same series/new revision且归当前Admin本人，普通包操作可复用，不需要发明新Proto/SQL。实际阻断为BFF admin-web-bff服务route policy与原Admin闭集adapter尚未放行这四精确操作。Admin设计纠正提交6319b68，仅两必要文档；后继保fresh管理员及IAM普通Skill动作资格，不给另一个管理员跨owner包权限。此前“缺owner契约”表述不再作为新增RPC依据；实际包链仍OPEN。
 
 Web原writer继续已批准逐operation错误闭集RED修复；另准tests/hub/client.test.ts仅正式managed503正控与502错配负控，先实际RED，不修改owner错误契约。完成仍需Root冻结门、真实发布安装CRUD、原Admin管理及浏览器；完整Wave0–7 active，Billing最后。
+
+### T-K03.14 按用户要求正式发行切片归并main（2026-10-10）
+Root核每仓clean、main祖先、准确已发行SHA与worktree占用后，以旧ref CAS原子快进并切main：Admin6319b68、IAM5cd6d20、Platform32666c1、实际normal BFF2f36787；四树重新核clean/HEAD一致，无代码重写、服务重启或远端push。Web唯一writer仍做精确review修复，五mixed不夹带；Root其它未验gitlink/uv.lock不统一暂存。main归并不是功能全闭环，后继Web冻结审查/提交与Root组合源治理继续，完整goal active。
