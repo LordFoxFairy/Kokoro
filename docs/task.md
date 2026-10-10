@@ -16119,3 +16119,11 @@ Root以正式IAM create-managed-client一次创建tenant_machine / platform_ingr
 真实初读admin401/sessionfalse保留为过渡失败；后续同正常浏览器fresh session200/true/admintrue，admin list200/28；/admin实际列表无alert，点击现“个人技能发布反馈 · R267 验收”真实detail200/dialog1，无mutation。两次Root猜登录入口/卡精确title等待超时属probe错误，未伪登录/注入cookie，实际路径恢复。不称CRUD或独立后台上线。0600 r357-admin-machine-normal-read-green.json及provision私有结果为证据，processes.json已更新原/新句柄。
 
 独立Admin A1 tests-only由Root实际复跑2PASS/6FAIL（缺新模块而非已运行的行为失败，明确不夸大）；准入认证实施。原writer报告tooling/8tests/build绿但缺durableOIDC transaction、callback/refresh/logout，尚未冻结/启动；Root续派同writer完成既有allowlist全认证链后再交付，不接受八test替代真实登录。Skills完整UI/CRUD、普通负控新身份、独立3320/cutover与Wave0–7仍OPEN。
+
+### T-K03.4 R357-IAM-ADMIN-CLIENT-D0：独立后台人类client准入（2026-10-09）
+
+真实源码确认独立客户端资格缺口：IAM ec66c06 session-authorizations:120只为IAM_PRODUCT_WEB_CLIENT_ID+IAM_PRODUCT_TENANT_ID投影platform_admin，Skills admin repository按同一Product client要求，MCP全局资格也同硬绑定。新Admin独立client即使OIDC成功，仍不取得预期admin projection/action；不得用原clientsecret/cookie绕过。尚未创建Admin OAuthclient或扩权限。
+
+整体决定：仍IAM auth/authorization唯一owner；无新API/Schema/SQL/服务。在现环境schema引入明确独立IAM_ADMIN_WEB_CLIENT_ID（不默认回退原client，不允许二者相等），其与现Product tenant绑定；现UserWeb仍需管理员Settings链接资格。现授权模块一份纯client eligibility policy让session、Skills admin、MCP global使用相同显式两client+tenant判断；保所有fresh Session/User/Client/resource/binding、scope、version、membership/rolegraph与tenant坏事实failclosed。不是任意user_delegatedclient可获platform_admin，不删除原安全检查。旧UserWeb后台surface最后按ADR034删，不能用client资格改动冒cutover完成。
+
+任务卡：原 bff_skills_boundary_successor_r357 转任IAM D0唯一文档writer（继承模型），Root审查；目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/apps/kokoro-iam，基线ec66c06c04922a8bc98245f4d6b095d51d233a32，当前子仓clean（Rootgitlink差异属先前提交，不暂存）。仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md允许前缀设计，旧全文保持。先核实际helper/config/三authorizationrepository是否有更窄现存policy，再给精确实施/测试集与readonly/PG真实客户端负控；无源码/机器/SDK/Schema/.env/服务/data/Git。原Webwriter同时独立仓A1认证，互不抢写/调用契约不自行发明。Root按文档门审批后才准tests-only→生产→固定commit→正常IAMreload→Admin独立OAuth实测。完整goal仍active。
