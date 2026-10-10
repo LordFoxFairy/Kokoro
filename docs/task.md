@@ -16597,3 +16597,18 @@ T-K03.14-WEB-CATALOG-PACKAGE-DETAIL D0正式 main8100ad7：Root机器YAML核getS
 Web main `3d2b419f971aaa3478b22d7f4e96f34190dff79b`，精确五现路径。新增安装按所选 revision；已安装停用通过正式列表定位唯一原 installation ID，启用保留旧 pin；未知 ACK 保留原 intent/body/key。设置 ACK 后失效同一目录缓存，持续打开的弹窗展示与执行共用新安装事实，不换当前详情 revision。真实 RED 覆盖错 revision、未知结果、设置缓存/覆盖与持续弹窗旧快照；Root 5008 当前纯门155 files/2905 PASS，typecheck/lint/build exit0；独审 P2 已关闭，五 hash及767保护不变，mixed五文件未暂存。
 
 正常浏览器真实设置停用后，原弹窗按钮恢复可点击；点击“添加到我的技能”实际 enabled200，原 installation `5566b467-fe9d-46e1-847f-cc4ba984577c`、source_ref `skill:33fe755e-af36-40ae-aeeb-5a0c1ad46cad`、revision1 保持，enabled=true恢复；不是误装当前v4。接着“查看详情”实际读取 SKILL.md，独立左文件列表/右内容可见。收据 /tmp/kokoro-install-action-browser-final.json（私有0600）；截图 /tmp/kokoro-skills-reader-install-final.jpg。样本仅一个真实文本文件，不冒充嵌套文件夹浏览器验收。新安装的正式浏览器写入、完整 Skills CRUD、Admin权限负控与默认system门仍OPEN；内存未知意图不宣称刷新后持久恢复。原用户页面无重置，未重启共享服务/清数据。
+
+### T-K03.14-WEB-LOCAL-IMPORT D0（2026-10-10）
+
+| 项 | 当前裁决 |
+| --- | --- |
+| Owner | Web apps/kokoro-app；web_identity_owner唯一writer，Root设计放行/集成/commit，platform_expand_review只读契约审查 |
+| 基线 | Web main3d2b419，五mixed保护；BFF正规main939bf0e，Platform32666c1已有LocalSkillImport契约 |
+| 目标 | 普通用户拖放.zip/.skill，owner从根SKILL.md读取名称描述，正式导入并安装；不把用户导入等同管理员发布 |
+| 位置比较 | 采用现hub普通client/schema文件及现skills上传组件；不塞进Admin发布客户端，不新建顶层/owner服务或浏览器ZIP解析器 |
+| 调用/数据 | Browser→Web同源闭集→BFF browser/v1/skills/local-imports四操作→Platform/Storage；无SQL/权限/owner契约改变。Begin filename/number size_bytes/sha256；PUT真实version receipt；Complete原proof/body/key；Finalize零body；Get恢复phase |
+| 删除 | 正式入口移除旧previewUpload/confirmUpload与手填发布字段流程；显式preview如仍有独立消费者须盘点后限定，不造双轨正式fallback |
+| 阶段 | 当前仅三设计新增本任务D0前缀，既有mixed正文原字节不变；给出实际文件集/状态机/严格响应/错误/恢复边界，再冻结，Root核契约及精确index接纳后才准业务代码 |
+| 验证 | 旧正式上传404与手填表单行为RED；schema/ACK身份、未知结果同键、PUT版本proof、总deadline/body/取消；Root纯门/type/lint/build、正常浏览器MinIO实际上传及个人安装/详情；不冒充管理员发布 |
+
+本切片不扩大到GitHub/Agent/其他功能，不新API；后继完整Skills CRUD与原Admin功能继续按同一计划。
