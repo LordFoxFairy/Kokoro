@@ -4,7 +4,7 @@ Root 已修正历史 schema expand 使用可变当前 schema 的问题，改为�
 
 随后仅简化单文件 HTTP 客户端目录，正文不变；架构回归先失败后通过，首轮定向 38 passed、typecheck/lint 通过；追加影响客户端与架构回归 86 passed、build/diff-check exit 0，迁移前后 helper 正文字节一致。Root 全套 scripts/tests 当前 **3 failed、1778 passed、3 skipped**，失败为 IAM composition checkpoint、Skills smoke contract pin 和新增 Admin 拓扑断言；不得称 Root 总门或 Wave0–7 通过。当前还需审查 Platform/IAM 与目录边界、冻结 owner 候选、按依赖接入 BFF/Web/Admin 并完成真实浏览器 CRUD；连接器用户端/后台 CRUD 尚未闭环。不重置共享数据、不跳过失败、不重复启动现有服务。
 
-Root 后续已纠正 Admin 的拓扑登记与 submodule section 名，新增名称闭集回归先失败后通过（7 PASS），保留九个业务 owner；完整拓扑仍有 7 个 checkout/gitlink 未对齐，不擅自接收任务外提交。独立只读审查确认 Platform 的 IAM 调用用于 workload/Agent execution 边界，不重复人类 session；同时发现当前物理 BFF 的 SkillAuthorizationClient 未装配/调用，具名 human 权限接线列为 BFF 后继必须修正项，禁止以删除 Platform 门替代。
+Root 后续已纠正 Admin 的拓扑登记与 submodule section 名，新增名称闭集回归先失败后通过（7 PASS），保留九个业务 owner；完整拓扑仍有 7 个 checkout/gitlink 未对齐，不擅自接收任务外提交。独立审查及 Root 复核确认 Platform 的 IAM 调用用于 workload/Agent execution 边界，不重复人类 session。旧物理 BFF checkout 未装配 SkillAuthorizationClient，但真实运行源码 `/Users/nako/.codex/worktrees/kokoro-r257-bff-normal` HEAD `00e4b791153ada9bb65e8236731353d3df2a2c64` clean 已装配并覆盖普通命令、安装、本人生命周期及后台 action；撤销将旧 checkout 缺口当作运行漏洞的结论。未对齐的是源码/contract 基线，不能另写重复认证或删除 Platform 验证门。
 
 ### T-K03.13 当前后台物理拓扑与连接器 owner 候选复核（2026-10-10）
 
