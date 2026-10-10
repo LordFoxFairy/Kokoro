@@ -16612,3 +16612,5 @@ Web main `3d2b419f971aaa3478b22d7f4e96f34190dff79b`，精确五现路径。新�
 | 验证 | 旧正式上传404与手填表单行为RED；schema/ACK身份、未知结果同键、PUT版本proof、总deadline/body/取消；Root纯门/type/lint/build、正常浏览器MinIO实际上传及个人安装/详情；不冒充管理员发布 |
 
 本切片不扩大到GitHub/Agent/其他功能，不新API；后继完整Skills CRUD与原Admin功能继续按同一计划。
+
+T-K03.14-WEB-LOCAL-IMPORT D0正式Web main43d4d08：Root仅三prefix+HEAD精确index79行，原mixed全文及769保护保持，独审无确定P1/P2；现准原owner第一个网络切片，新src/hub/skill-local-import.schema.ts、skill-local-import-client.ts、skill-package-transfer.ts及tests/hub/skill-local-import-client.test.ts、skill-package-transfer.test.ts；现src/hub/skill-publish-client.ts、src/app/api/hub/[...path]/route.ts、tests/hub/skill-publish-client.test.ts、tests/app/hub-proxy.test.ts。先真实未接四route/PUT required_headers/proof/期限RED，严格owner响应/错误/身份与取消，保原publish60s；不得写UI/flow/旧网络删除/三mixed正文与两mixed tests。网络片冻结Root复验审查后才串行统一两入口，避免大块无门改造。
