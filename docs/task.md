@@ -1,3 +1,11 @@
+### T-K03.14-BFF-SHARE-REVISION（2026-10-10；D0已提交、实施进行中）
+- 目标：Skills分享仍读所分享的精确发布revision，完整摘要和文件树，不把series最新元数据当旧版本；只收尾Skills/原Admin，其他模块暂停。
+- Owner/基线：BFF原writer web_identity_owner；正式目录 /Users/nako/.codex/worktrees/kokoro-r257-bff-normal，main c9e8fab；Root审查、Git和最终集成。Platform正式发行91bc3655已通过Root九门与隔离PG19PASS，不是候选pin。
+- 当前授权：三设计D0正式main1bf002c，Root实际三hash/680保护/suffix exact；独审摘要业务通过，漏buf/HTTP旧vendor路径已在同清单补齐。原writer按D0精确业务/机器/生成闭集先RED后实施；无Git/服务/SQL。拟GET /v1/skill-shares/{share_id}/skill，public13.3/137操作；先查有效分享→正式GetSkillRevision→严格摘要/真实IAM作者→返回前复核。原Resolve六字段与GetSkill current不动；无SQL变化、无品牌/用量/示例伪造，source_kind取owner事实。
+- 依赖/验收：准确vendor输入闭集与三设计冻结审查后，才正式消费75图/历史74父验证；先真实RED，Root重跑type/lint/contract/test/build，再运行与浏览器验精确旧版本、权限、撤销/过期。Web分享正式接线随后串行，不做reader-only半页。
+- 并行只读：admin_skills_owner核原Admin c43eee3当前七管理命令证据、SSO/普通菜单及hydration最小修复，不写应用/SQL/服务/Git。
+- 最终交付：全部实际闭环后各仓main-only；未交接mixed/活跃未合并worktree保留并接收，不以强删冒完成。无远端push。
+
 ### T-K03.14-PLATFORM-SKILL-REVISION-READ（2026-10-10）
 | 项目 | 方案约束 |
 |---|---|
