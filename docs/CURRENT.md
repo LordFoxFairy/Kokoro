@@ -1,4 +1,13 @@
 
+### T-K03.4 R357 后台专用调用链真实读已通（2026-10-09）
+
+Root以正式IAM create-managed-client一次创建tenant_machine / platform_ingress_skills_admin /独占platform:skills-admin.manage；官方回读成功，0600凭据与原BFF.env.local持久引用，无catalog/execution凭据混用。原52818句柄确认live，Ctrl-C自然143且53714 listener消失；Node22 NODE_OPTIONS env-file启动被Node拒（exit9/无listener），纠正标准node --env-file加载原配置后spawn pnpm dev，新72265/listener87946、固定74b1b源码ready200，PG/Redis/MinIO/其它owner未重启。
+
+真实初读admin401/sessionfalse保留为过渡失败；后续同正常浏览器fresh session200/true/admintrue，admin list200/28；/admin实际列表无alert，点击现“个人技能发布反馈 · R267 验收”真实detail200/dialog1，无mutation。两次Root猜登录入口/卡精确title等待超时属probe错误，未伪登录/注入cookie，实际路径恢复。不称CRUD或独立后台上线。0600 r357-admin-machine-normal-read-green.json及provision私有结果为证据，processes.json已更新原/新句柄。
+
+独立Admin A1 tests-only由Root实际复跑2PASS/6FAIL（缺新模块而非已运行的行为失败，明确不夸大）；准入认证实施。原writer报告tooling/8tests/build绿但缺durableOIDC transaction、callback/refresh/logout，尚未冻结/启动；Root续派同writer完成既有allowlist全认证链后再交付，不接受八test替代真实登录。Skills完整UI/CRUD、普通负控新身份、独立3320/cutover与Wave0–7仍OPEN。
+
+
 ### T-K03.4 R357 管理员资格真实完成；后台缺少机器凭据已定位（2026-10-09）
 
 上一turn D0提交/A1派工是进度。本轮原writer仍running，Root未重复启动。准许A1具名9工程入口（含pnpm12 pnpm-workspace.yaml strictDepBuilds闭集）；生成目录依实际HeyAPI机械输出，完整固定BFFartifact字节不改，14operations生成filter；Admin scope移除User Team六项，只保八项，详细三设计由原writer同步。A1仍tooling/tests-only阶段，生产auth未放行。

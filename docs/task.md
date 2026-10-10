@@ -16111,3 +16111,11 @@ Root依用户明确“授权设置本地开发管理员”执行正常IAM流程�
 浏览器正规session200 authenticatedtrue/platform_admintrue，fresh gate已生效无需盲重登录。旧/admin进入后台shell，但实际点击重试 /api/hub/admin/skills503 skill_dependency_unavailable、页面技能池加载失败。这不是闭环成功；首heading探测误猜“技能管理”超时，snapshot实际“后台管理/技能”保留为Rootprobe错误。配置事实 apps/kokoro-bff/.env.local 缺 KOKORO_BFF_SKILLS_ADMIN_CREDENTIAL_FILE，runtime skillAdminClient=null时明确Unavailable；正式IAM只读 read-platform-skills-admin-scope state=current/allowedScopeCount7，resource已注册。下一Root正规provision独立tenant-machine purpose platform_ingress_skills_admin/唯一scope，持久credential配置后按原句柄drain/reload再真实list；禁止复用catalog/execution凭据或放宽权限。尚未provision该机器client/配置/重启，原页面失败不掩盖。
 
 普通用户历史负控仍保留，但当前已授管理员的账号不再作为普通负控；后继需另一真实普通身份。独立Admin3320尚未启动，完整CRUD/撤权/cutover、Skills/Wave0–7仍OPEN。除持久IAMmanager配置与被授权资格写入外，业务数据/进程与任务外源码保留。
+
+### T-K03.4 R357 后台专用调用链真实读已通（2026-10-09）
+
+Root以正式IAM create-managed-client一次创建tenant_machine / platform_ingress_skills_admin /独占platform:skills-admin.manage；官方回读成功，0600凭据与原BFF.env.local持久引用，无catalog/execution凭据混用。原52818句柄确认live，Ctrl-C自然143且53714 listener消失；Node22 NODE_OPTIONS env-file启动被Node拒（exit9/无listener），纠正标准node --env-file加载原配置后spawn pnpm dev，新72265/listener87946、固定74b1b源码ready200，PG/Redis/MinIO/其它owner未重启。
+
+真实初读admin401/sessionfalse保留为过渡失败；后续同正常浏览器fresh session200/true/admintrue，admin list200/28；/admin实际列表无alert，点击现“个人技能发布反馈 · R267 验收”真实detail200/dialog1，无mutation。两次Root猜登录入口/卡精确title等待超时属probe错误，未伪登录/注入cookie，实际路径恢复。不称CRUD或独立后台上线。0600 r357-admin-machine-normal-read-green.json及provision私有结果为证据，processes.json已更新原/新句柄。
+
+独立Admin A1 tests-only由Root实际复跑2PASS/6FAIL（缺新模块而非已运行的行为失败，明确不夸大）；准入认证实施。原writer报告tooling/8tests/build绿但缺durableOIDC transaction、callback/refresh/logout，尚未冻结/启动；Root续派同writer完成既有allowlist全认证链后再交付，不接受八test替代真实登录。Skills完整UI/CRUD、普通负控新身份、独立3320/cutover与Wave0–7仍OPEN。
