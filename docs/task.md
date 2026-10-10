@@ -16270,3 +16270,17 @@ Root 单一 Platform writer；新包发布资格、官方晋升 receipt 快照/�
 Root 明确指定 Platform 固定提交 `e2f6dbf213eb551f71a85628587c96cda790a31e` 的实际 checkout，未使用默认旧运行副本；既有 `run_platform_local_skill_import_storage_smoke.py` 的 dry-run 四场景通过、启动资源0。随后原进程句柄62689正常终止 exit0，clean/eicar/ack_lost/ingress_clean 各4测试，共16PASS，真实 PostgreSQL、S3对象版本、ClamAV扫描与正规IAM token exchange/Connect四导入RPC均参与；缺bearer401、错误workload403负控通过。四场景cleanup完成、run-owned剩余资源0，未重置共享PG/Redis或重启正常服务。日志 `/tmp/kokoro-platform-e2f6dbf-storage-connect-smoke.log`，四资源收据目录见日志终行。
 
 此证据只覆盖本地导入网络生命周期、扫描拒绝、ACK丢失重放和身份边界，不覆盖正式Web/Admin浏览器、官方晋升全网络链或全部Wave。当前BFF正常worktree `00e4b791` clean，仍固定Platform `84262b`；下一按owner发行顺序更新固定消费者并验证，再切正常服务和完整用户/原Admin操作。供应链与整体闭环仍OPEN。
+
+### T-K03.14-BFF-PIN 固定当前 owner 发行（2026-10-10，待派工）
+
+| 项 | 当前切片 |
+| --- | --- |
+| 目标/归属 | BFF 网关消费者固定 Platform e2f6dbf；保既有上传/下载/管理调用和权限，不复制 owner CRUD |
+| 基线 | /Users/nako/.codex/worktrees/kokoro-r257-bff-normal；HEAD 00e4b791153ada9bb65e8236731353d3df2a2c64；clean |
+| writer/reviewer | 原生 bff_platform_pin_owner 唯一 BFF writer；platform_expand_review 只读；Root index/commit/最终验证 |
+| 设计门 | 沿现 BFF TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL 本地导入设计，只改变固定发行出处；先核新旧机器字节/摘要，发现 wire 差异即报告，禁止臆造契约 |
+| 允许文件 | Platform HTTP/Connect 生成脚本、对应 buf/openapi-ts 配置、dependencies/platform 两文件、正规 generated 平台客户端、contract/vendor/kokoro-platform 精确新 SHA artifact、现绑定测试、三设计与CURRENT中的当前 pin 说明 |
+| 排除 | public OpenAPI/SQL、IAM/Storage artifacts、业务服务/路由、manifest/lock、其它仓、Root台账、凭据/正常进程 |
+| 删除项 | 消费者旧84262b vendored副本及现行旧pin引用；不可改历史事实以制造通过，不留第二套current消费 |
+| 验证 | 先实际新pin断言RED；正规生成/check、lint/type/build、现local import及Platform contract测试；冻结交文件清单/摘要；Root重跑适当全门 |
+| 完成条件 | 当前消费者所有current pin一致、字段/方法/摘要准确、既有行为与授权保持；不代表服务/browser/Wave完成 |
