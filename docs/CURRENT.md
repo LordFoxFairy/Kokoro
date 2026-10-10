@@ -1,3 +1,9 @@
+### T-K03.14 原Admin真实owner包发布与管理链（2026-10-10）
+
+Root正规持久账号重新登录、用户session与原Admin无感SSO/manage/overview及Skills/IAM四read均200，正常Admin当前目录非空1。仅正式HTTP创建Admin新版本（新ID/sameSeries）201；真实包状态200→Begin201→MinIO PUT200/真实x-amz-version-id→Complete200→Validate200→Admin catalog publish200；随后quarantine/restore/audience owner→catalog均200，每命令实际GET读回status/CAS相等。原body/key/ACK与对象version持久0600保留，无SQL/Redis重置、重复草稿或伪造使用数。日志 /tmp/kokoro-admin-skills-root-real-{read,lifecycle,lifecycle-final,commands}.log。
+
+首次私有runner按user_id读既有Admin /api/v1/me误停identity_missing，实际bare为authenticated/subject/expires_at/platform_admin；按正式subject修runner后publish200。Root另确认新UI同样用apiGet错误期待data/user_id/tenant_id，导致身份null/upload禁用；已授原Adminowner现组件/client/schema与相邻test精确修，保me/auth契约不变、organization ID显式输入。withdraw/discard、已登录普通用户/另管理员owner负控和浏览器尚未验，七命令整体不冒全通过。Web正式D0前缀43f1095 Root精准index保mixed正文后已派消费者实施，完整Wave0–7仍active。
+
 ### T-K03.14 原Admin技能实施正式main（2026-10-10）
 
 原Admin正式2d4ec6f1f7ca8d23f97268211f2bd414eddffa48，19精确路径提交并原子快进main，工作树clean；原Ant/IAM/System壳不重建。Root88583最终8files67PASS/type/lint/diff0，43885原完整候选build0；后继仅reader两文件P2修复，独审关闭、其余17冻结字节保持。19hash与67任务外保护Root核实。七命令/四包接线源码已提交，但真实owner mutation/其他管理员与普通用户负控/浏览器尚待验，不称整体Skills/Admin闭环。Web精确消费者纠偏卡271c569e继续，真实目录解析失败仍OPEN；正常配置已同源复用，无共享基础设施清理或远端push。
