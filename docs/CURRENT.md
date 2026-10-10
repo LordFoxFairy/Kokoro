@@ -1,3 +1,9 @@
+
+### T-K03.14-WEB-DETAIL-LAYOUT main1e02285（2026-10-10）
+当前用户截图摘要布局已按右图作局部纠偏：原DialogHeader column/center、无图预扣15rem与grid拉伸导致标题x201/32px/hero345.8px；现692宽实际左缘x65/20px/hero189.2px，添加先于FileText查看详情、无孤立尾分隔符，分类条件横排。未改安装/包读取事实，不造缺失封面/用量/示例。独审窄屏cover遮按钮P2经真实RED1FAIL关闭，窄屏隐藏装饰封面，宽屏保实际封面。
+Root冻结3hash和776任务外字节（含五mixed）全一致，Node22当前具名UI96PASS、type/lint/build/diff全exit0，日志/tmp/kokoro-detail-layout-root-{ui,type,lint,build}.log；独审绑定freeze363ede0a无确定P1/P2，精确三路径提交Web main1e0228508f74565267a53056b77c24c8e0f5f956。真实692摘要截图/tmp/kokoro-detail-layout-after.jpg，390实际viewport390/dialog370/无横溢，临时尺寸已撤；真实详情仍独立SKILL.md+references树、checklist.md正文可切。无真实封面样本，封面场景仅代码/纯测，不冒像素全一致或整体Skills完成。默认system/全纯未本轮重跑，保持既有OPEN。
+本轮先用户弹窗问题，GitHub后继暂停：正式BFF792ae35上六机器路径冻结未提交/fullpure1339PASS1FAIL3SKIP，现architecture版本13.1断言未获扩scope、未改；不得记全门通过。Web五mixed、其它owner/gitlink及uv.lock保持。完整Wave0–7 active，Billing最后，无远端push。
+
 ### 2026-10-10 当前已验收基线（Root）
 
 Web main2073390，Platform main4f7501b：普通本地导入原intent实际恢复completed/installed/enabled，真实SKILL.md与references/checklist.md选择、目录折叠展开通过；Root Web2972PASS、Platform2063PASS及各type/lint/build0，默认system与整体验收未完。原Admin4b576a8保持原Ant/IAM/System壳，同源3310/manage。BFF正式源仍/Users/nako/.codex/worktrees/kokoro-r257-bff-normal main939bf0e，勿误用physical旧mixed仓。

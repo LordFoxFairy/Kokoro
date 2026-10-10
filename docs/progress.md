@@ -13123,3 +13123,8 @@ Web当前正式main：2073390da478d2640e963e3d53de6647cb78db79。
 
 T-K03.14-WEB-GITHUB-IMPORT真实浏览器RED（2026-10-10）：正常tab50在既有GitHub导入窗输入公开openai/skills并提交，POST /api/hub/self/skills/github/import404，UI显示导入失败；没有创建draft或安装。证据/tmp/kokoro-github-import-browser-red.json、jpg。只读对照正式契约证明应为Preview→原commit/path selector Import draft→owner Publish原CAS→Install。独审另发现机器path max2048/运行256及archive UTF8 relative256边界漂移：先由BFF owner收敛真实契约，不让Web隐式猜测或放宽包安全限制。
 网络候选5路径：新src/hub/skill-github-import.schema.ts、skill-github-import-client.ts、tests/hub/skill-github-import-client.test.ts；现src/app/api/hub/[...path]/route.ts、tests/app/hub-proxy.test.ts。UI候选19路径已原owner具名报告，三设计前缀未写，Root尚未准业务代码。此轮是已复现失败与设计审查，未冒修复完成；旧/正常上传与文件树已验收成果保持，全部目标active。
+
+### T-K03.14-WEB-DETAIL-LAYOUT main1e02285（2026-10-10）
+当前用户截图摘要布局已按右图作局部纠偏：原DialogHeader column/center、无图预扣15rem与grid拉伸导致标题x201/32px/hero345.8px；现692宽实际左缘x65/20px/hero189.2px，添加先于FileText查看详情、无孤立尾分隔符，分类条件横排。未改安装/包读取事实，不造缺失封面/用量/示例。独审窄屏cover遮按钮P2经真实RED1FAIL关闭，窄屏隐藏装饰封面，宽屏保实际封面。
+Root冻结3hash和776任务外字节（含五mixed）全一致，Node22当前具名UI96PASS、type/lint/build/diff全exit0，日志/tmp/kokoro-detail-layout-root-{ui,type,lint,build}.log；独审绑定freeze363ede0a无确定P1/P2，精确三路径提交Web main1e0228508f74565267a53056b77c24c8e0f5f956。真实692摘要截图/tmp/kokoro-detail-layout-after.jpg，390实际viewport390/dialog370/无横溢，临时尺寸已撤；真实详情仍独立SKILL.md+references树、checklist.md正文可切。无真实封面样本，封面场景仅代码/纯测，不冒像素全一致或整体Skills完成。默认system/全纯未本轮重跑，保持既有OPEN。
+本轮先用户弹窗问题，GitHub后继暂停：正式BFF792ae35上六机器路径冻结未提交/fullpure1339PASS1FAIL3SKIP，现architecture版本13.1断言未获扩scope、未改；不得记全门通过。Web五mixed、其它owner/gitlink及uv.lock保持。完整Wave0–7 active，Billing最后，无远端push。

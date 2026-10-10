@@ -16647,3 +16647,14 @@ Root批准当前机器契约13.2.0纠偏，同/v1：仅五个Github Import/Previ
 现阶段仅docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/DATA_MODEL.md、contract/README.md最小当前纠偏说明，冻结后Root核设计门再准机器/测试六路径：contract/openapi/v1/openapi.yaml、scripts/verify-skill-product-contract.mjs、scripts/verify-openapi.ts、test/contract/openapi-contract.test.mjs、test/skill-product-input.test.ts、test/skill-github-import.test.mjs。不创建生成物/SQL/服务/新接口；新inverse只恢复版本与五约束，必须得到原13.1完整digest再沿既有历史门。真实RED为旧机器五处约束失败，非原已拒257运行输入冒充RED；冻结后Rootcontract/type/lint/test/build与归档边界重新验证。Web5网络/19UI暂不准，待此owner正式contract更新；完整目标active。
 
 T-K03.14-BFF-GITHUB-PATH-CONTRACT D0正式BFF main792ae35：Root核四doc hash与680保护、原canonical418db950完整digest一致，三设计/API/数据边界一致、无未决本片owner。现准同writer六现机器/checker/test路径，先真实五约束RED，再13.2五处改与显式inverse；原13.1/13/12历史checker逻辑与父digest不放宽。无运行时/SQL/服务/权限改，schema readonly出版物不新造。冻结后Root完整相关门与独审再commit；Web暂不写业务。
+
+### T-K03.14-WEB-DETAIL-LAYOUT 2026-10-10 当前用户截图纠偏
+- 优先级：先当前详情弹窗，GitHub后继暂停；owner Web，writer web_identity_owner，Root审查/提交。基线 apps/kokoro-app main2073390，五mixed排除并保原字节。
+- 现事实：DialogHeader默认flex-col，hero仅align-items:center使无封面copy居中；copy max-width扣15rem导致无图标题换行；DialogContent默认grid在min-height内拉伸留白。截图按钮详情在前/添加在后、日期末尾孤立分隔符。目标按用户右图左对齐紧凑hero，添加在前/详情在后，元数据仅实际相邻字段分隔。缺图/分类/用量/示例不得伪造；真实树和安装逻辑不改。
+- 仅三个现路径：src/ui/skills/manus-skill-detail-dialog.tsx、相邻.module.css、tests/ui/kokoro-skills-surface.test.tsx。修改现职责，不建文件/目录/契约/SQL/新服务；优先现组件局部布局而非共享Dialog（避免其它弹窗回归）。
+- 验证：真实RED（动作顺序/分隔符/布局规则），Node22具名UI/type/lint，freeze后Root复门；浏览器同尺寸核左缘/无图标题/间距及独立文件树切换。完整Skills不由本局部称完成。
+
+### T-K03.14-WEB-DETAIL-LAYOUT main1e02285（2026-10-10）
+当前用户截图摘要布局已按右图作局部纠偏：原DialogHeader column/center、无图预扣15rem与grid拉伸导致标题x201/32px/hero345.8px；现692宽实际左缘x65/20px/hero189.2px，添加先于FileText查看详情、无孤立尾分隔符，分类条件横排。未改安装/包读取事实，不造缺失封面/用量/示例。独审窄屏cover遮按钮P2经真实RED1FAIL关闭，窄屏隐藏装饰封面，宽屏保实际封面。
+Root冻结3hash和776任务外字节（含五mixed）全一致，Node22当前具名UI96PASS、type/lint/build/diff全exit0，日志/tmp/kokoro-detail-layout-root-{ui,type,lint,build}.log；独审绑定freeze363ede0a无确定P1/P2，精确三路径提交Web main1e0228508f74565267a53056b77c24c8e0f5f956。真实692摘要截图/tmp/kokoro-detail-layout-after.jpg，390实际viewport390/dialog370/无横溢，临时尺寸已撤；真实详情仍独立SKILL.md+references树、checklist.md正文可切。无真实封面样本，封面场景仅代码/纯测，不冒像素全一致或整体Skills完成。默认system/全纯未本轮重跑，保持既有OPEN。
+本轮先用户弹窗问题，GitHub后继暂停：正式BFF792ae35上六机器路径冻结未提交/fullpure1339PASS1FAIL3SKIP，现architecture版本13.1断言未获扩scope、未改；不得记全门通过。Web五mixed、其它owner/gitlink及uv.lock保持。完整Wave0–7 active，Billing最后，无远端push。
