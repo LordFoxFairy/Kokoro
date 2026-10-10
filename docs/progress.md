@@ -1,3 +1,9 @@
+### T-K03.4 R357 Settings发起本人管理的最窄关闭交接准入（2026-10-09）
+
+Root与原Web owner只读核验：mounted导航变pathname但AppFrame settingsTab仅自身open/close/popstate更新，Settings主控仍非null；现Browse已导航后requestClose，Manage未传同owner关闭回调。采用现callback透传复用Browse关闭顺序，淘汰全局surface事件强关所有Settings，避免扩大其它合法overlay/history行为。
+
+归属Web现Settings/Skills装配，无owner/API/SQL/权限/locale变更；准入现personal-skills-read.tsx、skills-panel.tsx、settings-modal.tsx，仅新增可选onManageSkills并透传，Settings导航后requestClose；非嵌入原mounted navigation保留。现settings-modal/app-frame.smoke/skill-create-menu/必要skills-panel测试先真实RED（Settings卸载、manage可见、hash空、回调一次且无写请求），再修复与具名/type/lint/build；三现设计/CURRENT必要记录可补。其它冻结字节、protected基线不动，同仓原writer唯一写，Root独占Git。新freeze与Root浏览器导航/返回/刷新/焦点核验前不提交，完整goal/后台/profile/OIDC保持OPEN。
+
 ### T-K03.4 R357 四来源真实通过；本人管理导航被旧Settings遮挡（2026-10-09）
 
 上一goal turn仅重申独立后台及查看现route，分类no progress；本轮重验并推进。Root41975原句柄自然terminal wrapper0，实际ROOT_RESULTS proxy0/type0/lint0/default1/build0；105具名PASS，默认3602PASS/原6FAIL、197files196PASS/1FAIL，219.19s。最终候选freeze5a02266c…仍未放行，不将wrapper0或纯门冒整页闭环。
