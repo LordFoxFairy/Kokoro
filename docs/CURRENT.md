@@ -1,3 +1,11 @@
+### T-K03.4 R357 个人Skills管理与两个筛选adapter正式小切片（2026-10-09）
+
+上一轮导航真实GREEN及managed400定位/修复准入属progress。本轮Root实核最终managed freeze dbb9125d…5delta/846保护exact、累计36候选SHA与815非范围tracked保留；Root52582自然terminal proxy110PASS/type0/lint0，Root42296最终build0。父41975默认3602PASS/原六OIDC FAIL和50530 UI223PASS仍明确为父/相应增量证据，未重跑本最终树default，不冒当前全门绿。独立managed审查无新确定缺陷、合法Unicode及tenant/admission未扩大。
+
+真实managed四来源点击均200、表格😀Unicode200空、r357搜索200精确原skill7d9396fa/rev1一项；%00为400且session200true；Settings→管理无残留overlay。私有0600收据r357-managed-filter-root-green.json，此前详情/刷新/返回/focus真实证据保留。Root首保护核脚本误用protected after_sha256键导致KeyError且未stage，按实有sha256纠正后全815核过，属Root探测错误非产品失败。Root精确36路径暂存提交Web d3cacda2db75ba2d8271f5289f5ea75e53967d2a，未改BFF/Platform/SQL/服务/共享数据，任务外Gitlinks/uv.lock保持。此为个人管理与owner筛选切片，不是Skills或Wave0–7完成。
+
+下一按现任务优先Skills剩余闭环：独立后台/admin/settings管理员正向身份/入口/Skills审核发布与用户私有上传边界只读盘点；真实profile供给与Manus当前Settings对照另一个独立只读面。原Web owner负责后台边界/已有正式管理员入口证据，原UI reviewer负责profile最窄事实链，无写/Git/启动/自授角色权限，设计门后才授逐仓writer。不扩散连接器等其它模块；后台正向、profile/视觉细差、分享撤销/旧pin矩阵、六OIDC及全目标仍OPEN。
+
 ### T-K03.4 R357 本人管理关闭链真实通过；managed查询同类漂移定位（2026-10-09）
 
 上轮真实筛选、导航RED及修复准入属progress。本轮增量freeze bc6a1f42…7delta/844parent保护Root全SHA实核无差异；原writer停写，独审无新确定阻断。Root50530终态4files223PASS/type0/lint0；父41975 full3602PASS/原6FAIL及build0保留，不把旧完整门当当前新增全门。真实正常浏览器Settings→添加→管理：/app/skills/manage/hash空/modal0/heading可见；原r357预览→查看详情SKILL.md可读→返回→关闭还焦点原卡；reload仍manage无Settings→浏览返回/app/skills/dialog0。私有0600收据r357-manage-handoff-root-green.json。本片关闭遮挡链成立，但候选尚不整体验收。
