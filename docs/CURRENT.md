@@ -1,3 +1,7 @@
+### T-K03.14 普通权限链与安装完整往返当前验收（2026-10-10）
+Root审阅原Admin owner的隔离CookieJar脚本后独立重跑exit0：普通正式登录/app200、platform_admin=false且无manage_url；csrf有效、signin302、正式callback403/admin_required且无Admin RP、me401、Skills401。日志/tmp/kokoro-admin-ordinary-entry-root-result.jsonl。浏览器已定位为callback GET的Network.loadingFailed / ERR_BLOCKED_BY_CLIENT / blockedReason=inspector，而非没提交表单；仅恢复开发Network blockedURLs空集后仍被inspector拦截，未继续改变安全配置。收据/tmp/kokoro-ordinary-entry-inspector-receipt.json；浏览器直接拒绝页呈现未验，不改鉴权/新后台以绕过观察问题。已恢复原管理员工作区。
+Root正常浏览器对现开发skill-creator样本走移除DELETE200→独立GET200确认移除→目录添加POST200→本人列表GET200，安装/启用恢复、目录按钮同步，未清共享数据或改原官方pin。收据/tmp/kokoro-skill-remove-reinstall-final.json，截图/tmp/kokoro-skill-remove-reinstall-final.jpg。关闭两项既有验收缺口，不泛称CRUD整体未实现；严格视觉/记录技能等未证项与全Wave仍保留，任务外mixed不暂存。
+
 ### T-K03.14 当前完整system门与普通用户浏览器负控（2026-10-10）
 Root逐字核候选src/tests/contract/scripts及manifest与Web mainffc6c7c无差异；原87448自然exit0：14files/199PASS、0FAIL，149.19s，日志/tmp/kokoro-skills-final-committed-system.log，补齐前197+定向2的完整门。首次误在Root执行pnpm找不到vitest，未产生代码变更，随后在正确独立候选运行。
 普通fixture正规登录/app并打开账户菜单，后台管理入口count0；截图/tmp/kokoro-ordinary-user-no-admin-menu.jpg。直接/manage真实停留隐藏登录表单，捕获csrf200/me503，未捕获signin POST；API直导航另报浏览器ERR_BLOCKED_BY_CLIENT。这不是403权限验收通过，也未确定服务终止。原Admin owner只读确认me503是session/身份读取异常而非权限拒绝；下一片T-K03.14-ADMIN-ORDINARY-ENTRY仅归因表单POST/CSRF布尔资格/残留RP身份，上游失败与浏览器拦截需分开，不放宽鉴权或重写壳。已正常退出普通账号、恢复原开发管理员，现同源/manage自动SSO及原hub10真实记录读回，截图/tmp/kokoro-admin-restored-after-ordinary-proof.jpg。无服务重启/共享数据改动；其它模块仍不扩写，完整Wave保持active。

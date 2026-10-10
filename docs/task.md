@@ -1,3 +1,6 @@
+### T-K03.14 当前权限/安装验收（2026-10-10）
+Root当前正式普通HTTP403/401负控及浏览器安装移除→添加→列表往返通过；IAB callback被inspector阻断，不是服务未启动/表单未提交。具体收据与未验项见docs/CURRENT.md同日“普通权限链与安装完整往返当前验收”。其它owner/完整Wave保持未结项。
+
 ### T-K03.14 当前完整system门与普通用户浏览器负控（2026-10-10）
 Root逐字核候选src/tests/contract/scripts及manifest与Web mainffc6c7c无差异；原87448自然exit0：14files/199PASS、0FAIL，149.19s，日志/tmp/kokoro-skills-final-committed-system.log，补齐前197+定向2的完整门。首次误在Root执行pnpm找不到vitest，未产生代码变更，随后在正确独立候选运行。
 普通fixture正规登录/app并打开账户菜单，后台管理入口count0；截图/tmp/kokoro-ordinary-user-no-admin-menu.jpg。直接/manage真实停留隐藏登录表单，捕获csrf200/me503，未捕获signin POST；API直导航另报浏览器ERR_BLOCKED_BY_CLIENT。这不是403权限验收通过，也未确定服务终止。原Admin owner只读确认me503是session/身份读取异常而非权限拒绝；下一片T-K03.14-ADMIN-ORDINARY-ENTRY仅归因表单POST/CSRF布尔资格/残留RP身份，上游失败与浏览器拦截需分开，不放宽鉴权或重写壳。已正常退出普通账号、恢复原开发管理员，现同源/manage自动SSO及原hub10真实记录读回，截图/tmp/kokoro-admin-restored-after-ordinary-proof.jpg。无服务重启/共享数据改动；其它模块仍不扩写，完整Wave保持active。
