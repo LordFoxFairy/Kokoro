@@ -1,3 +1,9 @@
+### T-K03.14 独立文件树纠偏 main（2026-10-10）
+
+Web main e7a9c2d67515ff277ac696aad2f2d61ea21e4be4，仅reader现TSX/CSS/UItest；真实RED inline与层级各1FAIL，独审P2复合ARIA角色不完整经真实RED1FAIL关闭，最终普通层级list/native按钮保真实目录。Root79519终态155files/2891PASS、type/lint/build0，3hash及769任务外保护一致，独审无确定P1/P2。正常tab49实际简介→独立左右文件列表/正文，Enter返回简介、Space再开并读取SKILL.md通过；真实样本只有一个文件，嵌套文件夹/其它文件选择仅纯测，未冒浏览器多文件验收。截图 /tmp/kokoro-reader-tree-final-browser.jpg。旧tab48已从浏览器会话删除，创建新tab无重启服务。
+
+添加后继确定事实：正常ListHub200 series33fe755e/currentVersion165fdfd3，ListSkills200个人安装绑定旧v1同series，official added按series派生；因此显示已添加不证明当前v4安装。Platform Install直接按source_ref revision主键查，无series解析，Web新安装误传series。证据 /tmp/kokoro-skills-install-identity-browser.json；应保已安装旧版本，不自动升级，停用通过现安装ID启用。此前“成功后未同步”是源码风险待RED，不冒已复现失败。完整Skills/Wave0–7 active，默认system门/其他owner未交接/Billing仍OPEN。
+
 ### T-K03.14 真实包详情提交 main（2026-10-10）
 
 Web main `93e33329bce76c07e3f0a44dcebbccb1e0efdbd4`，精确十路径；Root 核最终 freeze277cbacd 的10 hash及762任务外保护一致，独审无确定P1/P2。真实RED5FAIL/223PASS→focused239PASS；Root18696终态实际155files/2890PASS、type/lint/build exit0，日志 /tmp/kokoro-catalog-package-root-{pure,type,lint,build}.log。未跑默认system门，不冒全仓绿。真实新tab47正规目录→摘要→查看详情→owner实际SKILL.md正文→语义按钮返回简介通过；URL始终/app/skills，样本只有SKILL.md，其他文件切换仅纯测，未冒真实多文件验收。截图 /tmp/kokoro-catalog-package-browser.jpg。旧tab46焦点CDP超时，使用同浏览器新标签验证，无服务重启。

@@ -1,3 +1,13 @@
+### T-K03.14 独立文件树纠偏 main（2026-10-10）
+
+Web main e7a9c2d67515ff277ac696aad2f2d61ea21e4be4，仅reader现TSX/CSS/UItest；真实RED inline与层级各1FAIL，独审P2复合ARIA角色不完整经真实RED1FAIL关闭，最终普通层级list/native按钮保真实目录。Root79519终态155files/2891PASS、type/lint/build0，3hash及769任务外保护一致，独审无确定P1/P2。正常tab49实际简介→独立左右文件列表/正文，Enter返回简介、Space再开并读取SKILL.md通过；真实样本只有一个文件，嵌套文件夹/其它文件选择仅纯测，未冒浏览器多文件验收。截图 /tmp/kokoro-reader-tree-final-browser.jpg。旧tab48已从浏览器会话删除，创建新tab无重启服务。
+
+添加后继确定事实：正常ListHub200 series33fe755e/currentVersion165fdfd3，ListSkills200个人安装绑定旧v1同series，official added按series派生；因此显示已添加不证明当前v4安装。Platform Install直接按source_ref revision主键查，无series解析，Web新安装误传series。证据 /tmp/kokoro-skills-install-identity-browser.json；应保已安装旧版本，不自动升级，停用通过现安装ID启用。此前“成功后未同步”是源码风险待RED，不冒已复现失败。完整Skills/Wave0–7 active，默认system门/其他owner未交接/Billing仍OPEN。
+
+### T-K03.14-WEB-INSTALLATION-ACTION（2026-10-10）
+
+Owner Web apps/kokoro-app，沿原web_identity_owner唯一writer，Root审查提交；基线e7a9c2d，五mixed/现D0完整bytes受保护。局部接线已有安装contract，无新文件/目录/API/SQL/权限/service：允许现features/app/kokoro-skills-surface.tsx、ui/skills/manus-skill-detail-dialog.tsx、tests/ui/kokoro-skills-surface.test.tsx；若现测试需要fixture辅助须先报告，不扩其他功能。新安装只能已验证revision_skill_id，不用series/title；已安装停用只通过正式installation list按同series确定唯一现安装ID再setEnabled，不自动升级旧版本；分页/容量闭界，重复或找不到报错，不猜ID。ACK source_ref/series/installed/enabled校验后才同步当前弹窗并invalidate，错误在当前弹窗可见；切资源不串状态，防重复提交，未知结果保原key/意图不换key重发。先真实RED新安装revision、ACK后按钮、失败可见、停用仅enable不reinstall及重复意图，再focused/type/lint冻结；Root纯门/正常HTTP和浏览器验收，精确commit main。不扩上传/GitHub/分享/目录重构/owner消费者网络框架。
+
 ### T-K03.14-WEB-PACKAGE-READER-PRESENTATION 纠偏（2026-10-10）
 
 用户明确要求点击查看详情进入原Manus式独立文件夹树，93e3332简介下平铺实现不符合展示验收；该commit只证明真实读链，不是视觉合格。沿原Web writer仅现manus-skill-detail-dialog.tsx/CSS与相邻UI test局部纠偏：真实path分段构成可折叠树、右侧真实内容独立滚动，同一Dialog稳定模式切换，复用旧视觉壳但禁止假文件/合成YAML。先真实视觉结构RED，再focused/type/lint冻结，Root复验/提交。安装另由owner只读核series resolver/ACK身份，暂不因名称推断改消费者；Root新tab48真实目录已添加，摘要加载后已添加按钮禁用、查看详情可用，当前不是所有安装失败的证据。具体未安装/停用安装及成功后原弹窗同步仍待实证，不隐去用户报告。完整Skills与Wave0–7保持OPEN。
