@@ -16674,3 +16674,5 @@ T-K03.14-WEB-DETAIL-REFERENCE-FRAME（2026-10-10 当前用户要求）：暂停G
 Web main745f273595fa4fbacd3d700eef4b6f821c570e82，精确现有detail TSX/CSS/UItest三路径。Root最终3hash/776保护一致；当前UI99PASS、type/lint/build exit0（/tmp/kokoro-detail-reference-final-root-{ui,type,lint,build}.log），独审短视口P2真实RED后关闭。692×764真实浏览器最终框657.398×600、x17.3/y82、radius12、背景近248；与同视口Manus外框对照。320×240摘要可滚动且详情入口可用，恢复尺寸后真实SKILL.md/references/checklist.md可读取。截图/tmp/kokoro-detail-reference-final.jpg。缺失真实封面/分类/用量/例子不伪造，未称整体像素一致或Skills闭环；GitHub旧入口404仍待下片。
 用户要求最终Skills/Admin验收后全部本地main并清理其他分支，已只读盘点发现多仓有活跃worktree及未合并提交；仅在接收对应owner交付后收敛，不强删/重置。其他owner和uv.lock保留，完整Wave0–7 active，Billing最后。
 
+
+T-K03.14-WEB-GITHUB-IMPORT-D0 已接收：Web main94d7926三前缀精确index提交，原mixed正文逐字节保留；Root核正式BFF13.2及486ec7e，独审无P1/P2，仅修首段当前基线745f273。NETWORK原web_identity_owner唯一writer仅授权五路径，先RED，不准UI19/其他文件；Root独占提交和最终验证。原admin_skills_owner只读盘点最终用户闭环项，不新计划中心或新架构。当前Web无cookie/app307是登录边界、同源manage200、Platformready200；未把匿名307当服务停机。
