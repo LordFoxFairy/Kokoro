@@ -16296,3 +16296,9 @@ Root发现实际运行Platform `var/dev/platform-release` HEAD b5d4280不是e2f6
 | 设计门 | 现owner TECHNICAL_DESIGN/API_CONTRACT错误语义承接正式runtime 5b2d35e；属于局部既有adapter修复，不改变职责/契约 |
 | 验证 | 原正式publishOfficialSkill错误边界先真实RED→修复→所有具名admin/error tests、type/lint/build；冻结交接后Root复跑/提交，BFF再固定最终SHA |
 | 排除 | SQL/contract/generated/依赖/正常服务/数据及其它仓；不得以放宽错误或mock规则清零 |
+
+### T-K03.14 RPC 错误回归已正式修复（2026-10-10）
+
+Platform `32666c1c18360e707048a1104efe6b50e375002f` 已由Root具名提交，clean，仅rpc-handler与原admin admission测试两文件。先正式Admin RPC四reason实际RED4FAIL，修后Root65PASS，typecheck/lint/build/diff-check均exit0；独审冻结hash一致、原P2关闭、无新增确定P1/P2，权限/绑定/发布业务未改。首次Root查看diff错用相对-C路径报错，未写文件，实际测试正常；随后正确工作目录核diff/hash并提交。此提交承接正常5b2d35e稳定错误语义，不再以机器artifact相同推断运行无回归。
+
+BFF pin writer原e2候选已冻结，正规生成零generated字节差异；现沿同卡续派改固定最终32666c1并跑门，Root独占提交。正常服务/共享资源/数据未改，完整Web/Admin与发行安全门仍OPEN，Wave0–7保持active。

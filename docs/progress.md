@@ -12894,3 +12894,9 @@ Root 单事务清理实际 `kokoro_platform` Skills 数据：skill 77、installa
 Root 明确指定 Platform 固定提交 `e2f6dbf213eb551f71a85628587c96cda790a31e` 的实际 checkout，未使用默认旧运行副本；既有 `run_platform_local_skill_import_storage_smoke.py` 的 dry-run 四场景通过、启动资源0。随后原进程句柄62689正常终止 exit0，clean/eicar/ack_lost/ingress_clean 各4测试，共16PASS，真实 PostgreSQL、S3对象版本、ClamAV扫描与正规IAM token exchange/Connect四导入RPC均参与；缺bearer401、错误workload403负控通过。四场景cleanup完成、run-owned剩余资源0，未重置共享PG/Redis或重启正常服务。日志 `/tmp/kokoro-platform-e2f6dbf-storage-connect-smoke.log`，四资源收据目录见日志终行。
 
 此证据只覆盖本地导入网络生命周期、扫描拒绝、ACK丢失重放和身份边界，不覆盖正式Web/Admin浏览器、官方晋升全网络链或全部Wave。当前BFF正常worktree `00e4b791` clean，仍固定Platform `84262b`；下一按owner发行顺序更新固定消费者并验证，再切正常服务和完整用户/原Admin操作。供应链与整体闭环仍OPEN。
+
+### T-K03.14 RPC 错误回归已正式修复（2026-10-10）
+
+Platform `32666c1c18360e707048a1104efe6b50e375002f` 已由Root具名提交，clean，仅rpc-handler与原admin admission测试两文件。先正式Admin RPC四reason实际RED4FAIL，修后Root65PASS，typecheck/lint/build/diff-check均exit0；独审冻结hash一致、原P2关闭、无新增确定P1/P2，权限/绑定/发布业务未改。首次Root查看diff错用相对-C路径报错，未写文件，实际测试正常；随后正确工作目录核diff/hash并提交。此提交承接正常5b2d35e稳定错误语义，不再以机器artifact相同推断运行无回归。
+
+BFF pin writer原e2候选已冻结，正规生成零generated字节差异；现沿同卡续派改固定最终32666c1并跑门，Root独占提交。正常服务/共享资源/数据未改，完整Web/Admin与发行安全门仍OPEN，Wave0–7保持active。

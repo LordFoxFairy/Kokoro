@@ -1,3 +1,9 @@
+### T-K03.14 RPC 错误回归已正式修复（2026-10-10）
+
+Platform `32666c1c18360e707048a1104efe6b50e375002f` 已由Root具名提交，clean，仅rpc-handler与原admin admission测试两文件。先正式Admin RPC四reason实际RED4FAIL，修后Root65PASS，typecheck/lint/build/diff-check均exit0；独审冻结hash一致、原P2关闭、无新增确定P1/P2，权限/绑定/发布业务未改。首次Root查看diff错用相对-C路径报错，未写文件，实际测试正常；随后正确工作目录核diff/hash并提交。此提交承接正常5b2d35e稳定错误语义，不再以机器artifact相同推断运行无回归。
+
+BFF pin writer原e2候选已冻结，正规生成零generated字节差异；现沿同卡续派改固定最终32666c1并跑门，Root独占提交。正常服务/共享资源/数据未改，完整Web/Admin与发行安全门仍OPEN，Wave0–7保持active。
+
 ### T-K03.14 Runtime 基线错误映射回归（2026-10-10）
 
 Root发现实际运行Platform `var/dev/platform-release` HEAD b5d4280不是e2f6dbf祖先，已追加比较其三个正式修复而非仅84262b。独审确认P2：e2f6dbf缺5b2d35e的SkillPublishError精确Connect code与x-kokoro-error-code映射，正常Admin失败会退回Internal；对应原admission边界测试亦缺。晋升service/state已承接，旧无attempt宽门已由精确completed intent资格替换，不恢复宽门。BFF writer暂停pin生成，机器contract169文件仍逐字节相同。
