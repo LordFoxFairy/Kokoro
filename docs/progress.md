@@ -13019,3 +13019,11 @@ Web正式cce0a2c98fcecee281908d07c8f13e17791af9c4并快进main，Root准确35冻
 Root69817正规持久账号登录、原Admin无感SSO/manage/overview及四真实读取200；保留原draft/body/key/真实Validate CAS，Publish由原400变200。随后实际MinIO/Storage既有包引用的install、managed active read、installation detail、disable、enable、remove均200，runner终态0，日志 `/tmp/kokoro-web-publish-root-real-crud.log`。没有新增重复草稿、清SQL/Redis、假安装或替换Admin；此为真实HTTP消费链，不冒称浏览器视觉或Admin七mutation全闭环。
 
 按用户要求已验切片归并各main：Webcce0a2c、Admin6319b68、IAM5cd6d20、Platform32666c1、实际BFF2f36787。Root记录精确正式gitlink；BFF物理checkout仍975a2d8及其19mixed不能强制覆盖，与normal正式运行源差异仍待单独治理。其余owner/gitlink及uv.lock任务外保留，尚未远端push。下一原Admin七管理命令与精确四包路径接线、剩余工程/浏览器及完整Wave0–7，Billing最后。
+
+### T-K03.14 原Admin接线实施与两切片正式收尾（2026-10-10）
+
+BFF正式939bf0e main：仅现policy两行精确四包method/raw path＋现准入测试，681保护/机器Public13.1不变；独审无P1/P2，Root76479实际build/21PASS/type/lint0。Root核原21300 listener/CWD，正常TERM并证端口释放，复用原私有配置定向重载；27501新句柄/listener45477/supervisor45456，readyz200，私有registry已更新。只重启需新policy的BFF，其它PG/Redis/MinIO及应用保持。
+
+Webi18n正式12f3879 main：四路径/768保护与五mixed保持，独审无P1/P2；Root25766实际70PASS/type/lint0。最终全纯75525终态2798PASS/9FAIL（155files），唯一Manus硬编码失败已消除，剩九原基线导航失败保留，不称整体工程全绿；后继原owner只改三个fixture明确隔离新的admin-access请求，业务IO次数/Move资格断言不放宽。
+
+原Admin三实施设计377406e，原Ant/IAM/System壳保留；唯一writer admin_skills_owner基线codex/t-k03-14-admin-skills，Root当前默认baseline19PASS；新功能真实RED9FAIL27PASS后完整七命令＋四包链/严格ACK/意图/分页/异步实施中，未冻结未验收。准增加现config.ts/config.test.ts复用BFF既有KOKORO_STORAGE_OBJECT_ORIGIN，仅package准入缺配置明确不可用，不破坏原SSO/其它管理，不新env事实/数据库/依赖。用户要求快速commit/main继续按真实冻结审查放行；功能未完不因main字样称整体闭环，完整Wave0–7 active。

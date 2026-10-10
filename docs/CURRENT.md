@@ -1,3 +1,11 @@
+### T-K03.14 原Admin接线实施与两切片正式收尾（2026-10-10）
+
+BFF正式939bf0e main：仅现policy两行精确四包method/raw path＋现准入测试，681保护/机器Public13.1不变；独审无P1/P2，Root76479实际build/21PASS/type/lint0。Root核原21300 listener/CWD，正常TERM并证端口释放，复用原私有配置定向重载；27501新句柄/listener45477/supervisor45456，readyz200，私有registry已更新。只重启需新policy的BFF，其它PG/Redis/MinIO及应用保持。
+
+Webi18n正式12f3879 main：四路径/768保护与五mixed保持，独审无P1/P2；Root25766实际70PASS/type/lint0。最终全纯75525终态2798PASS/9FAIL（155files），唯一Manus硬编码失败已消除，剩九原基线导航失败保留，不称整体工程全绿；后继原owner只改三个fixture明确隔离新的admin-access请求，业务IO次数/Move资格断言不放宽。
+
+原Admin三实施设计377406e，原Ant/IAM/System壳保留；唯一writer admin_skills_owner基线codex/t-k03-14-admin-skills，Root当前默认baseline19PASS；新功能真实RED9FAIL27PASS后完整七命令＋四包链/严格ACK/意图/分页/异步实施中，未冻结未验收。准增加现config.ts/config.test.ts复用BFF既有KOKORO_STORAGE_OBJECT_ORIGIN，仅package准入缺配置明确不可用，不破坏原SSO/其它管理，不新env事实/数据库/依赖。用户要求快速commit/main继续按真实冻结审查放行；功能未完不因main字样称整体闭环，完整Wave0–7 active。
+
 ### T-K03.14 Web正式切片已提交main，真实发布安装链通过（2026-10-10）
 
 Web正式cce0a2c98fcecee281908d07c8f13e17791af9c4并快进main，Root准确35冻结hash/765review保护与五mixed原字节核对、独审P2已关闭。仅33实际差异文件提交，三设计只提交D0前缀；五mixed仍保留未暂存。Root92493终态：contract277PASS，lint/typecheck/diff0；完整纯门2791PASS/10FAIL，剩余1未改Manus i18n及9已证原Git基线导航失败。未跑build/system全门/浏览器，工程整体仍OPEN，不以局部门代替。

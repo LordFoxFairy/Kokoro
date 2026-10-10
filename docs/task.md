@@ -16497,3 +16497,5 @@ Web原owner独立小修唯一writer，与BFF policy不同仓；maincce0a2c＋五
 
 ### T-K03.14-WEB-NAV-TEST-ISOLATION
 Root已两次实证Git79d1710基线9FAIL240PASS与当前12f3879全纯2798PASS9FAIL同九导航失败。原Webowner唯一writer仅现tests/ui/app-frame-rail.test.tsx、tests/ui/app-frame.smoke.test.tsx、tests/ui/workspace-rail.test.tsx精确fixture接线；不得改生产/布局/权限/断言/预期调用数。先原失败具名RED，给/api/admin-access显式真实形状非管理员Response与独立mock；conversation/upload fetchMock仍保持原严格调用次数/Move资格/项目过滤断言，断言新admin请求本身闭集路径，不过滤调用记录、不跳过或放宽断言。若生产根因或范围更大先停报。Root测试/审查/提交main，五mixed原字节保护；其它测试不改、不新增helper目录。
+
+T-K03.14-ADMIN-SKILLS-IMPLEMENT追加现lib/server/config.ts/config.test.ts仅复用BFF正式KOKORO_STORAGE_OBJECT_ORIGIN/exact origin；无新env命名，不破坏SSO/其它管理。先RED，Root私有配置负责。Web i18n12f3879/BFF准入939bf0e均Root复验提交main；后台原writer继续，未完成。
