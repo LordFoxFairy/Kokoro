@@ -16567,3 +16567,5 @@ Admin已提交4b576a8的浏览器消费者现真实跨access到期：同一tab45
 | D0范围 | 先仅三设计文档新增具名本任务前缀，旧mixed全文bytes不变，不写业务代码；machine schema/契约路径与当前commit核验后冻结供Root精准index提取 |
 | 实施预计 | 现detail tsx/CSS、manus-skill-client、hub schemas、hub同源route、现对应client/UI/proxy tests；D0验收后Root精确授权 |
 | 验证 | 先404/资源错/文件穿越/重复query/迟到取消RED；Root纯门/type/lint/build、真实未安装目录SKILL.md与文本/资格失败/browser；owner全负控历史不替代当前链 |
+
+T-K03.14-WEB-CATALOG-PACKAGE-DETAIL D0正式 main8100ad7：Root机器YAML核getSkillPackageDirectory/status/strict schema/digest418db950，独审无P1/P2，3prefix+HEAD正文精确index提交，3mixed全文与769保护保持。准原Webowner唯一writer实施以下10现路径：src/ui/skills/manus-skill-client.ts、src/hub/schemas.ts、src/app/api/hub/[...path]/route.ts、src/ui/skills/manus-skill-detail-dialog.tsx及相邻module.css、src/i18n/messages.ts、src/i18n/overlays.ts、tests/ui/kokoro-skills-surface.test.tsx、tests/hub/client.test.ts、tests/app/hub-proxy.test.ts。先真实功能/边界RED，再完整目录→SKILL.md→其它真实UTF8文本读链，不执行外部内容；owner/schema/RPC/服务/data/三mixed正文及两mixed tests禁止写。focused/type/lint后冻结停写，Root纯门/build/独审/正常真实浏览器统一验收，Root独占commit/main。

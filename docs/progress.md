@@ -13079,3 +13079,9 @@ Web正式 `d2545a3` main，精确三现文件：卡片/弹窗共用真实 scope�
 Admin已提交4b576a8的浏览器消费者现真实跨access到期：同一tab45点击原列表刷新，skills401→csrf200→POST session200→原skills200，页面始终/manage/hub、四条原记录保持，无二次密码、导航或调整TTL。证据 /tmp/kokoro-admin-session-browser-expiry.json、/tmp/kokoro-admin-session-browser-expiry.jpg。跨到期读链已证；写意图/权限负控仍待验。
 
 纠正此前owner缺接口推断：正式BFF939bf0e已发布GET /v1/skills/{revision_id}/package、ProductSkillReadService.InspectSkillPackage，Platform32666c1已有未安装目录资格和真实文本读取；现缺Web同源consumer接线（Root真实GET /api/hub/skills/{v4revision}/package 404）。后继不新增RPC，不混self/install资格，先现Web三设计D0，再真实SKILL.md/文本reader。“所有文件”现owner只提供UTF8文本，二进制省略；不生成假目录。当前Root topology实际5个未接收owner gitlink差异，未强行pin混合checkout。完整Wave0–7与Skills包详情、默认system门仍OPEN。
+
+### T-K03.14 真实包详情设计门放行（2026-10-10）
+
+Web main8100ad7仅三个具名D0前缀；Root精确index使用prefix+HEAD正文、三mixed完整工作字节与769任务外hash保持，独审无P1/P2。机器YAML实核getSkillPackageDirectory、严格嵌套schema、11状态及digest418db950一致。不是新owner接口：准原writer现十路径接正式公开revision package、真实SKILL.md与文本，先RED；无新RPC/SQL/依赖/假目录。实现未冻结未验收，Root不并行写该仓。
+
+Root当前结构门实际168违反（0 unverified，exit1），拓扑实际5个未接受owner gitlink差异；不是全仓绿。只读收尾核Agent814e929→ee736cd、System9a4e98e→1460820有待复核已提交片；BFF physical975a2d8落后正式939bf0e且19mixed，Storagephysical0b5042d落后已记录a1206d0且55mixed，禁止回pin/reset。Billing698da77有25mixed未冻结，uv.lock是独立镜像源变化，不夹带提交。后继按原owner冻结/审查再接收，不执行all-add，不因main字样假定闭环。日志/tmp/kokoro-root-{standard,topology}-current.log；完整Wave0–7保持active、Billing最后。

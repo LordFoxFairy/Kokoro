@@ -1,3 +1,9 @@
+### T-K03.14 真实包详情设计门放行（2026-10-10）
+
+Web main8100ad7仅三个具名D0前缀；Root精确index使用prefix+HEAD正文、三mixed完整工作字节与769任务外hash保持，独审无P1/P2。机器YAML实核getSkillPackageDirectory、严格嵌套schema、11状态及digest418db950一致。不是新owner接口：准原writer现十路径接正式公开revision package、真实SKILL.md与文本，先RED；无新RPC/SQL/依赖/假目录。实现未冻结未验收，Root不并行写该仓。
+
+Root当前结构门实际168违反（0 unverified，exit1），拓扑实际5个未接受owner gitlink差异；不是全仓绿。只读收尾核Agent814e929→ee736cd、System9a4e98e→1460820有待复核已提交片；BFF physical975a2d8落后正式939bf0e且19mixed，Storagephysical0b5042d落后已记录a1206d0且55mixed，禁止回pin/reset。Billing698da77有25mixed未冻结，uv.lock是独立镜像源变化，不夹带提交。后继按原owner冻结/审查再接收，不执行all-add，不因main字样假定闭环。日志/tmp/kokoro-root-{standard,topology}-current.log；完整Wave0–7保持active、Billing最后。
+
 ### T-K03.14 Skills 展示提交 main 与 Admin 跨到期浏览器实证（2026-10-10）
 
 Web正式 `d2545a3` main，精确三现文件：卡片/弹窗共用真实 scope、品牌及八分类本地化映射；封面仅消费 owner revision 绑定 cover_image，缺图不造URL。品牌/分类真实 RED10FAIL32PASS、封面 RED2FAIL66PASS；Root 当前155files/2874PASS、type/lint/build/diff0，独审无确定P1/P2，三hash与769任务外tracked全部保持。五mixed未暂存。实际新tab46目录/Get可读、弹窗显示Kokoro及真实描述；本样本无分类/封面/例子，视觉不冒充带图与分类整体验收。截图 /tmp/kokoro-skills-publisher-browser.jpg。
