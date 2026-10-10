@@ -1,6 +1,6 @@
 ### T-K03.14-V10-MERGE 当前进行中（2026-10-10）
 
-Owner Platform；三设计门由 Root 提交 2648844，Root 发起 merge 后已交接原 skills_platform_implementation_r357 为唯一实现 writer；Root 独占 index/commit，platform_expand_review 只读。当前 merge 45 个冲突待整合，不切 pin/重启。基线 apps/kokoro-capability / codex/r259-skills-metadata / f971064 clean，合入现运行消费者的 84262b。范围既有 Local import 源码、canonical/contract/生成/安装工具及完整测试；保留候选 SKILL.md/publicationFrom 修复。禁止写其它仓/切消费者pin/重启共享服务。三设计先明确真实基线；准入为恢复当前功能并全量回归，随后固定消费者与 Web/Admin 实证，不另建计划。
+Owner Platform；三设计门由 Root 提交 2648844，Root 发起 merge 后已交接原 skills_platform_implementation_r357 为唯一实现 writer；Root 独占 index/commit，platform_expand_review 只读。首次writer冻结91路径，Root纯门2058PASS/1FAIL、真实integration487PASS/6FAIL/4SKIP及1suite setup失败。固定父图局部修2PASS；组合Local import→官方晋升P1已确认为新增阻断，三设计补正后续派同owner，未切pin/重启。基线 apps/kokoro-capability / codex/r259-skills-metadata / f971064 clean，合入现运行消费者的 84262b。范围既有 Local import 源码、canonical/contract/生成/安装工具及完整测试；保留候选 SKILL.md/publicationFrom 修复。禁止写其它仓/切消费者pin/重启共享服务。三设计先明确真实基线；准入为恢复当前功能并全量回归，随后固定消费者与 Web/Admin 实证，不另建计划。
 
 ### T-K03.14 Platform owner 集成已通过，整体候选仍待审查（2026-10-10）
 
