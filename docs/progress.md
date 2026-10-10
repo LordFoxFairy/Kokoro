@@ -1,3 +1,7 @@
+### T-K03.14-ADMIN-HYDRATION maincc297cc（2026-10-10）
+原Admin五精确路径修固定ProUtils2.18.0 es/lib断点首帧；原SSR/Ant/IAM/System壳、权限/API/SQL不变。真实原包RED2FAIL→GREEN2PASS；Root42078自然exit0：默认10files89PASS、type/lint/build及frozen-install全0，5hash/85保护exact、独审无P1/P2。日志/tmp/kokoro-admin-hydration-root-*.log。当前浏览器自然SSO回原Ant，390 reload与默认宽屏无hydration错误、响应式保留；未重启服务。内部移动Drawer width与错误Alert message deprecated仍OPEN。
+浏览器同时实测Skills列表502 admin_upstream_invalid，Retry一次同502；不是闭环/模拟空列表，原Admin owner只读正式链定位，未放宽schema。截图/tmp/kokoro-admin-hydration-root-browser.jpg。BFF共享revision原writer最终串行86094仍运行未冻结，不重复开门/服务；Share仍未正式Web消费。全Skills/Admin与main-only未完成，其他模块暂停。
+
 ### T-K03.14 精确发布revision与普通用户权限（2026-10-10）
 Platform main91bc3655精确26路径已验收：Root36158九门自然exit0，default134files/2227PASS/405既有SKIP；Root49276独立临时PG19PASS/0SKIP，669保护/27授权hash最终一致、独审无P1/P2。PG首次56329测试已完成但shell只读status变量导致driver退出1，修runner后独立完整重跑49276自然exit0，保原日志；SQL/历史v10不变。来源日志/tmp/platform-revision-root-*.log，不冒BFF/Web消费或运行cutover。
 普通fixture正规注册/真实邮件验证/正式member邀请后，独立Web权限200 false/noURL、Admin正规callback403 admin_required/无RPcookie、API401 admin_session_required；Root另独立读回200false/401通过（/tmp/kokoro-ordinary-root-readback.json）。浏览器普通菜单隐藏未验。原浏览器长闲会话探针200 authenticated:false保正文，经正常同源login/现IAM SSO无需密码回skills，alert消失、三安装保持，截图/tmp/kokoro-skills-session-restored.jpg；不因失效重启/改认证。
