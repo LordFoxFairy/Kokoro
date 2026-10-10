@@ -16355,3 +16355,7 @@ Root初次与writer并发Prisma generate造成ENOTEMPTY/缺model编排失败；�
 真实同源HTTP完整用户登录→Admin CSRF/signin→/manage/overview200，无第二次密码；用户与Admin session均authenticated=true，Admin Skills读取200。身份成员读取仍403 admin_operation_failed；正式Admin scope maintainer只读状态legacy、8 client scopes/24 resource scopes，下一按已批准现owner scope扩展与Admin消费者请求对齐后重新登录复验。不将该403放宽或伪造成功。证据var/dev/r255-preserve/r357-admin-same-origin-redirect-receipt.json；正常IAM/BFF/Platform readyz200，无共享资源重启/SQL直改。
 
 这些是正式HTTP链证据而非浏览器视觉验收；完整Skills/Admin CRUD、普通用户负控、浏览器、供应链与Wave0–7仍OPEN。
+
+### T-K03.14-ADMIN-READ-SCOPE-CONSUMER
+
+局部现有consumer修复，无职责/契约/目录变化：Admin lib/server/config.ts现OIDC scope遗漏已批准IAM五只读member/invitation/role/tenant/audit范围。Owner apps/kokoro-admin，admin_scope_owner唯一writer；Root提交。基线4a9cf0e clean，允许仅现config.ts/config.test.ts。不加write/global user权限，不改IAM/SQL/secret/tenant/后台UI；先真实RED scopeexact断言，再请求原8+已批准5且唯一，Root复跑unit/type/lint/build、正式IAM BrowserAuthorizationScopeService.extend append-only授权＋readback，重新同源完整登录与五读取验证。Root另负责正式operator运行，writer不运行服务/data/indexcommit。
