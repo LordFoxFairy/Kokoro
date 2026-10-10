@@ -1,4 +1,4 @@
-A2 早审新增确定 P1：变化树 BFF response Create ACK 错将 enabled=false 判失败；Root 实读与正式 Platform 创建必为 false/CAS1 对照确认。已交原 writer 先加真实 false ACK RED 正控及 true 负控后定向修复，未上线、未改 owner 资格；最终验收仍待冻结。
+A2 早审新增确定 P1：变化树 BFF response Create ACK 错将 enabled=false 判失败；Root 实读与正式 Platform 创建必为 false/CAS1 对照确认。原 writer 已补 generated false ACK：具名真实 RED1FAIL→GREEN1PASS，true/CAS2/error 状态负控均拒绝；Root核 /tmp/kokoro-bff-mcp-personal-crud-a2/create-disabled-{red,green}.log 及当前源码已按 false/CAS1/pending或active修正。仅该局部证据，不冒变化树最终门；当前继续机器14.0/父逆和完整测试，未冻结、未上线、未改 owner 资格。
 
 ### T-K03.13 A2 实施观察与 A3 真实授权边界（2026-10-10）
 上一 goal turn 仅重述已交付 Skills/main 状态，归类 no-progress；本轮重新核当前 Git 与原生 agent 状态。BFF main c3770f6 上原 web_identity_owner 为唯一 writer，当前 A2 实施中；真实先行 RED 日志 /tmp/kokoro-bff-mcp-personal-crud-a2/red.log 自然 exit1、7FAIL/0PASS（六正式操作被旧 guard 503 拒绝及 contract 旧版本断言），不是 fixture/import 失败。Root 不在变化树跑最终门、不单边切正常 BFF；原 platform_expand_review 已续派只读 input/CAS/JCS 早期审查，freeze 后再正式审查与 Root 重跑。
