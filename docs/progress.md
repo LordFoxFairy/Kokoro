@@ -13206,3 +13206,7 @@ Web main3f7111feee2de3ef26f817dc19f4e24d7291b48c精确13路径；三设计前缀
 补充最终Web main611ae5342e11f9bf710a01a2b2547df3e8538975：独审发现匿名200 helper普通toContain会让只有登录链接通过；Root只改原helper2+/1−恢复NEXT_REDIRECT/meta真实标记并精确return_target终止边界，普通link/追加evil负控失败、两真marker通过共4断言PASS，当前type/lint0，独审P2关闭。HEAD-only index未夹带system其它mixed，production源/build不变；Root记录正式最终SHA，不把原system20失败清零。
 
 T-K03.14 当前续接（Root62221ad9）：上一goal turn为progress（Web13path与匿名marker小片、Storage/Platform/Agent main接收及Root正式commit）；没有live验证句柄需重开。原web_identity_owner只读定位system refresh rotation和20失败边界；原admin_skills_owner独立只读核旧clean release有效独有能力。Root保主仓台账、设计和Git，未授权生产代码写入/整片mixed暂存/服务或共享数据操作；本轮先归因再最窄RED修复。CODEBASE_MAP顶部已纠正当前SHA和已交付消费者，防止把旧GitHub入口/旧Admin误当现状。
+
+### T-K03.14 会话旋转回归收尾（2026-10-10）
+Web main f7279ed4b8a1cd5f2c8ec235fcfc1f3dd3ee1b39，仅HEAD原system fixture四hunk（7+/1−），不夹带巨大mixed；真实R147 RED1FAIL/1unhandled→具名8PASS，独审无P1/P2、790保护hash一致。Root1998自然终态：完整system14files199PASS/4FAIL/0unhandled，type/lint0，日志/tmp/kokoro-session-rotation-root-{system,type,lint}.log。17异常与16旧失败消除；剩余R192一项/R195三项是Project Conversation移动/跨scope展示，未改timeout/skip、不归为Skills失败或宣称全门通过。production/服务/共享数据均未修改。
+当前main-only尚未完成：physical BFF19mixed、Storage55mixed与正式main重叠12/50路径，当前分支独有提交均0；Billing25mixed及唯一5文档提交698da77待接收；旧Web release107unique含未逐项接收的设置/连接器/导航，旧Admin worktree129mixed保留。不能通过强删或整包暂存丢弃有效职责。原Admin剩余正向写与权限浏览器验收仍OPEN，其他功能暂停，完整Wave0–7目标不缩小。

@@ -1,4 +1,9 @@
 
+### T-K03.14 会话旋转回归收尾（2026-10-10）
+Web main f7279ed4b8a1cd5f2c8ec235fcfc1f3dd3ee1b39，仅HEAD原system fixture四hunk（7+/1−），不夹带巨大mixed；真实R147 RED1FAIL/1unhandled→具名8PASS，独审无P1/P2、790保护hash一致。Root1998自然终态：完整system14files199PASS/4FAIL/0unhandled，type/lint0，日志/tmp/kokoro-session-rotation-root-{system,type,lint}.log。17异常与16旧失败消除；剩余R192一项/R195三项是Project Conversation移动/跨scope展示，未改timeout/skip、不归为Skills失败或宣称全门通过。production/服务/共享数据均未修改。
+当前main-only尚未完成：physical BFF19mixed、Storage55mixed与正式main重叠12/50路径，当前分支独有提交均0；Billing25mixed及唯一5文档提交698da77待接收；旧Web release107unique含未逐项接收的设置/连接器/导航，旧Admin worktree129mixed保留。不能通过强删或整包暂存丢弃有效职责。原Admin剩余正向写与权限浏览器验收仍OPEN，其他功能暂停，完整Wave0–7目标不缩小。
+
+
 ### T-K03.14 Shared exact download 已提交main（2026-10-10）
 Web main3f7111feee2de3ef26f817dc19f4e24d7291b48c精确13路径；三设计前缀此前7fe5cee已提交，原mixed正文/两mixed tests仍保留。Root最终17hash/774保护exact，独审同准入取消P2 shared与catalog分别真实RED后关闭，无确定残留P1/P2。Root59838自然exit0：纯163files3108PASS、contract20files278PASS、type/lint/build0，日志/tmp/kokoro-shared-download-accepted-root-*.log；已停止的两个过时Root纯门exit130不作为通过证据。
 真实正常浏览器分享摘要下载583bytes/SHA25639b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313，ZIP根SKILL.md与references/checklist.md/正文一致，原文件树读取正常。照片/tmp/kokoro-shared-exact-download-final-browser.jpg及/tmp/kokoro-shared-exact-files-browser.jpg；不借series-current、不伪造下载。
