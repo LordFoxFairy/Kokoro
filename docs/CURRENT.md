@@ -1,3 +1,11 @@
+### T-K03.14 原 Admin 会话刷新切片提交 main（2026-10-10）
+
+Admin `4b576a8` main，精确九文件，工作树 clean；保留原 Ant/IAM/System 后台，仅统一现消费者的严格本地过期判断、single-flight 刷新、取消与累计 body/deadline 边界、原 body/key/CAS 至多一次重放。迟到响应 body 清理先真实 RED1FAIL/84PASS，再修复；Root 当前默认完整 9files/85PASS、typecheck/lint/build/diff-check 全 exit0，独审 P2 关闭。最终冻结 SHA402796f91370d787021c1547c191d1427c9a48dfefe5e92de6697974285b3201。日志 /tmp/kokoro-admin-session-root-{test,type,lint,build}.log。未变权限、TTL、SQL或服务。
+
+现服务正规 HTTP me401→csrf200（原协议无 request-id）→POST session200→me200→Skills200 已实测；新浏览器消费者实际跨到期仍待验，不以纯测冒充该路径。Web `29027a3` 当前 build exit0；正式新版本4通过真实 MinIO 上传/验证/发布，浏览器 ListHub/List/Get 均200、目录和摘要可读。实测仍有弹窗硬编码 Manus、分类显示原枚举、缺可见“查看详情”；未安装 catalog 的公开包 inspection 尚缺 owner 边界，后继沿原任务收敛，禁止合成包/示例。旧个人样本 audience 命令503的原 body/key 保留，未盲重试。
+
+本轮按用户要求提交已验收切片到本地 main，未远端 push；Root 保留其余 Agent/BFF/Billing/Storage/System gitlink、Web mixed 与 uv.lock，不打包未验收修改。普通用户/其他管理员负控、Web默认 system门、Skills视觉/包详情及完整Wave0–7仍 OPEN。
+
 ### T-K03.14 四读消费者正式main与后台余命令实证（2026-10-10）
 
 Web正式29027a3a346b3bd11d44af2d5e45ed7171e20c13 main，仅10已授权代码路径；Root58208当前155files/2840PASS、type/lint/diff0，10freeze、759任务外tracked与三mixed全文保持，独审唯一网络生命周期P2已关闭。四读10s总deadline/1MiB实际累计/取消，详情Get/Download关闭换资源取消。真实新tab44目录不再“技能池加载失败”，现无匹配卡片：官方开发v2已在本轮正式撤回，不能伪造目录。完整非空卡片/详情/视觉对照、default system门仍待验；此提交不冒充整体Skills验收。

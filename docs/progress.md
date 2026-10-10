@@ -13063,3 +13063,11 @@ Root正规持久账号重新登录、用户session与原Admin无感SSO/manage/ov
 ### T-K03.14 原Admin身份消费main与浏览器实证（2026-10-10）
 
 Admin正式99e65e333444a5bffd2e1dfa50844de64dab701c main/clean，仅四路径strict消费既有bare me/subject，组织ID显式输入不假造tenant；Root99230实际74PASS/type/lint/diff0、四hash与82任务外原字节一致，独审无P1/P2。Root真实浏览器新tab43同源/manage直接进入原Ant /manage/overview，无第二次密码；点原技能模块/manage/hub真实两行个人＋官方，打开官方详情具名七命令及包按钮，已发布包按钮按状态禁用。当前有Next dev Issues提示尚未归因，不以渲染结果称无错误或全CRUD。真实HTTP版本/对象包/发布/隔离/恢复/可见范围通过证据保持；撤回/草稿删除、普通用户和另一管理员负控、完整浏览器仍OPEN。Web原owner继续正式四读消费者纠偏，未冻结不可并发验收。
+
+### T-K03.14 原 Admin 会话刷新切片提交 main（2026-10-10）
+
+Admin `4b576a8` main，精确九文件，工作树 clean；保留原 Ant/IAM/System 后台，仅统一现消费者的严格本地过期判断、single-flight 刷新、取消与累计 body/deadline 边界、原 body/key/CAS 至多一次重放。迟到响应 body 清理先真实 RED1FAIL/84PASS，再修复；Root 当前默认完整 9files/85PASS、typecheck/lint/build/diff-check 全 exit0，独审 P2 关闭。最终冻结 SHA402796f91370d787021c1547c191d1427c9a48dfefe5e92de6697974285b3201。日志 /tmp/kokoro-admin-session-root-{test,type,lint,build}.log。未变权限、TTL、SQL或服务。
+
+现服务正规 HTTP me401→csrf200（原协议无 request-id）→POST session200→me200→Skills200 已实测；新浏览器消费者实际跨到期仍待验，不以纯测冒充该路径。Web `29027a3` 当前 build exit0；正式新版本4通过真实 MinIO 上传/验证/发布，浏览器 ListHub/List/Get 均200、目录和摘要可读。实测仍有弹窗硬编码 Manus、分类显示原枚举、缺可见“查看详情”；未安装 catalog 的公开包 inspection 尚缺 owner 边界，后继沿原任务收敛，禁止合成包/示例。旧个人样本 audience 命令503的原 body/key 保留，未盲重试。
+
+本轮按用户要求提交已验收切片到本地 main，未远端 push；Root 保留其余 Agent/BFF/Billing/Storage/System gitlink、Web mixed 与 uv.lock，不打包未验收修改。普通用户/其他管理员负控、Web默认 system门、Skills视觉/包详情及完整Wave0–7仍 OPEN。

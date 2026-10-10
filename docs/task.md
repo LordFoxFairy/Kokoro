@@ -16530,3 +16530,11 @@ Web正式29027a3a346b3bd11d44af2d5e45ed7171e20c13 main，仅10已授权代码路
 ### T-K03.14-ADMIN-SESSION-CONSUMER
 
 Owner 原 apps/kokoro-admin，admin_skills_owner唯一writer，Root审查/提交/main。基线99e65e3 clean；真实草稿discard/官方withdraw已200，随后有效长ProductSession的个人详情读取401/admin_session_required。Root核现catchall正式refresh已有，browser客户端未接，不能改IAM TTL/准入/SQL掩盖。目标为原Admin共用请求协调：仅明确本地会话401触发现CSRF＋POST session，单飞、总deadline/实际body界、strict bare身份ACK，最多原请求重放一次且原body/key/headers保持；403不刷新，旋转未知不盲重试。位置比较lib/admin-session.client.ts与塞进Skillsclient：采用前者身份生命周期独立职责，拒绝后者让原IAM/System调用依赖Skills；不新目录/进程/依赖/API。bare身份schema应收敛现lib/schemas.ts的身份域，移除Skills与AppShell重复，本次不重写壳。D0仅三当前设计先收敛/冻结供Root审查，未放行前不写实施。后继预计新lib/admin-session.client.ts与test/admin-session-client.test.ts，现api.ts/api.test.ts、admin-skills.client.ts/admin-skills.schemas.ts/其client test、lib/schemas.ts和app-shell.tsx对应身份调用；实现范围待D0证实。合同已有refresh与me不变，Web/owner服务/所有业务权限和数据禁止改，五mixed不涉及。验证先真实并发401/403/原意图/未知refresh/取消RED，Root完整Admin门＋真实短access过期后无感读取/写原意图，普通用户负控保持OPEN。
+
+### T-K03.14 原 Admin 会话刷新切片提交 main（2026-10-10）
+
+Admin `4b576a8` main，精确九文件，工作树 clean；保留原 Ant/IAM/System 后台，仅统一现消费者的严格本地过期判断、single-flight 刷新、取消与累计 body/deadline 边界、原 body/key/CAS 至多一次重放。迟到响应 body 清理先真实 RED1FAIL/84PASS，再修复；Root 当前默认完整 9files/85PASS、typecheck/lint/build/diff-check 全 exit0，独审 P2 关闭。最终冻结 SHA402796f91370d787021c1547c191d1427c9a48dfefe5e92de6697974285b3201。日志 /tmp/kokoro-admin-session-root-{test,type,lint,build}.log。未变权限、TTL、SQL或服务。
+
+现服务正规 HTTP me401→csrf200（原协议无 request-id）→POST session200→me200→Skills200 已实测；新浏览器消费者实际跨到期仍待验，不以纯测冒充该路径。Web `29027a3` 当前 build exit0；正式新版本4通过真实 MinIO 上传/验证/发布，浏览器 ListHub/List/Get 均200、目录和摘要可读。实测仍有弹窗硬编码 Manus、分类显示原枚举、缺可见“查看详情”；未安装 catalog 的公开包 inspection 尚缺 owner 边界，后继沿原任务收敛，禁止合成包/示例。旧个人样本 audience 命令503的原 body/key 保留，未盲重试。
+
+本轮按用户要求提交已验收切片到本地 main，未远端 push；Root 保留其余 Agent/BFF/Billing/Storage/System gitlink、Web mixed 与 uv.lock，不打包未验收修改。普通用户/其他管理员负控、Web默认 system门、Skills视觉/包详情及完整Wave0–7仍 OPEN。
