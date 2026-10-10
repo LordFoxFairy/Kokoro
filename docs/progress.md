@@ -1,3 +1,13 @@
+### T-K03.14 IAM 后台非空 Skills 读取已修复（2026-10-10）
+
+IAM设计847ae11、正式实现5cd6d2012680bf6b9b05931635800829abd71f9c，精确四现路径：publisher repository/unit/HTTP integration/application.setup。Product原资格保留；独立configured Admin同Product tenant，在同RepeatableRead完整身份/OAuth链上额外核当前platformAdmin/version/角色完整性，无权限缓存/SQL/schema/wire/grant改动。no-store仅现POST闭集补publisher精确路径，原Guard401头缺口不放宽。
+
+Root独立默认111files1407PASS及type/lint/contract/build/diffcheck0；独审最终4hash一致无确定P1/P2。worker有效Admin先unit1FAIL＋真实HTTP1FAIL；HTTP全门先18PASS/2FAIL（过期Session/disabled client401头缺），修后20PASS。Root首工程门与integration曾重叠，工程门完全结束后重新串行跑同20HTTP PASS/0SKIP，PG目录89→89/hash一致；后继禁止同仓build/generate与integration并发。最终隔离收据var/dev/r255-preserve/r357-root-iam-admin-publisher.json。
+
+Root原IAM21412句柄missing但实际PID4514/CWD正常源码仍live，核准后只正常停止此旧源码进程，端口释放后同持久env+Node24 pnpm dev重载5cd6d20（57164，真实新PID登记processes）。readyz200，fresh正常用户→原Admin /manage/overview200、零重复consent；实际Admin publisher resolve由403→200/no-store，原后台Skills非空目录返回200且真实1项，三个身份读取均200。未重启PG/Redis/MinIO或其它服务；没有把HTTP读取称浏览器/CRUD完成。
+
+BFF Public13 CAS切片进行中：当前contract726PASS；首全test1324PASS/1FAIL/3既有SKIP，唯一architecture旧version12断言，已授现文件仅更新当前13期待，仍待冻结/Root全验。正常Web全发布链ACK/CAS/object version/explicit audience、原后台mutation和浏览器仍OPEN；完整Wave0–7 active。
+
 ### T-K03.14 用户 Skills 授权接通，真实上传后继失败（2026-10-10）
 
 Web正式3c59071d8188f025b3d7b7683bb2d8560ceaa0fa，仅既有OIDC常量和scope具名测试两路径；原10项保序追加三个已登记scope，严格redirect不放宽。Root官方IAM只读client enabled/13且authorization、skill、publisher均存在，零注册/角色/SQL变更。真实正常登录草稿先403 skill_forbidden，消费者RED5FAIL/27PASS；Root独立4suite91PASS/type/lint/diff-check0，独审无确定P1/P2，冻结两文件及五mixed匹配。重新正规登录同持久幂等键草稿201，真实draft已保存在既有private状态文件；原Admin同源SSO和四读取此时200。未重跑build/浏览器/全套，未称完整闭环。

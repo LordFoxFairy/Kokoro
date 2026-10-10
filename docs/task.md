@@ -1,3 +1,41 @@
+### T-K03.14 IAM 后台非空 Skills 读取已修复（2026-10-10）
+
+IAM设计847ae11、正式实现5cd6d2012680bf6b9b05931635800829abd71f9c，精确四现路径：publisher repository/unit/HTTP integration/application.setup。Product原资格保留；独立configured Admin同Product tenant，在同RepeatableRead完整身份/OAuth链上额外核当前platformAdmin/version/角色完整性，无权限缓存/SQL/schema/wire/grant改动。no-store仅现POST闭集补publisher精确路径，原Guard401头缺口不放宽。
+
+Root独立默认111files1407PASS及type/lint/contract/build/diffcheck0；独审最终4hash一致无确定P1/P2。worker有效Admin先unit1FAIL＋真实HTTP1FAIL；HTTP全门先18PASS/2FAIL（过期Session/disabled client401头缺），修后20PASS。Root首工程门与integration曾重叠，工程门完全结束后重新串行跑同20HTTP PASS/0SKIP，PG目录89→89/hash一致；后继禁止同仓build/generate与integration并发。最终隔离收据var/dev/r255-preserve/r357-root-iam-admin-publisher.json。
+
+Root原IAM21412句柄missing但实际PID4514/CWD正常源码仍live，核准后只正常停止此旧源码进程，端口释放后同持久env+Node24 pnpm dev重载5cd6d20（57164，真实新PID登记processes）。readyz200，fresh正常用户→原Admin /manage/overview200、零重复consent；实际Admin publisher resolve由403→200/no-store，原后台Skills非空目录返回200且真实1项，三个身份读取均200。未重启PG/Redis/MinIO或其它服务；没有把HTTP读取称浏览器/CRUD完成。
+
+BFF Public13 CAS切片进行中：当前contract726PASS；首全test1324PASS/1FAIL/3既有SKIP，唯一architecture旧version12断言，已授现文件仅更新当前13期待，仍待冻结/Root全验。正常Web全发布链ACK/CAS/object version/explicit audience、原后台mutation和浏览器仍OPEN；完整Wave0–7 active。
+
+### T-K03.14-IAM-ADMIN-PUBLISHER 实测追加边界（2026-10-10）
+
+IAM三设计Root847ae11，contractcheck/prisma validate/diffcheck0。writer已获有效Admin unit1FAIL＋真实隔离PG HTTP1FAIL，数据库目录89→89/hash保持；实现后20HTTP首18PASS/2FAIL，Session过期/client disabled均正确401但Guard前Cache-Control缺失。Root核现application.setup.ts已存在POST no-store闭集而缺publisher精确路径，授权仅此现数组追加publisher路径（落实现错误契约，非权限或scope变更）；原两失败不放宽，全部20例复跑。实现范围最终repository＋unit＋integration＋application.setup四现路径，shared fixture无需改；Root暂不并发Prisma generate/build。
+
+BFF三设计Root8889701，当前12.0.0 contract:check716PASS/0FAIL/0SKIP及内含serialbuild0，已授Public13完整三mandatoryCAS自洽切片，Root最终验收提交。普通用户/原Admin与完整Wave0–7未验收。
+
+### T-K03.14-BFF-PACKAGE-CAS（2026-10-10，文档门进行中）
+
+Root批准BFF公共契约当前12.0.0→目标13.0.0（required收紧，URL仍/v1）。Begin/Complete/Validate三项expected_state_version必须；其余已required的publish/audience/metadata/cover/withdraw/admin保持，个人createVersion不修改base保无CAS例外。Create→Begin→真实PUT对象version→Complete→Validate→显式audience Publish，下一请求只能来自上次真实ACK/owner GET观察；samekey重放冻结原body/CAS/digest，未知ACK不换key/不改CAS。BFF只验入与转发，无新增SQL/业务事务。
+
+基线/owner：/Users/nako/.codex/worktrees/kokoro-r257-bff-normal b097f64 clean，bff_platform_pin_owner唯一writer，Root提交。阶段一仅现三设计文档；Root审后另授contract/parser/client/route/projector/具名门禁测试和正规generated的自洽切片，不动ownervendor/Proto/SQL/IAM/Storage。历史不可编辑owner向量不是production兼容路径。正常用户Web3c59071缺ACK state_version、CAS、真实PUT version及publish body，必须后继整条接线，不只修Begin。release c9b02b6与当前Web非直接祖先，禁止整体复制恢复替代Admin。原Admin后继沿既有组件接七具名CAS，不新壳/泛代理。完整Wave0–7仍active。
+
+### T-K03.14-IAM-ADMIN-PUBLISHER（2026-10-10，文档门进行中）
+
+Root原登记IAM句柄21412实际missing，但真实PID4514继续监听53711；未因此重启。fresh正规Admin解码现会话仅内存token调用实际publisher-profiles/resolve，同本人ref返回403 PERMISSION_DENIED、no-store=true。故非空列表失败的IAM边界已真实验证。
+
+| 项 | 裁决 |
+| --- | --- |
+| Owner/基线 | IAM tenancy/organization/publisher-profiles；iam_admin_redirect_owner唯一writer，Root审查/提交；89a6503 clean |
+| 当前/目标 | Product-only publisher当前挡独立Admin；保留Product原行为，增exact configured独立Admin同Product tenant且当前合法platformAdmin分支 |
+| 放置/粒度 | 扩现repository与既有unit/integration；淘汰新Admin endpoint/helper/第二份publisher模型，不改共享资格helper |
+| 依赖 | 复用OAuth纯资格policy、tenancy当前事实helper、角色完整性policy；资格policy不是授权票据；Admin不得用input client自填固定配置 |
+| 数据/API | 现单RepeatableRead中核session/user/tenant/member/client/scope/resource/binding以及Admin当前platformAdmin/version和role完整性；无SQL/wire/scope/generated改变，无缓存 |
+| 删除/排除 | 修文档旧Product-only规则；不删除Product限制，无fallback；禁止BFF/config/grant/schema/sharedpolicy修改及正常数据操作 |
+| 文档门范围 | 仅现TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL三文档，先冻结+contractcheck交Root，批准后再授实现 |
+| 实现后继范围 | publisher-profiles.repository.ts、既有unit与integration、internal-http-application测试fixture仅独立Admin接线；writer不操作index/commit/服务 |
+| 验证 | Admin有效先RED→200；Product不回归、第三client/跨tenant/撤权同token/坏version/roles/client/resource/scope/binding拒绝；现隔离PG+Redisprefix HTTP、unit/contract/type/lint/build；Root正常非空列表复验 |
+
 ### T-K03.14 后继契约接线（2026-10-10，待 owner 设计审查）
 
 只读核当前真实失败后，已确定两处独立边界：①Platform package RPC必须expected_state_version>=1；Web begin输入未包含该字段，BFF仅optional透传。下一由BFF owner先核公开契约/设计把CAS前置条件与当前owner统一，再Web消费者按真实state_version提交；不填常数或绕过并发控制。②有真实draft后Admin list首次需要iam_user publisher enrichment；IAM publisher repository仅接纳ProductWeb固定client，独立Admin即使有publisher scope仍被拒。空目录之前未调用resolve，原200不证明有记录读取。此项为源码强证据推断，仍待实际IAM边界safe status复验后由IAM owner按已配置Admin身份精确修正，不用Product token替换Admin、不松成任意client。Root保留真实draft和同幂等键，无对象上传，分别由owner完成设计/RED/实现，最后Root正常用户及原Admin有数据验收。
