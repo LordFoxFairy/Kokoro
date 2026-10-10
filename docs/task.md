@@ -1,3 +1,7 @@
+### T-K03.11 真实目录内容阻断已复现（2026-10-10）
+
+Root 以既有登录会话只读打开运行中 `/app/skills`。页面没有加载失败，但目录确实只显示 R267/R323/R324/R350/R255/R264/R275/R301/R306/R314/R357 等历史验收技能；没有任何正式官方技能卡片、封面、使用量或真实示例。这与 `ListHubSkills` 的 `official=0` 读取一致，证明当前问题是内容/发布事实缺失而非 Web 筛选或请求失败。Root 未把验收数据伪装成官方、未抓取或复制 Manus 内容、未自动发布任何草稿。要达到用户要求的 Manus 目录效果，需要经实际 owner 发布的 Kokoro 官方技能包及其真实封面、示例、分类和统计来源；该数据闭环仍 OPEN，不能靠 CSS 修复替代。
+
 ### T-G00 Root 发布基线仍未达标（2026-10-10）
 
 Root 重跑统一门：`verify-ten-repository-standard.py` 当前报告 **166** 条规则违规（BFF 36、Billing 34、IAM 31、Platform 23、Agent 14、Web 14、Storage 11、Scheduler 3）；`verify-repository-topology.py` 报告 9 个 runtime module，但 `kokoro-app`、`kokoro-bff`、`kokoro-agent`、`kokoro-iam`、`kokoro-system`、`kokoro-billing`、`kokoro-storage` 的 checkout HEAD 与 Root 记录的 gitlink 不一致。随后启动的 `python3 -m pytest scripts/tests` 已自然结束，但此次调用未保留可复核的终态摘要，因此不记录为通过或失败。上述基线直接否定“可正式发布”结论；未重置子仓、未回退任何工作树，也未把 gitlink 指针改写为当前候选。下一轮将按 owner 与既有任务卡逐项处理，不以局部 Skills/Admin 绿门替代 Root 发布验收。
