@@ -1,7 +1,7 @@
-### 2026-10-10 当前正式收尾基线（Root89477f31后继）
+### 2026-10-10 当前正式基线（Skills已批准主链收尾，连接器续接）
 
-Web mainb7dbfe8；Platform main1eeac36（tree与91bc3655相同）；原Admin main97cc927（原意图恢复已接收），同源3310/manage；正式BFF apps/kokoro-bff maine1769b56；正式Storage apps/kokoro-storage main4ab2f23；System main1460820 owner bounds已验/消费者待pin；Agent mainee736cd。GitHub导入与分享精确revision消费者已交付，真实固定包下载及嵌套文件树已验；不要恢复下方历史伪入口或重做已验布局。
-当前T-K03.14仅收尾系统失败、原Admin未验项与旧分支接收。系统最新Root81727自然exit0：14files203PASS/0FAIL/0unhandled、type/lint0；四项旧Project交互fixture只补真实Toggle展开和显式原会话选择，mainb7dbfe8仅15行，无production/timeout/skip改动；Web两mixed测试/三mixed文档及其它owner未交接字节保留。BFF/Storage已回apps正式main，旧完整保全非活动；Billing本地main25e7103历史链及owner-schema失败fixture已复验接收、25mixed保留；旧Web两refs已验证bundle归档；未承接有效职责仍待逐项接收。其它功能依用户要求仍暂停；完整Wave0–7目标保持，Billing最后。下方较旧“下一执行/尚未实现”只属历史。
+Web main567af6fe；Platform main1eeac36（物理kokoro-capability，目标重命名未完成）；原Admin main97cc927，同源3310/manage；正式BFF apps/kokoro-bff main4239cf1（e1769b56源码仅新增MCP三设计短前缀）；Storage main4ab2f23；System main1460820；Agent mainee736cd；Billing main25e7103。Root及12子仓本地仅main。Skills已批准主链/真实文件树/原Admin已验，不恢复旧伪入口或重复该收尾；AI仅composer/录制未实现不冒全部功能。
+当前连接器T-K03.13：Platform本人10方法已发行，BFF四read仅contract且实际self guard503；Web旧custom提交/api/hub/self/connectors/mcp404，静态推荐无连接操作，Settings仅真实active六字段投影。正常Platform PID44292 surface不含mcp-personal；原Web owner本阶段转BFF唯一writer按A1接四read，Root独占正常激活/资源/Git。个人CRUD/授权→connection/原Admin provider管理完整后继保留，读取片不冒闭环。五Web mixed、Billing25mixed、Agent build与uv.lock未接收保留；完整Wave0–7 active、Billing最后。下方均历史，不覆盖本当前态。
 
 ### 2026-10-10 当前已验收基线（Root）
 
