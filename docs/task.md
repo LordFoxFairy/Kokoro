@@ -4,6 +4,8 @@
 - 范围：原manus详情tsx/css、现i18n、return-target/test、hub adapter/test、正式BFF snapshot及资格test/generator（先盘点准确闭集），现INDEX；新增同hub风格share schema/client及test、src/app/skills/shared/[id]/page.tsx和test。preview缺UID不伪造身份；如移除fakeShare须单独列精确两现路径。原conversation /shared 不改。
 - 行为：POST原六字段ACK严格source_ref/同源URL；unknown不自动重建；复制失败只复用ACK；真实caller精确UID摘要及文件树，不current冒旧版本、不伪造已安装/品牌/封面/示例。保持异步原正文不跳动、10s取消预算/资源切换隔离。
 - 验收：先真实RED，冻结后Root纯门/type/lint/build/契约、现浏览器创建复制/另一页面精确版本/详情树/撤销权限；worker不Git/服务/共享数据修改。完整Skills/Admin尚未闭环。
+- 最窄追加：Root实核现installation request无总deadline/body界，批准src/hub/client.ts和tests/hub/client.test.ts仅installation request10s/1MiB取消cleanup，其他Hub/schema不动，最终共33路径同片冻结。
+- main-only当前：Root复核ancestor main且无worktree绑定后安全-d删除8个已合并分支；System clean/HEAD=main1460820切main并-d其已合并分支，原Admin现仅main。其它未合并/bound/mixed保留待接收，不冒所有仓main-only完成。
 
 ### T-K03.14-BFF-SHARE-REVISION（2026-10-10；BFF已验收、Web接线进行中）
 - 目标：Skills分享仍读所分享的精确发布revision，完整摘要和文件树，不把series最新元数据当旧版本；只收尾Skills/原Admin，其他模块暂停。
