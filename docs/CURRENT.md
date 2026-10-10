@@ -1,3 +1,8 @@
+### T-K03.14 精确发布revision与普通用户权限（2026-10-10）
+Platform main91bc3655精确26路径已验收：Root36158九门自然exit0，default134files/2227PASS/405既有SKIP；Root49276独立临时PG19PASS/0SKIP，669保护/27授权hash最终一致、独审无P1/P2。PG首次56329测试已完成但shell只读status变量导致driver退出1，修runner后独立完整重跑49276自然exit0，保原日志；SQL/历史v10不变。来源日志/tmp/platform-revision-root-*.log，不冒BFF/Web消费或运行cutover。
+普通fixture正规注册/真实邮件验证/正式member邀请后，独立Web权限200 false/noURL、Admin正规callback403 admin_required/无RPcookie、API401 admin_session_required；Root另独立读回200false/401通过（/tmp/kokoro-ordinary-root-readback.json）。浏览器普通菜单隐藏未验。原浏览器长闲会话探针200 authenticated:false保正文，经正常同源login/现IAM SSO无需密码回skills，alert消失、三安装保持，截图/tmp/kokoro-skills-session-restored.jpg；不因失效重启/改认证。
+下一只补Share受准旧revision完整摘要及Web正式接线，再最终Skills/原Admin验收与全仓main-only；其它模块保持暂停、未交接mixed/活跃worktree保留，完整Wave0–7 active。
+
 ### T-K03.14 当前收尾（2026-10-10）
 Platform D0三设计main e0f507d8已审查，3hash/688保护/历史suffix/diffcheck一致，独审无P1/P2；原writer只实施精确发布revision读取，真实首RED9FAIL/120PASS，代码尚未验收。分享仍待owner正式发行与BFF/Web接线，不称Skills完成。
 实际9应用＋原Admin探测：System/BFF/Storage/IAM/Scheduler/Platform/Billing ready200，Web/Admin页面200；Agent匿名health401是资格边界，不冒健康正控。发现本地SMTP缺失后启动官方固定Mailpit v1.31.4 digest b68349e3、本地1025/8025捕获且messages200，登记既有ignored进程表；未重启其他服务。普通fixture正式注册200／真实邮箱verify302已完成，当前缺Product membership403，原Admin owner仅沿既有Web正式邀请继续，未授管理员/改SQL。

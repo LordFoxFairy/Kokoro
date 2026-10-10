@@ -9,7 +9,7 @@
 | 数据/API | tenant/audience/status/UID/series/revision绑定；无新增SQL事实；三设计说明当前/目标和响应语义 |
 | 删除项 | 无兼容/fallback，不恢复历史模块；后继删假复制URL行为，不构造SkillCard |
 | 验证 | 旧revision与新current不同仍旧值；跨tenant/owner-only/撤回/隔离/source错配；Root owner全门和浏览器 |
-| 状态 | D0三设计main e0f507d8；Root三hash/688保护/历史suffix与diffcheck通过、独审无P1/P2。仅原platform_expand_review后继实现，Root统一审查提交；整体Skills/Admin未验收 |
+| 状态 | owner实现main91bc3655已验收；Root九门exit0/default2227PASS、真实PG19PASS，独审无P1/P2、669保护一致；BFF/Web消费及Skills整体尚未验收 |
 
 平台后继：唯一writer platform_expand_review，main e0f507d8／clean；闭集以本仓三设计前缀的准确allowlist为准，独立skill-product-revision-read-v1/1.0.0、75/39/24、固定74父inverse，历史v10与SQL不动。先RPC缺失/旧revision/current不同及资格真实RED，再实现；新入口在准入前拒admin purpose、独立active+validated闸，不收紧原通用productRecord。完整owner门与隔离真实PG、Root重跑后才发行给BFF/Web。禁止重启/清数据/扩模块，Root独占Git。
 
