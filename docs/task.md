@@ -16614,3 +16614,5 @@ Web main `3d2b419f971aaa3478b22d7f4e96f34190dff79b`，精确五现路径。新�
 本切片不扩大到GitHub/Agent/其他功能，不新API；后继完整Skills CRUD与原Admin功能继续按同一计划。
 
 T-K03.14-WEB-LOCAL-IMPORT D0正式Web main43d4d08：Root仅三prefix+HEAD精确index79行，原mixed全文及769保护保持，独审无确定P1/P2；现准原owner第一个网络切片，新src/hub/skill-local-import.schema.ts、skill-local-import-client.ts、skill-package-transfer.ts及tests/hub/skill-local-import-client.test.ts、skill-package-transfer.test.ts；现src/hub/skill-publish-client.ts、src/app/api/hub/[...path]/route.ts、tests/hub/skill-publish-client.test.ts、tests/app/hub-proxy.test.ts。先真实未接四route/PUT required_headers/proof/期限RED，严格owner响应/错误/身份与取消，保原publish60s；不得写UI/flow/旧网络删除/三mixed正文与两mixed tests。网络片冻结Root复验审查后才串行统一两入口，避免大块无门改造。
+
+T-K03.14-WEB-LOCAL-IMPORT网络片真实RED：正式Begin同源路径404（期待201），原PUT成功ACK未取消body（期望1次，实际0）；focused2FAIL/120PASS，日志/tmp/kokoro-local-import-network-red.log。原Webowner仅九授权路径实施，尚未冻结，不跑其最终门。Root本轮非破坏性核源服务：Web3310/同源manage3310及原Admin3320/manage均200，BFF/IAM/System/Platform/Storage/Billing/Scheduler ready200，Agent53763 ready401为认证边界；MinIO health200。原Admin根/实际404是basePath入口，不误报进程停机；PID14310仍监听，零重复启动/重启/清数据。完整Wave0–7保持active，网络/上传浏览器未验收。
