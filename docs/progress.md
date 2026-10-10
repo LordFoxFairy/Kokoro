@@ -1,3 +1,7 @@
+### T-K03.14 原Admin后继设计已审（2026-10-10）
+
+原Admin三份必要本仓设计正式b5d876095efd111664399affad69b8f09b715417，Root逐hash核验/diffcheck，独审无确定P1/P2。保留原Ant/IAM/System与同源/manage；七命令、fresh准入/精确错误/CAS/原意图、分页与新资源身份边界确定；无业务SQL/新后台，尚未派代码。新版本包上传缺owner契约仍OPEN，不能以七按钮或文档称全后台成功。Web同片继续正式安装完整shape迁移，Root待冻结后串行纯门＋真实链，不并发编辑或重启共享设施。完整Wave0–7 active。
+
 ### T-K03.14 BFF精确权限错误契约正式发布13.1（2026-10-10）
 
 Root正式2f3678736287241bbe620e087ab3b0da95fd2fb8，artifact SHA256418db9504b179d29113385f334628d304130491d4bbc86169e20c712cf2cd045，136operations与/v1不变。六路径冻结/677保护一致，独审无确定P1/P2；Root串行contract729PASS、默认1328PASS/0FAIL/3既有SKIP、lint/type/build/diff0。26实际skill action的403精准接skill_forbidden，安装仅三个mutation挂窄403组件；Get/managed/inspection不扩大。runtime/权限/SQL均未变，不做无意义重启。
