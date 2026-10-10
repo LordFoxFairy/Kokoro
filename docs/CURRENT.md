@@ -1,3 +1,7 @@
+### T-K03.14 active v10 功能合并已提交，整体闭环未完成（2026-10-10）
+
+Platform 合并提交634c83b＋安装工具摘要修正e2f6dbf，当前clean；Root初次stage沿旧freeze清单漏两新hash编辑，commit后status实际发现，立即具名独立提交补齐，不将中间不一致提交放行。固定e2f6dbf纯门121files/2059PASS；相同源码/SQL工具最终候选的真实integration37files/500PASS/4既有SKIP、235.52s及七工程门通过。独审当前晋升/明确current P1关闭、无新增确定P1/P2；当前current NULL/私有零回退、current2不取higher3均实际PG验证。正常服务/消费者未切、未改gitlink/共享基础设施，Web/Admin真实操作和供应链仍待后继，完整Wave0–7保持active。
+
 ### T-K03.14 合并首次 Root 全门失败，继续原 owner 修正（2026-10-10）
 
 原 writer 冻结91路径、599保护文件后，Root在同冻结字节跑完整纯门：121files，2058PASS/1FAIL，缺本仓外私有parent文件。Root已以f971064真实canonical a2f84dad固化 scripts/local-skill-import-parent.prisma.snapshot，单元2PASS，最终全门仍待重跑。真实integration原句柄17551自然终止，236.58s、37files、487PASS/6FAIL/4SKIP，另1suite因缺精确parent配置setup失败；失败涉及MCP历史DDL摘要3项、freshcatalog旧期待1项、NULL source-version fixture2项，负控不得删除或放宽。
