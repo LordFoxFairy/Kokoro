@@ -12900,3 +12900,9 @@ Root 明确指定 Platform 固定提交 `e2f6dbf213eb551f71a85628587c96cda790a31
 Platform `32666c1c18360e707048a1104efe6b50e375002f` 已由Root具名提交，clean，仅rpc-handler与原admin admission测试两文件。先正式Admin RPC四reason实际RED4FAIL，修后Root65PASS，typecheck/lint/build/diff-check均exit0；独审冻结hash一致、原P2关闭、无新增确定P1/P2，权限/绑定/发布业务未改。首次Root查看diff错用相对-C路径报错，未写文件，实际测试正常；随后正确工作目录核diff/hash并提交。此提交承接正常5b2d35e稳定错误语义，不再以机器artifact相同推断运行无回归。
 
 BFF pin writer原e2候选已冻结，正规生成零generated字节差异；现沿同卡续派改固定最终32666c1并跑门，Root独占提交。正常服务/共享资源/数据未改，完整Web/Admin与发行安全门仍OPEN，Wave0–7保持active。
+
+### T-K03.14 BFF 最终固定消费者已提交（2026-10-10）
+
+BFF正常worktree正式 `b097f64d132ba947bfcaf1e6324dcaeee9005451` clean，固定Platform `32666c1c18360e707048a1104efe6b50e375002f`。87正式vendor逐字节原样更名、旧current删除，生成客户端零变；只current pin/生成出处摘要与具名测试引用更新，无业务/public API/SQL/权限改动。独审770freeze记录（含87删除）全匹配、575任务外tracked原字节保留、无新增确定P1/P2。Root实际重跑contract716PASS、默认test1315PASS/0FAIL/3既有SKIP及lint/type/build/diff-check通过；日志 `/tmp/kokoro-bff-32666c1-root-{contract,lint,type,test,build}.log`，原句柄89559自然exit0。Root初次freeze校验未处理sha=null删除项误报，随后按实际absence语义复核0差异后才提交。
+
+Platform最终32666c1真实IAM/Storage/PG Connect复跑4PASS、run-owned资源0，日志 `/tmp/kokoro-platform-32666c1-connect-smoke.log`，原句柄36759自然exit0。正常b5与326 canonical Schema git diff为空，未执行DDL。当前源码/消费者已收敛，但正常Platform仍b5旧checkout，未重新加载正常服务，Web/原Admin完整用户路径与供应链门仍待验；不把716/1315纯门称全产品闭环。下一Root按原配置维护重载→正式双身份用户/后台操作，不重复启动基础设施，Wave0–7 active。
