@@ -1,3 +1,9 @@
+### T-K03.14 Web冻结候选 Root 全纯复验仍失败（2026-10-10）
+
+Web实际HEAD79d171071facaec3ff1ed27176ce469c05f8f93d，最终候选manifest `/tmp/kokoro-web-publish-final-freeze.json` 的34路径hash经Root逐一核对一致；738任务外保护由writer交付，Root完整保护复核待后继。原writer已停写，未提交、未重启。Root原树实际74767终态exit1：155files，2778PASS/12FAIL，日志 `/tmp/kokoro-web-publish-root-all-pure.log`，与writer全纯输出一致；32suite582PASS不能替代全门。
+
+失败5文件：contract/api-contract旧8.0/digest与正式13.1冲突；两个Skills组件i18n；app-frame-rail/app-frame.smoke/workspace-rail导航或额外请求断言9项尚未归因，不能称历史失败或擅改预期。独审另定位publish client错误code/status未逐operation闭集，待精确修复与真实RED。Root首次hash脚本误将manifest相对键当绝对路径而FileNotFound，未改任何文件；改按manifest root拼接后34hash全一致。下一按确定缺口授权原writer最小修复，再Root冻结审查/串行工程门/正常持久发布安装CRUD；原Admin仍D0待派，浏览器及完整Wave0–7保持OPEN。
+
 ### T-K03.14 原Admin后继设计已审（2026-10-10）
 
 原Admin三份必要本仓设计正式b5d876095efd111664399affad69b8f09b715417，Root逐hash核验/diffcheck，独审无确定P1/P2。保留原Ant/IAM/System与同源/manage；七命令、fresh准入/精确错误/CAS/原意图、分页与新资源身份边界确定；无业务SQL/新后台，尚未派代码。新版本包上传缺owner契约仍OPEN，不能以七按钮或文档称全后台成功。Web同片继续正式安装完整shape迁移，Root待冻结后串行纯门＋真实链，不并发编辑或重启共享设施。完整Wave0–7 active。

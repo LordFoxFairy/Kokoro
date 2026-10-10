@@ -12994,3 +12994,9 @@ Admin 正式952304b（codex/r357-admin-read-scope），只现config.ts/config.te
 Root以正式IAM BrowserAuthorizationScopeService运行append-only扩展，updated后官方＋持久snapshot读回current13/24。首私有runner未装RequestContext返回unknown；先读回legacy8证实未写，再按正式CLI相同上下文修正执行，无盲重试。重新正常用户登录后新范围首次触发真实consent，使用签名CSRF表单明确agree；后续再登录consentCount=0、/manage/overview200、Admin sessionauthenticated=true，Skills/members/invitations/roles四读取均200；无凭据四读取均401。未冒充普通已登录用户负控。最初shell for path触发zsh PATH特殊变量导致curl未找到，随后换endpoint真实重跑四负控，未影响服务。
 
 实际Skills目录返回skills/next_cursor，当前skills为空0，未伪造官方内容。HTTP读链不是页面/管理CRUD或普通用户权限整体证据；下一在既有Skills管理面用正式上传/发布链创建真实开发样本并验证状态命令与目录/详情。身份管理旧页面尚有历史API待后继，不把四200称全部后台完成。记录var/dev/r255-preserve/r357-admin-read-scope-receipt.json；正常共享资源不重置，完整Wave0–7继续active。
+
+### T-K03.14 Web冻结候选 Root 全纯复验仍失败（2026-10-10）
+
+Web实际HEAD79d171071facaec3ff1ed27176ce469c05f8f93d，最终候选manifest `/tmp/kokoro-web-publish-final-freeze.json` 的34路径hash经Root逐一核对一致；738任务外保护由writer交付，Root完整保护复核待后继。原writer已停写，未提交、未重启。Root原树实际74767终态exit1：155files，2778PASS/12FAIL，日志 `/tmp/kokoro-web-publish-root-all-pure.log`，与writer全纯输出一致；32suite582PASS不能替代全门。
+
+失败5文件：contract/api-contract旧8.0/digest与正式13.1冲突；两个Skills组件i18n；app-frame-rail/app-frame.smoke/workspace-rail导航或额外请求断言9项尚未归因，不能称历史失败或擅改预期。独审另定位publish client错误code/status未逐operation闭集，待精确修复与真实RED。Root首次hash脚本误将manifest相对键当绝对路径而FileNotFound，未改任何文件；改按manifest root拼接后34hash全一致。下一按确定缺口授权原writer最小修复，再Root冻结审查/串行工程门/正常持久发布安装CRUD；原Admin仍D0待派，浏览器及完整Wave0–7保持OPEN。
