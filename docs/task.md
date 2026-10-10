@@ -1,3 +1,7 @@
+### T-K03.14-WEB-PACKAGE-READER-PRESENTATION 纠偏（2026-10-10）
+
+用户明确要求点击查看详情进入原Manus式独立文件夹树，93e3332简介下平铺实现不符合展示验收；该commit只证明真实读链，不是视觉合格。沿原Web writer仅现manus-skill-detail-dialog.tsx/CSS与相邻UI test局部纠偏：真实path分段构成可折叠树、右侧真实内容独立滚动，同一Dialog稳定模式切换，复用旧视觉壳但禁止假文件/合成YAML。先真实视觉结构RED，再focused/type/lint冻结，Root复验/提交。安装另由owner只读核series resolver/ACK身份，暂不因名称推断改消费者；Root新tab48真实目录已添加，摘要加载后已添加按钮禁用、查看详情可用，当前不是所有安装失败的证据。具体未安装/停用安装及成功后原弹窗同步仍待实证，不隐去用户报告。完整Skills与Wave0–7保持OPEN。
+
 ### T-K03.14 真实包详情提交 main（2026-10-10）
 
 Web main `93e33329bce76c07e3f0a44dcebbccb1e0efdbd4`，精确十路径；Root 核最终 freeze277cbacd 的10 hash及762任务外保护一致，独审无确定P1/P2。真实RED5FAIL/223PASS→focused239PASS；Root18696终态实际155files/2890PASS、type/lint/build exit0，日志 /tmp/kokoro-catalog-package-root-{pure,type,lint,build}.log。未跑默认system门，不冒全仓绿。真实新tab47正规目录→摘要→查看详情→owner实际SKILL.md正文→语义按钮返回简介通过；URL始终/app/skills，样本只有SKILL.md，其他文件切换仅纯测，未冒真实多文件验收。截图 /tmp/kokoro-catalog-package-browser.jpg。旧tab46焦点CDP超时，使用同浏览器新标签验证，无服务重启。
