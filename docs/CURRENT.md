@@ -1,3 +1,7 @@
+### T-K03.14 导航fixture正式main收尾（2026-10-10）
+
+Web正式2e69b3b63ad4ac935752e4ad0b69ee1ce964f564 main，仅三授权导航测试隔离admin-access读取，原业务断言完整保留；769保护与五mixed hash核对一致，独审无P1/P2。Root18182实际全纯155files/2810PASS、type/lint/diff0，九原导航失败已闭合。Root25780默认全测试实际168suite通过/2932PASS/81SKIP、1system suite失败：未改mixed OIDC HTTP compile readiness /app返回307；没有排除后冒称默认全绿。日志 /tmp/kokoro-web-nav-root-{all,pure,type,lint}.log。原Admin七命令/四包候选仍由原owner修最后duplicate JSON与意图边界，未冻结未提交，完整Wave0–7和浏览器/系统门OPEN；未远端push。
+
 ### T-K03.14 原Admin接线实施与两切片正式收尾（2026-10-10）
 
 BFF正式939bf0e main：仅现policy两行精确四包method/raw path＋现准入测试，681保护/机器Public13.1不变；独审无P1/P2，Root76479实际build/21PASS/type/lint0。Root核原21300 listener/CWD，正常TERM并证端口释放，复用原私有配置定向重载；27501新句柄/listener45477/supervisor45456，readyz200，私有registry已更新。只重启需新policy的BFF，其它PG/Redis/MinIO及应用保持。

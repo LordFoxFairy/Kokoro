@@ -16499,3 +16499,7 @@ Web原owner独立小修唯一writer，与BFF policy不同仓；maincce0a2c＋五
 Root已两次实证Git79d1710基线9FAIL240PASS与当前12f3879全纯2798PASS9FAIL同九导航失败。原Webowner唯一writer仅现tests/ui/app-frame-rail.test.tsx、tests/ui/app-frame.smoke.test.tsx、tests/ui/workspace-rail.test.tsx精确fixture接线；不得改生产/布局/权限/断言/预期调用数。先原失败具名RED，给/api/admin-access显式真实形状非管理员Response与独立mock；conversation/upload fetchMock仍保持原严格调用次数/Move资格/项目过滤断言，断言新admin请求本身闭集路径，不过滤调用记录、不跳过或放宽断言。若生产根因或范围更大先停报。Root测试/审查/提交main，五mixed原字节保护；其它测试不改、不新增helper目录。
 
 T-K03.14-ADMIN-SKILLS-IMPLEMENT追加现lib/server/config.ts/config.test.ts仅复用BFF正式KOKORO_STORAGE_OBJECT_ORIGIN/exact origin；无新env命名，不破坏SSO/其它管理。先RED，Root私有配置负责。Web i18n12f3879/BFF准入939bf0e均Root复验提交main；后台原writer继续，未完成。
+
+### T-K03.14 导航fixture正式main收尾（2026-10-10）
+
+Web正式2e69b3b63ad4ac935752e4ad0b69ee1ce964f564 main，仅三授权导航测试隔离admin-access读取，原业务断言完整保留；769保护与五mixed hash核对一致，独审无P1/P2。Root18182实际全纯155files/2810PASS、type/lint/diff0，九原导航失败已闭合。Root25780默认全测试实际168suite通过/2932PASS/81SKIP、1system suite失败：未改mixed OIDC HTTP compile readiness /app返回307；没有排除后冒称默认全绿。日志 /tmp/kokoro-web-nav-root-{all,pure,type,lint}.log。原Admin七命令/四包候选仍由原owner修最后duplicate JSON与意图边界，未冻结未提交，完整Wave0–7和浏览器/系统门OPEN；未远端push。

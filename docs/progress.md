@@ -13027,3 +13027,7 @@ BFF正式939bf0e main：仅现policy两行精确四包method/raw path＋现准�
 Webi18n正式12f3879 main：四路径/768保护与五mixed保持，独审无P1/P2；Root25766实际70PASS/type/lint0。最终全纯75525终态2798PASS/9FAIL（155files），唯一Manus硬编码失败已消除，剩九原基线导航失败保留，不称整体工程全绿；后继原owner只改三个fixture明确隔离新的admin-access请求，业务IO次数/Move资格断言不放宽。
 
 原Admin三实施设计377406e，原Ant/IAM/System壳保留；唯一writer admin_skills_owner基线codex/t-k03-14-admin-skills，Root当前默认baseline19PASS；新功能真实RED9FAIL27PASS后完整七命令＋四包链/严格ACK/意图/分页/异步实施中，未冻结未验收。准增加现config.ts/config.test.ts复用BFF既有KOKORO_STORAGE_OBJECT_ORIGIN，仅package准入缺配置明确不可用，不破坏原SSO/其它管理，不新env事实/数据库/依赖。用户要求快速commit/main继续按真实冻结审查放行；功能未完不因main字样称整体闭环，完整Wave0–7 active。
+
+### T-K03.14 导航fixture正式main收尾（2026-10-10）
+
+Web正式2e69b3b63ad4ac935752e4ad0b69ee1ce964f564 main，仅三授权导航测试隔离admin-access读取，原业务断言完整保留；769保护与五mixed hash核对一致，独审无P1/P2。Root18182实际全纯155files/2810PASS、type/lint/diff0，九原导航失败已闭合。Root25780默认全测试实际168suite通过/2932PASS/81SKIP、1system suite失败：未改mixed OIDC HTTP compile readiness /app返回307；没有排除后冒称默认全绿。日志 /tmp/kokoro-web-nav-root-{all,pure,type,lint}.log。原Admin七命令/四包候选仍由原owner修最后duplicate JSON与意图边界，未冻结未提交，完整Wave0–7和浏览器/系统门OPEN；未远端push。
