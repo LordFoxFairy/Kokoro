@@ -1,3 +1,9 @@
+### T-K03.14 原Admin冻结复门与真实浏览器目录失败（2026-10-10）
+
+Root40711实际原Admin8files62PASS/type/lint/diff0，43885 build0；19冻结hash与67任务外tracked原字节一致。独审发现readJsonBody声明长度不等于实际读取边界：arrayBuffer缺慢流deadline/取消，尚不放行；同原writer仅该函数与adapter具名流负控RED修复，七命令/四包链其余冻结保持。Root私有Admin配置已复用既有BFF KOKORO_STORAGE_OBJECT_ORIGIN同步（0600），服务重载待最终冻结，不新建配置事实。
+
+当前真实浏览器tab42打开/app/skills呈“技能池加载失败”；重试两个List操作均200。ListHubSkills实际skills/tagOptions，真实item含publishStatus和完整currentVersion；现Web严格schema漏字段而拒绝，原owner只读直接导入consumer逐项复现确定解析失败。不是服务没启动，也不伪造目录；下一精确按正式BFF939bf0e机器schema闭合三读/下载消费者，先RED。系统307失败另已定位旧/login期待与真实/login?return_to=%2Fapp冲突，但该system文件mixed尚未交接，不擅改。完整Wave0–7、真实Admin命令/权限负控和浏览器仍OPEN。
+
 ### T-K03.14 导航fixture正式main收尾（2026-10-10）
 
 Web正式2e69b3b63ad4ac935752e4ad0b69ee1ce964f564 main，仅三授权导航测试隔离admin-access读取，原业务断言完整保留；769保护与五mixed hash核对一致，独审无P1/P2。Root18182实际全纯155files/2810PASS、type/lint/diff0，九原导航失败已闭合。Root25780默认全测试实际168suite通过/2932PASS/81SKIP、1system suite失败：未改mixed OIDC HTTP compile readiness /app返回307；没有排除后冒称默认全绿。日志 /tmp/kokoro-web-nav-root-{all,pure,type,lint}.log。原Admin七命令/四包候选仍由原owner修最后duplicate JSON与意图边界，未冻结未提交，完整Wave0–7和浏览器/系统门OPEN；未远端push。

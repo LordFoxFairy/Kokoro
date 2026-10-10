@@ -16503,3 +16503,5 @@ T-K03.14-ADMIN-SKILLS-IMPLEMENT追加现lib/server/config.ts/config.test.ts仅�
 ### T-K03.14 导航fixture正式main收尾（2026-10-10）
 
 Web正式2e69b3b63ad4ac935752e4ad0b69ee1ce964f564 main，仅三授权导航测试隔离admin-access读取，原业务断言完整保留；769保护与五mixed hash核对一致，独审无P1/P2。Root18182实际全纯155files/2810PASS、type/lint/diff0，九原导航失败已闭合。Root25780默认全测试实际168suite通过/2932PASS/81SKIP、1system suite失败：未改mixed OIDC HTTP compile readiness /app返回307；没有排除后冒称默认全绿。日志 /tmp/kokoro-web-nav-root-{all,pure,type,lint}.log。原Admin七命令/四包候选仍由原owner修最后duplicate JSON与意图边界，未冻结未提交，完整Wave0–7和浏览器/系统门OPEN；未远端push。
+
+T-K03.14-ADMIN-SKILLS-IMPLEMENT复门：Root62PASS/type/lint/build0；独审P2仅readJsonBody有界累计/deadline/abort，原writer获现route与adapter test精确修复权，其它冻结保持。Web真实200目录解析FAIL待当前owner只读定范围，系统mixed旧redirect不擅改。
