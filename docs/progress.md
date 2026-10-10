@@ -12853,3 +12853,12 @@ Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 
   tenant-status and audit reads. Focused test 41/41, format/type/lint pass; isolated integration is pending missing
   fixture URLs.
 - Next: owner artifact pin, BFF exact admin reads, then real `/manage` module pages. No placeholder routes/cards.
+# 2026-10-10 T-K03.14 本地 Skills clean-slate 授权执行
+
+Package clean-slate：删除 legacy manifest helper/预期旧identity参数/消费者调用；元数据仅根SKILL.md，Validate receipt 也删除zip-v2接受。RED4FAIL＋codec1FAIL后，纯门115files1984PASS、真实PG4files37PASS；lint/type/build/contract/diff-check通过，冻结artifact字节不改。只读复审续派原审查员；全候选未冻结、真实前后端链未称闭环。
+
+官方晋升 durable replay 切片：真实 PG 原行为 FAIL publish_snapshot_conflict，保存原 publicationFrom 于同事务 receipt 后通过；当前 PG 24 PASS，覆盖正常重放、未知 ACK 恢复及 receipt 快照版本篡改拒绝。unit 15 PASS；独审数组 enum 漏洞先 1 FAIL 后严格字符串修正。三设计同步，新 receipt 无旧 shape fallback，零公开 API/表新增。中间语法错误与 unknown ACK 用例旧 replayed=false 断言错误已修，均不冒充产品反例。候选未冻结/提交、全链仍 OPEN。
+
+续进：实际新 ZIP parser 的 identity 进入 Publish 被拒，旧 identity 却通过，具名正确基线 2 FAIL。发布规则改为唯一 skill-md-v1 后 33 unit PASS；真实隔离 PostgreSQL 发布 23 PASS，typecheck/lint/diff-check 通过（Node24）。历史冻结 contract 字节未改，不支持旧格式发布；完整上传/校验网络链、官方晋升同key重放、解析器兼容删除、整片冻结及浏览器验收仍待办。BFF 保网关转发与自有业务编排边界，不复制 Platform 发布业务。
+
+Root 单事务清理实际 `kokoro_platform` Skills 数据：skill 77、installation 9、publication 58、category 1、creation_source 2、import_intent 2、receipt 225、outbox 104；目标表零行复核通过。显式锁、无活动 lease/非终态命令检查、0600 私有备份，无 CASCADE；IAM/其他 schema/MCP/Redis/ObjectStore 未改。旧包兼容要求撤销，后续删除对应分支；新包发布 identity 与官方晋升幂等重放两个 P1 仍需真实失败测试和修复，候选未冻结、完整用户路径未验收。

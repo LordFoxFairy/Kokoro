@@ -1,3 +1,13 @@
+### T-K03.14 用户授权 Skills 本地 clean-slate（2026-10-10）
+
+最新 package 切片已删除 `skill-package-manifest.ts`、expectedLegacyIdentity 参数及消费者调用，Validate/Publish identity 唯一 skill-md-v1；可选 manifest.json 是普通内容，不参与元数据/identity/额外旧格式限制。CRC/ZIP 边界/摘要/大小/路径/取消保护保留。具名先 4 FAIL（旧回退/旧 manifest 限制）、Validate codec 1 FAIL 后通过。Root Node24 当前纯门 **115 files /1984 PASS**，真实隔离 PG package Validate/Publish/Get/Safety **4 files /37 PASS**，lint/typecheck/build/contract/diff-check 通过；冻结旧 contract 字节未改。解析器旧分支与官方晋升 replay 的两个实现缺口已修，但整体混合候选尚未冻结，正常服务/完整网络/浏览器/Admin 验收仍待完成。
+
+续进：官方晋升同 key 重放实测 `publish_snapshot_conflict`，原因是提交后 current 行不再包含原个人发布状态。现 receipt 在同事务保存 `publicationFrom`（普通发布 null，官方保存原 status/audience/version），verifyEvent 使用原快照重建；不新增表或公开字段、不补旧 receipt fallback。三设计已同步此次裁决。Root Node24 当前 unit 15 PASS、隔离 PostgreSQL 发布 24 PASS，含晋升正常重放、提交成功但 ACK 丢失后的恢复、篡改 snapshot version 拒绝且状态仍 3。独审追加发现 codec String(enum) 接受数组，具名 1 FAIL 后改严格字符串 enum，15 PASS；替身 CAS=7 的快照已改为 7。未冻结整个混合候选，旧 parser 分支和完整网络/浏览器路径仍待完成。
+
+用户明确旧数据无需兼容，允许清理 SQL 后走新流程。Root 已在实际 owner 配置的 `kokoro_platform` schema 内通过单一事务、显式表锁和无活动 lease/非终态 Skills command 断言清理：77 个技能版本、9 个安装、58 个发布事实、1 个分类关联、2 个来源、2 个导入意图、225 条 Skills receipt、104 条 Skills outbox；清理后 Skills 表实际 count=0，事务已提交。0600 私有备份保存在 `/Users/nako/.codex/private/kokoro/skills-clean-slate/2026-10-10T10-02-02.501Z.json`。未清 IAM、其他 schema、MCP、admission slot、Redis 或对象存储；不使用 CASCADE/reset。首次只读探测错用未配置 DATABASE_URL 后失败，纠正为显式 KOKORO_POSTGRES_URL 再执行，失败阶段无写入。
+
+独立审查发现新包 identity 被 Publish 拒绝、官方晋升 receipt 重放事件错配，候选停止冻结。Root 已修 Publish 只接受当前 `skill-md-v1` identity，拒绝退役 `zip-v2`；实际 ZIP parser→publishCurrent 正控及旧格式拒绝负控先准确 2 FAIL 后通过（首次测试参数顺序错误不计行为 RED）。Node24 两个 unit 文件 33 PASS、隔离 PostgreSQL 发布 integration 23 PASS、typecheck/lint/diff-check exit 0；integration fixture 使用实际 parser 的 identity，但尚未证明完整上传→Validate→Publish 网络链。混合候选未冻结/提交，官方晋升重放 P1 仍 OPEN。旧 zip-v2 包兼容/恢复需求由本次授权撤销，解析器残留兼容分支仍待删除，清理不等于 Skills/Admin 闭环。
+
 ### T-K03.14 Platform owner 集成已通过，整体候选仍待审查（2026-10-10）
 
 Root 已修正历史 schema expand 使用可变当前 schema 的问题，改为固定历史快照；同步当前 series publication、Storage 对象版本及 MCP provider read 的真实测试 fixture/契约断言，保留旧事实、事务回滚、租户和私有字段负控。首次全量失败为 23 failed /436 passed /4 skipped；最新同一真实 integration 终态 **exit 0：35 files、462 passed、4 既有 skipped**（246s），日志 `/tmp/kokoro-platform-integration-current.log`。纯门 115 files/1974 passed，schema/build/typecheck/lint/contract/artifact 检查通过；此证据基于 HEAD b0c0dbec 加未提交候选，不是发行 commit。

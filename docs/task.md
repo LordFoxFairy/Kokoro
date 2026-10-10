@@ -16255,3 +16255,6 @@ Root 用独立3320正规 OIDC 会话实测：`GET /api/v1/admin/skills?limit=1` 
 | IAM existing tenant reads | IAM `00a18c6` | closed operator provisioning of five exact Admin browser read scopes; 41 focused tests, format/type/lint pass | isolated real IAM fixture variables missing; then issue/pin owner artifact |
 | BFF admin identity/security read slice | BFF active worktree, not started | existing IAM GET owner operations identified | consume pinned IAM release; publish exact named BFF operations and tests |
 | Admin UI groups | Admin Web, blocked on BFF contract | no fake page remains | render Identity & security, System, Platform only after each real operation exists |
+# T-K03.14 当前执行更新（2026-10-10）
+
+Root 单一 Platform writer；新包发布资格、官方晋升 receipt 快照/重放和旧 parser 删除均已实现并待整片审查。当前纯门1984PASS，package真实PG37PASS；下一依赖为原审查员复审→整体owner候选冻结/固定artifact→BFF网关转发消费者→Web/原Admin完整浏览器验收。旧数据恢复要求已由用户撤销并实际限定清理；Wave0–7范围和后续owner顺序不变。
