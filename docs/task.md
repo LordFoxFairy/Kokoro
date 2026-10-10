@@ -16485,3 +16485,6 @@ Root全纯真实12FAIL/2778PASS，最终freeze34hash一致，独审确定P2错�
 T-K03.14-WEB-PUBLISH-REVIEW-FIX追加现tests/hub/client.test.ts正式managed503正控与502错配负控，先RED。原Admin上传设计纠偏6319b68：复用现Platform本人owner包生命周期，后继BFF/原Admin精确四操作接线，不新建RPC/SQL。Root隔离Git基线导航240PASS/9FAIL，原全局失败继续OPEN。
 
 T-K03.14-WEB-PUBLISH/REVIEW-FIX正式cce0a2c main，Root contract277PASS/lint/type0，全纯2791PASS10FAIL保OPEN；正常持久Publish/安装/读取/停启/移除真实200。原Admin实际HTTP读/SSO通过非七命令完成，后继沿原模块接七mutation及既有四包操作，完整Wave0–7继续。
+
+### T-K03.14-BFF-ADMIN-PACKAGE
+唯一owner BFF normal worktree，原bff_platform_pin_owner唯一writer；main2f36787后Root三D0当前commit。仅现src/auth/browser-service-credential.policy.ts与test/user-admission.test.ts，现四package GET/Begin/Complete/Validate路由服务准入；保持IAM动作、tenant/owner/CAS/完整负控，Public13.1机器与SQL字节不变。先RED再实现，Root审查/复门/提交合main，不擅自服务操作。原Admin只读规划独立可并行，不写直到此片冻结。
