@@ -13187,3 +13187,20 @@ Root最终冻结7hash/677保护全一致，独审无确定P1/P2；Node22原1383�
 后继仍同任务T-K03.14-WEB-GITHUB-IMPORT，先当前三设计前缀精确更新固定13.2/486ec7e契约，再网络5路径和UI19路径串行消费Preview→immutable Import draft→Publish→真实Install；当前旧self入口404未修，不造已安装卡片。Web正式1e02285摘要布局及真实文件树证据保持，原Admin4b576a8原壳保持。physical BFF祖先mixed不reset/gitlink回pin，其余owner与uv.lock未接收保持，完整Wave0–7 active、Billing最后。
 
 T-K03.14-ADMIN-ANT-PROPS mainc43eee3：仅原Admin现Skills组件3处orientation及Drawer size640、现test两断言，RED2FAIL→Root默认9files87PASS/type/lint/build0；2hash/86保护exact。真实同源/manage/hub新加载5记录，详情抽屉640px、全部原命令保留；本次日志不再Space/Drawer两warning，ProLayout hydration依赖缺陷仍实际存在（SSR无断点/browser初态读取断点），未掩盖/禁SSR/重建壳。截图/tmp/kokoro-admin-antd-props-browser.jpg，日志/tmp/kokoro-admin-antd-props-root-{test,type,lint,build}.log。此小片不冒完整Admin权限与七命令旅程验收。
+
+### T-K03.14 main-only已接受历史收敛（2026-10-10）
+Platform main1eeac36仅记录4条旧release已被32666c1/4f7501b/634c83b承接与替代；Root核权威更新时间/错误映射/真实Local-import receipt资格及当前75PASS。采用明确历史reconciliation merge，tree与91bc3655完全相同，旧宽晋升代码不恢复。两clean、无运行cwd旧worktree已移除，非main两分支均git branch -d删除，Platform现仅main。BFF/Web固定91bc契约仍准确。其它未合并有效工作保留，不能以此称全仓main-only。
+原Admin正常浏览器既有官方QA revision4实际隔离200→已隔离→恢复200→原已发布，原列表7项保持；/tmp/kokoro-admin-quarantine-restore-private.json为权威ACK私有证据。新版本表单已实看/取消，未制造额外draft或冒发布写通过。
+
+### T-K03.14 Storage正式main接收（2026-10-10）
+正式工作树 /Users/nako/.codex/worktrees/kokoro-storage-formal main4ab2f232bd4a74b315af0e4a76e1d61a9a9f86c5；Root接收既有连续10commit链到9fb0be0，再精确7当前证据文档提交4ab2f23，非范围307tracked字节保持。Root Node24 contract/type/lint/build/prisma validate全0，default67files613PASS/229既有资源SKIP；独立临时PG具名RR snapshot 1PASS（另一fixture按名称未选），日志/tmp/kokoro-storage-main-root-*.log。旧正常fixed37维护没有重跑、没有清共享数据或重启服务。独审五当前文档与d5/9fb窄片无确定P1/P2；三旧文格式及generated空白历史风险保留。正式main已fast-forward并原formal分支-d删除；physical55mixed与两旧worktree改动仍保留，未冒全仓main-only。
+Web shared下载已正常浏览器实点击：583bytes、SHA25639b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313，根SKILL.md与references/checklist.md正文一致，分享固定版本而非seriescurrent；截图/tmp/kokoro-shared-exact-files-browser.jpg。代码独审发现同主体准入取消恢复下载按钮P2，原writer仅现dialog/test修复，未验收不得先称整体完成。system17th现文件窄patch仅正式return_to匿名目标及必需platform_admin:false fixture，extra token负控保持；原49FAIL实际日志保留，不放宽schema/skip。
+
+T-K03.14 Agent已存在交付链main收敛：Root核tracked/index clean、main cf6038b祖先，既有三commit 6a21f7d→4f6802d→ee736cd经原owner只读审查无新确定P1/P2。Root当前uv lock/ruff format/ruff check/pyright/contract exit0；原默认pytest2339PASS/2FAIL/758资源deselected，失败仍为既有HTTP cast门与contract checker200行阈值，不删除/skip断言、不称Agent全门绿。日志/tmp/kokoro-agent-main-*.log。只fast-forward main ee736cdf68a63e4434d6b8800c8e266f5c3b005d、相同tree切main并-d已整合旧branch，原untracked build/保留，无服务重启。Agent当前仅main，新增推理/计费及全Wave仍暂停/未验收。
+
+### T-K03.14 Shared exact download 已提交main（2026-10-10）
+Web main3f7111feee2de3ef26f817dc19f4e24d7291b48c精确13路径；三设计前缀此前7fe5cee已提交，原mixed正文/两mixed tests仍保留。Root最终17hash/774保护exact，独审同准入取消P2 shared与catalog分别真实RED后关闭，无确定残留P1/P2。Root59838自然exit0：纯163files3108PASS、contract20files278PASS、type/lint/build0，日志/tmp/kokoro-shared-download-accepted-root-*.log；已停止的两个过时Root纯门exit130不作为通过证据。
+真实正常浏览器分享摘要下载583bytes/SHA25639b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313，ZIP根SKILL.md与references/checklist.md/正文一致，原文件树读取正常。照片/tmp/kokoro-shared-exact-download-final-browser.jpg及/tmp/kokoro-shared-exact-files-browser.jpg；不借series-current、不伪造下载。
+原system56414自然终态14files183PASS/20FAIL/17unhandled；17异常固定refresh-opaque断言遇合法refresh-rotated，20browser会话/Project/Conversation失败不归为单因，未再扩大未交接mixed修改。小修身份fixture及匿名helper仅HEAD原有段落7+/6−进入commit；readiness改动本来仅在mixed新增段中，未夹带整段。最终freeze401e1b106505379af95c1eaca13f8e035a88dae8c2aea7b07b99661041ef2921代码与独审c43f一致，仅追加system终态。此下载切片验收，不冒默认system/全部Skills/Admin或全仓main-only完成；未接收混合分支保持，其他功能暂停。
+
+补充最终Web main611ae5342e11f9bf710a01a2b2547df3e8538975：独审发现匿名200 helper普通toContain会让只有登录链接通过；Root只改原helper2+/1−恢复NEXT_REDIRECT/meta真实标记并精确return_target终止边界，普通link/追加evil负控失败、两真marker通过共4断言PASS，当前type/lint0，独审P2关闭。HEAD-only index未夹带system其它mixed，production源/build不变；Root记录正式最终SHA，不把原system20失败清零。

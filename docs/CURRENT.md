@@ -1,3 +1,9 @@
+
+### T-K03.14 Shared exact download 已提交main（2026-10-10）
+Web main3f7111feee2de3ef26f817dc19f4e24d7291b48c精确13路径；三设计前缀此前7fe5cee已提交，原mixed正文/两mixed tests仍保留。Root最终17hash/774保护exact，独审同准入取消P2 shared与catalog分别真实RED后关闭，无确定残留P1/P2。Root59838自然exit0：纯163files3108PASS、contract20files278PASS、type/lint/build0，日志/tmp/kokoro-shared-download-accepted-root-*.log；已停止的两个过时Root纯门exit130不作为通过证据。
+真实正常浏览器分享摘要下载583bytes/SHA25639b6555bb6518bcb6db4b669f0433e5fc9a302e4c07589ddc0ad89da19eba313，ZIP根SKILL.md与references/checklist.md/正文一致，原文件树读取正常。照片/tmp/kokoro-shared-exact-download-final-browser.jpg及/tmp/kokoro-shared-exact-files-browser.jpg；不借series-current、不伪造下载。
+原system56414自然终态14files183PASS/20FAIL/17unhandled；17异常固定refresh-opaque断言遇合法refresh-rotated，20browser会话/Project/Conversation失败不归为单因，未再扩大未交接mixed修改。小修身份fixture及匿名helper仅HEAD原有段落7+/6−进入commit；readiness改动本来仅在mixed新增段中，未夹带整段。最终freeze401e1b106505379af95c1eaca13f8e035a88dae8c2aea7b07b99661041ef2921代码与独审c43f一致，仅追加system终态。此下载切片验收，不冒默认system/全部Skills/Admin或全仓main-only完成；未接收混合分支保持，其他功能暂停。
+
 ### T-K03.14-WEB-SHARE 正式main3c5c302（2026-10-10）
 Root3620自然exit0：纯162files3070PASS、contract20files278PASS、type/lint/build0；独审两P2修复后34hash/756保护exact，原29候选文件不动，五mixed保留，精确33实际路径提交main3c5c30292ab8d65ffbe0d2e3bc35b5839914a8fb。前Root55166真实legacy旧fakeShare断言1FAIL3064PASS与精确RED五FAIL原日志保留；不重加假入口。日志/tmp/kokoro-web-share-root-final-*.log。
 真实正常浏览器POST/api/hub/skill-shares201、显示链接已复制；从服务ACK链接打开精确shared摘要/原本人已安装事实，查看详情读真实SKILL.md、references/checklist.md嵌套正文(package200)，截图/tmp/kokoro-skills-shared-files-browser.jpg。私有/tmp/kokoro-skills-share-browser-private.json只存ACK及safe状态；工具clipboard桥返回空，未冒实际字节比较通过。Shared exact下载handle缺口保留，不借series current。当前仅此slice通过，原Admin剩余权限/跨到期写、默认旧OIDC mixed失败、其它owner未交接/main-only及完整Wave0–7仍未完成，其它模块暂停。
@@ -3515,3 +3521,5 @@ Web main `3d2b419f971aaa3478b22d7f4e96f34190dff79b`，精确五现路径。新�
 Web正式c408f0397b78709cf3f7ecd2fba87047b02f5e7b，仅九路径消费既有四browser-private操作及真实版本PUT；Finalize创建事实严格active/personal/owner/installed/enabled，Get允许当前停用或缺安装。404与未cancel PUT真实RED2FAIL/120PASS，Finalize状态RED1FAIL/30PASS；Root32527当前157files/2958PASS、type/lint/build exit0，独审唯一P2关闭。冻结c85f4366与九hash/768任务外原bytes一致，五mixed未暂存。日志/tmp/kokoro-local-import-network-root-final-{pure,type,lint,build}.log；此片未接上传UI，未冒充真实MinIO导入/完整Skills闭环。
 
 T-K03.14-ADMIN-ANT-PROPS mainc43eee3：仅原Admin现Skills组件3处orientation及Drawer size640、现test两断言，RED2FAIL→Root默认9files87PASS/type/lint/build0；2hash/86保护exact。真实同源/manage/hub新加载5记录，详情抽屉640px、全部原命令保留；本次日志不再Space/Drawer两warning，ProLayout hydration依赖缺陷仍实际存在（SSR无断点/browser初态读取断点），未掩盖/禁SSR/重建壳。截图/tmp/kokoro-admin-antd-props-browser.jpg，日志/tmp/kokoro-admin-antd-props-root-{test,type,lint,build}.log。此小片不冒完整Admin权限与七命令旅程验收。
+
+补充最终Web main611ae5342e11f9bf710a01a2b2547df3e8538975：独审发现匿名200 helper普通toContain会让只有登录链接通过；Root只改原helper2+/1−恢复NEXT_REDIRECT/meta真实标记并精确return_target终止边界，普通link/追加evil负控失败、两真marker通过共4断言PASS，当前type/lint0，独审P2关闭。HEAD-only index未夹带system其它mixed，production源/build不变；Root记录正式最终SHA，不把原system20失败清零。
