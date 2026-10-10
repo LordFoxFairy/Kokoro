@@ -16488,3 +16488,6 @@ T-K03.14-WEB-PUBLISH/REVIEW-FIX正式cce0a2c main，Root contract277PASS/lint/ty
 
 ### T-K03.14-BFF-ADMIN-PACKAGE
 唯一owner BFF normal worktree，原bff_platform_pin_owner唯一writer；main2f36787后Root三D0当前commit。仅现src/auth/browser-service-credential.policy.ts与test/user-admission.test.ts，现四package GET/Begin/Complete/Validate路由服务准入；保持IAM动作、tenant/owner/CAS/完整负控，Public13.1机器与SQL字节不变。先RED再实现，Root审查/复门/提交合main，不擅自服务操作。原Admin只读规划独立可并行，不写直到此片冻结。
+
+### T-K03.14-WEB-SKILL-I18N
+Web原owner独立小修唯一writer，与BFF policy不同仓；maincce0a2c＋五mixed原字节保护。仅现src/ui/skills/manus-skill-detail-dialog.tsx、src/i18n/messages.ts、src/i18n/overlays.ts及tests/ui/kokoro-skills-surface.test.tsx相邻本地化断言；复用现i18n键/相同九处文案，禁止改变字段、数据路径、布局、权限、品牌或扩大catalog实现。Root真实全纯已有该组件硬编码RED，writer再具名i18n RED→GREEN，zh/en展示与原组件功能断言保持。无新文件/目录，Root审查/提交main，五mixed保留，九导航失败另卡。
