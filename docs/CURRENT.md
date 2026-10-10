@@ -1,3 +1,9 @@
+### T-K03.14 真实包详情提交 main（2026-10-10）
+
+Web main `93e33329bce76c07e3f0a44dcebbccb1e0efdbd4`，精确十路径；Root 核最终 freeze277cbacd 的10 hash及762任务外保护一致，独审无确定P1/P2。真实RED5FAIL/223PASS→focused239PASS；Root18696终态实际155files/2890PASS、type/lint/build exit0，日志 /tmp/kokoro-catalog-package-root-{pure,type,lint,build}.log。未跑默认system门，不冒全仓绿。真实新tab47正规目录→摘要→查看详情→owner实际SKILL.md正文→语义按钮返回简介通过；URL始终/app/skills，样本只有SKILL.md，其他文件切换仅纯测，未冒真实多文件验收。截图 /tmp/kokoro-catalog-package-browser.jpg。旧tab46焦点CDP超时，使用同浏览器新标签验证，无服务重启。
+
+Skills整体仍OPEN：旧上传/GitHub consumer仍404、停用安装身份、正式分享及个人settings展示/命令、Admin权限负控尚待闭合。已只读证正式BFF939bf0e有browser/v1/skills/local-imports四操作，Platform32666c1由服务端解析SKILL.md并Finalize返回skill/installation；旧普通draft Validate不会回填展示名称/简介。下一步先核正常local-import运行依赖，再沿同原Web owner接既有正式导入，不发明ZIP浏览器解析或新ownerAPI；个人版本/撤回/draft/discard及share亦已有契约与运行入口，不误用Admin命令。保留五mixed和其他owner未交接修改，Billing最后，完整Wave0–7 active；未远端push。
+
 ### T-K03.14 真实包详情设计门放行（2026-10-10）
 
 Web main8100ad7仅三个具名D0前缀；Root精确index使用prefix+HEAD正文、三mixed完整工作字节与769任务外hash保持，独审无P1/P2。机器YAML实核getSkillPackageDirectory、严格嵌套schema、11状态及digest418db950一致。不是新owner接口：准原writer现十路径接正式公开revision package、真实SKILL.md与文本，先RED；无新RPC/SQL/依赖/假目录。实现未冻结未验收，Root不并行写该仓。
