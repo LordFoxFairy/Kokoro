@@ -1,3 +1,6 @@
+### T-K03.14 创建文案切片已验收（2026-10-10）
+原Web owner唯一writer，Root精确3文件提交Web main9aceeec；3132纯门PASS、类型错误修复后定向5PASS/type/lint/build0；浏览器创建菜单三项真实可见。五mixed保留。所有13仓本地只main已核对；不将任务外未验变更打包交付，完整Wave仍active。
+
 ### T-K03.14 当前权限/安装验收（2026-10-10）
 Root当前正式普通HTTP403/401负控及浏览器安装移除→添加→列表往返通过；IAB callback被inspector阻断，不是服务未启动/表单未提交。具体收据与未验项见docs/CURRENT.md同日“普通权限链与安装完整往返当前验收”。其它owner/完整Wave保持未结项。
 

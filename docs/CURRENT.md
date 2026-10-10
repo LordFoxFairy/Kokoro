@@ -1,3 +1,6 @@
+### T-K03.14 创建入口最后文案验收（2026-10-10）
+Web main 9aceeec2fa124475c76f4c2b25cf0287b22542d4：目录触发器恢复“创建”，保留三个已有真实入口，不新增未实现录制项。Root纯门3132PASS；新增断言曾typecheck FAIL，修为锚定regex后Root定向5PASS、typecheck/lint/build均exit0。正常浏览器已验证创建菜单三项，截图/tmp/kokoro-skills-create-label-final.jpg。789保护文件逐字不变，五mixed仍未暂存。Root与12子仓当前本地分支仅main，topology exit0；已提交不等于完整Wave/严格视觉/记录技能等剩余项完成。
+
 ### T-K03.14 普通权限链与安装完整往返当前验收（2026-10-10）
 Root审阅原Admin owner的隔离CookieJar脚本后独立重跑exit0：普通正式登录/app200、platform_admin=false且无manage_url；csrf有效、signin302、正式callback403/admin_required且无Admin RP、me401、Skills401。日志/tmp/kokoro-admin-ordinary-entry-root-result.jsonl。浏览器已定位为callback GET的Network.loadingFailed / ERR_BLOCKED_BY_CLIENT / blockedReason=inspector，而非没提交表单；仅恢复开发Network blockedURLs空集后仍被inspector拦截，未继续改变安全配置。收据/tmp/kokoro-ordinary-entry-inspector-receipt.json；浏览器直接拒绝页呈现未验，不改鉴权/新后台以绕过观察问题。已恢复原管理员工作区。
 Root正常浏览器对现开发skill-creator样本走移除DELETE200→独立GET200确认移除→目录添加POST200→本人列表GET200，安装/启用恢复、目录按钮同步，未清共享数据或改原官方pin。收据/tmp/kokoro-skill-remove-reinstall-final.json，截图/tmp/kokoro-skill-remove-reinstall-final.jpg。关闭两项既有验收缺口，不泛称CRUD整体未实现；严格视觉/记录技能等未证项与全Wave仍保留，任务外mixed不暂存。
