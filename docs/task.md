@@ -4,6 +4,8 @@ Root 已修正历史 schema expand 使用可变当前 schema 的问题，改为�
 
 随后仅简化单文件 HTTP 客户端目录，正文不变；架构回归先失败后通过，首轮定向 38 passed、typecheck/lint 通过；追加影响客户端与架构回归 86 passed、build/diff-check exit 0，迁移前后 helper 正文字节一致。Root 全套 scripts/tests 当前 **3 failed、1778 passed、3 skipped**，失败为 IAM composition checkpoint、Skills smoke contract pin 和新增 Admin 拓扑断言；不得称 Root 总门或 Wave0–7 通过。当前还需审查 Platform/IAM 与目录边界、冻结 owner 候选、按依赖接入 BFF/Web/Admin 并完成真实浏览器 CRUD；连接器用户端/后台 CRUD 尚未闭环。不重置共享数据、不跳过失败、不重复启动现有服务。
 
+Root 后续已纠正 Admin 的拓扑登记与 submodule section 名，新增名称闭集回归先失败后通过（7 PASS），保留九个业务 owner；完整拓扑仍有 7 个 checkout/gitlink 未对齐，不擅自接收任务外提交。独立只读审查确认 Platform 的 IAM 调用用于 workload/Agent execution 边界，不重复人类 session；同时发现当前物理 BFF 的 SkillAuthorizationClient 未装配/调用，具名 human 权限接线列为 BFF 后继必须修正项，禁止以删除 Platform 门替代。
+
 ### T-K03.13 当前后台物理拓扑与连接器 owner 候选复核（2026-10-10）
 
 Root 已复核当前源树和实际监听：用户端是 `apps/kokoro-app`（3310），独立后台源码是同级 gitlink `apps/kokoro-admin`（内部监听 3320）；后者基于历史 `kokoro-web/apps/admin` 的既有 Ant Design 控制台路由（users、teams、credit、payment、sites、models、hub、approvals、audit、operators），不是嵌入用户端的替代页面。浏览器公开入口固定为同源 `http://127.0.0.1:3310/manage`：3310 的 reverse proxy 将 `/manage` 交给原 Admin Web，Admin 保持 `basePath=/manage`，IAM callback 也固定回 3310/manage；直接访问 3320 的认证端点实测 403。用户端仅通过账户菜单、且仅 `platform_admin` 合格时投影相对入口 `/manage`；管理员首次进入走同一 IAM SSO，已存在后台 session 则回到原控制台首页。匿名实测 3310 `/manage` 为 200、3310 `/api/admin-access` 为 401；因此以后不得把用户端 3310 `/admin` 或公开 3320 作为后台事实，也不得再新造第三套后台壳。

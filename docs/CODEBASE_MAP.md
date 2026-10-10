@@ -8,7 +8,7 @@ Root 通过 BFF 已配置的正式 Platform projection credential 做只读 cata
 
 正式后台已独立为 `apps/kokoro-admin`（GitHub：`LordFoxFairy/kokoro-admin`），与 `apps/kokoro-app` 同级；它保留历史 Admin 的页面与模块作为迁移基座，并只通过当前 IAM 与 BFF 调用。旧的 `apps/kokoro-web/apps/admin` 注册已撤销，不再作为正式入口或扩展目标。
 
-`apps/kokoro-admin` 已完成独立工程、当前 IAM OIDC 接入层与 BFF 同源适配的静态验证；尚未配置本地独立客户端并完成真实登录、权限负控和原有管理页面的数据接线，因此不作为已运行或已闭环后台宣称。下一步只在该正式仓完成会话守卫、原 Admin 壳内 Skills 管理、IAM/BFF 真连接与浏览器验收；用户端管理员入口随后指向 `/manage`，普通用户不展示入口。
+`apps/kokoro-admin` 当前源码运行，内部监听 3320；公开入口为用户端同源 `http://127.0.0.1:3310/manage`，IAM callback 同样使用该前缀。Root 拓扑登记将 Admin 列为独立 Web 工程，不增加九个业务 owner。用户端账户菜单仅对合格平台管理员显示相对入口 `/manage`；直接内部端口认证请求拒绝。原 Ant Design 管理模块继续作为唯一基座；真实 SSO、普通用户权限负控及全部管理 CRUD 仍需当前浏览器证据，未称整体闭环。
 
 ### R352-P2 Skills 分类契约已提交，页面仍未切换（2026-10-08）
 

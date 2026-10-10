@@ -33,6 +33,7 @@ MODULES = {
     "kokoro-storage": ("apps/kokoro-storage", "https://github.com/LordFoxFairy/kokoro-storage.git"),
     "kokoro-scheduler": ("apps/kokoro-scheduler", "https://github.com/LordFoxFairy/kokoro-scheduler.git"),
     "kokoro-web-shared": ("libs/kokoro-web-shared", "https://github.com/LordFoxFairy/kokoro-web-shared.git"),
+    "kokoro-admin": ("apps/kokoro-admin", "https://github.com/LordFoxFairy/kokoro-admin.git"),
 }
 ARCHIVED = frozenset({
     "kokoro-session",

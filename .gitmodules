@@ -42,6 +42,6 @@
 	path = libs/kokoro-web-shared
 	url = https://github.com/LordFoxFairy/kokoro-web-shared.git
 	branch = main
-[submodule "apps/kokoro-admin"]
+[submodule "kokoro-admin"]
 	path = apps/kokoro-admin
 	url = https://github.com/LordFoxFairy/kokoro-admin.git

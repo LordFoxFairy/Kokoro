@@ -25,6 +25,8 @@ def test_repository_topology_script_declares_exact_remote_named_composition() ->
     modules = topology["MODULES"]
     assert modules["kokoro-app"] == ("apps/kokoro-app", "https://github.com/LordFoxFairy/kokoro-app.git")
     assert modules["kokoro-mori"][0] == "apps/kokoro-mori"
+    assert modules["kokoro-admin"] == ("apps/kokoro-admin", "https://github.com/LordFoxFairy/kokoro-admin.git")
+    assert "kokoro-admin" not in topology["RUNTIME_MODULES"]
     assert modules["kokoro-web-shared"][0] == "libs/kokoro-web-shared"
     assert "kokoro-model" not in modules
 
@@ -37,11 +39,14 @@ def test_root_metadata_uses_remote_names_without_a_web_alias() -> None:
     assert paths == [
         "apps/kokoro-app", "apps/kokoro-mori", "apps/kokoro-bff", "apps/kokoro-agent",
         "apps/kokoro-iam", "apps/kokoro-system", "apps/kokoro-billing", "apps/kokoro-capability",
-        "apps/kokoro-storage", "apps/kokoro-scheduler", "libs/kokoro-web-shared",
+        "apps/kokoro-storage", "apps/kokoro-scheduler", "libs/kokoro-web-shared", "apps/kokoro-admin",
     ]
     assert "`apps/kokoro-app`" in status
     assert "`apps/kokoro-app`" in codebase_map
     assert "| `apps/kokoro/` |" not in status
+    names = re.findall(r'(?m)^\[submodule "([^\"]+)"\]$', gitmodules)
+    topology = runpy.run_path(str(ROOT / "scripts/verify-repository-topology.py"))
+    assert set(names) == set(topology["MODULES"])
 
 
 def test_root_current_distinguishes_root_governance_tests_from_subrepository_tests() -> None:
