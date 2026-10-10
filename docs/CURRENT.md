@@ -1,3 +1,7 @@
+### T-K03.14 个人 Skills 生命周期已接收至 main（2026-10-10）
+Web main ffc6c7c989995d16d48dddbc87e3e129646ebb70（业务 e71ba0a）：本人新版本保同series/原key，真实ZIP上传→验证→发布→三例读回→仅新测试版本撤回200；旧本人版本保留。实际400源于Node chunked framing，可信bytes长度修复后原页面同intent恢复201，未放宽BFF校验。Root精确候选 contract278PASS、pure3129PASS、proxy127PASS、type/lint/build0；完整system先readiness FAIL，再197PASS2FAIL，两实际失败fixture修正后定向2PASS/75名称过滤，未冒一次完整199全绿。两独审无确定P1/P2；20业务/设计路径及1个HEAD-only测试已提交，五旧mixed及其它owner修改保留。
+浏览器收据 /tmp/kokoro-personal-lifecycle-browser-receipt.json；截图 /tmp/kokoro-skills-final-tree-browser.jpg 与 /tmp/kokoro-personal-version-detail-browser-green.jpg。原Admin账户菜单→同源3310/manage→原Ant/IAM/System技能模块已实际读回，不新建后台。Root及已初始化子仓本地heads仍仅main；只接本切片，完整Skills/Admin剩余权限/跨到期写/精确共享下载及全仓264规范违规、历史checkpoint失败继续OPEN，不称Wave0–7或全项目交付完成。经验：隔离候选独立node_modules；proxy单元mock之外必须覆盖真实HTTP framing。
+
 ### T-K03.14 本地main-only已实测收敛（2026-10-10）
 Root mainf638c842，拓扑门当前PASS；Root及12个已初始化子仓refs/heads均仅main。Web两旧分支已完整git bundle私有保全并verify，旧worktree同SHA detach；831/836可见文件、index/status前后exact，当前main/正在实现个人切片不变。私有proof /Users/nako/.codex/preserve/kokoro-main-cutover-20261010/web-main-only-archive-proof.json，未删除旧内容或将107旧有效职责虚称已承接。主控本片仅refs归档，不含Web/Billing未接mixed、Agentbuild/Rootuv.lock。Skills个人生命周期尚实施中，最终整个交付未称完成。
 

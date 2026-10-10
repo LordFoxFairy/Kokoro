@@ -1,7 +1,8 @@
 ### T-K03.14-BILLING-MAIN-FIXTURE（2026-10-10，真实RED）
 Owner Billing / writer admin_skills_owner / Root审查提交；main5c7caf8、25mixed逐字保护。Root精确main archive verify0（1415PASS/480SKIP）/generated0/prisma隔离0；10文件真实PG226PASS1FAIL，prisma-lifecycle shares cleanup after initialization failure的固定unreachable URL漏必需schema导致构造期先拒绝，未覆盖连接失败清理。仅现test/integration/prisma-lifecycle.test.ts该fixture加schema=kokoro_billing，使同真实拒连接进入onModuleInit；不改生产schema解析/断言/超时/其他测试。先保存RED，隔离HEAD-only准入，Root重跑同10文件PG门，clean main完整门仍需新SHA证据；不接Nest mixed、资金流程或共享应用库。
 
-### T-K03.14-WEB-PERSONAL-LIFECYCLE（2026-10-10，待设计门）
+### T-K03.14-WEB-PERSONAL-LIFECYCLE（2026-10-10，本切片已验收 main ffc6c7c）
+交付：业务e71ba0a、测试ffc6c7c，原native writer/独审/Root集成。Root contract278、pure3129、proxy127 PASS及type/lint/build0；真实新版本201→ZIP→验证/发布→三示例→撤回200、旧版本保留。系统197PASS2FAIL后仅两失败fixture定向2PASS/75名称过滤；完整单次全绿未重跑。五mixed保护、其他模块暂停；完整Skills/Admin/Wave仍OPEN。冻结与浏览器证据见CURRENT当前段；下段为原批准范围，不作为新的待设计任务。
 Owner Web / 唯一 writer web_identity_owner / Root审查与提交；基线 apps/kokoro-app main b7dbfe8，5项现mixed逐字保护。只接本人真实日期/例子、同series新包版本完整上传验证发布、CAS撤回；不恢复普通用户公开目录发布权，不改普通导入/目录reader/其他模块。现BFF两正式接口已存在，无owner数据库/contract/pin修改。放置方案扩现schemas/publish-client/同源route/个人flow/dialog/read及现CSS/i18n/skills-panel；撤回独立普通dialog+test，不建模块。先三设计文档仅具名前缀并保原mixed，再Root核门放行代码；source/test允许集以原生owner本轮放置表为准，不改巨大system混合测试。每stage原body/key/CAS，201仅draft，新包不可借旧包，数组省略不得静默清空，安装pin不自动升级。先真实RED后实现、Root完整Web适当门/真实owner浏览器验收，阶段冻结后HEAD-only准入。旧107独有commit逐职责归并，未承接有效职责不强删旧refs。
 
 ### T-K03.14-WEB-SHARE（2026-10-10；main3c5c302已验收）
