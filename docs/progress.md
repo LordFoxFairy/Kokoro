@@ -13308,3 +13308,8 @@ System现已提交四commit到main1460820经独审无P1/P2；Root38166自然chec
 
 ### T-K03.14 Billing 已提交历史裁决接收（2026-10-10）
 Billing main5c7caf846acec35f3e570b1e7a7d4111b28d0a29仅五HEAD-only文档前缀纠偏：唯一technical业务裁决、另四引用；去currentNest已运行误称，正式createBillingRuntime与未接收mixed分开，FG2/资金旅程保持OPEN。698da77历史已承接；独审无P1/P2、308保护及mixed正文exact。主控精确15+/48−提交、fast-forward main、同tree switch main/-d旧branch，本地refs仅main；25项未接收mixed仍逐字保持，无资金/服务/SQL变更。Root旧Billinggitlinke04bff9至当前main另有待复核前驱链，本片未盲pin未审源码；应用门不适用于这五文档小片，不冒Billing资金验收或最终所有bytes已commit。旧Web两非main分支仍待只读归并，完整Wave目标保持active。
+### 2026-10-11 — T-K03.16 Connector V1 API 对齐 Manus（已提交）
+
+- **完成：** BFF `/v1/connector.list` 已按 Manus public shape 固定 `{ok,request_id,data:[id,name,type,description,category]}`；只关联同主体 active Connector 与 Provider 真实 metadata，不返回管理状态、CAS、scope、credential 或 Provider key。
+- **验证：** RED 404 后实现；`build`、`typecheck`、`lint`、`contract:lint`、`contract:semantic`、`contract:test` 通过。BFF 同持久环境重载，`/readyz=200`，无可信浏览器凭据实时返回预期 `403 PermissionDenied`。
+- **边界：** Platform 仍唯一拥有授权/Connection 与 Provider 事实；OAuth→Connection→Enable、浏览器 private 管理迁移和原 Ant Provider Admin 仍 OPEN，不用此读取接口冒充闭环。
