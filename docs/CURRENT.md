@@ -5,13 +5,13 @@
 | 阶段 | Owner / 唯一 writer | 完成条件 | 当前状态 |
 | --- | --- | --- | --- |
 | D1 | Platform `modules/mcp` | `McpProvider` 单一 persisted directory；Provider Admin 的 List/Get/Create/Update/Enable/Remove、CAS/receipt、commit 后 snapshot 失效及生成 contract | 目录/失效 main `0a6e28c`/`b44c9b4`；v1 RPC/生成物/逆门 `0e5ddc0`；aggregate metadata/policy 归一化、PostgreSQL CRUD/CAS/软删除与提交后失效 `0c65754`（隔离真实 PG 通过）。receipt/admission/RPC runtime 尚未实现 |
-| D2 | IAM | 独立 BFF workload/scope 与当前人类 platform-admin 管理判断；普通用户负控 | 未开始；不复用 personal 或 skills-admin scope |
+| D2 | IAM | 独立 BFF workload/scope 与当前人类 platform-admin 管理判断；普通用户负控 | main `9e3034f`：`mcp_admin`/`platform:mcp-admin.manage`、7→8 资源演进命令、internal v1/SDK 生成物及隔离真实 PostgreSQL/Redis HTTP 6 PASS；不复用 personal 或 skills-admin。正常资源/BFF credential 尚未 provision，普通用户端到端负控随 BFF/Platform 路径验收 |
 | D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | 未开始；BFF 不直写 Platform SQL |
 | D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | 未开始；不新建 Admin 站点或 settings 壳 |
 | D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | 视觉与本地搜索 main `f18c4a5`，23 focused UI tests/type/lint 通过；真实 Provider 数据与外部授权未闭环 |
 | D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实 provider sandbox：授权回跳→Connection→Enable，取消/过期/重放负控 | 需要实际 provider sandbox 配置；当前不把 pending connector 说成已连接 |
 
-下一行动是 D1 的正式 owner contract/RED→实现，而不是继续在 Web 卡片上反复改样式。仅 D1–D6 全部完成并通过正常管理员、普通用户和浏览器路径后才称连接器闭环。
+下一行动是 D1 的 MCP Provider Admin receipt/admission/RPC runtime，随后由 BFF 固定 owner artifact 接 `/v1/admin/mcp/providers`；不回到 Web 卡片反复改样式。仅 D1–D6 全部完成并通过正常管理员、普通用户和浏览器路径后才称连接器闭环。
 
 ### T-K03.15 Platform IAM adapter boundary 收敛（2026-10-11）
 Platform main `5b722385af8e884081cc7390816c608e17ae3c9b` 将原 `src/iam/` 整体迁至 `src/infrastructure/iam/`：该目录仅承载 BFF/Agent 等可信 workload 的 IAM SDK、credential 与 admission adapter，不拥有 IAM 业务模型、数据或浏览器身份事实；Skills/MCP 继续只通过它取得受信调用准入。旧生产路径、测试、Nest composition 与 smoke dist import 全部改为新路径，架构测试明确拒绝恢复根级 `src/iam`。Root Node24 `typecheck`、`lint`、`format:check`、`build` 及完整 `pnpm test` 实测 `2228 PASS / 405 SKIP / 0 FAIL`；本片无 API/Proto/SQL/运行重启，不以此声明 Skills/MCP 用户或后台闭环。下一 owner 切片是 Platform 的官方 Skill 初始 draft contract（现仅有既有 Skill 的 `CreateAdminSkillVersion`），再由 BFF→既有 Admin UI 消费；MCP 则按个人 connector 的 OAuth/credential/connection/enable 真实状态机推进。

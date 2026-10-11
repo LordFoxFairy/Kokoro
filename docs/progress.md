@@ -5,13 +5,13 @@
 | 阶段 | Owner / 唯一 writer | 完成条件 | 当前状态 |
 | --- | --- | --- | --- |
 | D1 | Platform `modules/mcp` | `McpProvider` 单一 persisted directory；Provider Admin 的 List/Get/Create/Update/Enable/Remove、CAS/receipt、commit 后 snapshot 失效及生成 contract | 目录/失效 main `0a6e28c`/`b44c9b4`；v1 RPC/生成物/逆门 `0e5ddc0`；aggregate metadata/policy 归一化、PostgreSQL CRUD/CAS/软删除与提交后失效 `0c65754`（隔离真实 PG 通过）。receipt/admission/RPC runtime 尚未实现 |
-| D2 | IAM | 独立 BFF workload/scope 与当前人类 platform-admin 管理判断；普通用户负控 | 未开始；不复用 personal 或 skills-admin scope |
+| D2 | IAM | 独立 BFF workload/scope 与当前人类 platform-admin 管理判断；普通用户负控 | main `9e3034f`：`mcp_admin`/`platform:mcp-admin.manage`、7→8 资源演进命令、internal v1/SDK 生成物及隔离真实 PostgreSQL/Redis HTTP 6 PASS；不复用 personal 或 skills-admin。正常资源/BFF credential 尚未 provision，普通用户端到端负控随 BFF/Platform 路径验收 |
 | D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | 未开始；BFF 不直写 Platform SQL |
 | D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | 未开始；不新建 Admin 站点或 settings 壳 |
 | D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | 视觉与本地搜索 main `f18c4a5`，23 focused UI tests/type/lint 通过；真实 Provider 数据与外部授权未闭环 |
 | D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实 provider sandbox：授权回跳→Connection→Enable，取消/过期/重放负控 | 需要实际 provider sandbox 配置；当前不把 pending connector 说成已连接 |
 
-下一行动是 D1 的正式 owner contract/RED→实现，而不是继续在 Web 卡片上反复改样式。仅 D1–D6 全部完成并通过正常管理员、普通用户和浏览器路径后才称连接器闭环。
+下一行动是 D1 的 MCP Provider Admin receipt/admission/RPC runtime，随后由 BFF 固定 owner artifact 接 `/v1/admin/mcp/providers`；不回到 Web 卡片反复改样式。仅 D1–D6 全部完成并通过正常管理员、普通用户和浏览器路径后才称连接器闭环。
 
 ### T-K03.13 Web 个人连接器 CRUD 已接收（2026-10-11）
 Web `d296087` 已在既有 browser-private adapter 与 BFF Public14 CRUD 上交付个人连接器创建、编辑、启停、删除、Provider 选择和分页；动作使用原幂等键与正 CAS，刷新保留已展示列表、不闪空、不展示原始技术 ID。Root 集成 `14bc33dd` 到 main。现有相关 UI/client 202 PASS、lint/typecheck/build 均通过；全量 `pnpm test` 因现有服务型套件超过本轮观察窗口未作为通过证据。此切片不证明第三方 OAuth→Connection→Enable 或管理员 Provider 管理已闭环，仍按 A3/A4 后继推进。
