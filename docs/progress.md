@@ -6,12 +6,12 @@
 | --- | --- | --- | --- |
 | D1 | Platform `modules/mcp` | `McpProvider` 单一 persisted directory；Provider Admin 的 List/Get/Create/Update/Enable/Remove、CAS/receipt、commit 后 snapshot 失效及生成 contract | main `b95365f`：完成每次 fresh `mcp_admin` workload admission、可信 tenant/subject 绑定、request digest、receipt replay、10 秒绝对 budget、Serializable CRUD/CAS/软删除与事务成功后 cache 失效；format/lint/typecheck/contract/artifact/build、1289 unit 与隔离真实 PostgreSQL integration 均通过。BFF consumer、真实配置和浏览器路径尚未验收 |
 | D2 | IAM | 独立 BFF workload/scope 与当前人类 platform-admin 管理判断；普通用户负控 | main `9e3034f`：`mcp_admin`/`platform:mcp-admin.manage`、7→8 资源演进命令、internal v1/SDK 生成物及隔离真实 PostgreSQL/Redis HTTP 6 PASS；不复用 personal 或 skills-admin。正常资源/BFF credential 尚未 provision，普通用户端到端负控随 BFF/Platform 路径验收 |
-| D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | 未开始；BFF 不直写 Platform SQL |
-| D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | 未开始；不新建 Admin 站点或 settings 壳 |
-| D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | 视觉与本地搜索 main `f18c4a5`，23 focused UI tests/type/lint 通过；真实 Provider 数据与外部授权未闭环 |
+| D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | main `3e3d595`：已固定 owner artifact，不直写 Platform SQL；D4 同源 adapter 的真实 Create/Update/Enable 请求已由浏览器走通 |
+| D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | main `17b2f8e`：在既有 Ant 控制台同一 `/manage/hub` 内新增“连接器提供方”页签；严格 BFF artifact schema、幂等/CAS/错误 envelope。浏览器实测创建→编辑→停用→启用，用户 `/app/plugins` 同步显示已启用提供方；Admin `116 PASS`、typecheck/lint/build 通过 |
+| D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | main `264eb2e`：Skills/MCP 使用真实目录、详情、安装/连接投影和保留列表的异步刷新；3 focused suites `147 PASS`、typecheck/lint/build 通过。当前浏览器已读到 Admin 新建并启用的 Provider；不伪造封面、用量或连接状态 |
 | D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实 provider sandbox：授权回跳→Connection→Enable，取消/过期/重放负控 | 需要实际 provider sandbox 配置；当前不把 pending connector 说成已连接 |
 
-下一行动是 D1 的 MCP Provider Admin receipt/admission/RPC runtime，随后由 BFF 固定 owner artifact 接 `/v1/admin/mcp/providers`；不回到 Web 卡片反复改样式。仅 D1–D6 全部完成并通过正常管理员、普通用户和浏览器路径后才称连接器闭环。
+下一行动只剩 D6：在真实第三方 provider sandbox 配置完成后，执行 OAuth/credential/Connection 的授权回跳→Connection→Enable、取消/过期/重放负控。D1–D5 已有当前 owner 与浏览器证据；未将 D6 的外部授权资格冒充为完整连接器闭环。
 
 ### T-K03.13 Web 个人连接器 CRUD 已接收（2026-10-11）
 Web `d296087` 已在既有 browser-private adapter 与 BFF Public14 CRUD 上交付个人连接器创建、编辑、启停、删除、Provider 选择和分页；动作使用原幂等键与正 CAS，刷新保留已展示列表、不闪空、不展示原始技术 ID。Root 集成 `14bc33dd` 到 main。现有相关 UI/client 202 PASS、lint/typecheck/build 均通过；全量 `pnpm test` 因现有服务型套件超过本轮观察窗口未作为通过证据。此切片不证明第三方 OAuth→Connection→Enable 或管理员 Provider 管理已闭环，仍按 A3/A4 后继推进。
