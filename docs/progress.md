@@ -13313,3 +13313,14 @@ Billing main5c7caf846acec35f3e570b1e7a7d4111b28d0a29仅五HEAD-only文档前缀�
 - **完成：** BFF `/v1/connector.list` 已按 Manus public shape 固定 `{ok,request_id,data:[id,name,type,description,category]}`；只关联同主体 active Connector 与 Provider 真实 metadata，不返回管理状态、CAS、scope、credential 或 Provider key。
 - **验证：** RED 404 后实现；`build`、`typecheck`、`lint`、`contract:lint`、`contract:semantic`、`contract:test` 通过。BFF 同持久环境重载，`/readyz=200`，无可信浏览器凭据实时返回预期 `403 PermissionDenied`。
 - **边界：** Platform 仍唯一拥有授权/Connection 与 Provider 事实；OAuth→Connection→Enable、浏览器 private 管理迁移和原 Ant Provider Admin 仍 OPEN，不用此读取接口冒充闭环。
+
+### T-K03.17 官方 Skill 初始草稿闭环（D0，2026-10-11）
+
+| 项 | 结论 |
+| --- | --- |
+| 目标 / 优先级 | P0：补齐原 Ant Admin 的“官方新建草稿→现有上传/验证→发布”首写，不再把仅支持已有版本的 `CreateAdminSkillVersion` 当作官方创建。 |
+| Owner / writer | 先 Platform `apps/kokoro-capability`（Root 唯一 writer）；正式 owner contract 后串行 BFF，再串行原 Admin。Web user app、MCP、SQL/infrastructure 与任务外 mixed 文件排除。 |
+| 基线 | Platform 已完成 D1 owner commit `3fba81e`（`CreateAdminSkillDraft` RPC、generated client、严格 raw JSON/digest/receipt/outbox contract 与历史逆向验证）；BFF main `94b9b46`；Admin main `345a795`。Root 保留任务外 Root / Agent / App / Billing / `uv.lock` 变化。 |
+| 契约 / 数据 | 新 `SkillAdminService.CreateAdminSkillDraft` 与 BFF `POST /v1/admin/skills`；新 Skill revision1 official/draft/none，现 receipt/outbox 事务，无表/列/缓存变更；请求无 caller-supplied tenant/subject/publisher/skill id/CAS。 |
+| 验证 | 先 Platform 缺RPC RED；machine contract + generated + unit/contract/cutover/artifact/type/lint/build，再 BFF public contract/route、Admin same-origin，最后正常管理员浏览器创建→上传→验证→发布与普通/跨租户负控。 |
+| 完成条件 | 不留死 helper、第二服务、fake admin/用户创建路径或 compatibility alias；完整用户旅程真实通过才标记此能力闭环。 |

@@ -16871,3 +16871,14 @@ System现已提交四commit到main1460820经独审无P1/P2；Root38166自然chec
 Billing main5c7caf846acec35f3e570b1e7a7d4111b28d0a29仅五HEAD-only文档前缀纠偏：唯一technical业务裁决、另四引用；去currentNest已运行误称，正式createBillingRuntime与未接收mixed分开，FG2/资金旅程保持OPEN。698da77历史已承接；独审无P1/P2、308保护及mixed正文exact。主控精确15+/48−提交、fast-forward main、同tree switch main/-d旧branch，本地refs仅main；25项未接收mixed仍逐字保持，无资金/服务/SQL变更。Root旧Billinggitlinke04bff9至当前main另有待复核前驱链，本片未盲pin未审源码；应用门不适用于这五文档小片，不冒Billing资金验收或最终所有bytes已commit。旧Web两非main分支仍待只读归并，完整Wave目标保持active。
 ### T-K03.16 Connector V1 API 对齐 Manus（已提交，2026-10-11）
 Owner `kokoro-bff`，Root 为唯一 writer/审查与 Git 集成。已完成 RED→GREEN：公开 `GET /v1/connector.list` 固定 Manus 五字段/envelope、current IAM MCP `read` admission、Platform Connector+Provider 同 deadline 严格投影、无 query/body/状态/CAS/credential 泄露；OpenAPI 14.1.0 加入 exact inverse gate。BFF main `94b9b4674d90c5b902b15b178b10ad53c7af6be3`：`build`、`typecheck`、`lint`、`contract:lint`、`contract:semantic`、`contract:test` 均通过；运行 BFF 已按同一持久环境重载，`/readyz=200` 且无 browser credential 的请求真实为预期 `403 PermissionDenied`。Platform 仍是 Connector/Provider/授权/Connection 唯一事实 owner，BFF 无 SQL 或凭据。OAuth→Connection→Enable 和原 Ant Provider Admin 仍分别由 Platform A3/A4 闭环；当前接口不冒充它们完成。
+
+### T-K03.17 官方 Skill 初始草稿闭环（D0，2026-10-11）
+
+| 项 | 结论 |
+| --- | --- |
+| 目标 / 优先级 | P0：补齐原 Ant Admin 的“官方新建草稿→现有上传/验证→发布”首写，不再把仅支持已有版本的 `CreateAdminSkillVersion` 当作官方创建。 |
+| Owner / writer | 先 Platform `apps/kokoro-capability`（Root 唯一 writer）；正式 owner contract 后串行 BFF，再串行原 Admin。Web user app、MCP、SQL/infrastructure 与任务外 mixed 文件排除。 |
+| 基线 | Platform 已完成 D1 owner commit `3fba81e`（`CreateAdminSkillDraft` RPC、generated client、严格 raw JSON/digest/receipt/outbox contract 与历史逆向验证）；BFF main `94b9b46`；Admin main `345a795`。Root 保留任务外 Root / Agent / App / Billing / `uv.lock` 变化。 |
+| 契约 / 数据 | 新 `SkillAdminService.CreateAdminSkillDraft` 与 BFF `POST /v1/admin/skills`；新 Skill revision1 official/draft/none，现 receipt/outbox 事务，无表/列/缓存变更；请求无 caller-supplied tenant/subject/publisher/skill id/CAS。 |
+| 验证 | 先 Platform 缺RPC RED；machine contract + generated + unit/contract/cutover/artifact/type/lint/build，再 BFF public contract/route、Admin same-origin，最后正常管理员浏览器创建→上传→验证→发布与普通/跨租户负控。 |
+| 完成条件 | 不留死 helper、第二服务、fake admin/用户创建路径或 compatibility alias；完整用户旅程真实通过才标记此能力闭环。 |
