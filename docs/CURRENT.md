@@ -9,9 +9,9 @@
 | D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | main `3e3d595`：已固定 owner artifact，不直写 Platform SQL；D4 同源 adapter 的真实 Create/Update/Enable 请求已由浏览器走通 |
 | D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | main `17b2f8e`：在既有 Ant 控制台同一 `/manage/hub` 内新增“连接器提供方”页签；严格 BFF artifact schema、幂等/CAS/错误 envelope。浏览器实测创建→编辑→停用→启用，用户 `/app/plugins` 同步显示已启用提供方；Admin `116 PASS`、typecheck/lint/build 通过 |
 | D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | main `264eb2e`：Skills/MCP 使用真实目录、详情、安装/连接投影和保留列表的异步刷新；3 focused suites `147 PASS`、typecheck/lint/build 通过。当前浏览器已读到 Admin 新建并启用的 Provider；不伪造封面、用量或连接状态 |
-| D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实 provider sandbox：授权回跳→Connection→Enable，取消/过期/重放负控 | 需要实际 provider sandbox 配置；当前不把 pending connector 说成已连接 |
+| D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实 provider sandbox：授权回跳→Connection→Enable，取消/过期/重放负控 | 真实浏览器已创建 GitHub connector，状态准确显示“等待连接”；当前 BFF public contract 没有 Begin/Complete callback 路由，Platform `.env.local` 也未配置授权桥/SecretHandle URL 或 provider OAuth sandbox。现有 internal RPC 不能替代该浏览器链；不把 pending 说成已连接 |
 
-下一行动只剩 D6：在真实第三方 provider sandbox 配置完成后，执行 OAuth/credential/Connection 的授权回跳→Connection→Enable、取消/过期/重放负控。D1–D5 已有当前 owner 与浏览器证据；未将 D6 的外部授权资格冒充为完整连接器闭环。
+下一行动只剩 D6：先发行 Platform 本人 Begin/Complete/reconnect、受管 credential 和 callback contract，再由 BFF/Web 接线；同时配置真实第三方 provider sandbox 后，执行授权回跳→Connection→Enable、取消/过期/重放负控。D1–D5 已有当前 owner 与浏览器证据；未将 D6 的外部授权资格冒充为完整连接器闭环。
 
 ### T-K03.15 Platform IAM adapter boundary 收敛（2026-10-11）
 Platform main `5b722385af8e884081cc7390816c608e17ae3c9b` 将原 `src/iam/` 整体迁至 `src/infrastructure/iam/`：该目录仅承载 BFF/Agent 等可信 workload 的 IAM SDK、credential 与 admission adapter，不拥有 IAM 业务模型、数据或浏览器身份事实；Skills/MCP 继续只通过它取得受信调用准入。旧生产路径、测试、Nest composition 与 smoke dist import 全部改为新路径，架构测试明确拒绝恢复根级 `src/iam`。Root Node24 `typecheck`、`lint`、`format:check`、`build` 及完整 `pnpm test` 实测 `2228 PASS / 405 SKIP / 0 FAIL`；本片无 API/Proto/SQL/运行重启，不以此声明 Skills/MCP 用户或后台闭环。下一 owner 切片是 Platform 的官方 Skill 初始 draft contract（现仅有既有 Skill 的 `CreateAdminSkillVersion`），再由 BFF→既有 Admin UI 消费；MCP 则按个人 connector 的 OAuth/credential/connection/enable 真实状态机推进。
