@@ -1,3 +1,7 @@
+### T-K03.13 Web A3 contract adapter 已接收；浏览器 CRUD 仍待正式配对（2026-10-11）
+Web main `1690d9a0db6bac7fb1ea0c47835ce663a8b29b63` 固定 BFF main `4c8dc33a34dc78f1d282130f8622e0da8e0b2df6` 的 public14.0.0/OpenAPI SHA-256 `db093b698cc48951422236b8742464465ca8b06b721dab126f2f66d70938f8b4`：四个 connector command、Provider list/detail、严格 duplicate-key JSON、65KiB、同源、幂等键与 owner 回包校验均由现有 Web same-origin adapter 覆盖。原 Project parser 的跨业务借用已移除，改为 MCP 独立 strict parser；现有 BFF Team/Agent/Skills/Project/Library consumer pin 和生成物同步为同一 owner artifact，无旧 13.3 fallback。
+真实 RED：旧 consumer digest 两处失败；更新精确 pin 后 Root Node22 `pnpm check` 完整自然通过：contract 278、architecture 50、default 3,381，lint/type/build 全通过；最新 Origin 回归 focused 170 PASS。该片只完成 Web contract/adapter，不宣称用户端 connector CRUD、普通授权→Connection 或 Provider Admin 已完成；正常运行 BFF 仍是 ee423b7，须在真实用户界面完成并固定 BFF14 后成对切换。
+
 ### T-K03.13 A2 BFF CRUD 实施已接收（2026-10-11）
 原 BFF writer与早期审查员均因额度终止后，Root按既有卡接管、未重启服务或修改共享数据。BFF main `4c8dc33a34dc78f1d282130f8622e0da8e0b2df6` 完成 four command + Provider list/detail：严格JSON/Unicode/64KiB、幂等键、正十进制CAS、真实JCS、10秒取消/复准入、owner回包投影与typed conflict/precondition/unknown错误。Create初始 disabled ACK 的实际RED1→GREEN1、历史13.3断言两项及architecture一项完整门失败均按精确14→13.3 inverse修正，未改历史断言/hash或削弱门禁。
 Root完整 `pnpm check`（Node22）最终 session99560 exit0：contract全通过、默认测试1500PASS/0FAIL/3既有SKIP、lint/type/build通过；冻结 `/tmp/kokoro-bff-mcp-personal-crud-a2/final-freeze.json` 确认20实际路径、673受保护文件未变。正式运行仍是 ee423b7；新14.0 `/v1`契约待 Web consumer固定4c8dc33并完成strict schema/用户接口，再由Root成对切换。未把本片替代普通授权→Connection、Provider Admin写入或完整连接器UI；这些后继仍按Platform owner闭环。
