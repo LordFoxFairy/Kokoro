@@ -1,4 +1,4 @@
-T-K03.13 A2 原writer/审查员额度terminal后Root接管，24scope增加现Skills历史契约测试第25路径，仅插精确父逆、原断言/hash不变。Root全门真实896PASS/2FAIL→定向2PASS；最终31301运行中，root-check-final.log，见CURRENT。无正常运行切换或SQL修改，未称完整闭环。
+T-K03.13 A2 原writer/审查员额度terminal后Root接管，24scope增加现Skills历史契约测试第25路径，仅插精确父逆、原断言/hash不变。Root全门真实896PASS/2FAIL→定向2PASS；31301自然exit1：contract898PASS、默认1499PASS/1FAIL/3SKIP；scope第26现architecture历史版本断言补精确父逆，具名1PASS，最终99560运行中/root-check-complete.log，见CURRENT。无正常运行切换或SQL修改，未称完整闭环。
 
 A2 早审新增确定 P1：变化树 BFF response Create ACK 错将 enabled=false 判失败；Root 实读与正式 Platform 创建必为 false/CAS1 对照确认。原 writer 已补 generated false ACK：具名真实 RED1FAIL→GREEN1PASS，true/CAS2/error 状态负控均拒绝；Root核 /tmp/kokoro-bff-mcp-personal-crud-a2/create-disabled-{red,green}.log 及当前源码已按 false/CAS1/pending或active修正。仅该局部证据，不冒变化树最终门；当前继续机器14.0/父逆和完整测试，未冻结、未上线、未改 owner 资格。
 
