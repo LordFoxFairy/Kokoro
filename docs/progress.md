@@ -1,3 +1,6 @@
+### T-K03.13 Web 个人连接器 CRUD 已接收（2026-10-11）
+Web `d296087` 已在既有 browser-private adapter 与 BFF Public14 CRUD 上交付个人连接器创建、编辑、启停、删除、Provider 选择和分页；动作使用原幂等键与正 CAS，刷新保留已展示列表、不闪空、不展示原始技术 ID。Root 集成 `14bc33dd` 到 main。现有相关 UI/client 202 PASS、lint/typecheck/build 均通过；全量 `pnpm test` 因现有服务型套件超过本轮观察窗口未作为通过证据。此切片不证明第三方 OAuth→Connection→Enable 或管理员 Provider 管理已闭环，仍按 A3/A4 后继推进。
+
 T-K03.13 A2 BFF main4c8dc33已接收：Root完整pnpm check exit0（1500PASS/0FAIL/3SKIP、contract/lint/type/build过），freeze final-freeze.json/20path/673保护。正常运行仍ee423b7，下一片Web先pin14.0并实现strict CRUD UI/用户验收，随后Root配对激活；OAuth→Connection与Provider Admin仍Platform后继。
 
 T-K03.13 A2 原writer/审查员额度terminal后Root接管，24scope增加现Skills历史契约测试第25路径，仅插精确父逆、原断言/hash不变。Root全门真实896PASS/2FAIL→定向2PASS；31301自然exit1：contract898PASS、默认1499PASS/1FAIL/3SKIP；scope第26现architecture历史版本断言补精确父逆，具名1PASS，最终99560运行中/root-check-complete.log，见CURRENT。无正常运行切换或SQL修改，未称完整闭环。
