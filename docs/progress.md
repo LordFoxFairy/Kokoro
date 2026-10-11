@@ -4,7 +4,7 @@
 
 | 阶段 | Owner / 唯一 writer | 完成条件 | 当前状态 |
 | --- | --- | --- | --- |
-| D1 | Platform `modules/mcp` | `McpProvider` 单一 persisted directory；Provider Admin 的 List/Get/Create/Update/Enable/Remove、CAS/receipt、commit 后 snapshot 失效及生成 contract | 目录/失效 main `0a6e28c`/`b44c9b4`；v1 RPC/生成物/逆门 `0e5ddc0`；aggregate metadata/policy 归一化、PostgreSQL CRUD/CAS/软删除与提交后失效 `0c65754`（隔离真实 PG 通过）。receipt/admission/RPC runtime 尚未实现 |
+| D1 | Platform `modules/mcp` | `McpProvider` 单一 persisted directory；Provider Admin 的 List/Get/Create/Update/Enable/Remove、CAS/receipt、commit 后 snapshot 失效及生成 contract | main `b95365f`：完成每次 fresh `mcp_admin` workload admission、可信 tenant/subject 绑定、request digest、receipt replay、10 秒绝对 budget、Serializable CRUD/CAS/软删除与事务成功后 cache 失效；format/lint/typecheck/contract/artifact/build、1289 unit 与隔离真实 PostgreSQL integration 均通过。BFF consumer、真实配置和浏览器路径尚未验收 |
 | D2 | IAM | 独立 BFF workload/scope 与当前人类 platform-admin 管理判断；普通用户负控 | main `9e3034f`：`mcp_admin`/`platform:mcp-admin.manage`、7→8 资源演进命令、internal v1/SDK 生成物及隔离真实 PostgreSQL/Redis HTTP 6 PASS；不复用 personal 或 skills-admin。正常资源/BFF credential 尚未 provision，普通用户端到端负控随 BFF/Platform 路径验收 |
 | D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | 未开始；BFF 不直写 Platform SQL |
 | D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | 未开始；不新建 Admin 站点或 settings 壳 |
