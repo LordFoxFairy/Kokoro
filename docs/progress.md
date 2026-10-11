@@ -13324,3 +13324,9 @@ Billing main5c7caf846acec35f3e570b1e7a7d4111b28d0a29仅五HEAD-only文档前缀�
 | 契约 / 数据 | 新 `SkillAdminService.CreateAdminSkillDraft` 与 BFF `POST /v1/admin/skills`；新 Skill revision1 official/draft/none，现 receipt/outbox 事务，无表/列/缓存变更；请求无 caller-supplied tenant/subject/publisher/skill id/CAS。 |
 | 验证 | 先 Platform 缺RPC RED；machine contract + generated + unit/contract/cutover/artifact/type/lint/build，再 BFF public contract/route、Admin same-origin，最后正常管理员浏览器创建→上传→验证→发布与普通/跨租户负控。 |
 | 完成条件 | 不留死 helper、第二服务、fake admin/用户创建路径或 compatibility alias；完整用户旅程真实通过才标记此能力闭环。 |
+
+### 2026-10-11 — T-K03.18 MCP Provider 单一目录（Platform）
+
+- **已提交：** Platform `0a6e28c` 清除环境变量静态 Provider catalog，将非 secret connector 运行策略并入 `mcp_provider`；新持久化 adapter 由 MCP 读取路径直接消费。
+- **证据：** focused MCP 119/119；lint/typecheck/build 通过；隔离 PostgreSQL schema installer 21/21；本地 `kokoro_platform` schema 重建后 Platform 8086 实际 `/readyz`、`/healthz` 均 200。
+- **未闭环：** Provider Admin owner contract/BFF/Admin UI/用户连接 OAuth 或 custom-MCP 实际旅程仍是后续串行 owner 切片；没有静态 fallback、假 Provider 或成功声明。

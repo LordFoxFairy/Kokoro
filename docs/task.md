@@ -16882,3 +16882,7 @@ Owner `kokoro-bff`，Root 为唯一 writer/审查与 Git 集成。已完成 RED�
 | 契约 / 数据 | 新 `SkillAdminService.CreateAdminSkillDraft` 与 BFF `POST /v1/admin/skills`；新 Skill revision1 official/draft/none，现 receipt/outbox 事务，无表/列/缓存变更；请求无 caller-supplied tenant/subject/publisher/skill id/CAS。 |
 | 验证 | 先 Platform 缺RPC RED；machine contract + generated + unit/contract/cutover/artifact/type/lint/build，再 BFF public contract/route、Admin same-origin，最后正常管理员浏览器创建→上传→验证→发布与普通/跨租户负控。 |
 | 完成条件 | 不留死 helper、第二服务、fake admin/用户创建路径或 compatibility alias；完整用户旅程真实通过才标记此能力闭环。 |
+
+### T-K03.18 Platform MCP Provider 单一目录（2026-10-11）
+
+Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON` 与静态 parser，`kokoro_platform.mcp_provider` 现承载 connector type、scope、授权标记、origin 与 tool policy；用户读仅见 enabled/nondeleted provider。Root 已按用户许可清理并重建本地 Platform schema，实际 schema installer 隔离 PostgreSQL 21/21 通过，Platform 8086 重启后 `/readyz`、`/healthz` 为 200。Provider Admin contract、BFF `/v1/admin/mcp/providers`、原 Ant Admin 管理页面、真实第三方 OAuth/自定义 MCP sandbox 与用户浏览器连接旅程尚未完成，禁止以此目录切片称连接器闭环。
