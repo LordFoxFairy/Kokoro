@@ -9,9 +9,9 @@
 | D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | main `3e3d595`：已固定 owner artifact，不直写 Platform SQL；D4 同源 adapter 的真实 Create/Update/Enable 请求已由浏览器走通 |
 | D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | main `17b2f8e`：在既有 Ant 控制台同一 `/manage/hub` 内新增“连接器提供方”页签；严格 BFF artifact schema、幂等/CAS/错误 envelope。浏览器实测创建→编辑→停用→启用，用户 `/app/plugins` 同步显示已启用提供方；Admin `116 PASS`、typecheck/lint/build 通过 |
 | D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | main `a07eac9`：Provider 卡片和详情主动作直接按真实 Provider metadata 创建本人连接，移除额外“名称/描述”弹窗；保留已确认列表的异步刷新。Node 22 focused UI `22 PASS`、typecheck/lint/build 通过。OAuth 授权回跳、受管凭据、Connection 与 Enable 仍严格归 D6，不将 pending 冒充已连接。 |
-| D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实 provider sandbox：授权回跳→Connection→Enable，取消/过期/重放负控 | 真实浏览器已创建 GitHub connector，状态准确显示“等待连接”；当前 BFF public contract 没有 Begin/Complete callback 路由，Platform `.env.local` 也未配置授权桥/SecretHandle URL 或 provider OAuth sandbox。现有 internal RPC 不能替代该浏览器链；不把 pending 说成已连接 |
+| D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实第三方授权：授权回跳→Connection→Enable，取消/过期/重放负控 | 真实浏览器已创建 GitHub connector，状态准确显示“等待连接”；当前 BFF public contract 没有 Begin/Complete callback 路由，Platform `.env.local` 也未配置授权桥/SecretHandle URL 或第三方 OAuth client/callback 配置。现有 internal RPC 不能替代该浏览器链；不把 pending 说成已连接 |
 
-下一行动只剩 D6：先发行 Platform 本人 Begin/Complete/reconnect、受管 credential 和 callback contract，再由 BFF/Web 接线；同时配置真实第三方 provider sandbox 后，执行授权回跳→Connection→Enable、取消/过期/重放负控。D1–D5 已有当前 owner 与浏览器证据；未将 D6 的外部授权资格冒充为完整连接器闭环。
+下一行动只剩 D6：先发行 Platform 本人 Begin/Complete/reconnect、受管 credential 和 callback contract，再由 BFF/Web 接线；同时配置真实第三方 OAuth client/callback 后，执行授权回跳→Connection→Enable、取消/过期/重放负控。D1–D5 已有当前 owner 与浏览器证据；未将 D6 的外部授权资格冒充为完整连接器闭环。
 
 ### T-K03.13 Web 个人连接器 CRUD 已接收（2026-10-11）
 Web `d296087` 已在既有 browser-private adapter 与 BFF Public14 CRUD 上交付个人连接器创建、编辑、启停、删除、Provider 选择和分页；动作使用原幂等键与正 CAS，刷新保留已展示列表、不闪空、不展示原始技术 ID。Root 集成 `14bc33dd` 到 main。现有相关 UI/client 202 PASS、lint/typecheck/build 均通过；全量 `pnpm test` 因现有服务型套件超过本轮观察窗口未作为通过证据。此切片不证明第三方 OAuth→Connection→Enable 或管理员 Provider 管理已闭环，仍按 A3/A4 后继推进。
