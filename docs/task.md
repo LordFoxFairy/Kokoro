@@ -1,6 +1,8 @@
-### T-K03.19 连接器目录与 Provider 管理：单一收敛任务卡（2026-10-11）
+### T-K03.19 Skills 与 MCP：单一端到端闭环任务卡（2026-10-11）
 
-用户要求以 Manus 为视觉与 API 参考，但只以真实 owner 数据渲染，禁止静态 seed、伪造封面/使用量或另一套后台。现按以下顺序串行执行，复用同一任务卡：
+用户已将当前唯一交付目标收敛为 **彻底完成 Skills 与 MCP**；不在这张卡之外重开计划，也不提前扩散到 Scheduler、项目或其它 Settings 页面。唯一链路为：Browser → Web same-origin adapter → BFF → Platform（Skills/MCP control plane）→ Agent（MCP runtime）。管理员只在现有同源 `/manage` 原 Admin 壳出现，普通用户不可见；不新建第二套后台。Skills 与 MCP 的外部数据、状态和页面均以 owner 的真实返回为准，不用静态 seed、伪造封面、使用量、连接状态或完成状态。
+
+**闭环验收范围：** Skills 完成目录、详情/文件树、安装/移除、个人 ZIP/GitHub 导入与管理，以及现有 `/manage` 中的官方草稿→上传/校验→发布/撤回；MCP 完成 Provider 目录、个人 Connector CRUD、标准远程 Streamable HTTP OAuth（metadata、PKCE、resource、DCR 或显式 provider registration）、Connection/Enable/撤销，以及本地标准 stdio MCP 的按需启动→`initialize`→`tools/list`→`tools/call`→取消/超时/回收。Platform 不读取 IAM 业务数据，BFF 不直连 owner 数据库，Agent 不为某个工具写专用旁路。完成声明必须有 owner 门、真实服务和浏览器用户/管理员路径证据。
 
 | 阶段 | Owner / 唯一 writer | 完成条件 | 当前状态 |
 | --- | --- | --- | --- |
@@ -9,9 +11,9 @@
 | D3 | BFF | 固定 Platform artifact 后的 `/v1/admin/mcp/providers` adapter、snake_case/标准 error/CAS | main `3e3d595`：已固定 owner artifact，不直写 Platform SQL；D4 同源 adapter 的真实 Create/Update/Enable 请求已由浏览器走通 |
 | D4 | 原 Admin Web `/manage/hub` | 原有 Ant Admin 壳内的 Provider 管理、官方/第三方 metadata 配置；同源自然 SSO | 历史 Ant 管理页基线 `17b2f8e` 后，main `e1af433` 增加可选目录封面且允许空 MCP origin（与 owner contract 一致）；真实同源 Admin 创建/编辑 provider 后用户 `/app/plugins` 同步读回。目标 Admin tests 4 PASS、typecheck/lint 通过；其 production build 仍有既有 Turbopack font resolver 失败，未冒充通过。 |
 | D5 | Web `/app/plugins` | Manus 式目录/详情/添加交互；真实字段、稳定异步刷新；连接器 CRUD 投影 | 当前 Web main `45e191e`：既有真实 owner metadata 投影基础上，为缺少 `cover_image_url` 的 Provider 增加本地默认 artwork；不伪造封面/使用量/技术 ID。目标 UI 34 PASS、typecheck/lint/build 通过；Root 实际浏览器登录后确认 `/app/plugins` 卡片不再留白。OAuth 授权回跳、受管凭据、Connection 与 Enable 仍严格归 D6，不将 pending 冒充已连接。 |
-| D6 | Platform→BFF→Web | OAuth/credential/Connection 的真实第三方授权：授权回跳→Connection→Enable，取消/过期/重放负控 | Platform main `141e14f` 已完成三设计 D0，`f093a4f` 已落 OAuth attempt/AEAD credential persistence，`f021b70` 已将 Enable 收敛为同 tenant、同 connector、当前 approved authorization、active/未过期的 Platform-owned credential 才可通过；`9bd0398` 已将每次待授权 connector 的 PKCE state hash 与 verifier AEAD envelope 原子绑定，并只把授权 URL 返回浏览器；`68d1996` 已修正并发 Begin：先原子 claim state/verifier 后再构造授权 URL，provider URL 构造失败会释放仅该 claim，避免并发生成第二个有效授权入口；`70784b5` 以隔离真实 PostgreSQL 证明该并发 claim 只发出一个 provider URL 并持久化加密 envelope。Begin/Complete/Reconnect Proto、BFF public callback、本地 GitHub OAuth client/callback 配置与真实浏览器授权回跳仍不存在；真实浏览器仅为“等待连接”，不冒已连接。 |
+| D6 | Platform → Agent → BFF → Web | 标准远程与本地 MCP：remote OAuth/credential/Connection/Enable；stdio lifecycle；取消/过期/重放/超时/回收负控 | 远程 HTTP 的 PKCE state/verifier 原子 claim、AEAD 受管凭据与 Enable 前置约束已有 Platform 证据；Begin/Complete/reconnect contract、BFF callback、标准 metadata/DCR、真实远程回跳，以及 Agent 的 stdio launcher/进程生命周期仍未实现。当前 Agent 只支持 Streamable HTTP，Platform 也拒绝 stdio；该缺口纳入本卡，不能把配置文件或模拟 MCP 冒充本地工具闭环。GitHub MCP 不公开标准 AS metadata/DCR，需 Kokoro OAuth client registration；DCR-compatible server 不需该例外配置。 |
 
-下一行动只剩 D6：先发行 Platform 本人 Begin/Complete/reconnect、受管 credential 和 callback contract，再由 BFF/Web 接线；同时配置真实第三方 OAuth client/callback 后，执行授权回跳→Connection→Enable、取消/过期/重放负控。D1–D5 已有当前 owner 与浏览器证据；未将 D6 的外部授权资格冒充为完整连接器闭环。
+下一行动按依赖串行：先完成 Platform 的标准远程 OAuth Begin/Complete/reconnect、credential/Connection contract 与 DCR/provider-registration 处理；再由 Agent 将当前 HTTP-only MCP runtime 扩为标准 stdio lifecycle；随后 BFF/Web 接线并以真实远程兼容 server 与本地 MCP fixture 完成用户路径。Skills 同时只补现有 `/manage` 官方发布主链与用户端真实导入/安装/详情路径，不重写后台、不拆出第二个 admin。D1–D5 的既有证据保留；任何未验证的 OAuth 配置、远端授权或本地进程不得称闭环。
 
 ### T-K03.13 Web 个人连接器 CRUD 已接收（2026-10-11）
 Web `d296087` 已在既有 browser-private adapter 与 BFF Public14 CRUD 上交付个人连接器创建、编辑、启停、删除、Provider 选择和分页；动作使用原幂等键与正 CAS，刷新保留已展示列表、不闪空、不展示原始技术 ID。Root 集成 `14bc33dd` 到 main。现有相关 UI/client 202 PASS、lint/typecheck/build 均通过；全量 `pnpm test` 因现有服务型套件超过本轮观察窗口未作为通过证据。此切片不证明第三方 OAuth→Connection→Enable 或管理员 Provider 管理已闭环，仍按 A3/A4 后继推进。
