@@ -8,7 +8,7 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 ## Public entry points
 
 - `python3 scripts/verify-backend-design.py --manifest-only` verifies Root architecture documentation and Agent boundary markers.
-- `python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts` verifies active/archived repository topology and Phase 1 composition.
+- `python3 scripts/verify-repository-topology.py --allow-uninitialized` verifies active/archived repository topology and Phase 1 composition.
 - `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the six owner repositories. It emits stable
   text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
   every repository converges.
