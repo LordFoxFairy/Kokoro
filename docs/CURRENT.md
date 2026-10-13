@@ -1,3 +1,11 @@
+## SET-13 完整 Team 权限配对候选（2026-10-13，实际浏览器验收待完成）
+
+本设置分支固定 Web `c0a5e6e7c687e45c78757844ba0b6484d5fd16fa` 与 BFF `22a476ea59624b806e8d0013e069efdd6bd26595`，继续复用已审 IAM `a63bcd0`、Billing `20dba9c`。BFF public15.0.0 canonical SHA256 `5f6b1178cb878718090ba65d6b0d563185078624af0d3d46a01e568af87264a4`，Web通过正常generator消费原始不可变owner artifact。既有IAM角色八个权限域中的platform/skill此前被Web六域严格schema拒绝；现在完整接纳，未知域/非法动作/空数组仍拒绝，角色替换按完整权限superset校验。无IAM权限、SQL或技能/连接器功能修改；完整snapshot中继承的其他开发者字段不裁剪。
+
+这是breaking major仅自有开发候选同/v1配对，不激活main、日常、生产或Admin，不援旧beta例外；尚无新团队创建/切换能力。BFF变更独审无新增P1/P2，Root实际build及Team/contract相关48PASS；Web冻结18路径独审无新增P1/P2，Team相关36PASS、contract278PASS（含两生成检查）、architecture50PASS，lint/typecheck/production build通过。BFF全仓历史restore门与Web一次全测3356PASS/21FAIL/154SKIP保留，不称全仓或E2E通过。
+
+旧候选已干净停止、自有资源及凭据日志最终扫描通过；本配对尚待正式launcher精确gitlink/clean guard、启动与真实登录团队数据验收。独立QA前一运行确实发现团队与套餐加载失败，不能以源码测试覆盖其运行事实。快捷键由另一实现会话负责；完整非技能/连接器设置目标仍未完成。
+
 ## SET-11 可选 Billing 隔离编排候选（2026-10-13，本人读取组合已验收）
 
 既有 `serve_local_login.py` 显式 `--billing-node-bin` 选择 Node24.20.0及精确Billing HEAD/gitlink/index/clean/symlink guard；普通 `local_billing_runtime.py` 负责正式build、fresh owner installer、唯一 `dist/src/main.js` 和 readiness/alive/幂等close。共享本次自有application DB，仅选择 `schema=kokoro_billing`，无options、业务SQL或资金seed；真实缺账户保持404。未选中不启动Billing，不建立第二launcher或扩大sandbox schema白名单。
