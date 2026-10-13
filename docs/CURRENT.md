@@ -1,3 +1,13 @@
+## 2026-10-13 App 运行恢复与导航补验
+
+App、IAM、Storage 的原开发进程已退出，本轮重新以独立后台源码进程启动，未重启基础设施或 Mori。已有浏览器会话正常回到 App，没有发送新的账号/密码输入；此前“需用户登录”的状态已更新。
+
+入口消失的根因是上一轮仅补 Product/Site/Policy，正式 manifest 的 navigation 仍为空，而 App 有意不以 preview 菜单兜底。现通过 System 既有 Application/Presentation API 补齐 en-US、zh-CN 的五个真实注册入口：Agent、Skills、Connectors、Scheduled、Library；没有改 App 布局、权限、Schema 或添加假菜单。当前 feature_key 为 null 的页面导航不声明新业务执行许可；后端仍逐请求授权。
+
+真实已登录浏览器确认五个入口及对应面板可达，Skills 两读、MCP provider 目录、排程集合、个人文件、manifest、projects、direct sessions 均得到 200，并呈现 owner 的真实空态。Billing 缺账户 404 和历史记忆会话详情 404 单独保留，不冒充整个产品零错误；Manus 额外的电脑/创作等页面尚未实现。截图与运行配置仅本地 ignored 归档，未新增测试或脚本。
+
+以下是同日先前提交与阶段记录；当前运行/浏览器状态以上段为准。
+
 ## 2026-10-13 App 503/404 与 v1 修复
 
 App `8dd05cdbf973938646a1d4c7f5437bb1d6d806f5`、Billing `1ceeae550f05857d1e7fa0da1e83af23a552f0ca`、Platform（物理 Capability）`6b4c9db6719d2f5fd37a752921e603f4b0221de6`、BFF `e43c0e680bbc2a1bf9aa284f28bac201d82164a9` 为本地 topic 提交；尚未推送/PR/合并，不更新 Root gitlink 冒充已发行组合。

@@ -11,10 +11,11 @@
 
 | ID / 优先级 | Owner / 角色 | 基线与写入范围 | 依赖 / 验证 | 当前状态 |
 | --- | --- | --- | --- | --- |
-| APP-READ-LIFECYCLE / P0 | App；原 App writer 实现，架构 reviewer 只读，Root 验证/Git | App 12acfc6；fix/app-read-lifecycle；现 session/read hooks、Skills 对话框及关联测试，17 个既有文件 | focus/visibility 合并、StrictMode 退役 effect 零发送、共享可信 boundary；Node22 定向回归/lint/typecheck/build | 已提交 App `8dd05cd`；最新 Root 7 文件 250 PASS，lint/typecheck/build 通过；此前真实登录读取首次 sessions/projects 各 1 次，同轮 focus+visibility 各 1 次且 200；后端切换后的浏览器验收待正常登录 |
+| APP-READ-LIFECYCLE / P0 | App；原 App writer 实现，架构 reviewer 只读，Root 验证/Git | App 12acfc6；fix/app-read-lifecycle；现 session/read hooks、Skills 对话框及关联测试，17 个既有文件 | focus/visibility 合并、StrictMode 退役 effect 零发送、共享可信 boundary；Node22 定向回归/lint/typecheck/build | 已提交 App `8dd05cd`；最新 Root 7 文件 250 PASS，lint/typecheck/build 通过；此前真实登录读取首次 sessions/projects 各 1 次，同轮 focus+visibility 各 1 次且 200；本轮恢复开发进程后已有会话正常回到 App，浏览器读取复验已补 |
 | BILLING-V1-FIX / P0 | Billing 原负责人实施；Root 验证/Git/BFF 消费 | Billing 25e7103；fix/app-billing-v1；批准的正常组合、Credit 两读、唯一 v1 契约/生成与相关现测试；不改 SQL/资金/worker | owner 先交付固定 artifact→BFF 更新 pin；来源不明的 404 不得伪装账户不存在；不注册未实现 handler | Billing `1ceeae5` + BFF `e43c0e6` 已本地提交并重载；Billing 全门 1414 PASS/480 SKIP，隔离真实 PostgreSQL 32 PASS；真实 v1 两读返回明确缺账户 404，非路由 404，不创建账户/资金 |
-| SKILLS-503 / P0 | Platform→BFF 原 App 负责人串行；Root 配置/验收；独立 reviewer | Platform7da4e09+既有组件候选，refactor/internal-service-auth；BFF95fbd89，fix/app-api-dependencies；仅 projection 直接认证及所有该 surface HTTP/Connect 消费 | owner profile 正规生成/固定→BFF 配对；本地专用 Bearer 固定 caller/surface/tenant，人类准入与 Agent execution 保留 | Platform `5a521dd`→opaque tenant 修正 `6b4c9db` + BFF `e43c0e6` 已本地提交并重载；相关 Root Platform 123 PASS/4 SKIP、BFF 165 PASS；真实 owner＋隔离 BFF HTTP/Connect 两读 200、错凭据 401、跨租户 403、sender OAuth0；人类 session 为测试替身，当前浏览器尚待正常登录 |
+| SKILLS-503 / P0 | Platform→BFF 原 App 负责人串行；Root 配置/验收；独立 reviewer | Platform7da4e09+既有组件候选，refactor/internal-service-auth；BFF95fbd89，fix/app-api-dependencies；仅 projection 直接认证及所有该 surface HTTP/Connect 消费 | owner profile 正规生成/固定→BFF 配对；本地专用 Bearer 固定 caller/surface/tenant，人类准入与 Agent execution 保留 | Platform `5a521dd`→opaque tenant 修正 `6b4c9db` + BFF `e43c0e6` 已本地提交并重载；相关 Root Platform 123 PASS/4 SKIP、BFF 165 PASS；真实 owner＋隔离 BFF HTTP/Connect 两读 200、错凭据 401、跨租户 403、sender OAuth0；先前组合的人类 session 为测试替身；本轮真实已登录 App 两读 200 已补验 |
 | MANIFEST-404 / P0 | System owner API 配置；Root | System1460820；无源码、SQL、seed 或默认假响应变更 | 使用既有 Product/Site/Policy v1 API；App 同源真实读取复验 | 真实缺失配置已补齐，App en-US/zh-CN manifest 从 Site not found 404 变为 200；本地记录，不提交配置事实 |
+| APP-NAV-CONFIG / P0 | System Application/Presentation；Root 配置/浏览器，原 App writer 只读核对 | App `8dd05cd` / System `1460820`；仅既有 owner API，本地事实记录；无源码/Schema/布局变更 | live 空 navigation 明确覆盖 preview；按正式注册五项恢复 en-US/zh-CN，并实点五个面板 | 已通过 owner GET 与 App 同源 manifest：五项顺序/标签一致；真实登录侧栏恢复，Skills/MCP/排程/资料库读 200；截图本地归档，无新测试/脚本 |
 | ARCH-CLEANUP / P2（后续） | Root 梳理；实施时逐仓指定唯一 writer | 当前只读目录与既有规范报告；仅在本任务表登记，不授源码搬迁/重写范围 | 先对齐产品形态与 owner，后逐片同步实现/import/契约/文档，保真实行为 | 初步分类已登记；本轮不开展全仓目录重构，不打断 App 联调 |
 | AUTH-D0 / P0 | Root 主控；runtime reviewer 只读 | Root fb50a858；现任务表与 ADR-035，分支 refactor/internal-service-auth；保留 Mori 未提交路径修复，不暂存 | Platform HTTP5.3 当前调用矩阵；新旧职责/执行撤权语义审查 | Root/独审通过组件设计准入；即时撤权后继边界已定 |
 | AUTH-P1 / P0 | Platform；单一 writer，Root Git/审查 | Platform 7da4e09，clean 基线，分支 refactor/internal-service-auth；精确写集由任务卡派发 | 三面文档→本地服务凭据组件→unit/type/lint/build；未激活前不改变正常 ingress | 组件与 projection ingress 已接入 `6b4c9db` 正常源码服务；只验 projection 读取，其他 surface/执行授权仍后继；不称全部内部 IAM 已移除 |
@@ -33,7 +34,7 @@
 - 每个实现片停写交付后由独立 reviewer 审查；Root 在主工作树重跑门禁，随后按明确路径提交/PR。
 - 尚未通过的整链保留为未完成；服务存活、组件 PASS 与文档决策不代替功能成功。
 - 本轮已修真实根因：projection 凭据误要求 UUID 而现有 tenant 为 opaque ID、HTTP生成配置仍指旧输入、Billing 路由未挂载/消费者 v2 与 404 误分类、System 缺 Site 配置。真实联调结果见上表；Billing 合法缺账户 404 保留为空态，未伪装 200。
-- BFF 完整 `pnpm check` contract 为 629 PASS/2 FAIL；完整 `pnpm test` 为 1212 PASS/3 FAIL/3 SKIP，均为基线 public14.7 历史恢复链缺口，不属本片回归；Platform此前全unit仍有既存 OAuth spy 用例失败。未删失败断言或改旧hash，未宣称全仓通过。完整浏览器/付款/推理/其他认证 surface 仍未验收。
+- BFF 完整 `pnpm check` contract 为 629 PASS/2 FAIL；完整 `pnpm test` 为 1212 PASS/3 FAIL/3 SKIP，均为基线 public14.7 历史恢复链缺口，不属本片回归；Platform此前全unit仍有既存 OAuth spy 用例失败。未删失败断言或改旧hash，未宣称全仓通过。本轮已补既有五个面板的真实登录读取；完整写入旅程、付款、推理与其他认证 surface 仍未验收。
 
 #### ARCH-CLEANUP：初步问题分类（后续讨论，非实施授权）
 
