@@ -1,3 +1,41 @@
+## SET-18 账户登录设备（2026-10-14，文档门与只读审计）
+
+当前 D0 已形成 IAM 三设计前缀和 ADR-008，storage_platform_audit 独审无确定 P1/P2，可准入；Root 选择窄官方adapter生命周期保护而非接管完整grant，并补入官方Session续期/删除和cleanup协作。IAM 唯一源码writer runtime_audit 已进入实施，Root docs/ADR/CURRENT/Git独占，billing_scheduler_audit后继BFF/Web只读地图已接收，不允许消费未提交artifact。下方“待D0”记录是阶段历史，不能覆盖本段当前决定；设计门不等于源码/真实资源验收。
+
+| SET18-IAM候选允许集（D0独审通过后） | 范围 |
+| --- | --- |
+| 新源 | auth/account-sessions/account-session.{controller,service,repository,schema}、account-session-cursor.{codec,schema}、account-session-lifecycle.repository；better-auth/account-session-adapter；oauth/clients/account-session-scope.{service,schema}（全部.ts） |
+| 现源接线 | auth.module、better-auth.config、internal-principal.types/internal-auth.guard、oauth.constants、oauth-client.schema/service、browser-authorization-scope.service（仅新完整pair保留）、expiry-cleanup.repository、provisioning.config/provisioning-app.module及scripts/provision-oauth |
+| 生成 / SDK 接线 | scripts/generate-contracts版本0.12.0、sdk/package版本/现生成链必要metadata、正常生成contract/openapi/vendor及sdk/src/api；现sdk/src/iam-client.ts、iam-client.types.ts、index.ts只接两新method/generated类型别名/export，transport/error不改；不手改generated/锁文件依赖 |
+| 测试 | 新unit/account-sessions、account-session-adapter、account-session-scope、account-session-cursor，integration/account-sessions；现internal-auth.guard/oauth-client.service/browser-authorization-scope、expiry-cleanup、oauth-session-lifecycle、契约/架构/SDK与internal-http-application fixture仅必要接线/版本断言。超出先报Root |
+| 受保护 | Skills/连接器功能与文件、canonical Prisma/生成client/依赖锁、其他repo/正常服务/DB；node_modules已有链接保留；Root负责三设计/ADR/INDEX/CURRENT与Git、独立资源和最终验收 |
+| 工具/交付 | 固定Node24.20.0/owner pnpm12.3.4；先真实RED与原保留行为基线，再具名纯门；writer无资源测试/Git权，交exact允许路径/hash/log，Root冻结独审/关键复验与真实PG/Redis后才commit/pin/运行 |
+
+BFF三设计已独审通过并形成doc-only commit `63721953cd7f3067aa51ee60ad8b7433452c6410`，当前机器仍public15.0/141；仅IAM0.12正式发行后才能放行public15.1/143及消费者。唯一P2已明确owner409/TENANT_DISABLED→403 session_forbidden，CONFLICT才409；没有consumer源码或运行切换。
+
+Web三设计也已独审通过/doc-only `fa4fdd5b8a3a81b8349a224d7f6b7e28e8135472`；唯一P2最终ProductSession复核已明确ID/generation/subject及access/session两寿命，不能接收同ID/subject刷新前的迟到结果。BFF/Web除四docs外629/841 tracked原字节保护，原文suffix exact；正式上游artifact未发行，二者仍未授source写入。IAM SDK允许集已最窄补现三接线文件，原transport/error不改。
+
+IAM纯门工具接缝已核：pnpm12.3.4默认verifyDepsBeforeRun=install可能自动install，官方[build settings](https://pnpm.io/settings/build#verifydepsbeforerun)及本地config get证实单命令`PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN=warn`只告警不装且嵌套继承；不改repo/global配置/供应链policy/generator，锁与依赖hash仍须freeze后核。worker未冻结，局部候选测试不作为源码或integration通过。
+
+本地Account硬刷新后Owner/邮箱/user ID正常显示，原短暂loading未认定认证故障。PID11740/3311继续原SET17正式代码；本轮仅读取/导航，无重启/资源/偏好/Skills/连接器操作。
+
+用户对辅助 Goal 的疑问已核原会话和截图：`Kokoro 设置只读验收与速度对照` 的任务明确以报告交付为完成条件，截图有 Goal 达成状态，故它没有承担持续实现职责。Root 完整设置 Goal 仍 active，报告不作为整体实现完成证据；后继实现子任务必须以具名功能、工程检查和实际浏览器验收闭环。未向用户拥有的旧辅助会话发送新指令。
+
+本片两独立只读审查已返回，尚未源码放行：会话是本人 IAM 账户级事实，不能以可变的 activeOrganizationId 冒登录来源或 Product/Admin 归属；当前请求仍须 Product tenant/client/membership 在线准入。现 vendor cookie list 暴露 session token，不能直接 relay。Prisma relationMode=prisma，Session 的物理删除会把 OAuth 关联模拟为 SetNull；vendor rotation 是独立 adapter I/O，存在撤销提交后继续发行的确定窗口，因此不接受“撤销旧 token 再删除 Session 即闭环”的算法。
+
+候选 A 为正规 owner adapter 各 sid-linked 写入与撤销共享 Session 行锁、事务最终活性检查，撤销保留已过期 Session 且原子撤销关联 token/清 replay/写 Audit；候选 B 为整个 OAuth grant 共享事务。A 的可证明上限是新在线 Product 准入拒绝，不能冒所有并发 refresh 都返回 invalid_grant 或停止 ID token/JWT 生成。过期 Session 后续清理、派生 transaction adapter、无 sid 机器身份、官方 CAS/null 语义与稳定错误映射仍需 Root 精确 D0 裁决及 barrier 测试方案，再同步三设计。当前未改 schema、scope、源码或运行。
+
+上一Goal turn是实际progress：SET17源码提交、exact-pin自有运行与浏览器验收已完成，完整设置目标不缩减。本片实现目标为Account独立设备入口、本人真实IAM会话列表、识别当前会话并移除一个其他会话、撤销后的在线访问拒绝；不能以未提供城市/物理设备事实冒Manus定位。当前IAM vendor list/revoke含session凭据且依赖issuerCookie，BFF/Web未消费，不能直接加relay白名单。初始选择沿现IAM internal JWT sid安全投影→BFF public→Web browser-private；三owner按正式契约提交顺序接线。
+
+| 项 | 当前阶段决定 |
+| --- | --- |
+| 优先级 / 验收范围 | P1：真实本人会话读取/单个非当前撤销，零token投影；同用户两次登录、另一会话撤权、跨用户拒绝、当前会话保护与身份退役；Skills/连接器排除 |
+| 基线 / 状态 | Root `86dcca860658d02d0b7eaeb77504bee623af94b6` clean；IAM `a63bcd094438d7590b5899cc06a9c976e8acaa36`；BFF `571173253ecd247b82c42b5fb8313bce7f3e29e5`；Web `160d2a44ff4af2d766078bd97708c29bcae659a6` |
+| 主控 / 权限 | Root总体设计、三面文档、Git/运行/数据/最终验收；当前所有native均只读，未授源码写入 |
+| 并行审计 | runtime_audit：IAM现资格/会话查询、audit/refresh/真实fixture及精确文件地图；storage_platform_audit：独立安全/契约/事务设计审查；Root保跨仓方案与Manus/UI验证 |
+| 当前允许 | 只读目标源码/契约/文档/测试；Root可写现三设计/CURRENT前缀和private证据，不改canonical schema或scope/resource/正常服务 |
+| 阶段门 / 未决 | 先收敛唯一owner placement、API/错误/分页、事务/删除/审计与scope演进；新IAM artifact提交后BFF消费，再Web。新scope不能用旧refresh凭空获得；不伪造城市/活跃时间，不跨仓SQL，不以vendor.status=true冒已撤销 |
+
 ## SET-17 交易禁用与团队入口正式运行已验收（2026-10-14）
 
 本轮运行代码固定Root `a123e21718ebea0b78b2f7edadc8035be76a9b39`、Web `50b291bf50e65cfcc169784848d2b69a91e80dae`，其余owner不变。核自有旧launcher命令/cwd后仅发送SIGINT，确认owned资源清理、端口释放与独占缓存为空；随后正规launcher exact pins、canonical fresh install/build/ready和匿名login302成功。原预览与共享依赖保持，后续仅文档提交不改变本运行代码。
