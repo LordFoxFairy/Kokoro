@@ -1,3 +1,11 @@
+## SET-14 System smoke revision 请求修正（2026-10-13）
+
+既有 Root smoke fixture 创建模型版本时漏传 System 当前必填 `max_output_tokens`；本片仅在现请求补上 4096（不超过 fixture 的 8192 context），并在既有两种 provider 参数化测试固定该约束，不改变 owner API、模型或生产默认值。两个反例均真实因缺字段失败后修复通过；不以此证明实际 provider 容量或完整 Chat 可运行。
+
+独立审查无新增确定 P1/P2；固定 Python PATH 后具名完整测试文件 51PASS，Ruff F 类检查通过。首次完整运行的 50PASS/1FAIL 保留：子进程误入旧 Python，未以该运行计全绿。
+
+当前固定 Agent 的模型调用仍有 `ModelCallAuthorizationUnavailable` 硬门，正式授权消费者尚未接通；不能绕过它来宣称真实模型回复、任务完成通知或声音已验收。新 Root checkout 的 System/Agent 依赖也尚未安装，后继按正式锁文件准备，未把其他 checkout 的安装当成这里已齐备。
+
 ## SET-13 完整 Team 权限配对候选（2026-10-13，实际目录读取已验收）
 
 本设置分支固定 Web `c0a5e6e7c687e45c78757844ba0b6484d5fd16fa` 与 BFF `22a476ea59624b806e8d0013e069efdd6bd26595`，继续复用已审 IAM `a63bcd0`、Billing `20dba9c`。BFF public15.0.0 canonical SHA256 `5f6b1178cb878718090ba65d6b0d563185078624af0d3d46a01e568af87264a4`，Web通过正常generator消费原始不可变owner artifact。既有IAM角色八个权限域中的platform/skill此前被Web六域严格schema拒绝；现在完整接纳，未知域/非法动作/空数组仍拒绝，角色替换按完整权限superset校验。无IAM权限、SQL或技能/连接器功能修改；完整snapshot中继承的其他开发者字段不裁剪。
