@@ -1,4 +1,12 @@
-## SET-17 交易禁用与团队入口源码已接收（2026-10-14，待正式运行验收）
+## SET-17 交易禁用与团队入口正式运行已验收（2026-10-14）
+
+本轮运行代码固定Root `a123e21718ebea0b78b2f7edadc8035be76a9b39`、Web `50b291bf50e65cfcc169784848d2b69a91e80dae`，其余owner不变。核自有旧launcher命令/cwd后仅发送SIGINT，确认owned资源清理、端口释放与独占缓存为空；随后正规launcher exact pins、canonical fresh install/build/ready和匿名login302成功。原预览与共享依赖保持，后续仅文档提交不改变本运行代码。
+
+真实computer use正式登录→团队新标签/标题→Owner成员与原角色表单可读；账户升级→权威空目录；旧直接pay地址→明确不可用/实际disabled/不显示orderId或paid→返回/app并正常加载。Team首个locator误求不存在邮箱，原观察失败保留，终态Owner可见；未邀请/成员变更/支付/创建团队/修改偏好。Upgrade到空态约576ms含工具开销、单样本，不能作后端基准；非空目录禁用仅由受控组件证明，未seed商品。Zero checkout/支付owner POST由源码与具名测试支持，未冒另有浏览器网络抓包。
+
+Root独立7文件91PASS与24契约/架构文件328PASS，writerlint/type/build0和11hash终审通过。全测22失败历史保留，完整设置Goal仍active；下一可实现面为账户会话设备管理，需要IAM安全非凭据投影及专用scope，再依赖序更新BFF/Web和正规登录验收。Skills和连接器仍排除，真实支付/资金历史/模型完成通知不因本片成功而完成。下方为源码接收及任务卡阶段历史。
+
+## SET-17 交易禁用与团队入口源码已接收（2026-10-14，阶段历史）
 
 当前完整设置 Goal 仍 active；独立 QA 的 Goal 完成条件只是报告，不等于设置实现完成。已核本地账户重验短期 loading 后恢复真实资料，通用通知控件恢复可用，尚未认定认证故障。只读设备审计确认需要 IAM 安全会话投影及 BFF/Web 正式消费链，不能直接转发含 session token 的 vendor 路由；设备后继另按 owner 契约串行实现。
 
