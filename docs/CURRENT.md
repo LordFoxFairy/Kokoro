@@ -1,3 +1,13 @@
+## SET-16 通用通知与声音源码已接收（2026-10-14，待正式浏览器验收）
+
+固定 Web `dfb7ab5857f00ae73a9e68eb3a5d65129f2529f9`。42路径最终冻结经独审与Root逐hash/变更集合复核，无新增确定P1/P2；subject隔离偏好仅写成功后确认，未提供owner的产品更新/广告真实禁用。正式任务协议中本页receipt或可信active head锚定未来信号，成功终态与失败/取消分离，历史水合与重放不补通知。浏览器通知/音频仅来自明确设置手势，音频resume单次3秒预算；不提供闭页后台保证。
+
+新增同主体120秒/可见返回重验P2已由三个真实RED关闭：长期资源绑定可信subject与页面engine/scope，readBoundary代际只控制layout同步投递门；重验保留合法锚/去重/badge/已解锁音频，门关闭期间零投递且不补播。真实换人/logout/preview/scope/dispose退役；音频每次unlock attempt fence阻止旧pending结果关闭新解锁。StrictMode、真实owner dispose和主体/engine同时替换有具名回归，不复制资源owner。
+
+Root独立10具名engine/UI文件合计398PASS，实际Next HTTPS两个负控2PASS/3过滤。writer实际8文件347PASS，lint/typegen/tsc/build exit0；其私有manifest曾把聚焦命令清单错记成Root另一组8文件，原manifest保留并另记录准确执行集合更正，不能将347归到Root的246集合。原fixture将500当ready，现仅收紧为正规接口200，断言与有限循环保持；最初strict-ready失败保留，没有将Redis或并行build当已证原因。
+
+V1全测3410PASS/22FAIL/154SKIP未重跑，仍不能称全量绿；personal no-referrer超时已在旧代码复现，两proxy新增500有middleware缺失/ready误判证据及正规原仓独立正控。Root将仅更新自有开发运行供浏览器保存→刷新、手势音频及disabled行验收；真实成功模型任务→离开页面→唯一通知/声音仍受Agent/Billing正式授权硬门阻塞。Skills/连接器、SQL、契约/generated和依赖锁无本片改动，完整设置Goal仍active。下方实施和待验记录保留为阶段历史。
+
 ## SET-16 通用设置实施与正式运行依赖准备（2026-10-13，进行中）
 
 Web `5ba1030ee5e095cbf47464991cbef50b2f68eca9` 已收敛三设计并通过只读独审：沿固定正式任务协议为exact receipt/active owner head建立通知锚，成功完成与取消/失败分离、重放去重、身份退役、可靠主体偏好与手势音频；未提供owner的产品更新/广告真实禁用。唯一Web writer正在实施，实际浏览器旧四switch仍enabled的反例与两个自动RED已保留，不称功能或完整Goal已完成。现运行仍Web2a3dee7，未切候选。
