@@ -7,7 +7,8 @@ Kokoro 是由多个可独立发布仓库组成的 AI 产品平台。此仓库是
 ```text
 Kokoro/
 ├── apps/
-│   ├── kokoro-app/          # Web（Next.js）
+│   ├── kokoro-app/          # 用户 Web（Next.js）
+│   ├── kokoro-admin/        # 独立后台 Web，同源 /manage
 │   ├── kokoro-mori/         # Mori 音乐产品（Next.js）
 │   ├── kokoro-bff/          # Chat 与业务 BFF（TypeScript）
 │   ├── kokoro-agent/        # Agent execution（Python）
@@ -48,8 +49,9 @@ cd ../kokoro-scheduler && go test ./...
 直接在 `apps/` 的实际子仓运行，不复制临时源码、不随启动创建数据库/账号/模型路由。
 每仓自己的 `.env.local` 保存本地持久配置，权限 `0600`、不进 Git；启动时复用同一份配置。
 一个 PostgreSQL 应用数据库、每 owner 独立 schema，以及一套共享 Redis；已有基础设施先复用。
-这是目标拓扑，当前仅 Storage/Scheduler 完成保数据交接；其余 owner 先保留现有受管配置，
-按 [当前状态](docs/CURRENT.md) 逐仓交接，不直接把旧数据库 URL 改为共享库。
+当前 IAM、Storage、Platform、BFF 已通过私有启动配置接入 Windows 基础设施；其余服务的有效配置与全栈运行仍需核验。
+本仓 `.env.local` 中仍有旧本机地址，不能只加载它就宣称接入远程。当前交接见
+[开发交接](docs/handoffs/2026-10-13-development-handoff.md)，历史运行记录不替代当前检查。
 停止只停止自己启动的应用进程，不删除数据库、schema、文件桶、账号或积分流水。
 
 | 实际子仓 | 正常开发命令 | 工具链 | `.env.local` 读取 |
@@ -75,14 +77,15 @@ pnpm dev
 ```
 
 Agent 和 Scheduler 最后一行分别替换为表中的标准命令；Agent 的 HTTP 与 worker 都要启动。
-Billing 支付事件 worker `pnpm worker:payment-events` 仅在对应任务需要时启动；
+完整 dev 联调必须启动全部应用与服务（含 Admin、Mori、Agent HTTP/worker、Billing 支付事件 worker），不能只启动当前修改的几个。
+缺少任一必需进程时不得称为全栈联调通过。Billing 支付事件 worker `pnpm worker:payment-events` 在完整 dev 栈中常驻；
 `pnpm worker:execution-events` 是按需单次消费命令，不作为无工作时的常驻循环。
 
 依赖安装只在首次 checkout 或 lockfile 改变后执行。Schema 安装只在明确的新 owner 空 schema
 首次初始化时执行，不放进日常启动/重启流程；账号、客户端授权、模型目录、报价和积分通过对应 owner 的
 正常业务流程维护，不在启动时反复 seed/bootstrap。模型可见、服务 ready 都不代表真实用户聊天已通过。
-Billing 当前 installer 仍限定 public schema 和整库空白；owner-schema 切换完成前，
-不要对共享应用数据库执行该 installer。
+Billing 当前 README 指定 `kokoro_billing` owner schema；安装仍只针对本 owner 空 schema，
+不得在日常启动中重复执行或根据旧整库空白说明清理共享数据库。
 
 Root 的本地进程收据和私有日志只放已忽略的 `var/dev/`，不作为第二份配置事实源。
 当前实际常驻进程、端口、句柄及未迁移项见 [当前状态](docs/CURRENT.md)。

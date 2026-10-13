@@ -1,3 +1,11 @@
+### 2026-10-13 停止开发后的交接（覆盖下方历史运行叙述）
+
+用户已要求结束此前 Skills/MCP 开发；目标保持暂停，提交完成不等于能力验收完成。接手先读
+[开发交接](handoffs/2026-10-13-development-handoff.md)。基线为 Root `e1485245`，所有子仓在 `main`；本轮仅整理交接与开发运行规则，不续写功能。
+
+当前实测 IAM、Storage、Platform、BFF `/readyz` 均为 200，四者有效运行配置使用 Windows 的 PostgreSQL/Redis 隧道，Storage 使用远程 MinIO。Windows 的 PostgreSQL、Redis、MinIO、etcd、Milvus 均 healthy；Milvus 已部署，不再是历史“下载待完成”，但应用向量能力接入未验。
+Agent HTTP、System、Billing、Scheduler 的登记端口本次均未监听；Agent worker、Mori 与 Billing worker 未证实运行。当前并非全栈 dev 环境。后续开发必须按 `AGENTS.md` §4 启动全部应用和必需 worker，再做 dev 联调，禁止仅几个服务可用就宣称整体完成。
+
 ### T-K03.20 当前闭环台账（2026-10-13）
 
 当前唯一业务闭环仍是 **Skills 与 MCP**。本条只记录当前 main 与实际运行事实；下方旧条目为历史证据，不覆盖本条。

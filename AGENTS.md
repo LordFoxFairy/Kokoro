@@ -140,6 +140,9 @@ Browser -> Web same-origin adapter -> BFF -> System/IAM/Platform/Billing/Storage
 - 本地与 CI 的应用目标是一个 PostgreSQL 实例、一个数据库和一套应用 role/credential；每个数据 owner 在同库使用独立 schema 与指向该 schema 的连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享；表名前缀不代替 owner schema。现有部分 installer/URL 仍锁定 `public` 或整库空白，须由 owner 代码切片改为 schema 边界后才能宣称单库应用组合通过。测试 fixture 临时库只是运行隔离，不是新增应用数据库或角色。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前开发门禁。
 - 本地所有仓共享一个 Redis 实例；先探测复用，缺失时才启动。Web 不拥有数据库。
 - Redis 使用独立 namespace/logical DB；目标拓扑 cutover 时由单独 ADR 重新分配，禁止旧新服务同时占用并双写。
+- 开发与 dev 联调必须保持完整应用栈一起运行：`kokoro-app`、`kokoro-admin`、`kokoro-mori`、BFF、Agent HTTP + worker、IAM、System、Billing（含常驻 payment-events worker）、Platform（当前物理仓 `kokoro-capability`）、Storage、Scheduler；`kokoro-web-shared` 是构建依赖，不是常驻服务。启动可以按依赖顺序进行，但进入联调前必须全部就绪，不因当前只改 Skills/MCP 就只启动几个。单元测试本身不要求全栈，但不替代完整 dev 联调。
+- 先检查当前监听、健康状态、源码目录与有效配置；复用正常进程，缺失才启动。必要时可以重启对应应用，主控记录原因与新进程，保持持久配置与数据，不让多个 worker 重复启动或同时重启共享服务。任一必需服务失败时记录具体失败，不把局部运行标为整体可用。
+- 已部署的 Windows 基础设施经 Mac SSH 隧道复用；凭据只从私有配置加载，禁止退回本机旧 PostgreSQL/Redis/MinIO 或重复启动一套。Milvus 只有实际业务需要时绑定，基础设施健康不等于应用已集成。停止本机重复基础设施前，先确认全部应用和任务均已脱离该实例；禁止删除卷、库、schema 或桶。
 - 应用开发从源码运行：TypeScript `pnpm dev`、Python `uv run`、Go `go run`。
 - Docker 应用容器只用于 release candidate smoke，不替代本地 lint/test/dev。
 - worker/Agent 不得自行重复启动 PostgreSQL/Redis，也不得清理非自己创建的数据。
