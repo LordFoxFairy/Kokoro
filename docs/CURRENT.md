@@ -1,3 +1,15 @@
+## SET-SHORTCUTS 精确运行与浏览器验收（2026-10-13）
+
+Root `20a10cd5` 固定 Web `2a3dee7047c04aab73765da695aff5947b5023d9`，复用 BFF `22a476ea`、IAM `a63bcd0`、Billing `20dba9c`，通过正式 launcher 的精确 gitlink/index/child/clean 检查后运行。第三版冻结 19 路径经独审与 Root hash 复核，前版旧符号和物理 fallback alias 冲突 P2 已由真实三反例 RED→GREEN 关闭；Root 四具名文件 168PASS，writer 六文件 240PASS、lint/type/build 通过，旧全测失败仍保留。
+
+实际 computer use 正式登录，编辑三个绑定后全页刷新仍保留；搜索打开命令菜单，侧栏收起再展开，新任务清空未发送草稿；输入中不误触，重复及裸键被拒绝，Esc 只取消录制。清空搜索并刷新后旧键不触发；重设并刷新后默认三动作均实际可用，原可见默认绑定已恢复。设置内语音行真实 disabled。本轮不读取或恢复 raw localStorage 字节；storage 失败、IME/repeat、非 Mac 与旧 alias 的证据来自自动测试，未在浏览器注入故障。不声称模型对话或整套设置完成。
+
+## SET-15 Billing Catalog owner 已接收，消费者待配对（2026-10-13）
+
+Billing `ba98badab9445ae676a8f48faa55912d42ce5d2e` 已通过冻结 31 路径独审与 Root hash 复核。唯一正常 Nest graph 新增 canonical Catalog GET/HEAD；当前 owner artifact 为 `3.0.0-experimental.4`、SHA256 `8a3d12cf7517e7ee6cb2958b740bb69ab4831d38a383e61aca383b5fd1e8b27a`，required offer_key 是明确 strict breaking，仍限自有开发成对接收。Root 五具名纯文件 288PASS，三具名真实 PG 文件 36PASS/0SKIP，包含最新 eligible、租户分页、孤儿损坏失败、大整数、全部 35 表读前后零差量、source/dist 目录与原 drain/启动失败清理。writer 完整 verify 1433PASS/492 资源 SKIP，不把该 run 当真实 PG 全绿。
+
+BFF D0 `0ef958a` 已独审，等待正式固定上述 artifact 后实施完整有界分页与正确 service 身份。现运行仍旧 Billing，不称套餐页已修复。后继只接通目录读取，当前 checkout 明确不支持并保持零 owner I/O，不 seed 商品、账户或资金，也不据空目录或目录成功宣称支付/订阅已通。真实 IAM owner 签发 token 到 Catalog 的正控尚未执行，本地 JWT fixture 不能替代。
+
 ## SET-14 System smoke revision 请求修正（2026-10-13）
 
 既有 Root smoke fixture 创建模型版本时漏传 System 当前必填 `max_output_tokens`；本片仅在现请求补上 4096（不超过 fixture 的 8192 context），并在既有两种 provider 参数化测试固定该约束，不改变 owner API、模型或生产默认值。两个反例均真实因缺字段失败后修复通过；不以此证明实际 provider 容量或完整 Chat 可运行。
