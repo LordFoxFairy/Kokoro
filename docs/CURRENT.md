@@ -1,3 +1,15 @@
+### T-K03.20 当前闭环台账（2026-10-13）
+
+当前唯一业务闭环仍是 **Skills 与 MCP**。本条只记录当前 main 与实际运行事实；下方旧条目为历史证据，不覆盖本条。
+
+| 链路 | 当前事实 | 尚未用完成冒充的事项 |
+| --- | --- | --- |
+| Skills 安装 | Web、BFF、Platform 已改为稳定 `installation_id` 启停；display name 不再作为写入身份。App `8641e89`、BFF `e8a0d9`、Platform `16e0729` 均在 main，Root 已固定对应 gitlink。 | 普通用户与管理员的完整浏览器逐项验收、所有 Manus 视觉细节仍按实际截图收口。 |
+| 私有 URL MCP | Browser 仅提交 `display_name` 与 HTTPS `server_url`；Web same-origin → BFF browser-private → Platform 依序执行注册、声明、授权、连接、启用。URL 保存后复用同一 connector 发起授权，不再创建重复 server。 | 真实第三方 OAuth 服务的授权回跳、Connection/Enable 需用一个真实兼容 server 验证；不得将 pending 显示为已连接。 |
+| 开发基础设施 | IAM、Storage、Platform、BFF、Web 已切到受 SSH 隧道保护的远程 PostgreSQL/Redis/MinIO；owner schema 在空数据库中重新安装。Platform canonical catalog digest 已随当前 schema 修正并经 fresh install 验证。 | 本机 Mailpit、ClamAV 仍是本地开发依赖；未把它们伪装成远程已迁移。 |
+
+最小有效验证：App lint/typecheck/build 与 MCP focused 289 PASS；BFF focused MCP 29 PASS；Platform focused private-server/contract 21 PASS；远程 owner schema install 与服务 `/readyz` 全部通过。Root topology 检查通过。全仓旧规范扫描仍报告既存跨仓问题，不计为本次通过，也未为消除数字添加兼容层或无关测试。
+
 ### T-K03.19 Skills 与 MCP：单一端到端闭环任务卡（2026-10-11）
 
 用户已将当前唯一交付目标收敛为 **彻底完成 Skills 与 MCP**；不在这张卡之外重开计划，也不提前扩散到 Scheduler、项目或其它 Settings 页面。唯一链路为：Browser → Web same-origin adapter → BFF → Platform（Skills/MCP control plane）→ Agent（MCP runtime）。管理员只在现有同源 `/manage` 原 Admin 壳出现，普通用户不可见；不新建第二套后台。Skills 与 MCP 的外部数据、状态和页面均以 owner 的真实返回为准，不用静态 seed、伪造封面、使用量、连接状态或完成状态。
