@@ -1,8 +1,10 @@
-## SET-15 Catalog 消费者已接收，精确运行待验（2026-10-13）
+## SET-15 Catalog 正式组合与浏览器空目录已验收（2026-10-13）
 
 Root候选固定BFF `571173253ecd247b82c42b5fb8313bce7f3e29e5` 与Billing `ba98badab9445ae676a8f48faa55912d42ce5d2e`，继续使用Web `2a3dee7`、IAM `a63bcd0`。BFF正常生成器消费owner committed exp4原字节；public15.0.0 canonical不变。Catalog使用独立机器身份与可信IAM tenant，完整有界分页后才返回，任一失败现503 billing_unavailable；checkout原入站校验后明确503且零owner I/O，旧v1路径及unused mapper已删除。最终19路径冻结独审无新增P1/P2，Root独立build、正规生成check、三具名73PASS/0SKIP及完整HTTP route具名1PASS/0SKIP。worker全契约634PASS/2旧FAIL、全test1222PASS/3旧FAIL/3SKIP、全format7旧FAIL仍保留。
 
-此前自有快捷键验收运行已确认正常停止及资源清理，原预览不受影响。后继仍需正式launcher精确组合、正式登录与真实浏览器目录空态；当前不称套餐页、支付/订阅、模型执行或完整设置Goal完成。未seed商品、资金账户或积分，也未改Skills/连接器。
+此前自有快捷键验收运行已确认正常停止及资源清理，原预览不受影响。Root `c6f2ad17` 已按上述精确pin通过正式launcher、canonical fresh install、build、owner ready与正式登录；实际computer use套餐页终态从旧“套餐加载失败”变为“暂无可购买的套餐”，全页刷新后保持。Billing实际Catalog三次请求均200，真实无商品目录；积分账户与流水仍正确显示未开户，Team真实Owner/owner和邀请表单继续可读。此证据只关闭目录读取失败，不称支付/订阅、模型执行或完整设置Goal完成。未seed商品、资金账户或积分，也未改Skills/连接器。实际空目录没有购买按钮，非空商品下Web购买按钮的预先禁用仍待后继；真实IAM owner签发用户token直接到Catalog也尚未验证。
+
+下一设置切片仍包含通用通知/声音的真实事件与主体退役、产品更新/广告未提供owner的明确禁用，账户设备与Team创建/切换等缺口。现engine的idle混合成功/失败/取消，当前runtime manifest也没有正式任务执行可用性字段，不能从ready、任意feature flag或页面展示推断完成通知可用；不绕过Agent模型授权硬门。完整非Skills/连接器Goal持续active。
 
 ## SET-SHORTCUTS 精确运行与浏览器验收（2026-10-13）
 
