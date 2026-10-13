@@ -599,7 +599,7 @@ def require_post_logout_login_start(
         query["client_id"] != ready.client_id
         or query["redirect_uri"] != ready.redirect_uri
         or query["response_type"] != "code"
-        or query["scope"] != previous.SCOPES
+        or query["scope"] != old.PRODUCT_WEB_SCOPES
         or query["resource"] != previous.RESOURCE
         or query["code_challenge_method"] != "S256"
         or re.fullmatch(r"[A-Za-z0-9_-]{16,256}", query["state"]) is None
@@ -843,7 +843,7 @@ def run_browser(
         authorize_query["client_id"] != ready.client_id
         or authorize_query["redirect_uri"] != ready.redirect_uri
         or authorize_query["response_type"] != "code"
-        or authorize_query["scope"] != previous.SCOPES
+        or authorize_query["scope"] != old.PRODUCT_WEB_SCOPES
         or authorize_query["resource"] != previous.RESOURCE
         or authorize_query["code_challenge_method"] != "S256"
         or not re.fullmatch(r"[A-Za-z0-9_-]{16,256}", authorize_query["state"])
@@ -1259,6 +1259,7 @@ def main(argv=None) -> int:
                         "IAM_TEST_ADMIN_URL": args.postgres_admin_url,
                         "IAM_TEST_REDIS_URL": args.redis_url,
                         "IAM_TEST_WEB_ORIGIN": web_origin,
+                        "IAM_TEST_PRODUCT_WEB_TRUSTED_POLICY": "1",
                         "IAM_TEST_RESOURCE_ID": iam_resource_id,
                         "IAM_TEST_RESOURCE_OWNER_TOKEN": iam_owner_token,
                         "IAM_TEST_SMTP_URL": mailbox.url,
@@ -1413,6 +1414,7 @@ def main(argv=None) -> int:
                     bff_proxy.observed,
                     credentials,
                     probe_team=True,
+                    preconsented=True,
                 )
             except (
                 SmokeError,
