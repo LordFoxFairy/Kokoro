@@ -1,3 +1,9 @@
+## SET-15 Catalog 消费者已接收，精确运行待验（2026-10-13）
+
+Root候选固定BFF `571173253ecd247b82c42b5fb8313bce7f3e29e5` 与Billing `ba98badab9445ae676a8f48faa55912d42ce5d2e`，继续使用Web `2a3dee7`、IAM `a63bcd0`。BFF正常生成器消费owner committed exp4原字节；public15.0.0 canonical不变。Catalog使用独立机器身份与可信IAM tenant，完整有界分页后才返回，任一失败现503 billing_unavailable；checkout原入站校验后明确503且零owner I/O，旧v1路径及unused mapper已删除。最终19路径冻结独审无新增P1/P2，Root独立build、正规生成check、三具名73PASS/0SKIP及完整HTTP route具名1PASS/0SKIP。worker全契约634PASS/2旧FAIL、全test1222PASS/3旧FAIL/3SKIP、全format7旧FAIL仍保留。
+
+此前自有快捷键验收运行已确认正常停止及资源清理，原预览不受影响。后继仍需正式launcher精确组合、正式登录与真实浏览器目录空态；当前不称套餐页、支付/订阅、模型执行或完整设置Goal完成。未seed商品、资金账户或积分，也未改Skills/连接器。
+
 ## SET-SHORTCUTS 精确运行与浏览器验收（2026-10-13）
 
 Root `20a10cd5` 固定 Web `2a3dee7047c04aab73765da695aff5947b5023d9`，复用 BFF `22a476ea`、IAM `a63bcd0`、Billing `20dba9c`，通过正式 launcher 的精确 gitlink/index/child/clean 检查后运行。第三版冻结 19 路径经独审与 Root hash 复核，前版旧符号和物理 fallback alias 冲突 P2 已由真实三反例 RED→GREEN 关闭；Root 四具名文件 168PASS，writer 六文件 240PASS、lint/type/build 通过，旧全测失败仍保留。
