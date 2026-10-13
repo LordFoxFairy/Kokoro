@@ -822,6 +822,12 @@ class DirectBffConnectionTests(unittest.TestCase):
 
 
 class SafeLaunchDiagnosticTests(unittest.TestCase):
+    def test_formal_login_category_is_closed_and_preserves_safe_hop(self):
+        error = launcher.first_login.FormalLoginNavigationError("authorize", "redirect", 400)
+        self.assertEqual(launcher.failure_category(error), "login_navigation_authorize_redirect_400")
+        error.hop = "SECRET"
+        self.assertEqual(launcher.failure_category(error), "owner_smoke")
+
     def test_categories_never_render_messages_or_dynamic_class_names(self):
         secret = "KEY_PASSWORD_RAW_MESSAGE_SENTINEL"
 

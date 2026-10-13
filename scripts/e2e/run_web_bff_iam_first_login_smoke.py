@@ -28,6 +28,26 @@ class FirstLoginError(RuntimeError):
     """A sanitized first-login failure without credential-bearing URLs."""
 
 
+class FormalLoginNavigationError(FirstLoginError):
+    """Closed navigation diagnostics; never retain response text or locations."""
+
+    def __init__(self, hop: str, reason: str, status: int | None):
+        self.hop, self.reason, self.status = hop, reason, status
+        super().__init__(self.safe_category() or "owner_smoke")
+
+    def safe_category(self) -> str | None:
+        if type(self.hop) is not str or type(self.reason) is not str:
+            return None
+        if self.hop not in {"entry", "authorize", "form"} or self.reason not in {
+            "request", "http", "target", "redirect", "form", "legacy_ui"
+        }:
+            return None
+        if self.status is not None and (type(self.status) is not int or not 100 <= self.status <= 599):
+            return None
+        status = "unknown" if self.status is None else str(self.status)
+        return f"login_navigation_{self.hop}_{self.reason}_{status}"
+
+
 class _CredentialForm(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
@@ -241,6 +261,7 @@ def probe_formal_login_entry(
 ) -> None:
     """Require /login to lead straight to the issuer's real credential form."""
     jar = web_smoke.BrowserCookies(credentials.add)
+    hop, reason, status = "entry", "request", None
 
     def get(path: str):
         response = browser_request(
@@ -252,26 +273,36 @@ def probe_formal_login_entry(
         jar.update(urlsplit(path).path, response.set_cookies)
         return response
 
-    entrance = get("/login")
-    if entrance.status != 302 or entrance.body:
-        raise FirstLoginError(f"formal /login entry HTTP {entrance.status}")
-    authorize = web_smoke.browser_target(entrance.location(), web_origin)
-    if not authorize.startswith("/iam/oauth2/authorize?"):
-        raise FirstLoginError("formal /login did not start OIDC")
-    remember_secret_query(authorize, credentials, {"state", "nonce"})
-    interaction = get(authorize)
-    form_path = web_smoke.browser_target(
-        web_smoke.navigation_location(interaction, "formal IAM authorize"), web_origin
-    )
-    if not form_path.startswith("/auth/sign-in?"):
-        raise FirstLoginError("formal IAM credential form not reached")
-    remember_secret_query(form_path, credentials, {"state", "nonce"})
-    page = get(form_path)
-    proof = web_smoke.form_inputs(page, form_path)
-    credentials.add(proof.hidden["csrf_token"])
-    require_credential_inputs(page.body)
-    if page.body.find(b"Retry") >= 0 or page.body.find(b"Connecting") >= 0:
-        raise FirstLoginError("legacy intermediate UI remains")
+    try:
+        entrance = get("/login")
+        status, reason = entrance.status, "http"
+        if entrance.status != 302 or entrance.body:
+            raise FirstLoginError("formal entry rejected")
+        reason = "target"
+        authorize = web_smoke.browser_target(entrance.location(), web_origin)
+        if not authorize.startswith("/iam/oauth2/authorize?"):
+            raise FirstLoginError("formal OIDC target rejected")
+        remember_secret_query(authorize, credentials, {"state", "nonce"})
+        hop, reason, status = "authorize", "request", None
+        interaction = get(authorize)
+        status, reason = interaction.status, "redirect"
+        location = web_smoke.navigation_location(interaction, "formal IAM authorize")
+        reason = "target"
+        form_path = web_smoke.browser_target(location, web_origin)
+        if not form_path.startswith("/auth/sign-in?"):
+            raise FirstLoginError("formal credential target rejected")
+        remember_secret_query(form_path, credentials, {"state", "nonce"})
+        hop, reason, status = "form", "request", None
+        page = get(form_path)
+        status, reason = page.status, "form"
+        proof = web_smoke.form_inputs(page, form_path)
+        credentials.add(proof.hidden["csrf_token"])
+        require_credential_inputs(page.body)
+        reason = "legacy_ui"
+        if page.body.find(b"Retry") >= 0 or page.body.find(b"Connecting") >= 0:
+            raise FirstLoginError("legacy intermediate UI remains")
+    except Exception:
+        raise FormalLoginNavigationError(hop, reason, status) from None
 
 
 def enroll_in_fixed_tenant(

@@ -21,6 +21,45 @@ spec.loader.exec_module(smoke)
 
 
 class FirstLoginGuards(unittest.TestCase):
+    def test_formal_navigation_reports_each_safe_hop(self):
+        origin = "https://web.example.test"
+        response = smoke.web_smoke.BrowserResponse
+        good_login = response(302, {"location": origin + "/iam/oauth2/authorize?state=SECRET&nonce=SECRET"}, [], b"")
+        good_authorize = response(302, {"location": origin + "/auth/sign-in?state=SECRET&nonce=SECRET"}, [], b"")
+        for hop, replies, expected in [
+            ("entry", [response(503, {}, [], b"SECRET")], "login_navigation_entry_http_503"),
+            ("authorize", [good_login, response(400, {}, [], b"SECRET")], "login_navigation_authorize_redirect_400"),
+            ("form", [good_login, good_authorize, response(200, {}, [], b"SECRET")], "login_navigation_form_form_200"),
+            ("cross_origin", [response(302, {"location": "https://SECRET.test/SECRET?token=SECRET"}, [], b"")], "login_navigation_entry_target_302"),
+        ]:
+            with self.subTest(hop=hop):
+                iterator = iter(replies)
+                with self.assertRaises(smoke.FormalLoginNavigationError) as raised:
+                    smoke.probe_formal_login_entry(443, origin, SimpleNamespace(add=lambda *_: None), browser_request=lambda *_a, **_k: next(iterator))
+                self.assertEqual(raised.exception.safe_category(), expected)
+                self.assertNotIn("SECRET", str(raised.exception))
+
+    def test_formal_request_exceptions_never_escape_or_expose_text(self):
+        origin = "https://web.example.test"
+        response = smoke.web_smoke.BrowserResponse
+        replies = [
+            response(302, {"location": origin + "/iam/oauth2/authorize?state=SECRET&nonce=SECRET"}, [], b""),
+            response(302, {"location": origin + "/auth/sign-in?state=SECRET&nonce=SECRET"}, [], b""),
+        ]
+        class SecretError(Exception):
+            def __str__(self):
+                raise AssertionError("must not render an untrusted error")
+        for index, hop in enumerate(("entry", "authorize", "form")):
+            calls = iter(replies[:index])
+            def request(*_args, **_kwargs):
+                try:
+                    return next(calls)
+                except StopIteration:
+                    raise SecretError("SECRET cookie body query")
+            with self.subTest(hop=hop), self.assertRaises(smoke.FormalLoginNavigationError) as raised:
+                smoke.probe_formal_login_entry(443, origin, SimpleNamespace(add=lambda *_: None), browser_request=request)
+            self.assertEqual(str(raised.exception), f"login_navigation_{hop}_request_unknown")
+
     def test_verified_user_joins_existing_fixed_product_tenant(self):
         ready = SimpleNamespace(
             base_url="http://127.0.0.1:4211",

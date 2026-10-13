@@ -91,6 +91,8 @@ class LaunchError(RuntimeError):
 
 def failure_category(error: Exception) -> str:
     """Classify only by trusted types; never render an exception or its class name."""
+    if type(error) is first_login.FormalLoginNavigationError:
+        return error.safe_category() or "owner_smoke"
     for types, category in (
         ((LaunchError,), "launcher"),
         ((chat_runtime.ChatError,), "chat"),
