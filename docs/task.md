@@ -1,3 +1,52 @@
+### APP-DEV-20261013：App 开发准备与内部直接认证（进行中）
+
+用户本次要求修复 App 开发依赖，并明确内部子服务不重复走 IAM/OAuth；Mori 与其他 Web 功能开发排除。
+本卡覆盖这次新要求，不恢复下方暂停的旧功能目标。设计依据为
+[ADR-035](kokoro-handbook/decisions/ADR-035-direct-internal-service-authentication.md)，语言/数据规则继续引用三份专项手册。
+
+当前优先修复 App 实际失败接口与重复读取。用户明确当前所有 HTTP 业务路径统一 `/v1`；Billing 的旧 v1 / 目标 v2 双轨须由 owner 收敛为唯一 v1，再更新消费者，不保留 alias、重定向或 fallback。
+
+本次 UI 验收以 Manus 实际页面一比一对照为准，不引入其他设计风格，不让既有测试或历史实现决定布局。布局、字体、间距、图标、菜单、弹窗、响应式和交互逐状态核对；业务内容仍来自 Kokoro 的真实 owner 返回，不复制参考页面数据伪造可用状态。
+测试仅补真实缺陷和关键行为的回归，优先复用既有文件；禁止为数量增加 CSS/源码字符串断言、重复测试、无实际消费者的脚本或额外框架。截图作为本地对照材料按页面/状态归档，区分 Manus 参考与 Kokoro 对照、新截图与历史截图，使用相同视口比较；图片不替代功能验收。
+
+| ID / 优先级 | Owner / 角色 | 基线与写入范围 | 依赖 / 验证 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| APP-READ-LIFECYCLE / P0 | App；原 App writer 实现，架构 reviewer 只读，Root 验证/Git | App 12acfc6；fix/app-read-lifecycle；现 session/read hooks、Skills 对话框及关联测试，17 个既有文件 | focus/visibility 合并、StrictMode 退役 effect 零发送、共享可信 boundary；Node22 定向回归/lint/typecheck/build | 已提交 App `8dd05cd`；最新 Root 7 文件 250 PASS，lint/typecheck/build 通过；此前真实登录读取首次 sessions/projects 各 1 次，同轮 focus+visibility 各 1 次且 200；后端切换后的浏览器验收待正常登录 |
+| BILLING-V1-FIX / P0 | Billing 原负责人实施；Root 验证/Git/BFF 消费 | Billing 25e7103；fix/app-billing-v1；批准的正常组合、Credit 两读、唯一 v1 契约/生成与相关现测试；不改 SQL/资金/worker | owner 先交付固定 artifact→BFF 更新 pin；来源不明的 404 不得伪装账户不存在；不注册未实现 handler | Billing `1ceeae5` + BFF `e43c0e6` 已本地提交并重载；Billing 全门 1414 PASS/480 SKIP，隔离真实 PostgreSQL 32 PASS；真实 v1 两读返回明确缺账户 404，非路由 404，不创建账户/资金 |
+| SKILLS-503 / P0 | Platform→BFF 原 App 负责人串行；Root 配置/验收；独立 reviewer | Platform7da4e09+既有组件候选，refactor/internal-service-auth；BFF95fbd89，fix/app-api-dependencies；仅 projection 直接认证及所有该 surface HTTP/Connect 消费 | owner profile 正规生成/固定→BFF 配对；本地专用 Bearer 固定 caller/surface/tenant，人类准入与 Agent execution 保留 | Platform `5a521dd`→opaque tenant 修正 `6b4c9db` + BFF `e43c0e6` 已本地提交并重载；相关 Root Platform 123 PASS/4 SKIP、BFF 165 PASS；真实 owner＋隔离 BFF HTTP/Connect 两读 200、错凭据 401、跨租户 403、sender OAuth0；人类 session 为测试替身，当前浏览器尚待正常登录 |
+| MANIFEST-404 / P0 | System owner API 配置；Root | System1460820；无源码、SQL、seed 或默认假响应变更 | 使用既有 Product/Site/Policy v1 API；App 同源真实读取复验 | 真实缺失配置已补齐，App en-US/zh-CN manifest 从 Site not found 404 变为 200；本地记录，不提交配置事实 |
+| ARCH-CLEANUP / P2（后续） | Root 梳理；实施时逐仓指定唯一 writer | 当前只读目录与既有规范报告；仅在本任务表登记，不授源码搬迁/重写范围 | 先对齐产品形态与 owner，后逐片同步实现/import/契约/文档，保真实行为 | 初步分类已登记；本轮不开展全仓目录重构，不打断 App 联调 |
+| AUTH-D0 / P0 | Root 主控；runtime reviewer 只读 | Root fb50a858；现任务表与 ADR-035，分支 refactor/internal-service-auth；保留 Mori 未提交路径修复，不暂存 | Platform HTTP5.3 当前调用矩阵；新旧职责/执行撤权语义审查 | Root/独审通过组件设计准入；即时撤权后继边界已定 |
+| AUTH-P1 / P0 | Platform；单一 writer，Root Git/审查 | Platform 7da4e09，clean 基线，分支 refactor/internal-service-auth；精确写集由任务卡派发 | 三面文档→本地服务凭据组件→unit/type/lint/build；未激活前不改变正常 ingress | 组件与 projection ingress 已接入 `6b4c9db` 正常源码服务；只验 projection 读取，其他 surface/执行授权仍后继；不称全部内部 IAM 已移除 |
+| AUTH-P2 / P0 | Agent → IAM → Platform → BFF/Agent/System；串行 owner | auth profile/consumer 精确写集后继冻结；不先授全部仓修改权 | owner 发布→固定 artifact→配对 runtime；零 OAuth 请求、tenant/resource/fence 负控 | 未开始；执行授权替代契约尚需收敛 |
+| BILLING-WORKER / P0 | Billing；只读盘点已交付，Root 后继放行 | Billing 25e7103；复用本仓 IMPLEMENTATION_PLAN；不改正常数据库或补旧表 | canonical Payment/fulfillment 先于 worker；真实支付观察/幂等/lease/retry/drain，不空 ACK | 数据模型与应用实现脱节；尚未授源码写入 |
+| MODEL-CALL / P0 | System → Agent → Billing → Agent | System1460820 / Agent84502e6 / Billing25e7103；先 owner 正式契约 | prebound→admission/hold→dispatch→strict evidence→actual-only结算；无正式许可保持零发送 | 缺正式 producer/consumer 和已核模型价格/保证；不删拒绝门 |
+
+- AUTH-P1 writer 为 Platform owner agent；组件与后续 App projection 优先修复分别按精确文件交付，独立 reviewer 审查，Root 独占 Git/index/提交和主树验证。
+  caller/surface 配对与固定 tenant 按 ADR-035；每次认证读取有效完整文件快照，拒绝恢复旧配置缓存。
+  surface 由服务端提供，expected tenant 只用于相等核验；返回机器身份，不返回人类权限或执行许可。
+  projection 已按 owner HTTP6 profile 配对切换；IAM 代码、Schema、lockfile保持，其他 surface 与执行授权的零 OAuth 全链验收仍属 AUTH-P2。
+
+- 用户已明确：正在执行的 Run 也立即停止授权。AUTH-P2 必须证明撤权确认成功后零新工具/模型许可、在途取消与 unknown/pending；不用固定期限旧授权替代即时撤权。
+- Root 不管理已可用基础设施，不重置库/Redis/桶，不在共享文档保存机器配置、密钥、PID/健康快照。
+- 进程运行证据只留本地 ignored 输出。Mori 已按用户要求停止，其两文件未提交修复保留，不继续写入。
+- 每个实现片停写交付后由独立 reviewer 审查；Root 在主工作树重跑门禁，随后按明确路径提交/PR。
+- 尚未通过的整链保留为未完成；服务存活、组件 PASS 与文档决策不代替功能成功。
+- 本轮已修真实根因：projection 凭据误要求 UUID 而现有 tenant 为 opaque ID、HTTP生成配置仍指旧输入、Billing 路由未挂载/消费者 v2 与 404 误分类、System 缺 Site 配置。真实联调结果见上表；Billing 合法缺账户 404 保留为空态，未伪装 200。
+- BFF 完整 `pnpm check` contract 为 629 PASS/2 FAIL；完整 `pnpm test` 为 1212 PASS/3 FAIL/3 SKIP，均为基线 public14.7 历史恢复链缺口，不属本片回归；Platform此前全unit仍有既存 OAuth spy 用例失败。未删失败断言或改旧hash，未宣称全仓通过。完整浏览器/付款/推理/其他认证 surface 仍未验收。
+
+#### ARCH-CLEANUP：初步问题分类（后续讨论，非实施授权）
+
+| 分类 | 已观察现状 / 复核入口 | 后续处理边界 |
+| --- | --- | --- |
+| 业务职责与旧全局分层 | Agent 的 `src/kokoro_agent/{application,domain,infrastructure,interfaces}` 与 execution/model/skills/mcp 等能力目录并存；BFF/Billing 仍有全局 application/domain/interfaces 与 ports | 逐用例核实际 import 和 writer，归回业务能力；有价值的复杂领域规则保留，不按目录名称机械删层 |
+| 目标模块与真实运行图脱节 | Billing canonical `modules/credit` 已有本人读，正常 bootstrap 仍装旧 HTTP server；BFF 现 bootstrap 尚非目标 Nest 原生运行时 | 先承接真实运行行为、生命周期和必要测试，再删除旧入口；只有目录或依赖改名不算完成 |
+| 文件职责混杂 | App hub client/schema/catch-all route、AppFrame/Skills surface 与 BFF bootstrap 是现有大文件复核入口 | 按不同变化原因与真实依赖拆分，不按行数分割，不生成空目录/万能 helper，也不让旧 UI 测试固化设计 |
+| 契约与当前文档漂移 | Billing 旧 v1 / 目标 v2 双可编辑源及 BFF 旧 pin；设计文档混有多个历史阶段 | 当前 v1 是唯一实施基线；owner 源与正规生成先行，消费者后继；历史证据保留原时点，但不与当前方案并列为有效入口 |
+| 仓库/身份命名收敛 | `kokoro-capability` 仍是物理仓，`kokoro-platform` 为目标身份，已存在 Skills/MCP 模块 | 路径/package/service/env/contract/consumer 成对切换，Schema/Redis 影响先评审；不只改目录名，不留长期 alias |
+
+以上为当前目录读取与既有规范报告的初步梳理，不是新跑的完整架构验收。扫描提示逐项核实，不能把每条提示直接当作真实架构缺陷。先完成当前 App 接口修复及正常登录页面复验，再与用户对齐整体形态、边界和优先级；Manus 对照按具体页面另片推进；后续按功能切片逐仓清理，不为了规范扫描数字新增测试、脚本或兼容实现。
+
 ### T-K03.19 Skills 与 MCP：单一端到端闭环任务卡（2026-10-11）
 
 用户已将当前唯一交付目标收敛为 **彻底完成 Skills 与 MCP**；不在这张卡之外重开计划，也不提前扩散到 Scheduler、项目或其它 Settings 页面。唯一链路为：Browser → Web same-origin adapter → BFF → Platform（Skills/MCP control plane）→ Agent（MCP runtime）。管理员只在现有同源 `/manage` 原 Admin 壳出现，普通用户不可见；不新建第二套后台。Skills 与 MCP 的外部数据、状态和页面均以 owner 的真实返回为准，不用静态 seed、伪造封面、使用量、连接状态或完成状态。

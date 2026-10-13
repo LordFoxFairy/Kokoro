@@ -1,3 +1,13 @@
+## 2026-10-13 App 503/404 与 v1 修复
+
+App `8dd05cdbf973938646a1d4c7f5437bb1d6d806f5`、Billing `1ceeae550f05857d1e7fa0da1e83af23a552f0ca`、Platform（物理 Capability）`6b4c9db6719d2f5fd37a752921e603f4b0221de6`、BFF `e43c0e680bbc2a1bf9aa284f28bac201d82164a9` 为本地 topic 提交；尚未推送/PR/合并，不更新 Root gitlink 冒充已发行组合。
+
+三处后端源码进程已配对重载，readiness 200；复用既有基础设施，Mori 未启动。System 通过既有 Product/Site/Policy API 配置后，App runtime manifest en-US/zh-CN 均 200。真实 owner＋隔离 BFF 组合的 Skills 两读 200；Billing v1 两读明确缺账户 404，不造账户或资金。该组合仅人类 SessionAdmission 为测试替身；当前浏览器停在登录页，正常用户登录后的 App 页面验收待补。
+
+Root 最新验证：App 250 PASS；Platform相关123 PASS/4 SKIP；BFF相关165 PASS；Billing全测试1414 PASS/480 SKIP，隔离真实 PostgreSQL32 PASS。对应 lint/typecheck/build 与当前 owner/consumer 生成检查通过。BFF全测试1212 PASS/3 FAIL/3 SKIP；contract629 PASS/2 FAIL，失败是既存14.7历史逆链缺口，未删断言/旧hash。Platform既存 OAuth spy 单测失败未扩散修复。不宣称全仓通过。
+
+本片不改目录、Schema 或其他内部认证 surface。详细任务、验证与剩余 owner 见 [当前任务记录](task.md)；下方历史按原时点理解。
+
 ### T-K03.20 当前闭环台账（2026-10-13）
 
 当前唯一业务闭环仍是 **Skills 与 MCP**。本条只记录当前 main 与实际运行事实；下方旧条目为历史证据，不覆盖本条。
