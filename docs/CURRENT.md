@@ -1,10 +1,12 @@
-## SET-11 可选 Billing 隔离编排候选（2026-10-13，尚未真实组合验收）
+## SET-11 可选 Billing 隔离编排候选（2026-10-13，本人读取组合已验收）
 
 既有 `serve_local_login.py` 显式 `--billing-node-bin` 选择 Node24.20.0及精确Billing HEAD/gitlink/index/clean/symlink guard；普通 `local_billing_runtime.py` 负责正式build、fresh owner installer、唯一 `dist/src/main.js` 和 readiness/alive/幂等close。共享本次自有application DB，仅选择 `schema=kokoro_billing`，无options、业务SQL或资金seed；真实缺账户保持404。未选中不启动Billing，不建立第二launcher或扩大sandbox schema白名单。
 
 Chat启用时先取得其Root自有BFF内部身份再交Billing复用；Billing Bearer/operator分别独立，三项互异且立即进CredentialRegistry，operator不交BFF，不转用人类access。JWKS精确使用现IAM fixture的 `/iam/jwks`。消费者→Billing→Chat→其余owner逆序停止；无法确认quiescent时保留依赖、数据库和私有证据，仍做最终凭据扫描。
 
-独立审查发现并修正readiness慢headers/body突破总期限：同一绝对预算覆盖connect和正文，watchdog主动shutdown/close自有socket，处理迟到连接和16KiB上限。慢正文负控真实RED后转GREEN；Root最终独立两具名文件94PASS、35subtests，包括七项既有真实隔离进程/网络测试及两项新慢流测试。新增helper/test全配置Ruff零诊断；两旧文件HEAD与候选均39项，按code/message逐项比较无新增，未格式化旧基线。独立只读复审无新增确定P1/P2；正式Billing组合、资金用户旅程及整个设置仍待后继真实验收。
+独立审查发现并修正readiness慢headers/body突破总期限：同一绝对预算覆盖connect和正文，watchdog主动shutdown/close自有socket，处理迟到连接和16KiB上限。慢正文负控真实RED后转GREEN；Root最终独立两具名文件94PASS、35subtests，包括七项既有真实隔离进程/网络测试及两项新慢流测试。新增helper/test全配置Ruff零诊断；两旧文件HEAD与候选均39项，按code/message逐项比较无新增，未格式化旧基线。独立只读复审无新增确定P1/P2。
+
+Root运行基线 `b264abe0`、Web `77ebea4`、IAM `a63bcd0`、BFF `95fbd894`、Billing `20dba9c` 的正式隔离组合已通过精确gitlink/clean guard、BFF与Billing build、两owner canonical fresh install、Billing ready和正式登录。实际computer use进入用量与计费，余额与流水均显示真实“尚未开通积分账户”，owner两读确实404；本次三次owner请求耗时22–72ms，仅代表后端采样，不是页面端到端性能或SLO。未创建资金账户、赠送积分、执行支付或订阅；有资金账户的source/dist精确读证明来自另行隔离PG测试，不能当本页用户已有余额。私有运行收据/截图由运行环境保存，机器路径与凭据不进入tracked文档。整个设置、资金写旅程、日常站点切换仍未完成。
 
 ## Settings runtime candidate（2026-10-13）
 
