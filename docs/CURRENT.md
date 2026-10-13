@@ -1,10 +1,10 @@
 ## Settings runtime candidate（2026-10-13）
 
-本功能分支固定已独立审查的 Web `12f881e` 与 IAM `a63bcd0` 候选，用于正式 Web/BFF/IAM 隔离验收；两 owner 仍为 draft PR，不代表 main 或日常运行已切换。Web 包含个性化可靠保存、真实本人资料只读及键盘焦点修复。IAM 仅 trusted 测试 fixture 通过既有 owner API 补齐当前十三 scope；无生产权限策略、Schema 或合同变化。
+本功能分支固定 Web `82b5ba6` 与已独立审查的 IAM `a63bcd0` 候选，用于正式 Web/BFF/IAM 隔离验收；两 owner 仍为 draft PR，不代表 main 或日常运行已切换。Web 包含个性化可靠保存、真实本人资料只读、键盘焦点及积分卡片语义主题修复；主题修正前的账户源码已独立审查。IAM 仅 trusted 测试 fixture 通过既有 owner API 补齐当前十三 scope；无生产权限策略、Schema 或合同变化。
 
 当前 Product Session runner 消费现十三 scope、启用 trusted fixture，并显式使用既有 preconsented 流程；callback 的 pathname、closed query、state、issuer 校验保持。共享旧 RP-only 模块只增加当前 scope 常量；其历史可执行入口及底层 legacy scope 保持原样，不声称旧入口已适配当前固定 tenant UI。既有稳定登录失败分类继续保留，未输出凭据或授权 query。
 
-Root 四个相关 harness 测试文件共 102 项通过；Ruff F 类检查通过，全配置原 25 项基线诊断未增加。IAM 413 项真实隔离 scope/lifecycle 测试、1435 项纯测试及 format/lint/typecheck/contract generation/SDK/build 通过；contract:breaking 受固定工具下载的官方 Go 代理超时影响，合同字节未变但不计门禁通过。Web 154 项账户/个性化/modal、架构 50 项、契约 278 项及 lint/typecheck/build 通过，既存全测及 i18n 缺口仍保留。实际浏览器登录成功进入工作区，四字段个性化保存并全页刷新恢复，键盘焦点为可见2px实线；账户首次实测暴露Next内部bind URL差异，现固定修正版本待复验，不宣称整个设置完成。
+Root 四个相关 harness 测试文件共 102 项通过；Ruff F 类检查通过，全配置原 25 项基线诊断未增加。IAM 413 项真实隔离 scope/lifecycle 测试、1435 项纯测试及 format/lint/typecheck/contract generation/SDK/build 通过；contract:breaking 受固定工具下载的官方 Go 代理超时影响，合同字节未变但不计门禁通过。Web 前一相关七文件154项账户/个性化/modal、契约278项及lint/typecheck/build通过，内部URL修正后四相关文件112项通过；本次纯CSS修正后architecture50项与build通过，未重复未变化业务/contract检查。既存全测及i18n缺口仍保留。实际浏览器正式登录、本人账户资料读取/ID复制/issuer确认退出/重新登录恢复均已通过；四字段个性化在前一候选真实保存且全页刷新恢复，键盘焦点为可见2px实线。主题卡片实际深浅验证待新组合，整个设置仍未完成。
 
 ### T-K03.20 当前闭环台账（2026-10-13）
 
