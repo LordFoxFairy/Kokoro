@@ -36,6 +36,7 @@ import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
 import run_web_bff_iam_product_session_smoke as product_session  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import local_billing_runtime as billing_runtime
 import local_chat_runtime as chat_runtime  # noqa: E402
 import local_platform_runtime as platform_runtime  # noqa: E402
 import model_provider  # noqa: E402
@@ -96,6 +97,7 @@ def failure_category(error: Exception) -> str:
     for types, category in (
         ((LaunchError,), "launcher"),
         ((chat_runtime.ChatError,), "chat"),
+        ((billing_runtime.BillingRuntimeError,), "billing"),
         ((storage_runtime.StorageRuntimeError,), "storage"),
         ((platform_runtime.PlatformRuntimeError,), "platform"),
         ((model_provider.ProviderError,), "provider"),
@@ -239,6 +241,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--web-node-bin", type=Path, required=True)
     parser.add_argument("--web-port", type=int, default=WEB_PORT)
     parser.add_argument(
+        "--billing-node-bin",
+        type=Path,
+        help="Enable owned real Billing personal reads in the isolated application database",
+    )
+    parser.add_argument(
         "--platform-node-bin",
         type=Path,
         help="Enable owned real Platform Skills with owned real Storage",
@@ -260,6 +267,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--external-model-credential-file", type=Path)
     args = parser.parse_args(argv)
     args.storage_environment = None
+    if args.billing_node_bin is not None:
+        node = args.billing_node_bin.expanduser().resolve()
+        if not node.is_file() or not os.access(node, os.X_OK):
+            parser.error("billing_node_bin must be executable")
+        args.billing_node_bin = node
     if not 1 <= args.web_port <= 65535:
         parser.error("web_port must be between 1 and 65535")
     if args.platform_node_bin is not None and args.storage_node_bin is None:
@@ -337,7 +349,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def verify_login_release_inputs(
-    *, storage: bool = False, platform: bool = False
+    *, storage: bool = False, platform: bool = False, billing: bool = False
 ) -> None:
     """Admit the selected owners from one committed Root release."""
     root = web_smoke.ROOT
@@ -358,6 +370,8 @@ def verify_login_release_inputs(
         owners += ((apps / "kokoro-storage", "kokoro-storage"),)
     if platform:
         owners += ((apps / "kokoro-capability", "kokoro-capability"),)
+    if billing:
+        owners += ((apps / "kokoro-billing", "kokoro-billing"),)
     for repo, owner in owners:
         path = f"apps/{owner}"
         if repo != apps / owner or not repo.is_dir() or repo.is_symlink():
@@ -390,12 +404,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     web_port = getattr(args, "web_port", WEB_PORT)
     try:
-        if getattr(args, "platform_node_bin", None) is not None:
-            verify_login_release_inputs(storage=True, platform=True)
-        elif getattr(args, "storage_node_bin", None) is not None:
-            verify_login_release_inputs(storage=True)
-        else:
-            verify_login_release_inputs()
+        verify_login_release_inputs(
+            storage=getattr(args, "storage_node_bin", None) is not None,
+            platform=getattr(args, "platform_node_bin", None) is not None,
+            billing=getattr(args, "billing_node_bin", None) is not None,
+        )
     except runtime.SmokeError:
         raise LaunchError("release source preflight failed") from None
     require_free_web_port(web_port)
@@ -432,6 +445,8 @@ def main(argv: list[str] | None = None) -> int:
     chat_config = None
     storage = None
     platform = None
+    billing = None
+    billing_env = None
     storage_env = None
     platform_env = None
     if getattr(args, "storage_node_bin", None) is not None:
@@ -442,6 +457,10 @@ def main(argv: list[str] | None = None) -> int:
         platform_env = session.node_environment(
             args.platform_node_bin, "v24.20.0", args.platform_node_bin.parent
         )
+    if getattr(args, "billing_node_bin", None) is not None:
+        billing_env = session.node_environment(
+            args.billing_node_bin, "v24.20.0", args.billing_node_bin.parent
+        )
     with tempfile.TemporaryDirectory(
         prefix="kokoro-local-login-", dir=web_smoke.ROOT.parent, delete=False
     ) as temp:
@@ -451,6 +470,8 @@ def main(argv: list[str] | None = None) -> int:
             install_node_parent_guard(directory, storage_env)
         if platform_env is not None:
             install_node_parent_guard(directory, platform_env)
+        if billing_env is not None:
+            install_node_parent_guard(directory, billing_env)
         log_path = directory / "process.log"
         log_path.touch(mode=0o600)
         with log_path.open("w+b") as log:
@@ -662,6 +683,23 @@ def main(argv: list[str] | None = None) -> int:
                         agent_redis_url=args.agent_redis_url,
                     )
                     bff_env.update(chat.start(application_db_url))
+                if billing_env is not None:
+                    stage = "Billing startup"
+                    billing = billing_runtime.LocalBillingRuntime(
+                        node=args.billing_node_bin,
+                        node_environment=billing_env,
+                        credentials=credentials,
+                        log=log,
+                    )
+                    bff_env.update(
+                        billing.start(
+                            application_db_url,
+                            ready,
+                            bff_internal_secret=bff_env.get(
+                                "KOKORO_INTERNAL_SECRET_BFF"
+                            ),
+                        )
+                    )
                 stage = "BFF startup"
                 bff = runtime.start_process(
                     args.bff_node_bin, web_smoke.BFF, bff_env, log
@@ -689,8 +727,8 @@ def main(argv: list[str] | None = None) -> int:
                     }
                 )
                 if storage_env is not None:
-                    web_env["KOKORO_WEB_LOCAL_UPLOAD_ORIGIN"] = (
-                        web_local_upload_origin(args.storage_environment)
+                    web_env["KOKORO_WEB_LOCAL_UPLOAD_ORIGIN"] = web_local_upload_origin(
+                        args.storage_environment
                     )
                 credentials.add(web_env["KOKORO_WEB_AUTH_SECRET"])
                 next_process = subprocess.Popen(
@@ -727,6 +765,11 @@ def main(argv: list[str] | None = None) -> int:
                         "; real Storage"
                         if storage is not None
                         else "; Storage not configured"
+                    )
+                    + (
+                        "; real Billing personal reads"
+                        if billing is not None
+                        else "; Billing not configured"
                     ),
                     flush=True,
                 )
@@ -740,6 +783,8 @@ def main(argv: list[str] | None = None) -> int:
                         storage.require_alive()
                     if platform is not None:
                         platform.require_alive()
+                    if billing is not None:
+                        billing.require_alive()
                     if chat is not None:
                         stage = "serving chat tick"
                         chat.tick()
@@ -769,6 +814,22 @@ def main(argv: list[str] | None = None) -> int:
                     except Exception:
                         owned_processes_stopped = False
                         failures.append("owned process cleanup")
+                billing_failures = []
+                if billing is not None:
+                    if owned_processes_stopped:
+                        try:
+                            billing_failures = billing.close()
+                            if not billing.quiescent:
+                                owned_processes_stopped = False
+                        except Exception:  # noqa: BLE001 -- unknown owner cleanup must preserve resources.
+                            owned_processes_stopped = False
+                            billing_failures = ["Billing process cleanup"]
+                        failures.extend(billing_failures)
+                    else:
+                        billing_failures = ["Billing dependencies are still active"]
+                        failures.append(
+                            "Billing resources preserved for active dependents"
+                        )
                 chat_failures = []
                 if chat is not None:
                     if owned_processes_stopped:
@@ -849,6 +910,7 @@ def main(argv: list[str] | None = None) -> int:
                     if (
                         owned_processes_stopped
                         and not chat_failures
+                        and not billing_failures
                         and not platform_failures
                         and not storage_failures
                     ):
