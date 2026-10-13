@@ -1,3 +1,21 @@
+## SET-17 交易禁用与团队入口源码已接收（2026-10-14，待正式运行验收）
+
+当前完整设置 Goal 仍 active；独立 QA 的 Goal 完成条件只是报告，不等于设置实现完成。已核本地账户重验短期 loading 后恢复真实资料，通用通知控件恢复可用，尚未认定认证故障。只读设备审计确认需要 IAM 安全会话投影及 BFF/Web 正式消费链，不能直接转发含 session token 的 vendor 路由；设备后继另按 owner 契约串行实现。
+
+本片只修现有 Web 文件：当前 BFF checkout 固定503无交易能力，套餐目录保持可读、购买从首次渲染即禁用；旧直接模拟支付入口只显示不可用，所有环境的模拟支付 adapter 保留 Origin/登录守卫后503且零 owner POST；Team 入口命名与真实固定团队管理一致。无新目录、业务模块、API/SQL/依赖或契约生成修改。Web 三设计已统一该局部归属与行为撤销，原读取/升级导航和 Team 权限保留。
+
+Web `50b291bf50e65cfcc169784848d2b69a91e80dae` 已提交并推送同一功能分支。Root逐hash核11 worker paths和实际允许变更集合，独审无新增确定P1/P2；Root独立7具名文件91PASS、24契约/架构文件328PASS，writer最终lint/typegen/tsc/build0。真实RED四失败及Team语义一失败、原全测22失败均保留。尚未把源码门当正式浏览器PASS，下一步只切换自有隔离运行并验证只读目录、真实Team和直接pay不可用页；没有seed商品、资金写或Skills/连接器操作。
+
+| 项 | 决定 |
+| --- | --- |
+| 目标/完成条件 | P2：所有当前可触发交易入口预先禁用；原目录读取、真实金额与升级导航可用；Team 导航不再冒充创建团队；具名行为测试与正式浏览器验收 |
+| 基线 | Web feat/settings-interface `08fd6a57516c4688dd63f4ab4f4c65105717d0c2` clean；BFF `571173253ecd247b82c42b5fb8313bce7f3e29e5`；本片不写 BFF |
+| 唯一 writer / 审查 | billing_scheduler_audit 实现；storage_platform_audit 只读源码独审；Root 三设计、任务记录、Git/提交/运行/浏览器 |
+| 允许源文件 | 现 pricing-panel.tsx、mock-pay-panel.tsx、settings-navigation.tsx、billing mock-pay route、既有 billing pay page；pricing.ts 仅更正旧501/已接provider注释 |
+| 允许测试/索引 | 现 pricing-panel.test.tsx、mock-pay-panel.test.tsx、settings-modal.test.tsx、billing-routes.test.ts、ui/billing/INDEX.md；不新建测试文件 |
+| 排除/共享文件 | Skills/连接器及其测试、i18n、generated/contract、SQL、锁/依赖、其它仓/服务/数据均排除；Root 独占三设计/CURRENT/任务与 Git index |
+| 验证/交付 | 先保存当前实现真实 RED：非空目录首次disabled且零checkout、直接支付零POST、dev adapter503、Team导航语义；再具名GREEN、lint/type/build；worker交精确路径/hash和终态日志，不Git操作，Root独审/复验/提交后才启动 |
+
 ## SET-16 正式本地运行与浏览器偏好已验收（2026-10-14）
 
 正式运行代码基线Root `915947bd8cb8f2ce3aa043c6355a0b0e0d15e59d`、Web `dfb7ab5857f00ae73a9e68eb3a5d65129f2529f9`，其余owner固定不变。仅停止前一自有实例并确认其owned资源清理、端口释放与独占缓存为空，再用正规launcher通过exact pins、canonical fresh install/build/ready和匿名登录302检查启动新版；没有重启原预览或共享依赖。后续文档提交不改上述运行代码。
