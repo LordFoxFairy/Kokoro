@@ -8,7 +8,7 @@ Chat启用时先取得其Root自有BFF内部身份再交Billing复用；Billing 
 
 ## Settings runtime candidate（2026-10-13）
 
-本功能分支固定 Web `77ebea4` 与已独立审查的 IAM `a63bcd0` 候选，用于正式 Web/BFF/IAM 隔离验收；两 owner 仍为 draft PR，不代表 main 或日常运行已切换。Web 包含个性化可靠保存、真实本人资料只读、键盘焦点及积分卡片语义主题修复；主题修正前的账户源码已独立审查。IAM 仅 trusted 测试 fixture 通过既有 owner API 补齐当前十三 scope；无生产权限策略、Schema 或合同变化。
+本功能分支固定 Web `77ebea4`、IAM `a63bcd0` 与 Billing `20dba9c` 候选，用于正式设置隔离验收；三个 owner 仍为 draft PR，不代表 main 或日常运行已切换。Web 包含个性化可靠保存、真实本人资料只读、键盘焦点及积分卡片语义主题修复。IAM 仅 trusted 测试 fixture 通过既有 owner API 补齐当前十三 scope。Billing 已独立审查唯一Nest本人两读与probe入口，完整纯verify1392PASS/486资源SKIP、两文件真实PG30PASS及Prisma检查通过；旧server删除，未seed资金账户，其他19项operation仍未注册。无本次生产IAM权限策略、canonical SQL或机器API合同变化。
 
 当前 Product Session runner 消费现十三 scope、启用 trusted fixture，并显式使用既有 preconsented 流程；callback 的 pathname、closed query、state、issuer 校验保持。共享旧 RP-only 模块只增加当前 scope 常量；其历史可执行入口及底层 legacy scope 保持原样，不声称旧入口已适配当前固定 tenant UI。既有稳定登录失败分类继续保留，未输出凭据或授权 query。
 
