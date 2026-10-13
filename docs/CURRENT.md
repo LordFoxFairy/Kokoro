@@ -1,3 +1,11 @@
+## SET-16 通用设置实施与正式运行依赖准备（2026-10-13，进行中）
+
+Web `5ba1030ee5e095cbf47464991cbef50b2f68eca9` 已收敛三设计并通过只读独审：沿固定正式任务协议为exact receipt/active owner head建立通知锚，成功完成与取消/失败分离、重放去重、身份退役、可靠主体偏好与手势音频；未提供owner的产品更新/广告真实禁用。唯一Web writer正在实施，实际浏览器旧四switch仍enabled的反例与两个自动RED已保留，不称功能或完整Goal已完成。现运行仍Web2a3dee7，未切候选。
+
+当前Root固定Agent `84502e6ac14c4830edcfe11ae35b324cd1e0c34a` 和System `1460820eab10ade1ca62cd9fdf18b8ac700c0d7a` 的工作目录依赖已按各自锁文件离线安装。Agent采用现已批准Python3.12.13，uv frozen/no-sync正式worker与HTTP入口导入exit0；System采用Node24.20.0、owner pnpm12.3.4 frozen offline安装及production tsc exit0。首Agent自动选择3.14.6因缓存缺cp314 cffi wheel失败原日志保留，明确3.12后成功。两owner源码及锁文件仍clean，未启动服务、数据库演进或模型调用。
+
+`ModelCallAuthorizationUnavailable` 仍是实际成功任务→通知/声音验收的代码前置，安装依赖不能解除。设备会话、第三方登录方式、团队创建/切换也缺BFF/Web准入或安全投影，不能据IAM vendor路径或ready称闭环；固定团队成员管理已有正式链路，但写旅程未实际验证。后继保持全部非Skills/连接器设置范围，继续推进可实现功能，禁止绕过金融授权或伪造历史完成通知。
+
 ## SET-15 Catalog 正式组合与浏览器空目录已验收（2026-10-13）
 
 Root候选固定BFF `571173253ecd247b82c42b5fb8313bce7f3e29e5` 与Billing `ba98badab9445ae676a8f48faa55912d42ce5d2e`，继续使用Web `2a3dee7`、IAM `a63bcd0`。BFF正常生成器消费owner committed exp4原字节；public15.0.0 canonical不变。Catalog使用独立机器身份与可信IAM tenant，完整有界分页后才返回，任一失败现503 billing_unavailable；checkout原入站校验后明确503且零owner I/O，旧v1路径及unused mapper已删除。最终19路径冻结独审无新增P1/P2，Root独立build、正规生成check、三具名73PASS/0SKIP及完整HTTP route具名1PASS/0SKIP。worker全契约634PASS/2旧FAIL、全test1222PASS/3旧FAIL/3SKIP、全format7旧FAIL仍保留。
