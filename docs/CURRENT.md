@@ -1,3 +1,9 @@
+## SET28 阅读轴修补已接收，SET29继续（2026-10-15）
+
+Web 2d31cd502db44b5b0ad74e52321cba755624896f：仅现Web thread viewport scrollbar-width:none，取消双侧稳定滚动槽，原10.59375px阅读轴漂移修复；1CSS/931保护/Root7，原全部tests/精确oracle逐字保护、独审无确定P1/P2，原CSS逆核exact。可见滚动条拖动入口取消，overflow/共享mobile源码与滚动逻辑保持；contract283/architecture50/type通过，V2 lint/build0。
+
+终态完整test3959PASS/7此前具名FAIL/0SKIP，201.99s，原生登录完整门及UI/i18n遗留未闭环。正规隔离Playwright20PASS/0FAIL/4SKIP，20s，原布局全宽矩阵、长Markdown尾部/第二轮、logout/stream/HITL原业务断言全PASS，库存exact恢复；首wrapper漏覆盖absolute path只复现旧baseRED，已修相对路径/复制哈希校验后才判终态。正常认证Browser/多引擎未验，整设置Goal仍active，后续余额可信generation与原native观察边界分类；Skills/连接器排除。
+
 ## SET27 个性化不可用入口已接收，SET28接续（2026-10-15）
 
 Web 7e062cd5e69847bfb34181b6674cb998c4cc50f1：个人资料/知识line tabs、AI导入和记忆导入入口已呈现；知识及两个导入入口真实disabled、无handler，本地化未接通说明通过useId关联，未伪造知识或导入流程。原四字段和保存/冲突/未知写恢复保持；12writer/920保护/Root7，原69测试仅两批准替换与两附加断言、九locale单key/CSS逆核。Root原源真实1FAIL/68SKIP，终态117专项PASS；独审无确定P1/P2，contract283/architecture50/lint/type/build通过。
