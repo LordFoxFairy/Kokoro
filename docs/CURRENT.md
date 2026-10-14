@@ -1,3 +1,9 @@
+## SET-18 正常浏览器发现 DELETE 空流误拒（2026-10-14）
+
+正常已提交 Root e92dbe573428a6f885ef81ff57817cbf3ffa5fff 精确接收 Web3ea6084/BFF5399640/IAM284bfd8，selected-owner guard/fresh install/build/ready通过，匿名 login302及fresh authorize十五项有序scope通过。首运行因既有 PostgreSQL CLI 未在 PATH 而停于 preflight，补既有 CLI 路径后正常启动，不改代码或装新依赖。真实 CUA 登录及设备列表读取通过，但移除仍被 Web400拒绝，目标继续存在。旧 cookie 401发生于可能access到期之后，不是撤销成功证据。
+
+窄修补归 Web既有同源adapter责任，Root唯一writer，storage_platform_audit独立只读审查无确定P1/P2。仅现src/lib/server/account-sessions.ts与tests/server/account-sessions.test.ts，及现CURRENT/API_CONTRACT/server INDEX文档；不新模块/合同/SQL/依赖，不改Skills/连接器、BFF/IAM或正常运行源码。已核本仓Next Node适配非GET的无正文也有Request stream，改为原总预算内证明EOF并继续拒绝真实正文。旧正控/悬挂输入3FAIL/43PASS，修补46PASS；七具名124PASS，完整lint/type/build自然exit0。五路径已沿同一功能分支发行Web10027a1；Root仅接该精确gitlink和本记录，再正常 owned运行/CUA复验。当前整体测试失败仍保留，未因局部修补重跑无关整仓门或宣称全绿；完整设置Goal仍active。
+
 ## SET-18 Web 已发行，Root 正常消费者接收（2026-10-14）
 
 Web `3ea6084205843e45958c20bf8b5b56a28dda764a` 已在原设置功能分支正式提交发行；58 实现/生成/测试路径与 Root 四设计记录、三个 INDEX 精确接收，独审无剩余确定 P1/P2。正常 contract280/architecture50 与 lint/type/build通过，Root正常全测3686PASS/9FAIL/0SKIP；同环境旧源码完整对照3605PASS/9FAIL/0SKIP，八个失败case同时出现，另候选桌面登录视觉超时的独立文件4PASS。正常E2E14PASS/6FAIL/4SKIP，六个桌面预览navigation/networkidle超时未独立归因。失败均保留，不能称全仓绿。测试PG inventory/自有Redis数据与起点一致。
