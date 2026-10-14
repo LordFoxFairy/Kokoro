@@ -1,4 +1,8 @@
-## SET-18 正常浏览器发现 DELETE 空流误拒（2026-10-14）
+## SET-18 正常设备撤销已验收（2026-10-14）
+
+Web10027a1ba7cd7477b5012a1124a7a98d35cf4aea已由Root3386153eff8eac2797f3203848cd073b8de27894正常集成。selected-owner exact guard、fresh install/build/ready、匿名login302与十五scope通过；仅替换原 owned fixture，两个自有临时数据库和目录清理已核，其它数据库保持。实际 CUA 当前会话只读，另一正规新登录会话确认退出→真实ACK→权威relist移除，当前和bootstrap会话保持；该被退出cookie随后访问account list与Product identity均401，距新登录95.66秒小于正式IAM300秒access寿命，排除自然到期。单次本地HTTP列表241.66ms，拒绝57.6/28.45ms，不当性能基准。截图和凭据/机器收据只保私有本地。整套设置Goal仍active，后继账户编辑、团队写入、数据管理/帮助与真实任务通知仍待；Skills/连接器不改。
+
+### 本次问题与修补记录
 
 正常已提交 Root e92dbe573428a6f885ef81ff57817cbf3ffa5fff 精确接收 Web3ea6084/BFF5399640/IAM284bfd8，selected-owner guard/fresh install/build/ready通过，匿名 login302及fresh authorize十五项有序scope通过。首运行因既有 PostgreSQL CLI 未在 PATH 而停于 preflight，补既有 CLI 路径后正常启动，不改代码或装新依赖。真实 CUA 登录及设备列表读取通过，但移除仍被 Web400拒绝，目标继续存在。旧 cookie 401发生于可能access到期之后，不是撤销成功证据。
 
