@@ -1,3 +1,9 @@
+## SET29 账户侧栏余额已接收，SET30继续（2026-10-15）
+
+Web 0ab7bfaedf7425332049f5f867bcec79fccd285c：沿现可信readBoundary传入余额组件，同subject撤准入/换generation同步隐藏旧余额并取消原请求，非合作迟到/A-B-A不复活；marker只附加一致性guard。preview/BigInt/失败—及admin/menu/signout/通知原子树保持，4源码+1原test/927保护/Root7、原73全文逆核及一处new suffix type-only例外独核；实际原source14FAIL76PASS90，终态90PASS，独审无确定P1/P2，contract283/architecture50/lint/type/build0。
+
+完整test3975PASS/8此前具名FAIL/0SKIP，205.57s；工程隔离Playwright20PASS/0FAIL/4原SKIP，20.5s，资源库存exact恢复。正常认证Browser及原生登录完整门仍未闭环，不冒称全部设置完成或端到端服务性能。后继SET30补不可用说明、SET31 runtime退休请求分类；Skills/连接器业务排除，Goal active。
+
 ## SET28 阅读轴修补已接收，SET29继续（2026-10-15）
 
 Web 2d31cd502db44b5b0ad74e52321cba755624896f：仅现Web thread viewport scrollbar-width:none，取消双侧稳定滚动槽，原10.59375px阅读轴漂移修复；1CSS/931保护/Root7，原全部tests/精确oracle逐字保护、独审无确定P1/P2，原CSS逆核exact。可见滚动条拖动入口取消，overflow/共享mobile源码与滚动逻辑保持；contract283/architecture50/type通过，V2 lint/build0。
