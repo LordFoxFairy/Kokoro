@@ -1,3 +1,11 @@
+## SET24 退出失败恢复已集成，SET25接续（2026-10-15）
+
+Web6921a1cbffd723fc37c4cc64342bb3a6f89369a1沿同功能PR14接收，正常Web checkout clean精确更新；BFF eec324/IAMc64及其余owner不动。仅现AccountCard单10s总预算、同步重复护栏、完整身份/permission/preview退役与导航guard；拒绝或timeout明确无法确认退出并允许原按钮显式重试，不假成功或自动再POST，正规issuer/503 handoff与原auth client保持。profile不构成退出前置，九locale仅一键。
+
+Root终态原源码缺专属alert RED复现、专项132PASS、contract283/architecture50/lint/type/build通过，冻结11/921/Root7独核和独审无确定P1/P2。full3927PASS/6既有FAIL/0SKIP，本轮native认证组通过不表示whole-suite波动已修；Playwright14PASS/6同名此前desktop timeout/4SKIP，真实账户设置/CUA仍待既有HTTP错误页人工恢复。owned PG/Redis库存exact恢复。现Next dev重编译激活，launcher/共享基础设施不替换，完整设置Goal继续active。
+
+后继SET25已独审候选：仅现chat深链模型偏好保存错误和目录loading/error/ready/显式重试，不将模型塞入Manus General；General已按参考显示任务发送偏好。原store/client/API/其他owner与Skills/连接器排除，新正式base后D0/tests-only，原验收prefix/protected保留。
+
 ## SET23 Web偏好反馈正式集成，SET24接续（2026-10-15）
 
 Web03fc794403116f93c318eeec3534ae0d199cb690接收于现功能分支，同一PR14继续；正常checkout clean gitlink精确更新，BFF eec324/IAMc64及其余owner保持。只Web浏览器偏好路径演进，沿现Next dev重编译激活，不替换整个登录栈或共享基础设施；正常浏览器人工恢复待验。两Provider各自保保存失败，General对应alert/显式retry，九语言两新键；立即生效/Modal重开/真正重挂/独立成功恢复由真实Provider测试覆盖，非新持久化或API。
