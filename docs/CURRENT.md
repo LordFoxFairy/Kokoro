@@ -1,3 +1,11 @@
+## SET23 Web偏好反馈正式集成，SET24接续（2026-10-15）
+
+Web03fc794403116f93c318eeec3534ae0d199cb690接收于现功能分支，同一PR14继续；正常checkout clean gitlink精确更新，BFF eec324/IAMc64及其余owner保持。只Web浏览器偏好路径演进，沿现Next dev重编译激活，不替换整个登录栈或共享基础设施；正常浏览器人工恢复待验。两Provider各自保保存失败，General对应alert/显式retry，九语言两新键；立即生效/Modal重开/真正重挂/独立成功恢复由真实Provider测试覆盖，非新持久化或API。
+
+Root独核13源码/919原保护/7文档及旧47prefix、九locale inverse，独审无确定P1/P2；终态原源码真RED三缺alert，Root97专项与contract283/architecture50/lint/type/build通过。full3911PASS11FAIL/0SKIP，原base全939原字节full3910PASS9FAIL；native认证门不同波动，双版同过滤7PASS/79SKIP，不能归因并发或宣全绿。原生CSRF503来源细分仍未决，API导入图不经本片Provider；完整门稳定性风险保持。E2E14PASS/6同名此前桌面超时/4SKIP，正常设置浏览器旅程待。各资源库存前后exact恢复。
+
+SET24确定账户logout catch拒绝不恢复busy、按钮永久Spinner/disabled且无错误反馈，正式client确实可reject。后继仅现AccountCard caller总10s/AbortSignal/race/同步重复护栏与身份退役，失败明确无法确认退出并可显式重试，不假称仍登录/自动重试/改issuer handoff。现Product auth client源码保持；独立D0无确定P1/P2。Root三设计与新正式Web基线后tests-only真RED，再source；Skills/连接器排除，完整Goal保持active。
+
 ## SET21/22 正式代码接收与SET23继续（2026-10-15）
 
 Web293ac84d7b2b6562b73e46c56436aadc4c1c2e3b已提交/推送至同一PR14，BFF eec3244645d5129407147774ecb07e03848420c4已提交/推送至同一PR5；正常checkout两clean detached gitlink精确接收，IAMc64及其他owner保持。Data/Help正式入口与分享正规ACK接线，非任务分享能力禁用而非伪空。原四核心RED4FAIL→冻结152专项PASS，独审无确定P1/P2；contract283/architecture50、lint/type/build及真实Next七例通过。真实Next/Redis＋替身BFF不是正常IAM/PG页面旅程。正确配置全测3912PASS/7此前失败/0SKIP，隔离正常Playwright14PASS/6此前desktop timeout/4SKIP，完整门非全绿；PG/Redis测试资源均exact恢复。正常运行将仅替换本任务launcher，不动共享基础设施，浏览器正常旅程仍待验。
