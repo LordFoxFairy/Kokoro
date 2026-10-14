@@ -1,3 +1,9 @@
+## SET27 个性化不可用入口已接收，SET28接续（2026-10-15）
+
+Web 7e062cd5e69847bfb34181b6674cb998c4cc50f1：个人资料/知识line tabs、AI导入和记忆导入入口已呈现；知识及两个导入入口真实disabled、无handler，本地化未接通说明通过useId关联，未伪造知识或导入流程。原四字段和保存/冲突/未知写恢复保持；12writer/920保护/Root7，原69测试仅两批准替换与两附加断言、九locale单key/CSS逆核。Root原源真实1FAIL/68SKIP，终态117专项PASS；独审无确定P1/P2，contract283/architecture50/lint/type/build通过。
+
+完整test3959PASS/7此前具名FAIL/0SKIP，202.44s；六持续UI/i18n及原生R177未过。隔离Playwright18PASS/2阅读轴FAIL/4SKIP，35.1s，资源库存exact恢复。正常认证Browser与个性化窄屏视觉仍未验证。整个设置Goal继续active：SET28只修Web thread viewport样式，原精确E2E阈值/业务oracle保护；随后接侧栏余额可信generation，Skills/连接器排除。
+
 ## SET26 可信用量与套餐读取已接收，SET27接续（2026-10-15）
 
 Web 91fb1aee87df9e6dc0acadcdda4db5375623a13a：用量与套餐显式可信scope/client退役，未准入暂停并同步隐藏旧投影；目录局部状态/单10s/明确重试，正式plans真实reader取消释放锁，checkout与其他owner保持。原真实readerP2已由独立负控复现并修复，V2独审无确定P1/P2；Root原源码最终11FAIL复现、终态178专项PASS，contract283/architecture50/lint/type/build通过。
