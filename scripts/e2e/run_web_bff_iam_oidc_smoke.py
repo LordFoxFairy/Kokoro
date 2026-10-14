@@ -50,7 +50,8 @@ PRODUCT_WEB_SCOPES = (
     "openid profile email offline_access iam:session-authorization.verify "
     "iam:member.read iam:invitation.read iam:role.read "
     "iam:member.write iam:invitation.write iam:authorization.check "
-    "iam:skill-authorization.check iam:publisher-profile.read"
+    "iam:skill-authorization.check iam:publisher-profile.read "
+    "iam:account-session.read iam:account-session.revoke"
 )
 MAX_BODY = 1_048_576
 MAX_SSE_BODY = 4_194_304

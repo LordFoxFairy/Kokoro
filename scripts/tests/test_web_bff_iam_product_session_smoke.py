@@ -42,7 +42,8 @@ class ProductSessionGuards(unittest.TestCase):
                     "iam:member.read iam:invitation.read iam:role.read "
                     "iam:member.write iam:invitation.write "
                     "iam:authorization.check iam:skill-authorization.check "
-                    "iam:publisher-profile.read"
+                    "iam:publisher-profile.read "
+                    "iam:account-session.read iam:account-session.revoke"
                 ),
                 "resource": smoke.previous.RESOURCE,
                 "state": "s" * 24,
@@ -98,6 +99,14 @@ class ProductSessionGuards(unittest.TestCase):
 
         for scope in (
             smoke.previous.SCOPES,
+            (
+                "openid profile email offline_access "
+                "iam:session-authorization.verify "
+                "iam:member.read iam:invitation.read iam:role.read "
+                "iam:member.write iam:invitation.write "
+                "iam:authorization.check iam:skill-authorization.check "
+                "iam:publisher-profile.read"
+            ),
             " ".join(
                 query_scope
                 for query_scope in (

@@ -1,13 +1,79 @@
+## SET-18 Web 已发行，Root 正常消费者接收（2026-10-14）
+
+Web `3ea6084205843e45958c20bf8b5b56a28dda764a` 已在原设置功能分支正式提交发行；58 实现/生成/测试路径与 Root 四设计记录、三个 INDEX 精确接收，独审无剩余确定 P1/P2。正常 contract280/architecture50 与 lint/type/build通过，Root正常全测3686PASS/9FAIL/0SKIP；同环境旧源码完整对照3605PASS/9FAIL/0SKIP，八个失败case同时出现，另候选桌面登录视觉超时的独立文件4PASS。正常E2E14PASS/6FAIL/4SKIP，六个桌面预览navigation/networkidle超时未独立归因。失败均保留，不能称全仓绿。测试PG inventory/自有Redis数据与起点一致。
+
+Root后继只改现 `scripts/e2e/run_web_bff_iam_oidc_smoke.py` 的 PRODUCT_WEB_SCOPES：原十三项严格有序追加 account-session.read/revoke；现 `scripts/tests/test_web_bff_iam_product_session_smoke.py` 固定正控十五项并保旧十/十二负控、补旧十三项负控。原 legacy runner SCOPES、协议、资源与CLI保持，不授新fixture/SQL/业务入口。先正控RED，再常量接线GREEN；随后只固定上述Web、正式BFF5399640与IAM284bfd8 gitlinks，Root默认门后提交。正常owned launcher由Root成对集成，fresh code grant/两个实际会话/浏览器撤销/旧在线401仍待验；不涉及Skills/连接器或金融写入。完整设置Goal持续active。
+
+Root两scope接线正控先1FAIL/44PASS，后两具名文件45PASS；旧十/十二/十三scope负控保持。Ruff F通过，独立只读复审无确定P1/P2。Root默认全测1834PASS/2FAIL：合同checkpoint仍有跨owner evidence/gitlink漂移，Storage清理测试缺安装的S3 SDK；两case在固定Node24亦失败，不以切换工具链冒修复。默认standard331违规/2unverified，topology记录本地checkout问题；这些全仓治理/安装缺口保留，不放宽门禁或称全仓验证通过。正常selected-owner exact gitlink/index/clean guard与fresh运行/浏览器旅程另验。
+
+## SET-18 Web 登录设备源码准入（2026-10-14）
+
+| 项 | 执行决定 |
+| --- | --- |
+| owner / 执行 | Web；billing_scheduler_audit唯一源码writer，storage_platform_audit冻结后只读独审，Root四docs/INDEX/任务/Git/正常资源与浏览器 |
+| 正式依赖 / 基线 | BFF 53996400e4100ed5940b104f0dce139d44fec383，public15.1.0 SHA2565972f7be07a0117d8ee036fa4e742da7942b3c864d009c2847e70e69112a747d，144实际操作；IAM正式284bfd8/internal0.12同f6f。Web feat/settings-interface HEAD fa4fdd5b8a3a81b8349a224d7f6b7e28e8135472（doc-only），源基线160d2a44ff4af2d766078bd97708c29bcae659a6；D0保护841 tracked，当前Root仅四docs前缀变化 |
+| 新普通源 | src/app/api/account/sessions/route.ts、src/app/api/account/sessions/[sessionId]/route.ts；src/lib/server/account-sessions.ts；src/lib/account-sessions.schema.ts；src/ui/settings/account-sessions-client.ts、use-account-sessions.ts、sections/account-devices-dialog.tsx。沿现位置与责任，不新一级module/通用proxy/store |
+| 现源 / 认证 | src/ui/settings/sections/account-card.tsx与settings-sections.module.css仅独立设备入口/token样式；按本次真实Manus账户页对照，设备入口复用现accountDetailRow，放登录方式之后、删除账户之前，标题/说明与管理按钮，不置于账户顶部；现account-card.test.tsx保持具名accessible device入口断言并补所在row位置，不改变第三方登录方式；src/lib/server/oidc-provider.ts仅原十三scope顺序append iam:account-session.read/revoke，不改provider/auth/refresh生命周期。GET沿现canonical Host/Origin规则及URL scheme；DELETE在新adapter精确method/Host/scheme并必需canonical Origin，不扩大旧iam-relay-config GET/POST helper或用fallback |
+| 生成 / 单出处 | 新openapi-ts.bff-account-sessions.config.ts、scripts/generate-bff-account-sessions-client.mjs、src/generated/bff-account-sessions/**仅现0.99正规两operation窄生成。src/generated/bff-public-openapi.yaml必须正式owner Gitblob原字节；现scripts/generate-bff-team-client.mjs、generate-bff-agent-failure.mjs及正常派生bff-team/**、bff-agent-failure.ts仅同一正式出处/版本/digest，原Team字段/九ops与Agent ChatMessage fingerprint/roles/tuples不变；package.json仅追加新生成/check命令与原contract链，无依赖/锁/引擎变化 |
+| i18n | src/i18n/messages.ts、en.ts、ja.ts、ko.ts、es.ts、fr.ts、de.ts、pt.ts、ru.ts仅新增devices专用key，原所有键和值原样，尤其Skills/连接器不改 |
+| 新测试 | tests/server/account-sessions.test.ts、tests/ui/account-sessions-client.test.ts、tests/ui/use-account-sessions.test.tsx、tests/ui/account-devices-dialog.test.tsx、tests/contract/bff-account-sessions-public.test.ts；允许同文件涵盖schema与route方法/参数，不新测试fixture/资源 |
+| 现测试 | 现contract/api-contract.test.ts仅共享whole-artifact版本15.0→15.1与SHA更新，原ScheduledTask所有语义断言保持；现tests/architecture/governance.test.ts仅contract脚本精确字符串接新增account-sessions check。两处正规门实际各一新增FAIL已记录，授权原writer窄修，不当历史失败。tests/ui/account-card.test.tsx设备入口与既有account保持；tests/server/oidc-provider.test.ts只scope新pair/fresh authorize及原十三项保存/既有负控。七现tests/contract/bff-team-public.test.ts、bff-agent-failure-public.test.ts、bff-project-resource-public.test.ts、bff-project-create-public.test.ts、bff-library-file-public.test.ts、bff-library-artifact-public.test.ts、bff-skills-mcp-public.test.ts仅共享完整artifact pin/version/digest及whole inventory142→144；不改原field/status/metadata/语义oracle或Skills/连接器实现 |
+| 关键不变量 | 两端单10s从入口含body/session/pre与final identity读、总header+body≤1MiB、主动取消不合作fetch/reader/迟到promise；generated strip前closedraw核与binding/paging错误闭集。final同opaque sessionID/generation/subject/accessExpiresAt/session expiry同预算；UI subject/admitted generation/close/unmount退役；未知DELETE后设独立reconciliationRequired写栅栏，hook/remove/确认共同拒绝新写，只有成功首屏relist清除，More或读取失败不得清除，不自动重试写、不假移除/假设备/城市/last-active。current独立无remove、other确认/真实ACK/unknown重读/分页部分明确 |
+| 排除 / 验收 | Skills/连接器业务与旧测试语义、Scope原十三序列、其他owner/SQL/Redis/凭据/正常实例/锁依赖/Git/docs全不授worker。Node22.22.2/corepack原pnpm，先具名RED再GREEN、正常生成check/lint/type/build/contract/architecture；原全测22历史FAIL保留，新增失败需修。交exactpath/hash/log freeze，Root逐hash/独审/必要复跑再正式发布。Root2scope常量/probe与正常pins/fresh login两真实会话/list/revoke/旧在线401/CUA另统一实施，未授共享或金融写入 |
+
+## SET-18 真实消费者错误缓存补齐已接收（2026-10-14）
+
+IAM cache V2两源码freeze ffbe3179经逐hash/481 tracked保护核与独审无剩余确定P1/P2，原消费者错误已修复。Root正规完整verify 114文件1465PASS；真实BFF→IAM12请求及owner直接403通过，另具名owner错误integration一PASS/九过滤（匿名401、malformed-percent400、method/path排除）。资源teardown恢复原状态。internal0.12 SHA f6f3588d保持；IAM正式修补已发行284bfd8fea91d57dae18fa2b7c772d75c7b6dcd9，沿draft PR1；BFF仅后继新单pin/必要消费元数据与新文件格式修补，再Web与正规运行/UI验收。首PATH未含既有固定Go的ENOENT诊断保留，未放宽门禁。
+
+Root真实BFF→IAM联调中，已验证列表/分页/current409/foreign404，但缺scope本人请求由IAM守卫提前403时没有no-store，BFF按既定契约拒为502。源码确认Nest方法Header在守卫前错误路径不执行，现application.setup只覆盖旧Team/准入。首冻独审进一步发现Express参数路径在callback前解码，malformed-percent DELETE先400；修补须在参数解码前按原始pathname精确识别两新操作，不能使用会提前解码的参数matcher或扩大旧路径。本片沿已承诺两Account endpoints，在现HTTP setup中按精确GET list、DELETE单target预置no-store，使匿名/缺scope/资源失败仍遵同一响应合同；不改变守卫、资格、API artifact、schema或关联事务。
+
+| 项 | 裁决 |
+| --- | --- |
+| owner/writer | IAM，runtime_audit唯一源码writer；Root三设计/任务/Git与真实资源，storage_platform_audit冻源只读独审 |
+| 基线 | 9d9bd18022ff4fdca595b81a533d9e090978aaa1，tracked clean，既有node_modules链接保留；正常服务不变 |
+| 精确允许 | src/http/application.setup.ts仅两新endpoint早期no-store middleware；test/integration/account-sessions/account-sessions.test.ts仅既有错误负控增加no-store/request-id断言及同fixture malformed-percent 400边界/方法与路径负控，不新fixture/放宽期望/改旧业务路径 |
+| 排除/验证 | 原锁/schema/contract/generated/SDK和其他源码原字节保护；无Skills/连接器修改。writer不跑资源或Git；原错误RED由Root保存，纯format/lint/type及必要静态门后freeze；Root真实原错误与正常两登录链复验后发行修补commit，再BFF唯一正式pin接收 |
+
+## SET-18 BFF 登录设备接线已接收（2026-10-14）
+
+V3二十六实际实现路径（manifest含退休9d9 absent共27记录）经Root逐hash/613其余tracked保护核及独审，无新增确定P1/P2；正式IAM284bfd8 artifact与Git对象原字节一致。十八保护路径含业务/144 inventory/public5972全文及三generated正文与V2完全相同。Root原pnpm check exit1仅停于既有R357两项（contract675总/673PASS）；原pnpm test实际1267总/1261PASS/3既有FAIL/3SKIP，两个新增消费pin失败已消除。原format9降回原七项，两个新增格式问题已消除。正常生成check/lint/type及生产build成功；既有失败与原错误RED证据保留，未冒全check绿。真实IAM/BFF十二请求及direct403通过，测试资源恢复起点；V3无业务/生成正文变化不重复资源。BFF正式同一功能分支已commit/push 53996400e4100ed5940b104f0dce139d44fec383，沿draft PR5；Web随后固定该不可变artifact接线，正常运行/browser仍待；完整设置Goal继续active。
+
+## SET-18 BFF 登录设备接线任务卡（2026-10-14）
+
+V3窄后继：V2业务hash保持，正式IAM单pin由9d9替换284bfd8（同0.12/f6f原字节），现config/generator/vendor及依赖manifest正规生成；必要现contract-governance pin同步。额外允许现test/iam-protocol-relay-policy.test.ts仅当前vendor/version/provenance断言更新，原十五operation与components摘要fd871cf2f3206cf117565f9e4bc8e2041e6e1a1c4ba1e06f0bab5e1e8644a6cf保持，旧4d981/e3删除断言保持并补退休719。两个新scripts/account-session-public-contract.mjs与test/account-sessions-contract.test.mjs只按原--no-semi/print-width160格式纠正；原七format与三个历史业务失败不授修复。新public全文5972/144不变，IAM generated正文须同V2字节，SOURCE/Git/资源规则不变，freeze V3→独审/Root回归→正式发布，Web仍未准源。
+
+源码freeze后Root以正式Git对象及独立YAML解析核旧canonical实际142、旧inventory141，唯一漏原已存在websiteSetSkillInstallationEnabled；旧canonical顺序减该项后与旧141完全一致。因此纠正D0统计为新canonical/inventory144，允许原正规生成脚本补齐整个清单登记；不改变任何Skills源码、API字段/权限/行为。新最外层inventory inverse须严格核原遗漏三元组及新增两项、恢复原141数组及摘要，原历史oracle保持；旧Conversation/格式基线失败继续如实保留。该修是BFF共享清单完整性，不扩大Skills实现任务。
+
+用户询问剩余菜单后，Root核现侧栏18入口：9可选择（其中Skills/连接器2由同事负责）、9明确灰色占位。可选择不等于全功能；账户资料/退出、个性化、快捷键及通用偏好已有真实验收，计费/订阅、团队写入和模型完成通知仍保留缺口。登录设备后端已接收，消费者正接线，不把占位、报告或后端门当完整设置完成。
+
+| 项 | 执行决定 |
+| --- | --- |
+| 目标/前置 | SET18-BFF，P1：正常Product准入后本人设备列表/撤销安全公开投影；IAM正式284bfd8fea91d57dae18fa2b7c772d75c7b6dcd9，internal0.12.0，SHA256 f6f3588d0fe52e5b3eed57e117e25b991caabc9e2825d1a0edcf9149f6a3e26b；BFF三设计D0独审通过，TENANT_DISABLED映射已裁决 |
+| owner/执行 | BFF，billing_scheduler_audit唯一源码writer；storage_platform_audit冻结后只读独审；Root三设计/任务记录/Git与资源验收。沿已有agent当前模型，不新建会话 |
+| 基线 | feat/settings-team-contract，63721953cd7f3067aa51ee60ad8b7433452c6410；源码基线571173253ecd247b82c42b5fb8313bce7f3e29e5；Root本轮仅更新四docs前缀，writer不写docs |
+| 新普通源 | src/http/account-session-input.ts；src/http/routes/account-sessions.ts；src/infrastructure/clients/iam-account-sessions.ts及iam-account-sessions.types.ts。各自拥有原始入站校验、HTTP投影、owner I/O和窄内部结果，不复制wire或新一级module |
+| 现源 | src/bootstrap/server.ts仅正规准入后两新操作接线；不授runtime/通用认证/Skills/MCP修改，需额外路径先向Root说明 |
+| 机器/生成 | contract/openapi/v1/openapi.yaml仅两新路径/安全components及15.1；contract/tests/v1-operations.json正规144完整基线（校正旧清单漏记）；openapi-ts.iam.config.ts与scripts/generate-iam-http-client.mjs唯一正式新pin/0.12、保旧16再加2；contract/dependencies/iam-http.json与src/generated/iam-http/**仅正规生成；删除旧7192254 vendor、精确新增正式284bfd8 vendor原字节（V3退休9d9候选pin），不并存旧pin |
+| 契约门 | scripts/verify-openapi.ts、scripts/check-contract.mjs仅最外层15.1严格inverse与144机器门；批准新普通scripts/account-session-public-contract.mjs承接该逆变换。两paths、新components与版本剥离后必须全文还原15.0 SHA256 5f6b1178cb878718090ba65d6b0d563185078624af0d3d46a01e568af87264a4，再委托原历史门；历史fixture/hash/断言不可放宽 |
+| 测试允许 | 新test/account-sessions-input.test.ts、account-sessions-client.test.ts、account-sessions-http.test.mjs、account-sessions-contract.test.mjs；现test/contract-governance.test.mjs、test/contract/openapi-contract.test.mjs、test/architecture.test.ts、test/iam-admission-client.test.ts、test/team-read.test.ts、test/team-write.test.ts只必要新pin、最外层机器/保留行为接线。package.json仅原format:check/test/contract:test追加本片路径，不改依赖/引擎/版本 |
+| 关键约束 | Raw JSON必须在generated strip前closed核验，SDK正规responseValidator或raw解析结果完整比较；current与others分离/去重/limit、安全UTCmillis、绑定ID、status/code闭集、同request-id/JSON/no-store；单5s与1MiB覆盖headers/body、主动取消不合作fetch/reader与迟到清理、零自动写重试。400/401/403/404/409/413/429/502/503按D0，TENANT_DISABLED→403 session_forbidden |
+| 保护/证据 | 无SQL/Redis/cache/receipt/schema/lock/依赖/其他owner/正常服务修改；Skills/连接器源码与旧operation语义排除。正规Node22.22.2/pnpm11.25.0，不install；先真RED/基线再GREEN、生成check/lint/type/build，保已有R357三失败及格式基线。交精确path/hash/log、冻结停写，Root真实owner资源复验/独审后才正式发布；随后Web固定新public artifact |
+
 ## SET-18 账户登录设备（2026-10-14，文档门与只读审计）
 
+当前IAM源码/owner门已接收：V4 manifest8e32668c/49paths独审无剩余确定P1/P2，Root哈希/范围/保护核一致；正规原pnpmverify完整0（114files1465PASS、canonicalPrisma/服务/SDK build、原baselinebreaking0，旧enum warnings保留）。实际设备10项分轮九PASS+续期一PASS；原OAuth lifecycle两PASS、cleanup repository十一PASS及writer invariant五PASS、trustedfixture三PASS（40过滤）。原失败与RED都保留，不能冒全integration或单轮10/10。隔离fixture清理恢复测试前状态，未残留自有资源。internal0.12.0 SHA f6f3588d0fe52e5b3eed57e117e25b991caabc9e2825d1a0edcf9149f6a3e26b，旧paths/components不变；IAM已正式提交并推送9d9bd18022ff4fdca595b81a533d9e090978aaa1，沿同一draft PR1接收；本轮放行BFF消费，Web后继与正常运行切换仍待完整依赖链。下方首冻与D0记录均是阶段历史，不覆盖当前接收状态。
+
 当前 D0 已形成 IAM 三设计前缀和 ADR-008，storage_platform_audit 独审无确定 P1/P2，可准入；Root 选择窄官方adapter生命周期保护而非接管完整grant，并补入官方Session续期/删除和cleanup协作。IAM 唯一源码writer runtime_audit 已进入实施，Root docs/ADR/CURRENT/Git独占，billing_scheduler_audit后继BFF/Web只读地图已接收，不允许消费未提交artifact。下方“待D0”记录是阶段历史，不能覆盖本段当前决定；设计门不等于源码/真实资源验收。
+
+首冻manifest d950cdb8/48paths已由Root逐hash与实际修改范围核对，保护集无意外；独审发现一个P2。Root真实PG/Redis首轮10/10止于setup：新scope service直接深比admin ACK与普通get-client回读，官方admin ACK额外client_credentials_scopes致成功PATCH被判unknown。批准唯一writer仅修新scope service/unit，独立严格核ACK credential scopes与持久事实后再规范化其他稳定字段，并以正规第三次登录形成真实多页测试；须新freeze/独审/资源复跑，业务barrier无PASS。原contract:breaking正常官方路径已exit0，既定旧baseline enum warnings保留；原失败日志留存。失败后自有fixture清理恢复测试前状态，正常运行不动，未发布IAM/BFF/Web新artifact。
 
 | SET18-IAM候选允许集（D0独审通过后） | 范围 |
 | --- | --- |
 | 新源 | auth/account-sessions/account-session.{controller,service,repository,schema}、account-session-cursor.{codec,schema}、account-session-lifecycle.repository；better-auth/account-session-adapter；oauth/clients/account-session-scope.{service,schema}（全部.ts） |
 | 现源接线 | auth.module、better-auth.config、internal-principal.types/internal-auth.guard、oauth.constants、oauth-client.schema/service、browser-authorization-scope.service（仅新完整pair保留）、expiry-cleanup.repository、provisioning.config/provisioning-app.module及scripts/provision-oauth |
 | 生成 / SDK 接线 | scripts/generate-contracts版本0.12.0、sdk/package版本/现生成链必要metadata、正常生成contract/openapi/vendor及sdk/src/api；现sdk/src/iam-client.ts、iam-client.types.ts、index.ts只接两新method/generated类型别名/export，transport/error不改；不手改generated/锁文件依赖 |
-| 测试 | 新unit/account-sessions、account-session-adapter、account-session-scope、account-session-cursor，integration/account-sessions；现internal-auth.guard/oauth-client.service/browser-authorization-scope、expiry-cleanup、oauth-session-lifecycle、契约/架构/SDK与internal-http-application fixture仅必要接线/版本断言。超出先报Root |
+| SDK strict增量（独审通过并准入） | storage_platform_audit独审无确定阻断，Root授唯一writer新普通sdk/src/account-session.schema.ts；从正常generated shape派生嵌套closed response，通过两新method的正规options.responseValidator在strip前验证原始JSON。list envelope/data/current_session/sessions元素/meta及revoke envelope/data全部strict；不改全局generator/transport/error/旧操作，不以strip冒strict。原未知字段RED保留，源码/测试另行验收 |
+| 测试 | 新unit/account-sessions、account-session-adapter、account-session-scope、account-session-cursor，integration/account-sessions；现internal-auth.guard/oauth-client.service/browser-authorization-scope、expiry-cleanup、oauth-session-lifecycle、契约/架构/SDK与internal-http-application fixture仅必要接线/版本断言；精确另批准integration/auth-expiry-cleanup/writer-invariant.test.ts两旧oracle与ADR008的tombstone/expired-parent拒绝对齐，保真实400/零新凭据与cleanup最终删除。超出先报Root |
 | 受保护 | Skills/连接器功能与文件、canonical Prisma/生成client/依赖锁、其他repo/正常服务/DB；node_modules已有链接保留；Root负责三设计/ADR/INDEX/CURRENT与Git、独立资源和最终验收 |
 | 工具/交付 | 固定Node24.20.0/owner pnpm12.3.4；先真实RED与原保留行为基线，再具名纯门；writer无资源测试/Git权，交exact允许路径/hash/log，Root冻结独审/关键复验与真实PG/Redis后才commit/pin/运行 |
 
@@ -17,7 +83,9 @@ Web三设计也已独审通过/doc-only `fa4fdd5b8a3a81b8349a224d7f6b7e28e813547
 
 IAM纯门工具接缝已核：pnpm12.3.4默认verifyDepsBeforeRun=install可能自动install，官方[build settings](https://pnpm.io/settings/build#verifydepsbeforerun)及本地config get证实单命令`PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN=warn`只告警不装且嵌套继承；不改repo/global配置/供应链policy/generator，锁与依赖hash仍须freeze后核。worker未冻结，局部候选测试不作为源码或integration通过。
 
-本地Account硬刷新后Owner/邮箱/user ID正常显示，原短暂loading未认定认证故障。PID11740/3311继续原SET17正式代码；本轮仅读取/导航，无重启/资源/偏好/Skills/连接器操作。
+Root只读预检现PostgreSQL与隔离Redis测试资源并留存private baseline；未启动新基础设施。固定Go1.26.8经正常官方proxy/sumdb成功准备原pinned oasdiff v1.28.0及正常go run --help，旧SET06B下载超时工具接缝恢复；writer强制GOPROXY=off仍触发Go deprecation metadata lookup失败，原exit1留存，不按green日志名算通过。冻结后Root用原contract:breaking及官方正常metadata路径复验，不改固定baseline/脚本/依赖锁。
+
+本地Account硬刷新后Owner/邮箱/user ID正常显示，原短暂loading未认定认证故障。正常运行继续原SET17正式代码；本轮仅读取/导航，无重启/资源/偏好/Skills/连接器操作。
 
 用户对辅助 Goal 的疑问已核原会话和截图：`Kokoro 设置只读验收与速度对照` 的任务明确以报告交付为完成条件，截图有 Goal 达成状态，故它没有承担持续实现职责。Root 完整设置 Goal 仍 active，报告不作为整体实现完成证据；后继实现子任务必须以具名功能、工程检查和实际浏览器验收闭环。未向用户拥有的旧辅助会话发送新指令。
 
