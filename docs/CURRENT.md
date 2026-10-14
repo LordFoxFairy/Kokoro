@@ -1,3 +1,103 @@
+## SET-19 正式消费者集成（2026-10-15；正常fresh浏览器验证进行中）
+
+Web已发行3ed206c26dd42df8b979c3b1cba8e9649e1c5a97；IAM c64faa7992301f31495e163d04049c48a23d0225、BFF a88e710d2201342200017f44c2bc34325937b5d0已正式齐备。Root apps三个原clean checkout均切精确上述对象；仅两现scope常量/测试在原15顺序末尾append write，真实RED1FAIL44PASS→GREEN45PASS及原15负控保持。准备commit精确gitlinks和正常fresh16scope启动，不以源码变动冒实际授权/保存已完成。
+
+Web冻结0f1644e6的64源/833原保护、875baseline和canonical BFF Gitblob由Root独立复核；终态只读独审无剩余确定P1/P2。175专项、282contract、50architecture与四生成/静态/build通过，Root真实Next HTTP4PASS。正确复用既有Redis9的正常全测202files/3759PASS/7FAIL/0SKIP；六原失败与R177的12/11在原保留checkout同条件复现，原失败输出不隐藏。Redis9 key集合0与10个PG数据库名称完整恢复。隔离normal Playwright14PASS/6此前同名desktop timeout/4SKIP，仍非全E2E绿；首轮漏Redis地址及copy symlink-root失败保留，正式config未修改。71显式路径发布，Skills/连接器功能与原语义oracle排除，仅mixed出处共享artifact更新。
+
+当前正常旧PID90830尚在运行；Root后继只替换本任务owned launcher，自建PG/Redis与他人实例不停止。先正常16项authorize→账户改名→權威GET→刷新→退出重新登录验证，再继续SET20团队与SET21数据/SET22帮助。Goal active，后台/纯门通过不冒整个设置完成。
+
+## 设置后续切片（2026-10-15；不停止在状态汇报）
+
+| 切片 | 当前事实 / 下一验收 |
+| --- | --- |
+| SET-19 姓名 | IAM c64与BFF a88正式后端通过；runtime_audit唯一Webwriter正在接显式保存/权威GET。Root负责正式gitlink/fresh16scope/真实CUA保存刷新重登。 |
+| SET-20 团队 | 两位只读Agent核现合同/五类写操作已存在；确定缺口为unknown再写、跨身份迟到、ACK目标不绑、有界生命周期/权限分页、Origin及EOF-only body。Root现旧三文件纯基线32PASS，不表示这些负控已覆盖；姓名完整接收后在现Web能力内收敛三D0并修补，不新增owner/合同/SQL。 |
+| SET-21 数据管理 | 采用后继BFF本人有效Conversation分享列表，独立query与closed安全投影，复用现停止分享并修正式ACK消费；暂无文件分享/归档/授权应用/云浏览器/域名合同，不造假空。BFF拥有Share，Web不存capability。后继先owner三D0/查询/正式contract，再Web，真实资源与浏览器逐项验收。 |
+| SET-22 获取帮助 | 开放本产品真实说明页及已实现路径说明，不伪造客服/反馈投递或转向Manus客服。与数据页Web后继同源职责落地，文案以已发行能力为准。 |
+
+Root实际CUA再次核Manus数据管理：已分享任务、已分享文件、已归档任务，授权应用/云浏览器数据/已购域名；当前已分享与归档为空，授权应用管理有真正独立空态。参考只读，不改Manus个人资料/授权或数据。Kokoro自身正式能力决定可用/不可用，不从参考空态推导自家数据为空。
+
+后继真实分享正向验证存在当前运行边界：正常Chat-off launcher在POST message前拒503 agent_not_configured，Web“新任务”只是本地ID，无正规空Conversation创建API。不能直接seed分享或拿本地ID冒完整创建。BFF现chat-facts测试seam可经正式HTTP message→share落真实PG，明确idle worker/受控身份，不冒正常Agent/model。Data本人列表可真实读空，但正向正常浏览器分享需已有本人持久化任务或后继正规执行链；该项保持具体未决，不阻当前姓名与团队修补、不扩大本片启动Agent/支付。
+
+## SET-19 后端已发行，Web姓名保存实现继续（2026-10-15）
+
+BFF a88e710d2201342200017f44c2bc34325937b5d0已正式commit/push，public15.2.0/145全文SHA256 3214e32d273fbc514db1c1f2307f7855b623f1f613fb1da710cc51d23c41f453，IAM正式c64/internal0.13消费精确。V2三文件修补独审无剩余确定P1/P2，27记录/621保护与原642tracked已核；Root冻结后108PASS。真实BFF→IAM→PostgreSQL十四请求通过保存/权威userinfo/no-op/CAS/权限/非法输入/撤销后401，自有资源集合恢复。首保存单样本97.76ms，不作为性能基准；默认BFF1304PASS/3原FAIL/3SKIP、check713PASS/2原FAIL、format7原警告保留。
+
+Web三D0与CURRENT现绑定该正式Git对象；Root准入runtime_audit为唯一源码writer，沿Web任务卡的四新普通源、既有账户读/route/UI、正常窄生成、九locale与具名测试实施。Next真实HTTP用例归现tests/system/product-bff-next-http.integration.test.ts；Root持有docs/Git/正常运行与资源。旧normal实例仍供学习，三owner正式齐备后才精确集成并fresh16scope启动，保存→刷新→重登由CUA验收。姓名页面、Team、Data/Help未完成，Goal保持active，不因后端交付停止；Skills/连接器排除。
+
+## SET-19-BFF 本人姓名 public adapter 任务卡（2026-10-14，D0 独审通过；源码准入）
+
+IAM正式owner已commit/push c64faa7992301f31495e163d04049c48a23d0225，internal/SDK0.13.0 SHA c22c55ef2b963a89ca3e03016138c2da74f5f005edf1b6ee8c5572daaf466262；V2独审/Root完整verify118files1488PASS、真实profile8/8与trusted3/40过滤通过，首冻CAS失败及实际SQL修复证据留存，资源收尾精确恢复。普通运行仍原IAM284bfd8；只有正式消费者齐备才切换，页面改名尚只读。
+
+本片D0三设计明确采用server raw canonical PATCH提前分派，profile独立route内调用原authorizeUserRequest/composition.sessionAdmission并从route入口起单10s预算；相比深改generic admission及所有return/meta分支更窄。outer catch只exact profile plain envelope。Root已核642tracked5399640基线；storage_platform_audit只读独审无确定P1/P2，billing_scheduler_audit只读地图核正式owner Git blob及生成/治理接缝。Root准入下表窄源码集，待freeze独审及实际owner验收，不将D0通过记为功能完成。
+
+| 项 | 决定 |
+| --- | --- |
+| P1 / 完成 | BFF本人name/expected_name真消费，closed ACK/权限/CAS/unknown，formal public15.2可供Web接线；不以BFF通过冒设置完成 |
+| 唯一 writer / reviewer | billing_scheduler_audit后继实现；storage_platform_audit只读D0/源码独审；Root三设计/任务/INDEX/Git/资源/发行 |
+| 基线 | settings-bff feat/settings-team-contract 53996400e4100ed5940b104f0dce139d44fec383 clean；public15.1/144 SHA5972f7be07a0117d8ee036fa4e742da7942b3c864d009c2847e70e69112a747d |
+| 新普通源 | http/account-profile-input.ts、http/routes/account-profile.ts；infrastructure/clients/iam-account-profile.ts与.types.ts（无新目录/module） |
+| 现源 | bootstrap/server.ts仅import/exact earlydispatch/最后plain错误兜底；原通用admission/mutation/businessStore/旧operation不改 |
+| 机器 / 正规生成 | canonical openapi/v1/openapi.yaml添加profile/closed components/version15.2；operation inventory追加1；新scripts/account-profile-public-contract.mjs独立inverse，现verify-openapi.ts/check-contract.mjs只最外层接线；IAM现config/generator/dependency manifest、唯一旧vendor284bfd8删新c64原字节、正常generated19项（旧18保持）；package脚本仅把新具名测试/format/governance追加 |
+| 测试 | 新account-profile-input/client .test.ts及profile-http/contract .test.mjs；现test/iam-protocol-relay-policy.test.ts与test/contract-governance.test.mjs仅当前IAM pin/provenance及新能力负控；现test/architecture.test.ts与test/contract/openapi-contract.test.mjs仅当前public版本/数量及新能力登记，先profile inverse再原历史门。额外准入现test/account-sessions-contract.test.mjs仅先恢复完整15.1/144再原SET18 inverse，原5f6/2e32摘要、141/144及全部旧negative保持。旧会话/Skills/连接器语义oracle不放宽，其他必要路径先报Root |
+| 验证 / 保护 | 先具名真实RED，后纯GREEN、normal contract/generation/lint/type/build/check；freeze路径/hash与其余原642tracked保护，Root复核/独审/必要纯复跑+实际BFF→IAM自有资源再发行。现旧check2/test3/format7失败不隐去，新增必须修；无依赖锁/DDL/资源/Git权限 |
+
+本轮用户询问菜单完成度，Root真实CUA核18侧栏入口仍9可选/9禁用、账户姓名只读、订阅为明确“暂无可购买的套餐”；不以可选入口或后台门冒功能完成。当前正常自有服务继续运行，不需用户补装依赖。billing_scheduler_audit沿上表进入BFF唯一源码实现；runtime_audit并行只读Web姓名adapter/身份退役/unknown恢复与正规生成地图，不授写源码或消费BFF候选。正常pin仍原组合，BFF正式发行后才进入Web三设计准入，Skills/连接器保持排除，完整Goal active。
+
+Web08125f9三D0已由Root收敛，875tracked原字节已保存；storage_platform_audit只读独审无确定P1/P2。正式BFF前置到达才授runtime_audit唯一Webwriter，普通四源及现account/profile route/权威读、完整final-session等值栅栏、显式保存/unknown重读沿WebCURRENT任务卡。当前仅四docs，无consumer源码或候选pin。Root同时准入本人姓名正常启动的两现有integration路径：scripts/e2e/run_web_bff_iam_oidc_smoke.py只PRODUCT_WEB_SCOPES原十五项末尾append profile write，scripts/tests/test_web_bff_iam_product_session_smoke.py固定16正控并加原15负控，原legacy及旧10/12/13负控保持。先真实RED再单常量GREEN；三owner正式提交后Root只更新精确gitlinks并正常fresh运行，不以改scope字符串冒实际授权。
+
+BFF首冻57ba96ff独审发现确定P2：合法expected_name旧escaped单码元被全局strict parser拒。Root授唯一writer仅本片input及两测试修补flat原文codec，保fatal UTF8/duplicate/closed与newname wellformed，不改global/旧API或机器contract。新freeze/复审后才真实HTTP/发行，正常实例保持原组合。Root scope新16正控先1FAIL/44PASS，单常量接线后45PASS；旧15新增负控与旧10/12/13保持，仍不冒正常fresh授权已验。
+
+## SET-19 本人姓名 owner 已通过源码与真实资源门（2026-10-14）
+
+V2 freeze manifest ebbcc97f（46 writer / 449原保护）经Root逐hash、原487tracked独立基线及精确修改范围核对；只3文件修复首冻CAS，独审无剩余确定P1/P2。原跨sid双200由实际SQL确认并修为typed单条user.update保最终id/name条件，沿原Tenant状态CAS既有范式；无新raw/User锁、Schema、隔离级别或依赖。原首冻1FAIL/7PASS和诊断保留，不能凭首冻纯门绿宣安全通过。
+
+Root正规完整pnpm verify exit0：118files1488PASS，format/lint/type、contract生成/check、固定历史baseline breaking、SDK生成check、canonical Prisma generate、服务/SDK build均通过。真实PG/Redis/HTTP本片8/8PASS：普通成员保存与userinfo新name、同sid及不同sid双原值读取一成功一409、no-op时间保持、Audit故障实际rollback、旧scope/refresh uplift/错client/机器/operator与调用者字段拒绝、重复key/坏UTF8/别名/超限、实际5秒不完整正文超时零service、撤销先/后下一请求401。改名先行屏障确认撤销进入repository；不额外冒实际锁等待指标或在途工作回滚。
+
+原trusted fixture具名3PASS/40过滤：新16scope官方与持久登记一致且新authorize可行，trusted=false原legacy及未登记scope拒绝，旧publisher/browser维护保完整后继事实，旧unknown阶段不发布。未运行全integration。每轮真实fixture/诊断关闭后Root实核数据库集合与Redis测试库key集合精确恢复起点；正常运行未启停或写入，用户页面仍姓名只读。
+
+internal及SDK正规0.13.0；canonical contract/openapi/iam.internal.v1.json SHA256 c22c55ef2b963a89ca3e03016138c2da74f5f005edf1b6ee8c5572daaf466262，0.12旧paths/components完整不变，唯一新增PATCH /internal/v1/account/profile。Root准备正式commit/push同一draft PR1后才放行BFF消费，再Web及fresh16scope正常运行/浏览器保存刷新。完整设置Goal仍active，Skills/连接器不改；本owner门不表示产品改名已可用。
+
+## SET-19 首冻真实并发失败与 typed CAS 修补（2026-10-14）
+
+首冻manifest4b20101c（46 source/449保护）Root逐hash及487原tracked baseline核无越界；正规完整verify118files1487PASS、format/lint/type/contract/breaking/sdk及service/SDK build0。但首轮真实PG/Redis8项7PASS1FAIL，不同sid同姓名原值竞争双200，未接受或发行。独审最初源码表面无P1/P2，随后真实证据明确P2，不能以pure绿放行。
+
+Root沿既有隔离fixture取真实最终SQL：updateMany预SELECT id/name后UPDATE仅id，两请求均200；updateManyAndReturn同样丢name谓词。typed单条user.update扩展WhereUnique实际最终UPDATE保id/name，确定双旧值读取屏障一提交一正规P2025。采用该最窄typed修补，不增加User/raw锁、SQL/schema/隔离级别/框架、scope/API/artifact变化，不以官方一般OCC例子冒当前compiler行为。P2025只捕获目标User更新，核当前User存在→409/缺失→401，其他依赖失败原映射。三设计同步；唯一writer仅repository/本片unit/native三文件修补与新增精确负控，旧[200,409]oracle保持。所有原失败/诊断保留，修后重新freeze/独审/完整verify/真实HTTP。自建首轮资源已清，基线10数据库/3Redis key精确恢复，正常实例不动。
+
+## SET-19 账户姓名与数据/帮助后继盘点（2026-10-14）
+
+### SET-19-IAM 姓名 owner 三设计与实现任务卡
+
+上一Goal turn完成IAM/BFF两只读盘点并实核当前18入口/9禁用，得到姓名缺正式写及share receipt错配的确定证据，按progress处理，不重复SET18设备成功。当前IAM284bfd8仅原untracked node_modules；Root独占新SET19四docs，其他tracked clean。三设计当前前缀已收敛唯一IAM姓名owner、PATCH/原值CAS/同Session锁/审计rollback/专用scope精确演进；独立storage_platform_audit先只读审查D0，源码未授。完整目标与Skills/连接器排除保持。
+
+| 项 | 决定 |
+| --- | --- |
+| 目标 / P1 | 姓名真保存、权限/冲突/失败明确；owner发行后BFF再Web，正常保存→刷新最终验收，不以本IAM门冒页面已完成 |
+| 基线 / 执行 | IAM fix/product-web-fixture-scopes 284bfd8fea91d57dae18fa2b7c772d75c7b6dcd9；runtime_audit负责实现，storage_platform_audit只读审查；沿现native角色，不创建用户新会话 |
+| Root独占 | IAM TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT、ADR/INDEX/任务/Git、运行和真实资源；源码writer不可改共享docs/Git/index/服务/数据 |
+| 新普通源 | auth/account-profile四controller/schema/service/repository；oauth/clients/account-profile-scope service/schema；sdk/src/account-profile.schema.ts仅新generated closed验证 |
+| 现源 | auth.module、internal guard/principal闭集、oauth.constants/provider scopes、oauth-client.schema/service精确图、browser授权snapshot具名接缝改名及account-session-scope旧reader跟进、application.setup局部PATCH早期no-store/严格body；provisioning config/app与scripts/provision-oauth具名命令；原trusted fixture新scope演进 |
+| 合同 / 生成 | scripts/generate-contracts只目标0.13正规生成；contract/openapi唯一internal artifact、正常SDKgenerated及sdk package版本/现iam-client/types/index接线；锁/deps/vendor/Prisma/schema/其他合同原字节 |
+| 新测试 | unit/account-profile具名schema/service/scope；integration/account-profile具名真实用例与锁序；contract/account-profile.openapi；SDK新方法负控可扩现unit/sdk/iam-client.test.ts；不新资源runner/通用fixture |
+| 现测试 | internal guard、provisioning config/provision-oauth、browser/account-session scope、oauth-client service、trusted scope integration、原internal/三个version contract断言仅正规版本接线；现test/architecture/iam-2a-boundaries.test.ts仅登记四profile和两scope新增文件/能力及具名controller；sdk-boundaries.test.ts仅登记新generated-derived schema，其余规则/原oracle保持。两architecture精确目录闭集Root已实核后补授；发现其他必要oracle/newfailure先报告，不放宽旧语义 |
+| 验证 / 冻结 | 具名RED→GREEN、固定Node24/Pnpm12纯门；全verify/contract/sdk/build与真实资源由Root冻结后验；writer交exactpath/hash/log与其余tracked保护，不Git，不隐式install；Root复核/独审/正式发行 |
+
+D0参数与失败语义以IAM三设计当前SET19为准，未决为实现门真实输出而非未决定的API。storage_platform_audit已绑定IAM284bfd8+三D0工作树完成只读审查，无确定P1/P2；Root据此放行runtime_audit为唯一源码writer，沿上表与IAMCURRENT准入集实施。Root冻结后独审/真实资源/完整门与正式发行仍须逐步完成，不把设计审查当实现验收。若实现需要额外文件/更改scope维护职责/新raw SQL或放宽旧合同，先报Root裁决。用户无需为本片下载依赖或提供数据；正常实例保持供学习。
+
+IAM实现期间，billing_scheduler_audit只读BFF5399640后继消费闭集：沿现account owner client/普通route，Root预定PATCH /v1/account/profile与无传输metadata的成功/错误envelope、same Product bearer/subject binding、有限总预算/closed raw ACK；检查现Admission/JSON/error边界需要的最窄接线。只交source地图/确定缺口，不写BFF文档/源码/Git/资源，不消费未发行IAM树；Root保总体裁决，owner正式发行后才收敛BFF三设计并授写。
+
+BFF只读交付已核：Profile须在generic PATCH Idempotency-Key/businessStore管道前具名分发，deadline在Admission前建立并贯穿body/owner/readresponse，不能复制Session admission后另起5s。复用现strictParseRawJson拒坏UTF8/重复键；现requestBodyJson宽松不可复用。Admission失败无meta分支及最外层catch均需仅exact profile闭集投影，request ID只header；普通旧API保持。候选仅新iam-account-profile client/types、account-profile-input及普通route、现bootstrap.server局部接缝，正规IAM生成pin与public15.2后继；尚未授BFF写入。
+
+上一轮为真实 progress：设备无正文 DELETE 的实际400已修，Web10027a1/正常Root3386153的 CUA撤销/权威重读和未到期在线401已验收；不再重复这条已完成链路。当前 Root c50b924c、Web08125f9、BFF5399640、IAM284bfd8均clean；正常实例继续存活，完整Goal保持active，Skills/连接器明确排除。
+
+本轮独立工作面：runtime_audit只读IAM本人姓名owner/正式合同与最窄写边界，基线IAM284bfd8，仅调查，不写源码/文档/Git/资源；billing_scheduler_audit只读Web数据管理/帮助现入口、已有可复用能力与官方Manus文档，基线Web08125f9，同样只调查。Root保留Manus/CUA对照、总体设计/三设计门裁决、Root任务表/Git及正常资源。交付须绑定实际目录/提交与确定API或缺口；不得通过vendor cookie routes绕过Product Bearer、缓存本地改名或假邮件/假导出冒成功。根据调查选单一owner进入D0，跨owner契约先发行再串行消费，未授权任何实现或共享资源重启。
+
+两只读盘点已交付。IAM284bfd8没有正式Bearer本人姓名写operation；现User.name为唯一事实，正式userinfo重新查询User，vendor update-user未开放且不是可供Product消费的合同。后继选择AuthModule内具名account-profile能力，复用现本人准入、Session锁和Audit，不新身份表或转发issuer Cookie；Root仍须收敛姓名输入、并发与scope演进及三设计后才授源码。
+
+BFF5399640已有本人conversation分享创建/撤销和持久share事实，但无本人分享列表；Conversation仅active/deleted，无归档状态/操作。确定客户端错配为BFF撤销ACK data={share_id}、Web旧consumer按{ok:true}解析，后继复用前应纠正真实receipt。已分享文件、授权应用、云浏览器数据和购买域名无当前正式public能力；不以session/library/localStorage冒这些事实，也不显示假空态。Help可先为本产品真实能力说明，不连接Manus客服或假反馈。
+
+用户状态询问时，Root实际CUA核当前正常订阅页：18个侧栏入口，9个可选、9个disabled；订阅正文为“暂无可购买的套餐”，不是loading/错误。可选数含Skills/连接器，并不代表九项全功能已验收。正常自有实例仍运行；本轮未重启、改源码/数据或依赖。整套Goal仍active，账户姓名正式写与本人分享管理为下一可实现切片，团队写/支付/通知全流程仍未验收；云电脑等按既定范围禁用，不把它们计为必须实现的阻塞。
+
 ## SET-18 正常设备撤销已验收（2026-10-14）
 
 Web10027a1ba7cd7477b5012a1124a7a98d35cf4aea已由Root3386153eff8eac2797f3203848cd073b8de27894正常集成。selected-owner exact guard、fresh install/build/ready、匿名login302与十五scope通过；仅替换原 owned fixture，两个自有临时数据库和目录清理已核，其它数据库保持。实际 CUA 当前会话只读，另一正规新登录会话确认退出→真实ACK→权威relist移除，当前和bootstrap会话保持；该被退出cookie随后访问account list与Product identity均401，距新登录95.66秒小于正式IAM300秒access寿命，排除自然到期。单次本地HTTP列表241.66ms，拒绝57.6/28.45ms，不当性能基准。截图和凭据/机器收据只保私有本地。整套设置Goal仍active，后继账户编辑、团队写入、数据管理/帮助与真实任务通知仍待；Skills/连接器不改。
