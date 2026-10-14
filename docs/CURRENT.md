@@ -1,3 +1,11 @@
+## SET25 模型偏好与浏览器等待修复已接收，SET26接续（2026-10-15）
+
+Web正式a9183585ab403797f79b522aedb120de562a64e9沿原设置功能分支推进：模型偏好存储失败保原raw/cache、真实保存反馈与手动重试；目录单10s caller预算、明确加载/错误/真实空、布局身份退役防迟到覆盖。五处浏览器等待采用可交互输入断言，原业务oracle/fixture/timeout不变。原chat深链保留，General和Skills/连接器不扩写。Root独核13writer/919保护/Root7、旧61prefix与逆变换，冻结独审无确定P1/P2，原源码真实2FAIL/65SKIP、终态专项138PASS，contract283/architecture50/lint/type/build通过。
+
+完整test3933PASS/6既有FAIL/0SKIP；正规隔离Playwright18PASS/2FAIL/4SKIP、35.3s。此前六networkidle未触达业务的桌面用例现在四通过（logout、stream、approve/reject），两项真实进入390px阅读轴断言后发现几何偏移，尚未修；不能冒称此前未触达的几何失败已确定为原有。各轮PG/Redis库存exact恢复；正常IAM/CUA账户保存/刷新/重登、团队和分享旅程仍待被策略拒绝的错误页人工恢复，源代码回归不替代正常浏览器验收。现同owned Next dev重编译接入，不替换launcher/共享基础设施，完整设置Goal active。
+
+SET26候选独审无确定阻断P1/P2，沿现Web Billing/Pricing/settings消费接缝补可信preview/admitted/subject/generation和client退役、局部目录投影及单10s fetch/body/caller等待；不改全局QueryStore、支付checkout、owner契约或Skills/连接器。缺少可信登录资格暂停读、旧余额/预览目录隐藏，源准入将在新正式基线D0及真实tests-only RED后授予。侧栏独立余额也缺generation，暂列后继，不宣全部余额边界已修。个性化参考页知识/记忆导入禁用展示差异另续，不假实现导入。
+
 ## SET24 退出失败恢复已集成，SET25接续（2026-10-15）
 
 Web6921a1cbffd723fc37c4cc64342bb3a6f89369a1沿同功能PR14接收，正常Web checkout clean精确更新；BFF eec324/IAMc64及其余owner不动。仅现AccountCard单10s总预算、同步重复护栏、完整身份/permission/preview退役与导航guard；拒绝或timeout明确无法确认退出并允许原按钮显式重试，不假成功或自动再POST，正规issuer/503 handoff与原auth client保持。profile不构成退出前置，九locale仅一键。
