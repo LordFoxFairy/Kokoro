@@ -1,18 +1,26 @@
+## SET-20 团队恢复继续（2026-10-15；真实行为RED复现，源码实现进行中）
+
+Web3ed/901 tracked原字节已保存，Root仅四设计/任务文首修改，897其他tracked原字节保护已核。SET20三设计已独审无确定P1/P2；runtime_audit四具名真实行为RED28FAIL/55PASS，原52oracle独立PASS；Root固定Node22/pnpm11实际复现相同28FAIL/55PASS，现授同一卡源实现，不将原三测试32PASS当新缺口已覆盖。实际Team429头可缺省，存在1..99999，503不声明；原文校验接在现teamTransport而非手改generated。
+
+正常SET19已由Root599433db精确集成，owned launcher新实例ready，fresh login302及原15前缀追加第16scope逐项核验；Web3ed/BFFa88/IAMc64保持正常运行。旧浏览器断线标签当前为被禁止data协议，CUA刷新及HTTP跳转均被安全策略拒绝；已请用户手动恢复HTTP，未绕过拒绝，保存/刷新/重登浏览器门尚未通过。仅浏览器验证待恢复，不停止独立Team修补与Data只读准备，Skills/连接器排除，完整Goal active。
+
+后继SET21 BFF四D0已按既有cursor/索引/合法HTTP事实收敛并独审无确定P1/P2；只有project_ref IS NULL可无父、空串也须匹配本人有效Project。新GET安全四字段、单有界SQL，无新secret/DDL；仍待当前Web接收后另授，尚不写另一个owner或启动额外共享资源。Root继续保留Git/docs/正常服务和真实浏览器职责。
+
 ## SET-19 正式消费者集成（2026-10-15；正常fresh浏览器验证进行中）
 
-Web已发行3ed206c26dd42df8b979c3b1cba8e9649e1c5a97；IAM c64faa7992301f31495e163d04049c48a23d0225、BFF a88e710d2201342200017f44c2bc34325937b5d0已正式齐备。Root apps三个原clean checkout均切精确上述对象；仅两现scope常量/测试在原15顺序末尾append write，真实RED1FAIL44PASS→GREEN45PASS及原15负控保持。准备commit精确gitlinks和正常fresh16scope启动，不以源码变动冒实际授权/保存已完成。
+Web已发行3ed206c26dd42df8b979c3b1cba8e9649e1c5a97；IAM c64faa7992301f31495e163d04049c48a23d0225、BFF a88e710d2201342200017f44c2bc34325937b5d0已正式齐备。Root599433db的apps三个clean checkout/gitlinks已精确接收；两现scope常量/测试在原15顺序末尾append write，真实RED1FAIL44PASS→GREEN45PASS及原15负控保持。正常新组合ready且fresh302逐项16scope通过；真实浏览器保存刷新重登仍未通过，不以授权或后台门冒UI旅程完成。
 
 Web冻结0f1644e6的64源/833原保护、875baseline和canonical BFF Gitblob由Root独立复核；终态只读独审无剩余确定P1/P2。175专项、282contract、50architecture与四生成/静态/build通过，Root真实Next HTTP4PASS。正确复用既有Redis9的正常全测202files/3759PASS/7FAIL/0SKIP；六原失败与R177的12/11在原保留checkout同条件复现，原失败输出不隐藏。Redis9 key集合0与10个PG数据库名称完整恢复。隔离normal Playwright14PASS/6此前同名desktop timeout/4SKIP，仍非全E2E绿；首轮漏Redis地址及copy symlink-root失败保留，正式config未修改。71显式路径发布，Skills/连接器功能与原语义oracle排除，仅mixed出处共享artifact更新。
 
-当前正常旧PID90830尚在运行；Root后继只替换本任务owned launcher，自建PG/Redis与他人实例不停止。先正常16项authorize→账户改名→權威GET→刷新→退出重新登录验证，再继续SET20团队与SET21数据/SET22帮助。Goal active，后台/纯门通过不冒整个设置完成。
+Root已核exact argv并SIGINT退役旧owned launcher，再启动正常新组合；首轮漏本地URL环境的失败日志保留，补环境后ready。只替换本任务实例，共享PG/Redis与他人实例未停止。浏览器旧断线data页由安全策略阻止刷新/跳转，已请用户手动恢复HTTP，待正常16scope登录→账户改名→权威GET→刷新→退出重登。独立SET20团队及SET21/22准备持续推进，Goal active。
 
 ## 设置后续切片（2026-10-15；不停止在状态汇报）
 
 | 切片 | 当前事实 / 下一验收 |
 | --- | --- |
-| SET-19 姓名 | IAM c64与BFF a88正式后端通过；runtime_audit唯一Webwriter正在接显式保存/权威GET。Root负责正式gitlink/fresh16scope/真实CUA保存刷新重登。 |
-| SET-20 团队 | 两位只读Agent核现合同/五类写操作已存在；确定缺口为unknown再写、跨身份迟到、ACK目标不绑、有界生命周期/权限分页、Origin及EOF-only body。Root现旧三文件纯基线32PASS，不表示这些负控已覆盖；姓名完整接收后在现Web能力内收敛三D0并修补，不新增owner/合同/SQL。 |
-| SET-21 数据管理 | 采用后继BFF本人有效Conversation分享列表，独立query与closed安全投影，复用现停止分享并修正式ACK消费；暂无文件分享/归档/授权应用/云浏览器/域名合同，不造假空。BFF拥有Share，Web不存capability。后继先owner三D0/查询/正式contract，再Web，真实资源与浏览器逐项验收。 |
+| SET-19 姓名 | Web3ed/BFFa88/IAMc64正式接入Root599及正常ready16scope；源码/后台真实保存已过，真实CUA保存刷新重登待浏览器HTTP恢复。 |
+| SET-20 团队 | 现九operation/六mutation保持；四文件真实28FAIL/55PASS已由Root在固定Node22.22.2和不可变3ed私有副本独立复现，runtime_audit沿D0精确范围修补unknown再写、跨身份迟到、ACK绑定、单预算/有界分页、Origin及EOF-only，未新增owner/合同/SQL。 |
+| SET-21 数据管理 | BFF四D0已独审，拟本人有效Conversation分享GET/15.3/146，scope-bound可编辑cursor、安全四字段、单有界query；无新secret/DDL，待当前Web接收后另授。之后Web复用停止分享并修正式ACK。文件分享/归档/授权应用/云浏览器/域名暂无正式能力，不造假空。 |
 | SET-22 获取帮助 | 开放本产品真实说明页及已实现路径说明，不伪造客服/反馈投递或转向Manus客服。与数据页Web后继同源职责落地，文案以已发行能力为准。 |
 
 Root实际CUA再次核Manus数据管理：已分享任务、已分享文件、已归档任务，授权应用/云浏览器数据/已购域名；当前已分享与归档为空，授权应用管理有真正独立空态。参考只读，不改Manus个人资料/授权或数据。Kokoro自身正式能力决定可用/不可用，不从参考空态推导自家数据为空。
