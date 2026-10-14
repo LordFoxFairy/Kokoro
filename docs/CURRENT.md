@@ -1,3 +1,9 @@
+## SET30 不可用说明已接收，SET31继续（2026-10-15）
+
+Web dc26502bfa47ba0c22422623118b455d46644be0：七个灰菜单旁显示不可用说明，并实例useId关联；账户production FieldDescription明确更改邮箱/登录方式/删除三操作暂不可用，preview仍原示例语义。原三按钮禁用、nav数组/过滤/焦点/顺序、姓名/复制ID/devices/logout/全部dialogs原逻辑精确inverse；12source/920保护含所有tests/Root7，九语言只增加两key。窄于48rem导航说明sr-only，不冒称窄屏视觉可见。独审无确定P1/P2，focused81/contract283/arch50/lint/type/build0，i18n99PASS2旧FAIL。
+
+终态完整test3973PASS/10此前具名FAIL/0SKIP，208.59s；工程Playwright20PASS/0FAIL/4原SKIP，20.1s，库存exact恢复。正常认证Browser/i18n/原生登录等旧门仍未閉环，整Goal active；接续SET31仅现runtime hook退休dispatch/commit负控，不放宽AppGate或R175/R177原native计数。Skills/连接器业务仍排除。
+
 ## SET29 账户侧栏余额已接收，SET30继续（2026-10-15）
 
 Web 0ab7bfaedf7425332049f5f867bcec79fccd285c：沿现可信readBoundary传入余额组件，同subject撤准入/换generation同步隐藏旧余额并取消原请求，非合作迟到/A-B-A不复活；marker只附加一致性guard。preview/BigInt/失败—及admin/menu/signout/通知原子树保持，4源码+1原test/927保护/Root7、原73全文逆核及一处new suffix type-only例外独核；实际原source14FAIL76PASS90，终态90PASS，独审无确定P1/P2，contract283/architecture50/lint/type/build0。
