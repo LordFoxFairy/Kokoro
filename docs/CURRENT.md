@@ -1,4 +1,14 @@
-## SET-20 团队恢复继续（2026-10-15；真实行为RED复现，源码实现进行中）
+## SET-20 源码已接收，正常集成继续（2026-10-15）
+
+Web正式26695df038ea5a5d5f45e652c8bef789f0271db0已提交推送，同一draft PR14持续更新。Root a9db2ed1已精确接收Web gitlink，BFFa88/IAMc64及其他owner保持。V2独审无剩余确定P1/P2，Root逐hash核25writer/875保护及唯一client/test重定向窄修；174专项、真实Next HTTP5项、原生自有HTTP GET307/308两项与最终build通过。原52业务oracle独立通过，contract282/architecture50及lint/type通过。源码接收不冒正常浏览器门通过。
+
+完整normal两轮3833PASS/8FAIL、3830PASS/11FAIL，原输出保留；五个波动系统项隔离分轮3PASS+2PASS，原3ed对照5PASS，不声称完整suite成功或已确定首轮失败根因。Playwright14PASS/6此前同名桌面超时/4SKIP；测试Redis key和PostgreSQL库名集合精确恢复。只替本任务owned launcher运行新正式组合，共享实例保持；CUA旧data断线页仍待人工恢复，独立工作继续。
+
+SET21 D0独审通过，billing_scheduler_audit现仅两新HTTP/机器tests-only获得真实缺口RED，尚未授源码、机器契约或SQL修改。Root保留docs/Git/正常服务和实际资源验收。完整设置Goal active，Skills/连接器排除。
+
+以下首轮SET20源码准入记录作为历史保留，当前状态以上述正式提交和验收为准。
+
+## SET-20 团队恢复继续（2026-10-15；真实行为RED复现，源码准入历史）
 
 Web3ed/901 tracked原字节已保存，Root仅四设计/任务文首修改，897其他tracked原字节保护已核。SET20三设计已独审无确定P1/P2；runtime_audit四具名真实行为RED28FAIL/55PASS，原52oracle独立PASS；Root固定Node22/pnpm11实际复现相同28FAIL/55PASS，现授同一卡源实现，不将原三测试32PASS当新缺口已覆盖。实际Team429头可缺省，存在1..99999，503不声明；原文校验接在现teamTransport而非手改generated。
 
@@ -19,8 +29,8 @@ Root已核exact argv并SIGINT退役旧owned launcher，再启动正常新组合�
 | 切片 | 当前事实 / 下一验收 |
 | --- | --- |
 | SET-19 姓名 | Web3ed/BFFa88/IAMc64正式接入Root599及正常ready16scope；源码/后台真实保存已过，真实CUA保存刷新重登待浏览器HTTP恢复。 |
-| SET-20 团队 | 现九operation/六mutation保持；四文件真实28FAIL/55PASS已由Root在固定Node22.22.2和不可变3ed私有副本独立复现，runtime_audit沿D0精确范围修补unknown再写、跨身份迟到、ACK绑定、单预算/有界分页、Origin及EOF-only，未新增owner/合同/SQL。 |
-| SET-21 数据管理 | BFF四D0已独审，拟本人有效Conversation分享GET/15.3/146，scope-bound可编辑cursor、安全四字段、单有界query；无新secret/DDL，待当前Web接收后另授。之后Web复用停止分享并修正式ACK。文件分享/归档/授权应用/云浏览器/域名暂无正式能力，不造假空。 |
+| SET-20 团队 | Web26695df正式源码已接收，174专项/5实际HTTP/2原生GETredirect及build通过，full/E2E原失败和波动保留；Root正常精确集成继续，CUA待HTTP恢复。九operation/六mutation、owner/合同/SQL保持。 |
+| SET-21 数据管理 | BFF四D0已独审，现两具名tests-only真RED阶段，之后source/机器另授；拟本人有效Conversation分享GET/15.3/146、安全四字段/有界query，无新secret/DDL。Web随后复用停止分享并修正式ACK；其他区暂无正式能力，禁用而不造假空。 |
 | SET-22 获取帮助 | 开放本产品真实说明页及已实现路径说明，不伪造客服/反馈投递或转向Manus客服。与数据页Web后继同源职责落地，文案以已发行能力为准。 |
 
 Root实际CUA再次核Manus数据管理：已分享任务、已分享文件、已归档任务，授权应用/云浏览器数据/已购域名；当前已分享与归档为空，授权应用管理有真正独立空态。参考只读，不改Manus个人资料/授权或数据。Kokoro自身正式能力决定可用/不可用，不从参考空态推导自家数据为空。
