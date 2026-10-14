@@ -1,3 +1,37 @@
+## SET21/22 正式代码接收与SET23继续（2026-10-15）
+
+Web293ac84d7b2b6562b73e46c56436aadc4c1c2e3b已提交/推送至同一PR14，BFF eec3244645d5129407147774ecb07e03848420c4已提交/推送至同一PR5；正常checkout两clean detached gitlink精确接收，IAMc64及其他owner保持。Data/Help正式入口与分享正规ACK接线，非任务分享能力禁用而非伪空。原四核心RED4FAIL→冻结152专项PASS，独审无确定P1/P2；contract283/architecture50、lint/type/build及真实Next七例通过。真实Next/Redis＋替身BFF不是正常IAM/PG页面旅程。正确配置全测3912PASS/7此前失败/0SKIP，隔离正常Playwright14PASS/6此前desktop timeout/4SKIP，完整门非全绿；PG/Redis测试资源均exact恢复。正常运行将仅替换本任务launcher，不动共享基础设施，浏览器正常旅程仍待验。
+
+SET23沿正式Web293/939原tracked，仅现主题/语言Provider与AppearanceCard局部修补；独立D0审查无确定P1/P2。七Root文档已收敛，无新owner/API/依赖/store。runtime_audit先唯一tests-only追加三个真实保存失败case，Root复现RED后才授三现source与九locale。各Provider仅显式setItem失败保对应内存错误，显示本次已生效/未保存/刷新可恢复，明确重试成功只清自身错误；保原key/值/SSR/协商/system/IAMlang。快捷键已有失败反馈不重复改；Skills/连接器排除。完整Goal保持active，接入当前切片后继续后继。
+
+## SET21/22 Next fixture 实际依赖解析缺口与V3窄准入
+
+V2实际原7门两个beforeAll未达401，7SKIP/exit1，PG10库与Redis9键集合前后exact。Root私有Module._load诊断捕获Next所吞MODULE_NOT_FOUND @swc/helpers/_/_interop_require_default，实际middleware.js存在、Next正式0.5.15已安装、项目顶层该包缺；不是业务handler失败。原几轮首5与新2波动历史保留，不再归咎PNPM/PATH。
+
+仅两个scratch fixture依赖接线由whole node_modules symlink换独立目录、现有顶层/scoped包逐realpath链接，并从该Next所属pnpm依赖目录精确链接已安装@swc/helpers；不安装/复制/改package或lock、shared node_modules、NODE_PATH/loader。Root隔离副本真实同原七oracle全部7PASS/13.69s，PG/Redis前后exact，诊断插件未用于该GREEN。现授runtime_audit仅同一Next测试startup依赖helper和两调用，保V2严格401、drain、20s和旧5/第二2 body逐字、其余76源码及855保护、7文档hash；V3冻结独审/Root正规原路径实际7后才接收。完整Goal active。
+
+## SET21 首冻实际 Next 门与启动fixture窄修
+
+首冻e470源77/保护855/Root7逐hash及正式BFF原Gitblob由Root独核，152专项独立PASS，源码独审无确定P1/P2。实际Next新增stored-session两case PASS，原五case full执行得到Next edge-server“Cannot find the middleware module”500，资源完整恢复；首轮、未改重跑及精确环境诊断保留。过滤原五case多轮独立PASS，PNPM/PATH单因子不足以证明根因，不能伪称已修配置或将全组失败豁免。
+
+已确认旧setup使用status>0把500当ready。现仅授runtime_audit修改该同一Next测试文件原第一describe startup片段：必须原匿名会话列表真正401才ready，保持有界等待并消费自有pipe如必要；原五case body/期待值和deadRedis、第二两正向case以及其余76 writer路径原hash保持。本例旧整个Next前缀字节证明为首冻历史，V2需对准入startup逆变换后完整原字节/原五业务oracle复核，不假称现全文前缀未变。Root仍独占资源/Git/正常运行；V2独审、实际七case及全门尚待，完整Goal active。
+
+## 设置后继优先项：通用偏好持久化反馈（只读确认，尚未授写）
+
+billing_scheduler_audit 以 Web26695df 原基线只读核查，Root 已实读两 Provider 和 AppearanceCard：语言/主题先更新本次内存值，localStorage.setItem 异常被吞，当前选择生效但刷新会回到原持久值，没有“仅本次生效，未保存”反馈；不存在虚假已保存徽标，不能夸大成整体不可用。快捷键已有真实保存异常反馈及失败不发布测试，撤销该项缺口推测。
+
+SET21/22 当前唯一 writer 先完成冻结、独审、实际 Next 和正式接收；后继才以新正式 Web SHA 开 SET23 文档门。候选仅沿现 theme-context.tsx、i18n/context.tsx、appearance-card.tsx、九语言追加及现 settings-modal 行为测试：Provider 分别保本次保存失败状态，界面明确本次生效/未持久，允许明确重试保存当前值，成功仅清对应失败状态；原 key/值、SSR/系统主题、语言协商和其他设置保持，无新 API/owner/依赖或通用存储框架。具名真实 storage 失败 RED、旧存储保持、立即生效、重挂恢复原值、重试成功及下次重挂新值为后继验收，当前未运行或授写。Skills/连接器排除，完整 Goal active。
+
+## SET21/22 修正菜单操作后的原源码 RED（2026-10-15）
+
+Root 已将稳定的两份行为测试置于原266源码私有副本，其他902原 tracked 字节逐 hash 保持。固定 Node22 实际51项47PASS/4断言FAIL，exit1：正式 share_id 撤销回执被拒、旧 ok:true 被接受、Data/Help 可选择 tab 尚不存在。测试使用真实 settings-tab 控件及 Enter，不再以错误 role=button 断言导航；最初日志原样保留，不能当作准确交互依据。终态 GREEN 仍待完整实现冻结。Root 另独占三份相邻 INDEX 的本片职责追加，原内容保持；writer 保护集合需排除这三 INDEX 与原四 Root 文档。正常服务保持，完整 Goal active。
+
+## SET-21 分享列表 owner 已发行，Web Data/Help继续（2026-10-15）
+
+BFF eec3244645d5129407147774ecb07e03848420c4已沿现功能分支/同一draft PR5正式提交推送，public15.3.0/146 SHA256694251d4f4c1bcc9a79ae4fd2d4c050c87a0a8af39bea0a9f0bed3a4dcae5ad5。冻结24 source/631保护由Root逐hash接收并独审，Root83专项/build及真实HTTP→PG创建/分享/分页/撤销/public404/legacy保真/零读写通过。自有query锁150.94ms到期后同pool恢复，实际EXPLAIN与合成25样本p50 1.87ms/p95 3.12ms（只repository非UI/生产）。10数据库及测试Redis零key起点恢复，未停止正常服务；旧contract/default/architecture/format失败保留。
+
+Web26695df/904基线四D0已窄独审一致；正式owner到达后现只授两现test真实RED，随后同任务卡source/正常generated、独审与实际Next HTTP、正常激活/CUA逐步完成。Root实际Manus CUA确认Data为同页三段＋三管理行，当前仅任务分享可接，其他禁用非伪空，Help为本产品真实说明。正常服务仍SET20组合，浏览器旧data断线标签未人工恢复；不绕过策略也不停止独立实现，Skills/连接器排除，完整Goal active。
+
 ## SET-20 正常组合已激活，SET-21 分享列表实现继续（2026-10-15）
 
 Root7d7c6b64精确Web26695df/BFFa88/IAMc64已正常启动；实际anonymous /login302、fresh有序16scope及完整authorize→真实凭据表单链通过，匿名profile401。仅精确核argv后SIGINT退役本任务旧launcher，其日志确认自有资源已移除；共享实例未停。CUA旧data断线页未人工恢复，保存/刷新/重登和Team旅程仍未通过，独立实现继续。
