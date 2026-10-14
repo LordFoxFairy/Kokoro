@@ -1,3 +1,9 @@
+## SET26 可信用量与套餐读取已接收，SET27接续（2026-10-15）
+
+Web 91fb1aee87df9e6dc0acadcdda4db5375623a13a：用量与套餐显式可信scope/client退役，未准入暂停并同步隐藏旧投影；目录局部状态/单10s/明确重试，正式plans真实reader取消释放锁，checkout与其他owner保持。原真实readerP2已由独立负控复现并修复，V2独审无确定P1/P2；Root原源码最终11FAIL复现、终态178专项PASS，contract283/architecture50/lint/type/build通过。
+
+完整test3956PASS/10此前具名FAIL/0SKIP，200.11s；包含六持续UI/i18n及四历史原生登录波动，不虚称完整门绿。隔离Playwright18PASS/2阅读轴FAIL/4SKIP，35.6s，PG/Redis库存完整恢复。正常设置认证浏览器旅程仍待人工恢复错误页。整设置Goal继续active；接个性化可见但明确禁用知识/导入入口，原四字段保存/恢复保持；侧栏余额可信generation与原生认证稳定性、窄屏布局另续，Skills/连接器排除。
+
 ## SET25 模型偏好与浏览器等待修复已接收，SET26接续（2026-10-15）
 
 Web正式a9183585ab403797f79b522aedb120de562a64e9沿原设置功能分支推进：模型偏好存储失败保原raw/cache、真实保存反馈与手动重试；目录单10s caller预算、明确加载/错误/真实空、布局身份退役防迟到覆盖。五处浏览器等待采用可交互输入断言，原业务oracle/fixture/timeout不变。原chat深链保留，General和Skills/连接器不扩写。Root独核13writer/919保护/Root7、旧61prefix与逆变换，冻结独审无确定P1/P2，原源码真实2FAIL/65SKIP、终态专项138PASS，contract283/architecture50/lint/type/build通过。
