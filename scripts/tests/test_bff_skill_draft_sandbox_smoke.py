@@ -915,17 +915,18 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertEqual(catalog[0]["scope"], "platform:skill-catalog.manage")
         self.assertEqual(
             projection,
-            [
-                {
-                    "generation": 1,
-                    "credentialRefVersion": "sandbox-v1",
-                    "tenantId": "tenant-one",
-                    "clientId": "projection",
-                    "clientSecret": "projection-secret",
-                    "resource": "https://kokoro.dev/resources/platform-internal",
-                    "scope": "platform:projection.read",
-                }
-            ],
+            {
+                "version": 1,
+                "entries": [
+                    {
+                        "credential_id": "bff-projection",
+                        "secret": "projection-secret",
+                        "caller": "kokoro-bff",
+                        "surfaces": ["projection"],
+                        "tenant_id": "tenant-one",
+                    }
+                ],
+            },
         )
         self.assertEqual(
             execution[0]["resource"], "https://kokoro.dev/resources/iam-internal"
@@ -934,12 +935,12 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertEqual(execution[0]["clientId"], "execution")
         self.assertEqual(execution[0]["clientSecret"], "execution-secret")
 
-    def test_projection_credential_file_is_owned_and_removed(self):
+    def test_platform_service_credential_file_is_owned_and_removed(self):
         parsed = smoke.require_sandbox_ready(ready())
         with tempfile.TemporaryDirectory() as owned:
             directory = Path(owned)
             with smoke.credential_files(directory, parsed) as paths:
-                projection = paths["bff-projection.json"]
+                projection = paths["platform-service-credentials.json"]
                 self.assertEqual(projection.stat().st_mode & 0o777, 0o600)
                 self.assertEqual(
                     json.loads(projection.read_text()),
@@ -1116,7 +1117,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertLess(code.index(credential), code.index("active = _start("))
         self.assertIn("if proxy.count != 0:", code)
         self.assertIn(
-            "'KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE': str(files['bff-projection.json'])",
+            "'KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE': str(files['platform-service-credentials.json'])",
             code,
         )
 
@@ -2464,11 +2465,12 @@ def test_r356_cli_requires_both_explicit_absolute_source_options():
     assert required["--bff-source"] and required["--storage-source"]
 
 
-def test_r356_formal_901_pin():
-    assert smoke.FORMAL_PINS["bff"] == "727df38c810927cc88950d853a84223c9aa9c029"
-    assert smoke.FORMAL_PINS["platform"] == "5b47eaf7c7996fe836022d57b973b2085dcd852a"
-    assert smoke.FORMAL_PINS["storage"] == "a1206d0194c1b1e405834f4c4548168fddbb5d52"
-    assert smoke.FORMAL_PINS["iam"] == "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a"
+def test_formal_pins_match_the_current_root_product_release():
+    assert smoke.FORMAL_PINS["bff"] == "f9d7519520208fca64f339270f3ef4f7f8b28db5"
+    assert smoke.FORMAL_PINS["platform"] == "d4331f3ff55029ea05a2bf9e5c22bf9adac99ae5"
+    assert smoke.FORMAL_PINS["storage"] == "4ab2f232bd4a74b315af0e4a76e1d61a9a9f86c5"
+    assert smoke.FORMAL_PINS["iam"] == "4cb18610692cc1ade106fbbde429efb084736afe"
+    assert smoke.FORMAL_PINS["agent"] == "84502e6ac14c4830edcfe11ae35b324cd1e0c34a"
 
 
 def test_r356_formal_901_optional_get_locator_identity():
