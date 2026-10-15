@@ -1,3 +1,9 @@
+## SET47 真实任务归档/恢复本地候选（2026-10-15）
+
+固定消费Web bb3bc5a7193c41345745a97956230e13aa5f6638与BFF 53f222ec41500d7a608da0c221a4695c402ff678（public15.4.0/150）；IAM与Billing pin保持。任务菜单归档、数据管理本人分页/恢复及刷新后状态读取接通，归档保留消息、Run和分享；草稿证明在持久化后退休，旧回执不能永久遮蔽后来的真实状态。技能/连接器业务保持由另一owner负责，其余未接能力禁用。Root独立93writer/881protected对941基线、九locale整文件逆恢复、五原测试全文prefix、owner公契约全文与15.3完整逆恢复均exact；最终源码独审无新增确定P1/P2。
+
+Web相关253PASS、contract284PASS，lint/typecheck/build通过；architecture先独立50PASS，最后与build并行49PASS/1既有5秒扫描timeout，失败日志保留。完整test4124PASS/8FAIL（251.31s），5项既有Skills/MCP/翻译问题及3项HTTPS代理RP auth503仍未归因；无新增归档用例失败，不关闭此前instrumentation/welcome未归因问题。完整Playwright42PASS/4原SKIP（47.7s），preview用例不证明真实归档写入。BFF新增归档4项真实PG/Redis HTTP集成PASS（准入替身/idle worker，不代表正常IAM/Agent），其完整集成322PASS/10FAIL、default1395PASS/3FAIL/3SKIP及contract/architecture失败保留。两仓完整门FAILED、PR仍draft，仅接受保留回退点的本地候选。验证资源恢复，旧运行实例及其DB/session保留；新组合沿既有launcher独立owned fixture启动，正常登录/Data读取另验，不改旧数据库或造正常任务数据。
+
 ## SET46 用量资源分类已接收为本地候选（2026-10-15）
 
 Web b979cc946166df9e8d75ecdb3d958239aa286e55：设置内用量页新增任务、网站与游戏、电脑、电话分类；任务保留原真实读取，其余三类明确禁用且关联可见说明。独立BillingPanel、summary/ledger生命周期、全部原测试与Skills/连接器保持。11writer/4文档/926保护哈希exact，逆恢复及独审无确定P1/P2。contract283/architecture50/lint/type/build通过；相关276PASS/2既有FAIL，完整4052PASS/8FAIL（228.43s），Playwright38PASS/4原SKIP（39.7s），资源恢复。完整新增两项登录503和instrumentation采集超时未归因；基线六例6PASS，候选IAM夹具未就绪致两例未跑，另四例PASS。私有诊断首轮collection错误无效，纠正包装后串行六例PASS不构成根因修复，不改正式源码/oracle/timeout。完整门仍FAILED、PR draft，只允许可回退本地试用。
