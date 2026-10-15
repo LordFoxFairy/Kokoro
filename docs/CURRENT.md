@@ -1,3 +1,11 @@
+## SET45 侧栏快捷键预设已接入本地候选（2026-10-15）
+
+Web aa2e02a90fe55ff7f541c8f180c286cd674dce97：切换侧栏的未配置/显式重置预设由primary+B对齐当前Manus参考页所示primary+period；未在参考账户重置，不冒称其全局默认。已保存绑定原样保留，无迁移、alias或schema变更。产品仅一字符；两个现测试调整三个依赖预设的字面量并追加真实Sidebar保留/重置旅程。旧source20PASS/4预期FAIL，候选相关227PASS；contract283/architecture50/lint/type/build通过，完整4055PASS/5既有FAIL（240.39s），Playwright38PASS/4原SKIP（38.0s）。3writer/935保护哈希exact，独审无确定P1/P2，验证资源恢复；验收后仅补三份文档结果及空行。完整门仍FAILED，Skills/MCP和翻译覆盖率旧失败保留，早前RP-auth503、instrumentation/welcome偶发失败亦未根因关闭，PR保持draft。
+
+实际运行635个src/public文件已与该Web提交逐一对齐，同一服务和设置数据保持。正常Computer Use刷新确认原保存B保留；显式重置为period、刷新仍保留；主界面旧B不触发、period真实收起及再次展开。随后通过编辑器恢复测试前全部四个绑定，刷新核对一致，页面恢复通用设置。此证据不替代完整产品验收，Goal active。
+
+SET44补充真实验证：member测试邀请创建/刷新保留/撤销后刷新消失；无效邮箱被表单拦截。本地IAM无SMTP，重发只验证无错误及pending保留，不声称外部邮件交付。个性化四字段含多行已保存、刷新并恢复；双标签冲突的采用服务器资料和显式保存草稿两个分支均实测。当前Agent关闭，实际发送测试消息失败且刷新无持久任务，已有分享撤销仍未实测。源码另确认模型调用授权消费者未实现；Ollama也无法绕过，当前临时launcher退出会清理其应用/IAM事实，不能简单重启宣称模型已接通。Skills/连接器仍归另一开发者。
+
 ## SET43 已撤销会话资料读取已接入本地候选（2026-10-15）
 
 Web 6cd51d9193d27a4508d6c55d5ba13be52825abae：只将已配置BFF严格绑定的401 session_invalid映射资料接口既有401，非可信或依赖故障保503；原200/callback/refresh/owner授权与原测试不改。新增真实HTTP18例旧source为16PASS/2FAIL，再修三源；前两次collection失败不算行为RED。4writer/930保护/Root7、全部原tests字节exact，独立审查无确定P1/P2。Root相关211PASS，contract283/architecture50/lint/type/build通过；完整4054PASS/5既有FAIL（223.67s），此前proxy503本轮未复现但未根因关闭，早前instrumentation/welcome亦未归因。完整门FAILED，两个PR保持draft；完整Playwright38PASS/4原SKIP（35.1s），共享资源库存恢复。
