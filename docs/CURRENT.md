@@ -2,7 +2,7 @@
 
 Web b979cc946166df9e8d75ecdb3d958239aa286e55：设置内用量页新增任务、网站与游戏、电脑、电话分类；任务保留原真实读取，其余三类明确禁用且关联可见说明。独立BillingPanel、summary/ledger生命周期、全部原测试与Skills/连接器保持。11writer/4文档/926保护哈希exact，逆恢复及独审无确定P1/P2。contract283/architecture50/lint/type/build通过；相关276PASS/2既有FAIL，完整4052PASS/8FAIL（228.43s），Playwright38PASS/4原SKIP（39.7s），资源恢复。完整新增两项登录503和instrumentation采集超时未归因；基线六例6PASS，候选IAM夹具未就绪致两例未跑，另四例PASS。私有诊断首轮collection错误无效，纠正包装后串行六例PASS不构成根因修复，不改正式源码/oracle/timeout。完整门仍FAILED、PR draft，只允许可回退本地试用。
 
-实际运行副本同步、正常认证CUA、禁用语义/键盘/320px几何另行核验，不以gitlink替代。当前积分账户缺失是真实事实；无正式零余额开户API/消费者，不发积分或注入账户。当前电脑参考分为云电脑与桌面本地文件访问，缺失产品链先禁用。Goal active，其余owner gitlinks保持。
+实际运行635个src/public文件已与该Web提交逐一对齐，原服务/配置/登录保持。正常认证CUA确认四分类、三项原生disabled与可见说明关联，方向键留在唯一任务tab；英文真实320px四标签换行无重叠/溢出，只有一个任务面板。账户/设备/团队成员邀请/分享空列表均正常读取，中文与自动主题保持，视口恢复。单次热态点击至积分账户缺失状态可见235ms，含工具开销非基准。匿名登录302、profile/shared401及新授权16项scope精确顺序通过。当前积分账户缺失是真实事实；无正式零余额开户API/消费者，不发积分或注入账户。当前电脑参考分为云电脑与桌面本地文件访问，缺失产品链先禁用。Goal active，其余owner gitlinks保持。
 
 ## SET45 侧栏快捷键预设已接入本地候选（2026-10-15）
 
