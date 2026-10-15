@@ -1,3 +1,11 @@
+## SET42 任务发送窄屏修复已接入本地候选（2026-10-15）
+
+320px英文禁用任务发送行发生标签与选框重叠；仅现CSS在≤480px堆叠及select限宽，未开启其它发送策略。2writer/930保护/Root7逐文件exact，原E2E完整prefix和新增oracle冻结；独审无确定P1/P2。首次RED与私有full诊断重叠，库存不匹配，明确无效且保留；串行RED2为4PASS/2个320FAIL11.6s、库存恢复。局部CSS后完整E2E38PASS/0FAIL/4原SKIP37.7s，1280/390/320两项目六图保留，库存恢复；contract283/architecture50/lint/type/build通过。
+
+纯CSS/E2E切片未重复pnpm test；继承SET40原完整门FAILED：最新4033PASS/8FAIL，5既有及3新增proxy503未归因，先前instrumentation/welcome失败根因亦未关闭。私有诊断full4036PASS/5既有FAIL不构成正式门通过或根因修复，且后段曾与首次无效E2E重叠。菜单动作只读复核无确定可点击无动作或伪成功项；未接通能力保持禁用，Skills/连接器业务排除。正常实例实际634源文件同步和登录后CUA另记录，不能由gitlink/receipt代替。Goal active。
+
+已集成Web 6880ec4227fd1772cb5c9587d90a20b853ad5f39；其余owner gitlinks保持。
+
 ## SET41 主题窄屏裁切局部修复（2026-10-15）
 
 主题选项允许换行，General现Radix内容table固定布局，语言选择不超过容器；仅2个CSS，既有E2E追加6个实际case。3writer/929保护/Root7、两个CSS整体逆恢复和原测试完整prefix exact，独立审查无确定P1/P2。首探6PASS因逐项滚动掩盖默认裁切，记录保留后修新oracle；旧CSS准确2PASS4FAIL15.1s。V1全E2E30PASS2个320pxFAIL4原SKIP31.0s；V2保持新旧断言，32PASS0FAIL4原SKIP38.4s，库存恢复，1280/390/320六张截图已实际检查。contract283/architecture50/lint/type/build通过。纯CSS/E2E变化未重跑完整pnpm test，继承SET40的FAILED门，5旧及3新增proxy503未归因，早前instrumentation/welcome根因亦未关闭；不称全仓通过。实际部署和正常认证CUA将在接入后单独记录。
