@@ -49,6 +49,55 @@ class LocalLoginGuards(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 launcher.parse_args(argv)
 
+    def test_platform_mcp_only_is_explicit_and_excludes_storage(self):
+        argv = [
+            "--iam-node-bin",
+            "/bin/echo",
+            "--bff-node-bin",
+            "/bin/echo",
+            "--web-node-bin",
+            "/bin/echo",
+            "--platform-node-bin",
+            "/bin/echo",
+            "--platform-mcp-only",
+        ]
+        with patch.dict(
+            "os.environ",
+            {
+                "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+                "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+            },
+            clear=True,
+        ):
+            args = launcher.parse_args(argv)
+        self.assertTrue(args.platform_mcp_only)
+        self.assertIsNone(args.storage_node_bin)
+
+    def test_platform_mcp_only_rejects_storage(self):
+        argv = [
+            "--iam-node-bin",
+            "/bin/echo",
+            "--bff-node-bin",
+            "/bin/echo",
+            "--web-node-bin",
+            "/bin/echo",
+            "--platform-node-bin",
+            "/bin/echo",
+            "--platform-mcp-only",
+            "--storage-node-bin",
+            "/bin/echo",
+        ]
+        with patch.dict(
+            "os.environ",
+            {
+                "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+                "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+            },
+            clear=True,
+        ):
+            with self.assertRaises(SystemExit):
+                launcher.parse_args(argv)
+
     def test_platform_admin_fixture_requires_owned_platform(self):
         argv = [
             "--iam-node-bin", "/bin/echo",
@@ -107,9 +156,6 @@ class LocalLoginGuards(unittest.TestCase):
         self.assertIn('mcp-provider-admin', platform_source)
         self.assertIn('custom-api-personal', platform_source)
         self.assertIn('"KOKORO_BFF_PLATFORM_MCP_ADMIN_CREDENTIALS_FILE"', platform_source)
-        self.assertIn(
-            '"KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "true"', platform_source
-        )
         self.assertNotIn("KOKORO_CAPABILITY", source + platform_source)
 
     def test_default_ready_path_does_not_strip_unrequested_sandbox_fields(self):

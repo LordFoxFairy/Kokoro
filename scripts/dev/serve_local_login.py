@@ -242,6 +242,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Enable owned real Platform Skills with owned real Storage",
     )
     parser.add_argument(
+        "--platform-mcp-only",
+        action="store_true",
+        help="Run the owned Platform MCP and Custom API surfaces without Storage",
+    )
+    parser.add_argument(
         "--platform-admin",
         action="store_true",
         help="Grant only this isolated fixture's product user Platform administrator access",
@@ -265,8 +270,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     args.storage_environment = None
     if not 1 <= args.web_port <= 65535:
         parser.error("web_port must be between 1 and 65535")
-    if args.platform_node_bin is not None and args.storage_node_bin is None:
+    if (
+        args.platform_node_bin is not None
+        and args.storage_node_bin is None
+        and not args.platform_mcp_only
+    ):
         parser.error("Platform requires explicit owned Storage")
+    if args.platform_mcp_only and args.platform_node_bin is None:
+        parser.error("MCP-only Platform requires --platform-node-bin")
+    if args.platform_mcp_only and args.storage_node_bin is not None:
+        parser.error("MCP-only Platform must not start Storage")
     if args.platform_admin and args.platform_node_bin is None:
         parser.error("platform administrator fixture requires owned Platform")
     if args.storage_node_bin is not None:
@@ -396,7 +409,10 @@ def main(argv: list[str] | None = None) -> int:
     web_port = getattr(args, "web_port", WEB_PORT)
     try:
         if getattr(args, "platform_node_bin", None) is not None:
-            verify_login_release_inputs(storage=True, platform=True)
+            verify_login_release_inputs(
+                storage=not getattr(args, "platform_mcp_only", False),
+                platform=True,
+            )
         elif getattr(args, "storage_node_bin", None) is not None:
             verify_login_release_inputs(storage=True)
         else:
@@ -588,16 +604,17 @@ def main(argv: list[str] | None = None) -> int:
                 stage = "BFF startup"
                 secret = secrets.token_urlsafe(32)
                 credentials.add(secret)
+                if platform_env is not None:
+                    platform = platform_runtime.LocalPlatformRuntime(
+                        node=args.platform_node_bin,
+                        node_environment=platform_env,
+                        directory=directory,
+                        credentials=credentials,
+                        log=log,
+                    )
+                storage_result = None
                 if storage_env is not None:
                     stage = "Storage startup"
-                    if platform_env is not None:
-                        platform = platform_runtime.LocalPlatformRuntime(
-                            node=args.platform_node_bin,
-                            node_environment=platform_env,
-                            directory=directory,
-                            credentials=credentials,
-                            log=log,
-                        )
                     storage = storage_runtime.LocalStorageRuntime(
                         node=args.storage_node_bin,
                         environment=args.storage_environment,
@@ -625,17 +642,22 @@ def main(argv: list[str] | None = None) -> int:
                         ),
                     )
                     bff_env.update(storage_result)
-                    if platform is not None and sandbox_ready is not None:
-                        stage = "Platform startup"
-                        bff_env.update(
-                            platform.start(
-                                owner_application_url,
-                                args.redis_url,
-                                sandbox_ready,
-                                storage_result["KOKORO_STORAGE_RPC_BASE_URL"],
-                                origin,
-                            )
+                if platform is not None and sandbox_ready is not None:
+                    stage = "Platform startup"
+                    bff_env.update(
+                        platform.start(
+                            application_db_url,
+                            args.redis_url,
+                            sandbox_ready,
+                            (
+                                None
+                                if storage_result is None
+                                else storage_result["KOKORO_STORAGE_RPC_BASE_URL"]
+                            ),
+                            origin,
+                            include_skills=storage_result is not None,
                         )
+                    )
                 bff_port = runtime.free_port()
                 bff_env.update(
                     {

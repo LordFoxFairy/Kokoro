@@ -115,11 +115,17 @@ class LocalPlatformRuntime:
         application_database_url: str,
         redis_url: str,
         ready: sandbox.SandboxReady,
-        storage_base_url: str,
+        storage_base_url: str | None,
         web_origin: str,
+        *,
+        include_skills: bool = True,
     ) -> dict[str, str]:
         if self.process is not None:
             raise PlatformRuntimeError("Platform runtime was already started")
+        if include_skills != (storage_base_url is not None):
+            raise PlatformRuntimeError(
+                "Platform Skills composition requires an owned Storage endpoint"
+            )
         database_url = sandbox.owner_database_url(
             application_database_url,
             ready.database_name,
@@ -146,14 +152,14 @@ class LocalPlatformRuntime:
             "NODE_ENV": "development",
             "KOKORO_POSTGRES_URL": database_url,
             "KOKORO_REDIS_URL": redis_url,
-            "KOKORO_STORAGE_URL": storage_base_url,
-            "KOKORO_PLATFORM_STORAGE_SERVICE_CREDENTIAL": self.storage_service_credential,
             "KOKORO_IAM_BASE_URL": ready.base_url,
             "KOKORO_PLATFORM_HOST": "127.0.0.1",
             "KOKORO_PLATFORM_PORT": str(port),
             "KOKORO_PLATFORM_SURFACES": (
                 "skill-catalog,skill-source,skill-installation-product,"
                 "mcp-personal,custom-api-personal,mcp-provider-admin"
+                if include_skills
+                else "mcp-personal,custom-api-personal,mcp-provider-admin"
             ),
             "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE": str(
                 files["resource-server.json"]
@@ -179,6 +185,17 @@ class LocalPlatformRuntime:
                 custom_api_fingerprint_keyring
             ),
         }
+        if include_skills:
+            if storage_base_url is None:
+                raise PlatformRuntimeError(
+                    "Platform Skills composition requires an owned Storage endpoint"
+                )
+            environment.update(
+                {
+                    "KOKORO_STORAGE_URL": storage_base_url,
+                    "KOKORO_PLATFORM_STORAGE_SERVICE_CREDENTIAL": self.storage_service_credential,
+                }
+            )
         for command, timeout in (
             ([str(self.node.parent / "corepack"), "pnpm", "build"], 120),
             (
@@ -210,7 +227,7 @@ class LocalPlatformRuntime:
             self.quiescent = False
         base = f"http://127.0.0.1:{port}"
         sandbox._wait_ready(base, self.process)
-        return {
+        result = {
             "KOKORO_PLATFORM_BASE_URL": base,
             "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE": str(
                 files["bff-catalog.json"]
@@ -227,8 +244,10 @@ class LocalPlatformRuntime:
             "KOKORO_BFF_PLATFORM_MCP_ADMIN_CREDENTIALS_FILE": str(
                 bff_credentials["mcp-admin"]
             ),
-            "KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "true",
         }
+        if include_skills:
+            result["KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED"] = "true"
+        return result
 
     def require_alive(self) -> None:
         if self.process is None or self.process.poll() is not None:
