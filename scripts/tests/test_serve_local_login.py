@@ -116,6 +116,25 @@ class LocalLoginGuards(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 launcher.parse_args(argv)
 
+    def test_admin_console_requires_the_admin_platform_fixture(self):
+        base = [
+            "--iam-node-bin", "/bin/echo",
+            "--bff-node-bin", "/bin/echo",
+            "--web-node-bin", "/bin/echo",
+            "--platform-node-bin", "/bin/echo",
+            "--platform-mcp-only",
+            "--admin-node-bin", "/bin/echo",
+        ]
+        environment = {
+            "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+            "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+        }
+        with patch.dict("os.environ", environment, clear=True):
+            with self.assertRaises(SystemExit):
+                launcher.parse_args(base)
+            args = launcher.parse_args([*base, "--platform-admin"])
+        self.assertEqual(args.admin_node_bin, Path("/bin/echo"))
+
     def test_explicit_web_port_controls_origin_and_isolated_server(self):
         self.assertEqual(
             launcher.web_origin("ignored", 43110), "http://127.0.0.1:43110"
