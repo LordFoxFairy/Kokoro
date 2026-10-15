@@ -1,3 +1,9 @@
+## SET31 runtime请求与投影退休已接收，SET32继续（2026-10-15）
+
+Web 52b535789b93ebac740db7aa8e5296c82b6622b6：现有runtime hook用本地preview/attempt scope管理layout真实abort和queued dispatch/JSON前后/提交检查，切换模式即清旧展示，旧retry不覆盖新结果。原helpers/schema/options/URL/query/Accept/返回及AppGate/native原断言保护；原9完整prefix保留。Root实际原source10FAIL10PASS20，终态focused20/contract283/arch50/lint/type/build0，独审无确定P1/P2；2writer/930保护/Root7精确。
+
+完整test3987PASS/7此前具名FAIL/0SKIP，212.28s；工程Playwright20PASS/0FAIL/4原SKIP，21.6s，库存exact恢复。未证明runtime有期限或旧native R175/R177多请求根因；正常认证Browser未验，整体Goal active。继续SET32只记录请求顺序，不放宽helper/readiness/owner计数/timeout/mock；Skills/连接器业务仍排除。
+
 ## SET30 不可用说明已接收，SET31继续（2026-10-15）
 
 Web dc26502bfa47ba0c22422623118b455d46644be0：七个灰菜单旁显示不可用说明，并实例useId关联；账户production FieldDescription明确更改邮箱/登录方式/删除三操作暂不可用，preview仍原示例语义。原三按钮禁用、nav数组/过滤/焦点/顺序、姓名/复制ID/devices/logout/全部dialogs原逻辑精确inverse；12source/920保护含所有tests/Root7，九语言只增加两key。窄于48rem导航说明sr-only，不冒称窄屏视觉可见。独审无确定P1/P2，focused81/contract283/arch50/lint/type/build0，i18n99PASS2旧FAIL。
