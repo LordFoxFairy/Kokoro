@@ -579,6 +579,7 @@ def seed_control_plane(
             "transport": "litellm",
             "gateway_model_name": model_name,
             "context_window": 8192,
+            "max_output_tokens": 2048,
             "priority": 0,
         },
         global_scope=True,
