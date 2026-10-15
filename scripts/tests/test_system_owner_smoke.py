@@ -628,6 +628,7 @@ def test_seed_pins_real_provider_names_without_fixture_fallback(
         revision["provider_model_name"] == revision["gateway_model_name"] == model_name
     )
     assert revision["feature_key"] == "chat"
+    assert revision["max_output_tokens"] == 2048
     assert provider["provider"] == provider_name
     assert values["provider_id"]
     assert values["model_name"] == model_name
