@@ -1,3 +1,9 @@
+## SET43 已撤销会话资料读取已接入本地候选（2026-10-15）
+
+Web 6cd51d9193d27a4508d6c55d5ba13be52825abae：只将已配置BFF严格绑定的401 session_invalid映射资料接口既有401，非可信或依赖故障保503；原200/callback/refresh/owner授权与原测试不改。新增真实HTTP18例旧source为16PASS/2FAIL，再修三源；前两次collection失败不算行为RED。4writer/930保护/Root7、全部原tests字节exact，独立审查无确定P1/P2。Root相关211PASS，contract283/architecture50/lint/type/build通过；完整4054PASS/5既有FAIL（223.67s），此前proxy503本轮未复现但未根因关闭，早前instrumentation/welcome亦未归因。完整门FAILED，两个PR保持draft；完整Playwright38PASS/4原SKIP（35.1s），共享资源库存恢复。
+
+真实运行副本635个src/public文件已逐一与接受commit对齐，配置及同一服务保持。正常登录CUA刷新后账户资料/设备读取成功；独立标准表单登录创建本轮会话，资料先200，CUA取消保留、确认移除后列表消失，再读仍消失。该新客户端本地未过期投影仍authenticated=true、sessions已401 session_invalid、profile正确401 account_profile_session_required，排除用过期cookie代替修复证据；当前和原有会话保留。此前退出→确认→登录页、匿名/app回登录及原账户重登也已实测。已恢复中文/自动/空搜索/General/正常窗口；这些不证明付款、邀请、角色或已有分享撤销完成。Skills/连接器业务不改，Goal active。
+
 ## SET42 任务发送窄屏修复已接入本地候选（2026-10-15）
 
 320px英文禁用任务发送行发生标签与选框重叠；仅现CSS在≤480px堆叠及select限宽，未开启其它发送策略。2writer/930保护/Root7逐文件exact，原E2E完整prefix和新增oracle冻结；独审无确定P1/P2。首次RED与私有full诊断重叠，库存不匹配，明确无效且保留；串行RED2为4PASS/2个320FAIL11.6s、库存恢复。局部CSS后完整E2E38PASS/0FAIL/4原SKIP37.7s，1280/390/320两项目六图保留，库存恢复；contract283/architecture50/lint/type/build通过。
