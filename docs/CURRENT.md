@@ -4,6 +4,8 @@
 
 Web相关253PASS、contract284PASS，lint/typecheck/build通过；architecture先独立50PASS，最后与build并行49PASS/1既有5秒扫描timeout，失败日志保留。完整test4124PASS/8FAIL（251.31s），5项既有Skills/MCP/翻译问题及3项HTTPS代理RP auth503仍未归因；无新增归档用例失败，不关闭此前instrumentation/welcome未归因问题。完整Playwright42PASS/4原SKIP（47.7s），preview用例不证明真实归档写入。BFF新增归档4项真实PG/Redis HTTP集成PASS（准入替身/idle worker，不代表正常IAM/Agent），其完整集成322PASS/10FAIL、default1395PASS/3FAIL/3SKIP及contract/architecture失败保留。两仓完整门FAILED、PR仍draft，仅接受保留回退点的本地候选。验证资源恢复，旧运行实例及其DB/session保留；新组合沿既有launcher独立owned fixture启动，正常登录/Data读取另验，不改旧数据库或造正常任务数据。
 
+正常独立实例已通过Computer Use正规OIDC登录、Data真实分享/归档空态、重新读取和整页刷新，账户资料/设备、Owner团队、Billing账户缺失及套餐目录空态均成功读取。新实例660个实际src/public文件逐一等于Web接受commit，原实例进程、页面与数据保留；新fixture身份/默认资料不是旧数据迁移。归档重新读取单次2188ms含原生工具开销，不作为接口或模型基准。当前无正常持久任务且Agent关闭，非空archive/restore仍仅为隔离真实PG HTTP加Web测试证据；不注入正常库任务、积分账户或购买事实。当前launcher是owned临时fixture，退出会清理自有数据，不是持久生产部署。Root拓扑检查仍因既有本地clone origin及未初始化的其它仓失败，所选Web/BFF/IAM/Billing四repo的committed pin与clean预检通过；不宣全Root治理通过。
+
 ## SET46 用量资源分类已接收为本地候选（2026-10-15）
 
 Web b979cc946166df9e8d75ecdb3d958239aa286e55：设置内用量页新增任务、网站与游戏、电脑、电话分类；任务保留原真实读取，其余三类明确禁用且关联可见说明。独立BillingPanel、summary/ledger生命周期、全部原测试与Skills/连接器保持。11writer/4文档/926保护哈希exact，逆恢复及独审无确定P1/P2。contract283/architecture50/lint/type/build通过；相关276PASS/2既有FAIL，完整4052PASS/8FAIL（228.43s），Playwright38PASS/4原SKIP（39.7s），资源恢复。完整新增两项登录503和instrumentation采集超时未归因；基线六例6PASS，候选IAM夹具未就绪致两例未跑，另四例PASS。私有诊断首轮collection错误无效，纠正包装后串行六例PASS不构成根因修复，不改正式源码/oracle/timeout。完整门仍FAILED、PR draft，只允许可回退本地试用。
