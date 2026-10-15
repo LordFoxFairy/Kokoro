@@ -6,6 +6,8 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+  "boto3==1.43.114",
+  "psycopg[binary]==3.2.10",
   "pytest==8.4.2",
 ]
 
