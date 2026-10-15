@@ -170,7 +170,7 @@ class LocalPlatformRuntime:
             "KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE": str(service_credentials),
             "KOKORO_MCP_DECLARATION_DRIVER": "http",
             "KOKORO_MCP_OAUTH_REDIRECT_URI": web_origin
-            + "/api/mcp/oauth/callback",
+            + "/mcp/oauth/callback",
             "KOKORO_MCP_CREDENTIAL_KEYRING_FILE": str(oauth_keyring),
             "KOKORO_MCP_PRIVATE_SECRET_KEYRING_FILE": str(
                 private_secret_keyring
