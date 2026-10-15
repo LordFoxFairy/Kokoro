@@ -1,3 +1,19 @@
+### T-K03.20 项目/会话与 AG-UI Agent 真实闭环（2026-10-15，执行中）
+
+用户已将当前体验目标扩展为：在默认 **280px** 桌面侧栏内，项目、会话和聊天保持 Manus 式连续布局与交互；发送消息后必须通过既有 Browser → Web same-origin adapter → BFF → Agent AG-UI 流完成真实推理、增量事件、终态、重载恢复与失败呈现。侧栏宽度已由 Web `RAIL_DEFAULT=280` 固定并随 Root #48 入 `main`，不得在后续聊天修复中回退为更宽的默认值或引入另一套布局状态。
+
+**本轮真实基线（不以静态/假成功替代）：** 本地真实登录、System 模型解析、BFF `POST` 与 Agent replay/projection 均已实测抵达 Agent；实际运行在 Agent 端落为 `run.failed`，AG-UI 公开错误为 `dependency_unavailable`，而非页面渲染或项目筛选故障。根因已经定位到 Agent `model/call_runtime.py::freeze_final_model_request`：完成 durable `prepare` 后按现行设计固定抛出 `ModelCallAuthorizationUnavailable`，因为 Billing admission consumer 尚未发布。现有 Billing v1 admission 与 Agent 的 immutable preauthorization / grant / dispatch / sealed-evidence 模型不相容；不得通过前端假完成、允许所有本地调用、零价授权或跨 owner 数据库读取绕过该边界。
+
+| 顺序 | owner / 唯一 writer | 最小交付 | 验收 |
+| --- | --- | --- | --- |
+| C1 | Root（本卡） | 固定真实失败基线、需求和 owner 边界；保留侧栏 280px 与项目→会话选择、空态、移动/重命名、加载/失败状态的实际回归清单 | Root focused tests + 同尺寸浏览器主路径；不把 CSS/snapshot 字符串当行为契约 |
+| C2 | Billing + Agent（先设计门，后各自实现） | 发布一个可审计的 Agent→Billing admission consumer：稳定 request/admission identity、授权有效期、grant CAS、dispatch permit、sealed evidence ACK 与 capture/release；每个传输边界固定 owner artifact，不共享 SQL/DTO | owner contract、真实隔离数据库、授权拒绝/重放/过期/取消/未知恢复，以及 provider I/O 前零发送负控 |
+| C3 | Agent | 消费已固定 Billing artifact；仅在 grant + durable dispatch permit 后调用模型，完成后封存 evidence 并向 Billing 确认结算；保留原 fail-closed 行为 | 真实 Agent/模型 run：provider 成功一次、AG-UI 文本/终态正确；拒绝/超时/取消无假成功 |
+| C4 | BFF + Web | BFF 继续唯一拥有 Conversation/Message/AG-UI public projection，Web 只消费同源 AG-UI；项目内会话列表、选中态、发送中/完成/失败/重载恢复与侧栏动画保持连续，不借 Agent DB | 浏览器项目→新会话→发送→流式完成→刷新/返回；失败保留可操作状态且无消失/重复消息 |
+| C5 | Root 集成 | 用真实本地组合运行 Web、BFF、System、Agent、Billing 与受控模型；复用 `run_web_real_model_worker_smoke.py` 的真实链路，缺失的对象存储/扫描依赖显式列为环境缺口 | owner 门、组合 HTTP/AG-UI、浏览器宽/中/窄对照；PR 审查、合并与 root gitlink 精确更新 |
+
+**测试准则：** 保留能覆盖项目归属、会话切换、AG-UI 事件顺序、完成/失败恢复及授权边界的 focused 回归；删除或合并仅锁定私有 CSS、像素字符串、实现调用顺序的脆弱 UI 测试。每项视觉差异以固定 Manus 参考视口、状态和真实点击结果复核；完成一个切片后立即运行其主路径，而不是攒到最后。
+
 ### T-K03.19 Skills 与 MCP：单一端到端闭环任务卡（2026-10-11）
 
 用户已将当前唯一交付目标收敛为 **彻底完成 Skills 与 MCP**；不在这张卡之外重开计划，也不提前扩散到 Scheduler、项目或其它 Settings 页面。唯一链路为：Browser → Web same-origin adapter → BFF → Platform（Skills/MCP control plane）→ Agent（MCP runtime）。管理员只在现有同源 `/manage` 原 Admin 壳出现，普通用户不可见；不新建第二套后台。Skills 与 MCP 的外部数据、状态和页面均以 owner 的真实返回为准，不用静态 seed、伪造封面、使用量、连接状态或完成状态。
