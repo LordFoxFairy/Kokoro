@@ -49,6 +49,24 @@ class LocalLoginGuards(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 launcher.parse_args(argv)
 
+    def test_platform_admin_fixture_requires_owned_platform(self):
+        argv = [
+            "--iam-node-bin", "/bin/echo",
+            "--bff-node-bin", "/bin/echo",
+            "--web-node-bin", "/bin/echo",
+            "--platform-admin",
+        ]
+        with patch.dict(
+            "os.environ",
+            {
+                "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+                "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/0",
+            },
+            clear=True,
+        ):
+            with self.assertRaises(SystemExit):
+                launcher.parse_args(argv)
+
     def test_explicit_web_port_controls_origin_and_isolated_server(self):
         self.assertEqual(
             launcher.web_origin("ignored", 43110), "http://127.0.0.1:43110"
@@ -86,10 +104,9 @@ class LocalLoginGuards(unittest.TestCase):
         platform_source = (ROOT / "scripts/dev/local_platform_runtime.py").read_text()
         self.assertIn('"IAM_TEST_SKILL_SANDBOX_MODE"', source)
         self.assertIn('"KOKORO_PLATFORM_BASE_URL"', platform_source)
-        self.assertIn(
-            '"KOKORO_PLATFORM_SURFACES": "skill-catalog,skill-source,skill-installation-product"',
-            platform_source,
-        )
+        self.assertIn('mcp-provider-admin', platform_source)
+        self.assertIn('custom-api-personal', platform_source)
+        self.assertIn('"KOKORO_BFF_PLATFORM_MCP_ADMIN_CREDENTIALS_FILE"', platform_source)
         self.assertIn(
             '"KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED": "true"', platform_source
         )

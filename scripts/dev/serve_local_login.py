@@ -242,6 +242,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Enable owned real Platform Skills with owned real Storage",
     )
     parser.add_argument(
+        "--platform-admin",
+        action="store_true",
+        help="Grant only this isolated fixture's product user Platform administrator access",
+    )
+    parser.add_argument(
         "--storage-node-bin",
         type=Path,
         help="Enable owned real Storage using explicit existing local S3/ClamAV inputs",
@@ -262,6 +267,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("web_port must be between 1 and 65535")
     if args.platform_node_bin is not None and args.storage_node_bin is None:
         parser.error("Platform requires explicit owned Storage")
+    if args.platform_admin and args.platform_node_bin is None:
+        parser.error("platform administrator fixture requires owned Platform")
     if args.storage_node_bin is not None:
         node = args.storage_node_bin.expanduser().resolve()
         if not node.is_file() or not os.access(node, os.X_OK):
@@ -528,6 +535,8 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 if platform_env is not None:
                     iam_env["IAM_TEST_SKILL_SANDBOX_MODE"] = "1"
+                if getattr(args, "platform_admin", False):
+                    iam_env["IAM_TEST_PLATFORM_ADMIN"] = "1"
                 iam_attempted = True
                 iam = subprocess.Popen(
                     [str(args.iam_node_bin), "--import", "tsx", str(web_smoke.HOST)],
@@ -624,6 +633,7 @@ def main(argv: list[str] | None = None) -> int:
                                 args.redis_url,
                                 sandbox_ready,
                                 storage_result["KOKORO_STORAGE_RPC_BASE_URL"],
+                                origin,
                             )
                         )
                 bff_port = runtime.free_port()
