@@ -36,7 +36,16 @@ class ProductSessionGuards(unittest.TestCase):
                 "client_id": ready.client_id,
                 "redirect_uri": ready.redirect_uri,
                 "response_type": "code",
-                "scope": smoke.previous.SCOPES,
+                "scope": (
+                    "openid profile email offline_access "
+                    "iam:session-authorization.verify "
+                    "iam:member.read iam:invitation.read iam:role.read "
+                    "iam:member.write iam:invitation.write "
+                    "iam:authorization.check iam:skill-authorization.check "
+                    "iam:publisher-profile.read "
+                    "iam:account-session.read iam:account-session.revoke "
+                    "iam:account-profile.write"
+                ),
                 "resource": smoke.previous.RESOURCE,
                 "state": "s" * 24,
                 "nonce": "n" * 24,
@@ -88,6 +97,77 @@ class ProductSessionGuards(unittest.TestCase):
 
         with self.assertRaises(smoke.SmokeError):
             smoke.require_post_logout_login_start(wrong_client, "/login", origin, ready)
+
+        for scope in (
+            smoke.previous.SCOPES,
+            (
+                "openid profile email offline_access "
+                "iam:session-authorization.verify "
+                "iam:member.read iam:invitation.read iam:role.read "
+                "iam:member.write iam:invitation.write "
+                "iam:authorization.check iam:skill-authorization.check "
+                "iam:publisher-profile.read "
+                "iam:account-session.read iam:account-session.revoke"
+            ),
+            (
+                "openid profile email offline_access "
+                "iam:session-authorization.verify "
+                "iam:member.read iam:invitation.read iam:role.read "
+                "iam:member.write iam:invitation.write "
+                "iam:authorization.check iam:skill-authorization.check "
+                "iam:publisher-profile.read"
+            ),
+            " ".join(
+                query_scope
+                for query_scope in (
+                    "openid",
+                    "profile",
+                    "email",
+                    "offline_access",
+                    "iam:session-authorization.verify",
+                    "iam:member.read",
+                    "iam:invitation.read",
+                    "iam:role.read",
+                    "iam:member.write",
+                    "iam:invitation.write",
+                    "iam:authorization.check",
+                    "iam:skill-authorization.check",
+                )
+            ),
+            "openid profile email offline_access unregistered:scope",
+        ):
+
+            def wrong_scope(_path, requested_scope=scope):
+                pairs = smoke.old.single_query_values(
+                    "/iam/oauth2/authorize?" + query,
+                    {
+                        "client_id",
+                        "redirect_uri",
+                        "response_type",
+                        "scope",
+                        "resource",
+                        "state",
+                        "nonce",
+                        "code_challenge",
+                        "code_challenge_method",
+                    },
+                )
+                return smoke.BrowserResponse(
+                    302,
+                    {
+                        "location": origin
+                        + "/iam/oauth2/authorize?"
+                        + urlencode({**pairs, "scope": requested_scope}),
+                        "cache-control": "no-store",
+                    },
+                    [],
+                    b"",
+                )
+
+            with self.subTest(scope=scope), self.assertRaises(smoke.SmokeError):
+                smoke.require_post_logout_login_start(
+                    wrong_scope, "/login", origin, ready
+                )
 
     def test_fixed_tenant_invitation_protocol_is_exact_and_opaque(self):
         valid = {"kind": "invitation", "invitation_id": "invite-one"}

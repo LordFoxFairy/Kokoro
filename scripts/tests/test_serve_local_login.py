@@ -822,6 +822,12 @@ class DirectBffConnectionTests(unittest.TestCase):
 
 
 class SafeLaunchDiagnosticTests(unittest.TestCase):
+    def test_formal_login_category_is_closed_and_preserves_safe_hop(self):
+        error = launcher.first_login.FormalLoginNavigationError("authorize", "redirect", 400)
+        self.assertEqual(launcher.failure_category(error), "login_navigation_authorize_redirect_400")
+        error.hop = "SECRET"
+        self.assertEqual(launcher.failure_category(error), "owner_smoke")
+
     def test_categories_never_render_messages_or_dynamic_class_names(self):
         secret = "KEY_PASSWORD_RAW_MESSAGE_SENTINEL"
 
@@ -1349,3 +1355,134 @@ class StorageProfileGuards(unittest.TestCase):
                         launcher.verify_login_release_inputs(storage=True)
                 self.assertEqual(sum(command[3:] == ["rev-parse", "HEAD"] and Path(command[2]) == root for command in observed), 1)
                 self.assertTrue(any(Path(command[2]) == apps / "kokoro-storage" for command in observed))
+
+class BillingProfileGuards(unittest.TestCase):
+    def test_billing_is_an_explicit_optional_profile_without_storage_dependency(self):
+        argv = [
+            "--iam-node-bin",
+            sys.executable,
+            "--bff-node-bin",
+            sys.executable,
+            "--web-node-bin",
+            sys.executable,
+        ]
+        environment = {
+            "KOKORO_LOCAL_POSTGRES_URL": "postgresql://user@127.0.0.1/postgres",
+            "KOKORO_LOCAL_REDIS_URL": "redis://127.0.0.1:6379/9",
+        }
+        with patch.dict(os.environ, environment, clear=True):
+            default = launcher.parse_args(argv)
+            selected = launcher.parse_args(
+                argv + ["--billing-node-bin", sys.executable]
+            )
+        self.assertIsNone(default.billing_node_bin)
+        self.assertEqual(selected.billing_node_bin, Path(sys.executable).resolve())
+        self.assertIsNone(selected.storage_node_bin)
+
+    def test_billing_requires_an_executable_without_echoing_private_values(self):
+        argv = [
+            "--iam-node-bin",
+            sys.executable,
+            "--bff-node-bin",
+            sys.executable,
+            "--web-node-bin",
+            sys.executable,
+            "--billing-node-bin",
+            "/nonexistent/node",
+        ]
+        with self.assertRaises(SystemExit):
+            launcher.parse_args(argv)
+
+
+@pytest.mark.parametrize(
+    "violation", [None, "dirty", "head", "index", "missing-gitlink", "symlink"]
+)
+def test_billing_selected_owner_guard_runs_before_any_startup_effect(
+    monkeypatch, tmp_path, violation
+):
+    from unittest.mock import Mock
+
+    apps = tmp_path / "apps"
+    pins = {
+        "kokoro-app": "1" * 40,
+        "kokoro-iam": "2" * 40,
+        "kokoro-bff": "3" * 40,
+        "kokoro-billing": "4" * 40,
+    }
+    for name in pins:
+        (apps / name).mkdir(parents=True)
+    if violation == "symlink":
+        (apps / "kokoro-billing").rmdir()
+        target = tmp_path / "external-owner"
+        target.mkdir()
+        (apps / "kokoro-billing").symlink_to(target)
+    root_commit = "a" * 40
+    observed = []
+
+    def git(command, **_kwargs):
+        observed.append(command)
+        repo, args = Path(command[2]), command[3:]
+        if repo == tmp_path:
+            if args == ["rev-parse", "HEAD"]:
+                return root_commit
+            name = args[-1].removeprefix("apps/")
+            if args[:2] == ["ls-tree", root_commit]:
+                if name == "kokoro-billing" and violation == "missing-gitlink":
+                    return ""
+                return f"160000 commit {pins[name]}\tapps/{name}"
+            if args[:3] == ["ls-files", "--stage", "--"]:
+                sha = (
+                    "b" * 40
+                    if name == "kokoro-billing" and violation == "index"
+                    else pins[name]
+                )
+                return f"160000 {sha} 0\tapps/{name}"
+        if repo.parent == apps:
+            if args == ["rev-parse", "HEAD"]:
+                return (
+                    "b" * 40
+                    if repo.name == "kokoro-billing" and violation == "head"
+                    else pins[repo.name]
+                )
+            if args == ["status", "--porcelain", "--untracked-files=all"]:
+                return (
+                    "?? unpublished.ts"
+                    if repo.name == "kokoro-billing" and violation == "dirty"
+                    else ""
+                )
+        raise AssertionError(command)
+
+    monkeypatch.setattr(launcher.web_smoke, "ROOT", tmp_path)
+    for label, name in (
+        ("WEB", "kokoro-app"),
+        ("IAM", "kokoro-iam"),
+        ("BFF", "kokoro-bff"),
+    ):
+        monkeypatch.setattr(launcher.web_smoke, label, apps / name)
+    monkeypatch.setattr(launcher.runtime, "command_output", git)
+    if violation is None:
+        launcher.verify_login_release_inputs(billing=True)
+        assert (
+            sum(
+                command[2:] == [str(tmp_path), "rev-parse", "HEAD"]
+                for command in observed
+            )
+            == 1
+        )
+        assert any(Path(command[2]) == apps / "kokoro-billing" for command in observed)
+    else:
+        monkeypatch.setattr(
+            launcher,
+            "parse_args",
+            lambda _argv: SimpleNamespace(billing_node_bin=Path("/unused/node")),
+        )
+        effects = [Mock() for _ in range(4)]
+        for module, name, effect in zip(
+            [launcher, launcher.runtime, launcher.runtime, launcher.subprocess],
+            ["require_free_web_port", "OwnedResources", "run_owned_command", "Popen"],
+            effects,
+        ):
+            monkeypatch.setattr(module, name, effect)
+        with pytest.raises(launcher.LaunchError):
+            launcher.main([])
+        assert all(effect.call_count == 0 for effect in effects)
