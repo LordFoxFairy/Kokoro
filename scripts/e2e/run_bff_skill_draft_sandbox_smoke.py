@@ -57,11 +57,11 @@ OWNERS = MappingProxyType(
 )
 FORMAL_PINS = MappingProxyType(
     {
-        "bff": "727df38c810927cc88950d853a84223c9aa9c029",
-        "platform": "5b47eaf7c7996fe836022d57b973b2085dcd852a",
-        "storage": "a1206d0194c1b1e405834f4c4548168fddbb5d52",
-        "iam": "61ccdbb059f8eb3ff62fb27f6cc56f11999aaa9a",
-        "agent": "ee736cdf68a63e4434d6b8800c8e266f5c3b005d",
+        "bff": "f9d7519520208fca64f339270f3ef4f7f8b28db5",
+        "platform": "d4331f3ff55029ea05a2bf9e5c22bf9adac99ae5",
+        "storage": "4ab2f232bd4a74b315af0e4a76e1d61a9a9f86c5",
+        "iam": "4cb18610692cc1ade106fbbde429efb084736afe",
+        "agent": "84502e6ac14c4830edcfe11ae35b324cd1e0c34a",
     }
 )
 LOGICAL_GITLINKS = MappingProxyType(
@@ -1575,9 +1575,9 @@ def platform_credential_payloads(
     dict[str, object],
     list[dict[str, object]],
     list[dict[str, object]],
-    list[dict[str, object]],
+    dict[str, object],
 ]:
-    """Project IAM handles into owner-defined, scope-separated snapshots."""
+    """Project IAM handles into the current owner-defined credential files."""
     common = {"generation": 1, "credentialRefVersion": "sandbox-v1"}
     resource = {
         **common,
@@ -1604,16 +1604,18 @@ def platform_credential_payloads(
             "scope": "platform:skill-catalog.manage",
         }
     ]
-    projection = [
-        {
-            **common,
-            "tenantId": ready.tenant_id,
-            "clientId": ready.projection.client_id,
-            "clientSecret": ready.projection.client_secret,
-            "resource": "https://kokoro.dev/resources/platform-internal",
-            "scope": "platform:projection.read",
-        }
-    ]
+    projection = {
+        "version": 1,
+        "entries": [
+            {
+                "credential_id": "bff-projection",
+                "secret": ready.projection.client_secret,
+                "caller": "kokoro-bff",
+                "surfaces": ["projection"],
+                "tenant_id": ready.tenant_id,
+            }
+        ],
+    }
     return resource, execution, catalog, projection
 
 
@@ -1624,7 +1626,7 @@ def credential_files(directory: Path, ready: SandboxReady) -> Iterator[dict[str,
         "resource-server.json",
         "tenant-execution.json",
         "bff-catalog.json",
-        "bff-projection.json",
+        "platform-service-credentials.json",
     )
     paths: dict[str, Path] = {}
     try:
@@ -2877,6 +2879,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE": str(
                             files["tenant-execution.json"]
                         ),
+                        "KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE": str(
+                            files["platform-service-credentials.json"]
+                        ),
                     }
                 )
                 storage = _start(
@@ -2903,7 +2908,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     {
                         "KOKORO_PLATFORM_BASE_URL": proxied_platform,
                         "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": str(
-                            files["bff-projection.json"]
+                            files["platform-service-credentials.json"]
                         ),
                     }
                 )
