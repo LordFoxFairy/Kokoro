@@ -21,6 +21,63 @@ spec.loader.exec_module(smoke)
 
 
 class FirstLoginGuards(unittest.TestCase):
+    def test_browser_start_form_posts_csrf_with_the_issued_cookie(self):
+        origin = "https://web.example.test"
+        token = "a" * 64
+        response = smoke.web_smoke.BrowserResponse
+        document = f'<form method="post" action="/api/auth/signin/kokoro-iam"><input type="hidden" name="csrfToken" value="{token}"></form>'.encode()
+        replies = iter([
+            response(200, {"content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer"}, ["next-auth.csrf-token=proof; Path=/"], document),
+            response(302, {"location": origin + "/iam/oauth2/authorize?state=state-secret&nonce=nonce-secret"}, [], b""),
+            response(302, {"location": origin + "/auth/sign-in?state=state-secret&nonce=nonce-secret"}, [], b""),
+            response(200, {"content-type": "text/html; charset=utf-8"}, [], b'<form method="post" action="/auth/sign-in?state=state-secret&amp;nonce=nonce-secret"><input type="hidden" name="csrf_token" value="issuer-proof"><input name="email" type="email"><input name="password" type="password"></form>'),
+        ])
+        calls, secrets = [], []
+
+        def request(port, path, observed_origin, **kwargs):
+            calls.append((port, path, observed_origin, kwargs))
+            return next(replies)
+
+        smoke.probe_formal_login_entry(443, origin, SimpleNamespace(add=secrets.append), browser_request=request)
+        self.assertEqual(len(calls), 4)
+        self.assertEqual(calls[1], (443, "/api/auth/signin/kokoro-iam", origin, {"method": "POST", "form": {"csrfToken": token}, "origin": origin, "cookie": "next-auth.csrf-token=proof"}))
+        self.assertIn(token, secrets)
+        self.assertIn("issuer-proof", secrets)
+
+    def test_invalid_browser_start_forms_fail_before_any_post(self):
+        origin = "https://web.example.test"
+        token = "a" * 64
+        response = smoke.web_smoke.BrowserResponse
+        document = f'<form method="post" action="/api/auth/signin/kokoro-iam"><input type="hidden" name="csrfToken" value="{token}"></form>'.encode()
+        headers = {"content-type": "text/html; charset=utf-8", "cache-control": "private, no-store", "referrer-policy": "no-referrer"}
+        variants = [
+            ({**headers, "content-type": "text/plain"}, document),
+            ({**headers, "cache-control": "no-store=false"}, document),
+            ({**headers, "referrer-policy": "origin"}, document),
+            (headers, document.replace(b'/api/auth/signin/kokoro-iam', b'https://SECRET.test/SECRET')),
+            (headers, document.replace(b'method="post"', b'method="get"')),
+            (headers, document.replace(b'csrfToken', b'csrf_token')),
+            (headers, document.replace(token.encode(), b'SECRET')),
+            (headers, document.replace(b'</form>', b'<input type="hidden" name="csrfToken" value="SECRET"></form>')),
+            (headers, document.replace(b'</form>', b'<input type="hidden" name="callbackUrl" value="SECRET"></form>')),
+            (headers, document + document),
+            (headers, document.replace(b'</form>', b'')),
+            (headers, b'\xffSECRET'),
+        ]
+        for header, body in variants:
+            calls = []
+
+            def request(*args, **kwargs):
+                calls.append((args, kwargs))
+                return response(200, header, [], body)
+
+            with self.subTest(header=header, body=body):
+                with self.assertRaises(smoke.FormalLoginNavigationError) as raised:
+                    smoke.probe_formal_login_entry(443, origin, SimpleNamespace(add=lambda *_: None), browser_request=request)
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(raised.exception.safe_category(), "login_navigation_entry_form_200")
+                self.assertNotIn("SECRET", str(raised.exception))
+
     def test_formal_navigation_reports_each_safe_hop(self):
         origin = "https://web.example.test"
         response = smoke.web_smoke.BrowserResponse

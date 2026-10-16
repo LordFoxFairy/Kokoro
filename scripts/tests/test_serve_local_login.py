@@ -446,6 +446,40 @@ class LocalLoginGuards(unittest.TestCase):
             server.server_close()
             thread.join()
 
+    def test_plain_http_posts_the_browser_csrf_form_with_origin_and_cookie(self):
+        observed = []
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                body = self.rfile.read(int(self.headers["Content-Length"]))
+                observed.append((self.path, self.headers["Origin"], self.headers["Cookie"], self.headers["Content-Type"], body))
+                self.send_response(302)
+                self.send_header("Location", "/iam/oauth2/authorize?state=proof")
+                self.send_header("Set-Cookie", "next-auth.state=proof; Path=/")
+                self.end_headers()
+
+            def log_message(self, *_args):
+                pass
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = Thread(target=server.serve_forever)
+        thread.start()
+        try:
+            port = server.server_address[1]
+            origin = f"http://127.0.0.1:{port}"
+            response = launcher.http_browser(port, "/api/auth/signin/kokoro-iam", origin, method="POST", form={"csrfToken": "a+b &proof"}, origin=origin, cookie="csrf=proof")
+            self.assertEqual(response.status, 302)
+            self.assertEqual(response.location(), "/iam/oauth2/authorize?state=proof")
+            self.assertEqual(response.set_cookies, ["next-auth.state=proof; Path=/"])
+            self.assertEqual(observed, [("/api/auth/signin/kokoro-iam", origin, "csrf=proof", "application/x-www-form-urlencoded", b"csrfToken=a%2Bb+%26proof")])
+            with self.assertRaises(launcher.LaunchError):
+                launcher.http_browser(port, "/api/auth/signin/kokoro-iam", origin, method="POST", form={"csrfToken": "proof"}, origin="https://other.example.test")
+            self.assertEqual(len(observed), 1)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+
     def test_database_endpoints_are_read_from_environment_without_password(self):
         paths = {
             "--iam-node-bin": "/bin/echo",
