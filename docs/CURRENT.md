@@ -2,7 +2,9 @@
 
 Root PR38、Web PR14、BFF PR5、Billing PR1、IAM PR1 已通过普通 merge commit 合入各自 main。独立抓取核实五个 reviewed head 均为 main 祖先，五个合并结果的完整 tree 均与对应已验证 head 相同；同事 Skills/MCP 主线保留。五仓本地主干已 fast-forward，Root 已初始化的受影响 gitlink checkout 精确同步；本次已合并 topic 分支已清理。原 SET49 的完整测试失败仍未解决，不能因合并而改写为通过。GitHub Actions 当前账号付款/消费额度 annotation 导致 jobs 无执行步骤，不是新的代码执行结果。
 
-独立隔离启动复现了探测脚本与当前 Web 的不匹配：/login 已返回同源 CSRF 表单，旧脚本只接受 302。现有 Root probe 复用 hidden-form parser，严格验证单一 POST、固定 provider action、唯一 64 位 CSRF token、no-store 和响应头/文档 meta 的 no-referrer 策略后携带原 cookie 提交，再继续原 issuer redirect 与凭据表单检查；本地 HTTP transport 增加同源表单 POST 和 Origin 校验。未修改 Web/IAM 登录策略、Skills/连接器、数据库或业务契约。全部原负控保留，新增 form/token/cookie 正控、14 类坏表单零 POST 负控及真实 loopback HTTP 表单检查；旧实现真实 RED 为 14 FAIL、66 PASS、54 subtests PASS，修复后两受影响测试文件 68 PASS、68 subtests PASS。尚待隔离实际启动与浏览器验收；此脚本仍只用于隔离测试，不作为日常持久站点入口，不停止旧 supervisor 或迁移其数据。
+独立隔离启动复现了探测脚本与当前 Web 的不匹配：/login 已返回同源 CSRF 表单，旧脚本只接受 302。现有 Root probe 复用 hidden-form parser，严格验证单一 POST、固定 provider action、唯一 64 位 CSRF token、no-store 和响应头/文档 meta 的 no-referrer 策略后携带原 cookie 提交，再继续原 issuer redirect 与凭据表单检查；本地 HTTP transport 增加同源表单 POST 和 Origin 校验。未修改 Web/IAM 登录策略、Skills/连接器、数据库或业务契约。全部原负控保留，新增 form/token/cookie 正控、16 类坏表单零 POST 负控及真实 loopback HTTP 表单检查；旧实现真实 RED 为 14 FAIL、66 PASS、54 subtests PASS，最终两受影响测试文件 68 PASS、70 subtests PASS。独立审查发现的大小写混合 referrer meta 绕过已有双负控 RED，再按浏览器规则忽略 name 大小写后 GREEN。
+
+隔离组合已实际启动 Web/BFF/IAM/Billing；最终 probe 源码另对该运行实例通过。Computer Use 已完成正规登录，实际读取账户、Owner 团队、分享/归档空列表、积分账户未开通及套餐目录空态，通用设置呈现正常。没有注入积分账户、任务或购买事实，也没有修改用户偏好。Agent 未开启、Storage/Platform 未配置，不能称完整模型执行、文件、技能或连接器端到端通过。此脚本仍只用于隔离测试，不作为日常持久站点入口；旧 supervisor 与原数据保留。SET49 完整门的失败继续保留，本轮纯测试和选定页面验收不替代全仓门禁。
 
 ## SET49 最新主线与设置分支整合交付（2026-10-16）
 

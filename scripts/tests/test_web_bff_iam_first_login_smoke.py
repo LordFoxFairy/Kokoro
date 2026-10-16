@@ -65,6 +65,8 @@ class FirstLoginGuards(unittest.TestCase):
             (headers, b'\xffSECRET'),
             (headers, b'<meta name="referrer" content="origin">' + document),
             (headers, b'<meta name="referrer" content="no-referrer"><meta name="referrer" content="origin">' + document),
+            (headers, b'<meta name="referrer" content="no-referrer"><meta name="REFERRER" content="origin">' + document),
+            (headers, b'<meta name="REFERRER" content="origin">' + document),
         ]
         for header, body in variants:
             calls = []

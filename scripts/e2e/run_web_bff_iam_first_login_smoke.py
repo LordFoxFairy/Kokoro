@@ -79,7 +79,7 @@ class _BrowserStartForm(web_smoke.HiddenInputs):
 
     def handle_starttag(self, tag, attrs) -> None:
         values = dict(attrs)
-        if tag == "meta" and values.get("name") == "referrer":
+        if tag == "meta" and (values.get("name") or "").lower() == "referrer":
             self.referrer_policies.append(values.get("content"))
         super().handle_starttag(tag, attrs)
 
