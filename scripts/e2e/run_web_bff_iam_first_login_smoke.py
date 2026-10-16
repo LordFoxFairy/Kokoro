@@ -72,6 +72,18 @@ class _CredentialForm(HTMLParser):
             self.in_form = False
 
 
+class _BrowserStartForm(web_smoke.HiddenInputs):
+    def __init__(self) -> None:
+        super().__init__()
+        self.referrer_policies: list[str | None] = []
+
+    def handle_starttag(self, tag, attrs) -> None:
+        values = dict(attrs)
+        if tag == "meta" and values.get("name") == "referrer":
+            self.referrer_policies.append(values.get("content"))
+        super().handle_starttag(tag, attrs)
+
+
 def require_credential_inputs(document: bytes) -> None:
     try:
         page = _CredentialForm()
@@ -284,10 +296,9 @@ def probe_formal_login_entry(
                 or not has_cache_directive(
                     entrance.headers.get("cache-control", ""), "no-store"
                 )
-                or entrance.headers.get("referrer-policy") != "no-referrer"
             ):
                 raise FirstLoginError("formal browser start headers invalid")
-            start = web_smoke.HiddenInputs()
+            start = _BrowserStartForm()
             start.feed(entrance.body.decode("utf-8", "strict"))
             if (
                 start.forms != 1
@@ -295,6 +306,11 @@ def probe_formal_login_entry(
                 or start.action != "/api/auth/signin/kokoro-iam"
                 or set(start.hidden) != {"csrfToken"}
                 or re.fullmatch(r"[a-f0-9]{64}", start.hidden["csrfToken"]) is None
+                or (
+                    start.referrer_policies != ["no-referrer"]
+                    if start.referrer_policies
+                    else entrance.headers.get("referrer-policy") != "no-referrer"
+                )
             ):
                 raise FirstLoginError("formal browser start form invalid")
             credentials.add(start.hidden["csrfToken"])

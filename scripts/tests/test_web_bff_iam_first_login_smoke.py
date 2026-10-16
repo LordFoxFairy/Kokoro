@@ -25,9 +25,9 @@ class FirstLoginGuards(unittest.TestCase):
         origin = "https://web.example.test"
         token = "a" * 64
         response = smoke.web_smoke.BrowserResponse
-        document = f'<form method="post" action="/api/auth/signin/kokoro-iam"><input type="hidden" name="csrfToken" value="{token}"></form>'.encode()
+        document = f'<meta name="referrer" content="no-referrer"><form method="post" action="/api/auth/signin/kokoro-iam"><input type="hidden" name="csrfToken" value="{token}"></form>'.encode()
         replies = iter([
-            response(200, {"content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer"}, ["next-auth.csrf-token=proof; Path=/"], document),
+            response(200, {"content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "strict-origin-when-cross-origin"}, ["next-auth.csrf-token=proof; Path=/"], document),
             response(302, {"location": origin + "/iam/oauth2/authorize?state=state-secret&nonce=nonce-secret"}, [], b""),
             response(302, {"location": origin + "/auth/sign-in?state=state-secret&nonce=nonce-secret"}, [], b""),
             response(200, {"content-type": "text/html; charset=utf-8"}, [], b'<form method="post" action="/auth/sign-in?state=state-secret&amp;nonce=nonce-secret"><input type="hidden" name="csrf_token" value="issuer-proof"><input name="email" type="email"><input name="password" type="password"></form>'),
@@ -63,6 +63,8 @@ class FirstLoginGuards(unittest.TestCase):
             (headers, document + document),
             (headers, document.replace(b'</form>', b'')),
             (headers, b'\xffSECRET'),
+            (headers, b'<meta name="referrer" content="origin">' + document),
+            (headers, b'<meta name="referrer" content="no-referrer"><meta name="referrer" content="origin">' + document),
         ]
         for header, body in variants:
             calls = []
