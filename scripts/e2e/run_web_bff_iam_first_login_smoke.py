@@ -72,6 +72,18 @@ class _CredentialForm(HTMLParser):
             self.in_form = False
 
 
+class _BrowserStartForm(web_smoke.HiddenInputs):
+    def __init__(self) -> None:
+        super().__init__()
+        self.referrer_policies: list[str | None] = []
+
+    def handle_starttag(self, tag, attrs) -> None:
+        values = dict(attrs)
+        if tag == "meta" and (values.get("name") or "").lower() == "referrer":
+            self.referrer_policies.append(values.get("content"))
+        super().handle_starttag(tag, attrs)
+
+
 def require_credential_inputs(document: bytes) -> None:
     try:
         page = _CredentialForm()
@@ -263,12 +275,13 @@ def probe_formal_login_entry(
     jar = web_smoke.BrowserCookies(credentials.add)
     hop, reason, status = "entry", "request", None
 
-    def get(path: str):
+    def get(path: str, **kwargs):
         response = browser_request(
             web_port,
             path,
             web_origin,
             cookie=jar.header(urlsplit(path).path),
+            **kwargs,
         )
         jar.update(urlsplit(path).path, response.set_cookies)
         return response
@@ -276,6 +289,36 @@ def probe_formal_login_entry(
     try:
         entrance = get("/login")
         status, reason = entrance.status, "http"
+        if entrance.status == 200:
+            reason = "form"
+            if (
+                entrance.headers.get("content-type") != "text/html; charset=utf-8"
+                or not has_cache_directive(
+                    entrance.headers.get("cache-control", ""), "no-store"
+                )
+            ):
+                raise FirstLoginError("formal browser start headers invalid")
+            start = _BrowserStartForm()
+            start.feed(entrance.body.decode("utf-8", "strict"))
+            if (
+                start.forms != 1
+                or start.in_form
+                or start.action != "/api/auth/signin/kokoro-iam"
+                or set(start.hidden) != {"csrfToken"}
+                or re.fullmatch(r"[a-f0-9]{64}", start.hidden["csrfToken"]) is None
+                or (
+                    start.referrer_policies != ["no-referrer"]
+                    if start.referrer_policies
+                    else entrance.headers.get("referrer-policy") != "no-referrer"
+                )
+            ):
+                raise FirstLoginError("formal browser start form invalid")
+            credentials.add(start.hidden["csrfToken"])
+            status, reason = None, "request"
+            entrance = get(
+                start.action, method="POST", form=start.hidden, origin=web_origin
+            )
+            status, reason = entrance.status, "http"
         if entrance.status != 302 or entrance.body:
             raise FirstLoginError("formal entry rejected")
         reason = "target"

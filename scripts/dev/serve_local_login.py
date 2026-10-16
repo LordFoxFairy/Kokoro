@@ -21,7 +21,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from urllib.parse import unquote, urlsplit
+from urllib.parse import unquote, urlencode, urlsplit
 from uuid import uuid4
 
 E2E = Path(__file__).resolve().parents[1] / "e2e"
@@ -152,21 +152,40 @@ def require_owned_stack_alive(processes: list[subprocess.Popen[bytes]]) -> None:
 
 
 def http_browser(
-    port: int, path: str, origin: str, *, cookie: str = ""
+    port: int,
+    path: str,
+    web_origin: str,
+    *,
+    cookie: str = "",
+    method: str = "GET",
+    form: dict[str, str] | None = None,
+    origin: str | None = None,
 ) -> web_smoke.BrowserResponse:
-    """Read only the local, same-origin HTTP surface with bounded response size."""
-    if origin != f"http://127.0.0.1:{port}":
+    """Navigate local HTTP, including a same-origin browser form submission."""
+    if (
+        web_origin != f"http://127.0.0.1:{port}"
+        or method not in {"GET", "POST"}
+        or (form is not None) != (method == "POST")
+        or (origin is not None and origin != web_origin)
+        or (method == "POST" and origin != web_origin)
+    ):
         raise LaunchError("local browser origin mismatch")
-    target = web_smoke.browser_target(path, origin)
+    target = web_smoke.browser_target(path, web_origin)
     connection = http.client.HTTPConnection("127.0.0.1", port, timeout=12)
     try:
         headers = {
-            "Host": urlsplit(origin).netloc,
+            "Host": urlsplit(web_origin).netloc,
             "Accept": "text/html,application/json",
         }
         if cookie:
             headers["Cookie"] = cookie
-        connection.request("GET", target, headers=headers)
+        if origin is not None:
+            headers["Origin"] = origin
+        body = None
+        if form is not None:
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            body = urlencode(form).encode("utf-8")
+        connection.request(method, target, body=body, headers=headers)
         response = connection.getresponse()
         body = response.read(web_smoke.MAX_BODY + 1)
         if len(body) > web_smoke.MAX_BODY:
