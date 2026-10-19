@@ -1,3 +1,31 @@
+## 2026-10-19 当前轮集成收口：九个受影响 owner 已经正式 PR 合入
+
+本轮停止扩功能，只整合已交付历史、当前main和必要消费者契约。均由正式GitHub PR使用merge commit保留历史，核对已验证head与merge完整tree相等；未force push、未绕过分支保护。按用户明确约定不等待GitHub CI，不把未运行/失败记录说成绿色；每owner本地相关门和只读审查另有证据。Root最终组合验收记录在下段，当前不是正常运行环境部署说明。
+
+| Owner / PR | 精确合并 SHA | 本轮验证范围 |
+| --- | --- | --- |
+| [Storage #1](https://github.com/LordFoxFairy/kokoro-storage/pull/1) | `4a990617ffe36d739b5a3e622132c304d4d48d41` | 625 PASS/232 资源 SKIP；实际门与独审通过 |
+| [Scheduler #1](https://github.com/LordFoxFairy/kokoro-scheduler/pull/1) | `98be5e816957c8ee446d489933d22b4cccf2d5a0` | Go/contract 216 PASS/37 资源 SKIP；原同 SHA 真 PG63另列 |
+| [Platform #9](https://github.com/LordFoxFairy/kokoro-capability/pull/9) | `4a4e4c4ddfd3b51c0dca9f886daaeb6290a67257` | 默认2562 PASS/431资源SKIP；真PG/AS/Native46 PASS/0SKIP |
+| [Agent #45](https://github.com/LordFoxFairy/kokoro-agent/pull/45) | `9a2679f60f501a3fbe1eee7d0a6bb4f48ec7f243` | 默认2399 PASS/773 marker deselected；真 outbox/ingress/terminal62 PASS |
+| [IAM #3](https://github.com/LordFoxFairy/kokoro-iam/pull/3) | `7cbe988d8f3868f293a15120135e1885de8516ff` | 默认1510 PASS；真 PG/Redis/HTTP127 PASS/0SKIP |
+| [Billing #3](https://github.com/LordFoxFairy/kokoro-billing/pull/3) | `3f5e0dacc25c1e24d87cbe0c59337d3b909466de` | 默认1527 PASS/492SKIP；真只读/Schema36 PASS/0SKIP |
+| [BFF #10](https://github.com/LordFoxFairy/kokoro-bff/pull/10) | `08a2120ea85b6cad5cf6e839ef14dbf83d908b92` | PR9承接双父；PR10配对IAM0.14/Billing v1；contract845/默认1489+3SKIP；原13真PG/Redis346、当前双owner HTTP2 PASS |
+| [App #36](https://github.com/LordFoxFairy/kokoro-app/pull/36) | `182b11a678e41694b65ebb294fa11b4952b425a0` | 含原PR37/38和local全部历史；contract288/architecture50/全量4237 PASS；桌面手机Playwright38 PASS、0retry |
+| [Admin #2](https://github.com/LordFoxFairy/kokoro-admin/pull/2) | `5b73d2c387e871250eef2cc29034788e6e9ca060` | 默认185 PASS/0SKIP；25operations/120definitions语义闭包不变 |
+
+System、Mori、web-shared保留当前main组合，不夹带Mori等无关mixed。App原PR37与38由GitHub随精确祖先合入自动标记MERGED；不再逐commit建PR。原失败日志不覆盖：App私有2GiB预算触发Next两次exit77由原序列观测证实；最终仅将私有验证堆上限设4GiB，未修改生产行为、测试skip/retry/timeout。Billing旧完整integration157FAIL等历史未复验范围仍保留，不能以本轮定向通过抹掉。
+
+**明确留待下一轮，不阻塞本次已审源码收口：** BFF MCP availability/正式协调器装配与严格消费者全链、App知识/记忆及资料库其余未接mixed、完整Manus页面逐态对照/功能手册、复杂聊天与项目细节。原混合工作逐文件hash保护，未提交/回滚/覆盖他人改动；不是把这些未验工作冒充完成功能。正常工作树因此部分仍停留原topic，只有本地main引用同步；这不同于全部运行服务已切换新代码。
+
+**运行边界：** 本轮未改正常数据库、身份、登录配置、权限、积分或任务开关，未重启正常服务。正常模型调用、实际工具执行和扣费继续暂停；Billing正常依赖未激活，所有真实资源用例仅限自有隔离范围。分支仅在精确head已合入且无人占用后删除；其他managed worktree及承载mixed的topic保留。不新建下一轮PR，完成本Root PR后再与用户对齐下一轮。
+
+**本轮最终 Root 验证：** 876输入冻结无源码漂移；完整 `python -m pytest scripts/tests -q` 为 **1845 PASS /3 原资源 SKIP /0 FAIL**；12子仓全部初始化的拓扑检查PASS，diff/check通过，当前 BFF→IAM/Billing、App/Admin→BFF四份原始发布物字节及固定commit/digest核对exact。Root冲突与三个既有测试fixture配对经只读审查，无确定P0–P2。第一次完整门1831PASS/14FAIL/3SKIP原日志保留：11个Billing preflight mock补`admin=False`，原六personal Skill路径按本smoke的完整method集合精确选择，历史W1 checkpoint改在固定真实Root932fc原始inventory/原checkpoint字节及测试自有index上验；不改checker、历史oracle或生产行为。私有Storage依赖只读复用既有owner安装，未在symlink内执行pnpm。
+
+**不冒充全仓通过：** 既有跨仓静态标准审计仍 **FAIL：239 violations /7 unverified**；旧默认consumer-inventory仍为历史发布事实，直接用于当前组合的CLI为 **FAIL：313 diagnostics（含已声明broken边）**，并未将历史checkpoint通过冒充当前完整契约图已接受。只有上面四份本轮必要发布物配对和owner各自相关门通过；其余长期规范/旧图更新、全产品运行/视觉验收另列下一轮，不为本次合并扩大修复。全部原失败、最终门、原mixed冻结、远端merge及清理收据仅存ignored `var/dev/merge-inventory-20261019`。
+
+---
+
 ## SET50 设置功能已合入主干，隔离登录探测同步浏览器表单（2026-10-16）
 
 Root PR38、Web PR14、BFF PR5、Billing PR1、IAM PR1 已通过普通 merge commit 合入各自 main。独立抓取核实五个 reviewed head 均为 main 祖先，五个合并结果的完整 tree 均与对应已验证 head 相同；同事 Skills/MCP 主线保留。五仓本地主干已 fast-forward，Root 已初始化的受影响 gitlink checkout 精确同步；本次已合并 topic 分支已清理。原 SET49 的完整测试失败仍未解决，不能因合并而改写为通过。GitHub Actions 当前账号付款/消费额度 annotation 导致 jobs 无执行步骤，不是新的代码执行结果。
@@ -685,6 +713,26 @@ Root运行基线 `b264abe0`、Web `77ebea4`、IAM `a63bcd0`、BFF `95fbd894`、B
 当前 Product Session runner 消费现十三 scope、启用 trusted fixture，并显式使用既有 preconsented 流程；callback 的 pathname、closed query、state、issuer 校验保持。共享旧 RP-only 模块只增加当前 scope 常量；其历史可执行入口及底层 legacy scope 保持原样，不声称旧入口已适配当前固定 tenant UI。既有稳定登录失败分类继续保留，未输出凭据或授权 query。
 
 Root 四个相关 harness 测试文件共 102 项通过；Ruff F 类检查通过，全配置原 25 项基线诊断未增加。IAM 413 项真实隔离 scope/lifecycle 测试、1435 项纯测试及 format/lint/typecheck/contract generation/SDK/build 通过；contract:breaking 受固定工具下载的官方 Go 代理超时影响，合同字节未变但不计门禁通过。Web 前一相关七文件154项账户/个性化/modal、契约278项及lint/typecheck/build通过，内部URL修正后四相关文件112项通过；本次纯CSS修正后architecture50项与build通过，未重复未变化业务/contract检查。既存全测及i18n缺口仍保留。实际浏览器正式登录、本人账户资料读取/ID复制/issuer确认退出/重新登录恢复均已通过；四字段个性化在前一候选真实保存且全页刷新恢复，键盘焦点为可见2px实线。新主题候选正式登录后，账户卡片浅/深色实际对比度15.96/13.41且均可读，原自动主题已恢复；嵌入Billing卡片与整个设置仍未完成。
+
+## 2026-10-13 App 运行恢复与导航补验
+
+App、IAM、Storage 的原开发进程已退出，本轮重新以独立后台源码进程启动，未重启基础设施或 Mori。已有浏览器会话正常回到 App，没有发送新的账号/密码输入；此前“需用户登录”的状态已更新。
+
+入口消失的根因是上一轮仅补 Product/Site/Policy，正式 manifest 的 navigation 仍为空，而 App 有意不以 preview 菜单兜底。现通过 System 既有 Application/Presentation API 补齐 en-US、zh-CN 的五个真实注册入口：Agent、Skills、Connectors、Scheduled、Library；没有改 App 布局、权限、Schema 或添加假菜单。当前 feature_key 为 null 的页面导航不声明新业务执行许可；后端仍逐请求授权。
+
+真实已登录浏览器确认五个入口及对应面板可达，Skills 两读、MCP provider 目录、排程集合、个人文件、manifest、projects、direct sessions 均得到 200，并呈现 owner 的真实空态。Billing 缺账户 404 和历史记忆会话详情 404 单独保留，不冒充整个产品零错误；Manus 额外的电脑/创作等页面尚未实现。截图与运行配置仅本地 ignored 归档，未新增测试或脚本。
+
+以下是同日先前提交与阶段记录；当前运行/浏览器状态以上段为准。
+
+## 2026-10-13 App 503/404 与 v1 修复
+
+App `8dd05cdbf973938646a1d4c7f5437bb1d6d806f5`、Billing `1ceeae550f05857d1e7fa0da1e83af23a552f0ca`、Platform（物理 Capability）`6b4c9db6719d2f5fd37a752921e603f4b0221de6`、BFF `e43c0e680bbc2a1bf9aa284f28bac201d82164a9` 为本地 topic 提交；尚未推送/PR/合并，不更新 Root gitlink 冒充已发行组合。
+
+三处后端源码进程已配对重载，readiness 200；复用既有基础设施，Mori 未启动。System 通过既有 Product/Site/Policy API 配置后，App runtime manifest en-US/zh-CN 均 200。真实 owner＋隔离 BFF 组合的 Skills 两读 200；Billing v1 两读明确缺账户 404，不造账户或资金。该组合仅人类 SessionAdmission 为测试替身；当前浏览器停在登录页，正常用户登录后的 App 页面验收待补。
+
+Root 最新验证：App 250 PASS；Platform相关123 PASS/4 SKIP；BFF相关165 PASS；Billing全测试1414 PASS/480 SKIP，隔离真实 PostgreSQL32 PASS。对应 lint/typecheck/build 与当前 owner/consumer 生成检查通过。BFF全测试1212 PASS/3 FAIL/3 SKIP；contract629 PASS/2 FAIL，失败是既存14.7历史逆链缺口，未删断言/旧hash。Platform既存 OAuth spy 单测失败未扩散修复。不宣称全仓通过。
+
+本片不改目录、Schema 或其他内部认证 surface。详细任务、验证与剩余 owner 见 [当前任务记录](task.md)；下方历史按原时点理解。
 
 ### T-K03.20 当前闭环台账（2026-10-13）
 

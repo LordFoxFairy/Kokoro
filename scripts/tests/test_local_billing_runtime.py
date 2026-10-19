@@ -348,7 +348,9 @@ def test_launcher_closes_consumers_then_billing_then_iam_and_gates_database(
     monkeypatch.setattr(launcher.signal, "signal", Mock())
     with pytest.raises(launcher.LaunchError):
         launcher.main([])
-    preflight.assert_called_once_with(storage=False, platform=False, billing=True)
+    preflight.assert_called_once_with(
+        storage=False, platform=False, billing=True, admin=False
+    )
     assert any(
         call.args == (args.billing_node_bin, "v24.20.0", args.billing_node_bin.parent)
         for call in launcher.session.node_environment.call_args_list

@@ -270,6 +270,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Enable owned real Platform Skills with owned real Storage",
     )
     parser.add_argument(
+        "--platform-mcp-only",
+        action="store_true",
+        help="Run the owned Platform MCP and Custom API surfaces without Storage",
+    )
+    parser.add_argument(
+        "--platform-admin",
+        action="store_true",
+        help="Grant only this isolated fixture's product user Platform administrator access",
+    )
+    parser.add_argument(
+        "--admin-node-bin",
+        type=Path,
+        help="Run the owned Admin console through Web's same-origin /manage gateway",
+    )
+    parser.add_argument(
         "--storage-node-bin",
         type=Path,
         help="Enable owned real Storage using explicit existing local S3/ClamAV inputs",
@@ -293,8 +308,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         args.billing_node_bin = node
     if not 1 <= args.web_port <= 65535:
         parser.error("web_port must be between 1 and 65535")
-    if args.platform_node_bin is not None and args.storage_node_bin is None:
+    if (
+        args.platform_node_bin is not None
+        and args.storage_node_bin is None
+        and not args.platform_mcp_only
+    ):
         parser.error("Platform requires explicit owned Storage")
+    if args.platform_mcp_only and args.platform_node_bin is None:
+        parser.error("MCP-only Platform requires --platform-node-bin")
+    if args.platform_mcp_only and args.storage_node_bin is not None:
+        parser.error("MCP-only Platform must not start Storage")
+    if args.platform_admin and args.platform_node_bin is None:
+        parser.error("platform administrator fixture requires owned Platform")
+    if args.admin_node_bin is not None and not args.platform_admin:
+        parser.error("Admin console fixture requires --platform-admin")
     if args.storage_node_bin is not None:
         node = args.storage_node_bin.expanduser().resolve()
         if not node.is_file() or not os.access(node, os.X_OK):
@@ -339,8 +366,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("set KOKORO_LOCAL_POSTGRES_URL and KOKORO_LOCAL_REDIS_URL")
     if urlsplit(args.postgres_admin_url).password or urlsplit(args.redis_url).password:
         parser.error("use local passwordless endpoints for this foreground fixture")
-    for name in ("iam_node_bin", "bff_node_bin", "web_node_bin"):
-        node = getattr(args, name).expanduser().resolve()
+    for name in ("iam_node_bin", "bff_node_bin", "web_node_bin", "admin_node_bin"):
+        configured = getattr(args, name)
+        if configured is None:
+            continue
+        node = configured.expanduser().resolve()
         if not node.is_file() or not os.access(node, os.X_OK):
             parser.error(f"{name} must be executable")
         setattr(args, name, node)
@@ -368,7 +398,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def verify_login_release_inputs(
-    *, storage: bool = False, platform: bool = False, billing: bool = False
+    *, storage: bool = False, platform: bool = False, billing: bool = False, admin: bool = False
 ) -> None:
     """Admit the selected owners from one committed Root release."""
     root = web_smoke.ROOT
@@ -391,6 +421,8 @@ def verify_login_release_inputs(
         owners += ((apps / "kokoro-capability", "kokoro-capability"),)
     if billing:
         owners += ((apps / "kokoro-billing", "kokoro-billing"),)
+    if admin:
+        owners += ((apps / "kokoro-admin", "kokoro-admin"),)
     for repo, owner in owners:
         path = f"apps/{owner}"
         if repo != apps / owner or not repo.is_dir() or repo.is_symlink():
@@ -427,6 +459,7 @@ def main(argv: list[str] | None = None) -> int:
             storage=getattr(args, "storage_node_bin", None) is not None,
             platform=getattr(args, "platform_node_bin", None) is not None,
             billing=getattr(args, "billing_node_bin", None) is not None,
+            admin=getattr(args, "admin_node_bin", None) is not None,
         )
     except runtime.SmokeError:
         raise LaunchError("release source preflight failed") from None
@@ -446,6 +479,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     web_env = session.node_environment(
         args.web_node_bin, "v22.22.2", args.web_node_bin.parent
+    )
+    # Test harness callers predate the optional Admin console flag. Keep this
+    # optional at the orchestration boundary so they continue to exercise the
+    # login stack without constructing an Admin process.
+    admin_node_bin = getattr(args, "admin_node_bin", None)
+    admin_env = (
+        None
+        if admin_node_bin is None
+        else session.node_environment(
+            admin_node_bin, "v22.22.2", admin_node_bin.parent
+        )
     )
     credentials = previous.CredentialRegistry(
         args.postgres_admin_url, args.redis_url, iam_owner_token
@@ -485,6 +529,8 @@ def main(argv: list[str] | None = None) -> int:
     ) as temp:
         directory = Path(temp)
         install_node_parent_guard(directory, iam_env, bff_env, web_env)
+        if admin_env is not None:
+            install_node_parent_guard(directory, admin_env)
         if storage_env is not None:
             install_node_parent_guard(directory, storage_env)
         if platform_env is not None:
@@ -570,6 +616,8 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 if platform_env is not None:
                     iam_env["IAM_TEST_SKILL_SANDBOX_MODE"] = "1"
+                if getattr(args, "platform_admin", False):
+                    iam_env["IAM_TEST_PLATFORM_ADMIN"] = "1"
                 iam_attempted = True
                 iam = subprocess.Popen(
                     [str(args.iam_node_bin), "--import", "tsx", str(web_smoke.HOST)],
@@ -621,16 +669,17 @@ def main(argv: list[str] | None = None) -> int:
                 stage = "BFF startup"
                 secret = secrets.token_urlsafe(32)
                 credentials.add(secret)
+                if platform_env is not None:
+                    platform = platform_runtime.LocalPlatformRuntime(
+                        node=args.platform_node_bin,
+                        node_environment=platform_env,
+                        directory=directory,
+                        credentials=credentials,
+                        log=log,
+                    )
+                storage_result = None
                 if storage_env is not None:
                     stage = "Storage startup"
-                    if platform_env is not None:
-                        platform = platform_runtime.LocalPlatformRuntime(
-                            node=args.platform_node_bin,
-                            node_environment=platform_env,
-                            directory=directory,
-                            credentials=credentials,
-                            log=log,
-                        )
                     storage = storage_runtime.LocalStorageRuntime(
                         node=args.storage_node_bin,
                         environment=args.storage_environment,
@@ -658,16 +707,22 @@ def main(argv: list[str] | None = None) -> int:
                         ),
                     )
                     bff_env.update(storage_result)
-                    if platform is not None and sandbox_ready is not None:
-                        stage = "Platform startup"
-                        bff_env.update(
-                            platform.start(
-                                owner_application_url,
-                                args.redis_url,
-                                sandbox_ready,
-                                storage_result["KOKORO_STORAGE_RPC_BASE_URL"],
-                            )
+                if platform is not None and sandbox_ready is not None:
+                    stage = "Platform startup"
+                    bff_env.update(
+                        platform.start(
+                            application_db_url,
+                            args.redis_url,
+                            sandbox_ready,
+                            (
+                                None
+                                if storage_result is None
+                                else storage_result["KOKORO_STORAGE_RPC_BASE_URL"]
+                            ),
+                            origin,
+                            include_skills=storage_result is not None,
                         )
+                    )
                 bff_port = runtime.free_port()
                 bff_env.update(
                     {
@@ -725,6 +780,59 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 processes.append(bff)
                 runtime.wait_ready(f"http://127.0.0.1:{bff_port}", bff)
+                if admin_env is not None:
+                    stage = "Admin startup"
+                    admin_port = runtime.free_port()
+                    admin_root = web_smoke.ROOT / "apps" / "kokoro-admin"
+                    admin_entry = (
+                        admin_root
+                        / "node_modules"
+                        / "next"
+                        / "dist"
+                        / "bin"
+                        / "next"
+                    )
+                    if not admin_entry.is_file():
+                        raise LaunchError("Admin runtime entry is unavailable")
+                    admin_env.update(
+                        {
+                            "NODE_ENV": "development",
+                            "KOKORO_ADMIN_WEB_ORIGIN": origin,
+                            "KOKORO_TENANT_ID": ready.tenant_id,
+                        }
+                    )
+                    web_env["KOKORO_ADMIN_INTERNAL_ORIGIN"] = (
+                        f"http://127.0.0.1:{admin_port}"
+                    )
+                    admin = subprocess.Popen(
+                        [
+                            str(admin_node_bin),
+                            str(admin_entry),
+                            "dev",
+                            "-H",
+                            "127.0.0.1",
+                            "-p",
+                            str(admin_port),
+                        ],
+                        cwd=admin_root,
+                        env=admin_env,
+                        stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        stderr=log,
+                        start_new_session=True,
+                    )
+                    processes.append(admin)
+                    deadline = time.monotonic() + 45
+                    while time.monotonic() < deadline and admin.poll() is None:
+                        try:
+                            with socket.create_connection(
+                                ("127.0.0.1", admin_port), timeout=0.2
+                            ):
+                                break
+                        except OSError:
+                            time.sleep(0.2)
+                    else:
+                        raise LaunchError("Admin console did not become ready")
                 stage = "Web startup"
                 next_root = web_smoke.isolated_next(directory)
                 server_path = next_root / "server.cjs"
@@ -777,6 +885,8 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Local login: {origin}/login", flush=True)
                 print(f"Private login credentials: {credential_path}", flush=True)
                 mode = "real Chat (empty Skills)" if args.chat else "login only"
+                if admin_env is not None:
+                    mode += "; Admin via /manage"
                 print(
                     "Mode: "
                     + mode
