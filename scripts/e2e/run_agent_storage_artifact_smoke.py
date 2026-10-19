@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Isolated real Agent claimed Run → Storage v2 → MinIO/ClamAV smoke.
+"""Isolated real Agent claimed Run → Storage v3 → MinIO/ClamAV smoke.
 
 Run with apps/kokoro-agent/.venv/bin/python. Shared infrastructure is reused,
 not started or reset. The explicit test bucket must be exclusive to this run.
@@ -35,6 +35,51 @@ EICAR = b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
 
 class SmokeError(RuntimeError):
     """Failure safe to print without URLs, credentials, or file content."""
+
+
+class _CountingStorageTransport:
+    """Observe delivery operations without dropping the selected object version."""
+
+    def __init__(self, transport: object) -> None:
+        self.transport = transport
+        self.operations: list[str] = []
+
+    async def call(
+        self, method: str, request: object, headers: dict[str, str]
+    ) -> object:
+        self.operations.append(method)
+        return await self.transport.call(method, request, headers)
+
+    async def put(self, reference: object, content: bytes) -> str:
+        self.operations.append("signed_put")
+        return await self.transport.put(reference, content)
+
+
+class _ProjectionStream:
+    """Freeze independent queued facts before the real notification is sent."""
+
+    def __init__(self, bus: object, runs: object, run_id: str) -> None:
+        self.bus, self.runs, self.run_id = bus, runs, run_id
+        self.frames: list[dict[str, object]] = []
+
+    async def read_all(self, stream: str) -> list[object]:
+        return await self.bus.read_all(stream)
+
+    async def publish(
+        self, stream: str, event: dict[str, object], *, maxlen: int
+    ) -> object:
+        queued = [
+            frame
+            for frame in await self.runs.list_unpublished_outbox()
+            if frame.run_id == self.run_id
+            and frame.durable_seq == event.get("durable_seq")
+            and frame.event_id == event.get("event_id")
+            and event.get("run_id") == self.run_id
+        ]
+        if len(queued) != 1:
+            raise SmokeError("notification lacks one exact queued outbox fact")
+        self.frames.append(queued[0].model_dump())
+        return await self.bus.publish(stream, event, maxlen=maxlen)
 
 
 def _local_origin(value: str, label: str) -> str:
@@ -363,7 +408,7 @@ def select_run_chat_events(
     if not run_id:
         raise SmokeError("delivery Chat run identity missing")
     selected = [event for event in session_events if event.get("run_id") == run_id]
-    if len(selected) != 3:
+    if len(selected) != 4:
         raise SmokeError("delivery Chat run event cardinality drift")
     return selected
 
@@ -382,7 +427,9 @@ def verify_event_chain(
         raise SmokeError("delivery critical outbox order or cardinality drift")
     if [frame.get("durable_seq") for frame in outbox] != [1, 2, 3]:
         raise SmokeError("delivery critical outbox sequence drift")
-    if [frame.get("index") for frame in outbox] != [0, 1, 2]:
+    # Atomic finalization first commits interaction.state to Chat at index 2;
+    # the terminal critical frame follows at index 3, without a second outbox seq.
+    if [frame.get("index") for frame in outbox] != [0, 1, 3]:
         raise SmokeError("delivery critical outbox index drift")
     ids = [frame.get("event_id") for frame in outbox]
     if len(set(ids)) != 3 or not all(isinstance(item, str) and item for item in ids):
@@ -397,11 +444,21 @@ def verify_event_chain(
     if [record.get("event_type") for record in chat] != [
         "run.started",
         "delivery",
+        "interaction.state",
         "run.completed",
     ]:
         raise SmokeError("delivery Chat projection order or cardinality drift")
-    if [record.get("source_index") for record in chat] != [0, 1, 2]:
+    if [record.get("source_index") for record in chat] != [0, 1, 2, 3]:
         raise SmokeError("delivery Chat projection source index drift")
+    if json.loads(str(chat[2].get("payload_json", ""))) != {
+        "interaction_revision": 1,
+        "pause_revision": 0,
+        "pause_ref": None,
+        "phase": "terminal",
+        "groups": [],
+        "action_result": None,
+    }:
+        raise SmokeError("delivery terminal interaction state drift")
     chat_payload = json.loads(str(chat[1].get("payload_json", "")))
     if (
         chat_payload.get("artifact_id") != artifact_id
@@ -415,6 +472,8 @@ def verify_event_chain(
         raise SmokeError("delivery live stream duplicate or drifted event ID")
     if [event.get("durable_seq") for event in wire] != [1, 2, 3]:
         raise SmokeError("delivery live stream sequence drift")
+    if [event.get("index") for event in wire] != [0, 1, 3]:
+        raise SmokeError("delivery live stream index drift")
     wire_payload = wire[1].get("payload")
     if (
         not isinstance(wire_payload, dict)
@@ -450,7 +509,7 @@ def _storage_read(
     }
     with httpx.Client(timeout=15, follow_redirects=False, trust_env=False) as client:
         response = client.post(
-            f"{base}/kokoro.storage.v2.StorageService/GetFinalArtifactDownloadReference",
+            f"{base}/kokoro.storage.v3.StorageService/GetFinalArtifactDownloadReference",
             json=body,
             headers=headers,
         )
@@ -477,7 +536,12 @@ async def _assert_agent_event_projection(
     from datetime import UTC, datetime
 
     from kokoro_agent.domain.run.scope import RunScope
-    from kokoro_agent.execution.events import RunEmitter
+    from kokoro_agent.domain.run.models import (
+        ExecutionTerminalAuthority,
+        RunTerminalOutcome,
+        RunUsageSegment,
+    )
+    from kokoro_agent.execution.events import RunEmitter, outbox_wire_event
     from kokoro_agent.infrastructure.postgres_chat_repository import (
         PostgresChatRepositorySettings,
         make_chat_repository,
@@ -485,6 +549,7 @@ async def _assert_agent_event_projection(
     from kokoro_agent.protocol import (
         RunCompletedPayload,
         RunStartedPayload,
+        RUN_EVENTS_MAXLEN,
         run_events_stream,
     )
     from kokoro_agent.streams.factory import StreamSettings, make_stream
@@ -492,6 +557,7 @@ async def _assert_agent_event_projection(
     scope = RunScope.of(run)
     stream = run_events_stream(run.run_id)
     bus = make_stream(StreamSettings(redis_url=redis_url))
+    observed = _ProjectionStream(bus, runs, run.run_id)
     owned_stream = False
     try:
         if await bus.read_all(stream):
@@ -513,7 +579,7 @@ async def _assert_agent_event_projection(
                 updated_at=datetime.now(UTC),
             )
             emitter = await RunEmitter.attach(
-                bus,
+                observed,
                 run.run_id,
                 outbox=runs,
                 lease=lease,
@@ -533,15 +599,40 @@ async def _assert_agent_event_projection(
             await emitter.ensure_delivery_events()
             if len(await bus.read_all(stream)) != len(first):
                 raise SmokeError("delivery replay double-published")
-            if not await runs.try_mark_terminal(run.run_id, lease):
-                raise SmokeError("Agent Run terminal CAS failed")
-            await emitter.emit(
-                RunCompletedPayload(status="completed", token_usage=None)
+            snapshot = tuple(await runs.list_delivery_journal(run.run_id))
+            committed = await runs.finalize_terminal(
+                run.run_id,
+                ExecutionTerminalAuthority(lease=lease),
+                RunTerminalOutcome(
+                    payload=RunCompletedPayload(status="completed", token_usage=None),
+                    usage=RunUsageSegment(input_tokens=0, output_tokens=0),
+                ),
+                snapshot,
             )
-            await emitter.ensure_delivery_events()
+            if committed.status not in {
+                "committed",
+                "replayed",
+            } or not await runs.is_terminal(run.run_id):
+                raise SmokeError("Agent atomic terminal commit was not confirmed")
+            terminal = [
+                frame
+                for frame in await runs.list_unpublished_outbox()
+                if frame.run_id == run.run_id
+            ]
+            if len(terminal) != 1 or terminal[0].kind != "run.completed":
+                raise SmokeError(
+                    "Agent terminal queued identity is missing or ambiguous"
+                )
+            await runs.verify_terminal_frame(terminal[0])
+            await observed.publish(
+                stream, outbox_wire_event(terminal[0]), maxlen=RUN_EVENTS_MAXLEN
+            )
+            await runs.mark_critical_published(run.run_id, terminal[0].durable_seq)
             wire = [item.event for item in await bus.read_all(stream)]
-            reconcile = await runs.reconcile_receipts(run.run_id, republish_grace_ms=0)
-            outbox = [frame.model_dump() for frame in reconcile.republish]
+            reconcile = await runs.reconcile_receipts(run.run_id)
+            if reconcile.receipt_state_lost or reconcile.rejected_seq is not None:
+                raise SmokeError("Agent receipt reconciliation rejected current facts")
+            outbox = observed.frames
             session_chat_events = [
                 record.model_dump()
                 for record in await chat.replay(
@@ -609,22 +700,7 @@ async def _agent_cases(
         async with StorageDeliveryTransport(
             base, object_origin, agent_secret
         ) as transport:
-
-            class CountingTransport:
-                def __init__(self) -> None:
-                    self.operations: list[str] = []
-
-                async def call(
-                    self, method: str, request: object, headers: dict[str, str]
-                ) -> object:
-                    self.operations.append(method)
-                    return await transport.call(method, request, headers)
-
-                async def put(self, reference: object, content: bytes) -> None:
-                    self.operations.append("signed_put")
-                    await transport.put(reference, content)
-
-            counted = CountingTransport()
+            counted = _CountingStorageTransport(transport)
             delivery = StorageDeliveryClient(runs, counted)
 
             async def claimed_publish(
@@ -635,6 +711,8 @@ async def _agent_cases(
                     run_id=f"run-{suffix}-{run_token}",
                     session_id=scope,
                     feature_key="general",
+                    project_ref=None,
+                    selected_skill_source_refs=(),
                     execution_identity=identity,
                     input=RunInput(
                         message_id=f"message-{suffix}-{run_token}",
