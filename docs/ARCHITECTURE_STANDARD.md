@@ -20,6 +20,13 @@
 
 Root 为 superproject 而非业务子仓，本节集中记录技术、API和数据三个设计面；对应业务三设计仍由各 owner 唯一维护，不在 Root 另建可编辑业务契约/Schema 副本。
 
+## 2026-10-13 内部认证决定
+
+内部 owner 的机器身份不重复走 IAM OAuth/token introspection；采用接收 owner 本地验证的专用服务凭据与可信上下文。
+IAM 保留浏览器登录及用户身份/权限事实，第三方 MCP OAuth 和 Billing 业务资金授权保持。
+实施顺序、兼容删除及未完成边界见 [ADR-035](kokoro-handbook/decisions/ADR-035-direct-internal-service-authentication.md)。
+这是目标决定，尚未表示正常运行链路已切换。
+
 本文只定义系统级边界。语言目录、代码风格与 SQL 细节由以下唯一专项手册负责：
 
 - [PostgreSQL 与 SQL 工程规范](kokoro-handbook/standards/03-sql-and-postgresql.md)

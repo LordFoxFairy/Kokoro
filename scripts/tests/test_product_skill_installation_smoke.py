@@ -34,11 +34,6 @@ def test_collection_and_six_operations_match_pinned_bff_machine_contract():
             / "contract/tests/v1-operations.json"
         ).read_text()
     )["operations"]
-    actual = {
-        (x["method"], x["path"])
-        for x in operations
-        if "skill-installations" in x["path"]
-    }
     expected = {
         ("POST", m.COLLECTION),
         ("GET", m.COLLECTION),
@@ -46,6 +41,15 @@ def test_collection_and_six_operations_match_pinned_bff_machine_contract():
         ("DELETE", m.COLLECTION + "/{installation_id}"),
         ("PUT", m.COLLECTION + "/{installation_id}/enabled"),
         ("GET", m.COLLECTION + "/{installation_id}/package"),
+    }
+    # This smoke exercises these six personal lifecycle routes, not project
+    # installations or the separately delivered update command. Still reject
+    # a missing route or an unexpected verb on any selected path.
+    selected_paths = {path for _method, path in expected}
+    actual = {
+        (x["method"], x["path"])
+        for x in operations
+        if x["path"] in selected_paths
     }
     assert expected == actual
     assert m.COLLECTION == "/v1/skill-installations"

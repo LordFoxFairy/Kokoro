@@ -259,11 +259,15 @@ def test_event_chain_rejects_missing_delivery_or_wrong_terminal_order() -> None:
 def test_chat_event_selection_keeps_only_current_run_in_same_session() -> None:
     prior = [
         {"run_id": "run_first", "source_index": index, "event_type": kind}
-        for index, kind in enumerate(("run.started", "delivery", "run.completed"))
+        for index, kind in enumerate(
+            ("run.started", "delivery", "interaction.state", "run.completed")
+        )
     ]
     current = [
         {"run_id": "run_second", "source_index": index, "event_type": kind}
-        for index, kind in enumerate(("run.started", "delivery", "run.completed"))
+        for index, kind in enumerate(
+            ("run.started", "delivery", "interaction.state", "run.completed")
+        )
     ]
     assert smoke.select_run_chat_events([*prior, *current], "run_second") == current
 
@@ -272,7 +276,8 @@ def test_chat_event_selection_rejects_cross_run_delivery_mix() -> None:
     mixed = [
         {"run_id": "run_second", "source_index": 0, "event_type": "run.started"},
         {"run_id": "run_first", "source_index": 1, "event_type": "delivery"},
-        {"run_id": "run_second", "source_index": 2, "event_type": "run.completed"},
+        {"run_id": "run_second", "source_index": 2, "event_type": "interaction.state"},
+        {"run_id": "run_second", "source_index": 3, "event_type": "run.completed"},
     ]
     with pytest.raises(smoke.SmokeError, match="run event cardinality"):
         smoke.select_run_chat_events(mixed, "run_second")
@@ -297,7 +302,7 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
         {
             "kind": "run.completed",
             "durable_seq": 3,
-            "index": 2,
+            "index": 3,
             "event_id": "end",
             "payload_json": '{"status":"completed"}',
         },
@@ -310,8 +315,13 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
             "payload_json": '{"artifact_id":"artifact-1","tool_call_id":"tool-1","artifact_kind":"document"}',
         },
         {
-            "event_type": "run.completed",
+            "event_type": "interaction.state",
             "source_index": 2,
+            "payload_json": '{"interaction_revision":1,"pause_revision":0,"pause_ref":null,"phase":"terminal","groups":[],"action_result":null}',
+        },
+        {
+            "event_type": "run.completed",
+            "source_index": 3,
             "payload_json": '{"status":"completed"}',
         },
     ]
@@ -337,7 +347,7 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
         {
             "kind": "run.completed",
             "durable_seq": 3,
-            "index": 2,
+            "index": 3,
             "event_id": "end",
             "payload": {"status": "completed"},
         },
@@ -361,3 +371,145 @@ def test_event_chain_accepts_one_ordered_durable_delivery() -> None:
         smoke.verify_event_chain(
             outbox, chat, wire + [wire[1]], "artifact-1", "tool-1", "document"
         )
+
+    with pytest.raises(smoke.SmokeError, match="Chat projection"):
+        smoke.verify_event_chain(
+            outbox,
+            [chat[0], chat[1], chat[3]],
+            wire,
+            "artifact-1",
+            "tool-1",
+            "document",
+        )
+    wrong_state = [dict(item) for item in chat]
+    wrong_state[2]["payload_json"] = wrong_state[2]["payload_json"].replace(
+        '"terminal"', '"active"'
+    )
+    with pytest.raises(smoke.SmokeError, match="interaction"):
+        smoke.verify_event_chain(
+            outbox, wrong_state, wire, "artifact-1", "tool-1", "document"
+        )
+    drifted = [dict(item) for item in wire]
+    drifted[-1]["index"] = 2
+    with pytest.raises(smoke.SmokeError, match="index"):
+        smoke.verify_event_chain(
+            outbox, chat, drifted, "artifact-1", "tool-1", "document"
+        )
+
+
+def test_final_artifact_read_uses_the_current_storage_service(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import sys
+
+    calls = []
+
+    class Client:
+        def __init__(self, **_kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            pass
+
+        def post(self, url, **kwargs):
+            calls.append((url, kwargs))
+            return SimpleNamespace(
+                status_code=200, json=lambda: {"downloadReference": {}}
+            )
+
+    monkeypatch.setitem(sys.modules, "httpx", SimpleNamespace(Client=Client))
+    assert (
+        smoke._storage_read(
+            "http://storage.fixture", "fixture", "tenant", "user", "session", "artifact"
+        )[0]
+        == 200
+    )
+    assert (
+        calls[0][0]
+        == "http://storage.fixture/kokoro.storage.v3.StorageService/GetFinalArtifactDownloadReference"
+    )
+    assert calls[0][1]["json"]["artifactId"] == "artifact"
+
+
+def test_counting_transport_preserves_the_exact_uploaded_source_version() -> None:
+    import asyncio
+
+    class Transport:
+        async def put(self, reference, content):
+            assert reference == "original-reference" and content == b"original-bytes"
+            return "opaque-source-version"
+
+        async def call(self, method, request, headers):
+            return (method, request, headers)
+
+    async def exercise():
+        counted = smoke._CountingStorageTransport(Transport())
+        assert (
+            await counted.put("original-reference", b"original-bytes")
+            == "opaque-source-version"
+        )
+        assert await counted.call(
+            "complete_upload", "original-command", {"scope": "owned"}
+        ) == (
+            "complete_upload",
+            "original-command",
+            {"scope": "owned"},
+        )
+        assert counted.operations == ["signed_put", "complete_upload"]
+
+    asyncio.run(exercise())
+
+
+@pytest.mark.parametrize("queue_count", [0, 1, 2])
+def test_projection_observer_requires_one_independent_queued_fact(
+    queue_count: int,
+) -> None:
+    import asyncio
+
+    frozen = {
+        "run_id": "owned-run",
+        "durable_seq": 2,
+        "event_id": "original-id",
+        "payload_json": '{"artifact_id":"persisted-not-wire"}',
+    }
+    frame = SimpleNamespace(**frozen, model_dump=lambda: dict(frozen))
+    event = {
+        "run_id": "owned-run",
+        "durable_seq": 2,
+        "event_id": "original-id",
+        "payload": {"artifact_id": "wire-only"},
+    }
+    published = []
+
+    class Repository:
+        async def list_unpublished_outbox(self):
+            return [frame] * queue_count
+
+    class Bus:
+        async def read_all(self, stream):
+            return [stream]
+
+        async def publish(self, stream, value, *, maxlen):
+            published.append((stream, value, maxlen))
+            return "original-cursor"
+
+    async def exercise():
+        observer = smoke._ProjectionStream(Bus(), Repository(), "owned-run")
+        assert await observer.read_all("original-stream") == ["original-stream"]
+        if queue_count == 1:
+            assert (
+                await observer.publish("original-stream", event, maxlen=3)
+                == "original-cursor"
+            )
+            assert observer.frames == [frozen]
+            assert published == [("original-stream", event, 3)]
+        else:
+            with pytest.raises(smoke.SmokeError, match="queued"):
+                await observer.publish("original-stream", event, maxlen=3)
+            assert published == []
+            assert observer.frames == []
+
+    asyncio.run(exercise())

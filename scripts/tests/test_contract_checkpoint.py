@@ -304,7 +304,9 @@ def test_w1e_platform_code_release_marks_bff_consumer_broken() -> None:
     assert current["illegal_ids"] == previous["illegal_ids"] == []
 
 
-def test_w1e_iam07_bff_pin_marks_iam_composition_pending() -> None:
+def test_w1e_iam07_bff_pin_marks_iam_composition_pending(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     checkpoints = ROOT / "verification/contracts/checkpoints"
     previous = json.loads((checkpoints / "w1e-platform-code-release.json").read_text())
     current_path = checkpoints / "w1e-iam07-bff-pin.json"
@@ -317,8 +319,21 @@ def test_w1e_iam07_bff_pin_marks_iam_composition_pending() -> None:
         "EDGE-BFF-IAM"
     }
     assert current["illegal_ids"] == previous["illegal_ids"] == []
-    assert verify_checkpoint(
-        ROOT,
-        ROOT / "verification/contracts/consumer-inventory.json",
-        current_path,
-    ) == []
+    # Historical checkpoint: verify its real committed blobs and gitlinks,
+    # not today's evolving composition. read-tree only writes a test-owned
+    # index; the real index and child checkouts remain untouched.
+    release = "932fc272834e2d32f72a96ebc88424bbd7db18d8"
+    inventory = tmp_path / "inventory.json"
+    inventory.write_bytes(subprocess.check_output(
+        ["git", "--no-replace-objects", "show", f"{release}:verification/contracts/consumer-inventory.json"],
+        cwd=ROOT,
+    ))
+    assert current_path.read_bytes() == subprocess.check_output(
+        ["git", "--no-replace-objects", "show", f"{release}:verification/contracts/checkpoints/w1e-iam07-bff-pin.json"],
+        cwd=ROOT,
+    )
+    monkeypatch.setenv("GIT_INDEX_FILE", str(tmp_path / "release.index"))
+    subprocess.run(
+        ["git", "--no-replace-objects", "read-tree", release], cwd=ROOT, check=True,
+    )
+    assert verify_checkpoint(ROOT, inventory, current_path) == []
