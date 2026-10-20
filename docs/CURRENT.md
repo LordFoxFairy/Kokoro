@@ -1,3 +1,13 @@
+## 2026-10-20 本方本地遗漏交付：已发 PR 并合并的范围
+
+用户指出“新版仍在本地却未交付”属实，本批不再停在盘点。App [#42](https://github.com/LordFoxFairy/kokoro-app/pull/42) 已合 `d4b61f936ec9102836dc21092dff6fe1b48d0f22`，保留现有 main 认证/Profile/Public19/MCP/#41 修复，定向接回资料库、侧栏局部、知识编辑和画布；完整 Node22 lint/typecheck/七生成检查/build 均0，Vitest 231 files/4316 PASS，全部桌面手机 Playwright42 PASS。独审发现的同主体重核草稿丢失有有效 RED→GREEN；preview 原禁网络语义保留。正常3310已从e189954 fast-forward到此main并热更新，真实默认资料库、查看选项→个人文件→返回、现有文件读取与去除旧顶层页签已验。没有发送消息、上传或下载资料，也没有重启其他服务。
+
+本批另外已合：BFF [#13](https://github.com/LordFoxFairy/kokoro-bff/pull/13) `dfc3d59b408f6182672ac827ba04aba08fe34db0`（Library边界测试与历史文档，完整1493 PASS/3原资源SKIP）；Scheduler [#2](https://github.com/LordFoxFairy/kokoro-scheduler/pull/2) `cfb2502b0ef9331f79a328ec85c254157340962c` 与 Admin [#3](https://github.com/LordFoxFairy/kokoro-admin/pull/3) `f2fac30471e891454908aa2ec4e3d487bbeee5ea` 仅补交历史验证文档；Mori [#1](https://github.com/LordFoxFairy/kokoro-mori/pull/1) `12a1060830e1239c2ccb866baeefa4546ec04bb5` 只修三个shared file路径，frozen install、Node22 lint/types、86files706PASS/build和独审通过。不等待/主动重跑CI，不将CI未运行称通过。
+
+**明确未合与保留项**：System [#1](https://github.com/LordFoxFairy/kokoro-system/pull/1) 已发Draft保全原MC-01四提交，owner完整verify212PASS/fresh33断言通过；BFF Public19的管理员revision投影仍对应System3，不能伪造旧字段或单方面切System4。此项需公开契约/Admin配对及旧数据处置后再合，当前Root保留System1460820。BFF执行绑定producer已由 [#14](https://github.com/LordFoxFairy/kokoro-bff/pull/14) 合入 `5dc86e4c77ea7fa85ca0495e4c430d2a50c67c65`：完整contract848/architecture36、默认1496 PASS/3原资源SKIP、真实独占PG/Redis chat-facts33 PASS/0SKIP及独审通过，保留原d623f76来源历史、现Public19与HTTP7，不伪造trace权限。正常BFF仍是旧受控版本，未改正常两字段/outbox或机器凭据，未重启激活；该区别保留，不以源码PR冒称正常执行链已启用。旧detached源码中的上传预算/选后上传/侧栏重新clamp、项目资源生命周期与旧smoke候选已按commit保全；未完成当前复现与配对的不混进App42，也不作为“已合等效”删除。原39棵worktree的HEAD、tracked/index快照和untracked已保存至本地ignored恢复档；这不等于全工作区已清理。对方 `feat/settings-assets-pages` / ed92864不接收、不改、不代建PR。
+
+模型、真实工具执行与扣费继续暂停，正常BFF仍agent_enabled=false。本段只说明上述本批交付，不冒称全部能力、正常整链或Manus全站一比一完成。Root58最终精确pin/合并和原工作区main同步仍待本批最后核对。
+
 ## 2026-10-20 后续问题已归入现有计划 TODO
 
 已按“本批已关闭／下一轮优先／后置与暂停”整理到[当前计划 TODO](superpowers/plans/2026-09-03-kokoro-production-closure.md)首节。对方设置分支新提交 ed92864 在原 PR #38 合并后新增，尚未进入 main，也未发后续 PR；用户明确要求只跟踪、不接收／修改／替对方建 PR 或合并。当前 3310 正确运行已合 e189954，账户页因此还不是这批新实现。此前只比较 main 与对方分支不足以判断本方交付：本次已找到 10 月 17 日自己的资料库对照和侧栏局部修复记录，源码仍留在原 codex/local-ui-verification 的未提交／未跟踪文件中，未进入 main。正常服务改跑干净 main 后没有带入这些已实测修复，造成展示倒退；不是对方 PR 或浏览器缓存。此为本方收尾漏交付，列 T11 优先补齐，不能只列为新功能或重启解决。用户新截图对应的服务不可用文案／恢复按钮／窄列布局已只读复现，列 T00 第一优先；随后补聊天导航／阅读状态验收，再对齐项目概览与会话布局；历史分页先定“最近”的产品语义，preview/live 边界先核实际可达性。 另记 T10：用户反馈插件分类点击切换有问题，截图为“开发”选中及三块长条骨架占位；仅截图记录，待复现切换与局部加载，不冒称根因或已修。技能菜单、其他模块逐态补验、Billing 与手册后置。

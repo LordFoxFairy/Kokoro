@@ -14,10 +14,23 @@
 
 ### 本方漏交付优先收口（T11）
 
-- [ ] **T11 提取并交付原资料库／侧栏修复**：用户判断属实，准确状态不是只有“另一个未 merge 的分支”，而是本方修复仍在原 `apps/kokoro-app` 的 `codex/local-ui-verification` 工作树作为未提交与未跟踪文件保存，既未形成完整交付 commit，也未入 main。10 月 17 日资料库和侧栏记录当时均明确“源码未提交”；正常服务后续切到干净 main，保留 mixed 却遗漏提取该部分，因此相对之前已实测画面倒退。之前“当前文件等 main，所以只是未做”的推断不完整，已纠正。
+> 下列为发现时的历史状态，不是当前未交付结论。当前 App42 已合并并加载正常3310；正式收据见本节下方及 CURRENT 首节。上面的 e189954 基线也是本批开始前的历史基线。
+
+- [x] **T11 提取并交付原资料库／侧栏修复**：用户判断属实，准确状态不是只有“另一个未 merge 的分支”，而是本方修复仍在原 `apps/kokoro-app` 的 `codex/local-ui-verification` 工作树作为未提交与未跟踪文件保存，既未形成完整交付 commit，也未入 main。10 月 17 日资料库和侧栏记录当时均明确“源码未提交”；正常服务后续切到干净 main，保留 mixed 却遗漏提取该部分，因此相对之前已实测画面倒退。之前“当前文件等 main，所以只是未做”的推断不完整，已纠正。
 - **代码仍在**：Library header、独立 artifacts reader 为未跟踪新文件；surface/model/sections/CSS 为本地修改。新版默认产物、个人文件移到查看选项、移除顶层 Tabs 的实现仍可见，main 没有新 header／reader。侧栏三文件仍有缩小菜单／定位、修正项目行多余分隔阴影、统一图标文字起点与 Portal 回焦的未提交修改；不能把用户当前截图都当新需求重新实现。
 - **最小后继**：先按既有已验修复、对应测试、文案、返回路由及消费者契约梳理完整依赖闭集；从干净最新 main 提取本方增量，不复制整个 mixed、不碰对方设置分支、不覆盖主线认证／Skills/MCP／聊天修复。先复用旧截图与冻结证据定位差异，再做受影响定向回归和正常页面同态验收；所需 owner 相关交付门通过后集中 PR／merge，Root 最后 pin。重启不是提取／合并的替代方案。
 - 本次只有只读源码／历史核查、ignored 源文件与窄补丁留存、当前 TODO 纠偏；尚未迁移代码、切换服务、提交或创建 PR。窄补丁只用于保全，不宣称九个路径就是可直接合并的完整切片。模型、实际工具执行与扣费暂停不变。
+
+### 2026-10-20 T11 正式交付收据及其余保留工作
+
+T11历史段描述的是发现时状态，现已由 App42 合并 `d4b61f9` 承接；正常3310也已fast-forward并真实读取新版，不能再解释为只重启旧代码。知识草稿重新准入与preview组合有回归，完整4316测试/42浏览器旅程和独审通过。BFF13、Scheduler2、Admin3、Mori1已合；Root58最后配对。已合范围不重做，详见CURRENT首节。
+
+其余真正独有的旧提交分列，不混为已完成：
+- Library上传deadline `6a443b2`、选后才显示Upload/长文件名 `1b35a7a`、rail重新clamp `4871c2e`：保全候选，尚未完成最新主线复现/提取/验收；下轮局部守卫，不恢复整棵旧UI。
+- 项目资源scope/取消/迟到退休 `bf2bee9` 与旧worker/Chromium smoke：聊天/项目后置；旧Skills/Admin callback/trace兼容和浮动旧pins不恢复。
+- System4原 `7f479f6` 已发System1 Draft，owner完整verify通过，但BFF Public19/Admin公开投影及正常旧数据未配对。当前System pin仍1460820，不以清分支为由强合破坏性契约。
+- BFF `d623f76`/`16da6f0` 独有可信执行绑定producer已从最新main定向承接并合BFF14 `5dc86e4`；Public19/所有当前owner pins/System3/Scheduler旧命令路径保持，schema3不读旧trace当authority。完整contract848/default1496 PASS＋3原资源SKIP、真实隔离PG33 PASS及独审通过；正常字段/outbox/机器配置尚未激活，暂停执行不解除。
+- 原混合与detached的39棵worktree均有HEAD、tracked/index及untracked本地恢复快照。清理必须先核恢复与当前写入，另一个开发分支继续排除；不再声称所有本地改动均已合入。
 
 ### 外部新增交付仅跟踪，避免误判为运行回滚
 
