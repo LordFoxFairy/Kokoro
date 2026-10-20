@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -367,7 +368,9 @@ def test_cli_runs_from_the_root_and_emits_valid_json() -> None:
 def test_documentation_gate_and_single_manual_routes_are_explicit() -> None:
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     assert not agents.startswith("@CLAUDE.md")
-    assert "### 8.1 子仓实现前的文档门" in agents
+    # Check the gate's scope and safeguards, not a particular section number.
+    assert "设计门" in agents
+    assert "仅对本次受影响的设计面" in agents
     for required in (
         "docs/TECHNICAL_DESIGN.md",
         "docs/API_CONTRACT.md",
@@ -375,6 +378,19 @@ def test_documentation_gate_and_single_manual_routes_are_explicit() -> None:
     ):
         assert required in agents
     assert "文档门未通过时" in agents
+    assert "依赖该未决设计" in agents
+
+
+def test_agent_guide_has_resolvable_local_documentation_links() -> None:
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    local_links = [
+        target.partition("#")[0]
+        for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", agents)
+        if not target.startswith(("https://", "http://", "#"))
+    ]
+    assert local_links
+    for target in local_links:
+        assert (ROOT / target).is_file(), f"Broken AGENTS.md link: {target}"
 
 
 def test_quality_gate_rejects_placebo_scripts() -> None:

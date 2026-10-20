@@ -1,410 +1,166 @@
-# Kokoro Agent 执行控制手册
+# Kokoro Agent 工作指南
 
-本文件只定义跨仓 owner、规范路由、执行流程和验收证据。TypeScript、Python、PostgreSQL 的完整规则只维护在
-三份专项手册中，不在这里复制第二份，避免不同文档长期漂移。
+本文件是执行入口：明确任务范围、规范入口、工程边界和验收方式，不承载任务历史或完整语言手册。
+Root 是 Git submodule superproject；业务实现、契约、数据与发布归子仓，Root 负责组合版本和跨仓治理。
 
-## 0. 必读顺序与权威性
+## 1. 开始任务与命令入口
 
-每次任务按顺序读取：
+1. 确认用户要求、完成条件和允许修改的范围；查看 Git 状态与目标文件 diff，保留已有工作。
+2. 按第 2 节读取相关规范，按第 3 节选择流程；只完成本次要求，不顺手修复或升级任务外内容。
+3. 按第 7 节验证，按第 10 节交付；文档任务交付文档，调查任务交付结论，不默认转入实现。
 
-```text
-1. 系统/平台指令与当前用户要求
-2. 本 AGENTS.md
-3. 与任务相关的专项手册
-4. docs/CURRENT.md、docs/CODEBASE_MAP.md、目标仓 README/INDEX/docs/CURRENT.md
-5. 目标仓 contract、TECHNICAL_DESIGN、DATA_MODEL、有效 ADR
-6. 历史报告与已废止设计（只用于考古）
+```bash
+git status --short
+git diff --check
 ```
 
-三份唯一语言/数据事实源：
-
-- [PostgreSQL 与 SQL 工程规范](docs/kokoro-handbook/standards/03-sql-and-postgresql.md)
-- [TypeScript 后端成熟工程规范](docs/kokoro-handbook/standards/08-typescript-backend-engineering.md)
-- [Python 后端成熟工程规范](docs/kokoro-handbook/standards/09-python-backend-engineering.md)
-
-任务涉及 TypeScript、Python 或 SQL 时，必须先读取对应手册。TypeScript 设计先核对手册第 1、4–6、8.4 节的当前决定；
-历史示例与已替代 ADR 不作为并行实现依据，子仓技术方案必须明确当前态与目标态。子仓 `AGENTS.md` 只能补充本仓 owner、入口、契约、
-验证命令和例外 ADR，不得复制或覆盖上述手册。旧文档中的强制四层、`ports/`、`postgres/`/`redis/` 业务目录、
-机械 DTO/Command/Domain/Row 五层和旧 SQL 规则均不再作为实现依据。
-
-补充专题（与三份手册冲突时，以三份手册为准；历史目录示例不作为新建模板）：
-
-- 事务、并发与幂等：`docs/kokoro-handbook/standards/04-transaction-repository-idempotency.md`
-- API/RPC/错误：`docs/kokoro-handbook/standards/05-api-rpc-and-error-contracts.md`
-- 测试与门禁：`docs/kokoro-handbook/standards/06-testing-and-quality-gates.md`
-- 当前总架构：`docs/ARCHITECTURE_STANDARD.md`
-
-## 1. 全局工程原则
-
-1. 一个业务事实只有一个 owner 和一个写入边界；服务只访问自己的数据库事实。
-2. 先确认 owner、契约、状态机、事务、失败恢复和依赖方向，再创建目录和文件。
-3. 代码按业务能力聚合；框架、数据库、缓存和 provider 类型不得穿透业务规则。
-4. 简单业务保持简单；复杂业务才使用 Domain Model、CQRS、Repository abstraction 或状态机。
-5. 一个文件有一个清晰变化原因；一个目录有一组持续存在的职责，禁止空层和模板式脚手架。手写 TypeScript 不得把
-   schema/type、常量、model class、错误体系、解析 helper 和 Service 编排混成一个文件；具体例外与拆分规则以
-   [TypeScript 手册 §8.4](docs/kokoro-handbook/standards/08-typescript-backend-engineering.md#84-一个手写-typescript-文件只承载一个主要变化原因) 为准。
-6. Wire schema、内部业务对象、数据库 Row 和生成类型只有在语义/生命周期不同时才分开；不为凑层数复制类型。
-7. 时间瞬时点统一使用 UTC；本地日历时间和周期任务的 IANA timezone 显式建模。
-8. 规则必须落在代码、测试、架构检查和 CI；Markdown 自述不是完成证据。
-9. Clean-slate 重构删除旧路径、旧 schema、旧 API、fallback、alias 和双轨实现，不建立兼容层。
-10. “生产级、顶级、完成”只能绑定当前 commit 与真实 lint/typecheck/test/build/schema/smoke 输出。
-
-## 2. 目标服务拓扑与 owner
-
-目标拓扑为九个正式运行仓：
-
-| 仓库               | 唯一职责                                                                                         |
-| ------------------ | ------------------------------------------------------------------------------------------------ |
-| `kokoro`           | Web UI、浏览器交互状态、HttpOnly session、同源 adapter                                           |
-| `kokoro-bff`       | Conversation、Message、Share、Project、ScheduledTask、公开 Product API、durable AG-UI projection |
-| `kokoro-agent`     | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL/Approval、Evidence                          |
-| `kokoro-iam`       | Tenant、Identity、Authentication、Authorization、Role、Permission、Audit                         |
-| `kokoro-system`    | 系统控制面：Site、Host、Workspace、Runtime、Policy、模型目录与路由配置                           |
-| `kokoro-billing`   | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering、Reconciliation                |
-| `kokoro-platform`  | Agent Capability Control Plane；首批只包含 Skills 与 MCP 两个一级业务域                          |
-| `kokoro-storage`   | Blob、Upload、Asset、Artifact、Scan 与对象生命周期 metadata                                      |
-| `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch                                             |
-
-已裁决的 clean-slate 收敛方向：
-
-```text
-kokoro-model       -> 合入 kokoro-system/modules/model-catalog，保持清晰业务词汇、表前缀和契约边界
-kokoro-capability  -> 重命名为 kokoro-platform
-kokoro-platform    -> modules/skills + modules/mcp；历史归档代码不得直接恢复
-```
-
-当前物理仓库尚未完成上述 cutover 时，文档必须明确“当前态/目标态”；不得通过兼容代理、双写、复制 contract 或长期
-保留旧服务来假装完成。仓库移动、contract owner、数据库、Redis namespace、服务身份和消费者更新必须在独立目标中
-一次闭环。
-
-`kokoro-system` 不是万能配置中心。新增配置先归入拥有该业务事实的模块，例如 Site 配置属于 `sites`，模型路由属于
-`model-catalog`，运行参数属于 `runtimes`。只有出现独立身份、生命周期、权限、契约和查询模型时才新建一级模块；
-禁止每新增一种配置就创建 `<something>-config` 模块，也禁止建设任意 key/value 的 `configs` 垃圾桶。
-
-### 2.1 Platform 防止成为垃圾桶
-
-`kokoro-platform` 可以承载后续中间平台能力，但新增一级模块必须同时满足：
-
-1. 有清晰业务能力名、事实 owner、数据生命周期和公开/内部契约；
-2. 服务对象主要是 Agent/BFF/其他内部 runtime，而不是任意共享代码；
-3. 与现有 Skills/MCP 共享控制面、身份、发布或运维边界具有实际收益；
-4. 不属于 IAM、System、Billing、Storage、Scheduler 或 Agent 的既有 owner；
-5. 有 ADR 比较“放入现有 owner / Platform 新模块 / 独立服务”三种方案；
-6. 有独立模块测试、观测、权限和未来拆分边界。
-
-`common`、`utils`、SDK wrapper、数据库 helper 和“暂时不知道放哪”的代码不得成为 Platform 模块。
-
-### 2.2 固定调用与数据方向
-
-```text
-Browser -> Web same-origin adapter -> BFF -> System/IAM/Platform/Billing/Storage/Agent/Scheduler
-```
-
-- Web 不直连内部 owner 服务。
-- BFF 不读取任何 owner 数据库。
-- Agent 通过 Platform/Storage 的 contract 获取授权能力和保存 artifact，不复制其业务模型。
-- Scheduler 只处理通用调度事实，不拥有 BFF ScheduledTask 或 Agent Run。
-- 跨仓只使用 owner 发布的版本化 contract、API/RPC 或事件；不共享 ORM schema、SQL、业务 DTO 或相对路径 import。
-
-## 3. Contract、API 与协议
-
-1. OpenAPI/Proto/JSON Schema 只由事实 owner 仓库维护；Root 不建立跨仓可编辑 contract 中心。
-2. 由本仓 API 技术设计选择 schema-first 或 code-first 的唯一方向。BFF public OpenAPI 与 RPC Proto 在
-   `contract/` 编辑；内部 HTTP 可由运行时 schema 生成只读契约。`generated/` 只放生成物，不维护重复可编辑 DTO。
-3. 消费方使用固定版本、commit 和 digest 的 generated client/artifact；不得手改生成文件。
-4. HTTP 使用显式 `/v1`，资源名词化；动作在确有 command 语义时显式命名。
-5. 外部 JSON 使用 `snake_case`，内部 TypeScript/Python 遵循各语言命名。
-6. 成功与错误 envelope、稳定 error code、request ID、分页、幂等和并发条件按 API 专项手册执行。
-7. tenant、actor、subject、service identity 来自受信上下文，不从 body 自报。
-8. `contract/` 不存数据库 schema、ORM model、Domain Model、Application input 或别仓 API 副本。
-
-协议可见性：
-
-| 可见性            | 范围                           |
-| ----------------- | ------------------------------ |
-| `public`          | BFF 对开发者开放的 Product API |
-| `browser-private` | Web 同源 adapter               |
-| `internal-owner`  | 内部 owner 服务 API/RPC        |
-| `event-protocol`  | owner 发布的异步消息           |
-
-### 3.1 AG-UI 与 Vercel AI SDK
-
-- Web 与 BFF 的 Agent 网络事件只使用 AG-UI；删除 legacy SSE envelope、双读和 fallback。
-- BFF 拥有 durable AG-UI ledger、单调 cursor、replay、断线恢复、retention 与 GC；Redis stream 不是公开事实源。
-- Web 的 `AgUiChatTransport` 把 AG-UI 映射为 Vercel AI SDK `UIMessage`/parts；不得形成第二套网络协议。
-- HITL 使用结构化 interrupt/resume；resume 携带同 thread、全部未决项、幂等身份和校验结果。
-- UI 显式建模 submitting、queued、streaming、awaiting approval、resuming、cancelling、reconnecting、completed、failed。
-
-## 4. 本地基础设施与运行
-
-- 本地与 CI 的应用目标是一个 PostgreSQL 实例、一个数据库和一套应用 role/credential；每个数据 owner 在同库使用独立 schema 与指向该 schema 的连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享；表名前缀不代替 owner schema。现有部分 installer/URL 仍锁定 `public` 或整库空白，须由 owner 代码切片改为 schema 边界后才能宣称单库应用组合通过。测试 fixture 临时库只是运行隔离，不是新增应用数据库或角色。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前开发门禁。
-- 本地所有仓共享一个 Redis 实例；先探测复用，缺失时才启动。Web 不拥有数据库。
-- Redis 使用独立 namespace/logical DB；目标拓扑 cutover 时由单独 ADR 重新分配，禁止旧新服务同时占用并双写。
-- 应用开发从源码运行：TypeScript `pnpm dev`、Python `uv run`、Go `go run`。
-- Docker 应用容器只用于 release candidate smoke，不替代本地 lint/test/dev。
-- worker/Agent 不得自行重复启动 PostgreSQL/Redis，也不得清理非自己创建的数据。
-
-## 5. Scheduler 约束
-
-- Scheduler 以 PostgreSQL 保存 Schedule/Occurrence/Receipt/Outbox 权威事实；Redis 只协调 lease/通知/缓存。
-- `github.com/go-co-op/gocron/v2` 仅作为可替换 timer/wakeup dependency，不得把其类型泄漏到业务模型和 contract。
-- 重启、重复唤醒、misfire、崩溃和 Redis 丢失的正确性由持久化状态机、幂等和恢复测试证明。
-- 当前依赖版本按 Scheduler 自身 ADR/go.mod 固定；升级遵守稳定、兼容、可维护和完整门禁，不追浮动 `latest`。
-
-## 6. 测试、可靠性与安全
-
-测试目录遵循语言手册：TypeScript 使用 `test/`，Python 使用 `tests/`。必须覆盖 unit、integration、contract、
-architecture、smoke；只有真实 PostgreSQL/Redis/ObjectStore/provider sandbox 才能称 integration。
-
-共同门禁：
-
-- timeout、取消、有限重试、指数退避、jitter、graceful shutdown、worker drain；
-- tenant 越权、权限失败、幂等重放、并发冲突、事务回滚、重复投递和恢复；
-- 结构化日志包含 service、operation、request_id、trace_id、result、duration；不记录 token、密码和敏感 payload；
-- 依赖、源码、配置、secret、镜像扫描；GitHub Actions 固定完整 SHA；镜像非 root、有 HEALTHCHECK、SBOM/provenance；
-- 每仓维护 SLO、错误预算、告警和 runbook；目标值不得冒充实测结果。
-
-依赖采用“最新稳定且兼容”，manifest/lockfile 固定实际版本。新核心依赖或重大替换必须记录维护状态、候选比较、
-许可证、供应链、性能、故障语义和退出路径；Renovate/Dependabot 只提出可审查 PR。
-
-规范维护必须区分三类证据：官方文档说明工具语义；企业公开指南/源代码提供工程经验；Kokoro ADR 记录项目取舍。
-不得凭目录名称、star 数或品牌背书宣称“行业唯一/顶级”。版本与选型证据记录核验日期、来源、精确版本和验证命令；
-每次升级或进入子仓重构前重新核验，旧报告不证明当前兼容。尚未执行的检查明确列为待验，不用文字承诺替代。
-
-Web 额外覆盖 design token、focus-visible、reduced motion、loading/empty/error/disabled/reconnecting/partial/success、
-移动端、Playwright、axe、视觉回归与 bundle budget。
-
-## 7. 文档基线
-
-每个正式仓至少维护：
-
-```text
-README.md
-INDEX.md
-docs/INDEX.md
-docs/CURRENT.md
-docs/TECHNICAL_DESIGN.md
-docs/API_CONTRACT.md
-docs/DATA_MODEL.md
-docs/SECURITY.md
-docs/RELIABILITY.md
-docs/ACCEPTANCE.md
-docs/SLO.md
-docs/RUNBOOK.md
-docs/ADR/
-contract/README.md            # 有机器契约时
-```
-
-`README` 负责五分钟启动，`INDEX` 负责代码地图，`CURRENT` 只记录当前事实和证据，`TECHNICAL_DESIGN` 解释架构，
-`API_CONTRACT` 链接机器事实源而不复制字段。Root Developer API 门户只发布 BFF public contract。
-
-## 8. 创建目录和文件前的强制设计门
-
-Agent 新建文件/目录、调整模块边界或开展重构前，必须先检查目标仓并输出以下放置表。已有设计可直接引用；
-仅修改现有文件且不改变职责/契约的局部修复，用一句话说明归属与验证即可，不重复整张表：
-
-| 项       | 必须给出的结论                                                 |
-| -------- | -------------------------------------------------------------- |
-| Owner    | 仓库、业务模块、唯一 writer                                    |
-| 当前事实 | 现有目录、入口、import、contract、schema、测试和未提交变更     |
-| 目标职责 | 新对象解决什么问题，公开 API 是什么                            |
-| 目录方案 | 至少比较 2 个可行位置，说明采用与淘汰理由                      |
-| 粒度     | 为什么扩展现有文件、新建文件、新建子目录或新建模块             |
-| 依赖     | 允许 import、禁止 import、调用方向和生命周期                   |
-| 数据/API | schema、事务、tenant、幂等、缓存、contract、generated 影响     |
-| 删除项   | 被替代的旧路径、重复实现、alias、fallback                      |
-| 验证     | unit/integration/contract/architecture/build/schema/smoke 命令 |
-
-强制规则：
-
-1. 先读目标仓，不从通用模板盲目生成目录。
-2. 新顶层目录、新一级业务模块、新进程、新跨仓 owner 必须有技术设计或 ADR。
-3. 普通文件不要求 ADR，但必须能用一句业务语言解释位置和变化原因。
-4. 一个目录只有一个文件且没有近期明确增长时，默认不创建该目录。
-5. 不因使用 PostgreSQL、Redis、Prisma、Fastify 就创建同名业务目录。
-6. 不因看见 `command` 就创建 CQRS/command bus，不因看见数据库就创建 BaseRepository。
-7. 目录重构必须同时更新 import 门禁、测试、文档并删除旧路径；只移动文件不算架构优化。
-8. 方案已被本手册或 ADR 明确时直接执行，不重复询问；出现真正的新 owner/contract/不可逆决策才请求确认。
-
-### 8.1 子仓实现前的文档门
-
-每个子仓必须先把下列三个设计面收敛成一致的当前方案，再开始目录搬迁或业务重写：
-
-| 设计面   | 必须完成的文件                                  | 通过条件                                                                                       |
-| -------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| 技术方案 | `docs/TECHNICAL_DESIGN.md`                      | owner、模块、进程、依赖、状态机、事务、失败恢复和目标目录已确定                                |
-| API 契约 | `docs/API_CONTRACT.md` + `contract/` 机器事实源 | owner、visibility、version、请求/响应、错误、幂等、分页、事件和 breaking 策略已对齐            |
-| SQL/数据 | `docs/DATA_MODEL.md` + 本仓唯一 canonical schema | 表 owner、字段、软/物理删除、无外键完整性、查询、索引、事务、retention 和 fresh install 已对齐；SQL-first 使用 `database/schema.sql`，ORM-first 使用技术方案批准的唯一 schema |
-
-无数据库的仓库在 DATA_MODEL 中明确“无持久化 owner”及理由，不为通过门禁创建空 schema；无对应传输边界时也不创建空 contract。
-三者必须相互一致：API 的资源、状态和幂等不得与技术方案/Schema 矛盾，Schema 不得出现没有 owner 用例的表或索引。
-Agent 在文档门未通过时只能盘点、补文档、评审契约和验证设计；不先批量搬目录、改表或重写实现。
-
-通过报告必须列出三份文档的绝对路径、未决项、契约/Schema 验证命令和当前 commit。历史评审、过期版本号和“将来会做”
-不构成通过证据；发现旧方案时直接更新或归档，不与当前规范并列。
-
-## 9. Agent 执行与多 Agent 协作
-
-用户已明确要求参考本地 `libtv` 专案的任务计划、优先级清单与逐切片提交方式。这里固化的是协作机制，
-不复制 LibTV 前端 mock 项目的目录、依赖版本、数据实现或验收结果；后续会话默认执行，无需用户重复提醒。
-
-默认由 Root 主 Agent 发起子仓任务，为当前子仓指定一名负责人 Agent；后续子仓沿用相同机制。负责人负责本仓
-审计、方案、实施切片、测试和交接，主 Agent 负责跨仓边界、审查、放行与最终验收，不直接抢写已派出的文件。
-同仓后续阶段优先续派给该负责人；每次续派仍明确写入范围、阶段门和提交责任，不一次性授予所有子仓的修改权。
-Agent 会话结束或更换时，以任务记录和 commit 交接续接；长期保持的是仓库责任与执行机制，不假设旧 Agent 永久在线。
-
-### 9.1 主控、实现与审查分工
-
-1. 开始前读取本文件、相关三大手册、`docs/CODEBASE_MAP.md` 和目标仓文档。
-2. 检查 Git 状态；不覆盖、回滚或格式化其他 Agent/用户的修改。任务外或尚未交接的变更不得暂存；
-   主 Agent 按第 9.3 节接收并审查的 worker 交付可以统一提交。
-3. 主 Agent 先完成第 8 节整体设计与文档门，再拆任务、确定依赖顺序、派工、裁决边界、审查和集成；
-   不把总体架构决定分别丢给多个 worker，也不只转述 worker 的完成报告。
-4. 默认一次推进一个子仓，验收闭环后再进入下一个；一个仓同一时刻只有一个写入 Agent，主 Agent 也计入。
-   并行优先用于独立调查、契约审查、代码审查和隔离验证，不等于同时重写全部子仓。
-5. 出现至少两个独立工作面时，主动说明并行分工并使用可用的原生子 Agent；小修复、单文件编辑或紧密依赖的
-   任务由主 Agent 直接完成，不为凑人数派工。主 Agent 保留眼前关键路径，不重复实现已委派任务。
-6. 每个 Agent 启动时公开角色和任务范围，例如“SQL 设计审查”“API 契约审查”“实现”“回归验证”；并行数量
-   由独立任务数和机器资源决定，不追求开满。已完成的 Agent 及时回收，失败任务由主 Agent 判断重派或接管。
-7. 只读审查员不得改文件、提交、重置测试数据或启动共享服务；审查已完成切片应绑定 commit，审查变化中的
-   工作树必须标注基线。独立审查结论与主 Agent 的集成验证共同作为放行依据。
-
-### 9.1.1 主控与子 Agent 选模
-
-主窗口保持用户当前选择的模型担任主控，不因派工自动切换。用户已授权子 Agent 按任务需要选择：
-
-| 模型           | 默认适用任务                                   |
-| -------------- | ---------------------------------------------- |
-| `gpt-6-astra`  | 架构设计、跨仓边界、疑难问题及能力升级后的任务 |
-| `gpt-5.6-sol`  | 复杂实现、独立代码审查及多文件协调             |
-| `gpt-5.6-luna` | 边界明确、验收条件清楚的小任务                 |
-
-- 先按任务复杂度选模，不把所有子任务固定到最强或最轻模型；任务卡记录角色、模型、文件集和验收条件。
-- 出现能力瓶颈时由主控缩小任务或升级模型，保留已验证成果与交接证据；更换写入负责人前先让原负责人停写。
-- 选模不改变责任与依赖：独立任务并行、依赖任务串行、同仓单一 writer，主控统一审查、集成并重跑验证。
-- 以派发工具当时实际可用的模型为准；模型不可用时记录替代选择，不冒称已使用指定模型。
-- 除关键歧义或不可逆决策外，主控自主推进，不为常规选模、内部命名或已确定方案反复询问用户。
-
-### 9.2 先任务卡，再派工
-
-多 Agent 或多步骤工作在当前有效计划中维护一份任务表；优先复用已有计划，不另建重复任务中心。
-简单修改无需新建文档。计划引用第 8 节设计和三份专项手册，不把规范全文复制给每个 worker。
-
-每个任务至少记录：
-
-| 项目 | 内容                                                  |
-| ---- | ----------------------------------------------------- |
-| 任务 | ID、业务目标、优先级、完成条件                        |
-| 归属 | owner 仓库、执行 Agent、审查人、只读或写入            |
-| 基线 | 工作目录绝对路径、分支、起始 commit、已有未提交变更   |
-| 范围 | 允许创建/修改/删除的文件集、排除路径、共享文件负责人  |
-| 依赖 | 前置任务、已确定的 API/SQL/类型契约、可并行项、阻塞项 |
-| 验证 | 行为基线、实际命令、预期结果、所需隔离资源            |
-| 交付 | commit 负责人、交付 SHA、验证证据、风险与后续 owner   |
-
-- Worker prompt 使用中文，附任务卡、`docs/CODEBASE_MAP.md`、相关手册与目标仓文档入口；只给完成本任务
-  必要的上下文，不把整个项目历史当作任务描述。
-- 跨仓 contract 先由 owner 完成并提交，消费者再更新；存在依赖的任务串行，不让多个 Agent 发明同一契约。
-- 共享 contract、Schema、lockfile、公共入口和任务表指定唯一编辑负责人；worker 发现需要越界修改时先报告，
-  由主 Agent 调整任务卡，不自行扩大写入集。
-- 先记录保留行为的测试基线和批准变更的契约断言，再按业务切片替换；clean-slate 不等于跳过行为验证。
-- 已确认无用途或已被替代的旧代码、目录、Schema 和文档入口随切片删除，同时清理调用、配置和生成引用；
-  不保留兼容层或两套实现。不合理但仍承担有效职责的旧代码应重构承接，不因“旧”而误删安全或一致性保障。
-- 并行测试隔离数据、输出目录和运行资源，复用现有 PostgreSQL/Redis 实例；不得 reset 他人数据库、清空共享
-  Redis、重启用户预览进程，或在仍被编辑的工作树上声称获得最终验收结果。
-
-### 9.3 按功能需求迭代、PR 与主分支治理
-
+以下是按影响面选择的验证入口，**不是每次全部执行的清单**。子仓命令在对应目录运行，先核对 README、manifest 与 CI；版本以本仓配置和 lockfile 为准。
+
+| 范围 | 入口与用途 |
+| --- | --- |
+| Root 文档 | `git diff --check`、本地链接检查、直接相关的 `scripts/tests/` 测试 |
+| Root 拓扑/gitlink | `python3 scripts/verify-repository-topology.py` |
+| Root 治理逻辑 | `python3 -m pytest scripts/tests`；跨仓规范审计用 `python3 scripts/verify-ten-repository-standard.py --format json` |
+| TypeScript | `pnpm lint`、`pnpm typecheck`、`pnpm test`、`pnpm build`；有对应脚本时补 `pnpm format:check` |
+| Web | TypeScript 入口；交互变更补本次主路径浏览器验收，相关 E2E 用 `pnpm test:e2e` |
+| Python Agent | `uv lock --check`、`uv sync --frozen`、`uv run ruff format --check .`、`uv run ruff check .`、`uv run pyright`、`uv run pytest`、`uv build` |
+| Go Scheduler | `gofmt -l .`（输出为空）、`go vet ./...`、`go test ./...`、`go build ./...` |
+| 数据 owner | 本仓 Schema 安装/迁移入口；`pnpm db:apply-schema` 仅在指定隔离测试资源上执行 |
+
+`scripts/verify-ten-repository-full.sh` 与 `scripts/e2e/run_stage2_owner_health.py` 已暂停，诊断后退出 2，不作为验收入口。
+`scripts/e2e/run_system_owner_smoke.py` 只验证其隔离 System 跨仓 HTTP 链路，不代表全产品验收。
+
+## 2. 按需读取与规则归属
+
+平台指令与当前用户要求确定执行权限和本次范围。本文件定义项目执行流程；专项手册管理语言/SQL 规则，总体架构与有效 ADR 管理 owner/协议，子仓指南补充本仓入口、命令和已批准例外。
+
+| 需要了解什么 | 入口 |
+| --- | --- |
+| 路径与组合身份 | `.gitmodules`、[代码地图](docs/CODEBASE_MAP.md)、[组合状态](docs/REPOSITORY_STATUS.md)；实际路径以 `.gitmodules` 和 checkout 为准 |
+| 当前任务与阻塞 | [当前事实](docs/CURRENT.md)、[任务记录](docs/task.md)；按任务 ID/owner 只读相关条目 |
+| 跨仓边界与协议 | [总体架构](docs/ARCHITECTURE_STANDARD.md)及其引用的有效 ADR |
+| TypeScript 后端 | [TypeScript 手册](docs/kokoro-handbook/standards/08-typescript-backend-engineering.md)；设计/重构重点核对 §1、§4–6、§8.4 |
+| Python | [Python 手册](docs/kokoro-handbook/standards/09-python-backend-engineering.md) |
+| SQL、Schema、查询 | [PostgreSQL 手册](docs/kokoro-handbook/standards/03-sql-and-postgresql.md) |
+| 并发、API、测试 | [事务](docs/kokoro-handbook/standards/04-transaction-repository-idempotency.md)、[API](docs/kokoro-handbook/standards/05-api-rpc-and-error-contracts.md)、[测试](docs/kokoro-handbook/standards/06-testing-and-quality-gates.md) |
+
+进入子仓先读其 `AGENTS.md`、README 及相关实现/测试；涉及对应语言/数据时，先读专项手册相关章节，不默认通读历史台账。
+不复制完整手册，不使用已替代 ADR 或历史完成报告覆盖当前决定。发现冲突先核对适用范围与有效 ADR，未裁决部分暂停，其余独立工作继续；代码与设计不一致时如实区分当前态/目标态。
+
+## 3. 范围与设计门
+
+| 任务 | 必要流程 |
+| --- | --- |
+| 讨论、只读调研、文档/注释 | 读取相关材料 → 结论或文档 → 相关检查；不自动登录目标站、采集页面/源码、安装技能或开展业务实现 |
+| 不改变边界的局部修复/机械调整 | 定位职责与行为基线 → 修改 → 定向验证；不新增计划、ADR 或设计表 |
+| 单仓功能、多文件行为变更 | 简述目标、写区与验收，按完整业务切片实施；既定方案内扩展不重复审批 |
+| owner、模块/进程、跨仓契约、数据模型变化或重大重构 | 先过下述设计门，再实施；任务同时符合多行时，以实际边界/数据影响为准 |
+| 部署、破坏性数据操作、新的不可逆决定 | 明确资源、风险与恢复措施；尚未授权的具体操作先确认 |
+
+- 明确要求或已有裁决直接执行；只有影响目标/验收的歧义、新 owner/破坏性契约、写入冲突或未授权操作需要确认，其余采用最小合理假设并说明。
+- 无关未提交文件不阻塞任务；目标文件有归属不明的重叠 diff 时先确认写区。不要覆盖、回滚或提交他人的未交接改动。
+- 跨仓、多 Agent 或需要跨会话续接的工作复用当前有效计划，记录目标、owner、写区、依赖、状态与验证；简单任务用会话内简述即可，不为步骤数量新增任务中心。
+
+结构性变更的设计门只记录必要结论：owner/基线、目标目录与依赖、受影响的契约/数据/状态机和失败恢复、删除项及验证。新边界比较可行位置；已有裁决直接引用，不重复做方案竞赛。
+仅对本次受影响的设计面收敛：`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md` 与机器契约、`docs/DATA_MODEL.md` 与 canonical schema。
+文档门未通过时，不执行依赖该未决设计的搬迁、改表或业务重写；允许继续盘点、验证方案和独立局部修复。
+新顶层边界/重大取舍记录技术设计或 ADR；普通文件和既定方案内扩展不要求 ADR。无数据/传输 owner 时不建空 Schema/contract，不为局部修复补齐整套文档。
+
+## 4. 工程底线
+
+- 一个业务事实只有一个 owner 和写入边界；服务只访问自己的数据。Root 不建立跨仓可编辑 contract 中心；不共享 ORM schema、SQL、业务 DTO，不通过相对路径导入 sibling 源码。
+- Browser → Web same-origin adapter → BFF → 内部 owner；Web 不直连内部服务，BFF 不读取 owner 数据库。
+- 使用 `apps/kokoro-app`、`apps/kokoro-capability` 等实际路径；Capability → Platform 未完成原子切换前不冒称完成、不引入 alias。完整 owner/模块地图见总体架构。
+- System 配置归实际业务模块，Capability/目标 Platform 拥有 Skills/MCP 控制面，不成为任意配置或共享工具垃圾桶；Scheduler 不拥有 BFF ScheduledTask 或 Agent Run。
+- 跨仓使用 owner 发布的 API/RPC/事件与固定版本、commit 和 digest 的 generated client/artifact；每个传输边界只保留一个可编辑事实源，生成物由生成命令更新。
+- HTTP 业务 API 显式 `/v1`、外部 JSON `snake_case`；原生认证协议与 health 路由按 owner 契约。错误、分页、幂等和并发遵循 API 手册，不把业务 API 命名规则强加给原生协议。
+- tenant、actor、subject、service identity 来自受信上下文；服务身份、人类权限和执行授权分开，认证方案按当前架构/有效 ADR，不信任 body 自报身份。
+- Web/BFF Agent 网络事件只使用 AG-UI；BFF 拥有 durable ledger/cursor/replay，Web 映射到 AI SDK UIMessage，不恢复 legacy envelope 或第二套网络协议。
+- 代码按业务能力聚合、保持单一变化原因；不建空层、机械四层、BaseRepository 或重复类型。Domain Model、CQRS、抽象和状态机只在真实复杂度需要时引入，遵循语言手册。
+- 每个数据 owner 只维护一份 canonical schema：SQL-first 使用 `database/schema.sql`，ORM-first 使用技术方案批准的唯一 schema。时间瞬时点用 UTC，本地日历/周期显式建模 IANA timezone。
+- 已批准的 clean-slate 替换同步删除旧入口/Schema、alias、fallback 和重复实现；承接仍有效的权限、事务、幂等、取消与恢复保障，不清理任务外代码。
+- 依赖采用稳定兼容版本并锁定；新增核心依赖/重大替换记录候选、许可证、维护/供应链风险与退出路径，不顺手追浮动 `latest`。
+
+## 5. 协作
+
+- 单文件、紧密依赖或决策密集任务主 Agent 直接做；至少两个独立工作面时提议并行，有收益且工具可用再派工，不强制开满 Agent。
+- 按写区隔离；同一文件、contract、Schema、lockfile、公共入口和任务表指定唯一 writer，不强制整个仓串行。依赖契约先由 owner 交付，再更新消费者。
+- 派工公开角色，提供中文目标、绝对目录、基线、允许/排除路径、依赖、验收及相关代码地图/手册入口；不复制规范全文。越界需求先报告，调整范围后再写。
+- 共享 checkout 的 Git index、分支、提交/PR 和集成由主 Agent 串行负责；只读角色不改文件或共享资源。
+- worker 交付文件清单、SHA（如已提交）、实际验证与风险；主 Agent 复核 diff 并重跑相关验证。最终验收绑定交付 commit 或受影响文件停写后的基线，并发编辑中的结果只作阶段证据。
+- 工具/skill 是手段，不固定模型、worker 数量或外部 CLI；缺少非必需工具时使用已可用方法。缺少必要证据时报告具体缺口，不把安装工具或 worker 退出码当作完成证明。
+
+## 6. Git 与 PR
+
+采用 [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow) 与 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)，具体保护与合并方式遵循仓库现行规则。
+
+- 一个完整需求一个分支/PR，内部允许多个自洽 commit；复用同一个 draft PR，不按文件、按钮或实施切片拆 PR，不额外引入长期 develop/release 分支。
+- 开始新实现且工作区适合切换时，从同步后的 `main` 建 `feat/<功能>`、`fix/<问题>`、`refactor/<范围>`；版本交付用 `feat/v<版本>`。继续既有任务沿用分支，不在混合工作区强行切换。
+- 消息格式为 `type(scope): description`，如 `fix(skills): preserve dialog scroll position`；破坏性契约变化用 `!` 或 `BREAKING CHANGE:` 说明影响。
+- 提交前审查 diff/暂存区，按明确路径暂存，不用 `git add .` / `git add -A`；只提交本需求源码、契约、测试和必要文档，不夹带凭据、缓存、产物或机器运行记录。
+- 子仓独立提交、验证并推送后，Root 才更新精确 gitlink；Root 与子仓分开提交/PR，不混入无关版本，不用浮动更新代替已验证组合。
+- PR 说明需求/验收、契约/Schema 影响、实际验证和风险；UI 变更附参考/实现对照。`main` 只通过已审查/已验证 PR 更新，不直接提交或本地绕过 PR 合并。
 - 按用户项目约定，正常走 PR 合并，不将远端 CI 作为等待条件，不为此反复 push 或重跑 CI；仍完成本地相关验证、代码审查和冲突处理，并如实记录 CI 未运行/失败，不伪造绿色状态或绕过 GitHub 强制分支保护。
 - 开始集成、最终推送和合并前先 fetch 远端 main 与对应 PR 分支，核对新增提交和分叉；保留并整合其他人的更新，不用 force push、整树择一或盲目 pull 覆盖混合工作。Root/子仓显式使用非递归 fetch，避免并行更新同一 submodule ref；存在未提交改动时先保护，在独立集成区验证后再回填。
+- 提交、推送、建 PR、合并和分支清理遵循本次授权；“修改文档/代码”不自动扩大为发布。需求合并后，仅在无未交接工作时回到同步 main，核对 PR 已合并且分支没有合并后新增提交后，清理对应远程分支和无人使用的本地 topic 分支，并 fetch --prune 清理失效远端引用；仍被工作树占用或包含未交接工作的本地分支保留，待工作树收尾后再删除，不丢弃他人工作或未合并提交。
 
-1. 分支与 PR 以一个完整、边界明确的功能需求为单位，不以需求内的单文件、按钮、一次修复或实施切片为单位。同一需求的实现、联调、修复、必要测试和文档在同一功能分支持续迭代，可以拆成多个自洽 commit；切片提交不等于切片 PR。真正独立的需求另开分支，不把无关功能攒进一个 PR。
-2. 从已同步的 `main` 创建 `feat/<功能名>`（例如 `feat/skills-management`、`feat/mcp-connectors`）；明确属于同一版本交付时使用 `feat/v<版本>`（例如 `feat/v0.0.1`），不为命名而修改应用版本。独立缺陷或纯重构分别使用 `fix/<问题>`、`refactor/<范围>`。不再默认创建 `codex/<scope>` 或每个小任务的新分支。
-3. 一个需求在每个涉及的 owner 仓复用一个功能分支，完成需求范围后发起一个以 `main` 为 base 的 PR；需要提前审查时开同一个 draft PR 并持续更新，不重复发起小 PR。跨仓不共享 Git 分支/PR，按 owner 契约依赖顺序提交与合并，消费者固定已批准的 owner artifact；只有独立可交付或必要依赖边界才拆分 PR，并明确原因。`main` 只承载已完成审查与所需验证的 PR 合并结果，不直接提交或绕过 PR 本地合并。PR 包含 owner、需求/验收范围、契约/Schema 影响、旧路径删除、实际验证结果和风险。
-4. 提交权限在派工前明确：独占 checkout 的 worker 可以在自己的 topic 分支提交；共享 checkout 的 Git index、分支切换、PR 创建与合并由主 Agent 串行执行，其他 Agent 交付文件清单，不并发操作同一个 Git index。
-5. 提交前检查 diff 与暂存区，按明确路径暂存；不使用 `git add .` 或 `git add -A` 打包混合工作区。
-   只提交当前功能需求范围的文件，不夹带缓存、coverage、构建产物、临时数据库、凭据、任务外或尚未交接的变更。
-   业务源码、owner 契约/Schema、必要测试和可复用的团队规范可提交；机器专属路径/地址、SSH/隧道配置、凭据文件位置、PID/端口/健康快照、临时交接和日志只留本地 ignored 或私有目录，配置模板仅使用占位符。
-6. Worker 的“已提交”只表示交付待验收。主 Agent 复核范围、命名、目录、API/SQL 一致性与测试，在主工作树
-   重跑相关验证；独立工作树的提交先审查再按依赖顺序集成，原始 SHA、PR 与合并后的 SHA 都要记录。
-7. 完成状态依次为：待派工 → 进行中 → 待审查 → 待集成验证 → 已验收；阻塞项记录具体原因和后续 owner。
-   Worker 退出码、测试数量、历史截图或口头完成不替代当前 commit 的证据，失败项不靠放宽门禁清零。
-8. 每波收尾更新同一任务表：任务、Agent、仓库、文件集、提交、PR、验证、未解决风险；再决定下一波。
-   主 Agent 对最终结果负责，已知未闭环项明确保留，不以“多个 Agent 都说完成”宣称完成。
-9. 功能需求或版本收尾后，Root 和所有涉及子仓回到同步后的 `main`、工作树 clean；核对 topic 提交已合入后删除本地和远程已合并分支。无进行中需求时仅保留 `main`，下一个需求再从最新 `main` 创建功能分支。未合并/未审查的提交不得直接删除，应先报告并保留可恢复交付；不丢弃他人未交接改动或重置共享工作树制造“clean”，不清理其它任务仍在使用的工作树。
+## 7. 测试与验收
 
-本规则只约束本次治理 PR 合并后的后续变更；它把当前 `main` 作为既有基线，不追溯改写历史。
+**测试保护行为与独有风险，验证范围随变更扩大；不按数量或目录层级机械生成。**
 
-Worker 完成报告格式：
+- 新测试先查现有覆盖，选择最低充分层级，用名称/必要注释说明目的，不另建准入表。使用等价类、边界值和真实风险组合，不追全仓 100% 覆盖率。
+- 默认不锁定私有方法、内部调用顺序、源码/CSS 字符串或 Markdown 标题/整段文案；公开文案、协议值或顺序本身是有效契约时例外。架构检查优先验证实际边界与有效/违规样本。
+- 单元覆盖规则，集成覆盖真实 I/O/事务，contract 覆盖 wire/消费者边界，E2E 覆盖关键旅程；只有增加独有证据才跨层重复。缺陷修复补能复现问题的回归。
+- 可合并、下沉、重写或删除重复/过时/实现耦合测试，先确认风险已被承接或需求已废止并说明原因；不为消除失败删断言、缩小测试范围或放宽门禁。
 
-```text
-任务：<ID / owner / Agent 角色>
-状态：已提交 / 部分完成 / 被阻塞
-基线：<工作目录 / 分支 / 起始 SHA>
-commit：<交付 SHA 或由主 Agent 提交的原因；已集成时附集成 SHA>
-修改文件：<绝对路径>
-验证：<命令 -> 实际结果>
-审查：<审查人 / 对应 SHA / 结论或待审查>
-未完成与风险：<明确列出>
-后续 owner：<仓库/Agent/主控>
-```
+| 阶段/变更 | 验证要求 |
+| --- | --- |
+| 纯文档 | diff、链接与直接相关治理检查；不启动业务服务、目标站浏览器或全仓编排 |
+| 只读调查 | 核验结论所需来源/证据；登录、页面采集或环境实测仅在明确的调查范围内进行 |
+| 开发迭代、局部修复 | 相关行为/失败基线、focused test 和受影响的 lint/typecheck；按影响扩大，不每一步重复完整门禁 |
+| 单仓完整需求交付/合并 | 本 owner 所需格式、lint/typecheck/test/build 等完整相关门禁；已存在的失败也如实记录，未满足合并门禁不冒称已验收 |
+| 契约、数据或跨仓变更 | 在上述基础上补消费者契约、隔离真实集成、fresh schema/迁移与相关 smoke |
+| UI/交互 | 实测主路径和相关状态、移动端/键盘/可访问性；视觉保留对照证据，Manus 专项按第 8 节 |
 
-## 10. 默认验证命令
+权限、tenant、幂等、并发、回滚、重复投递、恢复及超时/取消/有限重试按本次受影响行为覆盖，不对无对应能力的模块建立空套件。
+mock 不称真实 integration，跳过不称通过；真实依赖/资源隔离遵循第 9 节。区分新增失败、既存失败与环境缺口，只暂停受阻交付/合并，不自动扩散修复范围。
 
-Root：
+## 8. Manus 复刻与技能分工
 
-```bash
-python3 scripts/verify-ten-repository-standard.py
-python3 scripts/verify-repository-topology.py
-python3 -m pytest scripts/tests
-```
+**仅在明确的页面/功能复刻任务中执行。视觉与交互以 Manus 实测参考为准，工程实现遵循 Kokoro owner/契约。**
 
-旧 `scripts/verify-ten-repository-full.sh` 与 `scripts/e2e/run_stage2_owner_health.py` 已暂停：原实现的
-共享状态清理未隔离，当前入口只诊断并退出 2，不访问基础设施，不列入默认可执行门禁。
-全仓隔离编排由 Root 后续重建；期间逐仓执行 owner 自有完整门禁。System 跨仓 HTTP 验收使用
-`scripts/e2e/run_system_owner_smoke.py`（独立临时数据库/缓存前缀、分别指定 Node 24/22），
-该 smoke 不替代全仓浏览器、外部存储、真实推理或镜像验收；静态门的实际失败仍需如实记录。
+1. **定范围**：指定页面/本地路由、状态与已批准的品牌/业务差异，以精确一比一为验收目标，不擅自换风格或让旧实现/测试决定布局。
+2. **观察取证**：复用可用浏览器与登录 session；认证按用户授权和平台规则进行，需要用户参与时再交接，不索取或导出登录凭据。发布、支付、删除等有副作用动作单独确认授权，不因采集任务自动执行。
+3. **提取规则**：读取页面已加载且可访问的 DOM、计算样式、CSS/前端 JS、字体及图片/SVG，测量布局/排版并记录触发→状态变化，不只凭截图猜样式。可访问 source map 时分析关联前端源码；前端产物、完整源码仓库和后端源码分开标注，现有证据足够时直接推进。
+4. **整理并实现**：按功能分批，一页一份紧凑规格记录布局/组件关系、token、交互状态、资源来源与待核实项；复用现有文档和组件，不等整站采集完才开发，不搬入整套模板/依赖或演示业务旁路。
+5. **对照验收**：固定参考 URL/采集日期、视口、主题/语言、滚动与交互状态，标注参考/实现、新/历史截图；逐项修正布局、字体、间距、图标、弹窗、滚动、响应式和动效，同时验证真实点击结果、数据变化和失败恢复。
 
-TypeScript：
+截图采集覆盖本次相关菜单/弹窗/标签、hover/focus、加载/空态/错误与响应式，复杂动效补操作记录或视频。字体渲染差异设有依据的容差，只屏蔽已识别动态噪声，不更新基线或遮盖区域掩盖错误。
+原始截图、HTML/HAR 和会话相关材料默认本地 ignored；仅脱敏规格及允许复用的资产进 Git。源码/资产按许可证研究复用；不伪造业务数据、连接或成功状态，后端缺口和未观察行为明确保留。
 
-```bash
-pnpm format:check
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm db:apply-schema       # 数据 owner
-```
+| 技能/来源 | 用途与边界 |
+| --- | --- |
+| [clone-website](https://github.com/JCodesMore/ai-website-cloner-template/blob/master/.agents/skills/clone-website/SKILL.md) | 复刻观察→实现→对比流程；遵循 Kokoro 目录、接口与工具链 |
+| `frontend-design` | 实现质量、响应式和可访问性；复刻时不重新选风格 |
+| [awesome-design-skills](https://github.com/bergside/awesome-design-skills) | 按需参考设计系统表达，不整库加载或覆盖 Manus 样式 |
+| `playwright` / `playwright-interactive` / 可用浏览器工具 | 页面观察、操作、截图与回归；复用已可用能力，不重复安装 |
 
-Web：
+技能链接是来源，不表示已安装；先核对可用性，技能中的默认脚手架、并行或风格建议不扩大本次任务。仅凭截图相似、build 或测试通过不宣称一比一完成，精确程度与剩余差异用实际对照证明。
 
-```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm test:e2e
-```
+## 9. 运行资源与安全
 
-Python Agent：
+- 开发从源码运行；Docker 应用容器用于 release candidate smoke，不替代本地开发验证。不要覆盖正在使用的预览输出或重启他人进程。
+- 先探测并复用受管 PostgreSQL/Redis/ObjectStore 与既有配置，不重复启动实例、不清理非自己创建的数据；测试使用独立 run/schema/key prefix/输出目录，只清理自身资源。
+- 本地与 CI 的应用目标是一个 PostgreSQL 实例、一个数据库和一套应用 role/credential；每个数据 owner 在同库使用独立 schema 与指向该 schema 的连接 URL。代码、Schema、查询、事务和测试继续禁止跨 owner SQL/JOIN、表引用、ORM model 与 canonical schema 共享；表名前缀不代替 owner schema。现有部分 installer/URL 仍锁定 `public` 或整库空白，须由 owner 代码切片改为 schema 边界后才能宣称单库应用组合通过。测试 fixture 临时库只是运行隔离，不是新增应用数据库或角色。每 owner 独立 production role、GRANT/REVOKE、数据库 mTLS 和 NetworkPolicy 属于部署阶段，不是当前开发门禁。
+- Redis 复用受管实例，各 owner 使用隔离 namespace/logical DB；不 reset 共享数据库或清空 Redis。
+- 凭据、密码、私钥、token 和敏感 payload 不进入源码、文档、日志或聊天；机器配置、密钥位置、PID/健康快照只留本地 ignored/私有记录。
+- 涉及 Windows SSH/远程资源/worker 时先读 `${CODEX_HOME:-$HOME/.codex}/WINDOWS_SSH.md`，实测连接状态，遵循本次授权与记录中的资源预算；未涉及远程操作的任务不加载该记录。
+- 发布、CI、扫描、SLO 和运维要求按 owner 的 SECURITY/RELIABILITY/ACCEPTANCE/RUNBOOK 与测试手册执行，不作为局部文档/修复的前置条件。
 
-```bash
-uv lock --check
-uv sync --frozen
-uv run ruff format --check .
-uv run ruff check .
-uv run pyright
-uv run pytest
-uv build
-```
+## 10. 交付与维护
 
-Go Scheduler：
+- 简报说明修改/结论、实际验证命令与通过/失败/跳过、未运行原因、风险与后续 owner；已提交附 SHA，未提交附基线 commit 与工作树范围。
+- 组件完成、功能验收、全仓通过分别绑定对应范围证据；未决设计、环境缺口或历史报告不作为当前完成证明，不用“顶级/生产级”替代验收。
+- 本文件只保留常用入口和执行边界；任务进度归有效计划，设计理由归架构/ADR，语言细节归专项手册。新规则注明触发条件与检查方式，删除重复/过时流程，优先由测试、lint 或 CI 执行。
 
-```bash
-gofmt -l .              # 验证时输出必须为空；格式化修改另行执行
-go vet ./...
-go test ./...
-go build ./...
-```
-
-完成报告必须列出当前 commit、实际执行命令、通过/失败数量、未运行原因、已知风险和后续 owner。
+参考：[GitHub 自定义指令建议](https://docs.github.com/en/copilot/concepts/prompting/response-customization)、[Vercel Chat 仓库指南](https://github.com/vercel/chat/blob/main/AGENTS.md)。这些是方法参考，不替代 Kokoro 的业务裁决。
