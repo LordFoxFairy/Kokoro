@@ -1,3 +1,9 @@
+## 2026-10-19 当前局部修复交付边界
+
+已确认先闭环当前批，不启动下一轮。App PR #41 已合 main `e189954a`；Root 本次只配对这一精确 gitlink，并记录四处已验局部修复，不修改其他 owner/配置/数据。完整4249测试与10浏览器旅程复用冻结树证据，收尾定向123 PASS；无新增测试或功能。
+
+下一轮单独处理项目概览—历史任务—会话往返、现有分页与真实能力呈现；消息内技能选择后置。暂停模型、实际工具和扣费不变，不把参考截图或隔离 preview 冒称真实执行。当前 PR 合并后同步 main、仅清理本方已合 topic 分支，不覆盖占用工作区。
+
 ## 2026-10-19 既定 MCP availability 消费配对集成
 
 原字段13被旧BFF decoder拒绝的故障已按既定边界修复。BFF [PR #11](https://github.com/LordFoxFairy/kokoro-bff/pull/11) 已合入 `f6ae19cb8aeebc1fe4744bbefaae986843d93172`，App [PR #39](https://github.com/LordFoxFairy/kokoro-app/pull/39) 已合入 `0a0bf9b0a414405684d0d6ffb2cdfbb26c341a5c`；各merge tree与已验head精确相等。Root仅更新这两个gitlink，Platform仍4a4e4c4，其余owner与公共契约不动；不重新实现已合协调器。CI按用户要求不等待，不把未运行/失败称通过。
