@@ -1,5 +1,7 @@
 # Manus 设计语言调研笔记
 
+登录后工作台的功能、操作与 API 素材另见 [Manus 功能观察记录](functional-manual-notes.md)。下文保留早期营销站调研范围，不覆盖后续真实页面观察。
+
 > 目的：为 Kokoro（类 Gemini 的对话 + Canvas 应用）横向对比 Manus 的产品形态与设计语言。
 > 数据来源：仅 WebFetch 抓取的服务端渲染文本（HTML→markdown）。**未拿到截图、未跑浏览器渲染**，色值/字体/圆角档位多为文字推断，请以"印象级"对待。
 

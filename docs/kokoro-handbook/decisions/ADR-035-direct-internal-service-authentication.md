@@ -13,6 +13,12 @@ Tenant 使用 IAM 已有的原样 opaque 标识（受长度和字符边界约束
 
 下面“当前事实”描述本 ADR 建立时的基线；源码提交、正常运行与浏览器验收以本轮任务记录区分。
 
+## AUTH-P3 范围补充（2026-10-16）
+
+沿已存在的 Custom API 专属控制面与 `ProductCustomApiService`，BFF 固定 caller/surface 配对补齐 `custom_api_personal`，与 `catalog|projection|skills_admin|mcp_personal|mcp_admin` 一并构成六种普通 BFF 用途。不是任意 caller/surface 扩展，也不授予 Custom API 执行权限。每个 BFF credential 只允许一个用途、固定 tenant，使用独立 secret/entry；新机器 profile 正式发行并由 BFF 固定消费后一次收敛余下 catalog/skills_admin。删除旧 OAuth source 与专用旧配置名，改用明确 direct service-credential 配置，不保留别名/旧 JSON/fallback。
+
+本片可按下文普通 BFF 独立验收决定先行；`tenant_execution|global_register` 保持原受控链，Agent/IAM 撤权 barrier 与 Billing 业务授权仍是后继门，不因普通控制面完成而放行执行。下文“当前事实”和五种用途列表是决策建立时的基线，当前六用途以本段补充为准。
+
 ## 当前事实
 
 BFF 到 Platform 的 catalog、projection、skills-admin、MCP-personal、MCP-admin 分别获取 IAM
