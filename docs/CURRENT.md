@@ -1,3 +1,13 @@
+## 2026-10-19 聊天／项目局部回归交付组合
+
+本批 App [PR #41](https://github.com/LordFoxFairy/kokoro-app/pull/41) 已合入 main，精确版本 `e189954af6e27116d024b66a75069b8de2c7ab8e`。本 Root 组合仅提升 `apps/kokoro-app`，其余 11 个 gitlink 保持；不捎带当前占用工作区的未提交变更。
+
+交付四项：超长恢复/语音草稿可见反馈；跨 scope 保留未回执消息的原 key/body（不自动重发，回执/身份失效后收束）；项目长草稿按实际编辑器高度预留历史留白；私有项目链接删除虚构 owner、无效邀请及公开访问暗示。无新增 owner、API、Schema、依赖或业务持久化 store。
+
+产品/测试冻结树与 App merge tree 逐项一致；已有完整 Vitest 226 files/4249 PASS、相关桌面/手机浏览器10 PASS、lint/typecheck/build及七生成检查0。本次收尾只新增定向复验6 files/123 PASS，不重复全量。正常原会话只读链与新链接提示已验，正常自有源码副本热更新未重启服务；不是实际模型/工具执行验收。原首轮失败记录保留，未删断言或放宽超时。
+
+本批局部缺陷关闭不代表项目工作区整轮完成；项目概览/历史往返、分页语义、live 演示数据隔离与消息技能选择留待独立下一轮。模型调用、实际工具、扣费保持暂停；不主动重跑/等待 CI。Root 组合是否已合 main 以本 PR 远端状态为准。
+
 ## 2026-10-19 既定 MCP availability 消费配对集成
 
 原字段13被旧BFF decoder拒绝的故障已按既定边界修复。BFF [PR #11](https://github.com/LordFoxFairy/kokoro-bff/pull/11) 已合入 `f6ae19cb8aeebc1fe4744bbefaae986843d93172`，App [PR #39](https://github.com/LordFoxFairy/kokoro-app/pull/39) 已合入 `0a0bf9b0a414405684d0d6ffb2cdfbb26c341a5c`；各merge tree与已验head精确相等。Root仅更新这两个gitlink，Platform仍4a4e4c4，其余owner与公共契约不动；不重新实现已合协调器。CI按用户要求不等待，不把未运行/失败称通过。
