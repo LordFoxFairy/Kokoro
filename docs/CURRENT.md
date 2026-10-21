@@ -1,3 +1,11 @@
+## 2026-10-20 最新目标与遗留项已重新对齐
+
+当前完整活动目标仍为 Skills `/v1/skill.list`、owner/BFF/App/Admin 正式旅程及真实验收，之后 MCP/Connectors 与逐仓 PR/Root组合；保持 active。最新状态、遗留需求、owner、顺序及完成条件统一见[现有计划首节](superpowers/plans/2026-09-03-kokoro-production-closure.md)。该首节优先于下方历史排期，不把组件PASS、已合PR或健康检查等同整产品闭环。
+
+本轮确实关闭的缺陷：Platform Connect内部Skills ZIP导入内嵌安装遗漏既有获取来源字段。Platform [PR #10](https://github.com/LordFoxFairy/kokoro-capability/pull/10) 已合 `c9862466267e6545c0b7f191357e9b8182dcca89`；Root本次只提升该精确gitlink并记录目标，不混入尚未交付的模型/账户候选。正常浏览器原未知结果经只读GET恢复，新纯文档ZIP的Begin/Complete/Finalize为201/200/200，参考文件可读；未盲重发、未补写历史unknown、未放宽BFF decoder。获取来源持久化/内部RPC值由owner测试证明；浏览器JSON不暴露该内部字段，本次不声称该JSON含direct/unknown，公开owner_type三模式仍待后继验收。仅自有Platform源码服务重载，配置/Schema/其他服务不变，未执行技能/模型/积分。owner完整门全0，默认2562PASS/432资源SKIP，另有真实PostgreSQL30PASS/0SKIP及只读审查；902源文件冻结无漂移。原始截图/日志留ignored。
+
+**未完成项明确保留**：Skills三类外部身份映射和全角色负控、Admin发布全旅程与同尺寸对照；MCP远程OAuth/stdio完整正常生命周期；System模型管理候选、账户布局/身份菜单及闪动候选交付；当前租户无感初始化/充值/整数实际用量结算/后台管理；首页、聊天、项目、其他页面剩余状态与手册。Billing初始化PR2、同事设置App43已合，分别不等于积分用户链完成或其他模型候选已交付。自动化/连接器继续保留同事写区，不接管、不重复实现；真钱支付后置，不引入sub2api代码或依赖。
+
 ## 2026-10-20 本方本地遗漏交付：已发 PR 并合并的范围
 
 用户指出“新版仍在本地却未交付”属实，本批不再停在盘点。App [#42](https://github.com/LordFoxFairy/kokoro-app/pull/42) 已合 `d4b61f936ec9102836dc21092dff6fe1b48d0f22`，保留现有 main 认证/Profile/Public19/MCP/#41 修复，定向接回资料库、侧栏局部、知识编辑和画布；完整 Node22 lint/typecheck/七生成检查/build 均0，Vitest 231 files/4316 PASS，全部桌面手机 Playwright42 PASS。独审发现的同主体重核草稿丢失有有效 RED→GREEN；preview 原禁网络语义保留。正常3310已从e189954 fast-forward到此main并热更新，真实默认资料库、查看选项→个人文件→返回、现有文件读取与去除旧顶层页签已验。没有发送消息、上传或下载资料，也没有重启其他服务。
