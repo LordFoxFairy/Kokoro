@@ -1,4 +1,5 @@
 import { ReferenceGenerationError } from './reference-errors.mjs';
+import { escapeContractTemplates } from './publication-policy.mjs';
 
 export function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -19,7 +20,7 @@ export function normalizeDescription(value, fallback = '—') {
   if (typeof value !== 'string' || value.trim() === '') {
     return fallback;
   }
-  return value.trim().replace(/\s+/g, ' ');
+  return escapeContractTemplates(value.trim().replace(/\s+/g, ' '));
 }
 
 export function slugify(value) {
@@ -136,7 +137,7 @@ export function schemaConstraints(contract, schema) {
     }
   }
   if (typeof resolved.pattern === 'string') {
-    constraints.push(`Pattern: ${resolved.pattern}`);
+    constraints.push(`Pattern: ${formatTableExample(resolved.pattern)}`);
   }
   if (resolved.uniqueItems === true) {
     constraints.push('Unique items');
@@ -187,8 +188,12 @@ export function formatExample(value) {
 
 export function formatTableExample(value) {
   if (value === undefined) return '—';
-  if (typeof value === 'string') return `\`${escapeTable(value)}\``;
-  return `\`${escapeTable(formatExample(value))}\``;
+  const text = typeof value === 'string' ? value : formatExample(value);
+  const runs = [...text.matchAll(/`+/gu)].map((match) => match[0].length);
+  const fence = '`'.repeat(Math.max(0, ...runs) + 1);
+  const padding = text.startsWith('`') || text.endsWith('`') ? ' ' : '';
+  // Escape table separators only at the final row boundary, not in code spans.
+  return `${fence}${padding}${text}${padding}${fence}`;
 }
 
 export function renderExample(example) {

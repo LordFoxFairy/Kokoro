@@ -1,9 +1,13 @@
 # 请求 ID（Request ID）
 
-JSON envelope 的 `meta.request_id` 用于关联一次请求。event stream 没有 JSON body，因此 `GET /v1/sessions/{id}/events` 的 `200` response 在 canonical contract 中通过 `X-Kokoro-Request-Id` header 暴露 correlation ID。
+请求ID由对应 operation 的 owner 契约定义，不等于资源ID、AG-UI replay cursor 或幂等key，不作为授权凭据。
 
-当前 public contract 没有把 request correlation ID 定义成调用方输入字段。客户端应接受服务端返回的值，不要在门户之外发明同名 request header 或把它当作幂等 key。
+| 当前接口 | 关联信息 |
+| --- | --- |
+| `GET /v1/skill.list` | body 顶层 `request_id`，header `X-Request-Id`，成功 `{ok, request_id, data}`。 |
+| 本站 message/control 示例 | JSON envelope 的 `meta.request_id`。 |
+| `GET /v1/sessions/{id}/events` | SSE 无JSON envelope，握手header为 `X-Kokoro-Request-Id`。 |
 
-记录 operationId、HTTP status、latency 和返回的 request ID，便于排查；凭据、完整用户消息、tool 参数和 provider payload 默认脱敏。request ID 只是诊断标识，不是 authorization credential、resource ID 或 AG-UI replay cursor。
+不要全局重命名这些字段或给全部响应补同一个包装。具体状态码、header、约束和是否接受调用方request ID，均看[生成Reference](/reference/v1/)的对应operation，不自造输入字段。
 
-字段名、header 出现在哪个 operation、状态码和约束都以[生成 reference](/reference/v1/)为准。
+记录 operationId、HTTP status、耗时和返回的请求ID；凭据、用户完整消息、tool参数和provider payload默认脱敏。

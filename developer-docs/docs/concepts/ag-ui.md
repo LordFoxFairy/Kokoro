@@ -6,7 +6,7 @@ Kokoro public Agent progress 使用 AG-UI over Server-Sent Events。公开 strea
 
 每个应用 frame 有 SSE `id` 和一个 JSON `data`。当前 public cursor 由正则 `^agui_[0-9a-f]{32}$`约束，是分配给单个 frame 的 opaque 值；一个内部事实可能投影成多个 public frame，每个 frame 都有自己的 cursor。
 
-AG-UI 的 `type` 应在 reducer 前校验。标准家族可包括 run、text message、tool call、activity、reasoning、subagent 和 `CUSTOM`；具体可观察事件以 owner contract 与实际 projection 为准。等待审批的产品 custom event 名称是 `kokoro.interaction.awaiting_approval`，不是客户端自造的别名。
+AG-UI 的 `type` 应在 reducer 前校验。标准家族可包括 run、text message、tool call、activity、reasoning、subagent 和 `CUSTOM`；具体可观察事件以 owner contract 与实际 projection 为准。产品交互 custom event 名称是 `kokoro.interaction.state`，其 value 为完整交互状态快照，不是旧的等待审批事件或增量 patch；恢复时使用快照的精确暂停引用、修订及决定项。
 
 ## Replay 顺序
 

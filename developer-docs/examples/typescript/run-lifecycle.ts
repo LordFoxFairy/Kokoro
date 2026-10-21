@@ -22,7 +22,7 @@ const MAX_FRAME_BYTES = 256 * 1024;
 const EVENT_CURSOR_PATTERN = /^agui_[0-9a-f]{32}$/u;
 const EVENT_TYPE_PATTERN = /^[A-Z][A-Z0-9_]+$/u;
 const TERMINAL_EVENT_TYPES = new Set(['RUN_FINISHED', 'RUN_ERROR']);
-const APPROVAL_EVENT_NAME = 'kokoro.interaction.awaiting_approval';
+const APPROVAL_EVENT_NAME = 'kokoro.interaction.state';
 
 function requiredEnvironment(name: string): string {
   const value = process.env[name];
@@ -56,15 +56,13 @@ function requireRequestMeta(envelope: JsonRecord): void {
 
 const baseUrl = requiredEnvironment('KOKORO_API_BASE_URL').replace(/\/$/u, '');
 const apiToken = requiredEnvironment('KOKORO_API_TOKEN');
-const namespace = requiredEnvironment('KOKORO_NAMESPACE');
-const principalId = requiredEnvironment('KOKORO_PRINCIPAL_ID');
+const userBearer = requiredEnvironment('KOKORO_USER_BEARER');
 const sessionId = requiredEnvironment('KOKORO_SESSION_ID');
 
 function serviceHeaders(): Record<string, string> {
   return {
     'x-kokoro-internal-secret': apiToken,
-    'x-kokoro-namespace': namespace,
-    'x-kokoro-principal-id': principalId,
+    authorization: `Bearer ${userBearer}`,
     'x-kokoro-service': 'web-bff',
   };
 }
@@ -278,15 +276,29 @@ function readChunk(
 }
 
 function isApprovalFrame(frame: SseFrame): boolean {
-  return frame.data.type === 'CUSTOM' && frame.data.name === APPROVAL_EVENT_NAME;
+  return frame.data.type === 'CUSTOM' && frame.data.name === APPROVAL_EVENT_NAME
+    && isRecord(frame.data.value) && frame.data.value.phase === 'waiting';
 }
 
-function approvalToolId(frame: SseFrame): string {
-  if (!isApprovalFrame(frame)) {
-    throw new Error('Expected an approval frame');
+function approvalCommand(frame: SseFrame): JsonRecord {
+  if (!isApprovalFrame(frame)) throw new Error('Expected a waiting interaction state');
+  const value = requireRecord(frame.data.value, 'SSE interaction state');
+  const pauseRef = requireString(value, 'pause_ref', 'SSE interaction state');
+  const revision = value.pause_revision;
+  if (typeof revision !== 'number' || !Number.isSafeInteger(revision) || revision < 1) {
+    throw new Error('Expected a positive exact pause revision');
   }
-  const value = requireRecord(frame.data.value, 'SSE approval value');
-  return requireString(value, 'tool_id', 'SSE approval value');
+  if (!Array.isArray(value.groups) || value.groups.length !== 1) throw new Error('This example requires exactly one approval group');
+  const group = requireRecord(value.groups[0], 'interaction group');
+  if (!Array.isArray(group.items) || group.items.length !== 1) throw new Error('This example requires exactly one approval item');
+  const item = requireRecord(group.items[0], 'approval item');
+  if (item.kind !== 'tool_approval' || !Array.isArray(item.allowed_decisions) || !item.allowed_decisions.includes('approve')) {
+    throw new Error('The interaction does not allow this example approval');
+  }
+  // The executable fixture demonstrates approval only. Real applications must
+  // collect the user's explicit decisions before constructing this command.
+  return { kind: 'run.resume', pause_ref: pauseRef, expected_pause_revision: revision,
+    decisions: [{ type: 'approve', item_id: requireString(item, 'item_id', 'approval item') }] };
 }
 
 function isTerminalFrame(frame: SseFrame): boolean {
@@ -385,15 +397,12 @@ const approval = await consumeEventStream();
 if (!isApprovalFrame(approval.frame)) {
   throw new Error('Expected a waiting approval frame before resume');
 }
-const toolId = approvalToolId(approval.frame);
+const command = approvalCommand(approval.frame);
 
 await postJson(
   `/v1/sessions/${encodeURIComponent(sessionId)}/runs/${encodeURIComponent(runId)}/control`,
   'example-typescript-resume-001',
-  {
-    decisions: [{ tool_id: toolId, type: 'approve' }],
-    kind: 'run.resume',
-  },
+  command,
 );
 
 const completed = await consumeEventStream(approval.cursor);

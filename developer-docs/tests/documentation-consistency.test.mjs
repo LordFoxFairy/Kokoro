@@ -177,7 +177,11 @@ test('authored protocol pages cite only observable BFF facts', () => {
   assert.equal(readyResponses['503']?.content?.['application/json']?.schema?.$ref,
     '#/components/schemas/HealthResponse');
   assert.match(errors, /readyz.*503|503.*HealthResponse/u);
-  assert.match(rateLimits, /没有.*429.*Retry-After|未.*429/u);
+  const limited = Object.values(contract.paths).flatMap((item) => Object.values(item))
+    .filter((operation) => operation?.responses?.['429']?.headers?.['Retry-After']);
+  assert.ok(limited.length > 0);
+  assert.match(rateLimits, /429/u);
+  assert.match(rateLimits, /Retry-After/u);
 
   const revision = contract.components?.schemas?.ProjectInstructionRevision;
   assert.ok(revision);

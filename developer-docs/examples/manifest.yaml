@@ -42,9 +42,11 @@ examples:
         content_type: application/json
         request_body:
           kind: run.resume
+          pause_ref: pause_example
+          expected_pause_revision: 1
           decisions:
             - type: approve
-              tool_id: tool_example
+              item_id: item_example
       - operation_id: streamSessionEvents
   - id: python-cursor-pagination
     file: examples/python/cursor-pagination.py

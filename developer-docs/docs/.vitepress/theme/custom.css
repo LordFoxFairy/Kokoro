@@ -153,8 +153,10 @@ a:focus-visible, button:focus-visible {
 }
 
 .vp-doc table {
-  display: table;
+  display: block;
   width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
   border-radius: var(--kokoro-radius-sm);
   background: color-mix(in srgb, var(--kokoro-paper-raised) 88%, transparent);
 }
@@ -278,10 +280,6 @@ a:focus-visible, button:focus-visible {
     border-left: 0;
   }
 
-  .vp-doc table {
-    display: block;
-    overflow-x: auto;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

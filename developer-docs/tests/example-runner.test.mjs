@@ -46,6 +46,6 @@ test('lifecycle example consumes a live stream incrementally before resuming', (
 
   assert.match(source, /getReader\(\)/u);
   assert.match(source, /AbortController/u);
-  assert.match(source, /kokoro\.interaction\.awaiting_approval/u);
+  assert.match(source, /kokoro\.interaction\.state/u);
   assert.match(source, /Last-Event-ID/u);
 });

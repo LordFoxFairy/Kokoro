@@ -2,6 +2,9 @@ import { ReferenceGenerationError } from './reference-errors.mjs';
 
 const PUBLIC_KOKORO_NAMES = new Set([
   'x-kokoro-idempotency',
+  'x-kokoro-json-byte-limit',
+  'x-kokoro-custom-event-values',
+  'x-kokoro-fixed-visibility',
   'x-kokoro-internal-secret',
   'x-kokoro-namespace',
   'x-kokoro-owner',
@@ -37,6 +40,13 @@ function addViolation(violations, path, message) {
   violations.push(`${path}: ${message}`);
 }
 
+// Identifier templates are literal prose, not HTML. Escape them before both
+// publication inspection and rendering; arbitrary markup remains rejected.
+export function escapeContractTemplates(value) {
+  return value.replace(/(\b[A-Za-z][\w.:-]*[_:])<([A-Za-z][A-Za-z0-9_]*)>/gu,
+    (_, prefix, name) => `${prefix}&lt;${name}&gt;`);
+}
+
 function inspectString(value, path, violations, options) {
   for (const pattern of SECRET_PATTERNS) {
     if (pattern.test(value)) {
@@ -50,7 +60,10 @@ function inspectString(value, path, violations, options) {
   const markupCandidate = options.allowGeneratedMarkup
     ? value.replace(GENERATED_MARKUP_PATTERN, '')
     : value;
-  if (RAW_HTML_PATTERN.test(markupCandidate) || HTML_COMMENT_PATTERN.test(markupCandidate)) {
+  const inspectedMarkup = !options.allowGeneratedMarkup && path.endsWith('.description')
+    ? escapeContractTemplates(markupCandidate)
+    : markupCandidate;
+  if (RAW_HTML_PATTERN.test(inspectedMarkup) || HTML_COMMENT_PATTERN.test(markupCandidate)) {
     addViolation(violations, path, 'raw HTML or comments are not publishable');
   }
   const internalPath = INTERNAL_OWNER_PATH.exec(value);

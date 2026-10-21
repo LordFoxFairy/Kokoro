@@ -7,13 +7,12 @@
 ```bash
 export KOKORO_API_BASE_URL="http://127.0.0.1:4300"
 export KOKORO_API_TOKEN="example-only-token"
-export KOKORO_NAMESPACE="ns_example"
-export KOKORO_PRINCIPAL_ID="principal_example"
+export KOKORO_USER_BEARER="example-user-session"
 export KOKORO_SESSION_ID="session_example"
 ```
 
 ::: warning 仅限服务端
-service token、namespace 和 principal 属于服务端信任边界。不要放入浏览器 JavaScript、移动端 bundle、URL 或普通日志。示例运行器会用 loopback fixture 替代真实 BFF。
+服务凭据仅保留在服务端，用户 Bearer 由正式 IAM 登录取得；tenant／actor 由当前准入解析，不自报。不要放入浏览器 JavaScript、移动端 bundle、URL 或普通日志。示例运行器会用 loopback fixture 替代真实 BFF。
 :::
 
 ## 2. 提交 message
@@ -32,4 +31,4 @@ service token、namespace 和 principal 属于服务端信任边界。不要放�
 
 ## 4. 关联失败
 
-JSON 响应读取 `meta.request_id`；SSE 握手读取响应头 `X-Kokoro-Request-Id`。调查问题时记录 operationId、HTTP status、耗时和 request ID，但默认不要记录凭据、完整用户内容、tool 参数或 provider payload。
+本页 message/control 示例读取 `meta.request_id`；SSE 握手读取 `X-Kokoro-Request-Id`。`skill.list` 使用独立 `request_id` 与 `X-Request-Id`，详见[技能读取](/guides/skills)。调查问题时记录 operationId、HTTP status、耗时和 request ID，但默认不要记录凭据、完整用户内容、tool 参数或 provider payload。

@@ -12,7 +12,8 @@
 
 - Node.js `22.22.x`
 - Corepack，以及 `pnpm@11.25.0`
-- `../kokoro-bff` 的本地 checkout，或通过 `KOKORO_BFF_CHECKOUT` 指向该 checkout
+- 执行 Python 示例需 `python3` 3.10 或更新版本；cURL 示例需 `curl`
+- `../apps/kokoro-bff` 的本地 checkout，或通过 `KOKORO_BFF_CHECKOUT` 指向该 checkout
 
 本地 BFF checkout 只用于读取已固定的 artifact；它不是门户的第二个可编辑事实源。示例使用 loopback fixture 和明显虚假的环境值，不需要真实凭据。
 

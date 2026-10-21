@@ -21,8 +21,7 @@ BASE_URL = required_environment("KOKORO_API_BASE_URL")
 HEADERS = {
     "x-kokoro-service": "web-bff",
     "x-kokoro-internal-secret": required_environment("KOKORO_API_TOKEN"),
-    "x-kokoro-namespace": required_environment("KOKORO_NAMESPACE"),
-    "x-kokoro-principal-id": required_environment("KOKORO_PRINCIPAL_ID"),
+    "authorization": "Bearer " + required_environment("KOKORO_USER_BEARER"),
 }
 
 

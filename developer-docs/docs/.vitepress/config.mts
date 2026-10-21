@@ -14,19 +14,26 @@ function isReferenceItem(value: unknown): value is ReferenceItem {
 }
 
 const REFERENCE_LABELS: Readonly<Record<string, string>> = {
+  'Account Profile': '账户资料',
+  'Account Sessions': '账户会话',
+  Administration: '后台管理',
   Agents: 'Agent 连接',
   Billing: '计费',
   Chat: '对话',
   Health: '健康检查',
+  Identity: '身份',
   Library: '资源库',
   MCP: 'MCP',
   Models: '模型',
   'Mori Music': 'Mori 音乐',
   Projects: '项目',
+  Personalization: '个性化',
   Scheduled: '定时任务',
   Schemas: '数据结构',
   Skills: '技能',
   System: '系统',
+  Team: '团队',
+  Connectors: '连接器',
 };
 
 function loadReferenceItems(): ReferenceItem[] {
@@ -62,14 +69,28 @@ export default defineConfig({
       { text: 'API 参考', link: '/reference/v1/' },
       { text: '变更记录', link: '/changelog' },
     ],
-    search: { provider: 'local' },
+    search: {
+      provider: 'local',
+      options: {
+        translations: {
+          button: { buttonText: '搜索文档与 API', buttonAriaLabel: '搜索文档与 API' },
+          modal: {
+            displayDetails: '显示详情',
+            resetButtonTitle: '清空搜索',
+            backButtonTitle: '返回搜索',
+            noResultsText: '没有找到相关结果',
+            footer: { selectText: '选择', navigateText: '切换', closeText: '关闭' },
+          },
+        },
+      },
+    },
     sidebar: [
       {
         text: '开始使用',
         items: [
           { text: '介绍', link: '/introduction' },
           { text: '快速开始', link: '/quickstart' },
-          { text: '认证与服务上下文', link: '/authentication' },
+          { text: '认证与请求约定', link: '/authentication' },
         ],
       },
       {
@@ -94,6 +115,7 @@ export default defineConfig({
       {
         text: '工作流指南',
         items: [
+          { text: '技能读取与精确版本', link: '/guides/skills' },
           { text: '创建 run', link: '/guides/create-run' },
           { text: '继续对话', link: '/guides/follow-up' },
           { text: '取消 run', link: '/guides/cancel-run' },

@@ -1,6 +1,6 @@
 # 版本与弃用
 
-当前 public contract version 是 `1.0.0`，路径前缀为 `/v1`，operation stability 标记为 `beta`。版本、owner、visibility 和 stability 以 catalog pin 与 generated manifest 为准。
+当前 public contract version 是 `19.0.1`，业务路径前缀为 `/v1`；operation stability 逐项按 metadata 展示。版本、owner、visibility 和 stability 以 catalog pin 与 generated manifest 为准。
 
 ## 兼容性说明
 

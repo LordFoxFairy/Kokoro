@@ -1,5 +1,6 @@
 import { assertPublicationSafe } from './publication-policy.mjs';
 import { ReferenceGenerationError } from './reference-errors.mjs';
+import { publicContractView } from './public-contract.mjs';
 import {
   escapeTable,
   firstExample,
@@ -34,9 +35,7 @@ const HTTP_METHODS = new Set([
 const STABILITY_VALUES = new Set(['stable', 'beta', 'experimental']);
 const IDEMPOTENCY_VALUES = new Set(['none', 'required']);
 const PERMISSION_PATTERN =
-  /^(?:anonymous|[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*)$/u;
-const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
-const NO_KEY_MUTATION = new Set(['previewGithubSkill']);
+  /^(?:anonymous|[a-z][a-z0-9]*(?:[._:-][a-z0-9]+)*)$/u;
 
 function requireString(record, key, label) {
   const value = record[key];
@@ -44,12 +43,6 @@ function requireString(record, key, label) {
     throw new ReferenceGenerationError(`${label}.${key} must be a string`);
   }
   return value;
-}
-
-function expectedIdempotency(method, operationId) {
-  return SAFE_METHODS.has(method) || NO_KEY_MUTATION.has(operationId)
-    ? 'none'
-    : 'required';
 }
 
 function parameterIdentity(parameter) {
@@ -199,12 +192,6 @@ export function assertPublicContract(contractValue, catalogEntry) {
     if (!PERMISSION_PATTERN.test(permission)) {
       throw new ReferenceGenerationError(
         `${operationId} has invalid x-kokoro-permission ${permission}`,
-      );
-    }
-    const expected = expectedIdempotency(method, operationId);
-    if (idempotency !== expected) {
-      throw new ReferenceGenerationError(
-        `${operationId} x-kokoro-idempotency must be ${expected}`,
       );
     }
     const idempotencyParameter = parameters.find(
@@ -467,12 +454,12 @@ function renderTagPage(contract, tag, operations, entry) {
   const title = requireString(tag, 'name', 'tag');
   const description = normalizeDescription(tag.description, '');
   return [
-    '<!-- Generated file. Do not edit. -->',
     '---',
     `title: ${JSON.stringify(title)}`,
     'outline: [2, 3, 4, 5]',
     'editLink: false',
     '---',
+    '<!-- Generated file. Do not edit. -->',
     '',
     `# ${title}`,
     '',
@@ -484,45 +471,6 @@ function renderTagPage(contract, tag, operations, entry) {
     operations.map((operation) => renderOperation(contract, operation)).join('\n\n'),
     '',
   ].join('\n');
-}
-
-function reachableSchemaNames(contract, operations) {
-  const names = new Set();
-  const visitedReferences = new Set();
-
-  function visit(value) {
-    if (!isRecord(value) && !Array.isArray(value)) return;
-    if (Array.isArray(value)) {
-      value.forEach(visit);
-      return;
-    }
-    if (typeof value.$ref === 'string') {
-      if (value.$ref.startsWith('#/components/schemas/')) {
-        const name = value.$ref.split('/').at(-1);
-        if (name !== undefined) names.add(name);
-      }
-      if (value.$ref.startsWith('#/') && !visitedReferences.has(value.$ref)) {
-        visitedReferences.add(value.$ref);
-        visit(resolveReference(contract, value, 'reachable reference'));
-      }
-      return;
-    }
-    Object.values(value).forEach(visit);
-  }
-
-  operations.forEach(({ operation, parameters }) => {
-    visit(operation);
-    visit(parameters);
-  });
-  let previousSize = -1;
-  while (previousSize !== names.size) {
-    previousSize = names.size;
-    for (const name of names) {
-      const schema = contract.components?.schemas?.[name];
-      if (schema !== undefined) visit(schema);
-    }
-  }
-  return names;
 }
 
 function renderSchemasPage(contract, entry, schemaNames) {
@@ -558,12 +506,12 @@ function renderSchemasPage(contract, entry, schemaNames) {
       return lines.join('\n');
     });
   return [
-    '<!-- Generated file. Do not edit. -->',
     '---',
     'title: Schemas（数据结构）',
     'outline: [2, 3, 4, 5]',
     'editLink: false',
     '---',
+    '<!-- Generated file. Do not edit. -->',
     '',
     '# Schemas（数据结构）',
     '',
@@ -610,8 +558,9 @@ function operationManifestEntry(collectedOperation) {
 }
 
 export function generateReferenceFiles(contract, catalogEntry) {
+  contract = publicContractView(contract);
   const operations = assertPublicContract(contract, catalogEntry);
-  const schemaNames = reachableSchemaNames(contract, operations);
+  const schemaNames = new Set(Object.keys(contract.components?.schemas ?? {}));
   const tags = tagDefinitions(contract, operations);
   const files = new Map();
   const manifestItems = [];

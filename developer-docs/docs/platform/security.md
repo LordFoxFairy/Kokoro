@@ -14,7 +14,7 @@
 
 ## 受信上下文隔离
 
-namespace 和 principal 来自服务端认证状态。pagination cursor 与 AG-UI replay cursor 都要绑定各自的资源和受信上下文；跨范围的值应按 contract 错误处理，不用试探方式确认外部资源是否存在。
+tenant 和 actor 来自正式 IAM 会话准入，不能由旧 namespace／principal 请求头自报。pagination cursor 与 AG-UI replay cursor 都要绑定各自的资源和受信上下文；跨范围的值应按 contract 错误处理，不用试探方式确认外部资源是否存在。
 
 ## 安全报告
 
