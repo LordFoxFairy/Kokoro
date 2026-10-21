@@ -16,6 +16,150 @@ App [PR #44](https://github.com/LordFoxFairy/kokoro-app/pull/44) 已合 `f9d45e5
 
 **未完成项明确保留**：Skills三类外部身份映射和全角色负控、Admin发布全旅程与同尺寸对照；MCP远程OAuth/stdio完整正常生命周期；System模型管理候选、账户布局/身份菜单及闪动候选交付；当前租户无感初始化/充值/整数实际用量结算/后台管理；首页、聊天、项目、其他页面剩余状态与手册。Billing初始化PR2、同事设置App43已合，分别不等于积分用户链完成或其他模型候选已交付。自动化/连接器继续保留同事写区，不接管、不重复实现；真钱支付后置，不引入sub2api代码或依赖。
 
+## 2026-10-20 积分验收预检：历史赠送不等于当前账户到账
+
+用户明确扣费指内部积分，真实支付/真钱充值后置。只读找到10月16日既有1000积分“联调测试”赠送及原命令重放余额不变收据；但收据tenant与当前正常BFF受信tenant不一致。当前验证在发出owner HTTP前即按身份绑定拒绝，未拿旧subject拼新tenant，未跨owner SQL查询、重放赠送或改余额。
+
+随后从现有正常Product聊天页的“用量与计费”入口实际读取当前会话：余额和积分历史均显示“尚未开通积分账户”。这是当前页面事实，不冒wire抓包或整个账本验收；原始截图仅ignored current-credits-not-opened.png。当前Billing main `3f5e0dacc25c1e24d87cbe0c59337d3b909466de` 的正常module只装本人两GET、Catalog和probes，CreditService grant内部能力不等于已开放正式管理员赠送/扣减接口；不能用目标契约、历史receipt或直接改库称本轮充值完成。当前1000积分到账与端到端扣减仍未证实，正式写入口是后继缺口，不在预检中扩实现。
+
+本轮没有充值/扣减/真实支付/模型或工具调用，没有动其他开发者自动化/连接器。模型管理原后台页仍待正确标签交接，不用本次不同Product积分页面代替后台模型表单验收，集中PR/merge条件不变。
+
+## 2026-10-20 聊天未就绪反馈：本次局部修复
+
+用户最新要求在模型、真实工具和扣费保持暂停的前提下优化聊天体验。本次只修已复现的 `agent_not_configured` 提交前依赖状态：独立紧凑中性反馈组件，保留历史与编辑区，只有现有恢复能力允许时展示“重试原请求”，不自动发送。真实 run.failed、未知提交、402、原 key/body 恢复、AG-UI、BFF 和项目业务不变；不接管其他开发者的自动化/连接器。
+
+正常 3310 已先复现旧红色整行错误，再实测新状态卡、历史保留、草稿可编辑和键盘到达恢复按钮；BFF 前置 guard 仍 disabled，未派发模型/工具/资金。实际截图视口568×766，不将此称为全尺寸或 Manus/ChatGPT 一比一验收。新增两项现有 suite 回归，定向214项通过；隔离完整233文件4446PASS/0skip、contract295/architecture50、lint/types/webpack build/posttypes全部通过，只读复核Approved。全测后仅整理两新增测试并加强新按钮标签断言，最终53项与lint重跑通过；其余1118输入hash不变，活动与隔离源码核等。App局部提交 `de5ffe5c0cae2aaf0a79b33bb09d49698d6c9671` 已在原正常源码目录由HMR加载，工作树clean；截图与运行收据仅保留ignored。
+
+本批仍不报告整体目标或PR完成。MC-02后台表单的原标签仍是浏览器内部错误页，工具准入拦截未解除；未换标签/浏览器/底层通道绕行，正常后台页面验收仍待原标签恢复。以下MC-02范围和历史结果继续有效，聊天只放行本段明确局部切片。
+
+## 2026-10-20 MC-02 当前执行目标：配置页面闭环后集中 PR merge
+
+用户最新授权继续 BFF 接线、后台模型配置表单和页面验收，完成后集中 PR/merge；模型调用、真实工具执行和扣费继续暂停，其他开发者的自动化/连接器明确排除。沿已确认 System6 `550d654` / Agent `c2c7cf9`，不新增 owner、服务、System6既定表之外的数据表或通用配置框架。
+
+1. **BFF（主方唯一writer）**：固定System6，独立model-management机器token，无通用token回退；IAM实时platformAdmin、tenant/actor保持。补既有资源provider/definition/feature列表，provider只写Key创建及脱敏创建查回，definition/revision创建、CAS发布、label创建/别名及默认修订修改共10具名操作；保原routing四操作，public21.1新增至175，不扩删除/恢复/health/草稿修改/密钥读取代理。
+2. **Admin/App（主方顺序写）**：先消费固定BFF artifact，再按连接、模型修订、业务组合拆现Ant组件，薄same-origin adapter闭集配对。Key仅当前内存，恢复记录只存原key/主体/tenant/阶段/确认provider ID；未知provider创建刷新后只查，404仍未知，不换key重建；无手填tenant/handle，无自动重试。
+3. **验收/交付**：定向RED→GREEN、owner相关完整门、真实IAM→BFF→System配置链、浏览器主路径/键盘/窄屏及失败恢复；正常配对前按既有备份/恢复/最小owner schema流程，不启模型或资金。独审/主方复验后才集中push、复用原PR、同步main/gitlink及清理自有已合topic；不动他人PR/分支。
+
+### 当前检查点
+
+- **源码已交付本地提交**：System6 `550d654`、Agent `c2c7cf9`；新BFF `f3da7d5`、Admin `4c8ec04`、App `0efd68f`。BFF Public21.1/175的10具名管理操作及同源消费已闭合，原key/CAS、当前管理员/tenant、Key只写及未知只查保持；配置表单分连接、共享修订、业务组合，不扩删除/health/执行。均未push本批，Root gitlink不指向未发布组合。
+- **验证**：BFF格式/lint/types/contract850、architecture36、默认1503 PASS/3原资源SKIP和build；Admin固定契约/lint/types、217 PASS/0skip、独占webpack build/post-types；App七生成/contract295、architecture50、lint/types、完整4444 PASS/0skip、webpack build/post-types。独审Approved，修复缺省ACK绑定、截止后误成功、Next零字节POST流、超期provider只读恢复、外部目录重试及原修订详情回归。保留首次fixture/缺Redis/Turbopack外链root失败，不改旧oracle、测试skip/timeout或依赖。
+- **真实链**：固定交付BFF提交的IAM→BFF→System6/PG配置创建、原key查回、发布、业务组合/别名清空、catalog、CAS/重放/冲突/非法session通过；自有DB94→94、IAM测试key0→0，进程已清。不是浏览器表单或正常执行验收。
+- **正常配对已完成**：先备份恢复和事务回滚负控，再停四个原进程、冻结备份/实际恢复复演；同一PG client提交前核新表完整canonical、其余catalog及22表旧行指纹，唯一补System6 credential表。独立model-management机器凭据/私有加密材料已按既定方案配对；四服务由上述精确已验源码重载，System/BFF ready200，provider/definition/feature三目录200，未登录Admin新路径401。23表及旧行复验不变，新表空，原模型目录无provider/definition；现有1个正式feature不伪造。Agent disabled、retention hold，未改用户登录/权限/积分或启模型/工具/资金。正常App仅有Next自动生成route import差异，不作为源码提交。
+- **仍待完成**：原后台标签处于浏览器内部错误页；用户要求自行恢复后再次从原标签获取，工具仍按URL安全策略拒绝。未换标签/浏览器/原始CDP或终端页面读取绕行；正常浏览器表单主路径、键盘/窄屏/视觉与本轮E2E尚未验，不用组件/接口成功替代。页面验收未完成，因此本批尚未集中push、更新Draft1或PR merge；不报告整个需求/上位目标完成。
+- **Root交付核查**：主方重新执行相关隔离助手单测66 PASS/4 subtests、Python compile与diff检查，Root三文件只读独审Approved；五个候选HEAD均含origin/main且behind=0（System/Agent/BFF/Admin/App分别ahead8/2/3/3/3），App仅运行时Next route import差异。GitHub六仓当前仅System原Draft1，其余无open PR，本轮未push/新建/合并；System Draft1已关联当前任务，后续复用而非另开。原错误标签inventory仍是data内部错误页，没有重试被拒读取或更换通道。
+- **同步与范围**：Root及12子仓最新fetch/prune全部0，远端main无新变化；自动化/连接器及他人PR/分支未动。只保留必要运行服务，自有隔离库/前缀已清，正常私有配置和回滚材料保留ignored。后续仍同一目标，不扩首页/聊天或新增框架。
+
+## 2026-10-20 MC-02：密钥底座与 Agent 已隔离交付，后台旅程待接
+
+已按用户明确批准的 System 现模块方案实现，无新服务／依赖。System6 `550d65498822d8d2e629199482de4f6990b62708` 在原model-catalog加密保存只写Key、独立HMAC脱敏receipt／永久创建身份、原主体脱敏查回、当前业务路由与精确修订Agent-only领取；原PG事务、CAS及恢复保护保留。完整owner门225 PASS／0SKIP，fresh33断言／23表canonical、格式/lint/type/build/contract均通过。独审Approved；55非model/probe递归表示除获准Feature身份枚举外保持，22来源Git原件核等。生成classification遗漏已正规重出并重跑最终全门；artifact `10ff7ee82ca7405dcab473f3fd80e620aa6c4e0bc92e64111797144ce0fa4061`、provenance `ed2e312bc5bc3022111797771190e57133818af83c0bb7ad2024a615a4e033c5`。
+
+Agent `c2c7cf98138b9b6002e6033635ed952cea1501ab` 固定上述System6，复用原连接池受控领取，原默认label缺省不变，逐项绑定响应且要求no-store／有界／无重试；删除旧本地Key文件parser和配置入口，无双读。完整默认2405 PASS／773资源marker未选，frozen锁／Ruff／Pyright／contract／wheel-sdist及仓外安装合同通过；194运行Python与wheel逐字同源，原usage1／usage2／sealed历史／SQL／资金runtime不改。原PG+本地协议受影响两文件331 PASS，自有库清理库存核等；旧文件测试随已删除loader退役、当下独有风险由owner文件／密文与当前严格消费承接，原资金零发送／取消断言未削弱。
+
+独立实际System6 HTTP／PG→当前Agent客户端隔离链通过：默认与显式选择领取、撤权／跨tenant拒绝、provider／receipt无明文；真实监听模型tripwire请求0。自有DB及Redis namespace已清、子进程关闭，未重启或修改正常服务／配置／库。Root及12子仓fetch/prune全0，remote main均无新变化，所有primary仍等于origin/main；不接管他人自动化／连接器，不覆盖其工作。
+
+仅上述两组件本地提交，尚未push／更新原Draft1／merge，Root gitlink不指向未发布组合。正常System5/Public21／Web/Admin仍原源及PID，Key方案不因隔离通过自动部署。下一步仍为原需求：BFF窄模型管理接线→App/Admin连接Key输入／修订发布／业务引用别名／当前tenant可见默认→页面与未知结果恢复验收；无手填tenant或handle回退、不加网关或万能配置框架。当前浏览器目标仍有内部错误页交接，未转通道绕开工具URL策略；正常完整页面旅程待普通UI恢复后验。本节优先于下方历史候选／等待记录，不宣称整个模型管理或总目标闭环。模型、真实工具和扣费继续暂停。
+
+## 2026-10-20 MC-02A：正常环境已配对，共享配置验收边界
+
+已按既有授权完成 System5 `b7fe78e`、BFF Public21 `513b18e`、App `56f2bfe`、Admin `6aa68f0` 的正常开发环境配对与重载；Agent 仍 disabled，模型／工具执行／扣费暂停。没有更改登录、权限、积分或机器配置，没有接管自动化／连接器。正常业务目录目前无模型配置，真实 GET 返回空列表，不伪造可选模型。
+
+先备份并实际恢复到自有隔离库，完成全 canonical 对照、错误列形状触发事务整体回滚和错误 CHECK 值拒绝负控，再停止四个既有开发进程、重新冻结备份与恢复演练。仅重建零行 model_revision 为当前 canonical、使 model_label.display_name 可空；同一真实 PostgreSQL client 内锁定后重验零行／无待处理命令，DDL、受影响完整 catalog／其余原样、22 表原行指纹均通过后才 COMMIT。临时库已清理，数据库 inventory 前后相同；其余约束不重写。独审发现的“提交后才校验”和“正常源码 HEAD 未固定”两项 P2 均在切换前修复并复核通过，未以放宽比较解决 PG CHECK 表示差异。
+
+切换后正常 System／BFF ready200，既有 BFF 机器身份与 System 配对；模型业务 chat 列表、label／revision／routing 四个正式 owner GET 均200空页。BFF 无机器身份403、具机器身份但无用户会话401均符合现契约，22表行指纹仍与冻结备份相同。首个本地探针误将前者预期为401，已依据既有准入逻辑修正探针并保留失败记录，未改产品认证或断言范围。源码固定到上述已验提交，Web 仅有 Next 自己生成的已知 next-env.d.ts import 差异，不作为业务改动提交。
+
+正常 Admin/Product 浏览器完整写旅程尚未验收：已有目标标签停在浏览器内部错误页，工具按 URL 策略拒绝获取，未转用其他通道绕行；需用户从普通界面刷新／打开目标本地页后继续。历史预览E2E／隔离链证据不替代此项。Key 保存／受控领取和提供方／模型新增发布表单仍未完成，本批仍未 push、新建／合并 PR，Root 未指向未发布组合；不宣布模型管理或总目标闭环。
+
+### 当前源码补核：业务组合的后台入口也未完整闭合
+
+按上述四个固定提交／System5与Public21原 artifact 核对，BFF/Admin目前只有 labels、revisions、routing 三个读取和一个租户路由PUT。共享修订与别名默认逻辑已在owner／消费者成立，不等于用户已经能在后台创建业务组合或编辑别名：System现有 createModelLabel／updateModelLabel 可写别名和默认修订，但该产品写入口尚不存在；业务选择需要的 listFeature、提供方／模型定义列表、模型创建与发布也尚未接成该页面旅程。现 provider 创建正式输入仍要求 secret_handle_ref，并没有直接 Key 输入，不能通过只改文案或添表单称已支持。
+
+现 global provider／revision／label 写入明确只准 system-admin，而当前正式BFF投影使用 web-bff。新业务别名／组合写入口因此与既有 MC-02“窄模型管理机器身份”共用同一个未决边界，不能复用租户routing的成功证据，也不临时把BFF升级为通用global管理员。下一步仍是一条完整配置旅程：统一连接→模型修订发布→业务引用／别名→当前租户可见及默认项→业务列表回读；不拆成另一套组合服务、不为未决Key设计先加手工handle回退。
+
+本轮只读Git原件／机器契约审计通过，独立复核亦Approved：System guard/controller/schema、BFF headers、Admin client/组件与App allowlist互证；未改任何owner业务源码、契约、数据或运行进程。正常页面操作仍待普通界面打开目标页后验；密钥／窄管理身份候选尚待用户对已有问题的裁决，不反复发同一确认。
+
+## 2026-10-20 MC-02A：共享业务模型跨仓验收与消费者收口
+
+用户已确认共享配置、业务分别组合。System `b7fe78e`（5.0.0）、BFF `513b18e`（Public21/165）、Agent `10dc60f`、Admin `6aa68f0`、App `56f2bfe` 均为本地已验提交；未 push/新建或合并本批 PR。System 原 Draft1 继续复用；Root gitlink暂不指向未发布组合。模型/工具执行/扣费暂停，其他开发者自动化与连接器不动。
+
+主方已独立重跑 BFF 七门全0（contract849、architecture36、默认1498 PASS/3原资源SKIP），独审无确定P0–P2；原20→19证明逐字保留，21→20可精确还原，162项其余递归契约保持。Agent System4→5 resolve＋3递归引用相等，20来源/Git原件固定；176定向、最终默认2399 PASS/773未选、frozen/Ruff/Pyright/contract/build及安装发行物检查通过。首轮退出/启动时限失败原留，不宣称已经修复原信号测试时限脆弱性，不改超时或skip。
+
+Admin 同共享修订可供多业务引用，别名为空按当前路由override/default显示request_model；已修策略分页未完成却猜default名称P2，两分支真实组件RED→GREEN。主方独占副本127输入相等、完整七门全0、默认208 PASS/0SKIP；活动.next未覆盖。冗余自有构建取消记exit143，不冒通过。
+
+Root正式隔离真IAM→BFF→System/PG主路径通过：业务chat筛选列表、slash稳定key与真实provider、无别名原request_model、精确revision、管理目录、CAS/原命令重放/冲突及非法session拒绝；自有数据库清理前后94=94、IAM测试key0=0，无正常数据或进程切换。Root原相关测试51 PASS。此链不含模型/工具调用、Admin浏览器写旅程或正常环境切换。
+
+App Public21消费者已提交 `56f2bfee465b63711d4b38e270381a95844b4a92`；最终收口关闭两个真实P2：raw业务label贯通菜单→message→BFF→Agent→System，不再拼provider前缀；Chat列表固定feature_key=chat且拒非chat响应。偏好只用v2，旧key保留但不读/拆/迁移，未知提交冻结body/key原样。完整owner七生成、contract295、architecture50、lint/types/build、233文件4442PASS/0SKIP及既有桌面/手机预览E2E108PASS，无新增retry/skip；主方另在1116输入逐字同源副本验735合同/受影响engine/UI/偏好/loopbackHTTP、architecture50、七生成与lint/types/build全0。47路径/1116输入停写hash及原BFF Git blob核等、最终独审Approved。E2E专属端口/进程已退出，Redis前后88keys及摘要相同；这是受控预览浏览器与隔离owner链分别提供的证据，不冒正常执行或完整Manus像素对齐。前轮OIDC/Radix阶段失败保留，未扩修这些模块。
+
+Root及12子仓再次fetch/prune全0，远端main本轮无新提交；五个受影响候选仓均已本地提交且clean。Root现有4项范围仍待整批交付：App既有main gitlink、两份有效进度文档和本次正式隔离smoke；未直接提交main、未push本批或改他人分支。
+
+Key保存/领取及提供方/模型新增发布表单仍是后续缺口；共享业务语义的确认不自动放行前述独立密钥设计候选。正常System/BFF仍System4组合，不热重载半套契约或隐式改库。
+
+## 2026-10-20 业务共享配置已获确认，System owner 切片已验
+
+用户明确选择“共享模型配置，业务分别组合”，允许解除 revision 与 feature 的耦合，复用现模块、不新增组合服务／规则引擎。System MC-02A已实现：共享精确修订、业务 label/routing 引用、可选／清空别名默认 request_model、有效列表及显式绑定拒绝空扫描；真实HTTP409及合同2例RED→GREEN。主会话最终完整verify全0：contract20、16files214PASS／0SKIP、fresh33／22表完整canonical、format/lint/type/build；独审无确定P0–P2，55非model操作递归表示保持。生命周期证明首业务退休后其他业务继续共享，引用中的修订退休仍409；测试库inventory前后相等。
+
+本次实际无 I/O 源码 probe 已确认两个缺口：省略 label display_name 被当前 Zod 拒绝；BFF 当前把合法选择 key“chat/fast”投影成 provider=chat，提供方来自别名推断而非 owner 事实。catalog feature 参数目前可省略，业务入口范围仍须配对核实。probe 仅实际纯函数／schema，不冒 HTTP/数据库整链证据；未调用模型／工具／计费。
+
+正常 System/BFF/App/Admin 暂不重载或改数据；已有 System4 配对继续有效。Key 存储／读取候选并未因业务组合确认自动成为实施批准；不把本 owner 切片称为完整模型管理或全目标结束。
+
+本owner已本地提交 `b7fe78e25e3c569ae0e1cb9b42cddab02074ca07`，System5 artifact `a83b37269e9e4fa7fb5310a1836975e20ab9eaee965a66c83e35bb1ca1b9e5df`／provenance `97b20e57f66010ba456fac59fe1dd62d90c17325c82d3da80be455ea9d3cf747`。未push本批、未建新PR或合并；Root gitlink仍保正式旧组合。下一步在现BFF业务列表／四管理操作及Agent、App/Admin消费者正规升级，不用已验owner结果替代整链。
+
+## 2026-10-20 用户纠正模型管理的产品中心：统一提供方、业务组合与模型列表
+
+用户对密钥候选的回复是业务语义澄清，不是直接批准该候选：model 的目的在于各业务领取自己的模型配置／组合／列表；provider 统一配置连接，允许别名且未设时默认原模型名。后续先按此梳理管理与消费主路径，API Key 存储只是配套底座，不把模型模块缩成 Key 仓或一模型一份 provider。
+
+当前源码已核：provider 与 revision 通过 provider_id 关联，允许同连接多个模型；label 含 feature_key 与默认修订，tenant routing 具有可见／默认／优先级；catalog 支持 tenant＋可选 feature_key 分页投影，Agent resolve 按 feature＋可选 label 解析。尚不可冒称完整目标：revision 当前也绑定 feature、label_key 全局唯一；catalog 现必填 display_name，无“未填别名用原始执行模型名”的显式语义；现后台未闭合 provider→模型→业务组合的完整配置流程。查询支持 feature 过滤，不等于已经证明每个业务入口只能领取自身组合。
+
+先复用现 model-catalog 的 feature/label/routing/resolve，明确业务列表、默认项、稳定选择身份和可选展示别名；原始 request_model 仍是上游请求标识，别名不替代它、不当唯一身份或凭据索引。业务运行方按授权获得适用配置，浏览器模型列表不含 Key。是否需要改变现 revision/feature 绑定，须按实际复用需求核定，不因“组合”字样机械新增服务、表或通用路由 DSL。MC-02 三面仍为候选；暂停依赖未决设计的密钥实现／发布，原已验接线保留。
+
+## 2026-10-20 默认租户源码核验与模型密钥设计候选
+
+App 的 Product BFF 入口只携带受管 session access token；BFF admission 调 IAM 正式核验并与固定产品 tenant 比对，IAM 从有效组织／成员／OAuth client 读取事实。因此页面无需手填或新建 tenant，浏览器 body 也不是可信租户来源。进一步核实 System provider/revision 是平台级目录、model_routing_policy 才按 tenant 隔离；“自动带入默认租户”不意味着把每个全局模型改成租户私有。Site/Project ID 也不替代 tenant。依据分别为 App product-bff、BFF user-admission、IAM session-authorization repository、System provider controller/repository 与 canonical SQL。
+
+已在现 System 候选工作树的三面文档和唯一实施计划新增 MC-02：直接 Key 输入、System model-catalog 受保护存储、专用机器权限、Agent 精确凭据读取、同事务脱敏幂等／未知查回，以及旧 Agent 手工文件退出。关键新增边界已提交用户异步确认，三面目前明确为待确认候选；轮换与领取授权／未知恢复须先收敛，不借默认 tenant 猜授权。只读审查员复核中。本次没有新业务代码、机器契约、DDL、配置、进程切换或发布；模型／工具执行／扣费暂停，自动化／连接器写区仍排除。
+
+## 2026-10-20 模型管理补充需求优先于本批合并
+
+用户明确需要在后台直接填API地址、API Key和模型，而非只读目录或人工secret_handle_ref。现有System4目录／路由接线和正常只读验收作为基础保留，目标继续补完整连接输入、服务端安全保存、模型修订发布与路由切换；不得把当前页面称为完整model管理。现System实际只有不透明handle，Agent从受限部署文件读取Key，没有可供本页保存SK的正式接口；这是真缺口，不是换文案即可解决。
+
+现本地提交：System4933413（仅新增验收docs，生产实现／artifact仍dafbc66同字节）、BFF15e4a74、Adminafd1f6f、App3042ae7；均尚未push本批，System原PR1仍Draft/远端dafbc66，新PR未创建。正常后端及3310/3320已配对；模型页三个真实GET均200，用户原会话维持，1280无横溢；隔离真IAM→BFF→System4/PG配置读写／CAS／重放／冲突通过，库和IAMkey inventory清理一致。Admin/Product整个写入及新Key保存尚未完成，不冒模型或工具执行证据。
+
+按新增需求先在既有owner三面文档／机器契约确定必要密钥管理边界，再落真实输入和Agent消费；不新增独立Secret服务、不由BFF改Agent本机配置，不为旧数据保兼容层。模型／工具／扣费持续暂停，自动化／连接器排除，首页聊天后置；此需求闭环后再集中PR/merge。
+
+## 2026-10-20 当前目标与 clean-slate 边界
+
+用户再次确认：先闭环BFF正常配对与System管理消费，再首页／聊天；排除另一开发者自动化与连接器写区，模型、实际工具执行、扣费继续暂停。目标只实现当前契约，不为旧协议、旧字段、旧数据增兼容层；必要时允许备份后清空该范围重建，不做无需求的全库清理。当前BFF无需回填旧trace，System两张受影响模型表经冻结确认零行，已按新canonical重建；22表原数据保留，旧receipt不改写为新协议结果。
+
+运行接线已到BFF Public20候选与System4候选（尚非远端合并）：System新模型结构及正常BFF已配对ready，Agent仍disabled。既有隔离真IAM资格→BFF→System4/PG脚本已完成目录、CAS、原命令重放、冲突和非法session拒绝，临时库／IAM key inventory清理前后相同；这不是Admin/Product桥的完整正常写旅程。Admin模型页新读取/详情/路由编辑已完成代码门，独审发现的写后旧GET覆盖竞态已用真实组件两路径修复；Public20消费者和正常页面／最终整链仍在收口。首页与聊天尚未开写，未宣布全部完成或推送合并。
+
+## 2026-10-20 BFF 正常环境已加载可信绑定 producer
+
+BFF 已快进并重载到 `5dc86e4`，IAM 源码仍为 `7cbe988`，仅补独立 IAM→BFF 机器接线并重载；未改登录配置、用户角色或积分。只在 BFF schema 增加两个既有 canonical nullable 字段，历史三条schema2终态派发不回填、不重写；其他旧表均保留。
+
+先热备恢复演练，再停止BFF做冻结备份／恢复演练及定向DDL：32张表原行hash全部一致，canonical必需列形状核对通过，隔离临时库已移除。两条正常定时任务仍暂停，调度命令无待发项，取消／定时Agent派发／资源释放队列均为空。BFF/IAM ready200，专用凭据与tenant拒绝403、缺绑定404、IAM正式reader真实访问正常BFF返回null；没有mint执行permit。正常3310刷新仍登录、历史问答正常回读。上述是运行配对和只读/拒绝路径证据，不冒正向执行验收；Agent仍disabled，模型／工具执行／扣费暂停。
+
+接续：System4固定契约与现有四操作消费配对、后台模型页正式读取及路由CAS；不扩provider/revision创建发布，不接管对方自动化和连接器。首页／聊天排在此后，待全部相关验收再集中PR/merge。
+
+## 2026-10-20 Root 与12子仓全面同步
+
+按用户要求逐仓执行非递归、仅快进的main拉取，13仓HEAD均与各自远端main一致；原两份规划文档内容在同步过程中hash不变。App新拉取已合PR43 `859f41593da6b70cbba4c64df1a2ad3480b841a6`，其余仓无新main提交；正常3310的独立App源码副本也快进至该SHA，未重启服务或操作数据库。这里核验源码版本，不代替页面／新设置行为验收。
+
+当前Root工作分支保留，App gitlink从原组合d4b61f9变为859f415的待交付差异随本轮正式PR配对，不直接提交main，也不以同步源码冒称新的组合验收通过。后端运行配对仍按既有范围单独处理，模型、实际工具和扣费继续暂停；他人未合分支不拉入工作树。
+
+## 2026-10-20 双人协作与对方新交付事实
+
+只读GitHub核验：对方App [PR43](https://github.com/LordFoxFairy/kokoro-app/pull/43) 已合main `859f41593da6b70cbba4c64df1a2ad3480b841a6`；原settings分支无独有提交，旧T09“未发PR/未入main”已成为历史。此次未改其分支、未更新App checkout/gitlink或重载服务，不假定正常3310已加载新设置。
+
+现计划补双人分工建议：本会话先BFF/System尾项，再首页/聊天与项目主框架；对方先自动化，再插件与连接器同一MCP功能域。项目共享Frame/Composer暂不双方并发写；完成本方批次后，只接明确移交、原writer停写的完整余项。公共契约/Schema/入口与正常进程约定唯一writer。尚未实际派工、消息其他会话或变更业务代码；模型、实际工具、扣费暂停不变。
+
+## 2026-10-20 剩余范围补充：自动化与首页场景
+
+Root58已合 `220060907b040967809cccdac098d9903fda6d0b`，上一批本方七PR完成源码交付，主工作区及12子仓已同步main；37旧topic已可恢复归档，受保护的pinned工作区保留。旧段落中的待合／旧e189954仅为发现时历史，不覆盖此事实。
+
+用户进一步确认：剩余项都要完成，自动化日历 `/app/scheduled?tab=calendar` 和首页四场景／更多 `/app` 明确纳入。已在现计划补T12/T13，依现组件及owner推进；项目能力仍有布局、资源生命周期、历史和真实能力边界未闭合，不称全部解决。当前仅源码／记录核对与范围文档，无新浏览器采集、业务实现、资源／配置／服务写入或发布。
+
+静态已核：日历按nextRun归日，不预判Manus是否展开全部周期；首页已有creation intent与场景组件，不把按钮可点当作生成能力或skill/connector已接通。后续必须同态观察页面与真实请求、回读和失败恢复。BFF正常环境配对、System1 Draft管理员契约配对仍是既有尾项；模型、实际工具执行和扣费保持暂停，执行结果单独未验，不伪造成功。
+
 ## 2026-10-20 本方本地遗漏交付：已发 PR 并合并的范围
 
 用户指出“新版仍在本地却未交付”属实，本批不再停在盘点。App [#42](https://github.com/LordFoxFairy/kokoro-app/pull/42) 已合 `d4b61f936ec9102836dc21092dff6fe1b48d0f22`，保留现有 main 认证/Profile/Public19/MCP/#41 修复，定向接回资料库、侧栏局部、知识编辑和画布；完整 Node22 lint/typecheck/七生成检查/build 均0，Vitest 231 files/4316 PASS，全部桌面手机 Playwright42 PASS。独审发现的同主体重核草稿丢失有有效 RED→GREEN；preview 原禁网络语义保留。正常3310已从e189954 fast-forward到此main并热更新，真实默认资料库、查看选项→个人文件→返回、现有文件读取与去除旧顶层页签已验。没有发送消息、上传或下载资料，也没有重启其他服务。
