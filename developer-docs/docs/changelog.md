@@ -1,5 +1,12 @@
 # 变更记录
 
+## 2026-10-21 · 对齐已发布 Public 19.0.1
+
+- 固定 BFF 已合并的 `19.0.1` artifact，发布 159 个公开接口，排除 6 个网站私有接口及其独占引用；原始 commit 和 SHA-256 保留完整来源证据。
+- 新增技能读取指南，说明个人／项目并集、精确版本和读取／执行授权边界；按 owner metadata 展示权限、幂等和字段，不按 HTTP 方法猜规则。
+- 认证指南与可执行示例改用当前 service envelope 和 IAM 用户 Bearer，删除旧 namespace／principal 自报身份方式。
+- 对齐完整交互暂停快照、`pause_ref`、`expected_pause_revision` 和 `decisions[].item_id`；区分各接口的响应与 Request ID，并说明已声明的 `429`／`Retry-After`。
+
 ## 2026-09-04 · Developer 门户完善
 
 - 将阅读入口、导航、平台行为和工作流说明统一为中文，并明确 contract fact、客户端策略和当前缺口的边界。
@@ -9,11 +16,11 @@
 
 ## 2026-09-04 · Portal Phase 1
 
-- 建立从固定 `kokoro-bff` public v1 artifact 生成 reference 的流程，当前目录枚举 63 个 public operation。
+- 建立从固定 `kokoro-bff` public v1 artifact 生成 reference 的流程，当时目录枚举 63 个 public operation。
 - 提供无真实凭据的 cURL、TypeScript、Python 示例，并由本地 fixture 执行。
 - 加入概念、生命周期、平台行为、provenance、搜索和响应式导航。
 
-## API `1.0.0` beta
+## API `1.0.0` beta（历史发布）
 
 - public 路径空间为 `/v1`，当前 operation 标记为 beta。
 - AG-UI public frame 使用 BFF 拥有的 opaque `agui_*` cursor。

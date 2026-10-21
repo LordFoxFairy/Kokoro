@@ -9,6 +9,8 @@ import {
 import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { createMarkdownRenderer } from 'vitepress';
+import { parse as parseYaml } from 'yaml';
 
 import {
   assertPublicContract,
@@ -126,11 +128,88 @@ const catalogEntry = {
   publication: { classification: 'public', include_in_portal: true },
 };
 
+test('renders schema regex constraints as literal code, never inferred links', async () => {
+  const contract = fixtureContract();
+  contract.components.schemas.MessageCreateRequest.properties.content.pattern = '^https://github\\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?/[A-Za-z0-9_.-]{1,100}$';
+  const renderer = await createMarkdownRenderer('/tmp/kokoro-reference-render');
+  const environment = {};
+  const html = renderer.render(generateReferenceFiles(contract, catalogEntry).get('chat.md'), environment);
+  assert.ok(environment.links.every((link) => /^\.\/schemas(?:\.html)?#/u.test(link)));
+  assert.match(html, /<code>\^https:\/\/github/);
+  for (const pattern of ['^(yes|no)$', '^(yes|no`)$']) {
+    contract.components.schemas.MessageCreateRequest.properties.content.pattern = pattern;
+    const rendered = renderer.render(generateReferenceFiles(contract, catalogEntry).get('chat.md'), {});
+    assert.ok(rendered.includes(`<code>${pattern}</code>`), 'the displayed regex must preserve its original operators and backticks');
+  }
+});
+
 test('rejects a non-public operation before reference generation', () => {
   assert.throws(
     () => assertPublicContract(fixtureContract('internal-owner'), catalogEntry),
     /createMessage must have public visibility/,
   );
+});
+
+test('publishes only explicit public operations and their reachable component graph without mutating the owner input', () => {
+  const contract = fixtureContract();
+  contract.paths['/skill.v1.SkillService/PrivateRead'] = {
+    post: {
+      ...structuredClone(contract.paths['/v1/sessions/{id}/messages'].post),
+      operationId: 'privateRead',
+      'x-kokoro-visibility': 'browser-private',
+      requestBody: { content: { 'application/json': { schema: { $ref: '#/components/schemas/PrivateOnly' } } } },
+    },
+  };
+  contract.components.schemas.PrivateOnly = { type: 'string', description: 'private-schema-must-not-publish' };
+  contract.components.schemas.Nested = { type: 'object', properties: { next: { $ref: '#/components/schemas/Nested' } } };
+  contract.components.schemas.MessageReceiptResponse.properties.data = { $ref: '#/components/schemas/Nested' };
+  const before = structuredClone(contract);
+  const files = generateReferenceFiles(contract, catalogEntry);
+  const manifest = JSON.parse(files.get('manifest.json'));
+  assert.equal(manifest.operationCount, 1);
+  assert.ok(manifest.schemaNames.includes('Nested'));
+  assert.equal(manifest.schemaNames.includes('PrivateOnly'), false);
+  assert.doesNotMatch([...files.values()].join('\n'), /privateRead|PrivateOnly|PrivateRead|private-schema-must-not-publish/u);
+  assert.deepEqual(contract, before);
+});
+
+test('uses declared owner idempotency for conditional mutations rather than inferring it from the HTTP verb', () => {
+  const contract = fixtureContract();
+  const operation = contract.paths['/v1/sessions/{id}/messages'].post;
+  operation['x-kokoro-idempotency'] = 'none';
+  operation.parameters = [{ name: 'If-Match', in: 'header', required: true, schema: { type: 'string' } }];
+  const manifest = JSON.parse(generateReferenceFiles(contract, catalogEntry).get('manifest.json'));
+  assert.equal(manifest.operations[0].idempotency, 'none');
+});
+
+test('rejects unknown publication classifications and unresolved public references', () => {
+  const unknown = fixtureContract();
+  unknown.paths['/v1/sessions/{id}/messages'].post['x-kokoro-visibility'] = 'new-unknown-surface';
+  assert.throws(() => generateReferenceFiles(unknown, catalogEntry), /visibility/u);
+  const unresolved = fixtureContract();
+  unresolved.components.schemas.MessageReceiptResponse.properties.data = { $ref: '#/components/schemas/Absent' };
+  assert.throws(() => generateReferenceFiles(unresolved, catalogEntry), /unresolved|reference/u);
+});
+
+test('renders owner permission namespaces and identifier templates while retaining publication guards', () => {
+  const contract = fixtureContract();
+  const operation = contract.paths['/v1/sessions/{id}/messages'].post;
+  operation['x-kokoro-permission'] = 'iam:account-session.read';
+  operation.description = 'Client conv_<UUID> uses skill:<skill_id> as a literal identifier.';
+  operation['x-kokoro-fixed-visibility'] = 'private';
+  contract.components.schemas.MessageCreateRequest['x-kokoro-json-byte-limit'] = 4096;
+  const files = generateReferenceFiles(contract, catalogEntry);
+  const rendered = files.get('chat.md');
+  assert.match(rendered, /iam:account-session\.read/u);
+  assert.match(rendered, /conv_&lt;UUID&gt;/u);
+  assert.match(rendered, /skill:&lt;skill_id&gt;/u);
+  assert.doesNotMatch(rendered, /<UUID>|<skill_id>/u);
+  operation.description = 'Literal tag:<script>alert(1)</script> is still rejected.';
+  assert.throws(() => generateReferenceFiles(contract, catalogEntry), /HTML|publication/u);
+  operation.description = 'Valid description';
+  contract.tags[0].name = 'safe_<textarea>';
+  operation.tags = ['safe_<textarea>'];
+  assert.throws(() => generateReferenceFiles(contract, catalogEntry), /HTML|publication/u);
 });
 
 test('generates deterministic operation, schema, and manifest files', () => {
@@ -146,6 +225,11 @@ test('generates deterministic operation, schema, and manifest files', () => {
   ]);
 
   const chatPage = first.get('chat.md');
+  for (const [name, title] of [['chat.md', 'Chat'], ['schemas.md', 'Schemas（数据结构）']]) {
+    const frontmatter = /^---\n([\s\S]*?)\n---\n/u.exec(first.get(name));
+    assert.ok(frontmatter, 'VitePress frontmatter must start the document, before comments');
+    assert.deepEqual(parseYaml(frontmatter[1]), { title, outline: [2, 3, 4, 5], editLink: false });
+  }
   assert.match(chatPage, /POST<\/span> `\/v1\/sessions\/\{id\}\/messages`/);
   assert.match(chatPage, /Operation ID.*`createMessage`/);
   assert.match(chatPage, /Idempotency-Key/);

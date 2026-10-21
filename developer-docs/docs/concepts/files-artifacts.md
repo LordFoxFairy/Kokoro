@@ -10,6 +10,6 @@ Kokoro 暴露几个相关但不可互换的 projection：
 
 ## Project resource intake
 
-当前 resource operation 接收一个或多个 multipart `files`，并返回 generic success envelope。v1 还没有公开 resource ID、scan status、processing state 或 resource-specific polling operation；[上传生命周期指南](/guides/upload-lifecycle)会把这个 beta 边界写清楚。
+当前项目 resource operation 接收一个或多个 multipart `files`，并返回 generic success envelope；这个 receipt 不包含 resource ID、scan status 或 processing state。不要把其他上传接口的状态套到这里；[上传生命周期指南](/guides/upload-lifecycle)会把这个入口的边界写清楚。
 
 `ok: true` 只代表 BFF 接纳了请求，不代表扫描、处理、晋级或持久化已经完成。字段和状态以生成 reference 为准。

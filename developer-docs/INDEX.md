@@ -1,5 +1,11 @@
 # Developer API 门户地图
 
+## 2026-10-21 当前契约配对切片
+
+沿既有目录、VitePress本地搜索与生成链，升级旧Public1.0.0到已合BFF Public19.0.1；不新增服务或依赖。catalog固定原始owner blob的commit/version/digest，发布视图只选明确public的operation及递归可达components/security；browser-private不进入Reference，未知visibility/owner及坏引用拒绝。筛选是只读生成步骤，不维护第二份OpenAPI，也不改变BFF准入或运行数据。
+
+幂等性由owner显式metadata与header声明决定，不在门户按HTTP动词重建规则。同步正式Bearer准入、x-request-id、Skills指南与实际输入输出示例，现有旧协议/占位说法退休。写区仅本目录及Root精确gitlink/必要交付记录；验收包括发布边界负控、来源/确定性生成、全部门户门、可执行fixture示例和真实宽窄预览，不冒模型/工具执行或APIKey/OpenApp已接通。
+
 ## Owner 与边界
 
 门户只拥有展示、编排和验证。`kokoro-bff` 是 public Product API 的事实 owner；`developer-docs/catalog/contracts.yaml` 只记录版本化 artifact 的来源与 provenance。IAM、Agent、Storage、Scheduler 等 internal-owner contract、数据库 schema、ORM Entity、generated internal DTO、凭据和私有 payload 都不进入本目录的发布输入。
@@ -10,7 +16,7 @@
 
 1. [`docs/introduction.md`](/introduction)：产品 API 边界、版本状态和异步模型。
 2. [`docs/quickstart.md`](/quickstart)：服务端首次请求、receipt、SSE 和断线恢复。
-3. [`docs/authentication.md`](/authentication)：四个 canonical service-context header 与信任边界。
+3. [`docs/authentication.md`](/authentication)：service envelope、IAM用户Bearer及当前准入边界。
 4. [`docs/concepts/`](/concepts/projects)：资源、run、生命周期、AG-UI 和时间模型。
 5. [`docs/guides/`](/guides/create-run)：可复制的创建、控制、分页、上传和恢复流程。
 6. [`docs/platform/`](/platform/responses-errors)：响应、错误、幂等、重试、版本和安全。
@@ -33,7 +39,7 @@
 - catalog 只接受 `kokoro-bff`、`public`、canonical v1 路径的 contract。
 - provenance 将当前文件字节和 immutable Git blob 绑定到同一个 SHA-256；BFF 其他未涉及 canonical 文件的 dirty 状态会如实报告。
 - 生成器拒绝错误的 owner、visibility、stability、idempotency、permission、security reference 和 `Idempotency-Key` 一致性。
-- canonical 输入和最终生成树都经过 secret、危险 URL scheme、内部 owner 路径和未知 Kokoro header 发布策略。
+- 公开投影和最终生成树都经过 secret、危险 URL scheme、内部 owner 路径和未知 Kokoro header 发布策略。
 - 架构检查拒绝复制的 OpenAPI、数据库 schema、内部 generated DTO、秘密字面量和跨仓 checkout 链接。
 - 两次隔离生成必须逐字节一致；生成目录只能由受管路径替换。
 - 示例通过 OpenAPI 请求体校验，并在本地无凭据 fixture 上实际执行。

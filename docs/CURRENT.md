@@ -1,3 +1,13 @@
+## 2026-10-21 Skills 与 API Docs 交付切片
+
+App [PR #44](https://github.com/LordFoxFairy/kokoro-app/pull/44) 已合 `f9d45e5ac4afd07e42ba70018f189fa8c30b8ee6`：个人技能精确版本发布／撤回、未知结果恢复、作者及焦点；不夹带模型、账户或聊天候选。BFF [PR #15](https://github.com/LordFoxFairy/kokoro-bff/pull/15) 已合 `feae0c012fb99958f90f37eeb260d07509a40c27`：项目列表保留个人技能，同系列取完整项目精确安装，不取 latest、不改变执行权限。Root仅提升这两个已合精确gitlink；正常服务加载与真实验收另记。
+
+复用现有 Developer API 门户，固定 Public19.0.1原始blob和摘要，159公开operation／344schema，排除6网站私有operation及其独占引用；共享只读生成投影，无第二份可编辑OpenAPI。同步认证、交互快照／恢复、错误／请求ID、Skills并集指南及可执行示例，保留当前外部身份映射未接通的边界。
+
+本地验证：App完整233文件4451PASS／0FAIL／0SKIP，同条件无observer主线4434PASS；七生成检查、lint/types/build、相关108及桌面手机预览2PASS。BFF完整1500PASS／3原资源SKIP、contract852／architecture36及lint/types/build通过。App间歇Next JSON500仍未归因；此前失败保留，不以最终通过称修复。文档门户完整43测试、5可执行fixture示例、provenance／确定性生成／架构／构建／链接通过；真实CUA已验搜索、菜单、目录锚点和关闭恢复，桌面1280／窄屏390的页面scrollWidth均等于视口，配置文本不再外露。隔离Root使用既有 --allow-uninitialized 验证manifest通过（另10个子仓未初始化，严格全checkout门未通过，不冒称完整运行拓扑）。fixture不称真实业务执行。未开启模型、工具、扣积分或真钱支付，不改同事自动化／连接器源码。
+
+整链仍未完成：正常组合、Skills历史／替换／删除、Admin全旅程、API Key／Open App／trusted身份映射及全角色负控继续按现有计划推进；不把本批PR或文档生成等同整个目标完成。由Agent完成页面、API、回读、恢复和对照验收，不再把普通打开／刷新／代测交给用户。
+
 ## 2026-10-20 最新目标与遗留项已重新对齐
 
 当前完整活动目标仍为 Skills `/v1/skill.list`、owner/BFF/App/Admin 正式旅程及真实验收，之后 MCP/Connectors 与逐仓 PR/Root组合；保持 active。最新状态、遗留需求、owner、顺序及完成条件统一见[现有计划首节](superpowers/plans/2026-09-03-kokoro-production-closure.md)。该首节优先于下方历史排期，不把组件PASS、已合PR或健康检查等同整产品闭环。

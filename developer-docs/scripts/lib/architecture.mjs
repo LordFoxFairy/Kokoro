@@ -47,6 +47,9 @@ const EXCLUDED_DIRECTORIES = Object.freeze([
 ]);
 const PUBLIC_KOKORO_NAMES = new Set([
   'x-kokoro-idempotency',
+  'x-kokoro-json-byte-limit',
+  'x-kokoro-custom-event-values',
+  'x-kokoro-fixed-visibility',
   'x-kokoro-internal-secret',
   'x-kokoro-namespace',
   'x-kokoro-owner',

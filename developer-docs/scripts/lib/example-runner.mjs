@@ -37,8 +37,7 @@ function sendJson(response, status, payload) {
 function assertServiceContext(request) {
   const expected = {
     'x-kokoro-internal-secret': FIXTURE_TOKEN,
-    'x-kokoro-namespace': 'ns_example',
-    'x-kokoro-principal-id': 'principal_example',
+    authorization: 'Bearer example-user-session',
     'x-kokoro-service': 'web-bff',
   };
   for (const [name, value] of Object.entries(expected)) {
@@ -101,6 +100,13 @@ async function handleControlRun(request, response, url, method, requests) {
   if (typeof idempotencyKey !== 'string' || idempotencyKey === '') {
     throw new Error('controlRun requires Idempotency-Key');
   }
+  if (payload.kind === 'run.resume') {
+    const decisions = payload.decisions;
+    const decision = Array.isArray(decisions) ? decisions[0] : undefined;
+    if (payload.pause_ref !== 'pause_example' || payload.expected_pause_revision !== 1
+      || decisions?.length !== 1 || decision?.item_id !== 'item_example' || decision?.type !== 'approve'
+      || Object.keys(decision).length !== 2) throw new Error('fixture expected the exact admitted pause and approval item');
+  }
   requests.push('controlRun');
   sendJson(response, 202, {
     data: {
@@ -137,9 +143,12 @@ async function handleEventStream(request, response, url, method, requests) {
     previousCursor === undefined
       ? {
           data: {
-            name: 'kokoro.interaction.awaiting_approval',
+            name: 'kokoro.interaction.state',
             type: 'CUSTOM',
-            value: { tool_id: 'tool_example' },
+            value: { interaction_revision: 1, pause_revision: 1, pause_ref: 'pause_example', phase: 'waiting',
+              groups: [{ group_id: 'group_example', items: [{ item_id: 'item_example', request_id: 'request_example',
+                kind: 'tool_approval', allowed_decisions: ['approve', 'reject'], display: { name: 'Review',
+                  description: 'Approve this fixture action', editable: false, input_schema: { type: 'object' } } }] }], action_result: null },
           },
           id: 'agui_00000000000000000000000000000001',
         }
@@ -361,8 +370,7 @@ export async function runExecutableExamples(manifest, options) {
     EXAMPLE_FILE: exampleFile,
     KOKORO_API_BASE_URL: fixture.baseUrl,
     KOKORO_API_TOKEN: FIXTURE_TOKEN,
-    KOKORO_NAMESPACE: 'ns_example',
-    KOKORO_PRINCIPAL_ID: 'principal_example',
+    KOKORO_USER_BEARER: 'example-user-session',
     KOKORO_PROJECT_ID: 'project_example',
     KOKORO_RUN_ID: 'run_example',
     KOKORO_SESSION_ID: 'session_example',

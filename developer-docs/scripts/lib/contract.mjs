@@ -6,6 +6,7 @@ import { parseDocument } from 'yaml';
 
 import { verifyContractEntry } from './provenance.mjs';
 import { assertPublicContract } from './reference-generator.mjs';
+import { publicContractView } from './public-contract.mjs';
 
 export function loadPinnedPublicContract(entry, options) {
   const provenance = verifyContractEntry(entry, options);
@@ -24,7 +25,7 @@ export function loadPinnedPublicContract(entry, options) {
       `canonical OpenAPI is invalid YAML: ${document.errors[0]?.message ?? 'unknown parse error'}`,
     );
   }
-  const contract = document.toJS();
+  const contract = publicContractView(document.toJS());
   assertPublicContract(contract, entry);
   return { contract, provenance };
 }

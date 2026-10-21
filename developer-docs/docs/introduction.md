@@ -6,7 +6,7 @@ Kokoro API v1 是由 `kokoro-bff` 拥有的 public Product API contract。它在
 
 ## 当前 contract 状态
 
-当前 artifact 版本为 `1.0.0`，路径前缀为 `/v1`，operation 的 stability 标记为 **beta**。operation 出现在 contract 中只说明公开 wire shape，不自动证明每个 live adapter、持久化路径、上游依赖或 SLO 已经完成。
+当前 artifact 版本为 `19.0.1`，业务路径前缀为 `/v1`。门户从源契约的 165 个 operation 中发布 159 个 `public` operation，排除 6 个 `browser-private` operation 及仅被它们引用的数据结构。稳定性按各 operation 的 metadata 展示，不统一推断。operation 出现在 contract 中只说明公开 wire shape，不自动证明每个 live adapter、持久化路径、上游依赖或 SLO 已经完成。
 
 ## 异步请求模型
 
@@ -18,7 +18,7 @@ Agent 工作遵循以下可观察流程：
 4. 完整接收每个 SSE frame 后保存原始 `id`，断线时原样放入 `Last-Event-ID`。
 5. 将 `RUN_FINISHED` 或 `RUN_ERROR` 作为 AG-UI run 的终态信号；传输断开本身不是业务结果。
 
-JSON 成功和错误通常使用 `data`/`meta` 或 `error`/`meta` envelope。`/readyz` 在依赖未就绪时的 `503` 是 contract 明确的 `HealthResponse` 例外；请以生成 reference 的 response schema 为准。
+JSON 成功和错误常见 `data`/`meta` 或 `error`/`meta` envelope；技能列表使用 `{ok, request_id, data}` 或 `{ok, request_id, error}`。`/readyz` 在依赖未就绪时的 `503` 是 contract 明确的 `HealthResponse` 例外；请以生成 reference 的 response schema 为准。
 
 ## Owner 边界
 
