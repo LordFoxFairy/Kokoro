@@ -6,6 +6,14 @@
 
 ## 1. 新目标
 
+### 本次目标更新与执行游标（2026-10-22）
+
+唯一目标仍为下述完整产品旅程；不沿用旧 Skills 优先标题，不新增平行 TODO。BFF正式充值接线和后台表单已本地提交，当前补 App 同源具名接线，再接通 Agent 授权／唯一派发／实际用量结算，最后以正常用户旅程贯通验证。首页、项目和其余既定需求继续属于同一16项清单。
+
+当前事实：Billing owner 已本地提交；BFF 消费者已本地提交 `c48a9bca07a2bb48fb5db46272ff71aab90e14ce`，相关格式及完整契约门最新为912 PASS／0 SKIP。BFF→Billing／隔离 PG 已验证真实记账与重放，但 IAM／会话使用夹具，Admin `c162f7edfee33ee0e9c20cc1db74443c3d20668c` 完整工程门303 PASS／0 SKIP、155输入无漂移；后台正常页面和 Agent 实际扣分尚未完成。详细进度统一见 `docs/CURRENT.md`，不把局部证据升级成整项完成。
+
+目标工具现仅支持状态更新；本次替换 objective 被“存在未完成目标”限制拒绝。因此保留 active，不以虚报 complete 换取新标题；执行依据为本节及同一16项 TODO。
+
 **本次目标更新（2026-10-22）：以正常环境中的一条真实用户旅程作为交付单位，打通登录 → 选择业务模型 → 发起会话 → Agent／低风险工具执行 → 产物与历史恢复 → 实际用量整数扣积分，并完成相应后台管理与 App 页面/API 的 Manus 对照。** 不以接口已写、测试已过或旧 PR 已合代替整链完成；保留下面唯一16项 TODO，不新增旧任务收尾清单。当前优先交付主链，随后在同一目标内完成首页、项目及其余既定页面。
 
 **最新执行顺序（2026-10-22，替代 Skills/MCP 优先的旧目标标题）：登录 → 业务模型配置 → 会话 Agent 完整链路 → 低风险工具／产物 → 实际用量整数积分结算。** App 页面、交互与可观察 API 差异随同一业务旅程实测 Manus、实现和验收，随后完成首页与项目等本节既定 TODO。MCP 不作为登录、模型或会话主线的前置关卡；复用已经验收的成果，只在当前旅程依赖或明确缺陷处补齐，不追加重复验收。全部既定需求仍属本轮，不以改顺序缩小完成条件。
@@ -45,6 +53,7 @@
 
 ### 当前主链推进（2026-10-22）
 
+- **CREDIT-1 BFF与后台消费者已本地停写提交，下一步App正式同源通路。** BFF `c48a9bca07a2bb48fb5db46272ff71aab90e14ce` Public22.4／183，完整七门通过及最终契约912 PASS；真实编译BFF→Billing／独立PG资金效果通过，IAM／session为夹具。Admin `c162f7edfee33ee0e9c20cc1db74443c3d20668c` 固定42消费，真实Ant确认流程及8个hook负控，完整303 PASS／0 SKIP、155冻结输入无漂移；旧grant入口及独占死分支退役，不添加兼容转换。已修畸形错误导致清原意图和身份退休漏取消／漏分支P2。未正常激活或push／PR／merge；App现管理adapter尚不接受两个具名路径，先补正式通路再验正常后台充值及Agent资金链，不以组件通过称整项完成。
 - **CREDIT-1正式非现金发放owner已验，接BFF/Admin及AGENT-1资金链。** Billing本地提交 `90929ef316470f2e9de9eda05d5510761637bd6e`：唯一正式POST、现账本／审计／双身份幂等，无DDL／支付或余额旁路；跨effective_at重复入账P1先真实PG RED后用一次DB时点修复。新8项真实资金旅程、相关Credit真实133 PASS／0SKIP和source/dist8 PASS／0SKIP；完整verify1628 PASS／509资源SKIP，341输入无漂移、fresh Prisma/HTTP生成drift通过，临时库94→94。独审无剩余确定P0–P2；旧治理map退休键已由正式26操作及集合相等承接，原失败日志保留。后继接BFF当前管理员／tenant收款主体资格、后台表单，再完成Agent授权→唯一dispatch→实际usage封口→整数结算。未push/PR/merge，Root不提前pin，正常租户尚未充值／扣分，owner验收不是整项完成。
 - **当前执行切入点：Agent资金授权与usage封口，而非追加MCP验收。** 源码核实 Agent main9a267／候选c2c7cf9均在prepare后固定拒绝无Billing consumer；正常Billing Nest只挂Credit/Commerce。候选现受控取钥不需重发BFF HTTP、System6.0两操作对当前6.1等价；主方本次focused191 PASS、lock/Ruff通过。取钥候选可复用，不重写；逐attempt授权、唯一dispatch、实际usage2封口及Billing实际结算仍待接通，保护不得删除。
 - CREDIT-1计价内核修复已本地提交Billing `b4dda148767f31df12d1d679cbeb2a1237d7c16a`：整attempt汇总、精确倍率／换算后只ceil一次整积分，再×1m记账；新策略attempt-credit-ceil-v2拒旧micro-ceil执行，不改历史。主方最终334输入无漂移，完整verify全0（1580 PASS／501资源SKIP），相关真实PG38 PASS／0SKIP、临时库94→94，compiled六边界通过。独审P2测试保护退化已修。没有正常充值/扣分/模型或工具请求，未PR/merge，Root不pin未发布提交；本slice不是CREDIT-1或AGENT-1整项完成。
