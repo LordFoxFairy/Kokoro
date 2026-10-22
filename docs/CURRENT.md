@@ -13,6 +13,7 @@
 - **App 充值同源通路已提交并正常配对**：`9b9ec34b6a70b0f690ce7f1038a35d544469c05e`，具名成员读取／充值、Public22.4及Docs；完整七门exit0，250文件4721 PASS／0 SKIP，预览108 PASS（零重试），1143非文档输入无漂移。Docs check及54 HTML／17654内部链接通过，独审无剩余确定P0–P2；原四MCP文件已原字节恢复，未夹带提交。
 - **当前租户正常充值和用户读链已验**：正常 Admin／App／BFF／Billing正式配对，复用既有管理员会话和真实当前租户成员；单次确认1000非现金积分，唯一POST201及三ID回执，用户账户显示1000／冻结0，历史单笔admin_credit +1000；两页刷新无第二次发放。无DDL／角色变更／真钱支付，原始回执截图仅ignored。此证据不是Agent或实际扣分通过。
 - **Agent计价前置错配已修并本地提交**：Billing `ec37a3e132030151944c847caa3055ad9c575f99` 当前可执行policy从旧usage1精确配到已固定usage2 aggregate，不加回退，不改独立failure-policy1.0.0或历史行。实际RED2 FAIL／9 PASS后，focused322 PASS；完整verify全0、1639 PASS／509默认资源SKIP，另真实PG38 PASS／0 SKIP、fresh Prisma及生成检查通过，338输入无漂移，自有库94→94，独审无确定P0–P2。正常未重载或实际结算。
+- **资金方案已按用户最新确认收敛**：退役额外供应商成本上界保证前置，采用后台价格／单次预算→预占→真实usage一次整数结算；unknown或超预算保留预占和证据、pending_reconciliation并停止同Run后续派发。Billing本地`4810a4ddbb90f840d73f8b60bdc0077b06a61a4d`已实现包内三态决策，无服务/表/HTTP新增；21新例、完整verify1660 PASS／509默认资源SKIP、仓外compiled8通过，340输入无漂移，独审无P0–P2。Agent三设计已同步`c7a2bc6`，未修改运行放行；pure决策不是资金或dispatch实际生效。
 - **正常计价配置实证**：Billing owner只读事务核实当前rate revision、policy revision和feature-price revision均为0；已有1000余额不是已有计价策略，不用测试合成价、quantity=1或前端换算冒实际模型扣分。后继需沿现Metering发布／选择和正式管理通路落计价配置，不重复建模块。
 - **立即下一步**：配齐正式计价配置与Agent逐次资金授权、唯一派发、真实用量封口与结算 → 正常环境登录、模型选择、会话、低风险工具、产物和整数扣分整链验收。保留授权、幂等、隔离和未知结果恢复，不删除保护直接放行；余额已具备，不再重复开发充值入口。
 
