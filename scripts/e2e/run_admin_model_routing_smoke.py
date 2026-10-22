@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from contextlib import ExitStack
 from hashlib import sha256
 import json
@@ -30,7 +31,7 @@ else:
 ROOT = Path(__file__).resolve().parents[2]
 IAM = ROOT / "apps/kokoro-iam"
 SYSTEM = ROOT / "apps/kokoro-system"
-ARTIFACT_SHA = "94ed91655741cbba66ce80a4c41717b9179cc509cb6858534e0b78aa3e6dc059"
+ARTIFACT_SHA = "10ff7ee82ca7405dcab473f3fd80e620aa6c4e0bc92e64111797144ce0fa4061"
 HOST = IAM / "test/fixtures/model-routing-admin-host.ts"
 
 
@@ -88,7 +89,7 @@ def system_database_url(url: str) -> str:
     return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), ""))
 
 
-def seed_route(base: str, tenant: str, token: str, run_id: str) -> dict:
+def seed_route(base: str, tenant: str, token: str, run_id: str, bff_base: str, browser_headers: dict[str, str], api_key: str) -> dict:
     """Only official owner commands; no table inserts or fixture publication bypass."""
 
     def mutate(
@@ -102,21 +103,31 @@ def seed_route(base: str, tenant: str, token: str, run_id: str) -> dict:
             "idempotency-key": secrets.token_hex(16),
             "x-request-id": secrets.token_hex(16),
         }
-        if not global_scope:
-            headers["x-kokoro-tenant-id"] = tenant
+        headers["x-kokoro-tenant-id"] = tenant
         if version is not None:
             headers["if-match"] = '"' + str(version) + '"'
         if create:
             headers["if-none-match"] = "*"
         expected = 200 if method == "PUT" or path.endswith("/publish") else 201
-        response = system.http_json(
-            base,
-            "/v1/system/" + path,
-            method=method,
-            headers=headers,
-            body=body,
-            expected=expected,
-        )
+        if path.startswith("model-catalog/"):
+            public = path.replace("model-catalog/providers", "model-providers").replace("model-catalog/definitions", "model-definitions").replace("model-catalog/revisions", "model-revisions").replace("model-catalog/labels", "model-labels").replace("model-catalog/routing-policies", "model-routing")
+            public_headers = {**browser_headers, "idempotency-key": headers["idempotency-key"]}
+            if body is not None:
+                public_headers["content-type"] = "application/json"
+            else:
+                public_headers.pop("content-type", None)
+            for name in ("if-match", "if-none-match"):
+                if name in headers:
+                    public_headers[name] = headers[name]
+            status, response = session.request(bff_base, "/v1/admin/" + public, method=method, headers=public_headers, body=body)
+            require(status == expected, "model_configuration_" + public.split("/")[0] + "_status_" + str(status))
+            require(set(response) == {"data", "meta"}, "configuration_envelope_invalid")
+            require(api_key not in json.dumps(response), "configuration_key_exposed")
+            if public == "model-providers":
+                status, lookup = session.request(bff_base, "/v1/admin/model-provider-creations?" + urlencode({"idempotency_key": headers["idempotency-key"]}), headers=browser_headers)
+                require(status == 200 and lookup.get("data") == {"provider_id": response["data"]["id"], "credential_status": "stored", "deleted_at": None}, "provider_creation_lookup_failed")
+            return response["data"]
+        response = system.http_json(base, "/v1/system/" + path, method=method, headers=headers, body=body, expected=expected)
         require(set(response) == {"data"}, "seed_envelope_invalid")
         return system.data_of(response)
 
@@ -124,7 +135,7 @@ def seed_route(base: str, tenant: str, token: str, run_id: str) -> dict:
         "products",
         {"product_key": "routing-" + run_id, "name": "Owned routing product"},
     )
-    feature = "chat." + run_id
+    feature = "chat"
     mutate(
         "features",
         {
@@ -145,8 +156,9 @@ def seed_route(base: str, tenant: str, token: str, run_id: str) -> dict:
             "provider": "fixture",
             "provider_key": "fixture-" + run_id,
             "display_name": "Owned fixture provider",
-            "secret_handle_ref": "secret://smoke/" + run_id,
-            "transport": "litellm",
+            "api_key": api_key,
+            "protocol": "openai_chat_completions",
+            "base_url": "https://models.fixture.invalid/v1",
             "priority": 0,
         },
     )
@@ -162,11 +174,9 @@ def seed_route(base: str, tenant: str, token: str, run_id: str) -> dict:
             "revision": 1,
             "provider_model_name": "smoke-model",
             "display_name": "Owned model",
-            "feature_key": feature,
             "input_modalities": ["text"],
             "output_modalities": ["text"],
-            "transport": "litellm",
-            "gateway_model_name": "smoke-model",
+            "request_model": "smoke-model",
             "context_window": 8192,
             "max_output_tokens": 4096,
             "priority": 0,
@@ -185,8 +195,7 @@ def seed_route(base: str, tenant: str, token: str, run_id: str) -> dict:
     label = mutate(
         "model-catalog/labels",
         {
-            "label_key": "default-" + run_id,
-            "display_name": "Owned route",
+            "label_key": "chat/" + run_id,
             "feature_key": feature,
             "default_revision_id": revision["id"],
         },
@@ -237,6 +246,7 @@ def parse_args(argv=None):
         "iam-node-bin",
         "bff-node-bin",
         "bff-source",
+        "system-source",
         "expected-iam-sha",
         "expected-bff-sha",
         "expected-system-sha",
@@ -246,7 +256,7 @@ def parse_args(argv=None):
     postgres = urlsplit(args.postgres_admin_url)
     if postgres.scheme != "postgresql" or not postgres.username:
         parser.error("explicit PostgreSQL role is required for the isolated CLI")
-    for name in ("iam_node_bin", "bff_node_bin", "bff_source"):
+    for name in ("iam_node_bin", "bff_node_bin", "bff_source", "system_source"):
         setattr(args, name, Path(getattr(args, name)).expanduser().resolve())
     return args
 
@@ -293,9 +303,9 @@ def main(argv=None) -> int:
         evidence["sources"] = {
             "iam": source(IAM, args.expected_iam_sha),
             "bff": source(args.bff_source, args.expected_bff_sha),
-            "system": source(SYSTEM, args.expected_system_sha),
+            "system": source(args.system_source, args.expected_system_sha),
         }
-        artifact = SYSTEM / "contract/openapi/system.openapi.json"
+        artifact = args.system_source / "contract/openapi/system.openapi.json"
         require(
             sha256(artifact.read_bytes()).hexdigest() == ARTIFACT_SHA,
             "immutable_system_artifact_mismatch",
@@ -344,6 +354,12 @@ def main(argv=None) -> int:
                 credential_values.extend(
                     (system_token, agent_token, admin_token, web_secret)
                 )
+                management_token = secrets.token_hex(32)
+                fixture_key = "owned-fixture-" + secrets.token_hex(24)
+                credential_values.extend((management_token, fixture_key))
+                material_file = Path(temporary) / "model-material.json"
+                material_file.write_text(json.dumps({"encryption_key": base64.b64encode(secrets.token_bytes(32)).decode(), "idempotency_hmac_key": base64.b64encode(secrets.token_bytes(32)).decode()}))
+                material_file.chmod(0o600)
                 system_port = system.free_port()
                 bff_port = system.free_port()
                 while bff_port == system_port:
@@ -363,6 +379,9 @@ def main(argv=None) -> int:
                     "KOKORO_SYSTEM_BFF_SERVICE_TOKEN": system_token,
                     "KOKORO_SYSTEM_AGENT_SERVICE_TOKEN": agent_token,
                     "KOKORO_SYSTEM_ADMIN_SERVICE_TOKEN": admin_token,
+                    "KOKORO_SYSTEM_MODEL_MANAGEMENT_SERVICE_TOKEN": management_token,
+                    "KOKORO_SYSTEM_MODEL_KEY_MATERIAL_FILE": str(material_file),
+                    "KOKORO_SYSTEM_RETENTION_HOLD": "true",
                 }
                 bff_env = {
                     **node22,
@@ -377,13 +396,14 @@ def main(argv=None) -> int:
                     "KOKORO_BFF_SHARED_SECRET": web_secret,
                     "KOKORO_IAM_BASE_URL": ready.base_url,
                     "KOKORO_INTERNAL_SECRET_BFF": system_token,
+                    "KOKORO_BFF_MODEL_MANAGEMENT_SERVICE_TOKEN": management_token,
                     "KOKORO_SYSTEM_BASE_URL": system_base,
                     "KOKORO_AGENT_ENABLED": "false",
                     "KOKORO_TENANT_ID": ready.tenant_id,
                     "KOKORO_DOMAIN": resources.run_id + ".smoke.localhost",
                 }
                 for name, cwd, env, node, base in (
-                    ("system", SYSTEM, system_env, args.iam_node_bin, system_base),
+                    ("system", args.system_source, system_env, args.iam_node_bin, system_base),
                     ("bff", args.bff_source, bff_env, args.bff_node_bin, bff_base),
                 ):
                     evidence["stage"] = name + "_schema_start"
@@ -412,7 +432,7 @@ def main(argv=None) -> int:
                     system.wait_ready(base, process)
                 evidence["stage"] = "system_official_seed"
                 route = seed_route(
-                    system_base, ready.tenant_id, admin_token, resources.run_id
+                    system_base, ready.tenant_id, admin_token, resources.run_id, bff_base, session.headers(ready, web_secret), fixture_key
                 )
                 owner_before = route_read(system_base, ready.tenant_id, system_token)
                 require(
@@ -420,6 +440,15 @@ def main(argv=None) -> int:
                     "system_read_positive_failed",
                 )
                 evidence["system_route_read"] = True
+                for directory in ("model-providers", "model-definitions", "model-features"):
+                    status, page = session.request(bff_base, "/v1/admin/" + directory + "?limit=50", headers=session.headers(ready, web_secret))
+                    require(status == 200 and len(page.get("data", [])) == 1 and page.get("meta", {}).get("next_cursor") is None, "configuration_directory_" + directory)
+                status, changed = session.request(bff_base, "/v1/admin/model-labels/" + route["label_id"], method="PATCH", headers={**session.headers(ready, web_secret), "content-type":"application/json", "idempotency-key":secrets.token_hex(16), "if-match":'"1"'}, body={"display_name":"Owned alias"})
+                require(status == 200 and changed.get("data", {}).get("display_name") == "Owned alias", "configuration_alias_save_failed")
+                status, changed = session.request(bff_base, "/v1/admin/model-labels/" + route["label_id"], method="PATCH", headers={**session.headers(ready, web_secret), "content-type":"application/json", "idempotency-key":secrets.token_hex(16), "if-match":'"2"'}, body={"display_name":None})
+                require(status == 200 and changed.get("data", {}).get("display_name", "missing") is None, "configuration_alias_clear_failed")
+                evidence["configuration_create_publish_lookup_alias_and_directories"] = True
+
                 evidence["stage"] = "bff_current_admin"
                 headers = session.headers(ready, web_secret)
                 status, body = session.request(bff_base, "/v1/me", headers=headers)
@@ -493,6 +522,54 @@ def main(argv=None) -> int:
                         and body["meta"]["next_cursor"] == authoritative["next_cursor"],
                         "admin_owner_list_projection_invalid",
                     )
+
+                evidence["stage"] = "business_model_catalog"
+                authoritative_catalog = system.data_of(
+                    system.http_json(
+                        system_base,
+                        "/v1/system/model-catalog/catalog?feature_key=chat",
+                        headers={
+                            "authorization": "Bearer " + system_token,
+                            "x-kokoro-service": "web-bff",
+                            "x-kokoro-tenant-id": ready.tenant_id,
+                            "x-kokoro-iam-permissions": "system:read",
+                            "x-request-id": secrets.token_hex(16),
+                        },
+                    )
+                )
+                status, body = session.request(
+                    bff_base, "/v1/models?feature_key=chat", headers=headers
+                )
+                owner_items = authoritative_catalog.get("items")
+                require(
+                    isinstance(owner_items, list) and len(owner_items) == 1,
+                    "business_catalog_owner_item_missing",
+                )
+                item = owner_items[0]
+                require(
+                    item["key"] == "chat/" + resources.run_id
+                    and item["provider"] == "fixture"
+                    and item["display_name"] == item["request_model"] == "smoke-model"
+                    and item["revision_id"] == route["model_revision_id"],
+                    "business_catalog_effective_identity_invalid",
+                )
+                expected_model = {
+                    name: item[name]
+                    for name in (
+                        "provider", "provider_id", "model_id", "revision_id",
+                        "feature_key", "display_name", "request_model", "is_default",
+                    )
+                }
+                expected_model["name"] = item["key"]
+                require(
+                    status == 200
+                    and body.get("data") == {
+                        "models": [expected_model],
+                        "next_cursor": authoritative_catalog["next_cursor"],
+                    },
+                    "business_catalog_public_projection_invalid",
+                )
+                evidence["business_model_catalog"] = True
 
                 evidence["stage"] = "admin_visible_cas"
                 write_body = {
@@ -693,6 +770,8 @@ def main(argv=None) -> int:
                     failure = "CleanupFailure"
     except Exception as error:
         failure = type(error).__name__
+        if isinstance(error, runtime.SmokeError) and re.fullmatch(r"[a-zA-Z0-9_:\-]{1,180}", str(error)):
+            evidence["failure_code"] = str(error)
     if failure:
         evidence["status"] = "failed"
         evidence["failure_class"] = failure
