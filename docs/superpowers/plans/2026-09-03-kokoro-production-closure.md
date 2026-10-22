@@ -12,12 +12,12 @@
 
 **主线顺序不变：登录 → 业务模型配置 → 会话 Agent 完整链路 → 工具／产物 → 真实用量整数结算。** App 页面、交互与可观察 API 差异贯穿实测和验收；Skills/MCP 复用已有成果，当前旅程依赖或明确缺陷才补齐，不再作为主线前置验收关卡。真钱支付不做，不新增团队或示例业务，不全局放开无限执行。
 
-当前进度：正常非现金充值→余额／单笔流水回读子旅程已验；精确选价绑定已完成Billing2d3ed0f→BFFa77276b（Public23）→App928de9f／Admindaf06b7的固定源码配对。App完整工程4749 PASS／0SKIP、preview108零重试和在线Docs检查通过，四MCP WIP原字节保留；Admin完整341 PASS／0SKIP及603px隔离compiled浏览器的修订选择／单次发布／刷新不重发通过。Agent正式prepared快照已在7e1e068完成本地源码验收（HTTP7.1、默认2416 PASS、相关真实PG／HTTP129 PASS、389输入无漂移及仓外安装通过）；Billing固定消费、合法逐attempt消费授权和真实资金链仍待，不勾AGENT-1／CREDIT-1整项。具体固定SHA、契约摘要和实际证据见CURRENT首节。
+当前进度：正常非现金充值→余额／单笔流水回读子旅程已验；精确选价绑定已完成Billing2d3ed0f→BFFa77276b（Public23）→App928de9f／Admindaf06b7的固定源码配对。App完整工程4749 PASS／0SKIP、preview108零重试和在线Docs检查通过，四MCP WIP原字节保留；Admin完整341 PASS／0SKIP及603px隔离compiled浏览器的修订选择／单次发布／刷新不重发通过。Agent正式prepared快照已在7e1e068完成本地源码验收（HTTP7.1、默认2416 PASS、相关真实PG／HTTP129 PASS、389输入无漂移及仓外安装通过）；Billing固定消费者现也已在7412c30完成：verify1762 PASS／524默认资源SKIP、真实PG61／source-dist8、357输入无漂移及仓外actual Agent HTTP／PG→compiled Billing reader／真实选价11检查通过。正常未激活，合法逐attempt消费授权和真实资金链仍待，不勾AGENT-1／CREDIT-1整项。具体固定SHA、契约摘要和实际证据见CURRENT首节。
 
 执行游标（对应原 TODO，不增加平行清单）：
 
 1. **CREDIT-1 已完成的子旅程**：App切片已保存并配对正常服务，当前租户正式后台非现金充值→严格回执→余额／流水回读及两页刷新通过。正常仅一笔POST201；原命令重放的资金幂等另有真实隔离PG证据，不冒称正常页面已经故障注入。此子旅程不另列为剩余任务。
-2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：正式计价管理、policy2整数预算、rate2精确System修订绑定及BFF/App/Admin三消费者已本地提交和验收，不再为此重开盘点。预算方案已替代额外供应商成本上界保证，unknown／超预算仍保留资金和证据、pending并停止同Run后续派发。Agent可信prepared reader已本地交付；当前接Billing固定消费者→合法逐attempt资金许可／预算预占→唯一派发→真实usage封口→一次整数结算，沿现owner、原幂等／租约／取消和single-dispatch，不新增服务或兼容层。普通Product token／Run assertion／管理员发放权不等于消费许可；消费grant不放Agent持久消息。正常计价配置和源契约配对激活仍待，不能用QA价／quantity=1或纯函数冒实际收费。
+2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：正式计价管理、policy2整数预算、rate2精确System修订绑定及BFF/App/Admin三消费者已本地提交和验收，不再为此重开盘点。预算方案已替代额外供应商成本上界保证，unknown／超预算仍保留资金和证据、pending并停止同Run后续派发。Agent可信prepared reader与Billing固定消费者均已本地交付；当前接合法逐attempt资金许可／预算预占→唯一派发→真实usage封口→一次整数结算，沿现owner、原幂等／租约／取消和single-dispatch，不新增服务或兼容层。现IAM已有原生Billing resource授权和在线verify，App缺具名Billing grant持有／续期与异步Run后台关联；沿现服务端加密会话补齐，不建新服务／token-exchange。普通Product token／Run assertion／管理员发放权不等于消费许可；消费grant不放Agent持久消息。正常计价配置和源契约配对激活仍待，不能用QA价／quantity=1或纯函数冒实际收费。
 3. **AUTH-1／CHAT-1／AGENT-1／UI-1／API-1**：由我走正常登录、选模型、首发／流式交互、低风险工具、产物、刷新恢复和扣分完整旅程；按 Manus 实测修页面、交互与API差异，不让用户反复代测。
 4. **其余原 TODO／DOCS-1／RELEASE-1**：完成同一清单的首页、项目等既定需求；同步 App 在线文档，自审和完整验收后集中 PR merge，Root 只 pin 已合精确SHA，核实正常环境生效。不等 CI，不绕强制保护。
 
