@@ -12,12 +12,12 @@
 
 **主线顺序不变：登录 → 业务模型配置 → 会话 Agent 完整链路 → 工具／产物 → 真实用量整数结算。** App 页面、交互与可观察 API 差异贯穿实测和验收；Skills/MCP 复用已有成果，当前旅程依赖或明确缺陷才补齐，不再作为主线前置验收关卡。真钱支付不做，不新增团队或示例业务，不全局放开无限执行。
 
-当前进度：Billing、BFF、Admin及App充值切片已本地提交；App 9b9ec34完整七门全0、4721 PASS／0 SKIP、预览108 PASS（零重试），1143输入无漂移，Docs check和链接通过，独审无剩余确定P0–P2。四端已正常配对，当前租户管理员单次发放1000非现金积分获得正式201回执；正常用户余额1000／冻结0、单笔admin_credit +1000，刷新无重复发放。原四MCP文件已原字节恢复且未夹带提交。Agent真实用量和扣分仍未完成，不能勾选CREDIT-1整项。
+当前进度：正常非现金充值→余额／单笔流水回读子旅程已验；精确选价绑定已完成Billing2d3ed0f→BFFa77276b（Public23）→App928de9f／Admindaf06b7的固定源码配对。App完整工程4749 PASS／0SKIP、preview108零重试和在线Docs检查通过，四MCP WIP原字节保留；Admin完整341 PASS／0SKIP及603px隔离compiled浏览器的修订选择／单次发布／刷新不重发通过。正式prepared快照、合法逐attempt消费授权和真实资金链尚未完成，不勾AGENT-1／CREDIT-1整项。具体固定SHA、契约摘要和实际证据见CURRENT首节。
 
 执行游标（对应原 TODO，不增加平行清单）：
 
 1. **CREDIT-1 已完成的子旅程**：App切片已保存并配对正常服务，当前租户正式后台非现金充值→严格回执→余额／流水回读及两页刷新通过。正常仅一笔POST201；原命令重放的资金幂等另有真实隔离PG证据，不冒称正常页面已经故障注入。此子旅程不另列为剩余任务。
-2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：沿现共享模型、受控取钥、Metering发布／选择与Credit事务，完成正式计价管理→消费授权与单次预算预占→唯一派发→真实usage封口→一次整数结算。**用户已确认预算方案替代额外供应商成本上界保证，不再为旧前置预建新合同/服务。** Billing4810a4d包内结算决策已验；d19f0bc将必填单次整数预算纳入现不可变policy2、完整digest／持久列／审计／回放／冻结selection，拒旧无预算版，无默认／兼容双轨。最终verify1681 PASS／512默认资源SKIP、另真实PG41 PASS／0SKIP及fresh Prisma／生成检查0，341输入无漂移，独审无P0–P2；正常DDL／计价管理和消费I/O尚未因此启用，余额不变。unknown/超预算仍保留资金与证据、pending并停止同Run后续派发。Billing35651fc正式计价管理owner三HTTP操作也已验（verify1728 PASS／520默认资源SKIP、真实PG57及source/dist8 PASS），BFF4d8a028固定exp5并完成Public22.5三操作，七门全0（contract970／architecture36／默认1655 PASS、3原资源SKIP）、758输入无漂移；真实BFF→Billing→独占PG十项通过、零资金行，自有库94→94，Session明确夹具，不冒正常页面／扣分已验。App bc0c8c3已固定该BFF并接正式三操作及Docs，完整App七门4748 PASS／0SKIP、preview108零重试及Docs45测试／54HTML17940链接通过，1142冻结输入无漂移、原MCP WIP原字节保留。Admin70399ab现也已完成具名计价表单、1MiB请求与恢复容量配对，原42消费保持；8门0、45文件331 PASS／0SKIP、167输入无漂移，独审无剩余P0–P2。独立编译IAB桌面验证确认单次发布／刷新不重发、复制、键盘和费率增删，HTTP peer夹具不冒正常IAM／Billing验收。旧pricing-rules创建／更新同步退休，不泛扩充值或把最新配置读取当未知提交未发生。Billing2d3ed0f现已在原rate2不可变行显式绑定System修订UUID／摘要与商业五维，无新表／服务／兼容读；按同active快照选价并冻结绑定，拒缺失／歧义／错digest。exp6原件7044102dd6e221338348152bb268eaca6516039cc5ca5122d3c42a096f6dc962，完整verify1736 PASS／524默认资源SKIP、真实PG61、source/dist8、compiled6及fresh Prisma／生成检查通过，353输入无漂移、自有库94→94，独审Approved；正常未激活。BFF a77276b现已固定该owner原件并发布Public23／186，raw34ea71e0aa56256ca00fc5b3c40abd4d142bea82e664a6871190b8547ec2b9e6；七门0、contract973／architecture36／默认1658 PASS及3原资源SKIP，真实compiled owner HTTP＋独占PG13项通过，758输入无漂移、自有库94→94，独审Approved。当前推进App／Admin精确升级Public23及正式修订选择，再接Agent可信prepared reader、合法逐attempt资金许可与真实结算，不按名称／Key／URL猜身份；正常rate/policy/feature-price revision均0，需要正式配置，不用QA价或quantity=1旁路；不删除身份、幂等、租约、取消、精确绑定或原single-dispatch保护。
+2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：正式计价管理、policy2整数预算、rate2精确System修订绑定及BFF/App/Admin三消费者已本地提交和验收，不再为此重开盘点。预算方案已替代额外供应商成本上界保证，unknown／超预算仍保留资金和证据、pending并停止同Run后续派发。当前接Agent可信prepared reader→合法逐attempt资金许可／预算预占→唯一派发→真实usage封口→一次整数结算，沿现owner、原幂等／租约／取消和single-dispatch，不新增服务或兼容层。普通Product token／Run assertion／管理员发放权不等于消费许可；消费grant不放Agent持久消息。正常计价配置和源契约配对激活仍待，不能用QA价／quantity=1或纯函数冒实际收费。
 3. **AUTH-1／CHAT-1／AGENT-1／UI-1／API-1**：由我走正常登录、选模型、首发／流式交互、低风险工具、产物、刷新恢复和扣分完整旅程；按 Manus 实测修页面、交互与API差异，不让用户反复代测。
 4. **其余原 TODO／DOCS-1／RELEASE-1**：完成同一清单的首页、项目等既定需求；同步 App 在线文档，自审和完整验收后集中 PR merge，Root 只 pin 已合精确SHA，核实正常环境生效。不等 CI，不绕强制保护。
 
@@ -85,7 +85,7 @@
 
 | 批次 | TODO | 当前状态／下一步 |
 | --- | --- | --- |
-| 1：主链最小闭环 | AUTH-1、MODEL-1、CHAT-1、AGENT-1、CREDIT-1 | 实施中。登录修复、模型候选读取与业务组合、无感零账户初始化已有交付证据，不重复开发。充值owner及延迟生效重复入账修复已通过真实持久化验收，后台充值正常子旅程已验，计价管理四端原配对已验、Billing精确模型绑定已提交，BFF升级已验，现配App/Admin后接 Agent 资金授权／用量结算；随后以正常登录→选模型→会话→低风险工具→产物→整数扣分完整实测收口，包含失败、重试、刷新与重放。 |
+| 1：主链最小闭环 | AUTH-1、MODEL-1、CHAT-1、AGENT-1、CREDIT-1 | 实施中。登录修复、模型候选读取与业务组合、无感零账户初始化已有交付证据，不重复开发。充值owner及延迟生效重复入账修复已通过真实持久化验收，后台充值正常子旅程已验，四端精确模型选价绑定源码和表单已配对验收，现接正式prepared快照、Agent资金授权／用量结算；随后以正常登录→选模型→会话→低风险工具→产物→整数扣分完整实测收口，包含失败、重试、刷新与重放。 |
 | 2：会话交互完整 | PREF-1、UI-1 | 待实施／验收。补运行中发送、队列／打断、恢复、设置与技能弹窗无闪动；必要 UI 修复随批次1一起做。 |
 | 3：首页与项目 | HOME-1、PROJECT-1 | 待实施／验收。首页入口、地址与归属、项目能力及 pin／排序／分区。 |
 | 4：本轮其余完整能力 | SKILLS-MCP-1、SCHEDULE-1、PERSONAL-1、NOTIFY-1 | 全部纳入本轮完成条件；Skills/MCP与Agent依赖部分随批次1接通，其余用户和后台旅程在本轮完成，不另留收尾目标。 |
