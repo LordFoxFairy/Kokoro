@@ -1,5 +1,7 @@
 ## 最新目标入口：正式产品主链与上线收尾（2026-10-22）
 
+最新执行收敛：登录 → 业务模型配置 → 会话 Agent → 工具／产物 → 整数积分结算；App 页面、交互和 API 差异随旅程一起按 Manus 实测修复。MCP 不再作为主线前置关卡，不追加重复验收；全部既定 TODO 的完成条件仍保留。自己完整验收后集中 PR merge，真钱支付不做。唯一目标和顺序已更新到下述计划首节；工具中的旧 Skills 目标标题不代表新的执行顺序。
+
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
 最新统一要求：Skills/MCP不再作为旧任务或交付债单列，全部纳入本轮同一目标和16项TODO；按依赖推进，一次完成实现、真实验收、PR合并与正常环境生效，不留另一个收尾周期。
@@ -9,6 +11,10 @@
 唯一有效目标、16项TODO、批次、owner与验收见[计划首节](superpowers/plans/2026-09-03-kokoro-production-closure.md#release-readiness-20261021)。当前已按该计划实施；组件提交、正常加载、完整旅程验收与PR合并分开记录。
 
 新主线为：登录和业务模型配置 → 真实会话／Agent／低风险工具／产物 → 实际用量整数积分结算 → 会话交互 → 首页和项目。模型／工具／积分全面暂停的旧约束不再作为新计划默认；实际验收使用限定租户、数据与运行上限，具体外发／删除等副作用独立控制，真钱支付后置。API对照及App在线Docs随功能维护。
+
+主链本次进展：Billing 隔离提交 `b4dda148767f31df12d1d679cbeb2a1237d7c16a` 修正唯一计价内核：同 attempt 合计精确费用后一次 ceil 到整积分，再×1,000,000记账，0仍0且取整溢出拒绝；新策略 `attempt-credit-ceil-v2`，不重解释旧策略。最终334输入无漂移，完整 `pnpm verify` 全0（1580 PASS／501资源SKIP），真实PG publication/selection38 PASS／0SKIP、数据库库存94→94；另compiled六边界通过。独审发现的大数／混合单位测试保护退化已修。未push/PR/merge、未改Root pin或正常服务，真实充值／Agent许可／结算仍未通过，不能以此算整链完成。
+
+下一实际断点已经源码核实：Agent main 与受控取钥候选 `c2c7cf9` 都在 durable prepare 后固定拒绝未接入的 Billing authorization consumer，middleware亦尚无正常成功返回／usage封口编排；Billing正常Nest未装配Admission。复用既有 journal、Credit事务与usage2 reader接通，不删除保护或恢复旧entitlement/固定quantity路径来放行。候选与当前BFF Agent HTTP字节相同，System6.0两消费操作与当前6.1递归等价；本次候选 focused191 PASS、lock/Ruff通过，不冒完整正常执行证明。必要取钥与资金授权接线优先于额外MCP验收。
 
 历史“立即下一步”不自动生效；统一目标仍见计划首节。IAM登录修复、Skills身份／绑定／生命周期、模型配置／候选、无感账户初始化与App Docs现已按下节六仓PR集中入main；正常已加载的代码和本次文档跟进分别核验。28项上游模型候选真实读取、搜索／刷新／取消无保存及账户幂等初始化已有正常浏览器证据，真实Agent执行、充值与用量结算不由这些配置证据代替。
 
