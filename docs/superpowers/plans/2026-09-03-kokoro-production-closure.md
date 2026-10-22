@@ -17,7 +17,7 @@
 执行游标（对应原 TODO，不增加平行清单）：
 
 1. **CREDIT-1 已完成的子旅程**：App切片已保存并配对正常服务，当前租户正式后台非现金充值→严格回执→余额／流水回读及两页刷新通过。正常仅一笔POST201；原命令重放的资金幂等另有真实隔离PG证据，不冒称正常页面已经故障注入。此子旅程不另列为剩余任务。
-2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：沿现共享模型、受控取钥、Metering发布／选择与Credit事务，完成正式计价管理→消费授权与单次预算预占→唯一派发→真实usage封口→一次整数结算。**用户已确认预算方案替代额外供应商成本上界保证，不再为旧前置预建新合同/服务。** Billing4810a4d包内结算决策已验；d19f0bc将必填单次整数预算纳入现不可变policy2、完整digest／持久列／审计／回放／冻结selection，拒旧无预算版，无默认／兼容双轨。最终verify1681 PASS／512默认资源SKIP、另真实PG41 PASS／0SKIP及fresh Prisma／生成检查0，341输入无漂移，独审无P0–P2；正常DDL／计价管理和消费I/O尚未因此启用，余额不变。unknown/超预算仍保留资金与证据、pending并停止同Run后续派发。正常rate/policy/feature-price revision均0，需要正式配置，不用QA价或quantity=1旁路；不删除身份、幂等、租约、取消、精确绑定或原single-dispatch保护。
+2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：沿现共享模型、受控取钥、Metering发布／选择与Credit事务，完成正式计价管理→消费授权与单次预算预占→唯一派发→真实usage封口→一次整数结算。**用户已确认预算方案替代额外供应商成本上界保证，不再为旧前置预建新合同/服务。** Billing4810a4d包内结算决策已验；d19f0bc将必填单次整数预算纳入现不可变policy2、完整digest／持久列／审计／回放／冻结selection，拒旧无预算版，无默认／兼容双轨。最终verify1681 PASS／512默认资源SKIP、另真实PG41 PASS／0SKIP及fresh Prisma／生成检查0，341输入无漂移，独审无P0–P2；正常DDL／计价管理和消费I/O尚未因此启用，余额不变。unknown/超预算仍保留资金与证据、pending并停止同Run后续派发。Billing35651fc正式计价管理owner三HTTP操作也已验（verify1728 PASS／520默认资源SKIP、真实PG57及source/dist8 PASS），现接BFF/Admin/App固定契约与各自1MiB请求／恢复容量，不泛扩充值或把最新配置读取当未知提交未发生。正常rate/policy/feature-price revision均0，需要正式配置，不用QA价或quantity=1旁路；不删除身份、幂等、租约、取消、精确绑定或原single-dispatch保护。
 3. **AUTH-1／CHAT-1／AGENT-1／UI-1／API-1**：由我走正常登录、选模型、首发／流式交互、低风险工具、产物、刷新恢复和扣分完整旅程；按 Manus 实测修页面、交互与API差异，不让用户反复代测。
 4. **其余原 TODO／DOCS-1／RELEASE-1**：完成同一清单的首页、项目等既定需求；同步 App 在线文档，自审和完整验收后集中 PR merge，Root 只 pin 已合精确SHA，核实正常环境生效。不等 CI，不绕强制保护。
 
