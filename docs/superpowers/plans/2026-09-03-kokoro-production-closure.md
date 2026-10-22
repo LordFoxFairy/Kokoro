@@ -16,14 +16,14 @@
 
 AUTH-1当前候选：App e48adb5已提交登录／refresh的可信issuer sid连续性，原生验签、原用户／tenant、单次交换、双CAS和失败清理保持；最终1143输入无漂移，完整App十阶段0、4773 PASS／0SKIP（单worker完整test）、108 preview零重试及Docs全门通过，四MCP WIP原样恢复、独审Approved。正常未激活；旧无sid cookie不兼容，不清业务数据。此次只闭合登录子片，不因此增加Agent所需token或额外用户授权旅程，整项AUTH-1与正常产品验收仍按原完成条件。
 
-IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换旧用户token body／Session前置，复用现签名proof／强制BFF Run及当前成员资格；496输入无漂移、九门0、1505默认PASS／0SKIP、31真实HTTP／PG／Redis及1 clean包仓外consumer通过，独审Approved。原件／包SHA与失败／恢复证据见CURRENT首节；正常未激活，Billing／Agent／BFF消费者尚待配对，不勾整项CREDIT-1／AGENT-1，不新建App授权旅程。
+IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换旧用户token body／Session前置，复用现签名proof／强制BFF Run及当前成员资格；496输入无漂移、九门0、1505默认PASS／0SKIP、31真实HTTP／PG／Redis及1 clean包仓外consumer通过，独审Approved。原件／包SHA与失败／恢复证据见CURRENT首节；SDK仅说明修正16ee2eb已交付；Billing d65d709固定该clean包，exp8／交付commit干净树五阶段全0／378输入无漂移，verify1786 PASS／561默认SKIP、真实PG228／source-dist10／fresh Prisma／生成检查通过，actual Agent＋Billing＋IAM隔离22检查通过。正常未激活，Agent／BFF消费者尚待配对，不勾整项CREDIT-1／AGENT-1，不新建App授权旅程。
 
 **认证最新裁决**：Run不需要用户token；执行使用内部服务身份与可信用户／租户／Run绑定。未实施的App额外Billing grant＋BFF回App取token提议撤回，不作为执行前置。App sid连续性是登录修复，不等于Run权限、消费grant或任务必须随浏览器登录过期。后继复用现IAM／BFF／Agent正式执行证据，保当前权限核验、具体消费意图绑定和预算事务；机器token本身不授权任意用户扣款。历史“App消费grant”实现游标不再直接实施。
 
 执行游标（对应原 TODO，不增加平行清单）：
 
 1. **CREDIT-1 已完成的子旅程**：App切片已保存并配对正常服务，当前租户正式后台非现金充值→严格回执→余额／流水回读及两页刷新通过。正常仅一笔POST201；原命令重放的资金幂等另有真实隔离PG证据，不冒称正常页面已经故障注入。此子旅程不另列为剩余任务。
-2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：正式计价管理、policy2整数预算、rate2精确System修订绑定及BFF/App/Admin三消费者已本地提交和验收，不再为此重开盘点。预算方案已替代额外供应商成本上界保证，unknown／超预算仍保留资金和证据、pending并停止同Run后续派发。Agent可信prepared、Billing固定消费者及首次预算预占业务及正式预算HTTP均已本地交付（f61a5d2，POST原held回执、GET本人当前四态）；当前接可信用户／Run消费关联及正式Admission API消费者→唯一派发→真实usage封口→一次整数结算，沿现owner、原幂等／租约／取消和single-dispatch，不新增服务或兼容层。IAM67a3c0e已原位完成具名Run授权／SDK0.16及完整工程、真实HTTP31与clean仓外consumer门；当前先固定Billing新SDK并从已验证prepared事实重算原model-admit:1摘要，再接Agent→BFF受限内部预算通路及Agent proof/pending恢复。BFF由自身持久提交事实派生消费主体，不冒用IAM／Scheduler凭据，不改变公共AG-UI，不新增App回程broker／服务／token-exchange。普通Run assertion／管理员发放权不等于消费许可；内部服务身份、当前用户权限与该次具体消费意图分别核验。正常计价配置和源契约配对激活仍待，不能用QA价／quantity=1或纯函数冒实际收费。
+2. **AGENT-1／MODEL-1／CREDIT-1（当前执行点）**：正式计价管理、policy2整数预算、rate2精确System修订绑定及BFF/App/Admin三消费者已本地提交和验收，不再为此重开盘点。预算方案已替代额外供应商成本上界保证，unknown／超预算仍保留资金和证据、pending并停止同Run后续派发。Agent可信prepared、Billing固定消费者及首次预算预占业务及正式预算HTTP均已本地交付（f61a5d2，POST原held回执、GET本人当前四态）；当前接可信用户／Run消费关联及正式Admission API消费者→唯一派发→真实usage封口→一次整数结算，沿现owner、原幂等／租约／取消和single-dispatch，不新增服务或兼容层。IAM67a3c0e已原位完成具名Run授权／SDK0.16及完整工程、真实HTTP31与clean仓外consumer门；Billing d65d709已固定clean SDK0.16并从已验证prepared事实重算原model-admit:1摘要；完整门、真实PG228、source/dist10及actual Agent＋Billing＋IAM隔离22检查通过，未产生真实usage/capture。当前接Agent→BFF受限内部预算通路及Agent proof/pending恢复。BFF由自身持久提交事实派生消费主体，不冒用IAM／Scheduler凭据，不改变公共AG-UI，不新增App回程broker／服务／token-exchange。普通Run assertion／管理员发放权不等于消费许可；内部服务身份、当前用户权限与该次具体消费意图分别核验。正常计价配置和源契约配对激活仍待，不能用QA价／quantity=1或纯函数冒实际收费。
 3. **AUTH-1／CHAT-1／AGENT-1／UI-1／API-1**：由我走正常登录、选模型、首发／流式交互、低风险工具、产物、刷新恢复和扣分完整旅程；按 Manus 实测修页面、交互与API差异，不让用户反复代测。
 4. **其余原 TODO／DOCS-1／RELEASE-1**：完成同一清单的首页、项目等既定需求；同步 App 在线文档，自审和完整验收后集中 PR merge，Root 只 pin 已合精确SHA，核实正常环境生效。不等 CI，不绕强制保护。
 
