@@ -6,6 +6,8 @@
 
 ### 当前进度与立即下一步
 
+**AUTH-1 Agent 消费者已删除机器 OAuth（2026-10-23，`d20f608b6e217dea93f51ebd5880d84a567b32fc`）**：固定 Platform `4c3853b` auth profile，现 worker/Connect 改为 proof 后读取当前 owner-only 服务凭据；删除 exchange/cache/single-flight、专用pool与旧配置，保留Run/tenant/proof/lease/取消和资金授权。最终2579 PASS／853资源marker未选，格式/lint/types/contract/lock/sync/build及仓外hash锁定安装通过，208份runtime源码与包逐字一致、418输入无漂移、独审无确证P0–P2。初次安装发现ignored build残留把旧OAuth模块带入wheel，已保留旧输出并clean rebuild，旧模块不存在负控通过；最初loopback旧TOKEN断言与zsh harness失败均留据。真实loopback零OAuth不是实际Platform/IAM或正常整链；当前尚未激活/PR/merge，Root不提前pin。下一步只做实际Agent→Platform→IAM消费者配对及正常登录/执行链，不重做已验接收端或Skills/MCP页面；真钱支付不做。
+
 <a id="admin-session-boundary-20261023"></a>
 
 **认证设计源已纠偏（2026-10-23）**：[ADR-034](kokoro-handbook/decisions/ADR-034-independent-admin-web.md) 与总体架构 §2.0 同步废止“独立后台＝独立 OAuth/session”，明确实际 `apps/kokoro-admin` 工程、Product 唯一会话和当前同源 `/manage`。已核对 Admin `e35df21` 的服务端准入消费者与 console layout；此次仅修正文档，不改变运行服务、权限或协议，不把文档一致视为完整登录验收。
