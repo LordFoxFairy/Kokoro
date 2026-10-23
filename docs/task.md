@@ -4,7 +4,7 @@ IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交�
 
 ## 最新跟进入口（2026-10-22）
 
-当前游标（2026-10-23）：**Agent历史sealed读取189c8ac及Billing固定消费1fac9de已本地提交，现接Agent BFF internal1.3消费者、金融关联／逐事件持久ACK与崩溃恢复**。Agent八门0、2461默认PASS／806 marker未选、实际PG／HTTP122及201份包源码核同；Billing完整verify1842 PASS／628原资源SKIP、实际PG结算42及生成drift通过，两仓独审Approved／clean。初轮清单与fixture失败、旧退出时限一次偶发及仓外offline缓存缺口均保留，明确最终验证边界；13仓fetch成功／main无新增、库94→94。下一步原唯一派发／同流真实usage→正常登录／模型／会话工具产物／整数积分与后台，再同轮其余页面与Docs。16项TODO保持，内部字段展示检查并入UI-1，真钱支付不做；正常未激活、未集中PR合并，不把历史读取子片冒整目标完成。
+当前游标（2026-10-23）：**Agent BFF internal1.3金融consumer aedba7b已本地提交，现接独立金融关联／逐事件持久ACK与崩溃恢复**。固定BFF5a303f2，create proof／201保持、recover／settle禁proof及严格原ACK，miss不新预占。405输入八门0／2522默认PASS（812 marker未选）、112 focused含owner-schema oracle、6实际TCP协议fixture、7真实PG授权及actual client→BFF／Billing／IAM隔离33检查通过，202份安装包源码核同，独审Approved；只QA100／hold10，零实际供应商或工具／usage结算，库94→94及自有IAM prefix清理，原失败保留。历史sealed189c8ac／Billing固定1fac9de不重做。然后原唯一派发／同流真实usage→正常登录／模型／会话工具产物／整数积分与后台，再同轮其余页面与Docs。16项TODO保持，内部展示修复并入UI-1，真钱支付不做；正常未激活、未集中PR合并。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
