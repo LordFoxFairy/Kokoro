@@ -18,7 +18,11 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 **最新源码交付**：IAM `2f881d0ad7c97a4226ee217b78fbc1dc9b1cbeab`已替换Billing接收认证并退役该旧scope，SDK0.17从clean commit正规打包；Billing `c158270`固定包/源commit/双digest，删除旧0.16包和启动OAuth token入口，按可信tenant逐次读取专用直接凭据。无新服务/Schema/兼容fallback，原业务proof/权限/预算保持。IAM完整1530 PASS；Billing完整1862 PASS＋628默认资源SKIP，另真实PG/source-dist115 PASS、compiled Billing→实际IAM Nest/PG/Redis八检查通过，OAuth请求0、自有库94→94。Agent signer和BFF Run绑定仍为具名fixture，真实模型/工具/正常积分写入0；不冒整链通过。独审发现重复JSON和停滞文件IO两个问题，均经RED→GREEN及复核关闭。当前两owner正常仍旧进程，readyz200、未重启/PR/merge；源码已提交不等于运行已加载。具体失败与测试范围见各owner CURRENT，本地证据保留ignored auth-direct。
 
-**用户最新重构要求已纳入**：剩余Agent→Platform和Platform→IAM两跳只替换机器身份；保留IAM `verifyExecutionAuthorization`／`DIRECT_USER_CURRENT`在线权限判断，不把替代权限来源的barrier/claim设计扩大为删token的前置。两处OAuth仍有真实源码耦合：Agent token provider、Platform workload introspection/tenant token provider，以及IAM caller_client_id和purpose策略，必须统一改契约并删除旧实现，不简单绕过guard。已在原ADR-035澄清范围，不新建任务中心；不声称更强的全Run即时撤权已实现。
+**本次执行验证receiver已交付**：IAM `6238371`／internal+SDK0.18在既有模块原位替换Platform→IAM机器OAuth，删除专属scope/purpose/policy，复用现Billing本地凭据读取但固定两用途、独立配置/secret/tenant；保留DIRECT_USER_CURRENT在线权限，未增加barrier/claim/Schema。只有execution operation将caller_client_id替换为caller_service/caller_credential_id，Billing wire逐值不变。完整verify119文件1541 PASS/0SKIP；真实Nest HTTP/PG/Redis三文件88 PASS/0SKIP、数据库94→94，含零JWT/内省、撤权/错tenant/撤销凭据/坏文件、慢body+BFF共用期限与socket取消无迟到allow，旧登录fixture仍通过。54源/契约输入冻结无漂移，独立复核无确定P0-P2。一次新增HTTP成功例使旧共享audit计数6→7失败，已用独立runId精确查询仍验6条重放决定并重新全门；原失败保留。Agent signer/BFF绑定仍为fixture，正常服务未重载，本片模型/工具/积分写入0、未PR/merge。
+
+剩余消费接线：先固定本次clean SDK包并替换Platform的tenant token provider和Agent的Platform token provider，原在线IAM权限不变；完成两端后统一正常配对。部署时正式收敛旧IAM resource execution scope并停用旧client，不能放宽Product scope精确读回来兼容配置。IAM新增文档链接有效，隔离worktree中的4条既存跨Root相对链接仍不可解析（上一基线已存在），不是本片新断链。正常产品/登录/Agent/资金整链仍未验完，不标AUTH-1整体完成。
+
+**用户最新重构要求已纳入**：剩余Agent→Platform和Platform→IAM两跳只替换机器身份；保留IAM `verifyExecutionAuthorization`／`DIRECT_USER_CURRENT`在线权限判断，不把替代权限来源的barrier/claim设计扩大为删token的前置。两处OAuth仍有真实源码耦合：Agent token provider、Platform workload introspection/tenant token provider，以及Platform消费者旧caller_client_id回包校验；IAM接收方已在6238371删除旧purpose策略，余下消费者必须统一配对并删除旧实现，不简单绕过guard。已在原ADR-035澄清范围，不新建任务中心；不声称更强的全Run即时撤权已实现。
 
 以下为本片起始基线与已完成的撤回记录：
 
