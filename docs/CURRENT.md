@@ -6,6 +6,10 @@
 
 ### 当前进度与立即下一步
 
+**AGENT-1 用量恢复的响应编号缺口已修复（2026-10-23，Agent `c92dbea6efdf7cc56b48c19b31e3d6887cf102aa`，本地提交）**：同一已验证物理响应的有界编号随首次usage seal原子写入原attempt；SSE编号冲突、非法值、截断和gzip尾不完整均不采信，重放不替换/丢弃原值。无新服务、公开wire、Billing入口或用户token。默认2596 PASS/855资源marker未选；最后新增gzip负控后观察器36 PASS；真实PG/SDK/HTTP171 PASS/0 SKIP，SQL边界、回滚和持久恢复通过，format/lint/types/contract/lock/frozen sync/build通过，208份runtime源码和schema与wheel一致，独审无确定新增缺陷。首次PG正则上界和native工具fixture首尾ID不一致问题均修复、失败留证，未放宽生产断言；三个相关仓库非递归fetch后main均无候选未承接提交。正常服务/schema未切换，未新增模型/工具/资金操作，原990可用/10冻结、revision1 pending已只读复核。
+
+**金融恢复下一步已定位**：Billing现有settle支持相邻补证后按原冻结价一次整数结算，无需重写资金流程；Agent现有recovery只重投未ACK事件，原pending已ACK后不会自动补用量。普通append仍禁止terminal新修订，后继须实现同次调用的有来源补证，不能放宽旧worker执行租约。当前配置是转接网关；对其GET /v1/generation（无id）的只读探测返回404非JSON，尚未证明官方OpenRouter补查接口可用。原attempt没有供应商编号，保持待核对，不补cache=0、不改冻结费率、不重派原请求。缺usage SSE尚沿原missing_final拒绝路径，本片不冒称所有补查已实现。证据仅在ignored `var/dev/model-response-receipt-20261023`；下一步沿现Agent owner核补查来源和terminal补证，再接原Billing结算与有限工具/产物验收。未PR/merge，原16项范围保持。
+
 **AUTH-1 登录地址已在正常服务收敛（2026-10-23，App `b2809f3`，文档 `8a31af0`）**：复用现 Product 登录，协议 query 仅服务端保留，密码表单、刷新和失败重试使用浏览器绑定的短地址；后台仍共享同一 Product 会话，不新增认证服务／Admin会话／机器token。每 render 独立证明，刷新只回收已观察的本交易 cookie，两个并发清理／预算恢复 P2 均先复现再修复。147专项及HTTPS反代5项通过；完整256文件4833项／0跳过、contract304／architecture50、lint／types／build／构建后types和隔离桌面／移动108 E2E通过，1208停写输入无漂移。原UI WIP保留、不夹带提交。首完整跑的旧反代fixture预期和测试Redis配置失败已保留，修正后完整重跑。
 
 正常仅更新并重启本方App，原11份WIP原字节、配置和其余8个监听保持；首次操作脚本因系统Python缺依赖在任何Git／进程变化前停止，改用既有Agent虚拟环境后完成。浏览器实测App退出确认→两个标签均进入不同短地址→较早表单刷新→一次原账号密码登录→后台直接准入并读回策略／费率1→原会话正文恢复。未改密码、权限、Schema或资金，未新增模型／工具调用。**冷读“正在加载工作区”仍可见，原10积分冻结待核对未变，不勾全链完成，也未PR／merge。** 原始截图、回滚和日志仅留ignored `var/dev/sign-in-short-url-20261023`；下一步回到现用量核对／真实结算主链，不重开Skills/MCP轮次。
