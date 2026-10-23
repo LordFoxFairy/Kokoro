@@ -6,6 +6,12 @@
 
 ### 当前进度与立即下一步
 
+**MODEL-1 已推进到正常真实解析（2026-10-23）**：用户确认现提供方由OpenRouter转接，后继按其精确 `openai/gpt-5.6-luna`／canonical `openai/gpt-5.6-luna-20260709`公开价配置，不再索要可公开查询的费率。实际公开目录200／468项，普通输入／输出每百万token USD0.20／1.20，缓存读／写0.02／0.25；严格大于272000输入的覆盖价已核，现4096context不触达。保7/5倍率与整attempt最终一次ceil，费用到积分仍是单独显式平台policy，不从目录凭空推导。App在线指南提交 `52baa59`，完整Docs check通过（45测试、5例、54HTML／17942内部链接，原大chunk警告保留）；价格来源不是已发布计价或已扣分证明。
+
+System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者的根因：原resolve按需复用有界metadata GET，provider／密文快照与health generation CAS、全局fence，公开发现GET仍零写，fresh down不被旧probe覆盖；无新服务／表／wire，不放宽freshness。真实RED503→200、37定向／完整owner263 PASS／0SKIP、fresh33断言23表及独审Approved。正常仅本方System已备份并ff／重载，配置字节和其余8监听身份保持、readyz200；无需DDL。正常当前租户Agent正式client resolve→精确revision／digest→受控Key领取→重复解析通过；旧2026-10-21观察generation1自动恢复到2/global8→9，重复零健康写，Key不回显。此为真实System／供应商metadata链，**模型生成、工具与usage扣分仍0，计价发布与完整正常Agent链未验，未PR合并，不勾整项**。原失败与本地收据留ignored `var/dev/product-real-chain-20261023`。
+
+**立即下一步**：复用已验Agent／IAM／BFF／Billing源码，完成正常managed PG／Redis与原proof／内部凭据配对及精确计价发布，再沿同一用户旅程做真实Agent／低风险工具／产物与整数结算。当前正常Agent仍指向已失效旧端口，BFF执行尚disabled，Billing运行仍旧入口；不能用目录恢复代替执行闭环，不重做已验SDK或金融恢复。保留既有积分／流水，owner Schema切换先备份并隔离恢复演练，不清共享库／Redis，不添用户token broker。原16项TODO不变，真钱支付不做。
+
 - **本次目标刷新（2026-10-23）**：仍执行登录→业务模型→会话Agent→工具／产物→实际用量整数积分→后台与同轮页面／API／Docs，唯一16项TODO不增不减；普通用户不外露内部状态码／来源码／技术引用也纳入原UI-1。Agent历史sealed读取`189c8ac`与Billing精确消费`1fac9de`已本地提交，Agent internal1.3消费者aedba7b已本地交付，独立金融关联／逐事件持久ACK与崩溃恢复已在abd1186c本地交付，Worker有界恢复已在ec53a01本地交付，最终请求授权／唯一派发及同流用量已在bfff8df本地交付；当前进入正常整链真实供应商与积分验收。真实模型／低风险工具／积分验收已授权，真钱支付不做。Goal面板旧objective仍受现接口限制，未原位改写，不将其虚标完成；本执行计划与最新用户要求优先，整目标仍进行中。
 
 - **Agent最终请求执行与同流用量已本地提交（2026-10-23）**：`bfff8df05112a88e04645d10c398982ae3946518`。原finalhook串接prepare→预算授权→唯一dispatch，Worker共享原signer／当前lease reader，不加用户token／服务／Schema／wire；原生产HTTPX核凭据与最终请求，同一响应流归一化实际usage，缺失／异模型不猜0或归属。DB时钟seal、原event持久ACK和pending拦后续dispatch，captured才返回原生图。418输入完整八门0，默认2588 PASS／853 marker未选（927上游warning保留）；原生DeepAgents图JSON/SSE十向量覆盖完整、异模型、缺用量、write_todos两轮原生工具、半响应取消；财务ACK为具名fixture，不冒真实计价。184真实PG／323 SDK及金融HTTP回归、实际四方恢复36检查、仓外同锁hash安装与209份wheel／sdist源码核同，独审Approved。双claim closed遮蔽首因已RED2FAIL→修复→GREEN2PASS；旧credential fixture仅补owned key，架构门承接最窄composition，原拒绝／取消／权限不放宽。首次完整架构失败、原HTTP配置子进程3秒偶发（focused3及最终完整通过，不冒根因消除）、harness缺fixture setup均留证。实际四方只QA100／hold及释放10，库94→94、自有IAM prefix清理；正常Schema／服务／资金保持，真实供应商与usage扣分仍未验。13仓非递归fetch成功、main无新增；clean本地组件提交，未正常激活／PR合并，Root不提前pin。**下一步直接接正常登录／模型选择→真实供应商→低风险工具／产物→真实Billing整数结算与后台回读**，不重做已验金融恢复或SDK组件，不勾AGENT-1／CREDIT-1整项；原16项TODO不改。

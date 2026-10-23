@@ -8,9 +8,15 @@
 
 ### 本次目标更新与执行游标（2026-10-23）
 
+**MODEL-1 已推进到正常真实解析（2026-10-23）**：用户确认现提供方由OpenRouter转接，后继按其精确 `openai/gpt-5.6-luna`／canonical `openai/gpt-5.6-luna-20260709`公开价配置，不再索要可公开查询的费率。实际公开目录200／468项，普通输入／输出每百万token USD0.20／1.20，缓存读／写0.02／0.25；严格大于272000输入的覆盖价已核，现4096context不触达。保7/5倍率与整attempt最终一次ceil，费用到积分仍是单独显式平台policy，不从目录凭空推导。App在线指南提交 `52baa59`，完整Docs check通过（45测试、5例、54HTML／17942内部链接，原大chunk警告保留）；价格来源不是已发布计价或已扣分证明。
+
+System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者的根因：原resolve按需复用有界metadata GET，provider／密文快照与health generation CAS、全局fence，公开发现GET仍零写，fresh down不被旧probe覆盖；无新服务／表／wire，不放宽freshness。真实RED503→200、37定向／完整owner263 PASS／0SKIP、fresh33断言23表及独审Approved。正常仅本方System已备份并ff／重载，配置字节和其余8监听身份保持、readyz200；无需DDL。正常当前租户Agent正式client resolve→精确revision／digest→受控Key领取→重复解析通过；旧2026-10-21观察generation1自动恢复到2/global8→9，重复零健康写，Key不回显。此为真实System／供应商metadata链，**模型生成、工具与usage扣分仍0，计价发布与完整正常Agent链未验，未PR合并，不勾整项**。原失败与本地收据留ignored `var/dev/product-real-chain-20261023`。
+
+**立即下一步**：复用已验Agent／IAM／BFF／Billing源码，完成正常managed PG／Redis与原proof／内部凭据配对及精确计价发布，再沿同一用户旅程做真实Agent／低风险工具／产物与整数结算。当前正常Agent仍指向已失效旧端口，BFF执行尚disabled，Billing运行仍旧入口；不能用目录恢复代替执行闭环，不重做已验SDK或金融恢复。保留既有积分／流水，owner Schema切换先备份并隔离恢复演练，不清共享库／Redis，不添用户token broker。原16项TODO不变，真钱支付不做。
+
 **本次刷新：唯一目标仍为正式产品整链闭环，状态进行中；下面16项TODO是唯一执行清单。** 登录、业务模型配置、会话Agent优先，页面／API对齐和其余既定需求在同一轮交付。真实模型、低风险工具和整数积分验收已授权；真钱支付不做。旧Skills目标标题、历史暂停语句、重复盘点或新增示例业务均不改变此范围。
 
-**当前执行点：正常用户／后台的真实整链验收。Agent `bfff8df05112a88e04645d10c398982ae3946518` 已本地接完原finalhook预算授权、唯一派发、同流usage／实际归属与金融ACK，不再列为待装配。Worker ec53a01有界公平恢复、abd1186c独立关联／逐事件ACK、aedba7b内部金融consumer及189c8ac／Billing1fac9de历史sealed均复用，不重做。** BFF `5a303f2`／internal1.3仍为正式消费者基线；下一步沿正常登录→业务模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及回读推进，不新增用户token回程／服务或金融seal屏障。
+**当前执行点：System正常解析已恢复，继续正常执行配对、计价发布与真实整链验收。Agent `bfff8df05112a88e04645d10c398982ae3946518` 已本地接完原finalhook预算授权、唯一派发、同流usage／实际归属与金融ACK，不再列为待装配。Worker ec53a01有界公平恢复、abd1186c独立关联／逐事件ACK、aedba7b内部金融consumer及189c8ac／Billing1fac9de历史sealed均复用，不重做。** BFF `5a303f2`／internal1.3仍为正式消费者基线；下一步沿正常登录→业务模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及回读推进，不新增用户token回程／服务或金融seal屏障。
 
 本次新增证据：418输入完整八门0、默认2588 PASS／853 marker未选，184真实PG／323 SDK及金融HTTP、36隔离四方恢复检查及209份安装包源码核同通过，独审Approved。原生图十向量含JSON/SSE、原生工具两轮和取消，但财务ACK为具名fixture；实际四方仍只QA预算释放，不冒正常真实模型用量扣分已验。首次失败及原时限偶发明确保留，详情见[CURRENT首节](../../CURRENT.md)。
 
