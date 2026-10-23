@@ -6,6 +6,10 @@
 
 ### 当前进度与立即下一步
 
+**UI-1 会话重核验误报已修复并正常验收（2026-10-23，App `745d2f3`）**：焦点返回时现Product探针暂退读取准入，原项目/会话侧栏误映射成“项目不可用／不可用”。已修正为等待读取的既有无文字占位，真实读取失败仍保错误；未改登录、服务认证或身份退役规则。两项新增回归先失败，相关301项通过；正常页面记录同一焦点事件，修复前出现两处不可用，修复后均为false并恢复5个项目，编辑器保持同一实例，未发送的验收草稿保持后已清理。刷新沿原会话恢复，设置开关及余额990/冻结10读回，原Agent失败与pending未变。
+
+App lint/typecheck、contract304、architecture50、build及构建后types通过，隔离preview桌面/手机108通过、零重试。完整测试首跑4834通过/1失败，失败为临时Next `/api/auth/session` 的JSON EOF；未改源码或断言，单独完整重跑该文件94通过，保留原失败、不冒称首次全绿。1151非文档输入无漂移。正常App已ff到同提交，原11份WIP、配置与9个监听PID均保持，无重启；原始记录在ignored `var/dev/rail-admission-20261023`。App远端main已fetch，本提交未push/PR/merge；Root未提前更新gitlink。**此片只消除误报，重核验期间列表仍短暂占位、账户切换仍有占位，UI-1“同主体刷新保留内容”尚未完成；金融补证、实际结算、工具和产物验收仍待，不勾整链。**
+
 **AGENT-1 正常配对完成（2026-10-23，执行源码 `b71e972`）**：先备份/隔离恢复真实Agent owner，23表185行原列和xmin保持，目标schema与回滚演练通过、临时库已回收；旧d20f608源码及锁定离线依赖回退副本已验。正常仅增加canonical响应编号列/CHECK、优雅替换Agent HTTP/worker，原配置及其他八监听保持；readiness200/匿名401、worker初始化/schema均通过，原数据及immutable usage API内容一致。首次脚本将每请求meta.request_id纳入整个body比较而失败，已核唯一差异并补data/全表验证；原进程存活，未重复启动。浏览器刷新无需登录，原会话、模型、项目、积分summary/ledger观察到200，显示990可用/10冻结；网络窗口truncated，不冒全量捕获。初次侧栏暂不可用随后恢复，冷读问题仍不冒修完。本轮零模型/工具/积分命令；原pending未补证，网关公开根页无认证GET403、仍无已验证补查来源。最新进程、备份、回退、浏览器证据在ignored/private `var/dev/agent-response-normal-20261023`；后续用processes-after而非历史worker PID。下一步核同次供应商补证与金融恢复，再真实结算/有限工具产物；未集中PR/merge，不勾整链。
 
 **AGENT-1 响应解析已修复（2026-10-23，Agent `b71e972b5d305e265fa80f8cc1c389ebedf34dce`，本地提交）**：按 OpenRouter 官方响应说明，cost/cost_details 不再误作 token 类别；SSE 完整结束但缺最终用量时保留一致 response.id/model，用量仍 unresolved 且摘要为空，不补零、不重发。未知计量/非法费用、编号冲突、无DONE和压缩截断保护保持；无新服务、认证、Schema或价格变更。回归先11 FAIL后59 PASS，SDK/HTTP具名peer376 PASS、真实隔离PG/原生图12 PASS（库存94→94）；默认2621 PASS/857资源未选及lock/frozen sync/格式/lint/types/contract/build通过，418输入无漂移。208源码与wheel/sdist核同，仓外hash锁定离线安装/contract通过；初次类型解释器、格式及包核对路径错误已纠正，既有warning保留。正常schema/服务未切换，原pending资金不变；具名peer不冒真实供应商/Billing结算。下一步保留现资金事实完成Agent schema配对，核实同次调用的供应商补证来源，再真实整数结算和有限工具/产物。证据为ignored `var/dev/usage-response-semantics-20261023`；未集中PR/merge，不勾主链完成。
