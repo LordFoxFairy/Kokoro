@@ -6,7 +6,7 @@
 
 ### 当前进度与立即下一步
 
-- **本次目标刷新（2026-10-22）**：仍按唯一16项TODO推进正式产品整链。Billing结算HTTP／BFF消费者已验，现 **Billing仅恢复原预占入口 `23ff71993f7772219cab8d3a3a4c7fbb4d66f735` 也已本地验收**；下一步固定BFF／Agent恢复消费者，保存历史金融关联而不补旧fence派发权，再完成逐事件ACK／崩溃恢复与原唯一派发／同流真实usage。相邻sealed恢复沿Agent正式历史事实读取＋顺序通知收敛，不让金融ACK阻塞业务seal，不借Chat outbox／新服务。由我完成正常用户和后台真实链及其余TODO，模型／低风险工具／整数积分已授权，真钱支付不做；本地通过不冒PR合并／正常激活。
+- **本次目标刷新（2026-10-22）**：唯一目标仍是正式登录→业务模型→会话Agent→低风险工具／产物→实际用量整数积分与后台，再完成同一16项TODO并集中PR merge及正常生效。**当前执行点是BFF原预占恢复消费者**：Billing `23ff71993f7772219cab8d3a3a4c7fbb4d66f735` 已验；BFF仍处于 `ebe7ca5` 已验结算基线，恢复1.3仅设计及2项预期失败契约回归，尚未实现／验收。接着Agent金融关联、逐事件持久ACK／历史sealed与崩溃恢复，再装配唯一派发和同流真实usage。真实模型／低风险工具／整数积分已授权，真钱支付不做；旧目标标题或历史暂停不驱动执行。设计、RED、本地通过、正常激活和PR合并严格分开，不勾整轮完成。
 
 - **Billing原预占仅恢复入口已本地交付**：`23ff71993f7772219cab8d3a3a4c7fbb4d66f735`，exp10／29操作／57schema，raw SHA256 `f3d510bbf084d0dddad91d8cfafd13caf19e23c2a97074b363e0687291e14654`。复用原receipt／完整性短事务，miss零钱／命令事实、原key命中零写，新key仅原alias；零Agent／IAM／价格请求、禁proof，原create首次授权不放宽。404不证明在途create取消或可派发；capture后200仍原held创建ACK。397输入无漂移、五阶段0，verify1841 PASS／628默认资源SKIP、相关真实PG289及source/dist10 PASS／0SKIP、fresh Prisma／正规生成通过，库94→94，独审Approved。并发miss后原create提交、资金锁内恢复、alias阻塞取消回滚、坏数据拒绝、同帧TCP正控与终态原ACK均实证；实际RED／首完整fixture payload类型失败保留，仅以原wire类型推导修复后全门重验。13仓fetch成功／main无新增，无SQL／依赖／正常配置资金或模型工具变化。BFF／Agent尚待固定新恢复操作，Agent金融关联／逐事件ACK及历史sealed恢复未装配，不勾整项完成。
 

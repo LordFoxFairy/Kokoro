@@ -4,7 +4,7 @@ IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交�
 
 ## 最新跟进入口（2026-10-22）
 
-当前游标：Billing原预占仅恢复HTTP `23ff71993f7772219cab8d3a3a4c7fbb4d66f735` 已本地验收（exp10／29操作／57schema），397冻结输入无漂移，五门0，verify1841 PASS／628资源SKIP、相关真实PG289／source-dist10 PASS、库94→94、独审Approved。**下一步BFF／Agent固定recover消费者→Agent历史金融关联与逐事件ACK／sealed历史恢复→原唯一派发及同流真实usage→正常产品整链**。recover miss不是取消或派发许可；恢复只找原回执，不追加预占、不补旧fence grant。已核原sealed表保存全修订，历史读取需正式发行并独立保head完整性；不强加seal等待金融ACK，不混Chat outbox。13仓fetch成功／main无新增，仍复用现16项TODO，真实模型／低风险工具／整数积分已授权、真钱支付不做；未集中PR合并／正常激活。
+当前游标：**BFF原预占恢复消费者实施中**。Billing `23ff71993f7772219cab8d3a3a4c7fbb4d66f735`／exp10已验；BFF已验结算基线为 `ebe7ca5`／internal1.2，目标1.3恢复仅有设计和2项RED，未完成实现或验收。下一步完成BFF接线及本地门→Agent结算／恢复消费者、金融关联与逐事件持久ACK／崩溃恢复→唯一派发及真实usage→正常产品整链。沿现16项TODO推进，不重开旧Skills任务或独立盘点阶段；模型、低风险工具和整数积分真实验收已授权，真钱支付不做。局部候选不代表正常已加载或PR已合并，完整目标仍进行中。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
