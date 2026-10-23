@@ -2,9 +2,9 @@
 
 IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交聚合已合精确版本并删除已迁入App的旧Root门户。主方真实外部Skills矩阵18请求／五组PASS，Platform当前完整十门与App Docs新固定契约均已验；具体SHA及跳过/失败边界见[CURRENT交付表](CURRENT.md)。MCP正常续期/重连/stdio、Agent实际工具/用量积分与其余16项尚未完成，不因本次发布标整轮闭环。
 
-## 最新跟进入口（2026-10-22）
+## 最新跟进入口（2026-10-23）
 
-当前游标（2026-10-23）：**Agent Worker金融恢复ec53a01已本地提交，现接原finalhook预算授权／唯一派发与同流真实usage／认证归属**。现Worker共享BFF pool／tenant专用机器secret与独立恢复task、有限keyset分页及取消清理已验，不占心跳，不调用首次reserve／proof／provider。412输入八门0、2569默认PASS／837 marker未选，154真实PG／36隔离组合及206份包源码核同，独审Approved；QA仅未派发预算释放，零真实模型／工具／usage扣分，正常配置资金不改。13仓fetch成功／main无新增；本地未正常激活／PR合并，不勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
+当前游标（2026-10-23）：**Agent bfff8df已本地接完原finalhook预算授权／唯一派发／同流usage与实际归属、金融ACK；下一步直接验正常登录／模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及后台回读。** 418输入八门0、2588默认PASS／853 marker未选，184真实PG／323 SDK金融HTTP及原生图十向量、36隔离恢复检查、209份包源码核同，独审Approved。模型／usage图财务端具名fixture，实际四方仅QA100／hold及释放10，不冒正常真实扣分。原closed首因遮蔽已修；原HTTP配置子进程3秒偶发及setup／旧架构fixture失败留证、不弱化门。13仓fetch成功／main无新增；正常配置资金不改，本地未激活／PR合并，不提前pin或勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
