@@ -6,7 +6,9 @@
 
 ### 当前进度与立即下一步
 
-**AUTH-1 Agent 消费者已删除机器 OAuth（2026-10-23，`d20f608b6e217dea93f51ebd5880d84a567b32fc`）**：固定 Platform `4c3853b` auth profile，现 worker/Connect 改为 proof 后读取当前 owner-only 服务凭据；删除 exchange/cache/single-flight、专用pool与旧配置，保留Run/tenant/proof/lease/取消和资金授权。最终2579 PASS／853资源marker未选，格式/lint/types/contract/lock/sync/build及仓外hash锁定安装通过，208份runtime源码与包逐字一致、418输入无漂移、独审无确证P0–P2。初次安装发现ignored build残留把旧OAuth模块带入wheel，已保留旧输出并clean rebuild，旧模块不存在负控通过；最初loopback旧TOKEN断言与zsh harness失败均留据。真实loopback零OAuth不是实际Platform/IAM或正常整链；当前尚未激活/PR/merge，Root不提前pin。下一步只做实际Agent→Platform→IAM消费者配对及正常登录/执行链，不重做已验接收端或Skills/MCP页面；真钱支付不做。
+**AUTH-1 Agent 消费者已删除机器 OAuth（2026-10-23，`d20f608b6e217dea93f51ebd5880d84a567b32fc`）**：固定 Platform `4c3853b` auth profile，现 worker/Connect 改为 proof 后读取当前 owner-only 服务凭据；删除 exchange/cache/single-flight、专用pool与旧配置，保留Run/tenant/proof/lease/取消和资金授权。最终2579 PASS／853资源marker未选，格式/lint/types/contract/lock/sync/build及仓外hash锁定安装通过，208份runtime源码与包逐字一致、418输入无漂移、独审无确证P0–P2。初次安装发现ignored build残留把旧OAuth模块带入wheel，已保留旧输出并clean rebuild，旧模块不存在负控通过；最初loopback旧TOKEN断言与zsh harness失败均留据。后续实际隔离配对通过：同一运行中 Python Agent → compiled Platform 正式 RPC/PG → IAM Nest/PG/Redis，14项检查、8次当前权限核验、7次具名BFF绑定读取、零OAuth交换/内省；凭据轮换、撤权/恢复、错tenant/摘要拒绝、期限及恢复均通过。最终单项旅程PASS（6.50秒），数据库库存94→94、自有Redis键回收为0。Agent lease和BFF绑定仍为具名fixture，Storage仅readiness，未执行模型/工具/积分；不代表正常整链。初始harness的Run kind和随机端口取值失败已修正并保留日志，未修改生产断言。当前尚未正常激活/PR/merge，Root不提前pin。下一步统一正常认证消费者配对与登录/执行链，不重做已验接收端或Skills/MCP页面；真钱支付不做。
+
+**正常认证配对预检（2026-10-23，尚未激活）**：重新读取9个监听与实际Agent worker进程，确认运行中Agent仍无Platform/BFF配置、Billing模型admission未启用，不能用当前checkout HEAD冒充进程已加载。已准备IAM↔Platform、IAM↔Billing及Agent→Platform独立直接凭据，保留原7条BFF entry逐值不变；实际IAM配置与认证器、Platform配置/凭据读取器、Billing凭据读取器及Agent AppConfig/现有私钥签名器验证通过，无网络或资金操作。首次Agent预检被旧进程继承的3项全局LiteLLM配置正确拒绝，仅从待激活配置删除，未改正常原件或放宽校验。未重启监听/worker、未改Schema；下一步补齐已有BFF/Agent金融消费者正式配置，再统一切换并验正常旅程，不先启用半条链路。配置与证据仅留本地ignored `var/dev/auth-normal-pair-20261023`。
 
 <a id="admin-session-boundary-20261023"></a>
 
