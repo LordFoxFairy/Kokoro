@@ -10,13 +10,13 @@
 
 **本次刷新：唯一目标仍为正式产品整链闭环，状态进行中；下面16项TODO是唯一执行清单。** 登录、业务模型配置、会话Agent优先，页面／API对齐和其余既定需求在同一轮交付。真实模型、低风险工具和整数积分验收已授权；真钱支付不做。旧Skills目标标题、历史暂停语句、重复盘点或新增示例业务均不改变此范围。
 
-**当前执行点：worker有界金融恢复扫描、原finalhook唯一派发及同流真实usage／认证归属装配。Agent abd1186c已交付独立金融关联、逐事件持久ACK与崩溃恢复；aedba7b固定BFF internal1.3的create／recover／settle，历史sealed189c8ac／Billing1fac9de均已验，不重复开发。** BFF原预占恢复消费者已完成实现与本地验收（`5a303f2003fabeb50376c7f7e1f66f0d163adebb`／internal1.3），不再列为待重做。随后装配原唯一派发与真实用量，再验正常用户和后台整链。原资金回执恢复不补旧worker执行权，查无回执不等于取消，不追加用户token回程或新服务；不让金融ACK阻塞业务seal。
+**当前执行点：原finalhook预算授权／唯一派发及同流真实usage／认证归属装配。Worker ec53a01已接有界公平金融恢复，不再列为待接。Agent abd1186c已交付独立金融关联、逐事件持久ACK与崩溃恢复；aedba7b固定BFF internal1.3的create／recover／settle，历史sealed189c8ac／Billing1fac9de均已验，不重复开发。** BFF原预占恢复消费者已完成实现与本地验收（`5a303f2003fabeb50376c7f7e1f66f0d163adebb`／internal1.3），不再列为待重做。随后装配原唯一派发与真实用量，再验正常用户和后台整链。原资金回执恢复不补旧worker执行权，查无回执不等于取消，不追加用户token回程或新服务；不让金融ACK阻塞业务seal。
 
-本次新增证据：Agent `abd1186c` 的持久金融恢复已本地交付；410冻结输入完整八门0、153真实PG、36隔离组合检查及205份安装包源码核同通过。只验证QA预算释放，真实模型用量扣分和正常整链仍待；详细证据与失败边界见[CURRENT首节](../../CURRENT.md)。
+本次新增证据：Agent `abd1186c` 持久恢复与Worker `ec53a01` 有界公平恢复均已本地交付；最新412冻结输入完整八门0、154真实PG、36隔离组合检查及206份安装包源码核同通过。只验证QA预算释放，真实模型用量扣分和正常整链仍待；详细证据与失败边界见[CURRENT首节](../../CURRENT.md)。
 
 | 当前推进顺序 | 最新状态与可验收出口 |
 | --- | --- |
-| 1. 同一次执行的积分结算 | **Billing、BFF及Agent金融消费者和持久关联／逐事件ACK／崩溃恢复已本地验；worker及真实用量装配待接。** BFF `5a303f2`／internal1.3固定Billing23ff719／exp10，778输入七门0、contract1008／默认1694 PASS（3原资源SKIP）、真实PG1及隔离实际四方30检查通过。原key恢复、miss和冲突无资金变化；Agent abd1186c已接逐事件持久ACK／关联与恢复：410输入八门0、153真实PG／36隔离组合检查及205份包源码核同；实际仅确认未派发的QA预算释放，不授新派发许可，不冒实际模型扣分已验。Agent `aedba7b`／BFF1.3金融消费405输入八门0、33隔离组合检查已验；Agent189c8ac／HTTP7.2历史读取和Billing1fac9de固定消费已验；原bytes／独立head完整性保持，不新增金融ACK屏障。 |
+| 1. 同一次执行的积分结算 | **Billing、BFF及Agent金融消费者和持久关联／逐事件ACK／崩溃恢复及Worker恢复均已本地验；首次派发与真实用量装配待接。** BFF `5a303f2`／internal1.3固定Billing23ff719／exp10，778输入七门0、contract1008／默认1694 PASS（3原资源SKIP）、真实PG1及隔离实际四方30检查通过。原key恢复、miss和冲突无资金变化；Agent abd1186c已接逐事件持久ACK／关联与恢复：410输入八门0、153真实PG／36隔离组合检查及205份包源码核同；实际仅确认未派发的QA预算释放，不授新派发许可，不冒实际模型扣分已验。Agent `aedba7b`／BFF1.3金融消费405输入八门0、33隔离组合检查已验；Agent189c8ac／HTTP7.2历史读取和Billing1fac9de固定消费已验；原bytes／独立head完整性保持，不新增金融ACK屏障。 |
 | 2. Agent正式执行链 | **待装配与整链验收**。复用已验proof与预算消费者，接唯一派发→同流真实usage封口→结算及崩溃恢复；不新建用户token回程，不以只预占当执行成功。 |
 | 3. 正常用户与后台完整旅程 | **待真实验收**。正常登录／续期→业务模型选择→首发与流式→低风险工具→产物→刷新恢复→余额／流水／后台回读，覆盖取消、重复回执及未知结果。 |
 | 4. App差异与统一交付 | **仍在同一轮**。按Manus实测完成原TODO中的会话／首页／项目／设置及在线Docs；本地审查和验收通过后集中PR merge、Root精确组合并核正常生效，不等待CI、不绕保护。 |
@@ -26,7 +26,7 @@
 
 **主线顺序不变：登录 → 业务模型配置 → 会话 Agent 完整链路 → 工具／产物 → 真实用量整数结算。** App 页面、交互与可观察 API 差异贯穿实测和验收；Skills/MCP 复用已有成果，当前旅程依赖或明确缺陷才补齐，不再作为主线前置验收关卡。真钱支付不做，不新增团队或示例业务，不全局放开无限执行。
 
-当前进度：正常无感账户初始化和后台非现金充值子旅程已验；模型精确配置／候选列表及App／Admin消费者已验；IAM／Billing／BFF具名Run预算与Agent正式预算消费者78dfda5已验，同admission结算应用796bfce、正式HTTP deab94e及BFF结算消费者ebe7ca5已验。**BFF恢复5a303f2、Agent消费者aedba7b及持久金融恢复abd1186c已本地交付；现在接worker有界恢复扫描、原唯一派发／同流真实usage及认证归属映射，最后验正常用户和后台整链。** 既有阶段源码与真实／fixture证据分别见CURRENT首节，不再把已验预算入口或结算应用列为待重做；未勾AGENT-1／CREDIT-1整项。
+当前进度：正常无感账户初始化和后台非现金充值子旅程已验；模型精确配置／候选列表及App／Admin消费者已验；IAM／Billing／BFF具名Run预算与Agent正式预算消费者78dfda5已验，同admission结算应用796bfce、正式HTTP deab94e及BFF结算消费者ebe7ca5已验。**BFF恢复5a303f2、Agent消费者aedba7b及持久金融恢复abd1186c已本地交付；Worker有界恢复ec53a01也已交付；现在接原finalhook预算授权／唯一派发、同流真实usage及认证归属映射，最后验正常用户和后台整链。** 既有阶段源码与真实／fixture证据分别见CURRENT首节，不再把已验预算入口或结算应用列为待重做；未勾AGENT-1／CREDIT-1整项。
 
 AUTH-1当前候选：App e48adb5已提交登录／refresh的可信issuer sid连续性，原生验签、原用户／tenant、单次交换、双CAS和失败清理保持；最终1143输入无漂移，完整App十阶段0、4773 PASS／0SKIP（单worker完整test）、108 preview零重试及Docs全门通过，四MCP WIP原样恢复、独审Approved。正常未激活；旧无sid cookie不兼容，不清业务数据。此次只闭合登录子片，不因此增加Agent所需token或额外用户授权旅程，整项AUTH-1与正常产品验收仍按原完成条件。
 

@@ -4,7 +4,7 @@ IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交�
 
 ## 最新跟进入口（2026-10-22）
 
-当前游标（2026-10-23）：**Agent持久金融恢复abd1186c已本地提交，现接worker有界恢复扫描、原finalhook唯一派发与同流真实usage／认证归属**。原两表独立关联及逐事件完整ACK、原key／最早未ACK与相邻pending、崩溃／取消／迟到回执零重复写均已验；原sealed/auth核心不改，无新wire／服务／用户token。410输入完整八门0，2550默认PASS／836 marker未选，24专项及原历史／预算PG共153 PASS／0SKIP、actual journal/client→BFF／Billing及IAM隔离36检查、仓外安装205份源码核同通过，独审Approved。QA100／hold10只确认未派发释放10，正常资金不改、零真实供应商／工具／usage扣分；库94→94和自有IAM prefix清理。原失败留证，正常未激活／集中PR合并；不重做历史reader／金融consumer，不勾整项AGENT-1／CREDIT-1。原16项保持、真钱支付不做。
+当前游标（2026-10-23）：**Agent Worker金融恢复ec53a01已本地提交，现接原finalhook预算授权／唯一派发与同流真实usage／认证归属**。现Worker共享BFF pool／tenant专用机器secret与独立恢复task、有限keyset分页及取消清理已验，不占心跳，不调用首次reserve／proof／provider。412输入八门0、2569默认PASS／837 marker未选，154真实PG／36隔离组合及206份包源码核同，独审Approved；QA仅未派发预算释放，零真实模型／工具／usage扣分，正常配置资金不改。13仓fetch成功／main无新增；本地未正常激活／PR合并，不勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
