@@ -4,7 +4,7 @@ IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交�
 
 ## 最新跟进入口（2026-10-22）
 
-当前游标：Agent预算消费者78dfda5、Billing过期余量原语e558728已验；同admission结算应用796bfce现已本地提交，388输入无漂移／五阶段0、verify1818 PASS／611资源SKIP、相关真实PG272／source-dist10 PASS，库94→94。Agent仅实际归属profile文档配对ec80da5，不冒真正producer完成。当前接正式结算HTTP→BFF→Agent，再装配唯一派发、同流用量／认证归属和持久恢复，完成正常用户／后台整链及本轮其余TODO；真实模型／低风险工具／积分验收已授权，真钱支付不做。范围、16项TODO与结束标准仍以现有计划首节为准，不新建任务清单；本地提交、正常激活与整链验收分别记录。
+当前游标：Billing正式结算HTTP `deab94efc9ee7d86d1d1072481920423d55b36ff` 已本地提交；exp9／28操作／57schema，394输入无漂移／完整五阶段0，verify1839 PASS／620默认资源SKIP、相关真实PG281及source/dist10 PASS，库94→94，独审Approved。原结算应用796bfce、Agent预算消费者78dfda5不重做。**现在接BFF固定消费者与受限结算入口→Agent结算通知／持久恢复→唯一派发和同流真实usage→正常用户／后台整链**；原Run付款关联不依赖浏览器在线，Run不存用户token。真实模型／低风险工具／整数积分验收已授权，真钱支付不做。范围、16项TODO与结束标准仍以现有计划首节为准；本地源码验收、PR合并、正常激活与真实产品验收分别记录，不新增清单、不拿fixture当实际供应商扣分。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
