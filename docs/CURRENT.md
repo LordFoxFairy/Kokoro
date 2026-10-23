@@ -6,6 +6,15 @@
 
 ### 当前进度与立即下一步
 
+**最新正常旅程：共享退出／重登通过，首个真实模型调用已返回，积分仍待核对（2026-10-23）**。以下为当前执行事实，覆盖下方阶段记录中的“模型调用0／计价未发布／正常App未配对”等旧时点描述；原16项范围不变，不勾整链完成。
+
+- 正常 App 已完整 ff 到 `52baa59d57494e38a22087e3ed64a106ff3f7629`，Admin 到 `e35df2178905f35d3dbced3bea1e114663e9bfc7`，不再是仅同步四份认证文件。App 原11份保留WIP逐字不变，其余6份App／8份Admin现场改动与目标提交一致并由提交承接；依赖、Schema、原配置及其他7个监听保持。Admin完整47文件358 PASS，App计价代理／契约／sid续期三文件46 PASS；此轮未重跑全App门，不冒全产品验收。备份及激活收据留ignored `var/dev/pricing-web-pair-20261023`。
+- 正常当前租户经后台正式发布策略1和费率1，并在刷新、退出再登录后读回。费率绑定System同一精确修订／digest，采用已核OpenRouter目录的输入／输出／缓存读价格；1 USD→1000积分、7/5倍率、单次预算10是本地非现金验收平台policy，不是供应商价格或真钱支付规则。用户只发送一次短文本请求，Agent唯一attempt实际返回预期文本，输入6366／输出15，正式预占成功；**余额990可用／10冻结，状态pending_reconciliation，未最终扣分、未执行工具／产物**。用户积分页显示“积分到账+1000”，不再展示开户或内部充值来源。
+- 缓存读数量在SDK转换前的物理响应投影即缺失：离线按canonical投影重算与冻结摘要完全相等，非SDK丢字段；五份QA检查点与其blob/write未保存可用于供应商补查的generation ID。不得将缺失视为0、改已冻结费率、手工补扣或重发付费请求冒结算通过。Token budget当前实现是调用后熔断，金融pending异常先退出会使旧token_total仍0；真实输入也超过配置context4096，因此这两个配置值不是已验证的派发前硬上界。原用量事实仍已封口。当前无活动Run／lease、仅一个模型attempt；本次验收派发窗口已恢复原关闭配置，其他8监听不变、BFF readyz200，未改资金。此为有限验收窗口结束，不恢复旧全局暂停要求。
+- 正常浏览器完成App账户退出→品牌确认→Product登录；另一后台标签刷新也退回同一Product登录，未残留独立Admin会话。较早标签在另一标签发起登录后仍可完成原交易；一次Product重登后后台直接恢复、策略／费率1及原会话历史可读。没有测试双表单同时提交或自然到期，不外推。**技术参数仍停留在登录地址，账户／侧栏冷读仍有加载与空态闪动，AUTH-1／UI-1仍未完成。** 本次退出不删除业务数据；截图及脱敏收据留ignored `var/dev/normal-pricing-20261023`。
+
+**下一执行点**：沿现owner补齐可核对的供应商用量来源及金融恢复，先解决真实结算缺口，再继续有限工具／产物验收；同时收敛Product登录地址与冷读体验。原QA预占保持真实pending，不用文案替代行为或组件门替代正常旅程；尚未集中PR／merge。
+
 **AUTH-1 Product 会话修复已同步正常运行（2026-10-23）**：正常 App 原四份认证文件逐字匹配 `e48adb5` 父提交，备份后同步该已验提交的 callback/provider/token/session 四文件，并仅重启 App。其余1241份 tracked 输入、原配置和另外八个服务监听保持；无新协议、依赖、Schema或兼容回填。主方重新跑四文件79项认证/后台准入回归全部通过。正常浏览器旧失败页先经“返回登录”恢复现有 App；新代码加载后旧无 sid cookie 不兼容，沿 Product 正式登录恢复，并观察到原生 session POST 200、后台准入及模型目录 GET 200；App 原会话历史与后台模型/用户页均可读取，不新增 Admin 登录。此轮证明实际会话重建、两次续期及共享后台读取，不代表自然过期、并发登录、退出完整旅程或无感 UI 已完成：冷开仍有临时加载/空态。回滚文件、脱敏收据和截图只留 ignored `var/dev/product-session-normal-20261023`；未模型/工具/积分命令、未PR/merge。后续继续同一主链的正常计价发布和受限真实执行，登录余下风险仍在 AUTH-1 内验收，不重开旧 Skills/MCP 轮次。
 
 **AUTH-1 Agent 消费者已删除机器 OAuth（2026-10-23，`d20f608b6e217dea93f51ebd5880d84a567b32fc`）**：固定 Platform `4c3853b` auth profile，现 worker/Connect 改为 proof 后读取当前 owner-only 服务凭据；删除 exchange/cache/single-flight、专用pool与旧配置，保留Run/tenant/proof/lease/取消和资金授权。最终2579 PASS／853资源marker未选，格式/lint/types/contract/lock/sync/build及仓外hash锁定安装通过，208份runtime源码与包逐字一致、418输入无漂移、独审无确证P0–P2。初次安装发现ignored build残留把旧OAuth模块带入wheel，已保留旧输出并clean rebuild，旧模块不存在负控通过；最初loopback旧TOKEN断言与zsh harness失败均留据。后续实际隔离配对通过：同一运行中 Python Agent → compiled Platform 正式 RPC/PG → IAM Nest/PG/Redis，14项检查、8次当前权限核验、7次具名BFF绑定读取、零OAuth交换/内省；凭据轮换、撤权/恢复、错tenant/摘要拒绝、期限及恢复均通过。最终单项旅程PASS（6.50秒），数据库库存94→94、自有Redis键回收为0。Agent lease和BFF绑定仍为具名fixture，Storage仅readiness，未执行模型/工具/积分；不代表正常整链。初始harness的Run kind和随机端口取值失败已修正并保留日志，未修改生产断言。正常HTTP/worker与认证消费者现已按下段配对；未PR/merge，Root不提前pin。下一步计价发布、正常登录/执行链，不重做已验接收端或Skills/MCP页面；真钱支付不做。
