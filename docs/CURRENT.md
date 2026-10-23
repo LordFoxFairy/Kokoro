@@ -6,6 +6,8 @@
 
 ### 当前进度与立即下一步
 
+**AGENT-1 响应解析已修复（2026-10-23，Agent `b71e972b5d305e265fa80f8cc1c389ebedf34dce`，本地提交）**：按 OpenRouter 官方响应说明，cost/cost_details 不再误作 token 类别；SSE 完整结束但缺最终用量时保留一致 response.id/model，用量仍 unresolved 且摘要为空，不补零、不重发。未知计量/非法费用、编号冲突、无DONE和压缩截断保护保持；无新服务、认证、Schema或价格变更。回归先11 FAIL后59 PASS，SDK/HTTP具名peer376 PASS、真实隔离PG/原生图12 PASS（库存94→94）；默认2621 PASS/857资源未选及lock/frozen sync/格式/lint/types/contract/build通过，418输入无漂移。208源码与wheel/sdist核同，仓外hash锁定离线安装/contract通过；初次类型解释器、格式及包核对路径错误已纠正，既有warning保留。正常schema/服务未切换，原pending资金不变；具名peer不冒真实供应商/Billing结算。下一步保留现资金事实完成Agent schema配对，核实同次调用的供应商补证来源，再真实整数结算和有限工具/产物。证据为ignored `var/dev/usage-response-semantics-20261023`；未集中PR/merge，不勾主链完成。
+
 **UI-1 首屏侧栏横移已修复并正常验收（2026-10-23，App `623eae833cdaafee978d8f34f71ee0edf76b29cb`，本地提交）**：原静态壳固定52px，用户保存展开后正式侧栏300px，接管横移248px。现在首文档和浏览器共用已有布局cookie的纯解析及现有尺寸常量；非法/缺失值沿页面默认、手机零占位。此偏好不授权，Product会话探针和私有Runtime准入保持，没有新增认证或存储。原真实Next/Chromium回归先52≠300失败，再验证首文档/接管/刷新/收起/手机/非法值/项目默认；三文件323 PASS、完整256文件4833 PASS、contract304/architecture50及lint/types/build/post-build types通过，隔离preview桌面/手机108 PASS、零重试。1053停写输入无漂移，既有UI/MCP工作保留、不混入10文件提交；全门基于包含这些WIP的工作树，不冒纯main验收。
 
 正常App已ff到该提交，原11份WIP逐字保留、配置与九个监听PID保持，无重启。正常CUA测量展开首帧/接管x=300/300、收起52/52、390px窄屏0/0且不横溢；键盘恢复原展开偏好，后台用户页沿同Product登录直接进入。截图、测量、测试日志、激活/回退材料留ignored `var/dev/workspace-cold-layout-20261023`。**纠正此前“正在加载工作区可见”的表述：本轮首帧该文字来自无障碍标签，DOM可见文字不含它；实际顶部/背景/输入框占位差异仍存在，本片不勾UI-1完成。** Manus冷刷新也有占位，本轮仅观察页面、没有推断API或执行动作。未新增模型/工具/资金操作，原结算待核对缺口继续；未push/PR/merge，不提前更新Root gitlink。
