@@ -12,7 +12,7 @@
 
 | 当前推进顺序 | 最新状态与可验收出口 |
 | --- | --- |
-| 1. 同一次执行的积分结算 | **Billing及BFF正式传输已本地验收，Agent恢复接线中**。Billing deab94e／BFF `ebe7ca5cb49ba64c8bec1f733a6527394ead50e5`，后者774输入七门0、contract998／默认1684 PASS／3资源SKIP及真实PG回路通过。当前Agent固定结算消费者、逐事件ACK与崩溃恢复；装配前补已预占未落grant／失租及相邻证据通知窗口，不冒正常真实扣分。 |
+| 1. 同一次执行的积分结算 | **结算及原预占仅恢复owner已验，消费者／持久恢复接线中**。Billing recover `23ff71993f7772219cab8d3a3a4c7fbb4d66f735`／exp10，397输入五门0、verify1841 PASS／628资源SKIP、真实PG289／source-dist10 PASS。现固定BFF／Agent恢复入口，再保历史金融关联与逐事件ACK；miss不证明取消、不授新派发。 |
 | 2. Agent正式执行链 | **待装配与整链验收**。复用已验proof与预算消费者，接唯一派发→同流真实usage封口→结算及崩溃恢复；不新建用户token回程，不以只预占当执行成功。 |
 | 3. 正常用户与后台完整旅程 | **待真实验收**。正常登录／续期→业务模型选择→首发与流式→低风险工具→产物→刷新恢复→余额／流水／后台回读，覆盖取消、重复回执及未知结果。 |
 | 4. App差异与统一交付 | **仍在同一轮**。按Manus实测完成原TODO中的会话／首页／项目／设置及在线Docs；本地审查和验收通过后集中PR merge、Root精确组合并核正常生效，不等待CI、不绕保护。 |
@@ -39,7 +39,7 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 3. **AUTH-1／CHAT-1／AGENT-1／UI-1／API-1**：由我走正常登录、选模型、首发／流式交互、低风险工具、产物、刷新恢复和扣分完整旅程；按 Manus 实测修页面、交互与API差异，不让用户反复代测。
 4. **其余原 TODO／DOCS-1／RELEASE-1**：完成同一清单的首页、项目等既定需求；同步 App 在线文档，自审和完整验收后集中 PR merge，Root 只 pin 已合精确SHA，核实正常环境生效。不等 CI，不绕强制保护。
 
-本次新增证据：BFF `ebe7ca5cb49ba64c8bec1f733a6527394ead50e5` 固定Billing exp9并发布internal1.2；774冻结输入无漂移、七门0，contract998／architecture36／默认1684 PASS、3原资源SKIP，定向34 PASS；fresh真实PG退休来源／actual route回路1 PASS／0SKIP，库94→94，22向量／44独立schema检查通过，独审Approved。Public23／SQL／依赖不改，13仓非递归fetch成功／main无新增，零正常模型／工具／资金。Agent尚无金融通知ACK，需逐事件保留原结果并保证相邻revision恢复；预占已提交但grant未落库／失租的仅恢复接缝也须接通，不能用dummy proof、补grant派发权或重发供应商弥补。两窗口均属于本次持久恢复，不新增服务／用户token旅程或独立旧任务清单；整链与本轮其他TODO、集中PR／正常激活仍待。
+本次新增证据：Billing仅恢复原预占 `23ff71993f7772219cab8d3a3a4c7fbb4d66f735`，exp10／29操作／57schema，raw SHA256 `f3d510bbf084d0dddad91d8cfafd13caf19e23c2a97074b363e0687291e14654`；397冻结输入无漂移、五阶段0，verify1841 PASS／628默认资源SKIP、相关真实PG289及source/dist10 PASS、fresh Prisma／生成通过，库94→94，独审Approved。只复用原receipt短事务，miss零创建，原key零写，换key仅alias且取消／坏数据回滚；并发与终态原ACK实证，原RED和首完整fixture类型失败保留，未弱化门。13仓fetch成功／main无新增，SQL／依赖／正常模型工具资金不变。后继BFF／Agent固定消费者、独立金融关联／逐事件ACK和历史sealed恢复，再装配实际执行；Agent现reader仅读head，已确认全修订存储可复用，但应正式发行历史读取并保独立head完整性，不把ACK屏障塞入seal或Chat outbox。整链、其余TODO、集中PR及正常激活仍待。
 
 目标工具只允许修改状态，旧 objective 标题暂不能原位改写；此前替换请求被“存在未完成目标”限制拒绝。本次更新现有执行目标与 TODO，不重复创建目标、不为换标题虚报 complete；目标保持 active，本节及下面唯一16项 TODO 是实际执行依据。详细阶段证据统一维护在 `docs/CURRENT.md`，历史暂停要求不重新生效。
 
