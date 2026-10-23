@@ -16,17 +16,23 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 ### AUTH-1／CREDIT-1：内部认证纠偏（2026-10-23，当前执行点）
 
+**最新源码交付**：IAM `2f881d0ad7c97a4226ee217b78fbc1dc9b1cbeab`已替换Billing接收认证并退役该旧scope，SDK0.17从clean commit正规打包；Billing `c158270`固定包/源commit/双digest，删除旧0.16包和启动OAuth token入口，按可信tenant逐次读取专用直接凭据。无新服务/Schema/兼容fallback，原业务proof/权限/预算保持。IAM完整1530 PASS；Billing完整1862 PASS＋628默认资源SKIP，另真实PG/source-dist115 PASS、compiled Billing→实际IAM Nest/PG/Redis八检查通过，OAuth请求0、自有库94→94。Agent signer和BFF Run绑定仍为具名fixture，真实模型/工具/正常积分写入0；不冒整链通过。独审发现重复JSON和停滞文件IO两个问题，均经RED→GREEN及复核关闭。当前两owner正常仍旧进程，readyz200、未重启/PR/merge；源码已提交不等于运行已加载。具体失败与测试范围见各owner CURRENT，本地证据保留ignored auth-direct。
+
+**用户最新重构要求已纳入**：剩余Agent→Platform和Platform→IAM两跳只替换机器身份；保留IAM `verifyExecutionAuthorization`／`DIRECT_USER_CURRENT`在线权限判断，不把替代权限来源的barrier/claim设计扩大为删token的前置。两处OAuth仍有真实源码耦合：Agent token provider、Platform workload introspection/tenant token provider，以及IAM caller_client_id和purpose策略，必须统一改契约并删除旧实现，不简单绕过guard。已在原ADR-035澄清范围，不新建任务中心；不声称更强的全Run即时撤权已实现。
+
+以下为本片起始基线与已完成的撤回记录：
+
 用户再次明确内部服务不反复换token；以既有ADR-035直接服务认证为准，不把机器OAuth续期当作新目标。源码证据：IAM `internal-auth.guard.ts` 对Billing verify先JWT验签再在线内省；Billing `iam-billing-authorization.client.ts` 固定启动bearer；Agent `clients/platform_tokens.py` 仍有独立client_credentials路径。普通BFF→Platform、IAM→BFF绑定和Agent→BFF金融调用已有直接凭据，不能把部分切换称为全部完成。
 
 本轮撤下主方未提交的续期实现：11个tracked修改和3个新文件已逐文件归档后恢复，Billing回到干净`1fac9de`；原IAM/client/options/config的3文件16单元测试通过。原失败和撤回补丁保留本地ignored收据，不提交旧实现、不部署续期、不删除业务校验。IAM正常源码已配到`16ee2eb`并readyz200的前次配对记录仍有效；此前正式注册的机器客户端与300秒签发只证明旧协议事实，不能当作新设计验收或继续签发依据。注册记录保留待切换后正规退役，不直接删数据库。
 
-当前工作是已有认证边界的纠偏，不新增服务／共享凭据SDK／权限表。IAM接收方只允许Billing具名用途与固定tenant的专用服务凭据；调用方来源与用户资格分开，沿原Run proof、BFF绑定、当前成员、预算、限流、取消和审计。无OAuth兼容fallback，先正式发行认证profile，再固定Billing消费者并真实组合验证。Agent→Platform剩余OAuth另沿原ADR-035的撤权barrier退出条件纳入同一AUTH-1，不靠删除guard或延长token寿命处理。
+当前工作是已有认证边界的纠偏，不新增服务／共享凭据SDK／权限表。IAM接收方只允许Billing具名用途与固定tenant的专用服务凭据；调用方来源与用户资格分开，沿原Run proof、BFF绑定、当前成员、预算、限流、取消和审计。无OAuth兼容fallback，先正式发行认证profile，再固定Billing消费者并真实组合验证。Agent→Platform剩余OAuth按上面的认证/权限分离在同一AUTH-1替换，不靠删除guard或延长token寿命处理。
 
 登录只读核对：正常App `7ad1edc`已含多标签交易隔离、绑定后原子消费、产品化错误及注销页；候选`52baa59`额外包含`e48adb5`的issuer sid／refresh连续性，尚未正常激活。Auth.js只验证授权码交易，不另发Auth.js会话；产品会话由现Product cookie与Redis管理。不能把人类登录换码与内部client_credentials混为一谈，也不能称页面已全部验收。下一步按同一AUTH-1配对候选并验登录／多标签／刷新／注销；不另建session或删PKCE/CSRF。
 
 退出证据：内部具名调用零OAuth签发／内省，超过300秒仍可用，轮换／撤销立即影响新调用，错caller／tenant及伪造用户拒绝；再验原业务proof/fence／取消／未知资金恢复。这里的服务凭据无自动5分钟TTL；执行proof、租约与预算期限是独立业务安全约束，不随此删除。完整真实模型与整数扣分仍未验，未PR／merge，不勾整项。
 
-**立即下一步**：AUTH-1／CREDIT-1先按既有ADR-035删除Billing→IAM重复机器OAuth，再固定owner契约与消费者、配对正常运行；不继续client_credentials续期方案。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
+**立即下一步**：Billing→IAM源码与真实owner配对已验；继续沿现在线权限判断替换Agent→Platform→IAM两跳机器OAuth、正式发行并固定消费者，再统一配对正常运行；不加token续期或新授权状态机。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
 
 - **本次目标刷新（2026-10-23）**：仍执行登录→业务模型→会话Agent→工具／产物→实际用量整数积分→后台与同轮页面／API／Docs，唯一16项TODO不增不减；普通用户不外露内部状态码／来源码／技术引用也纳入原UI-1。Agent历史sealed读取`189c8ac`与Billing精确消费`1fac9de`已本地提交，Agent internal1.3消费者aedba7b已本地交付，独立金融关联／逐事件持久ACK与崩溃恢复已在abd1186c本地交付，Worker有界恢复已在ec53a01本地交付，最终请求授权／唯一派发及同流用量已在bfff8df本地交付；当前进入正常整链真实供应商与积分验收。真实模型／低风险工具／积分验收已授权，真钱支付不做。Goal面板旧objective仍受现接口限制，未原位改写，不将其虚标完成；本执行计划与最新用户要求优先，整目标仍进行中。
 

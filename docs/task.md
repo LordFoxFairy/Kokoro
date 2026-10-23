@@ -12,9 +12,9 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 ### AUTH-1／CREDIT-1：内部认证纠偏（2026-10-23）
 
-执行既有ADR-035：撤下本轮未提交机器OAuth续期补丁，不新增token服务；先替换Billing→IAM调用方认证并固定消费者，保留Run／预算业务授权。Agent→Platform剩余机器OAuth仍须按原撤权barrier退出，不冒局部切换为全内部完成。登录保持现原生交易验证与Product Session，不混删PKCE/CSRF；正常App尚缺候选e48adb5的issuer sid连续性修复。11个tracked修改＋3新文件已归档撤回，Billing恢复基线后3文件16测试通过；无正常配置／余额／进程修改。来源、精确缺口和退出条件见[CURRENT认证纠偏](CURRENT.md#auth-realignment-20261023)。原16项TODO不增不减，下一步不再走provisioning／client_credentials。
+IAM `2f881d0`／SDK0.17与Billing `c158270`已替换该跳机器OAuth，原业务wire/Schema/Run/预算语义不变；完整门、真实PG/source-dist及实际receiver配对通过，正常未统一切换、未PR/merge。用户允许重构而非叠补丁：余下Agent→Platform→IAM两跳保留现在线权限来源，仅替换机器身份并删除兑换/缓存/内省和旧配置；不把后继barrier/claim扩成此片前置，不假称它已完成。原ADR已澄清，16项TODO不增不减。证据与未完成项见[CURRENT认证纠偏](CURRENT.md#auth-realignment-20261023)。
 
-**立即下一步**：AUTH-1／CREDIT-1先按既有ADR-035删除Billing→IAM重复机器OAuth，再固定owner契约与消费者、配对正常运行；不继续client_credentials续期方案。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
+**立即下一步**：Billing→IAM源码与真实owner配对已验；继续沿现在线权限判断替换Agent→Platform→IAM两跳机器OAuth、正式发行并固定消费者，再统一配对正常运行；不加token续期或新授权状态机。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
 
 前一源码验收记录（2026-10-23；正常激活状态以上条为准）：**Agent bfff8df已本地接完原finalhook预算授权／唯一派发／同流usage与实际归属、金融ACK；下一步直接验正常登录／模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及后台回读。** 418输入八门0、2588默认PASS／853 marker未选，184真实PG／323 SDK金融HTTP及原生图十向量、36隔离恢复检查、209份包源码核同，独审Approved。模型／usage图财务端具名fixture，实际四方仅QA100／hold及释放10，不冒正常真实扣分。原closed首因遮蔽已修；原HTTP配置子进程3秒偶发及setup／旧架构fixture失败留证、不弱化门。13仓fetch成功／main无新增；正常配置资金不改，本地未激活／PR合并，不提前pin或勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
 
