@@ -18,7 +18,7 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 IAM `2f881d0`／SDK0.17与Billing `c158270`已替换该跳机器OAuth，原业务wire/Schema/Run/预算语义不变；完整门、真实PG/source-dist及实际receiver配对通过，正常未统一切换、未PR/merge。用户允许重构而非叠补丁：余下Agent→Platform→IAM两跳保留现在线权限来源，仅替换机器身份并删除兑换/缓存/内省和旧配置；不把后继barrier/claim扩成此片前置，不假称它已完成。原ADR已澄清，16项TODO不增不减。证据与未完成项见[CURRENT认证纠偏](../../CURRENT.md#auth-realignment-20261023)。
 
-**立即下一步**：IAM `6238371`与Platform `e23e566`已完成Platform→IAM直接机器身份配对，SDK0.18固定、旧兑换/TTL缓存/配置删除；完整Platform串行2631 PASS/500资源SKIP，实际compiled Platform→IAM/PG/Redis观察零OAuth，当前权限撤回/错tenant/错proof/轮换/取消拒绝保持。正常未切换、未PR/merge。下一步接Agent→Platform tenant_execution的专用服务身份与正式profile/固定消费者，清除Agent兑换/缓存并承接机器身份字段；System global ingress仍单独待迁移，不冒全内部完成。不新增token续期或barrier/claim前置；当前用户/tenant/Run及资金业务校验保留，旧scope/client通过正式流程退役。随后统一正常配对，发布精确计价并验正常模型/低风险工具/产物/整数结算。原16项TODO不变，不重开Skills/MCP验收轮次，不把fixture/owner通过当产品整链完成，真钱支付不做。
+**立即下一步**：Platform `4c3853b1062a9e22c9be6c059720a092805cb63f` 已完成 Agent→Platform 接收端专用服务身份和独立 auth profile，MCP principal v2 正式绑定 service/key；原 BFF 六用途、System global OAuth、业务 wire 保持。完整静态/契约/格式/build均0，174文件2661 PASS/500资源SKIP；相关隔离PG/生产装配52 PASS/4既存旅程SKIP、真实文件→Nest HTTP31 PASS，实际compiled ingress/admission→IAM Nest/PG/Redis验证4次正式当前权限且零OAuth/JWT内省，撤权/轮换/错tenant/错binding/取消拒绝保持；912输入冻结无漂移、两次资源库存94→94、独审无确定P0–P2。正常未切换、未PR/merge。下一步 Agent 固定该clean commit/profile，删除Platform OAuth exchange/cache/旧配置，复用现Connect/Run proof与总deadline后做组合验收；不重新设计权限源或展开Skills/MCP页面循环。随后统一正常配对、正式退役旧scope/client，发布精确计价并验正常模型/低风险工具/产物/整数结算。原16项TODO不变，真钱支付不做，不能把接收端完成当整链完成。
 
 **本次刷新：唯一目标仍为正式产品整链闭环，状态进行中；下面16项TODO是唯一执行清单。** 登录、业务模型配置、会话Agent优先，页面／API对齐和其余既定需求在同一轮交付。真实模型、低风险工具和整数积分验收已授权；真钱支付不做。旧Skills目标标题、历史暂停语句、重复盘点或新增示例业务均不改变此范围。
 
