@@ -12,7 +12,21 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 **正常数据与Billing已配对（2026-10-23）**：Agent canonical绑定 `bfff8df`、Billing绑定 `1fac9de`，两owner在同一事务内以RESTRICT重建，未动其他owner或Redis。冻结备份、原始恢复、canonical＋原数据恢复、故意失败回滚均经隔离实测，临时库94→94；正常Agent23表141行／Billing35表7行逐行哈希保持，余额1000。Billing正常已重载、readyz200，精确catalog为35表493列212约束102索引且差异0；原私有配置及其他8监听身份保持。正常浏览器刷新后显示可用1000、冻结0、积分到账+1000。首轮操作在DDL前因dump恢复重解析CHECK形式而被严格检查拦下，Billing自动恢复；改用原提交canonical基线后重新演练与独审通过，未放宽比对。另修复操作脚本停机后异常未进入恢复保护的问题；原失败保留。证据在ignored `var/dev/product-real-chain-20261023/owner-cutover-v2`。本轮未发模型／工具请求或新增扣分，未PR／merge，不勾整项。
 
-**立即下一步**：复用已验源码，将正常Agent HTTP／Worker配到现有managed PG／Redis及原proof；沿IAM正式provisioning／client_credentials补当前租户Billing机器授权，复用已有IAM↔BFF绑定，再发布精确计价并验真实Agent／工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。既有余额／流水保留，不添用户token broker，不重做已验SDK或恢复套件。原16项TODO不变，真钱支付不做。
+<a id="auth-realignment-20261023"></a>
+
+### AUTH-1／CREDIT-1：内部认证纠偏（2026-10-23，当前执行点）
+
+用户再次明确内部服务不反复换token；以既有ADR-035直接服务认证为准，不把机器OAuth续期当作新目标。源码证据：IAM `internal-auth.guard.ts` 对Billing verify先JWT验签再在线内省；Billing `iam-billing-authorization.client.ts` 固定启动bearer；Agent `clients/platform_tokens.py` 仍有独立client_credentials路径。普通BFF→Platform、IAM→BFF绑定和Agent→BFF金融调用已有直接凭据，不能把部分切换称为全部完成。
+
+本轮撤下主方未提交的续期实现：11个tracked修改和3个新文件已逐文件归档后恢复，Billing回到干净`1fac9de`；原IAM/client/options/config的3文件16单元测试通过。原失败和撤回补丁保留本地ignored收据，不提交旧实现、不部署续期、不删除业务校验。IAM正常源码已配到`16ee2eb`并readyz200的前次配对记录仍有效；此前正式注册的机器客户端与300秒签发只证明旧协议事实，不能当作新设计验收或继续签发依据。注册记录保留待切换后正规退役，不直接删数据库。
+
+当前工作是已有认证边界的纠偏，不新增服务／共享凭据SDK／权限表。IAM接收方只允许Billing具名用途与固定tenant的专用服务凭据；调用方来源与用户资格分开，沿原Run proof、BFF绑定、当前成员、预算、限流、取消和审计。无OAuth兼容fallback，先正式发行认证profile，再固定Billing消费者并真实组合验证。Agent→Platform剩余OAuth另沿原ADR-035的撤权barrier退出条件纳入同一AUTH-1，不靠删除guard或延长token寿命处理。
+
+登录只读核对：正常App `7ad1edc`已含多标签交易隔离、绑定后原子消费、产品化错误及注销页；候选`52baa59`额外包含`e48adb5`的issuer sid／refresh连续性，尚未正常激活。Auth.js只验证授权码交易，不另发Auth.js会话；产品会话由现Product cookie与Redis管理。不能把人类登录换码与内部client_credentials混为一谈，也不能称页面已全部验收。下一步按同一AUTH-1配对候选并验登录／多标签／刷新／注销；不另建session或删PKCE/CSRF。
+
+退出证据：内部具名调用零OAuth签发／内省，超过300秒仍可用，轮换／撤销立即影响新调用，错caller／tenant及伪造用户拒绝；再验原业务proof/fence／取消／未知资金恢复。这里的服务凭据无自动5分钟TTL；执行proof、租约与预算期限是独立业务安全约束，不随此删除。完整真实模型与整数扣分仍未验，未PR／merge，不勾整项。
+
+**立即下一步**：AUTH-1／CREDIT-1先按既有ADR-035删除Billing→IAM重复机器OAuth，再固定owner契约与消费者、配对正常运行；不继续client_credentials续期方案。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
 
 - **本次目标刷新（2026-10-23）**：仍执行登录→业务模型→会话Agent→工具／产物→实际用量整数积分→后台与同轮页面／API／Docs，唯一16项TODO不增不减；普通用户不外露内部状态码／来源码／技术引用也纳入原UI-1。Agent历史sealed读取`189c8ac`与Billing精确消费`1fac9de`已本地提交，Agent internal1.3消费者aedba7b已本地交付，独立金融关联／逐事件持久ACK与崩溃恢复已在abd1186c本地交付，Worker有界恢复已在ec53a01本地交付，最终请求授权／唯一派发及同流用量已在bfff8df本地交付；当前进入正常整链真实供应商与积分验收。真实模型／低风险工具／积分验收已授权，真钱支付不做。Goal面板旧objective仍受现接口限制，未原位改写，不将其虚标完成；本执行计划与最新用户要求优先，整目标仍进行中。
 

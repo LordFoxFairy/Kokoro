@@ -5,6 +5,14 @@
 - 范围：App 所需内部 owner 调用；Mori 与其他 Web 功能开发不在本次范围。
 - 依据：当前 BFF/Platform/Agent 源码及用户本次明确要求；这是项目选择，不是通用行业结论。
 
+## 2026-10-23 执行纠偏：Billing 内部机器 OAuth 不续期
+
+用户再次确认内部服务不反复签发／交换短期token。本ADR的直接服务认证决定不变：撤回新增Billing client_credentials缓存／续期实现，不将300秒有效期延长或自动刷新作为最终方案。当前IAM的Billing verify仍走JWT＋内省，须由IAM先发行直接凭据认证profile，再由Billing固定消费；原Run／预算业务授权不删除。Agent→Platform仍存的机器OAuth继续沿本ADR已有barrier约束退出，不把Billing一跳完成当全内部切换完成。
+
+人类登录的原生会话、授权码／PKCE／CSRF与内部机器身份是不同边界。App已有Auth.js只验证交易、Product cookie＋Redis持有会话；不因内部认证切换再新增另一套登录机制。登录失败／多标签／注销与候选配对统一在AUTH-1实测，不以协议正确代替用户体验验收。
+
+当前状态与实施范围见有效产品计划和各owner三面文档；本段为决定纠偏，不是正常运行已切换声明。
+
 ## App 读取优先切片（2026-10-13）
 
 按用户后续优先修复 App 503/404 与 v1 的要求，先独立切换 Platform `projection` surface 及 BFF 对应 HTTP/Connect 读取；同一 surface 只接受直接服务凭据，不保留 OAuth fallback。Catalog 写入、Skills/MCP 管理和 Agent execution 后继尚未切换，不把读取片称为全内部认证完成。

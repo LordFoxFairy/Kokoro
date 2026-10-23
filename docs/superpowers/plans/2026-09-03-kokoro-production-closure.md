@@ -14,7 +14,11 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 **正常数据与Billing已配对（2026-10-23）**：Agent canonical绑定 `bfff8df`、Billing绑定 `1fac9de`，两owner在同一事务内以RESTRICT重建，未动其他owner或Redis。冻结备份、原始恢复、canonical＋原数据恢复、故意失败回滚均经隔离实测，临时库94→94；正常Agent23表141行／Billing35表7行逐行哈希保持，余额1000。Billing正常已重载、readyz200，精确catalog为35表493列212约束102索引且差异0；原私有配置及其他8监听身份保持。正常浏览器刷新后显示可用1000、冻结0、积分到账+1000。首轮操作在DDL前因dump恢复重解析CHECK形式而被严格检查拦下，Billing自动恢复；改用原提交canonical基线后重新演练与独审通过，未放宽比对。另修复操作脚本停机后异常未进入恢复保护的问题；原失败保留。证据在ignored `var/dev/product-real-chain-20261023/owner-cutover-v2`。本轮未发模型／工具请求或新增扣分，未PR／merge，不勾整项。
 
-**立即下一步**：复用已验源码，将正常Agent HTTP／Worker配到现有managed PG／Redis及原proof；沿IAM正式provisioning／client_credentials补当前租户Billing机器授权，复用已有IAM↔BFF绑定，再发布精确计价并验真实Agent／工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。既有余额／流水保留，不添用户token broker，不重做已验SDK或恢复套件。原16项TODO不变，真钱支付不做。
+### AUTH-1／CREDIT-1：内部认证纠偏（2026-10-23）
+
+执行既有ADR-035：撤下本轮未提交机器OAuth续期补丁，不新增token服务；先替换Billing→IAM调用方认证并固定消费者，保留Run／预算业务授权。Agent→Platform剩余机器OAuth仍须按原撤权barrier退出，不冒局部切换为全内部完成。登录保持现原生交易验证与Product Session，不混删PKCE/CSRF；正常App尚缺候选e48adb5的issuer sid连续性修复。11个tracked修改＋3新文件已归档撤回，Billing恢复基线后3文件16测试通过；无正常配置／余额／进程修改。来源、精确缺口和退出条件见[CURRENT认证纠偏](../../CURRENT.md#auth-realignment-20261023)。原16项TODO不增不减，下一步不再走provisioning／client_credentials。
+
+**立即下一步**：AUTH-1／CREDIT-1先按既有ADR-035删除Billing→IAM重复机器OAuth，再固定owner契约与消费者、配对正常运行；不继续client_credentials续期方案。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
 
 **本次刷新：唯一目标仍为正式产品整链闭环，状态进行中；下面16项TODO是唯一执行清单。** 登录、业务模型配置、会话Agent优先，页面／API对齐和其余既定需求在同一轮交付。真实模型、低风险工具和整数积分验收已授权；真钱支付不做。旧Skills目标标题、历史暂停语句、重复盘点或新增示例业务均不改变此范围。
 
