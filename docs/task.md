@@ -4,7 +4,7 @@ IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交�
 
 ## 最新跟进入口（2026-10-22）
 
-当前游标：Billing正式结算HTTP `deab94efc9ee7d86d1d1072481920423d55b36ff` 已本地提交；exp9／28操作／57schema，394输入无漂移／完整五阶段0，verify1839 PASS／620默认资源SKIP、相关真实PG281及source/dist10 PASS，库94→94，独审Approved。原结算应用796bfce、Agent预算消费者78dfda5不重做。**现在接BFF固定消费者与受限结算入口→Agent结算通知／持久恢复→唯一派发和同流真实usage→正常用户／后台整链**；原Run付款关联不依赖浏览器在线，Run不存用户token。真实模型／低风险工具／整数积分验收已授权，真钱支付不做。范围、16项TODO与结束标准仍以现有计划首节为准；本地源码验收、PR合并、正常激活与真实产品验收分别记录，不新增清单、不拿fixture当实际供应商扣分。
+当前游标：BFF正式结算消费者 `ebe7ca5cb49ba64c8bec1f733a6527394ead50e5` 已本地提交；固定Billing deab94e／exp9、internal1.2，774输入无漂移／七门0，contract998／architecture36／默认1684 PASS及3原资源SKIP，定向34 PASS，真实PG退休来源／实际route回路1 PASS，库94→94，独审Approved。**下一步Agent固定消费者及逐事件ACK／持久恢复→唯一派发与同流usage→正常用户和后台整链**；装配前闭合已预占未存grant／失租及相邻evidence通知恢复两窗口，不靠活用户token、dummy proof或再次派发。13仓fetch成功、main无新增。仍用现16项TODO，真实模型／低风险工具／整数积分按已授权范围验收，真钱支付不做；未PR合并／正常激活，不拿wire fixture当供应商真实扣分。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
