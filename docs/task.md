@@ -8,9 +8,11 @@ IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交�
 
 System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者的根因：原resolve按需复用有界metadata GET，provider／密文快照与health generation CAS、全局fence，公开发现GET仍零写，fresh down不被旧probe覆盖；无新服务／表／wire，不放宽freshness。真实RED503→200、37定向／完整owner263 PASS／0SKIP、fresh33断言23表及独审Approved。正常仅本方System已备份并ff／重载，配置字节和其余8监听身份保持、readyz200；无需DDL。正常当前租户Agent正式client resolve→精确revision／digest→受控Key领取→重复解析通过；旧2026-10-21观察generation1自动恢复到2/global8→9，重复零健康写，Key不回显。此为真实System／供应商metadata链，**模型生成、工具与usage扣分仍0，计价发布与完整正常Agent链未验，未PR合并，不勾整项**。原失败与本地收据留ignored `var/dev/product-real-chain-20261023`。
 
-**立即下一步**：复用已验Agent／IAM／BFF／Billing源码，完成正常managed PG／Redis与原proof／内部凭据配对及精确计价发布，再沿同一用户旅程做真实Agent／低风险工具／产物与整数结算。当前正常Agent仍指向已失效旧端口，BFF执行尚disabled，Billing运行仍旧入口；不能用目录恢复代替执行闭环，不重做已验SDK或金融恢复。保留既有积分／流水，owner Schema切换先备份并隔离恢复演练，不清共享库／Redis，不添用户token broker。原16项TODO不变，真钱支付不做。
+**正常数据与Billing已配对（2026-10-23）**：Agent canonical绑定 `bfff8df`、Billing绑定 `1fac9de`，两owner在同一事务内以RESTRICT重建，未动其他owner或Redis。冻结备份、原始恢复、canonical＋原数据恢复、故意失败回滚均经隔离实测，临时库94→94；正常Agent23表141行／Billing35表7行逐行哈希保持，余额1000。Billing正常已重载、readyz200，精确catalog为35表493列212约束102索引且差异0；原私有配置及其他8监听身份保持。正常浏览器刷新后显示可用1000、冻结0、积分到账+1000。首轮操作在DDL前因dump恢复重解析CHECK形式而被严格检查拦下，Billing自动恢复；改用原提交canonical基线后重新演练与独审通过，未放宽比对。另修复操作脚本停机后异常未进入恢复保护的问题；原失败保留。证据在ignored `var/dev/product-real-chain-20261023/owner-cutover-v2`。本轮未发模型／工具请求或新增扣分，未PR／merge，不勾整项。
 
-当前游标（2026-10-23）：**Agent bfff8df已本地接完原finalhook预算授权／唯一派发／同流usage与实际归属、金融ACK；下一步直接验正常登录／模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及后台回读。** 418输入八门0、2588默认PASS／853 marker未选，184真实PG／323 SDK金融HTTP及原生图十向量、36隔离恢复检查、209份包源码核同，独审Approved。模型／usage图财务端具名fixture，实际四方仅QA100／hold及释放10，不冒正常真实扣分。原closed首因遮蔽已修；原HTTP配置子进程3秒偶发及setup／旧架构fixture失败留证、不弱化门。13仓fetch成功／main无新增；正常配置资金不改，本地未激活／PR合并，不提前pin或勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
+**立即下一步**：复用已验源码，将正常Agent HTTP／Worker配到现有managed PG／Redis及原proof；沿IAM正式provisioning／client_credentials补当前租户Billing机器授权，复用已有IAM↔BFF绑定，再发布精确计价并验真实Agent／工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。既有余额／流水保留，不添用户token broker，不重做已验SDK或恢复套件。原16项TODO不变，真钱支付不做。
+
+前一源码验收记录（2026-10-23；正常激活状态以上条为准）：**Agent bfff8df已本地接完原finalhook预算授权／唯一派发／同流usage与实际归属、金融ACK；下一步直接验正常登录／模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及后台回读。** 418输入八门0、2588默认PASS／853 marker未选，184真实PG／323 SDK金融HTTP及原生图十向量、36隔离恢复检查、209份包源码核同，独审Approved。模型／usage图财务端具名fixture，实际四方仅QA100／hold及释放10，不冒正常真实扣分。原closed首因遮蔽已修；原HTTP配置子进程3秒偶发及setup／旧架构fixture失败留证、不弱化门。13仓fetch成功／main无新增；正常配置资金不改，本地未激活／PR合并，不提前pin或勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 
