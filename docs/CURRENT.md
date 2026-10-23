@@ -22,7 +22,9 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 剩余消费接线：先固定本次clean SDK包并替换Platform的tenant token provider和Agent的Platform token provider，原在线IAM权限不变；完成两端后统一正常配对。部署时正式收敛旧IAM resource execution scope并停用旧client，不能放宽Product scope精确读回来兼容配置。IAM新增文档链接有效，隔离worktree中的4条既存跨Root相对链接仍不可解析（上一基线已存在），不是本片新断链。正常产品/登录/Agent/资金整链仍未验完，不标AUTH-1整体完成。
 
-**用户最新重构要求已纳入**：剩余Agent→Platform和Platform→IAM两跳只替换机器身份；保留IAM `verifyExecutionAuthorization`／`DIRECT_USER_CURRENT`在线权限判断，不把替代权限来源的barrier/claim设计扩大为删token的前置。两处OAuth仍有真实源码耦合：Agent token provider、Platform workload introspection/tenant token provider，以及Platform消费者旧caller_client_id回包校验；IAM接收方已在6238371删除旧purpose策略，余下消费者必须统一配对并删除旧实现，不简单绕过guard。已在原ADR-035澄清范围，不新建任务中心；不声称更强的全Run即时撤权已实现。
+**本次Platform消费者已交付**：`e23e566e3fb4595a0c8e908dfe4a5857328a1f0f`固定IAM clean6238371/SDK0.18，删除出站execution OAuth交换/TTL/singleflight缓存/旧配置，fresh专用凭据＋回执tenant/caller/key绑定；在线业务权限不变。完整源码927输入冻结无漂移，类型/lint/SDK/契约/artifact/schema/构建/格式均0；全目录串行2631 PASS/500资源SKIP。默认并行门曾因既有contract子进程5秒超时失败，未改timeout或删断言，完整串行重跑通过。compiled Platform→IAM真实NestHTTP/PG/Redis配对通过，6次authorization请求观察零OAuth/access-token验签/内省；错tenant不派发、proof binding错/成员删除/旧key/错回执ID拒绝、轮换配对成功和取消通过。真实Platform启动/资源13 PASS/4个旧R317/R336外部输入SKIP，数据库均94→94。首次配对测试误期望proof错为403、资源runner遗漏owner schema均仅修验收配置/预期后重跑，原失败保留。独审无确定P0–P2，正常未切换、未push/PR/merge，原模型/工具/积分运行本片0。
+
+**最新重构游标**：Platform→IAM消费者不再列待办；余下Agent→Platform tenant_execution使用已有local service authorizer，固定发行的机器身份profile并清除Agent兑换/缓存、旧配置，机器credential_id不冒OAuth client_id。保留IAM `verifyExecutionAuthorization`／`DIRECT_USER_CURRENT`、proof/BFF绑定/取消与当前权限；不把后继barrier/claim扩大成此片前置。System global ingress仍为旧OAuth独立边界，不冒全内部完成。下一步沿此既定片收敛后统一正常配对，不重做Skills/MCP产品验收。
 
 以下为本片起始基线与已完成的撤回记录：
 
@@ -36,7 +38,7 @@ System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者
 
 退出证据：内部具名调用零OAuth签发／内省，超过300秒仍可用，轮换／撤销立即影响新调用，错caller／tenant及伪造用户拒绝；再验原业务proof/fence／取消／未知资金恢复。这里的服务凭据无自动5分钟TTL；执行proof、租约与预算期限是独立业务安全约束，不随此删除。完整真实模型与整数扣分仍未验，未PR／merge，不勾整项。
 
-**立即下一步**：Billing→IAM源码与真实owner配对已验；继续沿现在线权限判断替换Agent→Platform→IAM两跳机器OAuth、正式发行并固定消费者，再统一配对正常运行；不加token续期或新授权状态机。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
+**立即下一步**：Billing→IAM与Platform→IAM的源码/实际receiver配对均已验；接Agent→Platform机器身份与正式profile/固定消费者，删除旧认证路径，再统一配对正常运行。用户登录会话、服务身份与当前用户/租户/Run及资金权限分开，不加续期或新权限服务。随后复用已验Agent HTTP/Worker、managed PG/Redis及原proof，发布精确计价并验正常模型/低风险工具/产物/整数结算。Agent/Billing正常Schema已配对，Billing实际仍加载1fac9de；Agent旧资源与BFF执行disabled须在正式切换处理，不把余额回读或fixture通过当整链完成。原16项TODO不变，真钱支付不做。
 
 - **本次目标刷新（2026-10-23）**：仍执行登录→业务模型→会话Agent→工具／产物→实际用量整数积分→后台与同轮页面／API／Docs，唯一16项TODO不增不减；普通用户不外露内部状态码／来源码／技术引用也纳入原UI-1。Agent历史sealed读取`189c8ac`与Billing精确消费`1fac9de`已本地提交，Agent internal1.3消费者aedba7b已本地交付，独立金融关联／逐事件持久ACK与崩溃恢复已在abd1186c本地交付，Worker有界恢复已在ec53a01本地交付，最终请求授权／唯一派发及同流用量已在bfff8df本地交付；当前进入正常整链真实供应商与积分验收。真实模型／低风险工具／积分验收已授权，真钱支付不做。Goal面板旧objective仍受现接口限制，未原位改写，不将其虚标完成；本执行计划与最新用户要求优先，整目标仍进行中。
 
