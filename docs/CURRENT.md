@@ -8,6 +8,8 @@
 
 <a id="admin-session-boundary-20261023"></a>
 
+**认证设计源已纠偏（2026-10-23）**：[ADR-034](kokoro-handbook/decisions/ADR-034-independent-admin-web.md) 与总体架构 §2.0 同步废止“独立后台＝独立 OAuth/session”，明确实际 `apps/kokoro-admin` 工程、Product 唯一会话和当前同源 `/manage`。已核对 Admin `e35df21` 的服务端准入消费者与 console layout；此次仅修正文档，不改变运行服务、权限或协议，不把文档一致视为完整登录验收。
+
 **AUTH-1 后台页面边界已收敛（2026-10-23，Admin `e35df2178905f35d3dbced3bea1e114663e9bfc7`）**：按用户再次明确的同一产品/身份体系，后台复用Product会话；删除独立登录/伪邮件确认旧路由及壳例外，控制台壳只在服务端准入通过后挂载，恢复页返回完整Product地址并保留取消/恢复。47文件358 PASS、lint/contract/type/build及构建后types通过；首默认并发超时和删除路由旧生成缓存失败均保留，独审手动恢复pagehide丢按钮P2已RED→修正→复核关闭。正常仅核对基线后同步本片7源码文件、备份且无重启/配置/权限变更；实际产品入口→后台→模型读取/刷新通过，旧两登录路由404。首次热更出现短暂空白/回Product，后续恢复通过，但其根因与多标签登录完整旅程尚未证明，不能称登录整链关闭。未PR/merge，Root不提前pin。下一步承接现AUTH-1正常登录/会话配对及既定内部认证消费者，不新增独立登录、不重做Skills/MCP产品验收；模型/积分整链仍待。
 
 **MODEL-1 已推进到正常真实解析（2026-10-23）**：用户确认现提供方由OpenRouter转接，后继按其精确 `openai/gpt-5.6-luna`／canonical `openai/gpt-5.6-luna-20260709`公开价配置，不再索要可公开查询的费率。实际公开目录200／468项，普通输入／输出每百万token USD0.20／1.20，缓存读／写0.02／0.25；严格大于272000输入的覆盖价已核，现4096context不触达。保7/5倍率与整attempt最终一次ceil，费用到积分仍是单独显式平台policy，不从目录凭空推导。App在线指南提交 `52baa59`，完整Docs check通过（45测试、5例、54HTML／17942内部链接，原大chunk警告保留）；价格来源不是已发布计价或已扣分证明。
