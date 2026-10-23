@@ -6,7 +6,9 @@
 
 ### 当前进度与立即下一步
 
-- **本次目标刷新（2026-10-22）**：唯一目标仍是正式登录→业务模型→会话Agent→低风险工具／产物→实际用量整数积分与后台，再完成同一16项TODO并集中PR merge及正常生效。**当前执行点是BFF原预占恢复消费者**：Billing `23ff71993f7772219cab8d3a3a4c7fbb4d66f735` 已验；BFF仍处于 `ebe7ca5` 已验结算基线，恢复1.3仅设计及2项预期失败契约回归，尚未实现／验收。接着Agent金融关联、逐事件持久ACK／历史sealed与崩溃恢复，再装配唯一派发和同流真实usage。真实模型／低风险工具／整数积分已授权，真钱支付不做；旧目标标题或历史暂停不驱动执行。设计、RED、本地通过、正常激活和PR合并严格分开，不勾整轮完成。
+- **本次目标刷新（2026-10-22）**：正式产品整链与同一16项TODO保持。**BFF原预占恢复已在5a303f2本地交付；当前执行点向前移到Agent固定结算／恢复消费者、历史金融关联和逐事件持久ACK／崩溃恢复**，不重做Billing／BFF已验入口。随后装配唯一派发、同流真实usage和认证归属映射，再由我验正常登录→本业务模型→会话Agent／工具产物→整数积分与后台，以及同轮页面/API／Docs和集中PR合并。真实模型／低风险工具／整数积分已授权，真钱支付不做；历史暂停和旧目标标题不驱动执行，未勾整轮完成。
+
+- **BFF原预占恢复消费者已本地交付**：`5a303f2003fabeb50376c7f7e1f66f0d163adebb`，固定Billing23ff719／exp10十一操作，internal1.3 raw SHA256 `4de1a6c7564f3a994d879cfc93588021c5ef4aeebbcc89959fa574d5b6f16d39`；Public23及原内部1.2→1.1→1.0整图保持。独立Agent凭据＋durable原提交者派生payer，recover禁proof、只找原ACK，无create fallback；首次create proof／settle和有界单发／取消保持，无SQL／依赖／新DTO。778输入无漂移、完整七门0：contract1008／architecture36／默认1694 PASS及3原资源SKIP；39定向、真实来源PG回路1及隔离实际四方30检查通过，独审Approved。关停验收Agent与IAM后仍经真实BFF／Billing恢复；原key、miss及冲突十表含xmin不变，退休／terminal／会话移动软删仍原payer。只QA100发放／10预占，Chat事实seed／签名JWKS fixture，不冒真实供应商用量或capture；库94→94、自有IAM prefix清理。契约2／HTTP8项RED保留再实现，无弱化门；13仓非递归fetch全成功／main无新增，干净提交，正常未激活、未PR合并。Agent金融关联／逐事件ACK、历史sealed及真实执行装配仍待，不勾整项完成。
 
 - **Billing原预占仅恢复入口已本地交付**：`23ff71993f7772219cab8d3a3a4c7fbb4d66f735`，exp10／29操作／57schema，raw SHA256 `f3d510bbf084d0dddad91d8cfafd13caf19e23c2a97074b363e0687291e14654`。复用原receipt／完整性短事务，miss零钱／命令事实、原key命中零写，新key仅原alias；零Agent／IAM／价格请求、禁proof，原create首次授权不放宽。404不证明在途create取消或可派发；capture后200仍原held创建ACK。397输入无漂移、五阶段0，verify1841 PASS／628默认资源SKIP、相关真实PG289及source/dist10 PASS／0SKIP、fresh Prisma／正规生成通过，库94→94，独审Approved。并发miss后原create提交、资金锁内恢复、alias阻塞取消回滚、坏数据拒绝、同帧TCP正控与终态原ACK均实证；实际RED／首完整fixture payload类型失败保留，仅以原wire类型推导修复后全门重验。13仓fetch成功／main无新增，无SQL／依赖／正常配置资金或模型工具变化。BFF／Agent尚待固定新恢复操作，Agent金融关联／逐事件ACK及历史sealed恢复未装配，不勾整项完成。
 

@@ -10,11 +10,11 @@
 
 **本次刷新：唯一目标仍为正式产品整链闭环，状态进行中；下面16项TODO是唯一执行清单。** 登录、业务模型配置、会话Agent优先，页面／API对齐和其余既定需求在同一轮交付。真实模型、低风险工具和整数积分验收已授权；真钱支付不做。旧Skills目标标题、历史暂停语句、重复盘点或新增示例业务均不改变此范围。
 
-**当前只推进一个接线点：BFF接入Billing已交付的原预占恢复接口。** 已有设计门与两项预期失败的契约回归；BFF恢复实现／完整验收尚未完成，不把设计或RED记作交付。接着完成Agent结算消费、逐事件持久ACK及崩溃恢复，再装配原唯一派发与真实用量，最终走正常用户和后台整链。恢复只关联原资金回执，不补旧worker执行权，不把查无回执当成已取消，不追加用户token回程或新服务。
+**当前执行点：Agent消费已交付的BFF结算／恢复契约，完成历史金融关联、逐事件持久ACK及崩溃恢复。** BFF原预占恢复消费者已完成实现与本地验收（`5a303f2003fabeb50376c7f7e1f66f0d163adebb`／internal1.3），不再列为待重做。随后装配原唯一派发与真实用量，再验正常用户和后台整链。原资金回执恢复不补旧worker执行权，查无回执不等于取消，不追加用户token回程或新服务；不让金融ACK阻塞业务seal。
 
 | 当前推进顺序 | 最新状态与可验收出口 |
 | --- | --- |
-| 1. 同一次执行的积分结算 | **Billing owner已验；BFF恢复消费者实施中，Agent恢复待接。** Billing recover `23ff71993f7772219cab8d3a3a4c7fbb4d66f735`／exp10已有完整owner门及真实PG证据。BFF当前仍为已验1.2结算基线；目标1.3恢复接口仅完成设计与2项RED，下一步实现并验证原回执、身份隔离、无proof、单次请求与取消。随后接Agent历史金融关联／逐事件ACK；不把miss当取消或新派发许可。 |
+| 1. 同一次执行的积分结算 | **Billing及BFF恢复／结算消费者已本地验；Agent消费者／持久恢复待接。** BFF `5a303f2`／internal1.3固定Billing23ff719／exp10，778输入七门0、contract1008／默认1694 PASS（3原资源SKIP）、真实PG1及隔离实际四方30检查通过。原key恢复、miss和冲突无资金变化；接Agent金融关联／逐事件持久ACK，不授新派发许可，不冒实际模型扣分已验。 |
 | 2. Agent正式执行链 | **待装配与整链验收**。复用已验proof与预算消费者，接唯一派发→同流真实usage封口→结算及崩溃恢复；不新建用户token回程，不以只预占当执行成功。 |
 | 3. 正常用户与后台完整旅程 | **待真实验收**。正常登录／续期→业务模型选择→首发与流式→低风险工具→产物→刷新恢复→余额／流水／后台回读，覆盖取消、重复回执及未知结果。 |
 | 4. App差异与统一交付 | **仍在同一轮**。按Manus实测完成原TODO中的会话／首页／项目／设置及在线Docs；本地审查和验收通过后集中PR merge、Root精确组合并核正常生效，不等待CI、不绕保护。 |
@@ -24,7 +24,7 @@
 
 **主线顺序不变：登录 → 业务模型配置 → 会话 Agent 完整链路 → 工具／产物 → 真实用量整数结算。** App 页面、交互与可观察 API 差异贯穿实测和验收；Skills/MCP 复用已有成果，当前旅程依赖或明确缺陷才补齐，不再作为主线前置验收关卡。真钱支付不做，不新增团队或示例业务，不全局放开无限执行。
 
-当前进度：正常无感账户初始化和后台非现金充值子旅程已验；模型精确配置／候选列表及App／Admin消费者已验；IAM／Billing／BFF具名Run预算与Agent正式预算消费者78dfda5已验，同admission结算应用796bfce、正式HTTP deab94e及BFF结算消费者ebe7ca5已验。**现在先完成BFF原预占恢复消费者，再接Agent固定结算／恢复消费者、逐事件持久ACK和崩溃恢复，随后装配原唯一派发／同流真实usage及认证归属映射，最后验正常用户和后台整链。** 既有阶段源码与真实／fixture证据分别见CURRENT首节，不再把已验预算入口或结算应用列为待重做；未勾AGENT-1／CREDIT-1整项。
+当前进度：正常无感账户初始化和后台非现金充值子旅程已验；模型精确配置／候选列表及App／Admin消费者已验；IAM／Billing／BFF具名Run预算与Agent正式预算消费者78dfda5已验，同admission结算应用796bfce、正式HTTP deab94e及BFF结算消费者ebe7ca5已验。**BFF恢复消费者5a303f2已本地交付；现在接Agent固定结算／恢复消费者、逐事件持久ACK和崩溃恢复，随后装配原唯一派发／同流真实usage及认证归属映射，最后验正常用户和后台整链。** 既有阶段源码与真实／fixture证据分别见CURRENT首节，不再把已验预算入口或结算应用列为待重做；未勾AGENT-1／CREDIT-1整项。
 
 AUTH-1当前候选：App e48adb5已提交登录／refresh的可信issuer sid连续性，原生验签、原用户／tenant、单次交换、双CAS和失败清理保持；最终1143输入无漂移，完整App十阶段0、4773 PASS／0SKIP（单worker完整test）、108 preview零重试及Docs全门通过，四MCP WIP原样恢复、独审Approved。正常未激活；旧无sid cookie不兼容，不清业务数据。此次只闭合登录子片，不因此增加Agent所需token或额外用户授权旅程，整项AUTH-1与正常产品验收仍按原完成条件。
 
@@ -41,7 +41,7 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 3. **AUTH-1／CHAT-1／AGENT-1／UI-1／API-1**：由我走正常登录、选模型、首发／流式交互、低风险工具、产物、刷新恢复和扣分完整旅程；按 Manus 实测修页面、交互与API差异，不让用户反复代测。
 4. **其余原 TODO／DOCS-1／RELEASE-1**：完成同一清单的首页、项目等既定需求；同步 App 在线文档，自审和完整验收后集中 PR merge，Root 只 pin 已合精确SHA，核实正常环境生效。不等 CI，不绕强制保护。
 
-本次新增证据：Billing仅恢复原预占 `23ff71993f7772219cab8d3a3a4c7fbb4d66f735`，exp10／29操作／57schema，raw SHA256 `f3d510bbf084d0dddad91d8cfafd13caf19e23c2a97074b363e0687291e14654`；397冻结输入无漂移、五阶段0，verify1841 PASS／628默认资源SKIP、相关真实PG289及source/dist10 PASS、fresh Prisma／生成通过，库94→94，独审Approved。只复用原receipt短事务，miss零创建，原key零写，换key仅alias且取消／坏数据回滚；并发与终态原ACK实证，原RED和首完整fixture类型失败保留，未弱化门。13仓fetch成功／main无新增，SQL／依赖／正常模型工具资金不变。后继BFF／Agent固定消费者、独立金融关联／逐事件ACK和历史sealed恢复，再装配实际执行；Agent现reader仅读head，已确认全修订存储可复用，但应正式发行历史读取并保独立head完整性，不把ACK屏障塞入seal或Chat outbox。整链、其余TODO、集中PR及正常激活仍待。
+本次新增证据：BFF `5a303f2003fabeb50376c7f7e1f66f0d163adebb` 本地干净提交，固定Billing23ff719／exp10的十一操作，internal1.3 raw SHA256 `4de1a6c7564f3a994d879cfc93588021c5ef4aeebbcc89959fa574d5b6f16d39`。778输入冻结无漂移、完整七门0，contract1008／architecture36／默认1694 PASS及3原资源SKIP，39定向／真实PG1／隔离实际四方30检查通过，独审Approved。仅新增recover，原十操作与create proof／settle保持、Public原字节和旧内部整图保护通过，无SQL／依赖／兼容层。真实BFF/Billing/PG在Agent和IAM验收进程关闭后仍恢复原ACK，原key／miss／冲突十表含xmin不变；只QA100发放／10预占，无真实usage或capture，Chat源seed／签名JWKS fixture边界明确。库94→94、自有IAM键清理，13仓fetch成功／main无新增，正常配置资金服务保持。后继Agent金融关联／持久ACK和正式历史sealed读取及唯一派发／真实用量仍待；不重开已验组件，不勾整项完成。
 
 目标工具只允许修改状态，旧 objective 标题暂不能原位改写；此前替换请求被“存在未完成目标”限制拒绝。本次更新现有执行目标与 TODO，不重复创建目标、不为换标题虚报 complete；目标保持 active，本节及下面唯一16项 TODO 是实际执行依据。详细阶段证据统一维护在 `docs/CURRENT.md`，历史暂停要求不重新生效。
 
