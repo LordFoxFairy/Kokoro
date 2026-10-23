@@ -6,6 +6,10 @@
 
 ### 当前进度与立即下一步
 
+**UI-1 首屏侧栏横移已修复并正常验收（2026-10-23，App `623eae833cdaafee978d8f34f71ee0edf76b29cb`，本地提交）**：原静态壳固定52px，用户保存展开后正式侧栏300px，接管横移248px。现在首文档和浏览器共用已有布局cookie的纯解析及现有尺寸常量；非法/缺失值沿页面默认、手机零占位。此偏好不授权，Product会话探针和私有Runtime准入保持，没有新增认证或存储。原真实Next/Chromium回归先52≠300失败，再验证首文档/接管/刷新/收起/手机/非法值/项目默认；三文件323 PASS、完整256文件4833 PASS、contract304/architecture50及lint/types/build/post-build types通过，隔离preview桌面/手机108 PASS、零重试。1053停写输入无漂移，既有UI/MCP工作保留、不混入10文件提交；全门基于包含这些WIP的工作树，不冒纯main验收。
+
+正常App已ff到该提交，原11份WIP逐字保留、配置与九个监听PID保持，无重启。正常CUA测量展开首帧/接管x=300/300、收起52/52、390px窄屏0/0且不横溢；键盘恢复原展开偏好，后台用户页沿同Product登录直接进入。截图、测量、测试日志、激活/回退材料留ignored `var/dev/workspace-cold-layout-20261023`。**纠正此前“正在加载工作区可见”的表述：本轮首帧该文字来自无障碍标签，DOM可见文字不含它；实际顶部/背景/输入框占位差异仍存在，本片不勾UI-1完成。** Manus冷刷新也有占位，本轮仅观察页面、没有推断API或执行动作。未新增模型/工具/资金操作，原结算待核对缺口继续；未push/PR/merge，不提前更新Root gitlink。
+
 **AGENT-1 用量恢复的响应编号缺口已修复（2026-10-23，Agent `c92dbea6efdf7cc56b48c19b31e3d6887cf102aa`，本地提交）**：同一已验证物理响应的有界编号随首次usage seal原子写入原attempt；SSE编号冲突、非法值、截断和gzip尾不完整均不采信，重放不替换/丢弃原值。无新服务、公开wire、Billing入口或用户token。默认2596 PASS/855资源marker未选；最后新增gzip负控后观察器36 PASS；真实PG/SDK/HTTP171 PASS/0 SKIP，SQL边界、回滚和持久恢复通过，format/lint/types/contract/lock/frozen sync/build通过，208份runtime源码和schema与wheel一致，独审无确定新增缺陷。首次PG正则上界和native工具fixture首尾ID不一致问题均修复、失败留证，未放宽生产断言；三个相关仓库非递归fetch后main均无候选未承接提交。正常服务/schema未切换，未新增模型/工具/资金操作，原990可用/10冻结、revision1 pending已只读复核。
 
 **金融恢复下一步已定位**：Billing现有settle支持相邻补证后按原冻结价一次整数结算，无需重写资金流程；Agent现有recovery只重投未ACK事件，原pending已ACK后不会自动补用量。普通append仍禁止terminal新修订，后继须实现同次调用的有来源补证，不能放宽旧worker执行租约。当前配置是转接网关；对其GET /v1/generation（无id）的只读探测返回404非JSON，尚未证明官方OpenRouter补查接口可用。原attempt没有供应商编号，保持待核对，不补cache=0、不改冻结费率、不重派原请求。缺usage SSE尚沿原missing_final拒绝路径，本片不冒称所有补查已实现。证据仅在ignored `var/dev/model-response-receipt-20261023`；下一步沿现Agent owner核补查来源和terminal补证，再接原Billing结算与有限工具/产物验收。未PR/merge，原16项范围保持。
