@@ -1,4 +1,4 @@
-## 最新目标：正式产品整链闭环（2026-10-22）
+## 最新目标：正式产品整链闭环（2026-10-23）
 
 **交付目标：按 Manus 实测对齐 App 页面、交互和可观察 API，完成正常登录 → 业务模型选择 → 会话 Agent → 低风险工具执行 → 产物及历史恢复 → 实际用量整数积分结算，并打通对应后台管理。随后完成同一计划中的首页、项目及其余既定页面，不拆成另一轮收尾。**
 
@@ -6,7 +6,9 @@
 
 ### 当前进度与立即下一步
 
-- **本次目标刷新（2026-10-22）**：正式产品整链与同一16项TODO保持。**BFF原预占恢复已在5a303f2本地交付；当前执行点向前移到Agent固定结算／恢复消费者、历史金融关联和逐事件持久ACK／崩溃恢复**，不重做Billing／BFF已验入口。随后装配唯一派发、同流真实usage和认证归属映射，再由我验正常登录→本业务模型→会话Agent／工具产物→整数积分与后台，以及同轮页面/API／Docs和集中PR合并。真实模型／低风险工具／整数积分已授权，真钱支付不做；历史暂停和旧目标标题不驱动执行，未勾整轮完成。
+- **本次目标刷新（2026-10-23）**：仍执行登录→业务模型→会话Agent→工具／产物→实际用量整数积分→后台与同轮页面／API／Docs，唯一16项TODO不增不减；普通用户不外露内部状态码／来源码／技术引用也纳入原UI-1。Agent历史sealed读取`189c8ac`与Billing精确消费`1fac9de`已本地提交，当前推进到Agent固定BFF internal1.3及金融关联／逐事件ACK与崩溃恢复，再装配唯一派发和真实usage。真实模型／低风险工具／积分验收已授权，真钱支付不做。Goal面板旧objective仍受现接口限制，未原位改写，不将其虚标完成；本执行计划与最新用户要求优先，整目标仍进行中。
+
+- **历史sealed读取及正式固定消费已本地交付（2026-10-23）**：Agent `189c8ac74baa8715589cd4e7ab1a5ee79fb51f9e`／HTTP7.2原SHA `4e75244c676e02736867d2f461d18b4d67d93151ff03ffaf6e632685b77ca9db`，原专用GET一个MVCC快照读请求与head，各自核原bytes／绑定／时间，head损坏仍拒绝；终态／失租仍读原财务证据，不补执行权。401输入八门0、默认2461 PASS／806 marker未选、真实PG／HTTP122 PASS／0SKIP，仓外同锁hash安装及201份wheel/sdist源码逐字核同，独审Approved。初次清单漏新模块已补；一次旧退出时限FAIL后focused4及完整重验通过，原时限不改、偶发根因未冒称消除；仓外首次offline缓存miss后同registry／hash联网安装，非全离线。Billing `1fac9de69805298ae073233532dc49d8a7622abe`从Agent提交Git blobs固定，usage2三件及生成wire形状保持，receipt SHA608ec8df；398输入、完整verify1842 PASS／628原资源SKIP、相关实际PG结算42及正规生成通过，独审Approved。首逆证明JS重序列化损int64／整数key顺序的fixture已改为两个精确raw编辑逆转，原父hash不放宽。13仓fetch成功／main无新增、库94→94；无Schema／依赖／正常配置资金变化，零本轮真实供应商或工具请求。两仓clean本地提交，未正常激活／集中PR合并，Root不提前pin。中间事件不再被head遮住，但Agent金融关联／逐事件持久ACK与执行装配仍待，不勾整链完成。
 
 - **BFF原预占恢复消费者已本地交付**：`5a303f2003fabeb50376c7f7e1f66f0d163adebb`，固定Billing23ff719／exp10十一操作，internal1.3 raw SHA256 `4de1a6c7564f3a994d879cfc93588021c5ef4aeebbcc89959fa574d5b6f16d39`；Public23及原内部1.2→1.1→1.0整图保持。独立Agent凭据＋durable原提交者派生payer，recover禁proof、只找原ACK，无create fallback；首次create proof／settle和有界单发／取消保持，无SQL／依赖／新DTO。778输入无漂移、完整七门0：contract1008／architecture36／默认1694 PASS及3原资源SKIP；39定向、真实来源PG回路1及隔离实际四方30检查通过，独审Approved。关停验收Agent与IAM后仍经真实BFF／Billing恢复；原key、miss及冲突十表含xmin不变，退休／terminal／会话移动软删仍原payer。只QA100发放／10预占，Chat事实seed／签名JWKS fixture，不冒真实供应商用量或capture；库94→94、自有IAM prefix清理。契约2／HTTP8项RED保留再实现，无弱化门；13仓非递归fetch全成功／main无新增，干净提交，正常未激活、未PR合并。Agent金融关联／逐事件ACK、历史sealed及真实执行装配仍待，不勾整项完成。
 
