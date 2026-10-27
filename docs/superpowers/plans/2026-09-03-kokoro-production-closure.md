@@ -179,13 +179,15 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 
 | Goal 顺序 | 原 TODO 归属 | 已完成／正常生效的子项 | 整项状态与剩余 |
 | --- | --- | --- | --- |
-| ① MCP／连接器 | SKILLS-MCP-1 的 MCP 部分 | 四路基础创建／对应详情编辑／QA删除刷新及密钥／Header／图标／HTTP定义发布已收敛正常证据；API删除负事实、URL图标取消、旧Prepare unknown下独立备注保存／刷新／恢复及面板分离、API主要外框／字段几何正常对照已闭合；真实调用／项目推荐／同会话恢复保持 | **实施中，基础CRUD不重挂。** 剩旧Prepare外部unknown终态工程、API剩余图标／密钥帮助／optional字重／垃圾桶呈现及末端同态对照；保原请求及CAS，不把泛failed marker当确定负ACK，不擅清journal。Provider/OAuth缺配置只限制对应授权，不掩盖工程恢复缺口。 |
+| ① MCP／连接器 | SKILLS-MCP-1 的 MCP 部分 | 四路基础创建／对应详情编辑／QA删除刷新及密钥／Header／图标／HTTP定义发布已收敛正常证据；API删除负事实、URL图标取消、旧Prepare unknown下独立备注保存／刷新／恢复及面板分离、API外框和剩余图标／帮助／密钥细节已正常验；真实调用／项目推荐／同会话恢复保持 | **实施中，基础CRUD与本轮API细节不重挂。** 原Prepare completed丢ACK查询已交付owner，BFF／App查询恢复接线中；旧外部unknown／确定失败终态仍待具体工程切片和末端同态对照。保原请求及CAS，不把泛failed marker当确定负ACK、不擅清journal。Provider/OAuth缺配置只限制对应授权，不掩盖工程恢复缺口。 |
 | ② Skills | SKILLS-MCP-1 的 Skills 部分 | 真实导入／下载、启停、安装更新、版本历史／新版本恢复、获准移除同版本重添已有正常证据；项目默认继承与Run两文件成功保持；本次最终正文／reference／历史及更新／移除取消、目录与外层重开已补 | **实施中，不重做已验写链。** 剩最终跨owner／传递依赖绑定、GitHub／创作录制入口、项目其余CRUD、权限／失败／unknown差额及全页同态；作者fallback和内部ACTIVE文案已定位待修。 |
 | ③ 创建任务与 Agent 主链 | AUTH-1、MODEL-1、CHAT-1、AGENT-1、CREDIT-1、PREF-1 | 正常新任务及项目归属／URL恢复已有证据；模型→真实MCP／Skills／文件→交付→终态→重开→实际积分已验，六QA共33attempt／73积分；真实自动压缩3次有checkpoint／capsule证据 | **实施中，核心成功链正常生效。** 剩运行中发送／队列／打断／停止恢复、异常／取消与多标签／会话导航完整矩阵及原AUTH-1默认测试缺口。原四笔40冻结按原事实保留，cache缺项仍partial；不反复付费重跑成功链，不改旧账充数。 |
 | ④ 首页、项目及其余产品能力 | HOME-1、PROJECT-1、SCHEDULE-1、PERSONAL-1、NOTIFY-1 | 本轮标题留白、项目五项共享菜单、真实固定／取消刷新、跨项目编辑取消→删除确认已闭合；指令／MCP／资源／Skills四项共享上下文、Root↔Task往返已有正常证据 | **实施中。** 首页各场景完整创建旅程；项目网页资源／网站持久化、项目定时过滤与嵌入、事件／高级自动化、分享／ACL及排序／分区完整矩阵；个性化／知识导入和通知按原条件核验。不能把复制URL、preview数据或几个入口当这些能力完成。 |
 | 贯穿四项 | UI-1、API-1、DOCS-1、RELEASE-1 | 当前相关源码／契约／Docs生成与局部工程门、Manus菜单计算样式／截图和正常版本聚合已验；原PR已更新 | **实施中／待合并。** 全站无感读取仍有T02 ProjectConversations可见loading／骨架；精确视觉色差、冷读／后台错误和完整登录回归保留。原PR仍Draft，未完成项不因push或局部绿而勾完；全部接口<100ms及全像素一致尚未成立。 |
 
-**下一执行游标：** 继续①MCP：基础四路CRUD、图标／密钥／Header／定义发布证据已承接，本片独立配置unknown解耦与呈现、API主要几何已正常验；收旧Prepare终态工程及API剩细节／末端对照，不重跑已验业务；随后②Skills；③保留已验成功主链，只补剩余交互／异常；随后收④。已经批准的Project scoped定时D0保留在项目子队列，不重开设计、不用历史“唯一下一步”抢占当前Goal顺序。确需独立并行时隔离owner／写区，不让外部Provider缺口或一个局部问题卡住其它可推进项。
+**下一执行游标：** 继续①MCP：已验基础四路CRUD、图标／密钥／Header／定义发布、独立配置unknown解耦及API外框／剩余控件不重跑；本轮先接正式completed回执查询→App同key GET恢复→正常配对，再收准确确定失败／旧unknown终态与末端对照。随后②Skills只补五类既有缺口；③保留已验成功主链，只补交互／异常；随后收④。Project scoped定时D0留项目子队列，不重新调查、不以历史“唯一下一步”抢占当前Goal顺序；一个Provider或局部问题不阻塞独立写区。
+
+**本轮并行写区／实进度（2026-10-27，仍属①MCP）：** App `509dd040` 已推送并正常HMR，826非MD源码核同；API／MCP共用Image图标、密钥帮助hover→click及Escape、单行无删除／多行独立、至少一完整pair、空额外行与部分行校验、390×400底栏可见，Root真实读／取消验收归档，不新增配置或调用。Platform `688bc1e3` 已正式推送，原Prepare completed丢ACK只读查询通过Root真实PG18／0skip、库94→94与完整owner相关门；原Runtime/SSE字节保持，未正常激活。`skills_evidence_delta` 正式接BFF Native／固定owner artifact；`api_visual_fidelity` 实施同原key／CAS的GET恢复并删除旧inspect→允许POST链，候选不冒生效；`prepare_recovery_boundary` 只读收敛HTTP410／结构拒绝的终态方案。Root独占资源／浏览器／Git、正式消费者与本表；旧failed marker仍未知，不由当前CAS推断负ACK或清journal。原Auth两历史失败本轮仅定向2PASS／94名称过滤，未复现不等于根因已修、完整默认门仍OPEN。
 
 **状态与证据规则：** 沿用待核实／待实施／实施中／待验收／待合并／正常生效；正常生效的子项不等于整项完成。每次关闭补根因、改动、正式SHA、实际旅程／回读及剩余差异；不以隐藏失败、伪造数据、删断言或重复盘点替代实施。详细证据仍在本页最新快照和CURRENT，不复制完整历史。
 
