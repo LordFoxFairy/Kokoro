@@ -1,5 +1,17 @@
 **Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
 
+## 2026-10-27 最新：旧连接未知不再锁配置，保存／刷新／恢复已正常验收
+
+**正式与正常。** App `467424fbef791fbc93544639f46d3d34faecdbb4`（功能父eb302887）；Platform `8b42a8e4f357aff88f9987e257b31b71f1ed55c5`仅追加真实PG测试，生产／Schema／契约树逐字等6fdeae0，正常Platform不重启。BFF a819855／Agent fc8b0f0及原正式artifact不变。App826份非MD源精确核同、原进程source HMR；无新wire／表／依赖／权限配置。
+
+**正常闭合。** 既有无凭据SSE QA保原Prepare unknown时，配置从name／notes／URL只读和保存禁用，变为独立编辑／Save；本次仅改备注、权威版本2→3、硬刷新重开读回，再显式恢复原备注到版本4。版本真实前进，不伪回滚。原所有Prepare等回执及xmin保持，仅2条新completed Update／各attempt1；其它Server／Headers／凭据／OAuth／Connection、Agent／Billing事实保持。Platform既有admission slot及BFF stream轮询技术变化明列，不称全库零写或全量HTTP抓包。正常浏览器journal精确digest未采到（raw CDP不支持，未绕过）；原日志模块／port精确等价测试及刷新仍unknown另列，不能把后者冒完整digest证明。
+
+**职责与呈现。** 只有fresh Server CAS的update_server越过同目标旧Prepare unknown，配置自身unknown、Prepare在途／completed／inspection、日志未ready仍保原门；Save不发Prepare／OAuth或试用。exact配置ACK只退休旧核验proof，不清原请求。发现并修复两处P2：共享locked拆分后HTTP发布被误启用，现独立发布门罩菜单／handler／effect；读错后同ACK标签可能复活，现真错误永久退休。配置表单不再挂不相干的旧连接异常面板：仅1×1读屏status及显式核验按钮，连接详情仍如实显示未知说明，配置自身未知／明确试用错误不隐藏。最终652／390无横溢出，390键盘可到可见Save，Escape回原管理入口；原备注保留、零新增Prepare／模型命令。
+
+**验证。** Root最终166个相关UI/core/engine/features文件3531 PASS、contract392／architecture50、lint／typegen／非增量types／build／posttypes八门均0，冻结输入无漂移；功能父另有3529通过的完整相关门。Platform原private-server整文件真实PG17 PASS／0skip，临时库库存94→94，格式／lint／全types0；外部declaration I/O为显式double，不称真实Provider或live OAuth refresh。完整默认原Auth/request-hook缺口仍OPEN，本片未重跑完整默认及未变Docs，不称全产品通过或合并。三处旧transport／Alert oracle按新职责迁移，保真错误／actor／代际／对象／confirmation和短屏真实CSS几何风险断言，不删测试消失败；全部原RED、两次后继全UI失败、修正及独审留档。
+
+**进度收敛与下一步。** 独立四路×八动作矩阵已找到基础Create／对应详情Update／获准QA删除后硬刷，以及API密钥／Header、图标生命周期与HTTP定义发布的真实正常证据，已承接而非重复重挂待办。本片新改动由上述正常QA和后继相关门补足；DeepWiki同Run真实成功与重开证据不重复付费。MCP整体仍需旧Prepare外部未知终态工程（旧泛marker缺阶段／效果证据，不可当确定失败、清journal或改旧CAS）、已实测API输入10／参考8px及高度／内部间距等视觉差与末端对照。该终态缺口不是统称Provider未配置；外部授权只阻对应动作。随后沿唯一Goal推进Skills及其余主链／首页项目，未偷换成小目标。原截图／DOM／权威快照／源码激活／回退／矩阵与独审在本地ignored mcp-config-prepare-separation-20261027，原Manus草稿与视口已恢复。
+
 ## 2026-10-27 最新：MCP URL图标取消回收与API删除负事实已正常闭合；继续配置／连接分离
 
 **本片已正常生效。** App `cd8e304bcd91787fcc736aa7d93eb386da80db33`，BFF a819855／Agent fc8b0f0／Platform 6fdeae0及原合同、Schema不变。App826份非MD源码逐字核同，只HMR两份生产源与相邻INDEX，原进程／依赖／环境保持。正常URL图片Import→ready5（5730字节PNG，实际解码288×288）→不保存取消→released7／asset_deleted／空绑定；只新增此intent与Import／Cancel两completed回执，没有创建API／Server／Connector／Connection或outbox。
