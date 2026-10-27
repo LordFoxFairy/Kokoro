@@ -1,6 +1,6 @@
 ## 2026-10-27 MCP 原结果恢复、失败终态与详情历史已正常验收
 
-**正式及正常组合：** App `361896a104975e661dc4b03c895323c16ca862c0`（MCP详情验收父 `13fdfa19140f016b5328d3d237d4d8de9e020c6a`，功能父 `8ba02623058c39c5ecbee8dfb2c8bdf8aaa067a9`）、BFF `394ae559cd2018206c32d5ca3014de248effa203`、Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`；Agent仍fc8b0f0 HTTP8.2。App834份非MD源码全核同；先完成v2 reader正常硬刷新／原请求GET，再优雅替换BFF→Platform，实际exit0与ready200、其余六监听／worker及原env／依赖／Schema保持。IDB升级后只允许向前兼容，不降级／删除历史。
+**正式及正常组合：** App `2aaf05fdac83d846fac3c272e71a43b3cce6d5a4`（文案父 `361896a104975e661dc4b03c895323c16ca862c0`，MCP详情验收父 `13fdfa19140f016b5328d3d237d4d8de9e020c6a`，功能父 `8ba02623058c39c5ecbee8dfb2c8bdf8aaa067a9`）、BFF `394ae559cd2018206c32d5ca3014de248effa203`、Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`；Agent仍fc8b0f0 HTTP8.2。App834份非MD源码全核同；先完成v2 reader正常硬刷新／原请求GET，再优雅替换BFF→Platform，实际exit0与ready200、其余六监听／worker及原env／依赖／Schema保持。IDB升级后只允许向前兼容，不降级／删除历史。
 
 **正常业务闭合：** 原无凭据SSE QA的旧K1／CAS1仅GET409具名fence，显式“结束等待”零网络写入；独立“重新连接”先GET当前Server＋Connector，再用新K2／CAS4仅POST一次，真实412 `mcp_personal_prepare_rejected`，不是虚构连接成功。owner回读新terminal四字段标记／attempt1、Server版本5，零凭据／OAuth／Connection；旧回执整行SHA及xmin完全保持。硬刷新后两条历史保留，各自仅GET原CAS4／CAS1，无POST／新key／自动授权／模型。processing、缺失或未获具名fence仍unknown，不把一般failed当确定失败。各窗口网络完整未截断；本次不重跑付费成功链、不改旧账。
 
@@ -10,9 +10,11 @@
 
 **执行游标：** 本轮可执行的MCP恢复／失败／CRUD与详情切片收口，真实有凭据Provider／OAuth／Admin末端仍依赖对应配置，单列，不再阻塞独立Skills。下一步按唯一Goal表继续Skills S10–S13差额（S09绑定已闭）：承接已有八项成功，不重新导入／移除重添／执行同一付费Run；先完成最终组合绑定，再核GitHub／创作录制、项目详情与权限失败及作者／状态文案。整个Goal保持active；Agent交互／异常矩阵、首页／项目及完整无感读取仍按表推进，PR保持Draft。脱敏说明入Git，原图、网络及owner证明留ignored `var/dev/mcp-prepare-receipt-20261027/`。
 
-**Skills已继续推进：** S09最终源码／契约／传递依赖绑定已闭：直接Skills模块未被本轮MCP改动改写，52条Skill路径与递归242引用逐对象相同；正常现QA概览→SKILL.md→reference marker真实GET200，安装／series／source_ref／revision1／installed／enabled／状态七字段与26日已验删装回读完全一致，原八成功承接，不再上传／移除重添或付费重跑。S13发布说明中的内部ACTIVE／回执术语也已在App `361896a104975e661dc4b03c895323c16ca862c0`正常修正，仅两字典literal＋原Dialog回归；Root42 focused／selected lint／非增量types0、独审0。正常本人更新窗新说明“选择单个 ZIP 包。”，读／取消完整网络窗零非GET；未选择文件、编辑或发布。此局部文案不冒新版本完整App八门，完整门上次绑定13f布局。开发字典HMR使本方空更新窗回列表，已明确重开正常验证，不冒同窗状态保持。
+**Skills已继续推进：** S09最终源码／契约／传递依赖绑定已闭：直接Skills模块未被本轮MCP改动改写，52条Skill路径与递归242引用逐对象相同；正常现QA概览→SKILL.md→reference marker真实GET200，安装／series／source_ref／revision1／installed／enabled／状态七字段与26日已验删装回读完全一致，原八成功承接，不再上传／移除重添或付费重跑。S13发布说明中的内部ACTIVE／回执术语也已在App `361896a104975e661dc4b03c895323c16ca862c0`正常修正，仅两字典literal＋原Dialog回归；Root42 focused／selected lint／非增量types0、独审0。正常本人更新窗新说明“选择单个 ZIP 包。”，读／取消完整网络窗零非GET；未选择文件、编辑或发布。此局部文案不冒新版本完整App八门，文案片当时完整门绑定13f布局；后继2aaf已完整重验见下。开发字典HMR使本方空更新窗回列表，已明确重开正常验证，不冒同窗状态保持。
 
-作者差额进一步定位：安装／个人详情已有真实publisher profile，外层Community只是来源类别fallback，Hub正式输出缺真实publisher字段；现有Platform／IAM当前tenant授权链可复用，不把creator／导入者当GitHub发布者，不另建owner／表。骨架aria-label不是可见loading文字，但共享reader确有可见骨架，另一reader有可见loading段落；这些呈现及S10–S13剩余继续，不假勾整个Skills。当前正常834源digest `e00dd6c64823f872bd48a837eb7ec8c84a8a7082491992dd8a08093bd3f1b30a`。
+作者差额进一步定位：安装／个人详情已有真实publisher profile，外层Community只是来源类别fallback，Hub正式输出缺真实publisher字段；现有Platform／IAM当前tenant授权链可复用，不把creator／导入者当GitHub发布者，不另建owner／表。骨架aria-label不是可见loading文字，但共享reader确有可见骨架，另一reader有可见loading段落；其中共用reader／overview安静呈现已正常验收，个人reader仅源／隔离资格；S10–S13剩余继续，不假勾整个Skills。当前正常834源digest `5e2bdc3e52b778fee5f83c2b8a56c0312a307ef18172b90d6dd73025e2b1870d`。
+
+**Skills安静读取已正常生效：** App `2aaf05fdac83d846fac3c272e71a43b3cce6d5a4`，仅共用reader／overview装饰骨架和另一包reader loading段落改为无可见加载、保sr-only／aria-busy；同path保文、缓存／singleflight、actor／代际、401／403／坏wire清私有facts、错误／重试／取消字节保持。Root六路径完整八门0（4821相关／419contract／50architecture等，1434输入无漂移）及独审0。正常共用QA在本方标签1800ms受控延迟下状态真实1×1、无骨架或可见loading，恢复正常网络后真实SKILL.md到达；390×400正常框370.5×360、零横溢。overview pending截图无条纹；DOM未定位aria-hidden壳，不据此冒正常128px量测，128由隔离真实CSS证明。另一personal reader仅源码／CSS fixture资格，生产入口未建立，不冒正常可达。长网络捕获截断如实保留，最终独立短窗四个GET完整未截断，无写命令；没有上传／重装／发布／模型。延迟与视口均已恢复，不把受控延迟当API性能SLO。后继S13真实publisher BFF28.6 D0已过门、源码候选实施中，正常BFF仍394，consumer未就绪不先启producer。
 
 **Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
 
