@@ -2,14 +2,17 @@
 
 <a id="project-1-full-scope"></a>
 
-**2026-10-27 用户最新追加／当前先执行：具体动作摘要。** 用户指出“处理过程·1个工具→读取文件／已完成／勾”每项同形。已按实际泛header、9类全扳手及重复状态完成App第一阶段，正式 `0f72e2f`／819非MD源码正常HMR，原进程／依赖／环境不变；单项直接动作行、多项真实类别摘要、九类图标与紧凑完成状态，1138／390截图已验。Root停写163文件3450通过及相关contract／architecture／lint／types／build／postbuild types均0，独审未见确定P0–P2；整App默认旧失败仍开放。Agent受信文件／MCP对象与首条恢复候选尚在验证，BFF等待正式artifact再配对；旧历史不猜对象，不称整片已完成。先完成此与主链展示直接相关切片，再回Project定时过滤；不改变完整上线目标或另建任务中心。
+**2026-10-27 当前执行快照。** 动作对象链已正常配对：App95d2d9f→侧栏3ca9601→短菜单b9d28c3、BFF020b401／Public28.4、Agentfc8b0f0／HTTP8.2。新Run804f356e实际完成原生文件读取＋DeepWiki发现／描述／调用，四项detail首条／返回／compact／parts／App一致，刷新零重复，10attempt／20积分全sealed/captured、缓存partial，原40冻结保持；旧历史不补对象。先前五Run23attempt／53积分保持，当前六Run33／73。实际证据在ignored tool-action-summary-20261027；完整默认AUTH-1仍OPEN，Draft不合。
 
-| owner／公开角色 | 当前写区与依赖 | 关闭条件 |
+| owner／公开角色 | 当前写区与依赖 | 状态／关闭条件 |
 | --- | --- | --- |
-| Agent `action_summary_agent_audit` | 先三面D0；现tool activity可选闭合`display_detail`，来自实际工具schema／运行文件面及已验证MCP公开声明，开始冻结／恢复读原安全Chat；无DDL或执行权限变化 | 新旧payload／敏感值剔除／重启首条绑定及真实工具不重执行；正式artifact交付BFF |
-| BFF `action_summary_bff_audit` | 先三面D0；固定Agent后继后消费并发行Public后继，原AGUI／compact／parts同值且immutable；匿名Share固定process=null | 真PG回滚／reopen与共享不泄露，固定artifact交付App；无新表／stream |
-| App `action_summary_ui_audit` | 先现设计／API D0；单项直接行、多项动作摘要、类别图标／紧凑状态，后接正式target字段；不猜文件名或raw参数 | 保真实交错／节点identity／手动开合／单live／HITL；正常新工具对象、旧历史fallback及1138／390对照 |
-| Root | 唯一计划／owner门审／Git／正常激活／浏览器与付费验收 | reader先于producer；旧历史不回填，现有登录全门失败仍OPEN，不把换图标称整片完成 |
+| Agent／BFF／App动作对象 | 正式8.2→Public28.4→95d reader；受信basename／公开MCP名、首条冻结／恢复、匿名Share=null | 本子链已真实完成；保原真实顺序／identity／手动开合／单live／权限和资金，旧history不回填 |
+| App `action_summary_agent_audit` | 侧栏Session一个ellipsis，解除隐藏四按钮占宽；390发现长title撑宽后正式b9短label／目标aria／局部主子边界 | 3ca正常标题恢复；b9主224px／子122px均在390边界内、真实目的地保留；原move／archive／deleteunknown保持 |
+| App项目菜单（writer已冻结） | 正式3ca：真右键／ShiftF10／ellipsis共享编辑／查看／显示更少／删除；跨Project目标handoff | 正常652／1138／390已验；编辑取消／不同项目删除仅确认后取消、焦点准确；不称固定已实现 |
+| BFF `action_summary_ui_audit` | 已批准三面D0：subject `bff_project_pin`关联、GET self集合／可见项目精确过滤、PUT布尔，父锁／tombstone同事务清理；Public28.5候选 | 正式artifact＋完整逆变换保28.4、真实隔离PG／fresh／migration门后再交App；用户已批准正常仅加偏好表／两索引并换源；隔离门通过后才激活，不做假pin |
+| Root | 唯一计划／owner门审／Git／资源／浏览器 | 保存真实Manus右键截图／编辑仅改名观察，记录标题83.8→215.8；pin正常激活另按范围，完整Project七组与AUTH-1不勾完 |
+
+**根因及新坑。** mobile隐藏四44px操作仍占176px，不是padding；desktop静置284px全标题恢复，移动一个44px。390菜单418px越界真实抓出后b9修短标签并实测主／子边界关闭，3478相关与lint/types/build均0。BFF首次激活log重复目录导致停后重启失败，已原程序恢复再预检日志切020b，无DDL／资料改动；并行28.5 WIP与App pin28.4冲突的Docs在精确源码＋正式BFF独立Git checkout重跑全门通过，未松provenance。Root sidebar3467相关／contract389／architecture50及lint/types/build门0不代替浏览器。实际Manus菜单5项中固定尚待正式个人偏好，不靠localStorage冒称持久化。此后回Project定时过滤／网站／ACL等原开放能力，不新建任务中心。
 
 本机Codex App只读取证被工具明确拒绝，未绕过；官方介绍页仅一般产品参考，不能冒充当前动作行的精确像素基线。继续采用用户最新Codex方向与已归档Manus真实分组规范，不等待这项参考权限而停工。普通执行／账本／取消／授权语义保持，新显示对象不自动变成文件访问或分享授权。
 

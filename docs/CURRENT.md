@@ -1,6 +1,14 @@
-## 2026-10-27 最新追加：具体动作摘要正在推进
+## 2026-10-27 最新：动作对象链已真实完成；侧栏标题／项目菜单已接入，固定项目继续
 
-用户要求按Codex熟悉的具体动作摘要收敛，不再每项统一泛过程／扳手／重复完成。App第一阶段 `0f72e2f208fcf93a360cac3cad890a20c8d090e9` 已正式提交并正常HMR生效：819份非MD源码逐字核同，原PID／环境／依赖不变；单项直接动作行，多项按真实类别聚合，九类图标及紧凑完成状态，仍保真实顺序、节点身份、手动开合、单live与HITL隔离。正常1138／390已截图核无横溢出，旧记录仍只保原类别，不猜对象。Root停写相关163文件3450通过，contract／architecture／lint／types／build／postbuild types均0，独立审查未见确定P0–P2；不覆盖原AUTH-1完整默认失败。Agent对象来源／首条恢复和BFF持久传输／匿名Share隔离仍在实施，尚未正常配对，不称完整动作摘要已闭环。具体关闭条件和writer边界仍在[唯一PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)。此前项目／实际主链证据继续有效，网站／网页资源／Project定时／ACL及登录集成门仍开放。
+**当前正常组合。** App `b9d28c312d94e5c59db7f814bdf02a1d115b75a4`、BFF `020b4016afbb4b3f5f2b43355a987bfbbf6300a6`／Public28.4、Agent `fc8b0f09f3cfd96211b33d863d5e629bbed13e46`／HTTP8.2、Platform `6fdeae0`；reader先于producer激活。App822非MD源码核同、仅HMR且原PID／环境／依赖不变；BFF／Agent仅本方优雅换源，无DDL、旧凭据或权限变化。正式分支已fetch远端main／topic核无缺失main提交；多人更新不reset／force。
+
+**实际新Run闭环。** 正常R258新Run `run_bff_804f356e29de40b2ec7625366bb159d1acbefc0510707776cd2f54d752592155`：原生读取既有55字节QA文件→真实DeepWiki发现／描述／调用→最终两marker。四项活动（原生文件1＋受管MCP journal3）均完成；文件basename／已验证MCP公开名称从Agent首条与返回，经BFF compact／ordered parts到App一致，旧历史不回填。10个实际model attempt全部sealed、20积分captured，缓存缺项仍partial；原4笔40冻结逐行／xmin保持。刷新／手动开合／1138与390无横溢出核同，没有额外Run／工具／扣费。当前六个具名QA Run合计33attempt／73积分，不把原40冻结改账。实际截图、三方对象与重开零重复证明留ignored `var/dev/tool-action-summary-20261027`。
+
+**用户最新侧栏两缺陷。** 根因不是空白padding，而是不可见操作仍占flex：mobile四个44px按钮挤去176px，标题select仅83.8px；现归为一个44px菜单，select215.8px；桌面284px行静置操作0px、hover／focus再露32px。实际Manus右键观察为固定／编辑项目／查看项目／显示更少／删除，其中编辑仅改名；已实现真实右键／Shift+F10／ellipsis共享后四项，跨项目编辑及删除确认均等目标owner就绪，取消零写、回焦正确；不借当前项目A操作目标B。652／1138／390标题与边界已实测。固定不是虚假本地开关：BFF按既定D0补subject pin关联／两正式API，尚未激活；会话菜单390实测另发现含完整标题文案撑到418px，已正式b9d28c3修为9语种短标签／完整目标aria及局部主子菜单限宽换行；实际主菜单224px（x49→273）、子菜单122px（x268→390、底793<844），原目的地完整保留，零移动／删除写入。
+
+**验证边界。** Root停写metadata相关UI/core/engine3455、sidebar初版3467／短菜单后继3478通过，contract389／architecture50及lint／typegen／types／build／posttypes均0；sidebar Docs因独立BFF28.5 WIP和App正式28.4有意不同而失败，改在精确源码＋正式BFF Git隔离checkout重跑全Docs通过，未放松provenance或覆盖协作者。BFF完整default2043通过／3既有资源skip，实际PG projection61／parts13及Share HTTP1均0skip；Agent metadata全纯2903＋PG10通过，后继basename修正做175相关与contract/lint/types/build。完整App默认原Next OIDC/request-hook失败仍OPEN，不盲目刷绿、Draft不合并。Project网站／网页资源／定时／ACL等仍按[唯一PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)开放，不以此称全产品上线或所有接口<100ms。
+
+**新增踩坑。** 正常切BFF时首版helper把log目录重复拼接，进程停后启动／自动回退均受同一路径影响；及时恢复原程序ready200，再修为停止前先验证日志可写后才切正式020b成功，原失败／恢复收据保留。PG选例harness缺schema、port snake/camel、旧Share泄露cursor oracle及direct-scope夹具都按实际owner纠正，未删权限／事务断言；并行owner WIP不得作为已发布artifact消费。浏览器仍是最终边界：代码全绿后390菜单越界被实际测出，补最小回归并正式接入后重测；项目固定尚待正式pin消费者与已批准的加表激活，不计作整项通过。
 
 ## 2026-10-27 当前：Project 共同组件与真实路由往返修复已生效
 
