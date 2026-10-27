@@ -1,3 +1,5 @@
+**Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
+
 ## 2026-10-27 最新：侧栏标题与项目五项菜单已实测闭合；全产品目标继续
 
 **正常组合。** App `69075839c89fdd8ccfd9b6d59c79413d4850dded`、BFF `a819855a45e9ddda3eb7318b9bed99c399374254`／Public28.5、Agent `fc8b0f09f3cfd96211b33d863d5e629bbed13e46`／HTTP8.2、Platform `6fdeae0`。App826非MD源码逐字核同，原PID／环境／依赖保持；BFF916正式源码核同／ready200。用户明确批准后仅增加个人pin关联表／两索引，原32表全行／xmin在DDL前后核同，旧程序带新表仍ready200；原凭据／权限不变。正式App消费合同c195／SHA109a，BFF后继a819仅错误表示修正，同一合同／SQL不变。Root／三受影响owner最后fetch main与topic均无缺失main提交，无force／reset。
