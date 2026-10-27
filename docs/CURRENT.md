@@ -1,6 +1,6 @@
 ## 2026-10-27 MCP 原结果恢复、失败终态与详情历史已正常验收
 
-**正式及正常组合：** App `2aaf05fdac83d846fac3c272e71a43b3cce6d5a4`（文案父 `361896a104975e661dc4b03c895323c16ca862c0`，MCP详情验收父 `13fdfa19140f016b5328d3d237d4d8de9e020c6a`，功能父 `8ba02623058c39c5ecbee8dfb2c8bdf8aaa067a9`）、BFF `394ae559cd2018206c32d5ca3014de248effa203`、Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`；Agent仍fc8b0f0 HTTP8.2。App834份非MD源码全核同；先完成v2 reader正常硬刷新／原请求GET，再优雅替换BFF→Platform，实际exit0与ready200、其余六监听／worker及原env／依赖／Schema保持。IDB升级后只允许向前兼容，不降级／删除历史。
+**正式及正常组合：** App `6bdf5a07e4d0b07c1afd3c1e8d7d279dc1113d3b`（文案父 `361896a104975e661dc4b03c895323c16ca862c0`，MCP详情验收父 `13fdfa19140f016b5328d3d237d4d8de9e020c6a`，功能父 `8ba02623058c39c5ecbee8dfb2c8bdf8aaa067a9`）、BFF `7f5c522b54762c5c0a01ffa7f71f5696eb4c70f6`、Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`；Agent仍fc8b0f0 HTTP8.2。App834份非MD源码全核同；先完成v2 reader正常硬刷新／原请求GET，再优雅替换BFF→Platform，实际exit0与ready200、其余六监听／worker及原env／依赖／Schema保持。IDB升级后只允许向前兼容，不降级／删除历史。
 
 **正常业务闭合：** 原无凭据SSE QA的旧K1／CAS1仅GET409具名fence，显式“结束等待”零网络写入；独立“重新连接”先GET当前Server＋Connector，再用新K2／CAS4仅POST一次，真实412 `mcp_personal_prepare_rejected`，不是虚构连接成功。owner回读新terminal四字段标记／attempt1、Server版本5，零凭据／OAuth／Connection；旧回执整行SHA及xmin完全保持。硬刷新后两条历史保留，各自仅GET原CAS4／CAS1，无POST／新key／自动授权／模型。processing、缺失或未获具名fence仍unknown，不把一般failed当确定失败。各窗口网络完整未截断；本次不重跑付费成功链、不改旧账。
 
@@ -15,6 +15,12 @@
 作者差额进一步定位：安装／个人详情已有真实publisher profile，外层Community只是来源类别fallback，Hub正式输出缺真实publisher字段；现有Platform／IAM当前tenant授权链可复用，不把creator／导入者当GitHub发布者，不另建owner／表。骨架aria-label不是可见loading文字，但共享reader确有可见骨架，另一reader有可见loading段落；其中共用reader／overview安静呈现已正常验收，个人reader仅源／隔离资格；S10–S13剩余继续，不假勾整个Skills。当前正常834源digest `5e2bdc3e52b778fee5f83c2b8a56c0312a307ef18172b90d6dd73025e2b1870d`。
 
 **Skills安静读取已正常生效：** App `2aaf05fdac83d846fac3c272e71a43b3cce6d5a4`，仅共用reader／overview装饰骨架和另一包reader loading段落改为无可见加载、保sr-only／aria-busy；同path保文、缓存／singleflight、actor／代际、401／403／坏wire清私有facts、错误／重试／取消字节保持。Root六路径完整八门0（4821相关／419contract／50architecture等，1434输入无漂移）及独审0。正常共用QA在本方标签1800ms受控延迟下状态真实1×1、无骨架或可见loading，恢复正常网络后真实SKILL.md到达；390×400正常框370.5×360、零横溢。overview pending截图无条纹；DOM未定位aria-hidden壳，不据此冒正常128px量测，128由隔离真实CSS证明。另一personal reader仅源码／CSS fixture资格，生产入口未建立，不冒正常可达。长网络捕获截断如实保留，最终独立短窗四个GET完整未截断，无写命令；没有上传／重装／发布／模型。延迟与视口均已恢复，不把受控延迟当API性能SLO。后继S13真实publisher BFF28.6 D0已过门、源码候选实施中，正常BFF仍394，consumer未就绪不先启producer。
+
+**Skills目录发布者已正常配对：** App `6bdf5a07e4d0b07c1afd3c1e8d7d279dc1113d3b`／BFF `7f5c522b54762c5c0a01ffa7f71f5696eb4c70f6`（Public28.6，唯一原件 `a020e849f740165fa20099f5ab041b76bc480c70a9bbc067955e57f5ec22ae02`），Platform及其余服务不变。沿现owner product与IAM精确kind/id聚合，不把creator／导入者／Community／品牌当发布者；optional缺省是未知，矛盾source／publisher／GitHub provenance／repository_id／presentation与坏profile均拒invalid。没有新增owner／Schema／缓存／权限。11public生成链正规配对，五private artifact source仍394原件，非误用正常BFF版本；GitHub只读发布方用已验证repository owner，不推断人名。
+
+Root新51路径完整相关八门0：4600相关／421contract／50architecture及lint／typegen／非增量types／build／posttypes，1435输入无漂移；相关命令范围记录于ignored root-app-skills-publisher-r2/results.json，与历史选择不同，不把数量作功能证明，也不冒本次完整default。独审原r1漏product关联真P2与10反例RED保留，r2定点修复；准备源码939全Git输入（不是939非MD；另904非MD），998 dist单独摘要，原package／lock／Schema相同。先新App HMR834正式源且旧producer缺省目录／详情200、未知无假作者，再只BFF优雅exit0→新PID82546 ready200，另七监听／worker保持、Platform不重启。激活前全部prepare processing含expired与非terminal Agent均0；没有删除pending行。原ops真实kernel fixtures承接，wrapper根dist symlink保护缺口经5负控修正，不把observer原data0误当exit0。
+
+正常新目录5条current IAM user found，卡片和详情同Owner1231、精确版本，旧GetSkill回读不覆盖发布者；652详情619.4×600、390×400为370.5×360，无横溢，未安装／导入／发布／执行模型或改旧账命令。网络完整窗，实际目录182ms、已添加读取144ms、详情35ms，不冒全部接口100ms。org／GitHub／missing分支仅fixture资格，不冒正常实体已验。Root本次新开独立Manus技能参考，固定652×767归档作者／GitHub详情与计算样式，原项目和草稿未动、临时参考已恢复关闭；确认GitHub详情尚缺来源链接／Star/Fork展示，沿既有S13下一局部补齐，不把作者事实片当整个Skills或像素一致。证据在同ignored skills-publisher-{reader-old-producer,new-normal-proof,manus-detail-reference}.json及对应截图，已验八成功不重做。
 
 **Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
 
