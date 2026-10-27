@@ -46,3 +46,19 @@ python3 scripts/verify-ten-repository-standard.py --format json
 2026-09-20 的组合验证中，前三项分别为 `PASS`、`PASS`、`322 passed`。最后一项报告 `110` 个 owner violation 和 `1` 个 System TypeScript `unverified`，因此其 JSON status 是 `FAIL`；这是可见的逐仓收敛队列，而非组合拓扑或 main-only 失败，也不允许被表述为全仓质量完成。
 
 完整 clone 的复现命令与远端标识规则见 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)。
+
+## 2026-10-27 产品闭环 Draft 组合（非发布）
+
+用户授权本轮逐仓PR对齐。以下提交已推送并建立Draft PR，Root仅锁定可审查候选；尚未合并、未宣称全产品验收或上线。正常App还含明确保留的22项工作树变更、Billing另有7项，均不随gitlink或push进入候选提交。当前逐动作出口仍为原[闭环计划§2.1](superpowers/plans/2026-09-03-kokoro-production-closure.md#21-接下来逐卡推进原id动作清单唯一接棒入口)。
+
+| Owner | 精确候选 | Draft PR |
+| --- | --- | --- |
+| kokoro-system | `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` | [#2](https://github.com/LordFoxFairy/kokoro-system/pull/2) |
+| kokoro-capability | `8cfead647856ef54ec851a3bebe169a3ca14d212` | [#12](https://github.com/LordFoxFairy/kokoro-capability/pull/12) |
+| kokoro-billing | `33b1452507068b1ce0d4bd8b4adea0bddf6ad1c5` | [#4](https://github.com/LordFoxFairy/kokoro-billing/pull/4) |
+| kokoro-agent | `d0815143f55b0879b3cbdc4a8eeb5694dece07e0` | [#46](https://github.com/LordFoxFairy/kokoro-agent/pull/46) |
+| kokoro-bff | `5dfce099c7ce448e18b8ce5b1e26bb01692c9033` | [#17](https://github.com/LordFoxFairy/kokoro-bff/pull/17) |
+| kokoro-admin | `d221b18d28e15ec423798416aa8abd1f71f44bf8` | [#5](https://github.com/LordFoxFairy/kokoro-admin/pull/5) |
+| kokoro-app | `33029fb3c3ae8269b456de4817a2ff96abdfa000` | [#46](https://github.com/LordFoxFairy/kokoro-app/pull/46) |
+
+这次拓扑核验仅证明manifest与本地精确HEAD对应，不证明owner全门或正常组合等同纯提交树。App默认全测仍有已分类的系统fixture/资源及历史oracle缺口；MCP外部Provider/OAuth、Skills分享/系列删除当前动作及Project资源/分享权限依既有计划保留。各Draft写明实际证据与缺口，不用候选代码或CI替代浏览器、权威回读和财务验收。Root物理工作树与维护工作树的重叠进度文档未整树覆盖，待按事实逐段整合。
