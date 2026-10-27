@@ -175,19 +175,19 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 
 ### 2026-10-27 剩余进度对齐
 
-以当前 active Goal 的四项顺序为准；正常App06b1ecc／BFFa819855／Agentfc8b0f0；Platform正式8b42a8e仅测试、正常生产仍等6fdeae0（本轮Root组合见精确gitlink）。下面区分已验子项与整项剩余，不以历史阶段的“待实施”覆盖最新验收，也不把单条成功链或测试数量当整项完成。不按已知不足的证据给百分比，不新增任务中心。
+以当前 active Goal 的四项顺序为准；正常App13fdfa1／BFF394ae559／Platformf29428f6／Agentfc8b0f0（本轮Root组合见精确gitlink）。下面区分已验子项与整项剩余，不以历史阶段的“待实施”覆盖最新验收，也不把单条成功链或测试数量当整项完成。不按已知不足的证据给百分比，不新增任务中心。
 
 | Goal 顺序 | 原 TODO 归属 | 已完成／正常生效的子项 | 整项状态与剩余 |
 | --- | --- | --- | --- |
-| ① MCP／连接器 | SKILLS-MCP-1 的 MCP 部分 | 四路基础创建／对应详情编辑／QA删除刷新及密钥／Header／图标／HTTP定义发布已收敛正常证据；API删除负事实、URL图标取消、旧Prepare unknown下独立备注保存／刷新／恢复及面板分离、API外框和剩余图标／帮助／密钥细节已正常验；真实调用／项目推荐／同会话恢复保持 | **实施中，基础CRUD与本轮API细节不重挂。** 原Prepare completed丢ACK查询已交付owner，BFF／App查询恢复接线中；旧外部unknown／确定失败终态仍待具体工程切片和末端同态对照。保原请求及CAS，不把泛failed marker当确定负ACK、不擅清journal。Provider/OAuth缺配置只限制对应授权，不掩盖工程恢复缺口。 |
+| ① MCP／连接器 | SKILLS-MCP-1 的 MCP 部分 | 四路基础创建／对应详情编辑／QA删除刷新及密钥／Header／图标／HTTP定义发布已收敛正常证据；API删除负事实、URL图标取消、旧Prepare unknown下独立备注保存／刷新／恢复及面板分离、API外框和剩余图标／帮助／密钥细节已正常验；真实调用／项目推荐／同会话恢复保持 | **本轮可执行工程切片已闭合，整项外部授权仍单列。** 原completed回执查询、旧unknown具名fence→结束等待、新key／fresh CAS独立重连、确定失败及刷新历史已正常实测；旧回执不改，不把failed泛码当负ACK。详情历史挂载／短屏可达及配置分离已修。真实Provider/OAuth/Admin有凭据末端依对应配置，不虚构成功，也不再阻塞Skills。 |
 | ② Skills | SKILLS-MCP-1 的 Skills 部分 | 真实导入／下载、启停、安装更新、版本历史／新版本恢复、获准移除同版本重添已有正常证据；项目默认继承与Run两文件成功保持；本次最终正文／reference／历史及更新／移除取消、目录与外层重开已补 | **实施中，不重做已验写链。** 剩最终跨owner／传递依赖绑定、GitHub／创作录制入口、项目其余CRUD、权限／失败／unknown差额及全页同态；作者fallback和内部ACTIVE文案已定位待修。 |
 | ③ 创建任务与 Agent 主链 | AUTH-1、MODEL-1、CHAT-1、AGENT-1、CREDIT-1、PREF-1 | 正常新任务及项目归属／URL恢复已有证据；模型→真实MCP／Skills／文件→交付→终态→重开→实际积分已验，六QA共33attempt／73积分；真实自动压缩3次有checkpoint／capsule证据 | **实施中，核心成功链正常生效。** 剩运行中发送／队列／打断／停止恢复、异常／取消与多标签／会话导航完整矩阵及原AUTH-1默认测试缺口。原四笔40冻结按原事实保留，cache缺项仍partial；不反复付费重跑成功链，不改旧账充数。 |
 | ④ 首页、项目及其余产品能力 | HOME-1、PROJECT-1、SCHEDULE-1、PERSONAL-1、NOTIFY-1 | 本轮标题留白、项目五项共享菜单、真实固定／取消刷新、跨项目编辑取消→删除确认已闭合；指令／MCP／资源／Skills四项共享上下文、Root↔Task往返已有正常证据 | **实施中。** 首页各场景完整创建旅程；项目网页资源／网站持久化、项目定时过滤与嵌入、事件／高级自动化、分享／ACL及排序／分区完整矩阵；个性化／知识导入和通知按原条件核验。不能把复制URL、preview数据或几个入口当这些能力完成。 |
 | 贯穿四项 | UI-1、API-1、DOCS-1、RELEASE-1 | 当前相关源码／契约／Docs生成与局部工程门、Manus菜单计算样式／截图和正常版本聚合已验；原PR已更新 | **实施中／待合并。** 全站无感读取仍有T02 ProjectConversations可见loading／骨架；精确视觉色差、冷读／后台错误和完整登录回归保留。原PR仍Draft，未完成项不因push或局部绿而勾完；全部接口<100ms及全像素一致尚未成立。 |
 
-**下一执行游标：** 继续①MCP：已验基础四路CRUD、图标／密钥／Header／定义发布、独立配置unknown解耦及API外框／剩余控件不重跑；本轮先接正式completed回执查询→App同key GET恢复→正常配对，再收准确确定失败／旧unknown终态与末端对照。随后②Skills只补五类既有缺口；③保留已验成功主链，只补交互／异常；随后收④。Project scoped定时D0留项目子队列，不重新调查、不以历史“唯一下一步”抢占当前Goal顺序；一个Provider或局部问题不阻塞独立写区。
+**下一执行游标：** 进入②Skills五类既有差额（S09–S13）；①已验基础四路CRUD、图标／密钥／Header／定义发布、原结果GET恢复／具名终态／历史／独立重连及配置职责不重做。先绑定最终组合，只补变化的真实用户旅程；GitHub预览与创作／录制handoff不冒实际导入或录屏能力。随后③只补已成功主链以外的交互／异常，再收④；有凭据OAuth和原AUTH/R352独立缺口不作为所有工作前置。
 
-**本轮并行写区／实进度（2026-10-27，仍属①MCP）：** 正常App `bb451ac735c5` 原key／CAS GET恢复与API控件已验，829非MD源核同；原SSE unknown仅原CAS1／原key GET、约45ms／503unknown保留，完整网络窗无POST，原ready详情正常，无新连接／模型；不是全接口SLO。Root V8八门0／1424输入无漂移，V7坏ACK实缺与RED保留。正常Platform688bc＋BFF6557 completed原回执双读43.01／15.08ms同SHA、错CAS409承接。后继Platform `f29428f6` 已正式推送未激活：Root真实PG28／0skip（首27／1为Prisma spy故障注入、已按真实Proxy修复）、八静态0／1088输入无漂移；完整default3016／672skip／1R352 child15s失败且串行复现，根因未证实，不刷绿或放宽。App `aef0d7ab` IDBv2存储正式7文件未正常升级，原active保持／双store精确历史及K2保护，native18＋原恢复／auth合136与其它相关门0；未接UI／wire，不称停止等待已生效。BFF `394ae559` 已正式推送outcomes1.0＋lookup1.1（正常仍6557），Root八门0／896输入无漂移，contract1226／default2077与3原资源skip；新helper过宽改无关错误P2已实RED后窄修，只接管新4／5 claim，完整相关门重验。`api_visual_fidelity` 已获正式394a原件实施最小commands／共用紧凑UI、原子complete历史围栏；retired非success、晚K1不动K2、新点击fresh CAS，writer不操作正常资源。reader先于producer，Root独占Git／配对。`prepare_recovery_boundary` AUTH隔离取证一次2PASS／857输入无漂移、自有进程及Redis前缀清空；9截断窗但未撞EOF，原两默认失败仍未闭，旧focused env／trace缺口已纠正，不阻独立MCP。旧processing仅过期不发fence，原历史未知不伪改，K2仍另次fresh/manage/newkey。Skills S09–S13只读cut已收（含上传自动写、创作可取消在途、Project缺详情入口纠正），MCP未闭不假勾Skills。完整AUTH／全Goal／合并门仍开放。
+**本轮并行写区／实进度（2026-10-27）：** MCP正常App13fdfa1／BFF394ae559／Platformf29428f6已配对；原K1 CAS1 GET409→显式结束等待零写→fresh双读／K2 CAS4一次POST412具名拒绝→刷新双历史只GET，owner旧行SHA／xmin保持、新terminal attempt1／版本5／无Connection凭据，真实功能切片已收口。Root截图另发现历史外挂挤hero，已在同组件原scroll body修正，652／390键盘及配置独立读／取消正常验；不以fixture图代正常图，原完整RED保留。App最终四路径Root八门0／1434输入无漂移，CSS／commands／journal／wire零变；PlatformPG28／0skip和BFF八门承接，默认R352 timeout及Next/Auth根因仍独立OPEN。Root独占Git／正常资源，原CURRENT29及计划32增／2删WIP保留。接下来进入②Skills S09–S13，不重做已验八成功；有凭据Provider/OAuth缺口不再拖住独立产品工作。完整上线、全Goal与合并门未假勾。
 
 **状态与证据规则：** 沿用待核实／待实施／实施中／待验收／待合并／正常生效；正常生效的子项不等于整项完成。每次关闭补根因、改动、正式SHA、实际旅程／回读及剩余差异；不以隐藏失败、伪造数据、删断言或重复盘点替代实施。详细证据仍在本页最新快照和CURRENT，不复制完整历史。
 
