@@ -1,3 +1,30 @@
+## PROJECT-1 当前执行补充（2026-10-27；以下原历史保留）
+
+<a id="project-1-full-scope"></a>
+
+**2026-10-27 项目完整范围校正（七组能力，整体仍开放）：** 用户新截图不是单独的 Skills 卡，而是整个项目上下文面板。已并行核对 App `ea04903`、BFF `1177715`、Platform `8cfead6` 的相关实现及正式契约，并只读观察 Manus 项目 `NB6rBWho5ecJHdsbQpZ8kw` 的网站选择器、触发任务类型、定时表单和事件来源。未创建、保存、授权或发送参考任务，参考原草稿保持。菜单截图／操作记录留在 ignored `var/dev/project-full-scope-20261027/`；本次调查不是实现交付，不新增完成勾选。
+
+| 能力 | 当前事实及缺口 | 下一动作／关闭条件 |
+| --- | --- | --- |
+| 指令 | 已有项目范围 PATCH／GET／历史及未知提交恢复证据；不是新增后端空白。 | 保留已验写入恢复；补完整面板同态对照及新任务继承证据。 |
+| 连接器／MCP | 真实 Manus 项目入口是“推荐连接器”：跨目录搜索／复选／取消／保存，已连接成员默认启用且各自可关闭；不是定义发布。本轮前runtime-manifest缺connectors键、源码只跳全局设置；现已正式启用独立推荐集合与选择器。原publication仍是定义pin，与推荐分离，不自动连接或授权。 | BFF正式推荐CAS／自然幂等PUT与App选择器已正常激活，已验持久化、取消、默认匹配和手动取消优先。新Run实际承接Connection，但声明发现503；下一先修具体失败跳并验远端工具成功／终态恢复，不以保存成功替执行成功。 |
+| 文件和资源 | 文件上传、扫描、metadata、原生下载、删除恢复已有真实证据；截图还含网页资源与“搜索网络”，该旅程尚未完成。 | 文件已验环节不重做；核实网页资源来源、选入／移除、刷新及任务实际读取。 |
+| 技能 | 已有项目专属安装／列表／详情／启停／更新／移除，以及默认选择 GET／PUT；不是仍跳全局设置的旧占位。 | 补完整项目内旅程及固定版本被新 Run 加载的证据；安装／勾选不直接等于执行闭环。 |
+| 网站 | 当前项目网站内容来自 `previewWebsites`，关联仅组件本地 state，尚非正式持久化。Manus 实际“添加网站至当前项目”为已有网站搜索／选择器，不是截图即可推定要另造托管平台。 | 确定既有用户网站实体与项目关联契约，再过受影响设计门；列表／添加／移除／刷新须走真实 owner。禁止打开 flag 暴露演示数据充数。 |
+| 触发任务 | Manus 实测三入口：定时任务、触发任务、高级自动化 Beta；事件来源含 RSS／Webhook 等。现有 ScheduledTasks 已有项目 ID、时间计划及 CRUD，但项目卡只有带 project_id 的跳转，没有完整嵌入列表／编辑；事件订阅与高级自动化正式契约仍缺。 | 先复用现有定时任务业务切片，核列表分页／项目过滤后接项目入口；事件／高级能力由现有业务 owner 明确触发、授权、投递、取消契约后实施，不以 cron 代替事件。 |
+| 分享和权限 | 当前项目分享仅私有 URL／复制，没有成员／邀请／角色／撤销授权契约；会话分享 scope=project 不是 Project ACL。 | 项目 owner 定义实际协作范围与权限后实施；用访问者真实读取／编辑／撤销验收，不以复制 URL 代替。 |
+
+**2026-10-27 正常激活／真实旅程快照：** 用户确认的范围已执行：BFF `21c6447` 已推送并正常加载；Project仅新增推荐集合／独立版本两列，配置采用CAS＋自然幂等PUT，无新增receipt／journal／outbox。System仅新建并暴露 `workspace.connectors`，manifest实际只多该启用键，网站／触发任务仍隐藏；原凭据和工具授权不改。App `dc7941d` 已正常加载，815非MD源码核同；后继 `18c1861` 两文件按Manus实际computed style补30%黑色＋4px模糊并正常配对。Root在冻结字节上完成App完整6113通过／0失败、lint／types／build及post-build types全0；后继视觉12通过／lint／types0；BFF默认2020通过／3原资源跳过、contract1191通过及隔离PG7通过。独审发现的可选Server误筛和pending关闭丢焦点已修，误用另一个Connection协议提出的status风险明确撤回，没有为失真替身新增状态。
+
+真实正常R258：选择后取消未保存；保存MCP＋Custom API→权威回读／重开，只有本人可用MCP被默认选入；手动取消为[]后保存新推荐仍保持[]；刷新新草稿重新默认选入MCP。正常Project版本1→2→3，推荐事实实际持久化；同1138×767的选择器560×590／16px圆角、18/600标题、528×36行与Manus测量一致，参考／实现截图已归档。首次发送实际新建Project会话，BFF launch确实承接本人Connection，URL／Project／终态／重开恢复已验；但发现工具步骤得到 `MCP_CURRENT_READ_FAILED`，没有成功读取外部文档，**不能关闭执行链或整个MCP／PROJECT-1**。正常日志已定位GetConnection200约15ms、GetConnector200约10ms、随后ListMcpServerDeclarations503约3018ms；这是声明发现子链，不是App漏传，也不证明远端DeepWiki不可达。继续定位该跳的DoH／逐RPC预算／协议握手，不重发原Run、不扩大授权、不拿UI保存成功当工具成功。
+
+正常加列前后，原Project／Conversation／Message／命令receipt／dispatch事实、xmin／ctid核同；在线 `bff_agui_stream` 操作态有变化，故不声称全库零写。原始证据、两次WIP门失败、错误推断撤回及最终冻结门均保留在 ignored `var/dev/project-mcp-recommendations-20261027/`。完整E2E／全产品<100ms与七组项目能力仍开放；PR仍Draft，不称已合并。
+
+**本轮前进判定与证据：** 上轮是范围／源码调查进展，本轮真实点击已改变实施选择：推荐配置与 definition pin 分开。已取同页 DOM／计算样式，560px 选择器、18/600 标题、36px 操作按钮；正常本地 manifest HTTP200 与项目截图证明三个入口当前隐藏，不误判为已具备实现。证据 `var/dev/project-full-scope-20261027/connector-recommendations-observation.json`、`manus-project-connector-recommendations.png`、`local-project-flags.json`、`local-project-current.png`。BFF 设计 writer 仅既有三面文档候选，Root 独占浏览器／任务板／Git；另一只读调查转入隔离 ignored 的 Next writer 诊断，不碰正常服务。
+
+**推进顺序与防遗漏：** 下一切片是项目推荐连接器（新观察已推翻直接复用 pin 的旧假设；先完成最小 Project 事实设计门），随后项目定时任务嵌入；其余独立的参考／契约澄清并行，不等一个外部 Provider。网站、事件／高级自动化、Project ACL 涉及缺失实体／契约，先提交必要设计结论再改数据与传输边界。每组分别记录“入口可用、写入持久化、任务执行、同态 UI”，七组均满足各自适用条件才关闭 PROJECT-1；本轮资源／删除收据只关闭对应动作。
+
+
 # 最新目标与 TODO：面向上线的正式产品闭环
 
 <a id="release-readiness-20261021"></a>
