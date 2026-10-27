@@ -1,5 +1,15 @@
 **Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
 
+## 2026-10-27 最新：MCP URL图标取消回收与API删除负事实已正常闭合；继续配置／连接分离
+
+**本片已正常生效。** App `cd8e304bcd91787fcc736aa7d93eb386da80db33`，BFF a819855／Agent fc8b0f0／Platform 6fdeae0及原合同、Schema不变。App826份非MD源码逐字核同，只HMR两份生产源与相邻INDEX，原进程／依赖／环境保持。正常URL图片Import→ready5（5730字节PNG，实际解码288×288）→不保存取消→released7／asset_deleted／空绑定；只新增此intent与Import／Cancel两completed回执，没有创建API／Server／Connector／Connection或outbox。
+
+**API CRUD根因与修复。** 已确认删除原先只使列表失效，读取失败却保留旧页，导致已删卡片复活。现在现有actor／client命令owner仅在生产client验证deleted:true＋精确profile ACK后记录安全ID，finish不清该显示负事实；广场／管理及恢复入口共用过滤。unknown／拒绝／错误目标不记，主体或client退休清除，原key／body／CAS与取消恢复不改，无持久副本或自动DELETE重试。用户精确批准后仅删除本轮无凭据新QA：正常head列表被本标签精确阻断时，管理和广场均不见已删卡、其他API仍在；清空阻断后刷新／重新管理仍相同。权威回读仅该QA profile消失，新增一个completed Delete回执／attempt1；这不是全量网络捕获或HTTP包计数证明。
+
+**验证与保护范围。** 主方冻结输入重跑166个相关UI/core/engine/features文件3514 PASS、contract392、architecture50、完整lint／typegen／非增量types／build／posttypes均0；三种head失败／旧head／旧tail回归先RED后GREEN，后两种仅夹具证据，不冒正常故障实测。独审五SHA一致、无确定P0–P2。两段正常旅程分开before/after守护：原Platform行／xmin除既有admission-slot技术活动保持，Agent／Billing全表保持，BFF除agui_stream轮询保持；两技术例外明确列出，不称全库零写。截图／计算样式／权威回读／原失败／独审与激活回退材料在本地ignored mcp-current-closure-20261027；参考原草稿保留，故障注入已清空。
+
+**剩余游标。** 四入口实际API编辑／JSON HTTP／URL HTTP／自定义SSE详情已补观察，不据此勾整项CRUD或全像素一致。发现旧Prepare unknown仍从UI及命令层锁独立Server编辑，与已批准“保存只保存／连接单独触发”粒度冲突；下一片先按当前Server CAS与owner Prepare版本围栏修正该互锁，保留原unknown key／body，不重发或伪造连接成功。API／JSON保存后的多项详情策略没有足够Manus实测，不擅自猜首项／强制跳转。原AUTH-1默认门仍OPEN、本次未重跑全默认或未变Docs，PR维持Draft，完整Goal继续active。
+
 ## 2026-10-27 最新：侧栏标题与项目五项菜单已实测闭合；全产品目标继续
 
 **正常组合。** App `69075839c89fdd8ccfd9b6d59c79413d4850dded`、BFF `a819855a45e9ddda3eb7318b9bed99c399374254`／Public28.5、Agent `fc8b0f09f3cfd96211b33d863d5e629bbed13e46`／HTTP8.2、Platform `6fdeae0`。App826非MD源码逐字核同，原PID／环境／依赖保持；BFF916正式源码核同／ready200。用户明确批准后仅增加个人pin关联表／两索引，原32表全行／xmin在DDL前后核同，旧程序带新表仍ready200；原凭据／权限不变。正式App消费合同c195／SHA109a，BFF后继a819仅错误表示修正，同一合同／SQL不变。Root／三受影响owner最后fetch main与topic均无缺失main提交，无force／reset。
