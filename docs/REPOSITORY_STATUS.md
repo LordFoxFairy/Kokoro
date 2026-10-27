@@ -49,16 +49,20 @@ python3 scripts/verify-ten-repository-standard.py --format json
 
 ## 2026-10-27 产品闭环 Draft 组合（非发布）
 
-用户授权本轮逐仓PR对齐。以下提交已推送并建立Draft PR，Root仅锁定可审查候选；尚未合并、未宣称全产品验收或上线。正常App还含明确保留的22项工作树变更、Billing另有7项，均不随gitlink或push进入候选提交。当前逐动作出口仍为原[闭环计划§2.1](superpowers/plans/2026-09-03-kokoro-production-closure.md#21-接下来逐卡推进原id动作清单唯一接棒入口)。
+用户授权逐仓PR对齐。全部候选已推送，仍保Draft、未合并/部署，不以测试数字替代产品验收。App原22与Billing原7工作树变更已按依赖闭包提交，不再依赖隐形运行覆盖；未交接的Root进度文档保持原工作树，不整树覆盖。唯一逐动作入口为原闭环计划§2.1。
 
 | Owner | 精确候选 | Draft PR |
 | --- | --- | --- |
 | kokoro-system | `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` | [#2](https://github.com/LordFoxFairy/kokoro-system/pull/2) |
 | kokoro-capability | `8cfead647856ef54ec851a3bebe169a3ca14d212` | [#12](https://github.com/LordFoxFairy/kokoro-capability/pull/12) |
-| kokoro-billing | `33b1452507068b1ce0d4bd8b4adea0bddf6ad1c5` | [#4](https://github.com/LordFoxFairy/kokoro-billing/pull/4) |
+| kokoro-billing | `b7c9858844df4c9b99e40e16bd9984b1d268b503` | [#4](https://github.com/LordFoxFairy/kokoro-billing/pull/4) |
 | kokoro-agent | `d0815143f55b0879b3cbdc4a8eeb5694dece07e0` | [#46](https://github.com/LordFoxFairy/kokoro-agent/pull/46) |
-| kokoro-bff | `5dfce099c7ce448e18b8ce5b1e26bb01692c9033` | [#17](https://github.com/LordFoxFairy/kokoro-bff/pull/17) |
+| kokoro-bff | `11777152bf8fe2ae316e4c67fb355eab94e7c0b5` | [#17](https://github.com/LordFoxFairy/kokoro-bff/pull/17) |
 | kokoro-admin | `d221b18d28e15ec423798416aa8abd1f71f44bf8` | [#5](https://github.com/LordFoxFairy/kokoro-admin/pull/5) |
-| kokoro-app | `33029fb3c3ae8269b456de4817a2ff96abdfa000` | [#46](https://github.com/LordFoxFairy/kokoro-app/pull/46) |
+| kokoro-app | `ea04903928ac0f5ba6f231e9f2f73215daa1a0e0` | [#46](https://github.com/LordFoxFairy/kokoro-app/pull/46) |
 
-这次拓扑核验仅证明manifest与本地精确HEAD对应，不证明owner全门或正常组合等同纯提交树。App默认全测仍有已分类的系统fixture/资源及历史oracle缺口；MCP外部Provider/OAuth、Skills分享/系列删除当前动作及Project资源/分享权限依既有计划保留。各Draft写明实际证据与缺口，不用候选代码或CI替代浏览器、权威回读和财务验收。Root物理工作树与维护工作树的重叠进度文档未整树覆盖，待按事实逐段整合。
+本轮真实闭合：Project根页独立新任务草稿与旧会话URL/锁定隔离；真实资源上传→fresh详情→原生900000B同SHA下载（该次90ms），同名本地413更正后不残留旧错误；真实Asset删除200的ACK延迟→unknown→关闭重开→404回读→同key/空body重放200且replayed=true，只移除目标并保兄弟；精确批准的QA Project删除202后返回/app、fresh侧栏不再出现。普通资源父/子面板读取无可见通用加载/错误重试面板；390px无横溢。项目逻辑删除与后台物理清理分层，不把202当物理完成。
+
+工程证据分层：BFF默认2005PASS/3原资源SKIP、contract1176PASS及相关构建/静态/生成检查通过；Billing默认1864PASS/630资源SKIP、独立真实PG44PASS/零残留。App最终72路径组合1480相关、lint/build/types及11既有生成check通过；其前一阶段完整门6027PASS/1FAIL：Next Webpack开发fixture读取0字节react-loadable-manifest导致请求prepare阶段JSONEOF，真实trace已绑定，未靠刷绿/放宽门禁抹掉。最后仅空DELETE流API守卫增量定向/真实HTTP验证，未冒最终字节完整门全绿。所有PR保留此缺口、不合并；正常Turbopack与发布生产构建不混称这一开发系统门。
+
+全产品目标仍开放：Project成员协作权限/执行绑定、外部Provider/OAuth事实及Skills精确分享/作者系列删除等依唯一计划继续；不拿私有URL、空目录或候选协议假代替。全接口100ms并未证明，不把单次90ms下载外推。正常旧Agent/Billing账本及原样本保持，无新付费Run/充值/费率发布。本批复用已授权topic分支；历史main-only记录不作为删除未合并分支的依据。
