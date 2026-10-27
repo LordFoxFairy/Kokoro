@@ -4,7 +4,11 @@ App `bb451ac735c547aa0d27704bf115533cc95ebfd0` 已正式推送并正常HMR，829
 
 Platform `688bc1e3d74c18c54ca85bc72d8e4ce242ac995a`＋BFF `6557f1895d4e1a4f6d2ad9e9e37ca4fc18371d45` 已正式推送并正常配对：原key／CAS／digest／fingerprint，只读原completed ACK，不claim／刷新／外呼或改历史；旧Runtime／SSE原字节保持。Root实际隔离PG18／0skip、库存94→94；正常DeepWiki原key／CAS Native两次ACK同SHA（43.01／15.08ms）、错CAS409，无Prepare。原业务／回执／outbox／Agent／账本行xmin保持，仅准入槽与AGUI stream协调更新，不称全库零写、浏览器正向完成或全接口100ms。BFF完整八门0、default2068／3原资源skip，Platform相关2825／静态全0。
 
-后继enum4确定拒绝＋query-only enum5已提交失败父fence尚未发行／激活：Root真实PG28首次27PASS／1FAIL，独立复现为Prisma代理在故障注入mockRestore后丢失$transaction，生产根因未被凭空归给Provider；修复fixture后须完整复测，旧RED不覆盖。旧processing仅lease过期仍unknown；旧receipt不retrofill，后继显式停止等待保原key／CAS历史，K2另次fresh/manage，不造abandon owner表。当前正常Appbb451ac／BFF6557 Public28.5／Platform688bc／Agentfc8b0f0 HTTP8.2；原Schema／凭据／资金及其余进程保持。旧AUTH本轮定向2PASS不等于根因修复或完整默认通过。统一ignored证据 `var/dev/mcp-prepare-receipt-20261027/`；唯一Goal四项仍active、完整MCP／Skills／产品与合并门未关，Draft不合，原CURRENT29及计划32增／2删WIP独立保留。
+后继Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873` 已正式推送但未正常启用：enum4确定拒绝＋query-only enum5已提交失败父fence。Root首次真实PG27／1根因是故障注入mockRestore破坏Prisma代理；透传Proxy修复、原断言不减，重跑整文件PG28／0skip、库存94→94；47源／1088输入零漂移，八静态门0。完整default仍3016PASS／672SKIP／1FAIL，R352 vectors child15s在单例串行也复现，正常phase观测约2.2s不证明根因已修；不增timeout／削断言／隐藏失败，独立取证继续。旧processing仅lease过期仍unknown，旧receipt不retrofill。
+
+App `aef0d7abff854dce19ea0af23dd5c401e3b2770e` 已正式推送同feature IDBv2存储切片，但未正常升级用户浏览器：保v1 active、双store精确归档原key／CAS、历史不可变、无active时拒同已退休tuple重建，K2不被旧回调清理。真实隔离Chromium18风险＋原恢复／生命周期／完整auth测试合136、architecture50、lint／非增量types0，7冻结零漂移；不把storage候选冒UI／wire已接。BFF正消费正式f294闭包，独立typed4／5和lookup1.1仍在实施；reader就绪前不启producer，不将未知改写为失败，不造abandon owner表。
+
+当前正常仍Appbb451ac／BFF6557 Public28.5／Platform688bc／Agentfc8b0f0 HTTP8.2，Root交付组合仍b9fb5176精确旧正常pin，未来子仓提交尚未promote；原Schema／凭据／资金及其余进程保持。旧AUTH本轮定向2PASS／完整auth组件77PASS不等于完整默认OIDC根因修复。统一ignored证据 `var/dev/mcp-prepare-receipt-20261027/`；唯一Goal四项仍active，完整MCP／Skills／产品与合并门未关，Draft不合，原CURRENT29及计划32增／2删WIP独立保留。
 
 **Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
 
