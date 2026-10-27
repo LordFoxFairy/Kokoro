@@ -2,6 +2,17 @@
 
 <a id="project-1-full-scope"></a>
 
+**2026-10-27 用户最新追加／当前先执行：具体动作摘要。** 用户指出“处理过程·1个工具→读取文件／已完成／勾”每项同形。已按实际泛header、9类全扳手及重复状态完成App第一阶段，正式 `0f72e2f`／819非MD源码正常HMR，原进程／依赖／环境不变；单项直接动作行、多项真实类别摘要、九类图标与紧凑完成状态，1138／390截图已验。Root停写163文件3450通过及相关contract／architecture／lint／types／build／postbuild types均0，独审未见确定P0–P2；整App默认旧失败仍开放。Agent受信文件／MCP对象与首条恢复候选尚在验证，BFF等待正式artifact再配对；旧历史不猜对象，不称整片已完成。先完成此与主链展示直接相关切片，再回Project定时过滤；不改变完整上线目标或另建任务中心。
+
+| owner／公开角色 | 当前写区与依赖 | 关闭条件 |
+| --- | --- | --- |
+| Agent `action_summary_agent_audit` | 先三面D0；现tool activity可选闭合`display_detail`，来自实际工具schema／运行文件面及已验证MCP公开声明，开始冻结／恢复读原安全Chat；无DDL或执行权限变化 | 新旧payload／敏感值剔除／重启首条绑定及真实工具不重执行；正式artifact交付BFF |
+| BFF `action_summary_bff_audit` | 先三面D0；固定Agent后继后消费并发行Public后继，原AGUI／compact／parts同值且immutable；匿名Share固定process=null | 真PG回滚／reopen与共享不泄露，固定artifact交付App；无新表／stream |
+| App `action_summary_ui_audit` | 先现设计／API D0；单项直接行、多项动作摘要、类别图标／紧凑状态，后接正式target字段；不猜文件名或raw参数 | 保真实交错／节点identity／手动开合／单live／HITL；正常新工具对象、旧历史fallback及1138／390对照 |
+| Root | 唯一计划／owner门审／Git／正常激活／浏览器与付费验收 | reader先于producer；旧历史不回填，现有登录全门失败仍OPEN，不把换图标称整片完成 |
+
+本机Codex App只读取证被工具明确拒绝，未绕过；官方介绍页仅一般产品参考，不能冒充当前动作行的精确像素基线。继续采用用户最新Codex方向与已归档Manus真实分组规范，不等待这项参考权限而停工。普通执行／账本／取消／授权语义保持，新显示对象不自动变成文件访问或分享授权。
+
 **2026-10-27 最新正常与UI闭环快照（覆盖后面阶段记录，完整项目仍开放）：** 正常App `00974e0`／818非MD源码逐字核同，BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0`不变。真实MCP→文件交付／55字节SHA→读回／重开，以及独立Project默认Skills版本1继承／真实两文件读取已验；五QA Run共23attempt／53积分封口，新冻结0，原40不动，cache仍partial。当前38c真实3次自动压缩核capsule／原生事件／精确输入checkpoint／祖先；未把旧hard-kill证据冒作本次重演。
 
 单一live进度、中性44×44成果卡、空href转文本、按真实Run归属均正常生效。四项Project共同上下文／dialogs已单实例接回会话，保一Composer、完整URL、Canvas原预览／DOM与同URL unknown原key/body；普通Skills／预览读取不再闪generic加载重试卡，真实内容及关闭重开仍验。实际Root往返另抓到activeId不变导致设置菜单拒开；已按完整pathname/query/hash退休既有命令／呈现与旧origin回调，保跨Project显式handoff，正常两轮Root→原Task→设置成功；不再把阶段测试通过算整条旅程。最终163文件3444相关PASS、lint/types/build/posttypes0；原完整默认两次6147／1仍有Next OIDC/request-hook缺口，AUTH-1／全App合并门未闭，Draft PR不合。

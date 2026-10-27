@@ -1,3 +1,7 @@
+## 2026-10-27 最新追加：具体动作摘要正在推进
+
+用户要求按Codex熟悉的具体动作摘要收敛，不再每项统一泛过程／扳手／重复完成。App第一阶段 `0f72e2f208fcf93a360cac3cad890a20c8d090e9` 已正式提交并正常HMR生效：819份非MD源码逐字核同，原PID／环境／依赖不变；单项直接动作行，多项按真实类别聚合，九类图标及紧凑完成状态，仍保真实顺序、节点身份、手动开合、单live与HITL隔离。正常1138／390已截图核无横溢出，旧记录仍只保原类别，不猜对象。Root停写相关163文件3450通过，contract／architecture／lint／types／build／postbuild types均0，独立审查未见确定P0–P2；不覆盖原AUTH-1完整默认失败。Agent对象来源／首条恢复和BFF持久传输／匿名Share隔离仍在实施，尚未正常配对，不称完整动作摘要已闭环。具体关闭条件和writer边界仍在[唯一PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)。此前项目／实际主链证据继续有效，网站／网页资源／Project定时／ACL及登录集成门仍开放。
+
 ## 2026-10-27 当前：Project 共同组件与真实路由往返修复已生效
 
 **正常组合。** App `00974e03dcd8581efb40031f04b19ea0b4928df1` 的818份非MD源码逐字核同；BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0` 保持。仅App源码HMR，原进程／依赖／环境／Schema／身份与工具权限不变；正式提交已进原Draft PR，未合并，不称全产品上线。
