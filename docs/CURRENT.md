@@ -1,14 +1,16 @@
-## 2026-10-27 当前：真实工具／压缩／产物链已验，项目会话上下文续接
+## 2026-10-27 当前：Project 共同组件与真实路由往返修复已生效
 
-**正常组合与边界。** App `e6cfad5`（815份非MD source逐字核同）、BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0` 已配对；原依赖、Schema、身份／凭据与工具授权不改。BFF先接9类reader、再App、最后Agent producer；旧generic不回填。均属当前本地运行和Draft PR，不称全产品上线或已合并。
+**正常组合。** App `00974e03dcd8581efb40031f04b19ea0b4928df1` 的818份非MD源码逐字核同；BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0` 保持。仅App源码HMR，原进程／依赖／环境／Schema／身份与工具权限不变；正式提交已进原Draft PR，未合并，不称全产品上线。
 
-**真实行为。** 同Project会话已完成MCP发现→参数→调用DeepWiki→答复，原生写入／交付／55字节下载三方SHA相同，随后同会话实际读回标记并刷新恢复；新类别“写入文件／交付文件”实际可见。另一个项目默认Skills任务继承精确版本1，真实读取SKILL.md／reference，后恢复原默认[]并停用新增QA安装，源包／安装／历史保留。上述5个具名QA Run共23次模型attempt、53积分，全部sealed/captured，新增活跃冻结0；当前账户原4笔40积分冻结仍保留。缓存明细仍partial，不猜供应商成本或改旧记录。当前38c文件Run真实自动压缩3次，capsule／原生summary事件／精确输入checkpoint／后续祖先关系均核同，6次模型调用结算；不把它扩大为当前hard-kill实测。
+**用户新报展示与项目缺口。** 重复“整理回答／处理中”已收为单一live入口，已完成工具仍如实完成；成果按conversation＋run归回所属回答，中性卡／44×44／空href普通文本已真实验证。Project根页与会话现复用同一个共同上下文／dialogs：指令／历史、推荐MCP、文件资源、Skills四项不再因开聊整组卸载，只有一个宿主和Composer。正常四入口已实际读取／取消，编辑指令保完整会话URL；Canvas暂隐保DOM／原55字节正文，关闭设置恢复；1138／390无横溢出与键盘回焦已验。普通Skills与成果预览读取仅保aria／读屏语义，真实正文及关闭重开读取均验；未把未知写入恢复或真实格式不支持冒作成功，也不把移除提示等同所有接口低于100ms。
 
-**用户新截图的三处修复已生效。** 中性成果卡实际白底、897／390下下载44×44、预览与下载原授权保持；过滤后的空href现在是普通文本，不制造假下载链接。工具完成而回答仍在生成时，真实抓到单一process入口、forming盒0／整理回答标签0。成果卡已按真实conversation+run回到所属回答，后续只读轮不再拖旧卡到尾部，Canvas／资料库仍聚合全集。截图及真实回读在ignored project-mcp-recommendations-20261027，未新增测试产物来重复验证等待态。
+**真实往返抓出的回归已一并修复。** 稳定宿主保留了旧engine activeId，旧路由key不随Root→同Task变化，导致菜单可见却不打开。现以实际pathname/query/hash退休原呈现／指令命令资格，旧回调的origin也核active＋完整route；保原跨Project显式handoff、同完整URL hide/reopen的unknown原key/body与ACK后仅GET恢复。正常页面已连续两轮“Root→原Task→项目设置打开”成功，URL／原历史／单宿主与单Composer保持，没有创建模型Run或修改配置。相关截图／before-after／quiet读回均在ignored project-mcp-recommendations-20261027。
 
-**未过门与下一步。** App本次lint／types／build等0，contract385／相关行为及独审通过；两次完整默认均6147通过／1失败，分别为真实Next OIDC pending-refresh EOF与synthetic error hook未观察到。限定两个case观测2通过只说明未复现，根因未定，AUTH-1／全App合并门仍未过；不删断言、换引擎或重试刷绿。用户新报项目右侧缺口已证实：Root工作台被ConversationThread替换时，整组四能力和dialogs卸载；已有后端足够，App正提取单实例共同上下文，当前仍候选未正常生效。网站、网页采集、Project定时过滤／嵌入和ACL等七组余项仍开放，沿唯一[PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)继续，不因局部链通过关闭整个目标。
+**真实主链事实保持。** 五个具名QA Run共23次attempt、53积分全部sealed/captured，新活跃冻结0；当前账户原4笔40积分仍保留，缓存缺项仍partial。已验真实DeepWiki发现／描述／调用、原生写入／交付／55字节三方SHA、后续实际读回与重开；项目默认Skills版本1首发继承与两文件读取后已恢复默认[]／停用新增QA安装，未删源包。当前Agent38c文件Run有3次真实自动压缩，capsule、原生事件、精确输入checkpoint与祖先核同，不宣称本次重演hard-kill。
 
-**新增踩坑。** 截图物理像素不是CSS视口，尺寸要在完整shell实测；通用icon规则曾把局部44px压回36px。Agent /readyz要求服务身份，操作脚本匿名探针401不等于服务失活；本次在producer启动前停住，经检查补正确身份后恢复，仅HTTP／worker替换，未降权。旧observer把执行task namespace当checkpoint存储namespace，曾误报3个输入缺失；精确SQL证明三行都在root graph，保留原误报并只修本地observer，不改Agent binding。旧独立Admin未运行不阻断无关Agent只读验收。
+**验证与未完成项。** 最终停写App的UI/core/engine为163文件3444 PASS／0SKIP，完整lint／types／build／postbuild types均0；本轮早前contract385／architecture50通过。两次完整默认各6147通过／1失败仍属Next OIDC／request-hook，限定两case通过仅说明未复现，AUTH-1／整App合并门未关闭，不删断言或反复刷绿。Project网站、网页采集、Project定时过滤／嵌入、ACL等仍沿唯一[PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)开放，四项组件接回不替代七组完整能力或精确Task侧1:1。下片按既有D0推进Project scoped定时列表：沿create的ID/slug解析、App使用canonical ID，仅先替换根页原卡，受影响owner契约门通过后实施。
+
+**踩坑。** 抽共享组件必须显式承接原卸载带来的路由退休；engine activeId不是当前页面路由。全套单元绿未覆盖真实Root往返，故以浏览器抓出的RED补回归。截图物理像素不等于CSS视口，切换DPR后必须另次固定clip取图，瞬时错误帧已归档排除。保留前序记录：局部44px曾被通用icon规则压回36px；Agent /readyz需原服务身份，匿名401不是失活；summary observer曾误用执行task namespace，修本地observer而非Agent绑定。旧独立Admin未运行仍不阻断无关主链验收。
 
 ## 2026-10-27 前半段历史：项目推荐激活后的首次声明发现失败
 

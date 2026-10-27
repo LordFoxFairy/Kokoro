@@ -2,9 +2,11 @@
 
 <a id="project-1-full-scope"></a>
 
-**2026-10-27 最新正常与UI闭环快照（覆盖后面阶段记录，完整项目仍开放）：** 正常App `e6cfad5`、BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0`；严格消费者先就绪再启producer，无新增Schema／权限。项目同会话MCP真实调用→原生写入／交付→55字节下载三方SHA→后续实际读回／刷新恢复已验，当前Run新类别两值实际可见；旧generic不回填。独立默认Skills固定版本1／首发继承／真实两文件读取与恢复已验，QA默认恢复[]、安装停用保留。5个具名QA Run共23attempt／53积分全部封口结算，新冻结0，原40不动；缓存未知保持partial。当前38c有3次真实自动压缩，capsule／native事件／3个精确输入checkpoint及祖先匹配均核同，不宣称本次重演hard-kill。
+**2026-10-27 最新正常与UI闭环快照（覆盖后面阶段记录，完整项目仍开放）：** 正常App `00974e0`／818非MD源码逐字核同，BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0`不变。真实MCP→文件交付／55字节SHA→读回／重开，以及独立Project默认Skills版本1继承／真实两文件读取已验；五QA Run共23attempt／53积分封口，新冻结0，原40不动，cache仍partial。当前38c真实3次自动压缩核capsule／原生事件／精确输入checkpoint／祖先；未把旧hard-kill证据冒作本次重演。
 
-用户两张新截图新增实际修复：单一live进度（完成工具但仍streaming时forming=0）、中性文件卡44×44、空href转纯文本、成果按真实Run归到所属回答而非跨轮尾部。均正常生效并有真实DOM／截图／下载回读；完整App两次默认6147通过／1失败仍属Next OIDC路径，限定两case通过仅记未复现，AUTH-1未闭。当前主执行转Project会话共同上下文：四项真实能力的单实例composition／dialog提取已过App D0，保URL、unknown原key/body、Canvas保挂载hidden/inert；另writer正在候选实现，根页→Task卸载缺口未冒称正常修完。后面的初始503／未启producer为历史阶段，不覆盖本快照。
+单一live进度、中性44×44成果卡、空href转文本、按真实Run归属均正常生效。四项Project共同上下文／dialogs已单实例接回会话，保一Composer、完整URL、Canvas原预览／DOM与同URL unknown原key/body；普通Skills／预览读取不再闪generic加载重试卡，真实内容及关闭重开仍验。实际Root往返另抓到activeId不变导致设置菜单拒开；已按完整pathname/query/hash退休既有命令／呈现与旧origin回调，保跨Project显式handoff，正常两轮Root→原Task→设置成功；不再把阶段测试通过算整条旅程。最终163文件3444相关PASS、lint/types/build/posttypes0；原完整默认两次6147／1仍有Next OIDC/request-hook缺口，AUTH-1／全App合并门未闭，Draft PR不合。
+
+**当前唯一下一动作：** 已有四项共享组件读／取消／URL／Canvas／响应式切片关闭；继续七组完整Project能力，不重跑已验付费链。Project scoped定时列表沿原D0先补BFF owner过滤与正式契约，参数承接已有create的ID/slug、内部解析canonical Project，App使用已准入canonical ID；空本人Project与无权／墓碑分开，Scheduler I/O前后核权限、原5秒生命周期与取消不放宽。App复用原EditorDialog而非全局hash editor hook，仅先替换Project根页原卡，不擅自扩Task栏。对应owner文档／正式artifact先过门；网站／网页资源／RSS／Webhook／Beta／ACL仍独立OPEN，不开flag暴露preview数据。完整无感加载／后台报错与精确Manus对照也未凭这两处提示修复勾完。
 
 **2026-10-27 项目完整范围校正（七组能力，整体仍开放）：** 用户新截图不是单独的 Skills 卡，而是整个项目上下文面板。已并行核对 App `ea04903`、BFF `1177715`、Platform `8cfead6` 的相关实现及正式契约，并只读观察 Manus 项目 `NB6rBWho5ecJHdsbQpZ8kw` 的网站选择器、触发任务类型、定时表单和事件来源。未创建、保存、授权或发送参考任务，参考原草稿保持。菜单截图／操作记录留在 ignored `var/dev/project-full-scope-20261027/`；本次调查不是实现交付，不新增完成勾选。
 
