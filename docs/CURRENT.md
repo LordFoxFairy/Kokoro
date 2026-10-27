@@ -1,10 +1,10 @@
-## 2026-10-27 MCP API控件已正常验；completed查询owner交付，消费者推进中
+## 2026-10-27 MCP API控件已正常验；completed查询后端已正常配对，App恢复接线中
 
 App `509dd0406ec0da638184d70c2476716ff418f81e` 已正式推送并正常HMR，826非MD源码digest `2810e003cac8c468b8b70af14860b96ba5b70cda2982ab90b396ebe62a9a90cb`。Root按Manus实际DOM/CSS核Image共用组件、API帮助hover后click保持展开／Escape关闭、单行无trash／多行独立、至少一完整pair及空／半行规则；652×767与390×400真实读／取消已归档，底栏可见、无横溢，不保存本次草稿、不加连接／模型／费用。相关UI/core/engine/features3542、contract392、architecture50与lint/typegen/types/build/posttypes全0；原过期fixture与hover点击真实RED保留，不以测试数代替浏览器。
 
-Platform `688bc1e3d74c18c54ca85bc72d8e4ce242ac995a` completed-only GetPersonalMcpPrepareReceipt 已推送：原key／CAS／digest／fingerprint，仅本人同有界RR中的原已完成ACK，副本replayed和当次安全availability，不claim／刷新／外呼或改历史结果；旧Runtime／SSE原件字节不变。Root实际整文件隔离PG18／0skip，库94→94；同次只读9表行／xmin及provider double调用不变，非真实Provider。Root完整owner相关2825及格式／lint／types／contract／artifact／schema／build全0、停写hash零漂移，独审无P0–P2。正式archive1079文件核同并可构建，正常Platform仍生产6fdeae0，尚未配对激活。BFF Native／App原意图GET恢复推进中，候选不冒已生效；未来HTTP410／严格RPC拒绝另经D0实施，旧泛marker仍unknown，不retrofill或清journal。
+Platform `688bc1e3d74c18c54ca85bc72d8e4ce242ac995a` completed-only GetPersonalMcpPrepareReceipt 已推送：原key／CAS／digest／fingerprint，仅本人同有界RR中的原已完成ACK，副本replayed和当次安全availability，不claim／刷新／外呼或改历史结果；旧Runtime／SSE原件字节不变。Root实际整文件隔离PG18／0skip，库94→94；同次只读9表行／xmin及provider double调用不变，非真实Provider。Root完整owner相关2825及格式／lint／types／contract／artifact／schema／build全0、停写hash零漂移，独审无P0–P2。正式archive1079文件核同并可构建；正常Platform688bc＋BFF6557f189已配对就绪，BFF933文件逐字核同。正常原DeepWiki key／CAS Native查回两次ACK同SHA（43.01／15.08ms）、错CAS409，未调用Prepare。Platform回执／业务／outbox、Agent／账本行xmin保持，仅准入槽及原AGUI stream协调更新；这不是浏览器human-admission完成恢复或全接口100ms证明。BFF主仓八门0、contract1218／architecture36／default2068及3原资源skip、887停写输入无漂移。App原意图GET恢复接线中，候选不冒已生效；未来HTTP410／严格RPC拒绝另经D0实施，旧泛marker仍unknown，不retrofill或清journal。
 
-当前正常App509dd／BFFa819855 Public28.5／Platform6fdeae0／Agentfc8b0f0 HTTP8.2；原Schema／凭据／资金和其他进程保持。旧AUTH两失败本轮仅隔离定向2PASS／94名称过滤，输入无漂移；未复现不等于根因修复或完整默认通过。证据统一ignored `var/dev/mcp-prepare-receipt-20261027/`。Root仍用唯一Goal四行顺序，完整MCP／Skills／产品与合并门未关，Draft不合；既有CURRENT29行和计划32增／2删WIP独立保留，不夹提交。
+当前正常App509dd／BFF6557f189 Public28.5／Platform688bc1e3／Agentfc8b0f0 HTTP8.2；原Schema／凭据／资金和其他进程保持。旧AUTH两失败本轮仅隔离定向2PASS／94名称过滤，输入无漂移；未复现不等于根因修复或完整默认通过。证据统一ignored `var/dev/mcp-prepare-receipt-20261027/`。Root仍用唯一Goal四行顺序，完整MCP／Skills／产品与合并门未关，Draft不合；既有CURRENT29行和计划32增／2删WIP独立保留，不夹提交。
 
 **Goal剩余进度已对齐（2026-10-27）：** 以[当前Goal进度表](superpowers/plans/2026-09-03-kokoro-production-closure.md#goal-progress-current)为唯一剩余顺序：先MCP剩余闭环，再Skills；主链核心成功证据与本次侧栏／菜单成果保留，只补各项未验／失败恢复，不把整项重置为零进度。Goal保持active，完整上线与合并未宣称完成。
 

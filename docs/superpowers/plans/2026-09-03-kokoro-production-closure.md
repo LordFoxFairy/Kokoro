@@ -187,7 +187,7 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 
 **下一执行游标：** 继续①MCP：已验基础四路CRUD、图标／密钥／Header／定义发布、独立配置unknown解耦及API外框／剩余控件不重跑；本轮先接正式completed回执查询→App同key GET恢复→正常配对，再收准确确定失败／旧unknown终态与末端对照。随后②Skills只补五类既有缺口；③保留已验成功主链，只补交互／异常；随后收④。Project scoped定时D0留项目子队列，不重新调查、不以历史“唯一下一步”抢占当前Goal顺序；一个Provider或局部问题不阻塞独立写区。
 
-**本轮并行写区／实进度（2026-10-27，仍属①MCP）：** App `509dd040` 已推送并正常HMR，826非MD源码核同；API／MCP共用Image图标、密钥帮助hover→click及Escape、单行无删除／多行独立、至少一完整pair、空额外行与部分行校验、390×400底栏可见，Root真实读／取消验收归档，不新增配置或调用。Platform `688bc1e3` 已正式推送，原Prepare completed丢ACK只读查询通过Root真实PG18／0skip、库94→94与完整owner相关门；原Runtime/SSE字节保持，未正常激活。`skills_evidence_delta` 正式接BFF Native／固定owner artifact；`api_visual_fidelity` 实施同原key／CAS的GET恢复并删除旧inspect→允许POST链，候选不冒生效；`prepare_recovery_boundary` 只读收敛HTTP410／结构拒绝的终态方案。Root独占资源／浏览器／Git、正式消费者与本表；旧failed marker仍未知，不由当前CAS推断负ACK或清journal。原Auth两历史失败本轮仅定向2PASS／94名称过滤，未复现不等于根因已修、完整默认门仍OPEN。
+**本轮并行写区／实进度（2026-10-27，仍属①MCP）：** App `509dd040` API／MCP共用图标、帮助hover→click／Escape、单多行密钥及390×400底栏已正常验，不重挂。Platform `688bc1e3`＋BFF `6557f189` completed原回执读取已正式推送并正常配对：1079／933完整源码核同，原env/deps/Schema保持；正常原DeepWiki key／CAS两次ACK同SHA、43.01／15.08ms，改原CAS409，不调用Prepare；业务／回执／outbox／Agent／账本行xmin保持，仅准入槽和既有AGUI stream协调更新。`api_visual_fidelity` App query1同key GET／真实detail和creation flow已接正式6557原件，Node22最终门运行，未正常激活；Root独占后续源审／HMR／正常浏览器与Git。`prepare_recovery_boundary` 后继真实确定拒绝enum4＋已提交旧失败父fence但效果unknown的query-only enum5实施中，未发行未激活；`skills_evidence_delta` 已完成旧fence独审并接后继BFF设计。旧processing仅时间过期不发fence，旧receipt不伪改；App后继显式停止等待须保原key/CAS历史与新K2隔离，不造abandon owner表。原Auth定向2PASS不等于全默认／根因已修；全Goal不关。
 
 **状态与证据规则：** 沿用待核实／待实施／实施中／待验收／待合并／正常生效；正常生效的子项不等于整项完成。每次关闭补根因、改动、正式SHA、实际旅程／回读及剩余差异；不以隐藏失败、伪造数据、删断言或重复盘点替代实施。详细证据仍在本页最新快照和CURRENT，不复制完整历史。
 
