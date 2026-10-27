@@ -1,4 +1,4 @@
-## 2026-10-27 MCP API控件与原结果GET恢复已正常验；后继旧失败fence尚未发行
+## 2026-10-27 MCP API控件与原结果GET恢复已正常验；后继旧失败fence尚未正常配对
 
 App `bb451ac735c547aa0d27704bf115533cc95ebfd0` 已正式推送并正常HMR，829非MD源码digest `64b4131cb04c3c3cc217b45ccfa2a0a746e85bd1bddb889fad9245c8f6c673d0`。API共用图标／密钥帮助／单多行规则与652×767、390×400主路径承接509dd真实验收；本次intro和备注placeholder按实际Manus校正，652同视口截图／DOM再次归档，footer可见无横溢，取消无保存。原未知Prepare先前核Current再重发POST已删除，恢复仅原key／CAS GET；初次POST及GET均严格ready／needs_oauth完整ACK后才可清journal，历史ACK不充当前授权。Root V8相关4752、contract403、architecture50及lint／typegen／非增量types／build／posttypes全0，1424输入无漂移；V7虽绿仍被strictAck-before-clear实缺推翻，RED保留。正常硬刷新后的原SSE unknown显式查询：完整未截断网络窗仅一次原CAS1／原key GET，503 unknown继续保留，无POST；原DeepWiki已连接详情仍正确，未试用／授权／执行模型。正常浏览器正向completed意图未人为植入，正向owner证明与UI证据分开，不冒整条恢复已全验。
 
@@ -6,7 +6,7 @@ Platform `688bc1e3d74c18c54ca85bc72d8e4ce242ac995a`＋BFF `6557f1895d4e1a4f6d2ad
 
 后继Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873` 已正式推送但未正常启用：enum4确定拒绝＋query-only enum5已提交失败父fence。Root首次真实PG27／1根因是故障注入mockRestore破坏Prisma代理；透传Proxy修复、原断言不减，重跑整文件PG28／0skip、库存94→94；47源／1088输入零漂移，八静态门0。完整default仍3016PASS／672SKIP／1FAIL，R352 vectors child15s在单例串行也复现，正常phase观测约2.2s不证明根因已修；不增timeout／削断言／隐藏失败，独立取证继续。旧processing仅lease过期仍unknown，旧receipt不retrofill。
 
-App `aef0d7abff854dce19ea0af23dd5c401e3b2770e` 已正式推送同feature IDBv2存储切片，但未正常升级用户浏览器：保v1 active、双store精确归档原key／CAS、历史不可变、无active时拒同已退休tuple重建，K2不被旧回调清理。真实隔离Chromium18风险＋原恢复／生命周期／完整auth测试合136、architecture50、lint／非增量types0，7冻结零漂移；不把storage候选冒UI／wire已接。BFF正消费正式f294闭包，独立typed4／5和lookup1.1仍在实施；reader就绪前不启producer，不将未知改写为失败，不造abandon owner表。
+App `aef0d7abff854dce19ea0af23dd5c401e3b2770e` 已正式推送同feature IDBv2存储切片，但未正常升级用户浏览器：保v1 active、双store精确归档原key／CAS、历史不可变、无active时拒同已退休tuple重建，K2不被旧回调清理。真实隔离Chromium18风险＋原恢复／生命周期／完整auth测试合136、architecture50、lint／非增量types0，7冻结零漂移；不把storage候选冒UI／wire已接。BFF `394ae559cd2018206c32d5ca3014de248effa203` 已按正式f294闭包推送独立outcomes1.0和lookup1.1：Root格式／lint／types／contract1226／architecture36／default2077＋3原资源skip／build八门0，896输入无漂移，独审无P0–P2。Root实审发现新helper过宽改了无关错误，已真实RED后收窄为只接管新4／5 claim，旧unrelated／1..3故障链保持；两机器JSON依canonical generator，不拿额外Prettier改发布字节，原误选和6557同类证据保留。App已获正式394a原件开始完整consumer／紧凑共用呈现和原子late围栏接线；正常BFF仍6557，reader就绪前不启producer，不将未知改写为失败，不造abandon owner表。
 
 当前正常仍Appbb451ac／BFF6557 Public28.5／Platform688bc／Agentfc8b0f0 HTTP8.2，Root交付组合仍b9fb5176精确旧正常pin，未来子仓提交尚未promote；原Schema／凭据／资金及其余进程保持。旧AUTH本轮定向2PASS／完整auth组件77PASS不等于完整默认OIDC根因修复。统一ignored证据 `var/dev/mcp-prepare-receipt-20261027/`；唯一Goal四项仍active，完整MCP／Skills／产品与合并门未关，Draft不合，原CURRENT29及计划32增／2删WIP独立保留。
 
