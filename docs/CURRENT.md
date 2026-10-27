@@ -1,4 +1,16 @@
-## 2026-10-27 项目推荐已正常激活，工具声明发现仍待修复
+## 2026-10-27 当前：真实工具／压缩／产物链已验，项目会话上下文续接
+
+**正常组合与边界。** App `e6cfad5`（815份非MD source逐字核同）、BFF `b2b9eb1`／Public28.3、Agent `38c294d`／HTTP8.1、Platform `6fdeae0` 已配对；原依赖、Schema、身份／凭据与工具授权不改。BFF先接9类reader、再App、最后Agent producer；旧generic不回填。均属当前本地运行和Draft PR，不称全产品上线或已合并。
+
+**真实行为。** 同Project会话已完成MCP发现→参数→调用DeepWiki→答复，原生写入／交付／55字节下载三方SHA相同，随后同会话实际读回标记并刷新恢复；新类别“写入文件／交付文件”实际可见。另一个项目默认Skills任务继承精确版本1，真实读取SKILL.md／reference，后恢复原默认[]并停用新增QA安装，源包／安装／历史保留。上述5个具名QA Run共23次模型attempt、53积分，全部sealed/captured，新增活跃冻结0；当前账户原4笔40积分冻结仍保留。缓存明细仍partial，不猜供应商成本或改旧记录。当前38c文件Run真实自动压缩3次，capsule／原生summary事件／精确输入checkpoint／后续祖先关系均核同，6次模型调用结算；不把它扩大为当前hard-kill实测。
+
+**用户新截图的三处修复已生效。** 中性成果卡实际白底、897／390下下载44×44、预览与下载原授权保持；过滤后的空href现在是普通文本，不制造假下载链接。工具完成而回答仍在生成时，真实抓到单一process入口、forming盒0／整理回答标签0。成果卡已按真实conversation+run回到所属回答，后续只读轮不再拖旧卡到尾部，Canvas／资料库仍聚合全集。截图及真实回读在ignored project-mcp-recommendations-20261027，未新增测试产物来重复验证等待态。
+
+**未过门与下一步。** App本次lint／types／build等0，contract385／相关行为及独审通过；两次完整默认均6147通过／1失败，分别为真实Next OIDC pending-refresh EOF与synthetic error hook未观察到。限定两个case观测2通过只说明未复现，根因未定，AUTH-1／全App合并门仍未过；不删断言、换引擎或重试刷绿。用户新报项目右侧缺口已证实：Root工作台被ConversationThread替换时，整组四能力和dialogs卸载；已有后端足够，App正提取单实例共同上下文，当前仍候选未正常生效。网站、网页采集、Project定时过滤／嵌入和ACL等七组余项仍开放，沿唯一[PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)继续，不因局部链通过关闭整个目标。
+
+**新增踩坑。** 截图物理像素不是CSS视口，尺寸要在完整shell实测；通用icon规则曾把局部44px压回36px。Agent /readyz要求服务身份，操作脚本匿名探针401不等于服务失活；本次在producer启动前停住，经检查补正确身份后恢复，仅HTTP／worker替换，未降权。旧observer把执行task namespace当checkpoint存储namespace，曾误报3个输入缺失；精确SQL证明三行都在root graph，保留原误报并只修本地observer，不改Agent binding。旧独立Admin未运行不阻断无关Agent只读验收。
+
+## 2026-10-27 前半段历史：项目推荐激活后的首次声明发现失败
 
 用户批准的两列及 `workspace.connectors` 已激活；正常 BFF `21c6447`／App `18c1861`，原env／依赖及其它服务身份保持。推荐选择、取消、保存后回读、刷新、本人可用Connection默认与显式取消优先已真实验证；新Project任务的URL、首发Connection承接及终态恢复也已验证，但声明发现调用503，尚未成功调用远端工具，不称整体闭环。App冻结完整6113通过及build等门全0，视觉后继12通过；测试不替实际执行。详情与唯一下一动作见[PROJECT-1](superpowers/plans/2026-09-03-kokoro-production-closure.md#project-1-full-scope)。截图与原始失败留本地ignored，不含凭据。
 
