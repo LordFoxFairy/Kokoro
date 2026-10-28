@@ -6,9 +6,9 @@
 
 **S12项目来源读取。** Root先正常复现24px可见loading及受控断网时通用重试面板，最小修复只改pending与字段反馈，保原token／controller／actor／游标／安装源有效性。现加载仅sr-only与input aria-busy；确定失败关联搜索字段，不冒成功空列表；Enter显式同词重读，保busy／IME，不自动重试。正常项目个人来源在受控1800ms延迟下1×1／inset50%、无可见加载或假空态；仅本标签阻断列表时字段invalid且无重试按钮，解除阻断后Enter实际GET200恢复。精确搜索返回一个原安装；390×400框370.5×380无横溢，关闭在途搜索实际Abort、不重新打开。完整短窗13请求全GET，项目三安装／原版本／停用及空默认集合回读不变。控制延迟／阻断均已撤销，不冒真实owner故障或API时延SLO。
 
-**工程及新缺口。** 两writer停写后Root13路径共同八门0（4639相关／423contract／50architecture等），1436输入无漂移，独审均无P0–P2；原测试前缀／初RED／React lint与测试fixture错误保留。候选测试绿后Root追到原RemoveDialog骨架，再补单展示delta并重新全验，没有删风险断言。正常HMR另实见session POST409→GET409→业务401，原生reload后session与业务GET200；其后独立429 session_rate_limited／Retry-After60。旧409 body不可取、长窗截断如实保留，不称Auth根因已修或IAM登出。推荐GET429时标签暂缺、composer显示连接器0不是推荐配置真实为空，未修改原配置。Project overview无conversation query却恢复隐藏旧会话并拉正文parts已由实际请求及源码确认；下一最小片只门控精确可见会话正文读取，保head／原pending-unknown恢复与SSE，不靠调限额或清状态解决。原Next/Auth默认与R352缺口仍OPEN。
+**工程及新缺口。** 两writer停写后Root13路径共同八门0（4639相关／423contract／50architecture等），1436输入无漂移，独审均无P0–P2；原测试前缀／初RED／React lint与测试fixture错误保留。候选测试绿后Root追到原RemoveDialog骨架，再补单展示delta并重新全验，没有删风险断言。正常HMR另实见session POST409→GET409→业务401，原生reload后session与业务GET200；其后独立429 session_rate_limited／Retry-After60。旧409 body不可取、长窗截断如实保留，不称Auth根因已修或IAM登出。推荐GET429时标签暂缺、composer显示连接器0不是推荐配置真实为空，未修改原配置。Project overview隐藏会话正文多读已修为精确路由／scope／conversation门控，保head、原pending-unknown与SSE；App `4e6f16f` 九路径已独审、Root八门0／1436输入无漂移并推原PR。仅正式候选，正常仍d524：为保当前GitHub未知提交身份，未热更或刷新；不冒429或Auth已修。原Next/Auth默认与R352缺口仍OPEN。
 
-**后续顺序。** S10固定版本GitHub导入仍待此前具体确认；创作／录制、Project详情入口与其余权限／unknown差额未勾完成。全Goal／上线／合并仍未完成，四PR仍Draft。上述正常截图／回执在ignored `var/dev/mcp-prepare-receipt-20261027/skills-deleted-install-*`、`project-skill-picker-*`及`project-hmr-auth-conflict-rate-limit.json`；唯一Goal表同步，不另建任务中心。
+**后续顺序。** 按用户最新答复自行推进同一固定版本GitHub导入，不再重复确认。真实preview200／252后仅一次新提交及一次同key重试，均503；BFF精确receipt为selected，Platform原Complete为external_unknown／finalizing，不记成功或重建草稿。关联原request-id证明Native首次Create与后继Complete各504；源码确认每次重试先重复GitHub下载，耗去原10秒预算。现最小修复selected／completed从受信冻结事实继续，不伪造bytes、不延长预算、不换key；低stage及不含selector的terminal201保原验证。原UI及key保持，等正式修复再恢复。创作／录制、Project详情入口与其余矩阵仍OPEN。全Goal／上线／合并仍未完成，四PR仍Draft。上述正常截图／回执在ignored `var/dev/mcp-prepare-receipt-20261027/skills-deleted-install-*`、`project-skill-picker-*`及`project-hmr-auth-conflict-rate-limit.json`；唯一Goal表同步，不另建任务中心。
 
 ## 2026-10-27 Skills GitHub 真实预览修复与获准删除已回读
 
