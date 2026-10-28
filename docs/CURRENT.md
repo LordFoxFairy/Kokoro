@@ -1,3 +1,15 @@
+## 2026-10-27 Skills GitHub 真实预览修复与获准删除已回读
+
+**当前正常组合：** App `92e1836a11a9f0846110db155dc06a56c714976f`／BFF `d040eb04c5875eec2ade19be947435071dca2a5e`／Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`，Agent及其他owner不变。下方6bdf／7f5是此前作者配对阶段，不覆盖此快照。App先接正规Public28.7原件，再只BFF优雅退出0并ready200；原环境、依赖、Schema及另七监听／worker保持，Platform未重启。834份App非MD源和939份BFF全Git输入精确绑定；五private artifact仍保原394来源，不能用正常BFF版本覆盖其身份。
+
+**根因与正常结果：** 公开仓库扫描错用了单个技能包128文件上限；修复仅将未选目录的发现容量分开为512，选中子树仍128，ZIP、字节、CRC、路径、取消与总时限不放宽。原同仓库503保留，修复后实际预览200，完整返回252个目录，固定提交 `2574e29377c7173d0cecffef29a6ecbd7f8ccb5d`；选择 `marketing/skills/content-creation` 只发生本地选择，完整短窗仅一次只读preview POST，无导入／发布／安装命令。652及390×400选择框内部可达、无横溢；390页脚按钮完整可见。实际导入等待固定版本确认，GitHub真实实体链接／统计尚未验，不把实现或预览当整链完成。
+
+**UI与工程证据：** 已按Manus实测20/26标题、13/18 GitHub来源行及560px封面断点补齐详情；封面只用owner真实资产，不造图片／统计。预览busy保aria-busy／读屏而无可见spinner，确定的预览读取失败用字段提示，未知写结果保护不变；展开252项的正文预算修复，非新建状态机。Root App最终八门0（4621相关／423contract／50architecture等，1436输入无漂移），BFF八门0、939输入无漂移；Root按官方原文件集合去重运行contract／architecture／其余55默认文件，142默认文件集合完整覆盖，不冒字面执行pnpm test；writer另有默认2112PASS／3原SKIP。独审无剩余P0–P2。准备收据dist路径口径首次预检拒绝，零信号／零服务变更；原manifest保留，Root另建逐项998字节同值的dist/前缀适配后复验，不改原证据或放松护栏。
+
+**获准QA删除：** 仅 `qa-skills-final-lifecycle-20261026` 系列 `0b42b893-76f8-4a9d-9237-9b10772c563c`，在旧BFF7f5阶段一次DELETE200，state_version1→2／deleted，刷新目录不再出现；历史安装仍installed=true／enabled=false／source_status=deleted，未额外卸载。其余四技能及MCP／项目不动。源删除后的安装清理入口另有独立UI候选，尚未接入正常，不把历史安装保留称删除失败。
+
+**下一步：** Skills S10固定版本导入及创作／录制、S11清理入口和后台草稿、S12项目／权限／未知结果差额继续；原八成功不重做。Agent异常／队列／停止与首页／项目依唯一Goal表推进。App默认Next/Auth与Platform默认R352 child15s历史缺口仍OPEN，全部接口<100ms、完整像素一致、全产品／合并均未宣称。原图／网络／源码与激活收据在本地ignored `var/dev/mcp-prepare-receipt-20261027/`；四PR仍Draft，Goal保持active。
+
 ## 2026-10-27 MCP 原结果恢复、失败终态与详情历史已正常验收
 
 **正式及正常组合：** App `6bdf5a07e4d0b07c1afd3c1e8d7d279dc1113d3b`（文案父 `361896a104975e661dc4b03c895323c16ca862c0`，MCP详情验收父 `13fdfa19140f016b5328d3d237d4d8de9e020c6a`，功能父 `8ba02623058c39c5ecbee8dfb2c8bdf8aaa067a9`）、BFF `7f5c522b54762c5c0a01ffa7f71f5696eb4c70f6`、Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`；Agent仍fc8b0f0 HTTP8.2。App834份非MD源码全核同；先完成v2 reader正常硬刷新／原请求GET，再优雅替换BFF→Platform，实际exit0与ready200、其余六监听／worker及原env／依赖／Schema保持。IDB升级后只允许向前兼容，不降级／删除历史。
