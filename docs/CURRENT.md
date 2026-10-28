@@ -1,3 +1,16 @@
+## 2026-10-28 Project固定技能内容与启动停止竞态已正常验收
+
+**2026-10-28 当前收口（覆盖下面旧游标，Goal仍ACTIVE）。** 正常与正式源已配对：App `f0fe7cc901b876c66f975673ccd228aa6f077249`／BFF `72317f5c46ed6e9ab465ad47f7d6a029695c2a38`／Platform `94e574c68d6c972078b661fa7d917dab90c71042`。90分钟核心链路窗口04:29:05→05:59:05 UTC已超时；不续造完成承诺，也不以本轮切片替代整体上线。
+
+- **②Project Skills exact详情/下载已正常闭环。** 共享reader真实读取项目f80的安装b68、固定revision5；SKILL.md标题D，不能因旧summary写E而猜成错误更新。Project scoped目录／文件／下载metadata与opaque GET实际200，ZIP270B／SKILL.md221B与reader UTF8 SHA一致。1280×720与390×400均可达、无横溢；详情没有个人启停／分享操作，Esc回父行。原QA disabled/default[]在短暂启用执行后已恢复；未新增安装/公开分享/删除。原始参考、reader桌面/窄屏、ZIP和回读保ignored证据，不冒该Project详情已观察Manus一比一。
+- **③真实连续主链有新增成功证据。** 同一Project新会话4087地址/项目归属正确，默认技能继承→真实read_file→PROJECT_PIN_READ_OK；运行中追加消息后原轮与追加轮分别完成LIVE_TURN_DONE／FOLLOWUP_OK。启动即Stop原先404 run_not_found、实际模型完成是失败历史，原记录不改。修复仅精确owner queued Run的startup404，在原预算/取消/同K同body下桥接原Agent控制；不泛化写重试、不造取消成功。新正常同批发送→Stop真实202 pending command，Agent run.completed.status=cancelled、dispatched0/无billing admission；随后同会话实际AFTER_STOP_OK，输入和URL保留。独审及Root50相关回归通过；BFF只重载自有进程，旧进程真实exit0、ready200，七其它listener+worker/原env/lock/schema保持。
+- **本轮边界。** 六新QA Run全部terminal，七attempt计数含一个未dispatch的取消attempt，实际六次dispatched；本轮18积分captured、unknown0、原四笔40冻结SHA/xmin不变。旧八成功/73积分及三压缩证据承接，不重复付费刷成功链。App补充历史只在精确同Run/同message且已有非空渲染正文时安静，不隐藏空回答/错误；取消空轮仍显示历史读取提示是实际未闭UI项，截图如实保留。
+- **剩余发布阻断不藏。** AUTH-1自然后台读取401两例、浏览器Back偶发SSR空壳尚未证明根因，既有pageshow已处理，未凭猜测改认证或重复写命令。深FIFO逐项取消、完整异常/多标签矩阵仍OPEN；②创作/录制、④首页/Project网站/事件/ACL/定时嵌入及全站<100ms/精确视觉仍未全验。四PR保持Draft，未合并、未宣布全产品完成。
+
+**下一执行游标：** 不重开已验Project读取/下载/成功工具链；先收口“取消空轮被误显示为历史缺口”及AUTH-1可定位的读取边界，再按原③异常/多标签矩阵与④实际七组能力逐业务切片推进。外部OAuth只限制对应动作。旧工程门/历史快照以下保留，不作为实时状态。
+
+**证据/踩坑：** `var/dev/mcp-prepare-receipt-20261027/`下project-content-normal-zip-proof、project-content-normal-reader-desktop/390、core-normal-owner-final、core-stop-natural404、core-stop-fixed-normal-ui、core-normal-owner-stop-terminal、core-stop-fixed-continued、stop-startup-runtime/activation-proof。浏览器下载要先注册原生download expectation；初次inspector拦截不是服务失败，未解除安全规则或绕过cookies。启用状态不从disabled DOM属性推断（核matches(':disabled')），CDP用afterSequence且短窗完整，截图fullPage:false；不同src digest算法先逐文件核对，不能放宽校验。所有原失败保留，原CURRENT29和计划32/2未交接WIP保持。
+
 ## 2026-10-28 会话侧栏悬停高亮断层已正常修复
 
 正常App `a7ebefe02b53e72bdb006528729f976917dcf1c5`，BFF31ce／Platformf294及其他owner不变。真实复现：284px会话行本身透明，只有252px标题按钮高亮，右32px更多按钮落在背景外；Manus实际284×36整行背景且more32。仅conversation父容器承接hover／focus／active／portal-open高亮、标题内块透明，保原独立点击目标、标题让位、36/44尺寸、键盘ring、编辑／拖拽和Project行。正常同一行实测整行高亮、more命中true、移出指针而菜单open仍高亮、Esc返回原more且focus-visible ring；URL与会话数据不变。短窗仅后台GET和原生auth session POST，已完成响应200，无会话命令／模型执行，不冒所有请求零POST。
