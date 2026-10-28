@@ -175,7 +175,9 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 
 ### 2026-10-28 当前增量与执行游标
 
-正常App97dac0f／BFF31ce61d／Platformf294；源组合另收BFF364f80c／Platform94e候选，未正常激活。①Composer菜单本次漏项已修且正常验：Add独立目录、Manage设置，原草稿／选择／URL保持；鼠标与键盘focus区分、无多余refresh、只读错误安静保缓存，390无横溢。Manus实测截图／计算样式与正常短窗19GET归档，未造Provider或重做创建／授权。
+**侧栏新增漏项已闭：** Appa7ebefe只修会话整行hover背景，保more独立命中／portal-open／Esc回焦、Project与数据不变；正常同态真验及隔离1437输入六局部门已归档。下面②消费者承接a7正式父继续，byte GET实际无412，机器描述缺口由BFF独立补齐，不让猜测卡住主片。
+
+正常Appa7ebefe／BFF31ce61d／Platformf294；源组合另收BFF364f80c／Platform94e候选，未正常激活。①Composer菜单本次漏项已修且正常验：Add独立目录、Manage设置，原草稿／选择／URL保持；鼠标与键盘focus区分、无多余refresh、只读错误安静保缓存，390无横溢。Manus实测截图／计算样式与正常短窗19GET归档，未造Provider或重做创建／授权。
 
 ②当前执行Project exact安装详情／下载：BFF364正式Public28.8／private policy2与Platform94e已交，Root八门及独审通过但非正常新RPC；App唯一writer沿正式原件接共享reader／thin adapter，绑定Project＋installation＋pin＋actor，不借personal授权、不暴露个人分享／启停。完成消费者资格后才配对正常验收；后继创作／录制及剩余矩阵，③④剩余按下表承接，Goal active不暂停。原八成功及账本不重跑；精确1:1、全站无感、完整上线未勾完。
 

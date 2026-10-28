@@ -1,3 +1,11 @@
+## 2026-10-28 会话侧栏悬停高亮断层已正常修复
+
+正常App `a7ebefe02b53e72bdb006528729f976917dcf1c5`，BFF31ce／Platformf294及其他owner不变。真实复现：284px会话行本身透明，只有252px标题按钮高亮，右32px更多按钮落在背景外；Manus实际284×36整行背景且more32。仅conversation父容器承接hover／focus／active／portal-open高亮、标题内块透明，保原独立点击目标、标题让位、36/44尺寸、键盘ring、编辑／拖拽和Project行。正常同一行实测整行高亮、more命中true、移出指针而菜单open仍高亮、Esc返回原more且focus-visible ring；URL与会话数据不变。短窗仅后台GET和原生auth session POST，已完成响应200，无会话命令／模型执行，不冒所有请求零POST。
+
+独立正式97＋两路径归档1437输入隔离资格，410既有相关、完整lint／typegen／非增量types／build／posttypes均0且无漂移；独审无P0–P2。两源正式后1437 Git字节核同，正常仅一份CSS HMR、834 runtime源同正式版本，不夹App Project消费者WIP。未为纯CSS重复全contract／architecture／默认／preview E2E，不冒全产品验收。截图与正常proof留ignored `var/dev/mcp-prepare-receipt-20261027/rail-session-hover/`及`rail-session-hover-fixed.png`。
+
+踩坑：隔离归档的外部node_modules symlink被Turbopack拒；pnpm还把三个实现仓workspace链接临时指向同字节归档包。已改为clonefile独立依赖，三个实现仓链接恢复自身packages并逐resolve核验；归档也用本身相对链接，正常依赖未触，原两次失败保留。参考行虽然几何在视口却被固定footer遮住，先滚动再fresh hit-test；截图显式fullPage:false且重测坐标，旧错误裁剪图不作修复证据。Goal active：App Project消费者承接a7正式父继续；byte GET不凭空加412，实际503与既存机器描述缺口另由BFF独立补齐，不阻塞UI主片。
+
 ## 2026-10-28 Composer MCP 控件按实测参考修复并正常验收
 
 **正常：** App `97dac0fbd0c286f50f61c158c7f934582acdd7c2`／BFF `31ce61d9c77b47398e703cf06d18407c7f480872`／Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`，其余owner不变。Root另pin BFF `364f80cab855a4358eab956b7e3e3a4b5bae647b`＋Platform `94e574c68d6c972078b661fa7d917dab90c71042`正式Project内容候选；二者未正常激活，App消费者继续，不混同源版本与运行版本。
