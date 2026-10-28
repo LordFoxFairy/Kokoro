@@ -1,12 +1,20 @@
 ## 2026-10-28 用户否决Agent展示，重新对照并打开产品验收
 
-**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** 用户明确判定当前Agent工具展示不合格，撤回展示闭环判断，优先重新对照真实参考并修同一会话。当前正常App086d8c07／BFFfb9dc4df／Agent4f8a8d24／Platform94e；已验数据与模型读取修复保留；AUTH限流等余项仍OPEN。
+**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** 用户明确判定当前Agent工具展示不合格，撤回展示闭环判断，优先重新对照真实参考并修同一会话。当前正常App086d8c07／BFFfb9dc4df／Agent Worker894e605（HTTP reader4f8a8d24）／Platform94e；已验数据与模型读取修复保留；AUTH限流等余项仍OPEN。
 
 **③取消状态切片正常已闭。** 旧取消Run3fe3实际Agent cancelled，原BFF持久Message四值映为failed、无failure profile，造成实时parts缺口／刷新generic失败。现私有ChatMessageRead以既有同owner durable `bff_skill_usage_run_terminal`，精确tenant/session/run/actor/dispatch assistant绑定，在原RR一次有界batch投影`terminal_status:cancelled`；无新表/列/状态中心/数据回填。Root正常只读旧Run，snapshot200确有cancelled，UI一处“已停止”，原generic与parts缺口均消失，四既有成功marker、完整项目URL、空草稿与可输入保持；没有重跑模型/工具/付费。真实后继Run＋GC的隔离PG仍保取消，不把易回收AGUI帧当永久终态。原Stop404失败历史不改。
 
 App真实RUN_FINISHED/ERROR／exact私有快照区分取消和失败，保实际正文/未读事实；202 pending及本地意图不伪造取消。unknown显式“再次停止”复原K/body，无自动重复POST；还补实抓的停止读取旧RR与同run同cursor后继ACK竞态，exact thread lineage拒迟到，原input/draft不被替换。236/237等阶段数量不作完整产品证明；最终source 69paths/1449输入，独立相关4689/contract427/arch50与lint/typegen/types/build/posttypes八门0，Root237重跑，旧private/policy/Auth/锁等保护及正规12gen已核。BFF15paths/944输入R2 format/lint/types/build/focused119/arch36/真实PG14全0，Root20＋独立freshPG14重跑；R1完整contract1315/default2183通过及3旧skip，只按两窄差分承接，不声称R1 hash就是R2。完整App default/Next旧风险与全产品合并门仍未闭，四PR仍Draft。
 
 **真实Auth证据，不扩大修复。** App18cbd1仅追加真实Redis RP cookie/CAS＋业务GET latch回归，Root117重跑：refreshing/旧generation正确拒401，新generation恢复200，tombstone仍拒；BFF内容明确double，不冒完整issuer/浏览器登录。未改认证生产源，不能据机制倒填原两自然401根因。原Back静壳保留页现实际已恢复可输入、SSR serverAdmitted=true，Root没有为此次观察reload/导航，不再把旧disabled状态称当前阻塞；恢复原因仍未证。
+
+**2026-10-28 阶段正文擦除根因已修，真实文字/工具交错与刷新通过；展示整体仍OPEN。** Agent 58728a公开阶段指引＋894e605文本完成帧修复已推原Draft分支；正常仅Worker切至894e605，HTTP reader仍4f8a8d24，App086d8c07／BFFfb9dc4df不变。没有新Schema、契约或依赖，不重写原会话，Goal继续ACTIVE。
+
+- 真实根因：初次新任务的公开delta已有“我会创建包含登录、会话恢复和连接器三项的简短检查单，随后重新读取核对。”，但后续assistant.completed为空，把正文擦除。SDK text projection终值与assembled AIMessage.text并不等价；现保持并发drain，await同一text projection权威终值，不使用拼接兜底覆盖修订。旧完整AIMessage回归本来存在，先前遗漏流式块路径的判断已纠正。
+- 验证：真实SDK dispatch mixed先RED，修后包含修订/tool-only、原取消与空段；默认3016 PASS/920按marker未选，类型/格式/lint/contract/build通过。仅default测试，不冒真实PG或任意投影调度全覆盖。两次Worker替换均无非终态Run、旧进程实际exit0，依赖/Schema及其它进程保持。
+- 正常新conv689的第一轮创建/回读/交付成功，但模型没有中间正文，不作阶段成功证据。随后明确要求公开说明的真实Run2275：四段说明与读取/修改/复读/交付四次操作交错持久化，终态完成；刷新同URL保留原顺序。更新后300B检查单实际预览含三项和追加测试说明；未核本轮账单金额，不宣称零费用或计费全链已验。
+- 下一片已明确：原生修改动作仍泛化“工具调用”且无详情；普通首帧“正在整理回答”和“继续处理中…”需统一为单一轻量活跃标记，保排队/取消/重连/HITL事实；文件Markdown预览当前纯文本，与Manus渲染预览仍不同。不得用本片通过关闭整个Agent展示。不同任务同1280×720截图仅支持层级比较，不冒像素一比一。其余MCP/Skills/Home/Projects未决项沿原计划继续，不重开已验CRUD。
+- 证据：ignored `display-rework/public-stage/text-completion/browser-verification.md`、真实事件回读、修前/刷新后与文件预览截图；不把私有会话产物进Git。
 
 **2026-10-28 Manus重新实测与动作详情接线推进，展示验收仍OPEN。** 正常App现086d8c07（含227de135私有详情与0d5aaf45单层操作段），BFF fb9dc4df／Public28.12、Agent4f8a8d24／HTTP8.5；Platform94e保持。未重跑原模型/工具、不回填历史，不把以下局部修复称完整Goal完成。
 
