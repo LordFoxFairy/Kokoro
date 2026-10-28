@@ -183,6 +183,15 @@ App真实RUN_FINISHED/ERROR／exact私有快照区分取消和失败，保实际
 
 **真实Auth证据，不扩大修复。** App18cbd1仅追加真实Redis RP cookie/CAS＋业务GET latch回归，Root117重跑：refreshing/旧generation正确拒401，新generation恢复200，tombstone仍拒；BFF内容明确double，不冒完整issuer/浏览器登录。未改认证生产源，不能据机制倒填原两自然401根因。原Back静壳保留页现实际已恢复可输入、SSR serverAdmitted=true，Root没有为此次观察reload/导航，不再把旧disabled状态称当前阻塞；恢复原因仍未证。
 
+**2026-10-28 模型目录读取切片正常已验，Goal仍ACTIVE。** App `8474d08fef30acab35f78012fdbe5e12fdfd9ae7` 取代下方工具展示阶段的bae416；BFF d629／Agent f31／Platform94e不变。本批9路径，正常仅3运行源码更新、855非MD源码逐字同正式commit，原进程/env/依赖保持；无Schema、认证政策、业务命令或额外模型执行。只关闭本切片，不把整个AUTH/产品标完成。
+
+- 根因与修复：目录以前跟随engine重取，非Composer广场也发GET，失败后无前台恢复。现目录按可信Product subject/generation隔离，模型选择仍归engine；同scope好数据跨页面复用，非Composer/隐藏/未准入不读。错误仅在真实前台唤醒或重入时单flight恢复，429遵守Retry-After，不自循环；401交现有ProductReadRecheck，换主体/退休拒迟到结果。审查发现同主体旧代菜单闭包可新写，增加committed authority阻止旧回调，保已确认选择。
+- 真实浏览器：同一QA项目→广场从旧2次模型GET降为0；健康往返0次GET且返回第一帧模型可见。激活期间自然发生model429（Retry-After60），重入在81.972秒后仅1次GET200、60.589ms恢复，不刷新整页。冷打开恰1次GET200、80.059ms；这些是单次实测，不称全站p95或全接口<100ms。原conv6530具体MCP工具名、4失败与正文仍保留，未重跑原任务。
+- 剩余真实错误：激活曾同时捕获项目/会话/连接器等429，另有401与原auth/session409。IAM当前公开策略为同OAuth client+operation共享100次/60秒，普通BFF请求逐次fresh admission，多标签共同竞争；本片未改政策、未缓存鉴权或提高限额，AUTH整体仍OPEN。模型自动恢复后项目/会话列表仍需原有显式重试才恢复；广场6个旧QA无图标404另记，不能掩盖成空态或称全页无错。
+- 最终验证：独审修复旧回调2RED，writer8文件596通过；Root私有隔离1486输入精确冻结，related4787、contract437、architecture50及lint/typegen/types/build/posttypes全通过。Root首次related的1FAIL/4786PASS保留：首发模型测试缺可信boundary，补正式准入fixture，保原首发model断言，不放宽生产鉴权。完整default/Next Chromium fixture及远端CI/合并未运行，不冒通过。正常证据ignored `var/dev/mcp-prepare-receipt-20261027/model-catalog-recovery/` 的browser-before、activation-rate-limit、normal-browser-proof、app-model-activation及原工具/项目截图。
+
+**当前后续游标：** 先收敛共享准入限流与项目/会话失败恢复，继续③异常/多标签，然后②Skills创作与④首页/项目剩余能力；复用原计划和Draft PR，①②③④均不整体打勾。
+
 **工具展示切片已真实回读闭环，产品Goal继续ACTIVE。** 最新正常App `bae41632fd9da66c474635e551eddc6db2387eba`／BFF `d629653cbf5799a44db55a947321a6ec152b7dcd`（Public28.11.0）／Agent `f31b60be27dd9b4dfddd7a1c3579b19e40db150d`（HTTP8.4.0）／Platform `94e574c68d6c972078b661fa7d917dab90c71042`。App855与Agent215非MD源码逐字核同正式commit；BFF971输入/1018编译文件的不可变归档启动，旧worker/HTTP/BFF逐个真实exit0后reader先于producer重载，原env/依赖保持；Admin3320此前离线且未动，不冒全系统健康。本批后继无Schema变化，不回填原Run、Message、ledger/id/digest或计费。
 
 **用户当前旧MCP截图已用同一旧会话核验，不靠重跑生成好看的记录。** conv6530／Run cab07的11活动原顺序保留：3发现＋5描述＋3真实调用；相邻准备折叠为2/4/2，三次调用在外单列真实`read_wiki_structure`／`ask_wiki_question`。只用该Run原typed AI/ToolMessage、native journal与opaque safeactivity精确绑定的证据；4项已证明失败纠正旧all-green，未证明的未知工具名仍不猜，不借当前目录补旧历史。3旧describe错误仅允许原recipe文件SHA f4f1（正式历史2aaf67e）对应完整内建常量＋typed同ID内容匹配，不用任意远端错误串推断。bounded tool_facts经过Agent8.4→BFF28.11正式snapshot/generator→App同Run overlay；既有活动/source/order/终态不改，无新轮模型/工具/业务写命令。

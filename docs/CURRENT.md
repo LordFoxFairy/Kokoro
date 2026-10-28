@@ -1,12 +1,21 @@
-## 2026-10-28 工具名称与历史状态展示已实读闭环，继续产品剩余目标
+## 2026-10-28 模型目录重复请求与恢复已实测，继续共享准入及产品剩余目标
 
-**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** 用户当前旧MCP通用活动/全绿及冷重开缺陷已在同一会话真实回读闭环，见下方“工具展示切片”；当前App bae416／BFF d629／Agent f31／Platform94e。下一游标为AUTH admission/模型目录真实错误与③异常矩阵，不把这张图的完成冒完整产品、①②全闭或全站<100ms。
+**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** App8474模型目录恢复切片与旧MCP工具展示已实测，BFF d629／Agent f31／Platform94e不变。真实共享准入429及项目/会话恢复仍OPEN；下一游标见“模型目录读取切片”，不冒全产品闭环。
 
 **③取消状态切片正常已闭。** 旧取消Run3fe3实际Agent cancelled，原BFF持久Message四值映为failed、无failure profile，造成实时parts缺口／刷新generic失败。现私有ChatMessageRead以既有同owner durable `bff_skill_usage_run_terminal`，精确tenant/session/run/actor/dispatch assistant绑定，在原RR一次有界batch投影`terminal_status:cancelled`；无新表/列/状态中心/数据回填。Root正常只读旧Run，snapshot200确有cancelled，UI一处“已停止”，原generic与parts缺口均消失，四既有成功marker、完整项目URL、空草稿与可输入保持；没有重跑模型/工具/付费。真实后继Run＋GC的隔离PG仍保取消，不把易回收AGUI帧当永久终态。原Stop404失败历史不改。
 
 App真实RUN_FINISHED/ERROR／exact私有快照区分取消和失败，保实际正文/未读事实；202 pending及本地意图不伪造取消。unknown显式“再次停止”复原K/body，无自动重复POST；还补实抓的停止读取旧RR与同run同cursor后继ACK竞态，exact thread lineage拒迟到，原input/draft不被替换。236/237等阶段数量不作完整产品证明；最终source 69paths/1449输入，独立相关4689/contract427/arch50与lint/typegen/types/build/posttypes八门0，Root237重跑，旧private/policy/Auth/锁等保护及正规12gen已核。BFF15paths/944输入R2 format/lint/types/build/focused119/arch36/真实PG14全0，Root20＋独立freshPG14重跑；R1完整contract1315/default2183通过及3旧skip，只按两窄差分承接，不声称R1 hash就是R2。完整App default/Next旧风险与全产品合并门仍未闭，四PR仍Draft。
 
 **真实Auth证据，不扩大修复。** App18cbd1仅追加真实Redis RP cookie/CAS＋业务GET latch回归，Root117重跑：refreshing/旧generation正确拒401，新generation恢复200，tombstone仍拒；BFF内容明确double，不冒完整issuer/浏览器登录。未改认证生产源，不能据机制倒填原两自然401根因。原Back静壳保留页现实际已恢复可输入、SSR serverAdmitted=true，Root没有为此次观察reload/导航，不再把旧disabled状态称当前阻塞；恢复原因仍未证。
+
+**2026-10-28 模型目录读取切片正常已验，Goal仍ACTIVE。** App `8474d08fef30acab35f78012fdbe5e12fdfd9ae7` 取代下方工具展示阶段的bae416；BFF d629／Agent f31／Platform94e不变。本批9路径，正常仅3运行源码更新、855非MD源码逐字同正式commit，原进程/env/依赖保持；无Schema、认证政策、业务命令或额外模型执行。只关闭本切片，不把整个AUTH/产品标完成。
+
+- 根因与修复：目录以前跟随engine重取，非Composer广场也发GET，失败后无前台恢复。现目录按可信Product subject/generation隔离，模型选择仍归engine；同scope好数据跨页面复用，非Composer/隐藏/未准入不读。错误仅在真实前台唤醒或重入时单flight恢复，429遵守Retry-After，不自循环；401交现有ProductReadRecheck，换主体/退休拒迟到结果。审查发现同主体旧代菜单闭包可新写，增加committed authority阻止旧回调，保已确认选择。
+- 真实浏览器：同一QA项目→广场从旧2次模型GET降为0；健康往返0次GET且返回第一帧模型可见。激活期间自然发生model429（Retry-After60），重入在81.972秒后仅1次GET200、60.589ms恢复，不刷新整页。冷打开恰1次GET200、80.059ms；这些是单次实测，不称全站p95或全接口<100ms。原conv6530具体MCP工具名、4失败与正文仍保留，未重跑原任务。
+- 剩余真实错误：激活曾同时捕获项目/会话/连接器等429，另有401与原auth/session409。IAM当前公开策略为同OAuth client+operation共享100次/60秒，普通BFF请求逐次fresh admission，多标签共同竞争；本片未改政策、未缓存鉴权或提高限额，AUTH整体仍OPEN。模型自动恢复后项目/会话列表仍需原有显式重试才恢复；广场6个旧QA无图标404另记，不能掩盖成空态或称全页无错。
+- 最终验证：独审修复旧回调2RED，writer8文件596通过；Root私有隔离1486输入精确冻结，related4787、contract437、architecture50及lint/typegen/types/build/posttypes全通过。Root首次related的1FAIL/4786PASS保留：首发模型测试缺可信boundary，补正式准入fixture，保原首发model断言，不放宽生产鉴权。完整default/Next Chromium fixture及远端CI/合并未运行，不冒通过。正常证据ignored `var/dev/mcp-prepare-receipt-20261027/model-catalog-recovery/` 的browser-before、activation-rate-limit、normal-browser-proof、app-model-activation及原工具/项目截图。
+
+**当前后续游标：** 先收敛共享准入限流与项目/会话失败恢复，继续③异常/多标签，然后②Skills创作与④首页/项目剩余能力；复用原计划和Draft PR，①②③④均不整体打勾。
 
 **工具展示切片已真实回读闭环，产品Goal继续ACTIVE。** 最新正常App `bae41632fd9da66c474635e551eddc6db2387eba`／BFF `d629653cbf5799a44db55a947321a6ec152b7dcd`（Public28.11.0）／Agent `f31b60be27dd9b4dfddd7a1c3579b19e40db150d`（HTTP8.4.0）／Platform `94e574c68d6c972078b661fa7d917dab90c71042`。App855与Agent215非MD源码逐字核同正式commit；BFF971输入/1018编译文件的不可变归档启动，旧worker/HTTP/BFF逐个真实exit0后reader先于producer重载，原env/依赖保持；Admin3320此前离线且未动，不冒全系统健康。本批后继无Schema变化，不回填原Run、Message、ledger/id/digest或计费。
 
