@@ -183,6 +183,14 @@ App真实RUN_FINISHED/ERROR／exact私有快照区分取消和失败，保实际
 
 **真实Auth证据，不扩大修复。** App18cbd1仅追加真实Redis RP cookie/CAS＋业务GET latch回归，Root117重跑：refreshing/旧generation正确拒401，新generation恢复200，tombstone仍拒；BFF内容明确double，不冒完整issuer/浏览器登录。未改认证生产源，不能据机制倒填原两自然401根因。原Back静壳保留页现实际已恢复可输入、SSR serverAdmitted=true，Root没有为此次观察reload/导航，不再把旧disabled状态称当前阻塞；恢复原因仍未证。
 
+**2026-10-28 MCP结果阅读已正常修补，动作语义与整体展示仍OPEN。** App a1cdb82b已推原Draft并精确HMR到3310，原BFFfb9dc4df／Agent HTTP4f8a8d24与Worker894e605均未动。Goal保持ACTIVE，不把本片称Manus一比一或产品上线完成。
+
+- 原会话成功动作3492字符JSON同时平铺text和structured_content。现真实工具目标为标题，结果按原换行只显示一次；原始输入/输出仍在键盘可开的技术详情，未知/截断JSON不修补，失败与缺证不伪造。独立组件持有展示，不新增请求、契约、数据或工具执行。
+- 正常747×767验收：原read_wiki_structure正文与原text逐字一致、无重复/横溢出/可执行链接；Enter展开原始详情，切原失败ask_wiki_question保持失败且披露关闭，刷新相同URL再开仍正确。Manus1280×720命令结果重新采集，仅作为层级参考，非同类MCP像素证明。HMR使原详情关闭，验收显式重开；不把此动作说成无感保留全部UI状态。
+- Node22停写相关333、contract439、architecture50及lint/typecheck/build/post-build types通过；完整default为6764 PASS／18 FAIL／2 skipped，**不是全绿**。2项因测试Redis参数缺失，按原隔离origin/UUID补参数后该8项完整文件通过；18项为既有rail Move/rename/delete浏览器定位超时，其中R183在未修改父086d8c07已复现，其余17尚未逐项独立归因。没有删断言、放宽超时或改旧失败；完整test:e2e未另跑。Root拓扑检查当前FAIL仅因Agent checkout52cc与保留gitlink894不同，这是未配对owner候选，不为消除检查改错组合版本。本轮不扩入旧rail流程，不合并PR。
+- Agent 52cccd6的HTTP8.6工具能力说明已推候选：同Run精确连接/selector成功describe、完整原文冲突拒取、1024bytes与原权限/状态保护；owner默认3039与真实隔离PG24通过。BFF/App正式消费与正常reader仍待，故Root**不更新该Agent gitlink**，不把能力说明冒成本次动作目的。
+- 后续依原目标：先接通真实说明的消费者并改善动作语义，再补原生edit/命令/技能上下文和活跃标记；历史无公开阶段文字不补造。详情本片证据归ignored `display-rework/mcp-result-reader/`，来源审查与真实截图归原study；重复准备信息、语义缺口及rail未决项继续OPEN。
+
 **2026-10-28 阶段正文擦除根因已修，真实文字/工具交错与刷新通过；展示整体仍OPEN。** Agent 58728a公开阶段指引＋894e605文本完成帧修复已推原Draft分支；正常仅Worker切至894e605，HTTP reader仍4f8a8d24，App086d8c07／BFFfb9dc4df不变。没有新Schema、契约或依赖，不重写原会话，Goal继续ACTIVE。
 
 - 真实根因：初次新任务的公开delta已有“我会创建包含登录、会话恢复和连接器三项的简短检查单，随后重新读取核对。”，但后续assistant.completed为空，把正文擦除。SDK text projection终值与assembled AIMessage.text并不等价；现保持并发drain，await同一text projection权威终值，不使用拼接兜底覆盖修订。旧完整AIMessage回归本来存在，先前遗漏流式块路径的判断已纠正。
