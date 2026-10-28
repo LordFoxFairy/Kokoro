@@ -1,3 +1,15 @@
+## 2026-10-28 Composer MCP 控件按实测参考修复并正常验收
+
+**正常：** App `97dac0fbd0c286f50f61c158c7f934582acdd7c2`／BFF `31ce61d9c77b47398e703cf06d18407c7f480872`／Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`，其余owner不变。Root另pin BFF `364f80cab855a4358eab956b7e3e3a4b5bae647b`＋Platform `94e574c68d6c972078b661fa7d917dab90c71042`正式Project内容候选；二者未正常激活，App消费者继续，不混同源版本与运行版本。
+
+**本次真实缺陷：** Add／Manage误共用Settings回调，多余refresh，鼠标打开首行自动focus。现Add独立原catalog，Manage仍原Settings；目录／详情／四创建复用原组件与命令，不新建广场或Provider假数据。按Manus测得36px行／8px内距／14px-21px排版，移除多余刷新；鼠标无首行focus，键盘Enter仍focus switch、ESC返回。只读失败保已知项和选择，status只读屏；原unknown写保护不改。
+
+**正常验收：** 仅9份正式runtime源HMR，834源核同，进程／环境／依赖／DB未变。自身Project页实测Add独立目录→原MCP表单仅打开／取消→目录→ESC，再Manage→已添加Settings→关闭，项目URL／本轮未发送草稿和Context7 off／DeepWiki on全保持；完整短窗19个GET无业务写。仅本标签阻断实际connections GET时保两项、1px读屏、零可见Retry；finally解除后3GET200。390×600菜单277.77×201在视口内、零横溢，仿真已清，本轮草稿已清。Add本地用route-bound RAM overlay保URL，与Manus #connectors/all有明确URL差异；真实Provider目录为空，不造参考条目。不冒全站／全MCP／<100ms已闭。
+
+**源码验证与后继：** Root15路径／1437输入八相关门全0且无漂移，独审无P0–P2；原失败保留。BFF Project完整Public28.8／下载policy2＋Native94e正式候选已Root八门0／941输入及独审，无借个人包授权；18HTTP/Native/Storage例仍有显式IAM／Projectrepo／owner响应fixture，不冒正常跨owner已验。App按正式原件继续共享Project详情／下载消费者，原五private394身份保持；Goal active，旧成功写链不重做，四PR继续Draft。
+
+**踩坑记录：** send_message不唤醒已完成worker，已改followup_task；同actor准入／generation只隔离事实与命令，不销毁用户目录／查询／输入，actor／route退休仍清旧回焦，排队RAF须二次核目标；目录blocked不伪装空。BFF整工作树预检曾因无关tmp witness拒绝，零暂存／提交后仅取获准157路径，原文件SHA保留。浏览器阻断／视口均仅自己标签并finally复原；AX读屏文案不等于可见异常面板。原图、网络、正常proof及门日志留ignored `var/dev/mcp-prepare-receipt-20261027/`。
+
 ## 2026-10-27 Skills 固定版本导入与可见正文读取已正常验收
 
 **正常运行：** App `b7f1e1a580594539ce92ac6fa44385f8f0646bef`／BFF `31ce61d9c77b47398e703cf06d18407c7f480872`／Platform `f29428f6e6d23e9f35642fe3de5463472bc1f873`；其余owner及运行配置不变。Root另收录Platform `94e574c68d6c972078b661fa7d917dab90c71042`正式源码候选，尚未正常激活，BFF Project消费者继续接线；源版本与当前进程版本分开，不称整个组合已上线。

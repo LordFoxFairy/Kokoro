@@ -173,6 +173,13 @@ IAM预算授权当前候选：67a3c0e已本地提交，internal／SDK0.16替换�
 
 <a id="goal-progress-current"></a>
 
+### 2026-10-28 当前增量与执行游标
+
+正常App97dac0f／BFF31ce61d／Platformf294；源组合另收BFF364f80c／Platform94e候选，未正常激活。①Composer菜单本次漏项已修且正常验：Add独立目录、Manage设置，原草稿／选择／URL保持；鼠标与键盘focus区分、无多余refresh、只读错误安静保缓存，390无横溢。Manus实测截图／计算样式与正常短窗19GET归档，未造Provider或重做创建／授权。
+
+②当前执行Project exact安装详情／下载：BFF364正式Public28.8／private policy2与Platform94e已交，Root八门及独审通过但非正常新RPC；App唯一writer沿正式原件接共享reader／thin adapter，绑定Project＋installation＋pin＋actor，不借personal授权、不暴露个人分享／启停。完成消费者资格后才配对正常验收；后继创作／录制及剩余矩阵，③④剩余按下表承接，Goal active不暂停。原八成功及账本不重跑；精确1:1、全站无感、完整上线未勾完。
+
+
 ### 2026-10-27 剩余进度对齐
 
 以当前 active Goal 的四项顺序为准；正常App6bdf5a0／BFF7f5c522／Platformf29428f6／Agentfc8b0f0（本轮Root组合见精确gitlink）。下面区分已验子项与整项剩余，不以历史阶段的“待实施”覆盖最新验收，也不把单条成功链或测试数量当整项完成。不按已知不足的证据给百分比，不新增任务中心。
