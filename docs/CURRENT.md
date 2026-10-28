@@ -1,3 +1,19 @@
+## 2026-10-28 取消终态刷新已正常修复，继续真实动作详情与回答操作栏
+
+**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** App `01a1ce337926dda33f28d826a1742ebcea078c2f`／BFF `51e049df72c1fb2fe82b9114135c2fdc1a3450d9`／Platform `94e574c68d6c972078b661fa7d917dab90c71042`／Agent `fc8b0f09f3cfd96211b33d863d5e629bbed13e46`。App reader-first后仅重载本方BFF，实际旧进程exit0→ready200；七其它listener与worker、原env/lock/Schema/旧业务事实不变。Root精确pins与正常源配对；当前其它新WIP不纳入正常完成。
+
+**③取消状态切片正常已闭。** 旧取消Run3fe3实际Agent cancelled，原BFF持久Message四值映为failed、无failure profile，造成实时parts缺口／刷新generic失败。现私有ChatMessageRead以既有同owner durable `bff_skill_usage_run_terminal`，精确tenant/session/run/actor/dispatch assistant绑定，在原RR一次有界batch投影`terminal_status:cancelled`；无新表/列/状态中心/数据回填。Root正常只读旧Run，snapshot200确有cancelled，UI一处“已停止”，原generic与parts缺口均消失，四既有成功marker、完整项目URL、空草稿与可输入保持；没有重跑模型/工具/付费。真实后继Run＋GC的隔离PG仍保取消，不把易回收AGUI帧当永久终态。原Stop404失败历史不改。
+
+App真实RUN_FINISHED/ERROR／exact私有快照区分取消和失败，保实际正文/未读事实；202 pending及本地意图不伪造取消。unknown显式“再次停止”复原K/body，无自动重复POST；还补实抓的停止读取旧RR与同run同cursor后继ACK竞态，exact thread lineage拒迟到，原input/draft不被替换。236/237等阶段数量不作完整产品证明；最终source 69paths/1449输入，独立相关4689/contract427/arch50与lint/typegen/types/build/posttypes八门0，Root237重跑，旧private/policy/Auth/锁等保护及正规12gen已核。BFF15paths/944输入R2 format/lint/types/build/focused119/arch36/真实PG14全0，Root20＋独立freshPG14重跑；R1完整contract1315/default2183通过及3旧skip，只按两窄差分承接，不声称R1 hash就是R2。完整App default/Next旧风险与全产品合并门仍未闭，四PR仍Draft。
+
+**真实Auth证据，不扩大修复。** App18cbd1仅追加真实Redis RP cookie/CAS＋业务GET latch回归，Root117重跑：refreshing/旧generation正确拒401，新generation恢复200，tombstone仍拒；BFF内容明确double，不冒完整issuer/浏览器登录。未改认证生产源，不能据机制倒填原两自然401根因。原Back静壳保留页现实际已恢复可输入、SSR serverAdmitted=true，Root没有为此次观察reload/导航，不再把旧disabled状态称当前阻塞；恢复原因仍未证。
+
+**用户新增trace与回答操作栏必须承接，不以取消已闭冒全目标。** 当前“技能已就绪/SKILL.md”缺真实名称/路径，根因在Agent原source无技能名、file主动basename，App已显示全部已有安全值；不是换CSS能补全。Root只读旧baf57精确checkpoint，13个match中10份SDKmetadata真名`kokoro-pin-consistency-20261016`及`/.skills/{exact-segment}/SKILL.md`一致，revision/version缺省，不拿当前catalog反填。新Agent8.3候选按native loader后发布真实有限展示，旧Run以独立只读projection恢复有证字段，不改旧event/id/digest，不重建无界session，不凭空猜版本。用户随后四icon图要求重新生成/复制/赞/踩；当前正常仍仅真实复制，其余不画假handler。BFF本人反馈CRUD与regen三面门/隔离I/O、App独立AnswerActions及精确target归属在原分支并行，均未正常生效。
+
+**下一执行游标/owner。** Agent prepare：真实Skill名/virtual path与旧Run有限read；BFF api_visual：同Message本人反馈持久CRUD、latest ended明确再生成新attempt并保旧答/原K unknown恢复，再消费正式Agent展示；App skills_evidence：真实descriptor/反馈/regen消费、控件样式和actor/scope/receipt归属，正式owner先交。Root唯一Git/正常/资源/计划writer，复用本TODO，不启动额外任务中心。①原MCP已验动作、②Project详情/下载及③六QA成功/取消证据承接；②创作/录制完整保存、③完整异常/多标签、④首页和Project网站/事件/ACL/定时嵌入及全站<100ms/精确视觉仍OPEN，不缩小Goal或重新付费刷旧成功链。
+
+**证据/踩坑。** 本地ignored `var/dev/mcp-prepare-receipt-20261027/cancelled-terminal-read/`：formal/app-formal、runtime准备/激活、normal-proof、normal-stopped-restored.png、Root真实PG及native旧metadata证据。旧Skill“记录技能”菜单→fresh Composer预填/聚焦已正常零业务写验收，原草稿清回，但只是prompt入口，不冒屏幕录制或完整AI生成导入闭环。最初ledger-only取消方案独审抓到GC退化，已改复用原durable事实；Root首freshPG URL少schema被明确拒绝，重建自有库修正，原红与零subcase保留；R1 SELECT *／格式失败仅修两处并保差分资格。原CURRENT29和计划32/2未交接WIP严格保持。
+
 ## 2026-10-28 Project固定技能内容与启动停止竞态已正常验收
 
 **2026-10-28 当前收口（覆盖下面旧游标，Goal仍ACTIVE）。** 正常与正式源已配对：App `f0fe7cc901b876c66f975673ccd228aa6f077249`／BFF `72317f5c46ed6e9ab465ad47f7d6a029695c2a38`／Platform `94e574c68d6c972078b661fa7d917dab90c71042`。90分钟核心链路窗口04:29:05→05:59:05 UTC已超时；不续造完成承诺，也不以本轮切片替代整体上线。
