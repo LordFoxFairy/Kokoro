@@ -1,6 +1,6 @@
 ## 2026-10-28 用户否决Agent展示，重新对照并打开产品验收
 
-**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** 用户明确判定当前Agent工具展示不合格，撤回展示闭环判断，优先重新对照真实参考并修同一会话。App8474／BFFd629／Agentf31／Platform94e的已验数据与模型读取修复保留；AUTH限流等余项仍OPEN。
+**2026-10-28 最新正常与当前游标（覆盖下方旧阶段，Goal ACTIVE）。** 用户明确判定当前Agent工具展示不合格，撤回展示闭环判断，优先重新对照真实参考并修同一会话。当前正常App086d8c07／BFFfb9dc4df／Agent4f8a8d24／Platform94e；已验数据与模型读取修复保留；AUTH限流等余项仍OPEN。
 
 **③取消状态切片正常已闭。** 旧取消Run3fe3实际Agent cancelled，原BFF持久Message四值映为failed、无failure profile，造成实时parts缺口／刷新generic失败。现私有ChatMessageRead以既有同owner durable `bff_skill_usage_run_terminal`，精确tenant/session/run/actor/dispatch assistant绑定，在原RR一次有界batch投影`terminal_status:cancelled`；无新表/列/状态中心/数据回填。Root正常只读旧Run，snapshot200确有cancelled，UI一处“已停止”，原generic与parts缺口均消失，四既有成功marker、完整项目URL、空草稿与可输入保持；没有重跑模型/工具/付费。真实后继Run＋GC的隔离PG仍保取消，不把易回收AGUI帧当永久终态。原Stop404失败历史不改。
 
@@ -8,10 +8,18 @@ App真实RUN_FINISHED/ERROR／exact私有快照区分取消和失败，保实际
 
 **真实Auth证据，不扩大修复。** App18cbd1仅追加真实Redis RP cookie/CAS＋业务GET latch回归，Root117重跑：refreshing/旧generation正确拒401，新generation恢复200，tombstone仍拒；BFF内容明确double，不冒完整issuer/浏览器登录。未改认证生产源，不能据机制倒填原两自然401根因。原Back静壳保留页现实际已恢复可输入、SSR serverAdmitted=true，Root没有为此次观察reload/导航，不再把旧disabled状态称当前阻塞；恢复原因仍未证。
 
+**2026-10-28 Manus重新实测与动作详情接线推进，展示验收仍OPEN。** 正常App现086d8c07（含227de135私有详情与0d5aaf45单层操作段），BFF fb9dc4df／Public28.12、Agent4f8a8d24／HTTP8.5；Platform94e保持。未重跑原模型/工具、不回填历史，不把以下局部修复称完整Goal完成。
+
+- 参考新证据：Manus网站任务同一正文段后混合命令、文件与其它动作，摘要“已运行1个命令·编辑了1个文件”，点击分别打开终端/文件；原Computer Use另证明失败说明仍存在。因此撤销旧“只合并相邻同类”的假设，改为真实公开文字之间单层相邻活动段，不跨文字重组、不嵌套重复准备与失败计数。未观察同一DeepWiki/MCP参考，不冒一比一已验。
+- 正常原conv6530保持11原活动及4原失败，摘要工具调用3次；名称、repo/question与文件路径只取本Run原事实。已修浏览器发现的第二缺陷：AnswerActionBoundary曾误传MainSurface、未传持有Canvas的AppFrameShell，导致详情只有泛化标签。现原成功动作有原输入/输出与截断标记，切换失败动作保原repo/英文question并明确输出未提供，关闭回到原失败按钮；无数据/权限改变。
+- 验证：0d5阶段独立UI/core/engine3822、contract/architecture及lint/build/types通过；本次接线完整AppFrame行为RED→GREEN，相关314与lint/build/types通过，最后强化完整session/Run URL断言focused1/lint通过。两次fixture错误、真实失败和最终日志均存ignored display-rework。最终正常856非MD源码同086d8c07，原进程/env/依赖保持。没有全默认/E2E本片通过声明。
+- 尚未关闭：历史普通调用没有自然语言目的字段；禁止用当前工具目录或新生成文字补造。下一片核实并完善Agent真实公开阶段文字与同响应文字/工具事件顺序，复用现TEXT_MESSAGE，不增展示协议。当前参考1280×720与本地窄窗747×767非同视口，精确视觉、窄屏详情呈现及新Run端到端仍待验。Auth限流等旧余项保持OPEN。
+- 证据：ignored `var/dev/mcp-prepare-receipt-20261027/display-rework/` 下manus-current-mixed-passage.png、local-action-input-output.png、local-action-failed-exact-input.png及action-shell-browser-verification.md；外部内容不进入Git。
+
 **2026-10-28 用户否决当前工具展示：不合格，展示验收重新打开。** 此裁决覆盖下方“工具展示闭环/可勾”的旧阶段判断；工具名/失败事实与模型目录局部修复保留，但不是产品展示完成。当前优先回到同一conv6530的Agent过程展示，不先绕去其他模块收集通过数。
 
 - 已重新实测Manus既有会话：折叠入口是简洁过程/耗时；展开后真实中间文字→具名动作组→中间文字交错，相邻同类浏览动作按4/1分组，点击动作打开右侧具体浏览历史和URL。28px高/14px字/20px行高/无边框透明行，非“类别标签串＋统一完成图标”列表。参考只证明Computer Use行为，不冒已观察MCP详情；原截图/DOM测量存ignored `var/dev/mcp-prepare-receipt-20261027/display-rework/`。
-- 重做范围：顶层不拼工具类别；正文保真实时间顺序，只合并相邻同类动作，不跨文字合并；工具行表达动作＋对象，技能名/文件path/MCP连接器与工具身份来自原Run可信事实；点击展示受控详情/结果，最终回答保持独立。历史缺字段不伪造，不能用当前连接器名称或自动生成中间文字回填旧Run。
+- 重做范围：顶层不拼工具类别；正文保真实时间顺序，按新观察以正文之间的相邻活动为一段（可混合类别），不跨文字合并；工具行表达动作＋对象，技能名/文件path/MCP连接器与工具身份来自原Run可信事实；点击展示受控详情/结果，最终回答保持独立。历史缺字段不伪造，不能用当前连接器名称或自动生成中间文字回填旧Run。
 - 待核实/实施：Agent安全投影目前主动缩窄arguments/result/连接器label，先明确可公开action摘要与owner契约，再落组件；BFF与Web不猜补数据。已有功能性状态修复不回滚，但当前UI/交互须按同视口真实参考再次验收，未经完成不得再写“展示闭环”。
 
 **2026-10-28 模型目录读取切片正常已验，Goal仍ACTIVE。** App `8474d08fef30acab35f78012fdbe5e12fdfd9ae7` 取代下方工具展示阶段的bae416；BFF d629／Agent f31／Platform94e不变。本批9路径，正常仅3运行源码更新、855非MD源码逐字同正式commit，原进程/env/依赖保持；无Schema、认证政策、业务命令或额外模型执行。只关闭本切片，不把整个AUTH/产品标完成。
