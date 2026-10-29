@@ -1,3 +1,49 @@
+## 2026-10-29 Custom API 隔离执行基础片已提交，产品链仍 OPEN
+
+固定组合候选：Platform44fcc5da599b4a5cec3077e41aaef4375fe4add2（PR12）、IAM547b05c9d49743c86c30f40c514082106135bebe（draft PR5）、Agent49f188d1aac915b6cd213adf17b59587785cd8b4（PR46）。均已非递归fetch核对main/原PR分支后提交推送；无强推、合并、DDL、正常服务重启或真实凭据调用。
+
+主控最终证据：IAM完整verify/default1535通过；Agent停写后default3251通过/931资源marker未选、focused164通过/8未选，Ruff/格式/type/contract/正规生成/lock/wheel/sdist通过。真实Docker两次fresh acquire＋原值脱敏＋未选下次不继承通过，专属限额容器已清理；E2B仍仅SDK替身。Platform真实本机HTTP与材料边界46通过，IAM/PG在该测试中是替身；初始owner全门2920/1超时及单文件24通过记录保留，不改称全绿。最终日志为本机/tmp/kokoro-custom-api-*，不提交日志/密钥/机器状态。
+
+下一完整业务切片明确为Agent Run safe refs/受信隔离装配→BFF原dispatch冻结/恢复→App真实API选择→正常整链＋Manus同状态对照。当前没有修改正常页面的API开关，因此不宣称用户已经看到效果；不重复做本基础片，不把工程通过当作MCP产品闭环。其余Goal与“＋”资源缺口保持原状态。
+
+## 2026-10-28 自定义 API 任务隔离沙箱（用户已批准，实施中）
+
+用户明确选择“采用任务隔离沙箱方案”。不做通用 HTTP 代理，不把 API profile 伪装成 MCP Connection，不切普通会话到宿主 shell。
+
+- Platform（实际 `apps/kokoro-capability`）唯一拥有说明及加密环境变量；复用当前 schema/加密/read transaction，新增独立运行 RPC：安全描述与每次 execute 的短期材料读取。请求为多 profile 的精确 ID/version，绑定 request/工具调用、受信 tenant/actor/subject/run/session。重复 profile、重复或运行时保留 env 名直接拒绝，不静默覆盖；只读不生成新的密钥库或配置副本。
+- IAM 复用现授权策略/在线 proof 校验，只增加固定 Platform operation artifact 的正式消费及生成常量；未知操作保持拒绝，不旁路服务/成员/执行资格。
+- Agent 使用真正隔离 Docker/E2B backend。每次 execute 在线重验并取值，resume 重新获取；凭据只在短生命周期 runtime/子进程环境，不放 prompt、command、冻结 dispatch 或全局 os.environ，不写 .env。输出在返回模型/journal/trace 前脱敏；文件读取/产物路径亦需处理。对模型任意脚本不承诺防止编码外泄，这是用户已知的保障边界。
+- App/BFF 仅传 safe profile refs，BFF 冻结在原 dispatch；本轮选择、刷新恢复、清空/新会话保持已批准语义。MCP 与 API 在菜单复用展示组件，真实身份与执行链分开。多项同名 env 冲突明确失败，不人为限制成单项。
+- 无新表/列/DDL。先 owner machine contract＋最小实现→固定 artifact/消费者→正常配对激活→真实同会话调用及刷新。未接好前不显示假可执行开关，不启用宿主执行。回退旧程序/功能暴露，保留已有配置和历史。
+
+写区：主方唯一 Git/集成 writer；只读 reviewer 核 IAM 授权与 Agent 沙箱边界。当前阶段未激活、未读取真实密钥、未执行模型。完成证据必须覆盖跨账号、撤销/版本漂移、取消/迟到结果清理、多项冲突、输出脱敏及真实沙箱成功，单测不等于整链完成。
+
+- [x] 用户方案批准，现有 owner/执行缺口核实。
+- [x] Platform 运行契约与读取/复核源码、敏感材料生命周期及真实本机HTTP验证；固定44fcc5d已推PR12。真实IAM/PG整链另列，不冒充本项已验。
+- [x] IAM 固定操作artifact消费及原在线权限策略；547b05c已推draft PR5，主方完整verify通过。
+- [x] Agent Docker/E2B单次环境adapter及固定Platform客户端候选；真实Docker成功/原值脱敏/不继承已验，E2B仅SDK替身。
+- [ ] Agent Run safe refs冻结、fresh lease绑定、Describe说明装配与隔离backend统一选择/回收；不得把当前独立adapter冒充已接Run。
+- [ ] BFF/App 选择冻结、会话恢复与统一菜单。
+- [ ] 正常环境端到端及 PR 精确交付；“＋”资源链继续保留独立 OPEN。
+
+### 2026-10-29 续接边界（不重做已验片）
+
+Platform44fcc5d已推PR12；IAM547b05c已推draft PR5。后继按依赖继续：Agent仅在选中API时由受信Feature选择已配置Docker/E2B，ordinary general仍state；build/static recipe/backend_for必须共用同一派生结果。沙箱必须使用Run级目录，不能继续共享namespace:session_id的可写workspace；同Run恢复走既有sandbox CAS。Describe说明/env名称是用户配置数据，不是系统authority，Acquire原值不进入prompt/recipe/checkpoint。
+
+BFF不新增Platform调用或表：现本人CustomAPI读已返回profile_id/state_version；在原message-create-input→agent-dispatch→HTTP-wire冻结selected_custom_api_profiles，沿既有outbox JSON和composer-selection原normal用户dispatch恢复。Agent正式safe-ref契约先交付，BFF再固定消费；然后App统一菜单。不得只添加开关或用profile ID冒充MCP connection ID。完整端到端、文件/产物秘密边界、正常配对激活仍未验。
+
+### 本轮实际进展（候选，未启用正常页面）
+
+Platform 已实现独立 Describe/Acquire 运行 RPC、严格 JSON/protobuf 边界、默认关闭 surface、当前本人多 profile 精确版本读取、返回前二次执行授权/材料复核及取消/序列化后清零；无 Schema 改动。独立 owner artifact v1.0.0 已正规生成，旧主 descriptor 与历史固定父未改，只在其编译闭包排除新独立 proto。IAM547b05c已消费固定新操作；Agent固定client候选及BFF/App发送消费继续，不称整链完成。
+
+主方复验：相关 46 例通过（含真实本机 HTTP JSON/protobuf；IAM/持久层明确替身），typecheck/full lint/build/format/schema/contract通过。owner unit/contract/architecture 合计 2920 通过、1 个既有重型子进程负控因并发 ETIMEDOUT；保持断言/超时不变，原文件单独复跑 24 通过。并发阶段统计不冒充最终整套全绿，完整真实 IAM/PG 链及消费者尚待。
+
+Agent 已实现 Docker/E2B 每次 execute 的 environment provider、并发局部 SecretStr 快照、无值 argv 注入、有限原文输出脱敏、共享绝对预算和取消线程归属；默认 provider=None 不变。主方重跑 sandbox/profile 114 通过、8 按原 marker 未选，六文件 Ruff/类型检查通过。真实 Docker 使用既有镜像、独立临时容器、无网络/0.25 CPU/64MiB/32 PIDs：两次 acquire+执行+原值脱敏通过，下一次无配置执行无 env 继承，容器已清理。未执行模型或外部 API，E2B 仅 SDK 接线测试；factory/Run/契约尚未接 provider，文件/产物处理及完整执行联动仍需后续验收。
+
+踩坑记录：①只封 PATH/代理不足，NODE_/OPENSSL_/SSLKEYLOGFILE 会改变 TLS/运行边界，现两端拒绝；②protobuf 会折叠重复 singular，须解码前检查原始 tag，已加真实 HTTP 负控；③Docker CLI 不能继承整个 worker env，也不能遗漏现 context，现只接显式 HOME/Docker 配置；④provider 复用可变 SecretStr 会让在途脱敏漏旧值，现每次复制快照。原文脱敏不宣称防任意编码/网络/文件外传。
+
+下一步：提交固定 owner artifact → IAM 编译期操作目录消费 → Agent 当前 Run/lease 绑定 provider及隔离 backend装配 → BFF/App safe refs冻结/恢复/菜单 → 配对激活后实际 API 调用和页面对照。“＋”资源仍独立 OPEN，Goal 保持 ACTIVE。
+
 ## 2026-10-28 MCP 输入菜单／已发送选择：正常页面已生效，资源入口仍 OPEN
 
 本次不是仅改候选：BFF `b1233d90403bd69e32998ccc8f71236213c28964` 已提交并推送原 PR17；App `fc57840150c4fba3fde7c0fd830f0585cc2176c4` 已推原PR46，消费正式 Public28.16 artifact，SHA256 `82485c2b7be17ad04f56d3656a58b42ea8d308c9dc22db5807a09ab706418a77`。先部署兼容 App reader（14份精确前像核验源），再仅重载 BFF53714；Agent／worker／App进程不变，无DDL、历史回填、连接或模型执行。私有 snapshot 只投影最新普通用户消息的精确冻结选择，不与账号已添加列表或工具调用次数混同。
