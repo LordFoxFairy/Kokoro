@@ -1,3 +1,25 @@
+## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
+
+已批准方案正常生效：Platform `44fcc5da599b4a5cec3077e41aaef4375fe4add2`、IAM `b9a63c533ab95b70a07693190d64bd09791a125b`、Agent HTTP/Worker `c6c8073a31cd2feb2725d0fd70505e9b5140be0a`、BFF `853ca9a5d8da3500b0c37543c72198a520e46225`、App `90c07f484ca64c8bacaf3b9cfb987de0deace275`。BFF 固定 Agent HTTP8.10，App 固定 Public28.17。MCP 原链保持；本次无新 Schema、DDL、历史回填或 Share 暴露。各 owner 沿原 PR 交付，未合并 main，不称完整产品上线结束。
+
+本轮真实主路径：管理页创建无真实凭据的 `QA Task Sandbox 20261029` → 输入菜单独立选择一个 API（两个 MCP 均关闭）→ 创建任务 → Describe/Acquire 实际 HTTP200 → Run 独立 Docker 执行 Python → 环境标记存在、公开 python.org 返回200、工具退出0 → 两次模型调用完成 → Run终态 → 容器已删除、持久清理记录 completed → 硬刷新恢复 API选择1。safe refs、dispatch、journal和公开事件未出现本轮标记值；这不是任意编码/网络/文件外泄的绝对保证。新建配置及 QA 会话保留，不删除旧样本。
+
+成功前第一次模型网关返回用户并发超限，Run失败及未知用量原样保留；随后显式再生成成功，没有伪造成功或将未知费用补零。成功轮两条模型用量均 normalized、已收到财务确认，但分类仍 partial；本片不宣称缓存成本和整套账本最终核对完成。
+
+浏览器继续暴露的 execute 详情缺项已修：Agent 原白名单仅 State 文件/MCP。现在冻结全部 peer 的 Docker/E2B资格并排除人工改写，再精确比对同 Run typed call/result、activity和持久journal，复用既有2048/4096字节脱敏预览；不新建API、不重跑模型、不改旧历史。正常页面刷新→展开处理过程→点击原成功动作，实际命令、HTTP200与退出码0均可见；本次空详情子项关闭。文件/产物秘密边界、其它工具展示和完整Manus视觉/交互仍按原计划开放。
+
+主方最终验证：Agent默认3336通过/934资源marker未选，Ruff格式/lint、Pyright、contract、wheel/sdist通过；独立真实PostgreSQL RunDisplay28通过（含execute、错Run、journal不匹配、原文件无关journal预算），仅自有测试库已回收。Docker删除非零旧缺陷修正为同daemon确认不存在才幂等成功，否则保留持久重试；负控先3失败→68定向通过，真实Docker已不存在场景通过，独审无新增确定缺陷。前置App6896、BFF2306/3条件跳过＋真实PG10、IAM完整verify1554及Platform2920/1既存超时的证据绑定原owner提交，未将跳过或超时称通过。
+
+激活踩坑与修复：匿名探测Agent `/readyz`返回401被误判，首次回滚又因同检查停止，导致Worker/BFF短暂未启动。已按原cwd/argv/env恢复全部服务并确认一致；修正为使用既有服务身份检查就绪，回滚逐个恢复全部已停止owner。重新配对激活、两次后继精确源码加载均通过；未降低认证、重置卷或改凭据。IAM先整合正常6238371已部署的direct身份链再上线，避免候选547回退既有认证。
+
+本地ignored证据位于 `var/dev/custom-api-runtime-20261028/`：`api-selection-restored-20261029.png`、`api-execute-details-20261029.png`、`manus-connector-menu-20261029.png`；activation目录保留成功/失败/恢复及权威回读收据。Manus参考为已有项目菜单，本地为QA会话菜单，视口和页面不同，只支持交互事实与差异定位，不宣称像素一致。菜单顺序/密度、加载中间态、“＋”资源和全局性能目标未关闭。
+
+- [x] Custom API配置保存、独立选择、safe refs冻结、真实Describe/Acquire、隔离脚本执行、终态清理和刷新恢复。
+- [x] execute成功动作只读输入输出详情，正常页面已回读。
+- [x] 保留已部署IAM认证链，修复激活检查及Docker清理失败误结案。
+- [ ] 多配置冲突/撤权/取消的正常整链负控；现有代码与隔离证据不冒充全部产品实测。
+- [ ] 完整Manus菜单与“＋”资源、其它Agent展示/加载、Skills/首页/项目及剩余整体目标；沿本唯一计划继续，Goal ACTIVE。
+
 ## 2026-10-29 Custom API 隔离执行基础片已提交，产品链仍 OPEN
 
 固定组合候选：Platform44fcc5da599b4a5cec3077e41aaef4375fe4add2（PR12）、IAM547b05c9d49743c86c30f40c514082106135bebe（draft PR5）、Agent49f188d1aac915b6cd213adf17b59587785cd8b4（PR46）。均已非递归fetch核对main/原PR分支后提交推送；无强推、合并、DDL、正常服务重启或真实凭据调用。
@@ -22,8 +44,9 @@
 - [x] Platform 运行契约与读取/复核源码、敏感材料生命周期及真实本机HTTP验证；固定44fcc5d已推PR12。真实IAM/PG整链另列，不冒充本项已验。
 - [x] IAM 固定操作artifact消费及原在线权限策略；547b05c已推draft PR5，主方完整verify通过。
 - [x] Agent Docker/E2B单次环境adapter及固定Platform客户端候选；真实Docker成功/原值脱敏/不继承已验，E2B仅SDK替身。
-- [ ] Agent Run safe refs冻结、fresh lease绑定、Describe说明装配与隔离backend统一选择/回收；不得把当前独立adapter冒充已接Run。
-- [ ] BFF/App 选择冻结、会话恢复与统一菜单。
+- [x] Agent Run safe refs冻结、fresh lease绑定、Describe说明装配与隔离backend统一选择/回收；fbdfd22已交付，正常环境整链另验。
+- [x] BFF safe refs选择冻结/会话恢复，853ca9a固定正式Agent8.10并发布Public28.17；独立真实PG已验。
+- [x] App正式消费、独立MCP/API会话恢复与统一菜单，90c07f48已交付；正常页面效果另验。
 - [ ] 正常环境端到端及 PR 精确交付；“＋”资源链继续保留独立 OPEN。
 
 ### 2026-10-29 续接边界（不重做已验片）
