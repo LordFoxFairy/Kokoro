@@ -1,6 +1,16 @@
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 
-已批准方案正常生效：Platform `44fcc5da599b4a5cec3077e41aaef4375fe4add2`、IAM `b9a63c533ab95b70a07693190d64bd09791a125b`、Agent HTTP/Worker `c6c8073a31cd2feb2725d0fd70505e9b5140be0a`、BFF `853ca9a5d8da3500b0c37543c72198a520e46225`、App `90c07f484ca64c8bacaf3b9cfb987de0deace275`。BFF 固定 Agent HTTP8.10，App 固定 Public28.17。MCP 原链保持；本次无新 Schema、DDL、历史回填或 Share 暴露。各 owner 沿原 PR 交付，未合并 main，不称完整产品上线结束。
+### 2026-10-29 后继：连接器菜单顺序已正常修正
+
+App `fcf395bd00a5778c22e258133ddc299a60fd9f73` 在同一PR46继续交付。Manus首页中文浅色1280×720实测向上仍是“列表→添加→管理”；原记录的向上逆序有误，现共享组件删除方向监听/反转，菜单上下展开都保持列表优先。两份运行源严格核90c07f4前像后HMR，当前3310已生效。实际向上/向下键盘首项与Escape、管理/添加返回原会话及API选择1、390px本地不溢出均已验；参考/实现首页同视口、会话前后截图和DOM测量在ignored `var/dev/connector-menu-parity-20261029/`。参考窄屏未取得，目录数量/类型不同，完整视觉不冒一比一。
+
+主方lint/typecheck/build/diff通过；定向26通过。完整default359文件6894通过，另1个HTTP套件因漏传Redis测试配置失败/2项未运行，补现有受管Redis与独立随机origin/session后原文件8通过；未重跑整套Playwright，保留原失败日志。独审无确定新增缺陷。正常代码及证据已验，未合并main。
+
+- [x] 连接器菜单向上反序及键盘首焦点子项关闭；旧2026-10-28逆序记录仅保留为历史，已被本次实测替代。
+- [ ] “＋”资源完整链继续OPEN。本轮Manus实测含Google Drive、OneDrive、Figma、使用技能、最近任务、资料库、本地文件；本地只有真实技能选择，其余无Composer handler/附件发送契约。下一片按已记录Library→BFF任务引用→Agent只读附件链推进，不用项目上传或导航冒充完成。
+- [ ] Custom API多项冲突/撤权/取消正常负控、真实E2B、整体加载/其他展示、Skills/首页/项目与计费核对仍按原计划；已验成功主链不重复，Goal ACTIVE。
+
+已批准方案正常生效：Platform `44fcc5da599b4a5cec3077e41aaef4375fe4add2`、IAM `b9a63c533ab95b70a07693190d64bd09791a125b`、Agent HTTP/Worker `c6c8073a31cd2feb2725d0fd70505e9b5140be0a`、BFF `853ca9a5d8da3500b0c37543c72198a520e46225`、App `fcf395bd00a5778c22e258133ddc299a60fd9f73`。BFF 固定 Agent HTTP8.10，App 固定 Public28.17。MCP 原链保持；本次无新 Schema、DDL、历史回填或 Share 暴露。各 owner 沿原 PR 交付，未合并 main，不称完整产品上线结束。
 
 本轮真实主路径：管理页创建无真实凭据的 `QA Task Sandbox 20261029` → 输入菜单独立选择一个 API（两个 MCP 均关闭）→ 创建任务 → Describe/Acquire 实际 HTTP200 → Run 独立 Docker 执行 Python → 环境标记存在、公开 python.org 返回200、工具退出0 → 两次模型调用完成 → Run终态 → 容器已删除、持久清理记录 completed → 硬刷新恢复 API选择1。safe refs、dispatch、journal和公开事件未出现本轮标记值；这不是任意编码/网络/文件外泄的绝对保证。新建配置及 QA 会话保留，不删除旧样本。
 
