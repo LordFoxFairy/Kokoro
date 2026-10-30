@@ -62,9 +62,11 @@ Browser -> Web -> BFF -> internal owner services / Agent / Scheduler
 | `kokoro-storage`   | Blob、Upload、Asset、Artifact、Scan、ObjectStore metadata                          |
 | `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch                               |
 
-### 2.0 独立后台前端补充（2026-10-09）
+### 2.0 后台工程与共享身份边界（2026-10-23）
 
-按 [ADR-034](kokoro-handbook/decisions/ADR-034-independent-admin-web.md)，新增目标 consumer `kokoro-admin-web`，独立工程/部署/OIDC/session，经既有 BFF 访问业务 owner，无业务数据库，不改变上述九个业务事实 owner。当前后台仍位于用户 Web `/admin`，迁移与正式组合登记未完成；用户 Settings 最终仅保管理员可见的外部跳转。
+按修订后的 [ADR-034](kokoro-handbook/decisions/ADR-034-independent-admin-web.md)，`apps/kokoro-admin` 是同一产品的独立前端工程，可独立构建和部署，但复用 Product 登录、会话与续期，不建立第二套 OAuth client、callback 或 session。当前公开入口为 Product 同源 `/manage`，内部 Admin 进程不是另一个公开认证入口；未来子域名部署不改变身份 owner，但仍需验证浏览器会话边界。
+
+Admin 经现有同源 adapter 与 BFF 访问业务 owner，无业务数据库，不增加上述业务事实 owner。登录与管理权限分开，业务内容只在当前管理员准入通过后渲染。实际提交、正常激活及未完成的登录验收以 [CURRENT](CURRENT.md#admin-session-boundary-20261023) 为准，不沿用旧 `/admin` 或独立 OIDC/session 的设计。
 
 ### 2.1 已裁决的收敛
 

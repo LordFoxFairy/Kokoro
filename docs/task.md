@@ -2,7 +2,21 @@
 
 IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交聚合已合精确版本并删除已迁入App的旧Root门户。主方真实外部Skills矩阵18请求／五组PASS，Platform当前完整十门与App Docs新固定契约均已验；具体SHA及跳过/失败边界见[CURRENT交付表](CURRENT.md)。MCP正常续期/重连/stdio、Agent实际工具/用量积分与其余16项尚未完成，不因本次发布标整轮闭环。
 
-## 最新跟进入口（2026-10-22）
+## 最新跟进入口（2026-10-23）
+
+**MODEL-1 已推进到正常真实解析（2026-10-23）**：用户确认现提供方由OpenRouter转接，后继按其精确 `openai/gpt-5.6-luna`／canonical `openai/gpt-5.6-luna-20260709`公开价配置，不再索要可公开查询的费率。实际公开目录200／468项，普通输入／输出每百万token USD0.20／1.20，缓存读／写0.02／0.25；严格大于272000输入的覆盖价已核，现4096context不触达。保7/5倍率与整attempt最终一次ceil，费用到积分仍是单独显式平台policy，不从目录凭空推导。App在线指南提交 `52baa59`，完整Docs check通过（45测试、5例、54HTML／17942内部链接，原大chunk警告保留）；价格来源不是已发布计价或已扣分证明。
+
+System `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` 修复健康过期无生产者的根因：原resolve按需复用有界metadata GET，provider／密文快照与health generation CAS、全局fence，公开发现GET仍零写，fresh down不被旧probe覆盖；无新服务／表／wire，不放宽freshness。真实RED503→200、37定向／完整owner263 PASS／0SKIP、fresh33断言23表及独审Approved。正常仅本方System已备份并ff／重载，配置字节和其余8监听身份保持、readyz200；无需DDL。正常当前租户Agent正式client resolve→精确revision／digest→受控Key领取→重复解析通过；旧2026-10-21观察generation1自动恢复到2/global8→9，重复零健康写，Key不回显。此为真实System／供应商metadata链，**模型生成、工具与usage扣分仍0，计价发布与完整正常Agent链未验，未PR合并，不勾整项**。原失败与本地收据留ignored `var/dev/product-real-chain-20261023`。
+
+**正常数据与Billing已配对（2026-10-23）**：Agent canonical绑定 `bfff8df`、Billing绑定 `1fac9de`，两owner在同一事务内以RESTRICT重建，未动其他owner或Redis。冻结备份、原始恢复、canonical＋原数据恢复、故意失败回滚均经隔离实测，临时库94→94；正常Agent23表141行／Billing35表7行逐行哈希保持，余额1000。Billing正常已重载、readyz200，精确catalog为35表493列212约束102索引且差异0；原私有配置及其他8监听身份保持。正常浏览器刷新后显示可用1000、冻结0、积分到账+1000。首轮操作在DDL前因dump恢复重解析CHECK形式而被严格检查拦下，Billing自动恢复；改用原提交canonical基线后重新演练与独审通过，未放宽比对。另修复操作脚本停机后异常未进入恢复保护的问题；原失败保留。证据在ignored `var/dev/product-real-chain-20261023/owner-cutover-v2`。本轮未发模型／工具请求或新增扣分，未PR／merge，不勾整项。
+
+### AUTH-1／CREDIT-1：内部认证纠偏（2026-10-23）
+
+IAM `2f881d0`／SDK0.17与Billing `c158270`已替换该跳机器OAuth，原业务wire/Schema/Run/预算语义不变；完整门、真实PG/source-dist及实际receiver配对通过，正常未统一切换、未PR/merge。用户允许重构而非叠补丁：余下Agent→Platform→IAM两跳保留现在线权限来源，仅替换机器身份并删除兑换/缓存/内省和旧配置；不把后继barrier/claim扩成此片前置，不假称它已完成。原ADR已澄清，16项TODO不增不减。证据与未完成项见[CURRENT认证纠偏](CURRENT.md#auth-realignment-20261023)。
+
+**立即下一步**：Billing→IAM源码与真实owner配对已验；继续沿现在线权限判断替换Agent→Platform→IAM两跳机器OAuth、正式发行并固定消费者，再统一配对正常运行；不加token续期或新授权状态机。用户登录会话与内部调用方认证分开，保留当前用户／租户／Run及资金业务校验。随后复用已验Agent HTTP／Worker、managed PG／Redis及原proof，发布精确计价并验正常模型／低风险工具／产物／整数结算。Agent／Billing正常Schema已配对，Billing已实际加载1fac9de；Agent进程仍指向旧资源、BFF执行仍disabled，不把Schema或余额回读当执行闭环。原16项TODO不变，真钱支付不做。
+
+前一源码验收记录（2026-10-23；正常激活状态以上条为准）：**Agent bfff8df已本地接完原finalhook预算授权／唯一派发／同流usage与实际归属、金融ACK；下一步直接验正常登录／模型选择→真实供应商→低风险工具／产物→实际Billing整数结算及后台回读。** 418输入八门0、2588默认PASS／853 marker未选，184真实PG／323 SDK金融HTTP及原生图十向量、36隔离恢复检查、209份包源码核同，独审Approved。模型／usage图财务端具名fixture，实际四方仅QA100／hold及释放10，不冒正常真实扣分。原closed首因遮蔽已修；原HTTP配置子进程3秒偶发及setup／旧架构fixture失败留证、不弱化门。13仓fetch成功／main无新增；正常配置资金不改，本地未激活／PR合并，不提前pin或勾AGENT-1／CREDIT-1整项。16项TODO不改，真钱支付不做，详见CURRENT。
 
 实现准则：按Manus实测复刻页面与交互，API也先观察Manus真实请求／响应再设计实现；对照契约、真实动作及失败恢复验收，不以旧实现或主观猜测代替参考。
 

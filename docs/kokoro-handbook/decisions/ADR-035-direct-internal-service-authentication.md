@@ -5,6 +5,22 @@
 - 范围：App 所需内部 owner 调用；Mori 与其他 Web 功能开发不在本次范围。
 - 依据：当前 BFF/Platform/Agent 源码及用户本次明确要求；这是项目选择，不是通用行业结论。
 
+## 2026-10-23 执行纠偏：Billing 内部机器 OAuth 不续期
+
+用户再次确认内部服务不反复签发／交换短期token。本ADR的直接服务认证决定不变：撤回新增Billing client_credentials缓存／续期实现，不将300秒有效期延长或自动刷新作为最终方案。本片起始基线IAM的Billing verify走JWT＋内省，按IAM先发行直接凭据认证profile、Billing再固定消费替换；原Run／预算业务授权不删除。Agent→Platform仍存的机器OAuth继续沿本ADR已有barrier约束退出，不把Billing一跳完成当全内部切换完成。
+
+人类登录的原生会话、授权码／PKCE／CSRF与内部机器身份是不同边界。App已有Auth.js只验证交易、Product cookie＋Redis持有会话；不因内部认证切换再新增另一套登录机制。登录失败／多标签／注销与候选配对统一在AUTH-1实测，不以协议正确代替用户体验验收。
+
+当前状态与实施范围见有效产品计划和各owner三面文档；本段为决定纠偏，不是正常运行已切换声明。
+
+## 2026-10-23 范围澄清：替换机器认证，不替换在线权限来源
+
+用户明确允许按正确边界重构、删除旧流程，不继续补token续期。此次 Agent→Platform 与 Platform→IAM 只替换机器身份认证：Platform复用既有local service authorizer；IAM原 `verifyExecutionAuthorization`／`DIRECT_USER_CURRENT`、Serializable当前权限判断、proof、BFF绑定和审计保持。服务凭据和tenant/user/Run上下文分开，不伪装 `credential_id` 为 OAuth `client_id`，相关机器身份字段正式发行消费者契约后一起切换。
+
+下文barrier/claim是**替代在线权限判断来源**时的后继设计，不作为本次保留在线判断、删除机器换票的前置；本片不新增授权状态机、权限中心或共享认证SDK。此前将两项合并为前置的实施判断已纠正。现有“撤权后下次在线判断拒绝”必须保留；不冒称已解决所有在途副作用与撤权的全局原子排序，也不删除后继更强撤权保证的记录。
+
+Billing→IAM 接收端已发行 `2f881d0`／SDK0.17，Billing `c158270`固定消费。该跳实际compiled Client→IAM/PG/Redis观察零OAuth请求；它不表示Agent的两跳旧OAuth已经删除或正常环境已整体切换。
+
 ## App 读取优先切片（2026-10-13）
 
 按用户后续优先修复 App 503/404 与 v1 的要求，先独立切换 Platform `projection` surface 及 BFF 对应 HTTP/Connect 读取；同一 surface 只接受直接服务凭据，不保留 OAuth fallback。Catalog 写入、Skills/MCP 管理和 Agent execution 后继尚未切换，不把读取片称为全内部认证完成。

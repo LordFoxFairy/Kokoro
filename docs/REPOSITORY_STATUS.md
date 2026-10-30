@@ -46,3 +46,23 @@ python3 scripts/verify-ten-repository-standard.py --format json
 2026-09-20 的组合验证中，前三项分别为 `PASS`、`PASS`、`322 passed`。最后一项报告 `110` 个 owner violation 和 `1` 个 System TypeScript `unverified`，因此其 JSON status 是 `FAIL`；这是可见的逐仓收敛队列，而非组合拓扑或 main-only 失败，也不允许被表述为全仓质量完成。
 
 完整 clone 的复现命令与远端标识规则见 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)。
+
+## 2026-10-27 产品闭环 Draft 组合（非发布）
+
+用户授权逐仓PR对齐。全部候选已推送，仍保Draft、未合并/部署，不以测试数字替代产品验收。App原22与Billing原7工作树变更已按依赖闭包提交，不再依赖隐形运行覆盖；未交接的Root进度文档保持原工作树，不整树覆盖。唯一逐动作入口为原闭环计划§2.1。
+
+| Owner | 精确候选 | Draft PR |
+| --- | --- | --- |
+| kokoro-system | `49a5f8e5e2797ec2d1a6fcf8c5f398184821bf33` | [#2](https://github.com/LordFoxFairy/kokoro-system/pull/2) |
+| kokoro-capability | `8cfead647856ef54ec851a3bebe169a3ca14d212` | [#12](https://github.com/LordFoxFairy/kokoro-capability/pull/12) |
+| kokoro-billing | `b7c9858844df4c9b99e40e16bd9984b1d268b503` | [#4](https://github.com/LordFoxFairy/kokoro-billing/pull/4) |
+| kokoro-agent | `d0815143f55b0879b3cbdc4a8eeb5694dece07e0` | [#46](https://github.com/LordFoxFairy/kokoro-agent/pull/46) |
+| kokoro-bff | `11777152bf8fe2ae316e4c67fb355eab94e7c0b5` | [#17](https://github.com/LordFoxFairy/kokoro-bff/pull/17) |
+| kokoro-admin | `d221b18d28e15ec423798416aa8abd1f71f44bf8` | [#5](https://github.com/LordFoxFairy/kokoro-admin/pull/5) |
+| kokoro-app | `ea04903928ac0f5ba6f231e9f2f73215daa1a0e0` | [#46](https://github.com/LordFoxFairy/kokoro-app/pull/46) |
+
+本轮真实闭合：Project根页独立新任务草稿与旧会话URL/锁定隔离；真实资源上传→fresh详情→原生900000B同SHA下载（该次90ms），同名本地413更正后不残留旧错误；真实Asset删除200的ACK延迟→unknown→关闭重开→404回读→同key/空body重放200且replayed=true，只移除目标并保兄弟；精确批准的QA Project删除202后返回/app、fresh侧栏不再出现。普通资源父/子面板读取无可见通用加载/错误重试面板；390px无横溢。项目逻辑删除与后台物理清理分层，不把202当物理完成。
+
+工程证据分层：BFF默认2005PASS/3原资源SKIP、contract1176PASS及相关构建/静态/生成检查通过；Billing默认1864PASS/630资源SKIP、独立真实PG44PASS/零残留。App最终72路径组合1480相关、lint/build/types及11既有生成check通过；其前一阶段完整门6027PASS/1FAIL：Next Webpack开发fixture读取0字节react-loadable-manifest导致请求prepare阶段JSONEOF，真实trace已绑定，未靠刷绿/放宽门禁抹掉。最后仅空DELETE流API守卫增量定向/真实HTTP验证，未冒最终字节完整门全绿。所有PR保留此缺口、不合并；正常Turbopack与发布生产构建不混称这一开发系统门。
+
+全产品目标仍开放：Project成员协作权限/执行绑定、外部Provider/OAuth事实及Skills精确分享/作者系列删除等依唯一计划继续；不拿私有URL、空目录或候选协议假代替。全接口100ms并未证明，不把单次90ms下载外推。正常旧Agent/Billing账本及原样本保持，无新付费Run/充值/费率发布。本批复用已授权topic分支；历史main-only记录不作为删除未合并分支的依据。
