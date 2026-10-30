@@ -1231,3 +1231,13 @@ Browser
 - [ ] App正式final优先，旧成功Run仅据本次有效adjunct复用整轮披露；不混入durable final merge、不补造旧阶段文字。正常conv6530对照/刷新/详情验收后再关闭此展示子项。
 
 写区为Agent新增helper/两份测试及既有TECHNICAL_DESIGN，消费者尚未修改；现有Goal与唯一计划继续，不创建并行任务中心。
+
+### 2026-10-29 真实 Custom API 取消与错误提示闭环记录
+
+- [x] 复用 QA API Boundary 当前版本，实际创建 Run 并确认 Agent DB 中 `sandbox_id`、Docker backend、`execute/started`。
+- [x] 通过正常 Run control 入口停止；确认 control receipt `persisted → applied`、Run `cancelled`、cleanup `completed`，并在同一 Docker context 查询容器不存在。
+- [x] 修复 Agent Custom API transport 对 Platform Connect 结构化错误的丢失：配置状态冲突/不存在与 owner 不可用分别进入 typed client error；不解析错误文案、不保留上游异常上下文。
+- [x] 为现有公共错误闭集保兼容：配置错误在 `assembly_failed` 非重试外壳中传递，Web 改为中性提示并刷新实测；没有新增跨仓枚举、没有改 BFF Message CHECK。
+- [ ] 若产品需要把“API 配置无效”作为独立公开 RunErrorCode，另开 Agent→BFF→App schema-evolution 切片：先更新历史父图与生成物，再升级 BFF 持久 CHECK，最后重载消费者；本轮不把这项未做的契约扩展冒称完成。
+
+本片证据：Agent `c43fc3f`（最终工作树相对既有 `c6c8073` 仅含 Custom API typed transport/failure handling 与回归测试）、App `c222b2e4`；浏览器和私有权威回读位于 ignored `var/dev/custom-api-boundary-20261029/`。默认 App 359 文件/6894 测试继续复现原有缺失 `KOKORO_TEST_REDIS_URL` 的 1 个 stored-session 套件（2 skip），本片未删断言或把该环境缺口称绿。

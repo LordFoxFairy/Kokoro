@@ -1,5 +1,13 @@
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 
+### 2026-10-29 续验：真实取消清理与配置失败提示收口
+
+本轮沿已批准的任务隔离沙箱方案完成真实取消验收：会话 `conv_6a9a369d-4c57-44ad-bc5d-6b3048a5ecbd` 的有界 Python 执行已实际进入 Docker 沙箱，工具 journal 记录 `execute/started`；点击停止后权威 Agent Run 进入 `cancelled`，控制命令先 `persisted` 后 `applied`，cleanup intent 为 `completed`，同一 Docker context 按完整容器 ID 查询为空。证据保存在 ignored `var/dev/custom-api-boundary-20261029/`（`cancel-executing.png`、`cancel-completed.png`、`conv_6a9a...private.json`、`error-copy-after.png`）。这补齐了“已绑定沙箱的在途取消→持久清理→容器不存在”证据，不再拿已失败的 assembly Run 冒充取消。
+
+同时修正了误导性错误展示的根因边界：Agent Platform client 现在保留 `FAILED_PRECONDITION/NOT_FOUND` 与 `UNAVAILABLE/DEADLINE_EXCEEDED` 的结构化分类，清理异常上下文后分别进入 Custom API 配置错误／依赖错误类型；公共 RunErrorCode 继续兼容现有闭集，配置错误在现有 `assembly_failed` 外壳中保持非重试。Web 的 `fail.assembly` 已改为中性的“本轮未能启动，请检查所选连接器、API 或模型设置”，不再把用户选择问题归咎为空间管理员。正常 3310 刷新后已实测新文案。公共枚举未扩展，避免破坏历史契约指纹；若后续要公开细分码，必须另开完整 Agent→BFF schema evolution 切片并先升级持久 CHECK。
+
+踩坑记录：①点击已终态冲突 Run 的停止不能证明清理；必须先看到同 Run `sandbox_id`、`execute/started`，再停止并核 cleanup 与 Docker；②Platform 结构化错误不能在 Custom API transport catch-all 中抹成 owner unavailable；③跨仓新增错误码会同时触及 Agent 历史父图、BFF 公共 YAML、Message CHECK、App 生成物，不能只改一处文案；④浏览器刷新恢复的是持久 Run 事实，截图或测试数量不能代替权威 DB 与同 daemon 证据。
+
 ### 2026-10-29 后继：连接器菜单顺序已正常修正
 
 App `fcf395bd00a5778c22e258133ddc299a60fd9f73` 在同一PR46继续交付。Manus首页中文浅色1280×720实测向上仍是“列表→添加→管理”；原记录的向上逆序有误，现共享组件删除方向监听/反转，菜单上下展开都保持列表优先。两份运行源严格核90c07f4前像后HMR，当前3310已生效。实际向上/向下键盘首项与Escape、管理/添加返回原会话及API选择1、390px本地不溢出均已验；参考/实现首页同视口、会话前后截图和DOM测量在ignored `var/dev/connector-menu-parity-20261029/`。参考窄屏未取得，目录数量/类型不同，完整视觉不冒一比一。
