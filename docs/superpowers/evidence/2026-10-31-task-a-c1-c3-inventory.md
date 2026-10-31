@@ -97,7 +97,7 @@ Nest AppModule
 | `POST /v1/projects/{id}/resources` | `projectResourceRoute` | `ProjectsModule` + Storage client | upload/idempotency/scan state | 未迁移 |
 | `GET /v1/projects/{id}/resources/{resourceId}` | `projectResourceReadRoute` | `ProjectsModule` + Storage client | read qualification、scope | 未迁移 |
 | `GET /v1/projects/{id}/resources/{resourceId}/download` | `projectResourceReadRoute` | `ProjectsModule` + Storage client | exact bytes、expiry | 未迁移 |
-| `DELETE /v1/projects/{id}/resources/{resourceId}` | `projectResourceDeleteRoute` | `ProjectsModule` + scope-release | deletion/outbox/recovery | 未迁移 |
+| `DELETE /v1/projects/{id}/resources/{resourceId}` | `handleProjectResourceDeleteRequest` (`project-native.ts`) | `ProjectsModule` + Storage client | deletion/outbox/recovery | 已迁移（`14aa232`） |
 | `PUT/POST /v1/projects/{id}/skill-selection` | `projectSkillSelectionRoute` | `ProjectsModule` + Skills client | project access、installation IDs、CAS | 未迁移 |
 | `/v1/projects/{id}/skill-installations/**` | `skillInstallationRoute` | `ProjectsModule` + Skills client | project access、owner qualification | 未迁移 |
 | `GET /v1/projects/{id}/tasks` | `liveBffBusiness`/project repository | `ProjectsModule` ProjectTask provider | A-07 canonical ProjectTask contract | A-07 停写 |
@@ -203,9 +203,9 @@ Nest AppModule
 
 本文件第 3～7 节保留最初 route/provider census；以下是其后的实际状态，不覆盖未迁移项：
 
-- BFF `52eeff7d6561f3ecc752a2c58d86fd72476d159b` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list source routes 已删除。
+- BFF `14aa2322030c9f967f7903562c7794f51fdcf7c1` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-delete、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-delete source routes 已删除。
 - `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService`、`projectService` 字段已删除；runtime 统一从 `services.chat` / `services.projects` 读取。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
-- Root pin：App `dde9fa672b1ec5fc2ca6f19d675ba215b58b71cf`、BFF `52eeff7d6561f3ecc752a2c58d86fd72476d159b`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- Root pin：App `dde9fa672b1ec5fc2ca6f19d675ba215b58b71cf`、BFF `14aa2322030c9f967f7903562c7794f51fdcf7c1`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
 - 最新 BFF 串行全量：2310 tests / 2308 pass / 0 fail / 2 skip；Root topology PASS；最新 Root gitlink native Web smoke 4/4。
 - 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat/AgentRuns/AG-UI/Scheduled mutations/Skills/MCP route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
 
