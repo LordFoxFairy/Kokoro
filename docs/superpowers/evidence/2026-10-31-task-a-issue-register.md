@@ -15,9 +15,10 @@
 - Projects pin route cutover：[Projects pin evidence](2026-10-31-task-a-project-pin-cutover.md)
 - ScheduledTask current-read route cutover：[Scheduled read evidence](2026-10-31-task-a-scheduled-read-cutover.md)
 - AgentRuns internal route cutover：[AgentRuns evidence](2026-10-31-task-a-agent-runs-cutover.md)
+- C-4 contract inverse 与全量复验：[C-4 evidence](2026-10-31-task-a-c4-contract-inverse.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `2ce0296`（含 `2df4bcc`、`caccdc9`、`a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest、Chat archive/share/feedback、Projects pin、ScheduledTask current-read、Agent internal admission/binding 与 run-display bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization、Chat、Project pin、ScheduledTask read 与 AgentRuns reader/provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider，partial test composition 仍保持兼容。native route HTTP fixtures 已切换到 build output，78 项 feedback/run-display/project-binding focused tests 全部通过。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `9c9e92f`（含 `2df4bcc`、`caccdc9`、`a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`、`2ce0296`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest、Chat archive/share/feedback、Projects pin、ScheduledTask current-read、Agent internal admission/binding 与 run-display bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization、Chat、Project pin、ScheduledTask read 与 AgentRuns reader/provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider，partial test composition 仍保持兼容。native route HTTP fixtures 已切换到 build output，78 项 feedback/run-display/project-binding focused tests 全部通过；C-4 contract inverse 与 IAM 0.18/profile-read governance 已收敛，BFF 串行全量为 2309 tests / 2307 pass / 0 fail / 2 skip。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
@@ -80,7 +81,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | TA-BASELINE-02 | Root 全局规范审计现有 224 条历史/任务外 violation。 | 只修本 Goal 直接命中的 BFF Nest、C-1.3 和 Task A clean-slate 项；其余留在治理 backlog。 |
 | TA-BASELINE-03 | App 停写后全量 `pnpm test` 为 6890 pass / 2 skip / 7 fail；失败集中在既有 process/activity UI 断言、sign-out 页面文案契约，另有 stored-session fixture 缺少 `KOKORO_TEST_REDIS_URL`。 | 作为独立 baseline/环境缺口记录；不以 focused native proof 冒称 App 全量通过，也不在 C-1.3 中顺手扩展 UI 语义。 |
 | TA-BASELINE-04 | Root `python3 -m pytest scripts/tests -q` 串行结果为 1844 passed、2 failed、3 skipped、502 subtests；失败为 `test_serve_local_login.py::test_occupied_port_is_not_reused_or_terminated` 与 Storage smoke 缺少 `@aws-sdk/client-s3`，均未命中本切片代码。Root topology verifier 通过，BFF focused gates 通过。 |
-| TA-BASELINE-05 | BFF 停写后串行 `pnpm test` 最新结果为 2296 tests / 2240 pass / 54 fail / 2 skip；失败集中在既有 `Activity details version drift` contract inverse。相较先前 2238/56，build-output fixture 调整消除了 2 个 source-loader 失败；本切片 message feedback/run display/project binding focused 为 78/78。 | 记录为 C-4 baseline；不把 BFF 全量写成通过，待 contract inverse 收敛后复验。 |
+| TA-BASELINE-05 | BFF 停写后串行 `pnpm test` 已复验为 2309 tests / 2307 pass / 0 fail / 2 skip；本轮补齐 v28.18 Account profile inverse、IAM 0.18/profile-read governance 与 build-output fixture，contract inverse 不再漂移；message feedback/run display/project binding focused 为 78/78。 | C-4 BFF 全量门已收敛；2 个 skip 仍是受资源门禁保护的真实 PostgreSQL 条件测试，不计为通过，详见 C-4 evidence。 |
 
 ## 4. 目标与 TODO
 

@@ -33,7 +33,7 @@ route inventory
 - `node --import tsx --test --test-concurrency=1 test/personal-file-upload.test.mjs`：通过（11/11）；验证 partial `businessStore` fixture 不因 Chat provider seam 崩溃。
 - `pnpm test:nest-architecture`：12/12 通过，包含 Chat feedback adapter ownership 与 Agent/Chat module graph 断言。
 - build-output focused HTTP fixtures：message feedback、run display、project binding 合计 78 项通过。
-- `pnpm test`：最新串行结果 2296 tests，2240 pass，54 fail，2 skip；失败仍集中于既有 `Activity details version drift` contract inverse。build-output fixture 调整消除了 2 个 source-loader 失败；Chat feedback/run-display/project-binding focused 78/78 通过。该基线需在 C-4 统一收敛，不冒称全量通过。
+- 历史切片基线曾为 2296 tests，2240 pass，54 fail，2 skip；C-4 后已由 v28.18 Account profile inverse、IAM 0.18/profile-read governance 与 build-output fixture 收敛。最新 BFF 串行 `pnpm test` 为 2309 tests，2307 pass，0 fail，2 skip；Chat feedback/run-display/project-binding focused 78/78 通过。2 个 skip 仍是资源门禁保护的真实 PostgreSQL 条件测试，不计为通过。
 
 ## 未关闭项
 

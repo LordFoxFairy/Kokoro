@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `2df4bcc`（先前 `caccdc9`、`a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled/Agent route bundles 已切换；personalization、Chat archive/share/feedback、Project pin、ScheduledTask read、AgentRuns reader 与 run-display provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `9c9e92f`（先前 `2ce0296`、`2df4bcc`、`caccdc9`、`a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled/Agent route bundles 已切换；personalization、Chat archive/share/feedback、Project pin、ScheduledTask read、AgentRuns reader 与 run-display provider seam 已脱离旧 dispatcher；C-4 contract inverse 与 BFF full gate 已复验通过，本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
