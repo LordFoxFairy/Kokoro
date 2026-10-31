@@ -9,9 +9,10 @@
 - 原执行顺序：[Task A 清理与重构执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md)
 - 当前收敛方案：[C-1.3～C-4 收敛实施方案](../plans/2026-10-31-task-a-c1-c3-convergence.md)
 - 已交付证据：[C-1 清理实施证据](2026-10-31-task-a-c1-cleanup-implementation.md)
+- C-2/C-3 路由与边界盘点：[C-2/C-3 inventory](2026-10-31-task-a-c2-c3-inventory.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前 Root 集成基线为 `f17bf828`，App 子仓已推进至 `4c41104d`，BFF 子仓至 `65cf2082`，IAM 子仓至 `108beedf`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前停写代码基线为 `f17bf828`；其后 Root `18b59a43` 仅同步文档。App 子仓已推进至 `4c41104d`，BFF 子仓至 `65cf2082`，IAM 子仓至 `108beedf`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
@@ -35,15 +36,15 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
-| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | 每条 route census 有目标 feature、Controller、Service/use case、必要持久化边界、测试；迁移后 adapter 不再处理该 path。 | 未完成 |
-| TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用。 | 存在第二 composition root 和隐藏依赖。 | 唯一 Nest listener、唯一 `AppModule`、旧 dispatcher/import census 为零。 | 未完成 |
+| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；真实 path 分派在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 盘点完成，迁移未完成 |
+| TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用；`app.module.ts`、`main.ts`、shutdown provider 也在删除链上。 | 存在第二 composition root 和隐藏依赖。 | 先完成 feature provider cutover/import census，再删 dispatcher；反向搜索 `LegacyRoutes*`、`createBffComposition`、`handleBffRequest`、`createBffServer`。 | 未完成 |
 | TA-C2-03 | 已有 feature module 仍有部分只声明 graph/ownership 的空壳风险。 | 机械建模块会增加无意义代码，掩盖未迁移行为。 | 每个 module 至少承接真实 route/provider/owner client；无 route、无 provider、无测试证据的模块不保留。 | 进行中 |
 
 ### 3.3 C-3 Repository / Service / Port
 
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
-| TA-C3-01 | `BffBusinessStore` 同时承载 Chat、Project、Agent、Scheduler、AG-UI、Artifact 等事实。 | 巨型 Port 隐藏 owner 和依赖，导致运行时缺失分支。 | 按 feature 拆分 provider；旧 global Port 生产 import 为零。 | 未完成 |
+| TA-C3-01 | `BffBusinessStore` 同时承载 Chat、Project、Agent、Scheduler、AG-UI、Artifact 等事实。 | 巨型 Port 隐藏 owner 和依赖，导致运行时缺失分支。 | C-2/C-3 inventory 已完成字段/owner 候选；按 slice 拆 provider，旧 global Port 生产 import 为零。 | 盘点完成，迁移未完成 |
 | TA-C3-02 | `PostgresBffRepositories` 是服务定位器，`BffApplicationServices` 是全局聚合器。 | 组合根无法表达真实依赖，Repository/Service 无法按 owner 审计。 | 复杂事务/CAS/lease/outbox/owner boundary 迁入具名 feature-local provider；两个聚合器删除。 | 未完成 |
 | TA-C3-03 | `src/application/ports/**` 尚有全局 Port；其中既有薄转发、单实现，也有需要保留的事务边界。 | 机械删除会丢失并发、幂等、outbox 或权限保障；全部保留又延续过度分层。 | 对每个 Port 给出 keep/move/merge/delete 证据；删除条件为新 provider 编译通过、旧 import 为零、行为测试已迁移。 | 未完成 |
 | TA-C3-04 | 部分 Service/Repository 只做一层 `return repository.method(...)` 转发。 | 无独立变化原因，增加抽象和测试负担。 | 并入 feature Service/Provider；公开行为测试保留，私有调用顺序测试删除。 | 未完成 |
@@ -92,7 +93,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ### G2：LegacyRoutes 全量退出
 
-- [ ] 建立 path/method → handler → target module → owner → test → status 的 route census。
+- [x] 建立 path/method → handler → target module → owner → test → status 的 route census；盘点覆盖 `server.ts`、`app.module.ts`、`main.ts`、shutdown provider 和 LegacyRoutes wrapper。
 - [ ] 每批先补 red HTTP/architecture test，再实现 Controller → Service/use case → 必要 feature-local Repository/client。
 - [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
 - [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
@@ -100,8 +101,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ### G3：Repository / Service / Port 收敛
 
-- [ ] 为 `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 建立字段/方法/消费者清单。
-- [ ] 为 `src/application/ports/**` 逐项写 keep/move/merge/delete 及事务、锁、CAS、lease、outbox、owner evidence。
+- [x] 为 `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 建立字段/方法/消费者清单。
+- [x] 为 `src/application/ports/**` 逐项写 keep/move/merge/delete 及事务、锁、CAS、lease、outbox、owner evidence。
 - [ ] 先移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
 - [ ] 旧 global wrapper 不再出现在生产 composition 后删除；反向 import census 为零。
 - [ ] 检查无 BaseRepository、无空模块、无第二套 DTO/SQL/ORM owner、无 sibling 相对路径穿透。
@@ -146,5 +147,5 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ## 7. 当前停止线与下一步
 
-当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile update、account sessions、Team 的 native owner transport。C-1.3 的 profile read owner contract、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、global Repository/Service/Port 收敛和 C-4 停写后串行门禁仍未完成；A-01/A-02/A-07 继续停写。下一步先冻结并实现 profile read owner contract，再补 native 旅程真实收据；随后按 route census 迁移一个有真实 owner/provider/test 的 feature bundle，每个 bundle 完成 focused 与串行门禁后再扩展下一批。
+当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile update、account sessions、Team 的 native owner transport；C-2/C-3 route、global wrapper、port inventory 已冻结。C-1.3 的 profile read owner contract、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、global Repository/Service/Port 收敛和 C-4 停写后串行门禁仍未完成；A-01/A-02/A-07 继续停写。下一步先完成 `GET /internal/v1/account/profile` contract/artifact/receipt，再按 inventory 迁移已有 `PERSONALIZATION_PROVIDER` 的 `GET/PUT /v1/preferences/personalization`，每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
 

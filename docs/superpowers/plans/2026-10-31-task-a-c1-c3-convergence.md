@@ -12,7 +12,7 @@
 
 ## 0. 当前基线与停写边界
 
-**停写基线：** Root `f17bf828`，工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。
+**停写代码基线：** Root `f17bf828`（后续仅有文档同步提交 `18b59a43`），工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。文档提交不改变代码基线；每次新增 evidence 后重新记录 Root 文档 HEAD 与子仓 gitlink。
 
 **已交付事实：**
 
@@ -87,13 +87,14 @@ IAM native session cookie
 
 - Modify: `docs/superpowers/evidence/2026-10-31-task-a-c1-cleanup-implementation.md`
 - Create: `docs/superpowers/evidence/2026-10-31-task-a-c1-c3-inventory.md`
-- Inspect only: `apps/kokoro-bff/src/modules/legacy-routes/legacy-routes.runtime.ts`
-- Inspect only: `apps/kokoro-bff/src/bootstrap/runtime.ts`, `apps/kokoro-bff/src/bootstrap/server.ts`, `apps/kokoro-bff/src/application/ports/**`
+- Inspect only: `apps/kokoro-bff/src/modules/legacy-routes/*`
+- Inspect only: `apps/kokoro-bff/src/bootstrap/runtime.ts`, `apps/kokoro-bff/src/bootstrap/server.ts`, `apps/kokoro-bff/src/main.ts`, `apps/kokoro-bff/src/app.module.ts`, `apps/kokoro-bff/src/common/lifecycle/graceful-shutdown.ts`
+- Inspect only: `apps/kokoro-bff/src/application/ports/**`, `apps/kokoro-bff/src/application/services.ts`, `apps/kokoro-bff/src/infrastructure/postgres/repositories.ts`
 
-- [ ] 列出每条 LegacyRoutes path/method 的当前 handler、目标 feature、依赖、测试、迁移状态。
+- [x] 列出每个 `server.ts` path/method family 的当前 handler、目标 feature、依赖、测试、迁移状态；`LegacyRoutesRuntime` 只作为 middleware wrapper 单独记录。
 - [ ] 列出 `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 的字段/方法及生产消费者。
 - [ ] 对 `src/application/ports/**` 逐项标记 keep/move/merge/delete，并记录真实事务/锁/CAS/lease/outbox/owner boundary 证据。
-- [ ] 为每个 slice 写明“从 adapter 删除的具体 path”和最低验证命令；没有 route/消费者证据的 slice 不进入实现。
+- [x] 为每个 slice 写明“从 `server.ts`/adapter 删除的具体 path”和最低验证命令；没有 route/消费者证据的 slice 不进入实现。
 
 ### Task 2：完成 App native adapter，再关闭 C-1.3
 
@@ -124,20 +125,28 @@ IAM native session cookie
 
 **验证出口：** IAM contract/HTTP/guard tests → BFF client/HTTP tests → App profile-read focused tests → 停写后串行 owner gates。生成器、OpenAPI digest 和 consumer pin 必须在同一提交序列中更新。
 
-### Task 3：Account/Projects 第一批真实 route 下沉
+### Task 3：Personalization 第一批真实 route 下沉（C-1.3 profile-read gate 之后）
 
 **Files:**
 
 - Modify/Create: `apps/kokoro-bff/src/modules/account/**`
-- Modify/Create: `apps/kokoro-bff/src/modules/projects/**`
-- Modify: `apps/kokoro-bff/src/modules/legacy-routes/legacy-routes.runtime.ts`
-- Modify: corresponding `src/http/routes/account-*.ts`, `project-*.ts`, `test/**`
+- Modify: `apps/kokoro-bff/src/bootstrap/server.ts`, `apps/kokoro-bff/src/bootstrap/runtime.ts` only for the exact migrated path/provider seam
+- Modify: `apps/kokoro-bff/src/modules/legacy-routes/*`, `apps/kokoro-bff/src/app.module.ts`, `apps/kokoro-bff/src/main.ts`, `apps/kokoro-bff/src/common/lifecycle/graceful-shutdown.ts` only when the route/worker graph requires it
+- Modify: `apps/kokoro-bff/src/http/routes/personalization.ts` only if its raw HTTP parsing is extracted into the controller boundary; exact focused tests and explicit package.json file lists
 
-- [ ] 选取 route bundle（Account profile/sessions 或 Project read/rename/pin）并先写 red HTTP/architecture tests。
-- [ ] 将 raw input/context/error mapping 放入 Controller，业务规则放入 Service/use case，真实 CAS/事务放入 named Repository；owner call 保持 integration client 边界。
-- [ ] 在 AppModule/feature module 注册 provider，测试注入 seam，不再从 `createBffComposition()` locator 取服务。
-- [ ] 从 LegacyRoutesRuntime 移除已迁移 path，并添加“该 path 不再由 adapter 处理”的回归断言。
-- [ ] 运行 format/lint/typecheck/build、feature focused tests、`test:nest-architecture`、`test:architecture`。
+- [ ] 以已有 `PERSONALIZATION_PROVIDER` 作为首个 C-2 slice，先写 red HTTP/architecture tests，迁移精确的 `GET/PUT /v1/preferences/personalization`。
+- [ ] Controller 负责 native/user admission context、raw body/query/content-type/abort/5s deadline 与 error envelope；`PERSONALIZATION_PROVIDER` 继续负责真实 CAS/事务，不能复制 Repository 或 generic receipt。
+- [ ] 在 `AccountModule` 注册 controller/provider，测试注入 `PERSONALIZATION_PROVIDER` 与 `SESSION_ADMISSION` seam，不再从 `createBffComposition()` locator 取服务。
+- [ ] 从 `bootstrap/server.ts` 移除已迁移 path，并在 LegacyRoutes middleware exclusion/negative test 中证明 adapter 不再处理该 path。
+- [ ] 同步更新 BFF `package.json` 的显式 format/test 文件清单，运行 format/lint/typecheck/build、feature focused tests、`test:nest-architecture`、`test:architecture`。
+
+**Personalization slice exit:** only after Task 2.1 profile-read contract/artifacts/receipt are complete; this slice must not remove `BffBusinessStore`, `BffApplicationServices`, `PostgresBffRepositories`, or unrelated LegacyRoutes branches.
+
+### Task 3.1：Projects 第一批真实 route 下沉
+
+- Modify/Create: `apps/kokoro-bff/src/modules/projects/**`
+- Modify: exact project route branches in `apps/kokoro-bff/src/bootstrap/server.ts`, feature wiring, focused tests and explicit package.json file lists
+- [ ] After Personalization exit, choose Project read/rename/pin only when the provider graph and DB pool owner are explicit; preserve project scope, idempotency and deadline behavior.
 
 ### Task 4：Chat/AgentRuns/AG-UI 与 ScheduledTasks 下沉
 
@@ -160,11 +169,11 @@ IAM native session cookie
 - Delete after zero-route proof: `src/modules/legacy-routes/legacy-routes.runtime.ts`, `legacy-routes.module.ts`, `legacy-routes.middleware.ts`
 - Delete after provider graph proof: old `src/bootstrap/server.ts` business dispatcher and `src/bootstrap/runtime.ts` global composition paths
 
-- [ ] 以 Task 1 inventory 为序迁移，不新增 route/alias/fallback。
+- [ ] 以 Task 1 inventory 为序迁移，不新增 route/alias/fallback；实际写区包含 `bootstrap/server.ts`、`app.module.ts`、`main.ts` 和测试引用，不把 runtime wrapper 改名为 Controller。
 - [ ] 每一批完成后更新 route census；census 为零前不删除 adapter。
-- [ ] 删除旧 listener/dispatcher 后运行 source-runtime architecture gate，证明唯一 Nest listener 和唯一 composition root。
+- [ ] 所有 feature provider cutover 与反向 import census 完成后，才删除旧 listener/dispatcher；运行 source-runtime architecture gate，证明唯一 Nest listener 和唯一 composition root。
 
-### Task 6：C-3 Repository/Service/Port 收敛
+### Task 6：C-3 Repository/Service/Port 收敛（按 slice 前置，最终删除后置）
 
 **Files:**
 
@@ -174,7 +183,7 @@ IAM native session cookie
 
 - [ ] 先按 inventory 移动有真实 owner boundary 的 port，不改行为。
 - [ ] 单实现、无边界的 Service 并入 feature Service/Provider；只转发一次的 Port 删除并把测试绑定公开行为。
-- [ ] `BffBusinessStore`/`PostgresBffRepositories`/`BffApplicationServices` 不再出现在生产 composition 后，删除旧 wrapper。
+- [ ] 每个 feature slice 先完成对应 provider cutover 与 import census；全部 route slice 完成后，`BffBusinessStore`/`PostgresBffRepositories`/`BffApplicationServices` 才能从生产 composition 删除，避免先删 wrapper 造成循环依赖或第二套 locator。
 - [ ] 运行全局 import census，确认没有相对路径穿越 sibling、第二 DTO/ORM/SQL owner 或空模块。
 
 ### Task 7：C-4 清理与最终全量验证
@@ -190,10 +199,13 @@ IAM native session cookie
 ```bash
 git diff --check
 python3 scripts/verify-repository-topology.py
+python3 -m pytest scripts/tests -q
 # IAM
-cd apps/kokoro-iam && pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test:unit && pnpm build
+cd apps/kokoro-iam && pnpm prisma:format && pnpm prisma:validate && pnpm prisma:generate && pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm test && pnpm build
 # BFF
-cd ../kokoro-bff && pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test:nest-architecture && pnpm test:architecture && pnpm test
+cd ../kokoro-bff && pnpm format:check && pnpm lint && pnpm typecheck && pnpm contract:check && pnpm build && pnpm test:nest-architecture && pnpm test:architecture && pnpm test
+# when isolated PostgreSQL/Redis resources are available
+pnpm test:integration
 # App / Agent 按各自 AGENTS.md 完整 owner gate
 ```
 
@@ -213,8 +225,8 @@ cd ../kokoro-bff && pnpm format:check && pnpm lint && pnpm typecheck && pnpm bui
 
 ## 6. 完成定义与 A gate
 
-- [ ] C-1.3：App native adapter、BFF native consumer、IAM runtime、sign-in/sign-out/tenant-switch/revocation 证据齐全；旧 first-party RP/Product Session 已删除。
-- [ ] C-2：唯一 Nest listener、唯一 AppModule composition root；LegacyRoutes 与旧 dispatcher 删除。
+- [ ] C-1.3：App native adapter、BFF native consumer、IAM runtime、sign-in/sign-out/tenant-switch/revocation 证据齐全；`GET /internal/v1/account/profile` owner contract、generated IAM/BFF artifacts、App profile-read receipt 齐全后，旧 first-party RP/Product Session 才能删除。当前 App 既有 7 failures、2 skips 与 `onReconnect` typecheck baseline 需单列，不能笼统写成全绿。
+- [ ] C-2：唯一 Nest listener、唯一 AppModule composition root；LegacyRoutes 与旧 dispatcher 删除，且反向搜索 `LegacyRoutesModule/Runtime/Middleware`、`createBffComposition`、`handleBffRequest`、`createBffServer` 生产引用为零或有明确保留证据。
 - [ ] C-3：global Repository/Service/Port 只剩有证据的 feature-local boundary；global locator/wrapper 删除。
 - [ ] C-4：默认测试只覆盖 canonical 当前态；owner/root 全量门禁通过；证据文档更新完成。
 - [ ] A-01/A-02/A-07：仅在上述四项均通过后另建实施计划并开始。
