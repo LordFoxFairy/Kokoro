@@ -34,11 +34,12 @@ pnpm exec vitest run \
 - `python3 scripts/e2e/run_bff_iam_oidc_smoke.py ... --expected-bff-sha 3ca1525... --expected-iam-sha f4f1585...`：42/42 cases 在 cookie cutover 前通过；Path=/ cutover 后需重跑，当前一次重跑在 OAuth foreign-tenant guard 阶段失败，不作为现行通过证据。
 - 两个 smoke 均使用本地 PostgreSQL/Redis、BFF source build 和 IAM test-owned host；Root gitlink、子仓 clean、process/database/Redis cleanup 均通过。
 - App native/policy focused gate：7 files / 120 tests passed，覆盖 native Cookie adapter、account profile admission、session proxy、relay policy 和 root-scoped cookie projection。
+- `python3 scripts/e2e/run_web_native_session_smoke.py ... --expected-iam-sha e1f537b02cb326cfb3751316b1591fa82313f70a`：4/4 cases passed；在 test-owned HTTPS Web origin 上验证 `/api/auth/session` native subject、`/api/session/projects` Web→BFF→IAM 链路、IAM signout 后的 401，以及进程/数据库/Redis 清理。IAM fixture 由 `IAM_TEST_WEB_ORIGIN` 固定到同一 Web origin，并通过直接 session-admission credential 启动 BFF。
 
 Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
 
 ## 尚未闭环
 
-- 该收据闭合 IAM native owner/profile、IAM→BFF real session/OIDC 与撤权行为，不代表 App→BFF→IAM native sign-in/sign-out/active-tenant switch/revocation 旅程已完成。
-- IAM issuer cookie scope 已按 G0 contract 切为 `Path=/`，BFF/App relay policy 同步切换；当前剩余缺口是用真实 HTTPS 浏览器证明 `/api/*` native adapter 触达 BFF/IAM，随后才删除旧 RP/Product Session。
+- 该收据闭合 IAM native owner/profile、IAM→BFF real session/OIDC 与 Web HTTPS native session/signout 入口，不代表完整 App native sign-in/active-tenant switch/revocation UI 旅程已完成。
+- IAM issuer cookie scope 已按 G0 contract 切为 `Path=/`，BFF/App relay policy 同步切换；当前剩余缺口是完整 native sign-in/active-tenant switch UI 与旧 RP/Product Session 删除前的全量回归。
 - App Product Session/Auth.js/OIDC 旧入口与 BFF LegacyRoutes 仍按 Goal 停写线保留，A-01/A-02/A-07 不启动。
