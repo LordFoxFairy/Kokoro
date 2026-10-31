@@ -13,7 +13,7 @@
 - C-1.3 profile-read cutover：[profile-read evidence](2026-10-31-task-a-c1-3-profile-read-cutover.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `96806f4`（含 `39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）和 System runtime-manifest 已由 feature middleware 接管，旧 `server.ts` 对应业务分支已移除，真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `4667506`（含 `96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）和 System runtime-manifest 已由 feature middleware 接管，旧 `server.ts` 对应业务分支已移除；personalization 已从 `BffApplicationServices`/global service locator 脱离，raw-server seam 使用显式 provider。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
@@ -46,7 +46,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
 | TA-C3-01 | `BffBusinessStore` 同时承载 Chat、Project、Agent、Scheduler、AG-UI、Artifact 等事实。 | 巨型 Port 隐藏 owner 和依赖，导致运行时缺失分支。 | C-2/C-3 inventory 已完成字段/owner 候选；按 slice 拆 provider，旧 global Port 生产 import 为零。 | 盘点完成，迁移未完成 |
-| TA-C3-02 | `PostgresBffRepositories` 是服务定位器，`BffApplicationServices` 是全局聚合器。 | 组合根无法表达真实依赖，Repository/Service 无法按 owner 审计。 | 复杂事务/CAS/lease/outbox/owner boundary 迁入具名 feature-local provider；两个聚合器删除。 | 未完成 |
+| TA-C3-02 | `PostgresBffRepositories` 是服务定位器，`BffApplicationServices` 是全局聚合器。 | 组合根无法表达真实依赖，Repository/Service 无法按 owner 审计。 | 复杂事务/CAS/lease/outbox/owner boundary 迁入具名 feature-local provider；personalization 已先脱离聚合器，剩余字段继续按 feature 迁移。 | 进行中 |
 | TA-C3-03 | `src/application/ports/**` 尚有全局 Port；其中既有薄转发、单实现，也有需要保留的事务边界。 | 机械删除会丢失并发、幂等、outbox 或权限保障；全部保留又延续过度分层。 | 对每个 Port 给出 keep/move/merge/delete 证据；删除条件为新 provider 编译通过、旧 import 为零、行为测试已迁移。 | 未完成 |
 | TA-C3-04 | 部分 Service/Repository 只做一层 `return repository.method(...)` 转发。 | 无独立变化原因，增加抽象和测试负担。 | 并入 feature Service/Provider；公开行为测试保留，私有调用顺序测试删除。 | 未完成 |
 | TA-C3-05 | 类型、错误映射、wire/domain DTO 可能存在镜像。 | 同一事实在多个 owner 漂移。 | 保留 canonical contract 与必要边界类型；重复 DTO/错误映射反向搜索为零。 | 未完成 |
@@ -105,7 +105,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 - [x] 为 `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 建立字段/方法/消费者清单。
 - [x] 为 `src/application/ports/**` 逐项写 keep/move/merge/delete 及事务、锁、CAS、lease、outbox、owner evidence。
-- [ ] 先移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
+- [x] 首个 C-3 slice 已将 `PersonalizationProvider` 从 `BffApplicationServices` 移到 `BffBusinessStore.personalizationProvider` 的显式 raw-server seam；CAS/事务实现未复制。
+- [ ] 继续移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
 - [ ] 旧 global wrapper 不再出现在生产 composition 后删除；反向 import census 为零。
 - [ ] 检查无 BaseRepository、无空模块、无第二套 DTO/SQL/ORM owner、无 sibling 相对路径穿透。
 
@@ -149,5 +150,5 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ## 7. 当前停止线与下一步
 
-当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342b` 固定。C-2 Account/System route bundles 已由 BFF `96806f4` 切到 feature middleware，并完成 BFF build/typecheck/format/lint、architecture、profile/session/team/me/runtime-manifest focused 验证。仍未完成的是真实 IAM infrastructure receipt、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、global Repository/Service/Port 收敛和 C-4 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移 Chat/Agent/Scheduled 与 Projects route bundle，每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
+当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342b` 固定。C-2 Account/System route bundles 已由 BFF `96806f4` 切到 feature middleware，C-3 首个 personalization provider slice 已由 BFF `4667506` 脱离 global service locator，并完成 BFF build/typecheck/format/lint、architecture、profile/session/team/me/runtime-manifest focused 验证。仍未完成的是真实 IAM infrastructure receipt、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、剩余 global Repository/Service/Port 收敛和 C-4 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移 Chat/Agent/Scheduled 与 Projects route bundle，并继续拆 global provider；每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
 

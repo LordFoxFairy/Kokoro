@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `96806f4`（先前 `39d5481`、`7f61218`、`2a504c0`）。Account/System route bundles 已切换；本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `4667506`（先前 `96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System route bundles 已切换；personalization 已脱离 `BffApplicationServices`，本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
@@ -89,7 +89,7 @@ Current public fields and observed production consumers:
 | `ChatApplicationService` | chat repository façade, cursor/replay/message reads | move to ChatModule service |
 | `ChatTurnApplicationService` | durable agent dispatch + stable id | move to Chat/AgentRuns use case; retain outbox/idempotency boundary |
 | `PublicShareApplicationService` | public share projection | move to Chat/PublicShare provider |
-| `personalization` | already feature-local provider but exposed through global aggregate | inject `PERSONALIZATION_PROVIDER` directly; delete aggregate field |
+| `personalization` | feature-local provider；此前暴露在 global aggregate，现已改为 `BffBusinessStore.personalizationProvider` 的 raw-server seam + AccountModule DI | **migrated first C-3 slice**; 删除 aggregate field，保留 CAS/transaction provider，后续删除 raw seam |
 | `skillShares`, `skillUsage`, `skillAiAssociation`, `personalKnowledge` | optional feature providers hidden behind aggregate | inject directly in Skills/Account/Chat feature modules; preserve owner-specific provider |
 
 ### 4.3 `PostgresBffRepositories`

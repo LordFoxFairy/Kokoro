@@ -182,6 +182,7 @@ IAM native session cookie
 - Modify: feature module providers/tests/architecture oracle
 
 - [ ] 先按 inventory 移动有真实 owner boundary 的 port，不改行为。
+- [x] 首个 C-3 slice 已将 `PersonalizationProvider` 从 `BffApplicationServices` 移到 `BffBusinessStore.personalizationProvider` 的显式 raw-server seam；CAS/事务实现未复制。
 - [ ] 单实现、无边界的 Service 并入 feature Service/Provider；只转发一次的 Port 删除并把测试绑定公开行为。
 - [ ] 每个 feature slice 先完成对应 provider cutover 与 import census；全部 route slice 完成后，`BffBusinessStore`/`PostgresBffRepositories`/`BffApplicationServices` 才能从生产 composition 删除，避免先删 wrapper 造成循环依赖或第二套 locator。
 - [ ] 运行全局 import census，确认没有相对路径穿越 sibling、第二 DTO/ORM/SQL owner 或空模块。
