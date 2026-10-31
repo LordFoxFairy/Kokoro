@@ -3,6 +3,7 @@
 ## 修复
 
 - IAM `InternalAuthGuard` 将 `account.profile.update` 的请求体误判为非法 Session body，导致所有带 JSON 的 profile update 在 owner boundary 直接返回 400。现仅对 profile read 拒绝 body；profile update 只拒绝 query，JSON body 交由 canonical schema/controller 校验。
+- IAM Better Auth issuer cookie 已从 `Path=/iam` 切为 G0 contract 固定的 `Path=/`；native admission integration 断言每个登录 Set-Cookie 均为 root path，BFF/App relay policy 同步接受 root path。
 - native profile integration fixture 在登录后显式通过同一 issuer cookie 设置 active organization，确保 native admission 验证的 active tenant 来自 IAM session，而不是 fixture 外部状态。
 
 ## 真实本地收据
