@@ -41,6 +41,7 @@ pnpm exec vitest run \
 - `BFF fd27d8d76386152ee8e2dd41d9ce232500a09938` 完成 global chat/project service-field cleanup 后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
 - `BFF fd74e02f9e148d0a480ecbc3e47a2de0ddaf1362` 将 public share projection 移入 Chat feature 后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
 - `BFF 8448a7e19b5e810a553f6699e859fd9cd57797ee` 保留 test-only shared reader fallback 后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
+- `BFF fb27e750674792b59e71f21a2dcd97d08d40da28` 将 health/readiness 旧 dispatcher 分支移出后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
 
 Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
 
