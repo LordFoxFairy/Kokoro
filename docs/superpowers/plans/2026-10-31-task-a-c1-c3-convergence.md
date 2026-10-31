@@ -107,6 +107,7 @@ IAM native session cookie
 
 - [x] 先补 native adapter contract tests，证明浏览器 Authorization/body tenant 不会跨 boundary。
 - [x] 接入 BFF native admission，保持 request-id、Origin、Cookie allowlist 与取消预算；`GET /api/auth/session` native path 不再要求旧 RP config。
+- [x] Browser `endProductSession` 先读 native session；native session 直接走 issuer signout handoff，legacy Product Session 才走 Auth.js CSRF fallback。
 - [ ] 实测登录、登出、active tenant 切换、撤权后的 401/403 与多标签 late response。
 - [ ] 只有消费者证据成立后才删除旧 RP、Product Session 与 token/refresh 测试。
 - [ ] 运行 App focused lint/typecheck/test；记录既有 `onReconnect` baseline，不扩大修复范围。
