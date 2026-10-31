@@ -88,8 +88,9 @@ C-1.3 native-session runtime/consumer 已交付第一闭环，但尚未宣称全
 
 - IAM child `2fbb96a`：新增 `POST /internal/v1/native-session-admission/verify` controller/service/schema；独立 `kokoro-bff/session_admission` direct credential；严格 Cookie/Origin/Accept/body/duplicate-header 校验；fresh Better Auth session、active tenant、membership、role permissions 查询；native error closed set；生成 `contract/openapi/iam.internal.v1.json`。
 - BFF child `799b9e4`：新增受限 credential reader、native transport/client、Cookie allowlist、Origin 校验和 AccountModule/runtime wiring；配置 `KOKORO_BFF_IAM_SESSION_ADMISSION_CREDENTIAL_FILE` 与 `KOKORO_IAM_WEB_ORIGIN`。启用两项配置时用户准入不再发送浏览器 bearer；旧 bearer transport 仅保留给独立 owner authorization consumers，native 结果对这些未迁移调用以空 bearer fail-closed。
+- App child `d944ac3`：为 `/api/session/*` 同源适配器增加 IAM native-session Cookie 投影；只转发 allowlisted IAM cookies、固定配置 Origin、request-id 与 web-bff service credential，过滤 Product/第三方 cookie，重复或空 native cookie fail-closed。当前仍保留 Product Session 作为无 native cookie 的过渡路径，其他 App API route 尚未切换。
 - Root integration `77921443`：同时 pin IAM `2fbb96a` 与 BFF `799b9e4`。
 
 本次主仓复核：BFF format/lint/typecheck/build、native tests 3/3、Nest architecture 7/7、architecture 33/33、全量 `pnpm test` 2301 pass / 2 skip / 0 fail；IAM format/lint/typecheck/contract:check、unit 95 files / 1403 tests pass。全量验证已在 worker 停写后重跑，dist 缺失的并行竞争结果不计入验收。
 
-仍未完成：App 同源 adapter/旧 first-party RP 删除、BFF LegacyRoutes 全量替换/旧 dispatcher 删除，以及剩余 global Repository/Service/Port 收敛。故 A-01/A-02/A-07 继续保持未启动，C-1～C-4 不标记为全部通过。
+仍未完成：App 仅完成 `/api/session/*` 的第一条 native adapter slice；旧 first-party RP/Product Session 删除、其余 App API route 切换、BFF LegacyRoutes 全量替换/旧 dispatcher 删除，以及剩余 global Repository/Service/Port 收敛仍在停写线之后。故 A-01/A-02/A-07 继续保持未启动，C-1～C-4 不标记为全部通过。
