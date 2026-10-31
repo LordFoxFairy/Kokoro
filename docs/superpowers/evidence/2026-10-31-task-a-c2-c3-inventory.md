@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `caccdc9`（先前 `a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled/Agent route bundles 已切换；personalization、Chat archive/share、Project pin、ScheduledTask read、AgentRuns reader 与 run-display provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `2df4bcc`（先前 `caccdc9`、`a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled/Agent route bundles 已切换；personalization、Chat archive/share/feedback、Project pin、ScheduledTask read、AgentRuns reader 与 run-display provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
@@ -45,7 +45,8 @@
 | `GET /v1/system/runtime-manifest` | SystemModule `SystemMiddleware` → `runtimeManifest` | SystemModule | **migrated**; service auth, tenant projection, owner normalization and focused BFF tests pass |
 | Connector/MCP browser routes | `connectorListRoute`, `mcpPackageAdminRoute`, `mcpProviderAdminRoute`, `mcpPersonalRoute`, `mcpProjectPublicationRoute`, `customApiRoute`, MCP authorization clients | McpModule | keep MCP budget/action checks and owner clients; no generic platform fallback |
 | `GET /v1/sessions/:id/runs/:run/display` | `AgentRunsModule` `AgentRunsMiddleware` → `run-display` adapter, `RUN_DISPLAY_PROVIDER` | AgentRuns/Agui | **migrated**; preserve submitted-run binding, Chat owner read, AG-UI transport and final admission |
-| `GET/POST /v1/sessions/:id/messages/:message/{feedback,regenerate}` | feedback/regeneration routes + fresh admission | ChatModule | preserve idempotency/re-admission/error mapping |
+| `GET/PUT /v1/sessions/:id/messages/:message/feedback` | `ChatModule` `ChatMiddleware` → `message-feedback-native` → `messageFeedbackRoute`, `CHAT_SERVICE` | ChatModule | **migrated**; preserve feedback CAS/read, re-admission and error mapping |
+| `POST /v1/sessions/:id/messages/:message/regenerate` | `messageRegenerationRoute` + fresh admission | ChatModule/AgentRuns | preserve idempotency/re-admission/error mapping |
 | `GET /v1/self/project-pins`, `PUT /v1/projects/:id/pin` | `ProjectsModule` `ProjectPinMiddleware` → `project-native` → `projectPinRoute`, `PROJECT_SERVICE` | ProjectsModule | **migrated**; preserve project ownership, 10s deadline, natural idempotency and final admission |
 | `GET /v1/scheduled-tasks[/:id]` | `ScheduledTasksModule` `ScheduledTaskReadMiddleware` → `scheduled-task-native` → `scheduledTaskReadRoute`, `SCHEDULED_TASK_READ_SERVICE` | ScheduledTasksModule | **migrated**; preserve scheduler timeout, re-admission, snapshot/revalidation and owner current-state binding |
 | `POST/GET/DELETE /v1/skill-shares[/:id][/skill]`; skill usage/package/cover/import lifecycle | skill route family + product clients/store skill services | SkillsModule | preserve skill authorization, package budget, owner Connect artifacts |
