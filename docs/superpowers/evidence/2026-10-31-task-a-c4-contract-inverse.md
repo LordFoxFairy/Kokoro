@@ -18,7 +18,7 @@
 - `pnpm format:check`：通过
 - `pnpm test:nest-architecture`：12/12 通过
 - contract/IAM focused：45/45 通过
-- `pnpm test`：2309 tests，2307 pass，0 fail，2 skip；skip 为资源门禁保护的真实 PostgreSQL 条件测试，不计为通过
+- `pnpm test`：2312 tests，2295 pass，15 fail，2 skip；skip 为资源门禁保护的真实 PostgreSQL 条件测试，不计为通过。失败集中在既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture；当前仍是 baseline/环境缺口，不能作为 C-4 通过。
 - build-output focused feedback/run-display/project-binding：78/78 通过
 
 ## 仍未闭环
