@@ -1,0 +1,143 @@
+# Task A 问题台账、目标与闭环规则（2026-10-31）
+
+## 1. 文档定位与对齐关系
+
+本台账把此前 Task A 的设计、盘点、执行计划和当前实现证据合并成一份可执行的事实表。它不替代既有裁决：
+
+- 总设计：[Task A 清理与重构技术方案](../specs/2026-10-30-task-a-cleanup-refactor-design.md)
+- 只读盘点：[Task A 清理与重构清单](../specs/2026-10-30-task-a-cleanup-inventory.md)
+- 原执行顺序：[Task A 清理与重构执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md)
+- 当前收敛方案：[C-1.3～C-4 收敛实施方案](../plans/2026-10-31-task-a-c1-c3-convergence.md)
+- 已交付证据：[C-1 清理实施证据](2026-10-31-task-a-c1-cleanup-implementation.md)
+- 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
+
+当前 Root 基线为 `f3bfe5a5`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+
+## 2. 已设置 Goal
+
+**Goal（active）**：完成 Task A 的 C-1.3～C-4 闭环：先整理并冻结全部问题、目标、约束与 TODO；完成有证据的 IAM native-session/App/BFF 链路；按 feature 迁移并删除 LegacyRoutes、旧 dispatcher、global composition 与无边界 Repository/Service/Port；串行完成 Root/子仓全量验证。A-01/A-02/A-07 在 C-1～C-4 完成前保持停写，禁止无意义代码和越界改动。
+
+Goal 的完成条件不是“目录改名”或“测试数量增加”，而是下表中的 G1～G4 均有实现证据、行为证据和串行门禁；随后才开启 G5（A-01/A-02/A-07）。
+
+## 3. 问题总表
+
+### 3.1 C-1.3 native-session 链路
+
+| ID | 当前问题 | 影响 | 闭环证据 | 状态 |
+|---|---|---|---|---|
+| TA-C1.3-01 | App 尚无同源 native-session adapter，浏览器侧登录、登出、租户切换、撤权还未与 IAM admission 成对验收。 | 不能关闭 first-party auth 旧入口。 | App adapter contract/HTTP/E2E；sign-in、sign-out、tenant-switch、revocation、多标签 late-response 全部通过。 | 未完成 |
+| TA-C1.3-02 | App 仍存在 Auth.js/OIDC RP、Product Session access/refresh 与 `/iam/oauth2/*` 旧链路。 | 形成第二套身份事实和双读风险。 | native consumer 先通过，再删除旧 RP、token/refresh store、relay 和只保护它们的测试；反向 import 为零。 | 未完成 |
+| TA-C1.3-03 | BFF native consumer 已存在，但入口仍由新配置门控；旧 bearer 仅被独立 owner authorization surface 使用，未迁移 surface 以空 bearer fail-closed。 | 若误删旧入口会造成无身份请求；若保留无条件双读会造成协议分叉。 | 每个 owner surface 有 native/direct-credential 等价边界；native 启用时无浏览器 bearer 双读；旧 bearer consumer 清单归零。 | 进行中 |
+| TA-C1.3-04 | IAM native contract/runtime 已交付，但正常登录到业务请求的真实链路尚未形成完整收据。 | 只有 controller/unit 通过还不足以证明用户旅程闭合。 | IAM→BFF→App 的真实 cookie、Origin、tenant、权限、撤权和错误闭集收据。 | 进行中 |
+
+### 3.2 C-2 BFF Nest 与 LegacyRoutes
+
+| ID | 当前问题 | 影响 | 闭环证据 | 状态 |
+|---|---|---|---|---|
+| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | 每条 route census 有目标 feature、Controller、Service/use case、必要持久化边界、测试；迁移后 adapter 不再处理该 path。 | 未完成 |
+| TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用。 | 存在第二 composition root 和隐藏依赖。 | 唯一 Nest listener、唯一 `AppModule`、旧 dispatcher/import census 为零。 | 未完成 |
+| TA-C2-03 | 已有 feature module 仍有部分只声明 graph/ownership 的空壳风险。 | 机械建模块会增加无意义代码，掩盖未迁移行为。 | 每个 module 至少承接真实 route/provider/owner client；无 route、无 provider、无测试证据的模块不保留。 | 进行中 |
+
+### 3.3 C-3 Repository / Service / Port
+
+| ID | 当前问题 | 影响 | 闭环证据 | 状态 |
+|---|---|---|---|---|
+| TA-C3-01 | `BffBusinessStore` 同时承载 Chat、Project、Agent、Scheduler、AG-UI、Artifact 等事实。 | 巨型 Port 隐藏 owner 和依赖，导致运行时缺失分支。 | 按 feature 拆分 provider；旧 global Port 生产 import 为零。 | 未完成 |
+| TA-C3-02 | `PostgresBffRepositories` 是服务定位器，`BffApplicationServices` 是全局聚合器。 | 组合根无法表达真实依赖，Repository/Service 无法按 owner 审计。 | 复杂事务/CAS/lease/outbox/owner boundary 迁入具名 feature-local provider；两个聚合器删除。 | 未完成 |
+| TA-C3-03 | `src/application/ports/**` 尚有全局 Port；其中既有薄转发、单实现，也有需要保留的事务边界。 | 机械删除会丢失并发、幂等、outbox 或权限保障；全部保留又延续过度分层。 | 对每个 Port 给出 keep/move/merge/delete 证据；删除条件为新 provider 编译通过、旧 import 为零、行为测试已迁移。 | 未完成 |
+| TA-C3-04 | 部分 Service/Repository 只做一层 `return repository.method(...)` 转发。 | 无独立变化原因，增加抽象和测试负担。 | 并入 feature Service/Provider；公开行为测试保留，私有调用顺序测试删除。 | 未完成 |
+| TA-C3-05 | 类型、错误映射、wire/domain DTO 可能存在镜像。 | 同一事实在多个 owner 漂移。 | 保留 canonical contract 与必要边界类型；重复 DTO/错误映射反向搜索为零。 | 未完成 |
+
+### 3.4 C-4 测试、脚本与验证
+
+| ID | 当前问题 | 影响 | 闭环证据 | 状态 |
+|---|---|---|---|---|
+| TA-C4-01 | 旧 `legacy`/`fallback`/`schema-evolution`/旧 dispatcher 测试及 fixture 尚未全部按 canonical 行为清理。 | 默认门禁继续保护已删除语义，阻碍删除生产代码。 | 删除生产消费者、测试、fixture、helper 和脚本的成组变更；保留权限、幂等、CAS、lease、outbox、replay、取消、恢复测试。 | 未完成 |
+| TA-C4-02 | BFF/IAM 已有完整门禁，但 App/Agent 仍有各自 baseline/环境缺口；全 Root 证据尚未形成一份最终收据。 | 局部绿不能宣称 C-1～C-4 通过。 | 停写后串行执行 Root、IAM、BFF、App、Agent owner gates，并分列 pass/fail/skip/baseline。 | 进行中 |
+| TA-C4-03 | 并行 build/test 曾出现 dist 竞争，部分 PostgreSQL 测试受资源门禁跳过。 | 结果不可直接作为全量通过。 | worker 停写后按 build→focused→full 顺序串行重跑；skip 只记录为环境缺口，不计为通过。 | 进行中 |
+
+### 3.5 A 任务与范围边界
+
+| ID | 当前问题 | 处理规则 | 状态 |
+|---|---|---|---|
+| TA-A-GATE-01 | A-01 会话创建恢复、A-02 Agent 展示、A-07 Project Todo 仍有产品缺口。 | C-1.3、C-2、C-3、C-4 全部关闭前停写；不以局部实现或页面假数据提前关闭。 | 停写 |
+| TA-A-BACKLOG-02 | A-03～A-16 仍属于 Task A 后续产品 backlog（输入控制、执行恢复、压缩、项目上下文、附件、资料库、产物、自动化、外部聊天、语音、体验与交付）。 | 继续沿 `docs/handoffs/2026-10-30-task-a-workspace-execution.md` 管理，不混入 C-1～C-4 清理代码。 | 待领取 |
+| TA-SCOPE-01 | `docs/CURRENT.md` 中还有 Task B、账户/Skills/MCP、视觉、后台、外部协议和历史治理问题。 | 只记录为外部 backlog；除非直接阻塞 C-1.3/C-2/C-3/C-4，否则不在本 Goal 写代码。 | 排除 |
+
+### 3.6 既有基线与环境缺口（不伪装为本次修复）
+
+| ID | 事实 | 处理 |
+|---|---|---|
+| TA-BASELINE-01 | App 全仓 typecheck 仍有 `app-frame-main-surface.tsx:onReconnect` 既有类型错误。 | 单独记录 baseline；C-1 清理不扩大范围。若影响 native adapter 触达路径，再由对应切片提出最小修复。 |
+| TA-ENV-01 | BFF 2 个真实 PostgreSQL 条件测试因资源门禁 skip。 | 不计为通过；配置隔离资源后补跑，或在最终收据中明确环境缺口。 |
+| TA-BASELINE-02 | Root 全局规范审计现有 224 条历史/任务外 violation。 | 只修本 Goal 直接命中的 BFF Nest、C-1.3 和 Task A clean-slate 项；其余留在治理 backlog。 |
+
+## 4. 目标与 TODO
+
+### G1：完成 C-1.3 native-session 闭环
+
+- [ ] 盘点 App 当前 Auth.js/OIDC/Product Session/relay 的生产 import 和请求边界。
+- [ ] 实现 App same-origin native adapter：allowlisted Cookie、Origin、request-id、取消预算；禁止 body/Authorization 自报 tenant/subject。
+- [ ] 对齐 sign-in、sign-out、active-tenant switch、revocation、multi-tab late response 的 contract/HTTP/E2E。
+- [ ] 固定 IAM artifact/version/digest，BFF/App 消费同一 artifact；补完整链路收据。
+- [ ] 只有 consumer proof 成立后，删除旧 RP、Product Session、refresh reservation、旧 relay 和专属测试。
+- [ ] 逐项关闭仍依赖 bearer 的 owner authorization surface；未完成者保持 fail-closed。
+
+### G2：LegacyRoutes 全量退出
+
+- [ ] 建立 path/method → handler → target module → owner → test → status 的 route census。
+- [ ] 每批先补 red HTTP/architecture test，再实现 Controller → Service/use case → 必要 feature-local Repository/client。
+- [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
+- [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
+- [ ] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
+
+### G3：Repository / Service / Port 收敛
+
+- [ ] 为 `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 建立字段/方法/消费者清单。
+- [ ] 为 `src/application/ports/**` 逐项写 keep/move/merge/delete 及事务、锁、CAS、lease、outbox、owner evidence。
+- [ ] 先移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
+- [ ] 旧 global wrapper 不再出现在生产 composition 后删除；反向 import census 为零。
+- [ ] 检查无 BaseRepository、无空模块、无第二套 DTO/SQL/ORM owner、无 sibling 相对路径穿透。
+
+### G4：C-4 清理与全量验证
+
+- [ ] 删除旧兼容/fallback/evolution/dispatcher 测试、fixture、helper、脚本；保留独有安全与可靠性证据。
+- [ ] 停写后串行执行 Root topology/diff-check、IAM owner gate、BFF owner gate、App owner gate、Agent owner gate。
+- [ ] 将 pass/fail/skip/baseline/环境缺口写入证据文档；不把 skip 或 mock 写成通过。
+- [ ] 复核 `git diff --check`、import census、route census、contract digest、唯一 listener/composition root。
+
+### G5：A-01/A-02/A-07 开闸
+
+- [ ] 仅当 G1～G4 全部通过且无未决设计/契约/数据 owner 冲突时建立 A-01 实施计划。
+- [ ] A-02 只接 canonical AG-UI/snapshot/parts/RunDisplay，不新增解释事件或第二网络协议。
+- [ ] A-07 先冻结 ProjectTask schema/authorization/concurrency/idempotency contract，再生成 App client，最后接页面；不直接 SQL 灌记录。
+
+## 5. 闭环逻辑（每个 feature slice 必须重复）
+
+```text
+事实盘点
+  → owner/边界决定
+  → contract 或 red 行为测试
+  → 最小 feature-local 实现
+  → 从 LegacyRoutes/旧组合器移除具体入口
+  → 反向 import/route census 为零
+  → focused lint/typecheck/build/test
+  → 停写后串行全量门禁
+  → 更新 evidence、状态和下一依赖
+```
+
+任何一步缺证据，slice 仍为“进行中”，不得进入下一层删除。删除顺序固定为：先消费者切换，再行为验证，再删除旧入口和只服务旧入口的测试，最后删除全局组合器与无边界抽象。
+
+## 6. “不要无意义代码”硬规则
+
+1. 不把 LegacyRoutes 改名成 Controller；Controller 必须拥有真实输入/输出边界和对应业务 provider。
+2. 不创建通用 `BaseRepository`、万能 `Service`、空 `Module`、重复 DTO、重复错误映射或第二套网络协议。
+3. 不为满足架构测试制造只检查目录/字符串的测试；测试必须保护公开行为、契约或真实可靠性风险。
+4. 不删除仍承载事务、CAS、lease、outbox、幂等、权限、取消、replay、恢复的边界；先迁移 owner，再删除包装。
+5. 不保留无消费者的 alias/fallback/双读/双写；也不在消费者未切换时先删旧入口。
+6. 不修改 Task B、无关 CURRENT backlog、生产数据、Schema、发布配置或 A-01/A-02/A-07 业务行为。
+
+## 7. 当前停止线与下一步
+
+当前只完成问题整理、Goal/TODO 冻结和技术方案；业务代码继续停写在 C-1.3 App adapter、LegacyRoutes route census、global Repository/Service/Port inventory 之前。下一步按 G2/G3 的只读 inventory 建立事实清单，随后以一个真实 route bundle 作为第一条可验收切片；在该切片完成 focused 与串行门禁前不扩展到下一批。
+
