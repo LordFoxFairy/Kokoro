@@ -79,6 +79,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 - [ ] 盘点 App 当前 Auth.js/OIDC/Product Session/relay 的生产 import 和请求边界。
 - [ ] 实现 App same-origin native adapter：allowlisted Cookie、Origin、request-id、取消预算；禁止 body/Authorization 自报 tenant/subject。
+- [x] `/api/session/*`、`/app` SSR admission、`/api/auth/session` probe、archived/shared task、session archive/share 和 sign-in failure recovery 已复用同一 native identity proof；native probe 不再发 Product refresh。
+- [ ] 为 account profile/profile update、account sessions、team 这三组仍依赖 bearer 的 owner surface 设计并固定 IAM native owner contract；在 contract 和 BFF consumer proof 前保持 fail-closed，不用空 bearer 伪造通过。
 - [ ] 对齐 sign-in、sign-out、active-tenant switch、revocation、multi-tab late response 的 contract/HTTP/E2E。
 - [ ] 固定 IAM artifact/version/digest，BFF/App 消费同一 artifact；补完整链路收据。
 - [ ] 只有 consumer proof 成立后，删除旧 RP、Product Session、refresh reservation、旧 relay 和专属测试。
