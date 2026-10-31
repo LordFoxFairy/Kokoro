@@ -152,6 +152,7 @@ IAM native session cookie
 - [x] Project resource metadata/download (`GET /v1/projects/:id/resources/:asset_id[\/download]`) now uses `ProjectsModule` `ProjectPinMiddleware` + `handleProjectResourceReadRequest`; old dispatcher branch is deleted and verified-download/owner-recheck behavior is preserved.
 - [x] Project resource upload (`POST /v1/projects/:id/resources`) now uses `ProjectsModule` `ProjectPinMiddleware` + `handleProjectResourceUploadRequest`; old dispatcher branch is deleted and receipt/checkpoint/scan behavior is preserved.
 - [x] Project skill-selection (`GET/PUT /v1/projects/:id/skill-selection`) now uses `ProjectsModule` `PROJECT_SKILL_SELECTION_PROVIDER` + `PROJECT_SKILL_INSTALLATION_CLIENT` and `ProjectPinMiddleware`; the old `handleBffRequest` branch is removed, native admission/recheck and persistent receipt validation are preserved (`2dd93ca`).
+- [x] Project MCP recommendations (`GET/PUT /v1/projects/:id/mcp-recommendations`) now use `McpModule` `PROJECT_MCP_RECOMMENDATIONS_PROVIDER`/`MCP_AUTHORIZATION` and `ProjectMcpRecommendationsMiddleware`; the old `handleBffRequest` branch is removed, candidate validation, read-vs-manage admission, CAS and cancellation are preserved (`9310aa6`).
 
 ### Task 4：Chat/AgentRuns/AG-UI 与 ScheduledTasks 下沉
 
@@ -244,8 +245,8 @@ pnpm test:integration
 
 ### 2026-10-31 execution update
 
-- BFF child `2dd93ca` completed the project skill-selection feature cutover. The feature owns its narrow project reader, idempotency receipt reader, and Skill Installation client; no second repository/service or global locator was introduced.
-- Focused verification passed: `pnpm lint`, `pnpm build`, `node --import tsx --test --test-concurrency=1 test/nest-feature-architecture.test.ts test/skill-installation-http.test.mjs test/contract/skill-specification-http.test.mjs` (144/144).
+- BFF child `9310aa6` completed the project skill-selection and project MCP recommendations feature cutovers. The features own narrow providers, admission seams, candidate clients and lifecycle cleanup; no second repository/service or global locator was introduced.
+- Focused verification passed: `pnpm lint`, `pnpm build`, `node --test --test-concurrency=1 test/nest-feature-architecture.test.ts`, and `node --import tsx --test --test-concurrency=1 test/project-mcp-recommendations-http.test.mjs test/project-mcp-recommendations-client.test.ts test/project-mcp-recommendations-input.test.ts` (11/11 architecture, 15/15 MCP focused; prior skill-selection/contract focus remains 144/144).
 - BFF `pnpm format:check` still reports pre-existing warnings including `src/bootstrap/server.ts` and `src/modules/projects/project-pin.middleware.ts`; full BFF test run remains non-green on unrelated baseline/environment failures and was interrupted at the existing long-running contract boundary. This is evidence of current state, not a C-4 pass.
-- Next slice remains project skill-installations or MCP recommendations; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
+- Next slice is project skill-installations or the next Skills/MCP route bundle; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
 

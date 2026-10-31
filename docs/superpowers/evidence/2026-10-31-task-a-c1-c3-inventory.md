@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`f3bfe5a5`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `2dd93ca`（本轮 skill-selection feature cutover）。
+- BFF：`apps/kokoro-bff` `9310aa6`（skill-selection 与 project MCP recommendations feature cutover）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -88,8 +88,8 @@ Nest AppModule
 | `GET/POST/... /v1/projects/**` | `liveBffBusiness` 与专用 route | `ProjectsModule` | project owner scope、CAS、idempotency | 未迁移 |
 | `GET /v1/self/project-pins` | `handleProjectPinRequest` (`project-native.ts`) | `ProjectsModule` | cursor、pin state、权限 | 已迁移（既有 pin cutover） |
 | `PUT/DELETE /v1/projects/{id}/pin` | `handleProjectPinRequest` (`project-native.ts`) | `ProjectsModule` | CAS、project owner | 已迁移（既有 pin cutover） |
-| `GET /v1/projects/{id}/mcp-recommendations` | `projectMcpRecommendationsRoute` | `ProjectsModule` + Mcp client | recommendation snapshot、MCP read admission | 未迁移 |
-| `PUT/POST /v1/projects/{id}/mcp-recommendations` | `projectMcpRecommendationsRoute` | `ProjectsModule` + Mcp client | expected state version、precondition failure | 未迁移 |
+| `GET /v1/projects/{id}/mcp-recommendations` | `handleProjectMcpRecommendationsRequest` → `McpModule` | `McpModule` + Projects provider | recommendation snapshot、MCP read admission | 已迁移（`9310aa6`） |
+| `PUT/POST /v1/projects/{id}/mcp-recommendations` | `handleProjectMcpRecommendationsRequest` → `McpModule` | `McpModule` + Projects provider | expected state version、precondition failure | 已迁移（`9310aa6`） |
 | `PATCH /v1/projects/{id}/name` | `handleProjectRenameRequest` (`project-native.ts`) | `ProjectsModule` | rename receipt、conflict | 已迁移（`1db4e51`） |
 | `DELETE /v1/projects/{id}` | `handleProjectDeleteRequest` (`project-native.ts`) | `ProjectsModule` + scope-release outbox | logical release、physical cleanup、恢复 | 已迁移（`1817bd9`） |
 | `GET /v1/projects/{id}/deletion` | `handleProjectDeletionStatusRequest` (`project-native.ts`) | `ProjectsModule` | deletion state projection | 已迁移（`7afbaff`） |
@@ -136,7 +136,8 @@ Nest AppModule
 | `AgentRunsModule` | 仅声明 IAM/Database imports | 未承接 Agent client、run display/control、outbox | run display/control/dispatch seam + cancellation/replay tests |
 | `AguiModule` | 仅声明 Chat/Redis/Database imports | 未承接 projector/ledger/replay provider | durable ledger/cursor/replay Controller/provider + tests |
 | `ScheduledTasksModule` | 仅声明 Projects/AgentRuns/Database imports | 已有 `ScheduledTaskStateReader` 仍未注册成业务 Controller | read/mutation/callback/outbox slice + tests |
-| `SkillsModule`/`McpModule`/`BillingModule`/`SystemModule`/`MusicModule` | 主要是 imports 声明 | 不能用空 graph 代表迁移完成 | 逐 route bundle 承接真实 client/use case；否则保持 inventory 状态 |
+| `SkillsModule`/`BillingModule`/`SystemModule`/`MusicModule` | 主要是 imports 声明 | 不能用空 graph 代表迁移完成 | 逐 route bundle 承接真实 client/use case；否则保持 inventory 状态 |
+| `McpModule` | `PROJECT_MCP_RECOMMENDATIONS_PROVIDER`、MCP authorization、candidate clients、`ProjectMcpRecommendationsMiddleware` | 仍有 personal/provider/package/publication route families 在旧 dispatcher | 继续按 route bundle 下沉并补 client lifecycle |
 | `LegacyRoutesModule` | all-route middleware + global runtime | 当前唯一实际业务入口 | route census 清零后删除 module/runtime/middleware |
 
 ## 5. Global composition / consumer census
@@ -203,9 +204,9 @@ Nest AppModule
 
 本文件第 3～7 节保留最初 route/provider census；以下是其后的实际状态，不覆盖未迁移项：
 
-- BFF `2dd93ca` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、project skill-selection、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete/skill-selection source routes 已删除。
+- BFF `9310aa6` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、project skill-selection、project MCP recommendations、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete/skill-selection/MCP recommendations source routes 已删除。
 - `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService`、`projectService` 字段已删除；runtime 统一从 `services.chat` / `services.projects` 读取。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
-- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `2dd93ca`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `9310aa6`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
 - 最新 BFF 串行全量：2310 tests / 2308 pass / 0 fail / 2 skip；Root topology PASS；最新 Root gitlink native Web smoke 4/4。
-- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、project skill-installations/MCP recommendations、Chat/AgentRuns/AG-UI/Scheduled mutations/Skills/MCP route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
+- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、project skill-installations、Chat/AgentRuns/AG-UI/Scheduled mutations/Skills/MCP remaining route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
 
