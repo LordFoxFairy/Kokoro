@@ -12,15 +12,17 @@
 
 ## 0. 当前基线与停写边界
 
-**停写基线：** Root `f4e99f7d`，工作树 clean。
+**停写基线：** Root `1c63b007`，工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。
 
 **已交付事实：**
 
 - G0 native-session contract 已固定：version `1.0.0`，digest `5cf59df4b7bd9853edfd2eabb31afc236c0ec0db371f9737706fc129484fd83f`。
-- IAM runtime：child `2fbb96a`，新增 native admission controller/service/schema、direct credential profile、Cookie/Origin/body/header 校验和 fresh session projection。
-- BFF native consumer：child `799b9e4`，新增 direct credential reader、native transport/client、Cookie allowlist、AccountModule/runtime wiring。
+- IAM runtime：child `108beedf`，新增 native admission controller/service/schema、direct credential profile、Cookie/Origin/body/header 校验和 fresh session projection，并接入 account/Team owner native proof。
+- BFF native consumer：child `65cf2082`，新增 direct credential reader、native transport/client、Cookie allowlist、AccountModule/runtime wiring 和 owner transport forwarding。
 - BFF Nest foundation/feature graph/ownership slices：`3f643ef`、`cd4ffb1`、`aacf1c5`、`6a42bd3`、`eefe02a`、`c9263cd`。
 - 当前 BFF 全量：2301 pass / 2 skip / 0 fail；IAM unit：1403 pass；Root topology/diff-check 通过。
+
+**C-1.3 owner cutover design gate (now fixed):** Account profile/profile update, account sessions, and Team are owner operations, not browser relays. The BFF sends the allowlisted IAM cookie, fixed configured Origin, request id, and the BFF `session_admission` direct credential. IAM authenticates that service identity, verifies the fresh issuer session/active tenant/membership/session id, and creates a marked native user principal. Account self operations retain Product tenant/session/CAS/transaction/Audit checks while skipping OAuth grant lookup only for the marked native proof; Team owner repositories recheck persisted role permissions in their existing snapshot. Legacy bearer remains only on uncut consumers and native requests fail closed rather than manufacturing a bearer. No DTO/schema/version change is introduced by this additive auth mode.
 
 **明确未完成：**
 

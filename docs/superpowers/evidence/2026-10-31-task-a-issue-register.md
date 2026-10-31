@@ -11,7 +11,7 @@
 - 已交付证据：[C-1 清理实施证据](2026-10-31-task-a-c1-cleanup-implementation.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前 Root 基线为 `0d768e6d`，App 子仓已推进至 `de40f9c3`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前 Root 基线为 `1c63b007`，App 子仓已推进至 `4c41104d`，BFF 子仓至 `65cf2082`，IAM 子仓至 `108beedf`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
@@ -27,8 +27,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 |---|---|---|---|---|
 | TA-C1.3-01 | App 已为 `/api/session/*`、App SSR shell、`/api/auth/session` probe 增加同源 native-session adapter，但登录、登出、租户切换、撤权还未与 IAM admission 成对验收。 | first-party auth 旧入口仍需保留回滚边界。 | App adapter contract/HTTP/E2E；sign-in、sign-out、tenant-switch、revocation、多标签 late-response 全部通过。 | 进行中 |
 | TA-C1.3-02 | App 仍存在 Auth.js/OIDC RP、Product Session access/refresh 与 `/iam/oauth2/*` 旧链路。 | 形成第二套身份事实和双读风险。 | native consumer 先通过，再删除旧 RP、token/refresh store、relay 和只保护它们的测试；反向 import 为零。 | 未完成 |
-| TA-C1.3-03 | BFF native consumer 已存在，但入口仍由新配置门控；旧 bearer 仅被独立 owner authorization surface 使用，未迁移 surface 以空 bearer fail-closed。 | 若误删旧入口会造成无身份请求；若保留无条件双读会造成协议分叉。 | 每个 owner surface 有 native/direct-credential 等价边界；native 启用时无浏览器 bearer 双读；旧 bearer consumer 清单归零。 | 进行中 |
-| TA-C1.3-04 | IAM native contract/runtime 已交付，App `/api/session/*`、SSR shell 和 probe 已通过 BFF `/v1/me` 接入 native identity proof，但正常登录到业务请求的真实收据尚未形成。 | 只有 controller/unit 和 probe 通过还不足以证明用户旅程闭合。 | IAM→BFF→App 的真实 cookie、Origin、tenant、权限、撤权和错误闭集收据。 | 进行中 |
+| TA-C1.3-03 | BFF native consumer 已存在；account profile/sessions/team 已切换到 native Cookie + direct credential owner transport，旧 bearer 仅被独立未迁移 owner authorization surface 使用。 | 若误删旧入口会造成无身份请求；若保留无条件双读会造成协议分叉。 | 每个 owner surface 有 native/direct-credential 等价边界；native 启用时无浏览器 bearer 双读；旧 bearer consumer 清单归零。 | 进行中 |
+| TA-C1.3-04 | IAM native contract/runtime 已交付，App `/api/session/*`、SSR shell、probe、account profile/sessions/team adapters 已通过 BFF 接入 native identity proof，但正常登录到业务请求的真实收据尚未形成。 | 只有 controller/unit 和 probe 通过还不足以证明用户旅程闭合。 | IAM→BFF→App 的真实 cookie、Origin、tenant、权限、撤权和错误闭集收据。 | 进行中 |
 
 ### 3.2 C-2 BFF Nest 与 LegacyRoutes
 
@@ -80,7 +80,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [ ] 盘点 App 当前 Auth.js/OIDC/Product Session/relay 的生产 import 和请求边界。
 - [ ] 实现 App same-origin native adapter：allowlisted Cookie、Origin、request-id、取消预算；禁止 body/Authorization 自报 tenant/subject。
 - [x] `/api/session/*`、`/app` SSR admission、`/api/auth/session` probe、archived/shared task、session archive/share 和 sign-in failure recovery 已复用同一 native identity proof；native probe 不再发 Product refresh。
-- [ ] 为 account profile/profile update、account sessions、team 这三组仍依赖 bearer 的 owner surface 设计并固定 IAM native owner contract；在 contract 和 BFF consumer proof 前保持 fail-closed，不用空 bearer 伪造通过。
+- [x] 为 account profile/profile update、account sessions、team 固定 IAM native owner contract：BFF direct `session_admission` credential + allowlisted Cookie + fixed Origin；IAM fresh session/tenant/membership proof；account self operations 保留 CAS/事务/Audit，Team owner snapshot 保留 role permission；未迁移 consumer 继续 fail-closed。
+- [ ] 补齐 App profile read 的 owner contract；在该 contract 与真实链路证据成立前保持现有 userinfo seam，不删除旧 RP/Product Session。
 - [ ] 对齐 sign-in、sign-out、active-tenant switch、revocation、multi-tab late response 的 contract/HTTP/E2E。
 - [ ] 固定 IAM artifact/version/digest，BFF/App 消费同一 artifact；补完整链路收据。
 - [ ] 只有 consumer proof 成立后，删除旧 RP、Product Session、refresh reservation、旧 relay 和专属测试。
