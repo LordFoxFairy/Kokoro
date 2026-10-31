@@ -106,7 +106,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] 生成并 pin IAM OpenAPI/SDK 与 BFF client；IAM contract/unit、BFF client/HTTP、App profile-read focused tests 已通过；真实 cookie→BFF→IAM receipt 待 `IAM_TEST_ADMIN_URL` 可用后补跑并关闭 TA-C1.3-05。
 - [ ] 对齐 sign-in、sign-out、active-tenant switch、revocation、multi-tab late response 的 contract/HTTP/E2E。
 - [x] 补真实 HTTPS `/api/auth/session`、`/api/session/*` cookie→BFF→IAM receipt；4/4 cases 通过，收据脚本和资源清理已固定。
-- [x] App `GET /api/auth/session` native read 已与旧 RP config 解耦：native issuer cookie 通过 allowlisted adapter → BFF `/v1/me` → `mode:native` projection；focused 9/9 通过。
+- [x] App `GET /api/auth/session` native read 与 `POST /api/auth/signout` issuer handoff 已与旧 RP config 解耦：native issuer cookie 通过 allowlisted adapter → BFF `/v1/me` → `mode:native` projection，signout 清理残留 Product Session 并返回固定 end-session URL；focused 10/10 通过。
 - [ ] 固定 IAM artifact/version/digest，BFF/App 消费同一 artifact；补完整链路收据。
 - [ ] 只有 consumer proof 成立后，删除旧 RP、Product Session、refresh reservation、旧 relay 和专属测试。
 - [ ] 逐项关闭仍依赖 bearer 的 owner authorization surface；未完成者保持 fail-closed。
