@@ -39,6 +39,7 @@
 ### App native runtime slice（子仓 `0bd1481c`）
 
 - `tests/ui/use-session-state.test.tsx`：79 pass；覆盖 native projection 直接 admission，确认不发 Product CSRF/refresh POST。
+- archived/shared/session archive/share adapters 与 sign-in failure recovery focused：58 pass；验证 native admission 迁移不改变 legacy bearer fallback、最终 admission recheck、取消和错误闭集。
 - `tests/server/product-bff.test.ts`、`tests/ui/product-auth-client.test.ts` 与相关 session tests：focused pass。
 - touched-file ESLint：pass。
 - `pnpm typecheck`：仍为既有 `src/components/blocks/app-frame/app-frame-main-surface.tsx:onReconnect` 类型错误。
@@ -82,7 +83,7 @@ Root gitlink 已更新至 BFF `a9bd12da7b6ed0a8a128f4ee387a19ee15f49a17`；最�
 - BFF `pnpm test:nest-architecture`：4/4 通过。
 - BFF contract governance / Platform / Storage focused gate：52/52 通过。
 - BFF `pnpm test`：2301 pass / 2 skip / 0 fail；skip 为受资源门禁保护的真实 PostgreSQL 条件测试，未将 skip 计为通过。
-- App C-1 focused Vitest：7 files / 91 tests pass；ESLint focused pass；既有全仓 typecheck 的 `app-frame-main-surface.tsx:onReconnect` 错误仍为基线。
+- App native adapter/probe/adapters focused Vitest：8 files / 145 tests pass；ESLint focused pass；既有全仓 typecheck 的 `app-frame-main-surface.tsx:onReconnect` 错误仍为基线。
 - Agent display/contract/http focused pytest：24 pass；ruff touched-file check pass。
 - Root `python3 scripts/verify-repository-topology.py`：PASS。
 - Root `git diff --check`：通过。
@@ -100,9 +101,9 @@ C-1.3 native-session runtime/consumer 已交付第一闭环，但尚未宣称全
 
 - IAM child `2fbb96a`：新增 `POST /internal/v1/native-session-admission/verify` controller/service/schema；独立 `kokoro-bff/session_admission` direct credential；严格 Cookie/Origin/Accept/body/duplicate-header 校验；fresh Better Auth session、active tenant、membership、role permissions 查询；native error closed set；生成 `contract/openapi/iam.internal.v1.json`。
 - BFF child `799b9e4`：新增受限 credential reader、native transport/client、Cookie allowlist、Origin 校验和 AccountModule/runtime wiring；配置 `KOKORO_BFF_IAM_SESSION_ADMISSION_CREDENTIAL_FILE` 与 `KOKORO_IAM_WEB_ORIGIN`。启用两项配置时用户准入不再发送浏览器 bearer；旧 bearer transport 仅保留给独立 owner authorization consumers，native 结果对这些未迁移调用以空 bearer fail-closed。
-- App child `d944ac3` + `f0ffd2d2` + `0bd1481c`：为 `/api/session/*` 同源适配器增加 IAM native-session Cookie 投影；只转发 allowlisted IAM cookies、固定配置 Origin、request-id 与 web-bff service credential，过滤 Product/第三方 cookie，重复或空 native cookie fail-closed。`admittedProductSession` 在 native cookie 存在时改为通过 BFF `/v1/me` 获取当前 subject，并把 native cookie proof 传给后续 BFF owner calls，不再发送 bearer；App `/app` SSR shell 和 `/api/auth/session` probe 现在优先使用同一 native identity proof，native probe 不再发 Product CSRF/refresh POST，native sign-out 返回 IAM end-session relay。当前仍保留 Product Session 作为无 native cookie 的过渡路径，其他 App API route 尚未切换。
+- App child `d944ac3` + `f0ffd2d2` + `0bd1481c` + `de40f9c3`：为 `/api/session/*` 同源适配器增加 IAM native-session Cookie 投影；只转发 allowlisted IAM cookies、固定配置 Origin、request-id 与 web-bff service credential，过滤 Product/第三方 cookie，重复或空 native cookie fail-closed。`admittedProductSession` 在 native cookie 存在时改为通过 BFF `/v1/me` 获取当前 subject，并把 native cookie proof 传给后续 BFF owner calls，不再发送 bearer；App `/app` SSR shell 和 `/api/auth/session` probe 现在优先使用同一 native identity proof，native probe 不再发 Product CSRF/refresh POST，native sign-out 返回 IAM end-session relay；archived/shared task 与 session archive/share adapters 已切到同一 admission helper，sign-in failure recovery 也先检查 native proof。当前仍保留 Product Session 作为无 native cookie 的过渡路径，account profile/sessions/team 等仍依赖 IAM bearer owner surface，尚未切换。
 - Root integration `77921443`：同时 pin IAM `2fbb96a` 与 BFF `799b9e4`。
 
 本次主仓复核：BFF format/lint/typecheck/build、native tests 3/3、Nest architecture 7/7、architecture 33/33、全量 `pnpm test` 2301 pass / 2 skip / 0 fail；IAM format/lint/typecheck/contract:check、unit 95 files / 1403 tests pass；App native adapter/probe focused 4 files / 87 tests pass、touched-file ESLint pass。App 全仓 typecheck 仍仅有既有 `app-frame-main-surface.tsx:onReconnect` baseline。全量验证已在 worker 停写后重跑，dist 缺失的并行竞争结果不计入验收。
 
-仍未完成：App 仅完成 `/api/session/*` 的第一条 native adapter slice；旧 first-party RP/Product Session 删除、其余 App API route 切换、BFF LegacyRoutes 全量替换/旧 dispatcher 删除，以及剩余 global Repository/Service/Port 收敛仍在停写线之后。故 A-01/A-02/A-07 继续保持未启动，C-1～C-4 不标记为全部通过。
+仍未完成：App 尚保留 account profile/sessions/team 等依赖 IAM bearer owner surface；旧 first-party RP/Product Session 删除、其余 App API route 切换、BFF LegacyRoutes 全量替换/旧 dispatcher 删除，以及剩余 global Repository/Service/Port 收敛仍在停写线之后。故 A-01/A-02/A-07 继续保持未启动，C-1～C-4 不标记为全部通过。
