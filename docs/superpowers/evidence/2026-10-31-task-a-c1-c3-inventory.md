@@ -86,8 +86,8 @@ Nest AppModule
 | 当前 path/method | 当前 handler | 目标 owner | 依赖/保留不变量 | 状态 |
 |---|---|---|---|---|
 | `GET/POST/... /v1/projects/**` | `liveBffBusiness` 与专用 route | `ProjectsModule` | project owner scope、CAS、idempotency | 未迁移 |
-| `GET /v1/self/project-pins` | `projectPinRoute` | `ProjectsModule` | cursor、pin state、权限 | 未迁移 |
-| `PUT/DELETE /v1/projects/{id}/pin` | `projectPinRoute` | `ProjectsModule` | CAS、project owner | 未迁移 |
+| `GET /v1/self/project-pins` | `handleProjectPinRequest` (`project-native.ts`) | `ProjectsModule` | cursor、pin state、权限 | 已迁移（既有 pin cutover） |
+| `PUT/DELETE /v1/projects/{id}/pin` | `handleProjectPinRequest` (`project-native.ts`) | `ProjectsModule` | CAS、project owner | 已迁移（既有 pin cutover） |
 | `GET /v1/projects/{id}/mcp-recommendations` | `projectMcpRecommendationsRoute` | `ProjectsModule` + Mcp client | recommendation snapshot、MCP read admission | 未迁移 |
 | `PUT/POST /v1/projects/{id}/mcp-recommendations` | `projectMcpRecommendationsRoute` | `ProjectsModule` + Mcp client | expected state version、precondition failure | 未迁移 |
 | `PATCH /v1/projects/{id}/name` | `handleProjectRenameRequest` (`project-native.ts`) | `ProjectsModule` | rename receipt、conflict | 已迁移（`1db4e51`） |
