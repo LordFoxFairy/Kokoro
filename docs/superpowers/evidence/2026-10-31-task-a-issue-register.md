@@ -135,6 +135,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Managed personal Skill reads（`GET /v1/self/skills[/:skill_id[/versions]]`）已由 `SkillsModule` 的 `SkillsMiddleware` 接管；旧 dispatcher read 分支已删除，保留 projection、IAM enrichment、deadline 与错误映射（`7aa092b`）。
 - [x] Browser-private Skill enable command（`/skill.v1.SkillOptionalService/SetSkillInstallationEnabled`）已由 `SkillsModule` 的 `SkillsMiddleware` 接管；旧 dispatcher 分支已删除，保留 owner ACK、错误闭集与 deadline（`2531941`）。
 - [x] Skill usage（`POST /v1/skills/usage`）已由 `SkillsModule` 的 `SkillsMiddleware` 接管；`SKILL_USAGE_READER` 通过 `BFF_POOL` 调用既有 projection，旧 dispatcher 分支已删除，保留 admission、批量 refs、unavailable/zero 语义与 10 秒请求预算（`a75930e`）。
+- [x] Personal Skill lifecycle（`POST /v1/self/skills/:id/versions`、`POST /withdraw`、`DELETE /v1/self/skills/:id`）已由 `SkillsModule` 的 `SKILL_DRAFT_CLIENT`/`SkillsMiddleware` 接管；旧 dispatcher 分支已删除，保留 action admission、严格路径别名拒绝、CAS/幂等、owner ACK/error 映射与生命周期预算（`e1a4f4d`）。
 - [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
 - [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
 - [ ] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
@@ -161,6 +162,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Personal skill-installations 将共享 `SkillInstallationConnectClient`/`SKILL_AUTHORIZATION` owner seam 收敛到 `SkillsModule`，ProjectsModule 仅消费其导出的窄 client；未保留第二 Platform client 或 personal route dispatcher。
 - [x] Skill enable command 复用 `SkillsModule` 导出的 installation client 与 SessionAdmission；未复制 owner command、receipt 或新 Platform transport。
 - [x] Skill usage 复用既有 `readSkillUsage` projection 与 PostgreSQL pool；未新增 Repository、Service、SQL owner 或第二错误协议。
+- [x] Personal Skill lifecycle 复用既有 `CatalogConnectClient` 与三条 canonical route handler；未新增 Repository、Service、receipt 或 owner contract。
 - [ ] 继续移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
 - [ ] 旧 global wrapper 不再出现在生产 composition 后删除；反向 import census 为零。
 - [ ] 检查无 BaseRepository、无空模块、无第二套 DTO/SQL/ORM owner、无 sibling 相对路径穿透。
@@ -205,7 +207,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ## 7. 当前停止线与下一步
 
-> 更新（BFF `a0bc277`）：project skill-selection、project MCP recommendations、project/personal skill-installations、managed personal Skill reads、Skill enable command、Skill usage 已分别由 Projects/Skills/Mcp feature middleware 接管，并从旧 dispatcher 分支移除；同时补齐 managed read 仅 GET 边界，避免 POST lifecycle 被读取适配器提前消费。本轮 Nest architecture 15/15、BFF architecture 34/34、Skills/MCP/content/installation/usage suite 184/184、personal Skill lifecycle 19/19，先前 skill-selection/contract focus 144/144。`a75930e` 全量 2312 tests / 2302 pass / 8 fail / 2 skip 中的 6 个 lifecycle 回归已在 `a0bc277` 复核，当前仍需停写后重跑全量；已复现的剩余基线为 Artifact/Personal Storage 两项，不作为 C-4 通过；other Skills route、剩余 Skills/MCP route、LegacyRoutes 退出及 global Port 收敛继续阻塞 A-01/A-02/A-07。
+> 更新（BFF `e1a4f4d`）：project skill-selection、project MCP recommendations、project/personal skill-installations、managed personal Skill reads、Skill enable command、Skill usage、personal Skill lifecycle 已分别由 Projects/Skills/Mcp feature middleware 接管，并从旧 dispatcher 分支移除；同时补齐 managed read 仅 GET 边界，避免 POST lifecycle 被读取适配器提前消费。本轮 Nest architecture 15/15、BFF architecture 34/34、Skills/MCP/content/installation/usage/personal-lifecycle suite 203/203，先前 skill-selection/contract focus 144/144。`a75930e` 全量 2312 tests / 2302 pass / 8 fail / 2 skip 中的 6 个 lifecycle 回归已先由 `a0bc277` 复核，本轮 feature suite 已在 `e1a4f4d` 重跑通过；当前仍需停写后重跑全量，已复现的剩余基线为 Artifact/Personal Storage 两项，不作为 C-4 通过；other Skills route、剩余 Skills/MCP route、LegacyRoutes 退出及 global Port 收敛继续阻塞 A-01/A-02/A-07。
 
 当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342` 固定。App native session read、issuer signout handoff 与 browser signout client 已脱离旧 RP runtime dependency。C-2 已将 IAM relay、current-user `/v1/me`、项目集合 `GET /v1/projects`、详情、instruction-revisions、deletion-status、rename、delete、resource-list、resource-read/download、resource-upload、resource-delete、skill-selection、MCP recommendations、public share projection 分别收敛到 feature middleware/provider；旧 dispatcher 仍保留其余 route families。C-3 personalization、Chat、Project pin、Project core-read（deletion-status/rename）、ScheduledTask read、AgentRuns reader/provider、Project resource receipt/provider、Project skill-selection 与 MCP recommendations provider seam 已建立；BFF 最新切片验证为 nest architecture 14/14、architecture 34/34、MCP focused 15/15，旧全量 baseline 仍单列。仍未完成的是完整 sign-in/tenant-switch/permission/revocation UI 收据、LegacyRoutes 全量退出、剩余 global Repository/Service/Port 收敛、App typecheck `onReconnect` baseline 与 C-4 跨 owner 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移 project skill-installations 与剩余 Chat/Agent/Scheduled/Skills/MCP route bundle，并继续拆 global provider；每个 bundle 完成 focused、architecture 与串行门禁后再扩展下一批。
 
