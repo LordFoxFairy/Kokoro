@@ -32,6 +32,7 @@ route inventory
 - `node --test test/nest-feature-architecture.test.ts test/archived-tasks-http.test.mjs test/shared-tasks-http.test.mjs`：通过（38/38；包含 ChatModule ownership assertion）。
 - `node --import tsx --test --test-concurrency=1 test/personal-file-upload.test.mjs`：通过（11/11）；验证 partial `businessStore` fixture 不因 Chat provider seam 崩溃。
 - `pnpm test:nest-architecture`：12/12 通过，包含 Chat feedback adapter ownership 与 Agent/Chat module graph 断言。
+- build-output focused HTTP fixtures：message feedback、run display、project binding 合计 78 项通过。
 - `pnpm test`：未作为本切片通过证明。停写前串行运行暴露既有 BFF contract inverse baseline（2296 tests，2238 pass，56 fail，2 skip），主要为 `Activity details version drift` 等历史契约回归；Chat focused tests 不在失败集合中。该基线需在 C-4 统一收敛，不冒称全量通过。
 
 ## 未关闭项

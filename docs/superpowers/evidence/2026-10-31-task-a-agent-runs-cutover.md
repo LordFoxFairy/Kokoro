@@ -22,6 +22,7 @@
 - `node --import tsx --test --test-concurrency=1 test/model-admission-http.test.mjs`：9/9 通过。
 - `node --import tsx --test --test-concurrency=1 test/bff.test.ts`：25/25 通过。
 - `pnpm test:nest-architecture`：12/12 通过，包含 run-display provider seam 与 Chat/Agent module graph 非循环断言。
+- build-output focused HTTP fixtures：run display 与 project binding 通过；model admission 独立 9/9 通过。
 - `test/project-execution-binding-http.test.mjs` 的直接 source-loader 路径仍受既有 `.js`/`.ts` ESM 解析限制；生产 build 与 Agent adapter architecture gate 通过，该 loader 失败不改变 route 行为。
 
 ## 未关闭项
