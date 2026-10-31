@@ -55,7 +55,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
 | TA-C3-01 | `BffBusinessStore` 同时承载 Chat、Project、Agent、Scheduler、AG-UI、Artifact 等事实。 | 巨型 Port 隐藏 owner 和依赖，导致运行时缺失分支。 | C-2/C-3 inventory 已完成字段/owner 候选；按 slice 拆 provider，旧 global Port 生产 import 为零。 | 盘点完成，迁移未完成 |
-| TA-C3-02 | `PostgresBffRepositories` 是服务定位器，`BffApplicationServices` 是全局聚合器。 | 组合根无法表达真实依赖，Repository/Service 无法按 owner 审计。 | 复杂事务/CAS/lease/outbox/owner boundary 迁入具名 feature-local provider；personalization 已先脱离聚合器，剩余字段继续按 feature 迁移。 | 进行中 |
+| TA-C3-02 | `PostgresBffRepositories` 是服务定位器，`BffApplicationServices` 是全局聚合器。 | 组合根无法表达真实依赖，Repository/Service 无法按 owner 审计。 | BFF `fd27d8d` 删除 `BffBusinessStore`/`PostgresBffRepositories` 上重复的 `chatService`、`projectService` 字段，runtime 统一从 `services.chat/projects` 读取；复杂事务/CAS/lease/outbox/owner boundary 继续迁入具名 feature-local provider。 | 进行中 |
 | TA-C3-03 | `src/application/ports/**` 尚有全局 Port；其中既有薄转发、单实现，也有需要保留的事务边界。 | 机械删除会丢失并发、幂等、outbox 或权限保障；全部保留又延续过度分层。 | 对每个 Port 给出 keep/move/merge/delete 证据；删除条件为新 provider 编译通过、旧 import 为零、行为测试已迁移。 | 未完成 |
 | TA-C3-04 | 部分 Service/Repository 只做一层 `return repository.method(...)` 转发。 | 无独立变化原因，增加抽象和测试负担。 | 并入 feature Service/Provider；公开行为测试保留，私有调用顺序测试删除。 | 未完成 |
 | TA-C3-05 | 类型、错误映射、wire/domain DTO 可能存在镜像。 | 同一事实在多个 owner 漂移。 | 保留 canonical contract 与必要边界类型；重复 DTO/错误映射反向搜索为零。 | 未完成 |
