@@ -25,7 +25,17 @@ pnpm exec vitest run \
 
 配套门禁：`pnpm format:check`、`pnpm lint`、`pnpm typecheck`、`pnpm contract:check`、`pnpm build`、`test/unit/internal-auth.guard.test.ts` 48/48 通过。
 
+## Root 跨仓收据
+
+工作区：`/Users/nako/.codex/worktrees/task-a-c1-cleanup/Kokoro`
+
+- `python3 scripts/e2e/run_bff_iam_session_smoke.py ... --expected-bff-sha b3a9ab5... --expected-iam-sha b23dade2...`：7/7 cases passed；覆盖真实 IAM session admission、BFF owner fact 归属、缺 bearer、signout、reset、新身份隔离、member removal、IAM outage 与资源清理。
+- `python3 scripts/e2e/run_bff_iam_oidc_smoke.py ... --expected-bff-sha b3a9ab5... --expected-iam-sha b23dade2...`：42/42 cases passed；覆盖 Code+S256、tenant/consent、userinfo、Team owner、invitation、撤权 refresh reuse、end-session 与资源清理。
+- 两个 smoke 均使用本地 PostgreSQL/Redis、BFF source build 和 IAM test-owned host；Root gitlink、子仓 clean、process/database/Redis cleanup 均通过。
+
+Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
+
 ## 尚未闭环
 
-- 该收据只闭合 IAM native owner/profile 片段与撤权行为，不代表 App→BFF→IAM 全链路 sign-in/sign-out/active-tenant switch/revocation 旅程已完成。
+- 该收据闭合 IAM native owner/profile、IAM→BFF real session/OIDC 与撤权行为，不代表 App→BFF→IAM native sign-in/sign-out/active-tenant switch/revocation 旅程已完成。
 - App Product Session/Auth.js/OIDC 旧入口与 BFF LegacyRoutes 仍按 Goal 停写线保留，A-01/A-02/A-07 不启动。
