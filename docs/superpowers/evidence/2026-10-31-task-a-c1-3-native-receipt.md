@@ -29,8 +29,8 @@ pnpm exec vitest run \
 
 工作区：`/Users/nako/.codex/worktrees/task-a-c1-cleanup/Kokoro`
 
-- `python3 scripts/e2e/run_bff_iam_session_smoke.py ... --expected-bff-sha b3a9ab5... --expected-iam-sha b23dade2...`：7/7 cases passed；覆盖真实 IAM session admission、BFF owner fact 归属、缺 bearer、signout、reset、新身份隔离、member removal、IAM outage 与资源清理。
-- `python3 scripts/e2e/run_bff_iam_oidc_smoke.py ... --expected-bff-sha b3a9ab5... --expected-iam-sha b23dade2...`：42/42 cases passed；覆盖 Code+S256、tenant/consent、userinfo、Team owner、invitation、撤权 refresh reuse、end-session 与资源清理。
+- `python3 scripts/e2e/run_bff_iam_session_smoke.py ... --expected-bff-sha 3ca1525... --expected-iam-sha f4f1585...`：7/7 cases passed；覆盖真实 IAM session admission、BFF owner fact 归属、缺 bearer、signout、reset、新身份隔离、member removal、IAM outage 与资源清理。
+- `python3 scripts/e2e/run_bff_iam_oidc_smoke.py ... --expected-bff-sha 3ca1525... --expected-iam-sha f4f1585...`：42/42 cases 在 cookie cutover 前通过；Path=/ cutover 后需重跑，当前一次重跑在 OAuth foreign-tenant guard 阶段失败，不作为现行通过证据。
 - 两个 smoke 均使用本地 PostgreSQL/Redis、BFF source build 和 IAM test-owned host；Root gitlink、子仓 clean、process/database/Redis cleanup 均通过。
 
 Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
@@ -38,5 +38,5 @@ Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTas
 ## 尚未闭环
 
 - 该收据闭合 IAM native owner/profile、IAM→BFF real session/OIDC 与撤权行为，不代表 App→BFF→IAM native sign-in/sign-out/active-tenant switch/revocation 旅程已完成。
-- 当前真实浏览器闭环的关键设计缺口是 IAM issuer cookie 默认 `Path=/iam`，而 App `/api/*` native adapter 需要读取同一 allowlisted cookie；在冻结 cookie scope/projection 方案前，不删除旧 RP/Product Session。
+- IAM issuer cookie scope 已按 G0 contract 切为 `Path=/`，BFF/App relay policy 同步切换；当前剩余缺口是用真实 HTTPS 浏览器证明 `/api/*` native adapter 触达 BFF/IAM，随后才删除旧 RP/Product Session。
 - App Product Session/Auth.js/OIDC 旧入口与 BFF LegacyRoutes 仍按 Goal 停写线保留，A-01/A-02/A-07 不启动。
