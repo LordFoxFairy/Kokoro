@@ -264,26 +264,26 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ## 9. 2026-10-31 direct Chat read cutover
 
-- BFF child `f40f6a3` 将 `GET /v1/sessions`、`GET /v1/sessions/:id`、`GET /v1/sessions/:id/messages`、Message parts 与 Run process direct reads 接入 `ChatModule` 的 `handleChatBusinessReadRequest`；入口在 Nest `ChatMiddleware` 与 raw `createBffServer` 双链路注册。
+- BFF child `0823d97` 将 `GET /v1/sessions`、`GET /v1/sessions/:id`、`GET /v1/sessions/:id/messages`、Message parts 与 Run process direct reads 接入 `ChatModule` 的 `handleChatBusinessReadRequest`；入口在 Nest `ChatMiddleware` 与 raw `createBffServer` 双链路注册。
 - 新 route 只接收 direct/no-`project_ref` GET，先走 `authorizeUserRequest`，再走 `authorizeChatRequest` 的 owner recheck，最后复用 `liveChatBusiness` 的既有 envelope、cursor、read budget、取消和错误映射；`ChatBusinessProvider` 将 Chat/Project/ChatTurn/AG-UI 依赖从 `BffBusinessStore` 解耦为 feature-local seam。
 - 验证：direct Chat read 2/2、BFF mock contract 25/25、Nest architecture 18/18、BFF architecture 34/34、`pnpm lint`、`pnpm typecheck`、`pnpm build`；串行全量 2316 tests / 2299 pass / 15 fail / 2 skip，15 项失败仍为既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture。
 - 下一步仍只推进 C-1.3/C-2/C-3：Chat POST/events/project scope、Agent/AG-UI route bundle 与剩余 global provider/Port；A-01/A-02/A-07 继续停写。
 
 ### 2026-10-31 C-3 ChatTurn seam cleanup
 
-- BFF child `f40f6a3` 删除 `BffBusinessStore.chatTurnService` 与 `PostgresBffRepositories.chatTurnService`，因为 ChatTurn 已由 `AgentDispatchModule` 的 `CHAT_TURN_SERVICE` 提供，生产消费者已不再读取全局 seam。
+- BFF child `a3fd669` 删除 `BffBusinessStore.chatTurnService` 与 `PostgresBffRepositories.chatTurnService`，因为 ChatTurn 已由 `AgentDispatchModule` 的 `CHAT_TURN_SERVICE` 提供，生产消费者已不再读取全局 seam。
 - 先更新 architecture oracle 观察到预期失败，再删除字段并复跑：BFF architecture 34/34、`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
 - `BffApplicationServices.chatTurns` 仍是 transitional aggregate，待 Chat POST/Agent dispatch route cutover 后再按 provider census 删除，未提前删除真实 outbox owner。
 
 ### 2026-10-31 C-3 Chat service seam cleanup
 
-- BFF child `f40f6a3` 删除 `BffBusinessStore.chatService` 与 `PostgresBffRepositories.chatService`；raw composition 改由 `BffApplicationServices.services.chat` 提供兼容读取，feature middleware 继续使用 `CHAT_SERVICE`。
+- BFF child `4e76866` 删除 `BffBusinessStore.chatService` 与 `PostgresBffRepositories.chatService`；raw composition 改由 `BffApplicationServices.services.chat` 提供兼容读取，feature middleware 继续使用 `CHAT_SERVICE`。
 - 该切片不删除 `BffApplicationServices.chat` 或 Chat Repository：Chat POST、events、project scope 和 LegacyRoutes 仍有真实消费者，保留 canonical application/repository owner，避免复制实现。
 - 验证：BFF architecture 34/34、BFF mock/chat/direct-read focused 143/143、`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
 
 ### 2026-10-31 Chat route provider handoff
 
-- BFF child `f40f6a3` 将旧 `handleBffRequest` 的 Chat authorization/live Chat 调用改为显式 `ChatBusinessProvider`，由 `CHAT_SERVICE`、`AgentDispatchModule` 的 `CHAT_TURN_SERVICE`、`PROJECT_SERVICE` 与 AG-UI consumer seam 组装；不再把完整 `BffBusinessStore` 作为 Chat route provider 传入。
+- BFF child `9c1c674` 将旧 `handleBffRequest` 的 Chat authorization/live Chat 调用改为显式 `ChatBusinessProvider`，由 `CHAT_SERVICE`、`AgentDispatchModule` 的 `CHAT_TURN_SERVICE`、`PROJECT_SERVICE` 与 AG-UI consumer seam 组装；不再把完整 `BffBusinessStore` 作为 Chat route provider 传入。
 - 该切片只收敛依赖边界，不改变 Chat POST/events/project scope 的路由归属；因此保留原幂等、项目访问、Agent dispatch 与 AG-UI 行为。
 - 验证：BFF architecture 34/34、BFF mock/chat/direct-read focused 143/143、`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
 
