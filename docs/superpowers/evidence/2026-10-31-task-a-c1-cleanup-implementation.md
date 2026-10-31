@@ -36,6 +36,13 @@
 - `uv run ruff check src/kokoro_agent/application/run_display.py src/kokoro_agent/infrastructure/checkpoint_display.py tests/unit/chat/test_historical_mcp_display.py`：通过
 - 受影响 display/contract/http 单测：130 pass
 
+### App native runtime slice（子仓 `0bd1481c`）
+
+- `tests/ui/use-session-state.test.tsx`：79 pass；覆盖 native projection 直接 admission，确认不发 Product CSRF/refresh POST。
+- `tests/server/product-bff.test.ts`、`tests/ui/product-auth-client.test.ts` 与相关 session tests：focused pass。
+- touched-file ESLint：pass。
+- `pnpm typecheck`：仍为既有 `src/components/blocks/app-frame/app-frame-main-surface.tsx:onReconnect` 类型错误。
+
 ## 停止线
 
 C-1 兼容清理的主仓复核补充（2026-10-31）：
@@ -79,6 +86,11 @@ Root gitlink 已更新至 BFF `a9bd12da7b6ed0a8a128f4ee387a19ee15f49a17`；最�
 - Agent display/contract/http focused pytest：24 pass；ruff touched-file check pass。
 - Root `python3 scripts/verify-repository-topology.py`：PASS。
 - Root `git diff --check`：通过。
+
+### 停写后 App 全量门禁复核（2026-10-31）
+
+- `pnpm test`：362 files；6890 pass、2 skip、7 fail。失败集中在既有 process/activity UI 断言（`segment-process.test.tsx` 4、`process-activity-groups.test.tsx` 2）和 sign-out 页面文案契约 1；另有 stored-session fixture 因缺少 `KOKORO_TEST_REDIS_URL` 触发环境缺口。该结果不计为 App 全量通过，也不扩大 C-1.3 代码范围。
+- native session focused/probe 测试保持通过；C-1.3 当前仍以 focused evidence 交付，待真实 IAM→BFF→App journey 收据和现有 App baseline 收敛后再关闭。
 
 ### 仍未越过的停写边界
 
