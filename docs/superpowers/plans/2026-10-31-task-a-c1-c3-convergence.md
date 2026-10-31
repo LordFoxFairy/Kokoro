@@ -137,7 +137,7 @@ IAM native session cookie
 - [x] 以已有 `PERSONALIZATION_PROVIDER` 作为首个 C-2 slice，先写 architecture/HTTP seam，迁移精确的 `GET/PUT /v1/preferences/personalization`。
 - [x] AccountModule `AccountMiddleware` 负责 native/user admission context、owner transport、raw body/query/content-type/abort/5 秒 deadline 与 error envelope；`PERSONALIZATION_PROVIDER` 继续负责真实 CAS/事务，未复制 Repository 或 generic receipt。
 - [x] 在 `AccountModule` 注册 middleware/provider，显式注入 `PERSONALIZATION_PROVIDER` 与 `SESSION_ADMISSION`；Account native bundle 在旧 dispatcher 前终止。
-- [x] Account native bundle（profile/sessions/team/me/personalization）已从 `handleBffRequest` 分派移出；`createBffServer` 只保留显式 feature adapter seam 供现有 raw HTTP/integration fixture 使用，并由同一 handler 实现。
+- [x] Account native bundle（profile/sessions/team/me/personalization）与 System runtime-manifest 已从 `handleBffRequest` 分派移出；`createBffServer` 只保留显式 feature adapter seam 供现有 raw HTTP/integration fixture 使用，并由同一 handler 实现。
 - [x] 同步 BFF `package.json` 显式 format 文件清单；BFF build/typecheck/format/lint、feature focused tests、`test:nest-architecture`、`test:architecture` 已通过。
 
 **Personalization slice exit:** only after Task 2.1 profile-read contract/artifacts/receipt are complete; this slice must not remove `BffBusinessStore`, `BffApplicationServices`, `PostgresBffRepositories`, or unrelated LegacyRoutes branches.
