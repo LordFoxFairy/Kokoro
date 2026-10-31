@@ -26,7 +26,7 @@ The request is bodyless and queryless. BFF materializes only the allowlisted IAM
 
 ## Verification actually run
 
-- IAM: `pnpm typecheck`; `pnpm contract:check`; `pnpm format:check`; `pnpm lint`; focused Vitest: 5 files / 64 tests passed. Real integration command was attempted and stopped before test execution because `IAM_TEST_ADMIN_URL is required for real infrastructure tests`.
+- IAM: `pnpm typecheck`; `pnpm contract:check`; `pnpm format:check`; `pnpm lint`; focused Vitest: 5 files / 64 tests passed. After the native admission guard fix, local PostgreSQL/Redis integration for account profile and BFF session-admission host passed 12/12 serially.
 - BFF: `pnpm build`; `pnpm lint`; `pnpm typecheck`; `pnpm contract:check:iam`; profile input/client/http/contract tests: 49 passed. IAM client generation is deterministic and pinned to owner commit/digest.
 - App: BFF account-profile client generation check passed (16 files); profile App/integration/update/contract tests: 62 passed; `pnpm lint` passed. Full App typecheck still has the pre-existing `app-frame-main-surface.tsx:onReconnect` error, recorded as `TA-BASELINE-01`.
 - Root: submodule gitlinks are pinned in `c7af342b`; no A-01/A-02/A-07 files were touched.
