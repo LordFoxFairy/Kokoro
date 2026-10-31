@@ -79,7 +79,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | TA-ENV-01 | BFF 2 个真实 PostgreSQL 条件测试因资源门禁 skip。 | 不计为通过；配置隔离资源后补跑，或在最终收据中明确环境缺口。 |
 | TA-BASELINE-02 | Root 全局规范审计现有 224 条历史/任务外 violation。 | 只修本 Goal 直接命中的 BFF Nest、C-1.3 和 Task A clean-slate 项；其余留在治理 backlog。 |
 | TA-BASELINE-03 | App 停写后全量 `pnpm test` 为 6890 pass / 2 skip / 7 fail；失败集中在既有 process/activity UI 断言、sign-out 页面文案契约，另有 stored-session fixture 缺少 `KOKORO_TEST_REDIS_URL`。 | 作为独立 baseline/环境缺口记录；不以 focused native proof 冒称 App 全量通过，也不在 C-1.3 中顺手扩展 UI 语义。 |
-| TA-BASELINE-04 | Root `python3 -m pytest scripts/tests -q` 串行结果为 1844 passed、2 failed、3 skipped、502 subtests；失败为 `test_serve_local_login.py::test_occupied_port_is_not_reused_or_terminated` 与 Storage smoke 缺少 `@aws-sdk/client-s3`，均未命中本切片代码。Root topology verifier 通过，BFF focused gates 通过。 | 记录为 C-4 baseline/环境缺口；不把 Root pytest 写成全量通过，待对应 owner/依赖门补齐后复验。 |
+| TA-BASELINE-04 | Root `python3 -m pytest scripts/tests -q` 串行结果为 1844 passed、2 failed、3 skipped、502 subtests；失败为 `test_serve_local_login.py::test_occupied_port_is_not_reused_or_terminated` 与 Storage smoke 缺少 `@aws-sdk/client-s3`，均未命中本切片代码。Root topology verifier 通过，BFF focused gates 通过。 |
+| TA-BASELINE-05 | BFF 停写后串行 `pnpm test` 最新结果为 2296 tests / 2240 pass / 54 fail / 2 skip；失败集中在既有 `Activity details version drift` contract inverse。相较先前 2238/56，build-output fixture 调整消除了 2 个 source-loader 失败；本切片 message feedback/run display/project binding focused 为 78/78。 | 记录为 C-4 baseline；不把 BFF 全量写成通过，待 contract inverse 收敛后复验。 |
 
 ## 4. 目标与 TODO
 
