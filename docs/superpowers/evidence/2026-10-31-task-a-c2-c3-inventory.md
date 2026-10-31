@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `108a0bc`（先前 `4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat route bundles 已切换；personalization 与 Chat archive/share provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `6de89c7`（先前 `108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat route bundles 已切换；personalization 与 Chat archive/share provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 

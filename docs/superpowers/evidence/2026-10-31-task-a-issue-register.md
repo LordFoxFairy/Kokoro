@@ -13,7 +13,7 @@
 - C-1.3 profile-read cutover：[profile-read evidence](2026-10-31-task-a-c1-3-profile-read-cutover.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `108a0bc`（含 `4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest 与 Chat archive/share bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization 与 Chat provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `6de89c7`（含 `108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest 与 Chat archive/share bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization 与 Chat provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider，partial test composition 仍保持兼容。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
