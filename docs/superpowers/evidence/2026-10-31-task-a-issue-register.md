@@ -14,9 +14,10 @@
 - Chat archive/share route cutover：[Chat cutover evidence](2026-10-31-task-a-chat-route-cutover.md)
 - Projects pin route cutover：[Projects pin evidence](2026-10-31-task-a-project-pin-cutover.md)
 - ScheduledTask current-read route cutover：[Scheduled read evidence](2026-10-31-task-a-scheduled-read-cutover.md)
+- AgentRuns internal route cutover：[AgentRuns evidence](2026-10-31-task-a-agent-runs-cutover.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `6874034`（含 `ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest、Chat archive/share、Projects pin 与 ScheduledTask current-read bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization、Chat、Project pin 与 ScheduledTask read provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider，partial test composition 仍保持兼容。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `a677cd2`（含 `6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest、Chat archive/share、Projects pin、ScheduledTask current-read 与 Agent internal admission/binding bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization、Chat、Project pin、ScheduledTask read 与 AgentRuns reader provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider，partial test composition 仍保持兼容。真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
@@ -40,7 +41,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
-| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；剩余业务 path 仍在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；Account native bundle、System runtime-manifest、Chat archive/share、Projects pin 与 ScheduledTask current-read 已切到 feature middleware/adapter，后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 盘点完成，Account/System/Chat/Projects/Scheduled route bundles 已迁移 |
+| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；剩余业务 path 仍在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；Account native bundle、System runtime-manifest、Chat archive/share、Projects pin、ScheduledTask current-read 与 Agent internal admission/binding 已切到 feature middleware/adapter，后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 盘点完成，Account/System/Chat/Projects/Scheduled/Agent route bundles 已迁移 |
 | TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用；`app.module.ts`、`main.ts`、shutdown provider 也在删除链上。 | 存在第二 composition root 和隐藏依赖。 | 先完成 feature provider cutover/import census，再删 dispatcher；反向搜索 `LegacyRoutes*`、`createBffComposition`、`handleBffRequest`、`createBffServer`。 | 未完成 |
 | TA-C2-03 | 已有 feature module 仍有部分只声明 graph/ownership 的空壳风险。 | 机械建模块会增加无意义代码，掩盖未迁移行为。 | 每个 module 至少承接真实 route/provider/owner client；无 route、无 provider、无测试证据的模块不保留。 | 进行中 |
 
@@ -104,6 +105,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Chat archive/share bundle（`GET /v1/account/archived-tasks`、`GET /v1/account/shared-tasks`、`GET/POST /v1/sessions/:id/{archive,restore}`）已由 `ChatModule` 的 `ChatMiddleware`/`chat-native` adapter 接管；旧 dispatcher 分支已移除，复用同一 `ChatApplicationService` provider，不复制持久化边界。
 - [x] Projects pin bundle（`GET /v1/self/project-pins`、`PUT /v1/projects/:id/pin`）已由 `ProjectsModule` 的 `ProjectPinMiddleware`/`project-native` adapter 接管；旧 dispatcher 分支已移除，复用现有 `ProjectService`/ProjectRepository owner，不新增 receipt 或第二 SQL 边界。
 - [x] ScheduledTask current-read bundle（`GET /v1/scheduled-tasks[/:id]`）已由 `ScheduledTasksModule` 的 `ScheduledTaskReadMiddleware`/`scheduled-task-native` adapter 接管；旧 dispatcher 分支已移除，复用现有 `ScheduledTaskReadService`/Scheduler owner read、5 秒预算和 re-admission。
+- [x] Agent internal bundle（`POST /internal/v1/model-admissions[/:id/settle|recover]`、`POST /internal/v1/project-execution-bindings/verify`）已由 `AgentRunsModule` 的 `AgentRunsMiddleware`/`agent-runs-native` adapter 接管；旧 dispatcher 分支已移除，复用现有 durable reader、dedicated credential 与 Billing/IAM owner boundary。
 - [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
 - [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
 - [ ] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
@@ -116,6 +118,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Chat archive/share 首个 provider seam 已接入 `CHAT_SERVICE`，`ChatModule` 通过唯一 `BFF_DATABASE` 构造 `ChatApplicationService`；旧 `businessStore.services.chat` 仅作为 transitional raw-server fallback，待全部 Chat route cutover 后删除。
 - [x] Project pin provider seam 已接入 `PROJECT_SERVICE`，`ProjectsModule` 通过唯一 `BFF_DATABASE` 构造 `ProjectService`；旧 `businessStore.services.projects` 仅作为 transitional raw-server fallback，待剩余 Project route cutover 后删除。
 - [x] ScheduledTask read provider seam 已接入 `SCHEDULED_TASK_READ_SERVICE`，`ScheduledTasksModule` 通过唯一 `BFF_DATABASE` 构造 `PostgresScheduledTaskRepository` + Scheduler state reader；raw test composition 保持 `routeHandler` 旁路，避免改变 mutation fixture。
+- [x] AgentRuns reader provider seam 已接入 `AGENT_RUNS_READER`，`AgentRunsModule` 通过唯一 `BFF_DATABASE` 构造 `PostgresAgentDispatchOutboxRepository`，同时提供 submitted-run 与 project-binding reader；不复制 outbox/SQL owner。
 - [ ] 继续移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
 - [ ] 旧 global wrapper 不再出现在生产 composition 后删除；反向 import census 为零。
 - [ ] 检查无 BaseRepository、无空模块、无第二套 DTO/SQL/ORM owner、无 sibling 相对路径穿透。
@@ -160,5 +163,5 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ## 7. 当前停止线与下一步
 
-当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342b` 固定。C-2 Account/System/Chat/Projects/Scheduled route bundles 已分别由 BFF `96806f4`、`108a0bc`、`ef1c53b`、`6874034` 切到 feature middleware/adapter，C-3 personalization、Chat、Project pin 与 ScheduledTask read provider seam 已建立，并完成 BFF build/typecheck/format/lint、architecture、profile/session/team/me/runtime-manifest/archive/share/project-pin/scheduled mutation focused 验证。仍未完成的是真实 IAM infrastructure receipt、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、剩余 global Repository/Service/Port 收敛和 C-4 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移剩余 Project/Chat/Agent/Scheduled route bundle，并继续拆 global provider；每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
+当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342b` 固定。C-2 Account/System/Chat/Projects/Scheduled/Agent route bundles 已分别由 BFF `96806f4`、`108a0bc`、`ef1c53b`、`6874034`、`a677cd2` 切到 feature middleware/adapter，C-3 personalization、Chat、Project pin、ScheduledTask read 与 AgentRuns reader provider seam 已建立，并完成 BFF build/typecheck/format/lint、architecture、profile/session/team/me/runtime-manifest/archive/share/project-pin/scheduled mutation/model-admission focused 验证。仍未完成的是真实 IAM infrastructure receipt、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、剩余 global Repository/Service/Port 收敛和 C-4 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移剩余 Project/Chat/Agent/Scheduled/Skills/MCP route bundle，并继续拆 global provider；每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
 

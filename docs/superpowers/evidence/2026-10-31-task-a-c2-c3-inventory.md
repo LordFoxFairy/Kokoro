@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `6874034`（先前 `ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled current-read route bundles 已切换；personalization、Chat archive/share、Project pin 与 ScheduledTask read provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `a677cd2`（先前 `6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled/Agent route bundles 已切换；personalization、Chat archive/share、Project pin、ScheduledTask read 与 AgentRuns reader provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
@@ -36,8 +36,8 @@
 | `GET/PATCH /v1/account/profile` | AccountModule `AccountMiddleware` → `accountProfileRoute` → IAM client | AccountModule + IAM owner client | **migrated**; raw `createBffServer` uses same adapter, native transport/final admission preserved |
 | `GET /v1/account/archived-tasks`; `GET/POST /v1/sessions/:id/{archive,restore}` | `ChatModule` `ChatMiddleware` → `chat-native` → `archivedTasksRoute`, `CHAT_SERVICE` | Chat/Account | **migrated**; 保留 no-store、re-admission、archive state 错误闭集 |
 | `GET /v1/account/shared-tasks` | `ChatModule` `ChatMiddleware` → `chat-native` → `sharedTasksRoute`, `CHAT_SERVICE` | Chat/Account | **migrated**; shared-task projection 与失效响应 focused tests 通过 |
-| `ALL /internal/v1/model-admissions[/**]` | `agentModelAdmissionRoute`, `submittedAgentRuns` | AgentRunsModule | agent run admission reader/provider；不可由 global store 隐式提供 |
-| `ALL /internal/v1/project-execution-bindings/verify` | `projectExecutionBindingRoute`, `projectExecutionBindings` | AgentRuns/Projects | execution-binding owner + service identity boundary |
+| `POST /internal/v1/model-admissions[/**]` | `AgentRunsModule` `AgentRunsMiddleware` → `agent-runs-native` → `agentModelAdmissionRoute`, `AGENT_RUNS_READER` | AgentRunsModule | **migrated**; dedicated credential, submitted-run reader and Billing admission/settlement boundary preserved |
+| `POST /internal/v1/project-execution-bindings/verify` | `AgentRunsModule` `AgentRunsMiddleware` → `agent-runs-native` → `projectExecutionBindingRoute`, `AGENT_RUNS_READER` | AgentRunsModule/Projects | **migrated**; execution-binding owner and dedicated service credential preserved |
 | `ALL /v1/app-skill-bindings/**`、platform specification/download/import routes | `appSkillBindingsRoute`, `skillSpecificationReadRoute`, `skillSpecificationEnabledRoute`, `skillDownloadHandleRoute`, `exactSkillDownloadRoute`, `localSkillImportRoute` | SkillsModule / Platform owner clients | preserve package budget, project access, generated Connect contracts |
 | `GET /healthz`, `GET /readyz` | inline checks in dispatcher + `HealthModule` | HealthModule | remove duplicate inline checks only after listener smoke confirms Nest controller behavior |
 | `GET /v1/shared/:shareId` | inline public share projection or `sharedSessionReader` | Chat/PublicShare feature | preserve server auth, scope/project query validation, public snapshot |
