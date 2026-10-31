@@ -151,6 +151,7 @@ IAM native session cookie
 - [x] Project pin (`GET /v1/self/project-pins`, `PUT /v1/projects/:id/pin`) now uses `ProjectsModule` `PROJECT_SERVICE` + `ProjectPinMiddleware`; `handleBffRequest` no longer owns the branch and existing natural-idempotency/owner-scope behavior is preserved.
 - [x] Project resource metadata/download (`GET /v1/projects/:id/resources/:asset_id[\/download]`) now uses `ProjectsModule` `ProjectPinMiddleware` + `handleProjectResourceReadRequest`; old dispatcher branch is deleted and verified-download/owner-recheck behavior is preserved.
 - [x] Project resource upload (`POST /v1/projects/:id/resources`) now uses `ProjectsModule` `ProjectPinMiddleware` + `handleProjectResourceUploadRequest`; old dispatcher branch is deleted and receipt/checkpoint/scan behavior is preserved.
+- [x] Project skill-selection (`GET/PUT /v1/projects/:id/skill-selection`) now uses `ProjectsModule` `PROJECT_SKILL_SELECTION_PROVIDER` + `PROJECT_SKILL_INSTALLATION_CLIENT` and `ProjectPinMiddleware`; the old `handleBffRequest` branch is removed, native admission/recheck and persistent receipt validation are preserved (`2dd93ca`).
 
 ### Task 4：Chat/AgentRuns/AG-UI 与 ScheduledTasks 下沉
 
@@ -240,4 +241,11 @@ pnpm test:integration
 - [ ] C-3：global Repository/Service/Port 只剩有证据的 feature-local boundary；global locator/wrapper 删除。
 - [ ] C-4：默认测试只覆盖 canonical 当前态；owner/root 全量门禁通过；证据文档更新完成。
 - [ ] A-01/A-02/A-07：仅在上述四项均通过后另建实施计划并开始。
+
+### 2026-10-31 execution update
+
+- BFF child `2dd93ca` completed the project skill-selection feature cutover. The feature owns its narrow project reader, idempotency receipt reader, and Skill Installation client; no second repository/service or global locator was introduced.
+- Focused verification passed: `pnpm lint`, `pnpm build`, `node --import tsx --test --test-concurrency=1 test/nest-feature-architecture.test.ts test/skill-installation-http.test.mjs test/contract/skill-specification-http.test.mjs` (144/144).
+- BFF `pnpm format:check` still reports pre-existing warnings including `src/bootstrap/server.ts` and `src/modules/projects/project-pin.middleware.ts`; full BFF test run remains non-green on unrelated baseline/environment failures and was interrupted at the existing long-running contract boundary. This is evidence of current state, not a C-4 pass.
+- Next slice remains project skill-installations or MCP recommendations; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
 

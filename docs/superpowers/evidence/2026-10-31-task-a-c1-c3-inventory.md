@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`f3bfe5a5`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `799b9e4c`。
+- BFF：`apps/kokoro-bff` `2dd93ca`（本轮 skill-selection feature cutover）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -98,7 +98,7 @@ Nest AppModule
 | `GET /v1/projects/{id}/resources/{resourceId}` | `handleProjectResourceReadRequest` (`project-native.ts`) | `ProjectsModule` + Storage client | read qualification、scope | 已迁移（`525a150`） |
 | `GET /v1/projects/{id}/resources/{resourceId}/download` | `handleProjectResourceReadRequest` (`project-native.ts`) | `ProjectsModule` + Storage client | exact bytes、expiry | 已迁移（`525a150`） |
 | `DELETE /v1/projects/{id}/resources/{resourceId}` | `handleProjectResourceDeleteRequest` (`project-native.ts`) | `ProjectsModule` + Storage client | deletion/outbox/recovery | 已迁移（`14aa232`） |
-| `PUT/POST /v1/projects/{id}/skill-selection` | `projectSkillSelectionRoute` | `ProjectsModule` + Skills client | project access、installation IDs、CAS | 未迁移 |
+| `PUT/POST /v1/projects/{id}/skill-selection` | `handleProjectSkillSelectionRequest` → `ProjectPinMiddleware` | `ProjectsModule` + Skills client | project access、installation IDs、CAS | 已迁移（`2dd93ca`） |
 | `/v1/projects/{id}/skill-installations/**` | `skillInstallationRoute` | `ProjectsModule` + Skills client | project access、owner qualification | 未迁移 |
 | `GET /v1/projects/{id}/tasks` | `liveBffBusiness`/project repository | `ProjectsModule` ProjectTask provider | A-07 canonical ProjectTask contract | A-07 停写 |
 
@@ -131,7 +131,7 @@ Nest AppModule
 | Module | 当前实现 | 实际问题 | 下一步删除门 |
 |---|---|---|---|
 | `AccountModule` | Database/IAM relay、Personalization provider、SessionAdmission provider | 仅有两个 provider，account route 仍在旧 dispatcher | profile/session/archive/share/knowledge route 至少有真实 Controller/provider 后再移除旧入口 |
-| `ProjectsModule` | 仅声明 Account/Chat/Database imports | 空壳，未承接 project route | project read/rename/pin/resource 中至少一组真实 slice + tests |
+| `ProjectsModule` | `PROJECT_SERVICE`、project resource provider、skill-selection provider/client、`ProjectPinMiddleware` | 仍有 project installation/MCP/task/mutation bundles 在旧 dispatcher | 完成剩余 project bundles 后删除旧 project fallback |
 | `ChatModule` | 仅声明 Account/Database/AgentRuns imports | Chat facts 仍由 global store/旧 route 组合 | chat snapshot/message mutation/authorization provider + contract tests |
 | `AgentRunsModule` | 仅声明 IAM/Database imports | 未承接 Agent client、run display/control、outbox | run display/control/dispatch seam + cancellation/replay tests |
 | `AguiModule` | 仅声明 Chat/Redis/Database imports | 未承接 projector/ledger/replay provider | durable ledger/cursor/replay Controller/provider + tests |
@@ -203,9 +203,9 @@ Nest AppModule
 
 本文件第 3～7 节保留最初 route/provider census；以下是其后的实际状态，不覆盖未迁移项：
 
-- BFF `4501a2c` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete source routes 已删除。
+- BFF `2dd93ca` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、project skill-selection、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete/skill-selection source routes 已删除。
 - `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService`、`projectService` 字段已删除；runtime 统一从 `services.chat` / `services.projects` 读取。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
-- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `4501a2c`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `2dd93ca`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
 - 最新 BFF 串行全量：2310 tests / 2308 pass / 0 fail / 2 skip；Root topology PASS；最新 Root gitlink native Web smoke 4/4。
-- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat/AgentRuns/AG-UI/Scheduled mutations/Skills/MCP route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
+- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、project skill-installations/MCP recommendations、Chat/AgentRuns/AG-UI/Scheduled mutations/Skills/MCP route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
 
