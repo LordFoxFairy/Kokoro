@@ -84,4 +84,12 @@ Root gitlink 已更新至 BFF `a9bd12da7b6ed0a8a128f4ee387a19ee15f49a17`；最�
 
 C-1 compatibility cleanup、C-2 foundation/feature graph、C-3 personalization slice 和 C-4 default contract-pin/test gate 已交付；但 C-1.3 first-party native-session runtime cutover、LegacyRoutes 全量替换/旧 dispatcher 删除、其余 global Repository/Service/Port 拆分尚未完成。因此 A-01/A-02/A-07 继续保持未启动，不能把当前证据标记为 C-1～C-4 完整通过。
 
-C-1.3 IAM writer 盘点（2026-10-31）：当前 `/internal/v1/session-authorizations/verify` 仍是 OAuth bearer + `InternalAuthGuard` + client/resource/scope 依赖，不符合 G0 native-session 的 Cookie/Origin/active-tenant admission。实现还需要独立 `session_admission` direct service credential、allowlisted Cookie/CSRF/Origin boundary、fresh session/membership/permissions projection 与专用 fixture；本轮未猜实现、未写 IAM、未创建 commit。该缺口保持 A-01/A-02/A-07 停写。
+C-1.3 native-session runtime/consumer 已交付第一闭环，但尚未宣称全量 auth cleanup：
+
+- IAM child `2fbb96a`：新增 `POST /internal/v1/native-session-admission/verify` controller/service/schema；独立 `kokoro-bff/session_admission` direct credential；严格 Cookie/Origin/Accept/body/duplicate-header 校验；fresh Better Auth session、active tenant、membership、role permissions 查询；native error closed set；生成 `contract/openapi/iam.internal.v1.json`。
+- BFF child `799b9e4`：新增受限 credential reader、native transport/client、Cookie allowlist、Origin 校验和 AccountModule/runtime wiring；配置 `KOKORO_BFF_IAM_SESSION_ADMISSION_CREDENTIAL_FILE` 与 `KOKORO_IAM_WEB_ORIGIN`。启用两项配置时用户准入不再发送浏览器 bearer；旧 bearer transport 仅保留给独立 owner authorization consumers，native 结果对这些未迁移调用以空 bearer fail-closed。
+- Root integration `77921443`：同时 pin IAM `2fbb96a` 与 BFF `799b9e4`。
+
+本次主仓复核：BFF format/lint/typecheck/build、native tests 3/3、Nest architecture 7/7、architecture 33/33、全量 `pnpm test` 2301 pass / 2 skip / 0 fail；IAM format/lint/typecheck/contract:check、unit 95 files / 1403 tests pass。全量验证已在 worker 停写后重跑，dist 缺失的并行竞争结果不计入验收。
+
+仍未完成：App 同源 adapter/旧 first-party RP 删除、BFF LegacyRoutes 全量替换/旧 dispatcher 删除，以及剩余 global Repository/Service/Port 收敛。故 A-01/A-02/A-07 继续保持未启动，C-1～C-4 不标记为全部通过。
