@@ -12,7 +12,7 @@
 
 ## 0. 当前基线与停写边界
 
-**停写基线：** Root `1c63b007`，工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。
+**停写基线：** Root `f81d6739`，工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。
 
 **已交付事实：**
 
@@ -27,6 +27,7 @@
 **明确未完成：**
 
 - App 同源 native adapter、旧 Auth.js/OIDC RP、Product Session store/refresh reservation 尚未删除。
+- App profile read 仍使用 `/iam/oauth2/userinfo` relay；需要先落定 IAM `GET /internal/v1/account/profile` owner contract，再生成 BFF client 并切换 App read。
 - `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍持有 `createBffComposition()` 与旧 `handleBffRequest`，业务 route 尚未全部下沉。
 - `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 仍是生产组合边界；`src/application/ports` 仍有全局 port。
 - C-4 只完成基础门禁，未完成“LegacyRoutes 清零 + global composition 删除 + feature-local ownership”验收。
@@ -108,6 +109,20 @@ IAM native session cookie
 - [ ] 实测登录、登出、active tenant 切换、撤权后的 401/403 与多标签 late response。
 - [ ] 只有消费者证据成立后才删除旧 RP、Product Session 与 token/refresh 测试。
 - [ ] 运行 App focused lint/typecheck/test；记录既有 `onReconnect` baseline，不扩大修复范围。
+
+### Task 2.1：冻结并实现 Account Profile read owner contract
+
+**设计门：** profile read 是 IAM account owner projection，不复用 OAuth userinfo relay。先变更 IAM API contract 与 generated artifacts，再按消费者顺序接入 BFF 和 App；在 contract、artifact、focused tests 与真实链路 receipt 齐备前，不删除旧 RP/Product Session。
+
+**Contract：**
+
+- IAM `GET /internal/v1/account/profile`，无 query/body，`Cache-Control: no-store`，标准 `accountProfileResponseSchema` 返回 `data.subject`, `data.name`, `data.email`, `data.email_verified`。
+- native 请求使用现有 direct `session_admission` credential + allowlisted IAM Cookie + fixed Origin + request id；IAM fresh-recheck session、active tenant、membership、session id，并标记 native principal。
+- legacy bearer 请求保持现有 account profile scope/tenant/client 校验；两种模式共享同一 response/error schema，不引入第二套 DTO。
+- BFF 新增 `GET /v1/account/profile`，仅负责 request admission、owner credential materialization、generated IAM client 调用、deadline/cancel、closed error mapping 和 no-store response；不读取 IAM 数据库。
+- App `GET /api/account/profile` 改用 `admittedProductSession` + BFF native headers；只接受 BFF canonical projection，保持 subject binding、final admission recheck、no-store 与 bounded body。
+
+**验证出口：** IAM contract/HTTP/guard tests → BFF client/HTTP tests → App profile-read focused tests → 停写后串行 owner gates。生成器、OpenAPI digest 和 consumer pin 必须在同一提交序列中更新。
 
 ### Task 3：Account/Projects 第一批真实 route 下沉
 
