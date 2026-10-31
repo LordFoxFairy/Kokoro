@@ -157,6 +157,7 @@ IAM native session cookie
 - Modify: `src/modules/legacy-routes/legacy-routes.runtime.ts`
 - Test: corresponding HTTP/ledger/replay/outbox/cancel/lease tests
 
+- [x] Chat archive/share bundle（archived tasks、shared tasks、session archive/restore）已接入 `ChatModule` 的 `CHAT_SERVICE` provider 与 `ChatMiddleware`，从 `handleBffRequest` 移除旧分支；HTTP/error/admission/architecture focused tests 通过。
 - [ ] 保留 durable ledger、cursor/replay、lease/CAS/outbox、取消和 drain 顺序；不复制 AG-UI envelope。
 - [ ] 将 Chat/Run/AG-UI repository/client 拆成 feature-local provider；只对有真实复杂边界的 repository 保留独立类型。
 - [ ] 每个 route bundle 迁移后从 adapter 删除并执行 focused HTTP + architecture tests。
