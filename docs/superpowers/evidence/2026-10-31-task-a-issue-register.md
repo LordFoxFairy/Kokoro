@@ -13,7 +13,7 @@
 - C-1.3 profile-read cutover：[profile-read evidence](2026-10-31-task-a-c1-3-profile-read-cutover.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `7f61218`（含 `2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF personalization 已由 AccountModule middleware 接管并从 LegacyRoutes 排除，真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `da82d2a9`、BFF 子仓 `39d5481`（含 `7f61218`、`2a504c0`）、IAM 子仓 `497900ab` 已完成 profile-read cutover；BFF account native bundle（profile/sessions/team/me/personalization）已由 AccountModule middleware 接管，旧 `server.ts` 业务分支已移除，真实基础设施 receipt 仍受 `IAM_TEST_ADMIN_URL` 环境缺口阻塞。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 
@@ -37,7 +37,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
-| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；真实 path 分派在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；personalization 已切到 AccountModule middleware，后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 盘点完成，首个 route bundle 已迁移 |
+| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；剩余业务 path 仍在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；Account native bundle（profile/sessions/team/me/personalization）已切到 AccountModule middleware，后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 盘点完成，Account route bundle 已迁移 |
 | TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用；`app.module.ts`、`main.ts`、shutdown provider 也在删除链上。 | 存在第二 composition root 和隐藏依赖。 | 先完成 feature provider cutover/import census，再删 dispatcher；反向搜索 `LegacyRoutes*`、`createBffComposition`、`handleBffRequest`、`createBffServer`。 | 未完成 |
 | TA-C2-03 | 已有 feature module 仍有部分只声明 graph/ownership 的空壳风险。 | 机械建模块会增加无意义代码，掩盖未迁移行为。 | 每个 module 至少承接真实 route/provider/owner client；无 route、无 provider、无测试证据的模块不保留。 | 进行中 |
 
@@ -96,7 +96,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 - [x] 建立 path/method → handler → target module → owner → test → status 的 route census；盘点覆盖 `server.ts`、`app.module.ts`、`main.ts`、shutdown provider 和 LegacyRoutes wrapper。
 - [x] 每批先补 red HTTP/architecture test，再实现 feature-local adapter/provider；personalization 复用既有 CAS provider，不新增 Service/Repository。
-- [x] 第一批 `GET/PUT /v1/preferences/personalization` 已从 `handleBffRequest` 分派移出；AccountModule middleware 负责 admission、raw body、5 秒预算和 error envelope，LegacyRoutes 对该 path 全方法排除。
+- [x] Account native bundle（profile/sessions/team/me/personalization）已从 `handleBffRequest` 分派移出；AccountModule middleware 负责 admission、owner transport、raw body/headers、预算和 error envelope，旧 dispatcher 只保留 raw `createBffServer` 的显式兼容入口。
 - [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
 - [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
 - [ ] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
@@ -149,5 +149,5 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ## 7. 当前停止线与下一步
 
-当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342b` 固定。C-2 第一批 personalization 已由 BFF `7f61218` 切到 AccountModule middleware，并完成 BFF build/typecheck/format/lint、architecture、profile focused 验证。仍未完成的是真实 IAM infrastructure receipt、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、global Repository/Service/Port 收敛和 C-4 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移 account sessions/team/shared/archived 与 Projects route bundle，每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
+当前已完成问题整理、Goal/TODO 冻结、技术方案和 C-1.3 App native identity 第一闭环（adapter、SSR admission、session probe、BFF `/v1/me` proof），并完成 account profile read/update、account sessions、Team 的 native owner transport；profile-read contract/artifact/consumer cutover 已由 Root `c7af342b` 固定。C-2 Account native bundle 已由 BFF `39d5481` 切到 AccountModule middleware，并完成 BFF build/typecheck/format/lint、architecture、profile/session/team focused 验证。仍未完成的是真实 IAM infrastructure receipt、sign-in/sign-out/tenant-switch/revocation 旅程收据、LegacyRoutes 全量退出、global Repository/Service/Port 收敛和 C-4 停写后串行门禁；A-01/A-02/A-07 继续停写。下一步按 inventory 迁移 Chat/Agent/Scheduled 与 Projects route bundle，每个 bundle 完成 focused、package explicit-file-list、architecture 与串行门禁后再扩展下一批。
 

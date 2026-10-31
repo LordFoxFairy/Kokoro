@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `7f61218`（先前 `2a504c0`）。Personalization 已是第一个已切换 route bundle；本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `39d5481`（先前 `7f61218`、`2a504c0`）。Account native bundle 已切换；本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
@@ -33,7 +33,7 @@
 | Route family（method/path） | 当前 handler/依赖 | 目标 feature owner | 迁移状态/最小证据 |
 |---|---|---|---|
 | `ALL /iam/**` | `iamProtocolRelay` | IAM relay module / owner transport | 保留独立协议边界；先完成 native owner/profile read contract，再移出通用 dispatcher |
-| `PATCH /v1/account/profile` | `accountProfileRoute`, `SessionAdmission`, IAM client | AccountModule + IAM owner client | native transport 已切换；Nest controller/DI 尚未接管 |
+| `GET/PATCH /v1/account/profile` | AccountModule `AccountMiddleware` → `accountProfileRoute` → IAM client | AccountModule + IAM owner client | **migrated**; raw `createBffServer` uses same adapter, native transport/final admission preserved |
 | `GET /v1/account/archived-tasks`; `GET/POST /v1/sessions/:id/{archive,restore}` | `archivedTasksRoute`, chat service | Chat/Account | 保留 no-store、re-admission、archive state 错误闭集 |
 | `GET /v1/account/shared-tasks` | `sharedTasksRoute`, chat service | Chat/Account | 真实 shared-task projection 证据 |
 | `ALL /internal/v1/model-admissions[/**]` | `agentModelAdmissionRoute`, `submittedAgentRuns` | AgentRunsModule | agent run admission reader/provider；不可由 global store 隐式提供 |
@@ -49,13 +49,13 @@
 | `GET/POST /v1/self/project-pins`, `POST /v1/projects/:id/pin` | `projectPinRoute`, project service | ProjectsModule | preserve project ownership and deadline |
 | `GET /v1/scheduled-tasks[/:id]` | `scheduledTaskReadRoute`, `ScheduledTaskReadService`, scheduler reader | ScheduledTasksModule | move reader/provider together; preserve scheduler timeout |
 | `POST/GET/DELETE /v1/skill-shares[/:id][/skill]`; skill usage/package/cover/import lifecycle | skill route family + product clients/store skill services | SkillsModule | preserve skill authorization, package budget, owner Connect artifacts |
-| `GET/PUT /v1/preferences/personalization` | AccountModule `AccountPersonalizationMiddleware` → `handlePersonalizationRequest` → `PERSONALIZATION_PROVIDER`；raw `createBffServer` 仅保留显式兼容 seam | AccountModule | **migrated**; LegacyRoutes excludes all methods; CAS/cancel/raw body focused and architecture gates passed |
+| `GET/PUT /v1/preferences/personalization` | AccountModule `AccountMiddleware` → `handlePersonalizationRequest` → `PERSONALIZATION_PROVIDER`；raw `createBffServer` 仅保留显式兼容 seam | AccountModule | **migrated**; CAS/cancel/raw body focused and architecture gates passed |
 | `GET/POST/PATCH/DELETE /v1/projects/**` | `liveBffBusiness`, project routes, `businessStore.services.projects` | ProjectsModule | split read/mutate/resource/rename/delete/status/pin/selection; preserve transaction/idempotency/owner scope |
 | `GET/POST/PATCH/DELETE /v1/scheduled-tasks/**` | `liveBffBusiness`, scheduled routes/service | ScheduledTasksModule | split create/update/delete/retry/read; preserve lineage/idempotency/calendar validation |
 | `GET/POST/PATCH/DELETE /v1/sessions/**` | `liveChatBusiness`, `liveAgentSession`, AG-UI/outbox services | ChatModule + AgentRunsModule + AguiModule | preserve durable ledger, cursor/replay, cancellation, outbox lease/drain |
-| `GET /v1/me` | inline context projection after admission | AccountModule | controller returns frozen admitted context; no owner DB read |
-| `GET/DELETE /v1/account/sessions[/:id]` | `accountSessionsRoute`, IAM native owner transport | AccountModule + IAM client | native cutover delivered; controller/DI migration pending |
-| `GET/ALL /v1/team/**` | `liveTeamRead`/`liveTeamWrite`, IAM native owner transport | AccountModule/Team provider | native cutover delivered; preserve role/permission snapshot |
+| `GET /v1/me` | AccountModule `AccountMiddleware` → frozen admitted context projection | AccountModule | **migrated**; no owner DB read |
+| `GET /v1/account/sessions[/:id]`、`DELETE /v1/account/sessions/:id` | AccountModule `AccountMiddleware` → `accountSessionsRoute`, IAM native owner transport | AccountModule + IAM client | **migrated**; input/CAS/error tests pass |
+| `GET/ALL /v1/team/**` | AccountModule `AccountMiddleware` → `liveTeamRead`/`liveTeamWrite`, IAM native owner transport | AccountModule/Team provider | **migrated**; role/permission snapshot and owner error tests pass |
 | `GET/POST /v1/admin/**` | billing metering/credit, identity, model config/routing, skill admin | Billing/System/Skills/Account modules | each admin owner keeps explicit permission and deadline; no catch-all admin controller |
 | `GET/POST /v1/library/**` | library/artifact/file routes, artifact library provider, Storage owner | Library/Storage feature boundary (or explicit owning module) | keep bounded downloads, project/tenant scope, storage client identity |
 | `GET/POST /v1/billing/**` | `liveOwnerBusiness`, billing clients | BillingModule | preserve owner projection/error normalization and idempotency |
