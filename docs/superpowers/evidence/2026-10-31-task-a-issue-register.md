@@ -45,7 +45,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
 | TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；剩余业务 path 仍在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；Account native bundle、System runtime-manifest、Chat archive/share/feedback、Projects pin、ScheduledTask current-read、Agent internal admission/binding 与 run-display 已切到 feature middleware/adapter，后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 盘点完成，Account/System/Chat/Projects/Scheduled/Agent route bundles 已迁移 |
-| TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用；`app.module.ts`、`main.ts`、shutdown provider 也在删除链上。 | 存在第二 composition root 和隐藏依赖。 | BFF `a2f1579` 已删除旧 dispatcher 的 `/v1/me` 分支，canonical `AccountModule`/`account-native.ts` 成为 current-user 唯一生产 handler；反向搜索 `LegacyRoutes*`、`createBffComposition`、`handleBffRequest`、`createBffServer` 仍需在剩余 route census 清零后完成。 | 进行中 |
+| TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用；`app.module.ts`、`main.ts`、shutdown provider 也在删除链上。 | 存在第二 composition root 和隐藏依赖。 | BFF `a2f1579` 已删除旧 dispatcher 的 `/v1/me` 分支，`2c683c4` 又将 IAM native relay 移入 `IamRelayModule` middleware；canonical `AccountModule`/`account-native.ts` 与 `IamRelayModule` 成为对应 handler。反向搜索 `LegacyRoutes*`、`createBffComposition`、`handleBffRequest`、`createBffServer` 仍需在剩余 route census 清零后完成。 | 进行中 |
 | TA-C2-03 | 已有 feature module 仍有部分只声明 graph/ownership 的空壳风险。 | 机械建模块会增加无意义代码，掩盖未迁移行为。 | 每个 module 至少承接真实 route/provider/owner client；无 route、无 provider、无测试证据的模块不保留。 | 进行中 |
 
 ### 3.3 C-3 Repository / Service / Port
