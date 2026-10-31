@@ -246,7 +246,7 @@ pnpm test:integration
 ### 2026-10-31 execution update
 
 - BFF child `9310aa6` completed the project skill-selection and project MCP recommendations feature cutovers. The features own narrow providers, admission seams, candidate clients and lifecycle cleanup; no second repository/service or global locator was introduced.
-- Focused verification passed: `pnpm lint`, `pnpm build`, `node --test --test-concurrency=1 test/nest-feature-architecture.test.ts`, and `node --import tsx --test --test-concurrency=1 test/project-mcp-recommendations-http.test.mjs test/project-mcp-recommendations-client.test.ts test/project-mcp-recommendations-input.test.ts` (11/11 architecture, 15/15 MCP focused; prior skill-selection/contract focus remains 144/144).
+- Focused verification passed: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:nest-architecture` (14/14), `pnpm test:architecture` (34/34), and `node --import tsx --test --test-concurrency=1 test/project-mcp-recommendations-http.test.mjs test/project-mcp-recommendations-client.test.ts test/project-mcp-recommendations-input.test.ts` (15/15 MCP focused; prior skill-selection/contract focus remains 144/144).
 - BFF `pnpm format:check` still reports pre-existing warnings including `src/bootstrap/server.ts` and `src/modules/projects/project-pin.middleware.ts`; full BFF test run remains non-green on unrelated baseline/environment failures and was interrupted at the existing long-running contract boundary. This is evidence of current state, not a C-4 pass.
 - Next slice is project skill-installations or the next Skills/MCP route bundle; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
 
