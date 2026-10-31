@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`f3bfe5a5`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `e8d7cf6`（project skill-selection、project MCP recommendations、project/personal skill-installations、managed reads、Skill enable command、Skill usage、personal Skill lifecycle、Skill draft creation/mutations、Skill catalog command/read/cover、published package read、Skill admin、GitHub preview、local import、personal knowledge feature cutover；补齐 managed read 仅 GET 边界）。
+- BFF：`apps/kokoro-bff` `2564efb`（project skill-selection、project MCP recommendations、project/personal skill-installations、managed reads、Skill enable command、Skill usage、personal Skill lifecycle、Skill draft creation/mutations、Skill catalog command/read/cover、published package read、Skill admin、GitHub preview、local import、personal knowledge feature cutover；并将 Knowledge repository 移出 global service aggregate）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -206,7 +206,7 @@ Nest AppModule
 
 - BFF `4b8b63d` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、project skill-selection、project MCP recommendations、project/personal skill-installations、managed personal Skill reads、Skill enable command、Skill usage、personal Skill lifecycle、Skill draft creation/mutations、Skill catalog commands/read/cover、published package read、Skill admin、GitHub preview、local import、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete/skill-selection/MCP recommendations/project/personal skill-installations/managed reads/enable/usage/personal lifecycle/skill draft creation/mutations/catalog command/read/cover/published package/admin/GitHub preview/local import source routes 已删除。
 - `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService`、`projectService` 字段已删除；runtime 统一从 `services.chat` / `services.projects` 读取。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
-- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `e8d7cf6`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `2564efb`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
 - 最新 BFF focused 串行验证：Nest architecture 15/15、BFF architecture 34/34、Skills/MCP/content/installation/usage suite 184/184、personal Skill lifecycle 19/19；`a75930e` 的全量 2312 tests / 2302 pass / 8 fail / 2 skip 中有 6 个由 managed-read 方法边界回归触发，已在 `a0bc277` 修复并由 lifecycle 19/19 复核；当前仍需重跑停写后的全量，已复现的剩余基线为 Artifact/Personal Storage 两项，不作为 C-4 通过。
 - 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat/AgentRuns/AG-UI/Scheduled mutations/remaining Skills/MCP route bundles、other Skill routes、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
 
