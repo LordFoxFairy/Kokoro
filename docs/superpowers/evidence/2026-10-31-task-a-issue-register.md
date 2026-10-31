@@ -19,6 +19,7 @@
 - Projects resource-list route cutover：[Project resource-list evidence](2026-10-31-task-a-project-resource-list-cutover.md)
 - Projects resource-delete route cutover：[Project resource-delete evidence](2026-10-31-task-a-project-resource-delete-cutover.md)
 - Projects resource-read/download route cutover：[Project resource-read evidence](2026-10-31-task-a-project-resource-read-cutover.md)
+- Projects resource-upload route cutover：[Project resource-upload evidence](2026-10-31-task-a-project-resource-upload-cutover.md)
 - ScheduledTask current-read route cutover：[Scheduled read evidence](2026-10-31-task-a-scheduled-read-cutover.md)
 - AgentRuns internal route cutover：[AgentRuns evidence](2026-10-31-task-a-agent-runs-cutover.md)
 - C-4 contract inverse 与全量复验：[C-4 evidence](2026-10-31-task-a-c4-contract-inverse.md)
@@ -91,7 +92,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | TA-BASELINE-02 | Root 全局规范审计现有 224 条历史/任务外 violation。 | 只修本 Goal 直接命中的 BFF Nest、C-1.3 和 Task A clean-slate 项；其余留在治理 backlog。 |
 | TA-BASELINE-03 | App 停写后全量 `pnpm test` 为 6890 pass / 2 skip / 7 fail；失败集中在既有 process/activity UI 断言、sign-out 页面文案契约，另有 stored-session fixture 缺少 `KOKORO_TEST_REDIS_URL`。 | 作为独立 baseline/环境缺口记录；不以 focused native proof 冒称 App 全量通过，也不在 C-1.3 中顺手扩展 UI 语义。 |
 | TA-BASELINE-04 | Root `python3 -m pytest scripts/tests -q` 串行结果为 1844 passed、2 failed、3 skipped、502 subtests；失败为 `test_serve_local_login.py::test_occupied_port_is_not_reused_or_terminated` 与 Storage smoke 缺少 `@aws-sdk/client-s3`，均未命中本切片代码。Root topology verifier 通过，BFF focused gates 通过。 |
-| TA-BASELINE-05 | BFF `525a150` 停写后串行 `pnpm test` 最新为 2311 tests / 2309 pass / 0 fail / 2 skip；本轮补齐 Project resource metadata/download native cutover，architecture/resource focused 为 20/20，保留 resource upload/skill-selection/MCP recommendations 等未迁移范围。 | C-4 BFF 本次串行门通过（2 个 skip 仍是受资源门禁保护的真实 PostgreSQL 条件测试，不计为通过）；全局 LegacyRoutes/Repository/Service/Port 与 Root/其他 owner 全量门仍未完成。 |
+| TA-BASELINE-05 | BFF `4501a2c` 停写后串行 `pnpm test` 最新为 2312 tests / 2310 pass / 0 fail / 2 skip；本轮补齐 Project resource metadata/download/upload native cutover，resource/architecture focused 为 25/25，保留 skill-selection/MCP recommendations 等未迁移范围。 | C-4 BFF 本次串行门通过（2 个 skip 仍是受资源门禁保护的真实 PostgreSQL 条件测试，不计为通过）；全局 LegacyRoutes/Repository/Service/Port 与 Root/其他 owner 全量门仍未完成。 |
 
 ## 4. 目标与 TODO
 
@@ -127,6 +128,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Project delete command（`DELETE /v1/projects/:id`）已由 `ProjectsModule` 的 `PROJECT_SERVICE`/`ProjectPinMiddleware` 与 `project-native` adapter 接管；旧 `projectDeleteRoute`、server path 判定及 source file 已删除，保留 202/Location、idempotency、scope-release/outbox 与取消边界。
 - [x] Project resource collection read（`GET /v1/projects/:id/resources`）已由 `ProjectsModule` 的 `PROJECT_SERVICE`/`ProjectPinMiddleware` 与 `project-native` adapter 接管；旧 `projectResourceListRoute`、server dispatcher 分支及 source file 已删除，保留 canonical Project scope、Storage pagination、request-id 与取消预算。
 - [x] Project resource metadata/download read（`GET /v1/projects/:id/resources/:asset_id[\/download]`）已由 `ProjectsModule` 的 `ProjectPinMiddleware`/`project-native` adapter 接管；旧 `projectResourceReadRoute` 的 server dispatcher 分支已删除，保留 verified bytes/hash、owner recheck、spool cleanup、request-id 与取消预算。
+- [x] Project resource upload（`POST /v1/projects/:id/resources`）已由 `ProjectsModule` 的 `ProjectPinMiddleware`/`project-native` adapter 接管；旧 `projectResourceRoute` 的 server dispatcher 分支已删除，保留 persistent receipt/checkpoint、scan/Complete、idempotency 与 cancellation。
 - [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
 - [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
 - [ ] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
@@ -143,6 +145,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Project core-read provider 已扩展 delete command；`ProjectService.delete`/`ProjectRepository.deleteProject` 继续作为唯一 owner，未新增 mutation framework 或第二 SQL writer。
 - [x] Project resource-list provider 使用既有 `ProjectService.find` + `StorageUploadClient` owner seam；未新增资源 Repository、Storage transport 或 global store reader。
 - [x] Project resource-read provider 使用窄 `ProjectResourceProjectReader.find` + 既有 `ProjectResourceAccessClient`/verified spool owner seam；未新增资源 Repository、Storage transport 或 global store reader。
+- [x] Project resource-upload provider 使用窄 Project reader + `PostgresIdempotencyRepository` + 既有 Storage upload owner seam；未新增资源 Repository、Storage transport 或第二 receipt owner。
 - [x] ScheduledTask read provider seam 已接入 `SCHEDULED_TASK_READ_SERVICE`，`ScheduledTasksModule` 通过唯一 `BFF_DATABASE` 构造 `PostgresScheduledTaskRepository` + Scheduler state reader；raw test composition 保持 `routeHandler` 旁路，避免改变 mutation fixture。
 - [x] AgentRuns reader provider seam 已接入 `AGENT_RUNS_READER`，`AgentRunsModule` 通过唯一 `BFF_DATABASE` 构造 `PostgresAgentDispatchOutboxRepository`，同时提供 submitted-run 与 project-binding reader；不复制 outbox/SQL owner。
 - [x] Run display provider seam 已接入 `RUN_DISPLAY_PROVIDER`，由 `AGENT_RUNS_READER` 与 `CHAT_SERVICE` 组合；ChatModule 不再反向依赖 AgentRunsModule，消除循环 module graph。
