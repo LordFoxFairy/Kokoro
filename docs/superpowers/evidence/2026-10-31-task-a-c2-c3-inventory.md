@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `65cf20822b4df81835d0e2dfea039e7c615aeb8c`。本文件只记录盘点，不改变运行行为。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `7f61218`（先前 `2a504c0`）。Personalization 已是第一个已切换 route bundle；本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
@@ -49,7 +49,7 @@
 | `GET/POST /v1/self/project-pins`, `POST /v1/projects/:id/pin` | `projectPinRoute`, project service | ProjectsModule | preserve project ownership and deadline |
 | `GET /v1/scheduled-tasks[/:id]` | `scheduledTaskReadRoute`, `ScheduledTaskReadService`, scheduler reader | ScheduledTasksModule | move reader/provider together; preserve scheduler timeout |
 | `POST/GET/DELETE /v1/skill-shares[/:id][/skill]`; skill usage/package/cover/import lifecycle | skill route family + product clients/store skill services | SkillsModule | preserve skill authorization, package budget, owner Connect artifacts |
-| `GET/PUT /v1/preferences/personalization` | `personalizationRoute`, `businessStore.services.personalization` | AccountModule | first C-2 candidate after profile-read contract gate; use existing `PERSONALIZATION_PROVIDER` directly, preserve CAS/cancel/raw body |
+| `GET/PUT /v1/preferences/personalization` | AccountModule `AccountPersonalizationMiddleware` → `handlePersonalizationRequest` → `PERSONALIZATION_PROVIDER`；raw `createBffServer` 仅保留显式兼容 seam | AccountModule | **migrated**; LegacyRoutes excludes all methods; CAS/cancel/raw body focused and architecture gates passed |
 | `GET/POST/PATCH/DELETE /v1/projects/**` | `liveBffBusiness`, project routes, `businessStore.services.projects` | ProjectsModule | split read/mutate/resource/rename/delete/status/pin/selection; preserve transaction/idempotency/owner scope |
 | `GET/POST/PATCH/DELETE /v1/scheduled-tasks/**` | `liveBffBusiness`, scheduled routes/service | ScheduledTasksModule | split create/update/delete/retry/read; preserve lineage/idempotency/calendar validation |
 | `GET/POST/PATCH/DELETE /v1/sessions/**` | `liveChatBusiness`, `liveAgentSession`, AG-UI/outbox services | ChatModule + AgentRunsModule + AguiModule | preserve durable ledger, cursor/replay, cancellation, outbox lease/drain |

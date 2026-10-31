@@ -134,11 +134,11 @@ IAM native session cookie
 - Modify: `apps/kokoro-bff/src/modules/legacy-routes/*`, `apps/kokoro-bff/src/app.module.ts`, `apps/kokoro-bff/src/main.ts`, `apps/kokoro-bff/src/common/lifecycle/graceful-shutdown.ts` only when the route/worker graph requires it
 - Modify: `apps/kokoro-bff/src/http/routes/personalization.ts` only if its raw HTTP parsing is extracted into the controller boundary; exact focused tests and explicit package.json file lists
 
-- [ ] 以已有 `PERSONALIZATION_PROVIDER` 作为首个 C-2 slice，先写 red HTTP/architecture tests，迁移精确的 `GET/PUT /v1/preferences/personalization`。
-- [ ] Controller 负责 native/user admission context、raw body/query/content-type/abort/5s deadline 与 error envelope；`PERSONALIZATION_PROVIDER` 继续负责真实 CAS/事务，不能复制 Repository 或 generic receipt。
-- [ ] 在 `AccountModule` 注册 controller/provider，测试注入 `PERSONALIZATION_PROVIDER` 与 `SESSION_ADMISSION` seam，不再从 `createBffComposition()` locator 取服务。
-- [ ] 从 `bootstrap/server.ts` 移除已迁移 path，并在 LegacyRoutes middleware exclusion/negative test 中证明 adapter 不再处理该 path。
-- [ ] 同步更新 BFF `package.json` 的显式 format/test 文件清单，运行 format/lint/typecheck/build、feature focused tests、`test:nest-architecture`、`test:architecture`。
+- [x] 以已有 `PERSONALIZATION_PROVIDER` 作为首个 C-2 slice，先写 architecture/HTTP seam，迁移精确的 `GET/PUT /v1/preferences/personalization`。
+- [x] AccountModule `AccountPersonalizationMiddleware` 负责 native/user admission context、raw body/query/content-type/abort/5 秒 deadline 与 error envelope；`PERSONALIZATION_PROVIDER` 继续负责真实 CAS/事务，未复制 Repository 或 generic receipt。
+- [x] 在 `AccountModule` 注册 middleware/provider，显式注入 `PERSONALIZATION_PROVIDER` 与 `SESSION_ADMISSION`；LegacyRoutes 不再接收该 path。
+- [x] 从 `handleBffRequest` 移除 personalization business-path 分支；`createBffServer` 只保留显式 feature adapter seam 供现有 raw HTTP/integration fixture 使用，并由同一 handler 实现。
+- [x] 同步 BFF `package.json` 显式 format 文件清单；BFF build/typecheck/format/lint、feature focused tests、`test:nest-architecture`、`test:architecture` 已通过。
 
 **Personalization slice exit:** only after Task 2.1 profile-read contract/artifacts/receipt are complete; this slice must not remove `BffBusinessStore`, `BffApplicationServices`, `PostgresBffRepositories`, or unrelated LegacyRoutes branches.
 
