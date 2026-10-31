@@ -157,6 +157,7 @@ IAM native session cookie
 - [x] Personal skill-installations (`/v1/skill-installations/**`) now use `SkillsModule` `SkillsMiddleware` + `SKILL_AUTHORIZATION`/`SKILL_INSTALLATION_CLIENT`; the old personal dispatcher branch is removed while the same installation owner contract and admission errors are preserved (`1153be7`).
 - [x] Managed personal Skill reads (`GET /v1/self/skills[/:skill_id[/versions]]`) now use `SkillsModule` `SkillsMiddleware`; the old dispatcher read branch is removed while projection, IAM enrichment, deadline and error mapping remain unchanged (`7aa092b`).
 - [x] Browser-private Skill enable command (`/skill.v1.SkillOptionalService/SetSkillInstallationEnabled`) now uses `SkillsModule` `SkillsMiddleware`; the old dispatcher branch is removed while installation owner ACK/error/deadline behavior remains unchanged (`2531941`).
+- [x] Skill usage (`POST /v1/skills/usage`) now uses `SkillsModule` `SkillsMiddleware` and its `SKILL_USAGE_READER` pool-backed provider; the old dispatcher branch is removed while admission, bounded refs and unavailable/zero semantics remain unchanged (`a75930e`).
 
 ### Task 4：Chat/AgentRuns/AG-UI 与 ScheduledTasks 下沉
 
@@ -249,8 +250,8 @@ pnpm test:integration
 
 ### 2026-10-31 execution update
 
-- BFF child `2531941` completed the project skill-selection, project MCP recommendations, project/personal skill-installations, managed personal Skill reads and Skill enable command feature cutovers. The features own narrow providers, admission seams, candidate clients and lifecycle cleanup; no second repository/service or global locator was introduced.
-- Focused verification passed: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:nest-architecture` (15/15), `pnpm test:architecture` (34/34), combined project MCP/content/installation suite (57/57), and Skill product/managed read suite (125/125; prior skill-selection/contract focus remains 144/144).
+- BFF child `a75930e` completed the project skill-selection, project MCP recommendations, project/personal skill-installations, managed personal Skill reads, Skill enable command and Skill usage feature cutovers. The features own narrow providers, admission seams, candidate clients and lifecycle cleanup; no second repository/service or global locator was introduced.
+- Focused verification passed: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:nest-architecture` (15/15), `pnpm test:architecture` (34/34), and combined Skills/MCP/content/installation/usage suite (184/184; prior skill-selection/contract focus remains 144/144).
 - BFF `pnpm format:check` still reports pre-existing warnings including `src/bootstrap/server.ts` and `src/modules/projects/project-pin.middleware.ts`; full BFF test run remains non-green on unrelated baseline/environment failures and was interrupted at the existing long-running contract boundary. This is evidence of current state, not a C-4 pass.
 - Next slice is the remaining other Skills route bundle; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
 
