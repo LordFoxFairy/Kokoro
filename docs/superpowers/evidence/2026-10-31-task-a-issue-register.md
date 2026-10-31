@@ -11,7 +11,7 @@
 - 已交付证据：[C-1 清理实施证据](2026-10-31-task-a-c1-cleanup-implementation.md)
 - 产品任务边界：[Task A workspace handoff](../../handoffs/2026-10-30-task-a-workspace-execution.md)
 
-当前 Root 集成基线为 `f81d6739`，App 子仓已推进至 `4c41104d`，BFF 子仓至 `65cf2082`，IAM 子仓至 `108beedf`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
+当前 Root 集成基线为 `f17bf828`，App 子仓已推进至 `4c41104d`，BFF 子仓至 `65cf2082`，IAM 子仓至 `108beedf`。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
 ## 2. 已设置 Goal
 

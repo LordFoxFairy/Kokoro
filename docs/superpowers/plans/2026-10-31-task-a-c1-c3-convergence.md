@@ -12,7 +12,7 @@
 
 ## 0. 当前基线与停写边界
 
-**停写基线：** Root `f81d6739`，工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。
+**停写基线：** Root `f17bf828`，工作树 clean（子仓 App `4c41104d`、BFF `65cf2082`、IAM `108beedf`）。
 
 **已交付事实：**
 
