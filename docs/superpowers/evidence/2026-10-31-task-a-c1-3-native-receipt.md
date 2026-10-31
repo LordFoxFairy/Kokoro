@@ -24,7 +24,7 @@ pnpm exec vitest run \
 
 结果：2 files / 12 tests passed；覆盖 native cookie profile read、bearer read、profile update CAS/rollback、same/different session 竞争、撤权后的 401、服务端 admission host 资源清理。
 
-配套门禁：`pnpm format:check`、`pnpm lint`、`pnpm typecheck`、`pnpm contract:check`、`pnpm build`、`test/unit/internal-auth.guard.test.ts` 48/48 通过。
+配套门禁：`pnpm format:check`、`pnpm lint`、`pnpm typecheck`、`pnpm contract:check`、`pnpm build`、IAM deterministic `pnpm test` 1561/1561 通过；`test/unit/internal-auth.guard.test.ts` 48/48 通过。
 
 ## Root 跨仓收据
 
@@ -33,6 +33,7 @@ pnpm exec vitest run \
 - `python3 scripts/e2e/run_bff_iam_session_smoke.py ... --expected-bff-sha 3ca1525... --expected-iam-sha f4f1585...`：7/7 cases passed；覆盖真实 IAM session admission、BFF owner fact 归属、缺 bearer、signout、reset、新身份隔离、member removal、IAM outage 与资源清理。
 - `python3 scripts/e2e/run_bff_iam_oidc_smoke.py ... --expected-bff-sha 3ca1525... --expected-iam-sha f4f1585...`：42/42 cases 在 cookie cutover 前通过；Path=/ cutover 后需重跑，当前一次重跑在 OAuth foreign-tenant guard 阶段失败，不作为现行通过证据。
 - 两个 smoke 均使用本地 PostgreSQL/Redis、BFF source build 和 IAM test-owned host；Root gitlink、子仓 clean、process/database/Redis cleanup 均通过。
+- App native/policy focused gate：7 files / 120 tests passed，覆盖 native Cookie adapter、account profile admission、session proxy、relay policy 和 root-scoped cookie projection。
 
 Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
 
