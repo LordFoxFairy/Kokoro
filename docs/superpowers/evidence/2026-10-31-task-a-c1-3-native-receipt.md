@@ -38,4 +38,5 @@ Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTas
 ## 尚未闭环
 
 - 该收据闭合 IAM native owner/profile、IAM→BFF real session/OIDC 与撤权行为，不代表 App→BFF→IAM native sign-in/sign-out/active-tenant switch/revocation 旅程已完成。
+- 当前真实浏览器闭环的关键设计缺口是 IAM issuer cookie 默认 `Path=/iam`，而 App `/api/*` native adapter 需要读取同一 allowlisted cookie；在冻结 cookie scope/projection 方案前，不删除旧 RP/Product Session。
 - App Product Session/Auth.js/OIDC 旧入口与 BFF LegacyRoutes 仍按 Goal 停写线保留，A-01/A-02/A-07 不启动。

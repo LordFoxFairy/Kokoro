@@ -37,7 +37,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | TA-C1.3-02 | App 仍存在 Auth.js/OIDC RP、Product Session access/refresh 与 `/iam/oauth2/*` 旧链路。 | 形成第二套身份事实和双读风险。 | native consumer 先通过，再删除旧 RP、token/refresh store、relay 和只保护它们的测试；反向 import 为零。 | 未完成 |
 | TA-C1.3-03 | BFF native consumer 已存在；account profile/sessions/team 已切换到 native Cookie + direct credential owner transport，旧 bearer 仅被独立未迁移 owner authorization surface 使用。 | 若误删旧入口会造成无身份请求；若保留无条件双读会造成协议分叉。 | 每个 owner surface 有 native/direct-credential 等价边界；native 启用时无浏览器 bearer 双读；旧 bearer consumer 清单归零。 | 进行中 |
 | TA-C1.3-04 | IAM native contract/runtime 已交付，App `/api/session/*`、SSR shell、probe、account profile/sessions/team adapters 已通过 BFF 接入 native identity proof，但正常登录到业务请求的真实收据尚未形成。 | 只有 controller/unit 和 probe 通过还不足以证明用户旅程闭合。 | IAM→BFF→App 的真实 cookie、Origin、tenant、权限、撤权和错误闭集收据。 | 进行中 |
-| TA-C1.3-05 | App profile read 已切换到 BFF GET；IAM/BFF canonical GET owner contract、generated artifacts 和 App/BFF focused tests 已落地。 | 旧 RP/userinfo relay 仍需等待真实 cookie→BFF→IAM receipt 与其它 native 旅程收据后再删除。 | IAM `497900ab`、BFF `091cd50`、App `da82d2a9`；subject/no-store/final re-admission 已有测试；真实 IAM integration receipt 待补。 | 进行中 |
+| TA-C1.3-05 | App profile read 已切换到 BFF GET；IAM/BFF canonical GET owner contract、generated artifacts 和 App/BFF focused tests 已落地。 | 旧 RP/userinfo relay 仍需等待真实 cookie→BFF→IAM receipt 与其它 native 旅程收据后再删除。 | IAM `b23dade`、BFF `b3a9ab5`、App `da82d2a9`；subject/no-store/final re-admission 已有测试；IAM→BFF real session/OIDC receipt 已通过，App 浏览器 cookie scope 仍待裁决。 | 进行中 |
+| TA-C1.3-06 | IAM Better Auth issuer cookie 当前默认 `Path=/iam`，而 App native adapter 需要在 `/api/auth/session`、`/api/session/*` 等同源路径读取 allowlisted cookie；现有 focused/integration fixture 直接注入 Cookie，未证明真实浏览器会把 `/iam` cookie 发送到 `/api`。 | 若不解决 cookie scope 或建立明确的同源 cookie projection，App→BFF native runtime 在真实浏览器中不会被触发；直接改 Path 会影响 IAM owner 契约与旧 relay 语义。 | 由 IAM/App/Root 共同冻结 cookie scope/projection contract；用真实 HTTPS 浏览器收据验证 `/api` 触达，再决定旧 RP/Product Session 删除。 | 设计待裁决 |
 
 ### 3.2 C-2 BFF Nest 与 LegacyRoutes
 
@@ -96,6 +97,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] 设计并冻结 `GET /internal/v1/account/profile` owner contract：IAM 返回 `subject/name/email/email_verified` 的 canonical projection；native proof 与 legacy bearer 共用同一 owner schema，BFF 仅做 admission/transport/error projection，App 不再解析 OAuth userinfo。
 - [x] 生成并 pin IAM OpenAPI/SDK 与 BFF client；IAM contract/unit、BFF client/HTTP、App profile-read focused tests 已通过；真实 cookie→BFF→IAM receipt 待 `IAM_TEST_ADMIN_URL` 可用后补跑并关闭 TA-C1.3-05。
 - [ ] 对齐 sign-in、sign-out、active-tenant switch、revocation、multi-tab late response 的 contract/HTTP/E2E。
+- [ ] 先冻结 TA-C1.3-06 的 issuer cookie scope/projection 方案，再补真实 HTTPS `/api/auth/session`、`/api/session/*` cookie→BFF→IAM receipt；不以手工 `Cookie` header fixture 代替浏览器证据。
 - [ ] 固定 IAM artifact/version/digest，BFF/App 消费同一 artifact；补完整链路收据。
 - [ ] 只有 consumer proof 成立后，删除旧 RP、Product Session、refresh reservation、旧 relay 和专属测试。
 - [ ] 逐项关闭仍依赖 bearer 的 owner authorization surface；未完成者保持 fail-closed。
