@@ -17,7 +17,7 @@
 **已交付事实：**
 
 - G0 native-session contract 已固定：version `1.0.0`，digest `5cf59df4b7bd9853edfd2eabb31afc236c0ec0db371f9737706fc129484fd83f`。
-- IAM runtime：child `108beedf`，新增 native admission controller/service/schema、direct credential profile、Cookie/Origin/body/header 校验和 fresh session projection，并接入 account/Team owner native proof。
+- IAM runtime：child `497900ab`，新增 native admission controller/service/schema、direct credential profile、Cookie/Origin/body/header 校验和 fresh session projection，并接入 account/Team owner native proof；新增 canonical `GET /internal/v1/account/profile`。
 - BFF native consumer：child `65cf2082`，新增 direct credential reader、native transport/client、Cookie allowlist、AccountModule/runtime wiring 和 owner transport forwarding。
 - BFF Nest foundation/feature graph/ownership slices：`3f643ef`、`cd4ffb1`、`aacf1c5`、`6a42bd3`、`eefe02a`、`c9263cd`。
 - 当前 BFF 全量：2301 pass / 2 skip / 0 fail；IAM unit：1403 pass；Root topology/diff-check 通过。
@@ -27,7 +27,7 @@
 **明确未完成：**
 
 - App 同源 native adapter、旧 Auth.js/OIDC RP、Product Session store/refresh reservation 尚未删除。
-- App profile read 仍使用 `/iam/oauth2/userinfo` relay；需要先落定 IAM `GET /internal/v1/account/profile` owner contract，再生成 BFF client 并切换 App read。
+- App profile read 已切到 BFF `GET /v1/account/profile`；IAM owner artifact、BFF generated client 和 App consumer 已固定于 Root `c7af342b`，真实 infrastructure receipt 仍待环境补齐。
 - `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍持有 `createBffComposition()` 与旧 `handleBffRequest`，业务 route 尚未全部下沉。
 - `BffBusinessStore`、`BffApplicationServices`、`PostgresBffRepositories` 仍是生产组合边界；`src/application/ports` 仍有全局 port。
 - C-4 只完成基础门禁，未完成“LegacyRoutes 清零 + global composition 删除 + feature-local ownership”验收。
@@ -123,7 +123,7 @@ IAM native session cookie
 - BFF 新增 `GET /v1/account/profile`，仅负责 request admission、owner credential materialization、generated IAM client 调用、deadline/cancel、closed error mapping 和 no-store response；不读取 IAM 数据库。
 - App `GET /api/account/profile` 改用 `admittedProductSession` + BFF native headers；只接受 BFF canonical projection，保持 subject binding、final admission recheck、no-store 与 bounded body。
 
-**验证出口：** IAM contract/HTTP/guard tests → BFF client/HTTP tests → App profile-read focused tests → 停写后串行 owner gates。生成器、OpenAPI digest 和 consumer pin 必须在同一提交序列中更新。
+**验证出口：** IAM contract/HTTP/guard tests → BFF client/HTTP tests → App profile-read focused tests → 真实 cookie→BFF→IAM receipt → 停写后串行 owner gates。生成器、OpenAPI digest 和 consumer pin 已在同一提交序列中更新；当前仅真实 receipt 为环境缺口。
 
 ### Task 3：Personalization 第一批真实 route 下沉（C-1.3 profile-read gate 之后）
 
