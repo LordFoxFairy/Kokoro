@@ -12,7 +12,7 @@
 
 冻结结论：`LegacyRoutesRuntime` 只是 Nest middleware 包装器，业务分派事实在 `src/bootstrap/server.ts`；因此 C-2 的迁移写区必须同时包含 `server.ts`、`runtime.ts`、`app.module.ts`、`main.ts`、shutdown provider 与对应测试/脚本，不能只修改 `legacy-routes.runtime.ts`。在所有 route bundle 尚未切换前，不删除旧 dispatcher 或 global composition。
 
-当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `ef1c53b`（先前 `6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects route bundles 已切换；personalization、Chat archive/share 与 Project pin provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
+当前代码/组合基线：Root `18b59a43`（文档同步提交），BFF `6874034`（先前 `ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）。Account/System/Chat/Projects/Scheduled current-read route bundles 已切换；personalization、Chat archive/share、Project pin 与 ScheduledTask read provider seam 已脱离旧 dispatcher，本文件继续记录剩余 route/边界盘点。
 
 ## 2. 生产入口与运行时依赖
 
@@ -47,7 +47,7 @@
 | `GET /v1/sessions/:id/runs/:run/display` | `runDisplayRoute`, fresh admission, AG-UI/chat store | AgentRuns/Agui | preserve final admission and bounded deadline |
 | `GET/POST /v1/sessions/:id/messages/:message/{feedback,regenerate}` | feedback/regeneration routes + fresh admission | ChatModule | preserve idempotency/re-admission/error mapping |
 | `GET /v1/self/project-pins`, `PUT /v1/projects/:id/pin` | `ProjectsModule` `ProjectPinMiddleware` → `project-native` → `projectPinRoute`, `PROJECT_SERVICE` | ProjectsModule | **migrated**; preserve project ownership, 10s deadline, natural idempotency and final admission |
-| `GET /v1/scheduled-tasks[/:id]` | `scheduledTaskReadRoute`, `ScheduledTaskReadService`, scheduler reader | ScheduledTasksModule | move reader/provider together; preserve scheduler timeout |
+| `GET /v1/scheduled-tasks[/:id]` | `ScheduledTasksModule` `ScheduledTaskReadMiddleware` → `scheduled-task-native` → `scheduledTaskReadRoute`, `SCHEDULED_TASK_READ_SERVICE` | ScheduledTasksModule | **migrated**; preserve scheduler timeout, re-admission, snapshot/revalidation and owner current-state binding |
 | `POST/GET/DELETE /v1/skill-shares[/:id][/skill]`; skill usage/package/cover/import lifecycle | skill route family + product clients/store skill services | SkillsModule | preserve skill authorization, package budget, owner Connect artifacts |
 | `GET/PUT /v1/preferences/personalization` | AccountModule `AccountMiddleware` → `handlePersonalizationRequest` → `PERSONALIZATION_PROVIDER`；raw `createBffServer` 仅保留显式兼容 seam | AccountModule | **migrated**; CAS/cancel/raw body focused and architecture gates passed |
 | `GET/POST/PATCH/DELETE /v1/projects/**` | `liveBffBusiness`, project routes, `businessStore.services.projects` | ProjectsModule | split read/mutate/resource/rename/delete/status/pin/selection; preserve transaction/idempotency/owner scope |
