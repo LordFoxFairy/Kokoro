@@ -161,6 +161,7 @@ IAM native session cookie
 - [x] Chat archive/share bundle（archived tasks、shared tasks、session archive/restore）已接入 `ChatModule` 的 `CHAT_SERVICE` provider 与 `ChatMiddleware`，从 `handleBffRequest` 移除旧分支；HTTP/error/admission/architecture focused tests 通过。
 - [x] ScheduledTask current-read bundle（`GET /v1/scheduled-tasks[/:id]`）已接入 `ScheduledTasksModule` 的 `SCHEDULED_TASK_READ_SERVICE` provider 与 `ScheduledTaskReadMiddleware`，从 `handleBffRequest` 移除旧分支；保留 5 秒预算、owner current-state read、snapshot revalidation 与 final admission。
 - [x] AgentRuns internal bundle（model admission/settlement/recovery 与 project-execution-binding verify）已接入 `AgentRunsModule` 的 `AGENT_RUNS_READER` provider 与 `AgentRunsMiddleware`，从 `handleBffRequest` 移除旧分支；保留 dedicated credential、durable reader、Billing/IAM owner boundary 与 bounded cancellation。
+- [x] Agent run-display bundle（`GET /v1/sessions/:id/runs/:run/display`）已接入 `RUN_DISPLAY_PROVIDER` 与 `AgentRunsMiddleware`，从 `handleBffRequest` 移除旧分支；保留 submitted-run binding、Chat owner read、AG-UI transport、final admission 与 5 秒预算。
 - [ ] 保留 durable ledger、cursor/replay、lease/CAS/outbox、取消和 drain 顺序；不复制 AG-UI envelope。
 - [ ] 将 Chat/Run/AG-UI repository/client 拆成 feature-local provider；只对有真实复杂边界的 repository 保留独立类型。
 - [ ] 每个 route bundle 迁移后从 adapter 删除并执行 focused HTTP + architecture tests。
