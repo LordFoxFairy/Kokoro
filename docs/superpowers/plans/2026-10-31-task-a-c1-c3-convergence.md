@@ -250,8 +250,8 @@ pnpm test:integration
 
 ### 2026-10-31 execution update
 
-- BFF child `a75930e` completed the project skill-selection, project MCP recommendations, project/personal skill-installations, managed personal Skill reads, Skill enable command and Skill usage feature cutovers. The features own narrow providers, admission seams, candidate clients and lifecycle cleanup; no second repository/service or global locator was introduced.
-- Focused verification passed: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:nest-architecture` (15/15), `pnpm test:architecture` (34/34), and combined Skills/MCP/content/installation/usage suite (184/184; prior skill-selection/contract focus remains 144/144).
+- BFF child `a0bc277` completed the project skill-selection, project MCP recommendations, project/personal skill-installations, managed personal Skill reads, Skill enable command and Skill usage feature cutovers, and fixed the managed-read method boundary so POST lifecycle commands continue to the canonical dispatcher. The features own narrow providers, admission seams, candidate clients and lifecycle cleanup; no second repository/service or global locator was introduced.
+- Focused verification passed: `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:nest-architecture` (15/15), `pnpm test:architecture` (34/34), combined Skills/MCP/content/installation/usage suite (184/184), and personal Skill lifecycle (19/19; prior skill-selection/contract focus remains 144/144). Full BFF run was 2312 tests / 2302 pass / 8 fail / 2 skip; failures remain the existing Artifact/Personal Storage baseline.
 - BFF `pnpm format:check` still reports pre-existing warnings including `src/bootstrap/server.ts` and `src/modules/projects/project-pin.middleware.ts`; full BFF test run remains non-green on unrelated baseline/environment failures and was interrupted at the existing long-running contract boundary. This is evidence of current state, not a C-4 pass.
 - Next slice is the remaining other Skills route bundle; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
 

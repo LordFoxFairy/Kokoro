@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`f3bfe5a5`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `a75930e`（project skill-selection、project MCP recommendations、project/personal skill-installations、managed reads、Skill enable command、Skill usage feature cutover）。
+- BFF：`apps/kokoro-bff` `a0bc277`（project skill-selection、project MCP recommendations、project/personal skill-installations、managed reads、Skill enable command、Skill usage feature cutover；补齐 managed read 仅 GET 边界）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -206,7 +206,7 @@ Nest AppModule
 
 - BFF `a75930e` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、project skill-selection、project MCP recommendations、project/personal skill-installations、managed personal Skill reads、Skill enable command、Skill usage、public share projection 迁入 feature middleware/provider，并保留 test-only shared reader fallback；旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete/skill-selection/MCP recommendations/project/personal skill-installations/managed reads/enable/usage source routes 已删除。
 - `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService`、`projectService` 字段已删除；runtime 统一从 `services.chat` / `services.projects` 读取。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
-- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `a75930e`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
-- 最新 BFF focused 串行验证：Nest architecture 15/15、BFF architecture 34/34、Skills/MCP/content/installation/usage suite 184/184；完整 BFF 全量仍按既有 baseline/environment failures 记录，不作为 C-4 通过。
+- Root pin（待本次 Root 文档/ gitlink 提交同步）：App `9cde5640`、BFF `a0bc277`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- 最新 BFF focused 串行验证：Nest architecture 15/15、BFF architecture 34/34、Skills/MCP/content/installation/usage suite 184/184、personal Skill lifecycle 19/19；全量 2312 tests / 2302 pass / 8 fail / 2 skip，失败仍集中在既有 Artifact/Personal Storage baseline，不作为 C-4 通过。
 - 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat/AgentRuns/AG-UI/Scheduled mutations/remaining Skills/MCP route bundles、other Skill routes、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
 
