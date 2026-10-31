@@ -16,7 +16,7 @@
 - architecture red/green：`test/nest-feature-architecture.test.ts` 锁定 `ProjectsModule`/middleware/native route/server ownership，并断言旧 `projectDeleteRoute` 不再进入 server。
 - BFF focused：`node --import tsx --test --test-concurrency=1 test/nest-feature-architecture.test.ts test/project-pin-http.test.mjs test/contract/openapi-contract.test.mjs test/bff.test.ts`，131/131 passed。
 - BFF static gates：`pnpm build`、`pnpm typecheck`、`pnpm lint`、`git diff --check` 通过；人工 HTTP fixture 验证 202 accepted、Location、query alias 400。
-- BFF 上一轮串行全量（删除切片前的 `7afbaff`）为 2310 tests / 2308 pass / 0 fail / 2 skip；删除切片后的完整 `pnpm test` 待本批停写后串行复跑。
+- BFF 删除切片后的串行全量：`pnpm test`，2310 tests / 2308 pass / 0 fail / 2 skip，duration 157229 ms；2 个 skip 为既有真实 PostgreSQL 资源门禁，不计为通过。
 
 ## 未关闭范围
 
