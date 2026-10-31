@@ -36,6 +36,7 @@ pnpm exec vitest run \
 - App native/policy focused gate：7 files / 120 tests passed，覆盖 native Cookie adapter、account profile admission、session proxy、relay policy 和 root-scoped cookie projection。
 - `python3 scripts/e2e/run_web_native_session_smoke.py ... --expected-iam-sha e1f537b02cb326cfb3751316b1591fa82313f70a`：4/4 cases passed；在 test-owned HTTPS Web origin 上验证 `/api/auth/session` native subject、`/api/session/projects` Web→BFF→IAM 链路、IAM signout 后的 401，以及进程/数据库/Redis 清理。IAM fixture 由 `IAM_TEST_WEB_ORIGIN` 固定到同一 Web origin，并通过直接 session-admission credential 启动 BFF。
 - 在 `BFF cb02934e48954d55a52b6918646256bc672f28d1` 将 `GET /v1/projects` 下沉到 `ProjectsModule` 后，按 Root gitlink 精确复跑同一 HTTPS smoke，仍为 4/4 cases passed；因此 receipt 同时覆盖最新 feature middleware/provider 图，而非只覆盖旧 dispatcher。
+- 随 `BFF e8d9a27900869d91c86e54d75246debb71946bec` 再将项目详情读取移入同一 feature provider 后，Root gitlink 精确复跑仍为 4/4 cases passed；`/api/session/projects` 业务链路保持 native admission 与 signout 语义。
 
 Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
 
