@@ -91,7 +91,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 | TA-BASELINE-02 | Root 全局规范审计现有 224 条历史/任务外 violation。 | 只修本 Goal 直接命中的 BFF Nest、C-1.3 和 Task A clean-slate 项；其余留在治理 backlog。 |
 | TA-BASELINE-03 | App 停写后全量 `pnpm test` 为 6890 pass / 2 skip / 7 fail；失败集中在既有 process/activity UI 断言、sign-out 页面文案契约，另有 stored-session fixture 缺少 `KOKORO_TEST_REDIS_URL`。 | 作为独立 baseline/环境缺口记录；不以 focused native proof 冒称 App 全量通过，也不在 C-1.3 中顺手扩展 UI 语义。 |
 | TA-BASELINE-04 | Root `python3 -m pytest scripts/tests -q` 串行结果为 1844 passed、2 failed、3 skipped、502 subtests；失败为 `test_serve_local_login.py::test_occupied_port_is_not_reused_or_terminated` 与 Storage smoke 缺少 `@aws-sdk/client-s3`，均未命中本切片代码。Root topology verifier 通过，BFF focused gates 通过。 |
-| TA-BASELINE-05 | BFF `f3710d3`（行为等同 `14aa232`，仅重命名测试 fixture）停写后串行 `pnpm test` 最新为 2310 tests / 2308 pass / 0 fail / 2 skip；本轮补齐 v28.18 Account profile inverse、IAM 0.18/profile-read governance、build-output fixture、global service-field cleanup、Project rename/delete/resource-list/resource-delete native cutover，contract inverse 不再漂移；message feedback/run display/project binding focused 为 78/78，resource focused 为 37/37。 | C-4 BFF 全量门已收敛；2 个 skip 仍是受资源门禁保护的真实 PostgreSQL 条件测试，不计为通过，详见 C-4 evidence。 |
+| TA-BASELINE-05 | BFF `525a150` 停写后串行 `pnpm test` 最新为 2311 tests / 2309 pass / 0 fail / 2 skip；本轮补齐 Project resource metadata/download native cutover，architecture/resource focused 为 20/20，保留 resource upload/skill-selection/MCP recommendations 等未迁移范围。 | C-4 BFF 本次串行门通过（2 个 skip 仍是受资源门禁保护的真实 PostgreSQL 条件测试，不计为通过）；全局 LegacyRoutes/Repository/Service/Port 与 Root/其他 owner 全量门仍未完成。 |
 
 ## 4. 目标与 TODO
 

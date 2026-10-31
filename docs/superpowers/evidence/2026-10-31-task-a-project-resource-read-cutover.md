@@ -19,4 +19,4 @@
 
 ## 未关闭范围
 
-该切片只关闭 Project resource metadata/download 的旧 dispatcher 入口；Project resource upload、skill-selection、MCP recommendations、剩余 LegacyRoutes/global composition 与 Repository/Service/Port 仍按 Task A 计划继续迁移。BFF 串行全量最近证据仍对应前一提交 `14aa232`；`525a150` 之后尚未重跑全量。A-01/A-02/A-07 继续停写。
+该切片只关闭 Project resource metadata/download 的旧 dispatcher 入口；Project resource upload、skill-selection、MCP recommendations、剩余 LegacyRoutes/global composition 与 Repository/Service/Port 仍按 Task A 计划继续迁移。BFF 串行全量（在 `525a150` 后）已重跑：`pnpm test`，2311 tests / 2309 pass / 0 fail / 2 skip，duration 156252.795583 ms；2 个 skip 为既有真实 PostgreSQL 资源门禁，不计为通过。A-01/A-02/A-07 继续停写。

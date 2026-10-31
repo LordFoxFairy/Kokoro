@@ -16,6 +16,7 @@
 - App focused：`pnpm exec vitest run tests/server/product-bff.test.ts tests/app/native-session-route.test.ts tests/server/native-session-bff.test.ts`，3 files / 10 tests passed。
 - App lint：`pnpm lint` 通过。
 - `pnpm typecheck` 未通过既有 baseline：`src/components/blocks/app-frame/app-frame-main-surface.tsx:186` 向不含 `onReconnect` 的属性类型传值；该错误不由本切片引入，未扩大范围。
+- App 全量 `pnpm test` 未形成当前绿门：363 files / 6862 tests，6676 passed / 184 failed / 2 skipped / 2 unhandled errors；失败主要来自既有 generated-contract digest drift、缺失 `KOKORO_TEST_REDIS_URL` 的 stored-session fixture、IAM relay/OIDC system fixture 与 UI baseline，未将其归因于本切片。
 - `git diff --check` 通过；Root topology 在 gitlink 同步后另行复核。
 
 ## 未关闭范围
