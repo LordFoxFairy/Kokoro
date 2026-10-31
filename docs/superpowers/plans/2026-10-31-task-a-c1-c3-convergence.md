@@ -147,6 +147,7 @@ IAM native session cookie
 - Modify/Create: `apps/kokoro-bff/src/modules/projects/**`
 - Modify: exact project route branches in `apps/kokoro-bff/src/bootstrap/server.ts`, feature wiring, focused tests and explicit package.json file lists
 - [ ] After Personalization exit, choose Project read/rename/pin only when the provider graph and DB pool owner are explicit; preserve project scope, idempotency and deadline behavior.
+- [x] Project pin (`GET /v1/self/project-pins`, `PUT /v1/projects/:id/pin`) now uses `ProjectsModule` `PROJECT_SERVICE` + `ProjectPinMiddleware`; `handleBffRequest` no longer owns the branch and existing natural-idempotency/owner-scope behavior is preserved.
 
 ### Task 4：Chat/AgentRuns/AG-UI 与 ScheduledTasks 下沉
 
