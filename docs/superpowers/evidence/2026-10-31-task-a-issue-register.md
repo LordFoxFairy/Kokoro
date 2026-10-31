@@ -150,6 +150,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] ScheduledTask read provider seam 已接入 `SCHEDULED_TASK_READ_SERVICE`，`ScheduledTasksModule` 通过唯一 `BFF_DATABASE` 构造 `PostgresScheduledTaskRepository` + Scheduler state reader；raw test composition 保持 `routeHandler` 旁路，避免改变 mutation fixture。
 - [x] AgentRuns reader provider seam 已接入 `AGENT_RUNS_READER`，`AgentRunsModule` 通过唯一 `BFF_DATABASE` 构造 `PostgresAgentDispatchOutboxRepository`，同时提供 submitted-run 与 project-binding reader；不复制 outbox/SQL owner。
 - [x] Run display provider seam 已接入 `RUN_DISPLAY_PROVIDER`，由 `AGENT_RUNS_READER` 与 `CHAT_SERVICE` 组合；ChatModule 不再反向依赖 AgentRunsModule，消除循环 module graph。
+- [x] Project skill-selection provider 已接入 `PROJECT_SKILL_SELECTION_PROVIDER` 与 `PROJECT_SKILL_INSTALLATION_CLIENT`；只暴露 ProjectService 窄读写与 Idempotency receipt，未复制 Project Repository 或第二 CAS owner。
+- [x] Project MCP recommendations provider 已接入 `McpModule` 的 `PROJECT_MCP_RECOMMENDATIONS_PROVIDER`、`MCP_AUTHORIZATION` 与 candidate clients；保留 owner candidate validation、MCP read admission、CAS 和 client shutdown，不引入 global store reader。
 - [ ] 继续移动有真实边界的 Port，不改行为；再合并单实现薄 Service/Repository。
 - [ ] 旧 global wrapper 不再出现在生产 composition 后删除；反向 import census 为零。
 - [ ] 检查无 BaseRepository、无空模块、无第二套 DTO/SQL/ORM owner、无 sibling 相对路径穿透。
