@@ -39,6 +39,7 @@ pnpm exec vitest run \
 - 随 `BFF e8d9a27900869d91c86e54d75246debb71946bec` 再将项目详情读取移入同一 feature provider 后，Root gitlink 精确复跑仍为 4/4 cases passed；`/api/session/projects` 业务链路保持 native admission 与 signout 语义。
 - `BFF b9294ab63eb5dbb25a55eed46d6e716df31594ce` 将项目 instruction-revisions 读取继续下沉后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
 - `BFF fd27d8d76386152ee8e2dd41d9ce232500a09938` 完成 global chat/project service-field cleanup 后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
+- `BFF fd74e02f9e148d0a480ecbc3e47a2de0ddaf1362` 将 public share projection 移入 Chat feature 后，Root gitlink 精确复跑 HTTPS native smoke 仍为 4/4。
 
 Smoke 中发现并修复的运行时依赖：`AgentRunsModule` 与 `ScheduledTasksModule` 显式导入 `AccountModule`，为 native middleware 提供 `SESSION_ADMISSION`；对应 BFF commits `4e794ce`、`b3a9ab5`。
 
