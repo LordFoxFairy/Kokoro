@@ -105,8 +105,8 @@ IAM native session cookie
 - Delete after adapter proof: Product Session cookie/store、refresh reservation 与只保护旧 RP 的 tests
 - Test: App native adapter、sign-in/sign-out、tenant switch、revocation/multi-tab/late response
 
-- [ ] 先补 native adapter contract tests，证明浏览器 Authorization/body tenant 不会跨 boundary。
-- [ ] 接入 BFF native admission，保持 request-id、Origin、Cookie allowlist 与取消预算。
+- [x] 先补 native adapter contract tests，证明浏览器 Authorization/body tenant 不会跨 boundary。
+- [x] 接入 BFF native admission，保持 request-id、Origin、Cookie allowlist 与取消预算；`GET /api/auth/session` native path 不再要求旧 RP config。
 - [ ] 实测登录、登出、active tenant 切换、撤权后的 401/403 与多标签 late response。
 - [ ] 只有消费者证据成立后才删除旧 RP、Product Session 与 token/refresh 测试。
 - [ ] 运行 App focused lint/typecheck/test；记录既有 `onReconnect` baseline，不扩大修复范围。
