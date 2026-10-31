@@ -199,3 +199,13 @@ Nest AppModule
 
 当前状态：inventory 已冻结；业务实现仍停写在下一切片准入前。 
 
+## 8. 盘点后的已验证增量（2026-10-31）
+
+本文件第 3～7 节保留最初 route/provider census；以下是其后的实际状态，不覆盖未迁移项：
+
+- BFF `fd27d8d76386152ee8e2dd41d9ce232500a09938` 已将 IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions 迁入 feature middleware/provider，并删除对应旧 dispatcher 分支。
+- `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService`、`projectService` 字段已删除；runtime 统一从 `services.chat` / `services.projects` 读取。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
+- Root pin：App `dde9fa672b1ec5fc2ca6f19d675ba215b58b71cf`、BFF `fd27d8d76386152ee8e2dd41d9ce232500a09938`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- 最新 BFF 串行全量：2310 tests / 2308 pass / 0 fail / 2 skip；Root topology PASS；最新 Root gitlink native Web smoke 4/4。
+- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat/AgentRuns/AG-UI/Scheduled mutations/Skills/MCP route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
+
