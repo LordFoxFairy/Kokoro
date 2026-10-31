@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`d9329c9e`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `8b01a14`（在既有 feature cutover 基础上，将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share 与 project installation 均保留精确 owner/revision recheck）。
+- BFF：`apps/kokoro-bff` `0823d97`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share 与 project installation 均保留精确 owner/revision recheck）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -71,11 +71,11 @@ Nest AppModule
 
 | 当前 path/method | 当前 handler | 目标 owner | 依赖/保留不变量 | 状态 |
 |---|---|---|---|---|
-| `GET/POST/... /v1/sessions/**` | `liveChatBusiness`、`liveAgentSession`、`liveOwnerBusiness` | `ChatModule` + `AgentRunsModule` + `AguiModule` | message parts、idempotent chat turn、dispatch outbox、AG-UI cursor/replay | 未迁移 |
+| `GET/POST/... /v1/sessions/**` | `liveChatBusiness`、`liveAgentSession`、`liveOwnerBusiness` | `ChatModule` + `AgentRunsModule` + `AguiModule` | message parts、idempotent chat turn、dispatch outbox、AG-UI cursor/replay | direct GET collection/session/messages/parts/process 已由 ChatModule 接管；POST/events/project-scoped 与 Agent/AG-UI 仍待迁移 |
 | `GET /v1/sessions/{id}/runs/{runId}/display` | `runDisplayRoute` | `AgentRunsModule` | canonical RunDisplay、owner identity、5s admission budget | 未迁移 |
 | `POST /v1/sessions/{id}/messages/{id}/feedback` | `messageFeedbackRoute` | `ChatModule` | feedback state、CAS/permission | 未迁移 |
 | `POST /v1/sessions/{id}/messages/{id}/regenerate` | `messageRegenerationRoute` | `ChatModule` + AgentRunsModule | source fingerprint、dispatch receipt、late result | 未迁移 |
-| `GET/POST/... /v1/sessions/{id}/messages/**` | `liveChatBusiness` + `chat-authorization` | `ChatModule` | project/session binding、idempotency、message ordering | 未迁移 |
+| `GET/POST/... /v1/sessions/{id}/messages/**` | `liveChatBusiness` + `chat-authorization` | `ChatModule` | project/session binding、idempotency、message ordering | direct GET list/parts 已接入 ChatModule；POST/feedback/regeneration 与 project scope 仍待迁移 |
 | `GET /v1/sessions/{id}/process` 与 replay/SSE 相关路径 | `liveAgentSession` + `AgUiSessionRuntime` | `AguiModule` + AgentRunsModule | durable ledger、cursor、replay、cancel/drain | 未迁移 |
 | `GET /v1/sessions/{id}/artifacts` 等 | `liveChatBusiness`/artifact readers | `ChatModule` + Storage client | artifact association、权限、分页 | 未迁移 |
 
@@ -132,7 +132,7 @@ Nest AppModule
 |---|---|---|---|
 | `AccountModule` | Database/IAM relay、Personalization provider、SessionAdmission provider | 仅有两个 provider，account route 仍在旧 dispatcher | profile/session/archive/share/knowledge route 至少有真实 Controller/provider 后再移除旧入口 |
 | `ProjectsModule` | `PROJECT_SERVICE`、project resource provider、skill-selection provider/client、`ProjectPinMiddleware` | 仍有 project installation/MCP/task/mutation bundles 在旧 dispatcher | 完成剩余 project bundles 后删除旧 project fallback |
-| `ChatModule` | 仅声明 Account/Database/AgentRuns imports | Chat facts 仍由 global store/旧 route 组合 | chat snapshot/message mutation/authorization provider + contract tests |
+| `ChatModule` | `CHAT_SERVICE`、`CHAT_TURN_SERVICE`、native archive/share/feedback/regeneration/move 与 direct Chat read middleware | Chat POST/events/project scope、Agent/AG-UI 仍由旧 dispatcher 组合 | 继续拆 Chat/Run/AG-UI provider，逐 bundle 删除旧分支 |
 | `AgentRunsModule` | 仅声明 IAM/Database imports | 未承接 Agent client、run display/control、outbox | run display/control/dispatch seam + cancellation/replay tests |
 | `AguiModule` | 仅声明 Chat/Redis/Database imports | 未承接 projector/ledger/replay provider | durable ledger/cursor/replay Controller/provider + tests |
 | `ScheduledTasksModule` | 仅声明 Projects/AgentRuns/Database imports | 已有 `ScheduledTaskStateReader` 仍未注册成业务 Controller | read/mutation/callback/outbox slice + tests |
@@ -206,7 +206,7 @@ Nest AppModule
 
 - BFF `e3c2b2d` 已将 Health、IAM relay、`GET /v1/me`、`GET /v1/projects` 集合/详情/instruction-revisions/deletion-status、rename/delete/resource-list/resource-read/resource-download/resource-upload/resource-delete、project skill-selection、project MCP recommendations、`GET /v1/connector.list`、MCP provider/package admin 与 browser project publication routes、App skill-bindings、Skill specification reads、全部 Skill package inspection、project/personal skill-installations、managed personal Skill reads、Skill enable command、Skill usage、personal skill lifecycle、skill draft creation/mutations、Skill catalog commands/read/cover、published package read、Skill admin、GitHub preview、local import、public share projection、exact Skill download POST/GET opaque-handle、`/v1/mori/**` admission/幂等/owner projection source/middleware 迁入 feature middleware/provider，并从旧 dispatcher 删除三类已迁移分支；同时将 Chat/ChatTurn 由 `BffBusinessStore.chatService`/`chatTurnService` 具名 seam 提供给 runtime、Chat authorization、live Chat、regeneration 与 run-display raw adapter；保留 test-only shared reader fallback。旧 dispatcher 对应分支与 project deletion-status/rename/delete/resource-list/resource-read/resource-upload/resource-delete/skill-selection/MCP recommendations/connector.list/MCP admin/project-publication/App skill-bindings/skill-specification/managed-skill-package-inspection/personal-skill-package-inspection/project-skill-package-inspection/project/personal skill-installations/managed reads/enable/usage/personal lifecycle/skill draft creation/mutations/catalog command/read/cover/published package/admin/GitHub preview/local import/Mori source routes 已删除。
 - `BffBusinessStore` 与 `PostgresBffRepositories` 的重复 `chatService` 字段已删除；`projectService` 已作为命名 C-3 seam 暴露，runtime/feature consumers 优先读取该 seam，兼容 `services.projects` fallback 保留。`personalizationProvider` 与 global `services` 仍属于待迁移边界。
-- Root pin：Root `d9329c9e`、App `9cde5640`、BFF `8b01a14`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
-- 最新 BFF focused 串行验证：`pnpm build`、`pnpm lint`、`pnpm typecheck`、Nest architecture 17/17、BFF architecture 34/34、exact-download HTTP/policy/unit 22/22、BFF mock contract 25/25、connector-list HTTP 5/5、MCP provider/package admin HTTP 12/12、MCP project publication HTTP 27/27、App skill-bindings/Open App management 12/12、Skill specification contract/focused 149/149、package inspection unit 47/47（4 个环境 skip）；停写后最新 `pnpm test` 为 2312 tests / 2295 pass / 15 fail / 2 skip，失败集中在既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture，不作为 C-4 通过。
-- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat/AgentRuns/AG-UI/剩余 ScheduledTask aggregate consumers/remaining Skills/MCP route bundles、other Skill routes、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
+- Root pin：Root `81dd982d`、App `9cde5640`、BFF `0823d97`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`。
+- 最新 BFF focused 串行验证：`pnpm build`、`pnpm lint`、`pnpm typecheck`、Nest architecture 18/18、BFF architecture 34/34、direct Chat read 2/2、Chat/ChatTurn/run-display focused 212/212、exact-download HTTP/policy/unit 22/22、BFF mock contract 25/25、connector-list HTTP 5/5、MCP provider/package admin HTTP 12/12、MCP project publication HTTP 27/27、App skill-bindings/Open App management 12/12、Skill specification contract/focused 149/149、package inspection unit 47/47（4 个环境 skip）；停写后最新 `pnpm test` 为 2316 tests / 2299 pass / 15 fail / 2 skip，失败集中在既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture，不作为 C-4 通过。
+- 仍未完成：LegacyRoutes 全量退出、`createBffComposition`/`PostgresBffRepositories` 生产移除、Chat POST/events/project scope、AgentRuns/AG-UI/剩余 ScheduledTask aggregate consumers/remaining Skills/MCP route bundles、剩余 Port 逐项迁移、C-4 Root/子仓最终串行门禁。
 
