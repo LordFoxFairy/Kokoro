@@ -326,3 +326,8 @@ pnpm test:integration
 - `3961450` established the direct Chat mutation seam; `ff14c86` extends it to project-scoped title/delete/share through a shared `ProjectAccessModule`, avoiding a second ProjectService owner.
 - `76b9402` established the direct events stream; `ff14c86` extends it to project-scoped events and moves Chat POST through the same owner/provider graph. The LegacyRoutes projector worker remains transitional.
 
+
+### 2026-11-01 execution update
+
+- `045dbf7` moves `PublicShareRepository` to the Chat feature boundary; `03940f9` moves `SkillShareRepository` to the Skills feature boundary. Both slices preserve the single PostgreSQL implementation and add architecture assertions against restoring global port files.
+- The next C-3 step remains an evidence-based per-port audit. Do not move shared idempotency or outbox contracts without proving an exclusive owner; do not delete raw compatibility composition until route/provider import census and C-4 owner gates are green. A-01/A-02/A-07 remain stopped.
