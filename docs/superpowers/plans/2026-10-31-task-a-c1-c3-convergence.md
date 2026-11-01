@@ -315,6 +315,7 @@ pnpm test:integration
 - `a725bdc` closes the last raw/test route seams for System admin and public Share while preserving native Skills admin termination; BFF full validation is now 2315/2315 with two environment skips.
 - `b7b30e5` moves browser Custom API CRUD into `McpModule` with one named client provider shared by Custom API and Project MCP recommendations; no second Platform client is constructed.
 - `a09176a` narrows ScheduledTask mutation authorization/execution to named Project/ScheduledTask providers and removes those production route consumers from the global `BffBusinessStore.services` aggregate.
+- `06ae1a6` narrows the Scheduler callback to the same explicit `SchedulerDispatchProvider`, removing its production `source.services.scheduledTasks` unwrap.
 - Current next TODO is unchanged in scope: migrate the remaining session/run and owner route families, then complete provider/Port import census before deleting global composition. Re-run the BFF focused gates after each route bundle and keep A-01/A-02/A-07 stopped.
 - Native-session focused revalidation remains green on the current checkout (IAM 3/3; App native/session/account/team/sign-in/out focused 167/167); this does not replace the missing IAM_TEST_ADMIN_URL/Redis real host and cross-owner tenant-switch/revocation journey receipts.
 
