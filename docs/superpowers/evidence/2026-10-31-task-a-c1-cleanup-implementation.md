@@ -264,28 +264,34 @@ BFF child `ba8ab60` moves scheduled-task create/update/delete/retry and project-
 
 ### Scheduled mutation canonical adapter（2026-10-31）
 
-BFF child `b1e93aa` centralizes scheduled-task create/update/delete/retry and project-scoped create business execution in `scheduled-task-mutation-native.ts`, shared by `ScheduledTaskMutationMiddleware` and raw `createBffServer`. The old `live-bff.ts` dispatcher is deleted; authorization, idempotency lineage, owner checks, stable task IDs, outbox service calls and error mapping now have one implementation. The raw server retains only the pre-admission check needed before the generic receipt claim.
+BFF child `c8aa0b2` centralizes scheduled-task create/update/delete/retry and project-scoped create business execution in `scheduled-task-mutation-native.ts`, shared by `ScheduledTaskMutationMiddleware` and raw `createBffServer`. The old `live-bff.ts` dispatcher is deleted; authorization, idempotency lineage, owner checks, stable task IDs, outbox service calls and error mapping now have one implementation. The raw server retains only the pre-admission check needed before the generic receipt claim.
 
 验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；scheduler + BFF mock focused 39/39；business-store integration 6 pass / 75 environment-gated skip。C-2 LegacyRoutes runtime and C-3 global provider census remain open。
 
 ### Project command/read cutover（2026-10-31）
 
-BFF child `b1e93aa` moves project create/instruction command handling into `ProjectsModule` through `ProjectMutationMiddleware`, with a feature-owned `PROJECT_IDEMPOTENCY` provider. Native admission, strict JSON/name/instruction validation, persistent idempotency replay/conflict handling, project owner scope, slug-conflict mapping and canonical response envelopes remain unchanged. The project core-read adapter now also owns `GET /v1/projects/:id/tasks`; the duplicate `liveBffBusiness` task branch was removed. No second ProjectService, Repository or SQL writer was introduced.
+BFF child `c8aa0b2` moves project create/instruction command handling into `ProjectsModule` through `ProjectMutationMiddleware`, with a feature-owned `PROJECT_IDEMPOTENCY` provider. Native admission, strict JSON/name/instruction validation, persistent idempotency replay/conflict handling, project owner scope, slug-conflict mapping and canonical response envelopes remain unchanged. The project core-read adapter now also owns `GET /v1/projects/:id/tasks`; the duplicate `liveBffBusiness` task branch was removed. No second ProjectService, Repository or SQL writer was introduced.
 
 验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；BFF mock contract 25/25；Project pin focused 15/15；business-store integration 在缺少 PostgreSQL/Redis 时 6 pass / 75 skip。Nest 与 raw `createBffServer` 现在共用同一 `project-mutation-native` adapter，未保留第二套 create/instruction 实现；C-2/C-3/C-4 和 A gates remain open。
 
 ### Personal Billing owner cutover（2026-10-31）
 
-BFF child `b1e93aa` moves personal Billing routes (`GET /v1/billing/summary`, `GET /v1/billing/ledger`, `PUT /v1/billing/credit-account`, `GET /v1/billing/plans`, `POST /v1/billing/checkout`) into `BillingModule`. `BillingPersonalMiddleware` and `billing-personal-native` share one admission, query validation, owner transport, bounded cancellation, response mapping and persistent idempotency provider; the old `owner.ts` Billing branches are deleted. Existing Billing owner and BFF mock fixtures remain unchanged.
+BFF child `c8aa0b2` moves personal Billing routes (`GET /v1/billing/summary`, `GET /v1/billing/ledger`, `PUT /v1/billing/credit-account`, `GET /v1/billing/plans`, `POST /v1/billing/checkout`) into `BillingModule`. `BillingPersonalMiddleware` and `billing-personal-native` share one admission, query validation, owner transport, bounded cancellation, response mapping and persistent idempotency provider; the old `owner.ts` Billing branches are deleted. Existing Billing owner and BFF mock fixtures remain unchanged.
 
 验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；Billing personal + BFF mock 66/66。Remaining owner route families and LegacyRoutes/global composition deletion remain open。
 
 ### System model catalog cutover（2026-10-31）
 
-BFF child `b1e93aa` moves `GET /v1/models` into `SystemModule` through `SystemModelCatalogMiddleware` and `system-model-catalog-native`. The exact owner query projection, System credential transport, model catalog validation, request-id and upstream error mapping are shared by Nest and raw `createBffServer`; the duplicate `owner.ts` model branch is deleted.
+BFF child `c8aa0b2` moves `GET /v1/models` into `SystemModule` through `SystemModelCatalogMiddleware` and `system-model-catalog-native`. The exact owner query projection, System credential transport, model catalog validation, request-id and upstream error mapping are shared by Nest and raw `createBffServer`; the duplicate `owner.ts` model branch is deleted.
 
 验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；BFF mock contract 25/25。Remaining owner projection routes and LegacyRoutes/global composition deletion remain open。
 
+### MCP platform projection cutover（2026-10-31）
+
+BFF child `c8aa0b2` moves `GET /v1/mcp/servers` and `GET /v1/mcp/connections` into `McpModule` through `PlatformProjectionMiddleware`. Admission, MCP budget, strict query/body validation, named Platform projection client, cursor/error mapping and no-store response semantics are shared by Nest and raw `createBffServer`; `owner.ts` no longer dispatches Platform projections. The retired System/Skills fallback is isolated in `retired-owner-native` rather than the owner dispatcher.
+
+验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；platform projection + BFF mock 50/50。Remaining MCP/Skills owner surfaces and LegacyRoutes/global composition deletion remain open。
+
 ### C-4 full-run revalidation（2026-10-31）
 
-在 `b1e93aa` 后串行启动 BFF `pnpm test`：focused 早期继续出现既有 R357 shared-summary fixture failures，随后停在 `test/contract/skill-specification-http.test.mjs` 的长时间 pending 状态；已手动终止，未取得完整汇总，不能计作 C-4 通过。进程状态已复核清零；本次切片以 build/lint/typecheck、Nest architecture、BFF architecture、scheduler 39/39、BFF mock 25/25 作为有效证据。
+在 `c8aa0b2` 后串行启动 BFF `pnpm test`：focused 早期继续出现既有 R357 shared-summary fixture failures，随后停在 `test/contract/skill-specification-http.test.mjs` 的长时间 pending 状态；已手动终止，未取得完整汇总，不能计作 C-4 通过。进程状态已复核清零；本次切片以 build/lint/typecheck、Nest architecture、BFF architecture、scheduler 39/39、BFF mock 25/25 作为有效证据。
