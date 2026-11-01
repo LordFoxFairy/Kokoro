@@ -331,3 +331,8 @@ pnpm test:integration
 
 - `045dbf7` moves `PublicShareRepository` to the Chat feature boundary; `03940f9` moves `SkillShareRepository` to the Skills feature boundary. Both slices preserve the single PostgreSQL implementation and add architecture assertions against restoring global port files.
 - The next C-3 step remains an evidence-based per-port audit. Do not move shared idempotency or outbox contracts without proving an exclusive owner; do not delete raw compatibility composition until route/provider import census and C-4 owner gates are green. A-01/A-02/A-07 remain stopped.
+
+### 2026-11-01 execution update (Account/Skills ports)
+
+- `758d58f` localizes the Account Personal Knowledge port; `224a624` localizes the Account Library Artifact port; `03940f9` localizes the Skills Share port. The moves are type/import-boundary changes only, with single-owner PostgreSQL implementations and negative architecture assertions.
+- Keep the next pass evidence-driven: classify remaining global ports as true cross-feature contracts versus feature-owned seams before moving or deleting them. Do not touch A-01/A-02/A-07 or claim C-3/C-4 completion until raw compatibility, route census, and owner full-gate evidence are closed.
