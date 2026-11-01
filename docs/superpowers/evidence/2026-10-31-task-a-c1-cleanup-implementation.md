@@ -313,3 +313,5 @@ BFF child `e1f2b81` moves `/v1/library`, artifact reads/downloads, personal file
 ### C-4 full-run revalidation（2026-10-31）
 
 在 `e1f2b81` 后串行启动 BFF `pnpm test`：focused 早期继续出现既有 R357 shared-summary fixture failures，随后停在 `test/contract/skill-specification-http.test.mjs` 的长时间 pending 状态；已手动终止，未取得完整汇总，不能计作 C-4 通过。进程状态已复核清零；本次切片以 build/lint/typecheck、Nest architecture、BFF architecture、scheduler 39/39、BFF mock 25/25 作为有效证据。
+
+BFF child `7cf1312` closes the remaining retired System/Skills fallback at the feature boundary. `SystemMiddleware` and `SkillsMiddleware` now invoke `handleRetiredOwnerRequest` after their native handlers; the adapter performs the standard IAM user admission and returns the existing `system_projection_not_configured` / `platform_operation_not_available` 503 contract without entering `LegacyRoutes`. Verification after the cutover: build, lint, typecheck, Nest architecture 24/24, BFF architecture 34/34, and mock contract 25/25 all passed. This is a route-boundary cleanup only; LegacyRoutes/global composition and the C-4 full serial gate remain open.
