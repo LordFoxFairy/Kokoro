@@ -441,3 +441,24 @@ IAM `/sign-in/email`，校验 allowlisted `kokoro-issuer.session_token`，原样
 `src/components/blocks/app-frame/app-frame-main-surface.tsx:onReconnect` 类型错误阻断；未将其记为本片引入。
 旧 OIDC system fixture 仍引用 legacy `/login` 隐藏表单，需在删除 first-party RP 前继续迁移，故 C-1.3、C-4 与
 全量跨 owner journey 尚未关闭，A-01/A-02/A-07 继续停写。
+
+### C-1.3 App native-session runtime cutover continuation（2026-11-01）
+
+App child `d7e7e179` completes the next native-only runtime slice. The catch-all
+`/api/auth/[...nextauth]` adapter now exposes only native `GET /session` and
+`POST /signout`; it no longer imports Auth.js, OIDC RP transactions, Product
+Session storage, refresh, or token revocation. Sign-out is a method-preserving
+307 handoff to `/iam/sign-out`, so the API path cannot create or clear a local
+Product Session. Native sign-in rejects legacy OAuth query shapes before form
+processing and no longer calls `/iam/oauth2/continue`. Product BFF admission
+and all migrated account/feature adapters now use the native IAM cookie and
+service/origin headers; Bearer fallback and Redis/secret configuration are no
+longer runtime requirements.
+
+验证：App native/session/sign-in/product-BFF focused suites 88/88、54/54、
+108/108、6/6；account/profile and cross-feature focused bundle 172/172；
+touched-file ESLint and `git diff --check` clean. App `pnpm typecheck` remains
+blocked only by the pre-existing `app-frame-main-surface.tsx:onReconnect`
+error. Old OIDC/Product Session source and tests, native tenant interaction
+OAuth query handling, and remaining legacy mocks are still open cleanup work;
+C-1.3/C-4 and A-01/A-02/A-07 remain open/stopped.
