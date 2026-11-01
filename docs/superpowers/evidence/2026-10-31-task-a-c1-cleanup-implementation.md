@@ -392,3 +392,9 @@ BFF child `4144fee` adds explicit `submittedAgentRuns` and `projectExecutionBind
 BFF child `1a1fe92` exposes `schedulerDispatchReceipts`, `scheduledAgentDispatch` and `artifactLibrary` as explicit raw composition providers. Scheduler callback and Library routing no longer read those repositories from `businessStore` in the server dispatcher; the Scheduler/Artifact providers remain single-owner. The Project resource HTTP fixture was migrated from `services.projects` to the named `projectService` seam, closing the focused provider drift without restoring aggregate fallback.
 
 验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；Project resource upload + Scheduler + architecture focused 80/80；`git diff --check` clean. Remaining worker lifecycle fields and the concrete compatibility aggregate are still open C-3 work.
+
+### C-3 scheduled-task compatibility view removal（2026-11-01）
+
+BFF child `10477a7` removes `scheduledTasks` from the concrete `PostgresBffRepositories.services` fixture-only aggregate. Scheduler integration fixtures now use the named `scheduledTaskService` and the explicit raw `scheduledTaskService` provider, so the production port and test seam share one owner without a duplicate aggregate property.
+
+验证：BFF build/typecheck/lint；BFF + Nest architecture 67/67；Scheduler focused 14/14；`rg` confirms no `services.scheduledTasks` consumer remains. The remaining compatibility view fields (`projects`, `chat`, `chatTurns`) and lifecycle/outbox ports remain open C-3 work; integration execution needs the local PostgreSQL/Redis environment.

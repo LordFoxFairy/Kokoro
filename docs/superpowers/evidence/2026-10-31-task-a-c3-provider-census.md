@@ -83,6 +83,10 @@ BFF child `4144fee` exposes AgentRuns-owned submitted-run and project-execution-
 
 BFF child `1a1fe92` exposes Scheduler receipt/dispatch and Artifact Library repositories through explicit composition fields. Raw Scheduler and Library routes no longer read those repository fields from `businessStore`; the Project resource HTTP fixture now supplies `projectService` explicitly instead of `services.projects`. The combined Project resource/Scheduler/architecture focused set is 80/80; no owner or repository was duplicated.
 
+### 2026-11-01 ScheduledTask compatibility view removal
+
+BFF child `10477a7` removes `scheduledTasks` from `PostgresBffRepositories.services` and migrates Scheduler integration fixtures to `scheduledTaskService`. No `services.scheduledTasks` consumer remains in source or tests; the named ScheduledTask service and Scheduler callback provider remain the only owner seams. PostgreSQL/Redis integration execution is pending the local isolated environment.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
