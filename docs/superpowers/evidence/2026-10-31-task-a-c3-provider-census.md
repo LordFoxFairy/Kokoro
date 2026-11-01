@@ -67,4 +67,6 @@ BFF child `46bb5ac` adds the explicit `SCHEDULED_TASK_READ_SERVICE` seam to the 
 
 BFF child `d2b0bfe` adds explicit `CHAT_SERVICE`, `CHAT_TURN_SERVICE`, and `PROJECT_SERVICE` injection to `LegacyRoutesRuntime` from `ChatModule`/`AgentDispatchModule`/`ProjectsModule`. `createBffComposition` and the Chat authorization provider now prefer these named feature services; `BffApplicationServices` remains only as a transitional fallback for raw/test composition and un-migrated mutation/Agent paths.
 
+BFF child `b9ac010` adds `PROJECT_SKILL_SELECTION_PROVIDER` to the same explicit chain. The raw server prefers `composition.projectSkillSelectionProvider`, while `projectSkillSelectionProvider(BffBusinessStore)` remains only a raw/test fallback until the project skill-selection path is fully owned by the Nest middleware.
+
 A-01/A-02/A-07 继续停写。

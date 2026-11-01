@@ -149,3 +149,9 @@ BFF child `46bb5ac` 将 `ScheduledTaskReadService` 从 transitional runtime 内�
 BFF child `d2b0bfe` 将 `CHAT_SERVICE`、`CHAT_TURN_SERVICE`、`PROJECT_SERVICE` 从 `ChatModule`/`AgentDispatchModule`/`ProjectsModule` 显式注入 `LegacyRoutesRuntime`，并传入 `createBffComposition`。Chat authorization 的 `chatProvider` 改为优先使用 `composition.chatTurnService`；global `BffApplicationServices` 仍保留给未迁移的 raw/test 与 Chat POST/Agent mutation 路径，不宣称 LegacyRoutes 或聚合服务已删除。
 
 验证：BFF build、lint、typecheck 通过；Nest runtime/feature architecture 20/20；Chat+Scheduler focused 156/156。
+
+### Project skill-selection provider handoff（2026-10-31）
+
+BFF child `b9ac010` 将 `PROJECT_SKILL_SELECTION_PROVIDER` 从 `ProjectsModule` 接入 `LegacyRoutesRuntime`，`createBffServer` 优先读取 `composition.projectSkillSelectionProvider`，并保留旧业务 store 构造仅作 raw/test fallback。该切片没有删除 Project service、LegacyRoutes 或 exact-download compatibility path。
+
+验证：BFF build、lint、typecheck 通过；Nest runtime/feature architecture 20/20；Project pin/skill focused 12/12，exact Project download 的 10 项既有 fixture failures 单列。
