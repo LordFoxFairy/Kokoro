@@ -563,3 +563,9 @@ BFF child `4fe8f51` moves `ScheduledTaskRepository`, `ScheduledTaskOutboxReposit
 BFF child `3af1684` moves Agent dispatch and cancellation delivery/outbox contracts into the AgentDispatch-owned `application/agent-dispatch` boundary. ChatTurn commit, dispatch/cancellation workers, Agent HTTP delivery, PostgreSQL repositories/composition, and fixtures now use the feature-local contracts. No Agent wire, lease, retry, cancellation, or Chat admission behavior changed.
 
 验证：BFF build/typecheck/lint；Agent dispatch/cancellation/ChatTurn/regeneration/architecture focused tests **203/203**；`git diff --check` clean. Remaining global ports are scheduled-Agent delivery/repository, Scheduler callback receipt, stable ID generation, and shared idempotency; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
+
+### C-3 global port census checkpoint（2026-11-02）
+
+After the feature moves through child `ca4b529`, `src/application/ports` contains only `idempotency-repository.ts`. Its callers span Account, Chat, Projects, ScheduledTasks, Skills, Billing, AgentRuns, Music, Library and raw bootstrap because it is the shared durable receipt/CAS contract; it remains an explicit cross-feature boundary rather than a feature locator. All repository, delivery, reader, and outbox ports with an exclusive owner now live under `application/{account,agent-dispatch,agent-runs,chat,projects,scheduled,skills}`.
+
+验证：the latest scheduled/Agent focused bundle is **132/132** after the move; build/typecheck/lint and architecture gates are green. This closes the source-level port placement census, but C-3 still requires raw compatibility composition/dispatcher deletion proof and C-4 owner/root full-gate evidence before A gates open.
