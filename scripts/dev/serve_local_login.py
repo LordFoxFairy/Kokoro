@@ -119,11 +119,12 @@ def failure_category(error: Exception) -> str:
     return "unexpected"
 
 
-def require_free_web_port(port: int = WEB_PORT) -> None:
+def require_free_web_port(port: int | None = None) -> None:
     """Fail before creating resources when another process owns the entrance."""
+    selected_port = WEB_PORT if port is None else port
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.bind(("127.0.0.1", port))
+            probe.bind(("127.0.0.1", selected_port))
     except OSError:
         raise LaunchError("selected local login port is occupied") from None
 

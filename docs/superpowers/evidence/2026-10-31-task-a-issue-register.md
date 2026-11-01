@@ -453,3 +453,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - BFF child `a5b94c0` moves `POST /v1/sessions/:id/runs/:run/control` into `AgentRunsModule`. The feature adapter preserves Chat authorization, Project scope, durable idempotency, Agent receipt validation, queued-cancel startup bridge and cancellation budgets through `liveAgentSession`.
 - LegacyRoutes no longer receives run-control POST; Agent dispatch worker lifecycle and remaining session/run paths remain transitional.
 - 验证：Nest runtime/feature architecture 20/20、BFF architecture 34/34、LegacyRoutes bypass coverage、`pnpm lint`、`pnpm typecheck`、`pnpm build` 全部通过。
+
+### 2026-11-01 C-4 validation cleanup
+
+- Root `scripts/dev/serve_local_login.py` fixed the port-guard default capture; `test_serve_local_login.py` is now 61/61 and the full `python3 -m pytest scripts/tests` run is 1845 passed / 3 skipped / 1 environment failure.
+- The remaining failure is `test_w2_bff_storage_smoke.py::test_exact_object_cleanup_and_database_nonadoption`, blocked by missing `@aws-sdk/client-s3` in the local Storage dependency graph. No test was weakened and no C-4 gate is marked green; install/lockfile ownership remains with the Storage owner.
