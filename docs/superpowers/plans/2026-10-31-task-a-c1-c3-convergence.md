@@ -387,3 +387,11 @@ pnpm test:integration
 
 - BFF child `6f9cc641d59d10b7778985aefb61d8e7cbe54f42` terminates unknown raw Agent/Billing paths with canonical 404 after named adapters and proves configured upstreams are not called. Exact setup/personal routes and mock route-handler seams remain unchanged.
 - Main-checkout revalidation is green for BFF build/typecheck/lint/diff-check, mock contract **29/29**, and architecture/Nest **70/70**. Remaining C-2/C-3 work is compatibility fixture/provider migration and any explicitly justified configured-upstream suffix; C-4/full owner and real C-1.3 receipts remain open.
+
+### 2026-11-02 execution update (E2E readiness)
+
+- 当前本地仅有受管 PostgreSQL/Redis 与既存 MinIO/Mailpit/ClamAV 依赖容器；IAM/BFF/App/Agent/System/Billing/Storage/Scheduler/Capability/Admin 未启动，且缺少本轮 `IAM_TEST_ADMIN_URL`、隔离 PG/Redis 测试 URL。C-1.3 real journey、C-4 integration/E2E 继续保持 open；不伪造服务 receipt，不执行破坏性 schema/资源操作。
+
+- Readiness audit 已冻结启动依赖：隔离 PG/Redis → IAM → System/Capability/Storage/Billing/Scheduler → BFF → Agent HTTP/worker → App → Admin；当前所有应用进程未启动，缺少 test admin URL、owner schema/namespace 与 service credentials。恢复这些外部条件前，C-1.3/E2E 只能保持阻塞记录，不进入 A。
+
+- `pnpm format:check` after `6f9cc64` reports 31 existing warnings (including `server.ts`, `scheduler.ts`, and architecture files) with no missing paths. Do not reformat unrelated files or mark C-4 green until the warning set is separately owned.

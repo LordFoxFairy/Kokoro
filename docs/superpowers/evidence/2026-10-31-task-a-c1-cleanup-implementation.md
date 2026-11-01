@@ -673,3 +673,15 @@ BFF child `6f9cc641d59d10b7778985aefb61d8e7cbe54f42` adds a raw-chain negative g
 ### Root verification after configured-owner fallback BFF pin `6f9cc64`（2026-11-02）
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `6f9cc641d59d10b7778985aefb61d8e7cbe54f42`; governance result: **1846 passed / 3 skipped / 502 subtests**. This verifies the raw Agent/Billing negative guard at Root level only; C-4 full owner gates, fixture migration, real C-1.3 receipts, E2E startup, and A gates remain open.
+
+### Cross-owner E2E readiness snapshot（2026-11-02）
+
+本地进程/端口核验显示当前只有受管 PostgreSQL `127.0.0.1:5432` 与 Redis `127.0.0.1:6379` 在监听；未发现 IAM、BFF、App、Agent、System、Billing、Storage、Scheduler、Capability 或 Admin 应用进程。Docker 仅有既存 MinIO/Mailpit/ClamAV 依赖容器，未启动业务 owner 容器；`IAM_TEST_ADMIN_URL`、`KOKORO_TEST_POSTGRES_URL`、`KOKORO_TEST_REDIS_URL` 未设置。故当前不能形成端到端登录/租户切换/登出/撤权 receipt，也不把 focused/raw HTTP fixture 视作 E2E。启动顺序与缺口待 readiness audit 收敛后再执行；不重启或改写他人/受管资源。
+
+### E2E readiness audit detail（2026-11-02）
+
+只读 audit 给出最小启动顺序：隔离 PG schemas/Redis namespaces → IAM → System/Capability/Storage/Billing/Scheduler → BFF → Agent HTTP/worker → App → Admin。各仓健康入口分别为 IAM/BFF/Agent/App 及 owner `/healthz`/`/readyz`；Agent HTTP 默认 4401、BFF 4300、App 3000、System 4240、Admin 内部 3320，Scheduler 默认 8080。当前缺少 IAM test admin URL、隔离 owner URL/schema/namespace、service credential 文件与运行时 secret，且应用进程/业务容器均未启动；本轮只记录缺口，不执行服务启动、凭据生成或 schema reset。
+
+### C-4 format gate recheck after `6f9cc64`（2026-11-02）
+
+`pnpm format:check` reaches the complete declared file list without missing-path errors and exits 1 on **31** existing Prettier warnings, including the touched raw server/scheduler/architecture files. No formatting-only sweep was applied because it would widen the cleanup slice; format remains an explicit C-4 blocker rather than being reported green.
