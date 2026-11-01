@@ -185,3 +185,9 @@ BFF child `3961450` moves direct no-`project_ref` Chat title/delete/share mutati
 BFF child `76b9402` moves direct no-`project_ref` AG-UI events into `ChatModule` + `AguiModule`. The feature graph now owns projection, consumer registration, session runtime and source-active gating for this route, while reusing `liveAgentSession` for durable replay/SSE behavior. Project-scoped events, Chat POST messages and the LegacyRoutes projector worker remain transitional.
 
 验证：本轮选定 AG-UI replay/runtime/SSE tests、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、BFF architecture 34/34、build/lint/typecheck 全部通过。
+
+### Project-scoped Chat owner sharing（2026-10-31）
+
+BFF child `1210420` extracts `ProjectAccessModule` as the single ProjectService/selection provider owner and lets ChatModule consume it. This extends title/delete/share mutations and AG-UI events to project-scoped requests without introducing a second ProjectRepository or service; Chat POST remains the next route bundle.
+
+验证：project-scoped Chat mutation focused 1/1、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、build/lint/typecheck 通过。

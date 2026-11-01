@@ -79,4 +79,6 @@ BFF child `3961450` adds `CHAT_IDEMPOTENCY` in `ChatModule` and moves direct no-
 
 BFF child `76b9402` adds `AguiModule` providers for the canonical projection, consumer repository, session runtime and source-active gate. Direct no-`project_ref` Chat events now use `liveAgentSession` through `ChatModule`; project-scoped events and the LegacyRoutes projector worker remain transitional until Agent/AG-UI ownership is fully cut over.
 
+BFF child `1210420` extracts `ProjectAccessModule` as the single `PROJECT_SERVICE`/`PROJECT_SKILL_SELECTION_PROVIDER` owner provider. `ChatModule` now consumes that shared owner for project-scoped mutation/event authorization, avoiding a second ProjectService/Repository implementation while `ProjectsModule` continues to own project middleware and exact-download adapters.
+
 A-01/A-02/A-07 继续停写。
