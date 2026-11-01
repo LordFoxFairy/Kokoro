@@ -63,6 +63,10 @@
 
 BFF child `039e8d8` removes the Scheduler callback route's type-level dependency on `BffBusinessStore`. The route now consumes `SchedulerDispatchReceiptRepository` directly for claim settlement and unknown-claim release, while its raw/test fixtures use the named `scheduledTaskService` provider. Scheduler focused coverage is 14/14; build/typecheck and diff checks are clean. This closes one C-3 port consumer but does not close the remaining compatibility aggregate or lifecycle/outbox port census.
 
+### 2026-11-01 Skill Share provider type isolation
+
+BFF child `27523d9` removes the native Skill Share route's `BffBusinessStore` import. Its raw compatibility extractor consumes only a narrow structural `SkillShareRepository` source, leaving aggregate knowledge at the bootstrap compatibility seam. BFF/Nest architecture and Skill Share HTTP focused checks are green; the R357 shared-summary failures remain the pre-existing fixture baseline.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.

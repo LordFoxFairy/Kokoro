@@ -362,3 +362,9 @@ BFF child `5de502c` moves `ArtifactAssociation`, `ArtifactPosition` and `Artifac
 BFF child `039e8d8` removes the Scheduler callback route's type dependency on the aggregate `BffBusinessStore`. `SchedulerDispatchProvider`, settlement and unknown-claim release now consume the feature-owned `SchedulerDispatchReceiptRepository` port directly; the raw/test fixture migration uses the already-named `scheduledTaskService` seam instead of `services.scheduledTasks`. No receipt repository, task service or worker implementation was duplicated.
 
 验证：BFF build/typecheck；Scheduler focused 14/14；`git diff --check` clean. The concrete PostgreSQL compatibility view and remaining lifecycle/outbox/feature ports are still open C-3 work; A-01/A-02/A-07 remain stopped.
+
+### C-3 skill-share provider type isolation（2026-11-01）
+
+BFF child `27523d9` removes the remaining `BffBusinessStore` import from the native Skill Share route. The transitional raw composition fallback now accepts a narrow structural `{ skillShares?: SkillShareRepository }` source, so the route depends on the feature port rather than the aggregate store contract. No repository, service or owner boundary was duplicated.
+
+验证：BFF build/typecheck；BFF architecture 34/34；Nest feature architecture 19/19；Skill Share HTTP 4/4；`git diff --check` clean. The known R357 shared-summary fixture failures remain baseline and are not attributed to this type-only cleanup; the compatibility aggregate and remaining lifecycle/outbox/feature ports remain open C-3 work.
