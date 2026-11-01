@@ -173,3 +173,9 @@ BFF child `c8c3259` 将 `SKILL_EXACT_DOWNLOAD_SOURCE` 与 `SKILL_SPECIFICATION_S
 BFF child `630efbf` adds an explicit `LegacyRoutesMiddleware` boundary. Migrated Chat paths—public share, archive/shared tasks, direct Chat reads, feedback, regeneration and move—now bypass `LegacyRoutesRuntime`; negative tests retain Chat POST/events/title/delete/share and project-scoped reads in the transitional dispatcher until their feature bundle is cut over. Raw `createBffServer` compatibility remains unchanged.
 
 验证：LegacyRoutes bypass 2/2；Nest runtime/feature architecture 20/20；Chat/feedback/regeneration focused 34/34；build/lint/typecheck 通过。
+
+### Direct Chat mutation cutover（2026-10-31）
+
+BFF child `d2f56c0` moves direct no-`project_ref` Chat title/delete/share mutations into `ChatModule`. `CHAT_IDEMPOTENCY` owns the PostgreSQL receipt adapter; `handleChatMutationRequest` preserves admission, canonical fingerprint, replay/conflict/pending behavior and delegates business semantics to the existing `liveChatBusiness`. Project-scoped mutations, Chat POST messages and events remain transitional by design.
+
+验证：direct Chat mutation 1/1、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、BFF mock contract 25/25、build/lint/typecheck 通过。

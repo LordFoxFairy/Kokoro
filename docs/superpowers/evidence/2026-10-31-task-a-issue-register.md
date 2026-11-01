@@ -125,6 +125,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Agent run-display bundle（`GET /v1/sessions/:id/runs/:run/display`）已由 `AgentRunsModule` 的 `RUN_DISPLAY_PROVIDER`/`AgentRunsMiddleware` 接管；旧 dispatcher 分支已移除，复用 submitted-run reader、Chat owner read、AG-UI/Agent transport 与 final admission。
 - [x] Chat message-feedback bundle（`GET/PUT /v1/sessions/:id/messages/:message/feedback`）已由 `ChatModule` 的 `CHAT_SERVICE`/`ChatMiddleware` 接管；旧 dispatcher 分支已移除，复用既有 feedback CAS/owner read，不复制 Repository 或 receipt。
 - [x] 已迁移 Chat path 的 LegacyRoutes bypass（public share、archive/shared tasks、direct reads、feedback、regeneration、move）已由 `LegacyRoutesMiddleware` 锁定；Chat POST/events/title/delete/share 与 project-scoped reads 继续保留旧入口并由负向测试保护。
+- [x] Chat direct no-`project_ref` title/delete/share mutations 已由 `ChatModule` 的 `CHAT_IDEMPOTENCY` + `handleChatMutationRequest` 接管；project-scoped variants 与 Chat POST/events 仍保留旧入口。
 - [x] Project deletion-status read（`GET /v1/projects/:id/deletion`）已由 `ProjectsModule` 的 `PROJECT_SERVICE`/`ProjectPinMiddleware` 与 `project-native` adapter 接管；旧 `projectDeletionStatusRoute`、server path 判定及 source file 已删除，保留 deletion error contract、no-store、request-id 与既有 repository read 边界。
 - [x] Project rename command（`PATCH /v1/projects/:id/name`）已由 `ProjectsModule` 的 `PROJECT_SERVICE`/`ProjectPinMiddleware` 与 `project-native` adapter 接管；旧 `projectRenameRoute`、server path 判定及 source file 已删除，保留 idempotency/CAS/receipt 与严格输入边界。
 - [x] Project delete command（`DELETE /v1/projects/:id`）已由 `ProjectsModule` 的 `PROJECT_SERVICE`/`ProjectPinMiddleware` 与 `project-native` adapter 接管；旧 `projectDeleteRoute`、server path 判定及 source file 已删除，保留 202/Location、idempotency、scope-release/outbox 与取消边界。
@@ -271,6 +272,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - 验证：direct Chat read 2/2、BFF mock contract 25/25、Nest architecture 18/18、BFF architecture 34/34、`pnpm lint`、`pnpm typecheck`、`pnpm build`；串行全量 2316 tests / 2299 pass / 15 fail / 2 skip，15 项失败仍为既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture。
 - 下一步仍只推进 C-1.3/C-2/C-3：Chat POST/events/project scope、Agent/AG-UI route bundle 与剩余 global provider/Port；A-01/A-02/A-07 继续停写。
 - `630efbf` 的 Chat bypass 只关闭已迁移路径对 LegacyRoutes 的消费，不改变 raw `createBffServer` 兼容入口；下一步仍是 Chat POST/events/project scope，再进入 Agent/AG-UI 与 global provider/Port census。
+- `d2f56c0` 将 direct title/delete/share 的 receipt owner 下沉到 ChatModule；下一步仍是 Chat POST/events/project scope，不能删除 `BffApplicationServices.chat` 或 Chat Repository。
 
 ### 2026-10-31 C-3 ChatTurn seam cleanup
 
@@ -385,3 +387,9 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - BFF child `630efbf` adds `isMigratedChatRoute` coverage to `LegacyRoutesMiddleware`; public share, archive/shared tasks, direct Chat GET reads, feedback, regeneration and move now call `next()` without entering `LegacyRoutesRuntime`.
 - Negative tests prove that Chat POST messages, events, title/delete/share and project-scoped reads remain on the transitional dispatcher until their own feature bundle is implemented.
 - 验证：LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、Chat/feedback/regeneration focused 34/34、`pnpm lint`、`pnpm typecheck`、`pnpm build` 全部通过。
+
+### 2026-10-31 Direct Chat mutation cutover
+
+- BFF child `d2f56c0` adds `CHAT_IDEMPOTENCY` and `handleChatMutationRequest` for direct no-`project_ref` PATCH title, DELETE session, and POST/DELETE share. It reuses `authorizeChatRequest`, `liveChatBusiness`, canonical mutation fingerprints, PostgreSQL receipts and process-local replay state.
+- Negative coverage keeps project-scoped mutations, Chat POST messages, and events in the transitional dispatcher; raw `createBffServer` behavior is unchanged.
+- 验证：direct Chat mutation 1/1、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、BFF mock contract 25/25、`pnpm lint`、`pnpm typecheck`、`pnpm build` 全部通过。

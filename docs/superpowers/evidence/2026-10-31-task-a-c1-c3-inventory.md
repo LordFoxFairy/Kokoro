@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`d9329c9e`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `630efbf`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule，并让 LegacyRoutesMiddleware 绕过已迁移的 Chat path；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation、scheduled current-read、Chat/ChatTurn、Project service、Project skill-selection、Project MCP recommendation、Skill specification 与 exact-download providers 均保留精确 owner/revision recheck）。
+- BFF：`apps/kokoro-bff` `d2f56c0`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 与无 `project_ref` 的 Chat title/delete/share mutations 下沉到 ChatModule，并让 LegacyRoutesMiddleware 绕过已迁移的 Chat path；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation、scheduled current-read、Chat/ChatTurn、Project service、Project skill-selection、Project MCP recommendation、Skill specification 与 exact-download providers 均保留精确 owner/revision recheck）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -71,7 +71,7 @@ Nest AppModule
 
 | 当前 path/method | 当前 handler | 目标 owner | 依赖/保留不变量 | 状态 |
 |---|---|---|---|---|
-| `GET/POST/... /v1/sessions/**` | `liveChatBusiness`、`liveAgentSession`、`liveOwnerBusiness` | `ChatModule` + `AgentRunsModule` + `AguiModule` | message parts、idempotent chat turn、dispatch outbox、AG-UI cursor/replay | direct GET collection/session/messages/parts/process 已由 ChatModule 接管；POST/events/project-scoped 与 Agent/AG-UI 仍待迁移 |
+| `GET/POST/... /v1/sessions/**` | `liveChatBusiness`、`liveAgentSession`、`liveOwnerBusiness` | `ChatModule` + `AgentRunsModule` + `AguiModule` | message parts、idempotent chat turn、dispatch outbox、AG-UI cursor/replay | direct GET collection/session/messages/parts/process 与无 `project_ref` title/delete/share 已由 ChatModule 接管；POST/events/project-scoped 与 Agent/AG-UI 仍待迁移 |
 | `GET /v1/sessions/{id}/runs/{runId}/display` | `runDisplayRoute` | `AgentRunsModule` | canonical RunDisplay、owner identity、5s admission budget | 未迁移 |
 | `POST /v1/sessions/{id}/messages/{id}/feedback` | `messageFeedbackRoute` | `ChatModule` | feedback state、CAS/permission | 未迁移 |
 | `POST /v1/sessions/{id}/messages/{id}/regenerate` | `messageRegenerationRoute` | `ChatModule` + AgentRunsModule | source fingerprint、dispatch receipt、late result | 未迁移 |

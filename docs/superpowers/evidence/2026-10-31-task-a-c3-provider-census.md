@@ -75,4 +75,6 @@ BFF child `c8c3259` passes `SKILL_EXACT_DOWNLOAD_SOURCE` and `SKILL_SPECIFICATIO
 
 BFF child `630efbf` adds a negative LegacyRoutes boundary for migrated Chat paths. `LegacyRoutesMiddleware` bypasses public share, archive/shared tasks, direct Chat reads, feedback, regeneration and move; un-migrated Chat POST/events/title/delete/share and project-scoped reads remain routed through the transitional dispatcher and are covered by explicit negative tests.
 
+BFF child `d2f56c0` adds `CHAT_IDEMPOTENCY` in `ChatModule` and moves direct no-`project_ref` title/delete/share mutations through `handleChatMutationRequest` + `liveChatBusiness`. The provider uses one PostgreSQL receipt owner and a process-local replay map; project-scoped variants and Chat POST/events remain transitional.
+
 A-01/A-02/A-07 继续停写。

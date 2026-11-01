@@ -207,6 +207,7 @@ IAM native session cookie
 - [x] Chat message-feedback bundle（`GET/PUT /v1/sessions/:id/messages/:message/feedback`）已接入 `CHAT_SERVICE` 与 `ChatMiddleware`，从 `handleBffRequest` 移除旧分支；保留 feedback CAS/read、re-admission 与错误闭集。
 - [x] Chat direct read bundle（`GET /v1/sessions[/:id]`、messages、parts、run process）已接入 `ChatModule` 的 `handleChatBusinessReadRequest`；feature-local `ChatBusinessProvider` 取代该路径对 `BffBusinessStore` 的依赖，保留 IAM admission、owner recheck、分页/cursor、取消和 canonical envelope；project-scoped、events 与 POST mutation 保持旧入口等待下一 slice（`0823d97`）。
 - [x] Chat migrated-path bypass 已接入 `LegacyRoutesMiddleware`：public share、archive/shared tasks、direct Chat reads、feedback、regeneration、move 直接交给 Chat feature middleware；POST messages、events、title/delete/share 与 project-scoped reads 继续保留在旧入口并由负向测试锁定（`630efbf`）。
+- [x] Chat direct title/delete/share mutations（无 `project_ref`）已由 `ChatModule` 的 `CHAT_IDEMPOTENCY` + `ChatApplicationService` 接管；project-scoped variants、POST messages、events 仍保留旧入口（`d2f56c0`）。
 - [ ] 保留 durable ledger、cursor/replay、lease/CAS/outbox、取消和 drain 顺序；不复制 AG-UI envelope。
 - [ ] 将 Chat/Run/AG-UI repository/client 拆成 feature-local provider；只对有真实复杂边界的 repository 保留独立类型。
 - [ ] 每个 route bundle 迁移后从 adapter 删除并执行 focused HTTP + architecture tests。
@@ -291,4 +292,5 @@ pnpm test:integration
 - Next slice is the Chat POST/events/project-scope bundle, followed by Agent/AG-UI route ownership and the remaining global provider/Port census; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
 
 - `630efbf` adds a negative LegacyRoutes boundary for the already migrated Chat paths. This is an adapter bypass, not the Chat bundle completion: the old dispatcher still owns Chat POST/events/title/delete/share and project-scoped reads.
+- `d2f56c0` completes the direct no-`project_ref` Chat title/delete/share mutation slice with a feature-owned PostgreSQL idempotency provider; project-scoped mutations and Chat POST/events remain the next route bundle.
 
