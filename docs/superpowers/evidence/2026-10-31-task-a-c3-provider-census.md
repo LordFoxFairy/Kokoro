@@ -87,6 +87,10 @@ BFF child `1a1fe92` exposes Scheduler receipt/dispatch and Artifact Library repo
 
 BFF child `10477a7` removes `scheduledTasks` from `PostgresBffRepositories.services` and migrates Scheduler integration fixtures to `scheduledTaskService`. No `services.scheduledTasks` consumer remains in source or tests; the named ScheduledTask service and Scheduler callback provider remain the only owner seams. PostgreSQL/Redis integration execution is pending the local isolated environment.
 
+### 2026-11-01 Project compatibility view removal
+
+BFF child `c373066` removes `projects` from `PostgresBffRepositories.services` and migrates Project resource/delete and Chat project-selection fixtures to `projectService`. No `services.projects` consumer remains except the standalone Project MCP test fixture that does not use the concrete repository. The canonical ProjectService remains single-owner; PostgreSQL/Redis integration is environment-gated.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
