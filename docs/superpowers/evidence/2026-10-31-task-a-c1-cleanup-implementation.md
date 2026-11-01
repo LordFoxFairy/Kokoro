@@ -368,3 +368,9 @@ BFF child `039e8d8` removes the Scheduler callback route's type dependency on th
 BFF child `27523d9` removes the remaining `BffBusinessStore` import from the native Skill Share route. The transitional raw composition fallback now accepts a narrow structural `{ skillShares?: SkillShareRepository }` source, so the route depends on the feature port rather than the aggregate store contract. No repository, service or owner boundary was duplicated.
 
 验证：BFF build/typecheck；BFF architecture 34/34；Nest feature architecture 19/19；Skill Share HTTP 4/4；`git diff --check` clean. The known R357 shared-summary fixture failures remain baseline and are not attributed to this type-only cleanup; the compatibility aggregate and remaining lifecycle/outbox/feature ports remain open C-3 work.
+
+### C-3 AG-UI consumer provider isolation（2026-11-01）
+
+BFF child `11d8199` adds an explicit `agUiConsumers` composition seam. Raw Chat admission now receives the Agui-owned consumer repository through `BffServerComposition`/`ChatBusinessProvider` instead of reading `businessStore.agUiConsumers` in the server dispatcher; PostgreSQL remains the single concrete repository owner and the bootstrap fallback is only the transitional composition boundary.
+
+验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；Chat/AG-UI focused 12/12；`git diff --check` clean. `BffBusinessStore.agUiConsumers` is still a bootstrap compatibility source for the next deletion slice; the remaining lifecycle/outbox/feature ports stay open C-3 work.

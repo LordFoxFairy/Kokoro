@@ -67,6 +67,10 @@ BFF child `039e8d8` removes the Scheduler callback route's type-level dependency
 
 BFF child `27523d9` removes the native Skill Share route's `BffBusinessStore` import. Its raw compatibility extractor consumes only a narrow structural `SkillShareRepository` source, leaving aggregate knowledge at the bootstrap compatibility seam. BFF/Nest architecture and Skill Share HTTP focused checks are green; the R357 shared-summary failures remain the pre-existing fixture baseline.
 
+### 2026-11-01 AG-UI consumer provider isolation
+
+BFF child `11d8199` exposes the Agui-owned consumer repository as an explicit composition provider. The raw server's Chat provider no longer reads `businessStore.agUiConsumers`; only bootstrap fallback wiring still bridges the live PostgreSQL composition. BFF/Nest architecture and Chat/AG-UI focused checks are green, with no duplicate consumer repository or projection implementation.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
