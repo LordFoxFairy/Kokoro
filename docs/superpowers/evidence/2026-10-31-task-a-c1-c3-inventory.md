@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`d9329c9e`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `c8c3259`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation、scheduled current-read、Chat/ChatTurn、Project service、Project skill-selection、Project MCP recommendation、Skill specification 与 exact-download providers 均保留精确 owner/revision recheck）。
+- BFF：`apps/kokoro-bff` `630efbf`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule，并让 LegacyRoutesMiddleware 绕过已迁移的 Chat path；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation、scheduled current-read、Chat/ChatTurn、Project service、Project skill-selection、Project MCP recommendation、Skill specification 与 exact-download providers 均保留精确 owner/revision recheck）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -33,7 +33,7 @@ Nest AppModule
 - `apps/kokoro-bff/src/common/lifecycle/graceful-shutdown.ts` 仍通过 `LegacyRoutesRuntime.close()` 关闭 worker/store。
 - `apps/kokoro-bff/src/bootstrap/server.ts` 仍同时导出 `handleBffRequest` 和独立 `createBffServer`。
 
-因此当前 Nest 只是承载旧 dispatcher；不能通过增加 module 壳或改名宣称 LegacyRoutes 已删除。
+因此当前 Nest 仍承载旧 dispatcher 的未迁移路径；已迁移 Chat path 由 `LegacyRoutesMiddleware` 明确绕过，但不能通过该 bypass 或增加 module 壳宣称 LegacyRoutes 已删除。
 
 ## 3. Route census（当前 handler → 目标 feature）
 

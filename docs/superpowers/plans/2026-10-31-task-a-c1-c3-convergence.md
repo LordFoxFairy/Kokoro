@@ -206,6 +206,7 @@ IAM native session cookie
 - [x] Agent run-display bundle（`GET /v1/sessions/:id/runs/:run/display`）已接入 `RUN_DISPLAY_PROVIDER` 与 `AgentRunsMiddleware`，从 `handleBffRequest` 移除旧分支；保留 submitted-run binding、Chat owner read、AG-UI transport、final admission 与 5 秒预算。
 - [x] Chat message-feedback bundle（`GET/PUT /v1/sessions/:id/messages/:message/feedback`）已接入 `CHAT_SERVICE` 与 `ChatMiddleware`，从 `handleBffRequest` 移除旧分支；保留 feedback CAS/read、re-admission 与错误闭集。
 - [x] Chat direct read bundle（`GET /v1/sessions[/:id]`、messages、parts、run process）已接入 `ChatModule` 的 `handleChatBusinessReadRequest`；feature-local `ChatBusinessProvider` 取代该路径对 `BffBusinessStore` 的依赖，保留 IAM admission、owner recheck、分页/cursor、取消和 canonical envelope；project-scoped、events 与 POST mutation 保持旧入口等待下一 slice（`0823d97`）。
+- [x] Chat migrated-path bypass 已接入 `LegacyRoutesMiddleware`：public share、archive/shared tasks、direct Chat reads、feedback、regeneration、move 直接交给 Chat feature middleware；POST messages、events、title/delete/share 与 project-scoped reads 继续保留在旧入口并由负向测试锁定（`630efbf`）。
 - [ ] 保留 durable ledger、cursor/replay、lease/CAS/outbox、取消和 drain 顺序；不复制 AG-UI envelope。
 - [ ] 将 Chat/Run/AG-UI repository/client 拆成 feature-local provider；只对有真实复杂边界的 repository 保留独立类型。
 - [ ] 每个 route bundle 迁移后从 adapter 删除并执行 focused HTTP + architecture tests。
@@ -288,4 +289,6 @@ pnpm test:integration
 - Current remaining C-3 census: `BffApplicationServices` remains as the compatibility aggregate for integration fixtures; ScheduledTask/Chat/ChatTurn/Project production providers are feature-local or read through `services` and no longer duplicated on `BffBusinessStore`. Remaining direct aggregate references are limited to compatibility fallbacks and integration tests; LegacyRoutes/createBffComposition/handleBffRequest references remain and require the next zero-consumer proof. No A gate is opened.
 - BFF `pnpm format:check` still reports pre-existing warnings including `src/bootstrap/server.ts` and `src/modules/projects/project-pin.middleware.ts`; full BFF test run completed non-green on the baseline/environment failures above. This is evidence of current state, not a C-4 pass.
 - Next slice is the Chat POST/events/project-scope bundle, followed by Agent/AG-UI route ownership and the remaining global provider/Port census; LegacyRoutes deletion and global Repository/Service/Port removal stay blocked until route census and provider import census are zero.
+
+- `630efbf` adds a negative LegacyRoutes boundary for the already migrated Chat paths. This is an adapter bypass, not the Chat bundle completion: the old dispatcher still owns Chat POST/events/title/delete/share and project-scoped reads.
 
