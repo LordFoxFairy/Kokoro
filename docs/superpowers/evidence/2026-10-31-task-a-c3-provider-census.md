@@ -8,6 +8,7 @@
 - ChatTurn：`chatTurnService`
 - Project：`projectService`
 - ScheduledTask：`scheduledTaskService`
+- Account personalization：`personalizationProvider`
 
 对应 feature owner：`CHAT_SERVICE`、`CHAT_TURN_SERVICE`、`PROJECT_SERVICE`、`SCHEDULED_TASK_READ_SERVICE` 及 `BffApplicationServices.services` 兼容聚合。
 
@@ -17,14 +18,13 @@
 
 | 字段 | 当前消费者 | 删除前置条件 |
 |---|---|---|
-| `personalizationProvider` | Account personalization raw adapter | Account native route 完全替代 raw adapter，runtime 不再从 store 取值 |
 | `personalKnowledge` | Personal Knowledge raw adapter | AccountModule provider 接管 raw/test composition，旧 route 分支删除 |
 | `skillUsage` | Skill usage raw adapter、runtime Skill specification composition | SkillsModule/SkillsMiddleware 成为唯一 runtime path，raw fallback 清零 |
 | `skillAiAssociation` | AI Skill import raw adapter | SkillsModule association provider 覆盖 raw composition，artifact owner contract 保持不变 |
 | `skillShares` | Skill share/exact-download raw composition | SkillsModule share/download provider 覆盖 raw source construction |
 | `publicShareService` | raw public-share projection | ChatModule public-share adapter覆盖 raw chain |
 
-这些字段是当前存在证据的兼容边界，不是新的 owner；禁止继续新增同类字段。
+这些字段是当前存在证据的兼容边界，不是新的 owner；Account personalization 已从 global store 删除。禁止继续新增同类字段。
 
 ## BffApplicationServices 聚合
 
