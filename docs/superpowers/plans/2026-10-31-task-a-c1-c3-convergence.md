@@ -377,3 +377,13 @@ pnpm test:integration
 - BFF child `1f5e2cd50707c7d3e622e3428cc2dff2c66ca170` routes unknown raw System/Skills paths through `handleRetiredOwnerRawRequest`, preserves the explicit historical Skill 404 shapes, and deletes the retired-owner business branch from `handleBffRequest`. Nest retired-owner middleware remains the production feature boundary; raw `createBffServer` remains compatibility-only.
 - Main-checkout revalidation: BFF build/typecheck/lint/diff-check, mock contract **28/28**, architecture/Nest suite **69/69**, and Scheduler identity/outbox/receiver **28/28** pass. `pnpm format:check` and full BFF test remain non-green only on the recorded pre-existing warning/fixture baseline; no C-4 pass is claimed.
 - Remaining C-2/C-3 deletion gate is unchanged: generic configured-upstream compatibility, raw integration fixture/provider census, `createBffComposition`/`handleBffRequest`/`PostgresBffRepositories` zero-consumer proof, then serial owner/root full gates. C-1.3 real IAM→BFF→App receipts and E2E service startup remain open; A-01/A-02/A-07 stay stopped.
+
+### 2026-11-02 execution update (full-gate diagnostic and fixture census)
+
+- BFF `pnpm test` after child `1f5e2cd` remains non-green: 1177 tests started, 1043 passed, 21 failed, 113 cancelled after the existing Skill shared-revision/archived owner fixture failures and a long pending `test/contract/skill-specification-http.test.mjs`. This is a diagnostic baseline, not a C-4 pass; no assertions or timeouts were weakened.
+- Read-only `PostgresBffRepositories` census found only raw runtime production construction, plus nine integration suites with 102 direct constructors, 17 raw database pool/notify accesses, and 10 stale `store.services.*` fixture accesses. Next C-3 slice is a test-only owner fixture factory under isolated PG/Redis; wrapper deletion stays blocked until all imports and direct aggregate accesses are gone.
+
+### 2026-11-02 execution update (generic owner fallback)
+
+- BFF child `6f9cc641d59d10b7778985aefb61d8e7cbe54f42` terminates unknown raw Agent/Billing paths with canonical 404 after named adapters and proves configured upstreams are not called. Exact setup/personal routes and mock route-handler seams remain unchanged.
+- Main-checkout revalidation is green for BFF build/typecheck/lint/diff-check, mock contract **29/29**, and architecture/Nest **70/70**. Remaining C-2/C-3 work is compatibility fixture/provider migration and any explicitly justified configured-upstream suffix; C-4/full owner and real C-1.3 receipts remain open.

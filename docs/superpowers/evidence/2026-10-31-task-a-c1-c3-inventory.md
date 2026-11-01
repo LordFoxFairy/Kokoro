@@ -291,3 +291,11 @@ The raw route census now has a negative proof for unknown live `/v1/sessions/**`
 - Scheduler callback is now feature-owned in both Nest and raw compatibility entrypoints (`07584d2`); `handleBffRequest` no longer contains its dispatch branch.
 - Retired System/Skills unknown paths now terminate in the dedicated raw adapter (`1f5e2cd`) after named feature handlers. Historical Skill compatibility 404s and mock route-handler fixtures remain explicit; no generic upstream proxy is used for these owner paths.
 - Remaining raw fallback inventory is limited to configured-upstream compatibility plus raw/test integration fixtures and provider extractors. Keep `createBffComposition`, `handleBffRequest`, and `PostgresBffRepositories` until route/provider import census and owner full gates close. C-4 and A gates remain open/stopped.
+
+### 2026-11-02 Postgres compatibility fixture census
+
+`PostgresBffRepositories` remains a raw/test-only compatibility aggregate: production import/constructor is limited to `src/bootstrap/runtime.ts`; nine integration suites still import it (**102 constructors**), with 17 direct pool/notify accesses and 10 stale `store.services.*` accesses. The correct next slice is a test-only owner fixture factory and explicit named providers under isolated PG/Redis resources; do not delete the aggregate or perform schema resets while `KOKORO_TEST_POSTGRES_URL`/`KOKORO_TEST_REDIS_URL` are absent.
+
+### 2026-11-02 generic upstream fallback continuation
+
+Unknown raw `/v1/agents/**` and `/v1/billing/**` paths now terminate 404 after named adapters (`6f9cc64`); configured upstreams receive zero calls in the negative fixture. Exact Agent setup and Billing personal paths remain canonical. Remaining generic proxy reachability is compatibility-only for undocumented/fixture-injected owner suffixes; keep `handleBffRequest` until raw fixture/provider census closes.

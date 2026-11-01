@@ -655,3 +655,21 @@ BFF child `1f5e2cd50707c7d3e622e3428cc2dff2c66ca170` inserts `handleRetiredOwner
 ### Root verification after Scheduler/retired-owner BFF pin `1f5e2cd`（2026-11-02）
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `1f5e2cd50707c7d3e622e3428cc2dff2c66ca170`; governance result: **1846 passed / 3 skipped / 502 subtests**. This closes the root topology/governance recheck for the two raw cutovers only. BFF `pnpm format:check`, full owner test baseline, real C-1.3 IAM→BFF→App receipts, E2E service startup, and raw composition zero-consumer proof remain open; A-01/A-02/A-07 stay stopped.
+
+### C-4 BFF full-owner diagnostic after raw cutovers（2026-11-02）
+
+在 child `1f5e2cd` 停写后串行运行 `pnpm test`。构建完成，测试在 `test/contract/skill-specification-http.test.mjs` 长时间 pending 后手动终止；汇总为 **1177 tests / 1043 pass / 21 fail / 113 cancelled / 0 skip**，失败首先集中在既有 archived-tasks 503 fixture 基线及 shared-revision/owner fixture，后续取消项是 pending 阻塞的连锁结果。该诊断不作为 C-4 通过，也未删断言或放宽超时；需要独立 owner 修复/环境资源后再重跑完整 BFF gate。
+
+### C-3 raw PostgreSQL fixture census（2026-11-02）
+
+只读 census 确认 `PostgresBffRepositories` 的生产引用仅在 `src/bootstrap/runtime.ts` 的 raw compatibility composition（import/constructor）；实现仍是唯一集中 PostgreSQL aggregate。9 个 integration suites 直接 import wrapper，共 **102 次** `new PostgresBffRepositories`；另有 17 处对 raw `database` pool/notify 的直接 fixture 访问，10 处 stale `store.services.*` 访问（PersonalKnowledge/PublicShare）。因此不能只删除 wrapper 或改名：先提供 test-only owner fixture factory/显式 named providers，迁移 fresh PostgreSQL/Redis 条件套件，再证明零 import 后删除 runtime aggregate。当前环境未提供 `KOKORO_TEST_POSTGRES_URL`/`KOKORO_TEST_REDIS_URL`，不执行破坏性 schema 操作，不宣称 C-3/C-4 已闭环。
+
+### C-2 generic configured-owner fallback termination（2026-11-02）
+
+BFF child `6f9cc641d59d10b7778985aefb61d8e7cbe54f42` adds a raw-chain negative guard for unknown `/v1/agents/**` and `/v1/billing/**` paths after the named Agent setup/Billing adapters. Unknown paths now return canonical 404 without calling configured upstreams; exact Agent setup and Billing personal routes remain on their named adapters, and mock `routeHandler` fixtures are unchanged. `handleBffRequest` remains as an explicit compatibility path for the remaining raw/test census rather than being deleted prematurely.
+
+验证：主方复核 BFF build/typecheck/lint/diff-check；BFF mock contract **29/29**；architecture/Nest runtime/feature suite **70/70**。This closes the known public Agent/Billing generic fallback categories; raw fixture/provider migration and the remaining configured-upstream compatibility surface are still open.
+
+### Root verification after configured-owner fallback BFF pin `6f9cc64`（2026-11-02）
+
+Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `6f9cc641d59d10b7778985aefb61d8e7cbe54f42`; governance result: **1846 passed / 3 skipped / 502 subtests**. This verifies the raw Agent/Billing negative guard at Root level only; C-4 full owner gates, fixture migration, real C-1.3 receipts, E2E startup, and A gates remain open.
