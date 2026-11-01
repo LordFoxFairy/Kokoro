@@ -329,3 +329,5 @@ BFF child `b7b30e5` moves browser Custom API CRUD into `McpModule` via `CustomAp
 BFF child `a09176a` narrows the ScheduledTask raw compatibility path to explicit `PROJECT_SERVICE` + `SCHEDULED_TASK_SERVICE` providers. Authorization and mutation execution no longer consume `BffBusinessStore.services` in production route code; the same canonical services remain the only owner for raw/test fallback. Scheduled/project focused validation is 129/129 and the complete BFF suite remains 2317/2315/0/2.
 
 BFF child `06ae1a6` applies the same provider boundary to the Scheduler callback: raw `createBffServer` now assembles `SchedulerDispatchProvider` explicitly, and the scheduler route no longer unwraps `source.services.scheduledTasks`. Architecture, scheduler, mock and full BFF gates remain green.
+
+BFF child `3c27f97` deletes the retired `project-resource.ts` upload dispatcher and its two duplicate compatibility tests. Canonical `project-native.ts` upload/read/delete coverage remains; the post-cleanup full BFF suite is 2315 tests / 2313 passed / 0 failed / 2 skipped.
