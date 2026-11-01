@@ -597,3 +597,7 @@ BFF child `393b9d5bd67f07e8b4c87b81f6c594f848621fee` adds the existing `handleAg
 App read-only audit confirms first-party runtime is native-session only: old OIDC/Auth.js/ProductSession runtime and dependencies were removed in App child history; `/api/auth/[...nextauth]` is a native `/session`/`/signout` compatibility adapter without RP fallback. IAM OAuth protocol relay and public Skill bearer remain separate owner protocols and are intentionally retained. Five active `.env*.example` files still contain stale legacy variable comments and historical docs retain old terminology; these are documentation/configuration cleanup items, not runtime fallback evidence.
 
 C-1.3 remains open because the real IAM→BFF→App PG/Redis receipt is missing for login, active-tenant switch, sign-out and revocation. No A-01/A-02/A-07 work is opened.
+
+### Root verification after BFF Agent control pin `393b9d5` (2026-11-02)
+
+Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `393b9d5bd67f07e8b4c87b81f6c594f848621fee` (**1846 passed / 3 skipped / 502 subtests**). Topology reports the new BFF child SHA; this remains governance evidence only and does not close BFF full owner gates, real C-1.3 receipts, or E2E service readiness.
