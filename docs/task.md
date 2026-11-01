@@ -17082,3 +17082,22 @@ Owner `kokoro-bff`，Root 为唯一 writer/审查与 Git 集成。已完成 RED�
 ### T-K03.18 Platform MCP Provider 单一目录（2026-10-11）
 
 Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON` 与静态 parser，`kokoro_platform.mcp_provider` 现承载 connector type、scope、授权标记、origin 与 tool policy；用户读仅见 enabled/nondeleted provider。Root 已按用户许可清理并重建本地 Platform schema，实际 schema installer 隔离 PostgreSQL 21/21 通过，Platform 8086 重启后 `/readyz`、`/healthz` 为 200。Provider Admin contract、BFF `/v1/admin/mcp/providers`、原 Ant Admin 管理页面、真实第三方 OAuth/自定义 MCP sandbox 与用户浏览器连接旅程尚未完成，禁止以此目录切片称连接器闭环。
+
+### Task A C-1.3～C-4 当前收敛检查点
+
+**Goal（保持 ACTIVE）**：完成 native-session 真实跨仓 receipt、BFF feature ownership/LegacyRoutes 与 global composition 收敛、C-3 wrapper/fixture 零消费者证明、Root/owner 串行全量验证；A-01/A-02/A-07 在此之前停写。
+
+**已完成并已 pin：**
+- App native-session source/config cleanup；App stale reconnect prop removed，静态 typecheck/lint/architecture 50/50。
+- BFF raw Scheduler callback、retired System/Skills、unknown session、unknown Agent/Billing、Personal MCP/Custom API 均走 named feature adapters/guards；Nest production 无 LegacyRoutes composition。
+- BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
+- Root topology/governance 每次 pin 后串行通过，当前 BFF `4af24bf`、App `f5d122bb`。
+
+**TODO / 未闭环：**
+1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
+2. C-2：迁移剩余 raw PostgreSQL/worker fixtures，证明 `createBffComposition`、`handleBffRequest`、`PostgresBffRepositories` 零消费者；不得以 raw fixture 通过替代生产 Nest 证据。
+3. C-3：9 个 integration suite 仍有 102 个 wrapper 构造、17 个 database pool/notify 直接访问；先建 test-only owner fixture factory，再删 wrapper/runtime aggregate。
+4. C-4：BFF full test 当前 1043 pass/21 fail/113 cancelled（Skill shared-revision/archived fixture baseline 与 pending）；BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
+5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
+
+**约束**：不重置共享 PG/Redis/MinIO，不生成/写入凭据，不放宽断言/超时/契约，不为消除失败删除测试，不启动未具备配置的业务服务。
