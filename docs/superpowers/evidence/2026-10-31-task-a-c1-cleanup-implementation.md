@@ -206,43 +206,43 @@ BFF child `a5b94c0` moves run-control POST into `AgentRunsModule`. `AGENT_CONTRO
 
 ### AgentRuns LegacyRoutes boundary（2026-10-31）
 
-BFF child `7c301d6` extends the negative `LegacyRoutesMiddleware` boundary to the AgentRuns-owned internal admission/binding paths and exact Run display path. `isAgentRunsInternalRequest` and the existing `isRunDisplayRequest` matcher now bypass the legacy runtime for these routes, while the feature middleware remains the only handler for method validation, credential checks, owner reads, response caps, cancellation and error envelopes. No new Repository/Service/Port or compatibility alias was introduced.
+BFF child `ba8ab60` extends the negative `LegacyRoutesMiddleware` boundary to the AgentRuns-owned internal admission/binding paths and exact Run display path. `isAgentRunsInternalRequest` and the existing `isRunDisplayRequest` matcher now bypass the legacy runtime for these routes, while the feature middleware remains the only handler for method validation, credential checks, owner reads, response caps, cancellation and error envelopes. No new Repository/Service/Port or compatibility alias was introduced.
 
 验证：BFF build/lint/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 20/20；Agent model-admission/settlement/recovery, project-execution-binding and Run display focused tests 99/99；LegacyRoutes bypass 2/2。`LegacyRoutes`、Agent dispatch worker lifecycle、剩余 session/run paths 与 global composition 仍未删除，C-2/C-3/C-4 不提前关闭。
 
 ### Agent outbox worker ownership（2026-10-31）
 
-BFF child `7c301d6` moves Agent dispatch and cancellation outbox worker construction/lifecycle into `AgentDispatchModule`. The feature module now owns the Postgres repository adapters, delivery adapters, worker identity, start/stop hooks and explicit disabled-agent behavior; `LegacyRoutesRuntime` receives the same feature-owned worker instances only as a raw-composition shutdown seam and no longer starts them. Explicit `null` options prevent `createBffComposition` from constructing a second production worker, while raw/test composition without the feature option keeps its compatibility worker behavior.
+BFF child `ba8ab60` moves Agent dispatch and cancellation outbox worker construction/lifecycle into `AgentDispatchModule`. The feature module now owns the Postgres repository adapters, delivery adapters, worker identity, start/stop hooks and explicit disabled-agent behavior; `LegacyRoutesRuntime` receives the same feature-owned worker instances only as a raw-composition shutdown seam and no longer starts them. Explicit `null` options prevent `createBffComposition` from constructing a second production worker, while raw/test composition without the feature option keeps its compatibility worker behavior.
 
 验证：build/lint/typecheck；Nest runtime/feature architecture 21/21；BFF architecture 34/34；Agent dispatch/cancellation/control focused 54/54；LegacyRoutes bypass 2/2。AG-UI projector、scheduled/project-scope worker lifecycle、剩余 session/run route 与 global composition 仍待按同一 owner 规则迁移。
 
 ### AG-UI projector ownership（2026-10-31）
 
-BFF child `7c301d6` moves the AG-UI projector repository/source-reader construction and start/stop lifecycle into `AguiModule`. The feature provider reuses the canonical `AGUI_PROJECTION`/consumer repositories and the existing Agent source contract, returns `null` when Agent projection is disabled, and is passed into raw composition only as a shutdown seam. `LegacyRoutesRuntime` no longer starts the projector; explicit-null composition options prevent a second production projector while raw/test composition retains its standalone fallback.
+BFF child `ba8ab60` moves the AG-UI projector repository/source-reader construction and start/stop lifecycle into `AguiModule`. The feature provider reuses the canonical `AGUI_PROJECTION`/consumer repositories and the existing Agent source contract, returns `null` when Agent projection is disabled, and is passed into raw composition only as a shutdown seam. `LegacyRoutesRuntime` no longer starts the projector; explicit-null composition options prevent a second production projector while raw/test composition retains its standalone fallback.
 
 验证：build/lint/typecheck；Nest runtime/feature architecture 22/22；BFF architecture 34/34；AG-UI projector focused cases 6/6；其余 direct message-parts/replay imports仍受既有 Node strip-only/缺失 `.js` fixture baseline影响，不作为本 slice 通过证据。Scheduled/project-scope worker lifecycle、剩余 session/run route 与 global composition 仍待迁移。
 
 ### Scheduled outbox worker ownership（2026-10-31）
 
-BFF child `7c301d6` moves the scheduled-task outbox repository, scheduler delivery and worker lifecycle into `ScheduledTasksModule`. The module owns the stable worker identity and shutdown hook; `LegacyRoutesRuntime` receives the feature instance only for raw-composition shutdown and no longer starts it. Explicit-null composition options prevent a duplicate production scheduler worker; raw/test composition without the feature option retains its compatibility fallback.
+BFF child `ba8ab60` moves the scheduled-task outbox repository, scheduler delivery and worker lifecycle into `ScheduledTasksModule`. The module owns the stable worker identity and shutdown hook; `LegacyRoutesRuntime` receives the feature instance only for raw-composition shutdown and no longer starts it. Explicit-null composition options prevent a duplicate production scheduler worker; raw/test composition without the feature option retains its compatibility fallback.
 
 验证：build/lint/typecheck；Nest runtime/feature architecture 23/23；BFF architecture 34/34。Scheduled task outbox behavior remains covered by the existing scheduler/outbox suites. Scheduled Agent dispatch/terminal and project-scope release worker lifecycle、剩余 session/run route 与 global composition 仍待迁移。
 
 ### Project-scope release worker ownership（2026-10-31）
 
-BFF child `7c301d6` moves the project-scope release outbox repository, Storage release client and worker lifecycle into `ProjectsModule`. The module keeps the existing storage-enabled condition and bounded release/settlement behavior, owns the worker identity/start/stop hooks, and exposes the feature instance to raw composition only for shutdown. Explicit-null composition options prevent a duplicate production worker; raw/test composition without the feature option retains its compatibility fallback.
+BFF child `ba8ab60` moves the project-scope release outbox repository, Storage release client and worker lifecycle into `ProjectsModule`. The module keeps the existing storage-enabled condition and bounded release/settlement behavior, owns the worker identity/start/stop hooks, and exposes the feature instance to raw composition only for shutdown. Explicit-null composition options prevent a duplicate production worker; raw/test composition without the feature option retains its compatibility fallback.
 
 验证：build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34。Project resource/delete/scope-release focused contracts remain on the existing owner boundary. Scheduled Agent dispatch/terminal lifecycle、剩余 session/run route 与 global composition 仍待迁移。
 
 ### Scheduled Agent worker ownership（2026-10-31）
 
-BFF child `7c301d6` moves the scheduled Agent dispatch/terminal repository, Agent delivery/source adapters and worker lifecycle into `ScheduledTasksModule`. The feature keeps the existing Agent-enabled/upstream-configured condition, stable worker identities, bounded concurrency/retry/backoff and shutdown ordering; `LegacyRoutesRuntime` receives the feature instances only for raw-composition shutdown and no longer starts them. Explicit-null composition options prevent duplicate production workers while raw/test composition retains its fallback.
+BFF child `ba8ab60` moves the scheduled Agent dispatch/terminal repository, Agent delivery/source adapters and worker lifecycle into `ScheduledTasksModule`. The feature keeps the existing Agent-enabled/upstream-configured condition, stable worker identities, bounded concurrency/retry/backoff and shutdown ordering; `LegacyRoutesRuntime` receives the feature instances only for raw-composition shutdown and no longer starts them. Explicit-null composition options prevent duplicate production workers while raw/test composition retains its fallback.
 
 验证：build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；scheduled Agent focused tests 15 pass / 13 resource-gated skip；其余 skips 为真实 PostgreSQL/Redis 条件测试，不计为通过。剩余 session/run route、global composition 与 C-4 全量 owner gate 仍未关闭。
 
 ### Project-scoped Chat read cutover（2026-10-31）
 
-BFF child `7c301d6` extends `ChatModule` business-read ownership to `project_ref` collection/session/message/parts/process reads. The adapter now passes the shared `ProjectAccessModule` owner into Chat authorization, preserving current project existence/recheck, Chat owner reads, pagination/cursor, cancellation and error envelopes; direct reads remain compatible without a project provider in raw focused fixtures. The `LegacyRoutesMiddleware` boundary now locks project-scoped Chat reads as migrated.
+BFF child `ba8ab60` extends `ChatModule` business-read ownership to `project_ref` collection/session/message/parts/process reads. The adapter now passes the shared `ProjectAccessModule` owner into Chat authorization, preserving current project existence/recheck, Chat owner reads, pagination/cursor, cancellation and error envelopes; direct reads remain compatible without a project provider in raw focused fixtures. The `LegacyRoutesMiddleware` boundary now locks project-scoped Chat reads as migrated.
 
 验证：Chat business direct/project focused 4/4；LegacyRoutes bypass 5/5；build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34。Remaining session/run families, LegacyRoutes runtime/global composition and C-3 Port census remain open。
 
@@ -252,6 +252,12 @@ BFF child `7c301d6` extends `ChatModule` business-read ownership to `project_ref
 
 ### Scheduler callback cutover（2026-10-31）
 
-BFF child `7c301d6` moves `POST /internal/v1/bff/scheduled-tasks/dispatch` into `ScheduledTasksModule`. The feature owns the canonical `ScheduledTaskService`, scheduler receipt repository and scheduled-Agent dispatch repository; the middleware preserves service authentication, webhook/body validation, receipt claim/CAS, frozen task revision checks and 202/409/503 mapping. `LegacyRoutesMiddleware` bypasses the exact callback path while raw `createBffServer` compatibility remains unchanged.
+BFF child `ba8ab60` moves `POST /internal/bff/scheduled-tasks/dispatch` into `ScheduledTasksModule`. The feature owns the canonical `ScheduledTaskService`, scheduler receipt repository and scheduled-Agent dispatch repository; the middleware preserves service authentication, webhook/body validation, receipt claim/CAS, frozen task revision checks and 202/409/503 mapping. `LegacyRoutesMiddleware` bypasses the exact callback path while raw `createBffServer` compatibility remains unchanged.
 
 验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；scheduler/scheduled-agent focused 28 tests（13 real-resource cases remain environment-gated skip）；LegacyRoutes bypass 3/3。
+
+### Scheduled task mutation cutover（2026-10-31）
+
+BFF child `ba8ab60` moves scheduled-task create/update/delete/retry and project-scoped scheduled-task create mutations into `ScheduledTasksModule`. The feature middleware owns native admission, strict input parsing, project/task owner rechecks, persistent idempotency receipts, stable task IDs, CAS/outbox service calls and canonical response/error mapping. The shared `PostgresScheduledTaskRepository` is reused by read, mutation and scheduler callback paths; no second task repository or receipt store is introduced.
+
+验证：build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；scheduler focused 14/14；LegacyRoutes bypass covers the callback and scheduled Chat/Agent boundaries. Remaining scheduled current-read/full owner integration and C-4 full suite remain open。
