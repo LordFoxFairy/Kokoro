@@ -370,3 +370,10 @@ pnpm test:integration
 
 - BFF child `e8e7207a3d7d1bbbc9a4f35bb502138754f0e2d6` terminates unknown live `/v1/sessions/**` paths before the raw session fallback, with a raw regression proving canonical 404 and known Agent control/Chat paths unchanged.
 - `liveAgentSession` remains a named adapter implementation for AG-UI events and Agent control; only the `handleBffRequest` residual unknown-session fallback is closed. Remaining C-2/C-3 work is internal Scheduler callback, retired-owner/generic-upstream compatibility and fixture/provider migration before raw composition deletion.
+
+### 2026-11-02 execution update (Scheduler and retired-owner raw cutovers)
+
+- BFF child `07584d25cd531cef472ec668ee1cab688ff1800b` routes raw Scheduler callbacks through the shared feature-owned `schedulerDispatch` entrypoint and deletes the duplicate `handleBffRequest` scheduler branch. Raw provider-null/routeHandler semantics and request-id behavior are covered by focused tests; no generic proxy or second Scheduler owner was added.
+- BFF child `1f5e2cd50707c7d3e622e3428cc2dff2c66ca170` routes unknown raw System/Skills paths through `handleRetiredOwnerRawRequest`, preserves the explicit historical Skill 404 shapes, and deletes the retired-owner business branch from `handleBffRequest`. Nest retired-owner middleware remains the production feature boundary; raw `createBffServer` remains compatibility-only.
+- Main-checkout revalidation: BFF build/typecheck/lint/diff-check, mock contract **28/28**, architecture/Nest suite **69/69**, and Scheduler identity/outbox/receiver **28/28** pass. `pnpm format:check` and full BFF test remain non-green only on the recorded pre-existing warning/fixture baseline; no C-4 pass is claimed.
+- Remaining C-2/C-3 deletion gate is unchanged: generic configured-upstream compatibility, raw integration fixture/provider census, `createBffComposition`/`handleBffRequest`/`PostgresBffRepositories` zero-consumer proof, then serial owner/root full gates. C-1.3 real IAM→BFF→App receipts and E2E service startup remain open; A-01/A-02/A-07 stay stopped.

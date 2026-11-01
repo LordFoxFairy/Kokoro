@@ -639,3 +639,19 @@ BFF child `e8e7207a3d7d1bbbc9a4f35bb502138754f0e2d6` adds a live-composition gua
 ### Root verification after session fallback pin `e8e7207` (2026-11-02)
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `e8e7207a3d7d1bbbc9a4f35bb502138754f0e2d6` (**1846 passed / 3 skipped / 502 subtests**). Unknown live session termination is now covered by the raw focused gate; BFF owner full tests, real native-session receipts, E2E startup and non-session raw composition removal remain open.
+
+### C-2 raw Scheduler callback cutover（2026-11-02）
+
+BFF child `07584d25cd531cef472ec668ee1cab688ff1800b` moves the raw compatibility callback `POST /internal/bff/scheduled-tasks/dispatch` out of `handleBffRequest` into the same feature-owned `schedulerDispatch` entrypoint used by `SchedulerDispatchMiddleware`. The raw chain now builds one narrow `SchedulerDispatchProvider` and invokes it before generic routing; provider-null, `routeHandler` and request-id semantics remain explicit. No second Scheduler service/repository or generic upstream path was introduced.
+
+验证：主方在 child checkout 重新运行 `pnpm build`、`pnpm typecheck`、`pnpm lint`、`git diff --check`；`test/bff.test.ts` **28/28**；architecture/Nest runtime/feature suite **69/69**；scheduler identity/outbox/receiver bundle **28/28**。`pnpm format:check` remains blocked only by the tracked pre-existing warning baseline; BFF full `pnpm test` diagnostic仍有既有 fixture failures/timeouts，不作为 C-4 通过。
+
+### C-2 retired-owner raw termination cutover（2026-11-02）
+
+BFF child `1f5e2cd50707c7d3e622e3428cc2dff2c66ca170` inserts `handleRetiredOwnerRawRequest` after the named feature adapters and removes the retired System/Skills business branch from `handleBffRequest`. Unknown `/v1/system/**` and `/v1/skills/**` requests now use the dedicated IAM-admitted retired-owner adapter and return the existing 503 contracts without generic upstream proxy or receipt claims. Raw compatibility preserves the historical 404 shapes for retired Skill root/by-id/download and enable/disable paths; mock `routeHandler` compositions remain on their fixture handler. Nest `SystemModule`/`SkillsModule` broad retired-owner behavior is unchanged.
+
+验证：主方已在 child checkout 复核 `pnpm build`、`pnpm typecheck`、`pnpm lint`、`git diff --check`；`test/bff.test.ts` **28/28**；architecture/Nest runtime/feature suite **69/69**。C-2 raw fallback census is reduced to generic configured-upstream compatibility plus raw/test fixture/provider consumers; `createBffComposition`, `handleBffRequest` and `PostgresBffRepositories` remain intentionally retained pending zero-consumer proof and C-4 owner gates。
+
+### Root verification after Scheduler/retired-owner BFF pin `1f5e2cd`（2026-11-02）
+
+Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `1f5e2cd50707c7d3e622e3428cc2dff2c66ca170`; governance result: **1846 passed / 3 skipped / 502 subtests**. This closes the root topology/governance recheck for the two raw cutovers only. BFF `pnpm format:check`, full owner test baseline, real C-1.3 IAM→BFF→App receipts, E2E service startup, and raw composition zero-consumer proof remain open; A-01/A-02/A-07 stay stopped.
