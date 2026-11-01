@@ -539,3 +539,9 @@ BFF child `61834b7` moves the 171-line `ChatRepository` contract and its Chat re
 BFF child `6926525` moves the Project owner repository contract from global `application/ports` to `application/projects`. ProjectService, Skill specification's Project owner scope, project HTTP inputs/routes, PostgreSQL Project adapters/composition, and architecture fixtures now consume the feature-local port. No Project SQL, Storage boundary, receipt semantics, or route behavior changed.
 
 验证：BFF build/typecheck/lint；Projects/Project Resource/MCP recommendation/architecture focused tests **122/122**；`git diff --check` clean. The Project Skill content suite remains environment-gated by its existing Platform dependency fixture and was kept outside this green slice. Remaining global ports and raw compatibility composition remain open C-3 work; A-01/A-02/A-07 stay stopped.
+
+### C-3 AgentRuns reader port isolation continuation（2026-11-02）
+
+BFF child `6d3d7ce` moves `ProjectExecutionBindingReader` and `SubmittedAgentRunReader` into the AgentRuns-owned `application/agent-runs` boundary. Agent admission/display/model-admission routes, AgentRuns module/middleware, PostgreSQL bindings/outbox composition, and runtime wiring now use the feature-local contracts. No Agent protocol, receipt, authorization, or persistence behavior changed.
+
+验证：BFF build/typecheck/lint；AgentRuns/Project binding/model-admission/architecture focused tests **193/193**；`git diff --check` clean. Remaining global ports are shared idempotency or lifecycle/outbox contracts requiring separate ownership proofs; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
