@@ -356,3 +356,9 @@ BFF child `6f9a9e2` deletes `src/application/services.ts` and removes the aggreg
 BFF child `5de502c` moves `ArtifactAssociation`, `ArtifactPosition` and `ArtifactLibraryRepository` out of the global `bff-business-store` port into the Account/Library-owned `artifact-library-repository` port. Library routes, AccountModule, Storage artifact projection and PostgreSQL adapter now import the narrow feature port; no behavior, SQL owner or storage transport changed.
 
 验证：BFF build/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 23/23；`git diff --check` clean. The remaining `BffBusinessStore` lifecycle/outbox fields still require feature-owner migration evidence.
+
+### C-3 scheduler receipt port isolation（2026-11-01）
+
+BFF child `039e8d8` removes the Scheduler callback route's type dependency on the aggregate `BffBusinessStore`. `SchedulerDispatchProvider`, settlement and unknown-claim release now consume the feature-owned `SchedulerDispatchReceiptRepository` port directly; the raw/test fixture migration uses the already-named `scheduledTaskService` seam instead of `services.scheduledTasks`. No receipt repository, task service or worker implementation was duplicated.
+
+验证：BFF build/typecheck；Scheduler focused 14/14；`git diff --check` clean. The concrete PostgreSQL compatibility view and remaining lifecycle/outbox/feature ports are still open C-3 work; A-01/A-02/A-07 remain stopped.

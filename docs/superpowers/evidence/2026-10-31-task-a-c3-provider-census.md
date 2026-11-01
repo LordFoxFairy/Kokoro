@@ -59,6 +59,10 @@
 - BFF full：2316 tests / 2299 pass / 15 fail / 2 skip；15 项失败为既有 Storage/Product、Project exact-download、Admin credential、anonymous Share fixtures。
 - Root topology：PASS
 
+### 2026-11-01 Scheduler receipt port isolation
+
+BFF child `039e8d8` removes the Scheduler callback route's type-level dependency on `BffBusinessStore`. The route now consumes `SchedulerDispatchReceiptRepository` directly for claim settlement and unknown-claim release, while its raw/test fixtures use the named `scheduledTaskService` provider. Scheduler focused coverage is 14/14; build/typecheck and diff checks are clean. This closes one C-3 port consumer but does not close the remaining compatibility aggregate or lifecycle/outbox port census.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
