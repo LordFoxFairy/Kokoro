@@ -525,3 +525,9 @@ BFF child `758d58f` moves `PersonalKnowledgeRepository` into the Account-owned `
 E2E 预检：当前本机仅探测到 PostgreSQL `127.0.0.1:5432`、Redis `127.0.0.1:6379`、MinIO recovery `39190/39192`、Mailpit `1025/8025`、ClamAV `43310`；IAM/BFF/App/Agent/System/Billing/Storage/Scheduler/Capability/Admin 均无运行监听。PostgreSQL `postgres` 数据库当前仅有 `kokoro_agent`、`kokoro_platform` 与历史 `kokoro_test_*` schema，缺少本轮 IAM/BFF/System/Billing/Storage/Scheduler 的隔离 owner schema；Redis DB9 仍有既有 key，未执行清理。
 
 端到端启动顺序冻结为：IAM（3101）→ System（4240）/Storage（8085）→ Capability（8086）/Scheduler（8080）/Billing（4245）→ Agent HTTP/worker（4401）→ BFF（4300）→ App（3000）/Admin（3320）。启动前须补齐 owner schema、隔离 Redis logical DB/prefix、Storage S3/ClamAV 与 IAM/BFF/owner credential 配对；完成 `/healthz`/`/readyz` 后，依次验证 native login/session admission、BFF `/v1/me`、profile/tenant/team/sign-out/revocation，再验证 Chat/Agent/Skills/Storage/Billing/Scheduler。当前资源与进程条件不足，未宣称 E2E 通过。
+
+### C-3 Chat repository port isolation continuation（2026-11-02）
+
+BFF child `61834b7` moves the 171-line `ChatRepository` contract and its Chat read/mutation value types from global `application/ports` to `application/chat`. Chat services, HTTP inputs/routes, public-share adapter, PostgreSQL readers, archive/shared-task adapters, and focused fixtures now import the Chat-owned port. No SQL, wire envelope, authorization rule, transaction, or repository implementation changed.
+
+验证：BFF build/typecheck/lint；architecture/Nest/runtime/feature + Chat/archive/shared-task/Skill Share focused tests **208/208**；`git diff --check` clean. The full BFF `pnpm test` remains a separate long-running baseline/environment gate and is not reclassified by this type-boundary slice. Remaining global ports are still subject to the planned owner audit; A-01/A-02/A-07 stay stopped.
