@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`d9329c9e`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `d2f56c0`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 与无 `project_ref` 的 Chat title/delete/share mutations 下沉到 ChatModule，并让 LegacyRoutesMiddleware 绕过已迁移的 Chat path；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation、scheduled current-read、Chat/ChatTurn、Project service、Project skill-selection、Project MCP recommendation、Skill specification 与 exact-download providers 均保留精确 owner/revision recheck）。
+- BFF：`apps/kokoro-bff` `5133ed3`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 与无 `project_ref` 的 Chat title/delete/share mutations 下沉到 ChatModule，并让 LegacyRoutesMiddleware 绕过已迁移的 Chat path；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation、scheduled current-read、Chat/ChatTurn、Project service、Project skill-selection、Project MCP recommendation、Skill specification 与 exact-download providers 均保留精确 owner/revision recheck）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。

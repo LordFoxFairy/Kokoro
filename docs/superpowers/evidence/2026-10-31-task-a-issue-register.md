@@ -272,7 +272,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - 验证：direct Chat read 2/2、BFF mock contract 25/25、Nest architecture 18/18、BFF architecture 34/34、`pnpm lint`、`pnpm typecheck`、`pnpm build`；串行全量 2316 tests / 2299 pass / 15 fail / 2 skip，15 项失败仍为既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture。
 - 下一步仍只推进 C-1.3/C-2/C-3：Chat POST/events/project scope、Agent/AG-UI route bundle 与剩余 global provider/Port；A-01/A-02/A-07 继续停写。
 - `630efbf` 的 Chat bypass 只关闭已迁移路径对 LegacyRoutes 的消费，不改变 raw `createBffServer` 兼容入口；下一步仍是 Chat POST/events/project scope，再进入 Agent/AG-UI 与 global provider/Port census。
-- `d2f56c0` 将 direct title/delete/share 的 receipt owner 下沉到 ChatModule；下一步仍是 Chat POST/events/project scope，不能删除 `BffApplicationServices.chat` 或 Chat Repository。
+- `5133ed3` 将 direct title/delete/share 的 receipt owner 下沉到 ChatModule；下一步仍是 Chat POST/events/project scope，不能删除 `BffApplicationServices.chat` 或 Chat Repository。
 
 ### 2026-10-31 C-3 ChatTurn seam cleanup
 
@@ -390,6 +390,6 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ### 2026-10-31 Direct Chat mutation cutover
 
-- BFF child `d2f56c0` adds `CHAT_IDEMPOTENCY` and `handleChatMutationRequest` for direct no-`project_ref` PATCH title, DELETE session, and POST/DELETE share. It reuses `authorizeChatRequest`, `liveChatBusiness`, canonical mutation fingerprints, PostgreSQL receipts and process-local replay state.
+- BFF child `5133ed3` adds `CHAT_IDEMPOTENCY` and `handleChatMutationRequest` for direct no-`project_ref` PATCH title, DELETE session, and POST/DELETE share. It reuses `authorizeChatRequest`, `liveChatBusiness`, canonical mutation fingerprints, PostgreSQL receipts and process-local replay state.
 - Negative coverage keeps project-scoped mutations, Chat POST messages, and events in the transitional dispatcher; raw `createBffServer` behavior is unchanged.
 - 验证：direct Chat mutation 1/1、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、BFF mock contract 25/25、`pnpm lint`、`pnpm typecheck`、`pnpm build` 全部通过。
