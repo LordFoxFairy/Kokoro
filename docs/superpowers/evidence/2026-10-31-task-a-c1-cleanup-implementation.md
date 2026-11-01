@@ -261,3 +261,9 @@ BFF child `ba8ab60` moves `POST /internal/bff/scheduled-tasks/dispatch` into `Sc
 BFF child `ba8ab60` moves scheduled-task create/update/delete/retry and project-scoped scheduled-task create mutations into `ScheduledTasksModule`. The feature middleware owns native admission, strict input parsing, project/task owner rechecks, persistent idempotency receipts, stable task IDs, CAS/outbox service calls and canonical response/error mapping. The shared `PostgresScheduledTaskRepository` is reused by read, mutation and scheduler callback paths; no second task repository or receipt store is introduced.
 
 验证：build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；scheduler focused 14/14；LegacyRoutes bypass covers the callback and scheduled Chat/Agent boundaries. Remaining scheduled current-read/full owner integration and C-4 full suite remain open。
+
+### Project command/read cutover（2026-10-31）
+
+BFF child `b1af958` moves project create/instruction command handling into `ProjectsModule` through `ProjectMutationMiddleware`, with a feature-owned `PROJECT_IDEMPOTENCY` provider. Native admission, strict JSON/name/instruction validation, persistent idempotency replay/conflict handling, project owner scope, slug-conflict mapping and canonical response envelopes remain unchanged. The project core-read adapter now also owns `GET /v1/projects/:id/tasks`; the duplicate `liveBffBusiness` task branch was removed. No second ProjectService, Repository or SQL writer was introduced.
+
+验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；BFF mock contract 25/25；Project pin focused 15/15。Raw `createBffServer` compatibility still retains create/instruction fallback until the remaining transitional dispatcher is removed; C-2/C-3/C-4 and A gates remain open。
