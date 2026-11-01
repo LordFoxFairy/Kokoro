@@ -480,3 +480,9 @@ the pre-existing `app-frame-main-surface.tsx:onReconnect` error. Old RP/
 Product Session server files and their real-HTTP fixtures still require a
 separate deletion/migration slice; C-1.3/C-4 remain open and A-01/A-02/A-07
 stay stopped.
+
+### C-1.3 legacy runtime deletion and native fixture migration（2026-11-01）
+
+App child `e277273a` completes the deletion slice for the first-party legacy runtime. Removed the Auth.js/OIDC RP helpers (`oidc-provider`, `oidc-token`, RP transaction/cookie/CSRF/agent) and Product Session identity/cookie/store/return modules, renamed the native browser recovery helper to `login-recovery.ts`, and removed their server and real-HTTP test fixtures. `package.json`/`pnpm-lock.yaml` no longer include `next-auth` or `openid-client`. Native BFF fixtures now assert issuer-cookie forwarding rather than Bearer/Product Session fallback; architecture and contract checks assert the native-only `/api/auth/session`/`signout` adapter and the absence of deleted files. The legacy IAM RP real-HTTP suites were deleted because their hidden Auth.js form/state contract is no longer a runtime contract; native IAM unit/app coverage remains in the current focused suites.
+
+验证：App `tests/app` 617/618 passed (the single public-skill-list provenance hash mismatch is pre-existing); App `tests/server` 279/279；architecture/contract 29/29；native/product-BFF/system focused bundles 26/26、73/73、39/39、18/18；touched-file ESLint and `git diff --check` clean. `pnpm typecheck` remains blocked only by the pre-existing `src/components/blocks/app-frame/app-frame-main-surface.tsx:186` `onReconnect` prop mismatch; Node 24 vs package Node 22 engine warning remains environment-only. C-1.3 still requires the remaining route/docs census and C-4 full cross-owner verification; A-01/A-02/A-07 remain stopped.
