@@ -63,4 +63,6 @@
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
 
+BFF child `46bb5ac` adds the explicit `SCHEDULED_TASK_READ_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ScheduledTasksModule`; `LegacyRoutesRuntime` injects `ScheduledTaskReadService` and passes it to `createBffComposition`; `BffCompositionOptions.scheduledTaskReader` now prefers that feature provider while retaining the old service-derived reader only for raw/test composition. Current-read behavior remains covered by the existing scheduler focused suite; mutation/callback/outbox routes remain in the next census slice.
+
 A-01/A-02/A-07 继续停写。

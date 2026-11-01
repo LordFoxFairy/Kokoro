@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`d9329c9e`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `330e439`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share 与 project installation 均保留精确 owner/revision recheck）。
+- BFF：`apps/kokoro-bff` `46bb5ac`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share、project installation 与 scheduled current-read 均保留精确 owner/revision recheck）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -135,7 +135,7 @@ Nest AppModule
 | `ChatModule` | `CHAT_SERVICE`、`CHAT_TURN_SERVICE`、`PUBLIC_SHARE_SERVICE`、native archive/share/feedback/regeneration/move 与 direct Chat read middleware | Chat POST/events/project scope、Agent/AG-UI 仍由旧 dispatcher 组合 | 继续拆 Chat/Run/AG-UI provider，逐 bundle 删除旧分支 |
 | `AgentRunsModule` | 仅声明 IAM/Database imports | 未承接 Agent client、run display/control、outbox | run display/control/dispatch seam + cancellation/replay tests |
 | `AguiModule` | 仅声明 Chat/Redis/Database imports | 未承接 projector/ledger/replay provider | durable ledger/cursor/replay Controller/provider + tests |
-| `ScheduledTasksModule` | 仅声明 Projects/AgentRuns/Database imports | 已有 `ScheduledTaskStateReader` 仍未注册成业务 Controller | read/mutation/callback/outbox slice + tests |
+| `ScheduledTasksModule` | `SCHEDULED_TASK_READ_SERVICE`、current-read middleware、Projects/AgentRuns/Database imports | mutation/callback/outbox 仍在旧 dispatcher；raw composition 仍需逐步清 fallback | read/mutation/callback/outbox slice + tests |
 | `SkillsModule`/`BillingModule`/`SystemModule`/`MusicModule` | SkillsModule 已拥有 App binding、specification、installation、catalog、admin、import、share 与 lifecycle providers；其余模块主要是 imports 声明 | Billing/System/Music 仍需按 route bundle 补齐真实 owner seam | 逐 route bundle 承接真实 client/use case；否则保持 inventory 状态 |
 | `McpModule` | `PROJECT_MCP_RECOMMENDATIONS_PROVIDER`、MCP authorization、personal/connector/admin/publication clients、对应 middleware | personal MCP execution 与少量旧 owner projection 仍在旧 dispatcher | 继续按 route bundle 下沉并补 client lifecycle |
 | `LegacyRoutesModule` | all-route middleware + global runtime | 当前唯一实际业务入口 | route census 清零后删除 module/runtime/middleware |
