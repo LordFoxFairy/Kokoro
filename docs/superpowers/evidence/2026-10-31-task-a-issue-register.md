@@ -8,6 +8,7 @@
 - 只读盘点：[Task A 清理与重构清单](../specs/2026-10-30-task-a-cleanup-inventory.md)
 - 原执行顺序：[Task A 清理与重构执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md)
 - 当前收敛方案：[C-1.3～C-4 收敛实施方案](../plans/2026-10-31-task-a-c1-c3-convergence.md)
+- C-3 provider/service 当前盘点：[C-3 provider census](2026-10-31-task-a-c3-provider-census.md)
 - 已交付证据：[C-1 清理实施证据](2026-10-31-task-a-c1-cleanup-implementation.md)
 - C-2/C-3 路由与边界盘点：[C-2/C-3 inventory](2026-10-31-task-a-c2-c3-inventory.md)
 - C-1.3 profile-read cutover：[profile-read evidence](2026-10-31-task-a-c1-3-profile-read-cutover.md)
