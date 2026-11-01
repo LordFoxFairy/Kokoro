@@ -273,3 +273,7 @@ BFF child `51d7bee` centralizes scheduled-task create/update/delete/retry and pr
 BFF child `51d7bee` moves project create/instruction command handling into `ProjectsModule` through `ProjectMutationMiddleware`, with a feature-owned `PROJECT_IDEMPOTENCY` provider. Native admission, strict JSON/name/instruction validation, persistent idempotency replay/conflict handling, project owner scope, slug-conflict mapping and canonical response envelopes remain unchanged. The project core-read adapter now also owns `GET /v1/projects/:id/tasks`; the duplicate `liveBffBusiness` task branch was removed. No second ProjectService, Repository or SQL writer was introduced.
 
 验证：BFF build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34；BFF mock contract 25/25；Project pin focused 15/15；business-store integration 在缺少 PostgreSQL/Redis 时 6 pass / 75 skip。Nest 与 raw `createBffServer` 现在共用同一 `project-mutation-native` adapter，未保留第二套 create/instruction 实现；C-2/C-3/C-4 和 A gates remain open。
+
+### C-4 full-run revalidation（2026-10-31）
+
+在 `51d7bee` 后串行启动 BFF `pnpm test`：focused 早期继续出现既有 R357 shared-summary fixture failures，随后停在 `test/contract/skill-specification-http.test.mjs` 的长时间 pending 状态；已手动终止，未取得完整汇总，不能计作 C-4 通过。进程状态已复核清零；本次切片以 build/lint/typecheck、Nest architecture、BFF architecture、scheduler 39/39、BFF mock 25/25 作为有效证据。
