@@ -69,4 +69,6 @@ BFF child `d2b0bfe` adds explicit `CHAT_SERVICE`, `CHAT_TURN_SERVICE`, and `PROJ
 
 BFF child `b9ac010` adds `PROJECT_SKILL_SELECTION_PROVIDER` to the same explicit chain. The raw server prefers `composition.projectSkillSelectionProvider`, while `projectSkillSelectionProvider(BffBusinessStore)` remains only a raw/test fallback until the project skill-selection path is fully owned by the Nest middleware.
 
+BFF child `1301269` adds `PROJECT_MCP_RECOMMENDATIONS_PROVIDER` to the explicit chain. `LegacyRoutesRuntime` receives the provider from `McpModule`; the raw server prefers `composition.projectMcpRecommendationsProvider`, preserving the business-store constructor only for raw/test fallback.
+
 A-01/A-02/A-07 继续停写。
