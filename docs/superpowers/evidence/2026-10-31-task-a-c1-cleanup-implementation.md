@@ -545,3 +545,9 @@ BFF child `6926525` moves the Project owner repository contract from global `app
 BFF child `6d3d7ce` moves `ProjectExecutionBindingReader` and `SubmittedAgentRunReader` into the AgentRuns-owned `application/agent-runs` boundary. Agent admission/display/model-admission routes, AgentRuns module/middleware, PostgreSQL bindings/outbox composition, and runtime wiring now use the feature-local contracts. No Agent protocol, receipt, authorization, or persistence behavior changed.
 
 验证：BFF build/typecheck/lint；AgentRuns/Project binding/model-admission/architecture focused tests **193/193**；`git diff --check` clean. Remaining global ports are shared idempotency or lifecycle/outbox contracts requiring separate ownership proofs; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
+
+### C-3 Projects release outbox port isolation continuation（2026-11-02）
+
+BFF child `a4e1241` moves `ProjectScopeReleaseOutboxRepository` into the Projects-owned `application/projects` boundary. Project release dispatcher, Storage scope-release client, PostgreSQL adapter/composition, runtime wiring, and ProjectsModule now consume the feature-local port; lifecycle and release semantics are unchanged.
+
+验证：BFF build/typecheck/lint；Project resource + architecture/Nest focused tests **101/101**；`git diff --check` clean. Remaining global ports are scheduled/Agent outbox contracts and shared idempotency, each requiring its own owner proof; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
