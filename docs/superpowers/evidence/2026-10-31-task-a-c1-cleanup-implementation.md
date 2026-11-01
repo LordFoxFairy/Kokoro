@@ -335,3 +335,10 @@ BFF child `3c27f97` deletes the retired `project-resource.ts` upload dispatcher 
 BFF child `8df63bb` removes `LegacyRoutesModule`, `LegacyRoutesRuntime`, its middleware, and the unused `GracefulShutdown` bridge from the production Nest graph. Feature modules now form the only Nest composition; raw `createBffServer` remains an explicit compatibility/test entrypoint. Nest architecture is 23/23, BFF architecture 34/34, and the full BFF suite is 2315/2313/0/2.
 
 BFF child `2d1103f` removes the remaining `BffApplicationServices` type mirror from `SkillSpecificationService`; the Project dependency is now expressed directly as `Pick<ProjectService, "find">`. Skill specification focused validation remains 110/110.
+
+
+### C-3 aggregate runtime fallback removal（2026-11-01）
+
+BFF child `62fe701` removes the `BffApplicationServices` aggregate from the `BffBusinessStore` contract and stops production bootstrap/server code from reading `businessStore.services.*`. The live PostgreSQL composition exposes named owner service seams for bootstrap (`chatService`, `chatTurnService`, `projectService`, `scheduledTaskService`); the aggregate view remains only on the concrete repository fixture for existing integration tests and is no longer a runtime application port. Project skill-selection, Project MCP recommendations, Skill share lookup and message regeneration now receive explicit owner/receipt providers rather than a global store locator.
+
+验证：BFF build/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 23/23；Project MCP recommendation HTTP 8/8；`git diff --check` clean. The compatibility aggregate and remaining feature-local Port census are still open C-3 work; A-01/A-02/A-07 remain stopped.

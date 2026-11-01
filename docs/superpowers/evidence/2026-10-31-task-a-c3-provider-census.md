@@ -104,3 +104,10 @@ BFF child `ba8ab60` moves the Scheduler callback route into `ScheduledTasksModul
 BFF child `ba8ab60` extends the same feature seam to scheduled-task create/update/delete/retry and project-scoped create mutations. Read, mutation and Scheduler callback paths now share one `PostgresScheduledTaskRepository`/`ScheduledTaskService` owner plus one persistent idempotency boundary; legacy live-bff remains only as raw compatibility.
 
 A-01/A-02/A-07 继续停写。
+
+
+## 2026-11-01 aggregate runtime fallback closure
+
+BFF child `62fe701` removes `BffBusinessStore.services` from the application port and removes all `businessStore.services.*` reads from `bootstrap/runtime.ts` and `bootstrap/server.ts`. The runtime now consumes explicit owner services from named composition seams. Project skill-selection, Project MCP recommendations, Skill share lookup and message regeneration no longer accept a global store aggregate as their production provider. `PostgresBffRepositories.services` remains a compatibility view for existing integration fixtures only; it is the next deletion target after those fixtures are migrated.
+
+Verification: build/typecheck, BFF architecture 34/34, Nest runtime/feature architecture 23/23, Project MCP recommendation HTTP 8/8.
