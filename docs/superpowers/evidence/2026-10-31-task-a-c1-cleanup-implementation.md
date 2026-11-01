@@ -551,3 +551,9 @@ BFF child `6d3d7ce` moves `ProjectExecutionBindingReader` and `SubmittedAgentRun
 BFF child `a4e1241` moves `ProjectScopeReleaseOutboxRepository` into the Projects-owned `application/projects` boundary. Project release dispatcher, Storage scope-release client, PostgreSQL adapter/composition, runtime wiring, and ProjectsModule now consume the feature-local port; lifecycle and release semantics are unchanged.
 
 验证：BFF build/typecheck/lint；Project resource + architecture/Nest focused tests **101/101**；`git diff --check` clean. Remaining global ports are scheduled/Agent outbox contracts and shared idempotency, each requiring its own owner proof; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
+
+### C-3 ScheduledTask port isolation continuation（2026-11-02）
+
+BFF child `4fe8f51` moves `ScheduledTaskRepository`, `ScheduledTaskOutboxRepository`, and `ScheduledTaskOutboxDeliveryPort` into the ScheduledTasks-owned `application/scheduled` boundary. ScheduledTask service/read/mutation code, scheduler state/outbox adapters, PostgreSQL composition, worker module, and test fixtures now use the feature-local contracts. Durable outbox leasing, Scheduler callback behavior, retries, settlement, and shutdown semantics are unchanged.
+
+验证：BFF build/typecheck/lint；ScheduledTask/Scheduler/Agent terminal/architecture focused tests **160/160**；`git diff --check` clean. Remaining global ports are Agent dispatch/cancellation, scheduled Agent dispatch, Scheduler receipt, stable ID generation, and shared idempotency; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
