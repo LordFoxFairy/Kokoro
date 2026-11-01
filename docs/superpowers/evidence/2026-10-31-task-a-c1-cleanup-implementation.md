@@ -342,3 +342,10 @@ BFF child `2d1103f` removes the remaining `BffApplicationServices` type mirror f
 BFF child `62fe701` removes the `BffApplicationServices` aggregate from the `BffBusinessStore` contract and stops production bootstrap/server code from reading `businessStore.services.*`. The live PostgreSQL composition exposes named owner service seams for bootstrap (`chatService`, `chatTurnService`, `projectService`, `scheduledTaskService`); the aggregate view remains only on the concrete repository fixture for existing integration tests and is no longer a runtime application port. Project skill-selection, Project MCP recommendations, Skill share lookup and message regeneration now receive explicit owner/receipt providers rather than a global store locator.
 
 验证：BFF build/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 23/23；Project MCP recommendation HTTP 8/8；`git diff --check` clean. The compatibility aggregate and remaining feature-local Port census are still open C-3 work; A-01/A-02/A-07 remain stopped.
+
+
+### C-3 compatibility aggregate deletion（2026-11-01）
+
+BFF child `6f9a9e2` deletes `src/application/services.ts` and removes the aggregate class from the PostgreSQL composition. Named `ProjectService`, `ScheduledTaskService`, `ChatApplicationService` and `ChatTurnApplicationService` instances are constructed once and exposed to bootstrap; the concrete repository retains only a typed compatibility view for integration fixtures, with no production consumer. Personal Knowledge, AI Skill import and Message regeneration route contracts no longer accept `BffBusinessStore.services`; affected raw fixtures were migrated to explicit owner providers.
+
+验证：BFF build/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 23/23；focused feedback/regeneration/project-pin/MCP/personal-knowledge/AI-hand-off tests 46/46；project/resource/installation focused tests 66/66. Remaining C-3 work is the compatibility view removal from integration fixtures and the per-port keep/move/delete audit.

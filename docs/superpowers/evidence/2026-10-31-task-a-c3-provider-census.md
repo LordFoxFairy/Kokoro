@@ -111,3 +111,10 @@ A-01/A-02/A-07 继续停写。
 BFF child `62fe701` removes `BffBusinessStore.services` from the application port and removes all `businessStore.services.*` reads from `bootstrap/runtime.ts` and `bootstrap/server.ts`. The runtime now consumes explicit owner services from named composition seams. Project skill-selection, Project MCP recommendations, Skill share lookup and message regeneration no longer accept a global store aggregate as their production provider. `PostgresBffRepositories.services` remains a compatibility view for existing integration fixtures only; it is the next deletion target after those fixtures are migrated.
 
 Verification: build/typecheck, BFF architecture 34/34, Nest runtime/feature architecture 23/23, Project MCP recommendation HTTP 8/8.
+
+
+## 2026-11-01 aggregate class deletion
+
+BFF child `6f9a9e2` deletes `src/application/services.ts` and constructs each named application service exactly once in `PostgresBffRepositories`. The `services` property is now a typed fixture-only compatibility view; no source runtime/bootstrap/route code reads it. Personal Knowledge, AI Skill import and Message regeneration no longer expose aggregate fallback contracts.
+
+The compatibility view remains an integration-fixture migration target; C-3 is not closed until its consumers are zero and each remaining Port has keep/move/delete evidence.
