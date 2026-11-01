@@ -386,3 +386,9 @@ BFF child `db3c94a` adds the matching explicit `agUiProjection` composition seam
 BFF child `4144fee` adds explicit `submittedAgentRuns` and `projectExecutionBindings` composition seams. Raw AgentRuns internal admission and Run display now consume the named reader providers rather than reading those fields from `businessStore` inside the dispatcher; bootstrap remains the only transitional bridge from the concrete PostgreSQL composition.
 
 验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；Agent display/admission/project-binding focused 144/144；`git diff --check` clean. The compatibility fields remain in the bootstrap source until all raw/test consumers are migrated; C-3 and C-4 are not closed.
+
+### C-3 Scheduler/Artifact provider isolation（2026-11-01）
+
+BFF child `1a1fe92` exposes `schedulerDispatchReceipts`, `scheduledAgentDispatch` and `artifactLibrary` as explicit raw composition providers. Scheduler callback and Library routing no longer read those repositories from `businessStore` in the server dispatcher; the Scheduler/Artifact providers remain single-owner. The Project resource HTTP fixture was migrated from `services.projects` to the named `projectService` seam, closing the focused provider drift without restoring aggregate fallback.
+
+验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；Project resource upload + Scheduler + architecture focused 80/80；`git diff --check` clean. Remaining worker lifecycle fields and the concrete compatibility aggregate are still open C-3 work.
