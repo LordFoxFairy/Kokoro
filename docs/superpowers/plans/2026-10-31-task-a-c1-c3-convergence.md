@@ -354,3 +354,9 @@ pnpm test:integration
 - BFF child `393b9d5bd67f07e8b4c87b81f6c594f848621fee` adds the AgentRuns-owned control adapter to raw `createBffServer`; the route is verified through a real raw server fixture rather than only the mock `routeHandler` seam.
 - Focused verification: build plus Agent control/raw compatibility/Nest architecture **68/68**, lint and diff-check passed. Remaining C-2/C-3 work is the zero-consumer proof for `handleBffRequest`, raw global composition and remaining session/run/fixture references; C-4 full owner gates and cross-owner E2E remain open.
 - App native-session audit confirms first-party runtime cutover is complete at source level, but real IAM→BFF→App login/tenant-switch/sign-out/revocation receipts remain an environment gate. A-01/A-02/A-07 stay stopped.
+
+### 2026-11-02 execution update (App config and C-4 gate)
+
+- App child `b0919ffc20fe4ba3b281a8150aee503e1744a274` removes stale legacy auth environment comments from the five active templates; architecture **50/50** and lint pass. Runtime native-only evidence is stronger, but real cross-owner receipts remain an environment gate.
+- BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` removes deleted LegacyRoutes/global-port/service paths from `format:check`; the command now reaches the existing 30-file formatting warning baseline instead of missing-file errors. Do not claim format green until those warnings are separately owned and fixed.
+- C-3 census confirms only shared idempotency remains under `src/application/ports`, while `PostgresBffRepositories` and raw compatibility fixture consumers remain. Next work is to classify/freeze the five raw fallback surfaces and migrate or explicitly retain their fixtures before deleting raw composition; A-01/A-02/A-07 remain stopped.

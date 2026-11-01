@@ -601,3 +601,17 @@ C-1.3 remains open because the real IAM→BFF→App PG/Redis receipt is missing 
 ### Root verification after BFF Agent control pin `393b9d5` (2026-11-02)
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `393b9d5bd67f07e8b4c87b81f6c594f848621fee` (**1846 passed / 3 skipped / 502 subtests**). Topology reports the new BFF child SHA; this remains governance evidence only and does not close BFF full owner gates, real C-1.3 receipts, or E2E service readiness.
+
+### C-1.3 App native-session static configuration cleanup（2026-11-02）
+
+App child `b0919ffc20fe4ba3b281a8150aee503e1744a274` removes stale `NEXTAUTH_*`, `KOKORO_OIDC_*`, and `KOKORO_WEB_AUTH_SECRET` comments from the five active `.env*.example` templates and replaces them with native-session deployment guidance. Historical docs and test fixture stubs remain unchanged; source runtime has no reads of those legacy variables.
+
+验证：App `pnpm test:architecture` **50/50**, `pnpm lint`, `git diff --check` passed. This removes deployment ambiguity but does not create the missing real IAM→BFF→App login, tenant-switch, sign-out or revocation receipts.
+
+### C-4 format gate stale-path cleanup（2026-11-02）
+
+BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` removes deleted LegacyRoutes/global-port/service paths from the explicit `format:check` file list; no deleted compatibility file is restored. After the cleanup, `pnpm format:check` no longer reports missing files and still exits 1 only for the pre-existing 30-file Prettier warning baseline (including `server.ts`, feature middleware and architecture tests). This is a gate-cleanup slice, not a format-green claim.
+
+### C-3/C-4 global composition census checkpoint（2026-11-02）
+
+The BFF source census confirms `src/application/ports` now contains only the shared `idempotency-repository.ts`; `BffBusinessStore`/`BffApplicationServices` files and production imports are already zero. `PostgresBffRepositories` remains in raw compatibility runtime and is directly constructed by multiple PostgreSQL integration suites, so it cannot yet be deleted. Remaining raw fallback surfaces are internal Scheduler callback, browser-private MCP/custom API, residual sessions/run, retired-owner termination and generic configured-upstream proxy. Nest `AppModule` is the only production composition root; raw `createBffServer` remains an explicit fixture/compatibility entrypoint until those consumers are migrated or frozen.

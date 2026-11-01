@@ -271,3 +271,9 @@ C-3 keep/move/delete：
 ### Agent control raw-chain census continuation（2026-11-02）
 
 The only exported `*-native` adapter missing from the raw `createBffServer` chain was `handleAgentControlRequest`. BFF child `393b9d5bd67f07e8b4c87b81f6c594f848621fee` now inserts it after the other feature adapters and before `handleBffRequest`, guarded by the live feature providers and disabled for the mock `routeHandler` seam. The raw fixture proves the canonical Agent receipt and upstream path. This closes the adapter-chain census, not the broader deletion gate: `handleBffRequest`, `createBffComposition`, `PostgresBffRepositories`, and their fixture consumers still require zero-import proof and C-4 full-gate evidence.
+
+### C-3/C-4 global composition and format-gate continuation（2026-11-02）
+
+The read-only import census found no production imports of the removed `BffBusinessStore`/`BffApplicationServices` files and only the shared idempotency port under `src/application/ports`. `PostgresBffRepositories` is still instantiated by raw runtime and PostgreSQL integration fixtures. The remaining raw fallback categories are internal Scheduler dispatch, browser-private MCP/custom API, residual sessions/run, retired-owner handling and generic upstream proxy; each needs route-level proof before deleting `handleBffRequest`/`createBffComposition`.
+
+BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` also removes stale deleted paths from the format gate. `pnpm format:check` now has no missing-file errors but remains exit 1 for 30 pre-existing warnings; this is tracked as C-4 open, not passed.
