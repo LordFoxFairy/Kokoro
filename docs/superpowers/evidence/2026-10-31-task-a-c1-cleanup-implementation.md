@@ -331,3 +331,5 @@ BFF child `a09176a` narrows the ScheduledTask raw compatibility path to explicit
 BFF child `06ae1a6` applies the same provider boundary to the Scheduler callback: raw `createBffServer` now assembles `SchedulerDispatchProvider` explicitly, and the scheduler route no longer unwraps `source.services.scheduledTasks`. Architecture, scheduler, mock and full BFF gates remain green.
 
 BFF child `3c27f97` deletes the retired `project-resource.ts` upload dispatcher and its two duplicate compatibility tests. Canonical `project-native.ts` upload/read/delete coverage remains; the post-cleanup full BFF suite is 2315 tests / 2313 passed / 0 failed / 2 skipped.
+
+BFF child `8df63bb` removes `LegacyRoutesModule`, `LegacyRoutesRuntime`, its middleware, and the unused `GracefulShutdown` bridge from the production Nest graph. Feature modules now form the only Nest composition; raw `createBffServer` remains an explicit compatibility/test entrypoint. Nest architecture is 23/23, BFF architecture 34/34, and the full BFF suite is 2315/2313/0/2.
