@@ -585,3 +585,15 @@ BFF child `bb1fa5e8a7fd4959a113afd0cbcf8d013d1b7ff` extends the raw `createBffSe
 ### Root verification after BFF child pin `bb1fa5e` (2026-11-02)
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `bb1fa5e8a7fd4959a113afd0cbcf8d013d1b7ff` (**1846 passed / 3 skipped / 502 subtests**). This is Root governance/topology evidence only; it does not replace the pending BFF full owner gate or E2E service receipts.
+
+### C-2 raw compatibility Agent control cutover（2026-11-02）
+
+BFF child `393b9d5bd67f07e8b4c87b81f6c594f848621fee` adds the existing `handleAgentControlRequest` feature adapter to the raw `createBffServer` chain. `POST /v1/sessions/:session_id/runs/:run_id/control` now uses the same AgentRuns-owned admission, Chat/Project recheck, durable idempotency receipt and strict Agent control receipt path as Nest `AgentRunsMiddleware`; the mock `routeHandler` seam and provider-null fallback remain explicit compatibility guards. The old `handleBffRequest` session branch is no longer the first live compatibility owner for this route.
+
+验证：BFF `pnpm build`; raw compatibility + Agent control + Nest runtime/feature architecture tests **68/68**; `pnpm lint`; `git diff --check`。`liveAgentSession` remains as the bounded compatibility implementation used by the named adapter; it is not deleted until the remaining session/run route census and provider import census prove zero consumers.
+
+### C-1.3 native-session runtime audit（2026-11-02）
+
+App read-only audit confirms first-party runtime is native-session only: old OIDC/Auth.js/ProductSession runtime and dependencies were removed in App child history; `/api/auth/[...nextauth]` is a native `/session`/`/signout` compatibility adapter without RP fallback. IAM OAuth protocol relay and public Skill bearer remain separate owner protocols and are intentionally retained. Five active `.env*.example` files still contain stale legacy variable comments and historical docs retain old terminology; these are documentation/configuration cleanup items, not runtime fallback evidence.
+
+C-1.3 remains open because the real IAM→BFF→App PG/Redis receipt is missing for login, active-tenant switch, sign-out and revocation. No A-01/A-02/A-07 work is opened.

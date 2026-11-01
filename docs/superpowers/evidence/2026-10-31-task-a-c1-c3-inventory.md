@@ -267,3 +267,7 @@ C-3 keep/move/delete：
 - Root topology、Root governance tests 的历史通过证据保留；本轮 child gitlink 更新后需由 Root 重跑。
 - E2E 仍未具备：IAM/BFF/App/Agent/System/Billing/Storage/Scheduler/Capability/Admin 进程未启动，且缺少本轮 owner schema/isolated credentials。不得把 focused adapter fixture 当作端到端 receipt。
 - A-01/A-02/A-07 继续停写，直到 C-1.3 真实 journey、C-2 raw/LegacyRoutes 删除、C-3 aggregate 删除、C-4 owner/root full gates 和 E2E 环境收据全部齐备。
+
+### Agent control raw-chain census continuation（2026-11-02）
+
+The only exported `*-native` adapter missing from the raw `createBffServer` chain was `handleAgentControlRequest`. BFF child `393b9d5bd67f07e8b4c87b81f6c594f848621fee` now inserts it after the other feature adapters and before `handleBffRequest`, guarded by the live feature providers and disabled for the mock `routeHandler` seam. The raw fixture proves the canonical Agent receipt and upstream path. This closes the adapter-chain census, not the broader deletion gate: `handleBffRequest`, `createBffComposition`, `PostgresBffRepositories`, and their fixture consumers still require zero-import proof and C-4 full-gate evidence.

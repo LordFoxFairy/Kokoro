@@ -348,3 +348,9 @@ pnpm test:integration
 
 - BFF child `bb1fa5e8a7fd4959a113afd0cbcf8d013d1b7ff` routes Chat mutation, AG-UI events, Chat message submission and regeneration through the existing Chat/AgentRuns/Agui feature adapters before raw fallback. Mock `routeHandler` remains an explicit test seam.
 - Focused verification: BFF build plus BFF/Chat/regeneration/Nest suite **65/65**, lint and diff-check passed. `handleBffRequest` and `PostgresBffRepositories` remain open until raw integration fixtures and provider import census are migrated.
+
+### 2026-11-02 execution update (Agent control compatibility chain)
+
+- BFF child `393b9d5bd67f07e8b4c87b81f6c594f848621fee` adds the AgentRuns-owned control adapter to raw `createBffServer`; the route is verified through a real raw server fixture rather than only the mock `routeHandler` seam.
+- Focused verification: build plus Agent control/raw compatibility/Nest architecture **68/68**, lint and diff-check passed. Remaining C-2/C-3 work is the zero-consumer proof for `handleBffRequest`, raw global composition and remaining session/run/fixture references; C-4 full owner gates and cross-owner E2E remain open.
+- App native-session audit confirms first-party runtime cutover is complete at source level, but real IAM→BFF→App login/tenant-switch/sign-out/revocation receipts remain an environment gate. A-01/A-02/A-07 stay stopped.
