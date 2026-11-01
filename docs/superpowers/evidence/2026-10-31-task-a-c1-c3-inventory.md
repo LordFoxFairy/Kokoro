@@ -3,7 +3,7 @@
 ## 1. 基线与证据范围
 
 - Root：`d9329c9e`；当前工作树 clean。
-- BFF：`apps/kokoro-bff` `0823d97`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share 与 project installation 均保留精确 owner/revision recheck）。
+- BFF：`apps/kokoro-bff` `330e439`（在既有 feature cutover 基础上，将 direct Chat collection/session/message reads 下沉到 ChatModule；此前将 exact Skill download 的 source construction、POST native middleware 与 GET opaque-handle middleware 下沉到 SkillsModule/ProjectsModule，将 `/v1/mori/**` 的 admission、幂等、owner projection/stream 迁入 MusicModule，并将 Message regeneration/ChatTurn service 下沉到 ChatModule/AgentDispatchModule；从旧 dispatcher 删除三类 Skill download/Mori 分支并移除退休 Mori routing helper；个人、managed、share 与 project installation 均保留精确 owner/revision recheck）。
 - IAM：`apps/kokoro-iam` `2fbb96a0`。
 - App：`apps/kokoro-app` `4da1c1b2`。
 - Agent：`apps/kokoro-agent` `c761fad3`。
@@ -44,7 +44,7 @@ Nest AppModule
 | `GET /healthz` | `HealthController` 与旧 `handleBffRequest` 均有分支 | `HealthModule` | readiness/liveness、bounded shutdown | Controller 已存在；旧分支待删除 |
 | `GET /readyz` | `HealthController` 与旧 dispatcher | `HealthModule` | DB/Redis/IAM readiness、503 语义 | Controller 已存在；旧分支待删除 |
 | `/iam/**` | `iamProtocolRelay` | `IamRelayModule` | 原生协议 wire、Cookie/Origin/错误闭集 | module 只有 relay service；route 仍旧 dispatcher |
-| `GET /v1/shared/{shareId}` | `handleBffRequest` 内 public-share projection | `AccountModule`/`ChatModule` | 公开分享权限与 snapshot projection | 未迁移 |
+| `GET /v1/shared/{shareId}` | `handleBffRequest` 内 public-share projection | `AccountModule`/`ChatModule` | 公开分享权限与 snapshot projection | ChatModule provider 已接入；旧入口仍待删除 |
 | `POST /internal/v1/model-admissions/**` | `agentModelAdmissionRoute` | `AgentRunsModule` + Billing/System owner clients | model admission、service auth、预算 | 未迁移 |
 | `POST /internal/v1/project-execution-bindings/verify` | `projectExecutionBindingRoute` | `AgentRunsModule`/`ProjectsModule` | execution binding、identity assertion、项目资格 | 未迁移 |
 | `POST /internal/v1/bff/scheduled-tasks/dispatch` | `schedulerDispatch` | `ScheduledTasksModule` | Scheduler callback、receipt claim/CAS、lease | 未迁移 |
@@ -132,7 +132,7 @@ Nest AppModule
 |---|---|---|---|
 | `AccountModule` | Database/IAM relay、Personalization provider、SessionAdmission provider | 仅有两个 provider，account route 仍在旧 dispatcher | profile/session/archive/share/knowledge route 至少有真实 Controller/provider 后再移除旧入口 |
 | `ProjectsModule` | `PROJECT_SERVICE`、project resource provider、skill-selection provider/client、`ProjectPinMiddleware` | 仍有 project installation/MCP/task/mutation bundles 在旧 dispatcher | 完成剩余 project bundles 后删除旧 project fallback |
-| `ChatModule` | `CHAT_SERVICE`、`CHAT_TURN_SERVICE`、native archive/share/feedback/regeneration/move 与 direct Chat read middleware | Chat POST/events/project scope、Agent/AG-UI 仍由旧 dispatcher 组合 | 继续拆 Chat/Run/AG-UI provider，逐 bundle 删除旧分支 |
+| `ChatModule` | `CHAT_SERVICE`、`CHAT_TURN_SERVICE`、`PUBLIC_SHARE_SERVICE`、native archive/share/feedback/regeneration/move 与 direct Chat read middleware | Chat POST/events/project scope、Agent/AG-UI 仍由旧 dispatcher 组合 | 继续拆 Chat/Run/AG-UI provider，逐 bundle 删除旧分支 |
 | `AgentRunsModule` | 仅声明 IAM/Database imports | 未承接 Agent client、run display/control、outbox | run display/control/dispatch seam + cancellation/replay tests |
 | `AguiModule` | 仅声明 Chat/Redis/Database imports | 未承接 projector/ledger/replay provider | durable ledger/cursor/replay Controller/provider + tests |
 | `ScheduledTasksModule` | 仅声明 Projects/AgentRuns/Database imports | 已有 `ScheduledTaskStateReader` 仍未注册成业务 Controller | read/mutation/callback/outbox slice + tests |

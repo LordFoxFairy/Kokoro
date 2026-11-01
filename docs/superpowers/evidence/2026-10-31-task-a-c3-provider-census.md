@@ -22,7 +22,7 @@
 | `skillUsage` | raw Skill usage adapter; `LegacyRoutesRuntime` now receives explicit `SKILL_USAGE_READER` | SkillsModule/SkillsMiddleware 成为唯一 runtime path，删除 `BffBusinessStore.skillUsage` fallback |
 | `skillAiAssociation` | AI Skill import raw adapter | SkillsModule association provider 覆盖 raw composition，artifact owner contract 保持不变 |
 | `skillShares` | Skill share/exact-download raw composition | SkillsModule share/download provider 覆盖 raw source construction |
-| `publicShareService` | raw public-share projection | ChatModule public-share adapter覆盖 raw chain |
+| `publicShareService` | raw public-share projection; `LegacyRoutesRuntime` now receives explicit `PUBLIC_SHARE_SERVICE` from `ChatModule` | ChatModule provider 覆盖 raw chain；删除 `BffBusinessStore.publicShareService` fallback after raw/test composition no longer needs it |
 
 这些字段是当前存在证据的兼容边界，不是新的 owner；Account personalization 已从 global store 删除。禁止继续新增同类字段。
 
@@ -53,9 +53,14 @@
 ## 当前验证证据
 
 - BFF architecture：34/34
+- Nest runtime architecture：5/5
 - Chat/BFF focused：230/230
 - ScheduledTask focused：106/106
 - BFF full：2316 tests / 2299 pass / 15 fail / 2 skip；15 项失败为既有 Storage/Product、Project exact-download、Admin credential、anonymous Share fixtures。
 - Root topology：PASS
+
+## 2026-10-31 provider handoff update
+
+BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
 
 A-01/A-02/A-07 继续停写。
