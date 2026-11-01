@@ -423,3 +423,21 @@ BFF child `46096d4` narrows `BffBusinessStore` to the durable idempotency and li
 BFF child `95d6516` 删除 `src/application/ports/bff-business-store.ts`。`BffBusinessStore` 不再作为应用层全局 Port 暴露；`BffRuntimeStore` 仅在 `bootstrap/runtime.ts` 内组合 `IdempotencyRepository` 与数据库生命周期，feature resources 继续通过命名的 `BffServerComposition` providers 传递。没有新增 Repository/Service 实现，也没有改变 raw/test compatibility 的行为边界。
 
 验证：BFF `pnpm build`、`pnpm typecheck`、`pnpm lint`；BFF architecture 34/34；`git diff --check` clean。`PostgresBffRepositories` 仍是真实 PostgreSQL composition 与现有 integration fixtures 的 owner；C-3 其余 lifecycle/fixture census 和 C-4 全量跨 owner 验证继续 open。
+
+### C-1.3 App native-session runtime cutover（2026-11-01）
+
+App child `bc1f5c4b` 将首方 `GET /login` 改为白名单 `return_to` 校验后直接 303 到
+`/auth/sign-in?native=1&return_to=...`；不再签发 Auth.js handoff CSRF、Product login intent 或隐藏
+`/api/auth/signin/kokoro-iam` POST。`auth/sign-in/route.ts` 识别精确 native marker 后只调用
+IAM `/sign-in/email`，校验 allowlisted `kokoro-issuer.session_token`，原样转发 native session cookie，
+清理 flow/CSRF 并 303 回白名单目标；native 分支不调用 `/iam/oauth2/continue`。App shell `15720322`
+改为 native BFF admission only：缺 cookie 进入 `/login`，invalid/unavailable 保持 serverUnavailable，
+不再从 Product Session Redis fallback 授予 SSR 准入。旧 OAuth relay 与 Product Session 文件仍保留给后续删除切片，
+不得被新的登录入口调用。
+
+验证：App `tests/server/login-route.test.ts`、`tests/server/native-sign-in-route.test.ts`、
+`tests/server/proxy-sign-in.test.ts`、`tests/app/sign-in-failure-page.test.tsx`、`tests/ui/app-gate.test.tsx`
+共 31 项通过；touched-file ESLint 通过。App 全仓 `pnpm typecheck` 仍被既有
+`src/components/blocks/app-frame/app-frame-main-surface.tsx:onReconnect` 类型错误阻断；未将其记为本片引入。
+旧 OIDC system fixture 仍引用 legacy `/login` 隐藏表单，需在删除 first-party RP 前继续迁移，故 C-1.3、C-4 与
+全量跨 owner journey 尚未关闭，A-01/A-02/A-07 继续停写。

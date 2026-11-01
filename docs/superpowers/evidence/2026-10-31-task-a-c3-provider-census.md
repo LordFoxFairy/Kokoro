@@ -168,3 +168,7 @@ BFF child `5de502c` moves the artifact library contract to `src/application/port
 ### 2026-11-01 bootstrap-only runtime store seam
 
 BFF child `95d6516` 删除全局 `BffBusinessStore` application Port；runtime 内部 `BffRuntimeStore` 只承担 Idempotency 与 ready/close 生命周期，feature resources 仍以明确 provider 字段跨 raw composition 边界。该切片没有新增抽象层或第二 owner；`PostgresBffRepositories` 继续作为 PostgreSQL composition/集成 fixture owner，待后续 lifecycle/fixture census 决定是否拆分。
+
+### 2026-11-01 App native login consumer cutover
+
+App child `bc1f5c4b`/`15720322` 已将新的 `/login` 与 `/app` SSR admission 绑定 IAM native session：首方登录只传递 allowlisted `return_to`，IAM 邮箱登录成功后发行 native cookie；App shell 不再把 Product Session Redis 作为 SSR 准入 fallback。该切片不删除 OAuth relay、Auth.js RP、Product Session 或其测试 fixture；这些旧入口仍是 C-1.3 后续清理目标，不能以本片标记全量 auth cleanup。
