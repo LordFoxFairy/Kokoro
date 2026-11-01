@@ -318,6 +318,7 @@ pnpm test:integration
 - `06ae1a6` narrows the Scheduler callback to the same explicit `SchedulerDispatchProvider`, removing its production `source.services.scheduledTasks` unwrap.
 - `3c27f97` deletes the retired Project resource upload dispatcher and duplicate tests; canonical Project feature handlers remain the only upload owner.
 - `8df63bb` deletes the LegacyRoutes Nest composition and shutdown bridge; feature middleware is now the sole production Nest route graph, while raw `createBffServer` remains test/compatibility-only.
+- `2d1103f` removes a `BffApplicationServices` type mirror from Skill specification and keeps the dependency at the Project owner boundary.
 - Current next TODO is unchanged in scope: migrate the remaining session/run and owner route families, then complete provider/Port import census before deleting global composition. Re-run the BFF focused gates after each route bundle and keep A-01/A-02/A-07 stopped.
 - Native-session focused revalidation remains green on the current checkout (IAM 3/3; App native/session/account/team/sign-in/out focused 167/167); this does not replace the missing IAM_TEST_ADMIN_URL/Redis real host and cross-owner tenant-switch/revocation journey receipts.
 
