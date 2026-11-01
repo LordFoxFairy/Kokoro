@@ -223,3 +223,47 @@ Nest AppModule
 - BFF `ba8ab60` 将 `POST /internal/bff/scheduled-tasks/dispatch` 接入 `ScheduledTasksModule`；receipt、ScheduledTaskService、scheduled-Agent repository 与 callback validation 由 feature middleware 共享，LegacyRoutes bypass 同步锁定。
 - BFF `ba8ab60` 将 scheduled-task create/update/delete/retry 与 project-scoped create 接入同一 `ScheduledTaskMutationMiddleware`；read/callback/mutation 共用 repository/service/idempotency owner，旧 dispatcher 仅保留 raw composition 兼容路径。
 
+
+## 9. 2026-11-02 route/provider census continuation
+
+盘点范围补充覆盖当前 BFF `src/bootstrap/server.ts`、`src/bootstrap/runtime.ts`、`src/modules/**`、`src/application/**`、`src/infrastructure/postgres/**` 及公开 OpenAPI v1 路径。生产入口是 Nest `AppModule`；`createBffServer()` 仅保留 raw/test compatibility seam，不能把 raw 测试通过当作生产图完成证明。
+
+冻结结论：
+
+- `LegacyRoutesModule/Runtime/Middleware` 已从 Nest `AppModule` 删除；生产 Nest 图没有 LegacyRoutes。
+- `src/application/ports` 当前只剩 `idempotency-repository.ts`。它被 Account、Chat、Projects、Scheduled、Skills、Billing、Music、AgentRuns 等多个 feature 使用，仍是跨 feature 的 durable receipt/CAS 合同，暂不机械移动。
+- `PostgresBffRepositories` 仍是 raw/test compatibility 的集中 PostgreSQL composition；它不是 Nest feature provider，且仍被 integration fixtures 直接实例化。删除它需要先迁移 raw compatibility 和 integration fixture 的 owner factory，不能只删文件。
+- `handleBffRequest` 的通用 proxy 仍保留给未知/非契约路径；其当前唯一确认的公开合法 raw-only 路径 `GET /v1/agents/connections/setup` 已由 BFF child `0b65b91` 接入具名 Agent setup adapter，generic fallback 不再拥有该契约路径。
+
+当前 route ownership：
+
+| 路由族 | 当前 owner/入口 | raw dispatcher 状态 | 下一步 |
+|---|---|---|---|
+| `/v1/account/**`, `/v1/me`, `/v1/team`, personalization, knowledge, library | `AccountModule` | 已移出 | 保留 focused/contract 证据，删除 compatibility extractor 前先迁移 fixture |
+| `/v1/sessions/**`, `/v1/shared/**` | `ChatModule` + `AgentRunsModule` + `AguiModule` | 合法路径已由 native handlers 覆盖；旧 `liveChatBusiness/liveAgentSession` 仍在 raw compatibility | 迁移剩余 raw session/run 入口和 projector/fixture seam |
+| `/v1/projects/**` | `ProjectsModule` | 合法 project/resource/skill/MCP 路径已由 feature handlers 覆盖 | 删除 raw `ProjectService` compatibility 依赖并完成 owner fixture census |
+| `/v1/scheduled-tasks/**`, `/internal/bff/scheduled-tasks/dispatch` | `ScheduledTasksModule` | 合法路径已由 mutation/read/dispatch middleware 覆盖 | 迁移 scheduler integration fixture 后删除 raw dispatcher seam |
+| `/v1/skills/**`, `/v1/self/skills/**`, `/browser/v1/skills/**` | `SkillsModule` | 合法路径已由 Skills middleware 覆盖；未知路径显式 retired 503/404 | 清理剩余 raw compatibility imports |
+| `/v1/mcp/**`, `/browser/v1/mcp/**` | `McpModule` | 合法路径已由 MCP middleware 覆盖；未知路径不作为业务 contract | 清理 raw composition client extractor |
+| `/v1/billing/**`, `/v1/admin/billing/**` | `BillingModule` | 合法路径已由 billing middleware 覆盖 | 删除 raw billing compatibility 调用前迁移 fixture |
+| `/v1/models`, `/v1/system/**`, `/v1/admin/model-*` | `SystemModule` | 合法路径已由 System middleware 覆盖；未知 owner path 显式 retired | 保留 owner error contract，删除 raw fallback 引用 |
+| `/v1/mori/**` | `MusicModule` | 合法路径已由 Music middleware 覆盖 | 迁移 music raw fixture |
+| `/v1/agents/connections/setup` | BFF Agent setup adapter；enabled 时调用 configured Agent owner | 已从 generic raw fallback 移出（`0b65b91`） | 补真实 kokoro-agent owner endpoint receipt；当前 Agent owner 尚无 setup contract，enabled 路径只在 adapter contract fixture 验证 |
+
+C-3 keep/move/delete：
+
+| 项目 | 决定 | 依据 |
+|---|---|---|
+| `application/ports/idempotency-repository.ts` | keep | 多 feature 共享 durable receipt/CAS/lease 语义；不存在单一 owner |
+| Chat/Project/Account/Skills/Scheduled/AgentRuns/Project release ports | move 已完成 | 每项已有 feature-local port、单一 PostgreSQL 实现与 focused architecture 断言 |
+| `PostgresBffRepositories` | delete-after-cutover | 仅在 raw compatibility 与 integration fixtures 不再直接实例化后删除 |
+| `BffApplicationServices` / `BffBusinessStore` | delete-after-census | 当前主要是 raw/test compatibility seam；Nest 生产 provider 已按 feature 注册 |
+| `createBffComposition` / `handleBffRequest` | delete-after-route-and-fixture-census | 仍承接 raw server、legacy integration fixtures 与 fallback；不能以重命名替代删除 |
+
+验收阻塞：
+
+- BFF 当前 route/architecture focused bundle：本轮 `pnpm build` + `test/bff.test.ts` + architecture/Nest tests **95/95**，lint 与 `git diff --check` 通过。
+- BFF full `pnpm test` 仍需停写后串行重跑；上次运行在 `test/contract/skill-specification-http.test.mjs` 超时中止，不能标绿。
+- Root topology、Root governance tests 的历史通过证据保留；本轮 child gitlink 更新后需由 Root 重跑。
+- E2E 仍未具备：IAM/BFF/App/Agent/System/Billing/Storage/Scheduler/Capability/Admin 进程未启动，且缺少本轮 owner schema/isolated credentials。不得把 focused adapter fixture 当作端到端 receipt。
+- A-01/A-02/A-07 继续停写，直到 C-1.3 真实 journey、C-2 raw/LegacyRoutes 删除、C-3 aggregate 删除、C-4 owner/root full gates 和 E2E 环境收据全部齐备。

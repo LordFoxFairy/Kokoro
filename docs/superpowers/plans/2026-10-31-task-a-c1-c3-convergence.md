@@ -336,3 +336,10 @@ pnpm test:integration
 
 - `758d58f` localizes the Account Personal Knowledge port; `224a624` localizes the Account Library Artifact port; `03940f9` localizes the Skills Share port. The moves are type/import-boundary changes only, with single-owner PostgreSQL implementations and negative architecture assertions.
 - Keep the next pass evidence-driven: classify remaining global ports as true cross-feature contracts versus feature-owned seams before moving or deleting them. Do not touch A-01/A-02/A-07 or claim C-3/C-4 completion until raw compatibility, route census, and owner full-gate evidence are closed.
+
+### 2026-11-02 execution update
+
+- 新增 `docs/superpowers/evidence/2026-10-31-task-a-c1-c3-inventory.md`，冻结 route/provider ownership、C-3 keep/move/delete 决策与 C-4/E2E 阻塞项。
+- BFF child `0b65b918b96664ec5285998c5e87450b30533879` 将公开合法 `GET /v1/agents/connections/setup` 从 generic raw fallback 切到具名 Agent setup adapter：严格校验 platform/query/body、IAM admission、disabled fail-closed（`agent_not_configured`）、enabled owner identity headers 与响应投影。
+- 验证：BFF build、focused BFF/architecture/Nest tests **95/95**、lint、diff-check 通过；BFF full test、真实 kokoro-agent setup owner receipt、Root/跨仓 E2E 仍未完成。
+- C-2/C-3/C-4 与 A-01/A-02/A-07 状态不变：继续停写 `handleBffRequest`/`createBffComposition`/`PostgresBffRepositories` 的删除，先完成剩余 raw session/run 与 fixture/provider census，再串行全量验证。
