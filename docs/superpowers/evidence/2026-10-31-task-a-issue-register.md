@@ -305,3 +305,9 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - BFF child `33a1bf0` 删除 `BffBusinessStore.scheduledTaskService` 与 `PostgresBffRepositories.scheduledTaskService`。
 - ScheduledTask read/runtime、live-bff mutation、Scheduler callback 统一读取 `services.scheduledTasks`；`ScheduledTasksModule` 的 `SCHEDULED_TASK_READ_SERVICE` 继续作为 native feature provider。
 - 验证：BFF architecture 34/34、BFF mock/scheduler/scheduled focused 106/106、`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
+
+### 2026-10-31 Root governance gate recheck
+
+- `python3 -m pytest scripts/tests -q`：1844 passed，502 subtests passed，3 skipped，2 failed。
+- 失败为当前环境/已有治理基线：`test_serve_local_login.py::test_occupied_port_is_not_reused_or_terminated`；`test_w2_bff_storage_smoke.py::test_exact_object_cleanup_and_database_nonadoption` 因 `@aws-sdk/client-s3` 本地依赖缺失。
+- 该结果不计为 C-4 通过；BFF focused/full 与 Root topology 证据保持单列，未扩散修复到本次 C-3 provider 清理范围。
