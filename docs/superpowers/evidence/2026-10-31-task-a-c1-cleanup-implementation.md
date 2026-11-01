@@ -695,3 +695,7 @@ App child `f5d122bb41beb3e141015b758411dbcc0afc583b` removes the stale `onReconn
 ### Root verification after App typecheck cleanup pin `f5d122bb`（2026-11-02）
 
 Root topology verification and `python3 -m pytest scripts/tests -q` passed after pinning App `f5d122bb41beb3e141015b758411dbcc0afc583b`; result **1846 passed / 3 skipped / 502 subtests**. The App static typecheck baseline is now closed; native-session real receipts, E2E service readiness, BFF format/full-owner gate and raw fixture zero-consumer proof remain open.
+
+### IAM owner static gate recheck（2026-11-02）
+
+IAM child `e1f537b02cb326cfb3751316b1591fa82313f70a` was rechecked without changing source. `pnpm verify` stops at one existing Prettier warning (`test/integration/bff-session-admission-host.test.ts`); the remaining serial gates passed: lint, typecheck, contract/check-breaking, SDK check, **120 files / 1561 tests**, and build. This is static owner evidence only; `IAM_TEST_ADMIN_URL`/isolated integration resources are still absent, so native-session cross-owner receipts remain open.
