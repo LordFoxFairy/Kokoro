@@ -179,3 +179,9 @@ BFF child `630efbf` adds an explicit `LegacyRoutesMiddleware` boundary. Migrated
 BFF child `3961450` moves direct no-`project_ref` Chat title/delete/share mutations into `ChatModule`. `CHAT_IDEMPOTENCY` owns the PostgreSQL receipt adapter; `handleChatMutationRequest` preserves admission, canonical fingerprint, replay/conflict/pending behavior and delegates business semantics to the existing `liveChatBusiness`. Project-scoped mutations, Chat POST messages and events remain transitional by design.
 
 验证：direct Chat mutation 1/1、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、BFF mock contract 25/25、build/lint/typecheck 通过。
+
+### Direct Chat events cutover（2026-10-31）
+
+BFF child `76b9402` moves direct no-`project_ref` AG-UI events into `ChatModule` + `AguiModule`. The feature graph now owns projection, consumer registration, session runtime and source-active gating for this route, while reusing `liveAgentSession` for durable replay/SSE behavior. Project-scoped events, Chat POST messages and the LegacyRoutes projector worker remain transitional.
+
+验证：本轮选定 AG-UI replay/runtime/SSE tests、LegacyRoutes bypass 2/2、Nest runtime/feature architecture 20/20、BFF architecture 34/34、build/lint/typecheck 全部通过。

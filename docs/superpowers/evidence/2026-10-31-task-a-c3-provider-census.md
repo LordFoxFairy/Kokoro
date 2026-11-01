@@ -77,4 +77,6 @@ BFF child `630efbf` adds a negative LegacyRoutes boundary for migrated Chat path
 
 BFF child `3961450` adds `CHAT_IDEMPOTENCY` in `ChatModule` and moves direct no-`project_ref` title/delete/share mutations through `handleChatMutationRequest` + `liveChatBusiness`. The provider uses one PostgreSQL receipt owner and a process-local replay map; project-scoped variants and Chat POST/events remain transitional.
 
+BFF child `76b9402` adds `AguiModule` providers for the canonical projection, consumer repository, session runtime and source-active gate. Direct no-`project_ref` Chat events now use `liveAgentSession` through `ChatModule`; project-scoped events and the LegacyRoutes projector worker remain transitional until Agent/AG-UI ownership is fully cut over.
+
 A-01/A-02/A-07 继续停写。
