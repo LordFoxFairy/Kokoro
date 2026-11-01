@@ -531,3 +531,5 @@ E2E 预检：当前本机仅探测到 PostgreSQL `127.0.0.1:5432`、Redis `127.0
 BFF child `61834b7` moves the 171-line `ChatRepository` contract and its Chat read/mutation value types from global `application/ports` to `application/chat`. Chat services, HTTP inputs/routes, public-share adapter, PostgreSQL readers, archive/shared-task adapters, and focused fixtures now import the Chat-owned port. No SQL, wire envelope, authorization rule, transaction, or repository implementation changed.
 
 验证：BFF build/typecheck/lint；architecture/Nest/runtime/feature + Chat/archive/shared-task/Skill Share focused tests **208/208**；`git diff --check` clean. The full BFF `pnpm test` remains a separate long-running baseline/environment gate and is not reclassified by this type-boundary slice. Remaining global ports are still subject to the planned owner audit; A-01/A-02/A-07 stay stopped.
+
+补充：Chat port cutover 后由 BFF child `fb36fa5` 修正 Public Share port 的相对导入，Root 以 `acd8c89a` 更新 gitlink；行为与验证范围不变。
