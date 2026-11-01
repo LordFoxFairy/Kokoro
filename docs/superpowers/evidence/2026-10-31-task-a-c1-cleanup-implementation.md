@@ -615,3 +615,7 @@ BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` removes deleted LegacyRoute
 ### C-3/C-4 global composition census checkpoint（2026-11-02）
 
 The BFF source census confirms `src/application/ports` now contains only the shared `idempotency-repository.ts`; `BffBusinessStore`/`BffApplicationServices` files and production imports are already zero. `PostgresBffRepositories` remains in raw compatibility runtime and is directly constructed by multiple PostgreSQL integration suites, so it cannot yet be deleted. Remaining raw fallback surfaces are internal Scheduler callback, browser-private MCP/custom API, residual sessions/run, retired-owner termination and generic configured-upstream proxy. Nest `AppModule` is the only production composition root; raw `createBffServer` remains an explicit fixture/compatibility entrypoint until those consumers are migrated or frozen.
+
+### Root verification after App/BFF C-1.3/C-4 pins `b0919ff` / `062f93f` (2026-11-02)
+
+Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning App `b0919ffc20fe4ba3b281a8150aee503e1744a274` and BFF `062f93ff6ed249c45843bfec360fc9267104e1b9` (**1846 passed / 3 skipped / 502 subtests**). The topology gate is green; BFF format warnings, owner full gates, real native-session receipts and E2E startup remain open.
