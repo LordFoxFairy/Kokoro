@@ -18,7 +18,7 @@
 
 | 字段 | 当前消费者 | 删除前置条件 |
 |---|---|---|
-| `personalKnowledge` | Personal Knowledge raw adapter | AccountModule provider 接管 raw/test composition，旧 route 分支删除 |
+| `personalKnowledge` | raw compatibility adapter; `LegacyRoutesRuntime` now receives explicit `PERSONAL_KNOWLEDGE_REPOSITORY` | 删除 `BffBusinessStore.personalKnowledge` after raw/test composition consumes the explicit feature provider |
 | `skillUsage` | Skill usage raw adapter、runtime Skill specification composition | SkillsModule/SkillsMiddleware 成为唯一 runtime path，raw fallback 清零 |
 | `skillAiAssociation` | AI Skill import raw adapter | SkillsModule association provider 覆盖 raw composition，artifact owner contract 保持不变 |
 | `skillShares` | Skill share/exact-download raw composition | SkillsModule share/download provider 覆盖 raw source construction |

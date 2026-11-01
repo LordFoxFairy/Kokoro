@@ -29,7 +29,7 @@
 
 当前停写代码基线为 `f17bf828`；其后 Root `18b59a43`、`17d49259` 为文档同步，Root `f4202a5e` 固定 IAM profile-read owner，`c7af342b` 固定 BFF/App profile-read consumers。App 子仓 `dde9fa6`、BFF 子仓 `3ca1525`（含 `b3a9ab5`、`4e794ce`、`2ce0296`、`2df4bcc`、`caccdc9`、`a677cd2`、`6874034`、`ef1c53b`、`6de89c7`、`108a0bc`、`4667506`、`96806f4`、`39d5481`、`7f61218`、`2a504c0`）、IAM 子仓 `d461b82`（基于 `f4f1585`）已完成 profile-read 与 root-scoped issuer cookie cutover；BFF account native bundle（profile/sessions/team/me/personalization）、System runtime-manifest、Chat archive/share/feedback、Projects pin、ScheduledTask current-read、Agent internal admission/binding 与 run-display bundle 已由 feature middleware/adapter 接管，旧 `server.ts` 对应业务分支已移除；personalization、Chat、Project pin、ScheduledTask read 与 AgentRuns reader/provider 已从 global route dispatch 解耦，raw-server seam 使用显式 provider，partial test composition 仍保持兼容。native route HTTP fixtures 已切换到 build output，78 项 feedback/run-display/project-binding focused tests 全部通过；C-4 contract inverse 与 IAM 0.18/profile-read governance 已收敛，BFF 串行全量为 2309 tests / 2307 pass / 0 fail / 2 skip。IAM native profile read/update 与撤权集成 fixture 已在本地 PostgreSQL/Redis 上串行 12/12 通过；Root real IAM→BFF session smoke 7/7 已在 cookie cutover 后复验通过，OIDC smoke 42/42 仅为 cutover 前历史证据，需按新 cookie policy 重跑；真实跨 App→BFF→IAM native sign-in/sign-out/tenant-switch/revocation 旅程仍未形成。本台账只整理问题、目标、约束、TODO 和验收，不把 A-01/A-02/A-07 提前写入实现。
 
-本次继续推进后的精确停写 pins：BFF `91f0c76`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`、App `9cde5640`；BFF 已将 Health、IAM relay、`GET /v1/me`、项目集合/详情/revisions/deletion-status/rename/delete/resource-list/resource-delete、public share projection、`GET /v1/connector.list`、MCP provider/package admin、browser project publication、App skill-bindings、Skill specification reads、全部 Skill package inspection、exact Skill download POST/GET opaque-handle、`/v1/mori/**` Music owner adapter、Message regeneration/ChatTurn service 与 direct Chat read middleware 移入 feature middleware/provider，并从旧 dispatcher 删除三类 Skill download/Mori 分支；同时删除 `BffBusinessStore` 上的 `projectService`、`chatService`、`chatTurnService` 全局字段；`SKILL_EXACT_DOWNLOAD_SOURCE`/`PROJECT_EXACT_DOWNLOAD_SOURCE`/`MUSIC_IDEMPOTENCY`/`CHAT_TURN_SERVICE`/`AGENT_DISPATCH_OUTBOX` feature seams；Root topology PASS，最新 Music focused 12/12、Message regeneration focused 4/4、exact-download HTTP/policy/unit 22/22、Chat/ChatTurn/run-display focused 212/212、connector-list HTTP 5/5、MCP provider/package admin HTTP 12/12、MCP project publication HTTP 27/27、App skill-bindings/Open App management 12/12、Skill specification contract/focused 149/149、package inspection unit 47/47（4 个环境 skip），BFF mock contract 25/25，Nest architecture 18/18，BFF architecture 34/34。
+本次继续推进后的精确停写 pins：BFF `6a4c06c`、IAM `e1f537b02cb326cfb3751316b1591fa82313f70a`、App `9cde5640`；BFF 已将 Health、IAM relay、`GET /v1/me`、项目集合/详情/revisions/deletion-status/rename/delete/resource-list/resource-delete、public share projection、`GET /v1/connector.list`、MCP provider/package admin、browser project publication、App skill-bindings、Skill specification reads、全部 Skill package inspection、exact Skill download POST/GET opaque-handle、`/v1/mori/**` Music owner adapter、Message regeneration/ChatTurn service 与 direct Chat read middleware 移入 feature middleware/provider，并从旧 dispatcher 删除三类 Skill download/Mori 分支；同时删除 `BffBusinessStore` 上的 `projectService`、`chatService`、`chatTurnService` 全局字段；`SKILL_EXACT_DOWNLOAD_SOURCE`/`PROJECT_EXACT_DOWNLOAD_SOURCE`/`MUSIC_IDEMPOTENCY`/`CHAT_TURN_SERVICE`/`AGENT_DISPATCH_OUTBOX` feature seams；Root topology PASS，最新 Music focused 12/12、Message regeneration focused 4/4、exact-download HTTP/policy/unit 22/22、Chat/ChatTurn/run-display focused 212/212、connector-list HTTP 5/5、MCP provider/package admin HTTP 12/12、MCP project publication HTTP 27/27、App skill-bindings/Open App management 12/12、Skill specification contract/focused 149/149、package inspection unit 47/47（4 个环境 skip），BFF mock contract 25/25，Nest architecture 18/18，BFF architecture 34/34。
 
 ## 2. 已设置 Goal
 
@@ -254,7 +254,7 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 > 更新（BFF `b610c92`）：admin identity、billing admin、system admin、Chat move、project skill-selection、project MCP recommendations、`GET /v1/connector.list`、MCP provider/package admin、MCP project publication、App skill-bindings、Skill specification reads、全部 Skill package inspection、project/personal skill-installations、managed personal Skill reads、Skill enable command、Skill usage、personal Skill lifecycle、Skill draft creation/mutations、Skill catalog commands/read/cover、published package read、Skill admin、GitHub preview/import、AI import、Skill share、local import、Personal Knowledge 已分别由 Projects/Skills/Mcp/Account feature middleware 接管，并从旧 dispatcher 分支移除。同时将 Knowledge repository、Skill usage reader、Skill AI association、Skill shares、Public share service、ScheduledTask service seam 从 `BffApplicationServices` service aggregate 迁到 named `BffBusinessStore` transitional seams，ScheduledTask live-bff authorization/create/update/delete/retry consumers 已优先使用 named seam；native chain 保留 mock/raw composition 的行为闭环，Chat artifact association 与 Skill specification source 通过窄 provider 注入。本轮 Nest architecture 17/17、BFF architecture 34/34、BFF mock contract 25/25、connector-list HTTP 5/5、MCP provider/package admin HTTP 12/12、MCP project publication HTTP 27/27、App skill-bindings/Open App management 12/12、Skill specification contract/focused 149/149、package inspection unit 47/47（4 个环境 skip）；停写后最新 `pnpm test` 为 2312 tests / 2295 pass / 15 fail / 2 skip，失败集中在既有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture 与 anonymous Share fixture，不作为 C-4 通过；other Skills route、剩余 Skills/MCP route、LegacyRoutes 退出及 global Port 收敛继续阻塞 A-01/A-02/A-07。
 
-> 当前 C-3 反向消费者复核（BFF `91f0c76`）：`BffApplicationServices` 仍保留 `projects`、`scheduledTasks`、`chat`、`chatTurns` 四个兼容聚合字段，但 `BffBusinessStore` 不再重复暴露 Chat/ChatTurn/Project/ScheduledTask service 字段。生产源码仍有 `services.(projects|scheduledTasks|chat|chatTurns)` 引用，主要集中在 LegacyRoutes 兼容路径、Chat POST/Agent dispatch、exact-download/project fallback 与 integration fixtures。LegacyRoutes/createBffComposition/handleBffRequest 仍有生产引用，需继续按 owner seam 清零后再删除 aggregate 与 LegacyRoutes。
+> 当前 C-3 反向消费者复核（BFF `6a4c06c`）：`BffApplicationServices` 仍保留 `projects`、`scheduledTasks`、`chat`、`chatTurns` 四个兼容聚合字段，但 `BffBusinessStore` 不再重复暴露 Chat/ChatTurn/Project/ScheduledTask service 字段。生产源码仍有 `services.(projects|scheduledTasks|chat|chatTurns)` 引用，主要集中在 LegacyRoutes 兼容路径、Chat POST/Agent dispatch、exact-download/project fallback 与 integration fixtures。LegacyRoutes/createBffComposition/handleBffRequest 仍有生产引用，需继续按 owner seam 清零后再删除 aggregate 与 LegacyRoutes。
 
 
 > 全量验证更新：最新 `pnpm test` 已在停写工作树上运行到终态：2312 tests / 2295 pass / 15 fail / 2 skip；native/admin/Skill specification focused paths均通过，但仍有 Artifact/Personal Storage Product HTTP、Project exact-download、Admin Web credential fixture、以及部分 user-admission anonymous Share fixture 失败。该结果确认当前全量门禁仍非绿，不能作为 C-4 通过；失败项继续按 owner baseline 单列，不删除断言、不放宽测试、不提前打开 A gate。
@@ -296,13 +296,13 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ### 2026-10-31 Project provider aggregate closure
 
-- BFF child `91f0c76` 删除 `BffBusinessStore.projectService` 与 `PostgresBffRepositories.projectService`。
+- BFF child `6a4c06c` 删除 `BffBusinessStore.projectService` 与 `PostgresBffRepositories.projectService`。
 - Project/Chat authorization、resource、MCP recommendation、skill-selection、live-bff 与 raw runtime 统一读取 `services.projects` 或 feature composition 的 `PROJECT_SERVICE`，不再把重复 Project service 字段作为 global locator。
 - 验证：BFF architecture 34/34；BFF project/chat focused 193/193；`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
 
 ### 2026-10-31 ScheduledTask provider aggregate closure
 
-- BFF child `91f0c76` 删除 `BffBusinessStore.scheduledTaskService` 与 `PostgresBffRepositories.scheduledTaskService`。
+- BFF child `6a4c06c` 删除 `BffBusinessStore.scheduledTaskService` 与 `PostgresBffRepositories.scheduledTaskService`。
 - ScheduledTask read/runtime、live-bff mutation、Scheduler callback 统一读取 `services.scheduledTasks`；`ScheduledTasksModule` 的 `SCHEDULED_TASK_READ_SERVICE` 继续作为 native feature provider。
 - 验证：BFF architecture 34/34、BFF mock/scheduler/scheduled focused 106/106、`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
 
@@ -314,6 +314,12 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 ### 2026-10-31 Account personalization provider closure
 
-- BFF child `91f0c76` 删除 `BffBusinessStore.personalizationProvider` 与 `PostgresBffRepositories.personalizationProvider`。
+- BFF child `6a4c06c` 删除 `BffBusinessStore.personalizationProvider` 与 `PostgresBffRepositories.personalizationProvider`。
 - AccountModule 的 `PERSONALIZATION_PROVIDER` 已是 canonical provider；LegacyRoutes runtime 通过显式 `personalizationProvider` option 传入，raw composition 不再从 global store 读取。
 - 验证：BFF architecture 34/34、Account/personalization/team/BFF focused 55/55、`pnpm build`、`pnpm lint`、`pnpm typecheck` 全部通过。
+
+### 2026-10-31 Personal Knowledge feature-provider handoff
+
+- BFF child `6a4c06c` 为 `BffServerComposition` 增加 `personalKnowledgeRepository` seam；`LegacyRoutesRuntime` 从 AccountModule 注入 `PERSONAL_KNOWLEDGE_REPOSITORY` 并显式传给 transitional raw composition。
+- raw Personal Knowledge route 不再只能从完整 `BffBusinessStore` 定位 Repository；`BffBusinessStore.personalKnowledge` 暂保作 raw/test fallback，删除门已明确。
+- 验证：Nest runtime architecture 4/4、Personal Knowledge/BFF focused 28/28、`pnpm lint`、`pnpm typecheck`、`pnpm build` 全部通过。
