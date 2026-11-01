@@ -83,4 +83,6 @@ BFF child `ff14c86` extracts `ProjectAccessModule` as the single `PROJECT_SERVIC
 
 BFF child `ff14c86` also extracts `SkillInstallationAccessModule` as the sole installation client owner and moves Chat POST submission into `ChatModule`. The route reuses `ChatTurnApplicationService`, Agent outbox, ProjectAccessModule, Skill installation rechecks and idempotency; Skills/Projects consume the same installation client without a second Platform client.
 
+BFF child `a5b94c0` moves run-control receipt/admission into `AgentRunsModule` with `AGENT_CONTROL_IDEMPOTENCY`, shared Chat/Project owners and the existing `liveAgentSession` control semantics. Agent dispatch worker lifecycle and remaining session/run paths stay transitional until the next ownership slice.
+
 A-01/A-02/A-07 继续停写。

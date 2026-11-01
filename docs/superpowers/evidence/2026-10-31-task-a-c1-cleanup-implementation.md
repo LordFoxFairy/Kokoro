@@ -197,3 +197,9 @@ BFF child `ff14c86` extracts `ProjectAccessModule` as the single ProjectService/
 BFF child `ff14c86` moves Chat message submission into `ChatModule`. `SkillInstallationAccessModule` is now the shared installation client owner consumed by Skills, Projects and Chat; the feature route preserves ChatTurn outbox commit, project access, skill qualification, idempotency, cancellation and canonical 202 response behavior. LegacyRoutes no longer receives `/v1/sessions/:id/messages` POST.
 
 验证：Chat message POST 1/1、BFF mock contract 25/25、LegacyRoutes bypass 3/3、Nest runtime/feature architecture 20/20、build/lint/typecheck 通过。
+
+### Agent run-control cutover（2026-10-31）
+
+BFF child `a5b94c0` moves run-control POST into `AgentRunsModule`. `AGENT_CONTROL_IDEMPOTENCY` owns the receipt adapter; the route reuses shared Chat/Project providers and `liveAgentSession` for Agent control receipt validation, resume state checks, queued cancellation startup bridging, and bounded cancellation. Remaining Agent session/run paths and projector lifecycle stay transitional.
+
+验证：Nest runtime/feature architecture 20/20、BFF architecture 34/34、LegacyRoutes bypass coverage、build/lint/typecheck 通过。
