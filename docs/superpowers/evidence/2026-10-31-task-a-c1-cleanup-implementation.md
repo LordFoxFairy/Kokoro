@@ -462,3 +462,21 @@ blocked only by the pre-existing `app-frame-main-surface.tsx:onReconnect`
 error. Old OIDC/Product Session source and tests, native tenant interaction
 OAuth query handling, and remaining legacy mocks are still open cleanup work;
 C-1.3/C-4 and A-01/A-02/A-07 remain open/stopped.
+
+### C-1.3 browser recovery and tenant boundary cleanup（2026-11-01）
+
+App child `cd4da8b6` removes the browser Product Session refresh surface. The
+session probe now performs only bounded native `GET /api/auth/session` reads;
+it no longer prefetches Auth.js CSRF, issues a refresh POST, interprets
+`refresh_required`, or carries an uncertain Product Session mutation state.
+`endProductSession` uses only `POST /iam/sign-out`, and the obsolete client
+refresh/CSRF tests were replaced by native-session boundary coverage. App child
+`6c566893` removes `oauth_query` from the native IAM organization activation
+payload; the signed interaction cookie remains the only interaction binding.
+
+验证：native session/sign-in/browser recovery focused suites 74/74; touched
+file ESLint and `git diff --check` clean. App typecheck remains blocked only by
+the pre-existing `app-frame-main-surface.tsx:onReconnect` error. Old RP/
+Product Session server files and their real-HTTP fixtures still require a
+separate deletion/migration slice; C-1.3/C-4 remain open and A-01/A-02/A-07
+stay stopped.
