@@ -380,3 +380,9 @@ BFF child `11d8199` adds an explicit `agUiConsumers` composition seam. Raw Chat 
 BFF child `db3c94a` adds the matching explicit `agUiProjection` composition seam. The raw Agent session path and AG-UI projector construction now use the named projection provider, while `BffBusinessStore.agUi` is read only by bootstrap compatibility wiring. The PostgreSQL projection implementation remains single-owner and no generic abstraction was introduced.
 
 验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；Chat/AG-UI focused 137/137；`git diff --check` clean. The remaining bootstrap store fields, lifecycle/outbox ports and full C-4 cross-owner journey remain open.
+
+### C-3 Agent reader provider isolation（2026-11-01）
+
+BFF child `4144fee` adds explicit `submittedAgentRuns` and `projectExecutionBindings` composition seams. Raw AgentRuns internal admission and Run display now consume the named reader providers rather than reading those fields from `businessStore` inside the dispatcher; bootstrap remains the only transitional bridge from the concrete PostgreSQL composition.
+
+验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；Agent display/admission/project-binding focused 144/144；`git diff --check` clean. The compatibility fields remain in the bootstrap source until all raw/test consumers are migrated; C-3 and C-4 are not closed.
