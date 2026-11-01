@@ -557,3 +557,9 @@ BFF child `a4e1241` moves `ProjectScopeReleaseOutboxRepository` into the Project
 BFF child `4fe8f51` moves `ScheduledTaskRepository`, `ScheduledTaskOutboxRepository`, and `ScheduledTaskOutboxDeliveryPort` into the ScheduledTasks-owned `application/scheduled` boundary. ScheduledTask service/read/mutation code, scheduler state/outbox adapters, PostgreSQL composition, worker module, and test fixtures now use the feature-local contracts. Durable outbox leasing, Scheduler callback behavior, retries, settlement, and shutdown semantics are unchanged.
 
 验证：BFF build/typecheck/lint；ScheduledTask/Scheduler/Agent terminal/architecture focused tests **160/160**；`git diff --check` clean. Remaining global ports are Agent dispatch/cancellation, scheduled Agent dispatch, Scheduler receipt, stable ID generation, and shared idempotency; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
+
+### C-3 Agent dispatch port isolation continuation（2026-11-02）
+
+BFF child `3af1684` moves Agent dispatch and cancellation delivery/outbox contracts into the AgentDispatch-owned `application/agent-dispatch` boundary. ChatTurn commit, dispatch/cancellation workers, Agent HTTP delivery, PostgreSQL repositories/composition, and fixtures now use the feature-local contracts. No Agent wire, lease, retry, cancellation, or Chat admission behavior changed.
+
+验证：BFF build/typecheck/lint；Agent dispatch/cancellation/ChatTurn/regeneration/architecture focused tests **203/203**；`git diff --check` clean. Remaining global ports are scheduled-Agent delivery/repository, Scheduler callback receipt, stable ID generation, and shared idempotency; C-2/C-4 and A-01/A-02/A-07 remain open/stopped.
