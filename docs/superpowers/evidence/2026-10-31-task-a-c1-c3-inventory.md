@@ -303,3 +303,7 @@ Unknown raw `/v1/agents/**` and `/v1/billing/**` paths now terminate 404 after n
 ### 2026-11-02 PersonalKnowledge fixture seam
 
 Seven stale integration references now use the named `PostgresBffRepositories.personalKnowledge` seam (`24e157bb`). The wrapper and raw construction remain until the remaining eight integration suites are migrated; current SQL cases are resource-gated because test PG/Redis URLs are absent.
+
+### 2026-11-02 PublicShare fixture seam
+
+Four stale integration references now use `PostgresBffRepositories.publicShareService` (`4af24bf`). Remaining wrapper consumers are the raw database/worker suites; no alias or duplicate repository was introduced.

@@ -713,3 +713,13 @@ App `pnpm test` remains non-green on the existing contract-artifact digest basel
 ### Root verification after PersonalKnowledge fixture pin `24e157b`（2026-11-02）
 
 Root topology and governance recheck passed after pinning BFF `24e157bb023b5132c59fdd153af1c608134c0ee2`: **1846 passed / 3 skipped / 502 subtests**. The named fixture cleanup is now part of the verified Root combination; remaining C-3 integration wrappers, App artifact baseline, real native-session receipts and E2E readiness remain open.
+
+### C-3 named PublicShare fixture seams（2026-11-02）
+
+BFF child `4af24bf` updates four stale integration-fixture accesses from removed `store.services.publicShares` to the existing named `store.publicShareService` seam in Message-parts and AG-UI projection suites. No production code, wrapper, SQL, or public-share behavior changed.
+
+验证：BFF build/typecheck/lint/diff-check；Message-parts/AG-UI integration bundle **63 resource-gated skips / 0 failures** (test PG/Redis URLs absent); mock contract **29/29**；architecture/Nest **70/70**.
+
+### Root verification after PublicShare fixture pin `4af24bf`（2026-11-02）
+
+Root topology and governance recheck passed after pinning BFF `4af24bf72a5dc70a4a072025b726496ee1673762`: **1846 passed / 3 skipped / 502 subtests**. PublicShare fixture cleanup is integrated without changing production ownership; remaining raw database/worker fixture migration, App artifact reconciliation, C-1.3 receipts and E2E startup remain open.

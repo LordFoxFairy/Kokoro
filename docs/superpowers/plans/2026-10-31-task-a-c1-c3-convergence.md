@@ -406,3 +406,7 @@ pnpm test:integration
 
 - BFF child `24e157bb023b5132c59fdd153af1c608134c0ee2` removes the stale PersonalKnowledge global-service fixture accesses without adding an alias. Focused contract/input/HTTP tests pass and integration cases are explicitly skipped without isolated PG/Redis.
 - App full test remains a contract-artifact digest mismatch baseline; do not regenerate pinned public artifacts in this cleanup slice. Keep C-4 open until owner artifact provenance is reconciled and the serial suite is rerun.
+
+### 2026-11-02 execution update (named PublicShare fixture)
+
+- BFF child `4af24bf` removes four stale global-service fixture accesses in Message-parts/AG-UI integration tests by using the existing named PublicShare application service. Resource-gated SQL cases remain skipped without isolated PG/Redis; no C-3 owner boundary was widened.
