@@ -85,6 +85,8 @@ BFF child `ff14c86` also extracts `SkillInstallationAccessModule` as the sole in
 
 BFF child `a5b94c0` moves run-control receipt/admission into `AgentRunsModule` with `AGENT_CONTROL_IDEMPOTENCY`, shared Chat/Project owners and the existing `liveAgentSession` control semantics. Agent dispatch worker lifecycle and remaining session/run paths stay transitional until the next ownership slice.
 
-BFF child `0a61ed0` extends the LegacyRoutes negative boundary to the AgentRuns-owned internal admission/binding routes and exact Run display route. `AgentRunsMiddleware` is now the only Nest path for those route families; `LegacyRoutesMiddleware` bypasses them without adding another provider or changing the existing credential, owner-read, cancellation, response-cap or error contracts. Agent dispatch worker lifecycle, remaining session/run paths, raw compatibility composition and the global aggregate remain transitional.
+BFF child `af15b41` extends the LegacyRoutes negative boundary to the AgentRuns-owned internal admission/binding routes and exact Run display route. `AgentRunsMiddleware` is now the only Nest path for those route families; `LegacyRoutesMiddleware` bypasses them without adding another provider or changing the existing credential, owner-read, cancellation, response-cap or error contracts. Agent dispatch worker lifecycle, remaining session/run paths, raw compatibility composition and the global aggregate remain transitional.
+
+BFF child `af15b41` also moves Agent dispatch/cancellation outbox repository, delivery and worker lifecycle ownership into `AgentDispatchModule`. `LegacyRoutesRuntime` receives the feature-owned instances only to preserve raw composition shutdown wiring and does not start them; explicit-null composition options prevent duplicate production workers. AG-UI projector, scheduled-task/agent workers and project-scope release worker remain the next lifecycle slices.
 
 A-01/A-02/A-07 继续停写。
