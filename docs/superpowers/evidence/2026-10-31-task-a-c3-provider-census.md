@@ -71,6 +71,10 @@ BFF child `27523d9` removes the native Skill Share route's `BffBusinessStore` im
 
 BFF child `11d8199` exposes the Agui-owned consumer repository as an explicit composition provider. The raw server's Chat provider no longer reads `businessStore.agUiConsumers`; only bootstrap fallback wiring still bridges the live PostgreSQL composition. BFF/Nest architecture and Chat/AG-UI focused checks are green, with no duplicate consumer repository or projection implementation.
 
+### 2026-11-01 AG-UI projection provider isolation
+
+BFF child `db3c94a` exposes the Agui-owned projection as an explicit composition provider. The raw Agent session path and projector use `composition.agUiProjection`; the aggregate `agUi` field remains only at bootstrap fallback wiring. Architecture, build/typecheck/lint and the focused Chat/AG-UI set are green; the compatibility aggregate is not yet deleted.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
