@@ -343,3 +343,8 @@ pnpm test:integration
 - BFF child `0b65b918b96664ec5285998c5e87450b30533879` 将公开合法 `GET /v1/agents/connections/setup` 从 generic raw fallback 切到具名 Agent setup adapter：严格校验 platform/query/body、IAM admission、disabled fail-closed（`agent_not_configured`）、enabled owner identity headers 与响应投影。
 - 验证：BFF build、focused BFF/architecture/Nest tests **95/95**、lint、diff-check 通过；BFF full test、真实 kokoro-agent setup owner receipt、Root/跨仓 E2E 仍未完成。
 - C-2/C-3/C-4 与 A-01/A-02/A-07 状态不变：继续停写 `handleBffRequest`/`createBffComposition`/`PostgresBffRepositories` 的删除，先完成剩余 raw session/run 与 fixture/provider census，再串行全量验证。
+
+### 2026-11-02 execution update (Chat compatibility chain)
+
+- BFF child `bb1fa5e8a7fd4959a113afd0cbcf8d013d1b7ff` routes Chat mutation, AG-UI events, Chat message submission and regeneration through the existing Chat/AgentRuns/Agui feature adapters before raw fallback. Mock `routeHandler` remains an explicit test seam.
+- Focused verification: BFF build plus BFF/Chat/regeneration/Nest suite **65/65**, lint and diff-check passed. `handleBffRequest` and `PostgresBffRepositories` remain open until raw integration fixtures and provider import census are migrated.
