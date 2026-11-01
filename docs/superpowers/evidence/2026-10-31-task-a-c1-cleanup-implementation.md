@@ -318,4 +318,6 @@ BFF child `7cf1312` closes the remaining retired System/Skills fallback at the f
 
 BFF child `86c714b` restores the named `SkillShareRepository` seam for transitional raw/test composition by reusing `skillShareRepositoryFromBusinessStore` when only the legacy service-shaped fixture is present. This fixes the existing shared-revision contract without adding a second owner or repository: `test/contract/skill-specification-http.test.mjs` now passes 110/110, including the exact old-revision share and fail-closed cases.
 
+BFF child `34899e0` applies the same compatibility extractor to `ExactSkillDownloadService`: raw/test composition now recognizes the service-shaped SkillShare repository when constructing the project/personal exact-download source. Project exact-download and package inspection coverage is green at 18/18; no new Project or Skill repository is introduced.
+
 Root validation follow-up: `require_free_web_port` now resolves the patched `WEB_PORT` at call time instead of capturing 3310 in a default argument. The focused launcher suite is 61/61; the serial Root governance suite is 1845 passed, 3 skipped, with one remaining environment failure because `@aws-sdk/client-s3` is not installed for the W2 Storage smoke. This is recorded as an environment gap, not a C-4 pass.

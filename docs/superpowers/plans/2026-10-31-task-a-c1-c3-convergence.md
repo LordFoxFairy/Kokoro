@@ -311,6 +311,7 @@ pnpm test:integration
 - `e1f2b81` moves Library/artifact/personal-file routes into `AccountModule`, deletes the duplicate raw server branches, and adds feature-owned artifact/idempotency providers. Remaining route census is residual Skills plus LegacyRoutes/global composition deletion.
 - `7cf1312` terminates unknown `/v1/system/*` and `/v1/skills/*` requests in the owning `SystemModule`/`SkillsModule` through the dedicated retired-owner adapter, with the same IAM admission and explicit 503 error mapping; these requests no longer fall through to `LegacyRoutes`.
 - `86c714b` restores the named `SkillShareRepository` seam for raw/test compositions through the existing compatibility extractor; the shared-revision specification contract is green at 110/110 without introducing another repository owner.
+- `34899e0` reuses that named seam when constructing the raw exact-download source, closing the Project exact-download compatibility gap at 18/18 without adding a duplicate owner.
 - Current next TODO is unchanged in scope: migrate the remaining session/run and owner route families, then complete provider/Port import census before deleting global composition. Re-run the BFF focused gates after each route bundle and keep A-01/A-02/A-07 stopped.
 - Native-session focused revalidation remains green on the current checkout (IAM 3/3; App native/session/account/team/sign-in/out focused 167/167); this does not replace the missing IAM_TEST_ADMIN_URL/Redis real host and cross-owner tenant-switch/revocation journey receipts.
 
