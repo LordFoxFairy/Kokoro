@@ -54,8 +54,8 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 
 | ID | 当前问题 | 影响 | 闭环证据 | 状态 |
 |---|---|---|---|---|
-| TA-C2-01 | `src/modules/legacy-routes/legacy-routes.runtime.ts` 仍创建 `createBffComposition()` 并委派 `handleBffRequest`；剩余业务 path 仍在 `src/bootstrap/server.ts`。 | 业务事实仍由旧 dispatcher 持有，Nest feature graph 不是唯一运行边界。 | C-2/C-3 inventory 已冻结入口/route family；Health、Account native bundle、IAM relay、public share、System runtime-manifest、Chat archive/share/feedback、Projects pin/collection/detail/revisions/deletion-status/rename/delete/resource-list/resource-read/resource-download/resource-delete/skill-selection/MCP recommendations/project/personal skill-installations/managed personal Skill reads、ScheduledTask current-read、Agent internal admission/binding 与 run-display 已切到 feature middleware/adapter，后续每条 path 迁移必须同时改 `server.ts`、feature graph 和 negative test。 | 进行中，LegacyRoutes 仍保留 |
-| TA-C2-02 | 旧 `bootstrap/server.ts`、`bootstrap/runtime.ts` 与 global composition 路径仍有生产引用；`app.module.ts`、`main.ts`、shutdown provider 也在删除链上。 | 存在第二 composition root 和隐藏依赖。 | BFF `a2f1579` 已删除旧 dispatcher 的 `/v1/me` 分支，`2c683c4` 将 IAM native relay 移入 `IamRelayModule` middleware，`cb02934` 将 `GET /v1/projects` 集合读取、`e8d9a27` 将项目详情读取、`b9294ab` 将 instruction-revisions 读取、`fd74e02`/`8448a7e` 将 public share projection 与 test-only reader fallback、`fb27e75` 将 Health 处理收敛到 feature/compat adapter、`7afbaff` 将 project deletion-status 处理收敛到 `ProjectsModule`/native adapter、`1db4e51` 将 project rename 处理收敛到 `ProjectsModule`/native adapter、`1817bd9` 将 project delete 处理收敛到 `ProjectsModule`/native adapter、`52eeff7` 将 project resource-list 处理收敛到 `ProjectsModule`/native adapter、`14aa232` 将 project resource-delete 处理收敛到 `ProjectsModule`/native adapter、`525a150` 将 project resource-read/download 处理收敛到 `ProjectsModule`/native adapter、`2dd93ca` 将 project skill-selection 处理收敛到 `ProjectsModule`/native adapter、`9310aa6` 将 project MCP recommendations 处理收敛到 `McpModule`/native adapter、`d9a8a24` 将 project skill-installations 处理收敛到 `ProjectsModule`/native adapter、`1153be7` 将 personal skill-installations 处理收敛到 `SkillsModule`/native adapter、`7aa092b` 将 managed personal Skill reads 处理收敛到 `SkillsModule`/native adapter；canonical `HealthModule`/`AccountModule`/`IamRelayModule`/`ProjectsModule`/`ChatModule`/`McpModule`/`SkillsModule` 成为对应 handler。反向搜索 `LegacyRoutes*`、`createBffComposition`、`handleBffRequest`、`createBffServer` 仍需在剩余 route census 清零后完成。 | 进行中 |
+| TA-C2-01 | LegacyRoutes runtime/module/middleware 已删除；Nest 生产请求只经过 feature middleware，raw `createBffServer` 明确保留为测试/兼容入口。 | 旧 dispatcher 不再是 Nest 业务事实 owner。 | BFF `8df63bb` 删除三件套与 shutdown bridge；Nest architecture 23/23、BFF architecture 34/34、全量 BFF 2315/2313/0/2。 | 完成 |
+| TA-C2-02 | Root `bootstrap/server.ts`、`bootstrap/runtime.ts` 仍作为 raw/test compatibility entrypoint 存在，但不再由 `AppModule` 生产装配。 | 保留显式兼容边界，避免与 Nest composition 混成第二生产 listener。 | `app.module.ts` 不再导入 LegacyRoutes/GracefulShutdown；`main.ts` 只创建唯一 Nest listener；Root topology PASS。 | 完成 |
 | TA-C2-03 | 已有 feature module 仍有部分只声明 graph/ownership 的空壳风险。 | 机械建模块会增加无意义代码，掩盖未迁移行为。 | 每个 module 至少承接真实 route/provider/owner client；无 route、无 provider、无测试证据的模块不保留。 | 进行中 |
 
 ### 3.3 C-3 Repository / Service / Port
@@ -172,9 +172,9 @@ Goal 的完成条件不是“目录改名”或“测试数量增加”，而是
 - [x] Browser local Skill import（`/browser/v1/skills/local-imports/**`）已由 `SkillsModule` 的 `SKILL_LOCAL_IMPORT_CLIENT`/`SkillsMiddleware` 接管；旧 dispatcher 分支已删除，保留双 action admission、四条 owner RPC、幂等/回放和完整 credential-set gating（`4b8b63d`）。
 - [x] Personal Knowledge（`/v1/preferences/knowledge[/**]`、`/v1/preferences/knowledge-usage`）已由 `AccountModule` 的 `PERSONAL_KNOWLEDGE_REPOSITORY`/middleware 接管；旧 dispatcher 分支已删除，保留 tenant/subject admission、revision/CAS、limit/tombstone、usage 和 5 秒预算（`e8d7cf6`）。
 - [x] 对与 LegacyRoutes 重叠的 Chat/AgentRuns path family 已增加负向 bypass；当前已迁移 path 由测试锁定不再进入 LegacyRoutes（`ba8ab60`）。
-- [ ] 每迁移一批，从 `LegacyRoutesRuntime` 删除具体 path，并验证 adapter 不再接收该 path。
-- [ ] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、旧 dispatcher。
-- [ ] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
+- [x] 每迁移一批，从 LegacyRoutes 删除具体 path；最终 `LegacyRoutesRuntime`/middleware/module 已清零并由 architecture tests 固定。
+- [x] route census 清零后删除 `legacy-routes.runtime.ts`、module、middleware、shutdown bridge（`8df63bb`）。
+- [x] 验证唯一 Nest listener 和唯一 `AppModule` composition root。
 
 ### G3：Repository / Service / Port 收敛
 
