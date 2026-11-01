@@ -281,3 +281,7 @@ BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` also removes stale deleted 
 ### Browser MCP/custom API raw-chain census continuation（2026-11-02）
 
 `McpPersonalMiddleware` and `CustomApiMiddleware` now delegate to the same exported feature-owned entrypoints used by raw `createBffServer`; the raw chain invokes those entrypoints before `handleBffRequest`. The 127-case focused bundle proves the existing owner/error/request-id semantics. Generic fallback census is reduced to internal Scheduler dispatch, residual unknown sessions/run, retired-owner termination and configured-upstream proxy; these remain compatibility surfaces until explicit route-level proof and fixture migration.
+
+### Residual sessions/run fallback continuation（2026-11-02）
+
+The raw route census now has a negative proof for unknown live `/v1/sessions/**` suffixes: BFF child `e8e7207a3d7d1bbbc9a4f35bb502138754f0e2d6` returns canonical 404 before `handleBffRequest`. Valid Chat/Agent routes remain owned by named adapters; `liveAgentSession` is retained only as their shared execution implementation. Provider-null and mock fixture paths remain explicitly compatible.

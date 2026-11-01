@@ -365,3 +365,8 @@ pnpm test:integration
 
 - BFF child `562817cb70b7eb09f162929b4f665a5b85b5bc04` shares the Personal MCP and Custom API feature entrypoints between Nest middleware and raw `createBffServer`; raw requests no longer reach the generic `handleBffRequest` MCP/custom-api branch.
 - Focused verification: build plus Custom API/Personal MCP/icon/Nest architecture **127/127**, lint and diff-check passed. Remaining raw fallback categories are internal Scheduler dispatch, residual unknown sessions/run, retired-owner handling and generic upstream proxy; raw composition deletion still waits on fixture/provider census and owner gates.
+
+### 2026-11-02 execution update (residual session/run fallback)
+
+- BFF child `e8e7207a3d7d1bbbc9a4f35bb502138754f0e2d6` terminates unknown live `/v1/sessions/**` paths before the raw session fallback, with a raw regression proving canonical 404 and known Agent control/Chat paths unchanged.
+- `liveAgentSession` remains a named adapter implementation for AG-UI events and Agent control; only the `handleBffRequest` residual unknown-session fallback is closed. Remaining C-2/C-3 work is internal Scheduler callback, retired-owner/generic-upstream compatibility and fixture/provider migration before raw composition deletion.

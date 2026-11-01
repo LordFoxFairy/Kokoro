@@ -629,3 +629,9 @@ BFF child `562817cb70b7eb09f162929b4f665a5b85b5bc04` extracts shared raw/Nest fe
 ### Root verification after browser MCP BFF pin `562817c` (2026-11-02)
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `562817cb70b7eb09f162929b4f665a5b85b5bc04` (**1846 passed / 3 skipped / 502 subtests**). The new raw MCP/custom API cutover is topology/governance-green; owner full gates, real native-session receipts, E2E services and remaining raw fallback deletion are still open.
+
+### C-2 residual session/run fallback closure（2026-11-02）
+
+BFF child `e8e7207a3d7d1bbbc9a4f35bb502138754f0e2d6` adds a live-composition guard after all named session/run adapters: unknown `/v1/sessions/**` suffixes now terminate with the canonical 404 envelope instead of falling through to `liveChatBusiness`/`liveAgentSession`; provider-null and mock `routeHandler` compatibility seams remain unchanged. `liveAgentSession` itself remains because the named Chat events and Agent control adapters still use it.
+
+验证：BFF build; Agent control, Chat business/events/message/mutation and Nest architecture **74/74**; lint and diff-check passed. The remaining raw fallback is now limited to non-session owner categories and explicit compatibility providers.
