@@ -301,6 +301,7 @@ pnpm test:integration
 - `54fb620` closes the scheduled Agent dispatch/terminal lifecycle slice in `ScheduledTasksModule`; Agent/upstream guards, bounded retry/concurrency and shutdown are feature-owned. Remaining C-2/C-3 work is route census/global composition removal and the non-worker session/run paths.
 - `54fb620` extends Chat business-read cutover to `project_ref` collection/session/message/parts/process reads through the shared Project owner. Remaining route TODO is limited to the non-Chat session/run families and LegacyRoutes/global composition deletion proof.
 - Current next TODO is unchanged in scope: migrate the Agent dispatch/projector lifecycle and remaining session/run families, then complete provider/Port import census before deleting global composition. Re-run the BFF focused gates after each route bundle and keep A-01/A-02/A-07 stopped.
+- Native-session focused revalidation remains green on the current checkout (IAM 3/3; App native/session/account/team/sign-in/out focused 167/167); this does not replace the missing IAM_TEST_ADMIN_URL/Redis real host and cross-owner tenant-switch/revocation journey receipts.
 
 - `630efbf` adds a negative LegacyRoutes boundary for the already migrated Chat paths. This is an adapter bypass, not the Chat bundle completion: the old dispatcher still owns Chat POST/events/title/delete/share and project-scoped reads.
 - `3961450` established the direct Chat mutation seam; `ff14c86` extends it to project-scoped title/delete/share through a shared `ProjectAccessModule`, avoiding a second ProjectService owner.

@@ -245,3 +245,7 @@ BFF child `54fb620` moves the scheduled Agent dispatch/terminal repository, Agen
 BFF child `54fb620` extends `ChatModule` business-read ownership to `project_ref` collection/session/message/parts/process reads. The adapter now passes the shared `ProjectAccessModule` owner into Chat authorization, preserving current project existence/recheck, Chat owner reads, pagination/cursor, cancellation and error envelopes; direct reads remain compatible without a project provider in raw focused fixtures. The `LegacyRoutesMiddleware` boundary now locks project-scoped Chat reads as migrated.
 
 验证：Chat business direct/project focused 4/4；LegacyRoutes bypass 5/5；build/lint/typecheck；Nest runtime/feature architecture 24/24；BFF architecture 34/34。Remaining session/run families, LegacyRoutes runtime/global composition and C-3 Port census remain open。
+
+### C-1.3 native-session focused revalidation（2026-10-31）
+
+当前 App/IAM checkout 复验：IAM `test/unit/native-session-admission.test.ts` 3/3；App native-session/BFF adapter、native auth route、sign-in flow、tenant-route focused 22/22；App account profile/session/Team、sign-in/sign-out failure and recovery focused 145/145。真实 IAM_TEST_ADMIN_URL/Redis 集成 host 与跨 App→BFF→IAM sign-in/tenant-switch/revocation journey 仍是环境收据缺口，旧 RP/Product Session 尚未删除。
