@@ -360,3 +360,8 @@ pnpm test:integration
 - App child `b0919ffc20fe4ba3b281a8150aee503e1744a274` removes stale legacy auth environment comments from the five active templates; architecture **50/50** and lint pass. Runtime native-only evidence is stronger, but real cross-owner receipts remain an environment gate.
 - BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` removes deleted LegacyRoutes/global-port/service paths from `format:check`; the command now reaches the existing 30-file formatting warning baseline instead of missing-file errors. Do not claim format green until those warnings are separately owned and fixed.
 - C-3 census confirms only shared idempotency remains under `src/application/ports`, while `PostgresBffRepositories` and raw compatibility fixture consumers remain. Next work is to classify/freeze the five raw fallback surfaces and migrate or explicitly retain their fixtures before deleting raw composition; A-01/A-02/A-07 remain stopped.
+
+### 2026-11-02 execution update (browser MCP/custom API compatibility chain)
+
+- BFF child `562817cb70b7eb09f162929b4f665a5b85b5bc04` shares the Personal MCP and Custom API feature entrypoints between Nest middleware and raw `createBffServer`; raw requests no longer reach the generic `handleBffRequest` MCP/custom-api branch.
+- Focused verification: build plus Custom API/Personal MCP/icon/Nest architecture **127/127**, lint and diff-check passed. Remaining raw fallback categories are internal Scheduler dispatch, residual unknown sessions/run, retired-owner handling and generic upstream proxy; raw composition deletion still waits on fixture/provider census and owner gates.

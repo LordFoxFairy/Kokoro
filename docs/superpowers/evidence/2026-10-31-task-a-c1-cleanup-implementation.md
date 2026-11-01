@@ -619,3 +619,9 @@ The BFF source census confirms `src/application/ports` now contains only the sha
 ### Root verification after App/BFF C-1.3/C-4 pins `b0919ff` / `062f93f` (2026-11-02)
 
 Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning App `b0919ffc20fe4ba3b281a8150aee503e1744a274` and BFF `062f93ff6ed249c45843bfec360fc9267104e1b9` (**1846 passed / 3 skipped / 502 subtests**). The topology gate is green; BFF format warnings, owner full gates, real native-session receipts and E2E startup remain open.
+
+### C-2 raw compatibility browser MCP/custom API cutover（2026-11-02）
+
+BFF child `562817cb70b7eb09f162929b4f665a5b85b5bc04` extracts shared raw/Nest feature entrypoints for Personal MCP and Custom API. Raw `createBffServer` now invokes the same admitted `mcpPersonalRoute`/`customApiRoute` path before `handleBffRequest`, preserving request-id/cache headers, native admission, owner client identity and strict error projection; Nest middleware delegates to the same entrypoints. The mock `routeHandler` seam remains disabled for compatibility fixtures.
+
+验证：BFF build; Custom API, Personal MCP command/server/authorization, MCP icon, Nest runtime/feature architecture **127/127**; lint and diff-check passed. This removes browser-private MCP/custom API from the generic raw business fallback, but does not delete raw compatibility composition or the remaining scheduler/session/retired-owner/upstream fallback categories.

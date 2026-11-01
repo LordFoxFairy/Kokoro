@@ -277,3 +277,7 @@ The only exported `*-native` adapter missing from the raw `createBffServer` chai
 The read-only import census found no production imports of the removed `BffBusinessStore`/`BffApplicationServices` files and only the shared idempotency port under `src/application/ports`. `PostgresBffRepositories` is still instantiated by raw runtime and PostgreSQL integration fixtures. The remaining raw fallback categories are internal Scheduler dispatch, browser-private MCP/custom API, residual sessions/run, retired-owner handling and generic upstream proxy; each needs route-level proof before deleting `handleBffRequest`/`createBffComposition`.
 
 BFF child `062f93ff6ed249c45843bfec360fc9267104e1b9` also removes stale deleted paths from the format gate. `pnpm format:check` now has no missing-file errors but remains exit 1 for 30 pre-existing warnings; this is tracked as C-4 open, not passed.
+
+### Browser MCP/custom API raw-chain census continuation（2026-11-02）
+
+`McpPersonalMiddleware` and `CustomApiMiddleware` now delegate to the same exported feature-owned entrypoints used by raw `createBffServer`; the raw chain invokes those entrypoints before `handleBffRequest`. The 127-case focused bundle proves the existing owner/error/request-id semantics. Generic fallback census is reduced to internal Scheduler dispatch, residual unknown sessions/run, retired-owner termination and configured-upstream proxy; these remain compatibility surfaces until explicit route-level proof and fixture migration.
