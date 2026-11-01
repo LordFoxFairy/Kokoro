@@ -410,3 +410,9 @@ BFF child `c373066` removes `projects` from the concrete `PostgresBffRepositorie
 BFF child `e220ae4` removes the remaining `services` compatibility aggregate from `PostgresBffRepositories`. Chat/ChatTurn integration fixtures now use the named `chatService` and `chatTurnService`; no `services.chat`, `services.chatTurns`, `services.projects` or `services.scheduledTasks` consumer remains. The canonical named services and feature-local ports are now the only application service seams; no duplicate implementation or fallback was added.
 
 验证：BFF build/typecheck/lint；BFF + Nest architecture 173/173；Chat/Message/AG-UI focused 173/173；integration files `node --check` clean；`git diff --check` clean. Real PostgreSQL/Redis integration remains environment-gated; C-4 full cross-owner validation and IAM/App native journey are still open, so A-01/A-02/A-07 remain stopped.
+
+### C-3 BffBusinessStore application-port narrowing（2026-11-01）
+
+BFF child `46096d4` narrows `BffBusinessStore` to the durable idempotency and lifecycle contract. Feature repositories, services, AG-UI resources and outbox resources are now represented only by bootstrap-local `BffInfrastructureStore` and explicit `BffServerComposition` providers; the aggregate application port no longer carries feature resource fields. Existing PostgreSQL implementations remain single-owner and raw compatibility behavior is unchanged.
+
+验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；scheduler/Skill Share/Project resource/Chat focused set 87/87；`git diff --check` clean. This closes the global application-port field census; feature lifecycle worker proof and cross-owner C-4 remain open.

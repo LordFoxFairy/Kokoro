@@ -95,6 +95,10 @@ BFF child `c373066` removes `projects` from `PostgresBffRepositories.services` a
 
 BFF child `e220ae4` removes the `services` compatibility view entirely from `PostgresBffRepositories`. All concrete Chat/ChatTurn integration consumers use `chatService`/`chatTurnService`, and the source/test census has no `services.chat`, `services.chatTurns`, `services.projects` or `services.scheduledTasks` consumers. This closes the aggregate-view portion of C-3; lifecycle/outbox fields and full cross-owner C-4 evidence remain separate gates.
 
+### 2026-11-01 BffBusinessStore application-port narrowing
+
+BFF child `46096d4` removes feature repository/service/AG-UI/outbox fields from `BffBusinessStore`. Bootstrap resolves the concrete PostgreSQL infrastructure through a local `BffInfrastructureStore` and passes named providers through `BffServerComposition`; application routes no longer receive a global feature-resource locator. This closes the global application-port field census without introducing a second owner.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
