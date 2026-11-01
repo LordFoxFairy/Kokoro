@@ -71,4 +71,6 @@ BFF child `b9ac010` adds `PROJECT_SKILL_SELECTION_PROVIDER` to the same explicit
 
 BFF child `1301269` adds `PROJECT_MCP_RECOMMENDATIONS_PROVIDER` to the explicit chain. `LegacyRoutesRuntime` receives the provider from `McpModule`; the raw server prefers `composition.projectMcpRecommendationsProvider`, preserving the business-store constructor only for raw/test fallback.
 
+BFF child `c8c3259` passes `SKILL_EXACT_DOWNLOAD_SOURCE` and `SKILL_SPECIFICATION_SOURCE` from `SkillsModule` into `LegacyRoutesRuntime` and `BffCompositionOptions`. The raw server can now use the feature-owned exact-download/specification providers without rebuilding them from `BffBusinessStore.skillShares`/usage; those store fallbacks remain only for explicitly un-migrated raw/test compositions.
+
 A-01/A-02/A-07 继续停写。

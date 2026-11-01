@@ -161,3 +161,9 @@ BFF child `b9ac010` 将 `PROJECT_SKILL_SELECTION_PROVIDER` 从 `ProjectsModule` 
 BFF child `1301269` 将 `PROJECT_MCP_RECOMMENDATIONS_PROVIDER` 从 `McpModule` 接入 `LegacyRoutesRuntime`，raw recommendation route 优先读取 `composition.projectMcpRecommendationsProvider`；旧 business-store provider 构造保持为 raw/test fallback，不扩大 MCP personal execution 或 Task B 范围。
 
 验证：BFF build、lint、typecheck 通过；Nest runtime/feature architecture 20/20；MCP recommendation/publication focused 60/60。
+
+### Skill download/specification provider handoff（2026-10-31）
+
+BFF child `c8c3259` 将 `SKILL_EXACT_DOWNLOAD_SOURCE` 与 `SKILL_SPECIFICATION_SOURCE` 从 `SkillsModule` 接入 `LegacyRoutesRuntime`，使 raw composition 优先消费 feature-owned exact-download/specification provider；business-store skill-share/usage fallback 仍只服务未迁移 raw/test composition。
+
+验证：BFF build、lint、typecheck 通过；Nest runtime/feature architecture 20/20；Skill download/share/specification focused 60/60。
