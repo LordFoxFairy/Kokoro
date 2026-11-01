@@ -512,3 +512,16 @@ BFF child `045dbf7` moves `PublicShareRepository` from the global `application/p
 BFF child `758d58f` moves `PersonalKnowledgeRepository` into the Account-owned `application/account` boundary. Child `224a624` completes the matching Account Library move for `ArtifactLibraryRepository`; Account middleware/routes, Storage artifact projection, and PostgreSQL composition now import the feature-local port. Child `03940f9` moves `SkillShareRepository` into the Skills-owned `application/skills` boundary. Each change keeps one concrete PostgreSQL implementation, preserves existing wire/transaction behavior, and adds a negative architecture assertion for the retired global path.
 
 验证：BFF build/typecheck/lint；BFF architecture + Nest runtime/feature architecture **61/61**；`git diff --check` clean. The remaining global ports are reviewed as shared idempotency, owner repositories, or lifecycle/outbox seams and require an explicit keep/move/delete decision; raw compatibility composition and C-4 full owner validation remain open. A-01/A-02/A-07 stay stopped.
+
+### Task A closure and E2E readiness audit（2026-11-01）
+
+当前结论：Task A 尚未闭环，A-01/A-02/A-07 继续停写。
+
+- C-1.3：App/BFF native-session relay 删除与 native fixture closure 已有子仓证据；IAM→BFF→App 的真实 sign-in/session-admission/profile/tenant-switch/sign-out/revocation 旅程仍缺真实 PG/Redis 与服务进程收据，因此不能把跨 owner C-1.3 写成全绿。
+- C-2：Nest 生产图已删除 `LegacyRoutesModule/Runtime/Middleware`，但 `createBffComposition`、`handleBffRequest`、`createBffServer` 仍保留在 raw test/compatibility 入口，按设计门尚未满足零生产兼容路径证明。
+- C-3：最近已完成四个 feature-local port slices（Chat Public Share、Skills Share、Account Personal Knowledge、Account Library Artifact）；剩余 idempotency、Chat/Project/Scheduled/Agent/worker outbox 等 global ports 需逐项判定 keep/move/delete，不能批量机械搬迁。
+- C-4：Root `git diff --check`、拓扑检查与 `python3 -m pytest scripts/tests -q` 通过（1846 passed / 3 skipped）。BFF focused build/typecheck/lint 与 architecture/Nest 61/61 通过；本轮 `pnpm test` 在 `test/contract/skill-specification-http.test.mjs` 运行约 300 秒无终态，按超时中止，部分结果 1038 passed / 21 failed / 113 cancelled，不能作为全量绿证据。App 仍有既有 `onReconnect` typecheck 阻塞与全契约生成快照漂移基线。
+
+E2E 预检：当前本机仅探测到 PostgreSQL `127.0.0.1:5432`、Redis `127.0.0.1:6379`、MinIO recovery `39190/39192`、Mailpit `1025/8025`、ClamAV `43310`；IAM/BFF/App/Agent/System/Billing/Storage/Scheduler/Capability/Admin 均无运行监听。PostgreSQL `postgres` 数据库当前仅有 `kokoro_agent`、`kokoro_platform` 与历史 `kokoro_test_*` schema，缺少本轮 IAM/BFF/System/Billing/Storage/Scheduler 的隔离 owner schema；Redis DB9 仍有既有 key，未执行清理。
+
+端到端启动顺序冻结为：IAM（3101）→ System（4240）/Storage（8085）→ Capability（8086）/Scheduler（8080）/Billing（4245）→ Agent HTTP/worker（4401）→ BFF（4300）→ App（3000）/Admin（3320）。启动前须补齐 owner schema、隔离 Redis logical DB/prefix、Storage S3/ClamAV 与 IAM/BFF/owner credential 配对；完成 `/healthz`/`/readyz` 后，依次验证 native login/session admission、BFF `/v1/me`、profile/tenant/team/sign-out/revocation，再验证 Chat/Agent/Skills/Storage/Billing/Scheduler。当前资源与进程条件不足，未宣称 E2E 通过。
