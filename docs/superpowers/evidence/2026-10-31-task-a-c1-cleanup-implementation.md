@@ -685,3 +685,13 @@ Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `p
 ### C-4 format gate recheck after `6f9cc64`（2026-11-02）
 
 `pnpm format:check` reaches the complete declared file list without missing-path errors and exits 1 on **31** existing Prettier warnings, including the touched raw server/scheduler/architecture files. No formatting-only sweep was applied because it would widen the cleanup slice; format remains an explicit C-4 blocker rather than being reported green.
+
+### C-1.3 App typecheck baseline cleanup（2026-11-02）
+
+App child `f5d122bb41beb3e141015b758411dbcc0afc583b` removes the stale `onReconnect` prop from `AppFrameMainSurface` and its parent call. `AppFrameConnectionStatus` already owns a data-only status surface, so this is a type-boundary cleanup with no connection UI/behavior change.
+
+验证：App `pnpm typecheck`, `pnpm lint`, `pnpm test:architecture` **50/50**, `git diff --check` passed (Node engine warning only). This closes the known App typecheck baseline; C-1.3 real IAM→BFF→App login/tenant-switch/sign-out/revocation receipts and E2E startup remain open.
+
+### Root verification after App typecheck cleanup pin `f5d122bb`（2026-11-02）
+
+Root topology verification and `python3 -m pytest scripts/tests -q` passed after pinning App `f5d122bb41beb3e141015b758411dbcc0afc583b`; result **1846 passed / 3 skipped / 502 subtests**. The App static typecheck baseline is now closed; native-session real receipts, E2E service readiness, BFF format/full-owner gate and raw fixture zero-consumer proof remain open.

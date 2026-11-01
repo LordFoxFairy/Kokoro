@@ -395,3 +395,7 @@ pnpm test:integration
 - Readiness audit 已冻结启动依赖：隔离 PG/Redis → IAM → System/Capability/Storage/Billing/Scheduler → BFF → Agent HTTP/worker → App → Admin；当前所有应用进程未启动，缺少 test admin URL、owner schema/namespace 与 service credentials。恢复这些外部条件前，C-1.3/E2E 只能保持阻塞记录，不进入 A。
 
 - `pnpm format:check` after `6f9cc64` reports 31 existing warnings (including `server.ts`, `scheduler.ts`, and architecture files) with no missing paths. Do not reformat unrelated files or mark C-4 green until the warning set is separately owned.
+
+### 2026-11-02 execution update (App typecheck baseline)
+
+- App child `f5d122bb41beb3e141015b758411dbcc0afc583b` removes the stale reconnect-status prop from the App frame boundary. Typecheck/lint/architecture **50/50** are green; this does not substitute for real native-session receipts or E2E service readiness.
