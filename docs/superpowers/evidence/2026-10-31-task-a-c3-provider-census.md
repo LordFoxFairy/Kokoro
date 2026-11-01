@@ -163,3 +163,8 @@ The compatibility view remains an integration-fixture migration target; C-3 is n
 ## 2026-11-01 Artifact Library port isolation
 
 BFF child `5de502c` moves the artifact library contract to `src/application/ports/artifact-library-repository.ts`; `bff-business-store.ts` now only carries the transitional runtime store and no artifact DTO/port definitions. Account/Library/Storage/PostgreSQL consumers use the feature-local port with the existing bounded artifact query and verified transfer behavior.
+
+
+### 2026-11-01 bootstrap-only runtime store seam
+
+BFF child `95d6516` 删除全局 `BffBusinessStore` application Port；runtime 内部 `BffRuntimeStore` 只承担 Idempotency 与 ready/close 生命周期，feature resources 仍以明确 provider 字段跨 raw composition 边界。该切片没有新增抽象层或第二 owner；`PostgresBffRepositories` 继续作为 PostgreSQL composition/集成 fixture owner，待后续 lifecycle/fixture census 决定是否拆分。

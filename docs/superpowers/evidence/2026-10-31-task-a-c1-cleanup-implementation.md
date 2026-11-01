@@ -416,3 +416,10 @@ BFF child `e220ae4` removes the remaining `services` compatibility aggregate fro
 BFF child `46096d4` narrows `BffBusinessStore` to the durable idempotency and lifecycle contract. Feature repositories, services, AG-UI resources and outbox resources are now represented only by bootstrap-local `BffInfrastructureStore` and explicit `BffServerComposition` providers; the aggregate application port no longer carries feature resource fields. Existing PostgreSQL implementations remain single-owner and raw compatibility behavior is unchanged.
 
 验证：BFF build/typecheck/lint；BFF + Nest architecture 53/53；scheduler/Skill Share/Project resource/Chat focused set 87/87；`git diff --check` clean. This closes the global application-port field census; feature lifecycle worker proof and cross-owner C-4 remain open.
+
+
+### C-3 bootstrap-only runtime store seam（2026-11-01）
+
+BFF child `95d6516` 删除 `src/application/ports/bff-business-store.ts`。`BffBusinessStore` 不再作为应用层全局 Port 暴露；`BffRuntimeStore` 仅在 `bootstrap/runtime.ts` 内组合 `IdempotencyRepository` 与数据库生命周期，feature resources 继续通过命名的 `BffServerComposition` providers 传递。没有新增 Repository/Service 实现，也没有改变 raw/test compatibility 的行为边界。
+
+验证：BFF `pnpm build`、`pnpm typecheck`、`pnpm lint`；BFF architecture 34/34；`git diff --check` clean。`PostgresBffRepositories` 仍是真实 PostgreSQL composition 与现有 integration fixtures 的 owner；C-3 其余 lifecycle/fixture census 和 C-4 全量跨 owner 验证继续 open。
