@@ -118,3 +118,8 @@ Verification: build/typecheck, BFF architecture 34/34, Nest runtime/feature arch
 BFF child `6f9a9e2` deletes `src/application/services.ts` and constructs each named application service exactly once in `PostgresBffRepositories`. The `services` property is now a typed fixture-only compatibility view; no source runtime/bootstrap/route code reads it. Personal Knowledge, AI Skill import and Message regeneration no longer expose aggregate fallback contracts.
 
 The compatibility view remains an integration-fixture migration target; C-3 is not closed until its consumers are zero and each remaining Port has keep/move/delete evidence.
+
+
+## 2026-11-01 Artifact Library port isolation
+
+BFF child `5de502c` moves the artifact library contract to `src/application/ports/artifact-library-repository.ts`; `bff-business-store.ts` now only carries the transitional runtime store and no artifact DTO/port definitions. Account/Library/Storage/PostgreSQL consumers use the feature-local port with the existing bounded artifact query and verified transfer behavior.

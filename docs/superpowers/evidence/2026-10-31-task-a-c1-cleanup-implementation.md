@@ -349,3 +349,10 @@ BFF child `62fe701` removes the `BffApplicationServices` aggregate from the `Bff
 BFF child `6f9a9e2` deletes `src/application/services.ts` and removes the aggregate class from the PostgreSQL composition. Named `ProjectService`, `ScheduledTaskService`, `ChatApplicationService` and `ChatTurnApplicationService` instances are constructed once and exposed to bootstrap; the concrete repository retains only a typed compatibility view for integration fixtures, with no production consumer. Personal Knowledge, AI Skill import and Message regeneration route contracts no longer accept `BffBusinessStore.services`; affected raw fixtures were migrated to explicit owner providers.
 
 验证：BFF build/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 23/23；focused feedback/regeneration/project-pin/MCP/personal-knowledge/AI-hand-off tests 46/46；project/resource/installation focused tests 66/66. Remaining C-3 work is the compatibility view removal from integration fixtures and the per-port keep/move/delete audit.
+
+
+### C-3 artifact library port isolation（2026-11-01）
+
+BFF child `5de502c` moves `ArtifactAssociation`, `ArtifactPosition` and `ArtifactLibraryRepository` out of the global `bff-business-store` port into the Account/Library-owned `artifact-library-repository` port. Library routes, AccountModule, Storage artifact projection and PostgreSQL adapter now import the narrow feature port; no behavior, SQL owner or storage transport changed.
+
+验证：BFF build/typecheck；BFF architecture 34/34；Nest runtime/feature architecture 23/23；`git diff --check` clean. The remaining `BffBusinessStore` lifecycle/outbox fields still require feature-owner migration evidence.
