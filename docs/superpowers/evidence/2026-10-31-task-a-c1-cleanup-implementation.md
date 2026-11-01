@@ -699,3 +699,17 @@ Root topology verification and `python3 -m pytest scripts/tests -q` passed after
 ### IAM owner static gate recheck（2026-11-02）
 
 IAM child `e1f537b02cb326cfb3751316b1591fa82313f70a` was rechecked without changing source. `pnpm verify` stops at one existing Prettier warning (`test/integration/bff-session-admission-host.test.ts`); the remaining serial gates passed: lint, typecheck, contract/check-breaking, SDK check, **120 files / 1561 tests**, and build. This is static owner evidence only; `IAM_TEST_ADMIN_URL`/isolated integration resources are still absent, so native-session cross-owner receipts remain open.
+
+### C-3 named PersonalKnowledge fixture seam（2026-11-02）
+
+BFF child `24e157bb023b5132c59fdd153af1c608134c0ee2` updates seven stale integration-fixture accesses from removed `store.services.personalKnowledge` to the existing `PostgresBffRepositories.personalKnowledge` named seam. No production code, SQL, wrapper shape, or behavior changed.
+
+验证：BFF build/typecheck/lint/diff-check；personal-knowledge contract/input/HTTP/integration bundle **6 pass / 6 resource-gated skip**. `KOKORO_TEST_POSTGRES_URL`/`KOKORO_TEST_REDIS_URL` remain unset, so the SQL lock/CAS cases were not claimed as green.
+
+### App full-test diagnostic after typecheck cleanup（2026-11-02）
+
+App `pnpm test` remains non-green on the existing contract-artifact digest baseline: multiple BFF owner/public contract suites report pinned-byte/hash drift (first failure `scripts/generate-bff-project-resource.mjs`, expected vs actual owner digest), followed by related contract failures. The App child worktree stayed clean; no generated artifact or contract was rewritten to silence the mismatch. Architecture/lint/typecheck remain the valid static evidence for `f5d122bb`; full App C-4 validation remains open.
+
+### Root verification after PersonalKnowledge fixture pin `24e157b`（2026-11-02）
+
+Root topology and governance recheck passed after pinning BFF `24e157bb023b5132c59fdd153af1c608134c0ee2`: **1846 passed / 3 skipped / 502 subtests**. The named fixture cleanup is now part of the verified Root combination; remaining C-3 integration wrappers, App artifact baseline, real native-session receipts and E2E readiness remain open.

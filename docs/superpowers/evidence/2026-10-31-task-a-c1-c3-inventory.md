@@ -299,3 +299,7 @@ The raw route census now has a negative proof for unknown live `/v1/sessions/**`
 ### 2026-11-02 generic upstream fallback continuation
 
 Unknown raw `/v1/agents/**` and `/v1/billing/**` paths now terminate 404 after named adapters (`6f9cc64`); configured upstreams receive zero calls in the negative fixture. Exact Agent setup and Billing personal paths remain canonical. Remaining generic proxy reachability is compatibility-only for undocumented/fixture-injected owner suffixes; keep `handleBffRequest` until raw fixture/provider census closes.
+
+### 2026-11-02 PersonalKnowledge fixture seam
+
+Seven stale integration references now use the named `PostgresBffRepositories.personalKnowledge` seam (`24e157bb`). The wrapper and raw construction remain until the remaining eight integration suites are migrated; current SQL cases are resource-gated because test PG/Redis URLs are absent.

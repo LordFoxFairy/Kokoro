@@ -401,3 +401,8 @@ pnpm test:integration
 - App child `f5d122bb41beb3e141015b758411dbcc0afc583b` removes the stale reconnect-status prop from the App frame boundary. Typecheck/lint/architecture **50/50** are green; this does not substitute for real native-session receipts or E2E service readiness.
 
 - IAM static recheck: lint/typecheck/contracts/SDK/120-file test suite (**1561/1561**) and build pass; `pnpm verify` remains format-blocked by the existing `test/integration/bff-session-admission-host.test.ts` warning. Real IAM admin/PG/Redis receipt evidence is still unavailable.
+
+### 2026-11-02 execution update (named PersonalKnowledge fixture)
+
+- BFF child `24e157bb023b5132c59fdd153af1c608134c0ee2` removes the stale PersonalKnowledge global-service fixture accesses without adding an alias. Focused contract/input/HTTP tests pass and integration cases are explicitly skipped without isolated PG/Redis.
+- App full test remains a contract-artifact digest mismatch baseline; do not regenerate pinned public artifacts in this cleanup slice. Keep C-4 open until owner artifact provenance is reconciled and the serial suite is rerun.
