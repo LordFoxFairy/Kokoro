@@ -404,3 +404,9 @@ BFF child `10477a7` removes `scheduledTasks` from the concrete `PostgresBffRepos
 BFF child `c373066` removes `projects` from the concrete `PostgresBffRepositories.services` fixture-only aggregate. Project resource access/delete, BusinessStore deletion observation and Chat project-selection integration fixtures now use the named `projectService`; no `services.projects` consumer remains outside an intentionally independent MCP route fixture. The canonical ProjectService remains the sole owner.
 
 验证：BFF build/typecheck/lint；BFF + Nest architecture 67/67；Project resource access/delete/upload focused tests green; `git diff --check` clean. One Chat integration test remains an environment/baseline failure (no real IAM/DB session in this run); remaining compatibility view fields are `chat`/`chatTurns` only.
+
+### C-3 compatibility aggregate deletion（2026-11-01）
+
+BFF child `e220ae4` removes the remaining `services` compatibility aggregate from `PostgresBffRepositories`. Chat/ChatTurn integration fixtures now use the named `chatService` and `chatTurnService`; no `services.chat`, `services.chatTurns`, `services.projects` or `services.scheduledTasks` consumer remains. The canonical named services and feature-local ports are now the only application service seams; no duplicate implementation or fallback was added.
+
+验证：BFF build/typecheck/lint；BFF + Nest architecture 173/173；Chat/Message/AG-UI focused 173/173；integration files `node --check` clean；`git diff --check` clean. Real PostgreSQL/Redis integration remains environment-gated; C-4 full cross-owner validation and IAM/App native journey are still open, so A-01/A-02/A-07 remain stopped.

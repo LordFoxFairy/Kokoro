@@ -91,6 +91,10 @@ BFF child `10477a7` removes `scheduledTasks` from `PostgresBffRepositories.servi
 
 BFF child `c373066` removes `projects` from `PostgresBffRepositories.services` and migrates Project resource/delete and Chat project-selection fixtures to `projectService`. No `services.projects` consumer remains except the standalone Project MCP test fixture that does not use the concrete repository. The canonical ProjectService remains single-owner; PostgreSQL/Redis integration is environment-gated.
 
+### 2026-11-01 Compatibility aggregate deletion
+
+BFF child `e220ae4` removes the `services` compatibility view entirely from `PostgresBffRepositories`. All concrete Chat/ChatTurn integration consumers use `chatService`/`chatTurnService`, and the source/test census has no `services.chat`, `services.chatTurns`, `services.projects` or `services.scheduledTasks` consumers. This closes the aggregate-view portion of C-3; lifecycle/outbox fields and full cross-owner C-4 evidence remain separate gates.
+
 ## 2026-10-31 provider handoff update
 
 BFF child `330e439` adds the explicit `PUBLIC_SHARE_SERVICE` seam to the transitional runtime. `LegacyRoutesModule` imports `ChatModule`; `LegacyRoutesRuntime` injects `PublicShareApplicationService` and passes it to `createBffComposition`; raw shared-public handling reads `composition.publicShareService`. `BffCompositionOptions.publicShareService` now prefers the feature provider while retaining the store fallback only for un-migrated test/raw composition. This is a provider handoff, not LegacyRoutes completion.
