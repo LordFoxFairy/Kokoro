@@ -581,3 +581,7 @@ BFF child `0b65b918b96664ec5285998c5e87450b30533879` adds the named `agentConnec
 BFF child `bb1fa5e8a7fd4959a113afd0cbcf8d013d1b7ff` extends the raw `createBffServer` compatibility chain to invoke the same feature adapters already owned by `ChatModule`: message regeneration, title/delete/share mutations, AG-UI events, and message submission. The chain is gated off for the mock `routeHandler` seam and when the required named feature providers are absent; it does not duplicate Chat/Agent/AG-UI services or change the wire contract. This removes those legal Chat paths from the raw `handleBffRequest` session branch for live compatibility compositions while preserving the existing mock fixture path.
 
 验证：BFF build；focused BFF/Chat/regen/Nest suite **65/65**；lint and `git diff --check` passed. Full BFF test and raw integration fixture census remain open; this is not the deletion of `handleBffRequest` or `PostgresBffRepositories`.
+
+### Root verification after BFF child pin `bb1fa5e` (2026-11-02)
+
+Root `git diff --check`, `python3 scripts/verify-repository-topology.py`, and `python3 -m pytest scripts/tests -q` passed after pinning BFF `bb1fa5e8a7fd4959a113afd0cbcf8d013d1b7ff` (**1846 passed / 3 skipped / 502 subtests**). This is Root governance/topology evidence only; it does not replace the pending BFF full owner gate or E2E service receipts.
