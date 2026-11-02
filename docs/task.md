@@ -17091,12 +17091,13 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - App native-session source/config cleanup；App stale reconnect prop removed，静态 typecheck/lint/architecture 50/50。
 - BFF raw Scheduler callback、retired System/Skills、unknown session、unknown Agent/Billing、Personal MCP/Custom API 均走 named feature adapters/guards；Nest production 无 LegacyRoutes composition。
 - BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
-- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `13319aa`、App `f5d122bb`。
+- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `b8bf18a`、App `f5d122bb`。
 - BFF raw chain 对非 canonical `/v1/models/**` 已增加 404 终止，配置的 model upstream 不再接收未知 suffix；canonical `GET /v1/models` 保持 owner contract。
 - BFF raw chain 对非 canonical `/v1/library/**` 也已增加 404 终止，配置的 storage upstream 不再接收未知 suffix；canonical Library routes 保持不变。
 - BFF 已删除无已知生产可达入口的 generic configured-owner proxy tail；未命名路径统一以 `bff_route_not_found` 结算（保留幂等 receipt 回收），`configuredUpstream` 仅留在 health/readiness owner 配置检查。
 - Archived/Shared Tasks raw fixtures 已从 `businessStore.services.chat` 迁移到显式 `chatService`，不再以旧 aggregate 形状冒充 Chat owner；相关 HTTP suites 已复核全绿。
 - Skill shared-summary contract fixtures 已从 `businessStore.services.skillShares` 迁移到显式 `skillShareRepository`；排除 disconnect pending case 后该 contract suite **110/110** 通过，收回一组 C-4 baseline failures。
+- Model admission/recovery/settlement fixtures 已从 `businessStore.submittedAgentRuns` 提升为顶层 `submittedAgentRuns`，并移除空 `services` 壳；三套 internal HTTP suites **24/24** 通过。
 - Root topology/governance 每次 pin 后串行通过；本轮 BFF child 复核 build/typecheck/lint、mock 29/29、architecture/Nest 70/70。
 
 **TODO / 未闭环：**

@@ -787,3 +787,9 @@ BFF child `13319aa34628bb7b7dd4667ed615f6377078f84b` migrates the three shared-s
 ### Root verification after SkillShare fixture pin `13319aa`（2026-11-02）
 
 Root BFF gitlink now points to `13319aa34628bb7b7dd4667ed615f6377078f84b`. The fixture slice is owner-boundary green at child level; Root topology/governance recheck is required before treating the pin as integrated. C-1.3 real receipts, isolated PG/Redis integration, BFF/App/IAM full gates, and E2E service startup remain open.
+
+### C-3 submitted AgentRuns provider fixture seam（2026-11-02）
+
+BFF child `b8bf18aaf0de9edb8359d0d7320a856b52e63d51` migrates model admission, recovery, and settlement HTTP fixtures from `businessStore.submittedAgentRuns` plus an empty `services` shell to the explicit top-level `submittedAgentRuns` provider with `businessStore: null`. The internal AgentRuns adapter already consumes this named provider; no production or Billing contract change was made.
+
+验证：`test/model-admission-http.test.mjs`, `test/model-admission-recovery-http.test.mjs`, and `test/model-settlement-http.test.mjs` **24/24** pass; `git diff --check` passed. This closes three raw provider-shape consumers without claiming real Billing/Agent owner receipts.

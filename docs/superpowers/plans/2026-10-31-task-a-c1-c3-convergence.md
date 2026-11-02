@@ -435,3 +435,8 @@ pnpm test:integration
 
 - Migrate shared-summary fixture consumers to the existing top-level `skillShareRepository`; keep the disconnect cancellation case intact and rerun it separately.
 - After Root pins `13319aa`, rerun topology/governance and then the complete BFF owner gate. Do not treat the 110-case focused result as C-4 completion; A-01/A-02/A-07 remain stopped.
+
+### 2026-11-02 AgentRuns fixture migration
+
+- Keep the internal AgentRuns adapter as the owner boundary and migrate only fixture shape (`submittedAgentRuns` top-level, `businessStore: null`).
+- Re-pin Root, rerun topology/governance, then repeat the BFF full diagnostic; do not call focused model-admission tests an owner E2E receipt.
