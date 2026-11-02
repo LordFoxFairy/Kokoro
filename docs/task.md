@@ -17169,3 +17169,8 @@ I-35中12失败为canonical非id表摘要/ADR-008 Session tombstone旧oracle，3
 用户质疑内部 Cookie 与 SDK 的复杂度。受影响认证传递设计门重开，IAM writer 已停写，无 live 进程；I-37 两文件修复仅 worker 阶段证据，未提交/未主方验收，候选不推送。Goal 保持 active，先核边界与真实消费必要性，不另造 token 或客户端层。详见唯一计划 I-38。
 
 I-38 三路只读盘点已完成，候选设计写回唯一计划 §3.6：建议 Cookie 限专用 admission，其后受信 BFF 传真实 Session 引用、IAM 原事务复核，明确其新增委托信任，待用户裁决。SDK 并非空层：Billing0.17/Capability0.18 是已知生产消费者，BFF 用本仓 generated；不整包删除或迁入新 SDK。原始 Goal 不变，无生产写入。
+
+
+### 同日后续：I-37 独立 SDK 修复已主方验证
+
+IAM本地 `2cb9864`（未推送）修 Bearer 自动生成 Cookie；独审CLEAR，主方完整verify exit0、clean-commit外部consumer2 PASS，542输入未变。I-38仍待用户裁决，未实施Session引用、未发行native2，原Goal/G1/G2/G3不变；I-36其余测试价值清理仍开放。详见唯一计划，不以此切片冒整体认证闭环。

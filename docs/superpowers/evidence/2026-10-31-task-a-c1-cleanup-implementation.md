@@ -1135,3 +1135,11 @@ IAM 本地 `cc3fbaf1cf339c5b25ba78ac19ff1a0aeab9c9c3`，63 文件候选已双审
 唯一计划 §3.6 比较现 Cookie proof 方案与受信 BFF Session 引用方案。后者不新增 token/storage，也不取消 IAM 当前权限/事务复核，但扩大 BFF 身份代言信任，不能声称与每次 Cookie 持有验证等价；已作为明确问题提交用户裁决。App 的旧-shaped占位 claims 与重复/me只是清理候选，不当作新身份引用、不默认扩Web合同。此次未改三 owner 生产文件、运行服务、Schema 或生成物，未发布/更新 gitlink。
 
 I-38 文档验收：IAM/BFF 独立只读评审均 CLEAR；主方 `git diff --check` 通过，唯一计划 20 个本地链接有效、38 个问题/18 个 TODO ID 无重复；IAM/BFF/App 只读盘点前后 tracked/untracked 受版本管理输入哈希一致。未运行业务测试：此轮为设计文档与只读调查，未改变 owner 源码；既存 I-37 未提交差异保持。
+
+### I-37 SDK 凭据隔离主方验收（2026-11-02）
+
+I-38 未裁决期间，仅验证其独立局部修复，不新增引用式认证。IAM `2cb986446ba6b17ca24d73fdd6bfdfa363d071d9` 本地提交两文件：SDK transport 将现有 Bearer 仅用于 HTTP/header/bearer scheme，原测试补 wire Cookie 缺席（默认/调用覆盖/无token、现Skills及Basic）。生成物、guard、契约与公开SDK选项未改；规格/质量独审均CLEAR，未发布。
+
+- 主方 Node24.20.0 `corepack pnpm verify` exit0：格式/lint/types/contract/breaking/SDK/default/build通过，125文件/1654默认PASS，7.04s；完整输入hash未变。此处数字是套件执行量，不是独立业务覆盖数。
+- clean commit 后主方原 `vitest run test/consumer --maxWorkers=1` exit0：2文件/2PASS/0FAIL/0SKIP，23.92s；542输入hash未变。包含SDK pack→仓外安装/编译→真实IAM调用和auth-flow；Billing direct-service正例、同proof/body OAuth401负例均执行，原成员/角色/邀请/审计等后续流程保持。
+- 原b2f28d4 consumer 1FAIL保留；本次未改owner server，未无意义重跑其全部484integration，未称新组合E2E或全仓通过。私有日志/冻结存本地，资源按原fixture清理。Root gitlink仍5fffe60；I-38待用户裁决、I-36余项OPEN，Goal active。
