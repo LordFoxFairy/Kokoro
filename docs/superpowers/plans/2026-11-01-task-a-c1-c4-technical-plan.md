@@ -378,3 +378,7 @@ App1d54eedd4d67482c789ae3f7dd60807302732b24三文件退出修复已独审并经R
 Capability72路径修正canonical ownership断言后，Root真实HTTP→production receiver→隔离PG组1pass；13项为本次-t未选择，不计本组覆盖。System成功/自然重放/冲突/disabled不复活、BFF/Agent/未知凭据拒绝、文件删除后撤销、ownerTenantId/ownerUserId均null、零receipt/outbox/IAM请求均过；数据库inventory前后相同，Redis仅connect/ping/quit无key写入。不是System producer链。最终完整owner门再次串行运行中，尚不提前标全绿。
 
 T14实际交付：Capability f515e225，PR13 OPEN/draft，base为原PR12候选分支；GitHub实际mergeable=CONFLICTING，明确不合并。Root配套六文件hash保持，再跑154定向/141subtests通过（前轮完整治理1879/3skip/506同源码）；本次Root提交精确pin f515并配对退休配置删除。I-25记录最新基线集成，不借旧已验组合否认他人四个新提交。
+
+I-25只读集成调查已完成：共同基线44fcc；9重叠中5处文本冲突为provenance与四份设计/current文档，另checker/product-mcp.rpc/mcp.ports/architecture需语义复核。更重要的是远端mcp-private-server-v2-contract.ts从冻结父重建整份provenance，会拒绝/生成时删除T14认证索引；后继必须保v2精确contract发行及认证索引独立严格校验，并补生成保留/只读不写负控，不能重签父快照或删除索引。新Schema的global currentConnectorId=NULL需真实T14重验；B01 private/personal、fresh/父升级/回滚/代际撤权及Custom API真PG均随新组合重验。新B01消费者发布/正常Schema激活归其owner，不在本片擅自实现Task B；当前f515证据不继承到新合并树。本轮只读调查未合并、写对象或修改base分支。
+
+App媒体类型修复e1be73e08bb1bd4c9c554c9e319f6b079006fdb5已Root独审与完整check exit0：contract452/architecture50/full6407/0skip、lint/types/build，1494输入hash不变。仅三文件沿PR50交付；本次Root精确pin后再次验真实App sign-out/旧cookie重放。I-24在真实GREEN前仍OPEN。

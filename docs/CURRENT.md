@@ -2,7 +2,7 @@
 
 唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；G0通过，G1认证/G2删除/G3最终组合均OPEN，A功能停写。
 
-App冷登录727已在Root4fdb精确组合实际验证：无cookie注入的新Chromium表单303/session200/projects200，最小HTTP4checks与cleanup PASS。退出1d54已Root完整check6403pass/0skip，但真实App→IAM退出415、session与旧cookie重放仍200；第二层媒体类型/空JSON规范化修复中，I-24尚未关闭，不拿loopback或原HTTP4PASS代替退出验收。
+App冷登录727已在Root4fdb精确组合实际验证：无cookie注入的新Chromium表单303/session200/projects200，最小HTTP4checks与cleanup PASS。退出1d54已Root完整check6403pass/0skip，但真实App→IAM退出415、session与旧cookie重放仍200；第二层媒体类型/空JSON规范化已交付App e1be73e0，Root完整check6407pass/0skip与独审通过，本次精确pin后真实复验，I-24尚未关闭，不拿loopback或原HTTP4PASS代替退出验收。
 
 Capability f515接收方切片已Root独审、format/lint/verify/Prisma/build全0：3051pass/678skip，1111输入hash保持；隔离真实HTTP/PG receiver1pass，13未选择，数据库inventory保持。Root六文件配套候选独审、定向154及完整治理1879pass/3skip/506subtests证据绑定同源码，本次精确pin配对。新draft PR13依赖旧PR12；远端四新提交含Schema/契约，与PR13实际有冲突，I-25/T-09后继独立集成与重新验收，未覆盖或合并任一main。
 

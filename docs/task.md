@@ -17111,3 +17111,5 @@ Root4fdb精确组合冷登录已真实GREEN：无注入cookie的新Chromium表�
 App退出1d54eedd已Root完整check6403pass/0skip并沿原PR50交付，本次Root精确pin后实测。Capability修canonical断言后真实receiver1pass、13非选，数据库inventory保持；最终完整门复跑中。
 
 T14 receiver切片f515/PR13已Root全门3051pass/678skip和真实PG1pass，Root六配置文件配对交付；与原PR12最新2ad基线实际冲突留I-25/T-09独立整合。退出I-24仍OPEN：App1d54真实signout415且旧cookie200，媒体类型/空JSON规范化修复中，不以旧单测全绿结案。
+
+App e1be73e0 JSON规范化已独审/Root完整check6407pass/0skip并沿PR50推送，精确pin后复验真实退出；真实GREEN前I-24保持OPEN。

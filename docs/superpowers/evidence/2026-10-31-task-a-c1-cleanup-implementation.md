@@ -938,3 +938,7 @@ I-24 Root完整check exit0：contract452、architecture50、354files6403pass/0sk
 Capability最终72路径加CURRENT为f515e225；Root五门均0，202files3051pass/678skip，1111输入停写前后hash一致。真实receiver1pass/13名称未选、DBinventory保持。已独立推送PR13，base原PR12候选；fetch发现其4新增提交2ad（73路径含contract/schema），PR13实际CONFLICTING；不force、不合并main，后继独立集成与重新全门登记I-25。
 
 Root325d/App1d54真实冷登录仍303/session200/projects200；实际App退出415/session200/projects200，内存旧cookie独立HTTP重放亦200。原fixture4checks和cleanup PASS不覆盖该RED。锁定BetterCall有流无Content-Type抛415、JSON空流又400，既有IAM真实HTTP成功例是JSON {}。因此I24保OPEN，批准仅App adapter将已严格校验空浏览器请求规范化为固定JSON {}两字节，不放宽用户body/Origin或transport。
+
+I-25独立只读merge-base/diff/legacy三参数merge-tree确认9重叠/5文本冲突，并发现远端v2 contract generator重建provenance会丢T14 serviceCredentialSources的确定接缝；登记精确双checker/生成保索引回归及新canonical真实验证要求。未写Git对象/index/worktree，未擅自合并B01或推进其消费者。
+
+I-24第二层候选Root完整check exit0（452/50/6407、lint/types/build；1494输入hash保持），独审CLEAR。e1be73e0三文件沿PR50交付，浏览器严格零体不变，只有adapter固定JSON{}两字节；本次Root精确pin后真实复验，上轮415仍留证。
