@@ -17105,6 +17105,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - Project Skill content fixture 已绑定显式 `projectService`/`skillShareRepository`，并保留最小、真实语义的 receipt store；其 HTTP suite **18/18** 通过，下载/重检路径不再依赖 `services.projects` fallback。
 - Root topology/governance 每次 pin 后串行通过；本轮 BFF child 复核 build/typecheck/lint、mock 29/29、architecture/Nest 70/70。
 - BFF child `228e3d6` 已修复 denied MCP icon mutation 的 owner dispatch 顺序，并为 Skill installation Chat owner-error 场景补齐最小真实 receipt seam；focused MCP **42/42**、Skill installation **24/24**，随后 full `pnpm test` **2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**。
+- IAM child `a1457be` 已同步 native-session/profile generated SDK；`pnpm verify` 完成 **120 files / 1561 tests / build PASS**，Root 当前 pin 已更新。
 
 **TODO / 未闭环：**
 1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。

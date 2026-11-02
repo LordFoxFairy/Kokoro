@@ -19,7 +19,7 @@
 - Root HEAD（本计划冻结时）：`c59bcf54`（后续只更新本计划、TODO 和经批准的窄切片）
 - BFF：`228e3d691f6b5c93575950babb3d9f4c6b409c0a`
 - App：`f5d122bb41beb3e141015b758411dbcc0afc583b`
-- IAM：`e1f537b02cb326cfb3751316b1591fa82313f70a`
+- IAM：`a1457be836c21eb558c8cbf7d9366e60f8ce59b8`
 
 ### 0.2 已关闭的 C-2/C-3 切片
 
