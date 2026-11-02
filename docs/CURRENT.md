@@ -1,14 +1,12 @@
-## Task A 当前检查点：候选门通过，认证/清理闭环仍在推进
+## Task A 当前检查点：最小 native 已通过，完整闭环仍 OPEN
 
-唯一当前台账：[Task A C-1～C-4 技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)；[任务摘要](task.md#task-a-c-13c-4-当前收敛检查点)。本段只适用于 `task-a-c1-cleanup` 执行 worktree，下方历史运行记录不证明本组合已运行。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)；机器Goal已确认active。G0已通过，G1认证/G2删除/G3最终组合门仍OPEN，A-01/A-02/A-07保持停写，原A-01～A-16责任不缩减。
 
-G0已通过，机器Goal保持active；C-1.3/C-2/C-3/C-4仍未最终闭环。A-01/A-02/A-07保持门控，原A-01～A-16责任不缩减。用户要求每仓独立PR、完成前不合并main；当前App [draft PR #50](https://github.com/LordFoxFairy/kokoro-app/pull/50)（9ba65343）、BFF [draft PR #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18)（173e026）已推送，未合并或部署，Root gitlink待后续配对。
+Root535e7071精确配对App9ba65343/BFF4d6d17b/IAMe6a01cf。BFF五处DI装配错误已逐项真实RED→GREEN，真实生产容器compile/单实例回归加入默认门；Root完整format/check通过：contract1344/default2344pass+2原资源skip/build。新组合最小native HTTP4checks通过，成功退出资源cleanup PASS/quiescent、无保留workdir；旧两次启动失败证据保留，不外推为四浏览器旅程或优雅关闭矩阵。
 
-Root串行复验：App完整check通过（contract452、architecture50、full6373）；BFF format/check通过（contract1344、default2343pass/2skip、build），两数据库条件skip另补真实隔离PG整文件15pass/0skip。Node24生成链漂移及旧fixture缺pin两次RED已定向修复；106 generated字节保持。完整业务integration及跨仓浏览器证据仍待，不称全仓通过。
+此前App完整check452/50/6373、IAM两host真实62和verify1566、Root治理1876pass/3skip/502subtests证据保持对应基线；不是最终全组合验收。Root PR66、App50、BFF18、IAM6各自draft，未merge/deploy。
 
-native runner五项审查修复已双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf 的真实两host集成62pass、verify121files/1566pass/build通过，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三子仓精确gitlinks已提交且topology PASS；当前minimal native两次失败在BFF startup；尚未交付完整浏览器四旅程或常驻同步E2E环境。global_register切换、Nest关闭保障、raw/聚合删除和最终组合全门仍OPEN。用户已要求继续；最新用户状态事件及get_goal已确认Goal active，复用原目标。
-
-**最新运行结果（b2f9a59c精确组合）**：三子仓pin已提交/推送。两次真实最小native均在BFF startup失败、0业务检查；诊断定位ChatModule非法导出CHAT_TURN_SERVICE，登记I-19/T-17前置修复。两次自有资源清理passed、quiescent且无保留workdir。下一步修复真实Nest模块可见性并补容器启动回归，未宣称端到端通过。
+下一步T-05真实四旅程与T-14 receiver-only直接认证；Capability三面设计门已落并审核，当前仅3文档未提交，未写生产。之后G1→完整生命周期/旧实现删除→最终门/可保留同步测试环境。当前smoke进程已退出，不称用户可常驻同步测试。
 
 ---
 

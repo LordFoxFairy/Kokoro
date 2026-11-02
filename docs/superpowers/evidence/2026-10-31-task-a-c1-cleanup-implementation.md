@@ -894,3 +894,10 @@ Root b2f9a59c配对App9ba65343/BFF173e026/IAMe6a01cf，三子仓clean/gitlink以
 ### T-17 真实DI前置修复与完整门
 
 BFF173e026基线新增实际生产AppModule compile回归，五阶段真实RED定位Chat/Projects/Skills非法导出及ProjectAccess/Billing缺DB token；只修正五module imports/exports。7路径停写、范围外1061tracked不变；四关键token单注册/严格owner同实例，默认test/architecture先clean build，不用stale dist。两失效源码断言核对回真实owner，原业务断言保持。独审CLEAR；Root冻结1068hash逐项核验，完整format/check exit0：contract1344pass、default2346total/2344pass/0fail/2skip、lint/types/build。workerarchitecture74/runtime5辅助证据。BFF4d6d17b（7代码/测试+CURRENT）沿PR18交付，未合并main。当前尚未用新pin跑真实native，完整T17生命周期仍OPEN。
+
+
+### Root535e7071 最小native成功收据
+
+精确App9ba65343/BFF4d6d17b/IAMe6a01cf source/clean/gitlink与Node24/24/22.23.4通过；Root实际执行native runner，失败时才拦截诊断的包装未替换成功行为。4checks PASS：fixture native cookie的App session、同源projects、fixture IAM signout后401、秘密日志检查；cleanup PASS/quiescent=true/无保留workdir，脱敏机器收据在ignored本地证据。不是冷登录、双tenant、App退出或独立撤权的浏览器四旅程；也不证明完整drain/SSE/worker/PG池优雅释放。T-13在此最小范围闭合，T-17完整项/G1/G2/G3仍OPEN。
+
+T-14并行仅落Capability三面文档71行，Root复核scope/派生auth索引/冻结合同关系及取消未知提交边界；9本地链接/diff检查通过，历史正文原字节保留。无生产/contract/provenance/测试变更，Capability44fcc5d三文档dirty待后继实现，不冒认证cutover完成。

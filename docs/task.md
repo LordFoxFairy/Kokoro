@@ -17085,17 +17085,13 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**Task A 尚未闭环；当前是已验候选推进，不是产品完成。** 唯一问题/Goal/TODO/技术方案见[当前闭环方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)，逐项状态只在该方案维护。
+**机器Goal active，Task A未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护19问题/18TODO与原A16项。前置切片通过不换算产品完成率。
 
-- **Goal/顺序**：既有Goal active，G0通过；C-1.3→C-2/C-3→C-4→A-01/A-02→A-07。原A-01～A-16责任保留。
-- **App**：Root完整check通过，contract452/architecture50/full6373；实现4260f698、当前9ba65343（集成origin/main空树merge，源码不变）。独立[draft PR #50](https://github.com/LordFoxFairy/kokoro-app/pull/50)已推送。
-- **BFF**：173e026完成原11路径入口隔离/默认Nest门、32路径机械格式、21路径Node24工具链；Root format/check通过，contract1344/default2343pass+2skip/build通过。两数据库条件skip已另补真实隔离PG15pass/0skip；完整业务integration仍待。独立[draft PR #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18)已推送。
-- **Root/IAM**：六路径停写双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf真实两host62pass、verify121files/1566pass，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三gitlink已提交、topology PASS；minimal native已实测失败在BFF startup。用户已要求续接；最新get_goal已确认Goal active。
-- **未闭环**：真实native四旅程、global_register旧认证切换、Nest生命周期、raw/runtime及聚合删除、Agent/owner/Root最终门、同步E2E运行环境。BFF格式与工具链门已解决，不继续列为未修。
-- **Git边界**：每仓自己的PR；候选保持draft，不合并main、不部署。Root只接收已验证且已推送的精确子仓gitlink；没有“所有仓库已启动”的声明。
+- Root535e7071配对App9ba65343/BFF4d6d17b/IAMe6a01cf；各仓PR独立draft，未merge/deploy。
+- T-17前置五处DI问题已修，真实容器回归入默认门；Root BFF完整check contract1344/default2344pass+2原skip/build PASS。
+- 当前minimal native HTTP4checks及成功退出cleanup PASS；旧两失败退出清理亦PASS。T-13仅该smoke范围VERIFIED，完整生命周期仍T-17 OPEN。
+- App完整6373、IAM真实host62/verify1566、Root治理1876+3skip保留对应基线，不冒称最终组合全验。
+- T-14已完成owner三面设计，只有Capability三文档未提交，直接认证实现/真实receiver验证待做；不新建System producer或第二认证profile。
+- 下一步T-05四浏览器旅程与T-14并行→G1→完整生命周期及raw/聚合删除→最终串行门/同步环境→A-01/A-02→A-07。当前没有可保留的同步E2E环境，不称A已完成。
 
-实际结果与未运行范围见[实施证据](superpowers/evidence/2026-10-31-task-a-c1-cleanup-implementation.md)；后续每个切片同步本摘要、CURRENT与唯一TODO。
-
-**最新运行结果（b2f9a59c精确组合）**：三子仓pin已提交/推送。两次真实最小native均在BFF startup失败、0业务检查；诊断定位ChatModule非法导出CHAT_TURN_SERVICE，登记I-19/T-17前置修复。两次自有资源清理passed、quiescent且无保留workdir。下一步修复真实Nest模块可见性并补容器启动回归，未宣称端到端通过。
-
-Task A T-17最新候选：BFF4d6d17b已修复五处实际DI装配错误并补真实生产容器compile/单实例回归；Root完整check contract1344/default2344pass+2skip/build通过。新pin真实native待跑，仍不称启动/四旅程/完整生命周期通过。
+本轮证据见[实施记录](superpowers/evidence/2026-10-31-task-a-c1-cleanup-implementation.md)。
