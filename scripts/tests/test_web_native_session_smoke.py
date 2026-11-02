@@ -1251,6 +1251,82 @@ def test_browser_login_pacing_respects_owner_window_without_real_sleep(tmp_path)
     assert result.returncode == 0, result.stderr
 
 
+@pytest.mark.parametrize("remaining", [60_000, 60_001, 60_002, 175_000])
+def test_browser_native_admission_window_preserves_overall_deadline(remaining):
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      const {waitForNativeAdmissionWindow} = await import(process.argv[1]);
+      assert.equal(typeof waitForNativeAdmissionWindow, 'function');
+      const remaining = Number(process.argv[2]);
+      let now = 1500;
+      const deadline = now + remaining;
+      const waits = [];
+      const clock = {now: () => now, sleep: async ms => { waits.push(ms); now += ms; }};
+      if (remaining <= 60001) {
+        await assert.rejects(() => waitForNativeAdmissionWindow(deadline, clock), /browser journey failed/);
+        assert.deepEqual(waits, []);
+        assert.equal(now, 1500);
+      } else {
+        await waitForNativeAdmissionWindow(deadline, clock);
+        assert.deepEqual(waits, [60001]);
+        assert.equal(now, 61501);
+        assert.ok(now < deadline);
+      }
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri(), str(remaining)],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize(
+    "completion", ["rejected", "early", "window_elapsed", "deadline", "late"]
+)
+def test_browser_native_admission_window_checks_sleep_completion(completion):
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      const {waitForNativeAdmissionWindow} = await import(process.argv[1]);
+      assert.equal(typeof waitForNativeAdmissionWindow, 'function');
+      const completion = process.argv[2];
+      let now = 1500;
+      const deadline = now + 60002;
+      const waits = [];
+      const failure = new Error('fixture sleep failure');
+      const clock = {now: () => now, sleep: async ms => {
+        waits.push(ms);
+        if (completion === 'rejected') throw failure;
+        now += {early: 59999, window_elapsed: 60000, deadline: 60002, late: 60003}[completion];
+      }};
+      if (completion === 'window_elapsed') {
+        await waitForNativeAdmissionWindow(deadline, clock);
+      } else {
+        await assert.rejects(
+          () => waitForNativeAdmissionWindow(deadline, clock),
+          error => completion === 'rejected' ? error === failure : error.message === 'browser journey failed',
+        );
+      }
+      assert.deepEqual(waits, [60001]);
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri(), completion],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr
+
+
 def test_minimal_default_preserves_three_http_checks_plus_log_scan(
     tmp_path, monkeypatch
 ):

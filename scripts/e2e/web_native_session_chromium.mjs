@@ -98,6 +98,19 @@ export async function waitForLoginSlot(completed, deadline, clock = {
   if (delay) await clock.sleep(delay);
   completed.length = 0;
 }
+// IAM native admission shares a 100/60s bucket across these fixture sessions.
+// Separate independent journeys before opening their contexts, not after revocation
+// or in response to a 429; this wait consumes the existing overall budget.
+export async function waitForNativeAdmissionWindow(deadline, clock = {
+  now: () => performance.now(), sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
+}) {
+  const startedAt = clock.now();
+  requireFact(startedAt + 60_001 < deadline);
+  await clock.sleep(60_001);
+  const completedAt = clock.now();
+  // The extra millisecond absorbs timer rounding; the full owner window must elapse.
+  requireFact(completedAt - startedAt >= 60_000 && completedAt < deadline);
+}
 const loginCompletions = [];
 let overallDeadline;
 async function login(page, config, fixture) {
@@ -437,6 +450,7 @@ try {
   await context.close();
 
   stage = "independent_revocation";
+  await waitForNativeAdmissionWindow(overallDeadline);
   const a = await newContext();
   const b = await newContext();
   const pageA = await a.newPage();
