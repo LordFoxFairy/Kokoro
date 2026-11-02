@@ -2,11 +2,11 @@
 
 唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。本次机器Goal仍active，不是paused或complete；上一诊断已失败终态并清理，无仍在后台运行的验收。active仅表示目标未结束，不代表执行器持续运行；历史暂停原因未充分记录，主控已纠正旧交接歧义。
 
-源码Root `34af35dd`，文档基线 `6b0184e6`；精确App e1be/BFF4d6/IAM1ee8/Capabilityf515。正式run85be进入第四旅程但未通过。最新私有d11f80 failed/0完整旅程、cleanup PASS/quiescent、credential scan PASS；代理元数据确认profile503为`account_profile_unavailable`，同run的`/v1/me`429尚未与profile建立请求关联，根因继续OPEN。未启动新的测试/服务，不把私有诊断当正式验收。
+Root driver源码仍 `34af35dd`，前一文档基线 `063a0805`；本轮BFF更新f81f271，App e1be/IAM1ee8/Capabilityf515保持。I-30双审/Root format与check通过：contract1345/default2350pass、2原条件skip，1068输入停写hash保持。正式run85be进入第四旅程但未通过。最新私有d11f80 failed/0完整旅程、cleanup PASS/quiescent、credential scan PASS；代理元数据确认profile503为`account_profile_unavailable`，同run的`/v1/me`429尚未与profile建立请求关联，根因继续OPEN。未启动新的测试/服务，不把私有诊断当正式验收。
 
 18TODO＝11已验切片/2进行中/3等待/1开放/1门控；累计问题33项不等于33个未修缺陷。G0通过，G1认证/G2删除/G3最终组合仍OPEN，A01/A02/A07停写。原A01～16全范围保留；已有实现不归零。
 
-下一批：I-33请求关联定位与独立I-30受控native消费可并行；I-29先IAM owner授权设计，I-31补默认入口/负控。其后Nest生命周期→raw/无边界聚合删除→Capability新base整合、Agent与最终组合门→可保留同步E2E环境→A产品阶段。机器Goal复用，工期假设与退出条件仅在唯一计划维护。每仓独立原PR，不merge main、不部署。
+I-30受控native生成消费已交付，原PR18保持独立；下一批I-33请求关联实验已备好，待Root精确pin后运行；I-29先IAM owner授权设计，I-31补默认入口/负控。其后Nest生命周期→raw/无边界聚合删除→Capability新base整合、Agent与最终组合门→可保留同步E2E环境→A产品阶段。机器Goal复用，工期假设与退出条件仅在唯一计划维护。每仓独立原PR，不merge main、不部署。
 
 ---
 

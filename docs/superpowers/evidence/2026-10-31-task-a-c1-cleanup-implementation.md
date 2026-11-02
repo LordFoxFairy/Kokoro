@@ -1058,3 +1058,11 @@ Root HEAD6b0184e6，最后源码34af35dd，工作树文档修改前clean。本�
 本轮三个只读角色并行复核TODO分类、闭环证据、A全范围估时；Root唯一文档writer。前述已验工程门保留原SHA范围，本轮不复跑业务全门、不宣称新业务通过。
 
 文档停写复核：独立review CLEAR；Root核18个唯一TODO、33个唯一问题ID及状态分类一致；本次新增行本地文件链接2处/0缺失（未检查anchor），git diff --check通过。本轮4份文档未提交，无源码或gitlink改动；旧业务测试结果仍绑定原源码，不冒本轮重跑。
+
+### 2026-11-02 I-30 正规native消费闭合（BFF f81f271）
+
+固定IAM497900/0.18 vendor/digest保持，include唯一新增verifyNativeSession，23→24；正规生成替代client手写success/error，删除任意error-code fallback；native套件纳入默认入口。generator仅在对应response精确恢复三层closed及RFC3339 offset，16生成文件allowlist/双生成保持；无Schema/lockfile/授权业务变化。I-29现permissions映射与Bearer回退未冒完成。
+
+writer先RED3（operation/default入口/unknown error），首轮生成又真实暴露offset拒绝；修正后定向79pass。规格审直接核owner原件、generated闭集/日期/错误等价及摘要CLEAR；质量审CLEAR。Root停写1068输入hash冻结前后无漂移，Node24.20.0，pnpm format:check与pnpm check exit0：contract1345pass/0skip（168.53s），默认2350pass/2原条件skip（203.89s），lint/typecheck/build通过。真实资源测试未在此片运行，skip不计通过。Root未修改或新增业务门限。
+
+BFF十路径明确暂存提交f81f271，非递归fetch核原PR分支0/0、main无未整合新增，再推送原PR18分支；不合并main、不部署。后继Root精确pin并运行I-33私有请求关联实验。
