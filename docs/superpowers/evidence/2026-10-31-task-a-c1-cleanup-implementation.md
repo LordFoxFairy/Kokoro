@@ -1163,3 +1163,15 @@ IAM本地 `1d9bd95`（基线1d82fa2，未推送）仅7测试文件。Session/Exe
 主方格式/ESLint/tsc --noEmit及4contract+kernel+native unit共6文件39PASS（1.40s）；主方真实native15PASS（31.36s），542输入无漂移；最终7/7冻结匹配，规格/质量双审CLEAR。另在私有内存fixture中将72处schema替换为等价$ref并反转required，主方4目标PASS、22名称过滤；机器契约未改。这是表示无关性检查，不是额外产品覆盖。MCP仅标题改变未单独启动该整套，未无意义重跑全部484integration/完整默认套件。
 
 I-36本次抽样发现完成有界处置，不等于逐项审计所有测试。两条Audit敏感列源码弱检查保留，wire测试不证明SQL未读列；guard重复fixture仅风格问题保留，不另造框架。I-38仍待用户选择委托信任边界，未改认证设计/发布native2/更新Root IAM gitlink；Goal active，G1/G2/G3 OPEN，A功能停写。每仓仍原独立PR，不merge main、不部署。
+
+
+### T-16 Agent候选门与真实display旧oracle修复（2026-11-02）
+
+本轮为已提交C-1.2切片复核，不提前执行C-2/C-3或把C-4整体验收标完成。Agent c761fad的旧MCP文本/producer hash失败补判已从生产调用链删除；仍有deliver执行侧错误处理及预览省略，不宣称全Agent零文本判断。Root发现真实display测试[legacy]仍期待两条失败，主方自有隔离PG复现`assert 1 == 2`，不是产品恢复旧行为的理由。
+
+- c761fad停写主方门：`uv lock --check --offline`、`uv sync --frozen --offline`、Ruff format/check、Pyright、contract-check、Platform generator --check、默认pytest、wheel/sdist均exit0；默认3336PASS、934按marker未选、3100warnings，202.73秒。523输入未变。实际Python3.14.3、类型目标沿现配置；未升级工具或放宽检查。
+- 正规installed-wheel smoke首次离线因Python3.11依赖缓存不齐失败；保留该诊断，原命令允许下载临时venv依赖后exit0，安装来源检查通过；仓依赖/lock不变。这不是整个运行进程/生产部署smoke。
+- 本地Agent `47ca43149a6ff9680ab34719669860b7c4528946`仅改`tests/integration/database/test_run_display.py`：legacy改error_text_is_not_failure，保历史hash与匹配ToolMessage，按真实Chat projection identity精确断言三条facts（success/describe无status，真实failed唯一）；删已废止other_hash/wrong_message两参数与对应分支。其余绑定、预算和只读快照保留，不新增框架/生产代码。
+- 主方最终单文件format/lint/types、diff通过，规格与质量双审CLEAR；真实PG该完整文件26PASS/0FAIL/0SKIP，5.16秒，523输入无漂移、自有库回收。初始RED与最终GREEN日志留私有本地。默认3336绑定修改前c761，改动仅默认排除的integration测试，未无意义重跑默认全套，不称新commit全资源门通过。
+
+Root与子仓未推送、未更新Agent/IAM gitlink、未merge main/部署。T-16当前候选缺口已处理，最终组合/其他受影响I/O/治理审计仍在C-4。I-38未决，Goal active且原目标不缩减。同步删除计划中“停写验证后直接发行native2”的过期立即指令；下一步核I-31专用admission接线与重复logout真正缺口，现有覆盖优先，缺项才补，不借后继门控制造空转或重复全量测试。
