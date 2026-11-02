@@ -811,3 +811,11 @@ BFF child `dcfd0aee6d2ef0b151be84a9a23d71d3d50b0c41` removes two empty `services
 BFF child `0a22f4d24972fa82b1310b97c841d82b6572424b` removes the stale `services.projects`/`services.skillShares` fixture shape from `test/project-skill-content-http.test.mjs`. The fixture now injects explicit `projectService` and `skillShareRepository`, while retaining a minimal in-memory receipt repository because the exact project-download source requires a non-null idempotency owner resource. This is a test-only owner-boundary correction; no production alias or duplicate aggregate was added.
 
 验证：Project Skill content HTTP suite **18/18** pass, including package inspection, exact download, membership/pin rechecks, digest mismatch, cancellation and expiry; `git diff --check` passed.
+
+### Technical plan freeze and C-4 recheck（2026-11-01）
+
+Root 冻结技术方案 `docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md`，同步记录当前问题清单、Goal/TODO、owner 边界、执行顺序、验证与回滚约束。Goal 保持 ACTIVE；A-01/A-02/A-07 继续停写。
+
+在 BFF `0a22f4d` 完成 Project Skill content fixture owner binding 后，主方重新执行 `pnpm test`：**2298 tests / 2294 pass / 2 fail / 0 cancelled / 2 skipped**。剩余两项固定为 MCP denied-icon owner call 与 Skill installation Chat invalid-owner error mapping；无 pending cancellation。该结果仍不是 C-4 通过，需先修复两项并重跑 BFF/App/IAM/Root 全量门。
+
+本轮确认的外部缺口未变化：真实 IAM/BFF/App/owner 进程未启动，`IAM_TEST_ADMIN_URL`、隔离 PG/Redis URL 与 service credentials 缺失；不启动未配置服务、不重置共享资源、不伪造 native-session receipt。

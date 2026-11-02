@@ -343,3 +343,7 @@ The two Skill GitHub import fixtures no longer carry empty `services` placeholde
 ### 2026-11-02 Project Skill content fixture seam
 
 The Project Skill content fixture now uses explicit `projectService`/`skillShareRepository` plus a minimal receipt-only test owner resource (`0a22f4d`). All **18/18** HTTP cases pass; the receipt seam is retained because exact project-download qualification depends on it, not as a global service aggregate.
+
+### 2026-11-01 technical plan freeze
+
+`docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md` 冻结 C-1.3～C-4 的问题、目标、验证、回滚与 TODO。当前 BFF full gate 为 **2294/2298 pass, 2 fail, 0 cancelled, 2 skipped**；两项失败已定位到 MCP denied-icon owner dispatch 与 Skill installation error mapping，A gates 保持 stopped。

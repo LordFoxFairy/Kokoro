@@ -17085,6 +17085,8 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
+**Technical plan（本轮冻结）**：`docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md`。本计划先固定问题清单、架构闭环、分阶段验收与 TODO；后续每轮必须同步更新 Goal/TODO/证据，不在 C-4 前进入 A-01/A-02/A-07。
+
 **Goal（保持 ACTIVE）**：完成 native-session 真实跨仓 receipt、BFF feature ownership/LegacyRoutes 与 global composition 收敛、C-3 wrapper/fixture 零消费者证明、Root/owner 串行全量验证；A-01/A-02/A-07 在此之前停写。
 
 **已完成并已 pin：**
@@ -17107,7 +17109,9 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
 2. C-2：迁移剩余 raw worker/provider fixtures，证明 `createBffComposition`、`handleBffRequest` 零消费者；generic owner proxy tail 已删除，继续按 owner suffix 增加 negative guard，不得以 raw fixture 通过替代生产 Nest 证据。
 3. C-3：wrapper/9 个 integration suite 已收敛到 named owner factory，旧 aggregate 已删除；保留显式 `database` test seam，后续只迁移有实际 owner 边界收益的 raw fixture/provider 引用，不引入 alias 或第二 aggregate。
-4. C-4：本轮重跑 BFF `pnpm test` 已完成且无 pending cancellation：**2298 tests / 2280 pass / 16 fail / 0 cancelled / 2 skipped**。剩余 16 项集中在 MCP denied-icon、Project Skill content fixture（已在 `0a22f4d` 修复，待重跑 full gate）和 Skill installation 六路 baseline；完整 owner gate 尚未重跑为绿。BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
+4. C-4：Project Skill content fixture 修复后重跑 BFF `pnpm test` 已完成且无 pending cancellation：**2298 tests / 2294 pass / 2 fail / 0 cancelled / 2 skipped**。剩余 2 项为 MCP denied-icon owner call 与 Skill installation Chat invalid-owner error mapping；完整 owner gate 尚未重跑为绿。BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
 5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
 
 **约束**：不重置共享 PG/Redis/MinIO，不生成/写入凭据，不放宽断言/超时/契约，不为消除失败删除测试，不启动未具备配置的业务服务。
+
+**Goal/TODO 更新协议**：Goal 保持 ACTIVE；TODO 以 technical plan §5 为单一执行台账，完成一项必须同步 `docs/task.md`、technical plan 与 evidence，Root 重新运行 topology/governance 后才算集成。
