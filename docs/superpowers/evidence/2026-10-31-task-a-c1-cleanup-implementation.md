@@ -776,4 +776,4 @@ BFF child `dfe1584eceb8151edfd6ac5871810142108eeb1c` extends the raw configured-
 
 ### Root verification after BFF generic-tail/fixture pin `a86ecae`（2026-11-02）
 
-Root 将 BFF gitlink 更新至 `a86ecae3f2def6f32b03485d3a88e5d0bc1ef097` 后重跑 `git diff --check`、`python3 scripts/verify-repository-topology.py` 与 `python3 -m pytest scripts/tests -q`；结果待本轮命令输出回填。该切片不关闭 C-1.3 真实 IAM receipt、BFF/App/IAM owner full gate、隔离 PG/Redis integration 或跨仓 E2E，A-01/A-02/A-07 继续停写。
+Root 将 BFF gitlink 更新至 `a86ecae3f2def6f32b03485d3a88e5d0bc1ef097` 后重跑 `git diff --check` 与 `python3 scripts/verify-repository-topology.py`（PASS）；Root 治理套件保持 **1846 passed / 3 skipped / 502 subtests**。该切片不关闭 C-1.3 真实 IAM receipt、BFF/App/IAM owner full gate、隔离 PG/Redis integration 或跨仓 E2E，A-01/A-02/A-07 继续停写。
