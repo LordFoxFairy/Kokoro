@@ -1,5 +1,7 @@
 # Task A BFF NestJS 收敛实施计划
 
+> 当前入口：本文保留原Nest迁移设计、过渡图与历史checkbox；最新基线、删除门、Goal及TODO统一见 [Task A闭环方案](2026-11-01-task-a-c1-c4-technical-plan.md)。不据本历史计划的状态判断当前完成。
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 将 `apps/kokoro-bff` 从手写 `node:http` 单体路由编排收敛为唯一 NestJS 12 原生运行时，并按真实复杂度拆分 feature module、Service、Repository 与外部 owner provider，删除旧 bootstrap/重复 composition。

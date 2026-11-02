@@ -840,3 +840,42 @@ App `f5d122bb` static recheck passed: `pnpm typecheck`, `pnpm lint`, and `pnpm t
 IAM child `b336aa0cd13b6abafde6938d32f5380f4b99f471` first formats only `test/integration/bff-session-admission-host.test.ts`. After provenance review, child `a1457be` regenerates the checked-in SDK for the already-published native-session/profile operations (`ReadAccountProfile`, `VerifyNativeSession` and native-session error codes). 主方复核 `pnpm sdk:check`、format/lint/typecheck 与完整 `pnpm verify`：**120 test files / 1561 tests passed / build passed**。该变更只同步生成物，不改运行时契约；C-1.3 真实资源与跨仓 E2E 仍保持 open。
 
 Root then pinned IAM to `a1457be836c21eb558c8cbf7d9366e60f8ce59b8` and reran `git diff --check`, topology, and governance: topology **PASS**; governance **1846 passed / 3 skipped / 502 subtests passed**. Current Root worktree remains clean at the docs-only integration commits; no application service was started.
+
+
+### 当前进度审计与方案重整（Root 4715d2b7，文档轮）
+
+用户要求先整理当前所有问题、技术方案、TODO与Goal，本轮转为只读并行审计，Root唯一文档writer；没有继续实现、启动业务服务、安装Schema、提交或发布。执行树仍为task-a-c1-cleanup；既有App/BFF/Root未提交代码原样保留。
+
+- 主窗口`get_goal`核验既有目标为active；G0已有reviewer通过证据。本轮没有complete、blocked或新建重叠Goal。新的阶段目标及17项TODO统一在[当前技术方案](../plans/2026-11-01-task-a-c1-c4-technical-plan.md)，原A-01～A-16责任完整保留。
+- App writer停止在f5d122bb+56路径候选：报告Node22.23.4、focused23、contract452、architecture50、完整354files/6373pass/0skip、types/lint/build/diff通过；独审核56路径SHA无漂移，Public28.18原件/父逆证与旧hash保持。以上为worker冻结证据，Root完整门与Git集成尚未完成。
+- BFF writer停止在228e3d6+11路径候选：移除main raw export/两处类型倒依赖、6测试明确raw入口、默认test/architecture纳入Nest suites。worker architecture73/focused123、types/lint/build/diff通过；独审补强side-effect import漏检后未见新增确定阻断。全业务与真实I/O未在候选最终树重跑。
+- 当前raw census为56文件148直接调用、helper18文件42调用、composition3文件4调用、owner-resource9suites102调用；集合重叠，非可相加总数。生产入口隔离不等于ADR-036要求的raw server/runtime删除。
+- 新补回原计划遗漏的Capability global_register：当前仍走IAM workload introspection。policy声明caller为kokoro-system，但System当前源码未定位真实producer；先盘点再固定窄切片，不新增无需求功能。
+- 新记录Nest生命周期缺口：DatabaseModule只有factory，尚缺实际Nest app.close/SIGTERM→worker drain/池释放证明；raw lifecycle测试不替代生产图。
+- Root本轮实际运行`python3 -m pytest scripts/tests/test_web_native_session_smoke.py -q`：exit1，1pass/2fail；两项AttributeError均为尚无close_native_resources。保留RED半成品，未继续实现。前序删除的KOKORO_WEB_REDIS_URL仍被App native登录flow/CSRF使用，登记为待修复配置缺口，非退休配置。
+- 现runner仅fixture cookie/session/projects/fixture signout后401及日志4case；不含真实浏览器登录/双tenant切换/App退出/独立撤权。App默认Playwright开启preview；IAM verify不包含integration。历史IAM12、session7、HTTPS4证据保留原SHA，不外推到当前候选。
+- 前序受管PG只读连接/Redis PING已通过，纠正旧“缺环境输入即无资源”的表述；本轮未运行服务健康探针或真实E2E，未宣称所有仓库已启动。dirty App/BFF尚不满足runner exact-source/clean/gitlink前置。
+
+文档统一采用候选/已提交/Root复验分层状态；旧计划与问题台账增加历史入口标记，task/CURRENT仅摘要。验证结果在本段收尾补记，不将文档整理算作C gates或Task A产品完成。
+
+
+文档收尾：三个只读角色完成审计；最终独审通过，17问题/17TODO/A-01～A-16映射齐全。补齐旧Nest计划历史导航，并修正T-06候选格式门与T-17前置运行保障的依赖循环。G-DOC/T-01仅标记文档VERIFIED，机器Goal保持active，其余C/A完成状态不提升。Root最终diff/新增本地链接检查通过，既有69个源码/子仓候选路径与本轮进入时SHA一致；本轮未新增业务修改。Root红测1pass/2fail仍如实保留，未把文档交付写成全量测试通过。
+
+
+### Chunk 1 候选接收：App/BFF 主方完整门与独立 draft PR（2026-11-01）
+
+用户明确要求每仓独立PR、完成后才考虑合并main；当前保持draft，不合并main、不部署。Root串行负责验证/Git，原main工作区未改写。
+
+- App 56路径停写hash前后匹配；Root Node22.23.4/pnpm11.25 `pnpm check` exit0：contract48files/452pass、architecture4files/50pass、full354files/6373pass/0skip，lint/types/build通过。实现提交4260f698；fetch后把origin/main的空树merge整合到候选9ba653433c75dd3919bcc3de3cafc778fda4b975，前后tree相同。独立[draft PR #50](https://github.com/LordFoxFairy/kokoro-app/pull/50)已核OPEN/isDraft/head SHA；Root pin尚待。
+- BFF32格式路径与原11候选不重叠，AST/注释32/32等价。第一轮Root全门真实失败于Storage固定Node22；追加T-18将七生成链/pin/CI/Docker对齐Node24.20.0，106generated正规再生成仍字节不变，owner/vendor/wire/历史摘要/lock保持。第二轮contract1343pass/1fail，旧blob负控临时repo漏带.node-version；只补复制pin一行，第21工具链路径，旧拒绝断言未放宽。
+- 第三轮Root `pnpm format:check && pnpm check` exit0：contract1344pass/0skip，默认2345total/2343pass/0fail/2skip，lint/types/build通过；最终1068tracked冻结hash独审一致。两项skip均为既有schema测试缺KOKORO_TEST_POSTGRES_ADMIN_URL，另注入受管PG隔离fixture执行schema-governance整文件15pass/0fail/0skip，覆盖共存/SQL失败回滚/R237；各自有临时库由finally回收。未宣称完整业务PG/Redis integration通过。
+- BFF准确提交原64路径及本仓CURRENT摘要，共65文件为173e0263f21e2cc7499a67592b4526d811dde693；提交/推送前非递归fetch确认origin/main是祖先，未改main。独立[draft PR #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18)已核OPEN/isDraft/head SHA。
+- T-13阶段：前序close函数未实现的1pass/2fail保留RED。实现后Root三套runner相关测试52pass/31subtests；独审发现Node期望/实测混淆、source失败丢先前证据、IAM测试部分连接失败回收、ps inventory异常阻断IAM强杀、保留依赖缺私有恢复身份五项问题。原writer退出live后将同6文件写区交接native_cleanup_review_fixes，修复中；真实IAM integration、最终freeze及原生链路尚未执行。
+- 本轮受管PG/Redis只读探测通过，另只运行上述自有PG schema fixture；未启动完整应用组合、未接管用户预览、未交付常驻同步端到端环境。T-14只读已确认接收方和测试client，无System真实producer证据；需后续owner认证profile与取消边界设计，不新增无需求producer。
+
+本次局部结果推进T-06/T-07/T-12/T-18，不关闭G1/G2/G3。机器Goal继续active，A门停写；完整最终门/真实四旅程/清理删除项仍以唯一技术方案为准。
+
+
+### T-13 停写与主方真实宿主验收
+
+六路径五项修复获规格/质量双审；最终manifest由Root逐hash核对。Root三套runner60pass/31subtests，完整治理1876pass/3skip/502subtests、exit0。IAM两真实host文件62pass/0skip；完整verify121files/1566pass，format/lint/types/contract/breaking/SDK/build通过。精确5路径（4测试+本仓摘要）提交e6a01cf7f1aeef0cfd5a63efe78e194b50ad1e9b并推送本仓draft PR #6，无main合并。App/BFF已验SHA不变；Root三gitlink暂存后topology PASS。未运行当前最小native/四浏览器旅程，随后按源码精确组合执行。暂停后用户已明确续接；工具Goal仍paused，不伪报active或重复建Goal。

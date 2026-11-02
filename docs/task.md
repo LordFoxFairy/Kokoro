@@ -17085,35 +17085,13 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**Technical plan（本轮冻结）**：`docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md`。本计划先固定问题清单、架构闭环、分阶段验收与 TODO；后续每轮必须同步更新 Goal/TODO/证据，不在 C-4 前进入 A-01/A-02/A-07。
+**Task A 尚未闭环；当前是已验候选推进，不是产品完成。** 唯一问题/Goal/TODO/技术方案见[当前闭环方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)，逐项状态只在该方案维护。
 
-**Goal（保持 ACTIVE）**：完成 native-session 真实跨仓 receipt、BFF feature ownership/LegacyRoutes 与 global composition 收敛、C-3 wrapper/fixture 零消费者证明、Root/owner 串行全量验证；A-01/A-02/A-07 在此之前停写。
+- **Goal/顺序**：既有Goal active，G0通过；C-1.3→C-2/C-3→C-4→A-01/A-02→A-07。原A-01～A-16责任保留。
+- **App**：Root完整check通过，contract452/architecture50/full6373；实现4260f698、当前9ba65343（集成origin/main空树merge，源码不变）。独立[draft PR #50](https://github.com/LordFoxFairy/kokoro-app/pull/50)已推送。
+- **BFF**：173e026完成原11路径入口隔离/默认Nest门、32路径机械格式、21路径Node24工具链；Root format/check通过，contract1344/default2343pass+2skip/build通过。两数据库条件skip已另补真实隔离PG15pass/0skip；完整业务integration仍待。独立[draft PR #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18)已推送。
+- **Root/IAM**：六路径停写双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf真实两host62pass、verify121files/1566pass，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三gitlink暂存topology PASS，等待Root提交和最小native。用户已要求续接；工具Goal仍paused，未伪造切换。
+- **未闭环**：真实native四旅程、global_register旧认证切换、Nest生命周期、raw/runtime及聚合删除、Agent/owner/Root最终门、同步E2E运行环境。BFF格式与工具链门已解决，不继续列为未修。
+- **Git边界**：每仓自己的PR；候选保持draft，不合并main、不部署。Root只接收已验证且已推送的精确子仓gitlink；没有“所有仓库已启动”的声明。
 
-**已完成并已 pin：**
-- App native-session source/config cleanup；App stale reconnect prop removed，静态 typecheck/lint/architecture 50/50。
-- BFF raw Scheduler callback、retired System/Skills、unknown session、unknown Agent/Billing、Personal MCP/Custom API 均走 named feature adapters/guards；Nest production 无 LegacyRoutes composition。
-- BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
-- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `228e3d6`、App `f5d122bb`。
-- BFF raw chain 对非 canonical `/v1/models/**` 已增加 404 终止，配置的 model upstream 不再接收未知 suffix；canonical `GET /v1/models` 保持 owner contract。
-- BFF raw chain 对非 canonical `/v1/library/**` 也已增加 404 终止，配置的 storage upstream 不再接收未知 suffix；canonical Library routes 保持不变。
-- BFF 已删除无已知生产可达入口的 generic configured-owner proxy tail；未命名路径统一以 `bff_route_not_found` 结算（保留幂等 receipt 回收），`configuredUpstream` 仅留在 health/readiness owner 配置检查。
-- Archived/Shared Tasks raw fixtures 已从 `businessStore.services.chat` 迁移到显式 `chatService`，不再以旧 aggregate 形状冒充 Chat owner；相关 HTTP suites 已复核全绿。
-- Skill shared-summary contract fixtures 已从 `businessStore.services.skillShares` 迁移到显式 `skillShareRepository`；排除 disconnect pending case 后该 contract suite **110/110** 通过，收回一组 C-4 baseline failures。
-- Model admission/recovery/settlement fixtures 已从 `businessStore.submittedAgentRuns` 提升为顶层 `submittedAgentRuns`，并移除空 `services` 壳；三套 internal HTTP suites **24/24** 通过。
-- User-admission Share fixtures 已从 `businessStore.services.publicShares` 迁移到显式 `publicShareService`；`user-admission.test.ts` **24/24** 通过。
-- GitHub Skill import fixtures 已移除仅用于占位的空 `services` 壳；该 suite **52/52** 通过，receipt 方法仍由显式 business-store seam 提供。
-- Project Skill content fixture 已绑定显式 `projectService`/`skillShareRepository`，并保留最小、真实语义的 receipt store；其 HTTP suite **18/18** 通过，下载/重检路径不再依赖 `services.projects` fallback。
-- Root topology/governance 每次 pin 后串行通过；本轮 BFF child 复核 build/typecheck/lint、mock 29/29、architecture/Nest 70/70。
-- BFF child `228e3d6` 已修复 denied MCP icon mutation 的 owner dispatch 顺序，并为 Skill installation Chat owner-error 场景补齐最小真实 receipt seam；focused MCP **42/42**、Skill installation **24/24**，随后 full `pnpm test` **2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**。
-- IAM child `a1457be` 已同步 native-session/profile generated SDK；`pnpm verify` 完成 **120 files / 1561 tests / build PASS**，Root 当前 pin 已更新。
-
-**TODO / 未闭环：**
-1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
-2. C-2：迁移剩余 raw worker/provider fixtures，证明 `createBffComposition`、`handleBffRequest` 零消费者；generic owner proxy tail 已删除，继续按 owner suffix 增加 negative guard，不得以 raw fixture 通过替代生产 Nest 证据。
-3. C-3：wrapper/9 个 integration suite 已收敛到 named owner factory，旧 aggregate 已删除；保留显式 `database` test seam，后续只迁移有实际 owner 边界收益的 raw fixture/provider 引用，不引入 alias 或第二 aggregate。
-4. C-4：BFF 行为失败已闭环：`228e3d6` focused MCP **42/42**、Skill installation **24/24**，full `pnpm test` **2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**。IAM `a1457be` 已发布 native-session SDK 生成物，`pnpm verify` **120 files / 1561 tests / build PASS**。剩余非 BFF 全量门为 BFF format **32 files**、App full contract **6316 pass / 50 fail / 353 files**（集中在 pinned BFF artifact/version drift）；Root/owner full serial gate 与真实 C-1.3/E2E 仍未完成。
-5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
-
-**约束**：不重置共享 PG/Redis/MinIO，不生成/写入凭据，不放宽断言/超时/契约，不为消除失败删除测试，不启动未具备配置的业务服务。
-
-**Goal/TODO 更新协议**：Goal 保持 ACTIVE；TODO 以 technical plan §5 为单一执行台账，完成一项必须同步 `docs/task.md`、technical plan 与 evidence，Root 重新运行 topology/governance 后才算集成。
+实际结果与未运行范围见[实施证据](superpowers/evidence/2026-10-31-task-a-c1-cleanup-implementation.md)；后续每个切片同步本摘要、CURRENT与唯一TODO。

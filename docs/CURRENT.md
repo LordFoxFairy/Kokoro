@@ -1,3 +1,15 @@
+## Task A 当前检查点：候选门通过，认证/清理闭环仍在推进
+
+唯一当前台账：[Task A C-1～C-4 技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)；[任务摘要](task.md#task-a-c-13c-4-当前收敛检查点)。本段只适用于 `task-a-c1-cleanup` 执行 worktree，下方历史运行记录不证明本组合已运行。
+
+G0已通过，机器Goal保持active；C-1.3/C-2/C-3/C-4仍未最终闭环。A-01/A-02/A-07保持门控，原A-01～A-16责任不缩减。用户要求每仓独立PR、完成前不合并main；当前App [draft PR #50](https://github.com/LordFoxFairy/kokoro-app/pull/50)（9ba65343）、BFF [draft PR #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18)（173e026）已推送，未合并或部署，Root gitlink待后续配对。
+
+Root串行复验：App完整check通过（contract452、architecture50、full6373）；BFF format/check通过（contract1344、default2343pass/2skip、build），两数据库条件skip另补真实隔离PG整文件15pass/0skip。Node24生成链漂移及旧fixture缺pin两次RED已定向修复；106 generated字节保持。完整业务integration及跨仓浏览器证据仍待，不称全仓通过。
+
+native runner五项审查修复已双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf 的真实两host集成62pass、verify121files/1566pass/build通过，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三子仓精确gitlinks已暂存且topology PASS，Root提交后执行最小native；尚未交付完整浏览器四旅程或常驻同步E2E环境。global_register切换、Nest关闭保障、raw/聚合删除和最终组合全门仍OPEN。用户已要求继续；工具Goal仍显示paused，本轮没有虚构active状态或新建重叠目标。
+
+---
+
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 
 ### 2026-10-29 续验：真实取消清理与配置失败提示收口

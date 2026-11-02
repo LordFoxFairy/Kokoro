@@ -1,5 +1,7 @@
 # Task A C-1.3 IAM native profile receipt（2026-10-31）
 
+> 当前入口：本文为所列旧SHA的真实收据；App旧RP/LegacyRoutes等剩余项是当时状态，4case smoke不证明当前四旅程或资源清理。当前进度和补验要求见 [Task A闭环方案](../plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
+
 ## 修复
 
 - IAM `InternalAuthGuard` 将 `account.profile.update` 的请求体误判为非法 Session body，导致所有带 JSON 的 profile update 在 owner boundary 直接返回 400。现仅对 profile read 拒绝 body；profile update 只拒绝 query，JSON body 交由 canonical schema/controller 校验。

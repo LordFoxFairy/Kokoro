@@ -1,5 +1,7 @@
 # Task A C-1.3～C-4 收敛实施方案
 
+> 当前入口：本文保留当时收敛设计与历史执行证据；其中“当前/未完成/待环境”按原基线理解。最新问题、Goal、TODO统一维护于 [Task A闭环方案](2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents are available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 在进入 A-01/A-02/A-07 前，完成 C-1.3 first-party native-session 链路、BFF LegacyRoutes 全量退出、Repository/Service/Port feature-local 收敛，并以 Root/子仓全量门禁证明当前态已达到 C-1～C-4 完成条件。
