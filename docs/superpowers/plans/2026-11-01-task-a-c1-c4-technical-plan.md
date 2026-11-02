@@ -119,7 +119,7 @@
 | I-28 | bad205正式异tenant旅程已取得真实profile barrier，但driver错误要求projects401；实际session401/native_session_required、projects403/product_tenant_forbidden，符合固定tenant隔离实现 | 已交付实现与原断言保持；Root aec5775a/run2a960804正式4/4通过，本项在真实旅程范围闭合。对应RED/修复/组件门与历史失败见实施证据，不重复领取 | T-05 |
 | I-29 | BFF4d6生产authorizeUserRequest在缺native配置/verifyNative时回退Bearer→admission.verify；Nest真实feature可达，不只是raw/test残留 | G1前按owner处置旧浏览器准入消费者，缺配置fail-closed；逐项承接ownerSessionAuth/authorizeSkillAction有效权限，不批量误删公共skill.list或IAM公开OAuth | T-05 |
 | I-30 | 原BFF漏生成native operation且自写response，已由f81f271正规生成24 operations并删除重复schema，unknown error fail-closed | 本片已闭合：双审、Root完整门1345contract/2350default（2skip）；现固定原件不升级。I-29后继artifact再正式固定/生成，I-30不代表授权闭环 | T-05 |
-| I-31 | G1负控证据不齐：BFF默认test遗漏native-session-admission文件已由I-30补齐；IAM direct-service矩阵不含session_admission；重复登出/native IAM不可用/native mutation零写未有当前完整映射 | 复用既有测试承接具体风险并纳入正确默认入口；登记case/SHA/result/零副作用，缺项定向补证，不拿sibling purpose或Bearer/raw证据代替native | T-05/T-12 |
+| I-31 | G1负控仍须完整映射；BFF默认入口已由I-30补齐。IAM1d9bd95已有真实专用admission无效服务凭据401及guard先于人类读取证据，不因通用矩阵缺参数再造重复例 | 下个最小独立切片：既有host同Cookie第二次sign-out，保exact tombstone/旧Cookie拒绝/另一会话；既有guard补DEPENDENCY_UNAVAILABLE→native_session_service_unavailable 503且不进入人类读取。前者原host600–613仅一次退出；后者现guard只注入UNAUTHENTICATED。复用原文件、不改生产/设计、不复制通用凭据矩阵；其余风险按case/SHA/result核对 | T-05/T-12 |
 | I-32 | cc405正式run在focusProbe等待session超时；锁定Playwright默认启用focus emulation，抑制bringToFront真实事件。私有禁用两页override后trusted事件/session401与前三旅程顺序走通 | 已交付实现与原断言保持；Root aec5775a/run2a960804正式4/4通过，本项在真实旅程范围闭合。对应RED/修复/组件门与历史失败见实施证据，不重复领取 | T-05 |
 | I-33 | 同请求首次/me429→App503已证，场景累计负载触及既有共享配额；Root c142c49c仅在独立场景边界尊重窗口 | Root2005治理/3skip与双审；aec5775a正式4/4通过，本编排缺陷闭合。未抬配额/缓存/重试，不冒产品容量证明 | T-05 |
 | I-34 | App最终鲜验原catch成null误判401，已由fdbb49f1删除吞错，依赖不可用沿503且无资料泄漏 | 本局部缺陷已闭合：先3项真实loopback RED，Root App完整6411/0skip、contract452/architecture50/lint/types/build，1494输入稳定且双审CLEAR；当前aec5775a正式4/4已通过，整体G1另验 | T-05/T-12 |
@@ -378,6 +378,8 @@ Browser ← App UI 与刷新后的同一事实
 ### 5.1 下一检查点与工期口径（2026-11-02）
 
 **当前立即动作（覆盖下方历史交接）**：I-36已识别项与T-16本次候选复核已收尾，I-38仍待用户选择信任边界；不得把停写验证通过自动解释成允许发行native2。继续核I-31重复登出和专用session_admission凭据实际接线的独有缺口，先查全部现有覆盖，缺项才在原测试补证。A/B都保留专用Cookie准入和logout语义；不涉及未裁决业务引用协议。用户裁决后才由IAM更新正式owner合同、固定发行，再迁BFF消费者/删旧回退。G1未关闭，T-17/T-11及最终C-4仍在原依赖之后。
+
+**I-31最新覆盖核准（IAM1d9bd95，只读，不是新增测试已验）**：`native-owner-current-facts.test.ts:906–969`已覆盖真实专用admission未知服务凭据与human401分流；`internal-auth.guard.test.ts:179–239,1149–1173`已覆盖服务拒绝先于人类读取。撤回“未知凭据接线缺失”的初步判断。真正下一切片仅为上表重复sign-out与配置依赖故障503分类；不增未知credential重复例，暂不重跑已有四旅程。
 
 **历史 I-29 首版接收检查点（2026-11-02，当时候选未提交；当前见 §0.3）**：IAM首次55文件停写清单hash `c4a505dc3a5bb86dced0be78302a71166c86cdcc500c2c1b56c5f0bdabb4a90c`；主方确认native1原件hash不变。真实native新suite 11PASS/13.38s，完整verify 124files/1613PASS/exit0；两次541输入无漂移。随后完整真实integration为43files pass/5fail、464pass/15fail/421.62s，输入仍不变，归I-35。通过范围不覆盖失败项，不作owner发行依据。
 
