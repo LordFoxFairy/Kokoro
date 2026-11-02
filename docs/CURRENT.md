@@ -1,14 +1,12 @@
-## Task A 当前检查点：正式浏览器已进入第四旅程，G1仍OPEN
+## Task A 当前检查点：执行已核验，G1/G2/G3仍OPEN
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。33问题、18 TODO＝11已验切片/2进行中/3等待/1开放/1门控，不按数量换算产品完成率。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。本次机器Goal仍active，不是paused或complete；上一诊断已失败终态并清理，无仍在后台运行的验收。active仅表示目标未结束，不代表执行器持续运行；历史暂停原因未充分记录，主控已纠正旧交接歧义。
 
-当前源码Root `34af35dd`，精确App e1be/BFF4d6/IAM1ee8/Capabilityf515。Root本轮修复隔离HMR传输、profile barrier Node请求映射、异tenant精确401/403 oracle及Playwright固定focus override；没有修改产品认证、放宽UI断言或时间预算。各片双审，主方最终native128pass、完整治理1996pass/3skip/531subtests、Node/Ruff/diff通过，冻结输入保持。
+源码Root `34af35dd`，文档基线 `6b0184e6`；精确App e1be/BFF4d6/IAM1ee8/Capabilityf515。正式run85be进入第四旅程但未通过。最新私有d11f80 failed/0完整旅程、cleanup PASS/quiescent、credential scan PASS；代理元数据确认profile503为`account_profile_unavailable`，同run的`/v1/me`429尚未与profile建立请求关联，根因继续OPEN。未启动新的测试/服务，不把私有诊断当正式验收。
 
-正式run85be0e91605401666e2bc49c已按序走过冷登录、异tenant拒绝/恢复及UI退出，进入independent_revocation后openProfile非200；整体failed，仍无完整4/4收据。私有诊断3623420569a1b8f9b6f7dbbe为第三次登录后的profile503，未取得typed code，I-33待定位。此前私有副本同阶段曾账户入口超时，不据此先判产品根因。所有本轮已核收据cleanup PASS/quiescent、无保留自有文件，credential scan PASS；cleanup不等于旅程通过。
+18TODO＝11已验切片/2进行中/3等待/1开放/1门控；累计问题33项不等于33个未修缺陷。G0通过，G1认证/G2删除/G3最终组合仍OPEN，A01/A02/A07停写。原A01～16全范围保留；已有实现不归零。
 
-G1独立审计新增：I-29 BFF生产Bearer回退仍可达；I-30 native原件已固定但消费者生成/等价保护待补；I-31默认测试遗漏native文件及专用凭据/重复退出/IAM不可用/native零写证据缺口。复用已有风险测试，不造重复套件、不误删公共OAuth。
-
-既有App完整6407/0skip、IAM真实两host66/verify1566、Capability f515完整3051/678skip与真实receiver证据保留对应范围；Capability最新PR12基线冲突仍归T-09。没有常驻同步E2E环境。下一步I-33＋G1收口→生命周期与旧实现删除→最终组合/同步环境→A产品阶段。每仓独立原draft PR，未merge main/部署；完整A日期仍需实际剩余量核算。
+下一批：I-33请求关联定位与独立I-30受控native消费可并行；I-29先IAM owner授权设计，I-31补默认入口/负控。其后Nest生命周期→raw/无边界聚合删除→Capability新base整合、Agent与最终组合门→可保留同步E2E环境→A产品阶段。机器Goal复用，工期假设与退出条件仅在唯一计划维护。每仓独立原PR，不merge main、不部署。
 
 ---
 
