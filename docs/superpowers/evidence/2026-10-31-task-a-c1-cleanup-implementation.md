@@ -1066,3 +1066,21 @@ Root HEAD6b0184e6，最后源码34af35dd，工作树文档修改前clean。本�
 writer先RED3（operation/default入口/unknown error），首轮生成又真实暴露offset拒绝；修正后定向79pass。规格审直接核owner原件、generated闭集/日期/错误等价及摘要CLEAR；质量审CLEAR。Root停写1068输入hash冻结前后无漂移，Node24.20.0，pnpm format:check与pnpm check exit0：contract1345pass/0skip（168.53s），默认2350pass/2原条件skip（203.89s），lint/typecheck/build通过。真实资源测试未在此片运行，skip不计通过。Root未修改或新增业务门限。
 
 BFF十路径明确暂存提交f81f271，非递归fetch核原PR分支0/0、main无未整合新增，再推送原PR18分支；不合并main、不部署。后继Root精确pin并运行I-33私有请求关联实验。
+
+### 2026-11-02 I-33关联因果与单变量窗口对照
+
+组合Root75f6e1ce / BFFf81f271、App e1be、IAM1ee8。私有run7890d3103ca3b7ead51c0f52仍failed independent_revocation/driver140:3，但同profile入站hash匹配唯一/me429 session_rate_limited（2ms），App随后503 account_profile_unavailable（11ms）；无Retry-After、无该次业务profile调用。关联只加精确profile GET的随机request-id，不改身份/限流/预算，不存body/cookie。cleanup passed/quiescent、credential scan passed。
+
+同组合私有单变量run3dbb48c32c2b8082d65ffa9a：仅旧context关闭后、独立撤权contexts创建前sleep60,001ms，原175秒总预算/3秒焦点/4.5秒退休与全部assertions保持。结果passed/4完整旅程、0次429、5次profile200；观测请求完成最大间隔61,694ms，cleanup passed/quiescent/无保留文件、credential scan passed。此为私有修改driver的实验证据，不替代正规源码旅程验收，也不证明共享credential的产品容量合理。
+
+只读owner核：native配额继承旧Internal Guard的100/60秒安全默认，key为caller/credential/operation；锁定Redis存储只在首次INCR设置60秒TTL，拒绝不会延长。没有找到native聚合Web容量已验结论，不把对照通过当产品容量修复。Root正规场景边界调度候选及App最终鲜验不可用误判401的I-34独立修复进入TDD；各自窄写区、不改IAM限额。
+
+### 2026-11-02 I-33正规编排与I-34生产窄修验收
+
+Root driver两路径c142c49c：新增场景边界完整窗口等待，remaining budget不足/提前完成/到期/sleep异常均拒绝，不改175s及撤权断言。writer先RED8与计时临界RED1，再focused10/整份native137通过；规格/质量双审CLEAR。Root停写整套治理2005pass/3skip，157.65s、exit0，两输入hash保持；Node/Ruff相关检查通过。未以私有4/4代正式验收。
+
+App fdbb49f17bfbb09684cd5c3cfaea1c1678306697：仅删除account-profile最终admission的catch(null)，两份相邻测试/索引承接；最终429/503/断连均503、真实无效401、同主体200。真实loopback RED3（原401）→focused40pass；双审CLEAR。Root Node22.23.4 pnpm check完整exit0：contract452、architecture50、default354files/6411pass/0skip（103.08s），lint/typecheck/build通过；1494输入hash前后无漂移。App非递归fetch确认main无未整合新增、原PR分支0/0，三路径明确提交并推原draft PR50，无main合并/部署。正式组合旅程待Root新pin后执行；未跑无关preview Playwright全集。
+
+### 2026-11-02 I-29 owner局部设计门通过（尚未实现）
+
+IAM5fffe60/BFF105024d各仅三面设计文档，共218行新增、原文逐字保留，12本地文件链接/精确六路径/diff检查通过；规格/架构与质量双审CLEAR。初审服务与人类401同码歧义已收敛为native2单一新增服务错误code→BFF既有503，只有明确human拒绝401；此是目标待正式发行，不改native1历史或当前源码。平台管理员真实事实、四action及Account/Team事务证明、全部BFF消费者/删除清单、原角色/operator/公共身份政策与零DDL已明确；容量不新增SLO/生产压测门。两仓各推原draft PR6/18，无合并/部署。此次文档任务未重复运行业务全门，IAM运行源码仍1ee8、BFF仍f81；Root后继精确pin。

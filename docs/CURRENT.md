@@ -1,12 +1,12 @@
-## Task A 当前检查点：执行已核验，G1/G2/G3仍OPEN
+## Task A 当前检查点：三个修复片已交付，正式新组合旅程待验
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。本次机器Goal仍active，不是paused或complete；上一诊断已失败终态并清理，无仍在后台运行的验收。active仅表示目标未结束，不代表执行器持续运行；历史暂停原因未充分记录，主控已纠正旧交接歧义。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active，G0通过、G1/G2/G3仍OPEN，A01/A02/A07停写。34累计问题、18TODO（11已验切片/2进行中/3等待/1开放/1门控），不换算产品完成率。
 
-Root driver源码仍 `34af35dd`，前一文档基线 `063a0805`；本轮BFF更新f81f271，App e1be/IAM1ee8/Capabilityf515保持。I-30双审/Root format与check通过：contract1345/default2350pass、2原条件skip，1068输入停写hash保持。正式run85be进入第四旅程但未通过。最新私有d11f80 failed/0完整旅程、cleanup PASS/quiescent、credential scan PASS；代理元数据确认profile503为`account_profile_unavailable`，同run的`/v1/me`429尚未与profile建立请求关联，根因继续OPEN。未启动新的测试/服务，不把私有诊断当正式验收。
+Root driver c142c49c尊重IAM既有窗口；App fdbb49f1修复最终鲜验不可用误报401；BFF源码f81f271闭合I-30正规native生成/默认测试。双审与主控完整门：Root2005pass/3skip；App6411pass/0skip及contract452/architecture50/lint/types/build；BFF2350pass/2skip及contract1345/format/lint/types/build，冻结输入保持。
 
-18TODO＝11已验切片/2进行中/3等待/1开放/1门控；累计问题33项不等于33个未修缺陷。G0通过，G1认证/G2删除/G3最终组合仍OPEN，A01/A02/A07停写。原A01～16全范围保留；已有实现不归零。
+I-33同请求证据已确认首次/me429→App profile503；只在旧context关闭后等待完整60秒的私有对照4/4、0次429，cleanup PASS。正式源码调度已交付，但不以私有副本冒正式验收；下一步精确组合运行原四旅程。
 
-I-30受控native生成消费已交付，原PR18保持独立；下一批I-33请求关联实验已备好，待Root精确pin后运行；I-29先IAM owner授权设计，I-31补默认入口/负控。其后Nest生命周期→raw/无边界聚合删除→Capability新base整合、Agent与最终组合门→可保留同步E2E环境→A产品阶段。机器Goal复用，工期假设与退出条件仅在唯一计划维护。每仓独立原PR，不merge main、不部署。
+IAM5fffe60/BFF105024d仅更新I-29六份owner三面D0，规格/质量审查已通过，运行源码仍IAM1ee8/BFFf81。native2真实管理员字段、服务/人类401分类、Account/Team事务复核、四action及BFF隐蔽消费者/回退删除尚未实现。后继owner发行→consumer迁移→G1其余负控，再生命周期/旧实现删除/最终组合与同步环境。每仓保留原独立draft PR，不merge main、不部署。
 
 ---
 
