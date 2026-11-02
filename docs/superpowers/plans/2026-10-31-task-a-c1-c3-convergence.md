@@ -420,3 +420,5 @@ pnpm test:integration
 
 - Child `c6c2aa6e88e2b6fdb53517b38bc527118f537e0d` migrated the nine PostgreSQL integration suites from the old aggregate to `createPostgresBffOwnerResources` without changing SQL, cleanup, worker, or receipt behavior. The resource-gated run was **6 pass / 223 skip / 1 pre-existing baseline failure** because isolated PG/Redis URLs are absent.
 - Child `8150106dc11676817daca57c6ecbf956fdf283d3` deleted the now-unreferenced `PostgresBffRepositories` class and added a negative architecture assertion. Root revalidation after pin: topology PASS; governance **1846 passed / 3 skipped / 502 subtests**; BFF build/typecheck/lint/mock29/architecture70 pass. C-3 wrapper deletion is closed; C-2 raw composition and C-4/E2E remain open.
+
+- 主方随后重跑 BFF `pnpm test`：**1178 tests / 1044 pass / 21 fail / 113 cancelled / 0 skip**；`test/contract/skill-specification-http.test.mjs` 长 pending 后中止，失败仍为既有 archived-tasks/Skill shared-revision fixture baseline。该结果不计 C-4 通过，也未修改断言或 timeout。

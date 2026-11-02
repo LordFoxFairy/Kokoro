@@ -751,3 +751,7 @@ BFF child `8150106dc11676817daca57c6ecbf956fdf283d3` deletes the now-unreference
 ### Root verification after PostgreSQL aggregate deletion pin `8150106`（2026-11-02）
 
 Root `python3 scripts/verify-repository-topology.py` passed and `python3 -m pytest scripts/tests -q` returned **1846 passed / 3 skipped / 502 subtests**; `git diff --check` passed. This closes the C-3 wrapper deletion gate only. `createBffComposition`/`handleBffRequest` raw compatibility, BFF full-owner failures/format warnings, real IAM→BFF→App receipts, E2E service startup and A-01/A-02/A-07 remain open.
+
+### C-4 BFF full-gate recheck after aggregate deletion（2026-11-02）
+
+主方在 child `8150106` 停写后重新运行 `pnpm test`。构建完成；测试在 `test/contract/skill-specification-http.test.mjs` 的长 pending 后按现有安全边界中止，汇总为 **1178 tests / 1044 pass / 21 fail / 113 cancelled / 0 skip**。新增计数仅来自本次串行复跑；失败仍集中在既有 archived-tasks 503 fixture 与 Skill shared-revision/owner fixture，pending 造成后续取消。未删除断言、未放宽 timeout，不将此结果计为 C-4 通过。

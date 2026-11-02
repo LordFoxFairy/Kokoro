@@ -17098,7 +17098,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
 2. C-2：迁移剩余 raw worker/provider fixtures，证明 `createBffComposition`、`handleBffRequest` 零消费者；不得以 raw fixture 通过替代生产 Nest 证据。
 3. C-3：wrapper/9 个 integration suite 已收敛到 named owner factory，旧 aggregate 已删除；保留显式 `database` test seam，后续只迁移有实际 owner 边界收益的 raw fixture/provider 引用，不引入 alias 或第二 aggregate。
-4. C-4：BFF full test 当前 1043 pass/21 fail/113 cancelled（Skill shared-revision/archived fixture baseline 与 pending）；BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
+4. C-4：BFF full test 最新串行诊断为 1178 tests / 1044 pass / 21 fail / 113 cancelled（Skill shared-revision/archived fixture baseline 与 `test/contract/skill-specification-http.test.mjs` pending）；BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
 5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
 
 **约束**：不重置共享 PG/Redis/MinIO，不生成/写入凭据，不放宽断言/超时/契约，不为消除失败删除测试，不启动未具备配置的业务服务。
