@@ -767,3 +767,13 @@ BFF child `dfe1584eceb8151edfd6ac5871810142108eeb1c` extends the raw configured-
 ### C-4 BFF full-gate recheck after aggregate deletion（2026-11-02）
 
 主方在 child `8150106` 停写后重新运行 `pnpm test`。构建完成；测试在 `test/contract/skill-specification-http.test.mjs` 的长 pending 后按现有安全边界中止，汇总为 **1178 tests / 1044 pass / 21 fail / 113 cancelled / 0 skip**。新增计数仅来自本次串行复跑；失败仍集中在既有 archived-tasks 503 fixture 与 Skill shared-revision/owner fixture，pending 造成后续取消。未删除断言、未放宽 timeout，不将此结果计为 C-4 通过。
+
+### C-2 generic configured-owner proxy tail deletion（2026-11-02）
+
+只读 raw-route census 确认 `handleBffRequest` 中 `upstreamKey`/`proxyUpstream` generic tail 在当前生产链无已知可达入口：Agent、Billing、Model、Library、Session、System/Skills、Mori 均已由具名 adapter 或 negative guard 先行处理。BFF child `a86ecae3f2def6f32b03485d3a88e5d0bc1ef097` 删除 `upstream_not_configured`/`upstream_unreachable` generic proxy 分支，保留 BFF-owned 业务、幂等票据及 named adapter；未处理路径统一通过 `reply(..., 404, ..., mutation)` 结算，避免遗留 pending receipt。`configuredUpstream` 仍保留在 health/readiness owner 配置检查。
+
+同一 child 将 `archived-tasks-http.test.mjs` 与 `shared-tasks-http.test.mjs` 的旧 `businessStore.services.chat` fixture 迁移到显式 `chatService`，不再以 aggregate shape 冒充 Chat owner。验证：BFF `pnpm build`、`pnpm typecheck`、`pnpm lint`、`test:architecture` 34/34、`test:nest-architecture` 36/36、mock BFF 29/29、Archived Tasks HTTP/contract bundle 42/42、Shared Tasks HTTP 14/14、Mori bundle 12/12、`git diff --check` 均通过。`pnpm format:check` 仍是既有 31 warnings 基线，不作格式扫尾。
+
+### Root verification after BFF generic-tail/fixture pin `a86ecae`（2026-11-02）
+
+Root 将 BFF gitlink 更新至 `a86ecae3f2def6f32b03485d3a88e5d0bc1ef097` 后重跑 `git diff --check`、`python3 scripts/verify-repository-topology.py` 与 `python3 -m pytest scripts/tests -q`；结果待本轮命令输出回填。该切片不关闭 C-1.3 真实 IAM receipt、BFF/App/IAM owner full gate、隔离 PG/Redis integration 或跨仓 E2E，A-01/A-02/A-07 继续停写。

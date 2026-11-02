@@ -319,3 +319,7 @@ The preceding census is historical. BFF child `c6c2aa6e88e2b6fdb53517b38bc527118
 The raw configured-owner guard now also terminates non-canonical `/v1/models/**` suffixes (`88538a8`). The remaining generic fallback census is limited to compatibility-injected upstream paths and raw businessStore/idempotency/provider seams; canonical model catalog behavior is owned by the named System adapter.
 
 The guard now also terminates non-canonical `/v1/library/**` suffixes (`dfe1584`); canonical Library routes remain owner-adapted. Storage is no longer reachable through the generic raw proxy for an undocumented Library path.
+
+### 2026-11-02 generic proxy tail and Chat fixture cleanup
+
+Raw fallback audit confirmed the configured-owner generic proxy tail had no known production entry after named adapters/guards. BFF `a86ecae` removes the tail and settles any claimed mutation with canonical 404; `configuredUpstream` remains only for health/readiness configuration checks. Archived/Shared Tasks test fixtures now inject the explicit `chatService` provider instead of `businessStore.services.chat`. No production owner boundary or second aggregate was introduced; raw `handleBffRequest` remains for BFF-owned business/idempotency and explicit compatibility seams.

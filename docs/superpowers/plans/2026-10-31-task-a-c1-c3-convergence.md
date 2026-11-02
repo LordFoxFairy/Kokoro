@@ -424,3 +424,9 @@ pnpm test:integration
 - Child `dfe1584eceb8151edfd6ac5871810142108eeb1c` adds the analogous guard for unknown `/v1/library/**` suffixes; canonical Library routes remain unchanged and Storage is not called for undocumented paths. Focused BFF/Nest/Root gates are green; raw businessStore/provider seams and C-4/E2E remain open.
 
 - 主方随后重跑 BFF `pnpm test`：**1178 tests / 1044 pass / 21 fail / 113 cancelled / 0 skip**；`test/contract/skill-specification-http.test.mjs` 长 pending 后中止，失败仍为既有 archived-tasks/Skill shared-revision fixture baseline。该结果不计 C-4 通过，也未修改断言或 timeout。
+
+### 2026-11-02 generic-tail closure
+
+- `a86ecae` removes the unreachable generic configured-owner proxy tail from `handleBffRequest`; named adapters/guards own all currently known owner prefixes, and the residual fallback returns canonical 404 while committing/releasing idempotency state.
+- Archived/Shared Tasks raw fixtures use explicit `chatService`; this closes two stale aggregate-shaped fixture seams without changing production contracts.
+- Re-run Root topology/governance after pin. Keep C-1.3 real receipts, owner full gates, isolated PG/Redis integration, and E2E startup as open gates; do not enter A-01/A-02/A-07.
