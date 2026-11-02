@@ -1,6 +1,6 @@
 ## Task A 当前检查点：浏览器首旅程失败，整体仍未闭环
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。2026-11-02主控核Goal **active**；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。18 TODO＝11已验切片、2进行中、3等待、1开放、1门控；27问题，不以数量换算产品完成率。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。2026-11-02主控核Goal **active**；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。18 TODO＝11已验切片、2进行中、3等待、1开放、1门控；30问题，不以数量换算产品完成率。
 
 当前Root `50ac142b`精确pin App e1be/BFF4d6/IAM1ee8/Capabilityf515。IAM新test-only host已双审、Root真实两host66pass/0skip及完整verify1566pass，推原PR6；永久browser driver d309有82定向、1931治理/3skip，dd447诊断增量91定向通过，完整治理尚未在该后继重跑。
 

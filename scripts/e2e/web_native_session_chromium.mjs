@@ -379,7 +379,8 @@ try {
   const foreignOwner = ownerIs(await inspect('primary'), true, true, 'other');
   const rejectedSession = await read(page, '/api/auth/session');
   const rejectedProjects = await read(page, '/api/session/projects');
-  requireFact(rejectedSession.status === 401 && rejectedProjects.status === 401);
+  requireFact(rejectedSession.status === 401 && rejectedSession.body?.error?.code === 'native_session_required');
+  requireFact(rejectedProjects.status === 403 && rejectedProjects.body?.error?.code === 'product_tenant_forbidden');
   const focused = await focusProbe(page, peer, 401);
   const privateRetired = await retired(page, initialProfile.profile, expect);
   const raceObservation = await barrier.release();
@@ -395,7 +396,10 @@ try {
   journeys.tenant_rejection_recovery = {
     foreign_owner: foreignOwner, pre_mutation_profile_visible: visibleBeforeMutation,
     session_status: rejectedSession.status,
-    projects_status: rejectedProjects.status, private_ui_retired: privateRetired,
+    session_error_code: rejectedSession.body.error.code,
+    projects_status: rejectedProjects.status,
+    projects_error_code: rejectedProjects.body.error.code,
+    private_ui_retired: privateRetired,
     relogin_status: relogin, recovered_session_status: recoveredSession.status,
     recovered_projects_status: recoveredProjects.status,
     recovered_profile_status: recoveredProfile.status,

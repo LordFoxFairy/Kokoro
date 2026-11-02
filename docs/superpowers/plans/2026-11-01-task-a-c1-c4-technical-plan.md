@@ -15,9 +15,9 @@
 ## 当前执行摘要（2026-11-02 用户复核）
 
 - **为何看起来暂停**：本轮`get_goal`实际为**active**；历史记录记载过paused/中断，但现有证据不确定其触发来源。主控交接和台账存在明确滞后：当前段仍写“IAM tests-only待RED”，实际IAM与永久driver已经交付，正式浏览器验收已失败。不能把旧等待状态继续交给用户处理，也不需要再次批准既定步骤。
-- **当前执行点**：Root `dd447c6878c3b00340e51554311340a2dc1857c0`，IAM `1ee8d156`已精确pin；正式browser模式在cold_login的账户入口可见性检查超时，完成**0/4旅程**。独立诊断确认HMR WebSocket请求14次均404；这是代理能力缺口，是否为页面不就绪唯一原因仍需修复后复验。登记I-26。代理修复现已停写双审，Root165定向/1959治理（3skip）通过；下一动作是精确提交后正式四旅程复跑，不改产品认证或放宽断言。
+- **当前执行点**：Root bad205已含I-26 HMR与I-27 profile fetch映射修复，正式旅程已越过冷登录UI及profile barrier。后续异tenant拒绝实际为session401/projects403，原测试双401是I-28 oracle错误，已精确纠偏并获Root121定向/1989治理（3skip）与双审；精确提交后原四旅程重验。I-29生产Bearer回退与I-30受控native contract消费另属G1未完项，四旅程绿也不直接关闭G1。
 - **Goal边界**：机器Goal继续C-1.3～C-4前置闭环，不是“A全部完成”。G0通过；G1认证/G2删除/G3最终组合验收均OPEN，A-01/A-02/A-07停写。原A-01～A-16责任保留。
-- **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为27项；条目数量不等于产品完成百分比。
+- **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为30项；条目数量不等于产品完成百分比。
 - **闭环缺口**：完整四旅程、Nest生命周期、raw/聚合删除、Capability新base整合、Agent及最终组合门、可保留同步测试环境均未完成。已验HTTP认证/退出与receiver切片保留，不因新失败归零；PR存在、单测通过或cleanup通过不代表整体闭环。
 - **工期口径**：此前3～7工作日只属历史C阶段低置信度预算，不是当前剩余时间，更不是完整Task A日期。当前完整A没有可信完成日期：16项尚缺逐项当前证据/剩余量，raw迁移缺feature批次与吞吐样本，四旅程与生命周期仍有运行风险。先完成T-05并确定首批迁移规模，再重估C剩余工期；产品A需另按16项分解估算，不将已有实现当全部重做。下一检查点是“代理回归＋原四旅程结果”，而不是再次给滚动倒计时。
 
@@ -93,13 +93,17 @@
 | I-18 | 原BFF engines与pin/生成链/CI/Docker存在Node24/22漂移；173e026已统一并通过Root当前完整静态门 | 保留两轮RED与真实修复证据；七条正规生成/双检及当前完整门通过，106generated不变；未实跑CI/Docker，不以配置对齐冒称容器验收 | T-18 |
 | I-19 | 原Nest启动失败已解决：BFF4d6修复五处DI可见性，Root535最小native成功；完整关闭矩阵仍缺证 | 已加真实生产容器compile/关键token单实例回归；后续验证drain/SSE/worker/PG/Redis，不重复领取旧启动修复 | T-17 |
 | I-20 | 本计划曾要求同App正向双tenant切换，但App/BFF/IAM当前三面设计与G0都明确固定Product tenant；属于台账错误 | 已按有效裁决纠正T-05；用异tenant会话拒绝/固定域恢复验证隔离，禁止删BFF授权门或新增TaskB切换器 | T-01/T-05 |
-| I-21 | 真实Chromium冷登录RED：表单303后session/projects401；App缺固定tenant set-active，fixture预设会话曾掩盖 | 五文件727已获独审与Root完整门（6401pass）；Root4fdb实际冷登录GREEN，I-21缺陷闭合，仍不等于四旅程全部完成 | T-05 |
+| I-21 | 真实Chromium冷登录RED：表单303后session/projects401；App缺固定tenant set-active，fixture预设会话曾掩盖 | 五文件727已获独审与Root完整门（6401pass）；Root4fdb实际冷登录GREEN，I-21缺陷闭合，仍不等于四旅程全部完成 | T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS | 原冷登录/退出HTTP已验；IAM1ee8 host与Root永久driver已交付。I-26/I-27修复后正式旅程已过冷登录UI/profile barrier；I-28精确oracle纠偏获Root121定向/1989治理（3skip），下一步提交后原四旅程。I-29/I-30与G1负控映射仍需收口，不以4/4单独判G1完成 |
 | I-22 | LocalPlatformRuntime先生成单projection文件，随后聚合多surface凭据以同名O_EXCL创建，真实文件装配抛FileExistsError | Root候选已改独立聚合文件名，真实临时目录RED→GREEN并保持0600/回收；独审及Root154定向通过，已随c08c提交并配对f515；此文件装配缺陷闭合，同步环境仍待T-15 | T-14/T-15 |
 | I-23 | Capability现部分R317/R336 opt-in测试与release workflow仍有此前OAuth/旧execution配置欠账 | 保留原触发开关与业务断言，标清既存/本片新增；本片只迁退休resource-server消费者并真实验证global receiver，未触及的旧catalog/CI链不冒称已可运行 | T-14/T-16 |
 | I-24 | 已修复退出两层缺陷：显式POST body与owner JSON媒体类型/空对象规范化 | App e1be完整门6407/0skip及Root真实退出200、cookie清除、项目/旧cookie均401；I-24在此HTTP范围闭合，完整T-05仍OPEN | T-05 |
 | I-25 | Capability原PR12基线由44fcc前进至2ad5c9e，4提交/73路径含契约和Schema；本Task A PR13与其存在实际合并冲突 | 保留双方提交，不force、不整树择一；在独立集成区审边界/冲突后重新完整门和真实receiver，再更新精确Root组合。当前仅已验f515候选 | T-09/T-16 |
 | I-26 | Root dd447正式四旅程cold_login已303并到/app，但账户入口不可见而超时；诊断14次HMR WebSocket Upgrade均404，代理缺101双向转发 | 隔离代理修复已停写双审，Root165定向/1959治理（3skip）通过；HTTP/SSE/清理回归承接，不改App认证或UI断言。原四旅程真实通过才关闭；HMR是否唯一原因待证 | T-05/T-13 |
 | I-27 | Root50ac正式旅程已过cold_login UI/profile，进入异tenant旅程后profileBarrier的route.fetch在TLS握手前失败；Playwright Node请求不继承Chromium域名/443映射，私有同请求loopback诊断200 | barrier显式使用自有HTTPS loopback端口，保原Host与allHeaders内存cookie，maxRedirects=0；仍取真实APIResponse并保200/subject/4.5秒/退休断言。无产品改动，正式四旅程重验 | T-05 |
+
+| I-28 | bad205正式异tenant旅程已取得真实profile barrier，但driver错误要求projects401；实际session401/native_session_required、projects403/product_tenant_forbidden，符合固定tenant隔离实现 | 只纠正异tenant精确oracle，加入两个typed code并严格receipt校验，拒绝其他status/code；其他撤权/退出401保持，不放宽成401或403任选，不改产品 | T-05 |
+| I-29 | BFF4d6生产authorizeUserRequest在缺native配置/verifyNative时回退Bearer→admission.verify；Nest真实feature可达，不只是raw/test残留 | G1前按owner处置旧浏览器准入消费者，缺配置fail-closed；逐项承接ownerSessionAuth/authorizeSkillAction有效权限，不批量误删公共skill.list或IAM公开OAuth | T-05 |
+| I-30 | BFF固定IAM497900/0.18含native operation，但生成器include未纳入；client自写native response schema，尚缺原件→consumer等价/生成保护证据 | owner审核固定native消费，按现生成事实源补受控消费/契约验证；不是已证明wire错误，也不以现contract全绿代替native覆盖 | T-05 |
 
 ---
 
@@ -285,6 +289,10 @@ Browser ← App UI 与刷新后的同一事实
 ---
 
 ### 5.1 下一检查点与工期口径（2026-11-02）
+
+**I-28已复现与最小纠偏**：bad205正式run c2e12b5a失败于异tenant双401断言；私有40e265df实证session401/native_session_required、projects403/product_tenant_forbidden。只读沿IAM→BFF→App证实该403正确；其他exact session删除/成员撤销仍401，退出匿名仍200/false。唯一writer仅driver/native runner/现native测试，先补typed code/status拒绝负控，再同步三处精确oracle；不改产品、不允许泛化401|403。I-27传输修复已过主方108定向及正式真实profile barrier，该完整旅程仍待I-28后重验。
+
+**G1额外收口，不能只看四旅程4/4**：I-29旧Bearer生产回退、I-30受控native contract消费需由BFF owner在G1前处理；另将§3.1负控逐项映射已有case/精确SHA/实际结果/零副作用oracle，缺项才补测。IAM PlatformWorkloadController与fixed-Web OAuth测试需补保留/退休disposition，不按字符串误删公共OAuth或当前native guard仍用的IAM_PRODUCT_WEB_CLIENT_ID。Capability f515 receiver-only已验足够此切片，最新base整合仍归G3。后继T-17/T-11不提前实施。
 
 **最新运行检查点**：I-26修复已提交50ac142b并完成Root完整门；正式run8160b600已越过cold_login UI/profile而在tenant_rejection_recovery失败，整体收据仍0/4（失败路径不输出部分成功计数）。I-27主控私有诊断确认原fetch“TLS建立前连接断开”、upstream_status=null，同一真实请求经自有loopback/原Host/cookie返回200；不是认证失败。以下第1项实现已交付，第2项重验发现的新阻断由I-27承接。
 

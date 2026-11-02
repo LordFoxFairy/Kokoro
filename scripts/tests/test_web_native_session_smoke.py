@@ -870,7 +870,9 @@ def complete_browser_result():
                 "foreign_owner": {**fixed, "active_tenant": "other"},
                 "pre_mutation_profile_visible": True,
                 "session_status": 401,
-                "projects_status": 401,
+                "session_error_code": "native_session_required",
+                "projects_status": 403,
+                "projects_error_code": "product_tenant_forbidden",
                 "private_ui_retired": True,
                 "relogin_status": 303,
                 "recovered_session_status": 200,
@@ -922,6 +924,44 @@ def test_browser_receipt_accepts_four_journeys_and_observed_race(observation):
     result = complete_browser_result()
     result["race"]["observation"] = observation
     assert browser_result_validator()(result) == result
+
+
+def test_browser_receipt_rejects_obsolete_tenant_401_without_typed_codes():
+    receipt = complete_browser_result()
+    journey = receipt["journeys"]["tenant_rejection_recovery"]
+    journey["projects_status"] = 401
+    journey.pop("session_error_code")
+    journey.pop("projects_error_code")
+    with pytest.raises(smoke.SmokeError):
+        smoke.validate_browser_receipt(receipt)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("session_status", 200),
+        ("session_status", 403),
+        ("projects_status", 200),
+        ("projects_status", 401),
+        ("session_error_code", "product_tenant_forbidden"),
+        ("projects_error_code", "native_session_required"),
+        ("session_error_code", "other_error"),
+        ("projects_error_code", "other_error"),
+        ("session_error_code", None),
+        ("projects_error_code", None),
+        ("session_error_code", 401),
+        ("projects_error_code", 403),
+    ],
+)
+def test_browser_receipt_requires_exact_tenant_status_and_typed_codes(field, value):
+    receipt = complete_browser_result()
+    journey = receipt["journeys"]["tenant_rejection_recovery"]
+    if value is None:
+        journey.pop(field)
+    else:
+        journey[field] = value
+    with pytest.raises(smoke.SmokeError):
+        smoke.validate_browser_receipt(receipt)
 
 
 @pytest.mark.parametrize(
