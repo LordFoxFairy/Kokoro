@@ -17179,3 +17179,12 @@ IAM本地 `2cb9864`（未推送）修 Bearer 自动生成 Cookie；独审CLEAR�
 ### 同日后续：I-36 首批测试价值清理已验
 
 IAM本地 `1d82fa2` 仅六测试文件：SMTP重复正例独有断言合入HTTP；删除Audit两固定清单、tenant源码字符串和Skills全局位置检查；Audit两页改严格wire；Skills补非法字节拒绝。初版新增audit计数因正常成功也不写audit而无独有价值，已删除。主方format/lint/types、architecture10、真实三文件31PASS；最后微调仅Skills单文件16重验，非额外16风险。双审CLEAR，未推送；I-36其余项与I-38设计待办不据此关闭。
+
+
+### I-36 第二批：契约结构与重复转发检查处置（2026-11-02）
+
+IAM本地 `1d9bd95`（基线1d82fa2，未推送）仅7测试文件。Session/Execution/Billing与Audit四处字符串包含检查改为所在位置、type、required、closed、nullable和绑定值的结构断言；复用已安装SwaggerParser只做本地dereference、external=false，不新增依赖/框架，不锁inline/$ref或required顺序。删除Skills/publisher两项纯mock转发，保Account/MCP独有政策，由原真实native HTTP准入后状态变化→事务复读/零写矩阵承接；另两处标题准确标识OAuth与代表性smoke。
+
+主方格式/ESLint/tsc --noEmit及4contract+kernel+native unit共6文件39PASS（1.40s）；主方真实native15PASS（31.36s），542输入无漂移；最终7/7冻结匹配，规格/质量双审CLEAR。另在私有内存fixture中将72处schema替换为等价$ref并反转required，主方4目标PASS、22名称过滤；机器契约未改。这是表示无关性检查，不是额外产品覆盖。MCP仅标题改变未单独启动该整套，未无意义重跑全部484integration/完整默认套件。
+
+I-36本次抽样发现完成有界处置，不等于逐项审计所有测试。两条Audit敏感列源码弱检查保留，wire测试不证明SQL未读列；guard重复fixture仅风格问题保留，不另造框架。I-38仍待用户选择委托信任边界，未改认证设计/发布native2/更新Root IAM gitlink；Goal active，G1/G2/G3 OPEN，A功能停写。每仓仍原独立PR，不merge main、不部署。

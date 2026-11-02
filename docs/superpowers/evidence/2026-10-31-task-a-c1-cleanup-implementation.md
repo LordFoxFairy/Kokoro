@@ -1154,3 +1154,12 @@ I-38 未裁决期间，仅验证其独立局部修复，不新增引用式认证
 - 主方format/ESLint/tsc --noEmit与3架构文件10 PASS（0.93s）通过；真实`vitest run` SMTP/Skills/Audit三文件31 PASS（21.62s），542输入无漂移。随后仅删除Skills4行无效计数，其余5文件hash不变；主方最终Skills单文件16 PASS（13.83s）且542输入无漂移、格式/lint通过。31与16有重叠，不相加当独立覆盖。最终冻结6/6核同、双审CLEAR。
 
 本轮按测试影响范围验证，未重复完整默认/484 server integration或consumer；此前相应门绑定原切片，不冒当前全套重跑。实际删改已写唯一计划§0.3，contract结构/纯转发等余项仍OPEN，Goal active、G1/G2/G3未闭合。私有日志/冻结留本地。
+
+
+### I-36 第二批：契约结构与重复转发检查处置（2026-11-02）
+
+IAM本地 `1d9bd95`（基线1d82fa2，未推送）仅7测试文件。Session/Execution/Billing与Audit四处字符串包含检查改为所在位置、type、required、closed、nullable和绑定值的结构断言；复用已安装SwaggerParser只做本地dereference、external=false，不新增依赖/框架，不锁inline/$ref或required顺序。删除Skills/publisher两项纯mock转发，保Account/MCP独有政策，由原真实native HTTP准入后状态变化→事务复读/零写矩阵承接；另两处标题准确标识OAuth与代表性smoke。
+
+主方格式/ESLint/tsc --noEmit及4contract+kernel+native unit共6文件39PASS（1.40s）；主方真实native15PASS（31.36s），542输入无漂移；最终7/7冻结匹配，规格/质量双审CLEAR。另在私有内存fixture中将72处schema替换为等价$ref并反转required，主方4目标PASS、22名称过滤；机器契约未改。这是表示无关性检查，不是额外产品覆盖。MCP仅标题改变未单独启动该整套，未无意义重跑全部484integration/完整默认套件。
+
+I-36本次抽样发现完成有界处置，不等于逐项审计所有测试。两条Audit敏感列源码弱检查保留，wire测试不证明SQL未读列；guard重复fixture仅风格问题保留，不另造框架。I-38仍待用户选择委托信任边界，未改认证设计/发布native2/更新Root IAM gitlink；Goal active，G1/G2/G3 OPEN，A功能停写。每仓仍原独立PR，不merge main、不部署。
