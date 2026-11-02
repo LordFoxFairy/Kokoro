@@ -8,14 +8,14 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** Root aec5775a精确组合正式native浏览器4/4通过（run2a960804d5cac08754f45228），cleanup/credential scan PASS。I-30/I-34已交付，I-26/27/28/32/33驱动与编排修复取得当前完整旅程证据。I-29六份owner三面D0已双审通过但尚未实施，I-31其余负控待补；G1/G2/G3保持OPEN，A功能停写。
+**当前检查点：** Root aec5775a精确组合正式native浏览器4/4通过（run2a960804d5cac08754f45228），cleanup/credential scan PASS。I-30/I-34已交付，I-26/27/28/32/33驱动与编排修复取得当前完整旅程证据。I-29六份owner三面D0已双审通过，IAM唯一writer正在实现未提交候选，BFF消费者尚待正式artifact；I-31其余负控待补；G1/G2/G3保持OPEN，A功能停写。
 
 ---
 
-## 当前执行摘要（2026-11-02 正式四旅程通过）
+## 当前执行摘要（2026-11-02 正式四旅程通过后，I-29实施中）
 
-- **Goal与执行事实**：机器Goal继续active，不是complete。此前诊断已失败终态而Goal仍active，两者已分开记录；本轮不是再次等待批准，已实际提交三个修复片、完成主方全门并跑正式旅程。当前验收已终态，未留下后台长测或常驻环境。
-- **正式当前组合**：Root `aec5775a`，App `fdbb49f1`、BFF `105024d`、IAM `5fffe60`、Capability `f515e225`。BFF/IAM最新提交仅D0文档，运行源码分别为f81/1ee8。run2a960804d5cac08754f45228严格source clean/gitlink配对、实际Node版本符合要求，正式4/4、cleanup passed/quiescent/无保留文件、credential scan passed。
+- **Goal与执行事实**：本次再次调用get_goal核实为active，不是paused或complete。上轮正式验收已终态、临时服务已回收；这不等于下阶段已在执行。当前IAM唯一writer处于running且已有源码/测试diff，无环境或审批阻塞；Root负责接收和台账，BFF消费盘点/验收盘点已交付。此前文档“尚未实施”和旧I-33交接未及时更新，造成执行状态混淆，本次纠正。桌面曾显示暂停的具体调度原因尚无平台日志证据，不作推断。
+- **正式当前组合**：Root `aec5775a`，App `fdbb49f1`、BFF `105024d`、IAM `5fffe60`、Capability `f515e225`。BFF/IAM最新提交仅D0文档，上轮正式实跑源码分别为f81/1ee8。run2a960804d5cac08754f45228严格source clean/gitlink配对、实际Node版本符合要求，正式4/4、cleanup passed/quiescent/无保留文件、credential scan passed。
 - **已关闭切片**：I-30正规native生成/默认测试；I-34最终鲜验不可用不误判401；I-33同请求429→503根因已证，正式driver在已关闭旧context的独立场景边界等待原配额窗口。I-26/27/28/32连同本片已获完整正式旅程覆盖，不重新领取。没有提高配额、清bucket、缓存准入、自动重试或放宽撤权断言。
 - **证据边界**：四旅程覆盖冷登录、异tenant拒绝/恢复、UI退出、独立Session/成员撤销；真实held profile race本次观测为cancelled且私有UI退休，不冒非协作迟到JS结果被交付。三服务临时组合不代表所有仓库启动或同步环境可用，未证明生产容量。
 - **TODO与未闭环项**：34累计问题；18TODO仍11已验切片、2进行中、3等待、1开放、1门控。T-05包含完整认证切换，虽四旅程通过仍IN_PROGRESS；G1的I-29与I-31待完成，G2生命周期/旧实现删除、G3最终组合/同步环境未完成。原A01～16保留，A01/A02/A07停写。
@@ -42,7 +42,7 @@
 | Root | `aec5775a`（正式实跑组合） | App fdbb49f1/BFF105024d/IAM5fffe60精确pin；driver c142c49c，Root2005治理/3skip；正式4/4及cleanup/credential scan通过 |
 | App | `fdbb49f17bfbb09684cd5c3cfaea1c1678306697` | 原PR50；I-34最终复验不可用不误报401，Root完整452contract/50architecture/6411default、0skip，lint/types/build与双审通过；当前Root正式4/4通过；原组件门范围不扩大 |
 | BFF | `105024d33611dfaccc9a072d04f0864d03015ef9` | 原PR18；源码f81f271正规native消费，Root contract1345/default2350pass+2skip/format/lint/types/build；本HEAD仅I-29三面D0通过，不冒native2实现 |
-| IAM | `5fffe60ce07920b761213339e66bfbde31302603` | 原PR6；本HEAD仅I-29三面D0通过；运行源码仍1ee8，原两host66/verify1566证据不冒本轮重跑。native2与完整action/事务切换待实现 |
+| IAM | `5fffe60ce07920b761213339e66bfbde31302603` | 原PR6；本HEAD仅I-29三面D0通过；上轮正式实跑源码为1ee8，原两host66/verify1566证据不冒本轮重跑。native2与完整action/事务切换正在唯一writer未提交候选中实施；定向结果仅worker阶段报告，未独审/主方全门，不属于本HEAD已验内容 |
 | Agent | `c761fad3dba2b56cd7fe4da7683a9ac2f208243f` | C-1.2 清理已提交；最终完整 owner gate 仍待 |
 | Capability（物理路径仍为 kokoro-capability） | `f515e22596357e2dd6c05cfa47a1c2f54b99f202` | receiver-only源码及真实PG已验，独立draft PR13依赖PR12；远端基线2ad5c9e未集成且PR冲突，保留原已验组合不覆盖新增提交，最终合并门OPEN |
 | 其他组合成员 | 当前 Root gitlinks | 仅按受影响边界纳入验证；本轮未启动、未刷新全套运行健康状态 |
@@ -60,9 +60,9 @@
 
 证据严格分层：
 - **已提交旧基线**：BFF `228e3d6` 默认测试 2298 total / 2296 pass / 2 skip / 0 fail；该时默认入口未纳入两套 Nest 架构测试。IAM `a1457be` verify 为 120 files / 1561 pass / build PASS。Root 上次 topology PASS，治理 1846 pass / 3 skip / 502 subtests。这些不是当前 dirty tree 全绿证明。
-- **App 历史T-07基线9ba，Root复验结果（当前e1be见§0.1）**：Node 22.23.4；contract 48 files / 452 pass、architecture 50 pass、完整 test 354 files / 6373 pass / 0 skip；typecheck/lint/build/diff-check 通过。旧基线50个契约失败已收敛，Root完整check exit0且56路径前后SHA一致；已提交4260f698、集成origin/main空树merge为9ba65343并推送App draft PR #50。Root已pin；真实四旅程仍待。
-- **BFF 历史173e026切片，Root复验结果（当前4d6见§0.1）**：Node24.20.0下format/check exit0；contract1344pass，默认2343pass/0fail/2skip，lint/types/build通过。两项原数据库条件skip另补整文件真实PG schema15pass/0skip，覆盖共存/回滚与R237。原architecture73/focused123为辅助证据；未完成完整业务integration/当前native链路，字面依赖扫描不称完整AST图。
-- **Root runner历史→当前**：最初close函数缺失1pass/2fail，后续独审发现五项清理/收据缺陷，均已在T-13修复并以Root60定向/IAM真实62及成功/失败退出验证。现Root六文件T-14配套候选另有154定向、完整治理1879pass/3skip/506subtests；真实Capability receiver现已验（f515，见§0.1）；完整四浏览器旅程仍未验。
+- **App 历史T-07基线9ba，Root复验结果（最新基线见§0.1）**：Node 22.23.4；contract 48 files / 452 pass、architecture 50 pass、完整 test 354 files / 6373 pass / 0 skip；typecheck/lint/build/diff-check 通过。旧基线50个契约失败已收敛，Root完整check exit0且56路径前后SHA一致；已提交4260f698、集成origin/main空树merge为9ba65343并推送App draft PR #50。Root当时已pin；该历史阶段真实四旅程仍待，最新正式4/4见§0.1。
+- **BFF 历史173e026切片，Root复验结果（最新基线见§0.1）**：Node24.20.0下format/check exit0；contract1344pass，默认2343pass/0fail/2skip，lint/types/build通过。两项原数据库条件skip另补整文件真实PG schema15pass/0skip，覆盖共存/回滚与R237。原architecture73/focused123为辅助证据；未完成完整业务integration/当前native链路，字面依赖扫描不称完整AST图。
+- **Root runner历史阶段（不是最新验收结论）**：最初close函数缺失1pass/2fail，后续独审发现五项清理/收据缺陷，均已在T-13修复并以Root60定向/IAM真实62及成功/失败退出验证。现Root六文件T-14配套候选另有154定向、完整治理1879pass/3skip/506subtests；真实Capability receiver后续已验（f515，见§0.1）；该历史阶段完整四浏览器旅程仍未验，最新正式4/4见§0.1。
 - **历史真实链路**：旧组合有 IAM 集成 12 pass、IAM→BFF 7 case、HTTPS native smoke 4 case。保留其对应 SHA/范围；不外推到当前 Nest/候选组合，也不将历史 OIDC 验证作为目标 native 链路。
 
 ---
@@ -260,13 +260,13 @@ Browser ← App UI 与刷新后的同一事实
 | 独立reviewer | 只读规格/代码/证据、缺陷与门禁核验 | 不实现、不提交，不把worker退出码当Root通过 |
 | IAM/Capability专项owner | 到相应阶段替换空闲worker slot，先contract再consumer | 不新增并行contract writer；不同时铺开全仓重写 |
 
-2026-11-02当前交接：本轮IAM协议/Root代理与driver writer均已交付停写；两独立reviewer已完成精确候选审查，Root最终1996治理门和正式旅程已终态。没有仍在后台运行的验收。当前Root负责I-33真实503定位，之后按I-29～31收口G1，不等待用户再次“继续”。worker仅在明确新写区下重启，Root继续独占Git/资源/任务表。
+2026-11-02当前交接：I-33正式四旅程已交付，不再领取。`iam_i29_owner_impl`是IAM唯一writer，基线5fffe60，实施native2、显式native proof及原业务事务复核、四operation和正规0.19 artifact；不改Schema/依赖、不接真实资源。`bff_i29_consumer_cut`已交只读生产消费者清单，继续只读核量原A；`iam_i29_test_acceptance`已交真实PG/HTTP负控矩阵。Root独占任务表/Git/资源，候选停写后独审和重跑门禁，正式owner artifact固定后再启动BFF写入。
 
 ---
 
 ## 5. TODO 台账（后续持续更新）
 
-状态：`OPEN`未做；`IN_PROGRESS`正在执行；`REVIEW_PENDING`候选已有证据、待主方复验；`VERIFIED`仅该切片已验；`WAITING`依赖未满足；`GATED`后继停写。未运行、skip和设计通过都不记为功能完成。
+状态：`OPEN`未做；`IN_PROGRESS`已开工尚未闭环，不代表当前有运行worker（实时执行另见当前交接）；`REVIEW_PENDING`候选已有证据、待主方复验；`VERIFIED`仅该切片已验；`WAITING`依赖未满足；`GATED`后继停写。未运行、skip和设计通过都不记为功能完成。
 
 | ID | 事项 / owner | 状态 | 依赖、下一动作与完成证据 |
 | --- | --- | --- | --- |
@@ -274,10 +274,10 @@ Browser ← App UI 与刷新后的同一事实
 | T-02 | MCP denied icon零owner副作用；BFF | VERIFIED | `228e3d6`、focused42、旧基线full；最终组合继续回归 |
 | T-03 | invalid-owner typed error；BFF | VERIFIED | `228e3d6`、focused24、旧基线full |
 | T-04 | 资源/Node/source/schema preflight；Root | VERIFIED（当前原生组合前置） | aec5775a正式run三owner clean/gitlink配对、实际Node符合；隔离fixture正常建立/回收。不外推所有owner schema或常驻运行；后继新候选重新配对 |
-| T-05 | 当前native四旅程与生产切换；Root+IAM/BFF/App | IN_PROGRESS | Root aec5775a正式4/4、cleanup/credential scan通过；I-30/I-34已交付。I-29 D0已通过但未实施，I-31除native默认入口外仍待补证；四旅程通过不单独关闭G1 |
+| T-05 | 当前native四旅程与生产切换；Root+IAM/BFF/App | IN_PROGRESS | Root aec5775a正式4/4、cleanup/credential scan通过；I-30/I-34已交付。I-29 D0已通过，IAM未提交候选实施中，BFF待owner正式artifact；I-31除native默认入口外仍待补证；四旅程通过不单独关闭G1 |
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（消费切片） | App fdbb49f1主方完整contract452/architecture50/default6411、0skip及lint/types/build；当前正式native4/4。I-29后继owner版本另按影响固定消费，不将此项当全产品验收 |
-| T-08 | IAM SDK与verify；IAM | VERIFIED（当前候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
+| T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响owner最终串行门；Root | WAITING | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
 | T-11 | raw/global/剩余Repository-Service-Port；BFF | WAITING | G1后，先T-17；feature迁消费者→删旧实现→零引用/真实行为 |
@@ -286,20 +286,28 @@ Browser ← App UI 与刷新后的同一事实
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
 | T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
 | T-16 | Agent与原C-1删除项最终复核；Agent/Root | OPEN | `c761fad`仅focused130历史证据；当前全门及旧语义零生产引用；任务外治理问题留owner |
-| T-17 | Nest启动/shutdown/drain/pool释放；BFF | IN_PROGRESS（完整生命周期待验） | 前置已验：BFF4d6d17b五DI修复/真实容器回归、Root完整check2344pass+2skip，Root535e7071 minimal native4pass/cleanup PASS；完整drain/SSE/worker/PG/Redis矩阵仍在G1后、T-11删除前 |
+| T-17 | Nest启动/shutdown/drain/pool释放；BFF | IN_PROGRESS（前置已开工；完整生命周期当前等待G1） | 前置已验：BFF4d6d17b五DI修复/真实容器回归、Root完整check2344pass+2skip，Root535e7071 minimal native4pass/cleanup PASS；完整drain/SSE/worker/PG/Redis矩阵仍在G1后、T-11删除前 |
 | T-18 | BFF Node24运行/生成工具链一致；BFF/Root | VERIFIED（切片） | 173e026；21路径独审/1068tracked hash匹配；Root第三轮format/check exit0，106generated与原43路径保持，7正规生成/双检通过；两轮RED保留，CI/Docker未实跑不称通过 |
 
 ---
 
 ### 5.1 下一检查点与工期口径（2026-11-02）
 
-**当前立即动作（覆盖下方历史交接）**：正式四旅程已由aec5775a/run2a960804完成，停止重复I-33调试。I-29六份owner三面D0已在IAM5fffe60/BFF105024d双审通过，可直接进入IAM owner实现/正式artifact发行，再BFF完整消费者迁移与旧浏览器回退删除，保有效action/事务/取消与公共身份。I-31仅native默认入口随I-30完成，其余凭据用途/重复登出/依赖不确定/零写等风险映射继续补证；G1未关闭。T-17/T-11完整生命周期与删除仍在G1后。
+**当前立即动作（覆盖下方历史交接）**：正式四旅程已由aec5775a/run2a960804完成，停止重复I-33调试。I-29六份owner三面D0已在IAM5fffe60/BFF105024d双审通过，IAM唯一writer已进入owner实现/正式artifact发行准备，再BFF完整消费者迁移与旧浏览器回退删除，保有效action/事务/取消与公共身份。I-31仅native默认入口随I-30完成，其余凭据用途/重复登出/依赖不确定/零写等风险映射继续补证；G1未关闭。T-17/T-11完整生命周期与删除仍在G1后。
+
+**本次进度重盘点 / 活跃执行与工期边界**：
+
+- **暂停问题**：机器Goal为active；上轮验收进程确已结束，当前IAM实现正在运行。Goal状态、worker运行、测试服务存活是三个不同事实。现无待用户批准事项；具体桌面暂停原因没有调度日志证据，不能归因于权限或环境。主控须在每次阶段交付同步当前writer、下一动作和依赖，避免把“有计划”写成“正在执行”。
+- **本轮可交付检查点**：本次记录时刻`2026-11-02T03:24-05:00`；IAM writer在本轮报告候选实现/定向检查尚需约45～70分钟，低置信度、仅本轮时点预测；不含真实PG、独审、全门、提交/固定artifact、BFF消费或整个A。已报native2/guard/current-facts/Team定向结果仅为阶段证据，尚有原测试actor断言待承接，不写VERIFIED。
+- **剩余关键路径**：IAM owner及正式artifact → BFF共享认证/生成消费 → Skills、Account/Team/Admin/Billing、MCP实际链与负控 → I-31/G1 → T-17生命周期 → T-11旧实现删除 → T-09/T-16最终组合 → T-15同步环境 → 原A产品项。依赖契约和共享文件保持单writer；消费者清单与原A只读核量可以并行。
+- **当前Goal完成定义**：G1认证生产切换、G2生命周期/删除、G3冻结组合验证和同步环境全部达到退出条件；这是C前置Goal，不是原A01～16产品完成。11/18的VERIFIED是切片状态，不计算为Task A完成率。
+- **当前运行环境**：正式4/4收据再次读取确认passed，cleanup/quiescent通过且无保留文件；没有据此交付常驻同步E2E。当前文档盘点不启动服务，后继T-15独立交付入口/支持旅程/健康与回收归属。
 
 **本轮I-30实施写区（BFF唯一writer）**：固定IAM497900/0.18原件不升级；include新增verifyNativeSession（23→24 operation），使用generated native响应与既有ApiErrorResponse闭集，删除重复手写schema/arbitrary code fallback。仅openapi-ts.iam.config.ts、必要的既有generator精确保真normalizer、正规src/generated/iam-http生成物、依赖manifest、session-admission.client.ts、两份相关测试与package.json；16生成文件allowlist/双生成/owner digest不变。对owner closed object和RFC3339 offset语义补最低充分回归，native suite纳入默认入口。无Schema/lockfile/业务授权改动。已由f81f271交付，主方format/check全0，contract1345/default2350pass+2skip；1068输入无漂移，双审CLEAR。I-29后继owner artifact升级仍须重新固定/生成，不将此版本永久冻结。
 
-**I-29历史静态发现（现已由下述owner三面D0收敛，尚未实现）**：当前BFF native client从permissions字符串推platformAdmin，而IAM原生permissions来自organizationRole，不等于User.platformAdmin事实；此项不能以I-30生成替换冒关闭。与Skills/MCP/publisher/OpenApp的原user-delegated资格一起由IAM owner明确当前事实与native决定，先更新相应设计/机器契约再消费。withSkillActionAdmission丢失verifyNative也须迁移；公共skill.list身份和服务身份不误删。
+**I-29历史静态发现（已由下述owner三面D0收敛，当前IAM候选实施中）**：当前BFF native client从permissions字符串推platformAdmin，而IAM原生permissions来自organizationRole，不等于User.platformAdmin事实；此项不能以I-30生成替换冒关闭。与Skills/MCP/publisher/OpenApp的原user-delegated资格一起由IAM owner明确当前事实与native决定，先更新相应设计/机器契约再消费。withSkillActionAdmission丢失verifyNative也须迁移；公共skill.list身份和服务身份不误删。
 
-**I-29独立设计复核：owner三面D0已双审通过，未实施**。建议 native profile 2.0 删除无有效业务消费者的permissions、增加required platform_admin（当前User.platformAdmin事实，版本合法性留owner内，不增加无消费者wire）；旧1.0原件只读保留，新版正式生成/固定后原子切换，无兼容fallback。当前admission本身已核active tenant，缺口是业务事务helper/Team list未复核，以及Team Members/Roles/Invitations把Session/native proof丢失；必须承接exact Session/User/active tenant/current member，不只加四operation guard。角色政策按原owner承接：Skills/MCP检查角色完整性，Account/普通publisher不暗加全局角色门。现native admission的异tenant→BFF403既有语义保持。新增消费清单包括app-skill-bindings二次Bearer、skill-admin/installations regex enrich、managed-personal-skills/publisher、Billing成员分页/末端复核。IAM5fffe60/BFF105024d已明确这些写区/资格/错误/事务与零DDL并通过规格/质量双审，后继可实施；设计通过不冒实现完成。native2唯一必要新增native_session_service_unauthenticated（owner401→BFF既有503），human失效401保持，未归属401为503；原native1不改，不增加SLO/部署门。公共skill.list/第三方OAuth/服务资金与执行身份保持；事务内复读不承诺跨owner全局撤权原子性。
+**I-29独立设计复核：owner三面D0已双审通过，正式基线未实现，IAM工作树候选实施中**。建议 native profile 2.0 删除无有效业务消费者的permissions、增加required platform_admin（当前User.platformAdmin事实，版本合法性留owner内，不增加无消费者wire）；旧1.0原件只读保留，新版正式生成/固定后原子切换，无兼容fallback。当前admission本身已核active tenant，缺口是业务事务helper/Team list未复核，以及Team Members/Roles/Invitations把Session/native proof丢失；必须承接exact Session/User/active tenant/current member，不只加四operation guard。角色政策按原owner承接：Skills/MCP检查角色完整性，Account/普通publisher不暗加全局角色门。现native admission的异tenant→BFF403既有语义保持。新增消费清单包括app-skill-bindings二次Bearer、skill-admin/installations regex enrich、managed-personal-skills/publisher、Billing成员分页/末端复核。IAM5fffe60/BFF105024d已明确这些写区/资格/错误/事务与零DDL并通过规格/质量双审，后继可实施；设计通过不冒实现完成。native2唯一必要新增native_session_service_unauthenticated（owner401→BFF既有503），human失效401保持，未归属401为503；原native1不改，不增加SLO/部署门。公共skill.list/第三方OAuth/服务资金与执行身份保持；事务内复读不承诺跨owner全局撤权原子性。
 
 **I-33历史定位实验（已运行，结果见下）**：仅在隔离Web代理转发精确GET /api/account/profile时设置单个随机x-kokoro-request-id，以其入站hash→响应hash桥接App的两次/v1/me与业务profile请求；只留状态/错误类别/计时/hash，不留body/cookie。已读源码确认header用于关联而非身份，原driver、限流和预算不变。IAM native admission按caller/credential/operation共享100/60s bucket的静态事实已确认；仍需同请求证据判断本失败与429的关系。当时在BFF停写并精确配对后运行；后继同请求因果与窗口对照见下。
 
@@ -338,6 +346,18 @@ Browser ← App UI 与刷新后的同一事实
 4. **T-09/T-16/T-15／Root与owner**：保留双方更新整合Capability publication冲突，完成Agent及受影响owner最终门、组合E2E和可同步环境。每仓独立PR，未完成前不合main。
 5. **原A产品阶段**：G1～G3通过后才进入A-01/A-02→A-07；其余原A任务继续保留。当前原16项没有逐项剩余工作量与已配对端到端验收，故尚无可信完整完成日期；不把“未验收”解释为全部从零实现。下次估时须标明范围、基线、依赖、实际剩余量和置信度，而不是滚动重复3～7日。
 
+**本次I-29消费者核量（不是全A总工期）**：基于BFF105024d实际Nest生产调用链的只读盘点，原先owner+BFF合计1.5～3人日低估了隐蔽消费者和认证测试迁移。修正为BFF本片约**5～10工程人日，中低置信度**；以熟悉本仓的工程师有效投入衡量，不是Agent墙钟承诺，也不除以Agent数换日历天。
+
+| I-29 BFF工作包 | 剩余工程人日 | 核量依据 |
+| --- | --- | --- |
+| 固定artifact/共享认证底座 | 1～2 | 正规生成、必需native接口/显式proof、严格解析与服务401分类、wrapper/shared double |
+| Skills实际消费者 | 1.5～3 | action/import、publisher enrich/specification、download/share末验、App binding第二Bearer |
+| Account/Team/Admin/Billing | 1～2 | 共享Team client、全部成员分页、Billing末验及typed错误 |
+| MCP消费者 | 0.5～1 | 现闭集helper/DI及原公共OAuth/service-only负控 |
+| 本片集成/审查/返修 | 1～2 | 真Nest HTTP/实际IAM配对、零副作用/末验、完整相关门 |
+
+前提为IAM正式artifact满足D0且可运行、既有资源可用，无新增owner/Schema/协议裁决。该量包含本片认证fixture迁移，**不包含**IAM剩余、其他owner的I-31、T-17、T-11剩余raw全删、Capability整合、Agent全门、G3环境或A01～16；后续T-11核量须扣除本片已迁测试。首条wrapper＋publisher＋Billing分页真实链闭合后据实收窄，而不是每轮重新启动“5～10天”倒计时。
+
 **历史容量预算（I-30/I-33交付前的工程判断，非当前剩余）**：当时替代未纳入 I-29～31/I-33 的旧5～12人日，仅估C前置阶段而非整个Task A。现I-30/I-33已交付、I-29设计已通过；下表保留估算基准，不把已关闭工作继续计为剩余，也不重新滚动倒计时。当前剩余以T-05中的I-29/I-31、T-17/T-11、T-09/T-16/T-15为准，首批IAM实现后据实际工作量再更新。
 
 | 当时C阶段工作包 | 当时估计工程人日 | 退出条件 |
@@ -358,11 +378,13 @@ Browser ← App UI 与刷新后的同一事实
 | 原A范围 | 当前可确定的剩余类型 | 还需核量 |
 | --- | --- | --- |
 | A-07 / A-08 | 明确缺Project Todo写操作、附件发送/Run绑定/读取资格 | 设计、契约和消费者具体改动；不拿Run Todo/导航代替 |
-| A-01/02/04/05/06/09/10/14 | 已有实现或局部/历史证据，主要待当前完整验收与具体修复 | 当前commit的实现—case—收据映射，避免全量重写估算 |
-| A-03/11/12/13 | 当前支持面和剩余量未逐项核实 | 输入控制、承诺场景、自动化原writer交接、外部账号末端条件 |
+| A-01/02 | 已有实现且有明确语义/展示待修边界，不是仅缺测试 | localDraft/retry/retire、导航/多标签/迟到；RunDisplay分组/身份/历史/回焦的当前case与实际缺陷量 |
+| A-04/05/09/10/14 | 已有实现或历史子链，当前恢复/压缩/资料库/产物/语音完整验收未齐 | 当前commit的实现—case—收据映射；未验不等于全量重写，也不承诺无代码修复 |
+| A-06 | 项目上下文已有部分成果，菜单/排序/删除释放等支持面未核量 | 逐动作实际差距，不按页面名称计算完成 |
+| A-03/11/12/13 | 当前支持面和剩余量未逐项核实；A-12需原writer交接，A-13对应外部末端有条件依赖 | 输入控制、实际支持场景、自动化DST/重投/结果、外部账号callback/过期；不将末端条件扩大为全A阻塞 |
 | A-15 / A-16 | 体验缺陷未按页面量化；已有多仓draft PR，仍须随片验收/配对 | 缺陷与性能基线、交付成本；当前不merge main、不发布 |
 
-完整A当前没有有依据的总日期。下一估时交付是在 **0.5～1工程人日的只读盘点预算** 内补齐上述“已实现/明确缺实现/仅缺实测/外部依赖”与分包剩余量，再给全A范围；这可与C实施并行，不提前开发被门控的A功能，也不把这份文档概览当源码盘点已完成。
+完整A当前没有有依据的总日期。本次已完成原16项文档证据分类，A-07另窄核canonical OpenAPI仅listProjectTasks及repository列表读；A-08原handoff明确缺选择→发送→Run绑定/读取资格。没有任何完整A行因本次盘点新增标完成。上述分类不是全产品源码审计；原 **0.5～1工程人日只读盘点预算** 尚须补支持动作/缺陷量及当前case映射才能给全A总范围，可与C实施并行，不提前写A功能。
 
 本次Goal保持active，未创建重叠目标或将任何未验条目标complete。后续交接注明“主控下一动作”，不将worker等待当作需要用户再次发送“继续”。
 

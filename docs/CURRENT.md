@@ -1,4 +1,4 @@
-## Task A 当前检查点：正式native浏览器4/4通过，G1仍OPEN
+## Task A 当前检查点：I-29 IAM实施中，G1/G2/G3仍OPEN
 
 唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active，G0通过、G1/G2/G3仍OPEN，A01/A02/A07停写。34累计问题、18TODO分类不变，T-05仍含尚未完成的生产切换。
 
@@ -6,7 +6,7 @@ Root aec5775a精确App fdbb49f1/BFF105024d/IAM5fffe60；正式run2a960804d5cac08
 
 I-30正规native消费、I-34最终鲜验依赖不可用不误判401、Root场景边界窗口调度已交付并双审。主方完整门Root2005pass/3skip；App6411pass/0skip及contract452/architecture50/lint/types/build；BFF2350pass/2skip及contract1345/format/lint/types/build，输入hash保持。现配额/撤权断言未放宽，不宣称容量验收。
 
-I-29六份owner三面D0已双审通过（IAM5fffe60/BFF105024d仅文档，运行源码仍1ee8/f81），尚未实现native2、完整action/事务与消费者切换。下一步先IAM正式发行，再BFF迁移隐蔽消费者并删除生产回退，补I-31负控；其后生命周期/旧实现删除/最终组合/同步环境。当前验收已终态，无后台长测或常驻环境；每仓独立原draft PR，不merge main、不部署。
+I-29六份owner三面D0已双审通过（IAM5fffe60/BFF105024d仅文档，上轮正式实跑源码为1ee8/f81），已提交基线尚未实现native2；当前IAM唯一writer正在未提交候选中承接native2、完整action/事务，定向结果不等于独审或主方验收。BFF只读消费者盘点与IAM真实验收矩阵已交付，原A剩余量继续只读核量。下一步先IAM停写审查/真实PG/完整门/正式发行，再BFF迁移隐蔽消费者并删除生产回退，补I-31负控；其后生命周期/旧实现删除/最终组合/同步环境。上轮验收已终态、临时服务已回收；当前IAM实现Agent运行中，无环境/审批阻塞。机器Goal本次实查active；具体桌面暂停原因无平台日志证据，不推断。每仓独立原draft PR，不merge main、不部署。
 
 ---
 
