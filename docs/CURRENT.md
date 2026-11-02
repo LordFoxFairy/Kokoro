@@ -1,18 +1,14 @@
-## Task A 当前检查点：浏览器首旅程失败，整体仍未闭环
+## Task A 当前检查点：正式浏览器已进入第四旅程，G1仍OPEN
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。2026-11-02主控核Goal **active**；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。18 TODO＝11已验切片、2进行中、3等待、1开放、1门控；30问题，不以数量换算产品完成率。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。33问题、18 TODO＝11已验切片/2进行中/3等待/1开放/1门控，不按数量换算产品完成率。
 
-当前Root `50ac142b`精确pin App e1be/BFF4d6/IAM1ee8/Capabilityf515。IAM新test-only host已双审、Root真实两host66pass/0skip及完整verify1566pass，推原PR6；永久browser driver d309有82定向、1931治理/3skip，dd447诊断增量91定向通过，完整治理尚未在该后继重跑。
+当前源码Root `34af35dd`，精确App e1be/BFF4d6/IAM1ee8/Capabilityf515。Root本轮修复隔离HMR传输、profile barrier Node请求映射、异tenant精确401/403 oracle及Playwright固定focus override；没有修改产品认证、放宽UI断言或时间预算。各片双审，主方最终native128pass、完整治理1996pass/3skip/531subtests、Node/Ruff/diff通过，冻结输入保持。
 
-正式四旅程**已运行且失败**：50ac的HMR修复后，原cold_login账户入口/资料200与显示检查已过；当前在tenant_rejection_recovery的profileBarrier fetch失败，整体receipt仍0/4。cleanup PASS/quiescent，无保留自有文件。I-27私有同请求对照确认原Node fetch在TLS建立前断开，经自有HTTPS端口/原Host/cookie返回200；Playwright Node请求不继承Chromium域名/443映射。下一步只修driver映射、保真实响应与全部UI/预算断言，再跑原四旅程。
+正式run85be0e91605401666e2bc49c已按序走过冷登录、异tenant拒绝/恢复及UI退出，进入independent_revocation后openProfile非200；整体failed，仍无完整4/4收据。私有诊断3623420569a1b8f9b6f7dbbe为第三次登录后的profile503，未取得typed code，I-33待定位。此前私有副本同阶段曾账户入口超时，不据此先判产品根因。所有本轮已核收据cleanup PASS/quiescent、无保留自有文件，credential scan PASS；cleanup不等于旅程通过。
 
-既有App完整门6407pass/0skip、contract452/architecture50/lint/types/build与真实冷登录/退出HTTP仍有效于原组合；Capability f515完整门3051pass/678skip及真实PG receiver已验。二者不替代完整UI认证旅程。Capability PR13与其最新PR12基线2ad有冲突，T-09需保双方更新并重新验证。
+G1独立审计新增：I-29 BFF生产Bearer回退仍可达；I-30 native原件已固定但消费者生成/等价保护待补；I-31默认测试遗漏native文件及专用凭据/重复退出/IAM不可用/native零写证据缺口。复用已有风险测试，不造重复套件、不误删公共OAuth。
 
-仍待：T-05四旅程→G1→T-17生命周期→T-11 raw/聚合删除→T-09/T-16最终门与基线整合→T-15同步环境→A产品阶段。没有当前可保留的同步E2E环境；临时smoke已回收。Root66/App50/BFF18/IAM6/Capability13各自draft，未merge main/部署。
-
-原“等待IAM tests-only RED”是已过时的主控交接文字，本轮纠正。历史暂停触发原因尚无可确认记录；当前不是等待用户重复授权。完整A没有可信完成日期，旧3～7工作日仅历史C阶段预算，不作为本轮倒计时。
-
-I-26工程接收：Root真实TLS RED→GREEN，四路径候选已双审；主方165定向/52subtests、完整1959pass/3skip/531subtests、Ruff/diff均通过，四输入hash不变。普通HTTP/SSE/关闭风险已补回归；精确提交后正式四旅程复验，之前不关闭G1。
+既有App完整6407/0skip、IAM真实两host66/verify1566、Capability f515完整3051/678skip与真实receiver证据保留对应范围；Capability最新PR12基线冲突仍归T-09。没有常驻同步E2E环境。下一步I-33＋G1收口→生命周期与旧实现删除→最终组合/同步环境→A产品阶段。每仓独立原draft PR，未merge main/部署；完整A日期仍需实际剩余量核算。
 
 ---
 

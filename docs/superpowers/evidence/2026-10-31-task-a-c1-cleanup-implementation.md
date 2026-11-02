@@ -1038,3 +1038,13 @@ Rootcc405cc4正式run6cb4509024b133f193c0ddc7：tenant_rejection_recovery在focu
 G1只读负控审计登记I-31：BFF默认test未包含native-session-admission三例，IAM direct-service测试参数未含session_admission；现有匿名/Origin/伪造身份/撤权风险可复用，但native专用服务凭据、重复退出、IAM连接失败/超时与native mutation零副作用须补明确证据。紧凑case/基线/缺口映射已入唯一计划§5.1，未运行这些新门，未据原默认测试数量宣称完成。
 
 I-32两路径已获规格/质量独审CLEAR；Root整份native测试128pass（7.15s），最终完整治理**1996pass/3skip/531subtests，152.65s，exit0**，两输入hash保持。driver79886347ccdbbaab87be984761bff24c28564f3071fe1d9cb6f267433bfa1354；测试0ffbb98578080aad3653e30c5cad965346b70452d541f295dd6a9d07bfeb7114。仅关闭Playwright对两页的固定focus override，仍由真实bringToFront触发可信事件，不合成事件、不改预算；Node/Ruff/diff门一并核验，精确提交后正式四旅程重跑。
+
+### 2026-11-02 Root34af正式第四旅程失败（I-33）
+
+正式run85be0e91605401666e2bc49c，stage independent_revocation，Error/driver140:3，失败在openProfile的200断言，之前三旅程的顺序断言已走过；未输出完整browser_result，整体失败/0完整旅程收据，不伪造3/4验收。cleanup PASS/quiescent/无文件保留，credential scan PASS。
+
+私有诊断5b4c6fc8与36234205均到相同profile断言；3623420569a1b8f9b6f7dbbe仅增加固定状态字段，确认login ordinal=3、profile status503、typed error code未取得，未保存body或原错误message。该次与正式run cleanup均核PASS。旧私有ecfbb0曾同阶段账户入口超时，作为现象保留，不覆盖正式profile失败。I-33下一动作是定位响应所属边界，未改产品或放宽200/显示/时限要求。
+
+本轮所有实现worker已停写，独审已交接，所有主控测试/浏览器handle均终态；后续可直接继续既定I-33调查与G1 I-29～31，无需用户重复批准。
+
+本轮最终文档独审CLEAR：修正I-21误拼表格与真正T-05旧状态，历史交接/当前动作和未重估预算分开；问题33/TODO18/原A16复核一致。Root topology PASS，四文档本地文件链接69检查/0缺失（未验证anchor），diff通过；源码仍34af35dd，文档后继不改变1996治理门绑定。每仓保留原draft PR、未merge main/部署。

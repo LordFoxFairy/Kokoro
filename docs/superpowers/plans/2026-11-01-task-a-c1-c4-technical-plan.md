@@ -8,22 +8,22 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G0已通过。App e1be73e0已独审、Root完整门6407pass/0skip，真实冷登录和App退出HTTP/旧cookie拒绝通过；完整四旅程已正式运行但cold_login UI超时，I-26代理HMR缺口待修。Capability f515已Root完整门3051pass/678skip及真实PG接收方验证，Root配套退休配置已提交。PR13与最新PR12基线有冲突及publication接缝待T-09；G1/G2/G3保持OPEN，不进入A功能。
+**当前检查点：** G0通过。Root34af35dd已交付HMR/真实profile fetch/异tenant精确oracle/真实焦点四项驱动纠偏，主控1996治理pass/3skip。正式浏览器已进入第四旅程independent_revocation，但首次新context资料读取失败；私有诊断为第三次登录后的profile503（I-33），尚无完整4/4收据。G1还含I-29生产Bearer回退、I-30受控native消费、I-31负控与默认门缺口。G1/G2/G3保持OPEN，A功能停写。
 
 ---
 
 ## 当前执行摘要（2026-11-02 用户复核）
 
 - **为何看起来暂停**：本轮`get_goal`实际为**active**；历史记录记载过paused/中断，但现有证据不确定其触发来源。主控交接和台账存在明确滞后：当前段仍写“IAM tests-only待RED”，实际IAM与永久driver已经交付，正式浏览器验收已失败。不能把旧等待状态继续交给用户处理，也不需要再次批准既定步骤。
-- **当前执行点**：Root bad205已含I-26 HMR与I-27 profile fetch映射修复，正式旅程已越过冷登录UI及profile barrier。后续异tenant拒绝实际为session401/projects403，原测试双401是I-28 oracle错误，已精确纠偏并获Root121定向/1989治理（3skip）与双审；精确提交后原四旅程重验。I-29生产Bearer回退与I-30受控native contract消费另属G1未完项，四旅程绿也不直接关闭G1。
+- **当前执行点**：Root `34af35dd`，App e1be/BFF4d6/IAM1ee8/Capabilityf515精确pin未变。正式run85be进入第四旅程后在openProfile的200断言失败；主控私有诊断362342确认第三次登录后profile503，原因尚待定位，不先归因IAM或生产缺陷。原cold_login、异tenant拒绝/恢复、UI退出的顺序断言已走过，但失败收据仍0/4，不冒整体通过。下一动作是定位该503所属边界，继续T-05，并收口G1 I-29～31。
 - **Goal边界**：机器Goal继续C-1.3～C-4前置闭环，不是“A全部完成”。G0通过；G1认证/G2删除/G3最终组合验收均OPEN，A-01/A-02/A-07停写。原A-01～A-16责任保留。
-- **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为32项；条目数量不等于产品完成百分比。
+- **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为33项；条目数量不等于产品完成百分比。
 - **闭环缺口**：完整四旅程、Nest生命周期、raw/聚合删除、Capability新base整合、Agent及最终组合门、可保留同步测试环境均未完成。已验HTTP认证/退出与receiver切片保留，不因新失败归零；PR存在、单测通过或cleanup通过不代表整体闭环。
-- **工期口径**：此前3～7工作日只属历史C阶段低置信度预算，不是当前剩余时间，更不是完整Task A日期。当前完整A没有可信完成日期：16项尚缺逐项当前证据/剩余量，raw迁移缺feature批次与吞吐样本，四旅程与生命周期仍有运行风险。先完成T-05并确定首批迁移规模，再重估C剩余工期；产品A需另按16项分解估算，不将已有实现当全部重做。下一检查点是“代理回归＋原四旅程结果”，而不是再次给滚动倒计时。
+- **工期口径**：此前3～7工作日只属历史C阶段低置信度预算，不是当前剩余时间，更不是完整Task A日期。当前完整A没有可信完成日期：16项尚缺逐项当前证据/剩余量，raw迁移缺feature批次与吞吐样本，四旅程与生命周期仍有运行风险。先完成T-05并确定首批迁移规模，再重估C剩余工期；产品A需另按16项分解估算，不将已有实现当全部重做。下一检查点是“I-33边界定位＋原四旅程重验/G1收口”，而不是再次给滚动倒计时。
 
 ## 0. 当前结论与唯一入口
 
-**Task A 尚未闭环，C-1.3 / C-2 / C-3 / C-4 均未达到最终完成条件。** G0已有审阅通过证据。当前源码Root `dd447c68`，App e1be/BFF4d6/IAM1ee8/Capabilityf515；IAM新host已双审、Root两host66pass/0skip与完整verify1566pass并推原draft PR6。Root d309永久driver有82定向/1931治理（3skip）证据；dd447仅脱敏诊断增量另获91定向通过，完整治理未在该后继重跑。正式四旅程已运行但首旅程UI超时，不能再写“尚未运行”；没有常驻同步测试组合。
+**Task A 尚未闭环，C-1.3 / C-2 / C-3 / C-4 均未达到最终完成条件。** 当前源码Root34af35dd；IAM1ee8真实两host66pass/verify1566与App/BFF/Capability原切片证据保持。Root本轮四项驱动修复获双审，主方最终native128定向/完整1996pass、3skip、531subtests，输入hash保持。正式四旅程已推进到第四旅程资料读取，尚未通过；I-33记录当前503，I-29～31是额外G1收口条件。没有常驻同步测试组合，不把工程门或cleanup通过当产品完成。
 
 本文件是当前问题、分阶段 Goal 和 TODO 的**唯一可变台账**。`docs/task.md`、`docs/CURRENT.md` 只保留摘要与链接；旧方案/问题台账保留设计和历史证据，不再维护第二份当前状态。
 
@@ -39,7 +39,7 @@
 
 | 仓 / 范围 | 已提交基线 | 当前候选与证据层级 |
 | --- | --- | --- |
-| Root | `dd447c6878c3b00340e51554311340a2dc1857c0`（当前源码组合） | App e1be/BFF4d6/IAM1ee8/Capabilityf515精确pin；正式四旅程cold_login超时，0/4，cleanup PASS；d309完整治理1931pass/3skip，dd447增量91定向pass，不称完整组合通过 |
+| Root | `34af35dd`（当前源码组合） | App e1be/BFF4d6/IAM1ee8/Capabilityf515精确pin；最终128定向/1996治理pass、3skip；正式四旅程推进至独立撤权准备时profile非200，整体failed/0完整收据，cleanup PASS |
 | App | `e1be73e08bb1bd4c9c554c9e319f6b079006fdb5` | PR50；Root完整check452/50/6407、lint/types/build通过；真实冷登录303/authenticated=true、退出200后匿名/cookie0、项目401/旧cookie401。Settings实际点击、异域恢复与独立撤权仍待 |
 | BFF | `4d6d17b651a8d0e472dbabe67872c856185ae61b` | 五DI修复+真实容器回归；Root完整门contract1344/default2344pass+2skip/build；PR18已推送/Root535e7071已pin，minimal native4pass/cleanup PASS，完整四旅程待验 |
 | IAM | `1ee8d156252cc1c19ba6951546552e9b01123979` | 原draft PR6新增test-only exact browser session协议；双审、Root两host66pass/0skip与verify121files/1566pass/build通过，536输入hash不变；Root d309已接收精确pin，不等于跨仓UI验收 |
@@ -93,7 +93,7 @@
 | I-18 | 原BFF engines与pin/生成链/CI/Docker存在Node24/22漂移；173e026已统一并通过Root当前完整静态门 | 保留两轮RED与真实修复证据；七条正规生成/双检及当前完整门通过，106generated不变；未实跑CI/Docker，不以配置对齐冒称容器验收 | T-18 |
 | I-19 | 原Nest启动失败已解决：BFF4d6修复五处DI可见性，Root535最小native成功；完整关闭矩阵仍缺证 | 已加真实生产容器compile/关键token单实例回归；后续验证drain/SSE/worker/PG/Redis，不重复领取旧启动修复 | T-17 |
 | I-20 | 本计划曾要求同App正向双tenant切换，但App/BFF/IAM当前三面设计与G0都明确固定Product tenant；属于台账错误 | 已按有效裁决纠正T-05；用异tenant会话拒绝/固定域恢复验证隔离，禁止删BFF授权门或新增TaskB切换器 | T-01/T-05 |
-| I-21 | 真实Chromium冷登录RED：表单303后session/projects401；App缺固定tenant set-active，fixture预设会话曾掩盖 | 五文件727已获独审与Root完整门（6401pass）；Root4fdb实际冷登录GREEN，I-21缺陷闭合，仍不等于四旅程全部完成 | T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS | 原冷登录/退出HTTP已验；IAM1ee8 host与Root永久driver已交付。I-26/I-27修复后正式旅程已过冷登录UI/profile barrier；I-28精确oracle纠偏获Root121定向/1989治理（3skip），下一步提交后原四旅程。I-29/I-30与G1负控映射仍需收口，不以4/4单独判G1完成 |
+| I-21 | 真实冷登录原表单303后session/projects401，App缺固定tenant set-active，fixture预设会话曾掩盖 | App e1be及Root旧组合已完成真实冷登录/退出HTTP验证；此原缺陷闭合，不等于当前完整四旅程通过 | T-05 |
 | I-22 | LocalPlatformRuntime先生成单projection文件，随后聚合多surface凭据以同名O_EXCL创建，真实文件装配抛FileExistsError | Root候选已改独立聚合文件名，真实临时目录RED→GREEN并保持0600/回收；独审及Root154定向通过，已随c08c提交并配对f515；此文件装配缺陷闭合，同步环境仍待T-15 | T-14/T-15 |
 | I-23 | Capability现部分R317/R336 opt-in测试与release workflow仍有此前OAuth/旧execution配置欠账 | 保留原触发开关与业务断言，标清既存/本片新增；本片只迁退休resource-server消费者并真实验证global receiver，未触及的旧catalog/CI链不冒称已可运行 | T-14/T-16 |
 | I-24 | 已修复退出两层缺陷：显式POST body与owner JSON媒体类型/空对象规范化 | App e1be完整门6407/0skip及Root真实退出200、cookie清除、项目/旧cookie均401；I-24在此HTTP范围闭合，完整T-05仍OPEN | T-05 |
@@ -105,6 +105,7 @@
 | I-30 | BFF固定IAM497900/0.18含native operation，但生成器include未纳入；client自写native response schema，尚缺原件→consumer等价/生成保护证据 | owner审核固定native消费，按现生成事实源补受控消费/契约验证；不是已证明wire错误，也不以现contract全绿代替native覆盖 | T-05 |
 | I-31 | G1负控证据不齐：BFF默认test遗漏native-session-admission文件；IAM direct-service矩阵不含session_admission；重复登出/native IAM不可用/native mutation零写未有当前完整映射 | 复用既有测试承接具体风险并纳入正确默认入口；登记case/SHA/result/零副作用，缺项定向补证，不拿sibling purpose或Bearer/raw证据代替native | T-05/T-12 |
 | I-32 | cc405正式run在focusProbe等待session超时；锁定Playwright默认启用focus emulation，抑制bringToFront真实事件。私有禁用两页override后trusted事件/session401与前三旅程顺序走通 | 仅driver在page/peer关闭Playwright固定focus override；保真实bringToFront/isTrusted/visibility及3s/4.5s预算，禁止synthetic事件，CDP session随自有context关闭；正式重验 | T-05 |
+| I-33 | Root34af正式四旅程进入independent_revocation后openProfile非200；私有诊断第三次登录后profile503，错误code未取得。更早私有副本曾在同阶段账户入口超时 | 沿同一请求核App/Next/BFF/IAM边界与页面状态，确定根因后最低充分回归/修复；不猜归因、不降低200/显示/预算要求，原四旅程重新验证 | T-05 |
 
 ---
 
@@ -258,7 +259,7 @@ Browser ← App UI 与刷新后的同一事实
 | 独立reviewer | 只读规格/代码/证据、缺陷与门禁核验 | 不实现、不提交，不把worker退出码当Root通过 |
 | IAM/Capability专项owner | 到相应阶段替换空闲worker slot，先contract再consumer | 不新增并行contract writer；不同时铺开全仓重写 |
 
-2026-11-02当前交接：IAM1ee8和Root永久driver均已交付；上轮实现writer已交接，不把它们写成仍在后台运行。本轮`task_a_remaining_audit`只读核TODO/原A范围，`task_a_runtime_evidence_audit`只读核运行收据与代理缺口；Root唯一更新四份进度文档。当前轮仅状态/方案整理，不新增业务代码；后续T-05按下方I-26设计继续，无需再次“继续”或重复审批。
+2026-11-02当前交接：本轮IAM协议/Root代理与driver writer均已交付停写；两独立reviewer已完成精确候选审查，Root最终1996治理门和正式旅程已终态。没有仍在后台运行的验收。当前Root负责I-33真实503定位，之后按I-29～31收口G1，不等待用户再次“继续”。worker仅在明确新写区下重启，Root继续独占Git/资源/任务表。
 
 ---
 
@@ -272,7 +273,7 @@ Browser ← App UI 与刷新后的同一事实
 | T-02 | MCP denied icon零owner副作用；BFF | VERIFIED | `228e3d6`、focused42、旧基线full；最终组合继续回归 |
 | T-03 | invalid-owner typed error；BFF | VERIFIED | `228e3d6`、focused24、旧基线full |
 | T-04 | 资源/Node/source/schema preflight；Root | VERIFIED（已提交组合前置） | Root535精确App9ba/BFF4d6/IAMe6及Node/source门已过；Root41b仅文档后继。新dirty候选要重新精确配对，不继承当前source clean结论 |
-| T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS（冷登录/退出HTTP已验） | 精确App e1be：真实冷登录303/session认证true/projects200，退出200后session匿名/cookie0/projects401，旧cookie401。余下Settings UI点击、异tenant拒绝/固定域恢复、独立session/membership撤权及迟到状态未验。IAM1ee8已交付并精确pin；d309永久driver完整治理1931pass/3skip，dd447诊断增量91定向pass。正式四旅程cold_login UI超时，0/4；I-26代理HMR修复已双审/Root165定向与1959治理（3skip）通过；下一动作是精确提交后正式四旅程重验 |
+| T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS | Root34af四项编排纠偏已双审/主控128定向与1996治理（3skip）；正式旅程进入第四阶段，profile503待I-33定位，整体未通过。I-29/I-30/I-31及G1负控映射另待收口，不以4/4单独判G1完成 |
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（切片） | Root完整check：contract452/architecture50/full6373，lint/types/build通过；App9ba65343已推送PR50并由Root精确pin；四旅程待T-05 |
 | T-08 | IAM SDK与verify；IAM | VERIFIED（当前候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
@@ -291,7 +292,9 @@ Browser ← App UI 与刷新后的同一事实
 
 ### 5.1 下一检查点与工期口径（2026-11-02）
 
-**I-32最新检查点与写区**：cc405正式run6cb4509024b133f193c0ddc7在focusProbe172等待session响应超时，cleanup PASS。Playwright1.62.1源码默认Emulation.setFocusEmulationEnabled=true；主控私有副本仅在focusProbe起始对page/peer关闭该override，ecfbb0f5659e34406c291314实证trusted事件＋401，继而完成异tenant退休/恢复与UI退出全段，第四旅程新context登录账户入口超时。该副本不是正式4/4验收，不修改旧收据0/4。现在只授driver＋native测试两路径实现此focus纠偏，保全部原事件/预算/退休断言，不靠synthetic dispatchEvent；后续精确提交再复跑，第四旅程现象待正式复现后定位。
+**当前立即动作（覆盖下方阶段交接）**：正式Root34af已带I-32修复实跑，run85be在第四旅程首次新context的profile GET非200；主控私有诊断run362342为第三次登录后503、没有取得typed code。I-33先定位响应来源/请求关联与页面状态，保持原断言，不继续猜HMR/认证。原I-26/I-27/I-28/I-32实现和Root门已交付，不再领取重复实现；G1的I-29～31仍需收口。以下条目保留本轮设计与中间证据，不是等待用户审批或仍在跑的进程。
+
+**已交付I-32：当时检查点与写区**：cc405正式run6cb4509024b133f193c0ddc7在focusProbe172等待session响应超时，cleanup PASS。Playwright1.62.1源码默认Emulation.setFocusEmulationEnabled=true；主控私有副本仅在focusProbe起始对page/peer关闭该override，ecfbb0f5659e34406c291314实证trusted事件＋401，继而完成异tenant退休/恢复与UI退出全段，第四旅程新context登录账户入口超时。该副本不是正式4/4验收，不修改旧收据0/4。现在只授driver＋native测试两路径实现此focus纠偏，保全部原事件/预算/退休断言，不靠synthetic dispatchEvent；后续精确提交再复跑，第四旅程现象待正式复现后定位。
 
 **I-31最小负控证据映射（只读审计，未新增运行结果）**：
 
@@ -311,18 +314,18 @@ Browser ← App UI 与刷新后的同一事实
 
 **G1额外收口，不能只看四旅程4/4**：I-29旧Bearer生产回退、I-30受控native contract消费需由BFF owner在G1前处理；另将§3.1负控逐项映射已有case/精确SHA/实际结果/零副作用oracle，缺项才补测。IAM PlatformWorkloadController与fixed-Web OAuth测试需补保留/退休disposition，不按字符串误删公共OAuth或当前native guard仍用的IAM_PRODUCT_WEB_CLIENT_ID。Capability f515 receiver-only已验足够此切片，最新base整合仍归G3。后继T-17/T-11不提前实施。
 
-**最新运行检查点**：I-26修复已提交50ac142b并完成Root完整门；正式run8160b600已越过cold_login UI/profile而在tenant_rejection_recovery失败，整体收据仍0/4（失败路径不输出部分成功计数）。I-27主控私有诊断确认原fetch“TLS建立前连接断开”、upstream_status=null，同一真实请求经自有loopback/原Host/cookie返回200；不是认证失败。以下第1项实现已交付，第2项重验发现的新阻断由I-27承接。
+**历史运行检查点（已由I-33续接）**：I-26修复已提交50ac142b并完成Root完整门；正式run8160b600已越过cold_login UI/profile而在tenant_rejection_recovery失败，整体收据仍0/4（失败路径不输出部分成功计数）。I-27主控私有诊断确认原fetch“TLS建立前连接断开”、upstream_status=null，同一真实请求经自有loopback/原Host/cookie返回200；不是认证失败。以下第1项实现已交付，第2项重验发现的新阻断由I-27承接。
 
 **I-27最小写区与验证**：只修改既有Chromium driver和native runner测试文件；将config传入profileBarrier，route.fetch显式指向`https://127.0.0.1:<owned port>/api/account/profile`，保留原request.allHeaders及固定原origin Host、4500ms/maxRetries0并禁redirect；现有App profile GET适配器自身拒绝上游Set-Cookie且成功响应不返回Set-Cookie；本driver不建立新的cookie投影。保原真实response/status/subject与fulfill，不绕过owner或造成功。主方已获得实际RED/同请求200对照，接收最小行为回归后实现、独审、停写门、精确提交再正式复跑。
 
-1. **立即下一动作／Root／T-05＋I-26**：在既有共享smoke代理增加仅Web实例启用、精确`GET /_next/webpack-hmr`的Upgrade路径；固定自有Next上游，严格握手/101双向转发、有限连接/空闲/总时长预算和断开回收。不支持任意CONNECT或动态目标，不记录frame/cookie；普通HTTP/SSE、body上限与默认smoke行为不变。先查现有可复用实现，再在现有代理测试补握手/双向/EOF/关闭/禁用负控RED，随后实现与独审；不关闭React debug channel或增加登录等待掩盖问题。
+1. **已交付设计／Root／T-05＋I-26**：在既有共享smoke代理增加仅Web实例启用、精确`GET /_next/webpack-hmr`的Upgrade路径；固定自有Next上游，严格握手/101双向转发、有限连接/空闲/总时长预算和断开回收。不支持任意CONNECT或动态目标，不记录frame/cookie；普通HTTP/SSE、body上限与默认smoke行为不变。先查现有可复用实现，再在现有代理测试补握手/双向/EOF/关闭/禁用负控RED，随后实现与独审；不关闭React debug channel或增加登录等待掩盖问题。
 2. **主控验证／T-05**：代理定向及Root相关完整门→停写提交→正式四旅程原断言重跑。保持自然签发cookie、精确owner绑定与凭据私有管道；若HMR已通而UI仍不就绪，继续定位实际挂载原因，不先关闭I-26或G1。写区限定共享代理、其现有测试及native runner必要的显式启用接线；无App/IAM生产、Schema、依赖或lockfile变更。
    **组合依赖边界**：G1按当前已冻结、已验证的Capability f515组合判断认证门，不等待最新base整合；I-25/T-09整合在最终G3前完成，新组合重跑受影响G1回归。这样不形成G1等待T-09、T-09又等待G1的循环。
 3. **G1→T-17/T-11／BFF**：生命周期真实释放通过后，按feature迁移原消费者并删除raw/aggregate；不提前删除测试或创建第二套运行时。
 4. **T-09/T-16/T-15／Root与owner**：保留双方更新整合Capability publication冲突，完成Agent及受影响owner最终门、组合E2E和可同步环境。每仓独立PR，未完成前不合main。
 5. **原A产品阶段**：G1～G3通过后才进入A-01/A-02→A-07；其余原A任务继续保留。当前原16项没有逐项剩余工作量与已配对端到端验收，故尚无可信完整完成日期；不把“未验收”解释为全部从零实现。下次估时须标明范围、基线、依赖、实际剩余量和置信度，而不是滚动重复3～7日。
 
-**条件性容量预算（本次只读评估，非承诺日期）**：在持续投入、受管资源可用、无新增跨owner契约/Schema裁决且四旅程缺陷局部可修的前提下，C剩余暂留**5～12人日**：四旅程0.5～1.5、生命周期1～2、raw/聚合迁移2～4、基线整合/Agent与最终门/同步环境1.5～4.5。仅为低置信度工作量范围，不等于日历5～12天；串行门与公共写区不能按agent数线性压缩。原A16项只读剩余盘点另预算0.5～1人日，盘点结果出来后再给完整A范围；不得用该C预算回答“A全部何时完成”。T-05和首批迁移完成时以实绩替换本预算，不自动滚动重置。
+**条件性容量预算（本次早期只读评估，非承诺日期）**：在持续投入、受管资源可用、无新增跨owner契约/Schema裁决且四旅程缺陷局部可修的前提下，C剩余暂留**5～12人日**：四旅程0.5～1.5、生命周期1～2、raw/聚合迁移2～4、基线整合/Agent与最终门/同步环境1.5～4.5。仅为低置信度工作量范围，不等于日历5～12天；串行门与公共写区不能按agent数线性压缩。原A16项只读剩余盘点另预算0.5～1人日，盘点结果出来后再给完整A范围；不得用该C预算回答“A全部何时完成”。本预算尚未按后续I-29～31及I-33发现重新估算，不作为刷新后的剩余工期；T-05和首批迁移完成时以实绩替换，不自动滚动重置。
 
 本次Goal保持active，未创建重叠目标或将任何未验条目标complete。后续交接注明“主控下一动作”，不将worker等待当作需要用户再次发送“继续”。
 
@@ -359,7 +362,7 @@ Browser ← App UI 与刷新后的同一事实
 3. **唯一writer**：Root更新本表及阶段Goal；worker交接文件/结果/风险，reviewer只读核验。`task.md`/`CURRENT.md`同步简报，证据文件追加本次事实，旧证据不改写成当前成功。
 4. **主方完成判定**：worker报告→独审→停写后的Root相关门→真实受影响旅程→精确组合。少任一必要层，只标REVIEW_PENDING/OPEN，不标VERIFIED整体。
 5. **机器Goal**：每次阶段交接用`get_goal`核验；当前目标未完成时保留active。只在用户明确要求暂停时设paused；同一外部阻塞连续至少三个goal turns且无可推进工作才按工具规则blocked；G1/G2/G3全部达到才complete。不要为了更新文案虚假complete或重复create_goal。
-6. **下一轮默认动作**：T-17前置与T-13最小成功/失败清理已完成，不重复领取。I-26隔离代理修复已获Root工程门，下一步精确提交后复跑T-05永久四旅程；T-14接收方已验，不再重复实施；G1闭合后T-17完整生命周期→T-11删除→T-09/T-16最终组合门→T-15同步环境。A功能继续门控。
+6. **下一轮默认动作**：I-26/I-27/I-28/I-32实现和工程门已交付；先定位I-33第四旅程profile503，完成T-05正式四旅程及I-29～31/G1负控。T-14接收方不重复实施。G1闭合后T-17完整生命周期→T-11删除→T-09/T-16最终组合门→T-15同步环境；A功能继续门控。
 
 ### 历史暂停后续接检查点（已被下方 active 状态更新）
 
