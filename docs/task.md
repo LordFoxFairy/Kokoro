@@ -17110,7 +17110,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
 2. C-2：迁移剩余 raw worker/provider fixtures，证明 `createBffComposition`、`handleBffRequest` 零消费者；generic owner proxy tail 已删除，继续按 owner suffix 增加 negative guard，不得以 raw fixture 通过替代生产 Nest 证据。
 3. C-3：wrapper/9 个 integration suite 已收敛到 named owner factory，旧 aggregate 已删除；保留显式 `database` test seam，后续只迁移有实际 owner 边界收益的 raw fixture/provider 引用，不引入 alias 或第二 aggregate。
-4. C-4：BFF 行为失败已闭环：`228e3d6` focused MCP **42/42**、Skill installation **24/24**，full `pnpm test` **2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**。剩余非 BFF 全量门为 BFF format 31 warnings、App pinned artifact digest drift、IAM verify 单一既有 format warning；Root/owner full serial gate 与真实 C-1.3/E2E 仍未完成。
+4. C-4：BFF 行为失败已闭环：`228e3d6` focused MCP **42/42**、Skill installation **24/24**，full `pnpm test` **2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**。剩余非 BFF 全量门为 BFF format **32 files**、App full contract **6316 pass / 50 fail / 353 files**（集中在 pinned BFF artifact/version drift）、IAM `pnpm verify` 已越过格式门但在 `sdk:check` 发现 `sdk.gen.ts` drift；Root/owner full serial gate 与真实 C-1.3/E2E 仍未完成。
 5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
 
 **约束**：不重置共享 PG/Redis/MinIO，不生成/写入凭据，不放宽断言/超时/契约，不为消除失败删除测试，不启动未具备配置的业务服务。

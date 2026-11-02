@@ -832,3 +832,9 @@ BFF child `228e3d691f6b5c93575950babb3d9f4c6b409c0a` 完成两项最小修复：
 ### Root pin and governance recheck after BFF `228e3d6`（2026-11-01）
 
 Root pinned `apps/kokoro-bff` to `228e3d691f6b5c93575950babb3d9f4c6b409c0a` in commit `d37dc378`. 主方重新执行 `git diff --check`、`python3 scripts/verify-repository-topology.py` 与 `python3 -m pytest scripts/tests -q`：topology **PASS**；治理 **1846 passed / 3 skipped / 502 subtests passed**。BFF full behavior gate 现为 0 fail；C-1.3 真实隔离资源、App digest、IAM verify warning、BFF format warning 与跨仓 E2E 仍是后续 TODO。
+
+### App/IAM follow-up gate evidence（2026-11-01）
+
+App `f5d122bb` static recheck passed: `pnpm typecheck`, `pnpm lint`, and `pnpm test:architecture` (**50/50**). Full `pnpm test` remains red with **6316 pass / 50 fail / 353 files**; the failures share pinned BFF public artifact/version drift (for example expected `ea003110...` vs current `35a86f91...`, plus Activity details version drift), so no digest/baseline was changed.
+
+IAM child `b336aa0cd13b6abafde6938d32f5380f4b99f471` formats only `test/integration/bff-session-admission-host.test.ts`; format/lint/typecheck pass. `pnpm verify` now passes formatting and contract checks but stops at `sdk:check` with `Error: SDK drift: sdk.gen.ts`. Generated SDK provenance is not yet approved for refresh; C-1.3 and A gates remain open.
