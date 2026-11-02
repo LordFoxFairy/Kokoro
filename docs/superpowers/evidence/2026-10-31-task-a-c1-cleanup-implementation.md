@@ -1030,3 +1030,11 @@ Rootbad20503正式run c2e12b5aab0f6d7eb70bb900已取真实profile barrier，在d
 独立G1只读审计另确认I-29：生产Nest feature→authorizeUserRequest缺native配置分支→SessionAdmissionClient.verify→旧IAM session-authorizations/verify仍可达；不是单纯旧raw测试，须G1前移除回退并承接有效权限。I-30为消费证据缺口：IAM native artifact SHA匹配、BFF vendor497900包含native操作，但生成器include未纳入且client手写native schema；需受控消费审核，不冒称已证wire失败。公共OAuth/skill.list不随名称误删。完整负控仍需case/SHA/result/零副作用映射，四旅程全绿也不自动关闭G1。
 
 I-28只纠正已由实际行为与owner契约证明的异tenant oracle，新增两个实际typed code并拒绝旧401/401或任意错code；规格与质量双审CLEAR。Root目标121pass（6.02s），最终完整治理**1989pass/3skip/531subtests，152.27s，exit0**，三输入SHA保持。driver a8216f6cf18ceb4f59193d93ce6b79e4e30b1402f2bb4880cb531b586b674152；runner7abe404d0879bb77a5869ca9385bcc35c8317c7476b52c7b99ca6f6fcca17b27；测试058dcc66d1835eda1db1caa2de00dfcc54f3203297b32b35e0fff80cd826fa11。原App/BFF/IAM源码与pin不变，精确提交后原四旅程再跑；负控不改成任选401或403。
+
+### 2026-11-02 I-32真实焦点诊断与额外G1证据缺口
+
+Rootcc405cc4正式run6cb4509024b133f193c0ddc7：tenant_rejection_recovery在focusProbe172等待session响应超时；cleanup PASS/quiescent/无保留文件、credential scan PASS。锁定Playwright1.62.1 coreBundle37399在主frame默认设置focus emulation=true。私有诊断只对page/peer各创建CDP session关闭该override（不dispatchEvent、不加timeout），ecfbb0f5659e34406c291314记录trusted_observed=true、session401，随后异tenant退休/恢复及UI退出全段通过；最终在independent_revocation的新context登录账户入口114超时。私有副本不作为正式4/4，所有失败收据保留，cleanup均PASS。I-32只授权focus纠偏，不猜测第四旅程根因。
+
+G1只读负控审计登记I-31：BFF默认test未包含native-session-admission三例，IAM direct-service测试参数未含session_admission；现有匿名/Origin/伪造身份/撤权风险可复用，但native专用服务凭据、重复退出、IAM连接失败/超时与native mutation零副作用须补明确证据。紧凑case/基线/缺口映射已入唯一计划§5.1，未运行这些新门，未据原默认测试数量宣称完成。
+
+I-32两路径已获规格/质量独审CLEAR；Root整份native测试128pass（7.15s），最终完整治理**1996pass/3skip/531subtests，152.65s，exit0**，两输入hash保持。driver79886347ccdbbaab87be984761bff24c28564f3071fe1d9cb6f267433bfa1354；测试0ffbb98578080aad3653e30c5cad965346b70452d541f295dd6a9d07bfeb7114。仅关闭Playwright对两页的固定focus override，仍由真实bringToFront触发可信事件，不合成事件、不改预算；Node/Ruff/diff门一并核验，精确提交后正式四旅程重跑。

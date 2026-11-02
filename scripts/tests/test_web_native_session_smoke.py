@@ -1588,3 +1588,115 @@ def test_profile_barrier_transport_and_owner_response_boundary(case):
         timeout=5,
     )
     assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "trusted_focus",
+        "trusted_visibility",
+        "untrusted",
+        "hidden",
+        "wrong_status",
+        "page_cdp_failure",
+        "peer_cdp_failure",
+    ],
+)
+def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(case):
+    """Page/CDP doubles exercise driver behavior, not real Chromium focus evidence."""
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      const {focusProbe} = await import(process.argv[1]);
+      const scenario = process.argv[2];
+      const disabled = new Set();
+      const sessions = [];
+      const events = new Map();
+      let peerFront = false;
+      let pageFront = false;
+      let responseWaitStarted = false;
+      const listen = (name, callback, options) => {
+        assert.deepEqual(options, {once: true});
+        events.set(name, callback);
+      };
+      globalThis.window = {addEventListener: listen};
+      globalThis.document = {addEventListener: listen, visibilityState: 'hidden'};
+      const context = {
+        newCDPSession: async target => {
+          assert.ok(target === page || target === peer);
+          assert.ok(!sessions.includes(target));
+          sessions.push(target);
+          return {
+            send: async (command, params) => {
+              assert.equal(command, 'Emulation.setFocusEmulationEnabled');
+              assert.deepEqual(params, {enabled: false});
+              if ((scenario === 'page_cdp_failure' && target === page) ||
+                  (scenario === 'peer_cdp_failure' && target === peer)) {
+                throw new Error('fixture CDP failure');
+              }
+              disabled.add(target);
+            },
+            detach: async () => { throw new Error('early detach restores override'); },
+          };
+        },
+      };
+      const peer = {
+        context: () => context,
+        bringToFront: async () => {
+          assert.equal(disabled.has(page) && disabled.has(peer), true, 'both overrides must be disabled');
+          peerFront = true;
+        },
+      };
+      const page = {
+        context: () => context,
+        evaluate: async callback => { assert.equal(peerFront, true); callback(); },
+        waitForResponse: (predicate, options) => {
+          assert.deepEqual(options, {timeout: 3000});
+          assert.equal(predicate({url: () => 'https://fixture.test/api/account/profile'}), false);
+          const response = {
+            url: () => 'https://fixture.test/api/auth/session',
+            status: () => scenario === 'wrong_status' ? 200 : 401,
+          };
+          assert.equal(predicate(response), true);
+          responseWaitStarted = true;
+          return Promise.resolve(response);
+        },
+        bringToFront: async () => {
+          assert.equal(responseWaitStarted, true);
+          pageFront = true;
+          document.visibilityState = scenario === 'hidden' ? 'hidden' : 'visible';
+          const event = scenario === 'trusted_visibility' ? 'visibilitychange' : 'focus';
+          events.get(event)({isTrusted: scenario !== 'untrusted'});
+        },
+        waitForFunction: async (predicate, argument, options) => {
+          assert.equal(argument, null);
+          assert.deepEqual(options, {timeout: 3000});
+          if (!predicate()) throw new Error('fixture focus not observed');
+        },
+      };
+      if (scenario.endsWith('_cdp_failure')) {
+        await assert.rejects(() => focusProbe(page, peer, 401), /fixture CDP failure/);
+        assert.equal(peerFront, false);
+        assert.equal(pageFront, false);
+      } else if (scenario === 'wrong_status') {
+        await assert.rejects(() => focusProbe(page, peer, 401), /browser journey failed/);
+      } else if (scenario === 'untrusted' || scenario === 'hidden') {
+        await assert.rejects(() => focusProbe(page, peer, 401), /fixture focus not observed/);
+        assert.equal(window.__nativeSmokeFocusObserved, false);
+      } else {
+        assert.equal(await focusProbe(page, peer, 401), true);
+        assert.equal(window.__nativeSmokeFocusObserved, true);
+        assert.equal(pageFront, true);
+        assert.equal(sessions.length, 2);
+      }
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri(), case],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr

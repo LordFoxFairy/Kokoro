@@ -158,7 +158,13 @@ async function preparePeer(context, origin) {
   await peer.goto(origin + '/api/fixture-origin');
   return peer;
 }
-async function focusProbe(page, peer, status) {
+export async function focusProbe(page, peer, status) {
+  // Playwright's fixed focus override hides real tab activation. Keep these CDP
+  // sessions owned by the context until close; detaching would restore the override.
+  for (const target of [page, peer]) {
+    const session = await target.context().newCDPSession(target);
+    await session.send('Emulation.setFocusEmulationEnabled', {enabled: false});
+  }
   // Only browser focus/visibility events; no synthetic dispatchEvent or private React hook.
   await peer.bringToFront();
   await page.evaluate(() => {
