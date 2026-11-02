@@ -1084,3 +1084,13 @@ App fdbb49f17bfbb09684cd5c3cfaea1c1678306697：仅删除account-profile最终adm
 ### 2026-11-02 I-29 owner局部设计门通过（尚未实现）
 
 IAM5fffe60/BFF105024d各仅三面设计文档，共218行新增、原文逐字保留，12本地文件链接/精确六路径/diff检查通过；规格/架构与质量双审CLEAR。初审服务与人类401同码歧义已收敛为native2单一新增服务错误code→BFF既有503，只有明确human拒绝401；此是目标待正式发行，不改native1历史或当前源码。平台管理员真实事实、四action及Account/Team事务证明、全部BFF消费者/删除清单、原角色/operator/公共身份政策与零DDL已明确；容量不新增SLO/生产压测门。两仓各推原draft PR6/18，无合并/部署。此次文档任务未重复运行业务全门，IAM运行源码仍1ee8、BFF仍f81；Root后继精确pin。
+
+### 2026-11-02 正式native浏览器四旅程4/4（Root aec5775a）
+
+正规driver c142c49c，Root精确组合aec5775a；App fdbb49f17bfbb09684cd5c3cfaea1c1678306697、BFF105024d33611dfaccc9a072d04f0864d03015ef9、IAM5fffe60ce07920b761213339e66bfbde31302603。run2a960804d5cac08754f45228为正式browser_journeys模式，status passed/completed_journeys4，三owner clean/root_gitlink_matches全true，实际Node IAM/BFF24.20.0、App22.23.4。此非私有修改driver，不注入诊断request-id；Root与三个owner验收前后停写。
+
+冷登录无初始cookie→303、session/projects/profile200且私有资料真实可见；合法异tenant→session401/native_session_required、projects403/product_tenant_forbidden，资料退休后重登恢复200；UI退出200、cookie0、session200/false、项目及旧cookie401，owner保expired tombstone。A exact Session被删除后A两读401且UI退休，B仍200；撤member后B Session仍存在未过期但两读401且UI退休。held profile上游200、本次race observation=cancelled、cross_tab_focus=true/private_ui_retired=true，不冒非协作JS迟到值交付覆盖。
+
+cleanup passed/quiescent、无保留自有文件/恢复记录、credential_log_check passed；所有进程已终态，未留常驻同步环境。Root topology PASS、工作树clean（文档补录前）；未将临时三服务旅程称全产品/所有仓库启动。I-26/27/28/32/33取得当前完整旅程证据；G1仍需I-29完整native owner/consumer切换与I-31其余负控，G2/G3/原A功能未关闭。
+
+最终Root文档独审CLEAR，已纠正旧剩余预算/历史设计/待运行措辞；主方核34唯一问题、18唯一TODO与状态分类、后续验证命令表均一致，新改行2处本地文件链接无缺失（anchor未验）、diff检查通过。Goal继续active；未将4/4提升为G1或全Task A完成。
