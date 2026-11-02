@@ -932,3 +932,9 @@ Capability Root首次format/lint/Prisma validate/build均0，verify1：3049pass/
 T14首次真实接收方组实际RED：System注册/重放/冲突/disabled/撤销已走，末尾断言误用了canonical不存在的tenantId。按原schema改查ownerTenantId和ownerUserId均null，所有zero receipt/outbox/IAM负控保持，生产零改动；失败run的数据库inventory前后相同。旧日志归档，新72路径停写，待Root复跑。I-24已真实transport RED→GREEN候选，主方全门进行中，不先报真实退出成功。
 
 I-24 Root完整check exit0：contract452、architecture50、354files6403pass/0skip、lint/types/build，1494hash保持；独审CLEAR，三路径1d54eedd沿PR50推送。Capability真实组修canonical断言后exit0，1pass/13非选，数据库inventory前后相同，零Redis key写；实际覆盖System注册/重放/冲突/disabled、错caller与unknown拒绝、撤销、两owner字段null及零receipt/outbox/IAM。最终完整门另跑，不用1case代替全门。
+
+### T14源码交付及I24真实第二层RED
+
+Capability最终72路径加CURRENT为f515e225；Root五门均0，202files3051pass/678skip，1111输入停写前后hash一致。真实receiver1pass/13名称未选、DBinventory保持。已独立推送PR13，base原PR12候选；fetch发现其4新增提交2ad（73路径含contract/schema），PR13实际CONFLICTING；不force、不合并main，后继独立集成与重新全门登记I-25。
+
+Root325d/App1d54真实冷登录仍303/session200/projects200；实际App退出415/session200/projects200，内存旧cookie独立HTTP重放亦200。原fixture4checks和cleanup PASS不覆盖该RED。锁定BetterCall有流无Content-Type抛415、JSON空流又400，既有IAM真实HTTP成功例是JSON {}。因此I24保OPEN，批准仅App adapter将已严格校验空浏览器请求规范化为固定JSON {}两字节，不放宽用户body/Origin或transport。

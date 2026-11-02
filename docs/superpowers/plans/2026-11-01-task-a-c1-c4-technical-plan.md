@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** 文档基线与 G0 已通过；BFF 启动阻断和最小 native HTTP 链已验。真实冷登录另发现 303 后 session/projects 401，App 五文件修复已独审，Root完整check通过（full6401），提交727cd674并沿PR50交付；Root4fdb精确pin后实际冷登录303/session200/projects200，缺陷已验证；其余三旅程仍待。T-14 Capability 71路径候选已停写，worker定向123通过，待Root完整门/真实接收方验证；Root 配套六文件已独审、主方定向154与治理1879通过，尚未配对 owner 集成。G1/G2/G3保持OPEN，不进入A功能。
+**当前检查点：** 文档基线与 G0 已通过；BFF 启动阻断和最小 native HTTP 链已验。真实冷登录另发现 303 后 session/projects 401，App 五文件修复已独审，Root完整check通过（full6401），提交727cd674并沿PR50交付；Root4fdb精确pin后实际冷登录303/session200/projects200，缺陷已验证；其余三旅程仍待。T-14 Capability f515接收方切片已获Root完整门/真实PG验证，独立draft PR13与新增基线有冲突待后继集成；Root 配套六文件已独审、主方定向154与治理1879通过，尚未配对 owner 集成。G1/G2/G3保持OPEN，不进入A功能。
 
 ---
 
@@ -16,7 +16,7 @@
 
 - **暂停来源**：会话收到`User set goal status: "paused"`及中断事件；本记录不推断操作者、误操作或客户端原因。最新用户状态事件与`get_goal`已确认**active**。不是代码失败触发主控主动暂停。
 - **Goal边界**：机器Goal仍是C-1.3～C-4前置闭环，不是“A全部完成”。阶段G0通过，G1认证/G2删除/G3最终组合验收均OPEN；完成当前Goal后才进入原A-01～A-16产品验收。复用原Goal，不另建重叠目标。
-- **当前完成量不按百分比表述**：18条TODO中10条仅为已验切片/前置；T-05/T-17进行中、T-14候选待主验、T-16开放，T-09/T-11/T-15等待依赖，T-10门控。不同条目的规模不等，切片数量不等于Task A完成比例。
+- **当前完成量不按百分比表述**：18条TODO中11条仅为已验切片/前置；T-05/T-17进行中、T-16开放，T-14接收方切片已验但最新基线整合仍待T-09，T-09/T-11/T-15等待依赖，T-10门控。不同条目的规模不等，切片数量不等于Task A完成比例。
 - **已解决的前置阻断**：原BFF静态门未覆盖DI装配；4d6d17b补真实容器回归并修五处owner模块可见性，Root535e7071 minimal native4pass/cleanup PASS。当前下一步是四旅程与T-14，不重复处理旧启动失败；完整生命周期仍未验。
 - **闭环判定**：当前没有完整浏览器固定域登录/异域会话拒绝与恢复/登出/撤权收据，没有完成raw/聚合删除，也没有交付可保留同步测试环境。PR存在、单测通过和失败后资源回收均不等于这些完成。
 - **工期口径**：此前3～7个工作日只是C-1.3～C-4的低置信度工作量预算，不是Task A全部交付日期，也不因每次续接自动重置倒计时。原0.5～1日启动修复预算对应的最小启动项已完成；本次冷登录新缺陷、T-14取消边界候选及剩余真实旅程尚待Root验收，保留3～7日仅作暂定资源预算，待G1通过后按实际剩余重新估算。前提是持续投入、没有新增owner契约/数据迁移或重大回归。A-01～A-16只有功能责任清单，尚无逐项剩余量和估时，现无可信完整Task A日期；下一估算动作是只读核A项剩余切片/依赖，不提前实施A代码。
@@ -39,12 +39,12 @@
 
 | 仓 / 范围 | 已提交基线 | 当前候选与证据层级 |
 | --- | --- | --- |
-| Root | `4fdb2ede8259fcce395b7de93cef5b591bc06972` | 已pin App727/BFF4d6/IAMe6；实际冷登录303/session200/projects200及原4checks/cleanup PASS。现六文件T-14配套候选未提交。六文件停写独审、Root154定向/1879治理通过，待Capability精确配对；PR66仍不合main |
+| Root | `325d2f907819492bd391f516993095fc7ffb00d6`（本次pin前基线） | 已pin App727/BFF4d6/IAMe6；实际冷登录303/session200/projects200及原4checks/cleanup PASS。现六文件T-14配套候选未提交。六文件停写独审、Root154定向/1879治理通过，待Capability精确配对；PR66仍不合main |
 | App | `727cd674fd45487d3d9becc685701546623865b1` | 原T-07已完整验证/PR50/Root pin；T-05冷登录五文件已提交727cd674，独审CLEAR、Root完整门contract452/architecture50/full6401/lint/types/build通过；真实浏览器冷登录GREEN，仍不等于四旅程完成 |
 | BFF | `4d6d17b651a8d0e472dbabe67872c856185ae61b` | 五DI修复+真实容器回归；Root完整门contract1344/default2344pass+2skip/build；PR18已推送/Root535e7071已pin，minimal native4pass/cleanup PASS，完整四旅程待验 |
 | IAM | `e6a01cf7f1aeef0cfd5a63efe78e194b50ad1e9b` | 4个fixture/回归路径经Root真实两host62pass、verify121files/1566pass；独立draft PR #6已推送；不等于跨仓UI验收 |
 | Agent | `c761fad3dba2b56cd7fe4da7683a9ac2f208243f` | C-1.2 清理已提交；最终完整 owner gate 仍待 |
-| Capability（物理路径仍为 kokoro-capability） | `44fcc5da599b4a5cec3077e41aaef4375fe4add2` | 分支codex/task-a-c1-capability；三面设计通过，receiver-only直接认证及旧OAuth删除71路径候选已冻结，worker最终定向123pass/0skip、触及格式/lint/types/编译通过。Root全门/真实receiver/独立PR待交付，不新建System producer |
+| Capability（物理路径仍为 kokoro-capability） | `f515e22596357e2dd6c05cfa47a1c2f54b99f202` | receiver-only源码及真实PG已验，独立draft PR13依赖PR12；远端基线2ad5c9e未集成且PR冲突，保留原已验组合不覆盖新增提交，最终合并门OPEN |
 | 其他组合成员 | 当前 Root gitlinks | 仅按受影响边界纳入验证；本轮未启动、未刷新全套运行健康状态 |
 
 ### 0.2 进度与验证事实
@@ -96,7 +96,8 @@
 | I-21 | 真实Chromium冷登录RED：表单303后session/projects401；App缺固定tenant set-active，fixture预设会话曾掩盖 | 五文件727已获独审与Root完整门（6401pass）；Root4fdb实际冷登录GREEN，I-21缺陷闭合，仍不等于四旅程全部完成 | T-05 |
 | I-22 | LocalPlatformRuntime先生成单projection文件，随后聚合多surface凭据以同名O_EXCL创建，真实文件装配抛FileExistsError | Root候选已改独立聚合文件名，真实临时目录RED→GREEN并保持0600/回收；独审及Root154定向通过，待组合集成 | T-14/T-15 |
 | I-23 | Capability现部分R317/R336 opt-in测试与release workflow仍有此前OAuth/旧execution配置欠账 | 保留原触发开关与业务断言，标清既存/本片新增；本片只迁退休resource-server消费者并真实验证global receiver，未触及的旧catalog/CI链不冒称已可运行 | T-14/T-16 |
-| I-24 | App真实退出route→transport→loopback已复现两例503/零上游请求：POST未传body；原smoke直接IAM signout未覆盖 | 三文件候选仅生产一行显式空Uint8Array，worker200pass/lint/types及独审CLEAR；Root完整check运行中，真实App退出与旧cookie重放待验 | T-05 |
+| I-24 | App退出两层问题：真实transport原503已修1d54；实际IAM再复现415且旧cookie仍有效，缺JSON媒体类型/有效空对象 | 浏览器仍零体，adapter固定application/json及两字节{}，不透传用户body。最小候选修复中，真实signout/旧cookie拒绝后才关闭 | T-05 |
+| I-25 | Capability原PR12基线由44fcc前进至2ad5c9e，4提交/73路径含契约和Schema；本Task A PR13与其存在实际合并冲突 | 保留双方提交，不force、不整树择一；在独立集成区审边界/冲突后重新完整门和真实receiver，再更新精确Root组合。当前仅已验f515候选 | T-09/T-16 |
 
 ---
 
@@ -271,7 +272,7 @@ Browser ← App UI 与刷新后的同一事实
 | T-11 | raw/global/剩余Repository-Service-Port；BFF | WAITING | G1后，先T-17；feature迁消费者→删旧实现→零引用/真实行为 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（最小smoke范围） | 六路径双审；Root60相关/1876治理、IAM真实62；旧组合两失败退出和Root535e7071新组合成功4checks退出均cleanup passed/quiescent、无保留文件；不覆盖完整生命周期/常驻环境 |
-| T-14 | global_register direct credential；Capability/Root | REVIEW_PENDING（候选冻结） | 71路径候选已停写；worker最终7文件123pass/0skip、触及格式/lint/types/编译与独审通过。Root配套六文件154定向/1879治理通过；Capability主方完整门/真实receiver及精确组合未验 |
+| T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
 | T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
 | T-16 | Agent与原C-1删除项最终复核；Agent/Root | OPEN | `c761fad`仅focused130历史证据；当前全门及旧语义零生产引用；任务外治理问题留owner |
 | T-17 | Nest启动/shutdown/drain/pool释放；BFF | IN_PROGRESS（完整生命周期待验） | 前置已验：BFF4d6d17b五DI修复/真实容器回归、Root完整check2344pass+2skip，Root535e7071 minimal native4pass/cleanup PASS；完整drain/SSE/worker/PG/Redis矩阵仍在G1后、T-11删除前 |
@@ -375,3 +376,5 @@ T-05余下旅程的后继最小设计：沿现IAM native host增加test-only浏�
 App1d54eedd4d67482c789ae3f7dd60807302732b24三文件退出修复已独审并经Root完整check exit0（contract452/architecture50/full6403/0skip、lint/types/build；1494hash保持），沿原PR50交付。本次Root仅更新App精确pin；真实sign-out及旧cookie重放另验，T-05仍OPEN。
 
 Capability72路径修正canonical ownership断言后，Root真实HTTP→production receiver→隔离PG组1pass；13项为本次-t未选择，不计本组覆盖。System成功/自然重放/冲突/disabled不复活、BFF/Agent/未知凭据拒绝、文件删除后撤销、ownerTenantId/ownerUserId均null、零receipt/outbox/IAM请求均过；数据库inventory前后相同，Redis仅connect/ping/quit无key写入。不是System producer链。最终完整owner门再次串行运行中，尚不提前标全绿。
+
+T14实际交付：Capability f515e225，PR13 OPEN/draft，base为原PR12候选分支；GitHub实际mergeable=CONFLICTING，明确不合并。Root配套六文件hash保持，再跑154定向/141subtests通过（前轮完整治理1879/3skip/506同源码）；本次Root提交精确pin f515并配对退休配置删除。I-25记录最新基线集成，不借旧已验组合否认他人四个新提交。

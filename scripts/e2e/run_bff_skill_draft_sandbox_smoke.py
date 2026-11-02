@@ -161,6 +161,7 @@ class SandboxReady:
     access_token: str
     catalog: CatalogCredential
     projection: CatalogCredential
+    # IAM host protocol/secret redaction only; not Platform runtime configuration.
     resource_server: CatalogCredential
     execution_authorization: CatalogCredential
     web_client_secret: str
@@ -1572,18 +1573,12 @@ def normalized_postgres_admin_url(
 def platform_credential_payloads(
     ready: SandboxReady,
 ) -> tuple[
-    dict[str, object],
     list[dict[str, object]],
     list[dict[str, object]],
     dict[str, object],
 ]:
     """Project IAM handles into the current owner-defined credential files."""
     common = {"generation": 1, "credentialRefVersion": "sandbox-v1"}
-    resource = {
-        **common,
-        "clientId": ready.resource_server.client_id,
-        "clientSecret": ready.resource_server.client_secret,
-    }
     execution = [
         {
             **common,
@@ -1616,14 +1611,13 @@ def platform_credential_payloads(
             }
         ],
     }
-    return resource, execution, catalog, projection
+    return execution, catalog, projection
 
 
 @contextmanager
 def credential_files(directory: Path, ready: SandboxReady) -> Iterator[dict[str, Path]]:
     payloads = platform_credential_payloads(ready)
     names = (
-        "resource-server.json",
         "tenant-execution.json",
         "bff-catalog.json",
         "platform-service-credentials.json",
@@ -2873,9 +2867,6 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 phase = Phase.OWNER_START
                 platform_env.update(
                     {
-                        "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE": str(
-                            files["resource-server.json"]
-                        ),
                         "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE": str(
                             files["tenant-execution.json"]
                         ),

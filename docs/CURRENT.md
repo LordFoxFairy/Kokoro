@@ -1,14 +1,12 @@
-## Task A 当前检查点：最小 native 已通过，完整闭环仍 OPEN
+## Task A 当前检查点：接收方切片已验，四旅程与最终组合仍 OPEN
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)；机器Goal已确认active。G0已通过，G1认证/G2删除/G3最终组合门仍OPEN，A-01/A-02/A-07保持停写，原A-01～A-16责任不缩减。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；G0通过，G1认证/G2删除/G3最终组合均OPEN，A功能停写。
 
-Root535e7071精确配对App9ba65343/BFF4d6d17b/IAMe6a01cf。BFF五处DI装配错误已逐项真实RED→GREEN，真实生产容器compile/单实例回归加入默认门；Root完整format/check通过：contract1344/default2344pass+2原资源skip/build。新组合最小native HTTP4checks通过，成功退出资源cleanup PASS/quiescent、无保留workdir；旧两次启动失败证据保留，不外推为四浏览器旅程或优雅关闭矩阵。
+App冷登录727已在Root4fdb精确组合实际验证：无cookie注入的新Chromium表单303/session200/projects200，最小HTTP4checks与cleanup PASS。退出1d54已Root完整check6403pass/0skip，但真实App→IAM退出415、session与旧cookie重放仍200；第二层媒体类型/空JSON规范化修复中，I-24尚未关闭，不拿loopback或原HTTP4PASS代替退出验收。
 
-此前App完整check452/50/6373、IAM两host真实62和verify1566、Root治理1876pass/3skip/502subtests证据保持对应基线；不是最终全组合验收。Root PR66、App50、BFF18、IAM6各自draft，未merge/deploy。
+Capability f515接收方切片已Root独审、format/lint/verify/Prisma/build全0：3051pass/678skip，1111输入hash保持；隔离真实HTTP/PG receiver1pass，13未选择，数据库inventory保持。Root六文件配套候选独审、定向154及完整治理1879pass/3skip/506subtests证据绑定同源码，本次精确pin配对。新draft PR13依赖旧PR12；远端四新提交含Schema/契约，与PR13实际有冲突，I-25/T-09后继独立集成与重新验收，未覆盖或合并任一main。
 
-下一步T-05固定Product四旅程与T-14 receiver-only直接认证；Capability三面门已过，71路径候选已冻结，worker最终123定向通过，Root首次完整门verify有两项旧oracle失败（3049pass/678skip），精准承接中，真实receiver组已1pass，最终完整门复跑中，Root六文件旧配置消费者候选已停写、独审及主方154定向/1879治理通过（3skip/506subtests），待owner精确组合。T-05已纠正与固定tenant设计冲突的“双tenant正向切换”要求，改验异域会话拒绝/固定域恢复；冷登录active tenant缺口已真实复现：新Chromium表单303后session/projects401；App冷登录727cd674/PR50已交付，独审及Root完整check通过（6401pass/0skip），Root4fdb精确pin后真实冷登录303/session200/projects200及原4checks/cleanup PASS，余下三旅程待验，原HTTP4PASS不能替代此RED。之后G1→完整生命周期/旧实现删除→最终门/可保留同步测试环境。当前smoke进程已退出，不称用户可常驻同步测试。
-
-App退出I-24三文件1d54eedd已独审与Root完整check6403pass/0skip，原PR50已推送；本次Root精确pin后验真实sign-out/旧cookie重放。
+当前无常驻同步测试环境。下一步完成T-05真实退出、固定域隔离恢复、独立撤权，再G1→生命周期/旧实现删除→基线整合与最终门/同步环境。各仓独立draft PR，未发布部署。
 
 ---
 

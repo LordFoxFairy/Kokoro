@@ -104,7 +104,7 @@ class LocalPlatformRuntime:
             )
         return (
             self._write_private_json(
-                "platform-service-credentials.json",
+                "platform-local-service-credentials.json",
                 {"version": 1, "entries": entries},
             ),
             bff_files,
@@ -160,9 +160,6 @@ class LocalPlatformRuntime:
                 "mcp-personal,custom-api-personal,mcp-provider-admin"
                 if include_skills
                 else "mcp-personal,custom-api-personal,mcp-provider-admin"
-            ),
-            "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE": str(
-                files["resource-server.json"]
             ),
             "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE": str(
                 files["tenant-execution.json"]

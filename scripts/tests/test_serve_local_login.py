@@ -1,6 +1,7 @@
 """Focused guards for the local, real three-owner login launcher."""
 
 import importlib.util
+import json
 import os
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -196,6 +197,63 @@ class LocalLoginGuards(unittest.TestCase):
             child.id for child in ast.walk(guards[0]) if isinstance(child, ast.Name)
         }
         self.assertIn("platform_env", names)
+
+    def test_platform_start_does_not_inject_retired_resource_server_config(self):
+        from unittest.mock import Mock
+
+        credential = SimpleNamespace(client_id="fixture", client_secret="fixture-secret")
+        ready = SimpleNamespace(
+            database_name="owned_fixture", tenant_id="tenant-one",
+            base_url="http://127.0.0.1:4401", resource_server=credential,
+            execution_authorization=credential, catalog=credential, projection=credential,
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            owned = launcher.platform_runtime.LocalPlatformRuntime(
+                node=Path(sys.executable), node_environment={},
+                directory=Path(directory), credentials=Mock(), log=None,
+            )
+            with patch.object(
+                launcher.platform_runtime.runtime, "run_owned_command", return_value=1
+            ) as run, patch.object(launcher.platform_runtime.runtime, "free_port", return_value=4402):
+                try:
+                    with self.assertRaisesRegex(
+                        launcher.platform_runtime.PlatformRuntimeError,
+                        "Platform build or owner schema installation failed",
+                    ):
+                        owned.start(
+                            "postgresql://fixture@127.0.0.1/postgres",
+                            "redis://127.0.0.1:6379/0", ready, None,
+                            "http://127.0.0.1:4400", include_skills=False,
+                        )
+                    environment = run.call_args.kwargs["env"]
+                    self.assertNotIn(
+                        "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE", environment
+                    )
+                    self.assertEqual(
+                        environment["KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE"],
+                        str(Path(directory) / "tenant-execution.json"),
+                    )
+                    self.assertEqual(
+                        environment["KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE"],
+                        str(Path(directory) / "platform-local-service-credentials.json"),
+                    )
+                    sandbox_file = Path(directory) / "platform-service-credentials.json"
+                    local_file = Path(environment["KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE"])
+                    self.assertNotEqual(sandbox_file, local_file)
+                    self.assertEqual(
+                        json.loads(sandbox_file.read_text())["entries"][0]["surfaces"],
+                        ["projection"],
+                    )
+                    self.assertEqual(
+                        [entry["surfaces"] for entry in json.loads(local_file.read_text())["entries"]],
+                        [["projection"], ["mcp_personal"], ["custom_api_personal"], ["mcp_admin"]],
+                    )
+                    self.assertFalse((Path(directory) / "resource-server.json").exists())
+                    for path in Path(directory).iterdir():
+                        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+                finally:
+                    self.assertEqual(owned.close(), [])
+                self.assertEqual(list(Path(directory).iterdir()), [])
 
     def test_platform_cleanup_preserves_credentials_after_stop_failure(self):
         from unittest.mock import Mock

@@ -45,7 +45,7 @@ const tenantId=need("KOKORO_TENANT_ID"),iam=need("KOKORO_IAM_BASE_URL");
 const catalog=new CatalogCredentialSource(need("KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE"));
 const projection=new ProjectionCredentialSource(need("KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE"));
 await catalog.read(tenantId);await projection.read(tenantId);
-const runtime=Object.fromEntries(["KOKORO_IAM_BASE_URL","KOKORO_REDIS_URL","KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE","KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE"].map(k=>[k,need(k)]));
+const runtime=Object.fromEntries(["KOKORO_IAM_BASE_URL","KOKORO_REDIS_URL","KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE"].map(k=>[k,need(k)]));
 if({str(issue).lower()}){{
  const deadline=performance.now()+15000;
  const values=await Promise.all([new CatalogTokenSource(iam,catalog,10000).get(tenantId,undefined,deadline),new ProjectionTokenSource(iam,projection,10000).get(tenantId,undefined,deadline)]);
@@ -77,7 +77,6 @@ process.stdout.write(JSON.stringify({{tenantId,runtime}}));
         or not isinstance(runtime, dict)
         or set(runtime) != {
             "KOKORO_IAM_BASE_URL", "KOKORO_REDIS_URL",
-            "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE",
             "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE",
         }
         or not all(isinstance(v, str) and v and v == v.strip() for v in runtime.values())

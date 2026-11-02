@@ -17087,7 +17087,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**机器Goal active，Task A未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护24问题/18TODO与原A16项。前置切片通过不换算产品完成率。
+**机器Goal active，Task A未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护25问题/18TODO与原A16项。前置切片通过不换算产品完成率。
 
 - Root535e7071配对App9ba65343/BFF4d6d17b/IAMe6a01cf；各仓PR独立draft，未merge/deploy。
 - T-17前置五处DI问题已修，真实容器回归入默认门；Root BFF完整check contract1344/default2344pass+2原skip/build PASS。
@@ -17109,3 +17109,5 @@ App冷登录切片727cd674已独审并由Root完成完整check（contract452/arc
 Root4fdb精确组合冷登录已真实GREEN：无注入cookie的新Chromium表单303/session200/projects200，原4checks/cleanup亦PASS；仅关闭I-21。Capability首次Root全门两旧oracle失败（3049pass/678skip），两测试精确承接中，未宣称绿。I-24退出真实transport回归最小写区已授权；四旅程IAM/Root编排仍只有方案，未冒验收。
 
 App退出1d54eedd已Root完整check6403pass/0skip并沿原PR50交付，本次Root精确pin后实测。Capability修canonical断言后真实receiver1pass、13非选，数据库inventory保持；最终完整门复跑中。
+
+T14 receiver切片f515/PR13已Root全门3051pass/678skip和真实PG1pass，Root六配置文件配对交付；与原PR12最新2ad基线实际冲突留I-25/T-09独立整合。退出I-24仍OPEN：App1d54真实signout415且旧cookie200，媒体类型/空JSON规范化修复中，不以旧单测全绿结案。

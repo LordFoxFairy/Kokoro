@@ -896,23 +896,18 @@ class SkillDraftSandboxGuards(unittest.TestCase):
 
     def test_owner_credential_projections_are_exact(self):
         parsed = smoke.require_sandbox_ready(ready())
-        resource, execution, catalog, projection = smoke.platform_credential_payloads(
+        execution, catalog, projection = smoke.platform_credential_payloads(
             parsed
         )
-        self.assertEqual(
-            resource,
-            {
-                "generation": 1,
-                "credentialRefVersion": "sandbox-v1",
-                "clientId": "resource",
-                "clientSecret": "resource-secret",
-            },
-        )
-        self.assertEqual(catalog[0]["tenantId"], "tenant-one")
-        self.assertEqual(
-            catalog[0]["resource"], "https://kokoro.dev/resources/platform-internal"
-        )
-        self.assertEqual(catalog[0]["scope"], "platform:skill-catalog.manage")
+        self.assertEqual(catalog, [{
+            "generation": 1,
+            "credentialRefVersion": "sandbox-v1",
+            "tenantId": "tenant-one",
+            "clientId": "catalog",
+            "clientSecret": "catalog-secret",
+            "resource": "https://kokoro.dev/resources/platform-internal",
+            "scope": "platform:skill-catalog.manage",
+        }])
         self.assertEqual(
             projection,
             {
@@ -928,25 +923,42 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 ],
             },
         )
-        self.assertEqual(
-            execution[0]["resource"], "https://kokoro.dev/resources/iam-internal"
-        )
-        self.assertEqual(execution[0]["scope"], "iam:execution-authorization.verify")
-        self.assertEqual(execution[0]["clientId"], "execution")
-        self.assertEqual(execution[0]["clientSecret"], "execution-secret")
+        self.assertEqual(execution, [{
+            "generation": 1,
+            "credentialRefVersion": "sandbox-v1",
+            "tenantId": "tenant-one",
+            "clientId": "execution",
+            "clientSecret": "execution-secret",
+            "resource": "https://kokoro.dev/resources/iam-internal",
+            "scope": "iam:execution-authorization.verify",
+        }])
 
-    def test_platform_service_credential_file_is_owned_and_removed(self):
+    def test_platform_credential_files_are_exact_private_and_removed(self):
         parsed = smoke.require_sandbox_ready(ready())
-        with tempfile.TemporaryDirectory() as owned:
-            directory = Path(owned)
-            with smoke.credential_files(directory, parsed) as paths:
-                projection = paths["platform-service-credentials.json"]
-                self.assertEqual(projection.stat().st_mode & 0o777, 0o600)
-                self.assertEqual(
-                    json.loads(projection.read_text()),
-                    smoke.platform_credential_payloads(parsed)[3],
-                )
-            self.assertFalse(projection.exists())
+        expected_names = (
+            "tenant-execution.json",
+            "bff-catalog.json",
+            "platform-service-credentials.json",
+        )
+        for fail_inside in (False, True):
+            with self.subTest(fail_inside=fail_inside), tempfile.TemporaryDirectory() as owned:
+                directory = Path(owned)
+                try:
+                    with smoke.credential_files(directory, parsed) as paths:
+                        self.assertFalse((directory / "resource-server.json").exists())
+                        self.assertEqual(set(paths), set(expected_names))
+                        self.assertEqual({p.name for p in directory.iterdir()}, set(expected_names))
+                        for name, payload in zip(
+                            expected_names, smoke.platform_credential_payloads(parsed), strict=True
+                        ):
+                            self.assertEqual(stat.S_IMODE(paths[name].stat().st_mode), 0o600)
+                            self.assertEqual(json.loads(paths[name].read_text()), payload)
+                        if fail_inside:
+                            raise RuntimeError("consumer stopped")
+                except RuntimeError as error:
+                    self.assertTrue(fail_inside)
+                    self.assertEqual(str(error), "consumer stopped")
+                self.assertEqual(list(directory.iterdir()), [])
 
     def test_cleanup_verification_attempts_every_inventory_after_failures(self):
         calls = []
