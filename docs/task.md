@@ -17124,3 +17124,10 @@ Goal实际active；C前置闭环与原A产品验收分开。已验App冷登录/�
 T-05本轮接续实绩：Root已运行IAM新integration真实RED，1fail/10未选，失败为旧host不支持browser_fixture（ready已成功）。交原writer实现test-only协议，Root永久driver另一路先tests-only；真实GREEN、完整四旅程与最终闭环尚待。
 
 T-05接收检查点：IAM1ee8d156已推原draft PR6，Root两host66pass/verify1566且双审CLEAR；永久browser模式三路径已双审/Root82定向与1931治理通过。Root本次精确pin并提交runner后实跑四旅程，未merge main、未称同步环境或Task A完成。
+
+
+### Task A 2026-11-02 当前复核（替代前述待RED/尚未实跑状态）
+
+Root dd447c68，Goal active；18 TODO分类11已验切片/2进行中/3等待/1开放/1门控，问题26项。IAM1ee8与永久driver均已交付，但正式四旅程cold_login账户入口不可见而超时，0/4；cleanup PASS不等于认证闭环。独立诊断确认HMR Upgrade14次404，I-26归T-05/T-13，下一动作是Root隔离代理精确HMR传输回归和修复，再跑原四旅程。主控旧交接文字滞后已修正，不等待用户再次批准。
+
+G0通过，G1/G2/G3均OPEN；Nest生命周期/raw删除、Capability最新base整合、Agent/最终组合门与可保留同步环境未齐。原A01～16责任保留，A01/A02/A07仍门控；完整A日期证据不足，旧C预算不滚动重置。唯一[方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)给出写区、关闭条件与下一检查点。本轮仅文档复核，未启动服务或修改业务代码；每仓独立原PR、不merge main。

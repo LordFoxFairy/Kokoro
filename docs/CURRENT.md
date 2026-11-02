@@ -1,15 +1,16 @@
-## Task A 当前检查点：冷登录/退出HTTP与direct receiver已验，完整闭环仍OPEN
+## Task A 当前检查点：浏览器首旅程失败，整体仍未闭环
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；G0通过，G1认证/G2删除/G3最终组合均OPEN，A功能停写。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。2026-11-02主控核Goal **active**；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。18 TODO＝11已验切片、2进行中、3等待、1开放、1门控；26问题，不以数量换算产品完成率。
 
-已验源码组合Root1e6：App e1be73e0/BFF4d6/IAMe6/Capabilityf515。App最终完整check6407pass/0skip、contract452/architecture50/lint/types/build，独审及1494输入hash保持。真实新Chromium无cookie注入：表单303/session认证true/projects200；App退出200后session匿名、cookie清除，projects与旧cookie重放均401。最小HTTP4checks和自有资源cleanup PASS。I-21/I-24缺陷在此范围闭合；不是Settings点击、异tenant恢复或独立撤权的完整四旅程。
+当前Root `dd447c68`精确pin App e1be/BFF4d6/IAM1ee8/Capabilityf515。IAM新test-only host已双审、Root真实两host66pass/0skip及完整verify1566pass，推原PR6；永久browser driver d309有82定向、1931治理/3skip，dd447诊断增量91定向通过，完整治理尚未在该后继重跑。
 
-Capability f515已Root独审与format/lint/verify/Prisma/build全0（3051pass/678skip），1111输入保持；隔离真实HTTP/PG receiver1pass，13未选，DBinventory保持。Root退休配置六文件已随c08c提交，主方154定向与1879治理/3skip/506subtests绑定同源码。PR13依赖原PR12，最新base2ad有5文本冲突及v2 generator丢认证索引的集成接缝；I-25/T-09保双方提交，独立集成后重验，不把f515证据外推。
+正式四旅程**已运行且失败**：真实表单303并到/app，但账户入口不可见，cold_login超时、0/4完成；失败后cleanup PASS/quiescent，无保留自有文件。独立诊断14次HMR WebSocket请求均404，确认隔离代理缺Upgrade隧道；登记I-26，尚未证明是页面不就绪唯一原因。下一步仅修代理传输、回归后重跑原四旅程，不修改产品认证或放宽UI断言。
 
-无常驻同步测试环境。下一步T-05 owner绑定真实browser session与永久四旅程driver，验证固定域隔离恢复、独立撤权及UI迟到状态；随后生命周期/旧实现删除、base整合与最终门。Root66/App50/BFF18/IAM6/Capability13各自draft，未merge main/部署。
+既有App完整门6407pass/0skip、contract452/architecture50/lint/types/build与真实冷登录/退出HTTP仍有效于原组合；Capability f515完整门3051pass/678skip及真实PG receiver已验。二者不替代完整UI认证旅程。Capability PR13与其最新PR12基线2ad有冲突，T-09需保双方更新并重新验证。
 
+仍待：T-05四旅程→G1→T-17生命周期→T-11 raw/聚合删除→T-09/T-16最终门与基线整合→T-15同步环境→A产品阶段。没有当前可保留的同步E2E环境；临时smoke已回收。Root66/App50/BFF18/IAM6/Capability13各自draft，未merge main/部署。
 
-2026-11-02续接交付：IAM test-only host新协议经Root66真实integration/verify1566与双审，已提交推送1ee8d156/原draft PR6；Root本次接收精确pin。永久browser模式三路径已双审，Root82定向、完整治理1931pass/3skip/506subtests、Ruff/Node语法门通过；已修退休sentinel与进程reap回归，尚未实际运行四旅程。Goal保持active，后续直接按正式模式实跑，不把静态门当产品闭环。
+原“等待IAM tests-only RED”是已过时的主控交接文字，本轮纠正。历史暂停触发原因尚无可确认记录；当前不是等待用户重复授权。完整A没有可信完成日期，旧3～7工作日仅历史C阶段预算，不作为本轮倒计时。
 
 ---
 

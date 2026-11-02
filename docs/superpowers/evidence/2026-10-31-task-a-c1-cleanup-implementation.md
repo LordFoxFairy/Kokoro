@@ -988,3 +988,16 @@ IAM最终verify exit0：Node24.20.0/corepack pnpm12.3.4，format/lint/types/cont
 Root停写复验：82个runner定向通过（5.09s）；完整`python3 -m pytest scripts/tests -q` **1931pass/3skip/506subtests，122.05s，exit0**；两个Python文件Ruff format/check、Node22.23.4 driver语法及diff通过。规格/质量双审CLEAR。3路径冻结SHA与执行前后相同：runner `8150db322a6050ba474bdb1d75b89a46a1828ae884f4508bb8b456e427a5e127`、Chromium driver `1ca96c53a1eb47e18ec3dadfa15cab9225f49706740d2a4b6f95540a6ce5f3bb`、runner test `7ddddb3b4f1251708864b998e5e32d76a199e7e2c49186d0a1ddddff46de8bd9`。
 
 这些仅为编排工程证据（含本地pipe子进程），不是实际App/IAM/BFF浏览器四旅程。默认最小4checks保持；新模式fail-closed，真实scope、frame focus、迟到响应及Chromium子树清理要由精确提交组合实际运行后记录。
+
+
+### 2026-11-02 正式浏览器 RED 与当前状态复核
+
+当前Root `dd447c6878c3b00340e51554311340a2dc1857c0`，精确IAM1ee8/App e1be/BFF4d6；d309永久driver工程门1931pass/3skip后，dd447仅增加白名单stage/type/driver行列诊断，Root91定向、Ruff/Node语法/diff通过，未再运行完整治理。不将d309完整门冒称dd447全门。
+
+正式browser receipt `var/dev/web-native-session-smoke/6273525d4a9b3328ff50b4ae/receipt.json`：status failed，stage browser cold_login，TimeoutError位于driver114:50账户入口可见性等待，completed_journeys=0；此前表单303与/app URL等待已过。cleanup passed/quiescent、owned_files_retained=false，凭据日志检查通过。原d309首次失败同样不得标四旅程通过。
+
+私有诊断副本（不作为正式验收driver）在run `1971c4dc963c90e4229aa617`仍失败且cleanup通过；其行号124属于副本，不套用于正式driver。脱敏诊断：session200/认证true、SSR admitted=true，但UI未就绪；脚本70×200/22×304，无脚本失败；14次精确HMR Upgrade请求均404，13条console错误均为WebSocket分类。源码代理剥离Connection且无101双向隧道，确认传输缺口；尚未证其是UI超时唯一原因。I-26收录修复边界与原四旅程重验条件，不以诊断放宽产品断言。
+
+本轮用户要求进度/Goal/TODO/工期复核：主控get_goal返回active，Root与两只读agent核26问题/18TODO/16原A项；修正当前摘要仍写tests-only待RED的过时状态。未启动服务、未改业务代码或共享资源。当前G1/G2/G3未过，没有可保留同步环境；历史暂停具体触发来源未确认，不归责用户。文档diff、链接及独立复核结果在本轮交付记录，不把本次审计算新增运行验收。
+
+本轮文档复核完成：独立review CLEAR；I-26行分隔排版已修。主控`git diff --check`通过，四文件本地Markdown文件链接69个检查/0缺失（不含anchor有效性验证）；问题26/TODO18/原A16计数核对一致。仅上述四文档未提交，基线dd447c68，未修改业务源码或PR/main状态。
