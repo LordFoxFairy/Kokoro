@@ -323,3 +323,7 @@ The guard now also terminates non-canonical `/v1/library/**` suffixes (`dfe1584`
 ### 2026-11-02 generic proxy tail and Chat fixture cleanup
 
 Raw fallback audit confirmed the configured-owner generic proxy tail had no known production entry after named adapters/guards. BFF `a86ecae` removes the tail and settles any claimed mutation with canonical 404; `configuredUpstream` remains only for health/readiness configuration checks. Archived/Shared Tasks test fixtures now inject the explicit `chatService` provider instead of `businessStore.services.chat`. No production owner boundary or second aggregate was introduced; raw `handleBffRequest` remains for BFF-owned business/idempotency and explicit compatibility seams.
+
+### 2026-11-02 SkillShare fixture seam
+
+Three shared-summary contract fixture groups now inject `skillShareRepository` directly (`13319aa`) instead of nesting `businessStore.services.skillShares`. The named provider path passes **110/110** contract tests when excluding the separately pending disconnect-cancellation case; the pending test remains visible and blocks a full BFF green claim.

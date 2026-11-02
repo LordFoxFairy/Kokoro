@@ -430,3 +430,8 @@ pnpm test:integration
 - `a86ecae` removes the unreachable generic configured-owner proxy tail from `handleBffRequest`; named adapters/guards own all currently known owner prefixes, and the residual fallback returns canonical 404 while committing/releasing idempotency state.
 - Archived/Shared Tasks raw fixtures use explicit `chatService`; this closes two stale aggregate-shaped fixture seams without changing production contracts.
 - Re-run Root topology/governance after pin. Keep C-1.3 real receipts, owner full gates, isolated PG/Redis integration, and E2E startup as open gates; do not enter A-01/A-02/A-07.
+
+### 2026-11-02 SkillShare provider migration
+
+- Migrate shared-summary fixture consumers to the existing top-level `skillShareRepository`; keep the disconnect cancellation case intact and rerun it separately.
+- After Root pins `13319aa`, rerun topology/governance and then the complete BFF owner gate. Do not treat the 110-case focused result as C-4 completion; A-01/A-02/A-07 remain stopped.

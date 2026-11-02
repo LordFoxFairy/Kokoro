@@ -777,3 +777,13 @@ BFF child `dfe1584eceb8151edfd6ac5871810142108eeb1c` extends the raw configured-
 ### Root verification after BFF generic-tail/fixture pin `a86ecae`（2026-11-02）
 
 Root 将 BFF gitlink 更新至 `a86ecae3f2def6f32b03485d3a88e5d0bc1ef097` 后重跑 `git diff --check` 与 `python3 scripts/verify-repository-topology.py`（PASS）；Root 治理套件保持 **1846 passed / 3 skipped / 502 subtests**。该切片不关闭 C-1.3 真实 IAM receipt、BFF/App/IAM owner full gate、隔离 PG/Redis integration 或跨仓 E2E，A-01/A-02/A-07 继续停写。
+
+### C-3 explicit SkillShare fixture seam（2026-11-02）
+
+BFF child `13319aa34628bb7b7dd4667ed615f6377078f84b` migrates the three shared-summary fixture groups in `test/contract/skill-specification-http.test.mjs` from `businessStore.services.skillShares` to the top-level `skillShareRepository` provider. The production route already consumes this named provider; no alias, aggregate, SQL, or contract change was added.
+
+验证：focused shared-revision/shared-summary cases **13/13**；full Skill specification contract suite excluding the known long-running disconnect case **110/110**；BFF build/typecheck/lint/diff-check passed. The disconnect cancellation case remains separately pending and is not hidden; full BFF `pnpm test` must be rerun after that pending baseline is resolved.
+
+### Root verification after SkillShare fixture pin `13319aa`（2026-11-02）
+
+Root BFF gitlink now points to `13319aa34628bb7b7dd4667ed615f6377078f84b`. The fixture slice is owner-boundary green at child level; Root topology/governance recheck is required before treating the pin as integrated. C-1.3 real receipts, isolated PG/Redis integration, BFF/App/IAM full gates, and E2E service startup remain open.

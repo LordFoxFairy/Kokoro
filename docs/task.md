@@ -17091,18 +17091,19 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - App native-session source/config cleanup；App stale reconnect prop removed，静态 typecheck/lint/architecture 50/50。
 - BFF raw Scheduler callback、retired System/Skills、unknown session、unknown Agent/Billing、Personal MCP/Custom API 均走 named feature adapters/guards；Nest production 无 LegacyRoutes composition。
 - BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
-- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `a86ecae`、App `f5d122bb`。
+- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `13319aa`、App `f5d122bb`。
 - BFF raw chain 对非 canonical `/v1/models/**` 已增加 404 终止，配置的 model upstream 不再接收未知 suffix；canonical `GET /v1/models` 保持 owner contract。
 - BFF raw chain 对非 canonical `/v1/library/**` 也已增加 404 终止，配置的 storage upstream 不再接收未知 suffix；canonical Library routes 保持不变。
 - BFF 已删除无已知生产可达入口的 generic configured-owner proxy tail；未命名路径统一以 `bff_route_not_found` 结算（保留幂等 receipt 回收），`configuredUpstream` 仅留在 health/readiness owner 配置检查。
 - Archived/Shared Tasks raw fixtures 已从 `businessStore.services.chat` 迁移到显式 `chatService`，不再以旧 aggregate 形状冒充 Chat owner；相关 HTTP suites 已复核全绿。
+- Skill shared-summary contract fixtures 已从 `businessStore.services.skillShares` 迁移到显式 `skillShareRepository`；排除 disconnect pending case 后该 contract suite **110/110** 通过，收回一组 C-4 baseline failures。
 - Root topology/governance 每次 pin 后串行通过；本轮 BFF child 复核 build/typecheck/lint、mock 29/29、architecture/Nest 70/70。
 
 **TODO / 未闭环：**
 1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
 2. C-2：迁移剩余 raw worker/provider fixtures，证明 `createBffComposition`、`handleBffRequest` 零消费者；generic owner proxy tail 已删除，继续按 owner suffix 增加 negative guard，不得以 raw fixture 通过替代生产 Nest 证据。
 3. C-3：wrapper/9 个 integration suite 已收敛到 named owner factory，旧 aggregate 已删除；保留显式 `database` test seam，后续只迁移有实际 owner 边界收益的 raw fixture/provider 引用，不引入 alias 或第二 aggregate。
-4. C-4：BFF full test 最新串行诊断仍为 1178 tests / 1044 pass / 21 fail / 113 cancelled（Skill shared-revision/archived fixture baseline 与 `test/contract/skill-specification-http.test.mjs` pending）；本次删除 generic tail 后 focused BFF/archived/shared/mori/architecture/Nest gates 全绿；BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
+4. C-4：BFF full test 上一轮串行诊断为 1178 tests / 1044 pass / 21 fail / 113 cancelled；本次已收回 Archived/Shared Tasks 与 Skill shared-summary fixture failures，且 `skill-specification-http` 排除 disconnect pending case 后 **110/110** 通过；完整 `pnpm test` 仍需在 pending case 与剩余 owner baseline 收敛后重跑。BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
 5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
 
 **约束**：不重置共享 PG/Redis/MinIO，不生成/写入凭据，不放宽断言/超时/契约，不为消除失败删除测试，不启动未具备配置的业务服务。
