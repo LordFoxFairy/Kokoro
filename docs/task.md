@@ -17093,6 +17093,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
 - BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `8150106`、App `f5d122bb`。
 - BFF raw chain 对非 canonical `/v1/models/**` 已增加 404 终止，配置的 model upstream 不再接收未知 suffix；canonical `GET /v1/models` 保持 owner contract。
+- BFF raw chain 对非 canonical `/v1/library/**` 也已增加 404 终止，配置的 storage upstream 不再接收未知 suffix；canonical Library routes 保持不变。
 - Root topology/governance 每次 pin 后串行通过；本轮 BFF child 复核 build/typecheck/lint、mock 29/29、architecture/Nest 70/70。
 
 **TODO / 未闭环：**

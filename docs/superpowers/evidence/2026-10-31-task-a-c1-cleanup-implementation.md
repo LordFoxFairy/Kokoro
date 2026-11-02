@@ -758,6 +758,12 @@ BFF child `88538a88f3849e8aaeb2777d755f9b4616885ab4` extends the raw negative gu
 
 验证：BFF build/typecheck/lint/diff-check、mock contract **29/29**、architecture/Nest **70/70**；Root topology PASS，治理 **1846 passed / 3 skipped / 502 subtests**。
 
+### C-2 unknown Library suffix termination（2026-11-02）
+
+BFF child `dfe1584eceb8151edfd6ac5871810142108eeb1c` extends the raw configured-owner guard to non-canonical `/v1/library/**` requests. Canonical Library list/artifact/content/file routes continue through the named Library adapter; unknown suffixes now return 404 without calling a configured Storage upstream. The routeHandler fixture seam and canonical response/error shapes remain unchanged.
+
+验证：BFF build/typecheck/lint/diff-check、mock contract **29/29**、architecture/Nest **70/70**；Root topology PASS，治理 **1846 passed / 3 skipped / 502 subtests**。
+
 ### C-4 BFF full-gate recheck after aggregate deletion（2026-11-02）
 
 主方在 child `8150106` 停写后重新运行 `pnpm test`。构建完成；测试在 `test/contract/skill-specification-http.test.mjs` 的长 pending 后按现有安全边界中止，汇总为 **1178 tests / 1044 pass / 21 fail / 113 cancelled / 0 skip**。新增计数仅来自本次串行复跑；失败仍集中在既有 archived-tasks 503 fixture 与 Skill shared-revision/owner fixture，pending 造成后续取消。未删除断言、未放宽 timeout，不将此结果计为 C-4 通过。
