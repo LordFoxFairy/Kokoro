@@ -1107,3 +1107,31 @@ Root19dd10c8，IAM已提交基线5fffe60，未提交55文件候选停写；freez
 - 双审指出I-29内resend发行闭集遗漏，以及native原5s signal未接完整HTTP lifetime/非协作依赖race。主控在所有验收终态后授权唯一writer窄返修；首版绿不外推后续新候选。消费者、浏览器/正常运行尚未切换，未commit IAM或更新gitlink，G1/G2/G3保持OPEN。
 
 I-35 CLI资源反事实：原5fffe60私有源码快照、复用未变依赖与Prisma生成物，原3 CLI测试3FAIL/46非选（10.44s），与候选一致；仅诊断副本捕获白名单错误类别P1010→FAILED_TO_GET_SESSION，未写工作树/记录凭据。根因是管理URL没有显式user，窄CLI环境不继承父USER；从同管理连接读取实际current_user并仅规范私有测试URL后，原源码原断言3PASS/46非选/15.56s。无新role、全局配置/CLI/断言变更，私有快照回收；后续完整门使用同一显式身份，先前15FAIL仍保留，未以这3项替代整套。
+
+
+## I-29 owner 本地候选、消费者失败与测试价值审计（2026-11-02）
+
+IAM 本地 `cc3fbaf1cf339c5b25ba78ac19ff1a0aeab9c9c3`，63 文件候选已双审、主方停写验证后提交，尚未推送；Root `7c3557d9` 仍固定 IAM `5fffe60`，BFF 尚未消费 native2。
+
+- 原 lifetime/resend 两项缺口已修，native 真实 PG/HTTP 15 PASS，33.04s；完整 integration 48 文件 / 484 PASS / 0 FAIL / 0 SKIP，462.36s；542 输入 hash 无漂移。I-35 旧 oracle 已按 canonical 数据与 tombstone 承接，未跳过失败或改变产品语义。
+- 最终完整 verify exit0，默认 125 文件 / 1651 PASS，7.27s；格式/lint/types/contract/breaking/SDK/build 通过，63 文件冻结保持。独立 auth-flow consumer 1 PASS，2.70s。
+- clean commit 后完整 consumer 1 PASS / 1 FAIL，25.36s；SDK pack/安装/外部编译通过，真实 Billing 仍用旧 tenant OAuth 而获 401。修复仅测试凭据，不恢复旧 Billing 授权；后续真实结果另记。
+- 用户质疑测试价值后，两路只读抽样与主窗口复核发现旧预期、SMTP 重复正例、源码位置/固定文件清单耦合及弱 Schema 字符串断言。已纳入唯一计划 §0.3 / I-36，未声称全量去重或独立风险覆盖 2135 项。真实事务/权限/竞态/断连的独有证据保留。
+
+上述是阶段证据，不代表新组合端到端、常驻同步环境、G1 或整体 Task A 完成；日志和资源记录仅本地私有。
+
+### I-36 Billing 旧预期修复后暴露 I-37（同日）
+
+两文件测试修复本地提交 `b2f28d42038f7561b67a5e34bbe95dbc808c3abd`；主方格式/ESLint/外部 fixture 类型检查通过，静态审查 CLEAR。clean commit 真实 consumer 仍 1 PASS / 1 FAIL，37.54s，542 输入无漂移。Billing direct-service 正例与同 proof/body OAuth 401 负例已越过，后续 SDK 成员查询收到 `503/native_session_service_unavailable`。
+
+这是本轮 SDK 回归，不是旧测试：transport 字符串 auth 被生成的多 scheme 循环同时填入 Authorization 与 Cookie，正确的 native guard 因 Cookie 存在进入 native 路径。主方独立 loopback 实测成员路径上 Authorization 和 issuer Cookie 同时出现，只输出布尔值且服务已回收。SDK 的 `credentials: omit` 不会消除显式 Cookie。已登记 I-37，授权同仓唯一 writer 仅 SDK transport/原 SDK loopback suite 两文件，先 RED 再限制 bearer 凭据适用 scheme；不改生成物/guard/机器契约，不发布失败候选。
+
+### I-38 内部认证与 SDK 设计复核（2026-11-02，只读）
+
+用户质疑复杂度后，IAM writer 已停写；I-37 仅两文件未提交候选，worker 的 RED 3 FAIL / 2 PASS 与修后 SDK/边界 48 PASS 不冒主方或真实 consumer 通过。Root 将 I-38 登记为 C-1.3 局部设计重开，Goal 仍 active。
+
+三路 Agent 分别核 IAM 原生证明与业务事务、BFF owner 调用链、App 原生入口。Root 另扫描 .gitmodules 登记仓的 tracked 代码/manifest，确认 IAM SDK 已知生产消费者为 Billing0.17 与 Capability0.18，BFF 零包依赖而使用本仓 generated；这不是仓外依赖普查。当前 Cookie 传播到 IAM 准入及部分业务调用，不进入所有 owner。
+
+唯一计划 §3.6 比较现 Cookie proof 方案与受信 BFF Session 引用方案。后者不新增 token/storage，也不取消 IAM 当前权限/事务复核，但扩大 BFF 身份代言信任，不能声称与每次 Cookie 持有验证等价；已作为明确问题提交用户裁决。App 的旧-shaped占位 claims 与重复/me只是清理候选，不当作新身份引用、不默认扩Web合同。此次未改三 owner 生产文件、运行服务、Schema 或生成物，未发布/更新 gitlink。
+
+I-38 文档验收：IAM/BFF 独立只读评审均 CLEAR；主方 `git diff --check` 通过，唯一计划 20 个本地链接有效、38 个问题/18 个 TODO ID 无重复；IAM/BFF/App 只读盘点前后 tracked/untracked 受版本管理输入哈希一致。未运行业务测试：此轮为设计文档与只读调查，未改变 owner 源码；既存 I-37 未提交差异保持。

@@ -17157,3 +17157,15 @@ I-29六份owner三面D0已通过、未实施native2；G1仍欠完整owner/consum
 首次IAM55文件候选主方真实native11PASS、完整verify1613PASS；整套integration464PASS/15FAIL，全部541输入无漂移。双审要求补resend机器契约与native同一请求期限/断连，IAM唯一writer返修。累计问题35项、18TODO分类保持，G1仍OPEN。
 
 I-35中12失败为canonical非id表摘要/ADR-008 Session tombstone旧oracle，3份测试窄承接中；另3CLI失败在原5fffe60源码复现，明确同一管理连接实际role到私有测试URL后原3项全部PASS，无业务CLI/账号/环境权限放宽。完整新候选尚待停写后重审和原整套验收，Root不更新未验gitlink，各仓原PR、不merge main。详见唯一方案与实施证据。
+
+
+## 2026-11-02 当前检查点：测试价值处置与 SDK consumer
+
+以[唯一计划 §0.3 / I-36](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)为准。IAM 本地 cc3fbaf1 未推送；integration 484 与默认 1651 曾由主方执行通过，外部 consumer 1 PASS / 1 FAIL，Billing 旧凭据预期修复中。两路抽样证实重复与弱断言，不冒全量无冗余；风险承接后再删改。T-05/T-09 承接此项，Goal active，G1/G2/G3 OPEN，A 功能停写，每仓独立 PR、不 merge main。
+
+
+### 同日后续：I-38 内部认证边界重新核对
+
+用户质疑内部 Cookie 与 SDK 的复杂度。受影响认证传递设计门重开，IAM writer 已停写，无 live 进程；I-37 两文件修复仅 worker 阶段证据，未提交/未主方验收，候选不推送。Goal 保持 active，先核边界与真实消费必要性，不另造 token 或客户端层。详见唯一计划 I-38。
+
+I-38 三路只读盘点已完成，候选设计写回唯一计划 §3.6：建议 Cookie 限专用 admission，其后受信 BFF 传真实 Session 引用、IAM 原事务复核，明确其新增委托信任，待用户裁决。SDK 并非空层：Billing0.17/Capability0.18 是已知生产消费者，BFF 用本仓 generated；不整包删除或迁入新 SDK。原始 Goal 不变，无生产写入。
