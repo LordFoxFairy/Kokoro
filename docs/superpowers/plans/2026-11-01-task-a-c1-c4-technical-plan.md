@@ -17,7 +17,7 @@
 - Root worktree：`/Users/nako/.codex/worktrees/task-a-c1-cleanup/Kokoro`
 - Root branch：`codex/task-a-c1-cleanup`
 - Root HEAD（本计划冻结时）：`c59bcf54`（后续只更新本计划、TODO 和经批准的窄切片）
-- BFF：`0a22f4d24972fa82b1310b97c841d82b6572424b`
+- BFF：`228e3d691f6b5c93575950babb3d9f4c6b409c0a`
 - App：`f5d122bb41beb3e141015b758411dbcc0afc583b`
 - IAM：`e1f537b02cb326cfb3751316b1591fa82313f70a`
 
@@ -31,10 +31,8 @@
 
 ### 0.3 当前验证事实
 
-- BFF full `pnpm test`（在 `0a22f4d` 上）：**2298 tests / 2294 pass / 2 fail / 0 cancelled / 2 skipped**。
-- 当前 2 个失败：
-  1. `test/mcp-personal-http.test.mjs:565` — `denied icon mutation reaches no Platform command`，实际 Platform command count 为 1，预期 0。
-  2. `test/skill-installation-http.test.mjs:779` — Project installation 六路场景中的 Chat message owner invalid-response 映射为 503 `chat_unavailable`，预期 502 `skill_installation_response_invalid`。
+- BFF full `pnpm test`（在 `228e3d6` 上）：**2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**。
+- C-4 两个行为失败均已修复：denied MCP icon mutation 在授权拒绝后零 Platform command；Skill installation Chat invalid-owner 场景通过显式最小 receipt seam 保持 `502/skill_installation_response_invalid`。
 - BFF `pnpm format:check`：仍有 31 个既有 Prettier warnings；本计划不做无关格式扫尾。
 - App static gates：`typecheck`/`lint`/`test:architecture` **50/50**；full test 仍有 pinned BFF artifact digest drift。
 - IAM static gates：lint/typecheck/contracts/SDK/120-file suite **1561/1561** 和 build 通过；`pnpm verify` 仍被既有 `test/integration/bff-session-admission-host.test.ts` Prettier warning 阻断。
@@ -48,8 +46,8 @@
 | ID | 问题 | 影响 | 处理策略 | 状态 |
 | --- | --- | --- | --- | --- |
 | I-01 | 缺少隔离 IAM admin URL、PG/Redis URL、service credentials、owner URLs | C-1.3 login/tenant-switch/sign-out/revocation 无真实 receipt；integration/E2E 不能验收 | 先补环境输入与隔离资源；不重置共享资源、不生成凭据 | OPEN / external prerequisite |
-| I-02 | MCP denied icon mutation 在授权拒绝后仍调用 Platform | C-4 行为回归；存在越权副作用风险 | 先写最小回归测试，定位 `mcp-personal` admission→owner dispatch 顺序，确保 denied path zero owner calls | OPEN |
-| I-03 | Skill installation Chat invalid owner response 映射成 `chat_unavailable` | C-4 错误契约不闭合，掩盖 `skill_installation_response_invalid` | 保持 Chat/Project/Installation owner 分界，修正错误分类，不放宽断言 | OPEN |
+| I-02 | MCP denied icon mutation 在授权拒绝后仍调用 Platform | C-4 行为回归；存在越权副作用风险 | `228e3d6` 在 mutation owner dispatch 前补 `manage` action admission；focused 42/42，full 0 fail | DONE |
+| I-03 | Skill installation Chat invalid owner response 映射成 `chat_unavailable` | C-4 错误契约不闭合，掩盖 `skill_installation_response_invalid` | `228e3d6` 将 fixture 补为完整 receipt seam，保留 typed owner error 映射；focused 24/24，full 0 fail | DONE |
 | I-04 | BFF 31 个 format warnings | BFF/C-4 format gate 非绿 | 只处理受影响文件；禁止全仓格式化扩散 | OPEN |
 | I-05 | App pinned artifact digest drift | App full contract gate 非绿 | 追溯生成物 provenance；未经 owner 裁决不刷新 hash/生成物 | OPEN |
 | I-06 | IAM verify 单一 Prettier warning | IAM `pnpm verify` 非绿 | 只修该 warning 后重跑完整 verify | OPEN |
@@ -105,13 +103,13 @@ App native session
 - Modify: `apps/kokoro-bff/src/http/routes/chat-message-native.ts` / `apps/kokoro-bff/src/http/routes/chat.ts`（仅在调用栈确认错误映射 owner 后）
 - Modify: `apps/kokoro-bff/test/skill-installation-http.test.mjs`
 
-- [ ] Step 1：单独运行两个失败用例，保存调用顺序、admission 结果、owner call count 与 response envelope。
+- [x] Step 1：单独运行两个失败用例，保存调用顺序、admission 结果、owner call count 与 response envelope。
   - Run: `pnpm exec tsx --test --test-name-pattern='denied icon mutation reaches no Platform command' test/mcp-personal-http.test.mjs`
   - Run: `pnpm exec tsx --test --test-name-pattern='Project installation six routes' test/skill-installation-http.test.mjs`
-- [ ] Step 2：为每个失败补/确认最小 RED 断言：denied icon `ownerCalls === 0`；invalid installation owner response 映射 `502/skill_installation_response_invalid`。
-- [ ] Step 3：只在 named adapter 内修 admission→owner dispatch 或 typed error mapping；不改通用 catch、timeout、断言和路由范围。
-- [ ] Step 4：运行两套 focused tests、BFF build/typecheck/lint/diff-check。
-- [ ] Step 5：提交独立 child commit，回到 Root 重新验证；不要把 worker 退出码当完成证据。
+- [x] Step 2：为每个失败补/确认最小 RED 断言：denied icon `ownerCalls === 0`；invalid installation owner response 映射 `502/skill_installation_response_invalid`。
+- [x] Step 3：只在 named adapter 内修 admission→owner dispatch 或 typed error mapping；不改通用 catch、timeout、断言和路由范围。
+- [x] Step 4：运行两套 focused tests、BFF build/typecheck/lint/diff-check。
+- [x] Step 5：提交独立 child commit，回到 Root 重新验证；child `228e3d6`，Root 待 pin 后复跑 topology/governance。
 
 ### Chunk 2：C-1.3 native-session 真实环境闭环
 
@@ -148,14 +146,14 @@ App native session
 | TODO | Owner | 状态 | 完成证据/下一动作 |
 | --- | --- | --- | --- |
 | T-01 更新 Goal 与本技术方案 | Root | DONE（本次） | 本文件、`docs/task.md`、Goal ACTIVE |
-| T-02 修复 MCP denied icon owner call | BFF | OPEN | 运行 Chunk 1 focused RED |
-| T-03 修复 Skill installation invalid-owner error mapping | BFF | OPEN | 运行 Chunk 1 focused RED |
+| T-02 修复 MCP denied icon owner call | BFF | DONE | child `228e3d6`; focused 42/42; full BFF 0 fail |
+| T-03 修复 Skill installation invalid-owner error mapping | BFF | DONE | child `228e3d6`; focused 24/24; full BFF 0 fail |
 | T-04 提供 C-1.3 隔离环境输入 | Root/环境 owner | OPEN | `IAM_TEST_ADMIN_URL`、隔离 PG/Redis/credentials |
 | T-05 真实 IAM→BFF→App 四旅程 receipt | Root + IAM/BFF/App | WAITING T-04 | 脱敏 E2E manifest |
 | T-06 BFF format warning 31 项 | BFF | OPEN | 只修受影响文件，重跑 format |
 | T-07 App artifact digest drift | App/Root | OPEN | provenance review 后重生成/拒绝变更 |
 | T-08 IAM verify format warning | IAM | OPEN | 修 `test/integration/bff-session-admission-host.test.ts` warning |
-| T-09 Root/owner full serial gate | Root | WAITING T-02/T-03/T-04 | 全命令结果与失败分类 |
+| T-09 Root/owner full serial gate | Root | WAITING T-04 | 先 pin BFF `228e3d6`，再复跑 Root topology/governance、App/IAM/owner full gate |
 | T-10 A-01/A-02/A-07 | Root | STOPPED | T-09 全绿后另立计划 |
 
 ---

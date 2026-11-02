@@ -819,3 +819,12 @@ Root 冻结技术方案 `docs/superpowers/plans/2026-11-01-task-a-c1-c4-technica
 在 BFF `0a22f4d` 完成 Project Skill content fixture owner binding 后，主方重新执行 `pnpm test`：**2298 tests / 2294 pass / 2 fail / 0 cancelled / 2 skipped**。剩余两项固定为 MCP denied-icon owner call 与 Skill installation Chat invalid-owner error mapping；无 pending cancellation。该结果仍不是 C-4 通过，需先修复两项并重跑 BFF/App/IAM/Root 全量门。
 
 本轮确认的外部缺口未变化：真实 IAM/BFF/App/owner 进程未启动，`IAM_TEST_ADMIN_URL`、隔离 PG/Redis URL 与 service credentials 缺失；不启动未配置服务、不重置共享资源、不伪造 native-session receipt。
+
+### C-4 BFF 两个行为失败闭环（2026-11-01）
+
+BFF child `228e3d691f6b5c93575950babb3d9f4c6b409c0a` 完成两项最小修复：
+
+1. `mcp-personal` mutation 在 owner dispatch 前先执行 `manage` action admission；denied icon mutation 不再调用 Platform。
+2. `skill-installation-http` 的 Project installation Chat invalid-owner 场景补齐完整最小 receipt repository seam（`claimReceipt`/`putReceipt`/`releaseReceipt` 等），保持 typed owner error 映射为 `502/skill_installation_response_invalid`，不改通用 catch 或契约断言。
+
+主方在 child 停写后复核：MCP focused **42/42**、Skill installation focused **24/24**；BFF `pnpm build`、`pnpm typecheck`、`pnpm lint`、`git diff --check` 均通过。随后 full `pnpm test` 完成：**2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**（约 199 秒）。该 child 尚未由 Root pin；Root topology/governance、BFF format warnings、App/IAM full gate 与 C-1.3 真实 E2E 仍保持未闭环。
