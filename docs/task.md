@@ -1,3 +1,5 @@
+当前 Task A 请以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)和本文件末尾当前检查点为准；下方早期记录保留历史，不覆盖当前状态。
+
 ## 2026-10-22 集中PR交付推进
 
 IAM4／Platform11／System1／BFF16／Admin4／App45均已merge；本Root提交聚合已合精确版本并删除已迁入App的旧Root门户。主方真实外部Skills矩阵18请求／五组PASS，Platform当前完整十门与App Docs新固定契约均已验；具体SHA及跳过/失败边界见[CURRENT交付表](CURRENT.md)。MCP正常续期/重连/stdio、Agent实际工具/用量积分与其余16项尚未完成，不因本次发布标整轮闭环。
@@ -17085,13 +17087,21 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**机器Goal active，Task A未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护19问题/18TODO与原A16项。前置切片通过不换算产品完成率。
+**机器Goal active，Task A未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护24问题/18TODO与原A16项。前置切片通过不换算产品完成率。
 
 - Root535e7071配对App9ba65343/BFF4d6d17b/IAMe6a01cf；各仓PR独立draft，未merge/deploy。
 - T-17前置五处DI问题已修，真实容器回归入默认门；Root BFF完整check contract1344/default2344pass+2原skip/build PASS。
 - 当前minimal native HTTP4checks及成功退出cleanup PASS；旧两失败退出清理亦PASS。T-13仅该smoke范围VERIFIED，完整生命周期仍T-17 OPEN。
 - App完整6373、IAM真实host62/verify1566、Root治理1876+3skip保留对应基线，不冒称最终组合全验。
-- T-14已完成owner三面设计，只有Capability三文档未提交，直接认证实现/真实receiver验证待做；不新建System producer或第二认证profile。
+- T-14已完成owner三面设计，Capability实现与Root旧配置消费者清理按互斥写区推进，真实receiver验证待做；不新建System producer或第二认证profile。
 - 下一步T-05四浏览器旅程与T-14并行→G1→完整生命周期及raw/聚合删除→最终串行门/同步环境→A-01/A-02→A-07。当前没有可保留的同步E2E环境，不称A已完成。
 
 本轮证据见[实施记录](superpowers/evidence/2026-10-31-task-a-c1-cleanup-implementation.md)。
+
+T-05纠偏：有效设计是固定Product tenant，旧Team selector已删除；当前验收采用固定域冷登录、异tenant会话拒绝及返回固定域恢复、App登出、独立撤权。禁止因台账错误删除BFF隔离闸或新造跨tenant UI。冷登录active tenant缺失已真实复现，登记I-21；最新候选状态以下文为准。
+
+冷登录风险已转真实RED：全新Chromium真实表单303后session/projects401，登记I-21并派App最小修复；原HTTP smoke4PASS不覆盖此失败。Root退休配置与文件冲突6路径候选已独审、主方154pass/141subtests，待Capability切片配对。
+
+本次再核：Goal active；App冷登录五文件候选停写，worker55pass/lint/types，Root完整门/浏览器GREEN待验。Root配套六文件完整治理1879pass/3skip/506subtests已结束且冻结hash不变；Capability71路径候选已冻结，worker最终123pass/0skip，Root完整门/真实receiver待验。G1/G2/G3均OPEN，旧全门不覆盖当前dirty候选。
+
+App冷登录切片727cd674已独审并由Root完成完整check（contract452/architecture50/full6401/0skip，lint/types/build）；沿原PR50推送，本次Root精确pin后跑真实冷登录。退出POST body疑点登记I-24待复现，不拿当前slice绿覆盖四旅程。Capability71路径已独审，Root完整门运行中；G1/G2/G3保持OPEN。

@@ -901,3 +901,24 @@ BFF173e026基线新增实际生产AppModule compile回归，五阶段真实RED�
 精确App9ba65343/BFF4d6d17b/IAMe6a01cf source/clean/gitlink与Node24/24/22.23.4通过；Root实际执行native runner，失败时才拦截诊断的包装未替换成功行为。4checks PASS：fixture native cookie的App session、同源projects、fixture IAM signout后401、秘密日志检查；cleanup PASS/quiescent=true/无保留workdir，脱敏机器收据在ignored本地证据。不是冷登录、双tenant、App退出或独立撤权的浏览器四旅程；也不证明完整drain/SSE/worker/PG池优雅释放。T-13在此最小范围闭合，T-17完整项/G1/G2/G3仍OPEN。
 
 T-14并行仅落Capability三面文档71行，Root复核scope/派生auth索引/冻结合同关系及取消未知提交边界；9本地链接/diff检查通过，历史正文原字节保留。无生产/contract/provenance/测试变更，Capability44fcc5d三文档dirty待后继实现，不冒认证cutover完成。
+
+
+### T-05真实冷登录RED、T-14并行候选
+
+当前精确三owner组合的新Chromium空context没有注入cookie，真实/login表单已出现且POST303；其后浏览器同源session401、projects401。测试邮箱由本次自有IAM fixture get-session内存读取，密码是现fixture公开test-only常量，未记录凭据/会话内容；独立脱敏收据保留HTTP状态。原最小HTTP4checks仍PASS、该run资源清理PASS；两类证据不能互相替代。现有效App/IAM/BFF固定Product设计与G0均未批准同App跨tenant正向切换，Root纠正T05错误要求为异tenant会话拒绝/固定域恢复；App补固定tenant原生准入，不恢复selector。
+
+Capability T14按已审三面门实现，Node24.20.0/pnpm11.25 frozen install成功、lock未改；实际RED含System仍OAuth、缺auth-source索引、两处取消迟到写，后继候选尚未最终停写。Root三退休resource配置消费者6路径候选独审CLEAR，主方实际154pass/141subtests；同文件聚合credential与单projection同名O_EXCL碰撞先真实RED后独立文件名修复，真实文件权限/精确内容/正常异常回收保留。Root完整治理已exit0：1879pass/3skip/506subtests，六文件冻结hash保持；真实Capability接收方尚未运行。旧opt-in/CI其他OAuth债务不算本片通过。
+
+### 本次用户四问对齐与App候选交接
+
+get_goal实测active；当前Goal只覆盖C-1.3～C-4，Task A产品16项未闭环。暂停历史仅有paused状态事件/中断证据，不猜客户端具体触发。Root更新唯一台账主表、已验前置复选框、当前组合与并行角色，旧启动失败/后续设计待做文字归为历史。保留3～7工作日为低置信度C阶段资源预算，不作为Task A全部工期承诺。
+
+App9ba基线新增五文件冷登录候选已停写；worker日志55pass/0skip、lint/typecheck通过，尚未Root完整门或真实浏览器GREEN。记录为候选交接，不提前关闭I-21/T-05。Capability取消deadline两负控RED已登记在T-14，允许等价识别既有Connect DeadlineExceeded的最小修复，不扩事务方案。此次进度整理未另启服务、运行Schema或提交/推送/合main。
+
+随后T-14 worker交接：71路径（67存在/4删除）已停写，最终7files123pass/0skip，触及format/eslint/typecheck/tsc编译/readonly publication/diff均通过，独审deadline修复后CLEAR。以上是worker证据，不是Root owner全门；Root尚未运行该接收方真实PG/Redis。T-14标REVIEW_PENDING，G1不提升。
+
+### T-05 App冷登录Root主验及PR50交付
+
+Root全1494tracked hash冻结后以Node22.23.4/pnpm11.25.0执行pnpm check：exit0、contract48files452pass、architecture4files50pass、full354files6401pass/0skip，lint/types/build通过。前后输入hash一致；独审CLEAR。五路径提交727cd674fd45487d3d9becc685701546623865b1，fetch非递归核main/PR分支无新分叉后沿PR50推送；未合main。真实浏览器GREEN待本次Root精确gitlink提交后运行。独审辅助29测试使用Node24，不替代Root规定Node22主验。
+
+只读发现App退出nativeSignOut POST未传body与transport严格规则不符，登记I-24待实际复现；不据静态疑点称退出已修。Capability停写71hash复核及独审CLEAR，Root完整门独立串行启动，尚不提前报结果。
