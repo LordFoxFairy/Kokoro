@@ -17115,3 +17115,12 @@ T14 receiver切片f515/PR13已Root全门3051pass/678skip和真实PG1pass，Root�
 App e1be73e0 JSON规范化已独审/Root完整check6407pass/0skip并沿PR50推送，精确pin后复验真实退出；真实GREEN前I-24保持OPEN。
 
 最终当前：App e1be/Root1e6真实退出GREEN，session200且authenticated=false/cookie0、projects401/旧cookie401；冷登录亦真，原smoke与cleanupPASS。临时driver原要求无cookiesession401不符合既有200/false契约，已改精确body与零cookie/两401断言并真实重跑。I-24 HTTP缺陷闭合，完整四旅程仍T05进行中；下一步owner exact browser session fixture与永久driver，不提前A。
+
+
+### Task A 2026-11-02 状态重新对齐
+
+Goal实际active；C前置闭环与原A产品验收分开。已验App冷登录/退出HTTP、Capability receiver；未验完整四旅程、Nest关闭/旧实现最终删除、最新base整合和同步E2E。IAM新测试候选在Root真实RED交接点，尚无运行结果；本轮不推进业务代码。执行顺序、owner、当前证据与估时缺口只在[唯一方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护；前述增量条目按对应基线视为历史，不再据旧候选状态覆盖最新结论。每仓独立PR，未完成前不merge main。
+
+T-05本轮接续实绩：Root已运行IAM新integration真实RED，1fail/10未选，失败为旧host不支持browser_fixture（ready已成功）。交原writer实现test-only协议，Root永久driver另一路先tests-only；真实GREEN、完整四旅程与最终闭环尚待。
+
+T-05接收检查点：IAM1ee8d156已推原draft PR6，Root两host66pass/verify1566且双审CLEAR；永久browser模式三路径已双审/Root82定向与1931治理通过。Root本次精确pin并提交runner后实跑四旅程，未merge main、未称同步环境或Task A完成。

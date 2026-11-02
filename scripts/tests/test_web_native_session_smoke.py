@@ -34,6 +34,7 @@ def arguments(tmp_path):
         expected_bff_sha="b" * 40,
         expected_app_sha="c" * 40,
         allow_unpublished_iam_gitlink=False,
+        browser_journeys=False,
         postgres_admin_url="postgresql://user:postgres-secret@localhost/test_admin",
         redis_url="redis://user:redis-secret@localhost/0",
     )
@@ -346,8 +347,22 @@ def test_failed_build_or_schema_command_remains_tracked_for_teardown(
     assert processes == [process]
 
 
-def simulate_main(tmp_path, monkeypatch, *, fail_stop=False, fail_cleanup=False):
+def simulate_main(
+    tmp_path,
+    monkeypatch,
+    *,
+    fail_stop=False,
+    fail_cleanup=False,
+    browser_driver=None,
+    succeeds=False,
+    native_success=False,
+):
     args = prepare_main(tmp_path, monkeypatch)
+    args.browser_journeys = browser_driver is not None
+    if browser_driver is not None:
+        monkeypatch.setattr(
+            smoke, "run_browser_journeys", browser_driver, raising=False
+        )
     resources = resources_fixture()
     if fail_cleanup:
         resources.cleanup.side_effect = RuntimeError("database cleanup unavailable")
@@ -378,7 +393,11 @@ def simulate_main(tmp_path, monkeypatch, *, fail_stop=False, fail_cleanup=False)
     monkeypatch.setattr(
         smoke.web,
         "https_browser",
-        lambda *_: (_ for _ in ()).throw(RuntimeError("failed-http secret-cookie")),
+        (lambda *_args, **_kwargs: SimpleNamespace(status=200, body=b"{}"))
+        if browser_driver is not None
+        else lambda *_: (_ for _ in ()).throw(
+            RuntimeError("failed-http secret-cookie")
+        ),
     )
     made = []
     environments = []
@@ -430,8 +449,43 @@ def simulate_main(tmp_path, monkeypatch, *, fail_stop=False, fail_cleanup=False)
             raise RuntimeError("still live")
 
     monkeypatch.setattr(smoke.runtime, "stop_owned_process", stop)
-    with pytest.raises(smoke.SmokeError):
-        smoke.main([])
+    if native_success:
+        ready_record = reader.record()
+        reader.record = Mock(
+            side_effect=[
+                ready_record,
+                {"kind": "result", "command": "signout", "status": "ok"},
+            ]
+        )
+        responses = [
+            (200, {}),
+            (
+                200,
+                {
+                    "authenticated": True,
+                    "mode": "native",
+                    "subject": "user",
+                    "expires_at": 123,
+                },
+            ),
+            (200, {"projects": []}),
+            (401, {"error": {"code": "native_session_required"}}),
+        ]
+        monkeypatch.setattr(
+            smoke.web,
+            "https_browser",
+            Mock(
+                side_effect=[
+                    SimpleNamespace(status=status, body=json.dumps(body).encode())
+                    for status, body in responses
+                ]
+            ),
+        )
+    if succeeds:
+        assert smoke.main([]) == 0
+    else:
+        with pytest.raises(smoke.SmokeError):
+            smoke.main([])
     return args, resources, made, environments, credential, stopped
 
 
@@ -634,3 +688,647 @@ def test_invalid_runtime_probe_output_is_not_copied_into_receipt(tmp_path, monke
     receipt, path = read_receipt(tmp_path)
     assert receipt["node_versions"] == {"iam": None, "bff": None, "app": None}
     assert "private-not-a-version" not in path.read_text()
+
+
+# Browser-mode orchestration boundaries; all fixtures below remain process-local.
+def native_cli_args(tmp_path):
+    args = arguments(tmp_path)
+    result = []
+    for name in (
+        "postgres_admin_url",
+        "redis_url",
+        "iam_node_bin",
+        "bff_node_bin",
+        "web_node_bin",
+        "expected_iam_sha",
+        "expected_bff_sha",
+        "expected_app_sha",
+    ):
+        result.extend(["--" + name.replace("_", "-"), str(getattr(args, name))])
+    return result
+
+
+@pytest.mark.parametrize("selected", [False, True])
+def test_browser_journeys_are_explicit_opt_in(tmp_path, selected):
+    argv = native_cli_args(tmp_path)
+    if selected:
+        argv.append("--browser-journeys")
+    args = smoke.parse_args(argv)
+    assert getattr(args, "browser_journeys", None) is selected
+
+
+def browser_broker(tmp_path, responses):
+    broker_type = getattr(smoke, "BrowserBroker", None)
+    assert callable(broker_type), (
+        "browser commands need the bounded private owner broker"
+    )
+    stream_path = tmp_path / "owner-pipe"
+    stream = stream_path.open("w+b", buffering=0)
+    stream.getvalue = stream_path.read_bytes
+    process = SimpleNamespace(stdin=stream)
+    reader = SimpleNamespace(record=Mock(side_effect=responses))
+    credentials = smoke.web.previous.CredentialRegistry()
+    broker = broker_type(process, reader, credentials=credentials, timeout=0.25)
+    return broker, process, reader, credentials
+
+
+def test_browser_fixture_and_bound_cookie_stay_in_private_protocol(tmp_path, capsys):
+    credential_file = tmp_path / "receiver.json"
+    credential_file.write_text("{}")
+    fixture = {
+        "kind": "browser_fixture",
+        "email": "fixture@example.test",
+        "password": "private-browser-password",
+        "tenant_id": "fixed-tenant",
+        "credential_file": str(credential_file),
+        "web_origin": "https://web-native-fixture.example.test",
+    }
+    bound = {"kind": "result", "command": "bind_browser_session", "status": "ok"}
+    broker, process, reader, credentials = browser_broker(tmp_path, [fixture, bound])
+    assert broker.dispatch({"command": "browser_fixture"}) == fixture
+    cookie = "kokoro-issuer.session_token=private-browser-cookie"
+    assert (
+        broker.dispatch(
+            {
+                "command": "bind_browser_session",
+                "slot": "primary",
+                "cookie": cookie,
+            }
+        )
+        == bound
+    )
+    assert [json.loads(line) for line in process.stdin.getvalue().splitlines()] == [
+        {"command": "browser_fixture"},
+        {"command": "bind_browser_session", "slot": "primary", "cookie": cookie},
+    ]
+    assert "private-browser-password" in credentials.values()
+    assert "private-browser-cookie" in credentials.values()
+    assert all(
+        call.kwargs.get("timeout", call.args[0] if call.args else None) <= 0.25
+        for call in reader.record.call_args_list
+    )
+    captured = capsys.readouterr()
+    assert "private-browser" not in captured.out + captured.err
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        {"command": "reset"},
+        {"command": "stop"},
+        {"command": "native"},
+        {"command": "signout"},
+        {"command": "browser_fixture", "sql": "DELETE"},
+        {"command": "bind_browser_session", "slot": "third", "cookie": "x"},
+        {
+            "command": "bind_browser_session",
+            "slot": "primary",
+            "cookie": "kokoro-issuer.session_token=x; arbitrary=y",
+        },
+        {
+            "command": "bind_browser_session",
+            "slot": "primary",
+            "cookie": "kokoro-issuer.session_token=x\nsecret",
+        },
+        {
+            "command": "activate_browser_tenant",
+            "slot": "primary",
+            "tenant": "arbitrary",
+        },
+        {"command": "revoke_browser_membership", "user_id": "someone-else"},
+    ],
+)
+def test_browser_broker_rejects_unapproved_commands_without_owner_io(tmp_path, command):
+    broker, process, reader, _ = browser_broker(tmp_path, [])
+    with pytest.raises(smoke.SmokeError):
+        broker.dispatch(command)
+    assert process.stdin.getvalue() == b""
+    reader.record.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        {"kind": "result", "command": "revoke_browser_session", "status": "ok"},
+        {
+            "kind": "result",
+            "command": "activate_browser_tenant",
+            "status": "ok",
+            "cookie": "secret",
+        },
+        {"kind": "error", "code": "mutation_rejected"},
+        {
+            "kind": "browser_session",
+            "slot": "primary",
+            "exists": True,
+            "member": True,
+            "active_tenant": "other",
+        },
+    ],
+)
+def test_browser_broker_rejects_owner_error_or_response_drift(tmp_path, response):
+    broker, _, _, _ = browser_broker(tmp_path, [response])
+    with pytest.raises(smoke.SmokeError) as caught:
+        broker.dispatch(
+            {"command": "activate_browser_tenant", "slot": "primary", "tenant": "other"}
+        )
+    assert "secret" not in str(caught.value)
+
+
+def complete_browser_result():
+    fixed = {
+        "exists": True,
+        "unexpired": True,
+        "member": True,
+        "active_tenant": "fixed",
+    }
+    deleted = {
+        "exists": False,
+        "unexpired": False,
+        "member": True,
+        "active_tenant": "none",
+    }
+    return {
+        "kind": "browser_result",
+        "journeys": {
+            "cold_login": {
+                "initial_issuer_cookies": 0,
+                "sign_in_status": 303,
+                "session_status": 200,
+                "authenticated": True,
+                "projects_status": 200,
+                "profile_status": 200,
+                "profile_visible": True,
+                "owner": dict(fixed),
+            },
+            "tenant_rejection_recovery": {
+                "foreign_owner": {**fixed, "active_tenant": "other"},
+                "pre_mutation_profile_visible": True,
+                "session_status": 401,
+                "projects_status": 401,
+                "private_ui_retired": True,
+                "relogin_status": 303,
+                "recovered_session_status": 200,
+                "recovered_projects_status": 200,
+                "recovered_profile_status": 200,
+                "recovered_profile_visible": True,
+                "recovered_owner": dict(fixed),
+            },
+            "ui_logout": {
+                "clicked": True,
+                "sign_out_status": 200,
+                "owner": {**fixed, "unexpired": False},
+                "issuer_cookies": 0,
+                "session_status": 200,
+                "authenticated": False,
+                "projects_status": 401,
+                "old_cookie_status": 401,
+            },
+            "independent_revocation": {
+                "a_owner": dict(deleted),
+                "a_session_status": 401,
+                "a_projects_status": 401,
+                "a_private_ui_retired": True,
+                "b_session_status_before_membership": 200,
+                "b_owner_before_membership": dict(fixed),
+                "b_owner_after_membership": {**fixed, "member": False},
+                "b_session_status": 401,
+                "b_projects_status": 401,
+                "private_ui_retired": True,
+            },
+        },
+        "race": {
+            "upstream_profile_status": 200,
+            "observation": "cancelled",
+            "private_ui_retired": True,
+            "cross_tab_focus": True,
+        },
+    }
+
+
+def browser_result_validator():
+    validator = getattr(smoke, "validate_browser_receipt", None)
+    assert callable(validator), "browser receipt must fail closed before final success"
+    return validator
+
+
+@pytest.mark.parametrize("observation", ["cancelled", "delivered_and_retired"])
+def test_browser_receipt_accepts_four_journeys_and_observed_race(observation):
+    result = complete_browser_result()
+    result["race"]["observation"] = observation
+    assert browser_result_validator()(result) == result
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing",
+        "failed",
+        "unknown",
+        "secret",
+        "race",
+        "retired",
+        "focus",
+        "bool_status",
+    ],
+)
+def test_browser_receipt_rejects_incomplete_failed_or_sensitive_results(mutation):
+    result = complete_browser_result()
+    if mutation == "missing":
+        result["journeys"].pop("ui_logout")
+    elif mutation == "failed":
+        result["journeys"]["independent_revocation"]["a_session_status"] = 200
+    elif mutation == "unknown":
+        result["journeys"]["unobserved"] = {"status": "passed"}
+    elif mutation == "secret":
+        result["journeys"]["cold_login"]["cookie"] = "private-cookie"
+    elif mutation == "bool_status":
+        result["journeys"]["cold_login"]["initial_issuer_cookies"] = False
+    else:
+        key = {
+            "race": "observation",
+            "retired": "private_ui_retired",
+            "focus": "cross_tab_focus",
+        }[mutation]
+        result["race"].pop(key)
+    validator = browser_result_validator()
+    with pytest.raises(smoke.SmokeError) as caught:
+        validator(result)
+    assert "private-cookie" not in str(caught.value)
+
+
+@pytest.mark.parametrize("result", [None, "missing", "failed"])
+def test_browser_failure_reaches_main_failure_and_sanitized_receipt(
+    tmp_path, monkeypatch, result
+):
+    if result is None:
+        driver = Mock(side_effect=smoke.SmokeError("private-browser-password"))
+    else:
+        receipt = complete_browser_result()
+        if result == "missing":
+            receipt["journeys"].pop("ui_logout")
+        else:
+            receipt["journeys"]["ui_logout"]["old_cookie_status"] = 200
+        driver = Mock(return_value=receipt)
+    _, resources, _, _, _, _ = simulate_main(
+        tmp_path, monkeypatch, browser_driver=driver
+    )
+    driver.assert_called_once()
+    report, path = read_receipt(tmp_path)
+    assert report["mode"] == "browser_journeys"
+    assert report["status"] == "failed"
+    assert report["completed_journeys"] < 4
+    assert report["credential_log_check"] in {"passed", "failed"}
+    assert "private-browser" not in path.read_text()
+    resources.cleanup.assert_called_once()
+
+
+def test_minimal_mode_receipt_does_not_claim_browser_journeys(tmp_path, monkeypatch):
+    simulate_main(tmp_path, monkeypatch)
+    report, _ = read_receipt(tmp_path)
+    assert report["mode"] == "minimal_http"
+    assert report["completed_journeys"] == 0
+    assert "not browser" in report["scope"]
+
+
+@pytest.mark.parametrize("group_remains", [False, True])
+def test_browser_group_quiescence_precedes_owner_and_database_cleanup(
+    monkeypatch, group_remains
+):
+    import inspect
+
+    assert (
+        "browser_process" in inspect.signature(smoke.close_native_resources).parameters
+    ), "browser process group must be a cleanup dependency, including timeout paths"
+    events = []
+    browser = SimpleNamespace(pid=400, wait=lambda **_: events.append("browser-reap"))
+    owner = SimpleNamespace(pid=401, wait=lambda **_: events.append("owner-reap"))
+    proxy = SimpleNamespace(close=lambda: events.append("proxy"))
+    resources = resources_fixture()
+    resources.cleanup.side_effect = lambda: events.append("database")
+    monkeypatch.setattr(
+        smoke.runtime,
+        "stop_owned_process",
+        lambda process: events.append(
+            "browser-stop" if process is browser else "owner-stop"
+        ),
+    )
+
+    def group_exists(pid):
+        events.append(
+            "browser-group-check" if pid == browser.pid else "owner-group-check"
+        )
+        return group_remains if pid == browser.pid else False
+
+    monkeypatch.setattr(smoke.runtime, "process_group_exists", group_exists)
+    monkeypatch.setattr(
+        smoke.os, "killpg", lambda *_: events.append("owner-force-stop")
+    )
+    kwargs = dict(iam_process=owner, browser_process=browser)
+    if group_remains:
+        with pytest.raises(smoke.NativeCleanupError) as caught:
+            smoke.close_native_resources(
+                [owner, browser], [proxy], None, resources, **kwargs
+            )
+        assert caught.value.quiescent is False
+        assert "owner-stop" not in events
+        resources.cleanup.assert_not_called()
+    else:
+        smoke.close_native_resources(
+            [owner, browser], [proxy], None, resources, **kwargs
+        )
+        assert (
+            events.index("browser-group-check")
+            < events.index("owner-stop")
+            < events.index("database")
+        )
+    assert (
+        events.index("browser-stop")
+        < events.index("browser-group-check")
+        < events.index("proxy")
+    )
+
+
+@pytest.mark.parametrize("failure", ["timeout", "malformed", "eof"])
+def test_browser_driver_failure_is_tracked_before_protocol_and_has_no_secret_args(
+    tmp_path, monkeypatch, failure
+):
+    import io
+
+    run = getattr(smoke, "run_browser_journeys", None)
+    assert callable(run), (
+        "browser subprocess must be tracked before a bounded protocol read"
+    )
+    processes, browsers = [], []
+    process = SimpleNamespace(
+        pid=420,
+        stdin=(tmp_path / "driver-pipe").open("w+b", buffering=0),
+        stdout=SimpleNamespace(fileno=lambda: 13),
+        wait=Mock(return_value=1),
+        poll=lambda: None,
+    )
+    launches = []
+
+    def popen(command, **kwargs):
+        launches.append((command, kwargs))
+        assert "private-browser-password" not in repr(command)
+        assert "private-browser-cookie" not in repr(command)
+        assert kwargs["stdin"] == smoke.subprocess.PIPE
+        assert kwargs["stdout"] == smoke.subprocess.PIPE
+        assert kwargs["start_new_session"] is True
+        return process
+
+    monkeypatch.setattr(smoke.subprocess, "Popen", popen)
+
+    def record(timeout=90):
+        assert process in processes and process in browsers
+        assert 0 < timeout <= 0.25
+        if failure == "malformed":
+            return {"kind": "arbitrary", "password": "private-browser-password"}
+        raise smoke.session.SmokeError("IAM host protocol " + failure)
+
+    reader = SimpleNamespace(record=record, close=Mock())
+    monkeypatch.setattr(smoke.session, "ProtocolReader", lambda _: reader)
+    broker = SimpleNamespace(dispatch=Mock())
+    with pytest.raises(smoke.SmokeError) as caught:
+        run(
+            node=tmp_path / "node",
+            env={},
+            broker=broker,
+            web_origin="https://web-native-fixture.example.test",
+            proxy_port=1234,
+            processes=processes,
+            browser_processes=browsers,
+            log=io.BytesIO(),
+            work_dir=tmp_path,
+            timeout=0.25,
+        )
+    assert launches and processes == [process] and browsers == [process]
+    assert "private-browser" not in str(caught.value)
+    reader.close.assert_called_once()
+
+
+@pytest.mark.parametrize("unexpired", [None, "true", True])
+def test_browser_broker_requires_exact_owner_expiration_fact(tmp_path, unexpired):
+    response = {
+        "kind": "browser_session",
+        "slot": "primary",
+        "exists": True,
+        "member": True,
+        "active_tenant": "fixed",
+    }
+    if unexpired is not None:
+        response["unexpired"] = unexpired
+    broker, _, _, _ = browser_broker(tmp_path, [response])
+    if unexpired is True:
+        assert (
+            broker.dispatch({"command": "inspect_browser_session", "slot": "primary"})
+            == response
+        )
+    else:
+        with pytest.raises(smoke.SmokeError):
+            broker.dispatch({"command": "inspect_browser_session", "slot": "primary"})
+
+
+def test_browser_success_keeps_four_journeys_separate_from_credential_scan(
+    tmp_path, monkeypatch
+):
+    driver = Mock(return_value=complete_browser_result())
+    simulate_main(tmp_path, monkeypatch, browser_driver=driver, succeeds=True)
+    report, _ = read_receipt(tmp_path)
+    assert report["status"] == "passed"
+    assert report["mode"] == "browser_journeys"
+    assert report["completed_journeys"] == 4
+    assert report["completed_checks"] == 0
+    assert report["credential_log_check"] == "passed"
+    assert report["browser"] == complete_browser_result()
+
+
+def test_browser_driver_reports_only_allowlisted_failure_stage(tmp_path, monkeypatch):
+    import io
+
+    process = SimpleNamespace(
+        pid=421,
+        stdin=(tmp_path / "driver-pipe").open("w+b", buffering=0),
+        stdout=SimpleNamespace(fileno=lambda: 13),
+        poll=lambda: None,
+    )
+    monkeypatch.setattr(smoke.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    reader = SimpleNamespace(
+        record=lambda **_: {
+            "kind": "browser_failure",
+            "stage": "tenant_rejection_recovery",
+        },
+        close=lambda: None,
+    )
+    monkeypatch.setattr(smoke.session, "ProtocolReader", lambda _: reader)
+    with pytest.raises(smoke.SmokeError, match="tenant_rejection_recovery"):
+        smoke.run_browser_journeys(
+            node=tmp_path / "node",
+            env={},
+            broker=None,
+            web_origin="https://web-native-fixture.example.test",
+            proxy_port=1234,
+            processes=[],
+            browser_processes=[],
+            log=io.BytesIO(),
+            work_dir=tmp_path,
+        )
+
+
+def test_browser_login_pacing_respects_owner_window_without_real_sleep(tmp_path):
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      const {waitForLoginSlot} = await import(process.argv[1]);
+      let now = 1500;
+      const waits = [];
+      const clock = {now: () => now, sleep: async ms => { waits.push(ms); now += ms; }};
+      await waitForLoginSlot([100, 200], 20000, clock);
+      assert.deepEqual(waits, []);
+      const completed = [100, 200, 1000];
+      await waitForLoginSlot(completed, 20000, clock);
+      assert.ok(now >= 11000);
+      assert.equal(waits.length, 1);
+      assert.deepEqual(completed, []);
+      await assert.rejects(() => waitForLoginSlot([now, now, now], now + 100, clock));
+      assert.equal(waits.length, 1);
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri()],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr
+
+
+def test_minimal_default_preserves_three_http_checks_plus_log_scan(
+    tmp_path, monkeypatch
+):
+    simulate_main(tmp_path, monkeypatch, native_success=True, succeeds=True)
+    report, _ = read_receipt(tmp_path)
+    assert report["status"] == "passed"
+    assert report["mode"] == "minimal_http"
+    assert report["completed_checks"] == 4
+    assert report["completed_journeys"] == 0
+    assert report["browser"] is None
+    assert report["credential_log_check"] == "passed"
+
+
+@pytest.mark.parametrize(
+    "scenario", ["success", "exit_failure", "oversized", "timeout"]
+)
+def test_browser_process_private_pipe_is_bounded_and_exit_status_matters(
+    tmp_path, scenario
+):
+    import tempfile
+
+    executable = tmp_path / "protocol-child"
+    lines = [
+        "#!" + sys.executable,
+        "import json, sys, time",
+        "json.loads(sys.stdin.readline())",
+    ]
+    if scenario == "timeout":
+        lines.append("time.sleep(60)")
+    elif scenario == "oversized":
+        lines.append("sys.stdout.write('x' * 100000); sys.stdout.flush()")
+    else:
+        lines.extend(
+            [
+                "print(json.dumps("
+                + repr(complete_browser_result())
+                + "), flush=True)",
+                "sys.exit(" + ("9" if scenario == "exit_failure" else "0") + ")",
+            ]
+        )
+    executable.write_text("\n".join(lines) + "\n")
+    executable.chmod(0o700)
+    processes, browsers = [], []
+    try:
+        with tempfile.TemporaryFile() as log:
+            kwargs = dict(
+                node=executable,
+                env={},
+                broker=None,
+                web_origin="https://web-native-fixture.example.test",
+                proxy_port=1234,
+                processes=processes,
+                browser_processes=browsers,
+                log=log,
+                work_dir=tmp_path,
+                timeout=0.25 if scenario == "timeout" else 3,
+            )
+            if scenario == "success":
+                assert smoke.run_browser_journeys(**kwargs) == complete_browser_result()
+            else:
+                with pytest.raises(smoke.SmokeError):
+                    smoke.run_browser_journeys(**kwargs)
+    finally:
+        assert len(browsers) == 1 and processes == browsers
+        smoke.close_native_resources(
+            processes, [], None, None, browser_process=browsers[0]
+        )
+        assert not smoke.runtime.process_group_exists(browsers[0].pid)
+
+
+def test_browser_receipt_rejects_nonscalar_observation_without_reflecting_payload():
+    receipt = complete_browser_result()
+    receipt["race"]["observation"] = ["private-value"]
+    with pytest.raises(smoke.SmokeError) as caught:
+        smoke.validate_browser_receipt(receipt)
+    assert "private-value" not in str(caught.value)
+
+
+@pytest.mark.parametrize("visible", [None, False])
+def test_browser_tenant_retirement_requires_visible_private_data_before_mutation(
+    visible,
+):
+    receipt = complete_browser_result()
+    journey = receipt["journeys"]["tenant_rejection_recovery"]
+    if visible is None:
+        journey.pop("pre_mutation_profile_visible")
+    else:
+        journey["pre_mutation_profile_visible"] = visible
+    with pytest.raises(smoke.SmokeError):
+        smoke.validate_browser_receipt(receipt)
+
+
+def test_browser_cleanup_reaps_driver_before_quiescence_inventory(monkeypatch):
+    events = []
+    browser = SimpleNamespace(pid=490, wait=lambda **_: events.append("reaped"))
+    monkeypatch.setattr(
+        smoke.runtime, "stop_owned_process", lambda _: events.append("stopped")
+    )
+
+    def group_exists(_):
+        events.append("inventory")
+        return "reaped" not in events
+
+    monkeypatch.setattr(smoke.runtime, "process_group_exists", group_exists)
+    resources = resources_fixture()
+    smoke.close_native_resources(
+        [browser], [], None, resources, browser_process=browser
+    )
+    assert events == ["stopped", "reaped", "inventory"]
+    resources.cleanup.assert_called_once()
+
+
+def test_browser_reap_timeout_preserves_dependencies(monkeypatch):
+    browser = SimpleNamespace(
+        pid=491, wait=Mock(side_effect=smoke.subprocess.TimeoutExpired("driver", 5))
+    )
+    monkeypatch.setattr(smoke.runtime, "stop_owned_process", Mock())
+    monkeypatch.setattr(smoke.runtime, "process_group_exists", Mock(return_value=False))
+    resources = resources_fixture()
+    with pytest.raises(smoke.NativeCleanupError) as caught:
+        smoke.close_native_resources(
+            [browser], [], None, resources, browser_process=browser
+        )
+    assert caught.value.quiescent is False
+    browser.wait.assert_called_once_with(timeout=5)
+    resources.cleanup.assert_not_called()

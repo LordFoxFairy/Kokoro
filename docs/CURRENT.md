@@ -8,6 +8,9 @@ Capability f515已Root独审与format/lint/verify/Prisma/build全0（3051pass/67
 
 无常驻同步测试环境。下一步T-05 owner绑定真实browser session与永久四旅程driver，验证固定域隔离恢复、独立撤权及UI迟到状态；随后生命周期/旧实现删除、base整合与最终门。Root66/App50/BFF18/IAM6/Capability13各自draft，未merge main/部署。
 
+
+2026-11-02续接交付：IAM test-only host新协议经Root66真实integration/verify1566与双审，已提交推送1ee8d156/原draft PR6；Root本次接收精确pin。永久browser模式三路径已双审，Root82定向、完整治理1931pass/3skip/506subtests、Ruff/Node语法门通过；已修退休sentinel与进程reap回归，尚未实际运行四旅程。Goal保持active，后续直接按正式模式实跑，不把静态门当产品闭环。
+
 ---
 
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续

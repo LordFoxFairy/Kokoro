@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import select
 import shutil
 import signal
 import subprocess
@@ -58,6 +59,7 @@ def parse_args(argv=None):
     for name in ("expected-iam-sha", "expected-bff-sha", "expected-app-sha"):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--allow-unpublished-iam-gitlink", action="store_true")
+    parser.add_argument("--browser-journeys", action="store_true")
     args = parser.parse_args(argv)
     if urlsplit(args.postgres_admin_url).scheme != "postgresql" or urlsplit(
         args.redis_url
@@ -133,6 +135,348 @@ def native_command(
     return NativeReceipt(cookie, credential_file, web_origin)
 
 
+BROWSER_JOURNEYS = {
+    "cold_login": {
+        "initial_issuer_cookies": 0,
+        "sign_in_status": 303,
+        "session_status": 200,
+        "authenticated": True,
+        "projects_status": 200,
+        "profile_status": 200,
+        "profile_visible": True,
+        "owner": {
+            "exists": True,
+            "unexpired": True,
+            "member": True,
+            "active_tenant": "fixed",
+        },
+    },
+    "tenant_rejection_recovery": {
+        "foreign_owner": {
+            "exists": True,
+            "unexpired": True,
+            "member": True,
+            "active_tenant": "other",
+        },
+        "pre_mutation_profile_visible": True,
+        "session_status": 401,
+        "projects_status": 401,
+        "private_ui_retired": True,
+        "relogin_status": 303,
+        "recovered_session_status": 200,
+        "recovered_projects_status": 200,
+        "recovered_profile_status": 200,
+        "recovered_profile_visible": True,
+        "recovered_owner": {
+            "exists": True,
+            "unexpired": True,
+            "member": True,
+            "active_tenant": "fixed",
+        },
+    },
+    "ui_logout": {
+        "clicked": True,
+        "sign_out_status": 200,
+        "owner": {
+            "exists": True,
+            "unexpired": False,
+            "member": True,
+            "active_tenant": "fixed",
+        },
+        "issuer_cookies": 0,
+        "session_status": 200,
+        "authenticated": False,
+        "projects_status": 401,
+        "old_cookie_status": 401,
+    },
+    "independent_revocation": {
+        "a_owner": {
+            "exists": False,
+            "unexpired": False,
+            "member": True,
+            "active_tenant": "none",
+        },
+        "a_session_status": 401,
+        "a_projects_status": 401,
+        "a_private_ui_retired": True,
+        "b_session_status_before_membership": 200,
+        "b_owner_before_membership": {
+            "exists": True,
+            "unexpired": True,
+            "member": True,
+            "active_tenant": "fixed",
+        },
+        "b_owner_after_membership": {
+            "exists": True,
+            "unexpired": True,
+            "member": False,
+            "active_tenant": "fixed",
+        },
+        "b_session_status": 401,
+        "b_projects_status": 401,
+        "private_ui_retired": True,
+    },
+}
+
+
+def exact_browser_fact(value, expected) -> bool:
+    """Reject unknown fields and Python bool/int equivalence at the boundary."""
+    if type(value) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return value.keys() == expected.keys() and all(
+            exact_browser_fact(value[key], expected[key]) for key in expected
+        )
+    return value == expected
+
+
+def validate_browser_receipt(record: dict) -> dict:
+    if not isinstance(record, dict) or set(record) != {"kind", "journeys", "race"}:
+        raise SmokeError("browser receipt shape invalid")
+    if record["kind"] != "browser_result" or not exact_browser_fact(
+        record["journeys"], BROWSER_JOURNEYS
+    ):
+        raise SmokeError("browser journey facts incomplete or failed")
+    race = record["race"]
+    if not isinstance(race, dict) or race.get("observation") not in (
+        "cancelled",
+        "delivered_and_retired",
+    ):
+        raise SmokeError("browser race observation missing")
+    if not exact_browser_fact(
+        race,
+        {
+            "upstream_profile_status": 200,
+            "observation": race["observation"],
+            "private_ui_retired": True,
+            "cross_tab_focus": True,
+        },
+    ):
+        raise SmokeError("browser race facts incomplete or failed")
+    return record
+
+
+def private_json_write(stream, record: dict, timeout: float) -> None:
+    """Bounded nonblocking private-pipe write, never a log or command argument."""
+    payload = (json.dumps(record, separators=(",", ":")) + "\n").encode()
+    if len(payload) > 16_384 or timeout <= 0 or stream is None:
+        raise SmokeError("private protocol write invalid")
+    fd = stream.fileno()
+    was_blocking = os.get_blocking(fd)
+    deadline = time.monotonic() + timeout
+    try:
+        os.set_blocking(fd, False)
+        while payload:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or not select.select([], [fd], [], remaining)[1]:
+                raise SmokeError("private protocol write deadline exceeded")
+            try:
+                count = os.write(fd, payload)
+            except BlockingIOError:
+                continue
+            if count <= 0:
+                raise SmokeError("private protocol write closed")
+            payload = payload[count:]
+    except (OSError, ValueError):
+        raise SmokeError("private protocol write failed") from None
+    finally:
+        os.set_blocking(fd, was_blocking)
+
+
+class BrowserBroker:
+    """The six fixed IAM fixture operations; no arbitrary owner command relay."""
+
+    def __init__(self, process, reader, *, credentials, timeout=10):
+        self.process = process
+        self.reader = reader
+        self.credentials = credentials
+        self.timeout = timeout
+
+    def dispatch(self, request: dict, *, timeout=None) -> dict:
+        if not isinstance(request, dict):
+            raise SmokeError("browser command invalid")
+        command = request.get("command")
+        fields = {
+            "browser_fixture": {"command"},
+            "bind_browser_session": {"command", "slot", "cookie"},
+            "activate_browser_tenant": {"command", "slot", "tenant"},
+            "inspect_browser_session": {"command", "slot"},
+            "revoke_browser_session": {"command", "slot"},
+            "revoke_browser_membership": {"command"},
+        }
+        if (
+            not isinstance(command, str)
+            or command not in fields
+            or set(request) != fields[command]
+        ):
+            raise SmokeError("browser command invalid")
+        if "slot" in request and request["slot"] not in ("primary", "secondary"):
+            raise SmokeError("browser slot invalid")
+        if command == "activate_browser_tenant" and request["tenant"] not in (
+            "fixed",
+            "other",
+        ):
+            raise SmokeError("browser tenant invalid")
+        if command == "bind_browser_session":
+            cookie = request["cookie"]
+            if not isinstance(cookie, str) or not re.fullmatch(
+                r"(?:__Secure-)?kokoro-issuer\.session_token=[^;\s\x00-\x1f\x7f]{1,4096}",
+                cookie,
+            ):
+                raise SmokeError("browser cookie invalid")
+            self.credentials.add(cookie, cookie.partition("=")[2])
+        budget = min(self.timeout, self.timeout if timeout is None else timeout)
+        deadline = time.monotonic() + budget
+        private_json_write(self.process.stdin, request, budget)
+        try:
+            record = self.reader.record(timeout=max(0, deadline - time.monotonic()))
+        except Exception:
+            raise SmokeError("browser owner protocol failed") from None
+        if not isinstance(record, dict):
+            raise SmokeError("browser owner response invalid")
+        if command == "browser_fixture":
+            fields = {
+                "kind",
+                "email",
+                "password",
+                "tenant_id",
+                "credential_file",
+                "web_origin",
+            }
+            if set(record) != fields or record.get("kind") != "browser_fixture":
+                raise SmokeError("browser fixture response invalid")
+            if any(
+                not isinstance(record[key], str)
+                or not record[key]
+                or len(record[key]) > 4096
+                for key in fields - {"kind"}
+            ):
+                raise SmokeError("browser fixture value invalid")
+            if (
+                not Path(record["credential_file"]).is_file()
+                or urlsplit(record["web_origin"]).scheme != "https"
+            ):
+                raise SmokeError("browser fixture configuration invalid")
+            self.credentials.add(record["password"], record["email"])
+            return record
+        if command == "inspect_browser_session":
+            if (
+                set(record)
+                != {"kind", "slot", "exists", "unexpired", "member", "active_tenant"}
+                or record.get("kind") != "browser_session"
+                or record.get("slot") != request["slot"]
+                or type(record.get("exists")) is not bool
+                or type(record.get("unexpired")) is not bool
+                or type(record.get("member")) is not bool
+                or record.get("active_tenant") not in ("fixed", "other", "none")
+            ):
+                raise SmokeError("browser session observation invalid")
+            return record
+        if record != {"kind": "result", "command": command, "status": "ok"}:
+            raise SmokeError("browser owner mutation rejected")
+        return record
+
+
+class BrowserJourneyError(SmokeError):
+    def __init__(self, stage):
+        if not isinstance(stage, str) or stage not in {
+            "config",
+            "cold_login",
+            "tenant_rejection_recovery",
+            "ui_logout",
+            "independent_revocation",
+            "browser_close",
+        }:
+            stage = "unknown"
+        self.stage = stage
+        super().__init__("browser " + stage + " failed")
+
+
+def run_browser_journeys(
+    *,
+    node,
+    env,
+    broker,
+    web_origin,
+    proxy_port,
+    processes,
+    browser_processes,
+    log,
+    work_dir,
+    timeout=180,
+) -> dict:
+    deadline = time.monotonic() + timeout
+    reader = None
+    # Do not inherit inspector/debug flags that could log private protocol input.
+    driver_env = {
+        key: value
+        for key, value in env.items()
+        if key in {"PATH", "HOME", "TMPDIR", "LANG", "LC_ALL", "TZ"}
+    }
+    process = subprocess.Popen(
+        [str(node), str(Path(__file__).with_name("web_native_session_chromium.mjs"))],
+        cwd=ROOT,
+        env=driver_env,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=log,
+        start_new_session=True,
+        bufsize=0,
+    )
+    processes.append(process)
+    browser_processes.append(process)
+    try:
+        if process.stdout is None:
+            raise SmokeError("browser protocol unavailable")
+        reader = session.ProtocolReader(process.stdout.fileno())
+        private_json_write(
+            process.stdin,
+            {
+                "kind": "config",
+                "app": str(APP),
+                "origin": web_origin,
+                "port": proxy_port,
+                "work_dir": str(work_dir),
+            },
+            deadline - time.monotonic(),
+        )
+        for _ in range(64):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise SmokeError("browser deadline exceeded")
+            message = reader.record(timeout=remaining)
+            if not isinstance(message, dict):
+                raise SmokeError("browser protocol invalid")
+            if (
+                set(message) == {"kind", "request"}
+                and message["kind"] == "owner_command"
+            ):
+                response = broker.dispatch(
+                    message["request"], timeout=deadline - time.monotonic()
+                )
+                private_json_write(process.stdin, response, deadline - time.monotonic())
+            elif (
+                set(message) == {"kind", "stage"}
+                and message["kind"] == "browser_failure"
+            ):
+                raise BrowserJourneyError(message["stage"])
+            elif message.get("kind") == "browser_result":
+                result = validate_browser_receipt(message)
+                if process.wait(timeout=max(0.001, deadline - time.monotonic())) != 0:
+                    raise SmokeError("browser driver failed")
+                return result
+            else:
+                raise SmokeError("browser protocol invalid")
+        raise SmokeError("browser command limit exceeded")
+    except BrowserJourneyError:
+        raise
+    except Exception:
+        raise SmokeError("browser journeys failed") from None
+    finally:
+        if reader is not None:
+            reader.close()
+
+
 class NativeCleanupError(SmokeError):
     def __init__(self, failures: list[str], quiescent: bool):
         self.failures = failures
@@ -193,6 +537,7 @@ def close_native_resources(
     resources,
     *,
     iam_process=None,
+    browser_process=None,
     iam_identity=None,
     iam_before=None,
     iam_owner_token=None,
@@ -207,6 +552,15 @@ def close_native_resources(
     """
     failures: list[str] = []
     quiescent = True
+    if browser_process is not None:
+        try:
+            runtime.stop_owned_process(browser_process)
+            browser_process.wait(timeout=5)
+            if runtime.process_group_exists(browser_process.pid):
+                raise SmokeError("browser process group remains")
+        except Exception:
+            failures.append("browser process cleanup failed")
+            quiescent = False
     for proxy in reversed(proxies):
         try:
             proxy.close()
@@ -217,6 +571,8 @@ def close_native_resources(
             failures.append("owned proxy cleanup failed")
             quiescent = False
     for process in reversed(processes):
+        if process is browser_process:
+            continue
         if process is iam_process and not quiescent:
             # Leaving stdin open only delays EOF until this runner exits. Kill
             # this owned group without invoking IAM's DB/credential teardown.
@@ -349,6 +705,10 @@ def main(argv=None) -> int:
     processes: list[subprocess.Popen[bytes]] = []
     proxies: list[web.Proxy] = []
     reader = iam = None
+    browser_processes = []
+    browser_receipt = None
+    credential_log_check = "not_run"
+    browser_mode = args.browser_journeys
     iam_before = web_before = None
     recovery_path = directory / "iam-recovery.json"
     node_versions: dict[str, str | None] = dict.fromkeys(REQUIRED_NODE_VERSIONS)
@@ -539,6 +899,7 @@ def main(argv=None) -> int:
             next_port = runtime.free_port()
             web_env.update(
                 {
+                    "NEXT_PUBLIC_SESSION_PREVIEW": "0",
                     "KOKORO_WEB_ORIGIN": web_origin,
                     "KOKORO_DOMAIN": host_name,
                     "KOKORO_BFF_BASE_URL": f"http://127.0.0.1:{bff_proxy.server_port}",
@@ -580,50 +941,71 @@ def main(argv=None) -> int:
                 if time.monotonic() >= deadline or next_process.poll() is not None:
                     raise SmokeError("Next origin fixture not ready")
                 time.sleep(0.1)
-            stage = "native session"
-            session_response = web.https_browser(
-                web_proxy.server_port,
-                "/api/auth/session",
-                web_origin,
-                cookie=receipt.cookie,
-            )
-            body = require_json(session_response, 200, "native Web session")
-            if (
-                body.get("authenticated") is not True
-                or body.get("mode") != "native"
-                or body.get("subject") != ready.user_id
-                or not isinstance(body.get("expires_at"), int)
-            ):
-                raise SmokeError("native Web session response drift")
-            cases += 1
-            projects = web.https_browser(
-                web_proxy.server_port,
-                "/api/session/projects",
-                web_origin,
-                cookie=receipt.cookie,
-            )
-            project_body = require_json(projects, 200, "native Web BFF projects")
-            if project_body != {"projects": []}:
-                raise SmokeError("native Web BFF project response drift")
-            cases += 1
-            if iam.stdin is None:
-                raise SmokeError("IAM host stdin unavailable")
-            iam.stdin.write(b'{"command":"signout"}\n')
-            iam.stdin.flush()
-            result = reader.record()
-            if result != {"kind": "result", "command": "signout", "status": "ok"}:
-                raise SmokeError("IAM signout receipt drift")
-            signed_out = web.https_browser(
-                web_proxy.server_port,
-                "/api/auth/session",
-                web_origin,
-                cookie=receipt.cookie,
-            )
-            out_body = require_json(signed_out, 401, "native Web signed-out session")
-            if out_body.get("error", {}).get("code") != "native_session_required":
-                raise SmokeError("native logout was not enforced")
-            cases += 1
-        except (Exception, KeyboardInterrupt):
+            if browser_mode:
+                stage = "browser journeys"
+                broker = BrowserBroker(iam, reader, credentials=credentials)
+                browser_receipt = validate_browser_receipt(
+                    run_browser_journeys(
+                        node=args.web_node_bin,
+                        env=web_env,
+                        broker=broker,
+                        web_origin=web_origin,
+                        proxy_port=web_proxy.server_port,
+                        processes=processes,
+                        browser_processes=browser_processes,
+                        log=log,
+                        work_dir=directory,
+                    )
+                )
+            else:
+                stage = "native session"
+                session_response = web.https_browser(
+                    web_proxy.server_port,
+                    "/api/auth/session",
+                    web_origin,
+                    cookie=receipt.cookie,
+                )
+                body = require_json(session_response, 200, "native Web session")
+                if (
+                    body.get("authenticated") is not True
+                    or body.get("mode") != "native"
+                    or body.get("subject") != ready.user_id
+                    or not isinstance(body.get("expires_at"), int)
+                ):
+                    raise SmokeError("native Web session response drift")
+                cases += 1
+                projects = web.https_browser(
+                    web_proxy.server_port,
+                    "/api/session/projects",
+                    web_origin,
+                    cookie=receipt.cookie,
+                )
+                project_body = require_json(projects, 200, "native Web BFF projects")
+                if project_body != {"projects": []}:
+                    raise SmokeError("native Web BFF project response drift")
+                cases += 1
+                if iam.stdin is None:
+                    raise SmokeError("IAM host stdin unavailable")
+                iam.stdin.write(b'{"command":"signout"}\n')
+                iam.stdin.flush()
+                result = reader.record()
+                if result != {"kind": "result", "command": "signout", "status": "ok"}:
+                    raise SmokeError("IAM signout receipt drift")
+                signed_out = web.https_browser(
+                    web_proxy.server_port,
+                    "/api/auth/session",
+                    web_origin,
+                    cookie=receipt.cookie,
+                )
+                out_body = require_json(
+                    signed_out, 401, "native Web signed-out session"
+                )
+                if out_body.get("error", {}).get("code") != "native_session_required":
+                    raise SmokeError("native logout was not enforced")
+                cases += 1
+        except (Exception, KeyboardInterrupt) as error:
+            if isinstance(error, BrowserJourneyError):
+                stage = "browser " + error.stage
             failures.append(stage + " failed")
         finally:
             try:
@@ -633,6 +1015,7 @@ def main(argv=None) -> int:
                     reader,
                     resources,
                     iam_process=iam,
+                    browser_process=browser_processes[0] if browser_processes else None,
                     iam_identity=iam_identity,
                     iam_before=iam_before,
                     iam_owner_token=iam_owner_token,
@@ -656,9 +1039,11 @@ def main(argv=None) -> int:
                     }
                 ):
                     raise SmokeError("credential log scan failed")
-                if not failures:
+                credential_log_check = "passed"
+                if not failures and not browser_mode:
                     cases += 1
             except Exception:
+                credential_log_check = "failed"
                 failures.append("credential log scan failed")
             if quiescent and not cleanup_failures:
                 try:
@@ -667,7 +1052,15 @@ def main(argv=None) -> int:
                     cleanup_failures.append("owned files cleanup failed")
             report = {
                 "status": "failed" if failures or cleanup_failures else "passed",
-                "scope": "minimal native HTTP smoke; not browser authentication journeys",
+                "mode": "browser_journeys" if browser_mode else "minimal_http",
+                "scope": (
+                    "four native authentication browser journeys; not full product acceptance"
+                    if browser_mode
+                    else "minimal native HTTP smoke; not browser authentication journeys"
+                ),
+                "completed_journeys": 4 if browser_receipt is not None else 0,
+                "browser": browser_receipt,
+                "credential_log_check": credential_log_check,
                 "expected_sources": expected_sources,
                 "sources": sources,
                 "required_node_versions": REQUIRED_NODE_VERSIONS,

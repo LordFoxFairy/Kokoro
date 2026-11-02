@@ -946,3 +946,45 @@ I-24第二层候选Root完整check exit0（452/50/6407、lint/types/build；1494
 ### I-24真实退出最终GREEN及oracle纠正
 
 Root1e6/App e1be精确组合：真实新Chromium登录303、session200/true、projects200；App sign-out200、session200/false、issuer token cookie0、projects401、内存旧cookie重放401。原4checks与cleanup PASS/quiescent/无保留文件。首轮新实现signout已200但临时driver误要求缺cookie session401；核现native route和既有契约后改精确匿名false/零cookie及两个401，完整重跑GREEN，生产无额外改动。旧415真实RED及错误oracle均保留。脱敏浏览器收据与source SHA/driver hash/cleanup存同ignored run目录，不记录原cookie/密码。该范围不冒Settings点击或完整四旅程验收。
+
+
+### 2026-11-02 T-05 browser fixture 主控真实 RED
+
+在Task A工作树、IAM e6a01cf7基线上，仅现有host integration新增测试；Root使用Node24.20.0、corepack pnpm及既有受管PG/Redis执行：
+
+```sh
+corepack pnpm exec vitest run test/integration/bff-session-admission-host.test.ts -t 'binds only fresh browser sessions and isolates tenant, signout and revocation journeys' --maxWorkers=1
+```
+
+exit1，1 failed / 10未选（不计通过），2.74s。ready阶段成功，发送browser_fixture后旧host严格command enum不支持该命令，退出导致`host exited before browser protocol response`；失败对应缺失协议而非资源启动失败。未修改生产、放宽断言或启动产品旅程。测试冻结SHA256 `23adf38ecc115b6802a97240911a2061331b8f89c1d61f3af26d3533785c157e`，原host SHA256 `9e52a911f77f44e64a1e0eca02abeceb1a3027d457d9a891b0b4581016cfe5be`。本次不据进程退出宣称完整资源inventory验收。
+
+原IAM writer继续test-only host有限协议及pending-command关闭；独立Root worker先补永久browser模式的行为测试，互斥写区。Root负责真实资源、独审接收、完整门及Git。T-05/G1保持OPEN，未运行GREEN/浏览器四旅程。
+
+
+### 2026-11-02 T-05 Root 永久 browser 模式真实单测 RED
+
+Root主方执行`python3 -m pytest scripts/tests/test_web_native_session_smoke.py -q --tb=short`，exit1，34 failed / 30 passed，3.88s。新增模式选择、有限broker、结果验证、main失败传播和browser group优先清理尚无实现；无collection错误，原30测试仍过。此阶段只有单测替身，无浏览器或PG/Redis连接。已交唯一Root三路径writer实现；最终receipt需固定白名单HTTP/owner/UI事实而非仅passed标签，取消与迟到仅记录实际观察分支。主方将按停写候选重跑相关门，不以本RED或worker结果称四旅程完成。
+
+
+### 2026-11-02 T-05 首次候选真实运行与退出 oracle 纠偏
+
+Root执行新主旅程及pending信号/EOF三个选中测试：1 failed / 2 passed / 10未选，6.90s。两个pending关闭案例通过；主旅程实际sign-out200后物理row仍在，原测试期待消失失败。独审与owner writer分别核当前`account-session-adapter`把官方delete转为`terminateAccountSessions`，repository只收紧expiresAt并撤派生凭据；DATA_MODEL明确expired tombstone保留。故不改生产、不额外DELETE换绿，而在私有inspect协议增加unexpired事实，保持exists物理语义；补旧cookie原生get-session null及后续BFF401。此为新增测试oracle错误，原HTTP退出修复不重开为生产缺陷。原RED保留，候选纠偏后重新冻结/独审/实跑；T-05仍OPEN。
+
+
+### 2026-11-02 T-05 IAM test-only host 候选真实 GREEN
+
+Root第二轮曾因同一测试第4次登录返回429而失败（1fail/2pass）；已核锁定BetterAuth `/sign-in*` 特殊限流3次/10秒，保留原规则，将独立历史SID重绑风险拆到独立host，两次登录；主旅程保持三次，不更改IP/headers、不等待假时间或关闭限流。
+
+新冻结host SHA256 `48ac3b1aa6dacf0dddd49db1b9c6f52b8e96707ad1efde57b90fa1a309ea0659`；integration `24e86cf7a1973a37d410b32090dd07efba46a77e51acb67c1d0a0bc94b8e4ebf`。规格与质量独审CLEAR。Root新增4个选中真实测试4pass/10未选（9.75s），再完整运行native host和原web-oidc host两个integration文件，**66pass/0skip，110.76s，exit0**。覆盖真实owner登录/session绑定、异tenant与membership隔离、退出tombstone/旧cookie原生失效、SID历史重放、reset/stop及pending SIGTERM/EOF资源回收。此为测试host验收，不是App UI四旅程；owner完整verify随后串行执行。
+
+
+IAM最终verify exit0：Node24.20.0/corepack pnpm12.3.4，format/lint/types/contract/SDK/default121files1566pass/build；536 tracked输入hash前后不变。Root在确认远端main无新增、PR分支与本地HEAD一致后，仅暂存原3路径提交`1ee8d156252cc1c19ba6951546552e9b01123979`并推送原draft PR6；GitHub核PR OPEN/draft、head精确匹配，未merge。此时Root尚未提交新gitlink，浏览器driver规格独审发现“关闭整个Settings会丢已显示快照”的P2，原writer最小修复中；不以已过78单测代替真实UI退休证据。
+
+
+### 2026-11-02 T-05 Root 永久 browser 模式工程接收
+
+规格独审P2已修：不Escape卸载Settings快照，而通过现有appearance→account标签保持边界；真实profile200 barrier就绪后、tenant mutation前明确验证已有name/email可见，receipt缺该事实或false均拒绝。正常读取/恢复仍要求可编辑。真实本地pipe测试另复现进程stop→group检查间reap竞态，局部改为stop→wait(5s)→group检查，等待失败仍保留依赖；没有改共享runtime helper。
+
+Root停写复验：82个runner定向通过（5.09s）；完整`python3 -m pytest scripts/tests -q` **1931pass/3skip/506subtests，122.05s，exit0**；两个Python文件Ruff format/check、Node22.23.4 driver语法及diff通过。规格/质量双审CLEAR。3路径冻结SHA与执行前后相同：runner `8150db322a6050ba474bdb1d75b89a46a1828ae884f4508bb8b456e427a5e127`、Chromium driver `1ca96c53a1eb47e18ec3dadfa15cab9225f49706740d2a4b6f95540a6ce5f3bb`、runner test `7ddddb3b4f1251708864b998e5e32d76a199e7e2c49186d0a1ddddff46de8bd9`。
+
+这些仅为编排工程证据（含本地pipe子进程），不是实际App/IAM/BFF浏览器四旅程。默认最小4checks保持；新模式fail-closed，真实scope、frame focus、迟到响应及Chromium子树清理要由精确提交组合实际运行后记录。
