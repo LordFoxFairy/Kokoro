@@ -35,7 +35,7 @@
 - C-4 两个行为失败均已修复：denied MCP icon mutation 在授权拒绝后零 Platform command；Skill installation Chat invalid-owner 场景通过显式最小 receipt seam 保持 `502/skill_installation_response_invalid`。
 - BFF `pnpm format:check`：当前列出 32 个文件 warnings（含本轮已触及文件）；本计划不做无关格式扫尾。
 - App static gates：`typecheck`/`lint`/`test:architecture` **50/50**；full `pnpm test` 当前 **6316 pass / 50 fail / 353 files**，失败集中在 pinned BFF artifact/version drift。
-- IAM static gates：format/lint/typecheck 通过；child `b336aa0` 仅格式化 `test/integration/bff-session-admission-host.test.ts`。`pnpm verify` 已通过 format/contract gates，但在 `sdk:check` 发现 `sdk.gen.ts` drift，需 provenance review 后再决定是否更新生成物。
+- IAM static gates：child `a1457be` 发布 native-session SDK 生成物（含 `ReadAccountProfile`、`VerifyNativeSession` 与错误码）；format/lint/typecheck、SDK check、contract gates 与 `pnpm verify` 均通过：**120 files / 1561 tests / build PASS**。
 - Root topology：最新 pin 后 `verify-repository-topology.py` PASS；Root governance 最近有效证据为 **1846 passed / 3 skipped / 502 subtests**，BFF `0a22f4d` pin 后仍需再次串行复核。
 - 真实 C-1.3/E2E：当前只有受管 PostgreSQL `127.0.0.1:5432` 与 Redis `127.0.0.1:6379`；IAM/BFF/App/Agent/owner 进程未启动，`IAM_TEST_ADMIN_URL`、`KOKORO_TEST_POSTGRES_URL`、`KOKORO_TEST_REDIS_URL` 未提供。
 
@@ -50,7 +50,7 @@
 | I-03 | Skill installation Chat invalid owner response 映射成 `chat_unavailable` | C-4 错误契约不闭合，掩盖 `skill_installation_response_invalid` | `228e3d6` 将 fixture 补为完整 receipt seam，保留 typed owner error 映射；focused 24/24，full 0 fail | DONE |
 | I-04 | BFF 32 个 format warnings | BFF/C-4 format gate 非绿 | 只处理受影响文件；禁止全仓格式化扩散 | OPEN |
 | I-05 | App pinned artifact digest drift | App full contract gate 非绿 | 追溯生成物 provenance；未经 owner 裁决不刷新 hash/生成物 | OPEN |
-| I-06 | IAM `pnpm verify` 在 SDK 生成物 drift 停止 | IAM full gate 非绿；格式 warning 已收敛 | 先审 `sdk.gen.ts` provenance，再决定生成物变更，不盲目刷新 baseline | OPEN |
+| I-06 | IAM `pnpm verify` 在 SDK 生成物 drift 停止 | native-session API 已进入 OpenAPI，SDK 生成物需同步 | `a1457be` 重新生成并校验 SDK，`pnpm verify` 120/1561/build PASS | DONE |
 | I-07 | 真实 owner full gate 与 E2E 尚未串行跑完 | 无法宣称 Task A 或 C-4 完成 | 依序启动隔离 owner，收集 health/receipt/E2E evidence | OPEN |
 | I-08 | A-01/A-02/A-07 依赖 C-1～C-4 | 提前进入会造成边界漂移 | 保持停写，直到所有 C gate 证据齐全 | STOPPED |
 
@@ -152,7 +152,7 @@ App native session
 | T-05 真实 IAM→BFF→App 四旅程 receipt | Root + IAM/BFF/App | WAITING T-04 | 脱敏 E2E manifest |
 | T-06 BFF format warning 32 项 | BFF | OPEN | 只修受影响文件，重跑 format；当前保持非阻断历史基线 |
 | T-07 App artifact digest drift | App/Root | OPEN | provenance review 后重生成/拒绝变更 |
-| T-08 IAM verify / SDK drift | IAM | PARTIAL | `b336aa0` 收敛 format；下一步审 `sdk.gen.ts` provenance，未授权不刷新生成物 |
+| T-08 IAM verify / SDK drift | IAM | DONE | child `a1457be`; SDK check、`pnpm verify` 120 files / 1561 tests / build PASS |
 | T-09 Root/owner full serial gate | Root | WAITING T-04 | 先 pin BFF `228e3d6`，再复跑 Root topology/governance、App/IAM/owner full gate |
 | T-10 A-01/A-02/A-07 | Root | STOPPED | T-09 全绿后另立计划 |
 
