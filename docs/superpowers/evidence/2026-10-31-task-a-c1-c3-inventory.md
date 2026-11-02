@@ -339,3 +339,7 @@ User-admission Share fixtures now inject `publicShareService` directly (`64d5c3e
 ### 2026-11-02 Skill-import empty shell cleanup
 
 The two Skill GitHub import fixtures no longer carry empty `services` placeholders (`dcfd0ae`); receipt persistence methods remain explicit. Focused suite is **52/52**.
+
+### 2026-11-02 Project Skill content fixture seam
+
+The Project Skill content fixture now uses explicit `projectService`/`skillShareRepository` plus a minimal receipt-only test owner resource (`0a22f4d`). All **18/18** HTTP cases pass; the receipt seam is retained because exact project-download qualification depends on it, not as a global service aggregate.

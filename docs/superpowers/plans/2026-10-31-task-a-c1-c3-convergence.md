@@ -450,3 +450,8 @@ pnpm test:integration
 
 - Keep the receipt/idempotency seam because the fixture exercises durable replay; remove only empty aggregate placeholders and do not infer a new owner provider.
 - Re-pin Root and continue the remaining provider census; no A gate movement.
+
+### 2026-11-02 Project Skill content fixture migration
+
+- Migrate Project Skill content to named Project/Skills providers while keeping only the receipt methods required by exact-download qualification; do not force `businessStore: null` where the source contract requires an owner resource.
+- Re-run the full BFF diagnostic to measure the remaining baseline failures; preserve all recheck/cancellation assertions.

@@ -805,3 +805,9 @@ BFF child `64d5c3ea7dae963476553b401af2309d8f06ea4f` migrates both User-admissio
 BFF child `dcfd0aee6d2ef0b151be84a9a23d71d3d50b0c41` removes two empty `services: {}` placeholders from Skill GitHub import fixtures. The receipt methods remain explicit on the test-only business-store seam; no feature provider, alias, or production code was added.
 
 验证：`test/skill-github-import.test.mjs` **52/52** pass; `git diff --check` passed. This is a narrow fixture cleanup and does not substitute for real Platform/Storage owner integration.
+
+### C-3 Project Skill content fixture owner binding（2026-11-02）
+
+BFF child `0a22f4d24972fa82b1310b97c841d82b6572424b` removes the stale `services.projects`/`services.skillShares` fixture shape from `test/project-skill-content-http.test.mjs`. The fixture now injects explicit `projectService` and `skillShareRepository`, while retaining a minimal in-memory receipt repository because the exact project-download source requires a non-null idempotency owner resource. This is a test-only owner-boundary correction; no production alias or duplicate aggregate was added.
+
+验证：Project Skill content HTTP suite **18/18** pass, including package inspection, exact download, membership/pin rechecks, digest mismatch, cancellation and expiry; `git diff --check` passed.
