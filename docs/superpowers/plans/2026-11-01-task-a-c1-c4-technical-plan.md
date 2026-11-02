@@ -153,7 +153,7 @@ App native session
 | T-06 BFF format warning 32 项 | BFF | OPEN | 只修受影响文件，重跑 format；当前保持非阻断历史基线 |
 | T-07 App artifact digest drift | App/Root | OPEN | provenance review 后重生成/拒绝变更 |
 | T-08 IAM verify / SDK drift | IAM | DONE | child `a1457be`; SDK check、`pnpm verify` 120 files / 1561 tests / build PASS |
-| T-09 Root/owner full serial gate | Root | WAITING T-04 | 先 pin BFF `228e3d6`，再复跑 Root topology/governance、App/IAM/owner full gate |
+| T-09 Root/owner full serial gate | Root | WAITING T-04/T-07 | BFF/IAM 已 pin 且 Root topology/governance 通过；待 App artifact provenance、隔离环境与 owner full gate 收敛后重跑串行验收 |
 | T-10 A-01/A-02/A-07 | Root | STOPPED | T-09 全绿后另立计划 |
 
 ---
