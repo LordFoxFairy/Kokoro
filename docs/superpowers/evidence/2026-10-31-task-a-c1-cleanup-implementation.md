@@ -793,3 +793,15 @@ Root BFF gitlink now points to `13319aa34628bb7b7dd4667ed615f6377078f84b`. The f
 BFF child `b8bf18aaf0de9edb8359d0d7320a856b52e63d51` migrates model admission, recovery, and settlement HTTP fixtures from `businessStore.submittedAgentRuns` plus an empty `services` shell to the explicit top-level `submittedAgentRuns` provider with `businessStore: null`. The internal AgentRuns adapter already consumes this named provider; no production or Billing contract change was made.
 
 验证：`test/model-admission-http.test.mjs`, `test/model-admission-recovery-http.test.mjs`, and `test/model-settlement-http.test.mjs` **24/24** pass; `git diff --check` passed. This closes three raw provider-shape consumers without claiming real Billing/Agent owner receipts.
+
+### C-3 PublicShare fixture seam（2026-11-02）
+
+BFF child `64d5c3ea7dae963476553b401af2309d8f06ea4f` migrates both User-admission Share fixtures from `businessStore.services.publicShares` to the explicit top-level `publicShareService`, with `businessStore: null`. The Chat public-share adapter already owns this provider; the migration removes a stale aggregate shape and the unused private snapshot fallback.
+
+验证：`test/user-admission.test.ts` **24/24** pass; `git diff --check` passed. No production code, schema, public contract, or cross-owner receipt was changed.
+
+### C-3 empty Skill-import fixture shell cleanup（2026-11-02）
+
+BFF child `dcfd0aee6d2ef0b151be84a9a23d71d3d50b0c41` removes two empty `services: {}` placeholders from Skill GitHub import fixtures. The receipt methods remain explicit on the test-only business-store seam; no feature provider, alias, or production code was added.
+
+验证：`test/skill-github-import.test.mjs` **52/52** pass; `git diff --check` passed. This is a narrow fixture cleanup and does not substitute for real Platform/Storage owner integration.

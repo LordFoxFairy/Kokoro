@@ -331,3 +331,11 @@ Three shared-summary contract fixture groups now inject `skillShareRepository` d
 ### 2026-11-02 AgentRuns provider fixture seam
 
 Three model admission/recovery/settlement HTTP fixtures now inject `submittedAgentRuns` directly (`b8bf18a`) and remove empty aggregate `services` objects. The focused bundle is **24/24**; real cross-owner Billing/Agent receipt evidence remains an environment gate.
+
+### 2026-11-02 User-admission PublicShare fixture seam
+
+User-admission Share fixtures now inject `publicShareService` directly (`64d5c3e`) and remove the stale `businessStore.services.publicShares`/private snapshot shape. The focused User-admission suite is **24/24**; real Chat owner data remains resource-gated elsewhere.
+
+### 2026-11-02 Skill-import empty shell cleanup
+
+The two Skill GitHub import fixtures no longer carry empty `services` placeholders (`dcfd0ae`); receipt persistence methods remain explicit. Focused suite is **52/52**.

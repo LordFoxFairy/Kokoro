@@ -440,3 +440,13 @@ pnpm test:integration
 
 - Keep the internal AgentRuns adapter as the owner boundary and migrate only fixture shape (`submittedAgentRuns` top-level, `businessStore: null`).
 - Re-pin Root, rerun topology/governance, then repeat the BFF full diagnostic; do not call focused model-admission tests an owner E2E receipt.
+
+### 2026-11-02 PublicShare fixture migration
+
+- Keep public sharing on the Chat-owned `publicShareService`; migrate only the two raw User-admission fixture seams and preserve anonymous/fallback projections.
+- Re-pin Root and rerun the owner/full diagnostic; do not broaden into the exact-download fixture that still requires a non-null owner resource graph.
+
+### 2026-11-02 Skill-import shell cleanup
+
+- Keep the receipt/idempotency seam because the fixture exercises durable replay; remove only empty aggregate placeholders and do not infer a new owner provider.
+- Re-pin Root and continue the remaining provider census; no A gate movement.
