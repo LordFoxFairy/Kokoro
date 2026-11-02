@@ -1,12 +1,12 @@
 ## Task A 当前检查点：SDK 缺陷与已识别测试清理已验，认证设计待裁决
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；原 G0 基础决定保留，I-38 局部设计待裁决，G1/G2/G3 OPEN，A-01/A-02/A-07 停写。38 个累计问题、18 个 TODO；测试处置见 §0.3，身份传递候选见 §3.6。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal blocked（I-38等待用户信任裁决）；原 G0 基础决定保留，I-38 局部设计待裁决，G1/G2/G3 OPEN，A-01/A-02/A-07 停写。38 个累计问题、18 个 TODO；测试处置见 §0.3，身份传递候选见 §3.6。
 
-Root 组合仍固定 IAM `5fffe60`；IAM 本地 `1d9bd95` 未推送（前序SDK修复2cb9864）。I-37 SDK 将 Bearer 误填 Cookie 的回归已独审及主方验证：完整 verify exit0（默认1654），clean-commit 外部 consumer 2 PASS / 0 FAIL / 0 SKIP，542 输入未变。仅修 SDK 的凭据 scheme 选择与既有测试，未改 generated/guard/契约，不代表 I-38 已获批准。原 server integration484 是 cc3源码证据，本轮未重跑未变server套件。
+Root 组合仍固定 IAM `5fffe60`；IAM 本地 `285dfcb` 未推送（前序SDK修复2cb9864）。I-37 SDK 将 Bearer 误填 Cookie 的回归已独审及主方验证：完整 verify exit0（默认1654），clean-commit 外部 consumer 2 PASS / 0 FAIL / 0 SKIP，542 输入未变。仅修 SDK 的凭据 scheme 选择与既有测试，未改 generated/guard/契约，不代表 I-38 已获批准。原 server integration484 是 cc3源码证据，本轮未重跑未变server套件。
 
 I-38 建议 Cookie 限专用 admission、后续由受信 BFF 传 Session 引用并由 IAM 原事务复核；新增 BFF 委托信任已明确，仍待用户裁决。SDK 的已知生产消费者是 Billing0.17/Capability0.18，BFF 用本仓 generated，不整包删除或叠加新SDK层。I-36 首批六文件已合并SMTP重复正例、删固定文件清单/源码顺序/tenant字符串、严格Audit两页wire；双审和主方format/lint/types、architecture10、真实三文件31通过，Skills删除无效audit计数后单独16重验。第二批1d9bd95强化四处contract结构、删除两项纯mock转发并纠正两标题，双审CLEAR；主方格式/lint/types、6文件39与真实native15通过，输入未变。等价$ref/required重排反事实4通过、22名称过滤。两条敏感列源码弱检查与guard fixture保留；本次发现已处置，未声称全量无冗余。
 
-T-16已补当前Agent候选证据：c761fad的lock/frozen sync/格式/lint/types/contract/generated/default3336、build与安装wheel smoke通过；default排除934资源项。另真实display旧用例复现assert1==2，47ca431仅一测试文件修过期oracle并删两废止分支参数，主方真实全文件26通过/0skip、双审CLEAR，自有DB回收。Root仍pin c761fad，47ca431未推送；不代表C-4全资源/组合门完成。下一独立动作是核I-31是否仍缺重复logout与专用admission凭据接线证据，不按旧计划机械增测。
+T-16已补当前Agent候选证据：c761fad的lock/frozen sync/格式/lint/types/contract/generated/default3336、build与安装wheel smoke通过；default排除934资源项。另真实display旧用例复现assert1==2，47ca431仅一测试文件修过期oracle并删两废止分支参数，主方真实全文件26通过/0skip、双审CLEAR，自有DB回收。Root仍pin c761fad，47ca431未推送；不代表C-4全资源/组合门完成。I-31的重复logout与专用admission依赖故障分类已在IAM285dfcb补证：真实host14、guard58与format/lint/types通过，542输入稳定、双审CLEAR。guard只是单元分类，不冒真实HTTP/controller证据。BFF本地b6d98f8已补生产ProjectMutationMiddleware/真实client与loopback的断连、期限失败关闭及成功控制，主方native6、source lint/types/build和单文件严格类型检查通过、双审CLEAR。不是Nest启动/真实IAM/PG验证；当前独立补证已收尾，后续生产切换依赖I-38裁决，不再机械增测。
 
 无 live 验收进程；未发行 native2、更新 gitlink、merge main 或部署。旧 Root `aec5775a` 正式四旅程仅证明对应隔离组合，不是全部仓库常驻同步环境或 Task A 闭环。
 

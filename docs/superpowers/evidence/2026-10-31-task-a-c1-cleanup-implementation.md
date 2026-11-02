@@ -1175,3 +1175,25 @@ I-36本次抽样发现完成有界处置，不等于逐项审计所有测试。�
 - 主方最终单文件format/lint/types、diff通过，规格与质量双审CLEAR；真实PG该完整文件26PASS/0FAIL/0SKIP，5.16秒，523输入无漂移、自有库回收。初始RED与最终GREEN日志留私有本地。默认3336绑定修改前c761，改动仅默认排除的integration测试，未无意义重跑默认全套，不称新commit全资源门通过。
 
 Root与子仓未推送、未更新Agent/IAM gitlink、未merge main/部署。T-16当前候选缺口已处理，最终组合/其他受影响I/O/治理审计仍在C-4。I-38未决，Goal active且原目标不缩减。同步删除计划中“停写验证后直接发行native2”的过期立即指令；下一步核I-31专用admission接线与重复logout真正缺口，现有覆盖优先，缺项才补，不借后继门控制造空转或重复全量测试。
+
+
+### I-31 重复退出与专用准入依赖错误分类（2026-11-02）
+
+IAM本地 `285dfcb`，基线1d9bd95，仅两个既有测试文件，无生产/契约/Schema/依赖/I-38变更。
+
+- `test/integration/bff-session-admission-host.test.ts` 在原真实浏览器旅程原位补同一旧Cookie第二次正式sign-out，保两次200/success、绑定SID仍存在但已过期、旧Cookie get-session仍null；另一独立Session在实际HTTP前后保持同SID/目标user及有效状态。断言只输出布尔/状态，不dump会话材料；原有界finally和清理保持。
+- `test/unit/internal-auth.guard.test.ts` 仅新增专用nativeAdmission依赖失败→typed unavailable，并核现错误常量503、guard拒绝/无limiter与OAuth。此为unit与分类证据，不冒真实HTTP或controller零调用。已有未知服务凭据真实401与通用轮换/错用途覆盖不复制。
+- 主方Node24：两文件format/ESLint、`tsc --noEmit`、guard整文件58PASS（0.624秒）；真实受管PG/Redis、既有隔离fixture的host整文件14PASS/0FAIL/0SKIP（27.38秒），542输入无漂移。最终两文件freeze匹配，规格/质量双审CLEAR、git diff --check通过。此为已有正确行为补覆盖，未伪造生产RED，未重复全套484integration/default/新组合E2E。
+
+I-31仍未全部关闭：只读核准IAM已涵盖原非合作准入、业务超时/断连、准入后事务事实变化，不再重复增测；BFF现有native测试缺少实际网络失败经当前生产feature middleware的接线。下一片选择实际ProjectMutationMiddleware和真实client/loopback，排除新增createBffServer兼容测试消费者；不为容易通过而替代目标运行路径。I-38仍待用户裁决，Goal active、G1/G2/G3 OPEN，A停写，各仓原PR未merge；本地提交未推送或更新gitlink。
+
+
+### I-31 BFF生产middleware失败关闭补证与I-38阻断交接（2026-11-02）
+
+BFF本地 `b6d98f8`，基线105024d，仅`test/native-session-admission.test.ts`。新增一个现文件用例，在实际ProjectMutationMiddleware→authorizeUserRequest→真实SessionAdmissionClient/transport→loopback执行断连、无响应、成功控制。两故障各503/准确错误码、200ms配置且2s内结束、一次native请求、verify回退0、实际ProjectService/repo create与receipt claim/put均0；成功控制验证同实例观察口有效，真实service到窄repo且trustedtenant/user正确。复用原listen/credentialFile，未新增compat/raw消费者、harness文件或生产层，cleanup主动关闭本测试活动连接。
+
+主方Node24停写门：单文件格式、source lint/types、重建dist、native整文件6PASS/0skip，1068输入无漂移。随后额外直接静态检查测试文件（仓默认tsconfig仅src）发现TS2352；唯一writer把mock独立保存、repository显式Pick注解，保一次测试断言，不加unknown/any桥或空方法。主方最终单文件格式、严格测试类型检查、native6PASS/0skip（407ms）及diff通过，最终hash匹配、规格/质量双审CLEAR。实际命令为`tsc --noEmit --allowJs --checkJs false --skipLibCheck --module NodeNext --target ES2022 --strict --experimentalDecorators --emitDecoratorMetadata test/native-session-admission.test.ts`和`node --test test/native-session-admission.test.ts`；日志留私有本地，未无意义重跑全默认/全仓门。
+
+证据仅为生产middleware/client的真实loopback组合；IAM响应、ProjectRepository和receipt依赖是替身，不声称Nest容器启动、真实IAM/PG、durable零写或G1整体验收。最终仅测试类型调整，生产源码与主方已重建dist不变。各候选均本地未推送；Root IAM/BFF/Agent gitlink仍原组合，未merge main或部署。
+
+阻断审计：I-38在用户质疑及后续连续多轮推进中未获裁决；期间实际完成I-36测试处置、Agent旧oracle漏项、IAM重复登出/依赖分类和BFF本次接线补证，没有把这些独立动作冒主线完成。当前无live writer/验收；T-01/T-05下一步需要选定Cookie逐业务验证或受信BFF引用的信任边界；C-2/C-3与最终C-4受用户既定顺序门控，原A继续停写。达到重复阻断阈值且当前独立路径已收敛，主方已将机器Goal更新为blocked（非paused/complete），原完整目标不变。用户裁决后恢复owner设计/合同→消费者→清理→全量/组合验收，不自动选择方案，也不靠重复测试保持active。
