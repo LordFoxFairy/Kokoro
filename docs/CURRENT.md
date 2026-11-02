@@ -5473,3 +5473,5 @@ Web正式c408f0397b78709cf3f7ecd2fba87047b02f5e7b，仅九路径消费既有四b
 T-K03.14-ADMIN-ANT-PROPS mainc43eee3：仅原Admin现Skills组件3处orientation及Drawer size640、现test两断言，RED2FAIL→Root默认9files87PASS/type/lint/build0；2hash/86保护exact。真实同源/manage/hub新加载5记录，详情抽屉640px、全部原命令保留；本次日志不再Space/Drawer两warning，ProLayout hydration依赖缺陷仍实际存在（SSR无断点/browser初态读取断点），未掩盖/禁SSR/重建壳。截图/tmp/kokoro-admin-antd-props-browser.jpg，日志/tmp/kokoro-admin-antd-props-root-{test,type,lint,build}.log。此小片不冒完整Admin权限与七命令旅程验收。
 
 补充最终Web main611ae5342e11f9bf710a01a2b2547df3e8538975：独审发现匿名200 helper普通toContain会让只有登录链接通过；Root只改原helper2+/1−恢复NEXT_REDIRECT/meta真实标记并精确return_target终止边界，普通link/追加evil负控失败、两真marker通过共4断言PASS，当前type/lint0，独审P2关闭。HEAD-only index未夹带system其它mixed，production源/build不变；Root记录正式最终SHA，不把原system20失败清零。
+
+Task A T-17最新候选：BFF4d6d17b已修复五处实际DI装配错误并补真实生产容器compile/单实例回归；Root完整check contract1344/default2344pass+2skip/build通过。新pin真实native待跑，仍不称启动/四旅程/完整生命周期通过。

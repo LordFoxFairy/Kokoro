@@ -889,3 +889,8 @@ Root b2f9a59c配对App9ba65343/BFF173e026/IAMe6a01cf，三子仓clean/gitlink以
 ### 用户恢复active后的TODO/Goal重新对齐
 
 最新用户事件及get_goal已确认active；此前暂停原因只可确定是会话接收到paused状态/中断事件，具体触发方式无证据。修正主TODO中pin尚未提交、IAM旧verify、T13无退出收据等陈旧状态；保留历史证据，不抹掉真实失败。18TODO中的9条已验只代表切片/前置，绝不换算Task A完成比例。G1/G2/G3仍OPEN，当前优先T17真实DI启动回归，随后native/四旅程/global_register/删除/最终验收。方案新增低置信度前置排期预算与重估点，Task A全部16项未有可靠总工期。本轮仅文档整理，无业务改动/服务启动/新一轮全门。
+
+
+### T-17 真实DI前置修复与完整门
+
+BFF173e026基线新增实际生产AppModule compile回归，五阶段真实RED定位Chat/Projects/Skills非法导出及ProjectAccess/Billing缺DB token；只修正五module imports/exports。7路径停写、范围外1061tracked不变；四关键token单注册/严格owner同实例，默认test/architecture先clean build，不用stale dist。两失效源码断言核对回真实owner，原业务断言保持。独审CLEAR；Root冻结1068hash逐项核验，完整format/check exit0：contract1344pass、default2346total/2344pass/0fail/2skip、lint/types/build。workerarchitecture74/runtime5辅助证据。BFF4d6d17b（7代码/测试+CURRENT）沿PR18交付，未合并main。当前尚未用新pin跑真实native，完整T17生命周期仍OPEN。
