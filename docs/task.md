@@ -17105,3 +17105,7 @@ T-05纠偏：有效设计是固定Product tenant，旧Team selector已删除；�
 本次再核：Goal active；App冷登录五文件候选停写，worker55pass/lint/types，Root完整门/浏览器GREEN待验。Root配套六文件完整治理1879pass/3skip/506subtests已结束且冻结hash不变；Capability71路径候选已冻结，worker最终123pass/0skip，Root完整门/真实receiver待验。G1/G2/G3均OPEN，旧全门不覆盖当前dirty候选。
 
 App冷登录切片727cd674已独审并由Root完成完整check（contract452/architecture50/full6401/0skip，lint/types/build）；沿原PR50推送，本次Root精确pin后跑真实冷登录。退出POST body疑点登记I-24待复现，不拿当前slice绿覆盖四旅程。Capability71路径已独审，Root完整门运行中；G1/G2/G3保持OPEN。
+
+Root4fdb精确组合冷登录已真实GREEN：无注入cookie的新Chromium表单303/session200/projects200，原4checks/cleanup亦PASS；仅关闭I-21。Capability首次Root全门两旧oracle失败（3049pass/678skip），两测试精确承接中，未宣称绿。I-24退出真实transport回归最小写区已授权；四旅程IAM/Root编排仍只有方案，未冒验收。
+
+App退出1d54eedd已Root完整check6403pass/0skip并沿原PR50交付，本次Root精确pin后实测。Capability修canonical断言后真实receiver1pass、13非选，数据库inventory保持；最终完整门复跑中。

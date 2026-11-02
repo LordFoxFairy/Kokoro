@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** 文档基线与 G0 已通过；BFF 启动阻断和最小 native HTTP 链已验。真实冷登录另发现 303 后 session/projects 401，App 五文件修复已独审，Root完整check通过（full6401），提交727cd674并沿PR50交付；本次Root精确pin后待真实浏览器复测。T-14 Capability 71路径候选已停写，worker定向123通过，待Root完整门/真实接收方验证；Root 配套六文件已独审、主方定向154与治理1879通过，尚未配对 owner 集成。G1/G2/G3保持OPEN，不进入A功能。
+**当前检查点：** 文档基线与 G0 已通过；BFF 启动阻断和最小 native HTTP 链已验。真实冷登录另发现 303 后 session/projects 401，App 五文件修复已独审，Root完整check通过（full6401），提交727cd674并沿PR50交付；Root4fdb精确pin后实际冷登录303/session200/projects200，缺陷已验证；其余三旅程仍待。T-14 Capability 71路径候选已停写，worker定向123通过，待Root完整门/真实接收方验证；Root 配套六文件已独审、主方定向154与治理1879通过，尚未配对 owner 集成。G1/G2/G3保持OPEN，不进入A功能。
 
 ---
 
@@ -39,8 +39,8 @@
 
 | 仓 / 范围 | 已提交基线 | 当前候选与证据层级 |
 | --- | --- | --- |
-| Root | `41b1d6c30ca3ab8df757c8286d6a159420558f85` | 已提交组合与535e7071相同；现六文件T-14配套候选及进度文档未提交。六文件停写独审、Root154定向/1879治理通过，待Capability精确配对；PR66仍不合main |
-| App | `727cd674fd45487d3d9becc685701546623865b1` | 原T-07已完整验证/PR50/Root pin；T-05冷登录五文件已提交727cd674，独审CLEAR、Root完整门contract452/architecture50/full6401/lint/types/build通过；真实浏览器GREEN未验，不等于四旅程完成 |
+| Root | `4fdb2ede8259fcce395b7de93cef5b591bc06972` | 已pin App727/BFF4d6/IAMe6；实际冷登录303/session200/projects200及原4checks/cleanup PASS。现六文件T-14配套候选未提交。六文件停写独审、Root154定向/1879治理通过，待Capability精确配对；PR66仍不合main |
+| App | `727cd674fd45487d3d9becc685701546623865b1` | 原T-07已完整验证/PR50/Root pin；T-05冷登录五文件已提交727cd674，独审CLEAR、Root完整门contract452/architecture50/full6401/lint/types/build通过；真实浏览器冷登录GREEN，仍不等于四旅程完成 |
 | BFF | `4d6d17b651a8d0e472dbabe67872c856185ae61b` | 五DI修复+真实容器回归；Root完整门contract1344/default2344pass+2skip/build；PR18已推送/Root535e7071已pin，minimal native4pass/cleanup PASS，完整四旅程待验 |
 | IAM | `e6a01cf7f1aeef0cfd5a63efe78e194b50ad1e9b` | 4个fixture/回归路径经Root真实两host62pass、verify121files/1566pass；独立draft PR #6已推送；不等于跨仓UI验收 |
 | Agent | `c761fad3dba2b56cd7fe4da7683a9ac2f208243f` | C-1.2 清理已提交；最终完整 owner gate 仍待 |
@@ -93,10 +93,10 @@
 | I-18 | 原BFF engines与pin/生成链/CI/Docker存在Node24/22漂移；173e026已统一并通过Root当前完整静态门 | 保留两轮RED与真实修复证据；七条正规生成/双检及当前完整门通过，106generated不变；未实跑CI/Docker，不以配置对齐冒称容器验收 | T-18 |
 | I-19 | 原Nest启动失败已解决：BFF4d6修复五处DI可见性，Root535最小native成功；完整关闭矩阵仍缺证 | 已加真实生产容器compile/关键token单实例回归；后续验证drain/SSE/worker/PG/Redis，不重复领取旧启动修复 | T-17 |
 | I-20 | 本计划曾要求同App正向双tenant切换，但App/BFF/IAM当前三面设计与G0都明确固定Product tenant；属于台账错误 | 已按有效裁决纠正T-05；用异tenant会话拒绝/固定域恢复验证隔离，禁止删BFF授权门或新增TaskB切换器 | T-01/T-05 |
-| I-21 | 真实Chromium冷登录RED：表单303后session/projects401；App缺固定tenant set-active，fixture预设会话曾掩盖 | 五文件727已获独审与Root完整门（6401pass）；真实冷登录GREEN后才闭合此缺陷，仍不等于四旅程全部完成 | T-05 |
+| I-21 | 真实Chromium冷登录RED：表单303后session/projects401；App缺固定tenant set-active，fixture预设会话曾掩盖 | 五文件727已获独审与Root完整门（6401pass）；Root4fdb实际冷登录GREEN，I-21缺陷闭合，仍不等于四旅程全部完成 | T-05 |
 | I-22 | LocalPlatformRuntime先生成单projection文件，随后聚合多surface凭据以同名O_EXCL创建，真实文件装配抛FileExistsError | Root候选已改独立聚合文件名，真实临时目录RED→GREEN并保持0600/回收；独审及Root154定向通过，待组合集成 | T-14/T-15 |
 | I-23 | Capability现部分R317/R336 opt-in测试与release workflow仍有此前OAuth/旧execution配置欠账 | 保留原触发开关与业务断言，标清既存/本片新增；本片只迁退休resource-server消费者并真实验证global receiver，未触及的旧catalog/CI链不冒称已可运行 | T-14/T-16 |
-| I-24 | App真实退出静态发现POST调用未传body，现transport要求POST body存在；原smoke直接IAM fixture signout未覆盖 | 待实际transport回归复现；不在已冻结冷登录切片盲改，若复现按原空body wire最小修复再验App真实退出 | T-05 |
+| I-24 | App真实退出route→transport→loopback已复现两例503/零上游请求：POST未传body；原smoke直接IAM signout未覆盖 | 三文件候选仅生产一行显式空Uint8Array，worker200pass/lint/types及独审CLEAR；Root完整check运行中，真实App退出与旧cookie重放待验 | T-05 |
 
 ---
 
@@ -262,7 +262,7 @@ Browser ← App UI 与刷新后的同一事实
 | T-02 | MCP denied icon零owner副作用；BFF | VERIFIED | `228e3d6`、focused42、旧基线full；最终组合继续回归 |
 | T-03 | invalid-owner typed error；BFF | VERIFIED | `228e3d6`、focused24、旧基线full |
 | T-04 | 资源/Node/source/schema preflight；Root | VERIFIED（已提交组合前置） | Root535精确App9ba/BFF4d6/IAMe6及Node/source门已过；Root41b仅文档后继。新dirty候选要重新精确配对，不继承当前source clean结论 |
-| T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS（冷登录候选待主验） | 最小HTTP4pass；另真实浏览器冷登录RED。App727已获独审/Root完整门（6401pass），待精确组合浏览器复测，再补异域拒绝与恢复、App登出、独立撤权；不计整体完成 |
+| T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS（冷登录候选待主验） | 最小HTTP4pass；另真实浏览器冷登录RED。App727已获独审/Root完整门（6401pass），精确组合冷登录已实测GREEN；待异域拒绝与恢复、App登出、独立撤权；不计整体完成 |
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（切片） | Root完整check：contract452/architecture50/full6373，lint/types/build通过；App9ba65343已推送PR50并由Root精确pin；四旅程待T-05 |
 | T-08 | IAM SDK与verify；IAM | VERIFIED（当前候选） | IAM e6a01cf / PR6已pin；Root verify121files/1566pass/build，真实两host62pass/0skip；不代表跨仓native端到端 |
@@ -359,3 +359,19 @@ T-05 App修复局部门已确认：现sign-in路由内sign-in/email→新issuer 
 App727cd674fd45487d3d9becc685701546623865b1：Root Node22.23.4/pnpm11.25.0完整pnpm check exit0，contract452、architecture50、full354files/6401pass/0skip、lint/types/build通过；1494tracked输入前后hash一致，独审CLEAR。仅五明确路径提交并沿原draft PR50推送，本次Root提交精确pin；未合main。浏览器冷登录GREEN/完整四旅程待验，不沿用原fixture4checks替代。
 
 Capability71路径另获Root独立只读审查CLEAR及hash核验，完整format/lint/verify/Prisma/build按序运行中；终态以实际exit为准，不以worker123替代。
+
+### 当前验收推进：冷登录GREEN、T14全门RED与后继设计
+
+Root4fdb2ede精确App727/BFF4d6/IAMe6 source/clean/gitlink通过。全新Chromium context未注入cookie，真实表单303、session200、projects200；独立冷登录诊断与原最小HTTP4checks均PASS，cleanup PASS/quiescent/无保留资源。仅关闭I-21冷登录缺陷，不关闭T-05四旅程。
+
+Capability首次Root完整门format/lint/Prisma validate/build均0，verify退出1：3049pass/678skip/2fail。两项为本次旧OAuth删除/有效Agent错用途导致的旧oracle：preflight期待泄露ENOENT但现execution reader抛sanitized错误；generated-client期待Code16但应为有效credential错surface的Code7。只授权两现测试精确承接typed失败、无监听/零写，保留RED，生产不因此改宽。待重新冻结后Root真实receiver及完整门。
+
+I-24退出局部修复授权App唯一writer：现iam route、现真实transport测试（必要时原route测试）及CURRENT；先loopback真实RED，再按已批准空体POST补明确零长度Uint8Array，不放宽transport或新建helper。当前冷登录源码已提交，不在验收中重写。
+
+T-05余下旅程的后继最小设计：沿现IAM native host增加test-only浏览器fixture、session绑定slot和有限switch/revoke命令；cookie从浏览器自然签发只在私有pipe/内存交接，owner验签并核本fixture同user、非seed exact session后才绑定；Root不SQL IAM。另建同一user合法第二tenant membership验证固定Product拒绝及真实重登恢复；App UI退出须核exact session消失；独立A/B浏览器分别验exact session撤销仅影响A、membership撤销时B session仍存在但准入拒绝。保持原最小smoke模式，新driver/模式显式扩四旅程；先停Chromium再Web/BFF/IAM，保现精确资源回收。具体写区限IAM native host/其integration、Root native runner/新Chromium driver/现runner测试。此处只记录已核设计，尚未实现新fixture或四旅程编排。
+
+### I-24主方静态门与T14真实接收方GREEN
+
+App1d54eedd4d67482c789ae3f7dd60807302732b24三文件退出修复已独审并经Root完整check exit0（contract452/architecture50/full6403/0skip、lint/types/build；1494hash保持），沿原PR50交付。本次Root仅更新App精确pin；真实sign-out及旧cookie重放另验，T-05仍OPEN。
+
+Capability72路径修正canonical ownership断言后，Root真实HTTP→production receiver→隔离PG组1pass；13项为本次-t未选择，不计本组覆盖。System成功/自然重放/冲突/disabled不复活、BFF/Agent/未知凭据拒绝、文件删除后撤销、ownerTenantId/ownerUserId均null、零receipt/outbox/IAM请求均过；数据库inventory前后相同，Redis仅connect/ping/quit无key写入。不是System producer链。最终完整owner门再次串行运行中，尚不提前标全绿。

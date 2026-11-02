@@ -6,7 +6,9 @@ Root535e7071精确配对App9ba65343/BFF4d6d17b/IAMe6a01cf。BFF五处DI装配错
 
 此前App完整check452/50/6373、IAM两host真实62和verify1566、Root治理1876pass/3skip/502subtests证据保持对应基线；不是最终全组合验收。Root PR66、App50、BFF18、IAM6各自draft，未merge/deploy。
 
-下一步T-05固定Product四旅程与T-14 receiver-only直接认证；Capability三面门已过，71路径候选已冻结，worker最终123定向通过，Root owner完整门/真实receiver待验，Root六文件旧配置消费者候选已停写、独审及主方154定向/1879治理通过（3skip/506subtests），待owner精确组合。T-05已纠正与固定tenant设计冲突的“双tenant正向切换”要求，改验异域会话拒绝/固定域恢复；冷登录active tenant缺口已真实复现：新Chromium表单303后session/projects401；App五文件已交付727cd674/PR50，独审及Root完整check通过（6401pass/0skip），本次Root精确pin后浏览器GREEN待验，原HTTP4PASS不能替代此RED。之后G1→完整生命周期/旧实现删除→最终门/可保留同步测试环境。当前smoke进程已退出，不称用户可常驻同步测试。
+下一步T-05固定Product四旅程与T-14 receiver-only直接认证；Capability三面门已过，71路径候选已冻结，worker最终123定向通过，Root首次完整门verify有两项旧oracle失败（3049pass/678skip），精准承接中，真实receiver组已1pass，最终完整门复跑中，Root六文件旧配置消费者候选已停写、独审及主方154定向/1879治理通过（3skip/506subtests），待owner精确组合。T-05已纠正与固定tenant设计冲突的“双tenant正向切换”要求，改验异域会话拒绝/固定域恢复；冷登录active tenant缺口已真实复现：新Chromium表单303后session/projects401；App冷登录727cd674/PR50已交付，独审及Root完整check通过（6401pass/0skip），Root4fdb精确pin后真实冷登录303/session200/projects200及原4checks/cleanup PASS，余下三旅程待验，原HTTP4PASS不能替代此RED。之后G1→完整生命周期/旧实现删除→最终门/可保留同步测试环境。当前smoke进程已退出，不称用户可常驻同步测试。
+
+App退出I-24三文件1d54eedd已独审与Root完整check6403pass/0skip，原PR50已推送；本次Root精确pin后验真实sign-out/旧cookie重放。
 
 ---
 

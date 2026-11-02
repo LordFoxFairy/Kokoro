@@ -922,3 +922,13 @@ App9ba基线新增五文件冷登录候选已停写；worker日志55pass/0skip�
 Root全1494tracked hash冻结后以Node22.23.4/pnpm11.25.0执行pnpm check：exit0、contract48files452pass、architecture4files50pass、full354files6401pass/0skip，lint/types/build通过。前后输入hash一致；独审CLEAR。五路径提交727cd674fd45487d3d9becc685701546623865b1，fetch非递归核main/PR分支无新分叉后沿PR50推送；未合main。真实浏览器GREEN待本次Root精确gitlink提交后运行。独审辅助29测试使用Node24，不替代Root规定Node22主验。
 
 只读发现App退出nativeSignOut POST未传body与transport严格规则不符，登记I-24待实际复现；不据静态疑点称退出已修。Capability停写71hash复核及独审CLEAR，Root完整门独立串行启动，尚不提前报结果。
+
+### 冷登录真实GREEN与T14完整门首次RED
+
+精确Root4fdb2ede/App727/BFF4d6/IAMe6实际跑同冷登录诊断：空Chromium且cookies_injected=false，表单303/session200/projects200，status=passed。原native runner4checks PASS，source/clean/gitlink及Node均真，cleanup passed/quiescent、无文件保留。保留旧RED与新GREEN独立脱敏收据；不把该诊断当完整四旅程或常驻环境。
+
+Capability Root首次format/lint/Prisma validate/build均0，verify1：3049pass/678skip/2fail（preflight旧ENOENT与generated-client旧wrong-purpose Code16），默认678skip不算通过。1110文件前后hash完全一致，无生成漂移。仅两既有测试语义承接后再Root真实与完整门，原RED保留。
+
+T14首次真实接收方组实际RED：System注册/重放/冲突/disabled/撤销已走，末尾断言误用了canonical不存在的tenantId。按原schema改查ownerTenantId和ownerUserId均null，所有zero receipt/outbox/IAM负控保持，生产零改动；失败run的数据库inventory前后相同。旧日志归档，新72路径停写，待Root复跑。I-24已真实transport RED→GREEN候选，主方全门进行中，不先报真实退出成功。
+
+I-24 Root完整check exit0：contract452、architecture50、354files6403pass/0skip、lint/types/build，1494hash保持；独审CLEAR，三路径1d54eedd沿PR50推送。Capability真实组修canonical断言后exit0，1pass/13非选，数据库inventory前后相同，零Redis key写；实际覆盖System注册/重放/冲突/disabled、错caller与unknown拒绝、撤销、两owner字段null及零receipt/outbox/IAM。最终完整门另跑，不用1case代替全门。
