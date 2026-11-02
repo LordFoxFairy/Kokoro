@@ -17091,12 +17091,13 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - App native-session source/config cleanup；App stale reconnect prop removed，静态 typecheck/lint/architecture 50/50。
 - BFF raw Scheduler callback、retired System/Skills、unknown session、unknown Agent/Billing、Personal MCP/Custom API 均走 named feature adapters/guards；Nest production 无 LegacyRoutes composition。
 - BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
-- Root topology/governance 每次 pin 后串行通过，当前 BFF `4af24bf`、App `f5d122bb`。
+- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，测试侧不再 import/construct `PostgresBffRepositories`；当前 BFF `c6c2aa6`、App `f5d122bb`。
+- Root topology/governance 每次 pin 后串行通过；本轮 BFF child 复核 build/typecheck/lint、mock 29/29、architecture/Nest 70/70。
 
 **TODO / 未闭环：**
 1. C-1.3：启动隔离 IAM/BFF/App/Agent/owner 组合，取得 login、tenant-switch、sign-out、revocation 的真实 PG/Redis receipt；当前应用进程未启动，`IAM_TEST_ADMIN_URL`/隔离测试 URL 缺失。
-2. C-2：迁移剩余 raw PostgreSQL/worker fixtures，证明 `createBffComposition`、`handleBffRequest`、`PostgresBffRepositories` 零消费者；不得以 raw fixture 通过替代生产 Nest 证据。
-3. C-3：9 个 integration suite 仍有 102 个 wrapper 构造、17 个 database pool/notify 直接访问；先建 test-only owner fixture factory，再删 wrapper/runtime aggregate。
+2. C-2：迁移剩余 raw worker/provider fixtures，证明 `createBffComposition`、`handleBffRequest`、`PostgresBffRepositories` 零消费者；不得以 raw fixture 通过替代生产 Nest 证据。
+3. C-3：9 个 integration suite 已完成 wrapper→named owner factory 机械迁移；当前需复核 17 个 raw `database` pool/notify fixture 访问、剩余 `createBffComposition`/`handleBffRequest` 引用及 wrapper class 是否可删除，保留单一 owner graph，不引入 alias。
 4. C-4：BFF full test 当前 1043 pass/21 fail/113 cancelled（Skill shared-revision/archived fixture baseline 与 pending）；BFF format 有 31 warnings；App full contract test 有 pinned artifact digest drift；IAM verify 被一个既有 format warning 阻断但其余静态门已通过。
 5. 全量 owner/root 验证及 E2E 通过后，才另建 A-01/A-02/A-07 计划；当前不得提前进入。
 

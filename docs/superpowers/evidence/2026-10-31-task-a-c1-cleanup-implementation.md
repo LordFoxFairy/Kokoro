@@ -733,3 +733,15 @@ BFF child `673306e5e6c889c8bfbfde02933de1253b4f3034` extracts the PostgreSQL own
 ### Root verification after production owner-resource factory pin `673306e`（2026-11-02）
 
 Root topology and governance recheck passed after pinning BFF `673306e5e6c889c8bfbfde02933de1253b4f3034`: **1846 passed / 3 skipped / 502 subtests**. Production no longer constructs the global repository aggregate; raw/integration compatibility consumers remain the next deletion gate.
+
+### C-3 PostgreSQL integration fixture migration（2026-11-02）
+
+BFF child `c6c2aa6e88e2b6fdb53517b38bc527118f537e0d` migrates the nine remaining PostgreSQL integration suites (`agui-http`, `agui-projection`, `archived-tasks`, `business-store`, `chat-facts`, `message-parts-read`, `personal-knowledge`, `scheduled-agent-dispatch`, `scheduler-dispatch-receipt`) from `new PostgresBffRepositories(...)` to `createPostgresBffOwnerResources(...)`. The migration is mechanical: SQL, cleanup, worker wiring, receipt behavior, and direct fixture fields are unchanged. Test census now has zero `PostgresBffRepositories` imports/constructors; only the architecture oracle's negative runtime assertion retains the class name. No alias or second aggregate was added.
+
+主方在 child 停写后复核：`pnpm build`、`pnpm typecheck`、`pnpm lint`、`git diff --check`、BFF mock contract **29/29**、architecture/Nest **70/70** 通过。九个 integration suite 共 **230** 项：**6 pass / 223 resource-gated skip / 1 fail**；唯一失败为 `chat-facts` standalone 的既有 `401 !== 404`，在迁移前 HEAD 基线复跑同样失败，不能计为本轮回归。由于 `KOKORO_TEST_POSTGRES_URL`/`KOKORO_TEST_REDIS_URL` 未设置，不能把 skip 视为真实 owner integration 通过。
+
+下一删除门：在主方复核 17 处 raw `database.pool/notify` fixture 访问及 `createBffComposition`/`handleBffRequest` provider census 后，若确认无运行时消费者，再删除 `PostgresBffRepositories` compatibility class；随后串行重跑 BFF full owner gate、Root topology/governance，并保持 C-1.3 真实 IAM→BFF→App receipts、E2E service startup 与 A-01/A-02/A-07 停写。
+
+### Root verification after PostgreSQL fixture migration pin `c6c2aa6`（2026-11-02）
+
+Root pin is pending this evidence update; after staging the child gitlink, rerun `python3 scripts/verify-repository-topology.py`, `python3 -m pytest scripts/tests -q`, and `git diff --check`. Expected governance baseline remains **1846 passed / 3 skipped / 502 subtests**; this pin does not close C-4, real native-session receipts, or E2E readiness.
