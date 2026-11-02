@@ -311,3 +311,7 @@ Four stale integration references now use `PostgresBffRepositories.publicShareSe
 ### 2026-11-02 production owner-resource factory
 
 `createBffComposition` no longer imports/constructs the global `PostgresBffRepositories` aggregate; it consumes `createPostgresBffOwnerResources` (`673306e5`). The aggregate class remains a raw/integration compatibility wrapper while nine integration suites still construct it. Next gate is explicit fixture migration and zero imports, not another production alias.
+
+### 2026-11-02 fixture migration and aggregate deletion
+
+The preceding census is historical. BFF child `c6c2aa6e88e2b6fdb53517b38bc527118f537e0d` migrated all nine PostgreSQL integration suites to `createPostgresBffOwnerResources`; child `8150106dc11676817daca57c6ecbf956fdf283d3` then deleted `PostgresBffRepositories` after the zero-import/new proof. The remaining 17 semantic `database.pool/notify` fixture accesses use the explicit named factory `database` seam and are not wrapper consumers. `createBffComposition` and `handleBffRequest` remain because raw `createBffServer` still owns businessStore/idempotency compatibility, residual session/run fallback, configured-upstream fallback, and routeHandler fixtures. Next C-2 slice must remove one raw/provider category at a time and re-run the raw negative guards; it must not reintroduce an aggregate alias.
