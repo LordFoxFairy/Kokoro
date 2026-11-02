@@ -377,19 +377,43 @@ class BrowserBroker:
         return record
 
 
+def validate_browser_failure(record) -> dict:
+    fields = {"kind", "stage", "error_type", "driver_line", "driver_column"}
+    stages = (
+        "config",
+        "cold_login",
+        "tenant_rejection_recovery",
+        "ui_logout",
+        "independent_revocation",
+        "browser_close",
+    )
+    if (
+        not isinstance(record, dict)
+        or set(record) != fields
+        or record.get("kind") != "browser_failure"
+        or record.get("stage") not in stages
+        or record.get("error_type") not in ("Error", "TimeoutError")
+    ):
+        raise SmokeError("browser failure diagnostic invalid")
+    line, column = record["driver_line"], record["driver_column"]
+    if not (
+        (line is None and column is None)
+        or (
+            type(line) is int
+            and type(column) is int
+            and 1 <= line <= 100_000
+            and 1 <= column <= 100_000
+        )
+    ):
+        raise SmokeError("browser failure frame invalid")
+    return record
+
+
 class BrowserJourneyError(SmokeError):
-    def __init__(self, stage):
-        if not isinstance(stage, str) or stage not in {
-            "config",
-            "cold_login",
-            "tenant_rejection_recovery",
-            "ui_logout",
-            "independent_revocation",
-            "browser_close",
-        }:
-            stage = "unknown"
-        self.stage = stage
-        super().__init__("browser " + stage + " failed")
+    def __init__(self, record):
+        self.diagnostic = dict(validate_browser_failure(record))
+        self.stage = self.diagnostic["stage"]
+        super().__init__("browser " + self.stage + " failed")
 
 
 def run_browser_journeys(
@@ -455,11 +479,8 @@ def run_browser_journeys(
                     message["request"], timeout=deadline - time.monotonic()
                 )
                 private_json_write(process.stdin, response, deadline - time.monotonic())
-            elif (
-                set(message) == {"kind", "stage"}
-                and message["kind"] == "browser_failure"
-            ):
-                raise BrowserJourneyError(message["stage"])
+            elif message.get("kind") == "browser_failure":
+                raise BrowserJourneyError(message)
             elif message.get("kind") == "browser_result":
                 result = validate_browser_receipt(message)
                 if process.wait(timeout=max(0.001, deadline - time.monotonic())) != 0:
@@ -707,6 +728,7 @@ def main(argv=None) -> int:
     reader = iam = None
     browser_processes = []
     browser_receipt = None
+    browser_failure = None
     credential_log_check = "not_run"
     browser_mode = args.browser_journeys
     iam_before = web_before = None
@@ -1006,6 +1028,7 @@ def main(argv=None) -> int:
         except (Exception, KeyboardInterrupt) as error:
             if isinstance(error, BrowserJourneyError):
                 stage = "browser " + error.stage
+                browser_failure = error.diagnostic
             failures.append(stage + " failed")
         finally:
             try:
@@ -1060,6 +1083,7 @@ def main(argv=None) -> int:
                 ),
                 "completed_journeys": 4 if browser_receipt is not None else 0,
                 "browser": browser_receipt,
+                "browser_failure": browser_failure,
                 "credential_log_check": credential_log_check,
                 "expected_sources": expected_sources,
                 "sources": sources,

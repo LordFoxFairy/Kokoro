@@ -3,7 +3,7 @@ import https from 'node:https';
 import {spawn} from 'node:child_process';
 import {mkdtemp, readFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {pathToFileURL} from 'node:url';
+import {pathToFileURL, fileURLToPath} from 'node:url';
 import {createRequire} from 'node:module';
 import {performance} from 'node:perf_hooks';
 
@@ -283,6 +283,33 @@ async function launchOwnedChromium(chromium, config) {
   fail();
 }
 
+/** Only categorical error type and this driver's numeric call site cross the pipe. */
+export function browserFailure(stage, error) {
+  let errorType = 'Error';
+  let driverLine = null;
+  let driverColumn = null;
+  try {
+    if (error?.name === 'TimeoutError') errorType = 'TimeoutError';
+    if (typeof error?.stack === 'string') {
+      const ownLocations = [import.meta.url + ':', fileURLToPath(import.meta.url) + ':'];
+      for (const frame of error.stack.slice(0, 65_536).split('\n').slice(1)) {
+        if (/^\s*at (?:fail|requireFact) \(/.test(frame)) continue;
+        if (!ownLocations.some(location => frame.includes(location))) continue;
+        const position = frame.match(/:(\d+):(\d+)\)?$/);
+        if (!position) continue;
+        const line = Number(position[1]);
+        const column = Number(position[2]);
+        if (Number.isInteger(line) && Number.isInteger(column) && line >= 1 && line <= 100_000 && column >= 1 && column <= 100_000) {
+          driverLine = line;
+          driverColumn = column;
+          break;
+        }
+      }
+    }
+  } catch { /* Never reflect unexpected error objects or getter failures. */ }
+  return {kind: 'browser_failure', stage, error_type: errorType, driver_line: driverLine, driver_column: driverColumn};
+}
+
 async function main() {
 startInput();
 overallDeadline = performance.now() + 175_000;
@@ -433,9 +460,9 @@ try {
   browser = undefined;
   await emit({kind: 'browser_result', journeys, race});
   exitCode = 0;
-} catch {
+} catch (error) {
   // Never stringify Playwright errors: locators and assertions can contain identities.
-  await emit({kind: 'browser_failure', stage}).catch(() => undefined);
+  await emit(browserFailure(stage, error)).catch(() => undefined);
 } finally {
   barrier?.cancel();
   if (browser) await browser.close().catch(() => undefined);

@@ -1156,7 +1156,7 @@ def test_browser_driver_reports_only_allowlisted_failure_stage(tmp_path, monkeyp
     monkeypatch.setattr(smoke.subprocess, "Popen", lambda *_args, **_kwargs: process)
     reader = SimpleNamespace(
         record=lambda **_: {
-            "kind": "browser_failure",
+            **browser_failure_record(),
             "stage": "tenant_rejection_recovery",
         },
         close=lambda: None,
@@ -1332,3 +1332,83 @@ def test_browser_reap_timeout_preserves_dependencies(monkeypatch):
     assert caught.value.quiescent is False
     browser.wait.assert_called_once_with(timeout=5)
     resources.cleanup.assert_not_called()
+
+
+def browser_failure_record():
+    return {
+        "kind": "browser_failure",
+        "stage": "cold_login",
+        "error_type": "TimeoutError",
+        "driver_line": 123,
+        "driver_column": 9,
+    }
+
+
+def browser_failure_validator():
+    validator = getattr(smoke, "validate_browser_failure", None)
+    assert callable(validator), "browser failures need a fixed diagnostic whitelist"
+    return validator
+
+
+@pytest.mark.parametrize(
+    "mutation", ["extra", "stage", "type", "bool", "negative", "large", "half_null"]
+)
+def test_browser_failure_diagnostics_reject_unknown_or_nonframe_values(mutation):
+    record = browser_failure_record()
+    if mutation == "extra":
+        record["message"] = "private-cookie"
+    elif mutation == "stage":
+        record["stage"] = "private-email"
+    elif mutation == "type":
+        record["error_type"] = "private-error"
+    elif mutation == "half_null":
+        record["driver_line"] = None
+    else:
+        record["driver_line"] = {"bool": True, "negative": -1, "large": 100001}[
+            mutation
+        ]
+    with pytest.raises(smoke.SmokeError) as caught:
+        browser_failure_validator()(record)
+    assert "private" not in str(caught.value)
+
+
+def test_main_retains_only_safe_browser_failure_diagnostics(tmp_path, monkeypatch):
+    record = browser_failure_record()
+    validator = browser_failure_validator()
+    assert validator(record) == record
+    driver = Mock(side_effect=smoke.BrowserJourneyError(record))
+    simulate_main(tmp_path, monkeypatch, browser_driver=driver)
+    report, path = read_receipt(tmp_path)
+    assert report["status"] == "failed"
+    assert report["stage"] == "browser cold_login"
+    assert report["browser_failure"] == record
+    assert report["cleanup"]["status"] == "passed"
+    assert "private" not in path.read_text()
+
+
+def test_driver_failure_diagnostic_never_serializes_error_payload():
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      const url = process.argv[1];
+      const {browserFailure} = await import(url);
+      const error = new Error('private-cookie private-email private-url');
+      error.name = 'TimeoutError';
+      error.stack = `TimeoutError: private-cookie\n at requireFact (${url}:16:33)\n at login (${url}:123:9)\n at external (file:///private-email:1:1)`;
+      const result = browserFailure('cold_login', error);
+      assert.deepEqual(result, {kind:'browser_failure', stage:'cold_login', error_type:'TimeoutError', driver_line:123, driver_column:9});
+      assert.equal(JSON.stringify(result).includes('private'), false);
+      error.name = 'private-error';
+      error.stack = 'Error: private-cookie\n at external (file:///private-email:1:1)';
+      assert.deepEqual(browserFailure('cold_login', error), {kind:'browser_failure', stage:'cold_login', error_type:'Error', driver_line:null, driver_column:null});
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri()],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr
