@@ -17090,7 +17090,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - **Goal/顺序**：既有Goal active，G0通过；C-1.3→C-2/C-3→C-4→A-01/A-02→A-07。原A-01～A-16责任保留。
 - **App**：Root完整check通过，contract452/architecture50/full6373；实现4260f698、当前9ba65343（集成origin/main空树merge，源码不变）。独立[draft PR #50](https://github.com/LordFoxFairy/kokoro-app/pull/50)已推送。
 - **BFF**：173e026完成原11路径入口隔离/默认Nest门、32路径机械格式、21路径Node24工具链；Root format/check通过，contract1344/default2343pass+2skip/build通过。两数据库条件skip已另补真实隔离PG15pass/0skip；完整业务integration仍待。独立[draft PR #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18)已推送。
-- **Root/IAM**：六路径停写双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf真实两host62pass、verify121files/1566pass，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三gitlink暂存topology PASS，等待Root提交和最小native。用户已要求续接；工具Goal仍paused，未伪造切换。
+- **Root/IAM**：六路径停写双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf真实两host62pass、verify121files/1566pass，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三gitlink已提交、topology PASS；minimal native已实测失败在BFF startup。用户已要求续接；最新get_goal已确认Goal active。
 - **未闭环**：真实native四旅程、global_register旧认证切换、Nest生命周期、raw/runtime及聚合删除、Agent/owner/Root最终门、同步E2E运行环境。BFF格式与工具链门已解决，不继续列为未修。
 - **Git边界**：每仓自己的PR；候选保持draft，不合并main、不部署。Root只接收已验证且已推送的精确子仓gitlink；没有“所有仓库已启动”的声明。
 

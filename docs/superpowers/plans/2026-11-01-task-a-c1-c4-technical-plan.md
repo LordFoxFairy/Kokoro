@@ -8,13 +8,22 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**前一文档轮已完成：** 问题、方案、TODO/Goal已独审并冻结。当前按用户Goal续接Chunk 1：T-06/T-07/T-12/T-18候选主方门已完成、App/BFF各自draft PR已推送；T-04/T-13审修与Root静态/宿主真实门已通过，最小native运行待验，T-14只读盘点已完成、owner局部设计待做。没有把文档轮的交付状态当作产品完成，也不进入A功能。
+**前一文档轮已完成：** 问题、方案、TODO/Goal已独审并冻结。当前按用户Goal续接Chunk 1：T-06/T-07/T-12/T-18候选主方门已完成、App/BFF各自draft PR已推送；T-04/T-13审修与Root静态/宿主真实门已通过，最小native已两次启动失败，成功路径待验，T-14只读盘点已完成、owner局部设计待做。没有把文档轮的交付状态当作产品完成，也不进入A功能。
 
 ---
 
+## 当前执行摘要（2026-11-01 再对齐）
+
+- **暂停来源**：会话收到`User set goal status: "paused"`及中断事件；本记录不推断操作者、误操作或客户端原因。最新用户状态事件与`get_goal`已确认**active**。不是代码失败触发主控主动暂停。
+- **Goal边界**：机器Goal仍是C-1.3～C-4前置闭环，不是“A全部完成”。阶段G0通过，G1认证/G2删除/G3最终组合验收均OPEN；完成当前Goal后才进入原A-01～A-16产品验收。复用原Goal，不另建重叠目标。
+- **当前完成量不按百分比表述**：18条TODO中9条仅为已验切片/前置；剩余T-17进行中、T-13成功路径待验、T-14/T-16未完成，T-05/T-09/T-11/T-15等待依赖，T-10门控。不同条目的规模不等，9/18不等于Task A完成50%。
+- **真实阻断**：BFF静态门通过但实际Nest生产模块图启动失败，说明现静态架构测试没有覆盖DI装配；修复必须带真实容器回归，不增加空provider、global模块或兼容旁路。
+- **闭环判定**：当前没有完整浏览器登录/切tenant/登出/撤权收据，没有完成raw/聚合删除，也没有交付可保留同步测试环境。PR存在、单测通过和失败后资源回收均不等于这些完成。
+- **工期口径**：只给低置信度排期预算，非承诺：T-17最小启动修复与minimal native预留0.5～1个工作日；C-1.3～C-4剩余工作暂预留3～7个工作日（含前项）。假设持续投入、无新增owner契约/数据迁移或重大行为回归；若不成立立即重估。完整Task A的A-01～A-16尚未逐项核剩余规模，当前没有可信总交付日期，不能把上述前置预算当作Task A完成时间。首个重估点是minimal native成功，第二个是G1通过。
+
 ## 0. 当前结论与唯一入口
 
-**Task A 尚未闭环，C-1.3 / C-2 / C-3 / C-4 均未达到最终完成条件。** G0 已有审阅通过证据，不重新发明架构；App 与 BFF 当前候选已完成主方静态完整门；App 已推送独立 draft PR，BFF 已推送独立 draft PR #18。真实 I/O、Root 精确 gitlink 与跨仓集成尚未齐备。当前组合也没有可交给用户同步测试的完整启动、健康检查与浏览器旅程收据。
+**Task A 尚未闭环，C-1.3 / C-2 / C-3 / C-4 均未达到最终完成条件。** G0 已有审阅通过证据，不重新发明架构；App 与 BFF 当前候选已完成主方静态完整门；App 已推送独立 draft PR，BFF 已推送独立 draft PR #18。Root精确gitlink已完成，完整真实I/O与跨仓集成尚未齐备。当前组合也没有可交给用户同步测试的完整启动、健康检查与浏览器旅程收据。
 
 本文件是当前问题、分阶段 Goal 和 TODO 的**唯一可变台账**。`docs/task.md`、`docs/CURRENT.md` 只保留摘要与链接；旧方案/问题台账保留设计和历史证据，不再维护第二份当前状态。
 
@@ -30,9 +39,9 @@
 
 | 仓 / 范围 | 已提交基线 | 当前候选与证据层级 |
 | --- | --- | --- |
-| Root | `4715d2b7c17ea4f9e879e3223fd9d703997df2e0` | 本轮文档及 native runner/单测候选；清理已实现，Root 相关三套单测52通过，五项独审修复已停写且双审通过，Root60相关/1876治理通过；完整native待验 |
-| App | `9ba653433c75dd3919bcc3de3cafc778fda4b975` | T-07实现4260f698；Root完整check通过后集成origin/main空树merge，源码不变；已推送独立draft PR #50，尚未Root pin/真实四旅程 |
-| BFF | `173e0263f21e2cc7499a67592b4526d811dde693` | 64路径代码候选加当前摘要已提交；Root format/check通过、contract1344/default2343pass+2skip；另真实PG schema15pass/0skip；独立draft PR #18已推送，Root pin待做 |
+| Root | `493f91ddcc92ae4e173403bfd819be421bfa9c54` | b2f9a59c已提交runner/文档/精确三pin，493f91dd补失败证据；PR66 draft；Root60相关/1876治理通过，native失败在BFF启动 |
+| App | `9ba653433c75dd3919bcc3de3cafc778fda4b975` | T-07实现4260f698；Root完整check通过后集成origin/main空树merge，源码不变；已推送独立draft PR #50，Root pin已完成，真实四旅程未完成 |
+| BFF | `173e0263f21e2cc7499a67592b4526d811dde693` | 64路径代码候选加当前摘要已提交；Root format/check通过、contract1344/default2343pass+2skip；另真实PG schema15pass/0skip；独立draft PR #18已推送，Root pin已完成 |
 | IAM | `e6a01cf7f1aeef0cfd5a63efe78e194b50ad1e9b` | 4个fixture/回归路径经Root真实两host62pass、verify121files/1566pass；独立draft PR #6已推送；不等于跨仓UI验收 |
 | Agent | `c761fad3dba2b56cd7fe4da7683a9ac2f208243f` | C-1.2 清理已提交；最终完整 owner gate 仍待 |
 | Capability（物理路径仍为 kokoro-capability） | `44fcc5da599b4a5cec3077e41aaef4375fe4add2` | `global_register` workload OAuth 尚存，先盘点真实调用方再切换 |
@@ -120,7 +129,7 @@
 | A-13 | Agent与外部聊天应用 | 后续backlog；已有能力真实owner/callback/过期状态，不增加未裁决能力 |
 | A-14 | 语音输入 | 后续backlog；真实麦克风/转写/拒绝/取消，不用演示文本 |
 | A-15 | 体验与性能 | 随产品切片验收；响应式/回焦/真实延迟，不藏加载或伪造成功 |
-| A-16 | 文档、PR、合并与运行配对 | 随片交付；App/BFF独立draft PR已推送，Root pin/真实配对/最终验收未完成；未merge或上线 |
+| A-16 | 文档、PR、合并与运行配对 | 随片交付；App/BFF独立draft PR已推送，Root三pin已完成，真实配对/最终验收未完成；未merge或上线 |
 
 Task B 继续拥有能力配置/授权/安装、账户协作等业务；Task A 使用其固定契约与真实资格。`global_register` 属原 C-1.3 已批准清理依赖，不借此接管整个 Task B。
 
@@ -229,7 +238,7 @@ Browser ← App UI 与刷新后的同一事实
 | 角色 | 唯一写区 / 范围 | 排除 / 交接 |
 | --- | --- | --- |
 | Root主控 | 本计划、task/CURRENT/evidence；Git index/提交/组合/进程资源/最终验收；Root runner按本轮明确派工 | 不同时修改worker写区；受影响owner完整门由主窗口串行执行 |
-| App worker | 后续获准的App固定consumer/native adapter及对应测试 | 不动BFF/IAM契约或Root任务表；当前56文件已提交，Root pin待做 |
+| App worker | 后续获准的App固定consumer/native adapter及对应测试 | 不动BFF/IAM契约或Root任务表；当前56文件已提交，Root pin已完成 |
 | BFF worker | 后续按feature授予的BFF生产/测试窄切片 | 公共入口/package/lockfile单writer；原11路径加格式32/工具链21已提交，后续另授写区 |
 | 独立reviewer | 只读规格/代码/证据、缺陷与门禁核验 | 不实现、不提交，不把worker退出码当Root通过 |
 | IAM/Capability专项owner | 到相应阶段替换空闲worker slot，先contract再consumer | 不新增并行contract writer；不同时铺开全仓重写 |
@@ -247,20 +256,20 @@ Browser ← App UI 与刷新后的同一事实
 | T-01 | 方案/问题/Goal/TODO统一；Root | VERIFIED（文档） | 三个只读角色审计；两项依赖循环已修；独审、链接/diff通过，后续状态变化继续更新 |
 | T-02 | MCP denied icon零owner副作用；BFF | VERIFIED | `228e3d6`、focused42、旧基线full；最终组合继续回归 |
 | T-03 | invalid-owner typed error；BFF | VERIFIED | `228e3d6`、focused24、旧基线full |
-| T-04 | 资源/Node/source/schema preflight；Root | IN_PROGRESS | 三子仓已验证/推送，Root精确gitlinks已暂存且topology PASS；待Root提交后保留exact source门执行minimal native |
+| T-04 | 资源/Node/source/schema preflight；Root | VERIFIED（当前组合前置） | Root b2f9a59c已精确pin三子仓，当前493f91dd仅补证据；两次真实source clean/gitlink、Node、BFF build/schema及IAM host通过；BFF startup失败另归T-17，不称运行验收通过 |
 | T-05 | 当前native四旅程；Root+IAM/BFF/App | WAITING | T-04/T-13、已复现的T-17前置阻断及候选Root复验；最小4case与完整浏览器四旅程分列 |
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
-| T-07 | App Public28.18消费修复；App/Root | VERIFIED（待集成） | Root Node22.23.4/pnpm11.25完整check exit0：contract452/architecture50/full6373，lint/types/build通过；56路径前后SHA一致；4260f698实现/9ba65343候选已推送App draft PR #50，Root pin待做 |
-| T-08 | IAM SDK与verify；IAM | VERIFIED | `a1457be`、120files/1561pass/build；不代表native端到端 |
+| T-07 | App Public28.18消费修复；App/Root | VERIFIED（切片） | Root完整check：contract452/architecture50/full6373，lint/types/build通过；App9ba65343已推送PR50并由Root精确pin；四旅程待T-05 |
+| T-08 | IAM SDK与verify；IAM | VERIFIED（当前候选） | IAM e6a01cf / PR6已pin；Root verify121files/1566pass/build，真实两host62pass/0skip；不代表跨仓native端到端 |
 | T-09 | Root/各受影响owner最终串行门；Root | WAITING | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
 | T-11 | raw/global/剩余Repository-Service-Port；BFF | WAITING | G1后，先T-17；feature迁消费者→删旧实现→零引用/真实行为 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；raw最终删除仍属T-11 |
-| T-13 | native smoke清理与脱敏证据；Root | REVIEW_PENDING（真实smoke） | 六路径停写双审通过；Root相关60pass/31subtests、治理1876pass/3skip/502subtests，IAM真实host62pass及verify1566pass；待当前最小native退出收据，不等于浏览器四旅程 |
+| T-13 | native smoke清理与脱敏证据；Root | REVIEW_PENDING（成功路径） | 六路径双审；Root60相关/1876治理，IAM真实62；两次BFF启动失败均cleanup passed/quiescent、无保留文件；正常成功退出及完整链路待T-17修复后补验 |
 | T-14 | global_register direct credential；Capability/Root | OPEN（盘点完成） | 已证receiver/测试client存在、未见第一方producer；先固定owner认证artifact及取消边界处置，再direct cutover；不新增System功能 |
 | T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
 | T-16 | Agent与原C-1删除项最终复核；Agent/Root | OPEN | `c761fad`仅focused130历史证据；当前全门及旧语义零生产引用；任务外治理问题留owner |
-| T-17 | Nest shutdown/drain/pool释放；BFF | IN_PROGRESS（启动阻断） | 前置子项：native运行复现的启动/关闭/泄漏阻断先修；完整子项：G1后/T-11前补drain/SSE/worker/PG/Redis矩阵；两项均满足才关闭 |
+| T-17 | Nest启动/shutdown/drain/pool释放；BFF | IN_PROGRESS（启动阻断） | 已真实复现ChatModule非法导出CHAT_TURN_SERVICE；先实际Nest DI compile RED→最小owner可见性修复→生产启动/native。完整drain/SSE/worker/PG/Redis矩阵仍在G1后、T-11删除前 |
 | T-18 | BFF Node24运行/生成工具链一致；BFF/Root | VERIFIED（切片） | 173e026；21路径独审/1068tracked hash匹配；Root第三轮format/check exit0，106generated与原43路径保持，7正规生成/双检通过；两轮RED保留，CI/Docker未实跑不称通过 |
 
 ---
@@ -298,9 +307,9 @@ Browser ← App UI 与刷新后的同一事实
 3. **唯一writer**：Root更新本表及阶段Goal；worker交接文件/结果/风险，reviewer只读核验。`task.md`/`CURRENT.md`同步简报，证据文件追加本次事实，旧证据不改写成当前成功。
 4. **主方完成判定**：worker报告→独审→停写后的Root相关门→真实受影响旅程→精确组合。少任一必要层，只标REVIEW_PENDING/OPEN，不标VERIFIED整体。
 5. **机器Goal**：每次阶段交接用`get_goal`核验；当前目标未完成时保留active。只在用户明确要求暂停时设paused；同一外部阻塞连续至少三个goal turns且无可推进工作才按工具规则blocked；G1/G2/G3全部达到才complete。不要为了更新文案虚假complete或重复create_goal。
-6. **下一轮默认动作**：先核本表/diff，T-04/T-13五项审修与IAM真实integration/verify已完成，三子仓独立draft PR已推送；完成Root精确pin提交→最小native，处理实测发现的T-17前置阻断。再做T-05四旅程和T-14 owner局部设计/cutover（只读盘点已完成）。G1闭合后执行T-17完整矩阵/T-11批量清理；A功能继续门控。
+6. **下一轮默认动作**：T-17实际Nest容器compile复现→最小模块可见性修复→Root BFF完整门→同一BFF PR18与Root PR66更新精确pin→最小native及成功退出→T-05四旅程。T-14可独立先完成owner局部设计，再按单writer执行；G1后T-17完整生命周期矩阵→T-11删除→T-09/T-16最终门→T-15同步环境。不得重复领取已完成的pin/格式/工具链任务，A功能继续门控。
 
-### 最新暂停后续接检查点
+### 历史暂停后续接检查点（已被下方 active 状态更新）
 
 用户已明确继续。工具Goal记录仍显示paused；继续请求已撤销此前暂停指令，本轮不伪造状态切换，也不创建重叠Goal。阶段目标仍G1/G2/G3 OPEN，A门保持。
 
@@ -311,3 +320,7 @@ T-13五项修复已获规格/质量双审，六路径hash停写匹配；Root相�
 Root已提交/推送b2f9a59c，精确pin App9ba65343/BFF173e026/IAMe6a01cf。两次最小native在source clean/gitlink、Node、BFF build/schema及IAM host之后，于BFF startup失败，completed_checks=0；两次cleanup passed/quiescent=true、无保留workdir。诊断复现定位UnknownExportException：ChatModule导出CHAT_TURN_SERVICE，但该token由AgentDispatchModule拥有。此为T-17允许的前置启动修复，不等待G1，不扩展为raw消费者批量迁移。Skills/Projects导出与ProjectAccess/Billing数据库导入为只读同类候选，尚未逐个实测。
 
 下一步由BFF唯一writer核对真实owner/module可见性，补实际Nest容器compile/启动回归（不只源码字符串断言），最小修复后Root完整门与精确pin再跑native。最小HTTP仍不替代四浏览器旅程；T-13清理仅在本次失败路径有实测证据，成功路径待后续。G1/G2/G3继续OPEN。
+
+### T-17 前置实现写区（本轮）
+
+BFF唯一writer `bff_node24_generation`，基线173e026；限定chat.module、skills.module、projects.module、project-access.module、billing.module五个现有生产文件及现有nest-runtime-architecture测试。先真实生产AppModule容器compile RED，逐项纠正owner/module可见性；仅替换测试配置与外部资源，保留真实DI图/factory，不auto-mock缺失token、不重复provider、不global Database。新增文件/默认门接线需求先报告；生产写区外的新阻断先报告。worker不做Git/真实服务/完整门，停写双审后Root串行全门与native。T-14由独立只读角色完善owner局部设计，与BFF不重叠。

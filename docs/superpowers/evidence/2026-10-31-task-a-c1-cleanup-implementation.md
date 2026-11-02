@@ -884,3 +884,8 @@ Root then pinned IAM to `a1457be836c21eb558c8cbf7d9366e60f8ce59b8` and reran `gi
 ### 精确组合首次 native 运行：真实失败与清理证据
 
 Root b2f9a59c配对App9ba65343/BFF173e026/IAMe6a01cf，三子仓clean/gitlink以及实际Node24/24/22.23.4检查通过。正常runner和只增加内存脱敏诊断的复跑均exit1、0checks，stage=BFF startup；build/schema/IAMhost已过。诊断明确Nest UnknownExportException：ChatModule尝试导出由AgentDispatchModule拥有的CHAT_TURN_SERVICE。原始敏感诊断不保留；脱敏机器收据置ignored目录。两次cleanup均passed/quiescent=true、无文件保留，失败不计native成功。I-19/T-17登记前置修复，完整四旅程、后继清理和A门仍未放行。
+
+
+### 用户恢复active后的TODO/Goal重新对齐
+
+最新用户事件及get_goal已确认active；此前暂停原因只可确定是会话接收到paused状态/中断事件，具体触发方式无证据。修正主TODO中pin尚未提交、IAM旧verify、T13无退出收据等陈旧状态；保留历史证据，不抹掉真实失败。18TODO中的9条已验只代表切片/前置，绝不换算Task A完成比例。G1/G2/G3仍OPEN，当前优先T17真实DI启动回归，随后native/四旅程/global_register/删除/最终验收。方案新增低置信度前置排期预算与重估点，Task A全部16项未有可靠总工期。本轮仅文档整理，无业务改动/服务启动/新一轮全门。

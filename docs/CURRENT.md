@@ -6,7 +6,7 @@ G0已通过，机器Goal保持active；C-1.3/C-2/C-3/C-4仍未最终闭环。A-0
 
 Root串行复验：App完整check通过（contract452、architecture50、full6373）；BFF format/check通过（contract1344、default2343pass/2skip、build），两数据库条件skip另补真实隔离PG整文件15pass/0skip。Node24生成链漂移及旧fixture缺pin两次RED已定向修复；106 generated字节保持。完整业务integration及跨仓浏览器证据仍待，不称全仓通过。
 
-native runner五项审查修复已双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf 的真实两host集成62pass、verify121files/1566pass/build通过，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三子仓精确gitlinks已暂存且topology PASS，Root提交后执行最小native；尚未交付完整浏览器四旅程或常驻同步E2E环境。global_register切换、Nest关闭保障、raw/聚合删除和最终组合全门仍OPEN。用户已要求继续；工具Goal仍显示paused，本轮没有虚构active状态或新建重叠目标。
+native runner五项审查修复已双审通过；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests。IAM e6a01cf 的真实两host集成62pass、verify121files/1566pass/build通过，独立[draft PR #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6)已推送。三子仓精确gitlinks已提交且topology PASS；当前minimal native两次失败在BFF startup；尚未交付完整浏览器四旅程或常驻同步E2E环境。global_register切换、Nest关闭保障、raw/聚合删除和最终组合全门仍OPEN。用户已要求继续；最新用户状态事件及get_goal已确认Goal active，复用原目标。
 
 **最新运行结果（b2f9a59c精确组合）**：三子仓pin已提交/推送。两次真实最小native均在BFF startup失败、0业务检查；诊断定位ChatModule非法导出CHAT_TURN_SERVICE，登记I-19/T-17前置修复。两次自有资源清理passed、quiescent且无保留workdir。下一步修复真实Nest模块可见性并补容器启动回归，未宣称端到端通过。
 
