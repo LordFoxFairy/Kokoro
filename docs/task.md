@@ -17095,3 +17095,5 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - **Git边界**：每仓自己的PR；候选保持draft，不合并main、不部署。Root只接收已验证且已推送的精确子仓gitlink；没有“所有仓库已启动”的声明。
 
 实际结果与未运行范围见[实施证据](superpowers/evidence/2026-10-31-task-a-c1-cleanup-implementation.md)；后续每个切片同步本摘要、CURRENT与唯一TODO。
+
+**最新运行结果（b2f9a59c精确组合）**：三子仓pin已提交/推送。两次真实最小native均在BFF startup失败、0业务检查；诊断定位ChatModule非法导出CHAT_TURN_SERVICE，登记I-19/T-17前置修复。两次自有资源清理passed、quiescent且无保留workdir。下一步修复真实Nest模块可见性并补容器启动回归，未宣称端到端通过。

@@ -82,6 +82,7 @@
 | I-16 | Agent 最终全门及全局规范审计未刷新；旧问题台账记录过224条任务外 violation | 本轮不把历史计数当当前结果；C-4核受影响项，任务外问题保留 owner/backlog，不放宽适用门禁或宣称全仓无问题 | T-09/T-16 |
 | I-17 | 原runner移除了必需的Web Redis输入（冷登录缺值503）；候选已恢复精确隔离注入/清理，待最终审查与真实冷登录 | 不是已退休配置；候选已补隔离注入与key归属/清理，仍需真实冷登录覆盖。现session探针不触发该路径，默认Playwright又开启preview，均不足以发现此缺口 | T-04/T-13/T-05 |
 | I-18 | 原BFF engines与pin/生成链/CI/Docker存在Node24/22漂移；173e026已统一并通过Root当前完整静态门 | 保留两轮RED与真实修复证据；七条正规生成/双检及当前完整门通过，106generated不变；未实跑CI/Docker，不以配置对齐冒称容器验收 | T-18 |
+| I-19 | 当前精确组合真实native在BFF启动失败；已两次复现Nest UnknownExportException：ChatModule导出非自身provider CHAT_TURN_SERVICE | T-17前置最小修复：按真实provider owner纠正Nest导入/导出并以真实容器compile/启动回归；其他模块同类疑点先核实，不造重复provider；修复后重跑完整门/原生链路 | T-17 |
 
 ---
 
@@ -259,7 +260,7 @@ Browser ← App UI 与刷新后的同一事实
 | T-14 | global_register direct credential；Capability/Root | OPEN（盘点完成） | 已证receiver/测试client存在、未见第一方producer；先固定owner认证artifact及取消边界处置，再direct cutover；不新增System功能 |
 | T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
 | T-16 | Agent与原C-1删除项最终复核；Agent/Root | OPEN | `c761fad`仅focused130历史证据；当前全门及旧语义零生产引用；任务外治理问题留owner |
-| T-17 | Nest shutdown/drain/pool释放；BFF | OPEN | 前置子项：native运行复现的启动/关闭/泄漏阻断先修；完整子项：G1后/T-11前补drain/SSE/worker/PG/Redis矩阵；两项均满足才关闭 |
+| T-17 | Nest shutdown/drain/pool释放；BFF | IN_PROGRESS（启动阻断） | 前置子项：native运行复现的启动/关闭/泄漏阻断先修；完整子项：G1后/T-11前补drain/SSE/worker/PG/Redis矩阵；两项均满足才关闭 |
 | T-18 | BFF Node24运行/生成工具链一致；BFF/Root | VERIFIED（切片） | 173e026；21路径独审/1068tracked hash匹配；Root第三轮format/check exit0，106generated与原43路径保持，7正规生成/双检通过；两轮RED保留，CI/Docker未实跑不称通过 |
 
 ---
@@ -304,3 +305,9 @@ Browser ← App UI 与刷新后的同一事实
 用户已明确继续。工具Goal记录仍显示paused；继续请求已撤销此前暂停指令，本轮不伪造状态切换，也不创建重叠Goal。阶段目标仍G1/G2/G3 OPEN，A门保持。
 
 T-13五项修复已获规格/质量双审，六路径hash停写匹配；Root相关60pass/31subtests、完整治理1876pass/3skip/502subtests（exit0）。IAM真实两个host文件62pass/0skip，完整verify121files/1566pass/build通过，已推送e6a01cf与本仓draft PR #6。App/BFF原已验候选保持。三精确gitlink暂存后topology PASS；暂存前因旧pin的三项预期mismatch保留为阶段记录。当前等待Root提交后实际最小native，不把宿主测试或临时数据库隔离视为应用单库组合/浏览器四旅程。
+
+### 当前真实 native 结果与下一动作
+
+Root已提交/推送b2f9a59c，精确pin App9ba65343/BFF173e026/IAMe6a01cf。两次最小native在source clean/gitlink、Node、BFF build/schema及IAM host之后，于BFF startup失败，completed_checks=0；两次cleanup passed/quiescent=true、无保留workdir。诊断复现定位UnknownExportException：ChatModule导出CHAT_TURN_SERVICE，但该token由AgentDispatchModule拥有。此为T-17允许的前置启动修复，不等待G1，不扩展为raw消费者批量迁移。Skills/Projects导出与ProjectAccess/Billing数据库导入为只读同类候选，尚未逐个实测。
+
+下一步由BFF唯一writer核对真实owner/module可见性，补实际Nest容器compile/启动回归（不只源码字符串断言），最小修复后Root完整门与精确pin再跑native。最小HTTP仍不替代四浏览器旅程；T-13清理仅在本次失败路径有实测证据，成功路径待后续。G1/G2/G3继续OPEN。

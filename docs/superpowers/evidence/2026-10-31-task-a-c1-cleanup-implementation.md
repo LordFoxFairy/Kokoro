@@ -879,3 +879,8 @@ Root then pinned IAM to `a1457be836c21eb558c8cbf7d9366e60f8ce59b8` and reran `gi
 ### T-13 停写与主方真实宿主验收
 
 六路径五项修复获规格/质量双审；最终manifest由Root逐hash核对。Root三套runner60pass/31subtests，完整治理1876pass/3skip/502subtests、exit0。IAM两真实host文件62pass/0skip；完整verify121files/1566pass，format/lint/types/contract/breaking/SDK/build通过。精确5路径（4测试+本仓摘要）提交e6a01cf7f1aeef0cfd5a63efe78e194b50ad1e9b并推送本仓draft PR #6，无main合并。App/BFF已验SHA不变；Root三gitlink暂存后topology PASS。未运行当前最小native/四浏览器旅程，随后按源码精确组合执行。暂停后用户已明确续接；工具Goal仍paused，不伪报active或重复建Goal。
+
+
+### 精确组合首次 native 运行：真实失败与清理证据
+
+Root b2f9a59c配对App9ba65343/BFF173e026/IAMe6a01cf，三子仓clean/gitlink以及实际Node24/24/22.23.4检查通过。正常runner和只增加内存脱敏诊断的复跑均exit1、0checks，stage=BFF startup；build/schema/IAMhost已过。诊断明确Nest UnknownExportException：ChatModule尝试导出由AgentDispatchModule拥有的CHAT_TURN_SERVICE。原始敏感诊断不保留；脱敏机器收据置ignored目录。两次cleanup均passed/quiescent=true、无文件保留，失败不计native成功。I-19/T-17登记前置修复，完整四旅程、后继清理和A门仍未放行。
