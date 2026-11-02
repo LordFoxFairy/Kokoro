@@ -17174,3 +17174,8 @@ I-38 三路只读盘点已完成，候选设计写回唯一计划 §3.6：建议
 ### 同日后续：I-37 独立 SDK 修复已主方验证
 
 IAM本地 `2cb9864`（未推送）修 Bearer 自动生成 Cookie；独审CLEAR，主方完整verify exit0、clean-commit外部consumer2 PASS，542输入未变。I-38仍待用户裁决，未实施Session引用、未发行native2，原Goal/G1/G2/G3不变；I-36其余测试价值清理仍开放。详见唯一计划，不以此切片冒整体认证闭环。
+
+
+### 同日后续：I-36 首批测试价值清理已验
+
+IAM本地 `1d82fa2` 仅六测试文件：SMTP重复正例独有断言合入HTTP；删除Audit两固定清单、tenant源码字符串和Skills全局位置检查；Audit两页改严格wire；Skills补非法字节拒绝。初版新增audit计数因正常成功也不写audit而无独有价值，已删除。主方format/lint/types、architecture10、真实三文件31PASS；最后微调仅Skills单文件16重验，非额外16风险。双审CLEAR，未推送；I-36其余项与I-38设计待办不据此关闭。

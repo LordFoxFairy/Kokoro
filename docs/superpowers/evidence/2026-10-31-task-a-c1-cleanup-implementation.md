@@ -1143,3 +1143,14 @@ I-38 未裁决期间，仅验证其独立局部修复，不新增引用式认证
 - 主方 Node24.20.0 `corepack pnpm verify` exit0：格式/lint/types/contract/breaking/SDK/default/build通过，125文件/1654默认PASS，7.04s；完整输入hash未变。此处数字是套件执行量，不是独立业务覆盖数。
 - clean commit 后主方原 `vitest run test/consumer --maxWorkers=1` exit0：2文件/2PASS/0FAIL/0SKIP，23.92s；542输入hash未变。包含SDK pack→仓外安装/编译→真实IAM调用和auth-flow；Billing direct-service正例、同proof/body OAuth401负例均执行，原成员/角色/邀请/审计等后续流程保持。
 - 原b2f28d4 consumer 1FAIL保留；本次未改owner server，未无意义重跑其全部484integration，未称新组合E2E或全仓通过。私有日志/冻结存本地，资源按原fixture清理。Root gitlink仍5fffe60；I-38待用户裁决、I-36余项OPEN，Goal active。
+
+### I-36 首批测试精简与真实验证（2026-11-02）
+
+基线 IAM `2cb9864`，最终本地 `1d82fa254dc91d70e7b749458a7814c83fc855ec`（未推送），仅6测试文件、无生产/SDK/生成物/Schema/依赖变更，I-38未实施。
+
+- 删Audit query/maintenance固定目录数组，保Nest注册/导出/cron等有效边界；删tenant源码字符串，真实两页exact ID/tenant/keyset承接。两页使用现严格response schema，不再用剥未知字段的测试Zod投影；sentinel与游标篡改负控保持。details/resultSlot两条原弱检查保留，wire通过不证明SQL未读列，也不新增该硬门。
+- SMTP直接调用重复邀请正例删除前，把origin/唯一query ID/响应invitation ID/同PG行pending/email全部合入原HTTP正例；拒收、magic-link、注册验证和TLS原例不动。
+- 删除Skills全文件indexOf顺序用例，保原真实重复key/非法JSON/权限/413/no-store，追加原始非法UTF8字节拒绝。初版audit count前后比较因该操作正常也不写审计而无独有价值，review后删除，不新增mock替代；不宣称该请求证明业务零启动。
+- 主方format/ESLint/tsc --noEmit与3架构文件10 PASS（0.93s）通过；真实`vitest run` SMTP/Skills/Audit三文件31 PASS（21.62s），542输入无漂移。随后仅删除Skills4行无效计数，其余5文件hash不变；主方最终Skills单文件16 PASS（13.83s）且542输入无漂移、格式/lint通过。31与16有重叠，不相加当独立覆盖。最终冻结6/6核同、双审CLEAR。
+
+本轮按测试影响范围验证，未重复完整默认/484 server integration或consumer；此前相应门绑定原切片，不冒当前全套重跑。实际删改已写唯一计划§0.3，contract结构/纯转发等余项仍OPEN，Goal active、G1/G2/G3未闭合。私有日志/冻结留本地。
