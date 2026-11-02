@@ -723,3 +723,13 @@ BFF child `4af24bf` updates four stale integration-fixture accesses from removed
 ### Root verification after PublicShare fixture pin `4af24bf`（2026-11-02）
 
 Root topology and governance recheck passed after pinning BFF `4af24bf72a5dc70a4a072025b726496ee1673762`: **1846 passed / 3 skipped / 502 subtests**. PublicShare fixture cleanup is integrated without changing production ownership; remaining raw database/worker fixture migration, App artifact reconciliation, C-1.3 receipts and E2E startup remain open.
+
+### C-3 production PostgreSQL owner-resource factory（2026-11-02）
+
+BFF child `673306e5e6c889c8bfbfde02933de1253b4f3034` extracts the PostgreSQL owner graph into `createPostgresBffOwnerResources`/`PostgresBffOwnerResources`. Production `createBffComposition` now consumes the named resource factory and no longer constructs `PostgresBffRepositories`; the class remains only as an explicit raw/integration compatibility wrapper. Construction order, SQL/transaction/worker/readiness/close behavior are unchanged, and no application layer receives the database handle.
+
+验证：主方复核 BFF build/typecheck/lint/diff-check；mock contract **29/29**；architecture/Nest runtime/feature **70/70**。`pnpm format:check` remains exit 1 on the existing 31-file warning set; no unrelated formatting sweep was applied. Integration wrapper consumers remain and still require fixture migration before deleting the compatibility class.
+
+### Root verification after production owner-resource factory pin `673306e`（2026-11-02）
+
+Root topology and governance recheck passed after pinning BFF `673306e5e6c889c8bfbfde02933de1253b4f3034`: **1846 passed / 3 skipped / 502 subtests**. Production no longer constructs the global repository aggregate; raw/integration compatibility consumers remain the next deletion gate.

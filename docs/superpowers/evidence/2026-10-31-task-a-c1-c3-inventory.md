@@ -307,3 +307,7 @@ Seven stale integration references now use the named `PostgresBffRepositories.pe
 ### 2026-11-02 PublicShare fixture seam
 
 Four stale integration references now use `PostgresBffRepositories.publicShareService` (`4af24bf`). Remaining wrapper consumers are the raw database/worker suites; no alias or duplicate repository was introduced.
+
+### 2026-11-02 production owner-resource factory
+
+`createBffComposition` no longer imports/constructs the global `PostgresBffRepositories` aggregate; it consumes `createPostgresBffOwnerResources` (`673306e5`). The aggregate class remains a raw/integration compatibility wrapper while nine integration suites still construct it. Next gate is explicit fixture migration and zero imports, not another production alias.

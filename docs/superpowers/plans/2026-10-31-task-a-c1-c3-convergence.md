@@ -410,3 +410,8 @@ pnpm test:integration
 ### 2026-11-02 execution update (named PublicShare fixture)
 
 - BFF child `4af24bf` removes four stale global-service fixture accesses in Message-parts/AG-UI integration tests by using the existing named PublicShare application service. Resource-gated SQL cases remain skipped without isolated PG/Redis; no C-3 owner boundary was widened.
+
+### 2026-11-02 execution update (production owner-resource factory)
+
+- BFF child `673306e5e6c889c8bfbfde02933de1253b4f3034` removes the production runtime dependency on `new PostgresBffRepositories` by introducing a named PostgreSQL owner-resource graph. The compatibility wrapper remains only for raw/integration consumers until their fixtures are migrated.
+- Main-checkout focused verification: BFF build/typecheck/lint/diff-check, mock contract **29/29**, architecture/Nest **70/70**. C-3 wrapper deletion and C-4 full integration remain open; A gates stay stopped.
