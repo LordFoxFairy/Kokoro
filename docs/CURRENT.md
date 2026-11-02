@@ -1,12 +1,12 @@
-## Task A 当前检查点：接收方切片已验，四旅程与最终组合仍 OPEN
+## Task A 当前检查点：冷登录/退出HTTP与direct receiver已验，完整闭环仍OPEN
 
 唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal active；G0通过，G1认证/G2删除/G3最终组合均OPEN，A功能停写。
 
-App冷登录727已在Root4fdb精确组合实际验证：无cookie注入的新Chromium表单303/session200/projects200，最小HTTP4checks与cleanup PASS。退出1d54已Root完整check6403pass/0skip，但真实App→IAM退出415、session与旧cookie重放仍200；第二层媒体类型/空JSON规范化已交付App e1be73e0，Root完整check6407pass/0skip与独审通过，本次精确pin后真实复验，I-24尚未关闭，不拿loopback或原HTTP4PASS代替退出验收。
+已验源码组合Root1e6：App e1be73e0/BFF4d6/IAMe6/Capabilityf515。App最终完整check6407pass/0skip、contract452/architecture50/lint/types/build，独审及1494输入hash保持。真实新Chromium无cookie注入：表单303/session认证true/projects200；App退出200后session匿名、cookie清除，projects与旧cookie重放均401。最小HTTP4checks和自有资源cleanup PASS。I-21/I-24缺陷在此范围闭合；不是Settings点击、异tenant恢复或独立撤权的完整四旅程。
 
-Capability f515接收方切片已Root独审、format/lint/verify/Prisma/build全0：3051pass/678skip，1111输入hash保持；隔离真实HTTP/PG receiver1pass，13未选择，数据库inventory保持。Root六文件配套候选独审、定向154及完整治理1879pass/3skip/506subtests证据绑定同源码，本次精确pin配对。新draft PR13依赖旧PR12；远端四新提交含Schema/契约，与PR13实际有冲突，I-25/T-09后继独立集成与重新验收，未覆盖或合并任一main。
+Capability f515已Root独审与format/lint/verify/Prisma/build全0（3051pass/678skip），1111输入保持；隔离真实HTTP/PG receiver1pass，13未选，DBinventory保持。Root退休配置六文件已随c08c提交，主方154定向与1879治理/3skip/506subtests绑定同源码。PR13依赖原PR12，最新base2ad有5文本冲突及v2 generator丢认证索引的集成接缝；I-25/T-09保双方提交，独立集成后重验，不把f515证据外推。
 
-当前无常驻同步测试环境。下一步完成T-05真实退出、固定域隔离恢复、独立撤权，再G1→生命周期/旧实现删除→基线整合与最终门/同步环境。各仓独立draft PR，未发布部署。
+无常驻同步测试环境。下一步T-05 owner绑定真实browser session与永久四旅程driver，验证固定域隔离恢复、独立撤权及UI迟到状态；随后生命周期/旧实现删除、base整合与最终门。Root66/App50/BFF18/IAM6/Capability13各自draft，未merge main/部署。
 
 ---
 

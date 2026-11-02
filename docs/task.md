@@ -17113,3 +17113,5 @@ App退出1d54eedd已Root完整check6403pass/0skip并沿原PR50交付，本次Roo
 T14 receiver切片f515/PR13已Root全门3051pass/678skip和真实PG1pass，Root六配置文件配对交付；与原PR12最新2ad基线实际冲突留I-25/T-09独立整合。退出I-24仍OPEN：App1d54真实signout415且旧cookie200，媒体类型/空JSON规范化修复中，不以旧单测全绿结案。
 
 App e1be73e0 JSON规范化已独审/Root完整check6407pass/0skip并沿PR50推送，精确pin后复验真实退出；真实GREEN前I-24保持OPEN。
+
+最终当前：App e1be/Root1e6真实退出GREEN，session200且authenticated=false/cookie0、projects401/旧cookie401；冷登录亦真，原smoke与cleanupPASS。临时driver原要求无cookiesession401不符合既有200/false契约，已改精确body与零cookie/两401断言并真实重跑。I-24 HTTP缺陷闭合，完整四旅程仍T05进行中；下一步owner exact browser session fixture与永久driver，不提前A。

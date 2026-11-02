@@ -942,3 +942,7 @@ Root325d/App1d54真实冷登录仍303/session200/projects200；实际App退出41
 I-25独立只读merge-base/diff/legacy三参数merge-tree确认9重叠/5文本冲突，并发现远端v2 contract generator重建provenance会丢T14 serviceCredentialSources的确定接缝；登记精确双checker/生成保索引回归及新canonical真实验证要求。未写Git对象/index/worktree，未擅自合并B01或推进其消费者。
 
 I-24第二层候选Root完整check exit0（452/50/6407、lint/types/build；1494输入hash保持），独审CLEAR。e1be73e0三文件沿PR50交付，浏览器严格零体不变，只有adapter固定JSON{}两字节；本次Root精确pin后真实复验，上轮415仍留证。
+
+### I-24真实退出最终GREEN及oracle纠正
+
+Root1e6/App e1be精确组合：真实新Chromium登录303、session200/true、projects200；App sign-out200、session200/false、issuer token cookie0、projects401、内存旧cookie重放401。原4checks与cleanup PASS/quiescent/无保留文件。首轮新实现signout已200但临时driver误要求缺cookie session401；核现native route和既有契约后改精确匿名false/零cookie及两个401，完整重跑GREEN，生产无额外改动。旧415真实RED及错误oracle均保留。脱敏浏览器收据与source SHA/driver hash/cleanup存同ignored run目录，不记录原cookie/密码。该范围不冒Settings点击或完整四旅程验收。
