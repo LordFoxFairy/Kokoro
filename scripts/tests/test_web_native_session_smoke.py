@@ -1417,3 +1417,134 @@ def test_driver_failure_diagnostic_never_serializes_error_payload():
         timeout=5,
     )
     assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "delivered",
+        "cancelled",
+        "wrong_origin",
+        "wrong_method",
+        "wrong_path",
+        "query",
+        "http_origin",
+        "origin_path",
+        "origin_credentials",
+        "zero_port",
+        "large_port",
+        "string_port",
+        "fractional_port",
+        "redirect",
+        "unauthorized",
+        "missing_subject",
+        "transport_failure",
+    ],
+)
+def test_profile_barrier_transport_and_owner_response_boundary(case):
+    """Route doubles verify wiring only, not genuine owner/browser acceptance."""
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      import {EventEmitter} from 'node:events';
+      const {profileBarrier} = await import(process.argv[1]);
+      const scenario = process.argv[2];
+      const config = {origin: 'https://web-native-own.example.test', port: 49123};
+      const headers = {cookie: 'fixture-cookie', host: 'ignored.invalid', accept: 'application/json'};
+      let requestUrl = config.origin + '/api/account/profile';
+      let method = 'GET';
+      const badConfigs = {
+        http_origin: {origin: 'http://web-native-own.example.test'},
+        origin_path: {origin: config.origin + '/other'},
+        origin_credentials: {origin: 'https://user:fixture@web-native-own.example.test'},
+        zero_port: {port: 0}, large_port: {port: 65536},
+        string_port: {port: '49123'}, fractional_port: {port: 49123.5},
+      };
+      if (scenario === 'wrong_origin') requestUrl = 'https://other.example.test/api/account/profile';
+      if (scenario === 'wrong_method') method = 'POST';
+      if (scenario === 'wrong_path') requestUrl = config.origin + '/api/auth/session';
+      if (scenario === 'query') requestUrl += '?redirect=other';
+      const invalidRequest = ['wrong_origin', 'wrong_method', 'wrong_path', 'query'].includes(scenario);
+      const invalidResponse = ['redirect', 'unauthorized', 'missing_subject', 'transport_failure'].includes(scenario);
+      let handler;
+      let fetchOptions;
+      let headerReads = 0;
+      let fulfillment;
+      let aborted = false;
+      const page = new EventEmitter();
+      page.route = async (_pattern, callback) => { handler = callback; };
+      page.unroute = async (_pattern, callback) => { assert.equal(callback, handler); handler = undefined; };
+      const request = {
+        url: () => requestUrl, method: () => method,
+        allHeaders: async () => { headerReads++; return headers; },
+        failure: () => ({errorText: 'net::ERR_ABORTED'}),
+      };
+      const response = {
+        status: () => scenario === 'redirect' ? 302 : scenario === 'unauthorized' ? 401 : 200,
+        json: async () => ({data: scenario === 'missing_subject' ? {} : {subject: 'fixture-subject'}}),
+      };
+      const route = {
+        request: () => request,
+        fetch: async options => {
+          fetchOptions = options;
+          if (scenario === 'transport_failure') throw new Error('fixture transport error');
+          return response;
+        },
+        fulfill: async options => { fulfillment = options; page.emit('requestfinished', request); },
+        abort: async () => { aborted = true; },
+      };
+      if (badConfigs[scenario]) {
+        await assert.rejects(() => profileBarrier(page, {...config, ...badConfigs[scenario]}));
+        assert.equal(handler, undefined);
+        assert.equal(page.eventNames().length, 0);
+      } else {
+        const barrier = await profileBarrier(page, config);
+        const expectedFailure = invalidRequest || invalidResponse;
+        const ready = expectedFailure ? assert.rejects(barrier.ready) : barrier.ready;
+        const handled = handler(route);
+        await ready;
+        if (expectedFailure) {
+          barrier.cancel();
+          await handled;
+          assert.equal(fulfillment, undefined);
+          if (invalidRequest) {
+            assert.equal(fetchOptions, undefined);
+            assert.equal(headerReads, 0);
+          } else {
+            assert.equal(headerReads, 1);
+            assert.equal(fetchOptions.maxRedirects, 0);
+          }
+        } else {
+          assert.deepEqual(fetchOptions, {
+            url: 'https://127.0.0.1:49123/api/account/profile',
+            headers: {...headers, host: 'web-native-own.example.test'},
+            timeout: 4500, maxRetries: 0, maxRedirects: 0,
+          });
+          assert.equal(headerReads, 1);
+          assert.equal(headers.host, 'ignored.invalid');
+          assert.equal(fulfillment, undefined);
+          if (scenario === 'cancelled') page.emit('requestfailed', request);
+          const result = await barrier.release();
+          await handled;
+          assert.deepEqual(result, {
+            upstream_profile_status: 200,
+            observation: scenario === 'cancelled' ? 'cancelled' : 'delivered_and_retired',
+          });
+          assert.equal(aborted, scenario === 'cancelled');
+          if (scenario === 'delivered') assert.equal(fulfillment.response, response);
+          else assert.equal(fulfillment, undefined);
+          assert.equal(handler, undefined);
+          assert.equal(page.eventNames().length, 0);
+        }
+      }
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri(), case],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr

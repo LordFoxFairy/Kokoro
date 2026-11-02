@@ -1,10 +1,10 @@
 ## Task A 当前检查点：浏览器首旅程失败，整体仍未闭环
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。2026-11-02主控核Goal **active**；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。18 TODO＝11已验切片、2进行中、3等待、1开放、1门控；26问题，不以数量换算产品完成率。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。2026-11-02主控核Goal **active**；G0通过，G1认证/G2删除/G3最终组合均OPEN，A-01/A-02/A-07停写。18 TODO＝11已验切片、2进行中、3等待、1开放、1门控；27问题，不以数量换算产品完成率。
 
-当前Root `dd447c68`精确pin App e1be/BFF4d6/IAM1ee8/Capabilityf515。IAM新test-only host已双审、Root真实两host66pass/0skip及完整verify1566pass，推原PR6；永久browser driver d309有82定向、1931治理/3skip，dd447诊断增量91定向通过，完整治理尚未在该后继重跑。
+当前Root `50ac142b`精确pin App e1be/BFF4d6/IAM1ee8/Capabilityf515。IAM新test-only host已双审、Root真实两host66pass/0skip及完整verify1566pass，推原PR6；永久browser driver d309有82定向、1931治理/3skip，dd447诊断增量91定向通过，完整治理尚未在该后继重跑。
 
-正式四旅程**已运行且失败**：真实表单303并到/app，但账户入口不可见，cold_login超时、0/4完成；失败后cleanup PASS/quiescent，无保留自有文件。独立诊断14次HMR WebSocket请求均404，确认隔离代理缺Upgrade隧道；登记I-26，尚未证明是页面不就绪唯一原因。下一步仅修代理传输、回归后重跑原四旅程，不修改产品认证或放宽UI断言。
+正式四旅程**已运行且失败**：50ac的HMR修复后，原cold_login账户入口/资料200与显示检查已过；当前在tenant_rejection_recovery的profileBarrier fetch失败，整体receipt仍0/4。cleanup PASS/quiescent，无保留自有文件。I-27私有同请求对照确认原Node fetch在TLS建立前断开，经自有HTTPS端口/原Host/cookie返回200；Playwright Node请求不继承Chromium域名/443映射。下一步只修driver映射、保真实响应与全部UI/预算断言，再跑原四旅程。
 
 既有App完整门6407pass/0skip、contract452/architecture50/lint/types/build与真实冷登录/退出HTTP仍有效于原组合；Capability f515完整门3051pass/678skip及真实PG receiver已验。二者不替代完整UI认证旅程。Capability PR13与其最新PR12基线2ad有冲突，T-09需保双方更新并重新验证。
 

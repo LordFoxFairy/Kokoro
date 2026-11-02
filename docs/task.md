@@ -17133,3 +17133,5 @@ Root dd447c68，Goal active；18 TODO分类11已验切片/2进行中/3等待/1�
 G0通过，G1/G2/G3均OPEN；Nest生命周期/raw删除、Capability最新base整合、Agent/最终组合门与可保留同步环境未齐。原A01～16责任保留，A01/A02/A07仍门控；完整A日期证据不足，旧C预算不滚动重置。唯一[方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)给出写区、关闭条件与下一检查点。本轮仅文档复核，未启动服务或修改业务代码；每仓独立原PR、不merge main。
 
 I-26本轮工程切片已获Root接收：原真实TLS握手101预期/404实际RED，最小代理修复双审后Root165定向/1959完整治理（3skip）通过，四文件停写hash保持。无产品认证或driver断言变更；下一动作精确提交后正式四旅程，G1仍OPEN。
+
+I-26后正式run8160b600：冷登录账户入口/真实profile显示已过，进入异tenant旅程后barrier的Node fetch TLS握手前断开，整体收据仍0/4、cleanup PASS。I-27登记并实测同请求自有HTTPS loopback返回200；仅driver与既有测试窄修，保真实响应与原4500ms/退休断言，正式重验前G1不关闭。问题更新27项，18TODO不增。

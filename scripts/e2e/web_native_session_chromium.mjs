@@ -190,7 +190,10 @@ async function replay(config, cookie) {
 }
 
 /** Hold bytes from the genuine owner response; never manufacture success data. */
-async function profileBarrier(page) {
+export async function profileBarrier(page, config) {
+  const origin = new URL(config.origin);
+  requireFact(origin.protocol === 'https:' && origin.origin === config.origin);
+  requireFact(Number.isInteger(config.port) && config.port > 0 && config.port <= 65535);
   let release;
   let upstreamReady;
   let upstreamReject;
@@ -213,7 +216,14 @@ async function profileBarrier(page) {
     request = route.request();
     started = performance.now();
     try {
-      const response = await route.fetch({timeout: 4500, maxRetries: 0});
+      requireFact(request.method() === 'GET' && request.url() === origin.origin + '/api/account/profile');
+      // route.fetch uses Node, not Chromium's host-resolver-rules. Preserve the
+      // intercepted request's cookies and virtual host at our owned TLS proxy.
+      const response = await route.fetch({
+        url: `https://127.0.0.1:${config.port}/api/account/profile`,
+        headers: {...await request.allHeaders(), host: origin.host},
+        timeout: 4500, maxRetries: 0, maxRedirects: 0,
+      });
       upstreamStatus = response.status();
       requireFact(upstreamStatus === 200);
       // Parse without editing, ensuring this barrier captured a genuine profile.
@@ -361,7 +371,7 @@ try {
   await page.bringToFront();
   await page.getByTestId('settings-tab-appearance').click();
   await expect(page.getByTestId('settings-account')).toHaveCount(0);
-  barrier = await profileBarrier(page);
+  barrier = await profileBarrier(page, config);
   await page.getByTestId('settings-tab-account').click();
   await barrier.ready;
   const visibleBeforeMutation = await profileSentinel(page, initialProfile.profile, expect);

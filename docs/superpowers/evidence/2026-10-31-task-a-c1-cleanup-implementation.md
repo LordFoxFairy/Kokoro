@@ -1012,3 +1012,13 @@ Root在08c00523文档基线上实际执行tests-only真实TLS Upgrade回归：1 
 Root停写复验：三现有文件定向**165pass/52subtests，40.69s，exit0**；完整`python3 -m pytest scripts/tests -q` **1959pass/3skip/531subtests，157.47s，exit0**；四文件Ruff format/check及diff通过，四输入SHA256前后不变。代理e615d6bae0490f4b8987a13d60b5e8b000a696f9f2dcd87558ac2f8aef3bc8c4；native runner8e4037531e7052a927d6af189bc880064e9a1b0682b3a663d4bbc1f18b1be995；代理测试8526f45802bcb52ef9eded3e48c038f4d3acbad83b0ad4c4ab0bb0a337c6fc25；native测试dd877132fd4b467f4611d8054d93b35117d68b1057cea03a8e5963a3835bbfcd。主方日志留私有/tmp，不入Git。
 
 以上证明代理工程切片，不证明HMR是原UI卡住唯一原因。Root精确提交后跑正式原四旅程；真实结果之前I-26/T-05/G1保持开放。
+
+### 2026-11-02 I-26 后正式旅程推进与 I-27 transport RED
+
+Root50ac142b正式run8160b6005dd8862d3c703cb0已越过cold_login账户入口、真实profile200及可见性，进入tenant_rejection_recovery，在driver226 profileBarrier catch失败。整体收据仍completed_journeys=0，无部分成功receipt，不冒四旅程通过；cleanup PASS/quiescent/无保留文件与credential scan PASS。
+
+私有诊断副本e9584f77fc27584a88faf83c仅新增错误固定类别与同一原请求的loopback读取对照：原route.fetch在secure TLS建立前断开（upstream_status=null），不是ENOTFOUND/证书校验/超时/业务断言；同一profile请求使用既有自有HTTPS端口、原Host与allHeaders后返回200。未输出cookie、原错误message、响应体或URL；诊断副本不算正式验收。前两诊断run a53a06c9/222a44ab用于缩小错误分类，均保留失败。
+
+锁定Playwright1.62.1的Route.fetch走Node APIRequestContext/http(s).request，不继承Chromium host-resolver-rules；ignoreHTTPSErrors会继承，不错误归因证书校验。App readAccountProfile拒绝上游set-cookie且自身仅返回cache-control/request-id，loopback对照不涉及新cookie写入。登记I-27/既有T-05，仅修driver传输映射，保真实上游与全部UI/预算断言。
+
+I-27候选已停写双审CLEAR；Root重跑native runner整份测试108pass（5.97s），Node22语法、Ruff format/check与diff通过。driver SHA256 8214c4649bd90974b2532c3404cfde24e9115e4a12f71fc9d9c0a262c1b6caa4，测试514c5d1b9fb6c78956fa1f6e8e6b5bc8661970c0038f6d1cad7d6dceabd49458。该后继为局部驱动修复，1959完整门仍绑定50ac前一源码；精确提交后先复跑真实旅程，再按最终影响完成Root全门。

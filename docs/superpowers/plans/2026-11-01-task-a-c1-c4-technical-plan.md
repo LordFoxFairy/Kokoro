@@ -17,7 +17,7 @@
 - **为何看起来暂停**：本轮`get_goal`实际为**active**；历史记录记载过paused/中断，但现有证据不确定其触发来源。主控交接和台账存在明确滞后：当前段仍写“IAM tests-only待RED”，实际IAM与永久driver已经交付，正式浏览器验收已失败。不能把旧等待状态继续交给用户处理，也不需要再次批准既定步骤。
 - **当前执行点**：Root `dd447c6878c3b00340e51554311340a2dc1857c0`，IAM `1ee8d156`已精确pin；正式browser模式在cold_login的账户入口可见性检查超时，完成**0/4旅程**。独立诊断确认HMR WebSocket请求14次均404；这是代理能力缺口，是否为页面不就绪唯一原因仍需修复后复验。登记I-26。代理修复现已停写双审，Root165定向/1959治理（3skip）通过；下一动作是精确提交后正式四旅程复跑，不改产品认证或放宽断言。
 - **Goal边界**：机器Goal继续C-1.3～C-4前置闭环，不是“A全部完成”。G0通过；G1认证/G2删除/G3最终组合验收均OPEN，A-01/A-02/A-07停写。原A-01～A-16责任保留。
-- **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为26项；条目数量不等于产品完成百分比。
+- **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为27项；条目数量不等于产品完成百分比。
 - **闭环缺口**：完整四旅程、Nest生命周期、raw/聚合删除、Capability新base整合、Agent及最终组合门、可保留同步测试环境均未完成。已验HTTP认证/退出与receiver切片保留，不因新失败归零；PR存在、单测通过或cleanup通过不代表整体闭环。
 - **工期口径**：此前3～7工作日只属历史C阶段低置信度预算，不是当前剩余时间，更不是完整Task A日期。当前完整A没有可信完成日期：16项尚缺逐项当前证据/剩余量，raw迁移缺feature批次与吞吐样本，四旅程与生命周期仍有运行风险。先完成T-05并确定首批迁移规模，再重估C剩余工期；产品A需另按16项分解估算，不将已有实现当全部重做。下一检查点是“代理回归＋原四旅程结果”，而不是再次给滚动倒计时。
 
@@ -99,6 +99,7 @@
 | I-24 | 已修复退出两层缺陷：显式POST body与owner JSON媒体类型/空对象规范化 | App e1be完整门6407/0skip及Root真实退出200、cookie清除、项目/旧cookie均401；I-24在此HTTP范围闭合，完整T-05仍OPEN | T-05 |
 | I-25 | Capability原PR12基线由44fcc前进至2ad5c9e，4提交/73路径含契约和Schema；本Task A PR13与其存在实际合并冲突 | 保留双方提交，不force、不整树择一；在独立集成区审边界/冲突后重新完整门和真实receiver，再更新精确Root组合。当前仅已验f515候选 | T-09/T-16 |
 | I-26 | Root dd447正式四旅程cold_login已303并到/app，但账户入口不可见而超时；诊断14次HMR WebSocket Upgrade均404，代理缺101双向转发 | 隔离代理修复已停写双审，Root165定向/1959治理（3skip）通过；HTTP/SSE/清理回归承接，不改App认证或UI断言。原四旅程真实通过才关闭；HMR是否唯一原因待证 | T-05/T-13 |
+| I-27 | Root50ac正式旅程已过cold_login UI/profile，进入异tenant旅程后profileBarrier的route.fetch在TLS握手前失败；Playwright Node请求不继承Chromium域名/443映射，私有同请求loopback诊断200 | barrier显式使用自有HTTPS loopback端口，保原Host与allHeaders内存cookie，maxRedirects=0；仍取真实APIResponse并保200/subject/4.5秒/退休断言。无产品改动，正式四旅程重验 | T-05 |
 
 ---
 
@@ -284,6 +285,10 @@ Browser ← App UI 与刷新后的同一事实
 ---
 
 ### 5.1 下一检查点与工期口径（2026-11-02）
+
+**最新运行检查点**：I-26修复已提交50ac142b并完成Root完整门；正式run8160b600已越过cold_login UI/profile而在tenant_rejection_recovery失败，整体收据仍0/4（失败路径不输出部分成功计数）。I-27主控私有诊断确认原fetch“TLS建立前连接断开”、upstream_status=null，同一真实请求经自有loopback/原Host/cookie返回200；不是认证失败。以下第1项实现已交付，第2项重验发现的新阻断由I-27承接。
+
+**I-27最小写区与验证**：只修改既有Chromium driver和native runner测试文件；将config传入profileBarrier，route.fetch显式指向`https://127.0.0.1:<owned port>/api/account/profile`，保留原request.allHeaders及固定原origin Host、4500ms/maxRetries0并禁redirect；现有App profile GET适配器自身拒绝上游Set-Cookie且成功响应不返回Set-Cookie；本driver不建立新的cookie投影。保原真实response/status/subject与fulfill，不绕过owner或造成功。主方已获得实际RED/同请求200对照，接收最小行为回归后实现、独审、停写门、精确提交再正式复跑。
 
 1. **立即下一动作／Root／T-05＋I-26**：在既有共享smoke代理增加仅Web实例启用、精确`GET /_next/webpack-hmr`的Upgrade路径；固定自有Next上游，严格握手/101双向转发、有限连接/空闲/总时长预算和断开回收。不支持任意CONNECT或动态目标，不记录frame/cookie；普通HTTP/SSE、body上限与默认smoke行为不变。先查现有可复用实现，再在现有代理测试补握手/双向/EOF/关闭/禁用负控RED，随后实现与独审；不关闭React debug channel或增加登录等待掩盖问题。
 2. **主控验证／T-05**：代理定向及Root相关完整门→停写提交→正式四旅程原断言重跑。保持自然签发cookie、精确owner绑定与凭据私有管道；若HMR已通而UI仍不就绪，继续定位实际挂载原因，不先关闭I-26或G1。写区限定共享代理、其现有测试及native runner必要的显式启用接线；无App/IAM生产、Schema、依赖或lockfile变更。
