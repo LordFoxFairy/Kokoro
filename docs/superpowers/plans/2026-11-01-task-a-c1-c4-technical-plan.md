@@ -18,7 +18,7 @@
 - **正式当前组合**：Root `aec5775a`，App `fdbb49f1`、BFF `105024d`、IAM `5fffe60`、Capability `f515e225`。BFF/IAM最新提交仅D0文档，上轮正式实跑源码分别为f81/1ee8。run2a960804d5cac08754f45228严格source clean/gitlink配对、实际Node版本符合要求，正式4/4、cleanup passed/quiescent/无保留文件、credential scan passed。
 - **已关闭切片**：I-30正规native生成/默认测试；I-34最终鲜验不可用不误判401；I-33同请求429→503根因已证，正式driver在已关闭旧context的独立场景边界等待原配额窗口。I-26/27/28/32连同本片已获完整正式旅程覆盖，不重新领取。没有提高配额、清bucket、缓存准入、自动重试或放宽撤权断言。
 - **证据边界**：四旅程覆盖冷登录、异tenant拒绝/恢复、UI退出、独立Session/成员撤销；真实held profile race本次观测为cancelled且私有UI退休，不冒非协作迟到JS结果被交付。三服务临时组合不代表所有仓库启动或同步环境可用，未证明生产容量。
-- **TODO与未闭环项**：34累计问题；18TODO仍11已验切片、2进行中、3等待、1开放、1门控。T-05包含完整认证切换，虽四旅程通过仍IN_PROGRESS；G1的I-29与I-31待完成，G2生命周期/旧实现删除、G3最终组合/同步环境未完成。原A01～16保留，A01/A02/A07停写。
+- **TODO与未闭环项**：35累计问题；18TODO仍11已验切片、2进行中、3等待、1开放、1门控。T-05包含完整认证切换，虽四旅程通过仍IN_PROGRESS；G1的I-29与I-31待完成，G2生命周期/旧实现删除、G3最终组合/同步环境未完成。原A01～16保留，A01/A02/A07停写。
 - **下一主控动作**：按已通过I-29 owner三面设计，先IAM native2/真实管理员事实/业务事务复核/四action与正式artifact，再BFF固定消费和全部隐蔽消费者迁移，删除生产回退；补I-31并复验G1。Root继续掌控资源、Git与最终门，每仓复用原draft PR，不merge main、不部署。既有工期为条件性容量估算，不重置滚动倒计时。
 
 ## 0. 当前结论与唯一入口
@@ -107,6 +107,8 @@
 | I-32 | cc405正式run在focusProbe等待session超时；锁定Playwright默认启用focus emulation，抑制bringToFront真实事件。私有禁用两页override后trusted事件/session401与前三旅程顺序走通 | 已交付实现与原断言保持；Root aec5775a/run2a960804正式4/4通过，本项在真实旅程范围闭合。对应RED/修复/组件门与历史失败见实施证据，不重复领取 | T-05 |
 | I-33 | 同请求首次/me429→App503已证，场景累计负载触及既有共享配额；Root c142c49c仅在独立场景边界尊重窗口 | Root2005治理/3skip与双审；aec5775a正式4/4通过，本编排缺陷闭合。未抬配额/缓存/重试，不冒产品容量证明 | T-05 |
 | I-34 | App最终鲜验原catch成null误判401，已由fdbb49f1删除吞错，依赖不可用沿503且无资料泄漏 | 本局部缺陷已闭合：先3项真实loopback RED，Root App完整6411/0skip、contract452/architecture50/lint/types/build，1494输入稳定且双审CLEAR；当前aec5775a正式4/4已通过，整体G1另验 | T-05/T-12 |
+
+| I-35 | IAM完整integration首次本轮实跑15失败（5文件）：schema-evolution测试摘要假设所有表均有id列10项、Session物理删除旧oracle2项、真实CLI退出非零3项；464项通过不抵消失败 | 前12项只读已核相关测试/runtime/schema与5fffe60字节相同，须按canonical PK与ADR-008 tombstone承接原风险；3项CLI已证资源输入缺口：原基线3FAIL，仅同管理连接实际role显式化后原3项PASS；未改CLI/断言/角色。3份旧oracle候选承接中；禁止放宽/跳过或冒整套通过，修正后主方原整套复验 | T-05/T-09 |
 
 ---
 
@@ -295,10 +297,16 @@ Browser ← App UI 与刷新后的同一事实
 
 **当前立即动作（覆盖下方历史交接）**：正式四旅程已由aec5775a/run2a960804完成，停止重复I-33调试。I-29六份owner三面D0已在IAM5fffe60/BFF105024d双审通过，IAM唯一writer已进入owner实现/正式artifact发行准备，再BFF完整消费者迁移与旧浏览器回退删除，保有效action/事务/取消与公共身份。I-31仅native默认入口随I-30完成，其余凭据用途/重复登出/依赖不确定/零写等风险映射继续补证；G1未关闭。T-17/T-11完整生命周期与删除仍在G1后。
 
+**I-29主方接收检查点（2026-11-02，候选未提交）**：IAM首次55文件停写清单hash `c4a505dc3a5bb86dced0be78302a71166c86cdcc500c2c1b56c5f0bdabb4a90c`；主方确认native1原件hash不变。真实native新suite 11PASS/13.38s，完整verify 124files/1613PASS/exit0；两次541输入无漂移。随后完整真实integration为43files pass/5fail、464pass/15fail/421.62s，输入仍不变，归I-35。通过范围不覆盖失败项，不作owner发行依据。
+
+双审发现两项D0内缺口，统一归I-29不重建问题中心：resendTenantInvitation实际接受native但正规生成操作清单与新真实矩阵遗漏；native请求未真正接同一入口期限/HTTP断连，非协作依赖可能超预算且迟到抛500。唯一writer已获窄返修：resend正规生成/正负控；原lifetime＋具名native ingress/窄interceptor/guard/service共享预算，admission原504、business取消/unknown503，OAuth及服务身份不改，不承诺撤销已提交业务。主方所有测试已终态后才交还写区；后继重新冻结、双审、完整门和真实I/O，BFF仍待正式owner artifact。
+
+I-35诊断续证：在私有临时`git archive 5fffe60`源码快照复用未变依赖/Prisma生成物，原3个CLI真实测试3FAIL；最小私有类别诊断见底层P1010→FAILED_TO_GET_SESSION，未保存原始凭据/异常payload。受管测试admin URL未显式user，父进程有默认USER但CLI按设计只用显式env，造成身份漂移。仅从同一管理连接读取current_user并将其私有地明确到测试URL，原基线/原断言3PASS、46非选、15.56s。快照已清理，不修改全局配置/CLI、不新增账号或扩大child env。验收wrapper后续固定此资源身份；3份旧oracle修订仍待主方真实GREEN，完整15失败记录保留至整套重验。
+
 **本次进度重盘点 / 活跃执行与工期边界**：
 
 - **暂停问题**：机器Goal为active；上轮验收进程确已结束，当前IAM实现正在运行。Goal状态、worker运行、测试服务存活是三个不同事实。现无待用户批准事项；具体桌面暂停原因没有调度日志证据，不能归因于权限或环境。主控须在每次阶段交付同步当前writer、下一动作和依赖，避免把“有计划”写成“正在执行”。
-- **本轮可交付检查点**：本次记录时刻`2026-11-02T03:24-05:00`；IAM writer在本轮报告候选实现/定向检查尚需约45～70分钟，低置信度、仅本轮时点预测；不含真实PG、独审、全门、提交/固定artifact、BFF消费或整个A。已报native2/guard/current-facts/Team定向结果仅为阶段证据，尚有原测试actor断言待承接，不写VERIFIED。
+- **历史候选交付预测（首版候选现已交付，进入返修，不作剩余倒计时）**：本次记录时刻`2026-11-02T03:24-05:00`；IAM writer在本轮报告候选实现/定向检查尚需约45～70分钟，低置信度、仅本轮时点预测；不含真实PG、独审、全门、提交/固定artifact、BFF消费或整个A。已报native2/guard/current-facts/Team定向结果仅为阶段证据，尚有原测试actor断言待承接，不写VERIFIED。
 - **剩余关键路径**：IAM owner及正式artifact → BFF共享认证/生成消费 → Skills、Account/Team/Admin/Billing、MCP实际链与负控 → I-31/G1 → T-17生命周期 → T-11旧实现删除 → T-09/T-16最终组合 → T-15同步环境 → 原A产品项。依赖契约和共享文件保持单writer；消费者清单与原A只读核量可以并行。
 - **当前Goal完成定义**：G1认证生产切换、G2生命周期/删除、G3冻结组合验证和同步环境全部达到退出条件；这是C前置Goal，不是原A01～16产品完成。11/18的VERIFIED是切片状态，不计算为Task A完成率。
 - **当前运行环境**：正式4/4收据再次读取确认passed，cleanup/quiescent通过且无保留文件；没有据此交付常驻同步E2E。当前文档盘点不启动服务，后继T-15独立交付入口/支持旅程/健康与回收归属。

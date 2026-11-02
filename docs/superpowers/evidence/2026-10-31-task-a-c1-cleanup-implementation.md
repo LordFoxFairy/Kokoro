@@ -1094,3 +1094,16 @@ IAM5fffe60/BFF105024d各仅三面设计文档，共218行新增、原文逐字�
 cleanup passed/quiescent、无保留自有文件/恢复记录、credential_log_check passed；所有进程已终态，未留常驻同步环境。Root topology PASS、工作树clean（文档补录前）；未将临时三服务旅程称全产品/所有仓库启动。I-26/27/28/32/33取得当前完整旅程证据；G1仍需I-29完整native owner/consumer切换与I-31其余负控，G2/G3/原A功能未关闭。
 
 最终Root文档独审CLEAR，已纠正旧剩余预算/历史设计/待运行措辞；主方核34唯一问题、18唯一TODO与状态分类、后续验证命令表均一致，新改行2处本地文件链接无缺失（anchor未验）、diff检查通过。Goal继续active；未将4/4提升为G1或全Task A完成。
+
+
+## I-29 首版候选主方接收与完整integration RED（2026-11-02）
+
+Root19dd10c8，IAM已提交基线5fffe60，未提交55文件候选停写；freeze清单SHA256 c4a505dc3a5bb86dced0be78302a71166c86cdcc500c2c1b56c5f0bdabb4a90c，主控55/55匹配；native1完整原件SHA256 5cf59df4b7bd9853edfd2eabb31afc236c0ec0db371f9737706fc129484fd83f保持。
+
+- Node24.20.0；主方新增native-owner-current-facts真实PG/HTTP：11PASS，13.38s；guard后真实状态变化、原事务、零成功audit与业务快照、原政策负控，不以mock冒真实。
+- 主方pnpm verify：exit0，124files/1613PASS；format/lint/typecheck/正规contract+breaking/SDK/default/build全链通过。
+- 主方vitest run test/integration --maxWorkers=1：exit1，43files passed/5failed；464PASS/15FAIL，421.62s。上述三次均541输入hash无漂移；日志/冻结记录仅本地私有，不进Git。
+- 失败归I-35：platform-admin-schema-evolution 10、auth-redis 1、iam-2a-review-regressions 1、oauth-client-lifecycle 2、platform-admin-management 1。前12项源码/fixture/schema与5fffe60相同，静态归因为旧摘要PK和物理删Session oracle；CLI3项待诊断。未跳过或放宽门，未称整个owner验收。
+- 双审指出I-29内resend发行闭集遗漏，以及native原5s signal未接完整HTTP lifetime/非协作依赖race。主控在所有验收终态后授权唯一writer窄返修；首版绿不外推后续新候选。消费者、浏览器/正常运行尚未切换，未commit IAM或更新gitlink，G1/G2/G3保持OPEN。
+
+I-35 CLI资源反事实：原5fffe60私有源码快照、复用未变依赖与Prisma生成物，原3 CLI测试3FAIL/46非选（10.44s），与候选一致；仅诊断副本捕获白名单错误类别P1010→FAILED_TO_GET_SESSION，未写工作树/记录凭据。根因是管理URL没有显式user，窄CLI环境不继承父USER；从同管理连接读取实际current_user并仅规范私有测试URL后，原源码原断言3PASS/46非选/15.56s。无新role、全局配置/CLI/断言变更，私有快照回收；后续完整门使用同一显式身份，先前15FAIL仍保留，未以这3项替代整套。

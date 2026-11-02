@@ -17150,3 +17150,10 @@ I-29六份owner三面D0已通过、未实施native2；G1仍欠完整owner/consum
 34累计问题/18TODO分类不变，G1/G2/G3仍OPEN；IAM当前定向结果仅阶段报告，待停写双审、主方真实PG/全门和正式artifact后进入BFF。当前候选45～70分钟为worker低置信度检查点预测，不是全A工期。完整A缺少原16项当前实现与验收核量，历史9～18人日仅C阶段旧预算，不滚动用作承诺。唯一[方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护后续执行；原A功能仍门控，每仓原独立PR、不merge main。
 
 补充只读核量：I-29 BFF实际消费链约5～10工程人日（中低置信，仅本片含验收，不是全A或日历天）。原A16项已按证据分类，A07/A08明确有新增实现缺口，其他项各有现有成果及待修/待验/支持面缺口；本次不新增任何整项完成标记。详见唯一方案§5.1。
+
+
+### Task A I-29 主方接收与 I-35 验收缺口
+
+首次IAM55文件候选主方真实native11PASS、完整verify1613PASS；整套integration464PASS/15FAIL，全部541输入无漂移。双审要求补resend机器契约与native同一请求期限/断连，IAM唯一writer返修。累计问题35项、18TODO分类保持，G1仍OPEN。
+
+I-35中12失败为canonical非id表摘要/ADR-008 Session tombstone旧oracle，3份测试窄承接中；另3CLI失败在原5fffe60源码复现，明确同一管理连接实际role到私有测试URL后原3项全部PASS，无业务CLI/账号/环境权限放宽。完整新候选尚待停写后重审和原整套验收，Root不更新未验gitlink，各仓原PR、不merge main。详见唯一方案与实施证据。
