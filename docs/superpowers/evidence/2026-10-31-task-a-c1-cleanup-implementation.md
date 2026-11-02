@@ -742,6 +742,12 @@ BFF child `c6c2aa6e88e2b6fdb53517b38bc527118f537e0d` migrates the nine remaining
 
 下一删除门：在主方复核 17 处 raw `database.pool/notify` fixture 访问及 `createBffComposition`/`handleBffRequest` provider census 后，若确认无运行时消费者，再删除 `PostgresBffRepositories` compatibility class；随后串行重跑 BFF full owner gate、Root topology/governance，并保持 C-1.3 真实 IAM→BFF→App receipts、E2E service startup 与 A-01/A-02/A-07 停写。
 
-### Root verification after PostgreSQL fixture migration pin `c6c2aa6`（2026-11-02）
+### C-3 PostgreSQL aggregate deletion（2026-11-02）
 
-Root pin is pending this evidence update; after staging the child gitlink, rerun `python3 scripts/verify-repository-topology.py`, `python3 -m pytest scripts/tests -q`, and `git diff --check`. Expected governance baseline remains **1846 passed / 3 skipped / 502 subtests**; this pin does not close C-4, real native-session receipts, or E2E readiness.
+BFF child `8150106dc11676817daca57c6ecbf956fdf283d3` deletes the now-unreferenced `PostgresBffRepositories` compatibility class (84 lines). `createPostgresBffOwnerResources` remains the sole PostgreSQL owner graph and still exposes the explicit `database`/receipt seams required by resource-gated integration fixtures; no production application layer receives the database handle. The architecture oracle now asserts the old class is absent, preventing a compatibility alias from returning.
+
+主方在 child 停写后复核：BFF build、typecheck、lint、diff-check、mock contract **29/29**、architecture/Nest **70/70** 通过。`PostgresBffRepositories` 在 src/test 已无 import/new，仅 historical design text 与负断言保留；17 个 raw `database.pool/notify` fixture accesses are named-factory seams, not wrapper consumers, and remain unchanged.
+
+### Root verification after PostgreSQL aggregate deletion pin `8150106`（2026-11-02）
+
+Root `python3 scripts/verify-repository-topology.py` passed and `python3 -m pytest scripts/tests -q` returned **1846 passed / 3 skipped / 502 subtests**; `git diff --check` passed. This closes the C-3 wrapper deletion gate only. `createBffComposition`/`handleBffRequest` raw compatibility, BFF full-owner failures/format warnings, real IAM→BFF→App receipts, E2E service startup and A-01/A-02/A-07 remain open.
