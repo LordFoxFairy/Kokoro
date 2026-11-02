@@ -385,11 +385,12 @@ def simulate_main(
     monkeypatch.setattr(smoke.runtime, "free_port", lambda: 1234)
     monkeypatch.setattr(smoke.web, "certificate", lambda *_: None)
     monkeypatch.setattr(smoke.web, "isolated_next", lambda directory: directory)
-    monkeypatch.setattr(
-        smoke.web,
-        "Proxy",
-        lambda *_: SimpleNamespace(server_port=1234, close=lambda: None),
+    proxy_factory = Mock(
+        side_effect=lambda *_, **__: SimpleNamespace(
+            server_port=1234, close=lambda: None
+        )
     )
+    monkeypatch.setattr(smoke.web, "Proxy", proxy_factory)
     monkeypatch.setattr(
         smoke.web,
         "https_browser",
@@ -486,6 +487,10 @@ def simulate_main(
     else:
         with pytest.raises(smoke.SmokeError):
             smoke.main([])
+    # Only browser mode's Web instance opts in; the default remains HTTP-only.
+    assert len(proxy_factory.call_args_list) == 2
+    assert proxy_factory.call_args_list[0].kwargs == {}
+    assert proxy_factory.call_args.kwargs == {"hmr_websocket": args.browser_journeys}
     return args, resources, made, environments, credential, stopped
 
 

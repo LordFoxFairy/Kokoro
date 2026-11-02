@@ -946,7 +946,10 @@ def main(argv=None) -> int:
             )
             processes.append(next_process)
             web_proxy = web.Proxy(
-                next_port, host_name, web.certificate(directory, host_name)
+                next_port,
+                host_name,
+                web.certificate(directory, host_name),
+                hmr_websocket=browser_mode,
             )
             proxies.append(web_proxy)
             stage = "Web HTTPS preflight"

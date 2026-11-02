@@ -15,7 +15,7 @@
 ## 当前执行摘要（2026-11-02 用户复核）
 
 - **为何看起来暂停**：本轮`get_goal`实际为**active**；历史记录记载过paused/中断，但现有证据不确定其触发来源。主控交接和台账存在明确滞后：当前段仍写“IAM tests-only待RED”，实际IAM与永久driver已经交付，正式浏览器验收已失败。不能把旧等待状态继续交给用户处理，也不需要再次批准既定步骤。
-- **当前执行点**：Root `dd447c6878c3b00340e51554311340a2dc1857c0`，IAM `1ee8d156`已精确pin；正式browser模式在cold_login的账户入口可见性检查超时，完成**0/4旅程**。独立诊断确认HMR WebSocket请求14次均404；这是代理能力缺口，是否为页面不就绪唯一原因仍需修复后复验。登记I-26，下一动作归Root，不改产品认证或放宽断言。
+- **当前执行点**：Root `dd447c6878c3b00340e51554311340a2dc1857c0`，IAM `1ee8d156`已精确pin；正式browser模式在cold_login的账户入口可见性检查超时，完成**0/4旅程**。独立诊断确认HMR WebSocket请求14次均404；这是代理能力缺口，是否为页面不就绪唯一原因仍需修复后复验。登记I-26。代理修复现已停写双审，Root165定向/1959治理（3skip）通过；下一动作是精确提交后正式四旅程复跑，不改产品认证或放宽断言。
 - **Goal边界**：机器Goal继续C-1.3～C-4前置闭环，不是“A全部完成”。G0通过；G1认证/G2删除/G3最终组合验收均OPEN，A-01/A-02/A-07停写。原A-01～A-16责任保留。
 - **TODO准确计数**：18条＝11条VERIFIED（仅切片/前置）、2条IN_PROGRESS（T-05/T-17）、3条WAITING（T-09/T-11/T-15）、1条OPEN（T-16）、1条GATED（T-10）。问题表现为26项；条目数量不等于产品完成百分比。
 - **闭环缺口**：完整四旅程、Nest生命周期、raw/聚合删除、Capability新base整合、Agent及最终组合门、可保留同步测试环境均未完成。已验HTTP认证/退出与receiver切片保留，不因新失败归零；PR存在、单测通过或cleanup通过不代表整体闭环。
@@ -98,7 +98,7 @@
 | I-23 | Capability现部分R317/R336 opt-in测试与release workflow仍有此前OAuth/旧execution配置欠账 | 保留原触发开关与业务断言，标清既存/本片新增；本片只迁退休resource-server消费者并真实验证global receiver，未触及的旧catalog/CI链不冒称已可运行 | T-14/T-16 |
 | I-24 | 已修复退出两层缺陷：显式POST body与owner JSON媒体类型/空对象规范化 | App e1be完整门6407/0skip及Root真实退出200、cookie清除、项目/旧cookie均401；I-24在此HTTP范围闭合，完整T-05仍OPEN | T-05 |
 | I-25 | Capability原PR12基线由44fcc前进至2ad5c9e，4提交/73路径含契约和Schema；本Task A PR13与其存在实际合并冲突 | 保留双方提交，不force、不整树择一；在独立集成区审边界/冲突后重新完整门和真实receiver，再更新精确Root组合。当前仅已验f515候选 | T-09/T-16 |
-| I-26 | Root dd447正式四旅程cold_login已303并到/app，但账户入口不可见而超时；诊断14次HMR WebSocket Upgrade均404，代理缺101双向转发 | 仅修隔离测试代理精确HMR传输并回归HTTP/SSE/清理；不改App认证或放宽UI断言。修复后原四旅程真实通过才关闭；HMR是否唯一原因待证 | T-05/T-13 |
+| I-26 | Root dd447正式四旅程cold_login已303并到/app，但账户入口不可见而超时；诊断14次HMR WebSocket Upgrade均404，代理缺101双向转发 | 隔离代理修复已停写双审，Root165定向/1959治理（3skip）通过；HTTP/SSE/清理回归承接，不改App认证或UI断言。原四旅程真实通过才关闭；HMR是否唯一原因待证 | T-05/T-13 |
 
 ---
 
@@ -266,7 +266,7 @@ Browser ← App UI 与刷新后的同一事实
 | T-02 | MCP denied icon零owner副作用；BFF | VERIFIED | `228e3d6`、focused42、旧基线full；最终组合继续回归 |
 | T-03 | invalid-owner typed error；BFF | VERIFIED | `228e3d6`、focused24、旧基线full |
 | T-04 | 资源/Node/source/schema preflight；Root | VERIFIED（已提交组合前置） | Root535精确App9ba/BFF4d6/IAMe6及Node/source门已过；Root41b仅文档后继。新dirty候选要重新精确配对，不继承当前source clean结论 |
-| T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS（冷登录/退出HTTP已验） | 精确App e1be：真实冷登录303/session认证true/projects200，退出200后session匿名/cookie0/projects401，旧cookie401。余下Settings UI点击、异tenant拒绝/固定域恢复、独立session/membership撤权及迟到状态未验。IAM1ee8已交付并精确pin；d309永久driver完整治理1931pass/3skip，dd447诊断增量91定向pass。正式四旅程cold_login UI超时，0/4；I-26代理HMR404修复/重验是下一动作 |
+| T-05 | 当前native四旅程；Root+IAM/BFF/App | IN_PROGRESS（冷登录/退出HTTP已验） | 精确App e1be：真实冷登录303/session认证true/projects200，退出200后session匿名/cookie0/projects401，旧cookie401。余下Settings UI点击、异tenant拒绝/固定域恢复、独立session/membership撤权及迟到状态未验。IAM1ee8已交付并精确pin；d309永久driver完整治理1931pass/3skip，dd447诊断增量91定向pass。正式四旅程cold_login UI超时，0/4；I-26代理HMR修复已双审/Root165定向与1959治理（3skip）通过；下一动作是精确提交后正式四旅程重验 |
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（切片） | Root完整check：contract452/architecture50/full6373，lint/types/build通过；App9ba65343已推送PR50并由Root精确pin；四旅程待T-05 |
 | T-08 | IAM SDK与verify；IAM | VERIFIED（当前候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
@@ -329,7 +329,7 @@ Browser ← App UI 与刷新后的同一事实
 3. **唯一writer**：Root更新本表及阶段Goal；worker交接文件/结果/风险，reviewer只读核验。`task.md`/`CURRENT.md`同步简报，证据文件追加本次事实，旧证据不改写成当前成功。
 4. **主方完成判定**：worker报告→独审→停写后的Root相关门→真实受影响旅程→精确组合。少任一必要层，只标REVIEW_PENDING/OPEN，不标VERIFIED整体。
 5. **机器Goal**：每次阶段交接用`get_goal`核验；当前目标未完成时保留active。只在用户明确要求暂停时设paused；同一外部阻塞连续至少三个goal turns且无可推进工作才按工具规则blocked；G1/G2/G3全部达到才complete。不要为了更新文案虚假complete或重复create_goal。
-6. **下一轮默认动作**：T-17前置与T-13最小成功/失败清理已完成，不重复领取。现在先修I-26隔离代理HMR传输，再复跑T-05永久四旅程；T-14接收方已验，不再重复实施；G1闭合后T-17完整生命周期→T-11删除→T-09/T-16最终组合门→T-15同步环境。A功能继续门控。
+6. **下一轮默认动作**：T-17前置与T-13最小成功/失败清理已完成，不重复领取。I-26隔离代理修复已获Root工程门，下一步精确提交后复跑T-05永久四旅程；T-14接收方已验，不再重复实施；G1闭合后T-17完整生命周期→T-11删除→T-09/T-16最终组合门→T-15同步环境。A功能继续门控。
 
 ### 历史暂停后续接检查点（已被下方 active 状态更新）
 

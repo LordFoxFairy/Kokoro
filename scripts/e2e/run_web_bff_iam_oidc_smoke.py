@@ -30,7 +30,7 @@ import ssl
 import subprocess
 import sys
 import tempfile
-from threading import Event, Thread
+from threading import Event, Lock, Thread
 import time
 from urllib.parse import parse_qsl, urlencode, urlsplit, unquote
 from uuid import UUID, uuid4
@@ -57,6 +57,15 @@ MAX_BODY = 1_048_576
 MAX_SSE_BODY = 4_194_304
 SSE_IDLE_SECONDS = 15
 SSE_TOTAL_SECONDS = 120
+HMR_HEADER_BYTES = 32_768
+HMR_CONNECT_SECONDS = 5
+HMR_HEADER_SECONDS = 5
+HMR_IDLE_SECONDS = 30
+HMR_TOTAL_SECONDS = 300
+HMR_BUFFER_BYTES = 65_536
+HMR_MAX_CONNECTIONS = 64
+_HMR_PATH = "/_next/webpack-hmr"
+_WS_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 _SSE_PATH = re.compile(r"(?:/api/session/sessions|/v1/sessions)/[^/?]+/events")
 
 
@@ -418,8 +427,66 @@ def reconcile_iam_identity(
         raise SmokeError("IAM named resource cleanup incomplete")
 
 
+class _HmrRequestReader:
+    """Bound the entire request head, including a trickling TLS peer."""
+
+    def __init__(self, reader, connection):
+        self.reader = reader
+        self.connection = connection
+        self.deadline = time.monotonic() + HMR_HEADER_SECONDS
+        self.remaining = HMR_HEADER_BYTES
+
+    def readline(self, limit=-1):
+        line = bytearray()
+        while limit < 0 or len(line) < limit:
+            remaining = self.deadline - time.monotonic()
+            if remaining <= 0 or self.remaining <= 0:
+                raise TimeoutError("HMR request head budget exhausted")
+            self.connection.settimeout(remaining)
+            part = self.reader.read(1)
+            self.remaining -= len(part)
+            line.extend(part)
+            if not part or part == b"\n":
+                break
+        return bytes(line)
+
+    def read(self, length):
+        # Unbuffered SocketIO.read may return one TLS record, not the full body.
+        deadline = time.monotonic() + 10
+        body = bytearray()
+        while len(body) < length:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("proxy request body budget exhausted")
+            self.connection.settimeout(remaining)
+            part = self.reader.read(length - len(body))
+            if not part:
+                raise ConnectionError("proxy request body incomplete")
+            body.extend(part)
+        return bytes(body)
+
+    def close(self):
+        self.reader.close()
+
+
 class ProxyHandler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
+
+    def setup(self):
+        if getattr(self.server, "hmr_websocket", False):
+            # No hidden Python buffer may consume the first WebSocket frame.
+            self.rbufsize = 0
+            self.request.settimeout(HMR_HEADER_SECONDS)
+        super().setup()
+
+    def handle_one_request(self):
+        reader = self.rfile
+        if getattr(self.server, "hmr_websocket", False):
+            self.rfile = _HmrRequestReader(reader, self.connection)
+        try:
+            super().handle_one_request()
+        finally:
+            self.rfile = reader
 
     def log_message(self, _format, *_args):
         pass
@@ -505,10 +572,216 @@ class ProxyHandler(BaseHTTPRequestHandler):
             watcher_stop.set()
             watcher.join(timeout=0.5)
 
+    def _hmr_tunnel(self, upstream):
+        sockets = (self.connection, upstream)
+        for connection in sockets:
+            connection.setblocking(False)
+        pending = [b"", b""]
+        read_wait = ["read", "read"]
+        write_wait = ["write", "write"]
+        eof = False
+        started = last_activity = time.monotonic()
+        while not self.server.hmr_stopping.is_set():
+            now = time.monotonic()
+            remaining = min(
+                HMR_TOTAL_SECONDS - (now - started),
+                HMR_IDLE_SECONDS - (now - last_activity),
+            )
+            if remaining <= 0 or (eof and not any(pending)):
+                return
+            readers, writers = [], []
+            ready_pending = set()
+            for i, connection in enumerate(sockets):
+                if not eof and not pending[1 - i]:
+                    (readers if read_wait[i] == "read" else writers).append(connection)
+                    if isinstance(connection, ssl.SSLSocket) and connection.pending():
+                        ready_pending.add(connection)
+                if pending[i]:
+                    (writers if write_wait[i] == "write" else readers).append(
+                        connection
+                    )
+            readable, writable, _ = select.select(
+                readers, writers, [], 0 if ready_pending else min(0.1, remaining)
+            )
+            readable = set(readable) | ready_pending
+            writable = set(writable)
+            for i, connection in enumerate(sockets):
+                if pending[i] and connection in (
+                    writable if write_wait[i] == "write" else readable
+                ):
+                    try:
+                        sent = connection.send(pending[i])
+                        if not sent:
+                            return
+                        pending[i] = pending[i][sent:]
+                        write_wait[i] = "write"
+                        last_activity = time.monotonic()
+                    except ssl.SSLWantReadError:
+                        write_wait[i] = "read"
+                    except (ssl.SSLWantWriteError, BlockingIOError):
+                        write_wait[i] = "write"
+                # Keep the exact write buffer stable across SSLWant* retries.
+                if (
+                    not eof
+                    and not pending[1 - i]
+                    and connection in (readable if read_wait[i] == "read" else writable)
+                ):
+                    try:
+                        part = connection.recv(HMR_BUFFER_BYTES)
+                        read_wait[i] = "read"
+                        if not part:
+                            eof = True
+                        else:
+                            pending[1 - i] = part
+                            last_activity = time.monotonic()
+                    except ssl.SSLWantWriteError:
+                        read_wait[i] = "write"
+                    except (ssl.SSLWantReadError, BlockingIOError):
+                        read_wait[i] = "read"
+
+    def _forward_hmr(self):
+        self.close_connection = True
+        upstream = None
+        switched = False
+        try:
+
+            def single(name):
+                values = self.headers.get_all(name, [])
+                return values[0].strip() if len(values) == 1 else None
+
+            key = single("Sec-WebSocket-Key")
+            connection = single("Connection") or ""
+            if (
+                self.command != "GET"
+                or self.request_version != "HTTP/1.1"
+                or self.path.split("?", 1)[0] != _HMR_PATH
+                or self.requestline.split()[1].split("?", 1)[0] != _HMR_PATH
+                or any(ord(c) <= 32 or ord(c) >= 127 for c in self.path)
+                or any(
+                    ord(c) < 32 or ord(c) == 127
+                    for _, value in self.headers.items()
+                    for c in value
+                )
+                or not single("Host")
+                or single("Upgrade") is None
+                or single("Upgrade").lower() != "websocket"
+                or "upgrade" not in {v.strip().lower() for v in connection.split(",")}
+                or single("Sec-WebSocket-Version") != "13"
+                or key is None
+                or self.headers.get_all("Transfer-Encoding")
+                or self.headers.get_all("Content-Length") not in (None, ["0"])
+            ):
+                self.send_error(400)
+                return
+            try:
+                decoded_key = base64.b64decode(key, validate=True)
+            except ValueError:
+                decoded_key = b""
+            if len(decoded_key) != 16 or base64.b64encode(decoded_key).decode() != key:
+                self.send_error(400)
+                return
+            expected_accept = base64.b64encode(
+                hashlib.sha1((key + _WS_GUID).encode("ascii")).digest()
+            ).decode("ascii")
+            upstream = socket.create_connection(
+                ("127.0.0.1", self.server.upstream_port), timeout=HMR_CONNECT_SECONDS
+            )
+            with self.server.hmr_lock:
+                if self.server.hmr_stopping.is_set():
+                    return
+                self.server.hmr_sockets.add(upstream)
+            # Only the fixed Next origin is reachable. No extensions/subprotocols
+            # are offered: the tunnel does not interpret WebSocket frames.
+            headers = [
+                f"GET {self.path} HTTP/1.1",
+                f"Host: {self.server.web_host}",
+                "Connection: Upgrade",
+                "Upgrade: websocket",
+                "Sec-WebSocket-Version: 13",
+                f"Sec-WebSocket-Key: {key}",
+                "X-Forwarded-Proto: https",
+                f"X-Forwarded-Host: {self.server.web_host}",
+                f"X-Forwarded-Port: {self.server.web_port}",
+            ]
+            origin = single("Origin")
+            if origin is not None:
+                headers.append(f"Origin: {origin}")
+            upstream.sendall(("\r\n".join(headers) + "\r\n\r\n").encode("latin-1"))
+            deadline = time.monotonic() + HMR_HEADER_SECONDS
+            head = bytearray()
+            while not head.endswith(b"\r\n\r\n"):
+                remaining = deadline - time.monotonic()
+                if remaining <= 0 or len(head) >= HMR_HEADER_BYTES:
+                    raise SmokeError("HMR upstream handshake rejected")
+                upstream.settimeout(remaining)
+                part = upstream.recv(1)
+                if not part:
+                    raise SmokeError("HMR upstream handshake rejected")
+                head.extend(part)
+            lines = head.decode("latin-1").split("\r\n")
+            if not re.fullmatch(r"HTTP/1\.1 101(?: [^\r\n]*)?", lines[0]):
+                raise SmokeError("HMR upstream handshake rejected")
+            values = {}
+            for line in lines[1:-2]:
+                name, separator, value = line.partition(":")
+                if not separator or not re.fullmatch(
+                    r"[!#$%&'*+.^_`|~0-9A-Za-z-]+", name
+                ):
+                    raise SmokeError("HMR upstream handshake rejected")
+                name = name.lower()
+                if name in values or any(ord(c) < 32 and c != "\t" for c in value):
+                    raise SmokeError("HMR upstream handshake rejected")
+                values[name] = value.strip()
+            if (
+                values.get("upgrade", "").lower() != "websocket"
+                or "upgrade"
+                not in {
+                    v.strip().lower() for v in values.get("connection", "").split(",")
+                }
+                or values.get("sec-websocket-accept") != expected_accept
+                or any(
+                    name in values
+                    for name in (
+                        "content-length",
+                        "transfer-encoding",
+                        "sec-websocket-extensions",
+                        "sec-websocket-protocol",
+                    )
+                )
+            ):
+                raise SmokeError("HMR upstream handshake rejected")
+            self.connection.settimeout(HMR_HEADER_SECONDS)
+            self.send_response_only(101)
+            self.send_header("Connection", "Upgrade")
+            self.send_header("Upgrade", "websocket")
+            self.send_header("Sec-WebSocket-Accept", expected_accept)
+            self.end_headers()
+            self.wfile.flush()
+            switched = True
+            self._hmr_tunnel(upstream)
+        except (OSError, ValueError, SmokeError):
+            if not switched and not self.server.hmr_stopping.is_set():
+                try:
+                    self.send_error(502)
+                except OSError:
+                    pass
+        finally:
+            if upstream is not None:
+                with self.server.hmr_lock:
+                    self.server.hmr_sockets.discard(upstream)
+                upstream.close()
+
     def forward(self):
         response_started = False
         if len(self.path) > 8192 or not self.path.startswith("/"):
             self.send_error(400)
+            return
+        if (
+            getattr(self.server, "hmr_websocket", False)
+            and self.server.tls_web
+            and (self.path.split("?", 1)[0] == _HMR_PATH or self.headers.get("Upgrade"))
+        ):
+            self._forward_hmr()
             return
         try:
             length = int(self.headers.get("content-length", "0"))
@@ -541,11 +814,25 @@ class ProxyHandler(BaseHTTPRequestHandler):
             else:
                 headers["Host"] = f"127.0.0.1:{self.server.upstream_port}"
                 self.server.observed.append((self.command, self.path.split("?", 1)[0]))
+            hmr_enabled = getattr(self.server, "hmr_websocket", False)
             upstream = http.client.HTTPConnection(
-                "127.0.0.1", self.server.upstream_port, timeout=10
+                "127.0.0.1",
+                self.server.upstream_port,
+                timeout=HMR_CONNECT_SECONDS if hmr_enabled else 10,
             )
             response = None
+            tracked_socket = None
             try:
+                if hmr_enabled:
+                    upstream.connect()
+                    tracked_socket = upstream.sock
+                    # The HMR connect budget must not shorten ordinary HTTP reads.
+                    upstream.timeout = 10
+                    tracked_socket.settimeout(10)
+                    with self.server.hmr_lock:
+                        if self.server.hmr_stopping.is_set():
+                            return
+                        self.server.hmr_sockets.add(tracked_socket)
                 upstream.request(self.command, self.path, body=body, headers=headers)
                 response = upstream.getresponse()
                 if (
@@ -602,11 +889,17 @@ class ProxyHandler(BaseHTTPRequestHandler):
                 if response is not None:
                     response.close()
                 upstream.close()
-        except (OSError, ValueError, SmokeError):
+                if tracked_socket is not None:
+                    with self.server.hmr_lock:
+                        self.server.hmr_sockets.discard(tracked_socket)
+        except (OSError, ValueError, SmokeError, http.client.HTTPException):
             if response_started:
                 self.close_connection = True
-            else:
-                self.send_error(502)
+            elif not getattr(self.server, "hmr_stopping", Event()).is_set():
+                try:
+                    self.send_error(502)
+                except OSError:
+                    pass
 
 
 class Proxy(ThreadingHTTPServer):
@@ -618,6 +911,8 @@ class Proxy(ThreadingHTTPServer):
         web_host: str | None = None,
         certificate: tuple[Path, Path] | None = None,
         credentials: previous.CredentialRegistry | None = None,
+        *,
+        hmr_websocket: bool = False,
     ):
         super().__init__(("127.0.0.1", 0), ProxyHandler)
         self.upstream_port = upstream_port
@@ -626,17 +921,81 @@ class Proxy(ThreadingHTTPServer):
         self.tls_web = web_host is not None
         self.observed: list[tuple[str, str]] = []
         self.credentials = credentials
+        self.hmr_websocket = hmr_websocket
+        self.hmr_stopping = Event()
+        self.hmr_lock = Lock()
+        self.hmr_sockets: set[socket.socket] = set()
+        self.hmr_threads: list[Thread] = []
+        self.hmr_tls_context = None
+        if hmr_websocket and (web_host is None or certificate is None):
+            self.server_close()
+            raise SmokeError("HMR requires the test-owned TLS Web proxy")
         if certificate is not None:
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(str(certificate[0]), str(certificate[1]))
-            self.socket = context.wrap_socket(self.socket, server_side=True)
+            if hmr_websocket:
+                self.hmr_tls_context = context
+            else:
+                self.socket = context.wrap_socket(self.socket, server_side=True)
         self.thread = Thread(target=self.serve_forever, daemon=True)
         self.thread.start()
 
+    def get_request(self):
+        connection, address = super().get_request()
+        if self.hmr_tls_context is not None:
+            connection = self.hmr_tls_context.wrap_socket(
+                connection, server_side=True, do_handshake_on_connect=False
+            )
+        return connection, address
+
+    def process_request(self, request, client_address):
+        if not self.hmr_websocket:
+            return super().process_request(request, client_address)
+
+        def handle():
+            try:
+                self.process_request_thread(request, client_address)
+            finally:
+                with self.hmr_lock:
+                    self.hmr_sockets.discard(request)
+
+        with self.hmr_lock:
+            if self.hmr_stopping.is_set():
+                self.shutdown_request(request)
+                return
+            self.hmr_threads = [
+                thread for thread in self.hmr_threads if thread.is_alive()
+            ]
+            if len(self.hmr_threads) >= HMR_MAX_CONNECTIONS:
+                self.shutdown_request(request)
+                return
+            self.hmr_sockets.add(request)
+            thread = Thread(target=handle, daemon=True)
+            self.hmr_threads.append(thread)
+            thread.start()
+
     def close(self):
+        self.hmr_stopping.set()
         self.shutdown()
-        self.server_close()
-        self.thread.join(timeout=5)
+        try:
+            if self.hmr_websocket:
+                with self.hmr_lock:
+                    for connection in self.hmr_sockets:
+                        try:
+                            connection.shutdown(socket.SHUT_RDWR)
+                        except OSError:
+                            pass
+                    threads = list(self.hmr_threads)
+                deadline = time.monotonic() + HMR_CONNECT_SECONDS + 1
+                for thread in threads:
+                    thread.join(timeout=max(0, deadline - time.monotonic()))
+                if any(thread.is_alive() for thread in threads):
+                    raise SmokeError("HMR proxy handlers did not stop")
+        finally:
+            self.server_close()
+            self.thread.join(timeout=5)
+        if self.thread.is_alive():
+            raise SmokeError("proxy listener did not stop")
 
 
 def https_browser(

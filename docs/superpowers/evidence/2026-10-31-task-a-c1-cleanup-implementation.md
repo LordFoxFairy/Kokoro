@@ -1001,3 +1001,14 @@ Root停写复验：82个runner定向通过（5.09s）；完整`python3 -m pytest
 本轮用户要求进度/Goal/TODO/工期复核：主控get_goal返回active，Root与两只读agent核26问题/18TODO/16原A项；修正当前摘要仍写tests-only待RED的过时状态。未启动服务、未改业务代码或共享资源。当前G1/G2/G3未过，没有可保留同步环境；历史暂停具体触发来源未确认，不归责用户。文档diff、链接及独立复核结果在本轮交付记录，不把本次审计算新增运行验收。
 
 本轮文档复核完成：独立review CLEAR；I-26行分隔排版已修。主控`git diff --check`通过，四文件本地Markdown文件链接69个检查/0缺失（不含anchor有效性验证）；问题26/TODO18/原A16计数核对一致。仅上述四文档未提交，基线dd447c68，未修改业务源码或PR/main状态。
+
+
+### 2026-11-02 I-26 隔离 HMR 传输修复工程接收
+
+Root在08c00523文档基线上实际执行tests-only真实TLS Upgrade回归：1 failed/22未选，0.69s，期望101实际404；证实旧代理丢Connection Upgrade。随后仅修改共享smoke代理、native runner和两现有测试文件：browser-mode Web显式启用精确HMR路径，固定loopback上游、严格101、无额外子协议/压缩协商、双向固定缓冲与TLS pending、有限握手/连接数/idle/total、关闭等待自有handler；默认HTTP/SSE不启用。不改App/IAM/BFF产品源码、认证或driver断言。
+
+独审发现并修正enabled普通POST短读、背压空转、普通上游关闭遗漏、连接数上限与普通响应超时从10秒误缩5秒，均有相应回归。新增raw target精确校验，避免HTTP parser归一化`//`路径误入HMR。普通HTTP连接预算5秒但响应读仍保原10秒；body上限及SSE逻辑不扩大。规格与质量双审CLEAR。
+
+Root停写复验：三现有文件定向**165pass/52subtests，40.69s，exit0**；完整`python3 -m pytest scripts/tests -q` **1959pass/3skip/531subtests，157.47s，exit0**；四文件Ruff format/check及diff通过，四输入SHA256前后不变。代理e615d6bae0490f4b8987a13d60b5e8b000a696f9f2dcd87558ac2f8aef3bc8c4；native runner8e4037531e7052a927d6af189bc880064e9a1b0682b3a663d4bbc1f18b1be995；代理测试8526f45802bcb52ef9eded3e48c038f4d3acbad83b0ad4c4ab0bb0a337c6fc25；native测试dd877132fd4b467f4611d8054d93b35117d68b1057cea03a8e5963a3835bbfcd。主方日志留私有/tmp，不入Git。
+
+以上证明代理工程切片，不证明HMR是原UI卡住唯一原因。Root精确提交后跑正式原四旅程；真实结果之前I-26/T-05/G1保持开放。
