@@ -828,3 +828,7 @@ BFF child `228e3d691f6b5c93575950babb3d9f4c6b409c0a` 完成两项最小修复：
 2. `skill-installation-http` 的 Project installation Chat invalid-owner 场景补齐完整最小 receipt repository seam（`claimReceipt`/`putReceipt`/`releaseReceipt` 等），保持 typed owner error 映射为 `502/skill_installation_response_invalid`，不改通用 catch 或契约断言。
 
 主方在 child 停写后复核：MCP focused **42/42**、Skill installation focused **24/24**；BFF `pnpm build`、`pnpm typecheck`、`pnpm lint`、`git diff --check` 均通过。随后 full `pnpm test` 完成：**2298 tests / 2296 pass / 0 fail / 0 cancelled / 2 skipped**（约 199 秒）。该 child 尚未由 Root pin；Root topology/governance、BFF format warnings、App/IAM full gate 与 C-1.3 真实 E2E 仍保持未闭环。
+
+### Root pin and governance recheck after BFF `228e3d6`（2026-11-01）
+
+Root pinned `apps/kokoro-bff` to `228e3d691f6b5c93575950babb3d9f4c6b409c0a` in commit `d37dc378`. 主方重新执行 `git diff --check`、`python3 scripts/verify-repository-topology.py` 与 `python3 -m pytest scripts/tests -q`：topology **PASS**；治理 **1846 passed / 3 skipped / 502 subtests passed**。BFF full behavior gate 现为 0 fail；C-1.3 真实隔离资源、App digest、IAM verify warning、BFF format warning 与跨仓 E2E 仍是后续 TODO。

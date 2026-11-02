@@ -17093,7 +17093,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 - App native-session source/config cleanup；App stale reconnect prop removed，静态 typecheck/lint/architecture 50/50。
 - BFF raw Scheduler callback、retired System/Skills、unknown session、unknown Agent/Billing、Personal MCP/Custom API 均走 named feature adapters/guards；Nest production 无 LegacyRoutes composition。
 - BFF global `src/application/ports` 仅保留跨 feature idempotency contract；PersonalKnowledge/PublicShare integration fixture 的 stale `store.services.*` 已切到 named seams。
-- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `0a22f4d`、App `f5d122bb`。
+- BFF 9 个 PostgreSQL integration suites 已迁移到 `createPostgresBffOwnerResources`，并删除零消费者 `PostgresBffRepositories` compatibility class；当前 BFF `228e3d6`、App `f5d122bb`。
 - BFF raw chain 对非 canonical `/v1/models/**` 已增加 404 终止，配置的 model upstream 不再接收未知 suffix；canonical `GET /v1/models` 保持 owner contract。
 - BFF raw chain 对非 canonical `/v1/library/**` 也已增加 404 终止，配置的 storage upstream 不再接收未知 suffix；canonical Library routes 保持不变。
 - BFF 已删除无已知生产可达入口的 generic configured-owner proxy tail；未命名路径统一以 `bff_route_not_found` 结算（保留幂等 receipt 回收），`configuredUpstream` 仅留在 health/readiness owner 配置检查。
