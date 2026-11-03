@@ -76,16 +76,28 @@ def purpose_credential_files(tmp_path):
 def native_record(tmp_path):
     return {
         "kind": "native",
-        "cookie": "kokoro-issuer.session_token=private-native-cookie",
+        "cookie": "__Secure-kokoro-issuer.session_token=private-native-cookie",
         **purpose_credential_files(tmp_path),
         "web_origin": "https://web-native-fixture.example.test",
     }
 
 
-def test_native_command_accepts_two_purpose_credentials(tmp_path):
+@pytest.mark.parametrize(
+    "origin,cookie_name",
+    [
+        ("http://web-native-fixture.example.test", "kokoro-issuer.session_token"),
+        (
+            "https://web-native-fixture.example.test",
+            "__Secure-kokoro-issuer.session_token",
+        ),
+    ],
+)
+def test_native_command_accepts_two_purpose_credentials(tmp_path, origin, cookie_name):
     import io
 
     record = native_record(tmp_path)
+    record["web_origin"] = origin
+    record["cookie"] = f"{cookie_name}=private-native-cookie"
     process = SimpleNamespace(stdin=io.BytesIO())
     receipt = smoke.native_command(
         process, SimpleNamespace(record=lambda: record), run_dir=tmp_path
@@ -101,6 +113,79 @@ def test_native_command_accepts_two_purpose_credentials(tmp_path):
     assert receipt.cookie == record["cookie"]
     assert receipt.iam_web_origin == record["web_origin"]
     assert process.stdin.getvalue() == b'{"command":"native"}\n'
+
+
+@pytest.mark.parametrize(
+    "origin,cookie_name",
+    [
+        (
+            "http://web-native-fixture.example.test",
+            "__Secure-kokoro-issuer.session_token",
+        ),
+        ("https://web-native-fixture.example.test", "kokoro-issuer.session_token"),
+    ],
+)
+def test_native_command_rejects_cookie_mode_mismatching_origin(
+    tmp_path, origin, cookie_name
+):
+    import io
+
+    record = native_record(tmp_path)
+    record["web_origin"] = origin
+    record["cookie"] = f"{cookie_name}=private-native-cookie"
+    with pytest.raises(smoke.SmokeError, match="native cookie missing"):
+        smoke.native_command(
+            SimpleNamespace(stdin=io.BytesIO()),
+            SimpleNamespace(record=lambda: record),
+            run_dir=tmp_path,
+        )
+
+
+@pytest.mark.parametrize("scheme", ["http", "https"])
+@pytest.mark.parametrize("separator", ["; ", ";", ";  ", ";\t"])
+def test_native_command_rejects_mixed_cookie_modes(tmp_path, scheme, separator):
+    import io
+
+    record = native_record(tmp_path)
+    record["web_origin"] = f"{scheme}://web-native-fixture.example.test"
+    expected = "__Secure-" if scheme == "https" else ""
+    other = "" if expected else "__Secure-"
+    record["cookie"] = (
+        f"{expected}kokoro-issuer.session_token=expected{separator}"
+        f"{other}kokoro-issuer.session_token=other"
+    )
+    with pytest.raises(smoke.SmokeError, match="native cookie missing"):
+        smoke.native_command(
+            SimpleNamespace(stdin=io.BytesIO()),
+            SimpleNamespace(record=lambda: record),
+            run_dir=tmp_path,
+        )
+
+
+@pytest.mark.parametrize("scheme", ["http", "https"])
+@pytest.mark.parametrize(
+    "pair_template",
+    ["{other} =other", "{other}\t=other", "{same} =duplicate", "\u00a0{other}=other"],
+)
+def test_native_command_rejects_hidden_session_cookie_names(
+    tmp_path, scheme, pair_template
+):
+    import io
+
+    record = native_record(tmp_path)
+    record["web_origin"] = f"{scheme}://web-native-fixture.example.test"
+    plain = "kokoro-issuer.session_token"
+    secure = "__Secure-" + plain
+    same, other = (secure, plain) if scheme == "https" else (plain, secure)
+    record["cookie"] = f"{same}=expected; " + pair_template.format(
+        same=same, other=other
+    )
+    with pytest.raises(smoke.SmokeError, match="native cookie missing"):
+        smoke.native_command(
+            SimpleNamespace(stdin=io.BytesIO()),
+            SimpleNamespace(record=lambda: record),
+            run_dir=tmp_path,
+        )
 
 
 @pytest.mark.parametrize("alias", ["same_path", "symlink", "hardlink"])

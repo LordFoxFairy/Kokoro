@@ -438,16 +438,30 @@ def native_command(
     user_context_file = record["bff_user_context_credential_file"]
     account_session_file = record["account_session_credential_file"]
     web_origin = record.get("web_origin")
-    if not isinstance(cookie, str) or not re.search(
-        r"(?:^|; )kokoro-issuer\.session_token=[^;]+", cookie
-    ):
-        raise SmokeError("native cookie missing")
-    purpose_credential_paths(user_context_file, account_session_file, run_dir=run_dir)
     if not isinstance(web_origin, str) or urlsplit(web_origin).scheme not in {
         "http",
         "https",
     }:
         raise SmokeError("IAM Web origin invalid")
+    cookie_name = (
+        "__Secure-kokoro-issuer.session_token"
+        if urlsplit(web_origin).scheme == "https"
+        else "kokoro-issuer.session_token"
+    )
+    if not isinstance(cookie, str):
+        raise SmokeError("native cookie missing")
+    cookie_names = [pair.partition("=")[0].strip() for pair in cookie.split(";")]
+    session_cookie_names = [
+        name
+        for name in cookie_names
+        if name
+        in {"kokoro-issuer.session_token", "__Secure-kokoro-issuer.session_token"}
+    ]
+    if session_cookie_names != [cookie_name] or not re.search(
+        rf"(?:^|; ){re.escape(cookie_name)}=[^;]+", cookie
+    ):
+        raise SmokeError("native cookie missing")
+    purpose_credential_paths(user_context_file, account_session_file, run_dir=run_dir)
     return NativeReceipt(cookie, user_context_file, account_session_file, web_origin)
 
 

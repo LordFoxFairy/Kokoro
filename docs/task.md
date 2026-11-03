@@ -17251,8 +17251,8 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 
 ### Task A 当前检查点（2026-11-03，覆盖前述历史等待/阶段交接）
 
-当前唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md) §0、§3.6、§4；[CURRENT](CURRENT.md)只同步摘要。原C-1.3～C-4完整Goal active，认证D0已收口；旧I-38引用/A-B等待结束，G1/G2/G3未通过，A-01/A-02/A-07保持停写。
+以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[CURRENT](CURRENT.md)为准；C-1.3～C-4 Goal active，认证D0通过，G1/G2/G3 OPEN，A01/A02/A07停写。
 
-IAM9ea5b4c/原PR6、BFF21b3a51/原PR18、App bfb749c3/原PR50、Admin95c504d/原PR5均已交付clean。Root当前IAM完整1690/全真实482、BFF最终完整1347contract/2369default＋2条件SKIP（真实schema15另补）、真实PG423及实际IAM-BFF relay1均有对应冻结/清理证据，不累计重复批次。Root8e94已精确pin并正式实跑，四源码/Node/production BFF通过但Admin编译后清理竞态失败，0旅程并全回收。I-54仅原helper/test两文件修复，Root实际隔离build与最终治理2105PASS/3SKIP/531subtests/Ruff通过，851输入保持/独审CLEAR；已随78105bb6推原PR66。正式重跑已过Admin构建/启动并进入tenant_rejection_recovery，旧oracle强制私有card可见而失败，整体0完成/全回收；I55真实诊断证实仍/app非登录、旧身份全退休、非空真实composer草稿原字节保留且同Session恢复后可见。Root仅原driver/test窄修oracle，保3秒/公开壳/全局无泄漏/不匿名/迟到不复活，补/error与/app白屏负控；完整治理2116PASS/3SKIP/531subtests、Node/Ruff/851输入保持及独审CLEAR，追加原PR66后正式整批重验，不改App产品。I-53仅纠正一条无合同依据测试约束，生产策略不变。账户list/revoke真实BFF消费组合、inspection owner/新G1/同步环境未验；Agent47ca431尚未交付/pin，整体topology与C-4未闭合，不以组件关闭Task A。
+I56源码已推各自原draft PR：IAM1fc3875/PR6、BFF8cb6169/PR18、App197f1102/PR50；Admin95c504d/PR5不变，四仓clean。Root候选精确gitlinks、原receiver/test和三tracking docs交付后才正式重跑原五旅程。当前源IAM完整1695/真实482/clean consumer2、BFF完整工程门及真实PG423、App完整6399与工程门、Root治理2135PASS/3SKIP/531subtests均有冻结证据；实际HTTPS删除已纠正为Secure3→保留3，原真实IAM/raw BFF relay1通过、source/DB保持且全回收。首次consumer仅因未提交工作树触发sdk:pack前置拒绝，提交后正常2PASS，未改代码/门禁。
 
-剩余C阶段6个执行包按原顺序：T-05全部消费者/独有负控/真实旅程 → T-17真实完整生命周期 → T-11 raw/dispatcher/无边界aggregate删除 → T-09/T-16最终精确组合门 → T-15同步环境。T-10另保留原A-01～A-16完整产品责任，不把未验收等同全部从零实现、不相加为22个同级任务。资源hook的局部源码/真实空闲PG-Redis正负控只是前置切片。主窗口统一Git、资源、审查和串行复验；每仓只沿自身PR，不merge main、不部署，不以worker退出或测试数量代替闭环。
+上次0ad正式五旅程最后独立撤销失败，0完成且全回收；组件通过不替代新Nest/browser G1。账户list/revoke真实BFF消费、inspection owner/独有负控映射仍待。C仍6包：T05认证/G1→T17生命周期→T11遗留删除→T09/T16最终门与组合→T15同步环境。原A01～16责任保留，已有实现不等于已验收；Agent未pin/Capability最新base整合及常驻环境仍OPEN。每仓仅原PR，不merge main、不部署，当前无新增用户待决事项。
