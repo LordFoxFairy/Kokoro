@@ -1661,3 +1661,9 @@ Platform与IAM直接执行身份正规文件配对，BFF catalog/projection分�
 真实首次 package 429 及另一次诊断503暴露了空白 reader。App7bac5ae6 已推原功能分支：无已确认正文时显示现有错误提示，仅绑定有效时显式 GET 重试；权限退休不恢复旧内容，不重放写命令。完整详情88项、定向lint/完整非增量types/diff通过，限定独审无确定P0–P2；缺失的指定审查技能未调用，按局部迭代未重跑完整 owner 门，不声明可合并。最终正常预览下载成功未再命中失败，不能作为正常错误重试证据；底层429/503仍未定因。原验收器失败均保留，恢复同一项目/安装而非新建覆盖。证据 E/技术方案与联调/B03-normal-project-skill-and-reader-delivery.json 绑定实际回执、源码及日志SHA。未执行Run；版本/权限/Admin、真实外部连接与全Task B/组合门/main继续OPEN。
 
 本次 Root 仅更新已推送并正常加载的 App7bac5ae6 精确 gitlink；拓扑检查仍退出1，错误仅为原 kokoro-admin 未独立初始化、origin/HEAD不符三项，未冒称完整组合通过或合 main。
+
+#### B-01/B-05：正常 HTTPS MCP 准备、刷新与草稿交接（2026-11-03）
+
+正常3314原生创建本人 DeepWiki HTTPS 配置201，Prepare200，权威GET为ready/available、有独立Connection和实际三个selector（ask_wiki_question/read_wiki_contents/read_wiki_structure）。刷新后首次“试用一下”禁用并非连接保存失败：正常System尚无mcp导航，App按现规则不给Composer连接器回调。通过既有System API向原站点/产品/应用增加workspace.connectors暴露及mcp导航配置，保原project.skills及账户角色；没有前端绕过或运行代码改动。恢复同一配置后刷新按钮可用，显式试用进入新草稿、正文含该连接器名、选择器同名项checked；执行写请求0。随后原生删除200、同ID404，cleanupRequired=false。官方端点依据 https://docs.devin.ai/work-with-devin/deepwiki-mcp ，实际selector以回执为准。
+
+先前本地HTTP本人fixture的初始化/三类目录发现、Prepare200和connection回读也真实成功，但现安全投影严格HTTPS，保持unavailable且不出现可执行试用；不为验收放宽协议。首条浏览器create响应正文读取失败保留，经本人唯一名称及原server/connector权威回读恢复，没有第二次创建；该HTTP配置已删除并404，自有fixture已关闭。E/技术方案与联调/B01-normal-https-prepare-and-draft-delivery.json逐份绑定原失败/配置与成功回执。此片只关闭声明的HTTPS准备/刷新/草稿交接，不当成真实Run工具调用、OAuth矩阵、结算、完整视觉/性能或全Task B完成；其他末端继续OPEN。
