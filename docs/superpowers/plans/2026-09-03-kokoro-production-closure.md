@@ -1611,3 +1611,6 @@ System原LiteLLM标签经fresh版本7与已发布4K revision核对后，正式CA
 真实桌面column但aria-orientation固定horizontal，↓不切换，新E2E先红。原rail ResizeObserver/reveal回报实际CSS方向给同一Tabs root；不加断点、第二套导航或手写方向键。桌面↓/↑、390px→/←、回桌面焦点与选择E2E6.1秒通过，原更多菜单/深页可见项/缩放/侧栏回焦旅程11.6秒通过。候选三生产文件按HEAD字节核对后覆盖，仍为登记SHA的开发overlay，不冒整体源码精确组合；正常3314未切。
 
 最终原设置组件167通过69.76秒，定向ESLint/完整非增量tsc通过，六路径停写只读审查APPROVE，无确定P0–P2。首跑165过/2失败及隔离复跑1过/1失败是旧模型测试在目录ready前点击disabled；仅等待enabled后全文件通过，未放宽断言/时限。浏览器旧auth观察失败、嵌套tablist观察器及私有setup重复Playwright安装原失败保留；原生/login刷新、定位实际nav、同一安装后验证通过，未改认证代码。完整owner门/视觉同态对照与全TaskB仍OPEN，后继继续账户头像与正式owner支持边界核实，不再发送模型任务来刷成功。
+#### B-07：原 IAM 头像信息的账户页消费（2026-11-03）
+
+App2286cce8 已推原功能分支，沿 IAM 已有 `profile`/`picture` 及原同源资料读补可选 HTTPS 头像；无新 owner、上传、图片代理或持久化。保持原 subject/代际退休，匿名/no-referrer，坏 URL 或图片失败回落首字母，不损姓名资料。定向回归先红2/75，修复后三文件100项通过，scope lint/完整非增量tsc通过，九路径有限独审APPROVE。后台浏览器原生资料200（本人QA无图片）和明确fixture图片加载/失败、390px无横溢分别记录，零账户写入；不冒真实用户图片或上传验收。E/技术方案与联调/B07-account-picture-delivery.json 绑定原始测试、独审和四文件候选overlay。正常3314/main不切，完整B07及TaskB、既存B08结算末端和组合门禁继续OPEN；已通过不变验证不重复。
