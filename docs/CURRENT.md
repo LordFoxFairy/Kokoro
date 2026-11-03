@@ -1,13 +1,13 @@
-## Task A 当前检查点：I56各仓已交付，待Root精确配对后正式G1
+## Task A 当前检查点：I56已交付，I57端到端验收器修复中
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护全部问题与写区。认证D0通过，机器Goal active；G1/G2/G3 OPEN，A01/A02/A07停写。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护全部问题与写区。C-1.3～C-4 Goal active，认证D0通过，G1/G2/G3 OPEN，A01/A02/A07停写。
 
-- **已交付**：IAM `1fc3875952a9840aa1a8d15124b9be0eaf91c5f2` / 原PR6、BFF `8cb6169cf1d15d54c3a3bacad9ea622695642228` / 原PR18、App `197f110294e9b373d5c4aa0836b3d80f48e3a833` / 原PR50，Admin95c504d / 原PR5保持；四仓clean。Root I56候选精确pin这些已推源码，交付后才正式五旅程。未merge main、未部署。
-- **当前源验证**：IAM完整1695/126、真实482/48和提交后clean consumer2；BFF完整format/check0、contract1347/default2370PASS＋2条件SKIP、真实PG423/0SKIP含schema15；App458contract/50architecture/6399default、0SKIP与全部工程门/构建后types；Root治理2135PASS/3SKIP/531subtests及Node/Ruff。冻结字节保持，各真实资源回收，不累计测试数为完成率。
-- **I56真实因果闭环**：原HTTPS删除Cookie非Secure3条被过滤0；当前3条均Secure并由BFF保留3条，原实际IAM/raw BFF relay1PASS/0SKIP。安全过滤、精确Cookie模式及原401断言保持，无Session引用/SDK/新flag/fallback，正式artifact字节不变。这是组件证据，不是Nest/browser G1通过。
-- **仍未闭环**：上次Root0ad正式五旅程在最后独立撤销失败，0完成且全回收；新组合须按原编排重验。账户真实BFF消费、inspection owner/独有负控仍待；G1后T17完整生命周期→T11遗留删除→T09/T16最终门/组合→T15同步E2E环境。Agent47ca431未交付/pin、Capability最新base整合仍属C4。
+- **已交付组合**：Root07cbb674 / 原PR66精确pin IAM1fc3875/PR6、BFF8cb6169/PR18、App197f1102/PR50、Admin95c504d/PR5；四子仓clean。仅原PR，无main merge或部署。
+- **I56已验范围**：IAM完整1695/126、真实482/48及提交后clean consumer2；BFF完整format/check0、contract1347/default2370PASS＋2条件SKIP、真实PG423/0SKIP含schema15；App458contract/50architecture/6399default、0SKIP与全部工程门/构建后types；Root I56基线治理2135PASS/3SKIP/531subtests及Node/Ruff。真实HTTPS删除Secure3→BFF保留3、原IAM/raw BFF relay1通过，冻结输入/DB保持且回收。不把这些门冒成后继I57候选通过。
+- **当前I57**：07c原正式五旅程已越过旧独立撤销精确401required，在focusProbe263超时，0完成且cleanup/凭据扫描通过。聚焦实际诊断已见trusted/visible/flag=true与safe200严格匿名；helper本次返回后原匿名retired等待/login超时。App现/login明确303到/auth/sign-in，旧window标记还面临document替换窗口。Root原focus/匿名retired及原Python测试r1已冻结，40focused/269native通过，主方和独审发现的清理预算P2已实际RED后返修并CLEAR；主方完整2142PASS/3SKIP/531subtests、Node/Ruff与855输入保持已验，原PR交付/正式原5仍待；不改产品、非匿名I55分支、协议、精确401或3秒/175秒/60秒窗口。
+- **证据缺口如实保留**：追加最终DOM观测在Admin隔离构建处更早失败，尚无最终DOM事实，已全回收；不据此判产品bug或隐藏构建失败。新Root候选须独审/主方全门与原完整五旅程，不拿聚焦诊断代替正式G1。账户真实生产Nest→IAM消费已完成18检查（1profile/10账户wire），source/DB/dist保持、credential scan/回收通过；inspection真实producer仍待。
 
-C阶段仍6个未闭环执行包，原A01～16责任另保留，已有实现但未逐项验收，不相加成22项。没有常驻同步环境，也不是所有仓常驻运行；隔离实测已回收。当前无新增用户待决事项，主控统一Git/资源/复核，每仓仅原PR，不merge main、不部署。
+C阶段仍6包：T05认证/G1→T17生命周期→T11遗留删除→T09/T16最终门/组合→T15同步环境。原A01～16责任保留，未整体验收不等于从零实现；Agent47ca431未交付/pin、Capability最新base整合及常驻环境仍OPEN。拓扑实际仅Agent不配对；未回退代码掩盖。当前没有常驻同步E2E环境，所有本轮主控真实资源均已回收，当前无新增用户待决事项。
 
 ---
 

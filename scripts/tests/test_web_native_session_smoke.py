@@ -2118,6 +2118,13 @@ def test_profile_barrier_transport_and_owner_response_boundary(case):
     [
         "trusted_focus",
         "trusted_visibility",
+        "navigation",
+        "navigation_cleanup_unavailable",
+        "foreign_frame",
+        "late_focus",
+        "cleanup_slow",
+        "cleanup_dispose_hang",
+        "cleanup_evaluate_hang",
         "untrusted",
         "hidden",
         "wrong_status",
@@ -2146,7 +2153,7 @@ def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(
       import assert from 'node:assert/strict';
       const {focusProbe} = await import(process.argv[1]);
       const scenario = process.argv[2];
-      const anonymous = ['anonymous', 'leaking_anonymous'].includes(scenario);
+      const anonymous = ['anonymous', 'leaking_anonymous', 'navigation', 'navigation_cleanup_unavailable', 'cleanup_slow', 'cleanup_dispose_hang', 'cleanup_evaluate_hang'].includes(scenario);
       const active = ['false_is_not_active', 'flat_body', 'incomplete_active', 'valid_active',
         'wrong_active_subject', 'wrong_active_tenant', 'expired_active', 'non_utc_active'].includes(scenario);
       const expected = anonymous ? {status: 200, authenticated: false}
@@ -2156,6 +2163,24 @@ def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(
       const disabled = new Set();
       const sessions = [];
       const events = new Map();
+      const bindings = new Map();
+      const timers = new Map();
+      const mainFrame = {};
+      let now = 0;
+      let nextTimer = 0;
+      let bindingCalls = 0;
+      let disposed = 0;
+      let evaluations = 0;
+      let bindingCallback;
+      globalThis.setTimeout = (callback, milliseconds) => {
+        assert.ok(milliseconds > 0 && milliseconds <= 3000);
+        const id = ++nextTimer; timers.set(id, callback); return id;
+      };
+      globalThis.clearTimeout = id => timers.delete(id);
+      const expire = () => {
+        now = 3000;
+        for (const [id, callback] of [...timers]) { timers.delete(id); callback(); }
+      };
       let peerFront = false;
       let pageFront = false;
       let responseWaitStarted = false;
@@ -2163,8 +2188,13 @@ def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(
         assert.deepEqual(options, {once: true});
         events.set(name, callback);
       };
-      globalThis.window = {addEventListener: listen};
-      globalThis.document = {addEventListener: listen, visibilityState: 'hidden'};
+      const remove = (name, callback) => { if (events.get(name) === callback) events.delete(name); };
+      const documentState = visibilityState => {
+        globalThis.window = {addEventListener: listen, removeEventListener: remove};
+        globalThis.document = {addEventListener: listen, removeEventListener: remove, visibilityState};
+        for (const [name, callback] of bindings) window[name] = callback;
+      };
+      documentState('hidden');
       const context = {
         newCDPSession: async target => {
           assert.ok(target === page || target === peer);
@@ -2193,16 +2223,35 @@ def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(
       };
       const page = {
         context: () => context,
-        evaluate: async callback => { assert.equal(peerFront, true); callback(); },
+        mainFrame: () => mainFrame,
+        exposeBinding: async (name, callback) => {
+          assert.equal(bindings.has(name), false);
+          bindingCallback = callback;
+          const call = async (...args) => {
+            bindingCalls++;
+            return callback({page, frame: scenario === 'foreign_frame' ? {} : mainFrame}, ...args);
+          };
+          bindings.set(name, call); window[name] = call;
+          return {dispose: async () => {
+            disposed++; bindings.delete(name); delete window[name];
+            if (scenario === 'cleanup_slow') now = 4001;
+            if (scenario === 'cleanup_dispose_hang') { queueMicrotask(expire); return new Promise(() => {}); }
+          }};
+        },
+        evaluate: async (callback, argument) => {
+          assert.equal(peerFront, true);
+          if (++evaluations > 1 && ['cleanup_evaluate_hang', 'navigation_cleanup_unavailable'].includes(scenario)) { queueMicrotask(expire); return new Promise(() => {}); }
+          callback(argument);
+        },
         waitForResponse: (predicate, options) => {
-          assert.deepEqual(options, {timeout: 3000});
+          assert.ok(options.timeout > 0 && options.timeout <= 3000);
           assert.equal(predicate({url: () => 'https://fixture.test/api/account/profile'}), false);
           const response = {
             url: () => 'https://fixture.test/api/auth/session',
             status: () => scenario === 'wrong_status' || anonymous || active ? 200 : 403,
             json: async () => {
               if (scenario === 'json_failure') throw new Error('fixture JSON failure');
-              if (scenario === 'anonymous' || scenario === 'false_is_not_active') return {data: {authenticated: false}};
+              if (scenario === 'anonymous' || scenario.startsWith('navigation') || scenario === 'false_is_not_active' || scenario.startsWith('cleanup_')) return {data: {authenticated: false}};
               if (scenario === 'leaking_anonymous') return {data: {
                 authenticated: false, subject: 'stale-private-subject', session_token: 'private-canary',
               }};
@@ -2227,7 +2276,10 @@ def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(
           pageFront = true;
           document.visibilityState = scenario === 'hidden' ? 'hidden' : 'visible';
           const event = scenario === 'trusted_visibility' ? 'visibilitychange' : 'focus';
-          events.get(event)({isTrusted: scenario !== 'untrusted'});
+          events.get(event)({isTrusted: scenario !== 'untrusted' && scenario !== 'cleanup_evaluate_hang'});
+          if (scenario.startsWith('navigation')) { events.clear(); documentState('visible'); }
+          if (scenario === 'late_focus') now = 3001;
+          if (['untrusted', 'hidden', 'foreign_frame', 'cleanup_evaluate_hang'].includes(scenario)) queueMicrotask(expire);
         },
         waitForFunction: async (predicate, argument, options) => {
           assert.equal(argument, null);
@@ -2235,22 +2287,45 @@ def test_focus_probe_disables_both_overrides_and_preserves_trusted_event_oracle(
           if (!predicate()) throw new Error('fixture focus not observed');
         },
       };
-      if (scenario.endsWith('_cdp_failure')) {
-        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity), /fixture CDP failure/);
+      if (scenario.startsWith('cleanup_')) {
+        const pending = focusProbe(page, peer, expected.status, expected.authenticated, identity, {now: () => now});
+        const stalled = (async () => {
+          for (let i = 0; i < 50; i++) await Promise.resolve();
+          throw new Error('fixture cleanup exceeded the original deadline without settling');
+        })();
+        await assert.rejects(Promise.race([pending, stalled]), /browser journey failed/);
+        assert.equal(disposed, 1, 'dispose must be attempted independently of DOM cleanup');
+        if (scenario === 'cleanup_evaluate_hang') {
+          events.get('focus')?.({isTrusted: true});
+          await bindingCallback({page, frame: mainFrame});
+          await assert.rejects(pending, /browser journey failed/);
+        }
+      } else if (scenario.endsWith('_cdp_failure')) {
+        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity, {now: () => now}), /fixture CDP failure/);
         assert.equal(peerFront, false);
         assert.equal(pageFront, false);
       } else if (['wrong_status', 'false_is_not_active', 'leaking_anonymous', 'incomplete_active', 'wrong_active_subject', 'wrong_active_tenant', 'expired_active', 'non_utc_active', 'flat_body', 'wrong_code'].includes(scenario)) {
-        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity), /browser journey failed/);
+        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity, {now: () => now}), /browser journey failed/);
       } else if (scenario === 'json_failure') {
-        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity), /fixture JSON failure/);
-      } else if (scenario === 'untrusted' || scenario === 'hidden') {
-        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity), /fixture focus not observed/);
-        assert.equal(window.__nativeSmokeFocusObserved, false);
+        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity, {now: () => now}), /fixture JSON failure/);
+      } else if (['untrusted', 'hidden', 'foreign_frame', 'late_focus'].includes(scenario)) {
+        await assert.rejects(() => focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity, {now: () => now}), /browser journey failed/);
+        if (scenario === 'untrusted' || scenario === 'hidden') assert.equal(bindingCalls, 0);
       } else {
-        assert.equal(await focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity), true);
-        assert.equal(window.__nativeSmokeFocusObserved, true);
+        const pending = focusProbe(page, peer, expected.status, expected.authenticated ?? expected.error_code, identity, {now: () => now});
+        const observed = scenario === 'navigation_cleanup_unavailable' ? Promise.race([pending, (async () => {
+          for (let i = 0; i < 50; i++) await Promise.resolve();
+          throw new Error('fixture unnecessary document cleanup blocked navigation-safe ACK');
+        })()]) : pending;
+        assert.equal(await observed, true);
         assert.equal(pageFront, true);
         assert.equal(sessions.length, 2);
+      }
+      assert.equal(timers.size, 0, 'deadline timer must be cleared');
+      if (!scenario.endsWith('_cdp_failure')) {
+        assert.equal(disposed, 1);
+        assert.equal(bindings.size, 0, 'binding must be disposed');
+        if (disposed) assert.equal(events.size, 0, 'browser listeners must retire');
       }
     """
     result = subprocess.run(
@@ -2319,14 +2394,25 @@ def test_anonymous_retirement_observes_login_without_old_private_canaries():
     program = r"""
       import assert from 'node:assert/strict';
       const {retired} = await import(process.argv[1]);
-      const profile = {subject: 'old-subject', email: 'old@example.test'};
+      const profile = {subject: 'old-subject', name: 'Old Fixture Name', email: 'old@example.test'};
       let navigated = false;
       let stale = false;
+      let staleName = false;
+      let currentUrl = 'https://fixture.test/app';
+      let destination = 'https://fixture.test/auth/sign-in?flow=fixture-flow';
+      let passwordVisible = true;
+      let leaveSignIn = false;
       const checked = new Set();
       const page = {
+        url: () => currentUrl,
         waitForURL: async predicate => {
-          assert.equal(predicate(new URL('https://fixture.test/login?return_to=%2Fapp')), true);
+          assert.equal(predicate(new URL('https://fixture.test/auth/sign-in?flow=fixture-flow')), true);
+          assert.equal(predicate(new URL('https://fixture.test/login?return_to=%2Fapp')), false);
+          assert.equal(predicate(new URL('https://fixture.test/error')), false);
+          assert.equal(predicate(new URL('https://other.test/auth/sign-in')), false);
           assert.equal(predicate(new URL('https://fixture.test/app')), false);
+          currentUrl = destination;
+          if (!predicate(new URL(currentUrl))) throw new Error('fixture canonical sign-in absent');
           navigated = true;
         },
         locator: selector => { assert.equal(selector, 'input[name="password"][type="password"]'); return 'password'; },
@@ -2338,16 +2424,34 @@ def test_anonymous_retirement_observes_login_without_old_private_canaries():
         getByTestId: () => { throw new Error('anonymous is not an unavailable Settings shell'); },
       };
       const expect = locator => ({
-        toBeVisible: async () => { assert.equal(navigated, true); assert.equal(locator, 'password'); },
+        toBeVisible: async () => {
+          assert.equal(navigated, true); assert.equal(locator, 'password');
+          if (!passwordVisible) throw new Error('fixture password form absent');
+        },
         toHaveCount: async count => {
           assert.equal(count, 0); checked.add(locator);
           if (stale && locator === profile.email) throw new Error('old private canary still visible');
+          if (staleName && locator === profile.name) throw new Error('old private name still visible');
+          if (leaveSignIn && locator === profile.subject) currentUrl = 'https://fixture.test/error';
         },
       });
       assert.equal(await retired(page, profile, expect, true), true);
-      assert.deepEqual(checked, new Set(['private-name', profile.email, profile.subject]));
+      assert.deepEqual(checked, new Set(['private-name', profile.name, profile.email, profile.subject]));
       stale = true;
       await assert.rejects(() => retired(page, profile, expect, true), /old private canary still visible/);
+      stale = false; staleName = true;
+      await assert.rejects(() => retired(page, profile, expect, true), /old private name still visible/);
+      staleName = false;
+      for (const url of ['https://fixture.test/login', 'https://fixture.test/error', 'https://other.test/auth/sign-in']) {
+        currentUrl = 'https://fixture.test/app'; destination = url;
+        await assert.rejects(() => retired(page, profile, expect, true), /fixture canonical sign-in absent/);
+      }
+      currentUrl = 'https://fixture.test/app';
+      destination = 'https://fixture.test/auth/sign-in?flow=fixture-flow';
+      passwordVisible = false;
+      await assert.rejects(() => retired(page, profile, expect, true), /fixture password form absent/);
+      passwordVisible = true; leaveSignIn = true; currentUrl = 'https://fixture.test/app';
+      await assert.rejects(() => retired(page, profile, expect, true), /browser journey failed/);
     """
     result = subprocess.run(
         ["node", "--input-type=module", "-e", program, driver.as_uri()],
@@ -2367,7 +2471,7 @@ def test_anonymous_retirement_shares_original_three_second_navigation_and_canary
     program = r"""
       import assert from 'node:assert/strict';
       const {retired} = await import(process.argv[1]);
-      const profile = {subject: 'old-subject', email: 'old@example.test'};
+      const profile = {subject: 'old-subject', name: 'Old Fixture Name', email: 'old@example.test'};
       for (const late of [false, true]) {
         let now = 100;
         const started = now;
@@ -2379,8 +2483,9 @@ def test_anonymous_retirement_shares_original_three_second_navigation_and_canary
           now += elapsed;
         };
         const page = {
+          url: () => 'https://fixture.test/auth/sign-in',
           waitForURL: async (predicate, options) => {
-            assert.equal(predicate(new URL('https://fixture.test/login')), true);
+            assert.equal(predicate(new URL('https://fixture.test/auth/sign-in?flow=fixture-flow')), true);
             consume(options, 1000, 'navigation');
           },
           locator: () => 'password',
@@ -2392,13 +2497,13 @@ def test_anonymous_retirement_shares_original_three_second_navigation_and_canary
           toBeVisible: async options => consume(options, 750, 'login form'),
           toHaveCount: async (count, options) => {
             assert.equal(count, 0);
-            consume(options, locator === profile.subject ? (late ? 260 : 250) : 500, locator);
+            consume(options, locator === profile.subject ? (late ? 260 : 250) : locator === 'private-name' ? 500 : 250, locator);
           },
         });
         const observation = () => retired(page, profile, expect, true, {now: () => now});
         if (late) await assert.rejects(observation, /browser journey failed/);
         else assert.equal(await observation(), true);
-        assert.deepEqual(calls, ['navigation', 'login form', 'private-name', profile.email, profile.subject]);
+        assert.deepEqual(calls, ['navigation', 'login form', 'private-name', profile.name, profile.email, profile.subject]);
         assert.equal(now - started, late ? 3010 : 3000);
       }
     """
@@ -2886,10 +2991,14 @@ def test_shared_admin_retirement_uses_trusted_focus_and_one_three_second_budget(
         let now=100;
         const started=now;
         const events=new Map();
-        globalThis.window={addEventListener:(name,cb)=>events.set(name,cb)};
-        globalThis.document={visibilityState:'hidden',addEventListener:(name,cb)=>events.set(name,cb)};
+        const remove=(name,cb)=>{if(events.get(name)===cb)events.delete(name)};
+        globalThis.window={addEventListener:(name,cb)=>events.set(name,cb),removeEventListener:remove};
+        globalThis.document={visibilityState:'hidden',addEventListener:(name,cb)=>events.set(name,cb),removeEventListener:remove};
         const peer={bringToFront:async()=>{document.visibilityState='hidden'}};
+        const frame={};
         const page={
+          mainFrame:()=>frame,
+          exposeBinding:async(name,cb)=>{window[name]=async()=>cb({page,frame});return {dispose:async()=>{delete window[name]}}},
           context:()=>({newCDPSession:async target=>({send:async(name,value)=>{
             assert.ok(target===page||target===peer);assert.equal(name,'Emulation.setFocusEmulationEnabled');assert.deepEqual(value,{enabled:false});
           }})}),

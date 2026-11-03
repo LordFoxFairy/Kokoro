@@ -17251,8 +17251,10 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 
 ### Task A 当前检查点（2026-11-03，覆盖前述历史等待/阶段交接）
 
-以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[CURRENT](CURRENT.md)为准；C-1.3～C-4 Goal active，认证D0通过，G1/G2/G3 OPEN，A01/A02/A07停写。
+以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)和[CURRENT](CURRENT.md)为准；C-1.3～C-4 Goal active，G1/G2/G3 OPEN，A01/A02/A07停写。
 
-I56源码已推各自原draft PR：IAM1fc3875/PR6、BFF8cb6169/PR18、App197f1102/PR50；Admin95c504d/PR5不变，四仓clean。Root候选精确gitlinks、原receiver/test和三tracking docs交付后才正式重跑原五旅程。当前源IAM完整1695/真实482/clean consumer2、BFF完整工程门及真实PG423、App完整6399与工程门、Root治理2135PASS/3SKIP/531subtests均有冻结证据；实际HTTPS删除已纠正为Secure3→保留3，原真实IAM/raw BFF relay1通过、source/DB保持且全回收。首次consumer仅因未提交工作树触发sdk:pack前置拒绝，提交后正常2PASS，未改代码/门禁。
+I56已沿原PR交付Root07cbb674及精确IAM1fc3875/BFF8cb6169/App197f1102/Admin95c504d；各owner当前完整相关门、真实IAM482/clean consumer2/BFF PG423/relay1与Secure删除3→保留3通过，Root I56治理2135/3SKIP/531subtests通过。冻结字节/DB保持、真实资源回收；没有merge main或部署。
 
-上次0ad正式五旅程最后独立撤销失败，0完成且全回收；组件通过不替代新Nest/browser G1。账户list/revoke真实BFF消费、inspection owner/独有负控映射仍待。C仍6包：T05认证/G1→T17生命周期→T11遗留删除→T09/T16最终门与组合→T15同步环境。原A01～16责任保留，已有实现不等于已验收；Agent未pin/Capability最新base整合及常驻环境仍OPEN。每仓仅原PR，不merge main、不部署，当前无新增用户待决事项。
+原正式五旅程已越过旧精确401required，在独立撤销focusProbe263超时，0完成且回收/凭据扫描通过。I57聚焦实测已见真实trusted-visible事件、flag=true及safe200严格匿名，随后原匿名retired等待中间/login超时；当前实际/login303到/auth/sign-in。Root原两文件r1已冻结并独审CLEAR，40focused/269native通过；清理预算P2已实际RED后修复，主方完整2142PASS/3SKIP/531subtests、Node/Ruff/855输入保持已验，正式原5仍待；仅修跨document ACK/最终canonical路径，不改产品/协议/非匿名分支或放宽时间/错误断言。追加最终DOM观测被更早Admin隔离build失败截断，原因仍需日志，不隐藏失败/不虚构DOM。候选独审/主方完整治理已通过，沿原PR交付后正式原五旅程仍待。
+
+C仍6包，账户真实Nest→IAM18检查/精确wire已通过，inspection owner/负控映射未齐；随后T17→T11→T09/T16→T15。原A01～16责任保留；Agent未pin/Capability最新base整合、最终组合与常驻同步环境均OPEN，不用组件或数量关闭Task A。每仓原PR，当前无用户待决事项。

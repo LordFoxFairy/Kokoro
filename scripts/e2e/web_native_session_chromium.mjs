@@ -201,12 +201,15 @@ export async function retired(page, profile, expect, anonymous = false, clock = 
       requireFact(timeout > 0);
       return {timeout};
     };
-    await page.waitForURL(url => url.pathname === '/login', budget());
+    const origin = new URL(page.url()).origin;
+    const signIn = url => url.origin === origin && url.pathname === '/auth/sign-in';
+    await page.waitForURL(signIn, budget());
     await expect(page.locator('input[name="password"][type="password"]')).toBeVisible(budget());
     await expect(page.getByRole('textbox', {name: 'Full name', exact: true})).toHaveCount(0, budget());
+    if (profile.name) await expect(page.getByText(profile.name, {exact: true})).toHaveCount(0, budget());
     if (profile.email) await expect(page.getByText(profile.email, {exact: true})).toHaveCount(0, budget());
     await expect(page.getByText(profile.subject, {exact: true})).toHaveCount(0, budget());
-    requireFact(clock.now() <= deadline);
+    requireFact(signIn(new URL(page.url())) && clock.now() <= deadline);
     return true;
   }
   // A qualification refusal may unmount the private card, not the public shell.
@@ -238,7 +241,7 @@ async function preparePeer(context, origin) {
   await peer.goto(origin + '/api/fixture-origin');
   return peer;
 }
-export async function focusProbe(page, peer, status, observation, identity) {
+export async function focusProbe(page, peer, status, observation, identity, clock = {now: () => performance.now()}) {
   // Playwright's fixed focus override hides real tab activation. Keep these CDP
   // sessions owned by the context until close; detaching would restore the override.
   for (const target of [page, peer]) {
@@ -247,26 +250,92 @@ export async function focusProbe(page, peer, status, observation, identity) {
   }
   // Only browser focus/visibility events; no synthetic dispatchEvent or private React hook.
   await peer.bringToFront();
-  await page.evaluate(() => {
-    window.__nativeSmokeFocusObserved = false;
-    const observe = event => {
-      if (event.isTrusted && document.visibilityState === 'visible') window.__nativeSmokeFocusObserved = true;
-    };
-    window.addEventListener('focus', observe, {once: true});
-    document.addEventListener('visibilitychange', observe, {once: true});
+  let acknowledge;
+  const focused = new Promise(resolve => { acknowledge = resolve; });
+  let binding;
+  let timer;
+  let live = true;
+  let acknowledged = false;
+  const deadline = clock.now() + 3000;
+  const budget = () => {
+    const timeout = deadline - clock.now();
+    requireFact(timeout > 0);
+    return timeout;
+  };
+  const expired = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('browser journey failed')), budget());
   });
-  const response = page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/session', {timeout: 3000});
-  await page.bringToFront();
-  // Observe the trusted event before a false observation can navigate to login.
-  const [received] = await Promise.all([
-    response,
-    page.waitForFunction(() => window.__nativeSmokeFocusObserved === true, null, {timeout: 3000}),
-  ]);
-  requireFact(received.status() === status);
-  const body = await received.json();
-  if (status === 200) requireSessionObservation({status: received.status(), body}, observation, identity);
-  else requireFact(typeof observation === 'string' && body?.error?.code === observation);
-  return true;
+  const retireDocument = () => page.evaluate(() => window.__nativeSmokeFocusCleanup?.());
+  const observationResult = (async () => {
+    // Playwright 1.62 bindings survive navigation; the ACK is owned by Node,
+    // not a flag in the document that an anonymous observation can replace.
+    const acquired = await page.exposeBinding('__nativeSmokeTrustedFocus', source => {
+      if (live && clock.now() <= deadline && source.page === page && source.frame === page.mainFrame()) {
+        acknowledged = true;
+        acknowledge();
+      }
+    });
+    if (!live || clock.now() > deadline) {
+      await acquired.dispose();
+      fail();
+    }
+    binding = acquired;
+    await page.evaluate(() => {
+      const observe = event => {
+        if (event.isTrusted && document.visibilityState === 'visible') {
+          cleanup();
+          void window.__nativeSmokeTrustedFocus?.().catch(() => {});
+        }
+      };
+      const cleanup = () => {
+        window.removeEventListener('focus', observe);
+        document.removeEventListener('visibilitychange', observe);
+        delete window.__nativeSmokeFocusCleanup;
+      };
+      window.__nativeSmokeFocusCleanup = cleanup;
+      window.addEventListener('focus', observe, {once: true});
+      document.addEventListener('visibilitychange', observe, {once: true});
+    });
+    if (!live || clock.now() > deadline) {
+      // A late installation may only retire its own listeners, never activate.
+      await retireDocument().catch(() => {});
+      fail();
+    }
+    const response = page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/session', {timeout: budget()});
+    const [received] = await Promise.all([response, focused, Promise.resolve().then(() => page.bringToFront())]);
+    requireFact(live && clock.now() <= deadline);
+    requireFact(received.status() === status);
+    const body = await received.json();
+    requireFact(live && clock.now() <= deadline);
+    if (status === 200) requireSessionObservation({status: received.status(), body}, observation, identity);
+    else requireFact(typeof observation === 'string' && body?.error?.code === observation);
+    return true;
+  })();
+  let result;
+  let failed = false;
+  let failure;
+  try {
+    try { result = await Promise.race([observationResult, expired]); }
+    catch (error) { failed = true; failure = error; }
+    live = false;
+    // A qualified callback already removed both DOM listeners before its ACK.
+    // Otherwise attempt DOM retirement and binding disposal independently: a
+    // navigating/hung document must not block the latter or extend this budget.
+    const cleanup = Promise.allSettled([
+      ...(acknowledged ? [] : [Promise.resolve().then(retireDocument)]),
+      ...(binding ? [Promise.resolve().then(() => binding.dispose())] : []),
+    ]);
+    let cleaned;
+    try { cleaned = await Promise.race([cleanup, expired]); }
+    catch (error) { if (!failed) { failed = true; failure = error; } }
+    requireFact(clock.now() <= deadline);
+    if (failed) throw failure;
+    requireFact(cleaned?.every(entry => entry.status === 'fulfilled') === true);
+    return result;
+  } finally {
+    live = false;
+    clearTimeout(timer);
+  }
 }
 export async function retireAdminOnFocus(page, peer, identity, expect, clock = {now: () => performance.now()}) {
   const deadline = clock.now() + 3000;
