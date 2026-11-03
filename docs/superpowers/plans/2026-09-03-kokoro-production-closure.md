@@ -1683,3 +1683,11 @@ App a857542a64b6d878e5aeab92b081194a1ff478e9修复历史关闭/重新准入/同�
 作者原生撤回200后安装保留且source_status=withdrawn；本人managed下载资格与字节200，SHA256与原ZIP一致，成员同路径404。随后本人系列删除、安装移除、权威installed=false/managed404通过；测试成员通过正常团队页移除200，原Product会话立即403，原邀请不再pending。保留已注册测试账号，未授予admin或修改用户账号权限、模型、账本。最初QA ZIP错误地多包一层目录，被原生IMPORT_PACKAGE_INVALID拒绝；原rejected意图保留至2026-11-04T10:19:14.743Z，不称物理清除。已知拒绝后换用根目录SKILL.md的新包，原输入与回执均保留；分享响应正文观测失败及清理脚本语言定位失败分别保存，未伪称产品故障或丢弃原写事实。
 
 本片无生产代码/契约/Schema变动。独立只读审计未发现确定新越权问题；现有权限与主体退休定向回归20通过、96因名称筛选跳过，不作为完整测试通过。正常真实证据E/技术方案与联调/B04-normal-private-permission-runtime-delivery.json绑定10份原始回执SHA、明确API/页面范围与清理边界；hix-code-review仍缺失，未声称调用。App保持a857542a，完整作者/管理员/跨租户、真实Run及其余Task B与组合合并门继续OPEN。
+
+#### B-07：设置草稿隔离与日期语言（2026-11-03）
+
+App27b17f12c325022cfd0f9b77eab53fccf6f5598d已推原Draft49。个性化旧回调此前可取到新准入会话并修改/保存新草稿或读取新冲突；增加发起scope核对，换主体/准入代后的旧update/persist/retry/chooseServer/saveDraft均退休，原CAS及未知结果显式恢复保持。新回归4FAIL/2PASS后修复；数据管理三类日期原来无视产品语言，沿现locale格式化，原ISO时间和列表读取不变，新回归1FAIL/5PASS后修复。
+
+停写五路径独审无确定P0–P2，主方四套67PASS、定向ESLint/完整非增量tsc/diff通过。正常3314当前源码的日期展示以明确只读列表fixture验证中文/英文及390px无横溢；不冒原生分享/归档CRUD或Manus对照。第二轮逐路径记录仅原生POST /api/auth/session，业务写零；第一轮计数未分类而失败的原回执保留。正常个性化当前null，双标签CAS验收器在首写前退出，零PUT/零数据修改，未将其算通过。
+
+E/技术方案与联调/B07-settings-identity-locale-delivery.json绑定源码、命令、原始回执和范围；同目录自包含HTML提供真实显示截图。无契约/Schema/依赖变动，不重演无关完整owner门。hix-code-review不可用，未声称调用；完整B07/Task B及组合合并仍OPEN。
