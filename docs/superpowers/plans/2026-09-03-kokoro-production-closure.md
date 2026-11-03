@@ -1647,3 +1647,17 @@ Platform与IAM直接执行身份正规文件配对，BFF catalog/projection分�
 正常Web补既有精确本地上传origin后，新独立QA包从原生UI选择ZIP→begin201→真实对象PUT/版本ACK→complete200→finalize200→安装后刷新仍见，随后本人技能源DELETE200、本人账号安装DELETE200，正式同ID回读installed=false且刷新卡片消失。E/技术方案与联调/B03-normal-owned-skill-import-delivery.json绑定原失败/配置切换/新真实旅程与两类清理；不把删除源当移除账号安装。桶CORS API501未改配置，后继实际成功证明它不是当前本地旅程阻塞，首次CORS诊断不冒最终根因。App未生产改码，next-env启动派生单行已精确恢复。
 
 成功新包的来源/安装清理完成；首条旧CSP输入产生的upload_pending意图仍保留24小时到期和cleanupRequired=true，不假冒同一意图恢复，也不通过DB清理或新上传覆盖原失败。完整版本/权限/项目/Agent使用与B03/B04及全目标继续OPEN。
+
+#### B-03：正常技能启停、文件树与精确下载闭环（2026-11-03）
+
+正常3314同App2286cce8、原生账户与正常服务组合，以新的本人双文件包完成真实UI导入安装，停用与启用各原生命令200，分别刷新保持；详情读取SKILL.md及references/check.md正文，下载当前安装包200，下载ZIP与上传ZIP的SHA256逐字一致。随后来源删除200、账号安装移除200，同ID权威回读installed=false，刷新卡片消失，本次包cleanupRequired=false。E/技术方案与联调/B03-normal-skill-lifecycle-delivery.json绑定原始两份回执；首份验收器将文件显示名当完整accessible name导致超时，保留原失败，仅修验收器并恢复同一安装，不重新上传或修改产品源码。
+
+本片证明正常账号安装的启停、读取及精确包下载，不冒充项目选择、真正Run加载、版本更新、跨主体权限或管理后台完成。原先CSP失败的独立旧导入意图仍单独待到期。Storage父catalog调查不阻塞本片：同PG按4ab2官方空库installer建立的本人隔离库，与正常库原生读取的388条catalog定义完全一致；两者仍不等于脚本批准的父指纹，未放宽批准值或升级正常库，隔离库已按归属清理。全Task B继续OPEN。
+
+#### B-03/B-14：正常项目精确技能与读取失败反馈（2026-11-03）
+
+正常 System 通过已有 API 为原站点/产品配置 project.skills 暴露；普通 manifest 实读与项目入口已确认，不改浏览器角色或绕过准入。本人同一 QA 包先账号安装，再创建项目的独立安装，默认选择经权威回读/刷新保持；精确正文预览、下载原 ZIP SHA256 一致。随后清默认、移除项目安装、项目删除202并原生读回逻辑 released、移除本人来源和账号安装均通过。本次 cleanupRequired=false 仅指原生逻辑清理，不声称物理存储对象删除；原先独立 CSP pending 意图不在本次清理内。
+
+真实首次 package 429 及另一次诊断503暴露了空白 reader。App7bac5ae6 已推原功能分支：无已确认正文时显示现有错误提示，仅绑定有效时显式 GET 重试；权限退休不恢复旧内容，不重放写命令。完整详情88项、定向lint/完整非增量types/diff通过，限定独审无确定P0–P2；缺失的指定审查技能未调用，按局部迭代未重跑完整 owner 门，不声明可合并。最终正常预览下载成功未再命中失败，不能作为正常错误重试证据；底层429/503仍未定因。原验收器失败均保留，恢复同一项目/安装而非新建覆盖。证据 E/技术方案与联调/B03-normal-project-skill-and-reader-delivery.json 绑定实际回执、源码及日志SHA。未执行Run；版本/权限/Admin、真实外部连接与全Task B/组合门/main继续OPEN。
+
+本次 Root 仅更新已推送并正常加载的 App7bac5ae6 精确 gitlink；拓扑检查仍退出1，错误仅为原 kokoro-admin 未独立初始化、origin/HEAD不符三项，未冒称完整组合通过或合 main。
