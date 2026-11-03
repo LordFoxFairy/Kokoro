@@ -1667,3 +1667,11 @@ Platform与IAM直接执行身份正规文件配对，BFF catalog/projection分�
 正常3314原生创建本人 DeepWiki HTTPS 配置201，Prepare200，权威GET为ready/available、有独立Connection和实际三个selector（ask_wiki_question/read_wiki_contents/read_wiki_structure）。刷新后首次“试用一下”禁用并非连接保存失败：正常System尚无mcp导航，App按现规则不给Composer连接器回调。通过既有System API向原站点/产品/应用增加workspace.connectors暴露及mcp导航配置，保原project.skills及账户角色；没有前端绕过或运行代码改动。恢复同一配置后刷新按钮可用，显式试用进入新草稿、正文含该连接器名、选择器同名项checked；执行写请求0。随后原生删除200、同ID404，cleanupRequired=false。官方端点依据 https://docs.devin.ai/work-with-devin/deepwiki-mcp ，实际selector以回执为准。
 
 先前本地HTTP本人fixture的初始化/三类目录发现、Prepare200和connection回读也真实成功，但现安全投影严格HTTPS，保持unavailable且不出现可执行试用；不为验收放宽协议。首条浏览器create响应正文读取失败保留，经本人唯一名称及原server/connector权威回读恢复，没有第二次创建；该HTTP配置已删除并404，自有fixture已关闭。E/技术方案与联调/B01-normal-https-prepare-and-draft-delivery.json逐份绑定原失败/配置与成功回执。此片只关闭声明的HTTPS准备/刷新/草稿交接，不当成真实Run工具调用、OAuth矩阵、结算、完整视觉/性能或全Task B完成；其他末端继续OPEN。
+
+#### B-04：正常个人版本完整生命周期与历史读取修复（2026-11-03）
+
+正常3314本人样本完成v1导入安装→v2新包上传/扫描/校验/发布→取消升级零写→同一安装显式更新v2及刷新/精确正文/原ZIP摘要一致。发布不隐式升级安装。随后取消撤回零写、显式撤回v2、历史v1精确正文读取；取消恢复零写，原v1 ZIP经既有链发布成新UID/v3，原安装保持v2。显式更新同一安装到v3后，刷新正文与ZIP均与原v1一致；原生系列删除、安装移除及权威installed=false通过，测试样本cleanupRequired=false，不声称物理对象删除。首份验收器对重复关闭按钮和更新按钮完整无障碍名称误定位保留；后续恢复同一系列/安装，未重发成功发布或升级。
+
+App a857542a64b6d878e5aeab92b081194a1ff478e9修复历史关闭/重新准入/同主体generation换代时旧列表、正文、分页/恢复入口复现，迟到结果退休；原未知Restore意图及原body/key/CAS保留。可见版本号与真实完整日期已在正常桌面/390核对，窄窗374宽、scrollWidth=clientWidth=372；截图正文仍加载，未冒已加载正文视觉对照。新增回归先3FAIL，最终history+restore16PASS，Root同范围独立复验16PASS，scoped ESLint/完整非增量tsc/diff0；停写四文件限定独审无确定P0–P2，缺失hix-code-review未冒调用。E/技术方案与联调/B04-normal-version-lifecycle-and-history-read-delivery.json绑定七份原始回执与四源码SHA。无接口/Schema/依赖/模型变化，未重复无关全owner门，不声明完整需求可合并；Root只配对已推精确App版本。跨主体/租户、Admin、真实Run加载、其余B项及全组合/main继续OPEN。
+
+本次新App gitlink的Root拓扑复验仍仅原Admin未独立初始化、origin不匹配及HEAD/gitlink不符三项，退出1；不据局部功能修复合main。
