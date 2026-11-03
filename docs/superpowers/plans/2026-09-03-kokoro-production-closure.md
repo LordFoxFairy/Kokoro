@@ -1691,3 +1691,13 @@ App27b17f12c325022cfd0f9b77eab53fccf6f5598d已推原Draft49。个性化旧回调
 停写五路径独审无确定P0–P2，主方四套67PASS、定向ESLint/完整非增量tsc/diff通过。正常3314当前源码的日期展示以明确只读列表fixture验证中文/英文及390px无横溢；不冒原生分享/归档CRUD或Manus对照。第二轮逐路径记录仅原生POST /api/auth/session，业务写零；第一轮计数未分类而失败的原回执保留。正常个性化当前null，双标签CAS验收器在首写前退出，零PUT/零数据修改，未将其算通过。
 
 E/技术方案与联调/B07-settings-identity-locale-delivery.json绑定源码、命令、原始回执和范围；同目录自包含HTML提供真实显示截图。无契约/Schema/依赖变动，不重演无关完整owner门。hix-code-review不可用，未声称调用；完整B07/Task B及组合合并仍OPEN。
+
+#### B-01：正常存储图标升级与页面实测（2026-11-03）
+
+官方4ab2f23干净父库原生bootstrap真实RED：完整目录为1d60而原脚本只接受历史bdf6。正常库与同源码官方新建库388项定义完全一致，不归因于正常结构漂移。Storage add2da6ca379be686127da31d64e38843fc10a70保留历史bdf6→94839，新增固定父新建→原三条enum ALTER→独立新版新建全部定义一致的1d60→0f480精确配对；未知、部分目录及双向错误目标仍拒绝，canonical/fingerprint/事务/安装锁/取消围栏不变。独立只读审无确定P0–P2；正常执行脚本的未知COMMIT记录问题已修为调用前unknown、成功后committed，不把丢ACK写成零修改。
+
+定向真实PG三项及单元五项通过，四项名称过滤；完整类型、相关lint、四路径格式和diff通过。完整bootstrap首轮7FAIL涉及fixture连接与CREATE/DROP超时，首因未归因、原日志保留，未重跑无关全仓或冒完整owner门。当前只读库存仍见4个storage_schema前缀库，未证明全部归本次失败，保留待核，不盲删；本次新建fresh资格两库和真实备份恢复演练库均有亲建清理回执。hix-code-review仍不可用，未冒调用。
+
+正常Storage owner先全量私有pg_dump并恢复到独立库，原数据SHA一致，正式expand前后九表全量数据及xmin摘要一致，重放already-current；再对正常库重新备份、亲建旧服务优雅退出、正式expand与相同数据/xmin核对通过。正常63372已从冻结add2da6源码启动ready，原数据库/对象bucket/扫描器/credential配置保留。此为Storage运行源更新，不冒完整Root所有gitlink与运行源一致。
+
+正常3314本人QA完成从设备上传PNG→扫描/可用预览→保存MCP配置→刷新卡片自然图片加载→详情及390宽度无横溢。单次上传到预览8561ms、整段25167ms，不称p50/p95或100ms达标；Playwright headless自动化不是Computer Use，也不是Manus视觉对照。随后同一新建配置原生删除200、fresh列表无该server；原生对象生命周期清理不等于物理字节删除。只保存配置，未连接示例端点，不冒真实MCP调用/OAuth完成。E/技术方案与联调/B01-normal-icons-storage-delivery.json及自包含HTML绑定真实回执、截图和精确source。Storage功能分支已推；组合及完整Task B仍OPEN。
