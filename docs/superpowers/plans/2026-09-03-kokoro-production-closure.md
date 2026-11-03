@@ -1585,3 +1585,23 @@ App702/BFF8ae现资料四字段、个人知识CRUD和usage事实都归BFF本人�
 App d98abda1已推原Draft49并精确升级候选1559输入，仅7行隐藏知识编辑/删除弹窗遗留的上一笔Saved，列表成功与当前unknown/conflict/error恢复保留；原面板8通过、scope lint/非增量types0、三路径停写独审通过，未加镜像测试或为显示改动再重演CRUD。B08-knowledge-dialog-feedback-delivery.json给范围。Agent8.11仍独立实施，BFF未提前消费。D0独审P2自动LangSmith/Debug内容回调旁路已通知writer；真实actor.opaque_ref可绑定个人owner。BFF首次413本已有not_admitted→failed/RUN_ERROR，先unknown的sticky恢复安全围栏保留。完整HTTP body即payload.launch，身份走header，可在原queued前按正式SDK实际序列化字节和owner1MiB metadata拒界，拟正规personal_context_too_large/413；App原pending保body/key、不自动发送，不能冒已恢复editable draft。
 
 Agent B08 30ce29a6、BFF 1e6765b3与App 38d2f6cd已提交推送原Draft46/17/49，候选Agent60261/worker、BFF60259、Web60256按精确已提交源升级并健康；正常3314/Root/main未切。Agent v2离线wheel+sdist重建成功，231生产模块及530源输入字节核一致。BFF v2独审APPROVE，63相关/37架构/201语义、18SDK生成与lint/build/types通过；Root同实例独占临时PG库真实B08两旅程及failure CHECK evolution一旅程通过，fixture库已删除；候选原库正式check→apply→check=current，1145源/1084编译产物核一致。App 77路径独审APPROVE，13原生成链、190受影响契约、67 UI/原请求恢复、50架构及scope lint/非增量types通过；1560候选源输入核一致，A发送状态未改。真实普通UI创建一条知识/开启→新消息202→正确本人材料被冻结→Agent context_window_exceeded→普通原会话刷新200正确显示超限、零自动重发；原瞬时排队观察不冒持久界面故障。网关local-qwen显式num_ctx4096，System对应context4096/maxout512，完整提示超限在模型计费准入前拒绝；该Run原生Billing admission=0，不能称知识已参与模型回答或on/off成功。20非现金QA测试积分经正式BFF发放，native IAM临时管理员8→9→10立即撤回；当前26available/50held，原unknown50未改，测试知识已删、usage恢复false/rev2。首次全表facts隔离不足、Agent probe漏Bearer及只读定位器歧义等原失败保留，未重放业务写。B08-real-material-run-read-audit.json、B08-app-final-independent-review.md等在E/技术方案与联调。模型容量适配、成功on/off、动态/scheduler及全TaskB仍OPEN，知识待接提示未提前移除。
+
+
+#### B-08 / B-11：模型窗口与首发偏好更正（2026-11-03）
+
+共享 LiteLLM local-qwen 配置实际 num_ctx4096，候选 System 曾误登记为16384；独立直接Ollama 16K/no-thinking模型另建，未改变共享网关。此前完整工具请求 UNKNOWN 不足以证明模型不会使用知识。Agent 最终边界重复注入 b636879e 缺乏依据，已用849f668撤回并推原Draft46，39项相关测试通过；Root旧gitlink尚待正规组合验证，不冒已同步或已合main。Root Draft67已改正模型能力与Admin“仓库不存在”的过度结论；当前访问Repository not found只能证明现身份不可读。
+
+v24真实Run在装配阶段 model_unavailable，原生模型attempt=0，requested_model_label=null；原fixture已清理。定位到Web首次异步准入后丢失已有模型偏好，新增真实engine首发回归先红，最小3行修复后84相关通过，定向lint/完整非增量tsc通过。仅测试选项undefined与strict类型冲突已修，不改运行contract。Web60256此时是38d2f6cd加该单文件未提交overlay，哈希已登记；v25首条真实UI发送已包含独立16K raw label，模型最终回答与on/off仍待确认。未重演全部工程门，正常3314/main不切，不称完整B08/B11完成。
+
+候选Billing曾经合成QA充值单位误用造成超额余额，不能沿用前文26available/50held等旧快照；不得为“修绿”直改账本或处理原未知冻结。当前独立16K费率与50积分单attempt上限仅为合成QA测试政策，非生产报价/支付。后继须逐笔以当前正式账本核对。
+
+
+v25后继终态：首条请求已正确带独立16K label，Agent同值冻结，原生一次模型attempt为observed，usage execution_outcome=completed / normalized / known_nonzero / partial，financial ACK已回。Run后续internal_error，不是上游零attempt或知识成功回答；开启/关闭对照仍未通过，关闭腿未发送。页面观察169.635秒不冒模型纯耗时。自有知识删除/usage恢复均确认，cleanupRequired=false，无待恢复权限；未重放原message。BFF余额从19999985000000降至19999973000000 micros，原70积分冻结保持；12积分为合成QA消费，既存超额发放未直改。后继定位当前已完成模型调用后的Run收口异常，避免继续盲换模型或重复充值。
+
+v25 typed checkpoint确认MODEL_BUDGET_UNAVAILABLE；Agent局部修复将3个固定财务unavailable映射dependency_unavailable/false，已确认pending ACK仍独立，不新增重放。client默认5→10秒仍单发送/有界取消。4项先红后绿，4相关文件184通过/4原marker未选，Ruff及显式Python3.12 Pyright通过；App首发偏好84相关通过。8个源/测试路径停写限定独审APPROVE，无确定P0–P2，完整owner门未重演。
+
+候选单文件App overlay及两个Agent生产文件overlay均记精确SHA，不能冒称已提交组合。v26真实首发仍正确direct16K，唯一模型attempt observed且usage completed/normalized/known_nonzero/partial；Run失败原因为MODEL_SETTLEMENT_UNAVAILABLE，财务ACK稍后恢复。BFF当前无显式timeout配置，实际默认5秒，不是此前误认为的实际10秒；延长Agent期限未解决该末端，未发送关闭腿或重复模型。cleanupRequired=false，自有知识删除/usage恢复；保留原失败receipt，下一步沿该结算原identity与owner链定位，并推进独立功能，不再盲发v27。完整B08/TaskB保持OPEN。
+
+两片已分别提交推送原分支：App f078d98d、Agent cfd1fccc（包含849f668撤回），工作区干净。正常3314未切；候选运行仍按上述overlay取证，不能把提交动作冒成全候选源码一致性验证。仅用v26已经ACK的原event/原幂等key，通过正式BFF重读同一结算回执212.4ms、captured，Agent原sealed evidence/ACK逐字未变；没有新reserve/provider/model，不把该单次无模型负载样本冒p50/p95或首结算性能修复。
+
+System原LiteLLM标签经fresh版本7与已发布4K revision核对后，正式CAS PUT200恢复实际context4096的旧精确revision；版本8，原visible/default/priority保留，独立direct16K与共享网关未变。旧错误16K快照及合成QA费率历史不改写，后继不能继续使用错误窗口宣称成功。实际Admin权限、13条兼容边、全owner门及完整TaskB仍未闭，不合main。
