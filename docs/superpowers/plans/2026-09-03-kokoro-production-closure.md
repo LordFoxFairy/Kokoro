@@ -1675,3 +1675,11 @@ Platform与IAM直接执行身份正规文件配对，BFF catalog/projection分�
 App a857542a64b6d878e5aeab92b081194a1ff478e9修复历史关闭/重新准入/同主体generation换代时旧列表、正文、分页/恢复入口复现，迟到结果退休；原未知Restore意图及原body/key/CAS保留。可见版本号与真实完整日期已在正常桌面/390核对，窄窗374宽、scrollWidth=clientWidth=372；截图正文仍加载，未冒已加载正文视觉对照。新增回归先3FAIL，最终history+restore16PASS，Root同范围独立复验16PASS，scoped ESLint/完整非增量tsc/diff0；停写四文件限定独审无确定P0–P2，缺失hix-code-review未冒调用。E/技术方案与联调/B04-normal-version-lifecycle-and-history-read-delivery.json绑定七份原始回执与四源码SHA。无接口/Schema/依赖/模型变化，未重复无关全owner门，不声明完整需求可合并；Root只配对已推精确App版本。跨主体/租户、Admin、真实Run加载、其余B项及全组合/main继续OPEN。
 
 本次新App gitlink的Root拓扑复验仍仅原Admin未独立初始化、origin不匹配及HEAD/gitlink不符三项，退出1；不据局部功能修复合main。
+
+#### B-04 / B-06 / B-09：正常私有技能作者与同团队成员权限（2026-11-03）
+
+正常3314通过团队页邀请、现有本地SMTP邮箱验证、原生注册/登录和接受邀请建立本人QA普通成员，双方回读同一member身份。作者独立私有技能导入安装后，另一账号的managed详情、历史、包及作者安装读取均404；创建新版、撤回、删除系列及安装owner-only来源均403，作者原active状态与state_version不变。分享仍遵循现owner规则，不扩大publication audience：匿名401；成员Resolve、summary、下载及撤销均404，页面显示不可用，作者原链接仍有效。作者显式撤销200后fresh GET404。以上13个负控未暴露本人QA正文标记，不冒跨租户或管理员矩阵。
+
+作者原生撤回200后安装保留且source_status=withdrawn；本人managed下载资格与字节200，SHA256与原ZIP一致，成员同路径404。随后本人系列删除、安装移除、权威installed=false/managed404通过；测试成员通过正常团队页移除200，原Product会话立即403，原邀请不再pending。保留已注册测试账号，未授予admin或修改用户账号权限、模型、账本。最初QA ZIP错误地多包一层目录，被原生IMPORT_PACKAGE_INVALID拒绝；原rejected意图保留至2026-11-04T10:19:14.743Z，不称物理清除。已知拒绝后换用根目录SKILL.md的新包，原输入与回执均保留；分享响应正文观测失败及清理脚本语言定位失败分别保存，未伪称产品故障或丢弃原写事实。
+
+本片无生产代码/契约/Schema变动。独立只读审计未发现确定新越权问题；现有权限与主体退休定向回归20通过、96因名称筛选跳过，不作为完整测试通过。正常真实证据E/技术方案与联调/B04-normal-private-permission-runtime-delivery.json绑定10份原始回执SHA、明确API/页面范围与清理边界；hix-code-review仍缺失，未声称调用。App保持a857542a，完整作者/管理员/跨租户、真实Run及其余Task B与组合合并门继续OPEN。
