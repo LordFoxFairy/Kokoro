@@ -1701,3 +1701,11 @@ E/技术方案与联调/B07-settings-identity-locale-delivery.json绑定源码�
 正常Storage owner先全量私有pg_dump并恢复到独立库，原数据SHA一致，正式expand前后九表全量数据及xmin摘要一致，重放already-current；再对正常库重新备份、亲建旧服务优雅退出、正式expand与相同数据/xmin核对通过。正常63372已从冻结add2da6源码启动ready，原数据库/对象bucket/扫描器/credential配置保留。此为Storage运行源更新，不冒完整Root所有gitlink与运行源一致。
 
 正常3314本人QA完成从设备上传PNG→扫描/可用预览→保存MCP配置→刷新卡片自然图片加载→详情及390宽度无横溢。单次上传到预览8561ms、整段25167ms，不称p50/p95或100ms达标；Playwright headless自动化不是Computer Use，也不是Manus视觉对照。随后同一新建配置原生删除200、fresh列表无该server；原生对象生命周期清理不等于物理字节删除。只保存配置，未连接示例端点，不冒真实MCP调用/OAuth完成。E/技术方案与联调/B01-normal-icons-storage-delivery.json及自包含HTML绑定真实回执、截图和精确source。Storage功能分支已推；组合及完整Task B仍OPEN。
+
+### 2026-11-03 B-03 / B-06：两类恢复功能交付
+
+正常B06真实双标签复现退出后原页丢为/app。App5b7d0fd6保tab-local白名单导航hint，原GET-only确认和签RP流程不改，失败页不提前固定跳首页；正常退出→issuer确认→另一标签私有内容退休/资料401→显式重登完整path/query/hash恢复/资料200→另一标签再准入通过。存储不可用失败恢复回退/app，自然过期/多设备仍OPEN。
+
+Appd6dd3cd0修设置与独立技能广场的可见错误/明确重试，保原查询/分类/cursor/身份退休与安装写命令。正常两入口浏览器注入目录503→可见Alert→同body真实owner200通过，390px及设置提示框父内边界通过；原误判共用组件导致首轮广场漏修的RED保留，现两个入口均验。原CSS仅width:auto防w-full加margin裁切。Auth75、设置选中8（18未选）、广场原文件12项通过，scope lint/最终全tsc通过，停写限定独审无确定P0–P2；非完整owner门，缺hix-code-review未冒调用。
+
+App两提交已推原Draft49并核精确remote head；Root仅更新App gitlink与本计划。正常3314加载本App源码，其他owner组合/原Admin拓扑/全门仍未完整配对，不冒main或完整Task B。故障为明确浏览器fixture、非自然owner事故；单样本恢复设置1855ms/广场2036ms及退休约5秒，不冒分位或100ms。E/技术方案与联调/B03-B06-settings-recovery-delivery.json绑定原始范围；完整目标继续active。
