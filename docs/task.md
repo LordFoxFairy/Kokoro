@@ -17253,6 +17253,6 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 
 当前唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md) §0、§3.6、§4；[CURRENT](CURRENT.md)只同步摘要。原C-1.3～C-4完整Goal active，认证D0已收口；旧I-38引用/A-B等待结束，G1/G2/G3未通过，A-01/A-02/A-07保持停写。
 
-IAM9ea5b4c/原PR6、BFF21b3a51/原PR18、App bfb749c3/原PR50、Admin95c504d/原PR5均已交付clean。Root当前IAM完整1690/全真实482、BFF最终完整1347contract/2369default＋2条件SKIP（真实schema15另补）、真实PG423及实际IAM-BFF relay1均有对应冻结/清理证据，不累计重复批次。Root共享Admin组件239与完整治理2100PASS/3SKIP、Ruff/node通过，本次提交四仓精确pin和原三编排文件后实跑新共享浏览器。I-53仅纠正一条无合同依据测试约束，生产策略不变。inspection owner/新G1/同步环境未验；Agent47ca431尚未交付/pin，整体topology与C-4未闭合，不以组件关闭Task A。
+IAM9ea5b4c/原PR6、BFF21b3a51/原PR18、App bfb749c3/原PR50、Admin95c504d/原PR5均已交付clean。Root当前IAM完整1690/全真实482、BFF最终完整1347contract/2369default＋2条件SKIP（真实schema15另补）、真实PG423及实际IAM-BFF relay1均有对应冻结/清理证据，不累计重复批次。Root8e94已精确pin并正式实跑，四源码/Node/production BFF通过但Admin编译后清理竞态失败，0旅程并全回收。I-54仅原helper/test两文件修复，Root实际隔离build与最终治理2105PASS/3SKIP/531subtests/Ruff通过，851输入保持/独审CLEAR；连同三tracking docs追加原PR66后重跑新共享浏览器。I-53仅纠正一条无合同依据测试约束，生产策略不变。账户list/revoke真实BFF消费组合、inspection owner/新G1/同步环境未验；Agent47ca431尚未交付/pin，整体topology与C-4未闭合，不以组件关闭Task A。
 
 剩余C阶段6个执行包按原顺序：T-05全部消费者/独有负控/真实旅程 → T-17真实完整生命周期 → T-11 raw/dispatcher/无边界aggregate删除 → T-09/T-16最终精确组合门 → T-15同步环境。T-10另保留原A-01～A-16完整产品责任，不把未验收等同全部从零实现、不相加为22个同级任务。资源hook的局部源码/真实空闲PG-Redis正负控只是前置切片。主窗口统一Git、资源、审查和串行复验；每仓只沿自身PR，不merge main、不部署，不以worker退出或测试数量代替闭环。
