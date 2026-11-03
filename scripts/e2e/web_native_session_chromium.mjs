@@ -209,14 +209,28 @@ export async function retired(page, profile, expect, anonymous = false, clock = 
     requireFact(clock.now() <= deadline);
     return true;
   }
-  // Qualification/dependency errors keep the shell unavailable, retiring private data.
+  // A qualification refusal may unmount the private card, not the public shell.
+  const deadline = clock.now() + 3000;
+  const budget = () => {
+    const timeout = deadline - clock.now();
+    requireFact(timeout > 0);
+    return {timeout};
+  };
+  const onProductPage = () => /^\/app(?:\/|$)/.test(new URL(page.url()).pathname);
+  requireFact(onProductPage());
   const card = page.getByTestId('settings-account');
-  await expect(card).toBeVisible();
-  const name = card.getByRole('textbox', {name: 'Full name', exact: true});
-  await expect(name).toBeDisabled({timeout: 3000});
-  await expect(name).toHaveValue('—', {timeout: 3000});
-  if (profile.email) await expect(card.getByText(profile.email, {exact: true})).toHaveCount(0);
-  await expect(card.getByText(profile.subject, {exact: true})).toHaveCount(0);
+  await expect.poll(async () => {
+    const cards = await card.count();
+    // One immediate DOM snapshot also permits removal during the observation.
+    const names = await page.getByRole('textbox', {name: 'Full name', exact: true}).evaluateAll(elements =>
+      elements.map(element => element.matches(':disabled') && 'value' in element && element.value === '—'));
+    return cards === 0 ? names.length === 0 : cards === 1 && names.length === 1 && names[0];
+  }, budget()).toBe(true);
+  if (profile.email) await expect(page.getByText(profile.email, {exact: true})).toHaveCount(0, budget());
+  await expect(page.getByText(profile.subject, {exact: true})).toHaveCount(0, budget());
+  await expect(page.locator('input[name="password"][type="password"]')).toHaveCount(0, budget());
+  await expect(page.locator('[data-desktop-web="true"][data-web-skin="kokoro"]')).toBeVisible(budget());
+  requireFact(onProductPage() && clock.now() <= deadline);
   return true;
 }
 async function preparePeer(context, origin) {

@@ -2327,6 +2327,115 @@ def test_anonymous_retirement_shares_original_three_second_navigation_and_canary
     assert result.returncode == 0, result.stderr
 
 
+@pytest.mark.parametrize(
+    "scenario",
+    [
+        "unmounted",
+        "disabled_card",
+        "removes_card",
+        "unretired_card",
+        "leaked_email",
+        "leaked_subject",
+        "login",
+        "error_page",
+        "missing_shell",
+        "late",
+        "exhausted",
+    ],
+)
+def test_qualification_retirement_allows_only_private_retirement_in_one_budget(
+    scenario,
+):
+    """Semantic Page doubles; real forbidden DOM/draft evidence belongs to Root."""
+    import subprocess
+
+    driver = PATH.with_name("web_native_session_chromium.mjs")
+    program = r"""
+      import assert from 'node:assert/strict';
+      const {retired} = await import(process.argv[1]);
+      const scenario = process.argv[2];
+      const profile = {subject:'old-subject',email:'old@example.test'};
+      const valid = ['unmounted','disabled_card','removes_card'].includes(scenario);
+      let now = 100;
+      const started = now;
+      let cardCount = ['unmounted','error_page','missing_shell'].includes(scenario) ? 0 : 1;
+      const nameDisabled = !['unretired_card','removes_card'].includes(scenario);
+      const checked = new Set();
+      let missingBudget = false;
+      const consume = (options, elapsed) => {
+        if (!options) missingBudget = true;
+        else assert.deepEqual(options,{timeout:3000-(now-started)});
+        now += elapsed;
+      };
+      const name = {
+        kind:'name',
+        count:async()=>cardCount,
+        evaluateAll:async fn=>fn(cardCount ? [{matches:()=>nameDisabled,value:'—'}] : []),
+      };
+      const card = {
+        kind:'card',
+        count:async()=>cardCount,
+        getByRole:()=>name,
+        getByText:text=>({kind:'text',scope:'card',text}),
+      };
+      const page = {
+        url:()=> 'https://fixture.test/'+(scenario==='login'?'login':scenario==='error_page'?'error':scenario==='disabled_card'?'app/project/owned-ref':'app'),
+        getByTestId:()=>card,
+        getByRole:()=>name,
+        getByText:text=>({kind:'text',scope:'global',text}),
+        locator:selector=>{
+          if(selector==='[data-desktop-web="true"][data-web-skin="kokoro"]')return {kind:'shell'};
+          assert.equal(selector,'input[name="password"][type="password"]');
+          return {kind:'password'};
+        },
+      };
+      const expect = locator=>({
+        toBeVisible:async options=>{
+          assert.equal(locator.kind,'shell','only the public shell must stay visible');
+          checked.add('shell');
+          if(scenario==='missing_shell')throw new Error('public shell is missing');
+          consume(options,500);
+        },
+        toBeDisabled:async()=>{if(!nameDisabled)throw new Error('private state not retired')},
+        toHaveValue:async value=>assert.equal(value,'—'),
+        toHaveCount:async(count,options)=>{
+          assert.equal(count,0);
+          if(locator.kind==='password') {
+            checked.add('password');
+            if(scenario==='login')throw new Error('login form is visible');
+            consume(options,scenario==='late'?1001:1000);
+          } else {
+            checked.add(locator.scope+':'+locator.text);
+            if(locator.scope==='global'&&((scenario==='leaked_email'&&locator.text===profile.email)||(scenario==='leaked_subject'&&locator.text===profile.subject)))
+              throw new Error('private canary remains globally visible');
+            consume(options,500);
+          }
+        },
+      });
+      expect.poll = (read,options)=>({toBe:async expected=>{
+        let observed=await read();
+        if(scenario==='removes_card'&&!observed){cardCount=0;observed=await read()}
+        assert.equal(observed,expected,'private state not retired');
+        consume(options,scenario==='exhausted'?3000:500);
+      }});
+      const observe=()=>retired(page,profile,expect,false,{now:()=>now});
+      if(valid) {
+        assert.equal(await observe(),true);
+        assert.equal(missingBudget,false,'every observation shares the original budget');
+        assert.equal(now-started,3000);
+        assert.deepEqual(checked,new Set(['global:'+profile.email,'global:'+profile.subject,'password','shell']));
+      } else await assert.rejects(observe,/browser journey failed|private state not retired|private canary|login form|public shell/);
+    """
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", program, driver.as_uri(), scenario],
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert result.returncode == 0, result.stderr
+
+
 def shared_admin_facts():
     return {
         "initial_owner": {"enabled": False, "version": 0, "succeeded_audits": 0},

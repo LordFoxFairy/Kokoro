@@ -38,7 +38,7 @@
 
 | 仓 / 范围 | 已提交基线 | 当前候选与证据层级 |
 | --- | --- | --- |
-| Root | `8e94e9bd0b121ff4e190819a29ca4a5121179ce1` / 原draft PR66；当前I-54五文件候选 | 已精确配对App bfb749c3/Admin95c504d/BFF21b3a51/IAM9ea5b4c。首次新G1四仓source/node/BFF启动通过，Admin编译后清理竞态失败，0旅程且全回收；I-54两文件最小fix＋三tracking docs当前待追加提交，Root最终2105PASS/3SKIP/531subtests及Ruff通过、实际helper隔离buildPASS。新共享浏览器待重跑，Agent未pin偏差/C-4仍OPEN |
+| Root | `78105bb683047861d13a508340469d97a97b0432` / 原draft PR66；当前I55原driver/test待交付 | 四仓精确pin保持。I54原helper实际Next build、Root完整2105/3SKIP/531subtests与Ruff已验并推；正式重跑已进入tenant_rejection_recovery，但旧card可见oracle失败，整体0完成且全回收。I55真实DOM/非空draft同Session恢复诊断已验，原oracle已窄修，Root最终2116/3SKIP/531subtests、Node/Ruff及独审CLEAR；五文件追加交付后正式5旅程另验；Agent未pin/C4 OPEN |
 | App | `bfb749c3dae0519abee7803d82f552ea3e39adcf` / 原draft PR50 | 标准认证消费与I-50窄修已推原PR50，远端head精确、本仓clean。Root最终完整452contract/50architecture/6390default、0skip及lint/typegen/types/build/posttypes全部0，1505输入保持；之后仅README计数同步一处。机械空白AST/注释等价及I-50 RED→GREEN/Root34整文件已核，不代表新组合browser/G1通过，Root本次候选精确配对，新共享浏览器待 |
 | Admin | `95c504d1bfdcf1038ebadb85d8493c18828b51f7`，原PR5分支 `codex/admin-credit-funding` | 共享安全Session消费已推原draft PR5，远端head精确95c504d。Root最终完整348PASS/0SKIP及contract/lint/typegen/types/build/posttypes全部0，179输入保持；随后只修一行API文档时态并独审CLEAR、diff-check通过。本仓clean，不代表共享browser/新组合G1通过，Root本次候选精确配对，新共享浏览器待 |
 | BFF | 原draft PR18/head `21b3a516405ef4f2b34f403f37aa0a1eedc19f68`；Root本次候选同pin | 标准认证完整运行时已推原PR18且clean。Root最终format/check全0，contract1347/default2369PASS＋2条件SKIP；真实PG整批423/0SKIP含schema15补证，实际IAM relay1/0SKIP，均保source/DB并清理。1087冻结条目含2删除，提交1085文件全树逐字复核；状态1.0/relay3.0正式artifact不变。不是Nest完整生命周期、inspection owner或新browser G1验收 |
@@ -151,7 +151,8 @@
 | I-51 | 共享Admin未被runner启动；fixture无真实管理员，Node同origin不继承Chromium映射 | VERIFIED（编排/fixture组件）/G1_PENDING：Root标准Node CONNECT＋CA五类正负控保持Host/SNI且全回收；原host新增旅程真实RED后整文件15PASS，I-51基线verify1687/全48 integration suite482PASS。Root原三文件组件232＋文档7＝239PASS，browser模式拒绝未配对IAM豁免，产品源码/Schema不改。源码停写，未提交配对或实跑共享Admin浏览器，不当G1通过 | T-05/T-15 |
 | I-52 | 真实IAM/BFF relay退出失败；IAM零字节POST被物化为有body，偏离锁定框架Node adapter | VERIFIED（认证HTTP组件）：原unit实际RED2→相关13PASS；Root当前完整verify1690、全部真实482/0SKIP及真实IAM/BFF relay1PASS。保原无body请求，退出200/issuer Cookie删除/同旧Cookie安全状态严格匿名，source/DB保持且清理通过；最小四文件含I-51已推9ea5b4c原PR6。无媒体/CSRF/Schema放宽，不外推Nest/browser G1 | T-05/T-09 |
 | I-53 | I-52测试给原生sign-out新增了未获合同支持的no-store断言，真实复验停在该断言 | VERIFIED（测试约束纠偏）：Generic native合同保留owner缓存头，safe status及具名邮件/邀请操作才强制no-store。仅撤主方误加的raw sign-out缓存断言；exact200/删除Cookie/noJWT及旧Cookie fresh safe严格匿名/no-store/noJWT逐字保留，独审CLEAR、实际真实relay1PASS/0SKIP且回收。未为测试绿改生产政策，原RED保留，不称原生产退化 | T-05/T-09 |
-| I-54 | 新精确组合G1停在Admin隔离build阶段；编译成功后的进程组库存-信号竞态令EPERM被立即判失败 | VERIFIED（helper组件）/G1_RETRY_PENDING：正式四源码/Node/production BFF已通过、0旅程，清理/scan通过。原helper独立真实build复现编译成功后EPERM，原HEAD另观察库存true→ProcessLookupError。两文件最小修复仅复用原15/5秒库存预算；原用例实际4FAIL/1PASS→45整文件PASS，持续存在/库存失败仍报错，独审CLEAR。Root原helper实际隔离Next build已PASS/全回收，最终Root治理2105PASS/3SKIP、531subtests及Ruff全0，851输入保持；提交后重跑正式G1，不改产品/认证/90秒期限 | T-05/T-13 |
+| I-54 | 新精确组合G1停在Admin隔离build阶段；编译成功后的进程组库存-信号竞态令EPERM被立即判失败 | VERIFIED（helper组件＋正式run Admin阶段）：正式四源码/Node/production BFF已通过、0旅程，清理/scan通过。原helper独立真实build复现编译成功后EPERM，原HEAD另观察库存true→ProcessLookupError。两文件最小修复仅复用原15/5秒库存预算；原用例实际4FAIL/1PASS→45整文件PASS，持续存在/库存失败仍报错，独审CLEAR。Root原helper实际隔离Next build已PASS/全回收，最终Root治理2105PASS/3SKIP、531subtests及Ruff全0，851输入保持；已推78105bb6，正式重跑已过Admin构建/启动，后续I55另收口；不改产品/认证/90秒期限 | T-05/T-13 |
+| I-55 | 新G1已进入tenant_rejection_recovery，retired旧oracle强制私有账户card继续可见，与可信403的数据空壳路径不符 | VERIFIED（oracle组件）/FORMAL_G1_PENDING：Root78105bb6正式run已过Admin编译/启动和先行冷登录/共享Admin步骤，整体收据仍0完成、在driver214失败且全回收。只读核当前App可信403为forbidden/checking而非anonymous，booting分支卸载私有Runtime。Root私有诊断保留原失败断言，真实DOM为仍在/app、非/login、账户card/旧邮箱/subject/姓名字段均0；真实composer非空draft原字节在403时不变，同Session恢复fixed并reload后原draft可见且字节不变。故只纠正Root原oracle，保3秒总预算、无私有泄漏、非匿名/不注销及迟到结果不复活；不改App产品或以空draft冒保留。原9语义及/error、/app无公共壳两项均实际RED后修复，Root最终完整治理2116PASS/3SKIP、531subtests及Node/Ruff全0、851输入保持，243原整文件及独审CLEAR；正式5旅程尚未通过，TLS噪音未证与此因果 | T-05/T-13 |
 
 ---
 
@@ -353,6 +354,8 @@ Browser ← App UI 与刷新后的同一事实
 
 **I-54原生编排owned-process清理竞态（同一T-05/T-13）：**当前四仓精确组合正式G1已过source/node及生产BFF启动，但Admin阶段0旅程失败；源码、清理及凭据边界未失败。Root无资源复现原Admin隔离构建：Next编译/类型实际成功，仅原run_native_command后置进程组清理报EPERM，finally随后重试清理成功；该重试是否再次发信号未记录，不断言zombie或仅自然消失。原helper已正确保留leader退出后的子进程库存，但EPERM后二次库存仍短暂有组即失败，未使用现有quiescence预算。只在既有capability_bff_smoke_runtime的stop_owned_process承接该竞态：在当前phase原15/5秒内轮询真实库存，只有组确实消失才成功；持续EPERM/存活/库存读取失败仍报错并保留依赖，不以leader退出或EPERM当完成，不延长build期限、不盲重试信号。原capability测试先证明短暂EPERM→后消失的RED，保持续拒绝/仍存活的负控；Root原helper真实隔离build和正式G1再验。无System helper、产品、认证或Schema扩修。
 
+**I-55原生资格拒绝的真实UI oracle（同一T-05，不提前A功能）：**正式新G1已推进至异tenant资格拒绝，原retired以“私有账户card必须可见且disabled”绑定旧实现。当前有效设计只要求可信403不伪装匿名、不注销仍有效Session、退休私有读写/旧数据并保canonical草稿/未知命令；不要求私有modal继续挂载。Root私有真实诊断保留原断言并先经真实composer写非空草稿：403后仍/app且无登录表单，card/旧邮箱/subject/姓名字段均消失，草稿原字节未变；通过既有fixture恢复同Session固定tenant并reload后原草稿实际恢复，非空字节仍相同。只在原driver/原Python测试使oracle允许“旧数据已退休的disabled空card”或“私有card已卸载”，两者都要留在/app产品路由并确认真实公共壳可见，保全局旧身份无泄漏、非/login、3秒总预算及迟到profile释放后仍不复活；/error或/app白屏不能因私有card不存在就通过，不能只删可见断言放行。补会被旧实现击中的回归与仍泄露/误到登录/超预算负控，Root再正式5旅程验证；未知命令原key/body由既有对应案例承接，不用这次普通draft证明其全链。无需App/IAM/BFF/Admin产品、Schema、认证协议或新状态页变动。TLS handshake噪音另作未裁因事实，不借此关闭TLS校验。
+
 **I-51共享Admin真实验收接缝（仅既定T-05 fixture/编排，不改产品认证）：**当前runner只起IAM/BFF/App；App已有`/manage`重写，可直接接同源Admin，不新建业务路由。新增Admin源码/Node精确预检、隔离Next启动与清理；仍复用现PG/Redis/TLS代理及一个浏览器会话，不改App/Admin/BFF产品admission、Schema或发布依赖。现browser用户不是platformAdmin；IAM现成`manage-platform-admin.ts`与model-routing fixture已提供真实管理者Session、0600私有Cookie、CAS、鲜读和同事务audit模式。只给原bff-session-admission host增加固定当前fixture用户的grant/revoke/inspect窄命令，禁任意userId/直接改资格SQL/新测试服务；CLI未知不自动重试，失败与输出脱敏，私有文件/manager随自有fixture回收。命令有限输出为`kind=browser_platform_admin`、原command、真实enabled/version/succeeded_audits，不含Session/Cookie/新token。先原host integration实际RED再fixture实现，Root串行真实资源复验。
 
 Admin Node需回读canonical同源`/api/admin-access`；Chromium的host映射不覆盖Node，不能改产品Origin或放开localhost掩盖。只验证并复用Node22既有`--use-env-proxy`与`NODE_EXTRA_CA_CERTS`：自有loopback HTTP CONNECT仅允许本run唯一canonical host:443，隧道到原自有TLS代理的随机端口，Host/SNI/证书校验和产品fetch保持，不禁TLS校验、不猴补fetch、不继承外部proxy。先私有真实Node fetch＋正确/错误authority与CA负控证明，再定具体Root写区。顺序为同一真实登录→Admin准入/安全状态→CLI仅撤管理员→Admin私有UI与当前me拒绝、Product会话/成员仍有效→原撤成员旅程；全部源码停写且精确gitlink后才能称G1通过。Root候选写区仅原native runner、Chromium driver与原测试；若隔离Next通用helper确需变更，先报精确路径/兼容影响，不自建第二编排框架。
@@ -459,7 +462,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 
 #### 当前立即动作
 
-当前版本、写区与验证以§0及I-51～I-54为准。四子仓已交付，Root8e94已精确配对，首次新G1已实际启动生产BFF但在Admin编译后owned-process清理竞态失败，0旅程并全回收；不是登录/授权通过或产品构建失败。I-54最小两文件已Root原helper真实隔离build与完整治理2105/3SKIP验证、独审CLEAR，现连同三tracking docs沿原PR66追加提交后重跑G1。账户两API真实BFF消费组合收据与inspection owner继续列缺，不新增生产协议或A功能；G1未闭合，不提前T-17/T-11。
+当前版本、写区与验证以§0及I-51～I-55为准。四子仓已交付且Root781精确配对，I54已闭合；正式新G1在I55旧card可见oracle失败且全回收。I55真实DOM/非空draft同Session恢复诊断已验，原两文件窄修经Root完整2116PASS/3SKIP、531subtests、Node/Ruff/851输入保持及独审CLEAR（含/error与/app白屏负控），现连同三tracking docs沿原PR66追加交付，再正式5旅程重验。账户两API真实BFF消费与inspection owner仍缺组合收据，不提前T-17/T-11/A。
 
 没有新增用户待决事项。按T-01～T-18当前标签：11项有设计/前置/局部VERIFIED证据，2项IN_PROGRESS、4项WAITING、1项GATED；不能换算整体完成百分比。C阶段尚有6个未闭环执行包（T-05/T-17/T-11/T-09/T-16/T-15），T-10另汇总原A-01～A-16产品责任，二者不是22个同级任务。原A已有实现/历史子链，不等于16项从零开发，但完整验收尚未逐项关闭。历史工期不作为当前倒计时；先完成I-52真实复验与G1，再据生命周期/遗留清理的实际剩余量校准。
 
@@ -612,7 +615,7 @@ I-35诊断续证：在私有临时`git archive 5fffe60`源码快照复用未变�
 | IAM | `pnpm sdk:check`、`pnpm verify`与相关真实native/profile/撤权integration；核verify覆盖后不重复等价全门 |
 | Agent | `uv lock --check`、`uv sync --frozen`、`uv run ruff format --check .`、`uv run ruff check .`、`uv run pyright`、`uv run pytest`、`uv build`，资源marker按真实依赖补跑 |
 | Capability及实际受影响owner | 读取各自AGENTS/README/manifest，执行格式/lint/types/contract/test/build及本次真实I/O；未触及的owner不无端重写 |
-| Root | `8e94e9bd0b121ff4e190819a29ca4a5121179ce1` / 原draft PR66；当前I-54五文件候选 | 已精确配对App bfb749c3/Admin95c504d/BFF21b3a51/IAM9ea5b4c。首次新G1四仓source/node/BFF启动通过，Admin编译后清理竞态失败，0旅程且全回收；I-54两文件最小fix＋三tracking docs当前待追加提交，Root最终2105PASS/3SKIP/531subtests及Ruff通过、实际helper隔离buildPASS。新共享浏览器待重跑，Agent未pin偏差/C-4仍OPEN |
+| Root | `78105bb683047861d13a508340469d97a97b0432` / 原draft PR66；当前I55原driver/test待交付 | 四仓精确pin保持。I54原helper实际Next build、Root完整2105/3SKIP/531subtests与Ruff已验并推；正式重跑已进入tenant_rejection_recovery，但旧card可见oracle失败，整体0完成且全回收。I55真实DOM/非空draft同Session恢复诊断已验，原oracle已窄修，Root最终2116/3SKIP/531subtests、Node/Ruff及独审CLEAR；五文件追加交付后正式5旅程另验；Agent未pin/C4 OPEN |
 | 真实链路 | 精确source/clean preflight、owner health/readiness、认证与业务负控、持久事实回读、取消/重试/恢复、全部自有资源回收 |
 
 暂停入口 `verify-ten-repository-full.sh` / `run_stage2_owner_health.py` 不作完成证明；System smoke只证明自己的链路。
