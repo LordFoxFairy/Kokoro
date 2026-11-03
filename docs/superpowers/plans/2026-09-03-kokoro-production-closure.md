@@ -1605,3 +1605,9 @@ v25 typed checkpoint确认MODEL_BUDGET_UNAVAILABLE；Agent局部修复将3个固
 两片已分别提交推送原分支：App f078d98d、Agent cfd1fccc（包含849f668撤回），工作区干净。正常3314未切；候选运行仍按上述overlay取证，不能把提交动作冒成全候选源码一致性验证。仅用v26已经ACK的原event/原幂等key，通过正式BFF重读同一结算回执212.4ms、captured，Agent原sealed evidence/ACK逐字未变；没有新reserve/provider/model，不把该单次无模型负载样本冒p50/p95或首结算性能修复。
 
 System原LiteLLM标签经fresh版本7与已发布4K revision核对后，正式CAS PUT200恢复实际context4096的旧精确revision；版本8，原visible/default/priority保留，独立direct16K与共享网关未变。旧错误16K快照及合成QA费率历史不改写，后继不能继续使用错误窗口宣称成功。实际Admin权限、13条兼容边、全owner门及完整TaskB仍未闭，不合main。
+
+#### B-14：设置竖栏方向键与窄屏布局配对（2026-11-03）
+
+真实桌面column但aria-orientation固定horizontal，↓不切换，新E2E先红。原rail ResizeObserver/reveal回报实际CSS方向给同一Tabs root；不加断点、第二套导航或手写方向键。桌面↓/↑、390px→/←、回桌面焦点与选择E2E6.1秒通过，原更多菜单/深页可见项/缩放/侧栏回焦旅程11.6秒通过。候选三生产文件按HEAD字节核对后覆盖，仍为登记SHA的开发overlay，不冒整体源码精确组合；正常3314未切。
+
+最终原设置组件167通过69.76秒，定向ESLint/完整非增量tsc通过，六路径停写只读审查APPROVE，无确定P0–P2。首跑165过/2失败及隔离复跑1过/1失败是旧模型测试在目录ready前点击disabled；仅等待enabled后全文件通过，未放宽断言/时限。浏览器旧auth观察失败、嵌套tablist观察器及私有setup重复Playwright安装原失败保留；原生/login刷新、定位实际nav、同一安装后验证通过，未改认证代码。完整owner门/视觉同态对照与全TaskB仍OPEN，后继继续账户头像与正式owner支持边界核实，不再发送模型任务来刷成功。
