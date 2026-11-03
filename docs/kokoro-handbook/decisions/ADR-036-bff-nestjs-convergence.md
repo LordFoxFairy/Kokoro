@@ -1,6 +1,10 @@
 # ADR-036 BFF NestJS 原生运行时与按能力收敛
 
-状态：Accepted / G0 approved; implementation authorized (2026-10-31)
+状态：Nest/DI/feature 收敛 Accepted / G0 approved (2026-10-31)；认证D0复核通过 (2026-11-03)，owner实施中/G1未验
+
+2026-11-02范围更新：用户否决后续I-38 Session引用并要求认证按标准重设计。**本ADR的Nest/DI/feature收敛决定保留，认证子设计门重开**；下方native-admission 1.0/hash仅为原G0历史前置，不再据此放行新认证实现。新认证边界与状态见 [Task A唯一方案](../../superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md) §3.6；用户未要求恢复旧逐业务Cookie方案。
+
+2026-11-03设计门复核：认证D0已按用户标准后端重做要求、ADR-034共享登录与ADR-035直接服务认证/BFF可信用户上下文完成三面复核，进入IAM owner合同/实现；无新增认证owner、票据或持久模型，不重复请求既定决定。旧native profile不恢复为新合同，G1/消费者/最终验证尚未完成。
 
 ## Context
 

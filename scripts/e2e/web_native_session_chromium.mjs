@@ -87,6 +87,42 @@ async function read(page, path) {
     return {status: response.status, body};
   }, path);
 }
+/** Smoke oracle for the owner observation, not a second application decoder. */
+export function requireSessionObservation(response, authenticated, identity) {
+  const keys = (value, expected) => value !== null && typeof value === 'object' && !Array.isArray(value)
+    && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key));
+  requireFact(response.status === 200 && typeof authenticated === 'boolean' && keys(response.body, ['data']));
+  const data = response.body.data;
+  requireFact(keys(data, authenticated ? ['authenticated', 'subject', 'tenant_id', 'expires_at'] : ['authenticated']));
+  requireFact(data.authenticated === authenticated);
+  if (authenticated) {
+    requireFact(typeof identity?.subject === 'string' && identity.subject.length > 0
+      && typeof identity.tenant_id === 'string' && identity.tenant_id.length > 0
+      && data.subject === identity.subject && data.tenant_id === identity.tenant_id);
+    requireFact(typeof data.expires_at === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(data.expires_at));
+    const expiry = Date.parse(data.expires_at);
+    requireFact(Number.isFinite(expiry) && expiry > Date.now()
+      && new Date(expiry).toISOString().slice(0, 19) === data.expires_at.slice(0, 19));
+  }
+  return data;
+}
+export function requireAdminObservation(response, identity) {
+  const value = response.body;
+  requireFact(response.status === 200 && value !== null && typeof value === 'object' && !Array.isArray(value)
+    && Object.keys(value).length === 4 && ['authenticated', 'subject', 'tenant_id', 'platform_admin'].every(key => Object.hasOwn(value, key))
+    && value.authenticated === true && value.platform_admin === true
+    && typeof identity.subject === 'string' && identity.subject.length > 0 && value.subject === identity.subject
+    && typeof identity.tenant_id === 'string' && identity.tenant_id.length > 0 && value.tenant_id === identity.tenant_id);
+  return true;
+}
+export function requirePlatformAdminObservation(record, command, enabled, version, audits) {
+  requireFact(record !== null && typeof record === 'object' && !Array.isArray(record)
+    && Object.keys(record).length === 5 && ['kind', 'command', 'enabled', 'version', 'succeeded_audits'].every(key => Object.hasOwn(record, key))
+    && record.kind === 'browser_platform_admin' && record.command === command && record.enabled === enabled
+    && Number.isInteger(record.version) && record.version === version
+    && Number.isInteger(record.succeeded_audits) && record.succeeded_audits === audits);
+  return {enabled: record.enabled, version: record.version, succeeded_audits: record.succeeded_audits};
+}
 // BetterAuth's locked owner rule allows three sign-in attempts per ten seconds.
 // After the third completion, wait a full window after that latest completion.
 export async function waitForLoginSlot(completed, deadline, clock = {
@@ -155,8 +191,25 @@ async function openProfile(page, expect) {
   await profileVisible(page, profile, expect);
   return {profile, status: received.status()};
 }
-async function retired(page, profile, expect) {
-  // An invalid cookie is unavailable, not anonymous: keep the shell and retire private data.
+export async function retired(page, profile, expect, anonymous = false, clock = {now: () => performance.now()}) {
+  if (anonymous) {
+    // A revoked login is now an explicit anonymous observation. The product gate
+    // replaces the private page with login rather than retaining an unavailable shell.
+    const deadline = clock.now() + 3000;
+    const budget = () => {
+      const timeout = deadline - clock.now();
+      requireFact(timeout > 0);
+      return {timeout};
+    };
+    await page.waitForURL(url => url.pathname === '/login', budget());
+    await expect(page.locator('input[name="password"][type="password"]')).toBeVisible(budget());
+    await expect(page.getByRole('textbox', {name: 'Full name', exact: true})).toHaveCount(0, budget());
+    if (profile.email) await expect(page.getByText(profile.email, {exact: true})).toHaveCount(0, budget());
+    await expect(page.getByText(profile.subject, {exact: true})).toHaveCount(0, budget());
+    requireFact(clock.now() <= deadline);
+    return true;
+  }
+  // Qualification/dependency errors keep the shell unavailable, retiring private data.
   const card = page.getByTestId('settings-account');
   await expect(card).toBeVisible();
   const name = card.getByRole('textbox', {name: 'Full name', exact: true});
@@ -171,7 +224,7 @@ async function preparePeer(context, origin) {
   await peer.goto(origin + '/api/fixture-origin');
   return peer;
 }
-export async function focusProbe(page, peer, status) {
+export async function focusProbe(page, peer, status, observation, identity) {
   // Playwright's fixed focus override hides real tab activation. Keep these CDP
   // sessions owned by the context until close; detaching would restore the override.
   for (const target of [page, peer]) {
@@ -190,18 +243,118 @@ export async function focusProbe(page, peer, status) {
   });
   const response = page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/session', {timeout: 3000});
   await page.bringToFront();
-  requireFact((await response).status() === status);
-  await page.waitForFunction(() => window.__nativeSmokeFocusObserved === true, null, {timeout: 3000});
+  // Observe the trusted event before a false observation can navigate to login.
+  const [received] = await Promise.all([
+    response,
+    page.waitForFunction(() => window.__nativeSmokeFocusObserved === true, null, {timeout: 3000}),
+  ]);
+  requireFact(received.status() === status);
+  const body = await received.json();
+  if (status === 200) requireSessionObservation({status: received.status(), body}, observation, identity);
+  else requireFact(typeof observation === 'string' && body?.error?.code === observation);
   return true;
 }
-async function replay(config, cookie) {
+export async function retireAdminOnFocus(page, peer, identity, expect, clock = {now: () => performance.now()}) {
+  const deadline = clock.now() + 3000;
+  const budget = () => {
+    const timeout = deadline - clock.now();
+    requireFact(timeout > 0);
+    return {timeout};
+  };
+  let timer;
+  try {
+    return await Promise.race([
+      (async () => {
+        const response = page.waitForResponse(r => new URL(r.url()).pathname === '/manage/api/v1/me' && r.request().method() === 'GET', budget());
+        const [received] = await Promise.all([response, focusProbe(page, peer, 200, true, identity)]);
+        const body = await received.json();
+        requireFact(received.status() === 403 && body !== null && typeof body === 'object'
+          && Object.keys(body).length === 1 && Object.hasOwn(body, 'error') && body.error !== null
+          && typeof body.error === 'object' && Object.keys(body.error).length === 1 && body.error.code === 'admin_access_denied');
+        await expect(page.getByText(identity.subject, {exact: true})).toHaveCount(0, budget());
+        await expect(page.getByText('运营概览', {exact: true})).toHaveCount(0, budget());
+        await expect(page.getByRole('heading', {name: 'Kokoro 管理后台', exact: true})).toBeVisible(budget());
+        requireFact(clock.now() <= deadline);
+        return true;
+      })(),
+      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('browser journey failed')), budget().timeout); }),
+    ]);
+  } finally { clearTimeout(timer); }
+}
+
+async function sharedAdminJourney(context, config, identity, expect) {
+  const observe = async (command, enabled, version, audits) => requirePlatformAdminObservation(
+    await owner({command}), command, enabled, version, audits,
+  );
+  const initialOwner = await observe('inspect_browser_platform_admin', false, 0, 0);
+  const grantedOwner = await observe('grant_browser_platform_admin', true, 1, 1);
+  await observe('inspect_browser_platform_admin', true, 1, 1);
+  const before = await issuerCookies(context, config.origin);
+  requireFact(before.length === 1);
+  let signIns = 0;
+  const recordSignIn = request => {
+    const url = new URL(request.url());
+    if (url.origin === config.origin && url.pathname === '/auth/sign-in' && request.method() === 'POST') signIns++;
+  };
+  context.on('request', recordSignIn);
+  const admin = await context.newPage();
+  let peer;
+  try {
+    await admin.goto(config.origin + '/manage', {waitUntil: 'domcontentloaded'});
+    await admin.waitForURL(url => url.pathname === '/manage/overview');
+    const current = await read(admin, '/manage/api/v1/me');
+    const matches = requireAdminObservation(current, identity);
+    await expect(admin.getByText(identity.subject, {exact: true}).first()).toBeVisible();
+    await expect(admin.getByText('运营概览', {exact: true}).first()).toBeVisible();
+    const after = await issuerCookies(context, config.origin);
+    const shared = after.length === 1 && after[0].name === before[0].name && after[0].value === before[0].value;
+    requireFact(shared && signIns === 0);
+    const revokedOwner = await observe('revoke_browser_platform_admin', false, 2, 2);
+    await observe('inspect_browser_platform_admin', false, 2, 2);
+    const denied = await read(admin, '/manage/api/v1/me');
+    requireFact(denied.status === 403 && denied.body?.error?.code === 'admin_access_denied');
+    peer = await preparePeer(context, config.origin);
+    const privateRetired = await retireAdminOnFocus(admin, peer, identity, expect);
+    const session = await read(admin, '/api/auth/session');
+    requireSessionObservation(session, true, identity);
+    const projects = await read(admin, '/api/session/projects');
+    requireFact(projects.status === 200 && signIns === 0);
+    const productOwner = ownerIs(await inspect('primary'), true, true, 'fixed');
+    return {
+      initial_owner: initialOwner, granted_owner: grantedOwner, shared_issuer_cookie: shared,
+      additional_sign_in_requests: signIns, admin_me_status: current.status, admin_identity_matches: matches,
+      admin_shell_visible: true, revoked_owner: revokedOwner, revoked_admin_me_status: denied.status,
+      revoked_admin_error_code: denied.body.error.code, private_ui_retired: privateRetired,
+      product_session_status: session.status, product_authenticated: session.body.data.authenticated,
+      projects_status: projects.status, product_owner: productOwner,
+    };
+  } finally {
+    context.off('request', recordSignIn);
+    await peer?.close();
+    await admin.close();
+  }
+}
+export async function replay(config, cookie) {
   const origin = new URL(config.origin);
   return new Promise((resolve, reject) => {
     const request = https.request({
       hostname: '127.0.0.1', port: config.port, servername: origin.hostname,
-      rejectUnauthorized: false, path: '/api/auth/session', method: 'GET',
+      rejectUnauthorized: false, path: '/api/session/projects', method: 'GET',
       headers: {host: origin.host, origin: config.origin, cookie},
-    }, response => { response.resume(); response.once('end', () => resolve(response.statusCode)); });
+    }, response => {
+      let length = 0;
+      const chunks = [];
+      response.on('data', chunk => {
+        length += chunk.length;
+        if (length > MAX_LINE) { response.destroy(); reject(new Error('replay response invalid')); }
+        else chunks.push(chunk);
+      });
+      response.once('error', () => reject(new Error('replay response invalid')));
+      response.once('end', () => {
+        try { resolve({status: response.statusCode, body: JSON.parse(Buffer.concat(chunks).toString('utf8'))}); }
+        catch { reject(new Error('replay response invalid')); }
+      });
+    });
     request.setTimeout(5000, () => request.destroy(new Error('replay timeout')));
     request.once('error', reject);
     request.end();
@@ -369,18 +522,22 @@ try {
   requireFact(initialCookies === 0);
   const signIn = await login(page, config, fixture);
   const session = await read(page, '/api/auth/session');
-  requireFact(session.status === 200 && session.body.authenticated === true);
   const projects = await read(page, '/api/session/projects');
   requireFact(projects.status === 200);
   const initialProfile = await openProfile(page, expect);
+  const identity = {subject: initialProfile.profile.subject, tenant_id: fixture.tenant_id};
+  requireSessionObservation(session, true, identity);
   await bind(context, config.origin, 'primary');
   const journeys = {cold_login: {
     initial_issuer_cookies: initialCookies, sign_in_status: signIn,
-    session_status: session.status, authenticated: session.body.authenticated,
+    session_status: session.status, authenticated: session.body?.data?.authenticated,
     projects_status: projects.status, profile_status: initialProfile.status,
     profile_visible: await profileVisible(page, initialProfile.profile, expect),
     owner: ownerIs(await inspect('primary'), true, true, 'fixed'),
   }};
+
+  stage = "shared_admin";
+  journeys.shared_admin = await sharedAdminJourney(context, config, identity, expect);
 
   stage = "tenant_rejection_recovery";
   // Keep this SettingsPanel snapshot boundary mounted across a real tab switch.
@@ -398,9 +555,9 @@ try {
   const foreignOwner = ownerIs(await inspect('primary'), true, true, 'other');
   const rejectedSession = await read(page, '/api/auth/session');
   const rejectedProjects = await read(page, '/api/session/projects');
-  requireFact(rejectedSession.status === 401 && rejectedSession.body?.error?.code === 'native_session_required');
+  requireFact(rejectedSession.status === 403 && rejectedSession.body?.error?.code === 'product_tenant_forbidden');
   requireFact(rejectedProjects.status === 403 && rejectedProjects.body?.error?.code === 'product_tenant_forbidden');
-  const focused = await focusProbe(page, peer, 401);
+  const focused = await focusProbe(page, peer, 403, 'product_tenant_forbidden');
   const privateRetired = await retired(page, initialProfile.profile, expect);
   const raceObservation = await barrier.release();
   barrier = undefined;
@@ -410,8 +567,10 @@ try {
   await bind(context, config.origin, 'primary');
   const recoveredSession = await read(page, '/api/auth/session');
   const recoveredProjects = await read(page, '/api/session/projects');
-  requireFact(recoveredSession.status === 200 && recoveredSession.body.authenticated === true && recoveredProjects.status === 200);
+  requireSessionObservation(recoveredSession, true, identity);
+  requireFact(recoveredProjects.status === 200);
   const recoveredProfile = await openProfile(page, expect);
+  requireFact(recoveredProfile.profile.subject === identity.subject);
   journeys.tenant_rejection_recovery = {
     foreign_owner: foreignOwner, pre_mutation_profile_visible: visibleBeforeMutation,
     session_status: rejectedSession.status,
@@ -420,6 +579,7 @@ try {
     projects_error_code: rejectedProjects.body.error.code,
     private_ui_retired: privateRetired,
     relogin_status: relogin, recovered_session_status: recoveredSession.status,
+    recovered_authenticated: recoveredSession.body.data.authenticated,
     recovered_projects_status: recoveredProjects.status,
     recovered_profile_status: recoveredProfile.status,
     recovered_profile_visible: await profileVisible(page, recoveredProfile.profile, expect),
@@ -438,14 +598,17 @@ try {
   const anonymous = await read(page, '/api/auth/session');
   const outProjects = await read(page, '/api/session/projects');
   const remainingCookies = (await issuerCookies(context, config.origin)).length;
-  const oldCookieStatus = await replay(config, oldCookie);
-  requireFact(anonymous.status === 200 && anonymous.body.authenticated === false && outProjects.status === 401 && remainingCookies === 0 && oldCookieStatus === 401);
+  const oldCookieProjects = await replay(config, oldCookie);
+  requireSessionObservation(anonymous, false);
+  requireFact(outProjects.status === 401 && outProjects.body?.error?.code === 'session_authentication_required' && remainingCookies === 0 && oldCookieProjects.status === 401 && oldCookieProjects.body?.error?.code === 'session_invalid');
   journeys.ui_logout = {
     clicked: true, sign_out_status: signoutStatus,
     owner: ownerIs(await inspect('primary'), true, true, 'fixed', false),
     issuer_cookies: remainingCookies, session_status: anonymous.status,
-    authenticated: anonymous.body.authenticated, projects_status: outProjects.status,
-    old_cookie_status: oldCookieStatus,
+    authenticated: anonymous.body?.data?.authenticated, projects_status: outProjects.status,
+    projects_error_code: outProjects.body.error.code,
+    old_cookie_projects_status: oldCookieProjects.status,
+    old_cookie_projects_error_code: oldCookieProjects.body.error.code,
   };
   await context.close();
 
@@ -468,23 +631,31 @@ try {
   const revokedA = await read(pageA, '/api/auth/session');
   const revokedAProjects = await read(pageA, '/api/session/projects');
   const survivingB = await read(pageB, '/api/auth/session');
-  requireFact(revokedA.status === 401 && revokedAProjects.status === 401 && survivingB.status === 200 && survivingB.body.authenticated === true);
-  await focusProbe(pageA, peerA, 401);
-  const aRetired = await retired(pageA, profileA.profile, expect);
+  requireSessionObservation(revokedA, false);
+  requireSessionObservation(survivingB, true, {subject: profileB.profile.subject, tenant_id: fixture.tenant_id});
+  requireFact(revokedAProjects.status === 401 && revokedAProjects.body?.error?.code === 'session_authentication_required');
+  await focusProbe(pageA, peerA, 200, false);
+  const aRetired = await retired(pageA, profileA.profile, expect, true);
   const aOwner = ownerIs(await inspect('primary'), false, true, 'none');
   const bBefore = ownerIs(await inspect('secondary'), true, true, 'fixed');
   await owner({command: 'revoke_browser_membership'});
   const bAfter = ownerIs(await inspect('secondary'), true, false, 'fixed');
   const deniedB = await read(pageB, '/api/auth/session');
   const deniedBProjects = await read(pageB, '/api/session/projects');
-  requireFact(deniedB.status === 401 && deniedBProjects.status === 401);
-  await focusProbe(pageB, peerB, 401);
+  requireFact(deniedB.status === 403 && deniedB.body?.error?.code === 'session_forbidden' && deniedBProjects.status === 403 && deniedBProjects.body?.error?.code === 'session_forbidden');
+  await focusProbe(pageB, peerB, 403, 'session_forbidden');
   journeys.independent_revocation = {
     a_owner: aOwner, a_session_status: revokedA.status,
-    a_projects_status: revokedAProjects.status, a_private_ui_retired: aRetired,
-    b_session_status_before_membership: survivingB.status, b_owner_before_membership: bBefore,
+    a_authenticated: revokedA.body.data.authenticated,
+    a_projects_status: revokedAProjects.status,
+    a_projects_error_code: revokedAProjects.body.error.code, a_private_ui_retired: aRetired,
+    b_session_status_before_membership: survivingB.status,
+    b_authenticated_before_membership: survivingB.body.data.authenticated,
+    b_owner_before_membership: bBefore,
     b_owner_after_membership: bAfter, b_session_status: deniedB.status,
+    b_session_error_code: deniedB.body.error.code,
     b_projects_status: deniedBProjects.status,
+    b_projects_error_code: deniedBProjects.body.error.code,
     private_ui_retired: await retired(pageB, profileB.profile, expect),
   };
   stage = "browser_close";

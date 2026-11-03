@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -14,10 +15,13 @@ import secrets
 import select
 import shutil
 import signal
+import socket
+import socketserver
 import subprocess
 import sys
 import tempfile
 import time
+from threading import BoundedSemaphore, Event, Lock, Thread
 from urllib.parse import quote, quote_plus, unquote, urlsplit
 from uuid import uuid4
 
@@ -30,9 +34,11 @@ ROOT = Path(__file__).resolve().parents[2]
 IAM = ROOT / "apps/kokoro-iam"
 BFF = ROOT / "apps/kokoro-bff"
 APP = ROOT / "apps/kokoro-app"
+ADMIN = ROOT / "apps/kokoro-admin"
 IAM_HOST = IAM / "test/fixtures/bff-session-admission-host.ts"
 EVIDENCE_ROOT = ROOT / "var/dev/web-native-session-smoke"
 REQUIRED_NODE_VERSIONS = {"iam": "24.20.0", "bff": "24.20.0", "app": "22.23.4"}
+ADMIN_NODE_VERSION = "22.23.4"
 
 
 class SmokeError(RuntimeError):
@@ -42,7 +48,8 @@ class SmokeError(RuntimeError):
 @dataclass(frozen=True)
 class NativeReceipt:
     cookie: str
-    credential_file: str
+    bff_user_context_credential_file: str
+    account_session_credential_file: str
     iam_web_origin: str
 
 
@@ -58,9 +65,14 @@ def parse_args(argv=None):
         parser.add_argument("--" + name, required=True)
     for name in ("expected-iam-sha", "expected-bff-sha", "expected-app-sha"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--expected-admin-sha")
     parser.add_argument("--allow-unpublished-iam-gitlink", action="store_true")
     parser.add_argument("--browser-journeys", action="store_true")
     args = parser.parse_args(argv)
+    if args.browser_journeys and args.allow_unpublished_iam_gitlink:
+        parser.error(
+            "browser journeys require all source commits to match Root gitlinks"
+        )
     if urlsplit(args.postgres_admin_url).scheme != "postgresql" or urlsplit(
         args.redis_url
     ).scheme not in {"redis", "rediss"}:
@@ -73,7 +85,285 @@ def parse_args(argv=None):
     for name in ("expected_iam_sha", "expected_bff_sha", "expected_app_sha"):
         if not re.fullmatch(r"[a-f0-9]{40}", getattr(args, name)):
             parser.error("expected source SHA must be full commit")
+    if (args.browser_journeys or args.expected_admin_sha is not None) and (
+        not isinstance(args.expected_admin_sha, str)
+        or not re.fullmatch(r"[a-f0-9]{40}", args.expected_admin_sha)
+    ):
+        parser.error("browser journeys require an exact expected Admin SHA")
     return args
+
+
+class _AdminConnectHandler(socketserver.BaseRequestHandler):
+    def reject(self, status: int) -> None:
+        self.request.sendall(
+            f"HTTP/1.1 {status} Rejected\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".encode()
+        )
+
+    def handle(self) -> None:
+        server = self.server
+        upstream = None
+        try:
+            deadline = time.monotonic() + server.HEADER_SECONDS
+            data = b""
+            while b"\r\n\r\n" not in data:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    self.reject(408)
+                    return
+                self.request.settimeout(remaining)
+                try:
+                    part = self.request.recv(
+                        min(1024, server.HEADER_BYTES + 1 - len(data))
+                    )
+                except TimeoutError:
+                    self.reject(408)
+                    return
+                if not part:
+                    return
+                data += part
+                if len(data) > server.HEADER_BYTES:
+                    self.reject(431)
+                    return
+            head, _, pending = data.partition(b"\r\n\r\n")
+            lines = head.decode("ascii", "strict").split("\r\n")
+            if lines[0] != f"CONNECT {server.authority} HTTP/1.1":
+                self.reject(403)
+                return
+            headers: dict[str, list[str]] = {}
+            for line in lines[1:]:
+                name, separator, value = line.partition(":")
+                if (
+                    not separator
+                    or not re.fullmatch(r"[!#$%&'*+.^_`|~0-9A-Za-z-]+", name)
+                    or any(ord(char) < 32 or ord(char) > 126 for char in value)
+                ):
+                    self.reject(403)
+                    return
+                headers.setdefault(name.lower(), []).append(value.strip())
+            if (
+                # Node's native CONNECT omits the default HTTPS port in Host.
+                headers.get("host") not in ([server.authority], [server.hostname])
+                or "transfer-encoding" in headers
+                or "expect" in headers
+                or headers.get("content-length", ["0"]) != ["0"]
+                or server.stopping.is_set()
+                or time.monotonic() >= deadline
+            ):
+                self.reject(403)
+                return
+            upstream = socket.create_connection(
+                ("127.0.0.1", server.upstream_port), timeout=server.CONNECT_SECONDS
+            )
+            with server.upstream_lock:
+                if server.stopping.is_set():
+                    return
+                server.upstreams.add(upstream)
+            self.request.settimeout(server.IDLE_SECONDS)
+            upstream.settimeout(server.IDLE_SECONDS)
+            deadline = time.monotonic() + server.TOTAL_SECONDS
+            self.request.sendall(b"HTTP/1.1 200 Connection Established\r\n\r\n")
+            if pending:
+                upstream.settimeout(
+                    min(server.IDLE_SECONDS, max(0.001, deadline - time.monotonic()))
+                )
+                upstream.sendall(pending)
+            idle = time.monotonic() + server.IDLE_SECONDS
+            while not server.stopping.is_set():
+                remaining = min(deadline, idle) - time.monotonic()
+                if remaining <= 0:
+                    return
+                readable, _, _ = select.select(
+                    [self.request, upstream], [], [], min(remaining, 0.1)
+                )
+                for source in readable:
+                    part = source.recv(65_536)
+                    if not part:
+                        return
+                    remaining = min(deadline, idle) - time.monotonic()
+                    if remaining <= 0:
+                        return
+                    target = upstream if source is self.request else self.request
+                    target.settimeout(remaining)
+                    target.sendall(part)
+                    idle = time.monotonic() + server.IDLE_SECONDS
+        except (OSError, UnicodeError, ValueError):
+            # Neither CONNECT headers nor exception payloads are diagnostics.
+            return
+        finally:
+            if upstream is not None:
+                with server.upstream_lock:
+                    server.upstreams.discard(upstream)
+                try:
+                    upstream.shutdown(socket.SHUT_RDWR)
+                except OSError:
+                    pass
+                upstream.close()
+
+
+class AdminConnectProxy(runtime.OwnedHTTPServer):
+    """Private Node transport: one authority, one owned TLS target, no general proxy."""
+
+    HEADER_BYTES = 8192
+    HEADER_SECONDS = 2
+    CONNECT_SECONDS = 2
+    IDLE_SECONDS = 10
+    TOTAL_SECONDS = 30
+    MAX_CONNECTIONS = 8
+
+    def __init__(self, origin: str, upstream_port: int):
+        parsed = urlsplit(origin)
+        if (
+            parsed.scheme != "https"
+            or parsed.netloc != parsed.hostname
+            or not re.fullmatch(r"[a-z0-9][a-z0-9.-]{0,252}", parsed.hostname or "")
+            or parsed.path
+            or parsed.query
+            or parsed.fragment
+            or type(upstream_port) is not int
+            or not 1 <= upstream_port <= 65_535
+        ):
+            raise SmokeError("Admin CONNECT configuration invalid")
+        self.hostname = parsed.hostname
+        self.authority = self.hostname + ":443"
+        self.upstream_port = upstream_port
+        self.upstreams: set[socket.socket] = set()
+        self.upstream_lock = Lock()
+        self.stopping = Event()
+        self.slots = BoundedSemaphore(self.MAX_CONNECTIONS)
+        super().__init__(("127.0.0.1", 0), _AdminConnectHandler)
+        self.thread = Thread(
+            target=self.serve_forever, kwargs={"poll_interval": 0.05}, daemon=True
+        )
+        try:
+            self.thread.start()
+        except BaseException:
+            self.server_close()
+            raise
+
+    def process_request(self, request, address):
+        if not self.slots.acquire(blocking=False):
+            self.shutdown_request(request)
+            return
+        try:
+            super().process_request(request, address)
+        except BaseException:
+            self.slots.release()
+            raise
+
+    def process_request_thread(self, request, address):
+        try:
+            super().process_request_thread(request, address)
+        finally:
+            self.slots.release()
+
+    def handle_error(self, *_):
+        # Transport failures are closed without reflecting private request bytes.
+        return
+
+    def close(self):
+        self.stopping.set()
+        self.shutdown()
+        self.close_owned_connections()
+        with self.upstream_lock:
+            connections = tuple(self.upstreams)
+        for connection in connections:
+            try:
+                connection.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+            connection.close()
+        self.server_close()
+        self.thread.join(timeout=5)
+        with self.upstream_lock, self._connections_lock:
+            if self.thread.is_alive() or self.upstreams or self._connections:
+                raise SmokeError("Admin CONNECT cleanup failed")
+
+
+def admin_runtime_preflight(node: Path, env: dict) -> dict:
+    """Inspect the existing isolated installation; never install or relink it."""
+    try:
+        modules = json.loads((ADMIN / "node_modules/.modules.yaml").read_text())
+        next_package = json.loads(
+            (ADMIN / "node_modules/next/package.json").read_text()
+        )
+        if (
+            modules.get("packageManager") != "pnpm@12.3.4"
+            or next_package.get("version") != "16.2.6"
+        ):
+            raise SmokeError("Admin installed toolchain mismatch")
+        result = subprocess.run(
+            [
+                str(node),
+                "-e",
+                "process.stdout.write(JSON.stringify({env_proxy:process.allowedNodeEnvironmentFlags.has('--use-env-proxy')}))",
+            ],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=True,
+        )
+        if not exact_browser_fact(json.loads(result.stdout), {"env_proxy": True}):
+            raise SmokeError("Admin Node env proxy unsupported")
+    except (OSError, ValueError, TypeError, subprocess.SubprocessError):
+        raise SmokeError("Admin runtime preflight failed") from None
+    return {"pnpm": "12.3.4", "next": "16.2.6", "env_proxy": True}
+
+
+def isolated_admin_next(directory: Path) -> Path:
+    """Copy only Admin inputs; its installed dependencies and owner output stay untouched."""
+    root = directory / "admin-next"
+    root.mkdir(mode=0o700)
+    for source in ("app", "components", "lib", "patches", "public"):
+        if (ADMIN / source).is_dir():
+            shutil.copytree(ADMIN / source, root / source)
+    for source in (
+        "package.json",
+        "tsconfig.json",
+        "next-env.d.ts",
+        "next.config.ts",
+        "postcss.config.mjs",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+        "proxy.ts",
+    ):
+        shutil.copy2(ADMIN / source, root / source)
+    config = root / "next.config.ts"
+    original = config.read_text()
+    marker = "const nextConfig: NextConfig = {"
+    if original.count(marker) != 1:
+        raise SmokeError("Admin isolated Next configuration drift")
+    config.write_text(
+        original.replace(
+            marker,
+            marker + "\n  turbopack: { root: " + json.dumps(str(ROOT.parent)) + " },",
+        )
+    )
+    (root / "server.cjs").write_text(
+        'const http = require("node:http")\nconst next = require("next")\n'
+        "const [port, host] = process.argv.slice(2)\n"
+        "const app = next({ dev: false, dir: __dirname, hostname: host, port: 443 })\n"
+        'app.prepare().then(() => http.createServer(app.getRequestHandler()).listen(Number(port), "127.0.0.1"))'
+        ".catch(() => { process.exitCode = 1 })\n"
+    )
+    (root / "node_modules").symlink_to(ADMIN / "node_modules", target_is_directory=True)
+    return root
+
+
+def wait_admin_ready(proxy_port: int, origin: str, process) -> None:
+    deadline = time.monotonic() + 30
+    while True:
+        try:
+            response = web.https_browser(proxy_port, "/manage/api/v1/me", origin)
+            if response.status == 401 and exact_browser_fact(
+                json.loads(response.body), {"authenticated": False}
+            ):
+                return
+        except (SmokeError, web.SmokeError, OSError, ValueError):
+            pass
+        if process.poll() is not None or time.monotonic() >= deadline:
+            raise SmokeError("Admin HTTPS entry not ready")
+        time.sleep(0.1)
 
 
 def verify_source(
@@ -101,8 +391,30 @@ def verify_source(
     return {"sha": actual, "clean": clean, "root_gitlink_matches": published}
 
 
+def purpose_credential_paths(user_context, account_sessions, *, run_dir: Path):
+    if any(
+        not isinstance(value, str) or not value
+        for value in (user_context, account_sessions)
+    ):
+        raise SmokeError("IAM credential file missing")
+    try:
+        paths = (Path(user_context).resolve(), Path(account_sessions).resolve())
+        missing = not all(path.is_file() for path in paths)
+        escaped = not all(path.is_relative_to(run_dir.resolve()) for path in paths)
+        same_file = not missing and paths[0].samefile(paths[1])
+    except (OSError, RuntimeError, ValueError):
+        raise SmokeError("IAM credential file invalid") from None
+    if missing:
+        raise SmokeError("IAM credential file missing")
+    if escaped:
+        raise SmokeError("IAM credential escaped run directory")
+    if same_file:
+        raise SmokeError("IAM purpose credential files must be distinct")
+    return paths
+
+
 def native_command(
-    process: subprocess.Popen[bytes], reader: session.ProtocolReader
+    process: subprocess.Popen[bytes], reader: session.ProtocolReader, *, run_dir: Path
 ) -> NativeReceipt:
     if process.stdin is None:
         raise SmokeError("IAM host stdin unavailable")
@@ -110,32 +422,58 @@ def native_command(
     process.stdin.flush()
     record = reader.record()
     if (
-        set(record) != {"kind", "cookie", "credential_file", "web_origin"}
+        not isinstance(record, dict)
+        or set(record)
+        != {
+            "kind",
+            "cookie",
+            "bff_user_context_credential_file",
+            "account_session_credential_file",
+            "web_origin",
+        }
         or record.get("kind") != "native"
     ):
         raise SmokeError("native receipt protocol drift")
     cookie = record.get("cookie")
-    credential_file = record.get("credential_file")
+    user_context_file = record["bff_user_context_credential_file"]
+    account_session_file = record["account_session_credential_file"]
     web_origin = record.get("web_origin")
     if not isinstance(cookie, str) or not re.search(
         r"(?:^|; )kokoro-issuer\.session_token=[^;]+", cookie
     ):
         raise SmokeError("native cookie missing")
-    if (
-        not isinstance(credential_file, str)
-        or not credential_file
-        or not Path(credential_file).is_file()
-    ):
-        raise SmokeError("native credential file missing")
+    purpose_credential_paths(user_context_file, account_session_file, run_dir=run_dir)
     if not isinstance(web_origin, str) or urlsplit(web_origin).scheme not in {
         "http",
         "https",
     }:
         raise SmokeError("IAM Web origin invalid")
-    return NativeReceipt(cookie, credential_file, web_origin)
+    return NativeReceipt(cookie, user_context_file, account_session_file, web_origin)
 
 
 BROWSER_JOURNEYS = {
+    "shared_admin": {
+        "initial_owner": {"enabled": False, "version": 0, "succeeded_audits": 0},
+        "granted_owner": {"enabled": True, "version": 1, "succeeded_audits": 1},
+        "shared_issuer_cookie": True,
+        "additional_sign_in_requests": 0,
+        "admin_me_status": 200,
+        "admin_identity_matches": True,
+        "admin_shell_visible": True,
+        "revoked_owner": {"enabled": False, "version": 2, "succeeded_audits": 2},
+        "revoked_admin_me_status": 403,
+        "revoked_admin_error_code": "admin_access_denied",
+        "private_ui_retired": True,
+        "product_session_status": 200,
+        "product_authenticated": True,
+        "projects_status": 200,
+        "product_owner": {
+            "exists": True,
+            "unexpired": True,
+            "member": True,
+            "active_tenant": "fixed",
+        },
+    },
     "cold_login": {
         "initial_issuer_cookies": 0,
         "sign_in_status": 303,
@@ -159,13 +497,14 @@ BROWSER_JOURNEYS = {
             "active_tenant": "other",
         },
         "pre_mutation_profile_visible": True,
-        "session_status": 401,
-        "session_error_code": "native_session_required",
+        "session_status": 403,
+        "session_error_code": "product_tenant_forbidden",
         "projects_status": 403,
         "projects_error_code": "product_tenant_forbidden",
         "private_ui_retired": True,
         "relogin_status": 303,
         "recovered_session_status": 200,
+        "recovered_authenticated": True,
         "recovered_projects_status": 200,
         "recovered_profile_status": 200,
         "recovered_profile_visible": True,
@@ -189,7 +528,9 @@ BROWSER_JOURNEYS = {
         "session_status": 200,
         "authenticated": False,
         "projects_status": 401,
-        "old_cookie_status": 401,
+        "projects_error_code": "session_authentication_required",
+        "old_cookie_projects_status": 401,
+        "old_cookie_projects_error_code": "session_invalid",
     },
     "independent_revocation": {
         "a_owner": {
@@ -198,10 +539,13 @@ BROWSER_JOURNEYS = {
             "member": True,
             "active_tenant": "none",
         },
-        "a_session_status": 401,
+        "a_session_status": 200,
+        "a_authenticated": False,
         "a_projects_status": 401,
+        "a_projects_error_code": "session_authentication_required",
         "a_private_ui_retired": True,
         "b_session_status_before_membership": 200,
+        "b_authenticated_before_membership": True,
         "b_owner_before_membership": {
             "exists": True,
             "unexpired": True,
@@ -214,8 +558,10 @@ BROWSER_JOURNEYS = {
             "member": False,
             "active_tenant": "fixed",
         },
-        "b_session_status": 401,
-        "b_projects_status": 401,
+        "b_session_status": 403,
+        "b_session_error_code": "session_forbidden",
+        "b_projects_status": 403,
+        "b_projects_error_code": "session_forbidden",
         "private_ui_retired": True,
     },
 }
@@ -286,12 +632,13 @@ def private_json_write(stream, record: dict, timeout: float) -> None:
 
 
 class BrowserBroker:
-    """The six fixed IAM fixture operations; no arbitrary owner command relay."""
+    """Fixed IAM fixture operations; no arbitrary owner command relay."""
 
-    def __init__(self, process, reader, *, credentials, timeout=10):
+    def __init__(self, process, reader, *, credentials, run_dir: Path, timeout=10):
         self.process = process
         self.reader = reader
         self.credentials = credentials
+        self.run_dir = run_dir
         self.timeout = timeout
 
     def dispatch(self, request: dict, *, timeout=None) -> dict:
@@ -305,6 +652,9 @@ class BrowserBroker:
             "inspect_browser_session": {"command", "slot"},
             "revoke_browser_session": {"command", "slot"},
             "revoke_browser_membership": {"command"},
+            "grant_browser_platform_admin": {"command"},
+            "revoke_browser_platform_admin": {"command"},
+            "inspect_browser_platform_admin": {"command"},
         }
         if (
             not isinstance(command, str)
@@ -336,13 +686,33 @@ class BrowserBroker:
             raise SmokeError("browser owner protocol failed") from None
         if not isinstance(record, dict):
             raise SmokeError("browser owner response invalid")
+        if command in {
+            "grant_browser_platform_admin",
+            "revoke_browser_platform_admin",
+            "inspect_browser_platform_admin",
+        }:
+            if (
+                set(record)
+                != {"kind", "command", "enabled", "version", "succeeded_audits"}
+                or record.get("kind") != "browser_platform_admin"
+                or record.get("command") != command
+                or type(record.get("enabled")) is not bool
+                or any(
+                    type(record.get(key)) is not int
+                    or not 0 <= record[key] <= 2_147_483_647
+                    for key in ("version", "succeeded_audits")
+                )
+            ):
+                raise SmokeError("browser administrator observation invalid")
+            return record
         if command == "browser_fixture":
             fields = {
                 "kind",
                 "email",
                 "password",
                 "tenant_id",
-                "credential_file",
+                "bff_user_context_credential_file",
+                "account_session_credential_file",
                 "web_origin",
             }
             if set(record) != fields or record.get("kind") != "browser_fixture":
@@ -354,10 +724,12 @@ class BrowserBroker:
                 for key in fields - {"kind"}
             ):
                 raise SmokeError("browser fixture value invalid")
-            if (
-                not Path(record["credential_file"]).is_file()
-                or urlsplit(record["web_origin"]).scheme != "https"
-            ):
+            purpose_credential_paths(
+                record["bff_user_context_credential_file"],
+                record["account_session_credential_file"],
+                run_dir=self.run_dir,
+            )
+            if urlsplit(record["web_origin"]).scheme != "https":
                 raise SmokeError("browser fixture configuration invalid")
             self.credentials.add(record["password"], record["email"])
             return record
@@ -384,6 +756,7 @@ def validate_browser_failure(record) -> dict:
     stages = (
         "config",
         "cold_login",
+        "shared_admin",
         "tenant_rejection_recovery",
         "ui_logout",
         "independent_revocation",
@@ -733,9 +1106,13 @@ def main(argv=None) -> int:
     browser_failure = None
     credential_log_check = "not_run"
     browser_mode = args.browser_journeys
+    required_node_versions = dict(REQUIRED_NODE_VERSIONS)
+    if browser_mode:
+        required_node_versions["admin"] = ADMIN_NODE_VERSION
     iam_before = web_before = None
     recovery_path = directory / "iam-recovery.json"
-    node_versions: dict[str, str | None] = dict.fromkeys(REQUIRED_NODE_VERSIONS)
+    node_versions: dict[str, str | None] = dict.fromkeys(required_node_versions)
+    admin_runtime = None
     cases = 0
     stage = "source preflight"
     expected_sources = {
@@ -743,6 +1120,8 @@ def main(argv=None) -> int:
         "bff": args.expected_bff_sha,
         "app": args.expected_app_sha,
     }
+    if browser_mode:
+        expected_sources["admin"] = args.expected_admin_sha
     sources: dict[str, object] = {}
     failures: list[str] = []
     cleanup_failures: list[str] = []
@@ -755,11 +1134,14 @@ def main(argv=None) -> int:
     # Raw diagnostics are anonymous, never retained or copied to the receipt.
     with tempfile.TemporaryFile(mode="w+b") as log:
         try:
-            for owner, repo, allow_unpublished in (
+            source_inputs = [
                 ("iam", IAM, args.allow_unpublished_iam_gitlink),
                 ("bff", BFF, False),
                 ("app", APP, False),
-            ):
+            ]
+            if browser_mode:
+                source_inputs.append(("admin", ADMIN, False))
+            for owner, repo, allow_unpublished in source_inputs:
                 sources[owner] = verify_source(
                     repo,
                     expected_sources[owner],
@@ -769,14 +1151,23 @@ def main(argv=None) -> int:
             stage = "runtime preflight"
             # Current owner engines: IAM/BFF >=24 <25; App >=22 <23.
             environments = {}
-            for owner, node, package_bin in (
+            runtime_inputs = [
                 ("iam", args.iam_node_bin, args.bff_node_bin.parent),
                 ("bff", args.bff_node_bin, args.bff_node_bin.parent),
                 ("app", args.web_node_bin, args.web_node_bin.parent),
-            ):
+            ]
+            if browser_mode:
+                runtime_inputs.append(
+                    ("admin", args.web_node_bin, args.web_node_bin.parent)
+                )
+            for owner, node, package_bin in runtime_inputs:
                 node_versions[owner] = observe_node_version(node)
                 environments[owner] = session.node_environment(
-                    node, "v" + REQUIRED_NODE_VERSIONS[owner], package_bin
+                    node, "v" + required_node_versions[owner], package_bin
+                )
+            if browser_mode:
+                admin_runtime = admin_runtime_preflight(
+                    args.web_node_bin, environments["admin"]
                 )
             iam_env, bff_env, web_env = (
                 environments[owner] for owner in ("iam", "bff", "app")
@@ -880,15 +1271,17 @@ def main(argv=None) -> int:
             reader = session.ProtocolReader(iam.stdout.fileno())
             ready = session.validate_ready(reader.record())
             credentials.add(ready.access_token)
-            receipt = native_command(iam, reader)
+            receipt = native_command(iam, reader, run_dir=directory)
             credentials.add(receipt.cookie)
             for pair in receipt.cookie.split(";"):
                 credentials.add(pair.partition("=")[2].strip())
-            credential_path = Path(receipt.credential_file).resolve()
-            if not credential_path.is_relative_to(directory.resolve()):
-                raise SmokeError("IAM credential escaped run directory")
-            credential = json.loads(credential_path.read_text())
-            credentials.add(*(entry["secret"] for entry in credential["entries"]))
+            for credential_path in purpose_credential_paths(
+                receipt.bff_user_context_credential_file,
+                receipt.account_session_credential_file,
+                run_dir=directory,
+            ):
+                credential = json.loads(credential_path.read_text())
+                credentials.add(*(entry["secret"] for entry in credential["entries"]))
             if receipt.iam_web_origin != web_origin:
                 raise SmokeError("IAM and Web origins diverged")
             secret = secrets.token_urlsafe(32)
@@ -906,7 +1299,8 @@ def main(argv=None) -> int:
                     "KOKORO_IAM_WEB_CALLBACK_URI": web_origin
                     + "/api/auth/callback/kokoro-iam",
                     "KOKORO_IAM_WEB_POST_LOGOUT_URI": web_origin + "/auth/sign-in",
-                    "KOKORO_BFF_IAM_SESSION_ADMISSION_CREDENTIAL_FILE": receipt.credential_file,
+                    "KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE": receipt.bff_user_context_credential_file,
+                    "KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE": receipt.account_session_credential_file,
                     "KOKORO_AGENT_ENABLED": "false",
                     "KOKORO_TENANT_ID": ready.tenant_id,
                     "KOKORO_DOMAIN": f"{run_id}.smoke.localhost",
@@ -932,6 +1326,33 @@ def main(argv=None) -> int:
                     "KOKORO_TENANT_ID": ready.tenant_id,
                 }
             )
+            if browser_mode:
+                stage = "Admin isolated build"
+                admin_root = isolated_admin_next(directory)
+                admin_port = runtime.free_port()
+                admin_env = dict(environments["admin"])
+                admin_env.update(
+                    {
+                        "NODE_ENV": "production",
+                        "KOKORO_ADMIN_WEB_ORIGIN": web_origin,
+                        "KOKORO_TENANT_ID": ready.tenant_id,
+                    }
+                )
+                run_native_command(
+                    [
+                        str(args.web_node_bin),
+                        str(admin_root / "node_modules/next/dist/bin/next"),
+                        "build",
+                    ],
+                    cwd=admin_root,
+                    env=dict(admin_env),
+                    log=log,
+                    processes=processes,
+                )
+                web_env["KOKORO_ADMIN_INTERNAL_ORIGIN"] = (
+                    f"http://127.0.0.1:{admin_port}"
+                )
+            stage = "Web startup"
             next_process = subprocess.Popen(
                 [
                     str(args.web_node_bin),
@@ -947,10 +1368,11 @@ def main(argv=None) -> int:
                 start_new_session=True,
             )
             processes.append(next_process)
+            tls_certificate = web.certificate(directory, host_name)
             web_proxy = web.Proxy(
                 next_port,
                 host_name,
-                web.certificate(directory, host_name),
+                tls_certificate,
                 hmr_websocket=browser_mode,
             )
             proxies.append(web_proxy)
@@ -969,8 +1391,38 @@ def main(argv=None) -> int:
                     raise SmokeError("Next origin fixture not ready")
                 time.sleep(0.1)
             if browser_mode:
+                stage = "Admin startup"
+                admin_connect = AdminConnectProxy(web_origin, web_proxy.server_port)
+                proxies.append(admin_connect)
+                admin_env.update(
+                    {
+                        "HTTPS_PROXY": f"http://127.0.0.1:{admin_connect.server_port}",
+                        "NO_PROXY": "",
+                        "NODE_EXTRA_CA_CERTS": str(tls_certificate[0]),
+                    }
+                )
+                admin_process = subprocess.Popen(
+                    [
+                        str(args.web_node_bin),
+                        "--use-env-proxy",
+                        str(admin_root / "server.cjs"),
+                        str(admin_port),
+                        host_name,
+                    ],
+                    cwd=admin_root,
+                    env=admin_env,
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    stderr=log,
+                    start_new_session=True,
+                )
+                processes.append(admin_process)
+                stage = "Admin HTTPS preflight"
+                wait_admin_ready(web_proxy.server_port, web_origin, admin_process)
                 stage = "browser journeys"
-                broker = BrowserBroker(iam, reader, credentials=credentials)
+                broker = BrowserBroker(
+                    iam, reader, credentials=credentials, run_dir=directory
+                )
                 browser_receipt = validate_browser_receipt(
                     run_browser_journeys(
                         node=args.web_node_bin,
@@ -993,12 +1445,27 @@ def main(argv=None) -> int:
                     cookie=receipt.cookie,
                 )
                 body = require_json(session_response, 200, "native Web session")
-                if (
-                    body.get("authenticated") is not True
-                    or body.get("mode") != "native"
-                    or body.get("subject") != ready.user_id
-                    or not isinstance(body.get("expires_at"), int)
-                ):
+                data = body.get("data")
+                if not isinstance(data, dict):
+                    raise SmokeError("native Web session response drift")
+                expires_at = data.get("expires_at")
+                if not isinstance(expires_at, str) or not expires_at.endswith("Z"):
+                    raise SmokeError("native Web session expiry invalid")
+                try:
+                    expiry = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+                except ValueError:
+                    raise SmokeError("native Web session expiry invalid") from None
+                if not exact_browser_fact(
+                    body,
+                    {
+                        "data": {
+                            "authenticated": True,
+                            "subject": ready.user_id,
+                            "tenant_id": ready.tenant_id,
+                            "expires_at": expires_at,
+                        }
+                    },
+                ) or expiry <= datetime.now(timezone.utc):
                     raise SmokeError("native Web session response drift")
                 cases += 1
                 projects = web.https_browser(
@@ -1025,9 +1492,9 @@ def main(argv=None) -> int:
                     cookie=receipt.cookie,
                 )
                 out_body = require_json(
-                    signed_out, 401, "native Web signed-out session"
+                    signed_out, 200, "native Web signed-out session"
                 )
-                if out_body.get("error", {}).get("code") != "native_session_required":
+                if not exact_browser_fact(out_body, {"data": {"authenticated": False}}):
                     raise SmokeError("native logout was not enforced")
                 cases += 1
         except (Exception, KeyboardInterrupt) as error:
@@ -1082,17 +1549,21 @@ def main(argv=None) -> int:
                 "status": "failed" if failures or cleanup_failures else "passed",
                 "mode": "browser_journeys" if browser_mode else "minimal_http",
                 "scope": (
-                    "four native authentication browser journeys; not full product acceptance"
+                    "four native authentication journeys and shared Admin eligibility; not full product acceptance"
                     if browser_mode
-                    else "minimal native HTTP smoke; not browser authentication journeys"
+                    else "minimal native HTTP smoke; not browser authentication journeys; Admin not exercised"
                 ),
-                "completed_journeys": 4 if browser_receipt is not None else 0,
+                "completed_journeys": len(BROWSER_JOURNEYS)
+                if browser_receipt is not None
+                else 0,
+                "admin_verified": browser_receipt is not None,
+                "admin_runtime": admin_runtime,
                 "browser": browser_receipt,
                 "browser_failure": browser_failure,
                 "credential_log_check": credential_log_check,
                 "expected_sources": expected_sources,
                 "sources": sources,
-                "required_node_versions": REQUIRED_NODE_VERSIONS,
+                "required_node_versions": required_node_versions,
                 "node_versions": node_versions,
                 "stage": stage,
                 "completed_checks": cases,

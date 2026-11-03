@@ -17221,4 +17221,38 @@ BFF本地 `b6d98f8`，基线105024d，仅`test/native-session-admission.test.ts`
 
 证据仅为生产middleware/client的真实loopback组合；IAM响应、ProjectRepository和receipt依赖是替身，不声称Nest容器启动、真实IAM/PG、durable零写或G1整体验收。最终仅测试类型调整，生产源码与主方已重建dist不变。各候选均本地未推送；Root IAM/BFF/Agent gitlink仍原组合，未merge main或部署。
 
-阻断审计：I-38在用户质疑及后续连续多轮推进中未获裁决；期间实际完成I-36测试处置、Agent旧oracle漏项、IAM重复登出/依赖分类和BFF本次接线补证，没有把这些独立动作冒主线完成。当前无live writer/验收；T-01/T-05下一步需要选定Cookie逐业务验证或受信BFF引用的信任边界；C-2/C-3与最终C-4受用户既定顺序门控，原A继续停写。达到重复阻断阈值且当前独立路径已收敛，主方已将机器Goal更新为blocked（非paused/complete），原完整目标不变。用户裁决后恢复owner设计/合同→消费者→清理→全量/组合验收，不自动选择方案，也不靠重复测试保持active。
+历史阻断审计（已被下方 active 恢复检查点覆盖）：I-38在用户质疑及后续连续多轮推进中未获裁决；期间实际完成I-36测试处置、Agent旧oracle漏项、IAM重复登出/依赖分类和BFF本次接线补证，没有把这些独立动作冒主线完成。当前无live writer/验收；T-01/T-05下一步需要选定Cookie逐业务验证或受信BFF引用的信任边界；C-2/C-3与最终C-4受用户既定顺序门控，原A继续停写。达到重复阻断阈值且当前独立路径已收敛，主方已将机器Goal更新为blocked（非paused/complete），原完整目标不变。用户裁决后恢复owner设计/合同→消费者→清理→全量/组合验收，不自动选择方案，也不靠重复测试保持active。
+
+### Task A 当前恢复检查点（2026-11-02；纠正先前批准误记）
+
+用户恢复机器 Goal active，完整目标未缩减。“用户已明确选择 I-38 B”没有对应答复，撤回此记录；关于 OAuth 是否主流的提问不是信任边界批准。
+
+- 当前源码：第一方 Product 原生邮箱/密码登录 + HttpOnly IAM Session cookie；不是历史 Auth.js/OIDC RP。外部 OAuth/OIDC、第三方 MCP 与内部服务认证分别维护，不整体重写成 OAuth。
+- I-38 建议 B：Cookie 仅留 BFF→IAM 专用 admission；BFF→IAM 业务调用带 direct credential + 本次准入真实 Session 引用，IAM 鲜读权限。已提出显式选择题；确认前不发行或更新 Root gitlink。
+- 已撤去候选的 App Session 引用协议、`/v1/me` shape 扩展及合成 fallback；App 保持同源 Cookie 到 BFF 准入，Session 引用仅在 BFF 请求内进入 owner 调用。IAM 显式空引用不得降级 Cookie，回归通过；其余当前验证见唯一计划。
+- 先过受影响 owner 设计/合同门，再固定生成消费者和新组合负控；C-2/C-3、C-4 与 A-01/A-02/A-07 顺序保持。各仓只对应自身 PR，不 merge main，不部署。
+
+本次停写收据：IAM 基线 `285dfcb`＋未提交引用候选，真实 native HTTP/PG 整文件16通过（31.90秒，含先401 RED后403的异域引用负控），542输入未变；完整 `pnpm verify` exit0，125文件/1656通过。Root/App/BFF源码本轮未发行，文档diff及105个本地链接通过。独审限Cookie语义/tenant引用修复与文档纠偏范围；机器合同覆盖缺口、BFF消费、新组合E2E仍OPEN。
+
+I-38设计续接：IAM/BFF六份owner设计新增待确认提案，独立审查限范围CLEAR；Root唯一方案已链接并更新T-01/T-05。新核reference ingress漏现单一期限/取消与ID词法域不一致，19 HTTP/18 guard标签（resend共用create）和BFF wrapper/隐蔽私有消费者/actor A撤目标B均明确验收。只改文档，Schema与非Markdown输入保持；未启动或重跑服务/测试，未提交/发行。委托信任仍待明确答复，Goal active、G1/G2/G3 OPEN、A停写。
+
+### I-38恢复后第三轮阻断审计（2026-11-02，覆盖前述active检查点）
+
+当前checkout/Goal复核无新增裁决；两名owner设计reviewer均已终态，无live验收等待。前两轮分别完成候选纠偏/真实补证与六面设计提案，属于进展但不是批准；本轮同一委托信任缺口仍在。独立工作已收敛，机器合同/消费者需明确选择后实施，后继C-2/C-3/C-4及A受原顺序门控。达到恢复后三轮同一阻断阈值，将机器Goal置blocked（非paused/complete），原完整目标保留；本轮未改源码、启动服务、重复测试、提交/推送/merge或更新gitlink。A/B具体选项与恢复顺序见唯一方案§3.6。
+
+### 2026-11-02 用户否决I-38，标准认证重设计（覆盖前述待选/blocked交接）
+
+用户明确拒绝请求内Session引用，要求按后端标准推翻重来；不继续旧A/B选项，也不自动恢复逐业务Cookie。已精确撤销IAM12个本轮source/generated/test candidate，六owner提案撤下并标撤销；保SDK I-37、I-36及有效业务行为，其他仓/Root gitlink不动。撤销后IAM完整verify125文件/1652通过、生成核对通过；引用16/1656仅历史，不作新设计证据。
+
+Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认证子G0重开；旧Cookie业务透传、假claims/空token/兼容principal也不作为目标。§3.6已收敛原生框架Session认证、BFF入口真实principal、独立服务身份与owner当前policy候选；IAM/BFF/App与Admin的12份三面候选已由三名具名writer交付停写并交叉复核，主方文档检查通过；候选交用户审阅后，再按IAM→BFF→App/Admin发行合同及完整迁移。C-1.3后C-2/C-3/C-4及A停写顺序保持；本轮`get_goal`核实机器Goal为active，旧等待条件结束，未标complete。本次未新发契约、更新gitlink、merge或部署。
+
+撤销最终复核：三子仓source/generated/test与各HEAD精确一致，六owner历史后缀保持；IAM verify125文件/1652PASS，BFF旧ignored dist经无消费者预检后重建通过，source及实际构建输出的引用标记零残留。Root/子仓diff及97本地链接通过，新标准方案仅文档一致性复核通过，未将其等同G0批准或新实现完成。
+
+
+### Task A 当前检查点（2026-11-03，覆盖前述历史等待/阶段交接）
+
+当前唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md) §0、§3.6、§4；[CURRENT](CURRENT.md)只同步摘要。原C-1.3～C-4完整Goal active，认证D0已收口；旧I-38引用/A-B等待结束，G1/G2/G3未通过，A-01/A-02/A-07保持停写。
+
+IAM9ea5b4c/原PR6、BFF21b3a51/原PR18、App bfb749c3/原PR50、Admin95c504d/原PR5均已交付clean。Root当前IAM完整1690/全真实482、BFF最终完整1347contract/2369default＋2条件SKIP（真实schema15另补）、真实PG423及实际IAM-BFF relay1均有对应冻结/清理证据，不累计重复批次。Root共享Admin组件239与完整治理2100PASS/3SKIP、Ruff/node通过，本次提交四仓精确pin和原三编排文件后实跑新共享浏览器。I-53仅纠正一条无合同依据测试约束，生产策略不变。inspection owner/新G1/同步环境未验；Agent47ca431尚未交付/pin，整体topology与C-4未闭合，不以组件关闭Task A。
+
+剩余C阶段6个执行包按原顺序：T-05全部消费者/独有负控/真实旅程 → T-17真实完整生命周期 → T-11 raw/dispatcher/无边界aggregate删除 → T-09/T-16最终精确组合门 → T-15同步环境。T-10另保留原A-01～A-16完整产品责任，不把未验收等同全部从零实现、不相加为22个同级任务。资源hook的局部源码/真实空闲PG-Redis正负控只是前置切片。主窗口统一Git、资源、审查和串行复验；每仓只沿自身PR，不merge main、不部署，不以worker退出或测试数量代替闭环。

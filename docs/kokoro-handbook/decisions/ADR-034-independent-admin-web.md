@@ -4,6 +4,10 @@
 - 状态：用户已确认。本文替代旧版中独立 OAuth client、回调与 cookie/session namespace 的决定；不表示正常环境整链验收完成。
 - 范围：同一 Kokoro 产品的 Admin 前端工程与公开入口，不增加身份服务或业务 owner。
 
+## 2026-11-03 原生会话重设计范围（认证D0已通过，整链待验）
+
+共享Product登录、Admin不另建认证的决定保持。当前Task A的[认证D0方案](../../superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md#36-认证标准重设计i-38-引用方案已否决认证-d0-已通过)将IAM Better Auth确定为原生登录Session与续期权威，App负责同源入口，BFF负责入口认证和安全状态投影。因此下方“Product是会话/续期owner”不再解释为App必须保管另一套RP Session/refresh token。D0已依据既有用户要求及ADR复核通过；IAM owner已交付，BFF/App/Admin消费与真实共享登录验收仍待完成，不把设计门当整链通过。不新增Admin独立Cookie、OAuth client或存储。
+
 ## 决定
 
 1. 后台可以独立构建、启动和部署，但与 App 属于同一产品与身份体系。当前正式工程是 `apps/kokoro-admin`，不是新增 `apps/kokoro-admin-web`。工程边界不推导出第二套登录、OAuth client、用户会话或授权中心。

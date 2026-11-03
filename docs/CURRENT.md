@@ -1,14 +1,16 @@
-## Task A 当前检查点：SDK 缺陷与已识别测试清理已验，认证设计待裁决
+## Task A 当前检查点：四仓标准认证已交付，待新组合验收
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。Goal blocked（I-38等待用户信任裁决）；原 G0 基础决定保留，I-38 局部设计待裁决，G1/G2/G3 OPEN，A-01/A-02/A-07 停写。38 个累计问题、18 个 TODO；测试处置见 §0.3，身份传递候选见 §3.6。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护全部问题、写区和验收。用户否决的请求内Session引用已撤销；认证D0依据既有要求及ADR-034/035复核通过，不再以旧A/B或自设批准条件停工。机器Goal保持active；G1/G2/G3 OPEN，A-01/A-02/A-07停写。
 
-Root 组合仍固定 IAM `5fffe60`；IAM 本地 `285dfcb` 未推送（前序SDK修复2cb9864）。I-37 SDK 将 Bearer 误填 Cookie 的回归已独审及主方验证：完整 verify exit0（默认1654），clean-commit 外部 consumer 2 PASS / 0 FAIL / 0 SKIP，542 输入未变。仅修 SDK 的凭据 scheme 选择与既有测试，未改 generated/guard/契约，不代表 I-38 已获批准。原 server integration484 是 cc3源码证据，本轮未重跑未变server套件。
+- **IAM当前已交付**：`9ea5b4c23537d40868f4b11ae5039e168f99376c`已推原draft PR6且本仓clean；含I-51共享Admin fixture与I-52零字节POST修复。Root当前完整verify126文件/1690PASS、全部真实integration48文件/482PASS/0SKIP及实际IAM/BFF relay1PASS，537输入/DB inventory保持、资源回收；internal/SDK0.20及Schema/依赖/正式artifact不变。新共享浏览器G1另验。
+- **BFF运行时已交付**：`21b3a516405ef4f2b34f403f37aa0a1eedc19f68`已推原draft PR18且clean；Root最终完整format/check全0（contract1347/default2369PASS＋2条件SKIP），真实PG423/0SKIP含schema15补证，真实IAM relay1/0SKIP。冻结输入/DB保持、清理通过，提交全树逐字匹配最终门；不冒Nest完整生命周期、inspection owner或新共享浏览器G1。
+- **共享Admin前置组件已验，新组合未验**：Root原三编排文件239相关PASS，标准Node CONNECT/CA五类正负控保持Host/SNI并全回收；IAM I-51原host/test两文件真实host15PASS、完整verify1687及全48 integration suite482PASS。均已停写，本次Root候选精确配对后实跑共享Admin浏览器，不代表G1通过。
+- **当前直接检查点**：I-52退出415已由真实联调闭合为200/删除Cookie/旧Cookie严格匿名；I-53仅撤误加的一条raw退出缓存断言，未改生产策略。四仓均已交付，Root完整治理2100PASS/3SKIP及Ruff/node通过，现交付四仓精确配对和共享Admin编排，再实跑新浏览器G1；Agent47ca431未交付/pin的topology偏差留T-16/C-4，不称全组合全绿。
+- **App/Admin已沿原PR交付**：App `bfb749c3dae0519abee7803d82f552ea3e39adcf` / PR50，Admin `95c504d1bfdcf1038ebadb85d8493c18828b51f7` / PR5；远端head精确、两仓clean。Root最终App6390/0SKIP与contract452/architecture50及完整工程门、Admin348/0SKIP及完整工程门通过，1505/179输入保持；最后各一处文档同步另验。App I-50先RED后窄修、原未知命令/风险断言保持，未新增登录或A功能。新共享浏览器组合未验，本次Root候选精确配对。
+- **Root编排**：两用途凭据隔离/脱敏、安全状态与撤销/资格oracle已承接；strict状态、3秒退休与browser禁止未配对IAM豁免均已修复，主方232定向＋7文档测试、Ruff/node/diff及冻结校验通过。尚未实跑新组合；原Root `aec5775a`四旅程只是旧组合证据。
+- **后续顺序**：T-05当前消费与共享Admin真实验收 → T-17完整生命周期 → T-11剩余raw/dispatcher/Repository-Service-Port清理 → C-4各owner完整门与精确组合。资源hook正常空闲PG/Redis正负控已验，但HTTP/SSE/worker、故障/挂起及信号退出码仍OPEN。
 
-I-38 建议 Cookie 限专用 admission、后续由受信 BFF 传 Session 引用并由 IAM 原事务复核；新增 BFF 委托信任已明确，仍待用户裁决。SDK 的已知生产消费者是 Billing0.17/Capability0.18，BFF 用本仓 generated，不整包删除或叠加新SDK层。I-36 首批六文件已合并SMTP重复正例、删固定文件清单/源码顺序/tenant字符串、严格Audit两页wire；双审和主方format/lint/types、architecture10、真实三文件31通过，Skills删除无效audit计数后单独16重验。第二批1d9bd95强化四处contract结构、删除两项纯mock转发并纠正两标题，双审CLEAR；主方格式/lint/types、6文件39与真实native15通过，输入未变。等价$ref/required重排反事实4通过、22名称过滤。两条敏感列源码弱检查与guard fixture保留；本次发现已处置，未声称全量无冗余。
-
-T-16已补当前Agent候选证据：c761fad的lock/frozen sync/格式/lint/types/contract/generated/default3336、build与安装wheel smoke通过；default排除934资源项。另真实display旧用例复现assert1==2，47ca431仅一测试文件修过期oracle并删两废止分支参数，主方真实全文件26通过/0skip、双审CLEAR，自有DB回收。Root仍pin c761fad，47ca431未推送；不代表C-4全资源/组合门完成。I-31的重复logout与专用admission依赖故障分类已在IAM285dfcb补证：真实host14、guard58与format/lint/types通过，542输入稳定、双审CLEAR。guard只是单元分类，不冒真实HTTP/controller证据。BFF本地b6d98f8已补生产ProjectMutationMiddleware/真实client与loopback的断连、期限失败关闭及成功控制，主方native6、source lint/types/build和单文件严格类型检查通过、双审CLEAR。不是Nest启动/真实IAM/PG验证；当前独立补证已收尾，后续生产切换依赖I-38裁决，不再机械增测。
-
-无 live 验收进程；未发行 native2、更新 gitlink、merge main 或部署。旧 Root `aec5775a` 正式四旅程仅证明对应隔离组合，不是全部仓库常驻同步环境或 Task A 闭环。
+Root本次候选精确配对App bfb749c3/Admin95c504d/BFF21b3a51/IAM9ea5b4c；没有当前常驻同步测试环境，不宣称新端到端或Task A已完成。C阶段仍有6个未闭环执行包，原A-01～A-16产品责任另保留，不相加为22个同级任务、不把局部VERIFIED换算百分比。每仓只沿自身PR交付，不merge main、不部署；测试按独有风险承接，不按数量机械增删。
 
 ---
 
