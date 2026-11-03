@@ -1614,3 +1614,36 @@ System原LiteLLM标签经fresh版本7与已发布4K revision核对后，正式CA
 #### B-07：原 IAM 头像信息的账户页消费（2026-11-03）
 
 App2286cce8 已推原功能分支，沿 IAM 已有 `profile`/`picture` 及原同源资料读补可选 HTTPS 头像；无新 owner、上传、图片代理或持久化。保持原 subject/代际退休，匿名/no-referrer，坏 URL 或图片失败回落首字母，不损姓名资料。定向回归先红2/75，修复后三文件100项通过，scope lint/完整非增量tsc通过，九路径有限独审APPROVE。后台浏览器原生资料200（本人QA无图片）和明确fixture图片加载/失败、390px无横溢分别记录，零账户写入；不冒真实用户图片或上传验收。E/技术方案与联调/B07-account-picture-delivery.json 绑定原始测试、独审和四文件候选overlay。正常3314/main不切，完整B07及TaskB、既存B08结算末端和组合门禁继续OPEN；已通过不变验证不重复。
+
+
+#### B-15：日常3314切换当前App与保数据BFF/System（2026-11-03）
+
+日常3314已从旧归档切至App2286cce8当前checkout开发源，保原正常IAM登录、用户/租户、BFF数据库、Redis与上游地址；不是切换到隔离QA环境。后台Playwright通过正常原生准入后，完成本人测试账户姓名保存→权威回读→刷新保持→未保存离开不写→原名恢复的真实旅程，两次PATCH200，cleanupRequired=false。17个设置入口面板可见，390px无横溢；只证明导航/布局，不称所有页面服务可用。导航暖缓存5样本的p50/p95约120–170/172–201ms，包含自动化观察，不是冷启动、数据就绪或100ms目标通过。
+
+正式BFF5cb4a293完成独立正常快照恢复演练，8个原生演进check/必要apply/check均成功；随后原旧BFF优雅drain、最后一致备份、原同一kokoro_bff schema执行已验演进。32→34表，全部32张原表旧列逐表行数/排序行值摘要升级前后相同。原Project/偏好/知识/RSS/幂等与5条scheduled outbox均纳入保护，未换库/钥匙或删旧行。旧runtime与两份备份保留，自有演练临时库已精确识别、无连接后清理。新55838健康/就绪均200，Agent保持false。
+
+按BFF正式System6.1 pin使用845cf46b，不误用物理1460820 HEAD；全新正常System以同一正常BFF数据库的独立kokoro_system schema、独立Redis namespace启动。正式空owner installer23表，原BFF列catalog摘要前后相同；BFF服务token沿原正常值配对，不复制QA数据/模型/价格或更换IAM身份。正式System API以本地部署operator创建kokoro产品、127.0.0.1站点、active状态及中英manifest policy，未变浏览器账户权限。
+
+当前日常同源实读：账户资料、项目、project-pins、模型目录、zh-CN/en-US runtime-manifest均200，hub业务写0。模型目录接通不等于已配置真实可执行模型；无新模型/预占/充值。MCP connections与skill-installations仍明确503 dependency_unavailable，须保原Platform密钥/数据升级和补正规purpose凭据/Storage；不能放宽decoder或用候选库伪装成功。正常Platform仍旧fa5，Root/main未合，Admin与历史契约组合缺口、B08结算末端及全TaskB仍OPEN。原生浏览器凭据/备份/进程只留ignored；有限证据汇总B15-normal-preserving-runtime-delivery.json。
+
+#### B-15：日常IAM/Platform保数据升级与真实API配置闭环（2026-11-03）
+
+正常IAM49689升级正式b9a63c53/API0.18；原生具名演进前完成一致快照副本演练、停旧服务最后备份，原17表旧列逐表数量及有序数据摘要不变、目标19表。正常Platform61931升级正式2ad5c9e7；SQL dump/restore首演练catalog不等保留为失败；改用旧owner canonical安装与原data-only快照恢复后精确74d5父、原生apply至718d，原25表旧列数据不变。三份自有演练库按归属/无连接核实清理，正常备份保留；未改父hash或执行任意修复DDL。
+
+Platform与IAM直接执行身份正规文件配对，BFF catalog/projection分别限定purpose；Storage63372保持4ab2原对象桶/数据库/Redis，仅追加正常Platform身份后原生重启。MCP原密钥材料逐字保持，两个旧硬链接密钥文件复制为独立0600文件以满足当前原生读取约束，未轮换密钥。正常六服务ready200，账户/项目/pins/MCP连接/Skills安装/models/中英manifest同源全200，取代上一里程碑MCP/Skills503状态；模型目录为空和Agent禁用均未掩盖。
+
+后台Playwright在正常原生账户完成独立Custom API创建201→权威回读200→编辑200→刷新保持→未保存取消零PATCH→删除200→同ID回读404，响应不含写入密钥，自有配置cleanupRequired=false。E/技术方案与联调/B15-normal-capability-account-pairing-delivery.json绑定原始回执SHA。不是原生Computer Use或外部服务真实执行证据。其余MCP三种配置/Skills导入正在接续，Storage4a990 approved父catalog与正常实际不匹配，Prisma diff0不能代替原生指纹，尚未升级。正常历史多库未收敛同库，完整B01/B02/B03及全Task B/组合门/main仍OPEN。
+
+#### B-01：正常四种创建入口配置保存与清理（2026-11-03）
+
+正常3314完成Custom API创建/编辑/刷新/取消/删除（上节）；自定义MCP创建201→同ID详情200→编辑200→刷新保持→删除200/404。JSON导入与URL添加首次命令已保存，Playwright直接读取响应正文失败，原失败记录保留；各按正式connectors列表中唯一本人测试名找回同server/connector ID，真实页面打开详情、同ID删除200并回读404，未再次POST或用新配置替代原请求。全部自有配置已清理。E/技术方案与联调/B01-normal-four-creation-configuration-delivery.json逐份绑定原始失败、权威回读及恢复证据。
+
+本片仅配置保存与管理，不触发Prepare/Connect/Enable或外部服务，不冒称四种创建的真实连接/OAuth完成；stdio、图标/存储精确升级、Provider各末端与全B01继续OPEN。原生登录可重新完成并准入，独立脚本的初始语言/会话观察问题不直接归因为产品缺陷。技能原生上传/安装真实旅程接续中，不机械重跑已通过且输入未变的测试。
+
+正常技能上传首条导入begin201，但UI未知、权威GET仍upload_pending。已确认日常Web旧启动环境缺少既有KOKORO_WEB_LOCAL_UPLOAD_ORIGIN；正常Web保同App/认证/数据补精确loopback Storage origin后原生重启。原桶versioning Enabled；GetBucketCors404、尝试最小本地PUT/版本ACK策略被provider NotImplemented501拒绝，未成功修改桶CORS、未改对象数据。CSP漏配已确认，CORS是否另阻实际上传仍以新输入的真实请求为准，不能仅凭预检下结论。首条pending测试意图及其24小时期限保留，不伪报安装或清理完成；修正启动配置后的新独立包旅程接续并私密保存原body/key。
+
+#### B-03：正常技能原生包导入、刷新与清理通过（2026-11-03）
+
+正常Web补既有精确本地上传origin后，新独立QA包从原生UI选择ZIP→begin201→真实对象PUT/版本ACK→complete200→finalize200→安装后刷新仍见，随后本人技能源DELETE200、本人账号安装DELETE200，正式同ID回读installed=false且刷新卡片消失。E/技术方案与联调/B03-normal-owned-skill-import-delivery.json绑定原失败/配置切换/新真实旅程与两类清理；不把删除源当移除账号安装。桶CORS API501未改配置，后继实际成功证明它不是当前本地旅程阻塞，首次CORS诊断不冒最终根因。App未生产改码，next-env启动派生单行已精确恢复。
+
+成功新包的来源/安装清理完成；首条旧CSP输入产生的upload_pending意图仍保留24小时到期和cleanupRequired=true，不假冒同一意图恢复，也不通过DB清理或新上传覆盖原失败。完整版本/权限/项目/Agent使用与B03/B04及全目标继续OPEN。
