@@ -21,10 +21,12 @@
 - **Scheduler 任务项**：`c6b8085` 在 PATCH/retry 认领或重放回执前核对当前归属，保留父 Project 墓碑规则。后继 `80c68ac` 收口 DELETE：真实 PG/Redis 旧基线复现错归属写回执；新代码中错主体/租户、缺行和非同 key 均不写，合法原 ACK 精确重放，异指纹 409；回执丢失时只凭同 tenant/task/subject/key 的已提交 outbox 经原事务恢复。outbox 不证明 HTTP 指纹，不覆盖异常历史终态；旧 owner 锁与事务不改。
 - **前轮 raw 消费迁移**：BFF `1e25efc` Billing/Model、`cde1232` MCP、`881d4c7` Chat/IAM relay、`c55d82a` Archived Tasks、`071098c` Skills 已迁到实际 owner 模块。原场景按组对照、定向通过；Archived Tasks 原版和候选均用隔离真 PG/Redis 保持原四个场景（含行锁），资源已回收。
 - **IAM 消费退出前置**：Capability `6ae34a8` 将旧 SDK 方法 spy 改为 HTTP 边界零调用哨兵，主控用当前固定 SDK 验证，私有无旧方法 SDK 亦有对照；SDK、协议、生产源码未动。IAM 退役候选仍仅私有，真实历史 OAuth 行拒绝和混合 E2 未跑；旧 Skill/Agent sandbox、Capability opt-in ingress 与正式 SDK 版本/固定制品仍待处理。
-- **本轮 owner 测试迁移**：Projects、Library、Chat/Message、Admission、Agent Control 已按组迁移并复验；移除重复 mock 时保留真实模块的准入、关闭期和 owner 零调用断言。Business Store `aaa3add` 与 Chat/AG‑UI `b499ddb` 移除宽工厂与 raw 接线，隔离 PG/Redis 前后全文件题名一致、零跳过；Message Parts 与上传回执恢复也用真实 PG 验收（上传对端为受控 Storage）。已收口原 47 路径中的 26 个，剩余 21 路径仍私有未应用。
+- **前轮 owner 测试迁移**：Projects、Library、Chat/Message、Admission、Agent Control 已按组迁移并复验；移除重复 mock 时保留真实模块的准入、关闭期和 owner 零调用断言。Business Store `aaa3add` 与 Chat/AG‑UI `b499ddb` 移除宽工厂与 raw 接线，隔离 PG/Redis 前后全文件题名一致、零跳过；Message Parts 与上传回执恢复也用真实 PG 验收（上传对端为受控 Storage）。
 - **404 契约**：`3f4c595` 把唯一 Express transport 移到 HTTP 层，仅在 Nest 最终未匹配的 `/v1` 请求上输出既有 `bff_route_not_found`，不路由、不做准入或 owner I/O。真实 AppModule 复现旧 Nest 错误形态差异并复验四条文档明确的退役路由、未知 owner/Session 路径、正常 health 和非 Product 404。已匹配 feature、System/Skills 既有 503 与 `/browser/v1` 不纳入此修复。
-- **组合边界**：BFF 本地 `3f4c595`，Root gitlink 仍为已发布 `8cb6169`；Capability 和 Agent checkout 与 Root pin 仍须收敛。未推送、未 merge main、未部署、未启动 C‑4。每仓继续沿原 PR。
-- **下一门**：T‑11 先验证剩余独立候选，再处理 BFF/Admission mock 与 MCP 未发布方法的原风险断言；确认零消费者后删旧 bootstrap/dispatcher/宽聚合。Root/Capability 的原 `ingress_clean` 已有私有 native receiver 组合，保留 signed PUT 与回执、增加凭据撤权，仅凭据边界已验，真实资源链未跑；与其余旧 Skill/Agent sandbox 分开收口，再退役 IAM producer。BFF Agent setup 接通不代表真实 Agent/provider 已交付（T‑U04）。T‑11 闭环后再按 T‑09/T‑16/T‑15 串行验收精确组合，A‑01/A‑02/A‑07 不提前写入。
+- **BFF raw 退场（本地）**：`ef64012` 删除旧 bootstrap、dispatcher、宽 Postgres 聚合、旧探针/路由映射和六份 mock 夹具，移除 format 中已删文件输入；原 21 路径候选均已收口。退役 MCP 写和 Chat 依赖故障在真 Nest 验证无 owner 旁路；Project 指令历史和嵌套任务字段在真实 PG/Redis 验证。干净构建无旧产物，声明式格式、lint、267 项受影响检查及 Business Store 整文件 181 项通过，无失败或跳过。Scheduler receipt/dispatch 另用真实资源对照前后通过。未用这些阶段结果替代各仓完整门禁。
+- **边界补证**：`9bba83f` 保留最终未匹配的 `/browser/v1` 原 404 形态，不运行准入、权限或 owner；`133b72a` 用真 Nest relay 连接真 IAM owner，sign-in、会话与 sign-out 对照通过。真实 BFF 进程 `8bcdd2e` 恢复 Protobuf BOM/CRLF 字节保真，旧版 502 → 新版 200，plain/拒绝对照不变、两进程退出 0，资源已回收；IAM/Platform 为受控对端，非浏览器组合。
+- **组合边界**：BFF 本地 `ef64012`，Root gitlink 仍为已发布 `8cb6169`；Capability 和 Agent checkout 与 Root pin 仍须收敛。未推送、未 merge main、未部署、未启动 C‑4。每仓继续沿原 PR。
+- **下一门**：T‑11 核最后由旧装配遗留的 Chat 可选依赖胶水，保真实授权/事务/取消后再去掉无效分支。Root/Capability 原 `ingress_clean` 已有私有 native receiver 组合，保留 signed PUT、回执和撤权，实际开发配置缺独立 E2 凭据路径，真实资源链未跑；用本次授权的测试凭据验收，不降级到旧 grant。与旧 Skill/Agent sandbox 分开收口，再退役 IAM producer。BFF Agent setup 接通不代表真实 Agent/provider 已交付（T‑U04）。T‑11 闭环后再按 T‑09/T‑16/T‑15 串行验收精确组合，A‑01/A‑02/A‑07 不提前写入。
 
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 
@@ -490,7 +492,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响owner最终串行门；Root | WAITING | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | IN_PROGRESS | BFF 本地 `3f4c595` 已验 Business Store/Chat/AG‑UI 真 owner 迁移和最终未匹配 Product 404；剩余 21 路径候选及 BFF/Admission/MCP 残余风险仍需验收。旧 IAM 调用方与 producer 尚未闭环。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | IN_PROGRESS | BFF `ef64012` 已删除 raw/聚合并通过阶段验证；核最后 Chat 过渡胶水。IAM 旧调用方与 producer 尚未闭环，真实 native ingress 尚未运行。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |

@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交、实际验证和剩余项。机器 Goal 为 active。BFF 原 PR #18 分支本地 `3f4c595`，Business Store 和 Chat/AG‑UI 已迁至实际 owner，复验真 PG/Redis；最终未匹配的 `/v1` 路由恢复原 404 错误格式且不转发。Root gitlinks 不变，剩余旧入口消费者和 IAM producer 尚未清完。未推送、合并、部署或进入 C‑4，A‑01/A‑02/A‑07 仍停写。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交、实际验证和剩余项。机器 Goal 为 active。BFF 原 PR #18 分支本地 `ef64012`，旧 bootstrap、dispatcher、宽 Postgres 聚合与配套 mock 已删除；干净构建、受影响回归和真实 PG/Redis Business Store 验证通过。Root gitlinks 不变，T‑11 仍待核余留 Chat 过渡胶水并退役 IAM 旧调用方和 producer。未推送、合并、部署或进入 C‑4，A‑01/A‑02/A‑07 仍停写。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
