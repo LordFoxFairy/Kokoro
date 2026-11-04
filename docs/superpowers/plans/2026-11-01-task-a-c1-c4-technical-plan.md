@@ -53,6 +53,8 @@
 - **恢复与 T‑11 收据**：原 Docker Desktop 优雅停止超时后使用官方强制停止并启动，保留原 Docker 镜像、MinIO 容器及 `/data` 卷；在已登记的空桶中实际版本化 PUT、读回、精确删除，再删桶并确认 404。复用原 ClamAV，未清卷、重建或创建常驻服务。Root `eadf960d`／IAM `b6a9745`／BFF `f0107a7`／Capability `749b159`／Storage `4a99061` 的真实 `ingress_clean` 原四例、默认 `eicar` 与 `ack_lost`、R336 单场景通过；PG/Redis、对象版本、桶、进程及凭据回收通过。未另跑重叠的默认 `clean`。后续只在最终组合补 PR12 新的 Schema、MCP 和确有差异的业务，不重跑这些相同正控。
 - **C‑4 正在执行**：主控按仓串行验收；IAM `b6a9745` 正式 `pnpm verify` 和真实全量集成均 exit 0，停写及 PG/Redis 清单一致；安装包独立消费另已有同 SHA 证据。Capability `1b5116c` 在隔离 worktree 保留 Task A `749b159` 与原 PR12 `2ad5c9e` 两个父提交；合成 provenance 先失败后用现有唯一三源码索引修复，两具名检查通过且生成前后摘要相同。Capability 首次全量中格式、lint、正式合同/Schema/typecheck 均通过；默认测试 4 个 `spawnSync` 超时。限并发同输入补验 3 个原负控通过，唯一仍超时的正控与正式 `contract:check` 重复，隔离诊断验证该进程 15.165 秒通过（非验收）。`6e6ba9b` 删除仅在临时树重复同一 checker 的正控（现役 `contract:check` 承接），保原负控与 15 秒限制；三条 R345 进一步锁定实际 `feature publication` / `complete HTTP inverse` 诊断。按 Vitest 2 的进程上限重跑正式 gate，再跑受影响的真实 Schema 与 MCP。Agent 原 PR46 最新 `cfd1fcc` 与本地 `47ca431` 已隔离整合为 `33545a4`，保留两侧。Capability 正式默认门/真实 Schema 与 MCP、BFF/Agent 工程门、Root 精确组合仍待；未推送、未更新 Root gitlinks。
 
+- **C‑4 精确组合发现的真实不兼容（T‑09，OPEN）**：原 Agent PR46 新 8.11 终态 `context_window_exceeded` 为非重试；合成 `33545a4` 后真实 Agent 已可能发出该枚举。主控用现 BFF `f0107a7` 实测当前生成解析器返回 `null`，正常投影会拒绝该事件；BFF domain/public OpenAPI/PG 约束与 App 现用生成 tuple 同样只接受旧集合。不是可忽略的可选请求字段或纯 pin 漂移。组合冻结前由 owner 正规配对 Agent 发布原件 → BFF 生成消费与同一 canonical 约束/公开契约 → App 固定产物和非重试展示，并用一个聚焦终态链证明传输、持久与展示；不靠旧别名、吞错或额外生成第二份事实源。未改 BFF/App，独立 owner 门继续；原 PR46 不覆盖其远端新增提交。
+
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 
 - **目标/状态**：原C-1.3～C-4完整目标保留，认证D0通过；IAM唯一Session权威、BFF入口认证、内部服务身份及owner业务授权分离。普通内部业务不携浏览器Cookie、登录Session引用或伪OAuth claims。账号会话生命周期的明确认证例外见§3.6。
