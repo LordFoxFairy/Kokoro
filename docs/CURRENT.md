@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑11 本地验收通过，进入 C‑4
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `active`。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门通过，真实全量集成正在运行；Capability 隔离候选 `1b5116c` 保留原 PR12/13 双方，定向 provenance 门通过，合成后的全门未跑。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `active`。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 隔离候选 `1b5116c` 保留原 PR12/13 双方，正式合同、Schema、类型和静态门通过；默认门首跑 4 个子进程超时；三负控限并发通过。隔离 `6e6ba9b` 删掉与正式 checker 重复的临时树正控，保留 15 秒限制和全部负控，并让三项检查确切拒绝原因；正式门正按锁定 Vitest 版本的并发参数重跑。Agent 原 PR46 最新提交与本地清理已在隔离候选 `33545a4` 无冲突整合，验收待跑。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
