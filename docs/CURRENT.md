@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是机器 Goal `active` 的执行台账。T‑17 已本地提交。T‑11 的 Root 原生 ingress `237be60c`、IAM 退役 `b6a9745` 均已本地提交；IAM 0.21.0 已本地打包并核验来源/摘要，独立安装、编译及真实 PG/Redis 消费通过，尚未发布。原阶段登录与业务证据保留，新 ingress 接线、存储独有风险和 R336 仍待真实验收。PostgreSQL 宿主卷已恢复约 34 GiB，但 Docker guest 日志明确记录 EXT4 在 I/O 错误后被重新挂为只读，daemon 探活超时、对象存储仍拒写；由原受管 owner 恢复，不清卷、不重建。C‑4 精确组合和全量未跑，A‑01/A‑02/A‑07 未启动。Root gitlinks 未变，未推送、合并或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是机器 Goal `active` 的执行台账。T‑17 已本地提交。T‑11 的 Root 原生 ingress `237be60c`、IAM 退役 `b6a9745` 均已本地提交；IAM 0.21.0 已本地打包并核验来源/摘要，独立安装、编译及真实 PG/Redis 消费通过，尚未发布。已用正式 IAM 提交复验真实 execution peer 和 Root ingress dry-run，PG/Redis 清单恢复；没有启动真实 Storage。Capability `749b159` 已提交 R336 原生测试接线（仅静态检查），真实 ingress、存储独有风险和 R336 仍待验收。PostgreSQL 宿主卷已恢复约 34 GiB，但 Docker guest 日志明确记录 EXT4 在 I/O 错误后被重新挂为只读，daemon 探活超时、对象存储仍拒写；由原受管 owner 恢复，不清卷、不重建。C‑4 精确组合和全量未跑，A‑01/A‑02/A‑07 未启动。Root gitlinks 未变，未推送、合并或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
