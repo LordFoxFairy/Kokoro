@@ -17256,3 +17256,7 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 Root4e603743原正式五旅程、真实账户消费，以及真实Skill包生产全链/原BFF四GET和代表组合负控共同满足G1；主方及独审复核源码、收据、dist和DB清单保持，S3 exact版本/进程/自有资源已回收。Root2fc0436c是此前文档后继，不替换已验代码。不以数量或私有fixture代替旧smoke/R336、T17/C4与全产品验收。
 
 前次实施回合因模型容量错误failed，Goal blocked更新时间同秒；之后三次只读心跳没有实施worker，台账未收口。本次已串行同步G1/T05并推Root a612915a。T17真实listener两释放顺序已由主方复现RED，最小AgentDispatch早期hook候选通过主方冻结相关门及独审，未提交/pin；四feature正常drain现已各自RED后最小修复、主方冻结相关门/59定向和独审通过，累计6原文件未提交/pin；关闭拒入亦已主方RED后原生flag修复、冻结相关门及独审通过，累计7候选文件未提交；SSE已按主方准确RED→五原源码最小实现→主方冻结相关门GREEN及独立规格/质量CLEAR收口切片，原SSE/drain、受影响AG-UI/control/admission与授权回归均零skip，1085输入保持；累计15文件候选未提交/pin，不称真实IAM/PG或完整T17。当前writer的原Nest测试已由Root实跑确认有限失败漏停worker、raw错误泄漏与退出状态仍0的准确RED；旧DB失败例临时状态已归还，Root再RED→原五hook最小实现→冻结相关门及84保护/故障和121worker回归GREEN、独立规格/质量CLEAR；累计16文件候选未提交/pin，Root真实dist/main+受管PG/Redis已得正常信号策略RED（ready200、返回-2/-15而非0），source/dist稳定及全部资源回收；现只授权原lifecycle真实Nest测试迁移，main尚未写，进程失败/信号硬期限仍未实施。完整T17/异常信号期限尚未闭合，生产扩大须Root批准。当前C剩5包，顺序T17→T11→T09/T16→T15；IAM遗留producer、Agent未pin/Capability最新base、完整门及常驻单库环境保持未完。每仓原PR、不merge main或部署，无新增用户待决事项。
+
+### Task A 2026-11-04：原 PR 精确配对与 T‑15 原生验收
+
+[当前 TODO](../todo.md) 与 [CURRENT](CURRENT.md) 记录现态。IAM #6、Capability #13、Agent #46、BFF #18、App #50 已按各自原 PR 提交并核对远端 head。Root #66 的 `4cb91169` 精确组合已通过拓扑、checkpoint、现役 relay 和正式原生 5/5（`116d7c62ab4aa5e90f2076d4`，凭据扫描、临时资源回收通过）；独立保留的本机同步实例已实测登录、项目读取及共享 Admin。首次 0/5 为本机 PostgreSQL URL 缺显式角色，复用本机归一化后通过，未改生产认证。仍有 13 条声明破损边、既有结构告警与未验证工具链；I‑15 全 owner 单库未实证。未合并 main、未部署；机器 Goal 已清除，A‑01/A‑02/A‑07 未实施。

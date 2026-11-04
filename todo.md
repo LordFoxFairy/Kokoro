@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-04）
 
-**当前：T‑11 已在本地验收，C‑4 未闭环；T‑09 已完成并沿原 PR 交付；C‑4 尚待正式原生验收。机器 Goal 已由用户清除，不重建。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
+**当前：T‑11 已验收；C‑4 的精确配对、正式原生 E2E 和本机同步测试已通过。全产品、单库 owner schema 与既有 Root 治理红项未关闭；A‑01/A‑02/A‑07 仍未开始。机器 Goal 已清除。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
 
 ## C‑4 交付检查点
 
@@ -10,19 +10,18 @@
    - [x] **已复现持久化缺口：**在 BFF `32357c0` 的私有副本只给原 AG‑UI 集成夹具追加新 tuple。真实隔离 PG/Redis 中，现行投影落库报 `23514 / ck_bff_message_agent_failure`（1 失败、0 跳过）；资源已回收，主工作树 BFF 源码未改。这是持久化负控，不是原始 Agent wire 或正式组合端到端。
    - [x] **完成：** BFF `d166a51` 原 #18、App `e726cd61` 原 #50，Public 28.19 唯一 YAML 同字节。真 PG/Redis 验持久、回放、快照和禁止 `retryable: true`；App 保正文、无重发。两条保存命令仍拒绝 `personal_context`。
 2. [x] **T‑09 / T‑16：完成受影响 owner 门并交原 PR。** 主控复核停写后的候选。复用同提交或受影响输入不变的证据；BFF/App 新候选跑正式相关门，BFF 两项条件 PG 用例按最终输入核对已有真库收据，缺失才补。Agent #46 推到原远端 head `codex/agent-run-lifecycle`；Capability #13 保留原 PR #12 为 base。五仓已逐仓沿原 PR 交付并核对远端 head 精确相等。
-3. [ ] **T‑09：Root #66 精确组合与来源差额。** 主控在子仓提交已可从各自 PR 获取后更新 gitlinks，重核拓扑、合同 inventory 和现役 IAM relay 来源。先核 Browser→Web、BFF→Scheduler、Scheduler→BFF 三条活跃边；两条 Scheduler 边共用现役 vendor。Web→BFF、BFF→IAM 在旧清单仍为破损，不能按字节近似直接标绿。历史破损边、既有结构告警与此次新增阻断分列，不改历史 hash、不下调门禁、不为清数字扩大改动。
-   - [x] **来源清单预检：** 私有候选已按当前真实 Git blobs 重取路径，原 checkpoint 通过；兼容性仍只报原 13 条 broken。Scheduler 测试已从硬钉旧 1.0 版本改为断言同一 owner 契约；正式清单现已按最终五仓提交取证；历史 checkpoint 保持。
-4. [ ] **T‑15：正式原生 E2E 与同步交接。** 主控在精确组合上运行现有正式浏览器旅程，保留实际登录、异租户拒绝与恢复、登出、撤权等约定行为的收据；记录支持的入口、旅程、日志索引及启停/回收负责人。临时 smoke 已退出，不代表同步环境可用；旧 HTTP/Chat 探针不算。当前尚无最终组合可同步测试。参数预检已明确：前台 MCP+Admin 启动时把本机已配置的 `KOKORO_LOCAL_POSTGRES_ADMIN_URL` 显式映射为进程所需的 `KOKORO_LOCAL_POSTGRES_URL`；不改配置文件、不启旧模式。
+3. [x] **T‑09：Root #66 精确组合与来源差额。** 主控在子仓提交已可从各自 PR 获取后更新 gitlinks，重核拓扑、合同 inventory 和现役 IAM relay 来源。先核 Browser→Web、BFF→Scheduler、Scheduler→BFF 三条活跃边；两条 Scheduler 边共用现役 vendor。Web→BFF、BFF→IAM 在旧清单仍为破损，不能按字节近似直接标绿。历史破损边、既有结构告警与此次新增阻断分列，不改历史 hash、不下调门禁、不为清数字扩大改动。
+   - [x] **来源清单预检：** 私有候选已按当前真实 Git blobs 重取路径，原 checkpoint 通过；兼容性仍只报原 13 条 broken。Scheduler 测试已从硬钉旧 1.0 版本改为断言同一 owner 契约；正式清单与五个 gitlinks 已固定在 Root 本地 `4cb91169`；拓扑、checkpoint、relay 通过，历史 checkpoint 保持。Root 沿原 #66 交付，未合并。
+4. [x] **T‑15：正式原生 E2E 与同步交接。** 精确组合 Root `4cb91169` 的现有 Chromium 旅程 5/5 通过：冷登录、跨租户拒绝与恢复、登出、独立撤权、同会话 Admin 准入与撤权。收据 `116d7c62ab4aa5e90f2076d4` 的凭据扫描和全部临时资源回收通过。首次运行退出 1（0/5，收据 `928147cc7f37fd650ee37b43`）；同环境定位为 PostgreSQL URL 缺显式角色，复用现有本机 URL 归一化后通过，未改 IAM 或放宽门禁。主控另保留 IAM/BFF/App/Capability（MCP/Custom API）/Admin 同步实例；以实际 Chromium 登录 303、会话及 Project 列表 200、Admin me 200 验收。入口、启停与私有日志索引交本机说明；该实例不含真实 Chat、Skills 安装或账单。
 
 ## 版本与遗留项
 
 | 仓库 / 检查 | 当前事实 | 剩余动作 |
 | --- | --- | --- |
-| IAM #6 / Capability #13 / Agent #46 | 本地候选分别 `b6a9745` / `5e607fd` / `40effb2`，有各自工程和真实集成证据；Capability 最终 fixture 的类型、格式、lint 差额已补。各自原 PR head 精确核对 | Root 精确组合与正式验收 |
-| BFF #18 / App #50 | 原 PR `d166a51` / `e726cd61`。BFF 格式、完整工程门通过，默认门两项条件 PG 另在真库补齐；App 完整 `pnpm check` 通过 | 只验终态配对影响面与正式交付门 |
-| Root #66 | 治理补丁 `3a02058a`；最终候选五仓 gitlinks 按原 PR head 取证。当前结构审计仍 FAIL；合同兼容仍 FAIL（含 13 条已声明破损边，另有 owner/evidence 来源差额） | 不冻结不兼容组合；最终按实际 commit blob 核验。18 个旧证据路径在当前候选不存在，不等于 18 项产品失败 |
-| 现役来源与历史告警 | BFF/App 的 relay 3.0 生成检查及 Scheduler 来源核验通过；Root 现役 3.0 来源门已在私有 IAM/BFF/App 精确候选通过：保留原发布锚，只接受 IAM 0.20→0.21 已批准退役差额。正式工作树仍因旧 gitlinks 拒绝，最终组合须重验。Billing/System 已离线按原规则复核：Billing 有七项既有配置差额，System 此组无违规，不是全仓 typecheck/build | 现役来源与历史缺口分开记录；未证实为本轮新增时，不顺手改无关仓 |
-| 运行与交付 | 最终组合原生 E2E 未运行；单库 owner schema 组合未实证；CI/部署未运行 | 正式验收与同步交接归 T‑15；每仓只沿自己的 PR，不合并 `main`、不部署 |
+| IAM #6 / Capability #13 / Agent #46 | 原 PR 精确 head `b6a9745` / `5e607fd` / `40effb2`；已验受影响工程门、真实依赖与 Agent 自然超窗 | 仅随对应产品切片扩大验收 |
+| BFF #18 / App #50 | 原 PR `d166a51` / `e726cd61`；完整工程门通过，BFF 默认门的两项条件 PG 已另在真库补齐 | 不重复现有终态验证 |
+| Root #66 | 精确 gitlinks、拓扑、checkpoint、现役 relay 来源通过；合同兼容仍有 13 条已声明破损边，来源差额已消除；结构审计仍 FAIL（381 条既有规则告警、2 个工具链未验证；较前置基线没有新规则问题，仅 SQL 行号位移） | 既有红项保持显式；无新增风险不扩大此次 PR，不据此宣布全仓治理通过 |
+| I‑15 / 运行范围 | T‑15 原生正式和保留环境都使用隔离测试资源；全 owner 单库 schema 组合、全站浏览器、CI/部署未运行 | 单库按 owner installer/URL 盘点和一次真实组合补证；只在影响对应产品时补该路径，不重跑已通过旅程 |
 
 ## 已收口的阶段（保留证据，不重跑）
 
@@ -31,10 +30,10 @@
 - [x] **T‑11：** 旧入口、dispatcher 和退役 producer 已清理；四项归并为 StableId `f7d1e69`、两个 AgentRuns reader `76f2d04`、Personalization `335dbe3`；三个拆分为 ScheduledTask `368e65e`、Chat `fb3cfa4`、Projects `32357c0`。主控按切片验过有效行为；BFF 清理提交在本地，最终 PR 配对归 C‑4。
 - [x] **T‑11 环境：** 原 Docker/MinIO 卷已恢复写入，登记空测试桶已回收；现役 ingress、感染拒绝、ACK 丢失恢复及 R336 已验；未清卷、未重建。
 
-## 后续产品待办：C‑4 后解锁
+## 后续产品待办：G3 未结项前不实施
 
 - [ ] **A‑01** 会话创建/恢复、**A‑02** Agent 过程/详情；两项之后进入 **A‑07** Project Todo。
 - [ ] 保留 **A‑03** 输入与运行控制、**A‑04** 执行恢复、**A‑05** 长上下文、**A‑06** 项目上下文。
 - [ ] 保留 **A‑08** 附件、**A‑09** 资料库、**A‑10** 文件/Canvas、**A‑11** 首页、**A‑12** 自动化、**A‑13** 外部聊天、**A‑14** 语音、**A‑15** 体验性能、**A‑16** 交付与运行配对。按原范围验收，不默认从零做，也不冒称完成。
 
-**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每有实际验证、候选提交、精确 pin 或阻塞变化，立即更新对应条目；只复跑有新增证据的验证。四个 C‑4 项验收后才结束当前机器 Goal，再推进产品待办。
+**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每有实际验证、候选提交、精确 pin 或阻塞变化，立即更新对应条目；只复跑有新增证据的验证。当前没有机器 Goal；G3 剩余范围明确后再推进产品待办，不把此次正式认证旅程当作全产品验收。

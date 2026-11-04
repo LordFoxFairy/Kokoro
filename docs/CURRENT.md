@@ -1,6 +1,8 @@
-## Task A 当前检查点：T‑09 已交付，C‑4 正式原生验收待跑
+## Task A 当前检查点：精确组合已通过原生验收，本机可同步测试
 
-五个原 PR head 已核对：IAM `b6a9745`、Capability `5e607fd`、Agent `40effb2`、BFF `d166a51`、App `e726cd61`。BFF/App 唯一 Public 28.19 同字节，BFF 真实 PG/Redis 投影及两项条件 PG 补验通过；BFF 格式/`check` 和 App `check` 通过。App 保留正文、显示超窗文案且无重发；BFF 两条保存命令继续拒绝 `personal_context`。正式原生浏览器及同步环境仍待实证；机器 Goal 已清除，不重建。详见 [TODO](../todo.md)。
+T‑09 按批准范围交付：原 PR head 分别为 IAM `b6a9745`、Capability `5e607fd`、Agent `40effb2`、BFF `d166a51`、App `e726cd61`。BFF/App 唯一 Public 28.19 同字节；只承接不可重试的 `context_window_exceeded`，不启用 `personal_context`。BFF/App 完整工程门通过；真实 PG/Redis 投影与两项条件 PG 补验通过。Root #66 精确组合 `4cb91169` 的拓扑、checkpoint、现役 relay 来源通过。
+
+T‑15 正式 Chromium 5/5，收据 `116d7c62ab4aa5e90f2076d4`，凭据扫描和回收通过。首次 0/5（`928147cc7f37fd650ee37b43`）为本机 PostgreSQL URL 缺显式角色，复用现有本机归一化后通过，未改 IAM。另保留 IAM/BFF/App/Capability（MCP/Custom API）/Admin 本机同步实例，已实测登录 303、会话／Project 列表／Admin me 200。未启动 Agent、Storage、Billing、System、Scheduler 的组合；未实证全 owner 单库。Root 治理原有 13 条声明破损边、381 条结构告警及 2 个未验证工具链仍保留；没有把本轮通过写成全仓治理通过。A‑01/A‑02/A‑07 未开始。机器 Goal 已清除；执行与遗留见 [TODO](../todo.md)。
 
 ## Task A 前置证据：T‑11 本地收口至 T‑09 实施前
 
