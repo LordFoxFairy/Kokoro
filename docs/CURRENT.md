@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录本轮分仓提交、验证和剩余项。BFF 原 PR #18 分支本地 `93336a1`，Root 仍固定 `8cb6169`。尚未推送、合并、部署或进入 C‑4；A‑01/A‑02/A‑07 仍停写。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交、实际验证和剩余项。机器 Goal 为 active。BFF 原 PR #18 分支本地 `c6b8085`，本轮收口 R237、Scheduler PATCH/retry、Mori 续流、Agent setup 的 BFF 接线及三份 Account HTTP 测试；Root 仍固定 `8cb6169`。T‑11 未闭环；未推送、合并、部署或进入 C‑4，A‑01/A‑02/A‑07 仍停写。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
