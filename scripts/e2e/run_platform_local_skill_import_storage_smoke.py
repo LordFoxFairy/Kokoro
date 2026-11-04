@@ -20,7 +20,8 @@ DEFAULT_STORAGE = Path("/Users/nako/.codex/worktrees/kokoro-storage-formal")
 DEFAULT_RUNTIME_CONFIG = ROOT / "var/dev/page-runtime/config-private.json"
 CASES = ("clean", "eicar", "ack_lost")
 INGRESS_CASE = "ingress_clean"
-DEFAULT_BFF = Path("/Users/nako/.codex/worktrees/kokoro-r257-bff-normal")
+DEFAULT_BFF = ROOT / "apps/kokoro-bff"
+DEFAULT_NODE = "/opt/homebrew/Cellar/node@24/24.20.0/bin/node"
 DEFAULT_BFF_ENV = ROOT / "apps/kokoro-bff/.env.local"
 DEFAULT_PLATFORM_ENV = ROOT / "apps/kokoro-capability/.env.local"
 
@@ -30,56 +31,116 @@ class QualificationError(RuntimeError):
 
 
 def prepare_ingress(
-    bff: Path, node: str, directory: Path, *, issue: bool
+    bff: Path,
+    node: str,
+    directory: Path,
+    *,
+    issue: bool,
+    bff_env: Path = DEFAULT_BFF_ENV,
+    platform_env: Path = DEFAULT_PLATFORM_ENV,
 ) -> dict[str, str]:
-    """Use the formal BFF credential/token clients; never recreate OAuth identity."""
-    client = bff / "src/infrastructure/clients/platform"
-    program = f'''
-import {{writeFile}} from "node:fs/promises";
-import {{CatalogCredentialSource}} from {json.dumps((client / 'catalog-credential.ts').as_uri())};
-import {{CatalogTokenSource}} from {json.dumps((client / 'catalog-token.ts').as_uri())};
-import {{ProjectionCredentialSource}} from {json.dumps((client / 'projection-credential.ts').as_uri())};
-import {{ProjectionTokenSource}} from {json.dumps((client / 'projection-token.ts').as_uri())};
-const need=(key)=>{{const v=process.env[key];if(!v||v!==v.trim())throw new Error(key+" required");return v;}};
-const tenantId=need("KOKORO_TENANT_ID"),iam=need("KOKORO_IAM_BASE_URL");
-const catalog=new CatalogCredentialSource(need("KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE"));
-const projection=new ProjectionCredentialSource(need("KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE"));
-await catalog.read(tenantId);await projection.read(tenantId);
-const runtime=Object.fromEntries(["KOKORO_IAM_BASE_URL","KOKORO_REDIS_URL","KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE"].map(k=>[k,need(k)]));
-if({str(issue).lower()}){{
- const deadline=performance.now()+15000;
- const values=await Promise.all([new CatalogTokenSource(iam,catalog,10000).get(tenantId,undefined,deadline),new ProjectionTokenSource(iam,projection,10000).get(tenantId,undefined,deadline)]);
- await writeFile({json.dumps(str(directory / 'catalog-bearer.json'))},JSON.stringify({{accessToken:values[0]}}),{{mode:0o600,flag:"wx"}});
- await writeFile({json.dumps(str(directory / 'wrong-surface-bearer.json'))},JSON.stringify({{accessToken:values[1]}}),{{mode:0o600,flag:"wx"}});
-}}
-process.stdout.write(JSON.stringify({{tenantId,runtime}}));
-'''
+    """Prepare run-owned native pairs; do not exchange tokens or copy active service secrets."""
+    client = bff / "src/infrastructure/clients/platform/platform-service-credential.ts"
+    program = r"""
+import {randomBytes} from "node:crypto";
+import {readFile,writeFile} from "node:fs/promises";
+import {isAbsolute,join} from "node:path";
+import {parseEnv} from "node:util";
+
+const [client,platformPath,bffPath,directory,issue]=process.argv.slice(1);
+const {PlatformServiceCredentialSource}=await import(client);
+const platform=parseEnv(await readFile(platformPath,"utf8"));
+const bff=parseEnv(await readFile(bffPath,"utf8"));
+const need=(env,key)=>{
+  const value=env[key];
+  if(!value||value!==value.trim()) throw new Error(key+" required");
+  return value;
+};
+for(const key of [
+  "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE",
+  "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE",
+]) {
+  if(Object.hasOwn(platform,key)||Object.hasOwn(process.env,key))
+    throw new Error("retired Platform configuration");
+}
+const tenantId=need(bff,"KOKORO_TENANT_ID");
+const executionFile=need(platform,"KOKORO_PLATFORM_IAM_EXECUTION_SERVICE_CREDENTIAL_FILE");
+if(!isAbsolute(executionFile)||!isAbsolute(directory)) throw new Error("absolute credential paths required");
+const receiverFile=join(directory,"platform-service-credentials.json");
+const runtime={
+  KOKORO_IAM_BASE_URL:need(platform,"KOKORO_IAM_BASE_URL"),
+  KOKORO_REDIS_URL:need(platform,"KOKORO_REDIS_URL"),
+  KOKORO_PLATFORM_IAM_EXECUTION_SERVICE_CREDENTIAL_FILE:executionFile,
+  KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE:receiverFile,
+};
+const privateJson=(path,value)=>writeFile(path,JSON.stringify(value),{mode:0o600,flag:"wx"});
+const entries=[];
+for(const [surface,bearerFile] of [
+  ["catalog","catalog-bearer.json"],["projection","wrong-surface-bearer.json"],
+]) {
+  const entry={
+    credential_id:"local-import-"+surface+"-"+randomBytes(12).toString("hex"),
+    secret:randomBytes(48).toString("base64url"),
+    caller:"kokoro-bff",
+    tenant_id:tenantId,
+    surfaces:[surface],
+  };
+  const senderFile=join(directory,"bff-"+surface+".json");
+  await privateJson(senderFile,{version:1,entries:[entry]});
+  const bearer=await new PlatformServiceCredentialSource(senderFile,surface).get(tenantId);
+  if(issue==="true") await privateJson(join(directory,bearerFile),{accessToken:bearer});
+  entries.push(entry);
+}
+await privateJson(receiverFile,{version:1,entries});
+process.stdout.write(JSON.stringify({tenantId,runtime}));
+"""
     completed = subprocess.run(
         [
             node,
-            f"--env-file={DEFAULT_PLATFORM_ENV}",
-            f"--env-file={DEFAULT_BFF_ENV}",
-            "--import", str(bff / "node_modules/tsx/dist/loader.mjs"),
-            "--input-type=module", "-e", program,
+            "--import",
+            "tsx",
+            "--input-type=module",
+            "-e",
+            program,
+            "--",
+            client.as_uri(),
+            str(platform_env),
+            str(bff_env),
+            str(directory),
+            str(issue).lower(),
         ],
-        cwd=bff, text=True, capture_output=True, timeout=25,
+        cwd=bff,
+        text=True,
+        capture_output=True,
+        timeout=25,
     )
     if completed.returncode != 0:
-        # Do not expose private subprocess diagnostics, headers or token responses.
-        raise QualificationError("formal BFF ingress credential/token preparation failed")
+        # Do not expose private subprocess diagnostics or credential material.
+        raise QualificationError(
+            "native Platform ingress credential preparation failed"
+        )
     value = json.loads(completed.stdout)
     if not isinstance(value, dict) or set(value) != {"tenantId", "runtime"}:
         raise QualificationError("formal ingress preparation envelope invalid")
     tenant = value["tenantId"]
     runtime = value["runtime"]
     if (
-        not isinstance(tenant, str) or not tenant or tenant != tenant.strip()
+        not isinstance(tenant, str)
+        or not tenant
+        or tenant != tenant.strip()
         or not isinstance(runtime, dict)
-        or set(runtime) != {
-            "KOKORO_IAM_BASE_URL", "KOKORO_REDIS_URL",
-            "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE",
+        or set(runtime)
+        != {
+            "KOKORO_IAM_BASE_URL",
+            "KOKORO_REDIS_URL",
+            "KOKORO_PLATFORM_IAM_EXECUTION_SERVICE_CREDENTIAL_FILE",
+            "KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE",
         }
-        or not all(isinstance(v, str) and v and v == v.strip() for v in runtime.values())
+        or not all(
+            isinstance(v, str) and v and v == v.strip() for v in runtime.values()
+        )
+        or runtime["KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE"]
+        != str(directory / "platform-service-credentials.json")
     ):
         raise QualificationError("formal ingress preparation identity invalid")
     return {**runtime, "KOKORO_SMOKE_TRUSTED_TENANT_ID": tenant}
@@ -213,21 +274,39 @@ def validate_harness_load(
         env["QUALIFY_OBSERVER_DRAIN_TEST"] = "1"
         observer_negative = subprocess.run(
             [node, str(storage / "node_modules/tsx/dist/cli.mjs"), str(harness)],
-            cwd=storage, env=env, stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE, text=True, timeout=15,
+            cwd=storage,
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=15,
         )
         observer_result = json.loads(Path(env["QUALIFY_MANIFEST"]).read_text())
-        if observer_negative.returncode == 0 or observer_result.get("phase") != "preserved" or observer_result.get("activeSockets") != 0:
-            raise QualificationError("observer drain negative did not preserve after bounded shutdown")
+        if (
+            observer_negative.returncode == 0
+            or observer_result.get("phase") != "preserved"
+            or observer_result.get("activeSockets") != 0
+        ):
+            raise QualificationError(
+                "observer drain negative did not preserve after bounded shutdown"
+            )
         env["QUALIFY_OBSERVER_DRAIN_TEST"] = "0"
         env["QUALIFY_OBSERVER_PENDING_TEST"] = "1"
         pending_negative = subprocess.run(
             [node, str(storage / "node_modules/tsx/dist/cli.mjs"), str(harness)],
-            cwd=storage, env=env, stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE, text=True, timeout=15,
+            cwd=storage,
+            env=env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=15,
         )
         proof = json.loads(Path(env["QUALIFY_MANIFEST"] + ".pending-proof").read_text())
-        if pending_negative.returncode == 0 or proof != {"preserved": True, "teardownCalls": 0, "lateWrites": 0}:
+        if pending_negative.returncode == 0 or proof != {
+            "preserved": True,
+            "teardownCalls": 0,
+            "lateWrites": 0,
+        }:
             raise QualificationError("pending owner callback negative drifted")
         env["QUALIFY_OBSERVER_PENDING_TEST"] = "0"
         async_ack_manifest = evidence / "async-ack-manifest.json"
@@ -256,7 +335,9 @@ def validate_harness_load(
         )
         async_ack_result = json.loads(async_ack_manifest.read_text())
         if async_ack_result.get("asyncAckObserved") is not True:
-            raise QualificationError("asynchronous IPC acknowledgement was not observed")
+            raise QualificationError(
+                "asynchronous IPC acknowledgement was not observed"
+            )
         teardown_manifest = evidence / "teardown-manifest.json"
         env["QUALIFY_ASYNC_ACK_TEST"] = "0"
         env["QUALIFY_TEARDOWN_TEST"] = "1"
@@ -281,7 +362,9 @@ def validate_harness_load(
             timeout=30,
         )
         if negative.returncode == 0:
-            raise QualificationError("teardown preservation negative unexpectedly passed")
+            raise QualificationError(
+                "teardown preservation negative unexpectedly passed"
+            )
         result = json.loads(teardown_manifest.read_text())
         if (
             result.get("phase") != "preserved"
@@ -318,7 +401,7 @@ def validate_harness_load(
 
 def ingress_observer_source() -> str:
     """Transparent, bounded observation inside the already-owned Storage harness."""
-    return r'''
+    return r"""
 const storageCounts=new Map();
 const observerSockets=new Set(),observerTasks=new Set(),observerControllers=new Set();
 let observerDraining=false;
@@ -396,14 +479,14 @@ async function stopStorageObserver(){
  }
  finally{clearTimeout(timer);}
 }
-'''
+"""
 
 
 def harness_source(storage: Path) -> str:
     fixture = storage / "test/fixtures"
     generated = storage / "src/generated/proto/kokoro/storage/v3/storage_pb.ts"
     asset_constants = storage / "src/assets/asset.constants.ts"
-    return f'''import {{ createConnection, createServer }} from "node:net";
+    return f"""import {{ createConnection, createServer }} from "node:net";
 import {{ createServer as createHttpServer, request as httpRequest }} from "node:http";
 import {{ chmod, readFile, rename, rm, writeFile }} from "node:fs/promises";
 import {{ createHash }} from "node:crypto";
@@ -413,11 +496,11 @@ import {{
   HeadBucketCommand, ListObjectVersionsCommand, PutBucketVersioningCommand,
   S3Client
 }} from "@aws-sdk/client-s3";
-import {{ loadSmokeProviderConfig }} from {json.dumps(str(fixture / 'smoke-provider.schema.ts'))};
-import {{ SmokeProvider }} from {json.dumps(str(fixture / 'smoke-provider.ts'))};
-import {{ SmokeRuntime }} from {json.dumps(str(fixture / 'smoke-runtime.ts'))};
-import {{ SmokeStorageMetadata }} from {json.dumps(str(fixture / 'smoke-storage-metadata.ts'))};
-import {{ isolatedPrisma }} from {json.dumps(str(fixture / 'isolated-prisma.ts'))};
+import {{ loadSmokeProviderConfig }} from {json.dumps(str(fixture / "smoke-provider.schema.ts"))};
+import {{ SmokeProvider }} from {json.dumps(str(fixture / "smoke-provider.ts"))};
+import {{ SmokeRuntime }} from {json.dumps(str(fixture / "smoke-runtime.ts"))};
+import {{ SmokeStorageMetadata }} from {json.dumps(str(fixture / "smoke-storage-metadata.ts"))};
+import {{ isolatedPrisma }} from {json.dumps(str(fixture / "isolated-prisma.ts"))};
 import {{ CreateUploadRequestSchema, CreateUploadResponseSchema, CompleteUploadRequestSchema, CompleteUploadResponseSchema, ScanState as WireScanState }} from {json.dumps(str(generated))};
 import {{ ScanState as FixtureScanState }} from {json.dumps(str(asset_constants))};
 
@@ -596,7 +679,7 @@ async function close() {{
  teardownSocket?.destroy(); sdk.destroy(); await rm(socketPath,{{force:true}}); if(failures.length)throw new AggregateError(failures,"qualification cleanup failed");
 }}
 try{{await main();}}catch(e){{failure=e;}}finally{{try{{await close();}}catch(e){{failure=failure?new AggregateError([failure,e]):e;}}}} if(failure)throw failure;
-'''
+"""
 
 
 def case_environment(
@@ -616,11 +699,21 @@ def case_environment(
         "KOKORO_OBJECT_STORE_DRIVER": "s3",
         "KOKORO_OBJECT_STORE_PROFILE": "custom",
         "KOKORO_OBJECT_STORE_BUCKET": bucket,
-        "KOKORO_OBJECT_STORE_REGION": required(storage_config, "KOKORO_OBJECT_STORE_REGION"),
-        "KOKORO_OBJECT_STORE_ENDPOINT": required(storage_config, "KOKORO_OBJECT_STORE_ENDPOINT"),
-        "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": required(storage_config, "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"),
-        "KOKORO_OBJECT_STORE_ACCESS_KEY_ID": required(storage_config, "KOKORO_OBJECT_STORE_ACCESS_KEY_ID"),
-        "KOKORO_OBJECT_STORE_SECRET_ACCESS_KEY": required(storage_config, "KOKORO_OBJECT_STORE_SECRET_ACCESS_KEY"),
+        "KOKORO_OBJECT_STORE_REGION": required(
+            storage_config, "KOKORO_OBJECT_STORE_REGION"
+        ),
+        "KOKORO_OBJECT_STORE_ENDPOINT": required(
+            storage_config, "KOKORO_OBJECT_STORE_ENDPOINT"
+        ),
+        "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT": required(
+            storage_config, "KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"
+        ),
+        "KOKORO_OBJECT_STORE_ACCESS_KEY_ID": required(
+            storage_config, "KOKORO_OBJECT_STORE_ACCESS_KEY_ID"
+        ),
+        "KOKORO_OBJECT_STORE_SECRET_ACCESS_KEY": required(
+            storage_config, "KOKORO_OBJECT_STORE_SECRET_ACCESS_KEY"
+        ),
         "KOKORO_OBJECT_STORE_FORCE_PATH_STYLE": "true",
         "KOKORO_SCANNER_DRIVER": "clamav",
         "KOKORO_SCANNER_HOST": required(storage_config, "KOKORO_SCANNER_HOST"),
@@ -646,22 +739,39 @@ def run_case(
     storage_config: dict[str, str],
     case: str,
     bff: Path = DEFAULT_BFF,
-    bff_node: str = "/Users/nako/.nvm/versions/node/v22.22.2/bin/node",
+    bff_node: str = DEFAULT_NODE,
+    *,
+    bff_env: Path = DEFAULT_BFF_ENV,
+    platform_env: Path = DEFAULT_PLATFORM_ENV,
 ) -> None:
     directory = Path(tempfile.mkdtemp(prefix="kokoro-q-"))
     harness_directory = storage / ".tmp" / f"qualify-{case}-{secrets.token_hex(8)}"
     harness_directory.mkdir(parents=True, mode=0o700)
     harness_directory.chmod(0o700)
     succeeded = False
+    ingress_material = None
     try:
         harness = harness_directory / "storage-harness.ts"
         harness.write_text(harness_source(storage))
         env, credential = case_environment(
             dict(os.environ), storage_config, directory, case
         )
-        ingress = prepare_ingress(bff, bff_node, directory, issue=True) if case == INGRESS_CASE else {}
-        env.update(ingress)
-        if ingress:
+        ingress = {}
+        if case == INGRESS_CASE:
+            ingress_material = tempfile.TemporaryDirectory(
+                prefix="kokoro-ingress-keys-"
+            )
+            ingress = prepare_ingress(
+                bff,
+                bff_node,
+                Path(ingress_material.name),
+                issue=True,
+                bff_env=bff_env,
+                platform_env=platform_env,
+            )
+            env["KOKORO_SMOKE_TRUSTED_TENANT_ID"] = ingress[
+                "KOKORO_SMOKE_TRUSTED_TENANT_ID"
+            ]
             env["QUALIFY_SUBJECT_ID"] = f"ingress-{secrets.token_hex(16)}"
         prepare_journal_root(env, directory)
         env["QUALIFY_MANIFEST"] = str(directory / "resource-manifest.json")
@@ -704,8 +814,6 @@ def run_case(
                 **os.environ,
                 **ingress,
                 "KOKORO_CONNECT_E2E": "1" if ingress else "0",
-                "KOKORO_PLATFORM_SMOKE_CATALOG_BEARER_FILE": str(directory / "catalog-bearer.json"),
-                "KOKORO_PLATFORM_SMOKE_WRONG_SURFACE_BEARER_FILE": str(directory / "wrong-surface-bearer.json"),
                 "KOKORO_E2E": "1",
                 "KOKORO_TEST_POSTGRES_ADMIN_URL": env["KOKORO_POSTGRES_URL"],
                 "KOKORO_STORAGE_URL": str(ready["baseUrl"]),
@@ -717,12 +825,26 @@ def run_case(
                 "KOKORO_STORAGE_QUALIFY_SOCKET": env["QUALIFY_SOCKET"],
                 "KOKORO_STORAGE_QUALIFY_TOKEN": env["QUALIFY_TOKEN"],
             }
+            if ingress_material is not None:
+                ingress_directory = Path(ingress_material.name)
+                test_env.update(
+                    {
+                        "KOKORO_PLATFORM_SMOKE_CATALOG_BEARER_FILE": str(
+                            ingress_directory / "catalog-bearer.json"
+                        ),
+                        "KOKORO_PLATFORM_SMOKE_WRONG_SURFACE_BEARER_FILE": str(
+                            ingress_directory / "wrong-surface-bearer.json"
+                        ),
+                    }
+                )
             subprocess.run(
                 [
                     node,
                     str(platform / "node_modules/vitest/vitest.mjs"),
                     "run",
-                    "test/smoke/local-skill-import-connect.e2e.test.ts" if ingress else "test/smoke/local-skill-import-storage.e2e.test.ts",
+                    "test/smoke/local-skill-import-connect.e2e.test.ts"
+                    if ingress
+                    else "test/smoke/local-skill-import-storage.e2e.test.ts",
                     "--no-file-parallelism",
                 ],
                 cwd=platform,
@@ -743,7 +865,9 @@ def run_case(
                 if test_error is None:
                     test_error = QualificationError("Storage harness cleanup timeout")
             if process.returncode != 0 and test_error is None:
-                test_error = QualificationError("Storage harness failed; inspect private log")
+                test_error = QualificationError(
+                    "Storage harness failed; inspect private log"
+                )
             if test_error is not None:
                 update_failure_manifest(
                     Path(env["QUALIFY_MANIFEST"]), test_error, log_path
@@ -752,12 +876,20 @@ def run_case(
             raise test_error
         succeeded = True
     finally:
+        # Native test credentials are never part of retained success/failure evidence.
+        if ingress_material is not None:
+            ingress_material.cleanup()
         if succeeded:
-            # Tokens are short-lived secrets, not evidence. Keep cleanup receipts.
-            for name in ("catalog-bearer.json", "wrong-surface-bearer.json"):
-                (directory / name).unlink(missing_ok=True)
             shutil.rmtree(harness_directory)
-            print(json.dumps({"status": "case-passed", "case": case, "evidence_directory": str(directory)}))
+            print(
+                json.dumps(
+                    {
+                        "status": "case-passed",
+                        "case": case,
+                        "evidence_directory": str(directory),
+                    }
+                )
+            )
         else:
             print(
                 json.dumps(
@@ -776,16 +908,19 @@ def main() -> int:
     parser.add_argument("--platform", type=Path, default=DEFAULT_PLATFORM)
     parser.add_argument("--storage", type=Path, default=DEFAULT_STORAGE)
     parser.add_argument("--runtime-config", type=Path, default=DEFAULT_RUNTIME_CONFIG)
-    parser.add_argument(
-        "--node", default="/opt/homebrew/Cellar/node@24/24.20.0/bin/node"
-    )
+    parser.add_argument("--node", default=DEFAULT_NODE)
     parser.add_argument("--case", choices=(*CASES, INGRESS_CASE), action="append")
     parser.add_argument("--bff", type=Path, default=DEFAULT_BFF)
-    parser.add_argument("--bff-node", default="/Users/nako/.nvm/versions/node/v22.22.2/bin/node")
+    parser.add_argument("--bff-node")
+    parser.add_argument("--bff-env", type=Path, default=DEFAULT_BFF_ENV)
+    parser.add_argument("--platform-env", type=Path, default=DEFAULT_PLATFORM_ENV)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     node24(args.node)
     cases = tuple(args.case or CASES)
+    bff_node = args.bff_node or args.node
+    if INGRESS_CASE in cases:
+        node24(bff_node)
     for path in (args.platform, args.storage):
         if not path.is_dir():
             raise QualificationError(f"owner checkout missing: {path}")
@@ -813,8 +948,17 @@ def main() -> int:
     validate_harness_load(args.node, args.storage.resolve(), storage_config)
     if args.dry_run:
         if INGRESS_CASE in cases:
-            with tempfile.TemporaryDirectory(prefix="kokoro-ingress-preflight-") as temporary:
-                prepare_ingress(args.bff.resolve(), args.bff_node, Path(temporary), issue=False)
+            with tempfile.TemporaryDirectory(
+                prefix="kokoro-ingress-preflight-"
+            ) as temporary:
+                prepare_ingress(
+                    args.bff.resolve(),
+                    bff_node,
+                    Path(temporary),
+                    issue=False,
+                    bff_env=args.bff_env.resolve(),
+                    platform_env=args.platform_env.resolve(),
+                )
         print(
             json.dumps(
                 {
@@ -839,9 +983,15 @@ def main() -> int:
             storage_config,
             case,
             args.bff.resolve(),
-            args.bff_node,
+            bff_node,
+            bff_env=args.bff_env.resolve(),
+            platform_env=args.platform_env.resolve(),
         )
-    print(json.dumps({"status": "passed", "cases": list(cases), "owned_resources_remaining": 0}))
+    print(
+        json.dumps(
+            {"status": "passed", "cases": list(cases), "owned_resources_remaining": 0}
+        )
+    )
     return 0
 
 
