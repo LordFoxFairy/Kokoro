@@ -1,12 +1,12 @@
 ## Task A 当前检查点：T‑11 行为已验，G0 处置复核及 C‑4 进行中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `blocked`：上一轮限定只补 T‑11 验证，现需确认 BFF 归并写区；T‑09 跨仓终态配对也待确认。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 合入原 PR12 基线后的候选已通过正式 `verify`、build 和受影响真实 Schema/MCP；旧 fixture 只补当前连接指针，真实项目发布 15 项复验及独占 SSE 用例通过。已快进本地原 PR13 分支到 `5e607fd`，未推。Agent 原 PR46 隔离候选 `40effb2` 已在真实 PG 定向补齐原三项失败：R35 共享 builder 夹具纠偏后原组 18 项通过，旧终态读取以已审历史配方复验原单例通过；未改生产或放宽读取门。同 SHA 工程门通过；真实集成仅 26 个 Display 在环境守卫未启动，改用专用隔离库定向补验全部通过，资源清单恢复。Agent 本地候选已快进，未推送；原 PR46 远端 head 为 `codex/agent-run-lifecycle`，不等于本地候选分支名。实测 Agent 8.11 新终态 `context_window_exceeded` 被 BFF 8.10 消费器拒绝，BFF 持久约束及 App 生成枚举也未承接，当前不得冻结该跨仓组合。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
+[当前 TODO](../todo.md) 是执行清单，[技术方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计和证据。用户清除旧 Goal 后，新 Goal 已按原目标建立，状态 `active`；T‑09 跨仓终态配对仍待确认。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 合入原 PR12 基线后的候选已通过正式 `verify`、build 和受影响真实 Schema/MCP；旧 fixture 只补当前连接指针，真实项目发布 15 项复验及独占 SSE 用例通过。已快进本地原 PR13 分支到 `5e607fd`，未推。Agent 原 PR46 隔离候选 `40effb2` 已在真实 PG 定向补齐原三项失败：R35 共享 builder 夹具纠偏后原组 18 项通过，旧终态读取以已审历史配方复验原单例通过；未改生产或放宽读取门。同 SHA 工程门通过；真实集成仅 26 个 Display 在环境守卫未启动，改用专用隔离库定向补验全部通过，资源清单恢复。Agent 本地候选已快进，未推送；原 PR46 远端 head 为 `codex/agent-run-lifecycle`，不等于本地候选分支名。实测 Agent 8.11 新终态 `context_window_exceeded` 被 BFF 8.10 消费器拒绝，BFF 持久约束及 App 生成枚举也未承接，当前不得冻结该跨仓组合。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
 
 **Root/C‑4 补验：** `8c71a7c4` 治理测试通过（4 项跳过）。`9a55df34` 对齐前台 fixture 与 Node 治理 profile，受影响测试通过；四个旧 gitlink 不匹配，结构审计仍 FAIL。独立复核未发现已批准退役的生产入口仍有消费者。默认 HTTP/`--chat` 仍走旧探针；原生前台模式未启动，当前没有最终组合的可同步端到端环境。
 
 **BFF/C‑4 基线：** `f0107a7` 正式默认测试通过，两个 PG 条件用例以 `45a2989` 定向真库补齐。正式 `check` 原因权限夹具被启动环境收紧而失败，改正确权限只补原负控通过。`45a2989` 仅机械格式化，完整格式门通过，未推送。
 
-**G0/T‑11 处置余差：** 全量核对 23 项，确认 15 项具名保留、旧 BffBusinessStore 已删除；4 项并入与 3 项拆分尚未完成。BFF `45a2989` 的 Project 现行授权、Chat 原 ID 重放、Submitted Run 历史恢复及 ScheduledTask 同 ID 接管四条真实基线已通过，PG/Redis 清单恢复。此次未改生产代码。Agent 8.11 原件已核验；私有生成证实旧 BFF 重写会误删新请求字段，且直接扩展 owner schema 会改变 Scheduled 保存输入的拒绝边界。待确认的终态配对仍不启用该字段。
+**G0/T‑11 处置余差：** 全量核对 23 项，确认 15 项具名保留、旧 BffBusinessStore 已删除；原 4 项并入、3 项拆分中，StableId 已在 BFF `f7d1e69` 本地归并并通过定向回归；剩 3 项并入、3 项拆分。BFF `45a2989` 的 Project 现行授权、Chat 原 ID 重放、Submitted Run 历史恢复及 ScheduledTask 同 ID 接管四条真实基线已通过，PG/Redis 清单恢复。这些是归并前证据；StableId 候选另通过真实 Chat 同键重放、ScheduledTask 接管及固定时钟测试并回收资源。Agent 8.11 原件已核验；私有生成证实旧 BFF 重写会误删新请求字段，且直接扩展 owner schema 会改变 Scheduled 保存输入的拒绝边界。待确认的终态配对仍不启用该字段。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 

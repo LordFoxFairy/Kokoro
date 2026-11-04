@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项并入与三项拆分仍有处置余差；C‑4 独立门已取得现有候选证据。机器 Goal 为 `blocked`：T‑11 限定只补验证，首批三项归并的 BFF 写区待确认；T‑09 终态配对待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项并入与三项拆分仍有处置余差；C‑4 独立门已取得现有候选证据。新机器 Goal 为 `active`，见[当前执行清单](../../../todo.md)。T‑11 已归并 StableId，下一项为两个 AgentRuns reader；T‑09 终态配对待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
@@ -63,7 +63,7 @@
 - **BFF C‑4 基线补验**：在独立构建区用 Node 24.20.0 / pnpm 11.25.0 对 `f0107a7` 跑正式门。lint、typecheck、合同生成/静态/语义和 build 通过；正式 `check` exit 1，合同套件唯一失败是启动器 `umask 077` 将试图制造的 0644 负控文件变成 0600。用正确的权限条件仅复跑原具名负控通过；没有改权限规则或测试。随后正式 `pnpm test` 通过，2 个 PG 条件用例未运行；仅在 `45a2989` 的自有隔离库补这两项，证实 fresh 安装/回滚和 Project tombstone/index，资源清单恢复。另 `format:check` 原只有 `mcp-personal.ts` 一处换行，原 PR18 本地 `45a2989` 按原格式器修正，TypeScript 规范化语法与注释逐字相同，完整格式清单通过。BFF/App 新终态候选及最终真实组合尚未运行。
 
 - **T‑11 G0 全量处置复核**：按 G0 [原清单 §10.5](../specs/2026-10-30-task-a-cleanup-inventory.md) 对 BFF `45a2989` 的 23 项逐项核对：15 项保留具名边界、1 项旧 BffBusinessStore 已删除、4 项并入余差、3 项部分拆分。旧运行入口、全局 locator 和旧 IAM producer 的移除证据不变；旧 import 归零不代表每项按原 disposition 履约。未见后继有效裁决豁免这些处置。
-  - **并入首批（三项）**：`stable-id-generator`、`project-execution-binding-reader`、`submitted-agent-run-reader` 仅移动接口。按原 G0 删除独立接口和纯转发：StableId 沿唯一现役算法，保相同 SHA-256 输入、前缀与截断；两个 reader 沿现 AgentRuns 注入、原 Pool/SQL、当前授权与历史恢复各自的语义。主控已在精确 `45a2989` 真 PG/独占 Redis 补 **R146**（绑定授权、撤权及取消）、**R189**（Chat 原 ID 重放、冲突零写）、**Submitted Run**（历史恢复及越界拒绝）、**ScheduledTask outbox**（事务、租约与重启同 ID）四条基线，全部通过无跳过；资源清单恢复。这是归并前行为基线，不是新 provider 验收。本轮只补验证，生产归并待确认。
+  - **并入首批（三项）**：`stable-id-generator`、`project-execution-binding-reader`、`submitted-agent-run-reader` 仅移动接口。按原 G0 删除独立接口和纯转发：StableId 沿唯一现役算法，保相同 SHA-256 输入、前缀与截断；两个 reader 沿现 AgentRuns 注入、原 Pool/SQL、当前授权与历史恢复各自的语义。主控已在精确 `45a2989` 真 PG/独占 Redis 补 **R146**（绑定授权、撤权及取消）、**R189**（Chat 原 ID 重放、冲突零写）、**Submitted Run**（历史恢复及越界拒绝）、**ScheduledTask outbox**（事务、租约与重启同 ID）四条基线，全部通过无跳过；资源清单恢复。这是归并前行为基线，不是新 provider 验收。此段记归并前基线。新 Goal 下 StableId `f7d1e69` 已完成本地归并：源码 lint、构建、相关定向门及 R189/ScheduledTask outbox/固定时钟真库回归通过，资源清单复位；两 reader 尚未归并。
   - **其余一项并入**：Account 已注入唯一 PG Personalization 实现，但 `PersonalizationProvider` 仍重复声明原接口。核对以现具名实现直接推导窄调用，不新增抽象；保 revision CAS、取消及提交结果未知语义。
   - **三项部分拆分**：Chat 已分公开 Share 和 AG‑UI，但 RunDisplay 仍借宽 Chat 依赖；Projects 有具名 Skill 选择入口但底层仍绑整套 ProjectService，MCP 同样持有全量服务；ScheduledTask 已有独立 read/outbox/receipt，callback 仍借 mutation service 读 `findRecord`。按消费者真实需要分别收窄，不拆数据库池或事务，不扩新功能。其余四项与首批不同写区，未授权实施；完成前 T‑11 处置和 C‑4 最终组合继续 OPEN。
 
@@ -230,15 +230,15 @@
 
 ### 2.1 机器 Goal 与阶段目标
 
-本轮主窗口 `get_goal` 核验：机器Goal为 **active**（用户已恢复推进；旧I-38等待条件已被否决，非paused/blocked/complete），目标仍是“完成 Task A 的 C-1.3～C-4 闭环，先冻结问题/目标/约束/TODO，完成 native-session 与旧实现清理和串行全量验证，A-01/A-02/A-07 保持停写”。复用这一 Goal，不创建重叠 Goal，不提前 complete。
+旧 Goal 已由用户清除；主窗口按最新请求和根目录 todo.md 新建并核验机器 Goal 为 **active**，范围仍是 C-1.3～C-4，A-01/A-02/A-07 保持门控。不以阶段通过提前 complete。
 
 | 阶段目标 | 状态 | 可核验的完成条件 |
 | --- | --- | --- |
 | G0 设计门 | 认证D0设计面主方复核通过；Nest/owner决定保留 | IAM0.20及BFF安全状态/relay候选机器合同已沿原PR交付；消费者及新组合另验，不以设计门或旧artifact代替G1 |
 | G-DOC 当前方案与追踪 | VERIFIED（文档基线） | 初始17问题/17TODO及A-01～A-16已独审；执行中新发现T-18同步登记，状态持续更新；不算产品完成 |
 | G1 C-1.3 认证切换 | VERIFIED（当前冻结组合） | 正式五旅程、账户消费、真实包producer/原四GET及组合负控通过；当前旧认证零目标消费者与T14 receiver处置已核，主方及独审确认；未来组合变更按影响回归 |
-| G2 C-2/C-3 清理 | VERIFIED（本地组合） | T‑17 真实进程、T‑11 无旧运行时及目标消费者、真实受影响存储/R336均有证据；最终冻结组合仍由 G3 验收。 |
-| G3 C-4 与同步端到端 | IN_PROGRESS | 主方在冻结组合完成 owner全门/真实I/O/Root治理/健康与浏览器旅程收据；skip不计成功 |
+| G2 C-2/C-3 清理 | IN_PROGRESS | T‑17 与旧入口退役已验；StableId 已本地归并，剩 3 项并入、3 项拆分。 |
+| G3 C-4 与同步端到端 | WAITING_FINAL（已有各仓阶段证据） | 主方在冻结组合完成 owner全门/真实I/O/Root治理/健康与浏览器旅程收据；skip不计成功 |
 | G-A 产品后续 | GATED | 先完成G1～G3，再A-01/A-02、后A-07；其他A任务按原优先级领取，不从本清理Goal中消失 |
 
 ### 2.2 A-01～A-16，不缩小原任务
@@ -260,7 +260,7 @@
 | A-13 | Agent与外部聊天应用 | 后续backlog；已有能力真实owner/callback/过期状态，不增加未裁决能力 |
 | A-14 | 语音输入 | 后续backlog；真实麦克风/转写/拒绝/取消，不用演示文本 |
 | A-15 | 体验与性能 | 随产品切片验收；响应式/回焦/真实延迟，不藏加载或伪造成功 |
-| A-16 | 文档、PR、合并与运行配对 | 随片交付；Root/App/BFF/IAM/Capability各自draft PR，Root已精确pin当前子仓；限定真实链路已验，完整产品验收/运行配对仍待；未merge或上线 |
+| A-16 | 文档、PR、合并与运行配对 | 随片交付；Root/App/BFF/IAM/Capability各自draft PR，旧冻结组合已精确配对；当前候选 gitlink、最终验收/运行配对仍待；未merge或上线 |
 
 Task B 继续拥有能力配置/授权/安装、账户协作等业务；Task A 使用其固定契约与真实资格。`global_register` 属原 C-1.3 已批准清理依赖，不借此接管整个 Task B。
 
@@ -541,9 +541,9 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（消费切片） | App fdbb49f1主方完整contract452/architecture50/default6411、0skip及lint/types/build；当前正式native4/4。I-29后继owner版本另按影响固定消费，不将此项当全产品验收 |
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
-| T-09 | Root/各受影响 owner 最终串行门；Root | IN_PROGRESS | IAM、Capability、Agent owner 门有对应候选证据；BFF `f0107a7` 正式基线差额定向补齐，`45a2989` 仅格式。T‑11 G0 归并余差及 Agent 8.11→BFF→App 终态配对未收口；新候选、精确组合及 E2E 未运行。 |
+| T-09 | Root/各受影响 owner 最终串行门；Root | WAITING_FINAL（T‑11 和终态配对） | IAM、Capability、Agent owner 门有对应候选证据；BFF `f0107a7` 正式基线差额定向补齐，`45a2989` 仅格式。T‑11 G0 归并余差及 Agent 8.11→BFF→App 终态配对未收口；新候选、精确组合及 E2E 未运行。 |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | 行为 VERIFIED_LOCAL / G0 处置待收口 | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过。`45a2989` 首批四条真实行为基线通过；G0 四项并入与三项部分拆分未收口，生产写区待确认。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | 行为 VERIFIED_LOCAL / G0 处置待收口 | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过。`45a2989` 首批四条真实行为基线通过；StableId `f7d1e69` 已本地归并并定向验收；剩三项并入和三项拆分。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
@@ -556,7 +556,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 
 ### 5.1 下一检查点与工期口径（2026-11-03）
 
-#### 当前立即动作
+#### 历史检查点（2026-11-03，不作为当前排程）
 
 G1/T05已按完整证据链及源码复核收口，Root a612915a仅三份tracking docs已推原PR66；原正式五旅程、账户消费与包producer/原四GET不重跑。T17首片主方RED→最小AgentDispatch早期hook修复→冻结相关门GREEN及独审CLEAR；真实listener、在途HTTP/worker双释放顺序和DB末期回收已验，候选未提交/pin，不当完整T17。四feature正常drain均已按独有主方RED→最小hook前移→冻结相关门GREEN并独审CLEAR；累计6原文件未提交/pin，不是完整T17。`t17_sse_admission_read` 已只读确认锁定Nest原生return503OnClosing可在worker等待期间拒新请求，force-close不替代优雅SSE。关闭拒入主方已RED→原生return503OnClosing→冻结相关门GREEN，生产与测试复用main唯一options，不是测试专用假绿，未用force-close。SSE五源码已主方准确RED→最小实现→冻结相关门GREEN并独立规格/质量CLEAR，15文件候选未提交/pin；当前writer `t17_signal_failure_read` 的原Nest测试已被Root实际复验有限失败准确RED：原78保护PASS，新增5场景+父FAIL/0SKIP，无fixture/cleanup失败；private `kokoro-t17-finite-primary-red-d7nrju4e/result.json`。新增场景独审CLEAR；旧DB失败例已最小finally归还process状态，原断言/真实close及其他测试保持，Root再验84中78保护PASS/6准确RED/0SKIP，private `kokoro-t17-finite-compat-primary-red-rvc9n900/result.json`。owner设计先写回后实施原五hook最小候选，现已停写并由Root冻结format/lint/typecheck/build、原84保护/故障及121相关worker回归GREEN/0SKIP，1085输入保持，独立规格/质量CLEAR，private `kokoro-t17-finite-primary-green-flae_5uw/result.json`。DB close原字节、main/SSE控制语义及其他保护文件保持；累计16原文件候选未提交/pin，不冒实际main退出码或真实资源门；进程失败/挂起/初始化竞态与31秒出口只读盘点已完成，仍未实施，不以native enableShutdownHooks或旧fake shutdown用例冒已验。Root独占台账/Git/真实资源及后续source批准。有限失败独立清理/安全分类/非零状态切片亦已Root冻结GREEN并独审CLEAR；完整T17尚有挂起、启动失败/竞态、真实main signal/deadline出口及真实资源/SSE回归，T11待风险承接后删除；其后T09/T16/T15最终门与同步环境，A继续停写。
 
