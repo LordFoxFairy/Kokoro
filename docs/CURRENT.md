@@ -1,13 +1,13 @@
-## Task A 当前检查点：原正式五旅程已通过，inspection/G1继续收口
+## Task A 当前检查点：G1/T-05已验，恢复推进T-17
 
-唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护问题与写区。C-1.3～C-4 Goal active；原正式浏览器主路径及账户实际消费已验，G1/G2/G3整体未关闭，A01/A02/A07停写。
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护当前状态。机器Goal经用户恢复并由主方核验为active；G1已关闭当前冻结组合，G2/G3仍OPEN，A01/A02/A07停写。
 
-- **已验组合**：Root4e603743 / 原PR66精确pin IAM1fc3875/PR6、BFF8cb6169/PR18、App197f1102/PR50、Admin95c504d/PR5；四仓源码clean。正式原5/5通过：cold login、shared Admin、资格拒绝/恢复、UI退出、独立Session及membership撤销。原strict broker/源与Node/共享Admin/cleanup/quiescent/credential scan通过，资源全回收。没有merge main或部署。
-- **源门与账户组合**：I56各owner完整相关门和真实I/O保留；Root I57完整治理2142PASS/3SKIP/531subtests及Node/Ruff、源码冻结/独审后交付。账户生产Nest→IAM18检查（1profile/10账户wire），普通业务peer+actor无Cookie/Origin，账户独立peer+Cookie/Origin无actor；分页、self409/other200、tombstone、旧Cookieinvalid/应用删除required及独立存活全部通过，source/DB/dist/scan/回收保持。
-- **当前剩余**：inspection真实producer与G1独有负控映射仍待；已只读确认可复用真实IAM generic fixture的bffUserContext＋executionProof，同一user/tenant，不需新Schema/授权mock/产品SDK。版本化S3/ClamAV只读preflight及Capability/Storage fresh build已通过且源码保持；私有producer准备中，仍需实际四GET消费与有界组合负控，不将准备当验收。完整G1出口满足后才T17生命周期→T11遗留删除→T09/T16最终门/组合→T15同步环境。
-- **保留风险**：之前07c失败和不完整诊断不删除；较早Admin隔离build失败根因未取得日志，最新完整run无命令失败，后续仅有界分类观测。不以此伪称历史问题全查清。当前拓扑仍仅Agent47ca431未配对c761，Capability最新base整合/常驻环境归C4，未回退代码掩盖。
+- **G1已验**：Root4e603743精确组合IAM1fc3875/BFF8cb6169/App197f1102/Admin95c504d，原正式五旅程与真实账户消费保持；新增真实包上传/版本ACK→扫描CLEAN→验证→发布→安装→原BFF四GET通过。错误Origin/服务身份、伪身份头、独立purpose密钥失配与真实IAM中断按合同拒绝；源码/dist/DB清单、cleanup/凭据扫描通过。主方及独审最终复核无生产漂移，不靠单一四GET关闭全门。
+- **交付状态**：Root2fc0436c是原PR66中的文档后继，已验代码及gitlinks未变。本次仅同步三份tracking docs；IAM遗留PlatformWorkload server删除、旧smoke/R336漂移、Agent候选未pin及Capability最新base整合仍有明确后继owner。每仓沿原PR，不merge main、不部署。
+- **中断原因与恢复**：前次实施回合记录模型容量错误并failed，Goal blocked更新时间与失败结束时间一致；随后只读心跳未恢复实施，也未同步G1收据，不是业务验证失败。用户本次恢复active后，Root先串行收口台账并派具名writer进入T17，不再以定时汇总代替实施。
+- **当前写区**：`t17_native_lifecycle_cut` 先在BFF原Nest测试做真实AppModule listener/在途HTTP/worker drain的test-only RED，Root复现后批准最小production切片；独审负责规格/质量。尚未宣称T17生命周期通过，T11在其风险承接后删除旧图。
 
-C阶段仍6包，原A01～16责任另保留，已有实现但未逐项验收。没有常驻同步E2E环境，也不宣称所有仓常驻运行；本轮隔离实测已回收。无新增用户待决事项，主控统一Git/资源/复核，每仓仅原PR，不merge main、不部署。
+C阶段剩5包：T17→T11→T09/T16→T15。原A01～16责任保留；暂无常驻同步E2E环境，G1隔离资源已全部回收。历史失败和跳过仍保留，不将阶段通过等同全Task A完成。
 
 ---
 

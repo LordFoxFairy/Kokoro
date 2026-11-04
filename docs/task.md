@@ -17249,10 +17249,10 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 撤销最终复核：三子仓source/generated/test与各HEAD精确一致，六owner历史后缀保持；IAM verify125文件/1652PASS，BFF旧ignored dist经无消费者预检后重建通过，source及实际构建输出的引用标记零残留。Root/子仓diff及97本地链接通过，新标准方案仅文档一致性复核通过，未将其等同G0批准或新实现完成。
 
 
-### Task A 当前检查点（2026-11-03，覆盖前述历史等待/阶段交接）
+### Task A 当前检查点（2026-11-03，G1收口与执行恢复）
 
-以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)及[CURRENT](CURRENT.md)为准。Goal active，G1/G2/G3整体仍OPEN，A01/A02/A07停写。
+以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)及[CURRENT](CURRENT.md)为准。用户已恢复机器Goal active，主方实际核验；G1/T05当前冻结组合已验，G2/G3仍OPEN，A01/A02/A07停写。
 
-Root4e603743/原PR66精确组合IAM1fc3875/BFF8cb6169/App197f1102/Admin95c504d，原正式五旅程5/5通过，严格broker/四源与Node/共享Admin/cleanup及credential scan通过并全回收。I57完整治理2142/3SKIP/531subtests及Node/Ruff/冻结/独审已先交付；原07c失败与诊断不作新通过。账户实际生产Nest→IAM18检查/精确wire亦通过，source/DB/dist/scan/回收保持；原生请求ID旧alias仅harness输入错误，改标准名后保断言验证。
+Root4e603743原正式五旅程、真实账户消费，以及真实Skill包生产全链/原BFF四GET和代表组合负控共同满足G1；主方及独审复核源码、收据、dist和DB清单保持，S3 exact版本/进程/自有资源已回收。Root2fc0436c是此前文档后继，不替换已验代码。不以数量或私有fixture代替旧smoke/R336、T17/C4与全产品验收。
 
-当前继续inspection真实producer与G1独有负控映射；真实IAM generic fixture可合并bffUserContext＋executionProof，同用户/tenant，无新Schema/授权mock。完整G1出口满足后才T17→T11→T09/T16→T15。C仍6包；原A01～16责任、Agent未pin/Capability最新base整合、单库应用/常驻同步环境均未闭合。较早Admin隔离build失败保留且根因未查清，最新完整run无命令失败；不恢复旧代码或延时刷绿。每仓原PR、不merge main/部署，无用户待决事项。
+前次实施回合因模型容量错误failed，Goal blocked更新时间同秒；之后三次只读心跳没有实施worker，台账未收口。本次先串行同步G1/T05，再由 `t17_native_lifecycle_cut` test-only承接真实Nest listener/在途HTTP/worker drain；生产改动须主方复现RED后批准。当前C剩5包，顺序T17→T11→T09/T16→T15；IAM遗留producer、Agent未pin/Capability最新base、完整门及常驻单库环境保持未完。每仓原PR、不merge main或部署，无新增用户待决事项。
