@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交、验收与收口规则。机器 Goal 已恢复为 `active`。PostgreSQL 所在卷已复查约 34 GiB，高于 2 GiB 启动门槛；对象存储对同一个已确认空的测试桶仍拒绝写操作 `DeleteBucket`（`SlowDownWrite`），尚未启动下一轮真实存储验证。Root `8a172454` 已退役无法启动且没有现役调用方的旧 Chat GC Chromium runner；保留 BFF/PG 和 Web 的现役分层覆盖，未重跑历史浏览器组合。原生 Sandbox/Agent、Product/Lifecycle 与三种 Chromium 路径已有真实隔离证据。Root `ba4668ea` 已把 Project 原生写入、PG 归属、撤权零写、跨身份隔离和 IAM 停机拒绝纳入现有 runner，并退役旧 BFF session Bearer CLI；真实 BFF/IAM 复验通过，未重跑正式 App/浏览器组合。Capability `ef2d919`／`bf4aa07` 迁移 candidate readiness 与两个 workflow 的 global smoke 配置；未运行 CI。IAM `0.21.0` 私有候选通过五个受影响集成文件及现 BFF 原生 relay 的真实 PG/Redis 验证，尚未提交或发布。最近一次 `ingress_clean` 原生预检／dry-run 通过，真测建库因当时空间不足失败，未执行到业务断言；自有库已回收，空测试桶仍待对象存储恢复后删除。默认存储和 R336 真测未跑，C‑4 等待；A‑01/A‑02/A‑07 保持停写。Root gitlinks 未变，未推送、合并或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是机器 Goal `active` 的执行台账。T‑17 已本地提交。T‑11 的 Root 原生 ingress `237be60c`、IAM 退役 `b6a9745` 均已本地提交；IAM 0.21.0 已本地打包并核验来源/摘要，独立安装、编译及真实 PG/Redis 消费通过，尚未发布。原阶段登录与业务证据保留，新 ingress 接线、存储独有风险和 R336 仍待真实验收。PostgreSQL 宿主卷已恢复约 34 GiB，但 Docker guest 日志明确记录 EXT4 在 I/O 错误后被重新挂为只读，daemon 探活超时、对象存储仍拒写；由原受管 owner 恢复，不清卷、不重建。C‑4 精确组合和全量未跑，A‑01/A‑02/A‑07 未启动。Root gitlinks 未变，未推送、合并或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
