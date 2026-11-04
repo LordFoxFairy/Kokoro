@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收。机器 Goal 为 active。Sandbox 默认四 owner 全链路已通过，含 R357 现役读、验证/发布、同 Cookie 撤权后 401/零转发和资源回收。BFF `f56caea` 修复撤权响应相关性；IAM `5436f4f` 交付同租户测试凭据前置。尚待原 Root runner、三个可选模式、可选本地登录、IAM producer 退役与精确组合。Root gitlinks 未变；未推送、合并、部署或进入 C‑4，A‑01/A‑02/A‑07 仍停写。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收。机器 Goal 为 active。Sandbox 默认四 owner 全链路已通过，含 R357 现役读、验证/发布、同 Cookie 撤权后 401/零转发和资源回收；Product Installation 可选模式亦已真验。BFF `f56caea` 修复撤权响应相关性；IAM `5436f4f` 交付同租户测试凭据前置。尚待原 Root runner、Personal Skill Lifecycle/Agent、可选本地登录、IAM producer 退役与精确组合。Root gitlinks 未变；未推送、合并、部署或进入 C‑4，A‑01/A‑02/A‑07 仍停写。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
