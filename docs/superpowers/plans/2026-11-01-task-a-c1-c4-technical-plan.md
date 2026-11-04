@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 真实行为和 G0 四项归并、三项拆分已本地验收；C‑4 独立门已取得现有候选证据。新机器 Goal 为 `active`，见[当前执行清单](../../../todo.md)。下一步为 C‑4 的 T‑09 终态配对，跨仓写区待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 真实行为和 G0 四项归并、三项拆分已本地验收；C‑4 独立门已取得现有候选证据。T‑09 跨仓写区已由用户确认，按[当前执行清单](../../../todo.md)实施；机器 Goal 已由用户清除，不重建。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
@@ -81,7 +81,7 @@
 - **原 PR 与组合交付前置（只读核验）**：GitHub PR 与远端 refs 均核对：Root #66、BFF #18、App #50、Agent #46、IAM #6、Capability #13 仍为各自 OPEN draft，原 PR head 均在当前候选历史内；Cap #13 的 base 保持原 PR #12（`2ad5c9e`），不改成直接指 main。Agent 本地候选分支名不同于原 PR #46 远端 head：后者实际为 `codex/agent-run-lifecycle`（`cfd1fccc`），不得把本地名当远端推送目标或新开 PR。未推送、未改跟踪关系；交付前按各仓实际 head/base 再做非递归核验。
 - **固定产物顺序（无依赖环）**：Agent `40effb2` 反向固定的 BFF internal v1.3.0 与现 BFF 同字节；T‑09 只配对 BFF public failure，不需要先升级 Agent 的 BFF internal 产物。各独立 owner 可本地冻结；按 T‑11 → Agent 原件 → BFF public/domain/SQL → App 唯一 public 快照推进。App 有 12 个现有生成/校验入口固定同一快照摘要，使用原入口同步，不建第二份快照。各仓通过验收并在自己的原 PR 可达后，Root 才更新精确 gitlinks、验正式组合；不先钉已知不兼容中间态。
 
-### T‑09 精确终态配对：最小方案（待确认）
+### T‑09 精确终态配对：最小方案（已确认）
 
 - **事实与边界**：BFF `f0107a7` 原解析器对 Agent 8.11 新终态返回 `null`；App `197f1102` 实测拒绝新 tuple、仍接受旧 `token_budget_exceeded`。保留原 PR46 两侧提交，不用旧 Agent 临时遮住不兼容，也不把新码降格为旧码。Agent 是终态事实 owner，BFF 是消息/公开投影 owner，App 是生成契约的消费者。只承接 `context_window_exceeded` / `retryable: false`，不接入 `personal_context` 或任何 A 功能。
 - **写区与顺序**：Agent PR46 工程门通过后固定现有 OpenAPI 与 provenance；BFF PR18 用原生成器固定该原件，既有 domain/公开失败 tuple 与唯一 `database/schema.sql` 保同一闭集。用原 `db:apply-schema` 在本轮隔离空 schema 验证，不改正常非空库、不恢复旧迁移 CLI。App PR50 只从已提交 BFF 公开 YAML 原样更新唯一快照和现有生成器，补独立非重试文案，不新增 SDK、alias、fallback 或第二个契约。
@@ -92,7 +92,8 @@
 - **Root relay 精确前置复现**：私有 Root 以已提交 HEAD/index gitlinks 绑定干净 IAM `b6a9745` 和 BFF `32357c0`。未改原校验器，`verify-iam-relay-policy.py --root <isolated-root>` 实际 exit 1，具体为真实 3.0 policy TS literal 解析，不是 gitlink 差额。IAM 0.21 的 allowlist/snapshot 摘要相同，重绑发布来源会改 `iamOwnerCommit`、`iamOpenapiVersion`、`iamOpenapiSha256`；实测 App `197f1102` 接收原快照、拒绝只变三项的候选。本轮只改 Root 校验器：保留旧 2.1 严格检查；3.0 分别证明 IAM/BFF 发布锚、当前精确 pin、唯一已批准退役差额，另校验 BFF 路由/传输矩阵与 App 生成器锁、vendor 和生成物。私有 Root 精确锁定真实 IAM `b6a9745`、BFF `32357c0`、App `197f1102` 后 CLI exit 0；正式工作树旧 gitlink 仍 exit 1。定向 42 项通过，包含保留合同漂移、非祖先、传输和 App 生成漂移负控。未改 owner 产物或降低门禁。
 - **Root 合同清单预检**：以私有 `GIT_INDEX_FILE` 绑定当前实际各 owner checkout，按 Git blob 重取清单，不把不兼容旧 consumer artifact 标成当前 owner。原 `w1e-iam07-bff-pin` checkpoint exit 0；兼容性 CLI exit 1，仅 13 条既定 broken，3 active、0 illegal、无其余来源错误。原 Scheduler 测试对私有 3.0 清单因硬钉历史 1.0 先红；改断言三条 Scheduler 边统一使用同一具名 owner 合同，历史清单与 3.0 候选通过；实际 commit/digest/version 仍由原 CLI 校验。治理补丁已在 Root 本地提交 `3a02058a`，兼容性与 checkpoint 两套实际 93 项通过。未改正式清单、历史 checkpoint 或 gitlinks；最终 BFF/App 替换后重取相关证据，保留仍未验的运行时差额。
 - **独立来源差额**：当前 Storage `4a99061` 与 Capability v3 vendor 原件同字节；BFF 与 Agent v3 vendor 同为较早原件。比较 Git blob 去注释后的 proto 内容，差异仅 Storage 新增 `UPLOAD_PURPOSE_CONNECTOR_ICON = 5`，并非另一套 RPC。该静态证据不提升历史 broken 边，也不替代当前业务操作 smoke。
-- **验收/TODO**：待确认写区后修正 BFF，再复用原用例验证持久/回放/快照，由 App 现役入口验证同一公开 tuple 与非重试提示。只在适当层级保留非法 `retryable: true` 的拒绝证据。按 owner 串行验收后才能冻结 Root gitlinks，继续原 PR，不推未验组合，不 merge main、不部署。
+- **正式候选与 owner 交付**：BFF `d166a51` 和 App `e726cd61` 已推各自原 PR。BFF 格式与完整 `check` 通过，两个默认 PG skip 已分开真库补齐；新终态在真实 PG/Redis 的持久、快照、回放和资源回收通过。App 从已提交的唯一 Public 28.19 同字节生成，完整 `pnpm check` 通过；保留正文、不显示重发。IAM/Capability/Agent 原 PR head 已与已验候选精确配对。
+- **已确认验收顺序**：只接入新终态、不启用 `personal_context`、保持原路由与 PR。BFF 已修正，再复用原用例验证持久/回放/快照，由 App 现役入口验证同一公开 tuple 与非重试提示。只在适当层级保留非法 `retryable: true` 的拒绝证据。按 owner 串行验收后才能冻结 Root gitlinks，继续原 PR，不推未验组合，不 merge main、不部署。
 
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 

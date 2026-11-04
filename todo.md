@@ -1,26 +1,26 @@
 # Task A · TODO（2026-11-04）
 
-**当前：T‑11 已在本地验收，C‑4 未闭环；机器 Goal 已核验为 `active`。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
+**当前：T‑11 已在本地验收，C‑4 未闭环；T‑09 已完成并沿原 PR 交付；C‑4 尚待正式原生验收。机器 Goal 已由用户清除，不重建。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
 
-## 当前关键路径：C‑4 剩 4 项
+## C‑4 交付检查点
 
-1. [ ] **T‑09：对齐 Agent → BFF → App 终态。** 主控负责验收；Agent #46 提供现有 8.11 原件，BFF #18 承接持久和公开契约，App #50 消费已提交的 BFF 快照。跨仓写区待确认，范围只含 `context_window_exceeded / retryable: false`，不启用 `personal_context`，继续拒绝它进入 Scheduled 保存输入。不加 SDK、兼容码或备用路由。
+1. [x] **T‑09：对齐 Agent → BFF → App 终态。** 主控负责验收；Agent #46 提供现有 8.11 原件，BFF #18 承接持久和公开契约，App #50 消费已提交的 BFF 快照。跨仓写区已确认，范围只含 `context_window_exceeded / retryable: false`，不启用 `personal_context`，继续拒绝它进入 Scheduled 保存输入。不加 SDK、兼容码或备用路由。
    - [x] **已定位 HTTP 接缝：** Agent `40effb2` 在隔离真 PG/Redis 的原 acceptance 夹具注入实际 typed error，真实 HTTP 回放保留新 tuple。BFF `32357c0` 接受同一页外壳、拒绝新码映射；同一页只换回旧码即可映射。App 旧枚举也拒绝新码。
    - [x] **已验 Agent 自然触发：** 隔离环境直连 Agent HTTP，真实 Redis 消费与 PG 租约驱动 `RunSupervisor/AgentFactory` 自然超窗；只产一个不可重试终态，PG、Redis 与 HTTP 回放一致，模型供应商和资金授权零调用。诊断未经过 BFF，未启用产品 `personal_context`。
    - [x] **已复现持久化缺口：**在 BFF `32357c0` 的私有副本只给原 AG‑UI 集成夹具追加新 tuple。真实隔离 PG/Redis 中，现行投影落库报 `23514 / ck_bff_message_agent_failure`（1 失败、0 跳过）；资源已回收，主工作树 BFF 源码未改。这是持久化负控，不是原始 Agent wire 或正式组合端到端。
-   - [ ] **确认后执行：** 先用现有生成器和 canonical SQL 修正 BFF，再以现用例验证持久、回放、快照；App 更新唯一生成契约，验证同一终态显示且不提示重试。只在已有最合适的层保留非法 `retryable: true` 的拒绝证据。
-2. [ ] **T‑09 / T‑16：完成受影响 owner 门并交原 PR。** 主控复核停写后的候选。复用同提交或受影响输入不变的证据；BFF/App 新候选跑正式相关门，BFF 两项条件 PG 用例按最终输入核对已有真库收据，缺失才补。Agent #46 推到原远端 head `codex/agent-run-lifecycle`；Capability #13 保留原 PR #12 为 base。各仓候选验证通过后，逐仓沿原 PR 交付。
+   - [x] **完成：** BFF `d166a51` 原 #18、App `e726cd61` 原 #50，Public 28.19 唯一 YAML 同字节。真 PG/Redis 验持久、回放、快照和禁止 `retryable: true`；App 保正文、无重发。两条保存命令仍拒绝 `personal_context`。
+2. [x] **T‑09 / T‑16：完成受影响 owner 门并交原 PR。** 主控复核停写后的候选。复用同提交或受影响输入不变的证据；BFF/App 新候选跑正式相关门，BFF 两项条件 PG 用例按最终输入核对已有真库收据，缺失才补。Agent #46 推到原远端 head `codex/agent-run-lifecycle`；Capability #13 保留原 PR #12 为 base。五仓已逐仓沿原 PR 交付并核对远端 head 精确相等。
 3. [ ] **T‑09：Root #66 精确组合与来源差额。** 主控在子仓提交已可从各自 PR 获取后更新 gitlinks，重核拓扑、合同 inventory 和现役 IAM relay 来源。先核 Browser→Web、BFF→Scheduler、Scheduler→BFF 三条活跃边；两条 Scheduler 边共用现役 vendor。Web→BFF、BFF→IAM 在旧清单仍为破损，不能按字节近似直接标绿。历史破损边、既有结构告警与此次新增阻断分列，不改历史 hash、不下调门禁、不为清数字扩大改动。
-   - [x] **来源清单预检：** 私有候选已按当前真实 Git blobs 重取路径，原 checkpoint 通过；兼容性仍只报原 13 条 broken。Scheduler 测试已从硬钉旧 1.0 版本改为断言同一 owner 契约；最终 BFF/App SHA 交付后再更新正式清单及 gitlinks。
+   - [x] **来源清单预检：** 私有候选已按当前真实 Git blobs 重取路径，原 checkpoint 通过；兼容性仍只报原 13 条 broken。Scheduler 测试已从硬钉旧 1.0 版本改为断言同一 owner 契约；正式清单现已按最终五仓提交取证；历史 checkpoint 保持。
 4. [ ] **T‑15：正式原生 E2E 与同步交接。** 主控在精确组合上运行现有正式浏览器旅程，保留实际登录、异租户拒绝与恢复、登出、撤权等约定行为的收据；记录支持的入口、旅程、日志索引及启停/回收负责人。临时 smoke 已退出，不代表同步环境可用；旧 HTTP/Chat 探针不算。当前尚无最终组合可同步测试。参数预检已明确：前台 MCP+Admin 启动时把本机已配置的 `KOKORO_LOCAL_POSTGRES_ADMIN_URL` 显式映射为进程所需的 `KOKORO_LOCAL_POSTGRES_URL`；不改配置文件、不启旧模式。
 
 ## 版本与遗留项
 
 | 仓库 / 检查 | 当前事实 | 剩余动作 |
 | --- | --- | --- |
-| IAM #6 / Capability #13 / Agent #46 | 本地候选分别 `b6a9745` / `5e607fd` / `40effb2`，有各自工程和真实集成证据；Capability 最终 fixture 的类型、格式、lint 差额已补。未交付最终精确组合 | 保留已验基线，核原 PR 与精确来源 |
-| BFF #18 / App #50 | 本地 `32357c0` / `197f1102`。BFF 默认门 exit 0，两项条件 PG 用例在该轮未运行；App 未消费 Agent 新终态对应的 BFF public 契约 | 只验终态配对影响面与正式交付门 |
-| Root #66 | 治理补丁已本地提交 `3a02058a`，未改 `37027af1` 的 gitlinks；Agent/BFF/IAM/Capability 四个 checkout 与 gitlink 不同。当前结构审计仍 FAIL；合同兼容仍 FAIL（含 13 条已声明破损边，另有 owner/evidence 来源差额） | 不冻结不兼容组合；最终按实际 commit blob 核验。18 个旧证据路径在当前候选不存在，不等于 18 项产品失败 |
+| IAM #6 / Capability #13 / Agent #46 | 本地候选分别 `b6a9745` / `5e607fd` / `40effb2`，有各自工程和真实集成证据；Capability 最终 fixture 的类型、格式、lint 差额已补。各自原 PR head 精确核对 | Root 精确组合与正式验收 |
+| BFF #18 / App #50 | 原 PR `d166a51` / `e726cd61`。BFF 格式、完整工程门通过，默认门两项条件 PG 另在真库补齐；App 完整 `pnpm check` 通过 | 只验终态配对影响面与正式交付门 |
+| Root #66 | 治理补丁 `3a02058a`；最终候选五仓 gitlinks 按原 PR head 取证。当前结构审计仍 FAIL；合同兼容仍 FAIL（含 13 条已声明破损边，另有 owner/evidence 来源差额） | 不冻结不兼容组合；最终按实际 commit blob 核验。18 个旧证据路径在当前候选不存在，不等于 18 项产品失败 |
 | 现役来源与历史告警 | BFF/App 的 relay 3.0 生成检查及 Scheduler 来源核验通过；Root 现役 3.0 来源门已在私有 IAM/BFF/App 精确候选通过：保留原发布锚，只接受 IAM 0.20→0.21 已批准退役差额。正式工作树仍因旧 gitlinks 拒绝，最终组合须重验。Billing/System 已离线按原规则复核：Billing 有七项既有配置差额，System 此组无违规，不是全仓 typecheck/build | 现役来源与历史缺口分开记录；未证实为本轮新增时，不顺手改无关仓 |
 | 运行与交付 | 最终组合原生 E2E 未运行；单库 owner schema 组合未实证；CI/部署未运行 | 正式验收与同步交接归 T‑15；每仓只沿自己的 PR，不合并 `main`、不部署 |
 
