@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 三项薄 Port 的归并处置复核仍开；C‑4 独立门已启动。Root 精确组合尚未更新；A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项并入与三项拆分仍有处置余差；C‑4 独立门已启动。Root 精确组合尚未更新；A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
@@ -62,7 +62,10 @@
 
 - **BFF C‑4 基线补验**：在独立构建区用 Node 24.20.0 / pnpm 11.25.0 对 `f0107a7` 跑正式门。lint、typecheck、合同生成/静态/语义和 build 通过；正式 `check` exit 1，合同套件唯一失败是启动器 `umask 077` 将试图制造的 0644 负控文件变成 0600。用正确的权限条件仅复跑原具名负控通过；没有改权限规则或测试。随后正式 `pnpm test` 通过，2 个 PG 条件用例未运行；仅在 `45a2989` 的自有隔离库补这两项，证实 fresh 安装/回滚和 Project tombstone/index，资源清单恢复。另 `format:check` 原只有 `mcp-personal.ts` 一处换行，原 PR18 本地 `45a2989` 按原格式器修正，TypeScript 规范化语法与注释逐字相同，完整格式清单通过。BFF/App 新终态候选及最终真实组合尚未运行。
 
-- **T‑11 G0 处置复核**：旧运行入口、全局 locator、旧 IAM producer 的移除及真实行为证据不变。G0 [清单 §10.5](../specs/2026-10-30-task-a-cleanup-inventory.md) 将 `stable-id-generator.ts`、`project-execution-binding-reader.ts`、`submitted-agent-run-reader.ts` 明列为“并入”（删除独立 Port，保留具名实现）。`ca4b529` / `6d3d7ce` 实际只移动三个接口；两 reader 已由现役 AgentRuns wiring 提供，StableId 仍跨 ChatTurn/ScheduledTask。复核未见后继有效裁决变更这三项；作为 T‑11 余差单列，不能把零旧 import 或原存储回归当作已并入。当前仅核验，未改 ID 算法、事务、授权或读取路径。
+- **T‑11 G0 全量处置复核**：按 G0 [原清单 §10.5](../specs/2026-10-30-task-a-cleanup-inventory.md) 对 BFF `45a2989` 的 23 项逐项核对：15 项保留具名边界、1 项旧 BffBusinessStore 已删除、4 项并入余差、3 项部分拆分。旧运行入口、全局 locator 和旧 IAM producer 的移除证据不变；旧 import 归零不代表每项按原 disposition 履约。未见后继有效裁决豁免这些处置。
+  - **并入首批（三项）**：`stable-id-generator`、`project-execution-binding-reader`、`submitted-agent-run-reader` 仅移动接口。按原 G0 删除独立接口和纯转发：StableId 沿唯一现役算法，保相同 SHA-256 输入、前缀与截断；两个 reader 沿现 AgentRuns 注入、原 Pool/SQL、当前授权与历史恢复各自的语义。主控已在精确 `45a2989` 真 PG/独占 Redis 补 **R146**（绑定授权、撤权及取消）、**R189**（Chat 原 ID 重放、冲突零写）、**Submitted Run**（历史恢复及越界拒绝）、**ScheduledTask outbox**（事务、租约与重启同 ID）四条基线，全部通过无跳过；资源清单恢复。这是归并前行为基线，不是新 provider 验收。本轮只补验证，生产归并待确认。
+  - **其余一项并入**：Account 已注入唯一 PG Personalization 实现，但 `PersonalizationProvider` 仍重复声明原接口。核对以现具名实现直接推导窄调用，不新增抽象；保 revision CAS、取消及提交结果未知语义。
+  - **三项部分拆分**：Chat 已分公开 Share 和 AG‑UI，但 RunDisplay 仍借宽 Chat 依赖；Projects 有具名 Skill 选择入口但底层仍绑整套 ProjectService，MCP 同样持有全量服务；ScheduledTask 已有独立 read/outbox/receipt，callback 仍借 mutation service 读 `findRecord`。按消费者真实需要分别收窄，不拆数据库池或事务，不扩新功能。其余四项与首批不同写区，未授权实施；完成前 T‑11 处置和 C‑4 最终组合继续 OPEN。
 
 ### T‑09 精确终态配对：最小方案（待确认）
 
@@ -537,7 +540,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响 owner 最终串行门；Root | IN_PROGRESS | IAM、Capability、Agent owner 门有对应候选证据；BFF `f0107a7` 正式基线差额定向补齐，`45a2989` 仅格式。T‑11 G0 归并余差及 Agent 8.11→BFF→App 终态配对未收口；新候选、精确组合及 E2E 未运行。 |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | 行为 VERIFIED_LOCAL / G0 处置待收口 | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过并回收；三项薄 Port 只迁位置，尚未完成 G0 的归并处置。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | 行为 VERIFIED_LOCAL / G0 处置待收口 | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过。`45a2989` 首批四条真实行为基线通过；G0 四项并入与三项部分拆分未收口，生产写区待确认。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
