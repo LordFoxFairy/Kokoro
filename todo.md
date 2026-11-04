@@ -5,8 +5,8 @@
 ## P0：先收口 T‑11（BFF 原 PR #18）
 
 - [x] **StableId 归并**：BFF 本地 `f7d1e69` 删除独立 Port 与无用传递链；保持唯一 SHA-256、原输入、前缀和截断。源码 lint、构建、定向测试、真实 PG/Redis 的 Chat 同键重放、Scheduler 接管与时钟夹具通过；资源清单复位，未推送。
-- [ ] **Project execution binding reader、submitted Agent Run reader 归并**：两项同批，现 AgentRuns 注入直接接现有 PG 查询，去掉 Outbox 转发及两个独立 Port。保现行授权、撤权、取消与历史恢复各自的语义。
-- [ ] **Personalization 归并**：沿 Account 已有具名实现删重复接口，保 revision CAS、取消和提交结果未知时的处理。
+- [x] **两个 AgentRuns reader 归并**：BFF `76f2d04` 直接注入现 `BFF_DATABASE`，删 Outbox 转发和两个独立 Port；SQL、期限和取消不变。生产 Nest 注入图、R146 授权/取消、R148 回滚、Submitted Run 历史恢复均通过，未推送。
+- [x] **Personalization 归并**：BFF `335dbe3` 沿现 PG 实现收窄类型，保 Account token 和事务。真实 R257 读写、并发 CAS、COMMIT 结果未知、锁等待期间 HTTP 取消通过，未推送。
 - [ ] **Chat、Projects、ScheduledTask 三项拆分**：Chat 先收窄 RunDisplay；Projects 按现有 Skill/MCP 等调用方拆出最小依赖；ScheduledTask callback 不再借 mutation service 做读取。保现数据库池、SQL 和事务，不造兼容层或第二实现。
 - [ ] 主控按子切片验收。只跑变化触及的真实行为；同 SHA 的归并前基线已通过，不重跑相同基线。共享 Nest 入口、架构断言和数据库 fixture 串行维护。
 

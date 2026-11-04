@@ -6,7 +6,7 @@
 
 **BFF/C‑4 基线：** `f0107a7` 正式默认测试通过，两个 PG 条件用例以 `45a2989` 定向真库补齐。正式 `check` 原因权限夹具被启动环境收紧而失败，改正确权限只补原负控通过。`45a2989` 仅机械格式化，完整格式门通过，未推送。
 
-**G0/T‑11 处置余差：** 全量核对 23 项，确认 15 项具名保留、旧 BffBusinessStore 已删除；原 4 项并入、3 项拆分中，StableId 已在 BFF `f7d1e69` 本地归并并通过定向回归；剩 3 项并入、3 项拆分。BFF `45a2989` 的 Project 现行授权、Chat 原 ID 重放、Submitted Run 历史恢复及 ScheduledTask 同 ID 接管四条真实基线已通过，PG/Redis 清单恢复。这些是归并前证据；StableId 候选另通过真实 Chat 同键重放、ScheduledTask 接管及固定时钟测试并回收资源。Agent 8.11 原件已核验；私有生成证实旧 BFF 重写会误删新请求字段，且直接扩展 owner schema 会改变 Scheduled 保存输入的拒绝边界。待确认的终态配对仍不启用该字段。
+**G0/T‑11 处置余差：** 全量核对 23 项，确认 15 项具名保留、旧 BffBusinessStore 已删除；原 4 项并入、3 项拆分中，StableId `f7d1e69`、两个 AgentRuns reader `76f2d04`、Personalization `335dbe3` 已本地归并并通过定向验收；剩 Chat、Projects、ScheduledTask 三项拆分。BFF `45a2989` 的 Project 现行授权、Chat 原 ID 重放、Submitted Run 历史恢复及 ScheduledTask 同 ID 接管四条真实基线已通过，PG/Redis 清单恢复。这些是归并前证据；StableId 候选另通过真实 Chat 同键重放、ScheduledTask 接管及固定时钟测试并回收资源。两个 reader 的生产 Nest 注入、R146/R148 与真实历史读取，以及 Personalization 的读写、CAS、COMMIT 结果未知和锁等待取消均定向通过；PG/Redis 清单恢复。Agent 8.11 原件已核验；私有生成证实旧 BFF 重写会误删新请求字段，且直接扩展 owner schema 会改变 Scheduled 保存输入的拒绝边界。待确认的终态配对仍不启用该字段。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 

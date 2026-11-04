@@ -17087,7 +17087,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**机器 Goal active，Task A 未闭环。** 新建 Goal 沿原任务，T‑11 从 BFF StableId 已验切片继续，T‑09 终态配对待确认。[当前 TODO](../todo.md)、[技术方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[当前事实](CURRENT.md)维护现况。T‑17 和 T‑11 真实行为已本地验收；T‑11 首批四条真 PG/Redis 行为基线通过；StableId `f7d1e69` 本地已提交；G0 仍有三项并入与三项拆分。C‑4 中，Agent `40effb2` owner 门已通过，本地候选已快进；原 PR46 远端分支已核对，仍未推送。Root 治理、原生前台工具链及 BFF 基线差额已补验；结构审计、旧 gitlink 不匹配和默认 HTTP/Chat 的登录差额单独记录。Agent 8.11→BFF→App 终态配对待确认，精确组合 E2E 仍待。下列为历史检查点，不代表当前组合。
+**机器 Goal active，Task A 未闭环。** 新建 Goal 沿原任务，T‑11 的四项归并已本地验收，继续三项拆分，T‑09 终态配对待确认。[当前 TODO](../todo.md)、[技术方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[当前事实](CURRENT.md)维护现况。T‑17 和 T‑11 真实行为已本地验收；T‑11 首批四条真 PG/Redis 行为基线通过；StableId `f7d1e69`、两个 AgentRuns reader `76f2d04`、Personalization `335dbe3` 已本地提交；G0 剩 Chat、Projects、ScheduledTask 三项拆分。C‑4 中，Agent `40effb2` owner 门已通过，本地候选已快进；原 PR46 远端分支已核对，仍未推送。Root 治理、原生前台工具链及 BFF 基线差额已补验；结构审计、旧 gitlink 不匹配和默认 HTTP/Chat 的登录差额单独记录。Agent 8.11→BFF→App 终态配对待确认，精确组合 E2E 仍待。下列为历史检查点，不代表当前组合。
 
 - Root535e7071配对App9ba65343/BFF4d6d17b/IAMe6a01cf；各仓PR独立draft，未merge/deploy。
 - T-17前置五处DI问题已修，真实容器回归入默认门；Root BFF完整check contract1344/default2344pass+2原skip/build PASS。
