@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收，机器 Goal 为 active。原生 Sandbox/Agent、Product/Lifecycle 与三种 Chromium 路径已有真实隔离证据。Capability `ef2d919` 提交原生 candidate readiness 配置；IAM `0.21.0` 退役私有候选通过五个受影响集成文件的真实 PG/Redis 验证，尚未提交或发布。当前 `ingress_clean` 原生预检／dry-run 通过，真测建库因本机空间不足失败；自有库已回收，空测试桶仍待对象存储恢复后删除。默认存储和 R336 真测未跑，C‑4 等待；A‑01/A‑02/A‑07 保持停写。Root gitlinks 未变，未推送、合并或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收，机器 Goal 为 active。原生 Sandbox/Agent、Product/Lifecycle 与三种 Chromium 路径已有真实隔离证据。Capability `ef2d919`／`bf4aa07` 迁移 candidate readiness 与两个 workflow 的 global smoke 配置；未运行 CI。IAM `0.21.0` 私有候选通过五个受影响集成文件及现 BFF 原生 relay 的真实 PG/Redis 验证，尚未提交或发布。当前 `ingress_clean` 原生预检／dry-run 通过，真测建库因本机空间不足失败；自有库已回收，空测试桶仍待对象存储恢复后删除。默认存储和 R336 真测未跑，C‑4 等待；A‑01/A‑02/A‑07 保持停写。Root gitlinks 未变，未推送、合并或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 

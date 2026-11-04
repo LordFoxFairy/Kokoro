@@ -31,9 +31,9 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
   Redis prefix, and removes only resources registered by this invocation. BFF user models use an explicit fixed-token IAM
   wire stub; server-only runtime manifest remains bound to configured tenant. It does not perform provider inference.
-- `python3 scripts/e2e/run_bff_iam_session_smoke.py --help` is the real IAM Nest/PKCE fixture HTTP to BFF source-process
-  admission entry. It pins clean IAM/BFF commits and Root gitlinks, creates only its own BFF database, asks the IAM test-owned
-  host to manage IAM facts, exercises seven allow/deny/revocation/outage cases, and verifies owned-resource cleanup.
+- `run_bff_iam_session_smoke.py` retains a historical Bearer diagnostic and shared IAM fixture protocol helpers.
+  The Bearer CLI does not verify current browser admission. Use `run_web_native_session_smoke.py` for the current
+  native Cookie/Origin journeys; it does not replace the historical Project write and PostgreSQL ownership checks.
 - `python3 scripts/e2e/run_bff_iam_oidc_smoke.py --help` exercises the IAM→BFF native Code+S256 interaction chain;
   it does not prove Web RP login. `bff_owner_schema.py` gives all five Root BFF smokes an application URL fixed to
   `kokoro_bff`; `psql` observations retain the original libpq URL and explicitly qualify owner SQL.
