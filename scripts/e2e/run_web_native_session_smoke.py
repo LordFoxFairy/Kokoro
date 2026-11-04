@@ -1229,6 +1229,121 @@ def exercise_project_write_admission(
     deny(key, 401, "session_invalid", "native Project replay after signout")
 
 
+def _register_native_credentials(
+    credentials: web.previous.CredentialRegistry,
+    receipt: NativeReceipt,
+    *,
+    run_dir: Path,
+) -> None:
+    credentials.add(receipt.cookie)
+    for pair in receipt.cookie.split(";"):
+        credentials.add(pair.partition("=")[2].strip())
+    for path in purpose_credential_paths(
+        receipt.bff_user_context_credential_file,
+        receipt.account_session_credential_file,
+        run_dir=run_dir,
+    ):
+        document = json.loads(path.read_text())
+        credentials.add(*(entry["secret"] for entry in document["entries"]))
+
+
+def exercise_project_cross_identity_and_outage(
+    resources: runtime.OwnedResources,
+    db_url: str,
+    bff_base: str,
+    secret: str,
+    ready: session.Ready,
+    receipt: NativeReceipt,
+    iam: subprocess.Popen[bytes],
+    reader: session.ProtocolReader,
+    *,
+    bff: subprocess.Popen[bytes],
+    bff_env: dict[str, str],
+    bff_node: Path,
+    processes: list[subprocess.Popen[bytes]],
+    run_dir: Path,
+    credentials: web.previous.CredentialRegistry,
+    log,
+) -> None:
+    """Prove a fresh native principal cannot read A's Project, even during IAM outage."""
+    facts = _project_write_facts(resources, db_url)
+    projects = facts["projects"]
+    if (
+        len(projects) != 1
+        or len(facts["receipts"]) != 1
+        or not isinstance(projects[0], list)
+        or len(projects[0]) != 4
+        or not isinstance(projects[0][0], str)
+        or not projects[0][0]
+        or projects[0][1:3] != [ready.tenant_id, ready.user_id]
+    ):
+        raise SmokeError("BFF Project A owner facts absent before identity reset")
+    project_id = projects[0][0]
+
+    # Quiesce the old BFF before resetting the IAM resources it used.
+    # Retain its place in the final teardown order when registering the new BFF.
+    index = processes.index(bff)
+    runtime.stop_owned_process(bff)
+    if runtime.process_group_exists(bff.pid):
+        raise SmokeError("old BFF process group remains after stop")
+    processes.pop(index)
+
+    session.host_command(iam, reader, "reset")
+    next_ready = session.validate_ready(reader.record(timeout=60))
+    credentials.add(next_ready.access_token)
+    next_receipt = native_command(iam, reader, run_dir=run_dir)
+    _register_native_credentials(credentials, next_receipt, run_dir=run_dir)
+    if (
+        next_ready.tenant_id == ready.tenant_id
+        or next_ready.user_id == ready.user_id
+        or next_receipt.cookie == receipt.cookie
+        or next_receipt.iam_web_origin != receipt.iam_web_origin
+    ):
+        raise SmokeError("IAM reset did not produce an independent native identity")
+
+    replacement_env = {
+        **bff_env,
+        "KOKORO_IAM_BASE_URL": next_ready.base_url,
+        "KOKORO_TENANT_ID": next_ready.tenant_id,
+        "KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE": next_receipt.bff_user_context_credential_file,
+        "KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE": next_receipt.account_session_credential_file,
+    }
+    replacement = runtime.start_process(bff_node, BFF, replacement_env, log)
+    processes.insert(index, replacement)
+    runtime.wait_ready(bff_base, replacement)
+    headers = {
+        "x-kokoro-service": "web-bff",
+        "x-kokoro-internal-secret": secret,
+        "cookie": next_receipt.cookie,
+        "origin": next_receipt.iam_web_origin,
+    }
+    status, body = session.request(bff_base, "/v1/projects", headers=headers)
+    if session.require_success(status, body, "native identity B Projects") != {
+        "projects": []
+    }:
+        raise SmokeError("independent native identity could list the original Project")
+    status, body = session.request(
+        bff_base, "/v1/projects/" + quote(project_id, safe=""), headers=headers
+    )
+    session.require_error(
+        status, body, 404, "project_not_found", "native identity B direct Project read"
+    )
+    if _project_write_facts(resources, db_url) != facts:
+        raise SmokeError("independent native reads changed the original Project facts")
+
+    # This intentional outage stops only the owned IAM fixture and waits for its
+    # terminal ACK and process exit before probing the still-live replacement BFF.
+    session.host_command(iam, reader, "stop")
+    if iam.wait(timeout=30) != 0 or runtime.process_group_exists(iam.pid):
+        raise SmokeError("owned IAM did not exit cleanly before outage probe")
+    status, body = session.request(bff_base, "/v1/projects", headers=headers)
+    session.require_error(
+        status, body, 503, "iam_admission_unavailable", "native IAM outage"
+    )
+    if _project_write_facts(resources, db_url) != facts:
+        raise SmokeError("native IAM outage changed the original Project facts")
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
     run_id = secrets.token_hex(12)
@@ -1419,16 +1534,7 @@ def main(argv=None) -> int:
             ready = session.validate_ready(reader.record())
             credentials.add(ready.access_token)
             receipt = native_command(iam, reader, run_dir=directory)
-            credentials.add(receipt.cookie)
-            for pair in receipt.cookie.split(";"):
-                credentials.add(pair.partition("=")[2].strip())
-            for credential_path in purpose_credential_paths(
-                receipt.bff_user_context_credential_file,
-                receipt.account_session_credential_file,
-                run_dir=directory,
-            ):
-                credential = json.loads(credential_path.read_text())
-                credentials.add(*(entry["secret"] for entry in credential["entries"]))
+            _register_native_credentials(credentials, receipt, run_dir=directory)
             if receipt.iam_web_origin != web_origin:
                 raise SmokeError("IAM and Web origins diverged")
             secret = secrets.token_urlsafe(32)
@@ -1648,6 +1754,25 @@ def main(argv=None) -> int:
                 )
                 if not exact_browser_fact(out_body, {"data": {"authenticated": False}}):
                     raise SmokeError("native logout was not enforced")
+                stage = "native Project cross-identity and IAM outage"
+                exercise_project_cross_identity_and_outage(
+                    resources,
+                    db_url,
+                    f"http://127.0.0.1:{bff_port}",
+                    secret,
+                    ready,
+                    receipt,
+                    iam,
+                    reader,
+                    bff=bff,
+                    bff_env=bff_env,
+                    bff_node=args.bff_node_bin,
+                    processes=processes,
+                    run_dir=directory,
+                    credentials=credentials,
+                    log=log,
+                )
+                stage = "native session"
                 cases += 1
         except (Exception, KeyboardInterrupt) as error:
             if isinstance(error, BrowserJourneyError):

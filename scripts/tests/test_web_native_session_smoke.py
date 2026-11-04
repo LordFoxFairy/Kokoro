@@ -714,6 +714,16 @@ def simulate_main(
                 reader: smoke.session.host_command(iam, reader, "signout")
             ),
         )
+
+        def cross_after_web(*args, **kwargs):
+            assert smoke.web.https_browser.call_count == 4
+
+        monkeypatch.setattr(
+            smoke,
+            "exercise_project_cross_identity_and_outage",
+            Mock(side_effect=cross_after_web),
+            raising=False,
+        )
         responses = [
             (200, {}),
             (
@@ -1684,10 +1694,14 @@ def test_browser_native_admission_window_checks_sleep_completion(completion):
 def test_minimal_default_preserves_three_http_checks_plus_log_scan(
     tmp_path, monkeypatch
 ):
-    _, resources, _, _, _, _ = simulate_main(
+    _, resources, processes, _, _, _ = simulate_main(
         tmp_path, monkeypatch, native_success=True, succeeds=True
     )
     args = smoke.exercise_project_write_admission.call_args.args
+    cross = smoke.exercise_project_cross_identity_and_outage
+    cross.assert_called_once()
+    assert cross.call_args.args == args
+    assert cross.call_args.kwargs["bff"] is processes[1]
     assert args[0] is resources
     assert args[1:3] == ("postgresql://localhost/own", "http://127.0.0.1:1234")
     assert args[4].tenant_id == "tenant"
@@ -1698,6 +1712,184 @@ def test_minimal_default_preserves_three_http_checks_plus_log_scan(
     assert report["completed_journeys"] == 0
     assert report["browser"] is None
     assert report["credential_log_check"] == "passed"
+
+
+@pytest.mark.parametrize(
+    "fault, failure",
+    [
+        (None, None),
+        ("old_bff_live", "old BFF process group remains"),
+        ("same_identity", "independent native identity"),
+        ("iam_live", "owned IAM did not exit cleanly"),
+        ("outage_allows", "HTTP 200, expected 503"),
+        ("outage_mutates", "native IAM outage changed the original Project facts"),
+    ],
+)
+def test_native_project_identity_reset_keeps_lifecycle_and_owner_facts(
+    tmp_path, monkeypatch, fault, failure
+):
+    origin = "https://web-native-fixture.example.test"
+    db = "postgresql://localhost/owned"
+    base = "http://127.0.0.1:4321"
+    prior = smoke.session.Ready(
+        "http://127.0.0.1:4100", "token-a", "tenant-a", "user-a"
+    )
+    prior_receipt = smoke.NativeReceipt(
+        "issuer=a", "/old/context", "/old/sessions", origin
+    )
+    paths = purpose_credential_files(tmp_path)
+    current = smoke.NativeReceipt(
+        "issuer=b",
+        paths["bff_user_context_credential_file"],
+        paths["account_session_credential_file"],
+        origin,
+    )
+    next_ready = {
+        "kind": "ready",
+        "base_url": "http://127.0.0.1:4101",
+        "access_token": "token-b",
+        "tenant_id": "tenant-b",
+        "user_id": "user-a" if fault == "same_identity" else "user-b",
+    }
+    reader = Mock()
+    reader.record.return_value = next_ready
+    iam, old_bff, web_process, replacement = (
+        Mock(pid=1),
+        Mock(pid=2),
+        Mock(pid=3),
+        Mock(pid=4),
+    )
+    iam.wait.return_value = 0
+    processes = [iam, old_bff, web_process]
+    credentials = smoke.web.previous.CredentialRegistry()
+    owner_facts = {
+        "projects": [["opaque/id", "tenant-a", "user-a", "Project"]],
+        "receipts": [{"status": 200}],
+    }
+    resources = object()
+    log = object()
+    node = tmp_path / "node24"
+    bff_env = {
+        "KOKORO_BFF_POSTGRES_URL": "owner-schema",
+        "KOKORO_IAM_WEB_ORIGIN": origin,
+    }
+    events = []
+
+    def observe_facts(actual_resources, raw_db):
+        assert actual_resources is resources and raw_db == db
+        return json.loads(json.dumps(owner_facts))
+
+    def command(process, protocol, value):
+        assert process is iam and protocol is reader
+        events.append(value)
+
+    def start(actual_node, owner, env, target_log):
+        assert (actual_node, owner, target_log) == (node, smoke.BFF, log)
+        assert env == {
+            **bff_env,
+            "KOKORO_IAM_BASE_URL": next_ready["base_url"],
+            "KOKORO_TENANT_ID": "tenant-b",
+            "KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE": current.bff_user_context_credential_file,
+            "KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE": current.account_session_credential_file,
+        }
+        events.append("restart_bff")
+        return replacement
+
+    def wait_ready(url, process):
+        assert (url, process) == (base, replacement)
+        assert processes == [iam, replacement, web_process]
+        events.append("bff_ready")
+
+    def request(url, path, *, headers):
+        assert url == base
+        assert headers == {
+            "x-kokoro-service": "web-bff",
+            "x-kokoro-internal-secret": "bff-secret",
+            "origin": origin,
+            "cookie": current.cookie,
+        }
+        meta = {"request_id": "project-read"}
+        if "stop" in events:
+            iam.wait.assert_called_once_with(timeout=30)
+            assert path == "/v1/projects"
+            events.append("outage")
+            if fault == "outage_allows":
+                return 200, {"data": {"projects": []}, "meta": meta}
+            if fault == "outage_mutates":
+                owner_facts["receipts"][0]["status"] = 503
+            return 503, {
+                "error": {"code": "iam_admission_unavailable", "message": "fixture"},
+                "meta": meta,
+            }
+        if path == "/v1/projects":
+            events.append("list")
+            return 200, {"data": {"projects": []}, "meta": meta}
+        assert path == "/v1/projects/opaque%2Fid"
+        events.append("detail")
+        return 404, {
+            "error": {"code": "project_not_found", "message": "fixture"},
+            "meta": meta,
+        }
+
+    def process_group_exists(pid):
+        assert pid in (1, 2)
+        return (pid == 1 and fault == "iam_live") or (
+            pid == 2 and fault == "old_bff_live"
+        )
+
+    def stop_old(process):
+        assert process is old_bff
+        events.append("stop_old_bff")
+
+    monkeypatch.setattr(smoke, "_project_write_facts", observe_facts)
+    monkeypatch.setattr(smoke, "native_command", Mock(return_value=current))
+    monkeypatch.setattr(smoke.session, "host_command", command)
+    monkeypatch.setattr(smoke.session, "request", request)
+    monkeypatch.setattr(smoke.runtime, "stop_owned_process", stop_old)
+    monkeypatch.setattr(smoke.runtime, "process_group_exists", process_group_exists)
+    monkeypatch.setattr(smoke.runtime, "start_process", start)
+    monkeypatch.setattr(smoke.runtime, "wait_ready", wait_ready)
+    args = (resources, db, base, "bff-secret", prior, prior_receipt, iam, reader)
+    kwargs = dict(
+        bff=old_bff,
+        bff_env=bff_env,
+        bff_node=node,
+        processes=processes,
+        run_dir=tmp_path,
+        credentials=credentials,
+        log=log,
+    )
+    if failure is not None:
+        with pytest.raises((smoke.SmokeError, smoke.session.SmokeError), match=failure):
+            smoke.exercise_project_cross_identity_and_outage(*args, **kwargs)
+        if fault == "old_bff_live":
+            assert processes == [iam, old_bff, web_process]
+            assert events == ["stop_old_bff"]
+        if fault == "same_identity":
+            assert processes == [iam, web_process]
+            assert events == ["stop_old_bff", "reset"]
+        if fault == "iam_live":
+            assert "outage" not in events
+    else:
+        smoke.exercise_project_cross_identity_and_outage(*args, **kwargs)
+        assert events == [
+            "stop_old_bff",
+            "reset",
+            "restart_bff",
+            "bff_ready",
+            "list",
+            "detail",
+            "stop",
+            "outage",
+        ]
+        assert processes == [iam, replacement, web_process]
+        assert set(credentials.values()) == {
+            "token-b",
+            "issuer=b",
+            "b",
+            "bff_user_context-secret",
+            "account_sessions-secret",
+        }
 
 
 @pytest.mark.parametrize(
@@ -1910,6 +2102,7 @@ def test_minimal_http_requires_explicit_anonymous_after_owner_signout(
     report, _ = read_receipt(tmp_path)
     assert report["completed_checks"] == 2
     assert report["cleanup"]["status"] == "passed"
+    smoke.exercise_project_cross_identity_and_outage.assert_not_called()
 
 
 @pytest.mark.parametrize(
