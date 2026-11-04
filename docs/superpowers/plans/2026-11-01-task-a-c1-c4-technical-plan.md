@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实验收通过，C‑4 已启动。Root 精确组合尚未更新；A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 三项薄 Port 的归并处置复核仍开；C‑4 独立门已启动。Root 精确组合尚未更新；A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
@@ -60,10 +60,15 @@
 - **Root C‑4 独立验证**：Root `8c71a7c4` 以锁定 pytest 跑 `scripts/tests`，exit 0（2129 通过、4 跳过）；`verify-repository-topology.py` exit 1，只有 BFF、Agent、IAM、Capability 当前 checkout 与旧 gitlinks 不同。结构审计 exit 1；`9a55df34` 按已批准的 BFF Node 24 对齐 profile 和前台启动器，消除 7 条 Node 22 误报，未放松源码门。受影响的 launcher/native runner 及治理测试文件均通过。更正后审计仍报 381 项、2 个工具链未验证；对旧 gitlink 精确快照用同审计规则比较静态项：349 项原样、BFF 两个旧 bootstrap 超长项消失，唯一新增是 Capability `mcp.ports.ts` 超 800 行（原 PR12 已 802，整合后 805），不归为本次新建的抽象或 Schema 故障。31 项有效 TS 配置告警未进入静态差分。独立核实 BFF `message-parts-read` 告警是现役历史数据有界恢复，不是遗留生产入口；公开 YAML 的解析告警在旧、新 BFF 同一 Git blob 复现，不能当契约损坏。审计保留 FAIL，不批量修改历史问题、不将差分冒充最终组合通过。
 - **T‑15 启动前置**：`9a55df34` 让唯一前台 fixture 复用正式 native runner 版本：IAM/BFF 24.20.0，App/Admin 22.23.4；真实版本门及定向 RED→GREEN 通过，尚未启动服务。当前默认 HTTP/`--chat` 仍用已无 App 路由的 OAuth 探针，也未接 native 服务用途文件；不能当原生同步环境。最终配对后先用原正式浏览器 runner 验收并回收；需要共享前台时，只选现有 native MCP-only 或 Skills+Storage（Admin 显式）模式、按实际支持旅程交接，不占日常入口、不混 Chat/Billing，不宣称同库应用拓扑已验收。仍待最终 Git 配对及真实启动。
 
+- **BFF C‑4 基线补验**：在独立构建区用 Node 24.20.0 / pnpm 11.25.0 对 `f0107a7` 跑正式门。lint、typecheck、合同生成/静态/语义和 build 通过；正式 `check` exit 1，合同套件唯一失败是启动器 `umask 077` 将试图制造的 0644 负控文件变成 0600。用正确的权限条件仅复跑原具名负控通过；没有改权限规则或测试。随后正式 `pnpm test` 通过，2 个 PG 条件用例未运行；仅在 `45a2989` 的自有隔离库补这两项，证实 fresh 安装/回滚和 Project tombstone/index，资源清单恢复。另 `format:check` 原只有 `mcp-personal.ts` 一处换行，原 PR18 本地 `45a2989` 按原格式器修正，TypeScript 规范化语法与注释逐字相同，完整格式清单通过。BFF/App 新终态候选及最终真实组合尚未运行。
+
+- **T‑11 G0 处置复核**：旧运行入口、全局 locator、旧 IAM producer 的移除及真实行为证据不变。G0 [清单 §10.5](../specs/2026-10-30-task-a-cleanup-inventory.md) 将 `stable-id-generator.ts`、`project-execution-binding-reader.ts`、`submitted-agent-run-reader.ts` 明列为“并入”（删除独立 Port，保留具名实现）。`ca4b529` / `6d3d7ce` 实际只移动三个接口；两 reader 已由现役 AgentRuns wiring 提供，StableId 仍跨 ChatTurn/ScheduledTask。复核未见后继有效裁决变更这三项；作为 T‑11 余差单列，不能把零旧 import 或原存储回归当作已并入。当前仅核验，未改 ID 算法、事务、授权或读取路径。
+
 ### T‑09 精确终态配对：最小方案（待确认）
 
 - **事实与边界**：BFF `f0107a7` 原解析器对 Agent 8.11 新终态返回 `null`；App `197f1102` 实测拒绝新 tuple、仍接受旧 `token_budget_exceeded`。保留原 PR46 两侧提交，不用旧 Agent 临时遮住不兼容，也不把新码降格为旧码。Agent 是终态事实 owner，BFF 是消息/公开投影 owner，App 是生成契约的消费者。只承接 `context_window_exceeded` / `retryable: false`，不接入 `personal_context` 或任何 A 功能。
 - **写区与顺序**：Agent PR46 工程门通过后固定现有 OpenAPI 与 provenance；BFF PR18 用原生成器固定该原件，既有 domain/公开失败 tuple 与唯一 `database/schema.sql` 保同一闭集。用原 `db:apply-schema` 在本轮隔离空 schema 验证，不改正常非空库、不恢复旧迁移 CLI。App PR50 只从已提交 BFF 公开 YAML 原样更新唯一快照和现有生成器，补独立非重试文案，不新增 SDK、alias、fallback 或第二个契约。
+- **已验证的生成器差额**：已固定 Agent `40effb2` 原样 OpenAPI/provenance，HTTP SHA `ad34ba2c…` 与生成 Failure 模型来源一致；8.11→8.10 仅逆版本、新失败码、可选 `personal_context`、`POST /v1/runs` 的 1 MiB body 上限标记，可恢复原 8.10 字节；可重试闭集不变。私有目录用原 Hey API 配置/版本真实生成：现 BFF Custom API 的 Zod 改写会吃掉后续 `personal_context`。应收窄既有改写而非损坏 owner 生成物；当前 Scheduled saved projector 实测拒绝带该字段的输入，而新 owner schema 会接受并保留它。需显式保持 BFF 的原拒绝与出站字段，不接 A 功能、不调现请求限额。未改 BFF/App 合同或生产接线。
 - **验收/TODO**：独立 owner 门照常完成。待确认后先复现一条 Agent 终态到 BFF 持久/回放/快照的接缝，再由 App 现役入口验证同一公开 tuple 与非重试提示；只在适当层级保留非法 `retryable: true` 的拒绝证据。按 owner 串行验收后才能冻结 Root gitlinks，继续原 PR，不推未验组合，不 merge main、不部署。
 
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
@@ -530,9 +535,9 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（消费切片） | App fdbb49f1主方完整contract452/architecture50/default6411、0skip及lint/types/build；当前正式native4/4。I-29后继owner版本另按影响固定消费，不将此项当全产品验收 |
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
-| T-09 | Root/各受影响 owner 最终串行门；Root | IN_PROGRESS | IAM、Capability 和 Agent 的 owner 门已有对应候选证据；Agent `40effb2` 原 PR46 本地已快进。Agent 8.11→BFF→App 终态配对待确认；BFF/App 新候选、精确组合及 E2E 未运行。 |
+| T-09 | Root/各受影响 owner 最终串行门；Root | IN_PROGRESS | IAM、Capability、Agent owner 门有对应候选证据；BFF `f0107a7` 正式基线差额定向补齐，`45a2989` 仅格式。T‑11 G0 归并余差及 Agent 8.11→BFF→App 终态配对未收口；新候选、精确组合及 E2E 未运行。 |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | VERIFIED_LOCAL | 旧生产消费者归零，退役已提交，SDK 独立安装消费已验；原数据卷恢复，当前组合真实 ingress、eicar、ack_lost 与 R336 全通过并回收。C‑4 最终组合另验。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | 行为 VERIFIED_LOCAL / G0 处置待收口 | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过并回收；三项薄 Port 只迁位置，尚未完成 G0 的归并处置。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
