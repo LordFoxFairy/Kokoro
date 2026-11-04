@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项归并及 ScheduledTask 拆分已定向验收，Chat、Projects 两项仍待；C‑4 独立门已取得现有候选证据。新机器 Goal 为 `active`，见[当前执行清单](../../../todo.md)。Chat 已先收窄 RunDisplay，下一步迁 AG‑UI process/head，再收口 Projects；T‑09 终态配对待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项归并及 ScheduledTask 拆分已定向验收，Chat、Projects 两项仍待；C‑4 独立门已取得现有候选证据。新机器 Goal 为 `active`，见[当前执行清单](../../../todo.md)。Chat 已收窄 RunDisplay 并迁 AG‑UI process/head，下一步删除 Chat 本地宽聚合，再收口 Projects；T‑09 终态配对待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
@@ -68,7 +68,8 @@
   - **三项部分拆分**：Chat 已分公开 Share 和 AG‑UI，但 RunDisplay 仍借宽 Chat 依赖；Projects 有具名 Skill 选择入口但底层仍绑整套 ProjectService，MCP 同样持有全量服务；ScheduledTask 已有独立 read/outbox/receipt，callback 仍借 mutation service 读 `findRecord`。按消费者真实需要分别收窄，不拆数据库池或事务，不扩新功能。其余四项与首批不同写区，未授权实施；完成前 T‑11 处置和 C‑4 最终组合继续 OPEN。
 
 - **ScheduledTask 已完成本地拆分 `368e65e`**：旧宽接口及公开 repo token 删除；读取 snapshots、用户 mutation 和 callback lookup 各接自己的窄能力，outbox 与 receipt 保持现边界，沿同一 PG 实例。删仅测试调用的旧 list SQL，原跨 tenant/owner 负控改走生产 snapshots；在线 SQL、事务、调用顺序和 HTTP 契约未改。构建、lint、目标文件格式、Nest/HTTP 相关定向门通过；真实权威读取、DELETE 回执、callback cadence revision、终态通过。outbox 首轮合并夹具运行受共享测试库的全局 claim 干扰，保留失败记录；单独空库只补该例通过，无跳过，资源清单恢复。最终 C‑4 不把上述阶段证据当冻结组合通过。
-- **Chat / RunDisplay 子切片已本地提交 `c005e27`**：真实 Nest 图先因缺窄读取 provider 失败，接线后通过。Chat owner finder 和 AgentRuns 终态读取复用原 Pool；删 Chat 终态转发，不改 SQL、准入复判顺序、绝对期限或响应。构建、lint、相关文件格式、定向 Nest/HTTP 与取消回归通过；隔离 PG exact final 场景明确执行并通过（复用 Redis 资源并校验清单），其他 parts 场景按范围排除。当前只完成 RunDisplay；AG‑UI process/head、Chat 宽接口与 Projects 仍待，未推送。
+- **Chat / RunDisplay 子切片已本地提交 `c005e27`**：真实 Nest 图先因缺窄读取 provider 失败，接线后通过。Chat owner finder 和 AgentRuns 终态读取复用原 Pool；删 Chat 终态转发，不改 SQL、准入复判顺序、绝对期限或响应。构建、lint、相关文件格式、定向 Nest/HTTP 与取消回归通过；隔离 PG exact final 场景明确执行并通过（复用 Redis 资源并校验清单），其他 parts 场景按范围排除。该提交只完成 RunDisplay，未推送。
+- **AG‑UI process/head 子切片已本地提交 `2ef307e`**：新窄 provider 的真实 Nest 装配先红后绿。原 process RR/权限及 SQL 保持；Chat snapshot 用原 client 同时读 Message、Delivery、process/head 和 watermark；AgentRuns 不再注入宽 Chat，移除不可达的旧控制转发。构建、lint、变更文件格式、定向 HTTP/装配通过；隔离真实 PG/Redis 的 R124 快照及分页、R57 ACK 与拒绝、R237 的 process 底层授权通过，资源清单恢复。Chat 本地宽聚合和 Projects 未完成。
 
 - **原 PR 与组合交付前置（只读核验）**：GitHub PR 与远端 refs 均核对：Root #66、BFF #18、App #50、Agent #46、IAM #6、Capability #13 仍为各自 OPEN draft，原 PR head 均在当前候选历史内；Cap #13 的 base 保持原 PR #12（`2ad5c9e`），不改成直接指 main。Agent 本地候选分支名不同于原 PR #46 远端 head：后者实际为 `codex/agent-run-lifecycle`（`cfd1fccc`），不得把本地名当远端推送目标或新开 PR。未推送、未改跟踪关系；交付前按各仓实际 head/base 再做非递归核验。
 - **固定产物顺序（无依赖环）**：Agent `40effb2` 反向固定的 BFF internal v1.3.0 与现 BFF 同字节；T‑09 只配对 BFF public failure，不需要先升级 Agent 的 BFF internal 产物。各独立 owner 可本地冻结；按 T‑11 → Agent 原件 → BFF public/domain/SQL → App 唯一 public 快照推进。App 有 12 个现有生成/校验入口固定同一快照摘要，使用原入口同步，不建第二份快照。各仓通过验收并在自己的原 PR 可达后，Root 才更新精确 gitlinks、验正式组合；不先钉已知不兼容中间态。

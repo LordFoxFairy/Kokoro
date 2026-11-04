@@ -8,8 +8,9 @@
 - [x] **两个 AgentRuns reader 归并**：BFF `76f2d04` 直接注入现 `BFF_DATABASE`，删 Outbox 转发和两个独立 Port；SQL、期限和取消不变。生产 Nest 注入图、R146 授权/取消、R148 回滚、Submitted Run 历史恢复均通过，未推送。
 - [x] **Personalization 归并**：BFF `335dbe3` 沿现 PG 实现收窄类型，保 Account token 和事务。真实 R257 读写、并发 CAS、COMMIT 结果未知、锁等待期间 HTTP 取消通过，未推送。
 - [x] **ScheduledTask 拆分**：BFF `368e65e` 移除旧宽接口，现行读取、mutation、callback 各用具名能力，共用原 Pool、在线 SQL 和事务。真实 current read、DELETE 回执、callback 新旧 revision、终态及 outbox 通过；outbox 首次同库组跑有全局 claim 夹具干扰，独立空库补验通过。
-- [ ] **Chat 拆分**：剩 AG‑UI process/head 读取归属、同一快照事务和旧宽接口清理。
+- [ ] **Chat 拆分**：剩 Chat 本地宽聚合退出；按私有读/写、Archive、Shared list、Feedback、Move 的实际消费者收窄。
   - [x] BFF `c005e27`：RunDisplay 改用 Chat 会话归属与 AgentRuns 终态的具名读取，删除 Chat 的终态转发；原 SQL、准入复判与取消时序不变。构建、lint、变更文件格式、真实 Nest 接线/受控 HTTP、取消及隔离 PG 终态绑定通过；未推送。
+  - [x] BFF `2ef307e`：AG‑UI 直接拥有 process/head，AgentRuns 只用窄会话授权与 head；Chat 快照沿原同一 RR client。R124 固定 watermark/快照、R57 控制准入与 ACK、R237 底层权限先于 cursor 解析均通过；未推送。
 - [ ] **Projects 拆分**：按原 G0 分 Project/Pin/Recommendation/Task；Chat、ScheduledTask、Skill/MCP 等仅注入现有具名窄能力。保 Pool、SQL、锁和事务，不造兼容层或第二实现。
 - [ ] 主控按子切片验收。只跑变化触及的真实行为；同 SHA 的归并前基线已通过，不重跑相同基线。共享 Nest 入口、架构断言和数据库 fixture 串行维护。
 
