@@ -1,6 +1,6 @@
-## Task A 当前检查点：T‑17 本地已提交，T‑11 等待对象存储恢复
+## Task A 当前检查点：T‑11 本地验收通过，进入 C‑4
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；连续复核仍见同一 Docker 数据卷故障，机器 Goal 已标为 `blocked`。T‑17 已本地提交。T‑11 的 Root 原生 ingress `237be60c`、IAM 退役 `b6a9745` 均已本地提交；IAM 0.21.0 已本地打包并核验来源/摘要，独立安装、编译及真实 PG/Redis 消费通过，尚未发布。已用正式 IAM 提交复验真实 execution peer 和 Root ingress dry-run，PG/Redis 清单恢复；没有启动真实 Storage。Capability `749b159` 已提交 R336 原生测试接线（仅静态检查），真实 ingress、存储独有风险和 R336 仍待验收。PostgreSQL 宿主卷已恢复约 34 GiB，但 Docker guest 日志明确记录 EXT4 在 I/O 错误后被重新挂为只读，daemon 探活超时、对象存储仍拒写；由原受管 owner 恢复，不清卷、不重建。C‑4 精确组合和全量未跑，A‑01/A‑02/A‑07 未启动。Root gitlinks 未变，未推送、合并或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `active`。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门通过，真实全量集成正在运行；Capability 隔离候选 `1b5116c` 保留原 PR12/13 双方，定向 provenance 门通过，合成后的全门未跑。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
