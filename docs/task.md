@@ -17087,7 +17087,7 @@ Platform `main` `0a6e28c` 已删除 `KOKORO_MCP_CONNECTOR_PROVIDER_CATALOG_JSON`
 
 ### Task A C-1.3～C-4 当前收敛检查点
 
-**机器 Goal active，Task A 未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[当前事实](CURRENT.md)维护现况。T‑17、T‑11 已通过当前组合的本地验收；C‑4 中，Agent `40effb2` owner 门已通过，原 PR46 已本地快进；Agent 8.11→BFF→App 终态配对待确认，精确组合 E2E 仍待。下列为历史检查点，不代表当前组合。
+**机器 Goal active，Task A 未闭环。** 唯一[当前方案/TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)与[当前事实](CURRENT.md)维护现况。T‑17、T‑11 已通过当前组合的本地验收；C‑4 中，Agent `40effb2` owner 门已通过，原 PR46 已本地快进；Root 治理和原生前台工具链补验已执行；结构审计、旧 gitlink 不匹配和默认 HTTP/Chat 的登录差额单独记录。Agent 8.11→BFF→App 终态配对待确认，精确组合 E2E 仍待。下列为历史检查点，不代表当前组合。
 
 - Root535e7071配对App9ba65343/BFF4d6d17b/IAMe6a01cf；各仓PR独立draft，未merge/deploy。
 - T-17前置五处DI问题已修，真实容器回归入默认门；Root BFF完整check contract1344/default2344pass+2原skip/build PASS。

@@ -57,6 +57,9 @@
 
 - **Agent C‑4 定向纠偏**：补真实 PG/独占空 Redis 前置，原 HTTP acceptance、Run Display 和 Platform transport 68 项通过；真实归档 5 项和 Docker→S3 单例通过，独占桶、容器及 PG/Redis 清单复位。Docker 测试只清本轮已确认创建的精确桶与对象（`0fc0b42`）；初次全组遗留的 25 个流按实际测试前缀、事件时间、前置空库和精确键逐项回收，无清库。`af1188e` 仅让两个故障注入满足 canonical CHECK，保持 reader 拒绝和 terminal 回滚，两个具名用例通过。原剩余三项在合成与原 PR46 `cfd1fcc` 第一父同条件真实 PG 均失败。`494a278` 仅将 R35 共用夹具对齐现 builder 的第四参数；原 `bridge_r35` 组真实 PG 18 项通过，保留重复投递、健康心跳和拒入负控。`bb47ae8` 将旧终态读取测试固定为 `b80d683` 已审历史配方，保留真 PG、同 Run、原正文、只读/字节预算、坏格式拒绝及显式终态优先的原断言，原单例通过。现役 factory 的真实 v3/SSE 诊断在无上下文和合成上下文两例都产出正常答复，但即使在私有诊断临时接纳其摘要，历史 checkpoint 形状校验仍拒绝（无 `__pregel_tasks` 通道）；新 Run 走已有的显式终态绑定，不扩大历史读门、不改生产、不跳过原测试。两批定向 PG/Redis 均已回收。最终门先发现先前 Docker 测试的 S3 错误元数据为可选字段；`40effb2` 只改为类型安全读取，仍严格要求桶前后均为 404，完整 Pyright 通过。主控在 `40effb2` 停写树跑正式格式、lint、类型、合同、默认测试及 wheel/sdist，均 exit 0。真实集成/acceptance 首轮 908 通过，只有 26 个 Display 因一次性数据库命名不符合专用隔离守卫而未执行；同 SHA 改用专用独立库仅补该文件，26 项全通过（无跳过）。真实 HTTP/Redis、PG 与 Docker→MinIO 都有最终候选证据，PG、Redis、Docker 和 S3 清单恢复；仅按已确认键回收本轮 Redis 遗留，不清库。已将原 PR46 本地分支快进至该提交，未推送或改 Root gitlink；跨仓组合另验。
 
+- **Root C‑4 独立验证**：Root `8c71a7c4` 以锁定 pytest 跑 `scripts/tests`，exit 0（2129 通过、4 跳过）；`verify-repository-topology.py` exit 1，只有 BFF、Agent、IAM、Capability 当前 checkout 与旧 gitlinks 不同。结构审计 exit 1；`9a55df34` 按已批准的 BFF Node 24 对齐 profile 和前台启动器，消除 7 条 Node 22 误报，未放松源码门。受影响的 launcher/native runner 及治理测试文件均通过。更正后审计仍报 381 项、2 个工具链未验证；对旧 gitlink 精确快照用同审计规则比较静态项：349 项原样、BFF 两个旧 bootstrap 超长项消失，唯一新增是 Capability `mcp.ports.ts` 超 800 行（原 PR12 已 802，整合后 805），不归为本次新建的抽象或 Schema 故障。31 项有效 TS 配置告警未进入静态差分。独立核实 BFF `message-parts-read` 告警是现役历史数据有界恢复，不是遗留生产入口；公开 YAML 的解析告警在旧、新 BFF 同一 Git blob 复现，不能当契约损坏。审计保留 FAIL，不批量修改历史问题、不将差分冒充最终组合通过。
+- **T‑15 启动前置**：`9a55df34` 让唯一前台 fixture 复用正式 native runner 版本：IAM/BFF 24.20.0，App/Admin 22.23.4；真实版本门及定向 RED→GREEN 通过，尚未启动服务。当前默认 HTTP/`--chat` 仍用已无 App 路由的 OAuth 探针，也未接 native 服务用途文件；不能当原生同步环境。最终配对后先用原正式浏览器 runner 验收并回收；需要共享前台时，只选现有 native MCP-only 或 Skills+Storage（Admin 显式）模式、按实际支持旅程交接，不占日常入口、不混 Chat/Billing，不宣称同库应用拓扑已验收。仍待最终 Git 配对及真实启动。
+
 ### T‑09 精确终态配对：最小方案（待确认）
 
 - **事实与边界**：BFF `f0107a7` 原解析器对 Agent 8.11 新终态返回 `null`；App `197f1102` 实测拒绝新 tuple、仍接受旧 `token_budget_exceeded`。保留原 PR46 两侧提交，不用旧 Agent 临时遮住不兼容，也不把新码降格为旧码。Agent 是终态事实 owner，BFF 是消息/公开投影 owner，App 是生成契约的消费者。只承接 `context_window_exceeded` / `retryable: false`，不接入 `personal_context` 或任何 A 功能。
@@ -533,7 +536,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
-| T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
+| T-15 | 当前组合同步 E2E 可用性；Root | PRECHECKED（未启动） | `9a55df34` 对齐 launcher 版本；旧 HTTP/Chat 不是原生入口。最终配对后跑正式旅程，再以现役 native 前台交接支持范围、入口、日志索引与回收归属。 |
 | T-16 | Agent 与原 C-1 删除项最终复核；Agent/Root | VERIFIED_OWNER（组合待验） | `40effb2` 已通过最终工程门、真实集成/acceptance（Display 隔离命名差额同 SHA 补验），原 PR46 本地已快进；精确组合及全局规范核对仍归 T‑09。 |
 | T-17 | Nest 启动、shutdown/drain/pool；BFF | VERIFIED_LOCAL_COMMIT `09f44fe` | 实际 SIGINT/SIGTERM=0、端口冲突=1、真实 PG 锁下 30.002 秒 HTTP EOF 与 31.030 秒 exit 1，资源回收；未推送或更新 Root pin。 |
 | T-18 | BFF Node24运行/生成工具链一致；BFF/Root | VERIFIED（切片） | 173e026；21路径独审/1068tracked hash匹配；Root第三轮format/check exit0，106generated与原43路径保持，7正规生成/双检通过；两轮RED保留，CI/Docker未实跑不称通过 |

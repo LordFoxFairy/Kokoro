@@ -2,6 +2,8 @@
 
 [唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `active`。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 合入原 PR12 基线后的候选已通过正式 `verify`、build 和受影响真实 Schema/MCP；旧 fixture 只补当前连接指针，真实项目发布 15 项复验及独占 SSE 用例通过。已快进本地原 PR13 分支到 `5e607fd`，未推。Agent 原 PR46 隔离候选 `40effb2` 已在真实 PG 定向补齐原三项失败：R35 共享 builder 夹具纠偏后原组 18 项通过，旧终态读取以已审历史配方复验原单例通过；未改生产或放宽读取门。同 SHA 工程门通过；真实集成仅 26 个 Display 在环境守卫未启动，改用专用隔离库定向补验全部通过，资源清单恢复。本地原 PR46 已快进，未推送。实测 Agent 8.11 新终态 `context_window_exceeded` 被 BFF 8.10 消费器拒绝，BFF 持久约束及 App 生成枚举也未承接，当前不得冻结该跨仓组合。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
 
+**Root/C‑4 补验：** `8c71a7c4` 治理测试通过（4 项跳过）。`9a55df34` 对齐前台 fixture 与 Node 治理 profile，受影响测试通过；四个旧 gitlink 不匹配，结构审计仍 FAIL。独立复核未发现已批准退役的生产入口仍有消费者。默认 HTTP/`--chat` 仍走旧探针；原生前台模式未启动，当前没有最终组合的可同步端到端环境。
+
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
 唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护当前状态。机器Goal经用户恢复并由主方核验为active；G1已关闭当前冻结组合，G2/G3仍OPEN，A01/A02/A07停写。
