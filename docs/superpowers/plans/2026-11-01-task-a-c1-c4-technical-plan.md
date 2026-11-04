@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项并入与三项拆分仍有处置余差；C‑4 独立门已启动。Root 精确组合尚未更新；A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项并入与三项拆分仍有处置余差；C‑4 独立门已取得现有候选证据。机器 Goal 为 `blocked`：T‑11 限定只补验证，首批三项归并的 BFF 写区待确认；T‑09 终态配对待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
