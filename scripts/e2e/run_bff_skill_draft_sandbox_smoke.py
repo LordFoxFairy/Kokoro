@@ -11,7 +11,6 @@ from __future__ import annotations
 from contextlib import contextmanager
 from dataclasses import dataclass
 import argparse
-import base64
 from datetime import datetime, timedelta, timezone
 import getpass
 from enum import Enum
@@ -32,7 +31,7 @@ import tempfile
 import threading
 import time
 import zipfile
-from typing import Callable, Iterator, Protocol, Mapping
+from typing import TYPE_CHECKING, Callable, Iterator, Literal, Protocol, Mapping
 from types import MappingProxyType
 from uuid import UUID, uuid4
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
@@ -46,7 +45,16 @@ except ModuleNotFoundError:
     import product_skill_installation_smoke as product_helper
 
 
+if TYPE_CHECKING:
+    from run_bff_iam_session_smoke import Ready as NamedIamReady
+    from run_web_native_session_smoke import NativeReceipt
+
+
 ROOT = Path(__file__).resolve().parents[2]
+WEBSITE_SKILL_DETAIL_PATH = "/skill.v1.SkillOptionalService/GetSkill"
+ACTIVE_PERSONAL_SKILL_PATH = (
+    "/v1/self/skills?status=active&source_kind=personal&limit=100"
+)
 OWNERS = MappingProxyType(
     {
         "iam": ROOT / "apps/kokoro-iam",
@@ -145,164 +153,124 @@ class Phase(str, Enum):
     CLEANUP = "cleanup"
 
 
-@dataclass(frozen=True, slots=True)
-class CatalogCredential:
-    client_id: str
-    client_secret: str
-
-
-@dataclass(frozen=True, slots=True)
-class SandboxReady:
-    base_url: str
-    database_name: str
-    redis_prefix: str
-    tenant_id: str
-    subject_id: str
-    access_token: str
-    catalog: CatalogCredential
-    projection: CatalogCredential
-    # IAM host protocol/secret redaction only; not Platform runtime configuration.
-    resource_server: CatalogCredential
-    execution_authorization: CatalogCredential
-    web_client_secret: str
-    user_password: str
-    tenant_execution: CatalogCredential | None = None
-
-    @property
-    def secrets(self) -> tuple[str, ...]:
-        values = (
-            self.access_token,
-            self.catalog.client_secret,
-            self.projection.client_secret,
-            self.resource_server.client_secret,
-            self.execution_authorization.client_secret,
-            self.web_client_secret,
-            self.user_password,
-        )
-        if self.tenant_execution is not None:
-            values += (self.tenant_execution.client_secret,)
-        return values
-
-
-def _nonempty(value: object, label: str) -> str:
-    if not isinstance(value, str) or not value or value != value.strip():
-        raise SmokeError(f"IAM ready {label} invalid")
-    return value
-
-
-def _credential(value: object, label: str) -> CatalogCredential:
-    if not isinstance(value, dict) or set(value) != {"client_id", "client_secret"}:
-        raise SmokeError(f"IAM ready {label} invalid")
-    return CatalogCredential(
-        _nonempty(value["client_id"], f"{label} client id"),
-        _nonempty(value["client_secret"], f"{label} client secret"),
+def _named_iam_command(
+    iam: subprocess.Popen[bytes],
+    reader: object,
+    command: Literal["platform_execution_credential", "remove_member", "signout"],
+) -> object:
+    if iam.stdin is None:
+        raise SmokeError("IAM command pipe absent")
+    iam.stdin.write(
+        json.dumps({"command": command}, separators=(",", ":")).encode() + b"\n"
     )
+    iam.stdin.flush()
+    return getattr(reader, "record")(timeout=30)
 
 
-def require_sandbox_ready(
-    record: object, *, agent_source: bool = False
-) -> SandboxReady:
-    """Strictly accept the IAM opt-in protocol without copying owner policy."""
-    if type(agent_source) is not bool:
-        raise SmokeError("IAM Agent source mode must be an explicit boolean")
-    base = {
-        "kind",
-        "base_url",
-        "database_name",
-        "redis_prefix",
-        "issuer_url",
-        "client_id",
-        "client_secret",
-        "redirect_uri",
-        "post_logout_redirect_uri",
-        "email",
-        "password",
-        "tenant_id",
-        "skill_sandbox",
-    }
+def _iam_purpose_credential_secret(
+    path_value: object,
+    directory: Path,
+    tenant_id: str,
+    caller: str,
+    surface: str,
+) -> tuple[Path, str]:
+    """Read a named fixture file solely to bind purpose and redact its secret."""
+    try:
+        if not isinstance(path_value, str):
+            raise ValueError
+        path = Path(path_value)
+        if (
+            not path.is_absolute()
+            or not path.is_relative_to(directory.resolve())
+            or path.resolve(strict=True) != path
+        ):
+            raise ValueError
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            info = os.fstat(stream.fileno())
+            if (
+                not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid()
+                or info.st_nlink != 1
+                or stat.S_IMODE(info.st_mode) not in {0o400, 0o600}
+                or info.st_size > 65536
+            ):
+                raise ValueError
+            raw = stream.read(65537)
+        if len(raw) > 65536:
+            raise ValueError
+        document = json.loads(raw)
+        if (
+            not isinstance(document, dict)
+            or set(document) != {"version", "entries"}
+            or type(document["version"]) is not int
+            or document["version"] != 1
+            or not isinstance(document["entries"], list)
+            or len(document["entries"]) != 1
+        ):
+            raise ValueError
+        entry = document["entries"][0]
+        if (
+            not isinstance(entry, dict)
+            or set(entry)
+            != {"credential_id", "caller", "surface", "tenant_id", "secret"}
+            or entry["caller"] != caller
+            or entry["surface"] != surface
+            or entry["tenant_id"] != tenant_id
+            or not isinstance(entry["credential_id"], str)
+            or re.fullmatch(
+                r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", entry["credential_id"]
+            )
+            is None
+            or not isinstance(entry["secret"], str)
+            or re.fullmatch(r"[\x21-\x7e]{32,4096}", entry["secret"]) is None
+        ):
+            raise ValueError
+    except (OSError, ValueError, RuntimeError, UnicodeError):
+        raise SmokeError("IAM purpose credential invalid") from None
+    return path, entry["secret"]
+
+
+def _named_iam_execution_file(
+    iam: subprocess.Popen[bytes],
+    reader: object,
+    browser: NativeReceipt,
+    directory: Path,
+    tenant_id: str,
+    register_secret: Callable[[str], None],
+) -> Path:
+    record = _named_iam_command(iam, reader, "platform_execution_credential")
     if (
         not isinstance(record, dict)
-        or set(record) != base
-        or record.get("kind") != "ready"
+        or set(record) != {"kind", "execution_credential_file"}
+        or record["kind"] != "platform_execution_credential"
     ):
-        raise SmokeError("IAM skill sandbox ready protocol invalid")
-    sandbox = record.get("skill_sandbox")
-    sandbox_fields = {
-        "access_token",
-        "subject_id",
-        "catalog_client",
-        "projection_client",
-        "resource_server_basic",
-        "execution_authorization_client",
-    }
-    if agent_source:
-        sandbox_fields.add("tenant_execution_client")
-    if not isinstance(sandbox, dict) or set(sandbox) != sandbox_fields:
-        raise SmokeError("IAM skill sandbox evidence invalid")
-    execution = sandbox["execution_authorization_client"]
-    if not isinstance(execution, dict) or set(execution) != {
-        "client_id",
-        "client_secret",
-    }:
-        raise SmokeError("IAM execution authorization client invalid")
-    base_url = _nonempty(record["base_url"], "base URL")
-    parsed = urlsplit(base_url)
-    if (
-        parsed.scheme != "http"
-        or parsed.hostname not in LOCAL_HOSTS
-        or parsed.path not in {"", "/"}
-        or parsed.query
-        or parsed.fragment
-    ):
-        raise SmokeError("IAM ready base URL must be loopback HTTP origin")
-    if parsed.port in {None, 3310}:
-        raise SmokeError("IAM ready port missing or reserved")
-    database = _nonempty(record["database_name"], "database name")
-    if re.fullmatch(r"[a-z][a-z0-9_]{2,62}", database) is None:
-        raise SmokeError("IAM ready database name invalid")
-    return SandboxReady(
-        base_url,
-        database,
-        _nonempty(record["redis_prefix"], "Redis prefix"),
-        _nonempty(record["tenant_id"], "tenant id"),
-        _nonempty(sandbox["subject_id"], "subject id"),
-        _nonempty(sandbox["access_token"], "access token"),
-        _credential(sandbox["catalog_client"], "catalog client"),
-        _credential(sandbox["projection_client"], "projection client"),
-        _credential(sandbox["resource_server_basic"], "resource server"),
-        _credential(execution, "execution authorization client"),
-        _nonempty(record["client_secret"], "Web client secret"),
-        _nonempty(record["password"], "user password"),
-        _credential(sandbox["tenant_execution_client"], "Agent execution client")
-        if agent_source
-        else None,
+        raise SmokeError("IAM execution credential receipt invalid")
+    credentials = (
+        (browser.bff_user_context_credential_file, "kokoro-bff", "bff_user_context"),
+        (browser.account_session_credential_file, "kokoro-bff", "account_sessions"),
+        (
+            record["execution_credential_file"],
+            "kokoro-platform",
+            "execution_authorization",
+        ),
     )
+    paths, observed = set(), set()
+    for path_value, caller, surface in credentials:
+        path, secret = _iam_purpose_credential_secret(
+            path_value, directory, tenant_id, caller, surface
+        )
+        register_secret(secret)
+        paths.add(path)
+        observed.add(secret)
+    if len(paths) != len(credentials) or len(observed) != len(credentials):
+        raise SmokeError("IAM purpose credentials must be independent")
+    return path
 
 
 def require_revoke_result(record: object) -> None:
-    if record != {"kind": "result", "command": "revoke-user-session", "status": "ok"}:
+    if record != {"kind": "result", "command": "signout", "status": "ok"}:
         raise SmokeError("IAM session revoke protocol invalid")
-
-
-@contextmanager
-def credential_file(payload: dict[str, object]) -> Iterator[Path]:
-    """Write the BFF owner-only credential using create-exclusive mode 0600."""
-    directory = Path(tempfile.mkdtemp(prefix="kokoro-skill-draft-"))
-    path = directory / "platform-credential.json"
-    try:
-        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-        with os.fdopen(fd, "w", encoding="utf-8") as stream:
-            json.dump(payload, stream, separators=(",", ":"), sort_keys=True)
-            stream.write("\n")
-        if stat.S_IMODE(path.stat().st_mode) != 0o600:
-            raise SmokeError("credential file mode invalid")
-        yield path
-    finally:
-        try:
-            path.unlink(missing_ok=True)
-            directory.rmdir()
-        except OSError:
-            pass
 
 
 def frozen_sources(
@@ -357,7 +325,7 @@ def frozen_sources(
 
 class JsonRequest(Protocol):
     def __call__(
-        self, *, body: dict[str, object], key: str, token: str
+        self, *, body: dict[str, object], key: str
     ) -> tuple[int, dict[str, object]]: ...
 
 
@@ -945,6 +913,7 @@ def require_public_skill_validate(
     skill_id: str,
     series_id: str,
     content_sha256: str,
+    manifest_identity: str,
 ) -> dict[str, object]:
     """Validate projects an owner-verified ZIP result, never a publication."""
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
@@ -966,9 +935,7 @@ def require_public_skill_validate(
         or data["series_id"] != series_id
         or data["valid"] is not True
         or data["content_digest"] != content_sha256
-        or not isinstance(data["manifest_identity"], str)
-        or re.fullmatch(r"zip-v2:sha256:[a-f0-9]{64}", data["manifest_identity"])
-        is None
+        or data["manifest_identity"] != manifest_identity
         or type(data["replayed"]) is not bool
     ):
         raise SmokeError("BFF Skill Validate projection invalid")
@@ -1031,7 +998,11 @@ def require_platform_guard_denial(
     allowed = {
         (401, "capability.service_auth_failed", "BFF workload bearer is required"),
         (401, "capability.service_auth_failed", "BFF workload authentication failed"),
-        (403, "capability.tenant_mismatch", "BFF tenant does not match IAM"),
+        (
+            403,
+            "capability.tenant_mismatch",
+            "BFF tenant does not match the service credential",
+        ),
     }
     if (status, code, message) not in allowed or body != {
         "error": {"code": code, "message": message, "retryable": False}
@@ -1054,7 +1025,7 @@ def require_platform_guard_denial(
 
 
 def require_platform_published_skill_read(
-    status: int, body: object, skill_id: str, revision: str, *, enriched: bool = False
+    status: int, body: object, skill_id: str, revision: str
 ) -> None:
     if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
         raise SmokeError("Platform published Skill response invalid")
@@ -1072,9 +1043,7 @@ def require_platform_published_skill_read(
         "category_keys",
         "product",
     }
-    if not isinstance(data, dict) or not fields <= set(data) <= fields | (
-        {"publisher_profile"} if enriched else set()
-    ):
+    if not isinstance(data, dict) or set(data) != fields:
         raise SmokeError("Platform published Skill fields invalid")
     if (
         data["skill_id"] != skill_id
@@ -1091,104 +1060,104 @@ def require_platform_published_skill_read(
     ):
         raise SmokeError("Platform published Skill projection invalid")
     try:
-        product_helper.require_product_fields(data, enriched=enriched)
+        product_helper.require_product_fields(data, enriched=False)
     except product_helper.ProductError:
         raise SmokeError("Platform published Skill Product invalid") from None
 
 
-def require_public_published_skill_read(
-    status: int, body: object, skill_id: str, revision: str
+def require_retired_bff_skill_detail(
+    read: Callable[[str], tuple[int, dict[str, object]]],
+    proxy: CountingTcpProxy,
+    revision_id: str,
 ) -> None:
-    require_platform_published_skill_read(
-        status, body, skill_id, revision, enriched=True
-    )
+    """The retired BFF alias is a terminal guard, not a business read."""
+
+    def observation() -> tuple[int, int, bool, int]:
+        return (
+            proxy.count,
+            proxy.request_count,
+            proxy.protocol_failed,
+            proxy.protocol_failure_count,
+        )
+
+    before = observation()
+    response = read("/v1/skills/" + quote(revision_id, safe=""))
+    require_owned_error(response, 404, "bff_route_not_found")
+    if response[1]["error"]["message"] != "Business route was not found":
+        raise SmokeError("retired BFF Skill detail did not return terminal 404")
+    after = observation()
+    if before != after or after[2:] != (False, 0):
+        raise SmokeError("retired BFF Skill detail reached the owner")
 
 
-def require_bff_projection_revoked(status: int, body: object) -> None:
-    """A revoked Product session must not return any Skill projection bytes."""
-    if status != 401 or not isinstance(body, dict) or set(body) != {"error"}:
-        raise SmokeError("revoked IAM session exposed BFF Skill projection")
-    error = body["error"]
-    if (
-        not isinstance(error, dict)
-        or set(error) != {"code", "message", "retryable"}
-        or error["code"] != "session_invalid"
-        or error["message"] != "BFF user admission failed"
-        or error["retryable"] is not False
+def require_website_skill_missing(response: tuple[int, object]) -> None:
+    if response != (
+        404,
+        {"error": {"code": "NotFound", "message": "Skill is not available"}},
     ):
-        raise SmokeError("revoked IAM session exposed BFF Skill projection")
+        raise SmokeError("R357 unpublished Skill read was not private 404")
 
 
-def require_bff_personal_skill_list(
-    status: int, body: object, skill_id: str, revision: str
+def require_website_skill_projection(
+    response: tuple[int, dict[str, object]], series_id: str, owner: dict[str, object]
 ) -> None:
-    """Validate the entire public page, not only one matching reference."""
-    if status != 200 or not isinstance(body, dict) or set(body) != {"data"}:
-        raise SmokeError("BFF personal Skill list envelope invalid")
-    page = body["data"]
-    if not isinstance(page, dict) or not {"skills"} <= set(page) <= {
-        "skills",
-        "next_cursor",
-    }:
-        raise SmokeError("BFF personal Skill list page invalid")
+    status, body = response
+    skill = body.get("skill")
+    if status != 200 or set(body) != {"skill"} or not isinstance(skill, dict):
+        raise SmokeError("R357 Skill projection envelope invalid")
+    expected = {
+        "id": series_id,
+        "version": owner["skill_id"],
+        "displayName": owner["name"],
+        "description": owner["summary"],
+        "userDescription": owner["summary"],
+        "ownerType": "personal",
+        "coverImage": "/api/v1/skills/"
+        + quote(str(owner["skill_id"]), safe="")
+        + "/cover",
+    }
+    if {key: skill.get(key) for key in expected} != expected:
+        raise SmokeError("R357 Skill projection drifted from owner")
+
+
+def require_active_personal_skill_projection(
+    response: tuple[int, object], series_id: str, owner: dict[str, object]
+) -> None:
+    rows, _ = require_managed_page(response)
+    matches = [row for row in rows if row["source_ref"] == owner["source_ref"]]
+    fields = ("skill_id", "source_ref", "revision", "status", "name", "summary", "tags")
     if (
-        not isinstance(page["skills"], list)
-        or len(page["skills"]) > 100
-        or (
-            "next_cursor" in page
-            and page["next_cursor"] is not None
-            and (not isinstance(page["next_cursor"], str) or not page["next_cursor"])
+        len(matches) != 1
+        or matches[0]["series_id"] != series_id
+        or {key: matches[0][key] for key in fields}
+        != {key: owner[key] for key in fields}
+        or any(
+            row["status"] != "active" or row["product"]["source_kind"] != "personal"
+            for row in rows
         )
     ):
-        raise SmokeError("BFF personal Skill list page invalid")
-    required = {
-        "source_ref",
-        "name",
-        "description",
-        "content_hash",
-        "scope",
-        "revision",
-        "enabled",
-        "category_keys",
-        "example_prompts",
-        "product",
-        "skill_updated_at",
-    }
-    matches = 0
-    for item in page["skills"]:
-        if not isinstance(item, dict) or not required <= set(item) <= required | {
-            "installed",
-            "publisher_profile",
-        }:
-            raise SmokeError("BFF personal Skill list item invalid")
-        item_revision = item["revision"]
-        if (
-            not isinstance(item["source_ref"], str)
-            or not item["source_ref"].startswith("skill:")
-            or any(
-                not isinstance(item[key], str)
-                for key in ("name", "description", "content_hash")
-            )
-            or item["scope"] != "personal"
-            or not isinstance(item_revision, str)
-            or re.fullmatch(r"[1-9][0-9]{0,19}", item_revision) is None
-            or int(item_revision) > 18_446_744_073_709_551_615
-            or not isinstance(item["enabled"], bool)
-            or not isinstance(item["category_keys"], list)
-            or any(not isinstance(category, str) for category in item["category_keys"])
-            or ("installed" in item and not isinstance(item["installed"], bool))
-        ):
-            raise SmokeError("BFF personal Skill list item invalid")
-        try:
-            product_helper.require_product_fields(item)
-        except product_helper.ProductError:
-            raise SmokeError("BFF personal Skill Product invalid") from None
-        if item["source_ref"] == "skill:" + skill_id:
-            matches += 1
-            if item_revision != revision:
-                raise SmokeError("BFF personal Skill list revision drift")
-    if matches != 1:
-        raise SmokeError("BFF personal Skill list lost published Skill")
+        raise SmokeError("Managed active personal Skill projection drifted from owner")
+
+
+def require_website_skill_revoked(response: tuple[int, object]) -> None:
+    if response != (
+        401,
+        {
+            "error": {
+                "code": "session_invalid",
+                "message": "Current user admission is required",
+            }
+        },
+    ):
+        raise SmokeError("revoked IAM session exposed R357 Skill detail")
+
+
+def require_active_personal_skill_revoked(
+    response: tuple[int, dict[str, object]],
+) -> None:
+    require_owned_error(response, 401, "session_invalid")
+    if response[1]["error"]["message"] != "BFF user admission failed":
+        raise SmokeError("revoked IAM session exposed managed Skill list")
 
 
 def require_managed_page(
@@ -1391,7 +1360,6 @@ def signed_reference_secrets(url: str) -> tuple[str, ...]:
 
 def exercise_http_contract(
     request: JsonRequest,
-    ready: SandboxReady,
     observe: Callable[[Phase], None] = lambda _phase: None,
 ) -> dict[str, object]:
     """Exercise replay/conflict/revoke ordering through injected real HTTP calls."""
@@ -1402,14 +1370,14 @@ def exercise_http_contract(
     }
     key = "skill-draft-sandbox-key"
     observe(Phase.CANDIDATE_CREATE)
-    status, body = request(body=command, key=key, token=ready.access_token)
+    status, body = request(body=command, key=key)
     first, series, replayed, code = _draft(body, status)
     if status != 201 or replayed is not False:
         raise SmokeError(
             f"first Skill draft was not created (status={status}, code={public_error_code(code)})"
         )
     observe(Phase.CANDIDATE_REPLAY_CONFLICT)
-    status, body = request(body=command, key=key, token=ready.access_token)
+    status, body = request(body=command, key=key)
     second, replay_series, replayed, _ = _draft(body, status)
     if (
         status != 201
@@ -1418,9 +1386,7 @@ def exercise_http_contract(
         or replayed is not True
     ):
         raise SmokeError("Skill draft replay drift")
-    status, body = request(
-        body={**command, "summary": "different"}, key=key, token=ready.access_token
-    )
+    status, body = request(body={**command, "summary": "different"}, key=key)
     _, _, _, code = _draft(body, status)
     if status != 409 or code != "skill_idempotency_conflict":
         raise SmokeError("Skill draft conflict drift")
@@ -1494,9 +1460,9 @@ def platform_package_probe_env(
     platform_node: Path,
     storage_base: str,
     platform_base: str,
-    iam_base: str,
     service_secret: str,
-    ready: SandboxReady,
+    ready: NamedIamReady,
+    catalog_file: Path,
     skill_id: str,
 ) -> dict[str, str]:
     """Give the owner probe only current Skill and short-lived owner boundary inputs."""
@@ -1508,11 +1474,9 @@ def platform_package_probe_env(
         "KOKORO_STORAGE_URL": storage_base,
         "KOKORO_PLATFORM_STORAGE_SERVICE_CREDENTIAL": service_secret,
         "KOKORO_SMOKE_PLATFORM_URL": platform_base,
-        "KOKORO_SMOKE_IAM_URL": iam_base,
-        "KOKORO_SMOKE_CATALOG_CLIENT_ID": ready.catalog.client_id,
-        "KOKORO_SMOKE_CATALOG_CLIENT_SECRET": ready.catalog.client_secret,
+        "KOKORO_SMOKE_CATALOG_SERVICE_CREDENTIAL_FILE": str(catalog_file),
         "KOKORO_SMOKE_TENANT_ID": ready.tenant_id,
-        "KOKORO_SMOKE_SUBJECT_ID": ready.subject_id,
+        "KOKORO_SMOKE_SUBJECT_ID": ready.user_id,
         "KOKORO_SMOKE_SKILL_ID": skill_id,
     }
 
@@ -1570,100 +1534,165 @@ def normalized_postgres_admin_url(
     )
 
 
-def platform_credential_payloads(
-    ready: SandboxReady,
-) -> tuple[
-    list[dict[str, object]],
-    list[dict[str, object]],
-    dict[str, object],
-]:
-    """Project IAM handles into the current owner-defined credential files."""
-    common = {"generation": 1, "credentialRefVersion": "sandbox-v1"}
-    execution = [
-        {
-            **common,
-            "tenantId": ready.tenant_id,
-            "clientId": ready.execution_authorization.client_id,
-            "clientSecret": ready.execution_authorization.client_secret,
-            "resource": "https://kokoro.dev/resources/iam-internal",
-            "scope": "iam:execution-authorization.verify",
-        }
-    ]
-    catalog = [
-        {
-            **common,
-            "tenantId": ready.tenant_id,
-            "clientId": ready.catalog.client_id,
-            "clientSecret": ready.catalog.client_secret,
-            "resource": "https://kokoro.dev/resources/platform-internal",
-            "scope": "platform:skill-catalog.manage",
-        }
-    ]
-    projection = {
-        "version": 1,
-        "entries": [
-            {
-                "credential_id": "bff-projection",
-                "secret": ready.projection.client_secret,
-                "caller": "kokoro-bff",
-                "surfaces": ["projection"],
-                "tenant_id": ready.tenant_id,
-            }
-        ],
-    }
-    return execution, catalog, projection
+def _write_owner_fixture_credential(
+    path: Path, entries: list[dict[str, object]]
+) -> None:
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        json.dump({"version": 1, "entries": entries}, stream, separators=(",", ":"))
+
+
+@dataclass(frozen=True, repr=False)
+class AgentSourceInputs:
+    tenant_id: str
+    subject_id: str
+    cookie: str
+    origin: str
+    bff_origin: str
+    bff_web_secret: str
+    platform_credential_file: Path
+    bff_database: str
+
+    async def observe_bff_dispatch_admitted(
+        self, tenant: str, run: str, conversation: str, request: str, message: str
+    ) -> bool:
+        # Read exactly the canonical BFF outbox fact in the run-owned database.
+        from kokoro_agent.infrastructure.postgres import connect_pg
+
+        async with connect_pg(self.bff_database) as connection:
+            cursor = await connection.execute(
+                """
+                SELECT EXISTS (
+                    SELECT 1 FROM "kokoro_bff"."bff_agent_dispatch_outbox"
+                    WHERE tenant_id = %s AND run_id = %s AND conversation_id = %s
+                      AND request_id = %s AND user_message_id = %s
+                      AND status = 'admitted' AND admitted_at IS NOT NULL
+                ) AS admitted
+                """,
+                (tenant, run, conversation, request, message),
+            )
+            row = await cursor.fetchone()
+        return row is not None and row["admitted"] is True
 
 
 @contextmanager
-def credential_files(directory: Path, ready: SandboxReady) -> Iterator[dict[str, Path]]:
-    payloads = platform_credential_payloads(ready)
-    names = (
-        "tenant-execution.json",
-        "bff-catalog.json",
-        "platform-service-credentials.json",
-    )
-    paths: dict[str, Path] = {}
+def _native_platform_credential_files(
+    directory: Path,
+    tenant_id: str,
+    catalog_secret: str,
+    projection_secret: str,
+    *,
+    retain_for_agent: bool,
+    agent_entry: dict[str, object] | None = None,
+) -> Iterator[dict[str, Path]]:
+    if catalog_secret == projection_secret:
+        raise SmokeError("Platform credentials must be independent")
+
+    def entry(surface: str, secret: str) -> dict[str, object]:
+        return {
+            "credential_id": "bff-" + surface,
+            "secret": secret,
+            "caller": "kokoro-bff",
+            "surfaces": [surface],
+            "tenant_id": tenant_id,
+        }
+
+    catalog = entry("catalog", catalog_secret)
+    projection = entry("projection", projection_secret)
+    paths = {}
+    receiver = [catalog, projection]
+    if agent_entry is not None:
+        receiver.append(agent_entry)
     try:
-        for name, payload in zip(names, payloads, strict=True):
+        for name, entries in (
+            ("bff-catalog.json", [catalog]),
+            ("bff-projection.json", [projection]),
+            ("platform-service-credentials.json", receiver),
+        ):
             path = directory / name
-            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            with os.fdopen(fd, "w", encoding="utf-8") as stream:
-                json.dump(payload, stream, separators=(",", ":"), sort_keys=True)
+            _write_owner_fixture_credential(path, entries)
             paths[name] = path
         yield paths
     finally:
-        for path in paths.values():
-            path.unlink(missing_ok=True)
+        # The existing outer teardown retains the run directory if Agent may
+        # still be using the owner processes and their purpose files.
+        if not retain_for_agent:
+            for path in paths.values():
+                path.unlink(missing_ok=True)
 
 
-def _http_json(
-    base: str, path: str, *, token: str, secret: str, key: str, body: dict[str, object]
-) -> tuple[int, dict[str, object]]:
+def _bff_http(
+    base: str,
+    path: str,
+    *,
+    browser: NativeReceipt,
+    secret: str,
+    method: Literal["GET", "POST"],
+    body: bytes | None = None,
+    key: str | None = None,
+    label: str = "BFF",
+    timeout: int = 8,
+) -> tuple[int, bytes, list[tuple[str, str]], str]:
+    """Use the named IAM fixture's Cookie and Origin as exact wire values."""
     parsed = urlsplit(base)
-    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
-    encoded = json.dumps(body, separators=(",", ":")).encode()
+    connection = http.client.HTTPConnection(
+        parsed.hostname, parsed.port, timeout=timeout
+    )
     request_id = "skill-sandbox-" + secrets.token_hex(8)
+    request_headers = {
+        "cookie": browser.cookie,
+        "origin": browser.iam_web_origin,
+        "x-kokoro-service": "web-bff",
+        "x-kokoro-internal-secret": secret,
+        "x-kokoro-request-id": request_id,
+    }
+    if key is not None:
+        request_headers["idempotency-key"] = key
+    if body == b"":
+        request_headers["content-length"] = "0"
+    elif body is not None:
+        request_headers["content-type"] = "application/json"
     try:
-        connection.request(
-            "POST",
-            path,
-            body=encoded,
-            headers={
-                "authorization": "Bearer " + token,
-                "x-kokoro-service": "web-bff",
-                "x-kokoro-internal-secret": secret,
-                "x-kokoro-request-id": request_id,
-                "idempotency-key": key,
-                "content-type": "application/json",
-            },
-        )
+        connection.request(method, path, body=body, headers=request_headers)
         response = connection.getresponse()
         raw = response.read(1_048_577)
         headers = response.getheaders()
+        status = response.status
     finally:
         connection.close()
     if len(raw) > 1_048_576:
-        raise SmokeError("BFF response too large")
+        raise SmokeError(f"{label} response too large")
+    return status, raw, headers, request_id
+
+
+def _bff_json(raw: bytes, label: str) -> dict[str, object]:
+    try:
+        value = json.loads(raw)
+    except (ValueError, UnicodeError):
+        raise SmokeError(f"{label} response is not JSON") from None
+    if not isinstance(value, dict):
+        raise SmokeError(f"{label} response envelope invalid")
+    return value
+
+
+def _http_json(
+    base: str,
+    path: str,
+    *,
+    browser: NativeReceipt,
+    secret: str,
+    key: str,
+    body: dict[str, object],
+) -> tuple[int, dict[str, object]]:
+    status, raw, headers, request_id = _bff_http(
+        base,
+        path,
+        browser=browser,
+        secret=secret,
+        method="POST",
+        key=key,
+        body=json.dumps(body, separators=(",", ":")).encode(),
+    )
     if path.endswith(("/package-upload", "/package-upload/complete", "/validate")):
         require_package_response_headers(
             headers,
@@ -1674,60 +1703,34 @@ def _http_json(
             if path.endswith("/complete")
             else "Begin",
         )
-    try:
-        value = json.loads(raw)
-    except (ValueError, UnicodeError):
-        raise SmokeError("BFF response is not JSON") from None
-    if not isinstance(value, dict):
-        raise SmokeError("BFF response envelope invalid")
-    return response.status, value
+    return status, _bff_json(raw, "BFF")
 
 
 def _http_lifecycle(
     base: str,
     path: str,
     *,
-    token: str,
+    browser: NativeReceipt,
     secret: str,
     key: str,
     body: dict[str, object],
 ) -> tuple[int, dict[str, object]]:
-    parsed = urlsplit(base)
-    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=12)
-    encoded = json.dumps(body, separators=(",", ":")).encode()
-    request_id = "skill-sandbox-" + secrets.token_hex(8)
-    try:
-        connection.request(
-            "POST",
-            path,
-            body=encoded,
-            headers={
-                "authorization": "Bearer " + token,
-                "x-kokoro-service": "web-bff",
-                "x-kokoro-internal-secret": secret,
-                "x-kokoro-request-id": request_id,
-                "idempotency-key": key,
-                "content-type": "application/json",
-            },
-        )
-        response = connection.getresponse()
-        raw = response.read(1_048_577)
-        headers = response.getheaders()
-        status = response.status
-    finally:
-        connection.close()
-    if len(raw) > 1_048_576:
-        raise SmokeError("BFF lifecycle response too large")
+    status, raw, headers, request_id = _bff_http(
+        base,
+        path,
+        browser=browser,
+        secret=secret,
+        method="POST",
+        key=key,
+        body=json.dumps(body, separators=(",", ":")).encode(),
+        label="BFF lifecycle",
+        timeout=12,
+    )
     returned_id = [value for name, value in headers if name.lower() == "x-request-id"]
     cache = [value for name, value in headers if name.lower() == "cache-control"]
     if returned_id != [request_id] or cache != ["no-store"]:
         raise SmokeError("BFF lifecycle response headers invalid")
-    try:
-        value = json.loads(raw)
-    except (ValueError, UnicodeError):
-        raise SmokeError("BFF lifecycle response is not JSON") from None
-    if not isinstance(value, dict):
-        raise SmokeError("BFF lifecycle response envelope invalid")
+    value = _bff_json(raw, "BFF lifecycle")
     envelope = {"data", "meta"} if 200 <= status < 300 else {"error", "meta"}
     if set(value) != envelope or value.get("meta") != {"request_id": request_id}:
         raise SmokeError("BFF lifecycle response envelope invalid")
@@ -1814,131 +1817,70 @@ def require_lifecycle_error(
 
 
 def _http_publish_empty(
-    base: str, path: str, *, token: str, secret: str, key: str
+    base: str, path: str, *, browser: NativeReceipt, secret: str, key: str
 ) -> tuple[int, dict[str, object]]:
     """Send zero body bytes only for default-off or authentication-negative probes."""
-    parsed = urlsplit(base)
-    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
-    request_id = "skill-sandbox-" + secrets.token_hex(8)
-    try:
-        connection.request(
-            "POST",
-            path,
-            body=b"",
-            headers={
-                "authorization": "Bearer " + token,
-                "x-kokoro-service": "web-bff",
-                "x-kokoro-internal-secret": secret,
-                "x-kokoro-request-id": request_id,
-                "idempotency-key": key,
-                "content-length": "0",
-            },
-        )
-        response = connection.getresponse()
-        raw = response.read(1_048_577)
-        headers = response.getheaders()
-    finally:
-        connection.close()
-    if len(raw) > 1_048_576:
-        raise SmokeError("BFF Publish response too large")
+    status, raw, headers, request_id = _bff_http(
+        base,
+        path,
+        browser=browser,
+        secret=secret,
+        method="POST",
+        key=key,
+        body=b"",
+        label="BFF Publish",
+    )
     require_package_response_headers(headers, request_id, "Publish")
-    try:
-        value = json.loads(raw)
-    except (ValueError, UnicodeError):
-        raise SmokeError("BFF Publish response is not JSON") from None
-    if not isinstance(value, dict):
-        raise SmokeError("BFF Publish response envelope invalid")
-    return response.status, value
+    return status, _bff_json(raw, "BFF Publish")
 
 
 def _http_get_json(
-    base: str, path: str, *, token: str, secret: str
+    base: str, path: str, *, browser: NativeReceipt, secret: str
 ) -> tuple[int, dict[str, object]]:
-    parsed = urlsplit(base)
-    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
-    request_id = "skill-sandbox-" + secrets.token_hex(8)
-    try:
-        connection.request(
-            "GET",
-            path,
-            headers={
-                "authorization": "Bearer " + token,
-                "x-kokoro-service": "web-bff",
-                "x-kokoro-internal-secret": secret,
-                "x-kokoro-request-id": request_id,
-            },
-        )
-        response = connection.getresponse()
-        raw = response.read(1_048_577)
-        headers = response.getheaders()
-    finally:
-        connection.close()
-    if len(raw) > 1_048_576:
-        raise SmokeError("BFF package GET response too large")
+    status, raw, headers, request_id = _bff_http(
+        base,
+        path,
+        browser=browser,
+        secret=secret,
+        method="GET",
+        label="BFF package GET",
+    )
     require_package_response_headers(headers, request_id, "GET")
-    try:
-        value = json.loads(raw)
-    except (ValueError, UnicodeError):
-        raise SmokeError("BFF package GET response is not JSON") from None
-    if not isinstance(value, dict):
-        raise SmokeError("BFF package GET response envelope invalid")
-    return response.status, value
+    return status, _bff_json(raw, "BFF package GET")
 
 
-def issue_projection_token(ready: SandboxReady) -> str:
-    """Exchange only IAM's BFF projection client for its exact workload scope."""
-    parsed = urlsplit(local_http_origin(ready.base_url, "IAM"))
-    connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
-    credential = base64.b64encode(
-        f"{ready.projection.client_id}:{ready.projection.client_secret}".encode()
-    ).decode("ascii")
-    body = urlencode(
-        {
-            "grant_type": "client_credentials",
-            "scope": "platform:projection.read",
-            "resource": "https://kokoro.dev/resources/platform-internal",
-        }
-    ).encode("ascii")
-    try:
-        connection.request(
-            "POST",
-            "/iam/oauth2/token",
-            body=body,
-            headers={
-                "authorization": "Basic " + credential,
-                "content-type": "application/x-www-form-urlencoded",
-            },
-        )
-        response = connection.getresponse()
-        raw = response.read(16_385)
-    finally:
-        connection.close()
-    if response.status != 200 or len(raw) > 16_384:
-        raise SmokeError("IAM projection token exchange failed")
-    try:
-        value = json.loads(raw)
-    except (ValueError, UnicodeError):
-        raise SmokeError("IAM projection token response invalid") from None
-    if (
-        not isinstance(value, dict)
-        or value.get("token_type") != "Bearer"
-        or not isinstance(value.get("access_token"), str)
-        or not value["access_token"]
-    ):
-        raise SmokeError("IAM projection token response invalid")
-    return value["access_token"]
+def _http_website_get_skill(
+    base: str,
+    series_id: str,
+    *,
+    browser: NativeReceipt,
+    secret: str,
+) -> tuple[int, dict[str, object]]:
+    if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", series_id) is None:
+        raise SmokeError("R357 Skill series ID invalid")
+    status, raw, headers, request_id = _bff_http(
+        base,
+        WEBSITE_SKILL_DETAIL_PATH,
+        browser=browser,
+        secret=secret,
+        method="POST",
+        body=json.dumps({"skillId": series_id}, separators=(",", ":")).encode(),
+        label="R357 Skill",
+    )
+    require_package_response_headers(headers, request_id, "GetSkill")
+    return status, _bff_json(raw, "R357 Skill")
 
 
 def platform_published_skill_get(
     base: str,
     skill_id: str,
-    token: str,
-    ready: SandboxReady,
+    credential: str,
+    ready: NamedIamReady,
     *,
     subject: str | None = None,
     tenant_assertion: str | None = None,
 ) -> tuple[int, dict[str, object]]:
-    """Probe Platform HTTP through its real IAM workload guard, not BFF SQL."""
+    """Probe Platform HTTP through its scoped service credential guard, not BFF SQL."""
     if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", skill_id) is None:
         raise SmokeError("Platform published Skill ID invalid")
     tenant = ready.tenant_id if tenant_assertion is None else tenant_assertion
@@ -1947,16 +1889,16 @@ def platform_published_skill_get(
     parsed = urlsplit(local_http_origin(base, "Platform"))
     connection = http.client.HTTPConnection(parsed.hostname, parsed.port, timeout=8)
     request_id = "skill-sandbox-" + secrets.token_hex(8)
+    request_headers = {
+        "x-kokoro-tenant-id": tenant,
+        "x-kokoro-subject": ready.user_id if subject is None else subject,
+        "x-kokoro-request-id": request_id,
+    }
+    if credential:
+        request_headers["authorization"] = "Bearer " + credential
     try:
         connection.request(
-            "GET",
-            "/v1/skills/" + quote(skill_id, safe=""),
-            headers={
-                "authorization": "Bearer " + token,
-                "x-kokoro-tenant-id": tenant,
-                "x-kokoro-subject": ready.subject_id if subject is None else subject,
-                "x-kokoro-request-id": request_id,
-            },
+            "GET", "/v1/skills/" + quote(skill_id, safe=""), headers=request_headers
         )
         response = connection.getresponse()
         raw = response.read(1_048_577)
@@ -1983,26 +1925,24 @@ def platform_published_skill_get(
 def upload_zip_bytes(
     skill_id: str, revision: int, *, agent_source: bool = False
 ) -> bytes:
-    """Build the strict owner ZIP V2 while retaining caller identity guards."""
+    """Build the current SKILL.md package without embedding fixture identity."""
     if type(agent_source) is not bool:
         raise SmokeError("ZIP Source mode must be explicit")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", skill_id) or revision < 1:
         raise SmokeError("ZIP fixture Skill identity invalid")
-    manifest = json.dumps(
-        {
-            "schema_version": 2,
-            "entry": "SKILL.md",
-        },
-        separators=(",", ":"),
-    )
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("manifest.json", manifest)
+        if agent_source:
+            archive.writestr("manifest.json", '{"schema_version":2,"entry":"SKILL.md"}')
         archive.writestr(
             "SKILL.md",
             source_helper.SKILL_BYTES
             if agent_source
-            else b"# Sandbox\n\nOwned signed PUT smoke.\n",
+            else (
+                b"---\nname: sandbox-signed-put\n"
+                b"description: Owned signed PUT smoke.\n---\n"
+                b"# Sandbox\n\nOwned signed PUT smoke.\n"
+            ),
         )
     return stream.getvalue()
 
@@ -2091,6 +2031,25 @@ def _stop(process: subprocess.Popen[bytes] | None) -> None:
             process.wait(timeout=5)
 
 
+def stop_agent_source_bff(
+    process: subprocess.Popen[bytes], group_exists: Callable[[int], bool]
+) -> None:
+    if not group_exists(process.pid):
+        process.poll()
+        return
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+    deadline = time.monotonic() + 34
+    while time.monotonic() < deadline:
+        process.poll()
+        if not group_exists(process.pid):
+            return
+        time.sleep(0.05)
+    raise SmokeError("Agent source BFF did not quiesce")
+
+
 def _start(
     command: list[str], cwd: Path, env: dict[str, str], log
 ) -> subprocess.Popen[bytes]:
@@ -2131,7 +2090,8 @@ def stop_owned_processes(
                 "status": "ok",
             }:
                 raise RuntimeError("protocol drift")
-            getattr(iam, "wait")(timeout=30)
+            if getattr(iam, "wait")(timeout=30) != 0:
+                raise RuntimeError("IAM stop exited nonzero")
         except BaseException:
             failures.append("IAM stop protocol cleanup failed")
     try:
@@ -2624,14 +2584,15 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     import run_agent_storage_artifact_smoke as storage_helper
     import run_web_bff_iam_oidc_smoke as oidc
     import run_bff_iam_session_smoke as session
+    import run_web_native_session_smoke as native
 
     run_id = secrets.token_hex(12)
-    directory = Path(tempfile.mkdtemp(prefix="kokoro-skill-sandbox-"))
+    directory = Path(tempfile.mkdtemp(prefix="kokoro-skill-sandbox-")).resolve()
     os.chmod(directory, 0o700)
     processes: list[subprocess.Popen[bytes]] = []
     reader = None
     proxy: CountingTcpProxy | None = None
-    ready: SandboxReady | None = None
+    ready: NamedIamReady | None = None
     secret_values: tuple[str, ...] = tuple(
         value
         for value in {
@@ -2651,6 +2612,8 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
     summary: dict[str, object] | None = None
     phase = Phase.IAM_READY
     agent_source = None
+    agent_keys = None
+    active = None
     source_cleanup_failures: list[str] = []
     source_dependencies_retained = False
     source_execution_error: str | None = None
@@ -2672,7 +2635,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             iam_owner_token = secrets.token_hex(16)
             secret_values += (iam_owner_token,)
             expected_database = "iam_web_oidc_" + iam_resource_id.replace("-", "")
-            expected_redis_prefix = f"iam:test:web-oidc-flow-host:{iam_resource_id}:"
+            expected_redis_prefix = (
+                f"iam:test:bff-session-admission-host:{iam_resource_id}:"
+            )
             if _database_exists(admin_url, expected_database) or _redis_keys(
                 args.redis_url, expected_redis_prefix + "*"
             ):
@@ -2680,13 +2645,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             iam_env = session.node_environment(
                 args.iam_node, "v24.20.0", args.bff_node.parent
             )
+            web_domain = f"skill-{run_id}.example.test"
             iam_env.update(
                 {
                     "IAM_TEST_ADMIN_URL": admin_url,
                     "IAM_TEST_REDIS_URL": args.redis_url,
-                    "IAM_TEST_WEB_ORIGIN": f"https://skill-{run_id}.example.test",
-                    "IAM_TEST_ALLOW_HTTP_LOOPBACK": "0",
-                    "IAM_TEST_SKILL_SANDBOX_MODE": "1",
+                    "IAM_TEST_WEB_ORIGIN": f"https://{web_domain}",
+                    "TMPDIR": str(directory),
+                    "IAM_BFF_HOST_PLATFORM_EXECUTION_CREDENTIAL": "1",
                     "IAM_TEST_RESOURCE_ID": iam_resource_id,
                     "IAM_TEST_RESOURCE_OWNER_TOKEN": iam_owner_token,
                     "NODE_ENV": "test",
@@ -2694,10 +2660,28 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             )
             # Never inherit opt-in mode or a JWKS target from the caller environment.
             iam_env["IAM_TEST_AGENT_SKILL_SOURCE_MODE"] = "0"
-            iam_env.pop("IAM_TEST_AGENT_JWKS_URL", None)
+            for peer_key in (
+                "IAM_TEST_AGENT_JWKS_URL",
+                "IAM_TEST_BINDING_PEER_URL",
+                "IAM_TEST_BINDING_CREDENTIAL_FILE",
+            ):
+                iam_env.pop(peer_key, None)
+            storage_port, platform_port, bff_port = (
+                oidc.runtime.free_port() for _ in range(3)
+            )
+            if len({storage_port, platform_port, bff_port}) != 3:
+                raise SmokeError("owned listener ports collide")
+            bff_base = f"http://127.0.0.1:{bff_port}"
+            iam_binding_file = directory / "iam-bff-binding-sender.json"
+            bff_binding_file = directory / "iam-bff-binding-receiver.json"
+            agent_credential_file = directory / "agent-platform-sender.json"
             if args.agent_source:
+                # The real JWKS loader rejects a writable ancestor (e.g. /tmp).
+                agent_keys = Path(
+                    tempfile.mkdtemp(prefix=".kokoro-sandbox-agent-", dir=Path.home())
+                ).resolve()
                 agent_source = source_helper.AgentSourceDriver(
-                    directory,
+                    agent_keys,
                     source_helper.database_url(admin_url, expected_database),
                     args.agent_redis_url,
                     run_id,
@@ -2707,8 +2691,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     urlsplit(args.agent_redis_url).password or "",
                 )
                 agent_source.start_http()
-                iam_env["IAM_TEST_AGENT_SKILL_SOURCE_MODE"] = "1"
-                iam_env["IAM_TEST_AGENT_JWKS_URL"] = agent_source.jwks_url
+                iam_env.update(
+                    {
+                        "IAM_TEST_AGENT_SKILL_SOURCE_MODE": "1",
+                        "IAM_TEST_AGENT_JWKS_URL": agent_source.jwks_url,
+                        "IAM_TEST_BINDING_PEER_URL": bff_base,
+                        "IAM_TEST_BINDING_CREDENTIAL_FILE": str(iam_binding_file),
+                    }
+                )
             database_name = expected_database
             redis_prefix = expected_redis_prefix
             iam = subprocess.Popen(
@@ -2716,7 +2706,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     str(args.iam_node),
                     "--import",
                     "tsx",
-                    str(owners["iam"] / "test/fixtures/web-oidc-flow-host.ts"),
+                    str(owners["iam"] / "test/fixtures/bff-session-admission-host.ts"),
                 ],
                 cwd=owners["iam"],
                 env=iam_env,
@@ -2730,32 +2720,67 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             if iam.stdout is None:
                 raise SmokeError("IAM host protocol absent")
             reader = session.ProtocolReader(iam.stdout.fileno())
-            ready = require_sandbox_ready(
-                reader.record(timeout=60), agent_source=args.agent_source
+            ready = session.validate_ready(reader.record(timeout=60))
+            secret_values += (ready.access_token,)
+            local_http_origin(ready.base_url, "IAM")
+            browser = native.native_command(iam, reader, run_dir=directory)
+            secret_values += (
+                browser.cookie,
+                *(
+                    pair.partition("=")[2].strip()
+                    for pair in browser.cookie.split(";")
+                    if "=" in pair
+                ),
             )
-            if (
-                ready.database_name != expected_database
-                or ready.redis_prefix != expected_redis_prefix
-            ):
-                raise SmokeError("IAM ready identity differs from runner ownership")
+            if browser.iam_web_origin != iam_env["IAM_TEST_WEB_ORIGIN"]:
+                raise SmokeError("IAM native receipt origin differs from runner origin")
+
+            def register_iam_secret(secret: str) -> None:
+                nonlocal secret_values
+                secret_values += (secret,)
+
+            execution_file = _named_iam_execution_file(
+                iam, reader, browser, directory, ready.tenant_id, register_iam_secret
+            )
             urls = {
-                schema: owner_database_url(admin_url, ready.database_name, schema)
+                schema: owner_database_url(admin_url, expected_database, schema)
                 for schema in ("kokoro_bff", "kokoro_platform", "kokoro_storage")
             }
-            storage_port, platform_port, bff_port = (
-                oidc.runtime.free_port() for _ in range(3)
-            )
             storage_base = f"http://127.0.0.1:{storage_port}"
             platform_base = f"http://127.0.0.1:{platform_port}"
-            bff_base = f"http://127.0.0.1:{bff_port}"
+            agent_entry = None
+            if agent_source is not None:
+                binding_secret = secrets.token_hex(32)
+                agent_platform_secret = secrets.token_hex(32)
+                secret_values += (binding_secret, agent_platform_secret)
+                binding = {
+                    "credential_id": "iam-bff-execution-binding",
+                    "secret": binding_secret,
+                    "caller": "kokoro-iam",
+                    "surface": "project_execution_binding",
+                    "tenant_id": ready.tenant_id,
+                }
+                for path in (iam_binding_file, bff_binding_file):
+                    _write_owner_fixture_credential(path, [binding])
+                agent_entry = {
+                    "credential_id": "agent-platform-source",
+                    "secret": agent_platform_secret,
+                    "caller": "kokoro-agent",
+                    "surfaces": ["tenant_execution"],
+                    "tenant_id": ready.tenant_id,
+                }
+                _write_owner_fixture_credential(agent_credential_file, [agent_entry])
             storage_secret = secrets.token_hex(32)
             storage_agent_secret = secrets.token_hex(32)
             storage_platform_secret = secrets.token_hex(32)
             web_secret = secrets.token_hex(32)
+            catalog_secret = secrets.token_hex(32)
+            projection_secret = secrets.token_hex(32)
             secret_values = tuple(
                 {
                     *secret_values,
-                    *ready.secrets,
+                    catalog_secret,
+                    projection_secret,
                     storage_secret,
                     storage_agent_secret,
                     storage_platform_secret,
@@ -2791,7 +2816,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
             phase = Phase.SCHEMA
             storage_env = storage_helper._storage_env(
                 storage_input,
-                ready.database_name,
+                expected_database,
                 storage_agent_secret,
                 storage_secret,
                 storage_port,
@@ -2834,8 +2859,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "KOKORO_BFF_MODE": "live",
                 "KOKORO_BFF_SHARED_SECRET": web_secret,
                 "KOKORO_TENANT_ID": ready.tenant_id,
-                "KOKORO_DOMAIN": f"{run_id}.smoke.localhost",
+                "KOKORO_DOMAIN": web_domain,
                 "KOKORO_IAM_BASE_URL": ready.base_url,
+                "KOKORO_IAM_WEB_ORIGIN": browser.iam_web_origin,
+                "KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE": browser.bff_user_context_credential_file,
+                "KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE": browser.account_session_credential_file,
                 "KOKORO_AGENT_ENABLED": "false",
                 "KOKORO_STORAGE_RPC_BASE_URL": storage_base,
                 "KOKORO_BFF_STORAGE_SECRET": storage_secret,
@@ -2863,12 +2891,19 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 "BFF schema installation",
                 secret_values,
             )
-            with credential_files(directory, ready) as files:
+            with _native_platform_credential_files(
+                directory,
+                ready.tenant_id,
+                catalog_secret,
+                projection_secret,
+                retain_for_agent=agent_source is not None,
+                agent_entry=agent_entry,
+            ) as files:
                 phase = Phase.OWNER_START
                 platform_env.update(
                     {
-                        "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE": str(
-                            files["tenant-execution.json"]
+                        "KOKORO_PLATFORM_IAM_EXECUTION_SERVICE_CREDENTIAL_FILE": str(
+                            execution_file
                         ),
                         "KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE": str(
                             files["platform-service-credentials.json"]
@@ -2899,7 +2934,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     {
                         "KOKORO_PLATFORM_BASE_URL": proxied_platform,
                         "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": str(
-                            files["platform-service-credentials.json"]
+                            files["bff-projection.json"]
                         ),
                     }
                 )
@@ -2914,7 +2949,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     "/v1/skills/drafts",
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="closed",
                     body={"display_name": "Closed", "summary": "", "tags": []},
@@ -2929,7 +2964,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     get_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 if (
@@ -2941,7 +2976,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     get_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="closed-begin",
                     body={
@@ -2962,7 +2997,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     get_path + "/complete",
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="closed-complete",
                     body={
@@ -2983,7 +3018,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     "/v1/skills/sandbox-closed/validate",
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="closed-validate",
                     body={"attempt_id": "attempt-closed"},
@@ -2997,7 +3032,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_publish_empty(
                     bff_base,
                     "/v1/skills/sandbox-closed/publish",
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="closed-publish",
                 )
@@ -3011,9 +3046,20 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("default-off BFF opened a Platform socket")
                 _stop(closed)
                 processes.remove(closed)
-                bff_env["KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE"] = str(
+                bff_env["KOKORO_BFF_PLATFORM_CATALOG_SERVICE_CREDENTIAL_FILE"] = str(
                     files["bff-catalog.json"]
                 )
+                if agent_source is not None:
+                    bff_env.update(
+                        {
+                            "KOKORO_AGENT_ENABLED": "true",
+                            "KOKORO_AGENT_BASE_URL": agent_source.http_origin,
+                            "KOKORO_INTERNAL_SECRET_BFF": agent_source.secret,
+                            "KOKORO_BFF_PROJECT_EXECUTION_CREDENTIAL_FILE": str(
+                                bff_binding_file
+                            ),
+                        }
+                    )
                 active = _start(
                     [str(args.bff_node), str(owners["bff"] / "dist/main.js")],
                     owners["bff"],
@@ -3029,9 +3075,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
 
                 result = exercise_http_contract(
                     lambda **kw: _http_json(
-                        bff_base, "/v1/skills/drafts", secret=web_secret, **kw
+                        bff_base,
+                        "/v1/skills/drafts",
+                        browser=browser,
+                        secret=web_secret,
+                        **kw,
                     ),
-                    ready,
                     observe,
                 )
                 phase = Phase.CANDIDATE_PACKAGE_GET
@@ -3043,7 +3092,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     get_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 require_public_package_get(status, body, str(result["skill_id"]))
@@ -3059,9 +3108,9 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         args.platform_node,
                         storage_base,
                         platform_base,
-                        ready.base_url,
                         storage_platform_secret,
                         ready,
+                        files["bff-catalog.json"],
                         str(result["skill_id"]),
                     ),
                     log,
@@ -3081,7 +3130,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     get_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 if (
@@ -3101,7 +3150,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     "/v1/skills/drafts",
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-begin-draft-" + run_id,
                     body={
@@ -3112,39 +3161,39 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 )
                 begin_skill_id, begin_series_id, replayed, _ = _draft(body, status)
                 begin_state_version = public_state_version(body.get("data"))
-                if status != 201 or replayed is not False or begin_skill_id is None:
+                if (
+                    status != 201
+                    or replayed is not False
+                    or begin_skill_id is None
+                    or begin_series_id is None
+                ):
                     raise SmokeError("BFF Begin fixture draft was not created")
                 if args.product_installation:
                     phase = Phase.PRODUCT_INSTALLATION
                     product_installation = product_helper.ProductInstallationSmoke(
                         product_helper.PublicInstallationHttp(
-                            bff_base, ready.access_token, web_secret
+                            bff_base, browser.cookie, browser.iam_web_origin, web_secret
                         ),
                         run_id,
                     )
                     product_installation.before_publish("skill:" + begin_skill_id)
                 phase = Phase.PROJECTION_READ
-                published_path = "/v1/skills/" + quote(begin_skill_id, safe="")
-                status, body = _http_get_json(
-                    bff_base,
-                    published_path,
-                    token=ready.access_token,
-                    secret=web_secret,
+                require_retired_bff_skill_detail(
+                    lambda path: _http_get_json(
+                        bff_base, path, browser=browser, secret=web_secret
+                    ),
+                    proxy,
+                    begin_skill_id,
                 )
-                if status != 404 or body != {
-                    "error": {
-                        "code": "skill_not_found",
-                        "message": "Skill was not found",
-                        "retryable": False,
-                    }
-                }:
-                    raise SmokeError("BFF unpublished Skill read was not private 404")
-                projection_token = issue_projection_token(ready)
-                secret_values += (projection_token,)
+                require_website_skill_missing(
+                    _http_website_get_skill(
+                        bff_base, begin_series_id, browser=browser, secret=web_secret
+                    )
+                )
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
-                    projection_token,
+                    projection_secret,
                     ready,
                 )
                 require_platform_published_skill_absent(status, body)
@@ -3155,6 +3204,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 payload = upload_zip_bytes(
                     begin_skill_id, 1, agent_source=args.agent_source
                 )
+                with zipfile.ZipFile(io.BytesIO(payload)) as package:
+                    manifest_identity = (
+                        "skill-md-v1:sha256:"
+                        + hashlib.sha256(package.read("SKILL.md")).hexdigest()
+                    )
                 begin_body = {
                     "expected_state_version": begin_state_version,
                     "filename": "sandbox.zip",
@@ -3166,7 +3220,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=begin_key,
                     body=begin_body,
@@ -3188,7 +3242,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 require_public_package_pending(
@@ -3204,7 +3258,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=begin_key,
                     body=begin_body,
@@ -3227,7 +3281,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=begin_key,
                     body={**begin_body, "filename": "different.zip"},
@@ -3240,7 +3294,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-begin-replace-" + run_id,
                     body={
@@ -3267,7 +3321,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 require_public_package_pending(
@@ -3293,7 +3347,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=complete_key,
                     body=complete_body,
@@ -3317,7 +3371,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_json(
                         bff_base,
                         complete_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                         key=complete_key,
                         body=complete_body,
@@ -3336,7 +3390,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=complete_key,
                     body=complete_body,
@@ -3355,7 +3409,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=complete_key,
                     body={**complete_body, "content_sha256": "0" * 64},
@@ -3371,7 +3425,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 require_public_package_uploaded(
@@ -3400,7 +3454,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-infected-begin-" + run_id,
                     body=infected_body,
@@ -3433,7 +3487,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_json(
                         bff_base,
                         complete_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                         key=infected_complete_key,
                         body=infected_complete_body,
@@ -3447,7 +3501,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_get_json(
                         bff_base,
                         begin_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                     )
                     require_public_package_aborted(
@@ -3462,7 +3516,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-recover-begin-" + run_id,
                     body={
@@ -3490,7 +3544,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=infected_complete_key,
                     body=infected_complete_body,
@@ -3503,7 +3557,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 require_public_package_pending(
@@ -3525,7 +3579,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-recover-complete-" + run_id,
                     body=recovered_complete_body,
@@ -3550,7 +3604,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_json(
                         bff_base,
                         complete_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                         key="package-recover-complete-" + run_id,
                         body=recovered_complete_body,
@@ -3578,7 +3632,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-bad-zip-begin-" + run_id,
                     body=bad_begin_body,
@@ -3610,7 +3664,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=bad_complete_key,
                     body=bad_complete_body,
@@ -3633,7 +3687,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_json(
                         bff_base,
                         complete_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                         key=bad_complete_key,
                         body=bad_complete_body,
@@ -3661,7 +3715,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_json(
                         bff_base,
                         validate_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                         key=bad_validate_key,
                         body=bad_validate_body,
@@ -3675,7 +3729,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_get_json(
                         bff_base,
                         begin_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                     )
                     require_public_package_aborted(
@@ -3690,7 +3744,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-zip-recover-begin-" + run_id,
                     body={
@@ -3727,7 +3781,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=zip_complete_key,
                     body=zip_complete_body,
@@ -3750,7 +3804,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status, body = _http_json(
                         bff_base,
                         complete_path,
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                         key=zip_complete_key,
                         body=zip_complete_body,
@@ -3774,7 +3828,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     validate_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=validate_key,
                     body=validate_body,
@@ -3785,13 +3839,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     begin_skill_id,
                     str(begin_series_id),
                     str(begin_body["content_sha256"]),
+                    manifest_identity,
                 )
                 if validation["replayed"] is not False:
                     raise SmokeError("BFF first Validate was unexpectedly replayed")
                 status, body = _http_json(
                     bff_base,
                     validate_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=validate_key,
                     body=validate_body,
@@ -3802,13 +3857,14 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     begin_skill_id,
                     str(begin_series_id),
                     str(begin_body["content_sha256"]),
+                    manifest_identity,
                 )
                 if validation["replayed"] is not True:
                     raise SmokeError("BFF Validate replay drift")
                 status, body = _http_get_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 require_public_package_validated(
@@ -3824,7 +3880,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     validate_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-stale-validate-" + run_id,
                     body={
@@ -3845,11 +3901,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 publish_body = {
                     "expected_state_version": validated_state_version,
                     "audience": "owner",
+                    "expected_publication": None,
                 }
                 status, body = _http_json(
                     bff_base,
                     publish_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=publish_key,
                     body=publish_body,
@@ -3875,7 +3932,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
-                    "invalid-projection-token",
+                    "invalid-projection-secret",
                     ready,
                 )
                 require_platform_guard_denial(
@@ -3887,7 +3944,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
-                    projection_token,
+                    projection_secret,
                     ready,
                     tenant_assertion="other-tenant",
                 )
@@ -3895,12 +3952,12 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     status,
                     body,
                     "capability.tenant_mismatch",
-                    "BFF tenant does not match IAM",
+                    "BFF tenant does not match the service credential",
                 )
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
-                    projection_token,
+                    projection_secret,
                     ready,
                 )
                 require_platform_published_skill_read(
@@ -3927,36 +3984,27 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     "tags": ["sandbox"],
                 }:
                     raise SmokeError("Platform published Skill content drift")
-                status, public_read = _http_get_json(
-                    bff_base,
-                    published_path,
-                    token=ready.access_token,
-                    secret=web_secret,
+                require_website_skill_projection(
+                    _http_website_get_skill(
+                        bff_base, begin_series_id, browser=browser, secret=web_secret
+                    ),
+                    begin_series_id,
+                    body["data"],
                 )
-                require_public_published_skill_read(
-                    status, public_read, begin_skill_id, str(revision)
-                )
-                if {
-                    k: v
-                    for k, v in public_read["data"].items()
-                    if k != "publisher_profile"
-                } != body["data"]:
-                    raise SmokeError(
-                        "BFF published Skill projection drifted from owner"
-                    )
-                status, public_list = _http_get_json(
-                    bff_base,
-                    "/v1/skills?scope_kind=personal&limit=100",
-                    token=ready.access_token,
-                    secret=web_secret,
-                )
-                require_bff_personal_skill_list(
-                    status, public_list, begin_skill_id, str(revision)
+                require_active_personal_skill_projection(
+                    _http_get_json(
+                        bff_base,
+                        ACTIVE_PERSONAL_SKILL_PATH,
+                        browser=browser,
+                        secret=web_secret,
+                    ),
+                    begin_series_id,
+                    body["data"],
                 )
                 status, body = platform_published_skill_get(
                     platform_base,
                     begin_skill_id,
-                    projection_token,
+                    projection_secret,
                     ready,
                     subject="other-user",
                 )
@@ -3965,7 +4013,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     publish_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=publish_key,
                     body=publish_body,
@@ -3980,12 +4028,17 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     publish_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key="package-publish-second-" + run_id,
                     body={
                         "expected_state_version": public_state_version(publication),
                         "audience": "owner",
+                        # This fresh series starts at publication version one.
+                        "expected_publication": {
+                            "current_version_id": begin_skill_id,
+                            "state_version": "1",
+                        },
                     },
                 )
                 if (
@@ -3996,7 +4049,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 if (
@@ -4024,7 +4077,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     raise SmokeError("IAM command pipe absent")
                 owned_queries = exercise_owned_queries(
                     lambda path: _http_get_json(
-                        bff_base, path, token=ready.access_token, secret=web_secret
+                        bff_base, path, browser=browser, secret=web_secret
                     ),
                     ("skill:" + str(result["skill_id"]), "skill:" + begin_skill_id),
                 )
@@ -4033,8 +4086,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     # Catalog probes and Product reads share IAM's resource-client
                     # window. Yield before exercising the full public sequence.
                     source_helper.wait_for_iam_window(args.product_installation)
+                    expected_markdown = product_helper.require_uploaded_markdown(
+                        payload, validation["content_digest"]
+                    )
                     product_result = product_installation.exercise(
-                        ("skill:" + str(result["skill_id"]), "skill:" + begin_skill_id)
+                        ("skill:" + str(result["skill_id"]), "skill:" + begin_skill_id),
+                        series_ids=(str(result["series_id"]), begin_series_id),
+                        expected_markdown=expected_markdown,
                     )
                     product_inventory = platform_inventory(
                         urls["kokoro_platform"], ready.tenant_id, begin_skill_id
@@ -4053,6 +4111,18 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         installed = product_installation.reinstall_for_lifecycle(
                             "skill:" + begin_skill_id
                         )
+                        skill_state_version = public_state_version(publication)
+                        if (
+                            installed["installation_id"]
+                            != product_installation.installation_ids[1]
+                            or installed["series_id"] != begin_series_id
+                            or installed["revision"] != publication["revision"]
+                            or installed["product"]["state_version"]
+                            != skill_state_version
+                        ):
+                            raise SmokeError(
+                                "Personal lifecycle reinstalled publication identity drift"
+                            )
                         lifecycle_version_key = "lifecycle-version-" + run_id
                         lifecycle_version_body = {
                             "display_name": "Signed PUT sandbox skill",
@@ -4068,7 +4138,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             _http_lifecycle(
                                 bff_base,
                                 version_path,
-                                token=ready.access_token,
+                                browser=browser,
                                 secret=web_secret,
                                 key=lifecycle_version_key,
                                 body=lifecycle_version_body,
@@ -4078,11 +4148,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             replayed=False,
                         )
                         new_skill_id = str(created["skill_id"])
-                        require_personal_skill_version(
+                        version_replay = require_personal_skill_version(
                             _http_lifecycle(
                                 bff_base,
                                 version_path,
-                                token=ready.access_token,
+                                browser=browser,
                                 secret=web_secret,
                                 key=lifecycle_version_key,
                                 body=lifecycle_version_body,
@@ -4092,11 +4162,13 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             replayed=True,
                             expected_skill_id=new_skill_id,
                         )
+                        if version_replay != {**created, "replayed": True}:
+                            raise SmokeError("Personal lifecycle version receipt drift")
                         require_lifecycle_error(
                             _http_lifecycle(
                                 bff_base,
                                 version_path,
-                                token=ready.access_token,
+                                browser=browser,
                                 secret=web_secret,
                                 key=lifecycle_version_key,
                                 body={**lifecycle_version_body, "summary": "changed"},
@@ -4112,10 +4184,18 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             "/v1/skills/"
                             + quote(new_skill_id, safe="")
                             + "/package-upload",
-                            token=ready.access_token,
+                            browser=browser,
                             secret=web_secret,
                         )
                         require_public_package_get(status, body, new_skill_id)
+                        if "source_version_id" in body["data"]:
+                            raise SmokeError(
+                                "Personal lifecycle new draft inherited a package locator"
+                            )
+                        if body["data"]["state_version"] != created["state_version"]:
+                            raise SmokeError(
+                                "Personal lifecycle new draft package state version drift"
+                            )
                         lifecycle_withdraw_key = "lifecycle-withdraw-" + run_id
                         lifecycle_withdraw_body = {
                             "expected_state_version": publication["state_version"],
@@ -4130,7 +4210,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             _http_lifecycle(
                                 bff_base,
                                 withdraw_path,
-                                token=ready.access_token,
+                                browser=browser,
                                 secret=web_secret,
                                 key=lifecycle_withdraw_key,
                                 body=lifecycle_withdraw_body,
@@ -4138,11 +4218,11 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             skill_id=begin_skill_id,
                             replayed=False,
                         )
-                        require_personal_skill_withdraw(
+                        withdraw_replay = require_personal_skill_withdraw(
                             _http_lifecycle(
                                 bff_base,
                                 withdraw_path,
-                                token=ready.access_token,
+                                browser=browser,
                                 secret=web_secret,
                                 key=lifecycle_withdraw_key,
                                 body=lifecycle_withdraw_body,
@@ -4151,11 +4231,15 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                             replayed=True,
                             expected_event_id=str(withdrawn["event_id"]),
                         )
+                        if withdraw_replay != {**withdrawn, "replayed": True}:
+                            raise SmokeError(
+                                "Personal lifecycle withdraw receipt drift"
+                            )
                         require_lifecycle_error(
                             _http_lifecycle(
                                 bff_base,
                                 withdraw_path,
-                                token=ready.access_token,
+                                browser=browser,
                                 secret=web_secret,
                                 key="lifecycle-withdraw-terminal-" + run_id,
                                 body=lifecycle_withdraw_body,
@@ -4231,9 +4315,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     )
 
                     def revoke_execution() -> object:
-                        iam.stdin.write(b'{"command":"revoke-agent-execution"}\n')
-                        iam.stdin.flush()
-                        return reader.record(timeout=30)
+                        return _named_iam_command(iam, reader, "remove_member")
 
                     with zipfile.ZipFile(io.BytesIO(payload)) as original_package:
                         expected_skill = original_package.read("SKILL.md")
@@ -4241,7 +4323,18 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     # quota. Yield its full window before creating any Agent lease.
                     source_helper.wait_for_iam_window(args.agent_source)
                     source_result = agent_source.exercise(
-                        ready,
+                        AgentSourceInputs(
+                            tenant_id=ready.tenant_id,
+                            subject_id=ready.user_id,
+                            cookie=browser.cookie,
+                            origin=browser.iam_web_origin,
+                            bff_origin=bff_base,
+                            bff_web_secret=web_secret,
+                            platform_credential_file=agent_credential_file,
+                            bff_database=source_helper.database_url(
+                                admin_url, expected_database
+                            ),
+                        ),
                         platform_base,
                         source_env["KOKORO_OBJECT_STORE_PUBLIC_ENDPOINT"],
                         begin_skill_id,
@@ -4256,9 +4349,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         ),
                     )
                 phase = Phase.REVOKE
-                iam.stdin.write(b'{"command":"revoke-user-session"}\n')
-                iam.stdin.flush()
-                require_revoke_result(reader.record(timeout=30))
+                require_revoke_result(_named_iam_command(iam, reader, "signout"))
                 before_revoked = proxy.count
                 before_revoked_requests = proxy.request_count
                 if product_installation is not None:
@@ -4276,7 +4367,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         _http_lifecycle(
                             bff_base,
                             version_path,
-                            token=ready.access_token,
+                            browser=browser,
                             secret=web_secret,
                             key=lifecycle_version_key,
                             body=lifecycle_version_body,
@@ -4288,7 +4379,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         _http_lifecycle(
                             bff_base,
                             withdraw_path,
-                            token=ready.access_token,
+                            browser=browser,
                             secret=web_secret,
                             key=lifecycle_withdraw_key,
                             body=lifecycle_withdraw_body,
@@ -4296,24 +4387,23 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         401,
                         "session_invalid",
                     )
-                status, body = _http_get_json(
-                    bff_base,
-                    published_path,
-                    token=ready.access_token,
-                    secret=web_secret,
+                require_website_skill_revoked(
+                    _http_website_get_skill(
+                        bff_base, begin_series_id, browser=browser, secret=web_secret
+                    )
                 )
-                require_bff_projection_revoked(status, body)
-                status, body = _http_get_json(
-                    bff_base,
-                    "/v1/skills?scope_kind=personal&limit=100",
-                    token=ready.access_token,
-                    secret=web_secret,
+                require_active_personal_skill_revoked(
+                    _http_get_json(
+                        bff_base,
+                        ACTIVE_PERSONAL_SKILL_PATH,
+                        browser=browser,
+                        secret=web_secret,
+                    )
                 )
-                require_bff_projection_revoked(status, body)
                 status, body = _http_json(
                     bff_base,
                     "/v1/skills/drafts",
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=str(result["key"]),
                     body=result["body"],
@@ -4323,7 +4413,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_get_json(
                     bff_base,
                     get_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                 )
                 if (
@@ -4334,7 +4424,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     begin_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=begin_key,
                     body=begin_body,
@@ -4347,7 +4437,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     complete_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=complete_key,
                     body=complete_body,
@@ -4360,7 +4450,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_json(
                     bff_base,
                     validate_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=validate_key,
                     body=validate_body,
@@ -4373,7 +4463,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                 status, body = _http_publish_empty(
                     bff_base,
                     publish_path,
-                    token=ready.access_token,
+                    browser=browser,
                     secret=web_secret,
                     key=publish_key,
                 )
@@ -4387,7 +4477,7 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                     _http_get_json(
                         bff_base,
                         "/v1/self/skills?query=sandbox",
-                        token=ready.access_token,
+                        browser=browser,
                         secret=web_secret,
                     ),
                     401,
@@ -4412,14 +4502,17 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
                         **product_result,
                         "unpublished_own_source_precondition": True,
                         "missing_source_private_not_found": True,
-                        "revoked_five_operations_before_owner": True,
+                        "revoked_six_operations_before_owner": True,
                     }
                     summary["platform_receipt_count"] = product_inventory[1]
                     summary["product_execution_boundary"] = (
                         "Agent disabled; no SourceDriver (structural, not Run-store observation)"
                     )
                 if lifecycle_result is not None:
-                    summary["personal_skill_lifecycle"] = lifecycle_result
+                    summary["personal_skill_lifecycle"] = {
+                        **lifecycle_result,
+                        "revoked_both_lifecycle_commands_before_owner": True,
+                    }
     except BaseException as exc:
         error = (
             exc
@@ -4434,8 +4527,25 @@ def execute(args: RunArguments, env: dict[str, str] | None = None) -> dict[str, 
         phase = Phase.CLEANUP
         # Agent pools/HTTP/owned Redis close before IAM drops the shared temporary DB.
         if agent_source is not None:
-            source_cleanup_failures = agent_source.close()
-            source_dependencies_retained = not agent_source.dependencies_quiescent
+            if active is not None:
+                try:
+                    # BFF owns the sender and can still call Agent or IAM while draining.
+                    stop_agent_source_bff(active, oidc.runtime.process_group_exists)
+                    processes.remove(active)
+                except BaseException:
+                    source_cleanup_failures.append("Agent source BFF did not quiesce")
+            if not source_cleanup_failures:
+                source_cleanup_failures = agent_source.close()
+                source_dependencies_retained = not agent_source.dependencies_quiescent
+            else:
+                source_dependencies_retained = True
+            if not source_dependencies_retained and agent_keys is not None:
+                try:
+                    agent_keys.rmdir()
+                except OSError:
+                    source_cleanup_failures.append(
+                        "Agent source key directory cleanup failed"
+                    )
             if source_dependencies_retained:
                 _RETAINED_SOURCE_RESOURCES.append(
                     (agent_source, tuple(processes), reader, proxy, s3)
