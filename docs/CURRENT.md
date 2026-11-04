@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收。机器 Goal 为 active。Sandbox 默认、Product Installation、Personal Skill Lifecycle 在真实隔离组合已通过；原 runner 尚未落地。BFF 本地 `f0107a7` 修复匿名 MCP 401 错误契约；MCP-only、Skills+Storage、Admin 的隔离 Chromium 诊断均通过并回收资源，不等于正式精确组合验收。下一门是 Agent 原生整链、唯一 Root runner 落地及 IAM producer 退役；C‑4 全量门仍未开始，A‑01/A‑02/A‑07 保持停写。Root gitlinks 未变；未推送、合并或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收，机器 Goal 为 active。Root `fff4c9d6` 落地原生可选登录，`d6ffb89c` 收口唯一 Sandbox runner 并删除旧凭据工厂；IAM `9bd7a8c` 只改测试接线。Sandbox 默认、Product Installation、Personal Skill Lifecycle 和 Agent 可选路径已有真实隔离证据；MCP-only、Skills+Storage、Admin 的 Chromium 诊断也已通过。资源已回收，未交付常驻同步环境。下一门为 Root ingress 迁移和当前组合复验、IAM producer/artifact 退役，再进入 C‑4；A‑01/A‑02/A‑07 保持停写。Root gitlinks 未变；未推送、合并或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
