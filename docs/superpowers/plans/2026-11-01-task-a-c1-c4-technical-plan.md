@@ -55,7 +55,7 @@
 
 - **C‑4 精确组合发现的真实不兼容（T‑09，OPEN）**：原 Agent PR46 新 8.11 终态 `context_window_exceeded` 为非重试；合成 `33545a4` 后真实 Agent 已可能发出该枚举。主控用现 BFF `f0107a7` 实测当前生成解析器返回 `null`，正常投影会拒绝该事件；BFF domain/public OpenAPI/PG 约束与 App 现用生成 tuple 同样只接受旧集合。不是可忽略的可选请求字段或纯 pin 漂移。组合冻结前由 owner 正规配对 Agent 发布原件 → BFF 生成消费与同一 canonical 约束/公开契约 → App 固定产物和非重试展示，并用一个聚焦终态链证明传输、持久与展示；不靠旧别名、吞错或额外生成第二份事实源。未改 BFF/App，独立 owner 门继续；原 PR46 不覆盖其远端新增提交。
 
-- **Agent C‑4 定向纠偏**：补真实 PG/独占空 Redis 前置，原 HTTP acceptance、Run Display 和 Platform transport 68 项通过；真实归档 5 项和 Docker→S3 单例通过，独占桶、容器及 PG/Redis 清单复位。Docker 测试只清本轮已确认创建的精确桶与对象（`0fc0b42`）；初次全组遗留的 25 个流按实际测试前缀、事件时间、前置空库和精确键逐项回收，无清库。`af1188e` 仅让两个故障注入满足 canonical CHECK，保持 reader 拒绝和 terminal 回滚，两个具名用例通过。剩 **native final provenance、R35 重复投递和健康心跳**在合成与原 PR46 `cfd1fcc` 第一父同条件真实 PG 均失败，不能归为本次合并或环境漂移；独立查因，不盲加 hash、放宽超时或跳过。
+- **Agent C‑4 定向纠偏**：补真实 PG/独占空 Redis 前置，原 HTTP acceptance、Run Display 和 Platform transport 68 项通过；真实归档 5 项和 Docker→S3 单例通过，独占桶、容器及 PG/Redis 清单复位。Docker 测试只清本轮已确认创建的精确桶与对象（`0fc0b42`）；初次全组遗留的 25 个流按实际测试前缀、事件时间、前置空库和精确键逐项回收，无清库。`af1188e` 仅让两个故障注入满足 canonical CHECK，保持 reader 拒绝和 terminal 回滚，两个具名用例通过。原剩余三项在合成与原 PR46 `cfd1fcc` 第一父同条件真实 PG 均失败。`494a278` 仅将 R35 共用夹具对齐现 builder 的第四参数；原 `bridge_r35` 组真实 PG 18 项通过，保留重复投递、健康心跳和拒入负控。`bb47ae8` 将旧终态读取测试固定为 `b80d683` 已审历史配方，保留真 PG、同 Run、原正文、只读/字节预算、坏格式拒绝及显式终态优先的原断言，原单例通过。现役 factory 的真实 v3/SSE 诊断在无上下文和合成上下文两例都产出正常答复，但即使在私有诊断临时接纳其摘要，历史 checkpoint 形状校验仍拒绝（无 `__pregel_tasks` 通道）；新 Run 走已有的显式终态绑定，不扩大历史读门、不改生产、不跳过原测试。两批定向 PG/Redis 均已回收。最终门先发现先前 Docker 测试的 S3 错误元数据为可选字段；`40effb2` 只改为类型安全读取，仍严格要求桶前后均为 404，完整 Pyright 通过。主控在 `40effb2` 停写树跑正式格式、lint、类型、合同、默认测试及 wheel/sdist，均 exit 0。真实集成/acceptance 首轮 908 通过，只有 26 个 Display 因一次性数据库命名不符合专用隔离守卫而未执行；同 SHA 改用专用独立库仅补该文件，26 项全通过（无跳过）。真实 HTTP/Redis、PG 与 Docker→MinIO 都有最终候选证据，PG、Redis、Docker 和 S3 清单恢复；仅按已确认键回收本轮 Redis 遗留，不清库。已将原 PR46 本地分支快进至该提交，未推送或改 Root gitlink；跨仓组合另验。
 
 ### T‑09 精确终态配对：最小方案（待确认）
 
@@ -527,14 +527,14 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-06 | BFF格式门；BFF | VERIFIED（候选） | Root format exit0，AST/注释等价32/32；独审确认原11候选byte不变、1068tracked符合冻结；后续改动再复验 |
 | T-07 | App Public28.18消费修复；App/Root | VERIFIED（消费切片） | App fdbb49f1主方完整contract452/architecture50/default6411、0skip及lint/types/build；当前正式native4/4。I-29后继owner版本另按影响固定消费，不将此项当全产品验收 |
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
-| T-09 | Root/各受影响owner最终串行门；Root | IN_PROGRESS | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
+| T-09 | Root/各受影响 owner 最终串行门；Root | IN_PROGRESS | IAM、Capability 和 Agent 的 owner 门已有对应候选证据；Agent `40effb2` 原 PR46 本地已快进。Agent 8.11→BFF→App 终态配对待确认；BFF/App 新候选、精确组合及 E2E 未运行。 |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
 | T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | VERIFIED_LOCAL | 旧生产消费者归零，退役已提交，SDK 独立安装消费已验；原数据卷恢复，当前组合真实 ingress、eicar、ack_lost 与 R336 全通过并回收。C‑4 最终组合另验。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
 | T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
-| T-16 | Agent与原C-1删除项最终复核；Agent/Root | WAITING（候选已复核；最终C-4） | c761已主方静态/default3336/打包与安装smoke；生产旧MCP补判调用链已复核。47ca431修真实display旧oracle，26PASS/双审。两项计数非全资源门；最终组合/受影响全I/O/全局规范核对仍待C-4，任务外问题不扩修 |
+| T-16 | Agent 与原 C-1 删除项最终复核；Agent/Root | VERIFIED_OWNER（组合待验） | `40effb2` 已通过最终工程门、真实集成/acceptance（Display 隔离命名差额同 SHA 补验），原 PR46 本地已快进；精确组合及全局规范核对仍归 T‑09。 |
 | T-17 | Nest 启动、shutdown/drain/pool；BFF | VERIFIED_LOCAL_COMMIT `09f44fe` | 实际 SIGINT/SIGTERM=0、端口冲突=1、真实 PG 锁下 30.002 秒 HTTP EOF 与 31.030 秒 exit 1，资源回收；未推送或更新 Root pin。 |
 | T-18 | BFF Node24运行/生成工具链一致；BFF/Root | VERIFIED（切片） | 173e026；21路径独审/1068tracked hash匹配；Root第三轮format/check exit0，106generated与原43路径保持，7正规生成/双检通过；两轮RED保留，CI/Docker未实跑不称通过 |
 
