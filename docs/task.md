@@ -1,4 +1,4 @@
-当前 Task A 请以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)和本文件末尾当前检查点为准；下方早期记录保留历史，不覆盖当前状态。
+当前 Task A 请以[唯一技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)和[当前状态](CURRENT.md)为准；下方各日期记录保留历史，不覆盖当前状态。
 
 ## 2026-10-22 集中PR交付推进
 

@@ -8,11 +8,18 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1 / T-05已按当前冻结组合完成验收并经主方、独立复核：Root4e603743原正式五旅程、真实账户消费、真实包生产至原BFF四GET及组合负控均通过，源码/dist/DB清单保持、自有资源回收。Root2fc0436c仅为文档后继，不替换已验代码。机器Goal已由用户恢复为active；先串行同步本台账，T-17首片已由主方复现真实Nest listener RED→AgentDispatch原生早期hook修复→冻结定向门GREEN并独审CLEAR，候选未提交/pin；其他3feature也已各自取得主方RED后最小修复，四feature正常drain候选经主方冻结相关门与独审通过；关闭期拒入亦经主方准确RED后仅加Nest原生flag，冻结相关门与独审通过；当前SSE仅test-only RED阶段，完整T17、T11与C4仍未完成。C阶段剩5包；G2/G3仍OPEN，A停写，不merge main/部署。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 继续推进。Root 精确组合尚未更新，C‑4 与 A‑01/A‑02/A‑07 仍待前置。
 
 ---
 
-## 当前执行摘要（2026-11-03，G1已验；恢复推进T-17）
+## 当前执行摘要（2026-11-04，本地提交）
+
+- **BFF 原 PR #18 分支本地提交**：`09f44fe` fix(runtime): bound Nest shutdown and drain AG-UI transports；`50b2f09` fix(mcp): restore projection authorization and request cancellation；`820f5bc` fix(skills): wire public list project and app owners；`329f9a1` test(knowledge): exercise account module with real storage；`170064b` test(bff): migrate billing and projection checks off raw listeners；`8de48c6` test(mcp): include projection admission in default checks；`79d3d10` fix(health): preserve readiness unavailable response；`325e777` fix(skills): return not found for retired reads。
+- **验证范围**：Skills 的真实 factory 回归 503 已转绿；定向 Skills/相邻用例、T‑17/MCP 定向门、Billing/Platform 测试和 Personal Knowledge 独立真实 PG/Redis 均通过。 `/readyz` 503/HealthResponse 已在真实 HealthModule HTTP 复验。 退役 Skills GET 的 404 与零 owner 转发已定向复验。 T‑17 真进程的正常退出、端口冲突、真实 PG 锁下 30/31 秒期限及回收均有收据。以上不是完整 C‑4，也不把受控 IAM/Platform 对端当实际跨仓链路。
+- **组合边界**：BFF 本地 `325e777`，Root gitlink 仍为已发布 `8cb6169`；Agent checkout 与 Root pin 仍须收敛。未推送、未 merge main、未部署、未启动 C‑4。每仓继续沿原 PR。
+- **下一门**：T‑11 先修其余已证行为差异（定时任务回执、模型 header、具名路由与剩余 wire 等），迁完有效消费者后删旧 bootstrap/dispatcher/宽聚合；再冻结各仓组合，按 T‑09/T‑16/T‑15 串行验收。A‑01/A‑02/A‑07 不提前写入。
+
+## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 
 - **目标/状态**：原C-1.3～C-4完整目标保留，认证D0通过；IAM唯一Session权威、BFF入口认证、内部服务身份及owner业务授权分离。普通内部业务不携浏览器Cookie、登录Session引用或伪OAuth claims。账号会话生命周期的明确认证例外见§3.6。
 - **已交付**：IAM `1fc3875952a9840aa1a8d15124b9be0eaf91c5f2` / PR6、BFF `8cb6169cf1d15d54c3a3bacad9ea622695642228` / PR18、App `197f110294e9b373d5c4aa0836b3d80f48e3a833` / PR50，Admin `95c504d1bfdcf1038ebadb85d8493c18828b51f7` / PR5不变；四仓在G1验收时源码clean，远端原PR head已精确核对；当前T17测试候选不提前pin。Root4e603743已精确配对并完成原正式五旅程；inspection真实生产/消费及组合负控现已通过，G1按当前冻结组合收口。internal/SDK0.20与BFF状态1.0/relay3.0正式产物字节保持，不新建SDK/flag/fallback。
@@ -25,7 +32,7 @@
 
 ## 0. 当前结论与唯一入口
 
-**Task A 尚未闭环；G1 / T-05已闭合当前冻结组合范围。** 原正式五旅程、账户真实Nest→IAM消费、真实包producer/原BFF四GET和独有组合负控共同满足G1，源码及收据经主方与独审复核。G2/G3仍OPEN；下一步是T17生命周期、T11遗留删除及C4最终组合/常驻环境，不把阶段验收换算全产品完成。
+**Task A 尚未闭环；G1 / T-05已闭合当前冻结组合范围。** 原正式五旅程、账户真实Nest→IAM消费、真实包producer/原BFF四GET和独有组合负控共同满足G1，源码及收据经主方与独审复核。G2/G3仍OPEN；下一步是 T‑11 遗留删除及 C‑4 最终组合/常驻环境，不把阶段验收换算全产品完成。
 
 本文件是当前问题、分阶段 Goal 和 TODO 的**唯一可变台账**。按用户要求每小时做一次只读进度对齐：完成/证据、进行中负责人、阻塞偏差、下一检查点及Goal/TODO待纠偏；不借定时汇总新增实现或并发改台账。`docs/task.md`、`docs/CURRENT.md` 只保留摘要与链接；旧方案/问题台账保留设计和历史证据，不再维护第二份当前状态。
 
@@ -476,13 +483,13 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响owner最终串行门；Root | WAITING | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余Repository-Service-Port与旧认证producer；BFF/IAM | WAITING（只读核量已复验） | G1后先完整T-17；当前只读确认历史3aggregate class/LegacyRoutes已删，不重复实施；剩bootstrap两文件、宽owner factory及原消费者。六integration文件53处HTTP相关factory迁原owner Nest，三纯PG文件49处保最低层；其余mockBusiness/composition分批承接。当前union74文件，调用点不是新增测试数；已有真实AppModule listener写法可复用，不建第二harness。BFF生产旧图已不可达，不重做已迁生产路由；IAM仍装配的PlatformWorkload producer/introspection须按原清理边界退休，保合法独立OAuth/API Key/OpenApp/MCP OAuth |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM | IN_PROGRESS | BFF 本地 `325e777` 含已验修复和部分测试迁移；其他行为、raw 消费者及旧 producer 仍待收口。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
 | T-15 | 当前组合同步E2E可用性；Root | WAITING | 区分临时smoke与可保留测试环境；健康/受支持旅程/日志索引/回收归属齐全 |
 | T-16 | Agent与原C-1删除项最终复核；Agent/Root | WAITING（候选已复核；最终C-4） | c761已主方静态/default3336/打包与安装smoke；生产旧MCP补判调用链已复核。47ca431修真实display旧oracle，26PASS/双审。两项计数非全资源门；最终组合/受影响全I/O/全局规范核对仍待C-4，任务外问题不扩修 |
-| T-17 | Nest启动/shutdown/drain/pool释放；BFF | IN_PROGRESS（正常drain/关闭拒入/SSE/有限失败切片已验；真实进程待） | 生产Nest五项DI启动修复、资源hook与既有正常/幂等/失败清理切片已交付并在当前BFF组合中保留。真实空闲PG/Redis正控1→0、缺hook负控1→1均在fallback前观察并完成自有回收。当前唯一writer `t17_native_lifecycle_cut` 已在原Nest测试承接真实AppModule/listener/在途HTTP与worker drain：主方两释放顺序精确RED后，仅将AgentDispatch stop前移至原生beforeApplicationShutdown，删一条旧hook名字断言，由真实行为承接。主方冻结format/lint/typecheck/build与53定向/0SKIP通过、1085输入保持，独审CLEAR；该三文件候选未提交/pin。另3feature各自在主方RED后只前移原生hook，所有初始化/stop顺序及DB末期释放保持；累计6原文件主方format/lint/typecheck/build及59定向/0SKIP通过、1085输入保持、独审CLEAR，均未提交/pin。关闭期代表health200/期望503由主方实际RED后，仅在main共享生产options加原生return503OnClosing；主方冻结相关门及59定向/0SKIP、1085输入保持，独审CLEAR，候选未提交。当前writer `t17_sse_retirement_cut` 的三原测试已停写；Root fresh build实跑确认活动SSE/共享replay剩余客户端未退役、6处pending物理工作未settle即开始worker drain、共享wait与writer背压取消均为准确行为RED，原59保护门及7既有runtime/writer用例保留通过，无fixture/cleanup失败；主方收据为本机private `kokoro-t17-sse-primary-red-zsma882k/result.json`，不冒真实IAM/PG集成。独审发现并补强背压必须在duration timer前唤醒的唯一缺口后，Root再验准确RED（private `kokoro-t17-sse-primary-red-revised-na1uaokz/result.json`），再授权五原源码最小实现。现已停写：Root冻结format/lint/typecheck/build、原SSE/drain等78、受影响AG-UI/control/admission279及授权消费者116均PASS/0SKIP，1085输入保持；独立规格/质量CLEAR，Root收据private `kokoro-t17-sse-primary-green-5gsx3n22/result.json`。控制签名与原control尾部Root/独审双重核对逐字保持，三测试保持准确RED字节；累计15文件含owner设计文档未提交/pin，只验传输退役，不冒真实IAM/PG/Redis或完整T17。完整init/readiness、拒新请求/drain/SSE/worker、故障/挂起、硬期限与真实信号/退出码仍须T11删除前完成；不把raw PG423、smoke进程清理或启动成功等同此项闭环 |
+| T-17 | Nest 启动、shutdown/drain/pool；BFF | VERIFIED_LOCAL_COMMIT `09f44fe` | 实际 SIGINT/SIGTERM=0、端口冲突=1、真实 PG 锁下 30.002 秒 HTTP EOF 与 31.030 秒 exit 1，资源回收；未推送或更新 Root pin。 |
 | T-18 | BFF Node24运行/生成工具链一致；BFF/Root | VERIFIED（切片） | 173e026；21路径独审/1068tracked hash匹配；Root第三轮format/check exit0，106generated与原43路径保持，7正规生成/双检通过；两轮RED保留，CI/Docker未实跑不称通过 |
 
 ---
