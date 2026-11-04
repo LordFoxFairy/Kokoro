@@ -55,6 +55,12 @@
 
 - **C‑4 精确组合发现的真实不兼容（T‑09，OPEN）**：原 Agent PR46 新 8.11 终态 `context_window_exceeded` 为非重试；合成 `33545a4` 后真实 Agent 已可能发出该枚举。主控用现 BFF `f0107a7` 实测当前生成解析器返回 `null`，正常投影会拒绝该事件；BFF domain/public OpenAPI/PG 约束与 App 现用生成 tuple 同样只接受旧集合。不是可忽略的可选请求字段或纯 pin 漂移。组合冻结前由 owner 正规配对 Agent 发布原件 → BFF 生成消费与同一 canonical 约束/公开契约 → App 固定产物和非重试展示，并用一个聚焦终态链证明传输、持久与展示；不靠旧别名、吞错或额外生成第二份事实源。未改 BFF/App，独立 owner 门继续；原 PR46 不覆盖其远端新增提交。
 
+### T‑09 精确终态配对：最小方案（待确认）
+
+- **事实与边界**：BFF `f0107a7` 原解析器对 Agent 8.11 新终态返回 `null`；App `197f1102` 实测拒绝新 tuple、仍接受旧 `token_budget_exceeded`。保留原 PR46 两侧提交，不用旧 Agent 临时遮住不兼容，也不把新码降格为旧码。Agent 是终态事实 owner，BFF 是消息/公开投影 owner，App 是生成契约的消费者。只承接 `context_window_exceeded` / `retryable: false`，不接入 `personal_context` 或任何 A 功能。
+- **写区与顺序**：Agent PR46 工程门通过后固定现有 OpenAPI 与 provenance；BFF PR18 用原生成器固定该原件，既有 domain/公开失败 tuple 与唯一 `database/schema.sql` 保同一闭集。用原 `db:apply-schema` 在本轮隔离空 schema 验证，不改正常非空库、不恢复旧迁移 CLI。App PR50 只从已提交 BFF 公开 YAML 原样更新唯一快照和现有生成器，补独立非重试文案，不新增 SDK、alias、fallback 或第二个契约。
+- **验收/TODO**：独立 owner 门照常完成。待确认后先复现一条 Agent 终态到 BFF 持久/回放/快照的接缝，再由 App 现役入口验证同一公开 tuple 与非重试提示；只在适当层级保留非法 `retryable: true` 的拒绝证据。按 owner 串行验收后才能冻结 Root gitlinks，继续原 PR，不推未验组合，不 merge main、不部署。
+
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 
 - **目标/状态**：原C-1.3～C-4完整目标保留，认证D0通过；IAM唯一Session权威、BFF入口认证、内部服务身份及owner业务授权分离。普通内部业务不携浏览器Cookie、登录Session引用或伪OAuth claims。账号会话生命周期的明确认证例外见§3.6。
