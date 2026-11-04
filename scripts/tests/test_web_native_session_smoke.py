@@ -700,6 +700,20 @@ def simulate_main(
                 {"kind": "result", "command": "signout", "status": "ok"},
             ]
         )
+        monkeypatch.setattr(
+            smoke,
+            "exercise_project_write_admission",
+            Mock(
+                side_effect=lambda _resources,
+                _db,
+                _base,
+                _secret,
+                _ready,
+                _receipt,
+                iam,
+                reader: smoke.session.host_command(iam, reader, "signout")
+            ),
+        )
         responses = [
             (200, {}),
             (
@@ -1670,7 +1684,13 @@ def test_browser_native_admission_window_checks_sleep_completion(completion):
 def test_minimal_default_preserves_three_http_checks_plus_log_scan(
     tmp_path, monkeypatch
 ):
-    simulate_main(tmp_path, monkeypatch, native_success=True, succeeds=True)
+    _, resources, _, _, _, _ = simulate_main(
+        tmp_path, monkeypatch, native_success=True, succeeds=True
+    )
+    args = smoke.exercise_project_write_admission.call_args.args
+    assert args[0] is resources
+    assert args[1:3] == ("postgresql://localhost/own", "http://127.0.0.1:1234")
+    assert args[4].tenant_id == "tenant"
     report, _ = read_receipt(tmp_path)
     assert report["status"] == "passed"
     assert report["mode"] == "minimal_http"
@@ -1678,6 +1698,131 @@ def test_minimal_default_preserves_three_http_checks_plus_log_scan(
     assert report["completed_journeys"] == 0
     assert report["browser"] is None
     assert report["credential_log_check"] == "passed"
+
+
+@pytest.mark.parametrize(
+    "fault, message",
+    [
+        (None, None),
+        ("forged_owner", "persisted owner differs"),
+        ("rewritten_receipt", "denied request changed Project or receipt facts"),
+        ("replay_after_signout", "HTTP 200, expected 401"),
+    ],
+)
+def test_native_project_write_uses_owner_identity_and_fences_revoked_replay(
+    monkeypatch, fault, message
+):
+    tenant, user = "current-tenant", "current-user"
+    origin = "https://web-native-fixture.example.test"
+    cookie = "__Secure-kokoro-issuer.session_token=fixture"
+    db_url = "postgresql://localhost/owned"
+    bff_base = "http://127.0.0.1:4321"
+    ready = smoke.session.Ready("http://127.0.0.1:1234", "unused-token", tenant, user)
+    receipt = smoke.NativeReceipt(
+        cookie, "/fixture/context", "/fixture/sessions", origin
+    )
+    iam, reader = object(), object()
+    facts = {"projects": [], "receipts": []}
+    events = []
+    name = "Native IAM owned Project"
+    meta = {"request_id": "fixture-request"}
+    created = {"data": {"project": {"id": "project-one"}}, "meta": meta}
+    key = None
+    command = None
+
+    def psql(argv):
+        assert argv[:-1] == ["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc"]
+        assert "FROM kokoro_bff.bff_project" in argv[-1]
+        assert "FROM kokoro_bff.bff_idempotency_receipt" in argv[-1]
+        return json.dumps(facts)
+
+    def owner_command(process, protocol, value):
+        nonlocal command
+        assert process is iam and protocol is reader
+        command = value
+        events.append(value)
+
+    def post(base, path, *, method, headers, body):
+        nonlocal key
+        assert (base, path, method) == (bff_base, "/v1/projects", "POST")
+        assert headers["x-kokoro-service"] == "web-bff"
+        assert headers["x-kokoro-internal-secret"] == "bff-secret"
+        assert headers["origin"] == origin and "authorization" not in headers
+        assert headers["x-kokoro-namespace"] == "forged-tenant"
+        assert headers["x-kokoro-principal-id"] == "forged-user"
+        assert headers["content-type"] == "application/json"
+        assert body == {"name": name}
+        k = headers["idempotency-key"]
+        if key is None:
+            assert headers["cookie"] == cookie
+            events.append("create")
+            key = k
+            facts["projects"].append(
+                [
+                    "project-one",
+                    tenant,
+                    "forged-user" if fault == "forged_owner" else user,
+                    name,
+                ]
+            )
+            facts["receipts"].append(
+                {
+                    "scope": json.dumps(
+                        [tenant, user, "POST", "/projects", key], separators=(",", ":")
+                    ),
+                    "status": 200,
+                    "response_body": created,
+                }
+            )
+            return 200, created
+        if command is None:
+            assert k == key + "-anonymous" and "cookie" not in headers
+            events.append("anonymous")
+            status, code = 401, "session_authentication_required"
+        elif command == "remove_member":
+            assert headers["cookie"] == cookie and k in {key, key + "-revoked"}
+            events.append("member_replay" if k == key else "member_create")
+            if fault == "rewritten_receipt" and k != key:
+                # Count-only checking would miss this mutation of the existing receipt.
+                facts["receipts"][0]["status"] = 403
+            status, code = 403, "session_forbidden"
+        else:
+            assert command == "signout" and headers["cookie"] == cookie and k == key
+            events.append("signed_out_replay")
+            if fault == "replay_after_signout":
+                return 200, created
+            status, code = 401, "session_invalid"
+        return status, {
+            "error": {"code": code, "message": "fixture denial"},
+            "meta": meta,
+        }
+
+    monkeypatch.setattr(smoke.session, "request", post)
+    monkeypatch.setattr(smoke.session, "host_command", owner_command)
+    args = (
+        SimpleNamespace(command=psql),
+        db_url,
+        bff_base,
+        "bff-secret",
+        ready,
+        receipt,
+        iam,
+        reader,
+    )
+    if message is not None:
+        with pytest.raises((smoke.SmokeError, smoke.session.SmokeError), match=message):
+            smoke.exercise_project_write_admission(*args)
+    else:
+        smoke.exercise_project_write_admission(*args)
+        assert events == [
+            "create",
+            "anonymous",
+            "remove_member",
+            "member_replay",
+            "member_create",
+            "signout",
+            "signed_out_replay",
+        ]
 
 
 @pytest.mark.parametrize(

@@ -1096,6 +1096,139 @@ def require_json(response: web.BrowserResponse, status: int, label: str) -> dict
     return body
 
 
+def _project_write_facts(resources: runtime.OwnedResources, db_url: str) -> dict:
+    sql = """
+        SELECT json_build_object(
+          'projects', COALESCE((
+            SELECT json_agg(json_build_array(project_id, tenant_id, owner_id, name)
+                            ORDER BY project_id)
+            FROM kokoro_bff.bff_project
+          ), '[]'::json),
+          'receipts', COALESCE((
+            SELECT json_agg(row_to_json(receipt) ORDER BY scope)
+            FROM kokoro_bff.bff_idempotency_receipt AS receipt
+          ), '[]'::json)
+        )
+    """
+    result = resources.command(
+        ["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", sql]
+    )
+    try:
+        facts = json.loads(result)
+    except (ValueError, UnicodeError):
+        raise SmokeError("BFF Project owner facts malformed") from None
+    if (
+        not isinstance(facts, dict)
+        or set(facts) != {"projects", "receipts"}
+        or not all(isinstance(value, list) for value in facts.values())
+    ):
+        raise SmokeError("BFF Project owner facts malformed")
+    return facts
+
+
+def exercise_project_write_admission(
+    resources: runtime.OwnedResources,
+    db_url: str,
+    bff_base: str,
+    secret: str,
+    ready: session.Ready,
+    receipt: NativeReceipt,
+    iam: subprocess.Popen[bytes],
+    reader: session.ProtocolReader,
+) -> None:
+    """Verify real native Project ownership and fail-closed receipt replay."""
+    if _project_write_facts(resources, db_url) != {"projects": [], "receipts": []}:
+        raise SmokeError("BFF Project qualification requires an empty owned database")
+
+    key = "native-project-" + secrets.token_hex(12)
+    name = "Native IAM owned Project"
+    headers = {
+        "content-type": "application/json",
+        "x-kokoro-service": "web-bff",
+        "x-kokoro-internal-secret": secret,
+        "origin": receipt.iam_web_origin,
+        "cookie": receipt.cookie,
+        "x-kokoro-namespace": "forged-tenant",
+        "x-kokoro-principal-id": "forged-user",
+    }
+
+    def post(command_key: str, *, with_cookie: bool = True) -> tuple[int, dict]:
+        outgoing = {**headers, "idempotency-key": command_key}
+        if not with_cookie:
+            del outgoing["cookie"]
+        return session.request(
+            bff_base,
+            "/v1/projects",
+            method="POST",
+            headers=outgoing,
+            body={"name": name},
+        )
+
+    status, body = post(key)
+    data = session.require_success(status, body, "native Project create")
+    project = data.get("project")
+    if (
+        not isinstance(project, dict)
+        or not isinstance(project.get("id"), str)
+        or not project["id"]
+    ):
+        raise SmokeError("BFF Project create identity missing")
+    before_denials = _project_write_facts(resources, db_url)
+    if before_denials["projects"] != [
+        [project["id"], ready.tenant_id, ready.user_id, name]
+    ]:
+        raise SmokeError(
+            "BFF Project persisted owner differs from the native IAM identity"
+        )
+    receipts = before_denials["receipts"]
+    if len(receipts) != 1 or not isinstance(receipts[0], dict):
+        raise SmokeError("BFF Project create did not persist exactly one receipt")
+    committed = receipts[0]
+    scope = json.dumps(
+        [ready.tenant_id, ready.user_id, "POST", "/projects", key],
+        separators=(",", ":"),
+    )
+    if (
+        committed.get("scope") != scope
+        or committed.get("status") != 200
+        or committed.get("response_body") != body
+    ):
+        raise SmokeError("BFF Project receipt differs from the admitted command")
+
+    def deny(
+        command_key: str,
+        expected_status: int,
+        code: str,
+        label: str,
+        *,
+        with_cookie: bool = True,
+    ) -> None:
+        status, body = post(command_key, with_cookie=with_cookie)
+        session.require_error(status, body, expected_status, code, label)
+        if _project_write_facts(resources, db_url) != before_denials:
+            raise SmokeError(
+                label + ": denied request changed Project or receipt facts"
+            )
+
+    deny(
+        key + "-anonymous",
+        401,
+        "session_authentication_required",
+        "native Project without Cookie",
+        with_cookie=False,
+    )
+    session.host_command(iam, reader, "remove_member")
+    deny(key, 403, "session_forbidden", "native Project replay after member removal")
+    deny(
+        key + "-revoked",
+        403,
+        "session_forbidden",
+        "native Project create after member removal",
+    )
+    session.host_command(iam, reader, "signout")
+    deny(key, 401, "session_invalid", "native Project replay after signout")
+
+
 def main(argv=None) -> int:
     args = parse_args(argv)
     run_id = secrets.token_hex(12)
@@ -1223,10 +1356,10 @@ def main(argv=None) -> int:
             iam_inventory = web.iam_owned_inventory(resources, iam_identity)
             if iam_inventory != (set(), set()):
                 raise SmokeError("IAM named resources already exist")
-            db_url = bff_owner_database_url(resources.create_database("bff"))
+            db_url = resources.create_database("bff")
             bff_env.update(
                 {
-                    "KOKORO_BFF_POSTGRES_URL": db_url,
+                    "KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(db_url),
                     "KOKORO_BFF_REDIS_URL": args.redis_url,
                 }
             )
@@ -1492,13 +1625,18 @@ def main(argv=None) -> int:
                 if project_body != {"projects": []}:
                     raise SmokeError("native Web BFF project response drift")
                 cases += 1
-                if iam.stdin is None:
-                    raise SmokeError("IAM host stdin unavailable")
-                iam.stdin.write(b'{"command":"signout"}\n')
-                iam.stdin.flush()
-                result = reader.record()
-                if result != {"kind": "result", "command": "signout", "status": "ok"}:
-                    raise SmokeError("IAM signout receipt drift")
+                stage = "native Project write admission"
+                exercise_project_write_admission(
+                    resources,
+                    db_url,
+                    f"http://127.0.0.1:{bff_port}",
+                    secret,
+                    ready,
+                    receipt,
+                    iam,
+                    reader,
+                )
+                stage = "native session"
                 signed_out = web.https_browser(
                     web_proxy.server_port,
                     "/api/auth/session",
