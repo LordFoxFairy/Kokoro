@@ -12,6 +12,12 @@
 
 ---
 
+## 收口执行规则（2026-11-04）
+
+- **现行契约和职责优先，不继承旧形状。** 以现行用户行为、owner 边界、契约和有效设计裁决为准；旧代码是调查材料，不是设计依据。已批准退役且消费者归零的入口、dispatcher、兼容层和纯转发抽象直接删除，不留 alias、fallback 或无调用壳。仍需保留的生产行为放在现役 owner；若发现真实消费者或有效兼容义务，列出调用方及退出条件，不以“以前这样写”保留。
+- **每个风险只在最低充分层级验证一次。** 机械接线和死代码删除只检查现役入口、引用和受影响的编译/定向行为；只有变更实际触及认证、授权、取消或事务边界时，才选对应回归。已有证据按提交、受影响路径和场景核对；只因 SHA 变化、旧脚本存在或测试数量多不加跑。不保留只验证旧目录、旧类名或私有调用顺序的断言；合并或删除前说明独有风险由何处承接。
+- **先收口 T‑11，再对冻结组合跑 C‑4。** 先盘点真实消费者和未覆盖的行为差异，复用适用的阶段证据，只补实际缺口；不继续扩写 smoke。C‑4 对最终精确组合做一次约定的正式验收；失败先分环境、业务与证据漂移，修复后定向复跑受影响项，组合变更影响正式结论时才重验对应门。环境失败记为未执行到业务断言，不算代码回归，也不算通过。A‑01/A‑02/A‑07 保持门控；各仓沿自己的 PR，不合并 main、不部署。
+
 ## 当前执行摘要（2026-11-04，本地提交）
 
 - **BFF 原 PR #18 分支本地提交**：`09f44fe` fix(runtime): bound Nest shutdown and drain AG-UI transports；`50b2f09` fix(mcp): restore projection authorization and request cancellation；`820f5bc` fix(skills): wire public list project and app owners；`329f9a1` test(knowledge): exercise account module with real storage；`170064b` test(bff): migrate billing and projection checks off raw listeners；`8de48c6` test(mcp): include projection admission in default checks；`79d3d10` fix(health): preserve readiness unavailable response；`325e777` fix(skills): return not found for retired reads；`91038f6` 迁移 admission 定向验证；`5a38c39` 删除无消费者的旧 route wrapper；`3ab4357` 修正 Model Admission 总请求头上限；`93336a1` 修正 Scheduler 顶层创建回执前置检查。
@@ -41,7 +47,7 @@
 - **Capability／IAM 后继**：Capability `ef2d919` 本地提交候选镜像的原生 IAM execution 文件及独立 Storage 凭据接线，真实配置加载旧红新绿，不改触发、健康探测或发布步骤；未运行 CI 或部署，runner 实际凭据仍待配置。R336 单文件私有候选已静态验，真实回归未跑。IAM 退役 `0.21.0` 私有候选正规生成，旧产物保持不变；相邻版本只删除旧 introspection POST 及专用 Basic scheme，保留 37 项。五个受影响的集成文件已用真实隔离 PG/Redis 完整通过（144 项，无跳过），资源清单一致；未提交退役、未打包发布。
 - **工作流与消费者补证**：Capability `bf4aa07` 在 CI 与 release verify 同步替换旧 global bearer 输入，改为 owner 文件路径与精确凭据 ID。实际 smoke 在请求前复现旧红新绿并通过权限、身份、用途负控；未运行真实 CI，runner 变量仍须由 owner 配对。现有消费者 pin 未改：BFF 0.20 契约/生成及策略、Capability 0.18 SDK/E2、Billing 0.17 SDK/授权各自定向通过。BFF `f0107a7` 的原 Nest relay 用真实 IAM 0.21 私有候选复验登录、会话状态和登出，PG/Redis 清单与 owner 凭据均清理；不是新 SDK 已安装或发布。
 - **Project 原生门与旧手工入口退役**：Root `eee26f5a` 加入原生写入、PG owner 和撤权零写，`ba4668ea` 在同一 minimal 模式加入跨身份列表/直读隔离、IAM 停机 503 与原事实不变，退役历史 BFF session Bearer CLI（明确非零并指向现入口），保留共享 NDJSON、ready、源码核验、合法 OAuth 和 Admin 仍使用的 helper。新增 runner 同字节在 BFF `f0107a7`、IAM `9bd7a8c` 的真实 HTTP/PG/Redis 通过，资源已回收；未重跑正式 App/Chromium。Root `ba0f5d90` 让纯 observer 测试独立于 Agent venv；受影响的 502 项 Python 3.13 测试通过，无跳过。Admin 旧手工入口未改，也不作当前原生验收。
-- **下一门（等待本机存储卷恢复）**：本机空间恢复后先删除原失败留下的空桶，再用当前提交串行复跑 `ingress_clean`、默认 clean/eicar/ack_lost 和 Capability R336。旧消费者归零后提交 IAM producer 退役，按 owner 验证正式 artifact 与消费者，再进 C‑4 精确组合和全量门。A‑01/A‑02/A‑07 保持停写。
+- **下一门（准备恢复 T‑11）**：机器 Goal 已恢复 `active`。PostgreSQL 卷已复查约 34 GiB，`ENOSPC` 是历史运行结果；对象存储只读检查可用，但同一空测试桶的 `DeleteBucket` 仍返回 `SlowDownWrite`，Docker daemon `_ping` 超时，未创建新资源。已核对 `ingress_clean` 4/4：Capability 的生产源码/契约与四例未变，Storage 固定版本未变，实际用到的 BFF credential loader 未变，IAM 生产代码未变，历史通过可承接业务行为。最新的显式配置文件和命名 IAM fixture 接线仍是未提交的 runner 候选，dry-run 不替代真实启动；只用已有场景补这一接缝，不新增断言。恢复执行时核查并仅回收已登记空测试桶。默认 `clean` 不另立一轮重复 signed PUT/CLEAN 正向链路，保留现役默认入口或独有调用计数的验证；`eicar` 和 `ack_lost` 分别验证感染拒绝零写、完成副作用后 ACK 丢失的恢复，不能用 `ingress_clean` 代替。R336 仅补个人包发布/安装/读取与撤回的实际契约差异，不重复下层存储正控。旧消费者归零后收口 IAM producer 退役并验证 owner artifact 与消费者，再对精确组合执行 C‑4。A‑01/A‑02/A‑07 保持停写。
 
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 
@@ -470,6 +476,8 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 - [ ] T-11：全部风险承接后删除raw server/runtime/旧dispatcher/无边界aggregate，重跑零消费者、contract与真实I/O。
 - [ ] T-06复验：前置格式门已处理；本批新触及文件若再有格式失败，只作机械修正并复验无行为改动。
 
+**本轮收口盘点（只读，BFF `f0107a7`）**：生产入口为 `main.ts → AppModule`，未发现仍可达的旧 raw runtime、LegacyRoutes 或宽聚合；旧批次迁移/调用点数字不再作为新增工作量。现役 System/Skills 的 503 是公开的拒绝行为，不调用旧 runtime 或 owner；不为迁移重复验，也不靠旧文件名判断去留。Root 旧 Chat GC Chromium 脚本引用已删的 `PostgresBffRepositories`，无现役调用者，已随专属驱动和分支在 `8a172454` 删除。现役 BFF 真 PG 覆盖删帧/墓碑/游标/快照，Web 覆盖 `event_cursor_expired` 后重新取快照和按新水位续流；旧的两件产物和 Chromium 真链只保留历史证据，不声称本轮复验，也不恢复宽聚合。定向 Root 回归与 Ruff 通过。此盘点不代替 IAM producer 退役或 C‑4。
+
 ### Chunk 4：C-4整体验收与A门交接
 
 - [ ] T-09/T-16：全部相关写区停写，Root按仓串行跑完整门，记录新失败/既存失败/环境缺口；集成后再核精确gitlinks。
@@ -507,7 +515,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响owner最终串行门；Root | WAITING | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | IN_PROGRESS | 原生 Sandbox/Agent 已落盘并真验。Capability candidate readiness 已本地迁原生；IAM 0.21 私有候选五个集成文件真验通过。当前 ingress 真测受本机 ENOSPC 阻断，空测试桶待回收；现有 BFF relay 已真验 IAM 0.21 候选，默认存储及 R336 真验、IAM 退役提交及 artifact、正式配对仍待，C‑4 等待。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | IN_PROGRESS | 原生 Sandbox/Agent 已落盘并真验。Capability candidate readiness 已本地迁原生；IAM 0.21 私有候选五个集成文件真验通过。最近一次 ingress 因 ENOSPC 未到业务断言；磁盘门槛已恢复，旧 4/4 可承接未变的业务行为，新显式运行接线未真跑；对象存储仍拒绝删除已确认空的旧测试桶，回收待完成。现有 BFF relay 已真验 IAM 0.21 候选；只补默认存储及 R336 尚未承接的独有风险，IAM 退役提交及 artifact、正式配对仍待，C‑4 等待。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |
