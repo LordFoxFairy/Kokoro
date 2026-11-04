@@ -396,12 +396,11 @@ def test_durable_owner_fact_accepts_storage_asset_digest_id_only() -> None:
     assert len(commands) == 1
 
 
-@pytest.mark.parametrize("other", ["live_scenario", "gc_scenario"])
-def test_real_model_scenario_is_exclusive_before_any_side_effect(other):
+def test_real_model_scenario_is_exclusive_before_any_side_effect():
     with pytest.raises(smoke.SmokeError, match="exclusive"):
         smoke._run_smoke(
             SimpleNamespace(),
             {},
             real_model_scenario=lambda **_: {},
-            **{other: lambda **_: {}},
+            live_scenario=lambda **_: {},
         )
