@@ -17255,4 +17255,4 @@ Root唯一方案§3.6已按RFC10017/RFC9700/OIDC/框架官方规范重写，认�
 
 Root4e603743原正式五旅程、真实账户消费，以及真实Skill包生产全链/原BFF四GET和代表组合负控共同满足G1；主方及独审复核源码、收据、dist和DB清单保持，S3 exact版本/进程/自有资源已回收。Root2fc0436c是此前文档后继，不替换已验代码。不以数量或私有fixture代替旧smoke/R336、T17/C4与全产品验收。
 
-前次实施回合因模型容量错误failed，Goal blocked更新时间同秒；之后三次只读心跳没有实施worker，台账未收口。本次先串行同步G1/T05，再由 `t17_native_lifecycle_cut` test-only承接真实Nest listener/在途HTTP/worker drain；生产改动须主方复现RED后批准。当前C剩5包，顺序T17→T11→T09/T16→T15；IAM遗留producer、Agent未pin/Capability最新base、完整门及常驻单库环境保持未完。每仓原PR、不merge main或部署，无新增用户待决事项。
+前次实施回合因模型容量错误failed，Goal blocked更新时间同秒；之后三次只读心跳没有实施worker，台账未收口。本次已串行同步G1/T05并推Root a612915a。T17真实listener两释放顺序已由主方复现RED，最小AgentDispatch早期hook候选通过主方冻结相关门及独审，未提交/pin；四feature正常drain现已各自RED后最小修复、主方冻结相关门/59定向和独审通过，累计6原文件未提交/pin；关闭拒入亦已主方RED后原生flag修复、冻结相关门及独审通过，累计7候选文件未提交；SSE已按主方准确RED→五原源码最小实现→主方冻结相关门GREEN及独立规格/质量CLEAR收口切片，原SSE/drain、受影响AG-UI/control/admission与授权回归均零skip，1085输入保持；累计15文件候选未提交/pin，不称真实IAM/PG或完整T17。下一writer只在原Nest测试补有限worker失败/独立清理与非零状态RED，进程失败/信号硬期限仍未实施。完整T17/异常信号期限尚未闭合，生产扩大须Root批准。当前C剩5包，顺序T17→T11→T09/T16→T15；IAM遗留producer、Agent未pin/Capability最新base、完整门及常驻单库环境保持未完。每仓原PR、不merge main或部署，无新增用户待决事项。
