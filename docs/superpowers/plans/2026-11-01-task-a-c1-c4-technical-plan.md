@@ -29,10 +29,11 @@
 - **Capability 原生 Storage ingress（本地）**：`db98f67` 对应私有 Root runner 实测：真实 IAM 独立 E2 服务凭据预检后，真实 Capability/Storage 用签名 PUT、原 Complete/Finalize 重放和纯 Get，校验缺失、错用途和撤销且产品控制面零 IAM 请求。首次因私有 Storage 源码归档缺编译产物、在 readiness 前失败，确认自有桶为空后回收该桶和单一测试库；构建锁定 Storage 后重试 4/4、无跳过，PG 清单、IAM Redis 命名空间和 Storage 资源恢复。仅验 opt-in `ingress_clean`，本轮未重跑默认 clean/eicar/ack_lost。
 - **Sandbox 原生接线实测（阶段）**：真实 IAM/BFF/Capability/Storage 暴露 System 旧兜底抢占 Skills，`POST /v1/skills/drafts` 错回 `503 platform_operation_not_available`；BFF `7c661ad` 按 owner 约束兜底，不调整 Nest 注册顺序。完整 AppModule 回归先失败后通过，保留原 owner 兜底、退役读 404 和零转发。真实复跑六个 default-off 均 `503 skill_dependency_unavailable`、零 Platform 请求；启用后原草稿 201、同键 201 重放、异输入 409、初始 GET 200。
 - **包验证与发布（阶段）**：Capability 旧 smoke 在构造 Publish digest 时遗漏 `expectedPublication`，负控未发 RPC。 `85fc3bb` 只修测试请求：首发显式 absent，发布后新 key 使用独立系列 CAS 和 Skill ACK，并断言具名 `publish_state_invalid`。冻结版本真实通过原签名上传、感染/坏 ZIP、恢复、验证和发布/重放，持久化计数与非草稿 GET 412 保持。运行进程、桶、PG/Redis 清单均已恢复。
-- **Sandbox 后半段未验收**：原流程在已由 R357 退役的 BFF by-ID 投影检查处停下，首次真实运行未完成发布读取、撤销和后段路径。迁到现役网站 GetSkill（stable series）和 Self 列表，保留退役路径 404/零转发、直连 Capability 的权限负控；Product Installation、Personal Skill Lifecycle、Agent 三可选模式未运行。
-- **可选本地登录前置（私有）**：IAM named HTTPS 测试 host 在同租户出具用户上下文、账户会话和独立 E2 凭据；现有 host 全文件 16/16 真实 PG/Redis 通过，含错用途拒绝、正确 E2 到达 DTO 校验及文件清理。仅验服务鉴权，不是签发执行 proof 或浏览器组合。候选未提交；待 Root 入口实接并验两个模式。
-- **组合边界**：BFF 本地 `7c661ad`、Capability 本地 `85fc3bb`，Root gitlinks 仍为原 pin（BFF `8cb6169`、Capability `f515e22`）；已通过的 Root runner 配对补丁尚未提交，待与 Capability 精确 pin 同步；私有补充预检能在真实模式分配资源前拒绝缺编译产物，原 dry-run 和默认用例选择不变，已复现红并通过定向测试。未推送、未 merge main、未部署、未启动 C‑4。
-- **下一门**：完成 Root Skill/Agent sandbox 后半段和可选模式；同租户原生浏览器上下文与独立 E2 已有私有 IAM fixture 候选，随后迁移 `serve_local_login --platform-node-bin`（含 `--platform-mcp-only`）仍读取的旧 `skill_sandbox` 凭据，保留默认登录、CORS、原 Sandbox 行为和真实验证；再删 IAM producer/旧 fixture provisioning、正规生成 artifact 并更新实际消费者。T‑11 闭环后按 T‑09/T‑16/T‑15 串行验收精确组合，A‑01/A‑02/A‑07 不提前写入。
+- **Sandbox 默认全链路（真实私有组合）**：R357 现役 stable-series GetSkill 与个人列表替代旧 BFF GET；旧入口实测终端 404、零转发，直连 Capability 保留身份负控。旧 ZIP 缺 SKILL.md frontmatter 造成 CLEAN 后 Validate 412；当前 fixture 的实际 owner 校验通过，验证和重放都校验 SKILL.md 精确摘要。Public Publish 传显式 publication CAS，与 Skill 版本分别校验；回执、唯一事件、精确库存通过。真 IAM 同 Cookie 登出后九个请求均 401，Platform 连接与请求计数均无增量。资源已回收。默认路径通过不代表 Root runner/精确 pin 落地，三可选模式均未运行。
+- **撤权传输纠偏（本地）**：真实撤权 package GET 已拒绝，但缺 `x-request-id`；BFF `f56caea` 在准入前挂同请求 ID，不改 401/no-store 或零 owner。旧版现有回归复现空头、定向复验 78 项通过；默认 Sandbox 真跑收口。
+- **可选本地登录前置**：IAM `5436f4f` 仅测试 fixture，同一命名 HTTPS host 出具用户上下文、账户会话和独立 E2 凭据，真实 host 整文件 16/16 通过。退役 producer 的私有累计版本又实测四个选中场景，含旧行拒绝、默认协议、同租户 named host 与真实 E2 成员撤权复判；未执行的用例不计通过，未提交 producer。Root 可选启动器仅私有单元通过，MCP-only、Skills+Storage、Admin 浏览器未验。
+- **组合边界**：BFF 本地 `f56caea`、Capability 本地 `85fc3bb`、IAM 本地 `5436f4f`，Root gitlinks 仍为原 pin（BFF `8cb6169`、Capability `f515e22`）；已通过的 Root runner 配对补丁尚未提交，待与 Capability 精确 pin 同步；私有补充预检能在真实模式分配资源前拒绝缺编译产物，原 dry-run 和默认用例选择不变，已复现红并通过定向测试。未推送、未 merge main、未部署、未启动 C‑4。
+- **下一门**：把真实默认 Sandbox 证据落回原唯一 runner，按原断言迁移并验 Product Installation、Personal Skill Lifecycle、Agent 可选模式。Agent 需真实 BFF Message→durable dispatch，旧直连和自造 identity 不再使用；可选本地登录使用同租户 named host 再验真实浏览器。旧 IAM 消费归零后退役 producer、正规生成 artifact/更新消费者并做精确组合，再按 T‑09/T‑16/T‑15 进入 C‑4。A‑01/A‑02/A‑07 不提前写入。
 
 ## 历史执行摘要（2026-11-03，G1已验；开始 T-17）
 
@@ -498,7 +499,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响owner最终串行门；Root | WAITING | G1/G2、T-06/T-07/T-12/T-13/T-16收敛；精确冻结SHA+pass/fail/skip |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | IN_PROGRESS | BFF raw/Chat 与跨 feature 兜底边界、Capability ingress 和 Publish CAS 测试已本地提交。真实 Sandbox 首段通过，后半段撞 R357 退役读；后续为现役读/撤权和可选模式、可选本地登录、Root 精确配对及 IAM producer/artifact 退役；C‑4 仍等待。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | IN_PROGRESS | Sandbox 默认四 owner 全链路及撤权真通过；BFF 相关性修复、IAM named fixture 已本地提交。仍待唯一 Root runner 落地、可选模式及本地登录、producer/artifact 退役与精确配对，C‑4 等待。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |

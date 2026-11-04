@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑17 本地已提交，T‑11 推进中
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收。机器 Goal 为 active。BFF `7c661ad` 修复 System 兜底抢占 Skills，Capability `85fc3bb` 修复 Publish CAS 测试接线。原生 Sandbox 首段真实通过（默认关闭零转发、草稿重放、上传/扫描/发布、资源回收）；后半段遇 R357 退役读，尚未完成。Root gitlinks 不变；待后段/可选登录、IAM producer 退役及精确配对后再进入 C‑4。未推送、合并或部署，A‑01/A‑02/A‑07 仍停写。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)记录分仓提交与验收。机器 Goal 为 active。Sandbox 默认四 owner 全链路已通过，含 R357 现役读、验证/发布、同 Cookie 撤权后 401/零转发和资源回收。BFF `f56caea` 修复撤权响应相关性；IAM `5436f4f` 交付同租户测试凭据前置。尚待原 Root runner、三个可选模式、可选本地登录、IAM producer 退役与精确组合。Root gitlinks 未变；未推送、合并、部署或进入 C‑4，A‑01/A‑02/A‑07 仍停写。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
