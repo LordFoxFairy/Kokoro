@@ -1,6 +1,6 @@
 ## Task A 当前检查点：T‑11 本地验收通过，进入 C‑4
 
-[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `active`。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 合入原 PR12 基线后的候选已通过正式 `verify`、build 和受影响真实 Schema/MCP；旧 fixture 只补当前连接指针，真实项目发布 15 项复验及独占 SSE 用例通过。已快进本地原 PR13 分支到 `5e607fd`，未推。Agent 原 PR46 隔离候选 `33545a4` 已进入串行 owner 验收。实测 Agent 8.11 新终态 `context_window_exceeded` 被 BFF 8.10 消费器拒绝，BFF 持久约束及 App 生成枚举也未承接，当前不得冻结该跨仓组合。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
+[唯一技术方案与 TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)是执行台账；机器 Goal 为 `active`。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 合入原 PR12 基线后的候选已通过正式 `verify`、build 和受影响真实 Schema/MCP；旧 fixture 只补当前连接指针，真实项目发布 15 项复验及独占 SSE 用例通过。已快进本地原 PR13 分支到 `5e607fd`，未推。Agent 原 PR46 隔离候选的工程门已有证据，环境缺口和两个旧 SQL fixture 已定向复验；当前 `0fc0b42` 尚有 3 个原 PR46 基线同样失败的真实用例。实测 Agent 8.11 新终态 `context_window_exceeded` 被 BFF 8.10 消费器拒绝，BFF 持久约束及 App 生成枚举也未承接，当前不得冻结该跨仓组合。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
 
 ## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
 
