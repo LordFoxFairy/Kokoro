@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import base64
 from contextlib import ExitStack
+from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
+import re
+import stat
 import secrets
 import subprocess
 
@@ -19,6 +22,70 @@ PLATFORM = Path(__file__).resolve().parents[2] / "apps/kokoro-capability"
 
 class PlatformRuntimeError(RuntimeError):
     """Sanitized composition failure; never includes credentials or endpoints."""
+
+
+@dataclass(frozen=True, slots=True)
+class LocalPlatformReady:
+    base_url: str
+    database_name: str
+    tenant_id: str
+    execution_file: Path
+
+
+def native_credential(
+    path_value, directory: Path, *, caller: str, surface: str, tenant_id: str
+) -> tuple[Path, str]:
+    """Validate an owner-created fixture file, without copying or exposing the secret."""
+    error = PlatformRuntimeError("local Platform IAM purpose credential invalid")
+    if type(path_value) is not str or not path_value:
+        raise error
+    path = Path(path_value)
+    try:
+        if path != path.resolve(strict=True) or not path.is_relative_to(
+            directory.resolve()
+        ):
+            raise error
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as source:
+            facts = os.fstat(source.fileno())
+            if (
+                not stat.S_ISREG(facts.st_mode)
+                or facts.st_mode & 0o777 != 0o600
+                or facts.st_uid != os.getuid()
+                or facts.st_nlink != 1
+            ):
+                raise error
+            raw = source.read(16_385)
+        if len(raw) > 16_384:
+            raise error
+        record = json.loads(raw)
+    except (OSError, RuntimeError, ValueError):
+        raise error from None
+    if (
+        type(record) is not dict
+        or set(record) != {"version", "entries"}
+        or type(record["version"]) is not int
+        or record["version"] != 1
+        or type(record["entries"]) is not list
+        or len(record["entries"]) != 1
+    ):
+        raise error
+    entry = record["entries"][0]
+    if (
+        type(entry) is not dict
+        or set(entry) != {"credential_id", "caller", "surface", "tenant_id", "secret"}
+        or entry["caller"] != caller
+        or entry["surface"] != surface
+        or entry["tenant_id"] != tenant_id
+        or not isinstance(entry["credential_id"], str)
+        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}", entry["credential_id"])
+        is None
+        or not isinstance(entry["secret"], str)
+        or re.fullmatch(r"[\x21-\x7e]{32,4096}", entry["secret"]) is None
+        or "," in entry["secret"]
+    ):
+        raise error
+    return path, entry["secret"]
 
 
 class LocalPlatformRuntime:
@@ -52,7 +119,9 @@ class LocalPlatformRuntime:
                 0o600,
             )
         except OSError as error:
-            raise PlatformRuntimeError("local Platform credential setup failed") from error
+            raise PlatformRuntimeError(
+                "local Platform credential setup failed"
+            ) from error
         try:
             with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
                 json.dump(value, stream, separators=(",", ":"), sort_keys=True)
@@ -76,7 +145,7 @@ class LocalPlatformRuntime:
         )
 
     def _service_credentials(
-        self, tenant_id: str
+        self, tenant_id: str, *, include_skills: bool
     ) -> tuple[Path, dict[str, Path]]:
         """Create exact per-surface BFF credentials for the local owner run."""
         surfaces = {
@@ -85,6 +154,8 @@ class LocalPlatformRuntime:
             "custom-api": "custom_api_personal",
             "mcp-admin": "mcp_admin",
         }
+        if include_skills:
+            surfaces["catalog"] = "catalog"
         entries: list[dict[str, object]] = []
         bff_files: dict[str, Path] = {}
         for label, surface in surfaces.items():
@@ -114,7 +185,7 @@ class LocalPlatformRuntime:
         self,
         application_database_url: str,
         redis_url: str,
-        ready: sandbox.SandboxReady,
+        ready: LocalPlatformReady,
         storage_base_url: str | None,
         web_origin: str,
         *,
@@ -131,21 +202,14 @@ class LocalPlatformRuntime:
             ready.database_name,
             "kokoro_platform",
         )
-        files = self._files.enter_context(
-            sandbox.credential_files(self.directory, ready)
-        )
         service_credentials, bff_credentials = self._service_credentials(
-            ready.tenant_id
+            ready.tenant_id, include_skills=include_skills
         )
         private_secret_keyring = self._keyring("mcp-private-secrets.json")
-        private_fingerprint_keyring = self._keyring(
-            "mcp-private-fingerprints.json"
-        )
+        private_fingerprint_keyring = self._keyring("mcp-private-fingerprints.json")
         oauth_keyring = self._keyring("mcp-oauth-secrets.json")
         custom_api_secret_keyring = self._keyring("custom-api-secrets.json")
-        custom_api_fingerprint_keyring = self._keyring(
-            "custom-api-fingerprints.json"
-        )
+        custom_api_fingerprint_keyring = self._keyring("custom-api-fingerprints.json")
         port = runtime.free_port()
         environment = {
             **self.node_environment,
@@ -161,23 +225,18 @@ class LocalPlatformRuntime:
                 if include_skills
                 else "mcp-personal,custom-api-personal,mcp-provider-admin"
             ),
-            "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE": str(
-                files["tenant-execution.json"]
+            "KOKORO_PLATFORM_IAM_EXECUTION_SERVICE_CREDENTIAL_FILE": str(
+                ready.execution_file
             ),
             "KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE": str(service_credentials),
             "KOKORO_MCP_DECLARATION_DRIVER": "http",
-            "KOKORO_MCP_OAUTH_REDIRECT_URI": web_origin
-            + "/mcp/oauth/callback",
+            "KOKORO_MCP_OAUTH_REDIRECT_URI": web_origin + "/mcp/oauth/callback",
             "KOKORO_MCP_CREDENTIAL_KEYRING_FILE": str(oauth_keyring),
-            "KOKORO_MCP_PRIVATE_SECRET_KEYRING_FILE": str(
-                private_secret_keyring
-            ),
+            "KOKORO_MCP_PRIVATE_SECRET_KEYRING_FILE": str(private_secret_keyring),
             "KOKORO_MCP_PRIVATE_FINGERPRINT_KEYRING_FILE": str(
                 private_fingerprint_keyring
             ),
-            "KOKORO_CUSTOM_API_SECRET_KEYRING_FILE": str(
-                custom_api_secret_keyring
-            ),
+            "KOKORO_CUSTOM_API_SECRET_KEYRING_FILE": str(custom_api_secret_keyring),
             "KOKORO_CUSTOM_API_FINGERPRINT_KEYRING_FILE": str(
                 custom_api_fingerprint_keyring
             ),
@@ -226,9 +285,6 @@ class LocalPlatformRuntime:
         sandbox._wait_ready(base, self.process)
         result = {
             "KOKORO_PLATFORM_BASE_URL": base,
-            "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE": str(
-                files["bff-catalog.json"]
-            ),
             "KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE": str(
                 bff_credentials["projection"]
             ),
@@ -243,7 +299,9 @@ class LocalPlatformRuntime:
             ),
         }
         if include_skills:
-            result["KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED"] = "true"
+            result["KOKORO_BFF_PLATFORM_CATALOG_SERVICE_CREDENTIAL_FILE"] = str(
+                bff_credentials["catalog"]
+            )
         return result
 
     def require_alive(self) -> None:

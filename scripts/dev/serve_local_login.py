@@ -31,12 +31,13 @@ import capability_bff_smoke_runtime as runtime  # noqa: E402
 from bff_owner_schema import bff_owner_database_url  # noqa: E402
 import run_bff_iam_oidc_smoke as previous  # noqa: E402
 import run_bff_iam_session_smoke as session  # noqa: E402
+import run_web_native_session_smoke as native  # noqa: E402
 import run_web_bff_iam_oidc_smoke as web_smoke  # noqa: E402
 import run_web_bff_iam_first_login_smoke as first_login  # noqa: E402
 import run_web_bff_iam_product_session_smoke as product_session  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import local_billing_runtime as billing_runtime
+import local_billing_runtime as billing_runtime  # noqa: E402
 import local_chat_runtime as chat_runtime  # noqa: E402
 import local_platform_runtime as platform_runtime  # noqa: E402
 import model_provider  # noqa: E402
@@ -254,12 +255,108 @@ def write_private_credentials(directory: Path, email: str, password: str) -> Pat
     return path
 
 
+def platform_login_fixture(
+    iam, reader, ready, identity, origin, directory, credentials, *, admin
+):
+    broker = native.BrowserBroker(
+        iam, reader, credentials=credentials, run_dir=directory, timeout=30
+    )
+    browser = broker.dispatch({"command": "browser_fixture"})
+    if browser["tenant_id"] != ready.tenant_id or browser["web_origin"] != origin:
+        raise LaunchError("native Platform browser fixture identity mismatch")
+    native.private_json_write(
+        iam.stdin, {"command": "platform_execution_credential"}, 10
+    )
+    execution = reader.record(timeout=10)
+    if (
+        set(execution) != {"kind", "execution_credential_file"}
+        or execution["kind"] != "platform_execution_credential"
+    ):
+        raise LaunchError("native Platform execution fixture response invalid")
+    files, values = zip(
+        *(
+            platform_runtime.native_credential(
+                value,
+                directory,
+                caller=caller,
+                surface=surface,
+                tenant_id=ready.tenant_id,
+            )
+            for value, caller, surface in (
+                (
+                    browser["bff_user_context_credential_file"],
+                    "kokoro-bff",
+                    "bff_user_context",
+                ),
+                (
+                    browser["account_session_credential_file"],
+                    "kokoro-bff",
+                    "account_sessions",
+                ),
+                (
+                    execution["execution_credential_file"],
+                    "kokoro-platform",
+                    "execution_authorization",
+                ),
+            )
+        ),
+        strict=True,
+    )
+    if len(set(files)) != 3 or len(set(values)) != 3:
+        raise LaunchError("native Platform fixture purposes are not independent")
+    credentials.add(*values)
+    if admin:
+        grant = broker.dispatch({"command": "grant_browser_platform_admin"})
+        if not grant["enabled"]:
+            raise LaunchError("native Platform administrator qualification absent")
+    return (
+        platform_runtime.LocalPlatformReady(
+            ready.base_url, identity.database_name, ready.tenant_id, files[2]
+        ),
+        {
+            "KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE": str(files[0]),
+            "KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE": str(files[1]),
+        },
+        browser["email"],
+        browser["password"],
+    )
+
+
+def wait_for_native_web(proxy, process, origin):
+    deadline = time.monotonic() + 30
+    while True:
+        try:
+            observed = web_smoke.https_browser(
+                proxy.server_port, "/api/fixture-origin", origin
+            )
+            if observed.status == 200:
+                break
+        except (web_smoke.SmokeError, OSError):
+            pass
+        if time.monotonic() >= deadline or process.poll() is not None:
+            raise LaunchError("native Platform Web HTTPS route unavailable")
+        time.sleep(0.1)
+    login = web_smoke.https_browser(proxy.server_port, "/login", origin)
+    location = urlsplit(login.headers.get("location", ""))
+    if (
+        login.status != 303
+        or f"{location.scheme}://{location.netloc}" != origin
+        or location.path != "/auth/sign-in"
+        or location.fragment
+    ):
+        raise LaunchError("native Platform sign-in entry did not redirect on origin")
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--iam-node-bin", type=Path, required=True)
     parser.add_argument("--bff-node-bin", type=Path, required=True)
     parser.add_argument("--web-node-bin", type=Path, required=True)
-    parser.add_argument("--web-port", type=int, default=WEB_PORT)
+    parser.add_argument(
+        "--web-port",
+        type=int,
+        help="Direct HTTP port; not used by the isolated native Platform profile",
+    )
     parser.add_argument(
         "--billing-node-bin",
         type=Path,
@@ -307,6 +404,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         if not node.is_file() or not os.access(node, os.X_OK):
             parser.error("billing_node_bin must be executable")
         args.billing_node_bin = node
+    if args.platform_node_bin is not None and args.web_port is not None:
+        parser.error("native Platform uses an isolated HTTPS listener, not --web-port")
+    if args.platform_node_bin is not None and (
+        args.chat or args.billing_node_bin is not None
+    ):
+        parser.error(
+            "native Platform is independent of the Chat and Billing launcher profiles"
+        )
+    if args.web_port is None:
+        args.web_port = WEB_PORT
     if not 1 <= args.web_port <= 65535:
         parser.error("web_port must be between 1 and 65535")
     if (
@@ -455,6 +562,7 @@ def verify_login_release_inputs(
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     web_port = getattr(args, "web_port", WEB_PORT)
+    native_platform = getattr(args, "platform_node_bin", None) is not None
     try:
         verify_login_release_inputs(
             storage=getattr(args, "storage_node_bin", None) is not None,
@@ -464,19 +572,29 @@ def main(argv: list[str] | None = None) -> int:
         )
     except runtime.SmokeError:
         raise LaunchError("release source preflight failed") from None
-    require_free_web_port(web_port)
+    if not native_platform:
+        require_free_web_port(web_port)
     run_id = secrets.token_hex(12)
-    origin = web_origin(run_id, web_port)
-    host_name = "127.0.0.1"
+    host_name = f"web-native-{run_id}.example.test" if native_platform else "127.0.0.1"
+    origin = f"https://{host_name}" if native_platform else web_origin(run_id, web_port)
     iam_resource_id = str(uuid4())
-    iam_identity = web_smoke.named_iam_identity(iam_resource_id)
+    iam_identity = (
+        web_smoke.IamOwnedIdentity(
+            "iam_web_oidc_" + iam_resource_id.replace("-", ""),
+            f"iam:test:bff-session-admission-host:{iam_resource_id}:",
+        )
+        if native_platform
+        else web_smoke.named_iam_identity(iam_resource_id)
+    )
     iam_owner_token = secrets.token_hex(16)
     resources = runtime.OwnedResources(args.postgres_admin_url, args.redis_url, run_id)
     iam_env = session.node_environment(
         args.iam_node_bin, "v24.20.0", args.bff_node_bin.parent
     )
     bff_env = session.node_environment(
-        args.bff_node_bin, "v22.22.2", args.bff_node_bin.parent
+        args.bff_node_bin,
+        "v24.20.0" if native_platform else "v22.22.2",
+        args.bff_node_bin.parent,
     )
     web_env = session.node_environment(
         args.web_node_bin, "v22.22.2", args.web_node_bin.parent
@@ -501,6 +619,7 @@ def main(argv: list[str] | None = None) -> int:
             credentials.add(password)
     processes: list[subprocess.Popen[bytes]] = []
     reader: session.ProtocolReader | None = None
+    proxies = []
     before_web: set[str] | None = None
     iam_attempted = False
     stage = "preflight"
@@ -582,9 +701,16 @@ def main(argv: list[str] | None = None) -> int:
                     != "PONG"
                 ):
                     raise LaunchError("Redis unavailable")
-                before_web = product_session.web_redis_keys(
-                    args.redis_url, origin, resources
+                before_web = (
+                    native.native_web_redis_keys(resources, origin)
+                    if native_platform
+                    else product_session.web_redis_keys(
+                        args.redis_url, origin, resources
+                    )
                 )
+                if native_platform and before_web:
+                    before_web = None
+                    raise LaunchError("native Platform Web namespace already exists")
                 stage = "BFF database"
                 application_db_url = resources.create_database("bff")
                 db_url = bff_owner_database_url(application_db_url)
@@ -608,20 +734,33 @@ def main(argv: list[str] | None = None) -> int:
                         "IAM_TEST_ADMIN_URL": args.postgres_admin_url,
                         "IAM_TEST_REDIS_URL": args.redis_url,
                         "IAM_TEST_WEB_ORIGIN": origin,
-                        "IAM_TEST_ALLOW_HTTP_LOOPBACK": "1",
-                        "IAM_TEST_PRODUCT_WEB_TRUSTED_POLICY": "1",
                         "IAM_TEST_RESOURCE_ID": iam_resource_id,
                         "IAM_TEST_RESOURCE_OWNER_TOKEN": iam_owner_token,
                         "NODE_ENV": "test",
                     }
                 )
-                if platform_env is not None:
-                    iam_env["IAM_TEST_SKILL_SANDBOX_MODE"] = "1"
-                if getattr(args, "platform_admin", False):
-                    iam_env["IAM_TEST_PLATFORM_ADMIN"] = "1"
+                if native_platform:
+                    iam_env.update(
+                        {
+                            "TMPDIR": str(directory.resolve()),
+                            "IAM_BFF_HOST_PLATFORM_EXECUTION_CREDENTIAL": "1",
+                        }
+                    )
+                else:
+                    iam_env.update(
+                        {
+                            "IAM_TEST_ALLOW_HTTP_LOOPBACK": "1",
+                            "IAM_TEST_PRODUCT_WEB_TRUSTED_POLICY": "1",
+                        }
+                    )
                 iam_attempted = True
                 iam = subprocess.Popen(
-                    [str(args.iam_node_bin), "--import", "tsx", str(web_smoke.HOST)],
+                    [
+                        str(args.iam_node_bin),
+                        "--import",
+                        "tsx",
+                        str(native.IAM_HOST if native_platform else web_smoke.HOST),
+                    ],
                     cwd=web_smoke.IAM,
                     env=iam_env,
                     stdin=subprocess.PIPE,
@@ -635,38 +774,38 @@ def main(argv: list[str] | None = None) -> int:
                     raise LaunchError("IAM host protocol absent")
                 reader = session.ProtocolReader(iam.stdout.fileno())
                 ready_record = reader.record()
-                login_ready_record = ready_record
-                if (
-                    platform_env is not None
-                    and isinstance(ready_record, dict)
-                    and "skill_sandbox" in ready_record
-                ):
-                    login_ready_record = {
-                        key: value
-                        for key, value in ready_record.items()
-                        if key != "skill_sandbox"
-                    }
-                ready = web_smoke.validate_ready(login_ready_record, origin)
-                sandbox_ready = None
-                if platform_env is not None:
-                    sandbox_ready = platform_runtime.sandbox.require_sandbox_ready(
-                        ready_record
+                platform_ready = None
+                if native_platform:
+                    ready = session.validate_ready(ready_record)
+                    credentials.add(ready.access_token)
+                    platform_ready, native_bff_env, email, password = (
+                        platform_login_fixture(
+                            iam,
+                            reader,
+                            ready,
+                            iam_identity,
+                            origin,
+                            directory,
+                            credentials,
+                            admin=args.platform_admin,
+                        )
                     )
-                if (ready.database_name, ready.redis_prefix) != (
-                    iam_identity.database_name,
-                    iam_identity.redis_prefix,
-                ):
-                    raise LaunchError(
-                        "IAM ready identity differs from runner ownership"
-                    )
+                    bff_env.update(native_bff_env)
+                else:
+                    ready = web_smoke.validate_ready(ready_record, origin)
+                    if (ready.database_name, ready.redis_prefix) != (
+                        iam_identity.database_name,
+                        iam_identity.redis_prefix,
+                    ):
+                        raise LaunchError(
+                            "IAM ready identity differs from runner ownership"
+                        )
+                    credentials.add(ready.client_secret, ready.password)
                 if (
-                    ready.database_name
-                    not in web_smoke.iam_owned_inventory(resources, ready)[0]
+                    iam_identity.database_name
+                    not in web_smoke.iam_owned_inventory(resources, iam_identity)[0]
                 ):
                     raise LaunchError("IAM owned database absent after host ready")
-                credentials.add(ready.client_secret, ready.password)
-                if sandbox_ready is not None:
-                    credentials.add(*sandbox_ready.secrets)
                 stage = "BFF startup"
                 secret = secrets.token_urlsafe(32)
                 credentials.add(secret)
@@ -690,11 +829,11 @@ def main(argv: list[str] | None = None) -> int:
                         log=log,
                     )
                     owner_application_url = application_db_url
-                    if sandbox_ready is not None:
+                    if platform_ready is not None:
                         owner_application_url = (
                             platform_runtime.sandbox.owner_database_url(
                                 args.postgres_admin_url,
-                                sandbox_ready.database_name,
+                                platform_ready.database_name,
                                 "kokoro_storage",
                             )
                         )
@@ -708,13 +847,13 @@ def main(argv: list[str] | None = None) -> int:
                         ),
                     )
                     bff_env.update(storage_result)
-                if platform is not None and sandbox_ready is not None:
+                if platform is not None and platform_ready is not None:
                     stage = "Platform startup"
                     bff_env.update(
                         platform.start(
                             application_db_url,
                             args.redis_url,
-                            sandbox_ready,
+                            platform_ready,
                             (
                                 None
                                 if storage_result is None
@@ -732,10 +871,17 @@ def main(argv: list[str] | None = None) -> int:
                         "KOKORO_BFF_MODE": "live",
                         "KOKORO_BFF_SHARED_SECRET": secret,
                         "KOKORO_IAM_BASE_URL": ready.base_url,
-                        "KOKORO_IAM_ISSUER_URL": ready.issuer_url,
+                        "KOKORO_IAM_ISSUER_URL": origin + "/iam"
+                        if native_platform
+                        else ready.issuer_url,
                         "KOKORO_IAM_WEB_ORIGIN": origin,
-                        "KOKORO_IAM_WEB_CALLBACK_URI": ready.redirect_uri,
-                        "KOKORO_IAM_WEB_POST_LOGOUT_URI": ready.post_logout_redirect_uri,
+                        "KOKORO_IAM_WEB_CALLBACK_URI": origin
+                        + "/api/auth/callback/kokoro-iam"
+                        if native_platform
+                        else ready.redirect_uri,
+                        "KOKORO_IAM_WEB_POST_LOGOUT_URI": origin + "/auth/sign-in"
+                        if native_platform
+                        else ready.post_logout_redirect_uri,
                         "KOKORO_AGENT_ENABLED": "false",
                         "KOKORO_TENANT_ID": ready.tenant_id,
                         "KOKORO_DOMAIN": host_name,
@@ -782,64 +928,38 @@ def main(argv: list[str] | None = None) -> int:
                 processes.append(bff)
                 runtime.wait_ready(f"http://127.0.0.1:{bff_port}", bff)
                 if admin_env is not None:
-                    stage = "Admin startup"
+                    stage = "Admin isolated build"
+                    admin_root = native.isolated_admin_next(directory)
                     admin_port = runtime.free_port()
-                    admin_root = web_smoke.ROOT / "apps" / "kokoro-admin"
-                    admin_entry = (
-                        admin_root
-                        / "node_modules"
-                        / "next"
-                        / "dist"
-                        / "bin"
-                        / "next"
-                    )
-                    if not admin_entry.is_file():
-                        raise LaunchError("Admin runtime entry is unavailable")
                     admin_env.update(
                         {
-                            "NODE_ENV": "development",
+                            "NODE_ENV": "production",
                             "KOKORO_ADMIN_WEB_ORIGIN": origin,
                             "KOKORO_TENANT_ID": ready.tenant_id,
                         }
                     )
+                    native.run_native_command(
+                        [
+                            str(admin_node_bin),
+                            str(admin_root / "node_modules/next/dist/bin/next"),
+                            "build",
+                        ],
+                        cwd=admin_root,
+                        env=dict(admin_env),
+                        log=log,
+                        processes=processes,
+                    )
                     web_env["KOKORO_ADMIN_INTERNAL_ORIGIN"] = (
                         f"http://127.0.0.1:{admin_port}"
                     )
-                    admin = subprocess.Popen(
-                        [
-                            str(admin_node_bin),
-                            str(admin_entry),
-                            "dev",
-                            "-H",
-                            "127.0.0.1",
-                            "-p",
-                            str(admin_port),
-                        ],
-                        cwd=admin_root,
-                        env=admin_env,
-                        stdin=subprocess.DEVNULL,
-                        stdout=subprocess.DEVNULL,
-                        stderr=log,
-                        start_new_session=True,
-                    )
-                    processes.append(admin)
-                    deadline = time.monotonic() + 45
-                    while time.monotonic() < deadline and admin.poll() is None:
-                        try:
-                            with socket.create_connection(
-                                ("127.0.0.1", admin_port), timeout=0.2
-                            ):
-                                break
-                        except OSError:
-                            time.sleep(0.2)
-                    else:
-                        raise LaunchError("Admin console did not become ready")
                 stage = "Web startup"
                 next_root = web_smoke.isolated_next(directory)
                 server_path = next_root / "server.cjs"
-                server_path.write_text(
-                    local_next_server(server_path.read_text(), web_port)
-                )
+                next_port = runtime.free_port() if native_platform else web_port
+                if not native_platform:
+                    server_path.write_text(
+                        local_next_server(server_path.read_text(), web_port)
+                    )
                 web_env.update(
                     {
                         "KOKORO_WEB_ORIGIN": origin,
@@ -848,22 +968,29 @@ def main(argv: list[str] | None = None) -> int:
                         "KOKORO_INTERNAL_SECRET_WEB_BFF": secret,
                         "KOKORO_WEB_REDIS_URL": args.redis_url,
                         "KOKORO_TENANT_ID": ready.tenant_id,
-                        "KOKORO_OIDC_CLIENT_ID": ready.client_id,
-                        "KOKORO_OIDC_CLIENT_SECRET": ready.client_secret,
-                        "KOKORO_WEB_AUTH_SECRET": secrets.token_hex(32),
-                        "NEXTAUTH_URL": origin + "/api/auth",
+                        **(
+                            {"NEXT_PUBLIC_SESSION_PREVIEW": "0"}
+                            if native_platform
+                            else {
+                                "KOKORO_OIDC_CLIENT_ID": ready.client_id,
+                                "KOKORO_OIDC_CLIENT_SECRET": ready.client_secret,
+                                "KOKORO_WEB_AUTH_SECRET": secrets.token_hex(32),
+                                "NEXTAUTH_URL": origin + "/api/auth",
+                            }
+                        ),
                     }
                 )
                 if storage_env is not None:
                     web_env["KOKORO_WEB_LOCAL_UPLOAD_ORIGIN"] = web_local_upload_origin(
                         args.storage_environment
                     )
-                credentials.add(web_env["KOKORO_WEB_AUTH_SECRET"])
+                if not native_platform:
+                    credentials.add(web_env["KOKORO_WEB_AUTH_SECRET"])
                 next_process = subprocess.Popen(
                     [
                         str(args.web_node_bin),
                         str(server_path),
-                        str(web_port),
+                        str(next_port),
                         host_name,
                     ],
                     cwd=next_root,
@@ -874,18 +1001,77 @@ def main(argv: list[str] | None = None) -> int:
                     start_new_session=True,
                 )
                 processes.append(next_process)
-                wait_for_web(next_process, origin, web_port)
-                stage = "formal login navigation"
-                first_login.probe_formal_login_entry(
-                    web_port, origin, credentials, browser_request=http_browser
-                )
+                if native_platform:
+                    stage = "native HTTPS Web readiness"
+                    certificate = web_smoke.certificate(directory, host_name)
+                    proxy = web_smoke.Proxy(
+                        next_port,
+                        host_name,
+                        certificate,
+                        credentials,
+                        hmr_websocket=True,
+                    )
+                    proxies.append(proxy)
+                    wait_for_native_web(proxy, next_process, origin)
+                    if admin_env is not None:
+                        stage = "native HTTPS Admin startup"
+                        connect = native.AdminConnectProxy(origin, proxy.server_port)
+                        proxies.append(connect)
+                        admin_env.update(
+                            {
+                                "HTTPS_PROXY": f"http://127.0.0.1:{connect.server_port}",
+                                "NO_PROXY": "",
+                                "NODE_EXTRA_CA_CERTS": str(certificate[0]),
+                            }
+                        )
+                        admin = subprocess.Popen(
+                            [
+                                str(admin_node_bin),
+                                "--use-env-proxy",
+                                str(admin_root / "server.cjs"),
+                                str(admin_port),
+                                host_name,
+                            ],
+                            cwd=admin_root,
+                            env=admin_env,
+                            stdin=subprocess.DEVNULL,
+                            stdout=subprocess.DEVNULL,
+                            stderr=log,
+                            start_new_session=True,
+                        )
+                        processes.append(admin)
+                        native.wait_admin_ready(proxy.server_port, origin, admin)
+                else:
+                    wait_for_web(next_process, origin, web_port)
+                    stage = "formal login navigation"
+                    first_login.probe_formal_login_entry(
+                        web_port, origin, credentials, browser_request=http_browser
+                    )
+                if not native_platform:
+                    email, password = ready.email, ready.password
                 stage = "private credential setup"
-                credential_path = write_private_credentials(
-                    directory, ready.email, ready.password
-                )
-                print(f"Local login: {origin}/login", flush=True)
+                credential_path = write_private_credentials(directory, email, password)
+                if native_platform:
+                    print(
+                        f"Native fixture login: {origin}/login (isolated browser resolver required)",
+                        flush=True,
+                    )
+                    print(
+                        f"Resolver: MAP {host_name}:443 127.0.0.1:{proxy.server_port}",
+                        flush=True,
+                    )
+                    print(f"Fixture TLS certificate: {certificate[0]}", flush=True)
+                else:
+                    print(f"Local login: {origin}/login", flush=True)
                 print(f"Private login credentials: {credential_path}", flush=True)
-                mode = "real Chat (empty Skills)" if args.chat else "login only"
+                if native_platform:
+                    mode = (
+                        "native Platform MCP-only"
+                        if args.platform_mcp_only
+                        else "native Platform Skills and MCP"
+                    )
+                else:
+                    mode = "real Chat (empty Skills)" if args.chat else "login only"
                 if admin_env is not None:
                     mode += "; Admin via /manage"
                 print(
@@ -938,6 +1124,12 @@ def main(argv: list[str] | None = None) -> int:
                 signal.signal(signal.SIGTERM, signal.SIG_IGN)
                 signal.signal(signal.SIGHUP, signal.SIG_IGN)
                 owned_processes_stopped = True
+                for proxy in reversed(proxies):
+                    try:
+                        proxy.close()
+                    except Exception:
+                        owned_processes_stopped = False
+                        failures.append("native HTTPS proxy cleanup")
                 for process in reversed(processes[1:]):
                     try:
                         runtime.stop_owned_process(process)
@@ -1008,30 +1200,33 @@ def main(argv: list[str] | None = None) -> int:
                         failures.append("IAM protocol cleanup")
                 if before_web is not None and owned_processes_stopped:
                     try:
-                        extras = (
-                            product_session.web_redis_keys(
-                                args.redis_url, origin, resources
+                        if native_platform:
+                            native.cleanup_web_redis(resources, origin, before_web)
+                        else:
+                            extras = (
+                                product_session.web_redis_keys(
+                                    args.redis_url, origin, resources
+                                )
+                                - before_web
                             )
-                            - before_web
-                        )
-                        if extras:
-                            resources.command(
-                                [
-                                    "redis-cli",
-                                    "-e",
-                                    "-u",
-                                    args.redis_url,
-                                    "UNLINK",
-                                    *sorted(extras),
-                                ]
-                            )
-                        if (
-                            product_session.web_redis_keys(
-                                args.redis_url, origin, resources
-                            )
-                            != before_web
-                        ):
-                            failures.append("Web Redis cleanup")
+                            if extras:
+                                resources.command(
+                                    [
+                                        "redis-cli",
+                                        "-e",
+                                        "-u",
+                                        args.redis_url,
+                                        "UNLINK",
+                                        *sorted(extras),
+                                    ]
+                                )
+                            if (
+                                product_session.web_redis_keys(
+                                    args.redis_url, origin, resources
+                                )
+                                != before_web
+                            ):
+                                failures.append("Web Redis cleanup")
                     except Exception:
                         failures.append("Web Redis cleanup")
                 elif before_web is not None:

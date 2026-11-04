@@ -171,89 +171,142 @@ class LocalLoginGuards(unittest.TestCase):
     def test_platform_composition_uses_current_platform_names_only(self):
         source = SCRIPT.read_text()
         platform_source = (ROOT / "scripts/dev/local_platform_runtime.py").read_text()
-        self.assertIn('"IAM_TEST_SKILL_SANDBOX_MODE"', source)
+        self.assertNotIn('"IAM_TEST_SKILL_SANDBOX_MODE"', source)
         self.assertIn('"KOKORO_PLATFORM_BASE_URL"', platform_source)
         self.assertIn('mcp-provider-admin', platform_source)
         self.assertIn('custom-api-personal', platform_source)
         self.assertIn('"KOKORO_BFF_PLATFORM_MCP_ADMIN_CREDENTIALS_FILE"', platform_source)
         self.assertNotIn("KOKORO_CAPABILITY", source + platform_source)
 
-    def test_default_ready_path_does_not_strip_unrequested_sandbox_fields(self):
-        import ast
-
-        tree = ast.parse(SCRIPT.read_text())
-        guards = [
-            node.test
-            for node in ast.walk(tree)
-            if isinstance(node, ast.If)
-            and any(
-                isinstance(child, ast.Constant)
-                and child.value == "skill_sandbox"
-                for child in ast.walk(node.test)
-            )
-        ]
-        self.assertEqual(len(guards), 1)
-        names = {
-            child.id for child in ast.walk(guards[0]) if isinstance(child, ast.Name)
-        }
-        self.assertIn("platform_env", names)
-
-    def test_platform_start_does_not_inject_retired_resource_server_config(self):
+    def test_platform_start_uses_current_owner_credentials_in_both_modes(self):
+        from contextlib import nullcontext
         from unittest.mock import Mock
 
-        credential = SimpleNamespace(client_id="fixture", client_secret="fixture-secret")
-        ready = SimpleNamespace(
-            database_name="owned_fixture", tenant_id="tenant-one",
-            base_url="http://127.0.0.1:4401", resource_server=credential,
-            execution_authorization=credential, catalog=credential, projection=credential,
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            owned = launcher.platform_runtime.LocalPlatformRuntime(
-                node=Path(sys.executable), node_environment={},
-                directory=Path(directory), credentials=Mock(), log=None,
-            )
-            with patch.object(
-                launcher.platform_runtime.runtime, "run_owned_command", return_value=1
-            ) as run, patch.object(launcher.platform_runtime.runtime, "free_port", return_value=4402):
-                try:
-                    with self.assertRaisesRegex(
-                        launcher.platform_runtime.PlatformRuntimeError,
-                        "Platform build or owner schema installation failed",
-                    ):
-                        owned.start(
+        for include_skills in (False, True):
+            with (
+                self.subTest(include_skills=include_skills),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory).resolve()
+                execution = _write_native_purposes(root)[2]
+                ready = launcher.platform_runtime.LocalPlatformReady(
+                    "http://127.0.0.1:4401",
+                    "owned_fixture",
+                    "fixture-tenant",
+                    execution,
+                )
+                owned = launcher.platform_runtime.LocalPlatformRuntime(
+                    node=Path(sys.executable),
+                    node_environment={},
+                    directory=Path(directory),
+                    credentials=Mock(),
+                    log=None,
+                )
+                with (
+                    patch.object(
+                        launcher.platform_runtime.runtime,
+                        "run_owned_command",
+                        return_value=0,
+                    ) as run,
+                    patch.object(
+                        launcher.platform_runtime.runtime,
+                        "free_port",
+                        return_value=4402,
+                    ),
+                    patch.object(
+                        launcher.platform_runtime.runtime,
+                        "start_process",
+                        return_value=SimpleNamespace(poll=lambda: 0),
+                    ),
+                    patch.object(
+                        launcher.platform_runtime.runtime, "stop_owned_process"
+                    ),
+                    patch.object(
+                        launcher.platform_runtime.local_chat_runtime,
+                        "registration_guard",
+                        side_effect=nullcontext,
+                    ),
+                    patch.object(launcher.platform_runtime.sandbox, "_wait_ready"),
+                ):
+                    try:
+                        result = owned.start(
                             "postgresql://fixture@127.0.0.1/postgres",
-                            "redis://127.0.0.1:6379/0", ready, None,
-                            "http://127.0.0.1:4400", include_skills=False,
+                            "redis://127.0.0.1:6379/0",
+                            ready,
+                            "http://127.0.0.1:4403" if include_skills else None,
+                            "http://127.0.0.1:4400",
+                            include_skills=include_skills,
                         )
-                    environment = run.call_args.kwargs["env"]
-                    self.assertNotIn(
-                        "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE", environment
-                    )
-                    self.assertEqual(
-                        environment["KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE"],
-                        str(Path(directory) / "tenant-execution.json"),
-                    )
-                    self.assertEqual(
-                        environment["KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE"],
-                        str(Path(directory) / "platform-local-service-credentials.json"),
-                    )
-                    sandbox_file = Path(directory) / "platform-service-credentials.json"
-                    local_file = Path(environment["KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE"])
-                    self.assertNotEqual(sandbox_file, local_file)
-                    self.assertEqual(
-                        json.loads(sandbox_file.read_text())["entries"][0]["surfaces"],
-                        ["projection"],
-                    )
-                    self.assertEqual(
-                        [entry["surfaces"] for entry in json.loads(local_file.read_text())["entries"]],
-                        [["projection"], ["mcp_personal"], ["custom_api_personal"], ["mcp_admin"]],
-                    )
-                    self.assertFalse((Path(directory) / "resource-server.json").exists())
-                    for path in Path(directory).iterdir():
-                        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
-                finally:
-                    self.assertEqual(owned.close(), [])
-                self.assertEqual(list(Path(directory).iterdir()), [])
+                        environment = run.call_args.kwargs["env"]
+                        self.assertNotIn(
+                            "KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE", environment
+                        )
+                        self.assertNotIn(
+                            "KOKORO_PLATFORM_IAM_RESOURCE_SERVER_CREDENTIAL_FILE",
+                            environment,
+                        )
+                        self.assertEqual(
+                            "KOKORO_STORAGE_URL" in environment, include_skills
+                        )
+                        self.assertEqual(
+                            "skill-catalog" in environment["KOKORO_PLATFORM_SURFACES"],
+                            include_skills,
+                        )
+                        self.assertNotIn(
+                            "KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE", result
+                        )
+                        self.assertNotIn("KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED", result)
+                        self.assertEqual(
+                            environment[
+                                "KOKORO_PLATFORM_IAM_EXECUTION_SERVICE_CREDENTIAL_FILE"
+                            ],
+                            str(execution),
+                        )
+                        local_file = Path(
+                            environment["KOKORO_PLATFORM_SERVICE_CREDENTIALS_FILE"]
+                        )
+                        receiver_entries = json.loads(local_file.read_text())["entries"]
+                        surfaces = [
+                            ["projection"],
+                            ["mcp_personal"],
+                            ["custom_api_personal"],
+                            ["mcp_admin"],
+                        ]
+                        if include_skills:
+                            surfaces.append(["catalog"])
+                            catalog = Path(
+                                result[
+                                    "KOKORO_BFF_PLATFORM_CATALOG_SERVICE_CREDENTIAL_FILE"
+                                ]
+                            )
+                            self.assertEqual(
+                                json.loads(catalog.read_text()),
+                                {"version": 1, "entries": [receiver_entries[-1]]},
+                            )
+                        else:
+                            self.assertNotIn(
+                                "KOKORO_BFF_PLATFORM_CATALOG_SERVICE_CREDENTIAL_FILE",
+                                result,
+                            )
+                        self.assertEqual(
+                            [entry["surfaces"] for entry in receiver_entries], surfaces
+                        )
+                        self.assertEqual(
+                            len({entry["secret"] for entry in receiver_entries}),
+                            len(surfaces),
+                        )
+                        self.assertFalse(
+                            (Path(directory) / "resource-server.json").exists()
+                        )
+                        self.assertFalse(
+                            (Path(directory) / "bff-catalog.json").exists()
+                        )
+                        for path in Path(directory).iterdir():
+                            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+                            self.assertNotIn("obsolete-user-token", path.read_text())
+                    finally:
+                        self.assertEqual(owned.close(), [])
+                    self.assertEqual(len(list(root.iterdir())), 3)
 
     def test_platform_cleanup_preserves_credentials_after_stop_failure(self):
         from unittest.mock import Mock
@@ -992,7 +1045,10 @@ class DirectBffConnectionTests(unittest.TestCase):
             and isinstance(node.func, ast.Attribute)
             and node.func.attr == "Proxy"
         ]
-        self.assertEqual(calls, [])
+        self.assertEqual(
+            [ast.unparse(call.args[0]) for call in calls],
+            ["next_port"],
+        )
 
 
 class SafeLaunchDiagnosticTests(unittest.TestCase):
@@ -1660,3 +1716,358 @@ def test_billing_selected_owner_guard_runs_before_any_startup_effect(
         with pytest.raises(launcher.LaunchError):
             launcher.main([])
         assert all(effect.call_count == 0 for effect in effects)
+
+
+def _write_native_purposes(directory):
+    paths = []
+    for index, (caller, surface) in enumerate(
+        (
+            ("kokoro-bff", "bff_user_context"),
+            ("kokoro-bff", "account_sessions"),
+            ("kokoro-platform", "execution_authorization"),
+        )
+    ):
+        path = directory / f"credential-{index}.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "version": 1,
+                    "entries": [
+                        {
+                            "credential_id": surface,
+                            "caller": caller,
+                            "surface": surface,
+                            "tenant_id": "fixture-tenant",
+                            "secret": str(index) * 40,
+                        }
+                    ],
+                }
+            )
+        )
+        path.chmod(0o600)
+        paths.append(path)
+    return paths
+
+
+@pytest.mark.parametrize("admin", [False, True])
+def test_native_platform_uses_one_named_host_and_owner_purpose_files(
+    monkeypatch, tmp_path, admin
+):
+    from contextlib import nullcontext
+    from unittest.mock import Mock
+
+    import run_web_native_session_smoke as native
+
+    root = tmp_path.resolve()
+    process_log = []
+    arguments = SimpleNamespace(
+        platform_node_bin=Path("/fake/node24/platform"),
+        platform_mcp_only=True,
+        platform_admin=admin,
+        billing_node_bin=None,
+        storage_node_bin=None,
+        admin_node_bin=None,
+        chat=False,
+        postgres_admin_url="postgresql://fixture@127.0.0.1/postgres",
+        redis_url="redis://127.0.0.1:6379/8",
+        iam_node_bin=Path("/fake/node24/iam"),
+        bff_node_bin=Path("/fake/node24/bff"),
+        web_node_bin=Path("/fake/node22/web"),
+    )
+    paths = _write_native_purposes(root)
+    (root / "server.cjs").write_text("const app = next({ port: 443 })")
+    resources = Mock(redis_url=arguments.redis_url)
+    resources.command.return_value = "PONG"
+    resources.create_database.return_value = "postgresql://fixture@127.0.0.1/owned"
+    iam = Mock(stdout=Mock(), stdin=Mock(), name="iam")
+    bff = Mock(name="bff")
+    web = Mock(name="web")
+    platform = Mock(quiescent=True)
+    platform.start.return_value = {"KOKORO_PLATFORM_BASE_URL": "http://127.0.0.1:4402"}
+    platform.close.return_value = []
+    proxy = Mock(server_port=4400)
+    credential_registry = launcher.previous.CredentialRegistry()
+    reader = Mock()
+    records = [
+        {
+            "kind": "ready",
+            "base_url": "http://127.0.0.1:4401",
+            "tenant_id": "fixture-tenant",
+            "user_id": "fixture-user",
+            "access_token": "not-browser-auth",
+        },
+        {
+            "kind": "platform_execution_credential",
+            "execution_credential_file": str(paths[2]),
+        },
+    ]
+    context = {}
+
+    def popen(command, **options):
+        process_log.append((command, dict(options["env"])))
+        if not context:
+            context.update(options["env"])
+            return iam
+        return web
+
+    def command_send(pipe, request, budget):
+        assert pipe is iam.stdin
+        assert budget > 0
+        commands.append(request["command"])
+
+    def record(timeout):
+        assert timeout > 0
+        if commands[-1] == "browser_fixture":
+            return {
+                "kind": "browser_fixture",
+                "tenant_id": "fixture-tenant",
+                "web_origin": context["IAM_TEST_WEB_ORIGIN"],
+                "email": "fixture@example.test",
+                "password": "fixture-password",
+                "bff_user_context_credential_file": str(paths[0]),
+                "account_session_credential_file": str(paths[1]),
+            }
+        if commands[-1] == "grant_browser_platform_admin":
+            return {
+                "kind": "browser_platform_admin",
+                "command": commands[-1],
+                "enabled": True,
+                "version": 1,
+                "succeeded_audits": 1,
+            }
+        return records.pop(0)
+
+    commands = []
+    reader.record.side_effect = lambda timeout=90: (
+        record(timeout) if commands else records.pop(0)
+    )
+    for target, name, value in (
+        (launcher, "parse_args", lambda _: arguments),
+        (launcher, "verify_login_release_inputs", Mock()),
+        (
+            launcher,
+            "require_free_web_port",
+            Mock(side_effect=AssertionError("must not probe the foreground HTTP port")),
+        ),
+        (launcher.tempfile, "TemporaryDirectory", lambda **_: nullcontext(str(root))),
+        (launcher.previous, "CredentialRegistry", lambda *_: credential_registry),
+        (launcher.previous, "assert_log_clean", Mock()),
+        (launcher.runtime, "OwnedResources", lambda *_: resources),
+        (launcher.runtime, "run_owned_command", Mock(return_value=0)),
+        (launcher.runtime, "install_schema", Mock()),
+        (launcher.runtime, "start_process", Mock(return_value=bff)),
+        (launcher.runtime, "wait_ready", Mock()),
+        (launcher.runtime, "free_port", Mock(side_effect=[4410, 4411])),
+        (launcher.runtime, "stop_owned_process", Mock()),
+        (launcher.session, "node_environment", Mock(return_value={})),
+        (launcher.session, "ProtocolReader", Mock(return_value=reader)),
+        (launcher.subprocess, "Popen", popen),
+        (
+            launcher.web_smoke,
+            "iam_owned_inventory",
+            lambda _, identity: (
+                (set(), set()) if not context else ({identity.database_name}, set())
+            ),
+        ),
+        (launcher.web_smoke, "reconcile_iam_identity", Mock()),
+        (launcher.web_smoke, "isolated_next", Mock(return_value=root)),
+        (
+            launcher.web_smoke,
+            "certificate",
+            Mock(return_value=(root / "cert", root / "key")),
+        ),
+        (launcher.web_smoke, "Proxy", Mock(return_value=proxy)),
+        (native, "native_web_redis_keys", Mock(return_value=set())),
+        (native, "cleanup_web_redis", Mock()),
+        (native, "private_json_write", command_send),
+        (
+            launcher.platform_runtime,
+            "LocalPlatformRuntime",
+            Mock(return_value=platform),
+        ),
+        (
+            launcher.storage_runtime,
+            "LocalStorageRuntime",
+            Mock(side_effect=AssertionError("MCP-only must not mount Storage")),
+        ),
+        (launcher, "wait_for_native_web", Mock()),
+        (launcher, "require_owned_stack_alive", Mock(side_effect=KeyboardInterrupt)),
+        (launcher.signal, "signal", Mock()),
+        (launcher.shutil, "rmtree", Mock()),
+    ):
+        monkeypatch.setattr(target, name, value, raising=name != "wait_for_native_web")
+    iam.stdout.fileno.return_value = 99
+    assert launcher.main([]) == 0
+    assert commands == ["browser_fixture", "platform_execution_credential"] + (
+        ["grant_browser_platform_admin"] if admin else []
+    )
+    assert process_log[0][0][-1] == str(native.IAM_HOST)
+    iam_env = process_log[0][1]
+    assert iam_env["IAM_BFF_HOST_PLATFORM_EXECUTION_CREDENTIAL"] == "1"
+    assert "IAM_TEST_SKILL_SANDBOX_MODE" not in iam_env
+    assert iam_env["IAM_TEST_WEB_ORIGIN"].startswith("https://web-native-")
+    assert launcher.session.node_environment.call_args_list[1].args[1] == "v24.20.0"
+    ready = platform.start.call_args.args[2]
+    assert ready.execution_file == paths[2]
+    assert ready.tenant_id == "fixture-tenant"
+    assert platform.start.call_args.kwargs == {"include_skills": False}
+    env = launcher.runtime.start_process.call_args.args[2]
+    assert env["KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE"] == str(paths[0])
+    assert env["KOKORO_BFF_IAM_ACCOUNT_SESSIONS_SERVICE_CREDENTIAL_FILE"] == str(
+        paths[1]
+    )
+    assert "KOKORO_OIDC_CLIENT_SECRET" not in process_log[-1][1]
+    assert "NEXTAUTH_URL" not in process_log[-1][1]
+    assert process_log[-1][1]["KOKORO_TENANT_ID"] == ready.tenant_id
+    proxy.close.assert_called_once()
+    assert launcher.web_smoke.Proxy.call_args.args[0] == 4411
+    assert launcher.web_smoke.Proxy.call_args.kwargs == {"hmr_websocket": True}
+    assert [
+        call.args[0] for call in launcher.runtime.stop_owned_process.call_args_list
+    ] == [web, bff, iam]
+    native.cleanup_web_redis.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "browser_tenant",
+        "browser_origin",
+        "legacy_receipt",
+        "purpose",
+        "file_mode",
+        "credential_tenant",
+        "symlink",
+        "duplicate_secret",
+    ],
+)
+def test_native_platform_fixture_rejects_mixed_identity(monkeypatch, tmp_path, fault):
+    from unittest.mock import Mock
+
+    root = tmp_path.resolve()
+    paths = _write_native_purposes(root)
+    ready = SimpleNamespace(
+        base_url="http://127.0.0.1:4400",
+        tenant_id="fixture-tenant",
+        access_token="unused",
+    )
+    origin = "https://native.example.test"
+    browser = {
+        "tenant_id": ready.tenant_id,
+        "web_origin": origin,
+        "email": "fixture@example.test",
+        "password": "fixture",
+        "bff_user_context_credential_file": str(paths[0]),
+        "account_session_credential_file": str(paths[1]),
+    }
+    peer = {
+        "kind": "platform_execution_credential",
+        "execution_credential_file": str(paths[2]),
+    }
+    if fault == "browser_tenant":
+        browser["tenant_id"] = "foreign"
+    elif fault == "browser_origin":
+        browser["web_origin"] = "http://127.0.0.1:3310"
+    elif fault == "legacy_receipt":
+        peer["catalog_client"] = {"client_id": "retired"}
+    elif fault == "purpose":
+        peer["execution_credential_file"] = str(paths[0])
+    elif fault == "file_mode":
+        paths[2].chmod(0o644)
+    elif fault == "symlink":
+        alias = root / "alias"
+        alias.symlink_to(paths[2])
+        peer["execution_credential_file"] = str(alias)
+    elif fault in {"duplicate_secret", "credential_tenant"}:
+        value = json.loads(paths[2].read_text())
+        if fault == "duplicate_secret":
+            value["entries"][0]["secret"] = "0" * 40
+        else:
+            value["entries"][0]["tenant_id"] = "foreign"
+        paths[2].write_text(json.dumps(value))
+    broker = Mock()
+    broker.dispatch.return_value = browser
+    monkeypatch.setattr(launcher.native, "BrowserBroker", Mock(return_value=broker))
+    monkeypatch.setattr(launcher.native, "private_json_write", Mock())
+    credentials = Mock()
+    with pytest.raises(
+        (launcher.LaunchError, launcher.platform_runtime.PlatformRuntimeError)
+    ):
+        launcher.platform_login_fixture(
+            Mock(),
+            Mock(record=Mock(return_value=peer)),
+            ready,
+            SimpleNamespace(database_name="owned"),
+            origin,
+            root,
+            credentials,
+            admin=True,
+        )
+    assert broker.dispatch.call_args_list == [
+        unittest.mock.call({"command": "browser_fixture"})
+    ]
+    credentials.add.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "extras",
+    [("--web-port", "43110"), ("--chat",), ("--billing-node-bin", "/bin/echo")],
+)
+def test_native_platform_does_not_mix_foreground_port_or_independent_profiles(
+    monkeypatch, extras
+):
+    monkeypatch.setenv(
+        "KOKORO_LOCAL_POSTGRES_URL", "postgresql://user@127.0.0.1/postgres"
+    )
+    monkeypatch.setenv("KOKORO_LOCAL_REDIS_URL", "redis://127.0.0.1:6379/0")
+    base = [
+        "--iam-node-bin",
+        "/bin/echo",
+        "--bff-node-bin",
+        "/bin/echo",
+        "--web-node-bin",
+        "/bin/echo",
+        "--platform-node-bin",
+        "/bin/echo",
+        "--platform-mcp-only",
+    ]
+    with pytest.raises(SystemExit) as result:
+        launcher.parse_args([*base, *extras])
+    assert result.value.code == 2
+
+
+def test_native_platform_readiness_rejects_non_native_login_destination(monkeypatch):
+    from unittest.mock import Mock
+
+    origin = "https://fixture.example.test"
+    proxy = SimpleNamespace(server_port=4420)
+    process = SimpleNamespace(poll=lambda: None)
+    for wrong in (
+        "/auth/sign-in",
+        "https://other.example.test/auth/sign-in",
+        origin + "/iam/oauth2/authorize",
+    ):
+        browser = Mock(
+            side_effect=[
+                SimpleNamespace(status=200),
+                SimpleNamespace(status=303, headers={"location": wrong}),
+            ]
+        )
+        monkeypatch.setattr(launcher.web_smoke, "https_browser", browser)
+        with pytest.raises(launcher.LaunchError, match="did not redirect on origin"):
+            launcher.wait_for_native_web(proxy, process, origin)
+    browser = Mock(
+        side_effect=[
+            SimpleNamespace(status=200),
+            SimpleNamespace(
+                status=303,
+                headers={"location": origin + "/auth/sign-in?return_to=%2Fapp"},
+            ),
+        ]
+    )
+    monkeypatch.setattr(launcher.web_smoke, "https_browser", browser)
+    launcher.wait_for_native_web(proxy, process, origin)
+    assert [item.args for item in browser.call_args_list] == [
+        (4420, "/api/fixture-origin", origin),
+        (4420, "/login", origin),
+    ]
