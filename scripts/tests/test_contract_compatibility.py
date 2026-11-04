@@ -93,17 +93,12 @@ def test_scheduler_event_edges_pin_scheduler_owned_contract() -> None:
         (ROOT / "verification/contracts/consumer-inventory.json").read_text()
     )
     edges = {edge["id"]: edge for edge in inventory["edges"]}
-    scheduler_owner = {
-        "name": "kokoro-scheduler",
-        "repository_path": "apps/kokoro-scheduler",
-        "repository_commit": "e8dca48988c4a93fa31bce3ee37f978394143c10",
-        "contract_version": "1.0.0",
-        "contract_path": "contract/openapi/v1/openapi.yaml",
-        "contract_sha256": (
-            "6ec2f6d5d71efa60b92bba1eb2dd0c81b7439734e2bc4450caa221e952e24183"
-        ),
-    }
-
+    scheduler_owner = edges["EDGE-BFF-SCHEDULER"]["owner"]
+    # The live inventory can advance its pin; the compatibility verifier still
+    # checks the exact gitlink, blob digest and version for all three edges.
+    assert scheduler_owner["name"] == "kokoro-scheduler"
+    assert scheduler_owner["repository_path"] == "apps/kokoro-scheduler"
+    assert scheduler_owner["contract_path"] == "contract/openapi/v1/openapi.yaml"
     assert edges["EDGE-SCHEDULER-BFF"]["owner"] == scheduler_owner
     assert edges["EDGE-SCHEDULER-AGENT"]["owner"] == scheduler_owner
     assert "apps/kokoro-bff" in {

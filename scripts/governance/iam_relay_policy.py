@@ -11,6 +11,8 @@ from typing import Any
 
 IAM_REPOSITORY = "apps/kokoro-iam"
 BFF_REPOSITORY = "apps/kokoro-bff"
+APP_REPOSITORY = "apps/kokoro-app"
+APP_POLICY_SOURCE = "contract/bff-iam-relay-policy-source.json"
 IAM_ALLOWLIST = "src/modules/auth/ingress/auth-routes.constants.ts"
 IAM_SNAPSHOT = "contract/vendor/better-auth.v1.7.3.json"
 IAM_OPENAPI = "contract/openapi/iam.internal.v1.json"
@@ -21,7 +23,7 @@ OID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 OPENAPI_VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
 ROUTE = re.compile(r"/[a-z0-9./-]+")
 METHODS = frozenset({"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"})
-POLICY_2_1_FIELDS = (
+POLICY_FIELDS = (
     "version",
     "iamOwnerCommit",
     "iamAllowlistSha256",
@@ -104,6 +106,43 @@ STATIC_2_1_ROUTES = {
     "/oauth2/consent": ["POST"],
     "/oauth2/continue": ["POST"],
 }
+
+
+NATIVE_ROUTES = {
+    "/sign-up/email": ["POST"],
+    "/sign-in/email": ["POST"],
+    "/verify-email": ["GET"],
+    "/sign-out": ["POST"],
+    "/organization/set-active": ["POST"],
+}
+NATIVE_TRANSPORT_POLICY = {
+    "requestHeaders": ["accept", "content-type", "origin", "cookie", "x-request-id"],
+    "responseHeaders": [
+        "content-type",
+        "cache-control",
+        "location",
+        "retry-after",
+        "content-security-policy",
+        "x-content-type-options",
+        "pragma",
+        "x-request-id",
+    ],
+    "cookieNames": ["session_token", "session_data", "dont_remember"],
+    "cookieNamePrefixes": ["kokoro-issuer.", "__Secure-kokoro-issuer."],
+    "cookiePaths": {"default": "/"},
+    "webInteractionPaths": [
+        "/auth/sign-in",
+        "/auth/select-tenant",
+        "/iam/interactions/invitation",
+    ],
+    "maxQueryBytes": 8192,
+    "maxRequestBodyBytes": 65536,
+    "maxHeaderBytes": 16384,
+    "maxResponseBytes": 1048576,
+    "maxDurationMs": 5000,
+}
+RETIRED_IAM_WORKLOAD_PATH = "/internal/v1/platform-workload-tokens/introspect"
+RETIRED_IAM_WORKLOAD_SCHEME = "platformResourceServerBasic"
 
 
 def _git(cwd: Path, *args: str) -> bytes:
@@ -267,7 +306,7 @@ def _strict_object(
         or tuple(value) != tuple(expected)
         or value != expected
     ):
-        raise ValueError(f"BFF policy {label} does not match the exact 2.1.0 shape")
+        raise ValueError(f"BFF policy {label} does not match the exact shape")
     return value
 
 
@@ -296,7 +335,7 @@ def _verify_invitation_routes(policy: dict[str, Any], openapi: dict[str, Any]) -
             operation.get(key) != value for key, value in expected_operation.items()
         ):
             raise ValueError(
-                "BFF policy invitationRoutes owner metadata does not match IAM 2.1.0"
+                "BFF policy invitationRoutes owner metadata does not match IAM committed OpenAPI"
             )
         expected_policy_routes.append(
             {
@@ -327,14 +366,15 @@ def _verify_invitation_routes(policy: dict[str, Any], openapi: dict[str, Any]) -
             )
 
 
-def _verify_2_1_policy(
+def _verify_policy_contract(
     root: Path,
     iam_commit: str,
     policy: dict[str, Any],
     routes: dict[str, Any],
 ) -> None:
-    if tuple(policy) != POLICY_2_1_FIELDS:
-        raise ValueError("BFF policy 2.1.0 fields do not match the exact shape")
+    version = policy["version"]
+    if tuple(policy) != POLICY_FIELDS:
+        raise ValueError(f"BFF policy {version} fields do not match the exact shape")
     if policy.get("iamOpenapiPath") != IAM_OPENAPI:
         raise ValueError(f"BFF policy iamOpenapiPath must equal {IAM_OPENAPI}")
     openapi_blob = _blob(root, IAM_REPOSITORY, iam_commit, IAM_OPENAPI)
@@ -348,11 +388,22 @@ def _verify_2_1_policy(
         or OPENAPI_VERSION.fullmatch(openapi_version) is None
         or policy.get("iamOpenapiVersion") != openapi_version
     ):
-        raise ValueError("BFF policy iamOpenapiVersion != IAM committed OpenAPI version")
-    if tuple(routes) != tuple(STATIC_2_1_ROUTES) or routes != STATIC_2_1_ROUTES:
         raise ValueError(
-            "BFF policy 2.1.0 static routes including sign-up do not match the exact matrix"
+            "BFF policy iamOpenapiVersion != IAM committed OpenAPI version"
         )
+    matrix = NATIVE_ROUTES if version == "3.0.0" else STATIC_2_1_ROUTES
+    if tuple(routes) != tuple(matrix) or routes != matrix:
+        raise ValueError(
+            f"BFF policy {version} static routes including sign-up do not match the exact matrix"
+        )
+    if version == "3.0.0":
+        actual = {key: policy.get(key) for key in NATIVE_TRANSPORT_POLICY}
+        if json.dumps(actual, sort_keys=True) != json.dumps(
+            NATIVE_TRANSPORT_POLICY, sort_keys=True
+        ):
+            raise ValueError(
+                "BFF native relay transport policy differs from the exact matrix"
+            )
     _verify_invitation_routes(policy, openapi)
     _strict_object(
         policy.get("invitationSignUp"), INVITATION_SIGN_UP, "invitationSignUp"
@@ -376,7 +427,7 @@ def _verify_2_1_policy(
     )
 
 
-def _typescript_policy(blob: bytes) -> dict[str, Any]:
+def _typescript_policy(blob: bytes, *, native: bool = False) -> dict[str, Any]:
     try:
         source = blob.decode("utf-8")
     except UnicodeDecodeError:
@@ -391,9 +442,119 @@ def _typescript_policy(blob: bytes) -> dict[str, Any]:
     ):
         raise ValueError("BFF TypeScript policy must have one literal declaration")
     literal = match.group("object")
+    if native:
+        literal = re.sub(r"(?m)^[ \t]*//[^\r\n]*", "", literal)
     literal = re.sub(r"([{,]\s*)([A-Za-z][A-Za-z0-9]*)(\s*:)", r'\1"\2"\3', literal)
     literal = re.sub(r",(?=\s*[}\]])", "", literal)
     return _json_object(literal.encode(), "BFF TypeScript policy")
+
+
+def _source_anchor(
+    root: Path, repository: str, anchor: object, selected: str, label: str
+) -> str:
+    if not isinstance(anchor, str) or OID.fullmatch(anchor) is None:
+        raise ValueError(f"{label}: invalid commit")
+    try:
+        _git(root / repository, "merge-base", "--is-ancestor", anchor, selected)
+    except ValueError:
+        raise ValueError(f"{label}: must be an ancestor of the Root gitlink") from None
+    return anchor
+
+
+def _verify_current_iam(root: Path, anchor: str, selected: str) -> None:
+    for path in (IAM_ALLOWLIST, IAM_SNAPSHOT, IAM_REDIRECT_ERRORS):
+        if _blob(root, IAM_REPOSITORY, anchor, path) != _blob(
+            root, IAM_REPOSITORY, selected, path
+        ):
+            raise ValueError(f"IAM native relay owner evidence differs: {path}")
+    source = _blob(root, IAM_REPOSITORY, anchor, IAM_OPENAPI)
+    current = _blob(root, IAM_REPOSITORY, selected, IAM_OPENAPI)
+    if source == current:
+        return
+    # The published native policy still points to the contract preceding T-11.
+    # Compare the entire retained contract, not just the relay operation list.
+    approved = _json_object(source, "IAM relay source OpenAPI")
+    try:
+        if approved["info"]["version"] != "0.20.0":
+            raise ValueError
+        approved["info"]["version"] = "0.21.0"
+        del approved["paths"][RETIRED_IAM_WORKLOAD_PATH]
+        del approved["components"]["securitySchemes"][RETIRED_IAM_WORKLOAD_SCHEME]
+    except (KeyError, TypeError, ValueError):
+        raise ValueError("unapproved IAM OpenAPI drift from the relay source") from None
+    if json.dumps(approved, sort_keys=True) != json.dumps(
+        _json_object(current, "current IAM OpenAPI"), sort_keys=True
+    ):
+        raise ValueError("unapproved IAM OpenAPI drift from the relay source")
+
+
+def _verify_app_relay(root: Path, bff_commit: str, bff_policy: bytes) -> None:
+    app_commit = _gitlink(root, APP_REPOSITORY)
+    pin = _json_object(
+        _blob(root, APP_REPOSITORY, app_commit, APP_POLICY_SOURCE),
+        "App relay policy pin",
+    )
+    anchor = _source_anchor(
+        root,
+        BFF_REPOSITORY,
+        pin.get("owner_commit"),
+        bff_commit,
+        "App BFF relay source anchor",
+    )
+    if pin != {
+        "owner": "kokoro-bff",
+        "owner_commit": anchor,
+        "source_path": BFF_POLICY,
+        "source_sha256": _sha(bff_policy),
+        "version": "3.0.0",
+    }:
+        raise ValueError("App relay policy pin does not match the current BFF artifact")
+    generator = _blob(
+        root, APP_REPOSITORY, app_commit, "scripts/generate-iam-relay-policy.mjs"
+    )
+    # The manifest and generated copies do not on their own prove the generator
+    # admits the declared BFF source. Match the two assertions it actually uses.
+    for subject, expected in (
+        (b"pin.owner_commit", anchor),
+        (b"digest", _sha(bff_policy)),
+    ):
+        locks = re.findall(
+            rb"(?m)^[ \t]*assert\.equal\([ \t]*"
+            + re.escape(subject)
+            + rb"""[ \t]*,[ \t]*(['"])([a-f0-9]+)\1[ \t]*\);?[ \t]*\r?$""",
+            generator,
+        )
+        if len(locks) != 1 or locks[0][1] != expected.encode():
+            raise ValueError(
+                "App relay generator source lock differs from the policy pin"
+            )
+    if _blob(root, BFF_REPOSITORY, anchor, BFF_POLICY) != bff_policy:
+        raise ValueError("BFF published relay source differs from the current artifact")
+    vendor = f"contract/vendor/kokoro-bff/{anchor}/iam-relay-policy.json"
+    if _blob(root, APP_REPOSITORY, app_commit, vendor) != bff_policy:
+        raise ValueError("App vendored relay policy differs from the BFF source")
+    if (
+        _blob(root, APP_REPOSITORY, app_commit, "src/generated/iam-relay-policy.json")
+        != bff_policy
+    ):
+        raise ValueError("App generated relay policy differs from the BFF source")
+    provenance = json.dumps(
+        {
+            "ownerRepository": "kokoro-bff",
+            "ownerCommit": anchor,
+            "policySha256": _sha(bff_policy),
+        },
+        separators=(",", ":"),
+    )
+    expected = (
+        "// Generated by scripts/generate-iam-relay-policy.mjs. Do not edit.\n"
+        f"export const IAM_RELAY_POLICY_PROVENANCE={provenance} as const\n"
+    ).encode()
+    if (
+        _blob(root, APP_REPOSITORY, app_commit, "src/generated/iam-relay-provenance.ts")
+        != expected
+    ):
+        raise ValueError("App generated relay provenance differs from its source pin")
 
 
 def _verify(root: Path) -> None:
@@ -406,10 +567,23 @@ def _verify(root: Path) -> None:
     policy_blob = _blob(root, BFF_REPOSITORY, bff_commit, BFF_POLICY)
     ts_blob = _blob(root, BFF_REPOSITORY, bff_commit, BFF_SOURCE)
     policy = _json_object(policy_blob, "BFF relay policy")
-    if _typescript_policy(ts_blob) != policy:
+    version = policy.get("version")
+    native = version == "3.0.0"
+    if _typescript_policy(ts_blob, native=native) != policy:
         raise ValueError("BFF TypeScript policy and published JSON differ")
-    if policy.get("iamOwnerCommit") != iam_commit:
-        raise ValueError("BFF policy iamOwnerCommit != IAM gitlink")
+    if native:
+        iam_anchor = _source_anchor(
+            root,
+            IAM_REPOSITORY,
+            policy.get("iamOwnerCommit"),
+            iam_commit,
+            "IAM relay source anchor",
+        )
+        _verify_current_iam(root, iam_anchor, iam_commit)
+    else:
+        if policy.get("iamOwnerCommit") != iam_commit:
+            raise ValueError("BFF policy iamOwnerCommit != IAM gitlink")
+        iam_anchor = iam_commit
     for field, blob in (
         ("iamAllowlistSha256", allowlist_blob),
         ("iamSnapshotSha256", snapshot_blob),
@@ -438,10 +612,11 @@ def _verify(root: Path) -> None:
             raise ValueError(f"BFF policy invalid methods for {path}")
         if not set(declared_methods).issubset(iam_routes[path]):
             raise ValueError(f"BFF policy method expansion for {path}")
-    version = policy.get("version")
-    if version != "2.1.0":
-        raise ValueError("BFF policy version must be 2.1.0")
-    _verify_2_1_policy(root, iam_commit, policy, routes)
+    if version not in ("2.1.0", "3.0.0"):
+        raise ValueError("BFF policy version must be 2.1.0 or 3.0.0")
+    _verify_policy_contract(root, iam_anchor, policy, routes)
+    if native:
+        _verify_app_relay(root, bff_commit, policy_blob)
 
 
 def verify_iam_relay_policy(root: Path) -> list[str]:
