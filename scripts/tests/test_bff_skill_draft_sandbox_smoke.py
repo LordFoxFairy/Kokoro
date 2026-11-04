@@ -1976,7 +1976,6 @@ class AgentBffAdmissionObserverTests(unittest.IsolatedAsyncioTestCase):
     async def test_owner_ack_binds_all_identity_fields_and_distinguishes_pending(self):
         from contextlib import asynccontextmanager
         from unittest.mock import AsyncMock
-        from kokoro_agent.infrastructure import postgres
 
         fields = ("tenant", "run", "conversation", "request", "message")
         urls = []
@@ -2001,7 +2000,15 @@ class AgentBffAdmissionObserverTests(unittest.IsolatedAsyncioTestCase):
             Path("/private/fixture"),
             database,
         )
-        with patch.object(postgres, "connect_pg", connect):
+        # The Root unit suite does not install the Agent owner package.
+        with patch.dict(
+            sys.modules,
+            {
+                "kokoro_agent.infrastructure.postgres": SimpleNamespace(
+                    connect_pg=connect
+                )
+            },
+        ):
             self.assertIs(await inputs.observe_bff_dispatch_admitted(*fields), False)
             self.assertIs(await inputs.observe_bff_dispatch_admitted(*fields), True)
         self.assertEqual(urls, [database, database])
