@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 当前组合真实行为已验，G0 四项归并及 ScheduledTask、Chat 拆分已定向验收，只剩 Projects；C‑4 独立门已取得现有候选证据。新机器 Goal 为 `active`，见[当前执行清单](../../../todo.md)。Projects lookup、Pin、Task 已通过定向验收；下一步收口 Recommendations、Skill Selection 与核心接线；T‑09 终态配对待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
+**当前检查点：** G1/T‑05 在原冻结组合已验；T‑17 在 BFF 原 PR 分支本地提交并通过真实进程验收；T‑11 真实行为和 G0 四项归并、三项拆分已本地验收；C‑4 独立门已取得现有候选证据。新机器 Goal 为 `active`，见[当前执行清单](../../../todo.md)。下一步为 C‑4 的 T‑09 终态配对，跨仓写区待确认。Root 精确组合尚未更新，A‑01/A‑02/A‑07 仍待门控。
 
 ---
 
@@ -71,7 +71,9 @@
 - **Chat / RunDisplay 子切片已本地提交 `c005e27`**：真实 Nest 图先因缺窄读取 provider 失败，接线后通过。Chat owner finder 和 AgentRuns 终态读取复用原 Pool；删 Chat 终态转发，不改 SQL、准入复判顺序、绝对期限或响应。构建、lint、相关文件格式、定向 Nest/HTTP 与取消回归通过；隔离 PG exact final 场景明确执行并通过（复用 Redis 资源并校验清单），其他 parts 场景按范围排除。该提交只完成 RunDisplay，未推送。
 - **AG‑UI process/head 子切片已本地提交 `2ef307e`**：新窄 provider 的真实 Nest 装配先红后绿。原 process RR/权限及 SQL 保持；Chat snapshot 用原 client 同时读 Message、Delivery、process/head 和 watermark；AgentRuns 不再注入宽 Chat，移除不可达的旧控制转发。构建、lint、变更文件格式、定向 HTTP/装配通过；隔离真实 PG/Redis 的 R124 快照及分页、R57 ACK 与拒绝、R237 的 process 底层授权通过，资源清单恢复。该提交不含 Chat 本地宽聚合。
 - **Chat 拆分本地完成 `fb3cfa4`**：去掉旧 Repository、Service、token 和无消费的转发；Chat 私有读写只共用原 PG store，Archive、Shared list、Feedback、Move 各接原有实现。新装配先红后绿；构建、lint、相关格式、定向 HTTP/映射通过。隔离真 PG/Redis 的 SET47 归档、SET21 私有 Share、R146/R237 Move、R43 SSE、R124 RR 快照通过；独占空 PG 的 Feedback 四场景通过。初次定向有两个迁接线夹具失败（缺拒绝 finder、在收尾后检查 signal），只修夹具后通过。原 SQL、Move scope/hash、同一 RR 与公开契约不变；资源清单恢复，未推送。
-- **Projects 进度（仍未关闭 T‑11）**：`d0724ec` 将查归属的消费者接到唯一单方法 lookup，原 tenant、owner、未删除和 ID/slug 查询原样；装配、HTTP、隔离真 PG/Redis 的 R237、R73、R189 通过。`a6ce80e` 让 Pin 和 Project Task 分别绑定现有实现，保 Pin 事务及 Task 两段 owner fence；定向装配、HTTP、真实 PG Pin 分页/同键无副作用/删除竞争、R237 Task 的 ID/slug 精确读取、隐藏父级和读中墓碑通过。原静态断言仍锁旧 tasks 调用名，替换为实际装配和真实路由证据。两批资源清单恢复，均未推送；剩 MCP Recommendations、Skill Selection、Project 核心与旧宽接口。
+- **Projects lookup、Pin、Task 子切片**：`d0724ec` 将查归属的消费者接到唯一单方法 lookup，原 tenant、owner、未删除和 ID/slug 查询原样；装配、HTTP、隔离真 PG/Redis 的 R237、R73、R189 通过。`a6ce80e` 让 Pin 和 Project Task 分别绑定现有实现，保 Pin 事务及 Task 两段 owner fence；定向装配、HTTP、真实 PG Pin 分页/同键无副作用/删除竞争、R237 Task 的 ID/slug 精确读取、隐藏父级和读中墓碑通过。原静态断言仍锁旧 tasks 调用名，替换为实际装配和真实路由证据。两批资源清单恢复，均未推送。
+- **Projects 拆分本地完成**：`c781a8f` 让 Recommendations 与 Skill Selection 脱离宽服务，原 CAS、绝对期限、Skill 回执与 Project 行锁保持；真实 PG CAS、取消、Skill 重放/回滚与锁中墓碑、定向 MCP/Skill HTTP 通过。`32357c0` 删除旧宽接口、Service 和 token；具名 Project 读写、Rename、Delete/Status，Resource/Installation 共用单方法 lookup。构建、lint、格式、装配、定向 HTTP 与真 PG/Redis 的 R237/R241/R279/R280/R73/R278 通过。首轮 R278 因测试仍依赖 Scheduled 传递挂载 Project 路由而 404；仅给该双 owner 夹具显式接回 ProjectsModule，保原断言复验通过。隔离资源恢复，契约/Schema 不变，未推送。
+- **T‑11 本地关闭**：四项归并、三项拆分及旧生产入口退役已验；C‑4 的 T‑09、各仓最终门、精确 gitlinks、正式端到端和同步环境未关闭。
 
 - **原 PR 与组合交付前置（只读核验）**：GitHub PR 与远端 refs 均核对：Root #66、BFF #18、App #50、Agent #46、IAM #6、Capability #13 仍为各自 OPEN draft，原 PR head 均在当前候选历史内；Cap #13 的 base 保持原 PR #12（`2ad5c9e`），不改成直接指 main。Agent 本地候选分支名不同于原 PR #46 远端 head：后者实际为 `codex/agent-run-lifecycle`（`cfd1fccc`），不得把本地名当远端推送目标或新开 PR。未推送、未改跟踪关系；交付前按各仓实际 head/base 再做非递归核验。
 - **固定产物顺序（无依赖环）**：Agent `40effb2` 反向固定的 BFF internal v1.3.0 与现 BFF 同字节；T‑09 只配对 BFF public failure，不需要先升级 Agent 的 BFF internal 产物。各独立 owner 可本地冻结；按 T‑11 → Agent 原件 → BFF public/domain/SQL → App 唯一 public 快照推进。App 有 12 个现有生成/校验入口固定同一快照摘要，使用原入口同步，不建第二份快照。各仓通过验收并在自己的原 PR 可达后，Root 才更新精确 gitlinks、验正式组合；不先钉已知不兼容中间态。
@@ -243,7 +245,7 @@
 | G0 设计门 | 认证D0设计面主方复核通过；Nest/owner决定保留 | IAM0.20及BFF安全状态/relay候选机器合同已沿原PR交付；消费者及新组合另验，不以设计门或旧artifact代替G1 |
 | G-DOC 当前方案与追踪 | VERIFIED（文档基线） | 初始17问题/17TODO及A-01～A-16已独审；执行中新发现T-18同步登记，状态持续更新；不算产品完成 |
 | G1 C-1.3 认证切换 | VERIFIED（当前冻结组合） | 正式五旅程、账户消费、真实包producer/原四GET及组合负控通过；当前旧认证零目标消费者与T14 receiver处置已核，主方及独审确认；未来组合变更按影响回归 |
-| G2 C-2/C-3 清理 | IN_PROGRESS | T‑17 与旧入口退役已验；四项归并及 ScheduledTask、Chat 拆分已本地验证，剩 Projects。 |
+| G2 C-2/C-3 清理 | VERIFIED_LOCAL | T‑17、旧入口退役、四项归并和 ScheduledTask、Chat、Projects 三项拆分已本地验收；等 C‑4 精确组合。 |
 | G3 C-4 与同步端到端 | WAITING_FINAL（已有各仓阶段证据） | 主方在冻结组合完成 owner全门/真实I/O/Root治理/健康与浏览器旅程收据；skip不计成功 |
 | G-A 产品后续 | GATED | 先完成G1～G3，再A-01/A-02、后A-07；其他A任务按原优先级领取，不从本清理Goal中消失 |
 
@@ -549,7 +551,7 @@ T-01负责标准方案/G0；T-05负责认证完整切片；G1后仍T-17/T-11清�
 | T-08 | IAM SDK与verify；IAM | VERIFIED（1ee8已验切片，非I-29候选） | IAM1ee8d156 / 原PR6已推送；Root verify121files/1566pass/build，真实两host66pass/0skip；Root d309已接收新pin，不代表跨仓native端到端 |
 | T-09 | Root/各受影响 owner 最终串行门；Root | WAITING_FINAL（T‑11 和终态配对） | IAM、Capability、Agent owner 门有对应候选证据；BFF `f0107a7` 正式基线差额定向补齐，`45a2989` 仅格式。T‑11 G0 归并余差及 Agent 8.11→BFF→App 终态配对未收口；新候选、精确组合及 E2E 未运行。 |
 | T-10 | A-01/A-02/A-07及其余A backlog；Root | GATED | G1/G2/G3全部闭合；原16任务责任和优先级保持 |
-| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | 行为 VERIFIED_LOCAL / G0 处置待收口 | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过。`45a2989` 首批四条真实行为基线通过；StableId `f7d1e69`、两个 reader `76f2d04`、Personalization `335dbe3` 均本地归并并定向验收；ScheduledTask `368e65e`、Chat `fb3cfa4` 已拆分，剩 Projects。 |
+| T-11 | raw/global/剩余 Repository-Service-Port 与旧认证 producer；BFF/IAM，Capability 消费配合 | VERIFIED_LOCAL | 旧生产入口/producer 归零，真实 ingress、eicar、ack_lost、R336 已通过。`45a2989` 首批四条真实行为基线通过；StableId `f7d1e69`、两个 reader `76f2d04`、Personalization `335dbe3` 均本地归并并定向验收；ScheduledTask `368e65e`、Chat `fb3cfa4`、Projects `32357c0` 已拆分；C‑4 组合另验。 |
 | T-12 | Nest默认架构门与入口隔离；BFF/Root | VERIFIED（切片） | 173e026；Root第三轮format/check exit0、contract1344/default2343pass+2skip/build通过；两资源skip另真实PG15pass/0skip；此项只覆盖Nest架构默认门，native默认测试遗漏归T-05/I-31；raw最终删除仍属T-11 |
 | T-13 | native smoke清理与脱敏证据；Root | VERIFIED（隔离smoke/browser清理） | 既有成功/失败回收证据保留；aec5775a正式4/4收据cleanup PASS/quiescent/无保留文件、credential scan PASS。不替代生产Nest生命周期或常驻同步环境 |
 | T-14 | global_register direct credential；Capability/Root | VERIFIED（接收方切片） | Capability f515e225 / 独立draft PR13，Root最终format/lint/verify/Prisma/build全0（3051pass/678skip）；真实receiver1pass，Root配套六文件154定向/1879治理。原PR12新增基线导致PR13冲突，后继整合归T-09，不能合并或称全组合完成 |

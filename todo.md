@@ -11,10 +11,12 @@
 - [x] **Chat 拆分**：BFF `fb3cfa4` 删除旧 Repository、Service 和 token，私有读/写、Archive、Shared list、Feedback、Move 各接实际能力。保原 SQL、事务和公开契约。定向 Nest/HTTP、真实 SET47、SET21、R146/R237、Feedback、R43/R124 通过；未推送。
   - [x] BFF `c005e27`：RunDisplay 改用 Chat 会话归属与 AgentRuns 终态的具名读取，删除 Chat 的终态转发；原 SQL、准入复判与取消时序不变。构建、lint、变更文件格式、真实 Nest 接线/受控 HTTP、取消及隔离 PG 终态绑定通过；未推送。
   - [x] BFF `2ef307e`：AG‑UI 直接拥有 process/head，AgentRuns 只用窄会话授权与 head；Chat 快照沿原同一 RR client。R124 固定 watermark/快照、R57 控制准入与 ACK、R237 底层权限先于 cursor 解析均通过；未推送。
-- [ ] **Projects 拆分**：剩 MCP Recommendations、Skill Selection 和 Project 核心接线收口，退役旧宽 Repository/Service；保原 Pool、SQL、锁和回执。
+- [x] **Projects 拆分**：独立 Lookup、Pin、Task、MCP Recommendations 和 Skill Selection，Project 核心使用具名读写；旧宽 Repository/Service/token 已退役，原 Pool、SQL、锁和回执不变。
   - [x] BFF `d0724ec`：Chat、Agent Control、ScheduledTask、Skills、MCP 发布和项目内容路径已接仅含 `find` 的 Project lookup。装配、定向 HTTP、真实 R237/R73/R189 通过；未推送。
   - [x] BFF `a6ce80e`：Pin、Project Task 各有独立 provider；原 Pin SQL/事务与 Task 两段权限读取不变。真实 Pin 分页/删除竞争、R237 Task ID/slug/墓碑通过；未推送。
-- [ ] 主控按子切片验收。只跑变化触及的真实行为；同 SHA 的归并前基线已通过，不重跑相同基线。共享 Nest 入口、架构断言和数据库 fixture 串行维护。
+  - [x] BFF `c781a8f`：Recommendations 与 Skill Selection 接各自持久能力；真实 PG CAS/取消、Skill 回执重放/回滚/父锁和定向 HTTP 通过。
+  - [x] BFF `32357c0`：删除旧 Project Repository/Service/token；具名读、写、Rename、Delete/Status 只在 Projects 装配，Resource/Installation 用窄 lookup。真实 R237、R241、R279、R280、R73、R278 及受控 Resource HTTP 通过；未推送。
+- [x] **T‑11 本地收口**：主控按子切片验收了四项归并和三项拆分；已复核旧符号退出。C‑4 精确组合和正式端到端单独验收。
 
 ## P1：C‑4 最终组合（T‑11 通过后）
 
