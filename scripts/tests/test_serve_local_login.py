@@ -1302,9 +1302,9 @@ def _r55_login_source_probe(
         chat=False,
         postgres_admin_url="postgresql://local/owned",
         redis_url="redis://local/8",
-        iam_node_bin=Path("/unused/node24/node"),
-        bff_node_bin=Path("/unused/node22/node"),
-        web_node_bin=Path("/unused/node22/node"),
+        iam_node_bin=Path("/unused/node24/iam"),
+        bff_node_bin=Path("/unused/node24/bff"),
+        web_node_bin=Path("/unused/node22/web"),
     )
     for module in (launcher.web_smoke, launcher.session):
         monkeypatch.setattr(module, "ROOT", tmp_path)
@@ -1367,6 +1367,14 @@ def test_r55_login_clean_published_sources_reach_bounded_build(monkeypatch, tmp_
 
     assert isinstance(error, launcher.LaunchError)
     assert "BFF build" in str(error)
+    assert [
+        (call.args[0].name, call.args[1])
+        for call in launcher.session.node_environment.call_args_list
+    ] == [
+        ("iam", "v" + launcher.native.REQUIRED_NODE_VERSIONS["iam"]),
+        ("bff", "v" + launcher.native.REQUIRED_NODE_VERSIONS["bff"]),
+        ("web", "v" + launcher.native.REQUIRED_NODE_VERSIONS["app"]),
+    ]
     effects["build"].assert_called_once()
     for name, effect in effects.items():
         if name != "build":
@@ -1906,7 +1914,15 @@ def test_native_platform_uses_one_named_host_and_owner_purpose_files(
     assert iam_env["IAM_BFF_HOST_PLATFORM_EXECUTION_CREDENTIAL"] == "1"
     assert "IAM_TEST_SKILL_SANDBOX_MODE" not in iam_env
     assert iam_env["IAM_TEST_WEB_ORIGIN"].startswith("https://web-native-")
-    assert launcher.session.node_environment.call_args_list[1].args[1] == "v24.20.0"
+    assert [
+        (call.args[0].name, call.args[1])
+        for call in launcher.session.node_environment.call_args_list
+    ] == [
+        ("iam", "v" + native.REQUIRED_NODE_VERSIONS["iam"]),
+        ("bff", "v" + native.REQUIRED_NODE_VERSIONS["bff"]),
+        ("web", "v" + native.REQUIRED_NODE_VERSIONS["app"]),
+        ("platform", "v24.20.0"),
+    ]
     ready = platform.start.call_args.args[2]
     assert ready.execution_file == paths[2]
     assert ready.tenant_id == "fixture-tenant"

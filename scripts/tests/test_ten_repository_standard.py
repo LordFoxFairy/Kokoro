@@ -61,6 +61,7 @@ def test_language_profiles_use_native_module_first_topology() -> None:
     verifier = load_verifier()
 
     assert verifier.REPOSITORY_PROFILES["kokoro-app"].node_major == 22
+    assert verifier.REPOSITORY_PROFILES["kokoro-bff"].node_major == 24
     assert verifier.REPOSITORY_PROFILES["kokoro-system"].node_major == 24
     assert verifier.REQUIRED_AGENT_SOURCE_PATHS == ("execution",)
     assert (

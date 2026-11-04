@@ -589,15 +589,19 @@ def main(argv: list[str] | None = None) -> int:
     iam_owner_token = secrets.token_hex(16)
     resources = runtime.OwnedResources(args.postgres_admin_url, args.redis_url, run_id)
     iam_env = session.node_environment(
-        args.iam_node_bin, "v24.20.0", args.bff_node_bin.parent
+        args.iam_node_bin,
+        "v" + native.REQUIRED_NODE_VERSIONS["iam"],
+        args.bff_node_bin.parent,
     )
     bff_env = session.node_environment(
         args.bff_node_bin,
-        "v24.20.0" if native_platform else "v22.22.2",
+        "v" + native.REQUIRED_NODE_VERSIONS["bff"],
         args.bff_node_bin.parent,
     )
     web_env = session.node_environment(
-        args.web_node_bin, "v22.22.2", args.web_node_bin.parent
+        args.web_node_bin,
+        "v" + native.REQUIRED_NODE_VERSIONS["app"],
+        args.web_node_bin.parent,
     )
     # Test harness callers predate the optional Admin console flag. Keep this
     # optional at the orchestration boundary so they continue to exercise the
@@ -607,7 +611,7 @@ def main(argv: list[str] | None = None) -> int:
         None
         if admin_node_bin is None
         else session.node_environment(
-            admin_node_bin, "v22.22.2", admin_node_bin.parent
+            admin_node_bin, "v" + native.ADMIN_NODE_VERSION, admin_node_bin.parent
         )
     )
     credentials = previous.CredentialRegistry(

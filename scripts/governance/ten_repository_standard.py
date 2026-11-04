@@ -94,8 +94,8 @@ class RepositoryProfile:
     )
 
 
-# Current owner facts, not the future cutover target. BFF still uses Node 22
-# and its existing layered tree; System/IAM/Storage have retired global layers.
+# Current owner facts, not the future topology. BFF uses Node 24; its
+# feature-owned adapters still live in the existing layered source tree.
 REPOSITORY_PROFILES = {
     "kokoro-app": RepositoryProfile("web", False, None, node_major=22),
     "kokoro-bff": RepositoryProfile(
@@ -104,7 +104,7 @@ REPOSITORY_PROFILES = {
         8,
         "database/schema.sql",
         "sql",
-        22,
+        24,
     ),
     "kokoro-agent": RepositoryProfile(
         "python-service",
