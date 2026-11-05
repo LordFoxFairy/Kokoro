@@ -1,8 +1,8 @@
-## Task A 当前检查点：A‑01/A‑02 两个缺陷修复已交付候选
+## Task A 当前检查点：A‑02 闭环，A‑01 仍在收口 Forward
 
-App #50 `065caaa3`：浏览器 Back 回裸首页只切本地视图，不弃原提交或取消后台 Run；迟到的确认或确定拒绝保留在原提交日志，Forward 按原会话恢复。显式 New 仍按原规则处理。App #50 `673292d2`：删除无动作纯文本历史轮的额外 RunDisplay 请求，保留具名动作的事实读取、详情和 canonical final。Root 固定 App 新提交，Public 28.19、依赖锁未改。
+A‑02：App #50 `673292d2` 删除纯文本历史的多余 RunDisplay 请求；`3c6a68aa` 复用桌面详情关闭路径，实现面板内 Escape 关闭与按 activity ID 回焦，不影响面板外 Escape。测试覆盖 51 项定向，ESLint 与 TypeScript 通过。真实 App/BFF/Agent 组合在同一 Run 中保存实际 `ls /` 的非空详情和 canonical final；Chromium 首开、刷新均核对同一动作、正文顺序、唯一终稿和详情 200，再按 Escape 关闭并回原按钮。零浏览器写入，临时资源全部回收，未调用外部模型。Root 固定已推送的 App 提交，Public 28.19 与锁不变。
 
-两片合并 App 工程检查通过；独审补充的迟到明确拒绝经 RED/定向 GREEN、ESLint 和 TypeScript 验收，相关 Chromium 预览 1/1。Agent DeepAgents/真 PG 与 BFF 真 PG/Redis 各补一条非空动作证据，受控模型、不同 fixture，不冒称同一真实浏览器旅程。A‑01/A‑02 仍在补当前真浏览器差额，A‑07 排后；产品 Goal active，见 [TODO](../todo.md)。各仓沿原 PR，未合并、未部署。
+A‑01：App #50 `065caaa3` 将 Back 与显式 New 分开，迟到确认或拒绝只更新原提交日志。真浏览器 A/B 证明此前空壳是私有探针全拦 WebSocket，阻断 Next dev React Flight 调试流所致；只放行本次同源 HMR 后原生 shell、会话列表、同一排队 Run 与同文档 Back 零取消均通过。Forward 的目标历史条目存在，但地址随后改回裸首页、未发目标 owner GET；刷新未到。A‑01 尚未完成，A‑07 排后。产品 Goal active，见 [TODO](../todo.md)。各仓沿原 PR，未合并、未部署。
 
 ## Task A 前置交付：C‑4 / G3 前置清理闭环
 

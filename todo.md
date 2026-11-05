@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-04）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 精确组合 `6db2028d` 的已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。现进入 **A‑01/A‑02**，验收后再进 **A‑07**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 精确组合 `6db2028d` 的已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑02 已验收，A‑01 正收 Forward/刷新差额**，两项闭环后再进 **A‑07**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
@@ -58,8 +58,8 @@
 
 ## 当前产品待办
 
-- [ ] **A‑01 会话创建与恢复**（进行中 · `i57_independent_review`）：App owner；已复现浏览器 Back 误走「新建」并取消真实 Run／作废原提交。App #50 `065caaa3` 改为纯本地导航；迟到 ACK／确定拒绝只落原提交、不污染新稿，Forward 按原会话恢复。实际 RED 与定向 GREEN、ESLint/TypeScript 均已核；相邻显式 New/项目历史的 Chromium 预览 1/1。待当前组合的浏览器刷新/原 owner 恢复，未勾闭环。
-- [ ] **A‑02 Agent 过程与详情**（进行中 · `agui_fixture_read`）：App owner；App #50 `673292d2` 删除纯文本历史轮进入视口自动请求 RunDisplay 的残留读取，详情点击、按 action 身份读取及回焦不变；主控 31 定向通过，未恢复旧 final 路径。Agent 实际 DeepAgents＋真 PG、BFF 真 PG/Redis 分别完成一条非空动作的持久化和重开收据（不同 fixture，未调用真实模型）；只剩同一当前浏览器动作的详情／刷新一致与回焦，未勾闭环。
+- [ ] **A‑01 会话创建与恢复**（进行中 · `i57_independent_review`）：App owner；已复现浏览器 Back 误走「新建」并取消真实 Run／作废原提交。App #50 `065caaa3` 改为纯本地导航；迟到 ACK／确定拒绝只落原提交、不污染新稿。实际 RED 与定向 GREEN、ESLint/TypeScript 均已核；相邻显式 New/项目历史的 Chromium 预览 1/1。真原生会话、Message seed／BFF 持久接收及 Agent 认领已进浏览器前置；真实同源会话列表包含该 Run 对应会话；同一 owner 运行的 A/B 已证实私有探针全拦 WebSocket 会阻断 Next dev React Flight 调试流和 hydration；仅放行本次同源 HMR 后 App 壳及原 Run 读取成功、真实同文档 Back 零取消。Forward 原生目标条目存在，但同文档返回目标后 URL 被改回裸首页，目标 owner GET 为零；硬刷新未到。正定位现有 history 与 Next Router canonical URL 不一致，不改认证或降低断言。试验资源已回收。未勾闭环。
+- [x] **A‑02 Agent 过程与详情**：App #50 `673292d2` 删除纯文本历史的无用 RunDisplay 请求；`3c6a68aa` 将面板内 Escape 接到现有关闭与按 activity ID 回焦，面板外不消费。原生 App/BFF/Agent 同一 Run 的真实 PG/Redis、Agent `ls /` 非空详情与 canonical final：Chromium 实测首开／硬刷新同一动作，正文顺序不变、终稿只出现一次、详情 200，Escape 关闭并回原动作，零写入；临时资源已回收。受控生成，未调用外部模型。
 - A‑01/A‑02 合并候选 App `pnpm check` 全过；独审补的迟到明确拒绝只重跑受影响的导航／恢复／引擎、类型和 lint；浏览器差额另用一条会话链验证，不重复 T‑15。主控验收与 Git，`p0_review` 独立复核。
 - [ ] **A‑07 Project Todo**：待 A‑01/A‑02 收口，核 BFF 项目任务 CRUD／权限／并发／幂等及 App 对应视图，不复用 Run Todo 冒称 Project Todo。
 - [ ] 保留 **A‑03** 输入与运行控制、**A‑04** 执行恢复、**A‑05** 长上下文、**A‑06** 项目上下文。
