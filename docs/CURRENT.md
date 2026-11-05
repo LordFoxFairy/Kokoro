@@ -6,7 +6,7 @@ Machine Goal is **ACTIVE** again.  A-01/A-02/A-03/A-04/A-07 are accepted on thei
 
 The current Root candidate pairs Agent `92e235e782178b7002f0bd68daa143b507db870d`, BFF `40bed716edf43c937c5f6e5ef2143a437ed412e4`, and App `b1c2c1e8ca53095bccf50a92cb0d88be8ce8`. Each is on its original PR branch and pushed; no main merge or deployment. Root gitlinks are committed in Root `48c5d801`; the ledger/design follow-ups are `fc74d02d`, `376f1a0d`, `38eed837`, and `de5e47d0`.
 
-Verification at this checkpoint: topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; App focused UI 41 passed; BFF focused suites, typecheck/lint/build and real isolated PG/Redis A-06 integration passed. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green.
+Verification at this checkpoint: topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; App focused UI 41 passed; BFF focused suites, typecheck/lint/build and real isolated PG/Redis A-06 integration passed; Storage RPC/trust/lifecycle/scoped-file focused 37 passed; Agent Storage generated/delivery/transport focused 53 passed. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green.
 
 Next: implement the approved A-08 minimum wire/owner slice (App → BFF transaction freeze → Agent run-scoped Storage read), then reuse the same Run evidence to close the A-05 reference-retention gap.
 

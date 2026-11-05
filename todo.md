@@ -9,7 +9,7 @@
 - **Goal：ACTIVE（已恢复）。** 仍以本文件为唯一 TODO；不合并 `main`、不部署，各仓沿原 PR。
 - **本轮已提交/已推送：** Agent #46 `92e235e782178b7002f0bd68daa143b507db870d`（8.12 project instruction contract）；BFF #18 `40bed716edf43c937c5f6e5ef2143a437ed412e4`（项目指令在 launch 同事务冻结、重放保持首值、1 MiB 保护）；App #50 `b1c2c1e8ca53095bccf50a92cb0d88be8ce8`（website preview 仅在 capability=true 且无 task 时显示）。三仓各自 PR 分支已推送。
 - **Root 已提交/已推送：** `48c5d801` 配对三个 gitlink 与 inventory；`fc74d02d` 设计门、`376f1a0d` 台账刷新、`38eed837` Goal 状态记录、`de5e47d0` 恢复 ACTIVE。`verify-repository-topology.py`、`verify-contract-compatibility.py`、`verify-contract-checkpoint.py --expected verification/contracts/checkpoints/task-a-agent-web-runs.json` 均 PASS。
-- **实际验证证据：** App UI 41 passed、ESLint、typecheck；BFF Agent dispatch 23 passed、display contract 7 passed、contract:check:agent 18 files、typecheck/lint/build；真实隔离 PG/Redis 的 A‑06 project-instruction integration 1 passed。BFF 全量 `contract:check` 仍有 5 个既有 closure inverse 失败，未冒称全绿。
+- **实际验证证据：** App UI 41 passed、ESLint、typecheck；BFF Agent dispatch 23 passed、display contract 7 passed、contract:check:agent 18 files、typecheck/lint/build；真实隔离 PG/Redis 的 A‑06 project-instruction integration 1 passed；Storage RPC/信任边界/生命周期/Scoped file 定向 37 passed，Agent Storage generated/delivery/transport 定向 53 passed。BFF 全量 `contract:check` 仍有 5 个既有 closure inverse 失败，未冒称全绿。
 - **当前闭环状态：** A‑01/A‑02/A‑03/A‑04/A‑07 已验；A‑05、A‑08～A‑16 仍 OPEN。A‑06 仅完成排序与指令跨仓候选，website 正式 owner/readback 仍缺，不能勾选完成。
 - **下一执行顺序：** A‑08 先由 Storage/Agent owner 交付窄的 run-scoped read contract，再接 BFF 事务冻结和 App 选择；复用现有 Storage/CLEAN。随后把同 Run 引用保持接入 A‑05；之后按 A‑09～A‑16 逐项收口。
 - **不重复/不扩张：** 不以测试数量代替闭环，不重跑已验旅程；只补实际缺口，旧入口/无消费者测试直接删除并保留有效断言。
