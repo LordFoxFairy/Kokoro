@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-05）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 候选 `fc74d02d` 配对 Agent `92e235e`、BFF `40bed71`、App `b1c2c1e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `48c5d801` 配对 Agent `92e235e`、BFF `40bed71`、App `b1c2c1e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
@@ -8,7 +8,7 @@
 
 - **Goal：ACTIVE（已恢复）。** 仍以本文件为唯一 TODO；不合并 `main`、不部署，各仓沿原 PR。
 - **本轮已提交/已推送：** Agent #46 `92e235e782178b7002f0bd68daa143b507db870d`（8.12 project instruction contract）；BFF #18 `40bed716edf43c937c5f6e5ef2143a437ed412e4`（项目指令在 launch 同事务冻结、重放保持首值、1 MiB 保护）；App #50 `b1c2c1e8ca53095bccf50a92cb0d88be8ce8`（website preview 仅在 capability=true 且无 task 时显示）。三仓各自 PR 分支已推送。
-- **Root 已提交/已推送：** `48c5d801` 配对三个 gitlink 与 inventory；`fc74d02d` 设计门、`376f1a0d` 台账刷新、`38eed837` Goal 状态记录。`verify-repository-topology.py`、`verify-contract-compatibility.py`、`verify-contract-checkpoint.py --expected verification/contracts/checkpoints/task-a-agent-web-runs.json` 均 PASS。
+- **Root 已提交/已推送：** `48c5d801` 配对三个 gitlink 与 inventory；`fc74d02d` 设计门、`376f1a0d` 台账刷新、`38eed837` Goal 状态记录、`de5e47d0` 恢复 ACTIVE。`verify-repository-topology.py`、`verify-contract-compatibility.py`、`verify-contract-checkpoint.py --expected verification/contracts/checkpoints/task-a-agent-web-runs.json` 均 PASS。
 - **实际验证证据：** App UI 41 passed、ESLint、typecheck；BFF Agent dispatch 23 passed、display contract 7 passed、contract:check:agent 18 files、typecheck/lint/build；真实隔离 PG/Redis 的 A‑06 project-instruction integration 1 passed。BFF 全量 `contract:check` 仍有 5 个既有 closure inverse 失败，未冒称全绿。
 - **当前闭环状态：** A‑01/A‑02/A‑03/A‑04/A‑07 已验；A‑05、A‑08～A‑16 仍 OPEN。A‑06 仅完成排序与指令跨仓候选，website 正式 owner/readback 仍缺，不能勾选完成。
 - **下一执行顺序：** 先 Root 串行提交精确组合与台账；随后 A‑08 设计门和最小消息附件→Run 绑定→Agent 只读资格切片，复用现有 Storage/CLEAN；再把同 Run 引用保持接入 A‑05；之后按 A‑09～A‑16 逐项收口。
