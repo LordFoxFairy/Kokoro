@@ -1,4 +1,10 @@
-## Task A 当前检查点：C‑4 / G3 前置清理闭环
+## Task A 当前检查点：A‑01/A‑02 两个缺陷修复已交付候选
+
+App #50 `065caaa3`：浏览器 Back 回裸首页只切本地视图，不弃原提交或取消后台 Run；迟到的确认或确定拒绝保留在原提交日志，Forward 按原会话恢复。显式 New 仍按原规则处理。App #50 `673292d2`：删除无动作纯文本历史轮的额外 RunDisplay 请求，保留具名动作的事实读取、详情和 canonical final。Root 固定 App 新提交，Public 28.19、依赖锁未改。
+
+两片合并 App 工程检查通过；独审补充的迟到明确拒绝经 RED/定向 GREEN、ESLint 和 TypeScript 验收，相关 Chromium 预览 1/1。Agent DeepAgents/真 PG 与 BFF 真 PG/Redis 各补一条非空动作证据，受控模型、不同 fixture，不冒称同一真实浏览器旅程。A‑01/A‑02 仍在补当前真浏览器差额，A‑07 排后；产品 Goal active，见 [TODO](../todo.md)。各仓沿原 PR，未合并、未部署。
+
+## Task A 前置交付：C‑4 / G3 前置清理闭环
 
 组合 `6db2028d` 在同一隔离 PostgreSQL、同一角色、八个独立 schema 上，从正式入口启动 IAM、BFF、Capability、Agent HTTP、Storage、System、Billing、Scheduler，八个 `/readyz` 同时通过。真实 Redis、对象存储和扫描依赖沿各 owner 检查，数据库中 0 跨 schema 外键，`public` 无业务关系。自有八进程、数据库、桶和 Redis 标记已回收，无常驻同步实例；Scheduler 既有 Redis 键保持。首轮私有夹具漏配 Capability ingress 文件，次轮 Storage 以符号链接路径触发 CLI 守卫，纠正夹具后 exit 0，未改生产代码。Agent Worker、模型、真实支付与全站浏览器未运行，不作全产品通过证明。
 
