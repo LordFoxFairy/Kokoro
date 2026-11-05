@@ -85,13 +85,13 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-storage-v3-consumers.json
+  --expected verification/contracts/checkpoints/task-a-capability-storage-icon.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A BFF/Agent→Storage v3 composition returns `1` because it
-declares six broken edges, with ten active and no illegal edge. Earlier
+the current Task A Capability→Storage icon composition returns `1` because
+it declares five broken edges, with eleven active and no illegal edge. Earlier
 checkpoints remain historical snapshots, not the current composition gate.
 The checkpoint CLI compares the complete active/broken/illegal ID sets with
 the selected checkpoint, runs the same compatibility verifier, and returns

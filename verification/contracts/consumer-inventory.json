@@ -2181,10 +2181,10 @@
         "contract_sha256": "b84a2fb1fd9c6e8c16e15a29cafbc33de670f40f703f3f33ef27652a0237a629"
       },
       "protocol": "connect-proto",
-      "code_generator_version": "@bufbuild/buf@1.72.0+@bufbuild/protoc-gen-es@2.14.0",
-      "runtime_package_version": "@bufbuild/protobuf@2.14.0+@connectrpc/connect@2.2.0+@connectrpc/connect-node@2.2.0",
-      "state": "broken",
-      "reason": "Capability package and connector-icon manifests pin current Storage v3 bytes separately; connector-icon still requires live activation and consumer pairing.",
+      "code_generator_version": "@bufbuild/protoc-gen-es@2.14.0",
+      "runtime_package_version": "@connectrpc/connect@2.2.0",
+      "state": "active",
+      "reason": "Current Storage v3 and the independent MCP package profile match exact owner bytes. The real Capability icon flow uses versioned Storage PUT, CLEAN qualification, byte-exact retrieval and durable cancellation; wrong subject/scope fails closed.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-capability",
@@ -2227,6 +2227,90 @@
           "repository_commit": "4a990617ffe36d739b5a3e622132c304d4d48d41",
           "path": "test/contract/rpc-trust-boundary.test.ts",
           "sha256": "1b2d942eafd26fc29c81691fd949eae4fc06d502e208ececf5a40153f975bb70"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "pnpm-lock.yaml",
+          "sha256": "205ef64103808afc4f37bad35b6327f50c52a02cc8cad4c488e9a377bb1bc6fa"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "contract/buf.gen.yaml",
+          "sha256": "dbd9b1c1c36611148a21738715bbf86f691e3ed7e3dbe528007d5302eb45e17e"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "contract/proto/kokoro/storage/v3/storage.proto",
+          "sha256": "b84a2fb1fd9c6e8c16e15a29cafbc33de670f40f703f3f33ef27652a0237a629"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "contract/descriptor/storage-mcp-package-v2.profile.json",
+          "sha256": "191eb6f06713059967bd6e9320ad9c7e9a2dd526ae13c6c93b3aace408c04e29"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "src/modules/mcp/icon/mcp-icon-storage.client.ts",
+          "sha256": "35c09102943049138e218ba8c83de956206259e3152308e95c71e23bec22abee"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "src/modules/mcp/package/mcp-package-storage.client.ts",
+          "sha256": "cfe7717b1b6a91358f03514260f204c8a4e6b69810a49512c0ac4bc41d3780f4"
+        },
+        {
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "src/modules/mcp/mcp.module.ts",
+          "sha256": "e59e21df0f7b55f94861899a6ed71bcdef14105ab87f2c0f7d330043a4368fa4"
+        },
+        {
+          "repository_path": "apps/kokoro-storage",
+          "repository_commit": "4a990617ffe36d739b5a3e622132c304d4d48d41",
+          "path": "contract/profiles/mcp-package-v2.json",
+          "sha256": "191eb6f06713059967bd6e9320ad9c7e9a2dd526ae13c6c93b3aace408c04e29"
+        }
+      ],
+      "version_assertions": [
+        {
+          "field": "code_generator_version",
+          "declared_value": "@bufbuild/protoc-gen-es@2.14.0",
+          "package_name": "@bufbuild/protoc-gen-es",
+          "version": "2.14.0",
+          "manifest_kind": "npm-package-json",
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "package.json",
+          "sha256": "2e98d454e340f28c01ba9695814605e06b47333635d8c48ed3d51adc31838e67",
+          "json_checks": [
+            {
+              "pointer": "/devDependencies/@bufbuild~1protoc-gen-es",
+              "expected": "2.14.0"
+            }
+          ]
+        },
+        {
+          "field": "runtime_package_version",
+          "declared_value": "@connectrpc/connect@2.2.0",
+          "package_name": "@connectrpc/connect",
+          "version": "2.2.0",
+          "manifest_kind": "npm-package-json",
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "package.json",
+          "sha256": "2e98d454e340f28c01ba9695814605e06b47333635d8c48ed3d51adc31838e67",
+          "json_checks": [
+            {
+              "pointer": "/dependencies/@connectrpc~1connect",
+              "expected": "2.2.0"
+            }
+          ]
         }
       ]
     },

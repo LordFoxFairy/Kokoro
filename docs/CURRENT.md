@@ -1,10 +1,16 @@
-## Task A 当前检查点：BFF／Agent→Storage v3 已验收
+## Task A 当前检查点：Capability→Storage 图标链路已验收
+
+精确 Capability `2409496` × Storage `4a99061`，真实 Nest、各自 PostgreSQL schema、Redis、独占版本化 MinIO 桶和 ClamAV。生产 Product Connect 完成带版本 PUT、CLEAN 24×24、读取原 PNG、取消和重放；他主体返回 404、错 Storage scope 返回 403。Capability intent 持久为 released，Storage 原资产标为 deleted，签名预览不再返回。没有外部 IAM 或工具调用，自有对象、桶、数据库及 Redis 标记均回收。独立 MCP package profile 与生成描述符校验通过，不重跑 R336。
+
+当前 checkpoint 11 active／5 declared broken／0 illegal。执行窗口及下一步见 [TODO](../todo.md)；Goal 仍 active，G3 未结项。没有生产代码变更、合并或部署。
+
+## Task A 前置交付：BFF／Agent→Storage v3 已验收
 
 BFF `3b3039c`、Agent `6231f0b` 各自固定 Storage `4a99061` 的 Git 原件并重生成，手写运行路径与依赖锁不变。Agent 7 项现役请求编码相同；Root 校验原件、provenance、确切生成器和直接锁定的 Connect runtime，复用历史真交付收据 `3d0ef92752028538c5d81e36`，不重复跑 Agent 旅程。
 
 BFF Projects 模块与 Storage 运行于同一隔离 PostgreSQL 的各自 schema，使用真实 Redis、MinIO 和 ClamAV，BFF Session 准入受控。普通资产同摘要的第二次扫描完整走真实 ClamAV，仅将回执置为非 clean；BFF 返回 409，原 canonical 数据、对象版本和字节保持。Project／Conversation 两条真实持久 ACK 对应 BFF outbox；DELETE 重放原 202，逻辑已释放、物理仍 pending。私有探针按实际 schema 修正观察查询；canonical 负控通过后，ACK 的排序和回执外壳断言另行修正，仅复跑 ACK，未改生产行为。自有数据库、Redis 标记、对象版本及桶均回收。
 
-当前 checkpoint 10 active／6 declared broken／0 illegal。Goal 保持 active，按 [TODO](../todo.md) 先补 Capability→Storage 图标运行配对；G3 尚未结项，不进入 A‑01/A‑02/A‑07。未合并、未部署。
+该阶段 checkpoint 10 active／6 declared broken／0 illegal。
 
 ## Task A 前置交付：BFF→Capability HTTP 7.0 已验收
 
