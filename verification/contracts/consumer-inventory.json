@@ -1727,10 +1727,10 @@
         "contract_sha256": "77792d3b31446a70adf25693bdea4bd9ebfd39f3b77c6816bc324591827ca758"
       },
       "protocol": "http-openapi",
-      "code_generator_version": "unmanaged",
+      "code_generator_version": "not-applicable:handwritten-agent-system-http",
       "runtime_package_version": "httpx@0.28.1",
-      "state": "broken",
-      "reason": "System 6.1 source is pinned and the actual Python client resolve/credential pair passed against the frozen owner. The current Root gate has no manifest assertion for the handwritten Python consumer and its locked runtime dependency.",
+      "state": "active",
+      "reason": "Agent resolves routes and reads bound credentials through its handwritten Python client; the exact System 6.1 owner receipt, OpenAPI source blobs and direct uv-locked httpx dependency are verified.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-agent",
@@ -1761,6 +1761,19 @@
           "repository_commit": "91c80f7d19da00b297e6a3568e16604f8f2af5e6",
           "path": "src/kokoro_agent/system_consumer_contract.py",
           "sha256": "debba611aae828e27dfc77ac04ffbf2fbf092365b6f2fc44eb8b704b25b0211f"
+        }
+      ],
+      "version_assertions": [
+        {
+          "field": "runtime_package_version",
+          "declared_value": "httpx@0.28.1",
+          "package_name": "httpx",
+          "version": "0.28.1",
+          "manifest_kind": "uv-lock",
+          "repository_path": "apps/kokoro-agent",
+          "repository_commit": "91c80f7d19da00b297e6a3568e16604f8f2af5e6",
+          "path": "uv.lock",
+          "sha256": "ec5d6ace78e81f987bc2806b921c7a137004e97f17b388c4728c1dc14f404b5f"
         }
       ]
     },

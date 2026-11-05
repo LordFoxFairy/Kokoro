@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-04）
 
-**当前：正式原生验收已通过；八个数据 owner 同库安装通过，BFF→IAM 业务 HTTP 已正式配对 0.21，BFF→System 6.1 已关闭；Agent→System 真调用已验、Python 治理证据待补。G3 整体仍未结项；A‑01/A‑02/A‑07 未开始。机器 Goal 已清除。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
+**当前：正式原生验收已通过；八个数据 owner 同库安装通过，BFF→IAM 业务 HTTP 已正式配对 0.21，BFF→System 6.1 已关闭；Agent→System 的真调用与 Python 治理证据均已验收。G3 整体仍未结项；A‑01/A‑02/A‑07 未开始。机器 Goal 已启用（active），范围为 G3/C‑4 收口。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
 
 ## C‑4 交付检查点
 
@@ -20,7 +20,7 @@
 | --- | --- | --- |
 | IAM #6 / Capability #13 / Agent #46 | 原 PR 精确 head `b6a9745` / `5e607fd` / `91c80f7`；已验受影响工程门、真实依赖与 Agent 自然超窗 | 仅随对应产品切片扩大验收 |
 | BFF #18 / App #50 | 原 PR `12ca1bf` / `e726cd61`；完整工程门通过，BFF 默认门的两项条件 PG 已另在真库补齐 | 不重复现有终态验证 |
-| Root #66 / G3 治理 | 实际锁定编译器补齐后，严格结构审计 FAIL：388 条、0 个未验证；新增可见的 7 条全是既有 Billing TS 配置差额，System 无新增。合同余项按实际调用、来源和业务缺口区分，不把全部标成运行故障 | 现行 5 active／11 declared broken／0 illegal；Agent→System 业务行为已验，Python 证据表达缺口单列 |
+| Root #66 / G3 治理 | 实际锁定编译器补齐后，严格结构审计 FAIL：388 条、0 个未验证；新增可见的 7 条全是既有 Billing TS 配置差额，System 无新增。合同余项按实际调用、来源和业务缺口区分，不把全部标成运行故障 | 现行 6 active／10 declared broken／0 illegal；结构审计既有红项及其他现役边继续单列 |
 | I‑15 / 运行范围 | Root `430ce075`：八个数据 owner 用同一连接角色在一个新隔离数据库串行执行正式 installer，全通过；每次邻 schema catalog 未变，`public` 不变、跨 schema FK 为零，临时库已回收。随后 BFF 仅改 IAM 生成来源，installer/canonical SQL 原字节保持 | 同库安装已验；八仓同库同时运行、Redis/业务旅程未验，按实际涉及的产品链补证。未运行全站浏览器、CI、部署 |
 
 ## G3 剩余验收
@@ -30,7 +30,9 @@
 - [x] **BFF→IAM 合同边**：BFF #18 `12ca1bf` 生成自 IAM `b6a9745` 的 0.21 原件；22 项引用闭包、16 个生成文件及生产源码保持，原 0.20 仅作独立 relay 锚。Root `98b6a9d9` 的真 IAM/BFF/App 同源链：profile／会话列表 200，自撤 409 且当前会话保留，Team 匿名 401、成员读取 200、删除不存在的成员返回 404 且列表不变；临时资源已回收。该步 checkpoint 为 4 active／12 declared broken／0 illegal；保留原件。
 - [x] **System 现役读链**：精确 System `49a5f8e` 的真 Nest、隔离 PG/Redis 上，Agent 现有 client 验证默认／指定模型解析、精确凭据、跨租户和错误 digest 拒绝；Agent #46 `91c80f7` 固定 6.1 来源，业务客户端、Worker 和 lock 保持。BFF `12ca1bf` 的实际目录与运行清单处理器通过：他租户无目录数据／清单 404、server envelope 缺失 403、凭据不进投影。BFF 另验 6.1 管理发现：管理员 200、非管理员 403、只发一次本地 metadata GET、无密钥泄露或目录写入。使用处理器级隔离接线，不冒称 Web／IAM 整链或其它管理写入验收。临时 DB/Redis 已核无余量；未启动 Worker、推理。
 - [x] **BFF→System 合同边**：在精确组合的真实 System 补齐 16 个生成模型操作及独立手写 manifest。实际覆盖创建/重放/恢复、不泄露凭据、跨租户 404、缺发布条件 428、合法发布、陈旧路由 409 且状态不变、标签更新与五类列表；管理发现只访问本地 metadata。生成器与 Node 版本断言按 BFF Git 原件固定，精确边恢复 active。
-- [ ] **剩余合同边**：先为 Agent 的手写 Python 客户端确定可核验的来源／运行依赖证据，不伪填 NPM 生成器。Billing checkout 的 503、Scheduler→Agent 的旧批准拓扑需各 owner 明确处理，不补假实现。
+- [x] **P0 · Agent→System 治理证据**：精确核对 System `49a5f8e` 6.1 OpenAPI、owner provenance 与其 23 个 Git 源文件、Agent `91c80f7` 的唯一手写消费收据与 `uv.lock` 直接运行依赖 `httpx@0.28.1`。具名例外只适用这条边，错来源、仅传递依赖与有条件锁记录均拒绝；历史 checkpoint 不变。真实路由／凭据收据的 Agent 运行基线仍为 `40effb2`，客户端、Worker、锁在 `91c80f7` 未变，直接复用、不重跑。
+- [ ] **P1 · Capability→IAM（下一条现役边）**：Capability `5e607fd` 仍钉 IAM 0.18；复用已验证的 IAM `b6a9745` 0.21 归档，核 E2 契约差额与安装来源，补新包对真实 IAM 的绑定成功和撤权拒绝；只证明这一条边，不重跑 R336。
+- [ ] **P2 · 其余现役边与 G3 退出项**：逐条明确实际 owner、缺的证据和完成条件。Billing checkout 的 503、Scheduler→Agent 的旧批准拓扑须经各 owner 明确处置，不补假实现。已有结构告警与新增问题分别记录，不靠改状态代替验收。
 
 ## 已收口的阶段（保留证据，不重跑）
 
@@ -45,4 +47,4 @@
 - [ ] 保留 **A‑03** 输入与运行控制、**A‑04** 执行恢复、**A‑05** 长上下文、**A‑06** 项目上下文。
 - [ ] 保留 **A‑08** 附件、**A‑09** 资料库、**A‑10** 文件/Canvas、**A‑11** 首页、**A‑12** 自动化、**A‑13** 外部聊天、**A‑14** 语音、**A‑15** 体验性能、**A‑16** 交付与运行配对。按原范围验收，不默认从零做，也不冒称完成。
 
-**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每有实际验证、候选提交、精确 pin 或阻塞变化，立即更新对应条目；只复跑有新增证据的验证。当前没有机器 Goal；G3 剩余范围明确后再推进产品待办，不把此次正式认证旅程当作全产品验收。
+**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每次只推进清单中最前的未关闭项，记录 owner、受影响提交、实测结论和下一步。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。G3 依原退出条件验收后才完成当前 Goal，再按顺序转入 A‑01/A‑02、A‑07。各仓沿原 PR，不合并 main、不部署。

@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import subprocess
+import tomllib
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -38,9 +39,24 @@ EXACT_SEMVER_PATTERN = re.compile(
 )
 VERSION_MANIFEST_KINDS = {
     "code_generator_version": frozenset({"npm-package-json"}),
-    "runtime_package_version": frozenset({"npm-package-json", "plain-version-file"}),
+    "runtime_package_version": frozenset(
+        {"npm-package-json", "plain-version-file", "uv-lock"}
+    ),
     "producer_runtime_version": frozenset({"go-mod"}),
 }
+
+
+AGENT_SYSTEM_EDGE = "EDGE-AGENT-SYSTEM"
+AGENT_SYSTEM_GENERATOR = "not-applicable:handwritten-agent-system-http"
+AGENT_REPOSITORY = "apps/kokoro-agent"
+SYSTEM_REPOSITORY = "apps/kokoro-system"
+SYSTEM_OPENAPI = "contract/openapi/system.openapi.json"
+CONTRACT_PROVENANCE = "contract/provenance.json"
+SYSTEM_CLIENT = "src/kokoro_agent/clients/system.py"
+SYSTEM_OPERATIONS = (
+    "POST /v1/system/model-catalog/resolve",
+    "POST /v1/system/model-catalog/credentials/read",
+)
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -389,6 +405,163 @@ def _verify_go_mod_assertion(
         errors.append(f"{label}: go.mod version {match.group(1)!r} != {version!r}")
 
 
+def _verify_agent_uv_lock(
+    label: str, version: str, blob: bytes, errors: list[str]
+) -> None:
+    try:
+        lock = tomllib.loads(blob.decode("utf-8"))
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError):
+        errors.append(f"{label}: uv.lock must be valid UTF-8 TOML")
+        return
+    packages = lock.get("package")
+    if (
+        type(lock.get("version")) is not int
+        or lock["version"] != 1
+        or not isinstance(packages, list)
+        or any(not isinstance(package, dict) for package in packages)
+    ):
+        errors.append(f"{label}: uv.lock must contain version 1 package records")
+        return
+    projects = [
+        package for package in packages if package.get("name") == "kokoro-agent"
+    ]
+    if (
+        len(projects) != 1
+        or projects[0].get("source") != {"editable": "."}
+        or "resolution-markers" in projects[0]
+    ):
+        errors.append(
+            f"{label}: uv.lock must have one unconditional editable kokoro-agent root"
+        )
+        return
+    dependencies = projects[0].get("dependencies")
+    if (
+        not isinstance(dependencies, list)
+        or any(
+            not isinstance(dependency, dict)
+            or not isinstance(dependency.get("name"), str)
+            or not dependency["name"].strip()
+            for dependency in dependencies
+        )
+        or [dependency for dependency in dependencies if dependency["name"] == "httpx"]
+        != [{"name": "httpx"}]
+    ):
+        errors.append(f"{label}: uv.lock must have one direct runtime httpx dependency")
+    matches = [package for package in packages if package.get("name") == "httpx"]
+    source = matches[0].get("source") if len(matches) == 1 else None
+    if (
+        EXACT_SEMVER_PATTERN.fullmatch(version) is None
+        or len(matches) != 1
+        or matches[0].get("version") != version
+        or "resolution-markers" in matches[0]
+        or not isinstance(source, dict)
+        or set(source) != {"registry"}
+        or not isinstance(source["registry"], str)
+        or not source["registry"].strip()
+    ):
+        errors.append(
+            f"{label}: uv.lock must resolve one registry httpx at {version!r}"
+        )
+
+
+def _strict_json_blob(blob: bytes) -> Any:
+    def unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON field")
+            result[key] = value
+        return result
+
+    def invalid_constant(value: str) -> Any:
+        raise ValueError(f"invalid JSON constant: {value}")
+
+    return json.loads(
+        blob.decode("utf-8"), object_pairs_hook=unique, parse_constant=invalid_constant
+    )
+
+
+def _verify_agent_system_receipt(
+    root: Path, edge: dict[str, Any], errors: list[str]
+) -> None:
+    label = f"{AGENT_SYSTEM_EDGE}: System consumer receipt"
+    evidence = edge.get("evidence")
+    try:
+        required = {}
+        for path in (SYSTEM_CLIENT, CONTRACT_PROVENANCE):
+            references = (
+                [
+                    ref
+                    for ref in evidence
+                    if isinstance(ref, dict)
+                    and ref.get("repository_path") == AGENT_REPOSITORY
+                    and ref.get("path") == path
+                ]
+                if isinstance(evidence, list)
+                else []
+            )
+            if len(references) != 1:
+                raise ValueError(f"requires one pinned Agent {path} reference")
+            blob = _verify_blob_reference(root, label, references[0], errors)
+            if not blob or not blob.strip():
+                raise ValueError(f"missing Agent {path} blob")
+            required[path] = blob
+
+        owner = edge["owner"]
+        commit = owner["repository_commit"]
+        provenance = git_blob(root, SYSTEM_REPOSITORY, commit, CONTRACT_PROVENANCE)
+        producer = _json_pointer(_strict_json_blob(provenance), "/openapi")
+        sources = _json_pointer(producer, "/sourceSha256")
+        if (
+            producer.get("file") != "openapi/system.openapi.json"
+            or producer.get("sha256") != owner["contract_sha256"]
+            or not isinstance(sources, dict)
+            or not sources
+        ):
+            raise ValueError("System owner provenance differs from the pinned OpenAPI")
+        for path, digest in sources.items():
+            if sha256_bytes(git_blob(root, SYSTEM_REPOSITORY, commit, path)) != digest:
+                raise ValueError(f"System source digest differs at {path}")
+        openapi = _strict_json_blob(
+            git_blob(root, SYSTEM_REPOSITORY, commit, SYSTEM_OPENAPI)
+        )
+        for operation in SYSTEM_OPERATIONS:
+            method, path = operation.split(" ", 1)
+            operations = _json_pointer(openapi, "/paths")
+            if not isinstance(operations.get(path, {}).get(method.lower()), dict):
+                raise ValueError(f"System OpenAPI lacks {operation}")
+        dependencies = _json_pointer(
+            _strict_json_blob(required[CONTRACT_PROVENANCE]), "/consumer_dependencies"
+        )
+        if not isinstance(dependencies, list):
+            raise ValueError("Agent consumer_dependencies must be a list")
+        matches = [
+            dependency
+            for dependency in dependencies
+            if isinstance(dependency, dict)
+            and dependency.get("owner") == "kokoro-system"
+        ]
+        expected = {
+            "owner": "kokoro-system",
+            "contract": SYSTEM_OPENAPI,
+            "version": owner["contract_version"],
+            "source_commit": commit,
+            "sha256": owner["contract_sha256"],
+            "provenance": {
+                "path": CONTRACT_PROVENANCE,
+                "sha256": sha256_bytes(provenance),
+            },
+            "source_sha256": sources,
+            "operations": list(SYSTEM_OPERATIONS),
+        }
+        if matches != [expected]:
+            raise ValueError(
+                "Agent receipt differs from the pinned System owner or operations"
+            )
+    except (AttributeError, KeyError, TypeError, ValueError) as error:
+        errors.append(f"{label}: {error}")
+
+
 def _verify_version_assertion(
     root: Path,
     label: str,
@@ -423,6 +596,8 @@ def _verify_version_assertion(
         )
     elif manifest_kind == "go-mod":
         _verify_go_mod_assertion(label, assertion, package_name, version, blob, errors)
+    elif manifest_kind == "uv-lock" and blob is not None:
+        _verify_agent_uv_lock(label, version, blob, errors)
 
 
 def _verify_version_assertions(
@@ -437,16 +612,33 @@ def _verify_version_assertions(
         return
     required = {"runtime_package_version"}
     generator = edge.get("code_generator_version")
-    generator_exempt = (
+    owner = edge.get("owner")
+    agent_system = (
+        edge_id == AGENT_SYSTEM_EDGE
+        and edge.get("caller") == "Agent"
+        and edge.get("protocol") == "http-openapi"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-system"
+        and owner.get("repository_path") == SYSTEM_REPOSITORY
+        and owner.get("contract_path") == SYSTEM_OPENAPI
+        and generator == AGENT_SYSTEM_GENERATOR
+    )
+    browser_exempt = (
         edge_id == "EDGE-BROWSER-WEB"
         and edge.get("protocol") == "same-origin-http"
         and generator == "not-applicable:same-origin-route"
     )
     if isinstance(generator, str) and generator.startswith("not-applicable:"):
-        if not generator_exempt:
+        if not (agent_system or browser_exempt):
             errors.append(f"{edge_id}: generator exemption is not allowed")
     else:
         required.add("code_generator_version")
+    if edge_id == AGENT_SYSTEM_EDGE and not agent_system:
+        errors.append(
+            f"{edge_id}: requires the scoped Agent System generator exemption"
+        )
+    if agent_system:
+        _verify_agent_system_receipt(root, edge, errors)
     asserted: set[str] = set()
     for index, raw_assertion in enumerate(assertions):
         label = f"{edge_id}: version_assertions[{index}]"
@@ -466,6 +658,23 @@ def _verify_version_assertions(
             errors.append(
                 f"{label}: declared version {declared_value!r} != {edge.get(field)!r}"
             )
+        manifest_kind = raw_assertion.get("manifest_kind")
+        if agent_system and (
+            field != "runtime_package_version"
+            or manifest_kind != "uv-lock"
+            or raw_assertion.get("repository_path") != AGENT_REPOSITORY
+            or raw_assertion.get("path") != "uv.lock"
+            or raw_assertion.get("package_name") != "httpx"
+        ):
+            errors.append(
+                f"{label}: requires Agent uv.lock and direct httpx runtime evidence"
+            )
+            continue
+        if not agent_system and manifest_kind == "uv-lock":
+            errors.append(
+                f"{label}: uv.lock assertion is only allowed for {AGENT_SYSTEM_EDGE}"
+            )
+            continue
         _verify_version_assertion(root, label, raw_assertion, field, errors)
     for field in sorted(required - asserted):
         errors.append(f"{edge_id}: missing version assertion for {field}")

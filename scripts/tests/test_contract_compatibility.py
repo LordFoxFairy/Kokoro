@@ -966,6 +966,298 @@ def test_http_event_cannot_use_generator_exemption(fixture) -> None:
     assert any("generator exemption" in error for error in fixture.verify())
 
 
+_SYSTEM_CONTRACT = "contract/openapi/system.openapi.json"
+_SYSTEM_PROVENANCE = "contract/provenance.json"
+_SYSTEM_CLIENT = "src/kokoro_agent/clients/system.py"
+_SYSTEM_OPERATIONS = (
+    "POST /v1/system/model-catalog/resolve",
+    "POST /v1/system/model-catalog/credentials/read",
+)
+_AGENT_SYSTEM_LOCK = b"""version = 1
+revision = 3
+requires-python = ">=3.11"
+
+[[package]]
+name = "httpx"
+version = "0.28.1"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "kokoro-agent"
+version = "2.0.0"
+source = { editable = "." }
+dependencies = [{ name = "httpx" }]
+"""
+
+
+def use_handwritten_agent_system(
+    fixture: InventoryFixture,
+    *,
+    lock: bytes = _AGENT_SYSTEM_LOCK,
+    lock_path: str = "uv.lock",
+    owner_repo: str = "kokoro-system",
+    contract_path: str = _SYSTEM_CONTRACT,
+    receipt_change: str | None = None,
+) -> dict[str, object]:
+    def json_bytes(document: object) -> bytes:
+        return (json.dumps(document) + "\n").encode()
+
+    contract = json_bytes(
+        {
+            "openapi": "3.1.0",
+            "info": {"title": "System", "version": "6.1.0"},
+            "paths": {
+                operation.split(" ", 1)[1]: {"post": {"responses": {"200": {}}}}
+                for operation in _SYSTEM_OPERATIONS
+            },
+        }
+    )
+    contract_digest = sha256(contract).hexdigest()
+    owner_sources = {
+        "scripts/generate-system-openapi.ts": b"export {};\n",
+        "src/modules/model-catalog/schemas/resolve.schema.ts": b"export const resolve = {};\n",
+    }
+    source_digests = {
+        path: sha256(content).hexdigest() for path, content in owner_sources.items()
+    }
+    if receipt_change == "source_blob":
+        source_digests[next(iter(source_digests))] = "0" * 64
+    elif receipt_change == "missing_source_blob":
+        owner_sources.pop(next(iter(source_digests)))
+    owner_provenance = json_bytes(
+        {
+            "authority": "runtime Zod HTTP schemas",
+            "version": 2,
+            "openapi": {
+                "file": contract_path.removeprefix("contract/"),
+                "sha256": contract_digest,
+                "source": "runtime Zod",
+                "sourceSha256": source_digests,
+            },
+        }
+    )
+    owner_sha = commit_child(
+        fixture.root,
+        owner_repo,
+        {
+            contract_path: contract,
+            _SYSTEM_PROVENANCE: owner_provenance,
+            **owner_sources,
+        },
+    )
+    receipt = {
+        "owner": "kokoro-system",
+        "contract": contract_path,
+        "version": "6.1.0",
+        "source_commit": owner_sha,
+        "sha256": contract_digest,
+        "provenance": {
+            "path": _SYSTEM_PROVENANCE,
+            "sha256": sha256(owner_provenance).hexdigest(),
+        },
+        "source_sha256": dict(source_digests),
+        "operations": list(_SYSTEM_OPERATIONS),
+    }
+    if receipt_change == "owner_pin":
+        receipt["source_commit"] = "0" * 40
+    elif receipt_change == "contract_version":
+        receipt["version"] = "6.0.0"
+    elif receipt_change == "contract_digest":
+        receipt["sha256"] = "0" * 64
+    elif receipt_change == "operation":
+        receipt["operations"][1] = "GET /v1/system/model-catalog/catalog"
+    elif receipt_change == "source_map":
+        receipt["source_sha256"].pop(next(iter(source_digests)))
+    elif receipt_change == "owner_provenance":
+        receipt["provenance"]["sha256"] = "0" * 64
+    agent_provenance = json_bytes({"consumer_dependencies": [receipt]})
+    if receipt_change == "malformed_json":
+        agent_provenance = b'{"consumer_dependencies": [\n'
+    elif receipt_change == "nonfinite_json":
+        agent_provenance = b'{"version": NaN, ' + agent_provenance[1:]
+    agent_files = {
+        _SYSTEM_CLIENT: b"from httpx import AsyncClient\n",
+        _SYSTEM_PROVENANCE: agent_provenance,
+        lock_path: lock,
+    }
+    agent_sha = commit_child(fixture.root, "kokoro-agent", agent_files)
+    for name, commit in ((owner_repo, owner_sha), ("kokoro-agent", agent_sha)):
+        run(
+            fixture.root,
+            "git",
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            "160000",
+            commit,
+            f"apps/{name}",
+        )
+
+    def agent_reference(path: str) -> dict[str, str]:
+        return {
+            "repository_path": "apps/kokoro-agent",
+            "repository_commit": agent_sha,
+            "path": path,
+            "sha256": sha256(agent_files[path]).hexdigest(),
+        }
+
+    edge = fixture.data["edges"][0]
+    edge.update(
+        id="EDGE-AGENT-SYSTEM",
+        caller="Agent",
+        owner={
+            "name": "kokoro-system",
+            "repository_path": f"apps/{owner_repo}",
+            "repository_commit": owner_sha,
+            "contract_version": "6.1.0",
+            "contract_path": contract_path,
+            "contract_sha256": contract_digest,
+        },
+        code_generator_version="not-applicable:handwritten-agent-system-http",
+        runtime_package_version="httpx@0.28.1",
+        reason="The handwritten client consumes two pinned System operations.",
+        evidence=[agent_reference(path) for path in agent_files],
+        version_assertions=[
+            {
+                "field": "runtime_package_version",
+                "declared_value": "httpx@0.28.1",
+                "package_name": "httpx",
+                "version": "0.28.1",
+                "manifest_kind": "uv-lock",
+                **agent_reference(lock_path),
+            }
+        ],
+    )
+    fixture.module.EXPECTED_EDGE_IDS = frozenset({"EDGE-AGENT-SYSTEM"})
+    return edge
+
+
+def test_handwritten_agent_system_accepts_pinned_receipt_and_direct_uv_runtime(
+    fixture,
+) -> None:
+    use_handwritten_agent_system(fixture)
+
+    assert fixture.verify() == []
+
+
+@pytest.mark.parametrize(
+    "scope",
+    ["edge", "caller", "protocol", "owner_name", "owner_repository", "contract_path"],
+)
+def test_handwritten_agent_system_generator_exemption_is_edge_local(
+    fixture, scope: str
+) -> None:
+    edge = use_handwritten_agent_system(
+        fixture,
+        owner_repo="other-system" if scope == "owner_repository" else "kokoro-system",
+        contract_path="contract/openapi/other.openapi.json"
+        if scope == "contract_path"
+        else _SYSTEM_CONTRACT,
+    )
+    if scope == "edge":
+        edge["id"] = "EDGE-AGENT-CAPABILITY"
+        fixture.module.EXPECTED_EDGE_IDS = frozenset({edge["id"]})
+    elif scope == "caller":
+        edge["caller"] = "BFF"
+    elif scope == "protocol":
+        edge["protocol"] = "same-origin-http"
+    elif scope == "owner_name":
+        edge["owner"]["name"] = "other-system"
+
+    assert any("generator exemption" in error for error in fixture.verify())
+
+
+@pytest.mark.parametrize(
+    "lock",
+    [
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(
+                b'dependencies = [{ name = "httpx" }]',
+                b'dependencies = [{ name = "adapter" }]\n\n[[package]]\n'
+                b'name = "adapter"\nversion = "1.0.0"\n'
+                b'source = { registry = "https://pypi.org/simple" }\n'
+                b'dependencies = [{ name = "httpx" }]',
+            ),
+            id="transitive-only",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(
+                b'dependencies = [{ name = "httpx" }]',
+                b'dependencies = [{ name = "httpx" }, "not-a-package-record"]',
+            ),
+            id="malformed-direct-dependency-record",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(b'version = "0.28.1"', b'version = "0.29.0"'),
+            id="different-runtime-version",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK + b'\n[[package]]\nname = "httpx"\nversion = "0.28.2"\n'
+            b'source = { registry = "https://pypi.org/simple" }\n',
+            id="ambiguous-runtime",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(
+                b'version = "0.28.1"',
+                b"""version = "0.28.1"\nresolution-markers = ["python_version < '3.0'"]""",
+            ),
+            id="runtime-is-only-conditionally-resolved",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(b"version = 1", b"version = 2", 1),
+            id="unsupported-lock-format",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(b'editable = "."', b'editable = "./other"'),
+            id="no-editable-root",
+        ),
+        pytest.param(
+            _AGENT_SYSTEM_LOCK.replace(
+                b'registry = "https://pypi.org/simple"', b'directory = "vendor/httpx"'
+            ),
+            id="non-registry-runtime",
+        ),
+    ],
+)
+def test_handwritten_agent_system_rejects_unpinned_uv_runtime(
+    fixture, lock: bytes
+) -> None:
+    use_handwritten_agent_system(fixture, lock=lock)
+
+    assert any("uv.lock" in error for error in fixture.verify())
+
+
+def test_handwritten_agent_system_requires_agent_root_uv_lock_path(fixture) -> None:
+    use_handwritten_agent_system(fixture, lock_path="fixtures/uv.lock")
+
+    assert any("uv.lock" in error for error in fixture.verify())
+
+
+@pytest.mark.parametrize(
+    "receipt_change",
+    [
+        "owner_pin",
+        "contract_version",
+        "contract_digest",
+        "operation",
+        "owner_provenance",
+        "source_map",
+        "source_blob",
+        "missing_source_blob",
+        "malformed_json",
+        "nonfinite_json",
+    ],
+)
+def test_handwritten_agent_system_rejects_wrong_consumer_receipt(
+    fixture, receipt_change: str
+) -> None:
+    use_handwritten_agent_system(fixture, receipt_change=receipt_change)
+
+    errors = fixture.verify()
+    assert len(errors) == 1 and "System consumer receipt" in errors[0], errors
+    assert "evidence sha256" not in errors[0]
+
+
 def test_top_level_version_pin_must_match_assertion_declared_value(fixture) -> None:
     fixture.data["edges"][0]["runtime_package_version"] = "undici@999.0.0"
     assert any("declared version" in error for error in fixture.verify())
