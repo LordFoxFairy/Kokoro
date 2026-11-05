@@ -2,7 +2,7 @@
 
 精确 Capability `2409496` × Storage `4a99061`，真实 Nest、各自 PostgreSQL schema、Redis、独占版本化 MinIO 桶和 ClamAV。生产 Product Connect 完成带版本 PUT、CLEAN 24×24、读取原 PNG、取消和重放；他主体返回 404、错 Storage scope 返回 403。Capability intent 持久为 released，Storage 原资产标为 deleted，签名预览不再返回。没有外部 IAM 或工具调用，自有对象、桶、数据库及 Redis 标记均回收。独立 MCP package profile 与生成描述符校验通过，不重跑 R336。
 
-当前 checkpoint 11 active／5 declared broken／0 illegal。执行窗口及下一步见 [TODO](../todo.md)；Goal 仍 active，G3 未结项。没有生产代码变更、合并或部署。
+当前 checkpoint 11 active／5 declared broken／0 illegal。执行窗口及下一步见 [TODO](../todo.md)；Goal 仍 active，G3 未结项。图标验收未改生产代码。App `4ac9d83d` 另删除无调用的 checkout 客户端、预览桩和专属测试；保留目录、关闭购买、公开 POST 及其边界。24 小时窗口只排除真实支付，其余 Task A 保持。未合并、未部署。
 
 ## Task A 前置交付：BFF／Agent→Storage v3 已验收
 
