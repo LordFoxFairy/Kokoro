@@ -1,3 +1,7 @@
+## Task A 当前检查点：A‑03 打断后继已验，原 Run 补充仍待
+
+原 PR App #50 `35967026`、BFF #18 `2cf1c14`（Public 28.21）、Agent #46 `18efa2e`。原生 Chromium/IAM/App/BFF/Agent HTTP、真隔离 PG/Redis 和 Agent Worker 收据 `e7d8150a022eb8ab81adaee4`：真实按钮发送精确旧 Run，后继 202 先持久排队；旧 Run 经真 Worker 取消、BFF 投影持久终态后才启动后继，刷新仅一个后继结果。首轮因私有夹具缓冲 SSE 未到第二次发送，纠正夹具后通过。隔离资源已回收，未调用外部模型。晚到终态控制不复活 Redis 流已在真 Agent PG/Redis 定向验；未称浏览器自然结束竞态已验。A‑03 同 Run 补充未交付，Goal active，唯一清单见 [TODO](../todo.md)。不合并 main、不部署。
+
 ## Task A 当前检查点：A‑03 FIFO 已验，打断与原 Run 补充仍待
 
 App #50 `b4c1616c`、BFF #18 `846821ae`（Public 28.20 不变）：原生 IAM/App/BFF/Agent HTTP、隔离真 PG/Redis 与 Chromium 收据 `937b817da5993a434df8b2c1`。真实后续消息 202 已提交、浏览器故意丢回执；硬刷新不发请求，显式原键/原 body 恢复同三 ID，owner 回读仍只有两条用户消息且原 Run 仍是队首。IME 合成事件和 Shift+Enter 已验；此旅程未启 Agent Worker。引擎/审批定向、App 工程门和最终构建通过；临时资源全部回收。A‑03 仍要完成真实 Run 控制和两种不同的运行中投递，详见 [TODO](../todo.md)。

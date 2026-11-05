@@ -31,6 +31,8 @@ A‑01/A‑02 已在 Root `33cc1485` 交付。沿原 handoff 的完整 A‑07：
 
 **打断并发送的边界。** BFF Chat owner 先过契约门：在既有 Message POST 加严格可选目标 Run，普通发送的字节和旧摘要保持。按现 Project → Conversation → stream 锁序，已准入 owner 同键回原三 ID；仅新键确认指定 Run 为同会话当前已启动且未终态。新消息、后继 Run 和旧 Run 的现有取消 outbox 同事务；错目标/已被其它命令认领返回冲突且零写，不创建缺失会话，不改数据库。沿原 FIFO 和真实终态放行，接纳不等于取消成功，旧 Run 自然结束不冒称已取消。BFF 先交测试和固定版本，再由 App 正规生成消费者。默认不插队，不引入偏好存储。
 
+**打断后继的原生收据。** IAM `b6a9745`、BFF `2cf1c14`、Agent `18efa2e`、App `35967026`，Chromium 收据 `e7d8150a022eb8ab81adaee4`（SHA‑256 `040bc411540f3fd520c6f33b59f5b0105e2f9550ed85188d37a339792aa77124`）。真 BFF cancel outbox / Agent HTTP / 真 Worker / PG / Redis：后继 admission 先于旧终态但实际派发晚于终态，旧 Run 真实取消，后继完成和刷新回读各保持唯一。首轮 `d7b09df5851331af3f49c06c` 未进入第二 POST，私有两层代理开启既有 SSE 转发后通过。未使用外部模型，隔离资源已回收。自然终态先于晚控制的真 PG/Redis owner 回归保持原终态、无再发布；不等同 Chromium 全链复测。
+
 **发送但不中断的边界。** 不复用普通发送来伪造「已注入」。BFF 同事务保存一条归原 Run 的用户消息和可重放投递，不新建 Run 或助手占位；现 launch/cancel outbox 各 Run 唯一，不塞多条 steer。Agent 复用现控制/信箱，但必须区分接纳、实际在指定 Run 注入和未注入；信箱写失败不冒成功，不终止健康 Run，不自动转排队。待 owner 设计明确定下最小投递记录、原键回执、实际注入证据和存量 schema 变更方式后再实现；不恢复旧校验或临时双 POST。三种路径独立验收，保留原 IME/多行、审批、停止/继续、草稿和阅读位置。
 
 ---
