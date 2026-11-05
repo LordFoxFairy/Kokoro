@@ -1,4 +1,8 @@
-## Task A 当前检查点：A‑01 / A‑02 已验收，下一项 A‑07
+## Task A 当前检查点：A‑07 功能通过，待 A/B 本地登记
+
+BFF #18 `846821ae` 与 App #50 `85752044` 已沿原 PR 交付，Root 固定精确提交；Public 28.20 原件同字节，沿现 Project 权限和数据，不改 Schema。原生 IAM/BFF/App、隔离真 PG/Redis 与 Chromium 收据 `2f5123a6b6d7297ba1a0e2cb`：创建后刷新同一任务、第二标签更新及 412 保草稿、核对无写入并显式保存、删除 204 后刷新读空、390px 可操作。首次实测发现悬浮输入框遮住编辑按钮、核对切换按钮触发原生表单提交、Next/Chromium 将空体表示为流；定向修复后同一旅程通过，临时资源已回收。原 handoff 的 A/B 正式登记另行在本地留存实例执行；Goal active，未合并 main、未部署。
+
+## Task A 产品验收：A‑01 / A‑02
 
 A‑02：App #50 `673292d2` 删除纯文本历史的多余 RunDisplay 请求；`3c6a68aa` 复用桌面详情关闭路径，实现面板内 Escape 关闭与按 activity ID 回焦，不影响面板外 Escape。测试覆盖 51 项定向，ESLint 与 TypeScript 通过。真实 App/BFF/Agent 组合在同一 Run 中保存实际 `ls /` 的非空详情和 canonical final；Chromium 首开、刷新均核对同一动作、正文顺序、唯一终稿和详情 200，再按 Escape 关闭并回原按钮。零浏览器写入，临时资源全部回收，未调用外部模型。Root 固定已推送的 App 提交，Public 28.19 与锁不变。
 

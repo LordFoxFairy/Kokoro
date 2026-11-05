@@ -10,6 +10,21 @@
 
 **当前检查点：** G1/T‑05、T‑17、T‑11、T‑15 正式原生旅程及 G3 已验。I‑15 在组合 `6db2028d` 的同一隔离 PG、同一角色下分八 schema，八 owner 同时 readiness 通过并全部回收。已发布契约 15 active／0 declared broken／0 illegal。严格结构审计保留 exit 1（408 FAIL／0 未验证）；相较 388 旧基线，20 项是 IAM 原件同字节消费者副本的重复报告，无新增未处置。Task A 产品项按 A‑01/A‑02、再 A‑07 推进，A‑13 setup 保留、仅真实支付除外。最新证据和待办见[唯一执行清单](../../../todo.md)。
 
+## A‑07 Project Todo：设计门与分工（2026-11-04）
+
+A‑01/A‑02 已在 Root `33cc1485` 交付。沿原 handoff 的完整 A‑07：Project Overview 手动待办，创建、改名、三态切换、删除、owner 排序及刷新；后续使用真实 CRUD 去重登记 A/B 两组任务，不把已清理夹具称实际登记。原 BFF 有单独的项目 Task 表及 GET；Run Todo 仍是执行进度，两者不联动。保留现 Project 权限、GET shape/排序及 id/slug；新增只针对 canonical 项目 ID 的写操作。不使用 AG‑UI、Agent、Scheduler 或新 IAM 机制。
+
+**选择与失败恢复。** 单独加版本列会要求复活非空库演进；直接拿现有毫秒时钟作版本有同毫秒及 ABA 问题。选择有效写入严格推进现任务时间戳、从完整资源投影生成强 revision，零 DDL；现有成功回执表同事务记录不含标题的 ACK。先锁当前 active 父 Project，再判原 key/版本及目标 Task；删除 Project 同锁清理任务，拒绝不再拥有者重放。App 同源同 key 同输入显式重试，明确 412 保草稿并只读刷新，不用新版本自动覆盖。
+
+| 顺序 | 唯一写入面 | 进入／退出证据 |
+| --- | --- | --- |
+| D0 / BFF 契约 | 主控：BFF 三设计与唯一 OpenAPI，配套契约基线；App 仅设计 | [BFF 技术设计](../../../apps/kokoro-bff/docs/TECHNICAL_DESIGN.md)／[API](../../../apps/kokoro-bff/docs/API_CONTRACT.md)／[数据](../../../apps/kokoro-bff/docs/DATA_MODEL.md)，[App 设计](../../../apps/kokoro-app/docs/TECHNICAL_DESIGN.md)／[同源 API](../../../apps/kokoro-app/docs/API_CONTRACT.md)。定合同再接消费者。 |
+| D1 / BFF | Projects 真路由／唯一 task store／父项目删除事务，另一写区做真实 PG 用例 | 现旧行可读写；原 key 一行、异指纹 409；并发同版本唯一胜者、ABA 后旧版本拒绝、错主体／父墓碑不能读写或重放；不跑邻 owner。通过后仅 BFF #18 推精确 SHA。 |
+| D2 / App | Project Overview 独立视图、具名 adapter 与固定来源生成；不改 Chat/Run | 独立逻辑可按冻结 D0 开始，生成只使用已交付 BFF Git blob。真原生浏览器项目创建待办→刷新→编辑/三态→第二标签旧版本拒绝且保草稿→删除→刷新。复用既有登录证据，不重跑 A‑01/T‑15。 |
+| 集成／登记 | 主控串行原 PR、Root gitlink 和唯一 TODO | 只给已验证且已推子仓精确配对；正式 CRUD 登记前核实际本地 owner／项目及已有项，避免重复。临时资源仅回收自己创建的；不合并、不部署。 |
+
+**原生验收（2026-11-05）。** 冻结 IAM `b6a9745`、BFF `846821ae`、App `85752044`，收据 `2f5123a6b6d7297ba1a0e2cb` 通过，真 PG/Redis 资源回收。保留三处独有浏览器缺陷的失败证据：`454ca7fe6fb4b81f2320065a` 指针被拦；`d4bf6f021c5c70841ad68d81` 核对步骤提前触发 PATCH；`fa3914223b8ba70a6a56f8ab` 真实 DELETE 已 204 但 UI 误当不确定。现明确滚动避让范围、核对取消原生默认动作、DELETE 接收零字节而拒绝正文、在浏览器以受信 204 ACK 判定成功；不改 BFF/IAM 或放宽条件写。正式 A/B 登记独立于此自动回收的夹具。
+
 ---
 
 ## 收口执行规则（2026-11-04）
