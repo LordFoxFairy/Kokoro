@@ -1,6 +1,8 @@
 ## Task A 当前检查点：A‑04 已验收，继续 A‑05／A‑06
 
-A‑04 在当前 Root `d03d7c51` 精确组合完成：Chromium 原生会话、一次真实发送和 live SSE、真实 Worker `write_file → deliver → final`、Storage/MinIO/ClamAV、Canvas 原字节下载、刷新仅一份产物和终稿、同 Run 三个 Billing 封存 ACK。收据 `8dfd5e705e2aab50797af6cf`；此旅程模型为离线替身，真实本地 Ollama 用量按原收据单列。主控又在最终 Agent `815ef5c` 实跑旧 Worker SIGKILL，真实自然 lease 到期 3326 ms、第二代接管、拒绝旧写和 Redis 同请求重投，工具副作用与终态各一次，收据 `bf56ed4c4b64…fe808`。Swarm 精确恢复与资源回收见 [TODO](../todo.md)。Task A 已验收 5/16，Goal active；不合并 main、不部署。
+A‑04 在 Root `d03d7c51` 精确组合完成：Chromium 原生会话、一次真实发送和 live SSE、真实 Worker `write_file → deliver → final`、Storage/MinIO/ClamAV、Canvas 原字节下载、刷新仅一份产物和终稿、同 Run 三个 Billing 封存 ACK。收据 `8dfd5e705e2aab50797af6cf`；此旅程模型为离线替身，真实本地 Ollama 用量按原收据单列。主控又在最终 Agent `815ef5c` 实跑旧 Worker SIGKILL，真实自然 lease 到期 3326 ms、第二代接管、拒绝旧写和 Redis 同请求重投，工具副作用与终态各一次，收据 `bf56ed4c4b64…fe808`。Swarm 精确恢复与资源回收见 [TODO](../todo.md)。Task A 已验收 5/16，Goal active；不合并 main、不部署。
+
+本轮 A‑05 已补真压缩后 Worker SIGKILL／同 Run generation 2 恢复、审批后继与真 Billing 摘要去重（`ef6424fd5794…61f6`）；同原长会话附件与既有产物引用仍待。A‑06 左栏排序 App `eb6c3819` 原生 Chromium `75789be73cbeb1c69ee20fe4` 通过，硬刷新保顺序、取消零写、不改 BFF 与会话顺序；同提交正式生产构建通过、已沿 App #50 推送，Root 固定精确 App；A‑06 的项目指令进入执行和网站 owner 尚未完成。
 
 ## Task A 当前检查点：A‑03 已验收，继续 A‑04／A‑05
 
