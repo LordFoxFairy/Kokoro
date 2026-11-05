@@ -6,7 +6,7 @@
 
 ## 2026-11-05 进度同步（主控唯一台账）
 
-- **Goal：ACTIVE。** 仍以本文件为唯一 TODO；不合并 `main`、不部署，各仓沿原 PR。
+- **Goal：机器当前读数为 BLOCKED；本轮工作已继续推进。** 仍以本文件为唯一 TODO；不合并 `main`、不部署，各仓沿原 PR。
 - **本轮已提交/已推送：** Agent #46 `92e235e782178b7002f0bd68daa143b507db870d`（8.12 project instruction contract）；BFF #18 `40bed716edf43c937c5f6e5ef2143a437ed412e4`（项目指令在 launch 同事务冻结、重放保持首值、1 MiB 保护）；App #50 `b1c2c1e8ca53095bccf50a92cb0d88be8ce8`（website preview 仅在 capability=true 且无 task 时显示）。三仓各自 PR 分支已推送。
 - **Root 当前未提交：** 三个 gitlink、`verification/contracts/consumer-inventory.json`、本计划文档和本台账。精确 gitlink 已 stage；`verify-repository-topology.py`、`verify-contract-compatibility.py`、`verify-contract-checkpoint.py --expected verification/contracts/checkpoints/task-a-agent-web-runs.json` 均 PASS。
 - **实际验证证据：** App UI 41 passed、ESLint、typecheck；BFF Agent dispatch 23 passed、display contract 7 passed、contract:check:agent 18 files、typecheck/lint/build；真实隔离 PG/Redis 的 A‑06 project-instruction integration 1 passed。BFF 全量 `contract:check` 仍有 5 个既有 closure inverse 失败，未冒称全绿。
