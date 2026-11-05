@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-04）
 
-**当前：正式原生验收已通过；八个数据 owner 同库安装通过，BFF→IAM 业务 HTTP 已正式配对 0.21，BFF→System 6.1 已关闭；Agent→System 真调用与 Python 治理、Capability→IAM 0.21 真授权与归档治理、BFF→Capability HTTP 7.0 六条现役读、BFF／Agent／Capability→Storage v3、Agent→Capability、BFF→Billing 的 11 项非支付调用、Web→BFF→Agent 的 Run 主链均已验收。G3 整体仍未结项；A‑01/A‑02/A‑07 未开始。机器 Goal 已启用（active），范围为 G3/C‑4 收口。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 精确组合 `6db2028d` 的已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。现进入 **A‑01/A‑02**，验收后再进 **A‑07**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
@@ -22,10 +22,10 @@
 | --- | --- | --- |
 | IAM #6 / Capability #13 / Agent #46 | 原 PR 精确 head `b6a9745` / `2409496` / `163b38a`；已验受影响工程门、真实依赖与 Agent 自然超窗 | 仅随对应产品切片扩大验收 |
 | BFF #18 / App #50 | 原 PR `3b3039c` / `4ac9d83d`；BFF Storage 来源更新后仅复验受影响门，原完整门及两项条件 PG 收据保留 | 不重复现有终态验证 |
-| Root #66 / G3 治理 | 最近一次用实际锁定编译器的严格结构审计 FAIL：388 条、0 个未验证；新增可见的 7 条全是既有 Billing TS 配置差额，System 无新增。合同余项按实际调用、来源和业务缺口区分，不把全部标成运行故障 | 现行 15 active／0 declared broken／0 illegal；另记 A‑13 setup 产品缺口；结构审计既有红项及其他现役边继续单列 |
-| I‑15 / 运行范围 | Root `430ce075`：八个数据 owner 用同一连接角色在一个新隔离数据库串行执行正式 installer，全通过；每次邻 schema catalog 未变，`public` 不变、跨 schema FK 为零，临时库已回收。随后 BFF 仅改 IAM 生成来源，installer/canonical SQL 原字节保持 | 同库安装已验；八仓同库同时运行、Redis/业务旅程未验，按实际涉及的产品链补证。未运行全站浏览器、CI、部署 |
+| Root #66 / G3 治理 | 最终精确源码组合 `6db2028d` 严格结构审计 exit 1：408 条、0 未验证。比 388 基线多出的 20 条均是 BFF 固定 IAM 0.21 字节副本，逐条同 IAM 原件历史诊断；没有新增未处置项，也没有改门禁。 | 已发布契约 15 active／0 declared broken／0 illegal；A‑13 setup 独立；八 owner 已同时 ready |
+| I‑15 / 运行范围 | Root `430ce075`：八个数据 owner 用同一连接角色在一个新隔离数据库串行执行正式 installer，全通过；每次邻 schema catalog 未变，`public` 不变、跨 schema FK 为零，临时库已回收。随后 BFF 仅改 IAM 生成来源，installer/canonical SQL 原字节保持 | 同库安装、八仓联合 readiness、Redis 隔离及回收已验；未称八仓业务全部跑通。未运行全站浏览器、CI、部署 |
 
-## G3 剩余验收
+## G3 验收收据
 
 - [x] **I‑15 同库安装**：BFF、IAM、Capability、Agent、Storage、System、Billing、Scheduler 八个正式安装器全部实际通过；不把安装收据当服务联合运行。
 - [x] **结构工具链补证**：原 System、Billing 两个未验证已使用本仓锁定依赖补齐，实际 FAIL 保留，不降门。
@@ -35,14 +35,15 @@
 - [x] **P0 · Agent→System 治理证据**：精确核对 System `49a5f8e` 6.1 OpenAPI、owner provenance 与其 23 个 Git 源文件、Agent `91c80f7` 的唯一手写消费收据与 `uv.lock` 直接运行依赖 `httpx@0.28.1`。具名例外只适用这条边，错来源、仅传递依赖与有条件锁记录均拒绝；历史 checkpoint 不变。真实路由／凭据收据的 Agent 运行基线仍为 `40effb2`，客户端、Worker、锁在 `91c80f7` 未变，直接复用、不重跑。
 - [x] **P1 · Capability→IAM**：Capability #13 `2409496` 使用独立 clean IAM `b6a9745` 0.21 归档（SHA‑256 `458da2ba…cad9`），Root 同时核归档、owner Git 来源、pnpm 安装和 zod 的实际来源，拒绝带真 provenance 的重包与依赖覆盖。真实 IAM 对同一生产 verifier/proof 先允许精确绑定，撤权后拒绝；审计记录 `DIRECT_USER_CURRENT` 与 `PERMISSION_NOT_CURRENT`，隔离 PG/Redis 零新增残留。Capability 生产源码不变，只证明这一条边，未重跑 R336。
 - [x] **P2 · BFF→Capability HTTP 7.0**：BFF `12ca1bf` 与 Capability `2409496` 原件同字节，16 个生成文件复现一致。真 Capability Nest／隔离 PG/Redis 验六条现役读：非空目录、本人列表/详情/两页历史、MCP 服务与本人连接；补五个非空 BFF 生产入口及目录到实际 Connect 当前版本的精确绑定；本人列表入口复用 Sandbox 收据。他主体/租户隔离、无凭据/错用途/租户错配拒绝。BFF Session/MCP 授权、用量读为受控边界，不称真实 IAM 登录旅程；三个无生产 caller 的生成读与旧 R336 不重跑。
-- [ ] **P3 · 其余现役边与 G3 退出项**：**Run/Web 与契约来源已验，剩最终运行范围和结构差分**。
+- [x] **P3 · 其余现役边与 G3 退出项**。
   - [x] **BFF／Agent→Storage v3**：分别沿原 PR 固定 Storage `4a99061`。BFF `3b3039c` 的真实 Projects 模块与 Storage 同一隔离库分 schema、真实 MinIO／Redis；同摘要第二次上传完整流过 ClamAV，仅将回执置为非 clean，BFF 返回 `409 storage_upload_conflict`，原 Asset／Blob／Scan、对象版本及原字节保持。Project 与 Conversation 两条持久 ACK 匹配 BFF outbox，DELETE 重放仍为 202，物理回收未验。Agent `6231f0b` 只再生新枚举，7 条现役请求字节及运行依赖保持；复用 Agent `4bfb5cc` × Storage `4a99061` 的真交付收据 `3d0ef92752028538c5d81e36`，未重跑整条。
   - [x] **Capability→Storage**：精确 `2409496` × `4a99061` 真 Nest／PG／Redis／MinIO／ClamAV，带版本 PUT、CLEAN 24×24、原 PNG、取消/重放均通过；他主体 404、错误 Storage scope 403，Capability intent 和 Storage 资产持久回收，自有桶及数据库已清理。独立 MCP package profile 与生成描述符通过现有检查，未重跑 R336。
   - [x] **Agent→Capability**：Agent #46 `163b38a` 正规再生四份当前 Platform Proto，12 个允许 RPC 描述符不变，独立 profile／运行客户端／锁保持。真实 Agent transport 与签名器→Capability `2409496`→IAM `b6a9745`；有效绑定只发一次持久 grant，owner 撤权后同键／新键拒绝，IAM 审计仍判当前，排除 IAM 误拒。隔离 PG/Redis 无新增残留；声明发现和 Run lease 输入受控，零模型或工具调用。
   - [x] **Web→BFF、BFF→Agent（已发布 Run 主链）**：App `4ac9d83d`（Node 22）实际 Session adapter→BFF #18 `2dcb75c` 同运行字节→Agent `163b38a` 真 HTTP／PG／Redis。Message 202 同键回放；SSE 游标对同一持久事件，续读不重放首帧，未知游标 400；真 Agent 认领、BFF Run Display 200／异用户 404；取消 202 同键回放只写一条 Agent PG 命令和一帧 Redis 控制，摘要一致。18 份 BFF 生成文件再生同字节；Web Public 28.19 原样。Session 准入受控；没有重跑登录、模型、Worker 或取消终态；自有资源已回收。
   - [x] **BFF→Billing（Billing、BFF/App 契约 owner）**：BFF #18 `b65cf76` 固定 Billing `b7c98588`，16 个生成文件及生产源码保持。真实 BFF/Billing HTTP 与隔离 PostgreSQL 两个 schema，目录、本人账户／摘要／账本、管理定价发布／回读／积分入账、模型预占／恢复／结算共 11 项通过。一次扣 1、释放 9，同键重放仍只有一笔结算；临时资源已回收。Session/IAM 与 Agent evidence 为受控输入，不称真实支付或模型执行。公开 checkout 仍 503；App `4ac9d83d` 仅删除无调用客户端、预览桩与专属重复覆盖，禁用 UI／公开契约保留。
   - [x] **Scheduler→Agent 直边退役**：现有本地持久 Scheduler 库以只读事务核对，active schedule 0、未完 outbox 0、可恢复 paused 2 条全为 BFF callback，Agent direct 与未分类均 0；未更改数据。实际链仍是 Scheduler→BFF 持久接收→BFF worker→Agent `/v1/runs`。仅退役当前 Root 直连边，历史 checkpoint 保留，未增加处理器。
-  - [ ] **G3 原退出审计**：验证最终组合、同步运行范围与 I‑15 缺证；停写后仅跑一次严格结构审计，对 `388 FAIL / 0 未验证` 基线做差分，保留实际退出码，零未处置新增、零未验证，不批改历史红项或降低门禁。
+  - [x] **G3 结构差分**：精确 `6db2028d` 严格审计仍 exit 1（408／0 未验证）；对 388 基线新增的 20 条全部与原本已红的 IAM canonical 相同，按字节及逐条归属，新增未处置为 0；不改历史基线或降低门禁。
+  - [x] **I‑15 / G3 最终运行范围**：主控在组合 `6db2028d` 上实跑，八个生产 owner 入口的 `/readyz` 同时通过。同一隔离 PostgreSQL、一个角色、八个 schema，0 跨 schema FK，`public` 无业务关系；Redis／自有桶／PG 和进程全部回收。Agent 仅 HTTP，未启动 Worker，不重复登录或全产品旅程。
 
 ## 已收口的阶段（保留证据，不重跑）
 
@@ -55,10 +56,12 @@
 
 - [ ] 当前入口已核登录和租户成员，`mcp_personal/read` 又单独查 IAM。独立处理该冗余接线，保留可信 `userId`、租户和资源归属，以及确有独立策略的管理员操作；本轮未改认证或授权行为，不用既有验收为重复调用背书。
 
-## 后续产品待办：G3 未结项前不实施
+## 当前产品待办
 
-- [ ] **A‑01** 会话创建/恢复、**A‑02** Agent 过程/详情；两项之后进入 **A‑07** Project Todo。
+- [ ] **A‑01 会话创建与恢复**：App owner；核对现有草稿、持久创建/幂等重试、导航/刷新恢复；仅修真实缺口。
+- [ ] **A‑02 Agent 过程与详情**：App owner，必要时原契约 owner 承接；复用唯一 AG‑UI/RunDisplay，核 live／终态／历史一致与真实动作详情。
+- [ ] **A‑07 Project Todo**：待 A‑01/A‑02 收口，核 BFF 项目任务 CRUD／权限／并发／幂等及 App 对应视图，不复用 Run Todo 冒称 Project Todo。
 - [ ] 保留 **A‑03** 输入与运行控制、**A‑04** 执行恢复、**A‑05** 长上下文、**A‑06** 项目上下文。
 - [ ] 保留 **A‑08** 附件、**A‑09** 资料库、**A‑10** 文件/Canvas、**A‑11** 首页、**A‑12** 自动化、**A‑13** 外部聊天（App setup 有真实 UI；Agent 尚无对应路由，保留并单独交付，不当作现有成功或死代码）、**A‑14** 语音、**A‑15** 体验性能、**A‑16** 交付与运行配对。按原范围验收，不默认从零做，也不冒称完成。
 
-**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每次只推进清单中最前的未关闭项，记录 owner、受影响提交、实测结论和下一步。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。G3 依原退出条件验收后才完成当前 Goal，再按顺序转入 A‑01/A‑02、A‑07。各仓沿原 PR，不合并 main、不部署。
+**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每次只推进清单中最前的未关闭项，记录 owner、受影响提交、实测结论和下一步。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。C‑4 Goal 已验收，产品 Goal 仍需逐项核对原 A‑01～A‑16（真实支付除外）。各仓沿原 PR，不合并 main、不部署。

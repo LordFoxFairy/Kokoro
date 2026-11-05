@@ -1,8 +1,14 @@
-## Task A 当前检查点：Web→BFF→Agent 已发布 Run 主链验收
+## Task A 当前检查点：C‑4 / G3 前置清理闭环
+
+组合 `6db2028d` 在同一隔离 PostgreSQL、同一角色、八个独立 schema 上，从正式入口启动 IAM、BFF、Capability、Agent HTTP、Storage、System、Billing、Scheduler，八个 `/readyz` 同时通过。真实 Redis、对象存储和扫描依赖沿各 owner 检查，数据库中 0 跨 schema 外键，`public` 无业务关系。自有八进程、数据库、桶和 Redis 标记已回收，无常驻同步实例；Scheduler 既有 Redis 键保持。首轮私有夹具漏配 Capability ingress 文件，次轮 Storage 以符号链接路径触发 CLI 守卫，纠正夹具后 exit 0，未改生产代码。Agent Worker、模型、真实支付与全站浏览器未运行，不作全产品通过证明。
+
+已发布契约 15 active／0 declared broken／0 illegal，原生登录及现役 Run/Billing 等接缝按精确输入复用。严格结构审计仍 exit 1（408 FAIL／0 未验证），新增的 20 条逐条对应 IAM 原件的历史诊断，来自 BFF 字节相同的消费者副本，无新增未处置；门禁未改。G3 前置清理结束，Task A 产品尚未闭环；按 [TODO](../todo.md) 开始 A‑01/A‑02，再进 A‑07。各仓沿原 PR，不合并、不部署。
+
+## Task A 前置交付：Web→BFF→Agent 已发布 Run 主链验收
 
 App `4ac9d83d` 的生产 Session adapter 在 Node 22 调用真实 BFF 和 Agent `163b38a`，PG/Redis 均真实隔离。提交 Message 与同键重放均为 202；SSE 事件与持久游标一致，续读不重发首帧，未知游标返回 400；真 Agent 认领后 BFF Run Display 200，同租户异用户 404。取消 202 和同键重放仅留一条 Agent PG 命令与一帧 Redis 控制，摘要相同。临时进程、数据库与 Redis 均回收。Session 准入受控；未重跑浏览器登录、Worker、模型或取消终态。
 
-BFF #18 `2dcb75c` 只更新 Agent 8.11 来源并移除无引用的旧 vendor，18 个生成文件、生产代码、锁和 Public 28.19 保持；主控核对实跑构建字节，双次再生和定向契约测试通过。App 的真实外部渠道 setup UI 尚无 Agent owner 路由，属于 A‑13，未删除、未验成成功。已发布契约 checkpoint 为 15 active／0 declared broken／0 illegal，不代表全部产品行为验收。G3 仍待最终运行范围和结构差分，Goal 保持 active；见 [TODO](../todo.md)。未合并、未部署。
+BFF #18 `2dcb75c` 只更新 Agent 8.11 来源并移除无引用的旧 vendor，18 个生成文件、生产代码、锁和 Public 28.19 保持；主控核对实跑构建字节，双次再生和定向契约测试通过。App 的真实外部渠道 setup UI 尚无 Agent owner 路由，属于 A‑13，未删除、未验成成功。已发布契约 checkpoint 为 15 active／0 declared broken／0 illegal，不代表全部产品行为验收。精确组合 `6db2028d` 严格结构审计 exit 1（408 FAIL／0 未验证）；比 388 基线多出的 20 条全是 BFF 对 IAM 0.21 原件字节副本的重复报项，逐条对应 IAM 原件的旧诊断，新增未处置为 0；门禁未改。八 owner 联合 readiness 见当前检查点。未合并、未部署。
 
 ## Task A 前置交付：退役 Scheduler→Agent 直连
 
