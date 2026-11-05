@@ -2931,43 +2931,6 @@
         "path": "go.mod",
         "sha256": "289cf9e81aeaeb43be815be780ffa5a3442e3bde1b402bed1d08439e341b34a1"
       }
-    },
-    {
-      "id": "EDGE-SCHEDULER-AGENT",
-      "caller": "Scheduler",
-      "owner": {
-        "name": "kokoro-scheduler",
-        "repository_path": "apps/kokoro-scheduler",
-        "repository_commit": "cfb2502b0ef9331f79a328ec85c254157340962c",
-        "contract_version": "3.0.0",
-        "contract_path": "contract/openapi/v1/openapi.yaml",
-        "contract_sha256": "d349eae8bba207074b1edf91acd9f08e94f39a27363441f45186c1799159c999"
-      },
-      "protocol": "http-event",
-      "code_generator_version": "unmanaged",
-      "runtime_package_version": "go:net/http@1.26.8",
-      "state": "broken",
-      "reason": "The current owner is Scheduler 3.0; current evidence does not establish a direct Scheduler-to-Agent live callback.",
-      "evidence": [
-        {
-          "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "cfb2502b0ef9331f79a328ec85c254157340962c",
-          "path": "internal/adapters/httpclient/client.go",
-          "sha256": "e5fb3901f41fddd447796e029f0dc9046206bc142a52364c69b5e88cba25369e"
-        },
-        {
-          "repository_path": "apps/kokoro-scheduler",
-          "repository_commit": "cfb2502b0ef9331f79a328ec85c254157340962c",
-          "path": "go.mod",
-          "sha256": "289cf9e81aeaeb43be815be780ffa5a3442e3bde1b402bed1d08439e341b34a1"
-        },
-        {
-          "repository_path": "apps/kokoro-agent",
-          "repository_commit": "163b38a41a870754b32fc4f80d04d11c7e4416d1",
-          "path": "contract/openapi/v1/openapi.json",
-          "sha256": "ad34ba2c8080f6a459a52116f929ed2c5f017a742dcb5d17d0e165ac18f1772b"
-        }
-      ]
     }
   ],
   "violations": []

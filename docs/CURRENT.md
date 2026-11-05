@@ -1,8 +1,14 @@
-## Task A 当前检查点：BFF→Billing 已验收，购买仍关闭
+## Task A 当前检查点：退役 Scheduler→Agent 直连
+
+只读检查现有本地持久 Scheduler 库，非新建测试库：活跃排程 0、未完成 outbox 0、可恢复暂停排程 2 条均指向 BFF 回调，Agent 直连和未分类均为 0。未改库或调度记录。现役仍由 Scheduler 投递 BFF，BFF 持久接收后由 BFF worker 调用 Agent；Root 删除无消费者的直连边，保留历史 checkpoint。不新增路由。
+
+当前 checkpoint 13 active／2 declared broken／0 illegal。Goal 仍 active，下一步是 Run/Web 与最终运行范围；[TODO](../todo.md) 为唯一清单。各仓沿原 PR，不合并、不部署。
+
+## Task A 前置交付：BFF→Billing 已验收，购买仍关闭
 
 BFF #18 `b65cf76` 固定 Billing `b7c98588` 4.0.0-experimental.10。16 个生成文件双次再生同字节、8 个定向契约测试通过；生产源码和锁保持。真实 BFF/Billing HTTP 在同一隔离 PostgreSQL 的各自 schema 内验证 11 个现役操作：目录、个人账户／摘要／账本、定价发布／回读／非现金积分入账，以及预占／恢复／结算。一次扣 1、释放 9，同键重放仍只有一笔结算和用量记录；临时数据库与 Redis 标记已回收。浏览器 Session、IAM 响应和 Agent evidence 是受控边界，不称真实登录、支付或模型执行；公开 checkout 保持 503。
 
-本阶段 checkpoint 13 active／3 declared broken／0 illegal，Goal 仍 active。Run/Web 与 Scheduler 存量并行推进，G3 完成后再进 A‑01/A‑02、A‑07；[TODO](../todo.md) 为唯一清单。各仓沿原 PR，未合并、未部署。
+该阶段 checkpoint 13 active／3 declared broken／0 illegal。
 
 ## Task A 前置交付：Agent→Capability 已验收
 

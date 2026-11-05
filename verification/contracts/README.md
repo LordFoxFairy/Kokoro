@@ -20,8 +20,8 @@ evidence. The former Web-to-IAM direct-call violation is preserved only in histo
 - The edge target is the runtime receiver; `owner` identifies the repository
   that owns the canonical contract and can therefore differ from the target.
   Event protocols are producer-owned: Scheduler owns its outbound dispatch
-  schema while BFF or Agent remains the receiving consumer and runtime
-  evidence.
+  schema while BFF is the receiving consumer and runtime evidence. The retired
+  direct Scheduler→Agent edge remains only in historical checkpoints.
 - `code_generator_version` and `runtime_package_version` describe the frozen
   consumer implementation. The literal `unmanaged` is permitted only on a
   `broken` edge. Every active edge has exactly one consumer runtime assertion;
@@ -85,13 +85,13 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-bff-billing-exp10.json
+  --expected verification/contracts/checkpoints/task-a-scheduler-bff-only.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A BFF→Billing composition returns `1` because it
-declares three broken edges, with thirteen active and no illegal edge. Earlier
+the current Task A composition returns `1` because it declares two broken
+edges, with thirteen active and no illegal edge. Earlier
 checkpoints remain historical snapshots, not the current composition gate.
 The checkpoint CLI compares the complete active/broken/illegal ID sets with
 the selected checkpoint, runs the same compatibility verifier, and returns

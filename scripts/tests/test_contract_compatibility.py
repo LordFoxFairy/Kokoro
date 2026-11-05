@@ -62,7 +62,7 @@ def commit_child(root: Path, name: str, files: dict[str, bytes]) -> str:
     return run(repository, "git", "rev-parse", "HEAD")
 
 
-def test_default_topology_baseline_declares_16_edges_and_no_violation() -> None:
+def test_default_topology_baseline_declares_15_edges_and_no_violation() -> None:
     module_path = ROOT / "scripts/governance/contract_inventory.py"
     spec = importlib.util.spec_from_file_location("contract_inventory", module_path)
     assert spec is not None and spec.loader is not None
@@ -86,7 +86,6 @@ def test_default_topology_baseline_declares_16_edges_and_no_violation() -> None:
             "EDGE-CAPABILITY-STORAGE",
             "EDGE-CAPABILITY-IAM",
             "EDGE-SCHEDULER-BFF",
-            "EDGE-SCHEDULER-AGENT",
         }
     )
     assert module.EXPECTED_VIOLATION_IDS == frozenset()
@@ -99,19 +98,14 @@ def test_scheduler_event_edges_pin_scheduler_owned_contract() -> None:
     edges = {edge["id"]: edge for edge in inventory["edges"]}
     scheduler_owner = edges["EDGE-BFF-SCHEDULER"]["owner"]
     # The live inventory can advance its pin; the compatibility verifier still
-    # checks the exact gitlink, blob digest and version for all three edges.
+    # checks the exact gitlink, blob digest and version for both edges.
     assert scheduler_owner["name"] == "kokoro-scheduler"
     assert scheduler_owner["repository_path"] == "apps/kokoro-scheduler"
     assert scheduler_owner["contract_path"] == "contract/openapi/v1/openapi.yaml"
     assert edges["EDGE-SCHEDULER-BFF"]["owner"] == scheduler_owner
-    assert edges["EDGE-SCHEDULER-AGENT"]["owner"] == scheduler_owner
     assert "apps/kokoro-bff" in {
         reference["repository_path"]
         for reference in edges["EDGE-SCHEDULER-BFF"]["evidence"]
-    }
-    assert "apps/kokoro-agent" in {
-        reference["repository_path"]
-        for reference in edges["EDGE-SCHEDULER-AGENT"]["evidence"]
     }
 
 

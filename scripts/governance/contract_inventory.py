@@ -34,7 +34,6 @@ EXPECTED_EDGE_IDS = frozenset(
         "EDGE-CAPABILITY-STORAGE",
         "EDGE-CAPABILITY-IAM",
         "EDGE-SCHEDULER-BFF",
-        "EDGE-SCHEDULER-AGENT",
     }
 )
 EXPECTED_VIOLATION_IDS = frozenset()
