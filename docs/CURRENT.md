@@ -8,7 +8,7 @@ The current Root candidate pairs Agent `92e235e782178b7002f0bd68daa143b507db870d
 
 Verification at this checkpoint: topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; App focused UI 41 passed; BFF focused suites, typecheck/lint/build and real isolated PG/Redis A-06 integration passed. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green.
 
-Next: commit the Root pairing and ledger update, then pass the A-08 design gate and implement only the minimum attachment/reference binding needed to close A-08 and the A-05 reference-retention gap.
+Next: implement the approved A-08 minimum wire/owner slice (App → BFF transaction freeze → Agent run-scoped Storage read), then reuse the same Run evidence to close the A-05 reference-retention gap.
 
 ## 历史检查点（按时间倒序，保留原收据）
 
