@@ -1,3 +1,9 @@
+## Task A 当前检查点：A‑03 FIFO 已验，打断与原 Run 补充仍待
+
+App #50 `b4c1616c`、BFF #18 `846821ae`（Public 28.20 不变）：原生 IAM/App/BFF/Agent HTTP、隔离真 PG/Redis 与 Chromium 收据 `937b817da5993a434df8b2c1`。真实后续消息 202 已提交、浏览器故意丢回执；硬刷新不发请求，显式原键/原 body 恢复同三 ID，owner 回读仍只有两条用户消息且原 Run 仍是队首。IME 合成事件和 Shift+Enter 已验；此旅程未启 Agent Worker。引擎/审批定向、App 工程门和最终构建通过；临时资源全部回收。A‑03 仍要完成真实 Run 控制和两种不同的运行中投递，详见 [TODO](../todo.md)。
+
+A‑04 独立阶段：Agent `163b38a` 两个真实 Worker 进程、PG checkpoint、Redis 重投通过。旧进程在工具结果提交后 SIGKILL，租约自然到期后由 generation 2 接管；旧代拒写、工具文件副作用及 PG/Redis 终态各一次，全部隔离资源回收。离线模型替身，尚不证明当前供应商／计费、Swarm 或浏览器。Goal active，未合并 main、未部署。
+
 ## Task A 当前检查点：A‑07 已验收，进入 A‑03
 
 BFF #18 `846821ae` 与 App #50 `85752044` 已沿原 PR 交付，Root 固定精确提交；Public 28.20 原件同字节，沿现 Project 权限和数据，不改 Schema。原生 IAM/BFF/App、隔离真 PG/Redis 与 Chromium 收据 `2f5123a6b6d7297ba1a0e2cb`：创建后刷新同一任务、第二标签更新及 412 保草稿、核对无写入并显式保存、删除 204 后刷新读空、390px 可操作。首次实测发现悬浮输入框遮住编辑按钮、核对切换按钮触发原生表单提交、Next/Chromium 将空体表示为流；定向修复后同一旅程通过，临时资源已回收。Root `b1fa258a` 拓扑和 15 条现役契约通过；另以该提交启动隔离 IAM/BFF/App，正式登录后核重并经业务 CRUD 登记原 handoff 的 A/B 两组任务，项目页和独立 GET 均读回两条唯一记录。该本地实例保留，旧同步实例未动。Goal active，下一项 A‑03；未合并 main、未部署。
