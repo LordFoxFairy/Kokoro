@@ -1,3 +1,7 @@
+## Task A 当前检查点：A‑04 已验收，继续 A‑05／A‑06
+
+A‑04 在当前 Root `d03d7c51` 精确组合完成：Chromium 原生会话、一次真实发送和 live SSE、真实 Worker `write_file → deliver → final`、Storage/MinIO/ClamAV、Canvas 原字节下载、刷新仅一份产物和终稿、同 Run 三个 Billing 封存 ACK。收据 `8dfd5e705e2aab50797af6cf`；此旅程模型为离线替身，真实本地 Ollama 用量按原收据单列。主控又在最终 Agent `815ef5c` 实跑旧 Worker SIGKILL，真实自然 lease 到期 3326 ms、第二代接管、拒绝旧写和 Redis 同请求重投，工具副作用与终态各一次，收据 `bf56ed4c4b64…fe808`。Swarm 精确恢复与资源回收见 [TODO](../todo.md)。Task A 已验收 5/16，Goal active；不合并 main、不部署。
+
 ## Task A 当前检查点：A‑03 已验收，继续 A‑04／A‑05
 
 App #50 `c17810c3`、BFF #18 `99f946e`（Public 28.22）、Agent #46 `815ef5c` 均沿原 PR，Root 固定三仓。真 Chromium/Worker/PG/Redis 已验 FIFO/IME、打断后继、同 Run 补充（收据 `dc117ba57713283151abe699`）与实际双决策恢复（最终组合 `8663731781f1edf9edb3e8a2`）：原 Run/pause、审批暂存零写、非空答复与审批同一次控制、模型和独立 checkpoint 各一次、原 Run 唯一终稿。另 R5 `876d2b77ddd53a5d9f47f197` 实证截流后原游标重连、阅读段落和草稿不丢；该轮整体仍失败，未拿来计 HITL 通过。前两次补充硬刷新偶发未显示完成正文，R6 同输入过，未称根因已修，留 A‑15 定向诊断。自有资源已回收；各具体范围见 [TODO](../todo.md)。
