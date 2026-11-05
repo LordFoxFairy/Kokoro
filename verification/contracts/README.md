@@ -36,6 +36,13 @@ evidence. The former Web-to-IAM direct-call violation is preserved only in histo
   the receipt, both POST operations, and all source digests agree with the
   System owner's committed OpenAPI and provenance. This does not waive any
   other edge's generator or runtime evidence.
+- Only `EDGE-CAPABILITY-IAM` can use `npm-file-archive`. The generator
+  assertion still reads the exact IAM owner's `sdk/package.json`. The runtime
+  assertion binds the installed Capability file package to the verified clean
+  IAM archive digest and the owner's committed OpenAPI, configuration, and lock.
+  It checks embedded provenance, consumer runtime importer, archive resolution
+  and SRI, and the owner's exact direct dependency resolutions. No other edge
+  gains a file archive exception.
 - `npm-package-json` assertions read the canonical dependency pointer from
   `package.json`. A consumer Node runtime may instead use
   `plain-version-file`: its path is exactly `.node-version`, its package is
@@ -74,15 +81,15 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-agent-system61.json
+  --expected verification/contracts/checkpoints/task-a-capability-iam021.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A Agent→System 6.1 composition returns `1` because it
-declares ten broken edges, with six active and no illegal edge. The prior
-Task A BFF→System, IAM 0.21, W1E, W1D and Wave 0A checkpoints remain historical
-snapshots, not the current composition gate. The checkpoint CLI instead compares the complete
+the current Task A Capability→IAM 0.21 composition returns `1` because it
+declares nine broken edges, with seven active and no illegal edge. The prior
+Task A Agent→System, BFF→System, IAM 0.21, W1E, W1D and Wave 0A checkpoints
+remain historical snapshots, not the current composition gate. The checkpoint CLI instead compares the complete
 active/broken/illegal ID sets with the selected checkpoint, runs the same
 compatibility verifier, and returns `0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not

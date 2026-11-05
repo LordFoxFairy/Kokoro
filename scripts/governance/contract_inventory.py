@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import base64
+import gzip
 import hashlib
+import io
 import json
 import re
 import subprocess
+import tarfile
 import tomllib
+import zlib
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -40,7 +45,7 @@ EXACT_SEMVER_PATTERN = re.compile(
 VERSION_MANIFEST_KINDS = {
     "code_generator_version": frozenset({"npm-package-json"}),
     "runtime_package_version": frozenset(
-        {"npm-package-json", "plain-version-file", "uv-lock"}
+        {"npm-package-json", "plain-version-file", "uv-lock", "npm-file-archive"}
     ),
     "producer_runtime_version": frozenset({"go-mod"}),
 }
@@ -53,6 +58,22 @@ SYSTEM_REPOSITORY = "apps/kokoro-system"
 SYSTEM_OPENAPI = "contract/openapi/system.openapi.json"
 CONTRACT_PROVENANCE = "contract/provenance.json"
 SYSTEM_CLIENT = "src/kokoro_agent/clients/system.py"
+CAPABILITY_IAM_EDGE = "EDGE-CAPABILITY-IAM"
+CAPABILITY_REPOSITORY = "apps/kokoro-capability"
+IAM_REPOSITORY = "apps/kokoro-iam"
+IAM_OPENAPI = "contract/openapi/iam.internal.v1.json"
+IAM_SDK_PACKAGE = "@kokoro/iam-client"
+IAM_SDK_GENERATOR = "@hey-api/openapi-ts"
+IAM_SDK_MANIFEST = "sdk/package.json"
+# IAM does not store tarballs in the source tree. Anchor the independently
+# packed clean-owner release here, not in the consuming repo's lock/evidence.
+IAM_SDK_RELEASE_ARCHIVES = {
+    (
+        "b6a9745b340149808afb1aae357574d0aa7bbad3",
+        "0.21.0",
+    ): "458da2ba96daa7784f0cd296b92fc0e428232e49119c0ca25485788ffc1dcad9",
+}
+IAM_SDK_VERIFIER = "src/infrastructure/iam/execution-authorization-verifier.ts"
 SYSTEM_OPERATIONS = (
     "POST /v1/system/model-catalog/resolve",
     "POST /v1/system/model-catalog/credentials/read",
@@ -562,6 +583,278 @@ def _verify_agent_system_receipt(
         errors.append(f"{label}: {error}")
 
 
+def _iam_sdk_archive_members(blob: bytes) -> dict[str, bytes]:
+    limit = 4 * 1024 * 1024
+    with gzip.GzipFile(fileobj=io.BytesIO(blob)) as archive:
+        tar = archive.read(limit + 1)
+    if len(tar) > limit:
+        raise ValueError("archive expands beyond the SDK size limit")
+    required = {
+        "package/package.json",
+        "package/dist/provenance.json",
+        "package/dist/index.js",
+    }
+    seen = set()
+    result = {}
+    with tarfile.open(fileobj=io.BytesIO(tar), mode="r:") as archive:
+        for member in archive:
+            name = member.name
+            if (
+                not member.isfile()
+                or not name.startswith("package/")
+                or "\\" in name
+                or safe_relative_path(name).as_posix() != name
+                or name in seen
+            ):
+                raise ValueError("archive has an unsafe or duplicate member")
+            seen.add(name)
+            if name in required:
+                content = archive.extractfile(member)
+                if content is None or member.size == 0 or member.size > 128 * 1024:
+                    raise ValueError(f"archive member is missing or invalid: {name}")
+                with content:
+                    result[name] = content.read()
+    if set(result) != required:
+        raise ValueError("archive lacks its SDK entrypoint, manifest, or provenance")
+    return result
+
+
+def _verify_pnpm_file_lock(
+    lock: bytes,
+    owner_lock: bytes,
+    archive_path: str,
+    version: str,
+    integrity: str,
+    dependencies: dict,
+) -> None:
+    from scripts.governance.contract_checks import (
+        _yaml_block_mapping,
+        _yaml_mapping_entries,
+    )
+
+    def document(text: str) -> dict:
+        root = _yaml_mapping_entries(text)
+        if root["lockfileVersion"] != ("'9.0'", ""):
+            raise ValueError("expected pnpm lockfile version 9")
+        return root
+
+    def packages(root: dict, section: str) -> dict:
+        value, body = root[section]
+        # pnpm emits unquoted scalar package keys such as accepts@2.0.0;
+        # normalize only those canonical keys at the section's key indent.
+        body = re.sub(
+            r"(?m)^  ([A-Za-z0-9_][A-Za-z0-9._/@+()~-]*)(?=:[ \t]*(?:$| ))",
+            lambda match: f"  '{match.group(1)}'",
+            body,
+        )
+        return _yaml_block_mapping((value, body))
+
+    try:
+        root = document(lock.decode("utf-8"))
+        imports = _yaml_block_mapping(root["importers"])
+        importer = _yaml_block_mapping(imports["."])
+        for other in ("devDependencies", "optionalDependencies", "peerDependencies"):
+            if other in importer and IAM_SDK_PACKAGE in _yaml_block_mapping(
+                importer[other]
+            ):
+                raise ValueError(
+                    "archive is also selected outside the runtime importer"
+                )
+        deps = _yaml_block_mapping(importer["dependencies"])
+        selected = _yaml_block_mapping(deps[IAM_SDK_PACKAGE])
+        reference = f"file:{archive_path}"
+        if selected != {"specifier": (reference, ""), "version": (reference, "")}:
+            raise ValueError("default runtime importer selects a different archive")
+        key = f"{IAM_SDK_PACKAGE}@{reference}"
+        installed_packages = packages(root, "packages")
+        installed_snapshots = packages(root, "snapshots")
+        package = _yaml_block_mapping(installed_packages[key])
+        expected = f"{{integrity: {integrity}, tarball: {reference}}}"
+        if package.get("resolution") != (expected, "") or package.get("version") != (
+            version,
+            "",
+        ):
+            raise ValueError("archive resolution, integrity, or version differs")
+        snapshot = installed_snapshots[key]
+        if not dependencies:
+            if snapshot != ("{}", ""):
+                raise ValueError("expected an empty archive snapshot")
+            return
+        snapshot = _yaml_block_mapping(snapshot)
+        if set(snapshot) != {"dependencies"}:
+            raise ValueError("archive snapshot has extra dependency selections")
+        locked = _yaml_block_mapping(snapshot["dependencies"])
+        if locked != {name: (value, "") for name, value in dependencies.items()}:
+            raise ValueError("archive snapshot dependencies differ")
+        # IAM's pnpm bootstrap document precedes the actual project graph.
+        owner_docs = [
+            part
+            for part in re.split(r"(?m)^---[ \t]*$", owner_lock.decode("utf-8"))
+            if part.strip()
+        ]
+        if not 1 <= len(owner_docs) <= 2:
+            raise ValueError("unexpected IAM lock document layout")
+        owner = document(owner_docs[-1])
+        producer_packages = packages(owner, "packages")
+        producer_snapshots = packages(owner, "snapshots")
+        for name, value in dependencies.items():
+            dependency = f"{name}@{value}"
+            if (
+                not isinstance(value, str)
+                or EXACT_SEMVER_PATTERN.fullmatch(value) is None
+                or installed_packages[dependency] != producer_packages[dependency]
+                or installed_snapshots[dependency] != producer_snapshots[dependency]
+            ):
+                raise ValueError(
+                    f"archive dependency {name} resolves differently from IAM"
+                )
+    except (AttributeError, KeyError, TypeError, ValueError) as error:
+        raise ValueError(f"pnpm lock: {error}") from error
+
+
+def _verify_capability_iam_archive(
+    root: Path, edge: dict[str, Any], assertion: dict[str, Any], errors: list[str]
+) -> None:
+    label = f"{CAPABILITY_IAM_EDGE}: IAM SDK archive"
+    owner = edge["owner"]
+    try:
+        version = assertion.get("version")
+        if (
+            not isinstance(version, str)
+            or EXACT_SEMVER_PATTERN.fullmatch(version) is None
+        ):
+            raise ValueError("archive version must be exact semantic version")
+        if version != owner["contract_version"]:
+            raise ValueError("archive version differs from the IAM owner contract")
+        archive_path = f"vendor/iam/kokoro-iam-client-{version}.tgz"
+        paths = (
+            archive_path,
+            "vendor/iam/provenance.json",
+            "pnpm-lock.yaml",
+            IAM_SDK_VERIFIER,
+        )
+        evidence = edge.get("evidence")
+        blobs = {}
+        for path in paths:
+            matches = (
+                [
+                    ref
+                    for ref in evidence
+                    if isinstance(ref, dict)
+                    and ref.get("repository_path") == CAPABILITY_REPOSITORY
+                    and ref.get("path") == path
+                    and ref.get("repository_commit")
+                    == assertion.get("repository_commit")
+                ]
+                if isinstance(evidence, list)
+                else []
+            )
+            if len(matches) != 1:
+                raise ValueError(f"requires one pinned Capability {path} reference")
+            blob = _verify_blob_reference(root, label, matches[0], errors)
+            if not blob:
+                raise ValueError(f"missing Capability {path} blob")
+            blobs[path] = blob
+
+        consumer = _verify_blob_reference(root, label, assertion, errors)
+        if not consumer:
+            raise ValueError("missing Capability package.json")
+        consumer_manifest = _strict_json_blob(consumer)
+        if (
+            _json_pointer(consumer_manifest, "/dependencies/@kokoro~1iam-client")
+            != f"file:{archive_path}"
+        ):
+            raise ValueError(
+                "Capability runtime dependency does not select the archive"
+            )
+        for other in ("devDependencies", "optionalDependencies", "peerDependencies"):
+            if IAM_SDK_PACKAGE in consumer_manifest.get(other, {}):
+                raise ValueError(
+                    "Capability manifest also selects the archive outside runtime dependencies"
+                )
+
+        commit = owner["repository_commit"]
+
+        def owner_blob(path: str) -> bytes:
+            return git_blob(root, IAM_REPOSITORY, commit, path)
+
+        packed = _iam_sdk_archive_members(blobs[archive_path])
+        owner_sdk = _strict_json_blob(owner_blob(IAM_SDK_MANIFEST))
+        if (
+            _strict_json_blob(packed["package/package.json"]) != owner_sdk
+            or owner_sdk.get("name") != IAM_SDK_PACKAGE
+            or owner_sdk.get("version") != version
+        ):
+            raise ValueError("archive manifest differs from the IAM SDK owner")
+        if (
+            packed["package/dist/provenance.json"]
+            != blobs["vendor/iam/provenance.json"]
+        ):
+            raise ValueError("archive embedded provenance differs from the sidecar")
+        owner_generator = _json_pointer(
+            owner_sdk, "/devDependencies/@hey-api~1openapi-ts"
+        )
+        pnpm = _json_pointer(
+            _strict_json_blob(owner_blob("package.json")), "/packageManager"
+        )
+        if not isinstance(pnpm, str) or not pnpm.startswith("pnpm@"):
+            raise ValueError("archive provenance requires an IAM pnpm pin")
+        expected = {
+            "schema_version": 1,
+            "package": {"name": IAM_SDK_PACKAGE, "version": version},
+            "source": {"commit": commit, "dirty": False},
+            "contract": {"path": IAM_OPENAPI, "sha256": owner["contract_sha256"]},
+            "generator": {
+                "package": IAM_SDK_GENERATOR,
+                "version": owner_generator,
+                "config_sha256": sha256_bytes(owner_blob("sdk/openapi-ts.config.ts")),
+            },
+            "lockfile_sha256": sha256_bytes(owner_blob("pnpm-lock.yaml")),
+            "runtime": {
+                "node": "v" + owner_blob(".node-version").decode("utf-8").strip(),
+                "pnpm": pnpm.removeprefix("pnpm@"),
+            },
+        }
+        provenance = _strict_json_blob(blobs["vendor/iam/provenance.json"])
+        if provenance != expected or provenance["source"]["dirty"] is not False:
+            raise ValueError("archive provenance differs from the exact IAM source")
+        if (
+            edge.get("code_generator_version")
+            != f"{IAM_SDK_GENERATOR}@{owner_generator}"
+        ):
+            raise ValueError(
+                "archive generator differs from the declared IAM generator"
+            )
+        integrity = "sha512-" + base64.b64encode(
+            hashlib.sha512(blobs[archive_path]).digest()
+        ).decode("ascii")
+        _verify_pnpm_file_lock(
+            blobs["pnpm-lock.yaml"],
+            owner_blob("pnpm-lock.yaml"),
+            archive_path,
+            version,
+            integrity,
+            owner_sdk.get("dependencies", {}),
+        )
+        if sha256_bytes(blobs[archive_path]) != IAM_SDK_RELEASE_ARCHIVES.get(
+            (commit, version)
+        ):
+            raise ValueError(
+                "digest does not match the independently verified clean IAM archive"
+            )
+    except (
+        AttributeError,
+        EOFError,
+        KeyError,
+        OSError,
+        tarfile.TarError,
+        zlib.error,
+        TypeError,
+        ValueError,
+    ) as error:
+        errors.append(f"{label}: {error}")
+
+
 def _verify_version_assertion(
     root: Path,
     label: str,
@@ -613,6 +906,19 @@ def _verify_version_assertions(
     required = {"runtime_package_version"}
     generator = edge.get("code_generator_version")
     owner = edge.get("owner")
+    capability_iam = (
+        edge_id == CAPABILITY_IAM_EDGE
+        and edge.get("caller") == "Capability"
+        and edge.get("protocol") == "http-openapi"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-iam"
+        and owner.get("repository_path") == IAM_REPOSITORY
+        and owner.get("contract_path") == IAM_OPENAPI
+    )
+    if edge_id == CAPABILITY_IAM_EDGE and not capability_iam:
+        errors.append(
+            f"{edge_id}: archive assertion requires the scoped Capability IAM edge"
+        )
     agent_system = (
         edge_id == AGENT_SYSTEM_EDGE
         and edge.get("caller") == "Agent"
@@ -673,6 +979,39 @@ def _verify_version_assertions(
         if not agent_system and manifest_kind == "uv-lock":
             errors.append(
                 f"{label}: uv.lock assertion is only allowed for {AGENT_SYSTEM_EDGE}"
+            )
+            continue
+        if capability_iam:
+            if field == "runtime_package_version":
+                if (
+                    manifest_kind != "npm-file-archive"
+                    or raw_assertion.get("repository_path") != CAPABILITY_REPOSITORY
+                    or raw_assertion.get("path") != "package.json"
+                    or raw_assertion.get("package_name") != IAM_SDK_PACKAGE
+                    or raw_assertion.get("declared_value")
+                    != f"{IAM_SDK_PACKAGE}@{raw_assertion.get('version')}"
+                ):
+                    errors.append(
+                        f"{label}: requires the pinned Capability IAM SDK archive"
+                    )
+                    continue
+                _verify_capability_iam_archive(root, edge, raw_assertion, errors)
+                continue
+            if (
+                manifest_kind != "npm-package-json"
+                or raw_assertion.get("repository_path") != IAM_REPOSITORY
+                or raw_assertion.get("repository_commit")
+                != owner.get("repository_commit")
+                or raw_assertion.get("path") != IAM_SDK_MANIFEST
+                or raw_assertion.get("package_name") != IAM_SDK_GENERATOR
+            ):
+                errors.append(
+                    f"{label}: generator must be pinned to the IAM owner SDK manifest"
+                )
+                continue
+        elif manifest_kind == "npm-file-archive":
+            errors.append(
+                f"{label}: archive assertion is only allowed for {CAPABILITY_IAM_EDGE}"
             )
             continue
         _verify_version_assertion(root, label, raw_assertion, field, errors)

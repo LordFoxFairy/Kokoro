@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import copy
+import gzip
 import importlib.util
 import json
 import shutil
 import subprocess
+import tarfile
+from base64 import b64encode
 from dataclasses import dataclass
-from hashlib import sha256
+from hashlib import sha256, sha512
+from io import BytesIO
 from pathlib import Path
 from types import ModuleType
 
@@ -1256,6 +1260,330 @@ def test_handwritten_agent_system_rejects_wrong_consumer_receipt(
     errors = fixture.verify()
     assert len(errors) == 1 and "System consumer receipt" in errors[0], errors
     assert "evidence sha256" not in errors[0]
+
+
+def use_capability_iam_sdk_archive(
+    fixture: InventoryFixture,
+    *,
+    drift: str | None = None,
+) -> dict[str, object]:
+    def json_bytes(value: object) -> bytes:
+        return (json.dumps(value) + "\n").encode()
+
+    def pack(members: list[tuple[str, bytes]]) -> bytes:
+        with BytesIO() as buffer:
+            with tarfile.open(fileobj=buffer, mode="w") as archive:
+                for name, body in members:
+                    entry = tarfile.TarInfo(name)
+                    entry.size = len(body)
+                    archive.addfile(entry, BytesIO(body))
+            return gzip.compress(buffer.getvalue(), mtime=0)
+
+    package = "@kokoro/iam-client"
+    version = "^0.21.0" if drift == "version_range" else "0.21.0"
+    generator = "@hey-api/openapi-ts"
+    generator_version = "0.99.0"
+    archive_path = f"vendor/iam/kokoro-iam-client-{version}.tgz"
+    provenance_path = "vendor/iam/provenance.json"
+    contract_path = (
+        "contract/openapi/other.internal.v1.json"
+        if drift == "owner_contract_path"
+        else "contract/openapi/iam.internal.v1.json"
+    )
+    sdk_manifest_path = "sdk/package.json"
+    config_path = "sdk/openapi-ts.config.ts"
+    iam_name = "other-iam" if drift == "owner_repository" else "kokoro-iam"
+    iam_repo = f"apps/{iam_name}"
+    capability_repo = "apps/kokoro-capability"
+    zod_sri = "sha512-" + b64encode(sha512(b"owner zod archive").digest()).decode()
+    owner = {
+        "package.json": json_bytes(
+            {"name": "kokoro-iam", "packageManager": "pnpm@12.3.4"}
+        ),
+        ".node-version": b"24.20.0\n",
+        "pnpm-lock.yaml": f"""lockfileVersion: '9.0'
+importers:
+  sdk:
+    dependencies:
+      zod:
+        specifier: 4.5.4
+        version: 4.5.4
+    devDependencies:
+      '@hey-api/openapi-ts':
+        specifier: 0.99.0
+        version: 0.99.0(typescript@6.0.3)
+
+packages:
+  zod@4.5.4:
+    resolution: {{integrity: {zod_sri}}}
+
+snapshots:
+  zod@4.5.4: {{}}
+""".encode(),
+        contract_path: json_bytes({"openapi": "3.1.0", "info": {"version": version}}),
+        config_path: b'export const input = "../contract/openapi/iam.internal.v1.json";\n',
+        sdk_manifest_path: json_bytes(
+            {
+                "name": package,
+                "version": version,
+                "engines": {"node": ">=24 <25"},
+                "main": "./dist/index.js",
+                "types": "./dist/index.d.ts",
+                "exports": {
+                    ".": {"types": "./dist/index.d.ts", "import": "./dist/index.js"}
+                },
+                "dependencies": {"zod": "4.5.4"},
+                "devDependencies": {generator: generator_version},
+            }
+        ),
+    }
+    owner_sha = commit_child(fixture.root, iam_name, owner)
+    contract_digest = sha256(owner[contract_path]).hexdigest()
+    provenance = {
+        "schema_version": 1,
+        "package": {"name": package, "version": version},
+        "source": {"commit": owner_sha, "dirty": False},
+        "contract": {"path": contract_path, "sha256": contract_digest},
+        "generator": {
+            "package": generator,
+            "version": generator_version,
+            "config_sha256": sha256(owner[config_path]).hexdigest(),
+        },
+        "lockfile_sha256": sha256(owner["pnpm-lock.yaml"]).hexdigest(),
+        "runtime": {"node": "v24.20.0", "pnpm": "12.3.4"},
+    }
+    members = [
+        ("package/package.json", owner[sdk_manifest_path]),
+        ("package/dist/index.js", b"export {};\n"),
+        ("package/dist/provenance.json", json_bytes(provenance)),
+    ]
+    official_archive = pack(members)
+    fixture.module.IAM_SDK_RELEASE_ARCHIVES = {
+        (owner_sha, version): sha256(official_archive).hexdigest()
+    }
+
+    if drift == "matching_wrong_contract":
+        provenance["contract"]["sha256"] = "0" * 64
+    elif drift == "matching_wrong_owner_config":
+        provenance["generator"]["config_sha256"] = "0" * 64
+    elif drift == "matching_wrong_owner_lock":
+        provenance["lockfile_sha256"] = "0" * 64
+    provenance_bytes = json_bytes(provenance)
+    members[-1] = ("package/dist/provenance.json", provenance_bytes)
+    if drift == "duplicate_member":
+        members.append(members[-1])
+    elif drift == "repacked_entrypoint":
+        members[1] = ("package/dist/index.js", b"export const repacked = true;\n")
+    archive_bytes = pack(members)
+    if drift == "damaged_deflate":
+        archive_bytes = archive_bytes[:10] + b"\xff" + archive_bytes[11:]
+    integrity_bytes = b"other archive" if drift == "wrong_sri" else archive_bytes
+    sri = "sha512-" + b64encode(sha512(integrity_bytes).digest()).decode()
+    file_specifier = f"file:{archive_path}"
+    archive_key = f"{package}@{file_specifier}"
+    snapshot_key = "unrelated@1.0.0" if drift == "wrong_snapshot" else archive_key
+    consumer_zod_sri = (
+        "sha512-" + b64encode(sha512(b"untrusted zod archive").digest()).decode()
+        if drift == "wrong_zod_sri"
+        else zod_sri
+    )
+    lock = f"""lockfileVersion: '9.0'
+
+importers:
+  .:
+    dependencies:
+      '{package}':
+        specifier: {file_specifier}
+        version: {file_specifier}
+
+packages:
+  '{archive_key}':
+    resolution: {{integrity: {sri}, tarball: {file_specifier}}}
+    version: {version}
+    engines: {{node: '>=24 <25'}}
+  zod@4.5.4:
+    resolution: {{integrity: {consumer_zod_sri}}}
+
+snapshots:
+  '{snapshot_key}':
+    dependencies:
+      zod: 4.5.4
+  zod@4.5.4: {{}}
+""".encode()
+    if drift == "optional_importer":
+        lock = lock.replace(
+            b"\npackages:\n",
+            f"    optionalDependencies:\n      '{package}':\n"
+            f"        specifier: file:vendor/replacement.tgz\n"
+            f"        version: file:vendor/replacement.tgz\n\npackages:\n".encode(),
+            1,
+        )
+    elif drift == "optional_snapshot":
+        lock = lock.replace(
+            b"      zod: 4.5.4\n  zod@4.5.4: {}",
+            b"      zod: 4.5.4\n    optionalDependencies:\n      zod: 9.0.0\n  zod@4.5.4: {}",
+        )
+    consumer = {
+        "package.json": json_bytes(
+            {
+                "name": "kokoro-capability",
+                "dependencies": {package: file_specifier},
+                **(
+                    {"devDependencies": {generator: generator_version}}
+                    if drift == "consumer_generator"
+                    else {}
+                ),
+                **(
+                    {"optionalDependencies": {package: "file:vendor/replacement.tgz"}}
+                    if drift == "optional_manifest"
+                    else {}
+                ),
+            }
+        ),
+        "pnpm-lock.yaml": lock,
+        archive_path: archive_bytes,
+        provenance_path: provenance_bytes,
+        "src/infrastructure/iam/execution-authorization-verifier.ts": b'import "@kokoro/iam-client";\n',
+        "scripts/check-iam-sdk-artifact.ts": b"export {};\n",
+    }
+    consumer_sha = commit_child(fixture.root, "kokoro-capability", consumer)
+    for repo, commit in ((iam_repo, owner_sha), (capability_repo, consumer_sha)):
+        run(
+            fixture.root,
+            "git",
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            "160000",
+            commit,
+            repo,
+        )
+
+    def reference(repo: str, path: str) -> dict[str, str]:
+        files, commit = (
+            (owner, owner_sha) if repo == iam_repo else (consumer, consumer_sha)
+        )
+        return {
+            "repository_path": repo,
+            "repository_commit": commit,
+            "path": path,
+            "sha256": sha256(files[path]).hexdigest(),
+        }
+
+    edge = fixture.data["edges"][0]
+    edge.update(
+        id="EDGE-CAPABILITY-IAM",
+        caller="Capability",
+        owner={
+            "name": "kokoro-iam",
+            "repository_path": iam_repo,
+            "repository_commit": owner_sha,
+            "contract_version": version,
+            "contract_path": contract_path,
+            "contract_sha256": contract_digest,
+        },
+        code_generator_version=f"{generator}@{generator_version}",
+        runtime_package_version=f"{package}@{version}",
+        reason="Capability consumes the pinned IAM SDK archive.",
+        evidence=[reference(capability_repo, path) for path in consumer],
+        version_assertions=[
+            {
+                "field": "code_generator_version",
+                "declared_value": f"{generator}@{generator_version}",
+                "package_name": generator,
+                "version": generator_version,
+                "manifest_kind": "npm-package-json",
+                "json_checks": [
+                    {
+                        "pointer": "/devDependencies/@hey-api~1openapi-ts",
+                        "expected": generator_version,
+                    }
+                ],
+                **(
+                    reference(capability_repo, "package.json")
+                    if drift == "consumer_generator"
+                    else reference(iam_repo, sdk_manifest_path)
+                ),
+            },
+            {
+                "field": "runtime_package_version",
+                "declared_value": f"{package}@{version}",
+                "package_name": package,
+                "version": version,
+                "manifest_kind": "npm-file-archive",
+                **reference(capability_repo, "package.json"),
+            },
+        ],
+    )
+    fixture.module.EXPECTED_EDGE_IDS = frozenset({"EDGE-CAPABILITY-IAM"})
+    return edge
+
+
+def test_capability_iam_sdk_archive_accepts_exact_owner_and_file_lock(fixture) -> None:
+    use_capability_iam_sdk_archive(fixture)
+
+    assert fixture.verify() == []
+
+
+@pytest.mark.parametrize(
+    "scope",
+    ["edge", "caller", "protocol", "owner", "owner_repository", "owner_contract_path"],
+)
+def test_capability_iam_sdk_archive_assertion_is_edge_local(
+    fixture, scope: str
+) -> None:
+    edge = use_capability_iam_sdk_archive(fixture, drift=scope)
+    if scope == "edge":
+        edge["id"] = "EDGE-BFF-IAM"
+        fixture.module.EXPECTED_EDGE_IDS = frozenset({edge["id"]})
+    elif scope == "caller":
+        edge["caller"] = "BFF"
+    elif scope == "protocol":
+        edge["protocol"] = "same-origin-http"
+    elif scope == "owner":
+        edge["owner"]["name"] = "other-iam"
+
+    assert any("archive" in error.lower() for error in fixture.verify())
+
+
+@pytest.mark.parametrize(
+    ("drift", "diagnostic"),
+    [
+        ("matching_wrong_contract", "provenance"),
+        ("matching_wrong_owner_config", "provenance"),
+        ("matching_wrong_owner_lock", "provenance"),
+        ("consumer_generator", "generator"),
+        ("wrong_sri", "lock"),
+        ("wrong_snapshot", "lock"),
+        ("wrong_zod_sri", "lock"),
+        ("optional_importer", "lock"),
+        ("optional_snapshot", "lock"),
+        ("optional_manifest", "outside runtime"),
+        ("duplicate_member", "archive"),
+        ("damaged_deflate", "archive"),
+        ("version_range", "archive"),
+    ],
+)
+def test_capability_iam_sdk_archive_rejects_inconsistent_git_evidence(
+    fixture, drift: str, diagnostic: str
+) -> None:
+    use_capability_iam_sdk_archive(fixture, drift=drift)
+
+    errors = fixture.verify()
+    assert any(diagnostic in error.lower() for error in errors), errors
+    assert all("evidence sha256" not in error for error in errors)
+
+
+def test_capability_iam_sdk_archive_rejects_repacked_js_with_genuine_provenance(
+    fixture,
+) -> None:
+    use_capability_iam_sdk_archive(fixture, drift="repacked_entrypoint")
+
+    errors = fixture.verify()
+    assert len(errors) == 1 and any(
+        diagnostic in errors[0]
+        for diagnostic in ("published IAM archive digest", "clean IAM archive")
+    ), errors
 
 
 def test_top_level_version_pin_must_match_assertion_declared_value(fixture) -> None:

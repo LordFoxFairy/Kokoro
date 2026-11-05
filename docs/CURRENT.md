@@ -1,8 +1,14 @@
-## Task A 当前检查点：Agent→System 6.1 治理已验收
+## Task A 当前检查点：Capability→IAM 0.21 已验收
+
+Capability #13 `2409496` 消费与 IAM `b6a9745` clean pack 字节相同的 0.21 SDK，生产准入与数据模型不变。Root 从实际 Git blobs 校验归档摘要、内嵌 provenance、owner 契约/生成配置/依赖锁，以及 Capability 默认运行安装图、SDK SRI 和 zod 来源；禁止以复制的 provenance 或覆盖依赖替代验证。
+
+用 0.21 实装包与 Capability 生产 verifier 连接真实 IAM：同一 proof 首次绑定成功，撤权后被拒，审计记录允许与撤权拒绝。隔离 PG/Redis 无新增残留；BFF 仅为本地绑定对端，不称真实 BFF 链路。未重跑 R336。现行 checkpoint 7 active／9 declared broken／0 illegal；G3 尚未闭环，按 [TODO](../todo.md) 继续，A‑01/A‑02/A‑07 未启动。
+
+## Task A 前置交付：Agent→System 6.1 治理已验收
 
 Root 从精确 Git blobs 核对 System `49a5f8e` 6.1 OpenAPI、owner provenance 及其 23 个来源摘要、Agent `91c80f7` 手写客户端与唯一消费收据；锁定的 `httpx@0.28.1` 必须是唯一、无条件的直接运行依赖。具名生成器例外仅限此边，其他门禁与历史 checkpoint 不变。此前真实路由／凭据验证的基线仍为 Agent `40effb2`；客户端、Worker、锁未变，本轮复用收据，未启动服务或模型。
 
-现行 checkpoint 6 active／10 declared broken／0 illegal，G3 尚未闭环。下一条现役边是 Capability→IAM，按 [TODO](../todo.md) 做 0.21 归档和真实 E2 增量验证；A‑01/A‑02/A‑07 仍未启动。
+该阶段 checkpoint 6 active／10 declared broken／0 illegal，下一阶段推进 Capability→IAM。
 
 ## Task A 前置交付：BFF→System 6.1 已验收
 

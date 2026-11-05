@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05、T‑17、T‑11、T‑15 正式 Chromium 5/5 已验；I‑15 的八个数据 owner 用同一连接角色、同一隔离 PG 库的正式 installer 已验并回收，联合业务运行未验。BFF #18 `12ca1bf` 已固定 IAM 0.21，生成产物无变化；新精确候选的 Account/Team 真链定向通过并回收，该阶段 checkpoint 为 4 active／12 declared broken／0 illegal，历史 checkpoint 原样。Root 严格结构审计 388 FAIL／0 未验证，保持实际红项；G3 及 Task A 未整体闭环，A‑01/A‑02/A‑07 未启动。System 6.1 的 Agent 路由／凭据及 Root Python 治理已验收；BFF 目录、运行清单与模型管理真链保持通过。现行 checkpoint 为 6 active／10 declared broken／0 illegal。机器 Goal 与当前执行项以[唯一执行清单](../../../todo.md)为准。
+**当前检查点：** G1/T‑05、T‑17、T‑11、T‑15 正式 Chromium 5/5 已验；I‑15 的八个数据 owner 用同一连接角色、同一隔离 PG 库的正式 installer 已验并回收，联合业务运行未验。BFF #18 `12ca1bf` 已固定 IAM 0.21，生成产物无变化；新精确候选的 Account/Team 真链定向通过并回收，该阶段 checkpoint 为 4 active／12 declared broken／0 illegal，历史 checkpoint 原样。Root 严格结构审计 388 FAIL／0 未验证，保持实际红项；G3 及 Task A 未整体闭环，A‑01/A‑02/A‑07 未启动。System 6.1 的 Agent 路由／凭据及 Root Python 治理已验收；BFF 目录、运行清单与模型管理真链保持通过。Capability→IAM 0.21 clean pack 和真实同 proof 撤权已验；现行 checkpoint 为 7 active／9 declared broken／0 illegal。机器 Goal 与当前执行项以[唯一执行清单](../../../todo.md)为准。
 
 ---
 
