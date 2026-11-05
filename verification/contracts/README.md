@@ -66,16 +66,16 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-bff-iam021.json
+  --expected verification/contracts/checkpoints/task-a-bff-system61.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A IAM 0.21 checkpoint returns `1` because it declares twelve
-broken edges, with four active and no illegal edge. BFF's generated HTTP client
-uses the exact IAM 0.21 contract; the independent native relay retains its verified
-0.20 provenance anchor. The earlier W1E, W1D and Wave 0A checkpoints remain
-historical snapshots, not the current composition gate. The checkpoint CLI instead compares the complete
+the current Task A System 6.1 composition returns `1` because it declares
+eleven broken edges, with five active and no illegal edge. It includes the exact
+BFF→System model contract and the independently verified handwritten manifest
+projection. The preceding Task A IAM 0.21, W1E, W1D and Wave 0A checkpoints
+remain historical snapshots, not the current composition gate. The checkpoint CLI instead compares the complete
 active/broken/illegal ID sets with the selected checkpoint, runs the same
 compatibility verifier, and returns `0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not

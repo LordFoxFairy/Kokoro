@@ -1,4 +1,10 @@
-## Task A 当前检查点：八个 owner 同库安装；IAM 业务契约来源切换
+## Task A 当前检查点：BFF→System 6.1 已验收
+
+精确 System `49a5f8e` 使用真实 Nest、隔离 PG/Redis。Agent 现有 client 的默认／指定解析、精确凭据领取通过，跨租户解析／凭据及错误 digest 均拒绝；不启动 Worker 或模型。Agent #46 `91c80f7` 固定 6.1 的 23 个来源摘要，实际业务 client/Worker/lock 不变；源仓及已安装 wheel 的契约门、定向测试、wheel/sdist 通过。BFF `12ca1bf` 实际目录和运行清单处理器直连同 SHA 真 owner，目录他租户为空、清单他租户 404、缺 server envelope 403，投影不泄露凭据。BFF 新增的 6.1 provider discovery 使用真 owner 与本地 metadata peer：管理员 200、非管理员 403、一次 GET、无 catalog 写入。定向真实实例回收；不是 Web/IAM 整链或所有管理写入。
+
+BFF 管理写入与列表也在同一精确 owner 上验过：创建/重放/恢复与跨租户拒绝，条件发布与路由写入、过期版本拒绝且不改现态，标签更新与五类列表。16 项模型操作加独立 manifest 均有实际证据；BFF→System 恢复 active，当前 checkpoint 5 active／11 declared broken／0 illegal。Agent→System 仍缺 Root Python 证据规则。按 [TODO](../todo.md) 推进 G3，A‑01/A‑02/A‑07 未启动，不合并 main、不部署。
+
+## Task A 前置交付：八个 owner 同库安装；IAM 业务契约来源切换
 
 I‑15：以 Root `430ce075` 的八个精确数据 owner，在同一隔离 PostgreSQL 数据库、同一连接角色下串行执行各仓正式安装器，全部 exit 0。每次只新增目标 owner catalog，其他 schema 与 `public` 不变、无跨 schema FK；临时数据库按 OID 核对并回收。未启动八仓同库运行，也未借此声明全 Redis/业务链通过。
 

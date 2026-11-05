@@ -17265,3 +17265,8 @@ Root4e603743原正式五旅程、真实账户消费，以及真实Skill包生产
 ### Task A 2026-11-04：I‑15 同库安装与 BFF→IAM 0.21 收口
 
 Root `430ce075` 八个正式 installer 在同一隔离 PG 库、同一角色全部通过；邻 catalog 和 public 保持、无跨 schema FK、已回收，不是八仓同时运行。BFF #18 `12ca1bf` 更新业务契约来源，不改 16 个生成产物或生产源码。Root `98b6a9d9` 实测 Account profile/会话列表、自撤冲突及 Team 401/200/404，状态保留并回收；原同步环境未动。Root 新 checkpoint 4 active／12 declared broken／0 illegal；严格结构审计真实工具链 388 条差额／0 未验证，新增可见均为 Billing 原有配置差额。Task A/G3 尚未闭环；[TODO](../todo.md) 为当前执行入口。
+
+
+### Task A 2026-11-04：System 现役读链实证
+
+System `49a5f8e` 真实 Nest／PG／Redis，Agent 两条实际调用和 BFF `12ca1bf` 目录／运行清单处理器定向通过；跨租户、错误摘要及缺服务信封保持拒绝，隔离资源回收，未做推理或全 Web／IAM 组合。6.1 provider discovery 用真 BFF 处理器验证 200/403、恰一次本地 metadata GET、无 catalog 写入。Agent 原 PR #46 `91c80f7` 固定 6.1 的 23 个来源，保客户端与 Worker 原字节；Root 组合证据按实际 Git 原件更新。真实 BFF 管理写入和列表亦通过：受保护凭据创建、重放和恢复、跨租户拒绝、条件发布、路由写入及 stale 拒绝、标签和五类列表。BFF→System 已恢复 active，现行 checkpoint 5 active／11 declared broken／0 illegal。Agent→System 仍缺 Python 证据规则，不修改历史门禁。[TODO](../todo.md) 记执行次序。
