@@ -1262,70 +1262,109 @@ def test_handwritten_agent_system_rejects_wrong_consumer_receipt(
     assert "evidence sha256" not in errors[0]
 
 
-def use_generated_agent_storage(
-    fixture: InventoryFixture, *, drift: str | None = None
+def use_generated_agent_connect(
+    fixture: InventoryFixture, *, drift: str | None = None, platform: bool = False
 ) -> None:
     def json_bytes(value: object) -> bytes:
         return (json.dumps(value) + "\n").encode()
 
-    owner_repo = "apps/kokoro-storage"
+    owner_name = "kokoro-capability" if platform else "kokoro-storage"
+    owner_repo = f"apps/{owner_name}"
+    wire_package = "kokoro.platform.v1" if platform else "kokoro.storage.v3"
+    edge_id = "EDGE-AGENT-CAPABILITY" if platform else "EDGE-AGENT-STORAGE"
     agent_repo = "apps/kokoro-agent"
     generator = "^0.11.1" if drift == "floating_generator" else "0.11.1"
     common = "kokoro/common/v1/common.proto"
-    storage = "kokoro/storage/v3/storage.proto"
+    wire = (
+        "kokoro/platform/v1/platform_runtime.proto"
+        if platform
+        else "kokoro/storage/v3/storage.proto"
+    )
+    mcp = "kokoro/platform/v1/mcp_runtime.proto"
+    custom = "kokoro/platform/v1/custom_api_runtime.proto"
+    base_inputs = (common, wire, mcp) if platform else (common, wire)
     owner_proto = "contract/proto/"
-    vendor = "contract/storage/v3/"
+    vendor = "contract/platform/v1/" if platform else "contract/storage/v3/"
     pin_path = vendor + "provenance.json"
     vendor_provenance = vendor + "owner-provenance.json"
     owner_provenance = "contract/provenance.json"
     owner_files = {
         owner_proto + common: b'syntax = "proto3";\npackage kokoro.common.v1;\n',
-        owner_proto + storage: b'syntax = "proto3";\npackage kokoro.storage.v3;\n',
+        owner_proto + wire: f'syntax = "proto3";\npackage {wire_package};\n'.encode(),
     }
+    if platform:
+        owner_files[owner_proto + mcp] = b"// exact MCP protocol\n"
+        owner_files[owner_proto + custom] = b"// exact Custom API protocol\n"
     combined = sha256(b"".join(owner_files.values())).hexdigest()
     owner_files[owner_provenance] = json_bytes(
         {
             "authority": "local contract/proto",
             "source": "contract/proto",
-            "files": [common, storage],
+            "files": list(base_inputs),
             "combinedSha256": combined,
         }
     )
-    owner_sha = commit_child(fixture.root, "kokoro-storage", owner_files)
+    owner_sha = commit_child(fixture.root, owner_name, owner_files)
     agent_files = {
         vendor + "proto/" + source: owner_files[owner_proto + source]
-        for source in (common, storage)
+        for source in ((*base_inputs, custom) if platform else base_inputs)
     }
     if drift == "owner_vendor":
         # Keep the Agent pin and evidence self-consistent with the wrong bytes.
-        agent_files[vendor + "proto/" + storage] += b"// stale consumer copy\n"
-    agent_files[vendor_provenance] = owner_files[owner_provenance]
-    agent_files[pin_path] = json_bytes(
-        {
-            "owner": "kokoro-storage",
-            "owner_repository": owner_repo,
-            "owner_commit": owner_sha,
-            "sources": [
+        agent_files[vendor + "proto/" + (custom if platform else wire)] += (
+            b"// stale consumer copy\n"
+        )
+    codegen = {
+        "python": "3.11",
+        "buf_bin": "^1.73.0" if drift == "floating_toolchain" else "1.73.0",
+        "protoc_gen_py": "0.1.1",
+        "protoc_gen_connectrpc": generator,
+        "connectrpc_parameter": "io=async",
+    }
+
+    def source_pin(source: str) -> dict[str, str]:
+        path = vendor + "proto/" + source
+        return {
+            "owner_path": owner_proto + source,
+            "path": path,
+            "sha256": sha256(agent_files[path]).hexdigest(),
+        }
+
+    if platform:
+        config_path = vendor + "codegen.json"
+        agent_files[config_path] = json_bytes(
+            {
+                **{key: codegen[key] for key in codegen if key != "python"},
+                "version": "v1",
+                "inputs": ["proto/" + source for source in (*base_inputs, custom)],
+            }
+        )
+        special = {
+            "custom_api_runtime": {"sources": [source_pin(custom)]},
+            "generation_inputs": [
                 {
-                    "owner_path": owner_proto + source,
-                    "path": path,
-                    "sha256": sha256(agent_files[path]).hexdigest(),
+                    "path": config_path,
+                    "sha256": sha256(agent_files[config_path]).hexdigest(),
                 }
-                for source in (common, storage)
-                for path in (vendor + "proto/" + source,)
             ],
+        }
+    else:
+        agent_files[vendor_provenance] = owner_files[owner_provenance]
+        special = {
             "owner_provenance": {
                 "path": vendor_provenance,
                 "sha256": sha256(agent_files[vendor_provenance]).hexdigest(),
                 "combined_sha256": combined,
-            },
-            "codegen": {
-                "python": "3.11",
-                "buf_bin": "1.73.0",
-                "protoc_gen_py": "0.1.1",
-                "protoc_gen_connectrpc": generator,
-                "connectrpc_parameter": "io=async",
-            },
+            }
+        }
+    agent_files[pin_path] = json_bytes(
+        {
+            "owner": "kokoro-platform" if platform else "kokoro-storage",
+            "owner_repository": owner_repo,
+            "owner_commit": owner_sha,
+            "sources": [source_pin(source) for source in base_inputs],
+            "codegen": codegen,
+            **special,
             "runtime": {"connectrpc": "0.12.1", "protobuf_py": ">=0.3.0,<0.4.0"},
         }
     )
@@ -1381,20 +1420,20 @@ dependencies = [{{ name = "{direct}" }}]
 
     edge = fixture.data["edges"][0]
     edge.update(
-        id="EDGE-AGENT-STORAGE",
+        id=edge_id,
         caller="Agent",
         owner={
-            "name": "kokoro-storage",
+            "name": owner_name,
             "repository_path": owner_repo,
             "repository_commit": owner_sha,
-            "contract_version": "kokoro.storage.v3",
-            "contract_path": owner_proto + storage,
-            "contract_sha256": sha256(owner_files[owner_proto + storage]).hexdigest(),
+            "contract_version": wire_package,
+            "contract_path": owner_proto + wire,
+            "contract_sha256": sha256(owner_files[owner_proto + wire]).hexdigest(),
         },
         protocol="connect-proto",
         code_generator_version=f"protoc-gen-connectrpc@{generator}",
         runtime_package_version="connectrpc@0.12.1",
-        reason="Generated Agent client consumes the pinned Storage v3 contract.",
+        reason="Generated Agent client consumes the pinned Connect contract.",
         evidence=[
             *(reference(owner_repo, path) for path in owner_files),
             *(reference(agent_repo, path) for path in agent_files),
@@ -1405,7 +1444,7 @@ dependencies = [{{ name = "{direct}" }}]
                 "declared_value": f"protoc-gen-connectrpc@{generator}",
                 "package_name": "protoc-gen-connectrpc",
                 "version": generator,
-                "manifest_kind": "agent-storage-codegen",
+                "manifest_kind": "agent-connect-codegen",
                 **reference(agent_repo, pin_path),
             },
             {
@@ -1418,13 +1457,13 @@ dependencies = [{{ name = "{direct}" }}]
             },
         ],
     )
-    fixture.module.EXPECTED_EDGE_IDS = frozenset({"EDGE-AGENT-STORAGE"})
+    fixture.module.EXPECTED_EDGE_IDS = frozenset({edge_id})
 
 
 def test_generated_agent_storage_accepts_exact_owner_and_direct_uv_runtime(
     fixture: InventoryFixture,
 ) -> None:
-    use_generated_agent_storage(fixture)
+    use_generated_agent_connect(fixture)
 
     assert fixture.verify() == []
 
@@ -1440,11 +1479,31 @@ def test_generated_agent_storage_accepts_exact_owner_and_direct_uv_runtime(
 def test_generated_agent_storage_rejects_unpaired_inputs(
     fixture: InventoryFixture, drift: str, diagnostic: str
 ) -> None:
-    use_generated_agent_storage(fixture, drift=drift)
+    use_generated_agent_connect(fixture, drift=drift)
 
     errors = fixture.verify()
     assert any(diagnostic in error.lower() for error in errors), errors
     assert all("evidence sha256" not in error for error in errors)
+
+
+@pytest.mark.parametrize("drift", [None, "owner_vendor", "floating_toolchain"])
+def test_generated_agent_platform_checks_all_current_vendor_inputs(
+    fixture: InventoryFixture,
+    drift: str | None,
+) -> None:
+    use_generated_agent_connect(fixture, drift=drift, platform=True)
+
+    errors = fixture.verify()
+    if drift is None:
+        assert not errors
+    elif drift == "owner_vendor":
+        assert any(
+            "vendor differs from owner" in error and "custom_api_runtime.proto" in error
+            for error in errors
+        ), errors
+        assert all("evidence sha256" not in error for error in errors)
+    else:
+        assert any("exact semantic version" in error for error in errors), errors
 
 
 def use_capability_iam_sdk_archive(

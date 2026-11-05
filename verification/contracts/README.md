@@ -29,17 +29,17 @@ evidence. The former Web-to-IAM direct-call violation is preserved only in histo
   exemptions are limited to `EDGE-BROWSER-WEB` with
   `not-applicable:same-origin-route` and the Agent→System handwritten HTTP edge
   with `not-applicable:handwritten-agent-system-http`.
-- Only the Agent→System and Agent→Storage edges can use the `uv-lock`
+- Only Agent→System, Agent→Storage and Agent→Capability use the `uv-lock`
   assertion. It proves the editable Agent project resolves a unique, direct
   registry runtime dependency: `httpx` for System and `connectrpc` for
-  Storage. The System edge also pins its handwritten client and receipt, and checks that
+  Storage and Platform. The System edge also pins its handwritten client and receipt, and checks that
   the receipt, both POST operations, and all source digests agree with the
   System owner's committed OpenAPI and provenance. This does not waive any
   other edge's generator or runtime evidence.
-- Agent→Storage's `agent-storage-codegen` assertion checks its exact
-  `protoc-gen-connectrpc` version, both vendored Proto blobs, and the owner
-  provenance and combined digest. Generated Python byte drift is checked
-  by the Agent owner's existing regeneration command.
+- The two Agent Connect edges use `agent-connect-codegen`: exact generator
+  version and all vendored generation input blobs, plus Storage combined
+  provenance or Platform's codegen configuration. The existing Agent
+  checker verifies generated Python bytes and independent profiles.
 - Only `EDGE-CAPABILITY-IAM` can use `npm-file-archive`. The generator
   assertion still reads the exact IAM owner's `sdk/package.json`. The runtime
   assertion binds the installed Capability file package to the verified clean
@@ -85,13 +85,13 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-capability-storage-icon.json
+  --expected verification/contracts/checkpoints/task-a-agent-capability-connect.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A Capability→Storage icon composition returns `1` because
-it declares five broken edges, with eleven active and no illegal edge. Earlier
+the current Task A Agent→Capability composition returns `1` because it
+declares four broken edges, with twelve active and no illegal edge. Earlier
 checkpoints remain historical snapshots, not the current composition gate.
 The checkpoint CLI compares the complete active/broken/illegal ID sets with
 the selected checkpoint, runs the same compatibility verifier, and returns

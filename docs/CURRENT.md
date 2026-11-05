@@ -1,8 +1,16 @@
-## Task A 当前检查点：Capability→Storage 图标链路已验收
+## Task A 当前检查点：Agent→Capability 已验收
+
+Agent #46 `163b38a` 固定 Capability `2409496` 的四份 Proto 并离线再生成，12 个允许 RPC 的描述符不变。Root 只核精确 Git 原件、生成配置和 Connect 直接运行锁；独立 profile 继续沿 Agent 原校验，不冒称 Root 重做全部语义检查。
+
+用生产 Agent transport 和签名器访问真实 Capability Nest、IAM `b6a9745` 与隔离 PG/Redis。有效私有 MCP 绑定产一条持久授权；owner 撤权后同键、新键均拒绝，IAM 仍判当前，确认拒绝来自 Capability 的绑定状态。声明发现对端与 Run lease 输入受控；未执行模型、工具、包下载。探针启动曾因私有 TS loader 与本机库角色接线未进入业务，修正接线后 exit 0；数据库与 Redis 标记无新增残留。
+
+当前 checkpoint 12 active／4 declared broken／0 illegal；Goal 保持 active。接着补 BFF→Billing 现役调用，不做真实支付。详见 [TODO](../todo.md)。未合并或部署。
+
+## Task A 前置交付：Capability→Storage 图标链路已验收
 
 精确 Capability `2409496` × Storage `4a99061`，真实 Nest、各自 PostgreSQL schema、Redis、独占版本化 MinIO 桶和 ClamAV。生产 Product Connect 完成带版本 PUT、CLEAN 24×24、读取原 PNG、取消和重放；他主体返回 404、错 Storage scope 返回 403。Capability intent 持久为 released，Storage 原资产标为 deleted，签名预览不再返回。没有外部 IAM 或工具调用，自有对象、桶、数据库及 Redis 标记均回收。独立 MCP package profile 与生成描述符校验通过，不重跑 R336。
 
-当前 checkpoint 11 active／5 declared broken／0 illegal。执行窗口及下一步见 [TODO](../todo.md)；Goal 仍 active，G3 未结项。图标验收未改生产代码。App `4ac9d83d` 另删除无调用的 checkout 客户端、预览桩和专属测试；保留目录、关闭购买、公开 POST 及其边界。24 小时窗口只排除真实支付，其余 Task A 保持。未合并、未部署。
+该阶段 checkpoint 11 active／5 declared broken／0 illegal。执行窗口及下一步见 [TODO](../todo.md)；Goal 仍 active，G3 未结项。图标验收未改生产代码。App `4ac9d83d` 另删除无调用的 checkout 客户端、预览桩和专属测试；保留目录、关闭购买、公开 POST 及其边界。24 小时窗口只排除真实支付，其余 Task A 保持。未合并、未部署。
 
 ## Task A 前置交付：BFF／Agent→Storage v3 已验收
 
