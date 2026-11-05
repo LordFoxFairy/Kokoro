@@ -1,8 +1,16 @@
-## Task A 当前检查点：BFF→Capability HTTP 7.0 已验收
+## Task A 当前检查点：BFF／Agent→Storage v3 已验收
+
+BFF `3b3039c`、Agent `6231f0b` 各自固定 Storage `4a99061` 的 Git 原件并重生成，手写运行路径与依赖锁不变。Agent 7 项现役请求编码相同；Root 校验原件、provenance、确切生成器和直接锁定的 Connect runtime，复用历史真交付收据 `3d0ef92752028538c5d81e36`，不重复跑 Agent 旅程。
+
+BFF Projects 模块与 Storage 运行于同一隔离 PostgreSQL 的各自 schema，使用真实 Redis、MinIO 和 ClamAV，BFF Session 准入受控。普通资产同摘要的第二次扫描完整走真实 ClamAV，仅将回执置为非 clean；BFF 返回 409，原 canonical 数据、对象版本和字节保持。Project／Conversation 两条真实持久 ACK 对应 BFF outbox；DELETE 重放原 202，逻辑已释放、物理仍 pending。私有探针按实际 schema 修正观察查询；canonical 负控通过后，ACK 的排序和回执外壳断言另行修正，仅复跑 ACK，未改生产行为。自有数据库、Redis 标记、对象版本及桶均回收。
+
+当前 checkpoint 10 active／6 declared broken／0 illegal。Goal 保持 active，按 [TODO](../todo.md) 先补 Capability→Storage 图标运行配对；G3 尚未结项，不进入 A‑01/A‑02/A‑07。未合并、未部署。
+
+## Task A 前置交付：BFF→Capability HTTP 7.0 已验收
 
 以 BFF `12ca1bf`、Capability `2409496` 的精确组合验六条生产读取：目录、本人技能列表／详情／两页历史、MCP 服务／连接。HTTP 7.0 owner 与 BFF vendor 同字节，16 个生成文件两次重生成一致。真 Capability Nest 使用隔离 PG／Redis；精确 BFF 生产 Skills/MCP 模块的五个非空入口通过（本人列表本轮验生成客户端，入口复用 Sandbox 收据），`ListHubSkills` 的 HTTP 目录与真实 Connect 当前版本核对同一 series/revision。另一主体和租户无权读他人的私有对象；缺凭据、错用途、租户头错配均拒绝。
 
-BFF Session/MCP 准入及用量读是受控接线，不称 IAM、浏览器或全产品 E2E。临时实例与自有资源已回收。首轮私有探针在库 URL、测试接线或本地断言失败，修探针后通过，未改生产。未重跑 R336。现行 checkpoint 8 active／8 declared broken／0 illegal；Goal 保持 active，按 [TODO](../todo.md) 先做 Storage 来源和缺证，G3 尚未结项，不进入 A‑01/A‑02/A‑07。
+BFF Session/MCP 准入及用量读是受控接线，不称 IAM、浏览器或全产品 E2E。临时实例与自有资源已回收。首轮私有探针在库 URL、测试接线或本地断言失败，修探针后通过，未改生产。未重跑 R336。该阶段 checkpoint 8 active／8 declared broken／0 illegal。
 
 ## Task A 前置交付：Capability→IAM 0.21 已验收
 

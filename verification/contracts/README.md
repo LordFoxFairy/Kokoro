@@ -29,13 +29,17 @@ evidence. The former Web-to-IAM direct-call violation is preserved only in histo
   exemptions are limited to `EDGE-BROWSER-WEB` with
   `not-applicable:same-origin-route` and the Agent→System handwritten HTTP edge
   with `not-applicable:handwritten-agent-system-http`.
-- Only `EDGE-AGENT-SYSTEM` can use the `uv-lock` assertion. It pins the
-  Agent gitlink's `uv.lock` to the unique registry `httpx` version and proves
-  it is a direct runtime dependency of the editable Agent project. The same
-  edge also pins its handwritten client and unique receipt, and checks that
+- Only the Agent→System and Agent→Storage edges can use the `uv-lock`
+  assertion. It proves the editable Agent project resolves a unique, direct
+  registry runtime dependency: `httpx` for System and `connectrpc` for
+  Storage. The System edge also pins its handwritten client and receipt, and checks that
   the receipt, both POST operations, and all source digests agree with the
   System owner's committed OpenAPI and provenance. This does not waive any
   other edge's generator or runtime evidence.
+- Agent→Storage's `agent-storage-codegen` assertion checks its exact
+  `protoc-gen-connectrpc` version, both vendored Proto blobs, and the owner
+  provenance and combined digest. Generated Python byte drift is checked
+  by the Agent owner's existing regeneration command.
 - Only `EDGE-CAPABILITY-IAM` can use `npm-file-archive`. The generator
   assertion still reads the exact IAM owner's `sdk/package.json`. The runtime
   assertion binds the installed Capability file package to the verified clean
@@ -81,17 +85,16 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-bff-capability-http7.json
+  --expected verification/contracts/checkpoints/task-a-storage-v3-consumers.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A BFF→Capability HTTP 7.0 composition returns `1` because it
-declares eight broken edges, with eight active and no illegal edge. The prior
-Task A Capability→IAM, Agent→System, BFF→System, IAM 0.21, W1E, W1D and Wave 0A
+the current Task A BFF/Agent→Storage v3 composition returns `1` because it
+declares six broken edges, with ten active and no illegal edge. Earlier
 checkpoints remain historical snapshots, not the current composition gate.
 The checkpoint CLI compares the complete active/broken/illegal ID sets with
-the selected checkpoint, runs the same
-compatibility verifier, and returns `0` only when every non-success outcome is
+the selected checkpoint, runs the same compatibility verifier, and returns
+`0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not
 pass, and schema, gitlink, digest, evidence or version drift remains fatal.

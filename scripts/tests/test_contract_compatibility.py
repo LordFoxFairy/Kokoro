@@ -1262,6 +1262,191 @@ def test_handwritten_agent_system_rejects_wrong_consumer_receipt(
     assert "evidence sha256" not in errors[0]
 
 
+def use_generated_agent_storage(
+    fixture: InventoryFixture, *, drift: str | None = None
+) -> None:
+    def json_bytes(value: object) -> bytes:
+        return (json.dumps(value) + "\n").encode()
+
+    owner_repo = "apps/kokoro-storage"
+    agent_repo = "apps/kokoro-agent"
+    generator = "^0.11.1" if drift == "floating_generator" else "0.11.1"
+    common = "kokoro/common/v1/common.proto"
+    storage = "kokoro/storage/v3/storage.proto"
+    owner_proto = "contract/proto/"
+    vendor = "contract/storage/v3/"
+    pin_path = vendor + "provenance.json"
+    vendor_provenance = vendor + "owner-provenance.json"
+    owner_provenance = "contract/provenance.json"
+    owner_files = {
+        owner_proto + common: b'syntax = "proto3";\npackage kokoro.common.v1;\n',
+        owner_proto + storage: b'syntax = "proto3";\npackage kokoro.storage.v3;\n',
+    }
+    combined = sha256(b"".join(owner_files.values())).hexdigest()
+    owner_files[owner_provenance] = json_bytes(
+        {
+            "authority": "local contract/proto",
+            "source": "contract/proto",
+            "files": [common, storage],
+            "combinedSha256": combined,
+        }
+    )
+    owner_sha = commit_child(fixture.root, "kokoro-storage", owner_files)
+    agent_files = {
+        vendor + "proto/" + source: owner_files[owner_proto + source]
+        for source in (common, storage)
+    }
+    if drift == "owner_vendor":
+        # Keep the Agent pin and evidence self-consistent with the wrong bytes.
+        agent_files[vendor + "proto/" + storage] += b"// stale consumer copy\n"
+    agent_files[vendor_provenance] = owner_files[owner_provenance]
+    agent_files[pin_path] = json_bytes(
+        {
+            "owner": "kokoro-storage",
+            "owner_repository": owner_repo,
+            "owner_commit": owner_sha,
+            "sources": [
+                {
+                    "owner_path": owner_proto + source,
+                    "path": path,
+                    "sha256": sha256(agent_files[path]).hexdigest(),
+                }
+                for source in (common, storage)
+                for path in (vendor + "proto/" + source,)
+            ],
+            "owner_provenance": {
+                "path": vendor_provenance,
+                "sha256": sha256(agent_files[vendor_provenance]).hexdigest(),
+                "combined_sha256": combined,
+            },
+            "codegen": {
+                "python": "3.11",
+                "buf_bin": "1.73.0",
+                "protoc_gen_py": "0.1.1",
+                "protoc_gen_connectrpc": generator,
+                "connectrpc_parameter": "io=async",
+            },
+            "runtime": {"connectrpc": "0.12.1", "protobuf_py": ">=0.3.0,<0.4.0"},
+        }
+    )
+    direct = "wrapper" if drift == "transitive_only" else "connectrpc"
+    agent_files["uv.lock"] = f'''version = 1
+revision = 3
+requires-python = ">=3.11"
+
+[[package]]
+name = "connectrpc"
+version = "0.12.1"
+source = {{ registry = "https://pypi.org/simple" }}
+
+[[package]]
+name = "wrapper"
+version = "1.0.0"
+source = {{ registry = "https://pypi.org/simple" }}
+dependencies = [{{ name = "connectrpc" }}]
+
+[[package]]
+name = "kokoro-agent"
+version = "2.0.0"
+source = {{ editable = "." }}
+dependencies = [{{ name = "{direct}" }}]
+'''.encode()
+    agent_files["src/kokoro_agent/clients/storage_transport.py"] = (
+        b"from kokoro_agent.generated.kokoro.storage.v3.storage_connect "
+        b"import StorageServiceClient\n"
+    )
+    agent_sha = commit_child(fixture.root, "kokoro-agent", agent_files)
+    for repo, commit in ((owner_repo, owner_sha), (agent_repo, agent_sha)):
+        run(
+            fixture.root,
+            "git",
+            "update-index",
+            "--add",
+            "--cacheinfo",
+            "160000",
+            commit,
+            repo,
+        )
+
+    def reference(repo: str, path: str) -> dict[str, str]:
+        files, commit = (
+            (owner_files, owner_sha) if repo == owner_repo else (agent_files, agent_sha)
+        )
+        return {
+            "repository_path": repo,
+            "repository_commit": commit,
+            "path": path,
+            "sha256": sha256(files[path]).hexdigest(),
+        }
+
+    edge = fixture.data["edges"][0]
+    edge.update(
+        id="EDGE-AGENT-STORAGE",
+        caller="Agent",
+        owner={
+            "name": "kokoro-storage",
+            "repository_path": owner_repo,
+            "repository_commit": owner_sha,
+            "contract_version": "kokoro.storage.v3",
+            "contract_path": owner_proto + storage,
+            "contract_sha256": sha256(owner_files[owner_proto + storage]).hexdigest(),
+        },
+        protocol="connect-proto",
+        code_generator_version=f"protoc-gen-connectrpc@{generator}",
+        runtime_package_version="connectrpc@0.12.1",
+        reason="Generated Agent client consumes the pinned Storage v3 contract.",
+        evidence=[
+            *(reference(owner_repo, path) for path in owner_files),
+            *(reference(agent_repo, path) for path in agent_files),
+        ],
+        version_assertions=[
+            {
+                "field": "code_generator_version",
+                "declared_value": f"protoc-gen-connectrpc@{generator}",
+                "package_name": "protoc-gen-connectrpc",
+                "version": generator,
+                "manifest_kind": "agent-storage-codegen",
+                **reference(agent_repo, pin_path),
+            },
+            {
+                "field": "runtime_package_version",
+                "declared_value": "connectrpc@0.12.1",
+                "package_name": "connectrpc",
+                "version": "0.12.1",
+                "manifest_kind": "uv-lock",
+                **reference(agent_repo, "uv.lock"),
+            },
+        ],
+    )
+    fixture.module.EXPECTED_EDGE_IDS = frozenset({"EDGE-AGENT-STORAGE"})
+
+
+def test_generated_agent_storage_accepts_exact_owner_and_direct_uv_runtime(
+    fixture: InventoryFixture,
+) -> None:
+    use_generated_agent_storage(fixture)
+
+    assert fixture.verify() == []
+
+
+@pytest.mark.parametrize(
+    ("drift", "diagnostic"),
+    [
+        ("owner_vendor", "vendor"),
+        ("transitive_only", "direct runtime"),
+        ("floating_generator", "exact semantic version"),
+    ],
+)
+def test_generated_agent_storage_rejects_unpaired_inputs(
+    fixture: InventoryFixture, drift: str, diagnostic: str
+) -> None:
+    use_generated_agent_storage(fixture, drift=drift)
+
+    errors = fixture.verify()
+    assert any(diagnostic in error.lower() for error in errors), errors
+    assert all("evidence sha256" not in error for error in errors)
+
+
 def use_capability_iam_sdk_archive(
     fixture: InventoryFixture,
     *,

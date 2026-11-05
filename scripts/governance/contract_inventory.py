@@ -52,6 +52,11 @@ VERSION_MANIFEST_KINDS = {
 
 
 AGENT_SYSTEM_EDGE = "EDGE-AGENT-SYSTEM"
+AGENT_STORAGE_EDGE = "EDGE-AGENT-STORAGE"
+AGENT_STORAGE_PIN = "contract/storage/v3/provenance.json"
+AGENT_STORAGE_VENDOR = "contract/storage/v3"
+STORAGE_REPOSITORY = "apps/kokoro-storage"
+STORAGE_PROTO = "kokoro/storage/v3/storage.proto"
 AGENT_SYSTEM_GENERATOR = "not-applicable:handwritten-agent-system-http"
 AGENT_REPOSITORY = "apps/kokoro-agent"
 SYSTEM_REPOSITORY = "apps/kokoro-system"
@@ -427,7 +432,7 @@ def _verify_go_mod_assertion(
 
 
 def _verify_agent_uv_lock(
-    label: str, version: str, blob: bytes, errors: list[str]
+    label: str, package_name: str, version: str, blob: bytes, errors: list[str]
 ) -> None:
     try:
         lock = tomllib.loads(blob.decode("utf-8"))
@@ -464,11 +469,17 @@ def _verify_agent_uv_lock(
             or not dependency["name"].strip()
             for dependency in dependencies
         )
-        or [dependency for dependency in dependencies if dependency["name"] == "httpx"]
-        != [{"name": "httpx"}]
+        or [
+            dependency
+            for dependency in dependencies
+            if dependency["name"] == package_name
+        ]
+        != [{"name": package_name}]
     ):
-        errors.append(f"{label}: uv.lock must have one direct runtime httpx dependency")
-    matches = [package for package in packages if package.get("name") == "httpx"]
+        errors.append(
+            f"{label}: uv.lock must have one direct runtime {package_name} dependency"
+        )
+    matches = [package for package in packages if package.get("name") == package_name]
     source = matches[0].get("source") if len(matches) == 1 else None
     if (
         EXACT_SEMVER_PATTERN.fullmatch(version) is None
@@ -481,7 +492,7 @@ def _verify_agent_uv_lock(
         or not source["registry"].strip()
     ):
         errors.append(
-            f"{label}: uv.lock must resolve one registry httpx at {version!r}"
+            f"{label}: uv.lock must resolve one registry {package_name} at {version!r}"
         )
 
 
@@ -500,6 +511,89 @@ def _strict_json_blob(blob: bytes) -> Any:
     return json.loads(
         blob.decode("utf-8"), object_pairs_hook=unique, parse_constant=invalid_constant
     )
+
+
+def _verify_agent_storage_codegen(
+    root: Path,
+    label: str,
+    edge: dict[str, Any],
+    assertion: dict[str, Any],
+    errors: list[str],
+) -> None:
+    version = _text(assertion, "version", label, errors)
+    if EXACT_SEMVER_PATTERN.fullmatch(version) is None:
+        errors.append(f"{label}: generator must be an exact semantic version")
+        return
+    _verify_declared_package_version(
+        label,
+        _text(assertion, "declared_value", label, errors),
+        "protoc-gen-connectrpc",
+        version,
+        errors,
+    )
+    blob = _verify_blob_reference(root, label, assertion, errors)
+    if blob is None:
+        return
+    try:
+        pin = _strict_json_blob(blob)
+        owner_commit = edge["owner"]["repository_commit"]
+        if not isinstance(pin, dict) or (
+            pin.get("owner"),
+            pin.get("owner_repository"),
+            pin.get("owner_commit"),
+        ) != ("kokoro-storage", STORAGE_REPOSITORY, owner_commit):
+            raise ValueError("Agent Storage receipt owner pin differs")
+        agent_commit = assertion["repository_commit"]
+        provenance = git_blob(
+            root, STORAGE_REPOSITORY, owner_commit, CONTRACT_PROVENANCE
+        )
+        inputs = ("kokoro/common/v1/common.proto", STORAGE_PROTO)
+        sources = []
+        combined = hashlib.sha256()
+        for source in inputs:
+            owner_path = f"contract/proto/{source}"
+            vendor = f"{AGENT_STORAGE_VENDOR}/proto/{source}"
+            owner_bytes = git_blob(root, STORAGE_REPOSITORY, owner_commit, owner_path)
+            if owner_bytes != git_blob(root, AGENT_REPOSITORY, agent_commit, vendor):
+                raise ValueError(f"Agent Storage vendor differs from owner: {source}")
+            combined.update(owner_bytes)
+            sources.append(
+                {
+                    "owner_path": owner_path,
+                    "path": vendor,
+                    "sha256": sha256_bytes(owner_bytes),
+                }
+            )
+        provenance_path = f"{AGENT_STORAGE_VENDOR}/owner-provenance.json"
+        if provenance != git_blob(
+            root, AGENT_REPOSITORY, agent_commit, provenance_path
+        ):
+            raise ValueError("Agent Storage vendor provenance differs from owner")
+        provenance_data = _strict_json_blob(provenance)
+        if (
+            not isinstance(provenance_data, dict)
+            or provenance_data.get("files") != list(inputs)
+            or provenance_data.get("combinedSha256") != combined.hexdigest()
+            or pin.get("sources") != sources
+            or pin.get("owner_provenance")
+            != {
+                "path": provenance_path,
+                "sha256": sha256_bytes(provenance),
+                "combined_sha256": combined.hexdigest(),
+            }
+        ):
+            raise ValueError("Agent Storage source or provenance digest differs")
+        if (
+            _json_pointer(pin, "/codegen/protoc_gen_connectrpc") != version
+            or _json_pointer(pin, "/codegen/connectrpc_parameter") != "io=async"
+            or f"connectrpc@{_json_pointer(pin, '/runtime/connectrpc')}"
+            != edge["runtime_package_version"]
+        ):
+            raise ValueError(
+                "Agent Storage generation or runtime version differs from receipt"
+            )
+    except (KeyError, TypeError, ValueError) as error:
+        errors.append(f"{label}: {error}")
 
 
 def _verify_agent_system_receipt(
@@ -890,7 +984,7 @@ def _verify_version_assertion(
     elif manifest_kind == "go-mod":
         _verify_go_mod_assertion(label, assertion, package_name, version, blob, errors)
     elif manifest_kind == "uv-lock" and blob is not None:
-        _verify_agent_uv_lock(label, version, blob, errors)
+        _verify_agent_uv_lock(label, package_name, version, blob, errors)
 
 
 def _verify_version_assertions(
@@ -929,6 +1023,18 @@ def _verify_version_assertions(
         and owner.get("contract_path") == SYSTEM_OPENAPI
         and generator == AGENT_SYSTEM_GENERATOR
     )
+    agent_storage = (
+        edge_id == AGENT_STORAGE_EDGE
+        and edge.get("caller") == "Agent"
+        and edge.get("protocol") == "connect-proto"
+        and isinstance(owner, dict)
+        and owner.get("name") == "kokoro-storage"
+        and owner.get("repository_path") == STORAGE_REPOSITORY
+        and owner.get("contract_path") == f"contract/proto/{STORAGE_PROTO}"
+        and owner.get("contract_version") == "kokoro.storage.v3"
+    )
+    if edge_id == AGENT_STORAGE_EDGE and not agent_storage:
+        errors.append(f"{edge_id}: assertion requires the scoped Agent Storage v3 edge")
     browser_exempt = (
         edge_id == "EDGE-BROWSER-WEB"
         and edge.get("protocol") == "same-origin-http"
@@ -976,9 +1082,33 @@ def _verify_version_assertions(
                 f"{label}: requires Agent uv.lock and direct httpx runtime evidence"
             )
             continue
-        if not agent_system and manifest_kind == "uv-lock":
+        if agent_storage:
+            expected_kind, expected_path, expected_package = (
+                ("agent-storage-codegen", AGENT_STORAGE_PIN, "protoc-gen-connectrpc")
+                if field == "code_generator_version"
+                else ("uv-lock", "uv.lock", "connectrpc")
+            )
+            if (
+                manifest_kind != expected_kind
+                or raw_assertion.get("repository_path") != AGENT_REPOSITORY
+                or raw_assertion.get("path") != expected_path
+                or raw_assertion.get("package_name") != expected_package
+            ):
+                errors.append(
+                    f"{label}: requires Agent {expected_path} and {expected_package}"
+                )
+                continue
+            if field == "code_generator_version":
+                _verify_agent_storage_codegen(root, label, edge, raw_assertion, errors)
+                continue
+        elif manifest_kind == "agent-storage-codegen":
             errors.append(
-                f"{label}: uv.lock assertion is only allowed for {AGENT_SYSTEM_EDGE}"
+                f"{label}: codegen assertion is only allowed for {AGENT_STORAGE_EDGE}"
+            )
+            continue
+        if not (agent_system or agent_storage) and manifest_kind == "uv-lock":
+            errors.append(
+                f"{label}: uv.lock assertion is only allowed for {AGENT_SYSTEM_EDGE} or {AGENT_STORAGE_EDGE}"
             )
             continue
         if capability_iam:
