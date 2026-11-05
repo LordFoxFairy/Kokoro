@@ -49,7 +49,7 @@ BFF 沿已发布的 `POST /v1/sessions/{id}/runs/{runId}/control`，只把 `run.
 项目排序仅覆盖 App 已支持的左栏普通项目，复用可信 tenant/subject 的浏览器偏好，按 ready owner IDs 对齐，保持 pin 和会话顺序；键盘取消不写。项目网站当前只存在 preview，正式读写 owner 未证，不恢复假关联，也不将预览冒称持久化，待 A‑06/A‑11 核可落地事实。
 
 
-**A‑08 附件设计门基线（尚未开写区）。** 原手册的本地文件、资料库、最近任务是三个真实来源。App 现本地文件走 `/api/hub/library/files`→BFF→Storage 的实际上传、CLEAN 与原键恢复，可复用，不重造上传。资料库的个人 Asset 与正式 Artifact 是不同 owner 类型，现个人下载按本人 scope、CLEAN、大小和 SHA 校对；没有现役 `MessageCreateRequest` 附件字段、持久 Run 绑定、Agent input read。当前 Agent→Storage 权限仅覆盖 conversation Artifact 交付的七项写/回读，不包括任意个人 Asset 或最终 Artifact 读取，禁止借该身份扩大到通用下载。
+**A‑08 附件设计门基线（尚未开写区）。** 原手册的本地文件、资料库、最近任务是三个真实来源。App 现本地文件走 `/api/hub/library/files`→BFF→Storage 的实际上传、CLEAN 与原键恢复，可复用，不重造上传。当前 Composer 的 ＋/斜杠只接 Skill 菜单。资料库的个人 Asset 与正式 Artifact 是不同 owner 类型，`GET /v1/library?kind=file|artifact` 可做候选读；现个人下载按本人 scope、CLEAN、大小和 SHA 校对，不等于 Run 授权。最近任务已有本人 active `GET /v1/sessions` 和 exact Snapshot `deliveries` 可作候选来源，FINAL artifact 选择可复用同类引用；无产物的 final 答复或显式跨项目范围仍须定资格，不能悄悄缩成仅有产物的历史。没有现役 `MessageCreateRequest` 附件字段、持久 Run 绑定、Agent input read。当前 Agent→Storage 权限仅覆盖 conversation Artifact 交付的七项写/回读，不包括任意个人 Asset 或最终 Artifact 读取，禁止借该身份扩大到通用下载。
 
 候选优先 BFF 用已授权的 canonical 资源 ID 验证并在现 Message/Run 同事务冻结只读引用；上传得到的 ID、浏览器标题、URL、客户端 `user_id` 都不是读取资格，不复制正文到 Message 或公开 share。Agent 消费同 Run 的窄读取边界，优先复用现 service identity/Run 归属，由 BFF 找回已绑定的原 scope，再走 Storage 现役精确版本/CLEAN/撤权检查；不传浏览器 Cookie、不给 Agent 整个个人库权限、不把临时签名 URL 当 durable 身份。若选择 Storage 直接授权，须先证明现合同支持精确 Run 资格与撤权，而不是增加宽泛服务权限。挂载为只读，明确大小/类型，失败不标已附加或默默发空 Run。近期任务究竟允许其明确选中的最终结果/产物还是经批准的公开快照，须先核产品边界，不读私有过程、提示和 capsule；外部连接器继续走 B 的正式授权，非此切片的前置。
 

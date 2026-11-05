@@ -1,4 +1,16 @@
-## Task A 当前检查点：A‑04 已验收，继续 A‑05／A‑06
+# Current Facts
+
+## Task A current checkpoint (2026-11-05)
+
+Goal remains **ACTIVE**. A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
+
+The current Root candidate pairs Agent `92e235e782178b7002f0bd68daa143b507db870d`, BFF `40bed716edf43c937c5f6e5ef2143a437ed412e4`, and App `b1c2c1e8ca53095bccf50a92cb0d88be8ce8`. Each is on its original PR branch and pushed; no main merge or deployment. Root gitlinks are staged but not yet committed.
+
+Verification at this checkpoint: topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; App focused UI 41 passed; BFF focused suites, typecheck/lint/build and real isolated PG/Redis A-06 integration passed. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green.
+
+Next: commit the Root pairing and ledger update, then pass the A-08 design gate and implement only the minimum attachment/reference binding needed to close A-08 and the A-05 reference-retention gap.
+
+## 历史检查点（按时间倒序，保留原收据）
 
 A‑04 在 Root `d03d7c51` 精确组合完成：Chromium 原生会话、一次真实发送和 live SSE、真实 Worker `write_file → deliver → final`、Storage/MinIO/ClamAV、Canvas 原字节下载、刷新仅一份产物和终稿、同 Run 三个 Billing 封存 ACK。收据 `8dfd5e705e2aab50797af6cf`；此旅程模型为离线替身，真实本地 Ollama 用量按原收据单列。主控又在最终 Agent `815ef5c` 实跑旧 Worker SIGKILL，真实自然 lease 到期 3326 ms、第二代接管、拒绝旧写和 Redis 同请求重投，工具副作用与终态各一次，收据 `bf56ed4c4b64…fe808`。Swarm 精确恢复与资源回收见 [TODO](../todo.md)。Task A 已验收 5/16，Goal active；不合并 main、不部署。
 
