@@ -1,8 +1,14 @@
-## Task A 当前检查点：退役 Scheduler→Agent 直连
+## Task A 当前检查点：Web→BFF→Agent 已发布 Run 主链验收
+
+App `4ac9d83d` 的生产 Session adapter 在 Node 22 调用真实 BFF 和 Agent `163b38a`，PG/Redis 均真实隔离。提交 Message 与同键重放均为 202；SSE 事件与持久游标一致，续读不重发首帧，未知游标返回 400；真 Agent 认领后 BFF Run Display 200，同租户异用户 404。取消 202 和同键重放仅留一条 Agent PG 命令与一帧 Redis 控制，摘要相同。临时进程、数据库与 Redis 均回收。Session 准入受控；未重跑浏览器登录、Worker、模型或取消终态。
+
+BFF #18 `2dcb75c` 只更新 Agent 8.11 来源并移除无引用的旧 vendor，18 个生成文件、生产代码、锁和 Public 28.19 保持；主控核对实跑构建字节，双次再生和定向契约测试通过。App 的真实外部渠道 setup UI 尚无 Agent owner 路由，属于 A‑13，未删除、未验成成功。已发布契约 checkpoint 为 15 active／0 declared broken／0 illegal，不代表全部产品行为验收。G3 仍待最终运行范围和结构差分，Goal 保持 active；见 [TODO](../todo.md)。未合并、未部署。
+
+## Task A 前置交付：退役 Scheduler→Agent 直连
 
 只读检查现有本地持久 Scheduler 库，非新建测试库：活跃排程 0、未完成 outbox 0、可恢复暂停排程 2 条均指向 BFF 回调，Agent 直连和未分类均为 0。未改库或调度记录。现役仍由 Scheduler 投递 BFF，BFF 持久接收后由 BFF worker 调用 Agent；Root 删除无消费者的直连边，保留历史 checkpoint。不新增路由。
 
-当前 checkpoint 13 active／2 declared broken／0 illegal。Goal 仍 active，下一步是 Run/Web 与最终运行范围；[TODO](../todo.md) 为唯一清单。各仓沿原 PR，不合并、不部署。
+该阶段 checkpoint 13 active／2 declared broken／0 illegal。
 
 ## Task A 前置交付：BFF→Billing 已验收，购买仍关闭
 

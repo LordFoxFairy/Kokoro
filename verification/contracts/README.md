@@ -85,13 +85,14 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-scheduler-bff-only.json
+  --expected verification/contracts/checkpoints/task-a-agent-web-runs.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A composition returns `1` because it declares two broken
-edges, with thirteen active and no illegal edge. Earlier
+the current Task A published-contract composition has fifteen active edges,
+no broken edges and no illegal edges. This does not claim a working Agent
+external-channel setup endpoint; that product gap remains A‑13. Earlier
 checkpoints remain historical snapshots, not the current composition gate.
 The checkpoint CLI compares the complete active/broken/illegal ID sets with
 the selected checkpoint, runs the same compatibility verifier, and returns
