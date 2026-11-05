@@ -81,16 +81,17 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/task-a-capability-iam021.json
+  --expected verification/contracts/checkpoints/task-a-bff-capability-http7.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current Task A Capability→IAM 0.21 composition returns `1` because it
-declares nine broken edges, with seven active and no illegal edge. The prior
-Task A Agent→System, BFF→System, IAM 0.21, W1E, W1D and Wave 0A checkpoints
-remain historical snapshots, not the current composition gate. The checkpoint CLI instead compares the complete
-active/broken/illegal ID sets with the selected checkpoint, runs the same
+the current Task A BFF→Capability HTTP 7.0 composition returns `1` because it
+declares eight broken edges, with eight active and no illegal edge. The prior
+Task A Capability→IAM, Agent→System, BFF→System, IAM 0.21, W1E, W1D and Wave 0A
+checkpoints remain historical snapshots, not the current composition gate.
+The checkpoint CLI compares the complete active/broken/illegal ID sets with
+the selected checkpoint, runs the same
 compatibility verifier, and returns `0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not
 pass, and schema, gitlink, digest, evidence or version drift remains fatal.

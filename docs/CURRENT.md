@@ -1,8 +1,14 @@
-## Task A 当前检查点：Capability→IAM 0.21 已验收
+## Task A 当前检查点：BFF→Capability HTTP 7.0 已验收
+
+以 BFF `12ca1bf`、Capability `2409496` 的精确组合验六条生产读取：目录、本人技能列表／详情／两页历史、MCP 服务／连接。HTTP 7.0 owner 与 BFF vendor 同字节，16 个生成文件两次重生成一致。真 Capability Nest 使用隔离 PG／Redis；精确 BFF 生产 Skills/MCP 模块的五个非空入口通过（本人列表本轮验生成客户端，入口复用 Sandbox 收据），`ListHubSkills` 的 HTTP 目录与真实 Connect 当前版本核对同一 series/revision。另一主体和租户无权读他人的私有对象；缺凭据、错用途、租户头错配均拒绝。
+
+BFF Session/MCP 准入及用量读是受控接线，不称 IAM、浏览器或全产品 E2E。临时实例与自有资源已回收。首轮私有探针在库 URL、测试接线或本地断言失败，修探针后通过，未改生产。未重跑 R336。现行 checkpoint 8 active／8 declared broken／0 illegal；Goal 保持 active，按 [TODO](../todo.md) 先做 Storage 来源和缺证，G3 尚未结项，不进入 A‑01/A‑02/A‑07。
+
+## Task A 前置交付：Capability→IAM 0.21 已验收
 
 Capability #13 `2409496` 消费与 IAM `b6a9745` clean pack 字节相同的 0.21 SDK，生产准入与数据模型不变。Root 从实际 Git blobs 校验归档摘要、内嵌 provenance、owner 契约/生成配置/依赖锁，以及 Capability 默认运行安装图、SDK SRI 和 zod 来源；禁止以复制的 provenance 或覆盖依赖替代验证。
 
-用 0.21 实装包与 Capability 生产 verifier 连接真实 IAM：同一 proof 首次绑定成功，撤权后被拒，审计记录允许与撤权拒绝。隔离 PG/Redis 无新增残留；BFF 仅为本地绑定对端，不称真实 BFF 链路。未重跑 R336。现行 checkpoint 7 active／9 declared broken／0 illegal；G3 尚未闭环，按 [TODO](../todo.md) 继续，A‑01/A‑02/A‑07 未启动。
+用 0.21 实装包与 Capability 生产 verifier 连接真实 IAM：同一 proof 首次绑定成功，撤权后被拒，审计记录允许与撤权拒绝。隔离 PG/Redis 无新增残留；BFF 仅为本地绑定对端，不称真实 BFF 链路。未重跑 R336。该阶段 checkpoint 7 active／9 declared broken／0 illegal；G3 尚未闭环，按 [TODO](../todo.md) 继续，A‑01/A‑02/A‑07 未启动。
 
 ## Task A 前置交付：Agent→System 6.1 治理已验收
 

@@ -908,8 +908,8 @@
       "protocol": "http-openapi",
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@24.20.0",
-      "state": "broken",
-      "reason": "Current Capability HTTP 7.0 and the BFF vendor bytes match; this does not establish all runtime identity and operation cases on the final pair.",
+      "state": "active",
+      "reason": "Exact Capability HTTP 7.0 vendor and reproducible BFF generated client; six production reads exercise real Capability Nest and PostgreSQL/Redis, with populated BFF feature entrypoints and subject/tenant/credential isolation. The other three generated reads have no BFF production caller.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",
@@ -944,44 +944,44 @@
         {
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "src/http/routes/validate-skill-draft.ts",
-          "sha256": "a11da7bb35d570ff839cc9ccdd7261fe09988fedd8de712665af2ee96ce7ad2a"
+          "path": "src/infrastructure/clients/platform/skill-specification-facade.ts",
+          "sha256": "71ad6da556c3328a7aa968e5b562f6161aba227a92028e593bc77a042fb848ad"
         },
         {
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "src/infrastructure/clients/platform/validate-skill-draft-projector.ts",
-          "sha256": "3b62f35a9dcc872e0eed6d4daf8f95acee75805825ac989666b82b760071a765"
+          "path": "src/http/routes/managed-personal-skills.ts",
+          "sha256": "70658306faad3969469543cdf4da8ea297e1615fadb590454089b426e3abfdfe"
         },
         {
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "test/skill-validate-http.test.mjs",
-          "sha256": "daffd82e7cc131585d1d19044f0b567c7feaaea442202d6bf0289ba1f031c479"
+          "path": "src/modules/mcp/platform-projection.middleware.ts",
+          "sha256": "6d1f62782b0ef4b23d16761889cb2e5c4f538de818d10510059b0c7b789d07db"
         },
         {
           "repository_path": "apps/kokoro-bff",
           "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "src/http/routes/publish-skill.ts",
-          "sha256": "eec369e6a77dc0e3e6f619b46b066e70672d94ac7fd4f140d99e67b72f8236c2"
+          "path": "src/modules/skills/skills.module.ts",
+          "sha256": "4a53763302d2ad0989b0abf1ed414d4a4ed0a2876abc5a2021db87535885a98b"
         },
         {
-          "repository_path": "apps/kokoro-bff",
-          "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "src/infrastructure/clients/platform/catalog-connect.ts",
-          "sha256": "cfaaf6c363d5215bd87ba1d1129abecfdba7aaa6944e2269875bc690e9e7477d"
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "src/http/bff-projection.guard.ts",
+          "sha256": "e03f3c82c058a27bb353268f6b1e33f70137e2830b71909aee01a871a187b135"
         },
         {
-          "repository_path": "apps/kokoro-bff",
-          "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "src/infrastructure/clients/platform/publish-skill-projector.ts",
-          "sha256": "d08e9578c2dd36c51c5921c0da154b02547026c32c3f7f602a6e059dc25f6910"
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "src/modules/mcp/connection/mcp-connection-projection.controller.ts",
+          "sha256": "55cf4103c67936c35841a722e7b2585c5e2eb39c0a4a5958965eb33937791664"
         },
         {
-          "repository_path": "apps/kokoro-bff",
-          "repository_commit": "12ca1bfda4b7b9e6dea16926d0e0713ab5915ddb",
-          "path": "test/skill-publish-http.test.mjs",
-          "sha256": "690670e184f2fcf4b3c24c9d24998825117886911362b0891a296053818fff77"
+          "repository_path": "apps/kokoro-capability",
+          "repository_commit": "24094960bad58d1b6a85a273d3bc94b0a0e0d1dc",
+          "path": "src/modules/mcp/connection/mcp-connection-projection.reader.ts",
+          "sha256": "e634334f03eb6a29f95ab0df93e758a80bb5f9f8cb9d744a580dcf3daa99e914"
         },
         {
           "repository_path": "apps/kokoro-bff",

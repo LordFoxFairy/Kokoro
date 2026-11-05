@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-04）
 
-**当前：正式原生验收已通过；八个数据 owner 同库安装通过，BFF→IAM 业务 HTTP 已正式配对 0.21，BFF→System 6.1 已关闭；Agent→System 真调用与 Python 治理、Capability→IAM 0.21 真授权与归档治理均已验收。G3 整体仍未结项；A‑01/A‑02/A‑07 未开始。机器 Goal 已启用（active），范围为 G3/C‑4 收口。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
+**当前：正式原生验收已通过；八个数据 owner 同库安装通过，BFF→IAM 业务 HTTP 已正式配对 0.21，BFF→System 6.1 已关闭；Agent→System 真调用与 Python 治理、Capability→IAM 0.21 真授权与归档治理、BFF→Capability HTTP 7.0 六条现役读均已验收。G3 整体仍未结项；A‑01/A‑02/A‑07 未开始。机器 Goal 已启用（active），范围为 G3/C‑4 收口。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
 
 ## C‑4 交付检查点
 
@@ -20,7 +20,7 @@
 | --- | --- | --- |
 | IAM #6 / Capability #13 / Agent #46 | 原 PR 精确 head `b6a9745` / `2409496` / `91c80f7`；已验受影响工程门、真实依赖与 Agent 自然超窗 | 仅随对应产品切片扩大验收 |
 | BFF #18 / App #50 | 原 PR `12ca1bf` / `e726cd61`；完整工程门通过，BFF 默认门的两项条件 PG 已另在真库补齐 | 不重复现有终态验证 |
-| Root #66 / G3 治理 | 实际锁定编译器补齐后，严格结构审计 FAIL：388 条、0 个未验证；新增可见的 7 条全是既有 Billing TS 配置差额，System 无新增。合同余项按实际调用、来源和业务缺口区分，不把全部标成运行故障 | 现行 7 active／9 declared broken／0 illegal；结构审计既有红项及其他现役边继续单列 |
+| Root #66 / G3 治理 | 实际锁定编译器补齐后，严格结构审计 FAIL：388 条、0 个未验证；新增可见的 7 条全是既有 Billing TS 配置差额，System 无新增。合同余项按实际调用、来源和业务缺口区分，不把全部标成运行故障 | 现行 8 active／8 declared broken／0 illegal；结构审计既有红项及其他现役边继续单列 |
 | I‑15 / 运行范围 | Root `430ce075`：八个数据 owner 用同一连接角色在一个新隔离数据库串行执行正式 installer，全通过；每次邻 schema catalog 未变，`public` 不变、跨 schema FK 为零，临时库已回收。随后 BFF 仅改 IAM 生成来源，installer/canonical SQL 原字节保持 | 同库安装已验；八仓同库同时运行、Redis/业务旅程未验，按实际涉及的产品链补证。未运行全站浏览器、CI、部署 |
 
 ## G3 剩余验收
@@ -32,8 +32,13 @@
 - [x] **BFF→System 合同边**：在精确组合的真实 System 补齐 16 个生成模型操作及独立手写 manifest。实际覆盖创建/重放/恢复、不泄露凭据、跨租户 404、缺发布条件 428、合法发布、陈旧路由 409 且状态不变、标签更新与五类列表；管理发现只访问本地 metadata。生成器与 Node 版本断言按 BFF Git 原件固定，精确边恢复 active。
 - [x] **P0 · Agent→System 治理证据**：精确核对 System `49a5f8e` 6.1 OpenAPI、owner provenance 与其 23 个 Git 源文件、Agent `91c80f7` 的唯一手写消费收据与 `uv.lock` 直接运行依赖 `httpx@0.28.1`。具名例外只适用这条边，错来源、仅传递依赖与有条件锁记录均拒绝；历史 checkpoint 不变。真实路由／凭据收据的 Agent 运行基线仍为 `40effb2`，客户端、Worker、锁在 `91c80f7` 未变，直接复用、不重跑。
 - [x] **P1 · Capability→IAM**：Capability #13 `2409496` 使用独立 clean IAM `b6a9745` 0.21 归档（SHA‑256 `458da2ba…cad9`），Root 同时核归档、owner Git 来源、pnpm 安装和 zod 的实际来源，拒绝带真 provenance 的重包与依赖覆盖。真实 IAM 对同一生产 verifier/proof 先允许精确绑定，撤权后拒绝；审计记录 `DIRECT_USER_CURRENT` 与 `PERMISSION_NOT_CURRENT`，隔离 PG/Redis 零新增残留。Capability 生产源码不变，只证明这一条边，未重跑 R336。
-- [ ] **P2 · BFF→Capability（下一条现役边）**：BFF `12ca1bf` 和 Capability `2409496` 的 HTTP 7.0 原件同字节；先按具名运行入口梳理现有组合收据，再只补缺失的身份、操作与拒绝场景。P1 只完成 Capability→IAM，不冒称反向或 BFF 全边验收。
-- [ ] **P3 · 其余现役边与 G3 退出项**：逐条明确实际 owner、缺的证据和完成条件。Billing checkout 的 503、Scheduler→Agent 的旧批准拓扑须经各 owner 明确处置，不补假实现。已有结构告警与新增问题分别记录，不靠改状态代替验收。
+- [x] **P2 · BFF→Capability HTTP 7.0**：BFF `12ca1bf` 与 Capability `2409496` 原件同字节，16 个生成文件复现一致。真 Capability Nest／隔离 PG/Redis 验六条现役读：非空目录、本人列表/详情/两页历史、MCP 服务与本人连接；补五个非空 BFF 生产入口及目录到实际 Connect 当前版本的精确绑定；本人列表入口复用 Sandbox 收据。他主体/租户隔离、无凭据/错用途/租户错配拒绝。BFF Session/MCP 授权、用量读为受控边界，不称真实 IAM 登录旅程；三个无生产 caller 的生成读与旧 R336 不重跑。
+- [ ] **P3 · 其余现役边与 G3 退出项**：**下一步先做 Storage 精确配对**；本轮并行只读盘点，未改 owner 或 pin。
+  - [ ] **Storage 组合（Storage、Agent、BFF、Capability）**：Agent 与 BFF 仍消费旧 `d13f33a`，先核现 `4a99061` 再生差额。Agent 已有真 `4bfb5cc` × `4a99061` 收据 `3d0ef92752028538c5d81e36`（原生交付、原字节、失效租约、EICAR、隔离），到 `91c80f7` 的 Storage 调用与运行依赖未变，不重跑整条；BFF 只补当前普通资产的 canonical 保护和两类 scope release，Capability 只补 connector icon 真实激活／配对，不重跑 package R336。
+  - [ ] **Web→BFF、BFF→Agent、Agent→Capability**：分别核剩余活跃入口和运行证据；T‑09 终态已验，不重复、不当全边。
+  - [ ] **BFF→Billing（Billing、BFF/App 契约 owner）**：现役 11 项另验；有效 checkout 当前在 BFF 本地返回 503，Billing 契约声明但 Nest 未注册。须裁决本轮正式保持关闭并处置公开契约，或交付真实 checkout、持久购买意图和幂等；不接回旧 handler。
+  - [ ] **Scheduler→Agent（Root 架构、Scheduler、Agent，BFF 确认承接）**：真实产品路径是 Scheduler→BFF 持久接收→BFF worker→Agent `/v1/runs`；架构仍批准直边。核存量目标后明确撤下直边或给出具名用途和 receiver 合同；历史 checkpoint 保留。
+  - [ ] **G3 原退出审计**：验证最终组合、同步运行范围与 I‑15 缺证；结构审计既有红项与新增问题分列，不降门、不以状态代替验收。
 
 ## 已收口的阶段（保留证据，不重跑）
 
