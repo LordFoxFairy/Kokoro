@@ -1,10 +1,16 @@
-## Task A 当前检查点：Agent→Capability 已验收
+## Task A 当前检查点：BFF→Billing 已验收，购买仍关闭
+
+BFF #18 `b65cf76` 固定 Billing `b7c98588` 4.0.0-experimental.10。16 个生成文件双次再生同字节、8 个定向契约测试通过；生产源码和锁保持。真实 BFF/Billing HTTP 在同一隔离 PostgreSQL 的各自 schema 内验证 11 个现役操作：目录、个人账户／摘要／账本、定价发布／回读／非现金积分入账，以及预占／恢复／结算。一次扣 1、释放 9，同键重放仍只有一笔结算和用量记录；临时数据库与 Redis 标记已回收。浏览器 Session、IAM 响应和 Agent evidence 是受控边界，不称真实登录、支付或模型执行；公开 checkout 保持 503。
+
+本阶段 checkpoint 13 active／3 declared broken／0 illegal，Goal 仍 active。Run/Web 与 Scheduler 存量并行推进，G3 完成后再进 A‑01/A‑02、A‑07；[TODO](../todo.md) 为唯一清单。各仓沿原 PR，未合并、未部署。
+
+## Task A 前置交付：Agent→Capability 已验收
 
 Agent #46 `163b38a` 固定 Capability `2409496` 的四份 Proto 并离线再生成，12 个允许 RPC 的描述符不变。Root 只核精确 Git 原件、生成配置和 Connect 直接运行锁；独立 profile 继续沿 Agent 原校验，不冒称 Root 重做全部语义检查。
 
 用生产 Agent transport 和签名器访问真实 Capability Nest、IAM `b6a9745` 与隔离 PG/Redis。有效私有 MCP 绑定产一条持久授权；owner 撤权后同键、新键均拒绝，IAM 仍判当前，确认拒绝来自 Capability 的绑定状态。声明发现对端与 Run lease 输入受控；未执行模型、工具、包下载。探针启动曾因私有 TS loader 与本机库角色接线未进入业务，修正接线后 exit 0；数据库与 Redis 标记无新增残留。
 
-当前 checkpoint 12 active／4 declared broken／0 illegal；Goal 保持 active。接着补 BFF→Billing 现役调用，不做真实支付。详见 [TODO](../todo.md)。未合并或部署。
+该阶段 checkpoint 12 active／4 declared broken／0 illegal。
 
 ## Task A 前置交付：Capability→Storage 图标链路已验收
 

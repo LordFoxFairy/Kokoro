@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "active_ids": [
+    "EDGE-AGENT-CAPABILITY",
+    "EDGE-AGENT-STORAGE",
+    "EDGE-AGENT-SYSTEM",
+    "EDGE-BFF-BILLING",
+    "EDGE-BFF-CAPABILITY",
+    "EDGE-BFF-IAM",
+    "EDGE-BFF-SCHEDULER",
+    "EDGE-BFF-STORAGE",
+    "EDGE-BFF-SYSTEM",
+    "EDGE-BROWSER-WEB",
+    "EDGE-CAPABILITY-IAM",
+    "EDGE-CAPABILITY-STORAGE",
+    "EDGE-SCHEDULER-BFF"
+  ],
+  "broken_ids": [
+    "EDGE-WEB-BFF",
+    "EDGE-BFF-AGENT",
+    "EDGE-SCHEDULER-AGENT"
+  ],
+  "illegal_ids": []
+}
