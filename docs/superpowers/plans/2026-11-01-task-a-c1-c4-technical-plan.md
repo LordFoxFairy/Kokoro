@@ -8,7 +8,7 @@
 
 **Tech Stack:** 现有 TypeScript/NestJS/pnpm、PostgreSQL/Redis、owner generated clients、Python Root 治理；各仓 Node/Python/Go 版本以其 manifest/lockfile 为准。
 
-**当前检查点：** G1/T‑05、T‑17 和 T‑11 已验；T‑09/T‑16 沿各原 PR 交付，Root #66 精确组合 `4cb91169`，现役拓扑、checkpoint、relay 通过。T‑15 正式 Chromium 5/5（收据 `116d7c62ab4aa5e90f2076d4`）及本机保留的同步实例已实测。Root 历史合同/结构红项仍保留，I‑15 全 owner 单库未实证，不宣布 G3 整体或 Task A 闭环；A‑01/A‑02/A‑07 未启动。机器 Goal 已清除，执行状态以[当前清单](../../../todo.md)为准。
+**当前检查点：** G1/T‑05、T‑17、T‑11、T‑15 正式 Chromium 5/5 已验；I‑15 的八个数据 owner 用同一连接角色、同一隔离 PG 库的正式 installer 已验并回收，联合业务运行未验。BFF #18 `12ca1bf` 已固定 IAM 0.21，生成产物无变化；新精确候选的 Account/Team 真链定向通过并回收，Root 现行 checkpoint 为 4 active／12 declared broken／0 illegal，历史 checkpoint 原样。Root 严格结构审计 388 FAIL／0 未验证，保持实际红项；G3 及 Task A 未整体闭环，A‑01/A‑02/A‑07 未启动。机器 Goal 已清除；详见[当前执行清单](../../../todo.md)。
 
 ---
 

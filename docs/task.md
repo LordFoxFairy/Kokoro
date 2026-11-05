@@ -17260,3 +17260,8 @@ Root4e603743原正式五旅程、真实账户消费，以及真实Skill包生产
 ### Task A 2026-11-04：原 PR 精确配对与 T‑15 原生验收
 
 [当前 TODO](../todo.md) 与 [CURRENT](CURRENT.md) 记录现态。IAM #6、Capability #13、Agent #46、BFF #18、App #50 已按各自原 PR 提交并核对远端 head。Root #66 的 `4cb91169` 精确组合已通过拓扑、checkpoint、现役 relay 和正式原生 5/5（`116d7c62ab4aa5e90f2076d4`，凭据扫描、临时资源回收通过）；独立保留的本机同步实例已实测登录、项目读取及共享 Admin。首次 0/5 为本机 PostgreSQL URL 缺显式角色，复用本机归一化后通过，未改生产认证。仍有 13 条声明破损边、既有结构告警与未验证工具链；I‑15 全 owner 单库未实证。未合并 main、未部署；机器 Goal 已清除，A‑01/A‑02/A‑07 未实施。
+
+
+### Task A 2026-11-04：I‑15 同库安装与 BFF→IAM 0.21 收口
+
+Root `430ce075` 八个正式 installer 在同一隔离 PG 库、同一角色全部通过；邻 catalog 和 public 保持、无跨 schema FK、已回收，不是八仓同时运行。BFF #18 `12ca1bf` 更新业务契约来源，不改 16 个生成产物或生产源码。Root `98b6a9d9` 实测 Account profile/会话列表、自撤冲突及 Team 401/200/404，状态保留并回收；原同步环境未动。Root 新 checkpoint 4 active／12 declared broken／0 illegal；严格结构审计真实工具链 388 条差额／0 未验证，新增可见均为 Billing 原有配置差额。Task A/G3 尚未闭环；[TODO](../todo.md) 为当前执行入口。

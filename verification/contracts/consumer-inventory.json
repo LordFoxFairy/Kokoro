@@ -408,8 +408,8 @@
       "protocol": "http-openapi",
       "code_generator_version": "@hey-api/openapi-ts@0.99.0",
       "runtime_package_version": "node@24.20.0",
-      "state": "broken",
-      "reason": "BFF business HTTP is generated from the exact IAM 0.21 owner artifact with unchanged generated files; exact Account and Team runtime acceptance remains pending.",
+      "state": "active",
+      "reason": "BFF business HTTP is generated from the exact IAM 0.21 owner artifact. The 22 selected operations and 16 generated files are unchanged; the independent native relay remains tied to its verified 0.20 provenance anchor.",
       "evidence": [
         {
           "repository_path": "apps/kokoro-bff",

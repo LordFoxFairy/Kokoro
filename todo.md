@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-04）
 
-**当前：T‑11 已验收；C‑4 的精确配对、正式原生 E2E 和本机同步测试已通过。全产品、单库 owner schema 与既有 Root 治理红项未关闭；A‑01/A‑02/A‑07 仍未开始。机器 Goal 已清除。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
+**当前：正式原生验收已通过；八个数据 owner 同库安装通过，BFF→IAM 业务 HTTP 已正式配对 0.21。G3 整体仍未结项；A‑01/A‑02/A‑07 未开始。机器 Goal 已清除。** 本页是执行清单；[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。已验证的旧组合不等于最终组合。
 
 ## C‑4 交付检查点
 
@@ -20,8 +20,15 @@
 | --- | --- | --- |
 | IAM #6 / Capability #13 / Agent #46 | 原 PR 精确 head `b6a9745` / `5e607fd` / `40effb2`；已验受影响工程门、真实依赖与 Agent 自然超窗 | 仅随对应产品切片扩大验收 |
 | BFF #18 / App #50 | 原 PR `d166a51` / `e726cd61`；完整工程门通过，BFF 默认门的两项条件 PG 已另在真库补齐 | 不重复现有终态验证 |
-| Root #66 | 精确 gitlinks、拓扑、checkpoint、现役 relay 来源通过；合同兼容仍有 13 条已声明破损边，来源差额已消除；结构审计仍 FAIL（381 条既有规则告警、2 个工具链未验证；较前置基线没有新规则问题，仅 SQL 行号位移） | 既有红项保持显式；无新增风险不扩大此次 PR，不据此宣布全仓治理通过 |
-| I‑15 / 运行范围 | T‑15 原生正式和保留环境都使用隔离测试资源；全 owner 单库 schema 组合、全站浏览器、CI/部署未运行 | 单库按 owner installer/URL 盘点和一次真实组合补证；只在影响对应产品时补该路径，不重跑已通过旅程 |
+| Root #66 / G3 治理 | 实际锁定编译器补齐后，严格结构审计 FAIL：388 条、0 个未验证；新增可见的 7 条全是既有 Billing TS 配置差额，System 无新增。合同余项按实际调用、来源和业务缺口区分，不把全部标成运行故障 | 优先 System 现役调用：复用当前 client 和真 HTTP，只验被影响接口；原 System 跨仓 runner 仍要求 BFF Node 22 与 LiteLLM fixture，不能冒充当前 Node 24/Agent 切换验收 |
+| I‑15 / 运行范围 | Root `430ce075`：八个数据 owner 用同一连接角色在一个新隔离数据库串行执行正式 installer，全通过；每次邻 schema catalog 未变，`public` 不变、跨 schema FK 为零，临时库已回收。随后 BFF 仅改 IAM 生成来源，installer/canonical SQL 原字节保持 | 同库安装已验；八仓同库同时运行、Redis/业务旅程未验，按实际涉及的产品链补证。未运行全站浏览器、CI、部署 |
+
+## G3 剩余验收
+
+- [x] **I‑15 同库安装**：BFF、IAM、Capability、Agent、Storage、System、Billing、Scheduler 八个正式安装器全部实际通过；不把安装收据当服务联合运行。
+- [x] **结构工具链补证**：原 System、Billing 两个未验证已使用本仓锁定依赖补齐，实际 FAIL 保留，不降门。
+- [x] **BFF→IAM 合同边**：BFF #18 `12ca1bf` 生成自 IAM `b6a9745` 的 0.21 原件；22 项引用闭包、16 个生成文件及生产源码保持，原 0.20 仅作独立 relay 锚。Root `98b6a9d9` 的真 IAM/BFF/App 同源链：profile／会话列表 200，自撤 409 且当前会话保留，Team 匿名 401、成员读取 200、删除不存在的成员返回 404 且列表不变；临时资源已回收。现行 checkpoint 为 4 active／12 declared broken／0 illegal；历史不改。
+- [ ] **剩余合同边**：先处理 System 已用的具名调用；Billing checkout 的 503、Scheduler→Agent 的旧批准拓扑需各 owner 明确处理，不补假实现。
 
 ## 已收口的阶段（保留证据，不重跑）
 

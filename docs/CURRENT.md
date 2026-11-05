@@ -1,4 +1,10 @@
-## Task A 当前检查点：精确组合已通过原生验收，本机可同步测试
+## Task A 当前检查点：八个 owner 同库安装；IAM 业务契约来源切换
+
+I‑15：以 Root `430ce075` 的八个精确数据 owner，在同一隔离 PostgreSQL 数据库、同一连接角色下串行执行各仓正式安装器，全部 exit 0。每次只新增目标 owner catalog，其他 schema 与 `public` 不变、无跨 schema FK；临时数据库按 OID 核对并回收。未启动八仓同库运行，也未借此声明全 Redis/业务链通过。
+
+BFF #18 `12ca1bf` 正规消费 IAM `b6a9745` 0.21；22 项使用操作及其引用闭包不变，16 个生成文件、现役生产源码、公开契约和数据库定义原字节保持。两套生成与 relay 检查及定向 75 项通过。原 Better Auth / relay 仍沿各自 0.20 锚。Root `98b6a9d9` 精确候选实际登录后，profile／会话列表 200、自撤 409 且会话保持，Team 匿名 401、成员 200、删除不存在的成员 404 且列表不变；定向隔离实例回收，原同步环境未动。现行 checkpoint 4 active／12 declared broken／0 illegal，BFF→IAM 恢复 active。Root 本轮实际严格结构审计 FAIL（388 条、0 个未验证）；原两项用精确锁定编译器复验后，System 无新增，Billing 7 条既有配置差额变为可见。不改门禁、无部署。A‑01/A‑02/A‑07 未开始；执行见 [TODO](../todo.md)。
+
+## Task A 前置交付：精确组合的正式原生验收与本机同步环境
 
 T‑09 按批准范围交付：原 PR head 分别为 IAM `b6a9745`、Capability `5e607fd`、Agent `40effb2`、BFF `d166a51`、App `e726cd61`。BFF/App 唯一 Public 28.19 同字节；只承接不可重试的 `context_window_exceeded`，不启用 `personal_context`。BFF/App 完整工程门通过；真实 PG/Redis 投影与两项条件 PG 补验通过。Root #66 精确组合 `4cb91169` 的拓扑、checkpoint、现役 relay 来源通过。
 
