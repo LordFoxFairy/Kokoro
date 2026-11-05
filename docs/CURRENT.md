@@ -1,8 +1,8 @@
-## Task A 当前检查点：A‑02 闭环，A‑01 仍在收口 Forward
+## Task A 当前检查点：A‑01 / A‑02 已验收，下一项 A‑07
 
 A‑02：App #50 `673292d2` 删除纯文本历史的多余 RunDisplay 请求；`3c6a68aa` 复用桌面详情关闭路径，实现面板内 Escape 关闭与按 activity ID 回焦，不影响面板外 Escape。测试覆盖 51 项定向，ESLint 与 TypeScript 通过。真实 App/BFF/Agent 组合在同一 Run 中保存实际 `ls /` 的非空详情和 canonical final；Chromium 首开、刷新均核对同一动作、正文顺序、唯一终稿和详情 200，再按 Escape 关闭并回原按钮。零浏览器写入，临时资源全部回收，未调用外部模型。Root 固定已推送的 App 提交，Public 28.19 与锁不变。
 
-A‑01：App #50 `065caaa3` 将 Back 与显式 New 分开，迟到确认或拒绝只更新原提交日志。真浏览器 A/B 证明此前空壳是私有探针全拦 WebSocket，阻断 Next dev React Flight 调试流所致；只放行本次同源 HMR 后原生 shell、会话列表、同一排队 Run 与同文档 Back 零取消均通过。Forward 的目标历史条目存在，但地址随后改回裸首页、未发目标 owner GET；刷新未到。A‑01 尚未完成，A‑07 排后。产品 Goal active，见 [TODO](../todo.md)。各仓沿原 PR，未合并、未部署。
+A‑01：App #50 `2bc82211` 修复 Forward 到正确条目后被 App 误清 URL 的竞态；仅清退同 scope 确实从视图索引移除的会话，保留普通 404。真实原生 IAM、BFF、Agent、隔离 PG/Redis 的 Chromium 旅程已覆盖直聊和项目首发、Back/Forward、硬刷新、空浏览器重登恢复、第二标签、侧栏改名/搜索/移动/归档/删除。导航链同一 owner Run、零取消／写入；归档后附加读一度 429，单独复验活跃列表 200 排除已归档 ID。生产构建通过，临时资源全部回收。Root 固定已推送的 App 精确提交，公开契约及依赖锁不变。产品 Goal active，下一步 A‑07 设计门，详见 [TODO](../todo.md)。各仓沿原 PR，未合并、未部署。
 
 ## Task A 前置交付：C‑4 / G3 前置清理闭环
 
