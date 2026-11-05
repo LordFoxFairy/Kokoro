@@ -1,6 +1,16 @@
+## Task A 当前检查点：A‑03 已验收，继续 A‑04／A‑05
+
+App #50 `c17810c3`、BFF #18 `99f946e`（Public 28.22）、Agent #46 `815ef5c` 均沿原 PR，Root 固定三仓。真 Chromium/Worker/PG/Redis 已验 FIFO/IME、打断后继、同 Run 补充（收据 `dc117ba57713283151abe699`）与实际双决策恢复（最终组合 `8663731781f1edf9edb3e8a2`）：原 Run/pause、审批暂存零写、非空答复与审批同一次控制、模型和独立 checkpoint 各一次、原 Run 唯一终稿。另 R5 `876d2b77ddd53a5d9f47f197` 实证截流后原游标重连、阅读段落和草稿不丢；该轮整体仍失败，未拿来计 HITL 通过。前两次补充硬刷新偶发未显示完成正文，R6 同输入过，未称根因已修，留 A‑15 定向诊断。自有资源已回收；各具体范围见 [TODO](../todo.md)。
+
+A‑05 同一 Agent 候选在真 PG／Redis／Worker 分别实过摘要请求中停止和正常长上下文：正常路径五次主调用、两次 SDK 摘要，真实 Skill 读保持且 Agent 公开帧无私有 marker；模型与 Billing 为离线替身。真实 BFF 原生公开 R5 `f6e136557b8612e3e7a1a4d4` 的实时、精确续读、快照、公开分享及撤销均通过，私有摘要未外泄，隔离资源已回收；A‑05 剩余原验收对照，未做浏览器。A‑04 主控复跑真 Swarm 通过（收据 `522b06ea8595…c104`），Agent 原 #46 `815ef5c`：同键 `native_consumed`、四次模型替身派发及封存、真 Billing 四笔隔离结算，PG 与 Redis 同一最终正文；自有资源已回收。仅剩当前组合的工具产物浏览器验收，不称 A‑04 已关闭。
+
+Scheduler `cfb2502` 本机持久数据只读复核：0 活跃、0 未完，2 条暂停均为 BFF 回调，0 直连和 0 未分类。正式源码两次隔离启动和重启幂等回读通过；独立真 PG 重投定向 425→202 通过（目标为替身），未触发现有排程、未改数据或仓库。未替代 A‑12 产品旅程。Goal active，进度见 [TODO](../todo.md)；不合并 main、不部署。
+
 ## Task A 当前检查点：A‑03 打断后继已验，原 Run 补充仍待
 
 原 PR App #50 `35967026`、BFF #18 `2cf1c14`（Public 28.21）、Agent #46 `18efa2e`。原生 Chromium/IAM/App/BFF/Agent HTTP、真隔离 PG/Redis 和 Agent Worker 收据 `e7d8150a022eb8ab81adaee4`：真实按钮发送精确旧 Run，后继 202 先持久排队；旧 Run 经真 Worker 取消、BFF 投影持久终态后才启动后继，刷新仅一个后继结果。首轮因私有夹具缓冲 SSE 未到第二次发送，纠正夹具后通过。隔离资源已回收，未调用外部模型。晚到终态控制不复活 Redis 流已在真 Agent PG/Redis 定向验；未称浏览器自然结束竞态已验。A‑03 同 Run 补充未交付，Goal active，唯一清单见 [TODO](../todo.md)。不合并 main、不部署。
+
+A‑04 三 owner 阶段：Root `0b5a3873` 上 Agent `18efa2e`、BFF `2cf1c14`、Billing `b7c98588`。同 attempt 真 Agent PG 封存与 HTTP 证据、BFF 转发、Billing 持久扣 1／释放 9、Agent ACK、原键重放单笔结算均通过，收据 SHA‑256 `daa09e934c02b931450c7d45f7f65098d26c5de4bbf2e5e2a3103effdd7152c8`。隔离资源已回收；该次首次预留用 IAM 夹具、用量合成。另在相同组合以正式 Worker 实跑本地 Ollama `qwen3:8b`：一条实际模型请求、一个派发并封存 attempt、真实输入/输出 7897/246、Run completed、同一 evidence 的 Agent captured ACK 和 Billing 唯一扣 2。收据 SHA‑256 `2d3e9b5c5d262abb35759f75ca0ec6c8e55f4d31ff3a8ca3812c7735175bf32a`，自有 PG 与 Redis keys 已回收；首次预留验证实际 Worker 签名/绑定，但 IAM 决策与 System resolver 受控，真实支付仍关闭，Swarm 与产品浏览器验收仍待。
 
 ## Task A 当前检查点：A‑03 FIFO 已验，打断与原 Run 补充仍待
 

@@ -35,6 +35,19 @@ A‑01/A‑02 已在 Root `33cc1485` 交付。沿原 handoff 的完整 A‑07：
 
 **发送但不中断的边界。** 不复用普通发送来伪造「已注入」。BFF 同事务保存一条归原 Run 的用户消息和可重放投递，不新建 Run 或助手占位；现 launch/cancel outbox 各 Run 唯一，不塞多条 steer。Agent 复用现控制/信箱，但必须区分接纳、实际在指定 Run 注入和未注入；信箱写失败不冒成功，不终止健康 Run，不自动转排队。待 owner 设计明确定下最小投递记录、原键回执、实际注入证据和存量 schema 变更方式后再实现；不恢复旧校验或临时双 POST。三种路径独立验收，保留原 IME/多行、审批、停止/继续、草稿和阅读位置。
 
+**同 Run 补充的最薄实现门。** Agent `18efa2e` 的真实 Agent HTTP→Redis→Worker→PG/checkpoint 复现：原工具还未释放时，HTTP 与持久 control receipt 已显示 `succeeded`，但真正的同一 Run 下一模型输入和独立 PG checkpoint 之后才各读到一条精确 HumanMessage。保持 Agent 8.11 和现 mailbox/command ledger，不把落箱当消费；精确 Run、有效 lease、已提交的原生 checkpoint 证明后才结算。同锁终态只能收口尚未证明的原命令，不倒推模型没看到；暂时落箱失败可按原命令恢复，不破坏健康 Run。
+
+BFF 沿已发布的 `POST /v1/sessions/{id}/runs/{runId}/control`，只把 `run.steer` 从瞬时转发换为持久 owner 分支，取消与继续保持现状。现 launch/cancel outbox 都每 Run 唯一，不装多条补充；用一张 BFF 自有窄投递记录，与现 Chat 的一条 canonical user Message 同事务，不添加 Run、assistant 或另一条公开入口。受信 tenant/actor/subject、原 Conversation 和原 Run 来自现准入及 owner；新键需锁定目标确为当前非 queued／非终态，原键在范围授权后先检查原 target、客户端消息标识和内容指纹，同键重放不重新入队，异意图零写。外部消息标识只作为意图的一部分，canonical Message ID 由 BFF 按受信 scope、目标和原键从专用命名空间稳定派生，不允许外部占用全局 Message ID。正文只由现 Message 保存；投递复用可重放的原 command、确切运行上下文和已发布 Agent control，只有 owner 明确结果才映射 Message 最终状态。补充消息不得替换启动消息的 MCP／API selection；普通正文相同也只按 ID 对账。先由现会话 Snapshot／现 control 原键回执承接状态；确需实时通知时沿既有 AG-UI，不伪造 Agent source cursor、不增第二串协议，核清终态前后的可观察性再扩展。只在隔离 fresh schema 验证，不在在用本地库自动执行 DDL。
+
+**A‑04 Swarm 恢复证据差额。** 正式 `music_chat` 真 Worker 已验暂停/原键准入；旧原生桥丢 `respond` 文本，候选修正后跨 peer 共四个派发并封存。私有 R7 观察表明原暂停 leaf 的精确 resume 向量匹配、无错误/interrupt，但留一个 task，现 owner 把同一 intent 判 unknown；root 有同 attempt 后继不是终态证明。仅核官方冻结 Swarm、单层已声明 peer 和单原暂停组：原 leaf 的 scoped 父子链、消息与复核租约保持严格；如有合法 handoff，还须由独立已提交的 exact root 同祖先/身份/attempt、合法 peer 切换及原生无下一任务来证明。reader 和 owner SQL 校验同一证据；不把工具文本、公开 final、模型数量或假空 leaf 当成功，不放宽普通 HITL 或多叶。未动公开 wire/Schema；若根链未证实，继续保留 unknown。独审后主控按定稿源码复跑真实隔离 Worker/PG/Redis 与 BFF/Billing，`native_consumed`、唯一终态和精确正文通过，模型为离线替身；最终架构门与相同真实运行复核后以 Agent 原 PR #46 `815ef5c` 留存，运行证据和未验项见 [TODO](../../../todo.md)。
+
+
+**A‑06 项目上下文设计门草案（先排序和现有动作，跨仓指令切片独立）。** App 文案现承诺指令适用于该项目新消息；实际仅 PATCH/历史能读写。BFF `commitChatTurn` 已按本人租户/项目锁 + 会话锁确定 canonical project，保存给 Agent 的 launch 只有 `project_ref`，Agent 构造原生 prompt 未读取项目指令。以现 Project 为唯一 owner；不让 Browser 上传或改写指令副本，不让 Agent 再读 BFF/项目库，也不塞入用户 Message、trace、个人上下文或另一层授权。对比后优先现 Agent owner launch 的具名可选指令：只在 BFF 新 Run 已准入、通过原键重放分支、原锁仍在时读取本人现 Project 指令，和现 launch 同事务冻结；无项目/空指令不发字段。后继普通发送、打断后新 Run、显式再生成均走现事务；同键重投、同 Run 补充、恢复不读新值。Scheduled 已有独立 owner 和 outbox，不把本切片的指令选项误带到未审核的调度 payload。
+
+已核 Project PATCH 的 BFF 原始 JSON 读限与 Agent Launch 原始 JSON 上限均为 1 MiB；本机持久 BFF 仅聚合只读：8 个未删项目，1 个非空指令，最长 49 字符/121 UTF‑8 字节，未读或输出任何正文。保留 PATCH 既有存量写读，不凭本机样本引入任意新字符上限；在 BFF 新 Run 保存前检查最终序列化 launch 总体大小，超限沿既有明确请求体错误，模型上下文不足由 Agent 沿现不可重试失败，不静默截断、扩大全局上限或改变无指令请求字节。Agent owner 在正式 OpenAPI、Pydantic 入站及冻结 RunRequest 接收；仅项目 scope 接受，复用原 service proof，不赋予工具/资源权限。按原 native prompt 组合和现不可重试超窗约束处理，保持正常聊天、上下文压缩及 replay；禁止指令正文进入产品 Message、AG‑UI、公开 share、凭据/诊断日志。Agent 正式合同先交付，BFF 固定精确 artifact，再实施消费者，App 公共合同及 Schema 不改。验收一条真项目会话：版本 A 接纳后改 B，等待中的原 Run 及同键恢复仍用 A，下一新 Run 才用 B；一条直聊或跨 scope 对照核零串入，公开回读/分享无原文。必要的真实 owner 负控只保护独有边界，不铺全矩阵。该段为设计草案，不表示跨仓写区已开或能力交付。
+
+项目排序仅覆盖 App 已支持的左栏普通项目，复用可信 tenant/subject 的浏览器偏好，按 ready owner IDs 对齐，保持 pin 和会话顺序；键盘取消不写。项目网站当前只存在 preview，正式读写 owner 未证，不恢复假关联，也不将预览冒称持久化，待 A‑06/A‑11 核可落地事实。
+
 ---
 
 ## 收口执行规则（2026-11-04）
