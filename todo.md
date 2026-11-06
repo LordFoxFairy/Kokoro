@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-05）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合待本轮更新 App 到 `509593e`，并配对 Agent `0b4b6c4`、BFF `46c061f`、Storage `b07405c`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `0fb22373` 已配对 Agent `0b4b6c4`、BFF `46c061f`、Storage `b07405c`、App `509593e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
@@ -32,7 +32,7 @@
 | 仓库 / 检查 | 当前事实 | 剩余动作 |
 | --- | --- | --- |
 | IAM #6 / Capability #13 / Agent #46 | 原 PR 精确 head `b6a9745` / `2409496` / Agent `0b4b6c4`；Agent 8.13 resource-ref/read contract 已推送 | 随 A-05/A-08 读取资格切片扩大验收 |
-| BFF #18 / App #50 / Storage | 当前候选 BFF `46c061f`、App `509593e`、Storage `b07405c`；BFF opaque refs、Storage run fence、App wire/selection/files filter 已推送 | Root 正在更新候选 gitlink/inventory；剩余 BFF canonical resolve、正式 producer、Agent runtime 与真实组合验证 |
+| BFF #18 / App #50 / Storage | 当前候选 BFF `46c061f`、App `509593e`、Storage `b07405c`；BFF opaque refs、Storage run fence、App wire/selection/files filter 已推送 | Root 已更新候选 gitlink/inventory；剩余 BFF canonical resolve、正式 producer、Agent runtime 与真实组合验证 |
 | Root #66 / G3 治理 | Root `fc74d02d` 的 topology、contract compatibility（15 edges/0 violations）和 `task-a-agent-web-runs` checkpoint 均 PASS；历史严格结构审计仍保留原 exit 1：408 条、0 未验证。比 388 基线多出的 20 条均是 BFF 固定 IAM 0.21 字节副本，逐条同 IAM 原件历史诊断；没有新增未处置项，也没有改门禁。 | 已发布契约 15 active／0 declared broken／0 illegal；A‑13 setup 独立；八 owner 已同时 ready |
 | I‑15 / 运行范围 | Root `430ce075`：八个数据 owner 用同一连接角色在一个新隔离数据库串行执行正式 installer，全通过；每次邻 schema catalog 未变，`public` 不变、跨 schema FK 为零，临时库已回收。随后 BFF 仅改 IAM 生成来源，installer/canonical SQL 原字节保持 | 同库安装、八仓联合 readiness、Redis 隔离及回收已验；未称八仓业务全部跑通。未运行全站浏览器、CI、部署 |
 
