@@ -55,9 +55,9 @@ BFF 沿已发布的 `POST /v1/sessions/{id}/runs/{runId}/control`，只把 `run.
 
 设计门验收：先在 App/BFF/Agent 各自写区实现 wire/owner 校验和定向单测，再用真实 PG/Redis/Storage/Worker + Chromium 验选择/取消零误发、单组 refs、刷新恢复、错主体/未扫描/撤权拒读；通过后把同一 Run 的引用保持接入 A‑05，未完成前 A‑08/A‑05 均保持 OPEN。
 
-当前实现审计（2026‑11‑05）：BFF 已有 ProjectResourceAccessClient 的 CLEAN 元数据与下载引用，但该能力绑定 `scope=project` 且面向浏览器下载；Agent Storage client 目前只有 Run-fenced Artifact delivery，没有个人 Asset/FINAL Artifact read RPC。因而本轮不在 App 先加假选择、不把 signed URL 或现有 deliver 权限冒充读取资格；下一写区必须先由 Storage/Agent owner 交付窄的 run-scoped read contract，再由 BFF 固定消费者。
+当前实现审计（2026‑11‑05）：Storage/Agent 已交付窄的 run-scoped final-artifact reference/read contract（Storage `b07405c`、Agent `0b4b6c4`），BFF 已交付 strict opaque parser、launch 冻结和 8.13 生成接线（`bb8defc`）。BFF canonical owner resolve、App 公共字段/选择、Agent runtime 实际挂载和真实组合验证仍未完成；个人 Asset 读取仍禁止借该身份扩大为通用下载。因而本轮不加假 UI、不把 signed URL 或现有 deliver 权限冒充完整读取资格。
 
-**A‑08 附件设计门基线（尚未开写区）。** 原手册的本地文件、资料库、最近任务是三个真实来源。App 现本地文件走 `/api/hub/library/files`→BFF→Storage 的实际上传、CLEAN 与原键恢复，可复用，不重造上传。当前 Composer 的 ＋/斜杠只接 Skill 菜单。资料库的个人 Asset 与正式 Artifact 是不同 owner 类型，`GET /v1/library?kind=file|artifact` 可做候选读；现个人下载按本人 scope、CLEAN、大小和 SHA 校对，不等于 Run 授权。最近任务已有本人 active `GET /v1/sessions` 和 exact Snapshot `deliveries` 可作候选来源，FINAL artifact 选择可复用同类引用；无产物的 final 答复或显式跨项目范围仍须定资格，不能悄悄缩成仅有产物的历史。没有现役 `MessageCreateRequest` 附件字段、持久 Run 绑定、Agent input read。当前 Agent→Storage 权限仅覆盖 conversation Artifact 交付的七项写/回读，不包括任意个人 Asset 或最终 Artifact 读取，禁止借该身份扩大到通用下载。
+**A‑08 附件设计门基线（历史审计快照，早于 2026‑11‑05 owner/wire slice）。** 原手册的本地文件、资料库、最近任务是三个真实来源。App 现本地文件走 `/api/hub/library/files`→BFF→Storage 的实际上传、CLEAN 与原键恢复，可复用，不重造上传。当前 Composer 的 ＋/斜杠只接 Skill 菜单。资料库的个人 Asset 与正式 Artifact 是不同 owner 类型，`GET /v1/library?kind=file|artifact` 可做候选读；现个人下载按本人 scope、CLEAN、大小和 SHA 校对，不等于 Run 授权。最近任务已有本人 active `GET /v1/sessions` 和 exact Snapshot `deliveries` 可作候选来源，FINAL artifact 选择可复用同类引用；无产物的 final 答复或显式跨项目范围仍须定资格，不能悄悄缩成仅有产物的历史。该历史快照当时没有现役 `MessageCreateRequest` 附件字段、持久 Run 绑定、Agent input read；当前字段/launch/parser 已在上方 owner/wire slice 中交付，仍未接 App 公共入口和 Agent runtime。当前 Agent→Storage 权限仅覆盖 conversation Artifact 交付的七项写/回读，不包括任意个人 Asset 或最终 Artifact 读取，禁止借该身份扩大到通用下载。
 
 候选优先 BFF 用已授权的 canonical 资源 ID 验证并在现 Message/Run 同事务冻结只读引用；上传得到的 ID、浏览器标题、URL、客户端 `user_id` 都不是读取资格，不复制正文到 Message 或公开 share。Agent 消费同 Run 的窄读取边界，优先复用现 service identity/Run 归属，由 BFF 找回已绑定的原 scope，再走 Storage 现役精确版本/CLEAN/撤权检查；不传浏览器 Cookie、不给 Agent 整个个人库权限、不把临时签名 URL 当 durable 身份。若选择 Storage 直接授权，须先证明现合同支持精确 Run 资格与撤权，而不是增加宽泛服务权限。挂载为只读，明确大小/类型，失败不标已附加或默默发空 Run。近期任务究竟允许其明确选中的最终结果/产物还是经批准的公开快照，须先核产品边界，不读私有过程、提示和 capsule；外部连接器继续走 B 的正式授权，非此切片的前置。
 
@@ -323,7 +323,7 @@ BFF 沿已发布的 `POST /v1/sessions/{id}/runs/{runId}/control`，只把 `run.
 | A-05 | 长上下文压缩 | 后续backlog；当前长会话/工具/取消/恢复，私有capsule不进入公开面 |
 | A-06 | 项目概览与上下文 | 后续backlog；指令/pin/资源/Skill引用、菜单、删除释放与回读 |
 | A-07 | Project Todo | GATED，A-01/A-02之后；BFF项目任务CRUD/权限/CAS/幂等→generated client→App，不把Run Todo改名 |
-| A-08 | 附件与上下文引用 | 后续backlog；选择→发送→Run资格→真实内容→刷新恢复 |
+| A-08 | 附件与上下文引用 | OPEN（owner/wire slice 已交付）；BFF canonical resolve、App 选择、Agent runtime、真实组合→刷新恢复 |
 | A-09 | 资料库 | 后续backlog；上传/扫描/分页/下载/删除/来源回跳 |
 | A-10 | 文件/产物/Canvas | 后续backlog；正确Run/版本/权限、完整内容、窄屏与键盘 |
 | A-11 | 首页与创建场景 | 后续backlog；只交付真实支持入口，Manus同状态对照 |
@@ -762,7 +762,7 @@ I-35诊断续证：在私有临时`git archive 5fffe60`源码快照复用未变�
 
 | 原A范围 | 当前可确定的剩余类型 | 还需核量 |
 | --- | --- | --- |
-| A-07 / A-08 | 明确缺Project Todo写操作、附件发送/Run绑定/读取资格 | 设计、契约和消费者具体改动；不拿Run Todo/导航代替 |
+| A-07 / A-08 | A-07 已验；A-08 owner/wire slice 已交付，仍缺 canonical resolve、App 选择、Agent runtime 与真实 Run 绑定读取 | 受影响消费者具体改动；不拿 Run Todo/导航代替附件资格 |
 | A-01/02 | 已有实现且有明确语义/展示待修边界，不是仅缺测试 | localDraft/retry/retire、导航/多标签/迟到；RunDisplay分组/身份/历史/回焦的当前case与实际缺陷量 |
 | A-04/05/09/10/14 | 已有实现或历史子链，当前恢复/压缩/资料库/产物/语音完整验收未齐 | 当前commit的实现—case—收据映射；未验不等于全量重写，也不承诺无代码修复 |
 | A-06 | 项目上下文已有部分成果，菜单/排序/删除释放等支持面未核量 | 逐动作实际差距，不按页面名称计算完成 |

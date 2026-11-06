@@ -4,11 +4,11 @@
 
 Machine Goal is **ACTIVE** again.  A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
 
-The current Root candidate pairs Agent `92e235e782178b7002f0bd68daa143b507db870d`, BFF `40bed716edf43c937c5f6e5ef2143a437ed412e4`, and App `b1c2c1e8ca53095bccf50a92cb0d88be8ce8`. Each is on its original PR branch and pushed; no main merge or deployment. Root gitlinks are committed in Root `48c5d801`; the ledger/design follow-ups are `fc74d02d`, `376f1a0d`, `38eed837`, and `de5e47d0`.
+The current Root candidate pairs Agent `0b4b6c4fe9a1319922e9f61344200cba74e5b9d8`, BFF `46c061f5fde2d4108dd00e3d04cf0ff533a03ff0`, Storage `b07405c464e98dd2c596f22115d1186511cf00cb`, and App `b1c2c1e8ca53095bccf50a92cb0d88be8ce7d1c3`. Agent/BFF/Storage are pushed on their PR branches; App is unchanged. Root gitlinks and inventory are pending this checkpoint update; no main merge or deployment.
 
-Verification at this checkpoint: topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; App focused UI 41 passed; BFF focused suites, typecheck/lint/build and real isolated PG/Redis A-06 integration passed; Storage RPC/trust/lifecycle/scoped-file focused 37 passed; Agent Storage generated/delivery/transport focused 53 passed. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green.
+Verification at the prior exact combination: topology and contract compatibility passed (15 edges, 0 violations) with the historical checkpoint. New owner evidence: Agent focused 94 passed with ruff/pyright/contract-check; BFF focused 60 passed with `contract:check:agent`, typecheck/lint/build/semantic; Storage focused 36 passed with typecheck/lint/contract:check. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green. Root topology/compatibility/checkpoint must be rerun after updating gitlinks and inventory.
 
-Next: implement the approved A-08 minimum wire/owner slice (App → BFF transaction freeze → Agent run-scoped Storage read), then reuse the same Run evidence to close the A-05 reference-retention gap.
+Next: finish Root exact pairing, then implement the remaining A-08 consumer slice (BFF canonical owner resolve → App public field/selection → Agent runtime mount) and run one real PG/Redis/Storage/Worker chain. Only then reuse the same Run evidence to close the A-05 reference-retention gap.
 
 ## 历史检查点（按时间倒序，保留原收据）
 
