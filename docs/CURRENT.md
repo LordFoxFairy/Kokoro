@@ -4,11 +4,11 @@
 
 Machine Goal is **ACTIVE** again.  A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
 
-The current Root candidate pairs Agent `0b4b6c4fe9a1319922e9f61344200cba74e5b9d8`, BFF `46c061f5fde2d4108dd00e3d04cf0ff533a03ff0`, Storage `b07405c464e98dd2c596f22115d1186511cf00cb`, and App `b1c2c1e8ca53095bccf50a92cb0d88be8ce7d1c3`. Agent/BFF/Storage are pushed on their PR branches; App is unchanged. Root gitlinks and inventory are committed and pushed in Root `6322c6d3`; no main merge or deployment.
+The current Root candidate pairs Agent `0b4b6c4fe9a1319922e9f61344200cba74e5b9d8`, BFF `46c061f5fde2d4108dd00e3d04cf0ff533a03ff0`, Storage `b07405c464e98dd2c596f22115d1186511cf00cb`, and App `85ef02e61ea64426b9fb556d31e5bcfe5fb941ab`. Agent/BFF/Storage/App are pushed on their original PR branches; App now carries opaque resource-ref wire/selection/recovery only. Root gitlinks and inventory are being updated in the current Root #66 change; no main merge or deployment.
 
 Verification at the prior exact combination: topology and contract compatibility passed (15 edges, 0 violations) with the historical checkpoint. New owner evidence: Agent focused 94 passed with ruff/pyright/contract-check; BFF focused 60 passed with `contract:check:agent`, typecheck/lint/build/semantic; Storage focused 36 passed with typecheck/lint/contract:check. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green. Root topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; governance focused tests 147 passed.
 
-Next: finish Root exact pairing, then implement the remaining A-08 consumer slice (BFF canonical owner resolve → App public field/selection → Agent runtime mount) and run one real PG/Redis/Storage/Worker chain. Only then reuse the same Run evidence to close the A-05 reference-retention gap.
+Next: Root exact pairing is being updated to App `85ef02e`; then implement the remaining A-08 consumer slice (BFF canonical owner resolve → formal App public producer → Agent runtime mount) and run one real PG/Redis/Storage/Worker chain. Only then reuse the same Run evidence to close the A-05 reference-retention gap.
 
 ## 历史检查点（按时间倒序，保留原收据）
 
