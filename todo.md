@@ -1,6 +1,6 @@
 # Task A · TODO（2026-11-05）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 工作树正在更新精确组合，候选 gitlink 为 Agent `0b4b6c4`、BFF `46c061f`、Storage `b07405c`、App `b1c2c1e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `6322c6d3` 已配对 Agent `0b4b6c4`、BFF `46c061f`、Storage `b07405c`、App `b1c2c1e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
@@ -8,8 +8,8 @@
 
 - **Goal：ACTIVE（已恢复）。** 仍以本文件为唯一 TODO；不合并 `main`、不部署，各仓沿原 PR。
 - **本轮已提交/已推送：** Agent #46 `0b4b6c4fe9a1319922e9f61344200cba74e5b9d8`（HTTP 8.13 resource refs、Run-scoped final-artifact read、历史逆向检查适配）；BFF #18 `46c061f5fde2d4108dd00e3d04cf0ff533a03ff0`（opaque resource refs 的解析、幂等指纹、launch 冻结和 8.13 生成客户端）；Storage `b07405c464e98dd2c596f22115d1186511cf00cb`（仅 Agent 的 `run_id` 绑定 final-artifact reference）。App #50 `b1c2c1e8ca53095bccf50a92cb0d88be8ce8` 未改。三仓各自 PR 分支已推送；Storage 使用新建候选分支，未合并 main。
-- **Root 待提交/未推送：** 本轮将更新三个 gitlink、`verification/contracts/consumer-inventory.json` 与本台账；Root 验证尚未重跑，不能把本候选称为 C‑4 完成。
-- **实际验证证据：** Agent focused 94 passed（storage transport/delivery、HTTP selection），ruff/pyright/contract-check 通过；BFF focused 60 passed、contract:check:agent、typecheck/lint/build/semantic 通过；Storage focused 36 passed、typecheck/lint/contract:check 通过。BFF 全量 `contract:check` 仍有 5 个既有 closure inverse 失败，未冒称全绿；App 公共 28.22 尚未增加 refs 字段，真实 App→BFF→Agent 组合未运行。
+- **Root 已提交/已推送：** `6322c6d3` 已更新三个 gitlink、`verification/contracts/consumer-inventory.json`、CURRENT、技术方案和本台账，沿 Root #66；未合并 main、未部署。
+- **实际验证证据：** Agent focused 94 passed（storage transport/delivery、HTTP selection），ruff/pyright/contract-check 通过；BFF focused 60 passed、Storage repin 6 passed、contract:check:agent、contract:check:storage、typecheck/lint/build/semantic 通过；Storage focused 36 passed、typecheck/lint/contract:check 通过。BFF 全量 `contract:check` 仍有 5 个既有 closure inverse 失败，未冒称全绿；App 公共 28.22 尚未增加 refs 字段，真实 App→BFF→Agent 组合未运行。Root topology、contract compatibility（15 edges/0 violations）、checkpoint 与治理定向 147 passed；BFF 全量 contract:check 的 5 个既有 closure inverse 失败仍单列。
 - **当前闭环状态：** A‑01/A‑02/A‑03/A‑04/A‑07 已验；A‑05、A‑08～A‑16 仍 OPEN。A‑06 仅完成排序与指令跨仓候选，website 正式 owner/readback 仍缺，不能勾选完成。
 - **下一执行顺序：** 先由 Root 更新并验证精确组合；然后 A‑08 补 BFF canonical owner resolve 和 App 公共字段/选择接线，跑真实 PG/Redis/Storage/Worker 定向链；只有该链通过后才把同 Run 引用保持接入 A‑05，之后按 A‑09～A‑16 逐项收口。
 - **不重复/不扩张：** 不以测试数量代替闭环，不重跑已验旅程；只补实际缺口，旧入口/无消费者测试直接删除并保留有效断言。
