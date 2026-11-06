@@ -497,6 +497,9 @@ class ProxyHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.forward()
 
+    def do_PATCH(self):
+        self.forward()
+
     def do_DELETE(self):
         self.forward()
 
