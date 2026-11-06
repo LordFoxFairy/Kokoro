@@ -2,7 +2,7 @@
 
 ## Task A current checkpoint (2026-11-05)
 
-Machine Goal is **ACTIVE** again.  A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
+Machine Goal is **ACTIVE** again (user explicitly confirmed continuation).  A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
 
 The current Root candidate pairs Agent `0b4b6c4fe9a1319922e9f61344200cba74e5b9d8`, BFF `46c061f5fde2d4108dd00e3d04cf0ff533a03ff0`, Storage `b07405c464e98dd2c596f22115d1186511cf00cb`, and App `509593e93b238edd775c7264eeff9b705c76d680`. Agent/BFF/Storage/App are pushed on their original PR branches; App now carries opaque resource-ref wire/selection/recovery plus files-tab search/type filtering with URL recovery. Root gitlinks and inventory are committed and pushed in Root `0fb22373` on #66; no main merge or deployment.
 
@@ -11,6 +11,7 @@ Verification at the prior exact combination: topology and contract compatibility
 Next: Root exact pairing is `0fb22373` with App `509593e`; then implement the remaining A-08 consumer slice (BFF canonical owner resolve → formal App public producer → Agent runtime mount) and run one real PG/Redis/Storage/Worker chain. Only then reuse the same Run evidence to close the A-05 reference-retention gap.
 Current audit: BFF/Agent canonical resolution is not claimed complete. Existing Storage clients can validate CLEAN project assets and FINAL artifacts, but the artifact client requires a complete owner association and project assets require project scope; the Agent OpenAPI/RunRequest still accepts only opaque refs, FinalArtifactReadClient is not injected into WorkerDependencies/AgentFactory, and no generic project-asset read RPC exists. No unsafe binding or guessed runtime mount was added. App A‑09 now has files-tab owner-list search/type filters with URL recovery (53 focused tests, typecheck, lint); persistent favorites/delete, server-side file search, and several source links remain missing.
 A‑12 read-only audit: `/app/scheduled` and the BFF/Scheduler callback chain are present, with durable occurrence/outbox/receipt, restart/retry and IANA/DST engineering evidence. No current authenticated browser receipt proves CRUD/calendar/pause-resume, updates/execution history, or BFF→Agent session-result linkage; A‑12 remains open.
+A‑12 execution is now the active checkpoint. The normal local login stack is live with App native proxy `127.0.0.1:58007` and admin connector `127.0.0.1:58030` for host `web-native-9025d1f847a5b63b8357b9f1.example.test`; browser CRUD/calendar/pause-resume and due-delivery evidence are not counted until a fresh authenticated receipt is captured.
 
 ## 历史检查点（按时间倒序，保留原收据）
 
