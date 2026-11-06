@@ -151,8 +151,10 @@ contract owner 和消费者配置；旧 Capability 名称不保留兼容 alias�
 | BFF/Agent/Platform → Storage | ConnectRPC/Proto v2           | Storage    | Asset、Artifact、Upload、Package reference。     |
 | BFF → Agent                  | HTTP/OpenAPI generated client | Agent      | Run dispatch/control 与可恢复 event paging。     |
 | BFF → Scheduler              | HTTP/OpenAPI generated client | Scheduler  | Schedule command/query。                         |
-| Scheduler → BFF/Agent        | HTTP event protocol           | Scheduler  | Durable retry、receipt、duplicate delivery。     |
+| Scheduler → BFF              | HTTP event protocol           | Scheduler  | Durable retry、receipt、duplicate delivery。     |
 | BFF → Billing                | HTTP/OpenAPI generated client | Billing    | Checkout、payment resource 与 provider webhook。 |
+
+- Scheduler 只投递到 BFF 的持久接收入口；BFF 承接 Run 准入并由自己的 worker 向 Agent 派发，不存在 Scheduler→Agent 直连。
 
 - BFF 是唯一 public Product API owner；Web 使用 browser-private 同源 adapter。
 - 内部服务 contract 由各 owner 仓维护；Root 只做 catalog 和治理。

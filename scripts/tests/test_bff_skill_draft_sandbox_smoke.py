@@ -1,12 +1,13 @@
 """Protocol and isolation guards for the Skill draft composition runner."""
 
-import base64
+import hashlib
 import importlib.util
 import json
 from datetime import datetime, timedelta, timezone
 from io import StringIO
 from io import BytesIO
 from pathlib import Path
+from types import SimpleNamespace
 import stat
 import sys
 import tempfile
@@ -20,43 +21,6 @@ spec = importlib.util.spec_from_file_location("skill_draft_sandbox", PATH)
 smoke = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = smoke
 spec.loader.exec_module(smoke)
-
-
-def ready():
-    return {
-        "kind": "ready",
-        "base_url": "http://127.0.0.1:4401",
-        "database_name": "kokoro_skill_abc",
-        "redis_prefix": "owned:abc",
-        "issuer_url": "https://web.example.test/iam",
-        "client_id": "web",
-        "client_secret": "web-secret",
-        "redirect_uri": "https://web.example.test/callback",
-        "post_logout_redirect_uri": "https://web.example.test/logout",
-        "email": "owner@example.test",
-        "password": "password",
-        "tenant_id": "tenant-one",
-        "skill_sandbox": {
-            "access_token": "user-token",
-            "subject_id": "user-one",
-            "catalog_client": {
-                "client_id": "catalog",
-                "client_secret": "catalog-secret",
-            },
-            "projection_client": {
-                "client_id": "projection",
-                "client_secret": "projection-secret",
-            },
-            "resource_server_basic": {
-                "client_id": "resource",
-                "client_secret": "resource-secret",
-            },
-            "execution_authorization_client": {
-                "client_id": "execution",
-                "client_secret": "execution-secret",
-            },
-        },
-    }
 
 
 class SkillDraftSandboxGuards(unittest.TestCase):
@@ -82,7 +46,11 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "capability.service_auth_failed",
                 "BFF workload authentication failed",
             ),
-            (403, "capability.tenant_mismatch", "BFF tenant does not match IAM"),
+            (
+                403,
+                "capability.tenant_mismatch",
+                "BFF tenant does not match the service credential",
+            ),
         ):
             body = {"error": {"code": code, "message": message, "retryable": False}}
             with self.subTest(status=status, message=message):
@@ -107,41 +75,6 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         code,
                         message,
                     )
-
-    def test_iam_projection_token_uses_only_dedicated_client_and_scope(self):
-        sent = []
-
-        class Response:
-            status = 200
-
-            def read(self, _limit):
-                return b'{"access_token":"projection-token","token_type":"Bearer"}'
-
-        class Connection:
-            def __init__(self, *_args, **_kwargs):
-                pass
-
-            def request(self, *args, **kwargs):
-                sent.append((args, kwargs))
-
-            def getresponse(self):
-                return Response()
-
-            def close(self):
-                pass
-
-        with patch.object(smoke.http.client, "HTTPConnection", Connection):
-            token = smoke.issue_projection_token(smoke.require_sandbox_ready(ready()))
-        self.assertEqual(token, "projection-token")
-        args, kwargs = sent[0]
-        self.assertEqual(args, ("POST", "/iam/oauth2/token"))
-        credential = kwargs["headers"]["authorization"].removeprefix("Basic ")
-        self.assertEqual(base64.b64decode(credential), b"projection:projection-secret")
-        self.assertIn(b"scope=platform%3Aprojection.read", kwargs["body"])
-        self.assertIn(
-            b"resource=https%3A%2F%2Fkokoro.dev%2Fresources%2Fplatform-internal",
-            kwargs["body"],
-        )
 
     def test_platform_by_id_http_sends_trusted_bff_projection_and_checks_headers(self):
         sent = []
@@ -178,13 +111,13 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             status, body = smoke.platform_published_skill_get(
                 "http://127.0.0.1:4402",
                 "skill-current",
-                "projection-token",
-                smoke.require_sandbox_ready(ready()),
+                "projection-secret",
+                SimpleNamespace(tenant_id="tenant-one", user_id="user-one"),
             )
         smoke.require_platform_published_skill_absent(status, body)
         args, kwargs = sent[0]
         self.assertEqual(args, ("GET", "/v1/skills/skill-current"))
-        self.assertEqual(kwargs["headers"]["authorization"], "Bearer projection-token")
+        self.assertEqual(kwargs["headers"]["authorization"], "Bearer projection-secret")
         self.assertEqual(kwargs["headers"]["x-kokoro-tenant-id"], "tenant-one")
         self.assertEqual(kwargs["headers"]["x-kokoro-subject"], "user-one")
         self.assertNotIn("x-kokoro-internal-secret", kwargs["headers"])
@@ -195,11 +128,23 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             smoke.platform_published_skill_get(
                 "http://127.0.0.1:4402",
                 "skill-current",
-                "projection-token",
-                smoke.require_sandbox_ready(ready()),
+                "projection-secret",
+                SimpleNamespace(tenant_id="tenant-one", user_id="user-one"),
                 tenant_assertion="other-tenant",
             )
         self.assertEqual(sent[1][1]["headers"]["x-kokoro-tenant-id"], "other-tenant")
+
+        with (
+            patch.object(smoke.http.client, "HTTPConnection", Connection),
+            patch.object(smoke.secrets, "token_hex", return_value="abc"),
+        ):
+            smoke.platform_published_skill_get(
+                "http://127.0.0.1:4402",
+                "skill-current",
+                "",
+                SimpleNamespace(tenant_id="tenant-one", user_id="user-one"),
+            )
+        self.assertNotIn("authorization", sent[2][1]["headers"])
 
     def test_platform_published_read_accepts_only_exact_safe_owner_projection(self):
         data = {
@@ -246,37 +191,57 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         with self.assertRaises(smoke.SmokeError):
             smoke.require_platform_published_skill_absent(200, {"data": {}})
 
-    def test_bff_published_read_revocation_does_not_leak_data(self):
-        denied = {
+    def test_bff_r357_and_managed_revocation_do_not_leak_data(self):
+        website = {
+            "error": {
+                "code": "session_invalid",
+                "message": "Current user admission is required",
+            }
+        }
+        managed = {
             "error": {
                 "code": "session_invalid",
                 "message": "BFF user admission failed",
-                "retryable": False,
-            }
+            },
+            "meta": {"request_id": "request-one"},
         }
-        smoke.require_bff_projection_revoked(401, denied)
-        for status, body in (
-            (200, denied),
-            (401, {**denied, "data": {"name": "private"}}),
-            (401, {"error": {"code": "session_invalid"}}),
-            (401, {"error": {**denied["error"], "retryable": True}}),
-            (401, {"error": {**denied["error"], "message": "Bearer leaked"}}),
+        for check, denied in (
+            (smoke.require_website_skill_revoked, website),
+            (smoke.require_active_personal_skill_revoked, managed),
         ):
-            with (
-                self.subTest(status=status, body=body),
-                self.assertRaises(smoke.SmokeError),
+            check((401, denied))
+            for status, body in (
+                (200, denied),
+                (401, {**denied, "data": {"name": "private"}}),
+                (401, {**denied, "error": {"code": "session_invalid"}}),
+                (401, {**denied, "error": {**denied["error"], "retryable": True}}),
+                (
+                    401,
+                    {
+                        **denied,
+                        "error": {**denied["error"], "message": "Bearer leaked"},
+                    },
+                ),
             ):
-                smoke.require_bff_projection_revoked(status, body)
+                with (
+                    self.subTest(check=check.__name__, status=status, body=body),
+                    self.assertRaises(smoke.SmokeError),
+                ):
+                    check((status, body))
 
-    def test_bff_personal_list_rejects_mixed_scope_or_private_fields(self):
-        item = {
+    def test_active_personal_projection_rejects_mixed_scope_or_private_fields(self):
+        owner = {
+            "skill_id": "skill-current",
             "source_ref": "skill:skill-current",
             "name": "Sandbox skill",
-            "description": "sandbox draft",
-            "content_hash": "sha256:public",
-            "scope": "personal",
+            "summary": "",
+            "tags": ["sandbox"],
             "revision": "1",
-            "enabled": True,
+            "status": "active",
+        }
+        item = {
+            **owner,
+            "series_id": "series-current",
             "product": formal_product(),
             "example_prompts": [],
             "category_keys": [],
@@ -287,26 +252,168 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 "status": "missing",
             },
         }
-        page = {"data": {"skills": [item], "next_cursor": None}}
-        smoke.require_bff_personal_skill_list(200, page, "skill-current", "1")
-        smoke.require_bff_personal_skill_list(
-            200,
-            {"data": {"skills": [{**item, "description": ""}], "next_cursor": None}},
-            "skill-current",
-            "1",
+
+        def read(row):
+            return 200, {
+                "data": {"skills": [row], "next_cursor": None},
+                "meta": {"request_id": "request-one"},
+            }
+
+        smoke.require_active_personal_skill_projection(
+            read(item), "series-current", owner
         )
         for mutation in (
-            {"scope": "organization"},
+            {"product": {**item["product"], "source_kind": "organization"}},
             {"package_asset_ref": "private"},
             {"revision": "0"},
+            {"revision": "2"},
+            {"series_id": "series-other"},
+            {"status": "draft"},
+            {"tags": ["unrelated"]},
         ):
             with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
-                smoke.require_bff_personal_skill_list(
-                    200,
-                    {"data": {"skills": [{**item, **mutation}], "next_cursor": None}},
-                    "skill-current",
-                    "1",
+                smoke.require_active_personal_skill_projection(
+                    read({**item, **mutation}), "series-current", owner
                 )
+
+    def test_r357_website_transport_uses_series_post_without_mutation_key(self):
+        sent = []
+        browser = SimpleNamespace(
+            cookie="__Secure-kokoro-issuer.session_token=opaque%2B",
+            iam_web_origin="https://sandbox.example.test",
+        )
+        owner = {"skill_id": "revision-one", "name": "Sandbox", "summary": ""}
+        skill = {
+            "id": "series-one",
+            "version": "revision-one",
+            "displayName": "Sandbox",
+            "description": "",
+            "userDescription": "",
+            "ownerType": "personal",
+            "coverImage": "/api/v1/skills/revision-one/cover",
+        }
+        responses = iter(
+            [
+                (
+                    404,
+                    {
+                        "error": {
+                            "code": "NotFound",
+                            "message": "Skill is not available",
+                        }
+                    },
+                ),
+                (200, {"skill": skill}),
+                (
+                    401,
+                    {
+                        "error": {
+                            "code": "session_invalid",
+                            "message": "Current user admission is required",
+                        }
+                    },
+                ),
+            ]
+        )
+
+        class Connection:
+            def __init__(self, host, port, *, timeout):
+                if (host, port, timeout) != ("127.0.0.1", 4401, 8):
+                    raise AssertionError("wrong controlled peer")
+
+            def request(self, method, path, *, headers, body):
+                sent.append((method, path, headers, body))
+
+            def getresponse(self):
+                status, data = next(responses)
+                return SimpleNamespace(
+                    status=status,
+                    read=lambda limit: (
+                        json.dumps(data).encode() if limit == 1_048_577 else b""
+                    ),
+                    getheaders=lambda: [
+                        ("x-request-id", sent[-1][2]["x-kokoro-request-id"]),
+                        ("cache-control", "no-store"),
+                    ],
+                )
+
+            def close(self):
+                pass
+
+        def get_skill():
+            return smoke._http_website_get_skill(
+                "http://127.0.0.1:4401", "series-one", browser=browser, secret="WEB"
+            )
+
+        with patch.object(smoke.http.client, "HTTPConnection", Connection):
+            smoke.require_website_skill_missing(get_skill())
+            smoke.require_website_skill_projection(get_skill(), "series-one", owner)
+            smoke.require_website_skill_revoked(get_skill())
+        self.assertEqual(len(sent), 3)
+        for method, path, headers, body in sent:
+            self.assertEqual(
+                (method, path, body),
+                (
+                    "POST",
+                    "/skill.v1.SkillOptionalService/GetSkill",
+                    b'{"skillId":"series-one"}',
+                ),
+            )
+            self.assertEqual(headers["cookie"], browser.cookie)
+            self.assertEqual(headers["origin"], browser.iam_web_origin)
+            self.assertEqual(headers["x-kokoro-service"], "web-bff")
+            self.assertEqual(headers["x-kokoro-internal-secret"], "WEB")
+            self.assertEqual(headers["content-type"], "application/json")
+            self.assertNotIn("idempotency-key", headers)
+            self.assertNotIn("authorization", headers)
+        for mutation in (
+            {"id": "wrong-series"},
+            {"version": "wrong-revision"},
+            {"description": "drift"},
+            {"coverImage": "/wrong"},
+        ):
+            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
+                smoke.require_website_skill_projection(
+                    (200, {"skill": {**skill, **mutation}}), "series-one", owner
+                )
+
+    def test_retired_skill_revision_is_terminal_and_never_forwarded(self):
+        proxy = SimpleNamespace(
+            count=5, request_count=13, protocol_failed=False, protocol_failure_count=0
+        )
+        observed = []
+        missing = {
+            "error": {
+                "code": "bff_route_not_found",
+                "message": "Business route was not found",
+            },
+            "meta": {"request_id": "request-one"},
+        }
+
+        def read(path):
+            observed.append(path)
+            return 404, missing
+
+        smoke.require_retired_bff_skill_detail(read, proxy, "revision-one")
+        self.assertEqual(observed, ["/v1/skills/revision-one"])
+        with self.assertRaises(smoke.SmokeError):
+            smoke.require_retired_bff_skill_detail(
+                lambda _path: (404, {"error": {"code": "skill_not_found"}}),
+                proxy,
+                "revision-one",
+            )
+        for field in ("count", "request_count", "protocol_failure_count"):
+
+            def leak(path):
+                setattr(proxy, field, getattr(proxy, field) + 1)
+                return read(path)
+
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(smoke.SmokeError, "reached the owner"),
+            ):
+                smoke.require_retired_bff_skill_detail(leak, proxy, "revision-one")
+            setattr(proxy, field, getattr(proxy, field) - 1)
 
     def test_public_publish_requires_exact_active_owner_event_projection(self):
         valid = {
@@ -387,7 +494,9 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             status, body = smoke._http_publish_empty(
                 "http://127.0.0.1:4401",
                 "/v1/skills/skill-current/publish",
-                token="TOKEN",
+                browser=SimpleNamespace(
+                    cookie="cookie=TOKEN", iam_web_origin="https://sandbox.example.test"
+                ),
                 secret="SECRET",
                 key="publish-key",
             )
@@ -400,40 +509,143 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertEqual(kwargs["headers"]["content-length"], "0")
         self.assertNotIn("content-type", kwargs["headers"])
 
-    def test_signed_put_zip_fixture_uses_strict_v2_manifest_without_embedded_identity(
+    def test_bff_routes_send_exact_native_cookie_and_origin(self):
+        # This transport check uses controlled I/O. The receipt is not acquired here.
+        cookie = "__Secure-kokoro-issuer.session_token=opaque%2B; unrelated=preserved"
+        origin = "https://sandbox.example.test"
+        browser = SimpleNamespace(cookie=cookie, iam_web_origin=origin)
+        calls = []
+
+        class Connection:
+            def __init__(self, host, port, *, timeout):
+                self.target = host, port, timeout
+
+            def request(self, method, path, *, headers, body=None):
+                calls.append((self.target, method, path, headers, body))
+
+            def getresponse(self):
+                request_id = calls[-1][3]["x-kokoro-request-id"]
+                path = calls[-1][2]
+                value = {"data": {}}
+                if path == "/v1/self/skills/series/versions":
+                    value["meta"] = {"request_id": request_id}
+                return SimpleNamespace(
+                    status=200,
+                    read=lambda limit: (
+                        json.dumps(value).encode() if limit == 1_048_577 else b""
+                    ),
+                    getheaders=lambda: [
+                        ("x-request-id", request_id),
+                        ("cache-control", "no-store"),
+                    ],
+                )
+
+            def close(self):
+                pass
+
+        base = "http://127.0.0.1:4401"
+        requests = (
+            (
+                smoke._http_json,
+                "/v1/skills/skill/package-upload",
+                {"key": "package-key", "body": {"value": True}},
+                "POST",
+                b'{"value":true}',
+                8,
+            ),
+            (
+                smoke._http_get_json,
+                "/v1/skills/skill/package-upload?probe=1",
+                {},
+                "GET",
+                None,
+                8,
+            ),
+            (
+                smoke._http_publish_empty,
+                "/v1/skills/skill/publish",
+                {"key": "publish-key"},
+                "POST",
+                b"",
+                8,
+            ),
+            (
+                smoke._http_lifecycle,
+                "/v1/self/skills/series/versions",
+                {"key": "lifecycle-key", "body": {"value": True}},
+                "POST",
+                b'{"value":true}',
+                12,
+            ),
+        )
+        with patch.object(smoke.http.client, "HTTPConnection", Connection):
+            for send, path, fields, method, raw, timeout in requests:
+                with self.subTest(path=path):
+                    status, body = send(
+                        base, path, secret="SECRET", browser=browser, **fields
+                    )
+                    self.assertEqual(status, 200)
+                    self.assertEqual(body["data"], {})
+                    target, actual_method, actual_path, headers, actual_body = calls[-1]
+                    self.assertEqual(target, ("127.0.0.1", 4401, timeout))
+                    self.assertEqual(
+                        (actual_method, actual_path, actual_body), (method, path, raw)
+                    )
+                    self.assertEqual(headers.get("cookie"), cookie)
+                    self.assertEqual(headers.get("origin"), origin)
+                    self.assertNotIn("authorization", headers)
+                    self.assertEqual(headers["x-kokoro-service"], "web-bff")
+                    self.assertEqual(headers["x-kokoro-internal-secret"], "SECRET")
+                    self.assertEqual(headers.get("idempotency-key"), fields.get("key"))
+                    self.assertEqual(
+                        headers.get("content-length"), "0" if raw == b"" else None
+                    )
+                    self.assertEqual(
+                        headers.get("content-type"), "application/json" if raw else None
+                    )
+
+    def test_signed_put_zip_fixture_uses_current_skill_markdown_without_embedded_identity(
         self,
     ):
         payload = smoke.upload_zip_bytes("skill-current", 1)
         with zipfile.ZipFile(BytesIO(payload)) as archive:
-            self.assertEqual(archive.namelist(), ["manifest.json", "SKILL.md"])
+            self.assertEqual(archive.namelist(), ["SKILL.md"])
             self.assertEqual(
-                json.loads(archive.read("manifest.json")),
-                {
-                    "schema_version": 2,
-                    "entry": "SKILL.md",
-                },
+                archive.read("SKILL.md"),
+                b"---\nname: sandbox-signed-put\n"
+                b"description: Owned signed PUT smoke.\n---\n"
+                b"# Sandbox\n\nOwned signed PUT smoke.\n",
             )
-            self.assertIn(b"# Sandbox", archive.read("SKILL.md"))
         with self.assertRaises(smoke.SmokeError):
             smoke.upload_zip_bytes("../other", 1)
         with self.assertRaises(smoke.SmokeError):
             smoke.upload_zip_bytes("skill-current", 0)
 
     def test_public_validate_requires_exact_owner_verified_zip_projection(self):
+        payload = smoke.upload_zip_bytes("skill-current", 1)
+        content_digest = hashlib.sha256(payload).hexdigest()
+        with zipfile.ZipFile(BytesIO(payload)) as archive:
+            skill_digest = hashlib.sha256(archive.read("SKILL.md")).hexdigest()
+        manifest_identity = "skill-md-v1:sha256:" + skill_digest
         valid = {
             "data": {
                 "skill_id": "skill-current",
                 "series_id": "series-current",
                 "valid": True,
-                "content_digest": "a" * 64,
-                "manifest_identity": "zip-v2:sha256:" + "b" * 64,
+                "content_digest": content_digest,
+                "manifest_identity": manifest_identity,
                 "replayed": False,
                 "state_version": "1",
             }
         }
         self.assertFalse(
             smoke.require_public_skill_validate(
-                200, valid, "skill-current", "series-current", "a" * 64
+                200,
+                valid,
+                "skill-current",
+                "series-current",
+                content_digest,
+                manifest_identity,
             )["replayed"]
         )
         for mutation in (
@@ -441,8 +653,10 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             {"series_id": "other"},
             {"valid": False},
             {"content_digest": "A" * 64},
-            {"manifest_identity": "zip-v2:sha256:INVALID"},
-            {"manifest_identity": "zip-v1:sha256:" + "b" * 64},
+            {"manifest_identity": "skill-md-v1:sha256:INVALID"},
+            {"manifest_identity": "zip-v2:sha256:" + skill_digest},
+            {"manifest_identity": "skill-md-v1:sha256:" + content_digest},
+            {"manifest_identity": "skill-md-v1:sha256:" + "b" * 64},
             {"replayed": "false"},
             {"asset_id": "private"},
         ):
@@ -452,7 +666,8 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                     {"data": {**valid["data"], **mutation}},
                     "skill-current",
                     "series-current",
-                    "a" * 64,
+                    content_digest,
+                    manifest_identity,
                 )
 
     def test_public_complete_requires_current_uploaded_projection(self):
@@ -769,15 +984,15 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 smoke.require_public_package_get(200, body, "skill-current")
 
     def test_package_probe_receives_only_storage_boundary_and_current_skill(self):
-        parsed = smoke.require_sandbox_ready(ready())
+        parsed = SimpleNamespace(tenant_id="tenant-one", user_id="user-one")
         env = smoke.platform_package_probe_env(
             {"PATH": "/usr/bin", "NODE_ENV": "development"},
             Path("/opt/node24/bin/node"),
             "http://127.0.0.1:4402",
             "http://127.0.0.1:4403",
-            "http://127.0.0.1:4404",
             "platform-secret",
             parsed,
+            Path("/owned/catalog.json"),
             "skill-current",
         )
         self.assertEqual(env["KOKORO_SMOKE_TENANT_ID"], "tenant-one")
@@ -785,9 +1000,12 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         self.assertEqual(env["KOKORO_SMOKE_SKILL_ID"], "skill-current")
         self.assertEqual(env["KOKORO_STORAGE_URL"], "http://127.0.0.1:4402")
         self.assertEqual(env["KOKORO_SMOKE_PLATFORM_URL"], "http://127.0.0.1:4403")
-        self.assertEqual(env["KOKORO_SMOKE_IAM_URL"], "http://127.0.0.1:4404")
-        self.assertEqual(env["KOKORO_SMOKE_CATALOG_CLIENT_ID"], "catalog")
-        self.assertEqual(env["KOKORO_SMOKE_CATALOG_CLIENT_SECRET"], "catalog-secret")
+        self.assertNotIn("KOKORO_SMOKE_IAM_URL", env)
+        self.assertNotIn("KOKORO_SMOKE_CATALOG_CLIENT_ID", env)
+        self.assertEqual(
+            env["KOKORO_SMOKE_CATALOG_SERVICE_CREDENTIAL_FILE"], "/owned/catalog.json"
+        )
+        self.assertNotIn("KOKORO_SMOKE_CATALOG_CLIENT_SECRET", env)
         self.assertEqual(env["PATH"], "/opt/node24/bin:/usr/bin")
         self.assertNotIn("KOKORO_PLATFORM_IAM_TENANT_CREDENTIALS_FILE", env)
         with self.assertRaises(smoke.SmokeError):
@@ -796,80 +1014,15 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 Path("/opt/node24/bin/node"),
                 "http://127.0.0.1:4402",
                 "http://127.0.0.1:4403",
-                "http://127.0.0.1:4404",
                 "platform-secret",
                 parsed,
+                Path("/owned/catalog.json"),
                 " ",
             )
 
-    def test_ready_protocol_is_exact_and_loopback(self):
-        value = smoke.require_sandbox_ready(ready())
-        self.assertEqual(value.tenant_id, "tenant-one")
-        self.assertEqual(value.projection.client_id, "projection")
-        self.assertEqual(len(value.secrets), 7)
-        self.assertIn("web-secret", value.secrets)
-        self.assertIn("password", value.secrets)
-        for mutation in (
-            {**ready(), "unexpected": "x"},
-            {**ready(), "base_url": "http://127.0.0.1:3310"},
-            {**ready(), "base_url": "https://public.example.test"},
-            {
-                **ready(),
-                "skill_sandbox": {**ready()["skill_sandbox"], "access_token": ""},
-            },
-        ):
-            with self.subTest(mutation=mutation), self.assertRaises(smoke.SmokeError):
-                smoke.require_sandbox_ready(mutation)
-
-    def test_agent_source_ready_requires_explicit_mode_and_exact_credential(self):
-        record = ready()
-        record["skill_sandbox"]["tenant_execution_client"] = {
-            "client_id": "agent-source",
-            "client_secret": "agent-source-secret",
-        }
-        with self.assertRaises(smoke.SmokeError):
-            smoke.require_sandbox_ready(record)
-        parsed = smoke.require_sandbox_ready(record, agent_source=True)
-        self.assertEqual(parsed.tenant_execution.client_id, "agent-source")
-        self.assertIn("agent-source-secret", parsed.secrets)
-        self.assertEqual(len(parsed.secrets), 8)
-        self.assertIsNone(smoke.require_sandbox_ready(ready()).tenant_execution)
-        for invalid_mode in ("1", "0", 1, 0, None):
-            with self.subTest(mode=invalid_mode), self.assertRaises(smoke.SmokeError):
-                smoke.require_sandbox_ready(record, agent_source=invalid_mode)
-        for invalid in (
-            None,
-            {},
-            {"client_id": "agent"},
-            {
-                "client_id": "agent",
-                "client_secret": "secret",
-                "private_key": "forbidden",
-            },
-            {"client_id": "agent", "client_secret": " "},
-        ):
-            changed = ready()
-            changed["skill_sandbox"]["tenant_execution_client"] = invalid
-            with self.subTest(invalid=invalid), self.assertRaises(smoke.SmokeError):
-                smoke.require_sandbox_ready(changed, agent_source=True)
-        with self.assertRaises(smoke.SmokeError):
-            smoke.require_sandbox_ready(ready(), agent_source=True)
-
-    def test_agent_source_credentials_are_redacted_from_diagnostics(self):
-        record = ready()
-        record["skill_sandbox"]["tenant_execution_client"] = {
-            "client_id": "agent-source",
-            "client_secret": "agent-source-secret",
-        }
-        parsed = smoke.require_sandbox_ready(record, agent_source=True)
-        summary = smoke.safe_summary(
-            smoke.SmokeError("failure agent-source-secret"), parsed.secrets
-        )
-        self.assertNotIn("agent-source-secret", json.dumps(summary))
-
     def test_revoke_protocol_is_exact(self):
         smoke.require_revoke_result(
-            {"kind": "result", "command": "revoke-user-session", "status": "ok"}
+            {"kind": "result", "command": "signout", "status": "ok"}
         )
         with self.assertRaises(smoke.SmokeError):
             smoke.require_revoke_result(
@@ -881,72 +1034,161 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                 }
             )
 
-    def test_credential_file_is_0600_and_removed(self):
-        with smoke.credential_file(
-            {"client_id": "catalog", "client_secret": "secret"}
-        ) as path:
-            self.assertEqual(stat.S_IMODE(path.stat().st_mode), 0o600)
-            self.assertEqual(
-                json.loads(path.read_text()),
-                {"client_id": "catalog", "client_secret": "secret"},
+    def test_named_execution_receipt_binds_three_owned_purpose_files(self):
+        from unittest.mock import Mock
+
+        with (
+            tempfile.TemporaryDirectory() as work,
+            tempfile.TemporaryDirectory() as outside,
+        ):
+            directory = Path(work).resolve()
+            specifications = (
+                ("context", "kokoro-bff", "bff_user_context"),
+                ("account", "kokoro-bff", "account_sessions"),
+                ("execution", "kokoro-platform", "execution_authorization"),
             )
-            parent = path.parent
-        self.assertFalse(path.exists())
-        self.assertFalse(parent.exists())
-
-    def test_owner_credential_projections_are_exact(self):
-        parsed = smoke.require_sandbox_ready(ready())
-        resource, execution, catalog, projection = smoke.platform_credential_payloads(
-            parsed
-        )
-        self.assertEqual(
-            resource,
-            {
-                "generation": 1,
-                "credentialRefVersion": "sandbox-v1",
-                "clientId": "resource",
-                "clientSecret": "resource-secret",
-            },
-        )
-        self.assertEqual(catalog[0]["tenantId"], "tenant-one")
-        self.assertEqual(
-            catalog[0]["resource"], "https://kokoro.dev/resources/platform-internal"
-        )
-        self.assertEqual(catalog[0]["scope"], "platform:skill-catalog.manage")
-        self.assertEqual(
-            projection,
-            {
-                "version": 1,
-                "entries": [
-                    {
-                        "credential_id": "bff-projection",
-                        "secret": "projection-secret",
-                        "caller": "kokoro-bff",
-                        "surfaces": ["projection"],
-                        "tenant_id": "tenant-one",
-                    }
-                ],
-            },
-        )
-        self.assertEqual(
-            execution[0]["resource"], "https://kokoro.dev/resources/iam-internal"
-        )
-        self.assertEqual(execution[0]["scope"], "iam:execution-authorization.verify")
-        self.assertEqual(execution[0]["clientId"], "execution")
-        self.assertEqual(execution[0]["clientSecret"], "execution-secret")
-
-    def test_platform_service_credential_file_is_owned_and_removed(self):
-        parsed = smoke.require_sandbox_ready(ready())
-        with tempfile.TemporaryDirectory() as owned:
-            directory = Path(owned)
-            with smoke.credential_files(directory, parsed) as paths:
-                projection = paths["platform-service-credentials.json"]
-                self.assertEqual(projection.stat().st_mode & 0o777, 0o600)
-                self.assertEqual(
-                    json.loads(projection.read_text()),
-                    smoke.platform_credential_payloads(parsed)[3],
+            paths = []
+            for name, caller, surface in specifications:
+                path = directory / (name + ".json")
+                path.write_text(
+                    json.dumps(
+                        {
+                            "version": 1,
+                            "entries": [
+                                {
+                                    "credential_id": name,
+                                    "caller": caller,
+                                    "surface": surface,
+                                    "tenant_id": "tenant-one",
+                                    "secret": name * 32,
+                                }
+                            ],
+                        }
+                    )
                 )
-            self.assertFalse(projection.exists())
+                path.chmod(0o600)
+                paths.append(path)
+            browser = SimpleNamespace(
+                bff_user_context_credential_file=str(paths[0]),
+                account_session_credential_file=str(paths[1]),
+            )
+            iam, reader, register = Mock(), Mock(), Mock()
+            receipt = {
+                "kind": "platform_execution_credential",
+                "execution_credential_file": str(paths[2]),
+            }
+            reader.record.return_value = receipt
+            self.assertEqual(
+                smoke._named_iam_execution_file(
+                    iam, reader, browser, directory, "tenant-one", register
+                ),
+                paths[2],
+            )
+            iam.stdin.write.assert_called_once_with(
+                b'{"command":"platform_execution_credential"}\n'
+            )
+            reader.record.assert_called_once_with(timeout=30)
+            self.assertEqual(
+                [args.args[0] for args in register.call_args_list],
+                [name * 32 for name, *_ in specifications],
+            )
+
+            for invalid in (
+                {**receipt, "access_token": "not-a-purpose-credential"},
+                {**receipt, "execution_credential_file": str(paths[0])},
+                {
+                    **receipt,
+                    "execution_credential_file": str(Path(outside) / "execution.json"),
+                },
+            ):
+                with self.subTest(invalid=invalid), self.assertRaises(smoke.SmokeError):
+                    reader.record.return_value = invalid
+                    smoke._named_iam_execution_file(
+                        iam, reader, browser, directory, "tenant-one", register
+                    )
+            reader.record.return_value = receipt
+            paths[2].chmod(0o644)
+            with self.assertRaisesRegex(smoke.SmokeError, "purpose credential invalid"):
+                smoke._named_iam_execution_file(
+                    iam, reader, browser, directory, "tenant-one", register
+                )
+
+    def test_native_platform_sender_files_are_scoped_and_not_the_receiver(self):
+        catalog = {
+            "credential_id": "bff-catalog",
+            "secret": "c" * 32,
+            "caller": "kokoro-bff",
+            "surfaces": ["catalog"],
+            "tenant_id": "tenant-one",
+        }
+        projection = {
+            **catalog,
+            "credential_id": "bff-projection",
+            "secret": "p" * 32,
+            "surfaces": ["projection"],
+        }
+        agent = {
+            **catalog,
+            "credential_id": "agent-platform-source",
+            "secret": "a" * 32,
+            "caller": "kokoro-agent",
+            "surfaces": ["tenant_execution"],
+        }
+        for enabled in (False, True):
+            with (
+                self.subTest(agent_source=enabled),
+                tempfile.TemporaryDirectory() as work,
+            ):
+                directory = Path(work)
+                expected = {
+                    "bff-catalog.json": {"version": 1, "entries": [catalog]},
+                    "bff-projection.json": {"version": 1, "entries": [projection]},
+                    "platform-service-credentials.json": {
+                        "version": 1,
+                        "entries": [catalog, projection, *([agent] if enabled else [])],
+                    },
+                }
+                with smoke._native_platform_credential_files(
+                    directory,
+                    "tenant-one",
+                    "c" * 32,
+                    "p" * 32,
+                    retain_for_agent=enabled,
+                    agent_entry=agent if enabled else None,
+                ) as files:
+                    self.assertEqual(set(files), set(expected))
+                    self.assertEqual(
+                        {p.name for p in directory.iterdir()}, set(expected)
+                    )
+                    self.assertEqual(
+                        {
+                            name: json.loads(path.read_text())
+                            for name, path in files.items()
+                        },
+                        expected,
+                    )
+                    self.assertEqual(
+                        {stat.S_IMODE(path.stat().st_mode) for path in files.values()},
+                        {0o600},
+                    )
+                self.assertEqual(
+                    {p.name for p in directory.iterdir()},
+                    set(expected) if enabled else set(),
+                )
+
+    def test_native_platform_files_are_removed_after_body_failure(self):
+        with tempfile.TemporaryDirectory() as work:
+            directory = Path(work)
+            untouched = directory / "unrelated"
+            untouched.write_text("keep")
+            with self.assertRaisesRegex(RuntimeError, "consumer stopped"):
+                with smoke._native_platform_credential_files(
+                    directory, "tenant-one", "c" * 32, "p" * 32, retain_for_agent=False
+                ) as files:
+                    self.assertTrue(all(path.is_file() for path in files.values()))
+                    raise RuntimeError("consumer stopped")
+            self.assertEqual(list(directory.iterdir()), [untouched])
+            self.assertEqual(untouched.read_text(), "keep")
 
     def test_cleanup_verification_attempts_every_inventory_after_failures(self):
         calls = []
@@ -993,6 +1235,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
 
             def wait(self, timeout):
                 events.append(("wait", self.name, timeout))
+                return 0
 
         class Reader:
             def record(self, timeout):
@@ -1013,6 +1256,26 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             events.index(("write", b'{"command":"stop"}\n')),
         )
         self.assertEqual(events[-1], ("stop", "iam"))
+
+    def test_named_iam_stop_rejects_nonzero_exit_even_after_valid_ack(self):
+        from unittest.mock import Mock
+
+        iam = Mock()
+        iam.poll.return_value = None
+        iam.wait.return_value = 3
+        reader = Mock()
+        reader.record.return_value = {
+            "kind": "result",
+            "command": "stop",
+            "status": "ok",
+        }
+        stop = Mock()
+        self.assertEqual(
+            smoke.stop_owned_processes([], iam, reader, stop),
+            ["IAM stop protocol cleanup failed"],
+        )
+        iam.stdin.write.assert_called_once_with(b'{"command":"stop"}\n')
+        stop.assert_called_once_with(iam)
 
     def test_owned_bucket_is_created_versioned_and_deleted_only_after_creation(self):
         class Missing(Exception):
@@ -1112,12 +1375,12 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         )
         code = ast.unparse(execute)
         self.assertNotIn("KOKORO_SKILL_DRAFT_CANDIDATE_ENABLED", code)
-        credential = "bff_env['KOKORO_BFF_PLATFORM_CATALOG_CREDENTIALS_FILE'] = str(files['bff-catalog.json'])"
+        credential = "bff_env['KOKORO_BFF_PLATFORM_CATALOG_SERVICE_CREDENTIAL_FILE'] = str(files['bff-catalog.json'])"
         self.assertLess(code.index("closed = _start("), code.index(credential))
         self.assertLess(code.index(credential), code.index("active = _start("))
         self.assertIn("if proxy.count != 0:", code)
         self.assertIn(
-            "'KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE': str(files['platform-service-credentials.json'])",
+            "'KOKORO_PLATFORM_PROJECTION_CREDENTIAL_FILE': str(files['bff-projection.json'])",
             code,
         )
 
@@ -1410,13 +1673,13 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             calls.append(kwargs)
             return responses.pop(0)
 
-        result = smoke.exercise_http_contract(
-            request, smoke.require_sandbox_ready(ready())
-        )
+        result = smoke.exercise_http_contract(request)
         self.assertEqual(result["skill_id"], "skill-one")
         self.assertEqual(len(calls), 3)
         self.assertEqual({call["key"] for call in calls}, {"skill-draft-sandbox-key"})
-        self.assertTrue(all(call["token"] == "user-token" for call in calls))
+        self.assertEqual([set(call) for call in calls], [{"body", "key"}] * 3)
+        self.assertEqual(calls[0]["body"], calls[1]["body"])
+        self.assertNotEqual(calls[1]["body"], calls[2]["body"])
 
     def test_http_contract_rejects_unrelated_409_code(self):
         responses = [
@@ -1449,9 +1712,7 @@ class SkillDraftSandboxGuards(unittest.TestCase):
             (409, {"error": {"code": "other_conflict"}}),
         ]
         with self.assertRaisesRegex(smoke.SmokeError, "conflict drift"):
-            smoke.exercise_http_contract(
-                lambda **_kw: responses.pop(0), smoke.require_sandbox_ready(ready())
-            )
+            smoke.exercise_http_contract(lambda **_kw: responses.pop(0))
 
     def test_first_draft_failure_reports_only_status_and_whitelisted_code(self):
         with self.assertRaises(smoke.SmokeError) as known:
@@ -1465,7 +1726,6 @@ class SkillDraftSandboxGuards(unittest.TestCase):
                         }
                     },
                 ),
-                smoke.require_sandbox_ready(ready()),
             )
         self.assertEqual(
             str(known.exception),
@@ -1474,7 +1734,6 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         with self.assertRaises(smoke.SmokeError) as unknown:
             smoke.exercise_http_contract(
                 lambda **_kw: (503, {"error": {"code": "secret/value?token=leak"}}),
-                smoke.require_sandbox_ready(ready()),
             )
         self.assertEqual(
             str(unknown.exception),
@@ -1710,21 +1969,68 @@ class SkillDraftSandboxGuards(unittest.TestCase):
         with self.assertRaisesRegex(smoke.SmokeError, "replay drift"):
             smoke.exercise_http_contract(
                 lambda **_kwargs: responses.pop(0),
-                smoke.require_sandbox_ready(ready()),
             )
+
+
+class AgentBffAdmissionObserverTests(unittest.IsolatedAsyncioTestCase):
+    async def test_owner_ack_binds_all_identity_fields_and_distinguishes_pending(self):
+        from contextlib import asynccontextmanager
+        from unittest.mock import AsyncMock
+
+        fields = ("tenant", "run", "conversation", "request", "message")
+        urls = []
+        cursor = SimpleNamespace(
+            fetchone=AsyncMock(side_effect=[{"admitted": False}, {"admitted": True}])
+        )
+        connection = SimpleNamespace(execute=AsyncMock(return_value=cursor))
+
+        @asynccontextmanager
+        async def connect(database):
+            urls.append(database)
+            yield connection
+
+        database = "postgresql://role@127.0.0.1/owned"
+        inputs = smoke.AgentSourceInputs(
+            "tenant",
+            "user",
+            "fixture",
+            "https://fixture.example.test",
+            "http://127.0.0.1:13337",
+            "secret",
+            Path("/private/fixture"),
+            database,
+        )
+        # The Root unit suite does not install the Agent owner package.
+        with patch.dict(
+            sys.modules,
+            {
+                "kokoro_agent.infrastructure.postgres": SimpleNamespace(
+                    connect_pg=connect
+                )
+            },
+        ):
+            self.assertIs(await inputs.observe_bff_dispatch_admitted(*fields), False)
+            self.assertIs(await inputs.observe_bff_dispatch_admitted(*fields), True)
+        self.assertEqual(urls, [database, database])
+        for call in connection.execute.await_args_list:
+            query, params = call.args
+            self.assertEqual(params, fields)
+            self.assertIn('"kokoro_bff"."bff_agent_dispatch_outbox"', query)
+            self.assertIn("status = 'admitted' AND admitted_at IS NOT NULL", query)
 
 
 class AgentSourceOptInTests(unittest.TestCase):
     def test_unquiet_source_retains_owner_processes_database_and_bucket(self):
         from contextlib import ExitStack
-        from dataclasses import replace
         from types import SimpleNamespace
         from unittest.mock import Mock
         from uuid import UUID
 
         storage_helper = SimpleNamespace(_s3=Mock(), preflight_bucket=Mock())
         oidc = SimpleNamespace(runtime=SimpleNamespace(free_port=Mock()))
-        session = SimpleNamespace(node_environment=Mock(), ProtocolReader=Mock())
+        session = SimpleNamespace(
+            node_environment=Mock(), ProtocolReader=Mock(), validate_ready=Mock()
+        )
 
         resource_id = UUID("11111111-1111-1111-1111-111111111111")
         args = smoke.RunArguments(
@@ -1746,17 +2052,24 @@ class AgentSourceOptInTests(unittest.TestCase):
             "KOKORO_SCANNER_HOST": "127.0.0.1",
             "KOKORO_SCANNER_PORT": "3311",
         }
-        current = replace(
-            smoke.require_sandbox_ready(ready()),
-            database_name="iam_web_oidc_" + resource_id.hex,
-            redis_prefix=f"iam:test:web-oidc-flow-host:{resource_id}:",
+        current = SimpleNamespace(
+            base_url="http://127.0.0.1:4401",
+            tenant_id="tenant-one",
+            user_id="user-one",
+            access_token="legacy-token-redaction",
         )
         for quiescent in (False, True):
             with (
                 self.subTest(quiescent=quiescent),
                 tempfile.TemporaryDirectory() as directory,
+                tempfile.TemporaryDirectory() as agent_keys,
                 ExitStack() as stack,
             ):
+                browser = SimpleNamespace(
+                    cookie="cookie=native-private",
+                    iam_web_origin="https://skill-0123456789abcdef01234567.example.test",
+                )
+                native = SimpleNamespace(native_command=Mock(return_value=browser))
                 stack.enter_context(
                     patch.dict(
                         sys.modules,
@@ -1764,6 +2077,7 @@ class AgentSourceOptInTests(unittest.TestCase):
                             "run_agent_storage_artifact_smoke": storage_helper,
                             "run_web_bff_iam_oidc_smoke": oidc,
                             "run_bff_iam_session_smoke": session,
+                            "run_web_native_session_smoke": native,
                         },
                     )
                 )
@@ -1792,14 +2106,29 @@ class AgentSourceOptInTests(unittest.TestCase):
                 stub(smoke.source_helper, "AgentSourceDriver", return_value=driver)
                 stub(smoke, "frozen_sources")
                 stub(smoke, "uuid4", return_value=resource_id)
-                stub(smoke.tempfile, "mkdtemp", return_value=directory)
+                token_hex = smoke.secrets.token_hex
+                stub(
+                    smoke.secrets,
+                    "token_hex",
+                    side_effect=lambda length: (
+                        "0123456789abcdef01234567"
+                        if length == 12
+                        else token_hex(length)
+                    ),
+                )
+                stub(smoke.tempfile, "mkdtemp", side_effect=[directory, agent_keys])
                 stub(smoke, "_database_exists", return_value=False)
                 stub(smoke, "_redis_keys", return_value=set())
                 stub(session, "node_environment", return_value={})
-                stub(smoke.subprocess, "Popen", return_value=process)
+                popen = stub(smoke.subprocess, "Popen", return_value=process)
                 stub(session, "ProtocolReader", return_value=reader)
-                stub(smoke, "require_sandbox_ready", return_value=current)
-                stub(oidc.runtime, "free_port", return_value=4400)
+                stub(session, "validate_ready", return_value=current)
+                purpose = stub(
+                    smoke,
+                    "_named_iam_execution_file",
+                    return_value=Path(directory) / "execution.json",
+                )
+                stub(oidc.runtime, "free_port", side_effect=[4401, 4402, 4403])
                 stub(storage_helper, "_s3", return_value=object())
                 stub(
                     smoke,
@@ -1817,14 +2146,54 @@ class AgentSourceOptInTests(unittest.TestCase):
                 delete = stub(smoke, "delete_owned_bucket")
                 absent = stub(smoke, "require_bucket_absent")
                 stub(smoke, "verify_cleanup", return_value=[])
+                summarize = stub(smoke, "safe_summary", wraps=smoke.safe_summary)
                 result = smoke.execute(args, env)
                 self.assertEqual(result["status"], "FAIL")
+                native.native_command.assert_called_once_with(
+                    process, reader, run_dir=Path(directory).resolve()
+                )
+                command = popen.call_args.args[0]
+                child_env = popen.call_args.kwargs["env"]
+                self.assertEqual(
+                    Path(command[-1]).name, "bff-session-admission-host.ts"
+                )
+                self.assertEqual(
+                    child_env.get("IAM_BFF_HOST_PLATFORM_EXECUTION_CREDENTIAL"), "1"
+                )
+                self.assertNotIn("IAM_TEST_SKILL_SANDBOX_MODE", child_env)
+                self.assertEqual(
+                    child_env["IAM_TEST_BINDING_PEER_URL"], "http://127.0.0.1:4403"
+                )
+                binding = Path(child_env["IAM_TEST_BINDING_CREDENTIAL_FILE"])
+                self.assertEqual(binding.parent, Path(directory).resolve())
+                self.assertEqual(binding.stat().st_mode & 0o777, 0o600)
+                self.assertEqual(
+                    json.loads(binding.read_bytes())["entries"][0]["surface"],
+                    "project_execution_binding",
+                )
+                self.assertEqual(
+                    purpose.call_args.args[:5],
+                    (process, reader, browser, Path(directory).resolve(), "tenant-one"),
+                )
                 self.assertEqual(
                     result["agent_source_execution_error"],
                     "runner termination requested",
                 )
-                self.assertEqual(result["agent_source_evidence_directory"], directory)
+                self.assertEqual(
+                    result["agent_source_evidence_directory"],
+                    str(Path(directory).resolve()),
+                )
                 self.assertTrue(Path(directory).exists())
+                agent_sender = Path(directory) / "agent-platform-sender.json"
+                agent_credential = json.loads(agent_sender.read_bytes())["entries"][0]
+                agent_secret = agent_credential["secret"]
+                registered = summarize.call_args.args[1]
+                self.assertIn(agent_secret, registered)
+                self.assertNotIn(agent_secret, json.dumps(result))
+                self.assertEqual(
+                    summarize(smoke.SmokeError(f"failure {agent_secret}"), registered),
+                    {"status": "FAIL", "error": "smoke execution failed"},
+                )
                 if quiescent:
                     self.assertEqual(retained, [])
                     stop.assert_called_once()
@@ -1847,9 +2216,16 @@ class AgentSourceOptInTests(unittest.TestCase):
                         result["agent_source_dependencies"],
                         "retained: activity not quiescent",
                     )
-                self.assertNotIn("private", json.dumps(result))
+                for secret in (
+                    "native-private",
+                    "private-agent",
+                    "private-key",
+                    "private-secret",
+                    "legacy-token-redaction",
+                ):
+                    self.assertNotIn(secret, json.dumps(result))
 
-    def test_default_zip_unchanged_and_source_frontmatter_explicit(self):
+    def test_default_zip_frontmatter_and_source_archive_stays_explicit(self):
         for enabled in (False, True):
             with zipfile.ZipFile(
                 BytesIO(smoke.upload_zip_bytes("skill-one", 1, agent_source=enabled))
@@ -1859,12 +2235,19 @@ class AgentSourceOptInTests(unittest.TestCase):
                     content,
                     smoke.source_helper.SKILL_BYTES
                     if enabled
-                    else b"# Sandbox\n\nOwned signed PUT smoke.\n",
+                    else (
+                        b"---\nname: sandbox-signed-put\n"
+                        b"description: Owned signed PUT smoke.\n---\n"
+                        b"# Sandbox\n\nOwned signed PUT smoke.\n"
+                    ),
                 )
-                self.assertEqual(
-                    json.loads(archive.read("manifest.json")),
-                    {"schema_version": 2, "entry": "SKILL.md"},
-                )
+                if enabled:
+                    self.assertEqual(
+                        json.loads(archive.read("manifest.json")),
+                        {"schema_version": 2, "entry": "SKILL.md"},
+                    )
+                else:
+                    self.assertEqual(archive.namelist(), ["SKILL.md"])
         for enabled in ("1", 1, None):
             with self.subTest(enabled=enabled), self.assertRaises(smoke.SmokeError):
                 smoke.upload_zip_bytes("skill-one", 1, agent_source=enabled)
@@ -2031,18 +2414,29 @@ class AgentSourceOptInTests(unittest.TestCase):
         )
         self.assertIn("platform_surfaces(args)", code)
         self.assertIn(
+            "product_helper.PublicInstallationHttp(bff_base, browser.cookie, browser.iam_web_origin, web_secret)",
+            code,
+        )
+        self.assertIn(
             "product_installation.before_publish('skill:' + begin_skill_id)", code
         )
         self.assertIn(
-            "product_installation.exercise(('skill:' + str(result['skill_id']), 'skill:' + begin_skill_id))",
+            "product_installation.exercise(('skill:' + str(result['skill_id']), 'skill:' + begin_skill_id), series_ids=(str(result['series_id']), begin_series_id), expected_markdown=expected_markdown)",
+            code,
+        )
+        self.assertIn(
+            "product_helper.require_uploaded_markdown(payload, validation['content_digest'])",
             code,
         )
         self.assertIn(
             "product_installation.require_revoked('skill:' + begin_skill_id)", code
         )
+        self.assertIn("'revoked_six_operations_before_owner': True", code)
         self.assertLess(
             code.index("product_installation.exercise("),
-            code.index('iam.stdin.write(b\'{"command":"revoke-user-session"}\\n\')'),
+            code.index(
+                "require_revoke_result(_named_iam_command(iam, reader, 'signout'))"
+            ),
         )
         self.assertIn("parser.add_mutually_exclusive_group()", code)
         self.assertIn("summary['product_execution_boundary']", code)
@@ -2076,7 +2470,13 @@ class AgentSourceOptInTests(unittest.TestCase):
         tree = ast.parse(PATH.read_text())
         code = ast.unparse(tree)
         self.assertIn("iam_env['IAM_TEST_AGENT_SKILL_SOURCE_MODE'] = '0'", code)
-        self.assertIn("iam_env.pop('IAM_TEST_AGENT_JWKS_URL', None)", code)
+        self.assertIn("iam_env.pop(peer_key, None)", code)
+        for name in (
+            "IAM_TEST_AGENT_JWKS_URL",
+            "IAM_TEST_BINDING_PEER_URL",
+            "IAM_TEST_BINDING_CREDENTIAL_FILE",
+        ):
+            self.assertIn(name, code)
         self.assertIn("(2, 31, 2, 1)", code)
         execute = next(
             node
@@ -2107,7 +2507,7 @@ class AgentSourceOptInTests(unittest.TestCase):
             body.index("process_failures = stop_owned_processes("),
         )
         self.assertIn(
-            "require_sandbox_ready(reader.record(timeout=60), agent_source=args.agent_source)",
+            "session.validate_ready(reader.record(timeout=60))",
             body,
         )
 
@@ -2279,23 +2679,32 @@ def test_r356_public_owner_and_iam_enriched_projection_are_distinct():
             "image_url": None,
         },
     }
-    smoke.require_public_published_skill_read(200, {"data": enriched}, "skill-one", "1")
+
+    def page(row):
+        return 200, {
+            "data": {
+                "skills": [{**row, "series_id": "series-one"}],
+                "next_cursor": None,
+            },
+            "meta": {"request_id": "managed"},
+        }
+
+    smoke.require_active_personal_skill_projection(page(enriched), "series-one", data)
     with unittest.TestCase().assertRaises(smoke.SmokeError):
         smoke.require_platform_published_skill_read(
             200, {"data": enriched}, "skill-one", "1"
         )
     for bad in ({"id": "other"}, {"status": "missing", "display_name": "Invented"}):
         with unittest.TestCase().assertRaises(smoke.SmokeError):
-            smoke.require_public_published_skill_read(
-                200,
-                {
-                    "data": {
+            smoke.require_active_personal_skill_projection(
+                page(
+                    {
                         **enriched,
                         "publisher_profile": {**enriched["publisher_profile"], **bad},
                     }
-                },
-                "skill-one",
-                "1",
+                ),
+                "series-one",
+                data,
             )
 
 
@@ -2612,9 +3021,29 @@ def test_positive_publish_and_replay_use_same_current_command_body():
     fields = dict(
         zip((key.value for key in definition.keys), definition.values, strict=True)
     )
-    assert set(fields) == {"expected_state_version", "audience"}
+    assert set(fields) == {"expected_state_version", "audience", "expected_publication"}
     assert ast.unparse(fields["expected_state_version"]) == "validated_state_version"
     assert fields["audience"].value == "owner"
+    assert fields["expected_publication"].value is None
+    terminal_body = next(
+        keyword.value
+        for node in commands
+        for keyword in node.keywords
+        if keyword.arg == "body" and isinstance(keyword.value, ast.Dict)
+    )
+    terminal_fields = dict(
+        zip(
+            (key.value for key in terminal_body.keys), terminal_body.values, strict=True
+        )
+    )
+    assert (
+        ast.unparse(terminal_fields["expected_state_version"])
+        == "public_state_version(publication)"
+    )
+    assert (
+        ast.unparse(terminal_fields["expected_publication"])
+        == "{'current_version_id': begin_skill_id, 'state_version': '1'}"
+    )
 
 
 def test_ordinary_version_command_uses_metadata_without_unsupported_base_cas():
@@ -2655,3 +3084,222 @@ def test_withdraw_freezes_original_publication_cas_for_same_key_replay():
     assert (
         ast.unparse(fields["expected_state_version"]) == "publication['state_version']"
     )
+
+
+def test_r357_original_execute_no_longer_uses_retired_paths_as_business_reads():
+    import ast
+
+    execute = next(
+        node
+        for node in ast.parse(PATH.read_text()).body
+        if isinstance(node, ast.FunctionDef) and node.name == "execute"
+    )
+    code = ast.unparse(execute)
+    assert "/v1/skills?scope_kind=personal" not in code
+    assert code.count("require_retired_bff_skill_detail(") == 1
+    assert code.count("require_website_skill_missing(") == 1
+    assert code.count("require_website_skill_projection(") == 1
+    assert code.count("require_website_skill_revoked(") == 1
+    assert code.count("require_active_personal_skill_projection(") == 1
+    assert code.count("require_active_personal_skill_revoked(") == 1
+    assert code.count("exercise_owned_queries(") == 1
+
+
+def test_original_lifecycle_checkpoint_keeps_qualified_owner_and_replay_guards():
+    """Execute the original inline checkpoint with a controlled transcript, no owner I/O."""
+    import ast
+    from copy import deepcopy
+
+    path = "/v1/self/skills/revision-one/"
+    state = {
+        "installation": {
+            "installation_id": "installation-b",
+            "series_id": "series-b",
+            "revision": "1",
+            "product": {"state_version": "5"},
+        },
+        "version": {
+            "skill_id": "revision-two",
+            "series_id": "series-b",
+            "revision": "2",
+            "status": "draft",
+            "replayed": False,
+            "state_version": "1",
+        },
+        "withdraw": {
+            "source_ref": "skill:revision-one",
+            "status": "withdrawn",
+            "event_id": "evt:" + "a" * 64,
+            "replayed": False,
+            "state_version": "6",
+        },
+        "package": {
+            "skill_id": "revision-two",
+            "attempt_epoch": "0",
+            "phase": "none",
+            "state_version": "1",
+        },
+    }
+    execute = next(
+        node
+        for node in ast.parse(PATH.read_text()).body
+        if isinstance(node, ast.FunctionDef) and node.name == "execute"
+    )
+    checkpoint = next(
+        node
+        for node in ast.walk(execute)
+        if isinstance(node, ast.If)
+        and ast.unparse(node.test) == "args.personal_skill_lifecycle"
+        and "product_installation.reinstall_for_lifecycle(" in ast.unparse(node)
+    )
+    snippet = compile(
+        ast.Module(body=checkpoint.body, type_ignores=[]), str(PATH), "exec"
+    )
+
+    def run(override=None):
+        values = deepcopy(state)
+        version_replay = {**values["version"], "replayed": True}
+        withdraw_replay = {**values["withdraw"], "replayed": True}
+        if override is not None:
+            target, *keys, replacement = override
+            entry = {
+                **values,
+                "version_replay": version_replay,
+                "withdraw_replay": withdraw_replay,
+            }[target]
+            for key in keys[:-1]:
+                entry = entry[key]
+            entry[keys[-1]] = replacement
+        events = []
+        requests = iter(
+            [
+                (path + "versions", (201, {"data": values["version"]})),
+                (path + "versions", (201, {"data": version_replay})),
+                (
+                    path + "versions",
+                    (
+                        409,
+                        {
+                            "error": {
+                                "code": "skill_idempotency_conflict",
+                                "message": "conflict",
+                            }
+                        },
+                    ),
+                ),
+                (path + "withdraw", (200, {"data": values["withdraw"]})),
+                (path + "withdraw", (200, {"data": withdraw_replay})),
+                (
+                    path + "withdraw",
+                    (
+                        412,
+                        {
+                            "error": {
+                                "code": "skill_precondition_failed",
+                                "message": "terminal",
+                            }
+                        },
+                    ),
+                ),
+            ]
+        )
+        receipts = iter([(3, 0), (6, 1)])
+
+        def request(_base, route, **fields):
+            expected_path, response = next(requests)
+            assert route == expected_path
+            events.append((route, fields))
+            return response
+
+        namespace = {
+            **vars(smoke),
+            "_http_lifecycle": request,
+            "_http_get_json": lambda *_a, **_kw: (200, {"data": values["package"]}),
+            "platform_inventory": lambda *_a: (3, 43, 2, 0),
+            "platform_lifecycle_receipts": lambda *_a: next(receipts),
+            "platform_withdraw_event": lambda *_a: 1,
+            "platform_withdrawn_source_fact": lambda *_a: {
+                "state_version": "6",
+                "updated_at": "2026-10-08T01:00:00.000Z",
+            },
+            "source_helper": SimpleNamespace(wait_for_iam_window=lambda _enabled: None),
+            "product_inventory": (2, 39, 2, 1),
+            "product_installation": SimpleNamespace(
+                installation_ids=("installation-a", "installation-b"),
+                reinstall_for_lifecycle=lambda _source: values["installation"],
+                require_lifecycle_source_status=lambda *_a, **_kw: None,
+            ),
+            "begin_skill_id": "revision-one",
+            "begin_series_id": "series-b",
+            "publication": {"revision": "1", "state_version": "5"},
+            "urls": {"kokoro_platform": "fixture-db"},
+            "ready": SimpleNamespace(tenant_id="tenant-one"),
+            "run_id": "fixture-run",
+            "bff_base": "http://127.0.0.1:4401",
+            "browser": object(),
+            "web_secret": "FIXTURE",
+        }
+        exec(snippet, namespace)
+        assert list(requests) == []
+        assert events[0] == events[1] and events[3] == events[4]
+        assert events[0][1]["body"] == {
+            "display_name": "Signed PUT sandbox skill",
+            "summary": "sandbox lifecycle revision",
+            "tags": ["sandbox", "lifecycle"],
+        }
+        assert events[3][1]["body"] == {
+            "expected_state_version": "5",
+            "reason": "Superseded by the sandbox lifecycle revision",
+        }
+        assert namespace["lifecycle_result"]["platform_inventory"] == (3, 43, 2, 0)
+
+    run()
+    cases = (
+        ("installation", "installation_id", "installation-other"),
+        ("installation", "series_id", "series-other"),
+        ("installation", "revision", "2"),
+        ("installation", "product", "state_version", "4"),
+        ("version_replay", "state_version", "2"),
+        ("package", "source_version_id", "old-package-version"),
+        ("package", "state_version", "2"),
+        ("withdraw_replay", "state_version", "7"),
+    )
+    expected_messages = (
+        *(["Personal lifecycle reinstalled publication identity drift"] * 4),
+        "Personal lifecycle version receipt drift",
+        "Personal lifecycle new draft inherited a package locator",
+        "Personal lifecycle new draft package state version drift",
+        "Personal lifecycle withdraw receipt drift",
+    )
+    accepted = []
+    for override, expected in zip(cases, expected_messages, strict=True):
+        try:
+            run(override)
+        except smoke.SmokeError as error:
+            assert str(error) == expected, override
+        else:
+            accepted.append(override)
+    assert accepted == []
+
+
+def test_lifecycle_success_receipt_follows_both_revoke_and_owner_zero_guards():
+    import ast
+
+    execute = next(
+        node
+        for node in ast.parse(PATH.read_text()).body
+        if isinstance(node, ast.FunctionDef) and node.name == "execute"
+    )
+    code = ast.unparse(execute)
+    after_signout = code.index(
+        "require_revoke_result(_named_iam_command(iam, reader, 'signout'))"
+    )
+    receipt = code.index("'revoked_both_lifecycle_commands_before_owner': True")
+    for protection in (
+        "require_lifecycle_error(_http_lifecycle(bff_base, version_path, browser=browser, secret=web_secret, key=lifecycle_version_key, body=lifecycle_version_body), 401, 'session_invalid')",
+        "require_lifecycle_error(_http_lifecycle(bff_base, withdraw_path, browser=browser, secret=web_secret, key=lifecycle_withdraw_key, body=lifecycle_withdraw_body), 401, 'session_invalid')",
+        "if proxy.count != before_revoked:",
+        "if proxy.request_count != before_revoked_requests:",
+        "if proxy.protocol_failed or proxy.protocol_failure_count != 0:",
+    ):
+        assert after_signout < code.index(protection, after_signout) < receipt

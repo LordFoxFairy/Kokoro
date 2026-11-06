@@ -120,7 +120,7 @@ def test_architecture_has_the_complete_approved_protocol_matrix() -> None:
         "| BFF/Agent/Platform → Storage | ConnectRPC/Proto v2 | Storage | Asset、Artifact、Upload、Package reference。 |",
         "| BFF → Agent | HTTP/OpenAPI generated client | Agent | Run dispatch/control 与可恢复 event paging。 |",
         "| BFF → Scheduler | HTTP/OpenAPI generated client | Scheduler | Schedule command/query。 |",
-        "| Scheduler → BFF/Agent | HTTP event protocol | Scheduler | Durable retry、receipt、duplicate delivery。 |",
+        "| Scheduler → BFF | HTTP event protocol | Scheduler | Durable retry、receipt、duplicate delivery。 |",
         "| BFF → Billing | HTTP/OpenAPI generated client | Billing | Checkout、payment resource 与 provider webhook。 |",
     )
     assert "| Caller → Owner | 唯一目标协议 | 契约 owner | 说明 |" in table_rows

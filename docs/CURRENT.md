@@ -1,3 +1,161 @@
+# Current Facts
+
+## Task A current checkpoint (2026-11-05)
+
+Machine Goal is **ACTIVE** again (user explicitly confirmed continuation).  A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
+
+The current Root candidate pairs Agent `0b4b6c4fe9a1319922e9f61344200cba74e5b9d8`, BFF `46c061f5fde2d4108dd00e3d04cf0ff533a03ff0`, Storage `b07405c464e98dd2c596f22115d1186511cf00cb`, and App `509593e93b238edd775c7264eeff9b705c76d680`. Agent/BFF/Storage/App are pushed on their original PR branches; App now carries opaque resource-ref wire/selection/recovery plus files-tab search/type filtering with URL recovery. Root gitlinks and inventory are committed and pushed in Root `0fb22373` on #66; no main merge or deployment.
+
+Verification at the prior exact combination: topology and contract compatibility passed (15 edges, 0 violations) with the historical checkpoint. New owner evidence: Agent focused 94 passed with ruff/pyright/contract-check; BFF focused 60 passed with `contract:check:agent`, typecheck/lint/build/semantic; Storage focused 36 passed with typecheck/lint/contract:check. BFF full `contract:check` still has five pre-existing closure-inverse failures and is not claimed green. Root topology PASS; contract compatibility PASS (15 edges, 0 violations); `task-a-agent-web-runs.json` checkpoint PASS; governance focused tests 147 passed.
+
+Next: Root exact pairing is `0fb22373` with App `509593e`; then implement the remaining A-08 consumer slice (BFF canonical owner resolve → formal App public producer → Agent runtime mount) and run one real PG/Redis/Storage/Worker chain. Only then reuse the same Run evidence to close the A-05 reference-retention gap.
+Current audit: BFF/Agent canonical resolution is not claimed complete. Existing Storage clients can validate CLEAN project assets and FINAL artifacts, but the artifact client requires a complete owner association and project assets require project scope; the Agent OpenAPI/RunRequest still accepts only opaque refs, FinalArtifactReadClient is not injected into WorkerDependencies/AgentFactory, and no generic project-asset read RPC exists. No unsafe binding or guessed runtime mount was added. App A‑09 now has files-tab owner-list search/type filters with URL recovery (53 focused tests, typecheck, lint); persistent favorites/delete, server-side file search, and several source links remain missing.
+A‑12 read-only audit: `/app/scheduled` and the BFF/Scheduler callback chain are present, with durable occurrence/outbox/receipt, restart/retry and IANA/DST engineering evidence. No current authenticated browser receipt proves CRUD/calendar/pause-resume, updates/execution history, or BFF→Agent session-result linkage; A‑12 remains open.
+A‑12 execution is the active checkpoint. Fresh authenticated Chromium receipts are in ignored `output/playwright/a12-crud-receipt.json` and `a12-api-browser-receipt.json`: login, scheduled surface, create POST 200, list GET 200, and Calendar tab passed for task `scheduled_2bcfe15bf5b6577b463633e63ca4c589`. The task then entered `failed`/`scheduling_state=failed`; native proxy PATCH returned 501 for edit/pause/resume, and no BFF→Agent due-delivery receipt exists. A‑12 CRUD/calendar/pause-resume 已在重启 native dev fixture 收口，收据为 ignored `output/playwright/a12-complete-api-receipt.json`；为使真实浏览器 PATCH 可达，本轮只补 `scripts/e2e/run_web_bff_iam_oidc_smoke.py` 的 `do_PATCH` 转发。该 fixture 是 Platform MCP-only，未启动 Scheduler/Agent Worker；到点 BFF→Agent、执行记录、DST/重投仍 OPEN。测试任务已通过 DELETE 与列表回读回收。
+
+## 历史检查点（按时间倒序，保留原收据）
+
+A‑04 在 Root `d03d7c51` 精确组合完成：Chromium 原生会话、一次真实发送和 live SSE、真实 Worker `write_file → deliver → final`、Storage/MinIO/ClamAV、Canvas 原字节下载、刷新仅一份产物和终稿、同 Run 三个 Billing 封存 ACK。收据 `8dfd5e705e2aab50797af6cf`；此旅程模型为离线替身，真实本地 Ollama 用量按原收据单列。主控又在最终 Agent `815ef5c` 实跑旧 Worker SIGKILL，真实自然 lease 到期 3326 ms、第二代接管、拒绝旧写和 Redis 同请求重投，工具副作用与终态各一次，收据 `bf56ed4c4b64…fe808`。Swarm 精确恢复与资源回收见 [TODO](../todo.md)。Task A 已验收 5/16，Goal active；不合并 main、不部署。
+
+本轮 A‑05 已补真压缩后 Worker SIGKILL／同 Run generation 2 恢复、审批后继与真 Billing 摘要去重（`ef6424fd5794…61f6`）；同原长会话附件与既有产物引用仍待。A‑06 左栏排序 App `eb6c3819` 原生 Chromium `75789be73cbeb1c69ee20fe4` 通过，硬刷新保顺序、取消零写、不改 BFF 与会话顺序；同提交正式生产构建通过、已沿 App #50 推送，Root 固定精确 App；A‑06 的项目指令进入执行和网站 owner 尚未完成。
+
+## Task A 当前检查点：A‑03 已验收，继续 A‑04／A‑05
+
+App #50 `c17810c3`、BFF #18 `99f946e`（Public 28.22）、Agent #46 `815ef5c` 均沿原 PR，Root 固定三仓。真 Chromium/Worker/PG/Redis 已验 FIFO/IME、打断后继、同 Run 补充（收据 `dc117ba57713283151abe699`）与实际双决策恢复（最终组合 `8663731781f1edf9edb3e8a2`）：原 Run/pause、审批暂存零写、非空答复与审批同一次控制、模型和独立 checkpoint 各一次、原 Run 唯一终稿。另 R5 `876d2b77ddd53a5d9f47f197` 实证截流后原游标重连、阅读段落和草稿不丢；该轮整体仍失败，未拿来计 HITL 通过。前两次补充硬刷新偶发未显示完成正文，R6 同输入过，未称根因已修，留 A‑15 定向诊断。自有资源已回收；各具体范围见 [TODO](../todo.md)。
+
+A‑05 同一 Agent 候选在真 PG／Redis／Worker 分别实过摘要请求中停止和正常长上下文：正常路径五次主调用、两次 SDK 摘要，真实 Skill 读保持且 Agent 公开帧无私有 marker；模型与 Billing 为离线替身。真实 BFF 原生公开 R5 `f6e136557b8612e3e7a1a4d4` 的实时、精确续读、快照、公开分享及撤销均通过，私有摘要未外泄，隔离资源已回收；A‑05 剩余原验收对照，未做浏览器。A‑04 主控复跑真 Swarm 通过（收据 `522b06ea8595…c104`），Agent 原 #46 `815ef5c`：同键 `native_consumed`、四次模型替身派发及封存、真 Billing 四笔隔离结算，PG 与 Redis 同一最终正文；自有资源已回收。仅剩当前组合的工具产物浏览器验收，不称 A‑04 已关闭。
+
+Scheduler `cfb2502` 本机持久数据只读复核：0 活跃、0 未完，2 条暂停均为 BFF 回调，0 直连和 0 未分类。正式源码两次隔离启动和重启幂等回读通过；独立真 PG 重投定向 425→202 通过（目标为替身），未触发现有排程、未改数据或仓库。未替代 A‑12 产品旅程。Goal active，进度见 [TODO](../todo.md)；不合并 main、不部署。
+
+## Task A 当前检查点：A‑03 打断后继已验，原 Run 补充仍待
+
+原 PR App #50 `35967026`、BFF #18 `2cf1c14`（Public 28.21）、Agent #46 `18efa2e`。原生 Chromium/IAM/App/BFF/Agent HTTP、真隔离 PG/Redis 和 Agent Worker 收据 `e7d8150a022eb8ab81adaee4`：真实按钮发送精确旧 Run，后继 202 先持久排队；旧 Run 经真 Worker 取消、BFF 投影持久终态后才启动后继，刷新仅一个后继结果。首轮因私有夹具缓冲 SSE 未到第二次发送，纠正夹具后通过。隔离资源已回收，未调用外部模型。晚到终态控制不复活 Redis 流已在真 Agent PG/Redis 定向验；未称浏览器自然结束竞态已验。A‑03 同 Run 补充未交付，Goal active，唯一清单见 [TODO](../todo.md)。不合并 main、不部署。
+
+A‑04 三 owner 阶段：Root `0b5a3873` 上 Agent `18efa2e`、BFF `2cf1c14`、Billing `b7c98588`。同 attempt 真 Agent PG 封存与 HTTP 证据、BFF 转发、Billing 持久扣 1／释放 9、Agent ACK、原键重放单笔结算均通过，收据 SHA‑256 `daa09e934c02b931450c7d45f7f65098d26c5de4bbf2e5e2a3103effdd7152c8`。隔离资源已回收；该次首次预留用 IAM 夹具、用量合成。另在相同组合以正式 Worker 实跑本地 Ollama `qwen3:8b`：一条实际模型请求、一个派发并封存 attempt、真实输入/输出 7897/246、Run completed、同一 evidence 的 Agent captured ACK 和 Billing 唯一扣 2。收据 SHA‑256 `2d3e9b5c5d262abb35759f75ca0ec6c8e55f4d31ff3a8ca3812c7735175bf32a`，自有 PG 与 Redis keys 已回收；首次预留验证实际 Worker 签名/绑定，但 IAM 决策与 System resolver 受控，真实支付仍关闭，Swarm 与产品浏览器验收仍待。
+
+## Task A 当前检查点：A‑03 FIFO 已验，打断与原 Run 补充仍待
+
+App #50 `b4c1616c`、BFF #18 `846821ae`（Public 28.20 不变）：原生 IAM/App/BFF/Agent HTTP、隔离真 PG/Redis 与 Chromium 收据 `937b817da5993a434df8b2c1`。真实后续消息 202 已提交、浏览器故意丢回执；硬刷新不发请求，显式原键/原 body 恢复同三 ID，owner 回读仍只有两条用户消息且原 Run 仍是队首。IME 合成事件和 Shift+Enter 已验；此旅程未启 Agent Worker。引擎/审批定向、App 工程门和最终构建通过；临时资源全部回收。A‑03 仍要完成真实 Run 控制和两种不同的运行中投递，详见 [TODO](../todo.md)。
+
+A‑04 独立阶段：Agent `163b38a` 两个真实 Worker 进程、PG checkpoint、Redis 重投通过。旧进程在工具结果提交后 SIGKILL，租约自然到期后由 generation 2 接管；旧代拒写、工具文件副作用及 PG/Redis 终态各一次，全部隔离资源回收。离线模型替身，尚不证明当前供应商／计费、Swarm 或浏览器。Goal active，未合并 main、未部署。
+
+## Task A 当前检查点：A‑07 已验收，进入 A‑03
+
+BFF #18 `846821ae` 与 App #50 `85752044` 已沿原 PR 交付，Root 固定精确提交；Public 28.20 原件同字节，沿现 Project 权限和数据，不改 Schema。原生 IAM/BFF/App、隔离真 PG/Redis 与 Chromium 收据 `2f5123a6b6d7297ba1a0e2cb`：创建后刷新同一任务、第二标签更新及 412 保草稿、核对无写入并显式保存、删除 204 后刷新读空、390px 可操作。首次实测发现悬浮输入框遮住编辑按钮、核对切换按钮触发原生表单提交、Next/Chromium 将空体表示为流；定向修复后同一旅程通过，临时资源已回收。Root `b1fa258a` 拓扑和 15 条现役契约通过；另以该提交启动隔离 IAM/BFF/App，正式登录后核重并经业务 CRUD 登记原 handoff 的 A/B 两组任务，项目页和独立 GET 均读回两条唯一记录。该本地实例保留，旧同步实例未动。Goal active，下一项 A‑03；未合并 main、未部署。
+
+## Task A 产品验收：A‑01 / A‑02
+
+A‑02：App #50 `673292d2` 删除纯文本历史的多余 RunDisplay 请求；`3c6a68aa` 复用桌面详情关闭路径，实现面板内 Escape 关闭与按 activity ID 回焦，不影响面板外 Escape。测试覆盖 51 项定向，ESLint 与 TypeScript 通过。真实 App/BFF/Agent 组合在同一 Run 中保存实际 `ls /` 的非空详情和 canonical final；Chromium 首开、刷新均核对同一动作、正文顺序、唯一终稿和详情 200，再按 Escape 关闭并回原按钮。零浏览器写入，临时资源全部回收，未调用外部模型。Root 固定已推送的 App 提交，Public 28.19 与锁不变。
+
+A‑01：App #50 `2bc82211` 修复 Forward 到正确条目后被 App 误清 URL 的竞态；仅清退同 scope 确实从视图索引移除的会话，保留普通 404。真实原生 IAM、BFF、Agent、隔离 PG/Redis 的 Chromium 旅程已覆盖直聊和项目首发、Back/Forward、硬刷新、空浏览器重登恢复、第二标签、侧栏改名/搜索/移动/归档/删除。导航链同一 owner Run、零取消／写入；归档后附加读一度 429，单独复验活跃列表 200 排除已归档 ID。生产构建通过，临时资源全部回收。Root 固定已推送的 App 精确提交，公开契约及依赖锁不变。产品 Goal active，下一步 A‑07 设计门，详见 [TODO](../todo.md)。各仓沿原 PR，未合并、未部署。
+
+## Task A 前置交付：C‑4 / G3 前置清理闭环
+
+组合 `6db2028d` 在同一隔离 PostgreSQL、同一角色、八个独立 schema 上，从正式入口启动 IAM、BFF、Capability、Agent HTTP、Storage、System、Billing、Scheduler，八个 `/readyz` 同时通过。真实 Redis、对象存储和扫描依赖沿各 owner 检查，数据库中 0 跨 schema 外键，`public` 无业务关系。自有八进程、数据库、桶和 Redis 标记已回收，无常驻同步实例；Scheduler 既有 Redis 键保持。首轮私有夹具漏配 Capability ingress 文件，次轮 Storage 以符号链接路径触发 CLI 守卫，纠正夹具后 exit 0，未改生产代码。Agent Worker、模型、真实支付与全站浏览器未运行，不作全产品通过证明。
+
+已发布契约 15 active／0 declared broken／0 illegal，原生登录及现役 Run/Billing 等接缝按精确输入复用。严格结构审计仍 exit 1（408 FAIL／0 未验证），新增的 20 条逐条对应 IAM 原件的历史诊断，来自 BFF 字节相同的消费者副本，无新增未处置；门禁未改。G3 前置清理结束，Task A 产品尚未闭环；按 [TODO](../todo.md) 开始 A‑01/A‑02，再进 A‑07。各仓沿原 PR，不合并、不部署。
+
+## Task A 前置交付：Web→BFF→Agent 已发布 Run 主链验收
+
+App `4ac9d83d` 的生产 Session adapter 在 Node 22 调用真实 BFF 和 Agent `163b38a`，PG/Redis 均真实隔离。提交 Message 与同键重放均为 202；SSE 事件与持久游标一致，续读不重发首帧，未知游标返回 400；真 Agent 认领后 BFF Run Display 200，同租户异用户 404。取消 202 和同键重放仅留一条 Agent PG 命令与一帧 Redis 控制，摘要相同。临时进程、数据库与 Redis 均回收。Session 准入受控；未重跑浏览器登录、Worker、模型或取消终态。
+
+BFF #18 `2dcb75c` 只更新 Agent 8.11 来源并移除无引用的旧 vendor，18 个生成文件、生产代码、锁和 Public 28.19 保持；主控核对实跑构建字节，双次再生和定向契约测试通过。App 的真实外部渠道 setup UI 尚无 Agent owner 路由，属于 A‑13，未删除、未验成成功。已发布契约 checkpoint 为 15 active／0 declared broken／0 illegal，不代表全部产品行为验收。精确组合 `6db2028d` 严格结构审计 exit 1（408 FAIL／0 未验证）；比 388 基线多出的 20 条全是 BFF 对 IAM 0.21 原件字节副本的重复报项，逐条对应 IAM 原件的旧诊断，新增未处置为 0；门禁未改。八 owner 联合 readiness 见当前检查点。未合并、未部署。
+
+## Task A 前置交付：退役 Scheduler→Agent 直连
+
+只读检查现有本地持久 Scheduler 库，非新建测试库：活跃排程 0、未完成 outbox 0、可恢复暂停排程 2 条均指向 BFF 回调，Agent 直连和未分类均为 0。未改库或调度记录。现役仍由 Scheduler 投递 BFF，BFF 持久接收后由 BFF worker 调用 Agent；Root 删除无消费者的直连边，保留历史 checkpoint。不新增路由。
+
+该阶段 checkpoint 13 active／2 declared broken／0 illegal。
+
+## Task A 前置交付：BFF→Billing 已验收，购买仍关闭
+
+BFF #18 `b65cf76` 固定 Billing `b7c98588` 4.0.0-experimental.10。16 个生成文件双次再生同字节、8 个定向契约测试通过；生产源码和锁保持。真实 BFF/Billing HTTP 在同一隔离 PostgreSQL 的各自 schema 内验证 11 个现役操作：目录、个人账户／摘要／账本、定价发布／回读／非现金积分入账，以及预占／恢复／结算。一次扣 1、释放 9，同键重放仍只有一笔结算和用量记录；临时数据库与 Redis 标记已回收。浏览器 Session、IAM 响应和 Agent evidence 是受控边界，不称真实登录、支付或模型执行；公开 checkout 保持 503。
+
+该阶段 checkpoint 13 active／3 declared broken／0 illegal。
+
+## Task A 前置交付：Agent→Capability 已验收
+
+Agent #46 `163b38a` 固定 Capability `2409496` 的四份 Proto 并离线再生成，12 个允许 RPC 的描述符不变。Root 只核精确 Git 原件、生成配置和 Connect 直接运行锁；独立 profile 继续沿 Agent 原校验，不冒称 Root 重做全部语义检查。
+
+用生产 Agent transport 和签名器访问真实 Capability Nest、IAM `b6a9745` 与隔离 PG/Redis。有效私有 MCP 绑定产一条持久授权；owner 撤权后同键、新键均拒绝，IAM 仍判当前，确认拒绝来自 Capability 的绑定状态。声明发现对端与 Run lease 输入受控；未执行模型、工具、包下载。探针启动曾因私有 TS loader 与本机库角色接线未进入业务，修正接线后 exit 0；数据库与 Redis 标记无新增残留。
+
+该阶段 checkpoint 12 active／4 declared broken／0 illegal。
+
+## Task A 前置交付：Capability→Storage 图标链路已验收
+
+精确 Capability `2409496` × Storage `4a99061`，真实 Nest、各自 PostgreSQL schema、Redis、独占版本化 MinIO 桶和 ClamAV。生产 Product Connect 完成带版本 PUT、CLEAN 24×24、读取原 PNG、取消和重放；他主体返回 404、错 Storage scope 返回 403。Capability intent 持久为 released，Storage 原资产标为 deleted，签名预览不再返回。没有外部 IAM 或工具调用，自有对象、桶、数据库及 Redis 标记均回收。独立 MCP package profile 与生成描述符校验通过，不重跑 R336。
+
+该阶段 checkpoint 11 active／5 declared broken／0 illegal。执行窗口及下一步见 [TODO](../todo.md)；Goal 仍 active，G3 未结项。图标验收未改生产代码。App `4ac9d83d` 另删除无调用的 checkout 客户端、预览桩和专属测试；保留目录、关闭购买、公开 POST 及其边界。24 小时窗口只排除真实支付，其余 Task A 保持。未合并、未部署。
+
+## Task A 前置交付：BFF／Agent→Storage v3 已验收
+
+BFF `3b3039c`、Agent `6231f0b` 各自固定 Storage `4a99061` 的 Git 原件并重生成，手写运行路径与依赖锁不变。Agent 7 项现役请求编码相同；Root 校验原件、provenance、确切生成器和直接锁定的 Connect runtime，复用历史真交付收据 `3d0ef92752028538c5d81e36`，不重复跑 Agent 旅程。
+
+BFF Projects 模块与 Storage 运行于同一隔离 PostgreSQL 的各自 schema，使用真实 Redis、MinIO 和 ClamAV，BFF Session 准入受控。普通资产同摘要的第二次扫描完整走真实 ClamAV，仅将回执置为非 clean；BFF 返回 409，原 canonical 数据、对象版本和字节保持。Project／Conversation 两条真实持久 ACK 对应 BFF outbox；DELETE 重放原 202，逻辑已释放、物理仍 pending。私有探针按实际 schema 修正观察查询；canonical 负控通过后，ACK 的排序和回执外壳断言另行修正，仅复跑 ACK，未改生产行为。自有数据库、Redis 标记、对象版本及桶均回收。
+
+该阶段 checkpoint 10 active／6 declared broken／0 illegal。
+
+## Task A 前置交付：BFF→Capability HTTP 7.0 已验收
+
+以 BFF `12ca1bf`、Capability `2409496` 的精确组合验六条生产读取：目录、本人技能列表／详情／两页历史、MCP 服务／连接。HTTP 7.0 owner 与 BFF vendor 同字节，16 个生成文件两次重生成一致。真 Capability Nest 使用隔离 PG／Redis；精确 BFF 生产 Skills/MCP 模块的五个非空入口通过（本人列表本轮验生成客户端，入口复用 Sandbox 收据），`ListHubSkills` 的 HTTP 目录与真实 Connect 当前版本核对同一 series/revision。另一主体和租户无权读他人的私有对象；缺凭据、错用途、租户头错配均拒绝。
+
+BFF Session/MCP 准入及用量读是受控接线，不称 IAM、浏览器或全产品 E2E。临时实例与自有资源已回收。首轮私有探针在库 URL、测试接线或本地断言失败，修探针后通过，未改生产。未重跑 R336。该阶段 checkpoint 8 active／8 declared broken／0 illegal。
+
+## Task A 前置交付：Capability→IAM 0.21 已验收
+
+Capability #13 `2409496` 消费与 IAM `b6a9745` clean pack 字节相同的 0.21 SDK，生产准入与数据模型不变。Root 从实际 Git blobs 校验归档摘要、内嵌 provenance、owner 契约/生成配置/依赖锁，以及 Capability 默认运行安装图、SDK SRI 和 zod 来源；禁止以复制的 provenance 或覆盖依赖替代验证。
+
+用 0.21 实装包与 Capability 生产 verifier 连接真实 IAM：同一 proof 首次绑定成功，撤权后被拒，审计记录允许与撤权拒绝。隔离 PG/Redis 无新增残留；BFF 仅为本地绑定对端，不称真实 BFF 链路。未重跑 R336。该阶段 checkpoint 7 active／9 declared broken／0 illegal；G3 尚未闭环，按 [TODO](../todo.md) 继续，A‑01/A‑02/A‑07 未启动。
+
+## Task A 前置交付：Agent→System 6.1 治理已验收
+
+Root 从精确 Git blobs 核对 System `49a5f8e` 6.1 OpenAPI、owner provenance 及其 23 个来源摘要、Agent `91c80f7` 手写客户端与唯一消费收据；锁定的 `httpx@0.28.1` 必须是唯一、无条件的直接运行依赖。具名生成器例外仅限此边，其他门禁与历史 checkpoint 不变。此前真实路由／凭据验证的基线仍为 Agent `40effb2`；客户端、Worker、锁未变，本轮复用收据，未启动服务或模型。
+
+该阶段 checkpoint 6 active／10 declared broken／0 illegal，下一阶段推进 Capability→IAM。
+
+## Task A 前置交付：BFF→System 6.1 已验收
+
+精确 System `49a5f8e` 使用真实 Nest、隔离 PG/Redis。Agent 现有 client 的默认／指定解析、精确凭据领取通过，跨租户解析／凭据及错误 digest 均拒绝；不启动 Worker 或模型。Agent #46 `91c80f7` 固定 6.1 的 23 个来源摘要，实际业务 client/Worker/lock 不变；源仓及已安装 wheel 的契约门、定向测试、wheel/sdist 通过。BFF `12ca1bf` 实际目录和运行清单处理器直连同 SHA 真 owner，目录他租户为空、清单他租户 404、缺 server envelope 403，投影不泄露凭据。BFF 新增的 6.1 provider discovery 使用真 owner 与本地 metadata peer：管理员 200、非管理员 403、一次 GET、无 catalog 写入。定向真实实例回收；不是 Web/IAM 整链或所有管理写入。
+
+BFF 管理写入与列表也在同一精确 owner 上验过：创建/重放/恢复与跨租户拒绝，条件发布与路由写入、过期版本拒绝且不改现态，标签更新与五类列表。16 项模型操作加独立 manifest 均有实际证据；BFF→System 恢复 active，该阶段 checkpoint 5 active／11 declared broken／0 illegal；下阶段补 Root Python 证据规则。按 [TODO](../todo.md) 推进 G3，A‑01/A‑02/A‑07 未启动，不合并 main、不部署。
+
+## Task A 前置交付：八个 owner 同库安装；IAM 业务契约来源切换
+
+I‑15：以 Root `430ce075` 的八个精确数据 owner，在同一隔离 PostgreSQL 数据库、同一连接角色下串行执行各仓正式安装器，全部 exit 0。每次只新增目标 owner catalog，其他 schema 与 `public` 不变、无跨 schema FK；临时数据库按 OID 核对并回收。未启动八仓同库运行，也未借此声明全 Redis/业务链通过。
+
+BFF #18 `12ca1bf` 正规消费 IAM `b6a9745` 0.21；22 项使用操作及其引用闭包不变，16 个生成文件、现役生产源码、公开契约和数据库定义原字节保持。两套生成与 relay 检查及定向 75 项通过。原 Better Auth / relay 仍沿各自 0.20 锚。Root `98b6a9d9` 精确候选实际登录后，profile／会话列表 200、自撤 409 且会话保持，Team 匿名 401、成员 200、删除不存在的成员 404 且列表不变；定向隔离实例回收，原同步环境未动。现行 checkpoint 4 active／12 declared broken／0 illegal，BFF→IAM 恢复 active。Root 本轮实际严格结构审计 FAIL（388 条、0 个未验证）；原两项用精确锁定编译器复验后，System 无新增，Billing 7 条既有配置差额变为可见。不改门禁、无部署。A‑01/A‑02/A‑07 未开始；执行见 [TODO](../todo.md)。
+
+## Task A 前置交付：精确组合的正式原生验收与本机同步环境
+
+T‑09 按批准范围交付：原 PR head 分别为 IAM `b6a9745`、Capability `5e607fd`、Agent `40effb2`、BFF `d166a51`、App `e726cd61`。BFF/App 唯一 Public 28.19 同字节；只承接不可重试的 `context_window_exceeded`，不启用 `personal_context`。BFF/App 完整工程门通过；真实 PG/Redis 投影与两项条件 PG 补验通过。Root #66 精确组合 `4cb91169` 的拓扑、checkpoint、现役 relay 来源通过。
+
+T‑15 正式 Chromium 5/5，收据 `116d7c62ab4aa5e90f2076d4`，凭据扫描和回收通过。首次 0/5（`928147cc7f37fd650ee37b43`）为本机 PostgreSQL URL 缺显式角色，复用现有本机归一化后通过，未改 IAM。另保留 IAM/BFF/App/Capability（MCP/Custom API）/Admin 本机同步实例，已实测登录 303、会话／Project 列表／Admin me 200。未启动 Agent、Storage、Billing、System、Scheduler 的组合；未实证全 owner 单库。Root 治理原有 13 条声明破损边、381 条结构告警及 2 个未验证工具链仍保留；没有把本轮通过写成全仓治理通过。A‑01/A‑02/A‑07 未开始。机器 Goal 已清除；执行与遗留见 [TODO](../todo.md)。
+
+## Task A 前置证据：T‑11 本地收口至 T‑09 实施前
+
+[当前 TODO](../todo.md) 是执行清单，[技术方案](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计和证据。用户清除旧 Goal 后，用户已确认 T‑09 按原最小方案实施；机器 Goal 已由用户清除，按清单继续，不重建。原 Docker/MinIO 数据卷已恢复，版本化 PUT/读回/精确删除通过，已登记测试空桶回收并确认 404。T‑11 当前组合的真实 ingress、感染拒绝、ACK 丢失恢复和 R336 通过，隔离资源均已回收。C‑4 已开始：IAM `b6a9745` 正式工程门和真实全量集成都通过，PG/Redis 清单已恢复。Capability 合入原 PR12 基线后的候选已通过正式 `verify`、build 和受影响真实 Schema/MCP；旧 fixture 只补当前连接指针，真实项目发布 15 项复验及独占 SSE 用例通过。已快进本地原 PR13 分支到 `5e607fd`，未推。Agent 原 PR46 隔离候选 `40effb2` 已在真实 PG 定向补齐原三项失败：R35 共享 builder 夹具纠偏后原组 18 项通过，旧终态读取以已审历史配方复验原单例通过；未改生产或放宽读取门。同 SHA 工程门通过；真实集成仅 26 个 Display 在环境守卫未启动，改用专用隔离库定向补验全部通过，资源清单恢复。Agent 本地候选已快进，未推送；原 PR46 远端 head 为 `codex/agent-run-lifecycle`，不等于本地候选分支名。实测 Agent 8.11 新终态 `context_window_exceeded` 被 BFF 8.10 消费器拒绝，BFF 持久约束及 App 生成枚举也未承接，当前不得冻结该跨仓组合。Root gitlinks 未更新；A‑01/A‑02/A‑07 未启动，未推送、合并 main 或部署。
+
+**Root/C‑4 补验：** `8c71a7c4` 治理测试通过（4 项跳过）。`9a55df34` 对齐前台 fixture 与 Node 治理 profile，受影响测试通过；最新在 `e42fccb9` 实跑拓扑，仅 BFF、Agent、IAM、Capability 四个 checkout 不匹配；结构审计仍 FAIL，381 条及 Billing/System 两个工具链未验证与 Node 对齐基线逐条相同。合同兼容仍 FAIL：13 条已声明破损边，以及旧 owner/evidence gitlink 差额；IAM relay CLI 先在 IAM gitlink 拒绝。Root 旧 relay 核验固定 2.1，BFF 现役 policy 为 3.0，最终固定后须按现役来源核验，不能把单仓生成检查当跨仓证据。独立补证：BFF `32357c0` 与 App `197f1102` 的正式 relay 生成检查通过；三仓 commit blob 证明现役 3.0 五条认证、三条 invitation 在 IAM `b6a9745` 保持，0.21 只删除旧内省及专属认证。旧 Root 2.1 核验未通过，现役 3.0 的新来源门在下述私有精确组合已验证。正式 inventory 尚未改，对当前候选有 18 个不存在的不同证据路径。Scheduler `cfb2502` 与现 BFF vendor 逐字一致，BFF 正式 Scheduler 契约门通过。已用私有 index/候选清单重取现役证据，原 checkpoint exit 0，兼容性 exit 1 仅原 13 条声明破损，无意外来源差额。Root 原 Scheduler 单测在当前 3.0 私有清单先失败，改为断言三边同一具名 owner 合同后，现行及私有清单均通过；未改历史 checkpoint 或正式 gitlinks。Billing/System 用锁定 TypeScript 6.0.3 离线按原规则补查，System 此组无违规，Billing 有七项既有配置差额；不是 owner typecheck/build。Root relay CLI 旧版即使对齐 IAM/BFF 也在 3.0 TS literal 解析退出 1。现 Root 本地补丁保留 2.1 校验，新增 3.0 三仓精确来源门：只承认 IAM 已批准退役的契约差额，校验 BFF 路由及传输矩阵、App 生成器锁和生成物。真实 IAM `b6a9745`、BFF `32357c0`、App `197f1102` 私有精确 gitlinks 的 CLI 通过；relay 定向 42 项、兼容性与 checkpoint 两套 93 项通过；Root 治理补丁本地提交 `3a02058a`。正式工作树 gitlinks 未改。独立复核未发现已批准退役的生产入口仍有消费者。默认 HTTP/`--chat` 仍走旧探针；原生前台模式未启动，当前没有最终组合的可同步端到端环境。正式 runner 的本机选项及 Admin 安装运行时预检通过；实际来源检查仅 IAM/BFF 被旧 gitlink 拒绝。前台本机原配置缺其预期 PG 键；仅在子进程将现有 admin URL 显式传为 launcher 所需键，MCP+Admin 参数预检通过，未启动服务或浏览器。
+
+**BFF/C‑4 基线：** `f0107a7` 正式默认测试通过，两个 PG 条件用例以 `45a2989` 定向真库补齐。正式 `check` 原因权限夹具被启动环境收紧而失败，改正确权限只补原负控通过。`45a2989` 仅机械格式化，完整格式门通过，未推送。T‑11 后 `32357c0` 在独立干净 checkout 以 Node 24.20.0/pnpm 11.25.0 跑正式 `pnpm test`，exit 0；Schema 共存/回滚与 Project catalog 两条条件 PG 用例未执行。BFF contract/database/generated 与 `45a2989` 同字节；Agent 8.11 原件与 provenance 摘要复核通过，现 BFF Public28.18 与 App 唯一快照同字节，尚未配对新终态。
+
+**G0/T‑11 处置余差：** 全量核对 23 项，确认 15 项具名保留、旧 BffBusinessStore 已删除；原 4 项并入、3 项拆分中，StableId `f7d1e69`、两个 AgentRuns reader `76f2d04`、Personalization `335dbe3` 已本地归并并通过定向验收；ScheduledTask `368e65e` 已拆分并通过定向验收。Chat 的 RunDisplay 子切片已本地提交为 `c005e27`：仅窄化读取接线，原 SQL、二次准入与取消不变；生产 Nest 图、定向 HTTP/取消和隔离 PG exact final 通过，资源已回收。AG‑UI process/head 已本地提交 `2ef307e`：AgentRuns 脱离宽 Chat，Chat 快照原 RR 不拆，真实 R124、R57、R237 定向通过并回收隔离资源。Chat 本地宽聚合已由 `fb3cfa4` 删除：私有读/写等各自接线，生产装配、定向 HTTP、真实 Archive/Share/Feedback/Move 和 SSE/RR 回归通过，资源清单恢复；未推送。Projects 的 `d0724ec` 已将只读消费者切到单一 lookup；`a6ce80e` 独立出 Pin 与 Project Task。真实 R237/R73/R189、Pin 删除竞争、Task ID/slug 与读中墓碑通过，资源清单恢复；Recommendations 和 Skill Selection `c781a8f`、Project 核心 `32357c0` 已完成，旧宽接口/服务/token 退出；真实 CAS、Skill 回执/锁、Project Instruction/Rename/Delete/Status、Scheduled 重放与受控 Resource HTTP 验过，隔离资源已回收。T‑11 已本地收口，未推送；C‑4 精确配对和正式端到端未运行。BFF `45a2989` 的 Project 现行授权、Chat 原 ID 重放、Submitted Run 历史恢复及 ScheduledTask 同 ID 接管四条真实基线已通过，PG/Redis 清单恢复。这些是归并前证据；StableId 候选另通过真实 Chat 同键重放、ScheduledTask 接管及固定时钟测试并回收资源。两个 reader 的生产 Nest 注入、R146/R148 与真实历史读取，以及 Personalization 的读写、CAS、COMMIT 结果未知和锁等待取消均定向通过；PG/Redis 清单恢复。Agent 8.11 原件已核验；私有生成证实旧 BFF 重写会误删新请求字段，且直接扩展 owner schema 会改变 Scheduled 保存输入的拒绝边界。待确认的终态配对仍不启用该字段。
+
+**T‑09 新实测：** BFF `32357c0` 私有副本的现有 AG‑UI 集成夹具仅追加新失败 tuple；真实隔离 PG/Redis 投影提交在 `ck_bff_message_agent_failure` 失败（SQLSTATE `23514`），资源已回收。主工作树生产源码未改；这是归一化输入的持久化负控。另以 Agent `40effb2` 的实际 typed error 走隔离 PG/Redis 和真实 HTTP 回放，BFF `32357c0` 接受返回页外壳、在失败映射拒绝新码，原页仅换旧码的对照可映射。该注入诊断另由独立真实 Worker 诊断补齐：Agent `40effb2` HTTP 202 → 真 Redis 消费/PG 认领 → 真实 Factory 自然超窗 → PG、Redis 和 HTTP 回放均为唯一不可重试失败。模型供应商与资金授权零调用，自有资源回收。未经过 BFF/App，最终组合未运行。Capability `5e607fd` 的 `pnpm typecheck`、变更 fixture 格式和两份变更测试 lint 均通过，主控已复验。
+
+## 2026-11-03 历史检查点：G1/T-05已验，开始 T-17
+
+唯一[技术方案 / Goal / TODO](superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)维护当前状态。机器Goal经用户恢复并由主方核验为active；G1已关闭当前冻结组合，G2/G3仍OPEN，A01/A02/A07停写。
+
+- **G1已验**：Root4e603743精确组合IAM1fc3875/BFF8cb6169/App197f1102/Admin95c504d，原正式五旅程与真实账户消费保持；新增真实包上传/版本ACK→扫描CLEAN→验证→发布→安装→原BFF四GET通过。错误Origin/服务身份、伪身份头、独立purpose密钥失配与真实IAM中断按合同拒绝；源码/dist/DB清单、cleanup/凭据扫描通过。主方及独审最终复核无生产漂移，不靠单一四GET关闭全门。
+- **交付状态**：Root2fc0436c是原PR66中的文档后继，已验代码及gitlinks未变。本次仅同步三份tracking docs；IAM遗留PlatformWorkload server删除、旧smoke/R336漂移、Agent候选未pin及Capability最新base整合仍有明确后继owner。每仓沿原PR，不merge main、不部署。
+- **中断原因与恢复**：前次实施回合记录模型容量错误并failed，Goal blocked更新时间与失败结束时间一致；随后只读心跳未恢复实施，也未同步G1收据，不是业务验证失败。用户本次恢复active后，Root先串行收口台账并派具名writer进入T17，不再以定时汇总代替实施。
+- **T17实际推进**：四feature正常worker/HTTP drain、Nest关闭期503拒入与AG-UI传输退役候选均已由Root准确RED→最小实现→冻结相关门GREEN，独立规格/质量CLEAR；BFF已验的16原文件候选仍未提交/pin；后继进程测试另在写，不称完整T17。SSE单客户端退出不影响他人/Run，handler等待已开始I/O真实settle；控制签名/实现原字节保持。有限失败也已按准确RED→原五hook最小实现→Root冻结format/lint/typecheck/build、原84保护/故障与121相关worker回归GREEN，1085输入保持，独立规格/质量CLEAR。原顺序逐项尽力stop、只记安全分类、失败非零状态且旧DB close逻辑保持；这不是真实进程退出码证据。Root现已跑真实dist/main与自有fresh schema/受管PG/Redis：health/ready均200，正常SIGINT/SIGTERM返回-2/-15，暴露既定0/1策略差异；source/dist保持，全部自有进程/DB已回收，不冒清理故障。现 `t17_sse_retirement_cut` 只迁原lifecycle假child为同一薄生产owner的真实Nest测试；缺新接口不算行为RED，main源码尚未授权。故障/挂起、启动竞态、真实信号/30–31秒出口和真实资源回归仍未闭合；T11待完整风险承接后实施。
+
+C阶段剩5包：T17→T11→T09/T16→T15。原A01～16责任保留；暂无常驻同步E2E环境，G1隔离资源已全部回收。历史失败和跳过仍保留，不将阶段通过等同全Task A完成。
+
+---
+
 ## 2026-10-29 Custom API 任务隔离主路径已正常生效，整体 Goal 继续
 
 ### 2026-10-29 续验：真实取消清理与配置失败提示收口
@@ -5459,3 +5617,5 @@ Web正式c408f0397b78709cf3f7ecd2fba87047b02f5e7b，仅九路径消费既有四b
 T-K03.14-ADMIN-ANT-PROPS mainc43eee3：仅原Admin现Skills组件3处orientation及Drawer size640、现test两断言，RED2FAIL→Root默认9files87PASS/type/lint/build0；2hash/86保护exact。真实同源/manage/hub新加载5记录，详情抽屉640px、全部原命令保留；本次日志不再Space/Drawer两warning，ProLayout hydration依赖缺陷仍实际存在（SSR无断点/browser初态读取断点），未掩盖/禁SSR/重建壳。截图/tmp/kokoro-admin-antd-props-browser.jpg，日志/tmp/kokoro-admin-antd-props-root-{test,type,lint,build}.log。此小片不冒完整Admin权限与七命令旅程验收。
 
 补充最终Web main611ae5342e11f9bf710a01a2b2547df3e8538975：独审发现匿名200 helper普通toContain会让只有登录链接通过；Root只改原helper2+/1−恢复NEXT_REDIRECT/meta真实标记并精确return_target终止边界，普通link/追加evil负控失败、两真marker通过共4断言PASS，当前type/lint0，独审P2关闭。HEAD-only index未夹带system其它mixed，production源/build不变；Root记录正式最终SHA，不把原system20失败清零。
+
+Task A T-17最新候选：BFF4d6d17b已修复五处实际DI装配错误并补真实生产容器compile/单实例回归；Root完整check contract1344/default2344pass+2skip/build通过。新pin真实native待跑，仍不称启动/四旅程/完整生命周期通过。

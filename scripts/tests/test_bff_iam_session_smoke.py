@@ -1,8 +1,9 @@
-"""Focused guards for the real IAM/BFF composition runner."""
+"""Focused guards for shared IAM/BFF smoke helpers and the retired CLI."""
 
 import importlib.util
 import os
 from pathlib import Path
+import subprocess
 import sys
 import time
 import unittest
@@ -17,9 +18,17 @@ spec.loader.exec_module(smoke)
 
 
 class RunnerGuards(unittest.TestCase):
-    def test_explicit_inputs_required(self):
-        with self.assertRaises(SystemExit):
-            smoke.parse_args([])
+    def test_retired_cli_help_exits_nonzero_and_names_native_runner(self):
+        result = subprocess.run(
+            [sys.executable, str(PATH), "--help"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("scripts/e2e/run_web_native_session_smoke.py", result.stderr)
 
     def test_ready_record_requires_local_origin_and_identity(self):
         good = {"kind": "ready", "base_url": "http://127.0.0.1:4321", "access_token": "secret", "tenant_id": "t", "user_id": "u"}
@@ -33,13 +42,6 @@ class RunnerGuards(unittest.TestCase):
         for bad in ({"kind": "result", "command": "reset", "status": "ok"}, {"kind": "result", "command": "signout", "status": "failed"}):
             with self.assertRaises(smoke.SmokeError):
                 smoke.validate_result(bad, "signout")
-
-    def test_owned_cleanup_stops_all_before_database_cleanup(self):
-        events = []
-        class Process:
-            pid = 1
-        smoke.cleanup_owned([Process(), Process()], lambda _: events.append("stop"), lambda: events.append("database"))
-        self.assertEqual(events, ["stop", "stop", "database"])
 
     def test_partial_protocol_line_obeys_absolute_deadline(self):
         read_fd, write_fd = os.pipe()
@@ -71,25 +73,6 @@ class RunnerGuards(unittest.TestCase):
             reader.close()
             os.close(read_fd)
             os.close(write_fd)
-
-    def test_finalization_checks_inventory_even_if_cleanup_fails(self):
-        events = []
-        class Process:
-            pid = 1
-        def stop(_):
-            events.append("stop")
-            raise RuntimeError("stop")
-        def cleanup():
-            events.append("database")
-            raise RuntimeError("database")
-        def verify():
-            events.append("verify")
-        def inventory():
-            events.append("inventory")
-            return ({"unchanged"}, set())
-        with self.assertRaises(smoke.SmokeError):
-            smoke.finalize_owned([Process(), Process()], stop, cleanup, verify, inventory, ({"unchanged"}, set()))
-        self.assertEqual(events, ["stop", "stop", "database", "verify", "inventory"])
 
     def test_envelope_codes_are_checked(self):
         smoke.require_success(200, {"data": {"projects": []}, "meta": {"request_id": "r"}}, "list")

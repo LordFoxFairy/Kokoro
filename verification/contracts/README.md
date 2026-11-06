@@ -20,14 +20,33 @@ evidence. The former Web-to-IAM direct-call violation is preserved only in histo
 - The edge target is the runtime receiver; `owner` identifies the repository
   that owns the canonical contract and can therefore differ from the target.
   Event protocols are producer-owned: Scheduler owns its outbound dispatch
-  schema while BFF or Agent remains the receiving consumer and runtime
-  evidence.
+  schema while BFF is the receiving consumer and runtime evidence. The retired
+  direct Scheduler→Agent edge remains only in historical checkpoints.
 - `code_generator_version` and `runtime_package_version` describe the frozen
   consumer implementation. The literal `unmanaged` is permitted only on a
   `broken` edge. Every active edge has exactly one consumer runtime assertion;
-  an active generated edge also has exactly one generator assertion. The only
-  generator exemption is `EDGE-BROWSER-WEB` with
-  `not-applicable:same-origin-route`.
+  an active generated edge also has exactly one generator assertion. The
+  exemptions are limited to `EDGE-BROWSER-WEB` with
+  `not-applicable:same-origin-route` and the Agent→System handwritten HTTP edge
+  with `not-applicable:handwritten-agent-system-http`.
+- Only Agent→System, Agent→Storage and Agent→Capability use the `uv-lock`
+  assertion. It proves the editable Agent project resolves a unique, direct
+  registry runtime dependency: `httpx` for System and `connectrpc` for
+  Storage and Platform. The System edge also pins its handwritten client and receipt, and checks that
+  the receipt, both POST operations, and all source digests agree with the
+  System owner's committed OpenAPI and provenance. This does not waive any
+  other edge's generator or runtime evidence.
+- The two Agent Connect edges use `agent-connect-codegen`: exact generator
+  version and all vendored generation input blobs, plus Storage combined
+  provenance or Platform's codegen configuration. The existing Agent
+  checker verifies generated Python bytes and independent profiles.
+- Only `EDGE-CAPABILITY-IAM` can use `npm-file-archive`. The generator
+  assertion still reads the exact IAM owner's `sdk/package.json`. The runtime
+  assertion binds the installed Capability file package to the verified clean
+  IAM archive digest and the owner's committed OpenAPI, configuration, and lock.
+  It checks embedded provenance, consumer runtime importer, archive resolution
+  and SRI, and the owner's exact direct dependency resolutions. No other edge
+  gains a file archive exception.
 - `npm-package-json` assertions read the canonical dependency pointer from
   `package.json`. A consumer Node runtime may instead use
   `plain-version-file`: its path is exactly `.node-version`, its package is
@@ -66,16 +85,17 @@ python3 -m pytest \
 python3 scripts/verify-contract-compatibility.py \
   --inventory verification/contracts/consumer-inventory.json
 python3 scripts/verify-contract-checkpoint.py \
-  --expected verification/contracts/checkpoints/w1e-iam07-bff-pin.json
+  --expected verification/contracts/checkpoints/task-a-agent-web-runs.json
 ```
 
 The focused tests return exit code `0` when verifier behavior is sound. The
 real CLI returns `0` only when every edge is active and no violation remains;
-the current W1E IAM07/BFF pin baseline returns `1` because it declares thirteen broken
-edges and no illegal edge (three are active). The older W1E Platform code-release,
-W1D and Wave 0A checkpoints remain historical snapshots; they are not the current
-composition gate. The checkpoint CLI instead compares the complete
-active/broken/illegal ID sets with the selected checkpoint, runs the same
-compatibility verifier, and returns `0` only when every non-success outcome is
+the current Task A published-contract composition has fifteen active edges,
+no broken edges and no illegal edges. This does not claim a working Agent
+external-channel setup endpoint; that product gap remains A‑13. Earlier
+checkpoints remain historical snapshots, not the current composition gate.
+The checkpoint CLI compares the complete active/broken/illegal ID sets with
+the selected checkpoint, runs the same compatibility verifier, and returns
+`0` only when every non-success outcome is
 the broken or illegal outcome declared by that checkpoint. Counts alone do not
 pass, and schema, gitlink, digest, evidence or version drift remains fatal.

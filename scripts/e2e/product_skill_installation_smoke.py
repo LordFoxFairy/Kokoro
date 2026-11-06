@@ -8,12 +8,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+import hashlib
 import http.client
+import io
 import json
 import re
 import secrets
 import unicodedata
 from typing import Protocol
+import zipfile
 from urllib.parse import quote, urlencode, urlsplit
 
 
@@ -56,6 +59,29 @@ SOURCE_STATUSES = frozenset({"active", "disabled", "withdrawn", "quarantined"})
 
 class ProductError(RuntimeError):
     """Fixed diagnostics only: no credential, private row or response body."""
+
+
+def require_uploaded_markdown(zip_payload: bytes, validated_digest: str) -> str:
+    """Use bytes sent by this run; never learn the expectation from package GET."""
+    if (
+        type(zip_payload) is not bytes
+        or not isinstance(validated_digest, str)
+        or re.fullmatch(r"[a-f0-9]{64}", validated_digest) is None
+        or hashlib.sha256(zip_payload).hexdigest() != validated_digest
+    ):
+        raise ProductError("product_package_fixture_digest_mismatch")
+    try:
+        with zipfile.ZipFile(io.BytesIO(zip_payload)) as package:
+            markdown = [
+                file for file in package.infolist() if file.filename == "SKILL.md"
+            ]
+            if len(markdown) != 1 or markdown[0].is_dir():
+                raise ProductError("product_package_fixture_markdown_not_unique")
+            return package.read(markdown[0]).decode("utf-8", "strict")
+    except (OSError, RuntimeError, UnicodeError, zipfile.BadZipFile) as error:
+        if isinstance(error, ProductError):
+            raise
+        raise ProductError("product_package_fixture_markdown_invalid") from None
 
 
 def preflight(enabled: bool, agent_source: bool) -> None:
@@ -637,7 +663,8 @@ def require_error(
 @dataclass(frozen=True, slots=True)
 class PublicInstallationHttp:
     base: str
-    token: str = field(repr=False)
+    cookie: str = field(repr=False)
+    origin: str
     secret: str = field(repr=False)
 
     def __post_init__(self) -> None:
@@ -657,6 +684,28 @@ class PublicInstallationHttp:
             or parsed.fragment
         ):
             raise ProductError("product_installation_origin_invalid")
+        if (
+            not isinstance(self.cookie, str)
+            or not self.cookie
+            or self.cookie.strip() != self.cookie
+            or re.search(r"[^\x20-\x7e]", self.cookie)
+            or not isinstance(self.origin, str)
+            or re.search(r"[^\x21-\x7e]", self.origin)
+        ):
+            raise ProductError("product_installation_native_session_invalid")
+        try:
+            origin = urlsplit(self.origin)
+            _ = origin.port
+        except ValueError:
+            raise ProductError("product_installation_native_session_invalid") from None
+        if (
+            origin.scheme != "https"
+            or origin.hostname is None
+            or origin.username is not None
+            or origin.password is not None
+            or self.origin != "https://" + origin.netloc
+        ):
+            raise ProductError("product_installation_native_session_invalid")
 
     def __call__(
         self,
@@ -672,7 +721,8 @@ class PublicInstallationHttp:
             raise ProductError("product_installation_request_invalid")
         request_id = "product-installation-" + secrets.token_hex(12)
         headers = {
-            "authorization": "Bearer " + self.token,
+            "cookie": self.cookie,
+            "origin": self.origin,
             "x-kokoro-service": "web-bff",
             "x-kokoro-internal-secret": self.secret,
             "x-kokoro-request-id": request_id,
@@ -949,7 +999,24 @@ class ProductInstallationSmoke:
                 ):
                     raise ProductError("product_package_text_invalid")
 
-    def exercise(self, sources: tuple[str, str]) -> dict[str, bool]:
+    def exercise(
+        self,
+        sources: tuple[str, str],
+        *,
+        series_ids: tuple[str, str],
+        expected_markdown: str,
+    ) -> dict[str, bool]:
+        if (
+            len(series_ids) != 2
+            or any(
+                not isinstance(value, str) or ID.fullmatch(value) is None
+                for value in series_ids
+            )
+            or series_ids[0] == series_ids[1]
+        ):
+            raise ProductError("product_installation_distinct_series_required")
+        if not isinstance(expected_markdown, str) or not expected_markdown:
+            raise ProductError("product_package_fixture_markdown_invalid")
         if len(set(sources)) != 2 or any(
             not isinstance(x, str) or SOURCE.fullmatch(x) is None for x in sources
         ):
@@ -1043,6 +1110,8 @@ class ProductInstallationSmoke:
         bid = b["installation_id"]
         if aid == bid or a["series_id"] == b["series_id"]:
             raise ProductError("product_installation_distinct_series_required")
+        if (a["series_id"], b["series_id"]) != series_ids:
+            raise ProductError("product_installation_published_series_mismatch")
         self.installation_ids = (aid, bid)
         db = require_ack(
             self.request(
@@ -1079,7 +1148,7 @@ class ProductInstallationSmoke:
         filter_proof = self.verify_filtered_pages(
             expected, a["display_name"].split()[0]
         )
-        self.verify_package(b, "# Sandbox\n\nOwned signed PUT smoke.\n")
+        self.verify_package(b, expected_markdown)
         current_rows = {aid: da, bid: db}
 
         def remove(identity: str, label: str):

@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.governance import contract_inventory
 from scripts.governance.contract_checkpoint import verify_checkpoint
 from scripts.governance.handbook_examples import ROOT
 
@@ -331,6 +332,12 @@ def test_w1e_iam07_bff_pin_marks_iam_composition_pending(
     assert current_path.read_bytes() == subprocess.check_output(
         ["git", "--no-replace-objects", "show", f"{release}:verification/contracts/checkpoints/w1e-iam07-bff-pin.json"],
         cwd=ROOT,
+    )
+    # The committed checkpoint also freezes the former approved topology.
+    monkeypatch.setattr(
+        contract_inventory,
+        "EXPECTED_EDGE_IDS",
+        frozenset(current["active_ids"] + current["broken_ids"]),
     )
     monkeypatch.setenv("GIT_INDEX_FILE", str(tmp_path / "release.index"))
     subprocess.run(
