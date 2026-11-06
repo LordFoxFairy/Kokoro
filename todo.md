@@ -13,7 +13,7 @@
 - **当前闭环状态：** A‑01/A‑02/A‑03/A‑04/A‑07 已验；A‑05、A‑08～A‑16 仍 OPEN。A‑06 仅完成排序与指令跨仓候选，website 正式 owner/readback 仍缺，不能勾选完成。
 - **下一执行顺序：** Root 精确组合已验证；然后 A‑08 补 BFF canonical owner resolve、正式公共字段/选择 producer 和 Agent runtime mount，跑真实 PG/Redis/Storage/Worker 定向链；只有该链通过后才把同 Run 引用保持接入 A‑05，之后按 A‑09～A‑16 逐项收口。
 - **不重复/不扩张：** 不以测试数量代替闭环，不重跑已验旅程；只补实际缺口，旧入口/无消费者测试直接删除并保留有效断言。
-- **本轮继续推进（2026-11-05）：** A‑08 BFF/Agent canonical resolve 已完成只读审计，未写猜测代码：Storage owner 客户端可返回 CLEAN asset / FINAL artifact 元数据，但 artifact 读取需要完整 association，project asset 读取需要 project scope；Agent OpenAPI/RunRequest 仍只有 opaque `selected_resource_refs`，FinalArtifactReadClient 未注入 WorkerDependencies/AgentFactory，且没有 generic project-asset read RPC。安全闭环还需正式严格 `resolved_resource_refs` 字段、BFF association producer、Agent read-only runtime mount，以及 asset owner 读契约；不能把 opaque ref 当事实，也不能在缺 owner 关联时伪造。A‑09 App 最小切片已交付：App `509593e` files tab 增加 owner 列表上的可访问搜索与 MIME/type 筛选，URL `file_q`/`file_type` 可恢复；53 项 focused、typecheck、lint 通过。收藏仅内存，服务端文件搜索、删除、来源回跳及 artifact 持久收藏/删除缺口仍登记。A‑08 保持 OPEN，未新增无意义代码或测试。
+- **本轮继续推进（2026-11-05）：** A‑08 BFF/Agent canonical resolve 已完成只读审计，未写猜测代码：Storage owner 客户端可返回 CLEAN asset / FINAL artifact 元数据，但 artifact 读取需要完整 association，project asset 读取需要 project scope；Agent OpenAPI/RunRequest 仍只有 opaque `selected_resource_refs`，FinalArtifactReadClient 未注入 WorkerDependencies/AgentFactory，且没有 generic project-asset read RPC。安全闭环还需正式严格 `resolved_resource_refs` 字段、BFF association producer、Agent read-only runtime mount，以及 asset owner 读契约；不能把 opaque ref 当事实，也不能在缺 owner 关联时伪造。A‑09 App 最小切片已交付：App `509593e` files tab 增加 owner 列表上的可访问搜索与 MIME/type 筛选，URL `file_q`/`file_type` 可恢复；53 项 focused、typecheck、lint 通过。收藏仅内存，服务端文件搜索、删除、来源回跳及 artifact 持久收藏/删除缺口仍登记。A‑08 保持 OPEN，未新增无意义代码或测试。 A‑12 只读盘点完成：确认 `/app/scheduled` → App same-origin adapter → BFF `/v1/scheduled-tasks` → Scheduler callback 的现役链，以及 Scheduler durable occurrence/outbox/receipt、重启/重投、IANA/DST 工程证据；当前仍缺认证浏览器 CRUD/日历/暂停恢复/执行记录、到点 BFF→Agent 会话结果和 DST 旅程收据，未冒称完成。
 
 ## C‑4 交付检查点
 
@@ -89,7 +89,7 @@
 - [ ] **A‑09 资料库**：App `509593e` 已补 files tab 的 owner 列表搜索、MIME/type 筛选与 URL 恢复，保留现上传、扫描、原字节下载和分页；仍需服务端文件搜索/删除、持久收藏、artifact 收藏/删除、来源回跳及真实端到端证据，复用 A‑08 同 owner 资源，不另存文件事实。
 - [ ] **A‑10 文件／Canvas**：复用 A‑04 当前组合的真实产物与原字节下载；仍需现文件树、Markdown／文本／表格、详情与来源、窄屏及只读／权限的独有证据，不把一个产物旅程扩大成整个 A‑10。
 - [ ] **A‑11 首页与创建场景**：核已支持场景实际提交／返回与空白／草稿状态；当前缺口明确标识，不展示假的创建结果；原参考对照待验。
-- [ ] **A‑12 自动化**：先核原 writer；Scheduler 独立重启幂等已验，仍缺当前产品浏览器 CRUD／日历／更新页签和到点结果可追、时区 DST／暂停恢复／重投不重复，不用 Scheduler 单仓结果替代。
+- [ ] **A‑12 自动化**：已完成只读链路盘点：`/app/scheduled`、BFF `/v1/scheduled-tasks`、Scheduler callback 与 durable occurrence/outbox/receipt 均存在，Scheduler 重启/重投/IANA DST 仅有工程证据；仍缺产品浏览器 CRUD／日历／updates/执行记录、到点 BFF→Agent 结果、DST 边界及暂停恢复/重投不重复收据，不用 Scheduler 单仓结果替代。
 - [ ] **A‑13 外部聊天**：App setup 有实际 UI；Agent 当前无对应路由。保留 Telegram／LINE／Slack 原范围，查正式 owner／真实 callback 和断开、过期、迟到状态，不当作现有成功或死代码。
 - [ ] **A‑14 语音**：复用已删除演示文字注入；真麦克风／转写、授权拒绝／不支持、取消与编辑/发送闭环待验。已确认当前 Next 通用和服务端头都声明 `microphone=()`，与语音入口存在配置冲突嫌疑；待真实浏览器分清媒体权限与识别服务行为，不先放宽全站策略。
 - [ ] **A‑15 体验性能**：随各片量实际冷／热和可访问性，留 A‑03 两次已完成 Run 的硬刷新终稿 DOM 偶发缺失；以真实 /parts 状态定位，确认前不加盲目重试。

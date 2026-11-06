@@ -10,6 +10,7 @@ Verification at the prior exact combination: topology and contract compatibility
 
 Next: Root exact pairing is `0fb22373` with App `509593e`; then implement the remaining A-08 consumer slice (BFF canonical owner resolve → formal App public producer → Agent runtime mount) and run one real PG/Redis/Storage/Worker chain. Only then reuse the same Run evidence to close the A-05 reference-retention gap.
 Current audit: BFF/Agent canonical resolution is not claimed complete. Existing Storage clients can validate CLEAN project assets and FINAL artifacts, but the artifact client requires a complete owner association and project assets require project scope; the Agent OpenAPI/RunRequest still accepts only opaque refs, FinalArtifactReadClient is not injected into WorkerDependencies/AgentFactory, and no generic project-asset read RPC exists. No unsafe binding or guessed runtime mount was added. App A‑09 now has files-tab owner-list search/type filters with URL recovery (53 focused tests, typecheck, lint); persistent favorites/delete, server-side file search, and several source links remain missing.
+A‑12 read-only audit: `/app/scheduled` and the BFF/Scheduler callback chain are present, with durable occurrence/outbox/receipt, restart/retry and IANA/DST engineering evidence. No current authenticated browser receipt proves CRUD/calendar/pause-resume, updates/execution history, or BFF→Agent session-result linkage; A‑12 remains open.
 
 ## 历史检查点（按时间倒序，保留原收据）
 
