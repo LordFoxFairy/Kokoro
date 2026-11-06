@@ -13,7 +13,7 @@
 - **当前闭环状态：** A‑01/A‑02/A‑03/A‑04/A‑07 已验；A‑05、A‑08～A‑16 仍 OPEN。A‑06 仅完成排序与指令跨仓候选，website 正式 owner/readback 仍缺，不能勾选完成。
 - **下一执行顺序：** Root 精确组合已验证；然后 A‑08 补 BFF canonical owner resolve、正式公共字段/选择 producer 和 Agent runtime mount，跑真实 PG/Redis/Storage/Worker 定向链；只有该链通过后才把同 Run 引用保持接入 A‑05，之后按 A‑09～A‑16 逐项收口。
 - **不重复/不扩张：** 不以测试数量代替闭环，不重跑已验旅程；只补实际缺口，旧入口/无消费者测试直接删除并保留有效断言。
-- **本轮继续推进（2026-11-05）：** A‑08 BFF canonical resolve 已完成只读审计，未写猜测代码：现有 Storage owner 客户端可返回 CLEAN asset / FINAL artifact 元数据，但 artifact 读取需要完整 association，project asset 读取需要 project scope；将其安全冻结到 Agent launch 还需正式严格字段与 Agent runtime mount，不能把 opaque ref 当事实，也不能在缺 owner 关联时伪造。A‑09 App 资料库只读盘点完成：现有 files/artifacts 列表、搜索/分页、下载、上传重试与 source 回跳部分可复用；收藏仅内存，文件筛选/删除/来源回跳及 artifact 持久收藏/删除缺口已登记。两项均保持 OPEN，未新增无意义代码或测试。
+- **本轮继续推进（2026-11-05）：** A‑08 BFF/Agent canonical resolve 已完成只读审计，未写猜测代码：Storage owner 客户端可返回 CLEAN asset / FINAL artifact 元数据，但 artifact 读取需要完整 association，project asset 读取需要 project scope；Agent OpenAPI/RunRequest 仍只有 opaque `selected_resource_refs`，FinalArtifactReadClient 未注入 WorkerDependencies/AgentFactory，且没有 generic project-asset read RPC。安全闭环还需正式严格 `resolved_resource_refs` 字段、BFF association producer、Agent read-only runtime mount，以及 asset owner 读契约；不能把 opaque ref 当事实，也不能在缺 owner 关联时伪造。A‑09 App 资料库只读盘点完成：现有 files/artifacts 列表、搜索/分页、下载、上传重试与 source 回跳部分可复用；收藏仅内存，文件筛选/删除/来源回跳及 artifact 持久收藏/删除缺口已登记。两项均保持 OPEN，未新增无意义代码或测试。
 
 ## C‑4 交付检查点
 
