@@ -14,6 +14,8 @@ A‑08 first fix is pushed: Storage `3f18577` on #3 removes the second generic-g
 
 A‑08 remains OPEN for canonical resolver/public producer/runtime mount and real combination evidence. Read-only owners confirmed the source Run must be separated from the consumer lease; personal/project assets need exact-input download admission. The next slice reuses existing service credentials, download RPCs, outbox and read-only backend, without OAuth, tokens, a grant registry or another runtime. BFF resolves outside its transaction, then rechecks its own scope/association under the final lock before freezing. Public version semantics must be explicit; no guessed version or browser-supplied scope is trusted.
 
+The stable paired checkpoint is Root `2b3b301f`. Subsequent published owner slices are Storage `c31a065` (exact input download fields/admission, local gates and review passed; real dependency cases not run) and Agent `55beed2` (HTTP 8.14 canonical private inputs, focused/schema gates passed). They are not yet a new Root runtime combination. BFF canonical resolution has preliminary real-PG/Nest evidence; Agent runtime and App selection are being implemented in disjoint write areas. A‑08 is still OPEN until consumers, precise combination and the real selected-input journey are accepted.
+
 ## 历史检查点（按时间倒序，保留原收据）
 
 A‑04 在 Root `d03d7c51` 精确组合完成：Chromium 原生会话、一次真实发送和 live SSE、真实 Worker `write_file → deliver → final`、Storage/MinIO/ClamAV、Canvas 原字节下载、刷新仅一份产物和终稿、同 Run 三个 Billing 封存 ACK。收据 `8dfd5e705e2aab50797af6cf`；此旅程模型为离线替身，真实本地 Ollama 用量按原收据单列。主控又在最终 Agent `815ef5c` 实跑旧 Worker SIGKILL，真实自然 lease 到期 3326 ms、第二代接管、拒绝旧写和 Redis 同请求重投，工具副作用与终态各一次，收据 `bf56ed4c4b64…fe808`。Swarm 精确恢复与资源回收见 [TODO](../todo.md)。Task A 已验收 5/16，Goal active；不合并 main、不部署。
