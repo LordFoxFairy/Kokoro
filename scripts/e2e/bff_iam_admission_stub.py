@@ -9,9 +9,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import re
 import socket
+from datetime import datetime, timedelta, timezone
 from threading import Thread
 from types import MappingProxyType
 from typing import Any
+from urllib.parse import urlsplit
 from uuid import uuid4
 
 
@@ -36,8 +38,13 @@ class _Server(ThreadingHTTPServer):
     block_on_close = True
     allow_reuse_address = False
 
-    def __init__(self, identities: Mapping[str, AdmissionIdentity]) -> None:
+    def __init__(
+        self,
+        identities: Mapping[str, AdmissionIdentity],
+        service_tokens: set[str] | frozenset[str] = frozenset(),
+    ) -> None:
         self.identities = MappingProxyType(dict(identities))
+        self.service_tokens = frozenset(service_tokens)
         super().__init__(("127.0.0.1", 0), _Handler)
 
     def get_request(self) -> tuple[socket.socket, object]:
@@ -54,7 +61,7 @@ class _Handler(BaseHTTPRequestHandler):
         # Bearer tokens are deliberately never written to fixture logs.
         return
 
-    def _respond(self, status: int, payload: dict[str, Any]) -> None:
+    def _respond(self, status: int, payload: dict[str, Any] | None) -> None:
         raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
         request_id = self.headers.get("x-request-id", "")
         if not _REQUEST_ID.fullmatch(request_id):
@@ -83,6 +90,9 @@ class _Handler(BaseHTTPRequestHandler):
         )
 
     def do_POST(self) -> None:
+        if self.path == "/internal/v1/authorization/check":
+            self._authorization_check()
+            return
         if self.path != _PATH:
             self._error(404, "NOT_FOUND")
             return
@@ -117,19 +127,113 @@ class _Handler(BaseHTTPRequestHandler):
             },
         )
 
+    def _authorization_check(self) -> None:
+        authorization = self.headers.get("authorization", "")
+        actor = self.headers.get("x-kokoro-actor-id", "")
+        if (
+            not authorization.startswith("Bearer ")
+            or authorization[7:] not in self.server.service_tokens
+        ):
+            self._error(401, "UNAUTHENTICATED")
+            return
+        identity = next(
+            (
+                identity
+                for identity in self.server.identities.values()
+                if identity.user_id == actor
+            ),
+            None,
+        )
+        if identity is None:
+            self._error(403, "PERMISSION_DENIED")
+            return
+        length = self.headers.get("content-length")
+        if length is None or self.headers.get("transfer-encoding") is not None:
+            self._error(400, "INVALID_ARGUMENT")
+            return
+        try:
+            body = self.rfile.read(int(length))
+            request = json.loads(body)
+        except (ValueError, json.JSONDecodeError):
+            self._error(400, "INVALID_ARGUMENT")
+            return
+        if (
+            not isinstance(request, dict)
+            or request.get("resource") != "tenant"
+            or request.get("action") != "read"
+        ):
+            self._error(400, "INVALID_ARGUMENT")
+            return
+        self._respond(
+            200,
+            {
+                "data": {
+                    "allowed": True,
+                    "tenant_id": identity.tenant_id,
+                    "subject_id": identity.user_id,
+                    "decision_source": "current_membership",
+                }
+            },
+        )
+
     def do_GET(self) -> None:
-        self._error(405, "INVALID_ARGUMENT")
+        if urlsplit(self.path).path != "/iam/get-session":
+            self._error(405, "INVALID_ARGUMENT")
+            return
+        cookie = self.headers.get("cookie", "")
+        match = re.fullmatch(
+            r"(?:__Secure-)?kokoro-issuer\.session_token=([^;\s]+)", cookie
+        )
+        identity = self.server.identities.get(match.group(1)) if match else None
+        if identity is None:
+            self._respond(200, None)
+            return
+        now = datetime.now(timezone.utc)
+        created = now - timedelta(minutes=1)
+        expires = now + timedelta(hours=1)
+        self._respond(
+            200,
+            {
+                "session": {
+                    "id": identity.session_id,
+                    "expiresAt": expires.isoformat().replace("+00:00", "Z"),
+                    "token": match.group(1),
+                    "createdAt": created.isoformat().replace("+00:00", "Z"),
+                    "updatedAt": created.isoformat().replace("+00:00", "Z"),
+                    "ipAddress": None,
+                    "userAgent": None,
+                    "userId": identity.user_id,
+                    "activeOrganizationId": identity.tenant_id,
+                },
+                "user": {
+                    "id": identity.user_id,
+                    "name": identity.user_id,
+                    "email": identity.user_id + "@scheduler-smoke.local",
+                    "emailVerified": True,
+                    "image": None,
+                    "createdAt": created.isoformat().replace("+00:00", "Z"),
+                    "updatedAt": created.isoformat().replace("+00:00", "Z"),
+                    "platformAdmin": False,
+                },
+            },
+        )
 
 
 @contextmanager
-def iam_admission_stub(identities: Mapping[str, AdmissionIdentity]) -> Iterator[str]:
+def iam_admission_stub(
+    identities: Mapping[str, AdmissionIdentity],
+    *,
+    service_tokens: set[str] | frozenset[str] = frozenset(),
+) -> Iterator[str]:
     """Serve an immutable token map on loopback and join every owned thread."""
     if not identities or any(
         not token or not isinstance(identity, AdmissionIdentity)
         for token, identity in identities.items()
     ):
         raise ValueError("IAM fixture requires a nonempty fixed token map")
-    server = _Server(identities)
+    server = (
+        _Server(identities, service_tokens) if service_tokens else _Server(identities)
+    )
     thread = Thread(target=server.serve_forever, name="bff-iam-admission-stub")
     try:
         thread.start()

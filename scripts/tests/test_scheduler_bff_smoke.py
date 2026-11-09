@@ -20,7 +20,7 @@ LOOPBACK_BINDING = ("fixture-host.local", "127.0.0.1", "127.0.0.1/32")
 
 
 def test_bff_release_and_user_headers_use_iam_admission() -> None:
-    assert smoke.BFF_RELEASE == "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
+    assert smoke.BFF_RELEASE == "46c061f5fde2d4108dd00e3d04cf0ff533a03ff0"
     assert case_owner.bff_headers(
         "service-secret", "tenant-a", "user-a", "request-1", "key-1", "session-token"
     ) == {
@@ -28,7 +28,8 @@ def test_bff_release_and_user_headers_use_iam_admission() -> None:
         "x-kokoro-internal-secret": "service-secret",
         "x-kokoro-request-id": "request-1",
         "idempotency-key": "key-1",
-        "authorization": "Bearer session-token",
+        "origin": "http://scheduler-smoke.local",
+        "cookie": "kokoro-issuer.session_token=session-token",
     }
 
 
@@ -164,7 +165,7 @@ def test_database_names_redis_databases_and_harness_prefix_are_exact() -> None:
     bff = owned.create_database("bff")
     assert "/w0b_sched_" + "a" * 24 + "_scheduler" in scheduler
     assert "/w0b_sched_" + "a" * 24 + "_bff" in bff
-    assert "search_path%3Dpublic%2Cpg_catalog" in scheduler
+    assert "schema=kokoro_scheduler" in scheduler
     assert owned.scheduler_redis_url.endswith("/7")
     assert owned.bff_redis_url.endswith("/8")
     assert owned.redis_prefix == "kokoro:w0b:scheduler:" + "a" * 24 + ":"
@@ -451,6 +452,7 @@ def test_temporary_go_binary_is_removed_after_midflight_failure(
             ),
         )
     assert not binary.exists()
+    assert not (tmp_path / "bff-user-context.json").exists()
 
 
 def test_restart_sequence_stops_old_bff_before_starting_replacement(
@@ -503,7 +505,7 @@ def _toolchain_args(tmp_path: Path) -> SimpleNamespace:
 
 def _toolchain_output(
     *,
-    node_version: str = "v22.22.2",
+    node_version: str = "v24.20.0",
     pnpm_version: str = "11.25.0",
     go_version: str = "go version go1.26.8 darwin/arm64",
 ) -> tuple[list[tuple[list[str], Path]], Callable[..., str]]:
@@ -548,8 +550,8 @@ def test_toolchain_rejects_non_exact_stable_go_token(
 @pytest.mark.parametrize(
     ("node_version", "pnpm_version", "message"),
     [
-        ("v22.22.20", "11.25.0", "Node v22.22.2"),
-        ("v22.22.2", "11.25.00", "pnpm 11.25.0"),
+        ("v24.20.00", "11.25.0", "Node v24.20.0"),
+        ("v24.20.0", "11.25.00", "pnpm 11.25.0"),
     ],
 )
 def test_toolchain_rejects_non_exact_node_or_pnpm(

@@ -1,6 +1,8 @@
 # Current Facts
 
-## Task A current checkpoint (2026-11-05)
+## Task A current checkpoint (2026-11-08)
+
+Current continuation: Goal is ACTIVE (machine state checked). The prior Scheduler `cfb2502` → BFF `46c061f` real-process smoke passed all 11 original cases with isolated real PG/Redis and deterministic IAM/Agent stubs; focused Root tests passed 77. The harness fixes now align Node24, multi-user/native anonymous responses and credential-file cleanup; related Root tests passed 78, Ruff passed, and the final Node24 real Scheduler/BFF run passed all 11 original cases with full owned-resource cleanup. Changes remain uncommitted. This is not real Agent execution or A-12 completion. A source audit also confirms scheduled executions do not create the standard Conversation/Message/submission binding needed for model admission and final-answer reads; App has no Updates/execution history/result link or project filter. Root is integrating real Worker/due-result evidence and the minimal product fix; see the single [TODO](../todo.md). The earlier 6/24-hour planning window has elapsed and is not a current completion promise. No main merge or deployment.
 
 Machine Goal is **ACTIVE** again (user explicitly confirmed continuation).  A-01/A-02/A-03/A-04/A-07 are accepted on their recorded evidence. A-05 and A-08–A-16 remain open; A-06 is partial: Agent/BFF project-instruction freezing is delivered, while the formal website owner/readback path is not.
 
