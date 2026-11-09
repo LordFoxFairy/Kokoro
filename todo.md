@@ -1,17 +1,33 @@
-# Task A · TODO（2026-11-08）
+# Task A · TODO（2026-11-09 UTC）
 
 **当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `0fb22373` 已配对 Agent `0b4b6c4`、BFF `46c061f`、Storage `b07405c`、App `509593e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
+## 2026-11-09 执行检查点（主控）
+
+- **Goal ACTIVE**：机器状态已核验；A‑12 未关闭，验收后进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
+- **已提交/推送**：BFF 原 #18 `a889f69`＋`5226ccd`；App 原 #50 `001d901c`，固定 BFF `a889f695` / Public 28.23 原件，摘要 `0abd300f…`。BFF 后继纯测试提交未改该契约字节。Root 原 #66 的 `f4488584` 保留 Scheduler/BFF 原 11 场景真实 PG/Redis 收据（IAM/Agent 替身），本次正在更新精确 gitlink/inventory；未合并 main、未部署。
+- **真实到点负控保留**：旧 BFF `46c061f` 的 native IAM/Chromium/Scheduler/Agent HTTP/独立 Worker 运行 `cda2e42a26c86ba41298c65c`，控件创建/暂停/恢复/日历通过，到点仅 admitted、无终态，整体 FAIL、回收 PASS。System/model/budget 是确定性夹具，不拿 admitted 计完成。
+- **BFF 实施与验证**：activation 复用原子普通 Chat turn/唯一 dispatcher/标准 AG‑UI；重复 scheduled 发送、terminal 消费和 source 表已删除。执行分页读、当前可访问会话关联、Project 精确过滤已接；后继 queued 行不再返回单边结果 ID。主控真实 PG 9/9 PASS、0 SKIP（自有 fresh schema 回收）；类型/build/lint 与新增契约/读取定向 7/7 通过，独审 CLEAR。完整 default 原收据 2403 PASS/10 FAIL/2 条件 SKIP、contract 1347 PASS/8 FAIL，其中本片版本负控已修并定向复验；其余由父基线复现，不冒全绿。完整格式的 5 个未改文件旧告警保留，本片路径格式通过。
+- **App 实施与主控验收**：Updates/分页/刷新/正式结果链接、独立读状态、Project 筛选已接，原周期/IANA 复用。主控最终 `pnpm check` exit 0：contract、architecture、完整 lint/typecheck/default/build 均通过；新消费片独审 CLEAR。不重复已验旅程，不以测试数量算产品闭环。
+- **下一检查点/TODO**：
+  - [x] 独审并修复真实缺陷；固定 App 正式来源。
+  - [x] BFF/App 最终相关门；BFF 既有失败明确单列。
+  - [x] 两仓沿各自原 PR 交付；无 main 合并/部署。
+  - [x] Root 精确组合与来源清单固定；topology、15 条契约兼容边、原 checkpoint 均 PASS。
+  - [ ] 新组合真实认证浏览器到点→Updates→正式终稿/刷新/删除，真实 Worker 与 owner durable 证据一致。
+  - [ ] 只补原 A‑12 周期编辑、项目筛选、时区/DST 的现有证据缺口。
+  - [ ] 验收后更新本页并进入 A‑08；其余原产品项保留。
+
 ## 2026-11-08 当前执行检查点
 
 - **Goal：ACTIVE**，已读取机器状态确认；此前中断后没有存活子代理，本轮重新分派两位只读代理，主控独占集成和本台账。
 - **上轮实测新增证据：** 真实 Scheduler `cfb2502` 与 BFF `46c061f` 的原 11 个集成场景全部通过，包括异步 durable dispatch、重放冲突、租户错配、回执丢失后 BFF 重启重试；依赖为真实隔离 PG/Redis，IAM/Agent 为确定性替身。资源已回收。相关 Root focused 77 passed；不将其计为真实 Agent 或 A‑12 全闭环。
-- **本轮已实修/未提交：** Scheduler/BFF smoke 已对齐 BFF Node24、当前 owner schema URL、native session wire、异步 dispatch 等待；多用户匹配、匿名 null 和凭据 0600/失败清理已修正。Root 相关 78 passed，Ruff 及 diff-check 通过。最终 Node24 真实 Scheduler/BFF 原 11 场景再次全过，收据 `var/dev/task-a-a12-real/scheduler-bff-node24-receipt.json`，自有进程/PG/Redis 全回收；IAM/Agent 仍为替身。
+- **该片已沿Root f4488584提交/推送：** Scheduler/BFF smoke 已对齐 BFF Node24、当前 owner schema URL、native session wire、异步 dispatch 等待；多用户匹配、匿名 null 和凭据 0600/失败清理已修正。Root 相关 78 passed，Ruff 及 diff-check 通过。最终 Node24 真实 Scheduler/BFF 原 11 场景再次全过，收据 `var/dev/task-a-a12-real/scheduler-bff-node24-receipt.json`，自有进程/PG/Redis 全回收；IAM/Agent 仍为替身。
 - **已确认产品缺口：** 到点记录仅进入 scheduled scope/dispatch/source ledger，没有普通 Conversation/Message/dispatch 绑定，现模型提交者证明和终稿 reader 只接受普通 Chat 绑定；Web 当前只有 Calendar/Tasks 两页签，没有 Updates/执行记录/结果链接，也没有项目过滤。正在沿现计划确定复用正式 Chat 提交与 AG-UI 投影的最小接线，禁止仅因内部 terminal 就标成功。
 - **A‑12 剩余：** 真实 Scheduler→BFF→Agent HTTP/Worker 到点执行及终稿/会话结果、执行记录/updates 的浏览器读取；周期编辑/项目筛选与时区/DST 按原范围核对，不重跑输入未变的已验收据。原生浏览器 CRUD/日历/暂停恢复已由 `a12-complete-api-receipt.json` 覆盖，具体 UI 控件覆盖仍须与 API 收据区分。
-- **下一检查点：** 完成上述夹具修正和真实 Worker 接线并取得收据，然后更新此表，进入 A‑08；其他产品项不提前勾选，不合并 main、不部署。
+- **下一检查点：** Root `f4488584` 已沿 #66 推送夹具修正；A‑12 真实 Worker 片和正式 Chat 接线并行。BFF A‑12 实施门已记录：activation 复用普通 Chat turn/唯一 dispatcher/AG‑UI，退役重复 scheduled 发送与事件消费；完成执行记录/真实结果浏览器收据后进入 A‑08。其他产品项不提前勾选，不合并 main、不部署。
 - **时间纠偏：** 原 2026‑11‑05 的 6/24 小时窗口已过期，不能继续作为有效完成承诺；后续按实际交付和阻断及时更新，不以自动摘要代替执行。
 
 ## 2026-11-05 进度同步（主控唯一台账）

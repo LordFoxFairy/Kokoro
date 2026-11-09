@@ -1,3 +1,11 @@
+## 2026-11-09 · A‑12 交付候选与真实运行检查点
+
+BFF 原 #18 `5226ccd`、App 原 #50 `001d901c` 已推送。scheduled 已复用正式 Chat/唯一 dispatcher/AG‑UI，重复 scheduled 发送/消费及 source 表已删除；App Updates 使用固定 BFF `a889f695` / Public28.23 完整原件的窄生成校验。主控 App 完整 check 通过、BFF 真实 PG 与定向读取/契约通过，独审 CLEAR；BFF 原有全门失败保持在 TODO，不冒全绿。下一步固定 Root 精确组合并运行真实认证浏览器到点→Updates→正式终稿；周期/项目/IANA/DST 只补原范围缺失证据。A‑12 未验收，A‑08 尚未进入实施；Goal ACTIVE。
+
+## 2026-11-08 · A‑12 正式提交与结果接线门
+
+已核当前源码：定时到点记录尚未进入普通 Chat 提交事实，Web 缺执行记录与结果入口。按 BFF [TECHNICAL_DESIGN](../../../apps/kokoro-bff/docs/TECHNICAL_DESIGN.md) 与 [DATA_MODEL](../../../apps/kokoro-bff/docs/DATA_MODEL.md) 的 A‑12 实施门，activation 复用原子 Chat turn、普通 dispatcher 与标准 AG‑UI，退役第二套 scheduled 发送/事件消费；其后补公开执行读面与 App。Root 唯一写 TODO/Git，BFF writer 独占本片源码。真实支付继续关闭；不合并 main、不部署。状态为实施中，不冒已验。
+
 # Task A 当前进度、问题与 C-1～C-4 闭环技术方案
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
