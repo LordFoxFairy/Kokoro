@@ -1,3 +1,9 @@
+## 2026-11-09 · A‑12 原范围验收 / A‑08 开始
+
+Root `f3a35da7` 的真实 native Chromium/Scheduler/Agent HTTP/独立 Worker 收据 `fd6c7b5283f4a49f05775a05` 整轮 PASS，含实际控件CRUD/日历/暂停恢复、自然到点→Updates completed→正式终稿→刷新→删除，回收通过。周期/IANA 规则编辑/owner next/重开/首刷以882补缺子步骤承接，Project Tasks/Updates筛选及对应刷新/All还原以f13b子步骤承接；这两轮末尾额外刷新有失败，整体仍记FAIL，认证链503/Reconnecting进入A‑15，未称修复或完整稳定性。DST真PG正式BFF/Scheduler Clock-port接缝33328a通过并回收；不冒浏览器时间旅行或真实供应商。A‑12按原范围组合证据验收，Goal ACTIVE，接下来 A‑08。
+
+A‑08 首步仅修当前正式Storage下载接线缺陷：`AssetsService.getFinalArtifactDownloadReference` 已验窄操作后调用通用 `ArtifactsListService.get`，再次以Agent无权的通用get操作拒绝。先用真实两Service组合复现，再通过具名download读取/私有lookup复用修正，保持普通get/list拒绝与原sourceRun=currentRun fence，零协议/Schema变化。更广历史Artifact/Asset资格与canonical launch仍按原A‑08设计门独立完成，不在本bug片扩权限。主控独占台账/Git/验收，Storage单writer；不增加SDK/兼容层/通用下载权限。
+
 ## 2026-11-09 · A‑12 交付候选与真实运行检查点
 
 BFF 原 #18 `5226ccd`、App 原 #50 `001d901c` 已推送。scheduled 已复用正式 Chat/唯一 dispatcher/AG‑UI，重复 scheduled 发送/消费及 source 表已删除；App Updates 使用固定 BFF `a889f695` / Public28.23 完整原件的窄生成校验。主控 App 完整 check 通过、BFF 真实 PG 与定向读取/契约通过，独审 CLEAR；BFF 原有全门失败保持在 TODO，不冒全绿。下一步固定 Root 精确组合并运行真实认证浏览器到点→Updates→正式终稿；周期/项目/IANA/DST 只补原范围缺失证据。A‑12 未验收，A‑08 尚未进入实施；Goal ACTIVE。

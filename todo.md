@@ -1,24 +1,26 @@
 # Task A · TODO（2026-11-09 UTC）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `0fb22373` 已配对 Agent `0b4b6c4`、BFF `46c061f`、Storage `b07405c`、App `509593e`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `f3a35da7` 已配对 Agent `0b4b6c4`、BFF `5226ccd`、Storage `b07405c`、App `001d901c`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
-**本次窗口：** 24 小时内按原门交付，前 6 小时检查实际已验、剩余缺口及待裁决项（起点 2026‑11‑05 02:36 UTC）。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
+**时间纠偏：** 原 2026‑11‑05 02:36 UTC 起的 6/24 小时窗口已超期，后续以实际交付更新，不继续当作有效完成承诺。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
 ## 2026-11-09 执行检查点（主控）
 
-- **Goal ACTIVE**：机器状态已核验；A‑12 未关闭，验收后进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
+- **Goal ACTIVE**：机器状态已核验；A‑12 原范围已按下列组合证据验收，当前进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
 - **已提交/推送**：BFF 原 #18 `a889f69`＋`5226ccd`；App 原 #50 `001d901c`，固定 BFF `a889f695` / Public 28.23 原件，摘要 `0abd300f…`。BFF 后继纯测试提交未改该契约字节。Root 原 #66 的 `f4488584` 保留 Scheduler/BFF 原 11 场景真实 PG/Redis 收据（IAM/Agent 替身），本次正在更新精确 gitlink/inventory；未合并 main、未部署。
 - **真实到点负控保留**：旧 BFF `46c061f` 的 native IAM/Chromium/Scheduler/Agent HTTP/独立 Worker 运行 `cda2e42a26c86ba41298c65c`，控件创建/暂停/恢复/日历通过，到点仅 admitted、无终态，整体 FAIL、回收 PASS。System/model/budget 是确定性夹具，不拿 admitted 计完成。
 - **BFF 实施与验证**：activation 复用原子普通 Chat turn/唯一 dispatcher/标准 AG‑UI；重复 scheduled 发送、terminal 消费和 source 表已删除。执行分页读、当前可访问会话关联、Project 精确过滤已接；后继 queued 行不再返回单边结果 ID。主控真实 PG 9/9 PASS、0 SKIP（自有 fresh schema 回收）；类型/build/lint 与新增契约/读取定向 7/7 通过，独审 CLEAR。完整 default 原收据 2403 PASS/10 FAIL/2 条件 SKIP、contract 1347 PASS/8 FAIL，其中本片版本负控已修并定向复验；其余由父基线复现，不冒全绿。完整格式的 5 个未改文件旧告警保留，本片路径格式通过。
 - **App 实施与主控验收**：Updates/分页/刷新/正式结果链接、独立读状态、Project 筛选已接，原周期/IANA 复用。主控最终 `pnpm check` exit 0：contract、architecture、完整 lint/typecheck/default/build 均通过；新消费片独审 CLEAR。不重复已验旅程，不以测试数量算产品闭环。
+- **失败保留 / A‑15 后继**：周期补缺 `882c1e9796c4485dd5485947` 的显式 weekly/IANA 编辑、owner next/重开/首次刷新和 Tasks Project 精确筛选均通过；随后带筛选硬刷新停在 `Reconnecting…`，无后续任务 GET，整轮 FAIL / 回收 PASS。前轮 `a87c09e…` 为脚本等待原生 option 的 visible 条件错误，已改 attached，不改产品断言。定向 `f13b54143347e0d4ceeffc71` 随后已通过 Project Tasks/Updates 的对应硬刷新、切回 All 和两条真实记录恢复；最后额外 All 硬刷新返回 `503 iam_admission_unavailable`，该整轮仍 FAIL / 回收 PASS。该认证可用性问题归 A‑15 继续定位，不称已修；不为重复刷新无限重跑。
 - **下一检查点/TODO**：
   - [x] 独审并修复真实缺陷；固定 App 正式来源。
   - [x] BFF/App 最终相关门；BFF 既有失败明确单列。
   - [x] 两仓沿各自原 PR 交付；无 main 合并/部署。
   - [x] Root 精确组合与来源清单固定；topology、15 条契约兼容边、原 checkpoint 均 PASS。
-  - [ ] 新组合真实认证浏览器到点→Updates→正式终稿/刷新/删除，真实 Worker 与 owner durable 证据一致。
-  - [ ] 只补原 A‑12 周期编辑、项目筛选、时区/DST 的现有证据缺口。
-  - [ ] 验收后更新本页并进入 A‑08；其余原产品项保留。
+  - [x] 新组合真实认证浏览器到点→Updates→正式终稿/刷新/删除：Root `f3a35da7`、run `fd6c7b5283f4a49f05775a05`，11 项原控件/回读断言全部 PASS，真实 Worker/普通 outbox/唯一 durable terminal 一致；到点后 2.165 秒完成（期限 90 秒）。native quiescent/回收均 PASS，收据摘要 `ae19dfc1…9984`。模型/System/budget 仍为确定性夹具，不称真实支付/供应商验收。
+  - [x] 周期/IANA 与 Project 筛选原范围补证：882 的明确 weekly Tue/Thu 10:00、Asia/Tokyo 保存/owner next=`2026-11-10T01:00:00Z`/重开/首刷通过；f13b 的 Project Tasks/Updates 过滤、对应硬刷新、All 还原均通过。两轮末尾的额外刷新失败如上保留，不把整轮 FAIL 写成 PASS。
+  - [x] 主控 DST 接缝 `33328a46a0a72084`：正式 BFF builder/client/state reader → Scheduler HTTP/service/recurrence/planner → 真实隔离 PG，现 Clock port 固定时间。spring gap 返回次日 `06:30Z`，fold 首个 `05:30Z` 实际 occurrence 后 current 推进 `06:30Z`；退出 0、回收 PASS。不把此接缝称浏览器跨 DST 或真实投递。
+  - [x] A‑12 原范围验收与本页同步；进入 A‑08，先用真实两 Service 组合复现/修复 Storage download 的错误二次通用准入，再推进正式读取资格/launch/resolver/runtime/UI；其余原产品项保留。
 
 ## 2026-11-08 当前执行检查点
 
@@ -115,10 +117,10 @@
 - [ ] **A‑09 资料库**：App `509593e` 已补 files tab 的 owner 列表搜索、MIME/type 筛选与 URL 恢复，保留现上传、扫描、原字节下载和分页；仍需服务端文件搜索/删除、持久收藏、artifact 收藏/删除、来源回跳及真实端到端证据，复用 A‑08 同 owner 资源，不另存文件事实。
 - [ ] **A‑10 文件／Canvas**：复用 A‑04 当前组合的真实产物与原字节下载；仍需现文件树、Markdown／文本／表格、详情与来源、窄屏及只读／权限的独有证据，不把一个产物旅程扩大成整个 A‑10。
 - [ ] **A‑11 首页与创建场景**：核已支持场景实际提交／返回与空白／草稿状态；当前缺口明确标识，不展示假的创建结果；原参考对照待验。
-- [ ] **A‑12 自动化**：已取得新鲜认证 Chromium 收据 `output/playwright/a12-crud-receipt.json`、`a12-api-browser-receipt.json`：正常 native login、`/app/scheduled`、任务创建 POST 200、列表 GET 200（任务 `scheduled_2bcfe15bf5b6577b463633e63ca4c589`）及 Calendar tab 均通过；任务随后变为 `failed`/`scheduling_state=failed`，证明当前实例没有可用 Scheduler→BFF→Agent 到点执行。编辑/暂停/恢复 PATCH 在 native HTTPS proxy 直接返回 501 `Unsupported method (PATCH)`，不是业务 2xx，不能计暂停恢复闭环；updates/执行记录、DST 和真实 BFF→Agent 结果仍缺。随后在重启的 native dev fixture（proxy 已补 `do_PATCH`）取得更完整收据 `output/playwright/a12-complete-api-receipt.json`：认证、创建/列表、编辑、暂停、暂停回读、恢复、恢复回读、Calendar、DELETE 与删除后 GET 全部通过，测试任务已回收。当前 fixture 为 Platform MCP-only，未启动 Scheduler/Agent Worker；因此到点 BFF→Agent、执行记录、DST/重投仍未验证。
+- [x] **A‑12 自动化**（原范围验收 / 主控）：Root `f3a35da7` 精确组合已验实际控件 CRUD、日历无写、暂停恢复、自然到点→真实 Agent Worker→Updates completed→正式会话终稿→刷新唯一→删除 404。收据 `fd6c7b5283f4a49f05775a05`，唯一 Run/terminal、2.165 秒完成、退出 0 / quiescent 与回收 PASS；System/model/budget 为确定性夹具。BFF 正式 Chat 复用和 App 正式 Public28.23 消费已沿各自 PR 交付；重复 scheduled 发送/消费已删除。主控 DST 接缝 `33328a46a0a72084` 在真实 PG/正式 HTTP/client/Clock port 核 spring gap 与 fold 两个 UTC，PASS / 已回收。周期/IANA 编辑/owner next/重开/首刷由882子步骤承接；Project Tasks/Updates过滤/对应硬刷新/All恢复由f13b子步骤承接。两补缺整轮仍因末尾额外刷新失败，明确保留FAIL，未伪造整轮PASS；认证链 `503 iam_admission_unavailable` 和偶发 Reconnecting 转A‑15继续定位，故不称整个产品稳定性或全门闭环。旧 PATCH 501、admitted-only 失败保留历史。
 - [ ] **A‑13 外部聊天**：App setup 有实际 UI；Agent 当前无对应路由。保留 Telegram／LINE／Slack 原范围，查正式 owner／真实 callback 和断开、过期、迟到状态，不当作现有成功或死代码。
 - [ ] **A‑14 语音**：复用已删除演示文字注入；真麦克风／转写、授权拒绝／不支持、取消与编辑/发送闭环待验。已确认当前 Next 通用和服务端头都声明 `microphone=()`，与语音入口存在配置冲突嫌疑；待真实浏览器分清媒体权限与识别服务行为，不先放宽全站策略。
-- [ ] **A‑15 体验性能**：随各片量实际冷／热和可访问性，留 A‑03 两次已完成 Run 的硬刷新终稿 DOM 偶发缺失；以真实 /parts 状态定位，确认前不加盲目重试。
+- [ ] **A‑15 体验性能**：新增 A‑12 多次硬刷新认证链 `503 iam_admission_unavailable` / Reconnecting（882/f13b 原始失败保留），仅有100/60s原生限流嫌疑、尚无IAM hop证据，不冒称已修；随各片量实际冷／热和可访问性，留 A‑03 两次已完成 Run 的硬刷新终稿 DOM 偶发缺失；以真实 /parts 状态定位，确认前不加盲目重试。
 - [ ] **A‑16 交付与运行配对**：主控沿每仓原 PR、Root 精确 gitlink、记录真实验收与遗留；本窗口不合并 main、不部署，不把历史交付记录当当前全任务通过。
 
 **更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每次只推进清单中最前的未关闭项，记录 owner、受影响提交、实测结论和下一步。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。C‑4 Goal 已验收，产品 Goal 仍需逐项核对原 A‑01～A‑16（真实支付除外）。各仓沿原 PR，不合并 main、不部署。
