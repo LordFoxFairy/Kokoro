@@ -1,11 +1,14 @@
 # Task A · TODO（2026-11-09 UTC）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root 精确组合提交 `f3a35da7` 已配对 Agent `0b4b6c4`、BFF `5226ccd`、Storage `b07405c`、App `001d901c`；已发布契约 15/15、八个数据 owner 同库同时 ready；已验登录和 Run 主链复用原收据。**A‑01 和 A‑02 已验收，A‑07 已通过原生浏览器，A/B 已在本地正式登记**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前组合已更新 Agent `478c5f1`、Storage `3f18577`，BFF `5226ccd`、App `001d901c` 保持；子仓已沿各自 PR 推送，Root 精确来源校验见下方当前检查点。八个数据 owner 同库 ready、已验登录和 Run 主链按输入不变复用原收据。**A‑01/A‑02/A‑03/A‑04/A‑07/A‑12 已按记录范围验收**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **时间纠偏：** 原 2026‑11‑05 02:36 UTC 起的 6/24 小时窗口已超期，后续以实际交付更新，不继续当作有效完成承诺。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
 ## 2026-11-09 执行检查点（主控）
 
+- **A‑08 当前推进（04:45 UTC）**：Goal 实查 ACTIVE。Storage `3f18577` 已推 #3，当前 source-run FINAL 下载的二次 generic-get 误拒绝已修，普通 get/list 仍拒绝；独审 CLEAR。主控 owner `typecheck/lint/test/build` 全部 exit 0，232 条真实资源条件用例未执行，未称真实 PG/S3/扫描验收。Agent `478c5f1` 已推原 #46，仅来源 pin/生成器及过期独立摘要断言更新；主控正规生成检查、contract-check 和原三文件定向均通过。原件、生成协议与锁字节不变，不重跑输入未变的 Worker/浏览器旅程。
+- **当前组合验收**：Root 已按真实 Git blobs 重取 68 项 Agent/Storage 来源引用和摘要；topology、15 条 contract compatibility（0 violation）、原 checkpoint 均 PASS。BFF/Capability 的 Storage vendor 原字节可复用，不为纯服务实现修复批量 repin。真实输入附件旅程尚未运行。
+- **A‑08 具名下一步**：主控负责设计门、唯一台账、Git 与验收；`a08_launch_design` 完成 canonical launch/事务接缝只读盘点，`a08_storage_download_fix` 完成 owner 读取资格只读盘点，`a08_agent_ready` 完成 pin 片并停写。接下来扩现下载请求的精确输入约束，BFF 先准入/重放→事务外有界解析→锁内重验关系并冻结；Agent 将 source Run 与 consumer lease 分开，复用现只读 backend。公共 `version_id` 无 owner 语义，不能忽略。正式读取、UI 与真实旅程仍未完成，A‑08 不勾选。
 - **Goal ACTIVE**：机器状态已核验；A‑12 原范围已按下列组合证据验收，当前进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
 - **已提交/推送**：BFF 原 #18 `a889f69`＋`5226ccd`；App 原 #50 `001d901c`，固定 BFF `a889f695` / Public 28.23 原件，摘要 `0abd300f…`。BFF 后继纯测试提交未改该契约字节。Root 原 #66 的 `f4488584` 保留 Scheduler/BFF 原 11 场景真实 PG/Redis 收据（IAM/Agent 替身），本次正在更新精确 gitlink/inventory；未合并 main、未部署。
 - **真实到点负控保留**：旧 BFF `46c061f` 的 native IAM/Chromium/Scheduler/Agent HTTP/独立 Worker 运行 `cda2e42a26c86ba41298c65c`，控件创建/暂停/恢复/日历通过，到点仅 admitted、无终态，整体 FAIL、回收 PASS。System/model/budget 是确定性夹具，不拿 admitted 计完成。

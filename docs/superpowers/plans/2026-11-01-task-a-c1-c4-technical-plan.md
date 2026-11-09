@@ -2,7 +2,18 @@
 
 Root `f3a35da7` 的真实 native Chromium/Scheduler/Agent HTTP/独立 Worker 收据 `fd6c7b5283f4a49f05775a05` 整轮 PASS，含实际控件CRUD/日历/暂停恢复、自然到点→Updates completed→正式终稿→刷新→删除，回收通过。周期/IANA 规则编辑/owner next/重开/首刷以882补缺子步骤承接，Project Tasks/Updates筛选及对应刷新/All还原以f13b子步骤承接；这两轮末尾额外刷新有失败，整体仍记FAIL，认证链503/Reconnecting进入A‑15，未称修复或完整稳定性。DST真PG正式BFF/Scheduler Clock-port接缝33328a通过并回收；不冒浏览器时间旅行或真实供应商。A‑12按原范围组合证据验收，Goal ACTIVE，接下来 A‑08。
 
-A‑08 首步仅修当前正式Storage下载接线缺陷：`AssetsService.getFinalArtifactDownloadReference` 已验窄操作后调用通用 `ArtifactsListService.get`，再次以Agent无权的通用get操作拒绝。先用真实两Service组合复现，再通过具名download读取/私有lookup复用修正，保持普通get/list拒绝与原sourceRun=currentRun fence，零协议/Schema变化。更广历史Artifact/Asset资格与canonical launch仍按原A‑08设计门独立完成，不在本bug片扩权限。主控独占台账/Git/验收，Storage单writer；不增加SDK/兼容层/通用下载权限。
+A‑08 首步已交付：Storage `3f18577`／#3 用真实两 Service 组合复现并修正二次 generic-get 误拒绝，经具名 download 读取复用私有 lookup；普通 get/list 拒绝及原 source Run fence 保持，零协议/Schema变化。主控 typecheck/lint/default/build 通过；232 条资源条件测试未运行，不冒称真实 owner 链。Agent `478c5f1`／原 #46 仅固定该来源并对齐过期独立摘要断言，正规生成/contract-check/原三文件定向通过，业务/生成协议/锁不变。Root 负责精确配对。更广历史 Artifact/Asset、canonical launch/runtime/UI 仍 OPEN。
+
+### A‑08 后继最小实现门（2026‑11‑09，主控裁决）
+
+沿原门，不新增 owner、认证、grant/登记表、SDK 或 runtime。两个只读 owner 已核现实现：BFF 元数据解析可复用 Storage 正式 GetAsset/GetFinalArtifact；缺口是输入下载资格和 canonical launch，而非重新建设资料库。
+
+1. **身份与源关系**：复用 ADR‑035 服务凭据和可信 tenant/subject。personal scope 固定 subject；project scope 来自 BFF canonical Project，须与消费会话项目一致；历史 Artifact 按 BFF 本人 active 源关联找回 source conversation/run/asset/hash，再由 Storage fresh FINAL/CLEAN metadata 核等。不信任浏览器提供来源 scope/digest/Run。`version_id` 当前没有 owner 公开语义，提供该字段应明确拒绝，不能忽略或猜为摘要。
+2. **冻结与重放**：现 Chat prepare 先处理同键重放，再在总预算内、事务外完成 owner resolve；最终事务锁内重验 BFF scope 和源关联，与 Message/outbox 一次提交。网络不占数据库行锁；Storage 状态在实际读取时再次检查，不声称跨 owner 原子锁。
+3. **唯一内部输入**：公共 `selected_resource_refs` 保留 opaque 意图；内部同名字段改为 strict canonical union，不透传公共类型，不额外保留第二份 resolved 列表。共同字段为 kind、resource_id、asset_id、content_sha256、size_bytes、mime_type、filename、source_scope；Artifact 另含 source_run_id，scope 限 conversation。consumer Run 取 launch 顶层 run_id，source Run 只表示 provenance。沿现 JSON/outbox，不新增 SQL 表列。
+4. **Storage 精确读**：扩现两个 download 请求，不新增 RPC。Asset 请求增加 consumer_run_id，Agent 仅 personal/project、purpose=ASSET、必填 exact SHA；Artifact 保留原 run_id 的 source 含义，增加 consumer_run_id、asset_id/content_sha256 exact 约束。Agent 仍无 list/generic metadata/包下载资格。Storage 检查自己的 scope、purpose、active/CLEAN/FINAL 及关系；consumer lease 和选中项 membership 由 Agent 本地 canonical Run 检查，不建跨仓验证网关。BFF 既有请求仍按原服务边界，不新增兼容别名。
+5. **只读执行**：Worker 复用一个 Storage transport/client 生命周期；每次读取从持久 canonical Run/当前 lease 找到完全相同项，读取前后核 lease，源 scope 仅取冻结项。沿现 CompositeBackend 增具名只读输入路由，路径由稳定索引生成，filename 只作元数据；禁写/edit/delete，不把虚拟路径冒称 shell/容器 mount。完整大小/SHA/origin/期限和取消复用现传输检查；失败明确终态，不默默提交空附件，正文不进入公共 Message/AG‑UI/trace。
+6. **删除与验收**：替换现 opaque Agent 类型/错误 currentRun-as-source 假设，更新正规 owner artifact 后按顺序生成消费者，不维护双轨。各来源原字节、未选择/错主体、撤销或未 CLEAN、同 Run 恢复原 manifest 用最低充分层级覆盖，再跑一条真实 PG/Redis/Storage/Worker/浏览器选择旅程并复用到 A‑05。输入未变的 A‑12 和旧全仓收据不重跑；未取得真实旅程前 A‑08/A‑05 均 OPEN。
 
 ## 2026-11-09 · A‑12 交付候选与真实运行检查点
 
