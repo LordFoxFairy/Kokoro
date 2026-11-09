@@ -15,6 +15,10 @@ A‑08 首步已交付：Storage `3f18577`／#3 用真实两 Service 组合复�
 5. **只读执行**：Worker 复用一个 Storage transport/client 生命周期；每次读取从持久 canonical Run/当前 lease 找到完全相同项，读取前后核 lease，源 scope 仅取冻结项。沿现 CompositeBackend 增具名只读输入路由，路径由稳定索引生成，filename 只作元数据；禁写/edit/delete，不把虚拟路径冒称 shell/容器 mount。完整大小/SHA/origin/期限和取消复用现传输检查；失败明确终态，不默默提交空附件，正文不进入公共 Message/AG‑UI/trace。
 6. **删除与验收**：替换现 opaque Agent 类型/错误 currentRun-as-source 假设，更新正规 owner artifact 后按顺序生成消费者，不维护双轨。各来源原字节、未选择/错主体、撤销或未 CLEAN、同 Run 恢复原 manifest 用最低充分层级覆盖，再跑一条真实 PG/Redis/Storage/Worker/浏览器选择旅程并复用到 A‑05。输入未变的 A‑12 和旧全仓收据不重跑；未取得真实旅程前 A‑08/A‑05 均 OPEN。
 
+### A‑08 后继交付检查点（2026‑11‑09）
+
+Storage `c31a065`、Agent `55beed2`＋`79a95c1`、BFF `534ace3` 已沿原PR推送。主控停写后复验Agent selected-input读与原生图失败传播、BFF canonical冻结/重放/regenerate/源关系争用，当前相关门通过；证据范围和完整默认失败核对见唯一TODO。最终事务源关联使用 `FOR SHARE OF c,a NOWAIT`，防止读后关系变动且不引入两会话反向等待；事务外候选仍不锁。App `0004d953` 固定Public28.24，完整相关门通过并经主控focused/独审；BFF后继 `144b07f` 仅隔离两测试夹具。Root新组合topology/15边compatibility/checkpoint通过，真实输入旅程待验。无产物最近任务的final答复引用、发送前草稿选择的刷新保持及A‑05同Run引用恢复保持OPEN，不以本片缩减原范围。现下载1MiB及非UTF8文本工具能力边界明确保留。
+
 ## 2026-11-09 · A‑12 交付候选与真实运行检查点
 
 BFF 原 #18 `5226ccd`、App 原 #50 `001d901c` 已推送。scheduled 已复用正式 Chat/唯一 dispatcher/AG‑UI，重复 scheduled 发送/消费及 source 表已删除；App Updates 使用固定 BFF `a889f695` / Public28.23 完整原件的窄生成校验。主控 App 完整 check 通过、BFF 真实 PG 与定向读取/契约通过，独审 CLEAR；BFF 原有全门失败保持在 TODO，不冒全绿。下一步固定 Root 精确组合并运行真实认证浏览器到点→Updates→正式终稿；周期/项目/IANA/DST 只补原范围缺失证据。A‑12 未验收，A‑08 尚未进入实施；Goal ACTIVE。

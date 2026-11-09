@@ -8,8 +8,14 @@
 
 - **A‑08 当前推进（04:45 UTC）**：Goal 实查 ACTIVE。Storage `3f18577` 已推 #3，当前 source-run FINAL 下载的二次 generic-get 误拒绝已修，普通 get/list 仍拒绝；独审 CLEAR。主控 owner `typecheck/lint/test/build` 全部 exit 0，232 条真实资源条件用例未执行，未称真实 PG/S3/扫描验收。Agent `478c5f1` 已推原 #46，仅来源 pin/生成器及过期独立摘要断言更新；主控正规生成检查、contract-check 和原三文件定向均通过。原件、生成协议与锁字节不变，不重跑输入未变的 Worker/浏览器旅程。
 - **当前组合验收**：Root 已按真实 Git blobs 重取 68 项 Agent/Storage 来源引用和摘要；topology、15 条 contract compatibility（0 violation）、原 checkpoint 均 PASS。BFF/Capability 的 Storage vendor 原字节可复用，不为纯服务实现修复批量 repin。真实输入附件旅程尚未运行。
-- **A‑08 后继实施**：稳定组合为 Root `2b3b301f`；后继 Storage `c31a065` 已推同 #3，现两个下载请求明确 exact asset/hash、source/consumer Run，主控 owner 门全过、独审 CLEAR，真实依赖条件测试未运行。Agent `55beed2` 已推原 #46，HTTP8.14 以唯一 canonical manifest 替换 opaque 内部输入，并纳入原私有材料保护；主控定向、正规生成与 contract-check 通过。BFF 当前未提交候选在真实 PG/正式 Nest 接线通过 canonical 冻结/重放/regenerate/关系变化拒写；仍待 Agent 正式生成消费、最终复验。`a08_storage_download_fix` 是 Agent runtime 唯一 writer；`a08_launch_design` 是 BFF 唯一 writer；`a08_agent_ready` 是 App 唯一 writer。主控独占 Git/台账和最终真实组合验收；未将后继源码提交误报为 Root 新组合或 A‑08 产品闭环。
-- **A‑08 具名下一步**：主控负责设计门、唯一台账、Git 与验收；`a08_launch_design` 完成 canonical launch/事务接缝只读盘点，`a08_storage_download_fix` 完成 owner 读取资格只读盘点，`a08_agent_ready` 完成 pin 片并停写。接下来扩现下载请求的精确输入约束，BFF 先准入/重放→事务外有界解析→锁内重验关系并冻结；Agent 将 source Run 与 consumer lease 分开，复用现只读 backend。公共 `version_id` 无 owner 语义，不能忽略。正式读取、UI 与真实旅程仍未完成，A‑08 不勾选。
+- **A‑08 后继 owner 已交付**：Storage `c31a065`（原 #3）、Agent canonical `55beed2`＋runtime `79a95c1`（原 #46）、BFF `534ace3`＋纯夹具隔离 `144b07f`（原 #18）、App `0004d953`（原 #50）均已提交/推送。主控 Agent 五文件77 PASS、锁定SDK原生图成功/失败2分支PASS，完整类型/Ruff/打包/contract/codegen通过；BFF 停写后类型/build、76项定向及真实Nest/独立PG8项全过，测试库回收。BFF完整默认为2408 PASS / 7 FAIL / 2条件SKIP：五项既有SQL inverse保留；另两项既有后台worker干扰夹具已修、主控两文件59 PASS，不拼接成完整全绿；PG中的Storage metadata是明确fixture，尚非真实附件旅程。
+- **A‑08 当前分工/下一步**：App `0004d953` 已固定正式BFF `534ace3` / Public28.24、正规生成并完成选择UI；writer完整lint/types/default/build/contract/architecture通过，主控UI/engine两文件17 PASS、独审CLEAR；三位代理本片停写。`a08_storage_download_fix` 已准备ignored真实旅程helper，模型须实际读取随机文件marker后才答复。主控独占Git/台账/Root精确配对及验收。现有MinIO原数据卷写/读/删与Scanner PING已恢复通过，probe桶已回收，无清卷/重建。
+- **A‑08 验收清单**：
+  - [x] owner exact下载、canonical冻结、只读runtime接线及必要回归，沿各仓原PR交付。
+  - [x] App正规28.24消费、主控相关验收与原PR交付。
+  - [x] Root精确gitlinks/来源inventory与契约检查：按412项真实已提交Git blobs重算，topology、15条compatibility/0violation和原checkpoint PASS；无关消费者旧pin按真实兼容保留。
+  - [ ] native IAM/Chromium→真实BFF/PG/Redis/Storage/ClamAV/Agent Worker：两项真实文件读、选择/移除/取消零误发、发送/刷新唯一终稿，记录并回收自有资源。
+  - [ ] 继续原范围剩余：Library/Project/历史FINAL来源真实验收；无产物最近任务最终答复引用；发送前草稿选择刷新保持与同Run恢复被A‑05复用。明确保留1MiB下载和非UTF8文本工具能力边界，A‑08尚未勾选。
 - **Goal ACTIVE**：机器状态已核验；A‑12 原范围已按下列组合证据验收，当前进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
 - **已提交/推送**：BFF 原 #18 `a889f69`＋`5226ccd`；App 原 #50 `001d901c`，固定 BFF `a889f695` / Public 28.23 原件，摘要 `0abd300f…`。BFF 后继纯测试提交未改该契约字节。Root 原 #66 的 `f4488584` 保留 Scheduler/BFF 原 11 场景真实 PG/Redis 收据（IAM/Agent 替身），本次正在更新精确 gitlink/inventory；未合并 main、未部署。
 - **真实到点负控保留**：旧 BFF `46c061f` 的 native IAM/Chromium/Scheduler/Agent HTTP/独立 Worker 运行 `cda2e42a26c86ba41298c65c`，控件创建/暂停/恢复/日历通过，到点仅 admitted、无终态，整体 FAIL、回收 PASS。System/model/budget 是确定性夹具，不拿 admitted 计完成。
