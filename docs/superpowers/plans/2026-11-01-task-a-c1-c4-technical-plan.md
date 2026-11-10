@@ -1,3 +1,11 @@
+## 2026-11-10 · A‑06 分项验收／A‑09 独立删除片
+
+Root `80f316d23ea3e0139a5ec1a3b7fde89723617b9c`，`48b73dafa2094e27aafe476c`（摘要 `c6dd639eb1c3fc35e63f0e3781218f2baa2c0ab6ece9321e45b37f85d7a293f0`）真实 Chromium 编辑两次；同一个 Project 会话的两次实际 Run 各封存一个模型尝试，BFF/Agent 原冻结快照与实际模型系统文本同字节，B 未带 A、同一会话历史保留；硬刷新读两份正式 parts、B 当前／A 历史，公开 AG‑UI 两终态共 14 帧无私有原文。浏览器上传/删除/回读通过，私有回执读取错误导致整轮 FAIL，不冒整轮全绿。只补释放的 `0be47511e1c3f3f533ea31d2`（摘要 `a3cb59fc864109803692e4e5f6832a8ef1377ea224939987886fb18ba7edbad4`）exit 0／原生 exit 0；BFF 与 Storage 两条 scope 的命令/摘要/owner 及状态核等，Project 一件 Asset 真退役，Conversation 无资产，逻辑 released／物理 pending，详情 404，cleanup/凭据日志通过。未重做指令、未改生产/契约/Schema。System/model/budget 为明确替身。
+
+A‑06 剩余事实：旧验收 TC‑PROJECT‑R191‑005 的“已有网站”指产品内可信的用户网站目录，并非要求用户自己找一个网址。App 旧 v3 Settings deployments 与 Project 网站关联仅属草案；现无已发布目录或持久关联。System 产品站点、Storage 普通文件、preview 和仅切筛选的 Search the web 都不构成该事实。保留原要求，未接入外部账户/未发布站点，待确认正式产品事实来源；无依据不建空目录/通用 URL 增删。Goal 继续 ACTIVE。
+
+**A‑09 最小独立设计门（下一片：本人文件删除）**：复用现 BFF 历史设计的 `DELETE /v1/library/files/{asset_id}` 与同源 UI；BFF fresh IAM 准入固定 personal scope=可信 subject，浏览器只传 opaque asset ID/原幂等键；不传 scope、身份、正文或对象键。仅复用已固定 Storage DeleteAsset/原 owner receipt，保现 Project command 域不变，不新增 Schema、内部 OAuth/SDK、前置查询或成功缓存。BFF 发布 canonical Public 契约后 App 正常消费；App 原列表新增确认和未知结果的原键恢复，仅真实 ACK 后更新现列表。用现有未删除 guard，补同键重放/异请求拒绝及一条本人浏览器删除→刷新不在、旧读取 404、同 scope 其他文件保留。服务端搜索、Project 来源、持久收藏和单 FINAL 删除保留为 A‑09 独立子项，不用整 scope 删除或已加载页筛选代替。
+
 ## 2026-11-10 · A‑05 原范围验收／A‑06 下一检查点
 
 Root `520010db1a15ad6c400c8877fb8f9cac9a153b92`，真实收据 `b6909a42805f00a0c5b3b25b` exit 0 / native exit 0，quiescent/cleanup/凭据日志 PASS，摘要 `0a459be803da13ecdb3a82e29154a383bf468d2759765a6a76c973e1eeb3c183`。真实 Chromium 先创建历史 FINAL、在不同目标会话暖场，再沿同一会话的普通 Chat 只提交一次有序 Artifact＋Asset；真实 Storage/Scanner、BFF/PG/Redis、Agent HTTP＋独立 Worker，System/model/budget 明确为 HTTP 夹具。原生 SDK 触发一个摘要，PG 以原 Run/attempt 封存，私有 checkpoint 以 cutoff 2 保留摘要和原历史的文件 delta；后继主调用使用摘要，原生工具分别核对两项原字节，BFF 目标唯一终态。初显和 IAM 窗口后硬刷新同终稿、零重写；同 Run 全重放、精确 Last-Event-ID 后缀、真无凭据匿名分享、撤销 404 都通过，不泄私有摘要。原取消/重启/真 Billing 收据复用，不重跑；本轮不改业务源码、协议或 gitlinks。
