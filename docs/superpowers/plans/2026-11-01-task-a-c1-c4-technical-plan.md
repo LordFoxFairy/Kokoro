@@ -24,6 +24,8 @@
 
 **App 消费已推原 #50**：`dd5ebe152230345299eade261980d71863761b71`。复用原 Canvas 与预览，按 exact Run/version 选择，退役无消费的旧按路径读取和占位文件。主控定向、架构、正式合同通过；停写 TypeScript 通过。不重跑已验的 FINAL/快切，下一门为真实 State 单旅程。
 
+**默认 State 真实主链已验**：Root `906e761ce9634a657d4aa8d29848e9bb42412012`，收据 `132800e968d29412f10ce91f` / SHA‑256 `9950741e2333af77eaff07be145ffb8977ce1a05e5146b70305f3b1254b79cd4`。真实 IAM/Chromium/BFF/PG/Redis/Storage/MinIO/ClamAV、独立 Agent Worker；两次普通 Chat 原生写/编辑同一路径，无 deliver；Canvas 原 SHA、硬刷同旧版本、删除 200 与旧链接 404，BFF 唯一窄回收命令已确认、Storage 目的栅栏已落。整轮、原生、凭据检查、静默与回收通过；System/model/budget 为确定性夹具。两轮失败 `c3640bb1…` 与 `cf174615…` 都已取两版与刷新，卡于折叠侧栏及菜单定位，未发删除、回收通过。无生产代码变化后通过。非 State 仍开：当前正式 Custom API 可选 Docker／E2B，Local Shell 已注册但非默认，不能松开 State gate 后扫盘冒充不可变版本；脚本必须在现隔离执行边界证明确切归属与停写。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。

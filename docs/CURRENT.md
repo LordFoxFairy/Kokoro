@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑10 default State process files passed in a real browser.** Exact Root `906e761c`, receipt `132800e968d29412f10ce91f`: two ordinary authenticated turns, independent Worker write/edit of one path, original bytes for both versions, and a hard reload restoring the old version. The real delete returned 200 and the old link 404; the BFF outbox and Storage purpose-specific revocation both settled. Native and overall exit 0, credentials/quiescence/cleanup passed. Two earlier attempts stopped before delete because of fixture locators; their cleanup passed. System/model/budget were deterministic fixtures. Non-State and script-produced outputs remain open; no main merge or deployment.
+
 **A‑10 App process files are pushed.** Original App #50 `dd5ebe15` pins BFF #18 `5d5b409`. Process opens the existing Canvas; same-path versions retain their original identities. The controller verified focused behavior, architecture and the full App contract; nonincremental TypeScript passed on the frozen App. Real browser acceptance remains pending.
 
 **A‑10 BFF process files are pushed; browser acceptance is pending.** Original BFF #18 `5d5b409` (Public 28.33) consumes the exact Agent and Storage releases. The controller reran the Nest/Connect HTTP regression: no object read for a wrong version, original bytes for the exact version, and no handoff after revoked Conversation access. Both generated-client checks passed. The App contract is regenerated from the exact BFF commit; product and Root pairing are not yet verified. BFF still installs to an empty owner schema only; no normal database was migrated.
