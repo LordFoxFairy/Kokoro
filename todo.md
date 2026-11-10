@@ -8,6 +8,8 @@
 
 ## 当前执行检查点（主控）
 
+- **A‑10 Docker 原生编辑实测通过**：Agent 原 #46 `0475f1b`。真 Docker/锁定 SDK、隔离 PG、Storage/MinIO/ClamAV：真实 Unicode/CRLF 原生 edit 写出 38 字节后容器再改同路径，新代从原后像发布 CLEAN 原 SHA；一上传、重新核凭据出口、清暂存、资源回收 PASS。日志 SHA‑256 `a3e5d35f88882b840dcfc4efedb58c6109a36c037dfe5708687d8abd1b40a3eb`；无独立 Worker/浏览器。Local 实际旅程、脚本/E2B 未验。
+- **A‑13 Slack BFF/App 已各推原 PR**：BFF #18 `18dcc30`／Public 28.35，App #50 `52e74822`。主控真 PG/Nest 定向、App 定向和正式契约通过；BFF 较宽契约单项 Library 失败在父版也复现，未改无关。浏览器真实顶级回调仍待；不持久化 bot token，不撤共享安装。
 - **A‑10 Docker 原生写入通过真实接缝验收**：Agent 原 #46 `d9b3eb7`；主控真实 Docker、锁定 SDK、隔离 PG 和 Storage/MinIO/ClamAV。原写入 36 字节，容器随后改同路径；旧代零发布，generation 2 取原 SHA、CLEAN，重放仍一上传，暂存清除，凭据内容未发布。收据日志 SHA‑256 `102c8f51a8787844347482cc0253c7af747f729e4b958daa868956377e2d7b31`，回收通过、Redis13 归零。模型/Custom API 凭据源为夹具，无独立 Worker/浏览器；Local 未实测，edit/script/E2B OPEN。
 - **A‑15 提问卡已通过真实链路**：Agent 原 #46 `384f910`，Root `db9bbc2f`，收据 `d233f1c2ba80862e93b68e1d`／SHA‑256 `cefb975e945b97b5501ed37ed761b230f479bc0b42be685c4741730af1e07be9`。真实登录，独立 Worker 原生提出 Unicode 问句；硬刷仍是同一 pause/item，浏览器只回一次，原 Run 持久 `native_consumed` 后终稿；真实 AG‑UI 和刷新 snapshot 都没有未选私有参数。不改公开协议、不重跑已验快速终稿；整轮/原生、凭据、回收通过，System/model/budget 明确替身。此前生产快刷窗四个背景 503 逐请求关联已有日志，IAM 两跳均 200，业务路由被脱敏，历史偶发问题仍未定位。
 - **A‑13 LINE 本地浏览器主路径 PASS**：Root `5e54c71c`／App `eac24dd8`／BFF `c535c16`，收据 `aa839b379f2ddc03f1601bc2`（SHA‑256 `2177093967f6e79727dc426209d51893e2d1fa5e32d120a375abe925ae46fc27`）。真实登录 Chromium、Nest、隔离 PG：启动→签名私聊→清 fragment 的本人批准→官方 URL 在本地拦截→签名绑定→硬刷同一绑定→断开。三次显式浏览器写、两回调 204，PG 同本人唯一 LINE 行 v6 已清空；原生/整轮、凭据检查、清理 PASS。LINE 为协议替身，真实渠道与 Slack 仍 OPEN。

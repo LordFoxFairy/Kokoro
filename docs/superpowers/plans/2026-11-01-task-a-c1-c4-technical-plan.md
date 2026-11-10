@@ -30,6 +30,10 @@
 
 **Docker 原生 write 接缝真实通过**：Agent 原 #46 `d9b3eb70ae489a779b96e63f803b6853b6b23189`，HTTP 8.17 canonical 原字节。主控实际 Docker SDK/PG journal/native lease、Storage/MinIO/ClamAV；原 36 字节在容器同路径变更后仍由新代精确发布，旧代无发布，CLEAN、原 SHA、一次上传及 pending 清除通过，凭据输出不登记。自有资源回收／Redis13 归零；日志 SHA‑256 `102c8f51a8787844347482cc0253c7af747f729e4b958daa868956377e2d7b31`。模型及 Custom API 凭据源为夹具，无独立 Worker/浏览器；已验 State 不重跑，非 State edit、脚本、E2B 和真实 Local 用户旅程仍 OPEN。
 
+**非 State 原生编辑续片**：只对现已受控的 native `edit_file` 和 `/outputs/`，沿锁定 SDK 的替换/换行语义，在实际 mutation 得到写出后像；不读事后的可变路径。逐级 dirfd/no-follow 固定安全目标，常规文件与大小约束，可信挂载外同文件系统私有暂存后原子替换，核目标身份；不能安全落位时明确失败。用调用内只消费一次的后像沿同 journal/lease/凭据出口与发布，不加表、接口或脚本机制；其它路径沿原 SDK。并发外部不宣称全局无 lost-update，只证明本次原子安装的原字节。真 Docker 只补 edit→后续同路径改动→CLEAN 原后像，不重跑默认 State。
+
+**真实 Docker edit 接缝通过**：Agent 原 #46 `0475f1b`，实际 native SDK edit Unicode/CRLF→38 字节确切后像，Docker 后续改同路径后 PG 新代仍发布原 bytes；真实 Storage/MinIO/ClamAV CLEAN，凭据 guard 再核、一次上传、pending 清除、回收 PASS。日志摘要 `a3e5d35f88882b840dcfc4efedb58c6109a36c037dfe5708687d8abd1b40a3eb`，模型和凭据来源夹具、无独立 Worker/浏览器。脚本/E2B/Local 旅程继续开放。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
@@ -51,6 +55,10 @@
 **首轮真实 LINE 失败及修复**：Root `caab8d40` 收据 `900ce05457bc2ec56640ef51`／SHA‑256 `c365be286545956ff45027720116785cbf60c45422582ef76c962339903e4495`；启动、签名私聊、新文档、本人批准 v4 成功，未打开官方交接／未发绑定回调，整轮 FAIL／回收 PASS。定向 RED 复现 Next Proxy 合并覆盖 `no-referrer`；App 原 #50 `eac24dd8` 仅 exact POST 末端保原隐私头，代理和同源定向通过，BFF/公开契约不变。
 
 **LINE 本地认证主路径 PASS**：Root `5e54c71c2c64a64e24e0b8d9647ac2b59f38d72b`，收据 `aa839b379f2ddc03f1601bc2`／SHA‑256 `2177093967f6e79727dc426209d51893e2d1fa5e32d120a375abe925ae46fc27`。真 IAM/Chromium→App/Nest BFF/PG：启动、签名私聊、Bot 私有回链在新文档清 fragment、本人显式批准和官方 URL 交接、签名绑定、硬刷 v5 同事实、断开 v6。本机拦截官方 URL，LINE provider 明确替身；仅三次浏览器写，两个回调 204，PG 唯一本人行 v6 unbound；整轮、原生、凭据、静默、回收通过。真实 LINE、真实 Telegram 及 Slack 不计闭环，不重复本地已验。
+
+**Slack 最小交付口径（仍为外部标准安装）**：沿现 BFF 本人 slot 和 App Agents 对话框。只申请 bot `team:read`，不申请 user scope；用 [Slack OAuth v2](https://docs.slack.dev/authentication/installing-with-oauth/) 正式换码，且以 [team.info](https://docs.slack.dev/reference/methods/team.info/) 验实际工作区。先在已准入的原本人 slot 认领 exact state/TTL，锁外固定 HTTPS 交换，绑定前再核取消/过期；本地身份只保 app/team/实际批准人，远端安装真实存在，但本期无 token 消费者，响应中的 bot token 当场使用后丢弃，不建安装表、密钥存储、内部 OAuth 或跨渠道聊天。个人断开只解除本地本人关联，不撤共享 bot、不承诺远端卸载或在线探活；外部签名与权限测试不扩大到未实现事件。拒绝回调只回固定 App 面；exact 浏览器 GET callback 禁止日志/转发 code 与 state 到登录或重定向，App→BFF 用 bounded body 和现原生 session。每个渠道只跑一条本地真实浏览器＋协议替身，真实 provider 独立标记。
+
+**Slack 组件已推原 PR**：BFF `18dcc30`／App `52e74822`，Public 28.35 SHA‑256 `a26431d45ad96c4e80e6751d61e66a14b3933ae7c2ffb6f9e7df57fcc7e6808f`。主控 fresh 真 PG/Nest 复验错本人零交换、已存在同工作区绑定、取消阻迟到、零 token 持久／撤回；隔离库回收。App 主控定向与正式合同通过。真实顶级浏览器回调待验，外部账号未操作。宽 BFF 合同中一项 Library 旧失败在父版同样复现，保留。
 
 ## A‑15 快刷诊断收据（正控，不等于修复）
 

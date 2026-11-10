@@ -2,6 +2,10 @@
 
 ## Task A current checkpoint
 
+**A‑10 native Docker edit passed the real SDK/PG/Storage seam.** Agent #46 `0475f1b`: after the container modified the same path again, a replacement lease recovered the original 38 edit bytes, ran the credential guard, published one CLEAN object and cleared pending content. Cleanup passed; model and credential source were fixtures. No independent Worker, browser, Local journey, script or E2B was tested.
+
+**A‑13 Slack component stages passed.** BFF #18 `18dcc30` and App #50 `52e74822` pin Public 28.35. Frozen Nest with real isolated PostgreSQL verifies the current owner, late cancellation and no retained/revoked shared token. App focused behavior and contract checks passed. Local browser acceptance and the live provider are not yet verified.
+
 **A‑10 native Docker write passed its isolated real seam.** Agent #46 `d9b3eb7` preserved the original bytes after the actual mounted path changed. The real PostgreSQL journal, Docker SDK, Storage/MinIO/ClamAV verified generation-2 recovery, CLEAN bytes, one upload, cleared pending content, and no credential output. Cleanup passed. Model and Custom API credential source were fixtures; no separate Worker or browser. Native edit, scripts, Local journey and E2B remain open.
 
 **A‑13 LINE passed the local authenticated browser journey.** Exact Root `5e54c71c`, receipt `aa839b379f2ddc03f1601bc2`, App `eac24dd8`, BFF `c535c16`. Private signed start and account-link callbacks, real approval through the private same-origin response, hard reload and disconnect passed; PostgreSQL holds one owned unbound row at revision 6. Credentials, quiescence and cleanup passed. The official LINE navigation was intercepted and the provider was a protocol double; no external account, Agent, Storage or deployment was used.
