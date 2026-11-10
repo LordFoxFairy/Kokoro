@@ -2,6 +2,10 @@
 
 ## Task A current checkpoint
 
+**A‑15 cold Project detail no longer waits for its rail collection.** App #50 `fc47ee3a` reuses the existing admitted Project detail endpoint; a late success does not restore a denied projection and warm known Projects do not re-fetch. Focused checks and review passed; the browser check is pending.
+
+**A‑10 native E2B edit is wired.** Agent #46 `27dbe3a` verifies the installed postimage on the same descriptor and uses the existing private capture, lease and credential guard. The public tool acknowledgement still has no file bytes. Local focused checks used an E2B protocol double; live cloud and scripts remain open.
+
 **A‑10 E2B native write is wired and locally verified.** Agent #46 `ef74f1d` uses the existing Custom API Chat and SDK. Protected outputs require an exclusive write and exact bytes checked on the same file descriptor, then use the existing journal and credential guard. No HTTP or Storage contract changes. Focused checks passed for the new behavior; one older metadata oversize fixture reset failure was reproduced unchanged at `c14c47d`. Real E2B, edit and script output remain open.
 
 **A‑15 stops reading disabled Project instruction history.** App #50 `f02684f8` reuses the existing instruction capability in AppFrame. Receipt `1381c861175735a0cb26dbd0` showed four extra BFF requests; focused regression and two existing identity-boundary checks passed after the fix, with lint and nonincremental TypeScript. No new browser timing or resolution of historical intermittent failures is claimed.

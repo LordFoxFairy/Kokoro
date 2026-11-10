@@ -55,6 +55,8 @@
 
 **A‑10 E2B 原生写入修复已推**：Agent 原 #46 `ef74f1d`，沿现 Custom API 的 E2B Chat、原 `write_file` 与过程文件发布。只处理 `/outputs/`：由锁定 SDK 在真实目标目录执行一次有界写，拒绝覆盖和符号链接，同一文件描述符核对实际字节，复用既有日志、凭据检查与 CLEAN 路径。主控定向新行为、Ruff／Pyright／契约通过；相关套件一项旧 metadata 超限夹具在父版 `c14c47d` 同样因对端 reset 未标关闭而失败，未改。使用本地真实文件写入与 E2B 协议替身；真云浏览器预览、E2B 编辑／脚本仍未验。
 
+**A‑10 E2B 原生编辑已推**：Agent 原 #46 `27dbe3a` 复用现 `edit_file`、E2B SDK 与私有版本登记，从同一描述符验证实际完整后像；CRLF/Unicode 保留，拒等长篡改，后像不进入公开工具回执。主控定向写／编辑、配方及相关 Docker 回归、Ruff／Pyright／契约通过；E2B 为协议替身，真云预览与脚本仍未验。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
@@ -84,6 +86,8 @@
 **Slack 本地认证主路径 PASS**：Root `724d4134fef3bf6afba33c3e2ded23ae1bb1eb0b`，收据 `5dedba9bfac88b12f592a412`／SHA‑256 `3a9dd3b6befe8e75057ca8591e3fcd5d21bb991388a04a8dbedad47ab22c536d`。真 IAM/Chromium→App/Nest BFF/PG：标准跨站顶级 callback、固定 303/no-referrer/no-store、本人连接、硬刷同事实、断开。一次换码／一次 team 核验，两次显式页面写，PG 唯一本人 v5 unbound；日志凭据、静默、回收通过。Slack 官方导航与 API 均为协议替身，本地不接外网；三渠道本地路径全有收据，实际账号仍不计通过。
 
 ## A‑15 快刷诊断收据（正控，不等于修复）
+
+**A‑15 Project 冷打开不等侧栏**：App 原 #50 `fc47ee3a` 并行读取已有精确 Project API 与侧栏集合；任一 401/403 撤投影、迟到成功不覆盖，暖切换已知项目不重复请求。主控定向、相关 lint／非增量类型和独审通过；真实浏览器补测待记，不据此报整体提速。
 
 **A‑15 移除关闭功能时的多余请求**：生产浏览器收据 `1381c861175735a0cb26dbd0` 中，Project 指令不可用时 BFF 仍收到 4 次历史读取。App 原 #50 `f02684f8` 让历史读取复用入口的指令开关；基线定向复现 1 次，主控复验开关行为与原身份切换保护 3 PASS，相关 lint／非增量类型通过。未重跑浏览器或全套，不据此报整体提速；旧 Preview 网站断言在基线亦失败，未改。
 
