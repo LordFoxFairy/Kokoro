@@ -15,6 +15,7 @@
 - **历史答复 Agent 私有 8.15 已交付**：`9d53f36` 推原 #46，`final_answer` 复用当前 Run/lease 与 `/.inputs`，按原字节验长度/SHA，不依赖 Storage，不自动输出到 RunDisplay 私有预览。主控正式 contract/codegen、定向、全类型/Ruff、打包通过；旧父契约整组失败在父基线复现，不冒称完整测试全绿。BFF 正消费固定原件 `7d9b9163…a81`，Root 尚未更新这个新 gitlink。
 - **BFF 历史答复提交链与 App 草稿候选已推**：BFF `8d7892c`／原 #18（Public28.25），主控真实 Nest/隔离 PG 验证 mixed 顺序、final-only、来源变化和重放，不改 Storage；回收 PASS。App 草稿 `311535e7`／原 #50，组件直聊/Project 冷重载与未决/409 恢复，主控定向和生产构建通过；真实浏览器未验。App 正接固定 Public28.25 的最近任务最终答复候选。历史与草稿只补各自缺失旅程，Root 等精确组合。
 - **App 历史候选已推**：`ad64c4a7`／原 #50 固定 Public28.25 原件 `008667f5…5759`；无产物任务只按同范围 Snapshot 的 durable 最终段标记选择 opaque Message，不读正文。主控 App 定向，writer 正规生成/完整契约、架构、类型、lint、生产构建通过。Root 固定三仓精确组合后，仅跑未发送直聊草稿硬刷新和无产物历史答复两条缺失真实旅程。
+- **真实新组合 `46683379`**：topology、15 条契约边/0 违规与原 checkpoint 通过。无产物历史答复 `cf7b053f665fd59baa57c94b` PASS：无 Storage/无上传；浏览器仅提交 opaque Message，真实独立 Worker 从 `/.inputs/0` 读取正式源最终段原字节，目标无自动泄露、刷新同 Run，资源回收 PASS。直聊草稿首轮 `e0b43d6b4510ef3077b47b7c` **FAIL**：两选中、0 POST、即时硬刷新后正文/芯片未恢复，认证/模型/运行清单请求均 200，回收 PASS。仅定向修 App 实际页退保存并复跑，不重跑历史答复。
 
 - **真实附件首轮失败与当前分工**：组合 `54813c5b`，运行 `093ddbcf611e2e440de0b901` 整体 FAIL、回收 PASS。真实认证页面已打开，但私有 System fixture 缺页面模型目录/运行能力接线，Composer 未出现附件入口，尚未上传或执行附件读取；不归为生产源码缺陷。`a08_storage_download_fix` 仅补 ignored helper 的正式 System wire/config 后交主控复跑；`a08_agent_ready` 只读收敛原草稿 store 的选择刷新保持；`a08_launch_design` 只读收敛无产物历史最终答案引用。主控独占资源启动、验收、台账与 Git；Goal 实查 ACTIVE。
 - **A‑08 当前推进（04:45 UTC）**：Goal 实查 ACTIVE。Storage `3f18577` 已推 #3，当前 source-run FINAL 下载的二次 generic-get 误拒绝已修，普通 get/list 仍拒绝；独审 CLEAR。主控 owner `typecheck/lint/test/build` 全部 exit 0，232 条真实资源条件用例未执行，未称真实 PG/S3/扫描验收。Agent `478c5f1` 已推原 #46，仅来源 pin/生成器及过期独立摘要断言更新；主控正规生成检查、contract-check 和原三文件定向均通过。原件、生成协议与锁字节不变，不重跑输入未变的 Worker/浏览器旅程。
@@ -27,7 +28,7 @@
   - [x] Root精确gitlinks/来源inventory与契约检查：按412项真实已提交Git blobs重算，topology、15条compatibility/0violation和原checkpoint PASS；无关消费者旧pin按真实兼容保留。
   - [x] native IAM/Chromium→真实 BFF/PG/Redis/Storage/ClamAV/Agent Worker：两项真实文件读、选择/移除/取消零误发、发送/刷新唯一终稿，资源回收 PASS（`7adde809590ca9847ea3dec7`）。
   - [x] Vercel AI SDK 装配已持久化最终答复，实际页面展示/刷新；真实两分片与原字节一致（`0a7ccd2e1dc332c5928b1d81`）。实时片字未迁移。
-  - [ ] 无产物最近任务最终答复引用：Agent 私有契约 → BFF 原发送链冻结 → App 选择 → 真实 Worker 读正式最终段并恢复（BFF 来源读取阶段已验）。
+  - [x] 无产物最近任务最终答复引用：Agent 私有契约 → BFF 原发送链冻结 → App 选择 → 真实 Worker 读正式最终段并恢复（`cf7b053f665fd59baa57c94b`，无 Storage）。
   - [ ] 未发送草稿选择硬刷新：直聊与 Project 首发；已有未决命令保原 key/body，明确冲突后恢复原正文/引用。
   - [ ] 补 Project/历史 FINAL 来源和同 Run 恢复的缺失证据，复用给 A‑05。保留现 1 MiB 下载与非 UTF‑8 文本工具能力边界；不重复已验本地与 Library Asset 旅程。
 - **Goal ACTIVE**：机器状态已核验；A‑12 原范围已按下列组合证据验收，当前进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
