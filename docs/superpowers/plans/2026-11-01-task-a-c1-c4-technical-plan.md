@@ -57,6 +57,8 @@
 
 **A‑10 E2B 原生编辑已推**：Agent 原 #46 `27dbe3a` 复用现 `edit_file`、E2B SDK 与私有版本登记，从同一描述符验证实际完整后像；CRLF/Unicode 保留，拒等长篡改，后像不进入公开工具回执。主控定向写／编辑、配方及相关 Docker 回归、Ruff／Pyright／契约通过；E2B 为协议替身，真云预览与脚本仍未验。
 
+**A‑10 按原交接收口**：原 A‑10 验收 Canvas 的准确文件／版本／Run、长内容、窄屏／键盘及 B‑02 秘密边界，按实际产品支持适用。Local Shell 已注册但无产品入口，保留组件证据；现 `execute.output_path` 只在 Docker 提供，已真实验收。不为 Local/E2B 新建脚本模式或验证入口。已可选的 E2B 仍必须在已配置测试 Worker 上真实走 Custom API→原生写入／编辑→Canvas 两版原字节，未以替身通过冒称闭环。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
