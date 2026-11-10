@@ -60,6 +60,8 @@
 
 **Slack 组件已推原 PR**：BFF `18dcc30`／App `52e74822`，Public 28.35 SHA‑256 `a26431d45ad96c4e80e6751d61e66a14b3933ae7c2ffb6f9e7df57fcc7e6808f`。主控 fresh 真 PG/Nest 复验错本人零交换、已存在同工作区绑定、取消阻迟到、零 token 持久／撤回；隔离库回收。App 主控定向与正式合同通过。真实顶级浏览器回调待验，外部账号未操作。宽 BFF 合同中一项 Library 旧失败在父版同样复现，保留。
 
+**Slack 本地认证主路径 PASS**：Root `724d4134fef3bf6afba33c3e2ded23ae1bb1eb0b`，收据 `5dedba9bfac88b12f592a412`／SHA‑256 `3a9dd3b6befe8e75057ca8591e3fcd5d21bb991388a04a8dbedad47ab22c536d`。真 IAM/Chromium→App/Nest BFF/PG：标准跨站顶级 callback、固定 303/no-referrer/no-store、本人连接、硬刷同事实、断开。一次换码／一次 team 核验，两次显式页面写，PG 唯一本人 v5 unbound；日志凭据、静默、回收通过。Slack 官方导航与 API 均为协议替身，本地不接外网；三渠道本地路径全有收据，实际账号仍不计通过。
+
 ## A‑15 快刷诊断收据（正控，不等于修复）
 
 精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。同 exact App `e0cfeda4` 的隔离生产 build 与 Node24 本机 ingress 脱敏/请求 ID 相关性已实测，完整生产旅程未运行。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。

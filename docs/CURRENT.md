@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑13 Slack passed the local authenticated browser journey.** Root `724d4134`, receipt `5dedba9bfac88b12f592a412`, App `52e74822`, BFF `18dcc30`. Chromium followed the top-level OAuth callback and fixed 303, read the same association after reload, and disconnected. Nest and PostgreSQL verified one exchange/workspace check and one owned unbound row at revision 5. No credential leak, Agent, Storage, external request, or deployment; Slack was an explicit protocol double. All three local channel journeys now have receipts, while live-provider acceptance remains open.
+
 **A‑10 native Docker edit passed the real SDK/PG/Storage seam.** Agent #46 `0475f1b`: after the container modified the same path again, a replacement lease recovered the original 38 edit bytes, ran the credential guard, published one CLEAN object and cleared pending content. Cleanup passed; model and credential source were fixtures. No independent Worker, browser, Local journey, script or E2B was tested.
 
 **A‑13 Slack component stages passed.** BFF #18 `18dcc30` and App #50 `52e74822` pin Public 28.35. Frozen Nest with real isolated PostgreSQL verifies the current owner, late cancellation and no retained/revoked shared token. App focused behavior and contract checks passed. Local browser acceptance and the live provider are not yet verified.
