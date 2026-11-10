@@ -1,3 +1,12 @@
+## 2026-11-10 · A‑09/A‑10 正式内容预览共用切片
+
+- **写区与边界**：仅 App 原 #50；个人文件卡、作品详情与 Canvas Delivery 复用一个有界读和渲染。继续走已发布 Public28.29 的本人文件内容、精确作品详情／内容，不改 owner、Schema、认证、AG‑UI 或原生下载。先用现元数据，再由内容 GET 独立重验权；个人文件取现 list SHA，作品 modal 不重读已确认详情，Canvas 从 canonical Session Delivery 核同会话/Artifact/Asset/source Run/MIME/长度。
+- **显示与失败**：一次 10 秒包含详情（如需要）、流 EOF、长度／SHA 与 UTF‑8；完整且 ≤64 KiB 的 Markdown、纯文本、CSV 才显示。Markdown 不触发外部媒体或链接；CSV 复杂度上限外明确保原下载，不静默截断；不执行 HTML，不用旧工作区路径或 preview fixture 代替真实 owner。沿现 subject/代际，关闭、切身份或迟到结果不显示旧内容。
+- **传输保长**：本机锁定 Next compression 的真实 HTTP 复现 `text/plain` 48,750 字节被 gzip 后移除 Content-Length；只对正式 Library 两个精确字节 GET 设置 `no-transform`，保原长度校验和正常 Project／通用 Hub 行为。不全站关闭压缩。
+- **最小门**：主控固定读者改动和相关定向测试；复用现隔离 native runner，一次真实 Library 个人文件、一次真实 Worker 交付三格式，核本人作品详情及 Canvas、文本末尾、表格与窄屏键盘。已验 A‑09 收藏/退役与 A‑04 原字节不重跑。正式成果/过程文件树另保留 A‑10 缺口，不用平列或下载冒充。
+
+**组件阶段**：App `ec7174d9` 已推原 #50，BFF/Agent/Storage 及 Public 28.29 原字节未改。主控定向 UI／Hub／架构、lint、TypeScript/production build 通过；未重跑完整默认。真实浏览器／Worker 证明需本次 Root 精确配对；尚未以组件阶段勾 A‑09/A‑10。
+
 ## 2026-11-10 · A‑09 剩余项合批（下一个执行门）
 
 - **范围与并行**：BFF 本人作品收藏与 Storage 单 FINAL 退役是两个 owner，可按写区并行。Storage 正式契约冻结后，主控合入 BFF 同一 Public 候选，App 一次消费；只做一轮 Root 组合，不为每个按钮重复生成/跑旧旅程。暂不扩大到个人文件收藏、独立收藏页、分享或 A‑10。
