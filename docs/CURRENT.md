@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑10 script browser attempt exposed a native activity gap.** Root `d42735c4`, receipt `4f6d00f514403546d4ea5a4e`: the model received the exact script output ACK and the final rendered, but the first implementation bypassed the SDK tool callback and exposed no Process entry. Overall failed, cleanup passed. Agent #46 `c14c47d` restores the original native handler and keeps captured bytes in one call-local slot; the real SDK regression and review passed. Exact browser retest is pending.
+
 **A‑10 Docker script capture is wired in Agent #46 `f70c6c2`.** Ordinary execute is unchanged. The opt-in direct output file comes from a separate stopped container, with the existing journal, lease, CLEAN Storage path and deferred cleanup. A real Docker and isolated PostgreSQL probe verified first-write mount setup, immutable stopped bytes, rejection of the old lease and exactly one new-lease freeze without restarting the script. Cleanup passed; authenticated Canvas confirmation is still pending.
 
 **A‑10 native Docker process files passed the authenticated browser journey.** Exact Root `d0d517c6`, Agent #46 `96ef6a5`, receipt `c0fbc9933f4283d67d78d68a`. Chromium selected the actual offered Custom API profile and sent one Chat; an independent Worker ran the real Docker backend and native file write. The original Canvas read the same 85 bytes as the single Agent version and CLEAN Storage object, with real MinIO/ClamAV. Native/scenario exit 0, cleanup passed, no extra Docker cleanup or upload/FINAL delivery. System/model/budget and Platform were explicit protocol doubles; scripts, Local and E2B remain open.

@@ -47,6 +47,8 @@
 
 **Docker 脚本阶段接管证据**：Agent 原 #46 `f70c6c2`，原 execute 不指定输出走原 SDK，指定直系单文件才启一次性容器，凭据经 stdin、不进 Docker 配置或日志。复用 journal started 精确摘要、active lease 版本事务和现清理 owner；原 HTTP/Schema 不变。独审通过。主控真 Docker＋隔离 PG 证空 workspace 首写、停机后过后台期限原字节不变、旧代拒写、新代只读原停机冻结唯一 pending 版本、已登记延迟清理完成，独占资源全部回收。日志 SHA‑256 `44c807fb2b3d9c7a89bb8e9327f30a673b90898a94df21201512db66b19b92ed`，System/model/Platform/Storage 和 Canvas 未在这条窄验证中运行。整条浏览器脚本输出待本次精确组合。
 
+**脚本浏览器首轮失败与定向修复**：Root `d42735c4`／`4f6d00f514403546d4ea5a4e`，真实选配置/Chat、独立 Docker Worker，模型确见 optional output_path、一次 execute exact ACK 和终稿；BFF 只有文本，没有 Process 活动，Canvas 未验；整轮 FAIL、回收 PASS。Agent 原 #46 `c14c47d` 复用正式 SDK handler，仅 opt-in 用当前工具调用内的 exact Docker 槽取得私有 bytes，普通 execute 不变；真实锁定 SDK 定向见唯一 native execute activity，旧代／重放及错误状态回归通过，独审 CLEAR。HTTP/Schema、BFF/App 原样；待浏览器精确复验。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
