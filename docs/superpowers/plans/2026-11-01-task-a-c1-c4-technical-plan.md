@@ -1,3 +1,17 @@
+## 2026-11-10 · A‑09 剩余项合批（下一个执行门）
+
+- **范围与并行**：BFF 本人作品收藏与 Storage 单 FINAL 退役是两个 owner，可按写区并行。Storage 正式契约冻结后，主控合入 BFF 同一 Public 候选，App 一次消费；只做一轮 Root 组合，不为每个按钮重复生成/跑旧旅程。暂不扩大到个人文件收藏、独立收藏页、分享或 A‑10。
+- **收藏**：BFF 现每件作品的 Conversation→Artifact 关联已有唯一本人 owner，收藏状态归该关系，不改 Storage metadata 或 Project pin。定向设置目标状态（非 toggle）与 exact 确认回执；现 Library 在 BFF 候选游标前过滤收藏，继续逐项真实 Storage FINAL/CLEAN 复核。App 用原星标与 URL “仅显示收藏”，去掉生产内存集合和页内筛；切身份不回写迟到结果。定稿前核同一项并发、数据库增量和现游标兼容。
+- **退役**：Storage 单独确切命令核本 scope、artifact/asset/hash/source Run，不调用整 scope release 或把 Artifact 当普通 Asset。保原 Artifact 身份与历史，新增精确退休状态；仅最后有效引用消失才走原 Blob 退休/清理。现 list/get/download、signed receipt/replay、finalize 与 scope release 都要识别目标已退休。BFF 历史关联保留，新选择已退休目标走既有 `invalid_resource_selection`；已冻结 Agent 引用由 Storage 在下一次实际读取拒绝。原始短期签名 URL 的有效期和已读字节不作即时撤回承诺。只在自有隔离库验 fresh/精准增量，不清卷、不动共享数据。
+- **最小验收**：真 PG 分别验证先筛后分页/本人限定、单退役及共享引用；真浏览器同一真实资料库完成收藏、筛选刷新、取消以及删除只影响目标和旧内容 404。对已冻结旧引用复用已有暂停/恢复接缝，只核一次真实读取拒绝与不产正常终稿，不重跑其他 Agent 旅程。具体写区在各 owner 实施前登记，仍沿原 PR、不合并 main、不部署。
+
+## 2026-11-10 · A‑09 Project 作品回跳证据
+
+- **组合**：Root `d67f4346c0c5e2d804ec4434ceb63b41fbd76d7e`；BFF `c9c0782` / Public28.28、App `faabec0e`，Storage/Agent/IAM 源码原样。BFF 从 BFF 归属读取 canonical Project / 明确直聊 / 省略三态，旧可读详情与字节保持，App 只用匹配详情与现 scoped rail 导航。Root topology、15 兼容边、原 checkpoint 通过；BFF 主控独立 Nest/Connect、真实隔离 PG 关联、build/lint/contract 通过；App 契约、96 条定向、架构、lint/type/build 通过，不重跑全默认。
+- **失败保留**：首轮 `c9f4ddd82be1c7395ad8d06c` 停在私有项目创建控件，换成已有真实同源创建路径；`97e3de7c2c2fdaf2788bb4d3` Agent 实际产出后浏览器取证超 240 秒。已加有界阶段记录。 `9899400943f6dad833248768` 已实证卡片快捷同源详情返回正确 Project，点击进入精确 Project URL，真实 scoped snapshot/parts 200，原 Run、作品、最终段一致；整轮因第二次 Library 列表响应体超时仍 FAIL。 `cd701d364d68538f877377ca` 第二次未渲染卡片；`908427e32e4f973bec4647cc` 第二次 Library 列表 200、详情 503 后体超时。仅补弹窗的 `ada47cd2f3167d3096854a2f` 也实证原 Project 路由、同 Run/终稿；快刷时真实 snapshot 429 `session_rate_limited`、models 503 `iam_admission_unavailable`，整轮 FAIL，已归 A‑15。以上自有资源回收通过，未改生产和限流。
+
+- **仅补详情与恢复 PASS**：`2c1d119dec97b13cb6f2ae5a`，SHA-256 `a3a76b08be9d2e7764fc1aeda155c28ac61da006b7fc6191498184e2f5f01948`，总进程/原生 exit 0。真实普通 Project Chat 一次；独立 Worker `write_file→deliver`，Storage FINAL/CLEAN、BFF 原一次投递与终态、原字节摘要一致。真实弹窗 exact detail → canonical Project 和原 Conversation；等现 IAM 61 秒窗口后硬刷，同一 scoped snapshot/parts/最终段逐值一致，额外写 0。凭据日志、静默、PG/Redis/桶回收通过；System/model/budget 为确定性替身，不称真实供应商。与卡片已完成子步骤合用，不把前轮 FAIL 或立即刷新当 PASS。
+
 ## 2026-11-10 · A‑09 Project 作品来源回跳实施门
 
 - **目标**：资料库的卡片快捷入口和详情入口都能返回真实作品的原 Project 与同一 Conversation/Run，刷新仍正确。直聊仅在 owner 明确无 Project 时走直聊；缺证、失效或冲突时保留资料库，不猜目标。
