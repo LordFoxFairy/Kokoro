@@ -34,6 +34,10 @@
 
 **真实 Docker edit 接缝通过**：Agent 原 #46 `0475f1b`，实际 native SDK edit Unicode/CRLF→38 字节确切后像，Docker 后续改同路径后 PG 新代仍发布原 bytes；真实 Storage/MinIO/ClamAV CLEAN，凭据 guard 再核、一次上传、pending 清除、回收 PASS。日志摘要 `a3e5d35f88882b840dcfc4efedb58c6109a36c037dfe5708687d8abd1b40a3eb`，模型和凭据来源夹具、无独立 Worker/浏览器。脚本/E2B/Local 旅程继续开放。
 
+**Custom API 新 Run 挂载隔离**：Agent 原 #46 `7a02044`。旧实路径在普通会话挂载内，改为按可信 owner、会话与 Run 派生独立同级路径；正式 BFF 普通路径不变。同配方接管稳定，旧配方沿现守门拒跨版本；不清理历史目录或 archive，不宣称历史字节已撤销。定向实际 RED→GREEN，主控路径/Factory 3 通过、Ruff 通过、独审通过；HTTP 8.17 原字节不变。
+
+**Docker 脚本停写前提探针**：现非 root 镜像的匿名卷默认不可写（FAIL，自有卷已回收）；改用只挂一个一次性容器的私有测试目录后，该容器 `exited:0`，过后台写入截止仍为原字节，清理 PASS。日志 SHA‑256 `0ad94e0461e40c7dd4fbd2f10adaa24f26d31af03ac31517768088587d848381`。未改脚本生产执行；不从长寿命 `docker exec` 前台退出、现存普通 bind 或 archive 推断停写。后续只复用已有工具记录、租约和版本发布，先定可恢复的独占输出归属与停写点，保持原执行语义；Local/E2B 继续按实际边界核验。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。

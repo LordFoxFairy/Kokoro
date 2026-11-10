@@ -8,6 +8,7 @@
 
 ## 当前执行检查点（主控）
 
+- **A‑10 Custom API 新 Run 目录隔离**：Agent 原 #46 `7a02044` 不再把选中 Run 放在普通会话挂载之下，同配方接管沿原 key；普通路径、HTTP 8.17 均原样。主控路径/Factory 定向与 Ruff 通过，独审通过。旧目录不迁移、不清理；旧配方跨版本沿既有守门。真实 Docker 能力探针证明非 root 容器退出后，独占目录不会被迟到后台写覆盖；只证停写前提，不是脚本、租约或产品旅程验收。
 - **A‑15 Project 生产模式快刷 PASS**：精确 Root `10312097`，收据 `624deaba22423c2e7c0cd114`（SHA‑256 `73635b194cadf5b348e1cd6f867dc5e7ab941b760031084859b5b8d0dd17f557`）。真登录 Chromium、生产构建、独立 Worker、同 Project/Run；终稿持久后只硬刷一次，256ms 恢复同字节与顺序 parts；快照/parts/模型 32/20/46ms，浏览器 reload 窗 8 个响应均 200。该窗另有 5 个脱敏背景 BFF 503，关联 IAM 两跳均 200，不归因历史偶发。原生/整轮 exit 0，清理通过，Redis 8/11 归零；System/model/budget 为替身。直聊和 Project 正控不再重跑；单次数据不是 p50/p95 或全站通过。
 - **A‑13 Slack 本地浏览器主路径 PASS**：Root `724d4134`／App `52e74822`／BFF `18dcc30`，收据 `5dedba9bfac88b12f592a412`（SHA‑256 `3a9dd3b6befe8e75057ca8591e3fcd5d21bb991388a04a8dbedad47ab22c536d`）。真实 IAM/Chromium/Nest/PG：启动、拦截标准授权、跨站顶级 GET 携现 session 回调、固定私有 303、原 owner connected、硬刷同绑定、本人断开；一次交换／一次 workspace 核验，PG 唯一本人行 v5 unbound。凭据检查、静默与清理 PASS；Slack 为协议替身、未接外部。Telegram、LINE、Slack 本地三条均已有证，不再重复；实际 provider 接受仍 OPEN。
 - **A‑10 Docker 原生编辑实测通过**：Agent 原 #46 `0475f1b`。真 Docker/锁定 SDK、隔离 PG、Storage/MinIO/ClamAV：真实 Unicode/CRLF 原生 edit 写出 38 字节后容器再改同路径，新代从原后像发布 CLEAN 原 SHA；一上传、重新核凭据出口、清暂存、资源回收 PASS。日志 SHA‑256 `a3e5d35f88882b840dcfc4efedb58c6109a36c037dfe5708687d8abd1b40a3eb`；无独立 Worker/浏览器。Local 实际旅程、脚本/E2B 未验。
