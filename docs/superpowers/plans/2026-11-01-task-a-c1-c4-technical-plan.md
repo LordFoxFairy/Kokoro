@@ -1,3 +1,10 @@
+## 2026-11-10 · A‑09 文件服务端搜索验收
+
+- **精确交付**：Root `f1572efe0d8e7b433a6ca668d5cdd747f373e2e2`；Storage `0f91535`（原 #3）、BFF `e52952d` / Public28.27（原 #18）、App `96369ee7`（原 #50）、Agent `db47a77`（原 #46）。初次 Root 组合核对发现 Storage owner evidence 仍指旧 gitlink，随后 Agent 的精确生成收据仍不匹配。更新现 owner 证据和 Agent 生成输入；未改任何门禁。Buf breaking 对旧 Storage 通过，Capability profile/鉴权/common/HTTP 原字节，Agent 无运行时变化。topology、15 条兼容边、原 checkpoint 通过。
+- **真实收据**：`8d5367efe4d511f2bc1e4c72`，SHA-256 `3c691a52e75f206b88fdd3c3ba92210a9a1a9a54a044f51e9b579c3f9c71eb1d`，总进程与原生 exit 0。真实 IAM、Chromium、App/BFF、PG、Redis、Storage/MinIO、ClamAV。四件真实 CLEAN 上传，最新两件分别不符文字或类型。正式 `limit=1` 页首/续页各返回一件较旧匹配；新条件携旧游标返回 `400 invalid_library_page`。UI 网络请求真实带 q/type，硬刷恢复原条件与同两件，上传后零额外写。回收、静默、凭据日志通过；不运行 Agent Worker、Billing、全量 E2E 或旧删除旅程。
+- **组件证据**：Storage 真 PG/二进制 Connect 旧行为失败，修正后主控隔离 19 PASS（对象/扫描/Redis 用替身），另 build/lint/type/contract/架构门通过。BFF 原 400 复现，正式契约和确定性生成、38 项定向、build/lint 通过；Redocly 仍有既有 53 warnings。App 现有契约、72 项相关、架构、lint、type/build 通过；未重跑全默认，之前两条连接器草稿基线失败保留。Agent 只跑正规生成校验与直接契约测试。
+- **下一检查点**：Project 作品来源回跳，复用 BFF 本人 Conversation→Project canonical 关联，缺证不能猜直聊；用一件真 Project FINAL 经资料库回原项目会话并刷新。收藏、单 FINAL 退役/旧引用仍 OPEN，Goal ACTIVE。各仓原 PR，不合并 main、不部署。
+
 ## 2026-11-10 · A‑09 文件服务端搜索实施门
 
 **目标与取舍。** 用户在资料库 Files 搜索全量本人 CLEAN 普通文件，不仅筛 App 已取的 50 项。沿现 App → BFF GET Library → Storage v3 ListAssets；筛选在 Storage 同一稳定 keyset/limit 前。页内筛选和 BFF 翻页扫描均不满足全量及时搜索；改写所有已有文件名或新建搜索索引服务没有必要。保留原公开列表、查询 URL、分类、结果形状和实际 scope；删除浏览器对已加载页的筛选。作品及 Project 列表不扩大。
