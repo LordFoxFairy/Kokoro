@@ -1,3 +1,17 @@
+## 2026-11-10 · A‑09 上传取消与 A‑10 快切合批
+
+- **A‑09 App**：沿现个人上传意图和唯一 AbortController 槽，不新增请求或持久状态。选中取消零写；在途取消停浏览器等待，状态明确未知，保留原 File/key，只有显式同键恢复。旧请求不刷新或夺回新 slot。不改 BFF/Storage/认证。
+- **A‑10 App**：在真实 `2ebfe824…` 已重现旧 220ms 关闭覆盖显式新打开，须用现 Canvas 意图判定并退役旧关闭／回焦。测试要保护同件重开、不同件、正常关闭与键盘；不重跑已验预览、改变其它 Dialog 或把文件树当完成。
+- **验收**：同一原 App PR、精确 Root 配对。真实浏览器只补取消：本地选中取消零 POST；首个真实 CLEAN 回执只在浏览器暂留，取消后无假成功／无自动重试，显式原键重放核同一回执、一个持久 Asset 与原字节。两个 App 写区互不重叠；主控独占 Git、资源及台账。
+
+**组件门：** App `d860cf5b` 已推原 #50；两个新回归均有实际 RED→GREEN，主控定向、架构、lint、TypeScript/production build 已通过，Public28.29 与 BFF/Agent/Storage 原样。真实浏览器只跑 A‑09 新取消，A‑10 快切真链留文件树旅程、不重复上一轮预览。
+
+## 2026-11-10 · A‑10 文件树边界核对（不等于方案通过）
+
+- 已确认现 BFF 私有 session snapshot 的 `files` 固定空，App legacy `fileUrl` 不是可用的生产授权路径；Agent S3 workspace archive 是运行内部 best-effort，不是可读产品目录。现 `delivery.created` 有原路径，但持久 Artifact 关系与 snapshot 未承接。不能从 title、filename、opaque ID 或历史 DOM 猜目录，也不把下述成果树当未交付工作区。
+- **成果候选**：Agent 已有正式 deliver 路径和 `safe_virtual_path`，BFF 已有从现 owner 约束生成的 `safeVirtualPath` 消费校验；复用已知虚拟 backend 的 owner 判定与现路径验证，并排除 `/.inputs`、`/.skills` 等私有挂载；BFF 的 lexical 检查不为未知 backend 的宿主路径背书。候选在现 exact deliver 成功事件和 journal 恢复使用同一可选安全展示路径，不新增 Agent 路由/RPC；旧记录无证时省略目录，不补造。BFF 沿现 Conversation↔Artifact 关联持久恢复，不另建表／服务、不逐 Run 发 HTTP 求路径；Web 用现 Canvas 列表做只读目录，选择器仍是精确 Conversation＋Artifact，读取仍由既有 BFF／Storage 核本人、当前可见、原版本。分享面不增加工作区路径。
+- **过程文件候选**：保留未交付文件的原范围；Agent 本地 B‑02 `FileEgress` 提供带原字节、路径和秘密检查的底座，但尚无持久、可授权、跨 backend 的产品版本来源。实施前须锁定所支持的公开文件、Run/version 绑定及执行结束后的恢复与撤销；不把内部 S3 archive、宿主目录、凭据、`/.inputs` 或“最后一次写入路径”直接放入浏览器。先验相同会话双目录、同名不同版本、刷新、错会话拒读；不重跑已验三格式旅程。
+
 ## 2026-11-10 · A‑09/A‑10 正式内容预览共用切片
 
 - **写区与边界**：仅 App 原 #50；个人文件卡、作品详情与 Canvas Delivery 复用一个有界读和渲染。继续走已发布 Public28.29 的本人文件内容、精确作品详情／内容，不改 owner、Schema、认证、AG‑UI 或原生下载。先用现元数据，再由内容 GET 独立重验权；个人文件取现 list SHA，作品 modal 不重读已确认详情，Canvas 从 canonical Session Delivery 核同会话/Artifact/Asset/source Run/MIME/长度。
