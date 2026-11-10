@@ -48,6 +48,8 @@
 
 **首轮真实 LINE 失败及修复**：Root `caab8d40` 收据 `900ce05457bc2ec56640ef51`／SHA‑256 `c365be286545956ff45027720116785cbf60c45422582ef76c962339903e4495`；启动、签名私聊、新文档、本人批准 v4 成功，未打开官方交接／未发绑定回调，整轮 FAIL／回收 PASS。定向 RED 复现 Next Proxy 合并覆盖 `no-referrer`；App 原 #50 `eac24dd8` 仅 exact POST 末端保原隐私头，代理和同源定向通过，BFF/公开契约不变。
 
+**LINE 本地认证主路径 PASS**：Root `5e54c71c2c64a64e24e0b8d9647ac2b59f38d72b`，收据 `aa839b379f2ddc03f1601bc2`／SHA‑256 `2177093967f6e79727dc426209d51893e2d1fa5e32d120a375abe925ae46fc27`。真 IAM/Chromium→App/Nest BFF/PG：启动、签名私聊、Bot 私有回链在新文档清 fragment、本人显式批准和官方 URL 交接、签名绑定、硬刷 v5 同事实、断开 v6。本机拦截官方 URL，LINE provider 明确替身；仅三次浏览器写，两个回调 204，PG 唯一本人行 v6 unbound；整轮、原生、凭据、静默、回收通过。真实 LINE、真实 Telegram 及 Slack 不计闭环，不重复本地已验。
+
 ## A‑15 快刷诊断收据（正控，不等于修复）
 
 精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。同 exact App `e0cfeda4` 的隔离生产 build 与 Node24 本机 ingress 脱敏/请求 ID 相关性已实测，完整生产旅程未运行。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
