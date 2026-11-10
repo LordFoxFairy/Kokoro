@@ -6,6 +6,8 @@
 
 **正式精确输入**：Agent 原 #46 `e27cd7ad79e6d3d0fb588328733cccd0598f1a3d` / HTTP 8.16.0 / canonical SHA‑256 `e303dfadfccd3a86c3cd47542f751868394d269fd584c70cfd9c801eaa618958`；BFF 原 #18 `0c6be20abbf34a2d5b9bdf9db9d582f6cea064b1` / Public 28.30 / SHA‑256 `2e459bd39f73686ac6d458011b777f08ea17b79a1467e563cdbb299e044a3cf9`；App 原 #50 `3137782bbba1e0625ec653441f3624c4259cb84f`。Agent 主控正式契约、Ruff、定向 314、历史 profile 6、真实隔离 PG 2 通过；两条旧版本硬写 8.12 的失败在父 `cbdd866` 复现、未更改。BFF 主控 122 契约／wire、隔离真实 PG 1 通过，最早的测试 URL 缺 schema、回放夹具把已有用户帧计入 delivery 均已纠正，未改产品断言；PG 临时库回收，隔离 Redis 空。App 官方生成／契约、架构／Canvas、lint、类型和 build 通过，匿名契约、独立排程 pin 与现字节读取不变。三仓已推原 PR，Root 固定本组合，真实浏览器待验。
 
+**真实成果目录阶段通过**：精确 Root `196f2012762842410cbaa1eebf367e39405af5d3`，收据 `83846f524b9a070906b870e4` / SHA‑256 `17aed0342951d5e9e99cd1266f4e047cebb73eabc64e512bd94a0778c106c431`。同一真实认证会话两次普通 Chat、独立 Worker native write/edit/deliver、Storage exact 原 SHA 与 BFF 关系核同，两目录三件且两版 `/reports/summary.md` 各绑定原 Run；390×844 键盘可达，退出期 4ms 可信键盘快切后新面板与焦点不被旧关闭覆盖；正常限流窗后刷新恢复，同一旅程两条 Chat、零上传。整轮、原生 exit 0／quiescent／凭据检查／回收 PASS，Redis 8/11 归零；System/model/budget 用明确确定性 HTTP 夹具。首轮 `c70e6fd366d05e6c6cf875de` 在 BFF 装配阶段因私有 Agent fixture 旧变量名退出，零浏览器动作、回收 PASS；仅修夹具。保持 A‑10 未交付过程文件和 A‑15 快刷开放。
+
 ## A‑11 后继实施门（待 A‑10 精确浏览器输入冻结）
 
 - 现简报范围只改 dropdown 本地状态，网站类别只改选中态；两者不进入唯一现 Chat 的 `content`。沿 App 当前草稿把显式选择写成可见、可编辑的约束行；再次选择只替换本场景能准确识别的选项行，保正文和附件，不把用户手改正文重写回默认。模板/灵感入口按现草稿操作承接该行，刷新读回同一草稿；沿原发送/未知重试冻结同一可见文本。保现文本长度上限，不悄悄截断，不加 BFF 字段、状态机、第二 store 或发送入口。
