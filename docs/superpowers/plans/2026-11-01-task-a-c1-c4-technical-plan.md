@@ -20,8 +20,11 @@
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
 - **操作与状态**：原 setup GET 保持只读和 no-store；创建／取消使用显式命令，连接回读和断开独立于 setup TTL。每个 setup 绑定可信 tenant/user/provider 和短期一次性随机证明；以锁内状态检查处理过期、取消、重复或迟到，外部操作不持行锁；回调按 provider 凭据验真，不信任 query/body 的 Kokoro 身份。连接状态只在正式 owner 回读显示，不把打开链接或本地二维码当完成。真实配置缺失明确不可用；不加静默重试、假 200、通用中继或新的登录。第一片走 Telegram，LINE 和 Slack 按同生命周期继续交付，三者均留原范围。
+- **Telegram 首片机器口径**：原 `GET /v1/agents/connections/setup?platform=...` 只读，`POST` 同路径为闭合显式 `start/cancel/confirm/disconnect` 命令，带 `expected_state_version`，cancel/confirm 另核 exact `setup_id`，confirm 附私聊证明；过期版本 412→正式 GET，不自动再写。返回只投影该用户的 closed state（disconnected、awaiting_telegram、awaiting_confirmation、expired、connected），只有有效待启动状态有单一 HTTPS continue_url，App 用同一 URL 生成二维码；到期与已连接状态不保假字段。未配置禁止启动，但既有绑定仍可本人回读/断开。单行 PG key 为 tenant/subject/provider；绑定外部身份按已配置 Bot ID + external ID 排他，状态版本约束确认/取消/断开；proof 只存高熵摘要。Telegram 独立 webhook 先验固定 secret、有限 JSON、私聊与 exact start token，原一次 claim 取真实外部身份；锁外只发一次私聊证明。claim 前失败可重投；claim 后结果未知不自动再发、不声称已送达，明确取消或到期后重开。只处理 Telegram；LINE/Slack 明确不可用但继续交付，不回落 Agent。
 - **平台路径**：[Telegram](https://core.telegram.org/bots/features#deep-linking) 以私聊 deep-link 启动，按 [Bot API](https://core.telegram.org/bots/api#setwebhook) 核 webhook 秘密与来源，原登录用户完成私聊证明后才绑定，单击转发的链接不构成绑定；[LINE](https://developers.line.biz/en/docs/messaging-api/linking-accounts/) 使用 Messaging API 的 account-link / nonce，按 [原始字节签名](https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/) 验事件；[Slack](https://api.slack.com/authentication/oauth-v2) 只在外部安装处使用标准 OAuth code exchange、匹配一次性 state 与当前产品身份，单独裁定工作区安装凭据安全存放／撤回，不扩大 MCP 授权。凭据不进浏览器、响应或日志。
 - **验收**：本地隔离 PG + 正式 HTTP 验证一成功、一错身份、取消/过期/重投和真实状态回读；每个真实平台仍需现成测试应用、账号和可达回调才能验证连接→刷新→断开。当前不创建外部应用、不设置公网回调、不部署。只有绑定/回读在原范围内；不新增跨渠道 Agent 聊天或 Agent 配置。
+
+**A‑13 App 本地切片已推**：原 #50 `e0cfeda4`。现 setup 关闭／换平台／重试／卸载实取消、丢迟到；有效未完成票据到点撤二维码／继续，零自动重发；connected 不被 setup TTL 覆盖，disconnected 独立，接收既有 offset 格式。主控 3 定向 25/0、限定 lint 与非增量 TypeScript 通过；不重跑 App 默认／浏览器，不冒真实 provider。BFF 的 Public 28.32 和 Telegram 仍在各自源码写区，不配对未完成提交。
 
 ## A‑15 快刷诊断收据（正控，不等于修复）
 
