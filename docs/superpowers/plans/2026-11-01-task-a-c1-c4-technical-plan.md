@@ -1,3 +1,10 @@
+## 2026-11-10 · A‑09 Project 作品来源回跳实施门
+
+- **目标**：资料库的卡片快捷入口和详情入口都能返回真实作品的原 Project 与同一 Conversation/Run，刷新仍正确。直聊仅在 owner 明确无 Project 时走直聊；缺证、失效或冲突时保留资料库，不猜目标。
+- **取舍 / owner**：BFF 只读现本人 active Conversation→Project 关联，在原 Library artifact detail 投影 `project_ref`（canonical Project ID 或直聊的 `null`，缺可信目标时省略），不增加 endpoint/Scope/认证/持久表。既有列表/游标/Storage FINAL 读取身份与 binary 路径不扩大；不从标题、URL 或 Storage scope 猜项目。读取前校 tenant/subject、唯一有效 Project 和 exact association；同一关联读快照不是跨 owner 原子锁，导航后沿现 Project/Conversation 权限再读。已穷尽现役 Conversation 写入：Chat（包括调度）和 Move 均写 canonical。旧 slug 存量可按原别名读取，不能冒充 canonical 导航目标；保留原详情/下载并省略归属字段，不增加 Chat alias/fallback 或改写数据。
+- **消费者 / 失败恢复**：App 卡片沿现 exact detail 读出已核归属（详情入口复用现读回），同一可信 scope 用现 shell scoped navigation 和 move fence，身份/路由换代中止并丢弃迟到读。直接把 Project 冗余写入列表或让卡片先开弹窗再要求第二次点击均不采用。保原一击、显示失败/可重试，保持列表、作品下载、收藏现状。
+- **执行 / 最小验收**：BFF 定向真实 PG association（canonical/明确直聊、错误归属不出导航信息）与现 Nest/Connect → 正式 Public 28.28 提交 → App 生成、UI scoped 路由及陈旧读定向 → 精确 Root 真 Project/Agent Worker 产生一件 Storage FINAL → Chromium 资料库回跳→真实 project_ref scoped 读→刷新同 Run/终稿。两入口共用该作品，不重复发送、旧直聊证据复用。原 PR、无 main merge、无部署。持久收藏、单 FINAL 退役仍独立待办。
+
 ## 2026-11-10 · A‑09 文件服务端搜索验收
 
 - **精确交付**：Root `f1572efe0d8e7b433a6ca668d5cdd747f373e2e2`；Storage `0f91535`（原 #3）、BFF `e52952d` / Public28.27（原 #18）、App `96369ee7`（原 #50）、Agent `db47a77`（原 #46）。初次 Root 组合核对发现 Storage owner evidence 仍指旧 gitlink，随后 Agent 的精确生成收据仍不匹配。更新现 owner 证据和 Agent 生成输入；未改任何门禁。Buf breaking 对旧 Storage 通过，Capability profile/鉴权/common/HTTP 原字节，Agent 无运行时变化。topology、15 条兼容边、原 checkpoint 通过。
