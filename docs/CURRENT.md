@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**Development closeout is in progress; live acceptance remains 12/16.** IAM #6, Admin #5 and Storage #3 merged into their owner main branches. Agent and BFF still have reproduced local merge-gate failures, and Capability #13 remains stacked on the independent #12. Root #66 remains open; it must not turn a partially merged owner set into a complete delivery claim. GitHub Actions did not start due to the account billing/spending limit. The [Task A checklist](../todo.md) holds exact owner evidence and the next Task B handoff. No deployment or real payment was started.
+
 **A‑14 native microphone-to-draft passed; send is unverified.** Exact Root `4ca36a58`, App `602a1361`, receipt `88e21f51931b0e25bd0e74ec`: headed Chrome reported one nonempty native final and showed an unsent draft. The edit/send wait timed out with zero Chat requests; cleanup passed. No audio or original speech text was retained by the runner.
 
 **A‑10 E2B Embed is an eligible live target.** The [official Compose stack](https://github.com/e2b-dev/runtime/blob/main/embed/compose/README.md) runs real Firecracker. The current Docker engine has no `/dev/kvm`; local free disk is about 12 GiB, below the default 20 GiB preflight. The private test runner accepts the paired loopback endpoints; the locked SDK resolved both offline and still defaults to cloud when neither is set. No Embed stack or live E2B journey ran.

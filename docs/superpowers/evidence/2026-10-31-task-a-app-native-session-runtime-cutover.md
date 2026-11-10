@@ -1,6 +1,6 @@
 # Task A App native-session runtime cutover receipt
 
-日期：2026-10-31  
+日期：2026-10-31
 范围：C-1.3 App same-origin native session read/admission
 
 ## 变更

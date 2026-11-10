@@ -8,6 +8,16 @@
 
 每项只补一条用户主路径和本次直接影响的关键边界。沿现有入口和机制解决已证实的问题；没有实际用户路径的内部探针不单独设交付门，不为测试补造入口。已有证据直接复用；缺真实外部条件的项标明未验，不拖住独立工作。
 
+## 2026-11-10 · 开发收尾与下一轮
+
+- **当前口径**：用户同意先收开发交付、真实环境验收暂缓。原产品证据仍是 12/16；A‑10 真 E2B、A‑13 三个真实渠道、A‑14 真转写后编辑发送按条件就绪补做；A‑16 的主线合并与真实验收差额分开记录。不部署，不开启真实支付。
+- **已通过原 PR 合入各自 `main`**：[IAM #6](https://github.com/LordFoxFairy/kokoro-iam/pull/6) `86f2ed7`、[Admin #5](https://github.com/LordFoxFairy/kokoro-admin/pull/5) `b6e37fa`、[Storage #3](https://github.com/LordFoxFairy/kokoro-storage/pull/3) `635b18f`。合并保留精确测试提交的可达性。IAM 原 #5 已被 GitHub 识别为随 #6 合并。IAM 契约／类型／85 条契约测试、Admin 契约／类型／默认测试／构建通过。Storage 正式验证先发现共用 Asset 退役 writer 未登记；`6382ffe` 只登记现精确路径并保留负控，`verify` 628 通过／237 条件跳过，主控复验原架构门通过。 Root 继续锁定 Storage 已进入 main 历史的 `b60931e`：`6382ffe` 只有架构测试变更，沿现 Agent 精确生成来源，不重发无变化的契约。
+- **合并未完成**：[Agent #46](https://github.com/LordFoxFairy/kokoro-agent/pull/46) `27dbe3a` 正式契约与锁定环境 Pyright 通过；fresh 单元／契约 3596 通过、9 失败、24 未选。剩余含 runtime import、E2B 响应边界、Worker 装配与历史契约检查，逐类查明后再合。[BFF #18](https://github.com/LordFoxFairy/kokoro-bff/pull/18) `18dcc30` 默认 2421 通过／8 失败／2 条件跳过；`ec8e926` 只修 Library 检查误读相邻 Artifact schema 和旧空行，原具名测试已通过，未重跑全量。剩余失败包括 domain 依赖边界、SQL 约束命名与五个同源历史逆证；先修实际门，不改冻存摘要换绿。
+- **App 收尾纠偏**：[App #50](https://github.com/LordFoxFairy/kokoro-app/pull/50) `28343edd` 已推。只改同一已验证用户／租户／路由重准入时保留未落盘草稿（旧写权限不恢复）、Project 读回期间不显示旧空态，以及拒绝模糊 Cookie 的 400；补原测试接线，不新增认证层。Node 22 正式契约及类型通过；最后一轮完整默认 6518 通过／1 个语音夹具缺主体 marker 失败。补同一夹具 marker 后 4 文件 67 通过、相关 lint 通过，未重跑完整默认；真实语音发送验收仍未做。等待配套 owner 再合并。
+- **配对顺序**：[Capability #13](https://github.com/LordFoxFairy/kokoro-capability/pull/13) 当前 base 是 [#12](https://github.com/LordFoxFairy/kokoro-capability/pull/12) 的 staging；#12 还含独立 Skills/MCP 交付，保留原栈，不改目标偷带合入。现组合的 IAM SDK 产物检查通过。先由原 #12 独立收口，再让 #13 指向 `main`；BFF/Agent 合并门与 App 的配套就绪后，最后由 [Root #66](https://github.com/LordFoxFairy/Kokoro/pull/66) 保留已验证的精确 gitlink 合入。GitHub Actions 当前因账户账单或额度未启动，既不是断言失败也不是通过；不绕分支保护、不触发部署。
+- **本地清理**：六份旧草稿移到私有归档（其中四份与正式文档内容不同），删除 13 个已停用的构建缓存／依赖／二进制，约 1.33 GiB。原工作区的 App 登录失败页未提交改动、两边的工作树、真实验收收据和私有复跑脚本保留。Task B 原 [Root #67](https://github.com/LordFoxFairy/Kokoro/pull/67)／App #49、BFF #17、Storage #2 等含独立内容，不按废稿关闭；未完成合并的分支不删。
+- **下一轮计划（未启动）**：沿现 [Task B 交接](docs/handoffs/2026-10-30-task-b-capabilities-account.md) 和原 PR。主线配对后先核 B‑01 MCP 与 B‑02 Custom API 的「设置→选择→运行→结果/取消→刷新」各一条，已有收据直接复用；仅当登录故障真实复现影响主路径时，优先 B‑06。先定一个完整小切片，不新建兼容层或另一个 TODO。
+
 ## 当前执行检查点（主控）
 
 - **A‑14 真实麦克风→草稿通过，整轮未通过**：精确 Root `4ca36a58`／App `602a1361`，生产工作台的可见 Google Chrome，收据 `88e21f51931b0e25bd0e74ec`（SHA‑256 `3462a0233830d7c663625c9edf9fec4168740d6bc5a5012780f1d7e9b44bb5e9`）。原生识别开始／非空 final／结束各一次，非空草稿可见、零 Chat POST。等待编辑后主动发送 175 秒超时，无 Run／终稿证据；回收 PASS，未保留音频或口述原文。下轮只补同次真转写后的编辑与一次发送。
@@ -221,4 +231,4 @@
   - **A‑15 提问文案缺口**：A‑09 冻结补验发现现 AskUserCard 展示静态工具说明，而非这次要用户回答的具体问题；A‑03/A‑08 原同 Run 控制收据仍有效。已按上方真实收据修复并验收本轮有界问句，未改变私有工具参数／分享边界；历史快刷故障不随本修复关闭。复核 A‑08 Project 429 和 A‑09 Project 429/503 收据的 exact BFF gitlink，均早于 `50a9690` 原生 429 纠偏，未有 IAM 跳级证据，不能用版本先后声称根因。
 - [ ] **A‑16 交付与运行配对**：当前原 PR、精确 gitlink 和说明已核对（见上方）；A‑10/A‑13/A‑14 的真实结果到齐后只补受影响版本及收据，主控最终确认。不合并 main、不部署。
 
-**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。主路径优先，独立缺口可并行；只记录负责人、实测结论和下一步，交付时绑定精确版本。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。C‑4 Goal 已验收，产品 Goal 仍需逐项核对原 A‑01～A‑16（真实支付除外）。各仓沿原 PR，不合并 main、不部署。
+**更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。主路径优先，独立缺口可并行；只记录负责人、实测结论和下一步，交付时绑定精确版本。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。C‑4 Goal 已验收，产品 Goal 仍需逐项核对原 A‑01～A‑16（真实支付除外）。各仓沿原 PR；2026-11-10 获准通过正常 PR 合入 main，不部署。

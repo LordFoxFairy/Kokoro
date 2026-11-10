@@ -1,6 +1,6 @@
 # Task A Project resource-list feature cutover receipt
 
-日期：2026-10-31  
+日期：2026-10-31
 范围：C-2 Projects resource read bundle、C-3 provider seam、C-4 BFF verification
 
 ## 变更

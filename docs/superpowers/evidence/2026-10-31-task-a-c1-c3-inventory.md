@@ -198,7 +198,7 @@ Nest AppModule
 - 从旧 dispatcher 删除 profile/session 具体 path；
 - focused gates 与停写后串行 BFF gates 通过后，才进入下一 bundle。
 
-当前状态：inventory 已冻结；业务实现仍停写在下一切片准入前。 
+当前状态：inventory 已冻结；业务实现仍停写在下一切片准入前。
 
 ## 8. 盘点后的已验证增量（2026-10-31）
 
