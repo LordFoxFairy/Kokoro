@@ -8,6 +8,8 @@
 
 ## 当前执行检查点（主控）
 
+- **A‑15 提问卡已通过真实链路**：Agent 原 #46 `384f910`，Root `db9bbc2f`，收据 `d233f1c2ba80862e93b68e1d`／SHA‑256 `cefb975e945b97b5501ed37ed761b230f479bc0b42be685c4741730af1e07be9`。真实登录，独立 Worker 原生提出 Unicode 问句；硬刷仍是同一 pause/item，浏览器只回一次，原 Run 持久 `native_consumed` 后终稿；真实 AG‑UI 和刷新 snapshot 都没有未选私有参数。不改公开协议、不重跑已验快速终稿；整轮/原生、凭据、回收通过，System/model/budget 明确替身。此前生产快刷窗四个背景 503 逐请求关联已有日志，IAM 两跳均 200，业务路由被脱敏，历史偶发问题仍未定位。
+- **并行中**：`a08_resume_evidence` 负责 BFF LINE owner，`a08_project_check` 接原 App 连接面；都未交付，Telegram 已验链不重跑，Slack/真实提供方仍开放。主控持有 Git、精确组合及唯一台账。
 - **A‑10 默认 State 过程文件真实旅程 PASS**：精确 Root `906e761c`，收据 `132800e968d29412f10ce91f`（SHA‑256 `9950741e2333af77eaff07be145ffb8977ce1a05e5146b70305f3b1254b79cd4`）。同一登录 Chromium 两次普通 Chat，独立 Agent Worker 原生写／编辑 `/outputs/report.md`，无 FINAL 交付。Canvas 取两版原 SHA，硬刷新旧版不变；正式删除 200、旧链接 404，真 PG 只有一条 BFF 窄撤销获 Storage 确认且目的栅栏已落库。整轮／原生 exit 0，凭据检查、回收和 Redis 8/11 归零通过。System/model/budget 为明确夹具。前两轮 `c3640bb1910dd43d0035ea02`、`cf1746151ac8fa686f680e30` 均通过读取/刷新、未发删除：分别为默认折叠侧栏未展开、Radix 覆盖样式 slot；整轮 FAIL／回收 PASS，只修私有脚本。非 State 与脚本未验，A‑10 不勾。
 - **A‑10 App 已推原 #50 `dd5ebe15`（阶段通过）**：用正式 Public 28.33，现 Process 打开原 Canvas Files，按 Run/版本取原字节；删除未消费的按路径读取与占位文件。主控复验同源/Canvas 定向、架构和正式合同；停写 TypeScript 通过。真实 IAM→Agent Worker→Storage→Canvas 旅程尚待。
 - **A‑10 BFF 已推原 #18 `5d5b409`（阶段通过）**：主控复验精确版本、撤权后零交付的 Nest/Connect HTTP 用例，Agent 与 Storage 正规生成检查通过；Storage 新 v3 对前两版 Buf breaking 均通过，MCP package profile 原字节不变。App 已从此精确提交生成 Public 28.33，产品验收待 App 定向和同一浏览器旅程。BFF 沿现 fresh-only 规则，未改已有数据库。
@@ -180,7 +182,7 @@
 - [ ] **A‑15 体验性能**：A‑09 作品正确回到 Project 后立即硬刷，真实会话 snapshot 429 `session_rate_limited`、模型列表 503 `iam_admission_unavailable`（`ada47cd2f3167d3096854a2f`）；待沿实际 IAM 请求证据定位，不放宽限流。新增 A‑08 Project 快速终稿硬刷新真实 parts 429 `session_rate_limited`（`947855337e1dc6b332b8518f`）；窗口后刷新通过，不表示快速刷新已修。新增 A‑12 多次硬刷新认证链 `503 iam_admission_unavailable` / Reconnecting（882/f13b 原始失败保留），仅有100/60s原生限流嫌疑、尚无IAM hop证据，不冒称已修；随各片量实际冷／热和可访问性，留 A‑03 两次已完成 Run 的硬刷新终稿 DOM 偶发缺失；以真实 /parts 状态定位，确认前不加盲目重试。
   - **A‑15 快刷正控与 IAM 两跳实测**：Root `bda1977d`／收据 `1606148e6e756a1863ea74d9`，真实登录 Chromium、独立 Worker、同一已完成短 Run，只发一次 Message，见终稿后立即硬刷一次。正式 snapshot 与自然 /parts 的 Run/版本/watermark/原文字节相同，恢复 DOM。该次从启动 reload 到观测终稿 1371ms（不是 p50/p95）；两跳关联会话快照/模型/parts 均 200。观察窗口内 BFF 共 24 次 get-session／26 次授权检查，部分 ID 重用、App 隔离开发服务有 admin-access 取消重发；没有 429／503，不能归因旧失败或将开发模式当生产。同一 exact App `e0cfeda4` 的隔离生产构建、Node24 本机脱敏 ingress/request-ID 探针已验；后继生产主路径见本页当前收据；保留既往偶发记录，不放宽限流，不再重复无复现旅程。整轮／原生 exit 0、凭据检查／回收 PASS，未启动 Storage；System/model/budget 为明确夹具。
   - **A‑15 429 错分组件通过**：BFF 基线 `9a0c45c` 在真实本地 HTTP 上复现锁定 Better Auth `text/plain` JSON＋有效 `Retry-After` 429 被误报为 503；原 #18 `50a9690` 保留原 429 与有界延迟，其他媒体/状态/畸形原生响应保持失败关闭。主控 build、同文件回归 20 PASS、项目格式参数、lint 通过；仅一次 get-session、无后续权限 I/O 或重试，不改协议或限流。Root 固定包含此改动的 `0c6be20`；旧 Chromium 503 的根因及快刷整体未证明。
-  - **A‑15 提问文案缺口**：A‑09 冻结补验发现现 AskUserCard 展示静态工具说明，而非这次要用户回答的具体问题；A‑03/A‑08 原同 Run 控制收据仍有效。后续单独核可面向当前 owner 的有界提问，保留私有工具参数／分享边界。本轮不把问句字面作退役证明。
+  - **A‑15 提问文案缺口**：A‑09 冻结补验发现现 AskUserCard 展示静态工具说明，而非这次要用户回答的具体问题；A‑03/A‑08 原同 Run 控制收据仍有效。已按上方真实收据修复并验收本轮有界问句，未改变私有工具参数／分享边界；历史快刷故障不随本修复关闭。
 - [ ] **A‑16 交付与运行配对**：主控沿每仓原 PR、Root 精确 gitlink、记录真实验收与遗留；本窗口不合并 main、不部署，不把历史交付记录当当前全任务通过。
 
 **更新规则：** 主控独占 TODO 和 Git 集成，子代理并行核对独立 owner 或来源证据。每次只推进清单中最前的未关闭项，记录 owner、受影响提交、实测结论和下一步。验收输入不变就复用旧收据；只有输入变化、失败定位或缺失证据才补定向验证。C‑4 Goal 已验收，产品 Goal 仍需逐项核对原 A‑01～A‑16（真实支付除外）。各仓沿原 PR，不合并 main、不部署。
