@@ -20,6 +20,10 @@
 
 **Agent State owner 已推原 #46**：`7bfbf5ef3febaad710007fcd88992f44333d4740` / HTTP 8.17 / canonical SHA‑256 `c471094369efa80f1182e41c67ef8150835a4544c283fd8d2d4e689707a51aad`。只复用原 RunDisplay 和同一版本事实表；主控隔离真 PG 证 exact 同径两版、旧租约迟到 CLEAN 零发布、新代同源重放与跨 Run 隔离，库已回收。Storage 传输替身；真实对象字节、既有 Canvas 与普通删除待组合验收，不加事件／列表或回写未证明的旧文件。
 
+**BFF 消费已推原 #18**：`5d5b409976713fc8b6d32fbbd426af82f19f6f62` / Public 28.33 / SHA‑256 `03d4add75d31c6c4dd22e7fcb3b4269556ad3ced87d29a5640976bc74f39810f`。主控复验正式 Nest/Connect HTTP 的错误版本零对象读取、exact 原字节和撤权后无字节交付；Agent/Storage 双生成检查通过。Storage Buf breaking 对 `ebd6e3b`、`0f91535` 均通过，MCP package profile 原字节不变。App 已按精确提交重生成，尚待最终组件和真实主路径。BFF 只以现 fresh installer 使用新 owner schema，不新增兼容迁移；未操作非空共享库。
+
+**App 消费已推原 #50**：`dd5ebe152230345299eade261980d71863761b71`。复用原 Canvas 与预览，按 exact Run/version 选择，退役无消费的旧按路径读取和占位文件。主控定向、架构、正式合同通过；停写 TypeScript 通过。不重跑已验的 FINAL/快切，下一门为真实 State 单旅程。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。

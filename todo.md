@@ -8,6 +8,8 @@
 
 ## 当前执行检查点（主控）
 
+- **A‑10 App 已推原 #50 `dd5ebe15`（阶段通过）**：用正式 Public 28.33，现 Process 打开原 Canvas Files，按 Run/版本取原字节；删除未消费的按路径读取与占位文件。主控复验同源/Canvas 定向、架构和正式合同；停写 TypeScript 通过。真实 IAM→Agent Worker→Storage→Canvas 旅程尚待。
+- **A‑10 BFF 已推原 #18 `5d5b409`（阶段通过）**：主控复验精确版本、撤权后零交付的 Nest/Connect HTTP 用例，Agent 与 Storage 正规生成检查通过；Storage 新 v3 对前两版 Buf breaking 均通过，MCP package profile 原字节不变。App 已从此精确提交生成 Public 28.33，产品验收待 App 定向和同一浏览器旅程。BFF 沿现 fresh-only 规则，未改已有数据库。
 - **A‑10 Agent owner 已推原 #46 `7bfbf5e`**：HTTP 8.17 复用现 RunDisplay，只给已发布 exact 版本。主控隔离真 PG 证同路径两原版本、旧租约迟到 CLEAN 不发布、新租约同源重放、其他 Run 无文件；Storage 传输为协议替身，库已回收。正式契约与 Storage 生成校验通过。BFF/App 正接现文件列表、预览及删除，未提前更新 Root gitlink。
 - **A‑15 生产模式快刷主路径通过**：精确 Root `648ee587`／收据 `d854c34f755173bb2cadc1ee`。真实登录、独立 Worker、终稿持久后一次立即硬刷，309ms 恢复同一份字节；快照 104ms／parts 13ms，目标请求及 IAM 两跳均 200。后台有四个未归类的 BFF 503，不冒称全站无错；旧偶发未复现，不再重复跑此路径。System/model/budget 为替身；本地隔离资源全部回收。
 - **A‑10 Storage owner 已推原 #3 `b60931e`**：真实隔离 PG＋Connect 两个过程输出定向通过（对象存储／扫描／Redis 为替身），同 SHA 的 FINAL 保持原字节，撤销拒绝旧读、迟到上传／完成不复活，未知暂存继续待核。父 schema 有行的正规增量保留原数据，重跑为 no-op；自有库已回收。主控合同与生产构建通过，旧 FINAL 重放用例在父提交实际复现为夹具提前退役，已按可观察请求阶段修夹具，原断言保留、定向 20 通过。Agent State 已以真 PG 核原生版本、同 Run 恢复和旧租约拒绝；Storage 发布、现列表与预览未验，未配对 Storage gitlink。
