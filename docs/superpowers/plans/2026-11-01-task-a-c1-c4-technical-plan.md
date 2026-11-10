@@ -1,8 +1,14 @@
-## 2026-11-10 · A‑08 补缺实测
+## 2026-11-10 · A‑08 原范围验收／A‑05 下一检查点
 
 真实历史 FINAL 产物：Root `2fd0baee`，收据 `6623682d4e89f56fe26fa0e9` exit 0 / cleanup PASS，摘要 `fd97c3d49655d4ab1bc8742cedab0dca4c75867f8018849d38ccea354e5eeb5a`。源 Worker 原生写文件并交付，真 Storage 记录 FINAL/CLEAN；不同的目标 Run 从 Chromium 最近任务选中文件，浏览器仅发 opaque artifact ID，BFF 冻结 source Run / asset / SHA，独立 Worker 核对原字节，刷新不重发、无私有原文泄露。System/model/budget 为显式替身，不称真实供应商。直接上传/Library、Vercel AI SDK 最终段装配和刷新、无产物历史答复及直聊草稿复用已验收据，不重复运行。
 
 Project 首次带 HITL 运行 `09612ce26bd8e391f4e2d1c0` 整体 FAIL / cleanup PASS；真实 Project 两个 CLEAN 输入、Library 重选、原始 opaque 顺序与单次 202 已实测，等待态失败：private-material 抑制遥测时误删了 supervisor 生成的 checkpoint 归属。局部修复只区分受信持久归属（Run/generation 及 resume command/attempt）与可选追踪；保留 tracing/回调隔离、exact reader fail-closed、Schema/API 和原 owner 不变。以同 Run 真实替换 Worker、两份原字节和唯一终态补证，不因 HTTP 202 或关闭追踪就算恢复通过。
+
+Agent `2d19822` 经主控定向、完整类型/相关 Ruff、契约和打包，独审通过，已推原 #46；Root `9dbee1d1` 配对，56 个声明证据 blob 原字节相同，topology、15 条边/0 违规和既有 checkpoint 通过。私有模型目录等待与两跳 SSE 夹具纠正后，`947855337e1dc6b332b8518f` 真实替换 Worker、浏览器原等待态回复、同 Run generation 2 / native_consumed 和终稿初显均实测；快速终稿硬刷新 parts 429，整体失败/回收通过，限流留 A‑15。复测保持 limiter，正常节奏刷新，不混淆两次收据。
+
+**A‑08 原范围通过**：同 Root `9dbee1d1`，收据 `67c08d79947a5b41b06b3fe9` exit 0、quiescent/cleanup/凭据日志 PASS，摘要 `e445e220c6986cf4afbb1e853458f9392513e6a020749cc06e9adae652997984`。未发 Project 草稿立即硬刷新保正文、两条精确引用（随后实际一次 POST 校验 ID 与顺序）；原生用户提问暂停后自有 Worker SIGKILL，第二代 PID 接管原 Run，浏览器正式回复只投一次，PG `native_consumed`、三次模型尝试封存、跨代冻结清单与两份原字节一致、BFF 唯一终态。首次终稿及等待 61 秒后真实 Project snapshot/parts 硬刷新均通过，零重复上传/Message/control。快速硬刷新失败留 A‑15；System/model/budget 为显式替身。权限负控复用既有受影响 owner 证据，未重跑全仓或旧旅程。
+
+**A‑05 后继只补缺证**：复用现真实 Chromium/Storage/独立 Worker 接线，用普通 Chat 暖场形成真实历史；同一次发送选择一项真实上传及一项真实历史 FINAL，锁定 Agent SDK 自然触发摘要，持久 evidence 后同 Run 后继模型实际读两项原字节再输出。仅补该 Run 终稿刷新、游标重放与真实分享的不泄私有摘要；原取消、重启和 Billing 收据复用。不新增契约或第二套执行/摘要实现，Goal ACTIVE。
 
 ## 2026-11-09 · A‑12 原范围验收 / A‑08 开始
 
