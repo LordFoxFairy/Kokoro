@@ -9,6 +9,7 @@
 ## 当前执行检查点（主控）
 
 - **A‑15 提问卡已通过真实链路**：Agent 原 #46 `384f910`，Root `db9bbc2f`，收据 `d233f1c2ba80862e93b68e1d`／SHA‑256 `cefb975e945b97b5501ed37ed761b230f479bc0b42be685c4741730af1e07be9`。真实登录，独立 Worker 原生提出 Unicode 问句；硬刷仍是同一 pause/item，浏览器只回一次，原 Run 持久 `native_consumed` 后终稿；真实 AG‑UI 和刷新 snapshot 都没有未选私有参数。不改公开协议、不重跑已验快速终稿；整轮/原生、凭据、回收通过，System/model/budget 明确替身。此前生产快刷窗四个背景 503 逐请求关联已有日志，IAM 两跳均 200，业务路由被脱敏，历史偶发问题仍未定位。
+- **A‑13 LINE 首轮真实 Chromium 有失败并定向修复**：Root `caab8d40` 收据 `900ce05457bc2ec56640ef51` 到本人批准／owner v4 为止，未发绑定回调，整轮 FAIL／回收 PASS。Next Proxy 把 continuation 的 `no-referrer` 覆盖成默认值，定向 RED→GREEN；App 原 #50 `eac24dd8` 只修 exact POST 响应头。协议、BFF 和其它页面未改；真实复验待同组合。
 - **A‑13 LINE App 已推原 #50 `21ce1044`（组件阶段）**：消费 exact Public 28.34，复用原连接对话框，Bot 回链只读/显式批准/一次官方续接，主控定向、正式合同和架构通过；真实浏览器待验。
 - **A‑13 LINE BFF 已推原 #18 `c535c16`（组件阶段）**：Public 28.34；主控对停写源码跑正规 fresh schema、真隔离 PG 和正式 HTTP handler，证明原字节签名、本人续接、同签名 LINE user/nonce、刷新与断开；LINE Bot API/IAM 准入是协议替身，自有库已回收。App 正接原连接页面，待精确组合真实 Chromium。Telegram 已验链不重跑，Slack/真实提供方仍开放。
 - **并行中**：`a08_project_check` 接 LINE App，`a08_resume_evidence` 补单条原生验收接线，`a08_final_model` 实施 Docker/Local 原生写入版本。主控持有 Git、精确组合、真实验收和唯一台账。

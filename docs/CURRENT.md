@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑13 first Chromium run stopped after approval.** On Root `caab8d40`, receipt `900ce05457bc2ec56640ef51` reached the signed private handoff and real approval, then failed before opening the official link; cleanup passed. A focused RED proved Next Proxy overwrote the route's no-referrer policy; App #50 `eac24dd8` fixes only the exact continuation POST. Real retest pending.
+
 **A‑13 LINE App #50 `21ce1044` is pushed with the exact Public 28.34 source.** The same-origin adapter and existing dialog passed focused checks and the complete App contract; Chromium and a live external account are not yet accepted.
 
 **A‑13 LINE BFF is pushed; App and live provider acceptance remain open.** Original BFF #18 `c535c16` / Public 28.34 uses the existing admitted setup and a signed LINE callback. Frozen HTTP handler and isolated PostgreSQL passed the original owner, exact private LINE identity and nonce, readback, disconnect and late-callback boundary. LINE Bot API and IAM admission were protocol doubles; the owned database was removed. No actual external account or Slack.
