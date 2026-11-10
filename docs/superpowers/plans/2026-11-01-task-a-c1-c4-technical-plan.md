@@ -5,6 +5,14 @@
 - **退役**：Storage 单独确切命令核本 scope、artifact/asset/hash/source Run，不调用整 scope release 或把 Artifact 当普通 Asset。保原 Artifact 身份与历史，新增精确退休状态；仅最后有效引用消失才走原 Blob 退休/清理。现 list/get/download、signed receipt/replay、finalize 与 scope release 都要识别目标已退休。BFF 历史关联保留，新选择已退休目标走既有 `invalid_resource_selection`；已冻结 Agent 引用由 Storage 在下一次实际读取拒绝。原始短期签名 URL 的有效期和已读字节不作即时撤回承诺。只在自有隔离库验 fresh/精准增量，不清卷、不动共享数据。
 - **最小验收**：真 PG 分别验证先筛后分页/本人限定、单退役及共享引用；真浏览器同一真实资料库完成收藏、筛选刷新、取消以及删除只影响目标和旧内容 404。对已冻结旧引用复用已有暂停/恢复接缝，只核一次真实读取拒绝与不产正常终稿，不重跑其他 Agent 旅程。具体写区在各 owner 实施前登记，仍沿原 PR、不合并 main、不部署。
 
+### 合批执行合同与写区
+
+- **Storage / 原 #3**（基线 `0f91535`）：独占 Storage canonical Prisma、v3 Proto/正规生成、Artifact/Blob 生命周期和直接测试。新增 `DeleteFinalArtifact`，request 固定 `command=1, artifact_id=2, asset_id=3, content_sha256=4, source_run_id=5`，response 固定 `artifact_id=1, retired_at=2 (Timestamp), replayed=3`。仅 `web-bff`、可信 Conversation scope，不扩 Agent 资格。保留 exact Artifact tombstone、现 command claim/replay 与独立活引用；单件操作不改 Scope 生命周期。鲜签/重放要在签发 I/O 后重新核 Artifact 是否活跃，不能仅依赖可能共享的 Asset 活跃状态。将隔离真实 PG 的 shared-reference、普通会话释放与既有未退役数据增量作为必要证据；只执行自有库。
+- **BFF / 原 #18**（基线 `c9c0782`）：收藏 writer 独占本仓现 Artifact 关系/列表/详情及其 SQL、收藏 route/验证；主控独占唯一 canonical OpenAPI 和退役代理、旧引用选择错误分类。收藏落现关系 nullable `favorited_at`；现 Library Artifact 列表和详情输出 required `favorited:boolean`，Artifact 列表仅新增 `favorites_only=true|false`，缺省/false 保原游标形状，true 绑定现查询。 `PUT /v1/library/artifacts/{conversation_id}/{artifact_id}/favorite` 只收 `{favorited:boolean}`，返回现 envelope `data={conversation_id,artifact_id,favorited}`；自然幂等，不新建通用幂等层。未核 Storage FINAL/CLEAN 或当前本人无权不写；同 owner 已失权在 SQL 内重核，网络不持 PG 行锁。单退役为现 detail 的 `DELETE`，空请求/原键恢复，成功 `data={conversation_id,artifact_id,deleted_at,replayed}`（header-only request ID，与个人文件删除同边界）。BFF 仅绑定现 owner association，不本地双写退役。
+- **App / 原 #50**：只变现 Artifact Surface、客户端及同源 adapter，保卡片/详情的真实归属；收藏由 owner，未知删除保原键，身份/路由退休；删除确认后列表才去目标。主控先固定最终 Public 28.29，再一次更新现生成消费与 Root。Agent 若精确仓门要求仅生成输入跟进，不变运行逻辑。单份真实旅程覆盖收藏与退役，缺失独有行为才分步补证。
+
+**合批阶段收据：** Storage `ebd6e3b`、BFF `9a0c45c` / Public28.29、App `5d39ef51`、Agent `cbdd866`（仅精确 Storage 生成消费）已推原 PR。主控复验 Storage 契约和真实隔离 PG/Connect 7、BFF 定向 HTTP 29 与真实隔离 PG/Nest 10、BFF build/lint/契约与 Agent 生成/契约 3 通过。初跑入口不当与下载计时不稳定未冒称通过，正式入口独立通过；未重跑完整默认。App 正式契约/定向/lint/生产构建通过；合批精确源码待浏览器与真实 Worker 验收，A‑09 仍 OPEN。
+
 ## 2026-11-10 · A‑09 Project 作品回跳证据
 
 - **组合**：Root `d67f4346c0c5e2d804ec4434ceb63b41fbd76d7e`；BFF `c9c0782` / Public28.28、App `faabec0e`，Storage/Agent/IAM 源码原样。BFF 从 BFF 归属读取 canonical Project / 明确直聊 / 省略三态，旧可读详情与字节保持，App 只用匹配详情与现 scoped rail 导航。Root topology、15 兼容边、原 checkpoint 通过；BFF 主控独立 Nest/Connect、真实隔离 PG 关联、build/lint/contract 通过；App 契约、96 条定向、架构、lint/type/build 通过，不重跑全默认。
