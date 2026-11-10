@@ -27,14 +27,16 @@
 
 **App 精确候选已推原 #50**：`a627f9ae00b0c29a5340fc88775ad0cddf732f69` 是 A‑11 草稿，`5c9fee1093133b1002de253f7188f32ac1099bd0` 含 A‑14 隔离修复。主控相关行为/架构 263、登录 Proxy 30、lint、类型与生产构建通过；不重跑未改的契约或全默认。独立 Chrome 156 只用合成 WAV：拒绝策略在真媒体 API 得到 NotAllowedError，允许策略捕获非静音样本；原默认原生识别两次 no-speech，本地 command 语言包探针有 speechstart/end 但无 final，dictation 语言包未就绪。未安装到日常 profile、未录物理麦克风、不改生产为本地语言包模式；该探针不等于真实 App 策略或转写验收。
 
-## A‑06 网站关联最小候选（原范围仍开放）
+## A‑06 网站关联正式交付与验收
 
 - 原 A‑06 要求项目网站关联可真实保存／回读／刷新；本机 Manus 记录仅证明项目搜索／选择／取消／保存弹窗，没有证据要求已部署站点或提供现成用户目录。System Site 是租户级入口/域名配置，不能挪作用户站点列表；不接部署、System、外站抓取或 Agent 注入。
 - 在现 BFF Project owner 内维护有界的真实 URL 引用集合。沿原项目网站弹窗的搜索／选择／取消／保存，已有引用来自本项目正式读取，可手填合法绝对 HTTP(S) 地址并在保存前移除。浏览器和 BFF 都拒绝带用户凭据的地址、未知 scheme 与超长输入；BFF 不访问目标站，关联不是验证站点所有权。不保生产 demo 网站。
 - 数据取舍：有界值对象可放现 Project 行，不建站点目录/新表；读取和 desired-state 保存/解除都要求原 owner、租户和 active Project。若同一集合可在多标签编辑，沿原 BFF 条件写规则防覆盖，未知结果先正式回读，不建第二套幂等。先锁定正式 schema/路由与 Project 删除边界，再写消费；只证明真实认证浏览器保存→回读→刷新→解除和错主体拒绝，不冒网页抓取或已部署站点选择。
 - 正式写入门：BFF 现 ProjectsModule 增精确 `GET/PUT /v1/projects/{project_id}/websites`，现 Project 行有界 `website_urls` 与同类配置状态版本；PUT 要 `expected_state_version`，匹配且同值不写、过期 412、空集合解除；与删除同一行锁，删除后 404。App 原 same-origin Project adapter，普通 Project/会话 snapshot 不改。定向真 PG 核同值、并发、错主体、删除；真 Chromium 核输入真实 URL、保存／刷新、筛选／解除。原生产 demo 列表删除。
 
-**BFF owner 已推且隔离真 PG PASS**：原 #18 `7f109384651741ee9df2e4931ef7a566053cea81` / Public 28.31.0 / canonical SHA‑256 `9fea8041e3eac479e5ea008e120729fb37637636bb6bf3ad8b94ac161ac8a88c`。真实 Nest＋fresh owner PG，准入用明确替身，保护同值 xmin/时间不改、同版本并发一胜、错主体/租户、解除与真实 Project DELETE 后 404，网站不增 receipt；清理通过。App 只消费正式 same-origin URL 引用，沿现 `project.websites` 特性位，不全局开放。App 原 #50 `64a58856` 已接精确契约，定向与架构、契约、lint、类型、构建通过，真实浏览器未验。真实认证 Chromium 证据待验。
+**BFF owner 已推且隔离真 PG PASS**：原 #18 `7f109384651741ee9df2e4931ef7a566053cea81` / Public 28.31.0 / canonical SHA‑256 `9fea8041e3eac479e5ea008e120729fb37637636bb6bf3ad8b94ac161ac8a88c`。真实 Nest＋fresh owner PG，准入用明确替身，保护同值 xmin/时间不改、同版本并发一胜、错主体/租户、解除与真实 Project DELETE 后 404，网站不增 receipt；清理通过。App 只消费正式 same-origin URL 引用，沿现 `project.websites` 特性位，不全局开放。App 原 #50 `64a58856` 已接精确契约，定向与架构、契约、lint、类型、构建通过。
+
+**真实浏览器 PASS，A‑06 闭环**：精确 Root `8e1bd70ddfb7ac04b780fcc4ff726052b0671073`，收据 `40474172735457db18750785` / SHA‑256 `ec9b074ce0787db7af23da12cab9f93c1b35b3ad5075182c7e153e4aa5a50e2b`。真实 IAM／Chromium 经 App→BFF→独立 PG，取消/筛选零写，保存两条网址并硬刷新回读，解除后重开为空；实际两次 PUT，PG 最终版本 3。整轮/原生退出 0、凭据与回收 PASS；System 仅特性位夹具，未访问外站、未启动 Agent/Storage、未发布。首轮 `259961f9bb92b7eedb3ceb38` 私有 System 凭据未接导致失败、回收通过；修私有配置和原方法中继，不改生产。此前排序、两版指令及逻辑释放证据原样复用。
 
 ## 2026-11-10 · A‑09 上传取消与 A‑10 快切合批
 
