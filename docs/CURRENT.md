@@ -2,6 +2,10 @@
 
 ## Task A current checkpoint
 
+**A‑14 native microphone-to-draft passed; send is unverified.** Exact Root `4ca36a58`, App `602a1361`, receipt `88e21f51931b0e25bd0e74ec`: headed Chrome reported one nonempty native final and showed an unsent draft. The edit/send wait timed out with zero Chat requests; cleanup passed. No audio or original speech text was retained by the runner.
+
+**A‑10 E2B Embed is an eligible live target.** The [official Compose stack](https://github.com/e2b-dev/runtime/blob/main/embed/compose/README.md) runs real Firecracker. The current Docker engine has no `/dev/kvm`; local free disk is about 12 GiB, below the default 20 GiB preflight. The private test runner accepts the paired loopback endpoints; the locked SDK resolved both offline and still defaults to cloud when neither is set. No Embed stack or live E2B journey ran.
+
 **A‑15 scoped experience acceptance passed.** Exact Root `48c2517a`, App `602a1361`, receipt `32cd825d1d4f0f718420864a`. One completed ordinary Chat and one Project seeded three unmodified cold/warm pairs each. Empirical p50/p95 in ms: direct cold 303/304, warm 86/90; Project cold 305/306, warm 17/18. Cold exceeds the 100ms target by 203–206ms; this is a small local sample, not production p95. Critical reads and IAM returned 200; background 503s and historical incidents remain explicitly distinct. Cleanup passed. A‑16 exact original PR heads are checked; A‑10/A‑13/A‑14 still need live environments.
 
 **A‑15 keeps confirmed Project content visible during a same-page reread.** App #50 `602a1361` preserves only the same admitted Project while the owner read is pending, and clears on current absence, denial, deletion or scope change. Focused checks, types, lint and review passed. Exact Root `f9dad474`, receipt `4c99f756d3aa6807e0503be0`: one real instruction save held its follow-up rail request; the title, instruction entry and existing row stayed visible, then the new instruction read back. The same page remained usable across 1050→768→390→1280px. Cleanup passed. The previous attempt used a link locator for a button and remains failed; no production code was changed for the retest.

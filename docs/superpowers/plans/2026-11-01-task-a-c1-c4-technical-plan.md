@@ -59,6 +59,10 @@
 
 **A‑10 按原交接收口**：原 A‑10 验收 Canvas 的准确文件／版本／Run、长内容、窄屏／键盘及 B‑02 秘密边界，按实际产品支持适用。Local Shell 已注册但无产品入口，保留组件证据；现 `execute.output_path` 只在 Docker 提供，已真实验收。不为 Local/E2B 新建脚本模式或验证入口。已可选的 E2B 仍必须在已配置测试 Worker 上真实走 Custom API→原生写入／编辑→Canvas 两版原字节，未以替身通过冒称闭环。
 
+**A‑10 真沙箱环境补证**：允许 [官方 E2B Embed Compose](https://github.com/e2b-dev/runtime/blob/main/embed/compose/README.md) 作为真实 E2B，不用普通容器替代。现有 Mac Docker 实测未暴露 KVM；本机约 12 GiB 可用，低于官方默认 20 GiB 预检。不动共享运行环境，先在独立 Linux/KVM 跑官方 smoke。私有 runner 只新增现 SDK 两个本机回环地址的成对注入，当前锁定 SDK 离线验证通过；未实跑 E2B。产品验收仍复用同 Run 写／编辑、两版原字节、刷新与回收。
+
+**A‑14 首次真实语音收据**：精确 Root `4ca36a58`／App `602a1361`，`88e21f51931b0e25bd0e74ec`。可见 Chrome 原生 final 进草稿、零提交；等待用户编辑并显式发送超时，整轮未通过、回收通过。只补同一次真转写后的编辑和原 Chat 发送／终稿；不存音频或口述原文。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
