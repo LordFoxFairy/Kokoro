@@ -1,11 +1,18 @@
 # Task A · TODO（2026-11-09 UTC）
 
-**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前组合已更新 Agent `478c5f1`、Storage `3f18577`，BFF `5226ccd`、App `001d901c` 保持；子仓已沿各自 PR 推送，Root 精确来源校验见下方当前检查点。八个数据 owner 同库 ready、已验登录和 Run 主链按输入不变复用原收据。**A‑01/A‑02/A‑03/A‑04/A‑07/A‑12 已按记录范围验收**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
+**当前：G0～G3／C‑1～C‑4 前置清理闭环。** 当前 Root `54813c5b` 精确组合为 Agent `79a95c1`、Storage `c31a065`、BFF `144b07f`、App `0004d953`；子仓已沿各自 PR 推送。八个数据 owner 同库 ready、已验登录和 Run 主链按输入不变复用原收据。**A‑01/A‑02/A‑03/A‑04/A‑07/A‑12 已按记录范围验收**；Task A 产品项未闭环。唯一执行清单在本页，[技术方案](docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)保留设计与逐项证据，[CURRENT](docs/CURRENT.md)只汇总当前事实。
 
 **时间纠偏：** 原 2026‑11‑05 02:36 UTC 起的 6/24 小时窗口已超期，后续以实际交付更新，不继续当作有效完成承诺。不重复已验旅程；确认无现役调用或独立证据价值的旧代码／测试直接删除，不加兼容层、不降低有效断言。**唯一排除真实支付**：购买继续关闭；其余 A‑01～A‑16 不缩减，外部渠道留在 A‑13。
 
-## 2026-11-09 执行检查点（主控）
+## 当前执行检查点（主控）
 
+- **Goal 已恢复 ACTIVE；A‑08 未闭环。** `a08_fixture_resume` 独占私有验收接线；`a08_draft_resume` 与 `a08_answer_resume` 并行只读收敛后继写区，主控独占真实环境、最终验收与 Git。现有 MinIO 原卷恢复后，隔离桶真实写/读/删与 Scanner PING 再验通过，未清卷、未重建。
+- **A‑08 第二轮 `fe279b793b254b045097a6f1`（Root `54813c5b`）**：私有 System 接线修正后，真实认证 Chromium 通过本地上传/移除/取消与 Library 重选；2 个 CLEAN 对象、1 次 202、独立 Agent Worker 两次原生读取、唯一 BFF terminal、现有页面终稿与硬刷新均有证据。整轮仍 FAIL、资源回收 PASS：验收脚本错误要求私有 snapshot 的 `content` 内联，现役 ordered 模式明确为 `null`；改核同 Run/Message 的版本绑定最终段，保留原字节断言。
+- **A‑08 真附件基线 `7adde809590ca9847ea3dec7`（同 Root）PASS**：退出 0；原生认证、真实两个 CLEAN 上传、取消/移除无误发、Library 重选、一次 202，独立 Worker 真读 `/.inputs/0` 和 `/1` 后才产生终稿，唯一 durable dispatch/terminal。硬刷新并核正式 snapshot、同 Run/Message/版本的完整最终段，浏览器和持久层同文本。自有库、桶、进程/命名空间回收通过，Agent 测试 Redis 恢复为空。System/model/budget 为显式 HTTP 夹具；未验真实供应商或支付。收据摘要 `f92b4fc7…dda0a`。
+- **Vercel AI SDK 缺口**：当前 App `client.ts` 用 `openProjectionEvents` 把 AG‑UI 交现 reducer；`UIMessageChunk` 的 SDK 入口没有页面调用。以上浏览器结果是 AG‑UI 页面基线，未验 SDK 运行时。后续只改 App 内 UI 适配，不另开 SSE/提交链，不替换 BFF 的持久游标、版本化 parts 或 Agent 执行。
+- **Vercel 验收候选**：App `4ee774f9` 已推原 #50，锁定 SDK 在原 reader 实际装配版本化文本分片，不迁实时 SSE。主控定向、架构检查、受影响 lint、类型与生产构建通过，独审通过；不重复全默认。`a08_fixture_resume` 已交真实长终稿复验接线，主控固定精确 gitlink 后执行。历史答案与未提交草稿两方案已收敛，生产写入排在 SDK 验收后。
+
+- **真实附件首轮失败与当前分工**：组合 `54813c5b`，运行 `093ddbcf611e2e440de0b901` 整体 FAIL、回收 PASS。真实认证页面已打开，但私有 System fixture 缺页面模型目录/运行能力接线，Composer 未出现附件入口，尚未上传或执行附件读取；不归为生产源码缺陷。`a08_storage_download_fix` 仅补 ignored helper 的正式 System wire/config 后交主控复跑；`a08_agent_ready` 只读收敛原草稿 store 的选择刷新保持；`a08_launch_design` 只读收敛无产物历史最终答案引用。主控独占资源启动、验收、台账与 Git；Goal 实查 ACTIVE。
 - **A‑08 当前推进（04:45 UTC）**：Goal 实查 ACTIVE。Storage `3f18577` 已推 #3，当前 source-run FINAL 下载的二次 generic-get 误拒绝已修，普通 get/list 仍拒绝；独审 CLEAR。主控 owner `typecheck/lint/test/build` 全部 exit 0，232 条真实资源条件用例未执行，未称真实 PG/S3/扫描验收。Agent `478c5f1` 已推原 #46，仅来源 pin/生成器及过期独立摘要断言更新；主控正规生成检查、contract-check 和原三文件定向均通过。原件、生成协议与锁字节不变，不重跑输入未变的 Worker/浏览器旅程。
 - **当前组合验收**：Root 已按真实 Git blobs 重取 68 项 Agent/Storage 来源引用和摘要；topology、15 条 contract compatibility（0 violation）、原 checkpoint 均 PASS。BFF/Capability 的 Storage vendor 原字节可复用，不为纯服务实现修复批量 repin。真实输入附件旅程尚未运行。
 - **A‑08 后继 owner 已交付**：Storage `c31a065`（原 #3）、Agent canonical `55beed2`＋runtime `79a95c1`（原 #46）、BFF `534ace3`＋纯夹具隔离 `144b07f`（原 #18）、App `0004d953`（原 #50）均已提交/推送。主控 Agent 五文件77 PASS、锁定SDK原生图成功/失败2分支PASS，完整类型/Ruff/打包/contract/codegen通过；BFF 停写后类型/build、76项定向及真实Nest/独立PG8项全过，测试库回收。BFF完整默认为2408 PASS / 7 FAIL / 2条件SKIP：五项既有SQL inverse保留；另两项既有后台worker干扰夹具已修、主控两文件59 PASS，不拼接成完整全绿；PG中的Storage metadata是明确fixture，尚非真实附件旅程。
@@ -14,7 +21,8 @@
   - [x] owner exact下载、canonical冻结、只读runtime接线及必要回归，沿各仓原PR交付。
   - [x] App正规28.24消费、主控相关验收与原PR交付。
   - [x] Root精确gitlinks/来源inventory与契约检查：按412项真实已提交Git blobs重算，topology、15条compatibility/0violation和原checkpoint PASS；无关消费者旧pin按真实兼容保留。
-  - [ ] native IAM/Chromium→真实BFF/PG/Redis/Storage/ClamAV/Agent Worker：两项真实文件读、选择/移除/取消零误发、发送/刷新唯一终稿，记录并回收自有资源。
+  - [x] native IAM/Chromium→真实 BFF/PG/Redis/Storage/ClamAV/Agent Worker：两项真实文件读、选择/移除/取消零误发、发送/刷新唯一终稿，资源回收 PASS（`7adde809590ca9847ea3dec7`）。
+  - [ ] Vercel AI SDK 实际驱动页面结果展示与刷新恢复；先核单一 AG‑UI 流、owner snapshot/parts 与正确恢复接缝，再以真实浏览器验证，不凭类型/未调用适配器勾选。
   - [ ] 继续原范围剩余：Library/Project/历史FINAL来源真实验收；无产物最近任务最终答复引用；发送前草稿选择刷新保持与同Run恢复被A‑05复用。明确保留1MiB下载和非UTF8文本工具能力边界，A‑08尚未勾选。
 - **Goal ACTIVE**：机器状态已核验；A‑12 原范围已按下列组合证据验收，当前进入 A‑08。主控独占台账/Git/验收，App、独审和真实运行各自具名分工。
 - **已提交/推送**：BFF 原 #18 `a889f69`＋`5226ccd`；App 原 #50 `001d901c`，固定 BFF `a889f695` / Public 28.23 原件，摘要 `0abd300f…`。BFF 后继纯测试提交未改该契约字节。Root 原 #66 的 `f4488584` 保留 Scheduler/BFF 原 11 场景真实 PG/Redis 收据（IAM/Agent 替身），本次正在更新精确 gitlink/inventory；未合并 main、未部署。

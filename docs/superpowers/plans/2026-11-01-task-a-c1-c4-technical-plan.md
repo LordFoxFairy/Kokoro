@@ -17,6 +17,18 @@ A‑08 首步已交付：Storage `3f18577`／#3 用真实两 Service 组合复�
 
 ### A‑08 后继交付检查点（2026‑11‑09）
 
+真实首轮 `093ddbcf611e2e440de0b901` 在 Root `54813c5b` 整体 FAIL、回收 PASS：私有 System fixture 漏页面模型目录/运行能力接线，附件入口尚未渲染，未到上传/Worker读取。仅修 ignored helper 的正式协议配置，由主控复跑，不修改 App 或放宽断言。草稿选择刷新保持与无产物历史最终答案引用仍由具名代理只读收敛；Goal ACTIVE，唯一执行清单同步于 TODO。
+
+第二轮 `fe279b793b254b045097a6f1` 已真实通过两文件 CLEAN、普通消息单次准入、独立 Worker 两次原生读及现有 UI 终稿硬刷新；整轮仍因验收脚本误读 ordered snapshot `content:null` 记 FAIL，回收 PASS。改为验证同 Run/Message 的版本化最终段，不把 DOM 字符串替代 owner 证据。App 实际 `openProjectionEvents` 消费现 reducer，Vercel `UIMessageChunk` 分支未被生产页面消费；后续 SDK 渲染不得接启现测试用 SDK POST/SSE、另建游标或以 SDK finish 替代 BFF 终态。以唯一 AG‑UI 输入及现 owner snapshot/parts 恢复为约束收敛最小接线。
+
+**Vercel 最小实施门：先接持久化最终答复的真实装配。** App 用锁定 `ai` 的 `readUIMessageStream` 在现 ordered parts reader 内按精确文本 slot 装配已验证的 owner 分片，取 SDK `TextUIPart.text` 作为唯一拼接输出进入现 Markdown 页面；删原分片 `previous.text + part.text`，不另存 UIMessage store。原分页、版本、Unicode offset、EOF、权限、超时、generation、错误与公开投影不动；不增 API/依赖，不改 BFF/Agent owner，SDK finish 不改变 Run。复用现分片与回放回归，真实浏览器按原发送与刷新结果核验。实时 AG‑UI 片字仍走现路径，不能把持久答复装配称为已迁实时 SDK 流；已锁 SDK 对中段续读需 START，禁止直接并开 SDK stream 或把它接到 SDK 自带提交/取消。先交有真实价值的窄片，不因此重写会话引擎。
+
+主控原 AG‑UI 基线复跑 `7adde809590ca9847ea3dec7` 整体 PASS、退出 0、回收 PASS。正式 snapshot/parts 的最终段与持久 Message/Run/版本一致；两真实输入、唯一 terminal，未冒 SDK。下一只用同一旅程加长真实终稿越过分片边界，验证新增 SDK 装配，不重跑已无变化的全仓门。
+
+**SDK 验收后的两个独立续做面（当前不抢写）。** 草稿由 App 复用原 `kokoro.web.drafts` 的会话/未创建/Project 键和当前已准入主体＋租户，只保正文和 opaque refs；旧身份 writer、页退与迟到选择沿原退休机制，删除 Project 组件重复 RAM refs。不迁 unknown journal：已有提交用原 key/body；明确 409 恢复同一正文/refs，不盖更新草稿。普通会话和 Project 首发至少各核一次刷新及发送，复用原恢复场景。
+
+历史答案优先使用已有私有 Snapshot 的 `message_id`、Run、durable `final_segment_id`/revision；旧无 marker 不猜。App 只传 `final_answer`＋opaque assistant Message ID。BFF 在现提交事务校本人 active 同范围来源、completed 唯一最终文本段及精确 revision，冻结私有 UTF‑8 原文/长度/SHA/来源；不读聚合正文、不建新表或 Storage 对象。源会话、消息、投递行 `FOR SHARE … NOWAIT` 防提交时竞态。已接受 Run/同键重放读原不可变材料；新命令或 regenerate（新 Run）重验来源，删除后拒绝；消费会话删除仍沿原取消。复用 16 项/32 KiB ASCII 引用及 1 MiB launch 总预算，不截断。Agent 对有效 Run/lease 与 exact manifest 复验，final-only 不要求 Storage，原 `/.inputs` 仍只读；原文不自动进入公开 Message/AG‑UI/share/诊断。按 Agent 私有契约→BFF 正式消费/公共契约→App 固定消费交付，先以一条无 Artifact 真历史答案引用核对工具原字节和刷新。
+
 Storage `c31a065`、Agent `55beed2`＋`79a95c1`、BFF `534ace3` 已沿原PR推送。主控停写后复验Agent selected-input读与原生图失败传播、BFF canonical冻结/重放/regenerate/源关系争用，当前相关门通过；证据范围和完整默认失败核对见唯一TODO。最终事务源关联使用 `FOR SHARE OF c,a NOWAIT`，防止读后关系变动且不引入两会话反向等待；事务外候选仍不锁。App `0004d953` 固定Public28.24，完整相关门通过并经主控focused/独审；BFF后继 `144b07f` 仅隔离两测试夹具。Root新组合topology/15边compatibility/checkpoint通过，真实输入旅程待验。无产物最近任务的final答复引用、发送前草稿选择的刷新保持及A‑05同Run引用恢复保持OPEN，不以本片缩减原范围。现下载1MiB及非UTF8文本工具能力边界明确保留。
 
 ## 2026-11-09 · A‑12 交付候选与真实运行检查点
