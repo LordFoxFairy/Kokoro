@@ -7,6 +7,8 @@
 
 **组件阶段**：App `ec7174d9` 已推原 #50，BFF/Agent/Storage 及 Public 28.29 原字节未改。主控定向 UI／Hub／架构、lint、TypeScript/production build 通过；未重跑完整默认。真实浏览器／Worker 证明需本次 Root 精确配对；尚未以组件阶段勾 A‑09/A‑10。
 
+**真实证据与后续**：精确 Root `99dd71d7`。个人 Markdown 子步骤 `6cfe142ced90fc91719bdf9d` 已验 CLEAN/原字节/Unicode/无外部请求，整轮 Canvas 快切 FAIL。诊断 `2ebfe824df8c72f9aa805b0d` 证实 16,445B 原响应无压缩且 SHA 对，约 102ms，无身份事件但面板被卸载；旧 220ms close 会覆盖新选择，保留 A‑10/A‑15。仅作品补验 `a9292ccedc367cbfc0a8592c`（SHA `d2058f4c…083332`）无个人上传、真实独立 Worker 一 Run 三件、全量正文与 390px 键盘、同一作品 Library 详情、原生和整轮 exit 0／cleanup PASS。只按正常闭合再打开，不冒称快切修复或真实文件树。A‑09 仅剩个人上传 Cancel：沿现页面 intent/幂等键，未送零请求，已送中止浏览器等待并保持未知原键，不承诺已回滚。
+
 ## 2026-11-10 · A‑09 剩余项合批（下一个执行门）
 
 - **范围与并行**：BFF 本人作品收藏与 Storage 单 FINAL 退役是两个 owner，可按写区并行。Storage 正式契约冻结后，主控合入 BFF 同一 Public 候选，App 一次消费；只做一轮 Root 组合，不为每个按钮重复生成/跑旧旅程。暂不扩大到个人文件收藏、独立收藏页、分享或 A‑10。
