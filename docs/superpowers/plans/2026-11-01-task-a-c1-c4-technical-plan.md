@@ -1,3 +1,11 @@
+## 2026-11-10 · A‑05 原范围验收／A‑06 下一检查点
+
+Root `520010db1a15ad6c400c8877fb8f9cac9a153b92`，真实收据 `b6909a42805f00a0c5b3b25b` exit 0 / native exit 0，quiescent/cleanup/凭据日志 PASS，摘要 `0a459be803da13ecdb3a82e29154a383bf468d2759765a6a76c973e1eeb3c183`。真实 Chromium 先创建历史 FINAL、在不同目标会话暖场，再沿同一会话的普通 Chat 只提交一次有序 Artifact＋Asset；真实 Storage/Scanner、BFF/PG/Redis、Agent HTTP＋独立 Worker，System/model/budget 明确为 HTTP 夹具。原生 SDK 触发一个摘要，PG 以原 Run/attempt 封存，私有 checkpoint 以 cutoff 2 保留摘要和原历史的文件 delta；后继主调用使用摘要，原生工具分别核对两项原字节，BFF 目标唯一终态。初显和 IAM 窗口后硬刷新同终稿、零重写；同 Run 全重放、精确 Last-Event-ID 后缀、真无凭据匿名分享、撤销 404 都通过，不泄私有摘要。原取消/重启/真 Billing 收据复用，不重跑；本轮不改业务源码、协议或 gitlinks。
+
+先前 4,800／11,000 窗口真实触发摘要但 post-compaction 容量保护停住；13,000 没触发。11,700 诊断轮 `a305a4d9207da46d02b01357` 实际 SDK 10,082 tokens、cutoff 2，两项读取/公开边界已过，整体因主控私有 UUID 比对失败；独立读回确定文件在 delta 历史。按实际类型比较、读真实 delta 后，以原锁定 SDK、未启观察器的最后一轮收口。历次失败和回收状态保留在 TODO。
+
+下一 A‑06：已确认当前提交含 BFF 锁内冻结与 Agent 私有指令消费，不再做旧设计；只补两版指令真实浏览器→Worker、刷新/历史标记与未覆盖的删除释放。网站保留原真实网站目录→关联/解除/刷新要求，当前仅 preview，文件或 System 产品站点均不替代正式 owner。Goal ACTIVE。
+
 ## 2026-11-10 · A‑08 原范围验收／A‑05 下一检查点
 
 真实历史 FINAL 产物：Root `2fd0baee`，收据 `6623682d4e89f56fe26fa0e9` exit 0 / cleanup PASS，摘要 `fd97c3d49655d4ab1bc8742cedab0dca4c75867f8018849d38ccea354e5eeb5a`。源 Worker 原生写文件并交付，真 Storage 记录 FINAL/CLEAN；不同的目标 Run 从 Chromium 最近任务选中文件，浏览器仅发 opaque artifact ID，BFF 冻结 source Run / asset / SHA，独立 Worker 核对原字节，刷新不重发、无私有原文泄露。System/model/budget 为显式替身，不称真实供应商。直接上传/Library、Vercel AI SDK 最终段装配和刷新、无产物历史答复及直聊草稿复用已验收据，不重复运行。
