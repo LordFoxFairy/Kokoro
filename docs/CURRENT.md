@@ -2,7 +2,7 @@
 
 ## Task A current checkpoint
 
-**A‑15 keeps confirmed Project content visible during a same-page reread.** App #50 `602a1361` preserves only the same admitted Project while the owner read is pending, and clears on current absence, denial, deletion or scope change. Focused checks, types, lint and review passed. The one authenticated instruction-save browser check is pending.
+**A‑15 keeps confirmed Project content visible during a same-page reread.** App #50 `602a1361` preserves only the same admitted Project while the owner read is pending, and clears on current absence, denial, deletion or scope change. Focused checks, types, lint and review passed. Exact Root `f9dad474`, receipt `4c99f756d3aa6807e0503be0`: one real instruction save held its follow-up rail request; the title, instruction entry and existing row stayed visible, then the new instruction read back. The same page remained usable across 1050→768→390→1280px. Cleanup passed. The previous attempt used a link locator for a button and remains failed; no production code was changed for the retest.
 
 **A‑15 cold Project detail no longer waits for its rail collection.** App #50 `fc47ee3a` reuses the existing admitted Project detail endpoint; a late success does not restore a denied projection and warm known Projects do not re-fetch. Focused checks and review passed. Exact Root `00059023`, receipt `7ddc48f0eb9a6a86718a0cc0`: production Chromium and real IAM/BFF/PG/Redis showed the title and editable composer after the exact detail returned 200, before the held rail was released. The released rail returned 200 and same-document Back made no further exact request. Cleanup passed. This is a causal check, not a latency benchmark; no Agent or Storage was started.
 
