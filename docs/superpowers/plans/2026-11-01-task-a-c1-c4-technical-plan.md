@@ -34,6 +34,8 @@
 - 数据取舍：有界值对象可放现 Project 行，不建站点目录/新表；读取和 desired-state 保存/解除都要求原 owner、租户和 active Project。若同一集合可在多标签编辑，沿原 BFF 条件写规则防覆盖，未知结果先正式回读，不建第二套幂等。先锁定正式 schema/路由与 Project 删除边界，再写消费；只证明真实认证浏览器保存→回读→刷新→解除和错主体拒绝，不冒网页抓取或已部署站点选择。
 - 正式写入门：BFF 现 ProjectsModule 增精确 `GET/PUT /v1/projects/{project_id}/websites`，现 Project 行有界 `website_urls` 与同类配置状态版本；PUT 要 `expected_state_version`，匹配且同值不写、过期 412、空集合解除；与删除同一行锁，删除后 404。App 原 same-origin Project adapter，普通 Project/会话 snapshot 不改。定向真 PG 核同值、并发、错主体、删除；真 Chromium 核输入真实 URL、保存／刷新、筛选／解除。原生产 demo 列表删除。
 
+**BFF owner 已推且隔离真 PG PASS**：原 #18 `7f109384651741ee9df2e4931ef7a566053cea81` / Public 28.31.0 / canonical SHA‑256 `9fea8041e3eac479e5ea008e120729fb37637636bb6bf3ad8b94ac161ac8a88c`。真实 Nest＋fresh owner PG，准入用明确替身，保护同值 xmin/时间不改、同版本并发一胜、错主体/租户、解除与真实 Project DELETE 后 404，网站不增 receipt；清理通过。App 只消费正式 same-origin URL 引用，沿现 `project.websites` 特性位，不全局开放。App 原 #50 `64a58856` 已接精确契约，定向与架构、契约、lint、类型、构建通过，真实浏览器未验。真实认证 Chromium 证据待验。
+
 ## 2026-11-10 · A‑09 上传取消与 A‑10 快切合批
 
 - **A‑09 App**：沿现个人上传意图和唯一 AbortController 槽，不新增请求或持久状态。选中取消零写；在途取消停浏览器等待，状态明确未知，保留原 File/key，只有显式同键恢复。旧请求不刷新或夺回新 slot。不改 BFF/Storage/认证。
