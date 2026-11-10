@@ -1,3 +1,9 @@
+## 2026-11-10 · A‑08 补缺实测
+
+真实历史 FINAL 产物：Root `2fd0baee`，收据 `6623682d4e89f56fe26fa0e9` exit 0 / cleanup PASS，摘要 `fd97c3d49655d4ab1bc8742cedab0dca4c75867f8018849d38ccea354e5eeb5a`。源 Worker 原生写文件并交付，真 Storage 记录 FINAL/CLEAN；不同的目标 Run 从 Chromium 最近任务选中文件，浏览器仅发 opaque artifact ID，BFF 冻结 source Run / asset / SHA，独立 Worker 核对原字节，刷新不重发、无私有原文泄露。System/model/budget 为显式替身，不称真实供应商。直接上传/Library、Vercel AI SDK 最终段装配和刷新、无产物历史答复及直聊草稿复用已验收据，不重复运行。
+
+Project 首次带 HITL 运行 `09612ce26bd8e391f4e2d1c0` 整体 FAIL / cleanup PASS；真实 Project 两个 CLEAN 输入、Library 重选、原始 opaque 顺序与单次 202 已实测，等待态失败：private-material 抑制遥测时误删了 supervisor 生成的 checkpoint 归属。局部修复只区分受信持久归属（Run/generation 及 resume command/attempt）与可选追踪；保留 tracing/回调隔离、exact reader fail-closed、Schema/API 和原 owner 不变。以同 Run 真实替换 Worker、两份原字节和唯一终态补证，不因 HTTP 202 或关闭追踪就算恢复通过。
+
 ## 2026-11-09 · A‑12 原范围验收 / A‑08 开始
 
 Root `f3a35da7` 的真实 native Chromium/Scheduler/Agent HTTP/独立 Worker 收据 `fd6c7b5283f4a49f05775a05` 整轮 PASS，含实际控件CRUD/日历/暂停恢复、自然到点→Updates completed→正式终稿→刷新→删除，回收通过。周期/IANA 规则编辑/owner next/重开/首刷以882补缺子步骤承接，Project Tasks/Updates筛选及对应刷新/All还原以f13b子步骤承接；这两轮末尾额外刷新有失败，整体仍记FAIL，认证链503/Reconnecting进入A‑15，未称修复或完整稳定性。DST真PG正式BFF/Scheduler Clock-port接缝33328a通过并回收；不冒浏览器时间旅行或真实供应商。A‑12按原范围组合证据验收，Goal ACTIVE，接下来 A‑08。
