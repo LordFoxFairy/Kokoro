@@ -8,6 +8,20 @@
 
 **真实成果目录阶段通过**：精确 Root `196f2012762842410cbaa1eebf367e39405af5d3`，收据 `83846f524b9a070906b870e4` / SHA‑256 `17aed0342951d5e9e99cd1266f4e047cebb73eabc64e512bd94a0778c106c431`。同一真实认证会话两次普通 Chat、独立 Worker native write/edit/deliver、Storage exact 原 SHA 与 BFF 关系核同，两目录三件且两版 `/reports/summary.md` 各绑定原 Run；390×844 键盘可达，退出期 4ms 可信键盘快切后新面板与焦点不被旧关闭覆盖；正常限流窗后刷新恢复，同一旅程两条 Chat、零上传。整轮、原生 exit 0／quiescent／凭据检查／回收 PASS，Redis 8/11 归零；System/model/budget 用明确确定性 HTTP 夹具。首轮 `c70e6fd366d05e6c6cf875de` 在 BFF 装配阶段因私有 Agent fixture 旧变量名退出，零浏览器动作、回收 PASS；仅修夹具。保持 A‑10 未交付过程文件和 A‑15 快刷开放。
 
+## A‑10 未交付过程文件执行门
+
+- **范围与授权**：成果目录仍走原 FINAL。过程输出从现 Run 配方冻结的产品输出目录 `/outputs/` 产生，目录归该 Run，不是全会话文件盘。目录之外的草稿、输入／Skills／隐藏挂载、凭据与宿主路径均非产品输出；只命中路径不授权，还要有本次真实、当前 lease 下受限操作的不可变版本。给执行端明确输出位置，但 prompt、工具 ACK、可变路径或旧 archive 都不当作来源。默认工作台正式 Chat 的受支持 backend 逐一接入；旧 Run 不回填，未覆盖 backend 明确保留 OPEN。
+- **事实与写区**：Agent 持有 Run、生产位置、opaque version ID、路径、长度／SHA 与发布状态；State 从原生写入的 exact 已提交父子版本取原字节，不从 pending 或最新 checkpoint 推断。Local/Docker 的原生写编辑在同一受控写入边界冻结字节；脚本输出只在当前隔离进程已停稳／可证不可变时取，不用 nofollow 代替字节快照。所有出口沿 B‑02 fresh 授权和同一原字节检查，必要的扫描及 immutable byte 存放由 Storage owner 负责。Storage 只加专用于会话过程输出的 purpose 与 exact 受限入口，不开放通用 list/get，不借 FINAL、Library 或私有 archive。原 lease 再核通过才可发布版本，重投同键；旧代迟到不会变成可见版本，不持 PG 行锁做网络 I/O。
+- **读取与撤销**：BFF 只投影当前本人 active Conversation（Project 同时 active）的 exact Run/version；走现 App same-origin 私有 Canvas、原 preview 下载，不给浏览器 Storage 签名 URL，不进匿名 share。普通 Conversation tombstone 立即撤可见权限，复用其持久删除写区安排 process-output-purpose 回收，不能顺带扩大旧 FINAL 物理释放。Project 原全 scope 释放边界保持。读前及交付前重核，已开始的传输不宣称可收回。先冻结 owner 机器契约，再生成 BFF/App 消费。
+- **最低验收**：沿现真实 Chromium／Worker 夹具只补两 Run 同径两版、刷新各取原 SHA、错 scope 拒绝、删除后旧版本拒读；另外验证旧代或 pending 不发布，且敏感路径／原值不出。先做 State 端到端，再接 Local/Docker/script 等实际受支持 backend；State 探针 e3e56fa 只是已有证据，不能勾 A‑10。
+
+## A‑13 外部聊天连接设计门
+
+- **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
+- **操作与状态**：原 setup GET 保持只读和 no-store；创建／取消使用显式命令，连接回读和断开独立于 setup TTL。每个 setup 绑定可信 tenant/user/provider 和短期一次性随机证明；以锁内状态检查处理过期、取消、重复或迟到，外部操作不持行锁；回调按 provider 凭据验真，不信任 query/body 的 Kokoro 身份。连接状态只在正式 owner 回读显示，不把打开链接或本地二维码当完成。真实配置缺失明确不可用；不加静默重试、假 200、通用中继或新的登录。第一片走 Telegram，LINE 和 Slack 按同生命周期继续交付，三者均留原范围。
+- **平台路径**：[Telegram](https://core.telegram.org/bots/features#deep-linking) 以私聊 deep-link 启动，按 [Bot API](https://core.telegram.org/bots/api#setwebhook) 核 webhook 秘密与来源，原登录用户完成私聊证明后才绑定，单击转发的链接不构成绑定；[LINE](https://developers.line.biz/en/docs/messaging-api/linking-accounts/) 使用 Messaging API 的 account-link / nonce，按 [原始字节签名](https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/) 验事件；[Slack](https://api.slack.com/authentication/oauth-v2) 只在外部安装处使用标准 OAuth code exchange、匹配一次性 state 与当前产品身份，单独裁定工作区安装凭据安全存放／撤回，不扩大 MCP 授权。凭据不进浏览器、响应或日志。
+- **验收**：本地隔离 PG + 正式 HTTP 验证一成功、一错身份、取消/过期/重投和真实状态回读；每个真实平台仍需现成测试应用、账号和可达回调才能验证连接→刷新→断开。当前不创建外部应用、不设置公网回调、不部署。只有绑定/回读在原范围内；不新增跨渠道 Agent 聊天或 Agent 配置。
+
 ## A‑11 场景实施门（A‑10 成果树已验，App 单独写区）
 
 - 现简报范围只改 dropdown 本地状态，网站类别只改选中态；两者不进入唯一现 Chat 的 `content`。沿 App 当前草稿把显式选择写成可见、可编辑的约束行；再次选择只替换本场景能准确识别的选项行，保正文和附件，不把用户手改正文重写回默认。模板/灵感入口按现草稿操作承接该行，刷新读回同一草稿；沿原发送/未知重试冻结同一可见文本。保现文本长度上限，不悄悄截断，不加 BFF 字段、状态机、第二 store 或发送入口。
