@@ -16,6 +16,8 @@
 - **Storage 首片机器边界**：沿 v3 上传增加 `WORKSPACE_OUTPUT` purpose（不改现有编号），仅 Agent＋conversation 创建/完成；CLEAN 后仅 web-bff＋该 conversation＋本人 exact Asset/SHA 可经现 GetDownloadReference 读取，不加 generic Get/List。单增具名 `ReleaseConversationWorkspaceOutputs`，复用同 scope 行 nullable purpose tombstone 和现锁／回执；目的不是全 scope，故不复用会连带退 FINAL 的原 RPC。签发/重签、完成、下载/重放均检查 fence；同 SHA 仍有 FINAL 时保原 Blob，未知对象版本留待核，不把禁止可见称作物理回收。无新表，不复制 Agent version/path。
 - **最低验收**：沿现真实 Chromium／Worker 夹具只补两 Run 同径两版、刷新各取原 SHA、错 scope 拒绝、删除后旧版本拒读；另外验证旧代或 pending 不发布，且敏感路径／原值不出。先做 State 端到端，再接 Local/Docker/script 等实际受支持 backend；State 探针 e3e56fa 只是已有证据，不能勾 A‑10。
 
+**Storage 首片 owner 已推原 #3**：`b60931e9e4e92d596b0678cbdabd9116e898b432` / v3 combined SHA‑256 `3da3346a760a6275251aba56f75129189e06e3522e81b4c0b110386a4cdff02f`。主控隔离真 PG／Connect 两项：迟到首次 PUT、未确认暂存、同 SHA 的 FINAL、晚到 Complete、本人 exact 读、撤销后重放；对象/扫描/Redis 均为替身。存量父 catalog 先置一行，扩展保行、重跑 no-op；自有库全部回收。原 FINAL 重放测试父 `ebd6e3b` 复现，修 fixture 使真正退役发生在一次成功签名之后，原断言保留。主控契约、构建、权限定向 20 通过。未配对 gitlink、未证明最终用户可见版本或未知对象的物理清除。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
@@ -26,9 +28,11 @@
 
 **A‑13 App 本地切片已推**：原 #50 `e0cfeda4`。现 setup 关闭／换平台／重试／卸载实取消、丢迟到；有效未完成票据到点撤二维码／继续，零自动重发；connected 不被 setup TTL 覆盖，disconnected 独立，接收既有 offset 格式。主控 3 定向 25/0、限定 lint 与非增量 TypeScript 通过；不重跑 App 默认／浏览器，不冒真实 provider。BFF 的 Public 28.32 和 Telegram 仍在各自源码写区，不配对未完成提交。
 
+**Telegram BFF owner 已推原 #18**：`3000256cf6c8d2b481b93253631f623f4d38a134` / Public 28.32 / SHA‑256 `e12a8078f5ecaa741c255a3bcec032d398d35309d845d3cf736dc764a0287d33`。正式 Nest＋fresh 隔离 PG 回归 1/0，既有用户本人确认、假身份拒绝、回调只发一次、过期／取消／断开与唯一绑定；IAM admission、Telegram provider 是明确替身。测试库回收，Redis 13 未污染；主控 211 操作合同和 lint 通过。App 待 exact 同源 UI 接线与真实认证浏览器验收，不更新 Root gitlink 到未配对候选，也不宣称真实外部 Telegram。
+
 ## A‑15 快刷诊断收据（正控，不等于修复）
 
-精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
+精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。同 exact App `e0cfeda4` 的隔离生产 build 与 Node24 本机 ingress 脱敏/请求 ID 相关性已实测，完整生产旅程未运行。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
 
 ## A‑11 场景实施门（A‑10 成果树已验，App 单独写区）
 

@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑10 Storage and A‑13 Telegram BFF owner candidates pushed independently.** Storage #3 `b60931e` passed two real isolated PG/Connect workspace-output cases and a seeded parent-schema expansion/replay; object/scan/Redis were doubles and no normal database changed. BFF #18 `3000256` / Public 28.32 passed real isolated PG/Nest Telegram lifecycle with explicit IAM admission and Telegram protocol doubles. Both isolated databases were removed. No new Root gitlink for either candidate until its consumer pair is proven; Agent file production, App Telegram flow, and live provider callbacks remain open. An exact isolated Next production build and the Node 24 BFF ingress attribution probe are verified, not a production rapid-reload journey.
+
 **Open design gates recorded; no product acceptance added.** A‑10 will publish only proven immutable Run versions under the trusted output root, using Storage bytes and private BFF/Canvas reads; existing FINAL lifecycle is unchanged. A‑13 will keep the existing page but put external account bindings in BFF Product, not the Run service or MCP; Telegram, LINE and Slack all remain open. A‑15 rapid reload diagnosis is scoped to the two actual IAM admission hops and the App snapshot/parts recovery.
 
 **A‑13 App-local setup lifecycle shipped, provider connections remain open.** App #50 `e0cfeda4` aborts abandoned setup reads, ignores late responses and removes expired QR/continue without issuing another request; connected is not governed by setup expiry. The controller reran 25 focused component/client/adapter tests, targeted ESLint and nonincremental TypeScript. Public 28.31 and runtime owner pairing otherwise remain unchanged. No external callback or real disconnect has been accepted.
