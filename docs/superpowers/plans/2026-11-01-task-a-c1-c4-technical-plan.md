@@ -1,3 +1,11 @@
+## 2026-11-10 · A‑09 文件服务端搜索实施门
+
+**目标与取舍。** 用户在资料库 Files 搜索全量本人 CLEAN 普通文件，不仅筛 App 已取的 50 项。沿现 App → BFF GET Library → Storage v3 ListAssets；筛选在 Storage 同一稳定 keyset/limit 前。页内筛选和 BFF 翻页扫描均不满足全量及时搜索；改写所有已有文件名或新建搜索索引服务没有必要。保留原公开列表、查询 URL、分类、结果形状和实际 scope；删除浏览器对已加载页的筛选。作品及 Project 列表不扩大。
+
+- **Storage owner / 原 #3。** 现 ListAssetsRequest 增 `string query = 3` 和 `PersonalLibraryFileType file_type = 4`（UNSPECIFIED=全部，DOCUMENTS/IMAGES/MEDIA/OTHER）。仅个人真实范围允许 active filter；缺省 project/personal/FINAL/旧 HTTP 游标字节不变。q 原始最多 200 Unicode code points、拒 C0/DEL，trim/NFC；空 q 与默认类型无 active filter。搜索对文件名或 MIME 作 NFC 后的大小写不敏感字面子串（PostgreSQL lower 的数据库 Unicode 语义，不宣称等同所有 JS Unicode 特例，`%`/`_` 是字面）；类型保原 Files MIME 谓词、其他为前三者补集。按现 tenant/subject、active scope、live blob/asset、ASSET、CLEAN、`created_at DESC, asset_id ASC` 做一条有界只读选页，游标追加规范筛选摘要，不匹配拒绝。仅 active filter 需要 NFC/字面函数，现 typed Prisma CRUD 不搬；Storage ADR 在原 NestJS/Prisma 决策记录窄例外：同 generated Prisma Client 参数化查询、不建 pool/Schema/索引/写路径、PG 测试及可退出条件。全范围无新认证、OAuth、SDK、表。
+- **消费者 / 原 BFF #18、App #50。** BFF 仅在 Storage canonical/生成物冻结后消费，公开原 `GET /v1/library?kind=file&q=&type=` 扩现 q/type（artifact 类型与行为原样，kind 不混），按原 400 处理非法筛选/游标；生成文件由工具更新。App 在 owner 冻结后使用现 `file_q/file_type`，搜索防抖、改条件立即停止渲染旧 window 并退休旧游标/响应，不重挂整个 Files（保留 A‑09 删除未知回执的原意图）。Chooser 的默认 list 无筛选，不顺手改。 Root 精确门要求 Agent 的 Storage 生成收据与当前 owner gitlink 同 SHA，故仅正规重生成 Agent Storage 输入；Agent 业务及 Capability 包/封面兼容输入不动。
+- **执行顺序和最小验收。** Storage 实现/真实隔离 PG/Connect → BFF 正式生成与定向 → App pin 与 UI → 主控冻结 Root 真实浏览器。PG 同一真实分页案同时证明较旧匹配首屏/后续、NFC/百分号下划线字面、换筛选游标拒绝；浏览器用少量真实 CLEAN 文件，通过现 Files 查询、刷新恢复、检查实际网络筛选，必要时同源 limit=1 区分先分页/先筛，不上传 51 个夹具。不重跑已验删除或 Agent 旅程。写区分开，主控唯一 Git、资源与台账，原 PR，不合并 main、不部署。
+
 ## 2026-11-10 · A‑09 本人文件删除验收
 
 - **精确交付**：Root `f8bd4b0f1708a0218179741f16809b0ad5933f14`，BFF `697cece8` / Public 28.26（原 #18）、App `5d1d2485`（原 #50）、Storage `c31a065` 不变。BFF 复用原本人准入和 Storage DeleteAsset；App 只在匹配 owner 回执后退休当前投影，不自动重试或把 404 当成功。无新 Schema、SDK、内部认证路径。Root topology、15 条兼容边及原 checkpoint 通过。
