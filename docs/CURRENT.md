@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑15 keeps confirmed Project content visible during a same-page reread.** App #50 `602a1361` preserves only the same admitted Project while the owner read is pending, and clears on current absence, denial, deletion or scope change. Focused checks, types, lint and review passed. The one authenticated instruction-save browser check is pending.
+
 **A‑15 cold Project detail no longer waits for its rail collection.** App #50 `fc47ee3a` reuses the existing admitted Project detail endpoint; a late success does not restore a denied projection and warm known Projects do not re-fetch. Focused checks and review passed. Exact Root `00059023`, receipt `7ddc48f0eb9a6a86718a0cc0`: production Chromium and real IAM/BFF/PG/Redis showed the title and editable composer after the exact detail returned 200, before the held rail was released. The released rail returned 200 and same-document Back made no further exact request. Cleanup passed. This is a causal check, not a latency benchmark; no Agent or Storage was started.
 
 **A‑10 native E2B edit is wired.** Agent #46 `27dbe3a` verifies the installed postimage on the same descriptor and uses the existing private capture, lease and credential guard. The public tool acknowledgement still has no file bytes. Local focused checks used an E2B protocol double; the live Custom API E2B write/edit-to-Canvas journey remains open. The original handoff applies to supported surfaces: Local Shell has no product route, and script output is currently offered by Docker only.
