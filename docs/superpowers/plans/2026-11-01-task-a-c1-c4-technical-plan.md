@@ -13,6 +13,7 @@
 - **范围与授权**：成果目录仍走原 FINAL。过程输出从现 Run 配方冻结的产品输出目录 `/outputs/` 产生，目录归该 Run，不是全会话文件盘。目录之外的草稿、输入／Skills／隐藏挂载、凭据与宿主路径均非产品输出；只命中路径不授权，还要有本次真实、当前 lease 下受限操作的不可变版本。给执行端明确输出位置，但 prompt、工具 ACK、可变路径或旧 archive 都不当作来源。默认工作台正式 Chat 的受支持 backend 逐一接入；旧 Run 不回填，未覆盖 backend 明确保留 OPEN。
 - **事实与写区**：Agent 持有 Run、生产位置、opaque version ID、路径、长度／SHA 与发布状态；State 从原生写入的 exact 已提交父子版本取原字节，不从 pending 或最新 checkpoint 推断。Local/Docker 的原生写编辑在同一受控写入边界冻结字节；脚本输出只在当前隔离进程已停稳／可证不可变时取，不用 nofollow 代替字节快照。所有出口沿 B‑02 fresh 授权和同一原字节检查，必要的扫描及 immutable byte 存放由 Storage owner 负责。Storage 只加专用于会话过程输出的 purpose 与 exact 受限入口，不开放通用 list/get，不借 FINAL、Library 或私有 archive。原 lease 再核通过才可发布版本，重投同键；旧代迟到不会变成可见版本，不持 PG 行锁做网络 I/O。
 - **读取与撤销**：BFF 只投影当前本人 active Conversation（Project 同时 active）的 exact Run/version；走现 App same-origin 私有 Canvas、原 preview 下载，不给浏览器 Storage 签名 URL，不进匿名 share。普通 Conversation tombstone 立即撤可见权限，复用其持久删除写区安排 process-output-purpose 回收，不能顺带扩大旧 FINAL 物理释放。Project 原全 scope 释放边界保持。读前及交付前重核，已开始的传输不宣称可收回。先冻结 owner 机器契约，再生成 BFF/App 消费。
+- **Storage 首片机器边界**：沿 v3 上传增加 `WORKSPACE_OUTPUT` purpose（不改现有编号），仅 Agent＋conversation 创建/完成；CLEAN 后仅 web-bff＋该 conversation＋本人 exact Asset/SHA 可经现 GetDownloadReference 读取，不加 generic Get/List。单增具名 `ReleaseConversationWorkspaceOutputs`，复用同 scope 行 nullable purpose tombstone 和现锁／回执；目的不是全 scope，故不复用会连带退 FINAL 的原 RPC。签发/重签、完成、下载/重放均检查 fence；同 SHA 仍有 FINAL 时保原 Blob，未知对象版本留待核，不把禁止可见称作物理回收。无新表，不复制 Agent version/path。
 - **最低验收**：沿现真实 Chromium／Worker 夹具只补两 Run 同径两版、刷新各取原 SHA、错 scope 拒绝、删除后旧版本拒读；另外验证旧代或 pending 不发布，且敏感路径／原值不出。先做 State 端到端，再接 Local/Docker/script 等实际受支持 backend；State 探针 e3e56fa 只是已有证据，不能勾 A‑10。
 
 ## A‑13 外部聊天连接设计门
@@ -21,6 +22,10 @@
 - **操作与状态**：原 setup GET 保持只读和 no-store；创建／取消使用显式命令，连接回读和断开独立于 setup TTL。每个 setup 绑定可信 tenant/user/provider 和短期一次性随机证明；以锁内状态检查处理过期、取消、重复或迟到，外部操作不持行锁；回调按 provider 凭据验真，不信任 query/body 的 Kokoro 身份。连接状态只在正式 owner 回读显示，不把打开链接或本地二维码当完成。真实配置缺失明确不可用；不加静默重试、假 200、通用中继或新的登录。第一片走 Telegram，LINE 和 Slack 按同生命周期继续交付，三者均留原范围。
 - **平台路径**：[Telegram](https://core.telegram.org/bots/features#deep-linking) 以私聊 deep-link 启动，按 [Bot API](https://core.telegram.org/bots/api#setwebhook) 核 webhook 秘密与来源，原登录用户完成私聊证明后才绑定，单击转发的链接不构成绑定；[LINE](https://developers.line.biz/en/docs/messaging-api/linking-accounts/) 使用 Messaging API 的 account-link / nonce，按 [原始字节签名](https://developers.line.biz/en/docs/messaging-api/verify-webhook-signature/) 验事件；[Slack](https://api.slack.com/authentication/oauth-v2) 只在外部安装处使用标准 OAuth code exchange、匹配一次性 state 与当前产品身份，单独裁定工作区安装凭据安全存放／撤回，不扩大 MCP 授权。凭据不进浏览器、响应或日志。
 - **验收**：本地隔离 PG + 正式 HTTP 验证一成功、一错身份、取消/过期/重投和真实状态回读；每个真实平台仍需现成测试应用、账号和可达回调才能验证连接→刷新→断开。当前不创建外部应用、不设置公网回调、不部署。只有绑定/回读在原范围内；不新增跨渠道 Agent 聊天或 Agent 配置。
+
+## A‑15 快刷诊断收据（正控，不等于修复）
+
+精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
 
 ## A‑11 场景实施门（A‑10 成果树已验，App 单独写区）
 
