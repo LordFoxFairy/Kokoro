@@ -8,6 +8,7 @@
 
 ## 当前执行检查点（主控）
 
+- **A‑10 Docker 脚本接线与接管验证**：Agent 原 #46 `f70c6c2`。原 `execute` 不指定输出时不变；指定单文件才启独占 Docker，停机原字节经既有 journal/Storage。主控真实 Docker/隔离 PG：新 workspace 首次写成功，后台迟写未覆盖，旧代不能登记，新代只读原停机并冻结唯一版本，延迟清理与资源回收通过；定向、类型、契约与独审通过。该证不含 Canvas，浏览器待本次精确组合。
 - **A‑10 Docker 原生过程文件浏览器 PASS**：精确 Root `d0d517c6`／Agent `96ef6a5`，收据 `c0fbc9933f4283d67d78d68a`（SHA‑256 `007fd33689d73b11097521dda3302ca6eb7eac8a6cc6b52ba783cbce33a3d89b`）。真登录选择 Custom API、一次 Chat 202、独立 Worker 真实 Docker 原生写文件、终稿及原 Canvas 预览；同 Run 唯一版本、真实 Storage/MinIO/ClamAV CLEAN，原 85 字节和 SHA 一致。原生/整轮 exit 0、清理通过，Redis 8/11 归零，无额外 Docker 回收、上传或 FINAL 交付。System/model/budget/Platform 是明确替身；Docker 脚本、Local 与 E2B 仍开，不重跑 State 或此次 Docker 原生链。
 - **A‑15 Project 冷/热小样本实测**：精确 Root `52099053`，收据 `1381c861175735a0cb26dbd0`（SHA‑256 `8282f369ef804b35b414de6dea3f64e166c1d34048f231d02014b9a6e4fcd743`）。生产模式、真实登录：一次真实 Project 创建，之后纯读。冷打开 305/306ms，同文档软返回 15/18ms（各 n=2，经验 p50/p95 即 305/306 与 15/18ms，非稳定尾延迟；冷态比 100ms 目标慢约 205ms）。本轮 IAM 63/65 两跳全 200；可具名的后台 503 包括 Project resources、MCP、Skill、Custom API，本夹具未配置 Storage／Platform；仍有遮罩项，不倒推历史错误。原生/整轮 exit 0、清理通过，无 Chat／Agent／Storage。
 - **A‑10 Docker 浏览器历史失败与修复**：精确 Root `52099053` 两轮均 FAIL、cleanup PASS、零 Chat：`fb050f95d77918115f88fe54` 缺夹具导航导致无连接按钮；补现正式导航后 `2bf6d12261fa61b6a2b21791` 已能打开连接面板，但 profile 未出现。夹具接齐后，`2b2590a199855b1f220e42b0` 已真实选择→原 Chat 202→独立 Docker Worker 原生写与终稿；实际 Agent 版本 0，Canvas 无过程文件。Worker runtime policy 漏接工作区配置，Agent 原 #46 `96ef6a5` 已修，主控定向 19 通过、独审通过；后续真 Docker 原生链见上方收据。独立真实 Docker 已证明脚本只读普通工作区、只写专属输出并在停箱后不被迟到子进程覆盖；仅是脚本接线前提。

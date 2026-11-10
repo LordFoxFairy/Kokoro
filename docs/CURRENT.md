@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑10 Docker script capture is wired in Agent #46 `f70c6c2`.** Ordinary execute is unchanged. The opt-in direct output file comes from a separate stopped container, with the existing journal, lease, CLEAN Storage path and deferred cleanup. A real Docker and isolated PostgreSQL probe verified first-write mount setup, immutable stopped bytes, rejection of the old lease and exactly one new-lease freeze without restarting the script. Cleanup passed; authenticated Canvas confirmation is still pending.
+
 **A‑10 native Docker process files passed the authenticated browser journey.** Exact Root `d0d517c6`, Agent #46 `96ef6a5`, receipt `c0fbc9933f4283d67d78d68a`. Chromium selected the actual offered Custom API profile and sent one Chat; an independent Worker ran the real Docker backend and native file write. The original Canvas read the same 85 bytes as the single Agent version and CLEAN Storage object, with real MinIO/ClamAV. Native/scenario exit 0, cleanup passed, no extra Docker cleanup or upload/FINAL delivery. System/model/budget and Platform were explicit protocol doubles; scripts, Local and E2B remain open.
 
 **A‑15 measured production Project readiness without a Run.** Exact Root `52099053`, receipt `1381c861175735a0cb26dbd0`: 305/306 ms for two new browser contexts and 15/18 ms for two same-document returns. Cold readiness exceeds the 100 ms target; the two pairs are descriptive only. Both IAM hops were 200; current background 503s include resources and unconfigured connectors, while some requests remain masked and historical incidents remain unassigned. One Project creation, no Chat, Agent, or Storage; native exit 0 and cleanup passed.
