@@ -6,11 +6,13 @@
 
 **组件门：** App `d860cf5b` 已推原 #50；两个新回归均有实际 RED→GREEN，主控定向、架构、lint、TypeScript/production build 已通过，Public28.29 与 BFF/Agent/Storage 原样。真实浏览器只跑 A‑09 新取消，A‑10 快切真链留文件树旅程、不重复上一轮预览。
 
+**A‑09 最终独有证据 PASS**：Root `3b3de71b`、App `d860cf5b`，`a757df8bc03de847b6ae1591`（SHA‑256 `d46c5aaf…2cf1cf`），整轮／原生 exit 0／cleanup PASS。真实已提交回执尚未交 App 时可取消等待，无假成功或自动重发；按原键显式恢复原 BFF receipt，单一 CLEAN Asset、原字节与持久层一致，零 Chat／Worker。首轮私有 CDP 持有响应时等待 raw header 死锁超时；独立浏览器复现，改为立即读取原请求已知 header，不改变数据或重发。复用旧内容／收藏／退役收据，A‑09 原范围勾选。A‑10 的 Canvas 旧关闭竞态在同提交定向通过，真快切随文件树单独补证。
+
 ## 2026-11-10 · A‑10 文件树边界核对（不等于方案通过）
 
 - 已确认现 BFF 私有 session snapshot 的 `files` 固定空，App legacy `fileUrl` 不是可用的生产授权路径；Agent S3 workspace archive 是运行内部 best-effort，不是可读产品目录。现 `delivery.created` 有原路径，但持久 Artifact 关系与 snapshot 未承接。不能从 title、filename、opaque ID 或历史 DOM 猜目录，也不把下述成果树当未交付工作区。
 - **成果候选**：Agent 已有正式 deliver 路径和 `safe_virtual_path`，BFF 已有从现 owner 约束生成的 `safeVirtualPath` 消费校验；复用已知虚拟 backend 的 owner 判定与现路径验证，并排除 `/.inputs`、`/.skills` 等私有挂载；BFF 的 lexical 检查不为未知 backend 的宿主路径背书。候选在现 exact deliver 成功事件和 journal 恢复使用同一可选安全展示路径，不新增 Agent 路由/RPC；旧记录无证时省略目录，不补造。BFF 沿现 Conversation↔Artifact 关联持久恢复，不另建表／服务、不逐 Run 发 HTTP 求路径；Web 用现 Canvas 列表做只读目录，选择器仍是精确 Conversation＋Artifact，读取仍由既有 BFF／Storage 核本人、当前可见、原版本。分享面不增加工作区路径。
-- **过程文件候选**：保留未交付文件的原范围；Agent 本地 B‑02 `FileEgress` 提供带原字节、路径和秘密检查的底座，但尚无持久、可授权、跨 backend 的产品版本来源。实施前须锁定所支持的公开文件、Run/version 绑定及执行结束后的恢复与撤销；不把内部 S3 archive、宿主目录、凭据、`/.inputs` 或“最后一次写入路径”直接放入浏览器。先验相同会话双目录、同名不同版本、刷新、错会话拒读；不重跑已验三格式旅程。
+- **过程文件候选**：保留未交付文件的原范围；Agent 本地 B‑02 `FileEgress` 提供带原字节、路径和秘密检查的底座，但尚无持久、可授权、跨 backend 的产品版本来源。实施前须锁定所支持的公开文件、Run/version 绑定及执行结束后的恢复与撤销；不把内部 S3 archive、宿主目录、凭据、`/.inputs` 或“最后一次写入路径”直接放入浏览器。先验相同会话双目录、同名不同版本、刷新、错会话拒读；现 ≤960px 隐藏 Files 切换，须复用现 compact 控件恢复键盘可达；只补目录和实际快切，不重跑三格式旅程。
 
 ## 2026-11-10 · A‑09/A‑10 正式内容预览共用切片
 
