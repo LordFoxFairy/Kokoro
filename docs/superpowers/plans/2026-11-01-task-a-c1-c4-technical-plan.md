@@ -1,3 +1,10 @@
+## 2026-11-10 · A‑09 本人文件删除验收
+
+- **精确交付**：Root `f8bd4b0f1708a0218179741f16809b0ad5933f14`，BFF `697cece8` / Public 28.26（原 #18）、App `5d1d2485`（原 #50）、Storage `c31a065` 不变。BFF 复用原本人准入和 Storage DeleteAsset；App 只在匹配 owner 回执后退休当前投影，不自动重试或把 404 当成功。无新 Schema、SDK、内部认证路径。Root topology、15 条兼容边及原 checkpoint 通过。
+- **真实收据**：`aea32dae9339155196e134a1`，SHA-256 `b5980492fad83772da889f3d1185b8bfe234d8bddd3dbfe0cde12720ba6f8dbe`，原生和总进程 exit 0。真实 IAM/Chromium、BFF、PG、Redis、Storage/MinIO、ClamAV。两件 CLEAN 文件、原字节下载、取消零删除；只丢弃浏览器看到的首个真实 200，不伪造响应或重放写入。用户显式重试同 key/asset，第二个 200 为同一时间的 replay。刷新后另一件仍在、旧内容 404。PG 核对一条完成的 owner command、精确 tombstone、目标 blob 逻辑退休及未触碰另一件。隔离资源回收、静默和凭据扫描通过。无 Agent、System 或 Billing；未验物理清理。
+- **验证边界**：BFF 构建、lint、公开契约与 Storage 生成检查、28 条定向 Nest/Connect 夹具通过，未重跑完整默认。App 契约、架构、lint、类型、294 条定向和独立构建通过；完整默认 6486 PASS / 2 FAIL，两条连接器草稿 `keep exact draft` 断言在未改父提交 `c4b92634` 隔离复现；保留断言，不记全绿。只跑了本次真实浏览器旅程，未跑 App 全量 E2E。
+- **下一检查点**：A‑09 文件过滤由 Storage 在原列表游标之前完成，App 复用 URL 筛选、取消陈旧查询并删除页内过滤；契约先钉实文件类型和文字匹配语义，再实现。Project 作品回跳只读已确认：使用 BFF 现有的本人 Conversation→Project 关联，不能缺字段时猜成直聊；补真实 Project 产物→资料库→原项目会话及刷新。两项均未进入实现；持久收藏和单 FINAL 退役仍 OPEN。Task A 维持 ACTIVE，未合并 main、未部署。
+
 ## 2026-11-10 · A‑06 分项验收／A‑09 独立删除片
 
 Root `80f316d23ea3e0139a5ec1a3b7fde89723617b9c`，`48b73dafa2094e27aafe476c`（摘要 `c6dd639eb1c3fc35e63f0e3781218f2baa2c0ab6ece9321e45b37f85d7a293f0`）真实 Chromium 编辑两次；同一个 Project 会话的两次实际 Run 各封存一个模型尝试，BFF/Agent 原冻结快照与实际模型系统文本同字节，B 未带 A、同一会话历史保留；硬刷新读两份正式 parts、B 当前／A 历史，公开 AG‑UI 两终态共 14 帧无私有原文。浏览器上传/删除/回读通过，私有回执读取错误导致整轮 FAIL，不冒整轮全绿。只补释放的 `0be47511e1c3f3f533ea31d2`（摘要 `a3cb59fc864109803692e4e5f6832a8ef1377ea224939987886fb18ba7edbad4`）exit 0／原生 exit 0；BFF 与 Storage 两条 scope 的命令/摘要/owner 及状态核等，Project 一件 Asset 真退役，Conversation 无资产，逻辑 released／物理 pending，详情 404，cleanup/凭据日志通过。未重做指令、未改生产/契约/Schema。System/model/budget 为明确替身。
