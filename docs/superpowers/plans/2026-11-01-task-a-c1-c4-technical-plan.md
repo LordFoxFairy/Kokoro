@@ -53,6 +53,8 @@
 
 **Local 原生写／编辑组件通过**：精确 Root `9c5c191c`、Agent `c14c47d`、Storage `b60931e`；收据 `a10-local-9d73832546b8a184ce578fa9`，SHA‑256 `90ffcfb06a03a2c4139cae1d0644b165842ea878d3d7c21cd9d5d665bae54514`。锁定 SDK 实际调用写入/编辑，后改活文件；旧租约零发布，新租约各上传一次，真 PG/Storage/MinIO/ClamAV 回读 36／38 字节 CLEAN 原版本。退出 0，隔离库回收、Redis 13 归零。模型替身；无浏览器、独立 Worker 或脚本。Local Shell 不新增测试专用入口。
 
+**A‑10 E2B 原生写入修复已推**：Agent 原 #46 `ef74f1d`，沿现 Custom API 的 E2B Chat、原 `write_file` 与过程文件发布。只处理 `/outputs/`：由锁定 SDK 在真实目标目录执行一次有界写，拒绝覆盖和符号链接，同一文件描述符核对实际字节，复用既有日志、凭据检查与 CLEAN 路径。主控定向新行为、Ruff／Pyright／契约通过；相关套件一项旧 metadata 超限夹具在父版 `c14c47d` 同样因对端 reset 未标关闭而失败，未改。使用本地真实文件写入与 E2B 协议替身；真云浏览器预览、E2B 编辑／脚本仍未验。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。

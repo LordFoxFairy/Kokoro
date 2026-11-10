@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑10 E2B native write is wired and locally verified.** Agent #46 `ef74f1d` uses the existing Custom API Chat and SDK. Protected outputs require an exclusive write and exact bytes checked on the same file descriptor, then use the existing journal and credential guard. No HTTP or Storage contract changes. Focused checks passed for the new behavior; one older metadata oversize fixture reset failure was reproduced unchanged at `c14c47d`. Real E2B, edit and script output remain open.
+
 **A‑15 stops reading disabled Project instruction history.** App #50 `f02684f8` reuses the existing instruction capability in AppFrame. Receipt `1381c861175735a0cb26dbd0` showed four extra BFF requests; focused regression and two existing identity-boundary checks passed after the fix, with lint and nonincremental TypeScript. No new browser timing or resolution of historical intermittent failures is claimed.
 
 **A‑10 Local native write/edit passed with real storage.** Exact Root `9c5c191c`, Agent `c14c47d`, Storage `b60931e`; receipt `a10-local-9d73832546b8a184ce578fa9`. The locked SDK produced two same-path versions; a new lease published the original 36/38 bytes through PostgreSQL and CLEAN Storage/MinIO/ClamAV, while the old lease published none. Exit 0, isolated DB removed and Redis 13 empty. Model fixture, no browser, independent Worker, or script; not a Local product-entry pass.
