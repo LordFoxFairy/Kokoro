@@ -6,6 +6,7 @@
 
 ## 当前执行检查点（主控）
 
+- **收口并行（A‑10 未验收）**：Agent HTTP 8.16.0 `e27cd7a`（#46）、BFF Public 28.30 `0c6be20`（#18）、App `3137782b`（#50）均已推原 PR。本次 Root 固定三仓精确组合；Agent 主控正式契约、定向及真实隔离 PG 通过；BFF 主控验 122 项契约／wire 与独立 PG 的持久关系／旧记录／重放；App 正式生成、契约／架构／Canvas 定向、lint、类型和生产构建通过。下一只跑双目录/双版本、快切和刷新，源码配对不冒真实旅程通过。BFF 包含 A‑15 `50a9690` 429 错分修复，快刷整体仍待验。A‑10 过程文件、A‑06 网站关联、A‑13 真实渠道保持未验收。
 - **A‑09 上传取消补缺 PASS（Root `3b3de71b`，App `d860cf5b` 原 #50）**：`a757df8bc03de847b6ae1591` 整轮／原生 exit 0、cleanup PASS。真实登录 Chromium 提交前取消零 POST；首个真实 BFF CLEAN 200 只在浏览器暂留，取消使原 fetch abort，不应用迟到 ACK、无自动重试；同一 File/key 显式重试返回原 BFF 200，PG 证一个完成命令、一个 CLEAN Asset，原字节一致，零 Chat／Worker。首轮 `dacbe879b18a916f3b5ddd7b` 整体超时、回收通过；独立实验确认等待 CDP 扣住响应时异步 raw header 会被阻塞，仅改私有观测，不改生产。主控 App 定向/架构、lint、TypeScript/build，Root topology／15 兼容边／原 checkpoint 均通过；未重跑完整默认或旧 E2E。
 - **A‑10 快切（定向通过）**：同 App `d860cf5b` 的真实状态组件回归先复现旧 220ms 定时器撤掉新选择，后验同一件／另一件重开、正常 Escape 与回焦通过。未再启动快切真实浏览器；待文件树旅程只补快切及目录，不重跑三格式。
 - **A‑09 内容预览／A‑10 三格式切片验收（Root `99dd71d7`，App `ec7174d9` 原 #50）**：Public28.29、BFF/Storage/Agent 原样。真实登录个人 Markdown 子链 `6cfe142ced90fc91719bdf9d`：一次 CLEAN 上传、同源 200、原长度/SHA、语义标题、Unicode 与链接/图片标签可读且零外部请求；该整轮稍后在 Canvas 第二件失败，不能记全绿。作品补验 `a9292ccedc367cbfc0a8592c` 整轮/原生 exit 0、cleanup PASS，零个人上传；一次普通 Chat、独立 Worker 真实交付 Markdown／16,445 字节文本／带引号与内嵌 CRLF 的 CSV。三件 Canvas 原 bytes、长文完整 DOM SHA、390px 键盘 Enter/Escape/回焦、无整页横溢；Library 详情按需读同一 Artifact/Run。System/model/budget 是确定性 HTTP 夹具。Root topology／15 兼容边／原 checkpoint 通过。
@@ -165,7 +166,7 @@
 - [ ] **A‑13 外部聊天**：App setup 有实际 UI；Agent 当前无对应路由。保留 Telegram／LINE／Slack 原范围，查正式 owner／真实 callback 和断开、过期、迟到状态，不当作现有成功或死代码。
 - [ ] **A‑14 语音**：复用已删除演示文字注入；真麦克风／转写、授权拒绝／不支持、取消与编辑/发送闭环待验。已确认当前 Next 通用和服务端头都声明 `microphone=()`，与语音入口存在配置冲突嫌疑；待真实浏览器分清媒体权限与识别服务行为，不先放宽全站策略。
 - [ ] **A‑15 体验性能**：A‑09 作品正确回到 Project 后立即硬刷，真实会话 snapshot 429 `session_rate_limited`、模型列表 503 `iam_admission_unavailable`（`ada47cd2f3167d3096854a2f`）；待沿实际 IAM 请求证据定位，不放宽限流。新增 A‑08 Project 快速终稿硬刷新真实 parts 429 `session_rate_limited`（`947855337e1dc6b332b8518f`）；窗口后刷新通过，不表示快速刷新已修。新增 A‑12 多次硬刷新认证链 `503 iam_admission_unavailable` / Reconnecting（882/f13b 原始失败保留），仅有100/60s原生限流嫌疑、尚无IAM hop证据，不冒称已修；随各片量实际冷／热和可访问性，留 A‑03 两次已完成 Run 的硬刷新终稿 DOM 偶发缺失；以真实 /parts 状态定位，确认前不加盲目重试。
-  - **A‑15 定向 RED（未改生产）**：BFF `9a0c45c` 本地真实 HTTP transport 收到锁定 Better Auth 形状的 `text/plain` JSON＋有效 `Retry-After` 429，当前返回 503 `iam_admission_unavailable`，仅打一次 get-session，未继续权限查验。只证明错分路径，不把旧浏览器 503 的根因或整体快刷已修；后续用现准入测试锁住这一路径，不放宽限流。
+  - **A‑15 429 错分组件通过**：BFF 基线 `9a0c45c` 在真实本地 HTTP 上复现锁定 Better Auth `text/plain` JSON＋有效 `Retry-After` 429 被误报为 503；原 #18 `50a9690` 保留原 429 与有界延迟，其他媒体/状态/畸形原生响应保持失败关闭。主控 build、同文件回归 20 PASS、项目格式参数、lint 通过；仅一次 get-session、无后续权限 I/O 或重试，不改协议或限流。Root 固定包含此改动的 `0c6be20`；旧 Chromium 503 的根因及快刷整体未证明。
   - **A‑15 提问文案缺口**：A‑09 冻结补验发现现 AskUserCard 展示静态工具说明，而非这次要用户回答的具体问题；A‑03/A‑08 原同 Run 控制收据仍有效。后续单独核可面向当前 owner 的有界提问，保留私有工具参数／分享边界。本轮不把问句字面作退役证明。
 - [ ] **A‑16 交付与运行配对**：主控沿每仓原 PR、Root 精确 gitlink、记录真实验收与遗留；本窗口不合并 main、不部署，不把历史交付记录当当前全任务通过。
 

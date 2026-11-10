@@ -1,3 +1,16 @@
+## 2026-11-10 · A‑10 已交付成果树执行门
+
+- **唯一事实与写区**：Agent 原 #46 在现 exact `deliver` 成功协议增可选 `display_path`（与安全的虚拟绝对原路径相等，例如 `/reports/summary.md`；不放宿主路径、敏感名、私有挂载或未知 backend）。它只表示已交付版本的展示出处；原 `path` 内部既有语义不变，不新增 HTTP/RPC 或读取方式。沿实际 native backend 判定；复用现工具 journal 初始意图冻结此可选证明，同一 live/恢复 builder；旧日志缺字段继续缺，不从旧原路径回填、不改 Storage command 身份或字节。
+- **下游门**：Agent 精确 owner HTTP contract/测试先交，再固定 BFF 原 #18 生成输入。BFF 同一 Artifact 关系保存 nullable 展示路径，现私有 live／snapshot 输出可选 `display_path`，无新表或每 Run 远程探测。复用 owner 派生路径校验并排运行私有挂载；匿名 share 不新增目录/路径。历史产物仍可作事实，是否可读由现 BFF/Storage exact 内容授权确认，不造 tombstone/许可缓存。App 原 #50 现内部 `SessionDelivery.displayPath` 供同一 Canvas 成果列表分组；老无目录仍平列，同路径不同 Run/版本各用原二元 ID，不假造来源。不让目录字符串成为读取路径。
+- **并行与最小验收**：在 owner 生成输入就绪前，App 可先写 Canvas 纯呈现／键盘测试，不修改 wire reader；BFF 先做消费落点核对，不提前猜 wire。只补真实双目录、同名不同版本、硬刷恢复、快切和 390px Files 入口；已验三格式不重跑。未交付过程文件继续列原 A‑10 缺口，按后面的 B‑02 版本／读取／撤销边界另落地，不用本切片代替全工作区。
+
+**正式精确输入**：Agent 原 #46 `e27cd7ad79e6d3d0fb588328733cccd0598f1a3d` / HTTP 8.16.0 / canonical SHA‑256 `e303dfadfccd3a86c3cd47542f751868394d269fd584c70cfd9c801eaa618958`；BFF 原 #18 `0c6be20abbf34a2d5b9bdf9db9d582f6cea064b1` / Public 28.30 / SHA‑256 `2e459bd39f73686ac6d458011b777f08ea17b79a1467e563cdbb299e044a3cf9`；App 原 #50 `3137782bbba1e0625ec653441f3624c4259cb84f`。Agent 主控正式契约、Ruff、定向 314、历史 profile 6、真实隔离 PG 2 通过；两条旧版本硬写 8.12 的失败在父 `cbdd866` 复现、未更改。BFF 主控 122 契约／wire、隔离真实 PG 1 通过，最早的测试 URL 缺 schema、回放夹具把已有用户帧计入 delivery 均已纠正，未改产品断言；PG 临时库回收，隔离 Redis 空。App 官方生成／契约、架构／Canvas、lint、类型和 build 通过，匿名契约、独立排程 pin 与现字节读取不变。三仓已推原 PR，Root 固定本组合，真实浏览器待验。
+
+## A‑11 后继实施门（待 A‑10 精确浏览器输入冻结）
+
+- 现简报范围只改 dropdown 本地状态，网站类别只改选中态；两者不进入唯一现 Chat 的 `content`。沿 App 当前草稿把显式选择写成可见、可编辑的约束行；再次选择只替换本场景能准确识别的选项行，保正文和附件，不把用户手改正文重写回默认。模板/灵感入口按现草稿操作承接该行，刷新读回同一草稿；沿原发送/未知重试冻结同一可见文本。保现文本长度上限，不悄悄截断，不加 BFF 字段、状态机、第二 store 或发送入口。
+- 写区限定欢迎页与场景组件、现草稿 updater/本地化（确需时）和直接回归。设计/游戏沿普通真实任务；游戏的通用示例不标成游戏模板。网站添加到项目只表示 Project 操作，不宣称创建或发布网站。最小真实验收：非默认简报范围与网站类别各一次，编辑、刷新、普通 Chat、Worker exact 文本、返回；设计/游戏各验证已有主入口。已有 1440×900 截图为营销首页；旧已登录 771×752 素材只作同状态可比处参考，不能冒当前页面一比一。
+
 ## 2026-11-10 · A‑09 上传取消与 A‑10 快切合批
 
 - **A‑09 App**：沿现个人上传意图和唯一 AbortController 槽，不新增请求或持久状态。选中取消零写；在途取消停浏览器等待，状态明确未知，保留原 File/key，只有显式同键恢复。旧请求不刷新或夺回新 slot。不改 BFF/Storage/认证。
@@ -13,6 +26,7 @@
 - 已确认现 BFF 私有 session snapshot 的 `files` 固定空，App legacy `fileUrl` 不是可用的生产授权路径；Agent S3 workspace archive 是运行内部 best-effort，不是可读产品目录。现 `delivery.created` 有原路径，但持久 Artifact 关系与 snapshot 未承接。不能从 title、filename、opaque ID 或历史 DOM 猜目录，也不把下述成果树当未交付工作区。
 - **成果候选**：Agent 已有正式 deliver 路径和 `safe_virtual_path`，BFF 已有从现 owner 约束生成的 `safeVirtualPath` 消费校验；复用已知虚拟 backend 的 owner 判定与现路径验证，并排除 `/.inputs`、`/.skills` 等私有挂载；BFF 的 lexical 检查不为未知 backend 的宿主路径背书。候选在现 exact deliver 成功事件和 journal 恢复使用同一可选安全展示路径，不新增 Agent 路由/RPC；旧记录无证时省略目录，不补造。BFF 沿现 Conversation↔Artifact 关联持久恢复，不另建表／服务、不逐 Run 发 HTTP 求路径；Web 用现 Canvas 列表做只读目录，选择器仍是精确 Conversation＋Artifact，读取仍由既有 BFF／Storage 核本人、当前可见、原版本。分享面不增加工作区路径。
 - **过程文件候选**：保留未交付文件的原范围；Agent 本地 B‑02 `FileEgress` 提供带原字节、路径和秘密检查的底座，但尚无持久、可授权、跨 backend 的产品版本来源。实施前须锁定所支持的公开文件、Run/version 绑定及执行结束后的恢复与撤销；不把内部 S3 archive、宿主目录、凭据、`/.inputs` 或“最后一次写入路径”直接放入浏览器。先验相同会话双目录、同名不同版本、刷新、错会话拒读；现 ≤960px 隐藏 Files 切换，须复用现 compact 控件恢复键盘可达；只补目录和实际快切，不重跑三格式旅程。
+  - 现 Storage v3 的 `ListAssets` 仅 personal/project；BFF 在 conversation 只有 FINAL 作品读取，不存在可直接复用的过程文件读取资格。后续先核可复用的字节存储和现有租约/回执，不能把过程文件塞进个人资料库或把 DRAFT/FINAL 改义作为读旁路。
 
 ## 2026-11-10 · A‑09/A‑10 正式内容预览共用切片
 
