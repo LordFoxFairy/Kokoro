@@ -38,6 +38,11 @@
 
 **Docker 脚本停写前提探针**：现非 root 镜像的匿名卷默认不可写（FAIL，自有卷已回收）；改用只挂一个一次性容器的私有测试目录后，该容器 `exited:0`，过后台写入截止仍为原字节，清理 PASS。日志 SHA‑256 `0ad94e0461e40c7dd4fbd2f10adaa24f26d31af03ac31517768088587d848381`。未改脚本生产执行；不从长寿命 `docker exec` 前台退出、现存普通 bind 或 archive 推断停写。后续只复用已有工具记录、租约和版本发布，先定可恢复的独占输出归属与停写点，保持原执行语义；Local/E2B 继续按实际边界核验。
 
+**Docker 脚本实施边界（复用原 execute，不做整 Run 封存）**：整 Run 停箱后扫目录还要新终态候选、跨代阻止重开和聚合来源，且无法给出具体脚本版本；不采用。只对已选 Custom API 且使用 Docker 的现 `execute`，在模型可见定义加可选单文件 `output_path`。无参数走原工具／原读写与超时，有参数才用一次性容器：普通 workspace 只读，独占可写 `/outputs`；脚本只生产指定文件，不覆盖原 workspace。真实非 root 探针已证可读原输入、拒绝普通写、覆盖挂载不暴露既有输出、容器 exit 0 后迟到子进程未改原字节，资源回收 PASS（日志 SHA‑256 `352180b08be24e721acc5f3969b86fa952cf8b1604e6b50a0dcbef5486c5d371`）。锁定 SDK 离线核同名只注册一次、只改模型侧 schema，非 opt-in 无差异。
+- **持久与验收**：现工具 started journal 在创建前绑定 exact Run/调用/参数摘要/独占输出归属；不存命令或凭据原文，沿现清理 owner 给有界生命周期。只有同一实例已停且 exit 0、指定普通文件有界且过 B‑02 guard，才在 active lease 原 finished journal 事务冻结 bytes，沿现版本表/Storage CLEAN；新代只认已冻结或有 exact 停机凭证的同次执行，不重启重跑。无可确认的完成凭证走原 unknown，不从活路径捞产物。无新公开接口、表或后台服务。一次真实脚本→Worker→原 Canvas 读验新增路径与旧代拒发布；Local/E2B 原范围继续开放，当前 Docker native 写入与先前探针都不代替脚本验收。
+
+**真 Docker 用户链接线（未验收）**：Root `52099053` 上 `fb050f95d77918115f88fe54` 因 System 夹具没返回 Connectors 导航停在按钮；仅补正式 manifest 导航后，`2bf6d12261fa61b6a2b21791` 能开面板，但没有该夹具 profile。前两轮均未发 Chat。用正式 BFF 客户端对照证夹具曾拒 HTTP/1.1 chunked unary，仅补有界读取；`8f95294c4c39a8359d9d7909` 读回目标 profile 并发出一条 Chat，随后私有断言错取文件对象。修夹具后 `cdeea492241984878faa69d7` 的浏览器原 Chat 与 Agent ingress 均 202，但夹具错误拒正式 Worker 的 `content-encoding: identity`；System/模型调用均 0。两轮仍 FAIL、清理 PASS。只允许现 Node chunked 与 Agent 无压缩 framing、有效列表分页，不写浏览器选择或 dispatch，不重跑已验 State。`2b2590a199855b1f220e42b0` 首次实测穿过真实选择、Chat/Agent 202、PG exact Docker Run、native 写入与终稿；Agent 版本行 0、Canvas 无过程文件，整轮 FAIL／清理 PASS，模型和 Platform 夹具无错误。生产根因是 `RuntimeAssemblyPolicy.from_settings()` 漏传已有 `workspace_root_configured`（默认 false），不是 Storage 或浏览器显示；Agent 原 #46 `96ef6a5` 按配置恢复现接线：原用例 RED→GREEN，主控运行配置/Factory 19 通过，Ruff/定向 Pyright/独审通过；旧 Factory 把 Docker 假成 State 被原 guard 拒，夹具改用实际 backend 类型而不启 Docker。HTTP 8.17/Schema 原字节不变；等真 Docker 精确复验。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
@@ -75,6 +80,8 @@
 **提问卡修复并真实验收**：Agent 原 #46 `384f910ac08f7eafb46ce7a9ad3d96997a643793`，Root `db9bbc2fa5d6bbbd41affd25c5a5dd8a92917185`，收据 `d233f1c2ba80862e93b68e1d`／SHA‑256 `cefb975e945b97b5501ed37ed761b230f479bc0b42be685c4741730af1e07be9`。仅把 exact 原生 ask+respond 的有界问句填进已有 `display.description`，旧默认参数描述不匹配、旧 pause 身份保持。锁定 SDK 定向 RED→GREEN。真实 IAM/Chromium/BFF/PG/Redis、独立 Worker：初显问句→一次硬刷同 pause/item→一次回复→原 Run native_consumed/终稿；真实 journal/快照不暴露 sibling/回答。整轮/原生/凭据/清理 PASS，System/model/budget 夹具、无 Storage。对上一生产快刷收据四个 reload 窗 503 按原请求 ID 复核，全部记录 IAM 两跳 200；业务路由仍脱敏，不归因旧故障或重跑正控。
 
 **Project 生产快刷补缺通过**：精确 Root `10312097797eed6d69b571175c75683d1a807f53`，收据 `624deaba22423c2e7c0cd114` / SHA‑256 `73635b194cadf5b348e1cd6f867dc5e7ab941b760031084859b5b8d0dd17f557`。真登录、生产 App、独立 Worker，一次实际 Project 提交，PG exact Project/Run 终稿持久后一次硬刷。256ms 恢复同路由、同终稿 SHA/顺序 parts；快照、parts、模型耗时 32/20/46ms，目标请求及整个浏览器观察窗 8 个响应均 200。同期 BFF 有 5 个脱敏后台 503，关联 IAM 两跳 200；不归因历史 A‑08/A‑09/A‑12 间歇故障，不加重试、不放宽限流。整轮/原生 exit 0、自有资源清理通过、Redis 8/11 零。System/model/budget 为夹具，未启动 Storage。合用普通会话正控，不再重跑这两条；单次不代替冷/热 p50/p95。
+
+**Project 冷/热小样本**：Root `5209905344899bbf9908ff761556f9749d9b4f08`，收据 `1381c861175735a0cb26dbd0`／SHA‑256 `8282f369ef804b35b414de6dea3f64e166c1d34048f231d02014b9a6e4fcd743`。同一真实本人 Project，生产 App、真实 IAM/Chromium/Nest/PG/Redis，只有一次创建；冷打开到同名标题与可编辑 Composer 为 305/306ms，软返回同一文档为 18/15ms，经验 p50/p95 冷 305/306、热 15/18ms，各 n=2，不当作容量或稳定 p95，冷态超 100ms。IAM 两跳分别 63/65 次均 200，无 429；BFF 13 次 503 的关联 IAM 均 200，4 次确认为 Project resources，另外 9 次入站仍遮罩；浏览器另外观察到 MCP、Skill、Custom API 依赖不可用的闭合错误码，本轮刻意未配 Storage/Platform，不归因历史间歇或改重试。未发 Chat、未启动 Agent/Storage，整轮与清理 PASS。
 
 ## A‑11 场景实施门（A‑10 成果树已验，App 单独写区）
 
