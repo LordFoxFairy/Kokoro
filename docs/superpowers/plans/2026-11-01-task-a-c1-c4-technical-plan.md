@@ -13,6 +13,10 @@
 
 **合批阶段收据：** Storage `ebd6e3b`、BFF `9a0c45c` / Public28.29、App `5d39ef51`、Agent `cbdd866`（仅精确 Storage 生成消费）已推原 PR。主控复验 Storage 契约和真实隔离 PG/Connect 7、BFF 定向 HTTP 29 与真实隔离 PG/Nest 10、BFF build/lint/契约与 Agent 生成/契约 3 通过。初跑入口不当与下载计时不稳定未冒称通过，正式入口独立通过；未重跑完整默认。App 正式契约/定向/lint/生产构建通过；合批精确源码待浏览器与真实 Worker 验收，A‑09 仍 OPEN。
 
+**真实合批边界：** Root `61514457` 精确组合门 PASS。私有代理遗漏 PUT 的 501 已用零上游／修后一次原方法、原路径、原正文复现并修接线；不改产品。收据 `5f1ac04ecc94ae717b8a3cbe` 的实际收藏、owner 筛选、硬刷后状态及取消通过，后续目标 Message 202／模型请求提问，但旧脚本要求模型问句字面，现公开投影为静态工具说明，整轮 FAIL、无 DELETE／resume，已回收。只补退役／旧冻结引用，不再跑 61 秒收藏刷新。A‑15 另复现原生 `text/plain` 429 被 BFF 错分 503，未改生产或放宽限流。
+
+**退役独立补缺 PASS：** 相同 `61514457` 组合，`b1eb4728558a9de09ae8a1df`（SHA‑256 `ccae5052…48245a`），整轮/原生 exit 0、资源已回收。只点一件 DELETE，真 Storage 目标 404/另一件原字节 200、新引用 400 无 dispatch；删前两 owner 同一活引用已持久冻结，删后原登录 Chromium 正式同源 resume 202，独立 Worker 在原 Run 读同件得到真实 Storage 404，无正常终稿。未重复收藏/硬刷或 HITL UI 旧证；原 A‑09 内容预览独立待补，与 A‑10 共用现 owner 读取与渲染，不以 metadata 详情冒称内容预览。
+
 ## 2026-11-10 · A‑09 Project 作品回跳证据
 
 - **组合**：Root `d67f4346c0c5e2d804ec4434ceb63b41fbd76d7e`；BFF `c9c0782` / Public28.28、App `faabec0e`，Storage/Agent/IAM 源码原样。BFF 从 BFF 归属读取 canonical Project / 明确直聊 / 省略三态，旧可读详情与字节保持，App 只用匹配详情与现 scoped rail 导航。Root topology、15 兼容边、原 checkpoint 通过；BFF 主控独立 Nest/Connect、真实隔离 PG 关联、build/lint/contract 通过；App 契约、96 条定向、架构、lint/type/build 通过，不重跑全默认。
