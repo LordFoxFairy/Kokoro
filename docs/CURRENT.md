@@ -2,6 +2,10 @@
 
 ## Task A current checkpoint
 
+**A‑15 stops reading disabled Project instruction history.** App #50 `f02684f8` reuses the existing instruction capability in AppFrame. Receipt `1381c861175735a0cb26dbd0` showed four extra BFF requests; focused regression and two existing identity-boundary checks passed after the fix, with lint and nonincremental TypeScript. No new browser timing or resolution of historical intermittent failures is claimed.
+
+**A‑10 Local native write/edit passed with real storage.** Exact Root `9c5c191c`, Agent `c14c47d`, Storage `b60931e`; receipt `a10-local-9d73832546b8a184ce578fa9`. The locked SDK produced two same-path versions; a new lease published the original 36/38 bytes through PostgreSQL and CLEAN Storage/MinIO/ClamAV, while the old lease published none. Exit 0, isolated DB removed and Redis 13 empty. Model fixture, no browser, independent Worker, or script; not a Local product-entry pass.
+
 **A‑10 Docker script output passed the authenticated browser journey.** Exact Root `ded53d37`, Agent #46 `c14c47d`, receipt `b20f0f76c4d3826a249b0431`. A signed-in browser selected a Custom API profile, sent one Chat, and an independent Docker Worker used the original execute tool. Its separate child stopped with exit 0 before a planned delayed write. The exact journal, single CLEAN version and Canvas's original 85 bytes matched. Native and scenario exit 0; cleanup passed. System/model/budget/Platform were protocol doubles. Local and E2B remain open.
 
 **A‑10 script browser attempt exposed a native activity gap.** Root `d42735c4`, receipt `4f6d00f514403546d4ea5a4e`: the model received the exact script output ACK and the final rendered, but the first implementation bypassed the SDK tool callback and exposed no Process entry. Overall failed, cleanup passed. Agent #46 `c14c47d` restores the original native handler and keeps captured bytes in one call-local slot; the real SDK regression and review passed. Exact browser retest is recorded above.

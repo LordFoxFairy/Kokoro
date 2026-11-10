@@ -51,6 +51,8 @@
 
 **Docker 脚本真实浏览器验收通过**：精确 Root `ded53d370954f1c565fd891c44f1b15538bffe46`／Agent `c14c47d`，收据 `b20f0f76c4d3826a249b0431`／SHA‑256 `86f41207d5326a771472d85ce3c42a144ca24f4e888ba134eccd6b686659ca62`。原认证 Chromium 选择 Custom API、一次 Chat 202、独立 Docker Worker、现 execute optional 参数与原 Process→Canvas。exact Docker 子容器 66ms exit 0，早于已启动的 5s 后台写；同 call journal ACK，PG 唯一已发布版本、pending 清除、真 Storage/MinIO/ClamAV CLEAN，原 85 字节和 SHA 与 Canvas 相等。原生/整轮 exit 0、资源回收／Redis 8/11 归零、零 Docker 额外清理，零浏览器上传或 FINAL。System/model/budget/Platform 是协议替身。中间 `30059444249acee2a49255bf` 已通过 Canvas 和单版本／Storage 核对，但私有 SQL 把 ACK 当标识符校验导致整轮失败；仅修夹具按原文本比较。复用先前真实 PG 接管和原生 Docker/State 收据，不再重跑。Local、E2B 仍待，原 Task A 不缩范围。
 
+**Local 原生写／编辑组件通过**：精确 Root `9c5c191c`、Agent `c14c47d`、Storage `b60931e`；收据 `a10-local-9d73832546b8a184ce578fa9`，SHA‑256 `90ffcfb06a03a2c4139cae1d0644b165842ea878d3d7c21cd9d5d665bae54514`。锁定 SDK 实际调用写入/编辑，后改活文件；旧租约零发布，新租约各上传一次，真 PG/Storage/MinIO/ClamAV 回读 36／38 字节 CLEAN 原版本。退出 0，隔离库回收、Redis 13 归零。模型替身；无浏览器、独立 Worker 或脚本。Local Shell 不新增测试专用入口。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
@@ -80,6 +82,8 @@
 **Slack 本地认证主路径 PASS**：Root `724d4134fef3bf6afba33c3e2ded23ae1bb1eb0b`，收据 `5dedba9bfac88b12f592a412`／SHA‑256 `3a9dd3b6befe8e75057ca8591e3fcd5d21bb991388a04a8dbedad47ab22c536d`。真 IAM/Chromium→App/Nest BFF/PG：标准跨站顶级 callback、固定 303/no-referrer/no-store、本人连接、硬刷同事实、断开。一次换码／一次 team 核验，两次显式页面写，PG 唯一本人 v5 unbound；日志凭据、静默、回收通过。Slack 官方导航与 API 均为协议替身，本地不接外网；三渠道本地路径全有收据，实际账号仍不计通过。
 
 ## A‑15 快刷诊断收据（正控，不等于修复）
+
+**A‑15 移除关闭功能时的多余请求**：生产浏览器收据 `1381c861175735a0cb26dbd0` 中，Project 指令不可用时 BFF 仍收到 4 次历史读取。App 原 #50 `f02684f8` 让历史读取复用入口的指令开关；基线定向复现 1 次，主控复验开关行为与原身份切换保护 3 PASS，相关 lint／非增量类型通过。未重跑浏览器或全套，不据此报整体提速；旧 Preview 网站断言在基线亦失败，未改。
 
 精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。同 exact App `e0cfeda4` 的隔离生产 build 与 Node24 本机 ingress 脱敏/请求 ID 相关性已实测，完整生产旅程未运行。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
 
