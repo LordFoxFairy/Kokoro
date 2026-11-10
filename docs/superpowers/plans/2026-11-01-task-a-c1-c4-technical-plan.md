@@ -70,6 +70,8 @@
 
 **提问卡修复并真实验收**：Agent 原 #46 `384f910ac08f7eafb46ce7a9ad3d96997a643793`，Root `db9bbc2fa5d6bbbd41affd25c5a5dd8a92917185`，收据 `d233f1c2ba80862e93b68e1d`／SHA‑256 `cefb975e945b97b5501ed37ed761b230f479bc0b42be685c4741730af1e07be9`。仅把 exact 原生 ask+respond 的有界问句填进已有 `display.description`，旧默认参数描述不匹配、旧 pause 身份保持。锁定 SDK 定向 RED→GREEN。真实 IAM/Chromium/BFF/PG/Redis、独立 Worker：初显问句→一次硬刷同 pause/item→一次回复→原 Run native_consumed/终稿；真实 journal/快照不暴露 sibling/回答。整轮/原生/凭据/清理 PASS，System/model/budget 夹具、无 Storage。对上一生产快刷收据四个 reload 窗 503 按原请求 ID 复核，全部记录 IAM 两跳 200；业务路由仍脱敏，不归因旧故障或重跑正控。
 
+**Project 生产快刷补缺通过**：精确 Root `10312097797eed6d69b571175c75683d1a807f53`，收据 `624deaba22423c2e7c0cd114` / SHA‑256 `73635b194cadf5b348e1cd6f867dc5e7ab941b760031084859b5b8d0dd17f557`。真登录、生产 App、独立 Worker，一次实际 Project 提交，PG exact Project/Run 终稿持久后一次硬刷。256ms 恢复同路由、同终稿 SHA/顺序 parts；快照、parts、模型耗时 32/20/46ms，目标请求及整个浏览器观察窗 8 个响应均 200。同期 BFF 有 5 个脱敏后台 503，关联 IAM 两跳 200；不归因历史 A‑08/A‑09/A‑12 间歇故障，不加重试、不放宽限流。整轮/原生 exit 0、自有资源清理通过、Redis 8/11 零。System/model/budget 为夹具，未启动 Storage。合用普通会话正控，不再重跑这两条；单次不代替冷/热 p50/p95。
+
 ## A‑11 场景实施门（A‑10 成果树已验，App 单独写区）
 
 - 现简报范围只改 dropdown 本地状态，网站类别只改选中态；两者不进入唯一现 Chat 的 `content`。沿 App 当前草稿把显式选择写成可见、可编辑的约束行；再次选择只替换本场景能准确识别的选项行，保正文和附件，不把用户手改正文重写回默认。模板/灵感入口按现草稿操作承接该行，刷新读回同一草稿；沿原发送/未知重试冻结同一可见文本。保现文本长度上限，不悄悄截断，不加 BFF 字段、状态机、第二 store 或发送入口。
