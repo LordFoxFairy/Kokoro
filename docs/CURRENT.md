@@ -2,6 +2,10 @@
 
 ## Task A current checkpoint
 
+**A‑13 LINE App #50 `21ce1044` is pushed with the exact Public 28.34 source.** The same-origin adapter and existing dialog passed focused checks and the complete App contract; Chromium and a live external account are not yet accepted.
+
+**A‑13 LINE BFF is pushed; App and live provider acceptance remain open.** Original BFF #18 `c535c16` / Public 28.34 uses the existing admitted setup and a signed LINE callback. Frozen HTTP handler and isolated PostgreSQL passed the original owner, exact private LINE identity and nonce, readback, disconnect and late-callback boundary. LINE Bot API and IAM admission were protocol doubles; the owned database was removed. No actual external account or Slack.
+
 **A‑15 shows the exact pending question through refresh and reply.** Agent #46 `384f910`, exact Root `db9bbc2f`, receipt `d233f1c2ba80862e93b68e1d`. A real authenticated browser saw the native Worker's current question, refreshed the same pause/item, sent one reply and completed the same Run. Durable AG-UI and the snapshot contained the question, not the private sibling argument; no wire change. Credentials and cleanup passed. Prior production reload-window traces show both IAM hops returned 200 for each of the four masked background 503s; those business routes and the historical intermittent failures are not attributed.
 
 **A‑10 default State process files passed in a real browser.** Exact Root `906e761c`, receipt `132800e968d29412f10ce91f`: two ordinary authenticated turns, independent Worker write/edit of one path, original bytes for both versions, and a hard reload restoring the old version. The real delete returned 200 and the old link 404; the BFF outbox and Storage purpose-specific revocation both settled. Native and overall exit 0, credentials/quiescence/cleanup passed. Two earlier attempts stopped before delete because of fixture locators; their cleanup passed. System/model/budget were deterministic fixtures. Non-State and script-produced outputs remain open; no main merge or deployment.

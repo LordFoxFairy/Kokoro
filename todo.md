@@ -9,7 +9,9 @@
 ## 当前执行检查点（主控）
 
 - **A‑15 提问卡已通过真实链路**：Agent 原 #46 `384f910`，Root `db9bbc2f`，收据 `d233f1c2ba80862e93b68e1d`／SHA‑256 `cefb975e945b97b5501ed37ed761b230f479bc0b42be685c4741730af1e07be9`。真实登录，独立 Worker 原生提出 Unicode 问句；硬刷仍是同一 pause/item，浏览器只回一次，原 Run 持久 `native_consumed` 后终稿；真实 AG‑UI 和刷新 snapshot 都没有未选私有参数。不改公开协议、不重跑已验快速终稿；整轮/原生、凭据、回收通过，System/model/budget 明确替身。此前生产快刷窗四个背景 503 逐请求关联已有日志，IAM 两跳均 200，业务路由被脱敏，历史偶发问题仍未定位。
-- **并行中**：`a08_resume_evidence` 负责 BFF LINE owner，`a08_project_check` 接原 App 连接面；都未交付，Telegram 已验链不重跑，Slack/真实提供方仍开放。主控持有 Git、精确组合及唯一台账。
+- **A‑13 LINE App 已推原 #50 `21ce1044`（组件阶段）**：消费 exact Public 28.34，复用原连接对话框，Bot 回链只读/显式批准/一次官方续接，主控定向、正式合同和架构通过；真实浏览器待验。
+- **A‑13 LINE BFF 已推原 #18 `c535c16`（组件阶段）**：Public 28.34；主控对停写源码跑正规 fresh schema、真隔离 PG 和正式 HTTP handler，证明原字节签名、本人续接、同签名 LINE user/nonce、刷新与断开；LINE Bot API/IAM 准入是协议替身，自有库已回收。App 正接原连接页面，待精确组合真实 Chromium。Telegram 已验链不重跑，Slack/真实提供方仍开放。
+- **并行中**：`a08_project_check` 接 LINE App，`a08_resume_evidence` 补单条原生验收接线，`a08_final_model` 实施 Docker/Local 原生写入版本。主控持有 Git、精确组合、真实验收和唯一台账。
 - **A‑10 默认 State 过程文件真实旅程 PASS**：精确 Root `906e761c`，收据 `132800e968d29412f10ce91f`（SHA‑256 `9950741e2333af77eaff07be145ffb8977ce1a05e5146b70305f3b1254b79cd4`）。同一登录 Chromium 两次普通 Chat，独立 Agent Worker 原生写／编辑 `/outputs/report.md`，无 FINAL 交付。Canvas 取两版原 SHA，硬刷新旧版不变；正式删除 200、旧链接 404，真 PG 只有一条 BFF 窄撤销获 Storage 确认且目的栅栏已落库。整轮／原生 exit 0，凭据检查、回收和 Redis 8/11 归零通过。System/model/budget 为明确夹具。前两轮 `c3640bb1910dd43d0035ea02`、`cf1746151ac8fa686f680e30` 均通过读取/刷新、未发删除：分别为默认折叠侧栏未展开、Radix 覆盖样式 slot；整轮 FAIL／回收 PASS，只修私有脚本。非 State 与脚本未验，A‑10 不勾。
 - **A‑10 App 已推原 #50 `dd5ebe15`（阶段通过）**：用正式 Public 28.33，现 Process 打开原 Canvas Files，按 Run/版本取原字节；删除未消费的按路径读取与占位文件。主控复验同源/Canvas 定向、架构和正式合同；停写 TypeScript 通过。真实 IAM→Agent Worker→Storage→Canvas 旅程尚待。
 - **A‑10 BFF 已推原 #18 `5d5b409`（阶段通过）**：主控复验精确版本、撤权后零交付的 Nest/Connect HTTP 用例，Agent 与 Storage 正规生成检查通过；Storage 新 v3 对前两版 Buf breaking 均通过，MCP package profile 原字节不变。App 已从此精确提交生成 Public 28.33，产品验收待 App 定向和同一浏览器旅程。BFF 沿现 fresh-only 规则，未改已有数据库。
