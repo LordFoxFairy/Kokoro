@@ -28,6 +28,8 @@
 
 **下一受支持后端切片（不变公开契约）**：先接正式可装配 Docker 的原生 `write_file`（和其共用的已配置 Local 实现），只认可锁定 SDK 真成功写入的 UTF‑8 入参，不从可变盘回读。沿现成功 tool journal/active lease 同事务登记稳定版本；State 保真实 checkpoint 定位，native 不冒充 State。为崩溃后恢复如需保留字节，只能在同版本事实短存已验证、有界 pending bytes，Storage CLEAN/绑定成功后清除，不进公开投影或工具日志。Custom API 必须复用现环境凭据出口检查；发布、上限、删除均复用已验路径。用一个真实 Docker write→同路径随后改变→旧版本原字节的证据。Edit 的原子后像、脚本停写及其他受支持 backend 保持原范围，不能用本切片勾 A‑10。
 
+**Docker 原生 write 接缝真实通过**：Agent 原 #46 `d9b3eb70ae489a779b96e63f803b6853b6b23189`，HTTP 8.17 canonical 原字节。主控实际 Docker SDK/PG journal/native lease、Storage/MinIO/ClamAV；原 36 字节在容器同路径变更后仍由新代精确发布，旧代无发布，CLEAN、原 SHA、一次上传及 pending 清除通过，凭据输出不登记。自有资源回收／Redis13 归零；日志 SHA‑256 `102c8f51a8787844347482cc0253c7af747f729e4b958daa868956377e2d7b31`。模型及 Custom API 凭据源为夹具，无独立 Worker/浏览器；已验 State 不重跑，非 State edit、脚本、E2B 和真实 Local 用户旅程仍 OPEN。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。

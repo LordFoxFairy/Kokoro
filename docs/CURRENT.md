@@ -2,6 +2,8 @@
 
 ## Task A current checkpoint
 
+**A‑10 native Docker write passed its isolated real seam.** Agent #46 `d9b3eb7` preserved the original bytes after the actual mounted path changed. The real PostgreSQL journal, Docker SDK, Storage/MinIO/ClamAV verified generation-2 recovery, CLEAN bytes, one upload, cleared pending content, and no credential output. Cleanup passed. Model and Custom API credential source were fixtures; no separate Worker or browser. Native edit, scripts, Local journey and E2B remain open.
+
 **A‑13 LINE passed the local authenticated browser journey.** Exact Root `5e54c71c`, receipt `aa839b379f2ddc03f1601bc2`, App `eac24dd8`, BFF `c535c16`. Private signed start and account-link callbacks, real approval through the private same-origin response, hard reload and disconnect passed; PostgreSQL holds one owned unbound row at revision 6. Credentials, quiescence and cleanup passed. The official LINE navigation was intercepted and the provider was a protocol double; no external account, Agent, Storage or deployment was used.
 
 **A‑13 first Chromium run stopped after approval.** On Root `caab8d40`, receipt `900ce05457bc2ec56640ef51` reached the signed private handoff and real approval, then failed before opening the official link; cleanup passed. A focused RED proved Next Proxy overwrote the route's no-referrer policy; App #50 `eac24dd8` fixes only the exact continuation POST. Real retest pending.
