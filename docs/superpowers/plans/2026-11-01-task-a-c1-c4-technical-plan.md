@@ -17,6 +17,8 @@
 
 **组件修复已推**：App 原 #50 `e5a56ba909567c625c86a19f8cedb11d74f6dbd6`，实证冻结计时器且无 pagehide 时旧实现显示了文本但未保存；新实现使用现相同 slot 立即保存，普通输入仍防抖。主控直接相关 113、限定 lint、非增量 types 与 diff 通过；真实刷新与四场景 Worker 待同组合复验。
 
+**A‑11 真实完整范围通过**：Root `35eecea7054e8d0e81ca933359f4a170f1c3f71d`、收据 `4729be33929b2cdfc37853d3` SHA‑256 `45f4b6f6d86615ba9a8552e90bdb5b9c30f0bc4c9da9b142e0a577255366ca2e`。无刷新等待，两个已编辑选项稿从旧页到新页字节一致；四场景独立普通 Chat，真实持久 user/dispatch/terminal、Worker 模型输入与浏览器 SHA 一致，Vercel AI SDK 终稿和原 UI 返回空首页。原生 exit 0、凭据/回收通过，Redis8/11 归零；无 Storage 或发布。771×752 认证空首页截图 SHA‑256 `a6d2bb5e8638f0b2a19c9b4a0b3af22a7d1bf2ae9e2b84a644822efe06cadc55`，同尺寸旧 Manus Studio 有展开栏和构建/创建区，当前站是折叠栏+四直入口，两者空态/Composer 可对照，语言与结构不同，不宣称一比一。
+
 ## A‑14 现语音入口修复门（与 A‑11 隔离）
 
 - 沿现浏览器原生识别，不添加音频上传、服务或供应商。现 `/app` 的所有工作台 HTML 入口必须一致：软导航回 Composer 不换 document。仅这些已受原会话准入的文档允许同源麦克风；公开、登录、分享、管理、API 等保持禁止，摄像头和地理位置不变。不另开权限端点。
@@ -30,6 +32,7 @@
 - 原 A‑06 要求项目网站关联可真实保存／回读／刷新；本机 Manus 记录仅证明项目搜索／选择／取消／保存弹窗，没有证据要求已部署站点或提供现成用户目录。System Site 是租户级入口/域名配置，不能挪作用户站点列表；不接部署、System、外站抓取或 Agent 注入。
 - 在现 BFF Project owner 内维护有界的真实 URL 引用集合。沿原项目网站弹窗的搜索／选择／取消／保存，已有引用来自本项目正式读取，可手填合法绝对 HTTP(S) 地址并在保存前移除。浏览器和 BFF 都拒绝带用户凭据的地址、未知 scheme 与超长输入；BFF 不访问目标站，关联不是验证站点所有权。不保生产 demo 网站。
 - 数据取舍：有界值对象可放现 Project 行，不建站点目录/新表；读取和 desired-state 保存/解除都要求原 owner、租户和 active Project。若同一集合可在多标签编辑，沿原 BFF 条件写规则防覆盖，未知结果先正式回读，不建第二套幂等。先锁定正式 schema/路由与 Project 删除边界，再写消费；只证明真实认证浏览器保存→回读→刷新→解除和错主体拒绝，不冒网页抓取或已部署站点选择。
+- 正式写入门：BFF 现 ProjectsModule 增精确 `GET/PUT /v1/projects/{project_id}/websites`，现 Project 行有界 `website_urls` 与同类配置状态版本；PUT 要 `expected_state_version`，匹配且同值不写、过期 412、空集合解除；与删除同一行锁，删除后 404。App 原 same-origin Project adapter，普通 Project/会话 snapshot 不改。定向真 PG 核同值、并发、错主体、删除；真 Chromium 核输入真实 URL、保存／刷新、筛选／解除。原生产 demo 列表删除。
 
 ## 2026-11-10 · A‑09 上传取消与 A‑10 快切合批
 
