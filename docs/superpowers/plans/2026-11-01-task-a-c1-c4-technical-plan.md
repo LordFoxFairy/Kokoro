@@ -25,6 +25,8 @@ A‑08 首步已交付：Storage `3f18577`／#3 用真实两 Service 组合复�
 
 主控原 AG‑UI 基线复跑 `7adde809590ca9847ea3dec7` 整体 PASS、退出 0、回收 PASS。正式 snapshot/parts 的最终段与持久 Message/Run/版本一致；两真实输入、唯一 terminal，未冒 SDK。下一只用同一旅程加长真实终稿越过分片边界，验证新增 SDK 装配，不重跑已无变化的全仓门。
 
+主控长终稿 `0a7ccd2e1dc332c5928b1d81`（Root `d82469c3`、App `4ee774f9`）真实整体 PASS：两选中输入均由独立 Worker 读取，消息提交/终态各一次；刷新后 App 自身两页 owner 请求通过，新 SDK 装配 `0→4096→4540` 标量，初显/刷新/持久最终段同 4,546 UTF‑8 字节。回收 PASS；不称实时 AG‑UI 片字已迁移。现草稿 App、历史答案 Agent 私有 producer、BFF 来源读取三写区并行，消费者按 owner artifact 顺序。
+
 **SDK 验收后的两个独立续做面（当前不抢写）。** 草稿由 App 复用原 `kokoro.web.drafts` 的会话/未创建/Project 键和当前已准入主体＋租户，只保正文和 opaque refs；旧身份 writer、页退与迟到选择沿原退休机制，删除 Project 组件重复 RAM refs。不迁 unknown journal：已有提交用原 key/body；明确 409 恢复同一正文/refs，不盖更新草稿。普通会话和 Project 首发至少各核一次刷新及发送，复用原恢复场景。
 
 历史答案优先使用已有私有 Snapshot 的 `message_id`、Run、durable `final_segment_id`/revision；旧无 marker 不猜。App 只传 `final_answer`＋opaque assistant Message ID。BFF 在现提交事务校本人 active 同范围来源、completed 唯一最终文本段及精确 revision，冻结私有 UTF‑8 原文/长度/SHA/来源；不读聚合正文、不建新表或 Storage 对象。源会话、消息、投递行 `FOR SHARE … NOWAIT` 防提交时竞态。已接受 Run/同键重放读原不可变材料；新命令或 regenerate（新 Run）重验来源，删除后拒绝；消费会话删除仍沿原取消。复用 16 项/32 KiB ASCII 引用及 1 MiB launch 总预算，不截断。Agent 对有效 Run/lease 与 exact manifest 复验，final-only 不要求 Storage，原 `/.inputs` 仍只读；原文不自动进入公开 Message/AG‑UI/share/诊断。按 Agent 私有契约→BFF 正式消费/公共契约→App 固定消费交付，先以一条无 Artifact 真历史答案引用核对工具原字节和刷新。
