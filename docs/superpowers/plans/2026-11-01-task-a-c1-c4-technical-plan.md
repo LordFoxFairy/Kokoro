@@ -18,6 +18,8 @@
 
 **Storage 首片 owner 已推原 #3**：`b60931e9e4e92d596b0678cbdabd9116e898b432` / v3 combined SHA‑256 `3da3346a760a6275251aba56f75129189e06e3522e81b4c0b110386a4cdff02f`。主控隔离真 PG／Connect 两项：迟到首次 PUT、未确认暂存、同 SHA 的 FINAL、晚到 Complete、本人 exact 读、撤销后重放；对象/扫描/Redis 均为替身。存量父 catalog 先置一行，扩展保行、重跑 no-op；自有库全部回收。原 FINAL 重放测试父 `ebd6e3b` 复现，修 fixture 使真正退役发生在一次成功签名之后，原断言保留。主控契约、构建、权限定向 20 通过。未配对 gitlink、未证明最终用户可见版本或未知对象的物理清除。
 
+**Agent State owner 已推原 #46**：`7bfbf5ef3febaad710007fcd88992f44333d4740` / HTTP 8.17 / canonical SHA‑256 `c471094369efa80f1182e41c67ef8150835a4544c283fd8d2d4e689707a51aad`。只复用原 RunDisplay 和同一版本事实表；主控隔离真 PG 证 exact 同径两版、旧租约迟到 CLEAN 零发布、新代同源重放与跨 Run 隔离，库已回收。Storage 传输替身；真实对象字节、既有 Canvas 与普通删除待组合验收，不加事件／列表或回写未证明的旧文件。
+
 ## A‑13 外部聊天连接设计门
 
 - **归属**：连接是当前产品用户与外部身份的关系，不是 Agent Run 或 Skills/MCP。BFF 在原 Product API 和 Nest 内独占连接事实、setup 生命周期与外部回调，现 App `/app/agents` 与同源 adapter 保留；正式实现落地时删除未实现的 Agent upstream 转发，不建服务、不改 Agent 执行，也不新增内部 OAuth。当前 App 过期／取消修复是独立切片，不冒连接成功。
@@ -35,6 +37,8 @@
 ## A‑15 快刷诊断收据（正控，不等于修复）
 
 精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。同 exact App `e0cfeda4` 的隔离生产 build 与 Node24 本机 ingress 脱敏/请求 ID 相关性已实测，完整生产旅程未运行。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
+
+**生产快刷主路径通过**：精确 Root `648ee5870c64d60b2fe88967b3eb46b605f243a2`，收据 `d854c34f755173bb2cadc1ee` / SHA‑256 `1648ecba3b179e51fba7ed6860764d0def2942bc9bdffa9d47fb4aa1c6dc0bb8`。实际隔离 Next 生产构建、真登录与独立 Worker，终稿已持久后一次立即硬刷，309ms 看到同一结果，snapshot/parts 为 104/13ms，IAM 两跳 22/24 个均 200。四个未归类背景 BFF 503 保留；非整站无故障或 p95，旧现象未在目标请求复现，不继续重复同一路径。System/model/budget 明确替身；原生/整轮 exit 0、凭据与回收通过。
 
 ## A‑11 场景实施门（A‑10 成果树已验，App 单独写区）
 
