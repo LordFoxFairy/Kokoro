@@ -31,6 +31,8 @@ A‑08 首步已交付：Storage `3f18577`／#3 用真实两 Service 组合复�
 
 历史答案优先使用已有私有 Snapshot 的 `message_id`、Run、durable `final_segment_id`/revision；旧无 marker 不猜。App 只传 `final_answer`＋opaque assistant Message ID。BFF 在现提交事务校本人 active 同范围来源、completed 唯一最终文本段及精确 revision，冻结私有 UTF‑8 原文/长度/SHA/来源；不读聚合正文、不建新表或 Storage 对象。源会话、消息、投递行 `FOR SHARE … NOWAIT` 防提交时竞态。已接受 Run/同键重放读原不可变材料；新命令或 regenerate（新 Run）重验来源，删除后拒绝；消费会话删除仍沿原取消。复用 16 项/32 KiB ASCII 引用及 1 MiB launch 总预算，不截断。Agent 对有效 Run/lease 与 exact manifest 复验，final-only 不要求 Storage，原 `/.inputs` 仍只读；原文不自动进入公开 Message/AG‑UI/share/诊断。按 Agent 私有契约→BFF 正式消费/公共契约→App 固定消费交付，先以一条无 Artifact 真历史答案引用核对工具原字节和刷新。
 
+**本轮真实验收**：历史答复 `cf7b053f665fd59baa57c94b`（Root `46683379`）PASS，真实无 Storage 两次普通 Chat，App opaque ID、BFF 私有冻结、独立 Worker 读取源最终段 exact 字节和目标刷新均一致，回收 PASS。草稿原实现及仅调整 `pagehide` 顺序的结果继续记 FAIL；实测 DOM 已选但未落盘，最后仅带附件草稿在选择、移除和关联正文变更时同步写原有主体/租户 slot，纯文本原防抖保留。`d5e3d1cb4db65fbda4ae7e1d`（Root `3f432d9f`、App `c4b92634`）真实直聊立即刷新及随后一次提交/两读取/唯一终稿 PASS，回收 PASS。Project 首发与 409/未决恢复有定向组件/引擎证据；后继只补真实 Project/历史 FINAL 产物与同 Run 恢复，不重复上述旅程。Goal ACTIVE。
+
 Storage `c31a065`、Agent `55beed2`＋`79a95c1`、BFF `534ace3` 已沿原PR推送。主控停写后复验Agent selected-input读与原生图失败传播、BFF canonical冻结/重放/regenerate/源关系争用，当前相关门通过；证据范围和完整默认失败核对见唯一TODO。最终事务源关联使用 `FOR SHARE OF c,a NOWAIT`，防止读后关系变动且不引入两会话反向等待；事务外候选仍不锁。App `0004d953` 固定Public28.24，完整相关门通过并经主控focused/独审；BFF后继 `144b07f` 仅隔离两测试夹具。Root新组合topology/15边compatibility/checkpoint通过，真实输入旅程待验。无产物最近任务的final答复引用、发送前草稿选择的刷新保持及A‑05同Run引用恢复保持OPEN，不以本片缩减原范围。现下载1MiB及非UTF8文本工具能力边界明确保留。
 
 ## 2026-11-09 · A‑12 交付候选与真实运行检查点
