@@ -30,6 +30,8 @@
 
 **Telegram BFF owner 已推原 #18**：`3000256cf6c8d2b481b93253631f623f4d38a134` / Public 28.32 / SHA‑256 `e12a8078f5ecaa741c255a3bcec032d398d35309d845d3cf736dc764a0287d33`。正式 Nest＋fresh 隔离 PG 回归 1/0，既有用户本人确认、假身份拒绝、回调只发一次、过期／取消／断开与唯一绑定；IAM admission、Telegram provider 是明确替身。测试库回收，Redis 13 未污染；主控 211 操作合同和 lint 通过。App 待 exact 同源 UI 接线与真实认证浏览器验收，不更新 Root gitlink 到未配对候选，也不宣称真实外部 Telegram。
 
+**Telegram 本地认证主路径 PASS**：精确 Root `9d00f47cfa54270637e39a758b01ed572022c648` / App `bb12e2b6` / BFF `3000256`，收据 `7241981ca91253433b83f4f8`（SHA‑256 `e655a29dddd6fc4374d51fa50047c7ba4b6a15613b81ab84a3ead17fa6b4116d`）。实际 IAM/Chromium→App/BFF/PG：发起、正式 webhook 一次私聊证明、确认、硬刷同绑定、断开，最终本人 v5 无绑定。只三次显式浏览器写、无外部请求／Agent／Storage；整轮、原生、清理与凭据检查通过。前几轮失败分别收敛到私有等待/状态 locator 与 App 误拒标准 no-store 响应头；后者以现共用解析修复。Telegram 是协议替身，真实 Telegram、LINE、Slack 不计完成，不再重复本地已验路径。
+
 ## A‑15 快刷诊断收据（正控，不等于修复）
 
 精确 Root `bda1977d8d257d5950d72a999e15868724f6f63d`，收据 `1606148e6e756a1863ea74d9` / SHA‑256 `06b618ff43630acd18e32a9819ba2d59d49207e99101a24efe9d5c2ce7703997`。同一独立 Worker 的真实短 Run，终稿可见且终态持久后无额外等待，仅一次硬刷，无附加浏览器 owner GET；自然 snapshot／parts 精确关联并回显相同原文字节。真实 reload 窗 1371ms，快照/parts 各 85/60ms（浏览器观察到 response，不是 p50/p95），IAM 24/26 次均 200；同 ID 多次出现及 admin-access 取消重发是隔离开发组合证据，不能归因旧故障。旧 429／503 和终稿 DOM 偶发缺失仍开放。同 exact App `e0cfeda4` 的隔离生产 build 与 Node24 本机 ingress 脱敏/请求 ID 相关性已实测，完整生产旅程未运行。下一步以生产 Web 观测自然 ingress 归属与尾延迟，复用原生 IAM/PG/Redis 与本次探针，不重复附件/自动化旅程，不放宽限流。确定性 System/model/budget、无 Storage；原生/整轮 exit 0、凭据/quiescent/回收通过。
