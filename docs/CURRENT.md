@@ -2,11 +2,11 @@
 
 ## PR收尾纠偏与IAM候选交付（2026-11-11）
 
-全13仓实查原有8个OPEN，不再将“当轮PR完成”笼统称“所有子仓main交付完成”。现System #2、Billing #4已核独立owner证据并通过原PR正常合main（0a4e7932／43a60920），远程候选分支已清理；Root原精确源码pins49a5f8e／b7c98588保持并已main可达。剩6个为Task B／其配对依赖5个，及**我们的Task A Capability #13**；#13需上游#12先交付，不直接close或整包retarget。详细证据／出口见[审计§11](reports/2026-11-11-typescript-auth-admin-audit.md#11-远程pr收尾复核2026-11-11)和[唯一TODO](../todo.md)。旧PR说明已纠正；远端失败CI是账户账单导致job未启动，不称通过、不绕保护。
+全13仓实查原有8个OPEN，不再将“当轮PR完成”笼统称“所有子仓main交付完成”。现System #2、Billing #4已核独立owner证据并通过原PR正常合main（0a4e7932／43a60920），远程候选分支已清理；Root原精确源码pins49a5f8e／b7c98588保持并已main可达。用户确认后，我们的Task A Capability #13已正常合入其原接收分支，merge `e068fcaaeb0c40e1119ce88760f568a94bf0859c`；剩5个为Task B／其配对依赖，均不操作。#12保持OPEN／Draft，不合main；本次没有修改其PR元数据。#13合并树与24094960源码树全等且祖先可达，Root pin保持，自有远程分支已删除、本地无同名分支。详细证据／出口见[审计§11](reports/2026-11-11-typescript-auth-admin-audit.md#11-远程pr收尾复核2026-11-11)和[唯一TODO](../todo.md)。旧PR说明已纠正；远端失败CI是账户账单导致job未启动，不称通过、不绕保护。
 
 已停止扩展新切片，只完成在手IAM14路径验收，经原PR #7合main，Root锁源码cee88df4：普通BFF可信actor配额、同事务有界分页撤销、原生读取5秒／响应30秒生命周期；其它机器／用户认证及当前权限不变。主控前置格式／lint／类型／合同／breaking／SDK、默认与build通过；首次默认旧Math.min源码oracle失败已退役，AST唯一writer与真实行为保障保留。真实隔离PG24通过且库存102→102；不冒浏览器整链、所有源IP容量或数据库硬取消已解决。
 
-Root仅修SDK发行锚与私有runtime提交的硬绑定，保原归档allowlist及SDK树／合同字节／祖先、lock／SRI／dirty等负控；153项和实际拓扑／15条契约边／原checkpoint通过。消费者和SDK源未变，来源按4条引用／3个Git blobs实核。本次Root PR承载精确组合与清单，最终合并和自有分支清理以Git回执为准；不合Task B、不部署、不重置共享资源。
+Root仅修SDK发行锚与私有runtime提交的硬绑定，保原归档allowlist及SDK树／合同字节／祖先、lock／SRI／dirty等负控；153项和实际拓扑／15条契约边／原checkpoint通过。消费者和SDK源未变，来源按4条引用／3个Git blobs实核。Root #72已合main（66da9997）且自有分支已清理；本次仅补PR收尾记录，不改源码或gitlink。不合Task B到main、不部署、不重置共享资源。
 
 ## 认证边界与旧代码维护（2026-11-11，子仓已交付）
 
@@ -32,7 +32,7 @@ Task A 已按用户确认的开发交付口径收尾。Root 原 #66 已合 main�
 - 真实附件／历史引用／Project 草稿与同 Run 恢复、定时到点完整主链已有各自证据；最新历史答复再验 `f4fb90ddc132b4cb6e69af5b` 通过。
 - 真实 E2B SDK→官方 envd Docker→独立 Worker→Storage CLEAN→Canvas两版及选中版刷新恢复通过，收据 `884f6bcbb5676f512bf67b6c`，SHA‑256 `6812937fe8ece3c1f4619110896f598cbcc17fb9c017bd26c9ea56eb0d6e08d1`。整轮／native exit 0／cleanup通过，容器独立停删且端口关闭；不声称云控制面已验。模型／System／预算／Platform 为明确协议夹具。
 - 真实外部账号、最终本人语音编辑发送、体验余量等仍在 TODO，未伪装成真实通过。购买保持关闭，未部署。CI 因账户账单／额度未启动，不称CI通过。
-- Capability #13 依赖其他 owner 的 #12，两 PR／远端分支保留；继承 Billing／System pins 不借本任务合并其独立工作。Task B 不由本任务接手。
+- Capability #13 已按后续用户确认合入原#12接收分支（e068fcaa），自有分支已清理；#12保持Draft、main不变，其后续交付由原owner处理。Billing／System已另经原PR合main，精确源码pins保持，不据此完成Task B范围。
 - Task A旧工作树／验证环境／临时资源与已合并分支已清理，唯一证据及原仓既存改动已私有归档保护，旧每小时自动任务已删除。Goal 已按最终裁决完成。
 
 子仓的 tests 不迁入 Root；`scripts/tests/` 只覆盖 Root 治理脚本；跨仓组合证据按 `verification/` 和正式运行入口归档。文档清理只跑相关链接／治理与公开门户构建，不重新启动全产品服务。

@@ -342,11 +342,11 @@ Root现归档校验将Capability消费的独立已验SDK构建source.commit硬�
 
 8个head均未成为各自main祖先；Storage #2与Capability #13另做patch等价核验，均未被main等价承接。因此本次未找到可为了减少数量而直接close的已完成空PR。远端mergeable／UNSTABLE不等于完整本地验收结论，也不自动构成必须等待CI的理由；不绕强制保护。
 
-### 我们的#13为何仍未结束
+### 我们的#13依赖复核与最终收口
 
-#13已通过merge提交1b5116c包含#12当前head2ad5c9e7；原PR描述“最新base尚未集成”已过时，本次已修正。真正未收口的是**上游#12仍未入main**。#13相对#12还有11个独有提交（10个非merge），87文件／1796增1478删；独有非merge patch均未等价进入main。相对main则包含37提交、398文件；现在直接retarget会把#12约378文件一并带入，既不独立，也违反不接管Task B的边界。
+#13已通过merge提交1b5116c包含收口前#12 head2ad5c9e7；原PR描述“最新base尚未集成”已过时，本次已修正。初次将**上游#12仍未入main**判断为#13必须等待的前置条件，后来复核确认该判断过度约束，以下保留差分事实并更正出口。合并前#13相对#12有11个独有提交（10个非merge），87文件／1796增1478删；独有非merge patch均未等价进入main。相对main则包含37提交、398文件；现在直接retarget会把#12约378文件一并带入，既不独立，也违反不接管Task B的边界。
 
-真实出口是：#12 owner确认ready及本地交付→正常merge #12→fetch resulting main，按合入方式核#13剩余差分及当前相关验证→retarget／ready／正常merge #13→核Root精确组合→清理自有分支。直接close #13没有main承接证据，故不做。若上游尚未交付，保留明确依赖，不再用“全部收尾”掩盖。
+正确出口有两种：按原base完成叠层交付，或等待#12由其owner交付main后再处理剩余差分。前者不要求先合Task B到main，但会推进其接收分支，须明确边界。用户已选择前者：只将我们的#13按原目标合入，不合Task B到main。没有直接close、强行retarget或独立重写。
 
 用户提出PR问题时，在手IAM13文件与Root治理2文件已停写、未提交，主控先完成上述历史候选的收尾。随后只验收原在手候选：首次默认检查发现一条绑定Math.min源码字面的过时oracle；保留AST唯一writer及unit／真实PG单调到期保障，退役该字面断言后完成验收，未继续扩展新功能。执行状态只维护唯一TODO。
 
@@ -356,10 +356,20 @@ System #2与Billing #4此前保留Draft的直接原因，是2026-10-27对齐时�
 
 复用证据而非重复测试：System196个交付输入逐项与49a5f8e Git blobs全等，历史定向／owner／fresh schema收据仍精确绑定，当前独立代码复核CLEAR；Billing419个基线＋7个最终输入共426个逐项与b7c98588全等，历史default1864 PASS／630 SKIP、真实PG44、零残留与源码独审绑定核实，主控另复核最终两文档。此处没有将历史结果写作本轮重跑。远端失败check的job均0个step，annotations明确账户账单导致未启动；CI未通过，不以UNSTABLE冒称技术保护阻塞，也不绕强制规则。
 
-收口后剩6个OPEN：Root67／App49／BFF17／Storage2／Capability12与我们的Capability13。前五项属于Task B或其显式配对依赖，按原owner推进；#13按上述stack出口处理，不直接关单。当前在手IAM候选的验收与提交继续收口，不再扩展新切片。
+上述两个owner收口时剩6个OPEN：Root67／App49／BFF17／Storage2／Capability12与我们的Capability13。这是中间快照；后续#13实际合并见下，剩5个属于Task B或其显式配对依赖，不由我们操作。
 
 ### 在手IAM候选亦已验收交付
 
 IAM14路径最终源码 `cee88df4770ce52d42798a9ed2cb66b3b6262c5d` 经[原PR #7](https://github.com/LordFoxFairy/kokoro-iam/pull/7)正常合main（merge9f260bb6）。主控完成格式、lint、类型、合同生成／固定baseline breaking、SDK检查；默认初次1630通过／1条旧源码oracle失败，移除该实现耦合而保留架构／行为保护后最终1631通过、build通过。真实隔离PG／Redis3文件24通过，PG库存102→102；不将官方auth.api＋真实PG写作浏览器整链。完整停写输入和独审已绑定，未改Schema／wire／依赖或SDK源。
 
 Root治理153项及Ruff主控复验通过；新实际IAM pin对应的4条来源引用按3个真实Git blobs核实，当前拓扑、15条契约边／0违例及原checkpoint通过。既有SDK的独立发行锚仍为原b6a9745b／0.21，不重打包或改Task B；新增校验证明其SDK整树和合同与当前runtime相同。原生源IP容量、已派发的非合作副作用unknown及极大撤销集合5秒事务边界仍明示，不称全部问题解决。Root最终集成与自有分支清理随本次PR和主控回执确认。
+
+### 用户确认后的Capability #13最终回执
+
+2026-11-11T09:45:59Z，主控将我们自己的[#13](https://github.com/LordFoxFairy/kokoro-capability/pull/13)转ready，以精确head `24094960bad58d1b6a85a273d3bc94b0a0e0d1dc` 通过正常merge合入原base `codex/connector-icon-staging`，merge为 `e068fcaaeb0c40e1119ce88760f568a94bf0859c`。用户明确授权该接收分支前进；没有操作#12的ready／合并／描述／清理，#12仍OPEN／Draft，Capability main仍为adbcc78a。没有force／admin／绕保护、没有部署。
+
+主控fetch后核验：源24094960为接收分支祖先，merge树与源树完全相等，Root仍固定该已验源；自有远程分支删除前tip精确匹配24094960，删除后prune，本地无该同名分支。保留其他owner的分支和工作树。此为叠层交付完成，不是Capability main交付完成；后者归#12原owner。
+
+补验严格限定缺口：当前源SDK checker／typecheck及8文件129项定向通过；另补本地HTTP peer 5项通过，明确不是实际IAM。私有精确源归档1118个tracked文件逐项与Git blobs全等，正式build／八owner真实PG同库schema和Redis readiness通过；仅证明装配，不扩大为完整产品mutation／当前全owner门。历史完整3051／678 SKIP不冒称当前重跑。合并无新源码，不重复全产品旅程。
+
+至此我们的历史PR已收口；剩余Root #67、App #49、BFF #17、Storage #2、Capability #12均保留原owner。Root #72亦已正常合main（66da9997）并清理本轮分支，本次只通过独立Root文档PR更正TODO／当前事实／技术总览和本报告，不改gitlink或业务代码。
