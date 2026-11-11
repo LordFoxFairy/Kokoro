@@ -1,3 +1,22 @@
+# Kokoro 当前代码入口
+
+核对日期：2026-11-11 UTC。当前产品与技术分别从[使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)和[系统总览](kokoro-handbook/technical/00-system-overview.md)进入；精确代码组合由Root gitlink固定，不从下方历史PID、分支或日期推断当前运行。
+
+| 要改什么 | 入口／owner |
+| --- | --- |
+| Web页面、草稿、AG-UI→AI SDK UIMessage | `apps/kokoro-app/src/` |
+| 用户／开发者文档门户 | `apps/kokoro-app/developer-docs/docs/`；导航 `docs/.vitepress/config.mts`（相对该门户） |
+| 业务HTTP／Chat持久投影／Project／ScheduledTask | `apps/kokoro-bff/src/`；Nest入口 `src/main.ts`、装配 `src/app.module.ts` |
+| Run／Worker／checkpoint／工具与恢复 | `apps/kokoro-agent/`，按本仓README与三设计定位 |
+| 原生会话与权限／模型／账务／能力／对象／到点调度 | `apps/kokoro-iam`／`kokoro-system`／`kokoro-billing`／`kokoro-capability`／`kokoro-storage`／`kokoro-scheduler` |
+| Root组合／跨仓规范 | `.gitmodules`、`verification/`、`scripts/`与[总体架构](ARCHITECTURE_STANDARD.md) |
+
+Task A已收尾，后继项只维护 [TODO](../todo.md)。Task B与其它owner保留其原分工、PR和资料；本次未改业务代码或重新启动服务。
+
+## 以下为旧定位与其它 owner 历史记录
+
+历史内容原样保留作查证，不覆盖上述当前入口，也不表明其中PID／路径／待办仍然现役。
+
 ### 2026-10-10 连接器四read已接 / A2契约续接
 
 Web main50508e55已准确消费BFF ee423b7 personal四GET，正常HTTP200/404/404/404及原active浏览器空态通过，Root纯3169/contract278/type/lint/build0。五Webmixed保护。BFF原owner转A2只读D0，后继正式四写/Provider两读/metadata-CAS、Platform普通授权→Connection与原Admin Provider管理尚未完成。不要再用旧self去前缀失败或未启surface推断现接口故障，不把静态推荐当真实已连接。

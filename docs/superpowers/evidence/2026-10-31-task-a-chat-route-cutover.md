@@ -1,3 +1,5 @@
+> 历史过程材料（Task A已收尾）：本页保留原设计／失败／验证事实，不再作为执行入口。现行边界见[当前技术总览](../../kokoro-handbook/technical/00-system-overview.md)，后继事项见[TODO](../../../todo.md)。
+
 # Task A Chat archive/share route cutover（2026-10-31）
 
 ## 变更

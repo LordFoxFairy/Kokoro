@@ -1,6 +1,8 @@
+> 历史过程材料（Task A已收尾）：本页保留原设计／失败／验证事实，不再作为执行入口。现行边界见[当前技术总览](../../kokoro-handbook/technical/00-system-overview.md)，后继事项见[TODO](../../../todo.md)。
+
 # Task A 清理与重构技术方案
 
-> 当前入口：G0已于2026-10-31通过，见ADR-036与实施证据。本文设计约束仍适用，下方阶段状态为历史快照；最新实施状态统一维护于 [Task A闭环方案](../plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
+> 当前入口：G0已于2026-10-31通过，见ADR-036与实施证据。本文设计约束仍适用，下方阶段状态为历史快照；最新实施状态统一维护于 [Task A闭环方案](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-11-01-task-a-c1-c4-technical-plan.md)。不据历史勾选判定当前完成。
 
 > 状态：G0 设计门补齐中；本轮只补契约/盘点/架构材料，不启动服务、不执行数据库清理、不发布。C-1 阶段提交仅作历史阶段证据，C-2/C-3/C-4 实施须等 G0 审阅放行。
 
@@ -416,4 +418,4 @@ G0 已固定 IAM owner artifact `apps/kokoro-iam/contract/openapi/native-session
 
 本文件是设计基线，不等同于已实施、已验证或已合并。
 
-阶段执行顺序、唯一 writer、停写门、C-1～C-4 验证和进入 A-01/A-02/A-07 的具体步骤见 [执行计划](../plans/2026-10-30-task-a-cleanup-refactor-execution.md)。
+阶段执行顺序、唯一 writer、停写门、C-1～C-4 验证和进入 A-01/A-02/A-07 的具体步骤见 [执行计划](https://github.com/LordFoxFairy/Kokoro/blob/bdebba56a046703400845f79ae57834d4dfa4d0a/docs/superpowers/plans/2026-10-30-task-a-cleanup-refactor-execution.md)。

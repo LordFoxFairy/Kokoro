@@ -1,7 +1,7 @@
 # ADR-035：内部服务直接认证，不重复 IAM OAuth
 
 - 日期：2026-10-13。
-- 状态：用户已决定内部服务不重复走 IAM/OAuth；实施与组合验收待完成。
+- 状态：Accepted。Task A已按当前技术总览完成其直接认证及组合交付；本文保留跨owner决定，不能把旧切片待办自动扩成当前阻塞。
 - 范围：App 所需内部 owner 调用；Mori 与其他 Web 功能开发不在本次范围。
 - 依据：当前 BFF/Platform/Agent 源码及用户本次明确要求；这是项目选择，不是通用行业结论。
 
@@ -9,7 +9,7 @@
 
 用户再次确认内部服务不反复签发／交换短期token。本ADR的直接服务认证决定不变：撤回新增Billing client_credentials缓存／续期实现，不将300秒有效期延长或自动刷新作为最终方案。本片起始基线IAM的Billing verify走JWT＋内省，按IAM先发行直接凭据认证profile、Billing再固定消费替换；原Run／预算业务授权不删除。Agent→Platform仍存的机器OAuth继续沿本ADR已有barrier约束退出，不把Billing一跳完成当全内部切换完成。
 
-人类登录的原生会话、授权码／PKCE／CSRF与内部机器身份是不同边界。App已有Auth.js只验证交易、Product cookie＋Redis持有会话；不因内部认证切换再新增另一套登录机制。登录失败／多标签／注销与候选配对统一在AUTH-1实测，不以协议正确代替用户体验验收。
+人类登录与内部机器身份是不同边界。现已由IAM原生登录Cookie／数据库Session与续期、BFF认证边缘和App同源adapter取代此前Auth.js／Product Redis会话方案，不维护第二份Session。普通业务直接服务身份＋可信actor与账户会话管理专用例外见[当前技术总览](../technical/00-system-overview.md#3-原生登录与内部调用)。历史AUTH-1切片不恢复为当前任务。
 
 当前状态与实施范围见有效产品计划和各owner三面文档；本段为决定纠偏，不是正常运行已切换声明。
 

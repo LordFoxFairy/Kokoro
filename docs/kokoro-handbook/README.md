@@ -12,100 +12,13 @@
 
 - [ADR-029：System Models 与 Platform 边界收敛](decisions/ADR-029-system-model-and-platform-boundaries.md)
 
-## 当前产品要求入口
+## 当前阅读入口
 
-先读 [当前 PRD](product/09-v2-prd.md)：用户对象关系、完整范围、功能要求、异常体验和验收里程碑。
-01/05/06/07 为补充章节；其它专业 Studio/白标专题说明长期愿景，不据此增加当前任务。
-PRD 不是完成报告；当前实现、任务和测试结果分别见 [CURRENT](../CURRENT.md)、[task](../task.md)、[test-cases](../test-cases.md)。
+- [产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)：实际工作台操作及支持限制，源自现有公开门户，不新建站点。
+- [PRD](product/09-v2-prd.md)：已批准需求；[当前技术总览](technical/00-system-overview.md)：实际 owner、认证、执行／事件／文件／调度链。
+- [CURRENT](../CURRENT.md) 与 [Task A TODO](../../todo.md)：当前交付事实和暂存项。Task B 保留独立负责人，不用 Task A 结论代替其验收。
 
-## 实现状态
-
-诚实区分本地原型与首发架构，避免把未上线的写成已上线：
-
-```text
-当前阶段 1 运行组合（不代表完整用户链闭环）：
-  kokoro（Web）/ kokoro-bff（Chat 与业务 BFF）/ kokoro-agent（Run worker、HITL、恢复）。
-  持久化基线为 PostgreSQL + Redis。
-
-当前阶段 2 物理业务仓（目标 cutover 尚未完成）：
-  kokoro-iam / kokoro-system（含 model-catalog） / kokoro-billing /
-  kokoro-capability / kokoro-storage / kokoro-scheduler。
-
-已接受的目标拓扑：
-  kokoro-model 合入 kokoro-system；kokoro-capability clean-slate 重命名为
-  kokoro-platform，并以 skills / mcp 为首批一级业务域。
-
-历史本地原型（未上线，已移出 Root）：
-  kokoro-web / kokoro-session / 旧 kokoro-platform / kokoro-gateway / kokoro-credit 及其旧部署、验证入口。
-  旧 platform 代码不会恢复；目标 platform 从当前 capability owner clean-slate 收敛。
-
-首发架构（clean build）：
-  现有原型没有生产 Session、Run、checkpoint、Artifact 或账务事实需要保留。GA、Session、Capability、Storage 与 Billing
-  以 handbook 的目标契约直接实现；原型代码只作实现参考，不形成兼容读写、双轨运行或数据搬运。
-```
-
-### 阶段 2 归属速查
-
-| 业务面 | 当前 owner | 边界结论 |
-|---|---|---|
-| Web | `LordFoxFairy/kokoro-app` | 独立 Web 子仓；只暴露同源 `/api/*` adapter，不直连业务仓 |
-| Chat / 业务编排 | `LordFoxFairy/kokoro-bff` | BFF 的 Chat 业务模块边界是 Chat 唯一业务入口；Session 是资源概念，不是独立仓库 |
-| 执行 | `LordFoxFairy/kokoro-agent` | Worker、HITL、恢复和执行事件；由 BFF 通过内部契约承接 |
-| 身份与权限 | `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit |
-| 系统与模型 | 目标 `kokoro-system` | Site/Workspace/Runtime/Policy 与 `model-catalog` 模块；当前 Model 物理仓待合并 |
-| 商业计费 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger 同仓；不再单列 `kokoro-credit` |
-| 平台能力与对象 | 目标 `kokoro-platform` / `kokoro-storage` | Platform 首批为 Skills/MCP；对象事实仍由 Storage 独立拥有 |
-| 调度 | `kokoro-scheduler` | 独立 Go 调度 owner；通用任务、lease、retry，不承载 Billing 业务规则 |
-
-`kokoro-gateway`、`kokoro-session`、旧 `kokoro-platform`、旧 `kokoro-web` 与 `kokoro-credit` 均为历史/归档实现，
-只用于考古。ADR-029 已重新采用 `kokoro-platform` 这个目标仓名，但不得复用历史实现或形成兼容入口。当前 API 以
-各 owner 仓库自己的 v1 contract 与 `/v1` 文档为准；Root 只维护归属、架构原则和验证入口，不保存 wire source 或生成物。
-
-## 当前 Feature-first / GA 目标架构（2026-08-22）
-
-当前 Agent/Capability 的唯一评审主线是：
-
-- [GA 核心架构总览](technical/42-ga-core-architecture.md)（先读：对象、owner 与一条运行主链）
-- [GA 整体 Agent 最终技术方案](technical/36-ga-final-agent-technical-plan.md)
-- [统一入口、App、Feature 与 Agent 产品架构](technical/37-product-experience-agent-studio-architecture.md)
-- [GA 公共运行契约](technical/38-ga-public-runtime-contract.md)
-- [GA 评测与运行证据](technical/39-ga-evaluation-and-evidence-architecture.md)
-- [GA 工作画像与有界并行任务](technical/40-ga-work-profiles-and-bounded-fanout.md)
-- [Feature 结果契约与质量门](technical/41-feature-outcome-contracts-and-quality-gates.md)
-- [GA Harness 与 Agent 组装校准](technical/44-ga-harness-and-workflow-research.md)
-- [GA 原型就绪审计](technical/45-ga-prototype-readiness-audit.md)
-- [跨子仓 API/AIP 契约与技术方案同步](technical/51-cross-repository-contract-sync.md)
-- [Capability × Storage v1 API 与 Client 契约](technical/52-capability-storage-v1-api-and-client-contract.md)
-- [PostgreSQL 与 SQL 工程规范](standards/03-sql-and-postgresql.md)
-- [TypeScript 后端成熟工程规范](standards/08-typescript-backend-engineering.md)
-- [Python 后端成熟工程规范](standards/09-python-backend-engineering.md)
-- [语言、时间与类型安全工程规范](technical/55-language-and-type-safety-standards.md)
-- [GA Runtime](technical/34-ga-agent-runtime-architecture.md)、[GA-first SkillRuntime](technical/33-ga-first-skill-runtime-architecture.md)、[GA × official Swarm](technical/35-ga-langgraph-swarm-architecture.md)
-- [产品 Session 生命周期](business-flows/session-lifecycle.md) 与 [Session/GA/Web 运行链路](business-flows/agent-session-web-general-chat-runtime.md)
-- [后端目标仓库设计卡](technical/backend-design/README.md)
-
-核心 owner 固定为：`kokoro-bff 的 Chat 内部业务边界` 拥有 Web-facing session/message/SSE/control 适配；上游 IAM 只向 GA
-提交服务端构造的 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`，GA ingress 从 tenant + subject 派生内部 `RuntimeNamespace`；GA 使用
-DeepAgents/LangGraph 原生 state、官方 `SwarmState`、checkpoint、RunLedger、workbench、HITL execution 与 `chat_events`；当前物理 Capability、目标 Platform 只拥有
-user/session Skill path、visibility、CRUD；Storage 拥有 bytes/scan/Asset/Artifact。当前不使用独立 `kokoro-chat` runtime、Capability runtime snapshot 或 Agent/Skill 版本/Session binding 机制。
-
-Billing 当前唯一业务与技术权威是 [Billing 商业系统重构版最终架构](technical/50-billing-commerce-rearchitecture.md)；
-正式业务仓统一遵守 PostgreSQL + Redis，旧 MySQL/Mongo SQL 与迁移资料只保留为历史审阅记录。
-新 API 必须在事实 owner 仓库的 canonical v1 contract 中定义，不创建跨仓 Root 镜像或第二份 Billing OpenAPI。
-
-## 当前阶段 1 链路
-
-```text
-kokoro Web -> kokoro-bff 的 Chat 内部业务边界 -> kokoro-agent
-                 PostgreSQL durable facts + Redis transport
-```
-
-```text
-kokoro          只做 Web UI 与同源 /api/* route adapter。
-kokoro-bff      负责 Chat/业务编排、鉴权、幂等、错误归一、SSE 与 owner adapter。
-kokoro-agent    负责 Run 执行、HITL、恢复与 worker；PostgreSQL 保存 durable facts，Redis 只作 transport/lease/cache。
-Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter、API、测试、Docker 与 CI；V1 不保留 migration runtime。
-```
+旧“阶段 1／阶段 2”“独立 Session”和 Feature-first 原型叙述不作为当前实施入口；目标／研究方案按本次相关主题读取，不能覆盖当前架构、owner 合同与源码。专业 Studio／增长章节是长期产品专题，不据此承诺当前工作台全部支持。历史从 Git 追溯，不继续堆入新的当前入口。
 
 ## 强制约束
 
@@ -169,26 +82,26 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 - [18-capability-namespace-auth-sandbox-artifacts](technical/18-capability-namespace-auth-sandbox-artifacts.md)
 - [19-current-runtime-capability-review-plan](technical/19-current-runtime-capability-review-plan.md)（已被 20 取代，保留为扩展附录）
 - [20-kokoro-v1-technical-plan](technical/20-kokoro-v1-technical-plan.md)（**本地原型物理参考 / 不进入首发**）
-- [21-platform-mainchain-closure](technical/21-platform-mainchain-closure.md)（**历史 Platform 接线记录**；当前 owner 见阶段 2 归属速查与 36/37/38）
+- [21-platform-mainchain-closure](technical/21-platform-mainchain-closure.md)（历史 Platform 接线记录；当前 owner 见00系统总览与仓库组合）
 - [22-capability-hub](technical/22-capability-hub.md)（**历史 Hub 边界记录**；物理 owner 暂为 `kokoro-capability`，目标 owner 为 `kokoro-platform`，跨仓入口为 BFF v1）
 - [23-platform-ops-console](technical/23-platform-ops-console.md)（运营台现状：三维 RBAC / maker-checker / DB 审计 / manifest 代理 / internal-secret 现状）
 - [24-backend-subrepository-ddd-architecture](technical/24-backend-subrepository-ddd-architecture.md)（历史全局拆仓材料）
 - [25-backend-architecture-and-ddd-levels](technical/25-backend-architecture-and-ddd-levels.md)（历史 DDD 分级材料）
 - [26-backend-repository-and-directory-topology](technical/26-backend-repository-and-directory-topology.md)（历史仓库拓扑）
-- [27-final-backend-architecture](technical/27-final-backend-architecture.md)（**历史全局拆仓总图**；当前 owner 以阶段 2 归属速查、36/38 和设计卡为准）
+- [27-final-backend-architecture](technical/27-final-backend-architecture.md)（历史全局拆仓总图；当前实现以00系统总览、有效ADR与owner合同为准）
 - [29-capability-storage-runtime-architecture](technical/29-capability-storage-runtime-architecture.md)（**Storage target owner；Capability snapshot/revision/agent_namespace 仅本地原型参考**）
 - [46-capability-mcp-connector-skill-design](technical/46-capability-mcp-connector-skill-design.md)（**Capability v1：Manus 风格 Skill、Connector、MCP 分层与 API 规划**）
 - [33-ga-first-skill-runtime-architecture](technical/33-ga-first-skill-runtime-architecture.md)（**GA default Skill、find_skills/load_skill、CA path 与恢复**）
 - [34-ga-agent-runtime-architecture](technical/34-ga-agent-runtime-architecture.md)（**GA 总体控制面、运行时与能力架构**）
 - [35-ga-langgraph-swarm-architecture](technical/35-ga-langgraph-swarm-architecture.md)（**GA × official LangGraph Swarm 编排架构**）
-- [36-ga-final-agent-technical-plan](technical/36-ga-final-agent-technical-plan.md)（**GA 整体 Agent 最终技术方案 / 单一评审入口**）
+- [36-ga-final-agent-technical-plan](technical/36-ga-final-agent-technical-plan.md)（历史GA目标方案；非当前实施／评审入口）
 - [37-product-experience-agent-studio-architecture](technical/37-product-experience-agent-studio-architecture.md)（**Kokoro 统一入口、App、Feature 与单/多 Agent 产品架构**）
-- [38 GA 公共运行契约](technical/38-ga-public-runtime-contract.md)（**Feature-first Root command 与 Session/GA 的唯一公共边界**）
+- [38 GA 公共运行契约](technical/38-ga-public-runtime-contract.md)（历史Root/Session目标契约；现行字段只认owner合同）
 - [39-ga-evaluation-and-evidence-architecture](technical/39-ga-evaluation-and-evidence-architecture.md)（**GA 真实装配评测、运行证据与上线门**）
 - [40-ga-work-profiles-and-bounded-fanout](technical/40-ga-work-profiles-and-bounded-fanout.md)（**GA 同一父 Run 的 private task、map/reduce 与恢复边界**）
 - [41-feature-outcome-contracts-and-quality-gates](technical/41-feature-outcome-contracts-and-quality-gates.md)（**Feature 用户可见交付、质量/成本基线与 promotion gate**）
-- [42-ga-core-architecture](technical/42-ga-core-architecture.md)（**一个闭环 GA 底座、Feature/Agent 组装、DeepAgents 原生执行、identity/namespace 与外部 owner 的首读总览**）
-- [45-ga-prototype-readiness-audit](technical/45-ga-prototype-readiness-audit.md)（**当前原型差距、default-only 首发闭环与实现前置条件**）
+- [42-ga-core-architecture](technical/42-ga-core-architecture.md)（历史GA目标总览；当前首读00系统总览）
+- [45-ga-prototype-readiness-audit](technical/45-ga-prototype-readiness-audit.md)（历史原型差距审计；非当前任务阻塞表）
 - [后端逐仓库设计卡](technical/backend-design/README.md)（每个仓库的职责、目录、owner、契约和 100 分验收证据）
 - [后端逐仓库设计审计](technical/backend-design/10-design-audit.md)（设计完成度与当前实现差距）
 
