@@ -4,7 +4,7 @@
 
 Task A 已按用户确认的开发交付口径收尾。Root 原 #66 已合 main，基线 `bdebba56`；IAM #6、Admin #5、Storage #3、Agent #46、BFF #18、App #50 均已通过各自原 PR 合入。实际组合继续锁定已验精确子提交，不机械换成 merge SHA。
 
-- 现在从[产品指南](../apps/kokoro-app/developer-docs/docs/product/index.md)、[当前技术总览](kokoro-handbook/technical/00-system-overview.md)和[唯一 TODO](../todo.md)阅读，不再沿旧执行计划重复推进。
+- 现在从[产品指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)、[当前技术总览](kokoro-handbook/technical/00-system-overview.md)和[唯一 TODO](../todo.md)阅读，不再沿旧执行计划重复推进。
 - 真实附件／历史引用／Project 草稿与同 Run 恢复、定时到点完整主链已有各自证据；最新历史答复再验 `f4fb90ddc132b4cb6e69af5b` 通过。
 - 真实 E2B SDK→官方 envd Docker→独立 Worker→Storage CLEAN→Canvas两版及选中版刷新恢复通过，收据 `884f6bcbb5676f512bf67b6c`，SHA‑256 `6812937fe8ece3c1f4619110896f598cbcc17fb9c017bd26c9ea56eb0d6e08d1`。整轮／native exit 0／cleanup通过，容器独立停删且端口关闭；不声称云控制面已验。模型／System／预算／Platform 为明确协议夹具。
 - 真实外部账号、最终本人语音编辑发送、体验余量等仍在 TODO，未伪装成真实通过。购买保持关闭，未部署。CI 因账户账单／额度未启动，不称CI通过。

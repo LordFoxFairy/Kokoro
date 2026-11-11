@@ -1,6 +1,6 @@
 # Kokoro 当前代码入口
 
-核对日期：2026-11-11 UTC。当前产品与技术分别从[使用指南](../apps/kokoro-app/developer-docs/docs/product/index.md)和[系统总览](kokoro-handbook/technical/00-system-overview.md)进入；精确代码组合由Root gitlink固定，不从下方历史PID、分支或日期推断当前运行。
+核对日期：2026-11-11 UTC。当前产品与技术分别从[使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)和[系统总览](kokoro-handbook/technical/00-system-overview.md)进入；精确代码组合由Root gitlink固定，不从下方历史PID、分支或日期推断当前运行。
 
 | 要改什么 | 入口／owner |
 | --- | --- |

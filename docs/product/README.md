@@ -1,6 +1,6 @@
 # 早期产品资料与共享规则
 
-**当前用户操作看 [App 产品指南](../../apps/kokoro-app/developer-docs/docs/product/index.md)，批准需求看 [PRD](../kokoro-handbook/product/09-v2-prd.md)，工程事实看 [当前技术总览](../kokoro-handbook/technical/00-system-overview.md)。** 本目录不是当前产品使用手册，不维护第二份交付比例或任务表。
+**当前用户操作看 [App 产品指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)，批准需求看 [PRD](../kokoro-handbook/product/09-v2-prd.md)，工程事实看 [当前技术总览](../kokoro-handbook/technical/00-system-overview.md)。** 本目录不是当前产品使用手册，不维护第二份交付比例或任务表。
 
 本目录多数内容是 2026-05 的产品研究、品牌、增长及交互草案。未实现的 Studio、市场、模式、记忆或定价设想不因为文中“已定”就成为当前可用能力；与现行规范冲突时不用于实施。
 
