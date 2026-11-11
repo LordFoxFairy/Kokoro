@@ -1,7 +1,7 @@
 # Kokoro 当前产品需求手册（PRD）
 
 - 核对日期：2026-11-11 UTC；本文维护已批准需求，不是实现完成率或上线报告。
-- 用户当前操作：[产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)；当前技术：[系统总览](../technical/00-system-overview.md)。
+- 用户当前操作：[产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)；当前技术：[系统总览](../technical/00-system-overview.md)。
 - Task A 已按用户确认的开发交付口径收尾；真实渠道账号／最终语音发送等暂存 [TODO](../../../todo.md)，真实支付保持关闭。Task B 的 Skills／MCP／账户等范围及状态由其独立负责人维护，不由 Task A代签。
 - 历史 Wave 目标与需求编号保留可追溯性，不把旧 R200／70组统计或原执行计划恢复为当前门。现交付事实见 [CURRENT](../../CURRENT.md)。
 

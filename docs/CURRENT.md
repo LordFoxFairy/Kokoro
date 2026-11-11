@@ -4,7 +4,7 @@
 
 Task A 已按用户确认的开发交付口径收尾。Root 原 #66 已合 main，基线 `bdebba56`；IAM #6、Admin #5、Storage #3、Agent #46、BFF #18、App #50 均已通过各自原 PR 合入。实际组合继续锁定已验精确子提交，不机械换成 merge SHA。
 
-- 现在从[产品指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)、[当前技术总览](kokoro-handbook/technical/00-system-overview.md)和[唯一 TODO](../todo.md)阅读，不再沿旧执行计划重复推进。
+- 现在从[产品指南](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)、[当前技术总览](kokoro-handbook/technical/00-system-overview.md)和[唯一 TODO](../todo.md)阅读，不再沿旧执行计划重复推进。
 - 真实附件／历史引用／Project 草稿与同 Run 恢复、定时到点完整主链已有各自证据；最新历史答复再验 `f4fb90ddc132b4cb6e69af5b` 通过。
 - 真实 E2B SDK→官方 envd Docker→独立 Worker→Storage CLEAN→Canvas两版及选中版刷新恢复通过，收据 `884f6bcbb5676f512bf67b6c`，SHA‑256 `6812937fe8ece3c1f4619110896f598cbcc17fb9c017bd26c9ea56eb0d6e08d1`。整轮／native exit 0／cleanup通过，容器独立停删且端口关闭；不声称云控制面已验。模型／System／预算／Platform 为明确协议夹具。
 - 真实外部账号、最终本人语音编辑发送、体验余量等仍在 TODO，未伪装成真实通过。购买保持关闭，未部署。CI 因账户账单／额度未启动，不称CI通过。
@@ -13,11 +13,11 @@ Task A 已按用户确认的开发交付口径收尾。Root 原 #66 已合 main�
 
 子仓的 tests 不迁入 Root；`scripts/tests/` 只覆盖 Root 治理脚本；跨仓组合证据按 `verification/` 和正式运行入口归档。文档清理只跑相关链接／治理与公开门户构建，不重新启动全产品服务。
 
-## 文档收敛（2026-11-11 UTC）
+## 对外文档分层（2026-11-10，America/New_York）
 
-当前入口已更新为产品使用指南、现技术总览与唯一TODO。已退役四份旧Task A计划和两份错误Session拓扑；Task A历史从固定Git版本追溯，其它owner正文保持。原ADR034–036已按最终原生认证／Nest事实纠正，不再指导恢复被否决的认证方案。
+公开文档只放Web仓库 `developer-docs/docs/`：产品按 `product/{tasks,files,projects,scheduled-tasks,connections}/` 分功能，API页面与生成参考独立放 `api/`。两类侧栏／导航分开，内部App／Root工程文档不进入公开构建或搜索。原API字段owner、catalog精确来源与发布／输出安全边界不变。
 
-App原文档PR #51已合main，Root固定其已验精确提交 `2b2522b7`，只更新现有VitePress门户、维护说明及其生成适配：四页产品指南＋分开的产品／开发者导航，生成API参考固定BFF28.35。Node22门户完整检查通过，生成来源／发布策略／例子／静态链接均通过；Root文档相关治理、拓扑、契约与原checkpoint通过。内部资料不进入公开构建；未部署，不声称 `/docs` 已在线挂载。Task B不受本轮交付结论覆盖。
+本轮仅整理文档目录、来源链接和配套生成路径，不修改Task B业务实现，也不改变其交付状态。不部署；帮助入口 `/docs` 的实际托管挂载另行验证。App文档PR #52已合main，Root锁已验 `1fed28b8`。门户完整来源／生成／例子／构建／链接通过，分区侧栏与旧页面缺席核验通过；Root相关治理、拓扑、15条契约边／原checkpoint通过。未变业务不重跑全量，最终合并与分支清理由本轮Root PR及主控收尾回执确认。
 
 ## 历史与其他 owner 记录
 

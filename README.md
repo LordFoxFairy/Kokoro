@@ -121,7 +121,7 @@ Browser → kokoro-app same-origin adapter → kokoro-bff → owner services
 
 ## 文档入口
 
-1. [产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)与[当前技术总览](docs/kokoro-handbook/technical/00-system-overview.md)
+1. [产品使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)与[当前技术总览](docs/kokoro-handbook/technical/00-system-overview.md)
 2. [当前状态](docs/CURRENT.md)
 3. [仓库组合状态](docs/REPOSITORY_STATUS.md)
 4. [代码地图](docs/CODEBASE_MAP.md)

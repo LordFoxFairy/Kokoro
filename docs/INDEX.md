@@ -4,7 +4,7 @@
 
 ## 产品与工程首读
 
-1. [工作台使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/docs/product/index.md)：开始使用、聊天与结果、项目／定时、支持范围。
+1. [工作台使用指南](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/docs/product/index.md)：快速开始，以及任务、文件、项目、定时、连接五个功能子目录与支持范围。
 2. [PRD](kokoro-handbook/product/09-v2-prd.md)：用户对象、批准需求与非目标，不当完成报告。
 3. [当前技术总览](kokoro-handbook/technical/00-system-overview.md)：实际链路、原生认证、AI SDK、文件与调度。
 4. [CURRENT](CURRENT.md)：当前交付事实；[Task A TODO](../todo.md)：唯一当前暂存事项。
@@ -16,7 +16,7 @@
 | --- | --- |
 | 架构／owner／跨仓边界 | [总体架构](ARCHITECTURE_STANDARD.md)、[长期手册](kokoro-handbook/README.md)、有效 ADR |
 | API／数据变更 | 对应子仓 `contract/`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md` 和 canonical schema；不从旧原型推字段 |
-| Web 用户文档或公开 API 文档 | App [门户维护说明](https://github.com/LordFoxFairy/kokoro-app/blob/2b2522b784492c248d3a95e6530fba9b03f562b4/developer-docs/README.md)；API 参考只由固定 BFF artifact 生成 |
+| Web 用户文档或公开 API 文档 | App [门户维护说明](https://github.com/LordFoxFairy/kokoro-app/blob/main/developer-docs/README.md)；API 参考只由固定 BFF artifact 生成 |
 | 类型／SQL／事务／API／测试规范 | [工程手册](kokoro-handbook/standards/)及 Root [AGENTS](../AGENTS.md) |
 | 当前验证命令 | [scripts 索引](../scripts/INDEX.md)及各 owner README/ACCEPTANCE；不因改文档启动全产品测试 |
 | Task B | [独立交接入口](handoffs/2026-10-30-task-b-capabilities-account.md)，保留其负责人、原 PR 和未验状态 |
