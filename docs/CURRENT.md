@@ -1,5 +1,13 @@
 # Current Facts
 
+## 当前维护盘点与本批交付（2026-11-11）
+
+16个编号问题现为8已闭环／8有遗留（7待处理、R-11部分完成），本轮起点为7／9。R-08已列入口余项经App #54与Billing #5修正；Billing无生产caller总factory／3孤立类型退役，现役Personal／Catalog鉴权实现逐字不变。主控相关288通过、格式／lint／类型／build通过；初次worker生成物未刷新的lint失败保留，未改其它业务去刷绿。
+
+Mori #2完成R-11本仓片：仅固定原已锁React插件和Node22类型，运行resolver／SRI守恒；主控Node22.23.4／pnpm11.2.2的owner check通过（含706测试和build）。App类型余项留原owner，R-11不整体勾掉。App两篇工程README只跑15本地链接／事实检查，未重跑业务；R-06双writer／规范交付仍待收敛。源码组合为App7182873f、Billingafbfd790、Morid363816e，其余pins不变。
+
+三仓自有PR均已正常合main并清理分支，Root本次PR锁精确源码并承接简化后的[唯一TODO](../todo.md)。当前拓扑／15条契约边／原checkpoint验收随本批回执记录；不操作Task B PR、分支和工作树，不部署。其余8项与两条候选的去重口径、实际证据见[报告§14](reports/2026-11-11-typescript-auth-admin-audit.md#14-剩余问题盘点与最小维护批次)。后续先评估R-07 Storage独立部分及R-09 Root工具校准，不机械重复十轮扫描。
+
 ## R-13／R-16修复验收（2026-11-11）
 
 R-13已通过BFF自有PR #21合main（58222407），Root锁已验源码a3e190623183d56f95960d8b6feb89a84fda1ece。Project业务与完成回执同PG事务，业务前锁／重核receipt，失败回滚、成功／提交响应未知可原key回放；不增表／token／服务，不重写通用幂等。主控静态／build／格式、78项相关用例和9项真实独占PG回归通过，数据库库存102→102、零本轮残留。原77／1失败为旧撤权测试只mock create，现仅补其事务mock且所有断言保留；与Task B同文件但不触及其三个实际diff区，PR和head未动。
