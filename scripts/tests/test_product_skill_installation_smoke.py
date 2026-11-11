@@ -1,17 +1,28 @@
 """Root evidence checks, not a substitute for the real owner composition."""
 
 from copy import deepcopy
+import hashlib
+import io
 import importlib.util
 import json
 import os
 from pathlib import Path
 import sys
 from unittest.mock import patch
+import zipfile
 
 import pytest
 
 
 PATH = Path(__file__).resolve().parents[1] / "e2e/product_skill_installation_smoke.py"
+NATIVE_COOKIE = "__Secure-kokoro-issuer.session_token=opaque%2B"
+NATIVE_ORIGIN = "https://sandbox.example.test"
+MARKDOWN = (
+    "---\nname: sandbox-signed-put\ndescription: Owned signed PUT smoke.\n---\n"
+    "# Sandbox\n\nOwned signed PUT smoke.\n"
+)
+PRODUCT_SOURCES = ("skill:source-a", "skill:source-b")
+PRODUCT_SERIES = ("series-a", "series-b")
 
 
 def helper():
@@ -47,9 +58,7 @@ def test_collection_and_six_operations_match_pinned_bff_machine_contract():
     # a missing route or an unexpected verb on any selected path.
     selected_paths = {path for _method, path in expected}
     actual = {
-        (x["method"], x["path"])
-        for x in operations
-        if x["path"] in selected_paths
+        (x["method"], x["path"]) for x in operations if x["path"] in selected_paths
     }
     assert expected == actual
     assert m.COLLECTION == "/v1/skill-installations"
@@ -315,7 +324,9 @@ def test_http_wire_has_exact_trusted_headers_delete_no_body_and_closes():
             closed.append(True)
 
     with patch.object(m.http.client, "HTTPConnection", Connection):
-        client = m.PublicInstallationHttp("http://127.0.0.1:4401", "TOKEN", "SECRET")
+        client = m.PublicInstallationHttp(
+            "http://127.0.0.1:4401", NATIVE_COOKIE, NATIVE_ORIGIN, "SECRET"
+        )
         client("DELETE", "/v1/skill-installations/installation-a", key="stable-key")
         client("GET", "/v1/skill-installations?installed=false&enabled=false")
         client(
@@ -332,7 +343,9 @@ def test_http_wire_has_exact_trusted_headers_delete_no_body_and_closes():
     assert get[2] is None and "idempotency-key" not in get[3]
     assert json.loads(post[2]) == {"source_ref": "skill:source-a"}
     assert all(
-        headers["authorization"] == "Bearer TOKEN"
+        headers.get("cookie") == NATIVE_COOKIE
+        and headers.get("origin") == NATIVE_ORIGIN
+        and "authorization" not in headers
         and headers["x-kokoro-service"] == "web-bff"
         and headers["x-kokoro-internal-secret"] == "SECRET"
         for _, _, _, headers in sent
@@ -357,7 +370,25 @@ def test_transport_rejects_non_owned_origin_before_socket(bad):
     m = helper()
     with patch.object(m.http.client, "HTTPConnection") as connection:
         with pytest.raises(m.ProductError):
-            m.PublicInstallationHttp(bad, "TOKEN", "SECRET")
+            m.PublicInstallationHttp(bad, NATIVE_COOKIE, NATIVE_ORIGIN, "SECRET")
+        connection.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "cookie,origin",
+    [
+        ("", NATIVE_ORIGIN),
+        (NATIVE_COOKIE + "\r\n", NATIVE_ORIGIN),
+        (NATIVE_COOKIE, "http://sandbox.example.test"),
+        (NATIVE_COOKIE, "https://sandbox.example.test/path"),
+        (NATIVE_COOKIE, "https://user@sandbox.example.test"),
+    ],
+)
+def test_transport_rejects_invalid_native_session_before_socket(cookie, origin):
+    m = helper()
+    with patch.object(m.http.client, "HTTPConnection") as connection:
+        with pytest.raises(m.ProductError, match="native_session_invalid"):
+            m.PublicInstallationHttp("http://127.0.0.1:4401", cookie, origin, "SECRET")
         connection.assert_not_called()
 
 
@@ -418,9 +449,9 @@ def test_http_invalid_response_closes_without_body_diagnostics(headers, raw, sta
         patch.object(m.http.client, "HTTPConnection", Connection),
         pytest.raises(m.ProductError) as caught,
     ):
-        m.PublicInstallationHttp("http://127.0.0.1:4401", "TOKEN", "SECRET")(
-            "GET", "/v1/skill-installations"
-        )
+        m.PublicInstallationHttp(
+            "http://127.0.0.1:4401", NATIVE_COOKIE, NATIVE_ORIGIN, "SECRET"
+        )("GET", "/v1/skill-installations")
     assert closed == [True]
     assert "PRIVATE_TEST_BODY" not in str(caught.value)
 
@@ -467,9 +498,7 @@ def transcript():
                     "files": [
                         {
                             "path": "SKILL.md",
-                            "size_bytes": str(
-                                len("# Sandbox\n\nOwned signed PUT smoke.\n".encode())
-                            ),
+                            "size_bytes": str(len(MARKDOWN.encode())),
                         }
                     ],
                     "selected_file": None,
@@ -485,14 +514,12 @@ def transcript():
                     "files": [
                         {
                             "path": "SKILL.md",
-                            "size_bytes": str(
-                                len("# Sandbox\n\nOwned signed PUT smoke.\n".encode())
-                            ),
+                            "size_bytes": str(len(MARKDOWN.encode())),
                         }
                     ],
                     "selected_file": {
                         "path": "SKILL.md",
-                        "text": "# Sandbox\n\nOwned signed PUT smoke.\n",
+                        "text": MARKDOWN,
                     },
                 }
             },
@@ -519,7 +546,9 @@ def test_sequence_historical_ack_never_overwrites_current_pagination_and_removal
         return responses.pop(0)
 
     driver = m.ProductInstallationSmoke(request, "owned-run")
-    proof = driver.exercise(("skill:source-a", "skill:source-b"))
+    proof = driver.exercise(
+        PRODUCT_SOURCES, series_ids=PRODUCT_SERIES, expected_markdown=MARKDOWN
+    )
     assert not responses
     assert proof["six_public_operations"] is True
     assert proof["historical_receipt_current_read"] is True
@@ -542,7 +571,9 @@ def test_sequence_refuses_published_auto_install_and_bad_page_current():
         with pytest.raises(m.ProductError):
             m.ProductInstallationSmoke(
                 lambda *_a, **_kw: responses.pop(0), "owned-run"
-            ).exercise(("skill:source-a", "skill:source-b"))
+            ).exercise(
+                PRODUCT_SOURCES, series_ids=PRODUCT_SERIES, expected_markdown=MARKDOWN
+            )
 
 
 def test_sequence_rejects_identity_drift_inside_valid_mutation_receipt():
@@ -562,7 +593,61 @@ def test_sequence_rejects_identity_drift_inside_valid_mutation_receipt():
         with pytest.raises(m.ProductError, match="identity_changed"):
             m.ProductInstallationSmoke(
                 lambda *_a, **_kw: responses.pop(0), "owned-run"
-            ).exercise(("skill:source-a", "skill:source-b"))
+            ).exercise(
+                PRODUCT_SOURCES, series_ids=PRODUCT_SERIES, expected_markdown=MARKDOWN
+            )
+
+
+def test_uploaded_markdown_uses_exact_archive_and_validated_digest():
+    m = helper()
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr("SKILL.md", MARKDOWN)
+    payload = stream.getvalue()
+    assert (
+        m.require_uploaded_markdown(payload, hashlib.sha256(payload).hexdigest())
+        == MARKDOWN
+    )
+    with pytest.raises(m.ProductError, match="fixture_digest_mismatch"):
+        m.require_uploaded_markdown(
+            payload, hashlib.sha256(MARKDOWN.encode()).hexdigest()
+        )
+
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, "w") as archive:
+        archive.writestr("SKILL.md", MARKDOWN)
+        with pytest.warns(UserWarning, match="Duplicate name"):
+            archive.writestr("SKILL.md", "wrong fixture")
+    payload = stream.getvalue()
+    with pytest.raises(m.ProductError, match="fixture_markdown_not_unique"):
+        m.require_uploaded_markdown(payload, hashlib.sha256(payload).hexdigest())
+
+
+def test_sequence_rejects_wrong_actual_publication_series_or_package_text():
+    m = helper()
+    responses = transcript()
+    with pytest.raises(m.ProductError, match="published_series_mismatch"):
+        m.ProductInstallationSmoke(
+            lambda *_a, **_kw: responses.pop(0), "owned-run"
+        ).exercise(
+            PRODUCT_SOURCES,
+            series_ids=("series-a", "series-other"),
+            expected_markdown=MARKDOWN,
+        )
+
+    responses = transcript()
+    selected = next(
+        data["data"]["selected_file"]
+        for _, data in responses
+        if isinstance(data.get("data"), dict) and data["data"].get("selected_file")
+    )
+    selected["text"] = MARKDOWN.replace("Sandbox", "Wrongxx")
+    with pytest.raises(m.ProductError, match="product_package_text_invalid"):
+        m.ProductInstallationSmoke(
+            lambda *_a, **_kw: responses.pop(0), "owned-run"
+        ).exercise(
+            PRODUCT_SOURCES, series_ids=PRODUCT_SERIES, expected_markdown=MARKDOWN
+        )
 
 
 def test_lifecycle_reinstall_and_withdrawn_read_preserve_installation_identity():
@@ -675,7 +760,7 @@ def test_withdrawn_projection_rejects_identity_or_exact_source_fact_drift(field,
         )
 
 
-def test_unpublished_is_precondition_missing_is_private_not_found_and_revoke_all_five():
+def test_unpublished_is_precondition_missing_is_private_not_found_and_revoke_all_six():
     m = helper()
     responses = [
         (412, error("skill_installation_precondition_failed")),
@@ -694,6 +779,10 @@ def test_unpublished_is_precondition_missing_is_private_not_found_and_revoke_all
     driver.installation_ids = ("installation-a", "installation-b")
     driver.require_revoked("skill:source-a")
     assert [x[0] for x in calls[2:]] == ["GET", "GET", "GET", "POST", "PUT", "DELETE"]
+    assert (
+        calls[4][1]
+        == "/v1/skill-installations/installation-a/package?file_path=SKILL.md"
+    )
     assert not responses
 
 

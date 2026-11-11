@@ -149,7 +149,14 @@ def _agent_handler(state: AgentReceiptState) -> type[BaseHTTPRequestHandler]:
             with state.lock:
                 state.calls.append(AgentCall(run_id, request_id, body))
             payload = json.dumps(
-                {"data": {"run_id": run_id}, "meta": {"request_id": request_id}},
+                {
+                    "data": {
+                        "run_id": run_id,
+                        "session_id": body.get("session_id", ""),
+                        "replayed": False,
+                    },
+                    "meta": {"request_id": request_id},
+                },
                 separators=(",", ":"),
             ).encode()
             self.send_response(202)

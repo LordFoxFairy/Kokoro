@@ -137,3 +137,44 @@ def test_failed_listener_thread_start_closes_owned_socket(monkeypatch) -> None:
             pass
     assert len(created) == 1
     assert created[0].fileno() == -1
+
+
+def test_native_session_and_multi_user_authorization_follow_current_wire() -> None:
+    identities = {
+        "token-a": AdmissionIdentity("tenant-a", "user-a", "session-a", "client"),
+        "token-b": AdmissionIdentity("tenant-b", "user-b", "session-b", "client"),
+    }
+    opener = build_opener(ProxyHandler({}))
+    with iam_admission_stub(identities, service_tokens={"service"}) as base:
+        for actor, expected in (("user-a", 200), ("user-b", 200), ("unknown", 403)):
+            call = Request(
+                base + "/internal/v1/authorization/check",
+                data=json.dumps({"resource": "tenant", "action": "read"}).encode(),
+                headers={"authorization": "Bearer service", "x-kokoro-actor-id": actor},
+            )
+            try:
+                response = opener.open(call, timeout=2)
+            except HTTPError as error:
+                response = error
+            with response:
+                assert response.status == expected
+                payload = json.load(response)
+                if expected == 200:
+                    assert payload["data"]["subject_id"] == actor
+        for cookie in ("", "kokoro-issuer.session_token=unknown"):
+            with opener.open(
+                Request(base + "/iam/get-session", headers={"cookie": cookie}),
+                timeout=2,
+            ) as response:
+                assert response.status == 200
+                assert json.load(response) is None
+        with opener.open(
+            Request(
+                base + "/iam/get-session",
+                headers={"cookie": "kokoro-issuer.session_token=token-b"},
+            ),
+            timeout=2,
+        ) as response:
+            payload = json.load(response)
+            assert payload["user"]["id"] == "user-b"
+            assert payload["session"]["activeOrganizationId"] == "tenant-b"

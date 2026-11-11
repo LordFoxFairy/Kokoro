@@ -13,8 +13,9 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 HELPER = ROOT / "scripts/e2e/bff_owner_schema.py"
+NATIVE_SESSION_RUNNER = ROOT / "scripts/e2e/run_web_native_session_smoke.py"
 RUNNERS = (
-    ROOT / "scripts/e2e/run_bff_iam_session_smoke.py",
+    NATIVE_SESSION_RUNNER,
     ROOT / "scripts/e2e/run_bff_iam_oidc_smoke.py",
     ROOT / "scripts/e2e/run_capability_bff_smoke.py",
     ROOT / "scripts/e2e/run_scheduler_bff_smoke.py",
@@ -81,11 +82,11 @@ def test_all_bff_runners_use_owner_helper_and_never_override_its_search_path() -
                     assert "PGOPTIONS" not in keys, runner
 
 
-def test_session_smoke_keeps_psql_url_free_of_app_schema_parameter() -> None:
-    source = (ROOT / "scripts/e2e/run_bff_iam_session_smoke.py").read_text()
+def test_native_session_smoke_keeps_psql_url_free_of_app_schema_parameter() -> None:
+    source = NATIVE_SESSION_RUNNER.read_text()
     assert 'db_url = resources.create_database("bff")' in source
     assert '"KOKORO_BFF_POSTGRES_URL": bff_owner_database_url(db_url)' in source
-    assert 'resources.command(["psql", db_url,' in source
+    assert '["psql", db_url, "-X", "-v", "ON_ERROR_STOP=1", "-Atc", sql]' in source
 
 
 def test_scheduler_smoke_observes_bff_outbox_in_owner_schema() -> None:

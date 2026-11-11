@@ -31,8 +31,6 @@ ROOT = Path(__file__).resolve().parents[2]
 AGENT = ROOT / "apps/kokoro-agent"
 SCHEMA = "kokoro_agent_source"
 ISSUER = "https://agent.example.test"
-RESOURCE = "https://kokoro.dev/resources/platform-internal"
-SCOPE = "platform:execution.invoke"
 TASK_DRAIN_SECONDS = 5
 # The longest submitted callback is IAM record(timeout=30); HTTP launch uses 10s.
 THREAD_DRAIN_SECONDS = 35
@@ -248,7 +246,7 @@ def command_digest(document: dict[str, object]) -> str:
 def require_revoke_result(record: object) -> None:
     if record != {
         "kind": "result",
-        "command": "revoke-agent-execution",
+        "command": "remove_member",
         "status": "ok",
     }:
         raise SourceError("IAM Agent execution revoke protocol invalid")
@@ -280,17 +278,37 @@ async def verify_native_metadata(backend: object, encoded_skill_id: str) -> None
     from deepagents.backends.composite import CompositeBackend
     from deepagents.backends.state import StateBackend
     from langgraph.runtime import Runtime
+    from kokoro_agent.clients.skills import SkillClientError
+    from kokoro_agent.protocol import SkillProgressCommitted
     from kokoro_agent.skills.middleware import RunSkillsMiddleware
 
     route = CompositeBackend(default=StateBackend(), routes={"/.skills/": backend})
-    middleware = RunSkillsMiddleware(backend=route, sources=["/.skills/"])
-    result = await middleware.abefore_agent({"messages": []}, Runtime(), {})
+    expected_path = f"/.skills/{encoded_skill_id}/SKILL.md"
+    phases = []
+
+    async def confirm_local_progress(phase, /, *, display_skills=None):
+        phases.append(phase.phase)
+        return SkillProgressCommitted(source_index=0)
+
+    middleware = RunSkillsMiddleware.for_selected(
+        backend=route,
+        sources=["/.skills/"],
+        discovery_backends=[(expected_path, route)],
+        progress=confirm_local_progress,
+    )
+    try:
+        result = await middleware.abefore_agent({"messages": []}, Runtime(), {})
+    except SkillClientError as exc:
+        if str(exc) != "SKILL_NATIVE_LOAD_INCOMPLETE" or phases != ["failed"]:
+            raise
+        raise SourceError("Agent source native Skill discovery mismatch") from None
     metadata = result["skills_metadata"]
     if (
-        len(metadata) != 1
+        phases != ["ready"]
+        or len(metadata) != 1
         or metadata[0]["name"] != SKILL_NAME
         or metadata[0]["description"] != SKILL_DESCRIPTION
-        or metadata[0]["path"] != f"/.skills/{encoded_skill_id}/SKILL.md"
+        or metadata[0]["path"] != expected_path
         or result.get("skills_load_errors")
     ):
         raise SourceError("Agent source native Skill discovery mismatch")
@@ -324,6 +342,12 @@ class AgentSourceDriver:
         self.phase = "not-started"
         self.close_failures: list[str] = []
         self._files: list[Path] = []
+
+    @property
+    def http_origin(self) -> str:
+        if self.server is None:
+            raise SourceError("Agent source HTTP is not started")
+        return f"http://127.0.0.1:{self.server.server_address[1]}"
 
     @property
     def jwks_url(self) -> str:
@@ -517,6 +541,7 @@ class AgentSourceDriver:
             make_run_repository,
             RunRepositorySettings,
         )
+        from kokoro_agent.worker.main import worker_execution_proofs
         from kokoro_agent.worker.platform import worker_platform_runtime
 
         self.phase = "Redis ownership"
@@ -534,33 +559,14 @@ class AgentSourceDriver:
         async with connect_pg(self.database) as connection:
             await apply_agent_schema(connection, SCHEMA, require_blank=True)
             await verify_agent_schema(connection, SCHEMA)
-        credential = ready.tenant_execution
-        if credential is None:
-            raise SourceError("IAM Agent execution credential absent")
-        path = self.directory / "agent-execution.json"
-        _secret_file(
-            path,
-            json.dumps(
-                [
-                    {
-                        "tenant_id": ready.tenant_id,
-                        "generation": 1,
-                        "credential_ref_version": "source-v1",
-                        "client_id": credential.client_id,
-                        "client_secret": credential.client_secret,
-                        "resource": RESOURCE,
-                        "scope": SCOPE,
-                    }
-                ]
-            ).encode(),
-        )
-        self._files.append(path)
+        path = Path(ready.platform_credential_file)
+        if not path.is_absolute() or path != path.resolve(strict=True):
+            raise SourceError("Agent source service credential path invalid")
         config = AppConfig.from_env(
             {
                 **self.env,
-                "KOKORO_AGENT_IAM_BASE_URL": ready.base_url,
                 "KOKORO_PLATFORM_BASE_URL": platform_base,
-                "KOKORO_AGENT_PLATFORM_CLIENT_CREDENTIALS_FILE": str(path),
+                "KOKORO_AGENT_PLATFORM_SERVICE_CREDENTIALS_FILE": str(path),
                 "KOKORO_AGENT_EXECUTION_PROOF_ISSUER": ISSUER,
                 "KOKORO_AGENT_EXECUTION_PROOF_PRIVATE_KEY_FILE": str(self.private),
                 "KOKORO_AGENT_EXECUTION_PROOF_WORKER_ACTIVE_KID": self.kid,
@@ -570,9 +576,12 @@ class AgentSourceDriver:
         )
         self.phase = "runtime composition"
         self.stack = AsyncExitStack()
+        signer, lease_reader = worker_execution_proofs(config)
         self.runtime = await self.stack.enter_async_context(
-            worker_platform_runtime(config)
+            worker_platform_runtime(config, signer=signer, lease_reader=lease_reader)
         )
+        if self.runtime is None:
+            raise SourceError("Agent source Platform worker runtime unavailable")
         self.repository = await self.stack.enter_async_context(
             make_run_repository(
                 RunRepositorySettings(
@@ -602,41 +611,103 @@ class AgentSourceDriver:
         )
         self.stack.push_async_callback(self.installer.close)
 
-    def _launch(self, ready: object, source_ref: str) -> None:
-        body = {
-            "request_id": "source-" + self.run_id,
-            "run_id": "source-" + self.run_id,
-            "session_id": "source-session-" + self.run_id,
-            "feature_key": "chat",
-            "selected_skill_source_refs": [source_ref],
-            "message_id": "source-message-" + self.run_id,
-            "content": "Read selected Skill source.",
-        }
+    def _require_ready(self) -> None:
+        if self.server is None:
+            raise SourceError("Agent source HTTP is not started")
         connection = http.client.HTTPConnection(
-            "127.0.0.1", self.server.server_address[1], timeout=10
+            "127.0.0.1", self.server.server_address[1], timeout=8
         )
         try:
             connection.request(
+                "GET", "/readyz", headers={"authorization": "Bearer " + self.secret}
+            )
+            response = connection.getresponse()
+            if response.status != 200 or json.loads(response.read(4097)) != {
+                "status": "ready",
+                "service": "kokoro-agent",
+            }:
+                raise SourceError("Agent source owned HTTP is not ready")
+        except (ValueError, OSError):
+            raise SourceError("Agent source owned HTTP is not ready") from None
+        finally:
+            connection.close()
+
+    def _launch(self, ready: object, source_ref: str) -> tuple[str, str, str]:
+        """Submit exactly one native Message; the BFF, not this fixture, owns the Run."""
+        try:
+            bff = urlsplit(ready.bff_origin)
+            port = bff.port
+        except (ValueError, AttributeError):
+            raise SourceError("Agent source BFF origin invalid") from None
+        if (
+            bff.scheme != "http"
+            or bff.hostname != "127.0.0.1"
+            or not port
+            or port == 3310
+            or bff.username is not None
+            or bff.password is not None
+            or bff.path not in ("", "/")
+            or bff.query
+            or bff.fragment
+        ):
+            raise SourceError("Agent source BFF origin invalid")
+        browser = (ready.cookie, ready.origin, ready.bff_web_secret)
+        if not all(
+            type(value) is str and value and not any(c in value for c in "\r\n\0")
+            for value in browser
+        ):
+            raise SourceError("Agent source native session inputs invalid")
+        if re.fullmatch(r"skill:[A-Za-z0-9][A-Za-z0-9._:-]{0,190}", source_ref) is None:
+            raise SourceError("Agent source reference invalid")
+        session_id = f"conv_{uuid4()}"
+        request_id = "source-" + self.run_id
+        body = {
+            "selected_skill_source_refs": [source_ref],
+            "content": "Read selected Skill source.",
+        }
+        connection = http.client.HTTPConnection(bff.hostname, port, timeout=10)
+        try:
+            connection.request(
                 "POST",
-                "/v1/runs",
+                f"/v1/sessions/{session_id}/messages",
                 json.dumps(body),
                 headers={
-                    "authorization": "Bearer " + self.secret,
+                    "cookie": ready.cookie,
+                    "origin": ready.origin,
                     "content-type": "application/json",
-                    "x-kokoro-tenant-ref": ready.tenant_id,
-                    "x-kokoro-actor-ref": ready.subject_id,
-                    "x-kokoro-subject-ref": ready.subject_id,
-                    "x-kokoro-actor-kind": "user",
-                    "x-kokoro-subject-kind": "user",
-                    "x-kokoro-identity-assertion-ref": "source-fixture-" + self.run_id,
+                    "x-kokoro-service": "web-bff",
+                    "x-kokoro-internal-secret": ready.bff_web_secret,
+                    "x-kokoro-request-id": request_id,
+                    "idempotency-key": request_id,
                 },
             )
             response = connection.getresponse()
             raw = response.read(1_048_577)
-            if response.status != 202 or len(raw) > 1_048_576:
-                raise SourceError("Agent source HTTP admission failed")
-            if json.loads(raw).get("data", {}).get("run_id") != body["run_id"]:
-                raise SourceError("Agent source admission identity mismatch")
+            if (
+                response.status != 202
+                or len(raw) > 1_048_576
+                or response.headers.get_all("x-request-id") != [request_id]
+                or response.headers.get_all("cache-control") != ["no-store"]
+            ):
+                raise SourceError("Agent source BFF Message admission failed")
+            try:
+                envelope = json.loads(raw)
+                data = envelope["data"]
+                run_id = data["run_id"]
+                match = re.fullmatch(r"run_bff_([a-f0-9]{64})", run_id)
+                if (
+                    set(envelope) != {"data", "meta"}
+                    or envelope["meta"] != {"request_id": request_id}
+                    or set(data)
+                    != {"run_id", "user_message_id", "assistant_message_id"}
+                    or match is None
+                    or data["user_message_id"] != f"msg_bff_{match[1]}_user"
+                    or data["assistant_message_id"] != f"msg_bff_{match[1]}_assistant"
+                ):
+                    raise ValueError
+            except (KeyError, TypeError, ValueError):
+                raise SourceError("Agent source BFF Message receipt invalid") from None
+            return session_id, run_id, data["user_message_id"]
         finally:
             connection.close()
 
@@ -666,7 +737,7 @@ class AgentSourceDriver:
                 command_document(ready.tenant_id, method, fields)
             ),
         )
-        token = await self.runtime.tokens.token(ready.tenant_id)
+        bearer = await self.runtime.credentials.credential(ready.tenant_id)
         binding = project_request_binding(tenant_ref=ready.tenant_id, request=request)
         supplier = create_execution_proof_supplier(
             leased_run=leased,
@@ -683,7 +754,9 @@ class AgentSourceDriver:
         )
         try:
             return await call(
-                request, headers={"authorization": "Bearer " + token}, timeout_ms=10_000
+                request,
+                headers={"authorization": "Bearer " + bearer},
+                timeout_ms=10_000,
             )
         except ConnectError as error:
             # Only an enum, cause presence and fixed message equality labels leave
@@ -727,13 +800,49 @@ class AgentSourceDriver:
         )
 
         await self._prepare(ready, platform_base, object_origin)
+        await self._blocking_call("Agent readiness", self._require_ready)
         source_ref = "skill:" + skill_id
         self.phase = "HTTP admission and claim"
-        await self._blocking_call("launch", self._launch, ready, source_ref)
-        run_id = "source-" + self.run_id
-        request = await self.repository.get_pending_dispatch(run_id)
-        if request is None or request.selected_skill_source_refs != (source_ref,):
-            raise SourceError("Agent source persisted selection mismatch")
+        launch = await self._blocking_call("launch", self._launch, ready, source_ref)
+        if not isinstance(launch, tuple) or len(launch) != 3:
+            raise SourceError("Agent source BFF Message receipt invalid")
+        session_id, run_id, message_id = launch
+        # The Agent persists pending before publishing to its queue and returning
+        # 202. Under one deadline, wait for both owner facts; never retry Message.
+        async with asyncio.timeout(15):
+            while (
+                request := await self.repository.get_pending_dispatch(run_id)
+            ) is None:
+                await asyncio.sleep(0.05)
+            self.phase = "BFF dispatch acknowledgement"
+            while (
+                await ready.observe_bff_dispatch_admitted(
+                    ready.tenant_id,
+                    run_id,
+                    session_id,
+                    "source-" + self.run_id,
+                    message_id,
+                )
+                is not True
+            ):
+                await asyncio.sleep(0.05)
+        identity = request.execution_identity
+        if (
+            request.run_id != run_id
+            or request.session_id != session_id
+            or request.input.message_id != message_id
+            or request.request_id != "source-" + self.run_id
+            or request.project_ref is not None
+            or request.selected_skill_source_refs != (source_ref,)
+            or identity.tenant_ref != ready.tenant_id
+            or identity.actor.kind != "user"
+            or identity.subject.kind != "user"
+            or identity.actor.opaque_ref != ready.subject_id
+            or identity.subject.opaque_ref != ready.subject_id
+            or identity.identity_assertion_ref
+            != "bff:" + run_id.removeprefix("run_bff_")
+        ):
+            raise SourceError("Agent source persisted BFF dispatch mismatch")
         lease = await self.repository.claim_dispatch(request, consumer="source-smoke")
         if lease is None:
             raise SourceError("Agent source lease claim failed")
@@ -875,7 +984,12 @@ class AgentSourceDriver:
         require_revoke_result(await self._blocking_call("revoke", revoke))
         await denied(current_backend)
         await owner_denied(current, "PLATFORM_PERMISSION_DENIED")
-        await self.repository.try_mark_terminal(run_id, next_lease)
+        # The fixture did not execute a model or deliver a terminal event.
+        # Release only its owned lease through the current repository API.
+        if not await self.repository.pause(
+            run_id, next_lease
+        ) or await self.repository.is_lease_current(run_id, next_lease):
+            raise SourceError("Agent source test lease did not release")
         return {
             "original_bytes": "PASS",
             "read_only": "PASS",

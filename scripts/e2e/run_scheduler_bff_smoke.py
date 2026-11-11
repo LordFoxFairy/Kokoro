@@ -49,8 +49,10 @@ command_output, run_owned_command = (
 )
 stop_owned_process = _runtime.stop_owned_process
 
-BFF_RELEASE = "a4dbc3339448c7ee8763b0f82d1c0ae4c213bf87"
-SCHEDULER_RELEASE = "975dee59616a1e0eda609aa69283401344900d83"
+# Keep the acceptance harness pinned to the Root's exact Task-A composition.
+# The earlier release pins predate the current owner-schema/parser contract.
+BFF_RELEASE = "46c061f5fde2d4108dd00e3d04cf0ff533a03ff0"
+SCHEDULER_RELEASE = "cfb2502b0ef9331f79a328ec85c254157340962c"
 EXPECTED_CASES = (
     "control_create",
     "control_replace",
@@ -81,13 +83,13 @@ def verify_inputs(
     node_dir = Path(args.bff_node_bin).expanduser().resolve()
     node, corepack = node_dir / "node", node_dir / "corepack"
     if not node.is_file() or not corepack.is_file():
-        raise SmokeError("Node v22.22.2 toolchain is missing")
+        raise SmokeError("Node v24.20.0 toolchain is missing")
     node_env = dict(os.environ)
     node_env["PATH"] = os.pathsep.join(
         [str(node_dir), "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin"]
     )
-    if command_output([str(node), "--version"], env=node_env).strip() != "v22.22.2":
-        raise SmokeError("Node v22.22.2 required for BFF")
+    if command_output([str(node), "--version"], env=node_env).strip() != "v24.20.0":
+        raise SmokeError("Node v24.20.0 required for BFF")
     if (
         command_output(
             [str(corepack), "pnpm", "--version"], cwd=BFF, env=node_env
@@ -284,7 +286,7 @@ def success_summary(
         "cases": 11,
         "results": cases,
         "releases": releases,
-        "toolchains": {"node": "v22.22.2", "pnpm": "11.25.0", "go": "go1.26.8"},
+        "toolchains": {"node": "v24.20.0", "pnpm": "11.25.0", "go": "go1.26.8"},
         "agent_evidence": "deterministic receipt stub; not a real Agent",
         "cleanup": cleanup,
     }
@@ -303,6 +305,7 @@ class RunState:
     processes: list[subprocess.Popen[bytes]] = field(default_factory=list)
     binary: Path | None = None
     scheduler_url: str | None = None
+    credential_file: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -411,6 +414,10 @@ def service_configuration(
         "KOKORO_BFF_MODE": "live",
         "KOKORO_BFF_SHARED_SECRET": web_token,
         "KOKORO_IAM_BASE_URL": iam_base,
+        "KOKORO_IAM_WEB_ORIGIN": "http://scheduler-smoke.local",
+        "KOKORO_BFF_IAM_USER_CONTEXT_SERVICE_CREDENTIAL_FILE": str(
+            state.directory / "bff-user-context.json"
+        ),
         "KOKORO_INTERNAL_SECRET_BFF": agent_token,
         "KOKORO_SCHEDULER_SERVICE_TOKEN": scheduler_token,
         "KOKORO_SCHEDULER_BASE_URL": scheduler_base,
@@ -527,6 +534,11 @@ def cleanup_run(state: RunState) -> None:
             state.binary.unlink(missing_ok=True)
         except OSError:
             failures.append("temporary Scheduler binary cleanup failed")
+    try:
+        if state.credential_file is not None:
+            state.credential_file.unlink(missing_ok=True)
+    except OSError:
+        failures.append("temporary credential cleanup failed")
     if state.directory_context is not None:
         state.directory_context.cleanup()
     if failures:
@@ -558,7 +570,29 @@ def run_smoke(
     )
     cases: list[dict[str, str]] = []
     session_token = secrets.token_urlsafe(32)
+    user_context_secret = secrets.token_urlsafe(32)
+    credential_file = state.directory / "bff-user-context.json"
     try:
+        with open(
+            credential_file, "x", opener=lambda path, flags: os.open(path, flags, 0o600)
+        ) as credential:
+            state.credential_file = credential_file
+            json.dump(
+                {
+                    "version": 1,
+                    "entries": [
+                        {
+                            "credential_id": "scheduler-smoke-user-context",
+                            "caller": "kokoro-bff",
+                            "surface": "bff_user_context",
+                            "tenant_id": state.tenant,
+                            "secret": user_context_secret,
+                        }
+                    ],
+                },
+                credential,
+                separators=(",", ":"),
+            )
         with (
             (directory / "smoke.log").open("wb") as log,
             agent_receipt_stub() as agent,
@@ -570,7 +604,8 @@ def run_smoke(
                         session_id="session-" + run_id,
                         client_id="w0b-scheduler-smoke",
                     )
-                }
+                },
+                service_tokens={user_context_secret},
             ) as iam_base,
         ):
             scheduler_url, bff_url = prepare_owned_dependencies(

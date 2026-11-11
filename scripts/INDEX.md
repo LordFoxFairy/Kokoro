@@ -23,17 +23,19 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
   complete active/broken/illegal edge ID sets with a frozen checkpoint and runs the compatibility verifier. Exit `0` accepts
   only the checkpoint's declared broken and illegal outcomes; count-preserving ID swaps and any schema, gitlink, digest,
   evidence or version drift fail.
-- `python3 scripts/verify-iam-relay-policy.py` verifies the BFF browser-private IAM relay policy against the frozen IAM/BFF
-  gitlink commit blobs. It checks owner commit and allowlist/snapshot digests, TS-to-JSON policy drift, and the narrower
-  route/method subset without copying IAM-owned protocol source into BFF. Exit `0` proves provenance, not a successful
-  OAuth browser flow; the latter requires a separate real HTTP composition smoke.
+- `python3 scripts/verify-iam-relay-policy.py` verifies the BFF browser-private IAM relay policy against exact Root
+  gitlinks. Policy 2.1 retains its historical IAM/BFF source checks. Native policy 3.0 verifies IAM/BFF/App, BFF's published
+  route and transport matrix, and the App generator pin and generated copies. The IAM publication anchor must match
+  current owner evidence; the only recognized OpenAPI difference is the approved 0.20→0.21 workload introspection
+  retirement. Exit `0` proves provenance, not a successful native browser flow.
 - `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
   It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
   Redis prefix, and removes only resources registered by this invocation. BFF user models use an explicit fixed-token IAM
   wire stub; server-only runtime manifest remains bound to configured tenant. It does not perform provider inference.
-- `python3 scripts/e2e/run_bff_iam_session_smoke.py --help` is the real IAM Nest/PKCE fixture HTTP to BFF source-process
-  admission entry. It pins clean IAM/BFF commits and Root gitlinks, creates only its own BFF database, asks the IAM test-owned
-  host to manage IAM facts, exercises seven allow/deny/revocation/outage cases, and verifies owned-resource cleanup.
+- `python3 scripts/e2e/run_web_native_session_smoke.py --help` is the current native Cookie/Origin acceptance entry.
+  Its HTTP journey checks Project writes, PostgreSQL ownership and receipts, actor isolation, revocation and IAM outage.
+  The historical `run_bff_iam_session_smoke.py` CLI is retired; the module still supplies shared IAM fixture helpers
+  and the Admin Model Routing smoke's existing header helper.
 - `python3 scripts/e2e/run_bff_iam_oidc_smoke.py --help` exercises the IAM→BFF native Code+S256 interaction chain;
   it does not prove Web RP login. `bff_owner_schema.py` gives all five Root BFF smokes an application URL fixed to
   `kokoro_bff`; `psql` observations retain the original libpq URL and explicitly qualify owner SQL.

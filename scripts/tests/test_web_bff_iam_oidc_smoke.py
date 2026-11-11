@@ -1,14 +1,18 @@
 """Guards for the browser-facing, three-process OIDC smoke harness."""
 
 import importlib.util
+from contextlib import contextmanager
 import base64
 import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import sys
+import socket
+import ssl
 import tempfile
-from threading import Thread
+import time
+from threading import Event, Thread
 import unittest
 from unittest.mock import patch
 
@@ -18,6 +22,463 @@ spec = importlib.util.spec_from_file_location("web_bff_iam_oidc_smoke", PATH)
 smoke = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = smoke
 spec.loader.exec_module(smoke)
+
+
+class HmrProxyTests(unittest.TestCase):
+    REQUEST = (
+        b"GET /_next/webpack-hmr?session=fixture HTTP/1.1\r\n"
+        b"Host: web.example.test\r\nConnection: keep-alive, Upgrade\r\n"
+        b"Upgrade: websocket\r\nSec-WebSocket-Version: 13\r\n"
+        b"Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n"
+    )
+    RESPONSE = (
+        b"HTTP/1.1 101 Switching Protocols\r\n"
+        b"Connection: Upgrade\r\nUpgrade: websocket\r\n"
+        b"Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n\r\n"
+    )
+
+    @staticmethod
+    def read_head(client):
+        head = bytearray()
+        while not head.endswith(b"\r\n\r\n"):
+            part = client.recv(1)
+            if not part:
+                break
+            head.extend(part)
+        return bytes(head)
+
+    @contextmanager
+    def fixture(self, respond, *, enabled=True):
+        observed = []
+        errors = []
+
+        class Upstream(BaseHTTPRequestHandler):
+            protocol_version = "HTTP/1.1"
+
+            def log_message(self, *_args):
+                pass
+
+            def do_GET(self):
+                self.connection.settimeout(3)
+                self.close_connection = True
+                observed.append(self.path)
+                try:
+                    respond(self)
+                except Exception as error:
+                    errors.append(error)
+
+            do_POST = do_GET
+
+        upstream = ThreadingHTTPServer(("127.0.0.1", 0), Upstream)
+        worker = Thread(target=upstream.serve_forever, daemon=True)
+        worker.start()
+        proxy = None
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                proxy = smoke.Proxy(
+                    upstream.server_port,
+                    "web.example.test",
+                    smoke.certificate(Path(directory), "web.example.test"),
+                    hmr_websocket=enabled,
+                )
+                yield proxy, observed
+        finally:
+            if proxy is not None:
+                proxy.close()
+            upstream.shutdown()
+            upstream.server_close()
+            worker.join(timeout=5)
+        self.assertFalse(worker.is_alive())
+        self.assertEqual(errors, [])
+
+    @contextmanager
+    def client(self, proxy):
+        with socket.create_connection(
+            ("127.0.0.1", proxy.server_port), timeout=3
+        ) as raw:
+            with ssl._create_unverified_context().wrap_socket(
+                raw, server_hostname="web.example.test"
+            ) as client:
+                yield client
+
+    def test_enabled_proxy_keeps_ordinary_read_budget_separate_from_hmr_connect(self):
+        def respond(handler):
+            Event().wait(0.1)
+            handler.connection.sendall(b"HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n")
+
+        with patch.object(smoke, "HMR_CONNECT_SECONDS", 0.02):
+            with self.fixture(respond) as (proxy, _):
+                with self.client(proxy) as client:
+                    client.sendall(b"GET /ordinary HTTP/1.1\r\nHost: fixture\r\n\r\n")
+                    self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 200 "))
+
+    def test_enabled_proxy_preserves_ordinary_fragmented_post_body(self):
+        payload = bytes(range(256)) * 1024
+        received = []
+
+        def respond(handler):
+            received.append(handler.rfile.read(int(handler.headers["Content-Length"])))
+            handler.connection.sendall(
+                b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK"
+            )
+
+        with self.fixture(respond) as (proxy, _):
+            with self.client(proxy) as client:
+                client.sendall(
+                    f"POST /ordinary HTTP/1.1\r\nHost: fixture\r\nContent-Length: {len(payload)}\r\n\r\n".encode()
+                    + payload[:1]
+                )
+                # Send the body across multiple TLS records, not one raw read.
+                client.sendall(payload[1:65536])
+                client.sendall(payload[65536:])
+                self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 200 "))
+                self.assertEqual(client.recv(2), b"OK")
+        self.assertEqual(received, [payload])
+
+    def test_enabled_proxy_rejects_truncated_body_before_opening_upstream(self):
+        with self.fixture(lambda _: None) as (proxy, observed):
+            with self.client(proxy) as client:
+                client.sendall(
+                    b"POST /ordinary HTTP/1.1\r\nHost: fixture\r\nContent-Length: 100\r\n\r\nx"
+                )
+            proxy.close()
+            self.assertEqual(observed, [])
+
+    def test_hmr_connection_limit_rejects_excess_without_spawning_handler(self):
+        with patch.object(smoke, "HMR_MAX_CONNECTIONS", 1):
+            with self.fixture(lambda _: None) as (proxy, _):
+                with socket.create_connection(
+                    ("127.0.0.1", proxy.server_port), timeout=2
+                ):
+                    deadline = time.monotonic() + 1
+                    while not proxy.hmr_threads and time.monotonic() < deadline:
+                        time.sleep(0.01)
+                    self.assertEqual(len(proxy.hmr_threads), 1)
+                    with socket.create_connection(
+                        ("127.0.0.1", proxy.server_port), timeout=2
+                    ) as excess:
+                        self.assertEqual(excess.recv(1), b"")
+                    self.assertEqual(len(proxy.hmr_threads), 1)
+
+    def test_hmr_client_header_bytes_and_time_are_bounded(self):
+        for request in (b"GET /" + b"x" * 1024, b"GET /"):
+            with (
+                patch.object(smoke, "HMR_HEADER_BYTES", 512),
+                patch.object(smoke, "HMR_HEADER_SECONDS", 0.2),
+            ):
+                with self.fixture(lambda _: None) as (proxy, observed):
+                    with self.client(proxy) as client:
+                        client.sendall(request)
+                        self.assertEqual(client.recv(1), b"")
+                        self.assertEqual(observed, [])
+
+    def test_enabled_proxy_preserves_sse_streaming_before_upstream_finishes(self):
+        release = Event()
+
+        def respond(handler):
+            handler.connection.sendall(
+                b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\n"
+                b"Transfer-Encoding: chunked\r\n\r\n9\r\ndata: 1\n\n\r\n"
+            )
+            release.wait(2)
+            handler.connection.sendall(b"0\r\n\r\n")
+
+        with self.fixture(respond) as (proxy, _):
+            proxy.stream_sse = True
+            try:
+                with self.client(proxy) as client:
+                    client.sendall(
+                        b"GET /api/session/sessions/fixture/events HTTP/1.1\r\nHost: fixture\r\n\r\n"
+                    )
+                    self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 200 "))
+                    body = bytearray()
+                    while b"data: 1" not in body:
+                        part = client.recv(4096)
+                        self.assertTrue(part)
+                        body.extend(part)
+                    release.set()
+                    while part := client.recv(4096):
+                        body.extend(part)
+                    self.assertTrue(body.endswith(b"0\r\n\r\n"))
+            finally:
+                release.set()
+
+    def test_enabled_proxy_keeps_ordinary_body_limit(self):
+        with self.fixture(lambda _: None) as (proxy, observed):
+            with self.client(proxy) as client:
+                client.sendall(
+                    f"POST /ordinary HTTP/1.1\r\nHost: fixture\r\nContent-Length: {smoke.MAX_BODY + 1}\r\n\r\n".encode()
+                )
+                self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 413 "))
+            self.assertEqual(observed, [])
+
+    def test_hmr_nonreading_client_is_closed_at_total_budget(self):
+        disconnected = Event()
+
+        def respond(handler):
+            handler.connection.sendall(self.RESPONSE)
+            try:
+                # Exceeds socket windows; the proxy must not buffer without limit.
+                for _ in range(512):
+                    handler.connection.sendall(b"x" * 65536)
+            except (BrokenPipeError, ConnectionResetError):
+                disconnected.set()
+
+        with patch.object(smoke, "HMR_TOTAL_SECONDS", 0.2):
+            with self.fixture(respond) as (proxy, _):
+                with self.client(proxy) as client:
+                    client.sendall(self.REQUEST)
+                    self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 101 "))
+                    self.assertTrue(disconnected.wait(2))
+                proxy.close()
+                self.assertFalse(any(thread.is_alive() for thread in proxy.hmr_threads))
+
+    def test_hmr_disabled_retains_http_response_and_no_connection_upgrade(self):
+        connections = []
+
+        def respond(handler):
+            connections.append(handler.headers.get("Connection"))
+            handler.connection.sendall(
+                b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n"
+            )
+
+        with self.fixture(respond, enabled=False) as (proxy, observed):
+            with self.client(proxy) as client:
+                client.sendall(self.REQUEST)
+                self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 404 "))
+        self.assertEqual(connections, [None])
+        self.assertEqual(len(observed), 1)
+
+    def test_hmr_rejects_wrong_path_method_and_invalid_client_handshake_before_upstream(
+        self,
+    ):
+        invalid = [
+            self.REQUEST.replace(b"/_next/webpack-hmr?session=fixture", path)
+            for path in (
+                b"/_next/webpack-hmr/",
+                b"/other",
+                b"//_next/webpack-hmr",
+                b"/_next/%77ebpack-hmr",
+            )
+        ] + [
+            self.REQUEST.replace(b"GET ", b"POST ", 1),
+            self.REQUEST.replace(b"HTTP/1.1", b"HTTP/1.0", 1),
+            self.REQUEST.replace(b"keep-alive, Upgrade", b"keep-alive"),
+            self.REQUEST.replace(b"Upgrade: websocket", b"Upgrade: h2c"),
+            self.REQUEST.replace(
+                b"Sec-WebSocket-Version: 13", b"Sec-WebSocket-Version: 12"
+            ),
+            self.REQUEST.replace(b"dGhlIHNhbXBsZSBub25jZQ==", b"invalid"),
+            self.REQUEST.replace(
+                b"\r\n\r\n", b"\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n"
+            ),
+            self.REQUEST.replace(b"\r\n\r\n", b"\r\nContent-Length: 1\r\n\r\nx"),
+            self.REQUEST.replace(
+                b"\r\n\r\n", b"\r\nTransfer-Encoding: chunked\r\n\r\n"
+            ),
+        ]
+        with self.fixture(lambda _: None) as (proxy, observed):
+            for request in invalid:
+                with (
+                    self.subTest(request=request.split(b"\r\n")[0]),
+                    self.client(proxy) as client,
+                ):
+                    client.sendall(request)
+                    self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 400 "))
+            self.assertEqual(observed, [])
+
+    def test_hmr_rejects_invalid_upstream_without_committing_101(self):
+        responses = [
+            self.RESPONSE.replace(b"101 Switching Protocols", b"200 OK"),
+            self.RESPONSE.replace(b"Upgrade: websocket", b"Upgrade: h2c"),
+            self.RESPONSE.replace(b"Connection: Upgrade", b"Connection: close"),
+            self.RESPONSE.replace(b"s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", b"invalid"),
+            self.RESPONSE.replace(
+                b"\r\n\r\n", b"\r\nSec-WebSocket-Accept: duplicate\r\n\r\n"
+            ),
+            self.RESPONSE.replace(
+                b"\r\n\r\n", b"\r\nSec-WebSocket-Extensions: permessage-deflate\r\n\r\n"
+            ),
+            self.RESPONSE.replace(b"\r\n\r\n", b"\r\nContent-Length: 0\r\n\r\n"),
+            b"HTTP/1.1 101 Switching Protocols\r\nBroken\r\n\r\n",
+        ]
+        for response in responses:
+            with self.subTest(response=response.split(b"\r\n")[0]):
+                with self.fixture(
+                    lambda handler: handler.connection.sendall(response)
+                ) as (proxy, _):
+                    with self.client(proxy) as client:
+                        client.sendall(self.REQUEST)
+                        head = self.read_head(client)
+                        self.assertTrue(head.startswith(b"HTTP/1.1 502 "), head)
+                        self.assertNotIn(b"101 Switching", head)
+
+    def test_hmr_tls_pending_and_backpressure_preserve_large_binary_transfer(self):
+        payload = bytes(range(256)) * 1024
+        received = []
+
+        def respond(handler):
+            handler.connection.sendall(self.RESPONSE)
+            received.append(handler.rfile.read(len(payload)))
+            handler.connection.sendall(payload)
+
+        with self.fixture(respond) as (proxy, _):
+            with self.client(proxy) as client:
+                client.sendall(self.REQUEST + payload)
+                self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 101 "))
+                result = bytearray()
+                while part := client.recv(4096):
+                    result.extend(part)
+                self.assertEqual(result, payload)
+        self.assertEqual(received, [payload])
+
+    def test_hmr_client_disconnect_releases_upstream_and_handler(self):
+        disconnected = Event()
+
+        def respond(handler):
+            handler.connection.sendall(self.RESPONSE)
+            if not handler.rfile.read(1):
+                disconnected.set()
+
+        with self.fixture(respond) as (proxy, _):
+            with self.client(proxy) as client:
+                client.sendall(self.REQUEST)
+                self.assertTrue(self.read_head(client).startswith(b"HTTP/1.1 101 "))
+            self.assertTrue(disconnected.wait(2))
+            proxy.close()
+            self.assertFalse(any(thread.is_alive() for thread in proxy.hmr_threads))
+            self.assertEqual(proxy.hmr_sockets, set())
+
+    def test_hmr_proxy_close_reaps_open_tunnel_and_upstream_handshake(self):
+        for handshake in (True, False):
+            accepted = Event()
+            disconnected = Event()
+
+            def respond(handler):
+                if handshake:
+                    handler.connection.sendall(self.RESPONSE)
+                accepted.set()
+                if not handler.rfile.read(1):
+                    disconnected.set()
+
+            with self.subTest(handshake=handshake), self.fixture(respond) as (proxy, _):
+                with self.client(proxy) as client:
+                    client.sendall(self.REQUEST)
+                    self.assertTrue(accepted.wait(1))
+                    if handshake:
+                        self.assertTrue(
+                            self.read_head(client).startswith(b"HTTP/1.1 101 ")
+                        )
+                    proxy.close()
+                    self.assertEqual(client.recv(1), b"")
+                    self.assertTrue(disconnected.wait(1))
+                    self.assertEqual(proxy.hmr_sockets, set())
+                    self.assertFalse(
+                        any(thread.is_alive() for thread in proxy.hmr_threads)
+                    )
+
+    def test_enabled_proxy_close_reaps_stalled_ordinary_http_upstream(self):
+        accepted = Event()
+        disconnected = Event()
+
+        def respond(handler):
+            accepted.set()
+            if not handler.rfile.read(1):
+                disconnected.set()
+
+        with self.fixture(respond) as (proxy, _):
+            with self.client(proxy) as client:
+                client.sendall(b"GET /ordinary HTTP/1.1\r\nHost: fixture\r\n\r\n")
+                self.assertTrue(accepted.wait(1))
+                proxy.close()
+                self.assertEqual(client.recv(1), b"")
+                self.assertTrue(disconnected.wait(1))
+                self.assertFalse(any(thread.is_alive() for thread in proxy.hmr_threads))
+                self.assertEqual(proxy.hmr_sockets, set())
+
+    def test_hmr_proxy_close_reaps_unfinished_tls_handshake(self):
+        with self.fixture(lambda _: None) as (proxy, observed):
+            with socket.create_connection(
+                ("127.0.0.1", proxy.server_port), timeout=2
+            ) as client:
+                deadline = time.monotonic() + 1
+                while not proxy.hmr_threads and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertTrue(proxy.hmr_threads)
+                proxy.close()
+                self.assertEqual(client.recv(1), b"")
+                self.assertFalse(any(thread.is_alive() for thread in proxy.hmr_threads))
+                self.assertEqual(observed, [])
+
+    def test_hmr_idle_and_total_budgets_close_real_upstream(self):
+        for name in ("HMR_IDLE_SECONDS", "HMR_TOTAL_SECONDS"):
+            disconnected = Event()
+
+            def respond(handler):
+                handler.connection.sendall(self.RESPONSE)
+                if not handler.rfile.read(1):
+                    disconnected.set()
+
+            with self.subTest(budget=name), patch.object(smoke, name, 0.1):
+                with self.fixture(respond) as (proxy, _):
+                    with self.client(proxy) as client:
+                        client.sendall(self.REQUEST)
+                        self.assertTrue(
+                            self.read_head(client).startswith(b"HTTP/1.1 101 ")
+                        )
+                        self.assertEqual(client.recv(1), b"")
+                        self.assertTrue(disconnected.wait(1))
+
+    def test_hmr_upstream_header_bytes_and_time_are_bounded(self):
+        for response in (b"HTTP/1.1 101 " + b"x" * 1024, b"HTTP/1.1 101 "):
+            disconnected = Event()
+
+            def respond(handler):
+                handler.connection.sendall(response)
+                try:
+                    self.assertEqual(handler.rfile.read(1), b"")
+                except ConnectionResetError:
+                    pass
+                disconnected.set()
+
+            with (
+                patch.object(smoke, "HMR_HEADER_BYTES", 512),
+                patch.object(smoke, "HMR_HEADER_SECONDS", 0.2),
+            ):
+                with self.fixture(respond) as (proxy, _):
+                    with self.client(proxy) as client:
+                        client.sendall(self.REQUEST)
+                        self.assertTrue(
+                            self.read_head(client).startswith(b"HTTP/1.1 502 ")
+                        )
+                        self.assertTrue(disconnected.wait(1))
+
+    def test_enabled_web_proxy_tunnels_hmr_tls_binary_and_upstream_eof(self):
+        """A real Upgrade preserves frames coalesced with both HTTP handshakes."""
+        client_frame = b"\x82\x84\x01\x02\x03\x04\x01\xfd\x03\x84"
+        server_frame = b"\x82\x04\x00\xff\x00\x80"
+        received = []
+
+        def respond(handler):
+            if "upgrade" not in handler.headers.get("Connection", "").lower():
+                handler.send_error(404)
+                return
+            # One write deliberately coalesces the first frame with the 101.
+            handler.connection.sendall(self.RESPONSE + server_frame)
+            received.append(handler.rfile.read(len(client_frame)))
+            handler.connection.sendall(received[-1])
+
+        with self.fixture(respond) as (proxy, observed):
+            with self.client(proxy) as client:
+                client.sendall(self.REQUEST + client_frame)
+                head = self.read_head(client)
+                self.assertTrue(head.startswith(b"HTTP/1.1 101 "), head)
+                body = bytearray()
+                while part := client.recv(4096):
+                    body.extend(part)
+                self.assertEqual(body, server_frame + client_frame)
+                self.assertEqual(observed, ["/_next/webpack-hmr?session=fixture"])
+        self.assertEqual(received, [client_frame])
 
 
 class BrowserGuards(unittest.TestCase):

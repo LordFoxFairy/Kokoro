@@ -8,10 +8,11 @@ from dataclasses import dataclass
 import hashlib
 from http.client import RemoteDisconnected
 import json
+import os
 import re
 import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 if __package__:
@@ -35,6 +36,7 @@ else:
 
 SmokeError = _runtime.SmokeError
 command_output = _runtime.command_output
+WEB_ORIGIN = "http://scheduler-smoke.local"
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -99,8 +101,21 @@ def _sql_literal(value: str) -> str:
 
 
 def sql(url: str, query: str) -> str:
+    parsed = urlsplit(url)
+    owner = "kokoro_scheduler" if parsed.path.endswith("_scheduler") else "kokoro_bff"
+    diagnostic_query = [
+        (name, value)
+        for name, value in parse_qsl(parsed.query, keep_blank_values=True)
+        if name.lower() not in {"schema", "options", "search_path", "timezone"}
+    ]
+    diagnostic_url = urlunsplit(
+        (parsed.scheme, parsed.netloc, parsed.path, urlencode(diagnostic_query), "")
+    )
+    env = dict(os.environ)
+    env["PGOPTIONS"] = f"-c search_path={owner},public,pg_catalog -c timezone=UTC"
     return command_output(
-        ["psql", url, "-X", "-q", "-v", "ON_ERROR_STOP=1", "-Atc", query]
+        ["psql", diagnostic_url, "-X", "-q", "-v", "ON_ERROR_STOP=1", "-Atc", query],
+        env=env,
     ).strip()
 
 
@@ -126,7 +141,8 @@ def bff_headers(
         "x-kokoro-internal-secret": token,
         "x-kokoro-request-id": request_id,
         "idempotency-key": key,
-        "authorization": "Bearer " + session_token,
+        "origin": WEB_ORIGIN,
+        "cookie": "kokoro-issuer.session_token=" + session_token,
     }
 
 
@@ -137,7 +153,6 @@ def task_body(marker: str) -> dict[str, object]:
         "frequency": "daily",
         "time": "23:59",
         "timezone": "UTC",
-        "next_run_at": "2026-09-22T12:00:00Z",
         "auto_approve": False,
     }
 
@@ -217,6 +232,21 @@ def assert_single_agent_admission(
     ):
         raise SmokeError("Scheduler callback Agent request lineage did not match")
     return call
+
+
+def wait_for_agent_admission(
+    agent: AgentReceiptState,
+    before: tuple[AgentCall, ...],
+    timeout: float = 30,
+) -> tuple[AgentCall, ...]:
+    """Wait for the durable BFF dispatch worker to deliver the accepted command."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        snapshot = agent.snapshot()
+        if len(snapshot) > len(before):
+            return snapshot
+        time.sleep(0.05)
+    raise SmokeError("BFF scheduled dispatch did not reach Agent before deadline")
 
 
 def assert_agent_snapshot_unchanged(
@@ -696,7 +726,7 @@ def exercise_callback_replay_cases(
     callback = proxy.wait_for_schedule(callback_name, after=call_index)
     if re.fullmatch(r".+\.123Z", callback.occurrence) is None:
         raise SmokeError("Fractional RFC3339Nano occurrence was not preserved")
-    accepted_snapshot = agent.snapshot()
+    accepted_snapshot = wait_for_agent_admission(agent, before_callback)
     assert_single_agent_admission(
         before_callback, accepted_snapshot, tenant, callback_task, callback
     )
@@ -766,7 +796,7 @@ def exercise_restart_case(fixture: CaseFixture, cases: list[dict[str, str]]) -> 
     if not proxy.wait_for_drop(30):
         raise SmokeError("Response-unknown proxy did not drop an accepted response")
     unknown_call = proxy.wait_for_schedule(unknown_name)
-    accepted_snapshot = agent.snapshot()
+    accepted_snapshot = wait_for_agent_admission(agent, before_unknown)
     assert_single_agent_admission(
         before_unknown, accepted_snapshot, tenant, unknown_task, unknown_call
     )

@@ -58,20 +58,22 @@ def stop_owned_process(process: ProcessLike) -> None:
         process.poll()
         if not process_group_exists(process.pid):
             return
+        denied = False
         try:
             os.killpg(process.pid, sig)
         except ProcessLookupError:
             return
         except PermissionError:
-            if process_group_exists(process.pid):
-                raise SmokeError("Owned process group termination was denied") from None
-            return
+            # A denied signal is not quiescence; observe the same phase budget.
+            denied = True
         deadline = time.monotonic() + seconds
         while time.monotonic() < deadline:
             process.poll()
             if not process_group_exists(process.pid):
                 return
             time.sleep(0.05)
+        if denied:
+            raise SmokeError("Owned process group termination was denied") from None
     raise SmokeError("Owned process group still exists after forced cleanup")
 
 
