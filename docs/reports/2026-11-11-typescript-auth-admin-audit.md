@@ -373,3 +373,81 @@ Root治理153项及Ruff主控复验通过；新实际IAM pin对应的4条来源�
 补验严格限定缺口：当前源SDK checker／typecheck及8文件129项定向通过；另补本地HTTP peer 5项通过，明确不是实际IAM。私有精确源归档1118个tracked文件逐项与Git blobs全等，正式build／八owner真实PG同库schema和Redis readiness通过；仅证明装配，不扩大为完整产品mutation／当前全owner门。历史完整3051／678 SKIP不冒称当前重跑。合并无新源码，不重复全产品旅程。
 
 至此我们的历史PR已收口；剩余Root #67、App #49、BFF #17、Storage #2、Capability #12均保留原owner。Root #72亦已正常合main（66da9997）并清理本轮分支，本次只通过独立Root文档PR更正TODO／当前事实／技术总览和本报告，不改gitlink或业务代码。
+
+
+## 12. 十轮定向维护审查
+
+日期：2026-11-11（America/New_York）。
+
+### 策略与完成口径
+
+用户要求继续梳理并启动十轮扫描。本轮把“十轮”定义为十个不同风险面，三名只读代理并行检查第1～9轮，主控完成第10轮、交叉复核和去重；不是把全仓测试或同一关键词搜索重复十遍。每轮检查代表性入口与实际消费者，**不是全源码逐行审计，也不证明没有其他缺陷**。
+
+冻结基线为Root `7274322c0775f386c5f7784365bfbc95bd3ee804`，12个子仓均干净且与其gitlink精确匹配。已修R-01／R-02／R-04／R-10／R-12不重新报新增；旧问题的剩余范围仍按原记录区分。
+
+只读获取Task B五个PR的完整文件清单：Root #67（11路径）、App #49（287）、BFF #17（598）、Capability #12（398）、Storage #2（4）。这是写区碰撞提示，不代表这些文件的当前代码已被Task B修复；未改其PR、分支或工作树。Scheduler继续不展开重构审查。未启动业务服务、浏览器或外部供应商连接，未安装依赖、重跑全套或删除测试；本次交付仅更新Root报告、当前入口和唯一TODO。
+
+### 十轮结果
+
+| 轮次／负责人 | 代表性检查入口 | 结论 |
+| --- | --- | --- |
+| 1／认证代理 | IAM原生handler/lifetime、BFF Session准入、InternalAuthGuard、AccountSessionGuard／撤销adapter | 抽样无新增；直接服务身份与可信actor、原生会话管理具名例外均保留。已修项不重报，源IP共享额度等已知边界未消失 |
+| 2／认证代理 | BFF ProjectsModule→mutation middleware→PG mutation store／receipt repository；ScheduledTask命令lineage | 新增R-13：项目业务与完成回执分开提交 |
+| 3／认证代理 | Admin console准入、具名adapter、NAV／旧页面与route inventory | 原R-03后台接线债务仍在，不新增；有效模型／Skills／MCP／积分adapter保留，不能说整个后台失效 |
+| 4／后端代理 | System模块／维护服务，Billing Nest图与三个worker脚本 | 无新增；Billing旧pg services有真实脚本消费者，不能整树删。Billing入口文档漂移归R-08 |
+| 5／后端代理 | Storage RPC／身份与purpose；Capability package／icon client与装配 | 无新增；不同资源purpose和服务身份有独有权限价值。生成检查副作用归R-07，不重复计数 |
+| 6／后端代理 | System／Billing关闭路径、Storage lifecycle、Capability registry／HTTP/SSE／OAuth client | 新增R-14；其余活动集合有settle／finally清理，不凭Map存在判泄漏 |
+| 7／Web-Agent代理 | AgUiChatTransport→readUIMessageStream→machine、draft、final reference、Agent scoped replay | 抽样无新增；实际使用锁定AI SDK，不建第二网络协议，不重开已交付Task A能力；未重跑浏览器／Worker旅程 |
+| 8／Web-Agent代理 | App scripts／Vitest发现配置，composer／CSS质量门，历史contract parent与Agent字符串断言 | 新增R-15；只保留窄去重建议，不把实现耦合测试全部判无用 |
+| 9／Web-Agent代理 | Mori／shared／App packages消费者、README与manifest | 原R-05／R-06／R-08／R-11再确认，无新增编号；双份源码当前相同不等于没有双writer债务，也不是已发生漂移 |
+| 10／主控 | 三份结论交叉复核、真实调用与写区核对、Root组合／main-only治理入口、最小失败探针 | 新增R-16；合并重复命中，保留正常保障；共四个新增确认机制，不是四起已发生事故 |
+
+### R-13｜优先修：项目业务成功与幂等完成回执不原子
+
+**当前证据（BFF `00a9ebee`）：** `src/modules/projects/project-mutation.middleware.ts:83–106` claim后调用正式业务；`src/http/routes/project-mutation-native.ts:46–47,54–62`先create／instruction后reply。`src/infrastructure/postgres/project-store.ts:119–124`为单条自动提交，`:149–160`在新增revision后显式COMMIT。之后`src/http/response.ts:28–33`才写完成回执；`src/application/idempotency.ts:56–61`失败会尝试release pending，返回503。`src/infrastructure/postgres/idempotency-repository.ts:23–38,41–53,84–89`的claim／完成／释放均为独立操作，未完成pending还可在60秒后重取。
+
+**触发／影响：** 业务成功但完成回执失败且release成功，或进程在两次提交间退出。原key可能重做已完成指令；create可能从原成功变成slug409，instruction会多写revision，中间有新指令时旧key重试可覆盖新值。tenant／owner、唯一约束、fingerprint和完成回执CAS仍存在；它们不消除此提交窗口。
+
+**主控最小探针：** 调用现真实route/helper，以内存business／receipt doubles注入一次完成回执失败，依次发原key旧指令、新key新指令、原key重试，实得状态`503 → 200 → 200`、业务调用3次、最终恢复旧指令。仅证明当前调用／恢复分支，**不称真实PG集成或生产事故**；实际SQL提交边界另由上述源码确认。
+
+**最小修复：** 优先仅收敛Project mutation的同owner提交边界，让业务与完成回执在同一PG事务落地，或以已有可恢复命令事实承接；保留claim、fingerprint、当前权限、slug与错误语义。单独保留pending只会延后重做窗口。不建新服务／全局框架，也不借此重写所有通用幂等消费者。实施前在现owner技术设计记清事务与恢复边界。
+
+**最低验收：** 隔离PG在回执写入点注入失败，确认业务与回执整事务无部分提交；若首笔已回滚，重试可首次成功创建项目／revision，不强求未提交的原ID。另对已成功提交，或提交ACK未知但结果已持久化的场景，同key只回放原project／结果，不新增revision、不覆盖后续新指令。复用现定向接线，不新增全产品门。
+
+**归属／碰撞：** BFF主改、主控验收；上述项目／receipt文件不在#17文件清单。`src/http/request.ts`有重叠但不需改。不等同已修R-12的Map驻留问题。
+
+### R-14｜交原owner：MCP OAuth DNS pin跨独立授权长期驻留
+
+**当前证据（Capability `24094960`）：** `src/modules/mcp/mcp.module.ts:338–368`只创建一次HTTP client并给单例OAuth port使用；`src/infrastructure/clients/mcp/mcp-oauth-http-client.ts:54,182–191`以origin永久保存首次完整地址集合，以后集合变化即拒绝。`src/infrastructure/clients/mcp/standard-product-oauth.ts:30–32,46–49,141–166,181–198`的discovery／begin／complete／refresh共用它；普通个人授权RPC及refresh服务为真实消费者。
+
+**触发／影响：** 首次解析后AS／CDN合法公网地址轮换或增减，后续独立授权、refresh因旧集合被拒，直到原DNS集合恢复或client重建。没有外部AS实测或线上发生证据。主控仅用注入DNS的白盒pin探针确认：同实例拒合法公网A→B，新实例接受B；没有网络连接。
+
+**最小修复／验收：** 明确pin绑定的一次授权操作／有界上下文；新授权和独立refresh可重新建立通过公网检查的绑定。同一上下文变更、私网、取消仍拒，实际连接IP、Host／SNI和预算保留。不直接删除SSRF保护、不引入通用缓存层。现有HTTP client用例承接这些差异即可，无需全产品E2E。
+
+**归属／碰撞：** Capability原owner；缺陷文件本身不在#12清单，但composition与OAuth调用链重叠，故只列交接，不由本轮修改Task B写区。不重复原R项。
+
+### R-15｜交原owner：Web聚合门重复执行同批测试
+
+**当前证据（App `b93acbd8`）：** `package.json:19`的contract在generator checks后运行contract Vitest；`:26`单跑architecture；`:31`默认test不带过滤；`:33`的check顺次调用三者。`vitest.config.ts:11–18`没有排除前两组，锁定Vitest本地默认发现模式也包含它们，因此执行一次`pnpm check`会再执行同一批contract／architecture测试。
+
+**影响与最小修复：** 确认重复工作，未测总耗时，不用测试数量推导收益。聚合门保留所有generator drift检查，让Vitest一次覆盖原文件集即可；独立focused入口继续保留。不删断言、不缩glob、不增加套件。最低验收是发现文件集与generator清单不减少，再跑调整后的一次聚合门。
+
+**归属／碰撞：** App原owner，package.json在#49写区，本轮只交接。不等同R-07“检查会写生成物”。composer forced-colors重复子断言仅作低优先窄去重建议；其普通焦点、系统色和forced-color-adjust保护仍有独有价值。landing文件数／行数门及历史parent helper尚未完成风险承接证明，不整组删除。
+
+### R-16｜低成本先纠偏：一次性main-only工具被当成通用组合门
+
+**当前证据（Root `7274322c`）：** `scripts/verify-main-only.py:55–60`要求每个子仓当前分支为main，且所有远端只能有main。`README.md:34`和`docs/REPOSITORY_STATUS.md:42`仍把它列为复现入口。正常submodule checkout可以detached在精确gitlink；其他人的正常topic分支也不应构成我们清理失败或删除理由。
+
+**主控最小探针：** 向原main函数注入干净detached＋仅一个main本地分支＋正常他人远端topic的合法fixture，原工具返回FAIL，分别报“checked out branch is not main”和“origin branches…expected only main”。这是合成语义反例，不是本轮执行全仓远端扫描；实际Capability当前也以合法精确pin detached。拓扑检查已承接组合身份，不通过换错gitlink或删他人分支刷绿。
+
+**最小修复／验收：** 从现役通用清理／复现入口退役该一次性“全远端只留main”要求，复用精确拓扑与自有分支收尾回执；如保留专用工具须明确限定自有范围。不要再建万能扫描框架。保留旧ADR历史验收事实，不改写过去PASS。定向合法／违规fixture和相关链接检查足够，不重跑产品旅程。
+
+**归属／碰撞：** Root主控；脚本与当前README／组合入口不在Root #67写区。本项是原R-09治理误报的新增具体反例，不重复计算旧414条原始记录。
+
+### 后续推进顺序与停止条件
+
+1. 先处理非重叠的R-13正确性问题及R-16工具误导；每项只围绕上述最小写区和独有风险，不扩成全仓重写。
+2. R-14／R-15列明证据交原owner，未拿到独立写权不改Task B；其余既有维护债务不假装已完成，也不重复立项。
+3. 本轮十个风险面已有可追溯结论，停止继续机械扫描。后续修复只回归受影响风险；新证据改变判断时更新原条目，不再启动重复十轮。
+
+状态仅维护[唯一TODO](../../todo.md)；本次扫描完成不等于上述修复完成，也不重开已交付Task A。未改业务源码／gitlink／Schema／依赖、未部署、未操作他人PR。
