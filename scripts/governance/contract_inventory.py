@@ -869,6 +869,49 @@ def _verify_pnpm_file_lock(
         raise ValueError(f"pnpm lock: {error}") from error
 
 
+def _verify_iam_sdk_release_inputs(root: Path, release: str, current: str) -> None:
+    repository = root / IAM_REPOSITORY
+    ancestry = subprocess.run(
+        [
+            "git",
+            "--no-replace-objects",
+            "merge-base",
+            "--is-ancestor",
+            release,
+            current,
+        ],
+        cwd=repository,
+        capture_output=True,
+        check=False,
+    )
+    if ancestry.returncode:
+        raise ValueError("IAM SDK release source must be a runtime ancestor")
+
+    def sdk_tree(commit: str) -> bytes:
+        result = subprocess.run(
+            ["git", "--no-replace-objects", "ls-tree", "-d", commit, "--", "sdk"],
+            cwd=repository,
+            capture_output=True,
+            check=False,
+        )
+        fields = result.stdout.split()
+        if (
+            result.returncode
+            or len(fields) != 4
+            or fields[:2] != [b"040000", b"tree"]
+            or fields[3] != b"sdk"
+        ):
+            raise ValueError("IAM SDK source tree is unavailable")
+        return fields[2]
+
+    if sdk_tree(release) != sdk_tree(current):
+        raise ValueError("runtime IAM SDK source tree differs from its release")
+    if git_blob(root, IAM_REPOSITORY, release, IAM_OPENAPI) != git_blob(
+        root, IAM_REPOSITORY, current, IAM_OPENAPI
+    ):
+        raise ValueError("runtime IAM contract differs from the SDK release")
+
+
 def _verify_capability_iam_archive(
     root: Path, edge: dict[str, Any], assertion: dict[str, Any], errors: list[str]
 ) -> None:
@@ -956,10 +999,15 @@ def _verify_capability_iam_archive(
         )
         if not isinstance(pnpm, str) or not pnpm.startswith("pnpm@"):
             raise ValueError("archive provenance requires an IAM pnpm pin")
+        provenance = _strict_json_blob(blobs["vendor/iam/provenance.json"])
+        release = _json_pointer(provenance, "/source/commit")
+        if not isinstance(release, str):
+            raise ValueError("archive provenance release source is missing")
+        release = _canonical_object_id(release)
         expected = {
             "schema_version": 1,
             "package": {"name": IAM_SDK_PACKAGE, "version": version},
-            "source": {"commit": commit, "dirty": False},
+            "source": {"commit": release, "dirty": False},
             "contract": {"path": IAM_OPENAPI, "sha256": owner["contract_sha256"]},
             "generator": {
                 "package": IAM_SDK_GENERATOR,
@@ -972,7 +1020,6 @@ def _verify_capability_iam_archive(
                 "pnpm": pnpm.removeprefix("pnpm@"),
             },
         }
-        provenance = _strict_json_blob(blobs["vendor/iam/provenance.json"])
         if provenance != expected or provenance["source"]["dirty"] is not False:
             raise ValueError("archive provenance differs from the exact IAM source")
         if (
@@ -994,11 +1041,12 @@ def _verify_capability_iam_archive(
             owner_sdk.get("dependencies", {}),
         )
         if sha256_bytes(blobs[archive_path]) != IAM_SDK_RELEASE_ARCHIVES.get(
-            (commit, version)
+            (release, version)
         ):
             raise ValueError(
                 "digest does not match the independently verified clean IAM archive"
             )
+        _verify_iam_sdk_release_inputs(root, release, commit)
     except (
         AttributeError,
         EOFError,

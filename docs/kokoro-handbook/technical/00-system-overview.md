@@ -66,7 +66,7 @@ Agent / BFF 的 AG-UI 事件 → BFF 持久 ledger / cursor / replay
 
 ## 7. 已验范围与仍保留的限制
 
-Task A 按用户确认的开发交付口径收尾，不等于外部生产环境全部通过。Root 基线 `bdebba56` 保留精确已验子提交；IAM、Admin、Storage、Agent、BFF、App 的原 PR 已合 main。Capability #13 仍叠在其他 owner #12，上游栈保留；继承 Billing/System pins 不借本轮合入其独立工作。Task B 不由 Task A 接手。
+Task A 按用户确认的开发交付口径收尾，不等于外部生产环境全部通过，也不等于全部子仓main交付闭环。Root 基线 `bdebba56` 保留精确已验子提交；IAM、Admin、Storage、Agent、BFF、App 的原 PR 已合 main。**Capability #13仍是我们的Task A交付遗留**，叠在其他owner #12，待上游交付后再收口；不伪称它已进main。Billing／System另于2026-11-11核实独立owner证据，通过原PR #4／#2正常合main，Root精确源码pins保持并已main可达；不据此完成Task B产品／后台范围。当前PR清单和依赖见唯一TODO与审计报告，不以“已收尾”笼统覆盖未合项。
 
 | 验证片 | 实际结果／边界 |
 | --- | --- |

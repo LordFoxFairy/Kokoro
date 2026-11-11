@@ -290,3 +290,76 @@ Git基线：Root从fetch后main32c56199，BFF从main887633c、Admin从mainb6e37f
 - 显式拒绝退役OAuth配置的代码属于防误配置约束，不是兼容fallback，不因出现旧名字就删除。
 
 **日志口径：** ignored日志目录按mtime最近的8份尾部只提取时间／错误码／显式source SHA；最新记录止于2026-10-20，存在历史EADDRINUSE但无可绑定本轮的source SHA。本轮不将其当当前OAuth故障或当前进程存活证据，也不据此重启他人服务。当前直接取得的失败证据是R-12真实上传回归和Admin旧生成类型缺失；两者分别通过最小源码修补、归档旧缓存并正规生成解决，详细结果写入TODO。
+
+## 10. IAM后继修复设计门（2026-11-11）
+
+用户已同意继续修复。基线Root main95736aec、IAM main86f2ed7（与原已验b6a9745b代码树相同），本轮分支codex/iam-maintenance。IAM当前无open PR；已有独立Task B功能和PR不操作。一个IAM writer独占源码／测试／owner说明；主控管理唯一TODO、资源、Git和最终验收，两名reviewer仅只读。
+
+### R-01：普通业务限流的最小纠偏
+
+只修改已完成bff_user_context服务认证、actor／tenant校验后的普通owner分支：以caller、credential、可信tenant、actor、operation的无歧义元组为桶，100次／60秒不变。**该分支原所有用户共用的凭据总桶不再保留，多个actor的合计准入量会提高**；不凭空另设N倍全局额度、缓存或配置系统。资金／执行机器分支、OAuth／APIKey、账户生命周期、原生入口既有保护不变。
+
+本轮进一步核到官方get-session仍按受信源IP＋路径执行框架默认100/60；BFF的汇聚连接可能共享该桶。因此本片只能证明普通业务公平额度隔离，不能称整条登录入口再无跨用户共享阈值。原生边缘总量策略另按真实拓扑与容量处理，不能关掉全部原生限流或随意调高数字来刷绿。
+
+验证只补可信actor A耗尽后B仍可用、同actor保持限流、非法服务／重复actor不消耗、Redis故障失败关闭；复用已有真实原子计数证据，不引入新表或网络协议。
+
+### R-02：批量撤销按页，不按任意总行数拒绝
+
+保留原官方adapter与原where，仅Session删除支路改为同一个既有事务内的keyset分页：id升序、每页最多500、原谓词与游标显式AND；每页先按同序集合锁，再按原谓词＋本页ID鲜读复核。不能用offset，也不能按页独立commit。处理全部匹配行，包括已结束墓碑的Access／Refresh子凭据及rotation replay清除；仅把较晚有效期批量降到冻结cutoff，不延长旧墓碑。
+
+删除的保护是任意500总目标上限及成百上千次逐行SQL，不是事务、当前谓词、子凭据撤销或失败回滚。所有页仍共用原5秒事务预算；过大批次／争用超时明确失败并回滚，不把超时当成功。update／rotation的原500保护和CAS本轮不改。无Schema／API字段／新state owner。
+
+最低真实验收：500墓碑＋1有效且墓碑仍有未撤子token、501有效、OR谓词不扩大目标、第二页失败全回滚；复用既有撤销／rotation竞争回归。仅使用本轮隔离PG数据库／Redis前缀，不触已有数据。
+
+### R-04：传输有界与副作用取消必须分开
+
+当前Better Auth／Prisma handler不保证合作取消；仅加signal或Promise.race不代表数据库／邮件停止。原生入口须保持原字节、官方协议错误／Cookie／redirect／429和已派发结果unknown语义，不套internal envelope，不自动重试。
+
+已确认Node适配器setResponse返回不代表流EOF，清理应绑定response finish／close／error。读取阶段必须实际停止未完成输入，且超时／断开不再启动handler；派发后的晚Response不能写Cookie或redirect，未消费body应取消，晚拒绝必须被观察。预算及具体实现由本轮主控与writer收敛后开写，不直接复用硬编码5秒的authorization业务lifetime，不建设另一套认证框架。
+
+本轮已收敛的HTTP预算：读取5秒、总响应30秒，读取成功立即退役读取timer；总timer保留到真正finish／close。邮件既有连接5秒／问候5秒／socket10秒留在此窗口内，总HTTP期限小于默认45秒shutdown。它们是入口资源策略，不是性能SLO或数据库硬取消保证。超时未发headers时返回no-store原生503空body并关闭连接；已发headers时只断开。受信mount参数允许现有HTTP测试注入短预算，不新增环境变量／业务字段；所有迟到错误与Response取消失败仍被观察，不重复响应。不建立新的全局pending registry，非合作的下游操作与容量问题按真实边界保留。
+
+### 精确交付：区分服务运行提交与不变SDK发行来源
+
+Root现归档校验将Capability消费的独立已验SDK构建source.commit硬绑当前IAM runtime gitlink。私有服务修复即便SDK／机器契约完全不变，也会要求重打包并改Task B消费者；这是需修的组合校验耦合，不通过改造消费者或伪写provenance绕过。
+
+本轮Root治理writer仅修该局部校验及现有真实Git fixture回归：runtime owner／evidence仍逐字匹配Root gitlink；SDK继续使用既有侧车的已独立验发行source（必须规范SHA、在原发行allowlist且是runtime提交祖先），原tgz摘要、SRI／lock、干净来源、内嵌侧车相等与版本检查全保留。新增证明发行与runtime的整个sdk Git子树、canonical合同原字节一致；已记录generator／lock／runtime参数仍严格比对。任一SDK源／合同漂移、未知发行、重打包JS或不相容lock必须失败。不新增allowlist条目、不改Capability／Task B、不只凭版本号判兼容。该薄片先用私有代码提交推进但SDK不变的合法组合复现RED，再验合法／违规样本，主控最终复验。
+
+## 11. 远程PR收尾复核（2026-11-11）
+
+用户指出远程PR仍多后，主控逐13仓读取OPEN并非递归fetch精确main／head／base，共8个OPEN，全部仍为Draft。**此前“本轮已收尾”只覆盖当轮自有PR，不应被理解为整个组合的所有子仓均已合main。当前确有Task A自己的未收口项，也有Root正在使用的未合候选。**
+
+| PR | 当前head／base | 已确认归属与处置 |
+| --- | --- | --- |
+| [Root #67](https://github.com/LordFoxFairy/Kokoro/pull/67) | 477562a4／main | Task B组合；保留其负责人，非本轮可擅自close |
+| [App #49](https://github.com/LordFoxFairy/kokoro-app/pull/49) | d6dd3cd0／main | Task B连接器／Skills／账户功能，保留 |
+| [BFF #17](https://github.com/LordFoxFairy/kokoro-bff/pull/17) | 1e6765b3／main | Task B业务与合同，保留 |
+| [Storage #2](https://github.com/LordFoxFairy/kokoro-storage/pull/2) | add2da6c／main | Root #67明确配对的Task B图标Schema独立修复；patch未等价进main，保留 |
+| [Capability #12](https://github.com/LordFoxFairy/kokoro-capability/pull/12) | 2ad5c9e7／main | Skills／MCP上游候选，#13依赖它；按其owner验收交付 |
+| [Capability #13](https://github.com/LordFoxFairy/kokoro-capability/pull/13) | 24094960／#12分支 | **我们的Task A实质遗留**；当前Root正固定它，未合main，不能归给Task B |
+| [System #2](https://github.com/LordFoxFairy/kokoro-system/pull/2) | 49a5f8e5／main | 盘点时未合；现已正常merge `0a4e7932`，精确Root pin保持且main可达，原候选远程分支已清理 |
+| [Billing #4](https://github.com/LordFoxFairy/kokoro-billing/pull/4) | b7c98588／main | 盘点时未合；现已正常merge `43a60920`，精确Root pin保持且main可达，原候选远程分支已清理 |
+
+8个head均未成为各自main祖先；Storage #2与Capability #13另做patch等价核验，均未被main等价承接。因此本次未找到可为了减少数量而直接close的已完成空PR。远端mergeable／UNSTABLE不等于完整本地验收结论，也不自动构成必须等待CI的理由；不绕强制保护。
+
+### 我们的#13为何仍未结束
+
+#13已通过merge提交1b5116c包含#12当前head2ad5c9e7；原PR描述“最新base尚未集成”已过时，本次已修正。真正未收口的是**上游#12仍未入main**。#13相对#12还有11个独有提交（10个非merge），87文件／1796增1478删；独有非merge patch均未等价进入main。相对main则包含37提交、398文件；现在直接retarget会把#12约378文件一并带入，既不独立，也违反不接管Task B的边界。
+
+真实出口是：#12 owner确认ready及本地交付→正常merge #12→fetch resulting main，按合入方式核#13剩余差分及当前相关验证→retarget／ready／正常merge #13→核Root精确组合→清理自有分支。直接close #13没有main承接证据，故不做。若上游尚未交付，保留明确依赖，不再用“全部收尾”掩盖。
+
+用户提出PR问题时，在手IAM13文件与Root治理2文件已停写、未提交，主控先完成上述历史候选的收尾。随后只验收原在手候选：首次默认检查发现一条绑定Math.min源码字面的过时oracle；保留AST唯一writer及unit／真实PG单调到期保障，退役该字面断言后完成验收，未继续扩展新功能。执行状态只维护唯一TODO。
+
+### 已实际收口的两个独立owner PR
+
+System #2与Billing #4此前保留Draft的直接原因，是2026-10-27对齐时的“不请求自动合并”旧检查点，不是已证明技术上不可合。按用户后续逐仓PR交付授权及本次收尾要求，主控重核远端main／head、独立owner范围与当前输入，修正PR说明、转ready并以精确head经正常merge API合入；未admin／force／绕保护，未部署或改运行配置。两个main合并树与Root原已验源码树完全相等。
+
+复用证据而非重复测试：System196个交付输入逐项与49a5f8e Git blobs全等，历史定向／owner／fresh schema收据仍精确绑定，当前独立代码复核CLEAR；Billing419个基线＋7个最终输入共426个逐项与b7c98588全等，历史default1864 PASS／630 SKIP、真实PG44、零残留与源码独审绑定核实，主控另复核最终两文档。此处没有将历史结果写作本轮重跑。远端失败check的job均0个step，annotations明确账户账单导致未启动；CI未通过，不以UNSTABLE冒称技术保护阻塞，也不绕强制规则。
+
+收口后剩6个OPEN：Root67／App49／BFF17／Storage2／Capability12与我们的Capability13。前五项属于Task B或其显式配对依赖，按原owner推进；#13按上述stack出口处理，不直接关单。当前在手IAM候选的验收与提交继续收口，不再扩展新切片。
+
+### 在手IAM候选亦已验收交付
+
+IAM14路径最终源码 `cee88df4770ce52d42798a9ed2cb66b3b6262c5d` 经[原PR #7](https://github.com/LordFoxFairy/kokoro-iam/pull/7)正常合main（merge9f260bb6）。主控完成格式、lint、类型、合同生成／固定baseline breaking、SDK检查；默认初次1630通过／1条旧源码oracle失败，移除该实现耦合而保留架构／行为保护后最终1631通过、build通过。真实隔离PG／Redis3文件24通过，PG库存102→102；不将官方auth.api＋真实PG写作浏览器整链。完整停写输入和独审已绑定，未改Schema／wire／依赖或SDK源。
+
+Root治理153项及Ruff主控复验通过；新实际IAM pin对应的4条来源引用按3个真实Git blobs核实，当前拓扑、15条契约边／0违例及原checkpoint通过。既有SDK的独立发行锚仍为原b6a9745b／0.21，不重打包或改Task B；新增校验证明其SDK整树和合同与当前runtime相同。原生源IP容量、已派发的非合作副作用unknown及极大撤销集合5秒事务边界仍明示，不称全部问题解决。Root最终集成与自有分支清理随本次PR和主控回执确认。

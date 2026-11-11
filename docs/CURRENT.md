@@ -1,5 +1,13 @@
 # Current Facts
 
+## PR收尾纠偏与IAM候选交付（2026-11-11）
+
+全13仓实查原有8个OPEN，不再将“当轮PR完成”笼统称“所有子仓main交付完成”。现System #2、Billing #4已核独立owner证据并通过原PR正常合main（0a4e7932／43a60920），远程候选分支已清理；Root原精确源码pins49a5f8e／b7c98588保持并已main可达。剩6个为Task B／其配对依赖5个，及**我们的Task A Capability #13**；#13需上游#12先交付，不直接close或整包retarget。详细证据／出口见[审计§11](reports/2026-11-11-typescript-auth-admin-audit.md#11-远程pr收尾复核2026-11-11)和[唯一TODO](../todo.md)。旧PR说明已纠正；远端失败CI是账户账单导致job未启动，不称通过、不绕保护。
+
+已停止扩展新切片，只完成在手IAM14路径验收，经原PR #7合main，Root锁源码cee88df4：普通BFF可信actor配额、同事务有界分页撤销、原生读取5秒／响应30秒生命周期；其它机器／用户认证及当前权限不变。主控前置格式／lint／类型／合同／breaking／SDK、默认与build通过；首次默认旧Math.min源码oracle失败已退役，AST唯一writer与真实行为保障保留。真实隔离PG24通过且库存102→102；不冒浏览器整链、所有源IP容量或数据库硬取消已解决。
+
+Root仅修SDK发行锚与私有runtime提交的硬绑定，保原归档allowlist及SDK树／合同字节／祖先、lock／SRI／dirty等负控；153项和实际拓扑／15条契约边／原checkpoint通过。消费者和SDK源未变，来源按4条引用／3个Git blobs实核。本次Root PR承载精确组合与清单，最终合并和自有分支清理以Git回执为准；不合Task B、不部署、不重置共享资源。
+
 ## 认证边界与旧代码维护（2026-11-11，子仓已交付）
 
 本轮从[审计报告](reports/2026-11-11-typescript-auth-admin-audit.md)进入最小修复，执行状态只维护[TODO](../todo.md)。普通内部调用未发现主动client_credentials／token换票现役caller；直接服务凭据、第三方OAuth和在线业务权限是不同边界，不按关键字删除。
