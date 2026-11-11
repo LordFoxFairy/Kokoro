@@ -1,3 +1,13 @@
+## 2026-11-11 · Task A 开发交付最终收尾裁决
+
+用户最新要求：本地 Docker E2B 协议验证后结束本次 Task A 开发交付，其余真实渠道账号／本人语音发送暂存 TODO；沿原 PR 合 `main`，只清理 Task A。该裁决替代下方历史中的“本轮不合并／E2B 必须等云环境”，不改历史失败证据，也不把暂存项改写成真实通过。唯一执行清单为 Root `todo.md`。
+
+真实 E2B 收据 `884f6bcbb5676f512bf67b6c` 绑定 Root `1213099a` 和精确已提交子仓；native IAM／Chromium／真实 BFF、PG、Redis、Storage、Scanner、Agent HTTP＋独立 Worker，锁定 E2B SDK 对官方 envd 0.10.0 Docker 的真实进程／文件协议。普通 Chat 选择原 E2B profile，一 Run 原生写／编辑同径两版，经 CLEAN 存储后 Canvas 按各自 SHA 展示，硬刷新恢复选中旧版。全轮 PASS／native exit 0／cleanup PASS，收据 SHA‑256 `6812937fe8ece3c1f4619110896f598cbcc17fb9c017bd26c9ea56eb0d6e08d1`。System／模型／预算／Platform 是明示夹具。SDK debug 跳过云控制面；主控另外物理停删容器、核端口关闭，独立清理收据 SHA‑256 `63d700609ab7228198274f0eafff04fb4f81cfe66596d0ab20c0aa923ea155d5`。不把 debug kill 当云或 Docker 实体回收。
+
+IAM #6、Admin #5、Storage #3 已合；本轮 Agent #46→`87577ea`、BFF #18→`8bead5c`、App #50→`af86159b` 正常 merge，保留精确已验提交。Root #66 收尾仍保留这些精确 pins，不机械换成 merge SHA。Capability #13 叠在其他 owner #12，两 PR／远端分支保持，不合 staging、不 retarget 带入 Task B。未变 Billing／System 沿继承 pin。清理前先私有归档唯一收据和原 App 无归属改动，不重跑未变的全量测试、不清卷、不部署。
+
+下方为原设计门与历史实施证据；最新状态以 `todo.md`／CURRENT 顶部为准。
+
 ## 2026-11-10 · A‑10 已交付成果树执行门
 
 - **唯一事实与写区**：Agent 原 #46 在现 exact `deliver` 成功协议增可选 `display_path`（与安全的虚拟绝对原路径相等，例如 `/reports/summary.md`；不放宿主路径、敏感名、私有挂载或未知 backend）。它只表示已交付版本的展示出处；原 `path` 内部既有语义不变，不新增 HTTP/RPC 或读取方式。沿实际 native backend 判定；复用现工具 journal 初始意图冻结此可选证明，同一 live/恢复 builder；旧日志缺字段继续缺，不从旧原路径回填、不改 Storage command 身份或字节。
