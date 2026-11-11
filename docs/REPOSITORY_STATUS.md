@@ -45,7 +45,9 @@ python3 scripts/verify-ten-repository-standard.py --format json
 
 精确gitlink检出的子仓可合法处于detached HEAD；他人的正常topic分支不属于组合错误。一次性“全远端仅main”检查已退役，自有分支清理按对应PR合并／无后继工作回执确认，不枚举或删除其他人的分支。
 
-2026-11-11固定组合 `32c56199` 的拓扑检查PASS，能识别12子仓；脚本中的runtime_module_count=9不是Git仓库总数。旧ten-repository-standard实际只覆盖9子仓，本轮报告FAIL／414条原始规则记录／0 unverified，包含原生协议误报和解析能力不足，不是414个已确认缺陷。逐项证据与未运行范围见上述审计报告。历史2026-09-20的322项与110条规则记录不作为当前通过／失败证明；治理预检不代替owner行为验收。
+现`ten-repository-standard`保留历史命令名，profiles覆盖12子仓（包括Mori／Admin／libs/shared），按service、web adapter和源码library的真实职责检查。结构规则记录不是已确认缺陷数；unsupported合同解析／无法核验发布对象进入阻断unverified；无有效pin或已知篡改为FAIL，不再虚构缺owner合同。安装态TypeScript工具unknown另列，可用`--require-installed-tools`要求阻断。最新修正／实际FAIL与未运行范围见[维护报告§15](reports/2026-11-11-typescript-auth-admin-audit.md#15-r-07-storage分片与r-09治理校准)，不把预检当产品验收。
+
+历史快照：2026-11-11固定组合 `32c56199` 的拓扑检查PASS，能识别12子仓；其中runtime_module_count=9不是Git仓库总数。旧审计器仅覆盖9子仓，FAIL／414条原始记录／0 unverified，含原生协议误报和解析不足，不是414个缺陷。历史2026-09-20的322项与110条规则记录同样不作为当前通过／失败证明。
 
 完整 clone 的复现命令与远端标识规则见 [ADR-032](kokoro-handbook/decisions/ADR-032-root-submodule-composition-and-repository-identity.md)。
 

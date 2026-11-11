@@ -1477,7 +1477,7 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+        "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
         "contract_version": "kokoro.storage.v3",
         "contract_path": "contract/proto/kokoro/storage/v3/storage.proto",
         "contract_sha256": "dbd622696f66817465f6481f86da03cfec871ade9960a8f4194d85631a9981df"
@@ -1502,13 +1502,13 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/openapi.json",
           "sha256": "3f3cf69fcb875be5959e5d3e570f77e8810025867c6996fcf562f97acc07c861"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/proto/kokoro/storage/v3/storage.proto",
           "sha256": "dbd622696f66817465f6481f86da03cfec871ade9960a8f4194d85631a9981df"
         },
@@ -1688,19 +1688,19 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/provenance.json",
           "sha256": "057aaeb0947e693ad8842bd0cf24e11bbd370d97891a60d273b44c1769bb130e"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/proto/kokoro/common/v1/common.proto",
           "sha256": "4604725ec7d5896c9d74b53c6f06d19b20ee758d5ab9e1cb90177ede95bba9fd"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "test/integration/scoped-file-lifecycle.test.ts",
           "sha256": "d1dc8a6a9764b8e3bb68d4017f04cb10afc8af78e767784d4f51cbabaad0d74c"
         },
@@ -1718,7 +1718,7 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "test/integration/final-artifact-retirement.test.ts",
           "sha256": "cae4cb2ea8678c47dcc5ff69fd1d8b02bef9746b45540478fd39012d1e48a2bd"
         },
@@ -2846,7 +2846,7 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+        "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
         "contract_version": "kokoro.storage.v3",
         "contract_path": "contract/proto/kokoro/storage/v3/storage.proto",
         "contract_sha256": "dbd622696f66817465f6481f86da03cfec871ade9960a8f4194d85631a9981df"
@@ -2949,19 +2949,19 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/provenance.json",
           "sha256": "057aaeb0947e693ad8842bd0cf24e11bbd370d97891a60d273b44c1769bb130e"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/proto/kokoro/common/v1/common.proto",
           "sha256": "4604725ec7d5896c9d74b53c6f06d19b20ee758d5ab9e1cb90177ede95bba9fd"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "test/integration/final-artifact-retirement.test.ts",
           "sha256": "cae4cb2ea8678c47dcc5ff69fd1d8b02bef9746b45540478fd39012d1e48a2bd"
         },
@@ -3003,7 +3003,7 @@
       "owner": {
         "name": "kokoro-storage",
         "repository_path": "apps/kokoro-storage",
-        "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+        "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
         "contract_version": "kokoro.storage.v3",
         "contract_path": "contract/proto/kokoro/storage/v3/storage.proto",
         "contract_sha256": "dbd622696f66817465f6481f86da03cfec871ade9960a8f4194d85631a9981df"
@@ -3046,13 +3046,13 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "src/common/auth/service-authorization.ts",
           "sha256": "6235e1a329a370a38cd57dcf9bd02b406ba91f9e36d7c4c8f27610627a16ad02"
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "test/contract/rpc-trust-boundary.test.ts",
           "sha256": "754b0da337eae2840f902afe5beafc55abe55daeb0e5c15939c1f36ffacbc797"
         },
@@ -3100,7 +3100,7 @@
         },
         {
           "repository_path": "apps/kokoro-storage",
-          "repository_commit": "b60931e9e4e92d596b0678cbdabd9116e898b432",
+          "repository_commit": "231bb6632c9962d18ce48c6e998384fb76497d06",
           "path": "contract/profiles/mcp-package-v2.json",
           "sha256": "191eb6f06713059967bd6e9320ad9c7e9a2dd526ae13c6c93b3aace408c04e29"
         }

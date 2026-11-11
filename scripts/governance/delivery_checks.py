@@ -6,6 +6,7 @@ import re
 
 from .ten_repository_standard import (
     REPOSITORY_PATHS,
+    REPOSITORY_PROFILES,
     REQUIRED_REPOSITORY_DIRECTORIES,
     REQUIRED_REPOSITORY_DOCUMENTS,
     ROOT,
@@ -19,17 +20,20 @@ from .ten_repository_standard import (
 
 def check_delivery(repository_name: str, failures: list[Failure]) -> None:
     repository = ROOT / REPOSITORY_PATHS[repository_name]
-    for relative in REQUIRED_REPOSITORY_DOCUMENTS:
+    library = REPOSITORY_PROFILES[repository_name].kind == "typescript-library"
+    documents = ("README.md",) if library else REQUIRED_REPOSITORY_DOCUMENTS
+    directories = () if library else REQUIRED_REPOSITORY_DIRECTORIES
+    for relative in documents:
         if not has_exact_relative_file(repository, relative):
             add(failures, repository_name, "documentation", f"{relative} is missing")
-    for relative in REQUIRED_REPOSITORY_DIRECTORIES:
+    for relative in directories:
         if not has_exact_relative_directory(repository, relative):
             add(failures, repository_name, "documentation", f"{relative}/ is missing")
 
     dockerfile = repository / "Dockerfile"
-    if not dockerfile.is_file():
+    if not dockerfile.is_file() and not library:
         add(failures, repository_name, "container", "Dockerfile is missing")
-    else:
+    elif dockerfile.is_file():
         docker_text = read_text(dockerfile)
         build_args = dict(
             re.findall(
