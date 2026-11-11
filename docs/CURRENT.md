@@ -1,14 +1,22 @@
 # Current Facts
 
-## R-07 Storage／R-09治理校准（2026-11-11）
+## R-05 Mori adapter 验收（2026-11-11）
+
+R-05原adapter欠账已通过自有[Mori #3](https://github.com/LordFoxFairy/kokoro-mori/pull/3)合main，源码3a4400e3、merge6d98924e，合并树与已验源一致，自有topic已清。复用Product已建立会话、标准三配置／公开Host与Origin，删除旧Cookie／namespace／principal和loopback默认；普通／唯一音频上传／GET媒体SSE按实际seam有界传输并贯穿取消，不增加登录、OAuth、预算框架或业务owner。
+
+主控一次Node22.23.4／pnpm11.2.2的owner check通过（lint／类型／739测试／build），270个输入摘要前后不变；独审18路径CLEAR。亲建生产Next HTTP→现BFF Music入口接线通过原生Cookie／固定Origin、多Set-Cookie、fresh撤权401且owner不再被调、跨源／旧Cookie零准入；IAM admission及Music owner明确替身，所有亲建进程／socket已关闭。首403因Node fetch没发送指定公开Host，修验收脚本为http.request后通过，失败保留、生产Host校验未放宽。
+
+Root本PR只锁精确Mori源码及台账，实际拓扑／15条边0违例／原checkpoint通过；无Mori既有inventory引用，不新造空边。现编号10收口／6遗留（4待处理、R-07／R-11部分完成），唯一状态见[TODO](../todo.md)及[报告§16](reports/2026-11-11-typescript-auth-admin-audit.md#16-r-05-mori同源adapter修复)。Mori继续preview，独立冷登录／Product挂载和Music owner上传／媒体等未接能力列产品暂存，不冒真实音乐链验收、不重开Task A；Task B及部署不动。
+
+## 上批 R-07 Storage／R-09治理校准（2026-11-11，Root #77已交付）
 
 Storage自有[#4](https://github.com/LordFoxFairy/kokoro-storage/pull/4)已正常合main，源码231bb663、合并树等于已验源，自有topic已清理。contract:check隔离生成、完整路径／字节比较，保原显式generate、HTTP／语义检查；主控7项真实命令回归、类型／focused lint／格式／正式check通过，321个输入摘要不变。Capability余项未动，R-07仅部分完成。
 
 Root第一候选341项fixture通过后，真实12仓诊断FAIL／552条结构记录／4项unverified暴露未收口归属，现已定向修正。最终主控372项fixture与现CLI smoke、Ruff／format通过、独审CLEAR；实际child预检仍exit1／FAIL，294条结构记录／4项unverified，不是294个已确认故障。目标版本路径／snapshot归属／缺owner级联误报记录为0；BFF／Billing超出受限YAML解析能力与shared两package工具缺失仍如实列未验证。不新增parser／工具安装或追数字清零。
 
-编号现为9项有界收口、7项遗留（5待处理、R-07／R-11部分完成），R-09及组合由本Root PR承接。Storage首次兼容门暴露Agent不可变发布receipt与私有runtime源码硬绑定，仅补Storage祖先／同输入证明，不为check脚本变更重发相同Agent合同；精确组合结果见下方最终回执。唯一状态见[TODO](../todo.md)，证据与局部裁决见[报告§15](reports/2026-11-11-typescript-auth-admin-audit.md#15-r-07-storage分片与r-09治理校准)。Task B及部署不动，未启动业务／数据资源。
+该批完成后编号为9项有界收口、7项遗留（5待处理、R-07／R-11部分完成），R-09及组合已由Root #77交付。Storage首次兼容门暴露Agent不可变发布receipt与私有runtime源码硬绑定，仅补Storage祖先／同输入证明，不为check脚本变更重发相同Agent合同；精确组合结果见下方最终回执。唯一状态见[TODO](../todo.md)，证据与局部裁决见[报告§15](reports/2026-11-11-typescript-auth-admin-audit.md#15-r-07-storage分片与r-09治理校准)。Task B及部署不动，未启动业务／数据资源。
 
-组合最终回执：Storage15项来源按9个真实Git blobs重核；主控9项新增发布锚回归、11项checkpoint回归及相关Ruff／format通过，writer完整兼容性151通过。实际拓扑PASS、15条边／0违例、原checkpoint PASS，首次硬绑FAIL证据保留。发布祖先／proto／provenance负控不减，Agent／Platform／IAM消费者未变；本Root PR只交付该精确组合和治理校准。
+组合最终回执：Storage15项来源按9个真实Git blobs重核；主控9项新增发布锚回归、11项checkpoint回归及相关Ruff／format通过，writer完整兼容性151通过。实际拓扑PASS、15条边／0违例、原checkpoint PASS，首次硬绑FAIL证据保留。发布祖先／proto／provenance负控不减，Agent／Platform／IAM消费者未变；该批Root #77只交付此精确组合和治理校准。
 
 ## 上批维护盘点与交付（2026-11-11）
 

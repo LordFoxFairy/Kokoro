@@ -1,56 +1,48 @@
 # Kokoro · 当前维护 TODO
 
-核对日期：2026-11-11（America/New_York）。本轮起点Root `ff0e36df`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
+核对日期：2026-11-11（America/New_York）。本轮起点Root `7edca39a`；唯一执行清单为本文件，证据集中在[维护报告](docs/reports/2026-11-11-typescript-auth-admin-audit.md)。历史逐次日志从Git追溯，不再平铺为当前任务。
 
 ## 当前盘点
 
-- R-01～R-16共16个已编号问题：本轮验收后**9项已收口、7项仍有遗留**（5项待处理、R-07／R-11部分完成）。R-09及精确组合由本Root PR承接；本轮起点8／8，不是新增故障。
+- R-01～R-16共16个已编号问题：当前**10项已收口、6项仍有遗留**（4项待处理、R-07／R-11部分完成）。R-05 adapter已由Mori #3合main，Root本PR承接精确组合；本轮起点9／7，不是新增故障。
 - 另有2条旧代码清理候选，单独列出，不混成新故障；已接受容量／取消边界和产品验收暂存也不混入编号统计。
 - Task A按用户确认口径已交付，不重开。Task B的PR、分支和工作树不操作；已合并的自有PR不反复建单。
 
-## 当前推进：R-07 Storage／R-09治理校准
+## 本轮收口：R-05 Mori adapter
 
-- [x] **R-07／Storage分片**：正式Buf／normalizer隔离生成并比较完整路径／字节，主控定向与输入不变验收通过；自有[#4](https://github.com/LordFoxFairy/kokoro-storage/pull/4)已合main、分支已清。Root精确组合尚待下项，Capability部分仍交原owner，不整体关闭R-07。
-- [x] **R-09／Root本地验收**：12子仓真实profile、native／browser-private与snapshot来源校准；unsupported阻断且无缺owner级联。主控372项fixture、现CLI smoke、Ruff／format通过，独审CLEAR；实际预检仍FAIL／294条结构记录／4项unverified，不是全仓绿，由本Root PR承接。
-- [x] **Storage精确组合本地验收**：发布锚祖先／生成输入与provenance逐字相同，原consumer／生成器负控不减。首次兼容FAIL保留；修正后主控9项新反例、11项checkpoint回归、实际拓扑／15条边0违例／原checkpoint通过。不改Agent或Platform，由本Root PR承接。
+- [x] **原生认证接线**：Product已有原生会话与标准三配置、公开Host／Origin校验；旧Cookie、namespace／principal及loopback默认已删除。
+- [x] **有界转发**：普通／音频上传／GET媒体SSE按现seam限额与期限，取消、Range／幂等／原字节保留；无通用代理框架。主控一次完整owner check及独占Next→BFF HTTP接线通过，替身边界明确。
+- [x] **契约／文档与交付**：7份认证契约仅改Product会话scheme，业务内容／成员顺序守恒；独审CLEAR。[Mori #3](https://github.com/LordFoxFairy/kokoro-mori/pull/3)已合main，源码3a4400e3，自有分支已清。Root本PR锁精确pin及更新台账；Task B不动。
 
-两名聚焦writer分别负责Storage检查／发布锚及Root治理分类器；主控独占台账／Git／组合，第三名代理只读审查。不运行产品服务或全量业务测试，不新增依赖／解析框架，不动Task B。
+本轮只闭环R-05所列adapter债务。Mori继续preview，不新建独立登录／OAuth，不接管Music owner、BFF缺失业务路由、R-06共享迁移或Task B；不拿测试替身冒真实登录／音乐生成／播放全链。
 
-## 本轮已收口
-
-- [x] **R-08／已列文档余项**：App [#54](https://github.com/LordFoxFairy/kokoro-app/pull/54)与Billing [#5](https://github.com/LordFoxFairy/kokoro-billing/pull/5)已合main；纠正现役认证／AG-UI／SDK／工具链／共享消费及Nest／Prisma／可信管理上下文事实。R-06迁移没有借文档勾掉。
-- [x] **Billing旧factory候选**：[#5](https://github.com/LordFoxFairy/kokoro-billing/pull/5)已交付源码afbfd790；删除零生产caller总factory及3孤立类型。现役Personal／Catalog实现逐字不变，有效JWT／JWKS／租户／四因子／operator风险保留；主控相关288通过与格式／lint／类型／build通过。
-- [x] **R-11／Mori分片**：[#2](https://github.com/LordFoxFairy/kokoro-mori/pull/2)已交付源码d363816e；插件固定现lock6.1.1、Node类型22.20.1，运行依赖和pnpm不变。主控完整owner check通过；App余项留Task B，整体R-11仅部分完成。
-
-三名聚焦代理实施、独立审查CLEAR、主控复验后，三仓自有PR已合main且自有分支已清理。Root本次PR承接精确组合与清单，最终main同步／分支清理以Git回执确认；未扩入下列业务／重叠写区。
-
-## 未闭环编号队列（当前7项）
+## 未闭环编号队列（当前6项）
 
 | ID | 遗留问题 | owner／下一动作 |
 | --- | --- | --- |
 | R-03 | Admin部分菜单／旧页面仍未接正式业务接口 | Task B后台owner；不接管、不造假成功页面 |
-| R-05 | Mori preview adapter的正式认证接线、fixture隔离、body／取消／媒体流边界 | Mori独立业务切片；复用Product原生边界，不新建身份服务 |
 | R-06 | App私有workspace与web-shared仍双writer，规范交付未收敛 | shared＋App；App消费者与Task B重叠，先确认owner／交付方式再切换删除 |
-| R-07 | **部分完成**：Storage检查已只读交付，Capability检查写副作用仍在 | Capability交其owner；Storage不重复修，Root精确组合本轮收口 |
+| R-07 | **部分完成**：Storage检查已只读交付，Capability检查写副作用仍在 | Capability交其owner；Storage不重复修，Root #77已完成精确组合 |
 | R-11 | **部分完成**：Mori已交付，App的Node类型仍需对齐运行环境 | App package与Task B重叠，交原owner；不重复修Mori |
 | R-14 | MCP OAuth DNS pin跨独立授权驻留，公网轮换可持续拒绝 | Capability原owner；composition与Task B重叠，本轮不动 |
 | R-15 | App聚合check重复执行同批contract／architecture测试 | App原owner；保generator检查与同等覆盖，只收敛编排，package与Task B重叠 |
 
-**后继顺序：** 先交付本轮Root精确组合；后继独立业务切片为R-05 Mori正式接线。其余重叠项交原owner，不为清零抢写Task B、按扫描数字扩修或重复全产品测试。
+**后继顺序：** 本轮Root精确组合经自有PR交付并清理；其余6项按原owner边界保留，不为清零抢写Task B、按扫描数字扩修或重复全产品测试。
 
-## 已收口编号（当前9项）
+## 已收口编号（当前10项）
 
 | ID | 结果与交付依据 |
 | --- | --- |
 | R-01／R-02／R-04 | IAM可信actor限流分桶、同事务分页撤销、原生读取／响应生命周期；IAM #7，源码cee88df4，Root #72 |
+| R-05 | 同源adapter原生会话／fixture隔离／有界传输已验；Mori #3，源码3a4400e3。非独立冷登录或完整Music产品验收 |
 | R-08 | 已列App／Billing／BFF／IAM／Root入口事实漂移已纠正；本轮App #54／Billing #5完成余项，不泛称全仓所有文档绝无错误 |
-| R-09 | 12仓profiles／协议与导入来源／未知诊断机制已本地验收；实际FAIL／unverified原样保留，不把预检当产品闭环，由本Root PR承接 |
+| R-09 | 12仓profiles／协议与导入来源／未知诊断机制已本地验收；实际FAIL／unverified原样保留，不把预检当产品闭环，Root #77已交付 |
 | R-10 | Admin无消费者旧认证配置／包装退役；Admin #6，源码9bed3d2a，Root #71 |
 | R-12 | 持久回执不再重复留无界Map；BFF #20，源码00a9ebee，Root #71 |
 | R-13 | Project业务／完成回执同事务，回滚／重放／竞争／提交响应未知已定向验；BFF #21，源码a3e19062，Root #75 |
 | R-16 | 一次性main-only脚本及当前入口退役，合法detached／他人topic与错pin反例保留；Root #75，mainf0efcb87 |
 
-详细实际命令、失败／复验、跳过与未运行边界见[报告§13～15](docs/reports/2026-11-11-typescript-auth-admin-audit.md#15-r-07-storage分片与r-09治理校准)。不拿测试数量代替行为闭环。
+详细实际命令、失败／复验、跳过与未运行边界见[报告§13～16](docs/reports/2026-11-11-typescript-auth-admin-audit.md#16-r-05-mori同源adapter修复)。不拿测试数量代替行为闭环。
 
 ## 旧代码候选（不重复立编号）
 
@@ -64,6 +56,7 @@
 ## 已接受边界与产品暂存
 
 - IAM原生get-session按BFF汇聚源IP共享额度仍需代表性容量核验；不随意抬限流或引入token缓存。HTTP超时不等于非合作数据库副作用硬回滚，超大撤销集合保留有界事务失败语义。
+- [ ] Mori正式产品接入：当前依赖Product同源已有会话，独立冷登录返回及Music owner的上传／媒体等映射尚未提供；交后续Product／Music owner，不以R-05 adapter传输修复冒完整音乐产品闭环，不重开Task A。
 - [ ] A-13：Telegram／LINE／Slack真实账号授权、收发和撤权；本地协议证据不冒充真实供应商。
 - [ ] A-14：用户本人语音转写后编辑并显式发送；不保留录音或口述原文。
 - [ ] 可选E2B云／完整自托管生命周期：实际使用时补创建、重连、独立回收；官方envd Docker本地真实协议链已通过，不再阻塞开发交付。
